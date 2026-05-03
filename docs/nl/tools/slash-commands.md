@@ -1,36 +1,36 @@
 ---
 read_when:
     - Chatcommando's gebruiken of configureren
-    - Opdrachtroutering of machtigingen debuggen
+    - Foutopsporing van opdrachtroutering of machtigingen
 sidebarTitle: Slash commands
-summary: 'Slash-commando''s: tekst versus systeemeigen, configuratie en ondersteunde commando''s'
+summary: 'Slashcommando''s: tekst versus systeemeigen, configuratie en ondersteunde commando''s'
 title: Slash-commando's
 x-i18n:
-    generated_at: "2026-05-02T20:59:27Z"
+    generated_at: "2026-05-03T21:38:48Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c2829a33601eb53a63b914ad1a6c3bf51be4298fe3bd34faf6475f60a2d491d2
+    source_hash: 9fbdd76ccd43159cabfbc3f15f7bddd2a7ada07fcd6eea2e169d2d88df18f28c
     source_path: tools/slash-commands.md
     workflow: 16
 ---
 
-Opdrachten worden afgehandeld door de Gateway. De meeste opdrachten moeten worden verzonden als een **losstaand** bericht dat begint met `/`. De bash-chatopdracht alleen voor de host gebruikt `! <cmd>` (met `/bash <cmd>` als alias).
+Opdrachten worden afgehandeld door de Gateway. De meeste opdrachten moeten worden verzonden als een **zelfstandig** bericht dat begint met `/`. De host-only bash-chatopdracht gebruikt `! <cmd>` (met `/bash <cmd>` als alias).
 
-Wanneer een gesprek of thread is gekoppeld aan een ACP-sessie, wordt normale vervolgtekst naar die ACP-harness gerouteerd. Gateway-beheeropdrachten blijven lokaal: `/acp ...` bereikt altijd de OpenClaw ACP-opdrachthandler, en `/status` plus `/unfocus` blijven lokaal wanneer opdrachtafhandeling voor het oppervlak is ingeschakeld.
+Wanneer een gesprek of thread is gekoppeld aan een ACP-sessie, wordt normale vervolgtekst naar die ACP-harness gerouteerd. Gateway-beheeropdrachten blijven nog steeds lokaal: `/acp ...` bereikt altijd de OpenClaw ACP-opdrachthandler, en `/status` plus `/unfocus` blijven lokaal wanneer opdrachtafhandeling is ingeschakeld voor het oppervlak.
 
-Er zijn twee gerelateerde systemen:
+Er zijn twee verwante systemen:
 
 <AccordionGroup>
   <Accordion title="Opdrachten">
-    Losstaande `/...`-berichten.
+    Zelfstandige `/...`-berichten.
   </Accordion>
   <Accordion title="Directieven">
     `/think`, `/fast`, `/verbose`, `/trace`, `/reasoning`, `/elevated`, `/exec`, `/model`, `/queue`.
 
     - Directieven worden uit het bericht verwijderd voordat het model ze ziet.
-    - In normale chatberichten (niet alleen-directief) worden ze behandeld als "inline hints" en blijven sessie-instellingen **niet** behouden.
-    - In berichten met alleen directieven (het bericht bevat alleen directieven) blijven ze voor de sessie behouden en antwoorden ze met een bevestiging.
-    - Directieven worden alleen toegepast voor **geautoriseerde afzenders**. Als `commands.allowFrom` is ingesteld, is dit de enige gebruikte allowlist; anders komt autorisatie uit kanaal-allowlists/koppeling plus `commands.useAccessGroups`. Ongeautoriseerde afzenders zien dat directieven als platte tekst worden behandeld.
+    - In normale chatberichten (niet alleen directieven) worden ze behandeld als "inline hints" en blijven sessie-instellingen **niet** behouden.
+    - In berichten die alleen directieven bevatten (het bericht bevat uitsluitend directieven), blijven ze behouden voor de sessie en wordt er met een bevestiging geantwoord.
+    - Directieven worden alleen toegepast voor **geautoriseerde afzenders**. Als `commands.allowFrom` is ingesteld, is dit de enige gebruikte allowlist; anders komt autorisatie uit kanaal-allowlists/koppeling plus `commands.useAccessGroups`. Ongeautoriseerde afzenders zien directieven behandeld als platte tekst.
 
   </Accordion>
   <Accordion title="Inline snelkoppelingen">
@@ -69,20 +69,20 @@ Er zijn twee gerelateerde systemen:
 ```
 
 <ParamField path="commands.text" type="boolean" default="true">
-  Schakelt het parsen van `/...` in chatberichten in. Op oppervlakken zonder native opdrachten (WhatsApp/WebChat/Signal/iMessage/Google Chat/Microsoft Teams) blijven tekstopdrachten werken, zelfs als je dit op `false` zet.
+  Schakelt het parsen van `/...` in chatberichten in. Op oppervlakken zonder native opdrachten (WhatsApp/WebChat/Signal/iMessage/Google Chat/Microsoft Teams) werken tekstopdrachten nog steeds, zelfs als u dit instelt op `false`.
 </ParamField>
 <ParamField path="commands.native" type='boolean | "auto"' default='"auto"'>
-  Registreert native opdrachten. Auto: aan voor Discord/Telegram; uit voor Slack (totdat je slash-opdrachten toevoegt); genegeerd voor providers zonder native ondersteuning. Stel `channels.discord.commands.native`, `channels.telegram.commands.native` of `channels.slack.commands.native` in om per provider te overschrijven (bool of `"auto"`). `false` wist eerder geregistreerde opdrachten op Discord/Telegram bij het opstarten. Slack-opdrachten worden beheerd in de Slack-app en worden niet automatisch verwijderd.
+  Registreert native opdrachten. Auto: aan voor Discord/Telegram; uit voor Slack (totdat u slash-opdrachten toevoegt); genegeerd voor providers zonder native ondersteuning. Stel `channels.discord.commands.native`, `channels.telegram.commands.native` of `channels.slack.commands.native` in om per provider te overschrijven (bool of `"auto"`). Op Discord slaat `false` de registratie en opschoning van slash-opdrachten tijdens het opstarten over; eerder geregistreerde opdrachten kunnen zichtbaar blijven totdat u ze uit de Discord-app verwijdert. Slack-opdrachten worden beheerd in de Slack-app en worden niet automatisch verwijderd.
 </ParamField>
-Op Discord kunnen native opdrachtspecificaties `descriptionLocalizations` bevatten, die OpenClaw publiceert als Discord `description_localizations` en meeneemt in reconciliatievergelijkingen.
+Op Discord kunnen native opdrachtspecificaties `descriptionLocalizations` bevatten, die OpenClaw publiceert als Discord `description_localizations` en opneemt in reconciliatievergelijkingen.
 <ParamField path="commands.nativeSkills" type='boolean | "auto"' default='"auto"'>
-  Registreert **skill**-opdrachten native wanneer dit wordt ondersteund. Auto: aan voor Discord/Telegram; uit voor Slack (Slack vereist het maken van een slash-opdracht per skill). Stel `channels.discord.commands.nativeSkills`, `channels.telegram.commands.nativeSkills` of `channels.slack.commands.nativeSkills` in om per provider te overschrijven (bool of `"auto"`).
+  Registreert **skill**-opdrachten native wanneer ondersteund. Auto: aan voor Discord/Telegram; uit voor Slack (Slack vereist het maken van een slash-opdracht per skill). Stel `channels.discord.commands.nativeSkills`, `channels.telegram.commands.nativeSkills` of `channels.slack.commands.nativeSkills` in om per provider te overschrijven (bool of `"auto"`).
 </ParamField>
 <ParamField path="commands.bash" type="boolean" default="false">
-  Schakelt `! <cmd>` in om shellopdrachten op de host uit te voeren (`/bash <cmd>` is een alias; vereist `tools.elevated`-allowlists).
+  Schakelt `! <cmd>` in om host-shellopdrachten uit te voeren (`/bash <cmd>` is een alias; vereist `tools.elevated`-allowlists).
 </ParamField>
 <ParamField path="commands.bashForegroundMs" type="number" default="2000">
-  Bepaalt hoe lang bash wacht voordat wordt overgeschakeld naar achtergrondmodus (`0` gaat direct naar de achtergrond).
+  Bepaalt hoe lang bash wacht voordat wordt overgeschakeld naar achtergrondmodus (`0` zet direct op de achtergrond).
 </ParamField>
 <ParamField path="commands.config" type="boolean" default="false">
   Schakelt `/config` in (leest/schrijft `openclaw.json`).
@@ -91,79 +91,79 @@ Op Discord kunnen native opdrachtspecificaties `descriptionLocalizations` bevatt
   Schakelt `/mcp` in (leest/schrijft door OpenClaw beheerde MCP-configuratie onder `mcp.servers`).
 </ParamField>
 <ParamField path="commands.plugins" type="boolean" default="false">
-  Schakelt `/plugins` in (plugin-detectie/status plus bediening voor installeren + inschakelen/uitschakelen).
+  Schakelt `/plugins` in (Plugin-detectie/status plus installatie- en in-/uitschakelbediening).
 </ParamField>
 <ParamField path="commands.debug" type="boolean" default="false">
   Schakelt `/debug` in (alleen runtime-overschrijvingen).
 </ParamField>
 <ParamField path="commands.restart" type="boolean" default="true">
-  Schakelt `/restart` plus gateway-herstarttoolacties in.
+  Schakelt `/restart` plus Gateway-herstarttoolacties in.
 </ParamField>
 <ParamField path="commands.ownerAllowFrom" type="string[]">
-  Stelt de expliciete eigenaar-allowlist in voor opdrachts-/tooloppervlakken die alleen voor de eigenaar zijn. Dit is het account van de menselijke operator dat gevaarlijke acties kan goedkeuren en opdrachten zoals `/diagnostics`, `/export-trajectory` en `/config` kan uitvoeren. Dit staat los van `commands.allowFrom` en van toegang via DM-koppeling.
+  Stelt de expliciete owner-allowlist in voor opdracht-/tooloppervlakken die alleen voor de owner zijn. Dit is het account van de menselijke operator dat gevaarlijke acties kan goedkeuren en opdrachten kan uitvoeren zoals `/diagnostics`, `/export-trajectory` en `/config`. Het staat los van `commands.allowFrom` en van DM-koppelingstoegang.
 </ParamField>
 <ParamField path="channels.<channel>.commands.enforceOwnerForCommands" type="boolean" default="false">
-  Per kanaal: zorgt dat eigenaar-only-opdrachten **eigenaaridentiteit** vereisen om op dat oppervlak te worden uitgevoerd. Wanneer dit `true` is, moet de afzender overeenkomen met een opgeloste eigenaarskandidaat (bijvoorbeeld een vermelding in `commands.ownerAllowFrom` of provider-native eigenaarsmetadata) of interne `operator.admin`-scope hebben op een intern berichtkanaal. Een wildcard-vermelding in kanaal `allowFrom`, of een lege/onopgeloste lijst met eigenaarskandidaten, is **niet** voldoende — eigenaar-only-opdrachten falen gesloten op dat kanaal. Laat dit uit als je wilt dat eigenaar-only-opdrachten alleen worden afgeschermd door `ownerAllowFrom` en de standaard allowlists voor opdrachten.
+  Per kanaal: zorgt ervoor dat opdrachten die alleen voor de owner zijn **owner-identiteit** vereisen om op dat oppervlak te worden uitgevoerd. Wanneer `true`, moet de afzender overeenkomen met een opgeloste owner-kandidaat (bijvoorbeeld een vermelding in `commands.ownerAllowFrom` of provider-native owner-metadata) of interne `operator.admin`-scope hebben op een intern berichtkanaal. Een wildcardvermelding in kanaal `allowFrom`, of een lege/onopgeloste lijst met owner-kandidaten, is **niet** voldoende — opdrachten die alleen voor de owner zijn falen gesloten op dat kanaal. Laat dit uit als u wilt dat opdrachten die alleen voor de owner zijn uitsluitend worden afgeschermd door `ownerAllowFrom` en de standaardopdracht-allowlists.
 </ParamField>
 <ParamField path="commands.ownerDisplay" type='"raw" | "hash"'>
-  Bepaalt hoe eigenaar-id's in de systeemprompt verschijnen.
+  Bepaalt hoe owner-id's verschijnen in de systeemprompt.
 </ParamField>
 <ParamField path="commands.ownerDisplaySecret" type="string">
   Stelt optioneel het HMAC-geheim in dat wordt gebruikt wanneer `commands.ownerDisplay="hash"`.
 </ParamField>
 <ParamField path="commands.allowFrom" type="object">
-  Allowlist per provider voor opdrachtautorisatie. Wanneer geconfigureerd is dit de enige autorisatiebron voor opdrachten en directieven (kanaal-allowlists/koppeling en `commands.useAccessGroups` worden genegeerd). Gebruik `"*"` voor een globale standaard; providerspecifieke sleutels overschrijven die.
+  Allowlist per provider voor opdrachtautorisatie. Wanneer geconfigureerd, is dit de enige autorisatiebron voor opdrachten en directieven (kanaal-allowlists/koppeling en `commands.useAccessGroups` worden genegeerd). Gebruik `"*"` voor een globale standaard; providerspecifieke sleutels overschrijven deze.
 </ParamField>
 <ParamField path="commands.useAccessGroups" type="boolean" default="true">
-  Dwingt allowlists/beleidsregels af voor opdrachten wanneer `commands.allowFrom` niet is ingesteld.
+  Dwingt allowlists/beleid af voor opdrachten wanneer `commands.allowFrom` niet is ingesteld.
 </ParamField>
 
 ## Opdrachtenlijst
 
 Huidige bron van waarheid:
 
-- ingebouwde kernopdrachten komen uit `src/auto-reply/commands-registry.shared.ts`
+- core built-ins komen uit `src/auto-reply/commands-registry.shared.ts`
 - gegenereerde dock-opdrachten komen uit `src/auto-reply/commands-registry.data.ts`
-- plugin-opdrachten komen uit plugin-`registerCommand()`-aanroepen
-- daadwerkelijke beschikbaarheid op je gateway hangt nog steeds af van configuratievlaggen, kanaaloppervlak en geïnstalleerde/ingeschakelde plugins
+- Plugin-opdrachten komen uit Plugin-`registerCommand()`-aanroepen
+- daadwerkelijke beschikbaarheid op uw Gateway hangt nog steeds af van configuratievlaggen, kanaaloppervlak en geïnstalleerde/ingeschakelde Plugins
 
-### Ingebouwde kernopdrachten
+### Ingebouwde core-opdrachten
 
 <AccordionGroup>
   <Accordion title="Sessies en runs">
     - `/new [model]` start een nieuwe sessie; `/reset` is de reset-alias.
     - Control UI onderschept getypte `/new` om een nieuwe dashboardsessie te maken en daarnaartoe te schakelen; getypte `/reset` voert nog steeds de in-place reset van de Gateway uit.
-    - `/reset soft [message]` behoudt het huidige transcript, verwijdert hergebruikte sessie-id's van de CLI-backend en voert het laden van opstart-/systeemprompt in-place opnieuw uit.
+    - `/reset soft [message]` behoudt het huidige transcript, verwijdert hergebruikte CLI-backendsessie-id's en voert het laden van startup/systeemprompt opnieuw in-place uit.
     - `/compact [instructions]` comprimeert de sessiecontext. Zie [Compaction](/nl/concepts/compaction).
     - `/stop` breekt de huidige run af.
-    - `/session idle <duration|off>` en `/session max-age <duration|off>` beheren het verlopen van thread-koppeling.
+    - `/session idle <duration|off>` en `/session max-age <duration|off>` beheren de vervaldatum van thread-koppelingen.
     - `/export-session [path]` exporteert de huidige sessie naar HTML. Alias: `/export`.
-    - `/export-trajectory [path]` vraagt om exec-goedkeuring en exporteert daarna een JSONL-[trajectbundel](/nl/tools/trajectory) voor de huidige sessie. Gebruik dit wanneer je de prompt-, tool- en transcripttijdlijn voor één OpenClaw-sessie nodig hebt. In groepschats gaan de goedkeuringsprompt en het exportresultaat privé naar de eigenaar. Alias: `/trajectory`.
+    - `/export-trajectory [path]` vraagt om exec-goedkeuring en exporteert daarna een JSONL-[trajectbundel](/nl/tools/trajectory) voor de huidige sessie. Gebruik dit wanneer u de prompt-, tool- en transcripttijdlijn voor één OpenClaw-sessie nodig hebt. In groepschats gaan de goedkeuringsprompt en het exportresultaat privé naar de owner. Alias: `/trajectory`.
 
   </Accordion>
   <Accordion title="Model- en runbesturing">
-    - `/think <level>` stelt het denkniveau in. Opties komen uit het providerprofiel van het actieve model; gebruikelijke niveaus zijn `off`, `minimal`, `low`, `medium` en `high`, met aangepaste niveaus zoals `xhigh`, `adaptive`, `max` of binair `on` alleen waar ondersteund. Aliassen: `/thinking`, `/t`.
-    - `/verbose on|off|full` schakelt uitgebreide uitvoer in of uit. Alias: `/v`.
-    - `/trace on|off` schakelt plugin-trace-uitvoer voor de huidige sessie in of uit.
+    - `/think <level>` stelt het denkniveau in. Opties komen uit het providerprofiel van het actieve model; gangbare niveaus zijn `off`, `minimal`, `low`, `medium` en `high`, met aangepaste niveaus zoals `xhigh`, `adaptive`, `max` of binaire `on` alleen waar ondersteund. Aliassen: `/thinking`, `/t`.
+    - `/verbose on|off|full` schakelt uitgebreide uitvoer om. Alias: `/v`.
+    - `/trace on|off` schakelt Plugin-trace-uitvoer om voor de huidige sessie.
     - `/fast [status|on|off]` toont of stelt snelle modus in.
-    - `/reasoning [on|off|stream]` schakelt zichtbaarheid van redenering in of uit. Alias: `/reason`.
-    - `/elevated [on|off|ask|full]` schakelt verhoogde modus in of uit. Alias: `/elev`.
+    - `/reasoning [on|off|stream]` schakelt zichtbaarheid van redenering om. Alias: `/reason`.
+    - `/elevated [on|off|ask|full]` schakelt elevated-modus om. Alias: `/elev`.
     - `/exec host=<auto|sandbox|gateway|node> security=<deny|allowlist|full> ask=<off|on-miss|always> node=<id>` toont of stelt exec-standaarden in.
     - `/model [name|#|status]` toont of stelt het model in.
-    - `/models [provider] [page] [limit=<n>|size=<n>|all]` toont geconfigureerde/providers met beschikbare authenticatie of modellen voor een provider; voeg `all` toe om door de volledige catalogus van die provider te bladeren.
-    - `/queue <mode>` beheert wachtrijgedrag (`steer`, legacy `queue`, `followup`, `collect`, `steer-backlog`, `interrupt`) plus opties zoals `debounce:0.5s cap:25 drop:summarize`; `/queue default` of `/queue reset` wist de sessie-overschrijving. Zie [Opdrachtwachtrij](/nl/concepts/queue) en [Stuurwachtrij](/nl/concepts/queue-steering).
+    - `/models [provider] [page] [limit=<n>|size=<n>|all]` toont geconfigureerde/beschikbare providers met auth of modellen voor een provider; voeg `all` toe om door de volledige catalogus van die provider te bladeren.
+    - `/queue <mode>` beheert wachtrijgedrag (`steer`, legacy `queue`, `followup`, `collect`, `steer-backlog`, `interrupt`) plus opties zoals `debounce:0.5s cap:25 drop:summarize`; `/queue default` of `/queue reset` wist de sessie-overschrijving. Zie [Opdrachtwachtrij](/nl/concepts/queue) en [Sturingswachtrij](/nl/concepts/queue-steering).
 
   </Accordion>
   <Accordion title="Detectie en status">
     - `/help` toont de korte helpsamenvatting.
     - `/commands` toont de gegenereerde opdrachtencatalogus.
     - `/tools [compact|verbose]` toont wat de huidige agent nu kan gebruiken.
-    - `/status` toont uitvoerings-/runtimestatus, inclusief labels `Execution`/`Runtime` en providergebruik/quotum wanneer beschikbaar.
-    - `/diagnostics [note]` is de eigenaar-only supportrapport-flow voor Gateway-bugs en Codex-harness-runs. Het vraagt elke keer om expliciete exec-goedkeuring voordat `openclaw gateway diagnostics export --json` wordt uitgevoerd; keur diagnostiek niet goed met een allow-all-regel. Na goedkeuring verstuurt het een plakbaar rapport met het lokale bundelpad, manifestsamenvatting, privacynotities en relevante sessie-id's. In groepschats gaan de goedkeuringsprompt en het rapport privé naar de eigenaar. Wanneer de actieve sessie de OpenAI Codex-harness gebruikt, stuurt dezelfde goedkeuring ook relevante Codex-feedback naar OpenAI-servers en vermeldt het voltooide antwoord de OpenClaw-sessie-id's, Codex-thread-id's en `codex resume <thread-id>`-opdrachten. Zie [Diagnostiekexport](/nl/gateway/diagnostics).
-    - `/crestodian <request>` voert de Crestodian-installatie- en reparatiehelper uit vanuit een eigenaar-DM.
+    - `/status` toont uitvoerings-/runtimestatus, inclusief `Execution`/`Runtime`-labels en providergebruik/quota wanneer beschikbaar.
+    - `/diagnostics [note]` is de supportrapport-flow voor Gateway-bugs en Codex-harnessruns, alleen voor de owner. Deze vraagt elke keer om expliciete exec-goedkeuring voordat `openclaw gateway diagnostics export --json` wordt uitgevoerd; keur diagnostics niet goed met een allow-all-regel. Na goedkeuring verzendt deze een plakbaar rapport met het lokale bundelpad, manifestsamenvatting, privacynotities en relevante sessie-id's. In groepschats gaan de goedkeuringsprompt en het rapport privé naar de owner. Wanneer de actieve sessie de OpenAI Codex-harness gebruikt, verzendt dezelfde goedkeuring ook relevante Codex-feedback naar OpenAI-servers en vermeldt het voltooide antwoord de OpenClaw-sessie-id's, Codex-thread-id's en `codex resume <thread-id>`-opdrachten. Zie [Diagnostics Export](/nl/gateway/diagnostics).
+    - `/crestodian <request>` voert de Crestodian-installatie- en reparatiehelper uit vanuit een owner-DM.
     - `/tasks` toont actieve/recente achtergrondtaken voor de huidige sessie.
     - `/context [list|detail|json]` legt uit hoe context wordt samengesteld.
-    - `/whoami` toont je afzender-id. Alias: `/id`.
+    - `/whoami` toont uw afzender-id. Alias: `/id`.
     - `/usage off|tokens|full|cost` beheert de gebruiksfooter per antwoord of drukt een lokale kostensamenvatting af.
 
   </Accordion>
@@ -171,30 +171,30 @@ Huidige bron van waarheid:
     - `/skill <name> [input]` voert een skill op naam uit.
     - `/allowlist [list|add|remove] ...` beheert allowlist-vermeldingen. Alleen tekst.
     - `/approve <id> <decision>` lost exec-goedkeuringsprompts op.
-    - `/btw <question>` stelt een zijvraag zonder de toekomstige sessiecontext te wijzigen. Zie [BTW](/nl/tools/btw).
+    - `/btw <question>` stelt een zijvraag zonder de toekomstige sessiecontext te wijzigen. Alias: `/side`. Zie [BTW](/nl/tools/btw).
 
   </Accordion>
-  <Accordion title="Subagenten en ACP">
-    - `/subagents list|kill|log|info|send|steer|spawn` beheert subagentruns voor de huidige sessie.
+  <Accordion title="Subagents en ACP">
+    - `/subagents list|kill|log|info|send|steer|spawn` beheert subagent-uitvoeringen voor de huidige sessie.
     - `/acp spawn|cancel|steer|close|sessions|status|set-mode|set|cwd|permissions|timeout|model|reset-options|doctor|install|help` beheert ACP-sessies en runtime-opties.
     - `/focus <target>` koppelt de huidige Discord-thread of het huidige Telegram-onderwerp/gesprek aan een sessiedoel.
     - `/unfocus` verwijdert de huidige koppeling.
-    - `/agents` toont threadgebonden agenten voor de huidige sessie.
-    - `/kill <id|#|all>` breekt een of alle actieve subagenten af.
+    - `/agents` toont thread-gebonden agents voor de huidige sessie.
+    - `/kill <id|#|all>` breekt een of alle actieve subagents af.
     - `/steer <id|#> <message>` stuurt bijsturing naar een actieve subagent. Alias: `/tell`.
 
   </Accordion>
-  <Accordion title="Alleen-eigenaar schrijfbewerkingen en beheer">
+  <Accordion title="Alleen-eigenaar-schrijfacties en beheer">
     - `/config show|get|set|unset` leest of schrijft `openclaw.json`. Alleen eigenaar. Vereist `commands.config: true`.
     - `/mcp show|get|set|unset` leest of schrijft door OpenClaw beheerde MCP-serverconfiguratie onder `mcp.servers`. Alleen eigenaar. Vereist `commands.mcp: true`.
-    - `/plugins list|inspect|show|get|install|enable|disable` inspecteert of wijzigt Plugin-status. `/plugin` is een alias. Alleen eigenaar voor schrijfbewerkingen. Vereist `commands.plugins: true`.
+    - `/plugins list|inspect|show|get|install|enable|disable` inspecteert of wijzigt de pluginstatus. `/plugin` is een alias. Alleen eigenaar voor schrijfacties. Vereist `commands.plugins: true`.
     - `/debug show|set|unset|reset` beheert runtime-only configuratie-overschrijvingen. Alleen eigenaar. Vereist `commands.debug: true`.
-    - `/restart` herstart OpenClaw wanneer ingeschakeld. Standaard: ingeschakeld; stel `commands.restart: false` in om dit uit te schakelen.
+    - `/restart` start OpenClaw opnieuw wanneer dit is ingeschakeld. Standaard: ingeschakeld; stel `commands.restart: false` in om dit uit te schakelen.
     - `/send on|off|inherit` stelt het verzendbeleid in. Alleen eigenaar.
 
   </Accordion>
   <Accordion title="Spraak, TTS, kanaalbeheer">
-    - `/tts on|off|status|chat|latest|provider|limit|summary|audio|help` beheert TTS. Zie [TTS](/nl/tools/tts).
+    - `/tts on|off|status|chat|latest|provider|limit|summary|audio|help` bestuurt TTS. Zie [TTS](/nl/tools/tts).
     - `/activation mention|always` stelt de groepsactivatiemodus in.
     - `/bash <command>` voert een host-shellopdracht uit. Alleen tekst. Alias: `! <command>`. Vereist `commands.bash: true` plus allowlists voor `tools.elevated`.
     - `!poll [sessionId]` controleert een achtergrond-bash-taak.
@@ -206,10 +206,10 @@ Huidige bron van waarheid:
 ### Gegenereerde dock-opdrachten
 
 Dock-opdrachten schakelen de antwoordroute van de huidige sessie over naar een ander gekoppeld
-kanaal. Zie [Kanaaldocking](/nl/concepts/channel-docking) voor installatie,
+kanaal. Zie [Kanaaldocking](/nl/concepts/channel-docking) voor configuratie,
 voorbeelden en probleemoplossing.
 
-Dock-opdrachten worden gegenereerd uit kanaal-Plugins met ondersteuning voor native opdrachten. Huidige gebundelde set:
+Dock-opdrachten worden gegenereerd uit kanaalplugins met ondersteuning voor native opdrachten. Huidige gebundelde set:
 
 - `/dock-discord` (alias: `/dock_discord`)
 - `/dock-mattermost` (alias: `/dock_mattermost`)
@@ -218,88 +218,88 @@ Dock-opdrachten worden gegenereerd uit kanaal-Plugins met ondersteuning voor nat
 
 Gebruik dock-opdrachten vanuit een directe chat om de antwoordroute van de huidige sessie over te schakelen naar een ander gekoppeld kanaal. De agent behoudt dezelfde sessiecontext, maar toekomstige antwoorden voor die sessie worden geleverd aan de geselecteerde kanaalpeer.
 
-Dock-opdrachten vereisen `session.identityLinks`. De bronafzender en doelpeer moeten in dezelfde identiteitsgroep zitten, bijvoorbeeld `["telegram:123", "discord:456"]`. Als een Telegram-gebruiker met id `123` `/dock_discord` verzendt, slaat OpenClaw `lastChannel: "discord"` en `lastTo: "456"` op in de actieve sessie. Als de afzender niet aan een Discord-peer is gekoppeld, antwoordt de opdracht met een installatiehint in plaats van door te vallen naar normale chat.
+Dock-opdrachten vereisen `session.identityLinks`. De bronafzender en doelpeer moeten in dezelfde identiteitsgroep zitten, bijvoorbeeld `["telegram:123", "discord:456"]`. Als een Telegram-gebruiker met id `123` `/dock_discord` verzendt, slaat OpenClaw `lastChannel: "discord"` en `lastTo: "456"` op in de actieve sessie. Als de afzender niet aan een Discord-peer is gekoppeld, antwoordt de opdracht met een configuratiehint in plaats van door te vallen naar normale chat.
 
 Docking wijzigt alleen de actieve sessieroute. Het maakt geen kanaalaccounts aan, verleent geen toegang, omzeilt geen kanaal-allowlists en verplaatst geen transcriptgeschiedenis naar een andere sessie. Gebruik `/dock-telegram`, `/dock-slack`, `/dock-mattermost` of een andere gegenereerde dock-opdracht om de route opnieuw te wijzigen.
 
-### Gebundelde Plugin-opdrachten
+### Gebundelde pluginopdrachten
 
-Gebundelde Plugins kunnen meer slash-opdrachten toevoegen. Huidige gebundelde opdrachten in deze repo:
+Gebundelde plugins kunnen meer slash-opdrachten toevoegen. Huidige gebundelde opdrachten in deze repo:
 
-- `/dreaming [on|off|status|help]` schakelt geheugen-Dreaming in of uit. Zie [Dreaming](/nl/concepts/dreaming).
-- `/pair [qr|status|pending|approve|cleanup|notify]` beheert de koppelings-/installatiestroom voor apparaten. Zie [Koppelen](/nl/channels/pairing).
-- `/phone status|arm <camera|screen|writes|all> [duration]|disarm` bewapent tijdelijk telefoonnode-opdrachten met hoog risico.
-- `/voice status|list [limit]|set <voiceId|name>` beheert de Talk-spraakconfiguratie. Op Discord is de native opdrachtnaam `/talkvoice`.
-- `/card ...` verzendt rich-card-presets voor LINE. Zie [LINE](/nl/channels/line).
-- `/codex status|models|threads|resume|compact|review|diagnostics|account|mcp|skills` inspecteert en beheert de gebundelde app-serverharness voor Codex. Zie [Codex-harness](/nl/plugins/codex-harness).
-- Alleen QQBot-opdrachten:
+- `/dreaming [on|off|status|help]` schakelt geheugen-dreaming in of uit. Zie [Dreaming](/nl/concepts/dreaming).
+- `/pair [qr|status|pending|approve|cleanup|notify]` beheert de flow voor apparaatkoppeling/configuratie. Zie [Koppelen](/nl/channels/pairing).
+- `/phone status|arm <camera|screen|writes|all> [duration]|disarm` activeert tijdelijk risicovolle opdrachten voor telefoon-nodes.
+- `/voice status|list [limit]|set <voiceId|name>` beheert Talk-spraakconfiguratie. Op Discord is de native opdrachtnaam `/talkvoice`.
+- `/card ...` verzendt LINE-rich-card-presets. Zie [LINE](/nl/channels/line).
+- `/codex status|models|threads|resume|compact|review|diagnostics|account|mcp|skills` inspecteert en bestuurt de gebundelde Codex app-server-harness. Zie [Codex-harness](/nl/plugins/codex-harness).
+- Alleen-QQBot-opdrachten:
   - `/bot-ping`
   - `/bot-version`
   - `/bot-help`
   - `/bot-upgrade`
   - `/bot-logs`
 
-### Dynamische Skills-opdrachten
+### Dynamische skill-opdrachten
 
 Door gebruikers aanroepbare Skills worden ook als slash-opdrachten beschikbaar gemaakt:
 
-- `/skill <name> [input]` werkt altijd als generiek ingangspunt.
-- Skills kunnen ook verschijnen als directe opdrachten zoals `/prose` wanneer de Skill/Plugin ze registreert.
-- native registratie van Skill-opdrachten wordt beheerd door `commands.nativeSkills` en `channels.<provider>.commands.nativeSkills`.
+- `/skill <name> [input]` werkt altijd als het generieke toegangspunt.
+- Skills kunnen ook verschijnen als directe opdrachten zoals `/prose` wanneer de skill/plugin deze registreert.
+- native registratie van skill-opdrachten wordt bestuurd door `commands.nativeSkills` en `channels.<provider>.commands.nativeSkills`.
 - opdrachtspecificaties kunnen `descriptionLocalizations` bieden voor native oppervlakken die gelokaliseerde beschrijvingen ondersteunen, waaronder Discord.
 
 <AccordionGroup>
   <Accordion title="Argument- en parseropmerkingen">
     - Opdrachten accepteren een optionele `:` tussen de opdracht en argumenten (bijv. `/think: high`, `/send: on`, `/help:`).
-    - `/new <model>` accepteert een modelalias, `provider/model` of een providernaam (fuzzy match); als er geen overeenkomst is, wordt de tekst behandeld als de berichttekst.
+    - `/new <model>` accepteert een modelalias, `provider/model` of een providernaam (fuzzy match); als er geen match is, wordt de tekst behandeld als de berichttekst.
     - Gebruik `openclaw status --usage` voor een volledige uitsplitsing van providergebruik.
     - `/allowlist add|remove` vereist `commands.config=true` en respecteert kanaal-`configWrites`.
     - In kanalen met meerdere accounts respecteren configuratiegerichte `/allowlist --account <id>` en `/config set channels.<provider>.accounts.<id>...` ook de `configWrites` van het doelaccount.
-    - `/usage` beheert de gebruiksfooter per antwoord; `/usage cost` print een lokale kostensamenvatting uit OpenClaw-sessielogs.
+    - `/usage` bestuurt de gebruiksfooter per antwoord; `/usage cost` drukt een lokaal kostenoverzicht af uit OpenClaw-sessielogs.
     - `/restart` is standaard ingeschakeld; stel `commands.restart: false` in om dit uit te schakelen.
-    - `/plugins install <spec>` accepteert dezelfde Plugin-specificaties als `openclaw plugins install`: lokaal pad/archief, npm-pakket, `git:<repo>` of `clawhub:<pkg>`, en vraagt vervolgens een Gateway-herstart aan omdat de bronmodules van Plugins zijn gewijzigd.
-    - `/plugins enable|disable` werkt Plugin-configuratie bij en activeert het opnieuw laden van Gateway-Plugins voor nieuwe agentbeurten.
+    - `/plugins install <spec>` accepteert dezelfde pluginspecificaties als `openclaw plugins install`: lokaal pad/archief, npm-pakket, `git:<repo>` of `clawhub:<pkg>`, en vraagt daarna om een Gateway-herstart omdat pluginbronmodules zijn gewijzigd.
+    - `/plugins enable|disable` werkt pluginconfiguratie bij en triggert een Gateway-pluginherlaadactie voor nieuwe agentbeurten.
 
   </Accordion>
   <Accordion title="Kanaalspecifiek gedrag">
-    - Alleen-Discord native opdracht: `/vc join|leave|status` beheert spraakkanalen (niet beschikbaar als tekst). `join` vereist een guild en geselecteerd spraak-/stagekanaal. Vereist `channels.discord.voice` en native opdrachten.
-    - Discord-threadkoppelingsopdrachten (`/focus`, `/unfocus`, `/agents`, `/session idle`, `/session max-age`) vereisen dat effectieve threadkoppelingen zijn ingeschakeld (`session.threadBindings.enabled` en/of `channels.discord.threadBindings.enabled`).
-    - ACP-opdrachtreferentie en runtimegedrag: [ACP-agenten](/nl/tools/acp-agents).
+    - Alleen-Discord native opdracht: `/vc join|leave|status` bestuurt spraakkanalen (niet beschikbaar als tekst). `join` vereist een guild en geselecteerd spraak-/stagekanaal. Vereist `channels.discord.voice` en native opdrachten.
+    - Discord-threadbindingsopdrachten (`/focus`, `/unfocus`, `/agents`, `/session idle`, `/session max-age`) vereisen dat effectieve threadbindings zijn ingeschakeld (`session.threadBindings.enabled` en/of `channels.discord.threadBindings.enabled`).
+    - ACP-opdrachtreferentie en runtimegedrag: [ACP-agents](/nl/tools/acp-agents).
 
   </Accordion>
-  <Accordion title="Verbose / trace / fast / redeneerveiligheid">
-    - `/verbose` is bedoeld voor debugging en extra zichtbaarheid; houd dit **uit** bij normaal gebruik.
-    - `/trace` is smaller dan `/verbose`: het toont alleen trace-/debugregels die eigendom zijn van Plugins en houdt normale verbose tool-ruis uit.
-    - `/fast on|off` bewaart een sessie-overschrijving. Gebruik de optie `inherit` in de Sessies-UI om deze te wissen en terug te vallen op configuratiestandaarden.
-    - `/fast` is providerspecifiek: OpenAI/OpenAI Codex koppelen dit aan `service_tier=priority` op native Responses-eindpunten, terwijl directe openbare Anthropic-verzoeken, inclusief OAuth-geverifieerd verkeer dat naar `api.anthropic.com` wordt verzonden, dit koppelen aan `service_tier=auto` of `standard_only`. Zie [OpenAI](/nl/providers/openai) en [Anthropic](/nl/providers/anthropic).
+  <Accordion title="Uitgebreid / trace / snel / redeneerveiligheid">
+    - `/verbose` is bedoeld voor debuggen en extra zichtbaarheid; houd dit bij normaal gebruik **uit**.
+    - `/trace` is smaller dan `/verbose`: het toont alleen trace-/debugregels die eigendom zijn van plugins en houdt normale uitgebreide toolruis uit.
+    - `/fast on|off` bewaart een sessie-overschrijving. Gebruik de optie `inherit` in de Sessions UI om deze te wissen en terug te vallen op configuratiestandaarden.
+    - `/fast` is providerspecifiek: OpenAI/OpenAI Codex koppelen dit aan `service_tier=priority` op native Responses-endpoints, terwijl directe publieke Anthropic-verzoeken, waaronder met OAuth geauthenticeerd verkeer dat naar `api.anthropic.com` wordt verzonden, dit koppelen aan `service_tier=auto` of `standard_only`. Zie [OpenAI](/nl/providers/openai) en [Anthropic](/nl/providers/anthropic).
     - Samenvattingen van toolfouten worden nog steeds getoond wanneer relevant, maar gedetailleerde fouttekst wordt alleen opgenomen wanneer `/verbose` `on` of `full` is.
-    - `/reasoning`, `/verbose` en `/trace` zijn riskant in groepsomgevingen: ze kunnen interne redeneringen, tooluitvoer of Plugin-diagnostiek onthullen die je niet wilde blootstellen. Laat ze bij voorkeur uit, vooral in groepschats.
+    - `/reasoning`, `/verbose` en `/trace` zijn risicovol in groepsinstellingen: ze kunnen interne redenering, tooluitvoer of plugin-diagnostiek tonen die je niet wilde blootgeven. Laat ze bij voorkeur uit, vooral in groepschats.
 
   </Accordion>
   <Accordion title="Model wisselen">
     - `/model` bewaart het nieuwe sessiemodel onmiddellijk.
-    - Als de agent inactief is, gebruikt de volgende run het meteen.
-    - Als er al een run actief is, markeert OpenClaw een live wissel als in behandeling en herstart het pas in het nieuwe model op een schoon retrypunt.
-    - Als toolactiviteit of antwoorduitvoer al is gestart, kan de in behandeling zijnde wissel in de wachtrij blijven tot een latere retrymogelijkheid of de volgende gebruikersbeurt.
-    - In de lokale TUI keert `/crestodian [request]` terug van de normale agent-TUI naar Crestodian. Dit staat los van rescue-modus voor berichtkanalen en verleent geen bevoegdheid voor externe configuratie.
+    - Als de agent inactief is, gebruikt de volgende uitvoering het meteen.
+    - Als er al een uitvoering actief is, markeert OpenClaw een live-wissel als in behandeling en herstart het alleen naar het nieuwe model op een schoon retrypunt.
+    - Als toolactiviteit of antwoorduitvoer al is gestart, kan de in behandeling staande wissel in de wachtrij blijven tot een latere retrymogelijkheid of de volgende gebruikersbeurt.
+    - In de lokale TUI keert `/crestodian [request]` terug van de normale agent-TUI naar Crestodian. Dit staat los van reddingsmodus voor berichtkanalen en verleent geen externe configuratiebevoegdheid.
 
   </Accordion>
-  <Accordion title="Snel pad en inline snelkoppelingen">
-    - **Snel pad:** berichten die alleen uit opdrachten bestaan van afzenders op de allowlist worden onmiddellijk afgehandeld (omzeilt wachtrij + model).
-    - **Groepsvermelding-gating:** berichten die alleen uit opdrachten bestaan van afzenders op de allowlist omzeilen vermeldingsvereisten.
-    - **Inline snelkoppelingen (alleen afzenders op de allowlist):** bepaalde opdrachten werken ook wanneer ze zijn ingebed in een normaal bericht en worden verwijderd voordat het model de resterende tekst ziet.
-      - Voorbeeld: `hey /status` activeert een statusantwoord, en de resterende tekst gaat verder via de normale stroom.
+  <Accordion title="Snel pad en inline-snelkoppelingen">
+    - **Snel pad:** berichten die alleen uit een opdracht bestaan van afzenders op de allowlist worden onmiddellijk afgehandeld (omzeilt wachtrij + model).
+    - **Groepsvermelding-gating:** berichten die alleen uit een opdracht bestaan van afzenders op de allowlist omzeilen vermeldingsvereisten.
+    - **Inline-snelkoppelingen (alleen afzenders op de allowlist):** bepaalde opdrachten werken ook wanneer ze in een normaal bericht zijn ingesloten en worden verwijderd voordat het model de resterende tekst ziet.
+      - Voorbeeld: `hey /status` triggert een statusantwoord, en de resterende tekst gaat door via de normale flow.
     - Momenteel: `/help`, `/commands`, `/status`, `/whoami` (`/id`).
-    - Niet-geautoriseerde berichten die alleen uit opdrachten bestaan worden stil genegeerd, en inline `/...`-tokens worden behandeld als platte tekst.
+    - Niet-geautoriseerde berichten die alleen uit een opdracht bestaan worden stil genegeerd, en inline `/...`-tokens worden behandeld als platte tekst.
 
   </Accordion>
   <Accordion title="Skill-opdrachten en native argumenten">
-    - **Skill-opdrachten:** `user-invocable` Skills worden beschikbaar gemaakt als slash-opdrachten. Namen worden opgeschoond naar `a-z0-9_` (max 32 tekens); botsingen krijgen numerieke suffixen (bijv. `_2`).
-      - `/skill <name> [input]` voert een Skill uit op naam (nuttig wanneer native opdrachtlimieten opdrachten per Skill verhinderen).
-      - Standaard worden Skill-opdrachten doorgestuurd naar het model als een normaal verzoek.
-      - Skills kunnen optioneel `command-dispatch: tool` declareren om de opdracht rechtstreeks naar een tool te routeren (deterministisch, geen model).
-      - Voorbeeld: `/prose` (OpenProse-Plugin) — zie [OpenProse](/nl/prose).
-    - **Native opdrachtargumenten:** Discord gebruikt autocomplete voor dynamische opties (en knopmenu's wanneer je vereiste argumenten weglaat). Telegram en Slack tonen een knopmenu wanneer een opdracht keuzes ondersteunt en je het argument weglaat. Dynamische keuzes worden opgelost tegen het doel-sessiemodel, dus modelspecifieke opties zoals `/think`-niveaus volgen de `/model`-overschrijving van die sessie.
+    - **Skill-opdrachten:** `user-invocable` Skills worden als slash-opdrachten beschikbaar gemaakt. Namen worden opgeschoond naar `a-z0-9_` (max. 32 tekens); botsingen krijgen numerieke suffixen (bijv. `_2`).
+      - `/skill <name> [input]` voert een skill op naam uit (nuttig wanneer native opdrachtlimieten opdrachten per skill verhinderen).
+      - Standaard worden skill-opdrachten als een normale aanvraag doorgestuurd naar het model.
+      - Skills kunnen optioneel `command-dispatch: tool` declareren om de opdracht direct naar een tool te routeren (deterministisch, geen model).
+      - Voorbeeld: `/prose` (OpenProse-plugin) — zie [OpenProse](/nl/prose).
+    - **Native opdrachtargumenten:** Discord gebruikt automatisch aanvullen voor dynamische opties (en knopmenu's wanneer je vereiste argumenten weglaat). Telegram en Slack tonen een knopmenu wanneer een opdracht keuzes ondersteunt en je het argument weglaat. Dynamische keuzes worden opgelost tegen het doelsessiemodel, dus modelspecifieke opties zoals `/think`-niveaus volgen de `/model`-overschrijving van die sessie.
 
   </Accordion>
 </AccordionGroup>
@@ -310,18 +310,18 @@ Door gebruikers aanroepbare Skills worden ook als slash-opdrachten beschikbaar g
 
 - Standaard `/tools` is compact en geoptimaliseerd voor snel scannen.
 - `/tools verbose` voegt korte beschrijvingen toe.
-- Native-opdrachtoppervlakken die argumenten ondersteunen, bieden dezelfde modusschakelaar als `compact|verbose`.
-- Resultaten zijn sessiegebonden, dus het wijzigen van agent, kanaal, thread, afzenderautorisatie of model kan de uitvoer wijzigen.
-- `/tools` bevat tools die daadwerkelijk bereikbaar zijn tijdens runtime, waaronder kerntools, verbonden Plugin-tools en tools die eigendom zijn van kanalen.
+- Native-opdrachtoppervlakken die argumenten ondersteunen, stellen dezelfde modusschakelaar beschikbaar als `compact|verbose`.
+- Resultaten zijn sessiegebonden, dus het wijzigen van agent, kanaal, thread, afzenderautorisatie of model kan de uitvoer veranderen.
+- `/tools` bevat tools die daadwerkelijk bereikbaar zijn tijdens runtime, waaronder kerntools, verbonden plugintools en kanaal-eigen tools.
 
 Gebruik voor het bewerken van profielen en overschrijvingen het Tools-paneel in de Control UI of configuratie-/catalogusoppervlakken in plaats van `/tools` als statische catalogus te behandelen.
 
 ## Gebruiksoppervlakken (wat waar wordt getoond)
 
-- **Providergebruik/quota** (voorbeeld: "Claude 80% over") verschijnt in `/status` voor de huidige modelprovider wanneer gebruikstracking is ingeschakeld. OpenClaw normaliseert providervensters naar `% over`; voor MiniMax worden percentagevelden met alleen resterend gebruik omgekeerd voordat ze worden weergegeven, en `model_remains`-antwoorden geven de voorkeur aan de chatmodelvermelding plus een model-gelabeld planlabel.
-- **Token/cache-regels** in `/status` kunnen terugvallen op de nieuwste gebruiksvermelding uit het transcript wanneer de live sessie-snapshot beperkt is. Bestaande niet-nul livewaarden blijven voorrang houden, en transcriptfallback kan ook het actieve runtimemodellabel herstellen plus een groter promptgericht totaal wanneer opgeslagen totalen ontbreken of kleiner zijn.
+- **Providergebruik/quota** (voorbeeld: "Claude 80% over") verschijnt in `/status` voor de huidige modelprovider wanneer gebruikstracking is ingeschakeld. OpenClaw normaliseert providervensters naar `% left`; voor MiniMax worden procentvelden met alleen resterend gebruik vóór weergave omgekeerd, en `model_remains`-antwoorden geven de voorkeur aan de chatmodelvermelding plus een modelgetagd planlabel.
+- **Token-/cache-regels** in `/status` kunnen terugvallen op de nieuwste gebruiksvermelding uit het transcript wanneer de live sessie-snapshot beperkt is. Bestaande niet-nul live waarden blijven voorgaan, en transcriptfallback kan ook het actieve runtime-modellabel herstellen plus een groter promptgericht totaal wanneer opgeslagen totalen ontbreken of kleiner zijn.
 - **Uitvoering versus runtime:** `/status` rapporteert `Execution` voor het effectieve sandboxpad en `Runtime` voor wie de sessie daadwerkelijk uitvoert: `OpenClaw Pi Default`, `OpenAI Codex`, een CLI-backend of een ACP-backend.
-- **Tokens/kosten per antwoord** worden geregeld door `/usage off|tokens|full` (toegevoegd aan normale antwoorden).
+- **Tokens/kosten per antwoord** wordt beheerd met `/usage off|tokens|full` (toegevoegd aan normale antwoorden).
 - `/model status` gaat over **modellen/authenticatie/eindpunten**, niet over gebruik.
 
 ## Modelselectie (`/model`)
@@ -342,13 +342,13 @@ Voorbeelden:
 Opmerkingen:
 
 - `/model` en `/model list` tonen een compacte, genummerde kiezer (modelfamilie + beschikbare providers).
-- Op Discord opent `/model` en `/models` een interactieve kiezer met provider- en modelkeuzelijsten plus een verzendstap.
+- Op Discord openen `/model` en `/models` een interactieve kiezer met dropdowns voor provider en model plus een stap Verzenden.
 - `/model <#>` selecteert uit die kiezer (en geeft waar mogelijk de voorkeur aan de huidige provider).
-- `/model status` toont de gedetailleerde weergave, inclusief geconfigureerd providereindpunt (`baseUrl`) en API-modus (`api`) wanneer beschikbaar.
+- `/model status` toont de gedetailleerde weergave, inclusief geconfigureerd provider-eindpunt (`baseUrl`) en API-modus (`api`) wanneer beschikbaar.
 
 ## Debug-overschrijvingen
 
-`/debug` laat je **alleen-runtime** configuratie-overschrijvingen instellen (geheugen, niet schijf). Alleen eigenaar. Standaard uitgeschakeld; schakel in met `commands.debug: true`.
+Met `/debug` kun je **alleen-runtime** configuratie-overschrijvingen instellen (geheugen, niet schijf). Alleen eigenaar. Standaard uitgeschakeld; schakel in met `commands.debug: true`.
 
 Voorbeelden:
 
@@ -361,12 +361,12 @@ Voorbeelden:
 ```
 
 <Note>
-Overschrijvingen worden onmiddellijk toegepast op nieuwe configuratieleesacties, maar schrijven **niet** naar `openclaw.json`. Gebruik `/debug reset` om alle overschrijvingen te wissen en terug te keren naar de configuratie op schijf.
+Overschrijvingen gelden onmiddellijk voor nieuwe configuratielezingen, maar schrijven **niet** naar `openclaw.json`. Gebruik `/debug reset` om alle overschrijvingen te wissen en terug te keren naar de configuratie op schijf.
 </Note>
 
 ## Plugin-trace-uitvoer
 
-`/trace` laat je **sessiegebonden Plugin-trace-/debugregels** in- en uitschakelen zonder volledige verbose-modus aan te zetten.
+Met `/trace` kun je **sessiegebonden Plugin trace-/debugregels** omschakelen zonder de volledige verbose-modus in te schakelen.
 
 Voorbeelden:
 
@@ -378,10 +378,10 @@ Voorbeelden:
 
 Opmerkingen:
 
-- `/trace` zonder argument toont de huidige tracestatus van de sessie.
-- `/trace on` schakelt Plugin-traceregels in voor de huidige sessie.
+- `/trace` zonder argument toont de huidige trace-status van de sessie.
+- `/trace on` schakelt Plugin trace-regels in voor de huidige sessie.
 - `/trace off` schakelt ze weer uit.
-- Plugin-traceregels kunnen verschijnen in `/status` en als vervolgend diagnostisch bericht na het normale assistentantwoord.
+- Plugin trace-regels kunnen verschijnen in `/status` en als vervolgdignosebericht na het normale assistentantwoord.
 - `/trace` vervangt `/debug` niet; `/debug` beheert nog steeds alleen-runtime configuratie-overschrijvingen.
 - `/trace` vervangt `/verbose` niet; normale verbose tool-/statusuitvoer hoort nog steeds bij `/verbose`.
 
@@ -400,7 +400,7 @@ Voorbeelden:
 ```
 
 <Note>
-Configuratie wordt gevalideerd voordat er wordt geschreven; ongeldige wijzigingen worden geweigerd. `/config`-updates blijven behouden na herstarts.
+Configuratie wordt gevalideerd vóór het schrijven; ongeldige wijzigingen worden geweigerd. `/config`-updates blijven behouden na herstarts.
 </Note>
 
 ## MCP-updates
@@ -417,12 +417,12 @@ Voorbeelden:
 ```
 
 <Note>
-`/mcp` bewaart configuratie in de OpenClaw-configuratie, niet in Pi-eigen projectinstellingen. Runtime-adapters bepalen welke transports daadwerkelijk uitvoerbaar zijn.
+`/mcp` slaat configuratie op in OpenClaw-configuratie, niet in projectinstellingen die eigendom zijn van Pi. Runtime-adapters bepalen welke transporten daadwerkelijk uitvoerbaar zijn.
 </Note>
 
 ## Plugin-updates
 
-`/plugins` laat operators gevonden Plugins inspecteren en inschakeling in de configuratie aan- of uitzetten. Alleen-lezen flows kunnen `/plugin` als alias gebruiken. Standaard uitgeschakeld; schakel in met `commands.plugins: true`.
+Met `/plugins` kunnen operators ontdekte plugins inspecteren en inschakeling in configuratie omschakelen. Alleen-lezen flows kunnen `/plugin` als alias gebruiken. Standaard uitgeschakeld; schakel in met `commands.plugins: true`.
 
 Voorbeelden:
 
@@ -437,52 +437,53 @@ Voorbeelden:
 <Note>
 - `/plugins list` en `/plugins show` gebruiken echte Plugin-detectie tegen de huidige workspace plus configuratie op schijf.
 - `/plugins install` installeert vanuit ClawHub, npm, git, lokale mappen en archieven.
-- `/plugins enable|disable` werkt alleen Plugin-configuratie bij; het installeert of verwijdert geen Plugins.
-- Wijzigingen voor inschakelen en uitschakelen herladen Gateway Plugin-runtimesurfaces live voor nieuwe agentbeurten; installeren vraagt om een Gateway-herstart omdat Plugin-bronmodules zijn gewijzigd.
+- `/plugins enable|disable` werkt alleen Plugin-configuratie bij; het installeert of verwijdert geen plugins.
+- Wijzigingen voor inschakelen en uitschakelen hot-reloaden runtime-oppervlakken van Gateway-plugins voor nieuwe agentbeurten; installeren vraagt om een Gateway-herstart omdat Plugin-bronmodules zijn gewijzigd.
 
 </Note>
 
-## Surface-opmerkingen
+## Opmerkingen per oppervlak
 
 <AccordionGroup>
-  <Accordion title="Sessies per surface">
-    - **Tekstopdrachten** worden uitgevoerd in de normale chatsessie (DM's delen `main`, groepen hebben hun eigen sessie).
-    - **Native opdrachten** gebruiken geïsoleerde sessies:
+  <Accordion title="Sessions per surface">
+    - **Tekstcommando's** worden uitgevoerd in de normale chatsessie (DM's delen `main`, groepen hebben hun eigen sessie).
+    - **Native commando's** gebruiken geïsoleerde sessies:
       - Discord: `agent:<agentId>:discord:slash:<userId>`
-      - Slack: `agent:<agentId>:slack:slash:<userId>` (voorvoegsel configureerbaar via `channels.slack.slashCommand.sessionPrefix`)
+      - Slack: `agent:<agentId>:slack:slash:<userId>` (prefix configureerbaar via `channels.slack.slashCommand.sessionPrefix`)
       - Telegram: `telegram:slash:<userId>` (richt zich op de chatsessie via `CommandTargetSessionKey`)
-    - **`/stop`** richt zich op de actieve chatsessie zodat deze de huidige run kan afbreken.
+    - **`/stop`** richt zich op de actieve chatsessie zodat die de huidige run kan afbreken.
 
   </Accordion>
-  <Accordion title="Slack-specifiek">
-    `channels.slack.slashCommand` wordt nog steeds ondersteund voor één opdracht in `/openclaw`-stijl. Als je `commands.native` inschakelt, moet je één Slack-slashopdracht per ingebouwde opdracht maken (dezelfde namen als `/help`). Opdrachtargumentmenu's voor Slack worden geleverd als tijdelijke Block Kit-knoppen.
+  <Accordion title="Slack specifics">
+    `channels.slack.slashCommand` wordt nog steeds ondersteund voor één commando in `/openclaw`-stijl. Als je `commands.native` inschakelt, moet je één Slack-slashcommando maken per ingebouwd commando (dezelfde namen als `/help`). Commandoargumentmenu's voor Slack worden geleverd als efemere Block Kit-knoppen.
 
-    Native uitzondering voor Slack: registreer `/agentstatus` (niet `/status`) omdat Slack `/status` reserveert. Tekstuele `/status` werkt nog steeds in Slack-berichten.
+    Slack native uitzondering: registreer `/agentstatus` (niet `/status`) omdat Slack `/status` reserveert. Tekst `/status` werkt nog steeds in Slack-berichten.
 
   </Accordion>
 </AccordionGroup>
 
-## BTW-zijvragen
+## BTW-nevenvragen
 
-`/btw` is een snelle **zijvraag** over de huidige sessie.
+`/btw` is een snelle **nevenvraag** over de huidige sessie. `/side` is een alias.
 
 Anders dan normale chat:
 
 - gebruikt het de huidige sessie als achtergrondcontext,
-- wordt het uitgevoerd als een afzonderlijke **zonder-tools** eenmalige call,
-- wijzigt het toekomstige sessiecontext niet,
+- wordt het uitgevoerd als een afzonderlijke **toolloze** eenmalige call,
+- verandert het toekomstige sessiecontext niet,
 - wordt het niet naar transcriptgeschiedenis geschreven,
-- wordt het geleverd als een live zijresultaat in plaats van een normaal assistentbericht.
+- wordt het geleverd als een live nevenresultaat in plaats van een normaal assistentbericht.
 
-Daardoor is `/btw` nuttig wanneer je een tijdelijke verduidelijking wilt terwijl de hoofdtaak doorgaat.
+Dat maakt `/btw` nuttig wanneer je tijdelijke verduidelijking wilt terwijl de hoofdtaak doorgaat.
 
 Voorbeeld:
 
 ```text
 /btw what are we doing right now?
+/side what changed while the main run continued?
 ```
 
-Zie [BTW-zijvragen](/nl/tools/btw) voor het volledige gedrag en de UX-details voor clients.
+Zie [BTW-nevenvragen](/nl/tools/btw) voor het volledige gedrag en de UX-details van clients.
 
 ## Gerelateerd
 

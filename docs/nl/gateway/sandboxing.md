@@ -2,46 +2,46 @@
 read_when: You want a dedicated explanation of sandboxing or need to tune agents.defaults.sandbox.
 sidebarTitle: Sandboxing
 status: active
-summary: 'Hoe OpenClaw-sandboxing werkt: modi, scopes, toegang tot de werkruimte en afbeeldingen'
+summary: 'Hoe sandboxing in OpenClaw werkt: modi, bereiken, toegang tot werkruimte en afbeeldingen'
 title: Sandboxisolatie
 x-i18n:
-    generated_at: "2026-05-01T11:18:17Z"
+    generated_at: "2026-05-03T21:33:02Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3f313333ec676aaef636b42d4a6f28f35bf213d9e1c5292ffb4868f312cf0eda
+    source_hash: e887d07ed84d582bb605c75f841499b6bed42cfc94d60690aba33c2f351b272b
     source_path: gateway/sandboxing.md
     workflow: 16
 ---
 
-OpenClaw kan **tools binnen sandbox-backends** uitvoeren om de impact te beperken. Dit is **optioneel** en wordt beheerd via configuratie (`agents.defaults.sandbox` of `agents.list[].sandbox`). Als sandboxing uit staat, draaien tools op de host. De Gateway blijft op de host; tooluitvoering draait in een geisoleerde sandbox wanneer dit is ingeschakeld.
+OpenClaw kan **tools binnen sandbox-backends** uitvoeren om de blast radius te verkleinen. Dit is **optioneel** en wordt beheerd via configuratie (`agents.defaults.sandbox` of `agents.list[].sandbox`). Als sandboxing uit staat, draaien tools op de host. De Gateway blijft op de host; tooluitvoering draait in een geïsoleerde sandbox wanneer dit is ingeschakeld.
 
 <Note>
-Dit is geen perfecte beveiligingsgrens, maar het beperkt bestandssysteem- en procestoegang aanzienlijk wanneer het model iets onverstandigs doet.
+Dit is geen perfecte beveiligingsgrens, maar het beperkt filesystem- en proces-toegang aanzienlijk wanneer het model iets onverstandigs doet.
 </Note>
 
-## Wat in een sandbox wordt geplaatst
+## Wat in de sandbox wordt uitgevoerd
 
 - Tooluitvoering (`exec`, `read`, `write`, `edit`, `apply_patch`, `process`, enz.).
-- Optionele sandboxbrowser (`agents.defaults.sandbox.browser`).
+- Optionele gesandboxte browser (`agents.defaults.sandbox.browser`).
 
 <AccordionGroup>
-  <Accordion title="Details van sandboxbrowser">
-    - Standaard start de sandboxbrowser automatisch (zorgt dat CDP bereikbaar is) wanneer de browsertool deze nodig heeft. Configureer via `agents.defaults.sandbox.browser.autoStart` en `agents.defaults.sandbox.browser.autoStartTimeoutMs`.
-    - Standaard gebruiken sandboxbrowsercontainers een speciaal Docker-netwerk (`openclaw-sandbox-browser`) in plaats van het globale `bridge`-netwerk. Configureer met `agents.defaults.sandbox.browser.network`.
+  <Accordion title="Sandboxed browser details">
+    - Standaard start de sandboxbrowser automatisch (zorgt dat CDP bereikbaar is) wanneer de browsertool die nodig heeft. Configureer dit via `agents.defaults.sandbox.browser.autoStart` en `agents.defaults.sandbox.browser.autoStartTimeoutMs`.
+    - Standaard gebruiken sandboxbrowsercontainers een toegewijd Docker-netwerk (`openclaw-sandbox-browser`) in plaats van het globale `bridge`-netwerk. Configureer dit met `agents.defaults.sandbox.browser.network`.
     - Optioneel beperkt `agents.defaults.sandbox.browser.cdpSourceRange` CDP-ingress aan de containerrand met een CIDR-allowlist (bijvoorbeeld `172.21.0.1/32`).
     - noVNC-observertoegang is standaard met een wachtwoord beveiligd; OpenClaw geeft een kortlevende token-URL uit die een lokale bootstrap-pagina serveert en noVNC opent met het wachtwoord in het URL-fragment (niet in query-/headerlogs).
-    - `agents.defaults.sandbox.browser.allowHostControl` laat sandboxsessies expliciet de hostbrowser targeten.
-    - Optionele allowlists bewaken `target: "custom"`: `allowedControlUrls`, `allowedControlHosts`, `allowedControlPorts`.
+    - `agents.defaults.sandbox.browser.allowHostControl` laat gesandboxte sessies expliciet de hostbrowser targeten.
+    - Optionele allowlists begrenzen `target: "custom"`: `allowedControlUrls`, `allowedControlHosts`, `allowedControlPorts`.
 
   </Accordion>
 </AccordionGroup>
 
-Niet in een sandbox geplaatst:
+Niet in de sandbox uitgevoerd:
 
 - Het Gateway-proces zelf.
 - Elke tool die expliciet buiten de sandbox mag draaien (bijv. `tools.elevated`).
-  - **Elevated exec omzeilt sandboxing en gebruikt het geconfigureerde ontsnappingspad (`gateway` standaard, of `node` wanneer het exec-target `node` is).**
-  - Als sandboxing uit staat, verandert `tools.elevated` de uitvoering niet (deze draait al op de host). Zie [Verhoogde modus](/nl/tools/elevated).
+  - **Elevated exec omzeilt sandboxing en gebruikt het geconfigureerde escape-pad (`gateway` standaard, of `node` wanneer het exec-target `node` is).**
+  - Als sandboxing uit staat, verandert `tools.elevated` de uitvoering niet (die draait al op de host). Zie [Elevated Mode](/nl/tools/elevated).
 
 ## Modi
 
@@ -52,9 +52,9 @@ Niet in een sandbox geplaatst:
     Geen sandboxing.
   </Tab>
   <Tab title="non-main">
-    Alleen **niet-main**-sessies in een sandbox (standaard als je normale chats op de host wilt).
+    Sandbox alleen **niet-main** sessies (standaard als je normale chats op de host wilt).
 
-    `"non-main"` is gebaseerd op `session.mainKey` (standaard `"main"`), niet op agent-id. Groeps-/kanaalsessies gebruiken hun eigen sleutels, dus ze tellen als niet-main en worden in een sandbox geplaatst.
+    `"non-main"` is gebaseerd op `session.mainKey` (standaard `"main"`), niet op agent-id. Groeps-/kanaalsessies gebruiken hun eigen keys, dus die tellen als niet-main en worden in de sandbox uitgevoerd.
 
   </Tab>
   <Tab title="all">
@@ -62,21 +62,21 @@ Niet in een sandbox geplaatst:
   </Tab>
 </Tabs>
 
-## Scope
+## Bereik
 
-`agents.defaults.sandbox.scope` bepaalt **hoeveel containers** worden gemaakt:
+`agents.defaults.sandbox.scope` bepaalt **hoeveel containers** er worden gemaakt:
 
-- `"agent"` (standaard): een container per agent.
-- `"session"`: een container per sessie.
-- `"shared"`: een container gedeeld door alle sandboxsessies.
+- `"agent"` (standaard): één container per agent.
+- `"session"`: één container per sessie.
+- `"shared"`: één container gedeeld door alle gesandboxte sessies.
 
 ## Backend
 
 `agents.defaults.sandbox.backend` bepaalt **welke runtime** de sandbox levert:
 
-- `"docker"` (standaard wanneer sandboxing is ingeschakeld): lokale Docker-gebaseerde sandboxruntime.
-- `"ssh"`: generieke SSH-gebaseerde externe sandboxruntime.
-- `"openshell"`: OpenShell-gebaseerde sandboxruntime.
+- `"docker"` (standaard wanneer sandboxing is ingeschakeld): lokale Docker-ondersteunde sandboxruntime.
+- `"ssh"`: generieke SSH-ondersteunde externe sandboxruntime.
+- `"openshell"`: OpenShell-ondersteunde sandboxruntime.
 
 SSH-specifieke configuratie staat onder `agents.defaults.sandbox.ssh`. OpenShell-specifieke configuratie staat onder `plugins.entries.openshell.config`.
 
@@ -84,34 +84,34 @@ SSH-specifieke configuratie staat onder `agents.defaults.sandbox.ssh`. OpenShell
 
 |                     | Docker                           | SSH                            | OpenShell                                           |
 | ------------------- | -------------------------------- | ------------------------------ | --------------------------------------------------- |
-| **Waar het draait** | Lokale container                 | Elke via SSH bereikbare host   | Door OpenShell beheerde sandbox                     |
-| **Setup**           | `scripts/sandbox-setup.sh`       | SSH-sleutel + doelhost         | OpenShell-Plugin ingeschakeld                       |
-| **Werkruimtemodel** | Bind-mount of kopie              | Extern-canoniek (eenmalig seeden) | `mirror` of `remote`                             |
+| **Waar het draait** | Lokale container                 | Elke via SSH toegankelijke host | Door OpenShell beheerde sandbox                     |
+| **Setup**           | `scripts/sandbox-setup.sh`       | SSH-key + targethost           | OpenShell-Plugin ingeschakeld                       |
+| **Werkruimtemodel** | Bind-mount of kopie              | Remote-canonical (eenmalig seeden) | `mirror` of `remote`                            |
 | **Netwerkbeheer**   | `docker.network` (standaard: geen) | Afhankelijk van externe host | Afhankelijk van OpenShell                           |
 | **Browsersandbox**  | Ondersteund                      | Niet ondersteund               | Nog niet ondersteund                                |
 | **Bind mounts**     | `docker.binds`                   | N.v.t.                         | N.v.t.                                              |
-| **Best voor**       | Lokale ontwikkeling, volledige isolatie | Offloaden naar een externe machine | Beheerde externe sandboxes met optionele tweerichtingssynchronisatie |
+| **Beste voor**      | Lokale ontwikkeling, volledige isolatie | Offloaden naar een externe machine | Beheerde externe sandboxes met optionele tweerichtingssynchronisatie |
 
 ### Docker-backend
 
-Sandboxing staat standaard uit. Als je sandboxing inschakelt en geen backend kiest, gebruikt OpenClaw de Docker-backend. Deze voert tools en sandboxbrowsers lokaal uit via de Docker-daemonsocket (`/var/run/docker.sock`). Sandboxcontainerisolatie wordt bepaald door Docker-namespaces.
+Sandboxing staat standaard uit. Als je sandboxing inschakelt en geen backend kiest, gebruikt OpenClaw de Docker-backend. Deze voert tools en sandboxbrowsers lokaal uit via de Docker-daemonsocket (`/var/run/docker.sock`). Isolatie van sandboxcontainers wordt bepaald door Docker-namespaces.
 
-Om host-GPU's aan Docker-sandboxes bloot te stellen, stel je `agents.defaults.sandbox.docker.gpus` in of de per-agent override `agents.list[].sandbox.docker.gpus`. De waarde wordt als afzonderlijk argument doorgegeven aan Docker's `--gpus`-vlag, bijvoorbeeld `"all"` of `"device=GPU-uuid"`, en vereist een compatibele hostruntime zoals NVIDIA Container Toolkit.
+Om host-GPU's beschikbaar te maken voor Docker-sandboxes, stel je `agents.defaults.sandbox.docker.gpus` in of de per-agent override `agents.list[].sandbox.docker.gpus`. De waarde wordt als afzonderlijk argument doorgegeven aan Docker's `--gpus`-flag, bijvoorbeeld `"all"` of `"device=GPU-uuid"`, en vereist een compatibele hostruntime zoals NVIDIA Container Toolkit.
 
 <Warning>
-**Docker-out-of-Docker-beperkingen (DooD)**
+**Docker-out-of-Docker (DooD)-beperkingen**
 
-Als je de OpenClaw Gateway zelf als Docker-container deployt, orkestreert deze sibling-sandboxcontainers via de Docker-socket van de host (DooD). Dit introduceert een specifieke beperking voor padmapping:
+Als je de OpenClaw Gateway zelf als Docker-container deployt, orkestreert die sibling-sandboxcontainers via de Docker-socket van de host (DooD). Dit introduceert een specifieke beperking voor pathmapping:
 
-- **Configuratie vereist hostpaden**: De `workspace`-configuratie in `openclaw.json` MOET het **absolute pad van de host** bevatten (bijv. `/home/user/.openclaw/workspaces`), niet het interne Gateway-containerpad. Wanneer OpenClaw de Docker-daemon vraagt een sandbox te starten, evalueert de daemon paden relatief aan de namespace van het host-OS, niet aan de Gateway-namespace.
-- **FS-bridge-pariteit (identieke volumemap)**: Het native OpenClaw Gateway-proces schrijft ook heartbeat- en bridge-bestanden naar de `workspace`-directory. Omdat de Gateway exact dezelfde tekenreeks (het hostpad) evalueert vanuit zijn eigen gecontaineriseerde omgeving, MOET de Gateway-deployment een identieke volumemap bevatten die de hostnamespace native koppelt (`-v /home/user/.openclaw:/home/user/.openclaw`).
+- **Configuratie vereist hostpaden**: De `openclaw.json`-`workspace`-configuratie MOET het **absolute pad van de host** bevatten (bijv. `/home/user/.openclaw/workspaces`), niet het interne pad van de Gateway-container. Wanneer OpenClaw de Docker-daemon vraagt een sandbox te starten, evalueert de daemon paden relatief aan de namespace van het host-OS, niet aan de Gateway-namespace.
+- **FS-bridge-pariteit (identieke volumemap)**: Het native OpenClaw Gateway-proces schrijft ook Heartbeat- en bridge-bestanden naar de `workspace`-directory. Omdat de Gateway exact dezelfde string (het hostpad) evalueert vanuit zijn eigen gecontaineriseerde omgeving, MOET de Gateway-deployment een identieke volumemap bevatten die de hostnamespace native koppelt (`-v /home/user/.openclaw:/home/user/.openclaw`).
 
-Als je paden intern mapt zonder absolute hostpariteit, gooit OpenClaw native een `EACCES`-machtigingsfout wanneer het probeert de Heartbeat binnen de containeromgeving te schrijven, omdat de volledig gekwalificeerde padtekenreeks daar native niet bestaat.
+Als je paden intern mapt zonder absolute hostpariteit, gooit OpenClaw native een `EACCES`-permissiefout bij een poging zijn Heartbeat binnen de containeromgeving te schrijven, omdat de volledig gekwalificeerde padstring daar native niet bestaat.
 </Warning>
 
 ### SSH-backend
 
-Gebruik `backend: "ssh"` wanneer je wilt dat OpenClaw `exec`, bestandstools en medialezingen sandboxt op een willekeurige via SSH bereikbare machine.
+Gebruik `backend: "ssh"` wanneer je wilt dat OpenClaw `exec`, bestandstools en medialezingen sandboxt op een willekeurige via SSH toegankelijke machine.
 
 ```json5
 {
@@ -142,35 +142,35 @@ Gebruik `backend: "ssh"` wanneer je wilt dat OpenClaw `exec`, bestandstools en m
 ```
 
 <AccordionGroup>
-  <Accordion title="Hoe het werkt">
-    - OpenClaw maakt een externe root per scope aan onder `sandbox.ssh.workspaceRoot`.
-    - Bij het eerste gebruik na aanmaken of opnieuw aanmaken seedt OpenClaw die externe werkruimte eenmalig vanuit de lokale werkruimte.
-    - Daarna draaien `exec`, `read`, `write`, `edit`, `apply_patch`, prompt-medialezingen en staging van inkomende media rechtstreeks tegen de externe werkruimte via SSH.
+  <Accordion title="How it works">
+    - OpenClaw maakt een per-scope externe root onder `sandbox.ssh.workspaceRoot`.
+    - Bij eerste gebruik na aanmaken of opnieuw aanmaken seedt OpenClaw die externe werkruimte één keer vanuit de lokale werkruimte.
+    - Daarna draaien `exec`, `read`, `write`, `edit`, `apply_patch`, promptmedialezingen en inkomende mediastaging rechtstreeks tegen de externe werkruimte via SSH.
     - OpenClaw synchroniseert externe wijzigingen niet automatisch terug naar de lokale werkruimte.
 
   </Accordion>
-  <Accordion title="Authenticatiemateriaal">
+  <Accordion title="Authentication material">
     - `identityFile`, `certificateFile`, `knownHostsFile`: gebruik bestaande lokale bestanden en geef ze door via OpenSSH-configuratie.
     - `identityData`, `certificateData`, `knownHostsData`: gebruik inline strings of SecretRefs. OpenClaw lost ze op via de normale secrets-runtime-snapshot, schrijft ze naar tijdelijke bestanden met `0600` en verwijdert ze wanneer de SSH-sessie eindigt.
     - Als zowel `*File` als `*Data` voor hetzelfde item zijn ingesteld, wint `*Data` voor die SSH-sessie.
 
   </Accordion>
-  <Accordion title="Gevolgen van extern-canoniek">
-    Dit is een **extern-canoniek** model. De externe SSH-werkruimte wordt na de initiële seed de echte sandboxstatus.
+  <Accordion title="Remote-canonical consequences">
+    Dit is een **remote-canonical** model. De externe SSH-werkruimte wordt de echte sandboxstatus na de initiële seed.
 
-    - Host-lokale bewerkingen buiten OpenClaw na de seedstap zijn extern niet zichtbaar totdat je de sandbox opnieuw aanmaakt.
-    - `openclaw sandbox recreate` verwijdert de externe root per scope en seedt opnieuw vanuit lokaal bij het volgende gebruik.
+    - Host-lokale bewerkingen die buiten OpenClaw na de seedstap worden gemaakt, zijn extern niet zichtbaar totdat je de sandbox opnieuw aanmaakt.
+    - `openclaw sandbox recreate` verwijdert de per-scope externe root en seedt opnieuw vanuit lokaal bij het volgende gebruik.
     - Browsersandboxing wordt niet ondersteund op de SSH-backend.
-    - `sandbox.docker.*`-instellingen zijn niet van toepassing op de SSH-backend.
+    - `sandbox.docker.*`-instellingen gelden niet voor de SSH-backend.
 
   </Accordion>
 </AccordionGroup>
 
 ### OpenShell-backend
 
-Gebruik `backend: "openshell"` wanneer je wilt dat OpenClaw tools sandboxt in een door OpenShell beheerde externe omgeving. Zie de speciale [OpenShell-pagina](/nl/gateway/openshell) voor de volledige setupgids, configuratiereferentie en vergelijking van werkruimtemodi.
+Gebruik `backend: "openshell"` wanneer je wilt dat OpenClaw tools in een door OpenShell beheerde externe omgeving sandboxt. Zie de toegewezen [OpenShell-pagina](/nl/gateway/openshell) voor de volledige setupgids, configuratiereferentie en vergelijking van werkruimtemodi.
 
-OpenShell hergebruikt hetzelfde kern-SSH-transport en dezelfde externe bestandssysteembridge als de generieke SSH-backend, en voegt OpenShell-specifieke lifecycle toe (`sandbox create/get/delete`, `sandbox ssh-config`) plus de optionele `mirror`-werkruimtemodus.
+OpenShell hergebruikt hetzelfde kern-SSH-transport en dezelfde externe filesystem-bridge als de generieke SSH-backend, en voegt OpenShell-specifieke lifecycle toe (`sandbox create/get/delete`, `sandbox ssh-config`) plus de optionele `mirror`-werkruimtemodus.
 
 ```json5
 {
@@ -202,17 +202,17 @@ OpenShell hergebruikt hetzelfde kern-SSH-transport en dezelfde externe bestandss
 
 OpenShell-modi:
 
-- `mirror` (standaard): lokale werkruimte blijft canoniek. OpenClaw synchroniseert lokale bestanden naar OpenShell voor exec en synchroniseert de externe werkruimte terug na exec.
-- `remote`: OpenShell-werkruimte is canoniek nadat de sandbox is gemaakt. OpenClaw seedt de externe werkruimte eenmalig vanuit de lokale werkruimte, waarna bestandstools en exec rechtstreeks tegen de externe sandbox draaien zonder wijzigingen terug te synchroniseren.
+- `mirror` (standaard): lokale werkruimte blijft canonical. OpenClaw synchroniseert lokale bestanden naar OpenShell vóór exec en synchroniseert de externe werkruimte terug na exec.
+- `remote`: OpenShell-werkruimte is canonical nadat de sandbox is aangemaakt. OpenClaw seedt de externe werkruimte één keer vanuit de lokale werkruimte, waarna bestandstools en exec rechtstreeks tegen de externe sandbox draaien zonder wijzigingen terug te synchroniseren.
 
 <AccordionGroup>
-  <Accordion title="Details van extern transport">
+  <Accordion title="Remote transport details">
     - OpenClaw vraagt OpenShell om sandboxspecifieke SSH-configuratie via `openshell sandbox ssh-config <name>`.
-    - Core schrijft die SSH-configuratie naar een tijdelijk bestand, opent de SSH-sessie en hergebruikt dezelfde externe bestandssysteembridge die door `backend: "ssh"` wordt gebruikt.
-    - Alleen in `mirror`-modus verschilt de lifecycle: synchroniseer lokaal naar extern voor exec, en synchroniseer daarna terug na exec.
+    - Core schrijft die SSH-configuratie naar een tijdelijk bestand, opent de SSH-sessie en hergebruikt dezelfde externe filesystem-bridge die door `backend: "ssh"` wordt gebruikt.
+    - Alleen in `mirror`-modus verschilt de lifecycle: synchroniseer lokaal naar extern vóór exec, en synchroniseer daarna terug na exec.
 
   </Accordion>
-  <Accordion title="Huidige OpenShell-beperkingen">
+  <Accordion title="Current OpenShell limitations">
     - sandboxbrowser wordt nog niet ondersteund
     - `sandbox.docker.binds` wordt niet ondersteund op de OpenShell-backend
     - Docker-specifieke runtimeknoppen onder `sandbox.docker.*` gelden nog steeds alleen voor de Docker-backend
@@ -225,20 +225,20 @@ OpenShell-modi:
 OpenShell heeft twee werkruimtemodellen. Dit is in de praktijk het belangrijkste deel.
 
 <Tabs>
-  <Tab title="mirror (lokaal canoniek)">
-    Gebruik `plugins.entries.openshell.config.mode: "mirror"` wanneer je wilt dat de **lokale werkruimte canoniek blijft**.
+  <Tab title="mirror (local canonical)">
+    Gebruik `plugins.entries.openshell.config.mode: "mirror"` wanneer je wilt dat de **lokale werkruimte canonical blijft**.
 
     Gedrag:
 
-    - Voor `exec` synchroniseert OpenClaw de lokale werkruimte naar de OpenShell-sandbox.
+    - Vóór `exec` synchroniseert OpenClaw de lokale werkruimte naar de OpenShell-sandbox.
     - Na `exec` synchroniseert OpenClaw de externe werkruimte terug naar de lokale werkruimte.
-    - Bestandstools werken nog steeds via de sandboxbridge, maar de lokale werkruimte blijft tussen beurten de bron van waarheid.
+    - Bestandstools werken nog steeds via de sandbox-bridge, maar de lokale werkruimte blijft tussen beurten de source of truth.
 
     Gebruik dit wanneer:
 
     - je bestanden lokaal buiten OpenClaw bewerkt en wilt dat die wijzigingen automatisch in de sandbox verschijnen
     - je wilt dat de OpenShell-sandbox zich zo veel mogelijk gedraagt als de Docker-backend
-    - je wilt dat de hostwerkruimte sandbox-schrijfacties weerspiegelt na elke exec-beurt
+    - je wilt dat de host-werkruimte sandbox-schrijfacties na elke exec-beurt weergeeft
 
     Afweging: extra synchronisatiekosten vóór en na exec.
 
@@ -248,11 +248,11 @@ OpenShell heeft twee werkruimtemodellen. Dit is in de praktijk het belangrijkste
 
     Gedrag:
 
-    - Wanneer de sandbox voor het eerst wordt gemaakt, vult OpenClaw de externe werkruimte één keer vanuit de lokale werkruimte.
+    - Wanneer de sandbox voor het eerst wordt gemaakt, vult OpenClaw de externe werkruimte eenmalig vanuit de lokale werkruimte.
     - Daarna werken `exec`, `read`, `write`, `edit` en `apply_patch` rechtstreeks op de externe OpenShell-werkruimte.
     - OpenClaw synchroniseert externe wijzigingen na exec **niet** terug naar de lokale werkruimte.
-    - Media-leesacties tijdens prompts blijven werken omdat bestands- en mediatools via de sandboxbridge lezen in plaats van uit te gaan van een lokaal hostpad.
-    - Transport verloopt via SSH naar de OpenShell-sandbox die wordt teruggegeven door `openshell sandbox ssh-config`.
+    - Media-lezingen op prompttijd blijven werken omdat bestands- en mediatools via de sandbox-bridge lezen in plaats van uit te gaan van een lokaal hostpad.
+    - Transport verloopt via SSH naar de OpenShell-sandbox die wordt geretourneerd door `openshell sandbox ssh-config`.
 
     Belangrijke gevolgen:
 
@@ -263,7 +263,7 @@ OpenShell heeft twee werkruimtemodellen. Dit is in de praktijk het belangrijkste
     Gebruik dit wanneer:
 
     - de sandbox primair aan de externe OpenShell-kant moet leven
-    - je lagere synchronisatie-overhead per beurt wilt
+    - je minder synchronisatie-overhead per beurt wilt
     - je niet wilt dat host-lokale bewerkingen stilzwijgend de externe sandboxstatus overschrijven
 
   </Tab>
@@ -273,11 +273,11 @@ Kies `mirror` als je de sandbox ziet als een tijdelijke uitvoeringsomgeving. Kie
 
 #### OpenShell-levenscyclus
 
-OpenShell-sandboxen worden nog steeds beheerd via de normale sandboxlevenscyclus:
+OpenShell-sandboxes worden nog steeds beheerd via de normale sandbox-levenscyclus:
 
 - `openclaw sandbox list` toont zowel OpenShell-runtimes als Docker-runtimes
 - `openclaw sandbox recreate` verwijdert de huidige runtime en laat OpenClaw deze bij het volgende gebruik opnieuw maken
-- opschoonlogica is ook backendbewust
+- opschoonlogica is ook backend-bewust
 
 Voor de modus `remote` is opnieuw maken extra belangrijk:
 
@@ -292,40 +292,40 @@ Voor de modus `mirror` reset opnieuw maken vooral de externe uitvoeringsomgeving
 
 <Tabs>
   <Tab title="none (default)">
-    Tools zien een sandboxwerkruimte onder `~/.openclaw/sandboxes`.
+    Tools zien een sandbox-werkruimte onder `~/.openclaw/sandboxes`.
   </Tab>
   <Tab title="ro">
-    Koppelt de agentwerkruimte alleen-lezen aan `/agent` (schakelt `write`/`edit`/`apply_patch` uit).
+    Koppelt de agent-werkruimte alleen-lezen op `/agent` (schakelt `write`/`edit`/`apply_patch` uit).
   </Tab>
   <Tab title="rw">
-    Koppelt de agentwerkruimte lezen/schrijven aan `/workspace`.
+    Koppelt de agent-werkruimte lezen/schrijven op `/workspace`.
   </Tab>
 </Tabs>
 
 Met de OpenShell-backend:
 
-- de modus `mirror` gebruikt nog steeds de lokale werkruimte als canonieke bron tussen exec-beurten
-- de modus `remote` gebruikt de externe OpenShell-werkruimte als canonieke bron na de eerste seed
+- de modus `mirror` gebruikt nog steeds de lokale werkruimte als de canonieke bron tussen exec-beurten
+- de modus `remote` gebruikt na de initiële seed de externe OpenShell-werkruimte als de canonieke bron
 - `workspaceAccess: "ro"` en `"none"` beperken schrijfgedrag nog steeds op dezelfde manier
 
-Binnenkomende media worden naar de actieve sandboxwerkruimte gekopieerd (`media/inbound/*`).
+Inkomende media worden gekopieerd naar de actieve sandbox-werkruimte (`media/inbound/*`).
 
 <Note>
-**Opmerking over Skills:** de `read`-tool is geworteld in de sandbox. Met `workspaceAccess: "none"` spiegelt OpenClaw geschikte Skills naar de sandboxwerkruimte (`.../skills`) zodat ze kunnen worden gelezen. Met `"rw"` zijn werkruimte-Skills leesbaar vanuit `/workspace/skills`.
+**Opmerking over Skills:** de tool `read` is sandbox-rooted. Met `workspaceAccess: "none"` spiegelt OpenClaw geschikte Skills naar de sandbox-werkruimte (`.../skills`) zodat ze gelezen kunnen worden. Met `"rw"` zijn werkruimte-Skills leesbaar vanuit `/workspace/skills`.
 </Note>
 
-## Aangepaste bind-mounts
+## Aangepaste bind mounts
 
-`agents.defaults.sandbox.docker.binds` koppelt extra hostmappen aan de container. Formaat: `host:container:mode` (bijvoorbeeld `"/home/user/source:/source:rw"`).
+`agents.defaults.sandbox.docker.binds` koppelt extra hostmappen in de container. Formaat: `host:container:mode` (bijv. `"/home/user/source:/source:rw"`).
 
-Globale en per-agent binds worden **samengevoegd** (niet vervangen). Onder `scope: "shared"` worden per-agent binds genegeerd.
+Globale binds en binds per agent worden **samengevoegd** (niet vervangen). Onder `scope: "shared"` worden binds per agent genegeerd.
 
-`agents.defaults.sandbox.browser.binds` koppelt extra hostmappen alleen aan de **sandboxbrowser**-container.
+`agents.defaults.sandbox.browser.binds` koppelt extra hostmappen alleen in de **sandboxbrowser**-container.
 
 - Wanneer ingesteld (inclusief `[]`), vervangt dit `agents.defaults.sandbox.docker.binds` voor de browsercontainer.
 - Wanneer weggelaten, valt de browsercontainer terug op `agents.defaults.sandbox.docker.binds` (achterwaarts compatibel).
 
-Voorbeeld (alleen-lezen bron + een extra gegevensmap):
+Voorbeeld (alleen-lezen bron + een extra datamap):
 
 ```json5
 {
@@ -356,26 +356,26 @@ Voorbeeld (alleen-lezen bron + een extra gegevensmap):
 
 - Binds omzeilen het sandboxbestandssysteem: ze stellen hostpaden bloot met de modus die je instelt (`:ro` of `:rw`).
 - OpenClaw blokkeert gevaarlijke bind-bronnen (bijvoorbeeld: `docker.sock`, `/etc`, `/proc`, `/sys`, `/dev` en bovenliggende mounts die deze zouden blootstellen).
-- OpenClaw blokkeert ook gangbare credential-roots in thuismappen, zoals `~/.aws`, `~/.cargo`, `~/.config`, `~/.docker`, `~/.gnupg`, `~/.netrc`, `~/.npm` en `~/.ssh`.
-- Bind-validatie is niet alleen stringmatching. OpenClaw normaliseert het bronpad en lost het daarna opnieuw op via de diepste bestaande voorouder voordat geblokkeerde paden en toegestane roots opnieuw worden gecontroleerd.
-- Dat betekent dat escapes via symlink-ouders nog steeds dicht falen, zelfs wanneer het uiteindelijke blad nog niet bestaat. Voorbeeld: `/workspace/run-link/new-file` wordt nog steeds opgelost als `/var/run/...` als `run-link` daarnaar verwijst.
-- Toegestane bronroots worden op dezelfde manier gecanonicaliseerd, dus een pad dat alleen vóór symlink-resolutie binnen de allowlist lijkt te liggen, wordt nog steeds afgewezen als `outside allowed roots`.
-- Gevoelige mounts (secrets, SSH-sleutels, servicecredentials) moeten `:ro` zijn tenzij absoluut vereist.
+- OpenClaw blokkeert ook veelvoorkomende credential-roots in thuismappen, zoals `~/.aws`, `~/.cargo`, `~/.config`, `~/.docker`, `~/.gnupg`, `~/.netrc`, `~/.npm` en `~/.ssh`.
+- Bind-validatie is niet alleen stringmatching. OpenClaw normaliseert het bronpad en lost het daarna opnieuw op via de diepste bestaande ancestor voordat geblokkeerde paden en toegestane roots opnieuw worden gecontroleerd.
+- Dat betekent dat ontsnappingen via symlink-parents nog steeds fail-closed zijn, zelfs wanneer het uiteindelijke leaf nog niet bestaat. Voorbeeld: `/workspace/run-link/new-file` wordt nog steeds opgelost als `/var/run/...` als `run-link` daarheen wijst.
+- Toegestane bron-roots worden op dezelfde manier gecanonicaliseerd, dus een pad dat alleen vóór symlinkresolutie binnen de allowlist lijkt te liggen, wordt nog steeds geweigerd als `outside allowed roots`.
+- Gevoelige mounts (geheimen, SSH-sleutels, servicecredentials) moeten `:ro` zijn, tenzij absoluut vereist.
 - Combineer met `workspaceAccess: "ro"` als je alleen leestoegang tot de werkruimte nodig hebt; bind-modi blijven onafhankelijk.
 - Zie [Sandbox versus toolbeleid versus verhoogd](/nl/gateway/sandbox-vs-tool-policy-vs-elevated) voor hoe binds samenwerken met toolbeleid en verhoogde exec.
 
 </Warning>
 
-## Images en installatie
+## Images en setup
 
 Standaard Docker-image: `openclaw-sandbox:bookworm-slim`
 
 <Note>
 **Bron-checkout versus npm-installatie**
 
-De helperscripts `scripts/sandbox-setup.sh`, `scripts/sandbox-common-setup.sh` en `scripts/sandbox-browser-setup.sh` zijn alleen beschikbaar wanneer je vanuit een [bron-checkout](https://github.com/openclaw/openclaw) draait. Ze zijn niet opgenomen in het npm-pakket.
+De helperscripts `scripts/sandbox-setup.sh`, `scripts/sandbox-common-setup.sh` en `scripts/sandbox-browser-setup.sh` zijn alleen beschikbaar wanneer je draait vanuit een [bron-checkout](https://github.com/openclaw/openclaw). Ze zijn niet opgenomen in het npm-pakket.
 
-Als je OpenClaw hebt geïnstalleerd via `npm install -g openclaw`, gebruik dan de inline `docker build`-commando's die hieronder worden getoond.
+Als je OpenClaw hebt geïnstalleerd via `npm install -g openclaw`, gebruik dan in plaats daarvan de inline `docker build`-commando's hieronder.
 </Note>
 
 <Steps>
@@ -402,13 +402,13 @@ Als je OpenClaw hebt geïnstalleerd via `npm install -g openclaw`, gebruik dan d
     DOCKERFILE
     ```
 
-    De standaardimage bevat **geen** Node. Als een skill Node (of andere runtimes) nodig heeft, bak dan een aangepaste image of installeer via `sandbox.docker.setupCommand` (vereist netwerk-egress + schrijfbare root + rootgebruiker).
+    De standaard-image bevat **geen** Node. Als een skill Node nodig heeft (of andere runtimes), bak dan een aangepaste image of installeer via `sandbox.docker.setupCommand` (vereist netwerk-egress + schrijfbare root + root-gebruiker).
 
-    OpenClaw vervangt niet stilzwijgend door gewone `debian:bookworm-slim` wanneer `openclaw-sandbox:bookworm-slim` ontbreekt. Sandboxruns die de standaardimage targeten, falen snel met een build-instructie totdat je deze bouwt, omdat de meegeleverde image `python3` bevat voor sandboxhelpers voor schrijven/bewerken.
+    OpenClaw vervangt niet stilzwijgend door gewone `debian:bookworm-slim` wanneer `openclaw-sandbox:bookworm-slim` ontbreekt. Sandbox-runs die de standaard-image targeten, falen snel met een bouwinstructie totdat je deze bouwt, omdat de meegeleverde image `python3` bevat voor sandbox-helpers voor schrijven/bewerken.
 
   </Step>
   <Step title="Optional: build the common image">
-    Voor een functionelere sandboximage met gangbare tooling (bijvoorbeeld `curl`, `jq`, `nodejs`, `python3`, `git`):
+    Voor een functionelere sandbox-image met gangbare tooling (bijvoorbeeld `curl`, `jq`, `nodejs`, `python3`, `git`):
 
     Vanuit een bron-checkout:
 
@@ -416,9 +416,9 @@ Als je OpenClaw hebt geïnstalleerd via `npm install -g openclaw`, gebruik dan d
     scripts/sandbox-common-setup.sh
     ```
 
-    Bouw vanuit een npm-installatie eerst de standaardimage (zie hierboven) en bouw daarna de common image erbovenop met de [`Dockerfile.sandbox-common`](https://github.com/openclaw/openclaw/blob/main/Dockerfile.sandbox-common) uit de repository.
+    Bouw vanuit een npm-installatie eerst de standaard-image (zie hierboven) en bouw daarna de common-image erbovenop met de [`scripts/docker/sandbox/Dockerfile.common`](https://github.com/openclaw/openclaw/blob/main/scripts/docker/sandbox/Dockerfile.common) uit de repository.
 
-    Stel daarna `agents.defaults.sandbox.docker.image` in op `openclaw-sandbox-common:bookworm-slim`.
+    Stel vervolgens `agents.defaults.sandbox.docker.image` in op `openclaw-sandbox-common:bookworm-slim`.
 
   </Step>
   <Step title="Optional: build the sandbox browser image">
@@ -428,7 +428,7 @@ Als je OpenClaw hebt geïnstalleerd via `npm install -g openclaw`, gebruik dan d
     scripts/sandbox-browser-setup.sh
     ```
 
-    Bouw vanuit een npm-installatie met de [`Dockerfile.sandbox-browser`](https://github.com/openclaw/openclaw/blob/main/Dockerfile.sandbox-browser) uit de repository.
+    Bouw vanuit een npm-installatie met de [`scripts/docker/sandbox/Dockerfile.browser`](https://github.com/openclaw/openclaw/blob/main/scripts/docker/sandbox/Dockerfile.browser) uit de repository.
 
   </Step>
 </Steps>
@@ -437,7 +437,7 @@ Standaard draaien Docker-sandboxcontainers met **geen netwerk**. Overschrijf dit
 
 <AccordionGroup>
   <Accordion title="Sandbox browser Chromium defaults">
-    De meegeleverde sandboxbrowserimage past ook conservatieve Chromium-opstartstandaarden toe voor containerized workloads. Huidige containerstandaarden omvatten:
+    De meegeleverde sandboxbrowser-image past ook conservatieve Chromium-opstartstandaarden toe voor gecontaineriseerde workloads. Huidige containerstandaarden omvatten:
 
     - `--remote-debugging-address=127.0.0.1`
     - `--remote-debugging-port=<derived from OPENCLAW_BROWSER_CDP_PORT>`
@@ -457,26 +457,26 @@ Standaard draaien Docker-sandboxcontainers met **geen netwerk**. Overschrijf dit
     - `--metrics-recording-only`
     - `--renderer-process-limit=2`
     - `--no-sandbox` wanneer `noSandbox` is ingeschakeld.
-    - De drie graphics-hardening-vlaggen (`--disable-3d-apis`, `--disable-software-rasterizer`, `--disable-gpu`) zijn optioneel en zijn nuttig wanneer containers geen GPU-ondersteuning hebben. Stel `OPENCLAW_BROWSER_DISABLE_GRAPHICS_FLAGS=0` in als je workload WebGL of andere 3D-/browserfuncties vereist.
+    - De drie graphics-hardeningflags (`--disable-3d-apis`, `--disable-software-rasterizer`, `--disable-gpu`) zijn optioneel en nuttig wanneer containers geen GPU-ondersteuning hebben. Stel `OPENCLAW_BROWSER_DISABLE_GRAPHICS_FLAGS=0` in als je workload WebGL of andere 3D-/browserfuncties vereist.
     - `--disable-extensions` is standaard ingeschakeld en kan worden uitgeschakeld met `OPENCLAW_BROWSER_DISABLE_EXTENSIONS=0` voor flows die afhankelijk zijn van extensies.
     - `--renderer-process-limit=2` wordt beheerd door `OPENCLAW_BROWSER_RENDERER_PROCESS_LIMIT=<N>`, waarbij `0` de standaard van Chromium behoudt.
 
-    Als je een ander runtimeprofiel nodig hebt, gebruik dan een aangepaste browserimage en lever je eigen entrypoint. Gebruik voor lokale (niet-container) Chromium-profielen `browser.extraArgs` om extra opstartvlaggen toe te voegen.
+    Als je een ander runtimeprofiel nodig hebt, gebruik dan een aangepaste browser-image en lever je eigen entrypoint. Gebruik voor lokale (niet-container) Chromium-profielen `browser.extraArgs` om extra opstartflags toe te voegen.
 
   </Accordion>
   <Accordion title="Network security defaults">
     - `network: "host"` wordt geblokkeerd.
-    - `network: "container:<id>"` wordt standaard geblokkeerd (risico op omzeiling via namespace join).
+    - `network: "container:<id>"` wordt standaard geblokkeerd (risico op omzeiling via namespace-join).
     - Break-glass-override: `agents.defaults.sandbox.docker.dangerouslyAllowContainerNamespaceJoin: true`.
 
   </Accordion>
 </AccordionGroup>
 
-Docker-installaties en de containerized Gateway staan hier: [Docker](/nl/install/docker)
+Docker-installaties en de gecontaineriseerde Gateway staan hier: [Docker](/nl/install/docker)
 
-Voor Docker Gateway-deployments kan `scripts/docker/setup.sh` de sandboxconfiguratie bootstrappen. Stel `OPENCLAW_SANDBOX=1` (of `true`/`yes`/`on`) in om dat pad in te schakelen. Je kunt de socketlocatie overschrijven met `OPENCLAW_DOCKER_SOCKET`. Volledige setup- en env-referentie: [Docker](/nl/install/docker#agent-sandbox).
+Voor Docker Gateway-deployments kan `scripts/docker/setup.sh` sandboxconfiguratie bootstrappen. Stel `OPENCLAW_SANDBOX=1` (of `true`/`yes`/`on`) in om dat pad in te schakelen. Je kunt de socketlocatie overschrijven met `OPENCLAW_DOCKER_SOCKET`. Volledige setup- en env-referentie: [Docker](/nl/install/docker#agent-sandbox).
 
-## setupCommand (eenmalige containerconfiguratie)
+## setupCommand (eenmalige container-setup)
 
 `setupCommand` draait **één keer** nadat de sandboxcontainer is gemaakt (niet bij elke run). Het wordt in de container uitgevoerd via `sh -lc`.
 
@@ -486,32 +486,32 @@ Paden:
 - Per agent: `agents.list[].sandbox.docker.setupCommand`
 
 <AccordionGroup>
-  <Accordion title="Common pitfalls">
-    - Standaard `docker.network` is `"none"` (geen egress), dus pakketinstallaties mislukken.
-    - `docker.network: "container:<id>"` vereist `dangerouslyAllowContainerNamespaceJoin: true` en is alleen voor break-glass.
+  <Accordion title="Veelvoorkomende valkuilen">
+    - Standaard is `docker.network` `"none"` (geen uitgaand verkeer), waardoor pakketinstallaties mislukken.
+    - `docker.network: "container:<id>"` vereist `dangerouslyAllowContainerNamespaceJoin: true` en is alleen bedoeld als noodoplossing.
     - `readOnlyRoot: true` voorkomt schrijfacties; stel `readOnlyRoot: false` in of bak een aangepaste image.
     - `user` moet root zijn voor pakketinstallaties (laat `user` weg of stel `user: "0:0"` in).
-    - Sandbox exec neemt host-`process.env` **niet** over. Gebruik `agents.defaults.sandbox.docker.env` (of een aangepaste image) voor skill-API-sleutels.
+    - Sandbox-exec neemt host-`process.env` **niet** over. Gebruik `agents.defaults.sandbox.docker.env` (of een aangepaste image) voor skill-API-sleutels.
 
   </Accordion>
 </AccordionGroup>
 
-## Hulpmiddelbeleid en uitwegen
+## Toolbeleid en escape hatches
 
-Beleid voor toestaan/weigeren van hulpmiddelen blijft vóór sandboxregels van toepassing. Als een hulpmiddel globaal of per agent wordt geweigerd, brengt sandboxing het niet terug.
+Tool-allow/deny-beleid blijft van toepassing vóór sandboxregels. Als een tool globaal of per agent wordt geweigerd, brengt sandboxing die niet terug.
 
-`tools.elevated` is een expliciete uitweg die `exec` buiten de sandbox uitvoert (`gateway` standaard, of `node` wanneer het exec-doel `node` is). `/exec`-directieven gelden alleen voor geautoriseerde afzenders en blijven per sessie behouden; om `exec` hard uit te schakelen, gebruik je weigeren via hulpmiddelbeleid (zie [Sandbox versus hulpmiddelbeleid versus Elevated](/nl/gateway/sandbox-vs-tool-policy-vs-elevated)).
+`tools.elevated` is een expliciete escape hatch die `exec` buiten de sandbox uitvoert (standaard `gateway`, of `node` wanneer het exec-doel `node` is). `/exec`-richtlijnen gelden alleen voor geautoriseerde afzenders en blijven per sessie bestaan; gebruik tool policy deny om `exec` hard uit te schakelen (zie [Sandbox vs Tool Policy vs Elevated](/nl/gateway/sandbox-vs-tool-policy-vs-elevated)).
 
 Debuggen:
 
-- Gebruik `openclaw sandbox explain` om de effectieve sandboxmodus, het hulpmiddelbeleid en configuratiesleutels voor herstel te inspecteren.
-- Zie [Sandbox versus hulpmiddelbeleid versus Elevated](/nl/gateway/sandbox-vs-tool-policy-vs-elevated) voor het mentale model achter "waarom is dit geblokkeerd?".
+- Gebruik `openclaw sandbox explain` om de effectieve sandboxmodus, het toolbeleid en fix-it-configuratiesleutels te inspecteren.
+- Zie [Sandbox vs Tool Policy vs Elevated](/nl/gateway/sandbox-vs-tool-policy-vs-elevated) voor het mentale model achter "waarom wordt dit geblokkeerd?".
 
 Houd het vergrendeld.
 
 ## Multi-agent-overschrijvingen
 
-Elke agent kan sandbox + hulpmiddelen overschrijven: `agents.list[].sandbox` en `agents.list[].tools` (plus `agents.list[].tools.sandbox.tools` voor sandbox-hulpmiddelbeleid). Zie [Multi-agent-sandbox en hulpmiddelen](/nl/tools/multi-agent-sandbox-tools) voor voorrang.
+Elke agent kan sandbox + tools overschrijven: `agents.list[].sandbox` en `agents.list[].tools` (plus `agents.list[].tools.sandbox.tools` voor sandbox-toolbeleid). Zie [Multi-Agent Sandbox & Tools](/nl/tools/multi-agent-sandbox-tools) voor prioriteit.
 
 ## Minimaal inschakelvoorbeeld
 
@@ -531,8 +531,8 @@ Elke agent kan sandbox + hulpmiddelen overschrijven: `agents.list[].sandbox` en 
 
 ## Gerelateerd
 
-- [Multi-agent-sandbox en hulpmiddelen](/nl/tools/multi-agent-sandbox-tools) — overschrijvingen per agent en voorrang
-- [OpenShell](/nl/gateway/openshell) — beheerde installatie van sandbox-backend, werkruimtemodi en configuratiereferentie
+- [Multi-Agent Sandbox & Tools](/nl/tools/multi-agent-sandbox-tools) — overschrijvingen per agent en prioriteit
+- [OpenShell](/nl/gateway/openshell) — beheerde sandbox-backendconfiguratie, werkruimtemodi en configuratiereferentie
 - [Sandboxconfiguratie](/nl/gateway/config-agents#agentsdefaultssandbox)
-- [Sandbox versus hulpmiddelbeleid versus Elevated](/nl/gateway/sandbox-vs-tool-policy-vs-elevated) — debuggen van "waarom is dit geblokkeerd?"
+- [Sandbox vs Tool Policy vs Elevated](/nl/gateway/sandbox-vs-tool-policy-vs-elevated) — debuggen van "waarom wordt dit geblokkeerd?"
 - [Beveiliging](/nl/gateway/security)

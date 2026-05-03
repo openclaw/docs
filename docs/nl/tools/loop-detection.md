@@ -1,33 +1,33 @@
 ---
 read_when:
-    - Een gebruiker meldt dat agenten vastlopen doordat ze toolaanroepen blijven herhalen
-    - Je moet de bescherming tegen herhaalde aanroepen afstemmen
-    - Je bewerkt beleid voor agenthulpmiddelen en de uitvoeringsomgeving
-summary: Hoe u beveiligingen inschakelt en afstemt die herhalende lussen van toolaanroepen detecteren
-title: Tool-loopdetectie
+    - Een gebruiker meldt dat agents vastlopen doordat ze toolaanroepen blijven herhalen
+    - Je moet de bescherming tegen herhaalde aanroepen bijstellen
+    - Je bewerkt beleid voor agenttools/runtime
+summary: Hoe u beveiligingsmechanismen inschakelt en afstemt die herhalende lussen van toolaanroepen detecteren
+title: Detectie van tool-lussen
 x-i18n:
-    generated_at: "2026-04-29T23:25:02Z"
+    generated_at: "2026-05-03T21:38:40Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ba601384e7d23ddfd316f9e5eef92b3daa4618d2287228a516c76fe141700a28
+    source_hash: 1b3976948d5735cf08b7ce854bab048a77a778a07a9f3f66d17c15aed0d42a97
     source_path: tools/loop-detection.md
     workflow: 16
 ---
 
-OpenClaw kan voorkomen dat agents vastlopen in herhaalde tool-call-patronen.
-De guard is **standaard uitgeschakeld**.
+OpenClaw kan voorkomen dat agents vastlopen in herhaalde toolaanroeppatronen.
+De beveiliging is **standaard uitgeschakeld**.
 
-Schakel deze alleen in waar nodig, omdat strikte instellingen legitieme herhaalde calls kunnen blokkeren.
+Schakel deze alleen in waar nodig, omdat strikte instellingen legitieme herhaalde aanroepen kunnen blokkeren.
 
 ## Waarom dit bestaat
 
-- Detecteer repetitieve reeksen die geen voortgang maken.
-- Detecteer hoogfrequente no-result-loops (dezelfde tool, dezelfde invoer, herhaalde fouten).
-- Detecteer specifieke repeated-call-patronen voor bekende pollingtools.
+- Detecteer repetitieve reeksen die geen voortgang boeken.
+- Detecteer hoogfrequente lussen zonder resultaat (dezelfde tool, dezelfde invoer, herhaalde fouten).
+- Detecteer specifieke patronen met herhaalde aanroepen voor bekende polling-tools.
 
 ## Configuratieblok
 
-Globale standaardinstellingen:
+Globale standaardwaarden:
 
 ```json5
 {
@@ -48,7 +48,7 @@ Globale standaardinstellingen:
 }
 ```
 
-Per-agent-override (optioneel):
+Override per agent (optioneel):
 
 ```json5
 {
@@ -71,23 +71,23 @@ Per-agent-override (optioneel):
 
 ### Gedrag van velden
 
-- `enabled`: Hoofdschakelaar. `false` betekent dat er geen loopdetectie wordt uitgevoerd.
-- `historySize`: aantal recente tool-calls dat voor analyse wordt bewaard.
-- `warningThreshold`: drempel voordat een patroon als alleen-waarschuwing wordt geclassificeerd.
-- `criticalThreshold`: drempel voor het blokkeren van repetitieve looppatronen.
-- `globalCircuitBreakerThreshold`: globale no-progress-breakerdrempel.
+- `enabled`: Hoofdschakelaar. `false` betekent dat er geen lusdetectie wordt uitgevoerd.
+- `historySize`: aantal recente toolaanroepen dat voor analyse wordt bewaard.
+- `warningThreshold`: drempel voordat een patroon alleen als waarschuwing wordt geclassificeerd.
+- `criticalThreshold`: drempel voor het blokkeren van repetitieve luspatronen.
+- `globalCircuitBreakerThreshold`: globale drempel voor de onderbreker bij geen voortgang.
 - `detectors.genericRepeat`: detecteert herhaalde patronen met dezelfde tool + dezelfde parameters.
-- `detectors.knownPollNoProgress`: detecteert bekende pollingachtige patronen zonder statuswijziging.
+- `detectors.knownPollNoProgress`: detecteert bekende polling-achtige patronen zonder statuswijziging.
 - `detectors.pingPong`: detecteert afwisselende pingpongpatronen.
 
-Voor `exec` vergelijken no-progress-controles stabiele opdrachtresultaten en negeren ze vluchtige runtimemetadata zoals duur, PID, sessie-ID en werkdirectory.
-Wanneer een run-id beschikbaar is, wordt recente tool-call-geschiedenis alleen binnen die run geëvalueerd, zodat geplande Heartbeat-cycli en nieuwe runs geen verouderde looptellingen uit eerdere runs erven.
+Voor `exec` vergelijken controles op geen voortgang stabiele opdrachtresultaten en negeren ze vluchtige runtime-metadata zoals duur, PID, sessie-ID en werkmap.
+Wanneer een run-ID beschikbaar is, wordt recente geschiedenis van toolaanroepen alleen binnen die run geëvalueerd, zodat geplande Heartbeat-cycli en nieuwe runs geen verouderde lustellingen uit eerdere runs overnemen.
 
 ## Aanbevolen instelling
 
-- Begin met `enabled: true`, standaardinstellingen ongewijzigd.
+- Begin voor kleinere modellen met `enabled: true`, met de standaardwaarden ongewijzigd. Flagship-modellen hebben lusdetectie zelden nodig en kunnen deze uitgeschakeld laten.
 - Houd drempels geordend als `warningThreshold < criticalThreshold < globalCircuitBreakerThreshold`.
-- Als er false positives optreden:
+- Als er fout-positieven optreden:
   - verhoog `warningThreshold` en/of `criticalThreshold`
   - verhoog (optioneel) `globalCircuitBreakerThreshold`
   - schakel alleen de detector uit die problemen veroorzaakt
@@ -95,8 +95,8 @@ Wanneer een run-id beschikbaar is, wordt recente tool-call-geschiedenis alleen b
 
 ## Logs en verwacht gedrag
 
-Wanneer een loop wordt gedetecteerd, meldt OpenClaw een loopevent en blokkeert of dempt het de volgende toolcyclus, afhankelijk van de ernst.
-Dit beschermt gebruikers tegen uit de hand lopende tokenkosten en vastlopers, terwijl normale tooltoegang behouden blijft.
+Wanneer een lus wordt gedetecteerd, rapporteert OpenClaw een lusgebeurtenis en blokkeert of dempt het de volgende toolcyclus, afhankelijk van de ernst.
+Dit beschermt gebruikers tegen ontsporend tokenverbruik en blokkades, terwijl normale tooltoegang behouden blijft.
 
 - Geef eerst de voorkeur aan waarschuwingen en tijdelijke onderdrukking.
 - Escaleer alleen wanneer herhaald bewijs zich opstapelt.
@@ -104,11 +104,11 @@ Dit beschermt gebruikers tegen uit de hand lopende tokenkosten en vastlopers, te
 ## Opmerkingen
 
 - `tools.loopDetection` wordt samengevoegd met overrides op agentniveau.
-- Per-agent-configuratie overschrijft of breidt globale waarden volledig uit.
-- Als er geen configuratie bestaat, blijven guardrails uit.
+- Configuratie per agent overschrijft globale waarden volledig of breidt deze uit.
+- Als er geen configuratie bestaat, blijven guardrails uitgeschakeld.
 
 ## Gerelateerd
 
 - [Exec-goedkeuringen](/nl/tools/exec-approvals)
 - [Denkniveaus](/nl/tools/thinking)
-- [Sub-agents](/nl/tools/subagents)
+- [Subagents](/nl/tools/subagents)

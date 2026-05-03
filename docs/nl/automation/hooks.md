@@ -1,28 +1,28 @@
 ---
 read_when:
-    - Je wilt gebeurtenisgestuurde automatisering voor /new, /reset, /stop en agentlevenscyclusgebeurtenissen
-    - Je wilt haakpunten bouwen, installeren of fouten erin opsporen
-summary: 'Haakpunten: gebeurtenisgestuurde automatisering voor commando''s en levenscyclusgebeurtenissen'
-title: Hooks
+    - Je wilt gebeurtenisgestuurde automatisering voor /new, /reset, /stop en gebeurtenissen in de levenscyclus van agents
+    - Je wilt inhaakpunten bouwen, installeren of debuggen
+summary: 'Hooks: gebeurtenisgestuurde automatisering voor commando''s en levenscyclusgebeurtenissen'
+title: Inhaakpunten
 x-i18n:
-    generated_at: "2026-05-02T11:08:35Z"
+    generated_at: "2026-05-03T21:27:28Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 00ebf65dce03c8643fc1eac84c3915aaa00133c7f007a22483a845e61f055d6b
+    source_hash: 15f0d120ccf7314a991da5d66e65e5c78375222a846ba01d7a04ddfe1f02cb32
     source_path: automation/hooks.md
     workflow: 16
 ---
 
-Hooks zijn kleine scripts die worden uitgevoerd wanneer er iets gebeurt binnen de Gateway. Ze kunnen vanuit directory's worden ontdekt en geïnspecteerd met `openclaw hooks`. De Gateway laadt interne hooks pas nadat je hooks inschakelt of ten minste één hook-entry, hookpakket, legacy-handler of extra hookdirectory configureert.
+Hooks zijn kleine scripts die worden uitgevoerd wanneer er iets gebeurt binnen de Gateway. Ze kunnen uit mappen worden ontdekt en met `openclaw hooks` worden geïnspecteerd. De Gateway laadt interne hooks pas nadat je hooks inschakelt of ten minste één hook-entry, hookpack, legacy-handler of extra hookmap configureert.
 
 Er zijn twee soorten hooks in OpenClaw:
 
-- **Interne hooks** (deze pagina): worden uitgevoerd binnen de Gateway wanneer agentgebeurtenissen plaatsvinden, zoals `/new`, `/reset`, `/stop` of levenscyclusgebeurtenissen.
-- **Webhooks**: externe HTTP-eindpunten waarmee andere systemen werk in OpenClaw kunnen starten. Zie [Webhooks](/nl/automation/cron-jobs#webhooks).
+- **Interne hooks** (deze pagina): worden uitgevoerd binnen de Gateway wanneer agent-events plaatsvinden, zoals `/new`, `/reset`, `/stop` of lifecycle-events.
+- **Webhooks**: externe HTTP-eindpunten waarmee andere systemen werk in OpenClaw kunnen activeren. Zie [Webhooks](/nl/automation/cron-jobs#webhooks).
 
-Hooks kunnen ook worden gebundeld in plugins. `openclaw hooks list` toont zowel zelfstandige hooks als door plugins beheerde hooks.
+Hooks kunnen ook in plugins worden gebundeld. `openclaw hooks list` toont zowel zelfstandige hooks als hooks die door plugins worden beheerd.
 
-## Snel starten
+## Snel aan de slag
 
 ```bash
 # List available hooks
@@ -38,31 +38,31 @@ openclaw hooks check
 openclaw hooks info session-memory
 ```
 
-## Gebeurtenistypen
+## Eventtypen
 
-| Gebeurtenis              | Wanneer deze wordt geactiveerd                                |
-| ------------------------ | ------------------------------------------------------------- |
-| `command:new`            | opdracht `/new` uitgegeven                                    |
-| `command:reset`          | opdracht `/reset` uitgegeven                                  |
-| `command:stop`           | opdracht `/stop` uitgegeven                                   |
-| `command`                | Elke opdrachtgebeurtenis (algemene listener)                  |
-| `session:compact:before` | Voordat Compaction de geschiedenis samenvat                   |
-| `session:compact:after`  | Nadat Compaction is voltooid                                  |
-| `session:patch`          | Wanneer sessie-eigenschappen worden gewijzigd                 |
-| `agent:bootstrap`        | Voordat bootstrapbestanden voor de werkruimte worden geïnjecteerd |
-| `gateway:startup`        | Nadat kanalen starten en hooks zijn geladen                   |
-| `gateway:shutdown`       | Wanneer het afsluiten van de gateway begint                   |
-| `gateway:pre-restart`    | Vóór een verwachte herstart van de gateway                    |
-| `message:received`       | Inkomend bericht van een willekeurig kanaal                   |
-| `message:transcribed`    | Nadat audiotranscriptie is voltooid                           |
+| Event                    | Wanneer het wordt geactiveerd                              |
+| ------------------------ | ---------------------------------------------------------- |
+| `command:new`            | `/new`-commando uitgegeven                                 |
+| `command:reset`          | `/reset`-commando uitgegeven                               |
+| `command:stop`           | `/stop`-commando uitgegeven                                |
+| `command`                | Elk command-event (algemene listener)                      |
+| `session:compact:before` | Voordat Compaction de geschiedenis samenvat                |
+| `session:compact:after`  | Nadat Compaction is voltooid                               |
+| `session:patch`          | Wanneer sessie-eigenschappen worden gewijzigd              |
+| `agent:bootstrap`        | Voordat workspace-bootstrapbestanden worden geïnjecteerd   |
+| `gateway:startup`        | Nadat kanalen starten en hooks zijn geladen                |
+| `gateway:shutdown`       | Wanneer het afsluiten van de gateway begint                |
+| `gateway:pre-restart`    | Vóór een verwachte gateway-herstart                        |
+| `message:received`       | Inkomend bericht van een kanaal                            |
+| `message:transcribed`    | Nadat audiotranscriptie is voltooid                        |
 | `message:preprocessed`   | Nadat media- en linkvoorverwerking is voltooid of overgeslagen |
-| `message:sent`           | Uitgaand bericht afgeleverd                                   |
+| `message:sent`           | Uitgaand bericht afgeleverd                                |
 
 ## Hooks schrijven
 
 ### Hookstructuur
 
-Elke hook is een directory met twee bestanden:
+Elke hook is een map met twee bestanden:
 
 ```
 my-hook/
@@ -90,14 +90,14 @@ Detailed documentation goes here.
 | Veld       | Beschrijving                                         |
 | ---------- | ---------------------------------------------------- |
 | `emoji`    | Weergave-emoji voor CLI                              |
-| `events`   | Array met gebeurtenissen om naar te luisteren        |
+| `events`   | Array met events om naar te luisteren                |
 | `export`   | Benoemde export om te gebruiken (standaard `"default"`) |
 | `os`       | Vereiste platforms (bijv. `["darwin", "linux"]`)     |
-| `requires` | Vereiste paden voor `bins`, `anyBins`, `env` of `config` |
+| `requires` | Vereiste `bins`-, `anyBins`-, `env`- of `config`-paden |
 | `always`   | Geschiktheidscontroles omzeilen (boolean)            |
 | `install`  | Installatiemethoden                                  |
 
-### Handlerimplementatie
+### Handler-implementatie
 
 ```typescript
 const handler = async (event) => {
@@ -115,61 +115,62 @@ const handler = async (event) => {
 export default handler;
 ```
 
-Elke gebeurtenis bevat: `type`, `action`, `sessionKey`, `timestamp`, `messages` (push om naar de gebruiker te verzenden) en `context` (gebeurtenisspecifieke gegevens). Hookcontexten voor agent- en toolplugins kunnen ook `trace` bevatten, een alleen-lezen W3C-compatibele diagnostische tracecontext die plugins kunnen doorgeven aan gestructureerde logs voor OTEL-correlatie.
+Elk event bevat: `type`, `action`, `sessionKey`, `timestamp`, `messages` (push om naar de gebruiker te sturen) en `context` (eventspecifieke gegevens). Agent- en tool-plugin-hookcontexten kunnen ook `trace` bevatten, een alleen-lezen W3C-compatibele diagnostische trace-context die plugins kunnen doorgeven aan gestructureerde logs voor OTEL-correlatie.
 
-### Hoogtepunten van gebeurteniscontext
+### Hoogtepunten van eventcontext
 
-**Opdrachtgebeurtenissen** (`command:new`, `command:reset`): `context.sessionEntry`, `context.previousSessionEntry`, `context.commandSource`, `context.workspaceDir`, `context.cfg`.
+**Command-events** (`command:new`, `command:reset`): `context.sessionEntry`, `context.previousSessionEntry`, `context.commandSource`, `context.workspaceDir`, `context.cfg`.
 
-**Berichtgebeurtenissen** (`message:received`): `context.from`, `context.content`, `context.channelId`, `context.metadata` (providerspecifieke gegevens, waaronder `senderId`, `senderName`, `guildId`). `context.content` geeft de voorkeur aan een niet-lege opdrachtbody voor opdrachtachtige berichten, valt daarna terug op de ruwe inkomende body en generieke body; het bevat geen verrijking die alleen voor de agent is bedoeld, zoals threadgeschiedenis of linksamenvattingen.
+**Message-events** (`message:received`): `context.from`, `context.content`, `context.channelId`, `context.metadata` (providerspecifieke gegevens inclusief `senderId`, `senderName`, `guildId`). `context.content` geeft de voorkeur aan een niet-lege commandobody voor commandoachtige berichten, en valt daarna terug op de ruwe inkomende body en generieke body; het bevat geen agent-only verrijking zoals threadgeschiedenis of linksamenvattingen.
 
-**Berichtgebeurtenissen** (`message:sent`): `context.to`, `context.content`, `context.success`, `context.channelId`.
+**Message-events** (`message:sent`): `context.to`, `context.content`, `context.success`, `context.channelId`.
 
-**Berichtgebeurtenissen** (`message:transcribed`): `context.transcript`, `context.from`, `context.channelId`, `context.mediaPath`.
+**Message-events** (`message:transcribed`): `context.transcript`, `context.from`, `context.channelId`, `context.mediaPath`.
 
-**Berichtgebeurtenissen** (`message:preprocessed`): `context.bodyForAgent` (definitieve verrijkte body), `context.from`, `context.channelId`.
+**Message-events** (`message:preprocessed`): `context.bodyForAgent` (uiteindelijke verrijkte body), `context.from`, `context.channelId`.
 
-**Bootstrapgebeurtenissen** (`agent:bootstrap`): `context.bootstrapFiles` (muteerbare array), `context.agentId`.
+**Bootstrap-events** (`agent:bootstrap`): `context.bootstrapFiles` (wijzigbare array), `context.agentId`.
 
-**Sessiepatchgebeurtenissen** (`session:patch`): `context.sessionEntry`, `context.patch` (alleen gewijzigde velden), `context.cfg`. Alleen bevoorrechte clients kunnen patchgebeurtenissen activeren.
+**Sessiepatch-events** (`session:patch`): `context.sessionEntry`, `context.patch` (alleen gewijzigde velden), `context.cfg`. Alleen geprivilegieerde clients kunnen patch-events activeren.
 
-**Compaction-gebeurtenissen**: `session:compact:before` bevat `messageCount`, `tokenCount`. `session:compact:after` voegt `compactedCount`, `summaryLength`, `tokensBefore`, `tokensAfter` toe.
+**Compaction-events**: `session:compact:before` bevat `messageCount`, `tokenCount`. `session:compact:after` voegt `compactedCount`, `summaryLength`, `tokensBefore`, `tokensAfter` toe.
 
-`command:stop` observeert dat de gebruiker `/stop` uitgeeft; het is annulering/opdrachtlevenscyclus, geen gate voor agentfinalisatie. Plugins die een natuurlijk definitief antwoord moeten inspecteren en de agent om nog een extra ronde moeten vragen, moeten in plaats daarvan de getypeerde pluginhook `before_agent_finalize` gebruiken. Zie [Plugin-hooks](/nl/plugins/hooks).
+`command:stop` observeert dat de gebruiker `/stop` uitgeeft; het is onderdeel van de lifecycle voor annulering/commando's, geen gate voor agentfinalisatie. Plugins die een natuurlijk eindantwoord moeten inspecteren en de agent om nog één pass willen vragen, moeten in plaats daarvan de getypeerde plugin-hook `before_agent_finalize` gebruiken. Zie [Plugin-hooks](/nl/plugins/hooks).
 
-**Gateway-levenscyclusgebeurtenissen**: `gateway:shutdown` bevat `reason` en `restartExpectedMs` en wordt geactiveerd wanneer het afsluiten van de gateway begint. `gateway:pre-restart` bevat dezelfde context, maar wordt alleen geactiveerd wanneer afsluiten deel uitmaakt van een verwachte herstart en een eindige waarde voor `restartExpectedMs` is opgegeven. Tijdens het afsluiten is elke wachttijd voor een levenscyclushook best-effort en begrensd, zodat afsluiten doorgaat als een handler blijft hangen.
+**Gateway-lifecycle-events**: `gateway:shutdown` bevat `reason` en `restartExpectedMs` en wordt geactiveerd wanneer het afsluiten van de gateway begint. `gateway:pre-restart` bevat dezelfde context, maar wordt alleen geactiveerd wanneer afsluiten onderdeel is van een verwachte herstart en een eindige `restartExpectedMs`-waarde is opgegeven. Tijdens het afsluiten is het wachten op elke lifecycle-hook best-effort en begrensd, zodat het afsluiten doorgaat als een handler vastloopt.
 
-## Hookdetectie
+## Hook-detectie
 
-Hooks worden ontdekt vanuit deze directory's, in volgorde van toenemende overrideprioriteit:
+Hooks worden ontdekt vanuit deze mappen, in volgorde van oplopende override-voorrang:
 
 1. **Gebundelde hooks**: meegeleverd met OpenClaw
 2. **Plugin-hooks**: hooks die zijn gebundeld in geïnstalleerde plugins
-3. **Beheerde hooks**: `~/.openclaw/hooks/` (door de gebruiker geïnstalleerd, gedeeld tussen werkruimten). Extra directory's uit `hooks.internal.load.extraDirs` delen deze prioriteit.
-4. **Werkruimtehooks**: `<workspace>/hooks/` (per agent, standaard uitgeschakeld totdat ze expliciet worden ingeschakeld)
+3. **Beheerde hooks**: `~/.openclaw/hooks/` (door de gebruiker geïnstalleerd, gedeeld over workspaces). Extra mappen uit `hooks.internal.load.extraDirs` delen deze voorrang.
+4. **Workspace-hooks**: `<workspace>/hooks/` (per agent, standaard uitgeschakeld totdat ze expliciet worden ingeschakeld)
 
-Werkruimtehooks kunnen nieuwe hooknamen toevoegen, maar kunnen geen gebundelde, beheerde of door plugins geleverde hooks met dezelfde naam overschrijven.
+Workspace-hooks kunnen nieuwe hooknamen toevoegen, maar kunnen geen gebundelde, beheerde of door plugins geleverde hooks met dezelfde naam overschrijven.
 
-De Gateway slaat interne hookdetectie bij het opstarten over totdat interne hooks zijn geconfigureerd. Schakel een gebundelde of beheerde hook in met `openclaw hooks enable <name>`, installeer een hookpakket of stel `hooks.internal.enabled=true` in om je aan te melden. Wanneer je één benoemde hook inschakelt, laadt de Gateway alleen de handler van die hook; `hooks.internal.enabled=true`, extra hookdirectory's en legacy-handlers melden zich aan voor brede detectie.
+De Gateway slaat interne hook-detectie bij het opstarten over totdat interne hooks zijn geconfigureerd. Schakel een gebundelde of beheerde hook in met `openclaw hooks enable <name>`, installeer een hookpack of stel `hooks.internal.enabled=true` in om je aan te melden. Wanneer je één benoemde hook inschakelt, laadt de Gateway alleen de handler van die hook; `hooks.internal.enabled=true`, extra hookmappen en legacy-handlers melden zich aan voor brede detectie.
 
-### Hookpakketten
+### Hookpacks
 
-Hookpakketten zijn npm-pakketten die hooks exporteren via `openclaw.hooks` in `package.json`. Installeer met:
+Hookpacks zijn npm-pakketten die hooks exporteren via `openclaw.hooks` in `package.json`. Installeer met:
 
 ```bash
 openclaw plugins install <path-or-spec>
 ```
 
-Npm-specificaties zijn uitsluitend registry-specificaties (pakketnaam + optionele exacte versie of dist-tag). Git-/URL-/file-specificaties en semver-bereiken worden geweigerd.
+Npm-specificaties zijn alleen registry-gebaseerd (pakketnaam + optionele exacte versie of dist-tag). Git-/URL-/bestandsspecificaties en semver-ranges worden geweigerd.
 
 ## Gebundelde hooks
 
-| Hook                  | Gebeurtenissen                 | Wat het doet                                          |
-| --------------------- | ------------------------------ | ----------------------------------------------------- |
-| session-memory        | `command:new`, `command:reset` | Slaat sessiecontext op in `<workspace>/memory/`       |
-| bootstrap-extra-files | `agent:bootstrap`              | Injecteert extra bootstrap-bestanden uit glob-patronen |
-| command-logger        | `command`                      | Logt alle opdrachten naar `~/.openclaw/logs/commands.log` |
-| boot-md               | `gateway:startup`              | Voert `BOOT.md` uit wanneer de gateway start          |
+| Hook                  | Events                                            | Wat het doet                                                   |
+| --------------------- | ------------------------------------------------- | -------------------------------------------------------------- |
+| session-memory        | `command:new`, `command:reset`                    | Slaat sessiecontext op in `<workspace>/memory/`                |
+| bootstrap-extra-files | `agent:bootstrap`                                 | Injecteert extra bootstrapbestanden vanuit globpatronen        |
+| command-logger        | `command`                                         | Logt alle commando's naar `~/.openclaw/logs/commands.log`      |
+| compaction-notifier   | `session:compact:before`, `session:compact:after` | Stuurt zichtbare chatmeldingen wanneer sessie-Compaction start/eindigt |
+| boot-md               | `gateway:startup`                                 | Voert `BOOT.md` uit wanneer de gateway start                   |
 
 Schakel een gebundelde hook in:
 
@@ -181,7 +182,7 @@ openclaw hooks enable <hook-name>
 
 ### Details van session-memory
 
-Extraheert de laatste 15 gebruikers-/assistentberichten, genereert via LLM een beschrijvende bestandsnaam-slug en slaat deze op naar `<workspace>/memory/YYYY-MM-DD-slug.md` met de lokale datum van de host. Vereist dat `workspace.dir` is geconfigureerd.
+Extraheert de laatste 15 gebruiker-/assistant-berichten, genereert via een LLM een beschrijvende bestandsnaamslug en slaat op naar `<workspace>/memory/YYYY-MM-DD-slug.md` met de lokale datum van de host. Vereist dat `workspace.dir` is geconfigureerd.
 
 <a id="bootstrap-extra-files"></a>
 
@@ -202,13 +203,19 @@ Extraheert de laatste 15 gebruikers-/assistentberichten, genereert via LLM een b
 }
 ```
 
-Paden worden relatief aan de workspace opgelost. Alleen herkende bootstrap-basisnamen worden geladen (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md`, `MEMORY.md`).
+Paden worden relatief aan de workspace opgelost. Alleen herkende bootstrap-basenamen worden geladen (`AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md`, `MEMORY.md`).
 
 <a id="command-logger"></a>
 
 ### Details van command-logger
 
-Logt elke slash-opdracht naar `~/.openclaw/logs/commands.log`.
+Logt elk slash-commando naar `~/.openclaw/logs/commands.log`.
+
+<a id="compaction-notifier"></a>
+
+### Details van compaction-notifier
+
+Stuurt korte statusberichten naar het huidige gesprek wanneer OpenClaw begint en klaar is met het compacten van het sessietranscript. Dit maakt lange turns minder verwarrend op chatoppervlakken, omdat de gebruiker kan zien dat de assistant context samenvat en na Compaction doorgaat.
 
 <a id="boot-md"></a>
 
@@ -216,14 +223,14 @@ Logt elke slash-opdracht naar `~/.openclaw/logs/commands.log`.
 
 Voert `BOOT.md` uit vanuit de actieve workspace wanneer de gateway start.
 
-## Plugin hooks
+## Plugin-hooks
 
 Plugins kunnen getypeerde hooks registreren via de Plugin SDK voor diepere integratie:
-toolaanroepen onderscheppen, prompts wijzigen, berichtenstroom beheren en meer.
+tool-calls onderscheppen, prompts wijzigen, berichtstroom beheren en meer.
 Gebruik plugin-hooks wanneer je `before_tool_call`, `before_agent_reply`,
-`before_install` of andere in-process lifecycle hooks nodig hebt.
+`before_install` of andere in-process lifecycle-hooks nodig hebt.
 
-Zie [Plugin hooks](/nl/plugins/hooks) voor de volledige referentie voor plugin-hooks.
+Zie [Plugin-hooks](/nl/plugins/hooks) voor de volledige referentie voor plugin-hooks.
 
 ## Configuratie
 
@@ -258,7 +265,7 @@ Omgevingsvariabelen per hook:
 }
 ```
 
-Extra hook-mappen:
+Extra hookmappen:
 
 ```json
 {
@@ -273,7 +280,7 @@ Extra hook-mappen:
 ```
 
 <Note>
-De legacy `hooks.internal.handlers` array-configuratie-indeling wordt nog steeds ondersteund voor achterwaartse compatibiliteit, maar nieuwe hooks moeten het discovery-gebaseerde systeem gebruiken.
+De legacy `hooks.internal.handlers`-arrayconfiguratie-indeling wordt nog steeds ondersteund voor achterwaartse compatibiliteit, maar nieuwe hooks moeten het op detectie gebaseerde systeem gebruiken.
 </Note>
 
 ## CLI-referentie
@@ -295,10 +302,10 @@ openclaw hooks disable <hook-name>
 
 ## Best practices
 
-- **Houd handlers snel.** Hooks worden uitgevoerd tijdens opdrachtverwerking. Start zwaar werk fire-and-forget met `void processInBackground(event)`.
-- **Handel fouten netjes af.** Wikkel risicovolle bewerkingen in try/catch; throw niet, zodat andere handlers kunnen worden uitgevoerd.
-- **Filter gebeurtenissen vroeg.** Return onmiddellijk als het gebeurtenistype of de actie niet relevant is.
-- **Gebruik specifieke gebeurtenissleutels.** Geef de voorkeur aan `"events": ["command:new"]` boven `"events": ["command"]` om overhead te verminderen.
+- **Houd handlers snel.** Hooks worden uitgevoerd tijdens opdrachtverwerking. Start zwaar werk zonder erop te wachten met `void processInBackground(event)`.
+- **Verwerk fouten netjes.** Omhul risicovolle bewerkingen met try/catch; gooi geen errors, zodat andere handlers kunnen worden uitgevoerd.
+- **Filter events vroeg.** Keer onmiddellijk terug als het eventtype of de eventactie niet relevant is.
+- **Gebruik specifieke event-sleutels.** Geef de voorkeur aan `"events": ["command:new"]` boven `"events": ["command"]` om overhead te verminderen.
 
 ## Probleemoplossing
 
@@ -324,8 +331,8 @@ Controleer op ontbrekende binaries (PATH), omgevingsvariabelen, configuratiewaar
 ### Hook wordt niet uitgevoerd
 
 1. Controleer of de hook is ingeschakeld: `openclaw hooks list`
-2. Herstart je Gateway-proces zodat hooks opnieuw worden geladen.
-3. Controleer Gateway-logboeken: `./scripts/clawlog.sh | grep hook`
+2. Herstart je gatewayproces zodat hooks opnieuw worden geladen.
+3. Controleer Gateway-logs: `./scripts/clawlog.sh | grep hook`
 
 ## Gerelateerd
 

@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Je moet de ruwe modeluitvoer inspecteren op redeneringslekkage
-    - Je wilt de Gateway in watch-modus uitvoeren terwijl je itereert
-    - Je hebt een herhaalbare debuggingworkflow nodig
-summary: 'Foutopsporingstools: watchmodus, ruwe modelstreams en redeneerlekkage traceren'
-title: Debuggen
+    - Je moet de ruwe modeluitvoer inspecteren op lekkage van redeneerinformatie
+    - Je wilt de Gateway in watch-modus uitvoeren tijdens het itereren
+    - Je hebt een herhaalbare workflow voor foutopsporing nodig
+summary: 'Foutopsporingshulpmiddelen: watchmodus, onbewerkte modelstreams en het traceren van redeneerlekkage'
+title: Foutopsporing
 x-i18n:
-    generated_at: "2026-05-02T22:19:14Z"
+    generated_at: "2026-05-03T21:34:07Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7a72a1508915e37ffdc5317889cdfde7024de3f5702739640abc2f03c3abadb7
+    source_hash: 7230112013a8db8d6a3853b765f4302a61609051ac4ffaf35a6f09de328deafc
     source_path: help/debugging.md
     workflow: 16
 ---
 
-Foutopsporingshelpers voor streaminguitvoer, vooral wanneer een provider redenering mengt met normale tekst.
+Hulpmiddelen voor debugging van streaming-uitvoer, vooral wanneer een provider redeneringen mengt met normale tekst.
 
-## Runtime-debug-overschrijvingen
+## Runtime-debugoverschrijvingen
 
-Gebruik `/debug` in chat om **alleen-runtime** configuratie-overschrijvingen in te stellen (geheugen, niet schijf).
-`/debug` is standaard uitgeschakeld; schakel dit in met `commands.debug: true`.
+Gebruik `/debug` in chat om **runtime-only** configuratieoverschrijvingen in te stellen (geheugen, niet schijf).
+`/debug` is standaard uitgeschakeld; schakel het in met `commands.debug: true`.
 Dit is handig wanneer je obscure instellingen moet omschakelen zonder `openclaw.json` te bewerken.
 
 Voorbeelden:
@@ -33,10 +33,10 @@ Voorbeelden:
 
 `/debug reset` wist alle overschrijvingen en keert terug naar de configuratie op schijf.
 
-## Sessie-trace-uitvoer
+## Uitvoer van sessietraces
 
-Gebruik `/trace` wanneer je Plugin-beheerde trace-/debugregels in één sessie wilt zien
-zonder de volledige uitgebreide modus in te schakelen.
+Gebruik `/trace` wanneer je door Plugins beheerde trace-/debugregels in één sessie wilt zien
+zonder de volledige verbose-modus in te schakelen.
 
 Voorbeelden:
 
@@ -46,16 +46,16 @@ Voorbeelden:
 /trace off
 ```
 
-Gebruik `/trace` voor Plugin-diagnostiek, zoals Active Memory-debugsamenvattingen.
-Blijf `/verbose` gebruiken voor normale uitgebreide status-/tooluitvoer en blijf
-`/debug` gebruiken voor alleen-runtime configuratie-overschrijvingen.
+Gebruik `/trace` voor Plugin-diagnostiek zoals Active Memory-debugsamenvattingen.
+Blijf `/verbose` gebruiken voor normale verbose status-/tooluitvoer, en blijf
+`/debug` gebruiken voor runtime-only configuratieoverschrijvingen.
 
-## Plugin-levenscyclus-trace
+## Plugin-lifecycletrace
 
-Gebruik `OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1` wanneer Plugin-levenscycluscommando's traag aanvoelen
+Gebruik `OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1` wanneer Plugin-lifecyclecommando's traag aanvoelen
 en je een ingebouwde fase-uitsplitsing nodig hebt voor Plugin-metadata, ontdekking, registry,
-runtime-mirror, configuratiemutatie en vernieuwingswerk. De trace is opt-in en schrijft
-naar stderr, zodat JSON-commando-uitvoer parseerbaar blijft.
+runtime-mirror, configuratiemutatie en verversingswerk. De trace is opt-in en schrijft
+naar stderr, zodat JSON-commandouitvoer parsebaar blijft.
 
 Voorbeeld:
 
@@ -71,12 +71,12 @@ Voorbeelduitvoer:
 [plugins:lifecycle] phase="registry refresh" ms=51.56 status=ok command="install" reason="source-changed"
 ```
 
-Gebruik dit voor onderzoek naar de Plugin-levenscyclus voordat je naar een CPU-profiler grijpt.
-Als het commando vanuit een source-checkout draait, meet dan bij voorkeur de gebouwde
+Gebruik dit voor onderzoek naar de Plugin-lifecycle voordat je naar een CPU-profiler grijpt.
+Als het commando vanuit een source-checkout wordt uitgevoerd, meet dan bij voorkeur de gebouwde
 runtime met `node dist/entry.js ...` na `pnpm build`; `pnpm openclaw ...`
 meet ook overhead van de source-runner.
 
-## CLI-opstart en commandoprofilering
+## CLI-opstarten en commandoprofilering
 
 Gebruik de ingecheckte opstartbenchmark wanneer een commando traag aanvoelt:
 
@@ -93,12 +93,12 @@ Stel voor eenmalige profilering via de normale source-runner
 OPENCLAW_RUN_NODE_CPU_PROF_DIR=.artifacts/cli-cpu pnpm openclaw status
 ```
 
-De source-runner voegt Node-CPU-profielflags toe en schrijft een `.cpuprofile` voor het
+De source-runner voegt Node CPU-profielflags toe en schrijft een `.cpuprofile` voor het
 commando. Gebruik dit voordat je tijdelijke instrumentatie aan commandocode toevoegt.
 
 ## Gateway-watchmodus
 
-Voer de Gateway voor snelle iteratie uit onder de bestandswatcher:
+Voer de Gateway voor snelle iteratie uit onder de file watcher:
 
 ```bash
 pnpm gateway:watch
@@ -106,21 +106,21 @@ pnpm gateway:watch
 
 Standaard start of herstart dit een tmux-sessie met de naam
 `openclaw-gateway-watch-main` (of een profiel-/poortspecifieke variant zoals
-`openclaw-gateway-watch-dev-19001`) en koppelt automatisch aan vanuit interactieve terminals.
+`openclaw-gateway-watch-dev-19001`) en koppelt het automatisch aan vanuit interactieve terminals.
 Niet-interactieve shells, CI en agent-exec-aanroepen blijven losgekoppeld en drukken in plaats daarvan
-koppelinstructies af. Koppel handmatig wanneer nodig:
+instructies voor aankoppelen af. Koppel handmatig aan wanneer nodig:
 
 ```bash
 tmux attach -t openclaw-gateway-watch-main
 ```
 
-Het tmux-paneel voert de ruwe watcher uit:
+Het tmux-pane voert de raw watcher uit:
 
 ```bash
 node scripts/watch-node.mjs gateway --force
 ```
 
-Gebruik voorgrondmodus wanneer tmux niet gewenst is:
+Gebruik foreground-modus wanneer tmux niet gewenst is:
 
 ```bash
 pnpm gateway:watch:raw
@@ -128,21 +128,21 @@ pnpm gateway:watch:raw
 OPENCLAW_GATEWAY_WATCH_TMUX=0 pnpm gateway:watch
 ```
 
-Schakel automatisch koppelen uit terwijl tmux-beheer behouden blijft:
+Schakel automatisch aankoppelen uit terwijl tmux-beheer behouden blijft:
 
 ```bash
 OPENCLAW_GATEWAY_WATCH_ATTACH=0 pnpm gateway:watch
 ```
 
-Profileer bekeken Gateway-CPU-tijd bij het debuggen van opstart-/runtime-hotspots:
+Profile Gateway-CPU-tijd onder watch wanneer je opstart-/runtimehotspots debugt:
 
 ```bash
 pnpm gateway:watch --benchmark
 ```
 
 De watch-wrapper verwerkt `--benchmark` voordat de Gateway wordt aangeroepen en schrijft
-één V8 `.cpuprofile` per afsluiting van een Gateway-child onder
-`.artifacts/gateway-watch-profiles/`. Stop of herstart de bekeken gateway om
+één V8-`.cpuprofile` per afsluiting van een Gateway-child onder
+`.artifacts/gateway-watch-profiles/`. Stop of herstart de bewaakte gateway om
 het huidige profiel weg te schrijven, en open het daarna met Chrome DevTools of Speedscope:
 
 ```bash
@@ -150,35 +150,42 @@ npx speedscope .artifacts/gateway-watch-profiles/*.cpuprofile
 ```
 
 Gebruik `--benchmark-dir <path>` wanneer je profielen ergens anders wilt hebben.
+Gebruik `--benchmark-no-force` wanneer je wilt dat de gebenchmarkte child de
+standaard `--force`-poortopruiming overslaat en snel faalt als de Gateway-poort al in
+gebruik is.
 
 De tmux-wrapper neemt gangbare niet-geheime runtime-selectors zoals
 `OPENCLAW_PROFILE`, `OPENCLAW_CONFIG_PATH`, `OPENCLAW_STATE_DIR`,
-`OPENCLAW_GATEWAY_PORT` en `OPENCLAW_SKIP_CHANNELS` mee naar het paneel. Zet
-providerreferenties in je normale profiel/configuratie, of gebruik ruwe voorgrondmodus
-voor eenmalige tijdelijke geheimen.
-Het beheerde tmux-paneel gebruikt ook standaard gekleurde Gateway-logs voor leesbaarheid;
+`OPENCLAW_GATEWAY_PORT` en `OPENCLAW_SKIP_CHANNELS` mee naar het pane. Zet
+providerreferenties in je normale profiel/configuratie, of gebruik raw foreground-modus
+voor eenmalige vluchtige secrets.
+Als de bewaakte Gateway tijdens het opstarten afsluit, voert de watcher
+`openclaw doctor --fix --non-interactive` één keer uit en herstart daarna de Gateway-child.
+Gebruik `OPENCLAW_GATEWAY_WATCH_AUTO_DOCTOR=0` wanneer je de oorspronkelijke opstartfout
+wilt zonder de repair-pass die alleen voor ontwikkeling is bedoeld.
+Het beheerde tmux-pane gebruikt ook standaard gekleurde Gateway-logs voor leesbaarheid;
 stel `FORCE_COLOR=0` in bij het starten van `pnpm gateway:watch` om ANSI-uitvoer uit te schakelen.
 
-De watcher herstart bij build-relevante bestanden onder `src/`, bronbestanden van extensies,
-extensie-`package.json` en `openclaw.plugin.json`-metadata, `tsconfig.json`,
+De watcher herstart bij build-relevante bestanden onder `src/`, extensiebronbestanden,
+extensie-`package.json`- en `openclaw.plugin.json`-metadata, `tsconfig.json`,
 `package.json` en `tsdown.config.ts`. Wijzigingen in extensiemetadata herstarten de
-gateway zonder een `tsdown`-rebuild af te dwingen; bron- en configuratiewijzigingen bouwen nog steeds
-eerst `dist` opnieuw.
+gateway zonder een `tsdown`-rebuild te forceren; bron- en configuratiewijzigingen
+bouwen nog steeds eerst `dist` opnieuw.
 
-Voeg eventuele Gateway-CLI-flags toe na `gateway:watch` en ze worden bij elke
-herstart doorgegeven. Het opnieuw uitvoeren van hetzelfde watchcommando spawnt het genoemde tmux-paneel opnieuw, en
-de ruwe watcher behoudt nog steeds zijn single-watcher-lock zodat dubbele watcher-parents
-worden vervangen in plaats van op te stapelen.
+Voeg Gateway-CLI-flags toe na `gateway:watch` en ze worden bij elke herstart doorgegeven.
+Het opnieuw uitvoeren van hetzelfde watchcommando start het benoemde tmux-pane opnieuw, en
+de raw watcher behoudt nog steeds zijn single-watcher-lock zodat dubbele watcher-parents
+worden vervangen in plaats van zich op te stapelen.
 
 ## Dev-profiel + dev-gateway (--dev)
 
-Gebruik het dev-profiel om state te isoleren en een veilige, wegwerpbare setup te starten voor
+Gebruik het dev-profiel om state te isoleren en een veilige, wegwerpbare setup op te starten voor
 debugging. Er zijn **twee** `--dev`-flags:
 
 - **Globale `--dev` (profiel):** isoleert state onder `~/.openclaw-dev` en
-  stelt de standaard Gateway-poort in op `19001` (afgeleide poorten schuiven mee).
+  zet de standaard Gateway-poort op `19001` (afgeleide poorten schuiven mee).
 - **`gateway --dev`: vertelt de Gateway om automatisch een standaardconfiguratie +
-  workspace te maken** wanneer die ontbreekt (en BOOTSTRAP.md over te slaan).
+  workspace aan te maken** wanneer die ontbreken (en BOOTSTRAP.md over te slaan).
 
 Aanbevolen flow (dev-profiel + dev-bootstrap):
 
@@ -199,21 +206,21 @@ Wat dit doet:
 
 2. **Dev-bootstrap** (`gateway --dev`)
    - Schrijft een minimale configuratie als die ontbreekt (`gateway.mode=local`, bind loopback).
-   - Stelt `agent.workspace` in op de dev-workspace.
-   - Stelt `agent.skipBootstrap=true` in (geen BOOTSTRAP.md).
+   - Zet `agent.workspace` op de dev-workspace.
+   - Zet `agent.skipBootstrap=true` (geen BOOTSTRAP.md).
    - Seedt de workspacebestanden als die ontbreken:
      `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`.
    - Standaardidentiteit: **C3‑PO** (protocoldroid).
-   - Slaat kanaalproviders over in dev-modus (`OPENCLAW_SKIP_CHANNELS=1`).
+   - Slaat channelproviders over in dev-modus (`OPENCLAW_SKIP_CHANNELS=1`).
 
-Resetflow (frisse start):
+Reset-flow (frisse start):
 
 ```bash
 pnpm gateway:dev:reset
 ```
 
 <Note>
-`--dev` is een **globale** profielflag en wordt door sommige runners opgegeten. Als je dit expliciet moet uitschrijven, gebruik dan de env-var-vorm:
+`--dev` is een **globale** profielflag en wordt door sommige runners opgeslokt. Als je hem expliciet moet uitschrijven, gebruik dan de env-var-vorm:
 
 ```bash
 OPENCLAW_PROFILE=dev openclaw gateway --dev --reset
@@ -222,7 +229,7 @@ OPENCLAW_PROFILE=dev openclaw gateway --dev --reset
 </Note>
 
 `--reset` wist configuratie, referenties, sessies en de dev-workspace (met
-`trash`, niet `rm`), en maakt daarna de standaard dev-setup opnieuw aan.
+`trash`, niet `rm`) en maakt daarna de standaard dev-setup opnieuw aan.
 
 <Tip>
 Als er al een niet-dev-gateway draait (launchd of systemd), stop die dan eerst:
@@ -233,13 +240,13 @@ openclaw gateway stop
 
 </Tip>
 
-## Ruwe streamlogging (OpenClaw)
+## Raw stream-logging (OpenClaw)
 
-OpenClaw kan de **ruwe assistant-stream** loggen vóór filtering/opmaak.
-Dit is de beste manier om te zien of redenering binnenkomt als plattetekst-delta's
-(of als afzonderlijke denkblokken).
+OpenClaw kan de **raw assistentstream** loggen vóór filtering/formattering.
+Dit is de beste manier om te zien of redenering als plattetekst-delta's aankomt
+(of als afzonderlijke thinking blocks).
 
-Schakel dit in via CLI:
+Schakel dit in via de CLI:
 
 ```bash
 pnpm gateway:watch --raw-stream
@@ -251,7 +258,7 @@ Optionele padoverschrijving:
 pnpm gateway:watch --raw-stream --raw-stream-path ~/.openclaw/logs/raw-stream.jsonl
 ```
 
-Equivalent env-vars:
+Equivalente env-vars:
 
 ```bash
 OPENCLAW_RAW_STREAM=1
@@ -262,9 +269,9 @@ Standaardbestand:
 
 `~/.openclaw/logs/raw-stream.jsonl`
 
-## Ruwe chunklogging (pi-mono)
+## Raw chunk-logging (pi-mono)
 
-Om **ruwe OpenAI-compat chunks** vast te leggen voordat ze naar blokken worden geparsed,
+Om **raw OpenAI-compat chunks** vast te leggen voordat ze in blokken worden geparseerd,
 biedt pi-mono een aparte logger:
 
 ```bash
@@ -281,14 +288,14 @@ Standaardbestand:
 
 `~/.pi-mono/logs/raw-openai-completions.jsonl`
 
-> Opmerking: dit wordt alleen uitgezonden door processen die pi-mono's
-> `openai-completions`-provider gebruiken.
+> Opmerking: dit wordt alleen uitgezonden door processen die de
+> `openai-completions`-provider van pi-mono gebruiken.
 
-## Veiligheidsopmerkingen
+## Veiligheidsnotities
 
-- Ruwe streamlogs kunnen volledige prompts, tooluitvoer en gebruikersgegevens bevatten.
+- Raw stream-logs kunnen volledige prompts, tooluitvoer en gebruikersgegevens bevatten.
 - Houd logs lokaal en verwijder ze na het debuggen.
-- Als je logs deelt, verwijder dan eerst geheimen en PII.
+- Als je logs deelt, verwijder dan eerst secrets en PII.
 
 ## Gerelateerd
 
