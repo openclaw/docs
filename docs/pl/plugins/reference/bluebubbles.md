@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz Plugin bluebubbles
+    - Instalujesz, konfigurujesz lub audytujesz plugin bluebubbles
 summary: Dodaje interfejs kanału BlueBubbles do wysyłania i odbierania wiadomości OpenClaw.
 title: Plugin BlueBubbles
 x-i18n:
-    generated_at: "2026-05-02T20:50:03Z"
+    generated_at: "2026-05-03T09:50:31Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c868423505aed372adfeda8cfab9acd1e53f0020f527712c2ba1ed5381feb268
+    source_hash: 7946a26ab304025ed8c40ea9477e3846547bbecd7952a257001eb003abf6c521
     source_path: plugins/reference/bluebubbles.md
     workflow: 16
 ---
@@ -19,7 +19,7 @@ Dodaje powierzchnię kanału BlueBubbles do wysyłania i odbierania wiadomości 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/bluebubbles`
-- Ścieżka instalacji: ClawHub + npm
+- Ścieżka instalacji: npm; ClawHub
 
 ## Powierzchnia
 

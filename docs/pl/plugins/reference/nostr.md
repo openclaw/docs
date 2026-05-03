@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz plugin nostr
+    - Instalujesz, konfigurujesz lub audytujesz Plugin nostr
 summary: Dodaje interfejs kanału Nostr do wysyłania i odbierania wiadomości OpenClaw.
 title: Plugin Nostr
 x-i18n:
-    generated_at: "2026-05-02T20:54:03Z"
+    generated_at: "2026-05-03T09:52:20Z"
     model: gpt-5.5
     provider: openai
-    source_hash: cf47af352b24f04d85d946c7ec49d66f8ce1b9ea5bd2bf39bb0d1d58b6f7681a
+    source_hash: 1205a3b286e406b41029418b5fb9b12dcb19b35aff60c32d12e60c45804d7eaa
     source_path: plugins/reference/nostr.md
     workflow: 16
 ---
@@ -19,7 +19,7 @@ Dodaje powierzchnię kanału Nostr do wysyłania i odbierania wiadomości OpenCl
 ## Dystrybucja
 
 - Pakiet: `@openclaw/nostr`
-- Ścieżka instalacji: ClawHub + npm
+- Ścieżka instalacji: npm; ClawHub
 
 ## Powierzchnia
 

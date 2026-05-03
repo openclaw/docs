@@ -1,43 +1,43 @@
 ---
 read_when:
     - Chcesz używać Arcee AI z OpenClaw
-    - Wymagana jest zmienna środowiskowa klucza API albo wybór uwierzytelniania CLI
+    - Potrzebujesz zmiennej środowiskowej klucza API lub wyboru uwierzytelniania w CLI
 summary: Konfiguracja Arcee AI (uwierzytelnianie + wybór modelu)
 title: Arcee AI
 x-i18n:
-    generated_at: "2026-05-02T23:39:22Z"
+    generated_at: "2026-05-03T09:53:28Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 622ee5288aec3ae0b45d3f06ba65fd6f972e07d7a7596ae3905d6fbdac0bf737
+    source_hash: 54989e1706901fedc8a0c816ca7ee7f877fa4b973697540dd90cb9182420043f
     source_path: providers/arcee.md
     workflow: 16
 ---
 
-[Arcee AI](https://arcee.ai) zapewnia dostęp do rodziny modeli Trinity typu mixture-of-experts przez API zgodne z OpenAI. Wszystkie modele Trinity są objęte licencją Apache 2.0.
+[Arcee AI](https://arcee.ai) zapewnia dostęp do rodziny modeli mieszanki ekspertów Trinity przez API zgodne z OpenAI. Wszystkie modele Trinity są objęte licencją Apache 2.0.
 
-Dostęp do modeli Arcee AI można uzyskać bezpośrednio przez platformę Arcee albo przez [OpenRouter](/pl/providers/openrouter).
+Do modeli Arcee AI można uzyskać dostęp bezpośrednio przez platformę Arcee albo przez [OpenRouter](/pl/providers/openrouter).
 
-| Właściwość       | Wartość                                                                               |
-| ---------------- | ------------------------------------------------------------------------------------- |
-| Dostawca         | `arcee`                                                                               |
-| Uwierzytelnianie | `ARCEEAI_API_KEY` (bezpośrednio) lub `OPENROUTER_API_KEY` (przez OpenRouter)          |
-| API              | zgodne z OpenAI                                                                       |
-| Bazowy URL       | `https://api.arcee.ai/api/v1` (bezpośrednio) lub `https://openrouter.ai/api/v1` (OpenRouter) |
+| Właściwość | Wartość                                                                               |
+| ---------- | ------------------------------------------------------------------------------------- |
+| Dostawca   | `arcee`                                                                               |
+| Uwierzytelnianie | `ARCEEAI_API_KEY` (bezpośrednio) lub `OPENROUTER_API_KEY` (przez OpenRouter)     |
+| API        | zgodne z OpenAI                                                                       |
+| Bazowy URL | `https://api.arcee.ai/api/v1` (bezpośrednio) lub `https://openrouter.ai/api/v1` (OpenRouter) |
 
 ## Pierwsze kroki
 
 <Tabs>
-  <Tab title="Bezpośrednio (platforma Arcee)">
+  <Tab title="Direct (Arcee platform)">
     <Steps>
-      <Step title="Uzyskaj klucz API">
+      <Step title="Get an API key">
         Utwórz klucz API w [Arcee AI](https://chat.arcee.ai/).
       </Step>
-      <Step title="Uruchom onboarding">
+      <Step title="Run onboarding">
         ```bash
         openclaw onboard --auth-choice arceeai-api-key
         ```
       </Step>
-      <Step title="Ustaw model domyślny">
+      <Step title="Set a default model">
         ```json5
         {
           agents: {
@@ -51,17 +51,17 @@ Dostęp do modeli Arcee AI można uzyskać bezpośrednio przez platformę Arcee 
     </Steps>
   </Tab>
 
-  <Tab title="Przez OpenRouter">
+  <Tab title="Via OpenRouter">
     <Steps>
-      <Step title="Uzyskaj klucz API">
+      <Step title="Get an API key">
         Utwórz klucz API w [OpenRouter](https://openrouter.ai/keys).
       </Step>
-      <Step title="Uruchom onboarding">
+      <Step title="Run onboarding">
         ```bash
         openclaw onboard --auth-choice arceeai-openrouter
         ```
       </Step>
-      <Step title="Ustaw model domyślny">
+      <Step title="Set a default model">
         ```json5
         {
           agents: {
@@ -82,7 +82,7 @@ Dostęp do modeli Arcee AI można uzyskać bezpośrednio przez platformę Arcee 
 ## Konfiguracja nieinteraktywna
 
 <Tabs>
-  <Tab title="Bezpośrednio (platforma Arcee)">
+  <Tab title="Direct (Arcee platform)">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -91,7 +91,7 @@ Dostęp do modeli Arcee AI można uzyskać bezpośrednio przez platformę Arcee 
     ```
   </Tab>
 
-  <Tab title="Przez OpenRouter">
+  <Tab title="Via OpenRouter">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -103,39 +103,39 @@ Dostęp do modeli Arcee AI można uzyskać bezpośrednio przez platformę Arcee 
 
 ## Wbudowany katalog
 
-OpenClaw obecnie zawiera ten wbudowany katalog Arcee:
+OpenClaw obecnie dostarcza ten dołączony katalog Arcee:
 
-| Odwołanie do modelu            | Nazwa                  | Dane wejściowe | Kontekst | Koszt (wej./wyj. za 1 mln) | Uwagi                                           |
-| ------------------------------ | ---------------------- | -------------- | -------- | -------------------------- | ----------------------------------------------- |
-| `arcee/trinity-large-thinking` | Trinity Large Thinking | tekst          | 256K     | $0.25 / $0.90              | Model domyślny; wnioskowanie włączone; bez narzędzi |
-| `arcee/trinity-large-preview`  | Trinity Large Preview  | tekst          | 128K     | $0.25 / $1.00              | Ogólnego przeznaczenia; 400 mld parametrów, 13 mld aktywnych |
-| `arcee/trinity-mini`           | Trinity Mini 26B       | tekst          | 128K     | $0.045 / $0.15             | Szybki i ekonomiczny; wywoływanie funkcji       |
+| Odwołanie do modelu            | Nazwa                  | Dane wejściowe | Kontekst | Koszt (wej./wyj. za 1 mln) | Uwagi                                     |
+| ------------------------------ | ---------------------- | -------------- | -------- | -------------------------- | ----------------------------------------- |
+| `arcee/trinity-large-thinking` | Trinity Large Thinking | tekst          | 256K     | $0.25 / $0.90              | Model domyślny; włączone rozumowanie      |
+| `arcee/trinity-large-preview`  | Trinity Large Preview  | tekst          | 128K     | $0.25 / $1.00              | Ogólnego przeznaczenia; 400B parametrów, 13B aktywnych |
+| `arcee/trinity-mini`           | Trinity Mini 26B       | tekst          | 128K     | $0.045 / $0.15             | Szybki i opłacalny; wywoływanie funkcji   |
 
 <Tip>
-Preset onboardingu ustawia `arcee/trinity-large-thinking` jako model domyślny. Obsługuje on tylko wnioskowanie i tekst oraz nie obsługuje użycia narzędzi ani wywoływania funkcji.
+Preset onboardingu ustawia `arcee/trinity-large-thinking` jako model domyślny.
 </Tip>
 
 ## Obsługiwane funkcje
 
-| Funkcja                                      | Obsługiwane                                 |
-| -------------------------------------------- | ------------------------------------------- |
-| Strumieniowanie                              | Tak                                         |
-| Użycie narzędzi / wywoływanie funkcji        | Zależne od modelu; nie Trinity Large Thinking |
-| Dane wyjściowe ze strukturą (tryb JSON i schemat JSON) | Tak                                |
-| Rozszerzone myślenie                         | Tak (Trinity Large Thinking)                |
+| Funkcja                                       | Obsługiwane                  |
+| --------------------------------------------- | ---------------------------- |
+| Strumieniowanie                               | Tak                          |
+| Użycie narzędzi / wywoływanie funkcji         | Tak                          |
+| Dane wyjściowe o określonej strukturze (tryb JSON i schemat JSON) | Tak        |
+| Rozszerzone myślenie                          | Tak (Trinity Large Thinking) |
 
 <AccordionGroup>
-  <Accordion title="Uwaga dotycząca środowiska">
+  <Accordion title="Environment note">
     Jeśli Gateway działa jako daemon (launchd/systemd), upewnij się, że `ARCEEAI_API_KEY`
     (lub `OPENROUTER_API_KEY`) jest dostępny dla tego procesu (na przykład w
     `~/.openclaw/.env` albo przez `env.shellEnv`).
   </Accordion>
 
-  <Accordion title="Routing OpenRouter">
-    Podczas używania modeli Arcee przez OpenRouter obowiązują te same odwołania do modeli `arcee/*`.
-    OpenClaw obsługuje routing transparentnie na podstawie wybranej metody uwierzytelniania. Zobacz
-    [dokumentację dostawcy OpenRouter](/pl/providers/openrouter), aby poznać szczegóły konfiguracji
-    specyficzne dla OpenRouter.
+  <Accordion title="OpenRouter routing">
+    Przy używaniu modeli Arcee przez OpenRouter obowiązują te same odwołania do modeli `arcee/*`.
+    OpenClaw obsługuje routing przezroczyście na podstawie wybranego sposobu uwierzytelniania. Zobacz
+    [dokumentację dostawcy OpenRouter](/pl/providers/openrouter), aby poznać szczegóły
+    konfiguracji specyficzne dla OpenRouter.
   </Accordion>
 </AccordionGroup>
 
@@ -143,9 +143,9 @@ Preset onboardingu ustawia `arcee/trinity-large-thinking` jako model domyślny. 
 
 <CardGroup cols={2}>
   <Card title="OpenRouter" href="/pl/providers/openrouter" icon="shuffle">
-    Dostęp do modeli Arcee i wielu innych przy użyciu jednego klucza API.
+    Uzyskaj dostęp do modeli Arcee i wielu innych za pomocą jednego klucza API.
   </Card>
-  <Card title="Wybór modelu" href="/pl/concepts/model-providers" icon="layers">
+  <Card title="Model selection" href="/pl/concepts/model-providers" icon="layers">
     Wybieranie dostawców, odwołań do modeli i zachowania przełączania awaryjnego.
   </Card>
 </CardGroup>

@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz plugin codex
-summary: Uprząż app-server Codex i katalog modeli GPT zarządzany przez Codex.
+    - Instalujesz, konfigurujesz lub audytujesz Plugin codex
+summary: Środowisko testowe app-server Codex oraz katalog modeli GPT zarządzany przez Codex.
 title: Plugin Codex
 x-i18n:
-    generated_at: "2026-05-02T20:50:59Z"
+    generated_at: "2026-05-03T09:51:01Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 616899a909bf9d098dd25a3737c7f3babad55e0a7b6f4f92270049f6069e55d0
+    source_hash: c049ce912109d9489a3bcdf31aa01668802ab4b9ded8fdd63e470a5901b261c5
     source_path: plugins/reference/codex.md
     workflow: 16
 ---
 
 # Plugin Codex
 
-Środowisko app-server Codex i katalog modeli GPT zarządzany przez Codex.
+Uprząż serwera aplikacji Codex i zarządzany przez Codex katalog modeli GPT.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/codex`
-- Ścieżka instalacji: ClawHub + npm
+- Ścieżka instalacji: npm; ClawHub
 
-## Interfejs
+## Powierzchnia
 
-dostawcy: codex; kontrakty: mediaUnderstandingProviders, migrationProviders
+providers: codex; kontrakty: mediaUnderstandingProviders, migrationProviders
 
 ## Powiązana dokumentacja
 

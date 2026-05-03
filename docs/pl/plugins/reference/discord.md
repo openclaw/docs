@@ -4,22 +4,22 @@ read_when:
 summary: Dodaje powierzchnię kanału Discord do wysyłania i odbierania wiadomości OpenClaw.
 title: Plugin Discord
 x-i18n:
-    generated_at: "2026-05-02T22:21:01Z"
+    generated_at: "2026-05-03T09:51:35Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 537132e77ff03df8a006c1dc1119ac31b6de598df69b8f8c8a9a667ee541ba29
+    source_hash: c0af255dc0e58e91c1f0ebcc5bca46e1e8e80f415ed3f5a9840bb31f717c9703
     source_path: plugins/reference/discord.md
     workflow: 16
 ---
 
-# Plugin Discord
+# Discord Plugin
 
 Dodaje powierzchnię kanału Discord do wysyłania i odbierania wiadomości OpenClaw.
 
 ## Dystrybucja
 
 - Pakiet: `@openclaw/discord`
-- Ścieżka instalacji: ClawHub + npm
+- Ścieżka instalacji: npm; ClawHub
 
 ## Powierzchnia
 

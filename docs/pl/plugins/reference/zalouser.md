@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Instalujesz, konfigurujesz lub audytujesz Plugin zalouser
+    - Instalujesz, konfigurujesz lub audytujesz plugin zalouser
 summary: Dodaje powierzchnię kanału Zalo Personal do wysyłania i odbierania wiadomości OpenClaw.
 title: Plugin Zalo Personal
 x-i18n:
-    generated_at: "2026-05-02T20:57:06Z"
+    generated_at: "2026-05-03T09:52:59Z"
     model: gpt-5.5
     provider: openai
-    source_hash: bd0398244efd8e15ac7a7331b4ed55dfd25a3bab547e0a501c2e5bed4ced182c
+    source_hash: 16ed8b255fd10e2a21bc9d9665c1eb26440929e5a46fe2f9dbfae929a25417a0
     source_path: plugins/reference/zalouser.md
     workflow: 16
 ---
@@ -19,11 +19,11 @@ Dodaje powierzchnię kanału Zalo Personal do wysyłania i odbierania wiadomośc
 ## Dystrybucja
 
 - Pakiet: `@openclaw/zalouser`
-- Ścieżka instalacji: ClawHub + npm
+- Ścieżka instalacji: npm; ClawHub
 
 ## Powierzchnia
 
-kanały: zalouser; kontrakty: tools
+channels: zalouser; contracts: tools
 
 ## Powiązana dokumentacja
 
