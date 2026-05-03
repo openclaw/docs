@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Está instalando, configurando o auditando el Plugin brave
+    - Estás instalando, configurando o auditando el Plugin brave
 summary: Añade soporte para proveedores de búsqueda web.
 title: Plugin de Brave
 x-i18n:
-    generated_at: "2026-05-02T20:54:56Z"
+    generated_at: "2026-05-03T05:30:29Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 64ab341ee94d55f7364a6a670df8adb0d29d5a50fba2fd6e7cfe650cda407d93
+    source_hash: b26d45080e2db635e9b07e1c6b674061c2b82549edc4d8d88e6f4f68bc9d43df
     source_path: plugins/reference/brave.md
     workflow: 16
 ---
 
 # Plugin de Brave
 
-Añade compatibilidad con proveedores de búsqueda web.
+Agrega compatibilidad con proveedores de búsqueda web.
 
 ## Distribución
 
 - Paquete: `@openclaw/brave-plugin`
-- Ruta de instalación: ClawHub + npm
+- Ruta de instalación: npm; ClawHub
 
 ## Superficie
 
-contratos: webSearchProviders
+contracts: webSearchProviders
 
 ## Documentación relacionada
 

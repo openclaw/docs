@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Estás instalando, configurando o auditando el plugin de feishu
-summary: Añade la superficie del canal de Feishu para enviar y recibir mensajes de OpenClaw.
+    - Estás instalando, configurando o auditando el Plugin de feishu
+summary: Añade la superficie del canal Feishu para enviar y recibir mensajes de OpenClaw.
 title: Plugin de Feishu
 x-i18n:
-    generated_at: "2026-05-02T20:56:49Z"
+    generated_at: "2026-05-03T05:31:14Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 0c188fdc65a3e2e7a354063e090001099a76ad3f6df423f18611c6e3799b6983
+    source_hash: cb9fa20533e6ad7f65ffbb3050166637bea8e8ab867dd3894ad90a77999ba9b8
     source_path: plugins/reference/feishu.md
     workflow: 16
 ---
 
 # Plugin de Feishu
 
-Añade la superficie de canal de Feishu para enviar y recibir mensajes de OpenClaw.
+Agrega la superficie del canal de Feishu para enviar y recibir mensajes de OpenClaw.
 
 ## Distribución
 
 - Paquete: `@openclaw/feishu`
-- Ruta de instalación: ClawHub + npm
+- Ruta de instalación: npm; ClawHub
 
 ## Superficie
 
-canales: feishu; contratos: herramientas; Skills
+channels: feishu; contracts: tools; Skills
 
 ## Documentación relacionada
 

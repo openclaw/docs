@@ -2,28 +2,28 @@
 read_when:
     - Está instalando, configurando o auditando el Plugin zalouser
 summary: Añade la superficie del canal Zalo Personal para enviar y recibir mensajes de OpenClaw.
-title: Plugin de Zalo Personal
+title: Plugin personal de Zalo
 x-i18n:
-    generated_at: "2026-05-02T21:03:05Z"
+    generated_at: "2026-05-03T05:32:38Z"
     model: gpt-5.5
     provider: openai
-    source_hash: bd0398244efd8e15ac7a7331b4ed55dfd25a3bab547e0a501c2e5bed4ced182c
+    source_hash: 16ed8b255fd10e2a21bc9d9665c1eb26440929e5a46fe2f9dbfae929a25417a0
     source_path: plugins/reference/zalouser.md
     workflow: 16
 ---
 
 # Plugin Zalo Personal
 
-Añade la superficie de canal Zalo Personal para enviar y recibir mensajes de OpenClaw.
+Agrega la superficie de canal Zalo Personal para enviar y recibir mensajes de OpenClaw.
 
 ## Distribución
 
 - Paquete: `@openclaw/zalouser`
-- Ruta de instalación: ClawHub + npm
+- Ruta de instalación: npm; ClawHub
 
 ## Superficie
 
-canales: zalouser; contratos: tools
+canales: zalouser; contratos: herramientas
 
 ## Documentación relacionada
 

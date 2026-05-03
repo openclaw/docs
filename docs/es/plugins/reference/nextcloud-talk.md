@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Está instalando, configurando o auditando el Plugin nextcloud-talk
+    - Estás instalando, configurando o auditando el Plugin nextcloud-talk
 summary: Añade la superficie del canal Nextcloud Talk para enviar y recibir mensajes de OpenClaw.
 title: Plugin de Nextcloud Talk
 x-i18n:
-    generated_at: "2026-05-02T20:59:16Z"
+    generated_at: "2026-05-03T05:32:05Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 769f543754bf08068be8d705a8e0e022edcb0a4f023d44a2eb33cb9d06cc9df9
+    source_hash: 4ef55f1a3a7f9eac5876e5a8e3d6b5182a18c54aee2a6a63e8e4b0115ab7f6a6
     source_path: plugins/reference/nextcloud-talk.md
     workflow: 16
 ---
@@ -19,11 +19,11 @@ Añade la superficie de canal de Nextcloud Talk para enviar y recibir mensajes d
 ## Distribución
 
 - Paquete: `@openclaw/nextcloud-talk`
-- Ruta de instalación: ClawHub + npm
+- Ruta de instalación: npm; ClawHub
 
 ## Superficie
 
-channels: nextcloud-talk
+canales: nextcloud-talk
 
 ## Documentación relacionada
 

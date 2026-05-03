@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Estás instalando, configurando o auditando el plugin tlon
+    - Está instalando, configurando o auditando el Plugin tlon
 summary: Añade la superficie del canal Tlon para enviar y recibir mensajes de OpenClaw.
 title: Plugin de Tlon
 x-i18n:
-    generated_at: "2026-05-02T21:01:40Z"
+    generated_at: "2026-05-03T05:32:10Z"
     model: gpt-5.5
     provider: openai
-    source_hash: a59a5331d3a06b77e980a9267472f40507dd9c77d98d4f2564f105e9626a5eb5
+    source_hash: 636c7fc3ae8f8f35337d2fe279f1752226ff7ee017442372878448a82f99ecce
     source_path: plugins/reference/tlon.md
     workflow: 16
 ---
 
 # Plugin de Tlon
 
-Agrega la superficie de canal Tlon para enviar y recibir mensajes de OpenClaw.
+Añade la superficie de canal de Tlon para enviar y recibir mensajes de OpenClaw.
 
 ## Distribución
 
 - Paquete: `@openclaw/tlon`
-- Ruta de instalación: ClawHub + npm
+- Ruta de instalación: npm; ClawHub
 
 ## Superficie
 
