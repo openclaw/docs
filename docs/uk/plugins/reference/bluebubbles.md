@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або проводите аудит Plugin bluebubbles
-summary: Додає інтерфейс каналу BlueBubbles для надсилання й отримання повідомлень OpenClaw.
-title: Плагін BlueBubbles
+    - Ви встановлюєте, налаштовуєте або виконуєте аудит Plugin bluebubbles
+summary: Додає поверхню каналу BlueBubbles для надсилання й отримання повідомлень OpenClaw.
+title: Plugin BlueBubbles
 x-i18n:
-    generated_at: "2026-05-02T15:16:11Z"
+    generated_at: "2026-05-03T02:48:48Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c868423505aed372adfeda8cfab9acd1e53f0020f527712c2ba1ed5381feb268
+    source_hash: 7946a26ab304025ed8c40ea9477e3846547bbecd7952a257001eb003abf6c521
     source_path: plugins/reference/bluebubbles.md
     workflow: 16
 ---
@@ -16,15 +16,15 @@ x-i18n:
 
 Додає поверхню каналу BlueBubbles для надсилання та отримання повідомлень OpenClaw.
 
-## Дистрибуція
+## Розповсюдження
 
 - Пакет: `@openclaw/bluebubbles`
-- Маршрут встановлення: ClawHub + npm
+- Маршрут встановлення: npm; ClawHub
 
 ## Поверхня
 
 channels: bluebubbles
 
-## Пов’язані документи
+## Пов’язана документація
 
 - [bluebubbles](/uk/channels/bluebubbles)

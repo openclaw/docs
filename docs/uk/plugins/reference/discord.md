@@ -2,29 +2,29 @@
 read_when:
     - Ви встановлюєте, налаштовуєте або проводите аудит Discord Plugin
 summary: Додає інтерфейс каналу Discord для надсилання й отримання повідомлень OpenClaw.
-title: Plugin Discord
+title: Discord Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:49:17Z"
+    generated_at: "2026-05-03T02:49:28Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 537132e77ff03df8a006c1dc1119ac31b6de598df69b8f8c8a9a667ee541ba29
+    source_hash: c0af255dc0e58e91c1f0ebcc5bca46e1e8e80f415ed3f5a9840bb31f717c9703
     source_path: plugins/reference/discord.md
     workflow: 16
 ---
 
-# Discord Plugin
+# Plugin Discord
 
 Додає поверхню каналу Discord для надсилання й отримання повідомлень OpenClaw.
 
-## Поширення
+## Розповсюдження
 
 - Пакет: `@openclaw/discord`
-- Спосіб встановлення: ClawHub + npm
+- Шлях встановлення: npm; ClawHub
 
 ## Поверхня
 
-канали: discord
+channels: discord
 
-## Пов’язана документація
+## Пов’язані документи
 
-- [Discord](/uk/channels/discord)
+- [discord](/uk/channels/discord)

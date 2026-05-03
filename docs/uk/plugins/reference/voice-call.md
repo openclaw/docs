@@ -2,12 +2,12 @@
 read_when:
     - Ви встановлюєте, налаштовуєте або проводите аудит Plugin для голосових викликів
 summary: Додає інструменти, які може викликати агент.
-title: Plugin голосових викликів
+title: Plugin голосового виклику
 x-i18n:
-    generated_at: "2026-05-02T15:22:48Z"
+    generated_at: "2026-05-03T02:50:46Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e4995de4dea95b3f197ad7b53987d4f7bf574f8c5029644cf1c6729c9cc80f36
+    source_hash: 4d91fe5d8c24761a7e8a57452c3826640a65301e18af88819188f8244515e36c
     source_path: plugins/reference/voice-call.md
     workflow: 16
 ---
@@ -16,15 +16,15 @@ x-i18n:
 
 Додає інструменти, які може викликати агент.
 
-## Розповсюдження
+## Поширення
 
 - Пакет: `@openclaw/voice-call`
-- Спосіб встановлення: ClawHub + npm
+- Шлях встановлення: npm; ClawHub
 
 ## Поверхня
 
 контракти: інструменти
 
-## Пов’язані документи
+## Пов'язана документація
 
 - [voice-call](/uk/plugins/voice-call)

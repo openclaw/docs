@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin zalo
+    - Ви встановлюєте, налаштовуєте або проводите аудит Plugin zalo
 summary: Додає поверхню каналу Zalo для надсилання й отримання повідомлень OpenClaw.
 title: Plugin Zalo
 x-i18n:
-    generated_at: "2026-05-02T15:23:24Z"
+    generated_at: "2026-05-03T02:50:55Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 66b8b3643ce7b5be508bc07f78e9b5d20023f07ff23c8273667cf9844a78c750
+    source_hash: 2914ba7fec4427c6a8a322ea1d9308d9e37a81b5ff51a89b06227e5ecfcef6f2
     source_path: plugins/reference/zalo.md
     workflow: 16
 ---
 
-# Zalo Plugin
+# Плагін Zalo
 
-Додає інтерфейс каналу Zalo для надсилання й отримання повідомлень OpenClaw.
+Додає поверхню каналу Zalo для надсилання й отримання повідомлень OpenClaw.
 
-## Поширення
+## Розповсюдження
 
 - Пакет: `@openclaw/zalo`
-- Шлях установлення: ClawHub + npm
+- Спосіб встановлення: npm; ClawHub
 
-## Інтерфейс
+## Поверхня
 
-канали: zalo
+channels: zalo
 
-## Пов’язані документи
+## Пов’язана документація
 
 - [zalo](/uk/channels/zalo)

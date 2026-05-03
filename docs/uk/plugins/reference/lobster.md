@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin lobster
-summary: Типізований інструмент для робочих процесів із відновлюваними затвердженнями.
-title: Lobster Plugin
+    - Ви встановлюєте, налаштовуєте або проводите аудит Plugin lobster
+summary: Типізований інструмент робочого процесу з відновлюваними схваленнями.
+title: Plugin Lobster
 x-i18n:
-    generated_at: "2026-05-02T15:19:21Z"
+    generated_at: "2026-05-03T02:50:03Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 2e39de9b84af417cc5b7f64a83ded3681a8f9878a5d3462eeabbbe977d4d5285
+    source_hash: 50b4849c8ea841a543655eead358c550f223a3100ac538b41c27f59706e6cf27
     source_path: plugins/reference/lobster.md
     workflow: 16
 ---
 
-# Lobster Plugin
+# Plugin Lobster
 
-Типізований інструмент робочих процесів із відновлюваними затвердженнями.
+Типізований інструмент робочого процесу з відновлюваними підтвердженнями.
 
-## Розповсюдження
+## Дистрибуція
 
 - Пакет: `@openclaw/lobster`
-- Маршрут встановлення: ClawHub + npm
+- Маршрут встановлення: npm; ClawHub
 
 ## Поверхня
 

@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Ви встановлюєте, налаштовуєте або перевіряєте Plugin tlon
+    - Ви встановлюєте, налаштовуєте або проводите аудит плагіна tlon
 summary: Додає поверхню каналу Tlon для надсилання й отримання повідомлень OpenClaw.
-title: Плагін Tlon
+title: Tlon Plugin
 x-i18n:
-    generated_at: "2026-05-02T15:22:14Z"
+    generated_at: "2026-05-03T02:50:43Z"
     model: gpt-5.5
     provider: openai
-    source_hash: a59a5331d3a06b77e980a9267472f40507dd9c77d98d4f2564f105e9626a5eb5
+    source_hash: 636c7fc3ae8f8f35337d2fe279f1752226ff7ee017442372878448a82f99ecce
     source_path: plugins/reference/tlon.md
     workflow: 16
 ---
@@ -16,10 +16,10 @@ x-i18n:
 
 Додає поверхню каналу Tlon для надсилання й отримання повідомлень OpenClaw.
 
-## Розповсюдження
+## Поширення
 
 - Пакет: `@openclaw/tlon`
-- Спосіб встановлення: ClawHub + npm
+- Шлях встановлення: npm; ClawHub
 
 ## Поверхня
 
