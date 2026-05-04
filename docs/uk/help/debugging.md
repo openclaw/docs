@@ -1,26 +1,26 @@
 ---
 read_when:
     - Потрібно перевірити необроблений вивід моделі на витік міркувань
-    - Ви хочете запускати Gateway у режимі відстеження під час ітераційної роботи
+    - Ви хочете запускати Gateway у режимі спостереження під час ітеративної роботи
     - Вам потрібен відтворюваний робочий процес налагодження
-summary: 'Інструменти налагодження: режим спостереження, необроблені потоки моделі та трасування витоку міркувань'
+summary: 'Інструменти налагодження: режим спостереження, необроблені потоки моделі та відстеження витоку міркувань'
 title: Налагодження
 x-i18n:
-    generated_at: "2026-05-04T22:41:07Z"
+    generated_at: "2026-05-04T22:45:38Z"
     model: gpt-5.5
     provider: openai
-    source_hash: d2b48aab9e3d8be36a78e797fdd723e3af4b35dd28ed3a95e63bb422422bccc6
+    source_hash: 9d86bd9b5dd08615d3c283f3fcb2a885f5134fa7e1cdece86b6a796d08a659ec
     source_path: help/debugging.md
     workflow: 16
 ---
 
-Помічники для налагодження потокового виводу, особливо коли provider домішує reasoning у звичайний текст.
+Помічники налагодження для потокового виводу, особливо коли провайдер змішує reasoning зі звичайним текстом.
 
-## Перевизначення runtime debug
+## Перевизначення налагодження під час виконання
 
-Використовуйте `/debug` у чаті, щоб установити **лише runtime** перевизначення config (у пам’яті, не на диску).
-`/debug` вимкнено за замовчуванням; увімкніть через `commands.debug: true`.
-Це зручно, коли потрібно перемикати маловідомі налаштування без редагування `openclaw.json`.
+Використовуйте `/debug` у чаті, щоб установити перевизначення конфігурації **лише під час виконання** (у пам’яті, не на диску).
+`/debug` за замовчуванням вимкнено; увімкніть за допомогою `commands.debug: true`.
+Це зручно, коли потрібно перемкнути маловідомі налаштування без редагування `openclaw.json`.
 
 Приклади:
 
@@ -31,12 +31,12 @@ x-i18n:
 /debug reset
 ```
 
-`/debug reset` очищає всі перевизначення й повертає config на диску.
+`/debug reset` очищає всі перевизначення й повертається до конфігурації на диску.
 
 ## Вивід трасування сесії
 
-Використовуйте `/trace`, коли хочете бачити trace/debug рядки, що належать Plugin, в одній сесії
-без увімкнення повного verbose mode.
+Використовуйте `/trace`, коли хочете бачити рядки трасування/налагодження, що належать Plugin, в одній сесії
+без увімкнення повного докладного режиму.
 
 Приклади:
 
@@ -46,16 +46,16 @@ x-i18n:
 /trace off
 ```
 
-Використовуйте `/trace` для діагностики Plugin, наприклад debug-зведень Active Memory.
-Продовжуйте використовувати `/verbose` для звичайного докладного виводу статусу/tool, і продовжуйте використовувати
-`/debug` для лише runtime перевизначень config.
+Використовуйте `/trace` для діагностики Plugin, наприклад налагоджувальних зведень Active Memory.
+Продовжуйте використовувати `/verbose` для звичайного докладного статусу/виводу інструментів, а також
+`/debug` для перевизначень конфігурації лише під час виконання.
 
 ## Трасування життєвого циклу Plugin
 
 Використовуйте `OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1`, коли команди життєвого циклу Plugin здаються повільними
-і потрібна вбудована розбивка фаз для metadata, discovery, registry Plugin,
-runtime mirror, мутації config і refresh-робіт. Трасування є opt-in і пише
-в stderr, тож JSON-вивід команд залишається придатним до парсингу.
+і вам потрібен вбудований розбір фаз для метаданих Plugin, виявлення, реєстру,
+runtime-дзеркала, зміни конфігурації та оновлення. Трасування вмикається явно й пише
+в stderr, тому JSON-вивід команди залишається придатним для розбору.
 
 Приклад:
 
@@ -71,14 +71,14 @@ OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1 openclaw plugins install tokenjuice --force
 [plugins:lifecycle] phase="registry refresh" ms=51.56 status=ok command="install" reason="source-changed"
 ```
 
-Використовуйте це для дослідження життєвого циклу Plugin перед тим, як переходити до CPU profiler.
-Якщо команда запускається з source checkout, надавайте перевагу вимірюванню зібраного
-runtime через `node dist/entry.js ...` після `pnpm build`; `pnpm openclaw ...`
-також вимірює overhead source-runner.
+Використовуйте це для дослідження життєвого циклу Plugin перед тим, як звертатися до CPU-профайлера.
+Якщо команда запускається з вихідного checkout, краще вимірювати зібраний
+runtime за допомогою `node dist/entry.js ...` після `pnpm build`; `pnpm openclaw ...`
+також вимірює накладні витрати source-runner.
 
-## Профілювання запуску CLI і команд
+## Профілювання запуску CLI та команд
 
-Використовуйте доданий startup benchmark, коли команда здається повільною:
+Використовуйте доданий до репозиторію бенчмарк запуску, коли команда здається повільною:
 
 ```bash
 pnpm test:startup:bench:smoke
@@ -86,46 +86,46 @@ pnpm tsx scripts/bench-cli-startup.ts --preset real --case status --runs 3
 pnpm tsx scripts/bench-cli-startup.ts --preset real --cpu-prof-dir .artifacts/cli-cpu
 ```
 
-Для одноразового профілювання через звичайний source runner задайте
+Для одноразового профілювання через звичайний source runner установіть
 `OPENCLAW_RUN_NODE_CPU_PROF_DIR`:
 
 ```bash
 OPENCLAW_RUN_NODE_CPU_PROF_DIR=.artifacts/cli-cpu pnpm openclaw status
 ```
 
-Source runner додає прапорці Node CPU profile і записує `.cpuprofile` для
-команди. Використовуйте це перед додаванням тимчасового інструментування в код команди.
+Source runner додає прапорці CPU-профілю Node і записує `.cpuprofile` для
+команди. Використовуйте це перед додаванням тимчасової інструментації до коду команди.
 
-Для зависань під час запуску, які схожі на синхронну роботу filesystem або module-loader,
-додайте прапорець Node для трасування sync I/O через source runner:
+Для зависань запуску, схожих на синхронну роботу файлової системи або module-loader,
+додайте прапорець трасування sync I/O Node через source runner:
 
 ```bash
 OPENCLAW_TRACE_SYNC_IO=1 pnpm openclaw gateway --force
 ```
 
-`pnpm gateway:watch` вмикає цей прапорець за замовчуванням для відстежуваного дочірнього Gateway.
-Установіть `OPENCLAW_TRACE_SYNC_IO=0`, щоб придушити вивід Node sync I/O trace у watch
+`pnpm gateway:watch` вмикає цей прапорець за замовчуванням для відстежуваного дочірнього процесу Gateway.
+Установіть `OPENCLAW_TRACE_SYNC_IO=0`, щоб приглушити вивід трасування sync I/O Node у watch
 mode.
 
 ## Watch mode Gateway
 
-Для швидкої ітерації запускайте gateway під file watcher:
+Для швидкої ітерації запускайте gateway під файловим watcher:
 
 ```bash
 pnpm gateway:watch
 ```
 
-За замовчуванням це запускає або перезапускає tmux-сесію з назвою
-`openclaw-gateway-watch-main` (або profile/port-specific варіант, наприклад
-`openclaw-gateway-watch-dev-19001`) і автоматично під’єднується з інтерактивних терміналів.
-Неінтерактивні shell, CI та agent exec calls залишаються від’єднаними й натомість друкують
-інструкції для під’єднання. Під’єднуйтеся вручну за потреби:
+За замовчуванням це запускає або перезапускає сесію tmux з назвою
+`openclaw-gateway-watch-main` (або варіант, специфічний для профілю/порту, наприклад
+`openclaw-gateway-watch-dev-19001`) і автоматично приєднується з інтерактивних терміналів.
+Неінтерактивні shell, CI та виклики agent exec залишаються від’єднаними й натомість друкують
+інструкції для приєднання. За потреби приєднайтеся вручну:
 
 ```bash
 tmux attach -t openclaw-gateway-watch-main
 ```
 
-Панель tmux запускає raw watcher:
+Панель tmux запускає сирий watcher:
 
 ```bash
 node scripts/watch-node.mjs gateway --force
@@ -145,7 +145,7 @@ OPENCLAW_GATEWAY_WATCH_TMUX=0 pnpm gateway:watch
 OPENCLAW_GATEWAY_WATCH_ATTACH=0 pnpm gateway:watch
 ```
 
-Профілюйте CPU-час відстежуваного Gateway під час налагодження hotspot запуску/runtime:
+Профілюйте CPU-час відстежуваного Gateway під час налагодження проблем запуску/runtime:
 
 ```bash
 pnpm gateway:watch --benchmark
@@ -154,87 +154,89 @@ pnpm gateway:watch --benchmark
 Watch wrapper споживає `--benchmark` перед викликом Gateway і записує
 один V8 `.cpuprofile` для кожного завершення дочірнього Gateway у
 `.artifacts/gateway-watch-profiles/`. Зупиніть або перезапустіть відстежуваний gateway, щоб
-скинути поточний profile, потім відкрийте його через Chrome DevTools або Speedscope:
+скинути поточний профіль, потім відкрийте його в Chrome DevTools або Speedscope:
 
 ```bash
 npx speedscope .artifacts/gateway-watch-profiles/*.cpuprofile
 ```
 
-Використовуйте `--benchmark-dir <path>`, коли хочете зберігати profiles в іншому місці.
-Використовуйте `--benchmark-no-force`, коли хочете, щоб benchmarked child пропускав
-стандартне очищення порту `--force` і швидко завершувався помилкою, якщо порт Gateway уже
+Використовуйте `--benchmark-dir <path>`, коли хочете зберігати профілі в іншому місці.
+Використовуйте `--benchmark-no-force`, коли хочете, щоб benchmarked child пропустив
+типове очищення порту `--force` і швидко завершувався з помилкою, якщо порт Gateway уже
 використовується.
-Benchmark mode за замовчуванням пригнічує спам sync-I/O trace. Установіть
-`OPENCLAW_TRACE_SYNC_IO=1` з `--benchmark`, коли явно хочете і CPU
-profiles, і stack traces Node sync-I/O.
+Benchmark mode за замовчуванням приглушує надмірний вивід трасування sync-I/O. Установіть
+`OPENCLAW_TRACE_SYNC_IO=1` з `--benchmark`, коли явно потрібні і CPU
+профілі, і stack traces sync-I/O Node. У benchmark mode ці блоки трасування
+записуються до `gateway-watch-output.log` у каталозі benchmark і
+фільтруються з панелі термінала; звичайні журнали Gateway залишаються видимими.
 
 Tmux wrapper переносить у панель поширені несекретні runtime selectors, як-от
 `OPENCLAW_PROFILE`, `OPENCLAW_CONFIG_PATH`, `OPENCLAW_STATE_DIR`,
 `OPENCLAW_GATEWAY_PORT` і `OPENCLAW_SKIP_CHANNELS`. Розміщуйте
-облікові дані provider у своєму звичайному profile/config або використовуйте raw foreground mode
-для одноразових ephemeral secrets.
+облікові дані провайдера у звичайному профілі/конфігурації або використовуйте raw foreground mode
+для одноразових ефемерних секретів.
 Якщо відстежуваний Gateway завершується під час запуску, watcher один раз запускає
 `openclaw doctor --fix --non-interactive` і перезапускає дочірній Gateway.
-Використовуйте `OPENCLAW_GATEWAY_WATCH_AUTO_DOCTOR=0`, коли хочете бачити початкову помилку запуску
-без dev-only repair pass.
-Керована tmux-панель також за замовчуванням використовує кольорові логи Gateway для читабельності;
+Використовуйте `OPENCLAW_GATEWAY_WATCH_AUTO_DOCTOR=0`, коли хочете отримати початкову
+помилку запуску без dev-only repair pass.
+Керована панель tmux також за замовчуванням використовує кольорові журнали Gateway для читабельності;
 установіть `FORCE_COLOR=0` під час запуску `pnpm gateway:watch`, щоб вимкнути ANSI-вивід.
 
-Watcher перезапускається на build-relevant файлах у `src/`, source-файлах extension,
-metadata `package.json` і `openclaw.plugin.json` extension, `tsconfig.json`,
-`package.json` і `tsdown.config.ts`. Зміни metadata extension перезапускають
-gateway без примусового `tsdown` rebuild; source і config зміни все ще
+Watcher перезапускається на файлах, релевантних для збірки, у `src/`, файлах вихідного коду extension,
+метаданих extension `package.json` і `openclaw.plugin.json`, `tsconfig.json`,
+`package.json` і `tsdown.config.ts`. Зміни метаданих extension перезапускають
+gateway без примусового `tsdown` rebuild; зміни вихідного коду та конфігурації все ще
 спершу перебудовують `dist`.
 
-Додавайте будь-які прапорці gateway CLI після `gateway:watch`, і їх буде передано далі під час
-кожного перезапуску. Повторний запуск тієї самої watch-команди respawn-ить названу tmux-панель, а
-raw watcher усе ще зберігає свій single-watcher lock, щоб дублікати watcher parents
+Додавайте будь-які прапорці CLI gateway після `gateway:watch`, і вони передаватимуться далі під час
+кожного перезапуску. Повторний запуск тієї самої watch-команди повторно створює названу панель tmux, а
+raw watcher усе ще зберігає блокування єдиного watcher, щоб дублікати батьківських watcher
 замінювалися, а не накопичувалися.
 
-## Dev profile + dev gateway (--dev)
+## Dev-профіль + dev gateway (`--dev`)
 
-Використовуйте dev profile, щоб ізолювати state і підняти безпечне одноразове середовище для
+Використовуйте dev-профіль, щоб ізолювати стан і запустити безпечне, одноразове середовище для
 налагодження. Є **два** прапорці `--dev`:
 
-- **Global `--dev` (profile):** ізолює state у `~/.openclaw-dev` і
-  задає стандартний порт gateway `19001` (derived ports зміщуються разом із ним).
-- **`gateway --dev`: каже Gateway автоматично створити default config +
-  workspace**, якщо їх немає (і пропустити BOOTSTRAP.md).
+- **Глобальний `--dev` (профіль):** ізолює стан у `~/.openclaw-dev` і
+  за замовчуванням установлює порт gateway на `19001` (похідні порти зміщуються разом із ним).
+- **`gateway --dev`: повідомляє Gateway автоматично створити типову конфігурацію +
+  workspace** за відсутності (і пропустити BOOTSTRAP.md).
 
-Рекомендований flow (dev profile + dev bootstrap):
+Рекомендований потік (dev-профіль + dev bootstrap):
 
 ```bash
 pnpm gateway:dev
 OPENCLAW_PROFILE=dev openclaw tui
 ```
 
-Якщо глобального install ще немає, запускайте CLI через `pnpm openclaw ...`.
+Якщо у вас ще немає глобального встановлення, запускайте CLI через `pnpm openclaw ...`.
 
 Що це робить:
 
-1. **Ізоляція profile** (global `--dev`)
+1. **Ізоляція профілю** (глобальний `--dev`)
    - `OPENCLAW_PROFILE=dev`
    - `OPENCLAW_STATE_DIR=~/.openclaw-dev`
    - `OPENCLAW_CONFIG_PATH=~/.openclaw-dev/openclaw.json`
    - `OPENCLAW_GATEWAY_PORT=19001` (browser/canvas зміщуються відповідно)
 
 2. **Dev bootstrap** (`gateway --dev`)
-   - Записує мінімальний config, якщо його немає (`gateway.mode=local`, bind loopback).
-   - Установлює `agent.workspace` у dev workspace.
+   - Записує мінімальну конфігурацію, якщо її немає (`gateway.mode=local`, bind loopback).
+   - Установлює `agent.workspace` на dev workspace.
    - Установлює `agent.skipBootstrap=true` (без BOOTSTRAP.md).
-   - Seed-ить файли workspace, якщо їх немає:
+   - Заповнює файли workspace, якщо їх немає:
      `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`.
-   - Default identity: **C3‑PO** (protocol droid).
-   - Пропускає channel providers у dev mode (`OPENCLAW_SKIP_CHANNELS=1`).
+   - Типова ідентичність: **C3‑PO** (protocol droid).
+   - Пропускає провайдерів каналів у dev mode (`OPENCLAW_SKIP_CHANNELS=1`).
 
-Reset flow (fresh start):
+Потік скидання (свіжий старт):
 
 ```bash
 pnpm gateway:dev:reset
 ```
 
 <Note>
-`--dev` — це **global** profile flag, і деякі runners його поглинають. Якщо потрібно прописати це явно, використовуйте форму env var:
+`--dev` — це **глобальний** прапорець профілю, і деякі runner його поглинають. Якщо потрібно вказати явно, використовуйте форму env var:
 
 ```bash
 OPENCLAW_PROFILE=dev openclaw gateway --dev --reset
@@ -242,11 +244,11 @@ OPENCLAW_PROFILE=dev openclaw gateway --dev --reset
 
 </Note>
 
-`--reset` стирає config, credentials, sessions і dev workspace (через
-`trash`, а не `rm`), потім повторно створює default dev setup.
+`--reset` очищає конфігурацію, облікові дані, сесії та dev workspace (за допомогою
+`trash`, не `rm`), а потім повторно створює типове dev-середовище.
 
 <Tip>
-Якщо non-dev gateway уже запущено (launchd або systemd), спершу зупиніть його:
+Якщо non-dev gateway уже запущений (launchd або systemd), спершу зупиніть його:
 
 ```bash
 openclaw gateway stop
@@ -254,9 +256,9 @@ openclaw gateway stop
 
 </Tip>
 
-## Логування raw stream (OpenClaw)
+## Журналювання сирого потоку (OpenClaw)
 
-OpenClaw може логувати **raw assistant stream** перед будь-якою фільтрацією/форматуванням.
+OpenClaw може журналювати **сирий assistant stream** перед будь-якою фільтрацією/форматуванням.
 Це найкращий спосіб побачити, чи reasoning надходить як plain text deltas
 (або як окремі thinking blocks).
 
@@ -266,7 +268,7 @@ OpenClaw може логувати **raw assistant stream** перед будь-
 pnpm gateway:watch --raw-stream
 ```
 
-Optional path override:
+Необов’язкове перевизначення шляху:
 
 ```bash
 pnpm gateway:watch --raw-stream --raw-stream-path ~/.openclaw/logs/raw-stream.jsonl
@@ -279,37 +281,37 @@ OPENCLAW_RAW_STREAM=1
 OPENCLAW_RAW_STREAM_PATH=~/.openclaw/logs/raw-stream.jsonl
 ```
 
-Default file:
+Типовий файл:
 
 `~/.openclaw/logs/raw-stream.jsonl`
 
-## Логування raw chunk (pi-mono)
+## Журналювання сирих chunk (pi-mono)
 
-Щоб захопити **raw OpenAI-compat chunks** до того, як вони будуть розпарсені на blocks,
+Щоб захопити **сирі OpenAI-сумісні chunks** перед тим, як їх буде розібрано на блоки,
 pi-mono надає окремий logger:
 
 ```bash
 PI_RAW_STREAM=1
 ```
 
-Optional path:
+Необов’язковий шлях:
 
 ```bash
 PI_RAW_STREAM_PATH=~/.pi-mono/logs/raw-openai-completions.jsonl
 ```
 
-Default file:
+Типовий файл:
 
 `~/.pi-mono/logs/raw-openai-completions.jsonl`
 
-> Note: це випускається лише процесами, що використовують provider pi-mono
+> Примітка: це виводиться лише процесами, що використовують провайдер pi-mono
 > `openai-completions`.
 
 ## Нотатки з безпеки
 
-- Raw stream logs можуть містити повні prompts, tool output і user data.
-- Зберігайте logs локально й видаляйте їх після налагодження.
-- Якщо ділитеся logs, спершу очистьте secrets і PII.
+- Журнали raw stream можуть містити повні prompts, вивід інструментів і дані користувача.
+- Зберігайте журнали локально й видаляйте їх після налагодження.
+- Якщо ділитеся журналами, спершу очистьте секрети та PII.
 
 ## Пов’язане
 
