@@ -7,29 +7,29 @@ sidebarTitle: Getting Started
 summary: Tạo Plugin OpenClaw đầu tiên của bạn trong vài phút
 title: Xây dựng Plugin
 x-i18n:
-    generated_at: "2026-05-02T20:46:14Z"
+    generated_at: "2026-05-04T02:24:37Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b42170b40094f89a63b1497c08ec31e397931dd536bd6faeeb8bc3c123ae45d1
+    source_hash: 3e6c55c551629da54b3f150ce6299694186fe4434cfd7978a2d43d175d33a5d9
     source_path: plugins/building-plugins.md
     workflow: 16
 ---
 
-Plugin mở rộng OpenClaw với các khả năng mới: kênh, nhà cung cấp mô hình,
-giọng nói, phiên âm thời gian thực, thoại thời gian thực, hiểu phương tiện, tạo
-ảnh, tạo video, web fetch, web search, công cụ agent, hoặc bất kỳ tổ hợp nào.
+Các Plugin mở rộng OpenClaw với các khả năng mới: kênh, nhà cung cấp mô hình,
+giọng nói, phiên âm theo thời gian thực, thoại theo thời gian thực, hiểu nội dung đa phương tiện, tạo hình ảnh, tạo video, tìm nạp web, tìm kiếm web, công cụ agent, hoặc bất kỳ
+kết hợp nào.
 
-Bạn không cần thêm Plugin của mình vào kho OpenClaw. Xuất bản lên
+Bạn không cần thêm Plugin của mình vào kho lưu trữ OpenClaw. Xuất bản lên
 [ClawHub](/vi/tools/clawhub) và người dùng cài đặt bằng
-`openclaw plugins install clawhub:<package-name>`. Các thông số gói trần vẫn
-cài đặt từ npm trong giai đoạn chuyển đổi khởi chạy.
+`openclaw plugins install clawhub:<package-name>`. Các đặc tả gói trần vẫn
+cài đặt từ npm trong giai đoạn chuyển đổi khi ra mắt.
 
 ## Điều kiện tiên quyết
 
 - Node >= 22 và một trình quản lý gói (npm hoặc pnpm)
 - Quen thuộc với TypeScript (ESM)
-- Với Plugin trong repo: đã clone kho và chạy xong `pnpm install`. Phát triển
-  Plugin từ source checkout chỉ hỗ trợ pnpm vì OpenClaw tải các Plugin đi kèm
+- Đối với Plugin trong repo: đã clone kho lưu trữ và chạy xong `pnpm install`. Phát triển Plugin từ
+  checkout mã nguồn chỉ hỗ trợ pnpm vì OpenClaw tải các Plugin được đóng gói kèm
   từ các gói workspace `extensions/*`.
 
 ## Loại Plugin nào?
@@ -46,16 +46,16 @@ cài đặt từ npm trong giai đoạn chuyển đổi khởi chạy.
   </Card>
 </CardGroup>
 
-Đối với một Plugin kênh không được bảo đảm đã cài đặt khi quy trình
-onboarding/thiết lập chạy, hãy dùng `createOptionalChannelSetupSurface(...)` từ
-`openclaw/plugin-sdk/channel-setup`. Hàm này tạo một cặp adapter thiết lập +
-wizard, thông báo yêu cầu cài đặt và từ chối an toàn các thao tác ghi cấu hình
-thật cho đến khi Plugin được cài đặt.
+Đối với một Plugin kênh không được bảo đảm sẽ được cài đặt khi onboarding/thiết lập
+chạy, hãy dùng `createOptionalChannelSetupSurface(...)` từ
+`openclaw/plugin-sdk/channel-setup`. Hàm này tạo một cặp adapter thiết lập + wizard
+để thông báo yêu cầu cài đặt và đóng an toàn khi ghi cấu hình thật
+cho đến khi Plugin được cài đặt.
 
 ## Bắt đầu nhanh: Plugin công cụ
 
-Hướng dẫn này tạo một Plugin tối thiểu để đăng ký một công cụ agent. Plugin
-kênh và Plugin nhà cung cấp có các hướng dẫn riêng được liên kết ở trên.
+Hướng dẫn này tạo một Plugin tối thiểu để đăng ký một công cụ agent. Plugin kênh
+và Plugin nhà cung cấp có các hướng dẫn riêng được liên kết ở trên.
 
 <Steps>
   <Step title="Tạo gói và manifest">
@@ -98,13 +98,12 @@ kênh và Plugin nhà cung cấp có các hướng dẫn riêng được liên k
     ```
     </CodeGroup>
 
-    Mỗi Plugin cần một manifest, ngay cả khi không có cấu hình. Các công cụ
-    được đăng ký lúc chạy phải được liệt kê trong `contracts.tools` để OpenClaw
-    có thể khám phá Plugin sở hữu mà không cần tải mọi runtime Plugin. Plugin
-    cũng nên khai báo `activation.onStartup` một cách có chủ ý. Ví dụ này đặt
-    giá trị đó là `true`. Xem [Manifest](/vi/plugins/manifest) để biết schema đầy
-    đủ. Các đoạn trích xuất bản ClawHub chuẩn nằm trong
-    `docs/snippets/plugin-publish/`.
+    Mọi Plugin đều cần một manifest, ngay cả khi không có cấu hình. Các công cụ
+    được đăng ký ở runtime phải được liệt kê trong `contracts.tools` để OpenClaw có thể phát hiện Plugin sở hữu
+    mà không cần tải mọi runtime Plugin. Các Plugin cũng nên khai báo
+    `activation.onStartup` một cách có chủ đích. Ví dụ này đặt giá trị đó là `true`. Xem
+    [Manifest](/vi/plugins/manifest) để biết schema đầy đủ. Các đoạn lệnh xuất bản ClawHub chuẩn
+    nằm trong `docs/snippets/plugin-publish/`.
 
   </Step>
 
@@ -132,7 +131,7 @@ kênh và Plugin nhà cung cấp có các hướng dẫn riêng được liên k
     });
     ```
 
-    `definePluginEntry` dành cho Plugin không phải kênh. Với kênh, hãy dùng
+    `definePluginEntry` dùng cho các Plugin không phải kênh. Đối với kênh, hãy dùng
     `defineChannelPluginEntry` — xem [Plugin kênh](/vi/plugins/sdk-channel-plugins).
     Để biết đầy đủ tùy chọn entry point, xem [Entry Points](/vi/plugins/sdk-entrypoints).
 
@@ -140,7 +139,7 @@ kênh và Plugin nhà cung cấp có các hướng dẫn riêng được liên k
 
   <Step title="Kiểm thử và xuất bản">
 
-    **Plugin bên ngoài:** xác thực và xuất bản bằng ClawHub, rồi cài đặt:
+    **Plugin bên ngoài:** xác thực và xuất bản bằng ClawHub, sau đó cài đặt:
 
     ```bash
     clawhub package publish your-org/your-plugin --dry-run
@@ -148,10 +147,10 @@ kênh và Plugin nhà cung cấp có các hướng dẫn riêng được liên k
     openclaw plugins install clawhub:@myorg/openclaw-my-plugin
     ```
 
-    Các thông số gói trần như `@myorg/openclaw-my-plugin` cài đặt từ npm trong
-    giai đoạn chuyển đổi khởi chạy. Dùng `clawhub:` khi bạn muốn phân giải qua ClawHub.
+    Các đặc tả gói trần như `@myorg/openclaw-my-plugin` cài đặt từ npm trong
+    giai đoạn chuyển đổi khi ra mắt. Dùng `clawhub:` khi bạn muốn phân giải qua ClawHub.
 
-    **Plugin trong repo:** đặt dưới cây workspace Plugin đi kèm — sẽ được tự động khám phá.
+    **Plugin trong repo:** đặt dưới cây workspace Plugin được đóng gói kèm — sẽ được tự động phát hiện.
 
     ```bash
     pnpm test -- <bundled-plugin-root>/my-plugin/
@@ -164,61 +163,61 @@ kênh và Plugin nhà cung cấp có các hướng dẫn riêng được liên k
 
 Một Plugin có thể đăng ký bất kỳ số lượng khả năng nào thông qua đối tượng `api`:
 
-| Khả năng               | Phương thức đăng ký                              | Hướng dẫn chi tiết                                                            |
-| ---------------------- | ------------------------------------------------ | ----------------------------------------------------------------------------- |
-| Suy luận văn bản (LLM) | `api.registerProvider(...)`                      | [Plugin nhà cung cấp](/vi/plugins/sdk-provider-plugins)                          |
-| Backend suy luận CLI   | `api.registerCliBackend(...)`                    | [Backend CLI](/vi/gateway/cli-backends)                                          |
-| Kênh / nhắn tin        | `api.registerChannel(...)`                       | [Plugin kênh](/vi/plugins/sdk-channel-plugins)                                   |
+| Khả năng               | Phương thức đăng ký                              | Hướng dẫn chi tiết                                                             |
+| ---------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------- |
+| Suy luận văn bản (LLM) | `api.registerProvider(...)`                      | [Plugin nhà cung cấp](/vi/plugins/sdk-provider-plugins)                           |
+| Backend suy luận CLI   | `api.registerCliBackend(...)`                    | [Backend CLI](/vi/gateway/cli-backends)                                           |
+| Kênh / nhắn tin        | `api.registerChannel(...)`                       | [Plugin kênh](/vi/plugins/sdk-channel-plugins)                                    |
 | Giọng nói (TTS/STT)    | `api.registerSpeechProvider(...)`                | [Plugin nhà cung cấp](/vi/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
 | Phiên âm thời gian thực | `api.registerRealtimeTranscriptionProvider(...)` | [Plugin nhà cung cấp](/vi/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
 | Thoại thời gian thực   | `api.registerRealtimeVoiceProvider(...)`         | [Plugin nhà cung cấp](/vi/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
-| Hiểu phương tiện       | `api.registerMediaUnderstandingProvider(...)`    | [Plugin nhà cung cấp](/vi/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
-| Tạo ảnh                | `api.registerImageGenerationProvider(...)`       | [Plugin nhà cung cấp](/vi/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
+| Hiểu nội dung đa phương tiện | `api.registerMediaUnderstandingProvider(...)`    | [Plugin nhà cung cấp](/vi/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
+| Tạo hình ảnh           | `api.registerImageGenerationProvider(...)`       | [Plugin nhà cung cấp](/vi/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
 | Tạo nhạc               | `api.registerMusicGenerationProvider(...)`       | [Plugin nhà cung cấp](/vi/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
 | Tạo video              | `api.registerVideoGenerationProvider(...)`       | [Plugin nhà cung cấp](/vi/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
-| Web fetch              | `api.registerWebFetchProvider(...)`              | [Plugin nhà cung cấp](/vi/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
-| Web search             | `api.registerWebSearchProvider(...)`             | [Plugin nhà cung cấp](/vi/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
-| Middleware kết quả công cụ | `api.registerAgentToolResultMiddleware(...)`     | [Tổng quan SDK](/vi/plugins/sdk-overview#registration-api)                        |
-| Công cụ agent          | `api.registerTool(...)`                          | Bên dưới                                                                      |
-| Lệnh tùy chỉnh         | `api.registerCommand(...)`                       | [Entry Points](/vi/plugins/sdk-entrypoints)                                      |
-| Hook Plugin            | `api.on(...)`                                    | [Hook Plugin](/vi/plugins/hooks)                                                 |
-| Hook sự kiện nội bộ    | `api.registerHook(...)`                          | [Entry Points](/vi/plugins/sdk-entrypoints)                                      |
-| Route HTTP             | `api.registerHttpRoute(...)`                     | [Nội bộ](/vi/plugins/architecture-internals#gateway-http-routes)                 |
-| Lệnh con CLI           | `api.registerCli(...)`                           | [Entry Points](/vi/plugins/sdk-entrypoints)                                      |
+| Tìm nạp web            | `api.registerWebFetchProvider(...)`              | [Plugin nhà cung cấp](/vi/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
+| Tìm kiếm web           | `api.registerWebSearchProvider(...)`             | [Plugin nhà cung cấp](/vi/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
+| Middleware kết quả công cụ | `api.registerAgentToolResultMiddleware(...)`     | [Tổng quan SDK](/vi/plugins/sdk-overview#registration-api)                         |
+| Công cụ agent          | `api.registerTool(...)`                          | Bên dưới                                                                        |
+| Lệnh tùy chỉnh         | `api.registerCommand(...)`                       | [Entry Points](/vi/plugins/sdk-entrypoints)                                        |
+| Hook Plugin            | `api.on(...)`                                    | [Hook Plugin](/vi/plugins/hooks)                                                  |
+| Hook sự kiện nội bộ    | `api.registerHook(...)`                          | [Entry Points](/vi/plugins/sdk-entrypoints)                                        |
+| Tuyến HTTP             | `api.registerHttpRoute(...)`                     | [Nội bộ](/vi/plugins/architecture-internals#gateway-http-routes)                  |
+| Lệnh con CLI           | `api.registerCli(...)`                           | [Entry Points](/vi/plugins/sdk-entrypoints)                                        |
 
 Để biết API đăng ký đầy đủ, xem [Tổng quan SDK](/vi/plugins/sdk-overview#registration-api).
 
-Plugin đi kèm có thể dùng `api.registerAgentToolResultMiddleware(...)` khi chúng
-cần viết lại bất đồng bộ kết quả công cụ trước khi mô hình thấy đầu ra. Khai báo
-các runtime được nhắm mục tiêu trong `contracts.agentToolResultMiddleware`, ví dụ
-`["pi", "codex"]`. Đây là một điểm mở rộng đáng tin cậy dành cho Plugin đi kèm;
-Plugin bên ngoài nên ưu tiên các hook Plugin OpenClaw thông thường, trừ khi
-OpenClaw phát triển một chính sách tin cậy rõ ràng cho khả năng này.
+Các Plugin được đóng gói kèm có thể dùng `api.registerAgentToolResultMiddleware(...)` khi chúng
+cần viết lại kết quả công cụ bất đồng bộ trước khi mô hình thấy đầu ra. Khai báo các
+runtime được nhắm tới trong `contracts.agentToolResultMiddleware`, ví dụ
+`["pi", "codex"]`. Đây là một seam đáng tin cậy dành cho Plugin được đóng gói kèm; các
+Plugin bên ngoài nên ưu tiên hook Plugin OpenClaw thông thường trừ khi OpenClaw phát triển một
+chính sách tin cậy rõ ràng cho khả năng này.
 
-Nếu Plugin của bạn đăng ký các phương thức RPC gateway tùy chỉnh, hãy giữ chúng
-trên một tiền tố riêng của Plugin. Các namespace quản trị lõi (`config.*`,
-`exec.approvals.*`, `wizard.*`, `update.*`) vẫn được giữ riêng và luôn phân giải
-thành `operator.admin`, ngay cả khi một Plugin yêu cầu phạm vi hẹp hơn.
+Nếu Plugin của bạn đăng ký các phương thức RPC Gateway tùy chỉnh, hãy giữ chúng dưới một
+tiền tố riêng cho Plugin. Các namespace quản trị lõi (`config.*`,
+`exec.approvals.*`, `wizard.*`, `update.*`) vẫn được dành riêng và luôn phân giải thành
+`operator.admin`, ngay cả khi một Plugin yêu cầu phạm vi hẹp hơn.
 
-Các ngữ nghĩa bảo vệ hook cần ghi nhớ:
+Ngữ nghĩa guard của hook cần ghi nhớ:
 
-- `before_tool_call`: `{ block: true }` là quyết định cuối cùng và dừng các handler có độ ưu tiên thấp hơn.
+- `before_tool_call`: `{ block: true }` là kết thúc và dừng các handler có độ ưu tiên thấp hơn.
 - `before_tool_call`: `{ block: false }` được xem như không có quyết định.
 - `before_tool_call`: `{ requireApproval: true }` tạm dừng thực thi agent và nhắc người dùng phê duyệt qua lớp phủ phê duyệt exec, nút Telegram, tương tác Discord, hoặc lệnh `/approve` trên bất kỳ kênh nào.
-- `before_install`: `{ block: true }` là quyết định cuối cùng và dừng các handler có độ ưu tiên thấp hơn.
+- `before_install`: `{ block: true }` là kết thúc và dừng các handler có độ ưu tiên thấp hơn.
 - `before_install`: `{ block: false }` được xem như không có quyết định.
-- `message_sending`: `{ cancel: true }` là quyết định cuối cùng và dừng các handler có độ ưu tiên thấp hơn.
+- `message_sending`: `{ cancel: true }` là kết thúc và dừng các handler có độ ưu tiên thấp hơn.
 - `message_sending`: `{ cancel: false }` được xem như không có quyết định.
-- `message_received`: ưu tiên trường có kiểu `threadId` khi bạn cần định tuyến thread/chủ đề đến. Giữ `metadata` cho các phần bổ sung riêng theo kênh.
-- `message_sending`: ưu tiên các trường định tuyến có kiểu `replyToId` / `threadId` hơn các khóa metadata riêng theo kênh.
+- `message_received`: ưu tiên trường có kiểu `threadId` khi bạn cần định tuyến luồng/chủ đề đầu vào. Giữ `metadata` cho các phần bổ sung riêng của kênh.
+- `message_sending`: ưu tiên các trường định tuyến có kiểu `replyToId` / `threadId` thay vì các khóa metadata riêng của kênh.
 
-Lệnh `/approve` xử lý cả phê duyệt exec và Plugin với cơ chế dự phòng có giới hạn: khi không tìm thấy id phê duyệt exec, OpenClaw thử lại cùng id đó qua phê duyệt Plugin. Có thể cấu hình độc lập việc chuyển tiếp phê duyệt Plugin qua `approvals.plugin` trong cấu hình.
+Lệnh `/approve` xử lý cả phê duyệt exec và phê duyệt Plugin với fallback có giới hạn: khi không tìm thấy id phê duyệt exec, OpenClaw thử lại cùng id đó qua phê duyệt Plugin. Có thể cấu hình chuyển tiếp phê duyệt Plugin độc lập qua `approvals.plugin` trong cấu hình.
 
-Nếu hệ thống phê duyệt tùy chỉnh cần phát hiện cùng trường hợp dự phòng có giới
-hạn đó, hãy ưu tiên `isApprovalNotFoundError` từ
-`openclaw/plugin-sdk/error-runtime` thay vì tự khớp chuỗi hết hạn phê duyệt.
+Nếu hệ thống phê duyệt tùy chỉnh cần phát hiện cùng trường hợp fallback có giới hạn đó,
+hãy ưu tiên `isApprovalNotFoundError` từ `openclaw/plugin-sdk/error-runtime`
+thay vì tự khớp chuỗi hết hạn phê duyệt thủ công.
 
-Xem [Hook Plugin](/vi/plugins/hooks) để biết ví dụ và tham chiếu hook.
+Xem [Hook Plugin](/vi/plugins/hooks) để biết ví dụ và tài liệu tham chiếu hook.
 
 ## Đăng ký công cụ agent
 
@@ -252,23 +251,31 @@ register(api) {
 }
 ```
 
-Mọi công cụ được đăng ký bằng `api.registerTool(...)` cũng phải được khai báo
-trong manifest Plugin:
+Mọi công cụ được đăng ký bằng `api.registerTool(...)` cũng phải được khai báo trong
+manifest Plugin:
 
 ```json
 {
   "contracts": {
     "tools": ["my_tool", "workflow_tool"]
+  },
+  "toolMetadata": {
+    "workflow_tool": {
+      "optional": true
+    }
   }
 }
 ```
 
-OpenClaw thu thập và lưu cache descriptor đã xác thực từ công cụ đã đăng ký, vì
-vậy Plugin không lặp lại `description` hoặc dữ liệu schema trong manifest.
-Contract manifest chỉ khai báo quyền sở hữu và khả năng khám phá; việc thực thi
-vẫn gọi implementation công cụ đã đăng ký đang hoạt động.
+OpenClaw thu thập và lưu vào bộ nhớ đệm descriptor đã được xác thực từ công cụ đã đăng ký,
+vì vậy các plugin không cần lặp lại dữ liệu `description` hoặc schema trong manifest. Hợp đồng
+manifest chỉ khai báo quyền sở hữu và khả năng khám phá; việc thực thi vẫn gọi
+phần triển khai công cụ đã đăng ký đang hoạt động.
+Đặt `toolMetadata.<tool>.optional: true` cho các công cụ được đăng ký bằng
+`api.registerTool(..., { optional: true })` để OpenClaw có thể tránh tải
+plugin runtime đó cho đến khi công cụ được đưa vào danh sách cho phép một cách rõ ràng.
 
-Người dùng bật công cụ tùy chọn trong cấu hình:
+Người dùng bật các công cụ tùy chọn trong config:
 
 ```json5
 {
@@ -276,16 +283,16 @@ Người dùng bật công cụ tùy chọn trong cấu hình:
 }
 ```
 
-- Tên công cụ không được xung đột với các công cụ lõi (các xung đột sẽ bị bỏ qua)
-- Các công cụ có đối tượng đăng ký sai định dạng, bao gồm thiếu `parameters`, sẽ bị bỏ qua và được báo cáo trong chẩn đoán Plugin thay vì làm hỏng các lần chạy agent
-- Dùng `optional: true` cho các công cụ có tác dụng phụ hoặc yêu cầu thêm binary
-- Người dùng có thể bật tất cả công cụ từ một Plugin bằng cách thêm id Plugin vào `tools.allow`
+- Tên công cụ không được xung đột với các công cụ lõi (xung đột sẽ bị bỏ qua)
+- Các công cụ có đối tượng đăng ký không đúng định dạng, bao gồm thiếu `parameters`, sẽ bị bỏ qua và được báo cáo trong chẩn đoán plugin thay vì làm hỏng các lần chạy agent
+- Dùng `optional: true` cho các công cụ có tác dụng phụ hoặc yêu cầu binary bổ sung
+- Người dùng có thể bật tất cả công cụ từ một plugin bằng cách thêm plugin id vào `tools.allow`
 
 ## Đăng ký lệnh CLI
 
 Plugin có thể thêm các nhóm lệnh `openclaw` gốc bằng `api.registerCli`. Cung cấp
 `descriptors` cho mọi gốc lệnh cấp cao nhất để OpenClaw có thể hiển thị và định tuyến
-lệnh mà không cần tải sẵn mọi runtime Plugin.
+lệnh mà không cần tải sẵn mọi plugin runtime.
 
 ```typescript
 register(api) {
@@ -315,7 +322,7 @@ register(api) {
 }
 ```
 
-Sau khi cài đặt, hãy xác minh đăng ký runtime và thực thi lệnh:
+Sau khi cài đặt, xác minh đăng ký runtime và thực thi lệnh:
 
 ```bash
 openclaw plugins inspect demo-plugin --runtime --json
@@ -336,55 +343,55 @@ import { ... } from "openclaw/plugin-sdk";
 
 Để xem tham chiếu subpath đầy đủ, hãy xem [Tổng quan SDK](/vi/plugins/sdk-overview).
 
-Trong Plugin của bạn, dùng các tệp barrel cục bộ (`api.ts`, `runtime-api.ts`) cho
-import nội bộ — không bao giờ import chính Plugin của bạn thông qua đường dẫn SDK của nó.
+Trong plugin của bạn, hãy dùng các tệp barrel cục bộ (`api.ts`, `runtime-api.ts`) cho
+các import nội bộ — không bao giờ import chính plugin của bạn thông qua đường dẫn SDK của nó.
 
-Đối với Plugin nhà cung cấp, hãy giữ các helper dành riêng cho nhà cung cấp trong các
-barrel gốc package đó trừ khi seam thật sự mang tính chung. Các ví dụ bundled hiện tại:
+Đối với provider plugin, giữ các helper dành riêng cho provider trong các barrel
+gốc package đó trừ khi seam thực sự có tính tổng quát. Các ví dụ được đóng gói hiện tại:
 
-- Anthropic: wrapper luồng Claude và helper `service_tier` / beta
-- OpenAI: builder nhà cung cấp, helper model mặc định, nhà cung cấp realtime
-- OpenRouter: builder nhà cung cấp cùng helper onboarding/cấu hình
+- Anthropic: wrapper stream Claude và các helper `service_tier` / beta
+- OpenAI: provider builder, helper mô hình mặc định, provider realtime
+- OpenRouter: provider builder cùng helper onboarding/config
 
-Nếu một helper chỉ hữu ích bên trong một package nhà cung cấp bundled, hãy giữ nó trên
+Nếu một helper chỉ hữu ích bên trong một package provider được đóng gói, hãy giữ nó trên
 seam gốc package đó thay vì đưa nó vào `openclaw/plugin-sdk/*`.
 
 Một số seam helper `openclaw/plugin-sdk/<bundled-id>` được tạo vẫn tồn tại cho
-bảo trì bundled-Plugin khi chúng có theo dõi việc sử dụng của owner. Hãy xem chúng là
-bề mặt được dành riêng, không phải mẫu mặc định cho Plugin bên thứ ba mới.
+việc bảo trì bundled-plugin khi chúng có mức sử dụng từ owner được theo dõi. Hãy xem đó là
+các bề mặt dành riêng, không phải mẫu mặc định cho plugin bên thứ ba mới.
 
-## Checklist trước khi gửi
+## Danh sách kiểm tra trước khi gửi
 
 <Check>**package.json** có metadata `openclaw` chính xác</Check>
 <Check>Manifest **openclaw.plugin.json** hiện diện và hợp lệ</Check>
 <Check>Entry point dùng `defineChannelPluginEntry` hoặc `definePluginEntry`</Check>
-<Check>Tất cả import dùng đường dẫn `plugin-sdk/<subpath>` tập trung</Check>
+<Check>Tất cả import dùng các đường dẫn `plugin-sdk/<subpath>` tập trung</Check>
 <Check>Import nội bộ dùng module cục bộ, không tự import qua SDK</Check>
-<Check>Test pass (`pnpm test -- <bundled-plugin-root>/my-plugin/`)</Check>
-<Check>`pnpm check` pass (Plugin trong repo)</Check>
+<Check>Test vượt qua (`pnpm test -- <bundled-plugin-root>/my-plugin/`)</Check>
+<Check>`pnpm check` vượt qua (plugin trong repo)</Check>
 
 ## Kiểm thử bản phát hành beta
 
-1. Theo dõi các tag phát hành GitHub trên [openclaw/openclaw](https://github.com/openclaw/openclaw/releases) và đăng ký qua `Watch` > `Releases`. Tag beta có dạng `v2026.3.N-beta.1`. Bạn cũng có thể bật thông báo cho tài khoản X chính thức của OpenClaw [@openclaw](https://x.com/openclaw) để nhận thông báo phát hành.
-2. Kiểm thử Plugin của bạn với tag beta ngay khi nó xuất hiện. Khoảng thời gian trước bản stable thường chỉ vài giờ.
-3. Đăng trong thread của Plugin của bạn ở kênh Discord `plugin-forum` sau khi kiểm thử, với `all good` hoặc nội dung đã bị hỏng. Nếu bạn chưa có thread, hãy tạo một thread.
-4. Nếu có thứ gì đó bị hỏng, hãy mở hoặc cập nhật một issue có tiêu đề `Beta blocker: <plugin-name> - <summary>` và áp dụng nhãn `beta-blocker`. Đặt liên kết issue trong thread của bạn.
-5. Mở một PR tới `main` có tiêu đề `fix(<plugin-id>): beta blocker - <summary>` và liên kết issue trong cả PR lẫn thread Discord của bạn. Contributor không thể gắn nhãn PR, nên tiêu đề là tín hiệu phía PR cho maintainer và tự động hóa. Blocker có PR sẽ được merge; blocker không có PR có thể vẫn được phát hành. Maintainer theo dõi các thread này trong khi kiểm thử beta.
-6. Im lặng nghĩa là xanh. Nếu bạn bỏ lỡ khoảng thời gian này, bản sửa của bạn nhiều khả năng sẽ vào chu kỳ tiếp theo.
+1. Theo dõi các thẻ phát hành GitHub trên [openclaw/openclaw](https://github.com/openclaw/openclaw/releases) và đăng ký qua `Watch` > `Releases`. Thẻ beta có dạng `v2026.3.N-beta.1`. Bạn cũng có thể bật thông báo cho tài khoản X chính thức của OpenClaw [@openclaw](https://x.com/openclaw) để nhận thông báo phát hành.
+2. Kiểm thử plugin của bạn với thẻ beta ngay khi thẻ xuất hiện. Khoảng thời gian trước bản stable thường chỉ là vài giờ.
+3. Đăng trong thread của plugin của bạn trong kênh Discord `plugin-forum` sau khi kiểm thử, với `all good` hoặc nội dung bị hỏng. Nếu bạn chưa có thread, hãy tạo một thread.
+4. Nếu có thứ bị hỏng, hãy mở hoặc cập nhật một issue có tiêu đề `Beta blocker: <plugin-name> - <summary>` và áp dụng nhãn `beta-blocker`. Đặt liên kết issue trong thread của bạn.
+5. Mở một PR tới `main` có tiêu đề `fix(<plugin-id>): beta blocker - <summary>` và liên kết issue trong cả PR lẫn thread Discord của bạn. Contributor không thể gắn nhãn PR, nên tiêu đề là tín hiệu phía PR cho maintainer và tự động hóa. Blocker có PR sẽ được merge; blocker không có PR vẫn có thể được phát hành. Maintainer theo dõi các thread này trong quá trình kiểm thử beta.
+6. Im lặng nghĩa là xanh. Nếu bạn bỏ lỡ khoảng thời gian này, bản sửa của bạn có khả năng sẽ vào chu kỳ tiếp theo.
 
 ## Bước tiếp theo
 
 <CardGroup cols={2}>
-  <Card title="Channel Plugins" icon="messages-square" href="/vi/plugins/sdk-channel-plugins">
-    Xây dựng Plugin kênh nhắn tin
+  <Card title="Channel Plugin" icon="messages-square" href="/vi/plugins/sdk-channel-plugins">
+    Xây dựng plugin kênh nhắn tin
   </Card>
-  <Card title="Provider Plugins" icon="cpu" href="/vi/plugins/sdk-provider-plugins">
-    Xây dựng Plugin nhà cung cấp model
+  <Card title="Provider Plugin" icon="cpu" href="/vi/plugins/sdk-provider-plugins">
+    Xây dựng plugin provider mô hình
   </Card>
   <Card title="Tổng quan SDK" icon="book-open" href="/vi/plugins/sdk-overview">
     Tham chiếu import map và API đăng ký
   </Card>
-  <Card title="Helper runtime" icon="settings" href="/vi/plugins/sdk-runtime">
+  <Card title="Helper Runtime" icon="settings" href="/vi/plugins/sdk-runtime">
     TTS, tìm kiếm, subagent qua api.runtime
   </Card>
   <Card title="Kiểm thử" icon="test-tubes" href="/vi/plugins/sdk-testing">
@@ -398,7 +405,7 @@ bề mặt được dành riêng, không phải mẫu mặc định cho Plugin b
 ## Liên quan
 
 - [Kiến trúc Plugin](/vi/plugins/architecture) — phân tích sâu kiến trúc nội bộ
-- [Tổng quan SDK](/vi/plugins/sdk-overview) — tham chiếu SDK Plugin
-- [Manifest](/vi/plugins/manifest) — định dạng manifest Plugin
-- [Channel Plugins](/vi/plugins/sdk-channel-plugins) — xây dựng Plugin kênh
-- [Provider Plugins](/vi/plugins/sdk-provider-plugins) — xây dựng Plugin nhà cung cấp
+- [Tổng quan SDK](/vi/plugins/sdk-overview) — tham chiếu Plugin SDK
+- [Manifest](/vi/plugins/manifest) — định dạng manifest plugin
+- [Channel Plugin](/vi/plugins/sdk-channel-plugins) — xây dựng channel plugin
+- [Provider Plugin](/vi/plugins/sdk-provider-plugins) — xây dựng provider plugin

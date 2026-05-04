@@ -1,120 +1,119 @@
 ---
 read_when:
-    - Bạn muốn kiến thức lâu dài vượt ngoài các ghi chú MEMORY.md đơn thuần
-    - Bạn đang cấu hình plugin memory-wiki đi kèm
-    - Bạn muốn tìm hiểu về wiki_search, wiki_get hoặc chế độ cầu nối
-summary: 'memory-wiki: kho tri thức tổng hợp với nguồn gốc, các khẳng định, bảng điều khiển và chế độ cầu nối'
+    - Bạn muốn có kiến thức được lưu giữ lâu dài ngoài các ghi chú MEMORY.md thuần túy
+    - Bạn đang cấu hình Plugin memory-wiki đi kèm
+    - Bạn muốn hiểu về wiki_search, wiki_get hoặc chế độ cầu nối
+summary: 'memory-wiki: kho tri thức đã biên soạn với thông tin nguồn gốc, các tuyên bố, bảng điều khiển và chế độ cầu nối'
 title: Wiki bộ nhớ
 x-i18n:
-    generated_at: "2026-04-29T23:00:45Z"
+    generated_at: "2026-05-04T02:25:14Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 744d569f8b0c9b668ea54dc057f808544359eaae87d5557de2e6acd1b31acd89
+    source_hash: b070177b7c1217e9102bc57680b4009265e3584ede7ad6dc3ba7b6393260fefe
     source_path: plugins/memory-wiki.md
     workflow: 16
 ---
 
-`memory-wiki` là một Plugin đi kèm, biến bộ nhớ bền vững thành một
-kho tri thức đã biên dịch.
+`memory-wiki` là một Plugin đi kèm giúp biến bộ nhớ bền vững thành một kho tri thức đã biên dịch.
 
 Nó **không** thay thế Plugin Active Memory. Plugin Active Memory vẫn
-sở hữu việc truy hồi, thăng hạng, lập chỉ mục và Dreaming. `memory-wiki` nằm bên cạnh nó
+sở hữu việc truy hồi, thăng cấp, lập chỉ mục và Dreaming. `memory-wiki` nằm cạnh nó
 và biên dịch tri thức bền vững thành một wiki có thể điều hướng với các trang xác định,
-claim có cấu trúc, provenance, bảng điều khiển và digest máy có thể đọc.
+nhận định có cấu trúc, nguồn gốc, bảng điều khiển và bản tóm lược đọc được bằng máy.
 
-Dùng nó khi bạn muốn bộ nhớ hoạt động giống một lớp tri thức được bảo trì hơn và
+Dùng nó khi bạn muốn bộ nhớ hoạt động giống một lớp tri thức được duy trì hơn và
 ít giống một đống tệp Markdown hơn.
 
-## Nó bổ sung gì
+## Những gì nó bổ sung
 
 - Một kho wiki chuyên dụng với bố cục trang xác định
-- Siêu dữ liệu claim và bằng chứng có cấu trúc, không chỉ là văn xuôi
-- Provenance, độ tin cậy, mâu thuẫn và câu hỏi mở ở cấp trang
-- Digest đã biên dịch cho agent/runtime sử dụng
-- Công cụ tìm kiếm/lấy/áp dụng/lint nguyên sinh của wiki
-- Chế độ bridge tùy chọn để nhập artifact công khai từ Plugin Active Memory
-- Chế độ render thân thiện với Obsidian và tích hợp CLI tùy chọn
+- Siêu dữ liệu nhận định và bằng chứng có cấu trúc, không chỉ là văn xuôi
+- Nguồn gốc, độ tin cậy, mâu thuẫn và câu hỏi mở ở cấp trang
+- Bản tóm lược đã biên dịch cho tác nhân/người dùng runtime
+- Công cụ tìm kiếm/lấy/áp dụng/lint dành riêng cho wiki
+- Chế độ cầu nối tùy chọn để nhập hiện vật công khai từ Plugin Active Memory
+- Chế độ kết xuất thân thiện với Obsidian và tích hợp CLI tùy chọn
 
-## Cách nó khớp với memory
+## Cách nó phù hợp với bộ nhớ
 
-Hãy hình dung phần tách lớp như sau:
+Hãy hình dung sự phân tách như sau:
 
 | Lớp                                                     | Sở hữu                                                                                     |
 | ------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| Plugin Active Memory (`memory-core`, QMD, Honcho, v.v.) | Truy hồi, tìm kiếm ngữ nghĩa, thăng hạng, Dreaming, runtime bộ nhớ                         |
-| `memory-wiki`                                           | Trang wiki đã biên dịch, bản tổng hợp giàu provenance, bảng điều khiển, tìm kiếm/lấy/áp dụng riêng của wiki |
+| Plugin Active Memory (`memory-core`, QMD, Honcho, v.v.) | Truy hồi, tìm kiếm ngữ nghĩa, thăng cấp, Dreaming, runtime bộ nhớ                          |
+| `memory-wiki`                                           | Trang wiki đã biên dịch, tổng hợp giàu nguồn gốc, bảng điều khiển, tìm kiếm/lấy/áp dụng riêng cho wiki |
 
-Nếu Plugin Active Memory cung cấp artifact truy hồi dùng chung, OpenClaw có thể tìm kiếm
+Nếu Plugin Active Memory hiển thị các hiện vật truy hồi dùng chung, OpenClaw có thể tìm kiếm
 cả hai lớp trong một lượt với `memory_search corpus=all`.
 
-Khi bạn cần xếp hạng riêng của wiki, provenance hoặc truy cập trang trực tiếp, hãy dùng
-các công cụ nguyên sinh của wiki thay thế.
+Khi bạn cần xếp hạng dành riêng cho wiki, nguồn gốc hoặc truy cập trang trực tiếp, hãy dùng
+các công cụ riêng của wiki thay thế.
 
-## Mẫu hybrid được khuyến nghị
+## Mẫu kết hợp được khuyến nghị
 
-Mặc định mạnh cho các thiết lập ưu tiên cục bộ là:
+Một mặc định mạnh cho các thiết lập ưu tiên cục bộ là:
 
 - QMD làm backend Active Memory cho truy hồi và tìm kiếm ngữ nghĩa rộng
-- `memory-wiki` ở chế độ `bridge` cho các trang tri thức tổng hợp bền vững
+- `memory-wiki` ở chế độ `bridge` cho các trang tri thức đã tổng hợp bền vững
 
-Phần tách đó hoạt động tốt vì mỗi lớp giữ đúng trọng tâm:
+Sự phân tách đó hoạt động tốt vì mỗi lớp vẫn tập trung:
 
-- QMD giữ cho ghi chú thô, bản xuất phiên và các collection bổ sung có thể tìm kiếm
-- `memory-wiki` biên dịch entity ổn định, claim, bảng điều khiển và trang nguồn
+- QMD giữ cho ghi chú thô, bản xuất phiên và các bộ sưu tập bổ sung có thể tìm kiếm được
+- `memory-wiki` biên dịch các thực thể ổn định, nhận định, bảng điều khiển và trang nguồn
 
 Quy tắc thực tế:
 
-- dùng `memory_search` khi bạn muốn một lượt truy hồi rộng trên bộ nhớ
-- dùng `wiki_search` và `wiki_get` khi bạn muốn kết quả wiki có nhận thức provenance
+- dùng `memory_search` khi bạn muốn một lượt truy hồi rộng trên toàn bộ bộ nhớ
+- dùng `wiki_search` và `wiki_get` khi bạn muốn kết quả wiki có nhận biết nguồn gốc
 - dùng `memory_search corpus=all` khi bạn muốn tìm kiếm dùng chung bao phủ cả hai lớp
 
-Nếu chế độ bridge báo cáo không có artifact đã xuất nào, Plugin Active Memory hiện
-chưa cung cấp đầu vào bridge công khai. Trước tiên chạy `openclaw wiki doctor`,
-sau đó xác nhận Plugin Active Memory hỗ trợ artifact công khai.
+Nếu chế độ cầu nối báo cáo không có hiện vật đã xuất nào, Plugin Active Memory hiện
+chưa hiển thị đầu vào cầu nối công khai. Chạy `openclaw wiki doctor` trước,
+sau đó xác nhận Plugin Active Memory hỗ trợ hiện vật công khai.
 
-Khi chế độ bridge hoạt động và `bridge.readMemoryArtifacts` được bật,
+Khi chế độ cầu nối đang hoạt động và `bridge.readMemoryArtifacts` được bật,
 `openclaw wiki status`, `openclaw wiki doctor` và `openclaw wiki bridge
-import` đọc thông qua Gateway đang chạy. Điều đó giữ các kiểm tra bridge của CLI đồng bộ
-với ngữ cảnh Plugin memory runtime. Nếu bridge bị tắt hoặc đọc artifact
-bị tắt, các lệnh đó giữ hành vi cục bộ/ngoại tuyến.
+import` đọc thông qua Gateway đang chạy. Điều đó giữ cho các kiểm tra cầu nối CLI khớp
+với ngữ cảnh Plugin bộ nhớ runtime. Nếu cầu nối bị tắt hoặc việc đọc hiện vật
+bị tắt, các lệnh đó giữ nguyên hành vi cục bộ/ngoại tuyến.
 
-## Chế độ vault
+## Chế độ kho
 
-`memory-wiki` hỗ trợ ba chế độ vault:
+`memory-wiki` hỗ trợ ba chế độ kho:
 
 ### `isolated`
 
-Vault riêng, nguồn riêng, không phụ thuộc vào `memory-core`.
+Kho riêng, nguồn riêng, không phụ thuộc vào `memory-core`.
 
 Dùng chế độ này khi bạn muốn wiki là kho tri thức được tuyển chọn riêng.
 
 ### `bridge`
 
-Đọc artifact memory công khai và sự kiện memory từ Plugin Active Memory
+Đọc hiện vật bộ nhớ công khai và sự kiện bộ nhớ từ Plugin Active Memory
 thông qua các seam công khai của Plugin SDK.
 
-Dùng chế độ này khi bạn muốn wiki biên dịch và tổ chức các artifact đã xuất
-của Plugin memory mà không chạm vào nội bộ Plugin riêng tư.
+Dùng chế độ này khi bạn muốn wiki biên dịch và tổ chức các hiện vật đã xuất
+của Plugin bộ nhớ mà không truy cập vào phần nội bộ riêng tư của Plugin.
 
-Chế độ bridge có thể lập chỉ mục:
+Chế độ cầu nối có thể lập chỉ mục:
 
-- artifact memory đã xuất
-- báo cáo dream
+- hiện vật bộ nhớ đã xuất
+- báo cáo Dreaming
 - ghi chú hằng ngày
-- tệp gốc memory
-- nhật ký sự kiện memory
+- tệp gốc bộ nhớ
+- nhật ký sự kiện bộ nhớ
 
 ### `unsafe-local`
 
-Lối thoát rõ ràng trên cùng máy cho đường dẫn cục bộ riêng tư.
+Lối thoát rõ ràng trên cùng máy cho các đường dẫn riêng tư cục bộ.
 
-Chế độ này có chủ đích là thử nghiệm và không di động. Chỉ dùng khi bạn
-hiểu ranh giới tin cậy và thật sự cần quyền truy cập hệ thống tệp cục bộ mà
-chế độ bridge không cung cấp được.
+Chế độ này có chủ ý là thử nghiệm và không di động. Chỉ dùng khi bạn
+hiểu ranh giới tin cậy và cụ thể cần truy cập hệ thống tệp cục bộ mà
+chế độ cầu nối không thể cung cấp.
 
-## Bố cục vault
+## Bố cục kho
 
-Plugin khởi tạo một vault như sau:
+Plugin khởi tạo một kho như sau:
 
 ```text
 <vault>/
@@ -136,17 +135,17 @@ Nội dung được quản lý nằm trong các khối đã tạo. Các khối g
 
 Các nhóm trang chính là:
 
-- `sources/` cho tư liệu thô đã nhập và các trang được bridge hỗ trợ
+- `sources/` cho tài liệu thô đã nhập và các trang dựa trên cầu nối
 - `entities/` cho những thứ, con người, hệ thống, dự án và đối tượng bền vững
-- `concepts/` cho ý tưởng, trừu tượng, mẫu hình và chính sách
-- `syntheses/` cho tóm tắt đã biên dịch và rollup được bảo trì
+- `concepts/` cho ý tưởng, trừu tượng, mẫu và chính sách
+- `syntheses/` cho tóm tắt đã biên dịch và bản tổng hợp được duy trì
 - `reports/` cho bảng điều khiển đã tạo
 
-## Claim và bằng chứng có cấu trúc
+## Nhận định và bằng chứng có cấu trúc
 
-Trang có thể mang frontmatter `claims` có cấu trúc, không chỉ văn bản tự do.
+Các trang có thể mang frontmatter `claims` có cấu trúc, không chỉ văn bản tự do.
 
-Mỗi claim có thể bao gồm:
+Mỗi nhận định có thể bao gồm:
 
 - `id`
 - `text`
@@ -167,31 +166,31 @@ Mục bằng chứng có thể bao gồm:
 - `note`
 - `updatedAt`
 
-Đây là điều khiến wiki hoạt động giống một lớp niềm tin hơn là một nơi
-đổ ghi chú thụ động. Claim có thể được theo dõi, chấm điểm, phản biện và truy ngược về nguồn.
+Đây là điều khiến wiki hoạt động giống một lớp niềm tin hơn là một nơi đổ ghi chú
+thụ động. Nhận định có thể được theo dõi, chấm điểm, phản biện và phân giải ngược về nguồn.
 
-## Siêu dữ liệu entity hướng tới agent
+## Siêu dữ liệu thực thể hướng tới tác nhân
 
-Trang entity cũng có thể mang siêu dữ liệu định tuyến cho agent sử dụng. Đây là
-frontmatter chung, nên nó hoạt động cho con người, nhóm, hệ thống, dự án hoặc bất kỳ
-kiểu entity nào khác.
+Trang thực thể cũng có thể mang siêu dữ liệu định tuyến để tác nhân sử dụng. Đây là
+frontmatter chung, nên nó hoạt động cho người, nhóm, hệ thống, dự án hoặc bất kỳ
+kiểu thực thể nào khác.
 
-Các trường thường gặp gồm:
+Các trường phổ biến bao gồm:
 
 - `entityType`: ví dụ `person`, `team`, `system` hoặc `project`
-- `canonicalId`: khóa danh tính ổn định dùng trên alias và lượt nhập
+- `canonicalId`: khóa danh tính ổn định được dùng trên các bí danh và bản nhập
 - `aliases`: tên, handle hoặc nhãn nên phân giải về cùng một trang
 - `privacyTier`: `public`, `local-private`, `sensitive` hoặc `confirm-before-use`
-- `bestUsedFor` / `notEnoughFor`: gợi ý định tuyến ngắn gọn
-- `lastRefreshedAt`: dấu thời gian làm mới nguồn tách biệt với thời gian sửa trang
-- `personCard`: thẻ định tuyến tùy chọn riêng cho người, với handle, mạng xã hội,
-  email, múi giờ, lane, ask-for, avoid-asking-for, độ tin cậy và quyền riêng tư
+- `bestUsedFor` / `notEnoughFor`: gợi ý định tuyến gọn
+- `lastRefreshedAt`: dấu thời gian làm mới nguồn tách biệt với thời gian chỉnh sửa trang
+- `personCard`: thẻ định tuyến tùy chọn dành riêng cho người với handle, mạng xã hội,
+  email, múi giờ, lane, nên hỏi, tránh hỏi, độ tin cậy và quyền riêng tư
 - `relationships`: cạnh có kiểu tới các trang liên quan với đích, loại, trọng số,
-  độ tin cậy, loại bằng chứng, tầng quyền riêng tư và ghi chú
+  độ tin cậy, loại bằng chứng, bậc quyền riêng tư và ghi chú
 
-Với wiki về con người, agent thường nên bắt đầu từ
-`reports/person-agent-directory.md`, sau đó mở trang người đó bằng `wiki_get`
-trước khi dùng thông tin liên hệ hoặc dữ kiện suy luận.
+Với wiki về con người, tác nhân thường nên bắt đầu từ
+`reports/person-agent-directory.md`, sau đó mở trang người bằng `wiki_get`
+trước khi dùng chi tiết liên hệ hoặc sự kiện suy luận.
 
 Ví dụ:
 
@@ -243,27 +242,28 @@ claims:
 
 ## Pipeline biên dịch
 
-Bước biên dịch đọc các trang wiki, chuẩn hóa tóm tắt và phát ra các artifact ổn định
+Bước biên dịch đọc các trang wiki, chuẩn hóa tóm tắt và phát ra các hiện vật ổn định
 hướng tới máy dưới:
 
 - `.openclaw-wiki/cache/agent-digest.json`
 - `.openclaw-wiki/cache/claims.jsonl`
 
-Các digest này tồn tại để agent và mã runtime không phải scrape trang Markdown.
+Các bản tóm lược này tồn tại để tác nhân và mã runtime không phải thu thập dữ liệu từ
+các trang Markdown.
 
-Đầu ra đã biên dịch cũng cung cấp năng lực cho:
+Đầu ra đã biên dịch cũng hỗ trợ:
 
 - lập chỉ mục wiki lượt đầu cho luồng tìm kiếm/lấy
 - tra cứu claim-id ngược về trang sở hữu
-- phần bổ sung prompt nhỏ gọn
+- phần bổ sung prompt gọn
 - tạo báo cáo/bảng điều khiển
 
 ## Bảng điều khiển và báo cáo sức khỏe
 
-Khi `render.createDashboards` được bật, compile duy trì bảng điều khiển trong
+Khi `render.createDashboards` được bật, bước biên dịch duy trì bảng điều khiển dưới
 `reports/`.
 
-Báo cáo tích hợp gồm:
+Các báo cáo tích hợp sẵn bao gồm:
 
 - `reports/open-questions.md`
 - `reports/contradictions.md`
@@ -278,24 +278,24 @@ Báo cáo tích hợp gồm:
 Các báo cáo này theo dõi những thứ như:
 
 - cụm ghi chú mâu thuẫn
-- cụm claim cạnh tranh
-- claim thiếu bằng chứng có cấu trúc
-- trang và claim có độ tin cậy thấp
-- độ mới cũ hoặc không rõ
+- cụm nhận định cạnh tranh
+- nhận định thiếu bằng chứng có cấu trúc
+- trang và nhận định có độ tin cậy thấp
+- độ mới đã cũ hoặc không xác định
 - trang có câu hỏi chưa giải quyết
-- thẻ định tuyến person/entity
+- thẻ định tuyến người/thực thể
 - cạnh quan hệ có cấu trúc
-- độ phủ lớp bằng chứng
-- tầng quyền riêng tư không công khai cần xem xét trước khi dùng
+- mức bao phủ lớp bằng chứng
+- bậc quyền riêng tư không công khai cần xem xét trước khi dùng
 
-## Tìm kiếm và truy hồi
+## Tìm kiếm và truy xuất
 
 `memory-wiki` hỗ trợ hai backend tìm kiếm:
 
-- `shared`: dùng luồng tìm kiếm memory dùng chung khi có sẵn
+- `shared`: dùng luồng tìm kiếm bộ nhớ dùng chung khi có sẵn
 - `local`: tìm kiếm wiki cục bộ
 
-Nó cũng hỗ trợ ba corpus:
+Nó cũng hỗ trợ ba ngữ liệu:
 
 - `wiki`
 - `memory`
@@ -303,36 +303,36 @@ Nó cũng hỗ trợ ba corpus:
 
 Hành vi quan trọng:
 
-- `wiki_search` và `wiki_get` dùng digest đã biên dịch làm lượt đầu khi có thể
-- id claim có thể phân giải ngược về trang sở hữu
-- claim bị phản biện/cũ/mới ảnh hưởng tới xếp hạng
-- nhãn provenance có thể được giữ trong kết quả
-- chế độ tìm kiếm có thể thiên vị xếp hạng cho tra cứu người, định tuyến câu hỏi, bằng chứng
-  nguồn hoặc claim thô
+- `wiki_search` và `wiki_get` dùng các bản tóm lược đã biên dịch làm lượt đầu khi có thể
+- id nhận định có thể phân giải ngược về trang sở hữu
+- nhận định bị tranh chấp/đã cũ/mới ảnh hưởng đến xếp hạng
+- nhãn nguồn gốc có thể tồn tại trong kết quả
+- chế độ tìm kiếm có thể thiên lệch xếp hạng cho tra cứu người, định tuyến câu hỏi, bằng chứng
+  nguồn hoặc nhận định thô
 
 Quy tắc thực tế:
 
 - dùng `memory_search corpus=all` cho một lượt truy hồi rộng
-- dùng `wiki_search` + `wiki_get` khi bạn quan tâm tới xếp hạng riêng của wiki,
-  provenance hoặc cấu trúc niềm tin cấp trang
+- dùng `wiki_search` + `wiki_get` khi bạn quan tâm đến xếp hạng riêng của wiki,
+  nguồn gốc hoặc cấu trúc niềm tin cấp trang
 
 Chế độ tìm kiếm:
 
 - `auto`: mặc định cân bằng
-- `find-person`: tăng điểm các entity giống người, alias, handle, mạng xã hội và
-  ID canonical
-- `route-question`: tăng điểm thẻ agent, gợi ý ask-for, gợi ý best-used-for và
+- `find-person`: tăng hạng thực thể giống người, bí danh, handle, mạng xã hội và
+  ID chính tắc
+- `route-question`: tăng hạng thẻ tác nhân, gợi ý nên hỏi, gợi ý phù hợp nhất và
   ngữ cảnh quan hệ
-- `source-evidence`: tăng điểm trang nguồn và siêu dữ liệu bằng chứng có cấu trúc
-- `raw-claim`: tăng điểm claim có cấu trúc khớp và trả về siêu dữ liệu claim/bằng chứng
-  trong kết quả
+- `source-evidence`: tăng hạng trang nguồn và siêu dữ liệu bằng chứng có cấu trúc
+- `raw-claim`: tăng hạng nhận định có cấu trúc khớp và trả về siêu dữ liệu
+  nhận định/bằng chứng trong kết quả
 
-Khi một kết quả khớp với claim có cấu trúc, `wiki_search` có thể trả về
+Khi một kết quả khớp với một nhận định có cấu trúc, `wiki_search` có thể trả về
 `matchedClaimId`, `matchedClaimStatus`, `matchedClaimConfidence`,
 `evidenceKinds` và `evidenceSourceIds` trong payload chi tiết của nó. Đầu ra văn bản
-cũng bao gồm các dòng `Claim:` và `Evidence:` nhỏ gọn khi có.
+cũng bao gồm các dòng `Claim:` và `Evidence:` gọn khi có sẵn.
 
-## Công cụ agent
+## Công cụ tác nhân
 
 Plugin đăng ký các công cụ này:
 
@@ -344,33 +344,33 @@ Plugin đăng ký các công cụ này:
 
 Chúng làm gì:
 
-- `wiki_status`: chế độ vault hiện tại, sức khỏe, khả năng có sẵn của CLI Obsidian
-- `wiki_search`: tìm kiếm trang wiki và, khi được cấu hình, corpus memory dùng chung;
+- `wiki_status`: chế độ kho hiện tại, sức khỏe, tính khả dụng của CLI Obsidian
+- `wiki_search`: tìm kiếm trang wiki và, khi được cấu hình, ngữ liệu bộ nhớ dùng chung;
   chấp nhận `mode` cho tra cứu người, định tuyến câu hỏi, bằng chứng nguồn hoặc đào sâu
-  claim thô
-- `wiki_get`: đọc trang wiki theo id/path hoặc fallback về corpus memory dùng chung
+  nhận định thô
+- `wiki_get`: đọc trang wiki theo id/đường dẫn hoặc fallback sang ngữ liệu bộ nhớ dùng chung
 - `wiki_apply`: đột biến tổng hợp/siêu dữ liệu hẹp mà không phẫu thuật trang tự do
-- `wiki_lint`: kiểm tra cấu trúc, khoảng trống provenance, mâu thuẫn, câu hỏi mở
+- `wiki_lint`: kiểm tra cấu trúc, thiếu hụt nguồn gốc, mâu thuẫn, câu hỏi mở
 
-Plugin cũng đăng ký phần bổ sung corpus memory không độc quyền, để
-`memory_search` và `memory_get` dùng chung có thể chạm tới wiki khi Plugin Active Memory
-hỗ trợ chọn corpus.
+Plugin cũng đăng ký một phần bổ sung ngữ liệu bộ nhớ không độc quyền, để
+`memory_search` và `memory_get` dùng chung có thể truy cập wiki khi Plugin Active Memory
+hỗ trợ chọn ngữ liệu.
 
-## Hành vi prompt và context
+## Hành vi prompt và ngữ cảnh
 
-Khi `context.includeCompiledDigestPrompt` được bật, các phần prompt memory
-thêm một snapshot đã biên dịch nhỏ gọn từ `agent-digest.json`.
+Khi `context.includeCompiledDigestPrompt` được bật, các phần prompt bộ nhớ
+nối thêm một ảnh chụp đã biên dịch gọn từ `agent-digest.json`.
 
-Snapshot đó được chủ đích giữ nhỏ và giàu tín hiệu:
+Ảnh chụp đó có chủ ý nhỏ và nhiều tín hiệu:
 
 - chỉ các trang hàng đầu
-- chỉ các claim hàng đầu
+- chỉ các nhận định hàng đầu
 - số lượng mâu thuẫn
 - số lượng câu hỏi
-- định tính độ tin cậy/độ mới
+- bộ định tính độ tin cậy/độ mới
 
-Đây là tùy chọn vì nó thay đổi hình dạng prompt và chủ yếu hữu ích cho engine context
-hoặc lắp ráp prompt legacy tiêu thụ rõ ràng các phần bổ sung memory.
+Đây là tùy chọn vì nó thay đổi hình dạng prompt và chủ yếu hữu ích cho các
+công cụ ngữ cảnh hoặc quá trình lắp ráp prompt cũ tiêu thụ rõ ràng phần bổ sung bộ nhớ.
 
 ## Cấu hình
 
@@ -426,26 +426,30 @@ hoặc lắp ráp prompt legacy tiêu thụ rõ ràng các phần bổ sung memo
 }
 ```
 
-Các tùy chọn bật/tắt chính:
+Các nút bật/tắt chính:
 
 - `vaultMode`: `isolated`, `bridge`, `unsafe-local`
 - `vault.renderMode`: `native` hoặc `obsidian`
 - `bridge.readMemoryArtifacts`: nhập các artifact công khai của Plugin Active Memory
-- `bridge.followMemoryEvents`: bao gồm nhật ký sự kiện ở chế độ bridge
+- `bridge.followMemoryEvents`: bao gồm nhật ký sự kiện trong chế độ bridge
 - `search.backend`: `shared` hoặc `local`
 - `search.corpus`: `wiki`, `memory`, hoặc `all`
-- `context.includeCompiledDigestPrompt`: thêm ảnh chụp digest nhỏ gọn vào các phần lời nhắc bộ nhớ
-- `render.createBacklinks`: tạo các khối liên quan xác định
-- `render.createDashboards`: tạo các trang bảng điều khiển
+- `context.includeCompiledDigestPrompt`: thêm snapshot tóm tắt gọn vào các phần lời nhắc bộ nhớ
+- `render.createBacklinks`: tạo các khối liên quan có tính xác định
+- `render.createDashboards`: tạo các trang dashboard
 
 ### Ví dụ: QMD + chế độ bridge
 
-Dùng cấu hình này khi bạn muốn QMD để truy hồi và `memory-wiki` làm một lớp tri thức được duy trì:
+Dùng cấu hình này khi bạn muốn QMD để truy hồi và `memory-wiki` cho một lớp
+tri thức được duy trì:
 
 ```json5
 {
   memory: {
     backend: "qmd",
+  },
+  plugins: {
+    entries: {
       "memory-wiki": {
         enabled: true,
         config: {
@@ -475,8 +479,8 @@ Dùng cấu hình này khi bạn muốn QMD để truy hồi và `memory-wiki` l
 Cấu hình này giữ:
 
 - QMD phụ trách truy hồi Active Memory
-- `memory-wiki` tập trung vào các trang đã biên dịch và bảng điều khiển
-- hình dạng lời nhắc không đổi cho đến khi bạn chủ động bật lời nhắc digest đã biên dịch
+- `memory-wiki` tập trung vào các trang đã biên dịch và dashboard
+- hình dạng lời nhắc không đổi cho đến khi bạn chủ động bật lời nhắc tóm tắt đã biên dịch
 
 ## CLI
 
@@ -500,7 +504,8 @@ Xem [CLI: wiki](/vi/cli/wiki) để biết tài liệu tham chiếu lệnh đầ
 
 ## Hỗ trợ Obsidian
 
-Khi `vault.renderMode` là `obsidian`, Plugin ghi Markdown thân thiện với Obsidian và có thể tùy chọn dùng CLI `obsidian` chính thức.
+Khi `vault.renderMode` là `obsidian`, Plugin ghi Markdown thân thiện với Obsidian
+và có thể tùy chọn dùng CLI `obsidian` chính thức.
 
 Các quy trình được hỗ trợ bao gồm:
 
@@ -508,7 +513,7 @@ Các quy trình được hỗ trợ bao gồm:
 - tìm kiếm vault
 - mở một trang
 - gọi một lệnh Obsidian
-- chuyển đến ghi chú hằng ngày
+- chuyển tới ghi chú hằng ngày
 
 Tính năng này là tùy chọn. Wiki vẫn hoạt động ở chế độ native mà không cần Obsidian.
 
@@ -517,14 +522,14 @@ Tính năng này là tùy chọn. Wiki vẫn hoạt động ở chế độ nati
 1. Giữ Plugin Active Memory của bạn cho truy hồi/quảng bá/Dreaming.
 2. Bật `memory-wiki`.
 3. Bắt đầu với chế độ `isolated` trừ khi bạn rõ ràng muốn chế độ bridge.
-4. Dùng `wiki_search` / `wiki_get` khi nguồn gốc quan trọng.
-5. Dùng `wiki_apply` cho các tổng hợp hẹp hoặc cập nhật siêu dữ liệu.
+4. Dùng `wiki_search` / `wiki_get` khi nguồn gốc dữ liệu là quan trọng.
+5. Dùng `wiki_apply` cho các bản tổng hợp hẹp hoặc cập nhật siêu dữ liệu.
 6. Chạy `wiki_lint` sau các thay đổi đáng kể.
-7. Bật bảng điều khiển nếu bạn muốn hiển thị nội dung lỗi thời/mâu thuẫn.
+7. Bật dashboard nếu bạn muốn khả năng hiển thị dữ liệu cũ/mâu thuẫn.
 
 ## Tài liệu liên quan
 
-- [Tổng quan về Memory](/vi/concepts/memory)
+- [Tổng quan về bộ nhớ](/vi/concepts/memory)
 - [CLI: memory](/vi/cli/memory)
 - [CLI: wiki](/vi/cli/wiki)
 - [Tổng quan Plugin SDK](/vi/plugins/sdk-overview)
