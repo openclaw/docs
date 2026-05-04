@@ -1,42 +1,42 @@
 ---
 read_when:
-    - Travail sur les fonctionnalités du canal Tlon/Urbit
-summary: État de prise en charge, fonctionnalités et configuration de Tlon/Urbit
+    - Travailler sur les fonctionnalités du canal Tlon/Urbit
+summary: État de la prise en charge de Tlon/Urbit, fonctionnalités et configuration
 title: Tlon
 x-i18n:
-    generated_at: "2026-05-02T22:16:29Z"
+    generated_at: "2026-05-04T02:22:17Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 30915170786fc1ee8b84fb8be2ea42280262923064cfa9ca7107036096a13add
+    source_hash: 1718044541b431ff2437508e7e6659c14206f4aa84ab8b207e0d791dea2a48c5
     source_path: channels/tlon.md
     workflow: 16
 ---
 
-Tlon est une messagerie décentralisée construite sur Urbit. OpenClaw se connecte à votre ship Urbit et peut
-répondre aux messages directs et aux messages de discussions de groupe. Les réponses de groupe nécessitent par défaut une mention @ et peuvent
+Tlon est une messagerie décentralisée construite sur Urbit. OpenClaw se connecte à votre vaisseau Urbit et peut
+répondre aux MP et aux messages de discussion de groupe. Les réponses de groupe nécessitent une mention @ par défaut et peuvent
 être davantage restreintes via des listes d’autorisation.
 
-Statut : Plugin intégré. Les messages directs, les mentions de groupe, les réponses dans les fils, la mise en forme de texte riche et les
+Statut : Plugin groupé. Les MP, les mentions de groupe, les réponses dans les fils, la mise en forme de texte enrichi et les
 téléversements d’images sont pris en charge. Les réactions et les sondages ne sont pas encore pris en charge.
 
-## Plugin intégré
+## Plugin groupé
 
-Tlon est livré comme Plugin intégré dans les versions actuelles d’OpenClaw ; les builds empaquetés
-standard ne nécessitent donc pas d’installation séparée.
+Tlon est fourni comme Plugin groupé dans les versions actuelles d’OpenClaw ; les builds
+empaquetés normaux ne nécessitent donc pas d’installation séparée.
 
 Si vous utilisez un build plus ancien ou une installation personnalisée qui exclut Tlon, installez un
 paquet npm actuel :
 
-Installation via CLI (registre npm) :
+Installation via la CLI (registre npm) :
 
 ```bash
 openclaw plugins install @openclaw/tlon
 ```
 
-Utilisez le paquet nu pour suivre l’étiquette de version officielle actuelle. Épinglez une version
+Utilisez le paquet nu pour suivre le tag de version officiel actuel. Épinglez une version
 exacte uniquement lorsque vous avez besoin d’une installation reproductible.
 
-Checkout local (lors d’une exécution depuis un dépôt git) :
+Checkout local (lors de l’exécution depuis un dépôt git) :
 
 ```bash
 openclaw plugins install ./path/to/local/tlon-plugin
@@ -46,13 +46,13 @@ Détails : [Plugins](/fr/tools/plugin)
 
 ## Configuration
 
-1. Vérifiez que le Plugin Tlon est disponible.
-   - Les versions empaquetées actuelles d’OpenClaw l’intègrent déjà.
+1. Assurez-vous que le Plugin Tlon est disponible.
+   - Les versions empaquetées actuelles d’OpenClaw l’incluent déjà.
    - Les installations plus anciennes/personnalisées peuvent l’ajouter manuellement avec les commandes ci-dessus.
-2. Récupérez l’URL de votre ship et le code de connexion.
+2. Rassemblez l’URL de votre vaisseau et le code de connexion.
 3. Configurez `channels.tlon`.
 4. Redémarrez le Gateway.
-5. Envoyez un message direct au bot ou mentionnez-le dans un canal de groupe.
+5. Envoyez un MP au bot ou mentionnez-le dans un canal de groupe.
 
 Configuration minimale (compte unique) :
 
@@ -64,17 +64,17 @@ Configuration minimale (compte unique) :
       ship: "~sampel-palnet",
       url: "https://your-ship-host",
       code: "lidlut-tabwed-pillex-ridrup",
-      ownerShip: "~your-main-ship", // recommandé : votre ship, toujours autorisé
+      ownerShip: "~your-main-ship", // recommended: your ship, always allowed
     },
   },
 }
 ```
 
-## Ships privés/LAN
+## Vaisseaux privés/LAN
 
-Par défaut, OpenClaw bloque les noms d’hôte et plages d’adresses IP privés/internes pour la protection SSRF.
-Si votre ship fonctionne sur un réseau privé (localhost, IP LAN ou nom d’hôte interne),
-vous devez l’autoriser explicitement :
+Par défaut, OpenClaw bloque les noms d’hôte privés/internes et les plages d’adresses IP pour la protection contre le SSRF.
+Si votre vaisseau fonctionne sur un réseau privé (localhost, IP LAN ou nom d’hôte interne),
+vous devez l’activer explicitement :
 
 ```json5
 {
@@ -93,8 +93,8 @@ Cela s’applique aux URL comme :
 - `http://192.168.x.x:8080`
 - `http://my-ship.local:8080`
 
-⚠️ Activez cette option uniquement si vous faites confiance à votre réseau local. Ce paramètre désactive les protections SSRF
-pour les requêtes vers l’URL de votre ship.
+⚠️ Activez ceci uniquement si vous faites confiance à votre réseau local. Ce paramètre désactive les protections SSRF
+pour les requêtes vers l’URL de votre vaisseau.
 
 ## Canaux de groupe
 
@@ -124,7 +124,7 @@ Désactiver la découverte automatique :
 
 ## Contrôle d’accès
 
-Liste d’autorisation des messages directs (vide = aucun message direct autorisé, utilisez `ownerShip` pour le flux d’approbation) :
+Liste d’autorisation des MP (vide = aucun MP autorisé, utilisez `ownerShip` pour le flux d’approbation) :
 
 ```json5
 {
@@ -136,7 +136,7 @@ Liste d’autorisation des messages directs (vide = aucun message direct autoris
 }
 ```
 
-Autorisation des groupes (restreinte par défaut) :
+Autorisation de groupe (restreinte par défaut) :
 
 ```json5
 {
@@ -159,9 +159,9 @@ Autorisation des groupes (restreinte par défaut) :
 }
 ```
 
-## Système de propriétaire et d’approbation
+## Propriétaire et système d’approbation
 
-Définissez un ship propriétaire pour recevoir les demandes d’approbation lorsque des utilisateurs non autorisés tentent d’interagir :
+Définissez un vaisseau propriétaire pour recevoir les demandes d’approbation lorsque des utilisateurs non autorisés tentent d’interagir :
 
 ```json5
 {
@@ -173,19 +173,19 @@ Définissez un ship propriétaire pour recevoir les demandes d’approbation lor
 }
 ```
 
-Le ship propriétaire est **automatiquement autorisé partout** — les invitations par message direct sont acceptées automatiquement et
-les messages de canal sont toujours autorisés. Vous n’avez pas besoin d’ajouter le propriétaire à `dmAllowlist` ou
+Le vaisseau propriétaire est **automatiquement autorisé partout** : les invitations par MP sont acceptées automatiquement et
+les messages de canal sont toujours autorisés. Vous n’avez pas besoin d’ajouter le propriétaire à `dmAllowlist` ou à
 `defaultAuthorizedShips`.
 
-Lorsqu’il est défini, le propriétaire reçoit des notifications par message direct pour :
+Lorsqu’il est défini, le propriétaire reçoit des notifications par MP pour :
 
-- les demandes de message direct provenant de ships absents de la liste d’autorisation
-- les mentions dans des canaux sans autorisation
-- les demandes d’invitation de groupe
+- Les demandes de MP provenant de vaisseaux absents de la liste d’autorisation
+- Les mentions dans des canaux sans autorisation
+- Les demandes d’invitation de groupe
 
 ## Paramètres d’acceptation automatique
 
-Accepter automatiquement les invitations par message direct (pour les ships dans dmAllowlist) :
+Accepter automatiquement les invitations par MP (pour les vaisseaux dans dmAllowlist) :
 
 ```json5
 {
@@ -197,55 +197,59 @@ Accepter automatiquement les invitations par message direct (pour les ships dans
 }
 ```
 
-Accepter automatiquement les invitations de groupe :
+Accepter automatiquement les invitations de groupe provenant de vaisseaux de confiance :
 
 ```json5
 {
   channels: {
     tlon: {
       autoAcceptGroupInvites: true,
+      groupInviteAllowlist: ["~zod"],
     },
   },
 }
 ```
 
-## Cibles de livraison (CLI/cron)
+`autoAcceptGroupInvites` échoue de manière fermée lorsque `groupInviteAllowlist` est vide. Définissez la
+liste d’autorisation sur les vaisseaux dont les invitations de groupe doivent être acceptées automatiquement.
 
-Utilisez celles-ci avec `openclaw message send` ou la livraison cron :
+## Cibles de livraison (CLI/Cron)
 
-- Message direct : `~sampel-palnet` ou `dm/~sampel-palnet`
+Utilisez-les avec `openclaw message send` ou la livraison cron :
+
+- MP : `~sampel-palnet` ou `dm/~sampel-palnet`
 - Groupe : `chat/~host-ship/channel` ou `group:~host-ship/channel`
 
-## Skill intégré
+## Skill groupée
 
-Le Plugin Tlon inclut une Skill intégrée ([`@tloncorp/tlon-skill`](https://github.com/tloncorp/tlon-skill))
+Le Plugin Tlon inclut une Skill groupée ([`@tloncorp/tlon-skill`](https://github.com/tloncorp/tlon-skill))
 qui fournit un accès CLI aux opérations Tlon :
 
-- **Contacts** : obtenir/mettre à jour des profils, lister les contacts
+- **Contacts** : obtenir/mettre à jour les profils, lister les contacts
 - **Canaux** : lister, créer, publier des messages, récupérer l’historique
 - **Groupes** : lister, créer, gérer les membres
-- **Messages directs** : envoyer des messages, réagir aux messages
-- **Réactions** : ajouter/supprimer des réactions emoji aux publications et aux messages directs
+- **MP** : envoyer des messages, réagir aux messages
+- **Réactions** : ajouter/supprimer des réactions emoji aux publications et aux MP
 - **Paramètres** : gérer les autorisations du Plugin via des commandes slash
 
 La Skill est automatiquement disponible lorsque le Plugin est installé.
 
 ## Capacités
 
-| Fonctionnalité   | Statut                                             |
-| ---------------- | -------------------------------------------------- |
-| Messages directs | ✅ Pris en charge                                  |
-| Groupes/canaux   | ✅ Pris en charge (mentions requises par défaut)   |
+| Fonctionnalité   | Statut                                      |
+| ---------------- | ------------------------------------------- |
+| Messages directs | ✅ Pris en charge                           |
+| Groupes/canaux   | ✅ Pris en charge (soumis à mention par défaut) |
 | Fils             | ✅ Pris en charge (réponses automatiques dans le fil) |
-| Texte riche      | ✅ Markdown converti au format Tlon                |
-| Images           | ✅ Téléversées vers le stockage Tlon               |
-| Réactions        | ✅ Via la [Skill intégrée](#bundled-skill)         |
-| Sondages         | ❌ Pas encore pris en charge                       |
-| Commandes natives | ✅ Pris en charge (propriétaire uniquement par défaut) |
+| Texte enrichi    | ✅ Markdown converti au format Tlon         |
+| Images           | ✅ Téléversées vers le stockage Tlon        |
+| Réactions        | ✅ Via la [Skill groupée](#bundled-skill)   |
+| Sondages         | ❌ Pas encore pris en charge                |
+| Commandes natives | ✅ Prises en charge (propriétaire uniquement par défaut) |
 
 ## Dépannage
 
-Exécutez d’abord cette procédure :
+Exécutez d’abord cette séquence :
 
 ```bash
 openclaw status
@@ -256,9 +260,9 @@ openclaw doctor
 
 Échecs courants :
 
-- **Messages directs ignorés** : l’expéditeur n’est pas dans `dmAllowlist` et aucun `ownerShip` n’est configuré pour le flux d’approbation.
-- **Messages de groupe ignorés** : canal non découvert ou expéditeur non autorisé.
-- **Erreurs de connexion** : vérifiez que l’URL du ship est joignable ; activez `allowPrivateNetwork` pour les ships locaux.
+- **MP ignorés** : l’expéditeur n’est pas dans `dmAllowlist` et aucun `ownerShip` n’est configuré pour le flux d’approbation.
+- **Messages de groupe ignorés** : le canal n’a pas été découvert ou l’expéditeur n’est pas autorisé.
+- **Erreurs de connexion** : vérifiez que l’URL du vaisseau est accessible ; activez `allowPrivateNetwork` pour les vaisseaux locaux.
 - **Erreurs d’authentification** : vérifiez que le code de connexion est actuel (les codes tournent).
 
 ## Référence de configuration
@@ -268,31 +272,32 @@ Configuration complète : [Configuration](/fr/gateway/configuration)
 Options du fournisseur :
 
 - `channels.tlon.enabled` : activer/désactiver le démarrage du canal.
-- `channels.tlon.ship` : nom du ship Urbit du bot (par ex. `~sampel-palnet`).
-- `channels.tlon.url` : URL du ship (par ex. `https://sampel-palnet.tlon.network`).
-- `channels.tlon.code` : code de connexion du ship.
+- `channels.tlon.ship` : nom du vaisseau Urbit du bot (par ex. `~sampel-palnet`).
+- `channels.tlon.url` : URL du vaisseau (par ex. `https://sampel-palnet.tlon.network`).
+- `channels.tlon.code` : code de connexion du vaisseau.
 - `channels.tlon.allowPrivateNetwork` : autoriser les URL localhost/LAN (contournement SSRF).
-- `channels.tlon.ownerShip` : ship propriétaire pour le système d’approbation (toujours autorisé).
-- `channels.tlon.dmAllowlist` : ships autorisés à envoyer des messages directs (vide = aucun).
-- `channels.tlon.autoAcceptDmInvites` : accepter automatiquement les messages directs des ships dans la liste d’autorisation.
-- `channels.tlon.autoAcceptGroupInvites` : accepter automatiquement toutes les invitations de groupe.
+- `channels.tlon.ownerShip` : vaisseau propriétaire pour le système d’approbation (toujours autorisé).
+- `channels.tlon.dmAllowlist` : vaisseaux autorisés à envoyer un MP (vide = aucun).
+- `channels.tlon.autoAcceptDmInvites` : accepter automatiquement les MP des vaisseaux autorisés.
+- `channels.tlon.autoAcceptGroupInvites` : accepter automatiquement les invitations de groupe des vaisseaux autorisés.
+- `channels.tlon.groupInviteAllowlist` : vaisseaux dont les invitations de groupe peuvent être acceptées automatiquement.
 - `channels.tlon.autoDiscoverChannels` : découvrir automatiquement les canaux de groupe (par défaut : true).
 - `channels.tlon.groupChannels` : nids de canaux épinglés manuellement.
-- `channels.tlon.defaultAuthorizedShips` : ships autorisés pour tous les canaux.
+- `channels.tlon.defaultAuthorizedShips` : vaisseaux autorisés pour tous les canaux.
 - `channels.tlon.authorization.channelRules` : règles d’authentification par canal.
 - `channels.tlon.showModelSignature` : ajouter le nom du modèle aux messages.
 
 ## Notes
 
 - Les réponses de groupe nécessitent une mention (par ex. `~your-bot-ship`) pour répondre.
-- Réponses dans les fils : si le message entrant se trouve dans un fil, OpenClaw répond dans ce fil.
-- Texte riche : la mise en forme Markdown (gras, italique, code, en-têtes, listes) est convertie au format natif de Tlon.
+- Réponses dans les fils : si le message entrant se trouve dans un fil, OpenClaw répond dans le fil.
+- Texte enrichi : la mise en forme Markdown (gras, italique, code, en-têtes, listes) est convertie au format natif de Tlon.
 - Images : les URL sont téléversées vers le stockage Tlon et intégrées comme blocs d’image.
 
 ## Connexe
 
 - [Vue d’ensemble des canaux](/fr/channels) — tous les canaux pris en charge
-- [Association](/fr/channels/pairing) — authentification par message direct et flux d’association
-- [Groupes](/fr/channels/groups) — comportement des discussions de groupe et obligation de mention
-- [Routage de canal](/fr/channels/channel-routing) — routage des sessions pour les messages
+- [Appairage](/fr/channels/pairing) — authentification par MP et flux d’appairage
+- [Groupes](/fr/channels/groups) — comportement des discussions de groupe et filtrage par mention
+- [Routage des canaux](/fr/channels/channel-routing) — routage de session pour les messages
 - [Sécurité](/fr/gateway/security) — modèle d’accès et durcissement
