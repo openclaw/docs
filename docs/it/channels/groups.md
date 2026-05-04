@@ -2,18 +2,18 @@
 read_when:
     - Modifica del comportamento delle chat di gruppo o del controllo tramite menzioni
 sidebarTitle: Groups
-summary: Comportamento delle chat di gruppo nelle diverse superfici (Discord/iMessage/Matrix/Microsoft Teams/Signal/Slack/Telegram/WhatsApp/Zalo)
+summary: Comportamento delle chat di gruppo nelle superfici (Discord/iMessage/Matrix/Microsoft Teams/Signal/Slack/Telegram/WhatsApp/Zalo)
 title: Gruppi
 x-i18n:
-    generated_at: "2026-05-03T21:27:22Z"
+    generated_at: "2026-05-04T02:21:43Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 6fd4fcaa8335f1dc4b4b1a719d6654ab0c10530f74284269ed6205dd5f87c116
+    source_hash: dea506c011a5d8f6155b2f56aacb236482cb8c5b7457001cb2171fd45932443d
     source_path: channels/groups.md
     workflow: 16
 ---
 
-OpenClaw tratta le chat di gruppo in modo coerente su tutte le superfici: Discord, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo.
+OpenClaw gestisce le chat di gruppo in modo coerente su tutte le superfici: Discord, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo.
 
 ## Introduzione per principianti (2 minuti)
 
@@ -22,17 +22,17 @@ OpenClaw "vive" sui tuoi account di messaggistica. Non esiste un utente bot What
 Comportamento predefinito:
 
 - I gruppi sono limitati (`groupPolicy: "allowlist"`).
-- Le risposte richiedono una menzione, a meno che tu non disabiliti esplicitamente il gating delle menzioni.
+- Le risposte richiedono una menzione, a meno che tu non disabiliti esplicitamente il controllo tramite menzione.
 - Le normali risposte finali nei gruppi/canali sono private per impostazione predefinita. L'output visibile nella stanza usa lo strumento `message`.
 
-In pratica: i mittenti nella allowlist possono attivare OpenClaw menzionandolo.
+Traduzione: i mittenti nella allowlist possono attivare OpenClaw menzionandolo.
 
 <Note>
 **In breve**
 
 - **L'accesso ai DM** è controllato da `*.allowFrom`.
 - **L'accesso ai gruppi** è controllato da `*.groupPolicy` + allowlist (`*.groups`, `*.groupAllowFrom`).
-- **L'attivazione delle risposte** è controllata dal gating delle menzioni (`requireMention`, `/activation`).
+- **L'attivazione delle risposte** è controllata dal controllo tramite menzione (`requireMention`, `/activation`).
 
 </Note>
 
@@ -47,18 +47,20 @@ otherwise -> reply
 
 ## Risposte visibili
 
-Per le stanze di gruppo/canale, OpenClaw usa per impostazione predefinita `messages.groupChat.visibleReplies: "message_tool"`.
+Per stanze di gruppo/canale, OpenClaw usa per impostazione predefinita `messages.groupChat.visibleReplies: "message_tool"`.
 `openclaw doctor --fix` scrive questo valore predefinito nelle configurazioni dei canali configurati che lo omettono.
-Questo significa che l'agente elabora comunque il turno e può aggiornare lo stato di memoria/sessione, ma la sua normale risposta finale non viene pubblicata automaticamente nella stanza. Per parlare in modo visibile, l'agente usa `message(action=send)`.
+Ciò significa che l'agente elabora comunque il turno e può aggiornare lo stato di memoria/sessione, ma la sua normale risposta finale non viene pubblicata automaticamente nella stanza. Per parlare in modo visibile, l'agente usa `message(action=send)`.
 
-Se lo strumento message non è disponibile con la policy degli strumenti attiva, OpenClaw ripiega sulle risposte visibili automatiche invece di sopprimere silenziosamente la risposta.
+Questo valore predefinito dipende da un modello/runtime che chiama gli strumenti in modo affidabile. Se i log mostrano testo dell'assistente ma `didSendViaMessagingTool: false`, il modello ha risposto privatamente invece di chiamare lo strumento di messaggistica. Non si tratta di un errore di invio di Discord/Slack/Telegram. Usa un modello affidabile nelle chiamate agli strumenti per le sessioni di gruppo/canale, oppure imposta `messages.groupChat.visibleReplies: "automatic"` per ripristinare le risposte finali visibili legacy.
+
+Se lo strumento di messaggistica non è disponibile con la policy degli strumenti attiva, OpenClaw ripiega sulle risposte visibili automatiche invece di sopprimere silenziosamente la risposta.
 `openclaw doctor` avvisa di questa mancata corrispondenza.
 
-Per le chat dirette e qualsiasi altro turno sorgente, usa `messages.visibleReplies: "message_tool"` per applicare globalmente lo stesso comportamento di risposta visibile solo tramite strumento. Anche gli harness possono scegliere questo come valore predefinito quando non è impostato; l'harness Codex lo fa per le chat dirette in modalità Codex. `messages.groupChat.visibleReplies` resta l'override più specifico per le stanze di gruppo/canale.
+Per le chat dirette e qualsiasi altro turno sorgente, usa `messages.visibleReplies: "message_tool"` per applicare globalmente lo stesso comportamento di risposta visibile solo tramite strumento. Anche gli harness possono scegliere questo valore come predefinito quando non impostato; l'harness Codex lo fa per le chat dirette in modalità Codex. `messages.groupChat.visibleReplies` rimane l'override più specifico per le stanze di gruppo/canale.
 
-Questo sostituisce il vecchio schema che costringeva il modello a rispondere `NO_REPLY` per la maggior parte dei turni in modalità ascolto. In modalità solo strumento, non fare nulla di visibile significa semplicemente non chiamare lo strumento message.
+Questo sostituisce il vecchio schema che forzava il modello a rispondere `NO_REPLY` per la maggior parte dei turni in modalità ascolto. In modalità solo strumento, non produrre nulla di visibile significa semplicemente non chiamare lo strumento di messaggistica.
 
-Gli indicatori di digitazione vengono comunque inviati mentre l'agente lavora in modalità solo strumento. La modalità di digitazione predefinita per i gruppi viene aggiornata da "message" a "instant" per questi turni, perché potrebbe non esserci mai testo normale del messaggio dell'assistente prima che l'agente decida se chiamare lo strumento message. La configurazione esplicita della modalità di digitazione ha comunque la precedenza.
+Gli indicatori di digitazione vengono comunque inviati mentre l'agente lavora in modalità solo strumento. La modalità di digitazione predefinita per i gruppi viene aggiornata da "message" a "instant" per questi turni, perché potrebbe non esserci mai testo normale del messaggio dell'assistente prima che l'agente decida se chiamare lo strumento di messaggistica. La configurazione esplicita della modalità di digitazione ha comunque la precedenza.
 
 Per ripristinare le risposte finali automatiche legacy per le stanze di gruppo/canale:
 
@@ -74,7 +76,7 @@ Per ripristinare le risposte finali automatiche legacy per le stanze di gruppo/c
 
 Il Gateway ricarica a caldo la configurazione `messages` dopo il salvataggio del file. Riavvia solo quando il monitoraggio dei file o il ricaricamento della configurazione è disabilitato nel deployment.
 
-Per richiedere che l'output visibile passi attraverso lo strumento message per ogni chat sorgente:
+Per richiedere che l'output visibile passi attraverso lo strumento di messaggistica per ogni chat sorgente:
 
 ```json5
 {
@@ -84,29 +86,29 @@ Per richiedere che l'output visibile passi attraverso lo strumento message per o
 }
 ```
 
-I comandi slash nativi (Discord, Telegram e altre superfici con supporto nativo dei comandi) ignorano `visibleReplies: "message_tool"` e rispondono sempre in modo visibile, così l'interfaccia dei comandi nativa del canale riceve la risposta che si aspetta. Questo vale solo per i turni di comando nativi validati; i comandi `/...` digitati come testo e i turni di chat ordinari seguono comunque il valore predefinito di gruppo configurato.
+I comandi slash nativi (Discord, Telegram e altre superfici con supporto nativo ai comandi) bypassano `visibleReplies: "message_tool"` e rispondono sempre in modo visibile, così l'interfaccia dei comandi nativa del canale riceve la risposta prevista. Questo vale solo per i turni di comando nativi validati; i comandi `/...` digitati come testo e i turni di chat ordinari seguono comunque il valore predefinito configurato per il gruppo.
 
 ## Visibilità del contesto e allowlist
 
 Nella sicurezza dei gruppi sono coinvolti due controlli diversi:
 
-- **Autorizzazione di attivazione**: chi può attivare l'agente (`groupPolicy`, `groups`, `groupAllowFrom`, allowlist specifiche del canale).
+- **Autorizzazione all'attivazione**: chi può attivare l'agente (`groupPolicy`, `groups`, `groupAllowFrom`, allowlist specifiche del canale).
 - **Visibilità del contesto**: quale contesto supplementare viene iniettato nel modello (testo della risposta, citazioni, cronologia del thread, metadati inoltrati).
 
-Per impostazione predefinita, OpenClaw dà priorità al normale comportamento di chat e mantiene il contesto per lo più come ricevuto. Questo significa che le allowlist decidono principalmente chi può attivare azioni, non un confine di redazione universale per ogni frammento citato o storico.
+Per impostazione predefinita, OpenClaw dà priorità al normale comportamento della chat e mantiene il contesto per lo più così come ricevuto. Ciò significa che le allowlist decidono principalmente chi può attivare azioni, non sono un confine universale di oscuramento per ogni frammento citato o storico.
 
 <AccordionGroup>
-  <Accordion title="Il comportamento attuale è specifico del canale">
+  <Accordion title="Current behavior is channel-specific">
     - Alcuni canali applicano già un filtro basato sul mittente per il contesto supplementare in percorsi specifici (per esempio il seeding dei thread Slack, le ricerche di risposte/thread Matrix).
-    - Altri canali continuano a passare il contesto di citazione/risposta/inoltro così come ricevuto.
+    - Altri canali trasmettono ancora il contesto di citazione/risposta/inoltro così come ricevuto.
 
   </Accordion>
-  <Accordion title="Direzione di rafforzamento (pianificata)">
+  <Accordion title="Hardening direction (planned)">
     - `contextVisibility: "all"` (predefinito) mantiene il comportamento attuale così come ricevuto.
     - `contextVisibility: "allowlist"` filtra il contesto supplementare limitandolo ai mittenti nella allowlist.
     - `contextVisibility: "allowlist_quote"` è `allowlist` più un'eccezione esplicita per citazione/risposta.
 
-    Finché questo modello di rafforzamento non sarà implementato in modo coerente su tutti i canali, aspettati differenze in base alla superficie.
+    Finché questo modello di rafforzamento non sarà implementato in modo coerente tra i canali, aspettati differenze in base alla superficie.
 
   </Accordion>
 </AccordionGroup>
@@ -115,42 +117,42 @@ Per impostazione predefinita, OpenClaw dà priorità al normale comportamento di
 
 Se vuoi...
 
-| Obiettivo                                         | Cosa impostare                                             |
+| Obiettivo                                    | Cosa impostare                                             |
 | -------------------------------------------- | ---------------------------------------------------------- |
 | Consentire tutti i gruppi ma rispondere solo alle @menzioni | `groups: { "*": { requireMention: true } }`                |
-| Disabilitare tutte le risposte di gruppo                    | `groupPolicy: "disabled"`                                  |
-| Solo gruppi specifici                         | `groups: { "<group-id>": { ... } }` (nessuna chiave `"*"` key)         |
-| Solo tu puoi attivare nei gruppi               | `groupPolicy: "allowlist"`, `groupAllowFrom: ["+1555..."]` |
-| Riutilizzare un set di mittenti attendibili tra canali | `groupAllowFrom: ["accessGroup:operators"]`                |
+| Disabilitare tutte le risposte nei gruppi    | `groupPolicy: "disabled"`                                  |
+| Solo gruppi specifici                        | `groups: { "<group-id>": { ... } }` (nessuna chiave `"*"` ) |
+| Solo tu puoi attivare nei gruppi             | `groupPolicy: "allowlist"`, `groupAllowFrom: ["+1555..."]` |
+| Riutilizzare un unico insieme di mittenti attendibili tra canali | `groupAllowFrom: ["accessGroup:operators"]`                |
 
 Per allowlist di mittenti riutilizzabili, vedi [Gruppi di accesso](/it/channels/access-groups).
 
 ## Chiavi di sessione
 
 - Le sessioni di gruppo usano chiavi di sessione `agent:<agentId>:<channel>:group:<id>` (stanze/canali usano `agent:<agentId>:<channel>:channel:<id>`).
-- Gli argomenti dei forum Telegram aggiungono `:topic:<threadId>` all'id del gruppo, così ogni argomento ha la propria sessione.
-- Le chat dirette usano la sessione principale (o una sessione per mittente, se configurata).
+- Gli argomenti dei forum Telegram aggiungono `:topic:<threadId>` all'ID del gruppo, così ogni argomento ha la propria sessione.
+- Le chat dirette usano la sessione principale (o una per mittente, se configurato).
 - Gli Heartbeat vengono saltati per le sessioni di gruppo.
 
 <a id="pattern-personal-dms-public-groups-single-agent"></a>
 
 ## Schema: DM personali + gruppi pubblici (agente singolo)
 
-Sì: funziona bene se il tuo traffico "personale" è composto da **DM** e il tuo traffico "pubblico" da **gruppi**.
+Sì, funziona bene se il tuo traffico "personale" è costituito da **DM** e il tuo traffico "pubblico" da **gruppi**.
 
-Perché: in modalità agente singolo, i DM di solito arrivano nella chiave di sessione **principale** (`agent:main:main`), mentre i gruppi usano sempre chiavi di sessione **non principali** (`agent:main:<channel>:group:<id>`). Se abiliti il sandboxing con `mode: "non-main"`, quelle sessioni di gruppo vengono eseguite nel backend sandbox configurato, mentre la tua sessione DM principale resta sull'host. Docker è il backend predefinito se non ne scegli uno.
+Perché: in modalità agente singolo, i DM in genere arrivano nella chiave di sessione **principale** (`agent:main:main`), mentre i gruppi usano sempre chiavi di sessione **non principali** (`agent:main:<channel>:group:<id>`). Se abiliti il sandboxing con `mode: "non-main"`, quelle sessioni di gruppo vengono eseguite nel backend sandbox configurato mentre la tua sessione DM principale resta sull'host. Docker è il backend predefinito se non ne scegli uno.
 
-Questo ti dà un unico "cervello" dell'agente (workspace + memoria condivisi), ma due posture di esecuzione:
+Questo ti dà un unico "cervello" agente (workspace + memoria condivisi), ma due posture di esecuzione:
 
 - **DM**: strumenti completi (host)
 - **Gruppi**: sandbox + strumenti limitati
 
 <Note>
-Se hai bisogno di workspace/personalità davvero separati ("personale" e "pubblico" non devono mai mescolarsi), usa un secondo agente + binding. Vedi [Routing multi-agente](/it/concepts/multi-agent).
+Se ti servono workspace/persona davvero separati ("personale" e "pubblico" non devono mai mescolarsi), usa un secondo agente + binding. Vedi [Routing multi-agente](/it/concepts/multi-agent).
 </Note>
 
 <Tabs>
-  <Tab title="DM sull'host, gruppi in sandbox">
+  <Tab title="DMs on host, groups sandboxed">
     ```json5
     {
       agents: {
@@ -174,8 +176,8 @@ Se hai bisogno di workspace/personalità davvero separati ("personale" e "pubbli
     }
     ```
   </Tab>
-  <Tab title="I gruppi vedono solo una cartella in allowlist">
-    Vuoi che "i gruppi possano vedere solo la cartella X" invece di "nessun accesso all'host"? Mantieni `workspaceAccess: "none"` e monta nella sandbox solo i percorsi in allowlist:
+  <Tab title="Groups see only an allowlisted folder">
+    Vuoi che "i gruppi possano vedere solo la cartella X" invece di "nessun accesso all'host"? Mantieni `workspaceAccess: "none"` e monta nella sandbox solo i percorsi nella allowlist:
 
     ```json5
     {
@@ -202,14 +204,14 @@ Se hai bisogno di workspace/personalità davvero separati ("personale" e "pubbli
 
 Correlati:
 
-- Chiavi di configurazione e valori predefiniti: [Configurazione del Gateway](/it/gateway/config-agents#agentsdefaultssandbox)
-- Debug del motivo per cui uno strumento è bloccato: [Sandbox vs Tool Policy vs Elevated](/it/gateway/sandbox-vs-tool-policy-vs-elevated)
-- Dettagli sui mount bind: [Sandboxing](/it/gateway/sandboxing#custom-bind-mounts)
+- Chiavi di configurazione e valori predefiniti: [Configurazione Gateway](/it/gateway/config-agents#agentsdefaultssandbox)
+- Debug del motivo per cui uno strumento è bloccato: [Sandbox vs policy degli strumenti vs privilegi elevati](/it/gateway/sandbox-vs-tool-policy-vs-elevated)
+- Dettagli sui bind mount: [Sandboxing](/it/gateway/sandboxing#custom-bind-mounts)
 
 ## Etichette di visualizzazione
 
-- Le etichette dell'UI usano `displayName` quando disponibile, formattato come `<channel>:<token>`.
-- `#room` è riservato a stanze/canali; le chat di gruppo usano `g-<slug>` (minuscole, spazi -> `-`, conserva `#@+._-`).
+- Le etichette dell'interfaccia utente usano `displayName` quando disponibile, formattato come `<channel>:<token>`.
+- `#room` è riservato a stanze/canali; le chat di gruppo usano `g-<slug>` (minuscolo, spazi -> `-`, mantieni `#@+._-`).
 
 ## Policy di gruppo
 
@@ -260,25 +262,25 @@ Controlla come vengono gestiti i messaggi di gruppo/stanza per canale:
 }
 ```
 
-| Policy        | Comportamento                                                     |
+| Policy        | Comportamento                                               |
 | ------------- | ------------------------------------------------------------ |
-| `"open"`      | I gruppi bypassano le allowlist; il gating delle menzioni si applica comunque.      |
-| `"disabled"`  | Blocca completamente tutti i messaggi di gruppo.                           |
+| `"open"`      | I gruppi bypassano le allowlist; il controllo tramite menzione si applica comunque. |
+| `"disabled"`  | Blocca completamente tutti i messaggi di gruppo.             |
 | `"allowlist"` | Consente solo gruppi/stanze che corrispondono alla allowlist configurata. |
 
 <AccordionGroup>
   <Accordion title="Note per canale">
-    - `groupPolicy` è separata dal gating delle menzioni (che richiede @menzioni).
+    - `groupPolicy` è separato dal controllo tramite menzione (che richiede @menzioni).
     - WhatsApp/Telegram/Signal/iMessage/Microsoft Teams/Zalo: usa `groupAllowFrom` (fallback: `allowFrom` esplicito).
     - Signal: `groupAllowFrom` può corrispondere all'id del gruppo Signal in ingresso oppure al telefono/UUID del mittente.
-    - Le approvazioni di pairing DM (voci nello store `*-allowFrom`) si applicano solo all'accesso DM; l'autorizzazione dei mittenti di gruppo resta esplicita nelle allowlist di gruppo.
-    - Discord: la allowlist usa `channels.discord.guilds.<id>.channels`.
-    - Slack: la allowlist usa `channels.slack.channels`.
-    - Matrix: la allowlist usa `channels.matrix.groups`. Preferisci ID stanza o alias; la ricerca del nome delle stanze unite è best-effort e i nomi non risolti vengono ignorati a runtime. Usa `channels.matrix.groupAllowFrom` per limitare i mittenti; sono supportate anche allowlist `users` per stanza.
+    - Le approvazioni di associazione DM (voci dello store `*-allowFrom`) si applicano solo all'accesso DM; l'autorizzazione dei mittenti nei gruppi resta esplicita nelle allowlist dei gruppi.
+    - Discord: l'allowlist usa `channels.discord.guilds.<id>.channels`.
+    - Slack: l'allowlist usa `channels.slack.channels`.
+    - Matrix: l'allowlist usa `channels.matrix.groups`. Preferisci ID o alias delle stanze; la ricerca del nome delle stanze unite è best-effort e i nomi non risolti vengono ignorati a runtime. Usa `channels.matrix.groupAllowFrom` per limitare i mittenti; sono supportate anche le allowlist `users` per stanza.
     - I DM di gruppo sono controllati separatamente (`channels.discord.dm.*`, `channels.slack.dm.*`).
-    - La allowlist Telegram può corrispondere a ID utente (`"123456789"`, `"telegram:123456789"`, `"tg:123456789"`) o nomi utente (`"@alice"` o `"alice"`); i prefissi non distinguono tra maiuscole e minuscole.
-    - Il valore predefinito è `groupPolicy: "allowlist"`; se la tua allowlist di gruppo è vuota, i messaggi di gruppo vengono bloccati.
-    - Sicurezza a runtime: quando un blocco provider manca completamente (`channels.<provider>` assente), la policy di gruppo ripiega su una modalità fail-closed (di solito `allowlist`) invece di ereditare `channels.defaults.groupPolicy`.
+    - L'allowlist di Telegram può corrispondere a ID utente (`"123456789"`, `"telegram:123456789"`, `"tg:123456789"`) o nomi utente (`"@alice"` o `"alice"`); i prefissi non distinguono maiuscole e minuscole.
+    - Il valore predefinito è `groupPolicy: "allowlist"`; se la tua allowlist dei gruppi è vuota, i messaggi di gruppo vengono bloccati.
+    - Sicurezza a runtime: quando un blocco provider è completamente assente (`channels.<provider>` assente), la policy di gruppo ripiega su una modalità fail-closed (in genere `allowlist`) invece di ereditare `channels.defaults.groupPolicy`.
 
   </Accordion>
 </AccordionGroup>
@@ -287,21 +289,21 @@ Modello mentale rapido (ordine di valutazione per i messaggi di gruppo):
 
 <Steps>
   <Step title="groupPolicy">
-    `groupPolicy` (aperto/disabilitato/allowlist).
+    `groupPolicy` (open/disabled/allowlist).
   </Step>
-  <Step title="Group allowlists">
-    Allowlist di gruppo (`*.groups`, `*.groupAllowFrom`, allowlist specifica del canale).
+  <Step title="Allowlist dei gruppi">
+    Allowlist dei gruppi (`*.groups`, `*.groupAllowFrom`, allowlist specifica del canale).
   </Step>
-  <Step title="Mention gating">
-    Controllo delle menzioni (`requireMention`, `/activation`).
+  <Step title="Controllo tramite menzione">
+    Controllo tramite menzione (`requireMention`, `/activation`).
   </Step>
 </Steps>
 
-## Controllo delle menzioni (predefinito)
+## Controllo tramite menzione (predefinito)
 
-I messaggi di gruppo richiedono una menzione, salvo override per gruppo. I valori predefiniti si trovano per sottosistema sotto `*.groups."*"`.
+I messaggi di gruppo richiedono una menzione, salvo override per gruppo. I valori predefiniti vivono per sottosistema in `*.groups."*"`.
 
-Rispondere a un messaggio del bot conta come menzione implicita quando il canale supporta i metadati di risposta. Citare un messaggio del bot può anche contare come menzione implicita sui canali che espongono metadati di citazione. I casi integrati attuali includono Telegram, WhatsApp, Slack, Discord, Microsoft Teams e ZaloUser.
+Rispondere a un messaggio del bot conta come menzione implicita quando il canale supporta i metadati di risposta. Anche citare un messaggio del bot può contare come menzione implicita nei canali che espongono i metadati di citazione. I casi integrati attuali includono Telegram, WhatsApp, Slack, Discord, Microsoft Teams e ZaloUser.
 
 ```json5
 {
@@ -340,40 +342,40 @@ Rispondere a un messaggio del bot conta come menzione implicita quando il canale
 ```
 
 <AccordionGroup>
-  <Accordion title="Mention gating notes">
+  <Accordion title="Note sul controllo tramite menzione">
     - `mentionPatterns` sono pattern regex sicuri e senza distinzione tra maiuscole e minuscole; i pattern non validi e le forme non sicure con ripetizioni annidate vengono ignorati.
     - Le superfici che forniscono menzioni esplicite passano comunque; i pattern sono un fallback.
     - Override per agente: `agents.list[].groupChat.mentionPatterns` (utile quando più agenti condividono un gruppo).
-    - Il controllo delle menzioni viene applicato solo quando il rilevamento delle menzioni è possibile (menzioni native o `mentionPatterns` configurati).
-    - Inserire un gruppo o un mittente in allowlist non disabilita il controllo delle menzioni; imposta `requireMention` di quel gruppo su `false` quando tutti i messaggi devono attivare.
-    - Il contesto del prompt della chat di gruppo trasporta a ogni turno l'istruzione risolta per la risposta silenziosa; i file dell'area di lavoro non dovrebbero duplicare i meccanismi `NO_REPLY`.
-    - I gruppi in cui sono consentite risposte silenziose trattano turni del modello vuoti in modo pulito o solo di ragionamento come silenziosi, equivalenti a `NO_REPLY`. Le chat dirette fanno lo stesso solo quando le risposte silenziose dirette sono esplicitamente consentite; altrimenti le risposte vuote restano turni agente falliti.
-    - I valori predefiniti di Discord si trovano in `channels.discord.guilds."*"` (sovrascrivibili per guild/canale).
-    - Il contesto della cronologia di gruppo viene incapsulato in modo uniforme tra i canali ed è **solo pending** (messaggi saltati a causa del controllo delle menzioni); usa `messages.groupChat.historyLimit` per il valore predefinito globale e `channels.<channel>.historyLimit` (o `channels.<channel>.accounts.*.historyLimit`) per gli override. Imposta `0` per disabilitare.
+    - Il controllo tramite menzione viene applicato solo quando il rilevamento delle menzioni è possibile (menzioni native o `mentionPatterns` configurati).
+    - Inserire un gruppo o un mittente in allowlist non disabilita il controllo tramite menzione; imposta `requireMention` di quel gruppo su `false` quando tutti i messaggi devono attivare.
+    - Il contesto del prompt della chat di gruppo include l'istruzione di risposta silenziosa risolta a ogni turno; i file del workspace non devono duplicare la meccanica `NO_REPLY`.
+    - I gruppi in cui sono consentite risposte silenziose trattano i turni del modello vuoti o di solo ragionamento pulito come silenziosi, equivalenti a `NO_REPLY`. Le chat dirette fanno lo stesso solo quando le risposte dirette silenziose sono consentite esplicitamente; altrimenti le risposte vuote restano turni agente non riusciti.
+    - I valori predefiniti di Discord vivono in `channels.discord.guilds."*"` (sovrascrivibili per guild/canale).
+    - Il contesto della cronologia di gruppo è avvolto uniformemente tra i canali ed è **solo pending** (messaggi saltati a causa del controllo tramite menzione); usa `messages.groupChat.historyLimit` per il valore predefinito globale e `channels.<channel>.historyLimit` (o `channels.<channel>.accounts.*.historyLimit`) per gli override. Imposta `0` per disabilitare.
 
   </Accordion>
 </AccordionGroup>
 
-## Restrizioni degli strumenti per gruppo/canale (facoltativo)
+## Restrizioni degli strumenti per gruppo/canale (facoltative)
 
 Alcune configurazioni di canale supportano la restrizione degli strumenti disponibili **all'interno di uno specifico gruppo/stanza/canale**.
 
-- `tools`: consente/nega strumenti per l'intero gruppo.
+- `tools`: consenti/nega strumenti per l'intero gruppo.
 - `toolsBySender`: override per mittente all'interno del gruppo. Usa prefissi di chiave espliciti: `id:<senderId>`, `e164:<phone>`, `username:<handle>`, `name:<displayName>` e wildcard `"*"`. Le chiavi legacy senza prefisso sono ancora accettate e abbinate solo come `id:`.
 
 Ordine di risoluzione (vince il più specifico):
 
 <Steps>
-  <Step title="Group toolsBySender">
+  <Step title="toolsBySender del gruppo">
     Corrispondenza `toolsBySender` di gruppo/canale.
   </Step>
-  <Step title="Group tools">
+  <Step title="tools del gruppo">
     `tools` di gruppo/canale.
   </Step>
-  <Step title="Default toolsBySender">
+  <Step title="toolsBySender predefinito">
     Corrispondenza `toolsBySender` predefinita (`"*"`).
   </Step>
-  <Step title="Default tools">
+  <Step title="tools predefiniti">
     `tools` predefiniti (`"*"`).
   </Step>
 </Steps>
@@ -399,28 +401,28 @@ Esempio (Telegram):
 ```
 
 <Note>
-Le restrizioni degli strumenti per gruppo/canale vengono applicate in aggiunta alla policy globale/di agente sugli strumenti (il deny vince comunque). Alcuni canali usano un annidamento diverso per stanze/canali (ad es. Discord `guilds.*.channels.*`, Slack `channels.*`, Microsoft Teams `teams.*.channels.*`).
+Le restrizioni degli strumenti per gruppo/canale vengono applicate in aggiunta alla policy globale/di agente sugli strumenti (deny vince comunque). Alcuni canali usano un annidamento diverso per stanze/canali (ad esempio Discord `guilds.*.channels.*`, Slack `channels.*`, Microsoft Teams `teams.*.channels.*`).
 </Note>
 
-## Allowlist di gruppo
+## Allowlist dei gruppi
 
-Quando `channels.whatsapp.groups`, `channels.telegram.groups` o `channels.imessage.groups` è configurato, le chiavi agiscono come allowlist di gruppo. Usa `"*"` per consentire tutti i gruppi continuando a impostare il comportamento predefinito delle menzioni.
+Quando `channels.whatsapp.groups`, `channels.telegram.groups` o `channels.imessage.groups` è configurato, le chiavi agiscono come allowlist dei gruppi. Usa `"*"` per consentire tutti i gruppi pur continuando a impostare il comportamento predefinito delle menzioni.
 
 <Warning>
-Confusione comune: l'approvazione dell'associazione DM non è la stessa cosa dell'autorizzazione del gruppo. Per i canali che supportano l'associazione DM, lo store di associazione sblocca solo i DM. I comandi di gruppo richiedono comunque un'autorizzazione esplicita del mittente del gruppo da allowlist di configurazione come `groupAllowFrom` o il fallback di configurazione documentato per quel canale.
+Confusione comune: l'approvazione dell'associazione DM non è la stessa cosa dell'autorizzazione di gruppo. Per i canali che supportano l'associazione DM, lo store di associazione sblocca solo i DM. I comandi di gruppo richiedono comunque un'autorizzazione esplicita del mittente del gruppo da allowlist di configurazione come `groupAllowFrom` o dal fallback di configurazione documentato per quel canale.
 </Warning>
 
 Intenti comuni (copia/incolla):
 
 <Tabs>
-  <Tab title="Disable all group replies">
+  <Tab title="Disabilita tutte le risposte di gruppo">
     ```json5
     {
       channels: { whatsapp: { groupPolicy: "disabled" } },
     }
     ```
   </Tab>
-  <Tab title="Allow only specific groups (WhatsApp)">
+  <Tab title="Consenti solo gruppi specifici (WhatsApp)">
     ```json5
     {
       channels: {
@@ -434,7 +436,7 @@ Intenti comuni (copia/incolla):
     }
     ```
   </Tab>
-  <Tab title="Allow all groups but require mention">
+  <Tab title="Consenti tutti i gruppi ma richiedi menzione">
     ```json5
     {
       channels: {
@@ -445,7 +447,7 @@ Intenti comuni (copia/incolla):
     }
     ```
   </Tab>
-  <Tab title="Owner-only triggers (WhatsApp)">
+  <Tab title="Attivazioni solo proprietario (WhatsApp)">
     ```json5
     {
       channels: {
@@ -476,32 +478,32 @@ I payload in ingresso di gruppo impostano:
 - `ChatType=group`
 - `GroupSubject` (se noto)
 - `GroupMembers` (se noto)
-- `WasMentioned` (risultato del controllo delle menzioni)
+- `WasMentioned` (risultato del controllo tramite menzione)
 - Gli argomenti dei forum Telegram includono anche `MessageThreadId` e `IsForum`.
 
 Note specifiche del canale:
 
-- BlueBubbles può opzionalmente arricchire i partecipanti senza nome dei gruppi macOS dal database locale dei Contatti prima di popolare `GroupMembers`. È disattivato per impostazione predefinita e viene eseguito solo dopo il superamento del normale controllo di gruppo.
+- BlueBubbles può opzionalmente arricchire i partecipanti anonimi dei gruppi macOS dal database locale dei Contatti prima di popolare `GroupMembers`. Questo è disattivato per impostazione predefinita e viene eseguito solo dopo il normale superamento del gating di gruppo.
 
-Il prompt di sistema dell'agente include un'introduzione al gruppo al primo turno di una nuova sessione di gruppo. Ricorda al modello di rispondere come un essere umano, evitare le tabelle Markdown, ridurre al minimo le righe vuote e seguire la normale spaziatura della chat, ed evitare di digitare sequenze letterali `\n`. I nomi dei gruppi e le etichette dei partecipanti provenienti dal canale vengono resi come metadati non attendibili in blocchi delimitati, non come istruzioni di sistema inline.
+Il prompt di sistema dell'agente include un'introduzione al gruppo nel primo turno di una nuova sessione di gruppo. Ricorda al modello di rispondere come un essere umano, evitare tabelle Markdown, ridurre al minimo le righe vuote e seguire la normale spaziatura della chat, ed evitare di digitare sequenze letterali `\n`. I nomi dei gruppi e le etichette dei partecipanti provenienti dal canale sono resi come metadati non attendibili in blocchi fenced, non come istruzioni di sistema inline.
 
 ## Specificità di iMessage
 
-- Preferisci `chat_id:<id>` quando instradi o inserisci in allowlist.
+- Preferisci `chat_id:<id>` durante il routing o l'inserimento in allowlist.
 - Elenca le chat: `imsg chats --limit 20`.
 - Le risposte di gruppo tornano sempre allo stesso `chat_id`.
 
-## Prompt di sistema WhatsApp
+## Prompt di sistema di WhatsApp
 
-Vedi [WhatsApp](/it/channels/whatsapp#system-prompts) per le regole canoniche del prompt di sistema WhatsApp, inclusa la risoluzione dei prompt di gruppo e diretti, il comportamento wildcard e la semantica degli override dell'account.
+Vedi [WhatsApp](/it/channels/whatsapp#system-prompts) per le regole canoniche dei prompt di sistema di WhatsApp, incluse la risoluzione dei prompt di gruppo e diretti, il comportamento wildcard e la semantica degli override degli account.
 
 ## Specificità di WhatsApp
 
-Vedi [Messaggi di gruppo](/it/channels/group-messages) per il comportamento solo WhatsApp (iniezione della cronologia, dettagli sulla gestione delle menzioni).
+Vedi [Messaggi di gruppo](/it/channels/group-messages) per il comportamento specifico di WhatsApp (iniezione della cronologia, dettagli sulla gestione delle menzioni).
 
 ## Correlati
 
 - [Gruppi broadcast](/it/channels/broadcast-groups)
-- [Routing del canale](/it/channels/channel-routing)
+- [Routing dei canali](/it/channels/channel-routing)
 - [Messaggi di gruppo](/it/channels/group-messages)
 - [Associazione](/it/channels/pairing)
