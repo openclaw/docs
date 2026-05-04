@@ -1,14 +1,14 @@
 ---
 read_when:
-    - คุณยังคงใช้ `openclaw daemon ...` ใน scripts
+    - คุณยังใช้ `openclaw daemon ...` ในสคริปต์
     - คุณต้องใช้คำสั่งวงจรชีวิตของบริการ (install/start/stop/restart/status)
 summary: เอกสารอ้างอิง CLI สำหรับ `openclaw daemon` (นามแฝงเดิมสำหรับการจัดการบริการ Gateway)
-title: ดีมอน
+title: เดมอน
 x-i18n:
-    generated_at: "2026-05-02T22:17:29Z"
+    generated_at: "2026-05-04T18:23:47Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3f11b75bf2781e69f6f59b23364f06cf359f9f24407f25f19b9d2186f7158512
+    source_hash: f84e11fc50bdf38da518a8fcf415ae461a2688c2299f996eee384357c0d04a05
     source_path: cli/daemon.md
     workflow: 16
 ---
@@ -17,7 +17,7 @@ x-i18n:
 
 นามแฝงเดิมสำหรับคำสั่งจัดการบริการ Gateway
 
-`openclaw daemon ...` แมปไปยังส่วนติดต่อควบคุมบริการเดียวกันกับคำสั่งบริการ `openclaw gateway ...`
+`openclaw daemon ...` แมปไปยังพื้นผิวควบคุมบริการเดียวกับคำสั่งบริการ `openclaw gateway ...`
 
 ## การใช้งาน
 
@@ -32,40 +32,41 @@ openclaw daemon uninstall
 
 ## คำสั่งย่อย
 
-- `status`: แสดงสถานะการติดตั้งบริการและตรวจสอบสุขภาพของ Gateway
+- `status`: แสดงสถานะการติดตั้งบริการและตรวจสอบสุขภาพ Gateway
 - `install`: ติดตั้งบริการ (`launchd`/`systemd`/`schtasks`)
-- `uninstall`: ลบบริการออก
+- `uninstall`: ลบบริการ
 - `start`: เริ่มบริการ
 - `stop`: หยุดบริการ
-- `restart`: รีสตาร์ทบริการ
+- `restart`: รีสตาร์ตบริการ
 
 ## ตัวเลือกทั่วไป
 
 - `status`: `--url`, `--token`, `--password`, `--timeout`, `--no-probe`, `--require-rpc`, `--deep`, `--json`
 - `install`: `--port`, `--runtime <node|bun>`, `--token`, `--force`, `--json`
-- `restart`: `--force`, `--wait <duration>`, `--json`
+- `restart`: `--safe`, `--force`, `--wait <duration>`, `--json`
 - วงจรชีวิต (`uninstall|start|stop`): `--json`
 
 หมายเหตุ:
 
-- `status` จะแก้ SecretRefs การยืนยันตัวตนที่กำหนดค่าไว้สำหรับการยืนยันตัวตนของการตรวจสอบเมื่อทำได้
-- หาก SecretRef การยืนยันตัวตนที่จำเป็นไม่สามารถแก้ได้ในเส้นทางคำสั่งนี้ `daemon status --json` จะรายงาน `rpc.authWarning` เมื่อการเชื่อมต่อ/การยืนยันตัวตนของการตรวจสอบล้มเหลว ให้ส่ง `--token`/`--password` อย่างชัดเจน หรือแก้แหล่งที่มาของความลับก่อน
-- หากการตรวจสอบสำเร็จ คำเตือน auth-ref ที่ยังแก้ไม่ได้จะถูกระงับเพื่อหลีกเลี่ยงผลบวกลวง
-- `status --deep` เพิ่มการสแกนบริการระดับระบบแบบพยายามอย่างดีที่สุด เมื่อพบบริการอื่นที่มีลักษณะคล้าย Gateway เอาต์พุตสำหรับมนุษย์จะแสดงคำแนะนำการล้างข้อมูลและเตือนว่าคำแนะนำปกติยังคงเป็นหนึ่ง Gateway ต่อหนึ่งเครื่อง
-- บนการติดตั้ง Linux systemd การตรวจสอบ token-drift ของ `status` จะรวมทั้งแหล่งที่มาของยูนิต `Environment=` และ `EnvironmentFile=`
-- การตรวจสอบ drift จะแก้ SecretRefs ของ `gateway.auth.token` โดยใช้ runtime env ที่รวมแล้ว (service command env ก่อน จากนั้น fallback ไปที่ process env)
-- หาก token auth ไม่ได้เปิดใช้อย่างมีผล (ตั้งค่า `gateway.auth.mode` อย่างชัดเจนเป็น `password`/`none`/`trusted-proxy` หรือไม่ได้ตั้งค่า mode โดยที่ password สามารถชนะได้และไม่มีตัวเลือก token ใดชนะได้) การตรวจสอบ token-drift จะข้ามการแก้ config token
-- เมื่อ token auth ต้องใช้ token และ `gateway.auth.token` ถูกจัดการด้วย SecretRef, `install` จะตรวจสอบว่า SecretRef แก้ได้ แต่จะไม่บันทึก token ที่แก้แล้วลงในเมทาดาทา environment ของบริการ
-- หาก token auth ต้องใช้ token และ SecretRef ของ token ที่กำหนดค่าไว้ยังแก้ไม่ได้ การติดตั้งจะล้มเหลวแบบปิด
-- หากกำหนดค่าทั้ง `gateway.auth.token` และ `gateway.auth.password` และไม่ได้ตั้งค่า `gateway.auth.mode` การติดตั้งจะถูกบล็อกจนกว่าจะตั้งค่า mode อย่างชัดเจน
-- บน macOS, `install` จะเก็บ LaunchAgent plists ให้เฉพาะเจ้าของเท่านั้น และโหลดค่า environment ของบริการที่จัดการผ่านไฟล์และ wrapper ที่เฉพาะเจ้าของเท่านั้น แทนการ serialize API keys หรือ auth-profile env refs ลงใน `EnvironmentVariables`
-- หากคุณตั้งใจเรียกใช้หลาย Gateway บนโฮสต์เดียว ให้แยกพอร์ต config/state และ workspaces ดู [/gateway#multiple-gateways-same-host](/th/gateway#multiple-gateways-same-host)
+- `status` แปลงค่า SecretRefs ของการยืนยันตัวตนที่กำหนดค่าไว้สำหรับการยืนยันตัวตนของการตรวจสอบเมื่อทำได้
+- หาก SecretRef ของการยืนยันตัวตนที่จำเป็นไม่สามารถแปลงค่าได้ในเส้นทางคำสั่งนี้ `daemon status --json` จะรายงาน `rpc.authWarning` เมื่อการเชื่อมต่อหรือการยืนยันตัวตนของการตรวจสอบล้มเหลว ให้ส่ง `--token`/`--password` อย่างชัดเจน หรือแปลงค่าแหล่งที่มาของ secret ก่อน
+- หากการตรวจสอบสำเร็จ คำเตือน auth-ref ที่ยังแปลงค่าไม่ได้จะถูกระงับเพื่อหลีกเลี่ยงผลบวกลวง
+- `status --deep` เพิ่มการสแกนบริการระดับระบบแบบพยายามให้ดีที่สุด เมื่อพบบริการอื่นที่คล้าย Gateway เอาต์พุตสำหรับมนุษย์จะพิมพ์คำแนะนำการล้างข้อมูลและเตือนว่าคำแนะนำปกติยังคงเป็นหนึ่ง Gateway ต่อหนึ่งเครื่อง
+- สำหรับการติดตั้ง systemd บน Linux การตรวจสอบ token-drift ของ `status` รวมทั้งแหล่งที่มาของยูนิต `Environment=` และ `EnvironmentFile=`
+- การตรวจสอบ drift แปลงค่า SecretRefs ของ `gateway.auth.token` โดยใช้ runtime env ที่ผสานแล้ว (env ของคำสั่งบริการก่อน แล้วจึงใช้ process env เป็น fallback)
+- หากการยืนยันตัวตนด้วยโทเค็นไม่ได้ทำงานอย่างมีผลจริง (ตั้งค่า `gateway.auth.mode` อย่างชัดเจนเป็น `password`/`none`/`trusted-proxy` หรือไม่ได้ตั้งค่าโหมดในกรณีที่รหัสผ่านสามารถชนะได้และไม่มีตัวเลือกโทเค็นใดชนะได้) การตรวจสอบ token-drift จะข้ามการแปลงค่าโทเค็นจากการกำหนดค่า
+- เมื่อการยืนยันตัวตนด้วยโทเค็นต้องใช้โทเค็นและ `gateway.auth.token` จัดการโดย SecretRef, `install` จะตรวจสอบว่า SecretRef แปลงค่าได้ แต่จะไม่คงค่าโทเค็นที่แปลงแล้วไว้ในข้อมูลเมตา environment ของบริการ
+- หากการยืนยันตัวตนด้วยโทเค็นต้องใช้โทเค็นและ SecretRef ของโทเค็นที่กำหนดค่าไว้ยังแปลงค่าไม่ได้ การติดตั้งจะล้มเหลวแบบปิด
+- หากกำหนดค่าทั้ง `gateway.auth.token` และ `gateway.auth.password` และไม่ได้ตั้งค่า `gateway.auth.mode` การติดตั้งจะถูกบล็อกจนกว่าจะตั้งค่าโหมดอย่างชัดเจน
+- บน macOS, `install` จะเก็บ plist ของ LaunchAgent ให้เฉพาะเจ้าของเท่านั้น และโหลดค่า environment ของบริการที่จัดการผ่านไฟล์และ wrapper ที่เฉพาะเจ้าของเท่านั้น แทนการซีเรียลไลซ์คีย์ API หรือ env refs ของ auth-profile ลงใน `EnvironmentVariables`
+- หากคุณตั้งใจเรียกใช้ Gateway หลายตัวบนโฮสต์เดียว ให้แยกพอร์ต การกำหนดค่า/สถานะ และเวิร์กสเปซออกจากกัน ดู [/gateway#multiple-gateways-same-host](/th/gateway#multiple-gateways-same-host)
+- `restart --safe` ขอให้ Gateway ที่กำลังทำงานอยู่ตรวจสอบงานที่ใช้งานอยู่ล่วงหน้าและกำหนดเวลารีสตาร์ตแบบรวมครั้งเดียวหลังจากงานที่ใช้งานอยู่หมดลง `restart` แบบธรรมดายังคงพฤติกรรมเดิมของตัวจัดการบริการไว้ ส่วน `--force` ยังคงเป็นเส้นทางบังคับทันที
 
-## แนะนำให้ใช้
+## แนะนำ
 
 ใช้ [`openclaw gateway`](/th/cli/gateway) สำหรับเอกสารและตัวอย่างปัจจุบัน
 
 ## ที่เกี่ยวข้อง
 
-- [ข้อมูลอ้างอิง CLI](/th/cli)
+- [เอกสารอ้างอิง CLI](/th/cli)
 - [คู่มือปฏิบัติการ Gateway](/th/gateway)
