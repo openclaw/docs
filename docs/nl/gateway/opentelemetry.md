@@ -1,39 +1,40 @@
 ---
 read_when:
-    - Je wilt OpenClaw-modelgebruik, berichtenstroom of sessiestatistieken naar een OpenTelemetry-collector sturen
-    - Je koppelt traces, metrieken of logs aan Grafana, Datadog, Honeycomb, New Relic, Tempo of een andere OTLP-backend
-    - Je hebt de exacte metrieknamen, spannamen of attribuutstructuren nodig om dashboards of waarschuwingen te bouwen
-summary: Exporteer OpenClaw-diagnostiek naar elke OpenTelemetry-collector via de diagnostics-otel Plugin (OTLP/HTTP)
+    - Je wilt OpenClaw-modelgebruik, berichtenstroom of sessiemetrieken naar een OpenTelemetry-collector sturen
+    - Je koppelt tracegegevens, metrieken of logboeken aan Grafana, Datadog, Honeycomb, New Relic, Tempo of een andere OTLP-backend
+    - Je hebt de exacte metriek-namen, span-namen of attribuutstructuren nodig om dashboards of waarschuwingen te bouwen
+summary: Exporteer OpenClaw-diagnostiek naar elke OpenTelemetry-collector via de diagnostics-otel-Plugin (OTLP/HTTP)
 title: OpenTelemetry-export
 x-i18n:
-    generated_at: "2026-05-03T21:32:47Z"
+    generated_at: "2026-05-04T07:06:17Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c8091aa633a3e10593681f94913a858587a5dc69d9947e0c0d4132f6e897b00b
+    source_hash: d0b5be99b29fe5f13132b03cfeaf3ce978ee16f29e307aa76769bc414b5ca35f
     source_path: gateway/opentelemetry.md
     workflow: 16
 ---
 
-OpenClaw exporteert diagnostiek via de officiële `diagnostics-otel`-Plugin
-met **OTLP/HTTP (protobuf)**. Elke collector of backend die OTLP/HTTP accepteert,
-werkt zonder codewijzigingen. Zie [Logboekregistratie](/nl/logging) voor lokale bestandslogs en hoe je ze leest.
+OpenClaw exporteert diagnostiek via de officiële `diagnostics-otel` plugin
+met **OTLP/HTTP (protobuf)**. Elke collector of backend die OTLP/HTTP
+accepteert, werkt zonder codewijzigingen. Voor lokale bestandslogs en hoe je ze leest, zie
+[Logboekregistratie](/nl/logging).
 
 ## Hoe het samenhangt
 
-- **Diagnostische events** zijn gestructureerde records binnen het proces die worden uitgezonden door de
-  Gateway en meegeleverde Plugins voor modeluitvoeringen, berichtenstroom, sessies, wachtrijen
+- **Diagnostiekgebeurtenissen** zijn gestructureerde, in-process records die worden uitgezonden door de
+  Gateway en meegeleverde plugins voor modelruns, berichtenstroom, sessies, wachtrijen
   en exec.
-- De **`diagnostics-otel`-Plugin** abonneert zich op die events en exporteert ze als
-  OpenTelemetry-**metrics**, **traces** en **logs** via OTLP/HTTP.
-- **Provider-aanroepen** ontvangen een W3C `traceparent`-header vanuit OpenClaw's
-  vertrouwde spancontext voor modelaanroepen wanneer het providertransport aangepaste
-  headers accepteert. Door Plugins uitgezonden tracecontext wordt niet doorgegeven.
-- Exporters worden alleen gekoppeld wanneer zowel het diagnostiekoppervlak als de Plugin zijn
-  ingeschakeld, zodat de kosten binnen het proces standaard vrijwel nul blijven.
+- **`diagnostics-otel` plugin** abonneert zich op die gebeurtenissen en exporteert ze als
+  OpenTelemetry **metrics**, **traces** en **logs** via OTLP/HTTP.
+- **Provideraanroepen** ontvangen een W3C `traceparent`-header van de
+  vertrouwde model-call spancontext van OpenClaw wanneer het providertransport aangepaste
+  headers accepteert. Door plugins uitgezonden tracecontext wordt niet doorgegeven.
+- Exporters worden alleen gekoppeld wanneer zowel het diagnostiekoppervlak als de plugin zijn
+  ingeschakeld, zodat de in-process kosten standaard bijna nul blijven.
 
 ## Snel aan de slag
 
-Installeer voor pakketinstallaties eerst de Plugin:
+Installeer voor pakketinstallaties eerst de plugin:
 
 ```bash
 openclaw plugins install clawhub:@openclaw/diagnostics-otel
@@ -64,7 +65,7 @@ openclaw plugins install clawhub:@openclaw/diagnostics-otel
 }
 ```
 
-Je kunt de Plugin ook inschakelen vanuit de CLI:
+Je kunt de plugin ook inschakelen vanuit de CLI:
 
 ```bash
 openclaw plugins enable diagnostics-otel
@@ -76,11 +77,11 @@ openclaw plugins enable diagnostics-otel
 
 ## Geëxporteerde signalen
 
-| Signaal     | Wat erin gaat                                                                                                                                 |
-| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Metrics** | Tellers en histogrammen voor tokengebruik, kosten, uitvoeringsduur, berichtenstroom, wachtrijlanes, sessiestatus, exec en geheugendruk.       |
-| **Traces**  | Spans voor modelgebruik, modelaanroepen, harness-levenscyclus, tooluitvoering, exec, webhook-/berichtverwerking, contextopbouw en toollussen. |
-| **Logs**    | Gestructureerde `logging.file`-records die via OTLP worden geëxporteerd wanneer `diagnostics.otel.logs` is ingeschakeld.                      |
+| Signaal     | Wat erin gaat                                                                                                                              |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Metrics** | Counters en histogrammen voor tokengebruik, kosten, runduur, berichtenstroom, wachtrijlanes, sessiestatus, exec en geheugendruk.          |
+| **Traces**  | Spans voor modelgebruik, modelaanroepen, harness-levenscyclus, tooluitvoering, exec, webhook-/berichtverwerking, contextopbouw en tool-loops. |
+| **Logs**    | Gestructureerde `logging.file`-records die via OTLP worden geëxporteerd wanneer `diagnostics.otel.logs` is ingeschakeld.                   |
 
 Schakel `traces`, `metrics` en `logs` onafhankelijk van elkaar in of uit. Alle drie staan standaard aan
 wanneer `diagnostics.otel.enabled` true is.
@@ -120,39 +121,39 @@ wanneer `diagnostics.otel.enabled` true is.
 
 ### Omgevingsvariabelen
 
-| Variabele                                                                                                         | Doel                                                                                                                                                                                                                                        |
-| ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `OTEL_EXPORTER_OTLP_ENDPOINT`                                                                                     | Overschrijft `diagnostics.otel.endpoint`. Als de waarde al `/v1/traces`, `/v1/metrics` of `/v1/logs` bevat, wordt die ongewijzigd gebruikt.                                                                                                  |
-| `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` / `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT` / `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT` | Signaalspecifieke endpoint-overschrijvingen die worden gebruikt wanneer de overeenkomende configuratiesleutel `diagnostics.otel.*Endpoint` niet is ingesteld. Signaalspecifieke configuratie wint van signaalspecifieke env, die wint van het gedeelde endpoint. |
-| `OTEL_SERVICE_NAME`                                                                                               | Overschrijft `diagnostics.otel.serviceName`.                                                                                                                                                                                                |
-| `OTEL_EXPORTER_OTLP_PROTOCOL`                                                                                     | Overschrijft het wireprotocol (alleen `http/protobuf` wordt vandaag ondersteund).                                                                                                                                                           |
-| `OTEL_SEMCONV_STABILITY_OPT_IN`                                                                                   | Stel in op `gen_ai_latest_experimental` om het nieuwste experimentele GenAI-spanattribuut (`gen_ai.provider.name`) uit te zenden in plaats van het legacy `gen_ai.system`. GenAI-metrics gebruiken altijd begrensde semantische attributen met lage cardinaliteit. |
-| `OPENCLAW_OTEL_PRELOADED`                                                                                         | Stel in op `1` wanneer een andere preload of hostproces de globale OpenTelemetry SDK al heeft geregistreerd. De Plugin slaat dan zijn eigen NodeSDK-levenscyclus over, maar verbindt nog steeds diagnostische listeners en respecteert `traces`/`metrics`/`logs`. |
+| Variabele                                                                                                         | Doel                                                                                                                                                                                                                                      |
+| ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `OTEL_EXPORTER_OTLP_ENDPOINT`                                                                                     | Overschrijft `diagnostics.otel.endpoint`. Als de waarde al `/v1/traces`, `/v1/metrics` of `/v1/logs` bevat, wordt deze ongewijzigd gebruikt.                                                                                              |
+| `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` / `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT` / `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT` | Signaalspecifieke endpoint-overschrijvingen die worden gebruikt wanneer de bijbehorende configsleutel `diagnostics.otel.*Endpoint` niet is ingesteld. Signaalspecifieke config gaat vóór signaalspecifieke env, die vóór het gedeelde endpoint gaat. |
+| `OTEL_SERVICE_NAME`                                                                                               | Overschrijft `diagnostics.otel.serviceName`.                                                                                                                                                                                              |
+| `OTEL_EXPORTER_OTLP_PROTOCOL`                                                                                     | Overschrijft het wire-protocol (alleen `http/protobuf` wordt momenteel gehonoreerd).                                                                                                                                                      |
+| `OTEL_SEMCONV_STABILITY_OPT_IN`                                                                                   | Stel in op `gen_ai_latest_experimental` om het nieuwste experimentele GenAI-spanattribuut (`gen_ai.provider.name`) uit te zenden in plaats van het oudere `gen_ai.system`. GenAI-metrics gebruiken altijd begrensde semantische attributen met lage cardinaliteit. |
+| `OPENCLAW_OTEL_PRELOADED`                                                                                         | Stel in op `1` wanneer een andere preload of hostproces de globale OpenTelemetry SDK al heeft geregistreerd. De plugin slaat dan zijn eigen NodeSDK-levenscyclus over, maar koppelt nog steeds diagnostische listeners en respecteert `traces`/`metrics`/`logs`. |
 
-## Privacy en inhoud vastleggen
+## Privacy en contentvastlegging
 
-Ruwe model-/toolinhoud wordt standaard **niet** geëxporteerd. Spans bevatten begrensde
-identificatoren (kanaal, provider, model, foutcategorie, alleen gehashte aanvraag-id's)
-en bevatten nooit prompttekst, antwoordtekst, toolinvoer, tooluitvoer of
+Ruwe model-/toolcontent wordt standaard **niet** geëxporteerd. Spans bevatten begrensde
+identifiers (kanaal, provider, model, foutcategorie, request-id's alleen als hash)
+en bevatten nooit prompttekst, antwoordtekst, toolinputs, tooloutputs of
 sessiesleutels.
 
-Uitgaande modelaanvragen kunnen een W3C `traceparent`-header bevatten. Die header wordt
-alleen gegenereerd vanuit diagnostische tracecontext die eigendom is van OpenClaw voor de actieve modelaanroep.
-Bestaande door de aanroeper geleverde `traceparent`-headers worden vervangen, zodat Plugins of
-aangepaste provideropties geen trace-afkomst tussen services kunnen vervalsen.
+Uitgaande modelrequests kunnen een W3C `traceparent`-header bevatten. Die header wordt
+alleen gegenereerd vanuit door OpenClaw beheerde diagnostische tracecontext voor de actieve modelaanroep.
+Bestaande door de aanroeper geleverde `traceparent`-headers worden vervangen, zodat plugins of
+aangepaste provideropties geen trace-afstamming tussen services kunnen spoofen.
 
-Zet `diagnostics.otel.captureContent.*` alleen op `true` wanneer je collector en
-retentiebeleid zijn goedgekeurd voor prompt-, antwoord-, tool- of systeemprompttekst.
-Elke subsleutel is afzonderlijk opt-in:
+Stel `diagnostics.otel.captureContent.*` alleen in op `true` wanneer je collector en
+retentiebeleid zijn goedgekeurd voor prompt-, antwoord-, tool- of system-prompt-
+tekst. Elke subsleutel is afzonderlijk opt-in:
 
 - `inputMessages` — inhoud van gebruikersprompts.
 - `outputMessages` — inhoud van modelantwoorden.
-- `toolInputs` — payloads met toolargumenten.
-- `toolOutputs` — payloads met toolresultaten.
-- `systemPrompt` — samengestelde systeem-/ontwikkelaarsprompt.
+- `toolInputs` — payloads van toolargumenten.
+- `toolOutputs` — payloads van toolresultaten.
+- `systemPrompt` — samengestelde system-/developerprompt.
 
-Wanneer een subsleutel is ingeschakeld, krijgen model- en toolspans alleen voor die klasse begrensde, geredigeerde
-`openclaw.content.*`-attributen.
+Wanneer een subsleutel is ingeschakeld, krijgen model- en toolspans begrensde, geredigeerde
+`openclaw.content.*`-attributen alleen voor die klasse.
 
 ## Sampling en flushen
 
@@ -160,16 +161,16 @@ Wanneer een subsleutel is ingeschakeld, krijgen model- en toolspans alleen voor 
   `1.0` behoudt alles).
 - **Metrics:** `diagnostics.otel.flushIntervalMs` (minimum `1000`).
 - **Logs:** OTLP-logs respecteren `logging.level` (bestandslogniveau). Ze gebruiken het
-  redactiepad voor diagnostische logrecords, niet consoleopmaak. Installaties met hoog volume
-  moeten de voorkeur geven aan sampling/filtering in de OTLP-collector boven lokale sampling.
-- **Bestandslogcorrelatie:** JSONL-bestandslogs bevatten `traceId`,
-  `spanId`, `parentSpanId` en `traceFlags` op het hoogste niveau wanneer de logaanroep een geldige
-  diagnostische tracecontext bevat, waardoor logprocessors lokale logregels kunnen koppelen aan
+  redactiepad voor diagnostische logrecords, niet consoleformattering. Installaties met hoog volume
+  moeten OTLP collector-sampling/-filtering verkiezen boven lokale sampling.
+- **Bestandslogcorrelatie:** JSONL-bestandslogs bevatten top-level `traceId`,
+  `spanId`, `parentSpanId` en `traceFlags` wanneer de logaanroep een geldige
+  diagnostische tracecontext bevat, zodat logprocessors lokale logregels kunnen koppelen aan
   geëxporteerde spans.
-- **Aanvraagcorrelatie:** Gateway-HTTP-aanvragen en WebSocket-frames maken een
-  interne aanvraag-tracescope. Logs en diagnostische events binnen die scope
-  erven standaard de aanvraagtrace, terwijl agentuitvoerings- en modelaanroeppans als
-  kinderen worden gemaakt zodat provider-`traceparent`-headers op dezelfde trace blijven.
+- **Requestcorrelatie:** Gateway HTTP-requests en WebSocket-frames maken een
+  intern request-tracebereik aan. Logs en diagnostiekgebeurtenissen binnen dat bereik
+  erven standaard de request-trace, terwijl agentrun- en model-call-spans als kinderen worden
+  aangemaakt zodat provider-`traceparent`-headers op dezelfde trace blijven.
 
 ## Geëxporteerde metrics
 
@@ -182,9 +183,9 @@ Wanneer een subsleutel is ingeschakeld, krijgen model- en toolspans alleen voor 
 - `gen_ai.client.token.usage` (histogram, GenAI semantic-conventions metric, attrs: `gen_ai.token.type` = `input`/`output`, `gen_ai.provider.name`, `gen_ai.operation.name`, `gen_ai.request.model`)
 - `gen_ai.client.operation.duration` (histogram, seconden, GenAI semantic-conventions metric, attrs: `gen_ai.provider.name`, `gen_ai.operation.name`, `gen_ai.request.model`, optioneel `error.type`)
 - `openclaw.model_call.duration_ms` (histogram, attrs: `openclaw.provider`, `openclaw.model`, `openclaw.api`, `openclaw.transport`, plus `openclaw.errorCategory` en `openclaw.failureKind` bij geclassificeerde fouten)
-- `openclaw.model_call.request_bytes` (histogram, UTF-8-bytegrootte van de uiteindelijke payload voor de modelaanvraag; geen ruwe payloadinhoud)
-- `openclaw.model_call.response_bytes` (histogram, UTF-8-bytegrootte van gestreamde modelantwoordevents; geen ruwe antwoordinhoud)
-- `openclaw.model_call.time_to_first_byte_ms` (histogram, verstreken tijd vóór het eerste gestreamde antwoordevent)
+- `openclaw.model_call.request_bytes` (histogram, UTF-8-bytegrootte van de uiteindelijke modelrequestpayload; geen ruwe payloadcontent)
+- `openclaw.model_call.response_bytes` (histogram, UTF-8-bytegrootte van gestreamde modelantwoordgebeurtenissen; geen ruwe antwoordcontent)
+- `openclaw.model_call.time_to_first_byte_ms` (histogram, verstreken tijd vóór de eerste gestreamde antwoordgebeurtenis)
 
 ### Berichtenstroom
 
@@ -208,63 +209,63 @@ Wanneer een subsleutel is ingeschakeld, krijgen model- en toolspans alleen voor 
 - `openclaw.session.stuck_age_ms` (histogram, attrs: `openclaw.state`; alleen uitgezonden voor verouderde sessieboekhouding zonder actief werk)
 - `openclaw.run.attempt` (counter, attrs: `openclaw.attempt`)
 
-### Telemetrie voor sessie-levendigheid
+### Telemetrie voor sessie-liveness
 
 `diagnostics.stuckSessionWarnMs` is de leeftijdsdrempel zonder voortgang voor diagnostiek van
-sessie-levendigheid. Een `processing`-sessie veroudert niet richting deze drempel
-terwijl OpenClaw voortgang in antwoord, tool, status, blok of ACP-runtime waarneemt.
-Typing-keepalives tellen niet als voortgang, zodat een stil model of harness nog steeds
-kan worden gedetecteerd.
+sessie-liveness. Een `processing`-sessie telt niet mee richting deze drempel
+terwijl OpenClaw voortgang in antwoord, tool, status, block of ACP-runtime waarneemt.
+Typing-keepalives worden niet als voortgang geteld, zodat een stil model of harness
+nog steeds kan worden gedetecteerd.
 
 OpenClaw classificeert sessies op basis van het werk dat het nog kan waarnemen:
 
 - `session.long_running`: actief ingebed werk, modelaanroepen of toolaanroepen maken
   nog steeds voortgang.
-- `session.stalled`: er bestaat actief werk, maar de actieve run heeft geen
-  recente voortgang gemeld. Vastgelopen ingebedde runs blijven eerst alleen-observeren en
-  gaan daarna abort-drain na minstens 10 minuten en 5x `diagnostics.stuckSessionWarnMs`
-  zonder voortgang, zodat wachtrijbeurten achter de lane kunnen worden hervat.
+- `session.stalled`: actief werk bestaat, maar de actieve run heeft geen
+  recente voortgang gemeld. Vastgelopen ingebedde runs blijven eerst alleen-ter-observatie en gaan daarna
+  over op abort-drain na minstens 10 minuten en 5x `diagnostics.stuckSessionWarnMs`
+  zonder voortgang, zodat in de wachtrij geplaatste beurten achter de lane kunnen hervatten.
 - `session.stuck`: verouderde sessieboekhouding zonder actief werk. Dit geeft
-  de betrokken sessie-lane onmiddellijk vrij.
+  de getroffen sessielane onmiddellijk vrij.
 
-Alleen `session.stuck` emitteert de teller `openclaw.session.stuck`, het
+Alleen `session.stuck` verstuurt de teller `openclaw.session.stuck`, het
 histogram `openclaw.session.stuck_age_ms` en de span `openclaw.session.stuck`.
-Herhaalde `session.stuck`-diagnostics bouwen vertraging op zolang de sessie
+Herhaalde `session.stuck`-diagnostiek trekt zich terug zolang de sessie
 ongewijzigd blijft, dus dashboards moeten waarschuwen bij aanhoudende stijgingen in plaats van bij elke
-heartbeat-tick. Zie voor de configuratieknop en standaardwaarden de
+Heartbeat-tick. Zie voor de configuratieknop en standaardwaarden
 [Configuratiereferentie](/nl/gateway/configuration-reference#diagnostics).
 
-### Harness-levenscyclus
+### Levenscyclus van de harness
 
-- `openclaw.harness.duration_ms` (histogram, attrs: `openclaw.harness.id`, `openclaw.harness.plugin`, `openclaw.outcome`, `openclaw.harness.phase` bij fouten)
+- `openclaw.harness.duration_ms` (histogram, attributen: `openclaw.harness.id`, `openclaw.harness.plugin`, `openclaw.outcome`, `openclaw.harness.phase` bij fouten)
 
 ### Exec
 
-- `openclaw.exec.duration_ms` (histogram, attrs: `openclaw.exec.target`, `openclaw.exec.mode`, `openclaw.outcome`, `openclaw.failureKind`)
+- `openclaw.exec.duration_ms` (histogram, attributen: `openclaw.exec.target`, `openclaw.exec.mode`, `openclaw.outcome`, `openclaw.failureKind`)
 
-### Interne diagnostics (geheugen en tool-loop)
+### Interne diagnostiek (geheugen en toollus)
 
-- `openclaw.memory.heap_used_bytes` (histogram, attrs: `openclaw.memory.kind`)
+- `openclaw.memory.heap_used_bytes` (histogram, attributen: `openclaw.memory.kind`)
 - `openclaw.memory.rss_bytes` (histogram)
-- `openclaw.memory.pressure` (teller, attrs: `openclaw.memory.level`)
-- `openclaw.tool.loop.iterations` (teller, attrs: `openclaw.toolName`, `openclaw.outcome`)
-- `openclaw.tool.loop.duration_ms` (histogram, attrs: `openclaw.toolName`, `openclaw.outcome`)
+- `openclaw.memory.pressure` (teller, attributen: `openclaw.memory.level`)
+- `openclaw.tool.loop.iterations` (teller, attributen: `openclaw.toolName`, `openclaw.outcome`)
+- `openclaw.tool.loop.duration_ms` (histogram, attributen: `openclaw.toolName`, `openclaw.outcome`)
 
 ## Geëxporteerde spans
 
 - `openclaw.model.usage`
   - `openclaw.channel`, `openclaw.provider`, `openclaw.model`
   - `openclaw.tokens.*` (input/output/cache_read/cache_write/total)
-  - `gen_ai.system` standaard, of `gen_ai.provider.name` wanneer de nieuwste GenAI semantische conventies zijn ingeschakeld
+  - standaard `gen_ai.system`, of `gen_ai.provider.name` wanneer de nieuwste semantische GenAI-conventies zijn ingeschakeld
   - `gen_ai.request.model`, `gen_ai.operation.name`, `gen_ai.usage.*`
 - `openclaw.run`
   - `openclaw.outcome`, `openclaw.channel`, `openclaw.provider`, `openclaw.model`, `openclaw.errorCategory`
 - `openclaw.model.call`
-  - `gen_ai.system` standaard, of `gen_ai.provider.name` wanneer de nieuwste GenAI semantische conventies zijn ingeschakeld
+  - standaard `gen_ai.system`, of `gen_ai.provider.name` wanneer de nieuwste semantische GenAI-conventies zijn ingeschakeld
   - `gen_ai.request.model`, `gen_ai.operation.name`, `openclaw.provider`, `openclaw.model`, `openclaw.api`, `openclaw.transport`
   - `openclaw.errorCategory` en optioneel `openclaw.failureKind` bij fouten
   - `openclaw.model_call.request_bytes`, `openclaw.model_call.response_bytes`, `openclaw.model_call.time_to_first_byte_ms`
-  - `openclaw.provider.request_id_hash` (begrensde SHA-gebaseerde hash van de upstream provider-request-id; ruwe id's worden niet geëxporteerd)
+  - `openclaw.provider.request_id_hash` (begrensde SHA-gebaseerde hash van de request-id van de upstreamprovider; ruwe id's worden niet geëxporteerd)
 - `openclaw.harness.run`
   - `openclaw.harness.id`, `openclaw.harness.plugin`, `openclaw.outcome`, `openclaw.provider`, `openclaw.model`, `openclaw.channel`
   - Bij voltooiing: `openclaw.harness.result_classification`, `openclaw.harness.yield_detected`, `openclaw.harness.items.started`, `openclaw.harness.items.completed`, `openclaw.harness.items.active`
@@ -274,37 +275,37 @@ heartbeat-tick. Zie voor de configuratieknop en standaardwaarden de
 - `openclaw.exec`
   - `openclaw.exec.target`, `openclaw.exec.mode`, `openclaw.outcome`, `openclaw.failureKind`, `openclaw.exec.command_length`, `openclaw.exec.exit_code`, `openclaw.exec.timed_out`
 - `openclaw.webhook.processed`
-  - `openclaw.channel`, `openclaw.webhook`, `openclaw.chatId`
+  - `openclaw.channel`, `openclaw.webhook`
 - `openclaw.webhook.error`
-  - `openclaw.channel`, `openclaw.webhook`, `openclaw.chatId`, `openclaw.error`
+  - `openclaw.channel`, `openclaw.webhook`, `openclaw.error`
 - `openclaw.message.processed`
-  - `openclaw.channel`, `openclaw.outcome`, `openclaw.chatId`, `openclaw.messageId`, `openclaw.reason`
+  - `openclaw.channel`, `openclaw.outcome`, `openclaw.reason`
 - `openclaw.message.delivery`
   - `openclaw.channel`, `openclaw.delivery.kind`, `openclaw.outcome`, `openclaw.errorCategory`, `openclaw.delivery.result_count`
 - `openclaw.session.stuck`
   - `openclaw.state`, `openclaw.ageMs`, `openclaw.queueDepth`
 - `openclaw.context.assembled`
-  - `openclaw.prompt.size`, `openclaw.history.size`, `openclaw.context.tokens`, `openclaw.errorCategory` (geen prompt-, geschiedenis-, reactie- of session-key-inhoud)
+  - `openclaw.prompt.size`, `openclaw.history.size`, `openclaw.context.tokens`, `openclaw.errorCategory` (geen prompt-, geschiedenis-, respons- of sessiesleutelinhoud)
 - `openclaw.tool.loop`
-  - `openclaw.toolName`, `openclaw.outcome`, `openclaw.iterations`, `openclaw.errorCategory` (geen loop-berichten, params of tooluitvoer)
+  - `openclaw.toolName`, `openclaw.outcome`, `openclaw.iterations`, `openclaw.errorCategory` (geen lusberichten, parameters of tooluitvoer)
 - `openclaw.memory.pressure`
   - `openclaw.memory.level`, `openclaw.memory.heap_used_bytes`, `openclaw.memory.rss_bytes`
 
-Wanneer inhoudsvastlegging expliciet is ingeschakeld, kunnen model- en tool-spans ook
+Wanneer inhoudsregistratie expliciet is ingeschakeld, kunnen model- en toolspans ook
 begrensde, geredigeerde `openclaw.content.*`-attributen bevatten voor de specifieke
 inhoudsklassen waarvoor je hebt gekozen.
 
-## Catalogus met diagnostic-events
+## Catalogus met diagnostische events
 
-De onderstaande events ondersteunen de metrics en spans hierboven. Plugins kunnen zich er ook
-rechtstreeks op abonneren zonder OTLP-export.
+De onderstaande events ondersteunen de bovenstaande metrics en spans. Plugins kunnen zich er ook rechtstreeks op abonneren
+zonder OTLP-export.
 
 **Modelgebruik**
 
 - `model.usage` — tokens, kosten, duur, context, provider/model/kanaal,
   sessie-id's. `usage` is provider-/beurtboekhouding voor kosten en telemetrie;
-  `context.used` is de huidige prompt-/context-snapshot en kan lager zijn dan
-  provider `usage.total` wanneer gecachte invoer of tool-loop-aanroepen betrokken zijn.
+  `context.used` is de huidige prompt-/contextsnapshot en kan lager zijn dan
+  provider `usage.total` wanneer gecachte invoer of toollusaanroepen betrokken zijn.
 
 **Berichtenstroom**
 
@@ -319,10 +320,10 @@ rechtstreeks op abonneren zonder OTLP-export.
 - `run.attempt` / `run.progress`
 - `diagnostic.heartbeat` (geaggregeerde tellers: webhooks/wachtrij/sessie)
 
-**Harness-levenscyclus**
+**Levenscyclus van de harness**
 
 - `harness.run.started` / `harness.run.completed` / `harness.run.error` —
-  levenscyclus per run voor de agent-harness. Bevat `harnessId`, optioneel
+  levenscyclus per run voor de agentharness. Bevat `harnessId`, optioneel
   `pluginId`, provider/model/kanaal en run-id. Voltooiing voegt
   `durationMs`, `outcome`, optioneel `resultClassification`, `yieldDetected`,
   en `itemLifecycle`-aantallen toe. Fouten voegen `phase`
@@ -337,7 +338,7 @@ rechtstreeks op abonneren zonder OTLP-export.
 
 ## Zonder exporter
 
-Je kunt diagnostics-events beschikbaar houden voor plugins of aangepaste sinks zonder
+Je kunt diagnostische events beschikbaar houden voor Plugins of aangepaste sinks zonder
 `diagnostics-otel` uit te voeren:
 
 ```json5
@@ -346,8 +347,8 @@ Je kunt diagnostics-events beschikbaar houden voor plugins of aangepaste sinks z
 }
 ```
 
-Gebruik diagnostics-flags voor gerichte debuguitvoer zonder `logging.level` te verhogen.
-Flags zijn hoofdletterongevoelig en ondersteunen wildcards (bijv. `telegram.*` of
+Gebruik diagnostiekvlaggen voor gerichte debuguitvoer zonder `logging.level` te verhogen.
+Vlaggen zijn niet hoofdlettergevoelig en ondersteunen wildcards (bijv. `telegram.*` of
 `*`):
 
 ```json5
@@ -362,9 +363,9 @@ Of als een eenmalige env-override:
 OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload openclaw gateway
 ```
 
-Flag-uitvoer gaat naar het standaard logbestand (`logging.file`) en wordt nog steeds
+Vlaguitvoer gaat naar het standaardlogbestand (`logging.file`) en wordt nog steeds
 geredigeerd door `logging.redactSensitive`. Volledige handleiding:
-[Diagnostics-flags](/nl/diagnostics/flags).
+[Diagnostiekvlaggen](/nl/diagnostics/flags).
 
 ## Uitschakelen
 
@@ -374,13 +375,13 @@ geredigeerd door `logging.redactSensitive`. Volledige handleiding:
 }
 ```
 
-Je kunt `diagnostics-otel` ook uit `plugins.allow` laten, of
+Je kunt `diagnostics-otel` ook weglaten uit `plugins.allow`, of
 `openclaw plugins disable diagnostics-otel` uitvoeren.
 
 ## Gerelateerd
 
 - [Logging](/nl/logging) — bestandslogs, console-uitvoer, CLI-tailing en het tabblad Logs in de Control UI
 - [Interne Gateway-logging](/nl/gateway/logging) — WS-logstijlen, subsysteemprefixen en consolevastlegging
-- [Diagnostics-flags](/nl/diagnostics/flags) — gerichte debug-logflags
-- [Diagnostics-export](/nl/gateway/diagnostics) — supportbundeltool voor operators (los van OTEL-export)
-- [Configuratiereferentie](/nl/gateway/configuration-reference#diagnostics) — volledige referentie voor `diagnostics.*`-velden
+- [Diagnostiekvlaggen](/nl/diagnostics/flags) — gerichte debuglogvlaggen
+- [Diagnostiekexport](/nl/gateway/diagnostics) — tool voor operator-supportbundels (los van OTEL-export)
+- [Configuratiereferentie](/nl/gateway/configuration-reference#diagnostics) — volledige veldreferentie voor `diagnostics.*`

@@ -1,22 +1,22 @@
 ---
 read_when:
-    - Leren hoe je OpenClaw configureert
+    - Leren hoe u OpenClaw configureert
     - Configuratievoorbeelden zoeken
     - OpenClaw voor het eerst instellen
-summary: Schema-getrouwe configuratievoorbeelden voor gangbare OpenClaw-installaties
+summary: Schemagetrouwe configuratievoorbeelden voor gangbare OpenClaw-configuraties
 title: Configuratievoorbeelden
 x-i18n:
-    generated_at: "2026-04-29T22:43:19Z"
+    generated_at: "2026-05-04T07:05:58Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8bc1f8877bc635d6e3aafd911852d61e71fa08de9144751209542fd67c70f0ba
+    source_hash: 60c8c2d731f8dce93c4d14657041d72043bc36e3d71ab6cb13c02993ba90dbe3
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Voorbeelden hieronder zijn afgestemd op het huidige configuratieschema. Zie [Configuratie](/nl/gateway/configuration) voor de volledige referentie en opmerkingen per veld.
+Onderstaande voorbeelden zijn afgestemd op het huidige configuratieschema. Zie [Configuratie](/nl/gateway/configuration) voor de volledige referentie en opmerkingen per veld.
 
-## Snelstart
+## Snel aan de slag
 
 ### Absoluut minimum
 
@@ -57,7 +57,7 @@ Sla op als `~/.openclaw/openclaw.json` en je kunt de bot vanaf dat nummer een DM
 }
 ```
 
-## Uitgebreid voorbeeld (belangrijke opties)
+## Uitgebreid voorbeeld (belangrijkste opties)
 
 > Met JSON5 kun je opmerkingen en afsluitende komma's gebruiken. Gewone JSON werkt ook.
 
@@ -256,6 +256,7 @@ Sla op als `~/.openclaw/openclaw.json` en je kunt de bot vanaf dat nummer een DM
       skills: ["github", "weather"], // inherited by agents that omit list[].skills
       thinkingDefault: "low",
       verboseDefault: "off",
+      toolProgressDetail: "explain",
       reasoningDefault: "off",
       elevatedDefault: "on",
       blockStreamingDefault: "off",
@@ -472,7 +473,7 @@ Sla op als `~/.openclaw/openclaw.json` en je kunt de bot vanaf dat nummer een DM
 
 ## Veelvoorkomende patronen
 
-### Gedeelde Skills-baseline met één overschrijving
+### Gedeelde Skills-basislijn met één overschrijving
 
 ```json5
 {
@@ -489,11 +490,11 @@ Sla op als `~/.openclaw/openclaw.json` en je kunt de bot vanaf dat nummer een DM
 }
 ```
 
-- `agents.defaults.skills` is de gedeelde basislijn.
-- `agents.list[].skills` vervangt die basislijn voor één agent.
+- `agents.defaults.skills` is de gedeelde basis.
+- `agents.list[].skills` vervangt die basis voor één agent.
 - Gebruik `skills: []` wanneer een agent geen Skills mag zien.
 
-### Setup voor meerdere platforms
+### Multiplatform-installatie
 
 ```json5
 {
@@ -514,11 +515,11 @@ Sla op als `~/.openclaw/openclaw.json` en je kunt de bot vanaf dat nummer een DM
 }
 ```
 
-### Automatische goedkeuring voor vertrouwd Node-netwerk
+### Automatische goedkeuring voor vertrouwde Node-netwerken
 
 Houd apparaatkoppeling handmatig, tenzij je het netwerkpad beheert. Voor een toegewezen
-lab of tailnet-subnet kun je je aanmelden voor automatische goedkeuring van Node-apparaten
-bij de eerste keer met exacte CIDR's of IP's:
+lab- of tailnet-subnet kun je je aanmelden voor automatische goedkeuring van Node-apparaten
+bij de eerste koppeling met exacte CIDR's of IP's:
 
 ```json5
 {
@@ -532,13 +533,13 @@ bij de eerste keer met exacte CIDR's of IP's:
 }
 ```
 
-Dit blijft uitgeschakeld wanneer het niet is ingesteld. Het geldt alleen voor nieuwe `role: node`-koppeling zonder
-aangevraagde scopes. Operator-/browserclients en upgrades voor rol, scope, metadata of
-openbare sleutel vereisen nog steeds handmatige goedkeuring.
+Dit blijft uitgeschakeld wanneer het niet is ingesteld. Het is alleen van toepassing op nieuwe `role: node`-koppelingen met
+geen aangevraagde scopes. Operator-/browserclients en upgrades van rol, scope, metadata of
+publieke sleutel vereisen nog steeds handmatige goedkeuring.
 
-### Beveiligde DM-modus (gedeelde inbox / DM's voor meerdere gebruikers)
+### Veilige DM-modus (gedeelde inbox / DM's met meerdere gebruikers)
 
-Als meer dan één persoon je bot een DM kan sturen (meerdere items in `allowFrom`, koppelingsgoedkeuringen voor meerdere personen of `dmPolicy: "open"`), schakel dan **beveiligde DM-modus** in zodat DM's van verschillende afzenders standaard niet één context delen:
+Als meer dan één persoon je bot kan DM'en (meerdere vermeldingen in `allowFrom`, koppelingsgoedkeuringen voor meerdere personen, of `dmPolicy: "open"`), schakel dan **veilige DM-modus** in zodat DM's van verschillende afzenders standaard geen context delen:
 
 ```json5
 {
@@ -563,9 +564,9 @@ Als meer dan één persoon je bot een DM kan sturen (meerdere items in `allowFro
 ```
 
 Voor Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC is afzenderautorisatie standaard eerst op ID gebaseerd.
-Schakel directe, wijzigbare matching op naam/e-mail/bijnaam alleen in met `dangerouslyAllowNameMatching: true` van elk kanaal als je dat risico expliciet accepteert.
+Schakel directe, wijzigbare matching op naam/e-mail/bijnaam alleen in met de `dangerouslyAllowNameMatching: true` van elk kanaal als je dat risico expliciet accepteert.
 
-### Anthropic API-sleutel + MiniMax-fallback
+### Anthropic API-sleutel + MiniMax-terugval
 
 ```json5
 {
@@ -658,10 +659,10 @@ Schakel directe, wijzigbare matching op naam/e-mail/bijnaam alleen in met `dange
 
 ## Tips
 
-- Als je `dmPolicy: "open"` instelt, moet de bijbehorende lijst `allowFrom` `"*"` bevatten.
+- Als je `dmPolicy: "open"` instelt, moet de bijbehorende `allowFrom`-lijst `"*"` bevatten.
 - Provider-ID's verschillen (telefoonnummers, gebruikers-ID's, kanaal-ID's). Gebruik de providerdocumentatie om de indeling te bevestigen.
 - Optionele secties om later toe te voegen: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
-- Zie [Providers](/nl/providers) en [Probleemoplossing](/nl/gateway/troubleshooting) voor uitgebreidere setupnotities.
+- Zie [Providers](/nl/providers) en [Probleemoplossing](/nl/gateway/troubleshooting) voor uitgebreidere installatienotities.
 
 ## Gerelateerd
 

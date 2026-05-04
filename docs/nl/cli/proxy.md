@@ -1,31 +1,31 @@
 ---
 read_when:
-    - Je moet door operators beheerde proxyrouting vóór implementatie valideren
-    - Je moet OpenClaw-transportverkeer lokaal vastleggen voor foutopsporing
-    - Je wilt debug-proxysessies, blobs of ingebouwde queryvoorinstellingen inspecteren
-summary: CLI-referentie voor `openclaw proxy`, inclusief door de operator beheerde proxyvalidatie en de lokale inspecteur voor debugproxy-opnamen
+    - Je moet door de operator beheerde proxyrouting vóór de uitrol valideren
+    - Je moet lokaal OpenClaw-transportverkeer vastleggen voor foutopsporing
+    - Je wilt foutopsporingsproxysessies, binaire objecten of ingebouwde queryvoorinstellingen inspecteren
+summary: CLI-referentie voor `openclaw proxy`, inclusief validatie van door de operator beheerde proxy's en de lokale inspectietool voor vastleggingen van de foutopsporingsproxy
 title: Proxy
 x-i18n:
-    generated_at: "2026-05-01T11:16:50Z"
+    generated_at: "2026-05-04T07:03:04Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e0820de861bfe1ec14e0c1624d636d6474b5fedd317e3ba1baaa61f6530e06e9
+    source_hash: 9589bedafb97c31bcb6536a04307cd0c6550e1f307693bd4401785d79f34a1eb
     source_path: cli/proxy.md
     workflow: 16
 ---
 
 # `openclaw proxy`
 
-Valideer door de operator beheerde proxyrouting, of voer de lokale expliciete debugproxy uit
+Valideer door operators beheerde proxyrouting, of voer de lokale expliciete debugproxy uit
 en inspecteer vastgelegd verkeer.
 
-Gebruik `validate` om een door de operator beheerde forward-proxy vooraf te controleren voordat
-OpenClaw-proxyrouting wordt ingeschakeld. De andere commando's zijn debugtools voor
-onderzoek op transportniveau: ze kunnen een lokale proxy starten, een onderliggend commando uitvoeren
-met vastlegging ingeschakeld, vastleggingssessies tonen, veelvoorkomende verkeerspatronen opvragen, vastgelegde
-blobs lezen en lokale vastleggingsgegevens opschonen.
+Gebruik `validate` om een door de operator beheerde forwardproxy vooraf te controleren voordat
+OpenClaw-proxyrouting wordt ingeschakeld. De andere opdrachten zijn debughulpmiddelen voor
+onderzoek op transportniveau: ze kunnen een lokale proxy starten, een child-opdracht uitvoeren
+met vastlegging ingeschakeld, vastleggingssessies tonen, veelvoorkomende verkeerspatronen opvragen, vastgelegde blobs lezen
+en lokale vastleggingsgegevens verwijderen.
 
-## Commando's
+## Opdrachten
 
 ```bash
 openclaw proxy start [--host <host>] [--port <port>]
@@ -41,20 +41,20 @@ openclaw proxy purge
 ## Valideren
 
 `openclaw proxy validate` controleert de effectieve door de operator beheerde proxy-URL uit
-`--proxy-url`, config of `OPENCLAW_PROXY_URL`. Het meldt een configuratieprobleem wanneer
-geen proxy is ingeschakeld en geconfigureerd; gebruik `--proxy-url` voor een eenmalige voorafcontrole
-voordat je de configuratie wijzigt. Standaard verifieert het dat een openbare bestemming slaagt
-via de proxy en dat de proxy geen tijdelijke loopback-canary kan bereiken.
-Aangepaste geweigerde bestemmingen zijn fail-closed: HTTP-reacties en ambigu
-transportfalen mislukken beide, tenzij je een implementatiespecifiek weigeringssignaal
+`--proxy-url`, configuratie of `OPENCLAW_PROXY_URL`. Het meldt een configuratieprobleem wanneer
+er geen proxy is ingeschakeld en geconfigureerd; gebruik `--proxy-url` voor een eenmalige voorafcontrole
+voordat de configuratie wordt gewijzigd. Standaard wordt gecontroleerd of een openbare bestemming via
+de proxy slaagt en of de proxy geen tijdelijke loopback-canary kan bereiken.
+Aangepaste geweigerde bestemmingen zijn fail-closed: HTTP-antwoorden en dubbelzinnige
+transportfouten mislukken allebei, tenzij je een implementatiespecifiek weigeringssignaal
 afzonderlijk kunt verifiëren.
 
 Opties:
 
 - `--json`: druk machineleesbare JSON af.
-- `--proxy-url <url>`: valideer deze proxy-URL in plaats van config of env.
-- `--allowed-url <url>`: voeg een bestemming toe die naar verwachting via de proxy slaagt. Herhaal om meerdere bestemmingen te controleren.
-- `--denied-url <url>`: voeg een bestemming toe die naar verwachting door de proxy wordt geblokkeerd. Herhaal om meerdere bestemmingen te controleren.
+- `--proxy-url <url>`: valideer deze proxy-URL in plaats van configuratie of env.
+- `--allowed-url <url>`: voeg een bestemming toe die naar verwachting via de proxy slaagt. Herhaal dit om meerdere bestemmingen te controleren.
+- `--denied-url <url>`: voeg een bestemming toe die naar verwachting door de proxy wordt geblokkeerd. Herhaal dit om meerdere bestemmingen te controleren.
 - `--timeout-ms <ms>`: time-out per aanvraag in milliseconden.
 
 Zie [Netwerkproxy](/nl/security/network-proxy) voor implementatierichtlijnen en weigeringssemantiek.
@@ -70,15 +70,16 @@ Zie [Netwerkproxy](/nl/security/network-proxy) voor implementatierichtlijnen en 
 - `missing-ack`
 - `error-bursts`
 
-## Opmerkingen
+## Notities
 
 - `start` gebruikt standaard `127.0.0.1`, tenzij `--host` is ingesteld.
-- `run` start een lokale debugproxy en voert daarna het commando na `--` uit.
-- `validate` sluit af met code 1 wanneer de proxyconfiguratie of bestemmingscontroles mislukken.
+- `run` start een lokale debugproxy en voert vervolgens de opdracht na `--` uit.
+- De directe upstream-forwarding van de debugproxy opent upstream-sockets voor diagnostiek. Wanneer de door OpenClaw beheerde proxymodus actief is, is directe forwarding voor proxy-aanvragen en CONNECT-tunnels standaard uitgeschakeld; stel `OPENCLAW_DEBUG_PROXY_ALLOW_DIRECT_CONNECT_WITH_MANAGED_PROXY=1` alleen in voor goedgekeurde lokale diagnostiek.
+- `validate` sluit af met code 1 wanneer proxyconfiguratie of bestemmingscontroles mislukken.
 - Vastleggingen zijn lokale debuggegevens; gebruik `openclaw proxy purge` wanneer je klaar bent.
 
 ## Gerelateerd
 
 - [CLI-referentie](/nl/cli)
 - [Netwerkproxy](/nl/security/network-proxy)
-- [Vertrouwde proxyauthenticatie](/nl/gateway/trusted-proxy-auth)
+- [Vertrouwde proxy-authenticatie](/nl/gateway/trusted-proxy-auth)

@@ -2,93 +2,93 @@
 read_when:
     - Je moet begrijpen waarom een CI-taak wel of niet is uitgevoerd
     - Je debugt een falende GitHub Actions-controle
-    - Je coördineert een releasevalidatierun of heruitvoering
-    - Je wijzigt ClawSweeper-dispatch of het doorsturen van GitHub-activiteit
-summary: CI-taakgrafiek, scopecontroles, release-overkoepelingen en lokale commando-equivalenten
-title: CI-pijplijn
+    - Je coördineert een releasevalidatierun of een herhaling daarvan
+    - Je wijzigt de ClawSweeper-dispatch of het doorsturen van GitHub-activiteit
+summary: CI-jobgrafiek, scope-gates, release-overkoepelingen en equivalenten voor lokale opdrachten
+title: CI-pipeline
 x-i18n:
-    generated_at: "2026-05-03T21:27:42Z"
+    generated_at: "2026-05-04T07:03:03Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e07fc44aa844cb66ce529c570cbbbbf502a61bcbcbc3d9488557abb459ef7678
+    source_hash: 72959d0feaf1339f01c9da263153fd89cc4727da6f928933819931991222714d
     source_path: ci.md
     workflow: 16
 ---
 
-OpenClaw CI draait bij elke push naar `main` en elke pull request. De job `preflight` classificeert de diff en schakelt dure lanes uit wanneer alleen niet-gerelateerde gebieden zijn gewijzigd. Handmatige `workflow_dispatch`-runs omzeilen bewust slimme scoping en waaieren de volledige graph uit voor releasekandidaten en brede validatie. Android-lanes blijven opt-in via `include_android`. Release-only plugin-dekking staat in de afzonderlijke workflow [`Plugin Prerelease`](#plugin-prerelease) en draait alleen vanuit [`Full Release Validation`](#full-release-validation) of een expliciete handmatige dispatch.
+OpenClaw CI draait bij elke push naar `main` en elke pull request. De taak `preflight` classificeert de diff en schakelt dure lanes uit wanneer alleen niet-gerelateerde gebieden zijn gewijzigd. Handmatige `workflow_dispatch`-runs omzeilen bewust slimme scoping en waaieren de volledige graph uit voor releasekandidaten en brede validatie. Android-lanes blijven opt-in via `include_android`. Plugin-dekking die alleen voor releases geldt, staat in de afzonderlijke workflow [`Plugin-voorrelease`](#plugin-prerelease) en draait alleen vanuit [`Volledige releasevalidatie`](#full-release-validation) of een expliciete handmatige dispatch.
 
 ## Pipeline-overzicht
 
-| Job                              | Doel                                                                                                      | Wanneer deze draait                    |
-| -------------------------------- | --------------------------------------------------------------------------------------------------------- | -------------------------------------- |
-| `preflight`                      | Detecteert docs-only wijzigingen, gewijzigde scopes, gewijzigde extensions, en bouwt het CI-manifest      | Altijd bij niet-draft pushes en PR's   |
-| `security-scm-fast`              | Detectie van privésleutels en workflow-audit via `zizmor`                                                 | Altijd bij niet-draft pushes en PR's   |
-| `security-dependency-audit`      | Dependency-vrije audit van production lockfile tegen npm-advisories                                       | Altijd bij niet-draft pushes en PR's   |
-| `security-fast`                  | Vereiste aggregatie voor de snelle security-jobs                                                          | Altijd bij niet-draft pushes en PR's   |
-| `check-dependencies`             | Production Knip dependency-only pass plus de guard voor de allowlist voor ongebruikte bestanden           | Node-relevante wijzigingen             |
-| `build-artifacts`                | Bouwt `dist/`, Control UI, checks voor gebouwde artefacten en herbruikbare downstream artefacten          | Node-relevante wijzigingen             |
-| `checks-fast-core`               | Snelle Linux-correctheidslanes zoals bundled/plugin-contract/protocol-checks                              | Node-relevante wijzigingen             |
-| `checks-fast-contracts-channels` | Gespreide channel-contractchecks met een stabiel geaggregeerd checkresultaat                              | Node-relevante wijzigingen             |
-| `checks-node-core-test`          | Core Node-testshards, exclusief channel-, bundled-, contract- en extension-lanes                          | Node-relevante wijzigingen             |
-| `check`                          | Gespreide equivalent van de lokale hoofdgate: prod-types, lint, guards, testtypes en strikte smoke        | Node-relevante wijzigingen             |
-| `check-additional`               | Architectuur, gespreide boundary/prompt-drift, extension-guards, package-boundary en Gateway watch        | Node-relevante wijzigingen             |
-| `build-smoke`                    | Built-CLI smoke-tests en startup-memory smoke                                                             | Node-relevante wijzigingen             |
-| `checks`                         | Verifier voor channel-tests met gebouwde artefacten                                                       | Node-relevante wijzigingen             |
-| `checks-node-compat-node22`      | Node 22-compatibiliteitsbuild en smoke-lane                                                               | Handmatige CI-dispatch voor releases   |
-| `check-docs`                     | Docs-formatting, lint en broken-link checks                                                               | Docs gewijzigd                         |
-| `skills-python`                  | Ruff + pytest voor Python-backed Skills                                                                   | Python-Skills-relevante wijzigingen    |
-| `checks-windows`                 | Windows-specifieke process/path-tests plus gedeelde regressies voor runtime-importspecifiers              | Windows-relevante wijzigingen          |
-| `macos-node`                     | macOS TypeScript-testlane met de gedeelde gebouwde artefacten                                             | macOS-relevante wijzigingen            |
-| `macos-swift`                    | Swift-lint, build en tests voor de macOS-app                                                              | macOS-relevante wijzigingen            |
-| `android`                        | Android-unittests voor beide flavors plus één debug-APK-build                                             | Android-relevante wijzigingen          |
-| `test-performance-agent`         | Dagelijkse Codex-optimalisatie van trage tests na vertrouwde activiteit                                   | Succesvolle main-CI of handmatige dispatch |
-| `openclaw-performance`           | Dagelijkse/on-demand Kova-runtimeperformancerapporten met mock-provider, deep-profile en GPT 5.4 live-lanes | Gepland en handmatige dispatch         |
+| Taak                             | Doel                                                                                                      | Wanneer deze draait                |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| `preflight`                      | Detecteert wijzigingen die alleen docs raken, gewijzigde scopes, gewijzigde extensies en bouwt het CI-manifest | Altijd bij niet-concept pushes en PR’s |
+| `security-scm-fast`              | Detectie van privésleutels en workflow-audit via `zizmor`                                                 | Altijd bij niet-concept pushes en PR’s |
+| `security-dependency-audit`      | Productie-lockfile-audit zonder afhankelijkheden tegen npm-advisories                                     | Altijd bij niet-concept pushes en PR’s |
+| `security-fast`                  | Vereiste aggregatie voor de snelle beveiligingstaken                                                      | Altijd bij niet-concept pushes en PR’s |
+| `check-dependencies`             | Productie-Knip-pass alleen voor afhankelijkheden plus de unused-file allowlist guard                      | Node-relevante wijzigingen         |
+| `build-artifacts`                | Bouwt `dist/`, Control UI, controles voor gebouwde artefacten en herbruikbare downstream artefacten       | Node-relevante wijzigingen         |
+| `checks-fast-core`               | Snelle Linux-correctheidslanes zoals gebundelde/plugin-contract/protocol-controles                        | Node-relevante wijzigingen         |
+| `checks-fast-contracts-channels` | Geshaarde channel-contractcontroles met een stabiel geaggregeerd controleresultaat                        | Node-relevante wijzigingen         |
+| `checks-node-core-test`          | Core Node-testshards, met uitzondering van channel-, gebundelde, contract- en extensielanes               | Node-relevante wijzigingen         |
+| `check`                          | Geshaarde equivalent van de hoofd-local gate: productietypes, lint, guards, testtypes en strikte smoke    | Node-relevante wijzigingen         |
+| `check-additional`               | Architectuur, geshaarde boundary/prompt-drift, extensieguards, package boundary en gateway watch          | Node-relevante wijzigingen         |
+| `build-smoke`                    | Smoke-tests voor gebouwde CLI en startup-memory-smoke                                                     | Node-relevante wijzigingen         |
+| `checks`                         | Verifier voor channel-tests van gebouwde artefacten                                                       | Node-relevante wijzigingen         |
+| `checks-node-compat-node22`      | Node 22-compatibiliteitsbuild en smoke-lane                                                               | Handmatige CI-dispatch voor releases |
+| `check-docs`                     | Docs-formattering, lint en controles op gebroken links                                                    | Docs gewijzigd                     |
+| `skills-python`                  | Ruff + pytest voor Python-ondersteunde Skills                                                             | Python-Skills-relevante wijzigingen |
+| `checks-windows`                 | Windows-specifieke proces-/padtests plus gedeelde regressies voor runtime-importspecificaties             | Windows-relevante wijzigingen      |
+| `macos-node`                     | macOS TypeScript-testlane met de gedeelde gebouwde artefacten                                             | macOS-relevante wijzigingen        |
+| `macos-swift`                    | Swift-lint, build en tests voor de macOS-app                                                              | macOS-relevante wijzigingen        |
+| `android`                        | Android-unit tests voor beide flavors plus één debug-APK-build                                            | Android-relevante wijzigingen      |
+| `test-performance-agent`         | Dagelijkse optimalisatie van trage Codex-tests na vertrouwde activiteit                                   | Succesvolle main-CI of handmatige dispatch |
+| `openclaw-performance`           | Dagelijkse/op aanvraag Kova-runtimeprestatierapporten met mock-provider-, deep-profile- en GPT 5.4-live-lanes | Gepland en handmatige dispatch     |
 
 ## Fail-fast-volgorde
 
-1. `preflight` bepaalt welke lanes überhaupt bestaan. De logica `docs-scope` en `changed-scope` zijn stappen binnen deze job, geen zelfstandige jobs.
-2. `security-scm-fast`, `security-dependency-audit`, `security-fast`, `check`, `check-additional`, `check-docs` en `skills-python` falen snel zonder te wachten op de zwaardere artefact- en platformmatrixjobs.
+1. `preflight` bepaalt welke lanes überhaupt bestaan. De logica `docs-scope` en `changed-scope` zijn stappen binnen deze taak, geen zelfstandige taken.
+2. `security-scm-fast`, `security-dependency-audit`, `security-fast`, `check`, `check-additional`, `check-docs` en `skills-python` falen snel zonder te wachten op de zwaardere artefact- en platformmatrix-taken.
 3. `build-artifacts` overlapt met de snelle Linux-lanes, zodat downstream consumers kunnen starten zodra de gedeelde build klaar is.
-4. Zwaardere platform- en runtime-lanes waaieren daarna uit: `checks-fast-core`, `checks-fast-contracts-channels`, `checks-node-core-test`, `checks`, `checks-windows`, `macos-node`, `macos-swift` en `android`.
+4. Zwaardere platform- en runtimelanes waaieren daarna uit: `checks-fast-core`, `checks-fast-contracts-channels`, `checks-node-core-test`, `checks`, `checks-windows`, `macos-node`, `macos-swift` en `android`.
 
-GitHub kan vervangen jobs als `cancelled` markeren wanneer een nieuwere push op dezelfde PR of `main`-ref landt. Behandel dat als CI-ruis, tenzij de nieuwste run voor dezelfde ref ook faalt. Geaggregeerde shard-checks gebruiken `!cancelled() && always()`, zodat ze normale shard-fouten nog steeds rapporteren maar niet in de wachtrij komen nadat de hele workflow al is vervangen. De automatische CI-concurrency-key is geversioneerd (`CI-v7-*`), zodat een zombie aan GitHub-zijde in een oude queue group nieuwere main-runs niet onbeperkt kan blokkeren. Handmatige full-suite-runs gebruiken `CI-manual-v1-*` en annuleren lopende runs niet.
+GitHub kan vervangen taken markeren als `cancelled` wanneer een nieuwere push op dezelfde PR- of `main`-ref landt. Behandel dat als CI-ruis tenzij de nieuwste run voor dezelfde ref ook faalt. Geaggregeerde shard-controles gebruiken `!cancelled() && always()`, zodat ze nog steeds normale shard-fouten rapporteren maar niet in de wachtrij komen nadat de hele workflow al is vervangen. De automatische CI-concurrency-key is geversioneerd (`CI-v7-*`), zodat een zombie aan GitHub-zijde in een oude queue group nieuwere main-runs niet oneindig kan blokkeren. Handmatige full-suite-runs gebruiken `CI-manual-v1-*` en annuleren geen lopende runs.
 
 ## Scope en routing
 
-Scope-logica staat in `scripts/ci-changed-scope.mjs` en wordt gedekt door unittests in `src/scripts/ci-changed-scope.test.ts`. Handmatige dispatch slaat changed-scope-detectie over en laat het preflight-manifest handelen alsof elk scoped gebied is gewijzigd.
+Scope-logica staat in `scripts/ci-changed-scope.mjs` en wordt gedekt door unit tests in `src/scripts/ci-changed-scope.test.ts`. Handmatige dispatch slaat changed-scope-detectie over en laat het preflight-manifest doen alsof elk scoped gebied is gewijzigd.
 
 - **CI-workflowwijzigingen** valideren de Node CI-graph plus workflow-linting, maar forceren op zichzelf geen Windows-, Android- of macOS-native builds; die platformlanes blijven gescoped tot platformbronwijzigingen.
-- **CI-routing-only wijzigingen, geselecteerde goedkope core-test fixture-wijzigingen en smalle plugin-contract helper/test-routing wijzigingen** gebruiken een snel Node-only manifestpad: `preflight`, security en één `checks-fast-core`-taak. Dat pad slaat build-artefacten, Node 22-compatibiliteit, channel-contracten, volledige core-shards, bundled-plugin-shards en aanvullende guard-matrices over wanneer de wijziging beperkt is tot de routing- of helperoppervlakken die de snelle taak direct oefent.
-- **Windows Node-checks** zijn gescoped tot Windows-specifieke process/path-wrappers, npm/pnpm/UI-runnerhelpers, package manager-configuratie en de CI-workflowoppervlakken die die lane uitvoeren; niet-gerelateerde source-, plugin-, install-smoke- en test-only wijzigingen blijven op de Linux Node-lanes.
+- **CI-wijzigingen die alleen routing raken, geselecteerde goedkope core-testfixturewijzigingen en smalle plugin-contract helper/test-routing-wijzigingen** gebruiken een snel Node-only manifestpad: `preflight`, security en één `checks-fast-core`-taak. Dat pad slaat build-artefacten, Node 22-compatibiliteit, channel-contracts, volledige core-shards, gebundelde-plugin-shards en extra guard-matrices over wanneer de wijziging beperkt is tot de routing- of helper-oppervlakken die de snelle taak direct oefent.
+- **Windows Node-controles** zijn gescoped tot Windows-specifieke proces-/padwrappers, npm/pnpm/UI-runnerhelpers, package manager-configuratie en de CI-workflowoppervlakken die die lane uitvoeren; niet-gerelateerde bron-, plugin-, install-smoke- en test-only-wijzigingen blijven op de Linux Node-lanes.
 
-De traagste Node-testfamilies zijn gesplitst of gebalanceerd zodat elke job klein blijft zonder runners te ruim te reserveren: channel-contracten draaien als drie gewogen shards, core unit fast/support-lanes draaien afzonderlijk, core runtime infra is gesplitst tussen state- en process/config-shards, auto-reply draait als gebalanceerde workers (waarbij de reply-subtree is gesplitst in agent-runner-, dispatch- en commands/state-routing-shards), en agentic Gateway/server-configs zijn gesplitst over chat/auth/model/http-plugin/runtime/startup-lanes in plaats van te wachten op gebouwde artefacten. Brede browser-, QA-, media- en diverse plugin-tests gebruiken hun eigen Vitest-configs in plaats van de gedeelde plugin catch-all. Include-pattern-shards registreren timingvermeldingen met de CI-shardnaam, zodat `.artifacts/vitest-shard-timings.json` een volledige config kan onderscheiden van een gefilterde shard. `check-additional` houdt package-boundary compile/canary-werk bij elkaar en scheidt runtime-topologiearchitectuur van Gateway watch-dekking; de boundary-guardlijst is over vier matrixshards gestreept, waarbij elke shard geselecteerde onafhankelijke guards gelijktijdig draait en per-check timings afdrukt, inclusief `pnpm prompt:snapshots:check`, zodat Codex runtime happy-path prompt-drift wordt vastgepind aan de PR die deze veroorzaakte. Gateway watch, channel-tests en de core support-boundary-shard draaien gelijktijdig binnen `build-artifacts` nadat `dist/` en `dist-runtime/` al zijn gebouwd.
+De traagste Node-testfamilies zijn gesplitst of gebalanceerd, zodat elke taak klein blijft zonder runners te ruim te reserveren: channel-contracts draaien als drie gewogen shards, core unit fast/support-lanes draaien afzonderlijk, core runtime infra is gesplitst tussen state- en process/config-shards, auto-reply draait als gebalanceerde workers (waarbij de reply-subtree is gesplitst in agent-runner-, dispatch- en commands/state-routing-shards), en agentic gateway/server-configs zijn gesplitst over chat/auth/model/http-plugin/runtime/startup-lanes in plaats van te wachten op gebouwde artefacten. Brede browser-, QA-, media- en diverse plugintests gebruiken hun eigen Vitest-configs in plaats van de gedeelde plugin catch-all. Include-pattern-shards registreren timingvermeldingen met de CI-shardnaam, zodat `.artifacts/vitest-shard-timings.json` een volledige config kan onderscheiden van een gefilterde shard. `check-additional` houdt package-boundary compile/canary-werk bij elkaar en scheidt runtime-topologiearchitectuur van gateway watch-dekking; de boundary guard-lijst is verdeeld over vier matrixshards, die elk geselecteerde onafhankelijke guards gelijktijdig draaien en timings per controle afdrukken, inclusief `pnpm prompt:snapshots:check`, zodat Codex runtime happy-path prompt-drift wordt vastgepind op de PR die deze veroorzaakte. Gateway watch, channel-tests en de core support-boundary-shard draaien gelijktijdig binnen `build-artifacts` nadat `dist/` en `dist-runtime/` al zijn gebouwd.
 
-Android CI draait zowel `testPlayDebugUnitTest` als `testThirdPartyDebugUnitTest` en bouwt daarna de Play debug-APK. De third-party flavor heeft geen afzonderlijke source set of manifest; de unittests-lane compileert de flavor nog steeds met de SMS/call-log BuildConfig-flags, terwijl een dubbele debug-APK-packagingjob bij elke Android-relevante push wordt vermeden.
+Android CI draait zowel `testPlayDebugUnitTest` als `testThirdPartyDebugUnitTest` en bouwt daarna de Play debug-APK. De third-party flavor heeft geen afzonderlijke source set of manifest; de unit-testlane compileert de flavor nog steeds met de SMS/call-log BuildConfig-vlaggen, terwijl een dubbele debug-APK-packagingtaak bij elke Android-relevante push wordt vermeden.
 
-De shard `check-dependencies` draait `pnpm deadcode:dependencies` (een production Knip dependency-only pass vastgepind op de nieuwste Knip-versie, met pnpm's minimum release age uitgeschakeld voor de `dlx`-installatie) en `pnpm deadcode:unused-files`, dat Knip's production unused-file-bevindingen vergelijkt met `scripts/deadcode-unused-files.allowlist.mjs`. De unused-file-guard faalt wanneer een PR een nieuw niet-gereviewd ongebruikt bestand toevoegt of een verouderde allowlist-vermelding laat staan, terwijl bewuste dynamische plugin-, generated-, build-, live-test- en package bridge-oppervlakken behouden blijven die Knip niet statisch kan oplossen.
+De shard `check-dependencies` draait `pnpm deadcode:dependencies` (een productie-Knip-pass alleen voor afhankelijkheden, vastgezet op de nieuwste Knip-versie, met pnpm’s minimale releaseleeftijd uitgeschakeld voor de `dlx`-installatie) en `pnpm deadcode:unused-files`, die Knip’s productiebevindingen voor ongebruikte bestanden vergelijkt met `scripts/deadcode-unused-files.allowlist.mjs`. De unused-file guard faalt wanneer een PR een nieuw niet-beoordeeld ongebruikt bestand toevoegt of een verouderde allowlist-vermelding laat staan, terwijl bewuste dynamische plugin-, gegenereerde, build-, live-test- en package bridge-oppervlakken behouden blijven die Knip niet statisch kan oplossen.
 
-## Doorsturen van ClawSweeper-activiteit
+## ClawSweeper-activiteit doorsturen
 
-`.github/workflows/clawsweeper-dispatch.yml` is de target-side bridge van OpenClaw-repositoryactiviteit naar ClawSweeper. Deze checkt geen onvertrouwde pull request-code uit en voert die niet uit. De workflow maakt een GitHub App-token aan vanuit `CLAWSWEEPER_APP_PRIVATE_KEY` en dispatcht daarna compacte `repository_dispatch`-payloads naar `openclaw/clawsweeper`.
+`.github/workflows/clawsweeper-dispatch.yml` is de brug aan doelzijde van OpenClaw-repositoryactiviteit naar ClawSweeper. Deze checkt geen onvertrouwde pull request-code uit en voert die ook niet uit. De workflow maakt een GitHub App-token aan vanuit `CLAWSWEEPER_APP_PRIVATE_KEY` en dispatcht daarna compacte `repository_dispatch`-payloads naar `openclaw/clawsweeper`.
 
 De workflow heeft vier lanes:
 
 - `clawsweeper_item` voor exacte reviewverzoeken voor issues en pull requests;
-- `clawsweeper_comment` voor expliciete ClawSweeper-commando's in issue-comments;
+- `clawsweeper_comment` voor expliciete ClawSweeper-commando’s in issuecommentaren;
 - `clawsweeper_commit_review` voor reviewverzoeken op commitniveau bij `main`-pushes;
-- `github_activity` voor algemene GitHub-activiteit die de ClawSweeper-agent kan inspecteren.
+- `github_activity` voor algemene GitHub-activiteit die de ClawSweeper-agent mag inspecteren.
 
-De lane `github_activity` stuurt alleen genormaliseerde metadata door: eventtype, actie, actor, repository, itemnummer, URL, titel, status en korte fragmenten voor comments of reviews wanneer aanwezig. Deze vermijdt bewust het doorsturen van de volledige webhook-body. De ontvangende workflow in `openclaw/clawsweeper` is `.github/workflows/github-activity.yml`, die het genormaliseerde event naar de OpenClaw Gateway-hook voor de ClawSweeper-agent post.
+De lane `github_activity` stuurt alleen genormaliseerde metadata door: eventtype, actie, actor, repository, itemnummer, URL, titel, status en korte fragmenten voor commentaren of reviews wanneer aanwezig. Deze vermijdt bewust het doorsturen van de volledige webhookbody. De ontvangende workflow in `openclaw/clawsweeper` is `.github/workflows/github-activity.yml`, die het genormaliseerde event post naar de OpenClaw Gateway-hook voor de ClawSweeper-agent.
 
-Algemene activiteit is observatie, geen delivery-by-default. De ClawSweeper-agent ontvangt het Discord-doel in de prompt en hoort alleen naar `#clawsweeper` te posten wanneer de gebeurtenis verrassend, actionable, riskant of operationeel nuttig is. Routinematige opens, edits, bot-churn, dubbele webhook-ruis en normaal reviewverkeer horen te resulteren in `NO_REPLY`.
+Algemene activiteit is observatie, geen standaardlevering. De ClawSweeper-agent ontvangt het Discord-doel in zijn prompt en zou alleen naar `#clawsweeper` moeten posten wanneer het event verrassend, actiegericht, riskant of operationeel nuttig is. Routineuze opens, edits, botverloop, dubbele webhookruis en normaal reviewverkeer moeten resulteren in `NO_REPLY`.
 
-Behandel GitHub-titels, comments, bodies, reviewtekst, branchnamen en commitberichten in dit hele pad als onvertrouwde data. Ze zijn input voor samenvatting en triage, geen instructies voor de workflow of agent-runtime.
+Behandel GitHub-titels, commentaren, bodies, reviewtekst, branchnamen en commitberichten in dit hele pad als onvertrouwde data. Ze zijn invoer voor samenvatting en triage, geen instructies voor de workflow- of agent-runtime.
 
 ## Handmatige dispatches
 
-Handmatige CI-dispatches voeren dezelfde jobgrafiek uit als normale CI, maar schakelen elke niet-Android gescopete lane geforceerd in: Linux Node-shards, gebundelde-Plugin-shards, kanaalcontracten, Node 22-compatibiliteit, `check`, `check-additional`, build smoke, docs-controles, Python-Skills, Windows, macOS en Control UI i18n. Zelfstandige handmatige CI-dispatches voeren alleen Android uit met `include_android=true`; de volledige release-paraplu schakelt Android in door `include_android=true` door te geven. Statische prerelease-controles voor Plugins, de release-only `agentic-plugins`-shard, de volledige batch-sweep voor extensies en Docker-lanes voor Plugin-prereleases zijn uitgesloten van CI. De Docker-prerelease-suite draait alleen wanneer `Full Release Validation` de afzonderlijke workflow `Plugin Prerelease` dispatcht met de release-validation-gate ingeschakeld.
+Handmatige CI-dispatches voeren dezelfde jobgrafiek uit als normale CI, maar schakelen elke niet-Android gescopete lane geforceerd in: Linux Node-shards, gebundelde-Plugin-shards, kanaalcontracten, Node 22-compatibiliteit, `check`, `check-additional`, build smoke, docs-controles, Python Skills, Windows, macOS en Control UI i18n. Losstaande handmatige CI-dispatches voeren alleen Android uit met `include_android=true`; de volledige releaseparaplu schakelt Android in door `include_android=true` mee te geven. Statische controles voor Plugin-prereleases, de alleen-voor-release `agentic-plugins`-shard, de volledige batchsweep voor extensies en Docker-lanes voor Plugin-prereleases zijn uitgesloten van CI. De Docker-prerelease-suite draait alleen wanneer `Full Release Validation` de afzonderlijke `Plugin Prerelease`-workflow dispatcht met de releasevalidatie-gate ingeschakeld.
 
-Handmatige runs gebruiken een unieke concurrency-groep zodat een volledige suite voor een release candidate niet wordt geannuleerd door een andere push- of PR-run op dezelfde ref. Met de optionele invoer `target_ref` kan een vertrouwde aanroeper die grafiek uitvoeren tegen een branch, tag of volledige commit-SHA terwijl het workflowbestand van de geselecteerde dispatch-ref wordt gebruikt.
+Handmatige runs gebruiken een unieke concurrency-groep, zodat een volledige suite voor een releasekandidaat niet wordt geannuleerd door een andere push- of PR-run op dezelfde ref. Met de optionele `target_ref`-invoer kan een vertrouwde caller die grafiek uitvoeren tegen een branch, tag of volledige commit-SHA, terwijl het workflowbestand van de geselecteerde dispatch-ref wordt gebruikt.
 
 ```bash
 gh workflow run ci.yml --ref release/YYYY.M.D
@@ -98,15 +98,15 @@ gh workflow run full-release-validation.yml --ref main -f ref=<branch-or-sha>
 
 ## Runners
 
-| Runner                           | Jobs                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
-| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ubuntu-24.04`                   | `preflight`, snelle beveiligingsjobs en aggregaties (`security-scm-fast`, `security-dependency-audit`, `security-fast`), snelle protocol-/contract-/gebundelde controles, gesharde kanaalcontractcontroles, `check`-shards behalve lint, `check-additional`-shards en aggregaties, Node-testaggregatieverifiers, docs-controles, Python-Skills, workflow-sanity, labeler, auto-response; install-smoke-preflight gebruikt ook door GitHub gehoste Ubuntu zodat de Blacksmith-matrix eerder kan worden gequeued |
-| `blacksmith-4vcpu-ubuntu-2404`   | `CodeQL Critical Quality`, lichtere extensieshards, `checks-fast-core`, `checks-node-compat-node22`, `check-prod-types` en `check-test-types`                                                                                                                                                                                                                                                                                                                        |
-| `blacksmith-8vcpu-ubuntu-2404`   | `build-artifacts`, build-smoke, Linux Node-testshards, gebundelde Plugin-testshards, `android`                                                                                                                                                                                                                                                                                                                                                                       |
-| `blacksmith-16vcpu-ubuntu-2404`  | `check-lint` (CPU-gevoelig genoeg dat 8 vCPU meer kostte dan het opleverde); install-smoke-Docker-builds (32-vCPU-wachtrijtijd kostte meer dan het opleverde)                                                                                                                                                                                                                                                                                                        |
-| `blacksmith-16vcpu-windows-2025` | `checks-windows`                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `blacksmith-6vcpu-macos-latest`  | `macos-node` op `openclaw/openclaw`; forks vallen terug op `macos-latest`                                                                                                                                                                                                                                                                                                                                                                                            |
-| `blacksmith-12vcpu-macos-latest` | `macos-swift` op `openclaw/openclaw`; forks vallen terug op `macos-latest`                                                                                                                                                                                                                                                                                                                                                                                           |
+| Runner                           | Jobs                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ubuntu-24.04`                   | `preflight`, snelle beveiligingsjobs en aggregaten (`security-scm-fast`, `security-dependency-audit`, `security-fast`), snelle protocol-/contract-/gebundelde controles, gesharde kanaalcontractcontroles, `check`-shards behalve lint, `check-additional`-shards en aggregaten, aggregaatverifiers voor Node-tests, docs-controles, Python Skills, workflow-sanity, labeler, auto-response; install-smoke preflight gebruikt ook GitHub-gehoste Ubuntu zodat de Blacksmith-matrix eerder in de wachtrij kan komen |
+| `blacksmith-4vcpu-ubuntu-2404`   | `CodeQL Critical Quality`, lichtere extensieshards, `checks-fast-core`, `checks-node-compat-node22`, `check-prod-types` en `check-test-types`                                                                                                                                                                                                                                                                                                                          |
+| `blacksmith-8vcpu-ubuntu-2404`   | `build-artifacts`, build-smoke, Linux Node-testshards, gebundelde Plugin-testshards, `android`                                                                                                                                                                                                                                                                                                                                                                           |
+| `blacksmith-16vcpu-ubuntu-2404`  | `check-lint` (CPU-gevoelig genoeg dat 8 vCPU meer kostte dan het opleverde); install-smoke Docker-builds (32-vCPU-wachtrijtijd kostte meer dan het opleverde)                                                                                                                                                                                                                                                                                                           |
+| `blacksmith-16vcpu-windows-2025` | `checks-windows`                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `blacksmith-6vcpu-macos-latest`  | `macos-node` op `openclaw/openclaw`; forks vallen terug op `macos-latest`                                                                                                                                                                                                                                                                                                                                                                                               |
+| `blacksmith-12vcpu-macos-latest` | `macos-swift` op `openclaw/openclaw`; forks vallen terug op `macos-latest`                                                                                                                                                                                                                                                                                                                                                                                             |
 
 ## Lokale equivalenten
 
@@ -135,9 +135,9 @@ pnpm test:perf:groups:compare .artifacts/test-perf/baseline-before.json .artifac
 pnpm perf:kova:summary --report .artifacts/kova/reports/mock-provider/report.json --output .artifacts/kova/summary.md
 ```
 
-## OpenClaw Performance
+## OpenClaw-prestaties
 
-`OpenClaw Performance` is de workflow voor product-/runtimeprestaties. Deze draait dagelijks op `main` en kan handmatig worden gedispatcht:
+`OpenClaw Performance` is de product-/runtimeprestatieworkflow. Deze draait dagelijks op `main` en kan handmatig worden gedispatcht:
 
 ```bash
 gh workflow run openclaw-performance.yml --ref main -f profile=diagnostic -f repeat=3
@@ -145,28 +145,28 @@ gh workflow run openclaw-performance.yml --ref main -f profile=smoke -f repeat=1
 gh workflow run openclaw-performance.yml --ref main -f target_ref=v2026.5.2 -f profile=diagnostic -f repeat=3
 ```
 
-Een handmatige dispatch benchmarkt normaal gesproken de workflow-ref. Stel `target_ref` in om een releasetag of een andere branch te benchmarken met de huidige workflowimplementatie. Gepubliceerde rapportpaden en nieuwste pointers worden gesleuteld op basis van de geteste ref, en elke `index.md` registreert de geteste ref/SHA, workflow-ref/SHA, Kova-ref, profiel, lane-authmodus, model, herhalingsaantal en scenariofilters.
+Handmatige dispatch benchmarkt normaal de workflow-ref. Stel `target_ref` in om een releasetag of een andere branch te benchmarken met de huidige workflowimplementatie. Gepubliceerde rapportpaden en latest-pointers zijn gekoppeld aan de geteste ref, en elke `index.md` registreert de geteste ref/SHA, workflow-ref/SHA, Kova-ref, het profiel, de lane-auth-modus, het model, het aantal herhalingen en scenariofilters.
 
-De workflow installeert OCM vanuit een gepinde release en Kova vanuit `openclaw/Kova` met de gepinde invoer `kova_ref`, en voert vervolgens drie lanes uit:
+De workflow installeert OCM vanaf een gepinde release en Kova vanaf `openclaw/Kova` op de gepinde `kova_ref`-invoer, en voert vervolgens drie lanes uit:
 
-- `mock-provider`: diagnostische Kova-scenario's tegen een runtime met lokale build en deterministische nep-auth die OpenAI-compatibel is.
-- `mock-deep-profile`: CPU-/heap-/trace-profiling voor hotspots bij opstarten, Gateway en agent-turns.
-- `live-gpt54`: een echte agent-turn met OpenAI `openai/gpt-5.4`, overgeslagen wanneer `OPENAI_API_KEY` niet beschikbaar is.
+- `mock-provider`: Kova-diagnostische scenario's tegen een lokaal gebouwde runtime met deterministische nep-auth die compatibel is met OpenAI.
+- `mock-deep-profile`: CPU-/heap-/traceprofilering voor hotspots bij opstarten, Gateway en agent-turns.
+- `live-gpt54`: een echte OpenAI `openai/gpt-5.4`-agent-turn, overgeslagen wanneer `OPENAI_API_KEY` niet beschikbaar is.
 
-De mock-provider-lane voert na de Kova-pass ook OpenClaw-native bronprobes uit: Gateway-opstarttiming en geheugen over standaard-, hook- en 50-Plugin-opstartscenario's; herhaalde mock-OpenAI `channel-chat-baseline`-hello-loops; en CLI-opstartcommando's tegen de opgestarte Gateway. De Markdown-samenvatting van de bronprobe staat op `source/index.md` in de rapportbundel, met de ruwe JSON ernaast.
+De mock-provider-lane voert ook OpenClaw-native bronprobes uit na de Kova-pass: Gateway-opstarttiming en geheugen voor standaard-, hook- en 50-Plugin-opstartcases; herhaalde mock-OpenAI `channel-chat-baseline` hello-loops; en CLI-opstartcommando's tegen de opgestarte Gateway. De Markdown-samenvatting van de bronprobe staat op `source/index.md` in de rapportbundel, met ruwe JSON ernaast.
 
 Elke lane uploadt GitHub-artifacts. Wanneer `CLAWGRIT_REPORTS_TOKEN` is geconfigureerd, commit de workflow ook `report.json`, `report.md`, bundels, `index.md` en bronprobe-artifacts naar `openclaw/clawgrit-reports` onder `openclaw-performance/<tested-ref>/<run-id>-<attempt>/<lane>/`. De huidige pointer voor de geteste ref wordt geschreven als `openclaw-performance/<tested-ref>/latest-<lane>.json`.
 
-## Full Release Validation
+## Validatie van volledige release
 
-`Full Release Validation` is de handmatige parapluworkflow voor "alles uitvoeren vóór release." Deze accepteert een branch, tag of volledige commit-SHA, dispatcht de handmatige `CI`-workflow met dat doel, dispatcht `Plugin Prerelease` voor release-only bewijs voor Plugin/pakket/statisch/Docker, en dispatcht `OpenClaw Release Checks` voor install smoke, package acceptance, Docker-releasepadsuites, live/E2E, OpenWebUI, QA Lab-pariteit, Matrix en Telegram-lanes. Met `rerun_group=all` en `release_profile=full` voert deze ook `NPM Telegram Beta E2E` uit tegen het artifact `release-package-under-test` uit release checks. Geef na publicatie `npm_telegram_package_spec` door om dezelfde Telegram-pakketlane opnieuw uit te voeren tegen het gepubliceerde npm-pakket.
+`Full Release Validation` is de handmatige parapluworkflow voor "alles uitvoeren vóór release". Deze accepteert een branch, tag of volledige commit-SHA, dispatcht de handmatige `CI`-workflow met dat doel, dispatcht `Plugin Prerelease` voor alleen-voor-release Plugin-/pakket-/statische-/Docker-bewijsvoering, en dispatcht `OpenClaw Release Checks` voor install smoke, pakketacceptatie, Docker-releasepad-suites, live/E2E, OpenWebUI, QA Lab-pariteit, Matrix en Telegram-lanes. Met `rerun_group=all` en `release_profile=full` voert deze ook `NPM Telegram Beta E2E` uit tegen het `release-package-under-test`-artifact uit releasecontroles. Geef na publicatie `npm_telegram_package_spec` mee om dezelfde Telegram-pakketlane opnieuw uit te voeren tegen het gepubliceerde npm-pakket.
 
-Zie [Volledige releasevalidatie](/nl/reference/full-release-validation) voor de
+Zie [Validatie van volledige release](/nl/reference/full-release-validation) voor de
 fasematrix, exacte workflowjobnamen, profielverschillen, artifacts en
 gerichte rerun-handles.
 
 `OpenClaw Release Publish` is de handmatige muterende releaseworkflow. Dispatch deze
-vanuit `release/YYYY.M.D` of `main` nadat de releasetag bestaat en nadat de
+vanaf `release/YYYY.M.D` of `main` nadat de releasetag bestaat en nadat de
 OpenClaw npm-preflight is geslaagd. Deze verifieert `pnpm plugins:sync:check`,
 dispatcht `Plugin NPM Release` voor alle publiceerbare Plugin-pakketten, dispatcht
 `Plugin ClawHub Release` voor dezelfde release-SHA, en dispatcht pas daarna
@@ -187,40 +187,40 @@ Gebruik voor gepind commitbewijs op een snel bewegende branch de helper in plaat
 pnpm ci:full-release --sha <full-sha>
 ```
 
-GitHub-workflowdispatch-refs moeten branches of tags zijn, geen ruwe commit-SHA's. De
-helper pusht een tijdelijke branch `release-ci/<sha>-...` op de doel-SHA,
-dispatcht `Full Release Validation` vanaf die gepinde ref, verifieert dat elke child-workflow
-`headSha` overeenkomt met het doel, en verwijdert de tijdelijke branch wanneer de
-run is voltooid. De parapluverifier faalt ook als een child-workflow op een
-andere SHA draaide.
+GitHub workflow-dispatch-refs moeten branches of tags zijn, geen ruwe commit-SHA's. De
+helper pusht een tijdelijke `release-ci/<sha>-...`-branch op de doel-SHA,
+dispatcht `Full Release Validation` vanaf die gepinde ref, verifieert dat elke
+onderliggende workflow-`headSha` overeenkomt met het doel, en verwijdert de tijdelijke branch wanneer de
+run is voltooid. De parapluverifier faalt ook als een onderliggende workflow op een
+andere SHA is uitgevoerd.
 
 `release_profile` bepaalt de live/provider-breedte die aan releasecontroles wordt doorgegeven. De
 handmatige releaseworkflows gebruiken standaard `stable`; gebruik `full` alleen wanneer je
-bewust de brede adviserende provider-/mediamatrix wilt.
+bewust de brede adviserende provider/media-matrix wilt.
 
-- `minimum` behoudt de snelste OpenAI-/core-lanes die releasekritiek zijn.
-- `stable` voegt de stabiele provider-/backendset toe.
-- `full` voert de brede adviserende provider-/mediamatrix uit.
+- `minimum` behoudt de snelste OpenAI/core releasekritieke lanes.
+- `stable` voegt de stabiele provider/backend-set toe.
+- `full` voert de brede adviserende provider/media-matrix uit.
 
-De overkoepelende workflow registreert de verzonden child-run-id's, en de laatste job `Verify full validation` controleert de huidige conclusies van child-runs opnieuw en voegt tabellen met traagste jobs toe voor elke child-run. Als een child-workflow opnieuw wordt uitgevoerd en groen wordt, voer dan alleen de parent-verifier-job opnieuw uit om het overkoepelende resultaat en de timingsamenvatting te vernieuwen.
+De overkoepelende workflow registreert de verzonden child-run-id's, en de laatste taak `Verify full validation` controleert de huidige conclusies van child-runs opnieuw en voegt tabellen met traagste taken toe voor elke child-run. Als een child-workflow opnieuw wordt uitgevoerd en groen wordt, voer dan alleen de parent-verificatietaak opnieuw uit om het overkoepelende resultaat en de timingsamenvatting te vernieuwen.
 
-Voor herstel accepteren zowel `Full Release Validation` als `OpenClaw Release Checks` `rerun_group`. Gebruik `all` voor een releasecandidate, `ci` voor alleen de normale volledige CI-child, `plugin-prerelease` voor alleen de Plugin-prerelease-child, `release-checks` voor elke release-child, of een smallere groep: `install-smoke`, `cross-os`, `live-e2e`, `package`, `qa`, `qa-parity`, `qa-live` of `npm-telegram` op de overkoepelende workflow. Dit houdt het opnieuw uitvoeren van een mislukte releasebox begrensd na een gerichte fix.
+Voor herstel accepteren zowel `Full Release Validation` als `OpenClaw Release Checks` `rerun_group`. Gebruik `all` voor een release candidate, `ci` voor alleen de normale volledige CI-child, `plugin-prerelease` voor alleen de Plugin prerelease-child, `release-checks` voor elke release-child, of een smallere groep: `install-smoke`, `cross-os`, `live-e2e`, `package`, `qa`, `qa-parity`, `qa-live`, of `npm-telegram` op de overkoepelende workflow. Dit houdt een nieuwe uitvoering van een mislukte releasebox begrensd na een gerichte fix.
 
-`OpenClaw Release Checks` gebruikt de vertrouwde workflow-ref om de geselecteerde ref eenmaal op te lossen naar een `release-package-under-test`-tarball, en geeft dat artefact vervolgens door aan zowel de Docker-workflow voor het live/E2E-releasepad als de package-acceptance-shard. Zo blijven de package-bytes consistent tussen releaseboxen en wordt voorkomen dat dezelfde candidate in meerdere child-jobs opnieuw wordt gepackaged.
+`OpenClaw Release Checks` gebruikt de vertrouwde workflow-ref om de geselecteerde ref eenmalig om te zetten in een `release-package-under-test`-tarball, en geeft dat artifact vervolgens door aan zowel de Docker-workflow voor het live/E2E-releasepad als de package acceptance-shard. Zo blijven de package-bytes consistent tussen releaseboxen en wordt voorkomen dat dezelfde kandidaat in meerdere child-taken opnieuw wordt verpakt.
 
 Dubbele `Full Release Validation`-runs voor `ref=main` en `rerun_group=all`
-vervangen de oudere overkoepelende workflow. De parent-monitor annuleert elke child-workflow die
-al is verzonden wanneer de parent wordt geannuleerd, zodat nieuwere main-validatie
-niet achter een verouderde twee uur durende releasecheck-run blijft hangen. Validatie van releasebranches/-tags
+vervangen de oudere overkoepelende workflow. De parent-monitor annuleert elke child-workflow die deze
+al heeft verzonden wanneer de parent wordt geannuleerd, zodat nieuwere main-validatie
+niet achter een verouderde release-checkrun van twee uur blijft staan. Validatie van releasebranch/tag
 en gerichte rerun-groepen behouden `cancel-in-progress: false`.
 
 ## Live- en E2E-shards
 
-De release-live/E2E-child behoudt brede native `pnpm test:live`-dekking, maar voert die uit als benoemde shards via `scripts/test-live-shard.mjs` in plaats van als een seriële job:
+De release live/E2E-child behoudt brede native `pnpm test:live`-dekking, maar voert deze uit als benoemde shards via `scripts/test-live-shard.mjs` in plaats van één seriële taak:
 
 - `native-live-src-agents`
 - `native-live-src-gateway-core`
-- providergefilterde `native-live-src-gateway-profiles`-jobs
+- provider-gefilterde `native-live-src-gateway-profiles`-taken
 - `native-live-src-gateway-backends`
 - `native-live-test`
 - `native-live-extensions-a-k`
@@ -228,61 +228,61 @@ De release-live/E2E-child behoudt brede native `pnpm test:live`-dekking, maar vo
 - `native-live-extensions-openai`
 - `native-live-extensions-o-z-other`
 - `native-live-extensions-xai`
-- opgesplitste media-audio/video-shards en providergefilterde muziekshards
+- gesplitste media-audio/video-shards en provider-gefilterde muziekshards
 
-Dit behoudt dezelfde bestandsdekking terwijl trage live-providerfouten makkelijker opnieuw uit te voeren en te diagnosticeren zijn. De geaggregeerde shardnamen `native-live-extensions-o-z`, `native-live-extensions-media` en `native-live-extensions-media-music` blijven geldig voor handmatige eenmalige reruns.
+Dat behoudt dezelfde bestandsdekking en maakt trage live-providerfouten makkelijker opnieuw uit te voeren en te diagnosticeren. De aggregaatshardnamen `native-live-extensions-o-z`, `native-live-extensions-media`, en `native-live-extensions-media-music` blijven geldig voor handmatige eenmalige reruns.
 
-De native live-mediaschards draaien in `ghcr.io/openclaw/openclaw-live-media-runner:ubuntu-24.04`, gebouwd door de workflow `Live Media Runner Image`. Die image installeert `ffmpeg` en `ffprobe` vooraf; mediajobs verifiëren alleen de binaries vóór de setup. Houd Docker-ondersteunde live-suites op normale Blacksmith-runners — containerjobs zijn de verkeerde plek om geneste Docker-tests te starten.
+De native live-mediashards draaien in `ghcr.io/openclaw/openclaw-live-media-runner:ubuntu-24.04`, gebouwd door de workflow `Live Media Runner Image`. Die image installeert `ffmpeg` en `ffprobe` vooraf; mediataken verifiëren alleen de binaries vóór de setup. Houd Docker-backed live-suites op normale Blacksmith-runners — containertaken zijn de verkeerde plek om geneste Docker-tests te starten.
 
-Docker-ondersteunde live model-/backendshards gebruiken een afzonderlijke gedeelde `ghcr.io/openclaw/openclaw-live-test:<sha>`-image per geselecteerde commit. De live-releaseworkflow bouwt en pusht die image eenmaal, waarna de Docker live model-, provider-sharded Gateway-, CLI-backend-, ACP-bind- en Codex-harness-shards met `OPENCLAW_SKIP_DOCKER_BUILD=1` draaien. Gateway Docker-shards hebben expliciete scriptniveau-`timeout`-limieten onder de workflow-jobtimeout, zodat een vastgelopen container of cleanup-pad snel faalt in plaats van het hele releasecheckbudget te verbruiken. Als die shards de volledige source-Docker-target onafhankelijk opnieuw bouwen, is de releaserun verkeerd geconfigureerd en verspilt die wandkloktijd aan dubbele image-builds.
+Docker-backed live model/backend-shards gebruiken een aparte gedeelde `ghcr.io/openclaw/openclaw-live-test:<sha>`-image per geselecteerde commit. De live-releaseworkflow bouwt en pusht die image één keer, waarna de Docker live model-, provider-sharded Gateway-, CLI-backend-, ACP-bind- en Codex-harnessshards draaien met `OPENCLAW_SKIP_DOCKER_BUILD=1`. Gateway Docker-shards hebben expliciete `timeout`-limieten op scriptniveau onder de workflowtaak-time-out, zodat een vastgelopen container of opruimpad snel faalt in plaats van het volledige release-checkbudget te verbruiken. Als die shards de volledige source Docker-target onafhankelijk opnieuw bouwen, is de releaserun verkeerd geconfigureerd en verspilt deze wandkloktijd aan dubbele image-builds.
 
 ## Pakketacceptatie
 
 Gebruik `Package Acceptance` wanneer de vraag is: "werkt dit installeerbare OpenClaw-package als product?" Het verschilt van normale CI: normale CI valideert de source tree, terwijl pakketacceptatie één tarball valideert via dezelfde Docker E2E-harness die gebruikers na installatie of update gebruiken.
 
-### Jobs
+### Taken
 
-1. `resolve_package` checkt `workflow_ref` uit, lost één packagecandidate op, schrijft `.artifacts/docker-e2e-package/openclaw-current.tgz`, schrijft `.artifacts/docker-e2e-package/package-candidate.json`, uploadt beide als het artefact `package-under-test`, en print de bron, workflow-ref, package-ref, versie, SHA-256 en profiel in de GitHub-stapsamenvatting.
-2. `docker_acceptance` roept `openclaw-live-and-e2e-checks-reusable.yml` aan met `ref=workflow_ref` en `package_artifact_name=package-under-test`. De herbruikbare workflow downloadt dat artefact, valideert de tarball-inventaris, bereidt package-digest-Docker-images voor wanneer nodig, en voert de geselecteerde Docker-lanes uit tegen dat package in plaats van de workflow-checkout te packagen. Wanneer een profiel meerdere gerichte `docker_lanes` selecteert, bereidt de herbruikbare workflow het package en de gedeelde images eenmaal voor, en waaiert die lanes daarna uit als parallelle gerichte Docker-jobs met unieke artefacten.
-3. `package_telegram` roept optioneel `NPM Telegram Beta E2E` aan. Die draait wanneer `telegram_mode` niet `none` is en installeert hetzelfde `package-under-test`-artefact wanneer Package Acceptance er een heeft opgelost; standalone Telegram-dispatch kan nog steeds een gepubliceerde npm-spec installeren.
-4. `summary` laat de workflow falen als package-resolutie, Docker-acceptatie of de optionele Telegram-lane is mislukt.
+1. `resolve_package` checkt `workflow_ref` uit, bepaalt één package-kandidaat, schrijft `.artifacts/docker-e2e-package/openclaw-current.tgz`, schrijft `.artifacts/docker-e2e-package/package-candidate.json`, uploadt beide als het artifact `package-under-test`, en print de bron, workflow-ref, package-ref, versie, SHA-256, en het profiel in de GitHub-stapsamenvatting.
+2. `docker_acceptance` roept `openclaw-live-and-e2e-checks-reusable.yml` aan met `ref=workflow_ref` en `package_artifact_name=package-under-test`. De herbruikbare workflow downloadt dat artifact, valideert de tarball-inventaris, bereidt package-digest Docker-images voor wanneer nodig, en draait de geselecteerde Docker-lanes tegen dat package in plaats van de workflow-checkout te verpakken. Wanneer een profiel meerdere gerichte `docker_lanes` selecteert, bereidt de herbruikbare workflow het package en de gedeelde images één keer voor, en waaiert die lanes vervolgens uit als parallelle gerichte Docker-taken met unieke artifacts.
+3. `package_telegram` roept optioneel `NPM Telegram Beta E2E` aan. Deze draait wanneer `telegram_mode` niet `none` is en installeert hetzelfde `package-under-test`-artifact wanneer Package Acceptance er één heeft bepaald; standalone Telegram-dispatch kan nog steeds een gepubliceerde npm-spec installeren.
+4. `summary` laat de workflow falen als package-resolutie, Docker-acceptatie, of de optionele Telegram-lane is mislukt.
 
-### Candidate-bronnen
+### Kandidaatbronnen
 
-- `source=npm` accepteert alleen `openclaw@beta`, `openclaw@latest` of een exacte OpenClaw-releaseversie zoals `openclaw@2026.4.27-beta.2`. Gebruik dit voor gepubliceerde prerelease-/stable-acceptatie.
-- `source=ref` packaget een vertrouwde `package_ref`-branch, tag of volledige commit-SHA. De resolver fetcht OpenClaw-branches/-tags, verifieert dat de geselecteerde commit bereikbaar is vanuit de repository-branchgeschiedenis of een releasetag, installeert dependencies in een detached worktree, en packaget die met `scripts/package-openclaw-for-docker.mjs`.
-- `source=url` downloadt een HTTPS-`.tgz`; `package_sha256` is verplicht.
-- `source=artifact` downloadt één `.tgz` uit `artifact_run_id` en `artifact_name`; `package_sha256` is optioneel maar moet worden meegegeven voor extern gedeelde artefacten.
+- `source=npm` accepteert alleen `openclaw@beta`, `openclaw@latest`, of een exacte OpenClaw-releaseversie zoals `openclaw@2026.4.27-beta.2`. Gebruik dit voor gepubliceerde prerelease/stable-acceptatie.
+- `source=ref` verpakt een vertrouwde `package_ref`-branch, tag, of volledige commit-SHA. De resolver fetcht OpenClaw-branches/tags, verifieert dat de geselecteerde commit bereikbaar is vanuit de branchgeschiedenis van de repository of een releasetag, installeert dependencies in een losgekoppelde worktree, en verpakt deze met `scripts/package-openclaw-for-docker.mjs`.
+- `source=url` downloadt een HTTPS `.tgz`; `package_sha256` is verplicht.
+- `source=artifact` downloadt één `.tgz` van `artifact_run_id` en `artifact_name`; `package_sha256` is optioneel maar moet worden opgegeven voor extern gedeelde artifacts.
 
-Houd `workflow_ref` en `package_ref` gescheiden. `workflow_ref` is de vertrouwde workflow-/harnesscode die de test uitvoert. `package_ref` is de source-commit die wordt gepackaged wanneer `source=ref`. Hierdoor kan de huidige testharness oudere vertrouwde source-commits valideren zonder oude workflowlogica uit te voeren.
+Houd `workflow_ref` en `package_ref` gescheiden. `workflow_ref` is de vertrouwde workflow/harness-code die de test uitvoert. `package_ref` is de source-commit die wordt verpakt wanneer `source=ref`. Hierdoor kan de huidige testharness oudere vertrouwde source-commits valideren zonder oude workflowlogica uit te voeren.
 
-### Suite-profielen
+### Suiteprofielen
 
 - `smoke` — `npm-onboard-channel-agent`, `gateway-network`, `config-reload`
 - `package` — `npm-onboard-channel-agent`, `doctor-switch`, `update-channel-switch`, `upgrade-survivor`, `published-upgrade-survivor`, `plugins-offline`, `plugin-update`
 - `product` — `package` plus `mcp-channels`, `cron-mcp-cleanup`, `openai-web-search-minimal`, `openwebui`
-- `full` — volledige Docker-releasepadchunks met OpenWebUI
-- `custom` — exacte `docker_lanes`; verplicht wanneer `suite_profile=custom`
+- `full` — volledige Docker release-path chunks met OpenWebUI
+- `custom` — exacte `docker_lanes`; vereist wanneer `suite_profile=custom`
 
-Het profiel `package` gebruikt offline Plugin-dekking zodat gepubliceerde-packagevalidatie niet afhankelijk is van live ClawHub-beschikbaarheid. De optionele Telegram-lane hergebruikt het `package-under-test`-artefact in `NPM Telegram Beta E2E`, waarbij het gepubliceerde npm-specpad behouden blijft voor standalone dispatches.
+Het `package`-profiel gebruikt offline plugin-dekking zodat validatie van gepubliceerde packages niet afhankelijk is van live beschikbaarheid van ClawHub. De optionele Telegram-lane hergebruikt het `package-under-test`-artifact in `NPM Telegram Beta E2E`, waarbij het gepubliceerde npm-specpad behouden blijft voor standalone dispatches.
 
-Voor het specifieke beleid voor update- en Plugintests, inclusief lokale opdrachten,
-Docker-lanes, Package Acceptance-inputs, releasestandaarden en foutentriage,
+Voor het specifieke update- en plugintestbeleid, inclusief lokale commando's,
+Docker-lanes, Package Acceptance-inputs, releasestandaarden, en fouttriage,
 zie [Updates en plugins testen](/nl/help/testing-updates-plugins).
 
-Releasecontroles roepen Package Acceptance aan met `source=artifact`, het voorbereide releasepackage-artefact, `suite_profile=custom`, `docker_lanes='doctor-switch update-channel-switch upgrade-survivor published-upgrade-survivor plugins-offline plugin-update'`, `published_upgrade_survivor_baselines=all-since-2026.4.23`, `published_upgrade_survivor_scenarios=reported-issues` en `telegram_mode=mock-openai`. Dit houdt package-migratie, update, cleanup van verouderde Plugin-dependencies, herstel van geconfigureerde Plugin-installaties, offline Plugin, Plugin-update en Telegram-bewijs op dezelfde opgeloste package-tarball. Stel `package_acceptance_package_spec` in op Full Release Validation of OpenClaw Release Checks om diezelfde matrix uit te voeren tegen een verzonden npm-package in plaats van het uit de SHA gebouwde artefact. Cross-OS-releasecontroles dekken nog steeds OS-specifiek onboarden, installer- en platformgedrag; productvalidatie voor package/update moet beginnen met Package Acceptance. De Docker-lane `published-upgrade-survivor` valideert één gepubliceerde packagebaseline per run. In Package Acceptance is de opgeloste `package-under-test`-tarball altijd de candidate en selecteert `published_upgrade_survivor_baseline` de fallback gepubliceerde baseline, standaard `openclaw@latest`; rerun-opdrachten voor mislukte lanes behouden die baseline. Stel `published_upgrade_survivor_baselines=all-since-2026.4.23` in om Full Release CI uit te breiden over elke stable npm-release vanaf `2026.4.23` tot en met `latest`; `release-history` blijft beschikbaar voor handmatige bredere sampling met het oudere pre-date anchor. Stel `published_upgrade_survivor_scenarios=reported-issues` in om dezelfde baselines uit te breiden over issue-vormige fixtures voor Feishu-configuratie, behouden bootstrap-/persona-bestanden, geconfigureerde OpenClaw Plugin-installaties, tilde-logpaden en verouderde legacy Plugin-dependency-roots. De afzonderlijke workflow `Update Migration` gebruikt de Docker-lane `update-migration` met `all-since-2026.4.23` en `plugin-deps-cleanup` wanneer de vraag uitputtende cleanup van gepubliceerde updates is, niet normale Full Release CI-breedte. Lokale geaggregeerde runs kunnen exacte packagespecs doorgeven met `OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPECS`, één lane behouden met `OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPEC` zoals `openclaw@2026.4.15`, of `OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS` instellen voor de scenariomatrix. De gepubliceerde lane configureert de baseline met een ingebakken opdrachtrecept `openclaw config set`, registreert receptstappen in `summary.json`, en probet `/healthz`, `/readyz`, plus RPC-status na het starten van Gateway. De verse Windows-package- en installer-lanes verifiëren ook dat een geïnstalleerd package een browser-control-override kan importeren vanuit een raw absoluut Windows-pad. De OpenAI cross-OS agent-turn-smoke gebruikt standaard `OPENCLAW_CROSS_OS_OPENAI_MODEL` wanneer ingesteld, anders `openai/gpt-5.4`, zodat het installatie- en Gateway-bewijs op een GPT-5-testmodel blijft terwijl GPT-4.x-standaarden worden vermeden.
+Releasecontroles roepen Package Acceptance aan met `source=artifact`, het voorbereide release-package-artifact, `suite_profile=custom`, `docker_lanes='doctor-switch update-channel-switch upgrade-survivor published-upgrade-survivor plugins-offline plugin-update'`, `published_upgrade_survivor_baselines=all-since-2026.4.23`, `published_upgrade_survivor_scenarios=reported-issues`, en `telegram_mode=mock-openai`. Dit houdt package-migratie, update, opruimen van verouderde plugin-dependencies, installatiereparatie van geconfigureerde plugins, offline plugin, plugin-update, en Telegram-bewijs op dezelfde opgeloste package-tarball. Stel `package_acceptance_package_spec` in op Full Release Validation of OpenClaw Release Checks om diezelfde matrix uit te voeren tegen een verscheept npm-package in plaats van het uit SHA gebouwde artifact. Cross-OS-releasecontroles dekken nog steeds OS-specifieke onboarding-, installer- en platformgedrag; productvalidatie voor package/update moet beginnen met Package Acceptance. De Docker-lane `published-upgrade-survivor` valideert één gepubliceerde packagebaseline per run. In Package Acceptance is de opgeloste `package-under-test`-tarball altijd de kandidaat en selecteert `published_upgrade_survivor_baseline` de fallback gepubliceerde baseline, standaard `openclaw@latest`; rerun-commando's voor mislukte lanes behouden die baseline. Stel `published_upgrade_survivor_baselines=all-since-2026.4.23` in om Full Release CI uit te breiden over elke stabiele npm-release van `2026.4.23` tot en met `latest`; `release-history` blijft beschikbaar voor handmatige bredere sampling met het oudere anker vóór die datum. Stel `published_upgrade_survivor_scenarios=reported-issues` in om dezelfde baselines uit te breiden over issue-vormige fixtures voor Feishu-config, behouden bootstrap/persona-bestanden, geconfigureerde OpenClaw-plugininstallaties, tilde-logpaden, en verouderde legacy plugin dependency-roots. De aparte workflow `Update Migration` gebruikt de Docker-lane `update-migration` met `all-since-2026.4.23` en `plugin-deps-cleanup` wanneer de vraag uitgebreide opruiming van gepubliceerde updates is, niet de normale breedte van Full Release CI. Lokale aggregaatruns kunnen exacte package-specs doorgeven met `OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPECS`, één lane behouden met `OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPEC` zoals `openclaw@2026.4.15`, of `OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS` instellen voor de scenariomatrix. De gepubliceerde lane configureert de baseline met een ingebakken `openclaw config set`-commandorecept, registreert receptstappen in `summary.json`, en peilt `/healthz`, `/readyz`, plus RPC-status na het starten van Gateway. De Windows packaged- en installer fresh-lanes verifiëren ook dat een geïnstalleerd package een browser-control override kan importeren vanuit een onbewerkt absoluut Windows-pad. De OpenAI cross-OS agent-turn smoke gebruikt standaard `OPENCLAW_CROSS_OS_OPENAI_MODEL` wanneer ingesteld, anders `openai/gpt-5.4`, zodat het installatie- en Gateway-bewijs op een GPT-5-testmodel blijft en GPT-4.x-standaarden worden vermeden.
 
 ### Legacy-compatibiliteitsvensters
 
 Package Acceptance heeft begrensde legacy-compatibiliteitsvensters voor al gepubliceerde packages. Packages tot en met `2026.4.25`, inclusief `2026.4.25-beta.*`, mogen het compatibiliteitspad gebruiken:
 
-- bekende private QA-items in `dist/postinstall-inventory.json` mogen verwijzen naar bestanden die uit de tarball zijn weggelaten;
-- `doctor-switch` mag de subcase voor persistentie van `gateway install --wrapper` overslaan wanneer het package die flag niet beschikbaar maakt;
-- `update-channel-switch` mag ontbrekende `pnpm.patchedDependencies` verwijderen uit de van de tarball afgeleide nep-git-fixture en mag ontbrekende gepersisteerde `update.channel` loggen;
-- Plugin-smokes mogen legacy install-record-locaties lezen of ontbrekende marketplace install-record-persistentie accepteren;
-- `plugin-update` mag config-metadatamigratie toestaan, terwijl nog steeds vereist blijft dat het install-record en no-reinstall-gedrag ongewijzigd blijven.
+- bekende private QA-items in `dist/postinstall-inventory.json` mogen naar bestanden wijzen die uit de tarball zijn weggelaten;
+- `doctor-switch` mag de subcase voor persistentie van `gateway install --wrapper` overslaan wanneer het package die flag niet exposeert;
+- `update-channel-switch` mag ontbrekende `pnpm.patchedDependencies` snoeien uit de van de tarball afgeleide nep-git-fixture en mag ontbrekende gepersisteerde `update.channel` loggen;
+- plugin-smokes mogen legacy install-record-locaties lezen of ontbrekende persistentie van marketplace install-records accepteren;
+- `plugin-update` mag configmetadata-migratie toestaan terwijl nog steeds wordt vereist dat het installatierecord en het no-reinstall-gedrag ongewijzigd blijven.
 
-Het gepubliceerde package `2026.4.26` mag ook waarschuwen voor lokale build-metadata-stampbestanden die al waren verzonden. Latere packages moeten aan de moderne contracten voldoen; dezelfde voorwaarden falen dan in plaats van te waarschuwen of over te slaan.
+Het gepubliceerde package `2026.4.26` mag ook waarschuwen voor lokale buildmetadata-stampbestanden die al waren verscheept. Latere packages moeten aan de moderne contracten voldoen; dezelfde voorwaarden falen dan in plaats van te waarschuwen of over te slaan.
 
 ### Voorbeelden
 
@@ -325,110 +325,110 @@ gh workflow run package-acceptance.yml \
   -f docker_lanes='install-e2e plugin-update'
 ```
 
-Begin bij het debuggen van een mislukte pakketacceptatierun met de `resolve_package`-samenvatting om de pakketbron, versie en SHA-256 te bevestigen. Inspecteer daarna de onderliggende `docker_acceptance`-run en de Docker-artifacts: `.artifacts/docker-tests/**/summary.json`, `failures.json`, lane-logs, fasetimings en rerun-commando's. Geef de voorkeur aan het opnieuw uitvoeren van het mislukte pakketprofiel of de exacte Docker-lanes in plaats van de volledige releasevalidatie opnieuw uit te voeren.
+Begin bij het debuggen van een mislukte package-acceptance-run met de samenvatting van `resolve_package` om de pakketbron, versie en SHA-256 te bevestigen. Inspecteer daarna de onderliggende run `docker_acceptance` en de bijbehorende Docker-artefacten: `.artifacts/docker-tests/**/summary.json`, `failures.json`, lane-logs, fasetimings en rerun-commando's. Geef de voorkeur aan het opnieuw uitvoeren van het mislukte pakketprofiel of de exacte Docker-lanes in plaats van volledige releasevalidatie opnieuw uit te voeren.
 
-## Installatiesmoketest
+## Installatiesmoke
 
-De afzonderlijke `Install Smoke`-workflow hergebruikt hetzelfde scopescript via zijn eigen `preflight`-job. De workflow splitst smoketestdekking in `run_fast_install_smoke` en `run_full_install_smoke`.
+De afzonderlijke workflow `Install Smoke` hergebruikt hetzelfde scopescript via zijn eigen `preflight`-job. Deze splitst smoke-dekking op in `run_fast_install_smoke` en `run_full_install_smoke`.
 
-- **Snel pad** draait voor pull requests die Docker-/pakketoppervlakken raken, wijzigingen in gebundelde plugin-pakketten/-manifesten, of kernoppervlakken voor Plugin/kanaal/Gateway/Plugin SDK die door de Docker-smokejobs worden getest. Wijzigingen alleen in broncode van gebundelde plugins, test-only-bewerkingen en docs-only-bewerkingen reserveren geen Docker-workers. Het snelle pad bouwt de root-Dockerfile-image eenmalig, controleert de CLI, voert de agents-delete shared-workspace CLI-smoketest uit, voert de container-gateway-network-e2e uit, verifieert een buildargument voor een gebundelde plugin en draait het begrensde Docker-profiel voor gebundelde plugins onder een totale commandotime-out van 240 seconden (waarbij elke Docker-run van een scenario afzonderlijk begrensd is).
-- **Volledig pad** behoudt QR-pakketinstallatie en Docker-/updatedekking voor installers voor nachtelijk geplande runs, handmatige dispatches, workflow-call-releasecontroles en pull requests die echt installer-/pakket-/Docker-oppervlakken raken. In volledige modus bereidt install-smoke één GHCR-root-Dockerfile-smoke-image voor de doel-SHA voor of hergebruikt die, en voert daarna QR-pakketinstallatie, root-Dockerfile-/Gateway-smokes, installer-/update-smokes en de snelle Docker-E2E voor gebundelde plugins uit als afzonderlijke jobs, zodat installerwerk niet hoeft te wachten achter de root-image-smokes.
+- **Snel pad** draait voor pull requests die Docker-/pakketoppervlakken raken, wijzigingen aan gebundelde Plugin-pakketten/manifests, of kernoppervlakken voor Plugin/channel/Gateway/Plugin SDK die door de Docker-smokejobs worden getest. Bronwijzigingen alleen aan gebundelde Plugins, test-only edits en docs-only edits reserveren geen Docker-workers. Het snelle pad bouwt de root-Dockerfile-image eenmaal, controleert de CLI, voert de agents-delete-shared-workspace-CLI-smoke uit, draait de container-gateway-network-e2e, verifieert een build-arg voor gebundelde extensies en voert het begrensde gebundelde-Plugin-Docker-profiel uit met een totale commandotime-out van 240 seconden (waarbij elke afzonderlijke Docker-run per scenario apart is begrensd).
+- **Volledig pad** bewaart QR-pakketinstallatie en installer-Docker-/update-dekking voor nachtelijke geplande runs, handmatige dispatches, workflow-call-releasechecks en pull requests die daadwerkelijk installer-/pakket-/Docker-oppervlakken raken. In volledige modus bereidt install-smoke één target-SHA GHCR-root-Dockerfile-smoke-image voor of hergebruikt die, en draait daarna QR-pakketinstallatie, root-Dockerfile-/Gateway-smokes, installer-/update-smokes en de snelle gebundelde-Plugin-Docker-E2E als afzonderlijke jobs, zodat installerwerk niet achter de root-image-smokes hoeft te wachten.
 
-`main`-pushes (inclusief mergecommits) forceren het volledige pad niet; wanneer de logica voor gewijzigde scope volledige dekking zou aanvragen bij een push, behoudt de workflow de snelle Docker-smoke en laat hij de volledige installatiesmoke over aan nachtelijke of releasevalidatie.
+`main`-pushes (inclusief mergecommits) forceren het volledige pad niet; wanneer de changed-scope-logica bij een push volledige dekking zou aanvragen, behoudt de workflow de snelle Docker-smoke en laat hij de volledige install-smoke over aan nachtelijke of releasevalidatie.
 
-De trage Bun-global-install-image-provider-smoke wordt afzonderlijk bewaakt door `run_bun_global_install_smoke`. Die draait op het nachtelijke schema en vanuit de releasechecks-workflow, en handmatige `Install Smoke`-dispatches kunnen ervoor kiezen, maar pull requests en `main`-pushes doen dat niet. QR- en installer-Docker-tests behouden hun eigen installatiegerichte Dockerfiles.
+De langzame Bun-global-install-image-provider-smoke wordt afzonderlijk begrensd door `run_bun_global_install_smoke`. Deze draait volgens het nachtelijke schema en vanuit de releasechecks-workflow, en handmatige `Install Smoke`-dispatches kunnen ervoor kiezen deze mee te nemen, maar pull requests en `main`-pushes niet. QR- en installer-Docker-tests behouden hun eigen installatiegerichte Dockerfiles.
 
 ## Lokale Docker-E2E
 
-`pnpm test:docker:all` bouwt vooraf één gedeelde live-testimage, verpakt OpenClaw eenmaal als een npm-tarball en bouwt twee gedeelde `scripts/e2e/Dockerfile`-images:
+`pnpm test:docker:all` prebuiltt één gedeelde live-test-image, packt OpenClaw eenmaal als npm-tarball en bouwt twee gedeelde `scripts/e2e/Dockerfile`-images:
 
-- een kale Node/Git-runner voor installer-/update-/plugin-dependency-lanes;
+- een kale Node-/Git-runner voor installer-/update-/Plugin-dependency-lanes;
 - een functionele image die dezelfde tarball in `/app` installeert voor normale functionaliteitslanes.
 
-Docker-lanedefinities staan in `scripts/lib/docker-e2e-scenarios.mjs`, plannerlogica staat in `scripts/lib/docker-e2e-plan.mjs`, en de runner voert alleen het geselecteerde plan uit. De scheduler selecteert de image per lane met `OPENCLAW_DOCKER_E2E_BARE_IMAGE` en `OPENCLAW_DOCKER_E2E_FUNCTIONAL_IMAGE`, en voert daarna lanes uit met `OPENCLAW_SKIP_DOCKER_BUILD=1`.
+Docker-lanedefinities staan in `scripts/lib/docker-e2e-scenarios.mjs`, plannerlogica staat in `scripts/lib/docker-e2e-plan.mjs`, en de runner voert alleen het geselecteerde plan uit. De scheduler selecteert de image per lane met `OPENCLAW_DOCKER_E2E_BARE_IMAGE` en `OPENCLAW_DOCKER_E2E_FUNCTIONAL_IMAGE`, en draait daarna lanes met `OPENCLAW_SKIP_DOCKER_BUILD=1`.
 
-### Instelbare waarden
+### Instelbare opties
 
 | Variabele                              | Standaard | Doel                                                                                          |
 | -------------------------------------- | --------- | --------------------------------------------------------------------------------------------- |
-| `OPENCLAW_DOCKER_ALL_PARALLELISM`      | 10        | Aantal main-pool-slots voor normale lanes.                                                    |
-| `OPENCLAW_DOCKER_ALL_TAIL_PARALLELISM` | 10        | Aantal providergevoelige tail-pool-slots.                                                     |
+| `OPENCLAW_DOCKER_ALL_PARALLELISM`      | 10        | Aantal slots in de hoofdpool voor normale lanes.                                              |
+| `OPENCLAW_DOCKER_ALL_TAIL_PARALLELISM` | 10        | Aantal slots in de providergevoelige tail-pool.                                               |
 | `OPENCLAW_DOCKER_ALL_LIVE_LIMIT`       | 9         | Limiet voor gelijktijdige live-lanes zodat providers niet throttlen.                          |
-| `OPENCLAW_DOCKER_ALL_NPM_LIMIT`        | 10        | Limiet voor gelijktijdige npm-installatielanes.                                                |
+| `OPENCLAW_DOCKER_ALL_NPM_LIMIT`        | 10        | Limiet voor gelijktijdige npm-install-lanes.                                                   |
 | `OPENCLAW_DOCKER_ALL_SERVICE_LIMIT`    | 7         | Limiet voor gelijktijdige multi-service-lanes.                                                 |
-| `OPENCLAW_DOCKER_ALL_START_STAGGER_MS` | 2000      | Spreiding tussen lane-starts om Docker-daemon-create-stormen te vermijden; zet op `0` voor geen spreiding. |
+| `OPENCLAW_DOCKER_ALL_START_STAGGER_MS` | 2000      | Spreiding tussen lanestarts om Docker-daemon-create-stormen te vermijden; stel `0` in voor geen spreiding. |
 | `OPENCLAW_DOCKER_ALL_LANE_TIMEOUT_MS`  | 7200000   | Fallbacktime-out per lane (120 minuten); geselecteerde live-/tail-lanes gebruiken strakkere limieten. |
-| `OPENCLAW_DOCKER_ALL_DRY_RUN`          | unset     | `1` drukt het schedulerplan af zonder lanes uit te voeren.                                    |
-| `OPENCLAW_DOCKER_ALL_LANES`            | unset     | Door komma's gescheiden exacte lanelijst; slaat cleanup-smoke over zodat agents één mislukte lane kunnen reproduceren. |
+| `OPENCLAW_DOCKER_ALL_DRY_RUN`          | unset     | `1` print het schedulerplan zonder lanes uit te voeren.                                       |
+| `OPENCLAW_DOCKER_ALL_LANES`            | unset     | Exacte kommagescheiden lanelijst; slaat cleanup-smoke over zodat agents één mislukte lane kunnen reproduceren. |
 
-Een lane die zwaarder is dan zijn effectieve limiet kan nog steeds starten vanuit een lege pool, en draait daarna alleen totdat hij capaciteit vrijgeeft. De lokale aggregatie voert Docker-preflights uit, verwijdert verouderde OpenClaw-E2E-containers, geeft actieve-lane-status uit, bewaart lanetimings voor longest-first-volgorde en stopt standaard met het plannen van nieuwe gepoolde lanes na de eerste fout.
+Een lane die zwaarder is dan zijn effectieve limiet kan nog steeds starten vanuit een lege pool, en draait daarna alleen totdat hij capaciteit vrijgeeft. De lokale aggregate voert preflights voor Docker uit, verwijdert verouderde OpenClaw-E2E-containers, toont actieve-lane-status, bewaart lanetimings voor longest-first-volgorde en stopt standaard met het plannen van nieuwe pooled lanes na de eerste fout.
 
 ### Herbruikbare live-/E2E-workflow
 
-De herbruikbare live-/E2E-workflow vraagt `scripts/test-docker-all.mjs --plan-json` welke pakket-, imagekind-, live-image-, lane- en credentialdekking vereist is. `scripts/docker-e2e.mjs` zet dat plan daarna om in GitHub-outputs en samenvattingen. De workflow verpakt OpenClaw via `scripts/package-openclaw-for-docker.mjs`, downloadt een pakketartifact uit de huidige run, of downloadt een pakketartifact uit `package_artifact_run_id`; valideert de tarballinventory; bouwt en pusht bare/functional GHCR Docker-E2E-images met package-digest-tags via de Docker-layercache van Blacksmith wanneer het plan lanes met geïnstalleerd pakket nodig heeft; en hergebruikt opgegeven `docker_e2e_bare_image`-/`docker_e2e_functional_image`-inputs of bestaande package-digest-images in plaats van opnieuw te bouwen. Docker-image-pulls worden opnieuw geprobeerd met een begrensde time-out van 180 seconden per poging, zodat een vastgelopen registry-/cachestream snel opnieuw wordt geprobeerd in plaats van het grootste deel van het kritieke CI-pad te verbruiken.
+De herbruikbare live-/E2E-workflow vraagt `scripts/test-docker-all.mjs --plan-json` welke pakket-, imagekind-, live-image-, lane- en credentialdekking vereist is. `scripts/docker-e2e.mjs` zet dat plan daarna om in GitHub-outputs en samenvattingen. Het script packt OpenClaw via `scripts/package-openclaw-for-docker.mjs`, downloadt een pakketartefact van de huidige run, of downloadt een pakketartefact uit `package_artifact_run_id`; valideert de tarball-inventaris; bouwt en pusht package-digest-getagde bare/functional GHCR-Docker-E2E-images via Blacksmiths Docker-layer-cache wanneer het plan lanes met geïnstalleerd pakket nodig heeft; en hergebruikt aangeleverde `docker_e2e_bare_image`-/`docker_e2e_functional_image`-inputs of bestaande package-digest-images in plaats van opnieuw te bouwen. Docker-image-pulls worden opnieuw geprobeerd met een begrensde time-out van 180 seconden per poging, zodat een vastgelopen registry-/cachestream snel opnieuw probeert in plaats van het grootste deel van het kritieke CI-pad te verbruiken.
 
 ### Releasepad-chunks
 
-Release-Docker-dekking draait kleinere chunked jobs met `OPENCLAW_SKIP_DOCKER_BUILD=1`, zodat elke chunk alleen het imagekind ophaalt dat hij nodig heeft en meerdere lanes via dezelfde gewogen scheduler uitvoert:
+Release-Docker-dekking draait kleinere gechunkte jobs met `OPENCLAW_SKIP_DOCKER_BUILD=1`, zodat elke chunk alleen het imagekind pullt dat nodig is en meerdere lanes uitvoert via dezelfde gewogen scheduler:
 
 - `OPENCLAW_DOCKER_ALL_PROFILE=release-path`
 - `OPENCLAW_DOCKER_ALL_CHUNK=core | package-update-openai | package-update-anthropic | package-update-core | plugins-runtime-plugins | plugins-runtime-services | plugins-runtime-install-a..h`
 
-Huidige release-Docker-chunks zijn `core`, `package-update-openai`, `package-update-anthropic`, `package-update-core`, `plugins-runtime-plugins`, `plugins-runtime-services` en `plugins-runtime-install-a` tot en met `plugins-runtime-install-h`. `plugins-runtime-core`, `plugins-runtime` en `plugins-integrations` blijven geaggregeerde plugin-/runtime-aliassen. De `install-e2e`-lanealias blijft de geaggregeerde handmatige rerun-alias voor beide provider-installerlanes.
+De huidige release-Docker-chunks zijn `core`, `package-update-openai`, `package-update-anthropic`, `package-update-core`, `plugins-runtime-plugins`, `plugins-runtime-services`, en `plugins-runtime-install-a` tot en met `plugins-runtime-install-h`. `plugins-runtime-core`, `plugins-runtime` en `plugins-integrations` blijven aggregate Plugin-/runtime-aliassen. De lane-alias `install-e2e` blijft de aggregate handmatige rerun-alias voor beide provider-installer-lanes.
 
-OpenWebUI wordt opgenomen in `plugins-runtime-services` wanneer volledige releasepath-dekking daarom vraagt, en behoudt alleen een zelfstandige `openwebui`-chunk voor OpenWebUI-only-dispatches. Bundled-channel-updatelanes proberen één keer opnieuw bij tijdelijke npm-netwerkfouten.
+OpenWebUI wordt opgenomen in `plugins-runtime-services` wanneer volledige releasepaddekking erom vraagt, en behoudt alleen een afzonderlijke `openwebui`-chunk voor OpenWebUI-only-dispatches. Update-lanes voor gebundelde channels proberen één keer opnieuw bij tijdelijke npm-netwerkfouten.
 
-Elke chunk uploadt `.artifacts/docker-tests/` met lane-logs, timings, `summary.json`, `failures.json`, fasetimings, schedulerplan-JSON, slow-lane-tabellen en rerun-commando's per lane. De workflowinput `docker_lanes` voert geselecteerde lanes uit tegen de voorbereide images in plaats van de chunkjobs, waardoor debugging van mislukte lanes begrensd blijft tot één gerichte Docker-job en de pakketartifact voor die run wordt voorbereid, gedownload of hergebruikt; als een geselecteerde lane een live-Docker-lane is, bouwt de gerichte job de live-testimage lokaal voor die rerun. Gegenereerde GitHub-rerun-commando's per lane bevatten `package_artifact_run_id`, `package_artifact_name` en inputs voor voorbereide images wanneer die waarden bestaan, zodat een mislukte lane het exacte pakket en de exacte images uit de mislukte run kan hergebruiken.
+Elke chunk uploadt `.artifacts/docker-tests/` met lane-logs, timings, `summary.json`, `failures.json`, fasetimings, schedulerplan-JSON, slow-lane-tabellen en rerun-commando's per lane. De workflow-input `docker_lanes` draait geselecteerde lanes tegen de voorbereide images in plaats van de chunkjobs, waardoor debugging van mislukte lanes begrensd blijft tot één gerichte Docker-job en het pakketartefact voor die run wordt voorbereid, gedownload of hergebruikt; als een geselecteerde lane een live-Docker-lane is, bouwt de gerichte job de live-test-image lokaal voor die rerun. Gegenereerde GitHub-rerun-commando's per lane bevatten `package_artifact_run_id`, `package_artifact_name` en voorbereide image-inputs wanneer die waarden bestaan, zodat een mislukte lane exact het pakket en de images uit de mislukte run kan hergebruiken.
 
 ```bash
 pnpm test:docker:rerun <run-id>      # download Docker artifacts and print combined/per-lane targeted rerun commands
 pnpm test:docker:timings <summary>   # slow-lane and phase critical-path summaries
 ```
 
-De geplande live-/E2E-workflow draait dagelijks de volledige releasepath-Docker-suite.
+De geplande live-/E2E-workflow draait dagelijks de volledige releasepad-Docker-suite.
 
 ## Plugin-prerelease
 
-`Plugin Prerelease` is duurdere product-/pakketdekking, dus het is een afzonderlijke workflow die wordt gedispatcht door `Full Release Validation` of door een expliciete operator. Normale pull requests, `main`-pushes en zelfstandige handmatige CI-dispatches houden die suite uitgeschakeld. De workflow verdeelt tests voor gebundelde plugins over acht extension-workers; die extension-shardjobs draaien maximaal twee pluginconfiguratiegroepen tegelijk met één Vitest-worker per groep en een grotere Node-heap, zodat importzware pluginbatches geen extra CI-jobs maken. Het release-only Docker-prereleasepad batcht gerichte Docker-lanes in kleine groepen om te voorkomen dat tientallen runners worden gereserveerd voor jobs van één tot drie minuten.
+`Plugin Prerelease` is duurdere product-/pakketdekking, dus het is een afzonderlijke workflow die wordt gedispatcht door `Full Release Validation` of door een expliciete operator. Normale pull requests, `main`-pushes en zelfstandige handmatige CI-dispatches houden die suite uitgeschakeld. De workflow balanceert gebundelde Plugin-tests over acht extensieworkers; die extensieshardjobs draaien maximaal twee Plugin-configgroepen tegelijk met één Vitest-worker per groep en een grotere Node-heap, zodat importzware Plugin-batches geen extra CI-jobs creëren. Het release-only Docker-prereleasepad batched gerichte Docker-lanes in kleine groepen om te voorkomen dat tientallen runners worden gereserveerd voor jobs van één tot drie minuten.
 
 ## QA Lab
 
-QA Lab heeft toegewijde CI-lanes buiten de belangrijkste slim-gescopete workflow. Agentic parity is genest onder de brede QA- en releaseharnassen, niet onder een zelfstandige PR-workflow. Gebruik `Full Release Validation` met `rerun_group=qa-parity` wanneer parity moet meelopen met een brede validatierun.
+QA Lab heeft toegewezen CI-lanes buiten de hoofdworkflow met slimme scope. Agentic parity is genest onder de brede QA- en releaseharnassen, niet als zelfstandige PR-workflow. Gebruik `Full Release Validation` met `rerun_group=qa-parity` wanneer parity moet meelopen met een brede validatierun.
 
-- De `QA-Lab - All Lanes`-workflow draait nachtelijk op `main` en bij handmatige dispatch; hij waaiert de mock-parity-lane, live-Matrix-lane en live-Telegram- en Discord-lanes uit als parallelle jobs. Live-jobs gebruiken de `qa-live-shared`-environment, en Telegram/Discord gebruiken Convex-leases.
+- De workflow `QA-Lab - All Lanes` draait nachtelijk op `main` en bij handmatige dispatch; hij waaiert de mock-parity-lane, live Matrix-lane en live Telegram- en Discord-lanes uit als parallelle jobs. Live-jobs gebruiken de omgeving `qa-live-shared`, en Telegram/Discord gebruiken Convex-leases.
 
-Releasechecks draaien Matrix- en Telegram-live-transportlanes met de deterministische mock-provider en mock-gekwalificeerde modellen (`mock-openai/gpt-5.5` en `mock-openai/gpt-5.5-alt`), zodat het kanaalcontract geïsoleerd is van live-modellatentie en normale startup van provider-plugins. De live-transport-Gateway schakelt memory search uit, omdat QA-parity memory-gedrag afzonderlijk dekt; providerconnectiviteit wordt gedekt door de afzonderlijke suites voor live model, native provider en Docker-provider.
+Releasechecks draaien Matrix- en Telegram-live-transportlanes met de deterministische mockprovider en mock-gekwalificeerde modellen (`mock-openai/gpt-5.5` en `mock-openai/gpt-5.5-alt`), zodat het channelcontract geïsoleerd is van live-modellatentie en normale provider-Plugin-startup. De live-transport-Gateway schakelt geheugenzoekopdrachten uit omdat QA-parity geheugengedrag afzonderlijk dekt; providerconnectiviteit wordt gedekt door de afzonderlijke live-model-, native-provider- en Docker-provider-suites.
 
-Matrix gebruikt `--profile fast` voor geplande en releasegates, en voegt `--fail-fast` alleen toe wanneer de uitgecheckte CLI dit ondersteunt. De CLI-standaard en handmatige workflowinput blijven `all`; handmatige `matrix_profile=all`-dispatch shardt volledige Matrix-dekking altijd in `transport`-, `media`-, `e2ee-smoke`-, `e2ee-deep`- en `e2ee-cli`-jobs.
+Matrix gebruikt `--profile fast` voor geplande en releasegates, en voegt `--fail-fast` alleen toe wanneer de uitgecheckte CLI dit ondersteunt. De CLI-standaard en handmatige workflowinput blijven `all`; handmatige `matrix_profile=all`-dispatch shardt volledige Matrix-dekking altijd in jobs voor `transport`, `media`, `e2ee-smoke`, `e2ee-deep` en `e2ee-cli`.
 
-`OpenClaw Release Checks` draait ook de releasekritieke QA Lab-lanes vóór releasegoedkeuring; de QA-parity-gate draait de kandidaat- en baselinepacks als parallelle lanejobs, en downloadt daarna beide artifacts naar een kleine rapportjob voor de uiteindelijke parityvergelijking.
+`OpenClaw Release Checks` draait ook de releasekritieke QA Lab-lanes vóór releasegoedkeuring; de QA-parity-gate draait de candidate- en baseline-packs als parallelle lanejobs, en downloadt daarna beide artefacten in een kleine rapportjob voor de uiteindelijke parity-vergelijking.
 
-Volg voor normale PR's gescopete CI-/checkbewijzen in plaats van parity als verplichte status te behandelen.
+Volg voor normale PR's scoped CI-/checkbewijs in plaats van parity als vereiste status te behandelen.
 
 ## CodeQL
 
-De `CodeQL`-workflow is bewust een smalle beveiligingsscanner voor een eerste controle, niet de volledige repository-sweep. Dagelijkse, handmatige en niet-concept pull request guard-runs scannen Actions-workflowcode plus de JavaScript/TypeScript-oppervlakken met het hoogste risico met beveiligingsquery's met hoge betrouwbaarheid, gefilterd op hoge/kritieke `security-severity`.
+De `CodeQL`-workflow is bewust een smalle beveiligingsscanner voor de eerste controle, niet de volledige repository-sweep. Dagelijkse, handmatige en niet-concept pull request-guard-runs scannen Actions-workflowcode plus de JavaScript/TypeScript-oppervlakken met het hoogste risico, met beveiligingsquery's met hoge betrouwbaarheid die zijn gefilterd op hoge/kritieke `security-severity`.
 
-De pull request guard blijft licht: hij start alleen voor wijzigingen onder `.github/actions`, `.github/codeql`, `.github/workflows`, `packages` of `src`, en voert dezelfde beveiligingsmatrix met hoge betrouwbaarheid uit als de geplande workflow. Android- en macOS-CodeQL blijven buiten de PR-standaarden.
+De pull request-guard blijft licht: hij start alleen voor wijzigingen onder `.github/actions`, `.github/codeql`, `.github/workflows`, `packages` of `src`, en voert dezelfde beveiligingsmatrix met hoge betrouwbaarheid uit als de geplande workflow. Android en macOS CodeQL blijven buiten de standaardinstellingen voor PR's.
 
 ### Beveiligingscategorieën
 
-| Categorie                                         | Oppervlak                                                                                                                               |
-| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `/codeql-security-high/core-auth-secrets`         | Authenticatie, geheimen, sandbox, Cron en Gateway-baseline                                                                              |
-| `/codeql-security-high/channel-runtime-boundary`  | Implementatiecontracten voor kernkanalen plus de runtime van kanaal-Plugins, Gateway, Plugin SDK, geheimen en audit-aanraakpunten       |
-| `/codeql-security-high/network-ssrf-boundary`     | Core SSRF, IP-parsing, netwerkguard, web-fetch en SSRF-beleidsoppervlakken van de Plugin SDK                                            |
-| `/codeql-security-high/mcp-process-tool-boundary` | MCP-servers, helpers voor procesuitvoering, uitgaande levering en gates voor tooluitvoering door agents                                |
-| `/codeql-security-high/plugin-trust-boundary`     | Vertrouwensoppervlakken voor Plugin-installatie, loader, manifest, registry, package-manager-installatie, source-loading en Plugin SDK-packagecontract |
+| Categorie                                         | Oppervlak                                                                                                                          |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `/codeql-security-high/core-auth-secrets`         | Auth, secrets, sandbox, cron en gateway-baseline                                                                                   |
+| `/codeql-security-high/channel-runtime-boundary`  | Core-kanaalimplementatiecontracten plus de kanaal-Plugin-runtime, gateway, Plugin SDK, secrets, audit-aanraakpunten                |
+| `/codeql-security-high/network-ssrf-boundary`     | Core SSRF, IP-parsing, netwerkguard, web-fetch en SSRF-beleidsoppervlakken van de Plugin SDK                                      |
+| `/codeql-security-high/mcp-process-tool-boundary` | MCP-servers, procesuitvoeringshelpers, uitgaande aflevering en agent-tooluitvoeringspoorten                                        |
+| `/codeql-security-high/plugin-trust-boundary`     | Plugin-installatie, loader, manifest, registry, package-manager-installatie, source-loading en vertrouwensoppervlakken van het Plugin SDK-packagecontract |
 
 ### Platformspecifieke beveiligingsshards
 
-- `CodeQL Android Critical Security` — geplande Android-beveiligingsshard. Bouwt de Android-app handmatig voor CodeQL op de kleinste Blacksmith Linux-runner die door workflow sanity wordt geaccepteerd. Uploadt onder `/codeql-critical-security/android`.
-- `CodeQL macOS Critical Security` — wekelijkse/handmatige macOS-beveiligingsshard. Bouwt de macOS-app handmatig voor CodeQL op Blacksmith macOS, filtert buildresultaten van afhankelijkheden uit de geüploade SARIF en uploadt onder `/codeql-critical-security/macos`. Buiten de dagelijkse standaarden gehouden omdat de macOS-build de runtime domineert, zelfs wanneer deze schoon is.
+- `CodeQL Android Critical Security` — geplande Android-beveiligingsshard. Bouwt de Android-app handmatig voor CodeQL op de kleinste Blacksmith Linux-runner die door workflow-sanity wordt geaccepteerd. Uploadt onder `/codeql-critical-security/android`.
+- `CodeQL macOS Critical Security` — wekelijkse/handmatige macOS-beveiligingsshard. Bouwt de macOS-app handmatig voor CodeQL op Blacksmith macOS, filtert dependency-buildresultaten uit de geüploade SARIF en uploadt onder `/codeql-critical-security/macos`. Buiten de dagelijkse standaardinstellingen gehouden omdat de macOS-build de runtime domineert, zelfs wanneer hij schoon is.
 
-### Critical Quality-categorieën
+### Categorieën voor kritieke kwaliteit
 
-`CodeQL Critical Quality` is de bijbehorende niet-beveiligingsshard. Deze voert alleen JavaScript/TypeScript-kwaliteitsquery's met fout-ernst en zonder beveiligingsfocus uit over smalle, waardevolle oppervlakken op de kleinere Blacksmith Linux-runner. De pull request guard is bewust kleiner dan het geplande profiel: niet-concept-PR's voeren alleen de bijbehorende shards `agent-runtime-boundary`, `config-boundary`, `core-auth-secrets`, `channel-runtime-boundary`, `gateway-runtime-boundary`, `memory-runtime-boundary`, `mcp-process-runtime-boundary`, `provider-runtime-boundary`, `session-diagnostics-boundary`, `plugin-boundary`, `plugin-sdk-package-contract` en `plugin-sdk-reply-runtime` uit voor wijzigingen in agent-opdracht/model/tool-uitvoering en reply-dispatchcode, config-schema/migratie/IO-code, auth/geheimen/sandbox/beveiligingscode, kernkanaal en gebundelde kanaal-Plugin-runtime, Gateway-protocol/server-method, memory-runtime/SDK-glue, MCP/proces/uitgaande levering, provider-runtime/modelcatalogus, sessiediagnostiek/leveringsqueues, Plugin-loader, Plugin SDK/packagecontract of Plugin SDK-reply-runtime. Wijzigingen in CodeQL-configuratie en kwaliteitsworkflow voeren alle twaalf PR-kwaliteitsshards uit.
+`CodeQL Critical Quality` is de bijbehorende niet-beveiligingsshard. Deze voert alleen JavaScript/TypeScript-kwaliteitsquery's met fout-severity en zonder beveiligingsfocus uit over smalle oppervlakken met hoge waarde op de kleinere Blacksmith Linux-runner. De pull request-guard is bewust kleiner dan het geplande profiel: niet-concept PR's voeren alleen de bijbehorende `agent-runtime-boundary`, `config-boundary`, `core-auth-secrets`, `channel-runtime-boundary`, `gateway-runtime-boundary`, `memory-runtime-boundary`, `mcp-process-runtime-boundary`, `provider-runtime-boundary`, `session-diagnostics-boundary`, `plugin-boundary`, `plugin-sdk-package-contract` en `plugin-sdk-reply-runtime`-shards uit voor wijzigingen in agent-command/model/tool-uitvoering en reply-dispatchcode, configschema/migratie/IO-code, auth/secrets/sandbox/beveiligingscode, core-kanaal en meegeleverde kanaal-Plugin-runtime, Gateway-protocol/servermethode, memory-runtime/SDK-glue, MCP/proces/uitgaande aflevering, provider-runtime/modelcatalogus, sessiediagnostiek/afleveringswachtrijen, Plugin-loader, Plugin SDK/packagecontract of Plugin SDK-reply-runtime. CodeQL-configuratie- en kwaliteitsworkflowwijzigingen voeren alle twaalf PR-kwaliteitsshards uit.
 
 Handmatige dispatch accepteert:
 
@@ -436,40 +436,40 @@ Handmatige dispatch accepteert:
 profile=all|agent-runtime-boundary|config-boundary|core-auth-secrets|channel-runtime-boundary|gateway-runtime-boundary|memory-runtime-boundary|mcp-process-runtime-boundary|plugin-boundary|plugin-sdk-package-contract|plugin-sdk-reply-runtime|provider-runtime-boundary|session-diagnostics-boundary
 ```
 
-De smalle profielen zijn hooks voor training/iteratie om één kwaliteitsshard geïsoleerd uit te voeren.
+De smalle profielen zijn onderwijs-/iteratiehooks om één kwaliteitsshard geïsoleerd uit te voeren.
 
-| Categorie                                               | Oppervlak                                                                                                                                                      |
-| ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/codeql-critical-quality/core-auth-secrets`            | Authenticatie, geheimen, sandbox, Cron en code voor de Gateway-beveiligingsgrens                                                                               |
-| `/codeql-critical-quality/config-boundary`              | Config-schema, migratie, normalisatie en IO-contracten                                                                                                         |
-| `/codeql-critical-quality/gateway-runtime-boundary`     | Gateway-protocolschema's en contracten voor servermethoden                                                                                                     |
-| `/codeql-critical-quality/channel-runtime-boundary`     | Implementatiecontracten voor kernkanaal en gebundelde kanaal-Plugin                                                                                            |
-| `/codeql-critical-quality/agent-runtime-boundary`       | Opdrachtuitvoering, model/provider-dispatch, auto-reply-dispatch en queues, en runtimecontracten voor het ACP-control plane                                    |
-| `/codeql-critical-quality/mcp-process-runtime-boundary` | MCP-servers en toolbridges, helpers voor procestoezicht en contracten voor uitgaande levering                                                                   |
-| `/codeql-critical-quality/memory-runtime-boundary`      | Memory host SDK, memory-runtimefacades, memory-Plugin SDK-aliassen, glue voor memory-runtimeactivatie en memory doctor-opdrachten                              |
-| `/codeql-critical-quality/session-diagnostics-boundary` | Interne reply-queue, sessieleveringsqueues, helpers voor uitgaande sessiebinding/levering, oppervlakken voor diagnostische events/logbundels en CLI-contracten voor session doctor |
-| `/codeql-critical-quality/plugin-sdk-reply-runtime`     | Inkomende reply-dispatch van Plugin SDK, reply-payload/chunking/runtime-helpers, kanaal-replyopties, leveringsqueues en helpers voor sessie/thread-binding      |
-| `/codeql-critical-quality/provider-runtime-boundary`    | Normalisatie van modelcatalogus, provider-authenticatie en -discovery, provider-runtime-registratie, provider-standaarden/catalogi en web/search/fetch/embedding-registries |
-| `/codeql-critical-quality/ui-control-plane`             | Bootstrap van Control UI, lokale persistentie, Gateway-control flows en runtimecontracten voor task control plane                                               |
-| `/codeql-critical-quality/web-media-runtime-boundary`   | Core web fetch/search, media-IO, media understanding, image-generation en runtimecontracten voor media-generation                                               |
-| `/codeql-critical-quality/plugin-boundary`              | Loader-, registry-, public-surface- en Plugin SDK-entrypointcontracten                                                                                          |
-| `/codeql-critical-quality/plugin-sdk-package-contract`  | Gepubliceerde package-side Plugin SDK-bron en helpers voor Plugin-packagecontracten                                                                             |
+| Categorie                                               | Oppervlak                                                                                                                                                           |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/codeql-critical-quality/core-auth-secrets`            | Auth, secrets, sandbox, cron en code voor de Gateway-beveiligingsgrens                                                                                              |
+| `/codeql-critical-quality/config-boundary`              | Configschema-, migratie-, normalisatie- en IO-contracten                                                                                                           |
+| `/codeql-critical-quality/gateway-runtime-boundary`     | Gateway-protocolschema's en servermethodecontracten                                                                                                                |
+| `/codeql-critical-quality/channel-runtime-boundary`     | Implementatiecontracten voor core-kanaal en meegeleverde kanaal-Plugin                                                                                             |
+| `/codeql-critical-quality/agent-runtime-boundary`       | Command-uitvoering, model/provider-dispatch, auto-reply-dispatch en wachtrijen, en ACP control-plane-runtimecontracten                                             |
+| `/codeql-critical-quality/mcp-process-runtime-boundary` | MCP-servers en tool-bridges, proces-supervisionhelpers en contracten voor uitgaande aflevering                                                                      |
+| `/codeql-critical-quality/memory-runtime-boundary`      | Memory-host-SDK, memory-runtimefacades, memory-Plugin SDK-aliassen, memory-runtimeactivatieglue en memory-doctorcommands                                           |
+| `/codeql-critical-quality/session-diagnostics-boundary` | Internals van reply-wachtrijen, sessieafleveringswachtrijen, helpers voor uitgaande sessiebinding/aflevering, oppervlakken voor diagnostische events/logbundels en sessie-doctor-CLI-contracten |
+| `/codeql-critical-quality/plugin-sdk-reply-runtime`     | Inbound reply-dispatch van Plugin SDK, reply-payload-/chunking-/runtimehelpers, kanaal-replyopties, afleveringswachtrijen en helpers voor sessie-/threadbinding     |
+| `/codeql-critical-quality/provider-runtime-boundary`    | Normalisatie van modelcatalogus, provider-auth en discovery, provider-runtimeregistratie, providerstandaarden/catalogi en web/search/fetch/embedding-registries    |
+| `/codeql-critical-quality/ui-control-plane`             | Control UI-bootstrap, lokale persistentie, Gateway-controlflows en Task-control-plane-runtimecontracten                                                             |
+| `/codeql-critical-quality/web-media-runtime-boundary`   | Core web-fetch/search, media-IO, media-understanding, image-generation en media-generation-runtimecontracten                                                        |
+| `/codeql-critical-quality/plugin-boundary`              | Loader-, registry-, public-surface- en Plugin SDK-entrypointcontracten                                                                                              |
+| `/codeql-critical-quality/plugin-sdk-package-contract`  | Gepubliceerde package-side Plugin SDK-source en helperfuncties voor pluginpackagecontracten                                                                         |
 
-Kwaliteit blijft gescheiden van beveiliging zodat kwaliteitsbevindingen kunnen worden gepland, gemeten, uitgeschakeld of uitgebreid zonder het beveiligingssignaal te vertroebelen. Uitbreiding van CodeQL voor Swift, Python en gebundelde Plugins moet alleen als gescopeerde of gesharde follow-up worden teruggezet nadat de smalle profielen stabiele runtime en signalen hebben.
+Kwaliteit blijft gescheiden van beveiliging zodat kwaliteitsbevindingen kunnen worden gepland, gemeten, uitgeschakeld of uitgebreid zonder het beveiligingssignaal te vertroebelen. Swift-, Python- en meegeleverde-Plugin-CodeQL-uitbreiding moet pas weer worden toegevoegd als afgebakend of geshard vervolgwerk nadat de smalle profielen stabiele runtime en stabiel signaal hebben.
 
 ## Onderhoudsworkflows
 
 ### Docs Agent
 
-De `Docs Agent`-workflow is een event-gedreven Codex-onderhoudslane om bestaande docs afgestemd te houden op recent gelande wijzigingen. Hij heeft geen zuiver schema: een succesvolle niet-bot push-CI-run op `main` kan hem activeren, en handmatige dispatch kan hem direct uitvoeren. Workflow-run-aanroepen worden overgeslagen wanneer `main` inmiddels is verplaatst of wanneer in het afgelopen uur een andere niet-overgeslagen Docs Agent-run is gemaakt. Wanneer hij draait, beoordeelt hij het commitbereik van de vorige niet-overgeslagen Docs Agent-bron-SHA tot de huidige `main`, zodat één uurlijkse run alle main-wijzigingen kan afdekken die sinds de laatste docs-pass zijn verzameld.
+De `Docs Agent`-workflow is een eventgestuurde Codex-onderhoudsbaan om bestaande docs afgestemd te houden op recent gelande wijzigingen. Er is geen puur schema: een succesvolle niet-bot push-CI-run op `main` kan hem triggeren, en handmatige dispatch kan hem direct uitvoeren. Workflow-run-invocations worden overgeslagen wanneer `main` is verdergegaan of wanneer er in het afgelopen uur een andere niet-overgeslagen Docs Agent-run is gemaakt. Wanneer hij draait, bekijkt hij het commitbereik van de vorige niet-overgeslagen Docs Agent-source-SHA tot de huidige `main`, zodat één uurlijkse run alle main-wijzigingen kan dekken die sinds de laatste docs-pass zijn verzameld.
 
 ### Test Performance Agent
 
-De `Test Performance Agent`-workflow is een event-gedreven Codex-onderhoudslane voor trage tests. Hij heeft geen zuiver schema: een succesvolle niet-bot push-CI-run op `main` kan hem activeren, maar hij slaat over als er die UTC-dag al een andere workflow-run-aanroep heeft gedraaid of draait. Handmatige dispatch omzeilt die dagelijkse activiteitsgate. De lane bouwt een full-suite gegroepeerd Vitest-prestatierapport, laat Codex alleen kleine dekking-behoudende testprestatieverbeteringen maken in plaats van brede refactors, voert daarna het full-suite-rapport opnieuw uit en wijst wijzigingen af die het aantal tests in de passerende baseline verlagen. Als de baseline falende tests heeft, mag Codex alleen duidelijke failures oplossen en moet het full-suite-rapport na de agent slagen voordat er iets wordt gecommit. Wanneer `main` verdergaat voordat de bot-push landt, rebased de lane de gevalideerde patch, voert `pnpm check:changed` opnieuw uit en probeert de push opnieuw; conflicterende verouderde patches worden overgeslagen. Hij gebruikt GitHub-hosted Ubuntu zodat de Codex-action dezelfde drop-sudo-veiligheidshouding kan behouden als de docs-agent.
+De `Test Performance Agent`-workflow is een eventgestuurde Codex-onderhoudsbaan voor trage tests. Er is geen puur schema: een succesvolle niet-bot push-CI-run op `main` kan hem triggeren, maar hij wordt overgeslagen als er die UTC-dag al een andere workflow-run-invocation heeft gedraaid of draait. Handmatige dispatch omzeilt die dagelijkse activiteitspoort. De baan bouwt een full-suite gegroepeerd Vitest-performancerapport, laat Codex alleen kleine testperformancefixes uitvoeren die coverage behouden in plaats van brede refactors, voert daarna het full-suite-rapport opnieuw uit en wijst wijzigingen af die het aantal passerende baseline-tests verlagen. Als de baseline falende tests heeft, mag Codex alleen duidelijke failures fixen en moet het full-suite-rapport na de agent slagen voordat er iets wordt gecommit. Wanneer `main` verdergaat voordat de bot-push landt, rebased de baan de gevalideerde patch, voert `pnpm check:changed` opnieuw uit en probeert de push opnieuw; conflicterende verouderde patches worden overgeslagen. Hij gebruikt GitHub-hosted Ubuntu zodat de Codex-action dezelfde drop-sudo-veiligheidshouding kan behouden als de docs-agent.
 
-### Dubbele PR's Na Merge
+### Dubbele PR's na merge
 
-De `Duplicate PRs After Merge`-workflow is een handmatige maintainer-workflow voor het opruimen van duplicaten na landen. Hij staat standaard op dry-run en sluit alleen expliciet vermelde PR's wanneer `apply=true`. Voordat hij GitHub muteert, verifieert hij dat de gelande PR is gemerged en dat elk duplicaat ofwel een gedeeld gerefereerd issue heeft of overlappende gewijzigde hunks.
+De `Duplicate PRs After Merge`-workflow is een handmatige maintainer-workflow voor duplicate cleanup na landing. Hij staat standaard op dry-run en sluit alleen expliciet vermelde PR's wanneer `apply=true`. Voordat GitHub wordt gewijzigd, verifieert hij dat de gelande PR is gemerged en dat elke duplicate ofwel een gedeeld gerefereerd issue heeft, of overlappende gewijzigde hunks.
 
 ```bash
 gh workflow run duplicate-after-merge.yml \
@@ -478,38 +478,115 @@ gh workflow run duplicate-after-merge.yml \
   -f apply=true
 ```
 
-## Lokale checkgates en gewijzigde routering
+## Lokale checkpoorten en changed-routing
 
-Lokale changed-lane-logica staat in `scripts/changed-lanes.mjs` en wordt uitgevoerd door `scripts/check-changed.mjs`. Die lokale checkgate is strenger over architectuurgrenzen dan de brede CI-platformscope:
+Lokale changed-lane-logica staat in `scripts/changed-lanes.mjs` en wordt uitgevoerd door `scripts/check-changed.mjs`. Die lokale checkpoort is strenger over architectuurgrenzen dan de brede CI-platformscope:
 
-- wijzigingen in core production voeren core prod- en core test-typecheck plus core lint/guards uit;
-- wijzigingen alleen in core tests voeren alleen core test-typecheck plus core lint uit;
-- wijzigingen in extension production voeren extension prod- en extension test-typecheck plus extension lint uit;
-- wijzigingen alleen in extension tests voeren extension test-typecheck plus extension lint uit;
-- wijzigingen in de publieke Plugin SDK of Plugin-contracten breiden uit naar extension-typecheck omdat extensies afhankelijk zijn van die core-contracten (Vitest extension-sweeps blijven expliciet testwerk);
-- release-metadata-only versiebumps voeren gerichte versie/config/root-dependency-checks uit;
-- onbekende root/config-wijzigingen falen veilig naar alle checklanes.
+- core-productiewijzigingen voeren core prod- en core test-typecheck plus core lint/guards uit;
+- alleen-core-testwijzigingen voeren alleen core test-typecheck plus core lint uit;
+- extensieproductiewijzigingen voeren extensie prod- en extensie test-typecheck plus extensie lint uit;
+- alleen-extensie-testwijzigingen voeren extensie test-typecheck plus extensie lint uit;
+- publieke Plugin SDK- of plugin-contractwijzigingen breiden uit naar extensietypecheck omdat extensies afhankelijk zijn van die core-contracten (Vitest-extensiesweeps blijven expliciet testwerk);
+- version bumps die alleen release-metadata raken, voeren gerichte versie-/config-/root-dependency-checks uit;
+- onbekende root-/configwijzigingen falen veilig naar alle checklanes.
 
-Lokale changed-test-routering staat in `scripts/test-projects.test-support.mjs` en is bewust goedkoper dan `check:changed`: directe testbewerkingen voeren zichzelf uit, bronbewerkingen geven de voorkeur aan expliciete mappings, daarna sibling-tests en import-graph-afhankelijken. Gedeelde group-room delivery-config is een van de expliciete mappings: wijzigingen in de group visible-reply-config, source reply delivery mode of de message-tool system prompt lopen via de core reply-tests plus Discord- en Slack-deliveryregressies, zodat een gedeelde standaardwijziging faalt vóór de eerste PR-push. Gebruik `OPENCLAW_TEST_CHANGED_BROAD=1 pnpm test:changed` alleen wanneer de wijziging zo harness-breed is dat de goedkope gemapte set geen betrouwbare proxy is.
+Lokale changed-test-routing staat in `scripts/test-projects.test-support.mjs` en is bewust goedkoper dan `check:changed`: directe testbewerkingen voeren zichzelf uit, sourcebewerkingen geven de voorkeur aan expliciete mappings, daarna sibling-tests en import-graph-dependents. Gedeelde group-room-afleveringsconfig is een van de expliciete mappings: wijzigingen aan de group visible-reply-config, source-reply-afleveringsmodus of de message-tool-systemprompt lopen via de core reply-tests plus Discord- en Slack-afleveringsregressies, zodat een gedeelde standaardwijziging faalt voor de eerste PR-push. Gebruik `OPENCLAW_TEST_CHANGED_BROAD=1 pnpm test:changed` alleen wanneer de wijziging zo harness-breed is dat de goedkope gemapte set geen betrouwbare proxy is.
 
 ## Testbox-validatie
 
-Voer Testbox uit vanuit de repo-root en gebruik bij voorkeur een pas opgewarmde box voor brede verificatie. Voordat je een trage gate uitvoert op een box die is hergebruikt, verlopen is of net een onverwacht grote sync meldde, voer je eerst `pnpm testbox:sanity` uit binnen de box.
+Voer Testbox uit vanuit de repo-root en geef voor breed bewijs de voorkeur aan een nieuw opgewarmde box. Voordat je een trage gate besteedt aan een box die is hergebruikt, verlopen is of net een onverwacht grote sync heeft gerapporteerd, voer je eerst `pnpm testbox:sanity` uit binnen de box.
 
-De sanity-check faalt snel wanneer vereiste rootbestanden zoals `pnpm-lock.yaml` zijn verdwenen of wanneer `git status --short` ten minste 200 gevolgde verwijderingen toont. Dat betekent meestal dat de externe syncstatus geen betrouwbare kopie van de PR is; stop die box en warm een nieuwe op in plaats van de producttestfout te debuggen. Stel voor PR’s met opzettelijke grootschalige verwijderingen `OPENCLAW_TESTBOX_ALLOW_MASS_DELETIONS=1` in voor die sanity-run.
+De sanity-check faalt snel wanneer vereiste root-bestanden zoals `pnpm-lock.yaml` zijn verdwenen of wanneer `git status --short` minstens 200 gevolgde verwijderingen toont. Dat betekent meestal dat de externe sync-status geen betrouwbare kopie van de PR is; stop die box en warm een nieuwe op in plaats van de producttestfout te debuggen. Voor opzettelijke PR’s met veel verwijderingen stel je `OPENCLAW_TESTBOX_ALLOW_MASS_DELETIONS=1` in voor die sanity-run.
 
-`pnpm testbox:run` beëindigt ook een lokale Blacksmith CLI-aanroep die langer dan vijf minuten in de syncfase blijft zonder uitvoer na de sync. Stel `OPENCLAW_TESTBOX_SYNC_TIMEOUT_MS=0` in om die beveiliging uit te schakelen, of gebruik een grotere millisecondewaarde voor ongebruikelijk grote lokale diffs.
+`pnpm testbox:run` beëindigt ook een lokale Blacksmith CLI-aanroep die langer dan vijf minuten in de sync-fase blijft zonder output na de sync. Stel `OPENCLAW_TESTBOX_SYNC_TIMEOUT_MS=0` in om die guard uit te schakelen, of gebruik een grotere millisecondewaarde voor ongewoon grote lokale diffs.
 
-Crabbox is het repo-eigen tweede pad voor externe boxen voor Linux-verificatie wanneer Blacksmith niet beschikbaar is of wanneer eigen cloudcapaciteit de voorkeur heeft. Warm een box op, hydrateer deze via de projectworkflow en voer daarna opdrachten uit via de Crabbox CLI:
+Crabbox is de repo-eigen remote-box-wrapper voor maintainer-Linux-bewijs. Gebruik het wanneer een check te breed is voor een lokale edit-loop, wanneer CI-pariteit belangrijk is, of wanneer het bewijs secrets, Docker, package-lanes, herbruikbare boxes of externe logs nodig heeft. De normale OpenClaw-backend is `blacksmith-testbox`; eigen AWS/Hetzner-capaciteit is een fallback bij Blacksmith-storingen, quota-problemen of expliciete tests met eigen capaciteit.
+
+Controleer de wrapper vanuit de repo-root vóór een eerste run:
 
 ```bash
-pnpm crabbox:warmup -- --idle-timeout 90m
-pnpm crabbox:hydrate -- --id <cbx_id>
-pnpm crabbox:run -- --id <cbx_id> --shell "OPENCLAW_TESTBOX=1 pnpm check:changed"
-pnpm crabbox:stop -- <cbx_id>
+pnpm crabbox:run -- --help | sed -n '1,120p'
 ```
 
-`.crabbox.yaml` beheert de standaardwaarden voor provider, sync en GitHub Actions-hydratatie. Het sluit de lokale `.git` uit, zodat de gehydrateerde Actions-checkout zijn eigen externe Git-metadata behoudt in plaats van maintainer-lokale remotes en objectstores te synchroniseren, en het sluit lokale runtime-/buildartefacten uit die nooit mogen worden overgedragen. `.github/workflows/crabbox-hydrate.yml` beheert checkout, Node/pnpm-configuratie, ophalen van `origin/main` en de niet-geheime omgevingsoverdracht die latere `crabbox run --id <cbx_id>`-opdrachten gebruiken.
+De repo-wrapper weigert een verouderde Crabbox-binary die `blacksmith-testbox` niet adverteert. Geef de provider expliciet door, ook al heeft `.crabbox.yaml` defaults voor eigen cloud.
+
+Gewijzigde gate:
+
+```bash
+pnpm crabbox:run -- --provider blacksmith-testbox \
+  --blacksmith-org openclaw \
+  --blacksmith-workflow .github/workflows/ci-check-testbox.yml \
+  --blacksmith-job check \
+  --blacksmith-ref main \
+  --idle-timeout 90m \
+  --ttl 240m \
+  --timing-json \
+  --shell -- \
+  "env CI=1 NODE_OPTIONS=--max-old-space-size=4096 OPENCLAW_TEST_PROJECTS_PARALLEL=6 OPENCLAW_VITEST_MAX_WORKERS=1 OPENCLAW_VITEST_NO_OUTPUT_TIMEOUT_MS=900000 pnpm check:changed"
+```
+
+Gerichte testrerun:
+
+```bash
+pnpm crabbox:run -- --provider blacksmith-testbox \
+  --blacksmith-org openclaw \
+  --blacksmith-workflow .github/workflows/ci-check-testbox.yml \
+  --blacksmith-job check \
+  --blacksmith-ref main \
+  --idle-timeout 90m \
+  --ttl 240m \
+  --timing-json \
+  --shell -- \
+  "env CI=1 NODE_OPTIONS=--max-old-space-size=4096 OPENCLAW_VITEST_MAX_WORKERS=1 OPENCLAW_VITEST_NO_OUTPUT_TIMEOUT_MS=900000 pnpm test <path-or-filter>"
+```
+
+Volledige suite:
+
+```bash
+pnpm crabbox:run -- --provider blacksmith-testbox \
+  --blacksmith-org openclaw \
+  --blacksmith-workflow .github/workflows/ci-check-testbox.yml \
+  --blacksmith-job check \
+  --blacksmith-ref main \
+  --idle-timeout 90m \
+  --ttl 240m \
+  --timing-json \
+  --shell -- \
+  "env CI=1 NODE_OPTIONS=--max-old-space-size=4096 OPENCLAW_TEST_PROJECTS_PARALLEL=6 OPENCLAW_VITEST_MAX_WORKERS=1 OPENCLAW_VITEST_NO_OUTPUT_TIMEOUT_MS=900000 pnpm test"
+```
+
+Lees de uiteindelijke JSON-samenvatting. De nuttige velden zijn `provider`, `leaseId`, `syncDelegated`, `exitCode`, `commandMs` en `totalMs`. Eenmalige door Blacksmith ondersteunde Crabbox-runs zouden de Testbox automatisch moeten stoppen; als een run wordt onderbroken of cleanup onduidelijk is, inspecteer dan live boxes en stop alleen de boxes die je hebt aangemaakt:
+
+```bash
+blacksmith testbox list
+blacksmith testbox stop --id <tbx_id>
+```
+
+Gebruik hergebruik alleen wanneer je bewust meerdere commando’s op dezelfde gehydrateerde box nodig hebt:
+
+```bash
+pnpm crabbox:run -- --provider blacksmith-testbox --id <tbx_id> --no-sync --timing-json --shell -- "pnpm test <path-or-filter>"
+pnpm crabbox:stop -- <tbx_id>
+```
+
+Als Crabbox de kapotte laag is maar Blacksmith zelf werkt, gebruik dan direct Blacksmith als smalle fallback:
+
+```bash
+blacksmith testbox warmup ci-check-testbox.yml --ref main --idle-timeout 90
+blacksmith testbox run --id <tbx_id> "env CI=1 NODE_OPTIONS=--max-old-space-size=4096 OPENCLAW_TEST_PROJECTS_PARALLEL=6 OPENCLAW_VITEST_MAX_WORKERS=1 OPENCLAW_VITEST_NO_OUTPUT_TIMEOUT_MS=900000 pnpm check:changed"
+blacksmith testbox stop --id <tbx_id>
+```
+
+Escaleren naar eigen Crabbox-capaciteit doe je alleen wanneer Blacksmith down is, door quota wordt beperkt, de benodigde omgeving mist, of eigen capaciteit expliciet het doel is:
+
+```bash
+pnpm crabbox:warmup -- --provider aws --class beast --market on-demand --idle-timeout 90m
+pnpm crabbox:hydrate -- --id <cbx_id-or-slug>
+pnpm crabbox:run -- --id <cbx_id-or-slug> --timing-json --shell -- "env NODE_OPTIONS=--max-old-space-size=4096 OPENCLAW_TEST_PROJECTS_PARALLEL=6 OPENCLAW_VITEST_MAX_WORKERS=1 OPENCLAW_VITEST_NO_OUTPUT_TIMEOUT_MS=900000 pnpm check:changed"
+pnpm crabbox:stop -- <cbx_id-or-slug>
+```
+
+`.crabbox.yaml` beheert de defaults voor provider, sync en GitHub Actions-hydratatie voor eigen-cloud-lanes. Het sluit lokale `.git` uit zodat de gehydrateerde Actions-checkout zijn eigen externe Git-metadata behoudt in plaats van maintainer-lokale remotes en object stores te synchroniseren, en het sluit lokale runtime-/build-artifacts uit die nooit mogen worden overgedragen. `.github/workflows/crabbox-hydrate.yml` beheert checkout, Node/pnpm-setup, `origin/main`-fetch en de niet-secret environment-overdracht voor eigen-cloud-commando’s met `crabbox run --id <cbx_id>`.
 
 ## Gerelateerd
 
