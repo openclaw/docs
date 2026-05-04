@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Konfigurowanie kontroli dostępu do wiadomości bezpośrednich
+    - Konfigurowanie kontroli dostępu do wiadomości prywatnych
     - Parowanie nowego Node iOS/Android
     - Przegląd stanu zabezpieczeń OpenClaw
-summary: 'Przegląd parowania: zatwierdź, kto może wysyłać Ci wiadomości prywatne + które węzły mogą dołączać'
+summary: 'Omówienie parowania: zatwierdź, kto może wysyłać Ci wiadomości prywatne + które węzły mogą dołączać'
 title: Parowanie
 x-i18n:
-    generated_at: "2026-05-02T09:43:24Z"
+    generated_at: "2026-05-04T02:21:52Z"
     model: gpt-5.5
     provider: openai
-    source_hash: bb68d87c0e1dfe7c9a6a6d9415f4c63625755fb43a2e22a1d1374ff0a63e49c4
+    source_hash: 4fb27840f7c9ef55e7270cc29f813e6db90b240aa2180f30952eb9485f0f8874
     source_path: channels/pairing.md
     workflow: 16
 ---
 
-“Parowanie” to jawny krok zatwierdzania dostępu w OpenClaw.
+„Parowanie” to jawny krok zatwierdzania dostępu w OpenClaw.
 Jest używane w dwóch miejscach:
 
 1. **Parowanie DM** (kto może rozmawiać z botem)
-2. **Parowanie Node** (które urządzenia/Node'y mogą dołączać do sieci Gateway)
+2. **Parowanie Node** (które urządzenia/węzły mogą dołączyć do sieci Gateway)
 
 Kontekst bezpieczeństwa: [Bezpieczeństwo](/pl/gateway/security)
 
@@ -28,16 +28,16 @@ Gdy kanał jest skonfigurowany z zasadą DM `pairing`, nieznani nadawcy otrzymuj
 
 Domyślne zasady DM są udokumentowane tutaj: [Bezpieczeństwo](/pl/gateway/security)
 
-`dmPolicy: "open"` jest publiczne tylko wtedy, gdy efektywna lista dozwolonych DM zawiera `"*"`.
-Konfiguracja i walidacja wymagają tego symbolu wieloznacznego dla publicznie otwartych konfiguracji. Jeśli istniejący
+`dmPolicy: "open"` jest publiczne tylko wtedy, gdy efektywna lista dozwolonych nadawców DM zawiera `"*"`.
+Konfiguracja i walidacja wymagają tego symbolu wieloznacznego dla publicznych konfiguracji open. Jeśli istniejący
 stan zawiera `open` z konkretnymi wpisami `allowFrom`, środowisko uruchomieniowe nadal dopuszcza
-tylko tych nadawców, a zatwierdzenia z magazynu parowania nie rozszerzają dostępu `open`.
+tylko tych nadawców, a zatwierdzenia w magazynie parowania nie rozszerzają dostępu `open`.
 
 Kody parowania:
 
-- 8 znaków, wielkie litery, bez mylących znaków (`0O1I`).
-- **Wygasają po 1 godzinie**. Bot wysyła wiadomość parowania tylko wtedy, gdy zostanie utworzone nowe żądanie (mniej więcej raz na godzinę na nadawcę).
-- Oczekujące żądania parowania DM są domyślnie ograniczone do **3 na kanał**; dodatkowe żądania są ignorowane, dopóki jedno nie wygaśnie albo nie zostanie zatwierdzone.
+- 8 znaków, wielkie litery, bez niejednoznacznych znaków (`0O1I`).
+- **Wygasają po 1 godzinie**. Bot wysyła wiadomość parowania tylko wtedy, gdy zostaje utworzone nowe żądanie (w przybliżeniu raz na godzinę na nadawcę).
+- Oczekujące żądania parowania DM są domyślnie ograniczone do **3 na kanał**; dodatkowe żądania są ignorowane, dopóki jedno nie wygaśnie lub nie zostanie zatwierdzone.
 
 ### Zatwierdzanie nadawcy
 
@@ -46,20 +46,20 @@ openclaw pairing list telegram
 openclaw pairing approve telegram <CODE>
 ```
 
-Jeśli właściciel poleceń nie jest jeszcze skonfigurowany, zatwierdzenie kodu parowania DM także inicjalizuje
-`commands.ownerAllowFrom` zatwierdzonym nadawcą, takim jak `telegram:123456789`.
-Daje to pierwszej konfiguracji jawnego właściciela dla poleceń uprzywilejowanych i monitów o zatwierdzenie
-exec. Po utworzeniu właściciela późniejsze zatwierdzenia parowania nadają tylko
-dostęp DM; nie dodają kolejnych właścicieli.
+Jeśli właściciel poleceń nie jest jeszcze skonfigurowany, zatwierdzenie kodu parowania DM także inicjuje
+`commands.ownerAllowFrom` dla zatwierdzonego nadawcy, na przykład `telegram:123456789`.
+Daje to pierwszym konfiguracjom jawnego właściciela dla uprzywilejowanych poleceń i monitów zatwierdzania
+wykonywania. Po utworzeniu właściciela późniejsze zatwierdzenia parowania przyznają tylko dostęp DM;
+nie dodają kolejnych właścicieli.
 
 Obsługiwane kanały: `bluebubbles`, `discord`, `feishu`, `googlechat`, `imessage`, `irc`, `line`, `matrix`, `mattermost`, `msteams`, `nextcloud-talk`, `nostr`, `openclaw-weixin`, `signal`, `slack`, `synology-chat`, `telegram`, `twitch`, `whatsapp`, `zalo`, `zalouser`.
 
-### Wielokrotnego użytku grupy nadawców
+### Grupy nadawców wielokrotnego użytku
 
-Użyj najwyższego poziomu `accessGroups`, gdy ten sam zaufany zestaw nadawców powinien obowiązywać w
-wielu kanałach wiadomości albo zarówno na listach dozwolonych DM, jak i grup.
+Używaj najwyższego poziomu `accessGroups`, gdy ten sam zestaw zaufanych nadawców ma być stosowany do
+wielu kanałów wiadomości albo zarówno do list dozwolonych DM, jak i grup.
 
-Grupy statyczne używają `type: "message.senders"` i są przywoływane przez
+Grupy statyczne używają `type: "message.senders"` i są wskazywane przez
 `accessGroup:<name>` z list dozwolonych kanałów:
 
 ```json5
@@ -88,29 +88,28 @@ Grupy dostępu są szczegółowo udokumentowane tutaj: [Grupy dostępu](/pl/chan
 Przechowywane w `~/.openclaw/credentials/`:
 
 - Oczekujące żądania: `<channel>-pairing.json`
-- Magazyn zatwierdzonej listy dozwolonych:
+- Magazyn zatwierdzonej listy dozwolonych nadawców:
   - Konto domyślne: `<channel>-allowFrom.json`
   - Konto inne niż domyślne: `<channel>-<accountId>-allowFrom.json`
 
-Zachowanie zakresu konta:
+Zachowanie zakresu kont:
 
-- Konta inne niż domyślne odczytują/zapisują tylko swój plik listy dozwolonych o określonym zakresie.
-- Konto domyślne używa pliku listy dozwolonych o zakresie kanału, bez określonego zakresu konta.
+- Konta inne niż domyślne odczytują/zapisują tylko swój plik listy dozwolonych nadawców o odpowiednim zakresie.
+- Konto domyślne używa pliku listy dozwolonych nadawców bez zakresu, przypisanego do kanału.
 
-Traktuj je jako poufne (bramkują dostęp do Twojego asystenta).
+Traktuj je jako poufne (kontrolują dostęp do Twojego asystenta).
 
 <Note>
-Magazyn listy dozwolonych parowania służy do dostępu DM. Autoryzacja grupowa jest oddzielna.
-Zatwierdzenie kodu parowania DM nie pozwala automatycznie temu nadawcy uruchamiać
-poleceń grupowych ani kontrolować bota w grupach. Inicjalizacja pierwszego właściciela to oddzielny stan konfiguracji
-w `commands.ownerAllowFrom`, a dostarczanie czatu grupowego nadal podlega
-listom dozwolonych grup danego kanału (na przykład `groupAllowFrom`, `groups` albo nadpisaniom
-dla poszczególnych grup lub tematów, zależnie od kanału).
+Magazyn listy dozwolonych nadawców parowania służy do dostępu DM. Autoryzacja grupowa jest oddzielna.
+Zatwierdzenie kodu parowania DM nie pozwala automatycznie temu nadawcy uruchamiać poleceń grupowych
+ani kontrolować bota w grupach. Inicjalizacja pierwszego właściciela to oddzielny stan konfiguracji
+w `commands.ownerAllowFrom`, a dostarczanie czatu grupowego nadal podlega listom dozwolonym grup kanału
+(na przykład `groupAllowFrom`, `groups` albo nadpisaniom dla grupy lub tematu, zależnie od kanału).
 </Note>
 
-## 2) Parowanie urządzeń Node (Node'y iOS/Android/macOS/headless)
+## 2) Parowanie urządzeń Node (węzły iOS/Android/macOS/headless)
 
-Node'y łączą się z Gateway jako **urządzenia** z `role: node`. Gateway
+Węzły łączą się z Gateway jako **urządzenia** z `role: node`. Gateway
 tworzy żądanie parowania urządzenia, które musi zostać zatwierdzone.
 
 ### Parowanie przez Telegram (zalecane dla iOS)
@@ -118,26 +117,26 @@ tworzy żądanie parowania urządzenia, które musi zostać zatwierdzone.
 Jeśli używasz Plugin `device-pair`, możesz przeprowadzić pierwsze parowanie urządzenia w całości z Telegram:
 
 1. W Telegram wyślij wiadomość do swojego bota: `/pair`
-2. Bot odpowie dwiema wiadomościami: wiadomością z instrukcjami i osobną wiadomością z **kodem konfiguracji** (łatwą do skopiowania/wklejenia w Telegram).
+2. Bot odpowie dwiema wiadomościami: wiadomością instruktażową i osobną wiadomością z **kodem konfiguracji** (łatwą do skopiowania/wklejenia w Telegram).
 3. Na telefonie otwórz aplikację OpenClaw iOS → Settings → Gateway.
 4. Wklej kod konfiguracji i połącz się.
-5. Wróć do Telegram: `/pair pending` (przejrzyj identyfikatory żądań, rolę i zakresy), a następnie zatwierdź.
+5. Z powrotem w Telegram: `/pair pending` (przejrzyj identyfikatory żądań, rolę i zakresy), a następnie zatwierdź.
 
-Kod konfiguracji to ładunek JSON zakodowany w base64, który zawiera:
+Kod konfiguracji to zakodowany w base64 ładunek JSON, który zawiera:
 
-- `url`: URL WebSocket Gateway (`ws://...` albo `wss://...`)
-- `bootstrapToken`: krótkotrwały token inicjalizujący dla jednego urządzenia, używany przy początkowym uzgadnianiu parowania
+- `url`: adres URL WebSocket Gateway (`ws://...` lub `wss://...`)
+- `bootstrapToken`: krótkotrwały token bootstrap pojedynczego urządzenia używany do początkowego uzgadniania parowania
 
-Ten token inicjalizujący niesie wbudowany profil inicjalizacji parowania:
+Ten token bootstrap przenosi wbudowany profil bootstrap parowania:
 
 - główny przekazany token `node` pozostaje `scopes: []`
-- każdy przekazany token `operator` pozostaje ograniczony do listy dozwolonych inicjalizacji:
+- każdy przekazany token `operator` pozostaje ograniczony do listy dozwolonej bootstrap:
   `operator.approvals`, `operator.read`, `operator.talk.secrets`, `operator.write`
-- kontrole zakresów inicjalizacji są prefiksowane rolą, a nie jedną płaską pulą zakresów:
-  wpisy zakresu operatora spełniają tylko żądania operatora, a role inne niż operator
+- sprawdzanie zakresów bootstrap jest prefiksowane rolą, a nie korzysta z jednej płaskiej puli zakresów:
+  wpisy zakresów operatora spełniają tylko żądania operatora, a role niebędące operatorem
   nadal muszą żądać zakresów pod własnym prefiksem roli
-- późniejsza rotacja/odwołanie tokenów pozostaje ograniczone zarówno zatwierdzonym
-  kontraktem roli urządzenia, jak i zakresami operatora sesji wywołującej
+- późniejsza rotacja/unieważnianie tokenów pozostaje ograniczone zarówno przez zatwierdzoną umowę roli
+  urządzenia, jak i zakresy operatora sesji wywołującego
 
 Traktuj kod konfiguracji jak hasło, dopóki jest ważny.
 
@@ -149,18 +148,25 @@ openclaw devices approve <requestId>
 openclaw devices reject <requestId>
 ```
 
+Gdy jawne zatwierdzenie zostanie odrzucone, ponieważ zatwierdzająca sesja sparowanego urządzenia
+została otwarta tylko z zakresem parowania, CLI ponawia to samo żądanie z
+`operator.admin`. Pozwala to istniejącemu sparowanemu urządzeniu z uprawnieniami administratora odzyskać nowe
+parowanie Control UI/przeglądarki bez ręcznej edycji `devices/paired.json`. Gateway
+nadal waliduje ponowione połączenie; tokeny, które nie mogą uwierzytelnić się
+z `operator.admin`, pozostają zablokowane.
+
 Jeśli to samo urządzenie ponowi próbę z innymi szczegółami uwierzytelniania (na przykład inną
-rolą/zakresami/kluczem publicznym), poprzednie oczekujące żądanie zostanie zastąpione i zostanie utworzony nowy
+rolą/zakresami/kluczem publicznym), poprzednie oczekujące żądanie zostanie zastąpione i zostanie utworzone nowe
 `requestId`.
 
 <Note>
-Już sparowane urządzenie nie otrzymuje po cichu szerszego dostępu. Jeśli połączy się ponownie, prosząc o więcej zakresów albo szerszą rolę, OpenClaw pozostawia istniejące zatwierdzenie bez zmian i tworzy nowe oczekujące żądanie aktualizacji. Użyj `openclaw devices list`, aby porównać obecnie zatwierdzony dostęp z nowo żądanym dostępem przed zatwierdzeniem.
+Już sparowane urządzenie nie otrzymuje po cichu szerszego dostępu. Jeśli połączy się ponownie, prosząc o więcej zakresów lub szerszą rolę, OpenClaw pozostawia istniejące zatwierdzenie bez zmian i tworzy nowe oczekujące żądanie rozszerzenia. Użyj `openclaw devices list`, aby porównać obecnie zatwierdzony dostęp z nowo żądanym dostępem przed zatwierdzeniem.
 </Note>
 
-### Opcjonalne automatyczne zatwierdzanie Node z zaufanego CIDR
+### Opcjonalne automatyczne zatwierdzanie Node z zaufanych CIDR
 
-Parowanie urządzeń pozostaje domyślnie ręczne. Dla ściśle kontrolowanych sieci Node
-możesz włączyć automatyczne zatwierdzanie pierwszego Node przy użyciu jawnych CIDR lub dokładnych adresów IP:
+Parowanie urządzeń pozostaje domyślnie ręczne. W ściśle kontrolowanych sieciach węzłów
+możesz włączyć automatyczne zatwierdzanie pierwszego Node z jawnymi CIDR lub dokładnymi adresami IP:
 
 ```json5
 {
@@ -183,20 +189,20 @@ zatwierdzenia.
 
 Przechowywane w `~/.openclaw/devices/`:
 
-- `pending.json` (krótkotrwały; oczekujące żądania wygasają)
+- `pending.json` (krótkotrwałe; oczekujące żądania wygasają)
 - `paired.json` (sparowane urządzenia + tokeny)
 
 ### Uwagi
 
 - Starsze API `node.pair.*` (CLI: `openclaw nodes pending|approve|reject|remove|rename`) jest
-  oddzielnym magazynem parowania należącym do Gateway. Node'y WS nadal wymagają parowania urządzeń.
+  oddzielnym magazynem parowania należącym do Gateway. Węzły WS nadal wymagają parowania urządzeń.
 - Rekord parowania jest trwałym źródłem prawdy dla zatwierdzonych ról. Aktywne
-  tokeny urządzeń pozostają ograniczone do tego zatwierdzonego zestawu ról; zbłąkany wpis tokenu
+  tokeny urządzeń pozostają ograniczone do tego zatwierdzonego zestawu ról; przypadkowy wpis tokena
   poza zatwierdzonymi rolami nie tworzy nowego dostępu.
 
-## Powiązana dokumentacja
+## Powiązane dokumenty
 
-- Model bezpieczeństwa + wstrzykiwanie promptów: [Bezpieczeństwo](/pl/gateway/security)
+- Model bezpieczeństwa + prompt injection: [Bezpieczeństwo](/pl/gateway/security)
 - Bezpieczne aktualizowanie (uruchom doctor): [Aktualizowanie](/pl/install/updating)
 - Konfiguracje kanałów:
   - Telegram: [Telegram](/pl/channels/telegram)

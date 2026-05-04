@@ -1,23 +1,21 @@
 ---
 read_when:
-    - Chcesz kroku LLM zwracającego tylko JSON wewnątrz przepływów pracy
-    - Potrzebujesz walidowanego przez schemat wyjścia LLM do automatyzacji
-summary: Zadania LLM zwracające tylko JSON dla przepływów pracy (opcjonalne narzędzie Pluginu)
+    - Chcesz użyć kroku LLM zwracającego wyłącznie JSON w przepływach pracy
+    - Potrzebujesz wyniku LLM zweryfikowanego względem schematu do automatyzacji
+summary: Zadania LLM wyłącznie w formacie JSON dla przepływów pracy (opcjonalne narzędzie Plugin)
 title: Zadanie LLM
 x-i18n:
-    generated_at: "2026-04-24T09:37:06Z"
-    model: gpt-5.4
+    generated_at: "2026-05-04T02:26:26Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 613aefd1bac5b9675821a118c11130c8bfaefb1673d0266f14ff4e91b47fed8b
+    source_hash: 9cdc5d4feef17fb6d6d90d819d4c92d26a4ec43e4f5364c6acbaad1934a89269
     source_path: tools/llm-task.md
-    workflow: 15
+    workflow: 16
 ---
 
-`llm-task` to **opcjonalne narzędzie Pluginu**, które uruchamia zadanie LLM zwracające tylko JSON i
-zwraca uporządkowane dane wyjściowe (opcjonalnie walidowane względem JSON Schema).
+`llm-task` to **opcjonalne narzędzie Plugin**, które uruchamia zadanie LLM zwracające wyłącznie JSON i zwraca ustrukturyzowane dane wyjściowe (opcjonalnie zweryfikowane względem JSON Schema).
 
-To rozwiązanie idealnie nadaje się do silników przepływów pracy, takich jak Lobster: możesz dodać pojedynczy krok LLM
-bez pisania niestandardowego kodu OpenClaw dla każdego przepływu pracy.
+Jest to idealne rozwiązanie dla silników przepływów pracy, takich jak Lobster: możesz dodać pojedynczy krok LLM bez pisania niestandardowego kodu OpenClaw dla każdego przepływu pracy.
 
 ## Włącz Plugin
 
@@ -33,22 +31,19 @@ bez pisania niestandardowego kodu OpenClaw dla każdego przepływu pracy.
 }
 ```
 
-2. Dodaj narzędzie do allowlisty (jest rejestrowane z `optional: true`):
+2. Zezwól na opcjonalne narzędzie:
 
 ```json
 {
-  "agents": {
-    "list": [
-      {
-        "id": "main",
-        "tools": { "allow": ["llm-task"] }
-      }
-    ]
+  "tools": {
+    "alsoAllow": ["llm-task"]
   }
 }
 ```
 
-## Konfiguracja (opcjonalnie)
+Używaj `tools.allow` tylko wtedy, gdy chcesz zastosować restrykcyjny tryb listy dozwolonych.
+
+## Konfiguracja (opcjonalna)
 
 ```json
 {
@@ -70,28 +65,26 @@ bez pisania niestandardowego kodu OpenClaw dla każdego przepływu pracy.
 }
 ```
 
-`allowedModels` to allowlista ciągów `provider/model`. Jeśli jest ustawiona, każde żądanie
-spoza listy zostanie odrzucone.
+`allowedModels` to lista dozwolonych ciągów `provider/model`. Jeśli jest ustawiona, każde żądanie spoza listy zostanie odrzucone.
 
 ## Parametry narzędzia
 
-- `prompt` (string, wymagane)
-- `input` (dowolny typ, opcjonalne)
-- `schema` (object, opcjonalny JSON Schema)
-- `provider` (string, opcjonalne)
-- `model` (string, opcjonalne)
-- `thinking` (string, opcjonalne)
-- `authProfileId` (string, opcjonalne)
-- `temperature` (number, opcjonalne)
-- `maxTokens` (number, opcjonalne)
-- `timeoutMs` (number, opcjonalne)
+- `prompt` (ciąg znaków, wymagany)
+- `input` (dowolny, opcjonalny)
+- `schema` (obiekt, opcjonalny JSON Schema)
+- `provider` (ciąg znaków, opcjonalny)
+- `model` (ciąg znaków, opcjonalny)
+- `thinking` (ciąg znaków, opcjonalny)
+- `authProfileId` (ciąg znaków, opcjonalny)
+- `temperature` (liczba, opcjonalna)
+- `maxTokens` (liczba, opcjonalna)
+- `timeoutMs` (liczba, opcjonalna)
 
 `thinking` akceptuje standardowe presety rozumowania OpenClaw, takie jak `low` lub `medium`.
 
 ## Dane wyjściowe
 
-Zwraca `details.json` zawierający sparsowany JSON (i waliduje go względem
-`schema`, jeśli zostanie podany).
+Zwraca `details.json` zawierający sparsowany JSON (oraz weryfikuje względem `schema`, gdy ją podano).
 
 ## Przykład: krok przepływu pracy Lobster
 
@@ -117,14 +110,13 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 
 ## Uwagi dotyczące bezpieczeństwa
 
-- Narzędzie jest **tylko-JSON** i instruuje model, aby zwracał wyłącznie JSON (bez
-  bloków kodu, bez komentarzy).
-- W tym przebiegu żadne narzędzia nie są udostępniane modelowi.
-- Traktuj dane wyjściowe jako niezaufane, chyba że zwalidujesz je za pomocą `schema`.
-- Umieszczaj zatwierdzenia przed każdym krokiem wywołującym skutki uboczne (wysyłanie, publikowanie, exec).
+- Narzędzie działa **wyłącznie w JSON** i instruuje model, aby zwracał wyłącznie JSON (bez bloków kodu, bez komentarza).
+- W tym uruchomieniu modelowi nie są udostępniane żadne narzędzia.
+- Traktuj dane wyjściowe jako niezaufane, chyba że zweryfikujesz je za pomocą `schema`.
+- Umieszczaj zatwierdzenia przed każdym krokiem powodującym skutki uboczne (wysyłanie, publikowanie, exec).
 
 ## Powiązane
 
-- [Poziomy thinking](/pl/tools/thinking)
-- [Podagenci](/pl/tools/subagents)
-- [Polecenia Slash](/pl/tools/slash-commands)
+- [Poziomy rozumowania](/pl/tools/thinking)
+- [Subagenci](/pl/tools/subagents)
+- [Polecenia ukośnikowe](/pl/tools/slash-commands)

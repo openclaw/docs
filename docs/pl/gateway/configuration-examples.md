@@ -3,18 +3,18 @@ read_when:
     - Nauka konfigurowania OpenClaw
     - Wyszukiwanie przykładów konfiguracji
     - Konfigurowanie OpenClaw po raz pierwszy
-summary: Przykłady konfiguracji zgodne ze schematem dla typowych konfiguracji OpenClaw
+summary: Przykłady konfiguracji zgodne ze schematem dla typowych wdrożeń OpenClaw
 title: Przykłady konfiguracji
 x-i18n:
-    generated_at: "2026-04-30T09:51:52Z"
+    generated_at: "2026-05-04T02:24:48Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8bc1f8877bc635d6e3aafd911852d61e71fa08de9144751209542fd67c70f0ba
+    source_hash: 60c8c2d731f8dce93c4d14657041d72043bc36e3d71ab6cb13c02993ba90dbe3
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Poniższe przykłady są zgodne z bieżącym schematem konfiguracji. Pełną dokumentację referencyjną i uwagi dotyczące poszczególnych pól znajdziesz w sekcji [Konfiguracja](/pl/gateway/configuration).
+Poniższe przykłady są zgodne z bieżącym schematem konfiguracji. Pełną dokumentację referencyjną i uwagi dla poszczególnych pól znajdziesz w sekcji [Konfiguracja](/pl/gateway/configuration).
 
 ## Szybki start
 
@@ -27,7 +27,7 @@ Poniższe przykłady są zgodne z bieżącym schematem konfiguracji. Pełną dok
 }
 ```
 
-Zapisz w `~/.openclaw/openclaw.json`, a bot będzie mógł odbierać wiadomości DM z tego numeru.
+Zapisz w `~/.openclaw/openclaw.json`, a potem możesz wysłać wiadomość prywatną do bota z tego numeru.
 
 ### Zalecany punkt startowy
 
@@ -57,7 +57,7 @@ Zapisz w `~/.openclaw/openclaw.json`, a bot będzie mógł odbierać wiadomości
 }
 ```
 
-## Rozbudowany przykład (główne opcje)
+## Rozszerzony przykład (główne opcje)
 
 > JSON5 pozwala używać komentarzy i końcowych przecinków. Zwykły JSON też działa.
 
@@ -256,6 +256,7 @@ Zapisz w `~/.openclaw/openclaw.json`, a bot będzie mógł odbierać wiadomości
       skills: ["github", "weather"], // inherited by agents that omit list[].skills
       thinkingDefault: "low",
       verboseDefault: "off",
+      toolProgressDetail: "explain",
       reasoningDefault: "off",
       elevatedDefault: "on",
       blockStreamingDefault: "off",
@@ -514,11 +515,9 @@ Zapisz w `~/.openclaw/openclaw.json`, a bot będzie mógł odbierać wiadomości
 }
 ```
 
-### Automatyczne zatwierdzanie zaufanej sieci Node
+### Automatyczne zatwierdzanie zaufanej sieci węzłów
 
-Pozostaw parowanie urządzeń w trybie ręcznym, chyba że kontrolujesz ścieżkę sieciową. Dla dedykowanego
-laboratorium lub podsieci tailnet możesz włączyć automatyczne zatwierdzanie
-urządzenia Node przy pierwszym połączeniu za pomocą dokładnych CIDR-ów lub adresów IP:
+Pozostaw parowanie urządzeń w trybie ręcznym, chyba że kontrolujesz ścieżkę sieciową. W dedykowanym laboratorium lub podsieci tailnet możesz włączyć automatyczne zatwierdzanie urządzeń węzłów przy pierwszym użyciu za pomocą dokładnych CIDR-ów lub adresów IP:
 
 ```json5
 {
@@ -532,13 +531,11 @@ urządzenia Node przy pierwszym połączeniu za pomocą dokładnych CIDR-ów lub
 }
 ```
 
-Bez ustawienia pozostaje to wyłączone. Dotyczy tylko świeżego parowania `role: node`
-bez żądanych zakresów. Klienci operatora/przeglądarki oraz aktualizacje roli, zakresu,
-metadanych lub klucza publicznego nadal wymagają ręcznego zatwierdzenia.
+Ta opcja pozostaje wyłączona, gdy nie jest ustawiona. Dotyczy tylko świeżego parowania `role: node` bez żądanych zakresów. Klienci operatora/przeglądarki oraz zmiany roli, zakresu, metadanych lub klucza publicznego nadal wymagają ręcznego zatwierdzenia.
 
-### Tryb bezpiecznych DM (wspólna skrzynka odbiorcza / DM wielu użytkowników)
+### Tryb bezpiecznych wiadomości DM (współdzielona skrzynka odbiorcza / wiadomości DM wielu użytkowników)
 
-Jeśli więcej niż jedna osoba może wysyłać DM do Twojego bota (wiele wpisów w `allowFrom`, zatwierdzenia parowania dla wielu osób albo `dmPolicy: "open"`), włącz **tryb bezpiecznych DM**, aby DM od różnych nadawców domyślnie nie współdzieliły jednego kontekstu:
+Jeśli więcej niż jedna osoba może wysłać wiadomość DM do Twojego bota (wiele wpisów w `allowFrom`, zatwierdzenia parowania dla wielu osób lub `dmPolicy: "open"`), włącz **tryb bezpiecznych wiadomości DM**, aby wiadomości DM od różnych nadawców domyślnie nie współdzieliły jednego kontekstu:
 
 ```json5
 {
@@ -562,10 +559,10 @@ Jeśli więcej niż jedna osoba może wysyłać DM do Twojego bota (wiele wpisó
 }
 ```
 
-W przypadku Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC autoryzacja nadawcy domyślnie opiera się najpierw na identyfikatorze.
-Włącz bezpośrednie, modyfikowalne dopasowywanie nazwy/adresu e-mail/nicka przez `dangerouslyAllowNameMatching: true` danego kanału tylko wtedy, gdy wyraźnie akceptujesz to ryzyko.
+Dla Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC autoryzacja nadawcy domyślnie opiera się najpierw na identyfikatorze.
+Włącz bezpośrednie dopasowywanie zmiennych nazw/adresów e-mail/pseudonimów za pomocą `dangerouslyAllowNameMatching: true` danego kanału tylko wtedy, gdy wyraźnie akceptujesz to ryzyko.
 
-### Klucz API Anthropic + awaryjny MiniMax
+### Klucz API Anthropic + zapasowy MiniMax
 
 ```json5
 {
@@ -658,12 +655,12 @@ Włącz bezpośrednie, modyfikowalne dopasowywanie nazwy/adresu e-mail/nicka prz
 
 ## Wskazówki
 
-- Jeśli ustawisz `dmPolicy: "open"`, odpowiadająca lista `allowFrom` musi zawierać `"*"`.
+- Jeśli ustawisz `dmPolicy: "open"`, pasująca lista `allowFrom` musi zawierać `"*"`.
 - Identyfikatory dostawców różnią się (numery telefonów, identyfikatory użytkowników, identyfikatory kanałów). Użyj dokumentacji dostawcy, aby potwierdzić format.
 - Opcjonalne sekcje do dodania później: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
-- Zobacz [Dostawcy](/pl/providers) i [Rozwiązywanie problemów](/pl/gateway/troubleshooting), aby poznać bardziej szczegółowe uwagi dotyczące konfiguracji.
+- Zobacz [Dostawcy](/pl/providers) i [Rozwiązywanie problemów](/pl/gateway/troubleshooting), aby uzyskać bardziej szczegółowe informacje o konfiguracji.
 
 ## Powiązane
 
-- [Dokumentacja konfiguracji](/pl/gateway/configuration-reference)
+- [Odwołanie do konfiguracji](/pl/gateway/configuration-reference)
 - [Konfiguracja](/pl/gateway/configuration)
