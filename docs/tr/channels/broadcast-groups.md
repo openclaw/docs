@@ -4,13 +4,13 @@ read_when:
     - WhatsApp'ta çoklu ajan yanıtlarında hata ayıklama
 sidebarTitle: Broadcast groups
 status: experimental
-summary: Bir WhatsApp mesajını birden fazla ajana yayınlayın
+summary: Bir WhatsApp mesajını birden fazla ajana yayınla
 title: Yayın grupları
 x-i18n:
-    generated_at: "2026-04-30T09:05:39Z"
+    generated_at: "2026-05-04T02:21:31Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b0de4ccc85bf79e2ceb1dddd60db067309b15b7f876c92e7d591ff0b4b4315ec
+    source_hash: eab43d3c3ffddb360340469433d74a380fbab98e662b2463a54f62eafc375b55
     source_path: channels/broadcast-groups.md
     workflow: 16
 ---
@@ -19,19 +19,19 @@ x-i18n:
 **Durum:** Deneysel. 2026.1.9 sürümünde eklendi.
 </Note>
 
-## Genel Bakış
+## Genel bakış
 
-Yayın Grupları, birden çok ajanın aynı iletiyi aynı anda işlemesini ve yanıtlamasını sağlar. Bu, tek bir WhatsApp grubunda veya DM'de birlikte çalışan uzmanlaşmış ajan ekipleri oluşturmanıza olanak tanır — hepsi tek bir telefon numarası kullanılarak.
+Yayın Grupları, birden fazla aracının aynı iletiyi eşzamanlı olarak işlemesini ve yanıtlamasını sağlar. Bu, tek bir WhatsApp grubunda veya DM'de birlikte çalışan özelleşmiş aracı ekipleri oluşturmanıza olanak tanır — hepsi tek bir telefon numarası kullanarak.
 
-Geçerli kapsam: **Yalnızca WhatsApp** (web kanalı).
+Geçerli kapsam: **yalnızca WhatsApp** (web kanalı).
 
-Yayın grupları, kanal izin listelerinden ve grup etkinleştirme kurallarından sonra değerlendirilir. WhatsApp gruplarında bu, yayınların OpenClaw normalde yanıt vereceği durumlarda gerçekleştiği anlamına gelir (örneğin: grup ayarlarınıza bağlı olarak bahsedildiğinde).
+Yayın grupları, kanal izin listelerinden ve grup etkinleştirme kurallarından sonra değerlendirilir. WhatsApp gruplarında bu, yayınların OpenClaw'ın normalde yanıt vereceği durumlarda gerçekleştiği anlamına gelir (örneğin: grup ayarlarınıza bağlı olarak bahsedildiğinde).
 
 ## Kullanım örnekleri
 
 <AccordionGroup>
-  <Accordion title="1. Uzmanlaşmış ajan ekipleri">
-    Atomik, odaklanmış sorumluluklara sahip birden çok ajan dağıtın:
+  <Accordion title="1. Özelleşmiş aracı ekipleri">
+    Atomik ve odaklanmış sorumluluklara sahip birden fazla aracı dağıtın:
 
     ```
     Group: "Development Team"
@@ -42,7 +42,7 @@ Yayın grupları, kanal izin listelerinden ve grup etkinleştirme kurallarından
       - TestGenerator (suggests test cases)
     ```
 
-    Her ajan aynı iletiyi işler ve kendi uzmanlık perspektifini sunar.
+    Her aracı aynı iletiyi işler ve kendi uzman bakış açısını sunar.
 
   </Accordion>
   <Accordion title="2. Çok dilli destek">
@@ -90,15 +90,15 @@ Yayın grupları, kanal izin listelerinden ve grup etkinleştirme kurallarından
 }
 ```
 
-**Sonuç:** OpenClaw bu sohbette yanıt vereceği zaman üç ajanın tamamını çalıştırır.
+**Sonuç:** OpenClaw bu sohbette yanıt vereceği zaman üç aracının tamamını çalıştırır.
 
 ### İşleme stratejisi
 
-Ajanların iletileri nasıl işleyeceğini denetleyin:
+Aracıların iletileri nasıl işlediğini denetleyin:
 
 <Tabs>
   <Tab title="parallel (varsayılan)">
-    Tüm ajanlar aynı anda işler:
+    Tüm aracılar eşzamanlı olarak işler:
 
     ```json
     {
@@ -111,7 +111,7 @@ Ajanların iletileri nasıl işleyeceğini denetleyin:
 
   </Tab>
   <Tab title="sequential">
-    Ajanlar sırayla işler (biri, öncekinin bitmesini bekler):
+    Aracılar sırayla işler (biri öncekinin bitmesini bekler):
 
     ```json
     {
@@ -166,15 +166,15 @@ Ajanların iletileri nasıl işleyeceğini denetleyin:
 
 <Steps>
   <Step title="Gelen ileti ulaşır">
-    Bir WhatsApp grup veya DM iletisi ulaşır.
+    Bir WhatsApp grup veya DM iletisi gelir.
   </Step>
   <Step title="Yayın denetimi">
     Sistem, eş kimliğinin `broadcast` içinde olup olmadığını denetler.
   </Step>
   <Step title="Yayın listesindeyse">
-    - Listelenen tüm ajanlar iletiyi işler.
-    - Her ajanın kendi oturum anahtarı ve yalıtılmış bağlamı vardır.
-    - Ajanlar paralel (varsayılan) veya sıralı olarak işler.
+    - Listelenen tüm aracılar iletiyi işler.
+    - Her aracının kendi oturum anahtarı ve yalıtılmış bağlamı vardır.
+    - Aracılar paralel (varsayılan) veya sıralı olarak işler.
 
   </Step>
   <Step title="Yayın listesinde değilse">
@@ -183,21 +183,21 @@ Ajanların iletileri nasıl işleyeceğini denetleyin:
 </Steps>
 
 <Note>
-Yayın grupları kanal izin listelerini veya grup etkinleştirme kurallarını (bahsetmeler/komutlar/vb.) atlamaz. Yalnızca bir ileti işlenmeye uygun olduğunda _hangi ajanların çalışacağını_ değiştirir.
+Yayın grupları kanal izin listelerini veya grup etkinleştirme kurallarını (bahsetmeler/komutlar/vb.) atlamaz. Yalnızca bir ileti işlemeye uygun olduğunda _hangi aracıların çalışacağını_ değiştirir.
 </Note>
 
 ### Oturum yalıtımı
 
-Bir yayın grubundaki her ajan tamamen ayrı şunları korur:
+Bir yayın grubundaki her aracı tamamen ayrı şunları korur:
 
 - **Oturum anahtarları** (`agent:alfred:whatsapp:group:120363...` ve `agent:baerbel:whatsapp:group:120363...`)
-- **Konuşma geçmişi** (ajan diğer ajanların iletilerini görmez)
-- **Çalışma alanı** (yapılandırılmışsa ayrı sandbox'lar)
-- **Araç erişimi** (farklı izin/red listeleri)
+- **Konuşma geçmişi** (aracı diğer aracıların iletilerini görmez)
+- **Çalışma alanı** (yapılandırıldıysa ayrı korumalı alanlar)
+- **Araç erişimi** (farklı izin/verme listeleri)
 - **Bellek/bağlam** (ayrı IDENTITY.md, SOUL.md, vb.)
-- **Grup bağlam arabelleği** (bağlam için kullanılan son grup iletileri) eş başına paylaşılır, böylece tüm yayın ajanları tetiklendiğinde aynı bağlamı görür
+- **Grup bağlam arabelleği** (bağlam için kullanılan son grup iletileri) eş başına paylaşılır, böylece tüm yayın aracıları tetiklendiğinde aynı bağlamı görür
 
-Bu, her ajanın şunlara sahip olmasını sağlar:
+Bu, her aracının şunlara sahip olmasını sağlar:
 
 - Farklı kişilikler
 - Farklı araç erişimi (örn. salt okunur ve okuma-yazma)
@@ -206,7 +206,7 @@ Bu, her ajanın şunlara sahip olmasını sağlar:
 
 ### Örnek: yalıtılmış oturumlar
 
-`120363403215116621@g.us` grubunda `["alfred", "baerbel"]` ajanlarıyla:
+`["alfred", "baerbel"]` aracılarıyla `120363403215116621@g.us` grubunda:
 
 <Tabs>
   <Tab title="Alfred'in bağlamı">
@@ -230,8 +230,8 @@ Bu, her ajanın şunlara sahip olmasını sağlar:
 ## En iyi uygulamalar
 
 <AccordionGroup>
-  <Accordion title="1. Ajanları odaklı tutun">
-    Her ajanı tek ve net bir sorumlulukla tasarlayın:
+  <Accordion title="1. Aracıları odaklı tutun">
+    Her aracıyı tek ve net bir sorumlulukla tasarlayın:
 
     ```json
     {
@@ -241,11 +241,11 @@ Bu, her ajanın şunlara sahip olmasını sağlar:
     }
     ```
 
-    ✅ **İyi:** Her ajanın bir işi vardır. ❌ **Kötü:** Tek bir genel "dev-helper" ajanı.
+    ✅ **İyi:** Her aracının bir işi vardır. ❌ **Kötü:** Tek bir genel "dev-helper" aracısı.
 
   </Accordion>
   <Accordion title="2. Açıklayıcı adlar kullanın">
-    Her ajanın ne yaptığını netleştirin:
+    Her aracının ne yaptığını netleştirin:
 
     ```json
     {
@@ -259,32 +259,34 @@ Bu, her ajanın şunlara sahip olmasını sağlar:
 
   </Accordion>
   <Accordion title="3. Farklı araç erişimi yapılandırın">
-    Ajanlara yalnızca ihtiyaç duydukları araçları verin:
+    Aracılara yalnızca ihtiyaç duydukları araçları verin:
 
     ```json
     {
       "agents": {
         "reviewer": {
-          "tools": { "allow": ["read", "exec"] } // Read-only
+          "tools": { "allow": ["read", "exec"] }
         },
         "fixer": {
-          "tools": { "allow": ["read", "write", "edit", "exec"] } // Read-write
+          "tools": { "allow": ["read", "write", "edit", "exec"] }
         }
       }
     }
     ```
 
+    `reviewer` salt okunurdur. `fixer` okuyabilir ve yazabilir.
+
   </Accordion>
   <Accordion title="4. Performansı izleyin">
-    Çok sayıda ajanla şunları göz önünde bulundurun:
+    Çok sayıda aracıyla şunları göz önünde bulundurun:
 
-    - Hız için `"strategy": "parallel"` (varsayılan) kullanmak
-    - Yayın gruplarını 5-10 ajanla sınırlamak
-    - Daha basit ajanlar için daha hızlı modeller kullanmak
+    - Hız için `"strategy": "parallel"` (varsayılan) kullanma
+    - Yayın gruplarını 5-10 aracıyla sınırlama
+    - Daha basit aracılar için daha hızlı modeller kullanma
 
   </Accordion>
-  <Accordion title="5. Hataları zarifçe ele alın">
-    Ajanlar bağımsız olarak başarısız olur. Bir ajanın hatası diğerlerini engellemez:
+  <Accordion title="5. Hataları zarifçe yönetin">
+    Aracılar bağımsız olarak başarısız olur. Bir aracının hatası diğerlerini engellemez:
 
     ```
     Message → [Agent A ✓, Agent B ✗ error, Agent C ✓]
@@ -301,9 +303,9 @@ Bu, her ajanın şunlara sahip olmasını sağlar:
 Yayın grupları şu anda şunlarla çalışır:
 
 - ✅ WhatsApp (uygulandı)
-- 🚧 Telegram (planlanıyor)
-- 🚧 Discord (planlanıyor)
-- 🚧 Slack (planlanıyor)
+- 🚧 Telegram (planlandı)
+- 🚧 Discord (planlandı)
+- 🚧 Slack (planlandı)
 
 ### Yönlendirme
 
@@ -333,12 +335,12 @@ Yayın grupları mevcut yönlendirmeyle birlikte çalışır:
 ## Sorun giderme
 
 <AccordionGroup>
-  <Accordion title="Ajanlar yanıt vermiyor">
+  <Accordion title="Aracılar yanıt vermiyor">
     **Denetleyin:**
 
-    1. Ajan kimlikleri `agents.list` içinde mevcut.
+    1. Aracı kimlikleri `agents.list` içinde mevcut.
     2. Eş kimliği biçimi doğru (örn. `120363403215116621@g.us`).
-    3. Ajanlar red listelerinde değil.
+    3. Aracılar engelleme listelerinde değil.
 
     **Hata ayıklama:**
 
@@ -347,18 +349,18 @@ Yayın grupları mevcut yönlendirmeyle birlikte çalışır:
     ```
 
   </Accordion>
-  <Accordion title="Yalnızca bir ajan yanıt veriyor">
+  <Accordion title="Yalnızca bir aracı yanıt veriyor">
     **Neden:** Eş kimliği `bindings` içinde olabilir ancak `broadcast` içinde olmayabilir.
 
-    **Düzeltme:** Yayın yapılandırmasına ekleyin veya bağlamalardan kaldırın.
+    **Çözüm:** Yayın yapılandırmasına ekleyin veya bağlamalardan kaldırın.
 
   </Accordion>
   <Accordion title="Performans sorunları">
-    Çok sayıda ajanla yavaşsa:
+    Çok sayıda aracıyla yavaşsa:
 
-    - Grup başına ajan sayısını azaltın.
+    - Grup başına aracı sayısını azaltın.
     - Daha hafif modeller kullanın (opus yerine sonnet).
-    - Sandbox başlatma süresini denetleyin.
+    - Korumalı alan başlatma süresini denetleyin.
 
   </Accordion>
 </AccordionGroup>
@@ -405,8 +407,8 @@ Yayın grupları mevcut yönlendirmeyle birlikte çalışır:
 
     **Yanıtlar:**
 
-    - code-formatter: "Girintileme düzeltildi ve tür ipuçları eklendi"
-    - security-scanner: "⚠️ 12. satırda SQL enjeksiyonu açığı"
+    - code-formatter: "Girinti düzeltildi ve type hint'ler eklendi"
+    - security-scanner: "⚠️ 12. satırda SQL injection açığı"
     - test-coverage: "Kapsam %45, hata durumları için testler eksik"
     - docs-checker: "`process_data` işlevi için docstring eksik"
 
@@ -446,27 +448,27 @@ interface OpenClawConfig {
 ### Alanlar
 
 <ParamField path="strategy" type='"parallel" | "sequential"' default='"parallel"'>
-  Ajanların nasıl işleneceği. `parallel` tüm ajanları aynı anda çalıştırır; `sequential` onları dizi sırasına göre çalıştırır.
+  Aracıların nasıl işleneceği. `parallel` tüm aracıları eşzamanlı olarak çalıştırır; `sequential` onları dizi sırasına göre çalıştırır.
 </ParamField>
 <ParamField path="[peerId]" type="string[]">
-  WhatsApp grup JID'si, E.164 numarası veya başka bir eş kimliği. Değer, iletileri işlemesi gereken ajan kimliklerinin dizisidir.
+  WhatsApp grup JID'si, E.164 numarası veya başka bir eş kimliği. Değer, iletileri işlemesi gereken aracı kimlikleri dizisidir.
 </ParamField>
 
 ## Sınırlamalar
 
-1. **Maksimum ajan:** Katı bir sınır yoktur, ancak 10+ ajan yavaş olabilir.
-2. **Paylaşılan bağlam:** Ajanlar birbirlerinin yanıtlarını görmez (tasarım gereği).
+1. **Maksimum aracı:** Katı bir sınır yok, ancak 10+ aracı yavaş olabilir.
+2. **Paylaşılan bağlam:** Aracılar birbirlerinin yanıtlarını görmez (tasarım gereği).
 3. **İleti sıralaması:** Paralel yanıtlar herhangi bir sırada gelebilir.
-4. **Hız sınırları:** Tüm ajanlar WhatsApp hız sınırlarına dahil edilir.
+4. **Hız sınırları:** Tüm aracılar WhatsApp hız sınırlarına dahil edilir.
 
 ## Gelecekteki geliştirmeler
 
 Planlanan özellikler:
 
-- [ ] Paylaşılan bağlam modu (ajanlar birbirlerinin yanıtlarını görür)
-- [ ] Ajan koordinasyonu (ajanlar birbirlerine sinyal gönderebilir)
-- [ ] Dinamik ajan seçimi (ileti içeriğine göre ajan seçme)
-- [ ] Ajan öncelikleri (bazı ajanlar diğerlerinden önce yanıt verir)
+- [ ] Paylaşılan bağlam modu (aracılar birbirlerinin yanıtlarını görür)
+- [ ] Aracı koordinasyonu (aracılar birbirlerine sinyal verebilir)
+- [ ] Dinamik aracı seçimi (ileti içeriğine göre aracı seçme)
+- [ ] Aracı öncelikleri (bazı aracılar diğerlerinden önce yanıt verir)
 
 ## İlgili
 

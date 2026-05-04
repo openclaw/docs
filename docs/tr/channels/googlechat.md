@@ -4,15 +4,15 @@ read_when:
 summary: Google Chat uygulamasının destek durumu, yetenekleri ve yapılandırması
 title: Google Chat
 x-i18n:
-    generated_at: "2026-05-02T08:46:50Z"
+    generated_at: "2026-05-04T02:21:23Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fdb8dcf651602e92801d7107646d853871ea6cef188a8733a831695a1243740e
+    source_hash: afa2ca4d9673396aa24a55ca5855a34ad26a4640c3a1f6928dbf7246e403cb04
     source_path: channels/googlechat.md
     workflow: 16
 ---
 
-Durum: Google Chat API Webhook'ları üzerinden DM'ler + alanlar için indirilebilir Plugin (yalnızca HTTP).
+Durum: Google Chat API web kancaları üzerinden DM'ler ve alanlar için indirilebilir Plugin (yalnızca HTTP).
 
 ## Kurulum
 
@@ -31,72 +31,72 @@ openclaw plugins install ./path/to/local/googlechat-plugin
 ## Hızlı kurulum (başlangıç)
 
 1. Bir Google Cloud projesi oluşturun ve **Google Chat API**'yi etkinleştirin.
-   - Şuraya gidin: [Google Chat API Credentials](https://console.cloud.google.com/apis/api/chat.googleapis.com/credentials)
+   - Şuraya gidin: [Google Chat API kimlik bilgileri](https://console.cloud.google.com/apis/api/chat.googleapis.com/credentials)
    - API zaten etkin değilse etkinleştirin.
 2. Bir **Service Account** oluşturun:
-   - **Create Credentials** > **Service Account** düğmesine basın.
-   - İstediğiniz bir ad verin (örn. `openclaw-chat`).
-   - İzinleri boş bırakın (**Continue** düğmesine basın).
-   - Erişimi olan principals alanını boş bırakın (**Done** düğmesine basın).
+   - **Create Credentials** > **Service Account**'a basın.
+   - İstediğiniz gibi adlandırın (ör. `openclaw-chat`).
+   - İzinleri boş bırakın (**Continue**'a basın).
+   - Erişimi olan sorumluları boş bırakın (**Done**'a basın).
 3. **JSON Key** oluşturun ve indirin:
-   - Service account listesinden az önce oluşturduğunuza tıklayın.
+   - Service Account listesinden az önce oluşturduğunuza tıklayın.
    - **Keys** sekmesine gidin.
-   - **Add Key** > **Create new key** seçeneğine tıklayın.
-   - **JSON** seçin ve **Create** düğmesine basın.
-4. İndirilen JSON dosyasını gateway host'unuzda saklayın (örn. `~/.openclaw/googlechat-service-account.json`).
-5. [Google Cloud Console Chat Configuration](https://console.cloud.google.com/apis/api/chat.googleapis.com/hangouts-chat) içinde bir Google Chat uygulaması oluşturun:
+   - **Add Key** > **Create new key**'e tıklayın.
+   - **JSON**'ı seçin ve **Create**'e basın.
+4. İndirilen JSON dosyasını Gateway host'unuzda saklayın (ör. `~/.openclaw/googlechat-service-account.json`).
+5. [Google Cloud Console Chat yapılandırması](https://console.cloud.google.com/apis/api/chat.googleapis.com/hangouts-chat) içinde bir Google Chat uygulaması oluşturun:
    - **Application info** alanını doldurun:
-     - **App name**: (örn. `OpenClaw`)
-     - **Avatar URL**: (örn. `https://openclaw.ai/logo.png`)
-     - **Description**: (örn. `Personal AI Assistant`)
-   - **Interactive features** özelliğini etkinleştirin.
-   - **Functionality** altında **Join spaces and group conversations** seçeneğini işaretleyin.
-   - **Connection settings** altında **HTTP endpoint URL** seçeneğini seçin.
-   - **Triggers** altında **Use a common HTTP endpoint URL for all triggers** seçeneğini seçin ve bunu gateway'inizin genel URL'sinin sonuna `/googlechat` eklenmiş hali olarak ayarlayın.
-     - _İpucu: Gateway'inizin genel URL'sini bulmak için `openclaw status` çalıştırın._
-   - **Visibility** altında **Make this Chat app available to specific people and groups in `<Your Domain>`** seçeneğini işaretleyin.
-   - Metin kutusuna e-posta adresinizi girin (örn. `user@example.com`).
-   - Alttaki **Save** düğmesine tıklayın.
+     - **App name**: (ör. `OpenClaw`)
+     - **Avatar URL**: (ör. `https://openclaw.ai/logo.png`)
+     - **Description**: (ör. `Personal AI Assistant`)
+   - **Interactive features**'ı etkinleştirin.
+   - **Functionality** altında **Join spaces and group conversations**'ı işaretleyin.
+   - **Connection settings** altında **HTTP endpoint URL**'yi seçin.
+   - **Triggers** altında **Use a common HTTP endpoint URL for all triggers**'ı seçin ve bunu Gateway'inizin herkese açık URL'sinin sonuna `/googlechat` eklenmiş hali olarak ayarlayın.
+     - _İpucu: Gateway'inizin herkese açık URL'sini bulmak için `openclaw status` çalıştırın._
+   - **Visibility** altında **Make this Chat app available to specific people and groups in `<Your Domain>`**'ı işaretleyin.
+   - Metin kutusuna e-posta adresinizi girin (ör. `user@example.com`).
+   - Altta **Save**'e tıklayın.
 6. **Uygulama durumunu etkinleştirin**:
    - Kaydettikten sonra **sayfayı yenileyin**.
-   - **App status** bölümünü bulun (kaydetmeden sonra genellikle üst veya alt kısma yakındır).
+   - **App status** bölümünü arayın (kaydetmeden sonra genellikle üstte veya altta olur).
    - Durumu **Live - available to users** olarak değiştirin.
-   - Yeniden **Save** düğmesine tıklayın.
-7. OpenClaw'u service account yolu + Webhook audience ile yapılandırın:
+   - Tekrar **Save**'e tıklayın.
+7. OpenClaw'ı Service Account yolu + Webhook hedef kitlesiyle yapılandırın:
    - Env: `GOOGLE_CHAT_SERVICE_ACCOUNT_FILE=/path/to/service-account.json`
-   - Veya yapılandırma: `channels.googlechat.serviceAccountFile: "/path/to/service-account.json"`.
-8. Webhook audience türünü + değerini ayarlayın (Chat uygulaması yapılandırmanızla eşleşir).
-9. Gateway'i başlatın. Google Chat, Webhook yolunuza POST gönderecek.
+   - Veya config: `channels.googlechat.serviceAccountFile: "/path/to/service-account.json"`.
+8. Webhook hedef kitle türünü + değerini ayarlayın (Chat uygulama yapılandırmanızla eşleşir).
+9. Gateway'i başlatın. Google Chat, Webhook yolunuza POST gönderir.
 
 ## Google Chat'e ekleme
 
-Gateway çalışır durumdayken ve e-postanız visibility listesine eklendikten sonra:
+Gateway çalışırken ve e-postanız görünürlük listesine eklenmişken:
 
 1. [Google Chat](https://chat.google.com/) adresine gidin.
 2. **Direct Messages** yanındaki **+** (artı) simgesine tıklayın.
-3. Arama çubuğuna (normalde kişi eklediğiniz yer) Google Cloud Console'da yapılandırdığınız **App name** değerini yazın.
-   - **Not**: Bot özel bir uygulama olduğu için "Marketplace" göz atma listesinde _görünmez_. Adıyla aramanız gerekir.
+3. Arama çubuğuna (genellikle kişi eklediğiniz yer), Google Cloud Console'da yapılandırdığınız **App name** değerini yazın.
+   - **Not**: Bot, özel bir uygulama olduğu için "Marketplace" göz atma listesinde _görünmez_. Adıyla aramanız gerekir.
 4. Sonuçlardan botunuzu seçin.
-5. 1:1 konuşma başlatmak için **Add** veya **Chat** düğmesine tıklayın.
-6. Asistanı tetiklemek için "Merhaba" gönderin!
+5. 1:1 konuşma başlatmak için **Add** veya **Chat**'e tıklayın.
+6. Asistanı tetiklemek için "Hello" gönderin!
 
-## Genel URL (Yalnızca Webhook)
+## Herkese açık URL (yalnızca Webhook)
 
-Google Chat Webhook'ları genel bir HTTPS endpoint gerektirir. Güvenlik için internete **yalnızca `/googlechat` yolunu açın**. OpenClaw dashboard'unu ve diğer hassas endpoint'leri özel ağınızda tutun.
+Google Chat web kancaları herkese açık bir HTTPS endpoint gerektirir. Güvenlik için internete **yalnızca `/googlechat` yolunu açın**. OpenClaw panosunu ve diğer hassas endpoint'leri özel ağınızda tutun.
 
 ### Seçenek A: Tailscale Funnel (Önerilir)
 
-Özel dashboard için Tailscale Serve, genel Webhook yolu için Funnel kullanın. Bu, yalnızca `/googlechat` yolunu açarken `/` yolunu özel tutar.
+Özel pano için Tailscale Serve, herkese açık Webhook yolu için Funnel kullanın. Bu, yalnızca `/googlechat` yolunu açarken `/` yolunu özel tutar.
 
-1. **Gateway'inizin hangi adrese bağlı olduğunu kontrol edin:**
+1. **Gateway'inizin hangi adrese bağlandığını kontrol edin:**
 
    ```bash
    ss -tlnp | grep 18789
    ```
 
-   IP adresini not edin (örn. `127.0.0.1`, `0.0.0.0` veya `100.x.x.x` gibi Tailscale IP'niz).
+   IP adresini not edin (ör. `127.0.0.1`, `0.0.0.0` veya `100.x.x.x` gibi Tailscale IP'niz).
 
-2. **Dashboard'u yalnızca tailnet'e açın (port 8443):**
+2. **Panoyu yalnızca tailnet'e açın (8443 portu):**
 
    ```bash
    # If bound to localhost (127.0.0.1 or 0.0.0.0):
@@ -116,8 +116,8 @@ Google Chat Webhook'ları genel bir HTTPS endpoint gerektirir. Güvenlik için i
    tailscale funnel --bg --set-path /googlechat http://100.106.161.80:18789/googlechat
    ```
 
-4. **Node'u Funnel erişimi için yetkilendirin:**
-   İstenirse, bu Node için tailnet ilkenizde Funnel'ı etkinleştirmek üzere çıktıda gösterilen yetkilendirme URL'sini ziyaret edin.
+4. **Düğümü Funnel erişimi için yetkilendirin:**
+   İstenirse, tailnet politikanızda bu düğüm için Funnel'ı etkinleştirmek üzere çıktıda gösterilen yetkilendirme URL'sini ziyaret edin.
 
 5. **Yapılandırmayı doğrulayın:**
 
@@ -126,19 +126,19 @@ Google Chat Webhook'ları genel bir HTTPS endpoint gerektirir. Güvenlik için i
    tailscale funnel status
    ```
 
-Genel Webhook URL'niz şu olacak:
+Herkese açık Webhook URL'niz şu olur:
 `https://<node-name>.<tailnet>.ts.net/googlechat`
 
-Özel dashboard'unuz yalnızca tailnet'te kalır:
+Özel panonuz yalnızca tailnet'e açık kalır:
 `https://<node-name>.<tailnet>.ts.net:8443/`
 
-Google Chat uygulaması yapılandırmasında genel URL'yi (`:8443` olmadan) kullanın.
+Google Chat uygulama yapılandırmasında herkese açık URL'yi (`:8443` olmadan) kullanın.
 
-> Not: Bu yapılandırma yeniden başlatmalar boyunca kalıcıdır. Daha sonra kaldırmak için `tailscale funnel reset` ve `tailscale serve reset` çalıştırın.
+> Not: Bu yapılandırma yeniden başlatmalar arasında kalıcıdır. Daha sonra kaldırmak için `tailscale funnel reset` ve `tailscale serve reset` çalıştırın.
 
-### Seçenek B: Ters Proxy (Caddy)
+### Seçenek B: Reverse Proxy (Caddy)
 
-Caddy gibi bir ters proxy kullanıyorsanız yalnızca belirli yolu proxy'leyin:
+Caddy gibi bir reverse proxy kullanıyorsanız yalnızca belirli yolu proxy'leyin:
 
 ```caddy
 your-domain.com {
@@ -150,36 +150,36 @@ Bu yapılandırmayla `your-domain.com/` adresine gelen herhangi bir istek yok sa
 
 ### Seçenek C: Cloudflare Tunnel
 
-Tunnel ingress kurallarınızı yalnızca Webhook yolunu yönlendirecek şekilde yapılandırın:
+Tünelinizin giriş kurallarını yalnızca Webhook yolunu yönlendirecek şekilde yapılandırın:
 
 - **Path**: `/googlechat` -> `http://localhost:18789/googlechat`
 - **Default Rule**: HTTP 404 (Not Found)
 
-## Nasıl çalışır
+## Nasıl çalışır?
 
-1. Google Chat, Gateway'e Webhook POST'ları gönderir. Her istek bir `Authorization: Bearer <token>` üstbilgisi içerir.
-   - OpenClaw, üstbilgi mevcut olduğunda tüm Webhook gövdelerini okumadan/ayrıştırmadan önce bearer auth doğrulaması yapar.
-   - Gövdede `authorizationEventObject.systemIdToken` taşıyan Google Workspace Add-on istekleri daha sıkı bir ön kimlik doğrulama gövde bütçesiyle desteklenir.
-2. OpenClaw, token'ı yapılandırılan `audienceType` + `audience` değerlerine göre doğrular:
-   - `audienceType: "app-url"` → audience, HTTPS Webhook URL'nizdir.
-   - `audienceType: "project-number"` → audience, Cloud proje numarasıdır.
+1. Google Chat, Gateway'e Webhook POST'ları gönderir. Her istek bir `Authorization: Bearer <token>` başlığı içerir.
+   - OpenClaw, başlık mevcut olduğunda tam Webhook gövdelerini okumadan/ayrıştırmadan önce bearer auth doğrulaması yapar.
+   - Gövdede `authorizationEventObject.systemIdToken` taşıyan Google Workspace Add-on istekleri, daha sıkı bir ön kimlik doğrulama gövde bütçesiyle desteklenir.
+2. OpenClaw, token'ı yapılandırılmış `audienceType` + `audience` değerlerine göre doğrular:
+   - `audienceType: "app-url"` → hedef kitle HTTPS Webhook URL'nizdir.
+   - `audienceType: "project-number"` → hedef kitle Cloud proje numarasıdır.
 3. Mesajlar alana göre yönlendirilir:
    - DM'ler `agent:<agentId>:googlechat:direct:<spaceId>` oturum anahtarını kullanır.
    - Alanlar `agent:<agentId>:googlechat:group:<spaceId>` oturum anahtarını kullanır.
-4. DM erişimi varsayılan olarak pairing'dir. Bilinmeyen gönderenler bir pairing kodu alır; şu komutla onaylayın:
+4. DM erişimi varsayılan olarak eşleştirme gerektirir. Bilinmeyen gönderenler bir eşleştirme kodu alır; şununla onaylayın:
    - `openclaw pairing approve googlechat <code>`
-5. Grup alanları varsayılan olarak @-mention gerektirir. Mention algılama uygulamanın kullanıcı adına ihtiyaç duyuyorsa `botUser` kullanın.
+5. Grup alanları varsayılan olarak @-mention gerektirir. Mention algılamasının uygulamanın kullanıcı adına ihtiyacı varsa `botUser` kullanın.
 
 ## Hedefler
 
-Teslimat ve allowlist'ler için şu tanımlayıcıları kullanın:
+Teslimat ve allowlist'ler için bu tanımlayıcıları kullanın:
 
 - Doğrudan mesajlar: `users/<userId>` (önerilir).
 - Ham e-posta `name@example.com` değişebilirdir ve yalnızca `channels.googlechat.dangerouslyAllowNameMatching: true` olduğunda doğrudan allowlist eşleştirmesi için kullanılır.
 - Kullanımdan kaldırıldı: `users/<email>` bir e-posta allowlist'i olarak değil, kullanıcı kimliği olarak ele alınır.
 - Alanlar: `spaces/<spaceId>`.
 
-## Yapılandırma öne çıkanları
+## Config öne çıkanları
 
 ```json5
 {
@@ -199,7 +199,7 @@ Teslimat ve allowlist'ler için şu tanımlayıcıları kullanın:
       groupPolicy: "allowlist",
       groups: {
         "spaces/AAAA": {
-          allow: true,
+          enabled: true,
           requireMention: true,
           users: ["users/1234567890"],
           systemPrompt: "Short answers only.",
@@ -215,16 +215,16 @@ Teslimat ve allowlist'ler için şu tanımlayıcıları kullanın:
 
 Notlar:
 
-- Service account kimlik bilgileri `serviceAccount` (JSON string) ile satır içinde de geçirilebilir.
-- `channels.googlechat.accounts.<id>.serviceAccountRef` altındaki hesap başına refs dahil olmak üzere `serviceAccountRef` de desteklenir (env/file SecretRef).
-- `webhookPath` ayarlanmadıysa varsayılan Webhook yolu `/googlechat` olur.
-- `dangerouslyAllowNameMatching`, allowlist'ler için değişebilir e-posta principal eşleştirmesini yeniden etkinleştirir (break-glass uyumluluk modu).
-- Reactions, `actions.reactions` etkinleştirildiğinde `reactions` aracı ve `channels action` üzerinden kullanılabilir.
-- Mesaj eylemleri metin için `send`, açık ek gönderimleri için `upload-file` sunar. `upload-file`, `media` / `filePath` / `path` ile isteğe bağlı `message`, `filename` ve thread hedeflemesini kabul eder.
-- `typingIndicator`, `none`, `message` (varsayılan) ve `reaction` destekler (reaction kullanıcı OAuth'u gerektirir).
-- Ekler Chat API üzerinden indirilir ve media pipeline'da saklanır (boyut `mediaMaxMb` ile sınırlıdır).
+- Service Account kimlik bilgileri `serviceAccount` (JSON dizesi) ile satır içinde de geçirilebilir.
+- `serviceAccountRef` de desteklenir (env/file SecretRef); buna `channels.googlechat.accounts.<id>.serviceAccountRef` altındaki hesap başına ref'ler dahildir.
+- `webhookPath` ayarlanmamışsa varsayılan Webhook yolu `/googlechat` olur.
+- `dangerouslyAllowNameMatching`, allowlist'ler için değişebilir e-posta sorumlusu eşleştirmesini yeniden etkinleştirir (break-glass uyumluluk modu).
+- `actions.reactions` etkinleştirildiğinde tepkiler `reactions` aracı ve `channels action` üzerinden kullanılabilir.
+- Mesaj eylemleri metin için `send`, açık ek gönderimleri için `upload-file` sunar. `upload-file`, `media` / `filePath` / `path` ile isteğe bağlı `message`, `filename` ve iş parçacığı hedeflemeyi kabul eder.
+- `typingIndicator`, `none`, `message` (varsayılan) ve `reaction` değerlerini destekler (`reaction` kullanıcı OAuth gerektirir).
+- Ekler Chat API üzerinden indirilir ve medya işlem hattında saklanır (boyut `mediaMaxMb` ile sınırlandırılır).
 
-Secrets referansı ayrıntıları: [Secrets Management](/tr/gateway/secrets).
+Gizli bilgi referansı ayrıntıları: [Gizli Bilgi Yönetimi](/tr/gateway/secrets).
 
 ## Sorun giderme
 
@@ -236,15 +236,15 @@ Google Cloud Logs Explorer şu tür hatalar gösteriyorsa:
 status code: 405, reason phrase: HTTP error response: HTTP/1.1 405 Method Not Allowed
 ```
 
-Bu, Webhook handler'ın kayıtlı olmadığı anlamına gelir. Yaygın nedenler:
+Bu, Webhook işleyicisinin kayıtlı olmadığı anlamına gelir. Yaygın nedenler:
 
-1. **Kanal yapılandırılmamış**: Yapılandırmanızda `channels.googlechat` bölümü eksik. Şununla doğrulayın:
+1. **Kanal yapılandırılmamış**: Config içinde `channels.googlechat` bölümü eksik. Şununla doğrulayın:
 
    ```bash
    openclaw config get channels.googlechat
    ```
 
-   "Config path not found" dönerse yapılandırmayı ekleyin (bkz. [Yapılandırma öne çıkanları](#config-highlights)).
+   "Config path not found" döndürürse yapılandırmayı ekleyin (bkz. [Config öne çıkanları](#config-highlights)).
 
 2. **Plugin etkin değil**: Plugin durumunu kontrol edin:
 
@@ -252,9 +252,9 @@ Bu, Webhook handler'ın kayıtlı olmadığı anlamına gelir. Yaygın nedenler:
    openclaw plugins list | grep googlechat
    ```
 
-   "disabled" gösteriyorsa yapılandırmanıza `plugins.entries.googlechat.enabled: true` ekleyin.
+   "disabled" gösteriyorsa config'inize `plugins.entries.googlechat.enabled: true` ekleyin.
 
-3. **Gateway yeniden başlatılmamış**: Yapılandırmayı ekledikten sonra Gateway'i yeniden başlatın:
+3. **Gateway yeniden başlatılmamış**: Config ekledikten sonra Gateway'i yeniden başlatın:
 
    ```bash
    openclaw gateway restart
@@ -269,21 +269,21 @@ openclaw channels status
 
 ### Diğer sorunlar
 
-- Kimlik doğrulama hataları veya eksik audience yapılandırması için `openclaw channels status --probe` komutunu kontrol edin.
-- Hiç mesaj gelmiyorsa Chat uygulamasının Webhook URL'sini + etkinlik aboneliklerini doğrulayın.
-- Mention gating yanıtları engelliyorsa `botUser` değerini uygulamanın kullanıcı resource adına ayarlayın ve `requireMention` değerini doğrulayın.
+- Kimlik doğrulama hataları veya eksik hedef kitle yapılandırması için `openclaw channels status --probe` komutunu kontrol edin.
+- Mesaj gelmiyorsa Chat uygulamasının Webhook URL'sini + etkinlik aboneliklerini doğrulayın.
+- Mention gating yanıtları engelliyorsa `botUser` değerini uygulamanın kullanıcı kaynak adına ayarlayın ve `requireMention` değerini doğrulayın.
 - İsteklerin Gateway'e ulaşıp ulaşmadığını görmek için test mesajı gönderirken `openclaw logs --follow` kullanın.
 
-İlgili dokümanlar:
+İlgili belgeler:
 
-- [Gateway configuration](/tr/gateway/configuration)
-- [Security](/tr/gateway/security)
-- [Reactions](/tr/tools/reactions)
+- [Gateway yapılandırması](/tr/gateway/configuration)
+- [Güvenlik](/tr/gateway/security)
+- [Tepkiler](/tr/tools/reactions)
 
 ## İlgili
 
-- [Channels Overview](/tr/channels) — desteklenen tüm kanallar
-- [Pairing](/tr/channels/pairing) — DM kimlik doğrulaması ve pairing akışı
-- [Groups](/tr/channels/groups) — grup sohbeti davranışı ve mention gating
-- [Channel Routing](/tr/channels/channel-routing) — mesajlar için oturum yönlendirme
-- [Security](/tr/gateway/security) — erişim modeli ve sağlamlaştırma
+- [Kanallara genel bakış](/tr/channels) — desteklenen tüm kanallar
+- [Eşleştirme](/tr/channels/pairing) — DM kimlik doğrulaması ve eşleştirme akışı
+- [Gruplar](/tr/channels/groups) — grup sohbeti davranışı ve mention gating
+- [Kanal yönlendirme](/tr/channels/channel-routing) — mesajlar için oturum yönlendirmesi
+- [Güvenlik](/tr/gateway/security) — erişim modeli ve sağlamlaştırma
