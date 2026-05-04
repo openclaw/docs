@@ -3,22 +3,22 @@ read_when:
     - 学习如何配置 OpenClaw
     - 正在查找配置示例
     - 首次设置 OpenClaw
-summary: 适用于常见 OpenClaw 设置的、符合模式定义的配置示例
+summary: 适用于常见 OpenClaw 设置的符合模式定义的配置示例
 title: 配置示例
 x-i18n:
-    generated_at: "2026-04-29T21:53:04Z"
+    generated_at: "2026-05-04T00:47:06Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8bc1f8877bc635d6e3aafd911852d61e71fa08de9144751209542fd67c70f0ba
+    source_hash: 60c8c2d731f8dce93c4d14657041d72043bc36e3d71ab6cb13c02993ba90dbe3
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-以下示例与当前配置 schema 保持一致。完整参考和每个字段的说明，请参阅[配置](/zh-CN/gateway/configuration)。
+Examples below are aligned with the current config schema. For the exhaustive reference and per-field notes, see [Configuration](/zh-CN/gateway/configuration).
 
-## 快速开始
+## Quick start
 
-### 绝对最小配置
+### Absolute minimum
 
 ```json5
 {
@@ -27,9 +27,9 @@ x-i18n:
 }
 ```
 
-保存到 `~/.openclaw/openclaw.json` 后，你就可以从该号码向 bot 发送私信。
+Save to `~/.openclaw/openclaw.json` and you can DM the bot from that number.
 
-### 推荐起步配置
+### Recommended starter
 
 ```json5
 {
@@ -57,9 +57,9 @@ x-i18n:
 }
 ```
 
-## 扩展示例（主要选项）
+## Expanded example (major options)
 
-> JSON5 允许使用注释和尾随逗号。普通 JSON 也可以使用。
+> JSON5 lets you use comments and trailing commas. Regular JSON works too.
 
 ```json5
 {
@@ -256,6 +256,7 @@ x-i18n:
       skills: ["github", "weather"], // inherited by agents that omit list[].skills
       thinkingDefault: "low",
       verboseDefault: "off",
+      toolProgressDetail: "explain",
       reasoningDefault: "off",
       elevatedDefault: "on",
       blockStreamingDefault: "off",
@@ -470,9 +471,9 @@ x-i18n:
 }
 ```
 
-## 常见模式
+## Common patterns
 
-### 带一个覆盖项的共享 skill 基线
+### Shared skill baseline with one override
 
 ```json5
 {
@@ -490,8 +491,8 @@ x-i18n:
 ```
 
 - `agents.defaults.skills` 是共享基线。
-- `agents.list[].skills` 会为单个智能体替换该基线。
-- 当智能体不应看到任何 Skills 时，使用 `skills: []`。
+- `agents.list[].skills` 会为一个智能体替换该基线。
+- 当某个智能体不应看到任何 Skills 时，使用 `skills: []`。
 
 ### 多平台设置
 
@@ -516,7 +517,7 @@ x-i18n:
 
 ### 可信节点网络自动批准
 
-除非你控制网络路径，否则请保持设备配对为手动。对于专用实验室或 tailnet 子网，你可以选择使用精确的 CIDR 或 IP，为首次节点设备启用自动批准：
+除非你控制网络路径，否则保持设备配对为手动。对于专用实验室或 tailnet 子网，你可以选择使用精确的 CIDR 或 IP，启用首次节点设备自动批准：
 
 ```json5
 {
@@ -530,11 +531,11 @@ x-i18n:
 }
 ```
 
-未设置时，此功能保持关闭。它仅适用于没有请求作用域的新 `role: node` 配对。操作员/浏览器客户端，以及 role、scope、metadata 或 public-key 升级仍需要手动批准。
+未设置时，此功能保持关闭。它只适用于没有请求作用域的新 `role: node` 配对。操作员/浏览器客户端，以及角色、作用域、元数据或公钥升级，仍然需要手动批准。
 
 ### 安全私信模式（共享收件箱 / 多用户私信）
 
-如果不止一个人可以向你的机器人发送私信（`allowFrom` 中有多个条目、多个用户的配对批准，或 `dmPolicy: "open"`），请启用**安全私信模式**，这样来自不同发送者的私信默认不会共享同一个上下文：
+如果不止一个人可以私信你的 bot（`allowFrom` 中有多个条目、为多人批准了配对，或设置了 `dmPolicy: "open"`），请启用**安全私信模式**，这样来自不同发送者的私信默认不会共享同一个上下文：
 
 ```json5
 {
@@ -559,7 +560,7 @@ x-i18n:
 ```
 
 对于 Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC，发送者授权默认优先使用 ID。
-只有在你明确接受该风险时，才为各渠道启用 `dangerouslyAllowNameMatching: true`，以允许直接使用可变的名称/电子邮件/昵称进行匹配。
+只有在你明确接受相应风险时，才通过每个渠道的 `dangerouslyAllowNameMatching: true` 启用直接可变的名称/电子邮件/nick 匹配。
 
 ### Anthropic API key + MiniMax 回退
 
@@ -595,7 +596,7 @@ x-i18n:
 }
 ```
 
-### 工作机器人（受限访问）
+### 工作 bot（受限访问）
 
 ```json5
 {
@@ -620,7 +621,7 @@ x-i18n:
 }
 ```
 
-### 仅本地模型
+### 仅使用本地模型
 
 ```json5
 {
@@ -654,12 +655,12 @@ x-i18n:
 
 ## 提示
 
-- 如果你设置了 `dmPolicy: "open"`，对应的 `allowFrom` 列表必须包含 `"*"`。
+- 如果你设置 `dmPolicy: "open"`，对应的 `allowFrom` 列表必须包含 `"*"`。
 - 提供商 ID 各不相同（电话号码、用户 ID、渠道 ID）。请使用提供商文档确认格式。
 - 稍后可添加的可选部分：`web`、`browser`、`ui`、`discovery`、`canvasHost`、`talk`、`signal`、`imessage`。
-- 请参阅[提供商](/zh-CN/providers)和[故障排除](/zh-CN/gateway/troubleshooting)，了解更深入的设置说明。
+- 如需更深入的设置说明，请参阅[提供商](/zh-CN/providers)和[故障排除](/zh-CN/gateway/troubleshooting)。
 
-## 相关内容
+## 相关
 
 - [配置参考](/zh-CN/gateway/configuration-reference)
 - [配置](/zh-CN/gateway/configuration)
