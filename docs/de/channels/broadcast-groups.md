@@ -1,16 +1,16 @@
 ---
 read_when:
     - Broadcast-Gruppen konfigurieren
-    - Debugging von Multi-Agent-Antworten in WhatsApp
+    - Fehlerbehebung bei Multi-Agent-Antworten in WhatsApp
 sidebarTitle: Broadcast groups
 status: experimental
 summary: Eine WhatsApp-Nachricht an mehrere Agenten senden
 title: Broadcast-Gruppen
 x-i18n:
-    generated_at: "2026-04-30T06:38:56Z"
+    generated_at: "2026-05-04T02:21:36Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b0de4ccc85bf79e2ceb1dddd60db067309b15b7f876c92e7d591ff0b4b4315ec
+    source_hash: eab43d3c3ffddb360340469433d74a380fbab98e662b2463a54f62eafc375b55
     source_path: channels/broadcast-groups.md
     workflow: 16
 ---
@@ -21,16 +21,16 @@ x-i18n:
 
 ## Überblick
 
-Broadcast-Gruppen ermöglichen es mehreren Agenten, dieselbe Nachricht gleichzeitig zu verarbeiten und darauf zu antworten. So können Sie spezialisierte Agententeams erstellen, die gemeinsam in einer einzelnen WhatsApp-Gruppe oder DM arbeiten — alle mit einer Telefonnummer.
+Broadcast Groups ermöglichen es mehreren Agenten, dieselbe Nachricht gleichzeitig zu verarbeiten und darauf zu antworten. So können Sie spezialisierte Agententeams erstellen, die in einer einzelnen WhatsApp-Gruppe oder DM zusammenarbeiten — alle mit einer Telefonnummer.
 
-Aktueller Umfang: **nur WhatsApp** (Web-Kanal).
+Aktueller Umfang: **nur WhatsApp** (Webkanal).
 
-Broadcast-Gruppen werden nach Kanal-Allowlists und Gruppenaktivierungsregeln ausgewertet. In WhatsApp-Gruppen bedeutet das, dass Broadcasts erfolgen, wenn OpenClaw normalerweise antworten würde (zum Beispiel: bei Erwähnung, abhängig von Ihren Gruppeneinstellungen).
+Broadcast Groups werden nach Kanal-Allowlists und Regeln zur Gruppenaktivierung ausgewertet. In WhatsApp-Gruppen bedeutet dies, dass Broadcasts erfolgen, wenn OpenClaw normalerweise antworten würde (zum Beispiel: bei Erwähnung, abhängig von Ihren Gruppeneinstellungen).
 
 ## Anwendungsfälle
 
 <AccordionGroup>
-  <Accordion title="1. Spezialisierte Agententeams">
+  <Accordion title="1. Specialized agent teams">
     Stellen Sie mehrere Agenten mit klar abgegrenzten, fokussierten Verantwortlichkeiten bereit:
 
     ```
@@ -45,7 +45,7 @@ Broadcast-Gruppen werden nach Kanal-Allowlists und Gruppenaktivierungsregeln aus
     Jeder Agent verarbeitet dieselbe Nachricht und liefert seine spezialisierte Perspektive.
 
   </Accordion>
-  <Accordion title="2. Unterstützung mehrerer Sprachen">
+  <Accordion title="2. Multi-language support">
     ```
     Group: "International Support"
     Agents:
@@ -54,7 +54,7 @@ Broadcast-Gruppen werden nach Kanal-Allowlists und Gruppenaktivierungsregeln aus
       - Agent_ES (responds in Spanish)
     ```
   </Accordion>
-  <Accordion title="3. Qualitätssicherungs-Workflows">
+  <Accordion title="3. Quality assurance workflows">
     ```
     Group: "Customer Support"
     Agents:
@@ -62,7 +62,7 @@ Broadcast-Gruppen werden nach Kanal-Allowlists und Gruppenaktivierungsregeln aus
       - QAAgent (reviews quality, only responds if issues found)
     ```
   </Accordion>
-  <Accordion title="4. Aufgabenautomatisierung">
+  <Accordion title="4. Task automation">
     ```
     Group: "Project Management"
     Agents:
@@ -97,7 +97,7 @@ Fügen Sie einen `broadcast`-Abschnitt auf oberster Ebene hinzu (neben `bindings
 Steuern Sie, wie Agenten Nachrichten verarbeiten:
 
 <Tabs>
-  <Tab title="parallel (Standard)">
+  <Tab title="parallel (default)">
     Alle Agenten verarbeiten gleichzeitig:
 
     ```json
@@ -165,51 +165,51 @@ Steuern Sie, wie Agenten Nachrichten verarbeiten:
 ### Nachrichtenfluss
 
 <Steps>
-  <Step title="Eingehende Nachricht trifft ein">
+  <Step title="Incoming message arrives">
     Eine WhatsApp-Gruppen- oder DM-Nachricht trifft ein.
   </Step>
-  <Step title="Broadcast-Prüfung">
+  <Step title="Broadcast check">
     Das System prüft, ob die Peer-ID in `broadcast` enthalten ist.
   </Step>
-  <Step title="Wenn in der Broadcast-Liste">
+  <Step title="If in broadcast list">
     - Alle aufgeführten Agenten verarbeiten die Nachricht.
     - Jeder Agent hat seinen eigenen Sitzungsschlüssel und isolierten Kontext.
     - Agenten verarbeiten parallel (Standard) oder sequenziell.
 
   </Step>
-  <Step title="Wenn nicht in der Broadcast-Liste">
-    Normales Routing gilt (erstes passendes Binding).
+  <Step title="If not in broadcast list">
+    Es gilt das normale Routing (erstes passendes Binding).
   </Step>
 </Steps>
 
 <Note>
-Broadcast-Gruppen umgehen keine Kanal-Allowlists oder Gruppenaktivierungsregeln (Erwähnungen/Befehle/usw.). Sie ändern nur, _welche Agenten ausgeführt werden_, wenn eine Nachricht für die Verarbeitung infrage kommt.
+Broadcast Groups umgehen keine Kanal-Allowlists oder Regeln zur Gruppenaktivierung (Erwähnungen/Befehle/usw.). Sie ändern nur, _welche Agenten ausgeführt werden_, wenn eine Nachricht zur Verarbeitung berechtigt ist.
 </Note>
 
-### Sitzungsisolierung
+### Sitzungsisolation
 
-Jeder Agent in einer Broadcast-Gruppe verwaltet vollständig getrennte:
+Jeder Agent in einer Broadcast Group verwaltet vollständig separate:
 
-- **Sitzungsschlüssel** (`agent:alfred:whatsapp:group:120363...` vs. `agent:baerbel:whatsapp:group:120363...`)
-- **Unterhaltungsverlauf** (Agent sieht die Nachrichten anderer Agenten nicht)
+- **Sitzungsschlüssel** (`agent:alfred:whatsapp:group:120363...` vs `agent:baerbel:whatsapp:group:120363...`)
+- **Unterhaltungsverlauf** (der Agent sieht die Nachrichten anderer Agenten nicht)
 - **Workspace** (separate Sandboxes, falls konfiguriert)
-- **Tool-Zugriff** (unterschiedliche Allow-/Deny-Listen)
+- **Toolzugriff** (unterschiedliche Allow-/Deny-Listen)
 - **Memory/Kontext** (separate IDENTITY.md, SOUL.md usw.)
-- **Gruppenkontextpuffer** (aktuelle Gruppennachrichten, die als Kontext verwendet werden) wird pro Peer geteilt, sodass alle Broadcast-Agenten bei Auslösung denselben Kontext sehen
+- **Gruppenkontextpuffer** (aktuelle Gruppennachrichten, die als Kontext verwendet werden) wird pro Peer gemeinsam genutzt, sodass alle Broadcast-Agenten beim Auslösen denselben Kontext sehen
 
 Dadurch kann jeder Agent Folgendes haben:
 
 - Unterschiedliche Persönlichkeiten
-- Unterschiedlichen Tool-Zugriff (z. B. read-only vs. read-write)
+- Unterschiedlichen Toolzugriff (z. B. schreibgeschützt vs. Lesen/Schreiben)
 - Unterschiedliche Modelle (z. B. opus vs. sonnet)
 - Unterschiedliche installierte Skills
 
 ### Beispiel: isolierte Sitzungen
 
-In Gruppe `120363403215116621@g.us` mit den Agenten `["alfred", "baerbel"]`:
+In Gruppe `120363403215116621@g.us` mit Agenten `["alfred", "baerbel"]`:
 
 <Tabs>
-  <Tab title="Alfreds Kontext">
+  <Tab title="Alfred's context">
     ```
     Session: agent:alfred:whatsapp:group:120363403215116621@g.us
     History: [user message, alfred's previous responses]
@@ -217,7 +217,7 @@ In Gruppe `120363403215116621@g.us` mit den Agenten `["alfred", "baerbel"]`:
     Tools: read, write, exec
     ```
   </Tab>
-  <Tab title="Bärbels Kontext">
+  <Tab title="Bärbel's context">
     ```
     Session: agent:baerbel:whatsapp:group:120363403215116621@g.us
     History: [user message, baerbel's previous responses]
@@ -227,11 +227,11 @@ In Gruppe `120363403215116621@g.us` mit den Agenten `["alfred", "baerbel"]`:
   </Tab>
 </Tabs>
 
-## Best Practices
+## Bewährte Vorgehensweisen
 
 <AccordionGroup>
-  <Accordion title="1. Agenten fokussiert halten">
-    Gestalten Sie jeden Agenten mit einer einzigen, klaren Verantwortung:
+  <Accordion title="1. Keep agents focused">
+    Entwerfen Sie jeden Agenten mit einer einzelnen, klaren Verantwortung:
 
     ```json
     {
@@ -244,8 +244,8 @@ In Gruppe `120363403215116621@g.us` mit den Agenten `["alfred", "baerbel"]`:
     ✅ **Gut:** Jeder Agent hat eine Aufgabe. ❌ **Schlecht:** Ein generischer "dev-helper"-Agent.
 
   </Accordion>
-  <Accordion title="2. Aussagekräftige Namen verwenden">
-    Machen Sie deutlich, was jeder Agent tut:
+  <Accordion title="2. Use descriptive names">
+    Machen Sie klar, was jeder Agent tut:
 
     ```json
     {
@@ -258,32 +258,34 @@ In Gruppe `120363403215116621@g.us` mit den Agenten `["alfred", "baerbel"]`:
     ```
 
   </Accordion>
-  <Accordion title="3. Unterschiedlichen Tool-Zugriff konfigurieren">
+  <Accordion title="3. Configure different tool access">
     Geben Sie Agenten nur die Tools, die sie benötigen:
 
     ```json
     {
       "agents": {
         "reviewer": {
-          "tools": { "allow": ["read", "exec"] } // Read-only
+          "tools": { "allow": ["read", "exec"] }
         },
         "fixer": {
-          "tools": { "allow": ["read", "write", "edit", "exec"] } // Read-write
+          "tools": { "allow": ["read", "write", "edit", "exec"] }
         }
       }
     }
     ```
 
+    `reviewer` ist schreibgeschützt. `fixer` kann lesen und schreiben.
+
   </Accordion>
-  <Accordion title="4. Performance überwachen">
+  <Accordion title="4. Monitor performance">
     Bei vielen Agenten sollten Sie Folgendes erwägen:
 
     - `"strategy": "parallel"` (Standard) für Geschwindigkeit verwenden
-    - Broadcast-Gruppen auf 5-10 Agenten begrenzen
+    - Broadcast Groups auf 5-10 Agenten begrenzen
     - Schnellere Modelle für einfachere Agenten verwenden
 
   </Accordion>
-  <Accordion title="5. Fehler robust behandeln">
+  <Accordion title="5. Handle failures gracefully">
     Agenten schlagen unabhängig voneinander fehl. Der Fehler eines Agenten blockiert andere nicht:
 
     ```
@@ -298,7 +300,7 @@ In Gruppe `120363403215116621@g.us` mit den Agenten `["alfred", "baerbel"]`:
 
 ### Provider
 
-Broadcast-Gruppen funktionieren derzeit mit:
+Broadcast Groups funktionieren derzeit mit:
 
 - ✅ WhatsApp (implementiert)
 - 🚧 Telegram (geplant)
@@ -307,7 +309,7 @@ Broadcast-Gruppen funktionieren derzeit mit:
 
 ### Routing
 
-Broadcast-Gruppen funktionieren zusammen mit bestehendem Routing:
+Broadcast Groups funktionieren zusammen mit vorhandenem Routing:
 
 ```json
 {
@@ -333,12 +335,12 @@ Broadcast-Gruppen funktionieren zusammen mit bestehendem Routing:
 ## Fehlerbehebung
 
 <AccordionGroup>
-  <Accordion title="Agenten antworten nicht">
-    **Prüfen Sie:**
+  <Accordion title="Agents not responding">
+    **Prüfen:**
 
-    1. Agent-IDs existieren in `agents.list`.
+    1. Agenten-IDs existieren in `agents.list`.
     2. Das Peer-ID-Format ist korrekt (z. B. `120363403215116621@g.us`).
-    3. Agenten stehen nicht in Deny-Listen.
+    3. Agenten befinden sich nicht in Deny-Listen.
 
     **Debug:**
 
@@ -347,13 +349,13 @@ Broadcast-Gruppen funktionieren zusammen mit bestehendem Routing:
     ```
 
   </Accordion>
-  <Accordion title="Nur ein Agent antwortet">
-    **Ursache:** Peer-ID ist möglicherweise in `bindings`, aber nicht in `broadcast`.
+  <Accordion title="Only one agent responding">
+    **Ursache:** Die Peer-ID könnte in `bindings`, aber nicht in `broadcast` enthalten sein.
 
     **Behebung:** Zur Broadcast-Konfiguration hinzufügen oder aus Bindings entfernen.
 
   </Accordion>
-  <Accordion title="Performance-Probleme">
+  <Accordion title="Performance issues">
     Wenn es mit vielen Agenten langsam ist:
 
     - Reduzieren Sie die Anzahl der Agenten pro Gruppe.
@@ -366,7 +368,7 @@ Broadcast-Gruppen funktionieren zusammen mit bestehendem Routing:
 ## Beispiele
 
 <AccordionGroup>
-  <Accordion title="Beispiel 1: Code-Review-Team">
+  <Accordion title="Example 1: Code review team">
     ```json
     {
       "broadcast": {
@@ -401,17 +403,17 @@ Broadcast-Gruppen funktionieren zusammen mit bestehendem Routing:
     }
     ```
 
-    **Benutzer sendet:** Code-Snippet.
+    **Benutzer sendet:** Codeausschnitt.
 
     **Antworten:**
 
     - code-formatter: "Einrückung korrigiert und Typhinweise hinzugefügt"
     - security-scanner: "⚠️ SQL-Injection-Schwachstelle in Zeile 12"
-    - test-coverage: "Abdeckung beträgt 45 %, Tests für Fehlerfälle fehlen"
-    - docs-checker: "Docstring für Funktion `process_data` fehlt"
+    - test-coverage: "Abdeckung liegt bei 45 %, Tests für Fehlerfälle fehlen"
+    - docs-checker: "Fehlender Docstring für Funktion `process_data`"
 
   </Accordion>
-  <Accordion title="Beispiel 2: Unterstützung mehrerer Sprachen">
+  <Accordion title="Example 2: Multi-language support">
     ```json
     {
       "broadcast": {
@@ -446,32 +448,32 @@ interface OpenClawConfig {
 ### Felder
 
 <ParamField path="strategy" type='"parallel" | "sequential"' default='"parallel"'>
-  So werden Agenten verarbeitet. `parallel` führt alle Agenten gleichzeitig aus; `sequential` führt sie in Array-Reihenfolge aus.
+  Wie Agenten verarbeitet werden. `parallel` führt alle Agenten gleichzeitig aus; `sequential` führt sie in Array-Reihenfolge aus.
 </ParamField>
 <ParamField path="[peerId]" type="string[]">
-  WhatsApp-Gruppen-JID, E.164-Nummer oder andere Peer-ID. Der Wert ist das Array der Agent-IDs, die Nachrichten verarbeiten sollen.
+  WhatsApp-Gruppen-JID, E.164-Nummer oder andere Peer-ID. Der Wert ist das Array der Agenten-IDs, die Nachrichten verarbeiten sollen.
 </ParamField>
 
 ## Einschränkungen
 
-1. **Max. Agenten:** Keine harte Grenze, aber 10+ Agenten können langsam sein.
-2. **Gemeinsamer Kontext:** Agenten sehen die Antworten der anderen nicht (absichtlich).
+1. **Max. Agenten:** Keine harte Begrenzung, aber mehr als 10 Agenten können langsam sein.
+2. **Gemeinsamer Kontext:** Agenten sehen die Antworten der jeweils anderen nicht (absichtlich).
 3. **Nachrichtenreihenfolge:** Parallele Antworten können in beliebiger Reihenfolge eintreffen.
-4. **Rate Limits:** Alle Agenten zählen zu den WhatsApp-Rate-Limits.
+4. **Ratenlimits:** Alle Agenten zählen zu den WhatsApp-Ratenlimits.
 
-## Zukünftige Erweiterungen
+## Zukünftige Verbesserungen
 
 Geplante Funktionen:
 
-- [ ] Modus mit gemeinsamem Kontext (Agenten sehen die Antworten der anderen)
-- [ ] Agentenkoordination (Agenten können sich gegenseitig Signale senden)
-- [ ] Dynamische Agentenauswahl (Agenten anhand des Nachrichteninhalts auswählen)
+- [ ] Modus mit gemeinsamem Kontext (Agenten sehen die Antworten der jeweils anderen)
+- [ ] Agentenkoordination (Agenten können einander Signale senden)
+- [ ] Dynamische Agentenauswahl (Agenten basierend auf Nachrichteninhalt auswählen)
 - [ ] Agentenprioritäten (einige Agenten antworten vor anderen)
 
-## Verwandte Inhalte
+## Verwandte Themen
 
 - [Kanalrouting](/de/channels/channel-routing)
 - [Gruppen](/de/channels/groups)
-- [Multi-Agent-Sandbox-Werkzeuge](/de/tools/multi-agent-sandbox-tools)
+- [Multi-Agent-Sandbox-Tools](/de/tools/multi-agent-sandbox-tools)
 - [Kopplung](/de/channels/pairing)
 - [Sitzungsverwaltung](/de/concepts/session)

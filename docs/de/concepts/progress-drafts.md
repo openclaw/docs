@@ -1,32 +1,32 @@
 ---
 read_when:
-    - Sichtbare Fortschrittsmeldungen für lang laufende Chat-Durchläufe konfigurieren
-    - Auswahl zwischen partiellen, Block- und Fortschritts-Streaming-Modi
-    - Erklärung, wie OpenClaw während laufender Arbeit eine Kanalnachricht aktualisiert
-    - Fehlerbehebung bei Fortschrittsentwürfen, eigenständigen Fortschrittsmeldungen oder Finalisierungs-Fallback
-summary: 'Fortschrittsentwürfe: eine sichtbare Nachricht zum Arbeitsfortschritt, die aktualisiert wird, während ein Agent läuft'
-title: Entwürfe voranbringen
+    - Sichtbare Fortschrittsmeldungen für lang laufende Chat-Interaktionen konfigurieren
+    - Auswahl zwischen partiellen, blockweisen und fortschrittsbezogenen Streaming-Modi
+    - Erklärung, wie OpenClaw eine Kanalnachricht aktualisiert, während die Arbeit läuft
+    - Problembehebung bei Fortschrittsentwürfen, eigenständigen Fortschrittsmeldungen oder Finalisierungs-Fallback
+summary: 'Fortschrittsentwürfe: eine sichtbare Zwischenstandsnachricht, die aktualisiert wird, während ein Agent ausgeführt wird'
+title: Fortschrittsentwürfe
 x-i18n:
-    generated_at: "2026-05-03T21:31:03Z"
+    generated_at: "2026-05-04T02:23:19Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 0fc0dff38232228b49872d66f4498f065675cdd3abf3a0f4003cb34fcbb7de8c
+    source_hash: 8ce19262800f1c3c3e505a3cf1d41ed5c3dffcbca168ad7b7afabdce62eee8fe
     source_path: concepts/progress-drafts.md
     workflow: 16
 ---
 
-Fortschrittsentwürfe lassen lang laufende Agenten-Turns im Chat lebendig wirken, ohne die Unterhaltung in einen Stapel temporärer Statusantworten zu verwandeln.
+Fortschrittsentwürfe lassen lang laufende Agent-Durchläufe im Chat lebendig wirken, ohne die Unterhaltung in einen Stapel temporärer Statusantworten zu verwandeln.
 
-Wenn Fortschrittsentwürfe aktiviert sind, erstellt OpenClaw eine sichtbare Work-in-Progress-Nachricht, aktualisiert sie, während der Agent liest, plant, Tools aufruft oder auf eine Genehmigung wartet, und wandelt diesen Entwurf anschließend in die finale Antwort um, wenn der Kanal dies sicher tun kann.
+Wenn Fortschrittsentwürfe aktiviert sind, erstellt OpenClaw erst dann eine sichtbare In-Arbeit-Nachricht, nachdem der Durchlauf zeigt, dass er echte Arbeit erledigt, aktualisiert sie, während der Agent liest, plant, Tools aufruft oder auf Genehmigung wartet, und wandelt diesen Entwurf anschließend in die endgültige Antwort um, wenn der Kanal das sicher unterstützen kann.
 
 ```text
-Shelling
-- reading recent channel context
-- checking matching issues
-- preparing reply
+Shelling...
+📖 Read: from docs/concepts/progress-drafts.md
+🔎 Web Search: for "discord edit message"
+🛠️ Exec: run tests
 ```
 
-Verwenden Sie Fortschrittsentwürfe, wenn Sie während tool-lastiger Arbeit eine aufgeräumte Statusnachricht und die finale Antwort nach Abschluss des Turns wünschen.
+Verwenden Sie Fortschrittsentwürfe, wenn Sie während toolintensiver Arbeit eine aufgeräumte Statusnachricht und nach Abschluss des Durchlaufs die endgültige Antwort wünschen.
 
 ## Schnellstart
 
@@ -44,63 +44,65 @@ Aktivieren Sie Fortschrittsentwürfe pro Kanal mit `streaming.mode: "progress"`:
 }
 ```
 
-Das reicht normalerweise aus. OpenClaw wählt automatisch ein Ein-Wort-Label, fügt kompakte Fortschrittszeilen hinzu, während nützliche Arbeit stattfindet, und unterdrückt doppelte eigenständige Fortschrittsmeldungen für diesen Turn.
+Das reicht normalerweise aus. OpenClaw wählt automatisch ein einwortiges Label, wartet, bis die Arbeit mindestens fünf Sekunden dauert oder ein zweites Arbeitsereignis ausgibt, fügt kompakte Fortschrittszeilen hinzu, während sinnvolle Arbeit geschieht, und unterdrückt doppelte eigenständige Fortschrittsmeldungen für diesen Durchlauf.
 
 ## Was Benutzer sehen
 
 Ein Fortschrittsentwurf besteht aus zwei Teilen:
 
-| Teil                 | Zweck                                                                 |
-| -------------------- | --------------------------------------------------------------------- |
-| Label                | Ein kurzer Titel wie `Thinking` oder `Shelling`.                      |
-| Fortschrittszeilen   | Kompakte Laufaktualisierungen wie Tool-Aufrufe, Aufgabenschritte oder Genehmigungen. |
+| Teil               | Zweck                                                                                  |
+| ------------------ | -------------------------------------------------------------------------------------- |
+| Label              | Ein kurzer Titel wie `Thinking...` oder `Shelling...`.                                 |
+| Fortschrittszeilen | Kompakte Laufaktualisierungen mit denselben Tool-Labels und Symbolen wie die ausführliche Ausgabe. |
 
-Das Label erscheint sofort, wenn der Agent mit der Antwort beginnt. Fortschrittszeilen werden nur hinzugefügt, wenn der Agent nützliche Arbeitsaktualisierungen ausgibt. Die finale Antwort ersetzt den Entwurf, wenn möglich; andernfalls sendet OpenClaw die finale Antwort normal und bereinigt den Entwurf oder beendet dessen Aktualisierung entsprechend dem Transport des Kanals.
+Das Label erscheint, nachdem der Agent sinnvolle Arbeit beginnt und entweder fünf Sekunden lang beschäftigt bleibt oder ein zweites Arbeitsereignis ausgibt. Reine Textantworten zeigen keinen Fortschrittsentwurf. Fortschrittszeilen werden nur hinzugefügt, wenn der Agent nützliche Arbeitsaktualisierungen ausgibt, zum Beispiel `🛠️ Exec`, `🔎 Web Search` oder `✍️ Write: to /tmp/file`.
+Standardmäßig verwenden sie denselben kompakten Erklärmodus wie `/verbose`; setzen Sie `agents.defaults.toolProgressDetail: "raw"`, wenn Sie debuggen und zusätzlich rohe Befehle/Details angehängt haben möchten.
+Die endgültige Antwort ersetzt den Entwurf, wenn möglich; andernfalls sendet OpenClaw die endgültige Antwort normal und bereinigt den Entwurf oder beendet dessen Aktualisierung gemäß dem Transport des Kanals.
 
-## Modus auswählen
+## Modus wählen
 
-`channels.<channel>.streaming.mode` steuert das sichtbare Work-in-Progress-Verhalten:
+`channels.<channel>.streaming.mode` steuert das sichtbare In-Arbeit-Verhalten:
 
-| Modus      | Am besten geeignet für              | Was im Chat erscheint                                  |
-| ---------- | ----------------------------------- | ----------------------------------------------------- |
-| `off`      | Ruhige Kanäle                       | Nur die finale Antwort.                               |
-| `partial`  | Zusehen, wie Antworttext erscheint  | Ein Entwurf, der mit dem neuesten Antworttext bearbeitet wird. |
-| `block`    | Größere Antwortvorschau-Chunks      | Eine Vorschau, die in größeren Chunks aktualisiert oder ergänzt wird. |
-| `progress` | Tool-lastige oder lang laufende Turns | Ein Statusentwurf, danach die finale Antwort.        |
+| Modus      | Am besten für                             | Was im Chat erscheint                                  |
+| ---------- | ---------------------------------------- | ------------------------------------------------------ |
+| `off`      | Ruhige Kanäle                            | Nur die endgültige Antwort.                            |
+| `partial`  | Zusehen, wie Antworttext erscheint       | Ein Entwurf, der mit dem neuesten Antworttext bearbeitet wird. |
+| `block`    | Größere Antwortvorschau-Abschnitte       | Eine Vorschau, die in größeren Abschnitten aktualisiert oder ergänzt wird. |
+| `progress` | Toolintensive oder lang laufende Durchläufe | Ein Statusentwurf, dann die endgültige Antwort.        |
 
-Wählen Sie `progress`, wenn Benutzer mehr Wert darauf legen, „was gerade passiert“, als den Antworttext Token für Token streamen zu sehen.
+Wählen Sie `progress`, wenn Benutzer mehr daran interessiert sind, „was passiert“, als den Antworttext Token für Token einlaufen zu sehen.
 
 Wählen Sie `partial`, wenn die Antwort selbst das Fortschrittssignal ist.
 
-Wählen Sie `block`, wenn Sie Entwurfsvorschau-Aktualisierungen in größeren Text-Chunks wünschen. Bei Discord und Telegram ist `streaming.mode: "block"` weiterhin Vorschau-Streaming, nicht die normale Blockzustellung. Verwenden Sie `streaming.block.enabled` oder das ältere `blockStreaming`, wenn Sie normale Blockantworten wünschen.
+Wählen Sie `block`, wenn Sie Entwurfs-Vorschauaktualisierungen in größeren Textabschnitten möchten. Auf Discord und Telegram ist `streaming.mode: "block"` weiterhin Vorschau-Streaming, keine normale Blockzustellung. Verwenden Sie `streaming.block.enabled` oder das ältere `blockStreaming`, wenn Sie normale Blockantworten möchten.
 
 ## Labels konfigurieren
 
 Fortschrittslabels befinden sich unter `channels.<channel>.streaming.progress`.
 
-Das Standardlabel ist `auto`, wodurch aus OpenClaws integriertem Pool von Ein-Wort-Labels ausgewählt wird:
+Das Standardlabel ist `auto`, wodurch aus dem integrierten Label-Pool von OpenClaw mit einzelnen Wörtern und Auslassungspunkten gewählt wird:
 
 ```text
-Thinking
-Shelling
-Scuttling
-Clawing
-Pinching
-Molting
-Bubbling
-Tiding
-Reefing
-Cracking
-Sifting
-Brining
-Nautiling
-Krilling
-Barnacling
-Lobstering
-Tidepooling
-Pearling
-Snapping
-Surfacing
+Thinking...
+Shelling...
+Scuttling...
+Clawing...
+Pinching...
+Molting...
+Bubbling...
+Tiding...
+Reefing...
+Cracking...
+Sifting...
+Brining...
+Nautiling...
+Krilling...
+Barnacling...
+Lobstering...
+Tidepooling...
+Pearling...
+Snapping...
+Surfacing...
 ```
 
 Verwenden Sie ein festes Label:
@@ -157,7 +159,28 @@ Blenden Sie das Label aus und zeigen Sie nur Fortschrittszeilen an:
 
 ## Fortschrittszeilen steuern
 
-Fortschrittszeilen sind im Fortschrittsmodus standardmäßig aktiviert. Sie stammen aus echten Laufereignissen: Tool-Starts, Elementaktualisierungen, Aufgabenplänen, Genehmigungen, Befehlsausgabe, Patch-Zusammenfassungen und ähnlicher Agentenaktivität.
+Fortschrittszeilen sind im Fortschrittsmodus standardmäßig aktiviert. Sie stammen aus echten Laufereignissen: Tool-Starts, Elementaktualisierungen, Aufgabenplänen, Genehmigungen, Befehlsausgabe, Patch-Zusammenfassungen und ähnlicher Agent-Aktivität.
+
+OpenClaw verwendet denselben Formatierer für Fortschrittsentwürfe und `/verbose`:
+
+```json5
+{
+  agents: {
+    defaults: {
+      toolProgressDetail: "explain", // explain | raw
+    },
+  },
+}
+```
+
+`"explain"` ist die Voreinstellung und hält Entwürfe mit prägnanten Labels wie `🛠️ Exec: check JS syntax for /tmp/app.js` stabil. `"raw"` hängt den zugrunde liegenden Befehl bzw. das Detail an, wenn verfügbar; das ist beim Debuggen hilfreich, aber im Chat lauter.
+
+Zum Beispiel erscheint derselbe Befehl je nach Detailmodus unterschiedlich:
+
+| Modus     | Fortschrittszeile                                                   |
+| --------- | ------------------------------------------------------------------- |
+| `explain` | `🛠️ Exec: check JS syntax for /tmp/app.js`                          |
+| `raw`     | `🛠️ Exec: check JS syntax for /tmp/app.js, node --check /tmp/app.js` |
 
 Begrenzen Sie, wie viele Zeilen sichtbar bleiben:
 
@@ -193,54 +216,54 @@ Behalten Sie den einzelnen Fortschrittsentwurf bei, blenden Sie aber Tool- und A
 }
 ```
 
-Mit `toolProgress: false` unterdrückt OpenClaw weiterhin die älteren eigenständigen Tool-Fortschrittsmeldungen für diesen Turn. Der Kanal bleibt bis zur finalen Antwort visuell ruhig, abgesehen vom Label, falls eines konfiguriert ist.
+Mit `toolProgress: false` unterdrückt OpenClaw weiterhin die älteren eigenständigen Tool-Fortschrittsnachrichten für diesen Durchlauf. Der Kanal bleibt bis zur endgültigen Antwort optisch ruhig, abgesehen vom Label, falls eines konfiguriert ist.
 
 ## Kanalverhalten
 
 Jeder Kanal verwendet den saubersten Transport, den er unterstützt:
 
-| Kanal           | Fortschrittstransport                         | Hinweise                                                              |
-| --------------- | --------------------------------------------- | --------------------------------------------------------------------- |
-| Discord         | Eine Nachricht senden und dann bearbeiten.    | Finaler Text wird direkt bearbeitet, wenn er in eine sichere Vorschau-Nachricht passt. |
-| Matrix          | Ein Event senden und dann bearbeiten.         | Streaming-Konfiguration auf Kontoebene steuert Entwürfe auf Kontoebene. |
-| Microsoft Teams | Nativer Teams-Stream in persönlichen Chats.   | `streaming.mode: "block"` wird Teams-Blockzustellung zugeordnet.      |
+| Kanal           | Fortschrittstransport                  | Hinweise                                                               |
+| --------------- | -------------------------------------- | ---------------------------------------------------------------------- |
+| Discord         | Eine Nachricht senden, dann bearbeiten. | Endgültiger Text wird direkt bearbeitet, wenn er in eine sichere Vorschaunachricht passt. |
+| Matrix          | Ein Ereignis senden, dann bearbeiten.  | Streaming-Konfiguration auf Kontoebene steuert Entwürfe auf Kontoebene. |
+| Microsoft Teams | Nativer Teams-Stream in persönlichen Chats. | `streaming.mode: "block"` wird Teams-Blockzustellung zugeordnet.       |
 | Slack           | Nativer Stream oder bearbeitbarer Entwurfsbeitrag. | Thread-Verfügbarkeit beeinflusst, ob natives Streaming verwendet werden kann. |
-| Telegram        | Eine Nachricht senden und dann bearbeiten.    | Ältere sichtbare Entwürfe können ersetzt werden, damit finale Zeitstempel nützlich bleiben. |
-| Mattermost      | Bearbeitbarer Entwurfsbeitrag.                | Tool-Aktivität wird in denselben beitragsartigen Entwurf integriert.  |
+| Telegram        | Eine Nachricht senden, dann bearbeiten. | Ältere sichtbare Entwürfe können ersetzt werden, damit endgültige Zeitstempel nützlich bleiben. |
+| Mattermost      | Bearbeitbarer Entwurfsbeitrag.         | Tool-Aktivität wird in denselben entwurfsartigen Beitrag integriert.   |
 
-Kanäle ohne sichere Bearbeitungsunterstützung fallen normalerweise auf Tippindikatoren oder reine Finalzustellung zurück.
+Kanäle ohne sichere Bearbeitungsunterstützung fallen normalerweise auf Tippindikatoren oder reine Endzustellung zurück.
 
-## Finalisierung
+## Abschluss
 
-Wenn die finale Antwort bereit ist, versucht OpenClaw, den Chat sauber zu halten:
+Wenn die endgültige Antwort bereit ist, versucht OpenClaw, den Chat sauber zu halten:
 
-- Wenn der Entwurf sicher zur finalen Antwort werden kann, bearbeitet OpenClaw ihn direkt.
-- Wenn der Kanal natives Fortschrittsstreaming verwendet, finalisiert OpenClaw diesen Stream, sobald der native Transport den finalen Text akzeptiert.
-- Wenn die finale Antwort Medien, eine Genehmigungsaufforderung, ein explizites Antwortziel, zu viele Chunks oder einen fehlgeschlagenen Bearbeitungs- oder Sendevorgang enthält, sendet OpenClaw die finale Antwort über den normalen Zustellpfad des Kanals.
+- Wenn der Entwurf sicher zur endgültigen Antwort werden kann, bearbeitet OpenClaw ihn direkt.
+- Wenn der Kanal natives Fortschritts-Streaming verwendet, schließt OpenClaw diesen Stream ab, wenn der native Transport den endgültigen Text akzeptiert.
+- Wenn die endgültige Antwort Medien, eine Genehmigungsaufforderung, ein explizites Antwortziel, zu viele Abschnitte oder einen fehlgeschlagenen Bearbeitungs-/Sendevorgang enthält, sendet OpenClaw die endgültige Antwort über den normalen Zustellpfad des Kanals.
 
-Der Fallback-Pfad ist beabsichtigt. Es ist besser, eine neue finale Antwort zu senden, als Text zu verlieren, eine Antwort im falschen Thread zu platzieren oder einen Entwurf mit einer Payload zu überschreiben, die der Kanal nicht sicher darstellen kann.
+Der Fallback-Pfad ist beabsichtigt. Es ist besser, eine neue endgültige Antwort zu senden, als Text zu verlieren, eine Antwort falsch in einen Thread einzuordnen oder einen Entwurf mit einer Nutzlast zu überschreiben, die der Kanal nicht sicher darstellen kann.
 
 ## Fehlerbehebung
 
-**Ich sehe nur die finale Antwort.**
+**Ich sehe nur die endgültige Antwort.**
 
-Prüfen Sie, ob `channels.<channel>.streaming.mode` für das Konto oder den Kanal, der die Nachricht verarbeitet hat, auf `progress` gesetzt ist. Einige Gruppen- oder Zitatantwort-Pfade können Entwurfsvorschauen für einen Turn deaktivieren, wenn der Kanal die richtige Nachricht nicht sicher bearbeiten kann.
+Prüfen Sie, ob `channels.<channel>.streaming.mode` für das Konto oder den Kanal, der die Nachricht verarbeitet hat, auf `progress` gesetzt ist. Einige Gruppen- oder Zitatantwort-Pfade können Entwurfsvorschauen für einen Durchlauf deaktivieren, wenn der Kanal die richtige Nachricht nicht sicher bearbeiten kann.
 
 **Ich sehe das Label, aber keine Tool-Zeilen.**
 
-Prüfen Sie `streaming.progress.toolProgress`. Wenn es `false` ist, behält OpenClaw das Verhalten mit einem einzelnen Entwurf bei, blendet aber Tool- und Aufgabenfortschrittszeilen aus.
+Prüfen Sie `streaming.progress.toolProgress`. Wenn es `false` ist, behält OpenClaw das Verhalten mit einem einzelnen Entwurf bei, blendet aber Tool- und Aufgaben-Fortschrittszeilen aus.
 
-**Ich sehe eine neue finale Nachricht statt eines bearbeiteten Entwurfs.**
+**Ich sehe eine neue endgültige Nachricht statt eines bearbeiteten Entwurfs.**
 
-Das ist ein Sicherheits-Fallback. Er kann bei Medienantworten, langen Antworten, expliziten Antwortzielen, alten Telegram-Entwürfen, fehlenden Slack-Thread-Zielen, gelöschten Vorschau-Nachrichten oder fehlgeschlagener nativer Stream-Finalisierung auftreten.
+Das ist ein Sicherheits-Fallback. Er kann bei Medienantworten, langen Antworten, expliziten Antwortzielen, alten Telegram-Entwürfen, fehlenden Slack-Thread-Zielen, gelöschten Vorschaunachrichten oder fehlgeschlagener nativer Stream-Finalisierung auftreten.
 
-**Ich sehe weiterhin eigenständige Fortschrittsmeldungen.**
+**Ich sehe weiterhin eigenständige Fortschrittsnachrichten.**
 
-Der Fortschrittsmodus unterdrückt standardmäßige eigenständige Tool-Fortschrittsmeldungen, wenn ein Entwurf aktiv ist. Wenn weiterhin eigenständige Meldungen erscheinen, prüfen Sie, ob der Turn tatsächlich den Fortschrittsmodus verwendet und nicht `streaming.mode: "off"` oder einen Kanalpfad, der für diese Nachricht keinen Entwurf erstellen kann.
+Der Fortschrittsmodus unterdrückt standardmäßige eigenständige Tool-Fortschrittsnachrichten, wenn ein Entwurf aktiv ist. Wenn weiterhin eigenständige Nachrichten erscheinen, prüfen Sie, ob der Durchlauf tatsächlich den Fortschrittsmodus verwendet und nicht `streaming.mode: "off"` oder einen Kanalpfad, der für diese Nachricht keinen Entwurf erstellen kann.
 
 **Teams verhält sich anders als Discord oder Telegram.**
 
-Microsoft Teams verwendet in persönlichen Chats einen nativen Stream statt des generischen Vorschau-Transports mit Senden und Bearbeiten. Teams behandelt außerdem `streaming.mode: "block"` als Teams-Blockzustellung, weil es nicht denselben Entwurfsvorschau-Blockmodus hat, den Discord und Telegram verwenden.
+Microsoft Teams verwendet in persönlichen Chats einen nativen Stream statt des generischen Senden-und-Bearbeiten-Vorschautransports. Teams behandelt außerdem `streaming.mode: "block"` als Teams-Blockzustellung, weil es nicht denselben Entwurfsvorschau-Blockmodus hat, der von Discord und Telegram verwendet wird.
 
 ## Verwandte Themen
 

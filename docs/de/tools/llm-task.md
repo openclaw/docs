@@ -1,27 +1,27 @@
 ---
 read_when:
-    - Sie möchten einen Nur-JSON-LLM-Schritt innerhalb von Workflows.
-    - Sie benötigen schema-validierte LLM-Ausgabe für Automatisierung.
+    - Sie möchten einen reinen JSON-LLM-Schritt innerhalb von Workflows
+    - Sie benötigen schema-validierte LLM-Ausgaben für die Automatisierung
 summary: Nur-JSON-LLM-Aufgaben für Workflows (optionales Plugin-Tool)
-title: LLM-Task
+title: LLM-Aufgabe
 x-i18n:
-    generated_at: "2026-04-24T07:03:54Z"
-    model: gpt-5.4
+    generated_at: "2026-05-04T02:25:47Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 613aefd1bac5b9675821a118c11130c8bfaefb1673d0266f14ff4e91b47fed8b
+    source_hash: 9cdc5d4feef17fb6d6d90d819d4c92d26a4ec43e4f5364c6acbaad1934a89269
     source_path: tools/llm-task.md
-    workflow: 15
+    workflow: 16
 ---
 
-`llm-task` ist ein **optionales Plugin-Tool**, das einen Nur-JSON-LLM-Task ausführt und
+`llm-task` ist ein **optionales Plugin-Tool**, das eine JSON-only-LLM-Aufgabe ausführt und
 strukturierte Ausgabe zurückgibt (optional gegen JSON Schema validiert).
 
-Das ist ideal für Workflow-Engines wie Lobster: Sie können einen einzelnen LLM-Schritt
+Dies ist ideal für Workflow-Engines wie Lobster: Sie können einen einzelnen LLM-Schritt
 hinzufügen, ohne für jeden Workflow benutzerdefinierten OpenClaw-Code schreiben zu müssen.
 
-## Das Plugin aktivieren
+## Plugin aktivieren
 
-1. Das Plugin aktivieren:
+1. Aktivieren Sie das Plugin:
 
 ```json
 {
@@ -33,20 +33,17 @@ hinzufügen, ohne für jeden Workflow benutzerdefinierten OpenClaw-Code schreibe
 }
 ```
 
-2. Das Tool auf die Allowlist setzen (es wird mit `optional: true` registriert):
+2. Erlauben Sie das optionale Tool:
 
 ```json
 {
-  "agents": {
-    "list": [
-      {
-        "id": "main",
-        "tools": { "allow": ["llm-task"] }
-      }
-    ]
+  "tools": {
+    "alsoAllow": ["llm-task"]
   }
 }
 ```
+
+Verwenden Sie `tools.allow` nur, wenn Sie den restriktiven Allowlist-Modus nutzen möchten.
 
 ## Konfiguration (optional)
 
@@ -70,7 +67,7 @@ hinzufügen, ohne für jeden Workflow benutzerdefinierten OpenClaw-Code schreibe
 }
 ```
 
-`allowedModels` ist eine Allowlist aus Strings `provider/model`. Wenn gesetzt, wird jede Anfrage
+`allowedModels` ist eine Allowlist von `provider/model`-Strings. Wenn sie festgelegt ist, wird jede Anfrage
 außerhalb der Liste abgelehnt.
 
 ## Tool-Parameter
@@ -86,12 +83,12 @@ außerhalb der Liste abgelehnt.
 - `maxTokens` (Zahl, optional)
 - `timeoutMs` (Zahl, optional)
 
-`thinking` akzeptiert die Standard-Reasoning-Presets von OpenClaw, zum Beispiel `low` oder `medium`.
+`thinking` akzeptiert die standardmäßigen OpenClaw-Reasoning-Voreinstellungen, wie `low` oder `medium`.
 
 ## Ausgabe
 
-Gibt `details.json` zurück, das das geparste JSON enthält (und gegen
-`schema` validiert, wenn es angegeben wurde).
+Gibt `details.json` mit dem geparsten JSON zurück (und validiert gegen
+`schema`, wenn angegeben).
 
 ## Beispiel: Lobster-Workflow-Schritt
 
@@ -117,14 +114,14 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 
 ## Sicherheitshinweise
 
-- Das Tool ist **Nur-JSON** und weist das Modell an, nur JSON auszugeben (keine
+- Das Tool ist **JSON-only** und weist das Modell an, nur JSON auszugeben (keine
   Code-Fences, keine Kommentare).
-- Für diesen Lauf werden dem Modell keine Tools offengelegt.
+- Für diesen Lauf werden dem Modell keine Tools bereitgestellt.
 - Behandeln Sie die Ausgabe als nicht vertrauenswürdig, sofern Sie sie nicht mit `schema` validieren.
-- Platzieren Sie Freigaben vor jedem Schritt mit Seiteneffekten (senden, posten, `exec`).
+- Platzieren Sie Genehmigungen vor jedem Schritt mit Nebeneffekten (send, post, exec).
 
-## Verwandt
+## Verwandte Themen
 
-- [Thinking levels](/de/tools/thinking)
-- [Sub-agents](/de/tools/subagents)
-- [Slash commands](/de/tools/slash-commands)
+- [Denkstufen](/de/tools/thinking)
+- [Sub-Agenten](/de/tools/subagents)
+- [Slash-Befehle](/de/tools/slash-commands)
