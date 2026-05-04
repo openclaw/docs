@@ -1,31 +1,31 @@
 ---
 read_when:
     - Werken aan Tlon/Urbit-kanaalfuncties
-summary: Ondersteuningsstatus, mogelijkheden en configuratie voor Tlon/Urbit
+summary: Tlon/Urbit-ondersteuningsstatus, mogelijkheden en configuratie
 title: Tlon
 x-i18n:
-    generated_at: "2026-05-02T22:16:24Z"
+    generated_at: "2026-05-04T02:22:12Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 30915170786fc1ee8b84fb8be2ea42280262923064cfa9ca7107036096a13add
+    source_hash: 1718044541b431ff2437508e7e6659c14206f4aa84ab8b207e0d791dea2a48c5
     source_path: channels/tlon.md
     workflow: 16
 ---
 
-Tlon is een gedecentraliseerde messenger gebouwd op Urbit. OpenClaw maakt verbinding met je Urbit-ship en kan
+Tlon is een gedecentraliseerde messenger die is gebouwd op Urbit. OpenClaw maakt verbinding met je Urbit-ship en kan
 reageren op DM's en groepschatberichten. Groepsantwoorden vereisen standaard een @-vermelding en kunnen
 verder worden beperkt via allowlists.
 
-Status: gebundelde plugin. DM's, groepsvermeldingen, thread-antwoorden, rich-textopmaak en
-afbeeldingsuploads worden ondersteund. Reacties en peilingen worden nog niet ondersteund.
+Status: gebundelde Plugin. DM's, groepsvermeldingen, threadantwoorden, rich-text-opmaak en
+afbeeldingsuploads worden ondersteund. Reacties en polls worden nog niet ondersteund.
 
-## Gebundelde plugin
+## Gebundelde Plugin
 
-Tlon wordt meegeleverd als gebundelde plugin in huidige OpenClaw-releases, dus normale verpakte
+Tlon wordt meegeleverd als gebundelde Plugin in huidige OpenClaw-releases, dus normale verpakte
 builds hebben geen aparte installatie nodig.
 
-Als je een oudere build gebruikt of een aangepaste installatie die Tlon uitsluit, installeer dan een
-actueel npm-pakket:
+Als je een oudere build gebruikt of een aangepaste installatie waarin Tlon is uitgesloten, installeer dan een
+huidig npm-pakket:
 
 Installeren via CLI (npm-register):
 
@@ -36,7 +36,7 @@ openclaw plugins install @openclaw/tlon
 Gebruik het kale pakket om de huidige officiële releasetag te volgen. Pin alleen een exacte
 versie wanneer je een reproduceerbare installatie nodig hebt.
 
-Lokale checkout (bij uitvoeren vanuit een git-repo):
+Lokale checkout (wanneer je vanuit een git-repo draait):
 
 ```bash
 openclaw plugins install ./path/to/local/tlon-plugin
@@ -46,7 +46,7 @@ Details: [Plugins](/nl/tools/plugin)
 
 ## Instellen
 
-1. Zorg dat de Tlon-plugin beschikbaar is.
+1. Zorg dat de Tlon-Plugin beschikbaar is.
    - Huidige verpakte OpenClaw-releases bundelen deze al.
    - Oudere/aangepaste installaties kunnen deze handmatig toevoegen met de bovenstaande opdrachten.
 2. Verzamel je ship-URL en logincode.
@@ -72,9 +72,9 @@ Minimale configuratie (één account):
 
 ## Privé-/LAN-ships
 
-Standaard blokkeert OpenClaw privé/interne hostnamen en IP-bereiken voor SSRF-bescherming.
+Standaard blokkeert OpenClaw privé/interne hostnamen en IP-bereiken ter bescherming tegen SSRF.
 Als je ship op een privénetwerk draait (localhost, LAN-IP of interne hostnaam),
-moet je je daar expliciet voor aanmelden:
+moet je dit expliciet inschakelen:
 
 ```json5
 {
@@ -122,7 +122,7 @@ Automatische detectie uitschakelen:
 }
 ```
 
-## Toegangscontrole
+## Toegangsbeheer
 
 DM-allowlist (leeg = geen DM's toegestaan, gebruik `ownerShip` voor goedkeuringsflow):
 
@@ -159,9 +159,9 @@ Groepsautorisatie (standaard beperkt):
 }
 ```
 
-## Eigenaar- en goedkeuringssysteem
+## Eigenaar en goedkeuringssysteem
 
-Stel een owner-ship in om goedkeuringsverzoeken te ontvangen wanneer ongeautoriseerde gebruikers proberen te communiceren:
+Stel een owner-ship in om goedkeuringsverzoeken te ontvangen wanneer niet-geautoriseerde gebruikers proberen te interacteren:
 
 ```json5
 {
@@ -173,7 +173,7 @@ Stel een owner-ship in om goedkeuringsverzoeken te ontvangen wanneer ongeautoris
 }
 ```
 
-Het owner-ship is **overal automatisch geautoriseerd** — DM-uitnodigingen worden automatisch geaccepteerd en
+De owner-ship is **overal automatisch geautoriseerd** — DM-uitnodigingen worden automatisch geaccepteerd en
 kanaalberichten zijn altijd toegestaan. Je hoeft de eigenaar niet toe te voegen aan `dmAllowlist` of
 `defaultAuthorizedShips`.
 
@@ -197,17 +197,21 @@ DM-uitnodigingen automatisch accepteren (voor ships in dmAllowlist):
 }
 ```
 
-Groepsuitnodigingen automatisch accepteren:
+Groepsuitnodigingen van vertrouwde ships automatisch accepteren:
 
 ```json5
 {
   channels: {
     tlon: {
       autoAcceptGroupInvites: true,
+      groupInviteAllowlist: ["~zod"],
     },
   },
 }
 ```
+
+`autoAcceptGroupInvites` faalt gesloten wanneer `groupInviteAllowlist` leeg is. Stel de
+allowlist in op de ships waarvan groepsuitnodigingen automatisch moeten worden geaccepteerd.
 
 ## Bezorgdoelen (CLI/cron)
 
@@ -218,30 +222,30 @@ Gebruik deze met `openclaw message send` of cron-bezorging:
 
 ## Gebundelde skill
 
-De Tlon-plugin bevat een gebundelde skill ([`@tloncorp/tlon-skill`](https://github.com/tloncorp/tlon-skill))
-die CLI-toegang biedt tot Tlon-bewerkingen:
+De Tlon-Plugin bevat een gebundelde skill ([`@tloncorp/tlon-skill`](https://github.com/tloncorp/tlon-skill))
+die CLI-toegang tot Tlon-bewerkingen biedt:
 
 - **Contacten**: profielen ophalen/bijwerken, contacten weergeven
 - **Kanalen**: weergeven, maken, berichten plaatsen, geschiedenis ophalen
 - **Groepen**: weergeven, maken, leden beheren
 - **DM's**: berichten verzenden, op berichten reageren
 - **Reacties**: emoji-reacties toevoegen aan/verwijderen van posts en DM's
-- **Instellingen**: pluginmachtigingen beheren via slash-opdrachten
+- **Instellingen**: Plugin-machtigingen beheren via slash-opdrachten
 
-De skill is automatisch beschikbaar wanneer de plugin is geïnstalleerd.
+De skill is automatisch beschikbaar wanneer de Plugin is geïnstalleerd.
 
 ## Mogelijkheden
 
-| Functie          | Status                                      |
-| ---------------- | ------------------------------------------- |
-| Directe berichten | ✅ Ondersteund                              |
-| Groepen/kanalen  | ✅ Ondersteund (standaard via vermelding)   |
-| Threads          | ✅ Ondersteund (automatische antwoorden in thread) |
-| Rich text        | ✅ Markdown omgezet naar Tlon-indeling      |
-| Afbeeldingen     | ✅ Geüpload naar Tlon-opslag                |
-| Reacties         | ✅ Via [gebundelde skill](#gebundelde-skill) |
-| Peilingen        | ❌ Nog niet ondersteund                     |
-| Native opdrachten | ✅ Ondersteund (standaard alleen eigenaar) |
+| Functie           | Status                                             |
+| ----------------- | -------------------------------------------------- |
+| Directe berichten | ✅ Ondersteund                                     |
+| Groepen/kanalen   | ✅ Ondersteund (standaard achter vermeldingspoort) |
+| Threads           | ✅ Ondersteund (automatische antwoorden in thread) |
+| Rich text         | ✅ Markdown omgezet naar Tlon-formaat              |
+| Afbeeldingen      | ✅ Geüpload naar Tlon-opslag                       |
+| Reacties          | ✅ Via [gebundelde skill](#bundled-skill)          |
+| Polls             | ❌ Nog niet ondersteund                            |
+| Native opdrachten | ✅ Ondersteund (standaard alleen eigenaar)         |
 
 ## Problemen oplossen
 
@@ -259,7 +263,7 @@ Veelvoorkomende fouten:
 - **DM's genegeerd**: afzender staat niet in `dmAllowlist` en er is geen `ownerShip` geconfigureerd voor de goedkeuringsflow.
 - **Groepsberichten genegeerd**: kanaal niet ontdekt of afzender niet geautoriseerd.
 - **Verbindingsfouten**: controleer of de ship-URL bereikbaar is; schakel `allowPrivateNetwork` in voor lokale ships.
-- **Authenticatiefouten**: controleer of de logincode actueel is (codes rouleren).
+- **Authenticatiefouten**: controleer of de logincode actueel is (codes roteren).
 
 ## Configuratiereferentie
 
@@ -267,32 +271,33 @@ Volledige configuratie: [Configuratie](/nl/gateway/configuration)
 
 Provideropties:
 
-- `channels.tlon.enabled`: opstarten van kanaal in-/uitschakelen.
+- `channels.tlon.enabled`: kanaalstart in-/uitschakelen.
 - `channels.tlon.ship`: Urbit-shipnaam van de bot (bijv. `~sampel-palnet`).
 - `channels.tlon.url`: ship-URL (bijv. `https://sampel-palnet.tlon.network`).
 - `channels.tlon.code`: ship-logincode.
 - `channels.tlon.allowPrivateNetwork`: localhost-/LAN-URL's toestaan (SSRF-bypass).
 - `channels.tlon.ownerShip`: owner-ship voor goedkeuringssysteem (altijd geautoriseerd).
-- `channels.tlon.dmAllowlist`: ships die mogen DM'en (leeg = geen).
-- `channels.tlon.autoAcceptDmInvites`: DM's van ships in de allowlist automatisch accepteren.
-- `channels.tlon.autoAcceptGroupInvites`: alle groepsuitnodigingen automatisch accepteren.
-- `channels.tlon.autoDiscoverChannels`: groepskanalen automatisch detecteren (standaard: true).
+- `channels.tlon.dmAllowlist`: ships die een DM mogen sturen (leeg = geen).
+- `channels.tlon.autoAcceptDmInvites`: DM's van ships op de allowlist automatisch accepteren.
+- `channels.tlon.autoAcceptGroupInvites`: groepsuitnodigingen van ships op de allowlist automatisch accepteren.
+- `channels.tlon.groupInviteAllowlist`: ships waarvan groepsuitnodigingen automatisch mogen worden geaccepteerd.
+- `channels.tlon.autoDiscoverChannels`: groepskanalen automatisch ontdekken (standaard: true).
 - `channels.tlon.groupChannels`: handmatig vastgezette kanaalnests.
-- `channels.tlon.defaultAuthorizedShips`: ships die voor alle kanalen geautoriseerd zijn.
-- `channels.tlon.authorization.channelRules`: autorisatieregels per kanaal.
+- `channels.tlon.defaultAuthorizedShips`: ships die voor alle kanalen zijn geautoriseerd.
+- `channels.tlon.authorization.channelRules`: auth-regels per kanaal.
 - `channels.tlon.showModelSignature`: modelnaam aan berichten toevoegen.
 
 ## Opmerkingen
 
 - Groepsantwoorden vereisen een vermelding (bijv. `~your-bot-ship`) om te reageren.
-- Thread-antwoorden: als het binnenkomende bericht in een thread staat, antwoordt OpenClaw in-thread.
+- Threadantwoorden: als het inkomende bericht in een thread staat, antwoordt OpenClaw in de thread.
 - Rich text: Markdown-opmaak (vet, cursief, code, koppen, lijsten) wordt omgezet naar de native indeling van Tlon.
 - Afbeeldingen: URL's worden geüpload naar Tlon-opslag en ingesloten als afbeeldingsblokken.
 
 ## Gerelateerd
 
-- [Kanalenoverzicht](/nl/channels) — alle ondersteunde kanalen
+- [Overzicht van kanalen](/nl/channels) — alle ondersteunde kanalen
 - [Koppelen](/nl/channels/pairing) — DM-authenticatie en koppelingsflow
-- [Groepen](/nl/channels/groups) — groepschatgedrag en vermeldingstoegang
+- [Groepen](/nl/channels/groups) — groepschatgedrag en vermeldingspoort
 - [Kanaalroutering](/nl/channels/channel-routing) — sessieroutering voor berichten
 - [Beveiliging](/nl/gateway/security) — toegangsmodel en hardening
