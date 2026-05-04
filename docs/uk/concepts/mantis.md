@@ -1,85 +1,85 @@
 ---
 read_when:
-    - Створення або запуск живої візуальної перевірки якості для помилок OpenClaw
-    - Додавання перевірки «до» та «після» для запиту на злиття
-    - Додавання сценаріїв живого транспорту для Discord, Slack, WhatsApp або інших сервісів
-    - Налагодження QA-запусків, яким потрібні знімки екрана, автоматизація браузера або доступ VNC
-summary: Mantis — це візуальна система наскрізної перевірки для відтворення помилок OpenClaw на реальних транспортних каналах, збирання доказів до і після та прикріплення артефактів до PR.
+    - Створення або запуск візуальної QA-перевірки наживо для помилок OpenClaw
+    - Додавання перевірки до та після для запиту на злиття
+    - Додавання сценаріїв Discord, Slack, WhatsApp або інших реальних транспортів
+    - Налагодження QA-запусків, які потребують знімків екрана, автоматизації браузера або доступу через VNC
+summary: Mantis — це візуальна система наскрізної перевірки для відтворення помилок OpenClaw на живих транспортах, збирання доказів до та після та прикріплення артефактів до PR.
 title: Богомол
 x-i18n:
-    generated_at: "2026-05-04T01:17:45Z"
+    generated_at: "2026-05-04T01:25:50Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3b32fdfed4ebf75083b4ca24fd41a800924c67918d2c969fa108639583284d84
+    source_hash: 5a86ab4bc876d1c53ada1c30580034165f028194a072f559eb54a898a369211d
     source_path: concepts/mantis.md
     workflow: 16
 ---
 
-Mantis — це система наскрізної перевірки OpenClaw для помилок, яким потрібні справжнє
-середовище виконання, справжній транспорт і видимий доказ. Вона запускає сценарій на відомому
+Mantis — це система наскрізної перевірки OpenClaw для помилок, яким потрібні реальне
+середовище виконання, реальний транспорт і видимий доказ. Вона запускає сценарій на відомому
 поганому ref, збирає докази, запускає той самий сценарій на кандидатному ref і
-публікує порівняння як артефакти, які maintainer може переглянути з PR або
+публікує порівняння як артефакти, які мейнтейнер може переглянути з PR або
 з локальної команди.
 
-Mantis починається з Discord, бо Discord дає нам першу lane з високою цінністю:
-справжню автентифікацію бота, справжні канали guild, реакції, threads, нативні команди та
-інтерфейс браузера, де люди можуть візуально підтвердити, що показав транспорт.
+Mantis починає з Discord, бо Discord дає нам цінну першу лінію:
+реальну автентифікацію бота, реальні канали guild, реакції, threads, нативні команди та
+браузерний інтерфейс, у якому люди можуть візуально підтвердити, що показав транспорт.
 
 ## Цілі
 
-- Відтворити помилку з GitHub issue або PR з тією самою формою транспорту, яку
-  бачать користувачі.
+- Відтворити помилку з GitHub issue або PR з тією самою формою транспорту, яку бачать
+  користувачі.
 - Зібрати артефакт **before** на базовому ref перед застосуванням виправлення.
 - Зібрати артефакт **after** на кандидатному ref після застосування виправлення.
-- Використовувати детермінований oracle, коли це можливо, наприклад читання реакції через Discord REST
+- Використовувати детермінований оракул, коли це можливо, наприклад читання реакції через Discord REST
   або перевірку transcript каналу.
-- Збирати знімки екрана, коли помилка має видиму UI-поверхню.
-- Запускати локально з керованого агентом CLI і віддалено з GitHub.
-- Зберігати достатньо стану машини для VNC-порятунку, коли вхід, автоматизація браузера або
-  автентифікація провайдера застрягає.
-- Надсилати стислий статус в операторський Discord-канал, коли запуск заблокований,
+- Збирати скриншоти, коли помилка має видиму поверхню UI.
+- Запускати локально з CLI, керованого агентом, і віддалено з GitHub.
+- Зберігати достатньо стану машини для VNC-рятування, коли вхід, браузерна автоматизація або
+  автентифікація провайдера зависає.
+- Публікувати стислий статус в операторський канал Discord, коли запуск заблоковано,
   потребує ручної допомоги через VNC або завершується.
 
 ## Нецілі
 
-- Mantis не є заміною unit tests. Запуск Mantis зазвичай має перетворитися на
-  менший regression test після того, як виправлення зрозуміле.
-- Mantis не є звичайним швидким CI gate. Він повільніший, використовує live credentials і
-  зарезервований для помилок, де live-середовище має значення.
+- Mantis не замінює модульні тести. Запуск Mantis зазвичай має перетворитися на
+  менший регресійний тест після того, як виправлення стане зрозумілим.
+- Mantis не є звичайним швидким CI-гейтом. Він повільніший, використовує живі облікові дані та
+  призначений для помилок, де живе середовище має значення.
 - Mantis не повинен вимагати людини для нормальної роботи. Ручний VNC — це шлях
-  порятунку, а не happy path.
-- Mantis не зберігає raw secrets в артефактах, логах, знімках екрана, Markdown
+  відновлення, а не основний сценарій.
+- Mantis не зберігає сирі секрети в артефактах, логах, скриншотах, Markdown
   звітах або коментарях PR.
 
-## Власність
+## Відповідальність
 
-Mantis живе в QA-стеку OpenClaw.
+Mantis живе у QA-стеку OpenClaw.
 
-- OpenClaw володіє runtime сценаріїв, transport adapters, evidence schema і
-  локальним CLI під `pnpm openclaw qa mantis`.
-- QA Lab володіє частинами live transport harness, browser capture helpers і
-  artifact writers.
-- Crabbox володіє warmed Linux machines, коли потрібна віддалена VM.
-- GitHub Actions володіє віддаленою точкою входу workflow і збереженням артефактів.
-- ClawSweeper володіє маршрутизацією коментарів GitHub: parsing maintainer commands,
-  dispatching workflow і posting final PR comment.
-- Агенти OpenClaw керують Mantis через Codex, коли сценарій потребує agentic setup,
-  debugging або stuck-state reporting.
+- OpenClaw відповідає за середовище виконання сценаріїв, транспортні адаптери, схему доказів і
+  локальний CLI у `pnpm openclaw qa mantis`.
+- QA Lab відповідає за компоненти live transport harness, помічники браузерного захоплення та
+  записувачі артефактів.
+- Crabbox відповідає за прогріті Linux-машини, коли потрібна віддалена VM.
+- GitHub Actions відповідає за віддалену точку входу workflow і збереження артефактів.
+- ClawSweeper відповідає за маршрутизацію коментарів GitHub: розбір команд мейнтейнерів,
+  запуск workflow і публікацію фінального коментаря PR.
+- Агенти OpenClaw керують Mantis через Codex, коли сценарію потрібні агентне налаштування,
+  налагодження або повідомлення про застряглий стан.
 
 Ця межа тримає знання про транспорт в OpenClaw, планування машин у
-Crabbox, а клей maintainer workflow — у ClawSweeper.
+Crabbox, а клей мейнтейнерського workflow у ClawSweeper.
 
 ## Форма команд
 
-Перша локальна команда перевіряє Discord-бота, guild, channel, надсилання повідомлення,
-надсилання реакції та шлях артефакту:
+Перша локальна команда перевіряє Discord-бота, guild, канал, надсилання повідомлення,
+надсилання реакції та шлях артефактів:
 
 ```bash
 pnpm openclaw qa mantis discord-smoke \
   --output-dir .artifacts/qa-e2e/mantis/discord-smoke
 ```
 
-Локальний before and after runner приймає таку форму:
+Локальний runner для before і after приймає таку форму:
 
 ```bash
 pnpm openclaw qa mantis run \
@@ -90,47 +90,49 @@ pnpm openclaw qa mantis run \
   --output-dir .artifacts/qa-e2e/mantis/local-discord-status-reactions
 ```
 
-Runner створює detached baseline і candidate worktrees у вихідному
-каталозі, встановлює залежності, збирає кожен ref, запускає сценарій з
-`--allow-failures`, потім записує `baseline/`, `candidate/`, `comparison.json`
-і `mantis-report.md`. Для першого Discord-сценарію успішна перевірка
-означає, що baseline status — `fail`, а candidate status — `pass`.
+Runner створює від’єднані worktree для baseline і candidate у каталозі output,
+встановлює залежності, збирає кожен ref, запускає сценарій з
+`--allow-failures`, а потім записує `baseline/`, `candidate/`, `comparison.json`
+і `mantis-report.md`. Для першого сценарію Discord успішна перевірка
+означає, що статус baseline — `fail`, а статус candidate — `pass`.
 
-Перший VM/browser primitive — це desktop smoke:
+Перша VM/браузерна примітива — desktop smoke:
 
 ```bash
 pnpm openclaw qa mantis desktop-browser-smoke \
   --output-dir .artifacts/qa-e2e/mantis/desktop-browser
 ```
 
-Він орендує або повторно використовує desktop machine Crabbox, запускає видимий браузер усередині
-VNC-сесії, захоплює desktop, витягує артефакти назад у локальний вихідний
-каталог і записує команду повторного підключення у звіт. Команда за замовчуванням
-використовує Hetzner provider, бо це перший provider із робочим desktop/VNC
-покриттям у Mantis lane. Перевизначте його через `--provider`, `--crabbox-bin` або
-`OPENCLAW_MANTIS_CRABBOX_PROVIDER`, коли запускаєте проти іншого Crabbox fleet.
+Вона орендує або повторно використовує desktop-машину Crabbox, запускає видимий браузер усередині
+VNC-сесії, захоплює desktop, забирає артефакти назад у локальний output
+каталог і записує команду перепідключення у звіт. Команда за замовчуванням
+використовує провайдера Hetzner, бо це перший провайдер із робочим desktop/VNC
+покриттям у лінії Mantis. Перевизначте це через `--provider`, `--crabbox-bin` або
+`OPENCLAW_MANTIS_CRABBOX_PROVIDER`, коли запускаєте проти іншого fleet Crabbox.
 
-Корисні desktop smoke flags:
+Корисні прапорці desktop smoke:
 
-- `--lease-id <cbx_...>` або `OPENCLAW_MANTIS_CRABBOX_LEASE_ID` повторно використовує warmed desktop.
-- `--browser-url <url>` змінює сторінку, відкриту у видимому браузері.
-- `--html-file <path>` рендерить repo-local HTML artifact у видимому браузері. Mantis використовує це, щоб захопити згенеровану Discord status-reaction timeline через справжній Crabbox desktop.
-- `--keep-lease` або `OPENCLAW_MANTIS_KEEP_VM=1` залишає новостворений passing lease відкритим для VNC inspection. Failed runs залишають lease за замовчуванням, коли його було створено, щоб оператор міг повторно підключитися.
-- `--class`, `--idle-timeout` і `--ttl` налаштовують розмір машини та lifetime lease.
+- `--lease-id <cbx_...>` або `OPENCLAW_MANTIS_CRABBOX_LEASE_ID` повторно використовує прогрітий desktop.
+- `--browser-url <url>` змінює сторінку, що відкривається у видимому браузері.
+- `--html-file <path>` рендерить repo-local HTML-артефакт у видимому браузері. Mantis використовує це, щоб захопити згенерований timeline status-reaction Discord через реальний Crabbox desktop.
+- `--keep-lease` або `OPENCLAW_MANTIS_KEEP_VM=1` залишає новостворений успішний lease відкритим для VNC-інспекції. Невдалі запуски за замовчуванням залишають lease, коли він був створений, щоб оператор міг перепідключитися.
+- `--class`, `--idle-timeout` і `--ttl` налаштовують розмір машини та час життя lease.
 
-GitHub smoke workflow — `Mantis Discord Smoke`. Before and after GitHub
-workflow для першого справжнього сценарію — `Mantis Discord Status Reactions`. Він
+GitHub smoke workflow — `Mantis Discord Smoke`. GitHub workflow before і after
+для першого реального сценарію — `Mantis Discord Status Reactions`. Він
 приймає:
 
-- `baseline_ref`: ref, який має відтворити queued-only behavior.
-- `candidate_ref`: ref, який має показати `queued -> thinking -> done`.
+- `baseline_ref`: ref, який має відтворювати поведінку queued-only.
+- `candidate_ref`: ref, який має показувати `queued -> thinking -> done`.
 
-Він checkout workflow harness ref, збирає окремі baseline і candidate
-worktrees, запускає `discord-status-reactions-tool-only` для кожного worktree і
+Він checkout-ить ref workflow harness, збирає окремі worktree baseline і candidate,
+запускає `discord-status-reactions-tool-only` для кожного worktree і
 завантажує `baseline/`, `candidate/`, `comparison.json` і `mantis-report.md` як
-Actions artifacts. Він також рендерить timeline HTML кожної lane у Crabbox
-desktop browser і публікує ці VNC screenshots поруч із deterministic
-timeline PNGs у коментарі PR.
+артефакти Actions. Він також рендерить HTML timeline кожної лінії у Crabbox
+desktop browser і публікує ці VNC-скриншоти поруч із детермінованими
+timeline PNG у коментарі PR. Workflow збирає Crabbox CLI з
+`openclaw/crabbox` main, щоб він міг використовувати поточні прапорці desktop/browser lease
+до наступного випуску бінарника Crabbox.
 
 Ви також можете запустити status-reactions run напряму з коментаря PR:
 
@@ -138,10 +140,10 @@ timeline PNGs у коментарі PR.
 @Mantis discord status reactions
 ```
 
-Comment trigger навмисно вузький. Він запускається лише на pull request
-comments від користувачів із write, maintain або admin access, і розпізнає лише
-Discord status-reaction requests. За замовчуванням він використовує відомий поганий baseline ref
-і поточний PR head SHA як candidate. Maintainers можуть перевизначити будь-який
+Тригер коментаря навмисно вузький. Він запускається лише для коментарів pull request
+від користувачів із доступом write, maintain або admin, і розпізнає лише
+запити status-reaction Discord. За замовчуванням він використовує відомий поганий baseline ref
+і поточний SHA head PR як candidate. Мейнтейнери можуть перевизначити будь-який
 ref:
 
 ```text
@@ -155,49 +157,49 @@ ref:
 @clawsweeper verify e2e discord
 ```
 
-Перша команда явна і сфокусована на сценарії. Друга пізніше може зіставляти PR
-або issue з рекомендованими Mantis scenarios на основі labels, changed files і
-ClawSweeper review findings.
+Перша команда явна й сфокусована на сценарії. Друга згодом може зіставляти PR
+або issue з рекомендованими сценаріями Mantis на основі labels, змінених файлів і
+результатів review ClawSweeper.
 
 ## Життєвий цикл запуску
 
-1. Отримати credentials.
+1. Отримати облікові дані.
 2. Виділити або повторно використати VM.
-3. Підготувати desktop/browser profile, коли сценарій потребує UI evidence.
+3. Підготувати профіль desktop/browser, коли сценарію потрібні UI-докази.
 4. Підготувати чистий checkout для baseline ref.
 5. Встановити залежності та зібрати лише те, що потрібно сценарію.
-6. Запустити дочірній OpenClaw Gateway з ізольованим state directory.
-7. Налаштувати live transport, provider, model і browser profile.
-8. Запустити сценарій і зібрати baseline evidence.
-9. Зупинити gateway і зберегти logs.
+6. Запустити дочірній OpenClaw Gateway з ізольованим каталогом стану.
+7. Налаштувати live transport, провайдера, модель і профіль браузера.
+8. Запустити сценарій і зібрати baseline-докази.
+9. Зупинити gateway і зберегти логи.
 10. Підготувати candidate ref у тій самій VM.
-11. Запустити той самий сценарій і зібрати candidate evidence.
-12. Порівняти oracle results і visual evidence.
-13. Записати Markdown, JSON, logs, screenshots і optional trace artifacts.
-14. Завантажити GitHub Actions artifacts.
-15. Опублікувати стислий PR або Discord status message.
+11. Запустити той самий сценарій і зібрати candidate-докази.
+12. Порівняти результати оракула та візуальні докази.
+13. Записати Markdown, JSON, логи, скриншоти та необов’язкові trace-артефакти.
+14. Завантажити артефакти GitHub Actions.
+15. Опублікувати стислий статус у PR або Discord.
 
 Сценарій має вміти падати двома різними способами:
 
 - **Помилку відтворено**: baseline впав очікуваним способом.
-- **Harness failure**: environment setup, credentials, Discord API, browser або
-  provider впав до того, як bug oracle став meaningful.
+- **Помилка harness**: налаштування середовища, облікові дані, Discord API, браузер або
+  провайдер впали до того, як оракул помилки став значущим.
 
-Фінальний звіт має розділяти ці випадки, щоб maintainers не плутали flaky
-environment із product behavior.
+Фінальний звіт має розділяти ці випадки, щоб мейнтейнери не плутали нестабільне
+середовище з поведінкою продукту.
 
-## Discord MVP
+## MVP Discord
 
-Перший сценарій має націлюватися на Discord status reactions у guild channels, де
-source reply delivery mode — `message_tool_only`.
+Перший сценарій має націлюватися на status reactions Discord у guild channels, де
+режим доставки source reply — `message_tool_only`.
 
-Чому це хороший seed для Mantis:
+Чому це добрий початковий сценарій для Mantis:
 
-- Це видно в Discord як reactions на triggering message.
-- Він має strong REST oracle через Discord message reaction state.
-- Він навантажує справжній OpenClaw Gateway, Discord bot auth, message dispatch,
-  source reply delivery mode, status reaction state і model turn lifecycle.
-- Він достатньо вузький, щоб тримати першу реалізацію чесною.
+- Це видно в Discord як реакції на повідомленні, яке запустило дію.
+- Він має сильний REST-оракул через стан реакцій повідомлення Discord.
+- Він перевіряє реальний OpenClaw Gateway, автентифікацію Discord-бота, dispatch повідомлень,
+  режим доставки source reply, стан status reaction і життєвий цикл model turn.
+- Він достатньо вузький, щоб перша реалізація залишалася чесною.
 
 Очікувана форма сценарію:
 
@@ -230,12 +232,12 @@ evidence:
     screenshotMessageRow: true
 ```
 
-Baseline evidence має показувати queued acknowledgement reaction, але без
-lifecycle transition у tool-only mode. Candidate evidence має показувати lifecycle
-status reactions, що виконуються, коли `messages.statusReactions.enabled` явно
-true.
+Baseline-докази мають показувати queued acknowledgement reaction, але без
+lifecycle transition у режимі tool-only. Candidate-докази мають показувати, що lifecycle
+status reactions працюють, коли `messages.statusReactions.enabled` явно
+дорівнює true.
 
-Виконуваний перший slice — це opt-in Discord live QA scenario:
+Виконуваний перший зріз — opt-in live QA сценарій Discord:
 
 ```bash
 pnpm openclaw qa discord \
@@ -248,33 +250,33 @@ pnpm openclaw qa discord \
 ```
 
 Він налаштовує SUT з always-on guild handling, `visibleReplies:
-"message_tool"`, `ackReaction: "👀"` і явними status reactions. Oracle
-polls справжнє Discord triggering message і очікує observed sequence
-`👀 -> 🤔 -> 👍`. Artifacts include `discord-qa-reaction-timelines.json`,
+"message_tool"`, `ackReaction: "👀"` і явними status reactions. Оракул
+опитує реальне Discord-повідомлення, що запустило дію, і очікує спостережену послідовність
+`👀 -> 🤔 -> 👍`. Артефакти включають `discord-qa-reaction-timelines.json`,
 `discord-status-reactions-tool-only-timeline.html` і
 `discord-status-reactions-tool-only-timeline.png`.
 
-## Наявні частини QA
+## Наявні компоненти QA
 
-Mantis має будуватися на наявному private QA stack, а не починати з
+Mantis має будуватися на наявному приватному QA-стеку, а не починати з
 нуля:
 
-- `pnpm openclaw qa discord` вже запускає live Discord lane з driver і
+- `pnpm openclaw qa discord` уже запускає live Discord line з driver і
   SUT bots.
-- Live transport runner вже записує reports і observed-message
-  artifacts у `.artifacts/qa-e2e/`.
-- Convex credential leases already provide exclusive access to shared live
+- Live transport runner уже записує звіти та observed-message
+  артефакти в `.artifacts/qa-e2e/`.
+- Credential leases Convex уже надають ексклюзивний доступ до спільних live
   transport credentials.
-- Browser control service вже підтримує screenshots, snapshots,
+- Browser control service уже підтримує скриншоти, snapshots,
   headless managed profiles і remote CDP profiles.
-- QA Lab already has a debugger UI and bus for transport-shaped testing.
+- QA Lab уже має debugger UI і bus для transport-shaped testing.
 
-Перша реалізація Mantis може бути thin before/after runner поверх цих
-частин, плюс один visual evidence layer.
+Перша реалізація Mantis може бути тонким before/after runner поверх цих
+компонентів плюс один шар візуальних доказів.
 
 ## Модель доказів
 
-Кожен запуск записує стабільний artifact directory:
+Кожен запуск записує стабільний каталог артефактів:
 
 ```text
 .artifacts/qa-e2e/mantis/<run-id>/
@@ -294,39 +296,39 @@ Mantis має будуватися на наявному private QA stack, а н
   run.log
 ```
 
-`mantis-summary.json` має бути machine-readable source of truth. Markdown
-report призначений для PR comments і human review.
+`mantis-summary.json` має бути машинозчитуваним джерелом істини. Markdown
+звіт призначений для коментарів PR і людського review.
 
-Summary must include:
+Summary має включати:
 
-- refs and SHAs tested
-- transport and scenario id
-- machine provider and machine id or lease id
-- credential source without secret values
+- перевірені refs і SHAs
+- transport і scenario id
+- machine provider і machine id або lease id
+- credential source без secret values
 - baseline result
 - candidate result
-- whether the bug reproduced on baseline
-- whether the candidate fixed it
+- чи помилка відтворилася на baseline
+- чи candidate виправив її
 - artifact paths
-- sanitized setup or cleanup issues
+- санітизовані setup або cleanup issues
 
-Screenshots are evidence, not secrets. They still need redaction discipline:
-private channel names, user names, or message content may appear. For public PRs,
-prefer GitHub Actions artifact links over inline images until the redaction story
-is stronger.
+Скриншоти — це докази, а не секрети. Однак вони все одно потребують дисципліни редагування:
+можуть з’являтися приватні назви каналів, імена користувачів або вміст повідомлень. Для публічних PR
+віддавайте перевагу посиланням на артефакти GitHub Actions замість inline images, доки історія редагування
+не стане сильнішою.
 
-## Browser And VNC
+## Браузер і VNC
 
-The browser lane has two modes:
+Browser lane має два режими:
 
-- **Headless automation**: default for CI. Chrome runs with CDP enabled, and
-  Playwright or OpenClaw browser control captures screenshots.
-- **VNC rescue**: enabled on the same VM when login, MFA, Discord anti-automation,
-  or visual debugging needs a human.
+- **Headless automation**: стандартний для CI. Chrome запускається з увімкненим CDP, а
+  Playwright або browser control OpenClaw збирає скриншоти.
+- **VNC rescue**: вмикається на тій самій VM, коли вхід, MFA, Discord anti-automation
+  або візуальне налагодження потребує людини.
 
-Профіль браузера-спостерігача Discord має бути достатньо постійним, щоб уникати
-входу під час кожного запуску, але ізольованим від особистого стану браузера. Профіль
-належить пулу машин Mantis, а не ноутбуку розробника.
+Профіль браузера спостерігача Discord має бути достатньо сталим, щоб не
+входити в систему під час кожного запуску, але ізольованим від особистого стану
+браузера. Профіль належить пулу машин Mantis, а не ноутбуку розробника.
 
 Коли Mantis застрягає, він публікує статусне повідомлення Discord із:
 
@@ -334,37 +336,38 @@ The browser lane has two modes:
 - id сценарію
 - постачальником машин
 - каталогом артефактів
-- інструкціями для підключення VNC або noVNC, якщо доступні
+- інструкціями підключення через VNC або noVNC, якщо доступно
 - коротким текстом блокера
 
-Перше приватне розгортання може публікувати ці повідомлення в наявний операторський
-канал і пізніше перейти до окремого каналу Mantis.
+Перше приватне розгортання може публікувати ці повідомлення в наявний канал
+операторів, а пізніше перейти до окремого каналу Mantis.
 
 ## Машини
 
-Mantis має віддавати перевагу AWS через Crabbox для першої віддаленої реалізації.
-Crabbox надає нам прогріті машини, відстеження оренди, гідратацію, журнали, результати та
-очищення. Якщо потужність AWS надто повільна або недоступна, додайте постачальника Hetzner
-за тим самим інтерфейсом машин.
+Mantis має надавати перевагу AWS через Crabbox для першої віддаленої реалізації.
+Crabbox надає нам прогріті машини, відстеження оренди, гідратацію, логи,
+результати та очищення. Якщо потужності AWS надто повільні або недоступні,
+додайте постачальника Hetzner за тим самим інтерфейсом машин.
 
 Мінімальні вимоги до VM:
 
-- Linux з установленим Chrome або Chromium, придатним для робочого столу
+- Linux з інсталяцією Chrome або Chromium, придатною для робочого столу
 - доступ CDP для автоматизації браузера
 - VNC або noVNC для відновлення
 - Node 22 і pnpm
 - checkout OpenClaw і кеш залежностей
 - кеш браузера Playwright Chromium, коли використовується Playwright
-- достатньо CPU й памʼяті для одного OpenClaw Gateway, одного браузера й одного запуску моделі
+- достатньо CPU та пам’яті для одного OpenClaw Gateway, одного браузера й одного модельного запуску
 - вихідний доступ до Discord, GitHub, постачальників моделей і брокера облікових даних
 
-VM не має зберігати довгоживучі сирі секрети поза очікуваними сховищами облікових даних або
-профілю браузера.
+VM не має зберігати довготривалі необроблені секрети поза очікуваними сховищами
+облікових даних або профілю браузера.
 
 ## Секрети
 
-Секрети живуть у секретах організації або репозиторію GitHub для віддалених запусків і в
-локальному файлі секретів під керуванням оператора для локальних запусків.
+Секрети зберігаються в секретах організації або репозиторію GitHub для
+віддалених запусків, а для локальних запусків — у локальному файлі секретів під
+контролем оператора.
 
 Рекомендовані назви секретів:
 
@@ -380,44 +383,47 @@ VM не має зберігати довгоживучі сирі секрети
 - `OPENCLAW_QA_MANTIS_CRABBOX_COORDINATOR`
 - `OPENCLAW_QA_MANTIS_CRABBOX_COORDINATOR_TOKEN`
 
-У довгостроковій перспективі пул облікових даних Convex має залишатися звичайним джерелом
-для облікових даних живого транспорту. Секрети GitHub завантажують брокер і резервні смуги.
-Робочий процес статусних реакцій Discord зіставляє секрети Mantis Crabbox назад зі
-змінними середовища `CRABBOX_COORDINATOR` і `CRABBOX_COORDINATOR_TOKEN`,
-яких очікує Crabbox CLI. Прості назви секретів GitHub `CRABBOX_*` залишаються
-прийнятими як резервний варіант сумісності.
+У довгостроковій перспективі пул облікових даних Convex має залишатися
+звичайним джерелом для живих транспортних облікових даних. Секрети GitHub
+початково завантажують брокер і резервні лінії. Workflow статусних реакцій
+Discord зіставляє секрети Mantis Crabbox назад зі змінними середовища
+`CRABBOX_COORDINATOR` і `CRABBOX_COORDINATOR_TOKEN`, яких очікує Crabbox CLI.
+Прості назви секретів GitHub `CRABBOX_*` залишаються прийнятими як резервна
+сумісність.
 
-Ранер Mantis ніколи не має друкувати:
+Runner Mantis ніколи не повинен друкувати:
 
 - токени ботів Discord
 - API-ключі постачальників
-- cookies браузера
+- cookie браузера
 - вміст профілів автентифікації
 - паролі VNC
-- сирі payload-и облікових даних
+- необроблені payload облікових даних
 
-Публічні завантаження артефактів також мають редагувати цільові метадані Discord, як-от id бота,
-гільдії, каналу й повідомлення. Робочий процес smoke GitHub вмикає
-`OPENCLAW_QA_REDACT_PUBLIC_METADATA=1` саме з цієї причини.
+Публічні завантаження артефактів також мають редагувати цільові метадані
+Discord, як-от id бота, guild, каналу та повідомлення. Workflow GitHub smoke
+увімкнув `OPENCLAW_QA_REDACT_PUBLIC_METADATA=1` саме з цієї причини.
 
-Якщо токен випадково вставлено в issue, PR, чат або журнал, оберніть його
-після збереження нового секрету.
+Якщо токен випадково вставили в issue, PR, чат або лог, поверніть його після
+збереження нового секрету.
 
 ## Артефакти GitHub і коментарі PR
 
-Робочі процеси Mantis мають завантажувати повний пакет доказів як короткоживучий артефакт
-Actions. Коли робочий процес запускається для звіту про баг або PR із виправленням, він також має
-публікувати відредаговані PNG-знімки екрана в гілку `qa-artifacts` і upsert-коментар
-до цього бага або PR із виправленням із вбудованими знімками до/після. Не публікуйте
-основний доказ лише в загальному PR автоматизації QA. Сирі журнали, спостережені
-повідомлення та інші обʼємні докази залишаються в артефакті Actions.
+Workflow Mantis мають завантажувати повний пакет доказів як короткоживучий
+артефакт Actions. Коли workflow запускається для звіту про баг або PR із
+виправленням, він також має публікувати відредаговані PNG-скріншоти в гілку
+`qa-artifacts` і оновлювати або створювати коментар до цього бага чи PR із
+виправленням із вбудованими скріншотами до/після. Не публікуйте основний доказ
+лише в загальному PR автоматизації QA. Необроблені логи, спостережені
+повідомлення та інші об’ємні докази залишаються в артефакті Actions.
 
-Виробничі робочі процеси мають публікувати ці коментарі через Mantis GitHub App, а не
-через `github-actions[bot]`. Зберігайте app id і приватний ключ як
-секрети GitHub Actions `MANTIS_GITHUB_APP_ID` і `MANTIS_GITHUB_APP_PRIVATE_KEY`.
-Робочий процес використовує прихований маркер як ключ upsert, оновлює цей
-коментар, коли токен може його редагувати, і створює новий коментар від Mantis, коли
-старіший маркер від бота не можна редагувати.
+Виробничі workflow мають публікувати ці коментарі через GitHub App Mantis, а не
+через `github-actions[bot]`. Зберігайте id застосунку та приватний ключ як
+секрети GitHub Actions `MANTIS_GITHUB_APP_ID` і
+`MANTIS_GITHUB_APP_PRIVATE_KEY`. Workflow використовує прихований маркер як ключ
+upsert, оновлює цей коментар, коли токен може його редагувати, і створює новий
+коментар, що належить Mantis, коли старіший маркер, який належить боту, не можна
+редагувати.
 
 Коментар PR має бути коротким і візуальним:
 
@@ -439,21 +445,21 @@ candidate showed the expected queued -> thinking -> done sequence.
 | <inline screenshot> | <inline screenshot> |
 ```
 
-Коли запуск зазнає невдачі через збій harness, коментар має повідомляти саме це,
-а не натякати, що кандидат зазнав невдачі.
+Коли запуск завершується невдало через збій harness, коментар має повідомляти
+саме це, а не натякати, що кандидат не пройшов.
 
-## Примітки до приватного розгортання
+## Нотатки щодо приватного розгортання
 
-Приватне розгортання вже може мати застосунок Mantis Discord. Повторно використайте цей
-застосунок замість створення іншого, якщо він має правильні дозволи бота
-і його можна безпечно обертати.
+Приватне розгортання вже може мати застосунок Discord для Mantis. Повторно
+використовуйте цей застосунок замість створення іншого, якщо він має потрібні
+дозволи бота й може бути безпечно ротований.
 
-Задайте початковий канал сповіщень операторів через секрети або конфігурацію
-розгортання. Спершу він може вказувати на наявний канал мейнтейнерів або операцій,
-а потім перейти до окремого каналу Mantis, щойно він зʼявиться.
+Налаштуйте початковий канал сповіщень оператора через секрети або конфігурацію
+розгортання. Спочатку він може вказувати на наявний канал мейнтейнерів або
+операцій, а потім перейти до окремого каналу Mantis, щойно він з’явиться.
 
-Не додавайте id гільдій, id каналів, токени ботів, cookies браузера або паролі VNC
-до цього документа. Зберігайте їх у секретах GitHub, брокері облікових даних або
+Не вносьте guild ids, channel ids, токени ботів, cookie браузера або паролі VNC
+у цей документ. Зберігайте їх у секретах GitHub, брокері облікових даних або
 локальному сховищі секретів оператора.
 
 ## Додавання сценарію
@@ -462,50 +468,47 @@ candidate showed the expected queued -> thinking -> done sequence.
 
 - id і назву
 - транспорт
-- необхідні облікові дані
+- потрібні облікові дані
 - політику baseline ref
 - політику candidate ref
 - патч конфігурації OpenClaw
 - кроки налаштування
 - стимул
-- очікуваний оракул baseline
-- очікуваний оракул candidate
+- очікуваний baseline oracle
+- очікуваний candidate oracle
 - цілі візуального захоплення
-- бюджет тайм-ауту
+- бюджет timeout
 - кроки очищення
 
-Сценарії мають віддавати перевагу малим типізованим оракулам:
+Сценарії мають надавати перевагу малим типізованим oracle:
 
-- стан реакції Discord для багів реакцій
+- стан реакцій Discord для багів реакцій
 - посилання на повідомлення Discord для багів тредингу
 - thread ts Slack і стан API реакцій для багів Slack
-- id повідомлень електронної пошти та заголовки для багів електронної пошти
-- знімки екрана браузера, коли UI є єдиним надійним спостережуваним сигналом
+- id повідомлень email і заголовки для багів email
+- скріншоти браузера, коли UI є єдиним надійним спостережуваним сигналом
 
-Перевірки зору мають бути додатковими. Якщо API платформи може довести баг, використовуйте
-API як оракул pass/fail і зберігайте знімки екрана для впевненості людини.
+Vision-перевірки мають бути додатковими. Якщо API платформи може довести баг,
+використовуйте API як oracle pass/fail, а скріншоти залишайте для впевненості
+людей.
 
 ## Розширення постачальників
 
-Після Discord той самий ранер може додати:
+Після Discord той самий runner може додати:
 
 - Slack: реакції, треди, згадки застосунку, модальні вікна, завантаження файлів.
-- Електронна пошта: автентифікація Gmail і трединг повідомлень за допомогою `gog`, коли конекторів
-  недостатньо.
-- WhatsApp: QR-вхід, повторна ідентифікація, доставка повідомлень, медіа, реакції.
-- Telegram: gating згадок групи, команди, реакції, де доступні.
-- Matrix: зашифровані кімнати, звʼязки тредів або відповідей, відновлення після перезапуску.
+- Email: автентифікацію Gmail і трединг повідомлень за допомогою `gog`, коли конекторів недостатньо.
+- WhatsApp: вхід через QR, повторну ідентифікацію, доставку повідомлень, медіа, реакції.
+- Telegram: gating згадок у групі, команди, реакції там, де доступно.
+- Matrix: зашифровані кімнати, зв’язки тредів або відповідей, відновлення після перезапуску.
 
-Кожен транспорт має мати один дешевий smoke-сценарій і один або кілька сценаріїв
+Кожен транспорт має мати один дешевий smoke-сценарій і один або більше сценаріїв
 класу багів. Дорогі візуальні сценарії мають залишатися opt-in.
 
 ## Відкриті питання
 
-- Який бот Discord має бути driver, а який SUT, коли повторно використовується
-  наявний бот Mantis?
-- Чи має вхід браузера-спостерігача використовувати людський акаунт Discord, тестовий акаунт
-  або лише REST-докази, доступні боту для читання, на першій фазі?
+- Який бот Discord має бути driver, а який SUT, коли наявний бот Mantis використовується повторно?
+- Чи має вхід браузера спостерігача використовувати людський обліковий запис Discord, тестовий обліковий запис або лише REST-докази, доступні для читання ботом, на першій фазі?
 - Як довго GitHub має зберігати артефакти Mantis для PR?
-- Коли ClawSweeper має автоматично рекомендувати Mantis замість очікування
-  команди мейнтейнера?
-- Чи потрібно редагувати або обрізати знімки екрана перед завантаженням для публічних PR?
+- Коли ClawSweeper має автоматично рекомендувати Mantis замість очікування команди мейнтейнера?
+- Чи мають скріншоти редагуватися або обрізатися перед завантаженням для публічних PR?
