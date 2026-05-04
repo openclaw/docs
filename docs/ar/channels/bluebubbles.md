@@ -1,49 +1,49 @@
 ---
 read_when:
     - إعداد قناة BlueBubbles
-    - استكشاف أخطاء إقران Webhook وإصلاحها
-    - تكوين iMessage على macOS
+    - استكشاف أخطاء اقتران Webhook وإصلاحها
+    - إعداد iMessage على macOS
 sidebarTitle: BlueBubbles
-summary: iMessage عبر خادم BlueBubbles على macOS (الإرسال/الاستقبال عبر REST، الكتابة، التفاعلات، الإقران، الإجراءات المتقدمة).
+summary: iMessage عبر خادم BlueBubbles على macOS (الإرسال/الاستقبال عبر REST، الكتابة، التفاعلات، الاقتران، الإجراءات المتقدمة).
 title: BlueBubbles
 x-i18n:
-    generated_at: "2026-05-01T07:37:59Z"
+    generated_at: "2026-05-04T02:21:58Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 499cc2a46db6e0eddfb897e96ec4b3e4a39ba9f2f6da8e7485c1c46562de4145
+    source_hash: 78a054da0c7c32b161997acd05914896259dd1a050e736a4c9e438a452ab6a51
     source_path: channels/bluebubbles.md
     workflow: 16
 ---
 
-الحالة: Plugin مضمن يتواصل مع خادم BlueBubbles على macOS عبر HTTP. **موصى به لتكامل iMessage** بفضل API الأغنى والإعداد الأسهل مقارنة بقناة imsg القديمة.
+الحالة: Plugin مضمّن يتواصل مع خادم BlueBubbles على macOS عبر HTTP. **موصى به لتكامل iMessage** بسبب واجهة API الأغنى وسهولة الإعداد مقارنة بقناة imsg القديمة.
 
 <Note>
-تضم إصدارات OpenClaw الحالية BlueBubbles، لذلك لا تحتاج البنيات المعبأة العادية إلى خطوة `openclaw plugins install` منفصلة.
+تضمّن إصدارات OpenClaw الحالية BlueBubbles، لذلك لا تحتاج البنى المعبأة العادية إلى خطوة `openclaw plugins install` منفصلة.
 </Note>
 
 ## نظرة عامة
 
 - يعمل على macOS عبر تطبيق BlueBubbles المساعد ([bluebubbles.app](https://bluebubbles.app)).
-- موصى به/مختبر: macOS Sequoia (15). يعمل macOS Tahoe (26)؛ التحرير معطل حاليا على Tahoe، وقد تبلغ تحديثات أيقونة المجموعة عن النجاح لكنها لا تتزامن.
-- يتواصل OpenClaw معه عبر REST API الخاص به (`GET /api/v1/ping`، `POST /message/text`، `POST /chat/:id/*`).
-- تصل الرسائل الواردة عبر Webhook؛ أما الردود الصادرة، ومؤشرات الكتابة، وإيصالات القراءة، وتفاعلات tapback فهي استدعاءات REST.
-- يتم استيعاب المرفقات والملصقات كوسائط واردة (وتعرض على الوكيل عند الإمكان).
-- يتم تسليم ردود Auto-TTS التي تنشئ صوت MP3 أو CAF كفقاعات مذكرة صوتية في iMessage بدلا من مرفقات ملفات عادية.
+- موصى به/مختبر: macOS Sequoia (15). يعمل macOS Tahoe (26)؛ التحرير معطل حاليا على Tahoe، وقد تبلغ تحديثات أيقونة المجموعة عن النجاح لكنها لا تتم مزامنتها.
+- يتواصل OpenClaw معه عبر REST API الخاصة به (`GET /api/v1/ping`، `POST /message/text`، `POST /chat/:id/*`).
+- تصل الرسائل الواردة عبر Webhook؛ أما الردود الصادرة ومؤشرات الكتابة وإيصالات القراءة وtapbacks فهي استدعاءات REST.
+- تُستوعب المرفقات والملصقات كوسائط واردة (وتُعرض على الوكيل عندما يكون ذلك ممكنا).
+- تُسلّم ردود Auto-TTS التي تنشئ صوت MP3 أو CAF كفقاعات مذكرة صوتية في iMessage بدلا من مرفقات ملفات عادية.
 - يعمل الاقتران/قائمة السماح بالطريقة نفسها مثل القنوات الأخرى (`/channels/pairing` وما إلى ذلك) مع `channels.bluebubbles.allowFrom` + رموز الاقتران.
-- تعرض التفاعلات كأحداث نظام تماما مثل Slack/Telegram حتى تتمكن الوكلاء من "ذكرها" قبل الرد.
-- الميزات المتقدمة: التحرير، إلغاء الإرسال، تسلسل الردود، تأثيرات الرسائل، إدارة المجموعات.
+- تُعرض التفاعلات كأحداث نظام تماما مثل Slack/Telegram لكي يتمكن الوكلاء من "ذكرها" قبل الرد.
+- ميزات متقدمة: التحرير، إلغاء الإرسال، تسلسل الردود، تأثيرات الرسائل، إدارة المجموعات.
 
 ## البدء السريع
 
 <Steps>
   <Step title="Install BlueBubbles">
-    ثبت خادم BlueBubbles على جهاز Mac لديك (اتبع التعليمات في [bluebubbles.app/install](https://bluebubbles.app/install)).
+    ثبّت خادم BlueBubbles على جهاز Mac الخاص بك (اتبع التعليمات في [bluebubbles.app/install](https://bluebubbles.app/install)).
   </Step>
   <Step title="Enable the web API">
-    في إعداد BlueBubbles، فعل web API واضبط كلمة مرور.
+    في إعدادات BlueBubbles، فعّل web API واضبط كلمة مرور.
   </Step>
   <Step title="Configure OpenClaw">
-    شغل `openclaw onboard` واختر BlueBubbles، أو اضبطه يدويا:
+    شغّل `openclaw onboard` واختر BlueBubbles، أو اضبطه يدويا:
 
     ```json5
     {
@@ -60,25 +60,25 @@ x-i18n:
 
   </Step>
   <Step title="Point webhooks at the gateway">
-    وجه Webhook الخاصة بـ BlueBubbles إلى Gateway لديك (مثال: `https://your-gateway-host:3000/bluebubbles-webhook?password=<password>`).
+    وجّه Webhook الخاصة بـ BlueBubbles إلى Gateway لديك (مثال: `https://your-gateway-host:3000/bluebubbles-webhook?password=<password>`).
   </Step>
   <Step title="Start the gateway">
-    ابدأ Gateway؛ سيسجل معالج Webhook ويبدأ الاقتران.
+    ابدأ Gateway؛ سيسجّل معالج Webhook ويبدأ الاقتران.
   </Step>
 </Steps>
 
 <Warning>
 **الأمان**
 
-- اضبط كلمة مرور Webhook دائما.
-- مصادقة Webhook مطلوبة دائما. يرفض OpenClaw طلبات Webhook من BlueBubbles ما لم تتضمن كلمة مرور/guid تطابق `channels.bluebubbles.password` (على سبيل المثال `?password=<password>` أو `x-password`)، بغض النظر عن بنية loopback/proxy.
+- اضبط دائما كلمة مرور Webhook.
+- مصادقة Webhook مطلوبة دائما. يرفض OpenClaw طلبات Webhook من BlueBubbles ما لم تتضمن كلمة مرور/guid تطابق `channels.bluebubbles.password` (على سبيل المثال `?password=<password>` أو `x-password`)، بغض النظر عن بنية local loopback/الوكيل.
 - يتم التحقق من مصادقة كلمة المرور قبل قراءة/تحليل أجسام Webhook الكاملة.
 
 </Warning>
 
-## إبقاء Messages.app نشطا (إعدادات VM / بلا واجهة)
+## إبقاء Messages.app نشطا (إعدادات VM / دون واجهة)
 
-قد تنتهي بعض إعدادات macOS VM / التشغيل الدائم إلى انتقال Messages.app إلى حالة "خمول" (تتوقف الأحداث الواردة حتى يتم فتح التطبيق/إحضاره إلى المقدمة). حل بديل بسيط هو **تنبيه Messages كل 5 دقائق** باستخدام AppleScript + LaunchAgent.
+قد تنتهي بعض إعدادات VM على macOS / الدائمة التشغيل إلى جعل Messages.app في حالة "خمول" (تتوقف الأحداث الواردة حتى يتم فتح التطبيق/إحضاره إلى المقدمة). حل بسيط هو **تنبيه Messages كل 5 دقائق** باستخدام AppleScript + LaunchAgent.
 
 <Steps>
   <Step title="Save the AppleScript">
@@ -132,7 +132,7 @@ x-i18n:
     </plist>
     ```
 
-    يعمل هذا **كل 300 ثانية** و**عند تسجيل الدخول**. قد يؤدي التشغيل الأول إلى ظهور مطالبات **Automation** في macOS (`osascript` → Messages). وافق عليها في جلسة المستخدم نفسها التي تشغل LaunchAgent.
+    يعمل هذا **كل 300 ثانية** و**عند تسجيل الدخول**. قد يؤدي التشغيل الأول إلى ظهور مطالبات **Automation** في macOS (`osascript` → Messages). وافق عليها في جلسة المستخدم نفسها التي تشغّل LaunchAgent.
 
   </Step>
   <Step title="Load it">
@@ -143,15 +143,15 @@ x-i18n:
   </Step>
 </Steps>
 
-## الإعداد الأولي
+## التهيئة الأولية
 
-يتوفر BlueBubbles في الإعداد الأولي التفاعلي:
+يتوفر BlueBubbles في التهيئة الأولية التفاعلية:
 
 ```
 openclaw onboard
 ```
 
-يطالب المعالج بما يلي:
+يطالبك المعالج بما يلي:
 
 <ParamField path="Server URL" type="string" required>
   عنوان خادم BlueBubbles (مثلا، `http://192.168.1.100:1234`).
@@ -163,10 +163,10 @@ openclaw onboard
   مسار نقطة نهاية Webhook.
 </ParamField>
 <ParamField path="DM policy" type="string">
-  `pairing`، أو `allowlist`، أو `open`، أو `disabled`.
+  `pairing` أو `allowlist` أو `open` أو `disabled`.
 </ParamField>
 <ParamField path="Allow list" type="string[]">
-  أرقام الهاتف، أو عناوين البريد الإلكتروني، أو أهداف الدردشة.
+  أرقام الهاتف أو عناوين البريد الإلكتروني أو أهداف الدردشة.
 </ParamField>
 
 يمكنك أيضا إضافة BlueBubbles عبر CLI:
@@ -180,8 +180,8 @@ openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --passwor
 <Tabs>
   <Tab title="DMs">
     - الافتراضي: `channels.bluebubbles.dmPolicy = "pairing"`.
-    - يتلقى المرسلون غير المعروفين رمز اقتران؛ يتم تجاهل الرسائل حتى تتم الموافقة عليها (تنتهي صلاحية الرموز بعد ساعة واحدة).
-    - وافق عبر:
+    - يتلقى المرسلون المجهولون رمز اقتران؛ ويتم تجاهل الرسائل حتى تتم الموافقة (تنتهي صلاحية الرموز بعد ساعة واحدة).
+    - الموافقة عبر:
       - `openclaw pairing list bluebubbles`
       - `openclaw pairing approve bluebubbles <CODE>`
     - الاقتران هو تبادل الرمز الافتراضي. التفاصيل: [الاقتران](/ar/channels/pairing)
@@ -189,19 +189,19 @@ openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --passwor
   </Tab>
   <Tab title="Groups">
     - `channels.bluebubbles.groupPolicy = open | allowlist | disabled` (الافتراضي: `allowlist`).
-    - يتحكم `channels.bluebubbles.groupAllowFrom` في من يمكنه التشغيل داخل المجموعات عند ضبط `allowlist`.
+    - يتحكم `channels.bluebubbles.groupAllowFrom` في من يمكنه التحفيز في المجموعات عندما يكون `allowlist` مضبوطا.
 
   </Tab>
 </Tabs>
 
 ### إثراء أسماء جهات الاتصال (macOS، اختياري)
 
-غالبا ما تتضمن Webhook مجموعات BlueBubbles عناوين المشاركين الخام فقط. إذا أردت أن يعرض سياق `GroupMembers` أسماء جهات الاتصال المحلية بدلا من ذلك، يمكنك الاشتراك في إثراء Contacts المحلي على macOS:
+غالبا ما تتضمن Webhook الخاصة بمجموعات BlueBubbles عناوين المشاركين الخام فقط. إذا أردت أن يعرض سياق `GroupMembers` أسماء جهات الاتصال المحلية بدلا من ذلك، يمكنك الاشتراك في إثراء Contacts المحلي على macOS:
 
-- يفعل `channels.bluebubbles.enrichGroupParticipantsFromContacts = true` البحث. الافتراضي: `false`.
-- لا تعمل عمليات البحث إلا بعد أن تسمح صلاحية وصول المجموعة، وتفويض الأوامر، وبوابة الذكر بمرور الرسالة.
-- يتم إثراء المشاركين الهاتفيين غير المسمين فقط.
-- تبقى أرقام الهاتف الخام كخيار احتياطي عند عدم العثور على تطابق محلي.
+- يفعّل `channels.bluebubbles.enrichGroupParticipantsFromContacts = true` البحث. الافتراضي: `false`.
+- لا تعمل عمليات البحث إلا بعد أن يسمح وصول المجموعة وتفويض الأوامر وبوابة الذكر بمرور الرسالة.
+- يتم إثراء المشاركين عبر الهاتف الذين لا يحملون أسماء فقط.
+- تبقى أرقام الهاتف الخام كبديل عند عدم العثور على تطابق محلي.
 
 ```json5
 {
@@ -217,11 +217,11 @@ openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --passwor
 
 يدعم BlueBubbles بوابة الذكر لدردشات المجموعات، بما يطابق سلوك iMessage/WhatsApp:
 
-- يستخدم `agents.list[].groupChat.mentionPatterns` (أو `messages.groupChat.mentionPatterns`) لاكتشاف الذكر.
-- عند تفعيل `requireMention` لمجموعة، لا يرد الوكيل إلا عند ذكره.
-- تتجاوز أوامر التحكم من المرسلين المفوضين بوابة الذكر.
+- يستخدم `agents.list[].groupChat.mentionPatterns` (أو `messages.groupChat.mentionPatterns`) لاكتشاف الإشارات.
+- عندما يتم تفعيل `requireMention` لمجموعة، لا يستجيب الوكيل إلا عند ذكره.
+- تتجاوز أوامر التحكم من المرسلين المخولين بوابة الذكر.
 
-إعداد لكل مجموعة:
+الإعداد لكل مجموعة:
 
 ```json5
 {
@@ -240,13 +240,13 @@ openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --passwor
 
 ### بوابة الأوامر
 
-- تتطلب أوامر التحكم (مثلا، `/config`، `/model`) تفويضا.
+- تتطلب أوامر التحكم (مثلا، `/config`، `/model`) التفويض.
 - يستخدم `allowFrom` و`groupAllowFrom` لتحديد تفويض الأوامر.
-- يمكن للمرسلين المفوضين تشغيل أوامر التحكم حتى من دون ذكر في المجموعات.
+- يمكن للمرسلين المخولين تشغيل أوامر التحكم حتى دون ذكر في المجموعات.
 
-### مطالبة نظام لكل مجموعة
+### موجّه النظام لكل مجموعة
 
-يقبل كل إدخال ضمن `channels.bluebubbles.groups.*` سلسلة `systemPrompt` اختيارية. يتم حقن القيمة في مطالبة نظام الوكيل في كل دورة تتعامل مع رسالة في تلك المجموعة، بحيث يمكنك ضبط شخصية أو قواعد سلوكية لكل مجموعة من دون تعديل مطالبات الوكيل:
+يقبل كل إدخال ضمن `channels.bluebubbles.groups.*` سلسلة `systemPrompt` اختيارية. تُحقن القيمة في موجّه نظام الوكيل في كل دورة تتعامل مع رسالة في تلك المجموعة، بحيث يمكنك ضبط شخصية أو قواعد سلوك لكل مجموعة دون تعديل موجّهات الوكيل:
 
 ```json5
 {
@@ -262,11 +262,11 @@ openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --passwor
 }
 ```
 
-يطابق المفتاح ما يبلغ عنه BlueBubbles باعتباره `chatGuid` / `chatIdentifier` / `chatId` رقمي للمجموعة، ويوفر إدخال البدل `"*"` افتراضيا لكل مجموعة لا تملك تطابقا دقيقا (النمط نفسه المستخدم بواسطة `requireMention` وسياسات الأدوات لكل مجموعة). تتفوق التطابقات الدقيقة دائما على البدل. تتجاهل الرسائل المباشرة هذا الحقل؛ استخدم تخصيص المطالبة على مستوى الوكيل أو الحساب بدلا من ذلك.
+يطابق المفتاح أيا كان ما يبلّغ عنه BlueBubbles كـ `chatGuid` / `chatIdentifier` / `chatId` رقمي للمجموعة، ويوفر إدخال البدل `"*"` قيمة افتراضية لكل مجموعة دون تطابق دقيق (النمط نفسه المستخدم بواسطة `requireMention` وسياسات الأدوات لكل مجموعة). تتغلب المطابقات الدقيقة دائما على البدل. تتجاهل الرسائل المباشرة هذا الحقل؛ استخدم تخصيص الموجّه على مستوى الوكيل أو الحساب بدلا من ذلك.
 
 #### مثال عملي: الردود المتسلسلة وتفاعلات tapback (Private API)
 
-مع تفعيل BlueBubbles Private API، تصل الرسائل الواردة مع معرفات رسائل قصيرة (على سبيل المثال `[[reply_to:5]]`) ويمكن للوكيل استدعاء `action=reply` للرد ضمن رسالة محددة أو `action=react` لإضافة tapback. تعد `systemPrompt` لكل مجموعة طريقة موثوقة لإبقاء الوكيل يختار الأداة الصحيحة:
+مع تفعيل BlueBubbles Private API، تصل الرسائل الواردة بمعرّفات رسائل قصيرة (على سبيل المثال `[[reply_to:5]]`) ويمكن للوكيل استدعاء `action=reply` لإدراج رد ضمن رسالة محددة أو `action=react` لإضافة tapback. تعد `systemPrompt` لكل مجموعة طريقة موثوقة لإبقاء الوكيل يختار الأداة الصحيحة:
 
 ```json5
 {
@@ -274,15 +274,7 @@ openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --passwor
     bluebubbles: {
       groups: {
         "iMessage;+;chat-family": {
-          systemPrompt: [
-            "When replying in this group, always call action=reply with the",
-            "[[reply_to:N]] messageId from context so your response threads",
-            "under the triggering message. Never send a new unlinked message.",
-            "",
-            "For short acknowledgements ('ok', 'got it', 'on it'), use",
-            "action=react with an appropriate tapback emoji (❤️, 👍, 😂, ‼️, ❓)",
-            "instead of sending a text reply.",
-          ].join(" "),
+          systemPrompt: "When replying in this group, always call action=reply with the [[reply_to:N]] messageId from context so your response threads under the triggering message. Never send a new unlinked message. For short acknowledgements ('ok', 'got it', 'on it'), use action=react with an appropriate tapback emoji (❤️, 👍, 😂, ‼️, ❓) instead of sending a text reply.",
         },
       },
     },
@@ -290,29 +282,29 @@ openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --passwor
 }
 ```
 
-تتطلب تفاعلات tapback والردود المتسلسلة كلاهما BlueBubbles Private API؛ راجع [الإجراءات المتقدمة](#advanced-actions) و[معرفات الرسائل](#message-ids-short-vs-full) لمعرفة الآليات الأساسية.
+تتطلب كل من تفاعلات tapback والردود المتسلسلة BlueBubbles Private API؛ راجع [الإجراءات المتقدمة](#advanced-actions) و[معرّفات الرسائل](#message-ids-short-vs-full) لمعرفة الآليات الأساسية.
 
 ## روابط محادثات ACP
 
-يمكن تحويل دردشات BlueBubbles إلى مساحات عمل ACP دائمة من دون تغيير طبقة النقل.
+يمكن تحويل دردشات BlueBubbles إلى مساحات عمل ACP دائمة دون تغيير طبقة النقل.
 
 تدفق سريع للمشغل:
 
-- شغل `/acp spawn codex --bind here` داخل الرسالة المباشرة أو دردشة المجموعة المسموح بها.
-- ستوجه الرسائل المستقبلية في محادثة BlueBubbles نفسها إلى جلسة ACP التي تم إنشاؤها.
+- شغّل `/acp spawn codex --bind here` داخل الرسالة المباشرة أو دردشة المجموعة المسموح بها.
+- تُوجّه الرسائل المستقبلية في محادثة BlueBubbles نفسها إلى جلسة ACP المنشأة.
 - يعيد `/new` و`/reset` ضبط جلسة ACP المرتبطة نفسها في مكانها.
-- يغلق `/acp close` جلسة ACP ويزيل الربط.
+- يغلق `/acp close` جلسة ACP ويزيل الرابط.
 
-تدعم أيضا الروابط الدائمة المضبوطة عبر إدخالات `bindings[]` ذات المستوى الأعلى مع `type: "acp"` و`match.channel: "bluebubbles"`.
+تُدعم الروابط الدائمة المضبوطة أيضا عبر إدخالات `bindings[]` في المستوى الأعلى مع `type: "acp"` و`match.channel: "bluebubbles"`.
 
 يمكن أن يستخدم `match.peer.id` أي صيغة هدف مدعومة في BlueBubbles:
 
-- مقبض رسالة مباشرة مطبع مثل `+15555550123` أو `user@example.com`
+- معرّف DM مطبّع مثل `+15555550123` أو `user@example.com`
 - `chat_id:<id>`
 - `chat_guid:<guid>`
 - `chat_identifier:<identifier>`
 
-للروابط المستقرة للمجموعات، فضل `chat_id:*` أو `chat_identifier:*`.
+لروابط المجموعات المستقرة، فضّل `chat_id:*` أو `chat_identifier:*`.
 
 مثال:
 
@@ -348,9 +340,9 @@ openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --passwor
 
 ## الكتابة + إيصالات القراءة
 
-- **مؤشرات الكتابة**: تُرسل تلقائياً قبل إنشاء الرد وأثناءه.
+- **مؤشرات الكتابة**: تُرسل تلقائيا قبل وأثناء إنشاء الرد.
 - **إيصالات القراءة**: يتحكم بها `channels.bluebubbles.sendReadReceipts` (الافتراضي: `true`).
-- **مؤشرات الكتابة**: يرسل OpenClaw أحداث بدء الكتابة؛ ويمسح BlueBubbles حالة الكتابة تلقائياً عند الإرسال أو انتهاء المهلة (الإيقاف اليدوي عبر DELETE غير موثوق).
+- **مؤشرات الكتابة**: يرسل OpenClaw أحداث بدء الكتابة؛ يمسح BlueBubbles الكتابة تلقائيا عند الإرسال أو انتهاء المهلة (الإيقاف اليدوي عبر DELETE غير موثوق).
 
 ```json5
 {
@@ -364,7 +356,7 @@ openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --passwor
 
 ## الإجراءات المتقدمة
 
-يدعم BlueBubbles إجراءات رسائل متقدمة عند تفعيلها في الإعدادات:
+يدعم BlueBubbles إجراءات الرسائل المتقدمة عند تمكينها في الإعدادات:
 
 ```json5
 {
@@ -389,34 +381,34 @@ openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --passwor
 ```
 
 <AccordionGroup>
-  <Accordion title="الإجراءات المتاحة">
-    - **react**: أضف/أزل تفاعلات tapback (`messageId`، `emoji`، `remove`). مجموعة tapback الأصلية في iMessage هي `love`، و`like`، و`dislike`، و`laugh`، و`emphasize`، و`question`. عندما يختار وكيل رمزاً تعبيرياً خارج تلك المجموعة (مثلاً `👀`)، تعود أداة التفاعل إلى `love` كي يستمر عرض tapback بدلاً من فشل الطلب بالكامل. لا تزال تفاعلات الإقرار المكوّنة تتحقق بصرامة وتُرجع خطأ عند القيم غير المعروفة.
+  <Accordion title="Available actions">
+    - **react**: أضف/أزل تفاعلات tapback (`messageId`، `emoji`، `remove`). مجموعة tapback الأصلية في iMessage هي `love` و`like` و`dislike` و`laugh` و`emphasize` و`question`. عندما يختار الوكيل رمزًا تعبيريًا خارج هذه المجموعة (مثل `👀`)، تعود أداة التفاعل إلى `love` بحيث يظل tapback معروضًا بدلًا من فشل الطلب بالكامل. تظل تفاعلات الإقرار المكوّنة تتحقق بصرامة وتعرض خطأ عند القيم غير المعروفة.
     - **edit**: عدّل رسالة مرسلة (`messageId`، `text`).
     - **unsend**: ألغِ إرسال رسالة (`messageId`).
     - **reply**: رد على رسالة محددة (`messageId`، `text`، `to`).
     - **sendWithEffect**: أرسل مع تأثير iMessage (`text`، `to`، `effectId`).
-    - **renameGroup**: أعد تسمية دردشة جماعية (`chatGuid`، `displayName`).
-    - **setGroupIcon**: عيّن أيقونة/صورة دردشة جماعية (`chatGuid`، `media`) — غير مستقرة على macOS 26 Tahoe (قد تُرجع API نجاحاً لكن الأيقونة لا تتزامن).
-    - **addParticipant**: أضف شخصاً إلى مجموعة (`chatGuid`، `address`).
-    - **removeParticipant**: أزل شخصاً من مجموعة (`chatGuid`، `address`).
-    - **leaveGroup**: غادر دردشة جماعية (`chatGuid`).
+    - **renameGroup**: أعد تسمية محادثة جماعية (`chatGuid`، `displayName`).
+    - **setGroupIcon**: عيّن أيقونة/صورة محادثة جماعية (`chatGuid`، `media`) — غير مستقر على macOS 26 Tahoe (قد تعيد API نجاحًا لكن الأيقونة لا تتزامن).
+    - **addParticipant**: أضف شخصًا إلى مجموعة (`chatGuid`، `address`).
+    - **removeParticipant**: أزل شخصًا من مجموعة (`chatGuid`، `address`).
+    - **leaveGroup**: غادر محادثة جماعية (`chatGuid`).
     - **upload-file**: أرسل وسائط/ملفات (`to`، `buffer`، `filename`، `asVoice`).
-      - المذكرات الصوتية: اضبط `asVoice: true` مع صوت **MP3** أو **CAF** للإرسال كرسالة صوتية في iMessage. يحوّل BlueBubbles ‏MP3 → CAF عند إرسال المذكرات الصوتية.
+      - المذكرات الصوتية: عيّن `asVoice: true` مع صوت **MP3** أو **CAF** للإرسال كرسالة صوتية في iMessage. يحوّل BlueBubbles ‏MP3 → CAF عند إرسال المذكرات الصوتية.
     - الاسم المستعار القديم: لا يزال `sendAttachment` يعمل، لكن `upload-file` هو اسم الإجراء المعتمد.
 
   </Accordion>
 </AccordionGroup>
 
-### معرّفات الرسائل (قصيرة مقابل كاملة)
+### معرّفات الرسائل (قصيرة أم كاملة)
 
 قد يعرض OpenClaw معرّفات رسائل _قصيرة_ (مثل `1`، `2`) لتوفير الرموز.
 
 - يمكن أن تكون `MessageSid` / `ReplyToId` معرّفات قصيرة.
-- تحتوي `MessageSidFull` / `ReplyToIdFull` على المعرّفات الكاملة للمزوّد.
-- المعرّفات القصيرة موجودة في الذاكرة؛ يمكن أن تنتهي صلاحيتها عند إعادة التشغيل أو إخلاء ذاكرة التخزين المؤقت.
-- تقبل الإجراءات `messageId` قصيراً أو كاملاً، لكن المعرّفات القصيرة ستُرجع خطأ إذا لم تعد متاحة.
+- تحتوي `MessageSidFull` / `ReplyToIdFull` على المعرّفات الكاملة من المزوّد.
+- المعرّفات القصيرة موجودة في الذاكرة؛ ويمكن أن تنتهي صلاحيتها عند إعادة التشغيل أو إخراجها من ذاكرة التخزين المؤقت.
+- تقبل الإجراءات `messageId` قصيرًا أو كاملًا، لكن المعرّفات القصيرة ستعرض خطأ إذا لم تعد متاحة.
 
-استخدم المعرّفات الكاملة للأتمتة والتخزين الدائمين:
+استخدم المعرّفات الكاملة للأتمتات والتخزين الدائمين:
 
 - القوالب: `{{MessageSidFull}}`، `{{ReplyToIdFull}}`
 - السياق: `MessageSidFull` / `ReplyToIdFull` في الحمولات الواردة
@@ -427,30 +419,30 @@ openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --passwor
 
 ## دمج الرسائل المباشرة المقسّمة عند الإرسال (أمر + URL في تركيب واحد)
 
-عندما يكتب مستخدم أمراً وURL معاً في iMessage — مثل `Dump https://example.com/article` — تقسّم Apple الإرسال إلى **تسليمين منفصلين عبر Webhook**:
+عندما يكتب مستخدم أمرًا وURL معًا في iMessage — مثل `Dump https://example.com/article` — تقسّم Apple الإرسال إلى **تسليمين منفصلين عبر Webhook**:
 
 1. رسالة نصية (`"Dump"`).
-2. فقاعة معاينة URL (`"https://..."`) مع صور معاينة OG كمرفقات.
+2. فقاعة معاينة URL ‏(`"https://..."`) مع صور معاينة OG كمرفقات.
 
-يصل Webhookان إلى OpenClaw بفاصل يقارب 0.8-2.0 ثانية في معظم الإعدادات. من دون الدمج، يتلقى الوكيل الأمر وحده في الدور 1، ويرد (غالباً "أرسل لي URL")، ولا يرى URL إلا في الدور 2 — وعندها يكون سياق الأمر قد فُقد بالفعل.
+يصل Webhookان إلى OpenClaw بفاصل يقارب 0.8-2.0 ثانية في معظم الإعدادات. من دون الدمج، يتلقى الوكيل الأمر وحده في الجولة 1، ويرد (غالبًا "أرسل لي URL")، ولا يرى URL إلا في الجولة 2 — وعندها يكون سياق الأمر قد فُقد بالفعل.
 
-يختار `channels.bluebubbles.coalesceSameSenderDms` دمج Webhookات متتالية من المرسل نفسه في الرسائل المباشرة ضمن دور وكيل واحد. تستمر الدردشات الجماعية في استخدام مفتاح لكل رسالة كي تُحفظ بنية الأدوار متعددة المستخدمين.
+يتيح `channels.bluebubbles.coalesceSameSenderDms` دمج Webhooks المتتابعة من المرسل نفسه في رسالة مباشرة ضمن جولة وكيل واحدة. تستمر المحادثات الجماعية في استخدام مفتاح لكل رسالة بحيث يُحافظ على بنية الجولات متعددة المستخدمين.
 
 <Tabs>
-  <Tab title="متى تفعّله">
+  <Tab title="When to enable">
     فعّله عندما:
 
-    - توفر Skills تتوقع `command + payload` في رسالة واحدة (تفريغ، لصق، حفظ، صف انتظار، إلخ).
-    - يلصق مستخدموك URLات أو صوراً أو محتوى طويلاً إلى جانب الأوامر.
-    - يمكنك قبول زمن انتظار إضافي في دور الرسالة المباشرة (انظر أدناه).
+    - تشحن Skills تتوقع `command + payload` في رسالة واحدة (dump، paste، save، queue، وما إلى ذلك).
+    - يلصق مستخدموك عناوين URL أو صورًا أو محتوى طويلًا إلى جانب الأوامر.
+    - يمكنك قبول التأخير الإضافي في جولة الرسائل المباشرة (انظر أدناه).
 
-    اتركه معطلاً عندما:
+    اتركه معطّلًا عندما:
 
-    - تحتاج إلى أقل زمن انتظار للأوامر في مشغلات الرسائل المباشرة ذات الكلمة الواحدة.
-    - تكون كل تدفقاتك أوامر لمرة واحدة بلا متابعات حمولة.
+    - تحتاج إلى أدنى زمن استجابة للأوامر لمشغلات الرسائل المباشرة ذات الكلمة الواحدة.
+    - تكون كل تدفقاتك أوامر من خطوة واحدة من دون متابعات حمولة.
 
   </Tab>
-  <Tab title="التفعيل">
+  <Tab title="Enabling">
     ```json5
     {
       channels: {
@@ -461,7 +453,7 @@ openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --passwor
     }
     ```
 
-    عند تشغيل الراية وعدم وجود `messages.inbound.byChannel.bluebubbles` صريح، تتسع نافذة debounce إلى **2500 ms** (الافتراضي لعدم الدمج هو 500 ms). النافذة الأوسع مطلوبة — وتيرة الإرسال المقسّم لدى Apple التي تبلغ 0.8-2.0 ثانية لا تناسب الافتراضي الأضيق.
+    عند تشغيل العلامة وعدم وجود `messages.inbound.byChannel.bluebubbles` صريح، تتسع نافذة debounce إلى **2500 ms** (الافتراضي لعدم الدمج هو 500 ms). النافذة الأوسع مطلوبة — إيقاع الإرسال المقسّم من Apple البالغ 0.8-2.0 ثانية لا يتناسب مع الافتراضي الأضيق.
 
     لضبط النافذة بنفسك:
 
@@ -480,62 +472,62 @@ openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --passwor
     ```
 
   </Tab>
-  <Tab title="المفاضلات">
-    - **زمن انتظار إضافي لأوامر التحكم في الرسائل المباشرة.** عند تشغيل الراية، تنتظر رسائل أوامر التحكم في الرسائل المباشرة (مثل `Dump` و`Save` وغيرهما) الآن حتى نافذة debounce قبل الإرسال، تحسباً لوصول Webhook حمولة. تحتفظ أوامر الدردشات الجماعية بالإرسال الفوري.
-    - **المخرجات المدمجة محدودة** — النص المدمج محدود بـ 4000 حرف مع علامة `…[truncated]` صريحة؛ والمرفقات محدودة بـ 20؛ وإدخالات المصدر محدودة بـ 10 (يُحتفظ بالأول زائد الأحدث بعد ذلك). لا يزال كل `messageId` مصدر يصل إلى إزالة التكرار الواردة، لذلك يُتعرّف على أي إعادة تشغيل لاحقة من MessagePoller لأي حدث فردي كتكرار.
-    - **اختياري، لكل قناة.** لا تتأثر القنوات الأخرى (Telegram، WhatsApp، Slack، …).
+  <Tab title="Trade-offs">
+    - **تأخير إضافي لأوامر التحكم في الرسائل المباشرة.** عند تشغيل العلامة، تنتظر رسائل أوامر التحكم في الرسائل المباشرة (مثل `Dump` و`Save` وما إلى ذلك) الآن حتى نافذة debounce قبل الإرسال، تحسبًا لوصول Webhook للحمولة. تحافظ أوامر المحادثات الجماعية على الإرسال الفوري.
+    - **المخرجات المدمجة محدودة** — النص المدمج محدد عند 4000 حرف مع علامة `…[truncated]` صريحة؛ والمرفقات محددة عند 20؛ وإدخالات المصدر محددة عند 10 (يُحتفظ بالأول زائد الأحدث بعد ذلك). لا يزال كل `messageId` للمصدر يصل إلى إزالة التكرار الواردة بحيث يُعرَف أي تكرار لاحق من MessagePoller لأي حدث فردي كتكرار.
+    - **اختياري، لكل قناة.** لا تتأثر القنوات الأخرى (Telegram وWhatsApp وSlack و…).
 
   </Tab>
 </Tabs>
 
 ### السيناريوهات وما يراه الوكيل
 
-| ما يركّبه المستخدم                                                 | ما تسلّمه Apple           | الراية متوقفة (الافتراضي)              | الراية مفعلة + نافذة 2500 ms                                             |
+| ما يؤلفه المستخدم                                                  | ما تسلمه Apple            | العلامة متوقفة (افتراضي)                | العلامة مشغلة + نافذة 2500 ms                                           |
 | ------------------------------------------------------------------ | ------------------------- | --------------------------------------- | ----------------------------------------------------------------------- |
-| `Dump https://example.com` (إرسال واحد)                            | Webhookان بفاصل ~1 ثانية  | دورا وكيل: "Dump" وحدها، ثم URL        | دور واحد: نص مدمج `Dump https://example.com`                            |
-| `Save this 📎image.jpg caption` (مرفق + نص)                        | Webhookان                 | دوران                                  | دور واحد: نص + صورة                                                     |
-| `/status` (أمر مستقل)                                             | Webhook واحد              | إرسال فوري                             | **انتظار حتى النافذة، ثم إرسال**                                        |
-| URL ملصق وحده                                                      | Webhook واحد              | إرسال فوري                             | إرسال فوري (إدخال واحد فقط في الحاوية)                                  |
-| نص + URL أُرسلا كرسالتين منفصلتين مقصودتين، بفاصل دقائق          | Webhookان خارج النافذة    | دوران                                  | دوران (تنتهي النافذة بينهما)                                            |
-| تدفق سريع (>10 رسائل مباشرة صغيرة داخل النافذة)                   | N Webhookات               | N أدوار                                | دور واحد، مخرجات محدودة (الأول + الأحدث، مع تطبيق حدود النص/المرفقات) |
+| `Dump https://example.com` (إرسال واحد)                            | 2 Webhooks بفاصل ~1 ثانية | جولتا وكيل: "Dump" وحدها، ثم URL        | جولة واحدة: نص مدمج `Dump https://example.com`                          |
+| `Save this 📎image.jpg caption` (مرفق + نص)                        | 2 Webhooks                | جولتان                                 | جولة واحدة: نص + صورة                                                   |
+| `/status` (أمر مستقل)                                              | 1 Webhook                 | إرسال فوري                              | **انتظر حتى النافذة، ثم أرسل**                                          |
+| URL ملصوق وحده                                                     | 1 Webhook                 | إرسال فوري                              | إرسال فوري (إدخال واحد فقط في الحاوية)                                  |
+| نص + URL أُرسلا كرسالتين منفصلتين عمدًا، بفاصل دقائق              | 2 Webhooks خارج النافذة   | جولتان                                 | جولتان (تنتهي النافذة بينهما)                                           |
+| تدفق سريع (>10 رسائل مباشرة صغيرة داخل النافذة)                   | N Webhooks                | N جولات                                | جولة واحدة، مخرجات محدودة (الأول + الأحدث، مع تطبيق حدود النص/المرفقات) |
 
 ### استكشاف أخطاء دمج الإرسال المقسّم وإصلاحها
 
-إذا كانت الراية مفعلة ولا تزال عمليات الإرسال المقسّم تصل كدورين، فتحقق من كل طبقة:
+إذا كانت العلامة مشغلة ولا تزال الإرسالات المقسّمة تصل كجولتين، فتحقق من كل طبقة:
 
 <AccordionGroup>
-  <Accordion title="تم تحميل الإعدادات فعلاً">
+  <Accordion title="Config actually loaded">
     ```
     grep coalesceSameSenderDms ~/.openclaw/openclaw.json
     ```
 
-    ثم `openclaw gateway restart` — تُقرأ الراية عند إنشاء سجل debouncer.
+    ثم `openclaw gateway restart` — تُقرأ العلامة عند إنشاء سجل debouncer.
 
   </Accordion>
-  <Accordion title="نافذة debounce واسعة بما يكفي لإعدادك">
-    انظر إلى سجل خادم BlueBubbles ضمن `~/Library/Logs/bluebubbles-server/main.log`:
+  <Accordion title="Debounce window wide enough for your setup">
+    انظر إلى سجل خادم BlueBubbles تحت `~/Library/Logs/bluebubbles-server/main.log`:
 
     ```
     grep -E "Dispatching event to webhook" main.log | tail -20
     ```
 
-    قِس الفاصل بين إرسال النص بنمط `"Dump"` وإرسال `"https://..."; Attachments:` الذي يليه. ارفع `messages.inbound.byChannel.bluebubbles` ليغطي ذلك الفاصل براحة.
+    قِس الفجوة بين إرسال النص بنمط `"Dump"` وإرسال `"https://..."; Attachments:` الذي يليه. ارفع `messages.inbound.byChannel.bluebubbles` ليغطي تلك الفجوة بشكل مريح.
 
   </Accordion>
-  <Accordion title="طوابع JSONL الزمنية للجلسة ≠ وصول Webhook">
-    تعكس طوابع أحداث الجلسة الزمنية (`~/.openclaw/agents/<id>/sessions/*.jsonl`) الوقت الذي يسلّم فيه Gateway رسالة إلى الوكيل، **وليس** وقت وصول Webhook. تعني رسالة ثانية موضوعة في الصف وموسومة بـ `[Queued messages while agent was busy]` أن الدور الأول كان لا يزال جارياً عند وصول Webhook الثاني — وكانت حاوية الدمج قد فُرغت بالفعل. اضبط النافذة مقابل سجل خادم BB، وليس سجل الجلسة.
+  <Accordion title="Session JSONL timestamps ≠ webhook arrival">
+    تعكس طوابع وقت أحداث الجلسة (`~/.openclaw/agents/<id>/sessions/*.jsonl`) وقت تسليم Gateway رسالة إلى الوكيل، **وليس** وقت وصول Webhook. تعني الرسالة الثانية في الطابور والموسومة `[Queued messages while agent was busy]` أن الجولة الأولى كانت لا تزال قيد التشغيل عندما وصل Webhook الثاني — وكانت حاوية الدمج قد أُفرغت بالفعل. اضبط النافذة مقابل سجل خادم BB، وليس سجل الجلسة.
   </Accordion>
-  <Accordion title="ضغط الذاكرة يبطئ إرسال الرد">
-    على الأجهزة الأصغر (8 GB)، قد تستغرق أدوار الوكيل وقتاً كافياً لتُفرغ حاوية الدمج قبل اكتمال الرد، وينتهي URL كدور ثانٍ في الصف. تحقق من `memory_pressure` و`ps -o rss -p $(pgrep openclaw-gateway)`؛ إذا كان Gateway يتجاوز ~500 MB RSS وكان الضاغط نشطاً، فأغلق العمليات الثقيلة الأخرى أو انتقل إلى مضيف أكبر.
+  <Accordion title="Memory pressure slowing reply dispatch">
+    على الأجهزة الأصغر (8 GB)، يمكن أن تستغرق جولات الوكيل وقتًا كافيًا بحيث تُفرغ حاوية الدمج قبل اكتمال الرد، ويصل URL كجولة ثانية في الطابور. تحقق من `memory_pressure` و`ps -o rss -p $(pgrep openclaw-gateway)`؛ إذا كان Gateway فوق ~500 MB RSS وكان الضاغط نشطًا، فأغلق العمليات الثقيلة الأخرى أو انتقل إلى مضيف أكبر.
   </Accordion>
-  <Accordion title="إرسالات اقتباس الرد مسار مختلف">
-    إذا نقر المستخدم على `Dump` كـ **رد** على فقاعة URL موجودة (يعرض iMessage شارة "1 Reply" على فقاعة Dump)، فإن URL موجود في `replyToBody`، وليس في Webhook ثانٍ. لا ينطبق الدمج — فهذا شأن Skill/المطالبة، وليس شأن debouncer.
+  <Accordion title="Reply-quote sends are a different path">
+    إذا نقر المستخدم على `Dump` كـ **رد** على فقاعة URL موجودة (يعرض iMessage شارة "1 Reply" على فقاعة Dump)، فإن URL يعيش في `replyToBody`، وليس في Webhook ثانٍ. لا ينطبق الدمج — هذه مسألة skill/موجه، وليست مسألة debouncer.
   </Accordion>
 </AccordionGroup>
 
 ## بث الكتل
 
-تحكم فيما إذا كانت الردود تُرسل كرسالة واحدة أو تُبث في كتل:
+تحكم في ما إذا كانت الردود تُرسل كرسالة واحدة أم تُبث في كتل:
 
 ```json5
 {
@@ -550,50 +542,50 @@ openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --passwor
 ## الوسائط + الحدود
 
 - تُنزّل المرفقات الواردة وتُخزّن في ذاكرة التخزين المؤقت للوسائط.
-- حد الوسائط عبر `channels.bluebubbles.mediaMaxMb` للوسائط الواردة والصادرة (الافتراضي: 8 MB).
-- يُقسّم النص الصادر إلى `channels.bluebubbles.textChunkLimit` (الافتراضي: 4000 حرف).
+- حد الوسائط عبر `channels.bluebubbles.mediaMaxMb` للوسائط الواردة والصادرة (افتراضيًا: 8 MB).
+- يُقسّم النص الصادر إلى `channels.bluebubbles.textChunkLimit` (افتراضيًا: 4000 حرف).
 
 ## مرجع الإعدادات
 
 الإعدادات الكاملة: [الإعدادات](/ar/gateway/configuration)
 
 <AccordionGroup>
-  <Accordion title="الاتصال وWebhook">
-    - `channels.bluebubbles.enabled`: فعّل/عطّل القناة.
-    - `channels.bluebubbles.serverUrl`: عنوان URL الأساسي لـ BlueBubbles REST API.
+  <Accordion title="Connection and webhook">
+    - `channels.bluebubbles.enabled`: تمكين/تعطيل القناة.
+    - `channels.bluebubbles.serverUrl`: عنوان URL الأساسي لـ REST API في BlueBubbles.
     - `channels.bluebubbles.password`: كلمة مرور API.
-    - `channels.bluebubbles.webhookPath`: مسار نقطة نهاية Webhook (الافتراضي: `/bluebubbles-webhook`).
+    - `channels.bluebubbles.webhookPath`: مسار نقطة نهاية Webhook (افتراضيًا: `/bluebubbles-webhook`).
 
   </Accordion>
-  <Accordion title="سياسة الوصول">
-    - `channels.bluebubbles.dmPolicy`: `pairing | allowlist | open | disabled` (الافتراضي: `pairing`).
-    - `channels.bluebubbles.allowFrom`: قائمة سماح الرسائل المباشرة (المعرّفات، عناوين البريد الإلكتروني، أرقام E.164، `chat_id:*`، `chat_guid:*`).
-    - `channels.bluebubbles.groupPolicy`: `open | allowlist | disabled` (الافتراضي: `allowlist`).
-    - `channels.bluebubbles.groupAllowFrom`: قائمة سماح مرسلي المجموعات.
-    - `channels.bluebubbles.enrichGroupParticipantsFromContacts`: على macOS، إثراء مشاركي المجموعات غير المسمّين اختيارياً من جهات الاتصال المحلية بعد اجتياز بوابات السماح. الافتراضي: `false`.
-    - `channels.bluebubbles.groups`: إعدادات لكل مجموعة (`requireMention`، إلخ).
+  <Accordion title="Access policy">
+    - `channels.bluebubbles.dmPolicy`: `pairing | allowlist | open | disabled` (افتراضيًا: `pairing`).
+    - `channels.bluebubbles.allowFrom`: قائمة سماح الرسائل المباشرة (المعرّفات، رسائل البريد الإلكتروني، أرقام E.164، `chat_id:*`، `chat_guid:*`).
+    - `channels.bluebubbles.groupPolicy`: `open | allowlist | disabled` (افتراضيًا: `allowlist`).
+    - `channels.bluebubbles.groupAllowFrom`: قائمة سماح مرسلي المجموعة.
+    - `channels.bluebubbles.enrichGroupParticipantsFromContacts`: على macOS، إثراء اختياري للمشاركين غير المسمّين في المجموعة من جهات الاتصال المحلية بعد اجتياز البوابات. الافتراضي: `false`.
+    - `channels.bluebubbles.groups`: إعداد لكل مجموعة (`requireMention`، وما إلى ذلك).
 
   </Accordion>
-  <Accordion title="التسليم والتقسيم إلى أجزاء">
+  <Accordion title="التسليم والتقسيم">
     - `channels.bluebubbles.sendReadReceipts`: إرسال إيصالات القراءة (الافتراضي: `true`).
-    - `channels.bluebubbles.blockStreaming`: تفعيل البث على شكل كتل (الافتراضي: `false`؛ مطلوب للردود المتدفقة).
+    - `channels.bluebubbles.blockStreaming`: تفعيل البث الكتلي (الافتراضي: `false`؛ مطلوب للردود المتدفقة).
     - `channels.bluebubbles.textChunkLimit`: حجم الجزء الصادر بالأحرف (الافتراضي: 4000).
-    - `channels.bluebubbles.sendTimeoutMs`: مهلة كل طلب بالمللي ثانية لإرسال النصوص الصادرة عبر `/api/v1/message/text` (الافتراضي: 30000). ارفعها في إعدادات macOS 26 حيث يمكن أن تتوقف عمليات إرسال iMessage عبر Private API لمدة تزيد عن 60 ثانية داخل إطار عمل iMessage؛ مثلًا `45000` أو `60000`. تحافظ المجسات، وعمليات البحث في الدردشات، والتفاعلات، والتعديلات، وفحوصات السلامة حاليًا على الافتراضي الأقصر البالغ 10 ثوانٍ؛ ومن المخطط توسيع التغطية لتشمل التفاعلات والتعديلات في متابعة لاحقة. تجاوز لكل حساب: `channels.bluebubbles.accounts.<accountId>.sendTimeoutMs`.
-    - `channels.bluebubbles.chunkMode`: يقسم `length` (الافتراضي) فقط عند تجاوز `textChunkLimit`؛ ويقسم `newline` عند الأسطر الفارغة (حدود الفقرات) قبل التقسيم حسب الطول.
+    - `channels.bluebubbles.sendTimeoutMs`: مهلة كل طلب بالمللي ثانية لإرسال النصوص الصادرة عبر `/api/v1/message/text` (الافتراضي: 30000). ارفعها في إعدادات macOS 26 حيث يمكن أن تتوقف عمليات إرسال iMessage عبر Private API لأكثر من 60 ثانية داخل إطار عمل iMessage؛ على سبيل المثال `45000` أو `60000`. تحتفظ المجسات وعمليات البحث في الدردشة والتفاعلات والتعديلات وفحوصات السلامة حاليًا بالمهلة الافتراضية الأقصر وهي 10 ثوانٍ؛ ومن المخطط توسيع التغطية لتشمل التفاعلات والتعديلات كمتابعة. تجاوز لكل حساب: `channels.bluebubbles.accounts.<accountId>.sendTimeoutMs`.
+    - `channels.bluebubbles.chunkMode`: يقسّم `length` (الافتراضي) فقط عند تجاوز `textChunkLimit`؛ ويقسّم `newline` عند الأسطر الفارغة (حدود الفقرات) قبل التقسيم حسب الطول.
 
   </Accordion>
   <Accordion title="الوسائط والسجل">
     - `channels.bluebubbles.mediaMaxMb`: حد الوسائط الواردة/الصادرة بالميغابايت (الافتراضي: 8).
-    - `channels.bluebubbles.mediaLocalRoots`: قائمة سماح صريحة للأدلة المحلية المطلقة المسموح بها لمسارات الوسائط المحلية الصادرة. يتم رفض إرسال المسارات المحلية افتراضيًا ما لم يتم تكوين هذا. تجاوز لكل حساب: `channels.bluebubbles.accounts.<accountId>.mediaLocalRoots`.
-    - `channels.bluebubbles.coalesceSameSenderDms`: دمج Webhook للرسائل المباشرة المتتالية من المرسل نفسه في دورة وكيل واحدة، بحيث تصل عملية الإرسال المقسمة من Apple للنص+عنوان URL كرسالة واحدة (الافتراضي: `false`). راجع [دمج الرسائل المباشرة المقسمة](#coalescing-split-send-dms-command--url-in-one-composition) للاطلاع على السيناريوهات، وضبط النافذة، والمفاضلات. يوسع نافذة إزالة الارتداد الافتراضية للوارد من 500 مللي ثانية إلى 2500 مللي ثانية عند التفعيل بدون `messages.inbound.byChannel.bluebubbles` صريح.
-    - `channels.bluebubbles.historyLimit`: الحد الأقصى لرسائل المجموعة للسياق (0 يعطلها).
-    - `channels.bluebubbles.dmHistoryLimit`: حد سجل الرسائل المباشرة.
-    - `channels.bluebubbles.replyContextApiFallback`: عندما يصل رد وارد بدون `replyToBody`/`replyToSender` ولا يجد مخبأ سياق الرد في الذاكرة نتيجة، اجلب الرسالة الأصلية من BlueBubbles HTTP API كخيار احتياطي بأفضل جهد (الافتراضي: `false`). مفيد لعمليات النشر متعددة المثيلات التي تشارك حساب BlueBubbles واحدًا، أو بعد إعادة تشغيل العملية، أو بعد طرد مخبأ TTL/LRU طويل العمر. يخضع الجلب لحماية SSRF بالسياسة نفسها مثل كل طلب عميل BlueBubbles آخر، ولا يرمي خطأ أبدًا، ويملأ المخبأ بحيث تستفيد الردود اللاحقة من ذلك. تجاوز لكل حساب: `channels.bluebubbles.accounts.<accountId>.replyContextApiFallback`. ينتشر إعداد مستوى القناة إلى الحسابات التي تحذف العلم.
+    - `channels.bluebubbles.mediaLocalRoots`: قائمة سماح صريحة بالأدلة المحلية المطلقة المسموح بها لمسارات الوسائط المحلية الصادرة. تُرفض عمليات الإرسال عبر المسارات المحلية افتراضيًا ما لم يُضبط هذا الخيار. تجاوز لكل حساب: `channels.bluebubbles.accounts.<accountId>.mediaLocalRoots`.
+    - `channels.bluebubbles.coalesceSameSenderDms`: دمج Webhook رسائل DM المتتالية من المرسل نفسه في دورة وكيل واحدة حتى يصل إرسال Apple المقسّم إلى نص+عنوان URL كرسالة واحدة (الافتراضي: `false`). راجع [دمج رسائل DM المقسّمة الإرسال](#coalescing-split-send-dms-command--url-in-one-composition) لمعرفة السيناريوهات وضبط النافذة والمفاضلات. يوسّع نافذة إزالة الارتداد الافتراضية للوارد من 500 مللي ثانية إلى 2500 مللي ثانية عند تفعيله دون `messages.inbound.byChannel.bluebubbles` صريح.
+    - `channels.bluebubbles.historyLimit`: الحد الأقصى لرسائل المجموعة للسياق (0 يعطّلها).
+    - `channels.bluebubbles.dmHistoryLimit`: حد سجل رسائل DM.
+    - `channels.bluebubbles.replyContextApiFallback`: عند وصول رد وارد دون `replyToBody`/`replyToSender` وفشل العثور في ذاكرة التخزين المؤقت لسياق الرد في الذاكرة، اجلب الرسالة الأصلية من BlueBubbles HTTP API كخيار احتياطي بأفضل جهد (الافتراضي: `false`). مفيد لعمليات النشر متعددة المثيلات التي تشارك حساب BlueBubbles واحدًا، أو بعد إعادة تشغيل العملية، أو بعد إخلاء ذاكرة التخزين المؤقت طويلة العمر TTL/LRU. الجلب محمي من SSRF بالسياسة نفسها مثل كل طلب عميل BlueBubbles آخر، ولا يرمي استثناءات أبدًا، ويملأ ذاكرة التخزين المؤقت حتى تُستهلك الردود اللاحقة بكلفة موزعة. تجاوز لكل حساب: `channels.bluebubbles.accounts.<accountId>.replyContextApiFallback`. ينتشر إعداد مستوى القناة إلى الحسابات التي تحذف العلامة.
 
   </Accordion>
   <Accordion title="الإجراءات والحسابات">
     - `channels.bluebubbles.actions`: تفعيل/تعطيل إجراءات محددة.
-    - `channels.bluebubbles.accounts`: تكوين متعدد الحسابات.
+    - `channels.bluebubbles.accounts`: إعداد متعدد الحسابات.
 
   </Accordion>
 </AccordionGroup>
@@ -603,36 +595,36 @@ openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --passwor
 - `agents.list[].groupChat.mentionPatterns` (أو `messages.groupChat.mentionPatterns`).
 - `messages.responsePrefix`.
 
-## العناوين / أهداف التسليم
+## عناوين / أهداف التسليم
 
 فضّل `chat_guid` للتوجيه المستقر:
 
 - `chat_guid:iMessage;-;+15555550123` (مفضّل للمجموعات)
 - `chat_id:123`
 - `chat_identifier:...`
-- المعرفات المباشرة: `+15555550123`، `user@example.com`
-  - إذا لم يكن للمعرف المباشر دردشة رسائل مباشرة موجودة، فسينشئ OpenClaw واحدة عبر `POST /api/v1/chat/new`. يتطلب ذلك تفعيل BlueBubbles Private API.
+- المعالجات المباشرة: `+15555550123`، `user@example.com`
+  - إذا لم يكن للمعالج المباشر دردشة DM موجودة، فسينشئ OpenClaw واحدة عبر `POST /api/v1/chat/new`. يتطلب هذا تفعيل BlueBubbles Private API.
 
 ### توجيه iMessage مقابل SMS
 
-عندما يكون للمعرف نفسه دردشة iMessage ودردشة SMS على Mac (مثل رقم هاتف مسجل في iMessage لكنه تلقى أيضًا بدائل الفقاعة الخضراء)، يفضّل OpenClaw دردشة iMessage ولا يخفضها بصمت إلى SMS أبدًا. لفرض دردشة SMS، استخدم بادئة هدف `sms:` صريحة (مثل `sms:+15555550123`). لا تزال المعرفات التي لا تملك دردشة iMessage مطابقة تُرسل عبر أي دردشة يبلّغ عنها BlueBubbles.
+عندما يكون للمعالج نفسه دردشة iMessage ودردشة SMS على Mac (على سبيل المثال رقم هاتف مسجل في iMessage لكنه تلقى أيضًا رسائل احتياطية ذات فقاعات خضراء)، يفضّل OpenClaw دردشة iMessage ولا يخفضها بصمت إلى SMS أبدًا. لفرض دردشة SMS، استخدم بادئة هدف صريحة `sms:` (على سبيل المثال `sms:+15555550123`). لا تزال المعالجات التي لا تملك دردشة iMessage مطابقة تُرسل عبر أي دردشة يبلغ عنها BlueBubbles.
 
 ## الأمان
 
-- تتم مصادقة طلبات Webhook بمقارنة معاملات الاستعلام أو الترويسات `guid`/`password` مع `channels.bluebubbles.password`.
-- أبقِ كلمة مرور API ونقطة نهاية Webhook سريتين (عاملها كبيانات اعتماد).
-- لا يوجد تجاوز localhost لمصادقة Webhook في BlueBubbles. إذا كنت تمرر حركة Webhook عبر وكيل، فأبقِ كلمة مرور BlueBubbles على الطلب من الطرف إلى الطرف. لا يستبدل `gateway.trustedProxies` هنا `channels.bluebubbles.password`. راجع [أمان Gateway](/ar/gateway/security#reverse-proxy-configuration).
+- تُصادق طلبات Webhook بمقارنة معاملات الاستعلام أو الترويسات `guid`/`password` مع `channels.bluebubbles.password`.
+- أبقِ كلمة مرور API ونقطة نهاية Webhook سريتين (تعامل معهما مثل بيانات الاعتماد).
+- لا يوجد تجاوز localhost لمصادقة BlueBubbles Webhook. إذا كنت تمرر حركة Webhook عبر وكيل، فاحتفظ بكلمة مرور BlueBubbles في الطلب من البداية إلى النهاية. لا يستبدل `gateway.trustedProxies` هنا `channels.bluebubbles.password`. راجع [أمان Gateway](/ar/gateway/security#reverse-proxy-configuration).
 - فعّل HTTPS + قواعد جدار الحماية على خادم BlueBubbles إذا كنت تعرضه خارج شبكة LAN لديك.
 
 ## استكشاف الأخطاء وإصلاحها
 
-- إذا توقفت أحداث الكتابة/القراءة عن العمل، فتحقق من سجلات Webhook في BlueBubbles وتأكد من أن مسار Gateway يطابق `channels.bluebubbles.webhookPath`.
+- إذا توقفت أحداث الكتابة/القراءة عن العمل، فتحقق من سجلات BlueBubbles Webhook وتأكد أن مسار Gateway يطابق `channels.bluebubbles.webhookPath`.
 - تنتهي صلاحية رموز الاقتران بعد ساعة واحدة؛ استخدم `openclaw pairing list bluebubbles` و`openclaw pairing approve bluebubbles <code>`.
-- تتطلب التفاعلات BlueBubbles private API (`POST /api/v1/message/react`)؛ تأكد من أن إصدار الخادم يعرّضها.
-- يتطلب التعديل/إلغاء الإرسال macOS 13+ وإصدار خادم BlueBubbles متوافقًا. على macOS 26 (Tahoe)، التعديل معطل حاليًا بسبب تغييرات private API.
-- قد تكون تحديثات أيقونة المجموعة غير مستقرة على macOS 26 (Tahoe): قد تعيد API نجاحًا لكن الأيقونة الجديدة لا تتم مزامنتها.
-- يخفي OpenClaw تلقائيًا الإجراءات المعروفة بأنها معطلة بناءً على إصدار macOS لخادم BlueBubbles. إذا كان التعديل لا يزال يظهر على macOS 26 (Tahoe)، فعطله يدويًا باستخدام `channels.bluebubbles.actions.edit=false`.
-- إذا كان `coalesceSameSenderDms` مفعّلًا لكن عمليات الإرسال المقسمة (مثل `Dump` + URL) لا تزال تصل كدورتين: راجع قائمة تحقق [استكشاف أخطاء دمج الإرسال المقسم وإصلاحها](#split-send-coalescing-troubleshooting) — الأسباب الشائعة هي نافذة إزالة ارتداد ضيقة جدًا، أو قراءة طوابع سجل الجلسة الزمنية خطأً كوقت وصول Webhook، أو إرسال اقتباس رد (والذي يستخدم `replyToBody`، وليس Webhook ثانيًا).
+- تتطلب التفاعلات BlueBubbles private API (`POST /api/v1/message/react`)؛ تأكد أن إصدار الخادم يوفّرها.
+- يتطلب التعديل/إلغاء الإرسال macOS 13+ وإصدار خادم BlueBubbles متوافقًا. على macOS 26 (Tahoe)، التعديل معطل حاليًا بسبب تغييرات Private API.
+- قد تكون تحديثات أيقونات المجموعات غير مستقرة على macOS 26 (Tahoe): قد تُرجع API نجاحًا لكن الأيقونة الجديدة لا تتزامن.
+- يخفي OpenClaw تلقائيًا الإجراءات المعروفة بأنها معطلة بناءً على إصدار macOS لخادم BlueBubbles. إذا كان التعديل لا يزال يظهر على macOS 26 (Tahoe)، فعطّله يدويًا باستخدام `channels.bluebubbles.actions.edit=false`.
+- إذا كان `coalesceSameSenderDms` مفعّلًا لكن الرسائل المقسّمة الإرسال (مثل `Dump` + عنوان URL) لا تزال تصل كدورتين: راجع قائمة تحقق [استكشاف أخطاء دمج الرسائل المقسّمة الإرسال وإصلاحها](#split-send-coalescing-troubleshooting) — الأسباب الشائعة هي نافذة إزالة ارتداد ضيقة جدًا، أو قراءة الطوابع الزمنية لسجل الجلسة خطأً كوقت وصول Webhook، أو إرسال اقتباس رد (الذي يستخدم `replyToBody`، وليس Webhook ثانيًا).
 - لمعلومات الحالة/السلامة: `openclaw status --all` أو `openclaw status --deep`.
 
 للمرجع العام لسير عمل القنوات، راجع [القنوات](/ar/channels) ودليل [Plugins](/ar/tools/plugin).
@@ -640,7 +632,7 @@ openclaw channels add bluebubbles --http-url http://192.168.1.100:1234 --passwor
 ## ذات صلة
 
 - [توجيه القنوات](/ar/channels/channel-routing) — توجيه الجلسات للرسائل
-- [نظرة عامة على القنوات](/ar/channels) — كل القنوات المدعومة
-- [المجموعات](/ar/channels/groups) — سلوك دردشة المجموعة وبوابة الإشارات
-- [الاقتران](/ar/channels/pairing) — مصادقة الرسائل المباشرة وتدفق الاقتران
+- [نظرة عامة على القنوات](/ar/channels) — جميع القنوات المدعومة
+- [المجموعات](/ar/channels/groups) — سلوك دردشة المجموعات وبوابة الإشارات
+- [الاقتران](/ar/channels/pairing) — مصادقة DM وتدفق الاقتران
 - [الأمان](/ar/gateway/security) — نموذج الوصول والتقوية
