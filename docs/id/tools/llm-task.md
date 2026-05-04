@@ -1,23 +1,23 @@
 ---
 read_when:
     - Anda menginginkan langkah LLM khusus JSON di dalam alur kerja
-    - Anda memerlukan output LLM yang divalidasi skema untuk otomatisasi
+    - Anda memerlukan keluaran LLM yang tervalidasi skema untuk otomatisasi
 summary: Tugas LLM khusus JSON untuk alur kerja (alat Plugin opsional)
 title: Tugas LLM
 x-i18n:
-    generated_at: "2026-04-24T09:31:27Z"
-    model: gpt-5.4
+    generated_at: "2026-05-04T07:08:16Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 613aefd1bac5b9675821a118c11130c8bfaefb1673d0266f14ff4e91b47fed8b
+    source_hash: 9cdc5d4feef17fb6d6d90d819d4c92d26a4ec43e4f5364c6acbaad1934a89269
     source_path: tools/llm-task.md
-    workflow: 15
+    workflow: 16
 ---
 
 `llm-task` adalah **alat Plugin opsional** yang menjalankan tugas LLM khusus JSON dan
-mengembalikan output terstruktur (opsional divalidasi terhadap JSON Schema).
+mengembalikan output terstruktur (secara opsional divalidasi terhadap JSON Schema).
 
-Ini ideal untuk engine alur kerja seperti Lobster: Anda dapat menambahkan satu langkah LLM
-tanpa menulis kode OpenClaw kustom untuk setiap alur kerja.
+Ini ideal untuk mesin alur kerja seperti Lobster: Anda dapat menambahkan satu langkah LLM
+tanpa menulis kode OpenClaw khusus untuk setiap alur kerja.
 
 ## Aktifkan Plugin
 
@@ -33,20 +33,17 @@ tanpa menulis kode OpenClaw kustom untuk setiap alur kerja.
 }
 ```
 
-2. Allowlist alat tersebut (alat ini terdaftar dengan `optional: true`):
+2. Izinkan alat opsional:
 
 ```json
 {
-  "agents": {
-    "list": [
-      {
-        "id": "main",
-        "tools": { "allow": ["llm-task"] }
-      }
-    ]
+  "tools": {
+    "alsoAllow": ["llm-task"]
   }
 }
 ```
+
+Gunakan `tools.allow` hanya ketika Anda menginginkan mode daftar izin yang restriktif.
 
 ## Konfigurasi (opsional)
 
@@ -70,7 +67,7 @@ tanpa menulis kode OpenClaw kustom untuk setiap alur kerja.
 }
 ```
 
-`allowedModels` adalah allowlist string `provider/model`. Jika ditetapkan, permintaan apa pun
+`allowedModels` adalah daftar izin untuk string `provider/model`. Jika disetel, permintaan apa pun
 di luar daftar akan ditolak.
 
 ## Parameter alat
@@ -86,12 +83,12 @@ di luar daftar akan ditolak.
 - `maxTokens` (number, opsional)
 - `timeoutMs` (number, opsional)
 
-`thinking` menerima preset reasoning OpenClaw standar, seperti `low` atau `medium`.
+`thinking` menerima preset penalaran standar OpenClaw, seperti `low` atau `medium`.
 
 ## Output
 
-Mengembalikan `details.json` yang berisi JSON yang telah di-parse (dan memvalidasi terhadap
-`schema` saat disediakan).
+Mengembalikan `details.json` yang berisi JSON yang telah diuraikan (dan memvalidasi terhadap
+`schema` ketika disediakan).
 
 ## Contoh: langkah alur kerja Lobster
 
@@ -117,14 +114,14 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 
 ## Catatan keamanan
 
-- Alat ini **khusus JSON** dan menginstruksikan model untuk hanya menghasilkan JSON (tanpa
+- Alat ini **khusus JSON** dan menginstruksikan model untuk hanya mengeluarkan JSON (tanpa
   code fence, tanpa komentar).
-- Tidak ada alat yang diekspos ke model untuk run ini.
+- Tidak ada alat yang diekspos ke model untuk eksekusi ini.
 - Perlakukan output sebagai tidak tepercaya kecuali Anda memvalidasinya dengan `schema`.
-- Letakkan persetujuan sebelum langkah apa pun yang memiliki efek samping (send, post, exec).
+- Letakkan persetujuan sebelum langkah apa pun yang menimbulkan efek samping (send, post, exec).
 
 ## Terkait
 
 - [Tingkat thinking](/id/tools/thinking)
 - [Sub-agen](/id/tools/subagents)
-- [Slash command](/id/tools/slash-commands)
+- [Perintah slash](/id/tools/slash-commands)

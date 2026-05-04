@@ -1,45 +1,45 @@
 ---
 read_when:
     - Anda ingin melakukan panggilan suara keluar dari OpenClaw
-    - Anda sedang mengonfigurasi atau mengembangkan Plugin voice-call
-    - Anda memerlukan suara waktu nyata atau transkripsi streaming untuk teleponi
+    - Anda sedang mengonfigurasi atau mengembangkan Plugin panggilan suara
+    - Anda memerlukan suara waktu nyata atau transkripsi aliran pada telefoni
 sidebarTitle: Voice call
 summary: Lakukan panggilan suara keluar dan terima panggilan suara masuk melalui Twilio, Telnyx, atau Plivo, dengan suara waktu nyata dan transkripsi streaming opsional
 title: Plugin panggilan suara
 x-i18n:
-    generated_at: "2026-05-02T22:22:15Z"
+    generated_at: "2026-05-04T07:07:05Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 18a9a0d7095ec92036b516cc26c69219a0a2fd9bb8e0cb2e7509123bb4f3f65a
+    source_hash: 8ec2c22dcc9073572963744685a432328787bcedb14025e0326c20d9d842f857
     source_path: plugins/voice-call.md
     workflow: 16
 ---
 
-Panggilan suara untuk OpenClaw melalui sebuah Plugin. Mendukung notifikasi keluar,
+Panggilan suara untuk OpenClaw melalui plugin. Mendukung notifikasi keluar,
 percakapan multi-giliran, suara realtime full-duplex, transkripsi
 streaming, dan panggilan masuk dengan kebijakan allowlist.
 
-**Penyedia saat ini:** `twilio` (Programmable Voice + Media Streams),
+**Provider saat ini:** `twilio` (Programmable Voice + Media Streams),
 `telnyx` (Call Control v2), `plivo` (Voice API + transfer XML + GetInput
 speech), `mock` (dev/tanpa jaringan).
 
 <Note>
 Plugin Voice Call berjalan **di dalam proses Gateway**. Jika Anda menggunakan
-Gateway jarak jauh, instal dan konfigurasikan Plugin pada mesin yang menjalankan
+Gateway jarak jauh, instal dan konfigurasikan plugin pada mesin yang menjalankan
 Gateway, lalu mulai ulang Gateway untuk memuatnya.
 </Note>
 
 ## Mulai cepat
 
 <Steps>
-  <Step title="Instal Plugin">
+  <Step title="Install the plugin">
     <Tabs>
-      <Tab title="Dari npm">
+      <Tab title="From npm">
         ```bash
         openclaw plugins install @openclaw/voice-call
         ```
       </Tab>
-      <Tab title="Dari folder lokal (dev)">
+      <Tab title="From a local folder (dev)">
         ```bash
         PLUGIN_SRC=./path/to/local/voice-call-plugin
         openclaw plugins install "$PLUGIN_SRC"
@@ -48,36 +48,36 @@ Gateway, lalu mulai ulang Gateway untuk memuatnya.
       </Tab>
     </Tabs>
 
-    Gunakan paket polos untuk mengikuti tag rilis resmi saat ini. Sematkan
-    versi persis hanya saat Anda membutuhkan instalasi yang dapat direproduksi.
+    Gunakan paket polos untuk mengikuti tag rilis resmi saat ini. Pin versi
+    persis hanya saat Anda memerlukan instalasi yang dapat direproduksi.
 
-    Mulai ulang Gateway setelahnya agar Plugin dimuat.
+    Mulai ulang Gateway setelahnya agar plugin dimuat.
 
   </Step>
-  <Step title="Konfigurasikan penyedia dan Webhook">
+  <Step title="Configure provider and webhook">
     Atur konfigurasi di bawah `plugins.entries.voice-call.config` (lihat
     [Konfigurasi](#configuration) di bawah untuk bentuk lengkapnya). Minimal:
-    `provider`, kredensial penyedia, `fromNumber`, dan URL Webhook yang dapat
+    `provider`, kredensial provider, `fromNumber`, dan URL webhook yang dapat
     dijangkau publik.
   </Step>
-  <Step title="Verifikasi penyiapan">
+  <Step title="Verify setup">
     ```bash
     openclaw voicecall setup
     ```
 
-    Keluaran default mudah dibaca di log chat dan terminal. Ini memeriksa
-    pengaktifan Plugin, kredensial penyedia, paparan Webhook, dan memastikan
+    Output default mudah dibaca di log chat dan terminal. Ini memeriksa
+    pengaktifan plugin, kredensial provider, eksposur webhook, dan bahwa
     hanya satu mode audio (`streaming` atau `realtime`) yang aktif. Gunakan
     `--json` untuk skrip.
 
   </Step>
-  <Step title="Uji smoke">
+  <Step title="Smoke test">
     ```bash
     openclaw voicecall smoke
     openclaw voicecall smoke --to "+15555550123"
     ```
 
-    Keduanya berupa dry run secara default. Tambahkan `--yes` untuk benar-benar
+    Keduanya adalah dry run secara default. Tambahkan `--yes` untuk benar-benar
     melakukan panggilan notifikasi keluar singkat:
 
     ```bash
@@ -88,18 +88,18 @@ Gateway, lalu mulai ulang Gateway untuk memuatnya.
 </Steps>
 
 <Warning>
-Untuk Twilio, Telnyx, dan Plivo, penyiapan harus menghasilkan **URL Webhook publik**.
+Untuk Twilio, Telnyx, dan Plivo, penyiapan harus mengarah ke **URL webhook publik**.
 Jika `publicUrl`, URL tunnel, URL Tailscale, atau fallback serve
-mengarah ke loopback atau ruang jaringan privat, penyiapan akan gagal alih-alih
-memulai penyedia yang tidak dapat menerima Webhook carrier.
+mengarah ke loopback atau ruang jaringan privat, penyiapan gagal alih-alih
+memulai provider yang tidak dapat menerima webhook operator.
 </Warning>
 
 ## Konfigurasi
 
-Jika `enabled: true` tetapi penyedia yang dipilih tidak memiliki kredensial,
-startup Gateway mencatat peringatan penyiapan-belum-lengkap dengan kunci yang hilang dan
+Jika `enabled: true` tetapi provider yang dipilih tidak memiliki kredensial,
+startup Gateway mencatat peringatan setup-incomplete dengan kunci yang hilang dan
 melewati pemulaian runtime. Perintah, panggilan RPC, dan alat agen tetap
-mengembalikan konfigurasi penyedia yang hilang secara persis saat digunakan.
+mengembalikan konfigurasi provider persis yang hilang saat digunakan.
 
 <Note>
 Kredensial voice-call menerima SecretRefs. `plugins.entries.voice-call.config.twilio.authToken`, `plugins.entries.voice-call.config.realtime.providers.*.apiKey`, `plugins.entries.voice-call.config.streaming.providers.*.apiKey`, dan `plugins.entries.voice-call.config.tts.providers.*.apiKey` diselesaikan melalui permukaan SecretRef standar; lihat [permukaan kredensial SecretRef](/id/reference/secretref-credential-surface).
@@ -175,28 +175,28 @@ Kredensial voice-call menerima SecretRefs. `plugins.entries.voice-call.config.tw
 ```
 
 <AccordionGroup>
-  <Accordion title="Catatan paparan dan keamanan penyedia">
-    - Twilio, Telnyx, dan Plivo semuanya memerlukan URL Webhook yang **dapat dijangkau publik**.
-    - `mock` adalah penyedia dev lokal (tanpa panggilan jaringan).
+  <Accordion title="Provider exposure and security notes">
+    - Twilio, Telnyx, dan Plivo semuanya memerlukan URL webhook yang **dapat dijangkau publik**.
+    - `mock` adalah provider dev lokal (tanpa panggilan jaringan).
     - Telnyx memerlukan `telnyx.publicKey` (atau `TELNYX_PUBLIC_KEY`) kecuali `skipSignatureVerification` bernilai true.
     - `skipSignatureVerification` hanya untuk pengujian lokal.
-    - Pada tier gratis ngrok, atur `publicUrl` ke URL ngrok yang persis; verifikasi tanda tangan selalu diberlakukan.
-    - `tunnel.allowNgrokFreeTierLoopbackBypass: true` mengizinkan Webhook Twilio dengan tanda tangan tidak valid **hanya** saat `tunnel.provider="ngrok"` dan `serve.bind` adalah loopback (agen lokal ngrok). Hanya dev lokal.
-    - URL tier gratis Ngrok dapat berubah atau menambahkan perilaku interstitial; jika `publicUrl` bergeser, tanda tangan Twilio gagal. Produksi: sebaiknya gunakan domain stabil atau funnel Tailscale.
+    - Pada tingkat gratis ngrok, atur `publicUrl` ke URL ngrok persis; verifikasi tanda tangan selalu diberlakukan.
+    - `tunnel.allowNgrokFreeTierLoopbackBypass: true` mengizinkan webhook Twilio dengan tanda tangan tidak valid **hanya** ketika `tunnel.provider="ngrok"` dan `serve.bind` adalah loopback (agen lokal ngrok). Hanya untuk dev lokal.
+    - URL tingkat gratis Ngrok dapat berubah atau menambahkan perilaku interstisial; jika `publicUrl` bergeser, tanda tangan Twilio gagal. Produksi: pilih domain stabil atau funnel Tailscale.
 
   </Accordion>
-  <Accordion title="Batas koneksi streaming">
-    - `streaming.preStartTimeoutMs` menutup socket yang tidak pernah mengirim frame `start` yang valid.
-    - `streaming.maxPendingConnections` membatasi total socket pra-start yang belum terautentikasi.
-    - `streaming.maxPendingConnectionsPerIp` membatasi socket pra-start yang belum terautentikasi per IP sumber.
-    - `streaming.maxConnections` membatasi total socket media stream yang terbuka (pending + aktif).
+  <Accordion title="Streaming connection caps">
+    - `streaming.preStartTimeoutMs` menutup soket yang tidak pernah mengirim frame `start` yang valid.
+    - `streaming.maxPendingConnections` membatasi total soket pra-mulai yang belum diautentikasi.
+    - `streaming.maxPendingConnectionsPerIp` membatasi soket pra-mulai yang belum diautentikasi per IP sumber.
+    - `streaming.maxConnections` membatasi total soket stream media yang terbuka (tertunda + aktif).
 
   </Accordion>
-  <Accordion title="Migrasi konfigurasi legacy">
+  <Accordion title="Legacy config migrations">
     Konfigurasi lama yang menggunakan `provider: "log"`, `twilio.from`, atau kunci OpenAI
-    `streaming.*` legacy ditulis ulang oleh `openclaw doctor --fix`.
+    `streaming.*` lama ditulis ulang oleh `openclaw doctor --fix`.
     Fallback runtime masih menerima kunci voice-call lama untuk saat ini, tetapi
-    jalur penulisan ulangnya adalah `openclaw doctor --fix` dan shim kompatibilitasnya
+    jalur penulisan ulang adalah `openclaw doctor --fix` dan shim kompatibilitas
     bersifat sementara.
 
     Kunci streaming yang dimigrasikan otomatis:
@@ -213,16 +213,16 @@ Kredensial voice-call menerima SecretRefs. `plugins.entries.voice-call.config.tw
 ## Cakupan sesi
 
 Secara default, Voice Call menggunakan `sessionScope: "per-phone"` sehingga panggilan berulang dari
-pemanggil yang sama mempertahankan memori percakapan. Atur `sessionScope: "per-call"` saat
-setiap panggilan carrier harus dimulai dengan konteks baru, misalnya alur resepsionis,
-pemesanan, IVR, atau bridge Google Meet di mana nomor telepon yang sama dapat
-mewakili rapat yang berbeda.
+pemanggil yang sama mempertahankan memori percakapan. Atur `sessionScope: "per-call"` ketika
+setiap panggilan operator harus dimulai dengan konteks baru, misalnya alur resepsionis,
+pemesanan, IVR, atau bridge Google Meet ketika nomor telepon yang sama dapat
+merepresentasikan rapat yang berbeda.
 
 ## Percakapan suara realtime
 
-`realtime` memilih penyedia suara realtime full-duplex untuk audio panggilan
+`realtime` memilih provider suara realtime full-duplex untuk audio panggilan
 langsung. Ini terpisah dari `streaming`, yang hanya meneruskan audio ke
-penyedia transkripsi realtime.
+provider transkripsi realtime.
 
 <Warning>
 `realtime.enabled` tidak dapat digabungkan dengan `streaming.enabled`. Pilih satu
@@ -232,31 +232,34 @@ mode audio per panggilan.
 Perilaku runtime saat ini:
 
 - `realtime.enabled` didukung untuk Twilio Media Streams.
-- `realtime.provider` bersifat opsional. Jika tidak diatur, Voice Call menggunakan penyedia suara realtime terdaftar pertama.
-- Penyedia suara realtime bawaan: Google Gemini Live (`google`) dan OpenAI (`openai`), yang didaftarkan oleh Plugin penyedianya.
-- Konfigurasi mentah milik penyedia berada di bawah `realtime.providers.<providerId>`.
-- Voice Call mengekspos alat realtime bersama `openclaw_agent_consult` secara default. Model realtime dapat memanggilnya saat pemanggil meminta penalaran yang lebih mendalam, informasi terkini, atau alat OpenClaw normal.
-- `realtime.fastContext.enabled` nonaktif secara default. Saat diaktifkan, Voice Call terlebih dahulu mencari konteks memori/sesi terindeks untuk pertanyaan konsultasi dan mengembalikan cuplikan tersebut ke model realtime dalam `realtime.fastContext.timeoutMs` sebelum fallback ke agen konsultasi penuh hanya jika `realtime.fastContext.fallbackToConsult` bernilai true.
-- Jika `realtime.provider` menunjuk ke penyedia yang tidak terdaftar, atau tidak ada penyedia suara realtime yang terdaftar sama sekali, Voice Call mencatat peringatan dan melewati media realtime alih-alih menggagalkan seluruh Plugin.
-- Kunci sesi konsultasi menggunakan ulang sesi panggilan tersimpan jika tersedia, lalu fallback ke `sessionScope` yang dikonfigurasi (`per-phone` secara default, atau `per-call` untuk panggilan terisolasi).
+- `realtime.provider` bersifat opsional. Jika tidak diatur, Voice Call menggunakan provider suara realtime terdaftar pertama.
+- Provider suara realtime bawaan: Google Gemini Live (`google`) dan OpenAI (`openai`), didaftarkan oleh plugin provider masing-masing.
+- Konfigurasi raw milik provider berada di bawah `realtime.providers.<providerId>`.
+- Voice Call mengekspos alat realtime bersama `openclaw_agent_consult` secara default. Model realtime dapat memanggilnya ketika pemanggil meminta penalaran lebih mendalam, informasi terkini, atau alat OpenClaw normal.
+- `realtime.fastContext.enabled` nonaktif secara default. Saat diaktifkan, Voice Call pertama-tama mencari memori terindeks/konteks sesi untuk pertanyaan konsultasi dan mengembalikan cuplikan tersebut ke model realtime dalam `realtime.fastContext.timeoutMs` sebelum fallback ke agen konsultasi penuh hanya jika `realtime.fastContext.fallbackToConsult` bernilai true.
+- Jika `realtime.provider` menunjuk ke provider yang tidak terdaftar, atau tidak ada provider suara realtime yang terdaftar sama sekali, Voice Call mencatat peringatan dan melewati media realtime alih-alih menggagalkan seluruh plugin.
+- Kunci sesi konsultasi menggunakan ulang sesi panggilan yang tersimpan jika tersedia, lalu fallback ke `sessionScope` yang dikonfigurasi (`per-phone` secara default, atau `per-call` untuk panggilan terisolasi).
 
 ### Kebijakan alat
 
-`realtime.toolPolicy` mengontrol jalannya konsultasi:
+`realtime.toolPolicy` mengontrol run konsultasi:
 
 | Kebijakan        | Perilaku                                                                                                                                |
 | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| `safe-read-only` | Ekspos alat konsultasi dan batasi agen reguler ke `read`, `web_search`, `web_fetch`, `x_search`, `memory_search`, dan `memory_get`. |
-| `owner`          | Ekspos alat konsultasi dan izinkan agen reguler menggunakan kebijakan alat agen normal.                                                  |
-| `none`           | Jangan ekspos alat konsultasi. `realtime.tools` kustom tetap diteruskan ke penyedia realtime.                                           |
+| `safe-read-only` | Mengekspos alat konsultasi dan membatasi agen reguler ke `read`, `web_search`, `web_fetch`, `x_search`, `memory_search`, dan `memory_get`. |
+| `owner`          | Mengekspos alat konsultasi dan membiarkan agen reguler menggunakan kebijakan alat agen normal.                                           |
+| `none`           | Jangan mengekspos alat konsultasi. `realtime.tools` kustom tetap diteruskan ke provider realtime.                                        |
 
-### Contoh penyedia realtime
+### Contoh provider realtime
 
 <Tabs>
   <Tab title="Google Gemini Live">
     Default: kunci API dari `realtime.providers.google.apiKey`,
     `GEMINI_API_KEY`, atau `GOOGLE_GENERATIVE_AI_API_KEY`; model
     `gemini-2.5-flash-native-audio-preview-12-2025`; suara `Kore`.
+    `sessionResumption` dan `contextWindowCompression` aktif secara default untuk panggilan yang lebih panjang
+    dan dapat tersambung ulang. Gunakan `silenceDurationMs`, `startSensitivity`, dan
+    `endSensitivity` untuk menyetel pengambilan giliran yang lebih cepat pada audio telepon.
 
     ```json5
     {
@@ -277,6 +280,8 @@ Perilaku runtime saat ini:
                     apiKey: "${GEMINI_API_KEY}",
                     model: "gemini-2.5-flash-native-audio-preview-12-2025",
                     voice: "Kore",
+                    silenceDurationMs: 500,
+                    startSensitivity: "high",
                   },
                 },
               },
@@ -320,11 +325,11 @@ Lihat [penyedia Google](/id/providers/google) dan
 
 Perilaku runtime saat ini:
 
-- `streaming.provider` bersifat opsional. Jika tidak disetel, Voice Call menggunakan penyedia transkripsi realtime terdaftar pertama.
-- Penyedia transkripsi realtime bawaan: Deepgram (`deepgram`), ElevenLabs (`elevenlabs`), Mistral (`mistral`), OpenAI (`openai`), dan xAI (`xai`), yang didaftarkan oleh Plugin penyedia masing-masing.
+- `streaming.provider` bersifat opsional. Jika tidak disetel, Voice Call menggunakan penyedia transkripsi realtime pertama yang terdaftar.
+- Penyedia transkripsi realtime bawaan: Deepgram (`deepgram`), ElevenLabs (`elevenlabs`), Mistral (`mistral`), OpenAI (`openai`), dan xAI (`xai`), yang didaftarkan oleh plugin penyedianya.
 - Konfigurasi mentah milik penyedia berada di bawah `streaming.providers.<providerId>`.
-- Setelah Twilio mengirim pesan `start` stream yang diterima, Voice Call langsung mendaftarkan stream, mengantrekan media masuk melalui penyedia transkripsi sementara penyedia tersambung, dan memulai sapaan awal hanya setelah transkripsi realtime siap.
-- Jika `streaming.provider` menunjuk ke penyedia yang belum terdaftar, atau tidak ada yang terdaftar, Voice Call mencatat peringatan dan melewati streaming media alih-alih menggagalkan seluruh Plugin.
+- Setelah Twilio mengirim pesan `start` stream yang diterima, Voice Call segera mendaftarkan stream, mengantrekan media masuk melalui penyedia transkripsi saat penyedia tersambung, dan memulai salam awal hanya setelah transkripsi realtime siap.
+- Jika `streaming.provider` menunjuk ke penyedia yang tidak terdaftar, atau tidak ada yang terdaftar, Voice Call mencatat peringatan dan melewati streaming media alih-alih menggagalkan seluruh plugin.
 
 ### Contoh penyedia streaming
 
@@ -363,7 +368,7 @@ Perilaku runtime saat ini:
   </Tab>
   <Tab title="xAI">
     Default: kunci API `streaming.providers.xai.apiKey` atau `XAI_API_KEY`;
-    endpoint `wss://api.x.ai/v1/stt`; encoding `mulaw`; laju sampel `8000`;
+    endpoint `wss://api.x.ai/v1/stt`; encoding `mulaw`; sample rate `8000`;
     `endpointingMs: 800`; `interimResults: true`.
 
     ```json5
@@ -396,9 +401,9 @@ Perilaku runtime saat ini:
 
 ## TTS untuk panggilan
 
-Voice Call menggunakan konfigurasi inti `messages.tts` untuk streaming
-ucapan pada panggilan. Anda dapat menimpanya di bawah konfigurasi Plugin dengan
-**bentuk yang sama** — konfigurasi tersebut di-deep-merge dengan `messages.tts`.
+Voice Call menggunakan konfigurasi inti `messages.tts` untuk ucapan streaming
+pada panggilan. Anda dapat menimpanya di bawah konfigurasi plugin dengan
+**bentuk yang sama** — konfigurasi ini digabungkan secara mendalam dengan `messages.tts`.
 
 ```json5
 {
@@ -415,17 +420,17 @@ ucapan pada panggilan. Anda dapat menimpanya di bawah konfigurasi Plugin dengan
 ```
 
 <Warning>
-**Microsoft speech diabaikan untuk panggilan suara.** Audio telepon membutuhkan PCM;
-transport Microsoft saat ini tidak mengekspos keluaran PCM telepon.
+**Microsoft speech diabaikan untuk panggilan suara.** Audio telepon memerlukan PCM;
+transport Microsoft saat ini tidak mengekspos output PCM telepon.
 </Warning>
 
 Catatan perilaku:
 
-- Kunci lama `tts.<provider>` di dalam konfigurasi Plugin (`openai`, `elevenlabs`, `microsoft`, `edge`) diperbaiki oleh `openclaw doctor --fix`; konfigurasi yang di-commit harus menggunakan `tts.providers.<provider>`.
-- TTS inti digunakan saat streaming media Twilio diaktifkan; jika tidak, panggilan kembali menggunakan suara native penyedia.
-- Jika stream media Twilio sudah aktif, Voice Call tidak kembali ke TwiML `<Say>`. Jika TTS telepon tidak tersedia dalam status tersebut, permintaan pemutaran gagal alih-alih mencampur dua jalur pemutaran.
-- Saat TTS telepon kembali ke penyedia sekunder, Voice Call mencatat peringatan dengan rantai penyedia (`from`, `to`, `attempts`) untuk debugging.
-- Saat barge-in Twilio atau pembongkaran stream mengosongkan antrean TTS tertunda, permintaan pemutaran yang diantrekan diselesaikan alih-alih membuat penelepon menunggu penyelesaian pemutaran tanpa batas.
+- Kunci lama `tts.<provider>` di dalam konfigurasi plugin (`openai`, `elevenlabs`, `microsoft`, `edge`) diperbaiki oleh `openclaw doctor --fix`; konfigurasi yang dikomit harus menggunakan `tts.providers.<provider>`.
+- TTS inti digunakan ketika streaming media Twilio diaktifkan; jika tidak, panggilan kembali menggunakan suara native penyedia.
+- Jika stream media Twilio sudah aktif, Voice Call tidak kembali ke TwiML `<Say>`. Jika TTS telepon tidak tersedia dalam keadaan itu, permintaan pemutaran gagal alih-alih mencampur dua jalur pemutaran.
+- Ketika TTS telepon kembali ke penyedia sekunder, Voice Call mencatat peringatan dengan rantai penyedia (`from`, `to`, `attempts`) untuk debugging.
+- Ketika barge-in Twilio atau pembongkaran stream mengosongkan antrean TTS yang tertunda, permintaan pemutaran yang diantrekan diselesaikan alih-alih membuat penelepon menunggu penyelesaian pemutaran.
 
 ### Contoh TTS
 
@@ -505,33 +510,33 @@ Kebijakan masuk default adalah `disabled`. Untuk mengaktifkan panggilan masuk, s
 ```
 
 <Warning>
-`inboundPolicy: "allowlist"` adalah penyaring ID penelepon dengan jaminan rendah. Plugin
-menormalisasi nilai `From` yang disediakan penyedia dan membandingkannya dengan
+`inboundPolicy: "allowlist"` adalah penyaringan ID penelepon dengan jaminan rendah. Plugin
+menormalkan nilai `From` yang disediakan penyedia dan membandingkannya dengan
 `allowFrom`. Verifikasi Webhook mengautentikasi pengiriman penyedia dan
 integritas payload, tetapi **tidak** membuktikan kepemilikan nomor penelepon
-PSTN/VoIP. Perlakukan `allowFrom` sebagai pemfilteran ID penelepon, bukan
-identitas penelepon yang kuat.
+PSTN/VoIP. Perlakukan `allowFrom` sebagai pemfilteran ID penelepon, bukan identitas
+penelepon yang kuat.
 </Warning>
 
 Respons otomatis menggunakan sistem agen. Sesuaikan dengan `responseModel`,
 `responseSystemPrompt`, dan `responseTimeoutMs`.
 
-### Perutean Per Nomor
+### Perutean per nomor
 
-Gunakan `numbers` saat satu Plugin Voice Call menerima panggilan untuk beberapa nomor
-telepon dan setiap nomor harus berperilaku seperti saluran berbeda. Misalnya, satu
-nomor dapat menggunakan asisten pribadi kasual sementara nomor lain menggunakan persona
-bisnis, agen respons berbeda, dan suara TTS berbeda.
+Gunakan `numbers` ketika satu plugin Voice Call menerima panggilan untuk beberapa nomor
+telepon dan setiap nomor harus berperilaku seperti saluran yang berbeda. Misalnya, satu
+nomor dapat menggunakan asisten pribadi kasual sementara yang lain menggunakan persona bisnis,
+agen respons yang berbeda, dan suara TTS yang berbeda.
 
-Rute dipilih dari nomor `To` yang dihubungi dan disediakan penyedia. Kunci harus berupa
-nomor E.164. Saat panggilan masuk, Voice Call menyelesaikan rute yang cocok satu kali,
-menyimpan rute yang cocok pada catatan panggilan, dan menggunakan kembali konfigurasi efektif itu
-untuk sapaan, jalur respons otomatis klasik, jalur konsultasi realtime, dan pemutaran
-TTS. Jika tidak ada rute yang cocok, konfigurasi global Voice Call digunakan.
-Panggilan keluar tidak menggunakan `numbers`; teruskan target keluar, pesan, dan
+Rute dipilih dari nomor `To` yang dipanggil dan disediakan penyedia. Kunci harus berupa
+nomor E.164. Ketika panggilan masuk, Voice Call menyelesaikan rute yang cocok satu kali,
+menyimpan rute yang cocok pada catatan panggilan, dan menggunakan ulang konfigurasi efektif itu
+untuk salam, jalur respons otomatis klasik, jalur konsultasi realtime, dan pemutaran TTS.
+Jika tidak ada rute yang cocok, konfigurasi global Voice Call digunakan.
+Panggilan keluar tidak menggunakan `numbers`; berikan target keluar, pesan, dan
 sesi secara eksplisit saat memulai panggilan.
 
-Timpa rute saat ini mendukung:
+Penimpaan rute saat ini mendukung:
 
 - `inboundGreeting`
 - `tts`
@@ -540,8 +545,8 @@ Timpa rute saat ini mendukung:
 - `responseSystemPrompt`
 - `responseTimeoutMs`
 
-Nilai rute `tts` di-deep-merge di atas konfigurasi `tts` global Voice Call, sehingga
-biasanya Anda dapat menimpa hanya suara penyedia:
+Nilai rute `tts` digabungkan secara mendalam di atas konfigurasi global Voice Call `tts`, sehingga
+Anda biasanya dapat menimpa hanya suara penyedia:
 
 ```json5
 {
@@ -567,9 +572,9 @@ biasanya Anda dapat menimpa hanya suara penyedia:
 }
 ```
 
-### Kontrak keluaran lisan
+### Kontrak output lisan
 
-Untuk respons otomatis, Voice Call menambahkan kontrak keluaran lisan yang ketat ke
+Untuk respons otomatis, Voice Call menambahkan kontrak output lisan yang ketat ke
 prompt sistem:
 
 ```text
@@ -578,33 +583,33 @@ prompt sistem:
 
 Voice Call mengekstrak teks ucapan secara defensif:
 
-- Mengabaikan payload yang ditandai sebagai konten penalaran/kesalahan.
+- Mengabaikan payload yang ditandai sebagai konten penalaran/error.
 - Mengurai JSON langsung, JSON berpagar, atau kunci `"spoken"` inline.
 - Kembali ke teks biasa dan menghapus paragraf pembuka yang kemungkinan berupa perencanaan/meta.
 
-Ini menjaga pemutaran lisan tetap berfokus pada teks untuk penelepon dan menghindari
+Ini menjaga pemutaran ucapan tetap berfokus pada teks yang ditujukan kepada penelepon dan menghindari
 bocornya teks perencanaan ke audio.
 
 ### Perilaku awal percakapan
 
-Untuk panggilan `conversation` keluar, penanganan pesan pertama terikat pada status
+Untuk panggilan `conversation` keluar, penanganan pesan pertama terkait dengan status
 pemutaran langsung:
 
-- Pengosongan antrean barge-in dan respons otomatis ditekan hanya saat sapaan awal sedang aktif diucapkan.
+- Pengosongan antrean barge-in dan respons otomatis ditekan hanya ketika salam awal sedang aktif diucapkan.
 - Jika pemutaran awal gagal, panggilan kembali ke `listening` dan pesan awal tetap diantrekan untuk dicoba ulang.
 - Pemutaran awal untuk streaming Twilio dimulai saat stream tersambung tanpa penundaan tambahan.
-- Barge-in membatalkan pemutaran aktif dan mengosongkan entri TTS Twilio yang sudah diantrekan tetapi belum diputar. Entri yang dikosongkan diselesaikan sebagai dilewati, sehingga logika respons lanjutan dapat berlanjut tanpa menunggu audio yang tidak akan pernah diputar.
-- Percakapan suara realtime menggunakan giliran pembuka milik stream realtime itu sendiri. Voice Call **tidak** mengirim pembaruan TwiML `<Say>` lama untuk pesan awal tersebut, sehingga sesi `<Connect><Stream>` keluar tetap terpasang.
+- Barge-in membatalkan pemutaran aktif dan mengosongkan entri TTS Twilio yang diantrekan tetapi belum diputar. Entri yang dikosongkan diselesaikan sebagai dilewati, sehingga logika respons lanjutan dapat berlanjut tanpa menunggu audio yang tidak akan pernah diputar.
+- Percakapan suara realtime menggunakan giliran pembuka milik stream realtime itu sendiri. Voice Call **tidak** memposting pembaruan TwiML `<Say>` lama untuk pesan awal tersebut, sehingga sesi `<Connect><Stream>` keluar tetap terhubung.
 
 ### Masa tenggang pemutusan stream Twilio
 
-Saat stream media Twilio terputus, Voice Call menunggu **2000 ms** sebelum
+Ketika stream media Twilio terputus, Voice Call menunggu **2000 ms** sebelum
 mengakhiri panggilan secara otomatis:
 
-- Jika stream tersambung kembali selama jendela tersebut, pengakhiran otomatis dibatalkan.
+- Jika stream tersambung kembali selama jendela itu, pengakhiran otomatis dibatalkan.
 - Jika tidak ada stream yang mendaftar ulang setelah masa tenggang, panggilan diakhiri untuk mencegah panggilan aktif macet.
 
-## Pembersih panggilan usang
+## Pembersih panggilan kedaluwarsa
 
 Gunakan `staleCallReaperSeconds` untuk mengakhiri panggilan yang tidak pernah menerima Webhook
 terminal (misalnya, panggilan mode notifikasi yang tidak pernah selesai). Default-nya
@@ -613,7 +618,7 @@ adalah `0` (dinonaktifkan).
 Rentang yang direkomendasikan:
 
 - **Produksi:** `120`–`300` detik untuk alur bergaya notifikasi.
-- Jaga nilai ini **lebih tinggi dari `maxDurationSeconds`** agar panggilan normal dapat selesai. Titik awal yang baik adalah `maxDurationSeconds + 30–60` detik.
+- Pertahankan nilai ini **lebih tinggi dari `maxDurationSeconds`** agar panggilan normal dapat selesai. Titik awal yang baik adalah `maxDurationSeconds + 30–60` detik.
 
 ```json5
 {
@@ -632,8 +637,8 @@ Rentang yang direkomendasikan:
 
 ## Keamanan Webhook
 
-Saat proxy atau tunnel berada di depan Gateway, Plugin
-merekonstruksi URL publik untuk verifikasi tanda tangan. Opsi berikut
+Ketika proxy atau tunnel berada di depan Gateway, plugin
+merekonstruksi URL publik untuk verifikasi tanda tangan. Opsi ini
 mengontrol header penerusan mana yang dipercaya:
 
 <ParamField path="webhookSecurity.allowedHosts" type="string[]">
@@ -643,17 +648,17 @@ mengontrol header penerusan mana yang dipercaya:
   Percayai header penerusan tanpa daftar izin.
 </ParamField>
 <ParamField path="webhookSecurity.trustedProxyIPs" type="string[]">
-  Percayai header penerusan hanya saat IP jarak jauh permintaan cocok dengan daftar.
+  Percayai header penerusan hanya ketika IP jarak jauh permintaan cocok dengan daftar.
 </ParamField>
 
 Perlindungan tambahan:
 
 - **Perlindungan replay** Webhook diaktifkan untuk Twilio dan Plivo. Permintaan Webhook valid yang diputar ulang diakui tetapi dilewati untuk efek samping.
-- Giliran percakapan Twilio menyertakan token per giliran dalam callback `<Gather>`, sehingga callback ucapan yang usang/diputar ulang tidak dapat memenuhi giliran transkrip tertunda yang lebih baru.
-- Permintaan Webhook yang tidak terautentikasi ditolak sebelum pembacaan body saat header tanda tangan wajib penyedia tidak ada.
-- Webhook voice-call menggunakan profil body pra-autentikasi bersama (64 KB / 5 detik) plus batas in-flight per IP sebelum verifikasi tanda tangan.
+- Giliran percakapan Twilio menyertakan token per giliran dalam callback `<Gather>`, sehingga callback ucapan yang kedaluwarsa/diputar ulang tidak dapat memenuhi giliran transkrip tertunda yang lebih baru.
+- Permintaan Webhook yang tidak terautentikasi ditolak sebelum pembacaan body ketika header tanda tangan yang diperlukan penyedia tidak ada.
+- Webhook voice-call menggunakan profil body pre-auth bersama (64 KB / 5 detik) ditambah batas in-flight per IP sebelum verifikasi tanda tangan.
 
-Contoh dengan host publik stabil:
+Contoh dengan host publik yang stabil:
 
 ```json5
 {
@@ -687,12 +692,12 @@ openclaw voicecall latency                      # summarize turn latency from lo
 openclaw voicecall expose --mode funnel
 ```
 
-Saat Gateway sudah berjalan, perintah operasional `voicecall` mendelegasikan
-ke runtime voice-call milik Gateway sehingga CLI tidak mengikat server
-Webhook kedua. Jika tidak ada Gateway yang dapat dijangkau, perintah kembali ke
-runtime CLI mandiri.
+Ketika Gateway sudah berjalan, perintah operasional `voicecall` mendelegasikan
+ke runtime panggilan suara milik Gateway sehingga CLI tidak mengikat server
+Webhook kedua. Jika tidak ada Gateway yang dapat dijangkau, perintah akan
+kembali menggunakan runtime CLI mandiri.
 
-`latency` membaca `calls.jsonl` dari jalur penyimpanan voice-call default.
+`latency` membaca `calls.jsonl` dari jalur penyimpanan panggilan suara default.
 Gunakan `--file <path>` untuk menunjuk ke log lain dan `--last <n>` untuk membatasi
 analisis ke N rekaman terakhir (default 200). Output mencakup p50/p90/p99
 untuk latensi giliran dan waktu tunggu-dengar.
@@ -710,12 +715,12 @@ Nama alat: `voice_call`.
 | `end_call`      | `callId`                                   |
 | `get_status`    | `callId`                                   |
 
-Repo ini menyertakan dokumen skill yang sesuai di `skills/voice-call/SKILL.md`.
+Repo ini menyertakan dokumen skill yang cocok di `skills/voice-call/SKILL.md`.
 
 ## RPC Gateway
 
-| Metode              | Argumen                                    |
-| ------------------- | ------------------------------------------ |
+| Metode               | Argumen                                    |
+| -------------------- | ------------------------------------------ |
 | `voicecall.initiate` | `to?`, `message`, `mode?`, `dtmfSequence?` |
 | `voicecall.continue` | `callId`, `message`                        |
 | `voicecall.speak`    | `callId`, `message`                        |
@@ -723,15 +728,15 @@ Repo ini menyertakan dokumen skill yang sesuai di `skills/voice-call/SKILL.md`.
 | `voicecall.end`      | `callId`                                   |
 | `voicecall.status`   | `callId`                                   |
 
-`dtmfSequence` hanya valid dengan `mode: "conversation"`. Panggilan mode notifikasi
-harus menggunakan `voicecall.dtmf` setelah panggilan ada jika membutuhkan digit
-setelah tersambung.
+`dtmfSequence` hanya valid dengan `mode: "conversation"`. Panggilan mode notify
+harus menggunakan `voicecall.dtmf` setelah panggilan ada jika memerlukan digit
+pasca-koneksi.
 
 ## Pemecahan masalah
 
-### Penyiapan gagal pada eksposur Webhook
+### Setup gagal mengekspos Webhook
 
-Jalankan penyiapan dari lingkungan yang sama dengan yang menjalankan Gateway:
+Jalankan setup dari lingkungan yang sama dengan yang menjalankan Gateway:
 
 ```bash
 openclaw voicecall setup
@@ -739,16 +744,16 @@ openclaw voicecall setup --json
 ```
 
 Untuk `twilio`, `telnyx`, dan `plivo`, `webhook-exposure` harus hijau. `publicUrl`
-yang dikonfigurasi tetap gagal jika menunjuk ke ruang jaringan lokal atau privat,
-karena operator tidak dapat memanggil balik ke alamat tersebut. Jangan gunakan
+yang dikonfigurasi tetap gagal ketika mengarah ke ruang jaringan lokal atau privat,
+karena operator tidak dapat melakukan panggilan balik ke alamat tersebut. Jangan gunakan
 `localhost`, `127.0.0.1`, `0.0.0.0`, `10.x`, `172.16.x`-`172.31.x`,
 `192.168.x`, `169.254.x`, `fc00::/7`, atau `fd00::/8` sebagai `publicUrl`.
 
-Panggilan keluar mode notifikasi Twilio mengirim `<Say>` TwiML awalnya langsung dalam
-permintaan pembuatan panggilan, sehingga pesan lisan pertama tidak bergantung pada Twilio
-yang mengambil TwiML Webhook. Webhook publik tetap diperlukan untuk callback status,
-panggilan percakapan, DTMF sebelum tersambung, stream realtime, dan kontrol panggilan
-setelah tersambung.
+Panggilan keluar Twilio mode notify mengirim TwiML `<Say>` awalnya langsung di
+permintaan create-call, sehingga pesan lisan pertama tidak bergantung pada Twilio
+mengambil TwiML Webhook. Webhook publik tetap diperlukan untuk callback status,
+panggilan percakapan, DTMF pra-koneksi, stream realtime, dan kontrol panggilan
+pasca-koneksi.
 
 Gunakan satu jalur eksposur publik:
 
@@ -789,13 +794,13 @@ Periksa penyedia yang dipilih dan bidang kredensial yang diperlukan:
   `fromNumber`.
 - Plivo: `plivo.authId`, `plivo.authToken`, dan `fromNumber`.
 
-Kredensial harus ada pada host Gateway. Mengedit profil shell lokal tidak
-memengaruhi Gateway yang sudah berjalan hingga Gateway dimulai ulang atau memuat ulang
-lingkungannya.
+Kredensial harus ada di host Gateway. Mengedit profil shell lokal tidak
+memengaruhi Gateway yang sudah berjalan hingga Gateway dimulai ulang atau memuat
+ulang lingkungannya.
 
-### Panggilan dimulai tetapi Webhook penyedia tidak tiba
+### Panggilan dimulai tetapi Webhook penyedia tidak datang
 
-Pastikan konsol penyedia menunjuk ke URL Webhook publik yang persis:
+Pastikan konsol penyedia mengarah ke URL Webhook publik yang persis:
 
 ```text
 https://voice.example.com/voice/webhook
@@ -811,16 +816,16 @@ openclaw logs --follow
 
 Penyebab umum:
 
-- `publicUrl` menunjuk ke jalur yang berbeda dari `serve.path`.
+- `publicUrl` mengarah ke jalur yang berbeda dari `serve.path`.
 - URL tunnel berubah setelah Gateway dimulai.
 - Proxy meneruskan permintaan tetapi menghapus atau menulis ulang header host/proto.
 - Firewall atau DNS merutekan hostname publik ke tempat selain Gateway.
 - Gateway dimulai ulang tanpa Plugin Voice Call diaktifkan.
 
-Saat reverse proxy atau tunnel berada di depan Gateway, tetapkan
+Ketika reverse proxy atau tunnel berada di depan Gateway, setel
 `webhookSecurity.allowedHosts` ke hostname publik, atau gunakan
 `webhookSecurity.trustedProxyIPs` untuk alamat proxy yang diketahui. Gunakan
-`webhookSecurity.trustForwardingHeaders` hanya saat batas proxy berada di bawah
+`webhookSecurity.trustForwardingHeaders` hanya ketika batas proxy berada di bawah
 kendali Anda.
 
 ### Verifikasi tanda tangan gagal
@@ -828,10 +833,10 @@ kendali Anda.
 Tanda tangan penyedia diperiksa terhadap URL publik yang direkonstruksi OpenClaw
 dari permintaan masuk. Jika tanda tangan gagal:
 
-- Pastikan URL Webhook penyedia sama persis dengan `publicUrl`, termasuk
+- Pastikan URL Webhook penyedia persis cocok dengan `publicUrl`, termasuk
   skema, host, dan jalur.
-- Untuk URL tingkat gratis ngrok, perbarui `publicUrl` saat hostname tunnel berubah.
-- Pastikan proxy mempertahankan header host dan proto asli, atau konfigurasikan
+- Untuk URL ngrok tingkat gratis, perbarui `publicUrl` ketika hostname tunnel berubah.
+- Pastikan proxy mempertahankan header host dan proto asli, atau konfigurasi
   `webhookSecurity.allowedHosts`.
 - Jangan aktifkan `skipSignatureVerification` di luar pengujian lokal.
 
@@ -851,22 +856,22 @@ openclaw googlemeet setup --transport twilio
 ```
 
 Jika Voice Call hijau tetapi peserta Meet tidak pernah bergabung, periksa nomor
-dial-in Meet, PIN, dan `--dtmf-sequence`. Panggilan telepon bisa sehat sementara
+dial-in Meet, PIN, dan `--dtmf-sequence`. Panggilan telepon dapat sehat sementara
 rapat menolak atau mengabaikan urutan DTMF yang salah.
 
 Google Meet meneruskan urutan DTMF Meet dan teks intro ke `voicecall.start`.
-Untuk panggilan Twilio, Voice Call menyajikan TwiML DTMF terlebih dahulu, mengalihkan kembali ke
-Webhook, lalu membuka stream media realtime sehingga intro yang disimpan dibuat
-setelah peserta telepon bergabung ke rapat.
+Untuk panggilan Twilio, Voice Call menyajikan TwiML DTMF terlebih dahulu, mengalihkan
+kembali ke Webhook, lalu membuka stream media realtime sehingga intro yang disimpan
+dibuat setelah peserta telepon bergabung ke rapat.
 
-Gunakan `openclaw logs --follow` untuk pelacakan fase live. Join Twilio Meet
-yang sehat mencatat urutan ini:
+Gunakan `openclaw logs --follow` untuk jejak fase live. Join Twilio Meet yang sehat
+mencatat urutan ini:
 
 - Google Meet mendelegasikan join Twilio ke Voice Call.
-- Voice Call menyimpan TwiML DTMF sebelum tersambung.
+- Voice Call menyimpan TwiML DTMF pra-koneksi.
 - TwiML awal Twilio dikonsumsi dan disajikan sebelum penanganan realtime.
 - Voice Call menyajikan TwiML realtime untuk panggilan Twilio.
-- Bridge realtime dimulai dengan sapaan awal diantrekan.
+- Bridge realtime dimulai dengan salam awal yang diantrekan.
 
 `openclaw voicecall tail` tetap menampilkan rekaman panggilan yang dipersistenkan; ini berguna untuk
 status panggilan dan transkrip, tetapi tidak setiap transisi Webhook/realtime muncul
@@ -875,18 +880,18 @@ di sana.
 ### Panggilan realtime tidak memiliki ucapan
 
 Pastikan hanya satu mode audio yang diaktifkan. `realtime.enabled` dan
-`streaming.enabled` tidak dapat keduanya bernilai true.
+`streaming.enabled` tidak dapat sama-sama bernilai true.
 
 Untuk panggilan Twilio realtime, verifikasi juga:
 
 - Plugin penyedia realtime dimuat dan terdaftar.
-- `realtime.provider` tidak ditetapkan atau menamai penyedia yang terdaftar.
+- `realtime.provider` tidak disetel atau menamai penyedia yang terdaftar.
 - Kunci API penyedia tersedia untuk proses Gateway.
-- `openclaw logs --follow` menunjukkan TwiML realtime disajikan, bridge realtime
-  dimulai, dan sapaan awal diantrekan.
+- `openclaw logs --follow` menampilkan TwiML realtime disajikan, bridge realtime
+  dimulai, dan salam awal diantrekan.
 
 ## Terkait
 
 - [Mode bicara](/id/nodes/talk)
-- [Teks-ke-ucapan](/id/tools/tts)
+- [Teks ke ucapan](/id/tools/tts)
 - [Bangun suara](/id/nodes/voicewake)

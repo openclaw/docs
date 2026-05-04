@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Anda ingin mengambil URL dan mengekstrak konten yang mudah dibaca
-    - Anda perlu mengonfigurasi web_fetch atau mekanisme cadangan Firecrawl-nya
-    - Anda ingin memahami batasan dan penembolokan web_fetch
+    - Anda ingin mengambil URL dan mengekstrak konten yang dapat dibaca
+    - Anda perlu mengonfigurasi web_fetch atau cadangan Firecrawl-nya
+    - Anda ingin memahami batasan web_fetch dan penyimpanan cache
 sidebarTitle: Web Fetch
-summary: alat web_fetch -- pengambilan HTTP dengan ekstraksi konten yang mudah dibaca
+summary: alat web_fetch -- pengambilan HTTP dengan ekstraksi konten yang dapat dibaca
 title: Pengambilan web
 x-i18n:
-    generated_at: "2026-05-02T09:35:43Z"
+    generated_at: "2026-05-04T07:09:28Z"
     model: gpt-5.5
     provider: openai
-    source_hash: f455da77c20049f0ed0246fa53e9f49d3cf2004e65bd64a0bf871861c6e93229
+    source_hash: c8c3efbf4a640b2fd69cc9532dcb06a873a6830a2e8a85ab7510ab38207c8670
     source_path: tools/web-fetch.md
     workflow: 16
 ---
 
 Alat `web_fetch` melakukan HTTP GET biasa dan mengekstrak konten yang dapat dibaca
-(HTML ke markdown atau teks). Alat ini **tidak** menjalankan JavaScript.
+(HTML ke markdown atau teks). Alat ini **tidak** mengeksekusi JavaScript.
 
 Untuk situs yang sangat bergantung pada JS atau halaman yang dilindungi login, gunakan
-[Peramban Web](/id/tools/browser) sebagai gantinya.
+[Browser Web](/id/tools/browser) sebagai gantinya.
 
 ## Mulai cepat
 
@@ -47,19 +47,19 @@ Pangkas keluaran hingga sejumlah karakter ini.
 ## Cara kerjanya
 
 <Steps>
-  <Step title="Ambil">
-    Mengirim HTTP GET dengan User-Agent seperti Chrome dan header
+  <Step title="Fetch">
+    Mengirim HTTP GET dengan header User-Agent mirip Chrome dan
     `Accept-Language`. Memblokir hostname privat/internal dan memeriksa ulang pengalihan.
   </Step>
-  <Step title="Ekstrak">
+  <Step title="Extract">
     Menjalankan Readability (ekstraksi konten utama) pada respons HTML.
   </Step>
-  <Step title="Fallback (opsional)">
+  <Step title="Fallback (optional)">
     Jika Readability gagal dan Firecrawl dikonfigurasi, mencoba ulang melalui
-    API Firecrawl dengan mode pengelakan bot.
+    API Firecrawl dengan mode penghindaran bot.
   </Step>
   <Step title="Cache">
-    Hasil di-cache selama 15 menit (dapat dikonfigurasi) untuk mengurangi
+    Hasil disimpan dalam cache selama 15 menit (dapat dikonfigurasi) untuk mengurangi
     pengambilan berulang atas URL yang sama.
   </Step>
 </Steps>
@@ -79,6 +79,7 @@ Pangkas keluaran hingga sejumlah karakter ini.
         timeoutSeconds: 30,
         cacheTtlMinutes: 15,
         maxRedirects: 3,
+        useTrustedEnvProxy: false, // let a trusted HTTP(S) env proxy resolve DNS
         readability: true, // use Readability extraction
         userAgent: "Mozilla/5.0 ...", // override User-Agent
         ssrfPolicy: {
@@ -93,8 +94,8 @@ Pangkas keluaran hingga sejumlah karakter ini.
 
 ## Fallback Firecrawl
 
-Jika ekstraksi Readability gagal, `web_fetch` dapat fallback ke
-[Firecrawl](/id/tools/firecrawl) untuk pengelakan bot dan ekstraksi yang lebih baik:
+Jika ekstraksi Readability gagal, `web_fetch` dapat melakukan fallback ke
+[Firecrawl](/id/tools/firecrawl) untuk penghindaran bot dan ekstraksi yang lebih baik:
 
 ```json5
 {
@@ -129,38 +130,57 @@ Konfigurasi lama `tools.web.fetch.firecrawl.*` dimigrasikan otomatis oleh `openc
 
 <Note>
   Jika Firecrawl diaktifkan dan SecretRef-nya tidak terselesaikan tanpa fallback env
-  `FIRECRAWL_API_KEY`, startup gateway gagal cepat.
+  `FIRECRAWL_API_KEY`, startup Gateway akan gagal cepat.
 </Note>
 
 <Note>
-  Override `baseUrl` Firecrawl dikunci ketat: trafik terhosting menggunakan
-  `https://api.firecrawl.dev`; override yang di-host sendiri harus menargetkan endpoint privat atau
-  internal, dan `http://` diterima hanya untuk target privat tersebut.
+  Penggantian `baseUrl` Firecrawl dikunci ketat: lalu lintas hosted menggunakan
+  `https://api.firecrawl.dev`; penggantian self-hosted harus menargetkan endpoint privat atau
+  internal, dan `http://` hanya diterima untuk target privat tersebut.
 </Note>
 
 Perilaku runtime saat ini:
 
 - `tools.web.fetch.provider` memilih penyedia fallback pengambilan secara eksplisit.
-- Jika `provider` dihilangkan, OpenClaw mendeteksi otomatis penyedia web-fetch
-  pertama yang siap dari kredensial yang tersedia. `web_fetch` non-sandbox dapat menggunakan
-  plugin terpasang yang mendeklarasikan `contracts.webFetchProviders` dan mendaftarkan
+- Jika `provider` dihilangkan, OpenClaw mendeteksi otomatis penyedia web-fetch pertama yang siap
+  dari kredensial yang tersedia. `web_fetch` yang tidak disandbox dapat menggunakan
+  Plugin terinstal yang mendeklarasikan `contracts.webFetchProviders` dan mendaftarkan
   penyedia yang cocok saat runtime. Saat ini penyedia bawaan adalah Firecrawl.
-- Panggilan `web_fetch` sandbox tetap terbatas pada penyedia bawaan.
+- Panggilan `web_fetch` tersandbox tetap terbatas pada penyedia bawaan.
 - Jika Readability dinonaktifkan, `web_fetch` langsung melewati ke fallback
-  penyedia yang dipilih. Jika tidak ada penyedia yang tersedia, ia gagal tertutup.
+  penyedia yang dipilih. Jika tidak ada penyedia yang tersedia, alat ini gagal tertutup.
+
+## Proksi Env Tepercaya
+
+Jika deployment Anda mengharuskan `web_fetch` melewati proksi keluar
+HTTP(S) tepercaya, atur `tools.web.fetch.useTrustedEnvProxy: true`.
+
+Dalam mode ini, OpenClaw tetap menerapkan pemeriksaan SSRF berbasis hostname sebelum mengirim
+permintaan, tetapi membiarkan proksi menyelesaikan DNS alih-alih melakukan pinning DNS lokal.
+Aktifkan ini hanya ketika proksi dikendalikan operator dan menerapkan
+kebijakan keluar setelah resolusi DNS.
+
+<Note>
+  Jika tidak ada variabel env proksi HTTP(S) yang dikonfigurasi, atau host target dikecualikan oleh
+  `NO_PROXY`, `web_fetch` kembali ke jalur ketat normal dengan pinning DNS
+  lokal.
+</Note>
 
 ## Batasan dan keamanan
 
 - `maxChars` dibatasi ke `tools.web.fetch.maxCharsCap`
-- Isi respons dibatasi pada `maxResponseBytes` sebelum parsing; respons yang terlalu besar
+- Body respons dibatasi pada `maxResponseBytes` sebelum parsing; respons yang terlalu besar
   dipangkas dengan peringatan
 - Hostname privat/internal diblokir
 - `tools.web.fetch.ssrfPolicy.allowRfc2544BenchmarkRange` dan
   `tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange` adalah opt-in sempit
-  untuk stack proxy fake-IP tepercaya; biarkan tidak disetel kecuali proxy Anda memiliki
+  untuk stack proksi fake-IP tepercaya; biarkan tidak diatur kecuali proksi Anda memiliki
   rentang sintetis tersebut dan menerapkan kebijakan tujuannya sendiri
 - Pengalihan diperiksa dan dibatasi oleh `maxRedirects`
-- `web_fetch` bersifat upaya terbaik -- beberapa situs memerlukan [Peramban Web](/id/tools/browser)
+- `useTrustedEnvProxy` adalah opt-in eksplisit dan hanya boleh diaktifkan untuk
+  proksi yang dikendalikan operator yang tetap menerapkan kebijakan keluar setelah resolusi
+  DNS
+- `web_fetch` bersifat upaya terbaik -- beberapa situs memerlukan [Browser Web](/id/tools/browser)
 
 ## Profil alat
 
@@ -178,5 +198,5 @@ Jika Anda menggunakan profil alat atau allowlist, tambahkan `web_fetch` atau `gr
 ## Terkait
 
 - [Pencarian Web](/id/tools/web) -- cari di web dengan beberapa penyedia
-- [Peramban Web](/id/tools/browser) -- otomasi peramban penuh untuk situs yang sangat bergantung pada JS
+- [Browser Web](/id/tools/browser) -- automasi browser penuh untuk situs yang sangat bergantung pada JS
 - [Firecrawl](/id/tools/firecrawl) -- alat pencarian dan scraping Firecrawl
