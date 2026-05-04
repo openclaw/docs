@@ -1,35 +1,36 @@
 ---
 read_when:
-    - تريد مفتاحًا واحدًا لواجهة برمجة التطبيقات للعديد من نماذج اللغة الكبيرة
+    - تريد مفتاح واجهة برمجة تطبيقات واحدًا للعديد من نماذج اللغة الكبيرة
     - تريد تشغيل النماذج عبر OpenRouter في OpenClaw
     - تريد استخدام OpenRouter لتوليد الصور
     - تريد استخدام OpenRouter لتوليد الفيديو
-summary: استخدم واجهة API الموحدة الخاصة بـ OpenRouter للوصول إلى العديد من النماذج في OpenClaw
+summary: استخدم واجهة برمجة التطبيقات الموحّدة من OpenRouter للوصول إلى العديد من النماذج في OpenClaw
 title: OpenRouter
 x-i18n:
-    generated_at: "2026-05-02T21:01:59Z"
+    generated_at: "2026-05-04T07:09:56Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e98b8b540265b6d11681390c02cb68312f33625bf223823a2dbca17e877c0422
+    source_hash: f6b7299408aa0de7530e2248c7fa5dae8c09095e2d20a0e9d12a64cab83966fc
     source_path: providers/openrouter.md
     workflow: 16
 ---
 
-OpenRouter يوفر **واجهة API موحدة** توجّه الطلبات إلى العديد من النماذج خلف نقطة نهاية واحدة ومفتاح API واحد. وهو متوافق مع OpenAI، لذلك تعمل معظم SDKs الخاصة بـ OpenAI عبر تبديل عنوان URL الأساسي.
+يوفر OpenRouter **واجهة API موحدة** توجّه الطلبات إلى العديد من النماذج خلف نقطة
+نهاية واحدة ومفتاح API واحد. وهي متوافقة مع OpenAI، لذلك تعمل معظم حزم OpenAI SDK عبر تبديل عنوان URL الأساسي.
 
 ## البدء
 
 <Steps>
-  <Step title="Get your API key">
+  <Step title="احصل على مفتاح API الخاص بك">
     أنشئ مفتاح API في [openrouter.ai/keys](https://openrouter.ai/keys).
   </Step>
-  <Step title="Run onboarding">
+  <Step title="شغّل الإعداد الأولي">
     ```bash
     openclaw onboard --auth-choice openrouter-api-key
     ```
   </Step>
-  <Step title="(Optional) Switch to a specific model">
-    يستخدم الإعداد التمهيدي `openrouter/auto` افتراضياً. اختر نموذجاً محدداً لاحقاً:
+  <Step title="(اختياري) بدّل إلى نموذج محدد">
+    يستخدم الإعداد الأولي `openrouter/auto` افتراضياً. اختر نموذجاً محدداً لاحقاً:
 
     ```bash
     openclaw models set openrouter/<provider>/<model>
@@ -58,14 +59,14 @@ OpenRouter يوفر **واجهة API موحدة** توجّه الطلبات إل
 للموفرين والنماذج المتاحة، راجع [/concepts/model-providers](/ar/concepts/model-providers).
 </Note>
 
-أمثلة fallback المضمنة:
+أمثلة احتياطية مضمّنة:
 
-| مرجع النموذج                    | ملاحظات                         |
+| مرجع النموذج                     | ملاحظات                     |
 | --------------------------------- | ---------------------------- |
-| `openrouter/auto`                 | توجيه OpenRouter التلقائي |
+| `openrouter/auto`                 | توجيه OpenRouter التلقائي    |
 | `openrouter/moonshotai/kimi-k2.6` | Kimi K2.6 عبر MoonshotAI     |
 
-## توليد الصور
+## إنشاء الصور
 
 يمكن أن يدعم OpenRouter أيضاً أداة `image_generate`. استخدم نموذج صور من OpenRouter ضمن `agents.defaults.imageGenerationModel`:
 
@@ -83,11 +84,11 @@ OpenRouter يوفر **واجهة API موحدة** توجّه الطلبات إل
 }
 ```
 
-يرسل OpenClaw طلبات الصور إلى API صور إكمالات المحادثة في OpenRouter مع `modalities: ["image", "text"]`. تتلقى نماذج الصور من Gemini تلميحات `aspectRatio` و`resolution` المدعومة عبر `image_config` في OpenRouter. استخدم `agents.defaults.imageGenerationModel.timeoutMs` لنماذج صور OpenRouter الأبطأ؛ وتبقى معلمة `timeoutMs` لكل استدعاء في أداة `image_generate` هي صاحبة الأولوية.
+يرسل OpenClaw طلبات الصور إلى واجهة API لصور إكمالات الدردشة في OpenRouter مع `modalities: ["image", "text"]`. تتلقى نماذج صور Gemini تلميحات `aspectRatio` و`resolution` المدعومة من خلال `image_config` الخاص بـ OpenRouter. استخدم `agents.defaults.imageGenerationModel.timeoutMs` لنماذج صور OpenRouter الأبطأ؛ يظل معامل `timeoutMs` لكل استدعاء في أداة `image_generate` هو صاحب الأولوية.
 
-## توليد الفيديو
+## إنشاء الفيديو
 
-يمكن أن يدعم OpenRouter أيضاً أداة `video_generate` عبر API غير المتزامنة `/videos`. استخدم نموذج فيديو من OpenRouter ضمن `agents.defaults.videoGenerationModel`:
+يمكن أن يدعم OpenRouter أيضاً أداة `video_generate` من خلال واجهة API غير المتزامنة `/videos` الخاصة به. استخدم نموذج فيديو من OpenRouter ضمن `agents.defaults.videoGenerationModel`:
 
 ```json5
 {
@@ -103,18 +104,18 @@ OpenRouter يوفر **واجهة API موحدة** توجّه الطلبات إل
 ```
 
 يرسل OpenClaw مهام تحويل النص إلى فيديو وتحويل الصورة إلى فيديو إلى OpenRouter، ويستطلع
-`polling_url` المُعاد، وينزّل الفيديو المكتمل من
-`unsigned_urls` في OpenRouter أو من نقطة نهاية محتوى المهمة الموثقة.
-تُرسل الصور المرجعية افتراضياً كصور للإطار الأول/الأخير؛ وتُرسل الصور
-الموسومة بـ `reference_image` كمراجع إدخال في OpenRouter. يعلن الإعداد الافتراضي
-المضمن `google/veo-3.1-fast` عن مدد 4/6/8
-ثوانٍ المدعومة حالياً، ودقات `720P`/`1080P`، ونسب أبعاد
-`16:9`/`9:16`. لا يتم تسجيل تحويل الفيديو إلى فيديو لـ OpenRouter لأن API
-توليد الفيديو upstream تقبل حالياً مراجع النصوص والصور.
+`polling_url` المُعاد، ثم ينزّل الفيديو المكتمل من
+`unsigned_urls` الخاصة بـ OpenRouter أو من نقطة نهاية محتوى المهمة الموثقة.
+تُرسل الصور المرجعية كصور للإطار الأول/الأخير افتراضياً؛ أما الصور
+الموسومة بـ `reference_image` فتُرسل كمراجع إدخال في OpenRouter. يعلن
+الافتراضي المضمّن `google/veo-3.1-fast` عن مدد 4/6/8
+ثوانٍ المدعومة حالياً، ودقات `720P`/`1080P`، ونسب العرض إلى الارتفاع
+`16:9`/`9:16`. لا يُسجَّل تحويل الفيديو إلى فيديو في OpenRouter لأن واجهة API
+لإنشاء الفيديو في المنبع تقبل حالياً مراجع النصوص والصور.
 
 ## تحويل النص إلى كلام
 
-يمكن أيضاً استخدام OpenRouter كموفر TTS عبر نقطة النهاية المتوافقة مع OpenAI
+يمكن استخدام OpenRouter أيضاً كموفر TTS من خلال نقطة النهاية المتوافقة مع OpenAI
 `/audio/speech`.
 
 ```json5
@@ -135,82 +136,115 @@ OpenRouter يوفر **واجهة API موحدة** توجّه الطلبات إل
 }
 ```
 
-إذا تم حذف `messages.tts.providers.openrouter.apiKey`، يعيد TTS استخدام
+إذا حُذف `messages.tts.providers.openrouter.apiKey`، فسيعيد TTS استخدام
 `models.providers.openrouter.apiKey`، ثم `OPENROUTER_API_KEY`.
 
 ## المصادقة والرؤوس
 
-يستخدم OpenRouter رمز Bearer مع مفتاح API الخاص بك داخلياً.
+يستخدم OpenRouter رمز Bearer مع مفتاح API الخاص بك في الخلفية.
 
 في طلبات OpenRouter الحقيقية (`https://openrouter.ai/api/v1`)، يضيف OpenClaw أيضاً
 رؤوس إسناد التطبيق الموثقة لدى OpenRouter:
 
-| الرأس                    | القيمة                 |
-| ------------------------- | --------------------- |
-| `HTTP-Referer`            | `https://openclaw.ai` |
-| `X-OpenRouter-Title`      | `OpenClaw`            |
-| `X-OpenRouter-Categories` | `cli-agent`           |
+| الرأس                     | القيمة                                                                                                 |
+| ------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `HTTP-Referer`            | `https://openclaw.ai`                                                                                  |
+| `X-OpenRouter-Title`      | `OpenClaw`                                                                                             |
+| `X-OpenRouter-Categories` | `cli-agent,cloud-agent,programming-app,creative-writing,writing-assistant,general-chat,personal-agent` |
 
 <Warning>
-إذا أعدت توجيه موفر OpenRouter إلى وكيل أو عنوان URL أساسي آخر، فإن OpenClaw
-**لا** يحقن تلك الرؤوس الخاصة بـ OpenRouter أو علامات ذاكرة التخزين المؤقت الخاصة بـ Anthropic.
+إذا أعدت توجيه موفر OpenRouter إلى وسيط أو عنوان URL أساسي آخر، فإن OpenClaw
+**لا** يحقن هذه الرؤوس الخاصة بـ OpenRouter أو علامات ذاكرة Anthropic المؤقتة.
 </Warning>
 
 ## الإعداد المتقدم
 
 <AccordionGroup>
-  <Accordion title="Anthropic cache markers">
+  <Accordion title="التخزين المؤقت للاستجابات">
+    التخزين المؤقت لاستجابات OpenRouter اختياري. فعّله لكل نموذج OpenRouter باستخدام
+    معاملات النموذج:
+
+    ```json5
+    {
+      agents: {
+        defaults: {
+          models: {
+            "openrouter/auto": {
+              params: {
+                responseCache: true,
+                responseCacheTtlSeconds: 300,
+              },
+            },
+          },
+        },
+      },
+    }
+    ```
+
+    يرسل OpenClaw `X-OpenRouter-Cache: true`، وعند الإعداد،
+    `X-OpenRouter-Cache-TTL`. يفرض `responseCacheClear: true` تحديثاً
+    للطلب الحالي ويخزن الاستجابة البديلة. كما تُقبل الأسماء البديلة بصيغة Snake_case
+    (`response_cache`، و`response_cache_ttl_seconds`، و
+    `response_cache_clear`).
+
+    هذا منفصل عن التخزين المؤقت لمطالبات الموفر وعن علامات Anthropic
+    `cache_control` الخاصة بـ OpenRouter. ولا يُطبَّق إلا على مسارات
+    `openrouter.ai` المتحقق منها، وليس على عناوين URL الأساسية لوسطاء مخصصين.
+
+  </Accordion>
+
+  <Accordion title="علامات ذاكرة Anthropic المؤقتة">
     في مسارات OpenRouter المتحقق منها، تحتفظ مراجع نماذج Anthropic بعلامات
-    `cache_control` الخاصة بـ Anthropic في OpenRouter التي يستخدمها OpenClaw
-    لتحسين إعادة استخدام ذاكرة prompt-cache في كتل موجهات النظام/المطور.
+    Anthropic `cache_control` الخاصة بـ OpenRouter التي يستخدمها OpenClaw
+    لتحسين إعادة استخدام ذاكرة المطالبات المؤقتة في كتل مطالبات النظام/المطور.
   </Accordion>
 
-  <Accordion title="Anthropic reasoning prefill">
-    في مسارات OpenRouter المتحقق منها، تُسقط مراجع نماذج Anthropic التي تم تمكين reasoning لها
-    أدوار الملء المسبق اللاحقة للمساعد قبل أن يصل الطلب إلى OpenRouter،
-    بما يطابق متطلب Anthropic بأن تنتهي محادثات reasoning بدور مستخدم.
+  <Accordion title="التعبئة المسبقة لاستدلال Anthropic">
+    في مسارات OpenRouter المتحقق منها، تُسقط مراجع نماذج Anthropic التي تم تمكين الاستدلال لها
+    أدوار التعبئة المسبقة اللاحقة للمساعد قبل وصول الطلب إلى OpenRouter،
+    بما يطابق متطلب Anthropic بأن تنتهي محادثات الاستدلال بدور مستخدم.
   </Accordion>
 
-  <Accordion title="Thinking / reasoning injection">
+  <Accordion title="إدخال التفكير / الاستدلال">
     في المسارات المدعومة غير `auto`، يربط OpenClaw مستوى التفكير المحدد
-    بحمولات reasoning الخاصة بوكيل OpenRouter. تتخطى تلميحات النماذج غير المدعومة و
-    `openrouter/auto` حقن reasoning ذلك. كما يتخطى Hunter Alpha أيضاً
-    reasoning الوكيل لمراجع النماذج المكونة القديمة لأن OpenRouter قد
-    يعيد نص الإجابة النهائي في حقول reasoning لذلك المسار المتقاعد.
+    بحمولات استدلال وسيط OpenRouter. تتجاوز تلميحات النماذج غير المدعومة و
+    `openrouter/auto` هذا الإدخال للاستدلال. يتجاوز Hunter Alpha أيضاً
+    استدلال الوسيط لمراجع النماذج المضبوطة القديمة لأن OpenRouter قد
+    يعيد نص الإجابة النهائي في حقول الاستدلال لذلك المسار المتقاعد.
   </Accordion>
 
-  <Accordion title="DeepSeek V4 reasoning replay">
+  <Accordion title="إعادة تشغيل استدلال DeepSeek V4">
     في مسارات OpenRouter المتحقق منها، يملأ `openrouter/deepseek/deepseek-v4-flash` و
-    `openrouter/deepseek/deepseek-v4-pro` قيمة `reasoning_content` المفقودة في
-    أدوار المساعد المعاد تشغيلها بحيث تحافظ محادثات التفكير/الأدوات على
+    `openrouter/deepseek/deepseek-v4-pro` محتوى `reasoning_content` المفقود في
+    أدوار المساعد المعاد تشغيلها حتى تحافظ محادثات التفكير/الأدوات على
     شكل المتابعة المطلوب في DeepSeek V4.
   </Accordion>
 
-  <Accordion title="OpenAI-only request shaping">
-    لا يزال OpenRouter يعمل عبر المسار المتوافق مع OpenAI بنمط الوكيل، لذلك
-    لا يتم تمرير تشكيل الطلبات الأصلي الخاص بـ OpenAI فقط مثل `serviceTier`، و`store` في Responses،
-    وحمولات توافق reasoning في OpenAI، وتلميحات prompt-cache.
+  <Accordion title="تشكيل الطلبات الخاص بـ OpenAI فقط">
+    لا يزال OpenRouter يعمل عبر المسار المتوافق مع OpenAI بنمط الوسيط، لذلك
+    لا تُمرَّر عمليات تشكيل الطلبات الأصلية الخاصة بـ OpenAI فقط مثل `serviceTier`، و`store` في Responses،
+    وحمولات توافق استدلال OpenAI، وتلميحات ذاكرة المطالبات المؤقتة.
   </Accordion>
 
-  <Accordion title="Gemini-backed routes">
-    تبقى مراجع OpenRouter المدعومة من Gemini على مسار proxy-Gemini: يحافظ OpenClaw على
-    تنظيف توقيعات التفكير الخاصة بـ Gemini هناك، لكنه لا يفعّل تحقق replay الأصلي في Gemini
-    أو إعادة كتابة bootstrap.
+  <Accordion title="مسارات مدعومة بـ Gemini">
+    تبقى مراجع OpenRouter المدعومة بـ Gemini على مسار proxy-Gemini: يحتفظ OpenClaw
+    بتنظيف توقيع التفكير في Gemini هناك، لكنه لا يفعّل تحقق إعادة التشغيل الأصلي في Gemini
+    أو عمليات إعادة كتابة التمهيد.
   </Accordion>
 
-  <Accordion title="Provider routing metadata">
-    إذا مرّرت توجيه موفر OpenRouter ضمن معلمات النموذج، يمرره OpenClaw
-    كبيانات تعريف توجيه OpenRouter قبل تشغيل مغلفات البث المشتركة.
+  <Accordion title="بيانات تعريف توجيه الموفر">
+    إذا مررت توجيه موفر OpenRouter ضمن معاملات النموذج، يمرره OpenClaw
+    كبيانات تعريف لتوجيه OpenRouter قبل تشغيل أغلفة البث المشتركة.
   </Accordion>
 </AccordionGroup>
 
-## ذو صلة
+## ذات صلة
 
 <CardGroup cols={2}>
-  <Card title="Model selection" href="/ar/concepts/model-providers" icon="layers">
-    اختيار الموفرين ومراجع النماذج وسلوك failover.
+  <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
+    اختيار الموفرين، ومراجع النماذج، وسلوك تجاوز الفشل.
   </Card>
-  <Card title="Configuration reference" href="/ar/gateway/configuration-reference" icon="gear">
-    مرجع الإعداد الكامل للوكلاء والنماذج والموفرين.
+  <Card title="مرجع الإعداد" href="/ar/gateway/configuration-reference" icon="gear">
+    مرجع الإعداد الكامل للوكلاء، والنماذج، والموفرين.
   </Card>
 </CardGroup>
