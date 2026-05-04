@@ -1,15 +1,15 @@
 ---
 read_when:
     - تريد تثبيت أو إدارة Plugins الخاصة بـ Gateway أو الحزم المتوافقة
-    - تريد استكشاف حالات فشل تحميل Plugin وإصلاحها
+    - تريد استكشاف إخفاقات تحميل Plugin وإصلاحها
 sidebarTitle: Plugins
-summary: مرجع CLI لـ `openclaw plugins` (list, install, marketplace, uninstall, enable/disable, doctor)
+summary: مرجع CLI لـ `openclaw plugins` (list، install، marketplace، uninstall، enable/disable، doctor)
 title: Plugins
 x-i18n:
-    generated_at: "2026-05-04T07:03:02Z"
+    generated_at: "2026-05-04T09:37:14Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 36ae7edb12986ead7e126f25e0761bf312b2644b35017181b674082105886776
+    source_hash: f561ce098181b07f25db3520b1726162863469ac05fb4a3e786915257d97c9a4
     source_path: cli/plugins.md
     workflow: 16
 ---
@@ -18,7 +18,7 @@ x-i18n:
 
 <CardGroup cols={2}>
   <Card title="نظام Plugin" href="/ar/tools/plugin">
-    دليل المستخدم النهائي لتثبيت Plugins وتمكينها واستكشاف مشكلاتها وإصلاحها.
+    دليل المستخدم النهائي لتثبيت Plugins وتفعيلها واستكشاف أخطائها وإصلاحها.
   </Card>
   <Card title="إدارة Plugins" href="/ar/plugins/manage-plugins">
     أمثلة سريعة للتثبيت، والسرد، والتحديث، وإلغاء التثبيت، والنشر.
@@ -27,10 +27,10 @@ x-i18n:
     نموذج توافق الحزم.
   </Card>
   <Card title="بيان Plugin" href="/ar/plugins/manifest">
-    حقول البيان ومخطط التكوين.
+    حقول البيان ومخطط الإعدادات.
   </Card>
   <Card title="الأمان" href="/ar/gateway/security">
-    تقوية الأمان لتثبيتات Plugin.
+    تعزيز الأمان لعمليات تثبيت Plugin.
   </Card>
 </CardGroup>
 
@@ -64,14 +64,14 @@ openclaw plugins marketplace list <marketplace> --json
 
 للتحقيق في بطء التثبيت، أو الفحص، أو إلغاء التثبيت، أو تحديث السجل، شغّل
 الأمر مع `OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1`. يكتب التتبع توقيتات المراحل
-إلى stderr ويُبقي مخرجات JSON قابلة للتحليل. راجع [تصحيح الأخطاء](/ar/help/debugging#plugin-lifecycle-trace).
+إلى stderr ويحافظ على قابلية تحليل مخرجات JSON. راجع [تصحيح الأخطاء](/ar/help/debugging#plugin-lifecycle-trace).
 
 <Note>
-تأتي Plugins المضمّنة مع OpenClaw. يكون بعضها ممكّنًا افتراضيًا (مثل موفري النماذج المضمّنين، وموفري الكلام المضمّنين، وPlugin المتصفح المضمّن)؛ ويتطلب بعضها الآخر `plugins enable`.
+تأتي Plugins المضمّنة مع OpenClaw. يكون بعضها مفعّلًا افتراضيًا (على سبيل المثال موفرو النماذج المضمّنون، وموفرو الكلام المضمّنون، وPlugin المتصفح المضمّن)؛ ويتطلب البعض الآخر `plugins enable`.
 
-يجب أن تشحن Plugins الأصلية لـ OpenClaw ملف `openclaw.plugin.json` مع JSON Schema مضمن (`configSchema`، حتى لو كان فارغًا). تستخدم الحزم المتوافقة بيانات الحزم الخاصة بها بدلًا من ذلك.
+يجب أن تتضمن Plugins الأصلية في OpenClaw ملف `openclaw.plugin.json` مع JSON Schema مضمّن (`configSchema`، حتى لو كان فارغًا). تستخدم الحزم المتوافقة بيانات الحزم الخاصة بها بدلًا من ذلك.
 
-يعرض `plugins list` القيمة `Format: openclaw` أو `Format: bundle`. وتعرض مخرجات القائمة/المعلومات المطوّلة أيضًا النوع الفرعي للحزمة (`codex` أو `claude` أو `cursor`) إضافةً إلى إمكانات الحزمة المكتشفة.
+يعرض `plugins list` القيمة `Format: openclaw` أو `Format: bundle`. كما تعرض مخرجات القائمة/المعلومات المطوّلة النوع الفرعي للحزمة (`codex` أو `claude` أو `cursor`) بالإضافة إلى إمكانات الحزمة المكتشفة.
 </Note>
 
 ### التثبيت
@@ -93,108 +93,108 @@ openclaw plugins install <plugin> --marketplace https://github.com/<owner>/<repo
 ```
 
 <Warning>
-تُثبّت أسماء الحزم المجردة من npm افتراضيًا أثناء مرحلة التحويل عند الإطلاق. استخدم `clawhub:<package>` من أجل ClawHub. تعامل مع تثبيتات Plugin كما تتعامل مع تشغيل التعليمات البرمجية. يُفضّل استخدام الإصدارات المثبّتة.
+تُثبَّت أسماء الحزم المجردة من npm افتراضيًا أثناء انتقال الإطلاق. استخدم `clawhub:<package>` لـ ClawHub. تعامل مع تثبيت Plugin كما تتعامل مع تشغيل الكود. فضّل الإصدارات المثبّتة.
 </Warning>
 
 يستعلم `plugins search` من ClawHub عن حزم Plugin القابلة للتثبيت ويطبع
 أسماء حزم جاهزة للتثبيت. يبحث في حزم code-plugin وbundle-plugin،
-وليس في Skills. استخدم `openclaw skills search` للبحث عن Skills في ClawHub.
+وليس Skills. استخدم `openclaw skills search` للبحث عن Skills في ClawHub.
 
 <Note>
-ClawHub هو سطح التوزيع والاكتشاف الأساسي لمعظم Plugins. يظل npm
-مسارًا احتياطيًا ومدعومًا للتثبيت المباشر. عادت حزم Plugin المملوكة لـ OpenClaw
-بصيغة `@openclaw/*` إلى النشر على npm؛ راجع القائمة الحالية
+ClawHub هو واجهة التوزيع والاكتشاف الأساسية لمعظم Plugins. يظل Npm
+مسارًا احتياطيًا مدعومًا ومسار تثبيت مباشر. عادت حزم Plugin المملوكة لـ OpenClaw
+باسم `@openclaw/*` إلى النشر على npm؛ راجع القائمة الحالية
 على [npmjs.com/org/openclaw](https://www.npmjs.com/org/openclaw) أو
 [مخزون Plugin](/ar/plugins/plugin-inventory). تستخدم التثبيتات المستقرة `latest`.
-وتفضّل تثبيتات وتحديثات قناة beta وسم توزيع npm المسمى `beta` عندما يكون ذلك الوسم
+تفضّل عمليات التثبيت والتحديث في قناة بيتا وسم التوزيع `beta` في npm عندما يكون ذلك الوسم
 متاحًا، ثم تعود إلى `latest`.
 </Note>
 
 <AccordionGroup>
-  <Accordion title="تضمينات التكوين وإصلاح التكوين غير الصالح">
-    إذا كان قسم `plugins` لديك مدعومًا بملف `$include` واحد، فإن `plugins install/update/enable/disable/uninstall` تكتب إلى ذلك الملف المضمّن وتترك `openclaw.json` دون تغيير. تفشل تضمينات الجذر، ومصفوفات التضمين، والتضمينات التي تحتوي على تجاوزات شقيقة بشكل مغلق بدلًا من تسطيحها. راجع [تضمينات التكوين](/ar/gateway/configuration) لمعرفة الأشكال المدعومة.
+  <Accordion title="تضمينات الإعداد وإصلاح الإعداد غير الصالح">
+    إذا كان قسم `plugins` لديك مدعومًا بـ `$include` في ملف واحد، فإن `plugins install/update/enable/disable/uninstall` تكتب إلى ذلك الملف المضمّن وتترك `openclaw.json` دون تغيير. تفشل تضمينات الجذر، ومصفوفات التضمين، والتضمينات التي تحتوي على تجاوزات شقيقة بشكل مغلق بدلًا من التسطيح. راجع [تضمينات الإعداد](/ar/gateway/configuration) للاطلاع على الأشكال المدعومة.
 
-    إذا كان التكوين غير صالح أثناء التثبيت، فعادةً يفشل `plugins install` بشكل مغلق ويطلب منك تشغيل `openclaw doctor --fix` أولًا. أثناء بدء تشغيل Gateway وإعادة التحميل الساخنة، يفشل تكوين Plugin غير الصالح بشكل مغلق مثل أي تكوين غير صالح آخر؛ ويمكن لـ `openclaw doctor --fix` عزل إدخال Plugin غير الصالح. الاستثناء الوحيد الموثق في وقت التثبيت هو مسار استرداد ضيق لـ Plugin مضمّن يتطلب أن تختار Plugins صراحةً `openclaw.install.allowInvalidConfigRecovery`.
+    إذا كان الإعداد غير صالح أثناء التثبيت، فإن `plugins install` يفشل عادةً بشكل مغلق ويطلب منك تشغيل `openclaw doctor --fix` أولًا. أثناء بدء Gateway وإعادة التحميل الساخن، يفشل إعداد Plugin غير الصالح بشكل مغلق مثل أي إعداد غير صالح آخر؛ يمكن لـ `openclaw doctor --fix` عزل إدخال Plugin غير الصالح. الاستثناء الوحيد الموثق وقت التثبيت هو مسار استرداد ضيق لـ Plugin مضمّن لـ Plugins التي تختار صراحةً `openclaw.install.allowInvalidConfigRecovery`.
 
   </Accordion>
   <Accordion title="--force وإعادة التثبيت مقابل التحديث">
-    يعيد `--force` استخدام هدف التثبيت الحالي ويستبدل Plugin أو حزمة خطافات مثبتة مسبقًا في مكانها. استخدمه عندما تعيد تثبيت المعرّف نفسه عمدًا من مسار محلي جديد، أو أرشيف، أو حزمة ClawHub، أو أثر npm. للترقيات المعتادة لـ Plugin من npm متتبَّع مسبقًا، يُفضّل استخدام `openclaw plugins update <id-or-npm-spec>`.
+    يعيد `--force` استخدام هدف التثبيت الحالي ويستبدل Plugin أو حزمة خطافات مثبّتة بالفعل في مكانها. استخدمه عندما تعيد تثبيت نفس المعرّف عمدًا من مسار محلي جديد، أو أرشيف، أو حزمة ClawHub، أو أثر npm. للترقيات الروتينية لـ Plugin من npm متتبّع بالفعل، فضّل `openclaw plugins update <id-or-npm-spec>`.
 
-    إذا شغّلت `plugins install` لمعرّف Plugin مثبت مسبقًا، فسيتوقف OpenClaw ويوجهك إلى `plugins update <id-or-npm-spec>` للترقية العادية، أو إلى `plugins install <package> --force` عندما تريد فعلًا استبدال التثبيت الحالي من مصدر مختلف.
+    إذا شغّلت `plugins install` لمعرّف Plugin مثبّت بالفعل، يوقف OpenClaw العملية ويوجّهك إلى `plugins update <id-or-npm-spec>` للترقية العادية، أو إلى `plugins install <package> --force` عندما تريد فعلًا استبدال التثبيت الحالي من مصدر مختلف.
 
   </Accordion>
   <Accordion title="نطاق --pin">
-    ينطبق `--pin` على تثبيتات npm فقط. وهو غير مدعوم مع تثبيتات `git:`؛ استخدم مرجع Git صريحًا مثل `git:github.com/acme/plugin@v1.2.3` عندما تريد مصدرًا مثبّتًا. ولا يُدعم مع `--marketplace`، لأن تثبيتات السوق تحفظ بيانات تعريف مصدر السوق بدلًا من مواصفة npm.
+    ينطبق `--pin` على تثبيتات npm فقط. لا يُدعم مع تثبيتات `git:`؛ استخدم مرجع git صريحًا مثل `git:github.com/acme/plugin@v1.2.3` عندما تريد مصدرًا مثبّتًا. ولا يُدعم مع `--marketplace`، لأن تثبيتات marketplace تحفظ بيانات تعريف مصدر marketplace بدلًا من مواصفة npm.
   </Accordion>
   <Accordion title="--dangerously-force-unsafe-install">
-    `--dangerously-force-unsafe-install` خيار طوارئ للإيجابيات الكاذبة في ماسح التعليمات البرمجية الخطرة المدمج. يسمح بمتابعة التثبيت حتى عندما يبلّغ الماسح المدمج عن نتائج `critical`، لكنه **لا** يتجاوز كتل سياسة خطاف Plugin `before_install` و**لا** يتجاوز إخفاقات الفحص.
+    `--dangerously-force-unsafe-install` خيار كسر طوارئ للنتائج الإيجابية الكاذبة في ماسح الكود الخطير المضمّن. يسمح للتثبيت بالاستمرار حتى عندما يبلّغ الماسح المضمّن عن نتائج `critical`، لكنه **لا** يتجاوز كتل سياسة خطاف `before_install` الخاصة بـ Plugin، و**لا** يتجاوز إخفاقات الفحص.
 
-    تنطبق علامة CLI هذه على تدفقات تثبيت/تحديث Plugin. تستخدم تثبيتات تبعيات Skills المدعومة من Gateway تجاوز الطلب المطابق `dangerouslyForceUnsafeInstall`، بينما يظل `openclaw skills install` تدفقًا منفصلًا لتنزيل/تثبيت Skills من ClawHub.
+    ينطبق علم CLI هذا على مسارات تثبيت/تحديث Plugin. تستخدم تثبيتات تبعيات Skills المدعومة من Gateway تجاوز الطلب المطابق `dangerouslyForceUnsafeInstall`، بينما يظل `openclaw skills install` مسار تنزيل/تثبيت Skills منفصلًا في ClawHub.
 
-    إذا كان Plugin نشرته على ClawHub محظورًا بسبب فحص السجل، فاستخدم خطوات الناشر في [ClawHub](/ar/tools/clawhub).
+    إذا حُظر Plugin نشرته على ClawHub بسبب فحص السجل، فاستخدم خطوات الناشر في [ClawHub](/ar/tools/clawhub).
 
   </Accordion>
   <Accordion title="حزم الخطافات ومواصفات npm">
-    `plugins install` هو أيضًا سطح التثبيت لحزم الخطافات التي تعرض `openclaw.hooks` في `package.json`. استخدم `openclaw hooks` لرؤية الخطافات المفلترة وتمكين كل خطاف على حدة، وليس لتثبيت الحزم.
+    `plugins install` هو أيضًا واجهة التثبيت لحزم الخطافات التي تعرض `openclaw.hooks` في `package.json`. استخدم `openclaw hooks` لرؤية الخطافات المفلترة وتفعيل كل خطاف، وليس لتثبيت الحزم.
 
-    مواصفات npm **خاصة بالسجل فقط** (اسم الحزمة + اختياريًا **إصدار دقيق** أو **وسم توزيع**). تُرفض مواصفات Git/URL/file ونطاقات semver. تعمل تثبيتات التبعيات محليًا ضمن المشروع مع `--ignore-scripts` للسلامة، حتى إذا كانت لدى shell لديك إعدادات تثبيت npm عالمية.
+    مواصفات Npm هي **للسجل فقط** (اسم الحزمة + **إصدار دقيق** اختياري أو **وسم توزيع**). تُرفض مواصفات Git/URL/file ونطاقات semver. تعمل تثبيتات التبعيات محليًا على مستوى المشروع مع `--ignore-scripts` للأمان، حتى عندما يحتوي shell لديك على إعدادات تثبيت npm عامة.
 
-    استخدم `npm:<package>` عندما تريد جعل حل npm صريحًا. كما تُثبّت مواصفات الحزم المجردة مباشرةً من npm أثناء مرحلة التحويل عند الإطلاق.
+    استخدم `npm:<package>` عندما تريد جعل حل npm صريحًا. تُثبَّت مواصفات الحزم المجردة أيضًا مباشرة من npm أثناء انتقال الإطلاق.
 
-    تبقى المواصفات المجردة و`@latest` على المسار المستقر. تُعد إصدارات التصحيح المؤرخة من OpenClaw مثل `2026.5.3-1` إصدارات مستقرة لهذا الفحص. إذا حل npm أيًا منهما إلى إصدار تمهيدي، يتوقف OpenClaw ويطلب منك الاشتراك صراحةً باستخدام وسم إصدار تمهيدي مثل `@beta`/`@rc` أو إصدار تمهيدي دقيق مثل `@1.2.3-beta.4`.
+    تبقى المواصفات المجردة و`@latest` على مسار الاستقرار. تُعد إصدارات التصحيح ذات الطابع الزمني في OpenClaw مثل `2026.5.3-1` إصدارات مستقرة لهذا الفحص. إذا حلّ npm أيًا منها إلى إصدار تمهيدي، يوقف OpenClaw العملية ويطلب منك الاشتراك صراحةً باستخدام وسم تمهيدي مثل `@beta`/`@rc` أو إصدار تمهيدي دقيق مثل `@1.2.3-beta.4`.
 
-    إذا طابقت مواصفة تثبيت مجردة معرّف Plugin رسميًا (مثل `diffs`)، يثبّت OpenClaw إدخال الكتالوج مباشرةً. لتثبيت حزمة npm بالاسم نفسه، استخدم مواصفة ذات نطاق صريح (مثل `@scope/diffs`).
+    إذا طابقت مواصفة تثبيت مجردة معرّف Plugin رسميًا (مثل `diffs`)، يثبّت OpenClaw إدخال الكتالوج مباشرة. لتثبيت حزمة npm تحمل الاسم نفسه، استخدم مواصفة نطاق صريحة (مثل `@scope/diffs`).
 
   </Accordion>
   <Accordion title="مستودعات Git">
-    استخدم `git:<repo>` للتثبيت مباشرةً من مستودع Git. تتضمن الصيغ المدعومة `git:github.com/owner/repo`، و`git:owner/repo`، وعناوين الاستنساخ الكاملة `https://`، و`ssh://`، و`git://`، و`file://`، و`git@host:owner/repo.git`. أضف `@<ref>` أو `#<ref>` لاستخراج فرع أو وسم أو التزام قبل التثبيت.
+    استخدم `git:<repo>` للتثبيت مباشرة من مستودع git. تشمل الأشكال المدعومة `git:github.com/owner/repo`، و`git:owner/repo`، وروابط النسخ الكاملة `https://`، و`ssh://`، و`git://`، و`file://`، و`git@host:owner/repo.git`. أضف `@<ref>` أو `#<ref>` لسحب فرع أو وسم أو commit قبل التثبيت.
 
-    تستنسخ تثبيتات Git إلى دليل مؤقت، وتستخرج المرجع المطلوب عندما يكون موجودًا، ثم تستخدم مثبّت دليل Plugin المعتاد. يعني ذلك أن التحقق من البيان، وفحص التعليمات البرمجية الخطرة، وعمل تثبيت مدير الحزم، وسجلات التثبيت تتصرف مثل تثبيتات npm. تتضمن تثبيتات Git المسجلة عنوان URL/المرجع للمصدر إضافةً إلى الالتزام المحلول بحيث يمكن لـ `openclaw plugins update` إعادة حل المصدر لاحقًا.
+    تستنسخ تثبيتات Git إلى دليل مؤقت، وتسحب المرجع المطلوب عند وجوده، ثم تستخدم مثبّت دليل Plugin العادي. وهذا يعني أن التحقق من البيان، وفحص الكود الخطير، وعمل تثبيت مدير الحزم، وسجلات التثبيت تتصرف مثل تثبيتات npm. تتضمن تثبيتات git المسجلة رابط/مرجع المصدر بالإضافة إلى commit المحلول حتى يتمكن `openclaw plugins update` من إعادة حل المصدر لاحقًا.
 
-    بعد التثبيت من Git، استخدم `openclaw plugins inspect <id> --runtime --json` للتحقق من تسجيلات وقت التشغيل مثل طرق Gateway وأوامر CLI. إذا سجّل Plugin جذر CLI باستخدام `api.registerCli`، فنفّذ ذلك الأمر مباشرةً عبر CLI الجذرية لـ OpenClaw، مثل `openclaw demo-plugin ping`.
+    بعد التثبيت من git، استخدم `openclaw plugins inspect <id> --runtime --json` للتحقق من تسجيلات وقت التشغيل مثل طرق gateway وأوامر CLI. إذا سجّل Plugin جذر CLI باستخدام `api.registerCli`، فنفّذ ذلك الأمر مباشرة عبر CLI الجذرية لـ OpenClaw، على سبيل المثال `openclaw demo-plugin ping`.
 
   </Accordion>
   <Accordion title="الأرشيفات">
-    الأرشيفات المدعومة: `.zip`، و`.tgz`، و`.tar.gz`، و`.tar`. يجب أن تحتوي أرشيفات Plugin الأصلية لـ OpenClaw على `openclaw.plugin.json` صالح في جذر Plugin المستخرج؛ أما الأرشيفات التي تحتوي فقط على `package.json` فتُرفض قبل أن يكتب OpenClaw سجلات التثبيت.
+    الأرشيفات المدعومة: `.zip`، و`.tgz`، و`.tar.gz`، و`.tar`. يجب أن تحتوي أرشيفات Plugin الأصلية في OpenClaw على `openclaw.plugin.json` صالح في جذر Plugin المستخرج؛ تُرفض الأرشيفات التي تحتوي فقط على `package.json` قبل أن يكتب OpenClaw سجلات التثبيت.
 
-    تثبيتات سوق Claude مدعومة أيضًا.
+    تُدعم أيضًا تثبيتات Claude marketplace.
 
   </Accordion>
 </AccordionGroup>
 
-تستخدم تثبيتات ClawHub محدِّد موقع صريحًا `clawhub:<package>`:
+تستخدم تثبيتات ClawHub محدد موقع صريحًا `clawhub:<package>`:
 
 ```bash
 openclaw plugins install clawhub:openclaw-codex-app-server
 openclaw plugins install clawhub:openclaw-codex-app-server@1.2.3
 ```
 
-تُثبّت مواصفات Plugin الآمنة لـ npm والمجردة من npm افتراضيًا أثناء مرحلة التحويل عند الإطلاق:
+تُثبَّت مواصفات Plugin الآمنة لـ npm المجردة من npm افتراضيًا أثناء انتقال الإطلاق:
 
 ```bash
 openclaw plugins install openclaw-codex-app-server
 ```
 
-استخدم `npm:` لجعل الحل الخاص بـ npm فقط صريحًا:
+استخدم `npm:` لجعل حل npm فقط صريحًا:
 
 ```bash
 openclaw plugins install npm:openclaw-codex-app-server
 openclaw plugins install npm:@scope/plugin-name@1.0.1
 ```
 
-يتحقق OpenClaw من توافق API المعلن لـ Plugin / الحد الأدنى لتوافق Gateway قبل التثبيت. عندما ينشر إصدار ClawHub المحدد أثر ClawPack، ينزّل OpenClaw ملف `.tgz` الخاص بـ npm-pack المرقّم بالإصدار، ويتحقق من رأس بصمة ClawHub وبصمة الأثر، ثم يثبته عبر مسار الأرشيف المعتاد. ما زالت إصدارات ClawHub الأقدم التي لا تحتوي على بيانات تعريف ClawPack تُثبّت عبر مسار التحقق من أرشيف الحزمة القديم. تحتفظ التثبيتات المسجلة ببيانات تعريف مصدر ClawHub، ونوع الأثر، وnpm integrity، وnpm shasum، واسم tarball، وحقائق بصمة ClawPack لاستخدامها في التحديثات اللاحقة.
-تحتفظ تثبيتات ClawHub غير المرقّمة بإصدار بمواصفة مسجلة غير مرقّمة كي يتمكن `openclaw plugins update` من متابعة إصدارات ClawHub الأحدث؛ وتظل محددات الإصدار أو الوسم الصريحة مثل `clawhub:pkg@1.2.3` و`clawhub:pkg@beta` مثبّتة على ذلك المحدد.
+يتحقق OpenClaw من توافق واجهة برمجة تطبيقات Plugin المعلن عنها / الحد الأدنى لتوافق gateway قبل التثبيت. عندما ينشر إصدار ClawHub المحدد أثر ClawPack، ينزّل OpenClaw ملف `.tgz` المعبأ عبر npm والموسوم بالإصدار، ويتحقق من ترويسة ملخص ClawHub وملخص الأثر، ثم يثبّته عبر مسار الأرشيف العادي. لا تزال إصدارات ClawHub الأقدم من دون بيانات تعريف ClawPack تُثبَّت عبر مسار التحقق القديم من أرشيف الحزمة. تحتفظ التثبيتات المسجلة ببيانات تعريف مصدر ClawHub، ونوع الأثر، وتكامل npm، وshasum الخاص بـ npm، واسم tarball، وحقائق ملخص ClawPack للتحديثات اللاحقة.
+تحتفظ تثبيتات ClawHub غير محددة الإصدار بمواصفة مسجلة غير محددة الإصدار حتى يتمكن `openclaw plugins update` من متابعة إصدارات ClawHub الأحدث؛ وتبقى محددات الإصدار أو الوسم الصريحة مثل `clawhub:pkg@1.2.3` و`clawhub:pkg@beta` مثبّتة على ذلك المحدد.
 
-#### اختصار السوق
+#### اختصار Marketplace
 
-استخدم اختصار `plugin@marketplace` عندما يكون اسم السوق موجودًا في ذاكرة التخزين المؤقت للسجل المحلي لدى Claude في `~/.claude/plugins/known_marketplaces.json`:
+استخدم اختصار `plugin@marketplace` عندما يكون اسم marketplace موجودًا في ذاكرة سجل Claude المحلية المؤقتة في `~/.claude/plugins/known_marketplaces.json`:
 
 ```bash
 openclaw plugins marketplace list <marketplace-name>
 openclaw plugins install <plugin-name>@<marketplace-name>
 ```
 
-استخدم `--marketplace` عندما تريد تمرير مصدر السوق صراحةً:
+استخدم `--marketplace` عندما تريد تمرير مصدر marketplace صراحةً:
 
 ```bash
 openclaw plugins install <plugin-name> --marketplace <marketplace-name>
@@ -205,7 +205,7 @@ openclaw plugins install <plugin-name> --marketplace ./my-marketplace
 
 <Tabs>
   <Tab title="مصادر السوق">
-    - اسم سوق معروف لـ Claude من `~/.claude/plugins/known_marketplaces.json`
+    - اسم سوق معروف لدى Claude من `~/.claude/plugins/known_marketplaces.json`
     - جذر سوق محلي أو مسار `marketplace.json`
     - اختصار مستودع GitHub مثل `owner/repo`
     - عنوان URL لمستودع GitHub مثل `https://github.com/owner/repo`
@@ -213,11 +213,11 @@ openclaw plugins install <plugin-name> --marketplace ./my-marketplace
 
   </Tab>
   <Tab title="قواعد السوق البعيد">
-    بالنسبة إلى الأسواق البعيدة المحمّلة من GitHub أو git، يجب أن تبقى إدخالات Plugin داخل مستودع السوق المستنسخ. يقبل OpenClaw مصادر المسارات النسبية من ذلك المستودع ويرفض مصادر Plugin من HTTP(S) والمسارات المطلقة وgit وGitHub وغيرها من المصادر غير المسارية من البيانات البعيدة.
+    بالنسبة إلى الأسواق البعيدة المحملة من GitHub أو git، يجب أن تبقى إدخالات Plugin داخل مستودع السوق المستنسخ. يقبل OpenClaw مصادر المسارات النسبية من ذلك المستودع ويرفض مصادر Plugin من HTTP(S) والمسارات المطلقة وgit وGitHub وغيرها من المصادر غير المسارية من البيانات التعريفية البعيدة.
   </Tab>
 </Tabs>
 
-بالنسبة إلى المسارات المحلية والأرشيفات، يكتشف OpenClaw تلقائيًا:
+بالنسبة إلى المسارات والأرشيفات المحلية، يكتشف OpenClaw تلقائيا:
 
 - Plugins أصلية لـ OpenClaw (`openclaw.plugin.json`)
 - حزم متوافقة مع Codex (`.codex-plugin/plugin.json`)
@@ -225,7 +225,7 @@ openclaw plugins install <plugin-name> --marketplace ./my-marketplace
 - حزم متوافقة مع Cursor (`.cursor-plugin/plugin.json`)
 
 <Note>
-تُثبَّت الحزم المتوافقة في جذر Plugin المعتاد وتشارك في تدفق القائمة/المعلومات/التمكين/التعطيل نفسه. حاليًا، تُدعم Skills الحزم، وSkills أوامر Claude، وافتراضات `settings.json` الخاصة بـ Claude، وافتراضات `.lsp.json` الخاصة بـ Claude / `lspServers` المعلنة في البيان، وSkills أوامر Cursor، وأدلة hooks المتوافقة مع Codex؛ أما قدرات الحزم الأخرى المكتشفة فتظهر في التشخيصات/المعلومات لكنها لم تُوصَل بعد بتنفيذ وقت التشغيل.
+تثبت الحزم المتوافقة في جذر Plugin العادي وتشارك في تدفق القائمة/المعلومات/التمكين/التعطيل نفسه. حاليا، تكون Skills الخاصة بالحزم، وSkills أوامر Claude، وافتراضيات Claude `settings.json`، وافتراضيات Claude `.lsp.json` / `lspServers` المعلنة في البيان، وSkills أوامر Cursor، وأدلة خطافات Codex المتوافقة مدعومة؛ أما قدرات الحزم الأخرى المكتشفة فتظهر في التشخيصات/المعلومات لكنها لم توصل بعد بالتنفيذ وقت التشغيل.
 </Note>
 
 ### القائمة
@@ -241,59 +241,58 @@ openclaw plugins search <query> --json
 ```
 
 <ParamField path="--enabled" type="boolean">
-  اعرض Plugins الممكّنة فقط.
+  اعرض Plugins الممكنة فقط.
 </ParamField>
 <ParamField path="--verbose" type="boolean">
-  بدّل من عرض الجدول إلى أسطر تفاصيل لكل Plugin تتضمن بيانات تعريف المصدر/الأصل/الإصدار/التفعيل.
+  بدّل من عرض الجدول إلى أسطر تفاصيل لكل Plugin تتضمن بيانات المصدر/الأصل/الإصدار/التفعيل الوصفية.
 </ParamField>
 <ParamField path="--json" type="boolean">
-  مخزون قابل للقراءة آليًا مع تشخيصات السجل وحالة تثبيت تبعيات الحزمة.
+  مخزون قابل للقراءة آليا مع تشخيصات السجل وحالة تثبيت تبعيات الحزمة.
 </ParamField>
 
 <Note>
-يقرأ `plugins list` سجل Plugin المحلي المستدام أولًا، مع مسار احتياطي مشتق من البيان فقط عندما يكون السجل مفقودًا أو غير صالح. يفيد ذلك في التحقق مما إذا كان Plugin مثبتًا وممكّنًا ومرئيًا لتخطيط بدء التشغيل البارد، لكنه ليس فحصًا مباشرًا لوقت تشغيل عملية Gateway قيد التشغيل بالفعل. بعد تغيير كود Plugin أو التمكين أو سياسة hooks أو `plugins.load.paths`، أعد تشغيل Gateway الذي يخدم القناة قبل توقع تشغيل كود `register(api)` الجديد أو hooks. بالنسبة إلى عمليات النشر البعيدة/الحاويات، تحقق من أنك تعيد تشغيل العملية الفرعية الفعلية `openclaw gateway run`، وليس عملية غلاف فقط.
+يقرأ `plugins list` سجل Plugins المحلي المستمر أولا، مع بديل مشتق من البيانات التعريفية فقط عند فقدان السجل أو عدم صلاحيته. يفيد ذلك في التحقق مما إذا كان Plugin مثبتا وممكنا ومرئيا لتخطيط بدء التشغيل البارد، لكنه ليس فحصا مباشرا وقت التشغيل لعملية Gateway قيد التشغيل بالفعل. بعد تغيير كود Plugin أو حالة التمكين أو سياسة الخطافات أو `plugins.load.paths`، أعد تشغيل Gateway الذي يخدم القناة قبل توقع تشغيل كود `register(api)` أو الخطافات الجديدة. بالنسبة إلى النشرات البعيدة/الحاوية، تحقق من أنك تعيد تشغيل ابن `openclaw gateway run` الفعلي، وليس عملية غلاف فقط.
 
 يتضمن `plugins list --json` قيمة `dependencyStatus` لكل Plugin من `package.json`
 `dependencies` و`optionalDependencies`. يتحقق OpenClaw مما إذا كانت أسماء تلك الحزم
-موجودة على مسار بحث Node المعتاد عن `node_modules` الخاص بـ Plugin؛ ولا
-يستورد كود وقت تشغيل Plugin، ولا يشغّل مدير حزم، ولا يصلح التبعيات
-المفقودة.
+موجودة على مسار بحث Node `node_modules` العادي الخاص بـ Plugin؛ ولا يستورد كود
+تشغيل Plugin، أو يشغل مدير حزم، أو يصلح التبعيات المفقودة.
 </Note>
 
 `plugins search` هو بحث في كتالوج ClawHub البعيد. لا يفحص الحالة المحلية،
-ولا يغيّر التكوين، ولا يثبت الحزم، ولا يحمّل كود وقت تشغيل Plugin. تتضمن
-نتائج البحث اسم حزمة ClawHub، والعائلة، والقناة، والإصدار، والملخص،
-وتلميح تثبيت مثل `openclaw plugins install clawhub:<package>`.
+ولا يغير الإعدادات، ولا يثبت الحزم، ولا يحمل كود تشغيل Plugin. تتضمن نتائج
+البحث اسم حزمة ClawHub، والعائلة، والقناة، والإصدار، والملخص، وتلميح تثبيت مثل
+`openclaw plugins install clawhub:<package>`.
 
-لعمل Plugin مضمّن داخل صورة Docker معبأة، اعمل تحميل ربط لدليل مصدر Plugin
+للعمل على Plugin مضمّن داخل صورة Docker معبأة، اربط دليل مصدر Plugin
 فوق مسار المصدر المعبأ المطابق، مثل
 `/app/extensions/synology-chat`. سيكتشف OpenClaw طبقة المصدر المركبة تلك
-قبل `/app/dist/extensions/synology-chat`؛ أما دليل المصدر المنسوخ نسخًا عاديًا
-فيبقى غير نشط بحيث تظل التثبيتات المعبأة المعتادة تستخدم dist المترجم.
+قبل `/app/dist/extensions/synology-chat`؛ أما دليل المصدر المنسوخ العادي
+فيبقى خاملا بحيث تستمر التثبيتات المعبأة العادية في استخدام dist المترجم.
 
-لتصحيح hooks وقت التشغيل:
+لتصحيح خطافات وقت التشغيل:
 
-- يعرض `openclaw plugins inspect <id> --runtime --json` hooks المسجلة والتشخيصات من جولة فحص تُحمّل الوحدة. لا يثبت فحص وقت التشغيل التبعيات أبدًا؛ استخدم `openclaw doctor --fix` لتنظيف حالة التبعيات القديمة أو تثبيت Plugins القابلة للتنزيل المفقودة والمكوّنة.
-- يؤكد `openclaw gateway status --deep --require-rpc` أن Gateway يمكن الوصول إليه، مع تلميحات الخدمة/العملية، ومسار التكوين، وصحة RPC.
-- تتطلب hooks المحادثات غير المضمّنة (`llm_input`, `llm_output`, `before_agent_finalize`, `agent_end`) ضبط `plugins.entries.<id>.hooks.allowConversationAccess=true`.
+- يعرض `openclaw plugins inspect <id> --runtime --json` الخطافات المسجلة والتشخيصات من تمريرة فحص محملة كوحدة. لا يثبت فحص وقت التشغيل التبعيات أبدا؛ استخدم `openclaw doctor --fix` لتنظيف حالة التبعيات القديمة أو تثبيت Plugins القابلة للتنزيل والمهيأة المفقودة.
+- يؤكد `openclaw gateway status --deep --require-rpc` إمكانية الوصول إلى Gateway، وتلميحات الخدمة/العملية، ومسار الإعدادات، وصحة RPC.
+- تتطلب خطافات المحادثة غير المضمنة (`llm_input`, `llm_output`, `before_agent_finalize`, `agent_end`) ضبط `plugins.entries.<id>.hooks.allowConversationAccess=true`.
 
-استخدم `--link` لتجنب نسخ دليل محلي (يضيف إلى `plugins.load.paths`):
+استخدم `--link` لتجنب نسخ دليل محلي (يضاف إلى `plugins.load.paths`):
 
 ```bash
 openclaw plugins install -l ./my-plugin
 ```
 
 <Note>
-لا يُدعم `--force` مع `--link` لأن التثبيتات المرتبطة تعيد استخدام مسار المصدر بدلًا من النسخ فوق هدف تثبيت مُدار.
+`--force` غير مدعوم مع `--link` لأن التثبيتات المرتبطة تعيد استخدام مسار المصدر بدلا من النسخ فوق هدف تثبيت مدار.
 
-استخدم `--pin` مع تثبيتات npm لحفظ المواصفة الدقيقة المحلولة (`name@version`) في فهرس Plugin المُدار مع إبقاء السلوك الافتراضي غير مقفل.
+استخدم `--pin` في تثبيتات npm لحفظ المواصفة الدقيقة المحلولة (`name@version`) في فهرس Plugin المدار مع إبقاء السلوك الافتراضي غير مثبت.
 </Note>
 
 ### فهرس Plugin
 
-بيانات تعريف تثبيت Plugin هي حالة تديرها الآلة، وليست تكوينًا للمستخدم. تكتبها عمليات التثبيت والتحديثات إلى `plugins/installs.json` تحت دليل حالة OpenClaw النشط. خريطة المستوى الأعلى `installRecords` هي المصدر الدائم لبيانات تعريف التثبيت، بما في ذلك سجلات بيانات Plugin المعطلة أو المفقودة. مصفوفة `plugins` هي ذاكرة التخزين المؤقت للسجل البارد المشتقة من البيان. يتضمن الملف تحذيرًا بعدم التحرير ويستخدمه `openclaw plugins update` وإلغاء التثبيت والتشخيصات وسجل Plugin البارد.
+بيانات تثبيت Plugin الوصفية هي حالة مدارة آليا، وليست إعدادات مستخدم. تكتب عمليات التثبيت والتحديث هذه البيانات إلى `plugins/installs.json` تحت دليل حالة OpenClaw النشط. خريطة `installRecords` العلوية هي المصدر الدائم لبيانات التثبيت الوصفية، بما في ذلك سجلات بيانات Plugin التعريفية المعطلة أو المفقودة. مصفوفة `plugins` هي ذاكرة التخزين المؤقت لسجل التشغيل البارد المشتقة من البيانات التعريفية. يتضمن الملف تحذيرا بعدم التحرير ويستخدمه `openclaw plugins update`، وإلغاء التثبيت، والتشخيصات، وسجل Plugin البارد.
 
-عندما يرى OpenClaw سجلات `plugins.installs` قديمة مشحونة في التكوين، ينقلها إلى فهرس Plugin ويزيل مفتاح التكوين؛ وإذا فشلت أي من عمليتي الكتابة، تُحفظ سجلات التكوين حتى لا تضيع بيانات تعريف التثبيت.
+عندما يرى OpenClaw سجلات `plugins.installs` قديمة مشحونة في الإعدادات، ينقلها إلى فهرس Plugin ويزيل مفتاح الإعدادات؛ إذا فشلت أي من عمليتي الكتابة، تبقى سجلات الإعدادات حتى لا تضيع بيانات التثبيت الوصفية.
 
 ### إلغاء التثبيت
 
@@ -303,10 +302,10 @@ openclaw plugins uninstall <id> --dry-run
 openclaw plugins uninstall <id> --keep-files
 ```
 
-يزيل `uninstall` سجلات Plugin من `plugins.entries` وفهرس Plugin المستدام وإدخالات قوائم السماح/الحظر الخاصة بـ Plugin وإدخالات `plugins.load.paths` المرتبطة عند الاقتضاء. ما لم يتم ضبط `--keep-files`، يزيل إلغاء التثبيت أيضًا دليل التثبيت المُدار المتعقب عندما يكون داخل جذر امتدادات Plugin الخاص بـ OpenClaw. بالنسبة إلى Plugins Active Memory، تُعاد فتحة الذاكرة إلى `memory-core`.
+يزيل `uninstall` سجلات Plugin من `plugins.entries`، وفهرس Plugin المستمر، وإدخالات قوائم السماح/الرفض لـ Plugin، وإدخالات `plugins.load.paths` المرتبطة عند الاقتضاء. ما لم يتم ضبط `--keep-files`، يزيل إلغاء التثبيت أيضا دليل التثبيت المدار المتتبع عندما يكون داخل جذر إضافات Plugin الخاص بـ OpenClaw. بالنسبة إلى Plugins الذاكرة النشطة، يعاد ضبط فتحة الذاكرة إلى `memory-core`.
 
 <Note>
-`--keep-config` مدعوم كاسم مستعار مهمل لـ `--keep-files`.
+`--keep-config` مدعوم كاسم بديل مهمل لـ `--keep-files`.
 </Note>
 
 ### التحديث
@@ -319,29 +318,29 @@ openclaw plugins update @openclaw/voice-call
 openclaw plugins update openclaw-codex-app-server --dangerously-force-unsafe-install
 ```
 
-تنطبق التحديثات على تثبيتات Plugin المتعقبة في فهرس Plugin المُدار وتثبيتات حزم hooks المتعقبة في `hooks.internal.installs`.
+تنطبق التحديثات على تثبيتات Plugin المتتبعة في فهرس Plugin المدار وتثبيتات حزم الخطافات المتتبعة في `hooks.internal.installs`.
 
 <AccordionGroup>
-  <Accordion title="حل معرّف Plugin مقابل مواصفة npm">
-    عندما تمرر معرّف Plugin، يعيد OpenClaw استخدام مواصفة التثبيت المسجلة لذلك Plugin. وهذا يعني أن وسوم التوزيع المخزنة سابقًا مثل `@beta` والإصدارات الدقيقة المقفلة تستمر في الاستخدام في تشغيلات `update <id>` اللاحقة.
+  <Accordion title="حل معرف Plugin مقابل مواصفة npm">
+    عندما تمرر معرف Plugin، يعيد OpenClaw استخدام مواصفة التثبيت المسجلة لذلك Plugin. هذا يعني أن وسوم dist-tags المخزنة سابقا مثل `@beta` والإصدارات الدقيقة المثبتة تواصل استخدامها في عمليات `update <id>` اللاحقة.
 
-    بالنسبة إلى تثبيتات npm، يمكنك أيضًا تمرير مواصفة حزمة npm صريحة مع وسم توزيع أو إصدار دقيق. يحل OpenClaw اسم تلك الحزمة إلى سجل Plugin المتعقب، ويحدّث ذلك Plugin المثبت، ويسجل مواصفة npm الجديدة للتحديثات المستقبلية القائمة على المعرّف.
+    بالنسبة إلى تثبيتات npm، يمكنك أيضا تمرير مواصفة حزمة npm صريحة مع dist-tag أو إصدار دقيق. يحل OpenClaw اسم الحزمة ذلك مرة أخرى إلى سجل Plugin المتتبع، ويحدث ذلك Plugin المثبت، ويسجل مواصفة npm الجديدة للتحديثات المستقبلية المعتمدة على المعرف.
 
-    تمرير اسم حزمة npm دون إصدار أو وسم يحل أيضًا إلى سجل Plugin المتعقب. استخدم هذا عندما يكون Plugin مقفلًا على إصدار دقيق وتريد إعادته إلى خط الإصدار الافتراضي في السجل.
+    تمرير اسم حزمة npm من دون إصدار أو وسم يحل أيضا مرة أخرى إلى سجل Plugin المتتبع. استخدم هذا عندما يكون Plugin مثبتا على إصدار دقيق وتريد إعادته إلى خط الإصدار الافتراضي في السجل.
 
   </Accordion>
-  <Accordion title="تحديثات قناة بيتا">
-    يعيد `openclaw plugins update` استخدام مواصفة Plugin المتعقبة ما لم تمرر مواصفة جديدة. يعرف `openclaw update` أيضًا قناة تحديث OpenClaw النشطة: على قناة بيتا، تجرب سجلات Plugin في npm وClawHub ذات الخط الافتراضي `@beta` أولًا، ثم تعود إلى مواصفة الافتراضي/الأحدث المسجلة إذا لم يكن هناك إصدار بيتا لـ Plugin. تبقى الإصدارات الدقيقة والوسوم الصريحة مقفلة على ذلك المحدد.
+  <Accordion title="تحديثات قناة beta">
+    يعيد `openclaw plugins update` استخدام مواصفة Plugin المتتبعة ما لم تمرر مواصفة جديدة. يعرف `openclaw update` أيضا قناة تحديث OpenClaw النشطة: على قناة beta، تحاول سجلات Plugin الافتراضية من npm وClawHub استخدام `@beta` أولا، ثم ترجع إلى المواصفة الافتراضية/الأحدث المسجلة إذا لم يوجد إصدار beta لـ Plugin. تبقى الإصدارات الدقيقة والوسوم الصريحة مثبتة على ذلك المحدد.
 
   </Accordion>
   <Accordion title="فحوصات الإصدار وانحراف السلامة">
-    قبل تحديث npm مباشر، يتحقق OpenClaw من إصدار الحزمة المثبتة مقابل بيانات تعريف سجل npm. إذا كان الإصدار المثبت وهوية الأثر المسجلة يطابقان الهدف المحلول بالفعل، يُتخطى التحديث دون تنزيل أو إعادة تثبيت أو إعادة كتابة `openclaw.json`.
+    قبل تحديث npm مباشر، يتحقق OpenClaw من إصدار الحزمة المثبتة مقابل بيانات سجل npm الوصفية. إذا كان الإصدار المثبت وهوية الأثر المسجلة يطابقان الهدف المحلول بالفعل، يتخطى التحديث من دون تنزيل أو إعادة تثبيت أو إعادة كتابة `openclaw.json`.
 
-    عندما توجد بصمة سلامة مخزنة وتتغير بصمة الأثر المجلب، يتعامل OpenClaw مع ذلك كأنه انحراف أثر npm. يطبع أمر `openclaw plugins update` التفاعلي البصمتين المتوقعة والفعلية ويطلب التأكيد قبل المتابعة. تفشل مساعدات التحديث غير التفاعلية على وضع الإيقاف الآمن ما لم يقدّم المستدعي سياسة متابعة صريحة.
+    عندما توجد قيمة تجزئة سلامة مخزنة وتتغير تجزئة الأثر المجلب، يتعامل OpenClaw مع ذلك بوصفه انحراف أثر npm. يطبع أمر `openclaw plugins update` التفاعلي التجزئات المتوقعة والفعلية ويطلب التأكيد قبل المتابعة. تفشل مساعدينات التحديث غير التفاعلية بوضع مغلق ما لم يوفر المستدعي سياسة متابعة صريحة.
 
   </Accordion>
   <Accordion title="--dangerously-force-unsafe-install عند التحديث">
-    يتوفر `--dangerously-force-unsafe-install` أيضًا في `plugins update` كتجاوز طارئ للإيجابيات الكاذبة في فحص الكود الخطر المدمج أثناء تحديثات Plugin. لكنه لا يزال لا يتجاوز حواجز سياسة `before_install` الخاصة بـ Plugin أو حظر فشل الفحص، ولا ينطبق إلا على تحديثات Plugin، وليس تحديثات حزم hooks.
+    يتوفر `--dangerously-force-unsafe-install` أيضا في `plugins update` كتجاوز طارئ لإيجابيات فحص الكود الخطر المضمنة الكاذبة أثناء تحديثات Plugin. ما زال لا يتجاوز حظر سياسة Plugin `before_install` أو حظر فشل الفحص، ولا ينطبق إلا على تحديثات Plugin، وليس تحديثات حزم الخطافات.
   </Accordion>
 </AccordionGroup>
 
@@ -353,34 +352,34 @@ openclaw plugins inspect <id> --runtime
 openclaw plugins inspect <id> --json
 ```
 
-يعرض الفحص الهوية، وحالة التحميل، والمصدر، وقدرات البيان، وأعلام السياسة، والتشخيصات، وبيانات تعريف التثبيت، وقدرات الحزمة، وأي دعم مكتشف لخوادم MCP أو LSP دون استيراد وقت تشغيل Plugin افتراضيًا. أضف `--runtime` لتحميل وحدة Plugin وتضمين hooks والأدوات والأوامر والخدمات وأساليب Gateway ومسارات HTTP المسجلة. يبلّغ فحص وقت التشغيل عن تبعيات Plugin المفقودة مباشرة؛ وتظل عمليات التثبيت والإصلاح في `openclaw plugins install` و`openclaw plugins update` و`openclaw doctor --fix`.
+يعرض الفحص الهوية، وحالة التحميل، والمصدر، وقدرات البيانات التعريفية، وأعلام السياسة، والتشخيصات، وبيانات التثبيت الوصفية، وقدرات الحزمة، وأي دعم مكتشف لخادم MCP أو LSP من دون استيراد تشغيل Plugin افتراضيا. أضف `--runtime` لتحميل وحدة Plugin وتضمين الخطافات والأدوات والأوامر والخدمات وطرق Gateway ومسارات HTTP المسجلة. يبلغ فحص وقت التشغيل عن تبعيات Plugin المفقودة مباشرة؛ أما التثبيتات والإصلاحات فتبقى في `openclaw plugins install` و`openclaw plugins update` و`openclaw doctor --fix`.
 
-تُثبَّت أوامر CLI المملوكة لـ Plugin كمجموعات أوامر جذرية في `openclaw`. بعد أن يعرض `inspect --runtime` أمرًا تحت `cliCommands`، شغّله بصيغة `openclaw <command> ...`؛ على سبيل المثال يمكن التحقق من Plugin يسجل `demo-git` باستخدام `openclaw demo-git ping`.
+تثبت أوامر CLI المملوكة لـ Plugin كمجموعات أوامر `openclaw` جذرية. بعد أن يعرض `inspect --runtime` أمرا ضمن `cliCommands`، شغله بصيغة `openclaw <command> ...`؛ على سبيل المثال يمكن التحقق من Plugin يسجل `demo-git` باستخدام `openclaw demo-git ping`.
 
-يُصنّف كل Plugin بحسب ما يسجله فعليًا في وقت التشغيل:
+يصنف كل Plugin بحسب ما يسجله فعليا وقت التشغيل:
 
-- **plain-capability** — نوع قدرة واحد (مثل Plugin خاص بمزوّد فقط)
+- **plain-capability** — نوع قدرة واحد (مثل Plugin لموفر فقط)
 - **hybrid-capability** — أنواع قدرات متعددة (مثل النص + الكلام + الصور)
-- **hook-only** — hooks فقط، دون قدرات أو أسطح
-- **non-capability** — أدوات/أوامر/خدمات لكن دون قدرات
+- **hook-only** — خطافات فقط، بلا قدرات أو واجهات
+- **non-capability** — أدوات/أوامر/خدمات لكن بلا قدرات
 
-راجع [أشكال Plugin](/ar/plugins/architecture#plugin-shapes) لمزيد حول نموذج القدرات.
+راجع [أشكال Plugin](/ar/plugins/architecture#plugin-shapes) لمزيد من المعلومات حول نموذج القدرات.
 
 <Note>
-ينتج علم `--json` تقريرًا قابلًا للقراءة آليًا مناسبًا للبرمجة النصية والتدقيق. يعرض `inspect --all` جدولًا على مستوى المجموعة يتضمن أعمدة الشكل، وأنواع القدرات، وإشعارات التوافق، وقدرات الحزم، وملخص hooks. `info` اسم مستعار لـ `inspect`.
+تخرج علامة `--json` تقريرا قابلا للقراءة آليا ومناسبا للبرمجة والتدقيق. يعرض `inspect --all` جدولا على مستوى المجموعة يتضمن أعمدة الشكل، وأنواع القدرات، وإشعارات التوافق، وقدرات الحزمة، وملخص الخطافات. `info` اسم بديل لـ `inspect`.
 </Note>
 
-### التشخيص
+### الطبيب
 
 ```bash
 openclaw plugins doctor
 ```
 
-يبلّغ `doctor` عن أخطاء تحميل Plugin وتشخيصات البيان/الاكتشاف وإشعارات التوافق. عندما يكون كل شيء سليمًا يطبع `No plugin issues detected.`
+يبلغ `doctor` عن أخطاء تحميل Plugin، وتشخيصات البيانات التعريفية/الاكتشاف، وإشعارات التوافق. عندما يكون كل شيء سليما، يطبع `No plugin issues detected.`
 
-إذا كان Plugin مكوّنًا موجودًا على القرص لكنه محظور بفحوصات أمان المسار في المحمّل، فإن التحقق من التكوين يبقي إدخال Plugin ويبلّغ عنه كـ `present but blocked`. أصلح تشخيص Plugin المحظور السابق، مثل ملكية المسار أو أذونات الكتابة للعالم، بدلًا من إزالة تكوين `plugins.entries.<id>` أو `plugins.allow`.
+إذا كان Plugin مهيأ موجودا على القرص لكنه محظور بفحوصات سلامة المسار الخاصة بالمحمل، تبقي عملية التحقق من الإعدادات إدخال Plugin وتبلغ عنه كـ `present but blocked`. أصلح تشخيص Plugin المحظور السابق، مثل ملكية المسار أو أذونات الكتابة للعالم، بدلا من إزالة إعدادات `plugins.entries.<id>` أو `plugins.allow`.
 
-بالنسبة إلى إخفاقات شكل الوحدة مثل تصديرات `register`/`activate` المفقودة، أعد التشغيل مع `OPENCLAW_PLUGIN_LOAD_DEBUG=1` لتضمين ملخص مدمج لشكل التصديرات في خرج التشخيص.
+بالنسبة إلى إخفاقات شكل الوحدة مثل غياب صادرات `register`/`activate`، أعد التشغيل مع `OPENCLAW_PLUGIN_LOAD_DEBUG=1` لتضمين ملخص مضغوط لشكل الصادرات في مخرجات التشخيص.
 
 ### السجل
 
@@ -390,12 +389,14 @@ openclaw plugins registry --refresh
 openclaw plugins registry --json
 ```
 
-سجل Plugin المحلي هو نموذج القراءة البارد المستدام في OpenClaw لهوية Plugin وتمكينه وبيانات تعريف المصدر وملكية المساهمات. يمكن لبدء التشغيل العادي، والبحث عن مالك المزوّد، وتصنيف إعداد القنوات، ومخزون Plugin قراءته دون استيراد وحدات وقت تشغيل Plugin.
+سجل Plugin المحلي هو نموذج القراءة الباردة المستمر الخاص بـ OpenClaw لهوية Plugin، والتمكين، وبيانات المصدر الوصفية، وملكية المساهمات. يمكن لبدء التشغيل العادي، والبحث عن مالك الموفر، وتصنيف إعداد القناة، ومخزون Plugin قراءته من دون استيراد وحدات تشغيل Plugin.
 
-استخدم `plugins registry` لفحص ما إذا كان السجل المحفوظ موجودًا أو محدثًا أو قديمًا. استخدم `--refresh` لإعادة بنائه من فهرس Plugin المحفوظ، وسياسة الإعدادات، وبيانات تعريف manifest/package. هذا مسار إصلاح، وليس مسار تفعيل وقت التشغيل.
+استخدم `plugins registry` لفحص ما إذا كان السجل المحفوظ موجودًا أو حاليًا أو قديمًا. استخدم `--refresh` لإعادة بنائه من فهرس Plugin المحفوظ وسياسة الإعدادات وبيانات تعريف البيان/الحزمة. هذا مسار إصلاح، وليس مسار تفعيل وقت التشغيل.
+
+يصلح `openclaw doctor --fix` أيضًا الانحراف المُدار في npm المجاور للسجل: إذا كانت حزمة `@openclaw/*` يتيمة أو مستردة ضمن جذر npm المُدار الخاص بـ Plugin تحجب Plugin مضمّنًا، يزيل doctor تلك الحزمة القديمة ويعيد بناء السجل حتى يتحقق بدء التشغيل مقابل البيان المضمّن.
 
 <Warning>
-`OPENCLAW_DISABLE_PERSISTED_PLUGIN_REGISTRY=1` هو مفتاح توافق مهمل لكسر الحاجز عند فشل قراءة السجل. فضّل استخدام `plugins registry --refresh` أو `openclaw doctor --fix`؛ فالرجوع عبر متغير البيئة مخصص فقط لاسترداد بدء التشغيل في حالات الطوارئ أثناء طرح الترحيل.
+`OPENCLAW_DISABLE_PERSISTED_PLUGIN_REGISTRY=1` هو مفتاح توافق مهمل لكسر الزجاج لحالات فشل قراءة السجل. يُفضَّل استخدام `plugins registry --refresh` أو `openclaw doctor --fix`؛ والرجوع الاحتياطي عبر متغير البيئة مخصص فقط لاسترداد بدء التشغيل الطارئ أثناء طرح الترحيل.
 </Warning>
 
 ### السوق
@@ -405,10 +406,10 @@ openclaw plugins marketplace list <source>
 openclaw plugins marketplace list <source> --json
 ```
 
-تقبل قائمة السوق مسار سوق محليًا، أو مسار `marketplace.json`، أو اختصار GitHub مثل `owner/repo`، أو عنوان URL لمستودع GitHub، أو عنوان URL لـ git. يطبع `--json` تسمية المصدر التي تم حلها بالإضافة إلى بيان السوق المحلل وإدخالات Plugin.
+تقبل قائمة السوق مسار سوق محليًا، أو مسار `marketplace.json`، أو اختصار GitHub مثل `owner/repo`، أو عنوان URL لمستودع GitHub، أو عنوان URL لـ git. يطبع `--json` تسمية المصدر المحلولة بالإضافة إلى بيان السوق المحلّل وإدخالات Plugin.
 
 ## ذات صلة
 
-- [بناء Plugins](/ar/plugins/building-plugins)
+- [بناء Plugin](/ar/plugins/building-plugins)
 - [مرجع CLI](/ar/cli)
-- [Plugins المجتمع](/ar/plugins/community)
+- [Plugin المجتمع](/ar/plugins/community)
