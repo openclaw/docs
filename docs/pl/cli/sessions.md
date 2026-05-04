@@ -1,13 +1,13 @@
 ---
 read_when:
     - Chcesz wyświetlić zapisane sesje i zobaczyć ostatnią aktywność
-summary: Dokumentacja CLI dla `openclaw sessions` (lista zapisanych sesji + użycie)
+summary: Dokumentacja referencyjna CLI dla `openclaw sessions` (lista zapisanych sesji + użycie)
 title: Sesje
 x-i18n:
-    generated_at: "2026-05-02T20:42:20Z"
+    generated_at: "2026-05-04T07:02:41Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 5c9ec3ca55f7c5b6217b481e9da62f5416df73e69405a0dc15e77d2afeac723f
+    source_hash: 8dc90344f40c53513bd6db3696bc709279155f26e7c3b6ea27e81a07a2f9f15e
     source_path: cli/sessions.md
     workflow: 16
 ---
@@ -16,12 +16,18 @@ x-i18n:
 
 Wyświetla listę zapisanych sesji konwersacji.
 
-Listy sesji nie są sprawdzeniami dostępności kanałów/dostawców. Pokazują utrwalone
+Listy sesji nie są sprawdzeniem aktywności kanału/dostawcy. Pokazują utrwalone
 wiersze konwersacji z magazynów sesji. Cichy Discord, Slack, Telegram lub
-inny kanał może ponownie połączyć się pomyślnie bez utworzenia nowego wiersza sesji
-do czasu przetworzenia wiadomości. Użyj `openclaw channels status --probe`,
-`openclaw status --deep` albo `openclaw health --verbose`, gdy potrzebujesz działającej
-łączności kanału.
+inny kanał może ponownie połączyć się pomyślnie bez utworzenia nowego wiersza
+sesji, dopóki nie zostanie przetworzona wiadomość. Użyj `openclaw channels status --probe`,
+`openclaw status --deep` lub `openclaw health --verbose`, gdy potrzebujesz
+łączności kanału na żywo.
+
+Odpowiedzi Gateway `sessions.list` są domyślnie ograniczone, aby duże, długo działające
+magazyny nie mogły zmonopolizować pętli zdarzeń Gateway. Przekaż jawny dodatni
+`limit` z klientów RPC, gdy potrzebne jest inne okno wyników; odpowiedzi
+zawierają `totalCount`, `limitApplied` i `hasMore`, gdy wywołujący muszą pokazać,
+że istnieje więcej wierszy.
 
 ```bash
 openclaw sessions
@@ -40,22 +46,23 @@ Wybór zakresu:
 - `--all-agents`: agreguj wszystkie skonfigurowane magazyny agentów
 - `--store <path>`: jawna ścieżka magazynu (nie można łączyć z `--agent` ani `--all-agents`)
 
-Wyeksportuj pakiet trajektorii dla zapisanej sesji:
+Eksport pakietu trajektorii dla zapisanej sesji:
 
 ```bash
 openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:123" --workspace .
 openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:123" --output bug-123 --json
 ```
 
-To ścieżka polecenia używana przez polecenie ukośnikowe `/export-trajectory` po tym, jak
-właściciel zatwierdzi żądanie wykonania. Katalog wyjściowy jest zawsze rozwiązywany
+To jest ścieżka polecenia używana przez polecenie slash `/export-trajectory` po tym,
+jak właściciel zatwierdzi żądanie wykonania. Katalog wyjściowy jest zawsze rozwiązywany
 wewnątrz `.openclaw/trajectory-exports/` w wybranym obszarze roboczym.
 
-`openclaw sessions --all-agents` odczytuje skonfigurowane magazyny agentów. Wykrywanie sesji
-Gateway i ACP jest szersze: obejmuje także magazyny dostępne tylko na dysku, znalezione pod
-domyślnym katalogiem głównym `agents/` albo szablonowym katalogiem głównym `session.store`. Te
-wykryte magazyny muszą rozwiązywać się do zwykłych plików `sessions.json` wewnątrz
-katalogu głównego agenta; dowiązania symboliczne i ścieżki poza katalogiem głównym są pomijane.
+`openclaw sessions --all-agents` odczytuje skonfigurowane magazyny agentów. Wykrywanie
+sesji Gateway i ACP jest szersze: obejmuje także magazyny istniejące tylko na dysku,
+znalezione w domyślnym katalogu głównym `agents/` lub w szablonowym katalogu głównym
+`session.store`. Te wykryte magazyny muszą wskazywać zwykłe pliki `sessions.json`
+wewnątrz katalogu głównego agenta; dowiązania symboliczne i ścieżki poza katalogiem
+głównym są pomijane.
 
 Przykłady JSON:
 
@@ -93,21 +100,21 @@ openclaw sessions cleanup --json
 
 `openclaw sessions cleanup` używa ustawień `session.maintenance` z konfiguracji:
 
-- Uwaga dotycząca zakresu: `openclaw sessions cleanup` utrzymuje magazyny sesji, transkrypcje i pliki towarzyszące trajektorii. Nie przycina logów uruchomień Cron (`cron/runs/<jobId>.jsonl`), którymi zarządzają `cron.runLog.maxBytes` i `cron.runLog.keepLines` w [konfiguracji Cron](/pl/automation/cron-jobs#configuration) oraz które opisano w [konserwacji Cron](/pl/automation/cron-jobs#maintenance).
+- Uwaga dotycząca zakresu: `openclaw sessions cleanup` konserwuje magazyny sesji, transkrypty i pliki towarzyszące trajektorii. Nie przycina dzienników uruchomień Cron (`cron/runs/<jobId>.jsonl`), którymi zarządzają `cron.runLog.maxBytes` i `cron.runLog.keepLines` w [konfiguracji Cron](/pl/automation/cron-jobs#configuration) i które są wyjaśnione w [konserwacji Cron](/pl/automation/cron-jobs#maintenance).
 
-- `--dry-run`: podgląd, ile wpisów zostałoby przyciętych/ograniczonych bez zapisu.
+- `--dry-run`: podgląd, ile wpisów zostałoby przyciętych/ograniczonych bez zapisywania.
   - W trybie tekstowym dry-run wypisuje tabelę działań dla każdej sesji (`Action`, `Key`, `Age`, `Model`, `Flags`), aby było widać, co zostałoby zachowane, a co usunięte.
 - `--enforce`: zastosuj konserwację nawet wtedy, gdy `session.maintenance.mode` ma wartość `warn`.
-- `--fix-missing`: usuń wpisy, których pliki transkrypcji nie istnieją, nawet jeśli zwykle nie zostałyby jeszcze usunięte ze względu na wiek/liczbę.
-- `--active-key <key>`: chroń określony aktywny klucz przed usunięciem w ramach budżetu dyskowego. Trwałe zewnętrzne wskaźniki konwersacji, takie jak sesje grupowe i sesje czatu w zakresie wątku, są także zachowywane przez konserwację opartą na wieku/liczbie/budżecie dyskowym.
+- `--fix-missing`: usuń wpisy, których pliki transkryptów nie istnieją, nawet jeśli normalnie nie zostałyby jeszcze usunięte ze względu na wiek/liczbę.
+- `--active-key <key>`: chroń określony aktywny klucz przed usunięciem z powodu budżetu dysku. Trwałe zewnętrzne wskaźniki konwersacji, takie jak sesje grupowe i sesje czatu o zakresie wątku, także są zachowywane przez konserwację według wieku/liczby/budżetu dysku.
 - `--agent <id>`: uruchom czyszczenie dla jednego skonfigurowanego magazynu agenta.
 - `--all-agents`: uruchom czyszczenie dla wszystkich skonfigurowanych magazynów agentów.
-- `--store <path>`: uruchom na określonym pliku `sessions.json`.
-- `--json`: wypisz podsumowanie JSON. Z `--all-agents` dane wyjściowe obejmują jedno podsumowanie na magazyn.
+- `--store <path>`: uruchom względem konkretnego pliku `sessions.json`.
+- `--json`: wypisz podsumowanie JSON. Z `--all-agents` dane wyjściowe zawierają jedno podsumowanie na magazyn.
 
-Gdy Gateway jest osiągalny, czyszczenie bez dry-run dla skonfigurowanych magazynów agentów jest
-wysyłane przez Gateway, aby korzystało z tego samego mechanizmu zapisu magazynu sesji co ruch
-w czasie działania. Użyj `--store <path>` do jawnej naprawy offline pliku magazynu.
+Gdy Gateway jest osiągalny, czyszczenie bez dry-run dla skonfigurowanych magazynów agentów
+jest wysyłane przez Gateway, aby współdzieliło ten sam zapisujący magazyn sesji co ruch
+w czasie działania. Użyj `--store <path>` do jawnej naprawy pliku magazynu offline.
 
 `openclaw sessions cleanup --all-agents --dry-run --json`:
 
