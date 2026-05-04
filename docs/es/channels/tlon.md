@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Trabajando en las funciones del canal Tlon/Urbit
+    - Trabajando en funciones del canal Tlon/Urbit
 summary: Estado de soporte, capacidades y configuración de Tlon/Urbit
 title: Tlon
 x-i18n:
-    generated_at: "2026-05-02T22:16:31Z"
+    generated_at: "2026-05-04T02:22:08Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 30915170786fc1ee8b84fb8be2ea42280262923064cfa9ca7107036096a13add
+    source_hash: 1718044541b431ff2437508e7e6659c14206f4aa84ab8b207e0d791dea2a48c5
     source_path: channels/tlon.md
     workflow: 16
 ---
 
-Tlon es un mensajero descentralizado creado sobre Urbit. OpenClaw se conecta a tu nave de Urbit y puede
-responder a MD y mensajes de chat grupal. Las respuestas de grupo requieren una mención con @ de forma predeterminada y pueden
+Tlon es un mensajero descentralizado construido sobre Urbit. OpenClaw se conecta a tu ship de Urbit y puede
+responder a MD y mensajes de chat grupal. Las respuestas en grupo requieren una mención @ de forma predeterminada y pueden
 restringirse aún más mediante listas de permitidos.
 
-Estado: Plugin incluido. Se admiten MD, menciones de grupo, respuestas en hilos, formato de texto enriquecido y
-cargas de imágenes. Las reacciones y encuestas aún no son compatibles.
+Estado: plugin incluido. Se admiten MD, menciones en grupos, respuestas en hilos, formato de texto enriquecido y
+cargas de imágenes. Las reacciones y las encuestas aún no son compatibles.
 
 ## Plugin incluido
 
-Tlon se distribuye como un Plugin incluido en las versiones actuales de OpenClaw, por lo que las compilaciones
-empaquetadas normales no necesitan una instalación aparte.
+Tlon se distribuye como un plugin incluido en las versiones actuales de OpenClaw, por lo que las compilaciones
+empaquetadas normales no necesitan una instalación separada.
 
-Si usas una compilación anterior o una instalación personalizada que excluye Tlon, instala un
+Si estás usando una compilación anterior o una instalación personalizada que excluye Tlon, instala un
 paquete npm actual:
 
 Instalar mediante CLI (registro npm):
@@ -33,10 +33,10 @@ Instalar mediante CLI (registro npm):
 openclaw plugins install @openclaw/tlon
 ```
 
-Usa el paquete sin versión para seguir la etiqueta de versión oficial actual. Fija una
-versión exacta solo cuando necesites una instalación reproducible.
+Usa el paquete básico para seguir la etiqueta de lanzamiento oficial actual. Fija una versión
+exacta solo cuando necesites una instalación reproducible.
 
-Checkout local (cuando se ejecuta desde un repositorio git):
+Checkout local (al ejecutar desde un repositorio git):
 
 ```bash
 openclaw plugins install ./path/to/local/tlon-plugin
@@ -46,12 +46,12 @@ Detalles: [Plugins](/es/tools/plugin)
 
 ## Configuración
 
-1. Asegúrate de que el Plugin de Tlon esté disponible.
+1. Asegúrate de que el plugin de Tlon esté disponible.
    - Las versiones empaquetadas actuales de OpenClaw ya lo incluyen.
-   - Las instalaciones anteriores o personalizadas pueden añadirlo manualmente con los comandos anteriores.
-2. Recopila la URL de tu nave y el código de inicio de sesión.
+   - Las instalaciones anteriores/personalizadas pueden añadirlo manualmente con los comandos anteriores.
+2. Reúne la URL de tu ship y el código de inicio de sesión.
 3. Configura `channels.tlon`.
-4. Reinicia el Gateway.
+4. Reinicia el gateway.
 5. Envía un MD al bot o menciónalo en un canal de grupo.
 
 Configuración mínima (una sola cuenta):
@@ -70,11 +70,11 @@ Configuración mínima (una sola cuenta):
 }
 ```
 
-## Naves privadas/LAN
+## Ships privadas/LAN
 
-De forma predeterminada, OpenClaw bloquea nombres de host y rangos de IP privados/internos para proteger contra SSRF.
-Si tu nave se ejecuta en una red privada (localhost, IP de LAN o nombre de host interno),
-debes aceptarlo explícitamente:
+De forma predeterminada, OpenClaw bloquea nombres de host y rangos de IP privados/internos para protección contra SSRF.
+Si tu ship se ejecuta en una red privada (localhost, IP de LAN o nombre de host interno),
+debes habilitarlo explícitamente:
 
 ```json5
 {
@@ -93,8 +93,8 @@ Esto se aplica a URL como:
 - `http://192.168.x.x:8080`
 - `http://my-ship.local:8080`
 
-⚠️ Habilita esto solo si confías en tu red local. Esta opción deshabilita las protecciones SSRF
-para las solicitudes a la URL de tu nave.
+⚠️ Habilita esto solo si confías en tu red local. Esta opción desactiva las protecciones contra SSRF
+para las solicitudes a la URL de tu ship.
 
 ## Canales de grupo
 
@@ -110,7 +110,7 @@ El descubrimiento automático está habilitado de forma predeterminada. También
 }
 ```
 
-Deshabilitar el descubrimiento automático:
+Desactivar el descubrimiento automático:
 
 ```json5
 {
@@ -124,7 +124,7 @@ Deshabilitar el descubrimiento automático:
 
 ## Control de acceso
 
-Lista de permitidos de MD (vacía = no se permiten MD, usa `ownerShip` para el flujo de aprobación):
+Lista de permitidos para MD (vacía = no se permiten MD, usa `ownerShip` para el flujo de aprobación):
 
 ```json5
 {
@@ -136,7 +136,7 @@ Lista de permitidos de MD (vacía = no se permiten MD, usa `ownerShip` para el f
 }
 ```
 
-Autorización de grupo (restringida de forma predeterminada):
+Autorización de grupos (restringida de forma predeterminada):
 
 ```json5
 {
@@ -159,9 +159,9 @@ Autorización de grupo (restringida de forma predeterminada):
 }
 ```
 
-## Propietario y sistema de aprobación
+## Sistema de propietario y aprobación
 
-Configura una nave propietaria para recibir solicitudes de aprobación cuando usuarios no autorizados intenten interactuar:
+Define una ship propietaria para recibir solicitudes de aprobación cuando usuarios no autorizados intenten interactuar:
 
 ```json5
 {
@@ -173,19 +173,19 @@ Configura una nave propietaria para recibir solicitudes de aprobación cuando us
 }
 ```
 
-La nave propietaria está **autorizada automáticamente en todas partes**: las invitaciones de MD se aceptan automáticamente y
+La ship propietaria está **autorizada automáticamente en todas partes**: las invitaciones de MD se aceptan automáticamente y
 los mensajes de canal siempre se permiten. No necesitas añadir el propietario a `dmAllowlist` ni a
 `defaultAuthorizedShips`.
 
 Cuando se configura, el propietario recibe notificaciones por MD para:
 
-- Solicitudes de MD de naves que no están en la lista de permitidos
+- Solicitudes de MD de ships que no están en la lista de permitidos
 - Menciones en canales sin autorización
 - Solicitudes de invitación a grupos
 
 ## Opciones de aceptación automática
 
-Aceptar automáticamente invitaciones de MD (para naves en dmAllowlist):
+Aceptar automáticamente invitaciones de MD (para ships en dmAllowlist):
 
 ```json5
 {
@@ -197,51 +197,55 @@ Aceptar automáticamente invitaciones de MD (para naves en dmAllowlist):
 }
 ```
 
-Aceptar automáticamente invitaciones de grupo:
+Aceptar automáticamente invitaciones a grupos de ships de confianza:
 
 ```json5
 {
   channels: {
     tlon: {
       autoAcceptGroupInvites: true,
+      groupInviteAllowlist: ["~zod"],
     },
   },
 }
 ```
 
+`autoAcceptGroupInvites` falla de forma cerrada cuando `groupInviteAllowlist` está vacía. Define la
+lista de permitidos con las ships cuyas invitaciones a grupos deben aceptarse automáticamente.
+
 ## Destinos de entrega (CLI/cron)
 
-Usa estos con `openclaw message send` o entrega por cron:
+Úsalos con `openclaw message send` o entrega por cron:
 
 - MD: `~sampel-palnet` o `dm/~sampel-palnet`
 - Grupo: `chat/~host-ship/channel` o `group:~host-ship/channel`
 
-## Skill incluido
+## Skill incluida
 
-El Plugin de Tlon incluye un skill incluido ([`@tloncorp/tlon-skill`](https://github.com/tloncorp/tlon-skill))
-que proporciona acceso mediante CLI a las operaciones de Tlon:
+El plugin de Tlon incluye una Skill incluida ([`@tloncorp/tlon-skill`](https://github.com/tloncorp/tlon-skill))
+que proporciona acceso mediante CLI a operaciones de Tlon:
 
 - **Contactos**: obtener/actualizar perfiles, listar contactos
 - **Canales**: listar, crear, publicar mensajes, obtener historial
-- **Grupos**: listar, crear, administrar miembros
+- **Grupos**: listar, crear, gestionar miembros
 - **MD**: enviar mensajes, reaccionar a mensajes
-- **Reacciones**: añadir/eliminar reacciones emoji a publicaciones y MD
-- **Configuración**: administrar permisos del Plugin mediante comandos de barra
+- **Reacciones**: añadir/eliminar reacciones con emoji a publicaciones y MD
+- **Configuración**: gestionar permisos del plugin mediante comandos slash
 
-El skill está disponible automáticamente cuando se instala el Plugin.
+La Skill está disponible automáticamente cuando el plugin está instalado.
 
 ## Capacidades
 
-| Función          | Estado                                                 |
-| ---------------- | ------------------------------------------------------ |
-| Mensajes directos | ✅ Compatible                                          |
+| Funcionalidad    | Estado                                            |
+| ---------------- | ------------------------------------------------- |
+| Mensajes directos | ✅ Compatible                                     |
 | Grupos/canales   | ✅ Compatible (requiere mención de forma predeterminada) |
-| Hilos            | ✅ Compatible (respuestas automáticas en el hilo)      |
-| Texto enriquecido | ✅ Markdown convertido al formato de Tlon              |
-| Imágenes         | ✅ Cargadas al almacenamiento de Tlon                   |
-| Reacciones       | ✅ Mediante [skill incluido](#bundled-skill)            |
-| Encuestas        | ❌ Aún no compatible                                   |
-| Comandos nativos | ✅ Compatible (solo propietario de forma predeterminada) |
+| Hilos            | ✅ Compatible (respuestas automáticas en el hilo) |
+| Texto enriquecido | ✅ Markdown convertido al formato de Tlon        |
+| Imágenes         | ✅ Cargadas al almacenamiento de Tlon             |
+| Reacciones       | ✅ Mediante [Skill incluida](#bundled-skill)      |
+| Encuestas        | ❌ Aún no compatibles                             |
+| Comandos nativos | ✅ Compatibles (solo propietario de forma predeterminada) |
 
 ## Solución de problemas
 
@@ -254,12 +258,12 @@ openclaw logs --follow
 openclaw doctor
 ```
 
-Fallos comunes:
+Errores comunes:
 
-- **MD ignorados**: el remitente no está en `dmAllowlist` y no hay `ownerShip` configurado para el flujo de aprobación.
-- **Mensajes de grupo ignorados**: canal no descubierto o remitente no autorizado.
-- **Errores de conexión**: comprueba que se pueda acceder a la URL de la nave; habilita `allowPrivateNetwork` para naves locales.
-- **Errores de autenticación**: verifica que el código de inicio de sesión sea actual (los códigos rotan).
+- **MD ignorados**: el remitente no está en `dmAllowlist` y no hay ningún `ownerShip` configurado para el flujo de aprobación.
+- **Mensajes de grupo ignorados**: el canal no se descubrió o el remitente no está autorizado.
+- **Errores de conexión**: comprueba que se pueda acceder a la URL de la ship; habilita `allowPrivateNetwork` para ships locales.
+- **Errores de autenticación**: verifica que el código de inicio de sesión esté vigente (los códigos rotan).
 
 ## Referencia de configuración
 
@@ -268,17 +272,18 @@ Configuración completa: [Configuración](/es/gateway/configuration)
 Opciones del proveedor:
 
 - `channels.tlon.enabled`: habilitar/deshabilitar el inicio del canal.
-- `channels.tlon.ship`: nombre de la nave de Urbit del bot (p. ej., `~sampel-palnet`).
-- `channels.tlon.url`: URL de la nave (p. ej., `https://sampel-palnet.tlon.network`).
-- `channels.tlon.code`: código de inicio de sesión de la nave.
-- `channels.tlon.allowPrivateNetwork`: permitir URL localhost/LAN (omisión de SSRF).
-- `channels.tlon.ownerShip`: nave propietaria para el sistema de aprobación (siempre autorizada).
-- `channels.tlon.dmAllowlist`: naves autorizadas a enviar MD (vacía = ninguna).
-- `channels.tlon.autoAcceptDmInvites`: aceptar automáticamente MD de naves en la lista de permitidos.
-- `channels.tlon.autoAcceptGroupInvites`: aceptar automáticamente todas las invitaciones de grupo.
+- `channels.tlon.ship`: nombre de la ship de Urbit del bot (p. ej., `~sampel-palnet`).
+- `channels.tlon.url`: URL de la ship (p. ej., `https://sampel-palnet.tlon.network`).
+- `channels.tlon.code`: código de inicio de sesión de la ship.
+- `channels.tlon.allowPrivateNetwork`: permitir URL de localhost/LAN (omisión de SSRF).
+- `channels.tlon.ownerShip`: ship propietaria para el sistema de aprobación (siempre autorizada).
+- `channels.tlon.dmAllowlist`: ships autorizadas a enviar MD (vacía = ninguna).
+- `channels.tlon.autoAcceptDmInvites`: aceptar automáticamente MD de ships en la lista de permitidos.
+- `channels.tlon.autoAcceptGroupInvites`: aceptar automáticamente invitaciones a grupos de ships en la lista de permitidos.
+- `channels.tlon.groupInviteAllowlist`: ships cuyas invitaciones a grupos pueden aceptarse automáticamente.
 - `channels.tlon.autoDiscoverChannels`: descubrir automáticamente canales de grupo (predeterminado: true).
 - `channels.tlon.groupChannels`: nidos de canal fijados manualmente.
-- `channels.tlon.defaultAuthorizedShips`: naves autorizadas para todos los canales.
+- `channels.tlon.defaultAuthorizedShips`: ships autorizadas para todos los canales.
 - `channels.tlon.authorization.channelRules`: reglas de autorización por canal.
 - `channels.tlon.showModelSignature`: añadir el nombre del modelo a los mensajes.
 
@@ -287,12 +292,12 @@ Opciones del proveedor:
 - Las respuestas de grupo requieren una mención (p. ej., `~your-bot-ship`) para responder.
 - Respuestas en hilos: si el mensaje entrante está en un hilo, OpenClaw responde dentro del hilo.
 - Texto enriquecido: el formato Markdown (negrita, cursiva, código, encabezados, listas) se convierte al formato nativo de Tlon.
-- Imágenes: las URL se cargan al almacenamiento de Tlon y se incrustan como bloques de imagen.
+- Imágenes: las URL se cargan al almacenamiento de Tlon y se insertan como bloques de imagen.
 
 ## Relacionado
 
 - [Resumen de canales](/es/channels) — todos los canales compatibles
 - [Emparejamiento](/es/channels/pairing) — autenticación por MD y flujo de emparejamiento
-- [Grupos](/es/channels/groups) — comportamiento de chat grupal y requisito de mención
+- [Grupos](/es/channels/groups) — comportamiento de chat grupal y activación por mención
 - [Enrutamiento de canales](/es/channels/channel-routing) — enrutamiento de sesiones para mensajes
-- [Seguridad](/es/gateway/security) — modelo de acceso y refuerzo
+- [Seguridad](/es/gateway/security) — modelo de acceso y endurecimiento
