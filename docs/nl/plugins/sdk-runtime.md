@@ -1,28 +1,28 @@
 ---
 read_when:
-    - Je moet core-helpers vanuit een Plugin aanroepen (TTS, STT, beeldgeneratie, webzoekfunctie, subagent, nodes)
+    - Je moet kernhelpers aanroepen vanuit een Plugin (TTS, STT, beeldgeneratie, zoeken op het web, subagent, knooppunten)
     - Je wilt begrijpen wat api.runtime beschikbaar stelt
-    - Je gebruikt configuratie-, agent- of mediahelpers vanuit plugin-code
+    - Je gebruikt configuratie-, agent- of mediahelpers vanuit plugincode
 sidebarTitle: Runtime helpers
-summary: api.runtime -- de geïnjecteerde runtime-hulpfuncties die beschikbaar zijn voor plugins
-title: Plugin-runtimehulpfuncties
+summary: api.runtime -- de geïnjecteerde runtimehelpers die beschikbaar zijn voor plugins
+title: Plugin-runtimehelpers
 x-i18n:
-    generated_at: "2026-05-02T20:57:41Z"
+    generated_at: "2026-05-04T09:37:05Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 26df37a2ad0dcd29648e382eb579b6892068af4dea1c47460cfd379458a8081c
+    source_hash: c968f30052ecba4359bdaa9b1c640c1220268933ce01ccef06bcade225b50b7d
     source_path: plugins/sdk-runtime.md
     workflow: 16
 ---
 
-Naslag voor het `api.runtime`-object dat tijdens registratie in elke plugin wordt geïnjecteerd. Gebruik deze helpers in plaats van host-internals rechtstreeks te importeren.
+Referentie voor het `api.runtime`-object dat tijdens registratie in elke plugin wordt geïnjecteerd. Gebruik deze helpers in plaats van hostinternals rechtstreeks te importeren.
 
 <CardGroup cols={2}>
-  <Card title="Kanaalplugins" href="/nl/plugins/sdk-channel-plugins">
-    Stapsgewijze gids die deze helpers in context gebruikt voor kanaalplugins.
+  <Card title="Channel-plugins" href="/nl/plugins/sdk-channel-plugins">
+    Stapsgewijze handleiding die deze helpers in context gebruikt voor channel-plugins.
   </Card>
-  <Card title="Providerplugins" href="/nl/plugins/sdk-provider-plugins">
-    Stapsgewijze gids die deze helpers in context gebruikt voor providerplugins.
+  <Card title="Provider-plugins" href="/nl/plugins/sdk-provider-plugins">
+    Stapsgewijze handleiding die deze helpers in context gebruikt voor provider-plugins.
   </Card>
 </CardGroup>
 
@@ -32,40 +32,40 @@ register(api) {
 }
 ```
 
-## Configuratie Laden En Schrijven
+## Configuratie laden en schrijven
 
-Geef de voorkeur aan configuratie die al aan het actieve aanroeppad is doorgegeven, bijvoorbeeld `api.config` tijdens registratie of een `cfg`-argument in kanaal-/providercallbacks. Zo blijft één processnapshot door het werk stromen in plaats van configuratie opnieuw te parsen op hot paths.
+Geef de voorkeur aan configuratie die al aan het actieve callpad is doorgegeven, bijvoorbeeld `api.config` tijdens registratie of een `cfg`-argument bij channel-/provider-callbacks. Zo blijft een proces-snapshot door het werk stromen in plaats van configuratie opnieuw te parsen op hot paths.
 
-Gebruik `api.runtime.config.current()` alleen wanneer een langlevende handler de huidige processnapshot nodig heeft en er geen configuratie aan die functie is doorgegeven. De geretourneerde waarde is readonly; kloon deze of gebruik een mutatiehelper voordat je bewerkingen uitvoert.
+Gebruik `api.runtime.config.current()` alleen wanneer een langdurig actieve handler de huidige proces-snapshot nodig heeft en er geen configuratie aan die functie is doorgegeven. De geretourneerde waarde is alleen-lezen; kloon deze of gebruik een mutation-helper voordat je bewerkingen uitvoert.
 
-Tool factories ontvangen `ctx.runtimeConfig` plus `ctx.getRuntimeConfig()`. Gebruik de getter binnen de `execute`-callback van een langlevende tool wanneer configuratie kan veranderen nadat de tooldefinitie is gemaakt.
+Tool-factories ontvangen `ctx.runtimeConfig` plus `ctx.getRuntimeConfig()`. Gebruik de getter binnen de `execute`-callback van een langdurig actieve tool wanneer configuratie kan wijzigen nadat de tooldefinitie is gemaakt.
 
-Sla wijzigingen op met `api.runtime.config.mutateConfigFile(...)` of `api.runtime.config.replaceConfigFile(...)`. Elke schrijfactie moet een expliciet `afterWrite`-beleid kiezen:
+Persist wijzigingen met `api.runtime.config.mutateConfigFile(...)` of `api.runtime.config.replaceConfigFile(...)`. Elke schrijfactie moet een expliciet `afterWrite`-beleid kiezen:
 
-- `afterWrite: { mode: "auto" }` laat de herlaadplanner van de Gateway beslissen.
+- `afterWrite: { mode: "auto" }` laat de gateway-herlaadplanner beslissen.
 - `afterWrite: { mode: "restart", reason: "..." }` forceert een schone herstart wanneer de schrijver weet dat hot reload onveilig is.
 - `afterWrite: { mode: "none", reason: "..." }` onderdrukt automatisch herladen/herstarten alleen wanneer de aanroeper eigenaar is van de follow-up.
 
-De mutatiehelpers retourneren `afterWrite` plus een getypte `followUp`-samenvatting, zodat aanroepers kunnen loggen of testen of ze een herstart hebben aangevraagd. De Gateway blijft bepalen wanneer die herstart daadwerkelijk plaatsvindt.
+De mutation-helpers retourneren `afterWrite` plus een getypeerde `followUp`-samenvatting zodat aanroepers kunnen loggen of testen of ze een herstart hebben aangevraagd. De Gateway blijft bepalen wanneer die herstart daadwerkelijk plaatsvindt.
 
-`api.runtime.config.loadConfig()` en `api.runtime.config.writeConfigFile(...)` zijn verouderde compatibiliteitshelpers onder `runtime-config-load-write`. Ze waarschuwen eenmaal tijdens runtime en blijven beschikbaar voor oude externe plugins tijdens het migratievenster. Gebundelde plugins mogen ze niet gebruiken; de configuratiegrensbewakers falen als plugincode ze aanroept of die helpers importeert vanuit plugin-SDK-subpaden.
+`api.runtime.config.loadConfig()` en `api.runtime.config.writeConfigFile(...)` zijn verouderde compatibiliteitshelpers onder `runtime-config-load-write`. Ze waarschuwen eenmaal tijdens runtime en blijven beschikbaar voor oude externe plugins tijdens het migratievenster. Gebundelde plugins mogen ze niet gebruiken; de config-boundary-guards falen als plugin-code ze aanroept of die helpers uit plugin-SDK-subpaden importeert.
 
-Gebruik voor rechtstreekse SDK-imports de gerichte configuratiesubpaden in plaats van de brede
-`openclaw/plugin-sdk/config-runtime`-compatibiliteitsbarrel: `config-types` voor
-typen, `plugin-config-runtime` voor al geladen configuratie-assertions en plugin-
-entry lookup, `runtime-config-snapshot` voor huidige processnapshots, en
-`config-mutation` voor schrijfoperaties. Tests voor gebundelde plugins moeten deze gerichte
+Gebruik voor rechtstreekse SDK-imports de gerichte config-subpaden in plaats van de brede compatibiliteitsbarrel
+`openclaw/plugin-sdk/config-runtime`: `config-types` voor
+typen, `plugin-config-runtime` voor assertions op al geladen configuratie en plugin-
+entry-lookup, `runtime-config-snapshot` voor huidige proces-snapshots, en
+`config-mutation` voor schrijfacties. Tests voor gebundelde plugins moeten deze gerichte
 subpaden rechtstreeks mocken in plaats van de brede compatibiliteitsbarrel te mocken.
 
-Interne OpenClaw-runtimecode volgt dezelfde richting: laad configuratie eenmaal aan de CLI-, Gateway- of procesgrens en geef die waarde daarna door. Succesvolle mutatieschrijfacties verversen de procesruntime-snapshot en verhogen de interne revisie; langlevende caches moeten de runtime-eigen cachesleutel gebruiken in plaats van configuratie lokaal te serialiseren. Langlevende runtimemodules hebben een zero-tolerance scanner voor ambient `loadConfig()`-aanroepen; gebruik een doorgegeven `cfg`, een request `context.getRuntimeConfig()`, of `getRuntimeConfig()` aan een expliciete procesgrens.
+Interne OpenClaw-runtimecode volgt dezelfde richting: laad configuratie eenmaal aan de CLI-, Gateway- of procesgrens en geef die waarde daarna door. Geslaagde mutation-schrijfacties verversen de proces-runtime-snapshot en verhogen de interne revisie; langdurig actieve caches moeten keyen op de runtime-owned cache-key in plaats van configuratie lokaal te serialiseren. Langdurig actieve runtime-modules hebben een zero-tolerance-scanner voor ambient `loadConfig()`-aanroepen; gebruik een doorgegeven `cfg`, een request-`context.getRuntimeConfig()`, of `getRuntimeConfig()` aan een expliciete procesgrens.
 
-Uitvoeringspaden voor providers en kanalen moeten de actieve runtimeconfiguratiesnapshot gebruiken, niet een bestandssnapshot die is geretourneerd voor configuratie-readback of bewerking. Bestandssnapshots bewaren bronwaarden zoals SecretRef-markeringen voor UI en schrijfoperaties; providercallbacks hebben de opgeloste runtimeweergave nodig. Wanneer een helper kan worden aangeroepen met de actieve bronsnapshot of de actieve runtimesnapshot, routeer dan via `selectApplicableRuntimeConfig()` voordat credentials worden gelezen.
+Provider- en channel-uitvoeringspaden moeten de actieve runtime-config-snapshot gebruiken, niet een bestandssnapshot die is geretourneerd voor config-readback of bewerking. Bestandssnapshots behouden bronwaarden zoals SecretRef-markers voor UI en schrijfacties; provider-callbacks hebben de opgeloste runtime-weergave nodig. Wanneer een helper kan worden aangeroepen met de actieve bron-snapshot of de actieve runtime-snapshot, routeer dan via `selectApplicableRuntimeConfig()` voordat je credentials leest.
 
 ## Runtime-namespaces
 
 <AccordionGroup>
   <Accordion title="api.runtime.agent">
-    Agentidentiteit, directories en sessiebeheer.
+    Agentidentiteit, mappen en sessiebeheer.
 
     ```typescript
     // Resolve the agent's working directory
@@ -109,15 +109,15 @@ Uitvoeringspaden voor providers en kanalen moeten de actieve runtimeconfiguratie
     });
     ```
 
-    `runEmbeddedAgent(...)` is de neutrale helper om vanuit plugincode een normale OpenClaw-agentbeurt te starten. Deze gebruikt dezelfde provider-/modelresolutie en agent-harnessselectie als door kanalen getriggerde antwoorden.
+    `runEmbeddedAgent(...)` is de neutrale helper om vanuit plugin-code een normale OpenClaw-agentturn te starten. Deze gebruikt dezelfde provider-/modelresolutie en agent-harnessselectie als channel-getriggerde antwoorden.
 
-    `runEmbeddedPiAgent(...)` blijft beschikbaar als compatibiliteitsalias.
+    `runEmbeddedPiAgent(...)` blijft bestaan als compatibiliteitsalias.
 
-    `resolveThinkingPolicy(...)` retourneert de ondersteunde denkniveaus van de provider/het model en een optionele standaardwaarde. Providerplugins zijn eigenaar van het modelspecifieke profiel via hun thinking-hooks, dus toolplugins moeten deze runtimehelper aanroepen in plaats van providerlijsten te importeren of te dupliceren.
+    `resolveThinkingPolicy(...)` retourneert de ondersteunde thinking-niveaus en optionele standaard van de provider/het model. Provider-plugins zijn eigenaar van het modelspecifieke profiel via hun thinking-hooks, dus tool-plugins moeten deze runtime-helper aanroepen in plaats van providerlijsten te importeren of te dupliceren.
 
-    `normalizeThinkingLevel(...)` zet gebruikerstekst zoals `on`, `x-high` of `extra high` om naar het canonieke opgeslagen niveau voordat dit wordt gecontroleerd tegen het opgeloste beleid.
+    `normalizeThinkingLevel(...)` converteert gebruikerstekst zoals `on`, `x-high` of `extra high` naar het canonieke opgeslagen niveau voordat dit wordt gecontroleerd tegen het opgeloste beleid.
 
-    **Helpers voor sessiestores** staan onder `api.runtime.agent.session`:
+    **Session-store-helpers** staan onder `api.runtime.agent.session`:
 
     ```typescript
     const storePath = api.runtime.agent.session.resolveStorePath(cfg);
@@ -129,7 +129,7 @@ Uitvoeringspaden voor providers en kanalen moeten de actieve runtimeconfiguratie
     const filePath = api.runtime.agent.session.resolveSessionFilePath(cfg, sessionId);
     ```
 
-    Geef voor runtime-schrijfoperaties de voorkeur aan `updateSessionStore(...)` of `updateSessionStoreEntry(...)`. Ze routeren via de sessiestoreschrijver die eigendom is van de Gateway, behouden gelijktijdige updates en hergebruiken de hot cache. `saveSessionStore(...)` blijft beschikbaar voor compatibiliteit en offline onderhoudsachtige herschrijfacties.
+    Geef de voorkeur aan `updateSessionStore(...)` of `updateSessionStoreEntry(...)` voor runtime-schrijfacties. Ze routeren via de session-store-writer van de Gateway, behouden gelijktijdige updates en hergebruiken de hot cache. `saveSessionStore(...)` blijft beschikbaar voor compatibiliteit en offline onderhoudsachtige herschrijfacties.
 
   </Accordion>
   <Accordion title="api.runtime.agent.defaults">
@@ -170,14 +170,14 @@ Uitvoeringspaden voor providers en kanalen moeten de actieve runtimeconfiguratie
     ```
 
     <Warning>
-    Modeloverrides (`provider`/`model`) vereisen opt-in van de operator via `plugins.entries.<id>.subagent.allowModelOverride: true` in de configuratie. Niet-vertrouwde plugins kunnen nog steeds subagents uitvoeren, maar overrideverzoeken worden geweigerd.
+    Model-overrides (`provider`/`model`) vereisen operator-opt-in via `plugins.entries.<id>.subagent.allowModelOverride: true` in configuratie. Niet-vertrouwde plugins kunnen nog steeds subagents uitvoeren, maar override-aanvragen worden geweigerd.
     </Warning>
 
-    `deleteSession(...)` kan sessies verwijderen die door dezelfde plugin zijn gemaakt via `api.runtime.subagent.run(...)`. Het verwijderen van willekeurige gebruikers- of operatorsessies vereist nog steeds een Gateway-verzoek met admin-scope.
+    `deleteSession(...)` kan sessies verwijderen die door dezelfde plugin zijn gemaakt via `api.runtime.subagent.run(...)`. Het verwijderen van willekeurige gebruikers- of operatorsessies vereist nog steeds een admin-scoped Gateway-request.
 
   </Accordion>
   <Accordion title="api.runtime.nodes">
-    Toon verbonden nodes en roep een node-hostcommand aan vanuit door de Gateway geladen plugincode of vanuit plugin-CLI-commands. Gebruik dit wanneer een plugin eigenaar is van lokaal werk op een gekoppeld apparaat, bijvoorbeeld een browser- of audiobridge op een andere Mac.
+    Toon verbonden nodes en roep een node-host-command aan vanuit door de Gateway geladen plugin-code of vanuit plugin-CLI-commands. Gebruik dit wanneer een plugin lokaal werk bezit op een gekoppeld apparaat, bijvoorbeeld een browser- of audiobridge op een andere Mac.
 
     ```typescript
     const { nodes } = await api.runtime.nodes.list({ connected: true });
@@ -190,13 +190,13 @@ Uitvoeringspaden voor providers en kanalen moeten de actieve runtimeconfiguratie
     });
     ```
 
-    Binnen de Gateway is deze runtime in-process. In plugin-CLI-commands roept deze de geconfigureerde Gateway aan via RPC, zodat commands zoals `openclaw googlemeet recover-tab` gekoppelde nodes vanuit de terminal kunnen inspecteren. Node-commands lopen nog steeds via normale Gateway-nodekoppeling, command-allowlists, pluginbeleid voor node-invoke en node-lokale commandafhandeling.
+    Binnen de Gateway draait deze runtime in-process. In plugin-CLI-commands roept deze de geconfigureerde Gateway aan via RPC, zodat commands zoals `openclaw googlemeet recover-tab` gekoppelde nodes vanuit de terminal kunnen inspecteren. Node-commands lopen nog steeds via normale Gateway-nodekoppeling, command-allowlists, plugin-node-invoke-beleid en node-local command-afhandeling.
 
-    Plugins die gevaarlijke node-hostcommands beschikbaar maken, moeten een node-invoke-beleid registreren met `api.registerNodeInvokePolicy(...)`. Het beleid draait in de Gateway na command-allowlistchecks en voordat het command naar de node wordt doorgestuurd, zodat rechtstreekse `node.invoke`-aanroepen en plugintools op hoger niveau hetzelfde handhavingspad delen.
+    Plugins die gevaarlijke node-host-commands beschikbaar maken, moeten een node-invoke-beleid registreren met `api.registerNodeInvokePolicy(...)`. Het beleid draait in de Gateway na command-allowlist-controles en voordat het command naar de node wordt doorgestuurd, zodat rechtstreekse `node.invoke`-aanroepen en hogere plugin-tools hetzelfde handhavingspad delen.
 
   </Accordion>
   <Accordion title="api.runtime.tasks.managedFlows">
-    Bind een Task Flow-runtime aan een bestaande OpenClaw-sessiesleutel of vertrouwde toolcontext, en maak en beheer daarna Task Flows zonder bij elke aanroep een eigenaar door te geven.
+    Bind een TaskFlow-runtime aan een bestaande OpenClaw-sessiesleutel of vertrouwde toolcontext, en maak en beheer daarna TaskFlows zonder bij elke aanroep een eigenaar door te geven.
 
     ```typescript
     const taskFlow = api.runtime.tasks.managedFlows.fromToolContext(ctx);
@@ -223,11 +223,11 @@ Uitvoeringspaden voor providers en kanalen moeten de actieve runtimeconfiguratie
     });
     ```
 
-    Gebruik `bindSession({ sessionKey, requesterOrigin })` wanneer je al een vertrouwde OpenClaw-sessiesleutel hebt vanuit je eigen bindingslaag. Bind niet vanuit ruwe gebruikersinvoer.
+    Gebruik `bindSession({ sessionKey, requesterOrigin })` wanneer je al een vertrouwde OpenClaw-sessiesleutel uit je eigen bindinglaag hebt. Bind niet vanuit ruwe gebruikersinvoer.
 
   </Accordion>
   <Accordion title="api.runtime.tts">
-    Tekst-naar-spraaksynthese.
+    Tekst-naar-spraak-synthese.
 
     ```typescript
     // Standard TTS
@@ -249,7 +249,7 @@ Uitvoeringspaden voor providers en kanalen moeten de actieve runtimeconfiguratie
     });
     ```
 
-    Gebruikt de coreconfiguratie `messages.tts` en providerselectie. Retourneert PCM-audiobuffer + sample rate.
+    Gebruikt de core-`messages.tts`-configuratie en providerselectie. Retourneert PCM-audiobuffer + samplefrequentie.
 
   </Accordion>
   <Accordion title="api.runtime.mediaUnderstanding">
@@ -291,7 +291,7 @@ Uitvoeringspaden voor providers en kanalen moeten de actieve runtimeconfiguratie
 
   </Accordion>
   <Accordion title="api.runtime.imageGeneration">
-    Beeldgeneratie.
+    Afbeeldingen genereren.
 
     ```typescript
     const result = await api.runtime.imageGeneration.generate({
@@ -342,9 +342,9 @@ Uitvoeringspaden voor providers en kanalen moeten de actieve runtimeconfiguratie
 
   </Accordion>
   <Accordion title="api.runtime.config">
-    Huidige momentopname van de runtimeconfiguratie en transactionele configuratieschrijfbewerkingen. Geef de voorkeur aan
-    configuratie die al is doorgegeven aan het actieve aanroeppad; gebruik
-    `current()` alleen wanneer de handler de procesmomentopname rechtstreeks nodig heeft.
+    Huidige snapshot van de runtimeconfiguratie en transactionele schrijfbewerkingen naar de configuratie. Geef de voorkeur aan
+    configuratie die al aan het actieve aanroeppad is doorgegeven; gebruik
+    `current()` alleen wanneer de handler de processnapshot rechtstreeks nodig heeft.
 
     ```typescript
     const cfg = api.runtime.config.current();
@@ -358,8 +358,8 @@ Uitvoeringspaden voor providers en kanalen moeten de actieve runtimeconfiguratie
 
     `mutateConfigFile(...)` en `replaceConfigFile(...)` retourneren een `followUp`-
     waarde, bijvoorbeeld `{ mode: "restart", requiresRestart: true, reason }`,
-    waarmee de intentie van de schrijver wordt vastgelegd zonder de herstartcontrole over te nemen van de
-    Gateway.
+    die de intentie van de writer vastlegt zonder de herstartbesturing bij de
+    Gateway weg te nemen.
 
   </Accordion>
   <Accordion title="api.runtime.system">
@@ -379,7 +379,7 @@ Uitvoeringspaden voor providers en kanalen moeten de actieve runtimeconfiguratie
 
   </Accordion>
   <Accordion title="api.runtime.events">
-    Gebeurtenisabonnementen.
+    Eventabonnementen.
 
     ```typescript
     api.runtime.events.onAgentEvent((event) => {
@@ -401,7 +401,7 @@ Uitvoeringspaden voor providers en kanalen moeten de actieve runtimeconfiguratie
 
   </Accordion>
   <Accordion title="api.runtime.modelAuth">
-    Authenticatieresolutie voor model en provider.
+    Auth-resolutie voor model en provider.
 
     ```typescript
     const auth = await api.runtime.modelAuth.getApiKeyForModel({ model, cfg });
@@ -413,7 +413,7 @@ Uitvoeringspaden voor providers en kanalen moeten de actieve runtimeconfiguratie
 
   </Accordion>
   <Accordion title="api.runtime.state">
-    Oplossing van de statusdirectory en door SQLite ondersteunde opslag met sleutels.
+    Resolutie van de statusdirectory en op SQLite gebaseerde keyed opslag.
 
     ```typescript
     const stateDir = api.runtime.state.resolveStateDir(process.env);
@@ -424,12 +424,13 @@ Uitvoeringspaden voor providers en kanalen moeten de actieve runtimeconfiguratie
     });
 
     await store.register("key-1", { value: "hello" });
+    const claimed = await store.registerIfAbsent("dedupe-key", { value: "first" });
     const value = await store.lookup("key-1");
     await store.consume("key-1");
     await store.clear();
     ```
 
-    Opslag met sleutels overleeft herstarts en wordt geïsoleerd op basis van de runtime-gebonden plugin-id. Limieten: `maxEntries` per namespace, 1.000 live rijen per Plugin, JSON-waarden kleiner dan 64 KB, en optionele TTL-vervaldatum.
+    Keyed stores blijven behouden na herstarts en zijn geïsoleerd door de runtime-gebonden Plugin-id. Gebruik `registerIfAbsent(...)` voor atomische deduplicatieclaims: dit retourneert `true` wanneer de sleutel ontbrak of verlopen was en is geregistreerd, of `false` wanneer er al een live waarde bestaat zonder de waarde, aanmaaktijd of TTL te overschrijven. Limieten: `maxEntries` per namespace, 1.000 live rijen per Plugin, JSON-waarden kleiner dan 64 KB en optioneel TTL-verval.
 
     <Warning>
     Alleen gebundelde plugins in deze release.
@@ -437,7 +438,7 @@ Uitvoeringspaden voor providers en kanalen moeten de actieve runtimeconfiguratie
 
   </Accordion>
   <Accordion title="api.runtime.tools">
-    Factory's voor geheugentools en CLI.
+    Memory-tool factories en CLI.
 
     ```typescript
     const getTool = api.runtime.tools.createMemoryGetTool(/* ... */);
@@ -449,7 +450,7 @@ Uitvoeringspaden voor providers en kanalen moeten de actieve runtimeconfiguratie
   <Accordion title="api.runtime.channel">
     Kanaalspecifieke runtimehelpers (beschikbaar wanneer een kanaalplugin is geladen).
 
-    `api.runtime.channel.mentions` is het gedeelde oppervlak voor inkomend vermeldingsbeleid voor gebundelde kanaalplugins die runtime-injectie gebruiken:
+    `api.runtime.channel.mentions` is het gedeelde inbound mention-policy-oppervlak voor gebundelde kanaalplugins die runtime-injectie gebruiken:
 
     ```typescript
     const mentionMatch = api.runtime.channel.mentions.matchesMentionWithExplicit(text, {
@@ -476,7 +477,7 @@ Uitvoeringspaden voor providers en kanalen moeten de actieve runtimeconfiguratie
     });
     ```
 
-    Beschikbare vermeldingshelpers:
+    Beschikbare mentionhelpers:
 
     - `buildMentionRegexes`
     - `matchesMentionPatterns`
@@ -484,14 +485,14 @@ Uitvoeringspaden voor providers en kanalen moeten de actieve runtimeconfiguratie
     - `implicitMentionKindWhen`
     - `resolveInboundMentionDecision`
 
-    `api.runtime.channel.mentions` stelt de oudere `resolveMentionGating*`-compatibiliteitshelpers bewust niet beschikbaar. Geef de voorkeur aan het genormaliseerde `{ facts, policy }`-pad.
+    `api.runtime.channel.mentions` stelt de oudere compatibiliteitshelpers `resolveMentionGating*` bewust niet beschikbaar. Geef de voorkeur aan het genormaliseerde pad `{ facts, policy }`.
 
   </Accordion>
 </AccordionGroup>
 
 ## Runtimeverwijzingen opslaan
 
-Gebruik `createPluginRuntimeStore` om de runtimeverwijzing op te slaan voor gebruik buiten de `register`-callback:
+Gebruik `createPluginRuntimeStore` om de runtimeverwijzing op te slaan voor gebruik buiten de callback `register`:
 
 <Steps>
   <Step title="Create the store">
@@ -532,7 +533,7 @@ Gebruik `createPluginRuntimeStore` om de runtimeverwijzing op te slaan voor gebr
 </Steps>
 
 <Note>
-Geef de voorkeur aan `pluginId` voor de identiteit van de runtime-store. De lower-level `key`-vorm is bedoeld voor ongebruikelijke gevallen waarin één Plugin bewust meer dan één runtimeslot nodig heeft.
+Geef de voorkeur aan `pluginId` voor de identiteit van de runtime-store. De lower-level vorm `key` is bedoeld voor ongebruikelijke gevallen waarin een Plugin bewust meer dan één runtimeslot nodig heeft.
 </Note>
 
 ## Andere top-level `api`-velden
@@ -546,23 +547,23 @@ Naast `api.runtime` biedt het API-object ook:
   Weergavenaam van Plugin.
 </ParamField>
 <ParamField path="api.config" type="OpenClawConfig">
-  Huidige configuratiemomentopname (actieve runtime-momentopname in het geheugen indien beschikbaar).
+  Huidige configuratiesnapshot (actieve in-memory runtimesnapshot wanneer beschikbaar).
 </ParamField>
 <ParamField path="api.pluginConfig" type="Record<string, unknown>">
   Plugin-specifieke configuratie uit `plugins.entries.<id>.config`.
 </ParamField>
 <ParamField path="api.logger" type="PluginLogger">
-  Gescopeerde logger (`debug`, `info`, `warn`, `error`).
+  Scoped logger (`debug`, `info`, `warn`, `error`).
 </ParamField>
 <ParamField path="api.registrationMode" type="PluginRegistrationMode">
-  Huidige laadmodus; `"setup-runtime"` is het lichte opstart-/setupvenster vóór de volledige entry.
+  Huidige laadmodus; `"setup-runtime"` is het lichte opstart-/setupvenster vóór volledige entry.
 </ParamField>
 <ParamField path="api.resolvePath(input)" type="(string) => string">
-  Los een pad op ten opzichte van de Plugin-root.
+  Los een pad op relatief aan de Plugin-root.
 </ParamField>
 
 ## Gerelateerd
 
-- [Plugin-internals](/nl/plugins/architecture) — capaciteitsmodel en register
-- [SDK-entrypoints](/nl/plugins/sdk-entrypoints) — `definePluginEntry`-opties
-- [SDK-overzicht](/nl/plugins/sdk-overview) — subpadreferentie
+- [Plugin-internals](/nl/plugins/architecture) — capabilitymodel en registry
+- [SDK-entry points](/nl/plugins/sdk-entrypoints) — opties voor `definePluginEntry`
+- [SDK-overzicht](/nl/plugins/sdk-overview) — subpathreferentie
