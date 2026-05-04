@@ -1,97 +1,104 @@
 ---
 read_when:
-    - Menjelaskan bagaimana steer berperilaku saat agen menggunakan alat
-    - Mengubah perilaku antrean proses aktif atau integrasi pengarahan waktu jalan
+    - Menjelaskan cara pengarahan berperilaku saat agen menggunakan alat
+    - Mengubah perilaku antrean proses aktif atau integrasi pengarahan lingkungan eksekusi
     - Membandingkan mode steer, queue, collect, dan followup
-summary: Cara pengarahan run aktif mengantrekan pesan di batas runtime
-title: Antrean arahan
+summary: Bagaimana pengarahan proses aktif mengantrekan pesan pada batas runtime
+title: Antrean pengarahan
 x-i18n:
-    generated_at: "2026-04-30T09:45:51Z"
+    generated_at: "2026-05-04T02:23:41Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 560390c8c26bcce95e0137f4336ad6e62bc3e2344cb15fd12ca3cfe4a85a8acc
+    source_hash: c8df35b127ae0c1e1b3b684a1f63ce33874eb3d0b7bf9d0df7cb9dfce093090a
     source_path: concepts/queue-steering.md
     workflow: 16
 ---
 
-Ketika sebuah pesan tiba saat run sesi sudah melakukan streaming, OpenClaw dapat
-mengirim pesan itu ke runtime aktif alih-alih memulai run lain untuk sesi yang
-sama. Mode publik bersifat netral terhadap runtime; Pi dan harness app-server
-Codex native mengimplementasikan detail pengirimannya secara berbeda.
+Saat pesan tiba ketika proses sesi sudah melakukan streaming, OpenClaw dapat
+mengirim pesan itu ke runtime aktif alih-alih memulai proses lain untuk sesi
+yang sama. Mode publik bersifat netral terhadap runtime; Pi dan harness app-server
+Codex native menerapkan detail pengirimannya secara berbeda.
 
-## Batas Runtime
+## Batas runtime
 
-Pengarahan tidak menginterupsi pemanggilan alat yang sudah berjalan. Pi memeriksa
-pesan pengarahan yang mengantre pada batas model:
+Steering tidak menghentikan panggilan alat yang sudah berjalan. Pi memeriksa
+pesan steering yang mengantre pada batas model:
 
-1. Asisten meminta pemanggilan alat.
-2. Pi mengeksekusi batch pemanggilan alat pesan asisten saat ini.
+1. Asisten meminta panggilan alat.
+2. Pi menjalankan batch panggilan alat dari pesan asisten saat ini.
 3. Pi memancarkan peristiwa akhir giliran.
-4. Pi menguras pesan pengarahan yang mengantre.
+4. Pi menguras pesan steering yang mengantre.
 5. Pi menambahkan pesan tersebut sebagai pesan pengguna sebelum panggilan LLM berikutnya.
 
 Ini menjaga hasil alat tetap berpasangan dengan pesan asisten yang memintanya,
-lalu memungkinkan panggilan model berikutnya melihat input pengguna terbaru.
+lalu memungkinkan panggilan model berikutnya melihat masukan pengguna terbaru.
 
-Harness app-server Codex native mengekspos `turn/steer`, bukan antrean
-pengarahan internal Pi. OpenClaw menyesuaikan mode yang sama di sana:
+Harness app-server Codex native mengekspos `turn/steer` alih-alih antrean
+steering internal Pi. OpenClaw mengadaptasi mode yang sama di sana:
 
-- `steer` membatch pesan yang mengantre selama jendela senyap yang dikonfigurasi, lalu mengirim
-  satu permintaan `turn/steer` dengan semua input pengguna yang dikumpulkan dalam urutan kedatangan.
-- `queue` mempertahankan bentuk berseri legacy dengan mengirim permintaan `turn/steer`
-  terpisah.
+- `steer` mengelompokkan pesan yang mengantre selama jendela hening yang
+  dikonfigurasi, lalu mengirim satu permintaan `turn/steer` dengan semua masukan
+  pengguna yang terkumpul sesuai urutan kedatangan.
+- `queue` mempertahankan bentuk serialisasi lama dengan mengirim permintaan
+  `turn/steer` terpisah.
 - `followup`, `collect`, `steer-backlog`, dan `interrupt` tetap menjadi perilaku
   antrean milik OpenClaw di sekitar giliran Codex yang aktif.
 
-Giliran peninjauan Codex dan Compaction manual menolak pengarahan dalam giliran
-yang sama. Ketika runtime tidak dapat menerima pengarahan, OpenClaw beralih ke antrean followup jika
-mode tersebut mengizinkannya.
+Giliran peninjauan Codex dan compaction manual menolak steering dalam giliran
+yang sama. Ketika runtime tidak dapat menerima steering, OpenClaw kembali ke
+antrean tindak lanjut jika mode tersebut mengizinkannya.
+
+Halaman ini menjelaskan steering mode antrean untuk pesan masuk normal. Untuk
+perintah eksplisit `/steer <message>`, lihat [Steer](/tools/steer).
 
 ## Mode
 
-| Mode            | Perilaku run aktif                                                                                                          | Perilaku followup berikutnya                                                             |
-| --------------- | ---------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `steer`         | Menyuntikkan semua pesan pengarahan yang mengantre bersama-sama pada batas runtime berikutnya. Ini adalah default.                             | Beralih ke followup hanya ketika pengarahan tidak tersedia.                           |
-| `queue`         | Pengarahan legacy satu per satu. Pi menyuntikkan satu pesan yang mengantre per batas model; Codex mengirim permintaan `turn/steer` terpisah. | Beralih ke followup hanya ketika pengarahan tidak tersedia.                           |
-| `steer-backlog` | Perilaku pengarahan run aktif yang sama seperti `steer`.                                                                                | Juga mempertahankan pesan yang sama untuk giliran followup nanti.                              |
-| `followup`      | Tidak mengarahkan run saat ini.                                                                                              | Menjalankan pesan yang mengantre nanti.                                                         |
-| `collect`       | Tidak mengarahkan run saat ini.                                                                                              | Menggabungkan pesan yang mengantre dan kompatibel menjadi satu giliran nanti setelah jendela debounce. |
-| `interrupt`     | Membatalkan run aktif, lalu memulai pesan terbaru.                                                                       | Tidak ada.                                                                               |
+| Mode            | Perilaku proses aktif                                                                                                        | Perilaku tindak lanjut berikutnya                                                       |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `steer`         | Menyisipkan semua pesan steering yang mengantre secara bersama-sama pada batas runtime berikutnya. Ini adalah default.        | Kembali ke tindak lanjut hanya ketika steering tidak tersedia.                          |
+| `queue`         | Steering lama satu per satu. Pi menyisipkan satu pesan antrean per batas model; Codex mengirim permintaan `turn/steer` terpisah. | Kembali ke tindak lanjut hanya ketika steering tidak tersedia.                          |
+| `steer-backlog` | Perilaku steering proses aktif yang sama seperti `steer`.                                                                    | Juga mempertahankan pesan yang sama untuk giliran tindak lanjut berikutnya.             |
+| `followup`      | Tidak melakukan steering pada proses saat ini.                                                                               | Menjalankan pesan yang mengantre nanti.                                                 |
+| `collect`       | Tidak melakukan steering pada proses saat ini.                                                                               | Menggabungkan pesan antrean yang kompatibel ke satu giliran berikutnya setelah jendela debounce. |
+| `interrupt`     | Membatalkan proses aktif, lalu memulai pesan terbaru.                                                                        | Tidak ada.                                                                              |
 
-## Contoh Lonjakan
+## Contoh lonjakan
 
-Jika empat pengguna mengirim pesan saat agen sedang mengeksekusi pemanggilan alat:
+Jika empat pengguna mengirim pesan saat agen sedang menjalankan panggilan alat:
 
-- `steer`: runtime aktif menerima keempat pesan dalam urutan kedatangan sebelum
+- `steer`: runtime aktif menerima keempat pesan sesuai urutan kedatangan sebelum
   keputusan model berikutnya. Pi mengurasnya pada batas model berikutnya; Codex
   menerimanya sebagai satu `turn/steer` yang dibatch.
-- `queue`: pengarahan berseri legacy. Pi menyuntikkan satu pesan yang mengantre pada satu waktu;
-  Codex menerima permintaan `turn/steer` terpisah.
-- `collect`: OpenClaw menunggu hingga run aktif berakhir, lalu membuat giliran followup
-  dengan pesan yang mengantre dan kompatibel setelah jendela debounce.
+- `queue`: steering serialisasi lama. Pi menyisipkan satu pesan antrean dalam
+  satu waktu; Codex menerima permintaan `turn/steer` terpisah.
+- `collect`: OpenClaw menunggu sampai proses aktif berakhir, lalu membuat giliran
+  tindak lanjut dengan pesan antrean yang kompatibel setelah jendela debounce.
 
 ## Cakupan
 
-Pengarahan selalu menargetkan run sesi aktif saat ini. Itu tidak membuat sesi
-baru, mengubah kebijakan alat run aktif, atau memisahkan pesan berdasarkan pengirim. Di
-kanal multi-pengguna, prompt masuk sudah menyertakan konteks pengirim dan rute, sehingga
-panggilan model berikutnya dapat melihat siapa yang mengirim setiap pesan.
+Steering selalu menargetkan proses sesi aktif saat ini. Ini tidak membuat sesi
+baru, mengubah kebijakan alat proses aktif, atau memisahkan pesan berdasarkan
+pengirim. Di kanal multipengguna, prompt masuk sudah menyertakan konteks
+pengirim dan rute, sehingga panggilan model berikutnya dapat melihat siapa yang
+mengirim setiap pesan.
 
-Gunakan `collect` ketika Anda ingin OpenClaw membangun giliran followup nanti yang dapat
-menggabungkan pesan yang kompatibel dan mempertahankan kebijakan penghapusan antrean followup. Gunakan
-`queue` hanya ketika Anda memerlukan perilaku pengarahan lama satu per satu.
+Gunakan `collect` saat Anda ingin OpenClaw membuat giliran tindak lanjut nanti
+yang dapat menggabungkan pesan yang kompatibel dan mempertahankan kebijakan
+penghapusan antrean tindak lanjut. Gunakan `queue` hanya saat Anda memerlukan
+perilaku steering lama satu per satu.
 
 ## Debounce
 
-`messages.queue.debounceMs` berlaku untuk pengiriman followup, termasuk `collect`,
-`followup`, `steer-backlog`, dan fallback `steer` ketika pengarahan run aktif tidak
-tersedia. Untuk Pi, `steer` aktif itu sendiri tidak menggunakan timer debounce karena
-Pi secara alami membatch pesan hingga batas model berikutnya. Untuk harness
-Codex native, OpenClaw menggunakan nilai debounce yang sama sebagai jendela senyap sebelum
-mengirim `turn/steer` yang dibatch.
+`messages.queue.debounceMs` berlaku untuk pengiriman tindak lanjut, termasuk
+`collect`, `followup`, `steer-backlog`, dan fallback `steer` ketika steering
+proses aktif tidak tersedia. Untuk Pi, `steer` aktif itu sendiri tidak menggunakan
+timer debounce karena Pi secara alami membatch pesan sampai batas model
+berikutnya. Untuk harness Codex native, OpenClaw menggunakan nilai debounce yang
+sama sebagai jendela hening sebelum mengirim `turn/steer` yang dibatch.
 
 ## Terkait
 
 - [Antrean perintah](/id/concepts/queue)
+- [Steer](/tools/steer)
 - [Pesan](/id/concepts/messages)
 - [Loop agen](/id/concepts/agent-loop)
