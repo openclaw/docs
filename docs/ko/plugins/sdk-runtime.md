@@ -1,28 +1,28 @@
 ---
 read_when:
-    - Plugin에서 코어 헬퍼(TTS, STT, 이미지 생성, 웹 검색, 하위 에이전트, 노드)를 호출해야 합니다.
-    - api.runtime가 노출하는 내용을 이해하고 싶을 때
-    - Plugin 코드에서 config, agent 또는 media 헬퍼에 접근하고 있습니다
+    - Plugin에서 코어 헬퍼(TTS, STT, 이미지 생성, 웹 검색, 하위 에이전트, 노드)를 호출해야 합니다
+    - api.runtime가 무엇을 노출하는지 이해하려는 경우
+    - Plugin 코드에서 config, 에이전트 또는 미디어 헬퍼에 접근하고 있습니다
 sidebarTitle: Runtime helpers
 summary: api.runtime -- Plugin에서 사용할 수 있는 주입된 런타임 헬퍼
 title: Plugin 런타임 헬퍼
 x-i18n:
-    generated_at: "2026-05-02T21:10:18Z"
+    generated_at: "2026-05-04T09:37:25Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 26df37a2ad0dcd29648e382eb579b6892068af4dea1c47460cfd379458a8081c
+    source_hash: c968f30052ecba4359bdaa9b1c640c1220268933ce01ccef06bcade225b50b7d
     source_path: plugins/sdk-runtime.md
     workflow: 16
 ---
 
-모든 Plugin 등록 중 주입되는 `api.runtime` 객체에 대한 참조입니다. 호스트 내부 구현을 직접 가져오는 대신 이 헬퍼들을 사용하세요.
+`api.runtime` 객체에 대한 참조입니다. 이 객체는 등록 중 모든 Plugin에 주입됩니다. 호스트 내부를 직접 가져오는 대신 이러한 헬퍼를 사용하세요.
 
 <CardGroup cols={2}>
   <Card title="채널 Plugin" href="/ko/plugins/sdk-channel-plugins">
-    채널 Plugin에서 이 헬퍼들을 맥락에 맞게 사용하는 단계별 가이드입니다.
+    채널 Plugin에서 이러한 헬퍼를 맥락에 맞게 사용하는 단계별 가이드입니다.
   </Card>
-  <Card title="Provider Plugin" href="/ko/plugins/sdk-provider-plugins">
-    Provider Plugin에서 이 헬퍼들을 맥락에 맞게 사용하는 단계별 가이드입니다.
+  <Card title="프로바이더 Plugin" href="/ko/plugins/sdk-provider-plugins">
+    프로바이더 Plugin에서 이러한 헬퍼를 맥락에 맞게 사용하는 단계별 가이드입니다.
   </Card>
 </CardGroup>
 
@@ -32,29 +32,30 @@ register(api) {
 }
 ```
 
-## Config 로딩 및 쓰기
+## Config 로드 및 쓰기
 
-활성 호출 경로에 이미 전달된 config를 선호하세요. 예를 들어 등록 중의 `api.config`나 채널/Provider 콜백의 `cfg` 인자가 있습니다. 이렇게 하면 핫 경로에서 config를 다시 파싱하는 대신 하나의 프로세스 스냅샷이 작업 전체를 통해 흐르게 됩니다.
+활성 호출 경로에 이미 전달된 config를 우선 사용하세요. 예를 들어 등록 중에는 `api.config`, 채널/프로바이더 콜백에서는 `cfg` 인수를 사용합니다. 이렇게 하면 핫 경로에서 config를 다시 파싱하는 대신 하나의 프로세스 스냅샷이 작업 전체를 흐르게 됩니다.
 
-장기 실행 핸들러가 현재 프로세스 스냅샷을 필요로 하고 해당 함수에 config가 전달되지 않은 경우에만 `api.runtime.config.current()`를 사용하세요. 반환된 값은 읽기 전용입니다. 편집하기 전에 복제하거나 변경 헬퍼를 사용하세요.
+수명이 긴 핸들러가 현재 프로세스 스냅샷을 필요로 하고 해당 함수에 config가 전달되지 않은 경우에만 `api.runtime.config.current()`를 사용하세요. 반환된 값은 읽기 전용입니다. 편집하기 전에 복제하거나 변경 헬퍼를 사용하세요.
 
-도구 팩토리는 `ctx.runtimeConfig`와 `ctx.getRuntimeConfig()`를 받습니다. 도구 정의가 생성된 뒤 config가 변경될 수 있는 장기 실행 도구의 `execute` 콜백 안에서는 getter를 사용하세요.
+도구 팩토리는 `ctx.runtimeConfig`와 `ctx.getRuntimeConfig()`를 받습니다. 도구 정의가 생성된 뒤 config가 변경될 수 있는 경우, 수명이 긴 도구의 `execute` 콜백 안에서 getter를 사용하세요.
 
-변경 사항은 `api.runtime.config.mutateConfigFile(...)` 또는 `api.runtime.config.replaceConfigFile(...)`로 영구 저장하세요. 각 쓰기는 명시적인 `afterWrite` 정책을 선택해야 합니다.
+변경 사항은 `api.runtime.config.mutateConfigFile(...)` 또는 `api.runtime.config.replaceConfigFile(...)`로 유지하세요. 각 쓰기는 명시적인 `afterWrite` 정책을 선택해야 합니다.
 
 - `afterWrite: { mode: "auto" }`는 Gateway 재로드 플래너가 결정하도록 합니다.
-- `afterWrite: { mode: "restart", reason: "..." }`는 작성자가 핫 리로드가 안전하지 않다는 것을 알고 있을 때 깔끔한 재시작을 강제합니다.
+- `afterWrite: { mode: "restart", reason: "..." }`는 작성자가 핫 리로드가 안전하지 않다고 아는 경우 깨끗한 재시작을 강제합니다.
 - `afterWrite: { mode: "none", reason: "..." }`는 호출자가 후속 조치를 소유하는 경우에만 자동 재로드/재시작을 억제합니다.
 
-변경 헬퍼는 `afterWrite`와 타입이 지정된 `followUp` 요약을 반환하므로 호출자가 재시작을 요청했는지 로그로 남기거나 테스트할 수 있습니다. 실제로 해당 재시작이 언제 발생하는지는 여전히 Gateway가 소유합니다.
+변경 헬퍼는 `afterWrite`와 타입이 지정된 `followUp` 요약을 반환하므로, 호출자는 재시작을 요청했는지 로그에 남기거나 테스트할 수 있습니다. 해당 재시작이 실제로 언제 일어나는지는 여전히 Gateway가 소유합니다.
 
-`api.runtime.config.loadConfig()`와 `api.runtime.config.writeConfigFile(...)`는 `runtime-config-load-write` 아래의 deprecated 호환성 헬퍼입니다. 런타임에서 한 번 경고하며, 마이그레이션 기간 동안 오래된 외부 Plugin에 계속 제공됩니다. 번들 Plugin은 이를 사용하면 안 됩니다. Plugin 코드가 이를 호출하거나 Plugin SDK 하위 경로에서 해당 헬퍼를 가져오면 config 경계 가드가 실패합니다.
+`api.runtime.config.loadConfig()`와 `api.runtime.config.writeConfigFile(...)`은 `runtime-config-load-write` 아래의 더 이상 권장되지 않는 호환성 헬퍼입니다. 런타임에서 한 번 경고하며, 마이그레이션 기간 동안 오래된 외부 Plugin을 위해 계속 사용할 수 있습니다. 번들 Plugin은 이를 사용하면 안 됩니다. Plugin 코드가 이를 호출하거나 Plugin SDK 하위 경로에서 해당 헬퍼를 가져오면 config 경계 가드가 실패합니다.
 
-직접 SDK import의 경우 광범위한 `openclaw/plugin-sdk/config-runtime` 호환성 배럴 대신 집중된 config 하위 경로를 사용하세요. 타입에는 `config-types`, 이미 로드된 config 어설션과 Plugin 엔트리 조회에는 `plugin-config-runtime`, 현재 프로세스 스냅샷에는 `runtime-config-snapshot`, 쓰기에는 `config-mutation`을 사용하세요. 번들 Plugin 테스트는 광범위한 호환성 배럴을 mock하는 대신 이러한 집중 하위 경로를 직접 mock해야 합니다.
+직접 SDK 가져오기에는 넓은
+`openclaw/plugin-sdk/config-runtime` 호환성 배럴 대신 초점이 맞춰진 config 하위 경로를 사용하세요. 타입에는 `config-types`, 이미 로드된 config 어설션과 Plugin 엔트리 조회에는 `plugin-config-runtime`, 현재 프로세스 스냅샷에는 `runtime-config-snapshot`, 쓰기에는 `config-mutation`을 사용하세요. 번들 Plugin 테스트는 넓은 호환성 배럴을 모킹하는 대신 이러한 초점이 맞춰진 하위 경로를 직접 모킹해야 합니다.
 
-내부 OpenClaw 런타임 코드도 같은 방향을 따릅니다. CLI, Gateway 또는 프로세스 경계에서 config를 한 번 로드한 뒤 해당 값을 전달하세요. 성공적인 변경 쓰기는 프로세스 런타임 스냅샷을 새로 고치고 내부 리비전을 증가시킵니다. 장기 실행 캐시는 config를 로컬로 직렬화하는 대신 런타임이 소유한 캐시 키를 기준으로 삼아야 합니다. 장기 실행 런타임 모듈에는 주변 `loadConfig()` 호출에 대한 무관용 스캐너가 있습니다. 전달된 `cfg`, 요청 `context.getRuntimeConfig()`, 또는 명시적인 프로세스 경계의 `getRuntimeConfig()`를 사용하세요.
+내부 OpenClaw 런타임 코드도 같은 방향을 따릅니다. CLI, Gateway, 또는 프로세스 경계에서 config를 한 번 로드한 뒤 그 값을 전달하세요. 성공한 변경 쓰기는 프로세스 런타임 스냅샷을 새로 고치고 내부 리비전을 증가시킵니다. 수명이 긴 캐시는 config를 로컬에서 직렬화하는 대신 런타임이 소유한 캐시 키를 기준으로 해야 합니다. 수명이 긴 런타임 모듈에는 주변 `loadConfig()` 호출에 대한 무관용 스캐너가 있습니다. 전달된 `cfg`, 요청 `context.getRuntimeConfig()`, 또는 명시적인 프로세스 경계의 `getRuntimeConfig()`를 사용하세요.
 
-Provider 및 채널 실행 경로는 config 읽기나 편집을 위해 반환된 파일 스냅샷이 아니라 활성 런타임 config 스냅샷을 사용해야 합니다. 파일 스냅샷은 UI와 쓰기를 위해 SecretRef 마커 같은 원본 값을 보존합니다. Provider 콜백에는 해석된 런타임 뷰가 필요합니다. 헬퍼가 활성 원본 스냅샷이나 활성 런타임 스냅샷 중 하나로 호출될 수 있는 경우, 자격 증명을 읽기 전에 `selectApplicableRuntimeConfig()`를 거치세요.
+프로바이더 및 채널 실행 경로는 config 읽기 또는 편집을 위해 반환된 파일 스냅샷이 아니라 활성 런타임 config 스냅샷을 사용해야 합니다. 파일 스냅샷은 UI와 쓰기를 위해 SecretRef 마커 같은 소스 값을 보존합니다. 프로바이더 콜백에는 해석된 런타임 보기가 필요합니다. 헬퍼가 활성 소스 스냅샷 또는 활성 런타임 스냅샷 중 하나로 호출될 수 있는 경우, 자격 증명을 읽기 전에 `selectApplicableRuntimeConfig()`를 거치도록 라우팅하세요.
 
 ## 런타임 네임스페이스
 
@@ -104,13 +105,13 @@ Provider 및 채널 실행 경로는 config 읽기나 편집을 위해 반환된
     });
     ```
 
-    `runEmbeddedAgent(...)`는 Plugin 코드에서 일반 OpenClaw 에이전트 턴을 시작하기 위한 중립 헬퍼입니다. 채널로 트리거된 응답과 동일한 Provider/모델 해석 및 에이전트 하네스 선택을 사용합니다.
+    `runEmbeddedAgent(...)`는 Plugin 코드에서 일반 OpenClaw 에이전트 턴을 시작하기 위한 중립 헬퍼입니다. 채널로 트리거된 응답과 동일한 프로바이더/모델 해석 및 에이전트 하네스 선택을 사용합니다.
 
     `runEmbeddedPiAgent(...)`는 호환성 별칭으로 남아 있습니다.
 
-    `resolveThinkingPolicy(...)`는 Provider/모델이 지원하는 사고 수준과 선택적 기본값을 반환합니다. Provider Plugin은 사고 훅을 통해 모델별 프로필을 소유하므로, 도구 Plugin은 Provider 목록을 import하거나 중복하는 대신 이 런타임 헬퍼를 호출해야 합니다.
+    `resolveThinkingPolicy(...)`는 프로바이더/모델이 지원하는 thinking level과 선택적 기본값을 반환합니다. 프로바이더 Plugin은 thinking 훅을 통해 모델별 프로필을 소유하므로, 도구 Plugin은 프로바이더 목록을 가져오거나 중복하는 대신 이 런타임 헬퍼를 호출해야 합니다.
 
-    `normalizeThinkingLevel(...)`는 해석된 정책과 대조하기 전에 `on`, `x-high`, 또는 `extra high` 같은 사용자 텍스트를 표준 저장 수준으로 변환합니다.
+    `normalizeThinkingLevel(...)`은 `on`, `x-high`, 또는 `extra high` 같은 사용자 텍스트를 해석된 정책과 대조하기 전에 표준 저장 level로 변환합니다.
 
     **세션 저장소 헬퍼**는 `api.runtime.agent.session` 아래에 있습니다.
 
@@ -124,11 +125,11 @@ Provider 및 채널 실행 경로는 config 읽기나 편집을 위해 반환된
     const filePath = api.runtime.agent.session.resolveSessionFilePath(cfg, sessionId);
     ```
 
-    런타임 쓰기에는 `updateSessionStore(...)` 또는 `updateSessionStoreEntry(...)`를 선호하세요. 이들은 Gateway가 소유한 세션 저장소 작성자를 거치고, 동시 업데이트를 보존하며, 핫 캐시를 재사용합니다. `saveSessionStore(...)`는 호환성과 오프라인 유지보수 방식 재작성을 위해 계속 제공됩니다.
+    런타임 쓰기에는 `updateSessionStore(...)` 또는 `updateSessionStoreEntry(...)`를 우선 사용하세요. 이들은 Gateway가 소유한 세션 저장소 작성자를 거치고, 동시 업데이트를 보존하며, 핫 캐시를 재사용합니다. `saveSessionStore(...)`는 호환성과 오프라인 유지관리 스타일 재작성용으로 계속 사용할 수 있습니다.
 
   </Accordion>
   <Accordion title="api.runtime.agent.defaults">
-    기본 모델 및 Provider 상수입니다.
+    기본 모델 및 프로바이더 상수입니다.
 
     ```typescript
     const model = api.runtime.agent.defaults.model; // e.g. "anthropic/claude-sonnet-4-6"
@@ -165,14 +166,14 @@ Provider 및 채널 실행 경로는 config 읽기나 편집을 위해 반환된
     ```
 
     <Warning>
-    모델 override(`provider`/`model`)에는 config의 `plugins.entries.<id>.subagent.allowModelOverride: true`를 통한 운영자 opt-in이 필요합니다. 신뢰할 수 없는 Plugin도 하위 에이전트를 실행할 수 있지만, override 요청은 거부됩니다.
+    모델 재정의(`provider`/`model`)에는 config에서 `plugins.entries.<id>.subagent.allowModelOverride: true`를 통한 운영자 옵트인이 필요합니다. 신뢰할 수 없는 Plugin도 하위 에이전트를 실행할 수 있지만, 재정의 요청은 거부됩니다.
     </Warning>
 
-    `deleteSession(...)`은 동일한 Plugin이 `api.runtime.subagent.run(...)`을 통해 생성한 세션을 삭제할 수 있습니다. 임의의 사용자 또는 운영자 세션을 삭제하려면 여전히 관리자 범위의 Gateway 요청이 필요합니다.
+    `deleteSession(...)`은 같은 Plugin이 `api.runtime.subagent.run(...)`을 통해 만든 세션을 삭제할 수 있습니다. 임의의 사용자 또는 운영자 세션을 삭제하려면 여전히 관리자 범위의 Gateway 요청이 필요합니다.
 
   </Accordion>
   <Accordion title="api.runtime.nodes">
-    Gateway가 로드한 Plugin 코드나 Plugin CLI 명령에서 연결된 Node를 나열하고 Node 호스트 명령을 호출합니다. 예를 들어 다른 Mac의 브라우저나 오디오 브리지처럼, Plugin이 페어링된 기기에서 로컬 작업을 소유할 때 사용하세요.
+    연결된 Node를 나열하고 Gateway가 로드한 Plugin 코드 또는 Plugin CLI 명령에서 Node 호스트 명령을 호출합니다. Plugin이 페어링된 기기에서 로컬 작업을 소유하는 경우 사용하세요. 예를 들어 다른 Mac의 브라우저 또는 오디오 브리지가 있습니다.
 
     ```typescript
     const { nodes } = await api.runtime.nodes.list({ connected: true });
@@ -185,13 +186,13 @@ Provider 및 채널 실행 경로는 config 읽기나 편집을 위해 반환된
     });
     ```
 
-    Gateway 내부에서 이 런타임은 in-process입니다. Plugin CLI 명령에서는 구성된 Gateway를 RPC로 호출하므로, `openclaw googlemeet recover-tab` 같은 명령이 터미널에서 페어링된 Node를 검사할 수 있습니다. Node 명령은 여전히 일반 Gateway Node 페어링, 명령 allowlist, Plugin Node 호출 정책, Node 로컬 명령 처리를 거칩니다.
+    Gateway 내부에서는 이 런타임이 인프로세스입니다. Plugin CLI 명령에서는 구성된 Gateway를 RPC로 호출하므로, `openclaw googlemeet recover-tab` 같은 명령이 터미널에서 페어링된 Node를 검사할 수 있습니다. Node 명령은 여전히 일반 Gateway Node 페어링, 명령 허용 목록, Plugin Node 호출 정책, Node 로컬 명령 처리를 거칩니다.
 
-    위험한 Node 호스트 명령을 노출하는 Plugin은 `api.registerNodeInvokePolicy(...)`로 Node 호출 정책을 등록해야 합니다. 이 정책은 Gateway에서 명령 allowlist 검사 후, 명령이 Node로 전달되기 전에 실행되므로 직접 `node.invoke` 호출과 상위 수준 Plugin 도구가 동일한 적용 경로를 공유합니다.
+    위험한 Node 호스트 명령을 노출하는 Plugin은 `api.registerNodeInvokePolicy(...)`로 Node 호출 정책을 등록해야 합니다. 정책은 명령 허용 목록 검사 후, 명령이 Node로 전달되기 전에 Gateway에서 실행됩니다. 따라서 직접 `node.invoke` 호출과 더 높은 수준의 Plugin 도구가 같은 강제 적용 경로를 공유합니다.
 
   </Accordion>
   <Accordion title="api.runtime.tasks.managedFlows">
-    Task Flow 런타임을 기존 OpenClaw 세션 키나 신뢰할 수 있는 도구 컨텍스트에 바인딩한 뒤, 모든 호출마다 소유자를 전달하지 않고 Task Flow를 만들고 관리합니다.
+    Task Flow 런타임을 기존 OpenClaw 세션 키 또는 신뢰할 수 있는 도구 컨텍스트에 바인딩한 다음, 모든 호출에서 소유자를 전달하지 않고 Task Flow를 만들고 관리합니다.
 
     ```typescript
     const taskFlow = api.runtime.tasks.managedFlows.fromToolContext(ctx);
@@ -218,7 +219,7 @@ Provider 및 채널 실행 경로는 config 읽기나 편집을 위해 반환된
     });
     ```
 
-    자체 바인딩 계층에서 신뢰할 수 있는 OpenClaw 세션 키를 이미 갖고 있을 때는 `bindSession({ sessionKey, requesterOrigin })`을 사용하세요. 원시 사용자 입력에서 바인딩하지 마세요.
+    자체 바인딩 계층에서 신뢰할 수 있는 OpenClaw 세션 키를 이미 가지고 있는 경우 `bindSession({ sessionKey, requesterOrigin })`를 사용하세요. 원시 사용자 입력에서 바인딩하지 마세요.
 
   </Accordion>
   <Accordion title="api.runtime.tts">
@@ -244,11 +245,11 @@ Provider 및 채널 실행 경로는 config 읽기나 편집을 위해 반환된
     });
     ```
 
-    코어 `messages.tts` 구성과 Provider 선택을 사용합니다. PCM 오디오 버퍼와 샘플 레이트를 반환합니다.
+    코어 `messages.tts` 구성과 프로바이더 선택을 사용합니다. PCM 오디오 버퍼와 샘플 레이트를 반환합니다.
 
   </Accordion>
   <Accordion title="api.runtime.mediaUnderstanding">
-    이미지, 오디오 및 비디오 분석입니다.
+    이미지, 오디오, 비디오 분석입니다.
 
     ```typescript
     // Describe an image
@@ -286,7 +287,7 @@ Provider 및 채널 실행 경로는 config 읽기나 편집을 위해 반환된
 
   </Accordion>
   <Accordion title="api.runtime.imageGeneration">
-    이미지 생성입니다.
+    이미지 생성.
 
     ```typescript
     const result = await api.runtime.imageGeneration.generate({
@@ -299,7 +300,7 @@ Provider 및 채널 실행 경로는 config 읽기나 편집을 위해 반환된
 
   </Accordion>
   <Accordion title="api.runtime.webSearch">
-    웹 검색입니다.
+    웹 검색.
 
     ```typescript
     const providers = api.runtime.webSearch.listProviders({ config: api.config });
@@ -312,7 +313,7 @@ Provider 및 채널 실행 경로는 config 읽기나 편집을 위해 반환된
 
   </Accordion>
   <Accordion title="api.runtime.media">
-    저수준 미디어 유틸리티입니다.
+    저수준 미디어 유틸리티.
 
     ```typescript
     const webMedia = await api.runtime.media.loadWebMedia(url);
@@ -337,7 +338,7 @@ Provider 및 채널 실행 경로는 config 읽기나 편집을 위해 반환된
 
   </Accordion>
   <Accordion title="api.runtime.config">
-    현재 런타임 구성 스냅샷과 트랜잭션 구성 쓰기입니다. 활성 호출 경로에 이미 전달된 구성을 선호하고, 핸들러가 프로세스 스냅샷을 직접 필요로 할 때만 `current()`를 사용하세요.
+    현재 런타임 구성 스냅샷과 트랜잭션 방식의 구성 쓰기입니다. 활성 호출 경로에 이미 전달된 구성을 우선 사용하고, 핸들러가 프로세스 스냅샷을 직접 필요로 할 때만 `current()`를 사용하세요.
 
     ```typescript
     const cfg = api.runtime.config.current();
@@ -349,11 +350,11 @@ Provider 및 채널 실행 경로는 config 읽기나 편집을 위해 반환된
     });
     ```
 
-    `mutateConfigFile(...)`와 `replaceConfigFile(...)`는 `followUp` 값을 반환합니다. 예를 들어 `{ mode: "restart", requiresRestart: true, reason }`이며, 이는 Gateway에서 재시작 제어권을 빼앗지 않고 작성자의 의도를 기록합니다.
+    `mutateConfigFile(...)` 및 `replaceConfigFile(...)`는 예를 들어 `{ mode: "restart", requiresRestart: true, reason }` 같은 `followUp` 값을 반환합니다. 이 값은 재시작 제어권을 gateway에서 빼앗지 않고 작성자의 의도를 기록합니다.
 
   </Accordion>
   <Accordion title="api.runtime.system">
-    시스템 수준 유틸리티입니다.
+    시스템 수준 유틸리티.
 
     ```typescript
     await api.runtime.system.enqueueSystemEvent(event);
@@ -369,7 +370,7 @@ Provider 및 채널 실행 경로는 config 읽기나 편집을 위해 반환된
 
   </Accordion>
   <Accordion title="api.runtime.events">
-    이벤트 구독입니다.
+    이벤트 구독.
 
     ```typescript
     api.runtime.events.onAgentEvent((event) => {
@@ -382,7 +383,7 @@ Provider 및 채널 실행 경로는 config 읽기나 편집을 위해 반환된
 
   </Accordion>
   <Accordion title="api.runtime.logging">
-    로깅입니다.
+    로깅.
 
     ```typescript
     const verbose = api.runtime.logging.shouldLogVerbose();
@@ -391,7 +392,7 @@ Provider 및 채널 실행 경로는 config 읽기나 편집을 위해 반환된
 
   </Accordion>
   <Accordion title="api.runtime.modelAuth">
-    모델 및 공급자 인증 해석입니다.
+    모델 및 provider 인증 확인.
 
     ```typescript
     const auth = await api.runtime.modelAuth.getApiKeyForModel({ model, cfg });
@@ -403,7 +404,7 @@ Provider 및 채널 실행 경로는 config 읽기나 편집을 위해 반환된
 
   </Accordion>
   <Accordion title="api.runtime.state">
-    상태 디렉터리 해석과 SQLite 기반 키 저장소입니다.
+    상태 디렉터리 확인 및 SQLite 기반 키 지정 저장소.
 
     ```typescript
     const stateDir = api.runtime.state.resolveStateDir(process.env);
@@ -414,12 +415,13 @@ Provider 및 채널 실행 경로는 config 읽기나 편집을 위해 반환된
     });
 
     await store.register("key-1", { value: "hello" });
+    const claimed = await store.registerIfAbsent("dedupe-key", { value: "first" });
     const value = await store.lookup("key-1");
     await store.consume("key-1");
     await store.clear();
     ```
 
-    키 저장소는 재시작 후에도 유지되며 런타임에 바인딩된 Plugin ID별로 격리됩니다. 제한: 네임스페이스당 `maxEntries`, Plugin당 활성 행 1,000개, 64KB 미만의 JSON 값, 선택적 TTL 만료입니다.
+    키 지정 저장소는 재시작 후에도 유지되며 런타임에 바인딩된 plugin id로 격리됩니다. 원자적 중복 제거 클레임에는 `registerIfAbsent(...)`를 사용하세요. 키가 없거나 만료되어 등록되면 `true`를 반환하고, 활성 값이 이미 있으면 해당 값, 생성 시간 또는 TTL을 덮어쓰지 않고 `false`를 반환합니다. 제한: 네임스페이스당 `maxEntries`, Plugin당 활성 행 1,000개, 64KB 미만의 JSON 값, 선택적 TTL 만료.
 
     <Warning>
     이 릴리스에서는 번들 Plugin만 지원됩니다.
@@ -427,7 +429,7 @@ Provider 및 채널 실행 경로는 config 읽기나 편집을 위해 반환된
 
   </Accordion>
   <Accordion title="api.runtime.tools">
-    메모리 도구 팩터리와 CLI입니다.
+    메모리 도구 팩터리 및 CLI.
 
     ```typescript
     const getTool = api.runtime.tools.createMemoryGetTool(/* ... */);
@@ -474,14 +476,14 @@ Provider 및 채널 실행 경로는 config 읽기나 편집을 위해 반환된
     - `implicitMentionKindWhen`
     - `resolveInboundMentionDecision`
 
-    `api.runtime.channel.mentions`는 이전 `resolveMentionGating*` 호환성 헬퍼를 의도적으로 노출하지 않습니다. 정규화된 `{ facts, policy }` 경로를 선호하세요.
+    `api.runtime.channel.mentions`는 의도적으로 이전 `resolveMentionGating*` 호환성 헬퍼를 노출하지 않습니다. 정규화된 `{ facts, policy }` 경로를 우선 사용하세요.
 
   </Accordion>
 </AccordionGroup>
 
 ## 런타임 참조 저장
 
-`register` 콜백 외부에서 사용할 런타임 참조를 저장하려면 `createPluginRuntimeStore`를 사용하세요.
+`register` 콜백 외부에서 사용하도록 런타임 참조를 저장하려면 `createPluginRuntimeStore`를 사용하세요.
 
 <Steps>
   <Step title="Create the store">
@@ -522,7 +524,7 @@ Provider 및 채널 실행 경로는 config 읽기나 편집을 위해 반환된
 </Steps>
 
 <Note>
-런타임 저장소 ID에는 `pluginId`를 선호하세요. 저수준 `key` 형식은 하나의 Plugin이 의도적으로 둘 이상의 런타임 슬롯을 필요로 하는 드문 경우를 위한 것입니다.
+런타임 저장소 ID에는 `pluginId`를 우선 사용하세요. 저수준 `key` 형식은 하나의 Plugin이 의도적으로 둘 이상의 런타임 슬롯을 필요로 하는 드문 경우에 사용합니다.
 </Note>
 
 ## 기타 최상위 `api` 필드
@@ -530,29 +532,29 @@ Provider 및 채널 실행 경로는 config 읽기나 편집을 위해 반환된
 `api.runtime` 외에도 API 객체는 다음을 제공합니다.
 
 <ParamField path="api.id" type="string">
-  Plugin ID입니다.
+  Plugin id.
 </ParamField>
 <ParamField path="api.name" type="string">
-  Plugin 표시 이름입니다.
+  Plugin 표시 이름.
 </ParamField>
 <ParamField path="api.config" type="OpenClawConfig">
-  현재 구성 스냅샷입니다(사용 가능한 경우 활성 인메모리 런타임 스냅샷).
+  현재 구성 스냅샷(사용 가능한 경우 활성 인메모리 런타임 스냅샷).
 </ParamField>
 <ParamField path="api.pluginConfig" type="Record<string, unknown>">
-  `plugins.entries.<id>.config`의 Plugin별 구성입니다.
+  `plugins.entries.<id>.config`의 Plugin별 구성.
 </ParamField>
 <ParamField path="api.logger" type="PluginLogger">
-  범위 지정 로거(`debug`, `info`, `warn`, `error`)입니다.
+  범위 지정 로거(`debug`, `info`, `warn`, `error`).
 </ParamField>
 <ParamField path="api.registrationMode" type="PluginRegistrationMode">
-  현재 로드 모드입니다. `"setup-runtime"`은 전체 엔트리 시작 전의 가벼운 시작/설정 창입니다.
+  현재 로드 모드입니다. `"setup-runtime"`은 전체 엔트리 전의 가벼운 시작/설정 구간입니다.
 </ParamField>
 <ParamField path="api.resolvePath(input)" type="(string) => string">
-  Plugin 루트를 기준으로 경로를 해석합니다.
+  Plugin 루트를 기준으로 경로를 확인합니다.
 </ParamField>
 
 ## 관련 항목
 
-- [Plugin 내부 구조](/ko/plugins/architecture) — 기능 모델과 레지스트리
+- [Plugin 내부 구조](/ko/plugins/architecture) — 기능 모델 및 레지스트리
 - [SDK 엔트리 포인트](/ko/plugins/sdk-entrypoints) — `definePluginEntry` 옵션
 - [SDK 개요](/ko/plugins/sdk-overview) — 하위 경로 참조
