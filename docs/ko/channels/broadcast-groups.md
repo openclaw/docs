@@ -1,31 +1,31 @@
 ---
 read_when:
     - 브로드캐스트 그룹 구성
-    - WhatsApp에서 다중 에이전트 답장 디버깅하기
+    - WhatsApp에서 다중 에이전트 응답 디버깅
 sidebarTitle: Broadcast groups
 status: experimental
 summary: 여러 에이전트에게 WhatsApp 메시지 브로드캐스트하기
 title: 브로드캐스트 그룹
 x-i18n:
-    generated_at: "2026-04-30T06:16:47Z"
+    generated_at: "2026-05-04T02:21:25Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b0de4ccc85bf79e2ceb1dddd60db067309b15b7f876c92e7d591ff0b4b4315ec
+    source_hash: eab43d3c3ffddb360340469433d74a380fbab98e662b2463a54f62eafc375b55
     source_path: channels/broadcast-groups.md
     workflow: 16
 ---
 
 <Note>
-**상태:** 실험적 기능입니다. 2026.1.9에 추가되었습니다.
+**상태:** 실험적 기능. 2026.1.9에 추가됨.
 </Note>
 
 ## 개요
 
-브로드캐스트 그룹을 사용하면 여러 에이전트가 동일한 메시지를 동시에 처리하고 응답할 수 있습니다. 이를 통해 하나의 WhatsApp 그룹이나 DM에서 함께 작업하는 전문 에이전트 팀을 만들 수 있으며, 모두 하나의 전화번호를 사용합니다.
+브로드캐스트 그룹을 사용하면 여러 에이전트가 동일한 메시지를 동시에 처리하고 응답할 수 있습니다. 이를 통해 하나의 WhatsApp 그룹 또는 DM에서 함께 작업하는 전문 에이전트 팀을 만들 수 있으며, 모두 하나의 전화번호를 사용합니다.
 
-현재 범위: **WhatsApp만 지원**(웹 채널).
+현재 범위: **WhatsApp만 해당**(웹 채널).
 
-브로드캐스트 그룹은 채널 허용 목록과 그룹 활성화 규칙 이후에 평가됩니다. WhatsApp 그룹에서는 OpenClaw가 일반적으로 응답할 때 브로드캐스트가 발생한다는 뜻입니다(예: 그룹 설정에 따라 멘션 시).
+브로드캐스트 그룹은 채널 허용 목록과 그룹 활성화 규칙 이후에 평가됩니다. WhatsApp 그룹에서는 OpenClaw가 일반적으로 응답할 때 브로드캐스트가 발생한다는 의미입니다(예: 그룹 설정에 따라 멘션 시).
 
 ## 사용 사례
 
@@ -73,7 +73,7 @@ x-i18n:
   </Accordion>
 </AccordionGroup>
 
-## 설정
+## 구성
 
 ### 기본 설정
 
@@ -97,7 +97,7 @@ x-i18n:
 에이전트가 메시지를 처리하는 방식을 제어합니다.
 
 <Tabs>
-  <Tab title="parallel (기본값)">
+  <Tab title="parallel(기본값)">
     모든 에이전트가 동시에 처리합니다.
 
     ```json
@@ -111,7 +111,7 @@ x-i18n:
 
   </Tab>
   <Tab title="sequential">
-    에이전트가 순서대로 처리합니다(하나가 이전 에이전트의 완료를 기다림).
+    에이전트가 순서대로 처리합니다(하나가 이전 에이전트가 완료될 때까지 기다림).
 
     ```json
     {
@@ -178,12 +178,12 @@ x-i18n:
 
   </Step>
   <Step title="브로드캐스트 목록에 없는 경우">
-    일반 라우팅이 적용됩니다(처음 일치하는 바인딩).
+    일반 라우팅이 적용됩니다(첫 번째로 일치하는 바인딩).
   </Step>
 </Steps>
 
 <Note>
-브로드캐스트 그룹은 채널 허용 목록이나 그룹 활성화 규칙(멘션/명령 등)을 우회하지 않습니다. 메시지가 처리 대상일 때 _어떤 에이전트가 실행되는지_만 변경합니다.
+브로드캐스트 그룹은 채널 허용 목록이나 그룹 활성화 규칙(멘션/명령 등)을 우회하지 않습니다. 메시지가 처리 대상일 때 _어떤 에이전트가 실행되는지_ 만 변경합니다.
 </Note>
 
 ### 세션 격리
@@ -192,21 +192,21 @@ x-i18n:
 
 - **세션 키**(`agent:alfred:whatsapp:group:120363...` vs `agent:baerbel:whatsapp:group:120363...`)
 - **대화 기록**(에이전트는 다른 에이전트의 메시지를 보지 않음)
-- **작업 공간**(설정된 경우 별도 샌드박스)
-- **도구 접근 권한**(서로 다른 허용/거부 목록)
+- **작업공간**(구성된 경우 별도 샌드박스)
+- **도구 접근**(서로 다른 허용/거부 목록)
 - **메모리/컨텍스트**(별도 IDENTITY.md, SOUL.md 등)
-- **그룹 컨텍스트 버퍼**(컨텍스트에 사용되는 최근 그룹 메시지)는 피어별로 공유되므로, 트리거될 때 모든 브로드캐스트 에이전트가 동일한 컨텍스트를 봅니다
+- **그룹 컨텍스트 버퍼**(컨텍스트에 사용되는 최근 그룹 메시지)는 피어별로 공유되므로, 모든 브로드캐스트 에이전트는 트리거될 때 동일한 컨텍스트를 봅니다.
 
 이를 통해 각 에이전트는 다음을 가질 수 있습니다.
 
 - 서로 다른 성격
-- 서로 다른 도구 접근 권한(예: 읽기 전용 vs. 읽기-쓰기)
+- 서로 다른 도구 접근(예: 읽기 전용 vs. 읽기/쓰기)
 - 서로 다른 모델(예: opus vs. sonnet)
 - 서로 다른 Skills 설치
 
 ### 예시: 격리된 세션
 
-그룹 `120363403215116621@g.us`에 에이전트 `["alfred", "baerbel"]`가 있는 경우:
+`120363403215116621@g.us` 그룹에서 에이전트가 `["alfred", "baerbel"]`인 경우:
 
 <Tabs>
   <Tab title="Alfred의 컨텍스트">
@@ -230,7 +230,7 @@ x-i18n:
 ## 모범 사례
 
 <AccordionGroup>
-  <Accordion title="1. 에이전트의 초점을 유지">
+  <Accordion title="1. 에이전트를 집중적으로 유지">
     각 에이전트를 하나의 명확한 책임으로 설계합니다.
 
     ```json
@@ -241,7 +241,7 @@ x-i18n:
     }
     ```
 
-    ✅ **좋음:** 각 에이전트에 하나의 작업이 있습니다. ❌ **나쁨:** 하나의 범용 "dev-helper" 에이전트.
+    ✅ **좋음:** 각 에이전트는 하나의 작업을 담당합니다. ❌ **나쁨:** 하나의 범용 "dev-helper" 에이전트.
 
   </Accordion>
   <Accordion title="2. 설명적인 이름 사용">
@@ -258,21 +258,23 @@ x-i18n:
     ```
 
   </Accordion>
-  <Accordion title="3. 서로 다른 도구 접근 권한 설정">
-    에이전트에게 필요한 도구만 제공합니다.
+  <Accordion title="3. 서로 다른 도구 접근 구성">
+    에이전트에 필요한 도구만 부여합니다.
 
     ```json
     {
       "agents": {
         "reviewer": {
-          "tools": { "allow": ["read", "exec"] } // Read-only
+          "tools": { "allow": ["read", "exec"] }
         },
         "fixer": {
-          "tools": { "allow": ["read", "write", "edit", "exec"] } // Read-write
+          "tools": { "allow": ["read", "write", "edit", "exec"] }
         }
       }
     }
     ```
+
+    `reviewer`는 읽기 전용입니다. `fixer`는 읽고 쓸 수 있습니다.
 
   </Accordion>
   <Accordion title="4. 성능 모니터링">
@@ -280,7 +282,7 @@ x-i18n:
 
     - 속도를 위해 `"strategy": "parallel"`(기본값) 사용
     - 브로드캐스트 그룹을 5~10개 에이전트로 제한
-    - 단순한 에이전트에는 더 빠른 모델 사용
+    - 더 단순한 에이전트에는 더 빠른 모델 사용
 
   </Accordion>
   <Accordion title="5. 실패를 우아하게 처리">
@@ -350,7 +352,7 @@ x-i18n:
   <Accordion title="하나의 에이전트만 응답함">
     **원인:** 피어 ID가 `bindings`에는 있지만 `broadcast`에는 없을 수 있습니다.
 
-    **수정:** 브로드캐스트 설정에 추가하거나 바인딩에서 제거합니다.
+    **해결:** 브로드캐스트 구성에 추가하거나 바인딩에서 제거합니다.
 
   </Accordion>
   <Accordion title="성능 문제">
@@ -401,14 +403,14 @@ x-i18n:
     }
     ```
 
-    **사용자 전송:** 코드 조각.
+    **사용자 전송:** 코드 스니펫.
 
     **응답:**
 
     - code-formatter: "들여쓰기를 수정하고 타입 힌트를 추가했습니다"
-    - security-scanner: "⚠️ 12번째 줄에 SQL 인젝션 취약점이 있습니다"
-    - test-coverage: "커버리지는 45%이며, 오류 사례에 대한 테스트가 누락되었습니다"
-    - docs-checker: "`process_data` 함수에 문서 문자열이 없습니다"
+    - security-scanner: "⚠️ 12번째 줄에 SQL 삽입 취약점이 있습니다"
+    - test-coverage: "커버리지가 45%이며 오류 사례에 대한 테스트가 없습니다"
+    - docs-checker: "`process_data` 함수의 docstring이 없습니다"
 
   </Accordion>
   <Accordion title="예시 2: 다국어 지원">
@@ -432,7 +434,7 @@ x-i18n:
 
 ## API 참조
 
-### 설정 스키마
+### 구성 스키마
 
 ```typescript
 interface OpenClawConfig {
@@ -446,18 +448,18 @@ interface OpenClawConfig {
 ### 필드
 
 <ParamField path="strategy" type='"parallel" | "sequential"' default='"parallel"'>
-  에이전트를 처리하는 방법입니다. `parallel`은 모든 에이전트를 동시에 실행하고, `sequential`은 배열 순서대로 실행합니다.
+  에이전트를 처리하는 방식입니다. `parallel`은 모든 에이전트를 동시에 실행하고, `sequential`은 배열 순서대로 실행합니다.
 </ParamField>
 <ParamField path="[peerId]" type="string[]">
-  WhatsApp 그룹 JID, E.164 번호 또는 기타 피어 ID입니다. 값은 메시지를 처리해야 하는 에이전트 ID 배열입니다.
+  WhatsApp 그룹 JID, E.164 번호 또는 기타 피어 ID입니다. 값은 메시지를 처리해야 하는 에이전트 ID의 배열입니다.
 </ParamField>
 
 ## 제한 사항
 
-1. **최대 에이전트 수:** 엄격한 제한은 없지만, 10개 이상의 에이전트는 느릴 수 있습니다.
+1. **최대 에이전트 수:** 엄격한 제한은 없지만, 에이전트가 10개 이상이면 느릴 수 있습니다.
 2. **공유 컨텍스트:** 에이전트는 서로의 응답을 보지 않습니다(의도된 설계).
-3. **메시지 순서:** 병렬 응답은 어떤 순서로든 도착할 수 있습니다.
-4. **속도 제한:** 모든 에이전트가 WhatsApp 속도 제한에 합산됩니다.
+3. **메시지 순서:** 병렬 응답은 임의의 순서로 도착할 수 있습니다.
+4. **속도 제한:** 모든 에이전트가 WhatsApp 속도 제한에 포함됩니다.
 
 ## 향후 개선 사항
 
@@ -472,6 +474,6 @@ interface OpenClawConfig {
 
 - [채널 라우팅](/ko/channels/channel-routing)
 - [그룹](/ko/channels/groups)
-- [다중 에이전트 샌드박스 도구](/ko/tools/multi-agent-sandbox-tools)
+- [멀티 에이전트 샌드박스 도구](/ko/tools/multi-agent-sandbox-tools)
 - [페어링](/ko/channels/pairing)
 - [세션 관리](/ko/concepts/session)
