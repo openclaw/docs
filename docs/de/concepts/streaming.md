@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Erklären, wie Streaming oder Chunking in Kanälen funktioniert
-    - Block-Streaming oder Channel-Chunking-Verhalten ändern
-    - Fehlersuche bei doppelten/verfrühten Blockantworten oder beim Streaming der Kanalvorschau
-summary: Streaming- und Chunking-Verhalten (Block-Antworten, Kanalvorschau-Streaming, Moduszuordnung)
+    - Erklärung, wie Streaming oder Chunking in Kanälen funktioniert
+    - Block-Streaming- oder Kanal-Chunking-Verhalten ändern
+    - Fehlerbehebung bei doppelten oder verfrühten Blockantworten oder beim Kanalvorschau-Streaming
+summary: Streaming- + Chunking-Verhalten (Blockantworten, Kanalvorschau-Streaming, Moduszuordnung)
 title: Streaming und Chunking
 x-i18n:
-    generated_at: "2026-05-04T06:42:24Z"
+    generated_at: "2026-05-04T07:03:06Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fcb41ceb5602ab42c3fd41a59de62cc965ea61fdbc058c052fb93689a9c5299b
+    source_hash: ff7b6cd8127255352fe16fb746469e9828e7d5aea183d3799ab10cc768515bd1
     source_path: concepts/streaming.md
     workflow: 16
 ---
 
-OpenClaw hat zwei getrennte Streaming-Ebenen:
+OpenClaw hat zwei separate Streaming-Ebenen:
 
-- **Block-Streaming (Kanäle):** gibt abgeschlossene **Blöcke** aus, während der Assistent schreibt. Das sind normale Kanalnachrichten (keine Token-Deltas).
+- **Block-Streaming (Kanäle):** gibt abgeschlossene **Blöcke** aus, während der Assistent schreibt. Dies sind normale Kanalnachrichten (keine Token-Deltas).
 - **Vorschau-Streaming (Telegram/Discord/Slack):** aktualisiert während der Generierung eine temporäre **Vorschaunachricht**.
 
-Aktuell gibt es **kein echtes Token-Delta-Streaming** in Kanalnachrichten. Vorschau-Streaming ist nachrichtenbasiert (Senden + Bearbeitungen/Anhänge).
+Es gibt derzeit **kein echtes Token-Delta-Streaming** zu Kanalnachrichten. Vorschau-Streaming ist nachrichtenbasiert (Senden + Bearbeitungen/Anhänge).
 
 ## Block-Streaming (Kanalnachrichten)
 
-Block-Streaming sendet Assistentenausgaben in groben Teilstücken, sobald sie verfügbar werden.
+Block-Streaming sendet Assistentenausgaben in groben Abschnitten, sobald sie verfügbar werden.
 
 ```
 Model output
@@ -38,19 +38,19 @@ Model output
 Legende:
 
 - `text_delta/events`: Modell-Stream-Ereignisse (können bei nicht streamenden Modellen spärlich sein).
-- `chunker`: `EmbeddedBlockChunker`, der Mindest-/Höchstgrenzen + Umbruchpräferenz anwendet.
+- `chunker`: `EmbeddedBlockChunker`, der Mindest-/Höchstgrenzen + bevorzugte Umbrüche anwendet.
 - `channel send`: tatsächliche ausgehende Nachrichten (Block-Antworten).
 
 **Steuerungen:**
 
 - `agents.defaults.blockStreamingDefault`: `"on"`/`"off"` (standardmäßig aus).
-- Kanal-Overrides: `*.blockStreaming` (und kontoabhängige Varianten), um pro Kanal `"on"`/`"off"` zu erzwingen.
+- Kanal-Overrides: `*.blockStreaming` (und Varianten pro Konto), um pro Kanal `"on"`/`"off"` zu erzwingen.
 - `agents.defaults.blockStreamingBreak`: `"text_end"` oder `"message_end"`.
 - `agents.defaults.blockStreamingChunk`: `{ minChars, maxChars, breakPreference? }`.
-- `agents.defaults.blockStreamingCoalesce`: `{ minChars?, maxChars?, idleMs? }` (streamende Blöcke vor dem Senden zusammenführen).
-- Harte Kanalgrenze: `*.textChunkLimit` (z. B. `channels.whatsapp.textChunkLimit`).
-- Kanal-Chunk-Modus: `*.chunkMode` (`length` standardmäßig, `newline` trennt vor dem Längen-Chunking an Leerzeilen (Absatzgrenzen)).
-- Discord-Softlimit: `channels.discord.maxLinesPerMessage` (standardmäßig 17) teilt hohe Antworten auf, um UI-Clipping zu vermeiden.
+- `agents.defaults.blockStreamingCoalesce`: `{ minChars?, maxChars?, idleMs? }` (führt gestreamte Blöcke vor dem Senden zusammen).
+- Harte Kanalobergrenze: `*.textChunkLimit` (z. B. `channels.whatsapp.textChunkLimit`).
+- Kanal-Chunk-Modus: `*.chunkMode` (Standard `length`, `newline` teilt vor dem Längen-Chunking an Leerzeilen (Absatzgrenzen)).
+- Discord-Soft-Cap: `channels.discord.maxLinesPerMessage` (Standard 17) teilt hohe Antworten, um UI-Clipping zu vermeiden.
 
 **Grenzsemantik:**
 
@@ -59,69 +59,54 @@ Legende:
 
 `message_end` verwendet weiterhin den Chunker, wenn der gepufferte Text `maxChars` überschreitet, sodass am Ende mehrere Chunks ausgegeben werden können.
 
-### Medienzustellung mit Block-Streaming
+### Medienauslieferung mit Block-Streaming
 
-`MEDIA:`-Direktiven sind normale Zustellungsmetadaten. Wenn Block-Streaming einen
-Medienblock früh sendet, merkt sich OpenClaw diese Zustellung für den Turn. Wenn die finale
-Assistenten-Nutzlast dieselbe Medien-URL wiederholt, entfernt die finale Zustellung das
-duplizierte Medium, statt den Anhang erneut zu senden.
+`MEDIA:`-Direktiven sind normale Auslieferungsmetadaten. Wenn Block-Streaming einen Medienblock früh sendet, merkt sich OpenClaw diese Auslieferung für den Turn. Wenn die endgültige Assistenten-Nutzlast dieselbe Medien-URL wiederholt, entfernt die endgültige Auslieferung das doppelte Medium, statt den Anhang erneut zu senden.
 
-Exakt duplizierte finale Nutzlasten werden unterdrückt. Wenn die finale Nutzlast
-eindeutigen Text um Medien ergänzt, die bereits gestreamt wurden, sendet OpenClaw weiterhin den
-neuen Text und stellt das Medium dabei nur einmal zu. Das verhindert doppelte Sprachnotizen
-oder Dateien in Kanälen wie Telegram, wenn ein Agent während des Streamings `MEDIA:` ausgibt
-und der Provider es auch in der abgeschlossenen Antwort enthält.
+Exakt doppelte endgültige Nutzlasten werden unterdrückt. Wenn die endgültige Nutzlast zusätzlichen Text um Medien ergänzt, die bereits gestreamt wurden, sendet OpenClaw den neuen Text weiterhin, behält aber die einmalige Medienauslieferung bei. Dies verhindert doppelte Sprachnachrichten oder Dateien in Kanälen wie Telegram, wenn ein Agent während des Streamings `MEDIA:` ausgibt und der Provider sie auch in die abgeschlossene Antwort einfügt.
 
-## Chunking-Algorithmus (niedrige/hohe Grenzen)
+## Chunking-Algorithmus (untere/obere Grenzen)
 
-Block-Chunking wird von `EmbeddedBlockChunker` implementiert:
+Block-Chunking wird durch `EmbeddedBlockChunker` implementiert:
 
-- **Niedrige Grenze:** erst ausgeben, wenn Puffer >= `minChars` ist (außer erzwungen).
-- **Hohe Grenze:** Trennungen vor `maxChars` bevorzugen; wenn erzwungen, bei `maxChars` trennen.
+- **Untere Grenze:** nicht ausgeben, bevor Puffer >= `minChars` ist (außer erzwungen).
+- **Obere Grenze:** Teilungen vor `maxChars` bevorzugen; wenn erzwungen, bei `maxChars` teilen.
 - **Umbruchpräferenz:** `paragraph` → `newline` → `sentence` → `whitespace` → harter Umbruch.
-- **Code-Fences:** niemals innerhalb von Fences trennen; wenn bei `maxChars` erzwungen wird, den Fence schließen + erneut öffnen, damit Markdown gültig bleibt.
+- **Code-Fences:** niemals innerhalb von Fences teilen; wenn bei `maxChars` erzwungen, den Fence schließen + erneut öffnen, um gültiges Markdown zu erhalten.
 
-`maxChars` wird auf das Kanal-`textChunkLimit` begrenzt, sodass Sie kanalbezogene Grenzen nicht überschreiten können.
+`maxChars` wird auf das Kanal-`textChunkLimit` begrenzt, sodass Sie die Grenzwerte pro Kanal nicht überschreiten können.
 
-## Zusammenführen (streamende Blöcke zusammenführen)
+## Coalescing (gestreamte Blöcke zusammenführen)
 
-Wenn Block-Streaming aktiviert ist, kann OpenClaw **aufeinanderfolgende Block-Chunks zusammenführen**,
-bevor sie gesendet werden. Das reduziert „Einzeilen-Spam“ und liefert trotzdem
-fortlaufende Ausgaben.
+Wenn Block-Streaming aktiviert ist, kann OpenClaw **aufeinanderfolgende Block-Chunks zusammenführen**, bevor sie ausgegeben werden. Dies reduziert „Ein-Zeilen-Spam“ und liefert dennoch fortlaufende Ausgaben.
 
-- Das Zusammenführen wartet vor dem Leeren auf **Leerlaufpausen** (`idleMs`).
-- Puffer werden durch `maxChars` begrenzt und werden geleert, wenn sie diese Grenze überschreiten.
-- `minChars` verhindert, dass winzige Fragmente gesendet werden, bevor genug Text angesammelt ist
-  (das finale Leeren sendet immer den verbleibenden Text).
-- Der Joiner wird aus `blockStreamingChunk.breakPreference` abgeleitet
-  (`paragraph` → `\n\n`, `newline` → `\n`, `sentence` → Leerzeichen).
-- Kanal-Overrides sind über `*.blockStreamingCoalesce` verfügbar (einschließlich kontoabhängiger Konfigurationen).
-- Der standardmäßige Zusammenführungswert `minChars` wird für Signal/Slack/Discord auf 1500 angehoben, sofern er nicht überschrieben wird.
+- Coalescing wartet vor dem Leeren auf **Leerlaufpausen** (`idleMs`).
+- Puffer sind durch `maxChars` begrenzt und werden geleert, wenn sie diese Grenze überschreiten.
+- `minChars` verhindert, dass winzige Fragmente gesendet werden, bis genug Text angesammelt wurde (der finale Flush sendet immer den verbleibenden Text).
+- Der Joiner wird aus `blockStreamingChunk.breakPreference` abgeleitet (`paragraph` → `\n\n`, `newline` → `\n`, `sentence` → Leerzeichen).
+- Kanal-Overrides sind über `*.blockStreamingCoalesce` verfügbar (einschließlich Konfigurationen pro Konto).
+- Der standardmäßige Coalesce-`minChars`-Wert wird für Signal/Slack/Discord auf 1500 erhöht, sofern er nicht überschrieben wird.
 
 ## Menschlich wirkende Pausen zwischen Blöcken
 
-Wenn Block-Streaming aktiviert ist, können Sie zwischen
-Block-Antworten (nach dem ersten Block) eine **zufällige Pause** hinzufügen. Dadurch wirken Antworten mit mehreren Sprechblasen
-natürlicher.
+Wenn Block-Streaming aktiviert ist, können Sie zwischen Block-Antworten (nach dem ersten Block) eine **randomisierte Pause** hinzufügen. Dadurch wirken Antworten mit mehreren Sprechblasen natürlicher.
 
-- Konfiguration: `agents.defaults.humanDelay` (pro Agent über `agents.list[].humanDelay` überschreiben).
-- Modi: `off` (Standard), `natural` (800-2500 ms), `custom` (`minMs`/`maxMs`).
-- Gilt nur für **Block-Antworten**, nicht für finale Antworten oder Tool-Zusammenfassungen.
+- Konfiguration: `agents.defaults.humanDelay` (pro Agent über `agents.list[].humanDelay` überschreibbar).
+- Modi: `off` (Standard), `natural` (800–2500 ms), `custom` (`minMs`/`maxMs`).
+- Gilt nur für **Block-Antworten**, nicht für endgültige Antworten oder Tool-Zusammenfassungen.
 
-## „Chunks streamen oder alles“
+## „Chunks oder alles streamen“
 
 Dies entspricht:
 
-- **Chunks streamen:** `blockStreamingDefault: "on"` + `blockStreamingBreak: "text_end"` (ausgeben, während generiert wird). Nicht-Telegram-Kanäle benötigen außerdem `*.blockStreaming: true`.
-- **Alles am Ende streamen:** `blockStreamingBreak: "message_end"` (einmal leeren, bei sehr langen Antworten ggf. in mehreren Chunks).
-- **Kein Block-Streaming:** `blockStreamingDefault: "off"` (nur finale Antwort).
+- **Chunks streamen:** `blockStreamingDefault: "on"` + `blockStreamingBreak: "text_end"` (während der Ausgabe senden). Nicht-Telegram-Kanäle benötigen außerdem `*.blockStreaming: true`.
+- **Alles am Ende streamen:** `blockStreamingBreak: "message_end"` (einmal leeren, bei sehr langer Ausgabe möglicherweise in mehreren Chunks).
+- **Kein Block-Streaming:** `blockStreamingDefault: "off"` (nur endgültige Antwort).
 
-**Kanalhinweis:** Block-Streaming ist **aus, sofern nicht**
-`*.blockStreaming` explizit auf `true` gesetzt ist. Kanäle können eine Live-Vorschau
-(`channels.<channel>.streaming`) ohne Block-Antworten streamen.
+**Kanalhinweis:** Block-Streaming ist **aus, sofern**
+`*.blockStreaming` nicht explizit auf `true` gesetzt ist. Kanäle können eine Live-Vorschau streamen (`channels.<channel>.streaming`), ohne Block-Antworten zu senden.
 
-Konfigurationshinweis: Die `blockStreaming*`-Standardwerte befinden sich unter
-`agents.defaults`, nicht in der Root-Konfiguration.
+Erinnerung zum Konfigurationsort: Die `blockStreaming*`-Defaults befinden sich unter `agents.defaults`, nicht in der Root-Konfiguration.
 
 ## Vorschau-Streaming-Modi
 
@@ -131,87 +116,82 @@ Modi:
 
 - `off`: Vorschau-Streaming deaktivieren.
 - `partial`: einzelne Vorschau, die durch den neuesten Text ersetzt wird.
-- `block`: Vorschau wird in gestückelten/angehängten Schritten aktualisiert.
-- `progress`: Fortschritts-/Statusvorschau während der Generierung, finale Antwort bei Abschluss.
+- `block`: Vorschau wird in gechunkten/angehängten Schritten aktualisiert.
+- `progress`: Fortschritts-/Statusvorschau während der Generierung, endgültige Antwort bei Abschluss.
 
-`streaming.mode: "block"` ist ein Vorschau-Streaming-Modus für Kanäle mit Bearbeitungsfunktion
-wie Discord und Telegram. Er aktiviert dort keine Block-Zustellung im Kanal.
-Verwenden Sie `streaming.block.enabled` oder den alten Kanal-Schlüssel `blockStreaming`, wenn
-Sie normale Block-Antworten möchten. Microsoft Teams ist die Ausnahme: Es hat keinen
-Block-Transport für Entwurfsvorschauen, daher wird `streaming.mode: "block"` auf die Teams-Block-Zustellung
-statt auf natives Partial-/Fortschritts-Streaming abgebildet.
+`streaming.mode: "block"` ist ein Vorschau-Streaming-Modus für bearbeitungsfähige Kanäle wie Discord und Telegram. Er aktiviert dort keine Kanal-Blockauslieferung. Verwenden Sie `streaming.block.enabled` oder den Legacy-Kanalschlüssel `blockStreaming`, wenn Sie normale Block-Antworten wünschen. Microsoft Teams ist die Ausnahme: Es hat keinen Entwurfs-Vorschau-Blocktransport, daher wird `streaming.mode: "block"` auf Teams-Blockauslieferung statt auf natives Partial-/Progress-Streaming abgebildet.
 
 ### Kanalzuordnung
 
-| Kanal      | `off` | `partial` | `block` | `progress`                   |
-| ---------- | ----- | --------- | ------- | ---------------------------- |
+| Kanal      | `off` | `partial` | `block` | `progress`                  |
+| ---------- | ----- | --------- | ------- | --------------------------- |
 | Telegram   | ✅    | ✅        | ✅      | bearbeitbarer Fortschrittsentwurf |
 | Discord    | ✅    | ✅        | ✅      | bearbeitbarer Fortschrittsentwurf |
-| Slack      | ✅    | ✅        | ✅      | ✅                           |
-| Mattermost | ✅    | ✅        | ✅      | ✅                           |
-| MS Teams   | ✅    | ✅        | ✅      | nativer Fortschrittsstream   |
+| Slack      | ✅    | ✅        | ✅      | ✅                          |
+| Mattermost | ✅    | ✅        | ✅      | ✅                          |
+| MS Teams   | ✅    | ✅        | ✅      | nativer Fortschrittsstream  |
 
 Nur Slack:
 
 - `channels.slack.streaming.nativeTransport` schaltet native Slack-Streaming-API-Aufrufe um, wenn `channels.slack.streaming.mode="partial"` ist (Standard: `true`).
-- Natives Slack-Streaming und der Slack-Assistenten-Threadstatus erfordern ein Antwort-Thread-Ziel. Top-Level-DMs zeigen diese Thread-artige Vorschau nicht an, können aber weiterhin Slack-Entwurfsvorschau-Beiträge und -Bearbeitungen verwenden.
+- Natives Slack-Streaming und Slack-Assistenten-Thread-Status benötigen ein Antwort-Thread-Ziel. Top-Level-DMs zeigen diese Thread-Vorschau nicht an, können aber weiterhin Slack-Entwurfs-Vorschauposts und Bearbeitungen verwenden.
 
-Migration alter Schlüssel:
+Legacy-Schlüsselmigration:
 
-- Telegram: alte `streamMode`- und skalare/boolesche `streaming`-Werte werden erkannt und durch Doctor-/Konfigurationskompatibilitätspfade zu `streaming.mode` migriert.
-- Discord: `streamMode` + boolesches `streaming` migrieren automatisch zum `streaming`-Enum.
-- Slack: `streamMode` migriert automatisch zu `streaming.mode`; boolesches `streaming` migriert automatisch zu `streaming.mode` plus `streaming.nativeTransport`; altes `nativeStreaming` migriert automatisch zu `streaming.nativeTransport`.
+- Telegram: Legacy-`streamMode` und skalare/boolesche `streaming`-Werte werden erkannt und über Doctor-/Konfigurationskompatibilitätspfade zu `streaming.mode` migriert.
+- Discord: `streamMode` + boolesches `streaming` werden automatisch zur `streaming`-Enum migriert.
+- Slack: `streamMode` wird automatisch zu `streaming.mode` migriert; boolesches `streaming` wird automatisch zu `streaming.mode` plus `streaming.nativeTransport` migriert; Legacy-`nativeStreaming` wird automatisch zu `streaming.nativeTransport` migriert.
 
 ### Laufzeitverhalten
 
 Telegram:
 
-- Verwendet `sendMessage` + `editMessageText` für Vorschauaktualisierungen über DMs und Gruppen/Themen hinweg.
-- Sendet eine neue finale Nachricht, statt sie an Ort und Stelle zu bearbeiten, wenn eine Vorschau ungefähr eine Minute sichtbar war, und räumt anschließend die Vorschau auf, damit der Telegram-Zeitstempel den Abschluss der Antwort widerspiegelt.
+- Verwendet `sendMessage` + `editMessageText`-Vorschauaktualisierungen über DMs und Gruppen/Themen hinweg.
+- Sendet eine neue endgültige Nachricht, statt an Ort und Stelle zu bearbeiten, wenn eine Vorschau etwa eine Minute sichtbar war, und bereinigt anschließend die Vorschau, damit der Telegram-Zeitstempel den Abschluss der Antwort widerspiegelt.
 - Vorschau-Streaming wird übersprungen, wenn Telegram-Block-Streaming explizit aktiviert ist (um doppeltes Streaming zu vermeiden).
-- `/reasoning stream` kann Reasoning in eine temporäre Vorschau schreiben, die nach der finalen Zustellung gelöscht wird.
+- `/reasoning stream` kann Reasoning in eine flüchtige Vorschau schreiben, die nach der endgültigen Auslieferung gelöscht wird.
 
 Discord:
 
 - Verwendet Senden + Bearbeiten von Vorschaunachrichten.
-- Der `block`-Modus verwendet Entwurfs-Chunking (`draftChunk`).
+- Der Modus `block` verwendet Entwurfs-Chunking (`draftChunk`).
 - Vorschau-Streaming wird übersprungen, wenn Discord-Block-Streaming explizit aktiviert ist.
-- Finale Medien-, Fehler- und explizite Antwort-Nutzlasten brechen ausstehende Vorschauen ab, ohne einen neuen Entwurf zu leeren, und verwenden dann die normale Zustellung.
+- Endgültige Medien-, Fehler- und explizite Antwortnutzlasten brechen ausstehende Vorschauen ab, ohne einen neuen Entwurf zu leeren, und verwenden anschließend die normale Auslieferung.
 
 Slack:
 
 - `partial` kann natives Slack-Streaming (`chat.startStream`/`append`/`stop`) verwenden, wenn verfügbar.
-- `block` verwendet angehängte Entwurfsvorschauen.
-- `progress` verwendet Statustext als Vorschau und danach die finale Antwort.
-- Top-Level-DMs ohne Antwort-Thread verwenden Entwurfsvorschau-Beiträge und -Bearbeitungen statt nativem Slack-Streaming.
-- Natives Streaming und Entwurfsvorschau-Streaming unterdrücken Block-Antworten für diesen Turn, sodass eine Slack-Antwort nur über einen Zustellungspfad gestreamt wird.
-- Finale Medien-/Fehler-Nutzlasten und Fortschrittsfinale erzeugen keine Wegwerf-Entwurfsnachrichten; nur Text-/Block-Finale, die die Vorschau bearbeiten können, leeren ausstehenden Entwurfstext.
+- `block` verwendet Entwurfsvorschauen im Append-Stil.
+- `progress` verwendet Statusvorschautext und anschließend die endgültige Antwort.
+- Top-Level-DMs ohne Antwort-Thread verwenden Entwurfs-Vorschauposts und Bearbeitungen statt nativem Slack-Streaming.
+- Native und Entwurfs-Vorschau-Streams unterdrücken Block-Antworten für diesen Turn, sodass eine Slack-Antwort nur über einen Auslieferungspfad gestreamt wird.
+- Endgültige Medien-/Fehlernutzlasten und Progress-Finals erzeugen keine Wegwerf-Entwurfsnachrichten; nur Text-/Block-Finals, die die Vorschau bearbeiten können, leeren ausstehenden Entwurfstext.
 
 Mattermost:
 
-- Streamt Denken, Tool-Aktivität und teilweisen Antworttext in einen einzelnen Entwurfsvorschau-Beitrag, der an Ort und Stelle finalisiert wird, wenn die finale Antwort sicher gesendet werden kann.
-- Fällt auf das Senden eines neuen finalen Beitrags zurück, wenn der Vorschaubeitrag gelöscht wurde oder zum Finalisierungszeitpunkt anderweitig nicht verfügbar ist.
-- Finale Medien-/Fehler-Nutzlasten brechen ausstehende Vorschauaktualisierungen vor der normalen Zustellung ab, statt einen temporären Vorschaubeitrag zu leeren.
+- Streamt Thinking, Tool-Aktivität und teilweisen Antworttext in einen einzelnen Entwurfs-Vorschaupost, der an Ort und Stelle finalisiert wird, wenn die endgültige Antwort sicher gesendet werden kann.
+- Fällt auf das Senden eines neuen endgültigen Posts zurück, wenn der Vorschaupost gelöscht wurde oder zum Finalisierungszeitpunkt anderweitig nicht verfügbar ist.
+- Endgültige Medien-/Fehlernutzlasten brechen ausstehende Vorschauaktualisierungen vor der normalen Auslieferung ab, statt einen temporären Vorschaupost zu leeren.
 
 Matrix:
 
-- Entwurfsvorschauen werden an Ort und Stelle finalisiert, wenn der finale Text das Vorschauereignis wiederverwenden kann.
-- Reine Medien-, Fehler- und Antwortzielkonflikt-Finale brechen ausstehende Vorschauaktualisierungen vor der normalen Zustellung ab; eine bereits sichtbare veraltete Vorschau wird redigiert.
+- Entwurfsvorschauen werden an Ort und Stelle finalisiert, wenn der endgültige Text das Vorschauereignis wiederverwenden kann.
+- Reine Medien-, Fehler- und Antwortziel-Nichtübereinstimmungs-Finals brechen ausstehende Vorschauaktualisierungen vor der normalen Auslieferung ab; eine bereits sichtbare veraltete Vorschau wird redigiert.
 
-### Vorschauaktualisierungen für Tool-Fortschritt
+### Tool-Fortschritts-Vorschauaktualisierungen
 
-Vorschau-Streaming kann auch **Tool-Fortschritts**-Aktualisierungen enthalten — kurze Statuszeilen wie „Web wird durchsucht“, „Datei wird gelesen“ oder „Tool wird aufgerufen“ —, die in derselben Vorschaunachricht erscheinen, während Tools ausgeführt werden, noch vor der finalen Antwort. Dadurch bleiben mehrstufige Tool-Turns visuell aktiv, statt zwischen der ersten Denk-Vorschau und der finalen Antwort still zu sein.
+Vorschau-Streaming kann auch **Tool-Fortschritts**-Aktualisierungen enthalten — kurze Statuszeilen wie „Durchsuchen des Webs“, „Datei lesen“ oder „Tool aufrufen“ — die in derselben Vorschaunachricht erscheinen, während Tools laufen, vor der endgültigen Antwort. Dadurch bleiben mehrstufige Tool-Turns visuell aktiv, statt zwischen der ersten Thinking-Vorschau und der endgültigen Antwort still zu wirken.
 
 Unterstützte Oberflächen:
 
 - **Discord**, **Slack**, **Telegram** und **Matrix** streamen Tool-Fortschritt standardmäßig in die Live-Vorschau-Bearbeitung, wenn Vorschau-Streaming aktiv ist. Microsoft Teams verwendet in persönlichen Chats seinen nativen Fortschrittsstream.
 - Telegram wird seit `v2026.4.22` mit aktivierten Tool-Fortschritts-Vorschauaktualisierungen ausgeliefert; sie aktiviert zu lassen, bewahrt dieses veröffentlichte Verhalten.
-- **Mattermost** integriert Tool-Aktivität bereits in seinen einzelnen Entwurfsvorschau-Beitrag (siehe oben).
-- Tool-Fortschritts-Bearbeitungen folgen dem aktiven Vorschau-Streaming-Modus; sie werden übersprungen, wenn Vorschau-Streaming `off` ist oder wenn Block-Streaming die Nachricht übernommen hat. Bei Telegram ist `streaming.mode: "off"` final-only: allgemeines Fortschrittsgerede wird ebenfalls unterdrückt, statt als eigenständige Statusnachrichten zugestellt zu werden, während Genehmigungsaufforderungen, Medien-Nutzlasten und Fehler weiterhin normal geroutet werden.
-- Um Vorschau-Streaming beizubehalten, aber Tool-Fortschrittszeilen auszublenden, setzen Sie `streaming.preview.toolProgress` für diesen Kanal auf `false`. Um Vorschaubearbeitungen vollständig zu deaktivieren, setzen Sie `streaming.mode` auf `off`.
-- Ausgewählte Telegram-Zitatantworten sind eine Ausnahme: Wenn `replyToMode` nicht `"off"` ist und ausgewählter Zitattext vorhanden ist, überspringt OpenClaw den Antwortvorschau-Stream für diesen Turn, sodass Tool-Fortschritts-Vorschauzeilen nicht gerendert werden können. Aktuelle-Nachricht-Antworten ohne ausgewählten Zitattext behalten weiterhin Vorschau-Streaming bei. Details finden Sie in der [Telegram-Kanaldokumentation](/de/channels/telegram).
+- **Mattermost** integriert Tool-Aktivität bereits in seinen einzelnen Entwurfs-Vorschaupost (siehe oben).
+- Tool-Fortschritts-Bearbeitungen folgen dem aktiven Vorschau-Streaming-Modus; sie werden übersprungen, wenn Vorschau-Streaming `off` ist oder wenn Block-Streaming die Nachricht übernommen hat. Bei Telegram ist `streaming.mode: "off"` nur final: generisches Fortschrittsgeplauder wird ebenfalls unterdrückt, statt als eigenständige Statusnachrichten ausgeliefert zu werden, während Genehmigungsaufforderungen, Mediennutzlasten und Fehler weiterhin normal geroutet werden.
+- Um Vorschau-Streaming beizubehalten, aber Tool-Fortschrittszeilen auszublenden, setzen Sie `streaming.preview.toolProgress` für diesen Kanal auf `false`. Um Tool-Fortschrittszeilen sichtbar zu halten und gleichzeitig Befehls-/Ausführungstext auszublenden, setzen Sie `streaming.preview.commandText` auf `"status"` oder `streaming.progress.commandText` auf `"status"`; Standard ist `"raw"`, um veröffentlichtes Verhalten beizubehalten. Diese Richtlinie wird von Entwurfs-/Progress-Kanälen geteilt, die OpenClaws kompakten Fortschrittsrenderer verwenden, einschließlich Discord, Matrix, Microsoft Teams, Mattermost, Slack-Entwurfsvorschauen und Telegram. Um Vorschau-Bearbeitungen vollständig zu deaktivieren, setzen Sie `streaming.mode` auf `off`.
+- Ausgewählte Telegram-Zitatantworten sind eine Ausnahme: Wenn `replyToMode` nicht `"off"` ist und ausgewählter Zitattext vorhanden ist, überspringt OpenClaw den Antwort-Vorschaustream für diesen Turn, sodass Tool-Fortschritts-Vorschauzeilen nicht gerendert werden können. Antworten auf aktuelle Nachrichten ohne ausgewählten Zitattext behalten das Vorschau-Streaming weiterhin bei. Details finden Sie in der [Telegram-Kanaldokumentation](/de/channels/telegram).
 
-Beispiel:
+Halten Sie Fortschrittszeilen sichtbar, blenden Sie aber rohen Befehls-/Ausführungstext aus:
 
 ```json
 {
@@ -220,7 +200,8 @@ Beispiel:
       "streaming": {
         "mode": "partial",
         "preview": {
-          "toolProgress": false
+          "toolProgress": true,
+          "commandText": "status"
         }
       }
     }
@@ -228,9 +209,27 @@ Beispiel:
 }
 ```
 
-## Verwandt
+Verwenden Sie dieselbe Struktur unter einem anderen kompakten Fortschrittskanal-Schlüssel, zum Beispiel `channels.discord`, `channels.matrix`, `channels.msteams`, `channels.mattermost` oder Slack-Entwurfsvorschauen. Für den Fortschrittsentwurfsmodus legen Sie dieselbe Richtlinie unter `streaming.progress` ab:
 
-- [Fortschrittsentwürfe](/de/concepts/progress-drafts) — sichtbare Nachrichten zum Bearbeitungsfortschritt, die während langer Durchläufe aktualisiert werden
+```json
+{
+  "channels": {
+    "telegram": {
+      "streaming": {
+        "mode": "progress",
+        "progress": {
+          "toolProgress": true,
+          "commandText": "status"
+        }
+      }
+    }
+  }
+}
+```
+
+## Verwandte Themen
+
+- [Fortschrittsentwürfe](/de/concepts/progress-drafts) — sichtbare Zwischenstandsnachrichten, die während langer Turns aktualisiert werden
 - [Nachrichten](/de/concepts/messages) — Nachrichtenlebenszyklus und Zustellung
-- [Erneuter Versuch](/de/concepts/retry) — Verhalten bei erneuten Zustellversuchen nach Zustellungsfehlern
+- [Wiederholen](/de/concepts/retry) — Wiederholungsverhalten bei Zustellfehlern
 - [Kanäle](/de/channels) — Streaming-Unterstützung pro Kanal
