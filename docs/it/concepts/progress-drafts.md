@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Configurare aggiornamenti visibili sullo stato di avanzamento per turni di chat di lunga durata
+    - Configurazione degli aggiornamenti di avanzamento visibili per turni di chat a lunga esecuzione
     - Scegliere tra le modalità di streaming parziale, a blocchi e di avanzamento
-    - Spiegazione di come OpenClaw aggiorna un messaggio del canale mentre il lavoro è in corso
-    - Risoluzione dei problemi relativi alle bozze di avanzamento, ai messaggi di avanzamento autonomi o al meccanismo di ripiego della finalizzazione
+    - Spiegazione di come OpenClaw aggiorna un singolo messaggio del canale mentre il lavoro è in corso
+    - Risoluzione dei problemi relativi alle bozze di avanzamento, ai messaggi di avanzamento autonomi o al meccanismo di ripiego per la finalizzazione
 summary: 'Bozze di avanzamento: un unico messaggio visibile di lavoro in corso che si aggiorna mentre un agente è in esecuzione'
 title: Bozze di avanzamento
 x-i18n:
-    generated_at: "2026-05-04T02:23:36Z"
+    generated_at: "2026-05-04T07:04:46Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8ce19262800f1c3c3e505a3cf1d41ed5c3dffcbca168ad7b7afabdce62eee8fe
+    source_hash: f78c07866cd7f613012a80a40413e5866c1dd2edd477088f9fc141347f5f3788
     source_path: concepts/progress-drafts.md
     workflow: 16
 ---
 
-Le bozze di avanzamento fanno sembrare vivi in chat i turni degli agenti di lunga durata senza trasformare
+Le bozze di avanzamento fanno sembrare vivi in chat i turni dell'agente di lunga durata senza trasformare
 la conversazione in una pila di risposte di stato temporanee.
 
-Quando le bozze di avanzamento sono abilitate, OpenClaw crea un solo messaggio visibile
-di lavoro in corso solo dopo che il turno dimostra che sta svolgendo lavoro reale, lo aggiorna mentre
+Quando le bozze di avanzamento sono abilitate, OpenClaw crea un solo messaggio visibile di lavoro in corso
+solo dopo che il turno dimostra che sta svolgendo lavoro reale, lo aggiorna mentre
 l'agente legge, pianifica, chiama strumenti o attende approvazione, e poi trasforma quella bozza
 nella risposta finale quando il canale può farlo in sicurezza.
 
@@ -30,8 +30,8 @@ Shelling...
 🛠️ Exec: run tests
 ```
 
-Usa le bozze di avanzamento quando vuoi un solo messaggio di stato ordinato durante lavori intensivi
-con gli strumenti e la risposta finale quando il turno è completato.
+Usa le bozze di avanzamento quando vuoi un unico messaggio di stato ordinato durante lavori intensivi di strumenti
+e la risposta finale quando il turno è terminato.
 
 ## Avvio rapido
 
@@ -49,50 +49,50 @@ Abilita le bozze di avanzamento per canale con `streaming.mode: "progress"`:
 }
 ```
 
-Di solito è sufficiente. OpenClaw sceglierà automaticamente un'etichetta di una parola, attenderà
-finché il lavoro dura almeno cinque secondi o emette un secondo evento di lavoro, aggiungerà righe
-di avanzamento compatte mentre avviene lavoro utile e sopprimerà le chiacchiere di avanzamento
-autonome duplicate per quel turno.
+Di solito questo è sufficiente. OpenClaw sceglierà un'etichetta automatica di una parola, aspetterà
+finché il lavoro dura almeno cinque secondi o emette un secondo evento di lavoro, aggiungerà righe di
+avanzamento compatte mentre avviene lavoro utile e sopprimerà il chiacchiericcio di avanzamento autonomo
+duplicato per quel turno.
 
 ## Cosa vedono gli utenti
 
 Una bozza di avanzamento ha due parti:
 
-| Parte                  | Scopo                                                                            |
-| ---------------------- | -------------------------------------------------------------------------------- |
-| Etichetta              | Un breve titolo come `Thinking...` o `Shelling...`.                              |
-| Righe di avanzamento   | Aggiornamenti di esecuzione compatti usando le stesse etichette e icone degli strumenti dell'output dettagliato. |
+| Parte          | Scopo                                                                       |
+| -------------- | --------------------------------------------------------------------------- |
+| Etichetta      | Un titolo breve come `Thinking...` o `Shelling...`.                         |
+| Righe di avanzamento | Aggiornamenti di esecuzione compatti usando le stesse etichette e icone degli strumenti dell'output dettagliato. |
 
-L'etichetta appare dopo che l'agente avvia un lavoro significativo e rimane occupato
-per cinque secondi o emette un secondo evento di lavoro. Le risposte di solo testo normale non
+L'etichetta appare dopo che l'agente inizia un lavoro significativo e resta occupato
+per cinque secondi o emette un secondo evento di lavoro. Le risposte solo testo semplice non
 mostrano una bozza di avanzamento. Le righe di avanzamento vengono aggiunte solo quando l'agente emette aggiornamenti
-di lavoro utili, per esempio `🛠️ Exec`, `🔎 Web Search` o `✍️ Write: to /tmp/file`.
+di lavoro utili, ad esempio `🛠️ Exec`, `🔎 Web Search` o `✍️ Write: to /tmp/file`.
 Per impostazione predefinita usano la stessa modalità di spiegazione compatta di `/verbose`; imposta
-`agents.defaults.toolProgressDetail: "raw"` durante il debug se vuoi anche comandi/dettagli grezzi
-aggiunti.
+`agents.defaults.toolProgressDetail: "raw"` durante il debug e se vuoi anche che comandi/dettagli grezzi
+vengano aggiunti.
 La risposta finale sostituisce la bozza quando possibile; altrimenti
 OpenClaw invia normalmente la risposta finale e ripulisce o smette di aggiornare la
 bozza in base al trasporto del canale.
 
 ## Scegliere una modalità
 
-`channels.<channel>.streaming.mode` controlla il comportamento visibile in corso:
+`channels.<channel>.streaming.mode` controlla il comportamento visibile del lavoro in corso:
 
-| Modalità   | Ideale per                         | Cosa appare in chat                                      |
-| ---------- | ---------------------------------- | -------------------------------------------------------- |
-| `off`      | Canali silenziosi                  | Solo la risposta finale.                                 |
-| `partial`  | Osservare apparire il testo della risposta | Una bozza modificata con il testo più recente della risposta. |
+| Modalità  | Ideale per                       | Cosa appare in chat                             |
+| ---------- | -------------------------------- | ------------------------------------------------- |
+| `off`      | Canali silenziosi                | Solo la risposta finale.                         |
+| `partial`  | Vedere comparire il testo della risposta | Una bozza modificata con il testo più recente della risposta. |
 | `block`    | Blocchi più grandi di anteprima della risposta | Un'anteprima aggiornata o aggiunta in blocchi più grandi. |
-| `progress` | Turni intensivi con strumenti o di lunga durata | Una bozza di stato, poi la risposta finale.              |
+| `progress` | Turni intensivi di strumenti o di lunga durata | Una bozza di stato, poi la risposta finale.       |
 
 Scegli `progress` quando agli utenti interessa più "cosa sta succedendo" che vedere
 il testo della risposta scorrere token per token.
 
 Scegli `partial` quando la risposta stessa è il segnale di avanzamento.
 
-Scegli `block` quando vuoi aggiornamenti della bozza di anteprima in blocchi di testo più grandi. Su
-Discord e Telegram, `streaming.mode: "block"` è ancora streaming di anteprima, non
-consegna normale a blocchi. Usa `streaming.block.enabled` o il legacy
+Scegli `block` quando vuoi aggiornamenti di anteprima della bozza in blocchi di testo più grandi. Su
+Discord e Telegram, `streaming.mode: "block"` resta streaming di anteprima, non
+normale consegna a blocchi. Usa `streaming.block.enabled` o il legacy
 `blockStreaming` quando vuoi risposte normali a blocchi.
 
 ## Configurare le etichette
@@ -100,7 +100,7 @@ consegna normale a blocchi. Usa `streaming.block.enabled` o il legacy
 Le etichette di avanzamento si trovano sotto `channels.<channel>.streaming.progress`.
 
 L'etichetta predefinita è `auto`, che sceglie dal pool integrato di OpenClaw
-di etichette composte da una sola parola con puntini di sospensione:
+di etichette con una sola parola e puntini di sospensione:
 
 ```text
 Thinking...
@@ -179,11 +179,11 @@ Nascondi l'etichetta e mostra solo le righe di avanzamento:
 
 ## Controllare le righe di avanzamento
 
-Le righe di avanzamento sono abilitate per impostazione predefinita in modalità di avanzamento. Provengono da eventi
-di esecuzione reali: avvii di strumenti, aggiornamenti di elementi, piani di attività, approvazioni, output di comandi, riepiloghi
+Le righe di avanzamento sono abilitate per impostazione predefinita in modalità progress. Provengono da eventi di esecuzione
+reali: avvio di strumenti, aggiornamenti di elementi, piani di attività, approvazioni, output di comandi, riepiloghi
 di patch e attività simili dell'agente.
 
-OpenClaw usa lo stesso formattatore per le bozze di avanzamento e `/verbose`:
+OpenClaw usa lo stesso formatter per le bozze di avanzamento e `/verbose`:
 
 ```json5
 {
@@ -195,14 +195,15 @@ OpenClaw usa lo stesso formattatore per le bozze di avanzamento e `/verbose`:
 }
 ```
 
-`"explain"` è il valore predefinito e mantiene le bozze stabili con etichette concise come
-`🛠️ Exec: check JS syntax for /tmp/app.js`. `"raw"` aggiunge il comando/dettaglio sottostante
-quando disponibile, utile durante il debug ma più rumoroso in chat.
+`"explain"` è l'impostazione predefinita e mantiene stabili le bozze con etichette concise come
+`🛠️ Exec: check JS syntax for /tmp/app.js`. `"raw"` aggiunge il comando/dettaglio
+sottostante quando disponibile, cosa utile durante il debug ma più rumorosa in
+chat.
 
-Per esempio, lo stesso comando appare in modo diverso a seconda della modalità di dettaglio:
+Ad esempio, lo stesso comando appare diversamente a seconda della modalità di dettaglio:
 
-| Modalità  | Riga di avanzamento                                                 |
-| --------- | ------------------------------------------------------------------- |
+| Modalità  | Riga di avanzamento                                                  |
+| --------- | -------------------------------------------------------------------- |
 | `explain` | `🛠️ Exec: check JS syntax for /tmp/app.js`                           |
 | `raw`     | `🛠️ Exec: check JS syntax for /tmp/app.js, node --check /tmp/app.js` |
 
@@ -223,6 +224,33 @@ Limita quante righe restano visibili:
 }
 ```
 
+Le righe di avanzamento vengono compattate automaticamente per ridurre il reflow delle bolle di chat mentre la bozza viene modificata.
+
+OpenClaw tronca per impostazione predefinita le righe di avanzamento lunghe in modo che le modifiche ripetute della bozza non
+vadano a capo in modo diverso a ogni aggiornamento. Il prefisso resta leggibile, e i dettagli lunghi
+come percorsi o comandi grezzi vengono abbreviati con puntini di sospensione.
+
+Slack può renderizzare le righe di avanzamento come campi strutturati Block Kit invece di un
+singolo corpo di testo:
+
+```json5
+{
+  channels: {
+    slack: {
+      streaming: {
+        mode: "progress",
+        progress: {
+          render: "rich",
+        },
+      },
+    },
+  },
+}
+```
+
+Il rendering ricco mantiene lo stesso fallback in testo semplice, così i canali e i client che
+non supportano la forma più ricca possono comunque mostrare il testo compatto di avanzamento.
+
 Mantieni la singola bozza di avanzamento ma nascondi le righe di strumenti e attività:
 
 ```json5
@@ -240,22 +268,22 @@ Mantieni la singola bozza di avanzamento ma nascondi le righe di strumenti e att
 }
 ```
 
-Con `toolProgress: false`, OpenClaw sopprime comunque i precedenti messaggi autonomi
-di avanzamento degli strumenti per quel turno. Il canale rimane visivamente silenzioso fino alla
-risposta finale, tranne per l'etichetta se configurata.
+Con `toolProgress: false`, OpenClaw sopprime comunque i vecchi messaggi autonomi
+di avanzamento degli strumenti per quel turno. Il canale resta visivamente silenzioso fino alla
+risposta finale, tranne per l'etichetta se ne è configurata una.
 
-## Comportamento del canale
+## Comportamento dei canali
 
 Ogni canale usa il trasporto più pulito che supporta:
 
-| Canale          | Trasporto dell'avanzamento             | Note                                                                  |
-| --------------- | -------------------------------------- | --------------------------------------------------------------------- |
-| Discord         | Invia un messaggio, poi lo modifica.   | Il testo finale viene modificato sul posto quando rientra in un solo messaggio di anteprima sicuro. |
-| Matrix          | Invia un evento, poi lo modifica.      | La configurazione dello streaming a livello di account controlla le bozze a livello di account. |
-| Microsoft Teams | Stream nativo di Teams nelle chat personali. | `streaming.mode: "block"` mappa alla consegna a blocchi di Teams. |
+| Canale          | Trasporto dell'avanzamento          | Note                                                                  |
+| --------------- | ----------------------------------- | --------------------------------------------------------------------- |
+| Discord         | Invia un messaggio, poi lo modifica. | Il testo finale viene modificato sul posto quando rientra in un messaggio di anteprima sicuro. |
+| Matrix          | Invia un evento, poi lo modifica.    | La configurazione dello streaming a livello di account controlla le bozze a livello di account. |
+| Microsoft Teams | Stream nativo di Teams nelle chat personali. | `streaming.mode: "block"` si mappa alla consegna a blocchi di Teams.  |
 | Slack           | Stream nativo o post bozza modificabile. | La disponibilità del thread influisce sulla possibilità di usare lo streaming nativo. |
-| Telegram        | Invia un messaggio, poi lo modifica.   | Le bozze visibili più vecchie possono essere sostituite così i timestamp finali restano utili. |
-| Mattermost      | Post bozza modificabile.               | L'attività degli strumenti viene incorporata nello stesso post in stile bozza. |
+| Telegram        | Invia un messaggio, poi lo modifica. | Le vecchie bozze visibili possono essere sostituite affinché i timestamp finali restino utili. |
+| Mattermost      | Post bozza modificabile.             | L'attività degli strumenti viene incorporata nello stesso post in stile bozza. |
 
 I canali senza supporto sicuro alla modifica di solito ripiegano sugli indicatori di digitazione o
 sulla consegna solo finale.
@@ -267,12 +295,12 @@ Quando la risposta finale è pronta, OpenClaw cerca di mantenere pulita la chat:
 - Se la bozza può diventare in sicurezza la risposta finale, OpenClaw la modifica sul posto.
 - Se il canale usa lo streaming di avanzamento nativo, OpenClaw finalizza quello stream
   quando il trasporto nativo accetta il testo finale.
-- Se la risposta finale contiene contenuti multimediali, una richiesta di approvazione, un destinatario di risposta esplicito,
-  troppi blocchi o una modifica/invio non riusciti, OpenClaw invia la risposta finale tramite
+- Se la risposta finale contiene media, una richiesta di approvazione, un target di risposta esplicito,
+  troppi blocchi o un invio/modifica non riuscito, OpenClaw invia la risposta finale tramite
   il normale percorso di consegna del canale.
 
 Il percorso di fallback è intenzionale. È meglio inviare una nuova risposta finale che
-perdere testo, collocare una risposta nel thread sbagliato o sovrascrivere una bozza con un payload che il canale
+perdere testo, indirizzare una risposta al thread sbagliato o sovrascrivere una bozza con un payload che il canale
 non può rappresentare in sicurezza.
 
 ## Risoluzione dei problemi
@@ -291,22 +319,22 @@ comportamento a bozza singola ma nasconde le righe di avanzamento di strumenti e
 
 **Vedo un nuovo messaggio finale invece di una bozza modificata.**
 
-È un fallback di sicurezza. Può succedere con risposte multimediali, risposte lunghe,
-destinatari di risposta espliciti, vecchie bozze Telegram, target di thread Slack mancanti,
-messaggi di anteprima eliminati o finalizzazione non riuscita di stream nativi.
+È un fallback di sicurezza. Può accadere per risposte con media, risposte lunghe,
+target di risposta espliciti, vecchie bozze Telegram, target di thread Slack mancanti,
+messaggi di anteprima eliminati o finalizzazione dello stream nativo non riuscita.
 
 **Vedo ancora messaggi di avanzamento autonomi.**
 
-La modalità di avanzamento sopprime i messaggi predefiniti autonomi di avanzamento degli strumenti quando una bozza
-è attiva. Se i messaggi autonomi compaiono ancora, verifica che il turno stia effettivamente
-usando la modalità di avanzamento e non `streaming.mode: "off"` o un percorso di canale che
+La modalità progress sopprime i messaggi predefiniti autonomi di avanzamento degli strumenti quando una bozza
+è attiva. Se compaiono ancora messaggi autonomi, verifica che il turno stia davvero
+usando la modalità progress e non `streaming.mode: "off"` o un percorso del canale che
 non può creare una bozza per quel messaggio.
 
-**Teams si comporta in modo diverso da Discord o Telegram.**
+**Teams si comporta diversamente da Discord o Telegram.**
 
-Microsoft Teams usa uno stream nativo nelle chat personali invece del trasporto generico
-di anteprima invia-e-modifica. Teams tratta anche `streaming.mode: "block"` come
-consegna a blocchi di Teams perché non dispone della stessa modalità a blocchi di anteprima bozza
+Microsoft Teams usa uno stream nativo nelle chat personali invece del trasporto di anteprima generico
+di invio e modifica. Teams tratta anche `streaming.mode: "block"` come
+consegna a blocchi di Teams perché non ha la stessa modalità a blocchi di anteprima bozza
 usata da Discord e Telegram.
 
 ## Correlati

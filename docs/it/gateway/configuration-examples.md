@@ -6,15 +6,15 @@ read_when:
 summary: Esempi di configurazione conformi allo schema per configurazioni OpenClaw comuni
 title: Esempi di configurazione
 x-i18n:
-    generated_at: "2026-04-30T08:50:25Z"
+    generated_at: "2026-05-04T07:05:33Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8bc1f8877bc635d6e3aafd911852d61e71fa08de9144751209542fd67c70f0ba
+    source_hash: 60c8c2d731f8dce93c4d14657041d72043bc36e3d71ab6cb13c02993ba90dbe3
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Gli esempi seguenti sono allineati allo schema di configurazione corrente. Per il riferimento completo e le note per ogni campo, consulta [Configurazione](/it/gateway/configuration).
+Gli esempi seguenti sono allineati con lo schema di configurazione attuale. Per il riferimento completo e le note per campo, consulta [Configurazione](/it/gateway/configuration).
 
 ## Avvio rapido
 
@@ -27,7 +27,7 @@ Gli esempi seguenti sono allineati allo schema di configurazione corrente. Per i
 }
 ```
 
-Salva in `~/.openclaw/openclaw.json` e potrai inviare un DM al bot da quel numero.
+Salva in `~/.openclaw/openclaw.json` e puoi inviare un messaggio diretto al bot da quel numero.
 
 ### Configurazione iniziale consigliata
 
@@ -59,7 +59,7 @@ Salva in `~/.openclaw/openclaw.json` e potrai inviare un DM al bot da quel numer
 
 ## Esempio esteso (opzioni principali)
 
-> JSON5 consente di usare commenti e virgole finali. Funziona anche il normale JSON.
+> JSON5 consente di usare commenti e virgole finali. Anche JSON normale funziona.
 
 ```json5
 {
@@ -256,6 +256,7 @@ Salva in `~/.openclaw/openclaw.json` e potrai inviare un DM al bot da quel numer
       skills: ["github", "weather"], // inherited by agents that omit list[].skills
       thinkingDefault: "low",
       verboseDefault: "off",
+      toolProgressDetail: "explain",
       reasoningDefault: "off",
       elevatedDefault: "on",
       blockStreamingDefault: "off",
@@ -472,7 +473,7 @@ Salva in `~/.openclaw/openclaw.json` e potrai inviare un DM al bot da quel numer
 
 ## Pattern comuni
 
-### Baseline di skill condivisa con una sostituzione
+### Baseline Skills condivisa con un override
 
 ```json5
 {
@@ -514,10 +515,10 @@ Salva in `~/.openclaw/openclaw.json` e potrai inviare un DM al bot da quel numer
 }
 ```
 
-### Approvazione automatica della rete di nodi attendibili
+### Approvazione automatica della rete di Node attendibili
 
-Mantieni manuale l'associazione dei dispositivi a meno che tu non controlli il percorso di rete. Per un laboratorio dedicato
-o una subnet tailnet, puoi attivare l'approvazione automatica dei dispositivi nodo al primo utilizzo
+Mantieni manuale l'abbinamento dei dispositivi, a meno che tu non controlli il percorso di rete. Per un
+lab dedicato o una subnet tailnet, puoi abilitare l'approvazione automatica al primo utilizzo dei dispositivi Node
 con CIDR o IP esatti:
 
 ```json5
@@ -532,13 +533,13 @@ con CIDR o IP esatti:
 }
 ```
 
-Resta disattivata quando non è impostata. Si applica solo a nuove associazioni `role: node` senza
-ambiti richiesti. Client operatore/browser e aggiornamenti di ruolo, ambito, metadati o
+Questa opzione resta disattivata quando non è impostata. Si applica solo a nuovi abbinamenti `role: node` senza
+scope richiesti. I client operatore/browser e gli aggiornamenti di ruolo, scope, metadati o
 chiave pubblica richiedono comunque l'approvazione manuale.
 
 ### Modalità DM sicura (posta in arrivo condivisa / DM multiutente)
 
-Se più di una persona può inviare DM al tuo bot (più voci in `allowFrom`, approvazioni di associazione per più persone o `dmPolicy: "open"`), abilita la **modalità DM sicura** così i DM di mittenti diversi non condividono un unico contesto per impostazione predefinita:
+Se più di una persona può inviare DM al tuo bot (più voci in `allowFrom`, approvazioni di abbinamento per più persone o `dmPolicy: "open"`), abilita la **modalità DM sicura** in modo che i DM provenienti da mittenti diversi non condividano un unico contesto per impostazione predefinita:
 
 ```json5
 {
@@ -659,11 +660,11 @@ Abilita la corrispondenza diretta mutabile per nome/email/nick con `dangerouslyA
 ## Suggerimenti
 
 - Se imposti `dmPolicy: "open"`, l'elenco `allowFrom` corrispondente deve includere `"*"`.
-- Gli ID dei provider differiscono (numeri di telefono, ID utente, ID canale). Usa la documentazione del provider per confermare il formato.
+- Gli ID dei provider sono diversi (numeri di telefono, ID utente, ID canale). Usa la documentazione del provider per confermare il formato.
 - Sezioni facoltative da aggiungere in seguito: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
 - Consulta [Provider](/it/providers) e [Risoluzione dei problemi](/it/gateway/troubleshooting) per note di configurazione più approfondite.
 
 ## Correlati
 
-- [Riferimento configurazione](/it/gateway/configuration-reference)
+- [Riferimento della configurazione](/it/gateway/configuration-reference)
 - [Configurazione](/it/gateway/configuration)
