@@ -1,32 +1,32 @@
 ---
 read_when:
-    - Vous souhaitez utiliser la synthèse vocale ElevenLabs dans OpenClaw
-    - Vous souhaitez utiliser la reconnaissance vocale ElevenLabs Scribe pour les pièces jointes audio
-    - Vous souhaitez utiliser la transcription en temps réel ElevenLabs pour les appels vocaux
-summary: Utilisez la parole ElevenLabs, Scribe STT et la transcription en temps réel avec OpenClaw
+    - Vous voulez la synthèse vocale ElevenLabs dans OpenClaw
+    - Vous souhaitez utiliser la transcription vocale ElevenLabs Scribe pour les pièces jointes audio
+    - Vous souhaitez la transcription en temps réel d’ElevenLabs pour Appel vocal ou Google Meet
+summary: Utiliser la synthèse vocale ElevenLabs, Scribe STT et la transcription en temps réel avec OpenClaw
 title: ElevenLabs
 x-i18n:
-    generated_at: "2026-04-25T13:55:38Z"
-    model: gpt-5.4
+    generated_at: "2026-05-04T07:05:38Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 1f858a344228c6355cd5fdc3775cddac39e0075f2e9fcf7683271f11be03a31a
+    source_hash: 4c880bf9dcab01ef70779c74576c70ea5d0203b96b5f739291842fafcb4bdb4b
     source_path: providers/elevenlabs.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw utilise ElevenLabs pour la synthèse vocale, la reconnaissance vocale par lot avec Scribe
-v2, et la reconnaissance vocale en streaming Voice Call avec Scribe v2 Realtime.
+OpenClaw utilise ElevenLabs pour la synthèse vocale, la transcription vocale par lots avec Scribe
+v2 et la STT en streaming avec Scribe v2 Realtime.
 
-| Fonctionnalité            | Surface OpenClaw                               | Valeur par défaut         |
-| ------------------------- | ---------------------------------------------- | ------------------------- |
-| Synthèse vocale           | `messages.tts` / `talk`                        | `eleven_multilingual_v2`  |
-| Reconnaissance vocale par lot | `tools.media.audio`                        | `scribe_v2`               |
-| Reconnaissance vocale en streaming | Voice Call `streaming.provider: "elevenlabs"` | `scribe_v2_realtime`      |
+| Capacité                | Surface OpenClaw                                                       | Par défaut               |
+| ----------------------- | ---------------------------------------------------------------------- | ------------------------ |
+| Synthèse vocale         | `messages.tts` / `talk`                                                | `eleven_multilingual_v2` |
+| Transcription vocale par lots | `tools.media.audio`                                             | `scribe_v2`              |
+| Transcription vocale en streaming | streaming d’appel vocal ou Google Meet `realtime.transcriptionProvider` | `scribe_v2_realtime`     |
 
 ## Authentification
 
 Définissez `ELEVENLABS_API_KEY` dans l’environnement. `XI_API_KEY` est également accepté pour
-la compatibilité avec les outils ElevenLabs existants.
+assurer la compatibilité avec les outils ElevenLabs existants.
 
 ```bash
 export ELEVENLABS_API_KEY="..."
@@ -50,10 +50,10 @@ export ELEVENLABS_API_KEY="..."
 }
 ```
 
-Définissez `modelId` sur `eleven_v3` pour utiliser la synthèse vocale ElevenLabs v3. OpenClaw conserve
+Définissez `modelId` sur `eleven_v3` pour utiliser la TTS ElevenLabs v3. OpenClaw conserve
 `eleven_multilingual_v2` comme valeur par défaut pour les installations existantes.
 
-## Reconnaissance vocale
+## Transcription vocale
 
 Utilisez Scribe v2 pour les pièces jointes audio entrantes et les courts segments vocaux enregistrés :
 
@@ -73,19 +73,19 @@ Utilisez Scribe v2 pour les pièces jointes audio entrantes et les courts segmen
 OpenClaw envoie l’audio multipart à ElevenLabs `/v1/speech-to-text` avec
 `model_id: "scribe_v2"`. Les indications de langue sont mappées vers `language_code` lorsqu’elles sont présentes.
 
-## Reconnaissance vocale en streaming Voice Call
+## STT en streaming
 
-Le Plugin `elevenlabs` intégré enregistre Scribe v2 Realtime pour la transcription
-en streaming Voice Call.
+Le Plugin `elevenlabs` fourni enregistre Scribe v2 Realtime pour l’appel vocal et
+la transcription en streaming en mode agent Google Meet.
 
-| Paramètre       | Chemin de config                                                        | Valeur par défaut                                  |
-| --------------- | ----------------------------------------------------------------------- | -------------------------------------------------- |
-| Clé API         | `plugins.entries.voice-call.config.streaming.providers.elevenlabs.apiKey` | Revient à `ELEVENLABS_API_KEY` / `XI_API_KEY`      |
-| Modèle          | `...elevenlabs.modelId`                                                 | `scribe_v2_realtime`                               |
-| Format audio    | `...elevenlabs.audioFormat`                                             | `ulaw_8000`                                        |
-| Fréquence d’échantillonnage | `...elevenlabs.sampleRate`                                  | `8000`                                             |
-| Stratégie de validation | `...elevenlabs.commitStrategy`                                 | `vad`                                              |
-| Langue          | `...elevenlabs.languageCode`                                            | (non défini)                                       |
+| Paramètre       | Chemin de configuration                                                  | Par défaut                                        |
+| --------------- | ------------------------------------------------------------------------- | ------------------------------------------------- |
+| Clé API         | `plugins.entries.voice-call.config.streaming.providers.elevenlabs.apiKey` | Se rabat sur `ELEVENLABS_API_KEY` / `XI_API_KEY` |
+| Modèle          | `...elevenlabs.modelId`                                                   | `scribe_v2_realtime`                              |
+| Format audio    | `...elevenlabs.audioFormat`                                               | `ulaw_8000`                                       |
+| Fréquence d’échantillonnage | `...elevenlabs.sampleRate`                                      | `8000`                                            |
+| Stratégie de commit | `...elevenlabs.commitStrategy`                                       | `vad`                                             |
+| Langue          | `...elevenlabs.languageCode`                                              | (non défini)                                      |
 
 ```json5
 {
@@ -113,12 +113,18 @@ en streaming Voice Call.
 ```
 
 <Note>
-Voice Call reçoit les médias Twilio en G.711 u-law à 8 kHz. Le fournisseur temps réel ElevenLabs
-utilise par défaut `ulaw_8000`, ce qui permet de transférer les trames de téléphonie sans
+L’appel vocal reçoit les médias Twilio en u-law G.711 à 8 kHz. Le fournisseur temps réel ElevenLabs
+utilise `ulaw_8000` par défaut, ce qui permet de transférer les trames téléphoniques sans
 transcodage.
 </Note>
 
-## Liens connexes
+Pour le mode agent Google Meet, définissez
+`plugins.entries.google-meet.config.realtime.transcriptionProvider` sur
+`"elevenlabs"` et configurez le même bloc de fournisseur sous
+`plugins.entries.google-meet.config.realtime.providers.elevenlabs`.
+
+## Connexe
 
 - [Synthèse vocale](/fr/tools/tts)
+- [Google Meet](/fr/plugins/google-meet)
 - [Sélection de modèle](/fr/concepts/model-providers)
