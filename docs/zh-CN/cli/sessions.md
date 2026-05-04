@@ -1,13 +1,13 @@
 ---
 read_when:
-    - 你想列出已存储的会话并查看近期活动
-summary: '`openclaw sessions` 的 CLI 参考（列出已存储的会话 + 用法）'
+    - 你想列出已存储的会话并查看最近活动
+summary: 适用于 `openclaw sessions` 的 CLI 参考（列出已存储会话 + 用法）
 title: 会话
 x-i18n:
-    generated_at: "2026-05-04T05:56:13Z"
+    generated_at: "2026-05-04T21:22:57Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8dc90344f40c53513bd6db3696bc709279155f26e7c3b6ea27e81a07a2f9f15e
+    source_hash: 6eb484ab1fa7686cf42dd00e640c4ae8616c4ea1c29873ea72694d72b9c680e7
     source_path: cli/sessions.md
     workflow: 16
 ---
@@ -16,23 +16,16 @@ x-i18n:
 
 列出已存储的对话会话。
 
-会话列表不是渠道/提供商存活检查。它们显示会话存储中持久化的
-对话行。安静的 Discord、Slack、Telegram 或
-其他渠道可以成功重新连接，但在处理消息之前不会创建新的会话行。
-当你需要实时
-渠道连接状态时，请使用 `openclaw channels status --probe`、
-`openclaw status --deep` 或 `openclaw health --verbose`。
+会话列表不是渠道/提供商存活检查。它们显示来自会话存储的持久化对话行。安静的 Discord、Slack、Telegram 或其他渠道可以成功重新连接，但在处理消息之前不会创建新的会话行。当你需要实时渠道连接状态时，请使用 `openclaw channels status --probe`、`openclaw status --deep` 或 `openclaw health --verbose`。
 
-Gateway 网关 `sessions.list` 响应默认有边界限制，因此大型长期存在的
-存储无法独占 Gateway 网关事件循环。当需要不同的结果窗口时，RPC 客户端应传入显式的正数
-`limit`；当调用方需要显示
-还有更多行存在时，响应会包含 `totalCount`、`limitApplied` 和 `hasMore`。
+`openclaw sessions` 和 Gateway 网关 `sessions.list` 响应默认有边界限制，这样大型长期存储就不能独占 CLI 进程或 Gateway 网关事件循环。CLI 默认返回最新的 100 个会话；传入 `--limit <n>` 可获取更小/更大的窗口，或在你有意需要完整存储时传入 `--limit all`。当调用方需要显示还有更多行存在时，JSON 响应会包含 `totalCount`、`limitApplied` 和 `hasMore`。
 
 ```bash
 openclaw sessions
 openclaw sessions --agent work
 openclaw sessions --all-agents
 openclaw sessions --active 120
+openclaw sessions --limit 25
 openclaw sessions --verbose
 openclaw sessions --json
 ```
@@ -40,10 +33,11 @@ openclaw sessions --json
 范围选择：
 
 - 默认：配置的默认智能体存储
-- `--verbose`：详细日志
+- `--verbose`：详细日志记录
 - `--agent <id>`：一个已配置的智能体存储
 - `--all-agents`：聚合所有已配置的智能体存储
 - `--store <path>`：显式存储路径（不能与 `--agent` 或 `--all-agents` 组合使用）
+- `--limit <n|all>`：要输出的最大行数（默认 `100`；`all` 恢复完整输出）
 
 为已存储的会话导出轨迹包：
 
@@ -52,15 +46,9 @@ openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:12
 openclaw sessions export-trajectory --session-key "agent:main:telegram:direct:123" --output bug-123 --json
 ```
 
-这是所有者批准执行请求后，`/export-trajectory` 斜杠命令使用的命令路径。
-输出目录始终解析到所选工作区下的
-`.openclaw/trajectory-exports/` 内。
+这是所有者批准执行请求后，`/export-trajectory` 斜杠命令使用的命令路径。输出目录始终解析到所选工作区下的 `.openclaw/trajectory-exports/` 内。
 
-`openclaw sessions --all-agents` 会读取已配置的智能体存储。Gateway 网关和 ACP
-会话发现范围更广：它们还会包含在默认
-`agents/` 根目录或模板化 `session.store` 根目录下找到的仅磁盘存储。这些
-发现的存储必须解析为智能体根目录内的常规 `sessions.json` 文件；
-符号链接和根目录外路径会被跳过。
+`openclaw sessions --all-agents` 读取已配置的智能体存储。Gateway 网关和 ACP 会话发现范围更广：它们还包括在默认 `agents/` 根目录下或模板化 `session.store` 根目录下找到的仅磁盘存储。这些已发现的存储必须解析为智能体根目录内的常规 `sessions.json` 文件；符号链接和根目录外路径会被跳过。
 
 JSON 示例：
 
@@ -75,6 +63,9 @@ JSON 示例：
   ],
   "allAgents": true,
   "count": 2,
+  "totalCount": 2,
+  "limitApplied": 100,
+  "hasMore": false,
   "activeMinutes": null,
   "sessions": [
     { "agentId": "main", "key": "agent:main:main", "model": "gpt-5" },
@@ -98,21 +89,19 @@ openclaw sessions cleanup --json
 
 `openclaw sessions cleanup` 使用配置中的 `session.maintenance` 设置：
 
-- 范围说明：`openclaw sessions cleanup` 会维护会话存储、转录记录和轨迹旁路文件。它不会修剪 cron 运行日志（`cron/runs/<jobId>.jsonl`），这些日志由 [Cron 配置](/zh-CN/automation/cron-jobs#configuration) 中的 `cron.runLog.maxBytes` 和 `cron.runLog.keepLines` 管理，并在 [Cron 维护](/zh-CN/automation/cron-jobs#maintenance) 中说明。
+- 范围说明：`openclaw sessions cleanup` 维护会话存储、转录记录和轨迹旁文件。它不会清理 cron 运行日志（`cron/runs/<jobId>.jsonl`），这些日志由 [Cron 配置](/zh-CN/automation/cron-jobs#configuration)中的 `cron.runLog.maxBytes` 和 `cron.runLog.keepLines` 管理，并在 [Cron 维护](/zh-CN/automation/cron-jobs#maintenance)中说明。
 
-- `--dry-run`：预览会修剪/封顶多少条目，而不写入。
-  - 在文本模式下，试运行会打印每个会话的操作表（`Action`、`Key`、`Age`、`Model`、`Flags`），这样你可以看到哪些会保留、哪些会移除。
+- `--dry-run`：预览会被清理/截断的条目数量，而不写入。
+  - 在文本模式下，dry-run 会打印每个会话的操作表（`Action`、`Key`、`Age`、`Model`、`Flags`），以便你查看哪些会保留、哪些会移除。
 - `--enforce`：即使 `session.maintenance.mode` 为 `warn`，也应用维护。
-- `--fix-missing`：移除转录记录文件缺失的条目，即使它们通常还不会因年龄/数量而被淘汰。
-- `--active-key <key>`：保护指定的活跃键不被磁盘预算驱逐。持久的外部对话指针，例如群组会话和线程范围聊天会话，也会在年龄/数量/磁盘预算维护中保留。
+- `--fix-missing`：移除其转录记录文件缺失的条目，即使它们通常还不会因时间/数量限制而被移除。
+- `--active-key <key>`：保护指定的活动键免受磁盘预算驱逐。持久的外部对话指针，例如群组会话和线程范围的聊天会话，也会由时间/数量/磁盘预算维护保留。
 - `--agent <id>`：为一个已配置的智能体存储运行清理。
 - `--all-agents`：为所有已配置的智能体存储运行清理。
 - `--store <path>`：针对特定 `sessions.json` 文件运行。
-- `--json`：打印 JSON 摘要。使用 `--all-agents` 时，输出会包含每个存储的一份摘要。
+- `--json`：打印 JSON 摘要。使用 `--all-agents` 时，输出会为每个存储包含一份摘要。
 
-当 Gateway 网关可达时，已配置智能体存储的非试运行清理会
-通过 Gateway 网关发送，因此它与运行时
-流量共享相同的会话存储写入器。使用 `--store <path>` 对存储文件进行显式离线修复。
+当 Gateway 网关可达时，针对已配置智能体存储的非 dry-run 清理会通过 Gateway 网关发送，这样它就会与运行时流量共享同一个会话存储写入器。使用 `--store <path>` 对存储文件执行显式离线修复。
 
 `openclaw sessions cleanup --all-agents --dry-run --json`：
 
@@ -142,11 +131,11 @@ openclaw sessions cleanup --json
 }
 ```
 
-相关：
+相关内容：
 
 - 会话配置：[配置参考](/zh-CN/gateway/config-agents#session)
 
-## 相关
+## 相关内容
 
 - [CLI 参考](/zh-CN/cli)
 - [会话管理](/zh-CN/concepts/session)
