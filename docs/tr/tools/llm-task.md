@@ -1,27 +1,25 @@
 ---
 read_when:
-    - İş akışları içinde yalnızca JSON kullanan bir LLM adımı istiyorsunuz
-    - Otomasyon için şema doğrulamalı LLM çıktısına ihtiyacınız var
-summary: İş akışları için yalnızca JSON LLM görevleri (isteğe bağlı plugin aracı)
+    - İş akışları içinde yalnızca JSON döndüren bir LLM adımı istiyorsunuz
+    - Otomasyon için şema doğrulamalı büyük dil modeli çıktısına ihtiyacınız var
+summary: İş akışları için yalnızca JSON LLM görevleri (isteğe bağlı Plugin aracı)
 title: LLM görevi
 x-i18n:
-    generated_at: "2026-04-24T09:35:39Z"
-    model: gpt-5.4
+    generated_at: "2026-05-04T07:08:44Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 613aefd1bac5b9675821a118c11130c8bfaefb1673d0266f14ff4e91b47fed8b
+    source_hash: 9cdc5d4feef17fb6d6d90d819d4c92d26a4ec43e4f5364c6acbaad1934a89269
     source_path: tools/llm-task.md
-    workflow: 15
+    workflow: 16
 ---
 
-`llm-task`, yalnızca JSON üreten bir LLM görevi çalıştıran ve yapılandırılmış çıktı döndüren
-(isteğe bağlı olarak JSON Schema'ya karşı doğrulanan) **isteğe bağlı bir plugin aracıdır**.
+`llm-task`, yalnızca JSON döndüren bir LLM görevini çalıştıran ve yapılandırılmış çıktı döndüren **isteğe bağlı bir Plugin aracıdır** (isteğe bağlı olarak JSON Schema ile doğrulanır).
 
-Bu, Lobster gibi iş akışı motorları için idealdir: her iş akışı için
-özel OpenClaw kodu yazmadan tek bir LLM adımı ekleyebilirsiniz.
+Bu, Lobster gibi iş akışı motorları için idealdir: Her iş akışı için özel OpenClaw kodu yazmadan tek bir LLM adımı ekleyebilirsiniz.
 
-## Plugin'i etkinleştirin
+## Plugin’i etkinleştirin
 
-1. Plugin'i etkinleştirin:
+1. Plugin’i etkinleştirin:
 
 ```json
 {
@@ -33,20 +31,17 @@ Bu, Lobster gibi iş akışı motorları için idealdir: her iş akışı için
 }
 ```
 
-2. Aracı allowlist'e ekleyin (`optional: true` ile kaydedilir):
+2. İsteğe bağlı araca izin verin:
 
 ```json
 {
-  "agents": {
-    "list": [
-      {
-        "id": "main",
-        "tools": { "allow": ["llm-task"] }
-      }
-    ]
+  "tools": {
+    "alsoAllow": ["llm-task"]
   }
 }
 ```
+
+`tools.allow` değerini yalnızca kısıtlayıcı izin listesi modunu istediğinizde kullanın.
 
 ## Yapılandırma (isteğe bağlı)
 
@@ -70,28 +65,26 @@ Bu, Lobster gibi iş akışı motorları için idealdir: her iş akışı için
 }
 ```
 
-`allowedModels`, `provider/model` string'lerinden oluşan bir allowlist'tir. Ayarlıysa,
-liste dışındaki tüm istekler reddedilir.
+`allowedModels`, `provider/model` dizelerinden oluşan bir izin listesidir. Ayarlanırsa listenin dışındaki tüm istekler reddedilir.
 
 ## Araç parametreleri
 
-- `prompt` (string, gerekli)
+- `prompt` (dize, gerekli)
 - `input` (herhangi biri, isteğe bağlı)
-- `schema` (object, isteğe bağlı JSON Schema)
-- `provider` (string, isteğe bağlı)
-- `model` (string, isteğe bağlı)
-- `thinking` (string, isteğe bağlı)
-- `authProfileId` (string, isteğe bağlı)
-- `temperature` (number, isteğe bağlı)
-- `maxTokens` (number, isteğe bağlı)
-- `timeoutMs` (number, isteğe bağlı)
+- `schema` (nesne, isteğe bağlı JSON Schema)
+- `provider` (dize, isteğe bağlı)
+- `model` (dize, isteğe bağlı)
+- `thinking` (dize, isteğe bağlı)
+- `authProfileId` (dize, isteğe bağlı)
+- `temperature` (sayı, isteğe bağlı)
+- `maxTokens` (sayı, isteğe bağlı)
+- `timeoutMs` (sayı, isteğe bağlı)
 
-`thinking`, `low` veya `medium` gibi standart OpenClaw reasoning önayarlarını kabul eder.
+`thinking`, `low` veya `medium` gibi standart OpenClaw akıl yürütme ön ayarlarını kabul eder.
 
 ## Çıktı
 
-Ayrıştırılmış JSON'u içeren `details.json` döndürür (ve
-verildiyse `schema`'ya göre doğrular).
+Ayrıştırılmış JSON’u içeren `details.json` döndürür (ve sağlandığında `schema` ile doğrular).
 
 ## Örnek: Lobster iş akışı adımı
 
@@ -117,13 +110,13 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 
 ## Güvenlik notları
 
-- Araç **yalnızca JSON** üretir ve modele yalnızca JSON çıktısı vermesini söyler (kod çitleri yok, yorum yok).
-- Bu çalıştırma için modele hiçbir araç açığa çıkarılmaz.
-- `schema` ile doğrulama yapmadığınız sürece çıktıyı güvenilmeyen veri olarak değerlendirin.
-- Yan etkili her adımdan önce (send, post, exec) onayları yerleştirin.
+- Araç **yalnızca JSON** kullanır ve modele yalnızca JSON çıktısı üretmesini söyler (kod blokları veya yorum yoktur).
+- Bu çalıştırma için modele hiçbir araç açılmaz.
+- `schema` ile doğrulamadığınız sürece çıktıyı güvenilmez kabul edin.
+- Yan etkisi olan herhangi bir adımdan önce onayları yerleştirin (gönderme, yayımlama, çalıştırma).
 
 ## İlgili
 
-- [Thinking levels](/tr/tools/thinking)
-- [Sub-agents](/tr/tools/subagents)
-- [Slash commands](/tr/tools/slash-commands)
+- [Düşünme düzeyleri](/tr/tools/thinking)
+- [Alt aracılar](/tr/tools/subagents)
+- [Slash komutları](/tr/tools/slash-commands)
