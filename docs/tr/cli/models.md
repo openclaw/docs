@@ -5,22 +5,22 @@ read_when:
 summary: '`openclaw models` için CLI başvurusu (status/list/set/scan, takma adlar, geri dönüşler, kimlik doğrulama)'
 title: Modeller
 x-i18n:
-    generated_at: "2026-05-01T08:59:06Z"
+    generated_at: "2026-05-04T18:23:40Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 538d3e4808329737fdc044dc6e14e5c7c78052e75d8a8b3b257b1ebd821c84d1
+    source_hash: dc7842f02e29aa0ac2ae88f3d42bba71f1890a58ab22d818dbee0585bc562fea
     source_path: cli/models.md
     workflow: 16
 ---
 
 # `openclaw models`
 
-Model keşfi, tarama ve yapılandırma (varsayılan model, yedekler, kimlik doğrulama profilleri).
+Model keşfi, tarama ve yapılandırma (varsayılan model, geri dönüşler, kimlik doğrulama profilleri).
 
 İlgili:
 
 - Sağlayıcılar + modeller: [Modeller](/tr/providers/models)
-- Model seçimi kavramları + `/models` slash komutu: [Modeller kavramı](/tr/concepts/models)
+- Model seçimi kavramları + `/models` eğik çizgi komutu: [Modeller kavramı](/tr/concepts/models)
 - Sağlayıcı kimlik doğrulama kurulumu: [Başlarken](/tr/start/getting-started)
 
 ## Yaygın komutlar
@@ -32,78 +32,78 @@ openclaw models set <model-or-alias>
 openclaw models scan
 ```
 
-`openclaw models status`, çözümlenen varsayılanı/yedekleri ve bir kimlik doğrulama genel görünümünü gösterir.
-Sağlayıcı kullanım anlık görüntüleri kullanılabilir olduğunda, OAuth/API anahtarı durum bölümü
+`openclaw models status`, çözümlenen varsayılanı/geri dönüşleri ve bir kimlik doğrulama genel görünümünü gösterir.
+Sağlayıcı kullanım anlık görüntüleri kullanılabilir olduğunda, OAuth/API anahtarı durumu bölümü
 sağlayıcı kullanım pencerelerini ve kota anlık görüntülerini içerir.
 Geçerli kullanım penceresi sağlayıcıları: Anthropic, GitHub Copilot, Gemini CLI, OpenAI
-Codex, MiniMax, Xiaomi ve z.ai. Kullanım kimlik doğrulaması, mevcut olduğunda
-sağlayıcıya özgü hook'lardan gelir; aksi takdirde OpenClaw, kimlik doğrulama
-profillerinden, env'den veya yapılandırmadan eşleşen OAuth/API anahtarı
+Codex, MiniMax, Xiaomi ve z.ai. Kullanım kimlik doğrulaması, kullanılabilir olduğunda
+sağlayıcıya özgü hook'lardan gelir; aksi halde OpenClaw, kimlik doğrulama profilleri,
+env veya config içindeki eşleşen OAuth/API anahtarı
 kimlik bilgilerine geri döner.
-`--json` çıktısında `auth.providers`, env/config/store farkındalıklı sağlayıcı
+`--json` çıktısında `auth.providers`, env/config/store duyarlı sağlayıcı
 genel görünümüdür; `auth.oauth` ise yalnızca auth-store profil sağlığıdır.
 Yapılandırılmış her sağlayıcı profiline karşı canlı kimlik doğrulama yoklamaları çalıştırmak için `--probe` ekleyin.
 Yoklamalar gerçek isteklerdir (token tüketebilir ve hız sınırlarını tetikleyebilir).
-Yapılandırılmış bir ajanın model/kimlik doğrulama durumunu incelemek için `--agent <id>` kullanın. Atlanırsa,
-komut ayarlanmışsa `OPENCLAW_AGENT_DIR`/`PI_CODING_AGENT_DIR` değerini, aksi takdirde
-yapılandırılmış varsayılan ajanı kullanır.
+Yapılandırılmış bir aracının model/kimlik doğrulama durumunu incelemek için `--agent <id>` kullanın. Atlandığında,
+komut ayarlanmışsa `OPENCLAW_AGENT_DIR`/`PI_CODING_AGENT_DIR` kullanır, aksi halde
+yapılandırılmış varsayılan aracıyı kullanır.
 Yoklama satırları kimlik doğrulama profillerinden, env kimlik bilgilerinden veya `models.json` içinden gelebilir.
 
 Notlar:
 
-- `models set <model-or-alias>`, `provider/model` veya bir takma adı kabul eder.
-- `models list` salt okunurdur: yapılandırmayı, kimlik doğrulama profillerini, mevcut katalog
-  durumunu ve sağlayıcıya ait katalog satırlarını okur, ancak
+- `models set <model-or-alias>`, `provider/model` veya bir takma ad kabul eder.
+- `models list` salt okunurdur: config, kimlik doğrulama profilleri, mevcut katalog
+  durumu ve sağlayıcıya ait katalog satırlarını okur, ancak
   `models.json` dosyasını yeniden yazmaz.
 - `Auth` sütunu sağlayıcı düzeyindedir ve salt okunurdur. Yerel
-  kimlik doğrulama profili meta verilerinden, env işaretçilerinden, yapılandırılmış sağlayıcı anahtarlarından, yerel sağlayıcı
-  işaretçilerinden, AWS Bedrock env/profil işaretçilerinden ve Plugin sentetik kimlik doğrulama meta verilerinden hesaplanır;
-  sağlayıcı runtime'ını yüklemez, keychain gizlerini okumaz, sağlayıcı
-  API'lerini çağırmaz veya model başına kesin yürütme hazırlığını kanıtlamaz.
-- `models list --all --provider <id>`, henüz o sağlayıcıyla kimlik doğrulaması
-  yapmamış olsanız bile Plugin manifestlerinden veya paketlenmiş sağlayıcı katalog meta verilerinden sağlayıcıya ait statik katalog
-  satırlarını içerebilir. Bu satırlar, eşleşen kimlik doğrulaması yapılandırılana kadar yine de
-  kullanılamaz olarak görünür.
-- `models list`, sağlayıcı katalog keşfi yavaşken control plane'i duyarlı tutar.
-  Varsayılan ve yapılandırılmış görünümler, kısa bir beklemeden sonra yapılandırılmış veya
-  sentetik model satırlarına geri döner ve keşfin arka planda bitmesine izin verir.
-  Kesin tam keşfedilmiş kataloğa ihtiyaç duyduğunuzda ve sağlayıcı keşfini
-  beklemeye razı olduğunuzda `--all` kullanın.
-- Geniş `models list --all`, sağlayıcı runtime destek hook'larını yüklemeden
+  kimlik doğrulama profili metaverileri, env işaretçileri, yapılandırılmış sağlayıcı anahtarları, yerel sağlayıcı
+  işaretçileri, AWS Bedrock env/profil işaretçileri ve Plugin sentetik kimlik doğrulama metaverilerinden hesaplanır;
+  sağlayıcı runtime'ını yüklemez, keychain sırlarını okumaz, sağlayıcı
+  API'lerini çağırmaz veya model başına tam yürütme hazır olduğunu kanıtlamaz.
+- `models list --all --provider <id>`, o sağlayıcıyla henüz kimlik doğrulaması
+  yapmamış olsanız bile Plugin manifestlerinden veya paketlenmiş sağlayıcı katalog metaverilerinden
+  sağlayıcıya ait statik katalog satırlarını içerebilir. Bu satırlar, eşleşen
+  kimlik doğrulama yapılandırılana kadar yine de kullanılamaz görünür.
+- `models list`, sağlayıcı katalog keşfi yavaşken kontrol düzlemini yanıt verebilir
+  tutar. Varsayılan ve yapılandırılmış görünümler, kısa bir beklemeden sonra yapılandırılmış veya
+  sentetik model satırlarına geri döner ve keşfin arka planda
+  tamamlanmasına izin verir. Tam keşfedilmiş kataloğa kesin olarak ihtiyacınız olduğunda ve
+  sağlayıcı keşfini beklemeye razı olduğunuzda `--all` kullanın.
+- Geniş `models list --all`, sağlayıcı runtime ek hook'larını yüklemeden
   manifest katalog satırlarını registry satırlarının üzerine birleştirir. Sağlayıcı filtreli manifest
-  hızlı yolları yalnızca `static` olarak işaretlenmiş sağlayıcıları kullanır; `refreshable` olarak işaretlenmiş sağlayıcılar
-  registry/cache destekli kalır ve manifest satırlarını destek olarak eklerken,
-  `runtime` olarak işaretlenmiş sağlayıcılar registry/runtime keşfinde kalır.
-- `models list`, yerel model meta verilerini ve runtime sınırlarını ayrı tutar. Tablo
-  çıktısında, etkili bir runtime sınırı yerel context penceresinden farklı olduğunda `Ctx`
-  `contextTokens/contextWindow` gösterir; JSON satırları, bir sağlayıcı bu sınırı sunduğunda
-  `contextTokens` içerir.
+  hızlı yolları yalnızca `static` olarak işaretlenmiş sağlayıcıları kullanır; `refreshable` olarak işaretlenmiş
+  sağlayıcılar registry/cache destekli kalır ve manifest satırlarını ekler olarak ekler, `runtime` olarak işaretlenmiş
+  sağlayıcılar ise registry/runtime keşfinde kalır.
+- `models list`, yerel model metaverilerini ve runtime sınırlarını ayrı tutar. Tablo
+  çıktısında `Ctx`, etkin runtime
+  sınırı yerel bağlam penceresinden farklı olduğunda `contextTokens/contextWindow` gösterir; JSON satırları, bir sağlayıcı bu sınırı sunduğunda `contextTokens`
+  içerir.
 - `models list --provider <id>`, `moonshot` veya
   `openai-codex` gibi sağlayıcı kimliğine göre filtreler. Etkileşimli sağlayıcı
   seçicilerinden gelen `Moonshot AI` gibi görüntü etiketlerini kabul etmez.
-- Model referansları **ilk** `/` karakterine göre bölünerek ayrıştırılır. Model ID'si `/` içeriyorsa (OpenRouter tarzı), sağlayıcı önekini ekleyin (örnek: `openrouter/moonshotai/kimi-k2`).
-- Sağlayıcıyı atlarsanız OpenClaw girdiyi önce takma ad olarak, sonra
-  tam model id'si için benzersiz yapılandırılmış sağlayıcı eşleşmesi olarak çözer ve ancak ondan sonra
-  kullanımdan kaldırma uyarısıyla yapılandırılmış varsayılan sağlayıcıya geri döner.
-  Bu sağlayıcı artık yapılandırılmış varsayılan modeli sunmuyorsa OpenClaw,
-  eski kaldırılmış sağlayıcı varsayılanını göstermek yerine ilk yapılandırılmış
-  sağlayıcı/modele geri döner.
-- `models status`, gizli olmayan yer tutucular için kimlik doğrulama çıktısında bunları gizli olarak maskelemek yerine `marker(<value>)` gösterebilir (örneğin `OPENAI_API_KEY`, `secretref-managed`, `minimax-oauth`, `oauth:chutes`, `ollama-local`).
+- Model referansları **ilk** `/` üzerinden bölünerek ayrıştırılır. Model kimliği `/` içeriyorsa (OpenRouter tarzı), sağlayıcı önekini ekleyin (örnek: `openrouter/moonshotai/kimi-k2`).
+- Sağlayıcıyı atlarsanız, OpenClaw girdiyi önce bir takma ad olarak, ardından
+  tam model kimliği için benzersiz bir yapılandırılmış sağlayıcı eşleşmesi olarak çözer ve ancak bundan sonra
+  bir kullanımdan kaldırma uyarısıyla yapılandırılmış varsayılan sağlayıcıya
+  geri döner. Bu sağlayıcı artık yapılandırılmış varsayılan modeli sunmuyorsa, OpenClaw
+  eski kaldırılmış sağlayıcı varsayılanını göstermek yerine ilk yapılandırılmış sağlayıcı/modele
+  geri döner.
+- `models status`, kimlik doğrulama çıktısında gizli olmayan yer tutucular için (örneğin `OPENAI_API_KEY`, `secretref-managed`, `minimax-oauth`, `oauth:chutes`, `ollama-local`) bunları sır olarak maskelemek yerine `marker(<value>)` gösterebilir.
 
 ### Modelleri tarama
 
 `models scan`, OpenRouter'ın herkese açık `:free` kataloğunu okur ve adayları
-yedek kullanım için sıralar. Kataloğun kendisi herkese açıktır; bu nedenle yalnızca meta veri taramaları
-OpenRouter anahtarı gerektirmez.
+geri dönüş kullanımı için sıralar. Kataloğun kendisi herkese açıktır, bu nedenle yalnızca metaveri taramaları
+bir OpenRouter anahtarı gerektirmez.
 
-Varsayılan olarak OpenClaw, canlı model çağrılarıyla araç ve görüntü desteğini yoklamayı dener.
-OpenRouter anahtarı yapılandırılmamışsa komut yalnızca meta veri
+Varsayılan olarak OpenClaw, canlı model çağrılarıyla araç ve görsel desteğini yoklamaya çalışır.
+Hiç OpenRouter anahtarı yapılandırılmamışsa, komut yalnızca metaveri
 çıktısına geri döner ve `:free` modellerin yoklamalar ve çıkarım için yine de
 `OPENROUTER_API_KEY` gerektirdiğini açıklar.
 
 Seçenekler:
 
-- `--no-probe` (yalnızca meta veri; config/gizli araması yok)
+- `--no-probe` (yalnızca metaveri; config/sır araması yok)
 - `--min-params <b>`
 - `--max-age-days <days>`
 - `--provider <name>`
@@ -116,10 +116,10 @@ Seçenekler:
 - `--set-image`
 - `--json`
 
-`--set-default` ve `--set-image` canlı yoklama gerektirir; yalnızca meta veri tarama
-sonuçları bilgilendirme amaçlıdır ve yapılandırmaya uygulanmaz.
+`--set-default` ve `--set-image` canlı yoklamalar gerektirir; yalnızca metaveri taraması
+sonuçları bilgilendirme amaçlıdır ve config'e uygulanmaz.
 
-### Modellerin durumu
+### Modeller durumu
 
 Seçenekler:
 
@@ -127,18 +127,18 @@ Seçenekler:
 - `--plain`
 - `--check` (çıkış 1=süresi dolmuş/eksik, 2=süresi dolmak üzere)
 - `--probe` (yapılandırılmış kimlik doğrulama profillerinin canlı yoklaması)
-- `--probe-provider <name>` (tek sağlayıcıyı yokla)
-- `--probe-profile <id>` (profil kimliklerini tekrarla veya virgülle ayır)
+- `--probe-provider <name>` (tek bir sağlayıcıyı yokla)
+- `--probe-profile <id>` (tekrarlanan veya virgülle ayrılmış profil kimlikleri)
 - `--probe-timeout <ms>`
 - `--probe-concurrency <n>`
 - `--probe-max-tokens <n>`
-- `--agent <id>` (yapılandırılmış ajan kimliği; `OPENCLAW_AGENT_DIR`/`PI_CODING_AGENT_DIR` değerlerini geçersiz kılar)
+- `--agent <id>` (yapılandırılmış aracı kimliği; `OPENCLAW_AGENT_DIR`/`PI_CODING_AGENT_DIR` değerlerini geçersiz kılar)
 
 `--json`, stdout'u JSON yükü için ayrılmış tutar. Kimlik doğrulama profili, sağlayıcı
-ve başlangıç tanılamaları stderr'ye yönlendirilir; böylece betikler stdout'u doğrudan
+ve başlangıç tanılama çıktıları stderr'e yönlendirilir; böylece betikler stdout'u doğrudan
 `jq` gibi araçlara pipe edebilir.
 
-Yoklama durumu kovaları:
+Yoklama durumu grupları:
 
 - `ok`
 - `auth`
@@ -149,17 +149,17 @@ Yoklama durumu kovaları:
 - `unknown`
 - `no_model`
 
-Beklenebilecek yoklama ayrıntısı/neden kodu durumları:
+Beklenmesi gereken yoklama ayrıntısı/neden kodu durumları:
 
-- `excluded_by_auth_order`: saklanan bir profil vardır, ancak açık
-  `auth.order.<provider>` bunu atlamıştır; bu yüzden yoklama denemek yerine
+- `excluded_by_auth_order`: depolanmış bir profil vardır, ancak açık
+  `auth.order.<provider>` onu atlamıştır; bu nedenle yoklama denemek yerine
   dışlamayı bildirir.
 - `missing_credential`, `invalid_expires`, `expired`, `unresolved_ref`:
   profil mevcuttur ancak uygun/çözümlenebilir değildir.
 - `no_model`: sağlayıcı kimlik doğrulaması vardır, ancak OpenClaw o sağlayıcı için yoklanabilir
-  bir model adayını çözememiştir.
+  bir model adayı çözememiştir.
 
-## Takma adlar + yedekler
+## Takma adlar + geri dönüşler
 
 ```bash
 openclaw models aliases list
@@ -170,45 +170,51 @@ openclaw models fallbacks list
 
 ```bash
 openclaw models auth add
+openclaw models auth list [--provider <id>] [--json]
 openclaw models auth login --provider <id>
 openclaw models auth setup-token --provider <id>
 openclaw models auth paste-token
 ```
 
 `models auth add`, etkileşimli kimlik doğrulama yardımcısıdır. Seçtiğiniz
-sağlayıcıya bağlı olarak bir sağlayıcı kimlik doğrulama akışı (OAuth/API anahtarı)
-başlatabilir veya sizi manuel token yapıştırmaya yönlendirebilir.
+sağlayıcıya bağlı olarak bir sağlayıcı kimlik doğrulama akışı (OAuth/API anahtarı) başlatabilir veya
+sizi elle token yapıştırmaya yönlendirebilir.
+
+`models auth list`, seçilen aracı için kaydedilmiş kimlik doğrulama profillerini
+token, API anahtarı veya OAuth sır materyali yazdırmadan listeler. `openai-codex` gibi
+tek bir sağlayıcıya filtrelemek için `--provider <id>`, betikleme için `--json` kullanın.
 
 `models auth login`, bir sağlayıcı Plugin'inin kimlik doğrulama akışını (OAuth/API anahtarı) çalıştırır. Hangi sağlayıcıların kurulu olduğunu görmek için
 `openclaw plugins list` kullanın.
-Kimlik doğrulama sonuçlarını belirli bir yapılandırılmış ajan deposuna yazmak için
+Kimlik doğrulama sonuçlarını belirli bir yapılandırılmış aracı deposuna yazmak için
 `openclaw models auth --agent <id> <subcommand>` kullanın. Üst `--agent` bayrağı
-`add`, `login`, `setup-token`, `paste-token` ve `login-github-copilot` tarafından dikkate alınır.
+`add`, `list`, `login`, `setup-token`, `paste-token` ve
+`login-github-copilot` tarafından dikkate alınır.
 
 Örnekler:
 
 ```bash
 openclaw models auth login --provider openai-codex --set-default
+openclaw models auth list --provider openai-codex
 ```
 
 Notlar:
 
 - `setup-token` ve `paste-token`, token kimlik doğrulama yöntemleri sunan sağlayıcılar için
   genel token komutları olarak kalır.
-- `setup-token` etkileşimli bir TTY gerektirir ve sağlayıcının token-auth
-  yöntemini çalıştırır (sağlayıcı bir tane sunuyorsa varsayılan olarak o sağlayıcının
-  `setup-token` yöntemini kullanır).
-- `paste-token`, başka yerde veya otomasyondan üretilmiş bir token dizesini kabul eder.
-- `paste-token`, `--provider` gerektirir, token değerini ister ve
-  `--profile-id` geçmediğiniz sürece bunu varsayılan profil kimliği
-  `<provider>:manual` içine yazar.
+- `setup-token`, etkileşimli bir TTY gerektirir ve sağlayıcının token kimlik doğrulama
+  yöntemini çalıştırır (sağlayıcı bir yöntem sunduğunda varsayılan olarak o sağlayıcının
+  `setup-token` yöntemine döner).
+- `paste-token`, başka yerde veya otomasyonla oluşturulmuş bir token dizesini kabul eder.
+- `paste-token`, `--provider` gerektirir, token değeri için istem gösterir ve
+  `--profile-id` geçmediğiniz sürece bunu varsayılan profil kimliği `<provider>:manual` içine yazar.
 - `paste-token --expires-in <duration>`, `365d` veya `12h` gibi göreli bir süreden
-  mutlak token sona erme zamanını depolar.
-- Anthropic notu: Anthropic çalışanları bize OpenClaw tarzı Claude CLI kullanımına tekrar izin verildiğini söyledi; bu nedenle OpenClaw, Anthropic yeni bir politika yayımlamadığı sürece bu entegrasyon için Claude CLI yeniden kullanımını ve `claude -p` kullanımını onaylı kabul eder.
-- Anthropic `setup-token` / `paste-token`, desteklenen bir OpenClaw token yolu olarak kullanılabilir kalır; ancak OpenClaw artık mevcut olduğunda Claude CLI yeniden kullanımını ve `claude -p` komutunu tercih eder.
+  mutlak token süresi bitimini saklar.
+- Anthropic notu: Anthropic çalışanları bize OpenClaw tarzı Claude CLI kullanımına yeniden izin verildiğini söyledi; bu nedenle Anthropic yeni bir politika yayımlamadığı sürece OpenClaw, Claude CLI yeniden kullanımını ve `claude -p` kullanımını bu entegrasyon için onaylanmış kabul eder.
+- Anthropic `setup-token` / `paste-token`, desteklenen bir OpenClaw token yolu olarak kullanılabilir kalır, ancak OpenClaw artık mevcut olduğunda Claude CLI yeniden kullanımını ve `claude -p` kullanımını tercih eder.
 
 ## İlgili
 
-- [CLI referansı](/tr/cli)
+- [CLI başvurusu](/tr/cli)
 - [Model seçimi](/tr/concepts/model-providers)
-- [Model yedeklemeye geçişi](/tr/concepts/model-failover)
+- [Model yedeklemesi](/tr/concepts/model-failover)
