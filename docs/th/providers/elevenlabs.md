@@ -1,32 +1,32 @@
 ---
 read_when:
-    - คุณต้องการใช้ระบบแปลงข้อความเป็นเสียงของ ElevenLabs ใน OpenClaw
-    - คุณต้องการใช้ระบบแปลงเสียงเป็นข้อความ ElevenLabs Scribe สำหรับไฟล์แนบเสียง
-    - คุณต้องการใช้การถอดเสียงแบบเรียลไทม์ของ ElevenLabs สำหรับ Voice Call
-summary: ใช้เสียงพูด ElevenLabs, Scribe STT และการถอดเสียงแบบเรียลไทม์กับ OpenClaw
+    - คุณต้องการใช้การแปลงข้อความเป็นเสียงของ ElevenLabs ใน OpenClaw
+    - คุณต้องการใช้ ElevenLabs Scribe สำหรับการถอดเสียงพูดเป็นข้อความจากไฟล์แนบเสียง
+    - คุณต้องการการถอดเสียงแบบเรียลไทม์ด้วย ElevenLabs สำหรับการโทรด้วยเสียงหรือ Google Meet
+summary: ใช้เสียงพูดของ ElevenLabs, Scribe STT และการถอดเสียงแบบเรียลไทม์กับ OpenClaw
 title: ElevenLabs
 x-i18n:
-    generated_at: "2026-04-25T13:57:04Z"
-    model: gpt-5.4
+    generated_at: "2026-05-04T07:06:18Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 1f858a344228c6355cd5fdc3775cddac39e0075f2e9fcf7683271f11be03a31a
+    source_hash: 4c880bf9dcab01ef70779c74576c70ea5d0203b96b5f739291842fafcb4bdb4b
     source_path: providers/elevenlabs.md
-    workflow: 15
+    workflow: 16
 ---
 
 OpenClaw ใช้ ElevenLabs สำหรับการแปลงข้อความเป็นเสียง, การแปลงเสียงเป็นข้อความแบบแบตช์ด้วย Scribe
-v2 และ STT แบบสตรีมมิงสำหรับ Voice Call ด้วย Scribe v2 Realtime
+v2 และ STT แบบสตรีมด้วย Scribe v2 Realtime.
 
-| ความสามารถ              | พื้นที่ใช้งานใน OpenClaw                        | ค่าเริ่มต้น               |
-| ----------------------- | ----------------------------------------------- | ------------------------- |
-| การแปลงข้อความเป็นเสียง | `messages.tts` / `talk`                         | `eleven_multilingual_v2`  |
-| การแปลงเสียงเป็นข้อความแบบแบตช์ | `tools.media.audio`                     | `scribe_v2`               |
-| การแปลงเสียงเป็นข้อความแบบสตรีมมิง | Voice Call `streaming.provider: "elevenlabs"` | `scribe_v2_realtime`      |
+| ความสามารถ               | พื้นผิวของ OpenClaw                                                     | ค่าเริ่มต้น                  |
+| ------------------------ | -------------------------------------------------------------------- | ------------------------ |
+| การแปลงข้อความเป็นเสียง           | `messages.tts` / `talk`                                              | `eleven_multilingual_v2` |
+| การแปลงเสียงเป็นข้อความแบบแบตช์     | `tools.media.audio`                                                  | `scribe_v2`              |
+| การแปลงเสียงเป็นข้อความแบบสตรีม | การสตรีม Voice Call หรือ Google Meet `realtime.transcriptionProvider` | `scribe_v2_realtime`     |
 
 ## การยืนยันตัวตน
 
-ตั้งค่า `ELEVENLABS_API_KEY` ใน environment โดย `XI_API_KEY` ก็รองรับเช่นกัน
-เพื่อความเข้ากันได้กับเครื่องมือ ElevenLabs ที่มีอยู่เดิม
+ตั้งค่า `ELEVENLABS_API_KEY` ในสภาพแวดล้อม ระบบยังยอมรับ `XI_API_KEY` เพื่อ
+ความเข้ากันได้กับเครื่องมือ ElevenLabs ที่มีอยู่.
 
 ```bash
 export ELEVENLABS_API_KEY="..."
@@ -50,12 +50,12 @@ export ELEVENLABS_API_KEY="..."
 }
 ```
 
-ตั้งค่า `modelId` เป็น `eleven_v3` เพื่อใช้ ElevenLabs v3 TTS โดย OpenClaw ยังคงใช้
-`eleven_multilingual_v2` เป็นค่าเริ่มต้นสำหรับการติดตั้งเดิม
+ตั้งค่า `modelId` เป็น `eleven_v3` เพื่อใช้ ElevenLabs v3 TTS. OpenClaw ยังคงใช้
+`eleven_multilingual_v2` เป็นค่าเริ่มต้นสำหรับการติดตั้งที่มีอยู่.
 
 ## การแปลงเสียงเป็นข้อความ
 
-ใช้ Scribe v2 สำหรับไฟล์แนบเสียงขาเข้าและเสียงพูดที่บันทึกไว้ช่วงสั้น ๆ:
+ใช้ Scribe v2 สำหรับไฟล์แนบเสียงขาเข้าและช่วงเสียงพูดที่บันทึกไว้แบบสั้น:
 
 ```json5
 {
@@ -71,20 +71,21 @@ export ELEVENLABS_API_KEY="..."
 ```
 
 OpenClaw ส่งเสียงแบบ multipart ไปยัง ElevenLabs `/v1/speech-to-text` พร้อม
-`model_id: "scribe_v2"` โดยคำใบ้ภาษาจะถูกแมปไปยัง `language_code` เมื่อมีการระบุ
+`model_id: "scribe_v2"`. คำใบ้ภาษาจะแมปไปยัง `language_code` เมื่อมีอยู่.
 
-## STT แบบสตรีมมิงสำหรับ Voice Call
+## STT แบบสตรีม
 
-Plugin `elevenlabs` ที่มีมาในตัวจะลงทะเบียน Scribe v2 Realtime สำหรับการถอดเสียงแบบสตรีมมิงของ Voice Call
+Plugin `elevenlabs` ที่รวมมาให้จะลงทะเบียน Scribe v2 Realtime สำหรับ Voice Call และ
+การถอดความแบบสตรีมในโหมดเอเจนต์ของ Google Meet.
 
-| การตั้งค่า       | เส้นทาง config                                                           | ค่าเริ่มต้น                                        |
-| ---------------- | ------------------------------------------------------------------------- | -------------------------------------------------- |
-| API key          | `plugins.entries.voice-call.config.streaming.providers.elevenlabs.apiKey` | ใช้ `ELEVENLABS_API_KEY` / `XI_API_KEY` เป็นค่า fallback |
-| โมเดล            | `...elevenlabs.modelId`                                                   | `scribe_v2_realtime`                               |
-| รูปแบบเสียง      | `...elevenlabs.audioFormat`                                               | `ulaw_8000`                                        |
-| อัตราการสุ่มตัวอย่าง | `...elevenlabs.sampleRate`                                            | `8000`                                             |
-| กลยุทธ์การ commit | `...elevenlabs.commitStrategy`                                          | `vad`                                              |
-| ภาษา             | `...elevenlabs.languageCode`                                              | (ไม่ตั้งค่า)                                       |
+| การตั้งค่า         | เส้นทางการกำหนดค่า                                                               | ค่าเริ่มต้น                                           |
+| --------------- | ------------------------------------------------------------------------- | ------------------------------------------------- |
+| คีย์ API         | `plugins.entries.voice-call.config.streaming.providers.elevenlabs.apiKey` | ย้อนกลับไปใช้ `ELEVENLABS_API_KEY` / `XI_API_KEY` |
+| โมเดล           | `...elevenlabs.modelId`                                                   | `scribe_v2_realtime`                              |
+| รูปแบบเสียง    | `...elevenlabs.audioFormat`                                               | `ulaw_8000`                                       |
+| อัตราสุ่มตัวอย่าง     | `...elevenlabs.sampleRate`                                                | `8000`                                            |
+| กลยุทธ์ commit | `...elevenlabs.commitStrategy`                                            | `vad`                                             |
+| ภาษา        | `...elevenlabs.languageCode`                                              | (ไม่ได้ตั้งค่า)                                           |
 
 ```json5
 {
@@ -112,12 +113,18 @@ Plugin `elevenlabs` ที่มีมาในตัวจะลงทะเบ
 ```
 
 <Note>
-Voice Call รับสื่อจาก Twilio เป็น G.711 u-law ที่ 8 kHz โดย provider แบบเรียลไทม์ของ ElevenLabs
-ใช้ค่าเริ่มต้นเป็น `ulaw_8000` ดังนั้นเฟรมโทรศัพท์จึงสามารถส่งต่อได้โดยไม่ต้อง
-transcode
+Voice Call รับสื่อ Twilio เป็น G.711 u-law ที่ 8 kHz. Provider แบบ realtime ของ ElevenLabs
+มีค่าเริ่มต้นเป็น `ulaw_8000` ดังนั้นเฟรมโทรศัพท์จึงสามารถส่งต่อได้โดยไม่ต้อง
+แปลงรหัส.
 </Note>
+
+สำหรับโหมดเอเจนต์ของ Google Meet ให้ตั้งค่า
+`plugins.entries.google-meet.config.realtime.transcriptionProvider` เป็น
+`"elevenlabs"` และกำหนดค่าบล็อก Provider เดียวกันภายใต้
+`plugins.entries.google-meet.config.realtime.providers.elevenlabs`.
 
 ## ที่เกี่ยวข้อง
 
 - [การแปลงข้อความเป็นเสียง](/th/tools/tts)
+- [Google Meet](/th/plugins/google-meet)
 - [การเลือกโมเดล](/th/concepts/model-providers)
