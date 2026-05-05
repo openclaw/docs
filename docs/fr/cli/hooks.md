@@ -1,42 +1,42 @@
 ---
 read_when:
-    - Vous souhaitez gérer les hooks d’agent
-    - Vous souhaitez vérifier la disponibilité des points d’accroche ou activer les points d’accroche de l’espace de travail
-summary: Référence CLI pour `openclaw hooks` (hooks d’agent)
-title: Points d’ancrage
+    - Vous souhaitez gérer les points d’accroche d’agent
+    - Vous souhaitez vérifier la disponibilité des hooks ou activer les hooks d’espace de travail
+summary: Référence CLI pour `openclaw hooks` (points d’accroche d’agent)
+title: Points d’accroche
 x-i18n:
-    generated_at: "2026-05-02T20:42:15Z"
+    generated_at: "2026-05-05T08:25:25Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3b02c176b4a310adba3fa1fde3758f6c8a19d454aeec58e919458b3f1a66c87d
+    source_hash: 8e860d4a20a09526e804fa1aff8c983a75396fcd1e6e24f742252fdf1812f6b7
     source_path: cli/hooks.md
     workflow: 16
 ---
 
 # `openclaw hooks`
 
-Gérer les hooks d’agent (automatisations pilotées par des événements pour des commandes comme `/new`, `/reset` et le démarrage du Gateway).
+Gérer les points d’accroche d’agent (automatisations déclenchées par des événements pour des commandes comme `/new`, `/reset` et le démarrage du Gateway).
 
 Exécuter `openclaw hooks` sans sous-commande équivaut à `openclaw hooks list`.
 
-Connexe :
+Liés :
 
-- Hooks : [Hooks](/fr/automation/hooks)
-- Hooks de Plugin : [Hooks de Plugin](/fr/plugins/hooks)
+- Points d’accroche : [Points d’accroche](/fr/automation/hooks)
+- Points d’accroche de Plugin : [Points d’accroche de Plugin](/fr/plugins/hooks)
 
-## Lister tous les hooks
+## Lister tous les points d’accroche
 
 ```bash
 openclaw hooks list
 ```
 
-Liste tous les hooks découverts dans les répertoires d’espace de travail, gérés, supplémentaires et intégrés.
-Le démarrage du Gateway ne charge pas les gestionnaires de hooks internes tant qu’au moins un hook interne n’est pas configuré.
+Liste tous les points d’accroche découverts dans les répertoires de l’espace de travail, gérés, supplémentaires et intégrés.
+Le démarrage du Gateway ne charge pas les gestionnaires de points d’accroche internes tant qu’au moins un point d’accroche interne n’est pas configuré.
 
 **Options :**
 
-- `--eligible` : Afficher uniquement les hooks éligibles (exigences satisfaites)
-- `--json` : Produire la sortie au format JSON
+- `--eligible` : Afficher uniquement les points d’accroche éligibles (exigences satisfaites)
+- `--json` : Produire une sortie au format JSON
 - `-v, --verbose` : Afficher des informations détaillées, y compris les exigences manquantes
 
 **Exemple de sortie :**
@@ -57,7 +57,7 @@ Ready:
 openclaw hooks list --verbose
 ```
 
-Affiche les exigences manquantes pour les hooks non éligibles.
+Affiche les exigences manquantes pour les points d’accroche non éligibles.
 
 **Exemple (JSON) :**
 
@@ -65,23 +65,23 @@ Affiche les exigences manquantes pour les hooks non éligibles.
 openclaw hooks list --json
 ```
 
-Renvoie du JSON structuré pour une utilisation programmatique.
+Renvoie un JSON structuré pour une utilisation programmatique.
 
-## Obtenir des informations sur un hook
+## Obtenir des informations sur un point d’accroche
 
 ```bash
 openclaw hooks info <name>
 ```
 
-Afficher des informations détaillées sur un hook spécifique.
+Afficher des informations détaillées sur un point d’accroche spécifique.
 
 **Arguments :**
 
-- `<name>` : Nom du hook ou clé du hook (par exemple, `session-memory`)
+- `<name>` : Nom du point d’accroche ou clé du point d’accroche (par exemple, `session-memory`)
 
 **Options :**
 
-- `--json` : Produire la sortie au format JSON
+- `--json` : Produire une sortie au format JSON
 
 **Exemple :**
 
@@ -107,17 +107,17 @@ Requirements:
   Config: ✓ workspace.dir
 ```
 
-## Vérifier l’éligibilité des hooks
+## Vérifier l’éligibilité des points d’accroche
 
 ```bash
 openclaw hooks check
 ```
 
-Afficher un résumé de l’état d’éligibilité des hooks (combien sont prêts ou non).
+Afficher un résumé de l’état d’éligibilité des points d’accroche (combien sont prêts et combien ne le sont pas).
 
 **Options :**
 
-- `--json` : Produire la sortie au format JSON
+- `--json` : Produire une sortie au format JSON
 
 **Exemple de sortie :**
 
@@ -129,19 +129,19 @@ Ready: 4
 Not ready: 0
 ```
 
-## Activer un hook
+## Activer un point d’accroche
 
 ```bash
 openclaw hooks enable <name>
 ```
 
-Activer un hook spécifique en l’ajoutant à votre configuration (`~/.openclaw/openclaw.json` par défaut).
+Activer un point d’accroche spécifique en l’ajoutant à votre configuration (`~/.openclaw/openclaw.json` par défaut).
 
-**Remarque :** Les hooks d’espace de travail sont désactivés par défaut jusqu’à leur activation ici ou dans la configuration. Les hooks gérés par des plugins affichent `plugin:<id>` dans `openclaw hooks list` et ne peuvent pas être activés/désactivés ici. Activez/désactivez plutôt le plugin.
+**Remarque :** Les points d’accroche d’espace de travail sont désactivés par défaut jusqu’à leur activation ici ou dans la configuration. Les points d’accroche gérés par des Plugins affichent `plugin:<id>` dans `openclaw hooks list` et ne peuvent pas être activés/désactivés ici. Activez/désactivez plutôt le Plugin.
 
 **Arguments :**
 
-- `<name>` : Nom du hook (par exemple, `session-memory`)
+- `<name>` : Nom du point d’accroche (par exemple, `session-memory`)
 
 **Exemple :**
 
@@ -157,27 +157,27 @@ openclaw hooks enable session-memory
 
 **Ce que cela fait :**
 
-- Vérifie que le hook existe et qu’il est éligible
+- Vérifie si le point d’accroche existe et est éligible
 - Met à jour `hooks.internal.entries.<name>.enabled = true` dans votre configuration
 - Enregistre la configuration sur le disque
 
-Si le hook provient de `<workspace>/hooks/`, cette étape d’adhésion explicite est requise avant que le Gateway ne le charge.
+Si le point d’accroche provient de `<workspace>/hooks/`, cette étape d’adhésion est requise avant que le Gateway ne le charge.
 
 **Après l’activation :**
 
-- Redémarrez le gateway pour que les hooks soient rechargés (redémarrage de l’app de barre de menus sur macOS, ou redémarrage de votre processus gateway en développement).
+- Redémarrez le Gateway afin que les points d’accroche soient rechargés (redémarrage de l’application de barre de menus sur macOS, ou redémarrage de votre processus Gateway en développement).
 
-## Désactiver un hook
+## Désactiver un point d’accroche
 
 ```bash
 openclaw hooks disable <name>
 ```
 
-Désactiver un hook spécifique en mettant à jour votre configuration.
+Désactiver un point d’accroche spécifique en mettant à jour votre configuration.
 
 **Arguments :**
 
-- `<name>` : Nom du hook (par exemple, `command-logger`)
+- `<name>` : Nom du point d’accroche (par exemple, `command-logger`)
 
 **Exemple :**
 
@@ -193,14 +193,14 @@ openclaw hooks disable command-logger
 
 **Après la désactivation :**
 
-- Redémarrez le gateway pour que les hooks soient rechargés
+- Redémarrez le Gateway afin que les points d’accroche soient rechargés
 
 ## Notes
 
-- `openclaw hooks list --json`, `info --json` et `check --json` écrivent du JSON structuré directement vers stdout.
-- Les hooks gérés par un plugin ne peuvent pas être activés ou désactivés ici ; activez ou désactivez plutôt le plugin propriétaire.
+- `openclaw hooks list --json`, `info --json` et `check --json` écrivent un JSON structuré directement dans stdout.
+- Les points d’accroche gérés par des Plugins ne peuvent pas être activés ni désactivés ici ; activez ou désactivez plutôt le Plugin propriétaire.
 
-## Installer des packs de hooks
+## Installer des packs de points d’accroche
 
 ```bash
 openclaw plugins install <package>        # npm by default
@@ -209,18 +209,18 @@ openclaw plugins install <package> --pin  # pin version
 openclaw plugins install <path>           # local path
 ```
 
-Installer des packs de hooks via l’installateur unifié de plugins.
+Installer des packs de points d’accroche via l’installateur unifié de Plugins.
 
-`openclaw hooks install` fonctionne toujours comme alias de compatibilité, mais il affiche un avertissement d’obsolescence et transfère vers `openclaw plugins install`.
+`openclaw hooks install` fonctionne toujours comme alias de compatibilité, mais affiche un avertissement d’obsolescence et transfère vers `openclaw plugins install`.
 
-Les spécifications npm sont **uniquement issues du registre** (nom du package + **version exacte** facultative ou **dist-tag**). Les spécifications Git/URL/fichier et les plages semver sont rejetées. Les installations de dépendances s’exécutent localement au projet avec `--ignore-scripts` pour la sécurité, même lorsque votre shell a des paramètres globaux d’installation npm.
+Les spécifications npm sont **limitées au registre** (nom de paquet + **version exacte** facultative ou **dist-tag**). Les spécifications Git/URL/fichier et les plages semver sont rejetées. Les installations de dépendances s’exécutent localement au projet avec `--ignore-scripts` par sécurité, même lorsque votre shell possède des paramètres d’installation npm globaux.
 
-Les spécifications nues et `@latest` restent sur la piste stable. Si npm résout l’une d’elles vers une préversion, OpenClaw s’arrête et vous demande d’adhérer explicitement avec un tag de préversion tel que `@beta`/`@rc` ou une version de préversion exacte.
+Les spécifications nues et `@latest` restent sur le canal stable. Si npm résout l’un ou l’autre vers une préversion, OpenClaw s’arrête et vous demande d’accepter explicitement avec une balise de préversion telle que `@beta`/`@rc` ou une version de préversion exacte.
 
 **Ce que cela fait :**
 
-- Copie le pack de hooks dans `~/.openclaw/hooks/<id>`
-- Active les hooks installés dans `hooks.internal.entries.*`
+- Copie le pack de points d’accroche dans `~/.openclaw/hooks/<id>`
+- Active les points d’accroche installés dans `hooks.internal.entries.*`
 - Enregistre l’installation sous `hooks.internal.installs`
 
 **Options :**
@@ -246,27 +246,27 @@ openclaw plugins install @openclaw/my-hook-pack
 openclaw plugins install -l ./my-hook-pack
 ```
 
-Les packs de hooks liés sont traités comme des hooks gérés provenant d’un répertoire configuré par l’opérateur, et non comme des hooks d’espace de travail.
+Les packs de points d’accroche liés sont traités comme des points d’accroche gérés provenant d’un répertoire configuré par l’opérateur, et non comme des points d’accroche d’espace de travail.
 
-## Mettre à jour des packs de hooks
+## Mettre à jour des packs de points d’accroche
 
 ```bash
 openclaw plugins update <id>
 openclaw plugins update --all
 ```
 
-Mettre à jour les packs de hooks npm suivis via le programme de mise à jour unifié des plugins.
+Mettre à jour les packs de points d’accroche basés sur npm et suivis via le programme de mise à jour unifié de Plugins.
 
-`openclaw hooks update` fonctionne toujours comme alias de compatibilité, mais il affiche un avertissement d’obsolescence et transfère vers `openclaw plugins update`.
+`openclaw hooks update` fonctionne toujours comme alias de compatibilité, mais affiche un avertissement d’obsolescence et transfère vers `openclaw plugins update`.
 
 **Options :**
 
-- `--all` : Mettre à jour tous les packs de hooks suivis
+- `--all` : Mettre à jour tous les packs de points d’accroche suivis
 - `--dry-run` : Afficher ce qui changerait sans écrire
 
 Lorsqu’un hachage d’intégrité stocké existe et que le hachage de l’artefact récupéré change, OpenClaw affiche un avertissement et demande confirmation avant de continuer. Utilisez l’option globale `--yes` pour contourner les invites en CI/exécutions non interactives.
 
-## Hooks intégrés
+## Points d’accroche intégrés
 
 ### session-memory
 
@@ -278,13 +278,13 @@ Enregistre le contexte de session en mémoire lorsque vous émettez `/new` ou `/
 openclaw hooks enable session-memory
 ```
 
-**Sortie :** `~/.openclaw/workspace/memory/YYYY-MM-DD-slug.md`
+**Sortie :** `~/.openclaw/workspace/memory/YYYY-MM-DD-HHMM.md` par défaut. Définissez `hooks.internal.entries.session-memory.llmSlug: true` pour des slugs de noms de fichiers générés par modèle.
 
-**Voir :** [documentation session-memory](/fr/automation/hooks#session-memory)
+**Voir :** [documentation de session-memory](/fr/automation/hooks#session-memory)
 
 ### bootstrap-extra-files
 
-Injecte des fichiers de bootstrap supplémentaires (par exemple `AGENTS.md` / `TOOLS.md` locaux au monorepo) pendant `agent:bootstrap`.
+Injecte des fichiers d’amorçage supplémentaires (par exemple `AGENTS.md` / `TOOLS.md` locaux au monorepo) pendant `agent:bootstrap`.
 
 **Activer :**
 
@@ -292,11 +292,11 @@ Injecte des fichiers de bootstrap supplémentaires (par exemple `AGENTS.md` / `T
 openclaw hooks enable bootstrap-extra-files
 ```
 
-**Voir :** [documentation bootstrap-extra-files](/fr/automation/hooks#bootstrap-extra-files)
+**Voir :** [documentation de bootstrap-extra-files](/fr/automation/hooks#bootstrap-extra-files)
 
 ### command-logger
 
-Consigne tous les événements de commande dans un fichier d’audit centralisé.
+Journalise tous les événements de commande dans un fichier d’audit centralisé.
 
 **Activer :**
 
@@ -319,11 +319,11 @@ cat ~/.openclaw/logs/commands.log | jq .
 grep '"action":"new"' ~/.openclaw/logs/commands.log | jq .
 ```
 
-**Voir :** [documentation command-logger](/fr/automation/hooks#command-logger)
+**Voir :** [documentation de command-logger](/fr/automation/hooks#command-logger)
 
 ### boot-md
 
-Exécute `BOOT.md` lorsque le gateway démarre (après le démarrage des canaux).
+Exécute `BOOT.md` lorsque le Gateway démarre (après le démarrage des canaux).
 
 **Événements** : `gateway:startup`
 
@@ -333,9 +333,9 @@ Exécute `BOOT.md` lorsque le gateway démarre (après le démarrage des canaux)
 openclaw hooks enable boot-md
 ```
 
-**Voir :** [documentation boot-md](/fr/automation/hooks#boot-md)
+**Voir :** [documentation de boot-md](/fr/automation/hooks#boot-md)
 
-## Connexe
+## Liés
 
 - [Référence CLI](/fr/cli)
-- [Hooks d’automatisation](/fr/automation/hooks)
+- [Points d’accroche d’automatisation](/fr/automation/hooks)
