@@ -1,13 +1,13 @@
 ---
 read_when:
     - Mengerjakan perilaku saluran WhatsApp/web atau perutean kotak masuk
-summary: Dukungan kanal WhatsApp, kontrol akses, perilaku pengiriman, dan operasi
+summary: Dukungan saluran WhatsApp, kontrol akses, perilaku pengiriman, dan operasi
 title: WhatsApp
 x-i18n:
-    generated_at: "2026-05-03T09:15:05Z"
+    generated_at: "2026-05-05T06:15:55Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 2f12709fc8ecb45e1b060647daf9a4624485d52b7b6436c3d07f171e6807babf
+    source_hash: 52a81fc323568e06d11606931e34465fe5a823a0699d8e0638195b8667c3ebee
     source_path: channels/whatsapp.md
     workflow: 16
 ---
@@ -17,11 +17,11 @@ Status: siap produksi melalui WhatsApp Web (Baileys). Gateway memiliki sesi tert
 ## Instal (sesuai kebutuhan)
 
 - Onboarding (`openclaw onboard`) dan `openclaw channels add --channel whatsapp`
-  meminta untuk menginstal Plugin WhatsApp saat pertama kali Anda memilihnya.
-- `openclaw channels login --channel whatsapp` juga menawarkan alur instalasi ketika
-  Plugin belum ada.
+  meminta untuk memasang Plugin WhatsApp saat pertama kali Anda memilihnya.
+- `openclaw channels login --channel whatsapp` juga menawarkan alur instal saat
+  Plugin belum tersedia.
 - Kanal dev + checkout git: default ke jalur Plugin lokal.
-- Stable/Beta: menggunakan paket npm `@openclaw/whatsapp` pada tag rilis resmi
+- Stabil/Beta: menggunakan paket npm `@openclaw/whatsapp` pada tag rilis resmi
   saat ini.
 
 Instal manual tetap tersedia:
@@ -30,17 +30,27 @@ Instal manual tetap tersedia:
 openclaw plugins install @openclaw/whatsapp
 ```
 
-Gunakan paket bare untuk mengikuti tag rilis resmi saat ini. Sematkan versi persis
-hanya ketika Anda membutuhkan instalasi yang dapat direproduksi.
+Gunakan paket bare untuk mengikuti tag rilis resmi saat ini. Pin versi yang tepat
+hanya saat Anda membutuhkan instal yang dapat direproduksi.
+
+Di Windows, Plugin WhatsApp membutuhkan Git pada `PATH` selama instal npm karena
+salah satu dependensi Baileys/libsignal diambil dari URL git. Instal
+Git for Windows, lalu mulai ulang shell dan jalankan ulang instal:
+
+```powershell
+winget install --id Git.Git -e
+```
+
+Portable Git juga berfungsi jika direktori `bin`-nya ada di `PATH`.
 
 <CardGroup cols={3}>
-  <Card title="Pemasangan" icon="link" href="/id/channels/pairing">
-    Kebijakan DM default adalah pemasangan untuk pengirim yang tidak dikenal.
+  <Card title="Pairing" icon="link" href="/id/channels/pairing">
+    Kebijakan DM default adalah pairing untuk pengirim yang tidak dikenal.
   </Card>
-  <Card title="Pemecahan masalah kanal" icon="wrench" href="/id/channels/troubleshooting">
+  <Card title="Channel troubleshooting" icon="wrench" href="/id/channels/troubleshooting">
     Diagnostik lintas kanal dan playbook perbaikan.
   </Card>
-  <Card title="Konfigurasi Gateway" icon="settings" href="/id/gateway/configuration">
+  <Card title="Gateway configuration" icon="settings" href="/id/gateway/configuration">
     Pola dan contoh konfigurasi kanal lengkap.
   </Card>
 </CardGroup>
@@ -48,7 +58,7 @@ hanya ketika Anda membutuhkan instalasi yang dapat direproduksi.
 ## Penyiapan cepat
 
 <Steps>
-  <Step title="Konfigurasikan kebijakan akses WhatsApp">
+  <Step title="Configure WhatsApp access policy">
 
 ```json5
 {
@@ -65,7 +75,7 @@ hanya ketika Anda membutuhkan instalasi yang dapat direproduksi.
 
   </Step>
 
-  <Step title="Tautkan WhatsApp (QR)">
+  <Step title="Link WhatsApp (QR)">
 
 ```bash
 openclaw channels login --channel whatsapp
@@ -86,7 +96,7 @@ openclaw channels login --channel whatsapp --account work
 
   </Step>
 
-  <Step title="Mulai Gateway">
+  <Step title="Start the gateway">
 
 ```bash
 openclaw gateway
@@ -94,31 +104,31 @@ openclaw gateway
 
   </Step>
 
-  <Step title="Setujui permintaan pemasangan pertama (jika menggunakan mode pemasangan)">
+  <Step title="Approve first pairing request (if using pairing mode)">
 
 ```bash
 openclaw pairing list whatsapp
 openclaw pairing approve whatsapp <CODE>
 ```
 
-    Permintaan pemasangan kedaluwarsa setelah 1 jam. Permintaan tertunda dibatasi hingga 3 per kanal.
+    Permintaan pairing kedaluwarsa setelah 1 jam. Permintaan tertunda dibatasi hingga 3 per kanal.
 
   </Step>
 </Steps>
 
 <Note>
-OpenClaw menyarankan menjalankan WhatsApp pada nomor terpisah jika memungkinkan. (Metadata kanal dan alur penyiapan dioptimalkan untuk penyiapan tersebut, tetapi penyiapan nomor pribadi juga didukung.)
+OpenClaw merekomendasikan menjalankan WhatsApp pada nomor terpisah bila memungkinkan. (Metadata kanal dan alur penyiapan dioptimalkan untuk penyiapan tersebut, tetapi penyiapan nomor pribadi juga didukung.)
 </Note>
 
 ## Pola deployment
 
 <AccordionGroup>
-  <Accordion title="Nomor khusus (disarankan)">
-    Ini adalah mode operasional paling bersih:
+  <Accordion title="Dedicated number (recommended)">
+    Ini adalah mode operasional yang paling bersih:
 
     - identitas WhatsApp terpisah untuk OpenClaw
     - allowlist DM dan batas routing yang lebih jelas
-    - peluang kebingungan chat-dengan-diri-sendiri lebih rendah
+    - peluang kebingungan self-chat lebih rendah
 
     Pola kebijakan minimal:
 
@@ -135,46 +145,46 @@ OpenClaw menyarankan menjalankan WhatsApp pada nomor terpisah jika memungkinkan.
 
   </Accordion>
 
-  <Accordion title="Fallback nomor pribadi">
-    Onboarding mendukung mode nomor pribadi dan menulis baseline yang ramah chat-dengan-diri-sendiri:
+  <Accordion title="Personal-number fallback">
+    Onboarding mendukung mode nomor pribadi dan menulis baseline yang ramah self-chat:
 
     - `dmPolicy: "allowlist"`
     - `allowFrom` menyertakan nomor pribadi Anda
     - `selfChatMode: true`
 
-    Saat runtime, perlindungan chat-dengan-diri-sendiri menggunakan nomor diri tertaut dan `allowFrom` sebagai kunci.
+    Saat runtime, perlindungan self-chat didasarkan pada nomor diri yang tertaut dan `allowFrom`.
 
   </Accordion>
 
-  <Accordion title="Cakupan kanal hanya WhatsApp Web">
-    Kanal platform perpesanan berbasis WhatsApp Web (`Baileys`) dalam arsitektur kanal OpenClaw saat ini.
+  <Accordion title="WhatsApp Web-only channel scope">
+    Kanal platform pesan didasarkan pada WhatsApp Web (`Baileys`) dalam arsitektur kanal OpenClaw saat ini.
 
-    Tidak ada kanal perpesanan Twilio WhatsApp terpisah dalam registry kanal chat bawaan.
+    Tidak ada kanal pesan Twilio WhatsApp terpisah dalam registry kanal chat bawaan.
 
   </Accordion>
 </AccordionGroup>
 
 ## Model runtime
 
-- Gateway memiliki socket WhatsApp dan loop rekoneksi.
-- Watchdog rekoneksi menggunakan aktivitas transport WhatsApp Web, bukan hanya volume pesan aplikasi masuk, sehingga sesi perangkat tertaut yang senyap tidak dimulai ulang semata-mata karena belum ada yang mengirim pesan baru-baru ini. Batas senyap aplikasi yang lebih panjang tetap memaksa rekoneksi jika frame transport terus tiba tetapi tidak ada pesan aplikasi yang ditangani selama jendela watchdog; setelah rekoneksi sementara untuk sesi yang baru-baru ini aktif, pemeriksaan senyap aplikasi tersebut menggunakan timeout pesan normal untuk jendela pemulihan pertama.
-- Timing socket Baileys eksplisit di bawah `web.whatsapp.*`: `keepAliveIntervalMs` mengontrol ping aplikasi WhatsApp Web, `connectTimeoutMs` mengontrol timeout handshake pembukaan, dan `defaultQueryTimeoutMs` mengontrol timeout kueri Baileys.
-- Pengiriman keluar memerlukan listener WhatsApp aktif untuk akun target.
-- Pengiriman grup melampirkan metadata mention native untuk token `@+<digits>` dan `@<digits>` dalam teks dan caption media ketika token cocok dengan metadata peserta WhatsApp saat ini, termasuk grup berbasis LID.
+- Gateway memiliki socket WhatsApp dan loop sambung ulang.
+- Watchdog sambung ulang menggunakan aktivitas transport WhatsApp Web, bukan hanya volume pesan aplikasi masuk, sehingga sesi perangkat tertaut yang sepi tidak dimulai ulang hanya karena belum ada yang mengirim pesan baru-baru ini. Batas kesunyian aplikasi yang lebih panjang tetap memaksa sambung ulang jika frame transport terus datang tetapi tidak ada pesan aplikasi yang ditangani selama jendela watchdog; setelah sambung ulang sementara untuk sesi yang baru aktif, pemeriksaan kesunyian aplikasi tersebut menggunakan timeout pesan normal untuk jendela pemulihan pertama.
+- Timing socket Baileys eksplisit di bawah `web.whatsapp.*`: `keepAliveIntervalMs` mengontrol ping aplikasi WhatsApp Web, `connectTimeoutMs` mengontrol timeout handshake pembuka, dan `defaultQueryTimeoutMs` mengontrol timeout kueri Baileys.
+- Pengiriman keluar membutuhkan listener WhatsApp aktif untuk akun target.
+- Pengiriman grup melampirkan metadata mention native untuk token `@+<digits>` dan `@<digits>` dalam teks dan caption media saat token cocok dengan metadata peserta WhatsApp saat ini, termasuk grup berbasis LID.
 - Chat status dan broadcast diabaikan (`@status`, `@broadcast`).
-- Watchdog rekoneksi mengikuti aktivitas transport WhatsApp Web, bukan hanya volume pesan aplikasi masuk: sesi perangkat tertaut yang senyap tetap aktif selama frame transport berlanjut, tetapi stall transport memaksa rekoneksi jauh sebelum jalur pemutusan remote yang lebih lambat.
+- Watchdog sambung ulang mengikuti aktivitas transport WhatsApp Web, bukan hanya volume pesan aplikasi masuk: sesi perangkat tertaut yang sepi tetap aktif selama frame transport berlanjut, tetapi transport yang macet memaksa sambung ulang jauh sebelum jalur pemutusan jarak jauh yang lebih lambat.
 - Chat langsung menggunakan aturan sesi DM (`session.dmScope`; default `main` menggabungkan DM ke sesi utama agen).
 - Sesi grup diisolasi (`agent:<agentId>:whatsapp:group:<jid>`).
-- WhatsApp Channels/Newsletter dapat menjadi target keluar eksplisit dengan JID native `@newsletter`. Pengiriman newsletter keluar menggunakan metadata sesi kanal (`agent:<agentId>:whatsapp:channel:<jid>`) alih-alih semantik sesi DM.
-- Transport WhatsApp Web menghormati variabel lingkungan proxy standar pada host gateway (`HTTPS_PROXY`, `HTTP_PROXY`, `NO_PROXY` / varian huruf kecil). Utamakan konfigurasi proxy tingkat host daripada pengaturan proxy WhatsApp khusus kanal.
-- Ketika `messages.removeAckAfterReply` diaktifkan, OpenClaw menghapus reaksi ack WhatsApp setelah balasan yang terlihat terkirim.
+- WhatsApp Channels/Newsletters dapat menjadi target keluar eksplisit dengan JID native `@newsletter`. Pengiriman newsletter keluar menggunakan metadata sesi kanal (`agent:<agentId>:whatsapp:channel:<jid>`) alih-alih semantik sesi DM.
+- Transport WhatsApp Web menghormati variabel lingkungan proxy standar pada host gateway (`HTTPS_PROXY`, `HTTP_PROXY`, `NO_PROXY` / varian huruf kecil). Lebih baik gunakan konfigurasi proxy tingkat host daripada pengaturan proxy WhatsApp khusus kanal.
+- Saat `messages.removeAckAfterReply` diaktifkan, OpenClaw menghapus reaksi ack WhatsApp setelah balasan yang terlihat terkirim.
 
 ## Hook Plugin dan privasi
 
 Pesan masuk WhatsApp dapat berisi konten pesan pribadi, nomor telepon,
-pengidentifikasi grup, nama pengirim, dan bidang korelasi sesi. Karena itu,
+pengidentifikasi grup, nama pengirim, dan kolom korelasi sesi. Karena itu,
 WhatsApp tidak menyiarkan payload hook `message_received` masuk ke Plugin
-kecuali Anda memilih ikut serta secara eksplisit:
+kecuali Anda secara eksplisit memilih ikut:
 
 ```json5
 {
@@ -188,7 +198,7 @@ kecuali Anda memilih ikut serta secara eksplisit:
 }
 ```
 
-Anda dapat membatasi opt-in ke satu akun:
+Anda dapat membatasi pilihan ikut ke satu akun:
 
 ```json5
 {
@@ -206,93 +216,93 @@ Anda dapat membatasi opt-in ke satu akun:
 }
 ```
 
-Aktifkan ini hanya untuk Plugin yang Anda percayai untuk menerima konten dan
-pengidentifikasi pesan masuk WhatsApp.
+Aktifkan ini hanya untuk Plugin yang Anda percayai untuk menerima konten pesan
+WhatsApp masuk dan pengidentifikasi.
 
 ## Kontrol akses dan aktivasi
 
 <Tabs>
-  <Tab title="Kebijakan DM">
+  <Tab title="DM policy">
     `channels.whatsapp.dmPolicy` mengontrol akses chat langsung:
 
     - `pairing` (default)
     - `allowlist`
-    - `open` (mengharuskan `allowFrom` menyertakan `"*"`)
+    - `open` (membutuhkan `allowFrom` untuk menyertakan `"*"`)
     - `disabled`
 
     `allowFrom` menerima nomor bergaya E.164 (dinormalisasi secara internal).
 
     `allowFrom` adalah daftar kontrol akses pengirim DM. Ini tidak membatasi pengiriman keluar eksplisit ke JID grup WhatsApp atau JID kanal `@newsletter`.
 
-    Override multi-akun: `channels.whatsapp.accounts.<id>.dmPolicy` (dan `allowFrom`) lebih diutamakan daripada default tingkat kanal untuk akun tersebut.
+    Override multi-akun: `channels.whatsapp.accounts.<id>.dmPolicy` (dan `allowFrom`) lebih diprioritaskan daripada default tingkat kanal untuk akun tersebut.
 
     Detail perilaku runtime:
 
-    - pemasangan disimpan dalam allow-store kanal dan digabungkan dengan `allowFrom` yang dikonfigurasi
-    - automasi terjadwal dan fallback penerima Heartbeat menggunakan target pengiriman eksplisit atau `allowFrom` yang dikonfigurasi; persetujuan pemasangan DM bukan penerima Cron atau Heartbeat implisit
+    - pairing dipersistenkan dalam allow-store kanal dan digabungkan dengan `allowFrom` yang dikonfigurasi
+    - otomatisasi terjadwal dan fallback penerima Heartbeat menggunakan target pengiriman eksplisit atau `allowFrom` yang dikonfigurasi; persetujuan pairing DM bukan penerima Cron atau Heartbeat implisit
     - jika tidak ada allowlist yang dikonfigurasi, nomor diri tertaut diizinkan secara default
-    - OpenClaw tidak pernah memasangkan otomatis DM `fromMe` keluar (pesan yang Anda kirim ke diri sendiri dari perangkat tertaut)
+    - OpenClaw tidak pernah melakukan auto-pair DM `fromMe` keluar (pesan yang Anda kirim kepada diri sendiri dari perangkat tertaut)
 
   </Tab>
 
-  <Tab title="Kebijakan grup + allowlist">
+  <Tab title="Group policy + allowlists">
     Akses grup memiliki dua lapisan:
 
     1. **Allowlist keanggotaan grup** (`channels.whatsapp.groups`)
        - jika `groups` dihilangkan, semua grup memenuhi syarat
-       - jika `groups` ada, itu bertindak sebagai allowlist grup (`"*"` diizinkan)
+       - jika `groups` ada, ini bertindak sebagai allowlist grup (`"*"` diizinkan)
 
     2. **Kebijakan pengirim grup** (`channels.whatsapp.groupPolicy` + `groupAllowFrom`)
        - `open`: allowlist pengirim dilewati
        - `allowlist`: pengirim harus cocok dengan `groupAllowFrom` (atau `*`)
-       - `disabled`: blokir semua pesan masuk grup
+       - `disabled`: blokir semua grup masuk
 
     Fallback allowlist pengirim:
 
-    - jika `groupAllowFrom` tidak disetel, runtime fallback ke `allowFrom` ketika tersedia
-    - allowlist pengirim dievaluasi sebelum aktivasi mention/reply
+    - jika `groupAllowFrom` tidak disetel, runtime fallback ke `allowFrom` bila tersedia
+    - allowlist pengirim dievaluasi sebelum aktivasi mention/balasan
 
-    Catatan: jika blok `channels.whatsapp` tidak ada sama sekali, fallback kebijakan grup runtime adalah `allowlist` (dengan log peringatan), bahkan jika `channels.defaults.groupPolicy` disetel.
+    Catatan: jika blok `channels.whatsapp` sama sekali tidak ada, fallback kebijakan grup runtime adalah `allowlist` (dengan log peringatan), bahkan jika `channels.defaults.groupPolicy` disetel.
 
   </Tab>
 
-  <Tab title="Mention + /activation">
-    Balasan grup memerlukan mention secara default.
+  <Tab title="Mentions + /activation">
+    Balasan grup membutuhkan mention secara default.
 
     Deteksi mention mencakup:
 
-    - mention WhatsApp eksplisit terhadap identitas bot
+    - mention WhatsApp eksplisit atas identitas bot
     - pola regex mention yang dikonfigurasi (`agents.list[].groupChat.mentionPatterns`, fallback `messages.groupChat.mentionPatterns`)
-    - transkrip voice-note masuk untuk pesan grup terotorisasi
-    - deteksi reply-to-bot implisit (pengirim balasan cocok dengan identitas bot)
+    - transkrip voice-note masuk untuk pesan grup yang diotorisasi
+    - deteksi balasan-ke-bot implisit (pengirim balasan cocok dengan identitas bot)
 
     Catatan keamanan:
 
-    - kutipan/balasan hanya memenuhi gating mention; itu **tidak** memberikan otorisasi pengirim
-    - dengan `groupPolicy: "allowlist"`, pengirim yang tidak ada dalam allowlist tetap diblokir meskipun mereka membalas pesan pengguna yang ada dalam allowlist
+    - kutipan/balasan hanya memenuhi gerbang mention; itu **tidak** memberikan otorisasi pengirim
+    - dengan `groupPolicy: "allowlist"`, pengirim yang tidak ada dalam allowlist tetap diblokir bahkan jika mereka membalas pesan pengguna yang ada dalam allowlist
 
     Perintah aktivasi tingkat sesi:
 
     - `/activation mention`
     - `/activation always`
 
-    `activation` memperbarui status sesi (bukan konfigurasi global). Ini dibatasi untuk pemilik.
+    `activation` memperbarui status sesi (bukan konfigurasi global). Ini dibatasi oleh pemilik.
 
   </Tab>
 </Tabs>
 
-## Perilaku nomor pribadi dan chat-dengan-diri-sendiri
+## Perilaku nomor pribadi dan self-chat
 
-Ketika nomor diri tertaut juga ada di `allowFrom`, perlindungan chat-dengan-diri-sendiri WhatsApp aktif:
+Saat nomor diri tertaut juga ada di `allowFrom`, pengaman self-chat WhatsApp aktif:
 
-- lewati tanda terima dibaca untuk giliran chat-dengan-diri-sendiri
-- abaikan perilaku auto-trigger mention-JID yang sebaliknya akan ping diri Anda sendiri
-- jika `messages.responsePrefix` tidak disetel, balasan chat-dengan-diri-sendiri default ke `[{identity.name}]` atau `[openclaw]`
+- lewati tanda terima baca untuk giliran self-chat
+- abaikan perilaku pemicu otomatis mention-JID yang jika tidak akan melakukan ping ke diri sendiri
+- jika `messages.responsePrefix` tidak disetel, balasan self-chat default ke `[{identity.name}]` atau `[openclaw]`
 
 ## Normalisasi pesan dan konteks
 
 <AccordionGroup>
-  <Accordion title="Envelope masuk + konteks balasan">
+  <Accordion title="Inbound envelope + reply context">
     Pesan WhatsApp masuk dibungkus dalam envelope masuk bersama.
 
     Jika balasan yang dikutip ada, konteks ditambahkan dalam bentuk ini:
@@ -303,16 +313,16 @@ Ketika nomor diri tertaut juga ada di `allowFrom`, perlindungan chat-dengan-diri
     [/Replying]
     ```
 
-    Bidang metadata balasan juga diisi ketika tersedia (`ReplyToId`, `ReplyToBody`, `ReplyToSender`, JID/E.164 pengirim).
-    Ketika target balasan yang dikutip adalah media yang dapat diunduh, OpenClaw menyimpannya melalui
+    Kolom metadata balasan juga diisi bila tersedia (`ReplyToId`, `ReplyToBody`, `ReplyToSender`, JID/E.164 pengirim).
+    Saat target balasan yang dikutip adalah media yang dapat diunduh, OpenClaw menyimpannya melalui
     penyimpanan media masuk normal dan mengeksposnya sebagai `MediaPath`/`MediaType` sehingga
-    agen dapat memeriksa gambar yang direferensikan alih-alih hanya melihat
+    agen dapat memeriksa gambar yang dirujuk alih-alih hanya melihat
     `<media:image>`.
 
   </Accordion>
 
-  <Accordion title="Placeholder media dan ekstraksi lokasi/kontak">
-    Pesan masuk yang hanya berisi media dinormalisasi dengan placeholder seperti:
+  <Accordion title="Media placeholders and location/contact extraction">
+    Pesan masuk khusus media dinormalisasi dengan placeholder seperti:
 
     - `<media:image>`
     - `<media:video>`
@@ -320,32 +330,32 @@ Ketika nomor diri tertaut juga ada di `allowFrom`, perlindungan chat-dengan-diri
     - `<media:document>`
     - `<media:sticker>`
 
-    Voice note grup terotorisasi ditranskrip sebelum gating mention ketika
-    isi hanya `<media:audio>`, sehingga mengucapkan mention bot dalam voice note dapat
-    memicu balasan. Jika transkrip masih tidak menyebut bot,
-    transkrip disimpan dalam riwayat grup tertunda alih-alih placeholder mentah.
+    Voice note grup yang diotorisasi ditranskripsikan sebelum gerbang mention saat
+    isi hanya `<media:audio>`, sehingga menyebut mention bot dalam voice note dapat
+    memicu balasan. Jika transkrip masih tidak menyebut bot, transkrip
+    disimpan dalam riwayat grup tertunda alih-alih placeholder mentah.
 
     Isi lokasi menggunakan teks koordinat ringkas. Label/komentar lokasi dan detail kontak/vCard dirender sebagai metadata tidak tepercaya berpagar, bukan teks prompt inline.
 
   </Accordion>
 
-  <Accordion title="Injeksi riwayat grup tertunda">
-    Untuk grup, pesan yang belum diproses dapat dibuffer dan disuntikkan sebagai konteks ketika bot akhirnya dipicu.
+  <Accordion title="Pending group history injection">
+    Untuk grup, pesan yang belum diproses dapat dibuffer dan disuntikkan sebagai konteks saat bot akhirnya dipicu.
 
     - batas default: `50`
-    - konfigurasi: `channels.whatsapp.historyLimit`
+    - config: `channels.whatsapp.historyLimit`
     - fallback: `messages.groupChat.historyLimit`
     - `0` menonaktifkan
 
-    Marker injeksi:
+    Penanda injeksi:
 
-    - `[Chat messages since your last reply - for context]`
-    - `[Current message - respond to this]`
+    - `[Pesan chat sejak balasan terakhir Anda - untuk konteks]`
+    - `[Pesan saat ini - tanggapi ini]`
 
   </Accordion>
 
-  <Accordion title="Tanda terima dibaca">
-    Tanda terima dibaca diaktifkan secara default untuk pesan WhatsApp masuk yang diterima.
+  <Accordion title="Tanda dibaca">
+    Tanda dibaca diaktifkan secara default untuk pesan WhatsApp masuk yang diterima.
 
     Nonaktifkan secara global:
 
@@ -375,7 +385,7 @@ Ketika nomor diri tertaut juga ada di `allowFrom`, perlindungan chat-dengan-diri
     }
     ```
 
-    Giliran obrolan dengan diri sendiri melewati tanda terima baca meskipun diaktifkan secara global.
+    Giliran chat dengan diri sendiri melewati tanda dibaca meskipun diaktifkan secara global.
 
   </Accordion>
 </AccordionGroup>
@@ -386,28 +396,28 @@ Ketika nomor diri tertaut juga ada di `allowFrom`, perlindungan chat-dengan-diri
   <Accordion title="Pemotongan teks">
     - batas potongan default: `channels.whatsapp.textChunkLimit = 4000`
     - `channels.whatsapp.chunkMode = "length" | "newline"`
-    - mode `newline` memprioritaskan batas paragraf (baris kosong), lalu fallback ke pemotongan yang aman berdasarkan panjang
+    - mode `newline` mengutamakan batas paragraf (baris kosong), lalu fallback ke pemotongan aman berdasarkan panjang
 
   </Accordion>
 
   <Accordion title="Perilaku media keluar">
     - mendukung payload gambar, video, audio (catatan suara PTT), dan dokumen
     - media audio dikirim melalui payload `audio` Baileys dengan `ptt: true`, sehingga klien WhatsApp merendernya sebagai catatan suara push-to-talk
-    - payload balasan mempertahankan `audioAsVoice`; output catatan suara TTS untuk WhatsApp tetap berada di jalur PTT ini meskipun penyedia mengembalikan MP3 atau WebM
+    - payload balasan mempertahankan `audioAsVoice`; output catatan suara TTS untuk WhatsApp tetap menggunakan jalur PTT ini meskipun provider mengembalikan MP3 atau WebM
     - audio Ogg/Opus native dikirim sebagai `audio/ogg; codecs=opus` untuk kompatibilitas catatan suara
-    - audio non-Ogg, termasuk output Microsoft Edge TTS MP3/WebM, ditranskode dengan `ffmpeg` ke Ogg/Opus mono 48 kHz sebelum pengiriman PTT
-    - `/tts latest` mengirim balasan asisten terbaru sebagai satu catatan suara dan menekan pengiriman ulang untuk balasan yang sama; `/tts chat on|off|default` mengontrol TTS otomatis untuk obrolan WhatsApp saat ini
+    - audio non-Ogg, termasuk output TTS MP3/WebM Microsoft Edge, ditranskode dengan `ffmpeg` ke Ogg/Opus mono 48 kHz sebelum pengiriman PTT
+    - `/tts latest` mengirim balasan asisten terbaru sebagai satu catatan suara dan menekan pengiriman berulang untuk balasan yang sama; `/tts chat on|off|default` mengontrol TTS otomatis untuk chat WhatsApp saat ini
     - pemutaran GIF animasi didukung melalui `gifPlayback: true` pada pengiriman video
-    - teks keterangan diterapkan ke item media pertama saat mengirim payload balasan multi-media, kecuali catatan suara PTT mengirim audio terlebih dahulu dan teks terlihat secara terpisah karena klien WhatsApp tidak merender teks keterangan catatan suara secara konsisten
-    - sumber media dapat berupa HTTP(S), `file://`, atau jalur lokal
+    - caption diterapkan ke item media pertama saat mengirim payload balasan multi-media, kecuali catatan suara PTT mengirim audio terlebih dahulu dan teks yang terlihat secara terpisah karena klien WhatsApp tidak merender caption catatan suara secara konsisten
+    - sumber media dapat berupa HTTP(S), `file://`, atau path lokal
 
   </Accordion>
 
   <Accordion title="Batas ukuran media dan perilaku fallback">
-    - batas penyimpanan media masuk: `channels.whatsapp.mediaMaxMb` (default `50`)
-    - batas pengiriman media keluar: `channels.whatsapp.mediaMaxMb` (default `50`)
+    - batas simpan media masuk: `channels.whatsapp.mediaMaxMb` (default `50`)
+    - batas kirim media keluar: `channels.whatsapp.mediaMaxMb` (default `50`)
     - override per akun menggunakan `channels.whatsapp.accounts.<accountId>.mediaMaxMb`
-    - gambar dioptimalkan otomatis (ubah ukuran/penyisiran kualitas) agar sesuai batas
+    - gambar dioptimalkan otomatis (resize/penyesuaian kualitas) agar sesuai batas
     - saat pengiriman media gagal, fallback item pertama mengirim peringatan teks alih-alih membuang respons secara diam-diam
 
   </Accordion>
@@ -415,14 +425,14 @@ Ketika nomor diri tertaut juga ada di `allowFrom`, perlindungan chat-dengan-diri
 
 ## Kutipan balasan
 
-WhatsApp mendukung kutipan balasan native, di mana balasan keluar mengutip pesan masuk secara terlihat. Kontrol dengan `channels.whatsapp.replyToMode`.
+WhatsApp mendukung kutipan balasan native, di mana balasan keluar menampilkan kutipan pesan masuk. Kontrol dengan `channels.whatsapp.replyToMode`.
 
 | Nilai       | Perilaku                                                              |
 | ----------- | --------------------------------------------------------------------- |
 | `"off"`     | Jangan pernah mengutip; kirim sebagai pesan biasa                     |
 | `"first"`   | Kutip hanya potongan balasan keluar pertama                           |
 | `"all"`     | Kutip setiap potongan balasan keluar                                  |
-| `"batched"` | Kutip balasan antrean batch sambil membiarkan balasan langsung tanpa kutipan |
+| `"batched"` | Kutip balasan antrean berbentuk batch sambil membiarkan balasan langsung tanpa kutipan |
 
 Default adalah `"off"`. Override per akun menggunakan `channels.whatsapp.accounts.<id>.replyToMode`.
 
@@ -436,16 +446,16 @@ Default adalah `"off"`. Override per akun menggunakan `channels.whatsapp.account
 }
 ```
 
-## Tingkat reaksi
+## Level reaksi
 
 `channels.whatsapp.reactionLevel` mengontrol seberapa luas agen menggunakan reaksi emoji di WhatsApp:
 
-| Tingkat       | Reaksi ack | Reaksi yang dimulai agen | Deskripsi                                      |
+| Level         | Reaksi ack | Reaksi yang dimulai agen | Deskripsi                                      |
 | ------------- | ---------- | ------------------------ | ---------------------------------------------- |
 | `"off"`       | Tidak      | Tidak                    | Tidak ada reaksi sama sekali                   |
 | `"ack"`       | Ya         | Tidak                    | Hanya reaksi ack (tanda terima pra-balasan)    |
 | `"minimal"`   | Ya         | Ya (konservatif)         | Ack + reaksi agen dengan panduan konservatif   |
-| `"extensive"` | Ya         | Ya (dianjurkan)          | Ack + reaksi agen dengan panduan dianjurkan    |
+| `"extensive"` | Ya         | Ya (dianjurkan)          | Ack + reaksi agen dengan panduan yang dianjurkan |
 
 Default: `"minimal"`.
 
@@ -464,7 +474,7 @@ Override per akun menggunakan `channels.whatsapp.accounts.<id>.reactionLevel`.
 ## Reaksi pengakuan
 
 WhatsApp mendukung reaksi ack langsung pada tanda terima masuk melalui `channels.whatsapp.ackReaction`.
-Reaksi ack dikontrol oleh `reactionLevel` — reaksi tersebut ditekan saat `reactionLevel` adalah `"off"`.
+Reaksi ack dibatasi oleh `reactionLevel` — reaksi ditekan saat `reactionLevel` adalah `"off"`.
 
 ```json5
 {
@@ -483,8 +493,8 @@ Reaksi ack dikontrol oleh `reactionLevel` — reaksi tersebut ditekan saat `reac
 Catatan perilaku:
 
 - dikirim segera setelah pesan masuk diterima (pra-balasan)
-- kegagalan dicatat tetapi tidak memblokir pengiriman balasan normal
-- mode grup `mentions` bereaksi pada giliran yang dipicu penyebutan; aktivasi grup `always` bertindak sebagai bypass untuk pemeriksaan ini
+- kegagalan dicatat di log tetapi tidak memblokir pengiriman balasan normal
+- mode grup `mentions` bereaksi pada giliran yang dipicu mention; aktivasi grup `always` bertindak sebagai bypass untuk pemeriksaan ini
 - WhatsApp menggunakan `channels.whatsapp.ackReaction` (`messages.ackReaction` legacy tidak digunakan di sini)
 
 ## Multi-akun dan kredensial
@@ -492,41 +502,41 @@ Catatan perilaku:
 <AccordionGroup>
   <Accordion title="Pemilihan akun dan default">
     - id akun berasal dari `channels.whatsapp.accounts`
-    - pemilihan akun default: `default` jika ada, jika tidak id akun terkonfigurasi pertama (diurutkan)
+    - pemilihan akun default: `default` jika ada, jika tidak id akun pertama yang dikonfigurasi (diurutkan)
     - id akun dinormalisasi secara internal untuk pencarian
 
   </Accordion>
 
-  <Accordion title="Jalur kredensial dan kompatibilitas legacy">
-    - jalur autentikasi saat ini: `~/.openclaw/credentials/whatsapp/<accountId>/creds.json`
+  <Accordion title="Path kredensial dan kompatibilitas legacy">
+    - path auth saat ini: `~/.openclaw/credentials/whatsapp/<accountId>/creds.json`
     - file cadangan: `creds.json.bak`
-    - autentikasi default legacy di `~/.openclaw/credentials/` masih dikenali/dimigrasikan untuk alur akun default
+    - auth default legacy di `~/.openclaw/credentials/` masih dikenali/dimigrasikan untuk alur akun default
 
   </Accordion>
 
   <Accordion title="Perilaku logout">
-    `openclaw channels logout --channel whatsapp [--account <id>]` menghapus status autentikasi WhatsApp untuk akun tersebut.
+    `openclaw channels logout --channel whatsapp [--account <id>]` menghapus status auth WhatsApp untuk akun tersebut.
 
-    Saat Gateway dapat dijangkau, logout terlebih dahulu menghentikan listener WhatsApp langsung untuk akun yang dipilih agar sesi tertaut tidak terus menerima pesan sampai restart berikutnya. `openclaw channels remove --channel whatsapp` juga menghentikan listener langsung sebelum menonaktifkan atau menghapus konfigurasi akun.
+    Saat Gateway dapat dijangkau, logout terlebih dahulu menghentikan listener WhatsApp live untuk akun yang dipilih sehingga sesi tertaut tidak terus menerima pesan hingga restart berikutnya. `openclaw channels remove --channel whatsapp` juga menghentikan listener live sebelum menonaktifkan atau menghapus config akun.
 
-    Di direktori autentikasi legacy, `oauth.json` dipertahankan sementara file autentikasi Baileys dihapus.
+    Di direktori auth legacy, `oauth.json` dipertahankan sementara file auth Baileys dihapus.
 
   </Accordion>
 </AccordionGroup>
 
-## Alat, tindakan, dan penulisan konfigurasi
+## Tool, tindakan, dan penulisan config
 
-- Dukungan alat agen mencakup tindakan reaksi WhatsApp (`react`).
+- Dukungan tool agen mencakup tindakan reaksi WhatsApp (`react`).
 - Gerbang tindakan:
   - `channels.whatsapp.actions.reactions`
   - `channels.whatsapp.actions.polls`
-- Penulisan konfigurasi yang diinisiasi saluran diaktifkan secara default (nonaktifkan melalui `channels.whatsapp.configWrites=false`).
+- Penulisan config yang dimulai channel diaktifkan secara default (nonaktifkan melalui `channels.whatsapp.configWrites=false`).
 
-## Pemecahan Masalah
+## Pemecahan masalah
 
 <AccordionGroup>
   <Accordion title="Tidak tertaut (QR diperlukan)">
-    Gejala: status saluran melaporkan tidak tertaut.
+    Gejala: status channel melaporkan tidak tertaut.
 
     Perbaikan:
 
@@ -538,16 +548,16 @@ Catatan perilaku:
   </Accordion>
 
   <Accordion title="Tertaut tetapi terputus / loop sambung ulang">
-    Gejala: akun tertaut dengan pemutusan berulang atau upaya sambung ulang.
+    Gejala: akun tertaut dengan pemutusan berulang atau percobaan sambung ulang.
 
-    Akun yang senyap dapat tetap terhubung melewati batas waktu pesan normal; watchdog
-    memulai ulang saat aktivitas transport WhatsApp Web berhenti, soket ditutup, atau
-    aktivitas tingkat aplikasi tetap senyap melampaui jendela keamanan yang lebih panjang.
+    Akun yang sepi dapat tetap tersambung melewati timeout pesan normal; watchdog
+    melakukan restart saat aktivitas transport WhatsApp Web berhenti, socket tertutup, atau
+    aktivitas tingkat aplikasi tetap senyap melewati jendela keselamatan yang lebih panjang.
 
     Jika log menampilkan `status=408 Request Time-out Connection was lost` berulang, sesuaikan
-    waktu soket Baileys di bawah `web.whatsapp`. Mulailah dengan mempersingkat
-    `keepAliveIntervalMs` di bawah batas waktu idle jaringan Anda dan meningkatkan
-    `connectTimeoutMs` pada tautan yang lambat atau lossy:
+    timing socket Baileys di bawah `web.whatsapp`. Mulailah dengan memendekkan
+    `keepAliveIntervalMs` di bawah timeout idle jaringan Anda dan meningkatkan
+    `connectTimeoutMs` pada koneksi yang lambat atau sering kehilangan paket:
 
     ```json5
     {
@@ -569,21 +579,21 @@ Catatan perilaku:
     ```
 
     Jika `~/.openclaw/logs/whatsapp-health.log` mengatakan `Gateway inactive` tetapi
-    `openclaw gateway status` dan `openclaw channels status --probe` menunjukkan
+    `openclaw gateway status` dan `openclaw channels status --probe` menunjukkan bahwa
     gateway dan WhatsApp sehat, jalankan `openclaw doctor`. Di Linux, doctor
-    memperingatkan tentang entri crontab lama yang masih memanggil
+    memperingatkan tentang entri crontab legacy yang masih memanggil
     `~/.openclaw/bin/ensure-whatsapp.sh`; hapus entri usang tersebut dengan
-    `crontab -e` karena cron dapat tidak memiliki lingkungan systemd user-bus dan
+    `crontab -e` karena cron dapat tidak memiliki lingkungan user-bus systemd dan
     membuat skrip lama itu salah melaporkan kesehatan gateway.
 
     Jika diperlukan, tautkan ulang dengan `channels login`.
 
   </Accordion>
 
-  <Accordion title="Login QR habis waktu di balik proxy">
-    Gejala: `openclaw channels login --channel whatsapp` gagal sebelum menampilkan kode QR yang dapat digunakan dengan `status=408 Request Time-out` atau pemutusan soket TLS.
+  <Accordion title="Login QR timeout di balik proxy">
+    Gejala: `openclaw channels login --channel whatsapp` gagal sebelum menampilkan kode QR yang dapat digunakan dengan `status=408 Request Time-out` atau pemutusan socket TLS.
 
-    Login WhatsApp Web menggunakan lingkungan proxy standar host gateway (`HTTPS_PROXY`, `HTTP_PROXY`, varian huruf kecil, dan `NO_PROXY`). Pastikan proses gateway mewarisi env proxy dan bahwa `NO_PROXY` tidak cocok dengan `mmg.whatsapp.net`.
+    Login WhatsApp Web menggunakan lingkungan proxy standar host gateway (`HTTPS_PROXY`, `HTTP_PROXY`, varian huruf kecil, dan `NO_PROXY`). Verifikasi bahwa proses gateway mewarisi env proxy dan `NO_PROXY` tidak cocok dengan `mmg.whatsapp.net`.
 
   </Accordion>
 
@@ -595,9 +605,9 @@ Catatan perilaku:
   </Accordion>
 
   <Accordion title="Balasan muncul di transkrip tetapi tidak di WhatsApp">
-    Baris transkrip mencatat apa yang dihasilkan agen. Pengiriman WhatsApp diperiksa secara terpisah: OpenClaw hanya menganggap balasan otomatis terkirim setelah Baileys mengembalikan id pesan keluar untuk setidaknya satu pengiriman teks atau media yang terlihat.
+    Baris transkrip mencatat apa yang dihasilkan agen. Pengiriman WhatsApp diperiksa secara terpisah: OpenClaw hanya menganggap auto-reply telah terkirim setelah Baileys mengembalikan id pesan keluar untuk setidaknya satu pengiriman teks atau media yang terlihat.
 
-    Reaksi ack adalah tanda terima prabalasan yang independen. Reaksi yang berhasil tidak membuktikan bahwa balasan teks atau media berikutnya diterima oleh WhatsApp.
+    Reaksi ack adalah tanda terima pra-balasan yang independen. Reaksi yang berhasil tidak membuktikan bahwa balasan teks atau media berikutnya diterima oleh WhatsApp.
 
     Periksa log gateway untuk `auto-reply delivery failed` atau `auto-reply was not accepted by WhatsApp provider`.
 
@@ -609,46 +619,46 @@ Catatan perilaku:
     - `groupPolicy`
     - `groupAllowFrom` / `allowFrom`
     - entri allowlist `groups`
-    - gating penyebutan (`requireMention` + pola penyebutan)
+    - gating mention (`requireMention` + pola mention)
     - kunci duplikat di `openclaw.json` (JSON5): entri yang lebih baru menimpa entri sebelumnya, jadi pertahankan satu `groupPolicy` per cakupan
 
   </Accordion>
 
   <Accordion title="Peringatan runtime Bun">
-    Runtime gateway WhatsApp harus menggunakan Node. Bun ditandai tidak kompatibel untuk operasi gateway WhatsApp/Telegram yang stabil.
+    Runtime gateway WhatsApp sebaiknya menggunakan Node. Bun ditandai sebagai tidak kompatibel untuk operasi gateway WhatsApp/Telegram yang stabil.
   </Accordion>
 </AccordionGroup>
 
-## Prompt Sistem
+## Prompt sistem
 
-WhatsApp mendukung prompt sistem bergaya Telegram untuk grup dan chat langsung melalui peta `groups` dan `direct`.
+WhatsApp mendukung prompt sistem bergaya Telegram untuk grup dan chat langsung melalui map `groups` dan `direct`.
 
 Hierarki resolusi untuk pesan grup:
 
-Peta `groups` efektif ditentukan terlebih dahulu: jika akun mendefinisikan `groups` miliknya sendiri, itu sepenuhnya menggantikan peta `groups` root (tanpa deep merge). Pencarian prompt kemudian berjalan pada satu peta yang dihasilkan:
+Map `groups` efektif ditentukan terlebih dahulu: jika akun mendefinisikan `groups` sendiri, map tersebut sepenuhnya menggantikan map `groups` root (tanpa deep merge). Pencarian prompt kemudian berjalan pada satu map yang dihasilkan:
 
-1. **Prompt sistem khusus grup** (`groups["<groupId>"].systemPrompt`): digunakan saat entri grup tertentu ada di peta **dan** kunci `systemPrompt`-nya didefinisikan. Jika `systemPrompt` adalah string kosong (`""`), wildcard ditekan dan tidak ada prompt sistem yang diterapkan.
-2. **Prompt sistem wildcard grup** (`groups["*"].systemPrompt`): digunakan saat entri grup tertentu sepenuhnya tidak ada dari peta, atau saat entri tersebut ada tetapi tidak mendefinisikan kunci `systemPrompt`.
+1. **Prompt sistem khusus grup** (`groups["<groupId>"].systemPrompt`): digunakan saat entri grup spesifik ada di map **dan** kunci `systemPrompt`-nya didefinisikan. Jika `systemPrompt` adalah string kosong (`""`), wildcard ditekan dan tidak ada prompt sistem yang diterapkan.
+2. **Prompt sistem wildcard grup** (`groups["*"].systemPrompt`): digunakan saat entri grup spesifik sama sekali tidak ada dari map, atau saat entri tersebut ada tetapi tidak mendefinisikan kunci `systemPrompt`.
 
 Hierarki resolusi untuk pesan langsung:
 
-Peta `direct` efektif ditentukan terlebih dahulu: jika akun mendefinisikan `direct` miliknya sendiri, itu sepenuhnya menggantikan peta `direct` root (tanpa deep merge). Pencarian prompt kemudian berjalan pada satu peta yang dihasilkan:
+Map `direct` efektif ditentukan terlebih dahulu: jika akun mendefinisikan `direct` sendiri, map tersebut sepenuhnya menggantikan map `direct` root (tanpa deep merge). Pencarian prompt kemudian berjalan pada satu map yang dihasilkan:
 
-1. **Prompt sistem khusus langsung** (`direct["<peerId>"].systemPrompt`): digunakan saat entri peer tertentu ada di peta **dan** kunci `systemPrompt`-nya didefinisikan. Jika `systemPrompt` adalah string kosong (`""`), wildcard ditekan dan tidak ada prompt sistem yang diterapkan.
-2. **Prompt sistem wildcard langsung** (`direct["*"].systemPrompt`): digunakan saat entri peer tertentu sepenuhnya tidak ada dari peta, atau saat entri tersebut ada tetapi tidak mendefinisikan kunci `systemPrompt`.
+1. **Prompt sistem khusus direct** (`direct["<peerId>"].systemPrompt`): digunakan ketika entri peer tertentu ada di map **dan** kunci `systemPrompt`-nya didefinisikan. Jika `systemPrompt` berupa string kosong (`""`), wildcard ditekan dan tidak ada prompt sistem yang diterapkan.
+2. **Prompt sistem wildcard direct** (`direct["*"].systemPrompt`): digunakan ketika entri peer tertentu sama sekali tidak ada di map, atau ketika entri itu ada tetapi tidak mendefinisikan kunci `systemPrompt`.
 
 <Note>
-`dms` tetap menjadi bucket override riwayat per-DM yang ringan (`dms.<id>.historyLimit`). Override prompt berada di bawah `direct`.
+`dms` tetap menjadi wadah override riwayat per-DM yang ringan (`dms.<id>.historyLimit`). Override prompt berada di bawah `direct`.
 </Note>
 
-**Perbedaan dari perilaku multi-akun Telegram:** Di Telegram, `groups` tingkat root sengaja disembunyikan untuk semua akun dalam konfigurasi multi-akun — bahkan akun yang tidak menentukan `groups` miliknya sendiri — untuk mencegah bot menerima pesan grup dari grup yang bukan tempatnya bergabung. WhatsApp tidak menerapkan pengaman ini: `groups` tingkat root dan `direct` tingkat root selalu diwarisi oleh akun yang tidak menentukan penimpaan tingkat akun, terlepas dari berapa banyak akun yang dikonfigurasi. Dalam konfigurasi WhatsApp multi-akun, jika Anda menginginkan prompt grup atau langsung per akun, tentukan peta lengkap di bawah setiap akun secara eksplisit alih-alih mengandalkan default tingkat root.
+**Perbedaan dari perilaku multi-akun Telegram:** Di Telegram, root `groups` sengaja ditekan untuk semua akun dalam penyiapan multi-akun — bahkan akun yang tidak mendefinisikan `groups` sendiri — untuk mencegah bot menerima pesan grup untuk grup yang tidak diikutinya. WhatsApp tidak menerapkan pelindung ini: root `groups` dan root `direct` selalu diwarisi oleh akun yang tidak mendefinisikan override tingkat akun, terlepas dari berapa banyak akun yang dikonfigurasi. Dalam penyiapan WhatsApp multi-akun, jika Anda menginginkan prompt grup atau direct per akun, definisikan map lengkap di bawah setiap akun secara eksplisit alih-alih mengandalkan default tingkat root.
 
 Perilaku penting:
 
-- `channels.whatsapp.groups` adalah peta konfigurasi per grup sekaligus daftar izin grup tingkat obrolan. Pada cakupan root maupun akun, `groups["*"]` berarti "semua grup diizinkan masuk" untuk cakupan tersebut.
-- Hanya tambahkan `systemPrompt` grup wildcard ketika Anda memang sudah ingin cakupan tersebut mengizinkan semua grup masuk. Jika Anda masih ingin hanya sekumpulan tetap ID grup yang memenuhi syarat, jangan gunakan `groups["*"]` sebagai default prompt. Sebagai gantinya, ulangi prompt pada setiap entri grup yang diizinkan secara eksplisit.
-- Penerimaan grup dan otorisasi pengirim adalah pemeriksaan yang terpisah. `groups["*"]` memperluas kumpulan grup yang dapat mencapai penanganan grup, tetapi itu sendiri tidak mengotorisasi setiap pengirim dalam grup tersebut. Akses pengirim tetap dikendalikan secara terpisah oleh `channels.whatsapp.groupPolicy` dan `channels.whatsapp.groupAllowFrom`.
-- `channels.whatsapp.direct` tidak memiliki efek samping yang sama untuk DM. `direct["*"]` hanya menyediakan konfigurasi obrolan langsung default setelah DM sudah diterima oleh `dmPolicy` ditambah aturan `allowFrom` atau penyimpanan pemasangan.
+- `channels.whatsapp.groups` adalah map konfigurasi per grup sekaligus allowlist grup tingkat chat. Pada cakupan root maupun akun, `groups["*"]` berarti "semua grup diterima" untuk cakupan tersebut.
+- Tambahkan wildcard grup `systemPrompt` hanya ketika Anda memang ingin cakupan tersebut menerima semua grup. Jika Anda masih ingin hanya sekumpulan ID grup tetap yang memenuhi syarat, jangan gunakan `groups["*"]` untuk default prompt. Sebagai gantinya, ulangi prompt pada setiap entri grup yang di-allowlist secara eksplisit.
+- Penerimaan grup dan otorisasi pengirim adalah pemeriksaan terpisah. `groups["*"]` memperluas kumpulan grup yang dapat mencapai penanganan grup, tetapi itu sendiri tidak mengotorisasi setiap pengirim di grup tersebut. Akses pengirim tetap dikendalikan secara terpisah oleh `channels.whatsapp.groupPolicy` dan `channels.whatsapp.groupAllowFrom`.
+- `channels.whatsapp.direct` tidak memiliki efek samping yang sama untuk DM. `direct["*"]` hanya menyediakan konfigurasi chat direct default setelah DM sudah diterima oleh `dmPolicy` plus `allowFrom` atau aturan pairing-store.
 
 Contoh:
 
@@ -696,20 +706,20 @@ Referensi utama:
 
 - [Referensi konfigurasi - WhatsApp](/id/gateway/config-channels#whatsapp)
 
-Bidang WhatsApp dengan sinyal tinggi:
+Field WhatsApp bernilai tinggi:
 
 - akses: `dmPolicy`, `allowFrom`, `groupPolicy`, `groupAllowFrom`, `groups`
 - pengiriman: `textChunkLimit`, `chunkMode`, `mediaMaxMb`, `sendReadReceipts`, `ackReaction`, `reactionLevel`
-- multi-akun: `accounts.<id>.enabled`, `accounts.<id>.authDir`, penimpaan tingkat akun
+- multi-akun: `accounts.<id>.enabled`, `accounts.<id>.authDir`, override tingkat akun
 - operasi: `configWrites`, `debounceMs`, `web.enabled`, `web.heartbeatSeconds`, `web.reconnect.*`, `web.whatsapp.*`
 - perilaku sesi: `session.dmScope`, `historyLimit`, `dmHistoryLimit`, `dms.<id>.historyLimit`
 - prompt: `groups.<id>.systemPrompt`, `groups["*"].systemPrompt`, `direct.<id>.systemPrompt`, `direct["*"].systemPrompt`
 
 ## Terkait
 
-- [Pemasangan](/id/channels/pairing)
+- [Pairing](/id/channels/pairing)
 - [Grup](/id/channels/groups)
 - [Keamanan](/id/gateway/security)
-- [Perutean saluran](/id/channels/channel-routing)
-- [Perutean multi-agen](/id/concepts/multi-agent)
+- [Perutean channel](/id/channels/channel-routing)
+- [Perutean multi-agent](/id/concepts/multi-agent)
 - [Pemecahan masalah](/id/channels/troubleshooting)
