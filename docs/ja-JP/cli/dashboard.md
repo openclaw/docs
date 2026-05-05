@@ -1,33 +1,37 @@
 ---
 read_when:
-    - 現在のトークンで Control UI を開きたい場合
-    - ブラウザを起動せずに URL を表示したい場合
-summary: '`openclaw dashboard` の CLI リファレンス（Control UI を開く）'
+    - 現在のトークンを使ってコントロール UI を開きたい
+    - ブラウザーを起動せずに URL を出力したい場合
+summary: '`openclaw dashboard`（コントロールUIを開く）のCLIリファレンス'
 title: ダッシュボード
 x-i18n:
-    generated_at: "2026-04-25T13:44:04Z"
-    model: gpt-5.4
+    generated_at: "2026-05-05T01:44:19Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: ce485388465fb93551be8ccf0aa01ea52e4feb949ef0d48c96b4f8ea65a6551c
+    source_hash: 51b3326b3884013ebcf570b417e66efe62ea89dcdedb5ab3173f39fb021de89f
     source_path: cli/dashboard.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw dashboard`
 
-現在の認証を使って Control UI を開きます。
+現在の認証を使用して Control UI を開きます。
 
 ```bash
 openclaw dashboard
 openclaw dashboard --no-open
 ```
 
-注意:
+注記:
 
-- `dashboard` は、可能であれば設定済みの `gateway.auth.token` SecretRef を解決します。
-- `dashboard` は `gateway.tls.enabled` に従います: TLS が有効な gateway は `https://` の Control UI URL を表示/起動し、`wss://` で接続します。
-- SecretRef 管理のトークン（解決済み・未解決を問わず）では、外部 secret がターミナル出力、クリップボード履歴、またはブラウザ起動引数に露出しないよう、`dashboard` はトークンを含まない URL を表示/コピー/起動します。
-- `gateway.auth.token` が SecretRef 管理だがこのコマンド経路で未解決の場合、このコマンドは無効なトークンプレースホルダーを埋め込む代わりに、トークンを含まない URL と明示的な対処ガイダンスを表示します。
+- `dashboard` は、可能な場合に設定済みの `gateway.auth.token` SecretRefs を解決します。
+- `dashboard` は `gateway.tls.enabled` に従います。TLS が有効な Gateway は
+  `https://` Control UI URL を表示/開き、`wss://` 経由で接続します。
+- トークン認証されたダッシュボード URL のクリップボード/ブラウザー配信に失敗した場合、
+  `dashboard` は安全な手動認証ヒントをログに記録し、トークン値を出力せずに
+  `OPENCLAW_GATEWAY_TOKEN`、`gateway.auth.token`、フラグメントキー `token` を示します。
+- SecretRef で管理されたトークン（解決済みまたは未解決）の場合、`dashboard` はターミナル出力、クリップボード履歴、ブラウザー起動引数で外部シークレットを公開しないように、トークン化されていない URL を表示/コピー/開きます。
+- `gateway.auth.token` が SecretRef で管理されているものの、このコマンドパスで未解決の場合、コマンドは無効なトークンプレースホルダーを埋め込む代わりに、トークン化されていない URL と明示的な修復手順を表示します。
 
 ## 関連
 
