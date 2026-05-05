@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Je wilt geplande taken en wekmomenten
+    - Je wilt geplande taken en wekacties
     - Je debugt Cron-uitvoering en logs
 summary: CLI-referentie voor `openclaw cron` (achtergrondtaken plannen en uitvoeren)
 title: Cron
 x-i18n:
-    generated_at: "2026-05-02T11:11:15Z"
+    generated_at: "2026-05-05T06:16:16Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 298ac3fc868462eb301febbc1aa5296d8087cad7fdc466870487081444c5856f
+    source_hash: 804efac75b8653b03cec197247be847498e084b50b00fb7bd3fbd94067ef25d4
     source_path: cli/cron.md
     workflow: 16
 ---
@@ -18,7 +18,7 @@ x-i18n:
 Beheer Cron-taken voor de Gateway-planner.
 
 <Tip>
-Voer `openclaw cron --help` uit voor het volledige opdrachtoppervlak. Zie [Cron-taken](/nl/automation/cron-jobs) voor de conceptuele gids.
+Voer `openclaw cron --help` uit voor het volledige commandobereik. Zie [Cron-taken](/nl/automation/cron-jobs) voor de conceptuele handleiding.
 </Tip>
 
 ## Sessies
@@ -28,21 +28,21 @@ Voer `openclaw cron --help` uit voor het volledige opdrachtoppervlak. Zie [Cron-
 <AccordionGroup>
   <Accordion title="Sessiesleutels">
     - `main` koppelt aan de hoofdsessie van de agent.
-    - `isolated` maakt voor elke uitvoering een nieuw transcript en nieuwe sessie-id aan.
+    - `isolated` maakt voor elke run een nieuw transcript en een nieuwe sessie-id.
     - `current` koppelt aan de actieve sessie op het moment van aanmaken.
-    - `session:<id>` zet vast op een expliciete persistente sessiesleutel.
+    - `session:<id>` zet vast op een expliciete permanente sessiesleutel.
 
   </Accordion>
   <Accordion title="Semantiek van geïsoleerde sessies">
-    Geïsoleerde uitvoeringen resetten de omgevingscontext van het gesprek. Routering voor kanaal en groep, verzend-/wachtrijbeleid, elevatie, herkomst en ACP-runtimebinding worden gereset voor de nieuwe uitvoering. Veilige voorkeuren en expliciete door de gebruiker geselecteerde model- of auth-overschrijvingen kunnen tussen uitvoeringen worden meegenomen.
+    Geïsoleerde runs resetten de omgevingscontext van het gesprek. Kanaal- en groepsroutering, verzend-/wachtrijbeleid, verhoging, oorsprong en ACP-runtimebinding worden gereset voor de nieuwe run. Veilige voorkeuren en expliciet door de gebruiker geselecteerde model- of auth-overschrijvingen kunnen tussen runs worden meegenomen.
   </Accordion>
 </AccordionGroup>
 
 ## Aflevering
 
-`openclaw cron list` en `openclaw cron show <job-id>` tonen een voorbeeld van de opgeloste afleverroute. Voor `channel: "last"` toont het voorbeeld of de route is opgelost vanuit de hoofd- of huidige sessie, of gesloten zal falen.
+`openclaw cron list` en `openclaw cron show <job-id>` tonen een voorbeeld van de opgeloste afleverroute. Voor `channel: "last"` laat het voorbeeld zien of de route is opgelost vanuit de hoofd- of huidige sessie, of gesloten zal falen.
 
-Doelen met providerprefix kunnen onopgeloste aankondigingskanalen ondubbelzinnig maken. Bijvoorbeeld: `to: "telegram:123"` selecteert Telegram wanneer `delivery.channel` is weggelaten of `last` is. Alleen prefixen die door de geladen plugin worden aangekondigd, zijn providerselectors. Als `delivery.channel` expliciet is, moet de prefix met dat kanaal overeenkomen; `channel: "whatsapp"` met `to: "telegram:123"` wordt geweigerd. Serviceprefixen zoals `imessage:` en `sms:` blijven kanaaleigen doelsyntaxis.
+Doelen met providervoorvoegsel kunnen onopgeloste aankondigingskanalen verduidelijken. Bijvoorbeeld: `to: "telegram:123"` selecteert Telegram wanneer `delivery.channel` is weggelaten of `last` is. Alleen voorvoegsels die door de geladen Plugin worden geadverteerd, zijn providerselectoren. Als `delivery.channel` expliciet is, moet het voorvoegsel overeenkomen met dat kanaal; `channel: "whatsapp"` met `to: "telegram:123"` wordt geweigerd. Servicevoorvoegsels zoals `imessage:` en `sms:` blijven kanaal-eigen doelsyntaxis.
 
 <Note>
 Geïsoleerde `cron add`-taken gebruiken standaard `--announce`-aflevering. Gebruik `--no-deliver` om uitvoer intern te houden. `--deliver` blijft beschikbaar als verouderde alias voor `--announce`.
@@ -50,16 +50,16 @@ Geïsoleerde `cron add`-taken gebruiken standaard `--announce`-aflevering. Gebru
 
 ### Eigenaarschap van aflevering
 
-Chat-aflevering voor geïsoleerde Cron is gedeeld tussen de agent en de runner:
+Geïsoleerde Cron-chataflevering wordt gedeeld tussen de agent en de runner:
 
-- De agent kan rechtstreeks verzenden met het hulpmiddel `message` wanneer er een chatroute beschikbaar is.
-- `announce` levert de uiteindelijke reactie alleen als fallback af wanneer de agent niet rechtstreeks naar het opgeloste doel heeft verzonden.
+- De agent kan rechtstreeks verzenden met de `message`-tool wanneer er een chatroute beschikbaar is.
+- `announce` levert als fallback alleen het eindantwoord af wanneer de agent niet rechtstreeks naar het opgeloste doel heeft verzonden.
 - `webhook` plaatst de voltooide payload op een URL.
-- `none` schakelt fallback-aflevering door de runner uit.
+- `none` schakelt fallbackaflevering door de runner uit.
 
-`--announce` is fallback-aflevering door de runner voor de uiteindelijke reactie. `--no-deliver` schakelt die fallback uit, maar verwijdert het hulpmiddel `message` van de agent niet wanneer er een chatroute beschikbaar is.
+`--announce` is fallbackaflevering door de runner voor het eindantwoord. `--no-deliver` schakelt die fallback uit, maar verwijdert de `message`-tool van de agent niet wanneer er een chatroute beschikbaar is.
 
-Herinneringen die vanuit een actieve chat zijn gemaakt, behouden het live chat-afleverdoel voor fallback-aankondigingsaflevering. Interne sessiesleutels kunnen kleine letters gebruiken; gebruik ze niet als bron van waarheid voor hoofdlettergevoelige provider-id's zoals Matrix-ruimte-id's.
+Herinneringen die vanuit een actieve chat worden aangemaakt, behouden het live chatafleverdoel voor fallback-aankondigingsaflevering. Interne sessiesleutels kunnen kleine letters gebruiken; gebruik ze niet als bron van waarheid voor hoofdlettergevoelige provider-ID's, zoals Matrix-kamer-ID's.
 
 ### Aflevering bij fouten
 
@@ -67,42 +67,42 @@ Foutmeldingen worden in deze volgorde opgelost:
 
 1. `delivery.failureDestination` op de taak.
 2. Globale `cron.failureDestination`.
-3. Het primaire aankondigingsdoel van de taak (wanneer er geen expliciete foutbestemming is ingesteld).
+3. Het primaire aankondigingsdoel van de taak (wanneer geen expliciete foutbestemming is ingesteld).
 
 <Note>
-Taken in de hoofdsessie mogen `delivery.failureDestination` alleen gebruiken wanneer de primaire aflevermodus `webhook` is. Geïsoleerde taken accepteren dit in alle modi.
+Hoofdsessietaken mogen `delivery.failureDestination` alleen gebruiken wanneer de primaire aflevermodus `webhook` is. Geïsoleerde taken accepteren dit in alle modi.
 </Note>
 
-Opmerking: geïsoleerde Cron-uitvoeringen behandelen agentfouten op uitvoeringsniveau als taakfouten, zelfs wanneer
-er geen reactiepayload wordt geproduceerd, zodat model-/providerfouten nog steeds fouttellers verhogen
-en foutmeldingen activeren.
+Opmerking: geïsoleerde Cron-runs behandelen agentfouten op runniveau als taakfouten, zelfs wanneer
+er geen antwoordpayload wordt geproduceerd, zodat model-/providerfouten nog steeds fouttellers
+verhogen en foutmeldingen activeren.
 
 ## Planning
 
 ### Eenmalige taken
 
-`--at <datetime>` plant een eenmalige uitvoering. Datums/tijden zonder offset worden als UTC behandeld, tenzij je ook `--tz <iana>` meegeeft; dan wordt de kloktijd in de opgegeven tijdzone geïnterpreteerd.
+`--at <datetime>` plant een eenmalige run. Datums en tijden zonder offset worden behandeld als UTC, tenzij je ook `--tz <iana>` meegeeft; daarmee wordt de kloktijd in de opgegeven tijdzone geïnterpreteerd.
 
 <Note>
-Eenmalige taken worden standaard verwijderd na succes. Gebruik `--keep-after-run` om ze te behouden.
+Eenmalige taken worden standaard na succes verwijderd. Gebruik `--keep-after-run` om ze te behouden.
 </Note>
 
 ### Terugkerende taken
 
-Terugkerende taken gebruiken exponentiële retry-backoff na opeenvolgende fouten: 30s, 1m, 5m, 15m, 60m. De planning keert terug naar normaal na de volgende geslaagde uitvoering.
+Terugkerende taken gebruiken exponentiële retry-backoff na opeenvolgende fouten: 30s, 1m, 5m, 15m, 60m. De planning keert terug naar normaal na de volgende succesvolle run.
 
-Overgeslagen uitvoeringen worden apart bijgehouden van uitvoeringsfouten. Ze beïnvloeden retry-backoff niet, maar `openclaw cron edit <job-id> --failure-alert-include-skipped` kan foutmeldingen laten meedoen aan herhaalde meldingen over overgeslagen uitvoeringen.
+Overgeslagen runs worden apart bijgehouden van uitvoeringsfouten. Ze beïnvloeden de retry-backoff niet, maar met `openclaw cron edit <job-id> --failure-alert-include-skipped` kunnen foutmeldingen worden ingesteld om herhaalde meldingen over overgeslagen runs op te nemen.
 
-Voor geïsoleerde taken die gericht zijn op een lokaal geconfigureerde modelprovider voert Cron een lichte provider-preflight uit voordat de agentbeurt start. Providers voor loopback, privénetwerk en `.local` met `api: "ollama"` worden gepeild op `/api/tags`; lokale OpenAI-compatibele providers zoals vLLM, SGLang en LM Studio worden gepeild op `/models`. Als het eindpunt onbereikbaar is, wordt de uitvoering geregistreerd als `skipped` en opnieuw geprobeerd volgens een latere planning; overeenkomende dode eindpunten worden 5 minuten gecachet om te voorkomen dat veel taken dezelfde lokale server bestoken.
+Voor geïsoleerde taken die een lokaal geconfigureerde modelprovider targeten, voert Cron een lichte providerpreflight uit voordat de agentbeurt start. Loopback-, privénetwerk- en `.local`-providers met `api: "ollama"` worden geprobed op `/api/tags`; lokale OpenAI-compatibele providers zoals vLLM, SGLang en LM Studio worden geprobed op `/models`. Als het endpoint onbereikbaar is, wordt de run vastgelegd als `skipped` en later opnieuw geprobeerd volgens de planning; overeenkomende dode endpoints worden 5 minuten gecachet om te voorkomen dat veel taken dezelfde lokale server bestoken.
 
-Opmerking: Cron-taakdefinities staan in `jobs.json`, terwijl de hangende runtimestatus in `jobs-state.json` staat. Als `jobs.json` extern wordt bewerkt, laadt de Gateway gewijzigde planningen opnieuw en wist hij verouderde hangende slots; herschrijvingen die alleen opmaak wijzigen, wissen het hangende slot niet.
+Opmerking: Cron-taakdefinities staan in `jobs.json`, terwijl wachtende runtimestatus in `jobs-state.json` staat. Als `jobs.json` extern wordt bewerkt, herlaadt de Gateway gewijzigde planningen en wist hij verouderde wachtende slots; herschrijvingen die alleen de opmaak wijzigen, wissen het wachtende slot niet.
 
-### Handmatige uitvoeringen
+### Handmatige runs
 
-`openclaw cron run` keert terug zodra de handmatige uitvoering in de wachtrij staat. Geslaagde reacties bevatten `{ ok: true, enqueued: true, runId }`. Gebruik `openclaw cron runs --id <job-id>` om de uiteindelijke uitkomst te volgen.
+`openclaw cron run` keert terug zodra de handmatige run in de wachtrij staat. Succesvolle responses bevatten `{ ok: true, enqueued: true, runId }`. Gebruik `openclaw cron runs --id <job-id>` om het uiteindelijke resultaat te volgen.
 
 <Note>
-`openclaw cron run <job-id>` forceert standaard een uitvoering. Gebruik `--due` om het oudere gedrag "alleen uitvoeren als deze verschuldigd is" te behouden.
+`openclaw cron run <job-id>` forceert standaard een run. Gebruik `--due` om het oudere gedrag "alleen uitvoeren als de taak verschuldigd is" te behouden.
 </Note>
 
 ## Modellen
@@ -110,15 +110,15 @@ Opmerking: Cron-taakdefinities staan in `jobs.json`, terwijl de hangende runtime
 `cron add|edit --model <ref>` selecteert een toegestaan model voor de taak.
 
 <Warning>
-Als het model niet is toegestaan of niet kan worden opgelost, laat Cron de uitvoering mislukken met een expliciete validatiefout in plaats van terug te vallen op de agent- of standaardmodelselectie van de taak.
+Als het model niet is toegestaan of niet kan worden opgelost, laat Cron de run mislukken met een expliciete validatiefout in plaats van terug te vallen op de agent of de standaardmodelselectie van de taak.
 </Warning>
 
-Cron `--model` is een **primaire taakinstelling**, geen `/model`-overschrijving voor chatsessies. Dat betekent:
+Cron `--model` is een **taakprimaire instelling**, geen `/model`-overschrijving voor chatsessies. Dat betekent:
 
 - Geconfigureerde modelfallbacks blijven van toepassing wanneer het geselecteerde taakmodel faalt.
 - Per-taakpayload `fallbacks` vervangt de geconfigureerde fallbacklijst wanneer aanwezig.
-- Een lege per-taakfallbacklijst (`fallbacks: []` in de taakpayload/API) maakt de Cron-uitvoering strikt.
-- Wanneer een taak `--model` heeft maar er geen fallbacklijst is geconfigureerd, geeft OpenClaw een expliciete lege fallback-overschrijving door, zodat de primaire agent niet wordt toegevoegd als verborgen retry-doel.
+- Een lege per-taakfallbacklijst (`fallbacks: []` in de taakpayload/API) maakt de Cron-run strikt.
+- Wanneer een taak `--model` heeft maar er geen fallbacklijst is geconfigureerd, geeft OpenClaw een expliciete lege fallbackoverschrijving door, zodat het primaire agentmodel niet als verborgen retrydoel wordt toegevoegd.
 
 ### Modelprioriteit voor geïsoleerde Cron
 
@@ -126,44 +126,44 @@ Geïsoleerde Cron lost het actieve model in deze volgorde op:
 
 1. Gmail-hookoverschrijving.
 2. Per-taak `--model`.
-3. Opgeslagen modeloverschrijving voor de Cron-sessie (wanneer de gebruiker er een heeft geselecteerd).
+3. Opgeslagen Cron-sessiemodeloverschrijving (wanneer de gebruiker er een heeft geselecteerd).
 4. Agent- of standaardmodelselectie.
 
 ### Snelle modus
 
-De snelle modus voor geïsoleerde Cron volgt de opgeloste live modelselectie. Modelconfiguratie `params.fastMode` is standaard van toepassing, maar een opgeslagen sessieoverschrijving `fastMode` wint nog steeds van de configuratie.
+De snelle modus van geïsoleerde Cron volgt de opgeloste live modelselectie. Modelconfiguratie `params.fastMode` is standaard van toepassing, maar een opgeslagen sessie-overschrijving `fastMode` heeft nog steeds voorrang op de configuratie.
 
-### Retries bij live modelwisseling
+### Retries bij live modelwissels
 
-Als een geïsoleerde uitvoering `LiveSessionModelSwitchError` gooit, bewaart Cron de gewisselde provider en het gewisselde model (en de gewisselde auth-profieloverschrijving wanneer aanwezig) voor de actieve uitvoering voordat opnieuw wordt geprobeerd. De buitenste retrylus is begrensd op twee wisselretries na de eerste poging en breekt daarna af in plaats van eindeloos te blijven herhalen.
+Als een geïsoleerde run `LiveSessionModelSwitchError` gooit, bewaart Cron de gewisselde provider en het gewisselde model (en de gewisselde auth-profieloverschrijving wanneer aanwezig) voor de actieve run voordat opnieuw wordt geprobeerd. De buitenste retrylus is begrensd op twee wisselretries na de eerste poging en breekt daarna af in plaats van oneindig door te lopen.
 
-## Uitvoer van uitvoeringen en weigeringen
+## Runuitvoer en weigeringen
 
 ### Onderdrukking van verouderde bevestigingen
 
-Geïsoleerde Cron-beurten onderdrukken verouderde reacties die alleen een bevestiging bevatten. Als het eerste resultaat slechts een tussentijdse statusupdate is en geen afstammende subagentuitvoering verantwoordelijk is voor het uiteindelijke antwoord, vraagt Cron één keer opnieuw om het echte resultaat vóór aflevering.
+Geïsoleerde Cron-beurten onderdrukken verouderde antwoorden die alleen uit een bevestiging bestaan. Als het eerste resultaat slechts een tussentijdse statusupdate is en geen afstammende subagent-run verantwoordelijk is voor het uiteindelijke antwoord, vraagt Cron één keer opnieuw om het echte resultaat vóór aflevering.
 
-### Onderdrukking van stille tokens
+### Onderdrukking van stil token
 
-Als een geïsoleerde Cron-uitvoering alleen het stille token (`NO_REPLY` of `no_reply`) retourneert, onderdrukt Cron zowel rechtstreekse uitgaande aflevering als het fallbackpad met wachtrijsamenvatting, zodat er niets terug naar de chat wordt geplaatst.
+Als een geïsoleerde Cron-run alleen het stille token (`NO_REPLY` of `no_reply`) retourneert, onderdrukt Cron zowel directe uitgaande aflevering als het fallbackpad met een samenvatting in de wachtrij, zodat er niets terug naar de chat wordt geplaatst.
 
 ### Gestructureerde weigeringen
 
-Geïsoleerde Cron-uitvoeringen geven de voorkeur aan gestructureerde metadata voor uitvoeringsweigeringen uit de ingebedde uitvoering en vallen daarna terug op bekende weigeringsmarkeringen in de uiteindelijke uitvoer, zoals `SYSTEM_RUN_DENIED`, `INVALID_REQUEST` en weigeringszinnen voor goedkeuringsbinding.
+Geïsoleerde Cron-runs geven de voorkeur aan gestructureerde metadata voor uitvoeringsweigering uit de ingesloten run en vallen daarna terug op bekende weigeringsmarkeringen in de einduitvoer, zoals `SYSTEM_RUN_DENIED`, `INVALID_REQUEST` en weigeringszinnen voor approval-binding.
 
-`cron list` en de uitvoeringsgeschiedenis tonen de weigeringsreden in plaats van een geblokkeerde opdracht als `ok` te rapporteren.
+`cron list` en de runhistorie tonen de weigeringsreden in plaats van een geblokkeerde opdracht als `ok` te rapporteren.
 
-## Bewaartermijn
+## Bewaring
 
-Bewaartermijn en opschoning worden beheerd in de configuratie:
+Bewaring en opschoning worden in de configuratie geregeld:
 
-- `cron.sessionRetention` (standaard `24h`) schoont voltooide geïsoleerde uitvoeringssessies op.
+- `cron.sessionRetention` (standaard `24h`) schoont voltooide geïsoleerde runsessies op.
 - `cron.runLog.maxBytes` en `cron.runLog.keepLines` schonen `~/.openclaw/cron/runs/<jobId>.jsonl` op.
 
 ## Oudere taken migreren
 
 <Note>
-Als je Cron-taken hebt van vóór de huidige aflever- en opslagindeling, voer dan `openclaw doctor --fix` uit. Doctor normaliseert verouderde Cron-velden (`jobId`, `schedule.cron`, top-level aflevervelden inclusief verouderde `threadId`, payload-aliassen voor `provider`-aflevering) en migreert eenvoudige `notify: true` webhook-fallbacktaken naar expliciete webhook-aflevering wanneer `cron.webhook` is geconfigureerd.
+Als je Cron-taken hebt van vóór de huidige afleverings- en opslagindeling, voer dan `openclaw doctor --fix` uit. Doctor normaliseert verouderde Cron-velden (`jobId`, `schedule.cron`, aflevervelden op topniveau inclusief verouderde `threadId`, payload-`provider`-afleveraliassen) en migreert eenvoudige webhookfallbacktaken met `notify: true` naar expliciete webhookaflevering wanneer `cron.webhook` is geconfigureerd.
 </Note>
 
 ## Veelvoorkomende bewerkingen
@@ -192,7 +192,7 @@ Kondig aan in een specifiek kanaal:
 openclaw cron edit <job-id> --announce --channel slack --to "channel:C1234567890"
 ```
 
-Kondig aan in een Telegram-forumonderwerp:
+Kondig aan in een Telegram-forumtopic:
 
 ```bash
 openclaw cron edit <job-id> --announce --channel telegram --to "-1001234567890" --thread-id 42
@@ -210,23 +210,26 @@ openclaw cron add \
   --no-deliver
 ```
 
-`--light-context` is alleen van toepassing op geïsoleerde agentbeurttaken. Voor Cron-uitvoeringen houdt de lichte modus de bootstrapcontext leeg in plaats van de volledige bootstrapset voor de werkruimte te injecteren.
+`--light-context` is alleen van toepassing op geïsoleerde agentbeurttaken. Voor Cron-runs houdt de lichte modus de bootstrapcontext leeg in plaats van de volledige workspace-bootstrapset te injecteren.
 
 ## Veelvoorkomende beheerdersopdrachten
 
-Handmatige uitvoering en inspectie:
+Handmatige run en inspectie:
 
 ```bash
 openclaw cron list
+openclaw cron list --agent ops
 openclaw cron show <job-id>
 openclaw cron run <job-id>
 openclaw cron run <job-id> --due
 openclaw cron runs --id <job-id> --limit 50
 ```
 
+`openclaw cron list` toont standaard alle overeenkomende taken. Geef `--agent <id>` mee om alleen taken te tonen waarvan de effectieve genormaliseerde agent-id overeenkomt; taken zonder opgeslagen agent-id tellen als de geconfigureerde standaardagent.
+
 `cron runs`-items bevatten afleverdiagnostiek met het beoogde Cron-doel, het opgeloste doel, verzendingen via de message-tool, fallbackgebruik en afgeleverde status.
 
-Agent- en sessieherroutering:
+Agent en sessie opnieuw targeten:
 
 ```bash
 openclaw cron edit <job-id> --agent ops
@@ -235,9 +238,9 @@ openclaw cron edit <job-id> --session current
 openclaw cron edit <job-id> --session "session:daily-brief"
 ```
 
-`openclaw cron add` waarschuwt wanneer `--agent` wordt weggelaten op agentbeurttaken en valt terug op de standaardagent (`main`). Geef `--agent <id>` mee bij het aanmaken om een specifieke agent vast te zetten.
+`openclaw cron add` waarschuwt wanneer `--agent` is weggelaten bij agentbeurttaken en valt terug op de standaardagent (`main`). Geef `--agent <id>` mee bij het aanmaken om een specifieke agent vast te zetten.
 
-Afleveraanpassingen:
+Aflevering aanpassen:
 
 ```bash
 openclaw cron edit <job-id> --announce --channel slack --to "channel:C1234567890"

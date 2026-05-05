@@ -4,10 +4,10 @@ read_when:
 summary: Voegt de WhatsApp-kanaalinterface toe voor het verzenden en ontvangen van OpenClaw-berichten.
 title: WhatsApp-Plugin
 x-i18n:
-    generated_at: "2026-05-03T11:16:13Z"
+    generated_at: "2026-05-05T06:18:51Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3ff038ce3afd0285e5cfca9ca1b0e89deed582cff4f2e9c257f29a4848f397fa
+    source_hash: a0fa274f7e937894a070abd9307aa12eed17b27275bc7e5cfc432f8a41373c54
     source_path: plugins/reference/whatsapp.md
     workflow: 16
 ---
@@ -24,6 +24,16 @@ Voegt het WhatsApp-kanaaloppervlak toe voor het verzenden en ontvangen van OpenC
 ## Oppervlak
 
 channels: whatsapp
+
+## Installatieopmerking voor Windows
+
+Op Windows heeft de WhatsApp Plugin Git op `PATH` nodig tijdens npm install, omdat een van de Baileys/libsignal-afhankelijkheden via een git-URL wordt opgehaald. Installeer Git for Windows, herstart daarna de shell en voer de installatie opnieuw uit:
+
+```powershell
+winget install --id Git.Git -e
+```
+
+Portable Git werkt ook als de `bin`-directory ervan op `PATH` staat.
 
 ## Gerelateerde documentatie
 
