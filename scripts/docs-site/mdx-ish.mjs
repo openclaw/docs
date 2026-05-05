@@ -69,7 +69,7 @@ function preprocess(input) {
 
   out = out.replace(/<([A-Z][A-Za-z0-9_.-]*)([^>]*)>/g, (_, name, attrs) => escapeHtml(`<${name}${attrs}>`));
   out = out.replace(/<\/([A-Z][A-Za-z0-9_.-]*)>/g, (_, name) => escapeHtml(`</${name}>`));
-  return out;
+  return dedentComponentChildren(out);
 }
 
 function postprocess(html) {
@@ -89,7 +89,7 @@ function expandMarker(payload) {
   if (kind === "calloutClose") return "</aside>";
   if (kind === "cardSelf") return cardHtml(value, true);
   if (kind === "cardOpen") return cardHtml(value, false);
-  if (kind === "cardClose") return "</span></a>";
+  if (kind === "cardClose") return "</div></a>";
   if (kind === "stepOpen") return `<li class="oc-step"><h3>${escapeHtml(parseAttrs(value).title ?? "Step")}</h3>`;
   if (kind === "stepClose") return "</li>";
   if (kind === "tabOpen") return `<section class="oc-tab"><h3>${escapeHtml(parseAttrs(value).title ?? "Tab")}</h3>`;
@@ -111,8 +111,30 @@ function cardHtml(rawAttrs, selfClosing) {
   const href = attrs.href ?? "#";
   const title = attrs.title ?? attrs.name ?? "Open";
   const icon = attrs.icon ? `<span class="oc-card-icon">${escapeHtml(attrs.icon)}</span>` : "";
-  const end = selfClosing ? "</span></a>" : "";
-  return `<a class="oc-card" href="${escapeAttr(href)}">${icon}<span><strong>${escapeHtml(title)}</strong>${end}`;
+  const end = selfClosing ? "</div></a>" : "";
+  return `<a class="oc-card" href="${escapeAttr(href)}">${icon}<div><strong>${escapeHtml(title)}</strong>${end}`;
+}
+
+function dedentComponentChildren(markdown) {
+  let depth = 0;
+  return markdown
+    .split("\n")
+    .map((line) => {
+      const markerMatch = line.match(new RegExp(`^${markerPrefix}:([^:]+):`));
+      if (markerMatch) {
+        if (markerMatch[1].endsWith("Close") || markerMatch[1] === "blockClose" || markerMatch[1] === "calloutClose") {
+          depth = Math.max(0, depth - 1);
+        }
+        const markerLine = line;
+        if (markerMatch[1].endsWith("Open") || markerMatch[1] === "blockOpen" || markerMatch[1] === "calloutOpen") {
+          depth += 1;
+        }
+        return markerLine;
+      }
+      if (depth <= 0 || !line.startsWith(" ")) return line;
+      return line.replace(new RegExp(`^ {1,${depth * 2}}`), "");
+    })
+    .join("\n");
 }
 
 function parseAttrs(raw) {

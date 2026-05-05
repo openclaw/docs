@@ -173,7 +173,7 @@ function sidebar(page, nav, activeTab) {
   const groups = (nav.find((tab) => tab.title === activeTab) ?? nav[0])?.groups ?? [];
   return `<aside class="sidebar">
 <a class="brand" href="${page.locale === "en" ? "/" : `/${page.locale}/`}"><img src="/assets/pixel-lobster.svg" alt=""><span><strong>${escapeHtml(config.name)}</strong><small>self-hosted agent gateway</small></span></a>
-<div class="tools"><select data-locale aria-label="Language">${options}</select><button type="button" data-theme>Theme</button></div>
+<div class="tools"><select data-locale aria-label="Language">${options}</select><button type="button" data-theme-toggle>Theme</button></div>
 <button class="search-button" type="button" data-search-open>Search docs <span>⌘K</span></button>
 <nav class="tabs">${tabs}</nav>
 <nav>${groups.map((group) => navGroupHtml(page, group)).join("")}</nav>

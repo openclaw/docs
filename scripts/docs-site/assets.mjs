@@ -13,7 +13,7 @@ export function siteCss() {
 
 export function siteJs() {
   return `
-const root=document.documentElement;const saved=localStorage.getItem("theme");if(saved)root.dataset.theme=saved;document.querySelector("[data-theme]")?.addEventListener("click",()=>{const next=root.dataset.theme==="dark"?"light":"dark";root.dataset.theme=next;localStorage.setItem("theme",next)});
+const root=document.documentElement;const saved=localStorage.getItem("theme");if(saved)root.dataset.theme=saved;document.querySelector("[data-theme-toggle]")?.addEventListener("click",()=>{const next=root.dataset.theme==="dark"?"light":"dark";root.dataset.theme=next;localStorage.setItem("theme",next)});
 const sidebar=document.querySelector(".sidebar");document.querySelector("[data-nav-toggle]")?.addEventListener("click",()=>sidebar?.classList.toggle("open"));document.querySelectorAll(".sidebar a").forEach(a=>a.addEventListener("click",()=>sidebar?.classList.remove("open")));
 document.querySelector("[data-locale]")?.addEventListener("change",e=>{const url=e.target.selectedOptions[0]?.dataset.url;if(url)location.href=url});
 const modal=document.querySelector(".search-modal");const input=document.querySelector("[data-search-input]");const results=document.querySelector("[data-search-results]");let pagefindReady;
