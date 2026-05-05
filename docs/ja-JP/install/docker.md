@@ -1,34 +1,32 @@
 ---
 read_when:
-    - ローカルインストールではなくコンテナ化された Gateway を使いたい場合
+    - ローカルインストールではなく、コンテナ化された Gateway を使いたい場合
     - Docker フローを検証しています
 summary: OpenClaw の任意の Docker ベースのセットアップとオンボーディング
 title: Docker
 x-i18n:
-    generated_at: "2026-05-02T20:50:45Z"
+    generated_at: "2026-05-05T08:26:06Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 5e57659c89a0b207b4b331752e7faaa814fe1f0043dad97043e95e460286c551
+    source_hash: f57db2ec12f1a1fd681ec90cc43b2c945755a9240f571de46688777e957f1b8e
     source_path: install/docker.md
     workflow: 16
 ---
 
-Docker は**任意**です。コンテナ化された Gateway を使いたい場合、または Docker フローを検証したい場合にのみ使用してください。
+Docker は**任意**です。コンテナ化された Gateway が必要な場合、または Docker フローを検証する場合にのみ使用してください。
 
-## Docker は自分に適しているか？
+## Docker は自分に適していますか？
 
 - **はい**: 分離された使い捨ての Gateway 環境が必要な場合、またはローカルインストールなしのホストで OpenClaw を実行したい場合。
 - **いいえ**: 自分のマシンで実行していて、最速の開発ループだけが必要な場合。代わりに通常のインストールフローを使用してください。
-- **サンドボックス化の注記**: デフォルトのサンドボックスバックエンドは、サンドボックス化が有効な場合に Docker を使用しますが、サンドボックス化はデフォルトでオフであり、完全な Gateway を Docker で実行する必要は**ありません**。SSH と OpenShell のサンドボックスバックエンドも利用できます。[サンドボックス化](/ja-JP/gateway/sandboxing)を参照してください。
+- **サンドボックス化に関する注意**: デフォルトのサンドボックスバックエンドは、サンドボックス化が有効な場合に Docker を使用しますが、サンドボックス化はデフォルトではオフであり、Gateway 全体を Docker で実行する必要は**ありません**。SSH と OpenShell のサンドボックスバックエンドも利用できます。[サンドボックス化](/ja-JP/gateway/sandboxing)を参照してください。
 
 ## 前提条件
 
 - Docker Desktop（または Docker Engine）+ Docker Compose v2
-- イメージビルド用に 2 GB 以上の RAM（1 GB ホストでは `pnpm install` が OOM により終了コード 137 で強制終了されることがあります）
+- イメージビルド用に少なくとも 2 GB RAM（1 GB のホストでは `pnpm install` が OOM により終了コード 137 で kill される場合があります）
 - イメージとログ用の十分なディスク容量
-- VPS/公開ホストで実行する場合は、
-  [ネットワーク公開のためのセキュリティ強化](/ja-JP/gateway/security)、
-  特に Docker の `DOCKER-USER` ファイアウォールポリシーを確認してください。
+- VPS/公開ホストで実行する場合は、特に Docker の `DOCKER-USER` ファイアウォールポリシーについて、[ネットワーク公開のためのセキュリティ強化](/ja-JP/gateway/security)を確認してください。
 
 ## コンテナ化された Gateway
 
@@ -40,7 +38,7 @@ Docker は**任意**です。コンテナ化された Gateway を使いたい場
     ./scripts/docker/setup.sh
     ```
 
-    これにより Gateway イメージがローカルでビルドされます。代わりに事前ビルド済みイメージを使用するには、次を実行します。
+    これにより、Gateway イメージがローカルでビルドされます。代わりに事前ビルド済みイメージを使用するには:
 
     ```bash
     export OPENCLAW_IMAGE="ghcr.io/openclaw/openclaw:latest"
@@ -54,21 +52,21 @@ Docker は**任意**です。コンテナ化された Gateway を使いたい場
   </Step>
 
   <Step title="オンボーディングを完了する">
-    セットアップスクリプトはオンボーディングを自動的に実行します。以下を行います。
+    セットアップスクリプトはオンボーディングを自動的に実行します。次を行います。
 
     - プロバイダー API キーの入力を求める
-    - Gateway トークンを生成し、`.env` に書き込む
+    - Gateway トークンを生成して `.env` に書き込む
     - Docker Compose 経由で Gateway を起動する
 
-    セットアップ中、起動前のオンボーディングと設定の書き込みは
-    `openclaw-gateway` を直接通じて実行されます。`openclaw-cli` は、
-    Gateway コンテナがすでに存在した後に実行するコマンド用です。
+    セットアップ中、起動前のオンボーディングと設定書き込みは
+    `openclaw-gateway` を直接通じて実行されます。`openclaw-cli` は、Gateway
+    コンテナがすでに存在した後に実行するコマンド用です。
 
   </Step>
 
   <Step title="Control UI を開く">
-    ブラウザーで `http://127.0.0.1:18789/` を開き、設定済みの
-    共有シークレットを Settings に貼り付けます。セットアップスクリプトはデフォルトでトークンを `.env` に書き込みます。コンテナ設定をパスワード認証に切り替えた場合は、代わりにそのパスワードを使用してください。
+    ブラウザーで `http://127.0.0.1:18789/` を開き、設定済みの共有シークレットを
+    Settings に貼り付けます。セットアップスクリプトはデフォルトで `.env` にトークンを書き込みます。コンテナ設定をパスワード認証に切り替えた場合は、代わりにそのパスワードを使用してください。
 
     URL が再度必要ですか？
 
@@ -78,8 +76,8 @@ Docker は**任意**です。コンテナ化された Gateway を使いたい場
 
   </Step>
 
-  <Step title="チャネルを設定する（任意）">
-    CLI コンテナを使用してメッセージングチャネルを追加します。
+  <Step title="チャンネルを設定する（任意）">
+    CLI コンテナを使用してメッセージングチャンネルを追加します。
 
     ```bash
     # WhatsApp (QR)
@@ -92,14 +90,14 @@ Docker は**任意**です。コンテナ化された Gateway を使いたい場
     docker compose run --rm openclaw-cli channels add --channel discord --token "<token>"
     ```
 
-    ドキュメント: [WhatsApp](/ja-JP/channels/whatsapp), [Telegram](/ja-JP/channels/telegram), [Discord](/ja-JP/channels/discord)
+    ドキュメント: [WhatsApp](/ja-JP/channels/whatsapp)、[Telegram](/ja-JP/channels/telegram)、[Discord](/ja-JP/channels/discord)
 
   </Step>
 </Steps>
 
 ### 手動フロー
 
-セットアップスクリプトを使用せず、各ステップを自分で実行したい場合:
+セットアップスクリプトを使用せず、各手順を自分で実行したい場合:
 
 ```bash
 docker build -t openclaw:local -f Dockerfile .
@@ -111,15 +109,16 @@ docker compose up -d openclaw-gateway
 ```
 
 <Note>
-リポジトリルートから `docker compose` を実行してください。`OPENCLAW_EXTRA_MOUNTS`
-または `OPENCLAW_HOME_VOLUME` を有効にした場合、セットアップスクリプトは `docker-compose.extra.yml` を書き込みます。
-`-f docker-compose.yml -f docker-compose.extra.yml` を付けて含めてください。
+`docker compose` はリポジトリルートから実行してください。`OPENCLAW_EXTRA_MOUNTS`
+または `OPENCLAW_HOME_VOLUME` を有効にした場合、セットアップスクリプトは
+`docker-compose.extra.yml` を書き込みます。`-f docker-compose.yml -f docker-compose.extra.yml`
+で含めてください。
 </Note>
 
 <Note>
 `openclaw-cli` は `openclaw-gateway` のネットワーク名前空間を共有するため、起動後のツールです。
-`docker compose up -d openclaw-gateway` の前に、オンボーディングとセットアップ時の設定書き込みを
-`--no-deps --entrypoint node` を指定した `openclaw-gateway` 経由で実行してください。
+`docker compose up -d openclaw-gateway` の前には、オンボーディングとセットアップ時の設定書き込みを
+`--no-deps --entrypoint node` を付けて `openclaw-gateway` 経由で実行してください。
 </Note>
 
 ### 環境変数
@@ -130,30 +129,31 @@ docker compose up -d openclaw-gateway
 | ------------------------------------------ | --------------------------------------------------------------- |
 | `OPENCLAW_IMAGE`                           | ローカルでビルドする代わりにリモートイメージを使用する          |
 | `OPENCLAW_DOCKER_APT_PACKAGES`             | ビルド中に追加の apt パッケージをインストールする（スペース区切り） |
-| `OPENCLAW_EXTENSIONS`                      | ビルド時に選択した同梱 Plugin ヘルパーを含める                 |
+| `OPENCLAW_EXTENSIONS`                      | ビルド時に選択したバンドル済み Plugin ヘルパーを含める          |
 | `OPENCLAW_EXTRA_MOUNTS`                    | 追加のホストバインドマウント（カンマ区切りの `source:target[:opts]`） |
-| `OPENCLAW_HOME_VOLUME`                     | 名前付き Docker ボリュームに `/home/node` を永続化する          |
-| `OPENCLAW_SANDBOX`                         | サンドボックスブートストラップを有効にする（`1`, `true`, `yes`, `on`） |
-| `OPENCLAW_SKIP_ONBOARDING`                 | 対話型オンボーディングステップをスキップする（`1`, `true`, `yes`, `on`） |
+| `OPENCLAW_HOME_VOLUME`                     | `/home/node` を名前付き Docker ボリュームに永続化する           |
+| `OPENCLAW_SANDBOX`                         | サンドボックスのブートストラップにオプトインする（`1`、`true`、`yes`、`on`） |
+| `OPENCLAW_SKIP_ONBOARDING`                 | 対話型オンボーディング手順をスキップする（`1`、`true`、`yes`、`on`） |
 | `OPENCLAW_DOCKER_SOCKET`                   | Docker ソケットパスを上書きする                                 |
 | `OPENCLAW_DISABLE_BONJOUR`                 | Bonjour/mDNS アドバタイズを無効にする（Docker ではデフォルトで `1`） |
-| `OPENCLAW_DISABLE_BUNDLED_SOURCE_OVERLAYS` | 同梱 Plugin ソースのバインドマウントオーバーレイを無効にする    |
+| `OPENCLAW_DISABLE_BUNDLED_SOURCE_OVERLAYS` | バンドル済み Plugin ソースのバインドマウントオーバーレイを無効にする |
 | `OTEL_EXPORTER_OTLP_ENDPOINT`              | OpenTelemetry エクスポート用の共有 OTLP/HTTP コレクターエンドポイント |
 | `OTEL_EXPORTER_OTLP_*_ENDPOINT`            | トレース、メトリクス、またはログ用のシグナル別 OTLP エンドポイント |
-| `OTEL_EXPORTER_OTLP_PROTOCOL`              | OTLP プロトコルの上書き。現在サポートされているのは `http/protobuf` のみ |
-| `OTEL_SERVICE_NAME`                        | OpenTelemetry リソースに使用されるサービス名                    |
-| `OTEL_SEMCONV_STABILITY_OPT_IN`            | 最新の実験的な GenAI セマンティック属性を有効にする             |
-| `OPENCLAW_OTEL_PRELOADED`                  | すでにプリロード済みの場合、2 つ目の OpenTelemetry SDK の起動をスキップする |
+| `OTEL_EXPORTER_OTLP_PROTOCOL`              | OTLP プロトコルの上書き。現在は `http/protobuf` のみサポートされています |
+| `OTEL_SERVICE_NAME`                        | OpenTelemetry リソースに使用されるサービス名                   |
+| `OTEL_SEMCONV_STABILITY_OPT_IN`            | 最新の実験的な GenAI セマンティック属性にオプトインする         |
+| `OPENCLAW_OTEL_PRELOADED`                  | すでに事前ロードされている場合、2 つ目の OpenTelemetry SDK の起動をスキップする |
 
-メンテナーは、1 つの Plugin ソースディレクトリを、そのパッケージ化済みソースパスの上にマウントすることで、パッケージ化済みイメージに対して同梱 Plugin ソースをテストできます。例:
+メンテナーは、1 つの Plugin ソースディレクトリをパッケージ済みソースパスにマウントすることで、パッケージ済みイメージに対してバンドル済み Plugin ソースをテストできます。例:
 `OPENCLAW_EXTRA_MOUNTS=/path/to/fork/extensions/synology-chat:/app/extensions/synology-chat:ro`。
-そのマウントされたソースディレクトリは、同じ Plugin ID に対して一致するコンパイル済みの
+そのマウントされたソースディレクトリは、同じ Plugin ID に対して対応するコンパイル済み
 `/app/dist/extensions/synology-chat` バンドルを上書きします。
 
-### オブザーバビリティ
+### 可観測性
 
-OpenTelemetry エクスポートは、Gateway コンテナから OTLP コレクターへのアウトバウンドです。
-公開された Docker ポートは必要ありません。イメージをローカルでビルドし、同梱の OpenTelemetry エクスポーターをイメージ内で利用できるようにしたい場合は、そのランタイム依存関係を含めてください。
+OpenTelemetry エクスポートは、Gateway コンテナから OTLP コレクターへのアウトバウンド通信です。
+公開済み Docker ポートは不要です。イメージをローカルでビルドし、バンドル済み OpenTelemetry
+エクスポーターをイメージ内で利用可能にしたい場合は、そのランタイム依存関係を含めてください。
 
 ```bash
 export OPENCLAW_EXTENSIONS="diagnostics-otel"
@@ -162,22 +162,23 @@ export OTEL_SERVICE_NAME="openclaw-gateway"
 ./scripts/docker/setup.sh
 ```
 
-エクスポートを有効にする前に、パッケージ化済み Docker インストールでは ClawHub から公式の `@openclaw/diagnostics-otel` Plugin をインストールしてください。カスタムのソースビルドイメージでは、引き続き
-`OPENCLAW_EXTENSIONS=diagnostics-otel` でローカル Plugin ソースを含めることができます。エクスポートを有効にするには、設定で `diagnostics-otel` Plugin を許可して有効にし、その後
-`diagnostics.otel.enabled=true` を設定するか、[OpenTelemetry
-エクスポート](/ja-JP/gateway/opentelemetry)の設定例を使用します。コレクター認証ヘッダーは Docker 環境変数ではなく、
+エクスポートを有効にする前に、パッケージ済み Docker インストールでは ClawHub から公式
+`@openclaw/diagnostics-otel` Plugin をインストールしてください。カスタムのソースビルドイメージでは、
+引き続き `OPENCLAW_EXTENSIONS=diagnostics-otel` でローカル Plugin ソースを含めることができます。
+エクスポートを有効にするには、設定で `diagnostics-otel` Plugin を許可して有効化し、
+`diagnostics.otel.enabled=true` を設定するか、[OpenTelemetry エクスポート](/ja-JP/gateway/opentelemetry)
+の設定例を使用してください。コレクター認証ヘッダーは Docker 環境変数ではなく、
 `diagnostics.otel.headers` で設定します。
 
-Prometheus メトリクスは、すでに公開されている Gateway ポートを使用します。
-`clawhub:@openclaw/diagnostics-prometheus` をインストールし、
-`diagnostics-prometheus` Plugin を有効にしてから、スクレイプします。
+Prometheus メトリクスは、すでに公開済みの Gateway ポートを使用します。
+`clawhub:@openclaw/diagnostics-prometheus` をインストールし、`diagnostics-prometheus`
+Plugin を有効化してから、次をスクレイプします。
 
 ```text
 http://<gateway-host>:18789/api/diagnostics/prometheus
 ```
 
-このルートは Gateway 認証で保護されています。別の公開 `/metrics` ポートや、認証されていないリバースプロキシパスを公開しないでください。
-[Prometheus メトリクス](/ja-JP/gateway/prometheus)を参照してください。
+このルートは Gateway 認証で保護されています。別の公開 `/metrics` ポートや未認証のリバースプロキシパスを公開しないでください。[Prometheus メトリクス](/ja-JP/gateway/prometheus)を参照してください。
 
 ### ヘルスチェック
 
@@ -189,7 +190,7 @@ curl -fsS http://127.0.0.1:18789/readyz     # readiness
 ```
 
 Docker イメージには、`/healthz` に ping する組み込みの `HEALTHCHECK` が含まれています。
-チェックが失敗し続けると、Docker はコンテナを `unhealthy` とマークし、オーケストレーションシステムはそれを再起動または置換できます。
+チェックが失敗し続けると、Docker はコンテナを `unhealthy` とマークし、オーケストレーションシステムが再起動または置き換えを行えるようになります。
 
 認証済みの詳細ヘルススナップショット:
 
@@ -199,29 +200,29 @@ docker compose exec openclaw-gateway node dist/index.js health --token "$OPENCLA
 
 ### LAN とループバック
 
-`scripts/docker/setup.sh` はデフォルトで `OPENCLAW_GATEWAY_BIND=lan` を設定するため、Docker のポート公開によりホストから
-`http://127.0.0.1:18789` へアクセスできます。
+`scripts/docker/setup.sh` はデフォルトで `OPENCLAW_GATEWAY_BIND=lan` を設定するため、
+Docker ポート公開によりホストから `http://127.0.0.1:18789` へアクセスできます。
 
-- `lan`（デフォルト）: ホストブラウザーとホスト CLI が公開された Gateway ポートに到達できます。
+- `lan`（デフォルト）: ホストブラウザーとホスト CLI が公開済み Gateway ポートに到達できます。
 - `loopback`: コンテナネットワーク名前空間内のプロセスだけが Gateway に直接到達できます。
 
 <Note>
-`gateway.bind` にはホストエイリアスの `0.0.0.0` や `127.0.0.1` ではなく、バインドモード値（`lan` / `loopback` / `custom` /
+`gateway.bind` には、`0.0.0.0` や `127.0.0.1` のようなホストエイリアスではなく、バインドモード値（`lan` / `loopback` / `custom` /
 `tailnet` / `auto`）を使用してください。
 </Note>
 
 ### ホストローカルプロバイダー
 
-OpenClaw が Docker 内で実行される場合、コンテナ内の `127.0.0.1` はホストマシンではなくコンテナ自体です。ホスト上で実行される AI プロバイダーには `host.docker.internal` を使用してください。
+OpenClaw を Docker で実行する場合、コンテナ内の `127.0.0.1` はホストマシンではなくコンテナ自身です。ホスト上で実行される AI プロバイダーには `host.docker.internal` を使用してください。
 
-| プロバイダー | ホストのデフォルト URL | Docker セットアップ URL            |
+| プロバイダー | ホストのデフォルト URL | Docker セットアップ URL              |
 | --------- | ------------------------ | ----------------------------------- |
 | LM Studio | `http://127.0.0.1:1234`  | `http://host.docker.internal:1234`  |
 | Ollama    | `http://127.0.0.1:11434` | `http://host.docker.internal:11434` |
 
-同梱の Docker セットアップは、LM Studio と Ollama のオンボーディングのデフォルトとしてこれらのホスト URL を使用し、`docker-compose.yml` は Linux Docker Engine 用に `host.docker.internal` を Docker のホスト Gateway にマップします。Docker Desktop は macOS と Windows で同じホスト名をすでに提供しています。
+バンドル済み Docker セットアップでは、LM Studio と Ollama のオンボーディングデフォルトとしてこれらのホスト URL を使用し、`docker-compose.yml` は Linux Docker Engine 向けに `host.docker.internal` を Docker のホストゲートウェイへマップします。Docker Desktop は macOS と Windows で同じホスト名をすでに提供しています。
 
-ホストサービスは、Docker から到達可能なアドレスでもリッスンしている必要があります。
+ホストサービスも Docker から到達可能なアドレスでリッスンする必要があります。
 
 ```bash
 lms server start --port 1234 --bind 0.0.0.0
@@ -233,59 +234,52 @@ OLLAMA_HOST=0.0.0.0:11434 ollama serve
 
 ### Bonjour / mDNS
 
-Docker ブリッジネットワークは通常、Bonjour/mDNS マルチキャスト（`224.0.0.251:5353`）を安定して転送しません。そのため、同梱の Compose セットアップではデフォルトで
-`OPENCLAW_DISABLE_BONJOUR=1` を設定し、ブリッジがマルチキャストトラフィックをドロップしたときに Gateway がクラッシュループしたり、アドバタイズの再起動を繰り返したりしないようにしています。
+Docker ブリッジネットワークは通常、Bonjour/mDNS マルチキャスト（`224.0.0.251:5353`）を確実には転送しません。そのため、バンドル済み Compose セットアップではデフォルトで `OPENCLAW_DISABLE_BONJOUR=1` を設定し、ブリッジがマルチキャストトラフィックを落とした際に Gateway がクラッシュループしたり、アドバタイズを繰り返し再開したりしないようにしています。
 
-Docker ホストには、公開された Gateway URL、Tailscale、または広域 DNS-SD を使用してください。
-`OPENCLAW_DISABLE_BONJOUR=0` は、ホストネットワーク、macvlan、または mDNS マルチキャストが動作することが分かっている別のネットワークで実行する場合にのみ設定してください。
+Docker ホストには、公開済み Gateway URL、Tailscale、または広域 DNS-SD を使用してください。
+`OPENCLAW_DISABLE_BONJOUR=0` は、ホストネットワーク、macvlan、または mDNS マルチキャストが動作することが分かっている別のネットワークで実行している場合にのみ設定してください。
 
 注意点とトラブルシューティングについては、[Bonjour ディスカバリー](/ja-JP/gateway/bonjour)を参照してください。
 
 ### ストレージと永続化
 
-Docker Compose は `OPENCLAW_CONFIG_DIR` を `/home/node/.openclaw` に、
-`OPENCLAW_WORKSPACE_DIR` を `/home/node/.openclaw/workspace` にバインドマウントするため、これらのパスはコンテナを置換しても保持されます。どちらかの変数が未設定の場合、同梱の
-`docker-compose.yml` は `${HOME}/.openclaw`（ワークスペースマウントは
-`${HOME}/.openclaw/workspace`）にフォールバックし、`HOME` 自体もない場合は `/tmp/.openclaw` にフォールバックします。これにより、ベア環境で `docker compose up` が空のソースボリューム仕様を出力しないようにします。
+Docker Compose は `OPENCLAW_CONFIG_DIR` を `/home/node/.openclaw` に、`OPENCLAW_WORKSPACE_DIR` を
+`/home/node/.openclaw/workspace` にバインドマウントするため、これらのパスはコンテナを置き換えても残ります。どちらかの変数が未設定の場合、バンドル済みの `docker-compose.yml` は `${HOME}/.openclaw`（ワークスペースマウントでは `${HOME}/.openclaw/workspace`）にフォールバックし、`HOME` 自体もない場合は `/tmp/.openclaw` にフォールバックします。これにより、素の環境で `docker compose up` が空のソースボリューム仕様を出力しないようにします。
 
-そのマウントされた設定ディレクトリに OpenClaw は以下を保持します。
+そのマウントされた設定ディレクトリには、OpenClaw が次を保持します。
 
 - 動作設定用の `openclaw.json`
-- 保存されたプロバイダー OAuth/API キー認証用の `agents/<agentId>/agent/auth-profiles.json`
-- `OPENCLAW_GATEWAY_TOKEN` など、環境変数に基づくランタイムシークレット用の `.env`
+- 保存済みプロバイダー OAuth/API キー認証用の `agents/<agentId>/agent/auth-profiles.json`
+- `OPENCLAW_GATEWAY_TOKEN` などの環境変数ベースのランタイムシークレット用の `.env`
 
-インストール済みのダウンロード可能な Plugin は、マウントされた OpenClaw ホーム配下にパッケージ状態を保存するため、Plugin インストール記録とパッケージルートはコンテナを置換しても保持されます。Gateway 起動時に同梱 Plugin の依存関係ツリーは生成されません。
+インストール済みのダウンロード可能な Plugin は、マウントされた OpenClaw ホーム配下にパッケージ状態を保存するため、Plugin インストール記録とパッケージルートはコンテナを置き換えても残ります。Gateway 起動時にバンドル済み Plugin の依存関係ツリーは生成されません。
 
-VM デプロイでの完全な永続化の詳細については、
-[Docker VM ランタイム - 何がどこに永続化されるか](/ja-JP/install/docker-vm-runtime#what-persists-where)を参照してください。
+VM デプロイでの永続化の詳細については、[Docker VM ランタイム - 何がどこに永続化されるか](/ja-JP/install/docker-vm-runtime#what-persists-where)を参照してください。
 
-**ディスク増加のホットスポット:** `media/`、セッション JSONL ファイル、
-`cron/runs/*.jsonl`、インストール済み Plugin パッケージルート、`/tmp/openclaw/`
-配下のローリングファイルログを監視してください。
+**ディスク増加のホットスポット:** `media/`、セッションのJSONLファイル、`cron/runs/*.jsonl`、インストール済みPluginパッケージルート、`/tmp/openclaw/` 配下のローテーションファイルログを監視してください。
 
-### シェルヘルパー (任意)
+### シェルヘルパー（任意）
 
-日常的な Docker 管理を簡単にするには、`ClawDock` をインストールします。
+日常的なDocker管理を簡単にするには、`ClawDock` をインストールします。
 
 ```bash
 mkdir -p ~/.clawdock && curl -sL https://raw.githubusercontent.com/openclaw/openclaw/main/scripts/clawdock/clawdock-helpers.sh -o ~/.clawdock/clawdock-helpers.sh
 echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
 ```
 
-古い `scripts/shell-helpers/clawdock-helpers.sh` の raw パスから ClawDock をインストールしていた場合は、上記のインストールコマンドを再実行して、ローカルのヘルパーファイルが新しい場所を追跡するようにしてください。
+古い `scripts/shell-helpers/clawdock-helpers.sh` のrawパスからClawDockをインストールしていた場合は、上のインストールコマンドを再実行し、ローカルのヘルパーファイルが新しい場所を追跡するようにしてください。
 
-その後、`clawdock-start`、`clawdock-stop`、`clawdock-dashboard` などを使用します。すべてのコマンドについては
-`clawdock-help` を実行してください。
+その後、`clawdock-start`、`clawdock-stop`、`clawdock-dashboard` などを使います。すべてのコマンドは `clawdock-help` を実行して確認してください。
 完全なヘルパーガイドは [ClawDock](/ja-JP/install/clawdock) を参照してください。
 
 <AccordionGroup>
-  <Accordion title="Docker gateway のエージェントサンドボックスを有効化">
+  <Accordion title="Docker gatewayのエージェントサンドボックスを有効化">
     ```bash
     export OPENCLAW_SANDBOX=1
     ./scripts/docker/setup.sh
     ```
 
-    カスタムソケットパス (例: rootless Docker):
+    カスタムソケットパス（例: rootless Docker）:
 
     ```bash
     export OPENCLAW_SANDBOX=1
@@ -293,13 +287,12 @@ echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
     ./scripts/docker/setup.sh
     ```
 
-    スクリプトは、サンドボックスの前提条件が満たされた後にのみ `docker.sock` をマウントします。サンドボックスのセットアップを完了できない場合、スクリプトは `agents.defaults.sandbox.mode`
-    を `off` にリセットします。
+    このスクリプトは、サンドボックスの前提条件が満たされた後にのみ `docker.sock` をマウントします。サンドボックスのセットアップを完了できない場合、スクリプトは `agents.defaults.sandbox.mode` を `off` にリセットします。
 
   </Accordion>
 
-  <Accordion title="自動化 / CI (非対話)">
-    `-T` で Compose の疑似 TTY 割り当てを無効にします。
+  <Accordion title="自動化 / CI（非対話）">
+    `-T` でComposeの疑似TTY割り当てを無効化します。
 
     ```bash
     docker compose run -T --rm openclaw-cli gateway probe
@@ -309,14 +302,11 @@ echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
   </Accordion>
 
   <Accordion title="共有ネットワークのセキュリティメモ">
-    `openclaw-cli` は `network_mode: "service:openclaw-gateway"` を使用するため、CLI
-    コマンドは `127.0.0.1` 経由で gateway に到達できます。これは共有の信頼境界として扱ってください。compose 設定では `NET_RAW`/`NET_ADMIN` を削除し、`openclaw-cli` で
-    `no-new-privileges` を有効にします。
+    `openclaw-cli` は `network_mode: "service:openclaw-gateway"` を使用するため、CLIコマンドは `127.0.0.1` 経由でGatewayに到達できます。これは共有の信頼境界として扱ってください。compose設定は `NET_RAW`/`NET_ADMIN` を削除し、`openclaw-gateway` と `openclaw-cli` の両方で `no-new-privileges` を有効化します。
   </Accordion>
 
-  <Accordion title="権限と EACCES">
-    イメージは `node` (uid 1000) として実行されます。
-    `/home/node/.openclaw` で権限エラーが表示される場合は、ホストの bind mount が uid 1000 に所有されていることを確認してください。
+  <Accordion title="権限とEACCES">
+    イメージは `node`（uid 1000）として実行されます。`/home/node/.openclaw` で権限エラーが表示される場合は、ホストのバインドマウントがuid 1000に所有されていることを確認してください。
 
     ```bash
     sudo chown -R 1000:1000 /path/to/openclaw-config /path/to/openclaw-workspace
@@ -325,8 +315,7 @@ echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
   </Accordion>
 
   <Accordion title="再ビルドの高速化">
-    依存関係レイヤーがキャッシュされるように Dockerfile を並べます。これにより、lockfile が変更されない限り
-    `pnpm install` の再実行を避けられます。
+    依存関係レイヤーがキャッシュされるようにDockerfileを並べます。これにより、ロックファイルが変更されない限り `pnpm install` の再実行を避けられます。
 
     ```dockerfile
     FROM node:24-bookworm
@@ -348,52 +337,44 @@ echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
 
   </Accordion>
 
-  <Accordion title="パワーユーザー向けコンテナオプション">
-    デフォルトイメージはセキュリティ優先で、非 root の `node` として実行されます。より機能の多いコンテナにするには:
+  <Accordion title="上級ユーザー向けコンテナオプション">
+    デフォルトのイメージはセキュリティ重視で、非rootの `node` として実行されます。より機能が充実したコンテナにするには:
 
     1. **`/home/node` を永続化**: `export OPENCLAW_HOME_VOLUME="openclaw_home"`
-    2. **システム依存関係を組み込む**: `export OPENCLAW_DOCKER_APT_PACKAGES="git curl jq"`
-    3. **Playwright ブラウザーをインストール**:
+    2. **システム依存関係を焼き込み**: `export OPENCLAW_DOCKER_APT_PACKAGES="git curl jq"`
+    3. **Playwrightブラウザーをインストール**:
        ```bash
        docker compose run --rm openclaw-cli \
          node /app/node_modules/playwright-core/cli.js install chromium
        ```
-    4. **ブラウザーのダウンロードを永続化**:
-       `PLAYWRIGHT_BROWSERS_PATH=/home/node/.cache/ms-playwright` を設定し、
-       `OPENCLAW_HOME_VOLUME` または `OPENCLAW_EXTRA_MOUNTS` を使用します。
+    4. **ブラウザーのダウンロードを永続化**: `PLAYWRIGHT_BROWSERS_PATH=/home/node/.cache/ms-playwright` を設定し、`OPENCLAW_HOME_VOLUME` または `OPENCLAW_EXTRA_MOUNTS` を使います。
 
   </Accordion>
 
-  <Accordion title="OpenAI Codex OAuth (headless Docker)">
-    ウィザードで OpenAI Codex OAuth を選択すると、ブラウザー URL が開きます。Docker や headless セットアップでは、到達した完全なリダイレクト URL をコピーしてウィザードに貼り戻し、認証を完了します。
+  <Accordion title="OpenAI Codex OAuth（ヘッドレスDocker）">
+    ウィザードでOpenAI Codex OAuthを選ぶと、ブラウザーURLが開きます。Dockerまたはヘッドレス環境では、到達した完全なリダイレクトURLをコピーし、認証を完了するためにウィザードへ貼り戻してください。
   </Accordion>
 
   <Accordion title="ベースイメージのメタデータ">
-    メインの Docker ランタイムイメージは `node:24-bookworm-slim` を使用し、
-    `org.opencontainers.image.base.name`、`org.opencontainers.image.source` などを含む OCI
-    ベースイメージアノテーションを公開します。Node ベースダイジェストは Dependabot の Docker ベースイメージ PR を通じて更新されます。リリースビルドではディストリビューションのアップグレードレイヤーは実行されません。
-    [OCI イメージアノテーション](https://github.com/opencontainers/image-spec/blob/main/annotations.md) を参照してください。
+    メインのDockerランタイムイメージは `node:24-bookworm-slim` を使用し、`org.opencontainers.image.base.name`、`org.opencontainers.image.source` などを含むOCIベースイメージアノテーションを公開します。NodeのベースダイジェストはDependabotのDockerベースイメージPRを通じて更新されます。リリースビルドではディストロアップグレードレイヤーを実行しません。[OCIイメージアノテーション](https://github.com/opencontainers/image-spec/blob/main/annotations.md)を参照してください。
   </Accordion>
 </AccordionGroup>
 
-### VPS で実行しますか?
+### VPSで実行しますか？
 
-バイナリの組み込み、永続化、更新を含む共有 VM デプロイ手順については、[Hetzner (Docker VPS)](/ja-JP/install/hetzner) と
-[Docker VM Runtime](/ja-JP/install/docker-vm-runtime) を参照してください。
+バイナリの焼き込み、永続化、更新を含む共有VMデプロイ手順については、[Hetzner（Docker VPS）](/ja-JP/install/hetzner) と [Docker VMランタイム](/ja-JP/install/docker-vm-runtime) を参照してください。
 
 ## エージェントサンドボックス
 
-`agents.defaults.sandbox` が Docker バックエンドで有効化されている場合、gateway
-はエージェントのツール実行 (シェル、ファイル読み取り/書き込みなど) を分離された Docker
-コンテナ内で実行し、gateway 自体はホスト上に残ります。これにより、gateway 全体をコンテナ化せずに、信頼できないエージェントセッションやマルチテナントのエージェントセッションの周囲に強固な壁を設けられます。
+Dockerバックエンドで `agents.defaults.sandbox` が有効な場合、Gatewayはエージェントのツール実行（シェル、ファイルの読み取り/書き込みなど）を分離されたDockerコンテナ内で実行し、Gateway自体はホスト上に残ります。これにより、Gateway全体をコンテナ化せずに、信頼できない、またはマルチテナントのエージェントセッションを囲む強固な壁を作れます。
 
-サンドボックスのスコープは、エージェント単位 (デフォルト)、セッション単位、または共有にできます。各スコープには、`/workspace` にマウントされた独自のワークスペースがあります。ツールの許可/拒否ポリシー、ネットワーク分離、リソース制限、ブラウザーコンテナも設定できます。
+サンドボックスのスコープはエージェント単位（デフォルト）、セッション単位、または共有にできます。各スコープには `/workspace` にマウントされた専用ワークスペースがあります。許可/拒否ツールポリシー、ネットワーク分離、リソース制限、ブラウザーコンテナも構成できます。
 
-完全な設定、イメージ、セキュリティメモ、マルチエージェントプロファイルについては、以下を参照してください。
+完全な構成、イメージ、セキュリティメモ、マルチエージェントプロファイルについては、以下を参照してください。
 
 - [サンドボックス化](/ja-JP/gateway/sandboxing) -- 完全なサンドボックスリファレンス
 - [OpenShell](/ja-JP/gateway/openshell) -- サンドボックスコンテナへの対話型シェルアクセス
-- [Multi-Agent Sandbox and Tools](/ja-JP/tools/multi-agent-sandbox-tools) -- エージェント単位のオーバーライド
+- [マルチエージェントサンドボックスとツール](/ja-JP/tools/multi-agent-sandbox-tools) -- エージェント単位の上書き
 
 ### クイック有効化
 
@@ -410,38 +391,34 @@ echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
 }
 ```
 
-デフォルトのサンドボックスイメージをビルドします (ソース checkout から):
+デフォルトのサンドボックスイメージをビルドします（ソースチェックアウトから）。
 
 ```bash
 scripts/sandbox-setup.sh
 ```
 
-ソース checkout なしの npm インストールでは、インラインの `docker build` コマンドについて [サンドボックス化 § イメージとセットアップ](/ja-JP/gateway/sandboxing#images-and-setup) を参照してください。
+ソースチェックアウトなしのnpmインストールでは、インラインの `docker build` コマンドについて [サンドボックス化 § イメージとセットアップ](/ja-JP/gateway/sandboxing#images-and-setup) を参照してください。
 
 ## トラブルシューティング
 
 <AccordionGroup>
-  <Accordion title="イメージが見つからない、またはサンドボックスコンテナが起動しない">
-    [`scripts/sandbox-setup.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/sandbox-setup.sh)
-    (ソース checkout) または [サンドボックス化 § イメージとセットアップ](/ja-JP/gateway/sandboxing#images-and-setup) のインライン `docker build` コマンド (npm install) でサンドボックスイメージをビルドするか、
-    `agents.defaults.sandbox.docker.image` をカスタムイメージに設定します。
-    コンテナは必要に応じてセッションごとに自動作成されます。
+  <Accordion title="イメージがない、またはサンドボックスコンテナが起動しない">
+    サンドボックスイメージを [`scripts/sandbox-setup.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/sandbox-setup.sh)（ソースチェックアウト）または [サンドボックス化 § イメージとセットアップ](/ja-JP/gateway/sandboxing#images-and-setup) のインライン `docker build` コマンド（npmインストール）でビルドするか、`agents.defaults.sandbox.docker.image` をカスタムイメージに設定してください。コンテナは必要に応じてセッション単位で自動作成されます。
   </Accordion>
 
   <Accordion title="サンドボックス内の権限エラー">
-    `docker.user` をマウントされたワークスペースの所有権に一致する UID:GID に設定するか、ワークスペースフォルダーを chown します。
+    マウントされたワークスペースの所有権に一致するUID:GIDを `docker.user` に設定するか、ワークスペースフォルダーをchownしてください。
   </Accordion>
 
-  <Accordion title="カスタムツールがサンドボックスで見つからない">
-    OpenClaw は `sh -lc` (login shell) でコマンドを実行します。これは
-    `/etc/profile` を source し、PATH をリセットする場合があります。`docker.env.PATH` を設定してカスタムツールパスを先頭に追加するか、Dockerfile の `/etc/profile.d/` 配下にスクリプトを追加してください。
+  <Accordion title="サンドボックス内でカスタムツールが見つからない">
+    OpenClawは `sh -lc`（ログインシェル）でコマンドを実行します。これは `/etc/profile` を読み込み、PATHをリセットする場合があります。カスタムツールのパスを前置するように `docker.env.PATH` を設定するか、Dockerfile内で `/etc/profile.d/` 配下にスクリプトを追加してください。
   </Accordion>
 
-  <Accordion title="イメージビルド中に OOM で kill された (exit 137)">
-    VM には少なくとも 2 GB の RAM が必要です。より大きなマシンクラスを使用して再試行してください。
+  <Accordion title="イメージビルド中にOOMでkillされた（exit 137）">
+    VMには少なくとも2 GBのRAMが必要です。より大きいマシンクラスを使用して再試行してください。
   </Accordion>
 
-  <Accordion title="Control UI で未認証またはペアリングが必要">
+  <Accordion title="Control UIで未認可またはペアリングが必要">
     新しいダッシュボードリンクを取得し、ブラウザーデバイスを承認します。
 
     ```bash
@@ -454,8 +431,8 @@ scripts/sandbox-setup.sh
 
   </Accordion>
 
-  <Accordion title="Gateway ターゲットが ws://172.x.x.x を示す、または Docker CLI からペアリングエラーが出る">
-    gateway モードと bind をリセットします。
+  <Accordion title="Gatewayターゲットがws://172.x.x.xを表示する、またはDocker CLIからペアリングエラーが出る">
+    Gatewayモードとバインドをリセットします。
 
     ```bash
     docker compose run --rm openclaw-cli config set --batch-json '[{"path":"gateway.mode","value":"local"},{"path":"gateway.bind","value":"lan"}]'
@@ -468,7 +445,7 @@ scripts/sandbox-setup.sh
 ## 関連
 
 - [インストール概要](/ja-JP/install) — すべてのインストール方法
-- [Podman](/ja-JP/install/podman) — Docker の代替となる Podman
-- [ClawDock](/ja-JP/install/clawdock) — Docker Compose コミュニティセットアップ
-- [更新](/ja-JP/install/updating) — OpenClaw を最新の状態に保つ
-- [設定](/ja-JP/gateway/configuration) — インストール後の gateway 設定
+- [Podman](/ja-JP/install/podman) — Dockerに代わるPodman
+- [ClawDock](/ja-JP/install/clawdock) — Docker Composeのコミュニティセットアップ
+- [更新](/ja-JP/install/updating) — OpenClawを最新に保つ
+- [構成](/ja-JP/gateway/configuration) — インストール後のGateway構成
