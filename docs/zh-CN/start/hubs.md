@@ -1,22 +1,22 @@
 ---
 read_when:
     - 你想要一份完整的文档地图
-summary: 链接到所有 OpenClaw 文档的中心页
-title: 文档中心页
+summary: 链接到每篇 OpenClaw 文档的枢纽页
+title: 文档中心
 x-i18n:
-    generated_at: "2026-04-24T17:31:33Z"
-    model: gpt-5.4
+    generated_at: "2026-05-05T16:52:58Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: db591029047b57e65141c5992760a81b838580602b1073e94d1bc2690415c0aa
+    source_hash: 0d69e3e48c149f77778540c4a486ab05e8f18fc08bd81739f434721d2336e1f5
     source_path: start/hubs.md
-    workflow: 15
+    workflow: 16
 ---
 
 <Note>
-如果你刚开始使用 OpenClaw，请先从 [入门指南](/zh-CN/start/getting-started) 开始。
+如果你刚接触 OpenClaw，请从[入门指南](/zh-CN/start/getting-started)开始。
 </Note>
 
-使用这些中心页来发现每一页文档，包括左侧导航中未显示的深度解析和参考文档。
+使用这些中心页发现每个页面，包括左侧导航中未显示的深度解析和参考文档。
 
 ## 从这里开始
 
@@ -25,14 +25,14 @@ x-i18n:
 - [新手引导](/zh-CN/start/onboarding)
 - [新手引导（CLI）](/zh-CN/start/wizard)
 - [设置](/zh-CN/start/setup)
-- [Dashboard（本地 Gateway 网关）](http://127.0.0.1:18789/)
+- [仪表盘（本地 Gateway 网关）](http://127.0.0.1:18789/)
 - [帮助](/zh-CN/help)
 - [文档目录](/zh-CN/start/docs-directory)
 - [配置](/zh-CN/gateway/configuration)
 - [配置示例](/zh-CN/gateway/configuration-examples)
 - [OpenClaw 助手](/zh-CN/start/openclaw)
 - [展示](/zh-CN/start/showcase)
-- [设定](/zh-CN/start/lore)
+- [背景设定](/zh-CN/start/lore)
 
 ## 安装 + 更新
 
@@ -46,20 +46,20 @@ x-i18n:
 - [架构](/zh-CN/concepts/architecture)
 - [功能](/zh-CN/concepts/features)
 - [网络中心](/zh-CN/network)
-- [智能体运行时](/zh-CN/concepts/agent)
-- [智能体工作区](/zh-CN/concepts/agent-workspace)
+- [Agent 运行时](/zh-CN/concepts/agent)
+- [Agent 工作区](/zh-CN/concepts/agent-workspace)
 - [记忆](/zh-CN/concepts/memory)
-- [智能体循环](/zh-CN/concepts/agent-loop)
+- [Agent loop](/zh-CN/concepts/agent-loop)
 - [流式传输 + 分块](/zh-CN/concepts/streaming)
 - [多智能体路由](/zh-CN/concepts/multi-agent)
 - [压缩](/zh-CN/concepts/compaction)
 - [会话](/zh-CN/concepts/session)
-- [会话裁剪](/zh-CN/concepts/session-pruning)
+- [会话剪枝](/zh-CN/concepts/session-pruning)
 - [会话工具](/zh-CN/concepts/session-tool)
 - [队列](/zh-CN/concepts/queue)
 - [斜杠命令](/zh-CN/tools/slash-commands)
 - [RPC 适配器](/zh-CN/reference/rpc)
-- [TypeBox 模式](/zh-CN/concepts/typebox)
+- [TypeBox 架构](/zh-CN/concepts/typebox)
 - [时区处理](/zh-CN/concepts/timezone)
 - [在线状态](/zh-CN/concepts/presence)
 - [设备发现 + 传输协议](/zh-CN/gateway/discovery)
@@ -67,10 +67,10 @@ x-i18n:
 - [渠道路由](/zh-CN/channels/channel-routing)
 - [群组](/zh-CN/channels/groups)
 - [群组消息](/zh-CN/channels/group-messages)
-- [模型故障切换](/zh-CN/concepts/model-failover)
+- [模型故障转移](/zh-CN/concepts/model-failover)
 - [OAuth](/zh-CN/concepts/oauth)
 
-## 提供商 + 接入
+## 提供商 + 入口
 
 - [聊天渠道中心](/zh-CN/channels)
 - [模型提供商中心](/zh-CN/providers/models)
@@ -91,17 +91,17 @@ x-i18n:
 ## Gateway 网关 + 运维
 
 - [Gateway 网关运行手册](/zh-CN/gateway)
-- [网络模型](/zh-CN/gateway/network-model)
+- [网络模型](/zh-CN/network#core-model)
 - [Gateway 网关配对](/zh-CN/gateway/pairing)
 - [Gateway 网关锁](/zh-CN/gateway/gateway-lock)
 - [后台进程](/zh-CN/gateway/background-process)
 - [健康状态](/zh-CN/gateway/health)
-- [心跳](/zh-CN/gateway/heartbeat)
+- [Heartbeat](/zh-CN/gateway/heartbeat)
 - [Doctor](/zh-CN/gateway/doctor)
-- [日志](/zh-CN/gateway/logging)
+- [日志记录](/zh-CN/gateway/logging)
 - [沙箱隔离](/zh-CN/gateway/sandboxing)
-- [Dashboard](/zh-CN/web/dashboard)
-- [控制 UI](/zh-CN/web/control-ui)
+- [仪表盘](/zh-CN/web/dashboard)
+- [控制界面](/zh-CN/web/control-ui)
 - [远程访问](/zh-CN/gateway/remote)
 - [远程 Gateway 网关 README](/zh-CN/gateway/remote-gateway-readme)
 - [Tailscale](/zh-CN/gateway/tailscale)
@@ -110,19 +110,19 @@ x-i18n:
 
 ## 工具 + 自动化
 
-- [工具总览](/zh-CN/tools)
+- [工具界面](/zh-CN/tools)
 - [OpenProse](/zh-CN/prose)
 - [CLI 参考](/zh-CN/cli)
-- [Exec 工具](/zh-CN/tools/exec)
+- [执行工具](/zh-CN/tools/exec)
 - [PDF 工具](/zh-CN/tools/pdf)
-- [提升模式](/zh-CN/tools/elevated)
-- [Cron 作业](/zh-CN/automation/cron-jobs)
-- [自动化与任务](/zh-CN/automation)
+- [提权模式](/zh-CN/tools/elevated)
+- [Cron 任务](/zh-CN/automation/cron-jobs)
+- [自动化和任务](/zh-CN/automation)
 - [思考 + 详细输出](/zh-CN/tools/thinking)
-- [模型](/zh-CN/concepts/models)
+- [Models](/zh-CN/concepts/models)
 - [子智能体](/zh-CN/tools/subagents)
-- [智能体发送 CLI](/zh-CN/tools/agent-send)
-- [终端 UI](/zh-CN/web/tui)
+- [Agent 发送 CLI](/zh-CN/tools/agent-send)
+- [终端界面](/zh-CN/web/tui)
 - [浏览器控制](/zh-CN/tools/browser)
 - [浏览器（Linux 故障排除）](/zh-CN/tools/browser-linux-troubleshooting)
 - [投票](/zh-CN/cli/message)
@@ -130,7 +130,7 @@ x-i18n:
 ## 节点、媒体、语音
 
 - [节点概览](/zh-CN/nodes)
-- [相机](/zh-CN/nodes/camera)
+- [摄像头](/zh-CN/nodes/camera)
 - [图像](/zh-CN/nodes/images)
 - [音频](/zh-CN/nodes/audio)
 - [位置命令](/zh-CN/nodes/location-command)
@@ -152,13 +152,13 @@ x-i18n:
 - [macOS 开发设置](/zh-CN/platforms/mac/dev-setup)
 - [macOS 菜单栏](/zh-CN/platforms/mac/menu-bar)
 - [macOS 语音唤醒](/zh-CN/platforms/mac/voicewake)
-- [macOS 语音浮层](/zh-CN/platforms/mac/voice-overlay)
+- [macOS 语音覆盖层](/zh-CN/platforms/mac/voice-overlay)
 - [macOS WebChat](/zh-CN/platforms/mac/webchat)
 - [macOS Canvas](/zh-CN/platforms/mac/canvas)
 - [macOS 子进程](/zh-CN/platforms/mac/child-process)
 - [macOS 健康状态](/zh-CN/platforms/mac/health)
 - [macOS 图标](/zh-CN/platforms/mac/icon)
-- [macOS 日志](/zh-CN/platforms/mac/logging)
+- [macOS 日志记录](/zh-CN/platforms/mac/logging)
 - [macOS 权限](/zh-CN/platforms/mac/permissions)
 - [macOS 远程访问](/zh-CN/platforms/mac/remote)
 - [macOS 签名](/zh-CN/platforms/mac/signing)
@@ -173,10 +173,10 @@ x-i18n:
 - [构建插件](/zh-CN/plugins/building-plugins)
 - [插件钩子](/zh-CN/plugins/hooks)
 - [插件清单](/zh-CN/plugins/manifest)
-- [智能体工具](/zh-CN/plugins/building-plugins#registering-agent-tools)
+- [Agent 工具](/zh-CN/plugins/building-plugins#registering-agent-tools)
 - [插件包](/zh-CN/plugins/bundles)
 - [社区插件](/zh-CN/plugins/community)
-- [能力扩展手册](/zh-CN/plugins/architecture)
+- [能力扩展手册](/zh-CN/plugins/adding-capabilities)
 - [语音通话插件](/zh-CN/plugins/voice-call)
 - [Zalo 用户插件](/zh-CN/plugins/zalouser)
 
@@ -202,8 +202,8 @@ x-i18n:
 
 - [测试](/zh-CN/reference/test)
 - [发布策略](/zh-CN/reference/RELEASING)
-- [设备型号](/zh-CN/reference/device-models)
+- [设备模型](/zh-CN/reference/device-models)
 
-## 相关内容
+## 相关
 
 - [入门指南](/zh-CN/start/getting-started)

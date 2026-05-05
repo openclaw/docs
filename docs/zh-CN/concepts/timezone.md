@@ -1,102 +1,54 @@
 ---
 read_when:
-    - 你需要了解时间戳如何为模型进行规范化
-    - 为系统提示词配置用户时区
-summary: 智能体、envelope 和提示词的时区处理
+    - 你需要一个用于理解时区处理的快速心智模型
+    - 你正在决定要在哪里设置或覆盖时区
+summary: OpenClaw 中时区出现的位置——信封、工具载荷、系统提示词
 title: 时区
 x-i18n:
-    generated_at: "2026-04-23T20:47:46Z"
-    model: gpt-5.4
+    generated_at: "2026-05-05T16:51:44Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8318acb0269f446fb3d3198f47811d40490a9ee9593fed82f31353aef2bacb81
+    source_hash: 041b207a0fa2758a20e8f3c4eca852d3dd416560d045459cb4d86709b45449e3
     source_path: concepts/timezone.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw 会对时间戳进行标准化，这样模型看到的是**单一参考时间**。
+OpenClaw 会标准化时间戳，让模型看到的是**单一参考时间**，而不是混杂的提供商本地时钟。时区会出现在三个层面，每个层面都有自己的用途：
 
-## 消息 envelope（默认使用本地时间）
+## 三个时区层面
 
-入站消息会被包装成如下 envelope：
+| 层面              | 显示内容                                                                                                | 默认值                                  | 配置方式                                                |
+| ----------------- | ------------------------------------------------------------------------------------------------------- | --------------------------------------- | ------------------------------------------------------- |
+| 消息信封          | 包装传入的渠道消息：`[Signal +1555 2026-01-18 00:19 PST] hello`                                         | 主机本地                                | `agents.defaults.envelopeTimezone`                      |
+| 工具载荷          | 渠道 `readMessages` 风格的工具返回原始提供商时间 + 标准化的 `timestampMs` / `timestampUtc`              | 始终存在 UTC 字段                       | 不可配置；保留提供商原生时间戳                         |
+| 系统提示词        | 一个小型 `Current Date & Time` 块，只包含**时区**（不含时钟值，以保持缓存稳定）                         | 未设置 `userTimezone` 时使用主机时区    | `agents.defaults.userTimezone`                          |
 
-```
-[Provider ... 2026-01-05 16:26 PST] message text
-```
+系统提示词会有意省略实时时钟，以保持提示词缓存在多轮对话中的稳定性。当智能体需要当前时间时，它会调用 `session_status`。
 
-envelope 中的时间戳默认是**主机本地时间**，精确到分钟。
-
-你可以通过以下配置进行覆盖：
+## 设置用户时区
 
 ```json5
 {
   agents: {
     defaults: {
-      envelopeTimezone: "local", // "utc" | "local" | "user" | IANA timezone
-      envelopeTimestamp: "on", // "on" | "off"
-      envelopeElapsed: "on", // "on" | "off"
+      userTimezone: "America/Chicago",
     },
   },
 }
 ```
 
-- `envelopeTimezone: "utc"` 使用 UTC。
-- `envelopeTimezone: "user"` 使用 `agents.defaults.userTimezone`（回退到主机时区）。
-- 使用显式 IANA 时区（例如 `"Europe/Vienna"`）可获得固定偏移。
-- `envelopeTimestamp: "off"` 会从 envelope 标头中移除绝对时间戳。
-- `envelopeElapsed: "off"` 会移除经过时间后缀（即 `+2m` 这种样式）。
+如果未设置 `userTimezone`，OpenClaw 会在运行时解析主机时区（不会写入配置）。`agents.defaults.timeFormat`（`auto` | `12` | `24`）控制信封和下游层面的 12 小时制/24 小时制渲染，而不控制系统提示词部分。
 
-### 示例
+## 何时覆盖
 
-**本地时间（默认）：**
+- **使用 UTC 信封**（`envelopeTimezone: "utc"`）：当你希望不同区域的主机之间使用稳定时间戳，或者希望 UTC 对齐的日志匹配诊断输出时使用。
+- **使用固定 IANA 时区**（例如 `"Europe/Vienna"`）：当 Gateway 网关主机位于一个时区，但用户位于另一个时区，并且你希望信封无论主机如何迁移都按用户时区显示时使用。
+- **设置 `envelopeTimestamp: "off"`**：当时间戳上下文对对话没有帮助，并希望使用低 token 信封时使用。
 
-```
-[Signal Alice +1555 2026-01-18 00:19 PST] hello
-```
+如需完整行为参考、各提供商示例以及经过时间格式化，请参阅 [日期和时间](/zh-CN/date-time)。
 
-**固定时区：**
+## 相关
 
-```
-[Signal Alice +1555 2026-01-18 06:19 GMT+1] hello
-```
-
-**经过时间：**
-
-```
-[Signal Alice +1555 +2m 2026-01-18T05:19Z] follow-up
-```
-
-## 工具载荷（原始提供商数据 + 标准化字段）
-
-工具调用（`channels.discord.readMessages`、`channels.slack.readMessages` 等）会返回**原始提供商时间戳**。
-我们还会附加标准化字段以保持一致性：
-
-- `timestampMs`（UTC epoch 毫秒）
-- `timestampUtc`（ISO 8601 UTC 字符串）
-
-原始提供商字段会被保留。
-
-## 用于系统提示词的用户时区
-
-设置 `agents.defaults.userTimezone`，告诉模型用户的本地时区。如果它
-未设置，OpenClaw 会在**运行时解析主机时区**（不会写入配置）。
-
-```json5
-{
-  agents: { defaults: { userTimezone: "America/Chicago" } },
-}
-```
-
-系统提示词中会包含：
-
-- `Current Date & Time` 部分，带本地时间和时区
-- `Time format: 12-hour` 或 `24-hour`
-
-你可以通过 `agents.defaults.timeFormat`（`auto` | `12` | `24`）控制提示词格式。
-
-完整行为和示例请参见 [Date & Time](/zh-CN/date-time)。
-
-## 相关内容
-
-- [Heartbeat](/zh-CN/gateway/heartbeat) — 活跃时段会使用时区进行调度
-- [Cron Jobs](/zh-CN/automation/cron-jobs) — cron 表达式会使用时区进行调度
-- [Date & Time](/zh-CN/date-time) — 完整的日期/时间行为与示例
+- [日期和时间](/zh-CN/date-time) — 完整的信封/工具/提示词行为和示例。
+- [Heartbeat](/zh-CN/gateway/heartbeat) — 活跃时段使用时区进行调度。
+- [Cron 任务](/zh-CN/automation/cron-jobs) — cron 表达式使用时区进行调度。
