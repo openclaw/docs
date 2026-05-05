@@ -1,22 +1,21 @@
 ---
 read_when:
-    - Je wilt snelle voorbeelden voor het installeren, weergeven, bijwerken of verwijderen van plugins
-    - Je wilt kiezen tussen ClawHub en Plugin-distributie via npm
+    - Je wilt snelle voorbeelden voor het installeren, weergeven, bijwerken of verwijderen van Plugins
+    - Je wilt kiezen tussen Plugin-distributie via ClawHub en via npm
     - Je publiceert een Plugin-pakket
 sidebarTitle: Manage plugins
 summary: Korte voorbeelden voor het installeren, weergeven, verwijderen, bijwerken en publiceren van OpenClaw-plugins
 title: Plugins beheren
 x-i18n:
-    generated_at: "2026-05-02T22:20:17Z"
+    generated_at: "2026-05-05T01:49:07Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ec25a811b942f155f5d5e4cac475dbef74f0616bc85ff182c74598184e910320
+    source_hash: 7fa7aa78c1ba9c83ba09bea073987ed5e037031f7c7f29307fe18934b0bd2a1c
     source_path: plugins/manage-plugins.md
     workflow: 16
 ---
 
-De meeste pluginworkflows bestaan uit een paar opdrachten: zoeken, installeren, de Gateway opnieuw starten,
-verifiëren en verwijderen wanneer je de plugin niet meer nodig hebt.
+De meeste plugin-workflows bestaan uit een paar commando's: zoeken, installeren, de Gateway opnieuw starten, verifiëren en verwijderen wanneer je de Plugin niet meer nodig hebt.
 
 ## Plugins weergeven
 
@@ -27,18 +26,14 @@ openclaw plugins list --verbose
 openclaw plugins list --json
 ```
 
-Gebruik `--json` voor scripts. Dit bevat registerdiagnostiek en de statische
-`dependencyStatus` van elke plugin wanneer het pluginpakket `dependencies` of
-`optionalDependencies` declareert.
+Gebruik `--json` voor scripts. Het bevat registerdiagnostiek en de statische `dependencyStatus` van elke Plugin wanneer het pluginpakket `dependencies` of `optionalDependencies` declareert.
 
 ```bash
 openclaw plugins list --json \
   | jq '.plugins[] | {id, enabled, format, source, dependencyStatus}'
 ```
 
-`plugins list` is een koude inventariscontrole. Het toont wat OpenClaw kan ontdekken
-uit configuratie, manifests en het pluginregister; het bewijst niet dat een
-al draaiend Gateway-proces de pluginruntime heeft geïmporteerd.
+`plugins list` is een koude inventariscontrole. Het toont wat OpenClaw kan ontdekken uit configuratie, manifests en het pluginregister; het bewijst niet dat een al draaiend Gateway-proces de pluginruntime heeft geïmporteerd.
 
 ## Plugins installeren
 
@@ -72,9 +67,7 @@ openclaw gateway restart
 openclaw plugins inspect <plugin-id> --runtime --json
 ```
 
-Gebruik `inspect --runtime` wanneer je bewijs nodig hebt dat de plugin runtime-
-oppervlakken heeft geregistreerd, zoals tools, hooks, services, Gateway-methoden
-of CLI-opdrachten die eigendom zijn van de plugin.
+Gebruik `inspect --runtime` wanneer je bewijs nodig hebt dat de Plugin runtime-oppervlakken heeft geregistreerd, zoals tools, hooks, services, Gateway-methoden of CLI-commando's die eigendom zijn van de Plugin.
 
 ## Plugins bijwerken
 
@@ -84,22 +77,16 @@ openclaw plugins update <npm-package-or-spec>
 openclaw plugins update --all
 ```
 
-Als een plugin is geïnstalleerd vanuit een npm-dist-tag zoals `@beta`, gebruiken latere
-aanroepen van `update <plugin-id>` die vastgelegde tag opnieuw. Door een expliciete npm-spec
-door te geven, wordt de bijgehouden installatie voor toekomstige updates naar die spec omgeschakeld.
+Als een Plugin is geïnstalleerd vanaf een npm-dist-tag zoals `@beta`, hergebruiken latere aanroepen van `update <plugin-id>` die opgeslagen tag. Door een expliciete npm-specificatie door te geven, wordt de bijgehouden installatie voor toekomstige updates overgezet naar die specificatie.
 
 ```bash
 openclaw plugins update @scope/openclaw-plugin@beta
 openclaw plugins update @scope/openclaw-plugin
 ```
 
-De tweede opdracht verplaatst een plugin terug naar de standaardreleaselijn van het register
-wanneer die eerder was vastgezet op een exacte versie of tag.
+Het tweede commando verplaatst een Plugin terug naar de standaard releaselijn van het register wanneer deze eerder was vastgezet op een exacte versie of tag.
 
-Wanneer `openclaw update` op het bètakanaal wordt uitgevoerd, proberen pluginrecords
-voor de standaardlijn van npm en ClawHub eerst de overeenkomende pluginrelease `@beta`.
-Als die bètarelease niet bestaat, valt OpenClaw terug op de vastgelegde standaard-/laatste spec.
-Exacte versies en expliciete tags zoals `@rc` of `@beta` blijven behouden.
+Wanneer `openclaw update` op het bètakanaal draait, proberen npm- en ClawHub-pluginrecords op de standaardlijn eerst de overeenkomende pluginrelease `@beta`. Als die bètarelease niet bestaat, valt OpenClaw terug op de opgeslagen standaard-/latest-specificatie. Voor npm-plugins valt OpenClaw ook terug wanneer het bètapakket bestaat maar de installatievalidatie mislukt. Exacte versies en expliciete tags zoals `@rc` of `@beta` blijven behouden.
 
 ## Plugins verwijderen
 
@@ -110,20 +97,15 @@ openclaw plugins uninstall <plugin-id> --keep-files
 openclaw gateway restart
 ```
 
-Verwijderen wist de configuratievermelding van de plugin, het pluginindexrecord, vermeldingen
-in de toestaan-/weigerenlijst en gekoppelde laadpaden wanneer van toepassing. Beheerde
-installatiemappen worden verwijderd, tenzij je `--keep-files` doorgeeft.
+Verwijderen verwijdert de configuratievermelding van de Plugin, de pluginindexrecord, vermeldingen in de allow-/deny-lijst en gekoppelde laadpaden wanneer van toepassing. Beheerde installatiemappen worden verwijderd, tenzij je `--keep-files` doorgeeft.
 
 ## Plugins publiceren
 
-Je kunt externe plugins publiceren naar [ClawHub](https://clawhub.ai), npmjs.com of
-beide.
+Je kunt externe Plugins publiceren naar [ClawHub](https://clawhub.ai), npmjs.com of beide.
 
 ### Publiceren naar ClawHub
 
-ClawHub is het primaire openbare ontdekkingsoppervlak voor OpenClaw-plugins. Het geeft
-gebruikers doorzoekbare metadata, versiegeschiedenis en resultaten van registerscans vóór
-installatie.
+ClawHub is het primaire openbare ontdekkingsoppervlak voor OpenClaw-Plugins. Het geeft gebruikers doorzoekbare metadata, versiegeschiedenis en registerscranresultaten vóór installatie.
 
 ```bash
 npm i -g clawhub
@@ -144,8 +126,7 @@ De kale vorm controleert nog steeds eerst ClawHub.
 
 ### Publiceren naar npmjs.com
 
-Native npm-plugins moeten een pluginmanifest en OpenClaw-entrypointmetadata in
-`package.json` bevatten.
+Native npm-Plugins moeten een pluginmanifest en OpenClaw-entrypointmetadata in `package.json` bevatten.
 
 ```json package.json
 {
@@ -170,17 +151,14 @@ openclaw plugins install npm:@acme/openclaw-plugin@beta
 openclaw plugins install npm:@acme/openclaw-plugin@1.0.0
 ```
 
-Als hetzelfde pakket ook beschikbaar is op ClawHub, slaat `npm:` het opzoeken in ClawHub over en
-dwingt het npm-resolutie af.
+Als hetzelfde pakket ook beschikbaar is op ClawHub, slaat `npm:` het opzoeken in ClawHub over en dwingt het npm-resolutie af.
 
 ## Bronkeuze
 
-- **ClawHub**: gebruik dit wanneer je OpenClaw-native ontdekking, scansamenvattingen,
-  versies en installatietips wilt.
-- **npmjs.com**: gebruik dit wanneer je al JavaScript-pakketten levert of npm-
-  dist-tags/private-registerworkflows nodig hebt.
+- **ClawHub**: gebruik dit wanneer je OpenClaw-native ontdekking, scansamenvattingen, versies en installatietips wilt.
+- **npmjs.com**: gebruik dit wanneer je al JavaScript-pakketten levert of npm dist-tags/private-registerworkflows nodig hebt.
 - **Git**: gebruik dit wanneer je rechtstreeks vanaf een branch, tag of commit wilt installeren.
-- **Lokaal pad**: gebruik dit wanneer je een plugin op dezelfde machine ontwikkelt of test.
+- **Lokaal pad**: gebruik dit wanneer je een Plugin op dezelfde machine ontwikkelt of test.
 
 ## Gerelateerd
 

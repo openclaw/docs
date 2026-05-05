@@ -2,45 +2,37 @@
 read_when:
     - Muziek of audio genereren via de agent
     - Muziekgeneratieproviders en -modellen configureren
-    - De parameters van de tool music_generate begrijpen
+    - Inzicht in de parameters van het hulpprogramma music_generate
 sidebarTitle: Music generation
-summary: Genereer muziek via music_generate in Google Lyria-, MiniMax- en ComfyUI-workflows
+summary: Genereer muziek via music_generate in Google Lyria-, MiniMax- en ComfyUI-werkstromen
 title: Muziekgeneratie
 x-i18n:
-    generated_at: "2026-05-02T11:30:01Z"
+    generated_at: "2026-05-05T01:51:00Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9199afe17b2641efb1a7523c651724af9c312c1415c7e60ca736341699f6bc26
+    source_hash: 0e14a5a10dd485c2d3dbbd23a0fc2c12de500d9f7bfb7db471c27ed2a99ad650
     source_path: tools/music-generation.md
     workflow: 16
 ---
 
-De `music_generate`-tool laat de agent muziek of audio maken via de
-gedeelde mogelijkheid voor muziekgeneratie met geconfigureerde providers —
-Google, MiniMax en workflow-geconfigureerde ComfyUI op dit moment.
+Met de tool `music_generate` kan de agent muziek of audio maken via de gedeelde mogelijkheid voor muziekgeneratie met geconfigureerde providers: momenteel Google, MiniMax en via workflow geconfigureerde ComfyUI.
 
-Voor agent-runs met sessieondersteuning start OpenClaw muziekgeneratie als
-achtergrondtaak, houdt deze bij in het taakregister, en wekt de agent daarna
-opnieuw wanneer de track klaar is, zodat de agent de voltooide audio terug kan
-plaatsen in het oorspronkelijke kanaal.
+Voor sessie-ondersteunde agent-runs start OpenClaw muziekgeneratie als achtergrondtaak, houdt deze bij in het takenlogboek en maakt de agent daarna weer wakker wanneer de track klaar is, zodat de agent de gebruiker kan informeren en de voltooide audio kan bijvoegen. In groeps-/kanaalchats die alleen zichtbare levering via berichtentools gebruiken, geeft de agent het resultaat door via de berichtentool.
 
 <Note>
-De ingebouwde gedeelde tool verschijnt alleen wanneer minstens één
-muziekgeneratieprovider beschikbaar is. Als je `music_generate` niet ziet in de
-tools van je agent, configureer dan `agents.defaults.musicGenerationModel` of stel
-een API-sleutel voor een provider in.
+De ingebouwde gedeelde tool verschijnt alleen wanneer ten minste één provider voor muziekgeneratie beschikbaar is. Als je `music_generate` niet ziet in de tools van je agent, configureer dan `agents.defaults.musicGenerationModel` of stel een API-sleutel voor een provider in.
 </Note>
 
 ## Snel aan de slag
 
 <Tabs>
-  <Tab title="Gedeeld met providerondersteuning">
+  <Tab title="Ondersteund door gedeelde provider">
     <Steps>
-      <Step title="Auth configureren">
-        Stel een API-sleutel in voor minstens één provider — bijvoorbeeld
+      <Step title="Authenticatie configureren">
+        Stel een API-sleutel in voor ten minste één provider, bijvoorbeeld
         `GEMINI_API_KEY` of `MINIMAX_API_KEY`.
       </Step>
-      <Step title="Kies een standaardmodel (optioneel)">
+      <Step title="Een standaardmodel kiezen (optioneel)">
         ```json5
         {
           agents: {
@@ -53,30 +45,30 @@ een API-sleutel voor een provider in.
         }
         ```
       </Step>
-      <Step title="Vraag het de agent">
-        _"Genereer een opgewekte synthpoptrack over een nachtelijke rit door een
-        neonstad."_
+      <Step title="De agent vragen">
+        _"Generate an upbeat synthpop track about a night drive through a
+        neon city."_
 
-        De agent roept `music_generate` automatisch aan. Geen tool-
-        allow-listing nodig.
+        De agent roept `music_generate` automatisch aan. Geen allow-listing
+        voor tools nodig.
       </Step>
     </Steps>
 
-    Voor directe synchrone contexten zonder agent-run met sessieondersteuning
+    Voor directe synchrone contexten zonder sessie-ondersteunde agent-run
     valt de ingebouwde tool nog steeds terug op inline generatie en retourneert
     het uiteindelijke mediapad in het toolresultaat.
 
   </Tab>
   <Tab title="ComfyUI-workflow">
     <Steps>
-      <Step title="Configureer de workflow">
+      <Step title="De workflow configureren">
         Configureer `plugins.entries.comfy.config.music` met een workflow-
-        JSON en prompt-/uitvoernodes.
+        JSON en prompt-/uitvoerknooppunten.
       </Step>
-      <Step title="Cloud-auth (optioneel)">
+      <Step title="Cloud-authenticatie (optioneel)">
         Stel voor Comfy Cloud `COMFY_API_KEY` of `COMFY_CLOUD_API_KEY` in.
       </Step>
-      <Step title="Roep de tool aan">
+      <Step title="De tool aanroepen">
         ```text
         /tool music_generate prompt="Warm ambient synth loop with soft tape texture"
         ```
@@ -97,32 +89,29 @@ Generate an energetic chiptune loop about launching a rocket at sunrise.
 
 ## Ondersteunde providers
 
-| Provider | Standaardmodel        | Referentie-invoer | Ondersteunde bedieningselementen                          | Auth                                   |
-| -------- | ---------------------- | ----------------- | --------------------------------------------------------- | -------------------------------------- |
-| ComfyUI  | `workflow`             | Tot 1 afbeelding  | Workflow-gedefinieerde muziek of audio                    | `COMFY_API_KEY`, `COMFY_CLOUD_API_KEY` |
-| Google   | `lyria-3-clip-preview` | Tot 10 afbeeldingen | `lyrics`, `instrumental`, `format`                      | `GEMINI_API_KEY`, `GOOGLE_API_KEY`     |
-| MiniMax  | `music-2.6`            | Geen              | `lyrics`, `instrumental`, `durationSeconds`, `format=mp3` | `MINIMAX_API_KEY` of MiniMax OAuth     |
+| Provider | Standaardmodel        | Referentie-invoer | Ondersteunde besturingselementen                         | Auth                                   |
+| -------- | --------------------- | ----------------- | -------------------------------------------------------- | -------------------------------------- |
+| ComfyUI  | `workflow`            | Maximaal 1 image  | Door workflow gedefinieerde muziek of audio              | `COMFY_API_KEY`, `COMFY_CLOUD_API_KEY` |
+| Google   | `lyria-3-clip-preview` | Maximaal 10 images | `lyrics`, `instrumental`, `format`                       | `GEMINI_API_KEY`, `GOOGLE_API_KEY`     |
+| MiniMax  | `music-2.6`           | Geen              | `lyrics`, `instrumental`, `durationSeconds`, `format=mp3` | `MINIMAX_API_KEY` of MiniMax OAuth     |
 
 ### Mogelijkhedenmatrix
 
-Het expliciete moduscontract dat wordt gebruikt door `music_generate`, contracttests
-en de gedeelde live-sweep:
+Het expliciete moduscontract dat wordt gebruikt door `music_generate`, contracttests en de gedeelde live sweep:
 
-| Provider | `generate` | `edit` | Bewerkingslimiet | Gedeelde live-lanes                                                     |
-| -------- | :--------: | :----: | ---------------- | ---------------------------------------------------------------------- |
-| ComfyUI  |     ✓      |   ✓    | 1 afbeelding     | Niet in de gedeelde sweep; gedekt door `extensions/comfy/comfy.live.test.ts` |
-| Google   |     ✓      |   ✓    | 10 afbeeldingen  | `generate`, `edit`                                                     |
-| MiniMax  |     ✓      |   —    | Geen             | `generate`                                                             |
+| Provider | `generate` | `edit` | Bewerklimiet | Gedeelde live-lanes                                                       |
+| -------- | :--------: | :----: | ------------ | ------------------------------------------------------------------------- |
+| ComfyUI  |     ✓      |   ✓    | 1 image      | Niet in de gedeelde sweep; gedekt door `extensions/comfy/comfy.live.test.ts` |
+| Google   |     ✓      |   ✓    | 10 images    | `generate`, `edit`                                                        |
+| MiniMax  |     ✓      |   —    | Geen         | `generate`                                                                |
 
-Gebruik `action: "list"` om beschikbare gedeelde providers en modellen tijdens
-runtime te bekijken:
+Gebruik `action: "list"` om beschikbare gedeelde providers en modellen tijdens runtime te bekijken:
 
 ```text
 /tool music_generate action=list
 ```
 
-Gebruik `action: "status"` om de actieve muziektak met sessieondersteuning te
-bekijken:
+Gebruik `action: "status"` om de actieve sessie-ondersteunde muziektaak te bekijken:
 
 ```text
 /tool music_generate action=status
@@ -140,76 +129,58 @@ Voorbeeld van directe generatie:
   Prompt voor muziekgeneratie. Vereist voor `action: "generate"`.
 </ParamField>
 <ParamField path="action" type='"generate" | "status" | "list"' default="generate">
-  `"status"` retourneert de huidige sessietaak; `"list"` inspecteert providers.
+  `"status"` retourneert de huidige sessietaak; `"list"` bekijkt providers.
 </ParamField>
 <ParamField path="model" type="string">
-  Overschrijving voor provider/model (bijv. `google/lyria-3-pro-preview`,
+  Provider-/modeloverride (bijv. `google/lyria-3-pro-preview`,
   `comfy/workflow`).
 </ParamField>
 <ParamField path="lyrics" type="string">
-  Optionele songteksten wanneer de provider expliciete invoer voor songteksten ondersteunt.
+  Optionele songtekst wanneer de provider expliciete songtekstinvoer ondersteunt.
 </ParamField>
 <ParamField path="instrumental" type="boolean">
-  Vraag uitvoer met alleen instrumenten aan wanneer de provider dit ondersteunt.
+  Vraag uitvoer met alleen instrumentale audio aan wanneer de provider dit ondersteunt.
 </ParamField>
 <ParamField path="image" type="string">
-  Pad of URL naar één referentieafbeelding.
+  Pad of URL naar één referentie-image.
 </ParamField>
 <ParamField path="images" type="string[]">
-  Meerdere referentieafbeeldingen (tot 10 bij ondersteunende providers).
+  Meerdere referentie-images (maximaal 10 bij providers die dit ondersteunen).
 </ParamField>
 <ParamField path="durationSeconds" type="number">
   Doelduur in seconden wanneer de provider duurhints ondersteunt.
 </ParamField>
 <ParamField path="format" type='"mp3" | "wav"'>
-  Hint voor uitvoerformaat wanneer de provider dit ondersteunt.
+  Hint voor uitvoerindeling wanneer de provider dit ondersteunt.
 </ParamField>
 <ParamField path="filename" type="string">Hint voor uitvoerbestandsnaam.</ParamField>
-<ParamField path="timeoutMs" type="number">Optionele time-out voor providerverzoeken in milliseconden. Waarden onder 10000 ms worden verhoogd naar 10000 ms en gerapporteerd in het toolresultaat.</ParamField>
+<ParamField path="timeoutMs" type="number">Optionele time-out voor providerverzoeken in milliseconden. Waarden onder 10000ms worden verhoogd naar 10000ms en gemeld in het toolresultaat.</ParamField>
 
 <Note>
-Niet alle providers ondersteunen alle parameters. OpenClaw valideert nog steeds
-harde limieten, zoals invoeraantallen, vóór indiening. Wanneer een provider
-duur ondersteunt maar een korter maximum gebruikt dan de aangevraagde waarde,
-klemt OpenClaw af naar de dichtstbijzijnde ondersteunde duur. Werkelijk niet-
-ondersteunde optionele hints worden genegeerd met een waarschuwing wanneer de
-geselecteerde provider of het geselecteerde model ze niet kan honoreren.
-Toolresultaten rapporteren toegepaste instellingen; `details.normalization`
-legt elke mapping van aangevraagd naar toegepast vast.
+Niet alle providers ondersteunen alle parameters. OpenClaw valideert nog steeds harde limieten, zoals invoeraantallen, vóór verzending. Wanneer een provider duur ondersteunt maar een korter maximum gebruikt dan de gevraagde waarde, begrenst OpenClaw dit tot de dichtstbijzijnde ondersteunde duur. Echt niet-ondersteunde optionele hints worden genegeerd met een waarschuwing wanneer de geselecteerde provider of het geselecteerde model ze niet kan honoreren. Toolresultaten rapporteren toegepaste instellingen; `details.normalization` legt elke mapping van aangevraagd naar toegepast vast.
 </Note>
 
 ## Asynchroon gedrag
 
-Muziekgeneratie met sessieondersteuning draait als achtergrondtaak:
+Sessie-ondersteunde muziekgeneratie draait als achtergrondtaak:
 
-- **Achtergrondtaak:** `music_generate` maakt een achtergrondtaak aan, retourneert
-  onmiddellijk een gestart-/taakrespons en plaatst de voltooide track later in
-  een vervolgbericht van de agent.
-- **Dubbele uitvoering voorkomen:** zolang een taak `queued` of `running` is,
-  retourneren latere `music_generate`-aanroepen in dezelfde sessie de taakstatus
-  in plaats van een nieuwe generatie te starten. Gebruik `action: "status"` om dit
-  expliciet te controleren.
-- **Status opzoeken:** `openclaw tasks list` of `openclaw tasks show <taskId>`
-  inspecteert wachtrij-, actieve en terminale status.
-- **Wekken bij voltooiing:** OpenClaw injecteert een interne voltooiingsgebeurtenis
-  terug in dezelfde sessie, zodat het model zelf het gebruikersgerichte
-  vervolgbericht kan schrijven.
-- **Prompthint:** latere gebruikers-/handmatige beurten in dezelfde sessie krijgen
-  een kleine runtime-hint wanneer er al een muziektak loopt, zodat het model niet
-  blind opnieuw `music_generate` aanroept.
-- **Fallback zonder sessie:** directe/lokale contexten zonder echte agentsessie
-  draaien inline en retourneren het uiteindelijke audioresultaat in dezelfde beurt.
+- **Achtergrondtaak:** `music_generate` maakt een achtergrondtaak aan, retourneert direct een gestart-/taakrespons en plaatst de voltooide track later in een vervolgbericht van de agent.
+- **Dubbele aanroepen voorkomen:** terwijl een taak `queued` of `running` is, retourneren latere `music_generate`-aanroepen in dezelfde sessie de taakstatus in plaats van een nieuwe generatie te starten. Gebruik `action: "status"` om dit expliciet te controleren.
+- **Status opzoeken:** `openclaw tasks list` of `openclaw tasks show <taskId>` bekijkt wachtrij-, actieve en terminale status.
+- **Voltooiingswake:** OpenClaw injecteert een interne voltooiingsgebeurtenis terug in dezelfde sessie, zodat het model zelf de gebruikersgerichte follow-up kan schrijven.
+- **Prompthint:** latere gebruikers-/handmatige beurten in dezelfde sessie krijgen een kleine runtimehint wanneer er al een muziektaak loopt, zodat het model niet blind opnieuw `music_generate` aanroept.
+- **Fallback zonder sessie:** directe/lokale contexten zonder echte agentsessie draaien inline en retourneren het uiteindelijke audioresultaat in dezelfde beurt.
 
 ### Taaklevenscyclus
 
 | Status      | Betekenis                                                                                     |
 | ----------- | --------------------------------------------------------------------------------------------- |
 | `queued`    | Taak aangemaakt, wacht tot de provider deze accepteert.                                       |
-| `running`   | Provider is aan het verwerken (meestal 30 seconden tot 3 minuten, afhankelijk van provider en duur). |
-| `succeeded` | Track klaar; de agent wordt gewekt en plaatst deze in het gesprek.                           |
-| `failed`    | Providerfout of time-out; de agent wordt gewekt met foutdetails.                             |
+| `running`   | Provider verwerkt de taak (meestal 30 seconden tot 3 minuten, afhankelijk van provider en duur). |
+| `succeeded` | Track klaar; de agent wordt wakker en plaatst deze in het gesprek.                           |
+| `failed`    | Providerfout of time-out; de agent wordt wakker met foutdetails.                              |
 
-Controleer de status vanuit de CLI:
+Controleer status via de CLI:
 
 ```bash
 openclaw tasks list
@@ -234,61 +205,57 @@ openclaw tasks cancel <taskId>
 }
 ```
 
-### Selectievolgorde voor providers
+### Volgorde voor providerselectie
 
 OpenClaw probeert providers in deze volgorde:
 
 1. `model`-parameter uit de toolaanroep (als de agent er een opgeeft).
-2. `musicGenerationModel.primary` uit de configuratie.
+2. `musicGenerationModel.primary` uit configuratie.
 3. `musicGenerationModel.fallbacks` op volgorde.
-4. Automatische detectie met alleen auth-ondersteunde providerstandaarden:
+4. Automatische detectie met alleen door auth ondersteunde providerstandaarden:
    - huidige standaardprovider eerst;
-   - overige geregistreerde muziekgeneratieproviders in provider-id-volgorde.
+   - resterende geregistreerde providers voor muziekgeneratie in volgorde van provider-id.
 
-Als een provider faalt, wordt de volgende kandidaat automatisch geprobeerd. Als
-alles faalt, bevat de fout details van elke poging.
+Als een provider faalt, wordt de volgende kandidaat automatisch geprobeerd. Als alle pogingen mislukken, bevat de fout details van elke poging.
 
-Stel `agents.defaults.mediaGenerationAutoProviderFallback: false` in om alleen
-expliciete `model`-, `primary`- en `fallbacks`-items te gebruiken.
+Stel `agents.defaults.mediaGenerationAutoProviderFallback: false` in om alleen expliciete `model`-, `primary`- en `fallbacks`-vermeldingen te gebruiken.
 
 ## Providernotities
 
 <AccordionGroup>
   <Accordion title="ComfyUI">
-    Workflowgestuurd en afhankelijk van de geconfigureerde graaf plus nodemapping
-    voor prompt-/uitvoervelden. De meegeleverde `comfy`-Plugin sluit aan op de
+    Workflowgestuurd en afhankelijk van de geconfigureerde graaf plus knooppuntmapping
+    voor prompt-/uitvoervelden. De gebundelde `comfy`-plugin koppelt aan de
     gedeelde `music_generate`-tool via het providerregister voor muziekgeneratie.
   </Accordion>
   <Accordion title="Google (Lyria 3)">
-    Gebruikt batchgeneratie met Lyria 3. De huidige meegeleverde flow ondersteunt
-    prompt, optionele songtekst en optionele referentieafbeeldingen.
+    Gebruikt Lyria 3-batchgeneratie. De huidige gebundelde flow ondersteunt
+    prompt, optionele songtekst en optionele referentie-images.
   </Accordion>
   <Accordion title="MiniMax">
-    Gebruikt het batch-`music_generation`-endpoint. Ondersteunt prompt, optionele
-    songteksten, instrumentale modus, duursturing en mp3-uitvoer via
-    `minimax`-auth met API-sleutel of `minimax-portal` OAuth.
+    Gebruikt het batchendpoint `music_generation`. Ondersteunt prompt, optionele
+    songtekst, instrumentale modus, duursturing en mp3-uitvoer via
+    `minimax` API-sleutel-authenticatie of `minimax-portal` OAuth.
   </Accordion>
 </AccordionGroup>
 
 ## Het juiste pad kiezen
 
-- **Gedeeld met providerondersteuning** wanneer je modelselectie, provider-
-  failover en de ingebouwde asynchrone taak-/statusflow wilt.
-- **Plugin-pad (ComfyUI)** wanneer je een aangepaste workflowgraaf nodig hebt of
-  een provider die geen deel uitmaakt van de gedeelde meegeleverde muziekmogelijkheid.
+- **Ondersteund door gedeelde provider** wanneer je modelselectie, providerfailover en de ingebouwde asynchrone taak-/statusflow wilt.
+- **Plugin-pad (ComfyUI)** wanneer je een aangepaste workflowgraaf nodig hebt of een provider die geen deel uitmaakt van de gedeelde gebundelde muziekmogelijkheid.
 
 Als je ComfyUI-specifiek gedrag debugt, zie
-[ComfyUI](/nl/providers/comfy). Als je gedeeld providergedrag debugt, begin dan met
-[Google (Gemini)](/nl/providers/google) of [MiniMax](/nl/providers/minimax).
+[ComfyUI](/nl/providers/comfy). Als je gedeeld providergedrag debugt, begin dan met [Google (Gemini)](/nl/providers/google) of
+[MiniMax](/nl/providers/minimax).
 
-## Provider-mogelijkheidsmodi
+## Providermodi voor mogelijkheden
 
 Het gedeelde contract voor muziekgeneratie ondersteunt expliciete modusdeclaraties:
 
-- `generate` voor generatie met alleen een prompt.
-- `edit` wanneer de aanvraag één of meer referentieafbeeldingen bevat.
+- `generate` voor generatie op basis van alleen een prompt.
+- `edit` wanneer de aanvraag één of meer referentie-images bevat.
 
-Nieuwe providerimplementaties moeten de voorkeur geven aan expliciete modusblokken:
+Nieuwe providerimplementaties moeten bij voorkeur expliciete modusblokken gebruiken:
 
 ```typescript
 capabilities: {
@@ -306,15 +273,12 @@ capabilities: {
 }
 ```
 
-Verouderde vlakke velden zoals `maxInputImages`, `supportsLyrics` en
-`supportsFormat` zijn **niet** genoeg om bewerkingsondersteuning te adverteren.
-Providers moeten `generate` en `edit` expliciet declareren, zodat live tests,
-contracttests en de gedeelde `music_generate`-tool modusondersteuning
-deterministisch kunnen valideren.
+Verouderde platte velden zoals `maxInputImages`, `supportsLyrics` en
+`supportsFormat` zijn **niet** genoeg om bewerkingsondersteuning te adverteren. Providers moeten `generate` en `edit` expliciet declareren, zodat live tests, contracttests en de gedeelde `music_generate`-tool modusondersteuning deterministisch kunnen valideren.
 
 ## Live tests
 
-Opt-in live dekking voor de gedeelde meegeleverde providers:
+Opt-in live dekking voor de gedeelde gebundelde providers:
 
 ```bash
 OPENCLAW_LIVE_TEST=1 pnpm test:live -- extensions/music-generation-providers.live.test.ts
@@ -326,30 +290,27 @@ Repo-wrapper:
 pnpm test:live:media music
 ```
 
-Dit live bestand laadt ontbrekende provider-env-vars uit `~/.profile`, geeft
-standaard de voorkeur aan live/env API-sleutels boven opgeslagen auth-profielen,
-en draait zowel `generate` als gedeclareerde `edit`-dekking wanneer de provider
-de bewerkingsmodus inschakelt. Dekking vandaag:
+Dit livebestand laadt ontbrekende provider-env-vars uit `~/.profile`, geeft standaard de voorkeur aan live/env API-sleutels boven opgeslagen auth-profielen en voert zowel `generate` als gedeclareerde `edit`-dekking uit wanneer de provider de bewerkingsmodus inschakelt. Dekking vandaag:
 
 - `google`: `generate` plus `edit`
 - `minimax`: alleen `generate`
-- `comfy`: afzonderlijke Comfy live dekking, niet de gedeelde provider-sweep
+- `comfy`: aparte Comfy-live dekking, niet de gedeelde provider-sweep
 
-Opt-in live dekking voor het meegeleverde ComfyUI-muziekpad:
+Opt-in live dekking voor het gebundelde ComfyUI-muziekpad:
 
 ```bash
 OPENCLAW_LIVE_TEST=1 COMFY_LIVE_TEST=1 pnpm test:live -- extensions/comfy/comfy.live.test.ts
 ```
 
-Het Comfy-livebestand behandelt ook comfy-afbeeldings- en videoworkflows wanneer die
+Het Comfy-livebestand behandelt ook Comfy-afbeeldings- en videoworkflows wanneer die
 secties zijn geconfigureerd.
 
 ## Gerelateerd
 
-- [Achtergrondtaken](/nl/automation/tasks) — taaktracking voor losgekoppelde `music_generate`-runs
+- [Achtergrondtaken](/nl/automation/tasks) — taaktracking voor losgekoppelde `music_generate`-uitvoeringen
 - [ComfyUI](/nl/providers/comfy)
 - [Configuratiereferentie](/nl/gateway/config-agents#agent-defaults) — `musicGenerationModel`-configuratie
 - [Google (Gemini)](/nl/providers/google)
 - [MiniMax](/nl/providers/minimax)
-- [Modellen](/nl/concepts/models) — modelconfiguratie en failover
-- [Tools-overzicht](/nl/tools)
+- [Modellen](/nl/concepts/models) — modelconfiguratie en uitvalovername
+- [Tooloverzicht](/nl/tools)

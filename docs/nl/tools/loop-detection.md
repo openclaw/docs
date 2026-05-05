@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Een gebruiker meldt dat agents vastlopen doordat ze toolaanroepen blijven herhalen
-    - Je moet de bescherming tegen herhaalde aanroepen bijstellen
-    - Je bewerkt beleid voor agenttools/runtime
-summary: Hoe u beveiligingsmechanismen inschakelt en afstemt die herhalende lussen van toolaanroepen detecteren
-title: Detectie van tool-lussen
+    - Een gebruiker meldt dat agenten vastlopen doordat ze tool-aanroepen blijven herhalen
+    - Je moet de bescherming tegen herhaalde aanroepen afstemmen
+    - Je bewerkt agenttool-/runtimebeleid
+summary: Beveiligingsrails inschakelen en afstemmen die repetitieve toolaanroeplussen detecteren
+title: Detectie van hulpmiddellussen
 x-i18n:
-    generated_at: "2026-05-03T21:38:40Z"
+    generated_at: "2026-05-05T01:50:49Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1b3976948d5735cf08b7ce854bab048a77a778a07a9f3f66d17c15aed0d42a97
+    source_hash: b9221e1716d3f4c2814a4705b160253839510cd6d11fe4ccd598c67958851afb
     source_path: tools/loop-detection.md
     workflow: 16
 ---
 
-OpenClaw kan voorkomen dat agents vastlopen in herhaalde toolaanroeppatronen.
-De beveiliging is **standaard uitgeschakeld**.
+OpenClaw kan voorkomen dat agents vastlopen in herhaalde tool-call-patronen.
+De bewaking is **standaard uitgeschakeld**.
 
-Schakel deze alleen in waar nodig, omdat strikte instellingen legitieme herhaalde aanroepen kunnen blokkeren.
+Schakel deze alleen in waar nodig, omdat strikte instellingen legitieme herhaalde calls kunnen blokkeren.
 
 ## Waarom dit bestaat
 
-- Detecteer repetitieve reeksen die geen voortgang boeken.
+- Detecteer repetitieve reeksen die geen voortgang maken.
 - Detecteer hoogfrequente lussen zonder resultaat (dezelfde tool, dezelfde invoer, herhaalde fouten).
-- Detecteer specifieke patronen met herhaalde aanroepen voor bekende polling-tools.
+- Detecteer specifieke patronen van herhaalde calls voor bekende pollingtools.
 
 ## Configuratieblok
 
@@ -48,7 +48,7 @@ Globale standaardwaarden:
 }
 ```
 
-Override per agent (optioneel):
+Per-agent override (optioneel):
 
 ```json5
 {
@@ -69,42 +69,65 @@ Override per agent (optioneel):
 }
 ```
 
-### Gedrag van velden
+### Veldgedrag
 
 - `enabled`: Hoofdschakelaar. `false` betekent dat er geen lusdetectie wordt uitgevoerd.
-- `historySize`: aantal recente toolaanroepen dat voor analyse wordt bewaard.
-- `warningThreshold`: drempel voordat een patroon alleen als waarschuwing wordt geclassificeerd.
+- `historySize`: aantal recente tool-calls dat voor analyse wordt bewaard.
+- `warningThreshold`: drempel voordat een patroon als alleen-waarschuwing wordt geclassificeerd.
 - `criticalThreshold`: drempel voor het blokkeren van repetitieve luspatronen.
-- `globalCircuitBreakerThreshold`: globale drempel voor de onderbreker bij geen voortgang.
+- `globalCircuitBreakerThreshold`: globale breaker-drempel voor geen voortgang.
 - `detectors.genericRepeat`: detecteert herhaalde patronen met dezelfde tool + dezelfde parameters.
-- `detectors.knownPollNoProgress`: detecteert bekende polling-achtige patronen zonder statuswijziging.
+- `detectors.knownPollNoProgress`: detecteert bekende pollingachtige patronen zonder statuswijziging.
 - `detectors.pingPong`: detecteert afwisselende pingpongpatronen.
 
 Voor `exec` vergelijken controles op geen voortgang stabiele opdrachtresultaten en negeren ze vluchtige runtime-metadata zoals duur, PID, sessie-ID en werkmap.
-Wanneer een run-ID beschikbaar is, wordt recente geschiedenis van toolaanroepen alleen binnen die run geëvalueerd, zodat geplande Heartbeat-cycli en nieuwe runs geen verouderde lustellingen uit eerdere runs overnemen.
+Wanneer een run-id beschikbaar is, wordt de recente tool-call-geschiedenis alleen binnen die run geëvalueerd, zodat geplande Heartbeat-cycli en nieuwe runs geen verouderde lustellingen van eerdere runs overnemen.
 
 ## Aanbevolen instelling
 
-- Begin voor kleinere modellen met `enabled: true`, met de standaardwaarden ongewijzigd. Flagship-modellen hebben lusdetectie zelden nodig en kunnen deze uitgeschakeld laten.
+- Begin voor kleinere modellen met `enabled: true`, met ongewijzigde standaardwaarden. Flagship-modellen hebben zelden lusdetectie nodig en kunnen deze uitgeschakeld laten.
 - Houd drempels geordend als `warningThreshold < criticalThreshold < globalCircuitBreakerThreshold`.
-- Als er fout-positieven optreden:
+- Als fout-positieven optreden:
   - verhoog `warningThreshold` en/of `criticalThreshold`
   - verhoog (optioneel) `globalCircuitBreakerThreshold`
   - schakel alleen de detector uit die problemen veroorzaakt
-  - verlaag `historySize` voor minder strikte historische context
+  - verlaag `historySize` voor een minder strikte historische context
+
+## Post-Compaction-bewaking
+
+Wanneer de runner een automatische Compaction-herhaalpoging voltooit (na een context-overflow), activeert deze een bewaking met een kort venster die de volgende paar tool-calls controleert. Als de agent meerdere keren binnen dat venster dezelfde `(toolName, args, result)`-triple uitzendt, concludeert de bewaking dat Compaction de lus niet heeft doorbroken en breekt deze de run af met een `compaction_loop_persisted`-fout.
+
+Dit is een afzonderlijk codepad naast de globale `tools.loopDetection`-detectoren. Het is onafhankelijk configureerbaar:
+
+```json5
+{
+  tools: {
+    loopDetection: {
+      enabled: true, // existing master switch; set false to disable loop guards
+      postCompactionGuard: {
+        windowSize: 3, // default: 3
+      },
+    },
+  },
+}
+```
+
+- `windowSize`: aantal tool-calls na Compaction waarin de bewaking actief blijft _en_ het aantal identieke (tool, args, result)-triples dat een afbreking triggert.
+
+De bewaking breekt nooit af wanneer resultaten veranderen, alleen wanneer resultaten byte-identiek zijn binnen het venster. Deze is bewust smal: hij gaat alleen af direct na een Compaction-herhaalpoging.
 
 ## Logs en verwacht gedrag
 
-Wanneer een lus wordt gedetecteerd, rapporteert OpenClaw een lusgebeurtenis en blokkeert of dempt het de volgende toolcyclus, afhankelijk van de ernst.
-Dit beschermt gebruikers tegen ontsporend tokenverbruik en blokkades, terwijl normale tooltoegang behouden blijft.
+Wanneer een lus wordt gedetecteerd, rapporteert OpenClaw een lusgebeurtenis en blokkeert of dempt het de volgende tool-cyclus, afhankelijk van de ernst.
+Dit beschermt gebruikers tegen onbeheersbare tokenkosten en vastlopers, terwijl normale tooltoegang behouden blijft.
 
-- Geef eerst de voorkeur aan waarschuwingen en tijdelijke onderdrukking.
+- Geef eerst de voorkeur aan waarschuwing en tijdelijke onderdrukking.
 - Escaleer alleen wanneer herhaald bewijs zich opstapelt.
 
 ## Opmerkingen
 
 - `tools.loopDetection` wordt samengevoegd met overrides op agentniveau.
-- Configuratie per agent overschrijft globale waarden volledig of breidt deze uit.
+- Per-agent configuratie overschrijft globale waarden volledig of breidt ze uit.
 - Als er geen configuratie bestaat, blijven guardrails uitgeschakeld.
 
 ## Gerelateerd

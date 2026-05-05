@@ -1,24 +1,24 @@
 ---
 read_when:
     - Dashboardauthenticatie of blootstellingsmodi wijzigen
-summary: Toegang en authenticatie voor het Gateway-dashboard (beheerinterface)
-title: Overzichtspaneel
+summary: Gateway-dashboard (Control UI) toegang en authenticatie
+title: Dashboard
 x-i18n:
-    generated_at: "2026-04-29T23:28:42Z"
+    generated_at: "2026-05-05T01:51:30Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 5e0e7c8cebe715f96e7f0e967e9fd86c4c6c54f7cc08a4291b02515fc0933a1a
+    source_hash: 0e2086587fee6303221663748c3047886a5beae29862d66e2edf78e02bfe3da1
     source_path: web/dashboard.md
     workflow: 16
 ---
 
-Het Gateway-dashboard is de browsergebaseerde Control UI die standaard op `/` wordt aangeboden
-(overschrijf met `gateway.controlUi.basePath`).
+Het Gateway-dashboard is de Control UI in de browser die standaard op `/` wordt aangeboden
+(overschrijf dit met `gateway.controlUi.basePath`).
 
 Snel openen (lokale Gateway):
 
 - [http://127.0.0.1:18789/](http://127.0.0.1:18789/) (of [http://localhost:18789/](http://localhost:18789/))
-- Met `gateway.tls.enabled: true`, gebruik `https://127.0.0.1:18789/` en
+- Met `gateway.tls.enabled: true` gebruik je `https://127.0.0.1:18789/` en
   `wss://127.0.0.1:18789` voor het WebSocket-eindpunt.
 
 Belangrijke verwijzingen:
@@ -37,45 +37,48 @@ authenticatiepad:
 
 Zie `gateway.auth` in [Gateway-configuratie](/nl/gateway/configuration).
 
-Beveiligingsopmerking: de Control UI is een **beheeroppervlak** (chat, configuratie, exec-goedkeuringen).
+Beveiligingsopmerking: de Control UI is een **beheeroppervlak** (chat, configuratie, uitvoeringsgoedkeuringen).
 Stel dit niet publiek beschikbaar. De UI bewaart dashboard-URL-tokens in sessionStorage
-voor de huidige browsertabsessie en geselecteerde gateway-URL, en verwijdert ze uit de URL na het laden.
+voor de huidige browsertabsessie en geselecteerde gateway-URL, en verwijdert ze na het laden uit de URL.
 Geef de voorkeur aan localhost, Tailscale Serve of een SSH-tunnel.
 
-## Snelle route (aanbevolen)
+## Snelste route (aanbevolen)
 
-- Na onboarding opent de CLI het dashboard automatisch en drukt een schone (niet-getokeniseerde) link af.
-- Opnieuw openen wanneer je wilt: `openclaw dashboard` (kopieert de link, opent de browser indien mogelijk, toont een SSH-hint bij headless gebruik).
-- Als de UI om authenticatie met een gedeeld geheim vraagt, plak dan het geconfigureerde token of
+- Na onboarding opent de CLI het dashboard automatisch en toont een schone link (zonder token).
+- Opnieuw openen kan altijd: `openclaw dashboard` (kopieert de link, opent indien mogelijk de browser, toont een SSH-hint bij headless gebruik).
+- Als leveren via klembord en browser mislukt, toont `openclaw dashboard` nog steeds de
+  schone URL en meldt dat je het token uit `OPENCLAW_GATEWAY_TOKEN` of
+  `gateway.auth.token` moet gebruiken als URL-fragmentsleutel `token`; tokenwaarden worden niet in logs afgedrukt.
+- Als de UI om gedeelde-geheim-authenticatie vraagt, plak je het geconfigureerde token of
   wachtwoord in de Control UI-instellingen.
 
-## Basisprincipes van authenticatie (lokaal vs. extern)
+## Basisprincipes van authenticatie (lokaal versus extern)
 
 - **Localhost**: open `http://127.0.0.1:18789/`.
 - **Gateway TLS**: wanneer `gateway.tls.enabled: true`, gebruiken dashboard-/statuslinks
-  `https://` en gebruiken Control UI-WebSocket-links `wss://`.
-- **Bron van gedeeld-geheim-token**: `gateway.auth.token` (of
+  `https://` en gebruiken Control UI WebSocket-links `wss://`.
+- **Bron voor gedeeld-geheim-token**: `gateway.auth.token` (of
   `OPENCLAW_GATEWAY_TOKEN`); `openclaw dashboard` kan dit via een URL-fragment doorgeven
-  voor eenmalige bootstrap, en de Control UI bewaart dit in sessionStorage voor de
+  voor een eenmalige bootstrap, en de Control UI bewaart het in sessionStorage voor de
   huidige browsertabsessie en geselecteerde gateway-URL in plaats van localStorage.
-- Als `gateway.auth.token` door SecretRef wordt beheerd, drukt/kopieert/opent `openclaw dashboard`
-  bewust een niet-getokeniseerde URL af. Dit voorkomt dat extern beheerde
-  tokens zichtbaar worden in shell-logs, klembordgeschiedenis of browserstartargumenten.
-- Als `gateway.auth.token` als SecretRef is geconfigureerd en niet is opgelost in je
-  huidige shell, drukt `openclaw dashboard` nog steeds een niet-getokeniseerde URL af plus
-  uitvoerbare richtlijnen voor het instellen van authenticatie.
+- Als `gateway.auth.token` door SecretRef wordt beheerd, drukt/kopieert/opent
+  `openclaw dashboard` bewust een URL zonder token af. Dit voorkomt dat
+  extern beheerde tokens in shell-logs, klembordgeschiedenis of browserstartargumenten terechtkomen.
+- Als `gateway.auth.token` als SecretRef is geconfigureerd en in je
+  huidige shell niet is opgelost, toont `openclaw dashboard` nog steeds een URL zonder token plus
+  uitvoerbare richtlijnen voor authenticatie-instelling.
 - **Gedeeld-geheim-wachtwoord**: gebruik het geconfigureerde `gateway.auth.password` (of
   `OPENCLAW_GATEWAY_PASSWORD`). Het dashboard bewaart wachtwoorden niet tussen
   herlaadbeurten.
-- **Modi met identiteit**: Tailscale Serve kan voldoen aan Control UI-/WebSocket-
-  authenticatie via identiteitsheaders wanneer `gateway.auth.allowTailscale: true`, en een
-  niet-loopback identity-aware reverse proxy kan voldoen aan
+- **Modi met identiteit**: Tailscale Serve kan Control UI/WebSocket-
+  authenticatie afhandelen via identiteitsheaders wanneer `gateway.auth.allowTailscale: true`, en een
+  niet-loopback identiteitsbewuste reverse proxy kan voldoen aan
   `gateway.auth.mode: "trusted-proxy"`. In die modi heeft het dashboard geen
   geplakt gedeeld geheim nodig voor de WebSocket.
 - **Niet localhost**: gebruik Tailscale Serve, een niet-loopback bind met gedeeld geheim, een
-  niet-loopback identity-aware reverse proxy met
+  niet-loopback identiteitsbewuste reverse proxy met
   `gateway.auth.mode: "trusted-proxy"`, of een SSH-tunnel. HTTP-API's gebruiken nog steeds
-  authenticatie met gedeeld geheim, tenzij je bewust private-ingress
+  gedeeld-geheim-authenticatie, tenzij je bewust private-ingress
   `gateway.auth.mode: "none"` of trusted-proxy HTTP-authenticatie gebruikt. Zie
   [Weboppervlakken](/nl/web).
 
@@ -84,23 +87,23 @@ Geef de voorkeur aan localhost, Tailscale Serve of een SSH-tunnel.
 ## Als je "unauthorized" / 1008 ziet
 
 - Zorg dat de gateway bereikbaar is (lokaal: `openclaw status`; extern: SSH-tunnel `ssh -N -L 18789:127.0.0.1:18789 user@host` en open daarna `http://127.0.0.1:18789/`).
-- Voor `AUTH_TOKEN_MISMATCH` kunnen clients één vertrouwde nieuwe poging doen met een gecachet apparaattoken wanneer de gateway retry-hints retourneert. Die retry met gecachet token hergebruikt de gecachete goedgekeurde scopes van het token; aanroepers met expliciete `deviceToken` / expliciete `scopes` behouden hun aangevraagde scopeset. Als authenticatie na die retry nog steeds mislukt, los tokendrift dan handmatig op.
-- Buiten dat retrypad is de prioriteit voor verbindingsauthenticatie eerst expliciet gedeeld token/wachtwoord, daarna expliciet `deviceToken`, daarna opgeslagen apparaattoken, daarna bootstrap-token.
-- Op het asynchrone Tailscale Serve-pad voor de Control UI worden mislukte pogingen voor dezelfde
-  `{scope, ip}` geserialiseerd voordat de failed-auth limiter ze registreert, waardoor
-  de tweede gelijktijdige foute retry al `retry later` kan tonen.
-- Volg voor stappen om tokendrift te herstellen de [checklist voor herstel van tokendrift](/nl/cli/devices#token-drift-recovery-checklist).
+- Voor `AUTH_TOKEN_MISMATCH` mogen clients één vertrouwde nieuwe poging doen met een gecachet apparaattoken wanneer de gateway retry-hints teruggeeft. Die nieuwe poging met gecachet token hergebruikt de gecachete goedgekeurde scopes van het token; aanroepen met expliciete `deviceToken` / expliciete `scopes` behouden hun gevraagde scopeset. Als authenticatie na die nieuwe poging nog steeds mislukt, los je tokendrift handmatig op.
+- Buiten dat pad voor opnieuw proberen is de prioriteit voor verbindingsauthenticatie eerst expliciet gedeeld token/wachtwoord, daarna expliciete `deviceToken`, daarna opgeslagen apparaattoken, daarna bootstraptoken.
+- Op het async Tailscale Serve Control UI-pad worden mislukte pogingen voor dezelfde
+  `{scope, ip}` geserialiseerd voordat de failed-auth-limiter ze registreert, waardoor
+  de tweede gelijktijdige slechte nieuwe poging al `retry later` kan tonen.
+- Volg voor stappen voor herstel van tokendrift de [checklist voor herstel van tokendrift](/nl/cli/devices#token-drift-recovery-checklist).
 - Haal het gedeelde geheim op vanaf de gateway-host of lever het daar aan:
   - Token: `openclaw config get gateway.auth.token`
-  - Wachtwoord: los de geconfigureerde `gateway.auth.password` of
+  - Wachtwoord: los het geconfigureerde `gateway.auth.password` of
     `OPENCLAW_GATEWAY_PASSWORD` op
-  - Door SecretRef beheerd token: los de externe geheimenprovider op of exporteer
+  - Door SecretRef beheerd token: los de externe geheimprovider op of exporteer
     `OPENCLAW_GATEWAY_TOKEN` in deze shell, en voer daarna `openclaw dashboard` opnieuw uit
   - Geen gedeeld geheim geconfigureerd: `openclaw doctor --generate-gateway-token`
 - Plak in de dashboardinstellingen het token of wachtwoord in het authenticatieveld,
   en maak daarna verbinding.
-- De taalkiezer van de UI staat in **Overzicht -> Gateway-toegang -> Taal**.
-  Deze is onderdeel van de toegangskaart, niet van de sectie Uiterlijk.
+- De taalkeuze van de UI staat in **Overzicht -> Gateway-toegang -> Taal**.
+  Dit is onderdeel van de toegangskaart, niet van de sectie Vormgeving.
 
 ## Gerelateerd
 
