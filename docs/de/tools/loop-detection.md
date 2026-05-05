@@ -1,29 +1,29 @@
 ---
 read_when:
     - Ein Benutzer meldet, dass Agenten beim Wiederholen von Tool-Aufrufen hängen bleiben
-    - Sie müssen den Schutz vor wiederholten Aufrufen feinabstimmen
-    - Sie bearbeiten Richtlinien für Agentenwerkzeuge und -Laufzeiten
-summary: So aktivieren und optimieren Sie Schutzmechanismen, die sich wiederholende Tool-Aufruf-Schleifen erkennen
-title: Erkennung von Tool-Schleifen
+    - Sie müssen den Schutz vor wiederholten Aufrufen anpassen
+    - Sie bearbeiten Richtlinien für Agenten-Tools und Laufzeitumgebungen
+summary: So aktivieren und konfigurieren Sie Schutzmechanismen, die sich wiederholende Tool-Aufruf-Schleifen erkennen
+title: Tool-Loop-Erkennung
 x-i18n:
-    generated_at: "2026-05-03T21:39:38Z"
+    generated_at: "2026-05-05T01:49:38Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1b3976948d5735cf08b7ce854bab048a77a778a07a9f3f66d17c15aed0d42a97
+    source_hash: b9221e1716d3f4c2814a4705b160253839510cd6d11fe4ccd598c67958851afb
     source_path: tools/loop-detection.md
     workflow: 16
 ---
 
 OpenClaw kann verhindern, dass Agenten in wiederholten Tool-Aufrufmustern stecken bleiben.
-Der Schutzmechanismus ist **standardmäßig deaktiviert**.
+Der Schutz ist **standardmäßig deaktiviert**.
 
 Aktivieren Sie ihn nur dort, wo er benötigt wird, da er bei strengen Einstellungen legitime wiederholte Aufrufe blockieren kann.
 
 ## Warum dies existiert
 
-- Erkennen repetitiver Sequenzen, die keinen Fortschritt erzielen.
-- Erkennen hochfrequenter Schleifen ohne Ergebnis (gleiches Tool, gleiche Eingaben, wiederholte Fehler).
-- Erkennen bestimmter Muster wiederholter Aufrufe für bekannte Polling-Tools.
+- Sich wiederholende Sequenzen erkennen, die keinen Fortschritt machen.
+- Hochfrequente Schleifen ohne Ergebnis erkennen (gleiches Tool, gleiche Eingaben, wiederholte Fehler).
+- Spezifische Muster wiederholter Aufrufe für bekannte Polling-Tools erkennen.
 
 ## Konfigurationsblock
 
@@ -69,43 +69,66 @@ Globale Standardwerte:
 }
 ```
 
-### Feldverhalten
+### Verhalten der Felder
 
 - `enabled`: Hauptschalter. `false` bedeutet, dass keine Schleifenerkennung durchgeführt wird.
-- `historySize`: Anzahl der letzten Tool-Aufrufe, die für die Analyse vorgehalten werden.
+- `historySize`: Anzahl der jüngsten Tool-Aufrufe, die für die Analyse vorgehalten werden.
 - `warningThreshold`: Schwellenwert, ab dem ein Muster als reine Warnung eingestuft wird.
-- `criticalThreshold`: Schwellenwert zum Blockieren repetitiver Schleifenmuster.
-- `globalCircuitBreakerThreshold`: globaler Schwellenwert für den Unterbrecher bei ausbleibendem Fortschritt.
-- `detectors.genericRepeat`: erkennt wiederholte Muster aus gleichem Tool und gleichen Parametern.
-- `detectors.knownPollNoProgress`: erkennt bekannte polling-ähnliche Muster ohne Zustandsänderung.
+- `criticalThreshold`: Schwellenwert zum Blockieren sich wiederholender Schleifenmuster.
+- `globalCircuitBreakerThreshold`: Globaler Schwellenwert für den Abbruch bei fehlendem Fortschritt.
+- `detectors.genericRepeat`: erkennt wiederholte Muster mit gleichem Tool + gleichen Parametern.
+- `detectors.knownPollNoProgress`: erkennt bekannte polling-artige Muster ohne Zustandsänderung.
 - `detectors.pingPong`: erkennt alternierende Ping-Pong-Muster.
 
-Für `exec` vergleichen Prüfungen auf ausbleibenden Fortschritt stabile Befehlsresultate und ignorieren flüchtige Laufzeitmetadaten wie Dauer, PID, Sitzungs-ID und Arbeitsverzeichnis.
-Wenn eine Run-ID verfügbar ist, wird der Verlauf der letzten Tool-Aufrufe nur innerhalb dieses Runs ausgewertet, sodass geplante Heartbeat-Zyklen und neue Runs keine veralteten Schleifenzähler aus früheren Runs übernehmen.
+Für `exec` vergleichen Prüfungen auf fehlenden Fortschritt stabile Befehlsresultate und ignorieren flüchtige Laufzeitmetadaten wie Dauer, PID, Sitzungs-ID und Arbeitsverzeichnis.
+Wenn eine Run-ID verfügbar ist, wird der jüngste Verlauf der Tool-Aufrufe nur innerhalb dieses Runs ausgewertet, sodass geplante Heartbeat-Zyklen und neue Runs keine veralteten Schleifenzähler aus früheren Runs übernehmen.
 
 ## Empfohlene Einrichtung
 
-- Für kleinere Modelle beginnen Sie mit `enabled: true` und unveränderten Standardwerten. Flaggschiffmodelle benötigen selten Schleifenerkennung und können sie deaktiviert lassen.
+- Aktivieren Sie für kleinere Modelle zunächst `enabled: true` und lassen Sie die Standardwerte unverändert. Flaggschiffmodelle benötigen Schleifenerkennung selten und können sie deaktiviert lassen.
 - Halten Sie die Schwellenwerte in der Reihenfolge `warningThreshold < criticalThreshold < globalCircuitBreakerThreshold`.
 - Wenn Fehlalarme auftreten:
   - erhöhen Sie `warningThreshold` und/oder `criticalThreshold`
-  - erhöhen Sie (optional) `globalCircuitBreakerThreshold`
+  - erhöhen Sie optional `globalCircuitBreakerThreshold`
   - deaktivieren Sie nur den Detector, der Probleme verursacht
-  - reduzieren Sie `historySize` für weniger strikten historischen Kontext
+  - verringern Sie `historySize`, um den historischen Kontext weniger streng zu machen
 
-## Logs und erwartetes Verhalten
+## Post-Compaction-Schutz
 
-Wenn eine Schleife erkannt wird, meldet OpenClaw ein Schleifenereignis und blockiert oder dämpft den nächsten Tool-Zyklus abhängig vom Schweregrad.
+Wenn der Runner einen automatischen Compaction-Wiederholungsversuch abschließt (nach einem Kontextüberlauf), aktiviert er für ein kurzes Fenster einen Schutz, der die nächsten wenigen Tool-Aufrufe beobachtet. Wenn der Agent innerhalb dieses Fensters mehrfach dasselbe `(toolName, args, result)`-Tripel ausgibt, folgert der Schutz, dass die Compaction die Schleife nicht unterbrochen hat, und bricht den Run mit einem Fehler `compaction_loop_persisted` ab.
+
+Dies ist ein separater Codepfad neben den globalen `tools.loopDetection`-Detectors. Er ist unabhängig konfigurierbar:
+
+```json5
+{
+  tools: {
+    loopDetection: {
+      enabled: true, // existing master switch; set false to disable loop guards
+      postCompactionGuard: {
+        windowSize: 3, // default: 3
+      },
+    },
+  },
+}
+```
+
+- `windowSize`: Anzahl der Tool-Aufrufe nach der Compaction, während derer der Schutz aktiv bleibt, _und_ Anzahl identischer Tripel aus (Tool, Argumenten, Ergebnis), die einen Abbruch auslösen.
+
+Der Schutz bricht niemals ab, wenn sich Ergebnisse ändern, sondern nur, wenn Ergebnisse über das Fenster hinweg byte-identisch sind. Er ist absichtlich eng gefasst: Er greift nur unmittelbar nach einem Compaction-Wiederholungsversuch.
+
+## Protokolle und erwartetes Verhalten
+
+Wenn eine Schleife erkannt wird, meldet OpenClaw ein Schleifenereignis und blockiert oder dämpft den nächsten Tool-Zyklus je nach Schweregrad.
 Dies schützt Benutzer vor ausuferndem Token-Verbrauch und Blockaden, während der normale Tool-Zugriff erhalten bleibt.
 
-- Bevorzugen Sie zuerst Warnungen und temporäre Unterdrückung.
-- Eskalieren Sie erst, wenn sich wiederholte Evidenz ansammelt.
+- Bevorzugen Sie zunächst Warnungen und temporäre Unterdrückung.
+- Eskalieren Sie nur, wenn sich wiederholte Hinweise ansammeln.
 
 ## Hinweise
 
-- `tools.loopDetection` wird mit Überschreibungen auf Agentenebene zusammengeführt.
+- `tools.loopDetection` wird mit Overrides auf Agent-Ebene zusammengeführt.
 - Die Konfiguration pro Agent überschreibt oder erweitert globale Werte vollständig.
-- Wenn keine Konfiguration vorhanden ist, bleiben Schutzmechanismen ausgeschaltet.
+- Wenn keine Konfiguration vorhanden ist, bleiben die Schutzmechanismen deaktiviert.
 
 ## Verwandte Themen
 

@@ -1,108 +1,112 @@
 ---
 read_when:
-    - Ändern der Authentifizierung oder der Freigabemodi des Dashboards
-summary: Zugriff auf das Gateway-Dashboard (Control UI) und Authentifizierung
-title: Dashboard
+    - Dashboard-Authentifizierung oder Expositionsmodi ändern
+summary: Zugriff und Authentifizierung für das Gateway-Dashboard (Control UI)
+title: Übersicht
 x-i18n:
-    generated_at: "2026-04-25T13:59:41Z"
-    model: gpt-5.4
+    generated_at: "2026-05-05T01:50:44Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 5e0e7c8cebe715f96e7f0e967e9fd86c4c6c54f7cc08a4291b02515fc0933a1a
+    source_hash: 0e2086587fee6303221663748c3047886a5beae29862d66e2edf78e02bfe3da1
     source_path: web/dashboard.md
-    workflow: 15
+    workflow: 16
 ---
 
 Das Gateway-Dashboard ist die browserbasierte Control UI, die standardmäßig unter `/` bereitgestellt wird
-(überschreibbar mit `gateway.controlUi.basePath`).
+(überschreiben mit `gateway.controlUi.basePath`).
 
 Schnell öffnen (lokales Gateway):
 
 - [http://127.0.0.1:18789/](http://127.0.0.1:18789/) (oder [http://localhost:18789/](http://localhost:18789/))
-- Mit `gateway.tls.enabled: true` verwende `https://127.0.0.1:18789/` und
+- Mit `gateway.tls.enabled: true` verwenden Sie `https://127.0.0.1:18789/` und
   `wss://127.0.0.1:18789` für den WebSocket-Endpunkt.
 
 Wichtige Referenzen:
 
 - [Control UI](/de/web/control-ui) für Nutzung und UI-Funktionen.
-- [Tailscale](/de/gateway/tailscale) für die Automatisierung mit Serve/Funnel.
-- [Web surfaces](/de/web) für Bindungsmodi und Sicherheitshinweise.
+- [Tailscale](/de/gateway/tailscale) für Serve/Funnel-Automatisierung.
+- [Web-Oberflächen](/de/web) für Bind-Modi und Sicherheitshinweise.
 
 Die Authentifizierung wird beim WebSocket-Handshake über den konfigurierten Gateway-
 Authentifizierungspfad erzwungen:
 
 - `connect.params.auth.token`
 - `connect.params.auth.password`
-- Tailscale-Serve-Identity-Header, wenn `gateway.auth.allowTailscale: true`
-- Identity-Header vertrauenswürdiger Proxys, wenn `gateway.auth.mode: "trusted-proxy"`
+- Tailscale Serve-Identitäts-Header, wenn `gateway.auth.allowTailscale: true`
+- Trusted-Proxy-Identitäts-Header, wenn `gateway.auth.mode: "trusted-proxy"`
 
 Siehe `gateway.auth` in der [Gateway-Konfiguration](/de/gateway/configuration).
 
-Sicherheitshinweis: Die Control UI ist eine **Admin-Oberfläche** (Chat, Konfiguration, Ausführungsfreigaben).
-Sie sollte nicht öffentlich zugänglich gemacht werden. Die UI speichert Dashboard-URL-Token in `sessionStorage`
+Sicherheitshinweis: Die Control UI ist eine **Admin-Oberfläche** (Chat, Konfiguration, Ausführungsgenehmigungen).
+Machen Sie sie nicht öffentlich zugänglich. Die UI speichert Dashboard-URL-Tokens in sessionStorage
 für die aktuelle Browser-Tab-Sitzung und die ausgewählte Gateway-URL und entfernt sie nach dem Laden aus der URL.
-Bevorzuge localhost, Tailscale Serve oder einen SSH-Tunnel.
+Bevorzugen Sie localhost, Tailscale Serve oder einen SSH-Tunnel.
 
-## Schnellpfad (empfohlen)
+## Schneller Weg (empfohlen)
 
-- Nach dem Onboarding öffnet die CLI das Dashboard automatisch und gibt einen sauberen Link ohne Token aus.
-- Jederzeit erneut öffnen: `openclaw dashboard` (kopiert den Link, öffnet den Browser, wenn möglich, und zeigt einen SSH-Hinweis an, wenn headless).
-- Wenn die UI nach einer Authentifizierung mit gemeinsamem Geheimnis fragt, füge das konfigurierte Token oder
+- Nach dem Onboarding öffnet die CLI automatisch das Dashboard und gibt einen sauberen (nicht tokenisierten) Link aus.
+- Jederzeit erneut öffnen: `openclaw dashboard` (kopiert den Link, öffnet wenn möglich den Browser, zeigt bei Headless-Umgebungen einen SSH-Hinweis).
+- Wenn Zwischenablage und Browser-Übergabe fehlschlagen, gibt `openclaw dashboard` trotzdem die
+  saubere URL aus und weist Sie an, das Token aus `OPENCLAW_GATEWAY_TOKEN` oder
+  `gateway.auth.token` als URL-Fragment-Schlüssel `token` zu verwenden; Token-
+  Werte werden nicht in Logs ausgegeben.
+- Wenn die UI zur Shared-Secret-Authentifizierung auffordert, fügen Sie das konfigurierte Token oder
   Passwort in die Einstellungen der Control UI ein.
 
-## Grundlagen der Authentifizierung (lokal vs. remote)
+## Auth-Grundlagen (lokal vs. remote)
 
-- **Localhost**: Öffne `http://127.0.0.1:18789/`.
-- **Gateway-TLS**: Wenn `gateway.tls.enabled: true`, verwenden
-  Dashboard-/Status-Links `https://` und Control-UI-WebSocket-Links `wss://`.
-- **Quelle für Shared-Secret-Token**: `gateway.auth.token` (oder
-  `OPENCLAW_GATEWAY_TOKEN`); `openclaw dashboard` kann es über ein URL-Fragment
-  für einmaliges Bootstrap übergeben, und die Control UI speichert es in `sessionStorage` für die
-  aktuelle Browser-Tab-Sitzung und die ausgewählte Gateway-URL statt in `localStorage`.
-- Wenn `gateway.auth.token` als SecretRef verwaltet wird, gibt `openclaw dashboard`
-  absichtlich eine URL ohne Token aus, kopiert und öffnet sie. Dadurch wird vermieden,
-  extern verwaltete Token in Shell-Logs, der Zwischenablagen-Historie oder Browser-Startargumenten offenzulegen.
-- Wenn `gateway.auth.token` als SecretRef konfiguriert ist und in deiner
-  aktuellen Shell nicht aufgelöst werden kann, gibt `openclaw dashboard` dennoch eine URL ohne Token sowie
-  konkrete Hinweise zur Einrichtung der Authentifizierung aus.
-- **Shared-Secret-Passwort**: Verwende das konfigurierte `gateway.auth.password` (oder
+- **Localhost**: Öffnen Sie `http://127.0.0.1:18789/`.
+- **Gateway-TLS**: Wenn `gateway.tls.enabled: true`, verwenden Dashboard-/Statuslinks
+  `https://` und WebSocket-Links der Control UI `wss://`.
+- **Shared-Secret-Token-Quelle**: `gateway.auth.token` (oder
+  `OPENCLAW_GATEWAY_TOKEN`); `openclaw dashboard` kann es für ein einmaliges
+  Bootstrap über das URL-Fragment übergeben, und die Control UI speichert es in sessionStorage für die
+  aktuelle Browser-Tab-Sitzung und die ausgewählte Gateway-URL statt in localStorage.
+- Wenn `gateway.auth.token` SecretRef-verwaltet ist, gibt `openclaw dashboard`
+  absichtlich eine nicht tokenisierte URL aus/kopiert/öffnet sie. Dadurch wird vermieden,
+  extern verwaltete Tokens in Shell-Logs, dem Verlauf der Zwischenablage oder Browser-Startargumenten offenzulegen.
+- Wenn `gateway.auth.token` als SecretRef konfiguriert ist und in Ihrer
+  aktuellen Shell nicht aufgelöst ist, gibt `openclaw dashboard` trotzdem eine nicht tokenisierte URL plus
+  umsetzbare Hinweise zur Auth-Einrichtung aus.
+- **Shared-Secret-Passwort**: Verwenden Sie das konfigurierte `gateway.auth.password` (oder
   `OPENCLAW_GATEWAY_PASSWORD`). Das Dashboard speichert Passwörter nicht über
   Neuladevorgänge hinweg.
-- **Modi mit Identitätsübertragung**: Tailscale Serve kann die Authentifizierung für Control UI/WebSocket
-  über Identity-Header erfüllen, wenn `gateway.auth.allowTailscale: true`, und ein
-  nicht auf Loopback beschränkter Reverse-Proxy mit Identitätsbewusstsein kann dies bei
-  `gateway.auth.mode: "trusted-proxy"` ebenfalls leisten. In diesen Modi benötigt das Dashboard
+- **Identitätstragende Modi**: Tailscale Serve kann die Authentifizierung für Control UI/WebSocket
+  über Identitäts-Header erfüllen, wenn `gateway.auth.allowTailscale: true`, und ein
+  nicht auf loopback beschränkter identitätsbewusster Reverse Proxy kann
+  `gateway.auth.mode: "trusted-proxy"` erfüllen. In diesen Modi benötigt das Dashboard
   kein eingefügtes Shared Secret für den WebSocket.
-- **Nicht localhost**: Verwende Tailscale Serve, ein nicht auf Loopback beschränktes Shared-Secret-Binding, einen
-  nicht auf Loopback beschränkten Reverse-Proxy mit Identitätsbewusstsein und
+- **Nicht localhost**: Verwenden Sie Tailscale Serve, eine nicht auf loopback beschränkte Shared-Secret-Bindung, einen
+  nicht auf loopback beschränkten identitätsbewussten Reverse Proxy mit
   `gateway.auth.mode: "trusted-proxy"` oder einen SSH-Tunnel. HTTP-APIs verwenden weiterhin
-  die Shared-Secret-Authentifizierung, es sei denn, du betreibst absichtlich einen privaten Ingress mit
-  `gateway.auth.mode: "none"` oder HTTP-Authentifizierung über trusted-proxy. Siehe
-  [Web surfaces](/de/web).
+  Shared-Secret-Authentifizierung, sofern Sie nicht bewusst den Private-Ingress-Modus
+  `gateway.auth.mode: "none"` oder Trusted-Proxy-HTTP-Auth verwenden. Siehe
+  [Web-Oberflächen](/de/web).
 
 <a id="if-you-see-unauthorized-1008"></a>
 
-## Wenn du „unauthorized“ / 1008 siehst
+## Wenn Sie „unauthorized“ / 1008 sehen
 
-- Stelle sicher, dass das Gateway erreichbar ist (lokal: `openclaw status`; remote: SSH-Tunnel `ssh -N -L 18789:127.0.0.1:18789 user@host` und dann `http://127.0.0.1:18789/` öffnen).
-- Bei `AUTH_TOKEN_MISMATCH` können Clients einen vertrauenswürdigen Wiederholungsversuch mit einem zwischengespeicherten Gerätetoken durchführen, wenn das Gateway Retry-Hinweise zurückgibt. Dieser Wiederholungsversuch mit zwischengespeichertem Token verwendet die zwischengespeicherten genehmigten Scopes des Tokens erneut; Aufrufer mit explizitem `deviceToken` / expliziten `scopes` behalten ihren angeforderten Scope-Satz bei. Wenn die Authentifizierung nach diesem Wiederholungsversuch weiterhin fehlschlägt, behebe die Token-Abweichung manuell.
-- Außerhalb dieses Wiederholungspfads ist die Priorität für Connect-Authentifizierung wie folgt: zuerst explizites Shared Token/Passwort, dann explizites `deviceToken`, dann gespeichertes Gerätetoken, dann Bootstrap-Token.
-- Auf dem asynchronen Tailscale-Serve-Control-UI-Pfad werden fehlgeschlagene Versuche für dasselbe
-  `{scope, ip}` serialisiert, bevor der Failed-Auth-Limiter sie erfasst, daher kann bereits der zweite gleichzeitige fehlerhafte Wiederholungsversuch `retry later` anzeigen.
-- Für Schritte zur Behebung von Token-Abweichungen folge der [Checkliste zur Wiederherstellung bei Token-Abweichung](/de/cli/devices#token-drift-recovery-checklist).
-- Hole oder übergib das Shared Secret vom Gateway-Host:
+- Stellen Sie sicher, dass das Gateway erreichbar ist (lokal: `openclaw status`; remote: SSH-Tunnel `ssh -N -L 18789:127.0.0.1:18789 user@host`, dann `http://127.0.0.1:18789/` öffnen).
+- Bei `AUTH_TOKEN_MISMATCH` können Clients einen vertrauenswürdigen Wiederholungsversuch mit einem zwischengespeicherten Geräte-Token durchführen, wenn das Gateway Wiederholungshinweise zurückgibt. Dieser Wiederholungsversuch mit zwischengespeichertem Token verwendet die zwischengespeicherten genehmigten Scopes des Tokens wieder; Aufrufer mit explizitem `deviceToken` / expliziten `scopes` behalten ihren angeforderten Scope-Satz. Wenn die Authentifizierung nach diesem Wiederholungsversuch weiterhin fehlschlägt, beheben Sie die Token-Abweichung manuell.
+- Außerhalb dieses Wiederholungspfads gilt für die Verbindungs-Authentifizierung diese Priorität: zuerst explizites Shared Token/Passwort, dann explizites `deviceToken`, dann gespeichertes Geräte-Token, dann Bootstrap-Token.
+- Auf dem asynchronen Tailscale Serve-Control-UI-Pfad werden fehlgeschlagene Versuche für dieselbe
+  `{scope, ip}` serialisiert, bevor der Failed-Auth-Limiter sie aufzeichnet, sodass
+  der zweite gleichzeitig fehlerhafte Wiederholungsversuch bereits `retry later` anzeigen kann.
+- Schritte zur Reparatur von Token-Abweichungen finden Sie in der [Checkliste zur Wiederherstellung bei Token-Abweichung](/de/cli/devices#token-drift-recovery-checklist).
+- Rufen Sie das Shared Secret vom Gateway-Host ab oder stellen Sie es dort bereit:
   - Token: `openclaw config get gateway.auth.token`
-  - Passwort: das konfigurierte `gateway.auth.password` oder
-    `OPENCLAW_GATEWAY_PASSWORD` auflösen
-  - SecretRef-verwaltetes Token: den externen Secret-Anbieter auflösen oder
-    `OPENCLAW_GATEWAY_TOKEN` in dieser Shell exportieren und dann `openclaw dashboard`
-    erneut ausführen
+  - Passwort: Lösen Sie das konfigurierte `gateway.auth.password` oder
+    `OPENCLAW_GATEWAY_PASSWORD` auf
+  - SecretRef-verwaltetes Token: Lösen Sie den externen Secret-Provider auf oder exportieren Sie
+    `OPENCLAW_GATEWAY_TOKEN` in dieser Shell und führen Sie dann `openclaw dashboard` erneut aus
   - Kein Shared Secret konfiguriert: `openclaw doctor --generate-gateway-token`
-- Füge in den Dashboard-Einstellungen das Token oder Passwort in das Auth-Feld ein
-  und verbinde dich dann.
-- Die Sprachauswahl der UI befindet sich unter **Overview -> Gateway Access -> Language**.
-  Sie ist Teil der Zugriffskarte, nicht des Bereichs Appearance.
+- Fügen Sie in den Dashboard-Einstellungen das Token oder Passwort in das Auth-Feld ein,
+  und verbinden Sie sich dann.
+- Die Sprachauswahl der UI befindet sich unter **Übersicht -> Gateway-Zugriff -> Sprache**.
+  Sie ist Teil der Zugriffskarte, nicht des Bereichs Darstellung.
 
-## Zugehörig
+## Verwandt
 
 - [Control UI](/de/web/control-ui)
 - [WebChat](/de/web/webchat)

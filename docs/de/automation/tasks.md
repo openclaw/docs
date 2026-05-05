@@ -1,48 +1,48 @@
 ---
 read_when:
     - Laufende oder kürzlich abgeschlossene Hintergrundarbeiten prüfen
-    - Debugging von Zustellungsfehlern für abgekoppelte Agent-Ausführungen
-    - Verstehen, wie Hintergrundläufe mit Sitzungen, Cron und Heartbeat zusammenhängen
+    - Fehlerbehebung bei Zustellungsfehlern für losgelöste Agentenläufe
+    - Verstehen, wie Hintergrundausführungen mit Sitzungen, Cron und Heartbeat zusammenhängen
 sidebarTitle: Background tasks
-summary: Nachverfolgung von Hintergrundaufgaben für ACP-Ausführungen, Unteragenten, isolierte Cron-Jobs und CLI-Vorgänge
+summary: Nachverfolgung von Hintergrundaufgaben für ACP-Ausführungen, Subagenten, isolierte Cron-Jobs und CLI-Vorgänge
 title: Hintergrundaufgaben
 x-i18n:
-    generated_at: "2026-05-01T06:41:00Z"
+    generated_at: "2026-05-05T01:44:24Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8782987a79989264ae3bd1ca4b16755bdfb7e295e4f77933bf3a38c136d837f4
+    source_hash: 60d6ea6178535b19b95d761b8e8b05a665234584ae69852fd21097988aa32991
     source_path: automation/tasks.md
     workflow: 16
 ---
 
 <Note>
-Suchen Sie nach Planung? Siehe [Automatisierung und Aufgaben](/de/automation), um den richtigen Mechanismus auszuwählen. Diese Seite ist das Aktivitätsprotokoll für Hintergrundarbeit, nicht der Planer.
+Suchen Sie nach Planung? Unter [Automatisierung und Aufgaben](/de/automation) finden Sie Hilfe bei der Wahl des richtigen Mechanismus. Diese Seite ist das Aktivitätsprotokoll für Hintergrundarbeit, nicht der Scheduler.
 </Note>
 
-Hintergrundaufgaben verfolgen Arbeit, die **außerhalb Ihrer Hauptunterhaltungssitzung** läuft: ACP-Ausführungen, Subagent-Starts, isolierte Cron-Job-Ausführungen und über die CLI gestartete Vorgänge.
+Hintergrundaufgaben verfolgen Arbeit, die **außerhalb Ihrer Haupt-Konversationssitzung** ausgeführt wird: ACP-Ausführungen, Subagent-Starts, isolierte Cron-Job-Ausführungen und über die CLI gestartete Vorgänge.
 
-Tasks ersetzen **keine** Sitzungen, Cron-Jobs oder Heartbeats – sie sind das **Aktivitätsprotokoll**, das aufzeichnet, welche entkoppelte Arbeit stattgefunden hat, wann sie ausgeführt wurde und ob sie erfolgreich war.
+Aufgaben ersetzen **nicht** Sitzungen, Cron-Jobs oder Heartbeats — sie sind das **Aktivitätsprotokoll**, das erfasst, welche losgelöste Arbeit wann stattgefunden hat und ob sie erfolgreich war.
 
 <Note>
-Nicht jeder Agent-Lauf erstellt eine Task. Heartbeat-Turns und normaler interaktiver Chat tun dies nicht. Alle Cron-Ausführungen, ACP-Starts, Subagent-Starts und CLI-Agent-Befehle tun dies.
+Nicht jeder Agent-Lauf erstellt eine Aufgabe. Heartbeat-Turns und normaler interaktiver Chat tun dies nicht. Alle Cron-Ausführungen, ACP-Starts, Subagent-Starts und CLI-Agent-Befehle tun dies.
 </Note>
 
 ## Kurzfassung
 
-- Tasks sind **Datensätze**, keine Planer – Cron und Heartbeat entscheiden, _wann_ Arbeit läuft, Tasks verfolgen, _was passiert ist_.
-- ACP, Subagents, alle Cron-Jobs und CLI-Vorgänge erstellen Tasks. Heartbeat-Turns tun dies nicht.
-- Jede Task durchläuft `queued → running → terminal` (succeeded, failed, timed_out, cancelled oder lost).
-- Cron-Tasks bleiben aktiv, solange die Cron-Laufzeit den Job noch besitzt; wenn der
-  In-Memory-Laufzeitstatus weg ist, prüft die Task-Wartung zuerst den dauerhaften Cron-
-  Ausführungsverlauf, bevor sie eine Task als verloren markiert.
-- Abschluss ist push-gesteuert: Entkoppelte Arbeit kann direkt benachrichtigen oder die
-  anfordernde Sitzung/den Heartbeat wecken, wenn sie fertig ist. Status-Polling-Schleifen
-  sind daher normalerweise die falsche Form.
-- Isolierte Cron-Läufe und Subagent-Abschlüsse bereinigen nach bestem Aufwand nachverfolgte Browser-Tabs/Prozesse für ihre Kind-Sitzung, bevor die abschließende Bereinigungsbuchhaltung erfolgt.
-- Isolierte Cron-Zustellung unterdrückt veraltete vorläufige Parent-Antworten, während nachgelagerte Subagent-Arbeit noch ausläuft, und bevorzugt die endgültige Ausgabe nachgelagerter Tasks, wenn diese vor der Zustellung eintrifft.
-- Abschlussbenachrichtigungen werden direkt an einen Kanal zugestellt oder für den nächsten Heartbeat eingereiht.
-- `openclaw tasks list` zeigt alle Tasks; `openclaw tasks audit` macht Probleme sichtbar.
-- Terminale Datensätze werden 7 Tage lang aufbewahrt und dann automatisch bereinigt.
+- Aufgaben sind **Datensätze**, keine Scheduler — Cron und Heartbeat entscheiden, _wann_ Arbeit ausgeführt wird, Aufgaben verfolgen, _was passiert ist_.
+- ACP, Subagents, alle Cron-Jobs und CLI-Vorgänge erstellen Aufgaben. Heartbeat-Turns tun dies nicht.
+- Jede Aufgabe durchläuft `queued → running → terminal` (succeeded, failed, timed_out, cancelled oder lost).
+- Cron-Aufgaben bleiben aktiv, solange die Cron-Runtime den Job noch besitzt; wenn der
+  In-Memory-Runtime-Zustand verschwunden ist, prüft die Aufgabenwartung zuerst den dauerhaften Cron-
+  Ausführungsverlauf, bevor eine Aufgabe als lost markiert wird.
+- Abschluss ist pushgesteuert: Losgelöste Arbeit kann direkt benachrichtigen oder die
+  anfragende Sitzung/den Heartbeat wecken, wenn sie beendet ist, sodass Status-Polling-Schleifen
+  in der Regel die falsche Form sind.
+- Isolierte Cron-Läufe und Subagent-Abschlüsse bereinigen nach bestem Aufwand verfolgte Browser-Tabs/Prozesse für ihre Child-Session vor der abschließenden Bereinigungsbuchführung.
+- Die Auslieferung isolierter Cron-Läufe unterdrückt veraltete vorläufige Parent-Antworten, während nachgelagerte Subagent-Arbeit noch abgearbeitet wird, und bevorzugt die endgültige Ausgabe der Nachfahren, wenn diese vor der Auslieferung eintrifft.
+- Abschlussbenachrichtigungen werden direkt an einen Kanal ausgeliefert oder für den nächsten Heartbeat in die Warteschlange gestellt.
+- `openclaw tasks list` zeigt alle Aufgaben; `openclaw tasks audit` macht Probleme sichtbar.
+- Terminal-Datensätze werden 7 Tage aufbewahrt und dann automatisch bereinigt.
 
 ## Schnellstart
 
@@ -95,35 +95,35 @@ Nicht jeder Agent-Lauf erstellt eine Task. Heartbeat-Turns und normaler interakt
   </Tab>
 </Tabs>
 
-## Was eine Task erstellt
+## Was eine Aufgabe erstellt
 
-| Quelle                 | Laufzeittyp | Wann ein Task-Datensatz erstellt wird                  | Standard-Benachrichtigungsrichtlinie |
-| ---------------------- | ------------ | ------------------------------------------------------ | ------------------------------------ |
-| ACP-Hintergrundläufe   | `acp`        | Starten einer ACP-Kind-Sitzung                         | `done_only`                          |
-| Subagent-Orchestrierung | `subagent`  | Starten eines Subagents über `sessions_spawn`          | `done_only`                          |
-| Cron-Jobs (alle Typen) | `cron`       | Jede Cron-Ausführung (Hauptsitzung und isoliert)       | `silent`                             |
-| CLI-Vorgänge           | `cli`        | `openclaw agent`-Befehle, die über den Gateway laufen  | `silent`                             |
-| Agent-Medienjobs       | `cli`        | Sitzungsbasierte `music_generate`/`video_generate`-Läufe | `silent`                           |
+| Quelle                 | Runtime-Typ | Wann ein Aufgabendatensatz erstellt wird                          | Standard-Benachrichtigungsrichtlinie |
+| ---------------------- | ------------ | ------------------------------------------------------ | --------------------- |
+| ACP-Hintergrundläufe    | `acp`        | Beim Starten einer Child-ACP-Sitzung                           | `done_only`           |
+| Subagent-Orchestrierung | `subagent`   | Beim Starten eines Subagents über `sessions_spawn`               | `done_only`           |
+| Cron-Jobs (alle Typen)  | `cron`       | Bei jeder Cron-Ausführung (Hauptsitzung und isoliert)       | `silent`              |
+| CLI-Vorgänge         | `cli`        | `openclaw agent`-Befehle, die über den Gateway laufen | `silent`              |
+| Agent-Medienjobs       | `cli`        | Sitzungsbasierte `music_generate`-/`video_generate`-Läufe  | `silent`              |
 
 <AccordionGroup>
   <Accordion title="Notify defaults for cron and media">
-    Cron-Tasks der Hauptsitzung verwenden standardmäßig die Benachrichtigungsrichtlinie `silent` – sie erstellen Datensätze zur Nachverfolgung, erzeugen aber keine Benachrichtigungen. Isolierte Cron-Tasks verwenden ebenfalls standardmäßig `silent`, sind aber sichtbarer, weil sie in ihrer eigenen Sitzung laufen.
+    Cron-Aufgaben der Hauptsitzung verwenden standardmäßig die Benachrichtigungsrichtlinie `silent` — sie erstellen Datensätze zur Nachverfolgung, erzeugen aber keine Benachrichtigungen. Isolierte Cron-Aufgaben verwenden ebenfalls standardmäßig `silent`, sind aber sichtbarer, da sie in ihrer eigenen Sitzung laufen.
 
-    Sitzungsbasierte `music_generate`- und `video_generate`-Läufe verwenden ebenfalls die Benachrichtigungsrichtlinie `silent`. Sie erstellen weiterhin Task-Datensätze, aber der Abschluss wird als internes Wake an die ursprüngliche Agent-Sitzung zurückgegeben, damit der Agent die Follow-up-Nachricht schreiben und die fertigen Medien selbst anhängen kann. Wenn Sie `tools.media.asyncCompletion.directSend` aktivieren, können asynchrone `video_generate`-Abschlüsse zuerst eine direkte Kanalzustellung versuchen; asynchrone `music_generate`-Abschlüsse bleiben auf dem Wake-Pfad der anfordernden Sitzung.
+    Sitzungsbasierte `music_generate`- und `video_generate`-Läufe verwenden ebenfalls die Benachrichtigungsrichtlinie `silent`. Sie erstellen weiterhin Aufgabendatensätze, aber der Abschluss wird als internes Wake an die ursprüngliche Agent-Sitzung zurückgegeben, damit der Agent die Folgenachricht schreiben und das fertige Medium selbst anhängen kann. Abschlüsse in Gruppen/Kanälen folgen der normalen Richtlinie für sichtbare Antworten, sodass der Agent das Nachrichtenwerkzeug verwendet, wenn die Quellzustellung dies erfordert.
 
   </Accordion>
   <Accordion title="Concurrent video_generate guardrail">
-    Während eine sitzungsbasierte `video_generate`-Task noch aktiv ist, wirkt das Tool auch als Schutzmechanismus: Wiederholte `video_generate`-Aufrufe in derselben Sitzung geben den Status der aktiven Task zurück, statt eine zweite parallele Generierung zu starten. Verwenden Sie `action: "status"`, wenn Sie von Agent-Seite aus eine explizite Fortschritts-/Statusabfrage wünschen.
+    Während eine sitzungsbasierte `video_generate`-Aufgabe noch aktiv ist, dient das Werkzeug auch als Leitplanke: Wiederholte `video_generate`-Aufrufe in derselben Sitzung geben den aktiven Aufgabenstatus zurück, anstatt eine zweite parallele Generierung zu starten. Verwenden Sie `action: "status"`, wenn Sie eine explizite Fortschritts-/Statusabfrage von der Agent-Seite wünschen.
   </Accordion>
   <Accordion title="What does not create tasks">
-    - Heartbeat-Turns – Hauptsitzung; siehe [Heartbeat](/de/gateway/heartbeat)
+    - Heartbeat-Turns — Hauptsitzung; siehe [Heartbeat](/de/gateway/heartbeat)
     - Normale interaktive Chat-Turns
     - Direkte `/command`-Antworten
 
   </Accordion>
 </AccordionGroup>
 
-## Task-Lebenszyklus
+## Aufgabenlebenszyklus
 
 ```mermaid
 stateDiagram-v2
@@ -137,58 +137,58 @@ stateDiagram-v2
     running --> lost : session gone > 5 min
 ```
 
-| Status      | Bedeutung                                                                  |
+| Status      | Bedeutung                                                              |
 | ----------- | -------------------------------------------------------------------------- |
-| `queued`    | Erstellt, wartet darauf, dass der Agent startet                            |
+| `queued`    | Erstellt, wartet auf den Start des Agents                                    |
 | `running`   | Agent-Turn wird aktiv ausgeführt                                           |
-| `succeeded` | Erfolgreich abgeschlossen                                                  |
-| `failed`    | Mit einem Fehler abgeschlossen                                             |
-| `timed_out` | Konfiguriertes Timeout überschritten                                       |
-| `cancelled` | Vom Operator über `openclaw tasks cancel` gestoppt                         |
-| `lost`      | Die Laufzeit hat nach einer 5-minütigen Kulanzfrist den autoritativen Stützzustand verloren |
+| `succeeded` | Erfolgreich abgeschlossen                                                     |
+| `failed`    | Mit einem Fehler abgeschlossen                                                    |
+| `timed_out` | Konfiguriertes Timeout überschritten                                            |
+| `cancelled` | Durch den Operator über `openclaw tasks cancel` gestoppt                        |
+| `lost`      | Die Runtime hat den autoritativen unterstützenden Zustand nach einer 5-minütigen Kulanzfrist verloren |
 
-Übergänge passieren automatisch – wenn der zugehörige Agent-Lauf endet, wird der Task-Status entsprechend aktualisiert.
+Übergänge erfolgen automatisch — wenn der zugehörige Agent-Lauf endet, wird der Aufgabenstatus entsprechend aktualisiert.
 
-Der Abschluss eines Agent-Laufs ist für aktive Task-Datensätze maßgeblich. Ein erfolgreicher entkoppelter Lauf wird als `succeeded` finalisiert, gewöhnliche Laufzeitfehler als `failed`, und Timeout- oder Abbruchergebnisse als `timed_out`. Wenn ein Operator die Task bereits abgebrochen hat oder die Laufzeit bereits einen stärkeren terminalen Status wie `failed`, `timed_out` oder `lost` aufgezeichnet hat, stuft ein späteres Erfolgssignal diesen terminalen Status nicht herab.
+Der Abschluss des Agent-Laufs ist für aktive Aufgabendatensätze autoritativ. Ein erfolgreicher losgelöster Lauf wird als `succeeded` finalisiert, gewöhnliche Laufzeitfehler als `failed` und Timeout- oder Abbruchergebnisse als `timed_out`. Wenn ein Operator die Aufgabe bereits abgebrochen hat oder die Runtime bereits einen stärkeren Terminal-Zustand wie `failed`, `timed_out` oder `lost` erfasst hat, stuft ein späteres Erfolgssignal diesen Terminal-Status nicht herunter.
 
-`lost` ist laufzeitbewusst:
+`lost` ist runtimebewusst:
 
-- ACP-Tasks: Die Metadaten der stützenden ACP-Kind-Sitzung sind verschwunden.
-- Subagent-Tasks: Die stützende Kind-Sitzung ist aus dem Ziel-Agent-Speicher verschwunden.
-- Cron-Tasks: Die Cron-Laufzeit verfolgt den Job nicht mehr als aktiv und der dauerhafte
-  Cron-Ausführungsverlauf zeigt kein terminales Ergebnis für diesen Lauf. Ein Offline-CLI-
-  Audit behandelt seinen eigenen leeren In-Process-Cron-Laufzeitstatus nicht als Autorität.
-- CLI-Tasks: Isolierte Kind-Sitzungs-Tasks verwenden die Kind-Sitzung; chat-gestützte
-  CLI-Tasks verwenden stattdessen den Live-Laufkontext, sodass verbleibende
+- ACP-Aufgaben: Unterstützende ACP-Child-Session-Metadaten sind verschwunden.
+- Subagent-Aufgaben: Unterstützende Child-Session ist aus dem Ziel-Agent-Speicher verschwunden.
+- Cron-Aufgaben: Die Cron-Runtime verfolgt den Job nicht mehr als aktiv und der dauerhafte
+  Cron-Ausführungsverlauf zeigt kein Terminal-Ergebnis für diesen Lauf. Ein Offline-CLI-
+  Audit behandelt seinen eigenen leeren In-Process-Cron-Runtime-Zustand nicht als Autorität.
+- CLI-Aufgaben: Isolierte Child-Session-Aufgaben verwenden die Child-Session; chatbasierte
+  CLI-Aufgaben verwenden stattdessen den Live-Ausführungskontext, sodass verbleibende
   Kanal-/Gruppen-/Direktsitzungszeilen sie nicht aktiv halten. Gateway-gestützte
-  `openclaw agent`-Läufe werden ebenfalls aus ihrem Laufergebnis finalisiert, sodass abgeschlossene Läufe
+  `openclaw agent`-Läufe werden ebenfalls anhand ihres Laufergebnisses finalisiert, sodass abgeschlossene Läufe
   nicht aktiv bleiben, bis der Sweeper sie als `lost` markiert.
 
-## Zustellung und Benachrichtigungen
+## Auslieferung und Benachrichtigungen
 
-Wenn eine Task einen terminalen Status erreicht, benachrichtigt OpenClaw Sie. Es gibt zwei Zustellpfade:
+Wenn eine Aufgabe einen Terminal-Zustand erreicht, benachrichtigt OpenClaw Sie. Es gibt zwei Auslieferungspfade:
 
-**Direkte Zustellung** – wenn die Task ein Kanalziel hat (`requesterOrigin`), geht die Abschlussnachricht direkt an diesen Kanal (Telegram, Discord, Slack usw.). Bei Subagent-Abschlüssen bewahrt OpenClaw außerdem gebundenes Thread-/Topic-Routing, wenn verfügbar, und kann ein fehlendes `to` / Konto aus der gespeicherten Route der anfordernden Sitzung (`lastChannel` / `lastTo` / `lastAccountId`) ergänzen, bevor die direkte Zustellung aufgegeben wird.
+**Direkte Auslieferung** — wenn die Aufgabe ein Kanalziel hat (den `requesterOrigin`), geht die Abschlussnachricht direkt an diesen Kanal (Telegram, Discord, Slack usw.). Für Subagent-Abschlüsse bewahrt OpenClaw außerdem gebundene Thread-/Topic-Routen, wenn verfügbar, und kann ein fehlendes `to` / Konto aus der gespeicherten Route der anfragenden Sitzung (`lastChannel` / `lastTo` / `lastAccountId`) ergänzen, bevor die direkte Auslieferung aufgegeben wird.
 
-**Sitzungs-eingereihte Zustellung** – wenn die direkte Zustellung fehlschlägt oder kein Ursprung festgelegt ist, wird die Aktualisierung als Systemereignis in der Sitzung des Anforderers eingereiht und beim nächsten Heartbeat sichtbar.
+**Sitzungswarteschlangen-Auslieferung** — wenn die direkte Auslieferung fehlschlägt oder kein Ursprung gesetzt ist, wird die Aktualisierung als Systemereignis in die Sitzung der anfragenden Person eingereiht und beim nächsten Heartbeat sichtbar.
 
 <Tip>
-Der Task-Abschluss löst ein sofortiges Heartbeat-Wake aus, sodass Sie das Ergebnis schnell sehen – Sie müssen nicht auf den nächsten geplanten Heartbeat-Tick warten.
+Der Aufgabenabschluss löst ein sofortiges Heartbeat-Wake aus, sodass Sie das Ergebnis schnell sehen — Sie müssen nicht auf den nächsten geplanten Heartbeat-Tick warten.
 </Tip>
 
-Das bedeutet, dass der übliche Workflow push-basiert ist: Starten Sie entkoppelte Arbeit einmal und lassen Sie dann die Laufzeit Sie beim Abschluss wecken oder benachrichtigen. Fragen Sie den Task-Status nur ab, wenn Sie Debugging, Eingriff oder ein explizites Audit benötigen.
+Das bedeutet, dass der übliche Workflow pushbasiert ist: Starten Sie losgelöste Arbeit einmal und lassen Sie die Runtime Sie beim Abschluss wecken oder benachrichtigen. Fragen Sie den Aufgabenstatus nur ab, wenn Sie Debugging, Eingriffe oder ein explizites Audit benötigen.
 
 ### Benachrichtigungsrichtlinien
 
-Steuern Sie, wie viel Sie über jede Task hören:
+Steuern Sie, wie viel Sie zu jeder Aufgabe hören:
 
-| Richtlinie            | Was zugestellt wird                                                     |
+| Richtlinie                | Was ausgeliefert wird                                                       |
 | --------------------- | ----------------------------------------------------------------------- |
-| `done_only` (Standard) | Nur terminaler Status (succeeded, failed usw.) – **dies ist der Standard** |
-| `state_changes`       | Jeder Statusübergang und jede Fortschrittsaktualisierung                |
-| `silent`              | Gar nichts                                                              |
+| `done_only` (Standard) | Nur Terminal-Zustand (succeeded, failed usw.) — **dies ist der Standard** |
+| `state_changes`       | Jeder Zustandsübergang und jede Fortschrittsaktualisierung                              |
+| `silent`              | Gar nichts                                                          |
 
-Ändern Sie die Richtlinie, während eine Task läuft:
+Ändern Sie die Richtlinie, während eine Aufgabe läuft:
 
 ```bash
 openclaw tasks notify <lookup> state_changes
@@ -202,7 +202,7 @@ openclaw tasks notify <lookup> state_changes
     openclaw tasks list [--runtime <acp|subagent|cron|cli>] [--status <status>] [--json]
     ```
 
-    Ausgabespalten: Task-ID, Art, Status, Zustellung, Lauf-ID, Kind-Sitzung, Zusammenfassung.
+    Ausgabespalten: Aufgaben-ID, Art, Status, Auslieferung, Lauf-ID, Child-Session, Zusammenfassung.
 
   </Accordion>
   <Accordion title="tasks show">
@@ -210,7 +210,7 @@ openclaw tasks notify <lookup> state_changes
     openclaw tasks show <lookup>
     ```
 
-    Das Such-Token akzeptiert eine Task-ID, Lauf-ID oder einen Sitzungsschlüssel. Zeigt den vollständigen Datensatz einschließlich Timing, Zustellstatus, Fehler und terminaler Zusammenfassung.
+    Das Lookup-Token akzeptiert eine Aufgaben-ID, Lauf-ID oder einen Sitzungsschlüssel. Zeigt den vollständigen Datensatz einschließlich Timing, Auslieferungszustand, Fehler und Terminal-Zusammenfassung.
 
   </Accordion>
   <Accordion title="tasks cancel">
@@ -218,7 +218,7 @@ openclaw tasks notify <lookup> state_changes
     openclaw tasks cancel <lookup>
     ```
 
-    Bei ACP- und Subagent-Tasks beendet dies die Kind-Sitzung. Bei CLI-verfolgten Tasks wird der Abbruch im Task-Registry aufgezeichnet (es gibt kein separates Handle der Kind-Laufzeit). Der Status wechselt zu `cancelled` und eine Zustellbenachrichtigung wird gesendet, sofern zutreffend.
+    Bei ACP- und Subagent-Aufgaben beendet dies die Child-Session. Bei CLI-verfolgten Aufgaben wird der Abbruch in der Aufgabenregistrierung erfasst (es gibt keinen separaten Child-Runtime-Handle). Der Status wechselt zu `cancelled`, und eine Auslieferungsbenachrichtigung wird gesendet, sofern zutreffend.
 
   </Accordion>
   <Accordion title="tasks notify">
@@ -233,14 +233,14 @@ openclaw tasks notify <lookup> state_changes
 
     Macht betriebliche Probleme sichtbar. Befunde erscheinen auch in `openclaw status`, wenn Probleme erkannt werden.
 
-    | Befund                   | Schweregrad | Auslöser                                                                                                                       |
-    | ------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------ |
-    | `stale_queued`            | warn        | Seit mehr als 10 Minuten in der Warteschlange                                                                                  |
-    | `stale_running`           | error       | Seit mehr als 30 Minuten laufend                                                                                               |
-    | `lost`                    | warn/error  | Runtime-gestützte Aufgabenverantwortung ist verschwunden; beibehaltene verlorene Aufgaben warnen bis `cleanupAfter` und werden dann zu Fehlern |
-    | `delivery_failed`         | warn        | Zustellung fehlgeschlagen und Benachrichtigungsrichtlinie ist nicht `silent`                                                    |
-    | `missing_cleanup`         | warn        | Terminale Aufgabe ohne Cleanup-Zeitstempel                                                                                     |
-    | `inconsistent_timestamps` | warn        | Timeline-Verstoß (zum Beispiel beendet, bevor gestartet)                                                                       |
+    | Ergebnis                  | Schweregrad      | Auslöser                                                                                                            |
+    | ------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------- |
+    | `stale_queued`            | Warnung          | Seit mehr als 10 Minuten eingereiht                                                                                 |
+    | `stale_running`           | Fehler           | Seit mehr als 30 Minuten laufend                                                                                    |
+    | `lost`                    | Warnung/Fehler   | Die durch die Laufzeitumgebung gestützte Aufgabeninhaberschaft ist verschwunden; beibehaltene verlorene Aufgaben werden bis `cleanupAfter` als Warnungen gemeldet und danach zu Fehlern |
+    | `delivery_failed`         | Warnung          | Zustellung fehlgeschlagen und Benachrichtigungsrichtlinie ist nicht `silent`                                         |
+    | `missing_cleanup`         | Warnung          | Beendete Aufgabe ohne Bereinigungszeitstempel                                                                       |
+    | `inconsistent_timestamps` | Warnung          | Zeitachsenverstoß (zum Beispiel beendet, bevor gestartet)                                                           |
 
   </Accordion>
   <Accordion title="tasks maintenance">
@@ -249,22 +249,22 @@ openclaw tasks notify <lookup> state_changes
     openclaw tasks maintenance --apply [--json]
     ```
 
-    Verwenden Sie dies, um Abgleich, Cleanup-Stempelung und Bereinigung für Aufgaben und Task-Flow-Zustand in der Vorschau anzuzeigen oder anzuwenden.
+    Verwenden Sie dies, um Abgleich, Bereinigungsstempelung und Pruning für Aufgaben und Task-Flow-Zustand in der Vorschau anzuzeigen oder anzuwenden.
 
-    Der Abgleich ist runtime-bewusst:
+    Der Abgleich berücksichtigt die Laufzeitumgebung:
 
     - ACP-/Subagent-Aufgaben prüfen ihre zugrunde liegende untergeordnete Sitzung.
-    - Subagent-Aufgaben, deren untergeordnete Sitzung einen Tombstone für Neustart-Wiederherstellung hat, werden als verloren markiert, anstatt als wiederherstellbare zugrunde liegende Sitzungen behandelt zu werden.
-    - Cron-Aufgaben prüfen, ob die Cron-Runtime den Job noch besitzt, und stellen dann den terminalen Status aus persistierten Cron-Ausführungsprotokollen/Job-Zustand wieder her, bevor sie auf `lost` zurückfallen. Nur der Gateway-Prozess ist autoritativ für die aktive In-Memory-Job-Menge von Cron; ein Offline-CLI-Audit verwendet dauerhafte Historie, markiert eine Cron-Aufgabe aber nicht allein deshalb als verloren, weil dieses lokale Set leer ist.
+    - Subagent-Aufgaben, deren untergeordnete Sitzung einen Tombstone für die Neustartwiederherstellung hat, werden als verloren markiert, statt als wiederherstellbare zugrunde liegende Sitzungen behandelt zu werden.
+    - Cron-Aufgaben prüfen, ob die Cron-Laufzeitumgebung den Job noch besitzt, und stellen dann den beendeten Status aus persistierten Cron-Ausführungsprotokollen/dem Job-Zustand wieder her, bevor sie auf `lost` zurückfallen. Nur der Gateway-Prozess ist für die speicherinterne Menge aktiver Cron-Jobs autoritativ; der Offline-CLI-Audit verwendet dauerhafte Historie, markiert eine Cron-Aufgabe aber nicht allein deshalb als verloren, weil dieses lokale Set leer ist.
     - Chat-gestützte CLI-Aufgaben prüfen den besitzenden Live-Ausführungskontext, nicht nur die Chat-Sitzungszeile.
 
-    Completion-Cleanup ist ebenfalls runtime-bewusst:
+    Die Bereinigung nach Abschluss berücksichtigt ebenfalls die Laufzeitumgebung:
 
-    - Subagent-Completion schließt nach bestem Aufwand verfolgte Browser-Tabs/Prozesse für die untergeordnete Sitzung, bevor das Ankündigungs-Cleanup fortfährt.
-    - Completion isolierter Cron-Ausführungen schließt nach bestem Aufwand verfolgte Browser-Tabs/Prozesse für die Cron-Sitzung, bevor die Ausführung vollständig abgebaut wird.
-    - Die Zustellung isolierter Cron-Ausführungen wartet bei Bedarf auf nachgelagerte Subagent-Folgearbeiten und unterdrückt veralteten Bestätigungstext des übergeordneten Elements, anstatt ihn anzukündigen.
-    - Die Zustellung von Subagent-Completion bevorzugt den neuesten sichtbaren Assistant-Text; wenn dieser leer ist, fällt sie auf bereinigten neuesten Tool-/toolResult-Text zurück, und reine Timeout-Tool-Call-Ausführungen können zu einer kurzen Teilfortschrittszusammenfassung verdichtet werden. Terminal fehlgeschlagene Ausführungen melden den Fehlerstatus, ohne erfassten Antworttext erneut wiederzugeben.
-    - Cleanup-Fehler verdecken nicht das tatsächliche Aufgabenergebnis.
+    - Beim Subagent-Abschluss werden nach bestem Aufwand nachverfolgte Browser-Tabs/-Prozesse für die untergeordnete Sitzung geschlossen, bevor die Ankündigungsbereinigung fortgesetzt wird.
+    - Beim isolierten Cron-Abschluss werden nach bestem Aufwand nachverfolgte Browser-Tabs/-Prozesse für die Cron-Sitzung geschlossen, bevor die Ausführung vollständig beendet wird.
+    - Die isolierte Cron-Zustellung wartet bei Bedarf auf Nachläufe nachgeordneter Subagents und unterdrückt veralteten Bestätigungstext des übergeordneten Elements, statt ihn anzukündigen.
+    - Die Zustellung des Subagent-Abschlusses bevorzugt den neuesten sichtbaren Assistententext; wenn dieser leer ist, fällt sie auf bereinigten neuesten tool/toolResult-Text zurück, und reine Timeout-Tool-Call-Ausführungen können zu einer kurzen Teilfortschrittszusammenfassung zusammengefasst werden. Beendete fehlgeschlagene Ausführungen kündigen den Fehlerstatus an, ohne erfassten Antworttext erneut wiederzugeben.
+    - Bereinigungsfehler verdecken nicht das tatsächliche Aufgabenergebnis.
 
   </Accordion>
   <Accordion title="tasks flow list | show | cancel">
@@ -274,20 +274,20 @@ openclaw tasks notify <lookup> state_changes
     openclaw tasks flow cancel <lookup>
     ```
 
-    Verwenden Sie diese Befehle, wenn der orchestrierende Task Flow für Sie relevant ist und nicht ein einzelner Hintergrundaufgabeneintrag.
+    Verwenden Sie diese Befehle, wenn der orchestrierende Task Flow für Sie relevant ist und nicht ein einzelner Hintergrundaufgabendatensatz.
 
   </Accordion>
 </AccordionGroup>
 
-## Chat-Aufgabenboard (`/tasks`)
+## Chat-Aufgabenübersicht (`/tasks`)
 
-Verwenden Sie `/tasks` in jeder Chat-Sitzung, um mit dieser Sitzung verknüpfte Hintergrundaufgaben anzuzeigen. Das Board zeigt aktive und kürzlich abgeschlossene Aufgaben mit Runtime, Status, Zeitangaben sowie Fortschritts- oder Fehlerdetails.
+Verwenden Sie `/tasks` in jeder Chat-Sitzung, um Hintergrundaufgaben zu sehen, die mit dieser Sitzung verknüpft sind. Die Übersicht zeigt aktive und kürzlich abgeschlossene Aufgaben mit Laufzeitumgebung, Status, Timing sowie Fortschritts- oder Fehlerdetails.
 
-Wenn die aktuelle Sitzung keine sichtbaren verknüpften Aufgaben hat, fällt `/tasks` auf agent-lokale Aufgabenzahlen zurück, sodass Sie weiterhin eine Übersicht erhalten, ohne Details anderer Sitzungen offenzulegen.
+Wenn die aktuelle Sitzung keine sichtbaren verknüpften Aufgaben hat, fällt `/tasks` auf agentenlokale Aufgabenzählungen zurück, sodass Sie weiterhin einen Überblick erhalten, ohne Details anderer Sitzungen offenzulegen.
 
-Für das vollständige Betreiber-Ledger verwenden Sie die CLI: `openclaw tasks list`.
+Für das vollständige Operator-Protokoll verwenden Sie die CLI: `openclaw tasks list`.
 
-## Statusintegration (Aufgabendruck)
+## Statusintegration (Aufgabenbelastung)
 
 `openclaw status` enthält eine Aufgabenübersicht auf einen Blick:
 
@@ -297,81 +297,81 @@ Tasks: 3 queued · 2 running · 1 issues
 
 Die Zusammenfassung meldet:
 
-- **aktiv** — Anzahl von `queued` + `running`
-- **Fehler** — Anzahl von `failed` + `timed_out` + `lost`
+- **active** — Anzahl von `queued` + `running`
+- **failures** — Anzahl von `failed` + `timed_out` + `lost`
 - **byRuntime** — Aufschlüsselung nach `acp`, `subagent`, `cron`, `cli`
 
-Sowohl `/status` als auch das Tool `session_status` verwenden einen cleanup-bewussten Aufgaben-Snapshot: Aktive Aufgaben werden bevorzugt, veraltete abgeschlossene Zeilen werden ausgeblendet, und aktuelle Fehler werden nur angezeigt, wenn keine aktive Arbeit verbleibt. So bleibt die Statuskarte auf das konzentriert, was jetzt relevant ist.
+Sowohl `/status` als auch das Tool `session_status` verwenden einen bereinigungsbewussten Aufgaben-Snapshot: aktive Aufgaben werden bevorzugt, veraltete abgeschlossene Zeilen werden ausgeblendet, und aktuelle Fehler werden nur angezeigt, wenn keine aktive Arbeit mehr verbleibt. So bleibt die Statuskarte auf das fokussiert, was im Moment wichtig ist.
 
 ## Speicherung und Wartung
 
-### Wo Aufgaben gespeichert werden
+### Speicherort der Aufgaben
 
-Aufgabeneinträge werden in SQLite persistiert unter:
+Aufgabendatensätze werden in SQLite persistiert unter:
 
 ```
 $OPENCLAW_STATE_DIR/tasks/runs.sqlite
 ```
 
-Die Registry wird beim Gateway-Start in den Speicher geladen und synchronisiert Schreibvorgänge nach SQLite, um Dauerhaftigkeit über Neustarts hinweg sicherzustellen.
-Der Gateway hält das SQLite-Write-Ahead-Log begrenzt, indem er den Standard-Autocheckpoint-Schwellenwert von SQLite sowie periodische und Shutdown-`TRUNCATE`-Checkpoints verwendet.
+Die Registry wird beim Start des Gateway in den Speicher geladen und synchronisiert Schreibvorgänge zur Dauerhaftigkeit über Neustarts hinweg nach SQLite.
+Der Gateway hält das SQLite-Write-Ahead-Log begrenzt, indem er die standardmäßige Autocheckpoint-Schwelle von SQLite sowie periodische und beim Herunterfahren ausgeführte `TRUNCATE`-Checkpoints verwendet.
 
 ### Automatische Wartung
 
-Ein Sweeper läuft alle **60 Sekunden** und behandelt vier Dinge:
+Ein Bereinigungsprozess läuft alle **60 Sekunden** und behandelt vier Dinge:
 
 <Steps>
   <Step title="Abgleich">
-    Prüft, ob aktive Aufgaben noch autoritative Runtime-Unterstützung haben. ACP-/Subagent-Aufgaben verwenden den Zustand der untergeordneten Sitzung, Cron-Aufgaben verwenden die aktive Job-Verantwortung, und Chat-gestützte CLI-Aufgaben verwenden den besitzenden Ausführungskontext. Wenn dieser zugrunde liegende Zustand länger als 5 Minuten verschwunden ist, wird die Aufgabe als `lost` markiert.
+    Prüft, ob aktive Aufgaben noch autoritative Laufzeitunterstützung haben. ACP-/Subagent-Aufgaben verwenden den Zustand der untergeordneten Sitzung, Cron-Aufgaben verwenden die Inhaberschaft aktiver Jobs, und chat-gestützte CLI-Aufgaben verwenden den besitzenden Ausführungskontext. Wenn dieser unterstützende Zustand länger als 5 Minuten verschwunden ist, wird die Aufgabe als `lost` markiert.
   </Step>
   <Step title="ACP-Sitzungsreparatur">
-    Schließt terminale oder verwaiste, vom übergeordneten Element besessene einmalige ACP-Sitzungen und schließt veraltete terminale oder verwaiste persistente ACP-Sitzungen nur dann, wenn keine aktive Konversationsbindung verbleibt.
+    Schließt beendete oder verwaiste, parent-eigene einmalige ACP-Sitzungen und schließt veraltete beendete oder verwaiste persistente ACP-Sitzungen nur dann, wenn keine aktive Konversationsbindung mehr besteht.
   </Step>
-  <Step title="Cleanup-Stempelung">
-    Setzt einen `cleanupAfter`-Zeitstempel für terminale Aufgaben (endedAt + 7 Tage). Während der Aufbewahrung erscheinen verlorene Aufgaben im Audit weiterhin als Warnungen; nachdem `cleanupAfter` abläuft oder wenn Cleanup-Metadaten fehlen, sind sie Fehler.
+  <Step title="Bereinigungsstempelung">
+    Setzt einen `cleanupAfter`-Zeitstempel für beendete Aufgaben (endedAt + 7 Tage). Während der Aufbewahrungsfrist erscheinen verlorene Aufgaben im Audit weiterhin als Warnungen; nachdem `cleanupAfter` abgelaufen ist oder wenn Bereinigungsmetadaten fehlen, sind sie Fehler.
   </Step>
-  <Step title="Bereinigung">
-    Löscht Einträge nach ihrem `cleanupAfter`-Datum.
+  <Step title="Pruning">
+    Löscht Datensätze nach ihrem `cleanupAfter`-Datum.
   </Step>
 </Steps>
 
 <Note>
-**Aufbewahrung:** Terminale Aufgabeneinträge werden **7 Tage** aufbewahrt und dann automatisch bereinigt. Keine Konfiguration erforderlich.
+**Aufbewahrung:** beendete Aufgabendatensätze werden **7 Tage** lang aufbewahrt und dann automatisch bereinigt. Keine Konfiguration erforderlich.
 </Note>
 
 ## Wie Aufgaben mit anderen Systemen zusammenhängen
 
 <AccordionGroup>
   <Accordion title="Aufgaben und Task Flow">
-    [Task Flow](/de/automation/taskflow) ist die Flow-Orchestrierungsebene über Hintergrundaufgaben. Ein einzelner Flow kann über seine Lebensdauer hinweg mehrere Aufgaben koordinieren, indem verwaltete oder gespiegelte Synchronisierungsmodi verwendet werden. Verwenden Sie `openclaw tasks`, um einzelne Aufgabeneinträge zu prüfen, und `openclaw tasks flow`, um den orchestrierenden Flow zu prüfen.
+    [Task Flow](/de/automation/taskflow) ist die Orchestrierungsschicht für Abläufe oberhalb von Hintergrundaufgaben. Ein einzelner Flow kann über seine Lebensdauer hinweg mehrere Aufgaben mit verwalteten oder gespiegelten Synchronisierungsmodi koordinieren. Verwenden Sie `openclaw tasks`, um einzelne Aufgabendatensätze zu prüfen, und `openclaw tasks flow`, um den orchestrierenden Flow zu prüfen.
 
-    Weitere Details finden Sie unter [Task Flow](/de/automation/taskflow).
+    Details finden Sie unter [Task Flow](/de/automation/taskflow).
 
   </Accordion>
   <Accordion title="Aufgaben und Cron">
-    Eine Cron-Job-**Definition** befindet sich in `~/.openclaw/cron/jobs.json`; der Runtime-Ausführungszustand befindet sich daneben in `~/.openclaw/cron/jobs-state.json`. **Jede** Cron-Ausführung erstellt einen Aufgabeneintrag — sowohl Hauptsitzung als auch isolierte Ausführung. Cron-Aufgaben in Hauptsitzungen verwenden standardmäßig die Benachrichtigungsrichtlinie `silent`, sodass sie nachverfolgt werden, ohne Benachrichtigungen zu erzeugen.
+    Eine Cron-Job-**Definition** befindet sich in `~/.openclaw/cron/jobs.json`; der Laufzeitausführungszustand liegt daneben in `~/.openclaw/cron/jobs-state.json`. **Jede** Cron-Ausführung erstellt einen Aufgabendatensatz — sowohl in der Hauptsitzung als auch isoliert. Cron-Aufgaben in der Hauptsitzung verwenden standardmäßig die Benachrichtigungsrichtlinie `silent`, sodass sie nachverfolgt werden, ohne Benachrichtigungen zu erzeugen.
 
     Siehe [Cron-Jobs](/de/automation/cron-jobs).
 
   </Accordion>
   <Accordion title="Aufgaben und Heartbeat">
-    Heartbeat-Ausführungen sind Hauptsitzungs-Turns — sie erstellen keine Aufgabeneinträge. Wenn eine Aufgabe abgeschlossen wird, kann sie ein Heartbeat-Aufwecken auslösen, damit Sie das Ergebnis zeitnah sehen.
+    Heartbeat-Ausführungen sind Hauptsitzungs-Turns — sie erstellen keine Aufgabendatensätze. Wenn eine Aufgabe abgeschlossen wird, kann sie ein Heartbeat-Wecken auslösen, damit Sie das Ergebnis umgehend sehen.
 
     Siehe [Heartbeat](/de/gateway/heartbeat).
 
   </Accordion>
   <Accordion title="Aufgaben und Sitzungen">
-    Eine Aufgabe kann auf einen `childSessionKey` (wo die Arbeit ausgeführt wird) und einen `requesterSessionKey` (wer sie gestartet hat) verweisen. Sitzungen sind Konversationskontext; Aufgaben sind Aktivitätsverfolgung darüber.
+    Eine Aufgabe kann auf einen `childSessionKey` (wo die Arbeit ausgeführt wird) und einen `requesterSessionKey` (wer sie gestartet hat) verweisen. Sitzungen sind Konversationskontext; Aufgaben sind die Aktivitätsverfolgung darüber.
   </Accordion>
   <Accordion title="Aufgaben und Agent-Ausführungen">
-    Die `runId` einer Aufgabe verweist auf die Agent-Ausführung, die die Arbeit erledigt. Agent-Lebenszyklusereignisse (Start, Ende, Fehler) aktualisieren den Aufgabenstatus automatisch — Sie müssen den Lebenszyklus nicht manuell verwalten.
+    Die `runId` einer Aufgabe verknüpft sie mit der Agent-Ausführung, die die Arbeit erledigt. Agent-Lebenszyklusereignisse (Start, Ende, Fehler) aktualisieren den Aufgabenstatus automatisch — Sie müssen den Lebenszyklus nicht manuell verwalten.
   </Accordion>
 </AccordionGroup>
 
-## Verwandt
+## Verwandte Themen
 
-- [Automatisierung und Aufgaben](/de/automation) — alle Automatisierungsmechanismen auf einen Blick
+- [Automatisierung & Aufgaben](/de/automation) — alle Automatisierungsmechanismen auf einen Blick
 - [CLI: Aufgaben](/de/cli/tasks) — CLI-Befehlsreferenz
 - [Heartbeat](/de/gateway/heartbeat) — periodische Hauptsitzungs-Turns
 - [Geplante Aufgaben](/de/automation/cron-jobs) — Hintergrundarbeit planen
-- [Task Flow](/de/automation/taskflow) — Flow-Orchestrierung über Aufgaben
+- [Task Flow](/de/automation/taskflow) — Flow-Orchestrierung oberhalb von Aufgaben
