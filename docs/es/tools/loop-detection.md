@@ -1,33 +1,33 @@
 ---
 read_when:
     - Un usuario informa que los agentes se quedan atascados repitiendo llamadas a herramientas
-    - Debe ajustar la protección contra llamadas repetitivas
-    - Está editando las políticas de herramientas/tiempo de ejecución del agente
-summary: Cómo habilitar y ajustar las barreras de protección que detectan bucles repetitivos de llamadas a herramientas
+    - Debes ajustar la protección contra llamadas repetitivas
+    - Estás editando las políticas de herramientas/entorno de ejecución del agente
+summary: Cómo habilitar y ajustar las protecciones que detectan bucles repetitivos de llamadas a herramientas
 title: Detección de bucles de herramientas
 x-i18n:
-    generated_at: "2026-05-03T21:38:55Z"
+    generated_at: "2026-05-05T01:49:10Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1b3976948d5735cf08b7ce854bab048a77a778a07a9f3f66d17c15aed0d42a97
+    source_hash: b9221e1716d3f4c2814a4705b160253839510cd6d11fe4ccd598c67958851afb
     source_path: tools/loop-detection.md
     workflow: 16
 ---
 
-OpenClaw puede evitar que los agentes queden atrapados en patrones repetidos de llamadas a herramientas.
-La protección está **deshabilitada de forma predeterminada**.
+OpenClaw puede evitar que los agentes se queden atascados en patrones repetidos de llamadas a herramientas.
+La protección está **desactivada de forma predeterminada**.
 
-Habilítala solo donde sea necesario, porque con ajustes estrictos puede bloquear llamadas repetidas legítimas.
+Actívala solo donde sea necesario, porque puede bloquear llamadas repetidas legítimas con configuraciones estrictas.
 
-## Por qué existe esto
+## Por qué existe
 
-- Detectar secuencias repetitivas que no avanzan.
+- Detectar secuencias repetitivas que no progresan.
 - Detectar bucles de alta frecuencia sin resultados (misma herramienta, mismas entradas, errores repetidos).
 - Detectar patrones específicos de llamadas repetidas para herramientas de sondeo conocidas.
 
 ## Bloque de configuración
 
-Valores globales predeterminados:
+Valores predeterminados globales:
 
 ```json5
 {
@@ -48,7 +48,7 @@ Valores globales predeterminados:
 }
 ```
 
-Sobrescritura por agente (opcional):
+Anulación por agente (opcional):
 
 ```json5
 {
@@ -72,40 +72,63 @@ Sobrescritura por agente (opcional):
 ### Comportamiento de los campos
 
 - `enabled`: interruptor principal. `false` significa que no se realiza detección de bucles.
-- `historySize`: número de llamadas recientes a herramientas conservadas para el análisis.
-- `warningThreshold`: umbral antes de clasificar un patrón como solo de advertencia.
-- `criticalThreshold`: umbral para bloquear patrones de bucles repetitivos.
-- `globalCircuitBreakerThreshold`: umbral global del interruptor de circuito sin avance.
+- `historySize`: número de llamadas recientes a herramientas conservadas para análisis.
+- `warningThreshold`: umbral antes de clasificar un patrón como solo advertencia.
+- `criticalThreshold`: umbral para bloquear patrones de bucle repetitivos.
+- `globalCircuitBreakerThreshold`: umbral global del interruptor de circuito sin progreso.
 - `detectors.genericRepeat`: detecta patrones repetidos de misma herramienta + mismos parámetros.
-- `detectors.knownPollNoProgress`: detecta patrones conocidos similares al sondeo sin cambio de estado.
+- `detectors.knownPollNoProgress`: detecta patrones conocidos similares a sondeo sin cambio de estado.
 - `detectors.pingPong`: detecta patrones alternos de ping-pong.
 
-Para `exec`, las comprobaciones sin avance comparan resultados estables de comandos e ignoran metadatos volátiles del tiempo de ejecución, como duración, PID, ID de sesión y directorio de trabajo.
-Cuando hay un ID de ejecución disponible, el historial reciente de llamadas a herramientas se evalúa solo dentro de esa ejecución, de modo que los ciclos programados de Heartbeat y las ejecuciones nuevas no hereden recuentos de bucles obsoletos de ejecuciones anteriores.
+Para `exec`, las comprobaciones de ausencia de progreso comparan resultados estables de comandos e ignoran metadatos volátiles de ejecución como duración, PID, ID de sesión y directorio de trabajo.
+Cuando hay un ID de ejecución disponible, el historial reciente de llamadas a herramientas se evalúa solo dentro de esa ejecución, para que los ciclos de Heartbeat programados y las ejecuciones nuevas no hereden conteos de bucles obsoletos de ejecuciones anteriores.
 
 ## Configuración recomendada
 
-- Para modelos más pequeños, empieza con `enabled: true` y deja los valores predeterminados sin cambios. Los modelos insignia rara vez necesitan detección de bucles y pueden dejarla deshabilitada.
+- Para modelos más pequeños, empieza con `enabled: true`, sin cambiar los valores predeterminados. Los modelos insignia rara vez necesitan detección de bucles y pueden dejarla desactivada.
 - Mantén los umbrales ordenados como `warningThreshold < criticalThreshold < globalCircuitBreakerThreshold`.
 - Si se producen falsos positivos:
-  - aumenta `warningThreshold` o `criticalThreshold`
-  - opcionalmente, aumenta `globalCircuitBreakerThreshold`
-  - deshabilita solo el detector que cause problemas
+  - aumenta `warningThreshold` y/o `criticalThreshold`
+  - (opcionalmente) aumenta `globalCircuitBreakerThreshold`
+  - desactiva solo el detector que cause problemas
   - reduce `historySize` para un contexto histórico menos estricto
+
+## Protección posterior a Compaction
+
+Cuando el ejecutor completa un reintento automático de Compaction (después de un desbordamiento de contexto), activa una protección de ventana breve que observa las siguientes llamadas a herramientas. Si el agente emite la _misma_ terna `(toolName, args, result)` varias veces dentro de esa ventana, la protección concluye que Compaction no rompió el bucle y aborta la ejecución con un error `compaction_loop_persisted`.
+
+Esta es una ruta de código separada de los detectores globales de `tools.loopDetection`. Se puede configurar de forma independiente:
+
+```json5
+{
+  tools: {
+    loopDetection: {
+      enabled: true, // existing master switch; set false to disable loop guards
+      postCompactionGuard: {
+        windowSize: 3, // default: 3
+      },
+    },
+  },
+}
+```
+
+- `windowSize`: número de llamadas a herramientas posteriores a Compaction durante las cuales la protección permanece activa _y_ el conteo de ternas idénticas (herramienta, argumentos, resultado) que desencadena un aborto.
+
+La protección nunca aborta cuando los resultados están cambiando, solo cuando los resultados son byte a byte idénticos en toda la ventana. Es intencionadamente estrecha: se activa solo inmediatamente después de un reintento de Compaction.
 
 ## Registros y comportamiento esperado
 
-Cuando se detecta un bucle, OpenClaw informa un evento de bucle y bloquea o atenúa el siguiente ciclo de herramientas según la gravedad.
-Esto protege a los usuarios contra el gasto descontrolado de tokens y los bloqueos, a la vez que preserva el acceso normal a las herramientas.
+Cuando se detecta un bucle, OpenClaw informa un evento de bucle y bloquea o atenúa el siguiente ciclo de herramienta según la gravedad.
+Esto protege a los usuarios del gasto descontrolado de tokens y de bloqueos, a la vez que conserva el acceso normal a las herramientas.
 
 - Prefiere primero la advertencia y la supresión temporal.
-- Escala solo cuando se acumule evidencia repetida.
+- Escala solo cuando se acumula evidencia repetida.
 
 ## Notas
 
-- `tools.loopDetection` se combina con sobrescrituras a nivel de agente.
-- La configuración por agente sobrescribe o amplía por completo los valores globales.
-- Si no existe ninguna configuración, las barreras de protección permanecen desactivadas.
+- `tools.loopDetection` se fusiona con anulaciones de nivel de agente.
+- La configuración por agente anula o amplía por completo los valores globales.
+- Si no existe configuración, las barreras de protección permanecen desactivadas.
 
 ## Relacionado
 

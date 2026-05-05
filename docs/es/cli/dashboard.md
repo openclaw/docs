@@ -1,21 +1,21 @@
 ---
 read_when:
-    - Quieres abrir la interfaz de usuario de Control con tu token actual
-    - Quieres imprimir la URL sin abrir un navegador
-summary: Referencia de la CLI para `openclaw dashboard` (abrir la interfaz de usuario de Control)
+    - Quieres abrir la interfaz de control con tu token actual
+    - Quiere mostrar la URL sin abrir un navegador
+summary: Referencia de la CLI para `openclaw dashboard` (abrir la interfaz de control)
 title: Panel de control
 x-i18n:
-    generated_at: "2026-04-25T13:43:35Z"
-    model: gpt-5.4
+    generated_at: "2026-05-05T01:44:25Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: ce485388465fb93551be8ccf0aa01ea52e4feb949ef0d48c96b4f8ea65a6551c
+    source_hash: 51b3326b3884013ebcf570b417e66efe62ea89dcdedb5ab3173f39fb021de89f
     source_path: cli/dashboard.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw dashboard`
 
-Abre la interfaz de usuario de Control usando tu autenticación actual.
+Abre la IU de Control con tu autenticación actual.
 
 ```bash
 openclaw dashboard
@@ -24,13 +24,13 @@ openclaw dashboard --no-open
 
 Notas:
 
-- `dashboard` resuelve los SecretRef configurados en `gateway.auth.token` cuando es posible.
-- `dashboard` sigue `gateway.tls.enabled`: los gateways con TLS habilitado imprimen/abren
-  URL de la interfaz de usuario de Control con `https://` y se conectan mediante `wss://`.
-- Para tokens gestionados por SecretRef (resueltos o no resueltos), `dashboard` imprime/copia/abre una URL sin token para evitar exponer secretos externos en la salida del terminal, el historial del portapapeles o los argumentos de apertura del navegador.
-- Si `gateway.auth.token` está gestionado por SecretRef pero no está resuelto en esta ruta del comando, el comando imprime una URL sin token y una guía de corrección explícita en lugar de incrustar un marcador de posición de token no válido.
+- `dashboard` resuelve las SecretRefs configuradas de `gateway.auth.token` cuando es posible.
+- `dashboard` respeta `gateway.tls.enabled`: las instancias de Gateway con TLS habilitado imprimen/abren URL de la IU de Control con `https://` y se conectan mediante `wss://`.
+- Si falla la entrega al portapapeles/navegador de una URL de dashboard autenticada con token, `dashboard` registra una indicación segura de autenticación manual que nombra `OPENCLAW_GATEWAY_TOKEN`, `gateway.auth.token` y la clave de fragmento `token` sin imprimir el valor del token.
+- Para tokens administrados por SecretRef (resueltos o sin resolver), `dashboard` imprime/copia/abre una URL sin token para evitar exponer secretos externos en la salida del terminal, el historial del portapapeles o los argumentos de inicio del navegador.
+- Si `gateway.auth.token` está administrado por SecretRef pero no se resuelve en esta ruta de comando, el comando imprime una URL sin token y una guía de corrección explícita en lugar de incrustar un marcador de posición de token no válido.
 
 ## Relacionado
 
-- [Referencia de la CLI](/es/cli)
-- [Panel de control](/es/web/dashboard)
+- [Referencia de CLI](/es/cli)
+- [Dashboard](/es/web/dashboard)
