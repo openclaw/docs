@@ -1,72 +1,73 @@
 ---
 read_when:
-    - OpenClaw'ı Windows'a kurma
+    - OpenClaw'ı Windows'a yükleme
     - Yerel Windows ile WSL2 arasında seçim yapma
-    - Windows yardımcı uygulamasının durumunu arıyorsunuz
-summary: 'Windows desteği: yerel ve WSL2 kurulum yolları, daemon ve mevcut dikkat edilmesi gerekenler'
+    - Windows yardımcı uygulamasının durumu aranıyor
+summary: 'Windows desteği: yerel ve WSL2 kurulum yolları, arka plan hizmeti ve mevcut dikkat edilmesi gerekenler'
 title: Windows
 x-i18n:
-    generated_at: "2026-04-24T09:20:29Z"
-    model: gpt-5.4
+    generated_at: "2026-05-05T06:18:07Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: dc147a9da97ab911ba7529c2170526c50c86711efe6fdf4854e6e0370e4d64ea
+    source_hash: adf885747e3a897cb4ee57f6494805468d38c4595c0ab7582b063153a1134d18
     source_path: platforms/windows.md
-    workflow: 15
+    workflow: 16
 ---
 
 OpenClaw hem **yerel Windows** hem de **WSL2** destekler. WSL2 daha
-kararlı yoldur ve tam deneyim için önerilir — CLI, Gateway ve
-araçlar Linux içinde tam uyumlulukla çalışır. Yerel Windows, temel CLI ve Gateway kullanımı için çalışır; aşağıda belirtilen bazı dikkat edilmesi gereken noktalar vardır.
+kararlı yoldur ve tam deneyim için önerilir; CLI, Gateway ve
+araçlar Linux içinde tam uyumlulukla çalışır. Yerel Windows, aşağıda belirtilen
+bazı sınırlamalarla temel CLI ve Gateway kullanımı için çalışır.
 
-Yerel Windows yardımcı uygulamaları planlanmaktadır.
+Yerel Windows eşlikçi uygulamaları planlanmaktadır.
 
-## WSL2 (önerilen)
+## WSL2 (önerilir)
 
-- [Başlangıç](/tr/start/getting-started) (WSL içinde kullanın)
+- [Başlarken](/tr/start/getting-started) (WSL içinde kullanın)
 - [Kurulum ve güncellemeler](/tr/install/updating)
-- Resmî WSL2 kılavuzu (Microsoft): [https://learn.microsoft.com/windows/wsl/install](https://learn.microsoft.com/windows/wsl/install)
+- Resmi WSL2 kılavuzu (Microsoft): [https://learn.microsoft.com/windows/wsl/install](https://learn.microsoft.com/windows/wsl/install)
 
 ## Yerel Windows durumu
 
-Yerel Windows CLI akışları gelişiyor, ancak önerilen yol hâlâ WSL2'dir.
+Yerel Windows CLI akışları gelişiyor, ancak WSL2 hâlâ önerilen yoldur.
 
 Bugün yerel Windows üzerinde iyi çalışanlar:
 
-- `install.ps1` üzerinden web sitesi kurucusu
+- `install.ps1` üzerinden web sitesi yükleyicisi
 - `openclaw --version`, `openclaw doctor` ve `openclaw plugins list --json` gibi yerel CLI kullanımı
-- aşağıdaki gibi gömülü yerel agent/sağlayıcı smoke testleri:
+- aşağıdaki gibi gömülü local-agent/provider duman testi:
 
 ```powershell
 openclaw agent --local --agent main --thinking low -m "Reply with exactly WINDOWS-HATCH-OK."
 ```
 
-Mevcut dikkat edilmesi gerekenler:
+Mevcut sınırlamalar:
 
-- `openclaw onboard --non-interactive`, `--skip-health` vermezseniz hâlâ erişilebilir bir yerel gateway bekler
-- `openclaw onboard --non-interactive --install-daemon` ve `openclaw gateway install` önce Windows Scheduled Tasks kullanmayı dener
-- Scheduled Task oluşturma reddedilirse OpenClaw, kullanıcı başına Startup klasörü oturum açma öğesine geri döner ve gateway'i hemen başlatır
-- `schtasks` kendisi takılırsa veya yanıt vermeyi bırakırsa OpenClaw artık sonsuza kadar takılmak yerine bu yolu hızla sonlandırır ve geri dönüşe geçer
-- Scheduled Tasks, daha iyi supervisor durumu sağladıkları için kullanılabildiğinde hâlâ tercih edilir
+- `openclaw onboard --non-interactive`, `--skip-health` geçmediğiniz sürece hâlâ erişilebilir bir yerel gateway bekler
+- `openclaw onboard --non-interactive --install-daemon` ve `openclaw gateway install` önce Windows Zamanlanmış Görevleri dener
+- Zamanlanmış Görev oluşturma reddedilirse, OpenClaw kullanıcı başına Başlangıç klasöründe bir oturum açma öğesine geri döner ve gateway’i hemen başlatır
+- `schtasks` kendisi takılır veya yanıt vermeyi bırakırsa, OpenClaw artık bu yolu hızlıca iptal eder ve sonsuza kadar takılı kalmak yerine geri dönüş yolunu kullanır
+- Zamanlanmış Görevler, daha iyi gözetici durumu sağladıkları için mevcut olduklarında hâlâ tercih edilir
 
-Yalnızca yerel CLI istiyorsanız, gateway hizmeti kurulumu olmadan şu seçeneklerden birini kullanın:
+Gateway hizmeti kurulumu olmadan yalnızca yerel CLI istiyorsanız şunlardan birini kullanın:
 
 ```powershell
 openclaw onboard --non-interactive --skip-health
 openclaw gateway run
 ```
 
-Yerel Windows'ta yönetilen başlangıç da istiyorsanız:
+Yerel Windows üzerinde yönetilen başlangıç istiyorsanız:
 
 ```powershell
 openclaw gateway install
 openclaw gateway status --json
 ```
 
-Scheduled Task oluşturma engellenirse, geri dönüş hizmet modu yine de mevcut kullanıcının Startup klasörü üzerinden oturum açtıktan sonra otomatik başlar.
+Zamanlanmış Görev oluşturma engellenirse, geri dönüş hizmet modu yine de mevcut kullanıcının Başlangıç klasörü aracılığıyla oturum açıldıktan sonra otomatik başlar.
 
 ## Gateway
 
-- [Gateway çalışma kılavuzu](/tr/gateway)
+- [Gateway çalıştırma kılavuzu](/tr/gateway)
 - [Yapılandırma](/tr/gateway/configuration)
 
 ## Gateway hizmeti kurulumu (CLI)
@@ -89,9 +90,9 @@ Veya:
 openclaw configure
 ```
 
-İstendiğinde **Gateway service** seçin.
+İstendiğinde **Gateway hizmeti** seçeneğini belirleyin.
 
-Onarma/taşıma:
+Onar/taşı:
 
 ```
 openclaw doctor
@@ -99,9 +100,10 @@ openclaw doctor
 
 ## Windows oturum açmadan önce Gateway otomatik başlatma
 
-Başsız kurulumlar için, hiç kimse Windows'ta oturum açmasa bile tam önyükleme zincirinin çalıştığından emin olun.
+Ekransız kurulumlarda, Windows’ta kimse oturum açmasa bile tam önyükleme
+zincirinin çalıştığından emin olun.
 
-### 1) Oturum açmadan kullanıcı hizmetlerini çalışır tutun
+### 1) Kullanıcı hizmetlerini oturum açmadan çalışır tutun
 
 WSL içinde:
 
@@ -117,23 +119,23 @@ WSL içinde:
 openclaw gateway install
 ```
 
-### 3) Windows açılışında WSL'yi otomatik başlatın
+### 3) Windows önyüklemesinde WSL’yi otomatik başlatın
 
-Yönetici olarak PowerShell içinde:
+Yönetici olarak PowerShell’de:
 
 ```powershell
 schtasks /create /tn "WSL Boot" /tr "wsl.exe -d Ubuntu --exec /bin/true" /sc onstart /ru SYSTEM
 ```
 
-`Ubuntu` yerine şu komuttan aldığınız dağıtım adını yazın:
+`Ubuntu` değerini şuradan aldığınız dağıtım adınızla değiştirin:
 
 ```powershell
 wsl --list --verbose
 ```
 
-### Başlatma zincirini doğrulayın
+### Başlangıç zincirini doğrulayın
 
-Yeniden başlatmadan sonra (Windows oturum açmadan önce), WSL içinden şunu denetleyin:
+Yeniden başlatmadan sonra (Windows oturum açmadan önce), WSL’den kontrol edin:
 
 ```bash
 systemctl --user is-enabled openclaw-gateway.service
@@ -142,12 +144,12 @@ systemctl --user status openclaw-gateway.service --no-pager
 
 ## Gelişmiş: WSL hizmetlerini LAN üzerinden açığa çıkarma (portproxy)
 
-WSL'nin kendi sanal ağı vardır. Başka bir makinenin **WSL içinde**
-çalışan bir hizmete (SSH, yerel bir TTS sunucusu veya Gateway) ulaşması gerekiyorsa,
-bir Windows portunu mevcut WSL IP'sine yönlendirmeniz gerekir. WSL IP'si yeniden başlatmalardan sonra değişir,
-bu nedenle yönlendirme kuralını yenilemeniz gerekebilir.
+WSL’nin kendi sanal ağı vardır. Başka bir makinenin **WSL içinde** çalışan bir hizmete
+(SSH, yerel bir TTS sunucusu veya Gateway) erişmesi gerekiyorsa, bir Windows portunu
+mevcut WSL IP’sine yönlendirmeniz gerekir. WSL IP’si yeniden başlatmalardan sonra
+değişir, bu yüzden yönlendirme kuralını yenilemeniz gerekebilir.
 
-Örnek (PowerShell **Yönetici olarak**):
+Örnek (PowerShell’de **Yönetici olarak**):
 
 ```powershell
 $Distro = "Ubuntu-24.04"
@@ -161,14 +163,14 @@ netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=$ListenPor
   connectaddress=$WslIp connectport=$TargetPort
 ```
 
-Portu Windows Güvenlik Duvarı üzerinden izinli hâle getirin (bir kez):
+Porta Windows Güvenlik Duvarı üzerinden izin verin (bir kez):
 
 ```powershell
 New-NetFirewallRule -DisplayName "WSL SSH $ListenPort" -Direction Inbound `
   -Protocol TCP -LocalPort $ListenPort -Action Allow
 ```
 
-WSL yeniden başladıktan sonra portproxy'yi yenileyin:
+WSL yeniden başladıktan sonra portproxy’yi yenileyin:
 
 ```powershell
 netsh interface portproxy delete v4tov4 listenport=$ListenPort listenaddress=0.0.0.0 | Out-Null
@@ -178,29 +180,29 @@ netsh interface portproxy add v4tov4 listenport=$ListenPort listenaddress=0.0.0.
 
 Notlar:
 
-- Başka bir makineden SSH, **Windows ana makine IP'sini** hedefler (örnek: `ssh user@windows-host -p 2222`).
-- Uzak node'lar **erişilebilir** bir Gateway URL'sini göstermelidir (`127.0.0.1` değil); doğrulamak için
+- Başka bir makineden SSH, **Windows ana makine IP’sini** hedefler (örnek: `ssh user@windows-host -p 2222`).
+- Uzak düğümler **erişilebilir** bir Gateway URL’sini işaret etmelidir (`127.0.0.1` değil); doğrulamak için
   `openclaw status --all` kullanın.
-- LAN erişimi için `listenaddress=0.0.0.0` kullanın; `127.0.0.1` bunu yalnızca yerel tutar.
-- Bunu otomatik yapmak istiyorsanız, yenileme
-  adımını oturum açıldığında çalıştıracak bir Scheduled Task kaydedin.
+- LAN erişimi için `listenaddress=0.0.0.0` kullanın; `127.0.0.1` yalnızca yerel tutar.
+- Bunun otomatik olmasını istiyorsanız, yenileme adımını oturum açıldığında çalıştıracak
+  bir Zamanlanmış Görev kaydedin.
 
 ## Adım adım WSL2 kurulumu
 
 ### 1) WSL2 + Ubuntu kurun
 
-PowerShell'i açın (Yönetici):
+PowerShell’i açın (Yönetici):
 
 ```powershell
 wsl --install
-# Veya bir dağıtımı açıkça seçin:
+# Or pick a distro explicitly:
 wsl --list --online
 wsl --install -d Ubuntu-24.04
 ```
 
 Windows isterse yeniden başlatın.
 
-### 2) systemd'yi etkinleştirin (gateway kurulumu için gereklidir)
+### 2) systemd’yi etkinleştirin (gateway kurulumu için gereklidir)
 
 WSL terminalinizde:
 
@@ -211,21 +213,21 @@ systemd=true
 EOF
 ```
 
-Ardından PowerShell'den:
+Ardından PowerShell’den:
 
 ```powershell
 wsl --shutdown
 ```
 
-Ubuntu'yu yeniden açın, sonra doğrulayın:
+Ubuntu’yu yeniden açın, ardından doğrulayın:
 
 ```bash
 systemctl --user status
 ```
 
-### 3) OpenClaw'ı kurun (WSL içinde)
+### 3) OpenClaw’u kurun (WSL içinde)
 
-WSL içinde normal bir ilk kurulum için Linux Başlangıç akışını izleyin:
+WSL içinde normal bir ilk kurulum için Linux Başlarken akışını izleyin:
 
 ```bash
 git clone https://github.com/openclaw/openclaw.git
@@ -236,24 +238,55 @@ pnpm ui:build
 pnpm openclaw onboard --install-daemon
 ```
 
-İlk kez kullanım akışını yapmak yerine kaynaktan geliştiriyorsanız,
-[Setup](/tr/start/setup) içindeki kaynak geliştirme döngüsünü kullanın:
+İlk katılım yerine kaynaktan geliştirme yapıyorsanız,
+[Kurulum](/tr/start/setup) bölümündeki kaynak geliştirme döngüsünü kullanın:
 
 ```bash
 pnpm install
-# Yalnızca ilk çalıştırmada (veya yerel OpenClaw config/workspace sıfırlandıktan sonra)
+# First run only (or after resetting local OpenClaw config/workspace)
 pnpm openclaw setup
 pnpm gateway:watch
 ```
 
-Tam kılavuz: [Başlangıç](/tr/start/getting-started)
+Tam kılavuz: [Başlarken](/tr/start/getting-started)
 
-## Windows yardımcı uygulaması
+## Windows eşlikçi uygulaması
 
-Henüz bir Windows yardımcı uygulamamız yok. Bunu gerçeğe dönüştürmek için
-katkıda bulunmak isterseniz katkılar memnuniyetle karşılanır.
+Henüz bir Windows eşlikçi uygulamamız yok. Bunun gerçekleşmesine yardımcı olmak
+isterseniz katkılar memnuniyetle karşılanır.
+
+## Git ve GitHub bağlantısı (katkıda bulunanlar)
+
+Bazı ağlar GitHub’a HTTPS erişimini engeller veya kısıtlar. `git clone` zaman aşımı
+veya bağlantı sıfırlamalarıyla başarısız olursa, başka bir ağ, VPN veya kuruluşunuzun
+sağladığı bir HTTP/HTTPS proxy deneyin.
+
+`gh auth login`, tarayıcı cihaz akışı sırasında başarısız olursa (örneğin
+`github.com:443` erişiminde zaman aşımı), bunun yerine kişisel erişim belirteciyle kimlik doğrulayın:
+
+1. En az `repo` kapsamına (klasik PAT) veya eşdeğer ayrıntılı erişime sahip bir belirteç oluşturun.
+2. Geçerli oturum için PowerShell’de:
+
+```powershell
+$env:GH_TOKEN="<your-token>"
+gh auth status
+gh auth setup-git
+```
+
+3. `gh auth status` eksik `read:org` hakkında uyarı verirse, bu kapsamı içeren
+   bir belirteç oluşturun ve değişkeni yeniden atayın:
+
+```powershell
+$env:GH_TOKEN="<your-token-with-repo-and-read:org>"
+gh auth status
+```
+
+`gh auth refresh -s read:org` yalnızca `gh auth login` ile kimlik doğruladıysanız
+ve yenilenecek saklanmış kimlik bilgileriniz varsa geçerlidir (`GH_TOKEN` kullanırken değil).
+
+Belirteçleri asla commit etmeyin veya issue’lara ya da pull request’lere yapıştırmayın.
 
 ## İlgili
 
-- [Kuruluma genel bakış](/tr/install)
+- [Kurulum özeti](/tr/install)
 - [Platformlar](/tr/platforms)

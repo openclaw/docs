@@ -2,13 +2,13 @@
 read_when:
     - Zamanlanmış işler ve uyandırmalar istiyorsunuz
     - Cron yürütmesinde ve günlüklerde hata ayıklıyorsunuz
-summary: '`openclaw cron` için CLI referansı (arka plan işlerini zamanlama ve çalıştırma)'
+summary: '`openclaw cron` için CLI referansı (arka plan işlerini zamanlayın ve çalıştırın)'
 title: Cron
 x-i18n:
-    generated_at: "2026-05-02T08:49:47Z"
+    generated_at: "2026-05-05T06:16:15Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 298ac3fc868462eb301febbc1aa5296d8087cad7fdc466870487081444c5856f
+    source_hash: 804efac75b8653b03cec197247be847498e084b50b00fb7bd3fbd94067ef25d4
     source_path: cli/cron.md
     workflow: 16
 ---
@@ -18,7 +18,7 @@ x-i18n:
 Gateway zamanlayıcısı için Cron işlerini yönetin.
 
 <Tip>
-Tam komut yüzeyi için `openclaw cron --help` komutunu çalıştırın. Kavramsal kılavuz için [Cron işleri](/tr/automation/cron-jobs) sayfasına bakın.
+Tam komut yüzeyi için `openclaw cron --help` çalıştırın. Kavramsal kılavuz için [Cron işleri](/tr/automation/cron-jobs) bölümüne bakın.
 </Tip>
 
 ## Oturumlar
@@ -28,40 +28,40 @@ Tam komut yüzeyi için `openclaw cron --help` komutunu çalıştırın. Kavrams
 <AccordionGroup>
   <Accordion title="Oturum anahtarları">
     - `main`, ajanın ana oturumuna bağlanır.
-    - `isolated`, her çalıştırma için yeni bir transkript ve oturum kimliği oluşturur.
+    - `isolated`, her çalıştırma için yeni bir döküm ve oturum kimliği oluşturur.
     - `current`, oluşturma anındaki etkin oturuma bağlanır.
     - `session:<id>`, açık bir kalıcı oturum anahtarına sabitler.
 
   </Accordion>
   <Accordion title="Yalıtılmış oturum semantiği">
-    Yalıtılmış çalıştırmalar ortam konuşma bağlamını sıfırlar. Kanal ve grup yönlendirmesi, gönderme/kuyruğa alma ilkesi, yükseltme, kaynak ve ACP çalışma zamanı bağlaması yeni çalıştırma için sıfırlanır. Güvenli tercihler ve kullanıcı tarafından açıkça seçilmiş model veya kimlik doğrulama geçersiz kılmaları çalıştırmalar arasında taşınabilir.
+    Yalıtılmış çalıştırmalar ortam konuşma bağlamını sıfırlar. Kanal ve grup yönlendirmesi, gönderme/kuyruk ilkesi, yükseltme, kaynak ve ACP çalışma zamanı bağlaması yeni çalıştırma için sıfırlanır. Güvenli tercihler ve açıkça kullanıcı tarafından seçilmiş model veya kimlik doğrulama geçersiz kılmaları çalıştırmalar arasında taşınabilir.
   </Accordion>
 </AccordionGroup>
 
-## Teslimat
+## Teslim
 
-`openclaw cron list` ve `openclaw cron show <job-id>` çözümlenen teslimat rotasını önizler. `channel: "last"` için önizleme, rotanın ana oturumdan mı yoksa geçerli oturumdan mı çözümlendiğini ya da kapalı biçimde başarısız olacağını gösterir.
+`openclaw cron list` ve `openclaw cron show <job-id>`, çözümlenen teslim yolunu önizler. `channel: "last"` için önizleme, yolun ana oturumdan mı yoksa geçerli oturumdan mı çözümlendiğini ya da kapalı biçimde başarısız olacağını gösterir.
 
-Sağlayıcı önekli hedefler, çözümlenemeyen duyuru kanallarının belirsizliğini giderebilir. Örneğin, `delivery.channel` atlandığında veya `last` olduğunda `to: "telegram:123"` Telegram'ı seçer. Yalnızca yüklenen Plugin tarafından ilan edilen önekler sağlayıcı seçicileridir. `delivery.channel` açıkça belirtilmişse önek o kanalla eşleşmelidir; `to: "telegram:123"` ile `channel: "whatsapp"` reddedilir. `imessage:` ve `sms:` gibi hizmet önekleri kanalın sahip olduğu hedef söz dizimi olarak kalır.
+Sağlayıcı önekli hedefler, çözümlenmemiş duyuru kanallarındaki belirsizliği giderebilir. Örneğin `to: "telegram:123"`, `delivery.channel` atlandığında veya `last` olduğunda Telegram'ı seçer. Yalnızca yüklenen Plugin tarafından duyurulan önekler sağlayıcı seçicileridir. `delivery.channel` açıkça belirtilmişse, önek bu kanalla eşleşmelidir; `channel: "whatsapp"` ile `to: "telegram:123"` reddedilir. `imessage:` ve `sms:` gibi hizmet önekleri kanalın sahip olduğu hedef sözdizimi olarak kalır.
 
 <Note>
-Yalıtılmış `cron add` işleri varsayılan olarak `--announce` teslimatını kullanır. Çıktıyı dahili tutmak için `--no-deliver` kullanın. `--deliver`, `--announce` için kullanım dışı bırakılmış bir takma ad olarak kalır.
+Yalıtılmış `cron add` işleri varsayılan olarak `--announce` teslimini kullanır. Çıktıyı dahili tutmak için `--no-deliver` kullanın. `--deliver`, `--announce` için kullanımdan kaldırılmış bir takma ad olarak kalır.
 </Note>
 
-### Teslimat sahipliği
+### Teslim sahipliği
 
-Yalıtılmış Cron sohbet teslimatı ajan ve çalıştırıcı arasında paylaşılır:
+Yalıtılmış Cron sohbet teslimi ajan ile çalıştırıcı arasında paylaşılır:
 
-- Ajan, bir sohbet rotası kullanılabilir olduğunda `message` aracını kullanarak doğrudan gönderebilir.
-- `announce`, yalnızca ajan çözümlenen hedefe doğrudan göndermediğinde son yanıtı yedek olarak teslim eder.
-- `webhook`, tamamlanmış yükü bir URL'ye gönderir.
-- `none`, çalıştırıcı yedek teslimatını devre dışı bırakır.
+- Ajan, bir sohbet yolu kullanılabilir olduğunda `message` aracını kullanarak doğrudan gönderebilir.
+- `announce`, yalnızca ajan çözümlenen hedefe doğrudan göndermediyse son yanıtı yedek olarak teslim eder.
+- `webhook`, tamamlanan yükü bir URL'ye gönderir.
+- `none`, çalıştırıcı yedek teslimini devre dışı bırakır.
 
-`--announce`, son yanıt için çalıştırıcı yedek teslimatıdır. `--no-deliver` bu yedeği devre dışı bırakır, ancak bir sohbet rotası kullanılabilir olduğunda ajanın `message` aracını kaldırmaz.
+`--announce`, son yanıt için çalıştırıcı yedek teslimidir. `--no-deliver` bu yedeği devre dışı bırakır ancak bir sohbet yolu kullanılabilir olduğunda ajanın `message` aracını kaldırmaz.
 
-Etkin bir sohbetten oluşturulan hatırlatıcılar, yedek duyuru teslimatı için canlı sohbet teslimat hedefini korur. Dahili oturum anahtarları küçük harfli olabilir; bunları Matrix oda kimlikleri gibi büyük/küçük harfe duyarlı sağlayıcı kimlikleri için doğruluk kaynağı olarak kullanmayın.
+Etkin bir sohbetten oluşturulan anımsatıcılar, yedek duyuru teslimi için canlı sohbet teslim hedefini korur. Dahili oturum anahtarları küçük harfli olabilir; bunları Matrix oda kimlikleri gibi büyük/küçük harfe duyarlı sağlayıcı kimlikleri için doğruluk kaynağı olarak kullanmayın.
 
-### Hata teslimatı
+### Hata teslimi
 
 Hata bildirimleri şu sırayla çözümlenir:
 
@@ -70,16 +70,16 @@ Hata bildirimleri şu sırayla çözümlenir:
 3. İşin birincil duyuru hedefi (açık bir hata hedefi ayarlanmadığında).
 
 <Note>
-Ana oturum işleri, yalnızca birincil teslimat modu `webhook` olduğunda `delivery.failureDestination` kullanabilir. Yalıtılmış işler bunu tüm modlarda kabul eder.
+Ana oturum işleri `delivery.failureDestination` öğesini yalnızca birincil teslim modu `webhook` olduğunda kullanabilir. Yalıtılmış işler bunu tüm modlarda kabul eder.
 </Note>
 
-Not: yalıtılmış Cron çalıştırmaları, yanıt yükü üretilmese bile çalıştırma düzeyindeki ajan hatalarını iş hataları olarak ele alır; bu nedenle model/sağlayıcı hataları yine hata sayaçlarını artırır ve hata bildirimlerini tetikler.
+Not: yalıtılmış Cron çalıştırmaları, yanıt yükü üretilmese bile çalıştırma düzeyindeki ajan hatalarını iş hataları olarak ele alır; bu nedenle model/sağlayıcı hataları hata sayaçlarını yine artırır ve hata bildirimlerini tetikler.
 
 ## Zamanlama
 
 ### Tek seferlik işler
 
-`--at <datetime>`, tek seferlik bir çalıştırma zamanlar. Ofsetsiz tarih-saat değerleri, `--tz <iana>` de geçmediğiniz sürece UTC olarak ele alınır; bu seçenek, duvar saati zamanını verilen saat diliminde yorumlar.
+`--at <datetime>`, tek seferlik bir çalıştırma zamanlar. Ofsetsiz tarih-saat değerleri, `--tz <iana>` da geçirilmediği sürece UTC olarak ele alınır; bu seçenek, duvar saati zamanını verilen saat diliminde yorumlar.
 
 <Note>
 Tek seferlik işler varsayılan olarak başarıdan sonra silinir. Bunları korumak için `--keep-after-run` kullanın.
@@ -87,13 +87,13 @@ Tek seferlik işler varsayılan olarak başarıdan sonra silinir. Bunları korum
 
 ### Yinelenen işler
 
-Yinelenen işler, ardışık hatalardan sonra üstel yeniden deneme geri çekilmesi kullanır: 30s, 1m, 5m, 15m, 60m. Sonraki başarılı çalıştırmadan sonra zamanlama normale döner.
+Yinelenen işler, art arda hatalardan sonra üstel yeniden deneme geri çekilmesi kullanır: 30s, 1m, 5m, 15m, 60m. Sonraki başarılı çalıştırmadan sonra zamanlama normale döner.
 
-Atlanan çalıştırmalar yürütme hatalarından ayrı izlenir. Yeniden deneme geri çekilmesini etkilemezler, ancak `openclaw cron edit <job-id> --failure-alert-include-skipped`, hata uyarılarını tekrarlanan atlanan çalıştırma bildirimlerine dahil edebilir.
+Atlanan çalıştırmalar yürütme hatalarından ayrı izlenir. Yeniden deneme geri çekilmesini etkilemezler, ancak `openclaw cron edit <job-id> --failure-alert-include-skipped`, hata uyarılarını yinelenen atlanan çalıştırma bildirimlerine dahil edebilir.
 
-Yerel olarak yapılandırılmış bir model sağlayıcısını hedefleyen yalıtılmış işler için Cron, ajan sırasını başlatmadan önce hafif bir sağlayıcı ön kontrolü çalıştırır. Loopback, özel ağ ve `.local` `api: "ollama"` sağlayıcıları `/api/tags` üzerinde yoklanır; vLLM, SGLang ve LM Studio gibi yerel OpenAI uyumlu sağlayıcılar `/models` üzerinde yoklanır. Uç noktaya ulaşılamazsa çalıştırma `skipped` olarak kaydedilir ve daha sonraki bir zamanlamada yeniden denenir; eşleşen ölü uç noktalar, birçok işin aynı yerel sunucuyu zorlamasını önlemek için 5 dakika önbelleğe alınır.
+Yerel yapılandırılmış bir model sağlayıcısını hedefleyen yalıtılmış işler için Cron, ajan turunu başlatmadan önce hafif bir sağlayıcı ön denetimi çalıştırır. Loopback, özel ağ ve `.local` `api: "ollama"` sağlayıcıları `/api/tags` üzerinde yoklanır; vLLM, SGLang ve LM Studio gibi yerel OpenAI uyumlu sağlayıcılar `/models` üzerinde yoklanır. Uç noktaya ulaşılamazsa, çalıştırma `skipped` olarak kaydedilir ve daha sonraki bir zamanlamada yeniden denenir; eşleşen ölü uç noktalar, birçok işin aynı yerel sunucuya yüklenmesini önlemek için 5 dakika önbelleğe alınır.
 
-Not: Cron iş tanımları `jobs.json` içinde yaşarken, bekleyen çalışma zamanı durumu `jobs-state.json` içinde yaşar. `jobs.json` dışarıdan düzenlenirse Gateway değişen zamanlamaları yeniden yükler ve eski bekleyen yuvaları temizler; yalnızca biçimlendirme amaçlı yeniden yazmalar bekleyen yuvayı temizlemez.
+Not: Cron iş tanımları `jobs.json` içinde bulunurken, bekleyen çalışma zamanı durumu `jobs-state.json` içinde bulunur. `jobs.json` dışarıdan düzenlenirse, Gateway değişen zamanlamaları yeniden yükler ve bayat bekleyen yuvaları temizler; yalnızca biçimlendirme yeniden yazımları bekleyen yuvayı temizlemez.
 
 ### Manuel çalıştırmalar
 
@@ -108,19 +108,19 @@ Not: Cron iş tanımları `jobs.json` içinde yaşarken, bekleyen çalışma zam
 `cron add|edit --model <ref>`, iş için izin verilen bir model seçer.
 
 <Warning>
-Model izinli değilse veya çözümlenemiyorsa Cron, işin ajanına ya da varsayılan model seçimine geri dönmek yerine açık bir doğrulama hatasıyla çalıştırmayı başarısız yapar.
+Model izinli değilse veya çözümlenemiyorsa, Cron işin ajanına ya da varsayılan model seçimine geri dönmek yerine çalıştırmayı açık bir doğrulama hatasıyla başarısız kılar.
 </Warning>
 
 Cron `--model`, bir sohbet oturumu `/model` geçersiz kılması değil, **iş birincilidir**. Bunun anlamı:
 
 - Seçilen iş modeli başarısız olduğunda yapılandırılmış model yedekleri yine uygulanır.
-- İş başına yükteki `fallbacks`, mevcut olduğunda yapılandırılmış yedek listesinin yerini alır.
-- Boş bir iş başına yedek listesi (iş yükünde/API'de `fallbacks: []`) Cron çalıştırmasını katı hale getirir.
-- Bir işte `--model` olup yedek listesi yapılandırılmadığında OpenClaw, ajan birincilinin gizli bir yeniden deneme hedefi olarak eklenmemesi için açık bir boş yedek geçersiz kılması geçirir.
+- İş başına yükteki `fallbacks`, varsa yapılandırılmış yedek listesinin yerini alır.
+- Boş bir iş başına yedek listesi (iş yükünde/API'de `fallbacks: []`) Cron çalıştırmasını katı yapar.
+- Bir işte `--model` olduğunda ancak hiçbir yedek liste yapılandırılmadığında, OpenClaw açık bir boş yedek geçersiz kılması geçirir; böylece ajan birincili gizli bir yeniden deneme hedefi olarak eklenmez.
 
 ### Yalıtılmış Cron model önceliği
 
-Yalıtılmış Cron, etkin modeli şu sırayla çözümler:
+Yalıtılmış Cron etkin modeli şu sırayla çözer:
 
 1. Gmail kancası geçersiz kılması.
 2. İş başına `--model`.
@@ -129,50 +129,50 @@ Yalıtılmış Cron, etkin modeli şu sırayla çözümler:
 
 ### Hızlı mod
 
-Yalıtılmış Cron hızlı modu, çözümlenen canlı model seçimini izler. Model yapılandırması `params.fastMode` varsayılan olarak uygulanır, ancak saklanan oturum `fastMode` geçersiz kılması yine yapılandırmaya üstün gelir.
+Yalıtılmış Cron hızlı modu, çözümlenen canlı model seçimini izler. Model yapılandırması `params.fastMode` varsayılan olarak uygulanır, ancak saklanan oturum `fastMode` geçersiz kılması yine de yapılandırmaya üstün gelir.
 
 ### Canlı model değiştirme yeniden denemeleri
 
-Yalıtılmış bir çalıştırma `LiveSessionModelSwitchError` fırlatırsa Cron, yeniden denemeden önce etkin çalıştırma için değiştirilen sağlayıcıyı ve modeli (ve mevcut olduğunda değiştirilen kimlik doğrulama profili geçersiz kılmasını) kalıcı hale getirir. Dış yeniden deneme döngüsü, ilk denemeden sonra iki değiştirme yeniden denemesiyle sınırlıdır; ardından sonsuza kadar döngüye girmek yerine iptal edilir.
+Yalıtılmış bir çalıştırma `LiveSessionModelSwitchError` fırlatırsa, Cron yeniden denemeden önce etkin çalıştırma için değiştirilen sağlayıcıyı ve modeli (ve varsa değiştirilen kimlik doğrulama profili geçersiz kılmasını) kalıcı hale getirir. Dış yeniden deneme döngüsü, ilk denemeden sonra iki değiştirme yeniden denemesiyle sınırlıdır; ardından sonsuza kadar döngüye girmek yerine iptal eder.
 
 ## Çalıştırma çıktısı ve retler
 
-### Eski onay bastırma
+### Bayat onay bastırma
 
-Yalıtılmış Cron sıraları, eski yalnızca onay niteliğindeki yanıtları bastırır. İlk sonuç yalnızca geçici bir durum güncellemesiyse ve nihai yanıttan hiçbir alt ajan çalıştırması sorumlu değilse Cron, teslimattan önce gerçek sonuç için bir kez yeniden istem gönderir.
+Yalıtılmış Cron turları, bayat yalnızca onay yanıtlarını bastırır. İlk sonuç yalnızca geçici bir durum güncellemesiyse ve nihai yanıttan hiçbir alt ajan çalıştırması sorumlu değilse, Cron teslimden önce gerçek sonuç için bir kez yeniden istem gönderir.
 
-### Sessiz token bastırma
+### Sessiz belirteç bastırma
 
-Yalıtılmış bir Cron çalıştırması yalnızca sessiz token (`NO_REPLY` veya `no_reply`) döndürürse Cron hem doğrudan giden teslimatı hem de yedek kuyruğa alınmış özet yolunu bastırır; böylece sohbete hiçbir şey geri gönderilmez.
+Yalıtılmış bir Cron çalıştırması yalnızca sessiz belirteci (`NO_REPLY` veya `no_reply`) döndürürse, Cron hem doğrudan giden teslimi hem de yedek kuyruklu özet yolunu bastırır; bu nedenle sohbete hiçbir şey gönderilmez.
 
 ### Yapılandırılmış retler
 
-Yalıtılmış Cron çalıştırmaları, gömülü çalıştırmadan gelen yapılandırılmış yürütme reddi meta verilerini tercih eder; ardından `SYSTEM_RUN_DENIED`, `INVALID_REQUEST` ve onay bağlama reddi ifadeleri gibi son çıktıdaki bilinen ret işaretlerine geri döner.
+Yalıtılmış Cron çalıştırmaları önce gömülü çalıştırmadan yapılandırılmış yürütme reddi meta verilerini tercih eder, ardından son çıktıda `SYSTEM_RUN_DENIED`, `INVALID_REQUEST` ve onay bağlama reddi ifadeleri gibi bilinen ret işaretlerine geri döner.
 
-`cron list` ve çalıştırma geçmişi, engellenen bir komutu `ok` olarak bildirmek yerine ret nedenini gösterir.
+`cron list` ve çalıştırma geçmişi, engellenmiş bir komutu `ok` olarak bildirmek yerine ret nedenini gösterir.
 
 ## Saklama
 
-Saklama ve budama yapılandırmada kontrol edilir:
+Saklama ve budama yapılandırmada denetlenir:
 
-- `cron.sessionRetention` (varsayılan `24h`) tamamlanmış yalıtılmış çalıştırma oturumlarını budar.
+- `cron.sessionRetention` (varsayılan `24h`), tamamlanmış yalıtılmış çalıştırma oturumlarını budar.
 - `cron.runLog.maxBytes` ve `cron.runLog.keepLines`, `~/.openclaw/cron/runs/<jobId>.jsonl` dosyasını budar.
 
 ## Eski işleri taşıma
 
 <Note>
-Geçerli teslimat ve depo biçiminden önce oluşturulmuş Cron işleriniz varsa `openclaw doctor --fix` çalıştırın. Doctor eski Cron alanlarını (`jobId`, `schedule.cron`, eski `threadId` dahil üst düzey teslimat alanları, yük `provider` teslimat takma adları) normalleştirir ve `cron.webhook` yapılandırıldığında basit `notify: true` Webhook yedek işlerini açık Webhook teslimatına taşır.
+Geçerli teslim ve depo biçiminden önceki Cron işleriniz varsa, `openclaw doctor --fix` çalıştırın. Doctor, eski Cron alanlarını (`jobId`, `schedule.cron`, eski `threadId` dahil üst düzey teslim alanları, yük `provider` teslim takma adları) normalleştirir ve `cron.webhook` yapılandırıldığında basit `notify: true` Webhook yedek işlerini açık Webhook teslimine taşır.
 </Note>
 
 ## Yaygın düzenlemeler
 
-Mesajı değiştirmeden teslimat ayarlarını güncelleyin:
+Mesajı değiştirmeden teslim ayarlarını güncelleyin:
 
 ```bash
 openclaw cron edit <job-id> --announce --channel telegram --to "123456789"
 ```
 
-Yalıtılmış bir iş için teslimatı devre dışı bırakın:
+Yalıtılmış bir iş için teslimi devre dışı bırakın:
 
 ```bash
 openclaw cron edit <job-id> --no-deliver
@@ -184,13 +184,13 @@ Yalıtılmış bir iş için hafif önyükleme bağlamını etkinleştirin:
 openclaw cron edit <job-id> --light-context
 ```
 
-Belirli bir kanala duyurun:
+Belirli bir kanala duyuru yapın:
 
 ```bash
 openclaw cron edit <job-id> --announce --channel slack --to "channel:C1234567890"
 ```
 
-Bir Telegram forum konusuna duyurun:
+Bir Telegram forum konusuna duyuru yapın:
 
 ```bash
 openclaw cron edit <job-id> --announce --channel telegram --to "-1001234567890" --thread-id 42
@@ -208,7 +208,7 @@ openclaw cron add \
   --no-deliver
 ```
 
-`--light-context` yalnızca yalıtılmış ajan sırası işlerine uygulanır. Cron çalıştırmaları için hafif mod, tam çalışma alanı önyükleme kümesini enjekte etmek yerine önyükleme bağlamını boş tutar.
+`--light-context` yalnızca yalıtılmış ajan turu işlerine uygulanır. Cron çalıştırmaları için hafif mod, tam çalışma alanı önyükleme kümesini enjekte etmek yerine önyükleme bağlamını boş tutar.
 
 ## Yaygın yönetici komutları
 
@@ -216,13 +216,16 @@ Manuel çalıştırma ve inceleme:
 
 ```bash
 openclaw cron list
+openclaw cron list --agent ops
 openclaw cron show <job-id>
 openclaw cron run <job-id>
 openclaw cron run <job-id> --due
 openclaw cron runs --id <job-id> --limit 50
 ```
 
-`cron runs` girdileri, amaçlanan Cron hedefi, çözümlenen hedef, message aracı gönderimleri, yedek kullanımı ve teslim edilmiş durumuyla ilgili teslimat tanılamalarını içerir.
+`openclaw cron list`, varsayılan olarak eşleşen tüm işleri gösterir. Yalnızca etkin normalleştirilmiş ajan kimliği eşleşen işleri göstermek için `--agent <id>` geçirin; saklanan ajan kimliği olmayan işler yapılandırılmış varsayılan ajan olarak sayılır.
+
+`cron runs` girdileri; amaçlanan Cron hedefi, çözümlenen hedef, message-tool gönderimleri, yedek kullanımı ve teslim edilmiş durumuyla birlikte teslim tanılamalarını içerir.
 
 Ajan ve oturum yeniden hedefleme:
 
@@ -233,9 +236,9 @@ openclaw cron edit <job-id> --session current
 openclaw cron edit <job-id> --session "session:daily-brief"
 ```
 
-`openclaw cron add`, ajan sırası işlerinde `--agent` atlandığında uyarır ve varsayılan ajana (`main`) geri döner. Belirli bir ajanı sabitlemek için oluşturma sırasında `--agent <id>` geçin.
+`openclaw cron add`, ajan turu işlerinde `--agent` atlandığında uyarı verir ve varsayılan ajana (`main`) geri döner. Belirli bir ajanı sabitlemek için oluşturma sırasında `--agent <id>` geçirin.
 
-Teslimat ince ayarları:
+Teslim ayarlamaları:
 
 ```bash
 openclaw cron edit <job-id> --announce --channel slack --to "channel:C1234567890"
@@ -246,5 +249,5 @@ openclaw cron edit <job-id> --no-deliver
 
 ## İlgili
 
-- [CLI başvurusu](/tr/cli)
+- [CLI referansı](/tr/cli)
 - [Zamanlanmış görevler](/tr/automation/cron-jobs)
