@@ -1,50 +1,50 @@
 ---
 read_when:
-    - Vous déboguez les installations de packages de Plugin
-    - Vous modifiez le comportement de démarrage des Plugins, de doctor ou d’installation par le gestionnaire de paquets
-    - Vous maintenez des installations OpenClaw empaquetées ou des manifestes de Plugin intégrés
+    - Vous déboguez les installations de paquets de Plugin
+    - Vous modifiez le comportement de démarrage du Plugin, de diagnostic ou d’installation via le gestionnaire de paquets
+    - Vous maintenez des installations OpenClaw packagées ou des manifestes de Plugin intégrés
 sidebarTitle: Dependencies
-summary: Comment OpenClaw installe les paquets de Plugin et résout les dépendances de Plugin
-title: Résolution des dépendances de Plugin
+summary: Comment OpenClaw installe les paquets Plugin et résout les dépendances Plugin
+title: Résolution des dépendances du Plugin
 x-i18n:
-    generated_at: "2026-05-03T21:35:55Z"
+    generated_at: "2026-05-05T01:48:45Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 46af62ff866d50cb53bb2761d9928f0fd2a25bdb945040885ec6bfb85be35c6d
+    source_hash: 1a832f705e51bba8ac77e2a8715a7213fd2caf10bfa42059d53db4a6d5ad8c20
     source_path: plugins/dependency-resolution.md
     workflow: 16
 ---
 
 # Résolution des dépendances de Plugin
 
-OpenClaw conserve le travail sur les dépendances des Plugins au moment de l’installation/la mise à jour. Le chargement à l’exécution
-n’exécute pas de gestionnaires de packages, ne répare pas les arbres de dépendances et ne modifie pas le répertoire du package
-OpenClaw.
+OpenClaw conserve le travail sur les dépendances des plugins au moment de l’installation/mise à jour. Le chargement à l’exécution
+n’exécute pas de gestionnaires de paquets, ne répare pas les arbres de dépendances et ne modifie pas le répertoire
+de paquets d’OpenClaw.
 
 ## Répartition des responsabilités
 
-Les packages Plugin possèdent leur graphe de dépendances :
+Les paquets de plugins possèdent leur graphe de dépendances :
 
-- les dépendances d’exécution résident dans les `dependencies` ou
-  `optionalDependencies` du package Plugin
-- les importations SDK/core sont des pairs ou des importations fournies par OpenClaw
-- les Plugins de développement local apportent leurs propres dépendances déjà installées
-- les Plugins npm et git sont installés dans des racines de packages possédées par OpenClaw
+- les dépendances d’exécution résident dans `dependencies` ou
+  `optionalDependencies` du paquet de plugin
+- les importations SDK/core sont des importations homologues ou fournies par OpenClaw
+- les plugins de développement local apportent leurs propres dépendances déjà installées
+- les plugins npm et git sont installés dans des racines de paquets appartenant à OpenClaw
 
-OpenClaw possède uniquement le cycle de vie du Plugin :
+OpenClaw possède uniquement le cycle de vie du plugin :
 
-- découvrir la source du Plugin
-- installer ou mettre à jour le package lorsque cela est explicitement demandé
+- découvrir la source du plugin
+- installer ou mettre à jour le paquet sur demande explicite
 - enregistrer les métadonnées d’installation
-- charger le point d’entrée du Plugin
+- charger le point d’entrée du plugin
 - échouer avec une erreur exploitable lorsque des dépendances sont manquantes
 
 ## Racines d’installation
 
 OpenClaw utilise des racines stables par source :
 
-- les packages npm s’installent sous `~/.openclaw/npm`
-- les packages git se clonent sous `~/.openclaw/git`
+- les paquets npm s’installent sous `~/.openclaw/npm`
+- les paquets git sont clonés sous `~/.openclaw/git`
 - les installations locales/par chemin/par archive sont copiées ou référencées sans réparation des dépendances
 
 Les installations npm s’exécutent dans la racine npm avec :
@@ -54,9 +54,9 @@ npm install --prefix ~/.openclaw/npm <spec> --omit=dev --ignore-scripts --no-aud
 ```
 
 npm peut hisser les dépendances transitives vers `~/.openclaw/npm/node_modules` à côté
-du package Plugin. OpenClaw analyse la racine npm gérée avant de faire confiance à
-l’installation et utilise npm pour supprimer les packages gérés par npm pendant la désinstallation ; les dépendances
-d’exécution hissées restent donc à l’intérieur de la limite de nettoyage gérée.
+du paquet de plugin. OpenClaw analyse la racine npm gérée avant de faire confiance à
+l’installation et utilise npm pour supprimer les paquets gérés par npm lors de la désinstallation, de sorte que les dépendances
+d’exécution hissées restent à l’intérieur du périmètre de nettoyage géré.
 
 Les installations git clonent ou actualisent le dépôt, puis exécutent :
 
@@ -64,27 +64,27 @@ Les installations git clonent ou actualisent le dépôt, puis exécutent :
 npm install --omit=dev --ignore-scripts --no-audit --no-fund
 ```
 
-Le Plugin installé se charge ensuite depuis ce répertoire de package, de sorte que la résolution
-des `node_modules` locaux au package et parents fonctionne comme pour un package
+Le plugin installé se charge ensuite depuis ce répertoire de paquet ; la résolution
+locale au paquet et par `node_modules` parent fonctionne donc de la même manière que pour un paquet
 Node normal.
 
 ## Plugins locaux
 
-Les Plugins locaux sont traités comme des répertoires contrôlés par les développeurs. OpenClaw n’exécute pas
-`npm install`, `pnpm install` ni de réparation de dépendances pour eux. Si un
-Plugin local a des dépendances, installez-les dans ce Plugin avant de le charger.
+Les plugins locaux sont traités comme des répertoires contrôlés par les développeurs. OpenClaw n’exécute pas
+`npm install`, `pnpm install` ni de réparation de dépendances pour eux. Si un plugin local
+a des dépendances, installez-les dans ce plugin avant de le charger.
 
-Les Plugins locaux TypeScript tiers peuvent utiliser le chemin d’urgence Jiti. Les Plugins
-JavaScript packagés et les Plugins internes intégrés se chargent via
-import/require natif plutôt que via Jiti.
+Les plugins locaux TypeScript tiers peuvent utiliser le chemin d’urgence Jiti. Les plugins
+JavaScript empaquetés et les plugins internes groupés se chargent via
+import/require natif au lieu de Jiti.
 
 ## Démarrage et rechargement
 
-Le démarrage du Gateway et le rechargement de la configuration n’installent jamais les dépendances de Plugin. Ils lisent
-les enregistrements d’installation du Plugin, calculent le point d’entrée et le chargent.
+Le démarrage du Gateway et le rechargement de la configuration n’installent jamais les dépendances de plugin. Ils lisent
+les enregistrements d’installation de plugin, calculent le point d’entrée et le chargent.
 
-Si une dépendance est manquante à l’exécution, le Plugin ne se charge pas et l’erreur
-doit indiquer à l’opérateur une correction explicite :
+Si une dépendance est manquante à l’exécution, le plugin échoue à se charger et l’erreur
+doit orienter l’opérateur vers une correction explicite :
 
 ```bash
 openclaw plugins update <id>
@@ -92,44 +92,44 @@ openclaw plugins install <source>
 openclaw doctor --fix
 ```
 
-`doctor --fix` peut nettoyer l’état de dépendances hérité généré par OpenClaw et installer
-les Plugins téléchargeables configurés qui sont absents des enregistrements d’installation locaux.
-Il ne répare pas les dépendances d’un Plugin local déjà installé.
+`doctor --fix` peut nettoyer l’état de dépendances hérité généré par OpenClaw et récupérer
+les plugins téléchargeables absents des enregistrements d’installation locaux lorsque la configuration
+les référence. Doctor ne répare pas les dépendances d’un plugin local déjà installé.
 
-## Plugins intégrés
+## Plugins groupés
 
-Les Plugins intégrés légers et critiques pour le cœur sont livrés dans OpenClaw.
-Ils ne doivent pas avoir d’arbre de dépendances d’exécution lourd, ou doivent être déplacés vers un
-package téléchargeable sur ClawHub/npm.
+Les plugins groupés légers et critiques pour le noyau sont livrés avec OpenClaw.
+Ils devraient soit ne pas avoir d’arbre de dépendances d’exécution lourd, soit être déplacés vers un
+paquet téléchargeable sur ClawHub/npm.
 
-Pour la liste générée actuelle des Plugins livrés dans le package cœur, installés
-en externe ou restant uniquement source, consultez [Inventaire des Plugins](/fr/plugins/plugin-inventory).
+Pour la liste actuellement générée des plugins livrés dans le paquet noyau, installés
+en externe ou conservés uniquement comme source, consultez [Inventaire des plugins](/fr/plugins/plugin-inventory).
 
-Les manifestes de Plugins intégrés ne doivent pas demander de préparation de dépendances. Les fonctionnalités de Plugin
-volumineuses ou facultatives doivent être packagées comme un Plugin normal et installées via
-le même chemin npm/git/ClawHub que les Plugins tiers.
+Les manifestes de plugins groupés ne doivent pas demander de préparation des dépendances. Les fonctionnalités
+de plugin volumineuses ou facultatives devraient être empaquetées comme un plugin normal et installées via
+le même chemin npm/git/ClawHub que les plugins tiers.
 
 Dans les checkouts source, OpenClaw traite le dépôt comme un monorepo pnpm. Après
-`pnpm install`, les Plugins intégrés se chargent depuis `extensions/<id>`, ce qui rend les dépendances
-d’espace de travail locales au package disponibles et permet de prendre directement les modifications en compte. Le développement depuis un
-checkout source est uniquement pnpm ; un simple `npm install` à la racine du dépôt n’est
-pas une méthode prise en charge pour préparer les dépendances des Plugins intégrés.
+`pnpm install`, les plugins groupés se chargent depuis `extensions/<id>`, de sorte que les dépendances
+workspace locales au paquet sont disponibles et que les modifications sont prises en compte directement. Le développement
+dans un checkout source est uniquement pnpm ; un simple `npm install` à la racine du dépôt
+n’est pas une méthode prise en charge pour préparer les dépendances des plugins groupés.
 
-| Forme d’installation             | Emplacement du Plugin intégré         | Propriétaire des dépendances                                          |
+| Forme d’installation             | Emplacement du plugin groupé          | Propriétaire des dépendances                                          |
 | -------------------------------- | ------------------------------------- | -------------------------------------------------------------------- |
-| `npm install -g openclaw`        | Arbre d’exécution construit dans le package | Package OpenClaw et flux explicites d’installation/mise à jour/doctor de Plugin |
-| Checkout git plus `pnpm install` | Packages d’espace de travail `extensions/<id>` | L’espace de travail pnpm, y compris les propres dépendances de chaque package Plugin |
-| `openclaw plugins install ...`   | Racine de Plugin npm/git/ClawHub gérée | Le flux d’installation/mise à jour du Plugin                          |
+| `npm install -g openclaw`        | Arbre d’exécution construit dans le paquet | Paquet OpenClaw et flux explicites d’installation/mise à jour/doctor de plugins |
+| Checkout Git plus `pnpm install` | Paquets workspace `extensions/<id>`   | Le workspace pnpm, y compris les propres dépendances de chaque paquet de plugin |
+| `openclaw plugins install ...`   | Racine de plugin npm/git/ClawHub gérée | Le flux d’installation/mise à jour du plugin                         |
 
 ## Nettoyage hérité
 
-Les anciennes versions d’OpenClaw généraient des racines de dépendances de Plugins intégrés au démarrage ou
-pendant la réparation doctor. Le nettoyage doctor actuel supprime ces répertoires obsolètes et
-liens symboliques lorsque `--fix` est utilisé, y compris les anciennes racines `plugin-runtime-deps`, les liens symboliques de packages
-à préfixe global Node qui pointent vers des cibles `plugin-runtime-deps` élaguées,
-les manifestes `.openclaw-runtime-deps*`, les `node_modules` de Plugin générés, les répertoires
-d’étape d’installation et les stores pnpm locaux au package. Le postinstall packagé supprime aussi
-ces liens symboliques globaux avant d’élaguer les racines cibles héritées, afin que les mises à niveau
-ne laissent pas d’importations de packages ESM pendantes.
+Les anciennes versions d’OpenClaw généraient des racines de dépendances de plugins groupés au démarrage ou
+pendant la réparation par doctor. Le nettoyage actuel de doctor supprime ces répertoires et
+liens symboliques obsolètes lorsque `--fix` est utilisé, y compris les anciennes racines `plugin-runtime-deps`, les liens symboliques
+de paquets au préfixe Node global qui pointent vers des cibles `plugin-runtime-deps` élaguées,
+les manifestes `.openclaw-runtime-deps*`, les `node_modules` de plugins générés, les répertoires
+d’étape d’installation et les stores pnpm locaux au paquet. Le postinstall empaqueté supprime aussi
+ces liens symboliques globaux avant d’élaguer les racines cibles héritées afin que les mises à niveau
+ne laissent pas d’importations de paquets ESM pendantes.
 
-Ces chemins ne sont que des débris hérités. Les nouvelles installations ne doivent pas les créer.
+Ces chemins ne sont que des débris hérités. Les nouvelles installations ne devraient pas les créer.
