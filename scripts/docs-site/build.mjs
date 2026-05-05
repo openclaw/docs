@@ -135,18 +135,17 @@ function layout({ page, nav, activeTab, html, toc, prev, next }) {
 <title>${escapeHtml(title)}</title>
 <link rel="icon" href="${publicPath("/assets/pixel-lobster.svg")}">
 <link rel="stylesheet" href="${publicPath("/assets/docs-site.css")}">
-<script>window.OPENCLAW_DOCS_BASE=${JSON.stringify(basePath)};document.documentElement.dataset.theme=localStorage.getItem("theme")||"light"</script>
+<script>window.OPENCLAW_DOCS_BASE=${JSON.stringify(basePath)};document.documentElement.dataset.theme=localStorage.getItem("theme")||"dark"</script>
 </head>
 <body>
-<div class="topbar"><button data-nav-toggle>Menu</button><strong>${escapeHtml(config.name)}</strong><button class="search-button" data-search-open>Search</button></div>
-<div class="shell">
+${siteHeader(page, nav, activeTab)}
+<div class="doc-shell">
 ${sidebar(page, nav, activeTab)}
-<main class="main">
+<main class="main" id="main">
 <article class="article">
 <header class="article-header">
-<p class="article-kicker">${escapeHtml(localeLabels[page.locale] ?? page.locale)}</p>
+<p class="article-kicker">${escapeHtml(groupForPage(nav, page.slug) ?? activeTab)}</p>
 <h1>${escapeHtml(page.title)}</h1>
-${page.summary ? `<p class="summary">${escapeHtml(page.summary)}</p>` : ""}
 </header>
 <div class="doc" data-pagefind-body>${html}</div>
 ${pager(prev, next)}
@@ -160,25 +159,42 @@ ${searchModal()}
 </html>`;
 }
 
-function sidebar(page, nav, activeTab) {
-  const options = locales.map((locale) => {
-    const url = localeUrlForSlug(locale.code, page.slug);
-    const selected = locale.code === page.locale ? " selected" : "";
-    return `<option value="${locale.code}" data-url="${escapeAttr(url)}"${selected}>${escapeHtml(localeLabels[locale.code] ?? locale.code)}</option>`;
-  }).join("");
+function siteHeader(page, nav, activeTab) {
+  const options = localeOptions(page);
   const tabs = nav.map((tab) => {
     const href = pageUrl(firstPage(tab));
     const active = tab.title === activeTab ? " active" : "";
     return `<a class="tab-link${active}" href="${href}">${escapeHtml(tab.title)}</a>`;
   }).join("");
+  return `<header class="site-header">
+<div class="header-row">
+<div class="header-left"><a class="brand" href="${pageUrl(pageByKey.get(pageKey(page.locale, "index")) ?? page)}"><img src="${publicPath("/assets/pixel-lobster.svg")}" alt=""></a><select data-locale aria-label="Language">${options}</select></div>
+<button class="search-button" type="button" data-search-open>Search... <span>⌘K</span></button>
+<nav class="header-links">${topLink("GitHub", "https://github.com/openclaw/openclaw")}${topLink("Releases", "https://github.com/openclaw/openclaw/releases")}${topLink("Discord", "https://discord.com/invite/clawd")}<button type="button" data-theme-toggle aria-label="Toggle theme">◐</button></nav>
+<button class="nav-toggle" type="button" data-nav-toggle>Menu</button>
+</div>
+<nav class="tabs">${tabs}</nav>
+</header>`;
+}
+
+function sidebar(page, nav, activeTab) {
   const groups = (nav.find((tab) => tab.title === activeTab) ?? nav[0])?.groups ?? [];
   return `<aside class="sidebar">
-<a class="brand" href="${pageUrl(pageByKey.get(pageKey(page.locale, "index")) ?? page)}"><img src="${publicPath("/assets/pixel-lobster.svg")}" alt=""><span><strong>${escapeHtml(config.name)}</strong><small>self-hosted agent gateway</small></span></a>
-<div class="tools"><select data-locale aria-label="Language">${options}</select><button type="button" data-theme-toggle>Theme</button></div>
-<button class="search-button" type="button" data-search-open>Search docs <span>⌘K</span></button>
-<nav class="tabs">${tabs}</nav>
 <nav>${groups.map((group) => navGroupHtml(page, group)).join("")}</nav>
 </aside>`;
+}
+
+function localeOptions(page) {
+  return locales.map((locale) => {
+    const url = localeUrlForSlug(locale.code, page.slug);
+    const selected = locale.code === page.locale ? " selected" : "";
+    const label = locale.code === "en" ? "🇺🇸 English" : (localeLabels[locale.code] ?? locale.code);
+    return `<option value="${locale.code}" data-url="${escapeAttr(url)}"${selected}>${escapeHtml(label)}</option>`;
+  }).join("");
+}
+
+function topLink(label, href) {
+  return `<a href="${escapeAttr(href)}">${escapeHtml(label)}</a>`;
 }
 
 function navGroupHtml(activePage, group) {
@@ -194,7 +210,7 @@ function navLink(activePage, page) {
 }
 
 function tableOfContents(html) {
-  return [...html.matchAll(/<h([23]) id="([^"]+)">([\s\S]*?)<\/h\1>/g)]
+  return [...html.matchAll(/<h([23])\b[^>]*\bid="([^"]+)"[^>]*>([\s\S]*?)<\/h\1>/g)]
     .map((m) => ({ level: Number(m[1]), id: m[2], title: stripTags(m[3]).replace(/^#\s*/, "") }))
     .slice(0, 24);
 }
@@ -255,6 +271,16 @@ function copyDir(source, dest) {
 
 function activeTabTitle(nav, slug) {
   return nav.find((tab) => flattenNav([tab]).some((page) => page.slug === slug))?.title ?? nav[0]?.title ?? "";
+}
+
+function groupForPage(nav, slug) {
+  for (const tab of nav) {
+    for (const group of tab.groups) {
+      if (group.pages.some((entry) => entry.group ? entry.pages.some((page) => page.slug === slug) : entry.slug === slug)) {
+        return group.title;
+      }
+    }
+  }
 }
 
 function flattenNav(nav) {
