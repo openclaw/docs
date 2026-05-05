@@ -44,6 +44,8 @@ jobs:
         run: npm ci
 
       - name: Build
+        env:
+          DOCS_SITE_BASE_PATH: /docs
         run: npm run docs:build
 
       - name: Smoke generated site

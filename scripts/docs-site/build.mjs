@@ -12,6 +12,7 @@ const docsDir = path.join(root, "docs");
 const outDir = path.join(root, "dist", "docs-site");
 const config = JSON.parse(fs.readFileSync(path.join(docsDir, "docs.json"), "utf8"));
 const md = createMarkdownRenderer();
+const basePath = normalizeBasePath(process.env.DOCS_SITE_BASE_PATH ?? "");
 
 fs.rmSync(outDir, { recursive: true, force: true });
 fs.mkdirSync(outDir, { recursive: true });
@@ -114,9 +115,9 @@ function writePage(page) {
   const activeTab = activeTabTitle(nav, page.slug);
   const prev = activeIndex > 0 ? flat[activeIndex - 1] : null;
   const next = activeIndex >= 0 && activeIndex < flat.length - 1 ? flat[activeIndex + 1] : null;
-  const html = localizeLinks(renderMdxish(page.body, md), page.locale);
+  const html = rewriteInternalUrls(renderMdxish(page.body, md), page.locale);
   const toc = tableOfContents(html);
-  const outPath = path.join(outDir, pageUrl(page).replace(/^\//, ""), "index.html");
+  const outPath = path.join(outDir, pageRoute(page).replace(/^\//, ""), "index.html");
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
   fs.writeFileSync(outPath, layout({ page, nav, activeTab, html, toc, prev, next }), "utf8");
 }
@@ -132,9 +133,9 @@ function layout({ page, nav, activeTab, html, toc, prev, next }) {
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="${escapeAttr(page.summary || config.description || "")}">
 <title>${escapeHtml(title)}</title>
-<link rel="icon" href="/assets/pixel-lobster.svg">
-<link rel="stylesheet" href="/assets/docs-site.css">
-<script>document.documentElement.dataset.theme=localStorage.getItem("theme")||"light"</script>
+<link rel="icon" href="${publicPath("/assets/pixel-lobster.svg")}">
+<link rel="stylesheet" href="${publicPath("/assets/docs-site.css")}">
+<script>window.OPENCLAW_DOCS_BASE=${JSON.stringify(basePath)};document.documentElement.dataset.theme=localStorage.getItem("theme")||"light"</script>
 </head>
 <body>
 <div class="topbar"><button data-nav-toggle>Menu</button><strong>${escapeHtml(config.name)}</strong><button class="search-button" data-search-open>Search</button></div>
@@ -154,7 +155,7 @@ ${tocHtml(toc)}
 </main>
 </div>
 ${searchModal()}
-<script type="module" src="/assets/docs-site.js"></script>
+<script type="module" src="${publicPath("/assets/docs-site.js")}"></script>
 </body>
 </html>`;
 }
@@ -172,7 +173,7 @@ function sidebar(page, nav, activeTab) {
   }).join("");
   const groups = (nav.find((tab) => tab.title === activeTab) ?? nav[0])?.groups ?? [];
   return `<aside class="sidebar">
-<a class="brand" href="${page.locale === "en" ? "/" : `/${page.locale}/`}"><img src="/assets/pixel-lobster.svg" alt=""><span><strong>${escapeHtml(config.name)}</strong><small>self-hosted agent gateway</small></span></a>
+<a class="brand" href="${pageUrl(pageByKey.get(pageKey(page.locale, "index")) ?? page)}"><img src="${publicPath("/assets/pixel-lobster.svg")}" alt=""><span><strong>${escapeHtml(config.name)}</strong><small>self-hosted agent gateway</small></span></a>
 <div class="tools"><select data-locale aria-label="Language">${options}</select><button type="button" data-theme-toggle>Theme</button></div>
 <button class="search-button" type="button" data-search-open>Search docs <span>⌘K</span></button>
 <nav class="tabs">${tabs}</nav>
@@ -219,7 +220,7 @@ function writeRedirects() {
     const target = path.join(outDir, source.replace(/^\//, ""), "index.html");
     if (fs.existsSync(target)) continue;
     fs.mkdirSync(path.dirname(target), { recursive: true });
-    fs.writeFileSync(target, redirectHtml(dest), "utf8");
+    fs.writeFileSync(target, redirectHtml(publicPath(dest)), "utf8");
   }
 }
 
@@ -233,7 +234,9 @@ function writeStaticAssets() {
   fs.writeFileSync(path.join(assetsDir, "docs-site.css"), siteCss(), "utf8");
   fs.writeFileSync(path.join(assetsDir, "docs-site.js"), siteJs(), "utf8");
   fs.writeFileSync(path.join(outDir, ".nojekyll"), "", "utf8");
-  fs.writeFileSync(path.join(outDir, "CNAME"), process.env.DOCS_SITE_CNAME ?? "docs.openclaw.ai", "utf8");
+  if (process.env.DOCS_SITE_CNAME) {
+    fs.writeFileSync(path.join(outDir, "CNAME"), process.env.DOCS_SITE_CNAME, "utf8");
+  }
 }
 
 function copyPublicFiles() {
@@ -266,22 +269,32 @@ function firstPage(tab) {
 }
 
 function localeUrlForSlug(locale, slug) {
-  return pageByKey.has(pageKey(locale, slug)) ? pageUrl(pageByKey.get(pageKey(locale, slug))) : locale === "en" ? "/" : `/${locale}/`;
+  return pageByKey.has(pageKey(locale, slug)) ? pageUrl(pageByKey.get(pageKey(locale, slug))) : publicPath(locale === "en" ? "/" : `/${locale}/`);
 }
 
 function pageUrl(page) {
+  return publicPath(pageRoute(page));
+}
+
+function pageRoute(page) {
   const prefix = page.locale === "en" ? "" : `/${page.locale}`;
   return page.slug === "index" ? (prefix ? `${prefix}/` : "/") : `${prefix}/${page.slug}/`;
 }
 
-function localizeLinks(html, locale) {
-  if (locale === "en") return html;
-  return html.replace(/href="\/([^"#?]*)([#?][^"]*)?"/g, (match, target, suffix = "") => {
-    if (!target || target.startsWith("assets/") || target.startsWith("pagefind/")) return match;
+function rewriteInternalUrls(html, locale) {
+  return html.replace(/\b(href|src)="\/([^"#?]*)([#?][^"]*)?"/g, (match, attr, target, suffix = "") => {
+    if (attr === "src") return `${attr}="${publicPath(`/${target}`)}${suffix}"`;
+    if (!target || target.startsWith("assets/") || target.startsWith("pagefind/")) {
+      return `${attr}="${publicPath(`/${target}`)}${suffix}"`;
+    }
+    const segments = target.replace(/\/$/, "").split("/");
+    const maybeLocale = segments[0];
+    if (pageByKey.has(pageKey(maybeLocale, normalizeSlug(segments.slice(1).join("/") || "index")))) {
+      return `${attr}="${pageUrl(pageByKey.get(pageKey(maybeLocale, normalizeSlug(segments.slice(1).join("/") || "index"))))}${suffix}"`;
+    }
     const slug = normalizeSlug(target.replace(/\/$/, ""));
-    if (!pageByKey.has(pageKey(locale, slug))) return match;
-    const localized = slug === "index" ? `/${locale}/` : `/${locale}/${target.replace(/\/$/, "")}/`;
-    return `href="${localized}${suffix}"`;
+    const page = pageByKey.get(pageKey(locale, slug)) ?? pageByKey.get(pageKey("en", slug));
+    return page ? `${attr}="${pageUrl(page)}${suffix}"` : `${attr}="${publicPath(`/${target}`)}${suffix}"`;
   });
 }
 
@@ -301,6 +314,17 @@ function cleanPath(value) {
   const [pathname, hash = ""] = String(value).split("#");
   const cleaned = pathname.replace(/\/$/, "") || "/";
   return hash ? `${cleaned}#${hash}` : cleaned;
+}
+
+function publicPath(value) {
+  if (!basePath) return value;
+  if (value === "/") return `${basePath}/`;
+  return `${basePath}${value.startsWith("/") ? value : `/${value}`}`;
+}
+
+function normalizeBasePath(value) {
+  if (!value || value === "/") return "";
+  return `/${value.replace(/^\/+|\/+$/g, "")}`;
 }
 
 function htmlLang(locale) {

@@ -34,10 +34,14 @@ for (const rel of required) {
   }
 }
 const zhReactions = fs.readFileSync(path.join(site, "zh-CN/tools/reactions/index.html"), "utf8");
-if (!zhReactions.includes('data-url="/zh-CN/tools/reactions/"')) {
+if (!/data-url="(?:\/docs)?\/zh-CN\/tools\/reactions\/"/.test(zhReactions)) {
   throw new Error("zh-CN reactions: language picker does not preserve current page");
 }
-if (!zhReactions.includes('href="/zh-CN/tools/agent-send')) {
+if (!/href="(?:\/docs)?\/zh-CN\/tools\/agent-send/.test(zhReactions)) {
   throw new Error("zh-CN reactions: article links do not stay in locale");
+}
+const index = fs.readFileSync(path.join(site, "index.html"), "utf8");
+if (/src="\/assets\//.test(index) || /href="\/assets\//.test(index)) {
+  throw new Error("index: absolute asset paths were not base-path rewritten");
 }
 console.log(`docs site smoke ok: ${required.length} checks`);
