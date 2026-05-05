@@ -1,13 +1,13 @@
 ---
 read_when:
-    - در حال نصب، پیکربندی، یا ممیزی Plugin WhatsApp هستید
-summary: رابط کانال WhatsApp را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
+    - شما در حال نصب، پیکربندی، یا ممیزی Plugin WhatsApp هستید
+summary: سطح کانال WhatsApp را برای ارسال و دریافت پیام‌های OpenClaw اضافه می‌کند.
 title: Plugin WhatsApp
 x-i18n:
-    generated_at: "2026-05-03T11:43:51Z"
+    generated_at: "2026-05-05T06:19:54Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3ff038ce3afd0285e5cfca9ca1b0e89deed582cff4f2e9c257f29a4848f397fa
+    source_hash: a0fa274f7e937894a070abd9307aa12eed17b27275bc7e5cfc432f8a41373c54
     source_path: plugins/reference/whatsapp.md
     workflow: 16
 ---
@@ -24,6 +24,16 @@ x-i18n:
 ## سطح
 
 channels: whatsapp
+
+## نکته نصب در Windows
+
+در Windows، Plugin WhatsApp هنگام نصب npm به Git در `PATH` نیاز دارد، زیرا یکی از وابستگی‌های Baileys/libsignal آن از یک URL مربوط به git دریافت می‌شود. Git for Windows را نصب کنید، سپس shell را دوباره راه‌اندازی کنید و نصب را دوباره اجرا کنید:
+
+```powershell
+winget install --id Git.Git -e
+```
+
+Portable Git نیز در صورتی کار می‌کند که دایرکتوری `bin` آن در `PATH` باشد.
 
 ## مستندات مرتبط
 
