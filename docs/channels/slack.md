@@ -25,12 +25,147 @@ Production-ready for DMs and channels via Slack app integrations. Default mode i
   <Tab title="Socket Mode (default)">
     <Steps>
       <Step title="Create a new Slack app">
-        In Slack app settings press the **[Create New App](https://api.slack.com/apps/new)** button:
+        Open [api.slack.com/apps](https://api.slack.com/apps/new) → **Create New App** → **From a manifest** → select your workspace → paste one of the manifests below → **Next** → **Create**.
 
-        - choose **from a manifest** and select a workspace for your app
-        - paste the [example manifest](#manifest-and-scope-checklist) from below and continue to create
-        - generate an **App-Level Token** (`xapp-...`) with `connections:write`
-        - install app and copy the **Bot Token** (`xoxb-...`) shown
+        <CodeGroup>
+
+```json Recommended
+{
+  "display_information": {
+    "name": "OpenClaw",
+    "description": "Slack connector for OpenClaw"
+  },
+  "features": {
+    "bot_user": { "display_name": "OpenClaw", "always_online": true },
+    "app_home": {
+      "home_tab_enabled": true,
+      "messages_tab_enabled": true,
+      "messages_tab_read_only_enabled": false
+    },
+    "slash_commands": [
+      {
+        "command": "/openclaw",
+        "description": "Send a message to OpenClaw",
+        "should_escape": false
+      }
+    ]
+  },
+  "oauth_config": {
+    "scopes": {
+      "bot": [
+        "app_mentions:read",
+        "assistant:write",
+        "channels:history",
+        "channels:read",
+        "chat:write",
+        "commands",
+        "emoji:read",
+        "files:read",
+        "files:write",
+        "groups:history",
+        "groups:read",
+        "im:history",
+        "im:read",
+        "im:write",
+        "mpim:history",
+        "mpim:read",
+        "mpim:write",
+        "pins:read",
+        "pins:write",
+        "reactions:read",
+        "reactions:write",
+        "usergroups:read",
+        "users:read"
+      ]
+    }
+  },
+  "settings": {
+    "socket_mode_enabled": true,
+    "event_subscriptions": {
+      "bot_events": [
+        "app_home_opened",
+        "app_mention",
+        "channel_rename",
+        "member_joined_channel",
+        "member_left_channel",
+        "message.channels",
+        "message.groups",
+        "message.im",
+        "message.mpim",
+        "pin_added",
+        "pin_removed",
+        "reaction_added",
+        "reaction_removed"
+      ]
+    }
+  }
+}
+```
+
+```json Minimal
+{
+  "display_information": {
+    "name": "OpenClaw",
+    "description": "Slack connector for OpenClaw"
+  },
+  "features": {
+    "bot_user": { "display_name": "OpenClaw", "always_online": true },
+    "app_home": {
+      "home_tab_enabled": true,
+      "messages_tab_enabled": true,
+      "messages_tab_read_only_enabled": false
+    },
+    "slash_commands": [
+      {
+        "command": "/openclaw",
+        "description": "Send a message to OpenClaw",
+        "should_escape": false
+      }
+    ]
+  },
+  "oauth_config": {
+    "scopes": {
+      "bot": [
+        "app_mentions:read",
+        "assistant:write",
+        "channels:history",
+        "channels:read",
+        "chat:write",
+        "commands",
+        "groups:history",
+        "groups:read",
+        "im:history",
+        "im:read",
+        "im:write",
+        "users:read"
+      ]
+    }
+  },
+  "settings": {
+    "socket_mode_enabled": true,
+    "event_subscriptions": {
+      "bot_events": [
+        "app_home_opened",
+        "app_mention",
+        "message.channels",
+        "message.groups",
+        "message.im"
+      ]
+    }
+  }
+}
+```
+
+        </CodeGroup>
+
+        <Note>
+          **Recommended** matches the bundled Slack plugin's full feature set: App Home, slash commands, files, reactions, pins, group DMs, and emoji/usergroup reads. Pick **Minimal** when workspace policy restricts scopes — it covers DMs, channel/group history, mentions, and slash commands but drops files, reactions, pins, group-DM (`mpim:*`), `emoji:read`, and `usergroups:read`. See [Manifest and scope checklist](#manifest-and-scope-checklist) for per-scope rationale and additive options like extra slash commands.
+        </Note>
+
+        After Slack creates the app:
+
+        - **Basic Information → App-Level Tokens → Generate Token and Scopes**: add `connections:write`, save, copy the `xapp-...` value.
+        - **Install App → Install to Workspace**: copy the `xoxb-...` Bot User OAuth Token.
 
       </Step>
 
@@ -80,12 +215,159 @@ openclaw gateway
   <Tab title="HTTP Request URLs">
     <Steps>
       <Step title="Create a new Slack app">
-        In Slack app settings press the **[Create New App](https://api.slack.com/apps/new)** button:
+        Open [api.slack.com/apps](https://api.slack.com/apps/new) → **Create New App** → **From a manifest** → select your workspace → paste one of the manifests below → replace `https://gateway-host.example.com/slack/events` with your public Gateway URL → **Next** → **Create**.
 
-        - choose **from a manifest** and select a workspace for your app
-        - paste the [example manifest](#manifest-and-scope-checklist) and update the URLs before create
-        - save the **Signing Secret** for request verification
-        - install app and copy the **Bot Token** (`xoxb-...`) shown
+        <CodeGroup>
+
+```json Recommended
+{
+  "display_information": {
+    "name": "OpenClaw",
+    "description": "Slack connector for OpenClaw"
+  },
+  "features": {
+    "bot_user": { "display_name": "OpenClaw", "always_online": true },
+    "app_home": {
+      "home_tab_enabled": true,
+      "messages_tab_enabled": true,
+      "messages_tab_read_only_enabled": false
+    },
+    "slash_commands": [
+      {
+        "command": "/openclaw",
+        "description": "Send a message to OpenClaw",
+        "should_escape": false,
+        "url": "https://gateway-host.example.com/slack/events"
+      }
+    ]
+  },
+  "oauth_config": {
+    "scopes": {
+      "bot": [
+        "app_mentions:read",
+        "assistant:write",
+        "channels:history",
+        "channels:read",
+        "chat:write",
+        "commands",
+        "emoji:read",
+        "files:read",
+        "files:write",
+        "groups:history",
+        "groups:read",
+        "im:history",
+        "im:read",
+        "im:write",
+        "mpim:history",
+        "mpim:read",
+        "mpim:write",
+        "pins:read",
+        "pins:write",
+        "reactions:read",
+        "reactions:write",
+        "usergroups:read",
+        "users:read"
+      ]
+    }
+  },
+  "settings": {
+    "event_subscriptions": {
+      "request_url": "https://gateway-host.example.com/slack/events",
+      "bot_events": [
+        "app_home_opened",
+        "app_mention",
+        "channel_rename",
+        "member_joined_channel",
+        "member_left_channel",
+        "message.channels",
+        "message.groups",
+        "message.im",
+        "message.mpim",
+        "pin_added",
+        "pin_removed",
+        "reaction_added",
+        "reaction_removed"
+      ]
+    },
+    "interactivity": {
+      "is_enabled": true,
+      "request_url": "https://gateway-host.example.com/slack/events",
+      "message_menu_options_url": "https://gateway-host.example.com/slack/events"
+    }
+  }
+}
+```
+
+```json Minimal
+{
+  "display_information": {
+    "name": "OpenClaw",
+    "description": "Slack connector for OpenClaw"
+  },
+  "features": {
+    "bot_user": { "display_name": "OpenClaw", "always_online": true },
+    "app_home": {
+      "home_tab_enabled": true,
+      "messages_tab_enabled": true,
+      "messages_tab_read_only_enabled": false
+    },
+    "slash_commands": [
+      {
+        "command": "/openclaw",
+        "description": "Send a message to OpenClaw",
+        "should_escape": false,
+        "url": "https://gateway-host.example.com/slack/events"
+      }
+    ]
+  },
+  "oauth_config": {
+    "scopes": {
+      "bot": [
+        "app_mentions:read",
+        "assistant:write",
+        "channels:history",
+        "channels:read",
+        "chat:write",
+        "commands",
+        "groups:history",
+        "groups:read",
+        "im:history",
+        "im:read",
+        "im:write",
+        "users:read"
+      ]
+    }
+  },
+  "settings": {
+    "event_subscriptions": {
+      "request_url": "https://gateway-host.example.com/slack/events",
+      "bot_events": [
+        "app_home_opened",
+        "app_mention",
+        "message.channels",
+        "message.groups",
+        "message.im"
+      ]
+    },
+    "interactivity": {
+      "is_enabled": true,
+      "request_url": "https://gateway-host.example.com/slack/events",
+      "message_menu_options_url": "https://gateway-host.example.com/slack/events"
+    }
+  }
+}
+```
+
+        </CodeGroup>
+
+        <Note>
+          **Recommended** matches the bundled Slack plugin's full feature set; **Minimal** drops files, reactions, pins, group-DM (`mpim:*`), `emoji:read`, and `usergroups:read` for restrictive workspaces. See [Manifest and scope checklist](#manifest-and-scope-checklist) for per-scope rationale.
+        </Note>
+
+        After Slack creates the app:
+
+        - **Basic Information → App Credentials**: copy the **Signing Secret** for request verification.
+        - **Install App → Install to Workspace**: copy the `xoxb-...` Bot User OAuth Token.
 
       </Step>
 
