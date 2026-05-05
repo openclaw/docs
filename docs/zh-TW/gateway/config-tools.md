@@ -2,20 +2,20 @@
 read_when:
     - 設定 `tools.*` 政策、允許清單或實驗性功能
     - 註冊自訂提供者或覆寫基底 URL
-    - 設定與 OpenAI 相容的自架端點
+    - 設定 OpenAI 相容的自行託管端点
 sidebarTitle: Tools and custom providers
-summary: 工具設定（政策、實驗性切換選項、由提供者支援的工具）與自訂提供者/基底 URL 設定
+summary: 工具設定（政策、實驗性切換項、由供應商支援的工具）與自訂供應商/base-URL 設定
 title: 設定 — 工具與自訂提供者
 x-i18n:
-    generated_at: "2026-05-03T21:32:33Z"
+    generated_at: "2026-05-05T01:45:43Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 75a39342f40e9c329a7c61855e805ec43532cbdb89fbe801acc26830fd63b4da
+    source_hash: 9196bff46d8b0f9447fb46b47fc764f5bbc4f0b19eb252d4db611e94e57b4883
     source_path: gateway/config-tools.md
     workflow: 16
 ---
 
-`tools.*` 設定鍵與自訂 provider / base-URL 設定。如需 agents、channels 和其他頂層設定鍵，請參閱[設定參考](/zh-TW/gateway/configuration-reference)。
+`tools.*` 設定鍵與自訂供應商 / base-URL 設定。若要查看代理程式、頻道和其他頂層設定鍵，請參閱[設定參考](/zh-TW/gateway/configuration-reference)。
 
 ## 工具
 
@@ -24,7 +24,7 @@ x-i18n:
 `tools.profile` 會在 `tools.allow`/`tools.deny` 之前設定基礎允許清單：
 
 <Note>
-本機 onboarding 會在未設定時，將新的本機設定預設為 `tools.profile: "coding"`（既有的明確設定檔會保留）。
+本機初始設定會在未設定時，將新的本機設定預設為 `tools.profile: "coding"`（既有的明確設定檔會保留）。
 </Note>
 
 | 設定檔      | 包含                                                                                                                            |
@@ -38,7 +38,7 @@ x-i18n:
 
 | 群組               | 工具                                                                                                                    |
 | ------------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| `group:runtime`    | `exec`, `process`, `code_execution`（`bash` 可作為 `exec` 的別名）                                                      |
+| `group:runtime`    | `exec`, `process`, `code_execution`（`bash` 可作為 `exec` 的別名）                                                       |
 | `group:fs`         | `read`, `write`, `edit`, `apply_patch`                                                                                  |
 | `group:sessions`   | `sessions_list`, `sessions_history`, `sessions_send`, `sessions_spawn`, `sessions_yield`, `subagents`, `session_status` |
 | `group:memory`     | `memory_search`, `memory_get`                                                                                           |
@@ -49,11 +49,11 @@ x-i18n:
 | `group:nodes`      | `nodes`                                                                                                                 |
 | `group:agents`     | `agents_list`                                                                                                           |
 | `group:media`      | `image`, `image_generate`, `video_generate`, `tts`                                                                      |
-| `group:openclaw`   | 所有內建工具（不含 provider plugins）                                                                                   |
+| `group:openclaw`   | 所有內建工具（不包含供應商 Plugin）                                                                                     |
 
 ### `tools.allow` / `tools.deny`
 
-全域工具允許/拒絕政策（拒絕優先）。不區分大小寫，支援 `*` 萬用字元。即使 Docker 沙箱關閉也會套用。
+全域工具允許/拒絕政策（拒絕優先）。不區分大小寫，支援 `*` 萬用字元。即使 Docker 沙盒關閉也會套用。
 
 ```json5
 {
@@ -61,7 +61,7 @@ x-i18n:
 }
 ```
 
-`write` 和 `apply_patch` 是不同的工具 ID。`allow: ["write"]` 也會為相容模型啟用 `apply_patch`，但 `deny: ["write"]` 不會拒絕 `apply_patch`。若要封鎖所有檔案變更，請拒絕 `group:fs`，或明確列出每個會變更檔案的工具：
+`write` 和 `apply_patch` 是獨立的工具 ID。`allow: ["write"]` 也會為相容模型啟用 `apply_patch`，但 `deny: ["write"]` 不會拒絕 `apply_patch`。若要封鎖所有檔案變更，請拒絕 `group:fs`，或明確列出每個會變更檔案的工具：
 
 ```json5
 {
@@ -71,7 +71,7 @@ x-i18n:
 
 ### `tools.byProvider`
 
-進一步限制特定 provider 或模型的工具。順序：基礎設定檔 → provider 設定檔 → 允許/拒絕。
+進一步限制特定供應商或模型的工具。順序：基礎設定檔 → 供應商設定檔 → 允許/拒絕。
 
 ```json5
 {
@@ -87,7 +87,7 @@ x-i18n:
 
 ### `tools.elevated`
 
-控制沙箱外的 elevated exec 存取權：
+控制沙盒外的提升權限 exec 存取：
 
 ```json5
 {
@@ -103,9 +103,9 @@ x-i18n:
 }
 ```
 
-- 每個 agent 的覆寫（`agents.list[].tools.elevated`）只能進一步限制。
+- 每個代理程式覆寫（`agents.list[].tools.elevated`）只能進一步限制。
 - `/elevated on|off|ask|full` 會依工作階段儲存狀態；行內指令僅套用於單則訊息。
-- Elevated `exec` 會繞過沙箱，並使用已設定的逸出路徑（預設為 `gateway`，或當 exec 目標為 `node` 時使用 `node`）。
+- 提升權限的 `exec` 會繞過沙盒，並使用設定的逸出路徑（預設為 `gateway`，或在 exec 目標是 `node` 時使用 `node`）。
 
 ### `tools.exec`
 
@@ -129,7 +129,7 @@ x-i18n:
 
 ### `tools.loopDetection`
 
-工具迴圈安全檢查**預設為停用**。設定 `enabled: true` 以啟用偵測。設定可在 `tools.loopDetection` 中全域定義，並在每個 agent 的 `agents.list[].tools.loopDetection` 覆寫。
+工具迴圈安全檢查**預設停用**。設定 `enabled: true` 可啟用偵測。設定可在 `tools.loopDetection` 中全域定義，並可於 `agents.list[].tools.loopDetection` 針對每個代理程式覆寫。
 
 ```json5
 {
@@ -151,22 +151,22 @@ x-i18n:
 ```
 
 <ParamField path="historySize" type="number">
-  保留用於迴圈分析的最大工具呼叫歷史。
+  保留用於迴圈分析的最大工具呼叫記錄。
 </ParamField>
 <ParamField path="warningThreshold" type="number">
-  發出警告的重複無進展模式閾值。
+  重複無進展模式的警告閾值。
 </ParamField>
 <ParamField path="criticalThreshold" type="number">
-  封鎖嚴重迴圈的較高重複閾值。
+  用於封鎖嚴重迴圈的較高重複閾值。
 </ParamField>
 <ParamField path="globalCircuitBreakerThreshold" type="number">
-  任何無進展執行的硬停止閾值。
+  任何無進展執行的硬性停止閾值。
 </ParamField>
 <ParamField path="detectors.genericRepeat" type="boolean">
-  對重複的相同工具/相同參數呼叫發出警告。
+  對重複的相同工具/相同引數呼叫發出警告。
 </ParamField>
 <ParamField path="detectors.knownPollNoProgress" type="boolean">
-  對已知輪詢工具（`process.poll`、`command_status` 等）的情況發出警告/封鎖。
+  對已知輪詢工具（`process.poll`、`command_status` 等）發出警告/封鎖。
 </ParamField>
 <ParamField path="detectors.pingPong" type="boolean">
   對交替無進展的成對模式發出警告/封鎖。
@@ -208,7 +208,7 @@ x-i18n:
 
 ### `tools.media`
 
-設定傳入媒體理解（影像/音訊/影片）：
+設定傳入媒體理解（圖片/音訊/影片）：
 
 ```json5
 {
@@ -216,7 +216,7 @@ x-i18n:
     media: {
       concurrency: 2,
       asyncCompletion: {
-        directSend: false, // opt-in: send finished async video directly to the channel
+        directSend: false, // deprecated: completions stay agent-mediated
       },
       audio: {
         enabled: true,
@@ -246,30 +246,30 @@ x-i18n:
 ```
 
 <AccordionGroup>
-  <Accordion title="媒體模型項目欄位">
-    **提供者項目**（`type: "provider"` 或省略）：
+  <Accordion title="Media model entry fields">
+    **供應商項目**（`type: "provider"` 或省略）：
 
-    - `provider`：API 提供者 id（`openai`、`anthropic`、`google`/`gemini`、`groq` 等）
-    - `model`：模型 id 覆寫
+    - `provider`：API 供應商 ID（`openai`、`anthropic`、`google`/`gemini`、`groq` 等）
+    - `model`：模型 ID 覆寫
     - `profile` / `preferredProfile`：`auth-profiles.json` 設定檔選擇
 
     **CLI 項目**（`type: "cli"`）：
 
     - `command`：要執行的可執行檔
-    - `args`：範本化引數（支援 `{{MediaPath}}`、`{{Prompt}}`、`{{MaxChars}}` 等；`openclaw doctor --fix` 會將已淘汰的 `{input}` placeholder 遷移至 `{{MediaPath}}`）
+    - `args`：範本化引數（支援 `{{MediaPath}}`、`{{Prompt}}`、`{{MaxChars}}` 等；`openclaw doctor --fix` 會將已淘汰的 `{input}` 預留位置遷移到 `{{MediaPath}}`）
 
     **通用欄位：**
 
-    - `capabilities`：選用清單（`image`、`audio`、`video`）。預設值：`openai`/`anthropic`/`minimax` → 影像，`google` → 影像+音訊+影片，`groq` → 音訊。
-    - `prompt`、`maxChars`、`maxBytes`、`timeoutSeconds`、`language`：每個項目的覆寫值。
-    - `tools.media.image.timeoutSeconds` 和相符影像模型的 `timeoutSeconds` 項目，也會在代理呼叫明確的 `image` 工具時套用。
-    - 失敗時會回退到下一個項目。
+    - `capabilities`：選用清單（`image`、`audio`、`video`）。預設值：`openai`/`anthropic`/`minimax` → 圖片，`google` → 圖片+音訊+影片，`groq` → 音訊。
+    - `prompt`、`maxChars`、`maxBytes`、`timeoutSeconds`、`language`：逐項目覆寫。
+    - 當代理呼叫明確的 `image` 工具時，`tools.media.image.timeoutSeconds` 和相符圖片模型的 `timeoutSeconds` 項目也會套用。
+    - 失敗時會退回到下一個項目。
 
-    提供者驗證遵循標準順序：`auth-profiles.json` → env vars → `models.providers.*.apiKey`。
+    供應商驗證會依照標準順序：`auth-profiles.json` → 環境變數 → `models.providers.*.apiKey`。
 
     **非同步完成欄位：**
 
-    - `asyncCompletion.directSend`：當為 `true` 時，支援直接完成交付的已完成非同步媒體工作，會先嘗試直接 channel 交付。預設值：`false`（requester-session 喚醒/模型交付路徑）。目前這會套用至非同步 `video_generate`；即使啟用此項，非同步 `music_generate` 完成仍會透過 requester-session 中介。
+    - `asyncCompletion.directSend`：已淘汰的相容性旗標。已完成的非同步媒體任務會維持由請求者工作階段居中處理，讓代理收到結果、決定如何告知使用者，並在來源傳遞需要時使用訊息工具。
 
   </Accordion>
 </AccordionGroup>
@@ -289,9 +289,9 @@ x-i18n:
 
 ### `tools.sessions`
 
-控制哪些 session 可由 session 工具（`sessions_list`、`sessions_history`、`sessions_send`）指定為目標。
+控制哪些工作階段可由工作階段工具（`sessions_list`、`sessions_history`、`sessions_send`）作為目標。
 
-預設值：`tree`（目前 session + 由其產生的 session，例如 subagents）。
+預設值：`tree`（目前工作階段 + 由其衍生的工作階段，例如子代理）。
 
 ```json5
 {
@@ -305,12 +305,12 @@ x-i18n:
 ```
 
 <AccordionGroup>
-  <Accordion title="可見性範圍">
-    - `self`：僅目前的 session key。
-    - `tree`：目前 session + 由目前 session 產生的 session（subagents）。
-    - `agent`：屬於目前 agent id 的任何 session（如果你在同一個 agent id 下執行每個 sender 的 session，可能包含其他使用者）。
-    - `all`：任何 session。跨代理指定目標仍需要 `tools.agentToAgent`。
-    - 沙盒限制：當目前 session 位於沙盒中且 `agents.defaults.sandbox.sessionToolsVisibility="spawned"` 時，即使 `tools.sessions.visibility="all"`，可見性也會被強制為 `tree`。
+  <Accordion title="Visibility scopes">
+    - `self`：僅目前工作階段金鑰。
+    - `tree`：目前工作階段 + 由目前工作階段衍生的工作階段（子代理）。
+    - `agent`：屬於目前代理 ID 的任何工作階段（如果你在同一個代理 ID 下依傳送者執行工作階段，可能包含其他使用者）。
+    - `all`：任何工作階段。跨代理指定目標仍需要 `tools.agentToAgent`。
+    - 沙箱限制：當目前工作階段在沙箱中，且 `agents.defaults.sandbox.sessionToolsVisibility="spawned"` 時，即使 `tools.sessions.visibility="all"`，可見性也會強制為 `tree`。
 
   </Accordion>
 </AccordionGroup>
@@ -336,13 +336,13 @@ x-i18n:
 ```
 
 <AccordionGroup>
-  <Accordion title="Attachment notes">
-    - 附件僅支援 `runtime: "subagent"`。ACP runtime 會拒絕附件。
-    - 檔案會實體化到子工作區的 `.openclaw/attachments/<uuid>/`，並包含 `.manifest.json`。
-    - 附件內容會自動從逐字稿持久化中遮蔽。
-    - Base64 輸入會以嚴格的字母表/填充檢查和解碼前大小防護進行驗證。
-    - 檔案權限為：目錄 `0700`，檔案 `0600`。
-    - 清理會遵循 `cleanup` 政策：`delete` 一律移除附件；`keep` 只有在 `retainOnSessionKeep: true` 時才保留附件。
+  <Accordion title="附件注意事項">
+    - 附件僅支援 `runtime: "subagent"`。ACP 執行階段會拒絕它們。
+    - 檔案會具體化到子工作區的 `.openclaw/attachments/<uuid>/`，並帶有 `.manifest.json`。
+    - 附件內容會自動從轉錄持久化中遮蔽。
+    - Base64 輸入會使用嚴格的字母表/填充檢查，以及解碼前大小保護進行驗證。
+    - 目錄的檔案權限為 `0700`，檔案的權限為 `0600`。
+    - 清理會遵循 `cleanup` 政策：`delete` 一律移除附件；`keep` 只會在 `retainOnSessionKeep: true` 時保留附件。
 
   </Accordion>
 </AccordionGroup>
@@ -364,8 +364,8 @@ x-i18n:
 ```
 
 - `planTool`：為非瑣碎的多步驟工作追蹤啟用結構化 `update_plan` 工具。
-- 預設：`false`，除非 `agents.defaults.embeddedPi.executionContract`（或每個代理的覆寫）針對 OpenAI 或 OpenAI Codex GPT-5 系列執行設定為 `"strict-agentic"`。設定為 `true` 可在該範圍之外強制啟用工具，或設定為 `false` 即使在嚴格代理式 GPT-5 執行中也保持關閉。
-- 啟用時，系統提示也會加入使用指引，讓模型只在實質工作中使用它，並且最多保持一個步驟為 `in_progress`。
+- 預設值：`false`，除非 `agents.defaults.embeddedPi.executionContract`（或每個代理的覆寫）針對 OpenAI 或 OpenAI Codex GPT-5 系列執行設為 `"strict-agentic"`。設為 `true` 可在該範圍外強制開啟工具，或設為 `false` 即使在嚴格代理式 GPT-5 執行中也保持關閉。
+- 啟用時，系統提示也會加入使用指引，讓模型只在實質工作中使用它，並最多保持一個步驟為 `in_progress`。
 
 ### `agents.defaults.subagents`
 
@@ -386,15 +386,15 @@ x-i18n:
 ```
 
 - `model`：產生的子代理預設模型。若省略，子代理會繼承呼叫者的模型。
-- `allowAgents`：當請求代理未設定自己的 `subagents.allowAgents` 時，`sessions_spawn` 目標代理 ID 的預設允許清單（`["*"]` = 任意；預設：僅相同代理）。
-- `runTimeoutSeconds`：當工具呼叫省略 `runTimeoutSeconds` 時，`sessions_spawn` 的預設逾時（秒）。`0` 表示無逾時。
+- `allowAgents`：當請求代理未設定自己的 `subagents.allowAgents` 時，`sessions_spawn` 的目標代理 ID 預設允許清單（`["*"]` = 任何代理；預設：僅相同代理）。
+- `runTimeoutSeconds`：當工具呼叫省略 `runTimeoutSeconds` 時，`sessions_spawn` 的預設逾時（秒）。`0` 表示不逾時。
 - 每個子代理的工具政策：`tools.subagents.tools.allow` / `tools.subagents.tools.deny`。
 
 ---
 
-## 自訂提供者與基底 URL
+## 自訂提供者與基礎 URL
 
-OpenClaw 使用內建模型目錄。透過設定中的 `models.providers` 或 `~/.openclaw/agents/<agentId>/agent/models.json` 新增自訂提供者。
+OpenClaw 使用內建模型目錄。透過設定中的 `models.providers` 或 `~/.openclaw/agents/<agentId>/agent/models.json` 加入自訂提供者。
 
 ```json5
 {
@@ -424,84 +424,84 @@ OpenClaw 使用內建模型目錄。透過設定中的 `models.providers` 或 `~
 ```
 
 <AccordionGroup>
-  <Accordion title="Auth and merge precedence">
+  <Accordion title="驗證與合併優先順序">
     - 對自訂驗證需求使用 `authHeader: true` + `headers`。
-    - 使用 `OPENCLAW_AGENT_DIR` 覆寫代理設定根目錄（或 `PI_CODING_AGENT_DIR`，這是舊版環境變數別名）。
-    - 符合提供者 ID 的合併優先順序：
+    - 使用 `OPENCLAW_AGENT_DIR`（或舊版環境變數別名 `PI_CODING_AGENT_DIR`）覆寫代理設定根目錄。
+    - 相符提供者 ID 的合併優先順序：
       - 非空的代理 `models.json` `baseUrl` 值優先。
-      - 非空的代理 `apiKey` 值僅在目前設定/驗證設定檔情境中該提供者不是由 SecretRef 管理時優先。
-      - SecretRef 管理的提供者 `apiKey` 值會從來源標記重新整理（環境變數參照為 `ENV_VAR_NAME`，檔案/執行參照為 `secretref-managed`），而不是持久化已解析的祕密。
-      - SecretRef 管理的提供者標頭值會從來源標記重新整理（環境變數參照為 `secretref-env:ENV_VAR_NAME`，檔案/執行參照為 `secretref-managed`）。
+      - 非空的代理 `apiKey` 值僅在該提供者於目前設定/驗證設定檔內容中未由 SecretRef 管理時優先。
+      - 由 SecretRef 管理的提供者 `apiKey` 值會從來源標記重新整理（環境參照為 `ENV_VAR_NAME`，檔案/exec 參照為 `secretref-managed`），而不是持久化已解析的秘密。
+      - 由 SecretRef 管理的提供者標頭值會從來源標記重新整理（環境參照為 `secretref-env:ENV_VAR_NAME`，檔案/exec 參照為 `secretref-managed`）。
       - 空白或缺少的代理 `apiKey`/`baseUrl` 會回退到設定中的 `models.providers`。
-      - 符合模型的 `contextWindow`/`maxTokens` 會使用明確設定與隱含目錄值之間較高的值。
-      - 符合模型的 `contextTokens` 會在存在時保留明確的 runtime 上限；可用它限制有效情境，而不變更原生模型中繼資料。
-      - 若希望設定完整重寫 `models.json`，請使用 `models.mode: "replace"`。
-      - 標記持久化以來源為準：標記會從作用中的來源設定快照（解析前）寫入，而不是從已解析的 runtime 祕密值寫入。
+      - 相符模型的 `contextWindow`/`maxTokens` 會使用明確設定與隱含目錄值之間較高的值。
+      - 相符模型的 `contextTokens` 會在存在時保留明確的執行階段上限；使用它來限制有效內容，而不變更原生模型中繼資料。
+      - 當你想讓設定完整重寫 `models.json` 時，使用 `models.mode: "replace"`。
+      - 標記持久化以來源為權威：標記會從作用中的來源設定快照（解析前）寫入，而不是從已解析的執行階段秘密值寫入。
 
   </Accordion>
 </AccordionGroup>
 
-### 提供者欄位詳細資訊
+### 提供者欄位詳細資料
 
 <AccordionGroup>
-  <Accordion title="Top-level catalog">
+  <Accordion title="頂層目錄">
     - `models.mode`：提供者目錄行為（`merge` 或 `replace`）。
-    - `models.providers`：以提供者 ID 為鍵的自訂提供者對映。
-      - 安全編輯：使用 `openclaw config set models.providers.<id> '<json>' --strict-json --merge` 或 `openclaw config set models.providers.<id>.models '<json-array>' --strict-json --merge` 進行增量更新。除非傳入 `--replace`，否則 `config set` 會拒絕破壞性替換。
+    - `models.providers`：以提供者 ID 為鍵的自訂提供者對應。
+      - 安全編輯：使用 `openclaw config set models.providers.<id> '<json>' --strict-json --merge` 或 `openclaw config set models.providers.<id>.models '<json-array>' --strict-json --merge` 進行附加更新。除非你傳入 `--replace`，否則 `config set` 會拒絕破壞性替換。
 
   </Accordion>
-  <Accordion title="Provider connection and auth">
-    - `models.providers.*.api`：請求配接器（`openai-completions`、`openai-responses`、`anthropic-messages`、`google-generative-ai` 等）。對於自託管的 `/v1/chat/completions` 後端，例如 MLX、vLLM、SGLang，以及多數 OpenAI 相容的本機伺服器，請使用 `openai-completions`。含有 `baseUrl` 但沒有 `api` 的自訂提供者預設為 `openai-completions`；只有在後端支援 `/v1/responses` 時才設定 `openai-responses`。
-    - `models.providers.*.apiKey`：提供者憑證（偏好 SecretRef/環境變數替換）。
+  <Accordion title="提供者連線與驗證">
+    - `models.providers.*.api`：請求配接器（`openai-completions`、`openai-responses`、`anthropic-messages`、`google-generative-ai` 等）。對於 MLX、vLLM、SGLang 和大多數 OpenAI 相容本機伺服器等自託管 `/v1/chat/completions` 後端，使用 `openai-completions`。帶有 `baseUrl` 但沒有 `api` 的自訂提供者預設為 `openai-completions`；只有在後端支援 `/v1/responses` 時才設定 `openai-responses`。
+    - `models.providers.*.apiKey`：提供者憑證（偏好 SecretRef/env 替換）。
     - `models.providers.*.auth`：驗證策略（`api-key`、`token`、`oauth`、`aws-sdk`）。
-    - `models.providers.*.contextWindow`：當模型項目未設定 `contextWindow` 時，此提供者下模型的預設原生情境視窗。
-    - `models.providers.*.contextTokens`：當模型項目未設定 `contextTokens` 時，此提供者下模型的預設有效 runtime 情境上限。
+    - `models.providers.*.contextWindow`：當模型項目未設定 `contextWindow` 時，此提供者下模型的預設原生內容窗口。
+    - `models.providers.*.contextTokens`：當模型項目未設定 `contextTokens` 時，此提供者下模型的預設有效執行階段內容上限。
     - `models.providers.*.maxTokens`：當模型項目未設定 `maxTokens` 時，此提供者下模型的預設輸出權杖上限。
-    - `models.providers.*.timeoutSeconds`：選用的每提供者模型 HTTP 請求逾時秒數，包含連線、標頭、主體與總請求中止處理。
+    - `models.providers.*.timeoutSeconds`：選用的每個提供者模型 HTTP 請求逾時秒數，包含連線、標頭、本文與總請求中止處理。
     - `models.providers.*.injectNumCtxForOpenAICompat`：對 Ollama + `openai-completions`，將 `options.num_ctx` 注入請求（預設：`true`）。
-    - `models.providers.*.authHeader`：需要時強制透過 `Authorization` 標頭傳輸憑證。
-    - `models.providers.*.baseUrl`：上游 API 基底 URL。
+    - `models.providers.*.authHeader`：在需要時強制透過 `Authorization` 標頭傳輸憑證。
+    - `models.providers.*.baseUrl`：上游 API 基礎 URL。
     - `models.providers.*.headers`：用於代理/租戶路由的額外靜態標頭。
 
   </Accordion>
-  <Accordion title="Request transport overrides">
+  <Accordion title="請求傳輸覆寫">
     `models.providers.*.request`：模型提供者 HTTP 請求的傳輸覆寫。
 
     - `request.headers`：額外標頭（與提供者預設值合併）。值接受 SecretRef。
-    - `request.auth`：驗證策略覆寫。模式：`"provider-default"`（使用提供者內建驗證）、`"authorization-bearer"`（搭配 `token`）、`"header"`（搭配 `headerName`、`value`、選用 `prefix`）。
+    - `request.auth`：驗證策略覆寫。模式：`"provider-default"`（使用提供者的內建驗證）、`"authorization-bearer"`（搭配 `token`）、`"header"`（搭配 `headerName`、`value`、選用的 `prefix`）。
     - `request.proxy`：HTTP 代理覆寫。模式：`"env-proxy"`（使用 `HTTP_PROXY`/`HTTPS_PROXY` 環境變數）、`"explicit-proxy"`（搭配 `url`）。兩種模式都接受選用的 `tls` 子物件。
     - `request.tls`：直接連線的 TLS 覆寫。欄位：`ca`、`cert`、`key`、`passphrase`（全部接受 SecretRef）、`serverName`、`insecureSkipVerify`。
-    - `request.allowPrivateNetwork`：設為 `true` 時，當 DNS 解析到私有、CGNAT 或類似範圍，允許透過提供者 HTTP 擷取防護對 `baseUrl` 使用 HTTPS（操作員為受信任的自託管 OpenAI 相容端點選擇加入）。local loopback 模型提供者串流 URL，例如 `localhost`、`127.0.0.1` 與 `[::1]`，除非明確設為 `false`，否則會自動允許；LAN、tailnet 與私有 DNS 主機仍需選擇加入。WebSocket 對標頭/TLS 使用相同的 `request`，但不使用該擷取 SSRF 閘門。預設為 `false`。
+    - `request.allowPrivateNetwork`：為 `true` 時，當 DNS 解析到私有、CGNAT 或類似範圍時，允許透過提供者 HTTP 擷取保護對 `baseUrl` 使用 HTTPS（營運者針對受信任自託管 OpenAI 相容端點的選擇加入）。`localhost`、`127.0.0.1` 和 `[::1]` 等回送模型提供者串流 URL 會自動允許，除非明確設為 `false`；LAN、tailnet 和私有 DNS 主機仍需選擇加入。WebSocket 對標頭/TLS 使用相同的 `request`，但不使用該擷取 SSRF 閘門。預設 `false`。
 
   </Accordion>
-  <Accordion title="Model catalog entries">
+  <Accordion title="模型目錄項目">
     - `models.providers.*.models`：明確的提供者模型目錄項目。
-    - `models.providers.*.models.*.input`：模型輸入模態。文字專用模型使用 `["text"]`，原生圖片/視覺模型使用 `["text", "image"]`。只有在所選模型標記為支援圖片時，圖片附件才會注入代理回合。
-    - `models.providers.*.models.*.contextWindow`：原生模型情境視窗中繼資料。這會覆寫該模型的提供者層級 `contextWindow`。
-    - `models.providers.*.models.*.contextTokens`：選用 runtime 情境上限。這會覆寫提供者層級 `contextTokens`；當你希望有效情境預算小於模型原生 `contextWindow` 時使用；`openclaw models list` 會在兩個值不同時顯示兩者。
-    - `models.providers.*.models.*.compat.supportsDeveloperRole`：選用相容性提示。對於 `api: "openai-completions"` 且具有非空非原生 `baseUrl`（主機不是 `api.openai.com`）的情況，OpenClaw 會在 runtime 強制將其設為 `false`。空白/省略的 `baseUrl` 會保留預設 OpenAI 行為。
-    - `models.providers.*.models.*.compat.requiresStringContent`：針對僅支援字串的 OpenAI 相容聊天端點的選用相容性提示。為 `true` 時，OpenClaw 會在送出請求前，將純文字 `messages[].content` 陣列攤平成純字串。
+    - `models.providers.*.models.*.input`：模型輸入模態。純文字模型使用 `["text"]`，原生圖片/視覺模型使用 `["text", "image"]`。只有在所選模型標記為支援圖片時，圖片附件才會注入代理輪次。
+    - `models.providers.*.models.*.contextWindow`：原生模型內容窗口中繼資料。這會覆寫該模型的提供者層級 `contextWindow`。
+    - `models.providers.*.models.*.contextTokens`：選用的執行階段內容上限。這會覆寫提供者層級的 `contextTokens`；當你想要比模型原生 `contextWindow` 更小的有效內容預算時使用它；`openclaw models list` 會在兩個值不同時顯示兩者。
+    - `models.providers.*.models.*.compat.supportsDeveloperRole`：選用的相容性提示。對於 `api: "openai-completions"` 且帶有非空、非原生 `baseUrl`（主機不是 `api.openai.com`）時，OpenClaw 會在執行階段強制將其設為 `false`。空白/省略的 `baseUrl` 會保留預設 OpenAI 行為。
+    - `models.providers.*.models.*.compat.requiresStringContent`：針對僅支援字串的 OpenAI 相容聊天端點的選用相容性提示。為 `true` 時，OpenClaw 會在傳送請求前，將純文字 `messages[].content` 陣列攤平成一般字串。
 
   </Accordion>
-  <Accordion title="Amazon Bedrock discovery">
-    - `plugins.entries.amazon-bedrock.config.discovery`：Bedrock 自動探索設定根。
+  <Accordion title="Amazon Bedrock 探索">
+    - `plugins.entries.amazon-bedrock.config.discovery`：Bedrock 自動探索設定根目錄。
     - `plugins.entries.amazon-bedrock.config.discovery.enabled`：開啟/關閉隱含探索。
-    - `plugins.entries.amazon-bedrock.config.discovery.region`：探索使用的 AWS 區域。
-    - `plugins.entries.amazon-bedrock.config.discovery.providerFilter`：用於定向探索的選用提供者 ID 篩選器。
+    - `plugins.entries.amazon-bedrock.config.discovery.region`：用於探索的 AWS 區域。
+    - `plugins.entries.amazon-bedrock.config.discovery.providerFilter`：用於目標探索的選用提供者 ID 篩選器。
     - `plugins.entries.amazon-bedrock.config.discovery.refreshInterval`：探索重新整理的輪詢間隔。
-    - `plugins.entries.amazon-bedrock.config.discovery.defaultContextWindow`：已探索模型的後援情境視窗。
+    - `plugins.entries.amazon-bedrock.config.discovery.defaultContextWindow`：已探索模型的後援內容窗口。
     - `plugins.entries.amazon-bedrock.config.discovery.defaultMaxTokens`：已探索模型的後援最大輸出權杖數。
 
   </Accordion>
 </AccordionGroup>
 
-互動式自訂提供者導引會針對常見視覺模型 ID 推斷圖片輸入，例如 GPT-4o、Claude、Gemini、Qwen-VL、LLaVA、Pixtral、InternVL、Mllama、MiniCPM-V 與 GLM-4V，並對已知文字專用系列略過額外問題。未知模型 ID 仍會提示詢問圖片支援。非互動式導引使用相同推斷；傳入 `--custom-image-input` 可強制使用支援圖片的中繼資料，或傳入 `--custom-text-input` 可強制使用文字專用中繼資料。
+互動式自訂提供者上線會針對 GPT-4o、Claude、Gemini、Qwen-VL、LLaVA、Pixtral、InternVL、Mllama、MiniCPM-V 和 GLM-4V 等常見視覺模型 ID 推斷圖片輸入，並對已知純文字系列略過額外問題。未知模型 ID 仍會提示詢問圖片支援。非互動式上線使用相同推斷；傳入 `--custom-image-input` 可強制使用支援圖片的中繼資料，或傳入 `--custom-text-input` 可強制使用純文字中繼資料。
 
 ### 提供者範例
 
 <AccordionGroup>
-  <Accordion title="Cerebras (GLM 4.7 / GPT OSS)">
-    隨附的 `cerebras` 提供者 Plugin 可透過 `openclaw onboard --auth-choice cerebras-api-key` 設定此項。只有在覆寫預設值時才使用明確的提供者設定。
+  <Accordion title="Cerebras（GLM 4.7 / GPT OSS）">
+    內建的 `cerebras` provider plugin 可透過 `openclaw onboard --auth-choice cerebras-api-key` 設定此項。僅在覆寫預設值時才使用明確提供者設定。
 
     ```json5
     {
@@ -535,10 +535,10 @@ OpenClaw 使用內建模型目錄。透過設定中的 `models.providers` 或 `~
     }
     ```
 
-    對 Cerebras 使用 `cerebras/zai-glm-4.7`；對 Z.AI direct 使用 `zai/glm-4.7`。
+    Cerebras 請使用 `cerebras/zai-glm-4.7`；Z.AI 直連請使用 `zai/glm-4.7`。
 
   </Accordion>
-  <Accordion title="Kimi Coding">
+  <Accordion title="Kimi 程式編寫">
     ```json5
     {
       env: { KIMI_API_KEY: "sk-..." },
@@ -554,10 +554,10 @@ OpenClaw 使用內建模型目錄。透過設定中的 `models.providers` 或 `~
     Anthropic 相容的內建提供者。捷徑：`openclaw onboard --auth-choice kimi-code-api-key`。
 
   </Accordion>
-  <Accordion title="Local models (LM Studio)">
-    請參閱[本機模型](/zh-TW/gateway/local-models)。簡短說明：在高階硬體上透過 LM Studio Responses API 執行大型本機模型；保留已合併的託管模型作為備援。
+  <Accordion title="本機模型 (LM Studio)">
+    請參閱[本機模型](/zh-TW/gateway/local-models)。摘要：在高階硬體上透過 LM Studio Responses API 執行大型本機模型；保留已合併的託管模型作為備援。
   </Accordion>
-  <Accordion title="MiniMax M2.7 (direct)">
+  <Accordion title="MiniMax M2.7（直連）">
     ```json5
     {
       agents: {
@@ -592,7 +592,7 @@ OpenClaw 使用內建模型目錄。透過設定中的 `models.providers` 或 `~
     }
     ```
 
-    設定 `MINIMAX_API_KEY`。捷徑：`openclaw onboard --auth-choice minimax-global-api` 或 `openclaw onboard --auth-choice minimax-cn-api`。模型目錄預設僅包含 M2.7。在 Anthropic 相容的串流路徑上，除非你明確自行設定 `thinking`，否則 OpenClaw 預設會停用 MiniMax thinking。`/fast on` 或 `params.fastMode: true` 會將 `MiniMax-M2.7` 改寫為 `MiniMax-M2.7-highspeed`。
+    設定 `MINIMAX_API_KEY`。捷徑：`openclaw onboard --auth-choice minimax-global-api` 或 `openclaw onboard --auth-choice minimax-cn-api`。模型目錄預設僅使用 M2.7。在 Anthropic 相容的串流路徑上，除非你明確自行設定 `thinking`，否則 OpenClaw 預設會停用 MiniMax thinking。`/fast on` 或 `params.fastMode: true` 會將 `MiniMax-M2.7` 改寫為 `MiniMax-M2.7-highspeed`。
 
   </Accordion>
   <Accordion title="Moonshot AI (Kimi)">
@@ -629,9 +629,9 @@ OpenClaw 使用內建模型目錄。透過設定中的 `models.providers` 或 `~
     }
     ```
 
-    若使用中國端點：`baseUrl: "https://api.moonshot.cn/v1"` 或 `openclaw onboard --auth-choice moonshot-api-key-cn`。
+    中國端點請使用：`baseUrl: "https://api.moonshot.cn/v1"` 或 `openclaw onboard --auth-choice moonshot-api-key-cn`。
 
-    原生 Moonshot 端點會在共用的 `openai-completions` 傳輸上宣告串流用量相容性，而 OpenClaw 會依據端點能力啟用此行為，而不是只依賴內建提供者 id。
+    原生 Moonshot 端點會在共用的 `openai-completions` 傳輸上宣告串流用量相容性，OpenClaw 會依端點能力判斷，而不只依內建提供者 id。
 
   </Accordion>
   <Accordion title="OpenCode">
@@ -646,10 +646,10 @@ OpenClaw 使用內建模型目錄。透過設定中的 `models.providers` 或 `~
     }
     ```
 
-    設定 `OPENCODE_API_KEY`（或 `OPENCODE_ZEN_API_KEY`）。Zen 目錄使用 `opencode/...` 參照，Go 目錄使用 `opencode-go/...` 參照。捷徑：`openclaw onboard --auth-choice opencode-zen` 或 `openclaw onboard --auth-choice opencode-go`。
+    設定 `OPENCODE_API_KEY`（或 `OPENCODE_ZEN_API_KEY`）。Zen 目錄請使用 `opencode/...` 參照，Go 目錄請使用 `opencode-go/...` 參照。捷徑：`openclaw onboard --auth-choice opencode-zen` 或 `openclaw onboard --auth-choice opencode-go`。
 
   </Accordion>
-  <Accordion title="Synthetic (Anthropic-compatible)">
+  <Accordion title="Synthetic（Anthropic 相容）">
     ```json5
     {
       env: { SYNTHETIC_API_KEY: "sk-..." },
@@ -698,11 +698,11 @@ OpenClaw 使用內建模型目錄。透過設定中的 `models.providers` 或 `~
     }
     ```
 
-    設定 `ZAI_API_KEY`。`z.ai/*` 和 `z-ai/*` 都是可接受的別名。捷徑：`openclaw onboard --auth-choice zai-api-key`。
+    設定 `ZAI_API_KEY`。`z.ai/*` 和 `z-ai/*` 是可接受的別名。捷徑：`openclaw onboard --auth-choice zai-api-key`。
 
     - 一般端點：`https://api.z.ai/api/paas/v4`
-    - 程式碼端點（預設）：`https://api.z.ai/api/coding/paas/v4`
-    - 若使用一般端點，請定義自訂提供者並覆寫基礎 URL。
+    - 程式編寫端點（預設）：`https://api.z.ai/api/coding/paas/v4`
+    - 若要使用一般端點，請定義含有基礎 URL 覆寫的自訂提供者。
 
   </Accordion>
 </AccordionGroup>
@@ -714,4 +714,4 @@ OpenClaw 使用內建模型目錄。透過設定中的 `models.providers` 或 `~
 - [設定 — agents](/zh-TW/gateway/config-agents)
 - [設定 — channels](/zh-TW/gateway/config-channels)
 - [設定參考](/zh-TW/gateway/configuration-reference) — 其他頂層鍵
-- [工具與 plugins](/zh-TW/tools)
+- [工具和 plugins](/zh-TW/tools)
