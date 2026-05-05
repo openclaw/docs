@@ -1,51 +1,49 @@
 ---
 read_when:
-    - Зміна поведінки оновлення OpenClaw, doctor, приймання пакета або встановлення Plugin
+    - Зміна поведінки оновлення OpenClaw, doctor, приймання пакетів або встановлення Plugin
     - Підготовка або затвердження реліз-кандидата
-    - Налагодження регресій оновлення пакета, очищення залежностей Plugin або встановлення Plugin
+    - Налагодження регресій, пов’язаних з оновленням пакета, очищенням залежностей Plugin або встановленням Plugin
 sidebarTitle: Update and plugin tests
-summary: Як OpenClaw перевіряє шляхи оновлення, міграції пакетів і поведінку встановлення й оновлення Plugin
-title: 'Тестування: оновлення та плагіни'
+summary: Як OpenClaw перевіряє шляхи оновлення, міграції пакетів і поведінку встановлення/оновлення Plugin
+title: 'Тестування: оновлення та Plugin-и'
 x-i18n:
-    generated_at: "2026-05-05T04:27:40Z"
+    generated_at: "2026-05-05T05:04:17Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3e5dbc85d567b9aec07d13e309d45da45d9088fb41dcbb2a07dae69dca6b09af
+    source_hash: 19ae526d3daa8a1b67cb2f74225138b3e1fa192c9f956c9dd6d0e407581b9ed9
     source_path: help/testing-updates-plugins.md
     workflow: 16
 ---
 
-Це спеціальний контрольний список для перевірки оновлень і Plugin. Мета
-проста: довести, що інстальований пакет може оновлювати реальний стан
-користувача, ремонтувати застарілий legacy-стан через `doctor` і далі
-інсталювати, завантажувати, оновлювати та видаляти Plugin з підтримуваних
-джерел.
+Це спеціальний контрольний список для валідації оновлень і Plugin. Мета
+проста: довести, що встановлюваний пакет може оновлювати реальний стан користувача, відновлювати застарілий
+успадкований стан через `doctor` і все ще встановлювати, завантажувати, оновлювати та видаляти
+Plugin з підтримуваних джерел.
 
-Ширшу мапу запуску тестів див. у [Тестування](/uk/help/testing). Для ключів live-провайдерів
-і наборів, що торкаються мережі, див. [Live-тестування](/uk/help/testing-live).
+Для ширшої мапи засобу запуску тестів див. [Тестування](/uk/help/testing). Для живих ключів провайдерів
+і наборів, що торкаються мережі, див. [Живе тестування](/uk/help/testing-live).
 
 ## Що ми захищаємо
 
-Тести оновлень і Plugin захищають такі контракти:
+Тести оновлень і Plugin захищають ці контракти:
 
-- Tarball пакета повний, має валідний `dist/postinstall-inventory.json`
-  і не залежить від нерозпакованих файлів репозиторію.
+- tarball пакета є повним, має чинний `dist/postinstall-inventory.json`
+  і не залежить від розпакованих файлів репозиторію.
 - Користувач може перейти зі старішого опублікованого пакета на пакет-кандидат
-  без втрати конфігурації, агентів, сесій, робочих просторів, allowlist Plugin
-  або конфігурації каналу.
-- `openclaw doctor --fix --non-interactive` володіє шляхами очищення та ремонту
-  legacy-стану. Startup не має нарощувати приховані міграції сумісності для
-  застарілого стану Plugin.
-- Інсталяції Plugin працюють із локальних директорій, git-репозиторіїв, npm-пакетів
-  і шляху реєстру ClawHub.
-- npm-залежності Plugin інсталюються в керований npm root, скануються перед
-  довірою і видаляються через npm під час деінсталяції, щоб hoisted-залежності
-  не лишалися.
-- Оновлення Plugin стабільне, коли нічого не змінилося: записи інсталяції,
-  розв’язане джерело, макет інстальованих залежностей і ввімкнений стан
-  лишаються неушкодженими.
+  без втрати конфігурації, агентів, сесій, робочих просторів, списків дозволених Plugin або
+  конфігурації каналу.
+- `openclaw doctor --fix --non-interactive` володіє шляхами очищення та відновлення
+  застарілого стану. Startup не має нарощувати приховані сумісні міграції для застарілого
+  стану Plugin.
+- Встановлення Plugin працює з локальних каталогів, git-репозиторіїв, npm-пакетів і
+  шляху реєстру ClawHub.
+- npm-залежності Plugin встановлюються в керований корінь npm, скануються перед
+  довірою та видаляються через npm під час видалення, щоб підняті залежності не
+  залишалися.
+- Оновлення Plugin стабільне, коли нічого не змінилося: записи встановлення, розв’язане
+  джерело, розкладка встановлених залежностей і ввімкнений стан залишаються незмінними.
 
-## Локальний доказ під час розробки
+## Локальне підтвердження під час розробки
 
 Починайте вузько:
 
@@ -55,31 +53,31 @@ pnpm check:changed
 pnpm test:changed
 ```
 
-Для змін інсталяції, деінсталяції, залежностей або інвентарю пакета Plugin також
-запустіть сфокусовані тести, що покривають редагований seam:
+Для змін у встановленні, видаленні, залежностях Plugin або інвентарі пакета також
+запускайте сфокусовані тести, що покривають редагований стик:
 
 ```bash
 pnpm test src/plugins/uninstall.test.ts src/infra/package-dist-inventory.test.ts test/scripts/package-acceptance-workflow.test.ts
 ```
 
-Перш ніж будь-яка Docker lane пакета споживатиме tarball, доведіть артефакт пакета:
+Перш ніж будь-яка Docker-гілка пакета споживатиме tarball, перевірте артефакт пакета:
 
 ```bash
 pnpm release:check
 ```
 
-`release:check` запускає перевірки дрейфу конфігурації/документації/API, записує
-інвентар package dist, запускає `npm pack --dry-run`, відхиляє заборонені
-запаковані файли, інсталює tarball у тимчасовий prefix, запускає postinstall
-і smoke-перевіряє entrypoint-и bundled channel.
+`release:check` запускає перевірки дрейфу конфігурації/документації/API, записує інвентар dist
+пакета, запускає `npm pack --dry-run`, відхиляє заборонені запаковані файли, встановлює
+tarball у тимчасовий префікс, запускає postinstall і smoke-тестує точки входу
+вбудованих каналів.
 
-## Docker lanes
+## Docker-гілки
 
-Docker lanes є доказом рівня продукту. Вони інсталюють або оновлюють реальний
-пакет усередині Linux-контейнерів і перевіряють поведінку через CLI-команди,
-запуск Gateway, HTTP-проби, RPC-статус і стан файлової системи.
+Docker-гілки є підтвердженням рівня продукту. Вони встановлюють або оновлюють реальний
+пакет у Linux-контейнерах і перевіряють поведінку через CLI-команди,
+запуск Gateway, HTTP-перевірки, RPC-статус і стан файлової системи.
 
-Під час ітерацій використовуйте сфокусовані lanes:
+Використовуйте сфокусовані гілки під час ітерацій:
 
 ```bash
 pnpm test:docker:plugins
@@ -87,39 +85,42 @@ pnpm test:docker:plugin-lifecycle-matrix
 pnpm test:docker:plugin-update
 pnpm test:docker:upgrade-survivor
 pnpm test:docker:published-upgrade-survivor
+pnpm test:docker:update-restart-auth
 pnpm test:docker:update-migration
 ```
 
-Важливі lanes:
+Важливі гілки:
 
-- `test:docker:plugins` перевіряє smoke інсталяції Plugin, інсталяції з локальної
-  теки, поведінку пропуску оновлення локальної теки, локальні теки з попередньо
-  інстальованими залежностями, інсталяції пакетів `file:`, git-інсталяції з
-  виконанням CLI, оновлення moving-ref у git, інсталяції з npm-реєстру з
-  hoisted транзитивними залежностями, npm update no-op, інсталяції з локального
-  fixture ClawHub і no-op оновлення, поведінку marketplace update, а також
-  увімкнення/inspect Claude-bundle. Задайте `OPENCLAW_PLUGINS_E2E_CLAWHUB=0`,
-  щоб блок ClawHub лишався герметичним/офлайн.
-- `test:docker:plugin-lifecycle-matrix` інсталює пакет-кандидат у порожній
-  контейнер, проводить npm Plugin через install, inspect, disable, enable,
-  явний upgrade, явний downgrade і uninstall після видалення коду Plugin.
-  Він логує метрики RSS і CPU для кожної фази.
-- `test:docker:plugin-update` перевіряє, що незмінений інстальований Plugin
-  не перевстановлюється і не втрачає метадані інсталяції під час
-  `openclaw plugins update`.
-- `test:docker:upgrade-survivor` інсталює tarball-кандидат поверх брудного
-  fixture старого користувача, запускає оновлення пакета плюс неінтерактивний
-  doctor, а потім запускає loopback Gateway і перевіряє збереження стану.
-- `test:docker:published-upgrade-survivor` спершу інсталює опублікований baseline,
-  конфігурує його через вбудований рецепт `openclaw config set`, оновлює його до
-  tarball-кандидата, запускає doctor, перевіряє legacy-очищення, запускає Gateway
-  і пробує `/healthz`, `/readyz` та RPC-статус.
-- `test:docker:update-migration` є lane опублікованого оновлення з акцентом на
-  очищенні. Він стартує з налаштованого користувацького стану в стилі
-  Discord/Telegram, запускає baseline doctor, щоб налаштовані залежності Plugin
-  мали шанс матеріалізуватися, засіває legacy-сміття залежностей Plugin для
-  налаштованого packaged Plugin, оновлює до tarball-кандидата і вимагає, щоб
-  post-update doctor видалив legacy roots залежностей.
+- `test:docker:plugins` перевіряє smoke встановлення Plugin, встановлення з локальних папок,
+  поведінку пропуску оновлення локальної папки, локальні папки з попередньо встановленими
+  залежностями, встановлення `file:` пакетів, git-встановлення з виконанням CLI, оновлення
+  рухомих git-посилань, встановлення з npm-реєстру з піднятими транзитивними
+  залежностями, npm-оновлення без дій, встановлення з локальної фікстури ClawHub та оновлення
+  без дій, поведінку оновлення маркетплейсу, а також увімкнення/інспекцію Claude-бандла. Установіть
+  `OPENCLAW_PLUGINS_E2E_CLAWHUB=0`, щоб зберегти блок ClawHub герметичним/офлайн.
+- `test:docker:plugin-lifecycle-matrix` встановлює пакет-кандидат у порожньому
+  контейнері, проводить npm Plugin через встановлення, інспекцію, вимкнення, увімкнення,
+  явне оновлення, явне пониження версії та видалення після видалення коду Plugin.
+  Він журналює метрики RSS і CPU для кожної фази.
+- `test:docker:plugin-update` перевіряє, що незмінений встановлений Plugin
+  не перевстановлюється і не втрачає метадані встановлення під час `openclaw plugins update`.
+- `test:docker:upgrade-survivor` встановлює tarball-кандидат поверх брудної
+  фікстури старого користувача, запускає оновлення пакета плюс неінтерактивний doctor, потім запускає
+  Gateway через local loopback і перевіряє збереження стану.
+- `test:docker:published-upgrade-survivor` спершу встановлює опубліковану базову версію,
+  налаштовує її через вбудований рецепт `openclaw config set`, оновлює її до
+  tarball-кандидата, запускає doctor, перевіряє застаріле очищення, запускає Gateway і
+  перевіряє `/healthz`, `/readyz` та RPC-статус.
+- `test:docker:update-restart-auth` встановлює пакет-кандидат, запускає
+  керований Gateway з token-auth, скасовує env автентифікації Gateway для викликача для
+  `openclaw update --yes --json` і вимагає, щоб команда оновлення кандидата
+  перезапустила Gateway перед звичайними перевірками.
+- `test:docker:update-migration` — гілка опублікованого оновлення з інтенсивним очищенням. Вона
+  стартує з налаштованого користувацького стану у стилі Discord/Telegram, запускає базовий
+  doctor, щоб налаштовані залежності Plugin мали шанс матеріалізуватися, засіває
+  сміття застарілих залежностей Plugin для налаштованого запакованого Plugin, оновлює до
+  tarball-кандидата та вимагає, щоб post-update doctor видалив застарілі
+  корені залежностей.
 
 Корисні варіанти published-upgrade survivor:
 
@@ -135,14 +136,14 @@ pnpm test:docker:published-upgrade-survivor
 
 Доступні сценарії: `base`, `feishu-channel`, `bootstrap-persona`,
 `plugin-deps-cleanup`, `configured-plugin-installs`,
-`stale-source-plugin-shadow`, `tilde-log-path` і `versioned-runtime-deps`. В aggregate-запусках
-`OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS=reported-issues` розгортається в усі сценарії
-форми reported issue, включно з міграцією інсталяції configured-plugin.
+`stale-source-plugin-shadow`, `tilde-log-path` і `versioned-runtime-deps`. В агрегованих запусках
+`OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS=reported-issues` розгортається до всіх сценаріїв
+у формі повідомлених проблем, включно з міграцією встановлення налаштованих Plugin.
 
 Повна міграція оновлень навмисно відокремлена від Full Release CI. Використовуйте
-ручний workflow `Update Migration`, коли release-питання звучить так: «чи може
-кожен опублікований stable release від 2026.4.23 і далі оновитися до цього
-кандидата та прибрати сміття залежностей Plugin?»:
+ручний workflow `Update Migration`, коли питання релізу таке: «чи може кожен
+опублікований стабільний реліз від 2026.4.23 і далі оновитися до цього кандидата та
+прибрати сміття залежностей Plugin?»:
 
 ```bash
 gh workflow run update-migration.yml \
@@ -153,32 +154,32 @@ gh workflow run update-migration.yml \
   -f scenarios=plugin-deps-cleanup
 ```
 
-## Package Acceptance
+## Прийняття пакета
 
-Package Acceptance є GitHub-native package gate. Він розв’язує один пакет-кандидат
-у tarball `package-under-test`, записує версію та SHA-256, а потім запускає
-reusable Docker E2E lanes проти саме цього tarball. Workflow harness ref
-відокремлений від package source ref, тому поточна логіка тестів може
-перевіряти старіші довірені релізи.
+Прийняття пакета — це GitHub-native пакетний gate. Воно розв’язує один пакет-кандидат
+у tarball `package-under-test`, записує версію та SHA-256, а потім
+запускає повторно використовувані Docker E2E-гілки проти саме цього tarball. Ref обв’язки workflow
+відокремлений від ref джерела пакета, тож поточна логіка тестів може валідувати
+старіші довірені релізи.
 
 Джерела кандидатів:
 
-- `source=npm`: перевірити `openclaw@beta`, `openclaw@latest` або точну
+- `source=npm`: валідує `openclaw@beta`, `openclaw@latest` або точну
   опубліковану версію.
-- `source=ref`: запакувати довірену гілку, тег або commit із вибраним поточним
-  harness.
-- `source=url`: перевірити HTTPS tarball з обов’язковим `package_sha256`.
-- `source=artifact`: повторно використати tarball, завантажений іншим Actions run.
+- `source=ref`: пакує довірену гілку, тег або коміт із вибраною поточною
+  обв’язкою.
+- `source=url`: валідує HTTPS tarball з обов’язковим `package_sha256`.
+- `source=artifact`: повторно використовує tarball, завантажений іншим запуском Actions.
 
-Full Release Validation стандартно використовує `source=artifact`, побудований з
-розв’язаного release SHA. Для post-publish proof передайте
-`package_acceptance_package_spec=openclaw@YYYY.M.D`, щоб та сама upgrade matrix
-цілилася в відвантажений npm-пакет.
+Повна валідація релізу використовує `source=artifact` за замовчуванням, зібраний із
+розв’язаного SHA релізу. Для післяпублікаційного підтвердження передайте
+`package_acceptance_package_spec=openclaw@YYYY.M.D`, щоб та сама матриця оновлень
+цілилася в поставлений npm-пакет натомість.
 
-Release checks викликають Package Acceptance із набором package/update/plugin:
+Перевірки релізу викликають прийняття пакета з набором package/update/restart/plugin:
 
 ```text
-doctor-switch update-channel-switch upgrade-survivor published-upgrade-survivor plugins-offline plugin-update
+doctor-switch update-channel-switch upgrade-survivor published-upgrade-survivor update-restart-auth plugins-offline plugin-update
 ```
 
 Коли release soak увімкнено, вони також передають:
@@ -189,27 +190,28 @@ published_upgrade_survivor_scenarios=reported-issues
 telegram_mode=mock-openai
 ```
 
-Це тримає міграцію пакета, перемикання каналу оновлень, очищення застарілих
-залежностей Plugin, офлайн-покриття Plugin, поведінку оновлення Plugin і
-Telegram package QA на тому самому розв’язаному артефакті, не змушуючи
-стандартний release package gate проходити кожен опублікований реліз.
+Це тримає міграцію пакета, перемикання каналу оновлень, очищення застарілих залежностей Plugin,
+офлайн-покриття Plugin, поведінку оновлення Plugin і пакетний QA Telegram на
+тому самому розв’язаному артефакті, не змушуючи типовий пакетний gate релізу
+проходити кожен опублікований реліз.
 
-`last-stable-4` розв’язується в чотири найновіші stable npm-published релізи
-OpenClaw. Release package acceptance закріплює `2026.4.23` як першу межу
-сумісності plugin-update, `2026.5.2` як межу зміни plugin-архітектури, а
-`2026.4.15` як старіший baseline published-update з 2026.4.1x; resolver
-дедуплікує pin-и, які вже є в останніх чотирьох. Для вичерпного покриття
-published update migration використовуйте `all-since-2026.4.23` в окремому
-workflow Update Migration замість Full Release CI. `release-history` лишається
-доступним для ручного ширшого семплінгу, коли також потрібен старий pre-date
-anchor.
+`last-stable-4` розв’язується до чотирьох найновіших стабільних npm-опублікованих релізів OpenClaw.
+Прийняття пакета релізу закріплює `2026.4.23` як першу межу сумісності
+оновлення Plugin, `2026.5.2` як межу змін архітектури Plugin і
+`2026.4.15` як старішу базову версію опублікованого оновлення 2026.4.1x; розв’язувач
+дедуплікує піни, які вже є серед останніх чотирьох. Для вичерпного покриття міграції
+опублікованих оновлень використовуйте `all-since-2026.4.23` в окремому workflow Update
+Migration замість Full Release CI. `release-history` залишається
+доступним для ручного ширшого семплювання, коли вам також потрібен старий якір
+до цієї дати.
 
-Коли вибрано кілька published-upgrade survivor baselines, reusable Docker workflow
-розбиває кожен baseline в окрему цільову runner job. Кожен baseline shard усе ще
-запускає вибраний набір сценаріїв, але логи й артефакти лишаються per-baseline,
-а wall time обмежений найповільнішим shard замість одного великого серійного job.
+Коли вибрано кілька базових версій published-upgrade survivor, повторно використовуваний
+Docker workflow шардить кожну базову версію в окреме цільове завдання runner. Кожен
+шард базової версії все ще запускає вибраний набір сценаріїв, але журнали й артефакти залишаються
+окремими за базовою версією, а загальний час обмежений найповільнішим шардом замість одного великого
+послідовного завдання.
 
-Запустіть package profile вручну під час перевірки кандидата перед релізом:
+Запустіть профіль пакета вручну під час валідації кандидата перед релізом:
 
 ```bash
 gh workflow run package-acceptance.yml \
@@ -223,72 +225,71 @@ gh workflow run package-acceptance.yml \
   -f telegram_mode=mock-openai
 ```
 
-Використовуйте `suite_profile=product`, коли release-питання включає MCP channels,
-cron/subagent cleanup, OpenAI web search або OpenWebUI. Використовуйте
-`suite_profile=full` лише тоді, коли потрібне повне покриття Docker release-path.
+Використовуйте `suite_profile=product`, коли питання релізу включає MCP-канали,
+cron/очищення subagent, вебпошук OpenAI або OpenWebUI. Використовуйте `suite_profile=full`
+лише тоді, коли вам потрібне повне Docker-покриття шляху релізу.
 
-## Стандарт релізу
+## Типове для релізу
 
-Для release candidates стандартний proof stack такий:
+Для release candidates типовий стек підтвердження такий:
 
-1. `pnpm check:changed` і `pnpm test:changed` для source-level регресій.
-2. `pnpm release:check` для цілісності package artifact.
-3. Package Acceptance `package` profile або custom package lanes release-check для
-   контрактів install/update/plugin.
-4. Cross-OS release checks для OS-specific installer, onboarding і platform
-   behavior.
-5. Live suites лише коли змінена поверхня торкається provider або hosted-service
-   behavior.
+1. `pnpm check:changed` і `pnpm test:changed` для регресій на рівні джерела.
+2. `pnpm release:check` для цілісності артефакта пакета.
+3. Профіль Package Acceptance `package` або кастомні пакетні гілки release-check
+   для контрактів встановлення/оновлення/перезапуску/Plugin.
+4. МіжОСні перевірки релізу для специфічної для ОС поведінки інсталятора, onboarding і платформи.
+5. Живі набори лише тоді, коли змінена поверхня торкається поведінки провайдера або hosted-service.
 
-На maintainer machines broad gates і Docker/package product proof мають
-запускатися в Testbox, якщо явно не виконується local proof.
+На машинах мейнтейнерів широкі gate та Docker/пакетні продуктові підтвердження мають запускатися
+в Testbox, якщо явно не виконується локальне підтвердження.
 
-## Legacy-сумісність
+## Успадкована сумісність
 
 Поблажливість сумісності вузька й обмежена в часі:
 
 - Пакети до `2026.4.25` включно, зокрема `2026.4.25-beta.*`, можуть толерувати
-  вже відвантажені прогалини metadata пакета в Package Acceptance.
-- Опублікований пакет `2026.4.26` може попереджати про вже відвантажені stamp-файли
-  metadata локальної збірки.
-- Пізніші пакети мають задовольняти сучасні контракти. Ті самі прогалини дають
-  failure замість warning або skipping.
+  вже поставлені прогалини метаданих пакета в Package Acceptance.
+- Опублікований пакет `2026.4.26` може попереджати про файли штампа метаданих локальної збірки,
+  які вже поставлені.
+- Пізніші пакети мають відповідати сучасним контрактам. Ті самі прогалини спричиняють збій замість
+  попередження або пропуску.
 
-Не додавайте нові startup migrations для цих старих форм. Додайте або розширте
-doctor repair, а потім доведіть це через `upgrade-survivor` або
-`published-upgrade-survivor`.
+Не додавайте нові startup-міграції для цих старих форм. Додайте або розширте відновлення doctor,
+потім доведіть це через `upgrade-survivor`, `published-upgrade-survivor` або
+`update-restart-auth`, коли команда оновлення володіє перезапуском.
 
 ## Додавання покриття
 
-Коли змінюєте поведінку update або Plugin, додавайте покриття на найнижчому
-рівні, який може впасти з правильної причини:
+Коли змінюєте поведінку оновлення або Plugin, додавайте покриття на найнижчому шарі, який
+може впасти з правильної причини:
 
-- Чиста логіка paths або metadata: unit test поруч із source.
-- Package inventory або packed-file behavior: `package-dist-inventory` або tarball
-  checker test.
-- Поведінка CLI install/update: assertion або fixture в Docker lane.
-- Поведінка міграції published-release: сценарій `published-upgrade-survivor`.
-- Поведінка registry/package source: fixture `test:docker:plugins` або fixture
-  server ClawHub.
-- Поведінка dependency layout або cleanup: перевіряйте і runtime execution, і
-  filesystem boundary. npm-залежності можуть hoist-итися під керований npm root,
-  тож тести мають доводити, що root сканується/очищається, замість припущення
-  про package-local дерево `node_modules`.
+- Чиста логіка шляхів або метаданих: unit-тест поруч із джерелом.
+- Поведінка інвентаря пакета або запакованих файлів: `package-dist-inventory` або тест
+  перевірки tarball.
+- Поведінка встановлення/оновлення CLI: твердження або фікстура Docker-гілки.
+- Поведінка міграції опублікованого релізу: сценарій `published-upgrade-survivor`.
+- Поведінка перезапуску, якою володіє оновлення: `update-restart-auth`.
+- Поведінка джерела реєстру/пакета: фікстура `test:docker:plugins` або сервер
+  фікстур ClawHub.
+- Поведінка розкладки або очищення залежностей: перевіряйте і runtime-виконання, і
+  межу файлової системи. npm-залежності можуть бути підняті під керований корінь npm,
+  тому тести мають доводити, що корінь сканується/очищається, замість припущення про
+  локальне для пакета дерево `node_modules`.
 
-Нові Docker fixtures стандартно тримайте герметичними. Використовуйте локальні
-fixture registries і fake packages, якщо мета тесту не є live registry behavior.
+Тримайте нові Docker-фікстури герметичними за замовчуванням. Використовуйте локальні реєстри фікстур і
+фейкові пакети, якщо метою тесту не є жива поведінка реєстру.
 
-## Тріаж failures
+## Тріаж збоїв
 
-Починайте з ідентичності артефакту:
+Починайте з ідентичності артефакта:
 
-- Summary `resolve_package` у Package Acceptance: source, version, SHA-256 і
-  artifact name.
-- Docker artifacts: `.artifacts/docker-tests/**/summary.json`,
-  `failures.json`, lane logs і rerun commands.
-- Upgrade survivor summary: `.artifacts/upgrade-survivor/summary.json`,
-  включно з baseline version, candidate version, scenario, phase timings і
-  recipe steps.
+- Зведення Package Acceptance `resolve_package`: джерело, версія, SHA-256 і
+  назва артефакта.
+- Артефакти Docker: `.artifacts/docker-tests/**/summary.json`,
+  `failures.json`, журнали lane і команди повторного запуску.
+- Зведення upgrade survivor: `.artifacts/upgrade-survivor/summary.json`,
+  зокрема базова версія, версія-кандидат, сценарій, часові показники фаз і
+  кроки рецепта.
 
-Надавайте перевагу повторному запуску саме тієї failed lane з тим самим package
-artifact, а не повторному запуску всього release umbrella.
+Віддавайте перевагу повторному запуску саме невдалого lane з тим самим артефактом пакета, а не
+повторному запуску всієї release umbrella.

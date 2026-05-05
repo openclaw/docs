@@ -1,289 +1,291 @@
 ---
 read_when:
     - Пошук визначень публічних каналів релізів
-    - Запуск перевірки релізу або приймального тестування пакета
-    - Шукаєте найменування версій і періодичність випусків
-summary: Релізні лінії, контрольний список оператора, середовища перевірки, іменування версій і ритм
+    - Запуск валідації релізу або приймання пакета
+    - Шукаєте іменування версій і частоту випусків
+summary: Канали випуску, контрольний список оператора, валідаційні бокси, найменування версій і каденція
 title: Політика випусків
 x-i18n:
-    generated_at: "2026-05-05T04:27:33Z"
+    generated_at: "2026-05-05T05:04:16Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e5f380b106fb304c932715d7b2ec5f92715b2572e7c582d7cfa9786a766730fd
+    source_hash: 9980265c30c6a6571db5512749ec173cca79ac70494fd09968add793be9717a5
     source_path: reference/RELEASING.md
     workflow: 16
 ---
 
-OpenClaw має три публічні канали випусків:
+OpenClaw має три публічні релізні гілки:
 
-- stable: теговані випуски, які публікуються в npm `beta` за замовчуванням або в npm `latest` за явним запитом
-- beta: передвипускні теги, які публікуються в npm `beta`
-- dev: рухома вершина `main`
+- стабільна: теговані релізи, які типово публікуються в npm `beta`, або в npm `latest` за явним запитом
+- бета: передрелізні теги, які публікуються в npm `beta`
+- розробницька: рухома вершина `main`
 
 ## Іменування версій
 
-- Версія стабільного випуску: `YYYY.M.D`
+- Версія стабільного релізу: `YYYY.M.D`
   - Git-тег: `vYYYY.M.D`
-- Версія стабільного коригувального випуску: `YYYY.M.D-N`
+- Версія стабільного виправного релізу: `YYYY.M.D-N`
   - Git-тег: `vYYYY.M.D-N`
-- Версія beta-передвипуску: `YYYY.M.D-beta.N`
+- Версія бета-передрелізу: `YYYY.M.D-beta.N`
   - Git-тег: `vYYYY.M.D-beta.N`
 - Не додавайте початкові нулі до місяця або дня
-- `latest` означає поточний підвищений стабільний випуск npm
-- `beta` означає поточну ціль встановлення beta
-- Стабільні та стабільні коригувальні випуски публікуються в npm `beta` за замовчуванням; оператори випусків можуть явно націлити `latest` або пізніше підвищити перевірену beta-збірку
-- Кожен стабільний випуск OpenClaw постачається разом із npm-пакетом і застосунком macOS;
-  beta-випуски зазвичай спершу перевіряють і публікують шлях npm/пакета, а
-  збірку/підпис/нотаризацію застосунку mac залишають для стабільного випуску, якщо це не запитано явно
+- `latest` означає поточний просунутий стабільний реліз npm
+- `beta` означає поточну ціль встановлення бета-версії
+- Стабільні та стабільні виправні релізи типово публікуються в npm `beta`; оператори релізу можуть явно вибрати `latest` або пізніше просунути перевірену бета-збірку
+- Кожен стабільний реліз OpenClaw постачається разом із npm-пакетом і застосунком для macOS;
+  бета-релізи зазвичай спершу перевіряють і публікують шлях npm/пакета, а
+  збирання/підписування/нотаризація Mac-застосунку лишаються для стабільного релізу, якщо інше не запитано явно
 
-## Каденція випусків
+## Ритм релізів
 
-- Випуски рухаються спершу через beta
-- Стабільний випуск з’являється лише після перевірки найновішої beta
-- Maintainers зазвичай створюють випуски з гілки `release/YYYY.M.D`, створеної
-  з поточної `main`, щоб перевірка випуску та виправлення не блокували нову
+- Релізи спершу проходять через бета-версію
+- Стабільний реліз виходить лише після перевірки останньої бета-версії
+- Супровідники зазвичай створюють релізи з гілки `release/YYYY.M.D`, створеної
+  з поточного `main`, щоб перевірка релізу й виправлення не блокували нову
   розробку в `main`
-- Якщо beta-тег уже було надіслано або опубліковано й він потребує виправлення, maintainers створюють
-  наступний тег `-beta.N` замість видалення або повторного створення старого beta-тега
-- Докладна процедура випуску, затвердження, облікові дані та нотатки з відновлення
-  доступні лише maintainers
+- Якщо бета-тег уже надіслано або опубліковано й він потребує виправлення, супровідники створюють
+  наступний тег `-beta.N` замість видалення або повторного створення старого бета-тега
+- Детальна процедура релізу, схвалення, облікові дані та нотатки з відновлення
+  доступні лише супровідникам
 
-## Контрольний список оператора випуску
+## Контрольний список оператора релізу
 
-Цей контрольний список описує публічну форму процесу випуску. Приватні облікові дані,
-підписування, нотаризація, відновлення dist-tag і деталі аварійного відкату залишаються в
-runbook випуску, доступному лише maintainers.
+Цей контрольний список описує публічну форму релізного потоку. Приватні облікові дані,
+підписування, нотаризація, відновлення dist-tag і подробиці аварійного відкату залишаються в
+релізному довіднику лише для супровідників.
 
-1. Почніть із поточної `main`: підтягніть найновіші зміни, підтвердьте, що цільовий коміт надіслано,
-   і підтвердьте, що поточний CI `main` достатньо зелений, щоб відгалузитися від нього.
+1. Почніть із поточного `main`: отримайте останні зміни, підтвердьте, що цільовий коміт надіслано,
+   і підтвердьте, що поточний CI для `main` достатньо зелений, щоб створити від нього гілку.
 2. Перепишіть верхній розділ `CHANGELOG.md` з реальної історії комітів за допомогою
-   `/changelog`, залиште записи орієнтованими на користувача, закомітьте його, надішліть і виконайте rebase/pull
+   `/changelog`, залиште записи орієнтованими на користувачів, закомітьте, надішліть зміни й виконайте rebase/pull
    ще раз перед створенням гілки.
-3. Перегляньте записи сумісності випуску в
+3. Перегляньте записи сумісності релізу в
    `src/plugins/compat/registry.ts` і
-   `src/commands/doctor/shared/deprecation-compat.ts`. Видаляйте прострочену
-   сумісність лише тоді, коли шлях оновлення залишається покритим, або зафіксуйте, чому її
+   `src/commands/doctor/shared/deprecation-compat.ts`. Видаляйте протерміновану
+   сумісність лише тоді, коли шлях оновлення лишається покритим, або зафіксуйте, чому її
    навмисно збережено.
-4. Створіть `release/YYYY.M.D` з поточної `main`; не виконуйте звичайну роботу над випуском
+4. Створіть `release/YYYY.M.D` з поточного `main`; не виконуйте звичайну релізну роботу
    безпосередньо в `main`.
-5. Підвищте версію в кожному потрібному місці для запланованого тега, запустіть
-   `pnpm plugins:sync`, щоб публіковні пакети plugin мали спільну версію випуску
-   та метадані сумісності, а потім запустіть локальний детермінований preflight:
+5. Оновіть кожне потрібне місце з версією для запланованого тегу, запустіть
+   `pnpm plugins:sync`, щоб пакети Plugin, які можна публікувати, мали спільну релізну
+   версію й метадані сумісності, а потім запустіть локальну детерміновану попередню перевірку:
    `pnpm check:test-types`, `pnpm check:architecture`,
    `pnpm build && pnpm ui:build`, `pnpm plugins:sync:check` і
    `pnpm release:check`.
-6. Запустіть `OpenClaw NPM Release` з `preflight_only=true`. До появи тега
-   повний 40-символьний SHA гілки випуску дозволено для preflight лише з метою перевірки.
+6. Запустіть `OpenClaw NPM Release` з `preflight_only=true`. До існування тегу
+   повний 40-символьний SHA релізної гілки дозволений для попередньої перевірки лише з метою валідації.
    Збережіть успішний `preflight_run_id`.
-7. Запустіть усі передвипускні тести за допомогою `Full Release Validation` для
-   гілки випуску, тега або повного SHA коміту. Це єдина ручна точка входу
-   для чотирьох великих тестових середовищ випуску: Vitest, Docker, QA Lab і Package.
-8. Якщо перевірка не проходить, виправте в гілці випуску й повторно запустіть найменший невдалий
-   файл, канал, job workflow, профіль пакета, провайдера або allowlist моделей, що
-   доводить виправлення. Повторно запускайте повну парасольку лише тоді, коли змінена поверхня робить
+7. Запустіть усі передрелізні тести через `Full Release Validation` для
+   релізної гілки, тегу або повного SHA коміту. Це єдина ручна точка входу
+   для чотирьох великих релізних тестових блоків: Vitest, Docker, QA Lab і Package.
+8. Якщо перевірка не проходить, виправте в релізній гілці й повторно запустіть найменший невдалий
+   файл, гілку перевірки, завдання workflow, профіль пакета, провайдера або allowlist моделей, що
+   доводить виправлення. Повторно запускайте повну парасолькову перевірку лише тоді, коли змінена поверхня робить
    попередні докази застарілими.
-9. Для beta позначте тегом `vYYYY.M.D-beta.N`, а потім запустіть `OpenClaw Release Publish` з
+9. Для бета-версії створіть тег `vYYYY.M.D-beta.N`, а потім запустіть `OpenClaw Release Publish` з
    відповідної гілки `release/YYYY.M.D`. Він перевіряє `pnpm plugins:sync:check`,
-   спершу публікує всі публіковні пакети plugin у npm, другим кроком публікує той самий
-   набір у ClawHub як ClawPack npm-pack tarballs, а потім підвищує
-   підготовлений preflight-артефакт npm OpenClaw з відповідним dist-tag. Після
-   публікації запустіть post-publish package
-   acceptance для опублікованого пакета `openclaw@YYYY.M.D-beta.N` або
-   `openclaw@beta`. Якщо надісланий або опублікований передвипуск потребує виправлення,
-   створіть наступний відповідний номер передвипуску; не видаляйте й не переписуйте старий
-   передвипуск.
-10. Для stable продовжуйте лише після того, як перевірена beta або release candidate матиме
-    потрібні докази перевірки. Публікація stable npm також проходить через
-    `OpenClaw Release Publish`, повторно використовуючи успішний preflight-артефакт через
-    `preflight_run_id`; готовність стабільного випуску macOS також потребує
+   спершу публікує всі пакети Plugin, які можна публікувати, в npm, другими публікує той самий
+   набір у ClawHub як tarball-и ClawPack npm-pack, а потім просуває
+   підготовлений артефакт попередньої перевірки OpenClaw npm з відповідним dist-tag. Після
+   публікації запустіть приймальну перевірку пакета після публікації
+   для опублікованого пакета `openclaw@YYYY.M.D-beta.N` або
+   `openclaw@beta`. Якщо надісланий або опублікований передреліз потребує виправлення,
+   створіть наступний відповідний номер передрелізу; не видаляйте й не переписуйте старий
+   передреліз.
+10. Для стабільного релізу продовжуйте лише після того, як перевірена бета-версія або release candidate матиме
+    потрібні докази перевірки. Стабільна публікація npm також проходить через
+    `OpenClaw Release Publish`, повторно використовуючи успішний артефакт попередньої перевірки через
+    `preflight_run_id`; готовність стабільного релізу macOS також потребує
     упакованих `.zip`, `.dmg`, `.dSYM.zip` і оновленого `appcast.xml` у `main`.
-11. Після публікації запустіть npm post-publish verifier, необов’язковий автономний
-    published-npm Telegram E2E, коли потрібен post-publish доказ каналу,
-    підвищення dist-tag за потреби, нотатки GitHub release/prerelease з
-    повного відповідного розділу `CHANGELOG.md` і кроки оголошення випуску.
+11. Після публікації запустіть перевірку npm після публікації, необов’язковий окремий
+    Telegram E2E для опублікованого npm, коли потрібне підтвердження каналу після публікації,
+    просування dist-tag за потреби, нотатки GitHub для релізу/передрелізу з
+    повного відповідного розділу `CHANGELOG.md` і кроки оголошення релізу.
 
-## Preflight випуску
+## Попередня перевірка релізу
 
-- Запустіть `pnpm check:test-types` перед release preflight, щоб тестовий TypeScript залишався
-  покритим поза швидшим локальним гейтом `pnpm check`
-- Запустіть `pnpm check:architecture` перед release preflight, щоб ширші перевірки циклів
-  імпортів і архітектурних меж були зеленими поза швидшим локальним гейтом
+- Запустіть `pnpm check:test-types` перед передрелізною перевіркою, щоб тестовий TypeScript залишався
+  покритим поза швидшим локальним шлюзом `pnpm check`
+- Запустіть `pnpm check:architecture` перед передрелізною перевіркою, щоб ширші перевірки циклів
+  імпортів і архітектурних меж були зеленими поза швидшим локальним шлюзом
 - Запустіть `pnpm build && pnpm ui:build` перед `pnpm release:check`, щоб очікувані
-  релізні артефакти `dist/*` і бандл Control UI існували для кроку валідації
+  релізні артефакти `dist/*` і пакет Control UI існували для етапу перевірки
   пакування
-- Запустіть `pnpm plugins:sync` після підняття кореневої версії та перед тегуванням. Він
-  оновлює версії пакетів публікованих plugin, метадані сумісності OpenClaw peer/API,
-  метадані збірки та заглушки changelog для plugin, щоб вони відповідали версії
-  основного релізу. `pnpm plugins:sync:check` є немутуючим релізним запобіжником;
-  publish workflow завершується помилкою до будь-якої мутації registry, якщо цей крок
-  забули.
-- Запустіть ручний workflow `Full Release Validation` перед схваленням релізу, щоб
+- Запустіть `pnpm plugins:sync` після підвищення кореневої версії та перед створенням тегу. Він
+  оновлює версії пакетів плагінів, доступних для публікації, метадані сумісності
+  OpenClaw peer/API, метадані збірки та заготовки журналів змін плагінів, щоб вони відповідали версії
+  основного релізу. `pnpm plugins:sync:check` — це немутуючий релізний захист;
+  робочий процес публікації завершується помилкою до будь-якої зміни реєстру, якщо цей крок було
+  забуто.
+- Запустіть ручний робочий процес `Full Release Validation` перед схваленням релізу, щоб
   запустити всі передрелізні тестові бокси з однієї точки входу. Він приймає гілку,
   тег або повний SHA коміту, запускає ручний `CI` і запускає
-  `OpenClaw Release Checks` для install smoke, package acceptance, cross-OS
-  package checks, QA Lab parity, Matrix і Telegram lanes. Stable/default запуски
-  тримають вичерпні live/E2E та Docker release-path soak за
-  `run_release_soak=true`; `release_profile=full` примусово вмикає soak. З
-  `release_profile=full` і `rerun_group=all` він також запускає package Telegram
-  E2E проти артефакту `release-package-under-test` з release checks.
+  `OpenClaw Release Checks` для перевірки встановлення, приймання пакета, міжплатформових
+  перевірок пакета, паритету QA Lab, Matrix і Telegram-ліній. Стабільні/типові запуски
+  тримають вичерпні live/E2E та Docker-витримку релізного шляху за
+  `run_release_soak=true`; `release_profile=full` примусово вмикає витримку. З
+  `release_profile=full` і `rerun_group=all` він також запускає пакетний Telegram
+  E2E проти артефакту `release-package-under-test` із перевірок релізу.
   Надайте `npm_telegram_package_spec` після публікації, коли той самий
   Telegram E2E має також підтвердити опублікований npm-пакет. Надайте
   `package_acceptance_package_spec` після публікації, коли Package Acceptance
-  має запустити свою матрицю package/update проти доставленого npm-пакета замість
-  артефакту, зібраного з SHA. Надайте
-  `evidence_package_spec`, коли приватний evidence report має підтвердити, що
-  валідація відповідає опублікованому npm-пакету, не вмикаючи примусово Telegram E2E.
+  має запускати свою матрицю пакета/оновлення проти відвантаженого npm-пакета замість
+  артефакту, зібраного із SHA. Надайте
+  `evidence_package_spec`, коли приватний звіт доказів має підтвердити, що
+  валідація відповідає опублікованому npm-пакету, без примусового запуску Telegram E2E.
   Приклад:
   `gh workflow run full-release-validation.yml --ref main -f ref=release/YYYY.M.D`
-- Запустіть ручний workflow `Package Acceptance`, коли потрібне side-channel підтвердження
+- Запустіть ручний робочий процес `Package Acceptance`, коли потрібне побічне підтвердження
   для кандидата пакета, поки релізна робота триває. Використовуйте `source=npm` для
-  `openclaw@beta`, `openclaw@latest` або точної релізної версії; `source=ref`,
-  щоб запакувати довірену гілку/тег/SHA `package_ref` з поточним harness
-  `workflow_ref`; `source=url` для HTTPS tarball з обов’язковим
-  SHA-256; або `source=artifact` для tarball, завантаженого іншим GitHub
-  Actions run. Workflow розв’язує кандидата до
-  `package-under-test`, повторно використовує Docker E2E release scheduler проти цього
-  tarball і може запускати Telegram QA проти того самого tarball з
-  `telegram_mode=mock-openai` або `telegram_mode=live-frontier`. Коли вибрані
-  Docker lanes містять `published-upgrade-survivor`, package
-  artifact є кандидатом, а `published_upgrade_survivor_baseline` вибирає
-  опублікований baseline.
+  `openclaw@beta`, `openclaw@latest` або точної версії релізу; `source=ref`,
+  щоб упакувати довірену гілку/тег/SHA `package_ref` з поточною
+  обв’язкою `workflow_ref`; `source=url` для HTTPS-тарбола з обов’язковим
+  SHA-256; або `source=artifact` для тарбола, завантаженого іншим запуском GitHub
+  Actions. Робочий процес розв’язує кандидата до
+  `package-under-test`, повторно використовує релізний планувальник Docker E2E проти цього
+  тарбола та може запускати Telegram QA проти того самого тарбола з
+  `telegram_mode=mock-openai` або `telegram_mode=live-frontier`. Коли
+  вибрані Docker-лінії включають `published-upgrade-survivor`, артефакт пакета
+  є кандидатом, а `published_upgrade_survivor_baseline` вибирає
+  опубліковану базову версію. `update-restart-auth` використовує пакет-кандидат як
+  встановлений CLI і як package-under-test, щоб перевірити керований шлях перезапуску
+  команди оновлення кандидата.
   Приклад: `gh workflow run package-acceptance.yml --ref main -f workflow_ref=main -f source=npm -f package_spec=openclaw@beta -f suite_profile=product -f published_upgrade_survivor_baseline=openclaw@2026.4.26 -f telegram_mode=mock-openai`
   Поширені профілі:
-  - `smoke`: lanes для install/channel/agent, gateway network і config reload
-  - `package`: artifact-native lanes для package/update/plugin без OpenWebUI або live ClawHub
-  - `product`: package profile плюс MCP channels, cron/subagent cleanup,
-    OpenAI web search і OpenWebUI
-  - `full`: Docker release-path chunks з OpenWebUI
+  - `smoke`: лінії встановлення/каналу/агента, мережі gateway і перезавантаження конфігурації
+  - `package`: нативні для артефакту лінії пакета/оновлення/перезапуску/плагіна без OpenWebUI або live ClawHub
+  - `product`: профіль пакета плюс MCP-канали, очищення cron/subagent,
+    вебпошук OpenAI та OpenWebUI
+  - `full`: фрагменти Docker релізного шляху з OpenWebUI
   - `custom`: точний вибір `docker_lanes` для сфокусованого повторного запуску
-- Запустіть ручний workflow `CI` напряму, коли вам потрібне лише повне звичайне CI
-  покриття для release candidate. Ручні CI dispatches обходять changed
-  scoping і примусово запускають Linux Node shards, bundled-plugin shards, channel
-  contracts, сумісність Node 22, `check`, `check-additional`, build smoke,
-  docs checks, Python skills, Windows, macOS, Android і Control UI i18n
-  lanes.
+- Запустіть ручний робочий процес `CI` напряму, коли потрібне лише повне звичайне CI
+  покриття для релізного кандидата. Ручні запускання CI обходять змінене
+  обмеження області та примусово вмикають Linux Node-шарди, шарди bundled-plugin, контракти каналів,
+  сумісність Node 22, `check`, `check-additional`, перевірку збірки,
+  перевірки документації, Python skills, Windows, macOS, Android і Control UI i18n
+  лінії.
   Приклад: `gh workflow run ci.yml --ref release/YYYY.M.D`
-- Запустіть `pnpm qa:otel:smoke` під час валідації release telemetry. Він проганяє
-  QA-lab через локальний OTLP/HTTP receiver і перевіряє експортовані назви trace
-  span, bounded attributes і редагування content/identifier без потреби в
-  Opik, Langfuse або іншому зовнішньому collector.
-- Запускайте `pnpm release:check` перед кожним tagged release
-- Запустіть `OpenClaw Release Publish` для мутуючої послідовності публікації після того,
-  як тег існує. Dispatch робіть з `release/YYYY.M.D` (або `main`, коли публікуєте
-  тег, досяжний з main), передайте release tag і успішний OpenClaw npm
-  `preflight_run_id`, і залиште стандартний plugin publish scope
-  `all-publishable`, якщо ви не запускаєте навмисно сфокусований repair. Workflow
-  серіалізує plugin npm publish, plugin ClawHub publish і OpenClaw
-  npm publish, щоб core package не був опублікований раніше за його externalized
-  plugins.
-- Release checks тепер запускаються в окремому ручному workflow:
+- Запустіть `pnpm qa:otel:smoke` під час валідації релізної телеметрії. Він перевіряє
+  QA-lab через локальний OTLP/HTTP-приймач і підтверджує експортовані назви
+  trace span, обмежені атрибути та редагування вмісту/ідентифікаторів без
+  потреби в Opik, Langfuse або іншому зовнішньому колекторі.
+- Запускайте `pnpm release:check` перед кожним тегованим релізом
+- Запустіть `OpenClaw Release Publish` для мутуючої послідовності публікації після того, як
+  тег існує. Запускайте його з `release/YYYY.M.D` (або `main`, коли публікуєте
+  тег, досяжний з main), передайте релізний тег і успішний OpenClaw npm
+  `preflight_run_id`, і залишайте типовий обсяг публікації плагінів
+  `all-publishable`, якщо ви не запускаєте навмисне сфокусоване виправлення. Робочий
+  процес серіалізує публікацію plugin npm, публікацію plugin ClawHub і публікацію OpenClaw
+  npm, щоб основний пакет не було опубліковано перед його зовнішніми
+  плагінами.
+- Перевірки релізу тепер виконуються в окремому ручному робочому процесі:
   `OpenClaw Release Checks`
-- `OpenClaw Release Checks` також запускає QA Lab mock parity lane плюс швидкий
-  live Matrix profile і Telegram QA lane перед схваленням релізу. Live
-  lanes використовують середовище `qa-live-shared`; Telegram також використовує Convex CI
-  credential leases. Запустіть ручний workflow `QA-Lab - All Lanes` з
-  `matrix_profile=all` і `matrix_shards=true`, коли потрібен повний Matrix
-  transport, media та E2EE inventory паралельно.
-- Cross-OS install і upgrade runtime validation є частиною публічних
+- `OpenClaw Release Checks` також запускає лінію QA Lab mock parity плюс швидкий
+  live-профіль Matrix і лінію Telegram QA перед схваленням релізу. Live
+  лінії використовують середовище `qa-live-shared`; Telegram також використовує оренди
+  облікових даних Convex CI. Запустіть ручний робочий процес `QA-Lab - All Lanes` з
+  `matrix_profile=all` і `matrix_shards=true`, коли потрібен повний інвентар
+  транспорту Matrix, медіа та E2EE паралельно.
+- Міжплатформова валідація встановлення та оновлення під час виконання є частиною публічних
   `OpenClaw Release Checks` і `Full Release Validation`, які напряму викликають
-  reusable workflow
+  повторно використовуваний робочий процес
   `.github/workflows/openclaw-cross-os-release-checks-reusable.yml`
-- Цей поділ навмисний: тримайте реальний npm release path коротким,
-  детермінованим і сфокусованим на артефактах, тоді як повільніші live checks залишаються у
-  власній lane, щоб вони не затримували й не блокували publish
-- Release checks із секретами слід dispatch через `Full Release
-Validation` або з `main`/release workflow ref, щоб workflow logic і
-  secrets залишалися контрольованими
-- `OpenClaw Release Checks` приймає гілку, тег або повний SHA коміту, якщо
-  розв’язаний коміт досяжний з гілки OpenClaw або release tag
-- Validation-only preflight `OpenClaw NPM Release` також приймає поточний
-  повний 40-символьний SHA коміту workflow-branch без вимоги pushed tag
-- Цей SHA path призначений лише для валідації й не може бути promoted у реальний publish
-- У SHA mode workflow синтезує `v<package.json version>` лише для перевірки
-  package metadata; реальний publish усе одно потребує справжнього release tag
-- Обидва workflows тримають реальний publish і promotion path на GitHub-hosted
-  runners, тоді як немутуючий validation path може використовувати більші
-  Blacksmith Linux runners
-- Цей workflow запускає
+- Цей поділ навмисний: тримайте реальний шлях npm-релізу коротким,
+  детермінованим і зосередженим на артефактах, тоді як повільніші live-перевірки залишаються у своїй
+  власній лінії, щоб вони не затримували й не блокували публікацію
+- Релізні перевірки з секретами слід запускати через `Full Release
+Validation` або з ref робочого процесу `main`/release, щоб логіка робочого процесу та
+  секрети залишалися контрольованими
+- `OpenClaw Release Checks` приймає гілку, тег або повний SHA коміту, доки
+  розв’язаний коміт досяжний з гілки OpenClaw або релізного тегу
+- Передрелізна перевірка лише для валідації `OpenClaw NPM Release` також приймає поточний
+  повний 40-символьний SHA коміту гілки робочого процесу без вимоги запушеного тегу
+- Цей SHA-шлях призначений лише для валідації й не може бути підвищений до реальної публікації
+- У SHA-режимі робочий процес синтезує `v<package.json version>` лише для
+  перевірки метаданих пакета; реальна публікація все одно потребує справжнього релізного тегу
+- Обидва робочі процеси тримають справжній шлях публікації та просування на GitHub-hosted
+  runner, тоді як немутуючий шлях валідації може використовувати більші
+  Linux runner Blacksmith
+- Цей робочий процес запускає
   `OPENCLAW_LIVE_TEST=1 OPENCLAW_LIVE_CACHE_TEST=1 pnpm test:live:cache`
-  з використанням обох workflow secrets `OPENAI_API_KEY` і `ANTHROPIC_API_KEY`
-- npm release preflight більше не чекає на окрему release checks lane
+  з використанням обох секретів робочого процесу `OPENAI_API_KEY` і `ANTHROPIC_API_KEY`
+- Передрелізна перевірка npm-релізу більше не чекає на окрему лінію перевірок релізу
 - Запустіть `RELEASE_TAG=vYYYY.M.D node --import tsx scripts/openclaw-npm-release-check.ts`
-  (або відповідний beta/correction tag) перед схваленням
-- Після npm publish запустіть
+  (або відповідний beta/correction тег) перед схваленням
+- Після публікації npm запустіть
   `node --import tsx scripts/openclaw-npm-postpublish-verify.ts YYYY.M.D`
-  (або відповідну beta/correction version), щоб перевірити published registry
-  install path у свіжому temp prefix
-- Після beta publish запустіть `OPENCLAW_NPM_TELEGRAM_PACKAGE_SPEC=openclaw@YYYY.M.D-beta.N OPENCLAW_NPM_TELEGRAM_CREDENTIAL_SOURCE=convex OPENCLAW_NPM_TELEGRAM_CREDENTIAL_ROLE=ci pnpm test:docker:npm-telegram-live`
-  щоб перевірити installed-package onboarding, налаштування Telegram і реальний Telegram E2E
-  проти опублікованого npm-пакета з використанням спільного leased Telegram credential
-  pool. Локальні одноразові maintainer-запуски можуть опустити Convex vars і передати три
-  env credentials `OPENCLAW_QA_TELEGRAM_*` напряму.
-- Щоб запустити повний post-publish beta smoke з maintainer machine, використовуйте `pnpm release:beta-smoke -- --beta betaN`. Helper запускає Parallels npm update/fresh-target validation, dispatches `NPM Telegram Beta E2E`, polls точний workflow run, downloads artifact і prints Telegram report.
-- Maintainers можуть запустити ту саму post-publish перевірку з GitHub Actions через
-  ручний workflow `NPM Telegram Beta E2E`. Він навмисно лише ручний і
-  не запускається на кожен merge.
-- Maintainer release automation тепер використовує preflight-then-promote:
-  - real npm publish має пройти успішний npm `preflight_run_id`
-  - real npm publish має бути dispatched з тієї самої гілки `main` або
-    `release/YYYY.M.D`, що й успішний preflight run
-  - stable npm releases за замовчуванням використовують `beta`
-  - stable npm publish може явно націлюватися на `latest` через workflow input
-  - token-based npm dist-tag mutation тепер живе в
+  (або відповідну beta/correction версію), щоб перевірити шлях встановлення з опублікованого реєстру
+  у свіжому тимчасовому префіксі
+- Після beta-публікації запустіть `OPENCLAW_NPM_TELEGRAM_PACKAGE_SPEC=openclaw@YYYY.M.D-beta.N OPENCLAW_NPM_TELEGRAM_CREDENTIAL_SOURCE=convex OPENCLAW_NPM_TELEGRAM_CREDENTIAL_ROLE=ci pnpm test:docker:npm-telegram-live`
+  щоб перевірити onboarding встановленого пакета, налаштування Telegram і справжній Telegram E2E
+  проти опублікованого npm-пакета з використанням спільного пулу орендованих облікових даних Telegram.
+  Локальні одноразові запускання супровідників можуть опустити змінні Convex і передати три
+  облікові дані середовища `OPENCLAW_QA_TELEGRAM_*` напряму.
+- Щоб запустити повну beta-перевірку після публікації з машини супровідника, використовуйте `pnpm release:beta-smoke -- --beta betaN`. Допоміжний скрипт запускає валідацію Parallels npm update/fresh-target, запускає `NPM Telegram Beta E2E`, опитує точний запуск робочого процесу, завантажує артефакт і друкує звіт Telegram.
+- Супровідники можуть запустити ту саму перевірку після публікації з GitHub Actions через
+  ручний робочий процес `NPM Telegram Beta E2E`. Він навмисно лише ручний і
+  не запускається під час кожного merge.
+- Автоматизація релізів супровідників тепер використовує preflight-then-promote:
+  - реальна npm-публікація має пройти успішний npm `preflight_run_id`
+  - реальну npm-публікацію має бути запущено з тієї самої гілки `main` або
+    `release/YYYY.M.D`, що й успішний передрелізний запуск
+  - стабільні npm-релізи типово публікуються в `beta`
+  - стабільна npm-публікація може явно націлюватися на `latest` через вхідні дані робочого процесу
+  - мутація npm dist-tag на основі токена тепер живе в
     `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml`
     з міркувань безпеки, бо `npm dist-tag add` досі потребує `NPM_TOKEN`, тоді як
-    public repo зберігає OIDC-only publish
-  - public `macOS Release` є validation-only; коли тег існує лише на
-    release branch, але workflow dispatched з `main`, задайте
+    публічний репозиторій зберігає публікацію лише через OIDC
+  - публічний `macOS Release` є лише валідаційним; коли тег існує лише на
+    релізній гілці, але робочий процес запущено з `main`, задайте
     `public_release_branch=release/YYYY.M.D`
-  - real private mac publish має пройти успішні private mac
+  - реальна приватна mac-публікація має пройти успішні приватні mac
     `preflight_run_id` і `validate_run_id`
-  - real publish paths просувають підготовлені артефакти замість того, щоб
-    збирати їх знову
-- Для stable correction releases на кшталт `YYYY.M.D-N` post-publish verifier
-  також перевіряє той самий temp-prefix upgrade path з `YYYY.M.D` до `YYYY.M.D-N`,
-  щоб release corrections не могли непомітно залишити старі global installs на
-  базовому stable payload
-- npm release preflight fail closed, якщо tarball не містить одночасно
+  - реальні шляхи публікації просувають підготовлені артефакти замість повторної
+    їх збірки
+- Для стабільних корекційних релізів на кшталт `YYYY.M.D-N` післяпублікаційний верифікатор
+  також перевіряє той самий шлях оновлення в тимчасовому префіксі з `YYYY.M.D` до `YYYY.M.D-N`,
+  щоб корекції релізу не могли непомітно залишити старіші глобальні встановлення на
+  базовому стабільному payload
+- Передрелізна перевірка npm-релізу завершується закритою помилкою, якщо tarball не містить одночасно
   `dist/control-ui/index.html` і непорожній payload `dist/control-ui/assets/`,
-  щоб ми знову не доставили порожню browser dashboard
-- Post-publish verification також перевіряє, що published plugin entrypoints і
-  package metadata присутні в installed registry layout. Реліз, який
-  доставляє відсутні plugin runtime payloads, провалює postpublish verifier і
-  не може бути promoted до `latest`.
-- `pnpm test:install:smoke` також забезпечує npm pack budget `unpackedSize` для
-  candidate update tarball, тож installer e2e ловить випадкове pack bloat
-  до release publish path
-- Якщо release work торкалася CI planning, extension timing manifests або
-  extension test matrices, regenerate і review planner-owned outputs матриці
-  `plugin-prerelease-extension-shard` з
+  щоб ми знову не відвантажили порожню browser dashboard
+- Післяпублікаційна верифікація також перевіряє, що опубліковані точки входу плагінів і
+  метадані пакета присутні у встановленому макеті реєстру. Реліз, який
+  відвантажує відсутні plugin runtime payloads, провалює postpublish verifier і
+  не може бути просунутий до `latest`.
+- `pnpm test:install:smoke` також застосовує бюджет npm pack `unpackedSize` до
+  tarball кандидата оновлення, тож installer e2e ловить випадкове роздуття пакета
+  до шляху публікації релізу
+- Якщо релізна робота торкалася планування CI, маніфестів часу розширень або
+  матриць тестів розширень, згенеруйте заново й перегляньте керовані планувальником
+  матричні виводи `plugin-prerelease-extension-shard` з
   `.github/workflows/plugin-prerelease.yml` перед схваленням, щоб release notes не
-  описували застарілий CI layout
-- Stable macOS release readiness також включає updater surfaces:
-  - GitHub release має в підсумку містити packaged `.zip`, `.dmg` і `.dSYM.zip`
-  - `appcast.xml` на `main` має вказувати на новий stable zip після publish
-  - packaged app має зберігати non-debug bundle id, непорожній Sparkle feed
-    URL і `CFBundleVersion` на рівні або вище canonical Sparkle build floor
-    для цієї release version
+  описували застарілий макет CI
+- Готовність стабільного macOS-релізу також включає поверхні оновлювача:
+  - GitHub-реліз має зрештою містити запаковані `.zip`, `.dmg` і `.dSYM.zip`
+  - `appcast.xml` на `main` має вказувати на новий стабільний zip після публікації
+  - запакований застосунок має зберігати не-debug bundle id, непорожній Sparkle feed
+    URL і `CFBundleVersion` на рівні або вище канонічного мінімуму Sparkle build
+    для цієї версії релізу
 
-## Release test boxes
+## Релізні тестові бокси
 
-`Full Release Validation` — це спосіб, яким operators запускають усі pre-release tests з
-однієї точки входу. Для pinned commit proof на швидко змінюваній гілці використовуйте
-helper, щоб кожен child workflow запускався з тимчасової гілки, зафіксованої на target
+`Full Release Validation` — це спосіб, яким оператори запускають усі передрелізні тести з
+однієї точки входу. Для доказу закріпленого коміту на гілці, що швидко рухається, використовуйте
+допоміжний скрипт, щоб кожен дочірній робочий процес запускався з тимчасової гілки, зафіксованої на цільовому
 SHA:
 
 ```bash
 pnpm ci:full-release --sha <full-sha>
 ```
 
-Helper pushes `release-ci/<sha>-...`, dispatches `Full Release Validation`
-з цієї гілки з `ref=<sha>`, verifies, що кожен child workflow `headSha`
-matches target, а потім deletes temporary branch. Це уникає випадкового підтвердження
-новішого child run з `main`.
+Допоміжний скрипт пушить `release-ci/<sha>-...`, запускає `Full Release Validation`
+з цієї гілки з `ref=<sha>`, перевіряє, що `headSha` кожного дочірнього робочого процесу
+відповідає цілі, а потім видаляє тимчасову гілку. Це запобігає випадковому підтвердженню
+новішого дочірнього запуску `main`.
 
-Для release branch або tag validation запустіть його з trusted `main` workflow
-ref і передайте release branch або tag як `ref`:
+Для валідації релізної гілки або тегу запускайте її з довіреного ref робочого процесу `main`
+і передавайте релізну гілку або тег як `ref`:
 
 ```bash
 gh workflow run full-release-validation.yml \
@@ -295,54 +297,54 @@ gh workflow run full-release-validation.yml \
   -f evidence_package_spec=openclaw@YYYY.M.D-beta.N
 ```
 
-Робочий процес визначає цільовий ref, запускає ручний `CI` з
+Workflow визначає цільовий ref, запускає ручний `CI` з
 `target_ref=<release-ref>`, запускає `OpenClaw Release Checks`, готує
-батьківський артефакт `release-package-under-test` для перевірок пакетного
-напряму та запускає окремий пакетний Telegram E2E, коли `release_profile=full` з
-`rerun_group=all` або коли задано `npm_telegram_package_spec`. Далі `OpenClaw Release
-Checks` розгалужується на install smoke, крос-OS release checks, live/E2E Docker
-покриття шляху релізу, коли soak увімкнено, Package Acceptance з Telegram
-package QA, QA Lab parity, live Matrix і live Telegram. Повний запуск прийнятний лише тоді, коли
+батьківський артефакт `release-package-under-test` для перевірок, пов’язаних із
+пакетом, і запускає автономний пакетний Telegram E2E, коли `release_profile=full` з
+`rerun_group=all` або коли задано `npm_telegram_package_spec`. Після цього `OpenClaw Release
+Checks` розгалужується на install smoke, міжплатформні release checks, live/E2E Docker
+покриття шляху релізу, коли ввімкнено soak, Package Acceptance з Telegram
+package QA, паритет QA Lab, live Matrix і live Telegram. Повний запуск прийнятний лише тоді, коли
 зведення `Full Release Validation`
 показує `normal_ci` і `release_checks` як успішні. У режимі full/all
-дочірній `npm_telegram` також має бути успішним; поза full/all його пропущено,
+дочірній `npm_telegram` також має бути успішним; поза full/all його пропускають,
 якщо не було надано опублікований `npm_telegram_package_spec`. Фінальне
-зведення verifier містить таблиці найповільніших jobs для кожного дочірнього запуску, щоб release
-manager міг бачити поточний critical path без завантаження логів.
+зведення verifier містить таблиці найповільніших завдань для кожного дочірнього запуску, щоб release
+manager міг бачити поточний критичний шлях без завантаження логів.
 Див. [Повна валідація релізу](/uk/reference/full-release-validation), щоб отримати
-повну матрицю етапів, точні назви workflow jobs, відмінності між stable і full
-профілями, артефакти та handles для сфокусованих повторних запусків.
+повну матрицю етапів, точні назви завдань workflow, відмінності між профілями stable і full,
+артефакти та ручки для фокусованих повторних запусків.
 Дочірні workflows запускаються з довіреного ref, який виконує `Full Release
 Validation`, зазвичай `--ref main`, навіть коли цільовий `ref` вказує на
-старішу гілку або тег релізу. Окремого input workflow-ref для Full Release Validation
+старішу release-гілку або тег. Окремого workflow-ref input для Full Release Validation
 немає; вибирайте довірений harness, вибираючи ref запуску workflow.
 Не використовуйте `--ref main -f ref=<sha>` для доказу точного коміту на рухомому `main`;
-raw commit SHAs не можуть бути workflow dispatch refs, тож використовуйте
-`pnpm ci:full-release --sha <sha>`, щоб створити pinned тимчасову гілку.
+сирі commit SHA не можуть бути workflow dispatch refs, тому використовуйте
+`pnpm ci:full-release --sha <sha>`, щоб створити закріплену тимчасову гілку.
 
 Використовуйте `release_profile`, щоб вибрати ширину live/provider:
 
-- `minimum`: найшвидший release-critical OpenAI/core live і Docker path
-- `stable`: minimum плюс stable provider/backend coverage для схвалення релізу
-- `full`: stable плюс широке advisory provider/media coverage
+- `minimum`: найшвидший release-critical OpenAI/core live і Docker шлях
+- `stable`: minimum плюс stable provider/backend покриття для схвалення релізу
+- `full`: stable плюс широке advisory provider/media покриття
 
 Використовуйте `run_release_soak=true` зі `stable`, коли release-blocking lanes
-зелені й потрібен вичерпний live/E2E, Docker release-path і
-обмежений sweep published upgrade-survivor перед promotion. Цей sweep охоплює
-останні чотири stable packages плюс pinned `2026.4.23` і `2026.5.2`
-baselines, а також старіше покриття `2026.4.15`, з видаленням duplicate baselines і
-шардингом кожного baseline у власний Docker runner job. `full` передбачає
+зелені й потрібен вичерпний live/E2E, Docker шлях релізу та
+обмежений sweep published upgrade-survivor перед просуванням. Цей sweep охоплює
+останні чотири stable пакети плюс закріплені базові версії `2026.4.23` і `2026.5.2`
+плюс старіше покриття `2026.4.15`, з видаленням дубльованих baseline і
+шардуванням кожної baseline в окреме завдання Docker runner. `full` передбачає
 `run_release_soak=true`.
 
 `OpenClaw Release Checks` використовує довірений workflow ref, щоб один раз визначити цільовий
 ref як `release-package-under-test`, і повторно використовує цей артефакт у cross-OS,
-Package Acceptance і release-path Docker checks, коли запускається soak. Це утримує
-всі package-facing boxes на тих самих bytes і уникає повторних package builds.
+Package Acceptance і release-path Docker перевірках, коли виконується soak. Це утримує
+всі package-facing boxes на тих самих байтах і уникає повторних збірок пакетів.
 Cross-OS OpenAI install smoke використовує `OPENCLAW_CROSS_OS_OPENAI_MODEL`, коли
-repo/org variable задано, інакше `openai/gpt-5.4`, бо ця lane
-доводить package install, onboarding, запуск gateway і один live agent turn,
-а не benchmark найповільнішої default model. Ширша live provider
-matrix залишається місцем для model-specific coverage.
+задано змінну repo/org, інакше `openai/gpt-5.4`, оскільки ця lane
+доводить встановлення пакета, onboarding, запуск Gateway і один live agent turn,
+а не вимірює найповільнішу модель за замовчуванням. Ширша live provider
+matrix залишається місцем для model-specific покриття.
 
 Використовуйте ці варіанти залежно від етапу релізу:
 
@@ -374,44 +376,44 @@ gh workflow run full-release-validation.yml \
   -f npm_telegram_provider_mode=mock-openai
 ```
 
-Не використовуйте повну umbrella як перший повторний запуск після сфокусованого виправлення. Якщо один box
-падає, використовуйте failed child workflow, job, Docker lane, package profile, model
-provider або QA lane для наступного proof. Запускайте повну umbrella знову лише тоді, коли
-виправлення змінило shared release orchestration або зробило попередні all-box evidence
+Не використовуйте повну umbrella як перший повторний запуск після фокусованого виправлення. Якщо один box
+падає, використовуйте невдалий дочірній workflow, job, Docker lane, package profile, model
+provider або QA lane для наступного доказу. Запускайте повну umbrella знову лише тоді, коли
+виправлення змінило спільну release orchestration або зробило попередні all-box докази
 застарілими. Фінальний verifier umbrella повторно перевіряє записані child workflow run
-ids, тому після успішного повторного запуску child workflow повторно запустіть лише failed
-`Verify full validation` parent job.
+ids, тому після успішного повторного запуску child workflow перезапустіть лише невдале
+батьківське завдання `Verify full validation`.
 
-Для обмеженого recovery передайте `rerun_group` до umbrella. `all` — це реальний
-release-candidate run, `ci` запускає лише normal CI child, `plugin-prerelease`
-запускає лише release-only plugin child, `release-checks` запускає кожен release
-box, а вужчі release groups — `install-smoke`, `cross-os`,
+Для обмеженого відновлення передайте `rerun_group` до umbrella. `all` — це справжній
+запуск release-candidate, `ci` запускає лише звичайний дочірній CI, `plugin-prerelease`
+запускає лише release-only дочірній Plugin, `release-checks` запускає кожен release
+box, а вужчі release groups — це `install-smoke`, `cross-os`,
 `live-e2e`, `package`, `qa`, `qa-parity`, `qa-live` і `npm-telegram`.
-Сфокусовані повторні запуски `npm-telegram` потребують `npm_telegram_package_spec`; full/all runs
-з `release_profile=full` використовують release-checks package artifact. Сфокусовані
-cross-OS reruns можуть додати `cross_os_suite_filter=windows/packaged-upgrade` або
-інший OS/suite filter. QA release-check failures мають advisory характер; QA-only
-failure не блокує release validation.
+Фокусовані повторні запуски `npm-telegram` потребують `npm_telegram_package_spec`; запуски full/all
+з `release_profile=full` використовують артефакт пакета release-checks. Фокусовані
+cross-OS повторні запуски можуть додати `cross_os_suite_filter=windows/packaged-upgrade` або
+інший OS/suite filter. Помилки QA release-check є advisory; помилка лише в QA
+не блокує валідацію релізу.
 
 ### Vitest
 
-Vitest box — це ручний `CI` child workflow. Manual CI навмисно
-обходить changed scoping і примусово запускає normal test graph для release
-candidate: Linux Node shards, bundled-plugin shards, channel contracts, Node 22
-compatibility, `check`, `check-additional`, build smoke, docs checks, Python
-skills, Windows, macOS, Android і Control UI i18n.
+Vitest box — це ручний дочірній workflow `CI`. Manual CI навмисно
+обходить changed scoping і примусово запускає звичайний test graph для release
+candidate: Linux Node shards, bundled-Plugin shards, channel contracts, сумісність Node 22,
+`check`, `check-additional`, build smoke, docs checks, Python
+Skills, Windows, macOS, Android і Control UI i18n.
 
-Використовуйте цей box, щоб відповісти на питання «чи source tree пройшло full normal test suite?»
-Це не те саме, що release-path product validation. Evidence, які слід зберегти:
+Використовуйте цей box, щоб відповісти на питання: «чи пройшло дерево вихідного коду повний звичайний набір тестів?»
+Це не те саме, що release-path product validation. Докази, які слід зберегти:
 
 - зведення `Full Release Validation`, що показує URL запущеного `CI` run
-- зелений `CI` run на точному target SHA
-- імена failed або slow shards із CI jobs під час розслідування regressions
-- Vitest timing artifacts, як-от `.artifacts/vitest-shard-timings.json`, коли
-  run потребує performance analysis
+- зелений `CI` run на точному цільовому SHA
+- назви невдалих або повільних shards із CI jobs під час розслідування регресій
+- артефакти таймінгів Vitest, як-от `.artifacts/vitest-shard-timings.json`, коли
+  запуск потребує аналізу продуктивності
 
-Запускайте manual CI напряму лише тоді, коли релізу потрібен deterministic normal CI, але
-не Docker, QA Lab, live, cross-OS або package boxes:
+Запускайте manual CI напряму лише тоді, коли релізу потрібен детермінований normal CI, але
+не потрібні Docker, QA Lab, live, cross-OS або package boxes:
 
 ```bash
 gh workflow run ci.yml --ref main -f target_ref=release/YYYY.M.D
@@ -419,16 +421,16 @@ gh workflow run ci.yml --ref main -f target_ref=release/YYYY.M.D
 
 ### Docker
 
-Docker box міститься в `OpenClaw Release Checks` через
+Docker box живе в `OpenClaw Release Checks` через
 `openclaw-live-and-e2e-checks-reusable.yml`, плюс release-mode
-workflow `install-smoke`. Він валідовує release candidate через packaged
+workflow `install-smoke`. Він перевіряє release candidate через packaged
 Docker environments, а не лише source-level tests.
 
 Release Docker coverage включає:
 
 - повний install smoke з увімкненим повільним Bun global install smoke
 - підготовку/повторне використання root Dockerfile smoke image за target SHA, з QR,
-  root/gateway і installer/Bun smoke jobs, що виконуються як окремі install-smoke
+  root/Gateway і installer/Bun smoke jobs, що виконуються як окремі install-smoke
   shards
 - repository E2E lanes
 - release-path Docker chunks: `core`, `package-update-openai`,
@@ -438,8 +440,8 @@ Release Docker coverage включає:
   `plugins-runtime-install-c`, `plugins-runtime-install-d`,
   `plugins-runtime-install-e`, `plugins-runtime-install-f`,
   `plugins-runtime-install-g` і `plugins-runtime-install-h`
-- покриття OpenWebUI всередині chunk `plugins-runtime-services`, коли це запитано
-- split bundled plugin install/uninstall lanes
+- покриття OpenWebUI всередині chunk `plugins-runtime-services`, коли його запитано
+- розділені bundled Plugin install/uninstall lanes
   `bundled-plugin-install-uninstall-0` through
   `bundled-plugin-install-uninstall-23`
 - live/E2E provider suites і Docker live model coverage, коли release checks
@@ -447,85 +449,85 @@ Release Docker coverage включає:
 
 Використовуйте Docker artifacts перед повторним запуском. Release-path scheduler завантажує
 `.artifacts/docker-tests/` з lane logs, `summary.json`, `failures.json`,
-phase timings, scheduler plan JSON і rerun commands. Для сфокусованого recovery
+phase timings, scheduler plan JSON і командами повторного запуску. Для фокусованого відновлення
 використовуйте `docker_lanes=<lane[,lane]>` у reusable live/E2E workflow замість
-повторного запуску всіх release chunks. Згенеровані rerun commands включають попередні
-`package_artifact_run_id` і prepared Docker image inputs, коли вони доступні, тож
-failed lane може повторно використати той самий tarball і GHCR images.
+повторного запуску всіх release chunks. Згенеровані команди повторного запуску включають попередній
+`package_artifact_run_id` і підготовлені Docker image inputs, коли вони доступні, тож
+невдала lane може повторно використати той самий tarball і GHCR images.
 
 ### QA Lab
 
 QA Lab box також є частиною `OpenClaw Release Checks`. Це agentic
-behavior і channel-level release gate, окремий від Vitest і Docker
-package mechanics.
+behavior і channel-level release gate, окремий від механіки пакетів Vitest і Docker.
 
 Release QA Lab coverage включає:
 
-- mock parity lane, що порівнює OpenAI candidate lane з baseline Opus 4.6
+- mock parity lane, що порівнює candidate lane OpenAI з baseline Opus 4.6
   за допомогою agentic parity pack
-- fast live Matrix QA profile з використанням environment `qa-live-shared`
-- live Telegram QA lane з використанням Convex CI credential leases
-- `pnpm qa:otel:smoke`, коли release telemetry потребує явного local proof
+- fast live Matrix QA profile, що використовує середовище `qa-live-shared`
+- live Telegram QA lane, що використовує Convex CI credential leases
+- `pnpm qa:otel:smoke`, коли release telemetry потребує явного локального доказу
 
-Використовуйте цей box, щоб відповісти на питання «чи реліз поводиться коректно в QA scenarios і
+Використовуйте цей box, щоб відповісти на питання: «чи реліз поводиться правильно у QA scenarios і
 live channel flows?» Зберігайте artifact URLs для parity, Matrix і Telegram
-lanes під час схвалення релізу. Full Matrix coverage залишається доступним як
-ручний sharded QA-Lab run, а не default release-critical lane.
+lanes під час схвалення релізу. Повне Matrix coverage залишається доступним як
+ручний sharded QA-Lab run, а не як стандартна release-critical lane.
 
-### Package
+### Пакет
 
-Package box — це installable-product gate. Його підтримують
+Package box — це installable-product gate. Він спирається на
 `Package Acceptance` і resolver
 `scripts/resolve-openclaw-package-candidate.mjs`. Resolver нормалізує
-candidate у tarball `package-under-test`, який споживає Docker E2E, валідовує
-package inventory, записує package version і SHA-256 та тримає
+candidate у tarball `package-under-test`, який споживає Docker E2E, перевіряє
+package inventory, записує package version і SHA-256, а також тримає
 workflow harness ref окремо від package source ref.
 
 Підтримувані candidate sources:
 
 - `source=npm`: `openclaw@beta`, `openclaw@latest` або точна OpenClaw release
   version
-- `source=ref`: пакує довірену `package_ref` branch, tag або full commit SHA
+- `source=ref`: упакувати довірену `package_ref` гілку, тег або повний commit SHA
   з вибраним `workflow_ref` harness
-- `source=url`: завантажує HTTPS `.tgz` з обов’язковим `package_sha256`
-- `source=artifact`: повторно використовує `.tgz`, завантажений іншим GitHub Actions run
+- `source=url`: завантажити HTTPS `.tgz` з обов’язковим `package_sha256`
+- `source=artifact`: повторно використати `.tgz`, завантажений іншим GitHub Actions run
 
-`OpenClaw Release Checks` запускає Package Acceptance з `source=artifact`,
+`OpenClaw Release Checks` запускає Package Acceptance із `source=artifact`,
 підготовленим release package artifact, `suite_profile=custom`,
-`docker_lanes=doctor-switch update-channel-switch upgrade-survivor published-upgrade-survivor plugins-offline plugin-update`,
-`telegram_mode=mock-openai`. Package Acceptance зберігає migration, update, stale
-plugin dependency cleanup, offline plugin fixtures, plugin update і Telegram
-package QA щодо того самого resolved tarball. Blocking release checks використовують
-default latest published package baseline; `run_release_soak=true` або
-`release_profile=full` розширює це до кожного stable npm-published baseline від
+`docker_lanes=doctor-switch update-channel-switch upgrade-survivor published-upgrade-survivor update-restart-auth plugins-offline plugin-update`,
+`telegram_mode=mock-openai`. Package Acceptance утримує migration, update,
+configured-auth update restart, stale Plugin dependency cleanup, offline Plugin
+fixtures, Plugin update і Telegram package QA на одному й тому самому resolved
+tarball. Blocking release checks використовують стандартну latest published package
+baseline; `run_release_soak=true` або
+`release_profile=full` розширює це до кожної stable npm-published baseline від
 `2026.4.23` до `latest` плюс reported-issue fixtures. Використовуйте
-Package Acceptance з `source=npm` для вже shipped candidate або
+Package Acceptance із `source=npm` для вже випущеного candidate або
 `source=ref`/`source=artifact` для SHA-backed local npm tarball перед
-publish. Це GitHub-native
-заміна більшої частини package/update coverage, яка раніше потребувала
-Parallels. Cross-OS release checks усе ще важливі для OS-specific onboarding,
+публікацією. Це GitHub-native
+заміна більшості package/update покриття, яке раніше потребувало
+Parallels. Cross-OS release checks досі важливі для OS-specific onboarding,
 installer і platform behavior, але package/update product validation має
 віддавати перевагу Package Acceptance.
 
-Канонічний checklist для update і plugin validation —
-[Тестування оновлень і plugins](/uk/help/testing-updates-plugins). Використовуйте його, коли
+Канонічний checklist для update і Plugin validation —
+[Тестування оновлень і Plugins](/uk/help/testing-updates-plugins). Використовуйте його, коли
 вирішуєте, яка local, Docker, Package Acceptance або release-check lane доводить
-plugin install/update, doctor cleanup або published-package migration change.
-Вичерпна published update migration з кожного stable package `2026.4.23+` —
-це окремий manual workflow `Update Migration`, а не частина Full Release CI.
+зміну Plugin install/update, doctor cleanup або published-package migration.
+Вичерпна published update migration з кожного stable пакета `2026.4.23+` є
+окремим ручним workflow `Update Migration`, а не частиною Full Release CI.
 
-Застарілу поблажливість package-acceptance навмисно обмежено в часі. Пакети до
+Застаріла поблажливість приймання пакетів навмисно обмежена в часі. Пакети до
 `2026.4.25` включно можуть використовувати шлях сумісності для прогалин у метаданих, уже опублікованих
 в npm: приватні записи інвентарю QA, відсутні в tarball, відсутній
-`gateway install --wrapper`, відсутні файли патчів у git-фікстурі,
-отриманій із tarball, відсутній збережений `update.channel`, застарілі
-розташування install-record для plugin, відсутнє збереження install-record
-marketplace, а також міграція метаданих конфігурації під час `plugins update`. Опублікований пакет `2026.4.26` може попереджати
-про локальні файли штампів метаданих збірки, які вже були випущені. Пізніші пакети
-мають відповідати сучасним контрактам пакетів; ті самі прогалини призводять до помилки
-валідації випуску.
+`gateway install --wrapper`, відсутні patch-файли у git-фікстурі, отриманій із tarball,
+відсутній збережений `update.channel`, застарілі розташування записів установлення Plugin,
+відсутнє збереження записів установлення marketplace, а також міграція метаданих конфігурації
+під час `plugins update`. Опублікований пакет `2026.4.26` може попереджати
+про локальні файли штампів метаданих збірки, які вже були поставлені. Пізніші пакети
+мають задовольняти сучасні контракти пакетів; ті самі прогалини провалюють
+валідацію релізу.
 
-Використовуйте ширші профілі Package Acceptance, коли питання випуску стосується
+Використовуйте ширші профілі приймання пакетів, коли питання релізу стосується
 фактичного встановлюваного пакета:
 
 ```bash
@@ -540,32 +542,32 @@ gh workflow run package-acceptance.yml \
 
 Поширені профілі пакетів:
 
-- `smoke`: швидкі лінії встановлення пакета, каналу й агента, мережі Gateway та
+- `smoke`: швидкі lanes установлення пакета/каналу/агента, мережі Gateway і
   перезавантаження конфігурації
-- `package`: контракти встановлення, оновлення та package для plugin без live ClawHub; це типовий
-  профіль перевірки випуску
+- `package`: контракти пакета install/update/restart/plugin без live
+  ClawHub; це стандарт для перевірки релізу
 - `product`: `package` плюс канали MCP, очищення cron/subagent, вебпошук OpenAI
   і OpenWebUI
 - `full`: фрагменти release-path Docker з OpenWebUI
 - `custom`: точний список `docker_lanes` для сфокусованих повторних запусків
 
-Для доказу Telegram package-candidate увімкніть `telegram_mode=mock-openai` або
-`telegram_mode=live-frontier` у Package Acceptance. Workflow передає
-розв’язаний tarball `package-under-test` у лінію Telegram; окремий workflow
-Telegram і далі приймає опубліковану npm-специфікацію для перевірок після публікації.
+Для package-candidate доказу Telegram увімкніть `telegram_mode=mock-openai` або
+`telegram_mode=live-frontier` у прийманні пакетів. Workflow передає
+розв’язаний tarball `package-under-test` у lane Telegram; окремий
+workflow Telegram усе ще приймає опубліковану npm-специфікацію для post-publish перевірок.
 
-## Автоматизація публікації випуску
+## Автоматизація публікації релізу
 
-`OpenClaw Release Publish` є звичайною мутувальною точкою входу для публікації. Вона
-оркеструє trusted-publisher workflows у потрібному для випуску порядку:
+`OpenClaw Release Publish` є звичайною змінювальною точкою входу для публікації. Вона
+оркеструє trusted-publisher workflows у порядку, потрібному релізу:
 
-1. Отримати тег випуску та визначити його commit SHA.
-2. Перевірити, що тег досяжний із `main` або `release/*`.
+1. Перевірити release tag і розв’язати його commit SHA.
+2. Переконатися, що tag досяжний із `main` або `release/*`.
 3. Запустити `pnpm plugins:sync:check`.
-4. Запустити `Plugin NPM Release` з `publish_scope=all-publishable` і
+4. Dispatch `Plugin NPM Release` з `publish_scope=all-publishable` і
    `ref=<release-sha>`.
-5. Запустити `Plugin ClawHub Release` з тією самою областю й SHA.
-6. Запустити `OpenClaw NPM Release` з тегом випуску, npm dist-tag і
+5. Dispatch `Plugin ClawHub Release` з тим самим scope і SHA.
+6. Dispatch `OpenClaw NPM Release` з release tag, npm dist-tag і
    збереженим `preflight_run_id`.
 
 Приклад публікації beta:
@@ -578,7 +580,7 @@ gh workflow run openclaw-release-publish.yml \
   -f npm_dist_tag=beta
 ```
 
-Стабільна публікація до типового beta dist-tag:
+Стабільна публікація до стандартного beta dist-tag:
 
 ```bash
 gh workflow run openclaw-release-publish.yml \
@@ -598,94 +600,94 @@ gh workflow run openclaw-release-publish.yml \
   -f npm_dist_tag=latest
 ```
 
-Використовуйте нижчорівневі workflows `Plugin NPM Release` і `Plugin ClawHub Release`
-лише для сфокусованого ремонту або повторної публікації. Для ремонту вибраного plugin передайте
+Використовуйте нижчерівневі workflows `Plugin NPM Release` і `Plugin ClawHub Release`
+лише для сфокусованого виправлення або повторної публікації. Для виправлення вибраного Plugin передайте
 `plugin_publish_scope=selected` і `plugins=@openclaw/name` до
-`OpenClaw Release Publish` або запускайте дочірній workflow напряму, коли
-пакет OpenClaw не має публікуватися.
+`OpenClaw Release Publish`, або запускайте дочірній workflow напряму, коли
+пакет OpenClaw не потрібно публікувати.
 
-## Вхідні дані workflow NPM
+## Вхідні параметри workflow NPM
 
-`OpenClaw NPM Release` приймає такі вхідні дані, керовані оператором:
+`OpenClaw NPM Release` приймає такі керовані оператором вхідні параметри:
 
-- `tag`: обов’язковий тег випуску, наприклад `v2026.4.2`, `v2026.4.2-1` або
+- `tag`: обов’язковий release tag, наприклад `v2026.4.2`, `v2026.4.2-1` або
   `v2026.4.2-beta.1`; коли `preflight_only=true`, це також може бути поточний
-  повний 40-символьний commit SHA workflow-branch лише для preflight-валідації
-- `preflight_only`: `true` лише для валідації, збірки й пакування, `false` для
+  повний 40-символьний commit SHA гілки workflow для validation-only preflight
+- `preflight_only`: `true` для лише валідації/збірки/пакування, `false` для
   справжнього шляху публікації
-- `preflight_run_id`: обов’язковий на справжньому шляху публікації, щоб workflow повторно використав
+- `preflight_run_id`: обов’язковий на справжньому шляху публікації, щоб workflow повторно використовував
   підготовлений tarball з успішного preflight-запуску
-- `npm_dist_tag`: цільовий тег npm для шляху публікації; типово `beta`
+- `npm_dist_tag`: цільовий npm-тег для шляху публікації; за замовчуванням `beta`
 
-`OpenClaw Release Publish` приймає такі вхідні дані, керовані оператором:
+`OpenClaw Release Publish` приймає такі керовані оператором вхідні параметри:
 
-- `tag`: обов’язковий тег випуску; має вже існувати
-- `preflight_run_id`: ідентифікатор успішного preflight-запуску `OpenClaw NPM Release`;
+- `tag`: обов’язковий release tag; має вже існувати
+- `preflight_run_id`: id успішного preflight-запуску `OpenClaw NPM Release`;
   обов’язковий, коли `publish_openclaw_npm=true`
-- `npm_dist_tag`: цільовий тег npm для пакета OpenClaw
-- `plugin_publish_scope`: типово `all-publishable`; використовуйте `selected` лише
-  для сфокусованого ремонту
-- `plugins`: розділені комами імена пакетів `@openclaw/*`, коли
+- `npm_dist_tag`: цільовий npm-тег для пакета OpenClaw
+- `plugin_publish_scope`: за замовчуванням `all-publishable`; використовуйте `selected` лише
+  для сфокусованих виправлень
+- `plugins`: розділені комами назви пакетів `@openclaw/*`, коли
   `plugin_publish_scope=selected`
-- `publish_openclaw_npm`: типово `true`; встановлюйте `false` лише коли використовуєте
-  workflow як оркестратор ремонту тільки для plugin
+- `publish_openclaw_npm`: за замовчуванням `true`; установлюйте `false` лише коли використовуєте
+  workflow як оркестратор виправлення тільки для Plugin
 
-`OpenClaw Release Checks` приймає такі вхідні дані, керовані оператором:
+`OpenClaw Release Checks` приймає такі керовані оператором вхідні параметри:
 
-- `ref`: гілка, тег або повний commit SHA для валідації. Перевірки із секретами
-  вимагають, щоб розв’язаний коміт був досяжний із гілки OpenClaw або
-  тегу випуску.
-- `run_release_soak`: увімкнення вичерпних live/E2E, Docker release-path і
-  all-since upgrade-survivor soak для стабільних/типових перевірок випуску. Примусово
+- `ref`: гілка, tag або повний commit SHA для валідації. Перевірки з секретами
+  вимагають, щоб розв’язаний commit був досяжний з гілки OpenClaw або
+  release tag.
+- `run_release_soak`: opt in до вичерпного live/E2E, Docker release-path і
+  all-since upgrade-survivor soak на стабільних/стандартних перевірках релізу. Це примусово
   вмикається через `release_profile=full`.
 
 Правила:
 
-- Стабільні й correction-теги можуть публікуватися або до `beta`, або до `latest`
-- Beta prerelease-теги можуть публікуватися лише до `beta`
-- Для `OpenClaw NPM Release` вхідний повний commit SHA дозволений лише коли
+- Стабільні та корекційні теги можуть публікуватися або до `beta`, або до `latest`
+- Beta prerelease теги можуть публікуватися лише до `beta`
+- Для `OpenClaw NPM Release` введення повного commit SHA дозволене лише коли
   `preflight_only=true`
-- `OpenClaw Release Checks` і `Full Release Validation` завжди
-  лише валідаційні
+- `OpenClaw Release Checks` і `Full Release Validation` завжди є
+  лише валідаційними
 - Справжній шлях публікації має використовувати той самий `npm_dist_tag`, що використовувався під час preflight;
-  workflow перевіряє ці метадані перед продовженням публікації
+  workflow перевіряє ці метадані, перш ніж продовжити публікацію
 
-## Послідовність стабільного npm-випуску
+## Послідовність стабільного npm-релізу
 
-Під час підготовки стабільного npm-випуску:
+Коли готуєте стабільний npm-реліз:
 
 1. Запустіть `OpenClaw NPM Release` з `preflight_only=true`
-   - До існування тегу можна використати поточний повний commit
-     SHA workflow-branch для dry run preflight workflow лише з валідацією
-2. Виберіть `npm_dist_tag=beta` для звичайного потоку beta-first або `latest` лише
-   коли навмисно потрібна пряма стабільна публікація
+   - Перш ніж tag існує, можна використати поточний повний commit SHA гілки workflow
+     для validation-only dry run preflight workflow
+2. Виберіть `npm_dist_tag=beta` для звичайного beta-first потоку або `latest` лише
+   коли ви навмисно хочете пряму стабільну публікацію
 3. Запустіть `Full Release Validation` на release branch, release tag або повному
-   commit SHA, коли потрібне звичайне CI плюс покриття live prompt cache, Docker, QA Lab,
-   Matrix і Telegram з одного ручного workflow
-4. Якщо навмисно потрібен лише детермінований звичайний граф тестів, запустіть
-   ручний workflow `CI` на release ref
+   commit SHA, коли вам потрібні звичайний CI плюс live prompt cache, Docker, QA Lab,
+   Matrix і покриття Telegram з одного ручного workflow
+4. Якщо вам навмисно потрібен лише детермінований звичайний граф тестів, запустіть
+   ручний workflow `CI` на release ref натомість
 5. Збережіть успішний `preflight_run_id`
 6. Запустіть `OpenClaw Release Publish` з тим самим `tag`, тим самим `npm_dist_tag`
-   і збереженим `preflight_run_id`; він публікує екстерналізовані plugins до npm
+   і збереженим `preflight_run_id`; він публікує externalized plugins до npm
    і ClawHub перед просуванням npm-пакета OpenClaw
-7. Якщо випуск потрапив на `beta`, використайте приватний
-   `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml`
-   workflow, щоб просунути цю стабільну версію з `beta` до `latest`
-8. Якщо випуск навмисно опубліковано безпосередньо до `latest`, а `beta`
-   має одразу слідувати за тією самою стабільною збіркою, використайте той самий приватний
+7. Якщо реліз потрапив до `beta`, використайте приватний
+   workflow `openclaw/releases-private/.github/workflows/openclaw-npm-dist-tags.yml`,
+   щоб просунути цю стабільну версію з `beta` до `latest`
+8. Якщо реліз навмисно опубліковано безпосередньо до `latest`, а `beta`
+   має негайно наслідувати ту саму стабільну збірку, використайте той самий приватний
    workflow, щоб спрямувати обидва dist-tags на стабільну версію, або дозвольте його запланованій
-   self-healing-синхронізації перемістити `beta` пізніше
+   self-healing синхронізації перемістити `beta` пізніше
 
-Мутація dist-tag розміщена в приватному репозиторії з міркувань безпеки, оскільки вона все ще
-потребує `NPM_TOKEN`, тоді як публічний репозиторій зберігає публікацію лише через OIDC.
+Мутація dist-tag живе в приватному репозиторії з міркувань безпеки, бо вона все ще
+вимагає `NPM_TOKEN`, тоді як публічний репозиторій зберігає публікацію лише через OIDC.
 
-Це зберігає і прямий шлях публікації, і шлях beta-first promotion
-задокументованими та видимими оператору.
+Це залишає як шлях прямої публікації, так і шлях beta-first просування
+задокументованими й видимими для оператора.
 
-Якщо maintainer мусить повернутися до локальної npm-автентифікації, запускайте будь-які
-команди 1Password CLI (`op`) лише всередині виділеної tmux-сесії. Не викликайте `op`
-напряму з основної shell агента; утримання його всередині tmux робить prompts,
-сповіщення й обробку OTP видимими та запобігає повторним сповіщенням хоста.
+Якщо maintainer змушений повернутися до локальної npm-автентифікації, запускайте будь-які команди 1Password
+CLI (`op`) лише всередині виділеної сесії tmux. Не викликайте `op`
+напряму з основної оболонки агента; утримання його всередині tmux робить prompts,
+alerts і обробку OTP спостережуваними та запобігає повторним alerts хоста.
 
 ## Публічні посилання
 
@@ -699,10 +701,10 @@ gh workflow run openclaw-release-publish.yml \
 - [`scripts/package-mac-dist.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-dist.sh)
 - [`scripts/make_appcast.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/make_appcast.sh)
 
-Maintainers використовують приватну документацію випусків у
+Maintainers використовують приватну документацію релізів у
 [`openclaw/maintainers/release/README.md`](https://github.com/openclaw/maintainers/blob/main/release/README.md)
 для фактичного runbook.
 
 ## Пов’язане
 
-- [Канали випусків](/uk/install/development-channels)
+- [Канали релізів](/uk/install/development-channels)
