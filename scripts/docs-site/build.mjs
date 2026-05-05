@@ -98,7 +98,7 @@ function flattenPages(locale, entries) {
   const output = [];
   for (const entry of entries) {
     if (typeof entry === "string") {
-      const page = pageByKey.get(pageKey(locale, normalizeSlug(entry)));
+      const page = pageByKey.get(pageKey(locale, navEntrySlug(locale, entry)));
       if (page) output.push(page);
     } else if (entry?.pages) {
       const nested = flattenPages(locale, entry.pages);
@@ -106,6 +106,11 @@ function flattenPages(locale, entries) {
     }
   }
   return output;
+}
+
+function navEntrySlug(locale, entry) {
+  const slug = normalizeSlug(entry);
+  return slug.startsWith(`${locale}/`) ? normalizeSlug(slug.slice(locale.length + 1)) : slug;
 }
 
 function writePage(page) {

@@ -7,6 +7,7 @@ const site = path.join(root, "dist", "docs-site");
 const required = [
   "index.html",
   "tools/reactions/index.html",
+  "it/channels/index.html",
   "zh-CN/tools/reactions/index.html",
   "de/tools/reactions/index.html",
   "de/gateway/heartbeat/index.html",
@@ -40,6 +41,13 @@ if (!/data-url="(?:\/docs)?\/zh-CN\/tools\/reactions\/"/.test(zhReactions)) {
 }
 if (!/href="(?:\/docs)?\/zh-CN\/tools\/agent-send/.test(zhReactions)) {
   throw new Error("zh-CN reactions: article links do not stay in locale");
+}
+const itChannels = fs.readFileSync(path.join(site, "it/channels/index.html"), "utf8");
+if (!/class="tab-link active" href="(?:\/docs)?\/it\/channels\/"/.test(itChannels)) {
+  throw new Error("it channels: localized tabs are missing active Channels tab");
+}
+if (!/<section class="nav-section"><h2>Overview<\/h2>/.test(itChannels)) {
+  throw new Error("it channels: localized sidebar is missing");
 }
 const index = fs.readFileSync(path.join(site, "index.html"), "utf8");
 if (/src="\/assets\//.test(index) || /href="\/assets\//.test(index)) {
