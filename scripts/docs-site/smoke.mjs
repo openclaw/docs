@@ -18,6 +18,7 @@ const poison = [
   /\banalysis\s+to=functions\./iu,
   /\b(?:commentary|final)\s+to=functions\./iu,
   /\bfunctions\.(?:read|write|exec|search|run)\b/iu,
+  /OPENCLAW_DOCS_MARKER/u,
   /<\/?openclaw_docs_i18n_input>/iu,
   /\/home\/runner\/work\//u,
   /彩神马争霸/u
@@ -43,5 +44,9 @@ if (!/href="(?:\/docs)?\/zh-CN\/tools\/agent-send/.test(zhReactions)) {
 const index = fs.readFileSync(path.join(site, "index.html"), "utf8");
 if (/src="\/assets\//.test(index) || /href="\/assets\//.test(index)) {
   throw new Error("index: absolute asset paths were not base-path rewritten");
+}
+const showcase = fs.readFileSync(path.join(site, "start/showcase/index.html"), "utf8");
+if (!/href="https:\/\/www\.youtube\.com\/watch\?v=SaWSPZoPX34"/.test(showcase)) {
+  throw new Error("showcase: external card href was not rendered");
 }
 console.log(`docs site smoke ok: ${required.length} checks`);

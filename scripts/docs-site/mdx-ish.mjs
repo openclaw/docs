@@ -77,12 +77,12 @@ function postprocess(html) {
 }
 
 function marker(kind, payload = "") {
-  return `${markerPrefix}:${kind}:${encodeURIComponent(payload)}`;
+  return `${markerPrefix}:${kind}:${Buffer.from(payload, "utf8").toString("base64url")}`;
 }
 
 function expandMarker(payload) {
   const [kind, encoded = ""] = payload.split(":");
-  const value = decodeURIComponent(encoded);
+  const value = Buffer.from(encoded, "base64url").toString("utf8");
   if (kind === "blockOpen") return `<div class="oc-${escapeAttr(value)}">`;
   if (kind === "blockClose") return "</div>";
   if (kind === "calloutOpen") return `<aside class="oc-callout oc-callout-${slug(value)}"><strong>${escapeHtml(value)}</strong>`;
