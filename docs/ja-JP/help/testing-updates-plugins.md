@@ -1,38 +1,48 @@
 ---
 read_when:
-    - OpenClaw の更新、doctor、パッケージ受け入れ、またはプラグインインストールの動作変更
+    - OpenClawの更新、doctor、パッケージ受け入れ、またはPluginインストールの動作の変更
     - リリース候補の準備または承認
     - パッケージ更新、Plugin 依存関係のクリーンアップ、または Plugin インストールのリグレッションのデバッグ
 sidebarTitle: Update and plugin tests
-summary: OpenClaw が更新パス、パッケージ移行、plugin のインストール/更新動作を検証する方法
+summary: OpenClaw が更新パス、パッケージ移行、Plugin のインストール/更新動作を検証する方法
 title: 'テスト: 更新とPlugin'
 x-i18n:
-    generated_at: "2026-05-05T04:50:03Z"
+    generated_at: "2026-05-05T06:16:34Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3e5dbc85d567b9aec07d13e309d45da45d9088fb41dcbb2a07dae69dca6b09af
+    source_hash: 19ae526d3daa8a1b67cb2f74225138b3e1fa192c9f956c9dd6d0e407581b9ed9
     source_path: help/testing-updates-plugins.md
     workflow: 16
 ---
 
-これは、更新とPlugin検証専用のチェックリストです。目的は単純です。インストール可能なパッケージが実際のユーザー状態を更新でき、`doctor` を通じて古いレガシー状態を修復でき、さらにサポート対象のソースからPluginをインストール、読み込み、更新、アンインストールできることを証明します。
+これは更新と Plugin 検証専用のチェックリストです。目標は
+シンプルです。インストール可能なパッケージが実際のユーザー状態を更新でき、
+`doctor` を通じて古いレガシー状態を修復でき、さらにサポートされているソースから
+Plugin をインストール、読み込み、更新、アンインストールできることを証明します。
 
-より広範なテストランナーの一覧については、[テスト](/ja-JP/help/testing)を参照してください。ライブプロバイダーキーとネットワークに触れるスイートについては、[ライブテスト](/ja-JP/help/testing-live)を参照してください。
+より広範なテストランナーの一覧については、[テスト](/ja-JP/help/testing)を参照してください。ライブプロバイダー
+キーとネットワークに触れるスイートについては、[ライブテスト](/ja-JP/help/testing-live)を参照してください。
 
 ## 保護するもの
 
-更新とPluginのテストは、次の契約を保護します。
+更新と Plugin テストは、次の契約を保護します。
 
-- パッケージtarballが完全で、有効な `dist/postinstall-inventory.json` を持ち、展開されていないリポジトリファイルに依存していないこと。
-- ユーザーが、設定、エージェント、セッション、ワークスペース、Plugin許可リスト、チャンネル設定を失うことなく、古い公開済みパッケージから候補パッケージへ移行できること。
-- `openclaw doctor --fix --non-interactive` がレガシーのクリーンアップと修復パスを所有すること。起動処理に、古いPlugin状態向けの隠れた互換性マイグレーションを増やすべきではありません。
-- Pluginのインストールが、ローカルディレクトリ、gitリポジトリ、npmパッケージ、ClawHubレジストリパスから機能すること。
-- Pluginのnpm依存関係が管理対象のnpmルートにインストールされ、信頼前にスキャンされ、アンインストール時にnpmを通じて削除されるため、巻き上げられた依存関係が残らないこと。
-- 何も変更されていない場合のPlugin更新が安定していること。インストール記録、解決済みソース、インストール済み依存関係のレイアウト、有効化状態がそのまま維持されること。
+- パッケージ tarball が完全で、有効な `dist/postinstall-inventory.json` を持ち、
+  展開されていないリポジトリファイルに依存しないこと。
+- ユーザーが、古い公開済みパッケージから候補パッケージへ移行しても、
+  config、agents、sessions、workspaces、Plugin allowlists、channel config を失わないこと。
+- `openclaw doctor --fix --non-interactive` がレガシーのクリーンアップと修復
+  パスを所有すること。起動処理に、古い Plugin 状態向けの隠れた互換性マイグレーションを増やすべきではありません。
+- Plugin のインストールが、ローカルディレクトリ、git リポジトリ、npm パッケージ、
+  ClawHub レジストリパスから動作すること。
+- Plugin の npm 依存関係が管理対象 npm ルートにインストールされ、信頼前にスキャンされ、
+  アンインストール時に npm 経由で削除されることで、hoist された依存関係が残らないこと。
+- 何も変更されていない場合の Plugin 更新が安定していること。インストール記録、解決済み
+  ソース、インストール済み依存関係レイアウト、有効状態が維持されます。
 
 ## 開発中のローカル証明
 
-狭い範囲から始めます。
+まずは狭く始めます。
 
 ```bash
 pnpm changed:lanes --json
@@ -40,25 +50,31 @@ pnpm check:changed
 pnpm test:changed
 ```
 
-Pluginのインストール、アンインストール、依存関係、またはパッケージインベントリを変更する場合は、編集した接点をカバーする集中的なテストも実行します。
+Plugin のインストール、アンインストール、依存関係、またはパッケージインベントリを変更した場合は、
+編集した接点をカバーする集中テストも実行します。
 
 ```bash
 pnpm test src/plugins/uninstall.test.ts src/infra/package-dist-inventory.test.ts test/scripts/package-acceptance-workflow.test.ts
 ```
 
-パッケージDockerレーンがtarballを消費する前に、パッケージ成果物を証明します。
+パッケージ Docker レーンが tarball を消費する前に、パッケージ成果物を証明します。
 
 ```bash
 pnpm release:check
 ```
 
-`release:check` は設定/ドキュメント/APIのドリフトチェックを実行し、パッケージdistインベントリを書き込み、`npm pack --dry-run` を実行し、パックが禁止されたファイルを拒否し、tarballを一時プレフィックスへインストールし、postinstallを実行し、バンドルされたチャンネルエントリポイントをスモークします。
+`release:check` は config/docs/API drift チェックを実行し、package dist
+inventory を書き込み、`npm pack --dry-run` を実行し、禁止された packed files を拒否し、
+tarball を一時 prefix にインストールし、postinstall を実行し、バンドル済み channel
+entrypoints を smoke します。
 
-## Dockerレーン
+## Docker レーン
 
-Dockerレーンは製品レベルの証明です。Linuxコンテナ内で実際のパッケージをインストールまたは更新し、CLIコマンド、Gateway起動、HTTPプローブ、RPCステータス、ファイルシステム状態を通じて動作を検証します。
+Docker レーンは製品レベルの証明です。Linux コンテナ内で実際の
+パッケージをインストールまたは更新し、CLI コマンド、Gateway 起動、HTTP probes、
+RPC status、ファイルシステム状態を通じて挙動を検証します。
 
-反復中は集中的なレーンを使います。
+反復中は集中レーンを使用します。
 
 ```bash
 pnpm test:docker:plugins
@@ -66,19 +82,40 @@ pnpm test:docker:plugin-lifecycle-matrix
 pnpm test:docker:plugin-update
 pnpm test:docker:upgrade-survivor
 pnpm test:docker:published-upgrade-survivor
+pnpm test:docker:update-restart-auth
 pnpm test:docker:update-migration
 ```
 
 重要なレーン:
 
-- `test:docker:plugins` は、Pluginインストールスモーク、ローカルフォルダーインストール、ローカルフォルダー更新のスキップ動作、事前インストール済み依存関係を持つローカルフォルダー、`file:` パッケージインストール、CLI実行を伴うgitインストール、gitの移動参照更新、巻き上げられた推移的依存関係を伴うnpmレジストリインストール、npm更新のno-op、ローカルClawHubフィクスチャのインストールと更新no-op、マーケットプレイス更新動作、Claudeバンドルの有効化/検査を検証します。ClawHubブロックを密閉/オフラインに保つには、`OPENCLAW_PLUGINS_E2E_CLAWHUB=0` を設定します。
-- `test:docker:plugin-lifecycle-matrix` は、素のコンテナに候補パッケージをインストールし、npm Pluginに対してインストール、検査、無効化、有効化、明示的アップグレード、明示的ダウングレード、Pluginコード削除後のアンインストールを実行します。各フェーズのRSSとCPUメトリクスをログに記録します。
-- `test:docker:plugin-update` は、変更されていないインストール済みPluginが `openclaw plugins update` 中に再インストールされたりインストールメタデータを失ったりしないことを検証します。
-- `test:docker:upgrade-survivor` は、候補tarballを汚れた古いユーザーフィクスチャの上にインストールし、パッケージ更新と非対話doctorを実行してから、loopback Gatewayを起動して状態保持を確認します。
-- `test:docker:published-upgrade-survivor` は、まず公開済みベースラインをインストールし、焼き込まれた `openclaw config set` レシピで設定し、候補tarballへ更新し、doctorを実行し、レガシークリーンアップを確認し、Gatewayを起動して `/healthz`、`/readyz`、RPCステータスをプローブします。
-- `test:docker:update-migration` は、クリーンアップ量の多い公開済み更新レーンです。設定済みのDiscord/Telegram風ユーザー状態から開始し、設定済みPlugin依存関係が実体化する機会を得るためにベースラインdoctorを実行し、設定済みパッケージ化Plugin向けにレガシーPlugin依存関係の残骸をシードし、候補tarballへ更新し、更新後doctorがレガシー依存関係ルートを削除することを要求します。
+- `test:docker:plugins` は、Plugin install smoke、ローカルフォルダーインストール、
+  ローカルフォルダー更新のスキップ挙動、依存関係が事前インストールされたローカルフォルダー、
+  `file:` パッケージインストール、CLI 実行を伴う git インストール、git
+  moving-ref 更新、hoist された推移的依存関係を伴う npm レジストリインストール、
+  npm update no-op、ローカル ClawHub fixture インストールと update no-op、
+  marketplace 更新挙動、Claude-bundle enable/inspect を検証します。
+  ClawHub ブロックを hermetic/offline に保つには `OPENCLAW_PLUGINS_E2E_CLAWHUB=0` を設定します。
+- `test:docker:plugin-lifecycle-matrix` は、bare
+  コンテナに候補パッケージをインストールし、npm Plugin を install、inspect、disable、enable、
+  explicit upgrade、explicit downgrade、Plugin コード削除後の uninstall まで実行します。
+  各フェーズの RSS と CPU metrics をログに記録します。
+- `test:docker:plugin-update` は、変更のないインストール済み Plugin が
+  `openclaw plugins update` 中に再インストールされたり、インストールメタデータを失ったりしないことを検証します。
+- `test:docker:upgrade-survivor` は、dirty
+  old-user fixture の上に候補 tarball をインストールし、パッケージ更新と non-interactive doctor を実行してから、
+  loopback Gateway を起動し、状態の保持を確認します。
+- `test:docker:published-upgrade-survivor` は、まず公開済みベースラインをインストールし、
+  焼き込まれた `openclaw config set` レシピで構成し、候補 tarball に更新し、doctor を実行し、
+  レガシークリーンアップを確認し、Gateway を起動し、`/healthz`、`/readyz`、RPC status を probe します。
+- `test:docker:update-restart-auth` は、候補パッケージをインストールし、
+  管理対象の token-auth Gateway を起動し、`openclaw update --yes --json` のために呼び出し元の gateway auth env を解除し、
+  通常の probe の前に、候補 update コマンドが Gateway を再起動することを要求します。
+- `test:docker:update-migration` は、クリーンアップが多い published-update レーンです。
+  構成済みの Discord/Telegram 風ユーザー状態から開始し、構成済み Plugin 依存関係が実体化する機会を得られるよう baseline
+  doctor を実行し、構成済み packaged Plugin 向けにレガシー Plugin dependency debris を seed し、
+  候補 tarball に更新し、post-update doctor がレガシー依存関係ルートを削除することを要求します。
 
-有用な公開済みアップグレード生存者バリアント:
+便利な published-upgrade survivor バリアント:
 
 ```bash
 OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPEC=openclaw@2026.4.23 \
@@ -90,9 +127,13 @@ OPENCLAW_UPGRADE_SURVIVOR_SCENARIO=bootstrap-persona \
 pnpm test:docker:published-upgrade-survivor
 ```
 
-利用可能なシナリオは、`base`、`feishu-channel`、`bootstrap-persona`、`plugin-deps-cleanup`、`configured-plugin-installs`、`stale-source-plugin-shadow`、`tilde-log-path`、`versioned-runtime-deps` です。集約実行では、`OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS=reported-issues` が、設定済みPluginインストールマイグレーションを含む、報告済みIssue形状のすべてのシナリオに展開されます。
+利用可能なシナリオは `base`、`feishu-channel`、`bootstrap-persona`、
+`plugin-deps-cleanup`、`configured-plugin-installs`、
+`stale-source-plugin-shadow`、`tilde-log-path`、`versioned-runtime-deps` です。集約実行では、
+`OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS=reported-issues` が、構成済み Plugin install migration を含む、報告済み issue 形状の全シナリオに展開されます。
 
-完全な更新マイグレーションは、Full Release CIから意図的に分離されています。リリース上の問いが「2026.4.23以降のすべての公開済み安定リリースがこの候補へ更新でき、Plugin依存関係の残骸をクリーンアップできるか」である場合は、手動の `Update Migration` ワークフローを使います。
+Full update migration は、Full Release CI から意図的に分離されています。リリース上の問いが「2026.4.23 以降のすべての公開済み stable release がこの候補へ更新でき、
+Plugin dependency debris をクリーンアップできるか」である場合は、手動の `Update Migration` workflow を使用します。
 
 ```bash
 gh workflow run update-migration.yml \
@@ -103,26 +144,32 @@ gh workflow run update-migration.yml \
   -f scenarios=plugin-deps-cleanup
 ```
 
-## パッケージ受け入れ
+## Package Acceptance
 
-パッケージ受け入れは、GitHubネイティブのパッケージゲートです。1つの候補パッケージを `package-under-test` tarballに解決し、バージョンとSHA-256を記録してから、その正確なtarballに対して再利用可能なDocker E2Eレーンを実行します。ワークフローハーネスrefはパッケージソースrefとは別なので、現在のテストロジックで古い信頼済みリリースを検証できます。
+Package Acceptance は GitHub ネイティブのパッケージゲートです。1 つの候補
+パッケージを `package-under-test` tarball に解決し、version と SHA-256 を記録してから、
+その正確な tarball に対して再利用可能な Docker E2E レーンを実行します。workflow harness
+ref は package source ref から分離されているため、現在のテストロジックで古い信頼済みリリースを検証できます。
 
 候補ソース:
 
-- `source=npm`: `openclaw@beta`、`openclaw@latest`、または正確な公開済みバージョンを検証します。
-- `source=ref`: 選択された現在のハーネスで、信頼済みブランチ、タグ、またはコミットをパックします。
-- `source=url`: 必須の `package_sha256` を持つHTTPS tarballを検証します。
-- `source=artifact`: 別のActions実行でアップロードされたtarballを再利用します。
+- `source=npm`: `openclaw@beta`、`openclaw@latest`、または正確な
+  公開済みバージョンを検証します。
+- `source=ref`: 選択された現在の harness で、信頼済み branch、tag、または commit を pack します。
+- `source=url`: 必須の `package_sha256` を伴う HTTPS tarball を検証します。
+- `source=artifact`: 別の Actions run によってアップロードされた tarball を再利用します。
 
-Full Release Validationは、解決済みリリースSHAから構築された `source=artifact` をデフォルトで使います。公開後の証明では、同じアップグレードマトリクスが出荷済みnpmパッケージを対象にするように、`package_acceptance_package_spec=openclaw@YYYY.M.D` を渡します。
+Full Release Validation は、デフォルトで `source=artifact` を使用し、
+解決済みリリース SHA から構築されます。公開後の証明では、
+`package_acceptance_package_spec=openclaw@YYYY.M.D` を渡し、同じ upgrade matrix が出荷済み npm パッケージを対象にするようにします。
 
-リリースチェックは、パッケージ/更新/Pluginセットでパッケージ受け入れを呼び出します。
+Release checks は、package/update/restart/plugin セットで Package Acceptance を呼び出します。
 
 ```text
-doctor-switch update-channel-switch upgrade-survivor published-upgrade-survivor plugins-offline plugin-update
+doctor-switch update-channel-switch upgrade-survivor published-upgrade-survivor update-restart-auth plugins-offline plugin-update
 ```
 
-リリースソークが有効な場合は、次も渡します。
+release soak が有効な場合は、次も渡します。
 
 ```text
 published_upgrade_survivor_baselines=last-stable-4 2026.4.23 2026.5.2 2026.4.15
@@ -130,13 +177,26 @@ published_upgrade_survivor_scenarios=reported-issues
 telegram_mode=mock-openai
 ```
 
-これにより、デフォルトのリリースパッケージゲートで全公開済みリリースを辿ることなく、パッケージマイグレーション、更新チャンネル切り替え、古いPlugin依存関係クリーンアップ、オフラインPluginカバレッジ、Plugin更新動作、TelegramパッケージQAを、同じ解決済み成果物上に保てます。
+これにより、package migration、update channel switching、古い Plugin dependency
+cleanup、offline Plugin coverage、Plugin update behavior、Telegram package
+QA が同じ解決済み成果物上に保たれ、デフォルトのリリースパッケージゲートが
+すべての公開済みリリースを巡回することはありません。
 
-`last-stable-4` は、npmに公開された最新4つの安定版OpenClawリリースへ解決されます。リリースパッケージ受け入れでは、`2026.4.23` を最初のPlugin更新互換性境界、`2026.5.2` をPluginアーキテクチャ変動境界、`2026.4.15` を古い2026.4.1x公開済み更新ベースラインとして固定します。リゾルバーは、すでに最新4件に含まれるピンを重複排除します。公開済み更新マイグレーションを網羅的にカバーするには、Full Release CIではなく、分離されたUpdate Migrationワークフローで `all-since-2026.4.23` を使います。レガシーな基準日前アンカーも含めてより広く手動サンプリングしたい場合のために、`release-history` も引き続き利用できます。
+`last-stable-4` は、npm に公開された最新 4 つの stable OpenClaw
+release に解決されます。Release package acceptance は、`2026.4.23` を最初の Plugin-update
+互換性境界として、`2026.5.2` を Plugin-architecture churn 境界として、
+`2026.4.15` を古い 2026.4.1x published-update baseline として pin します。resolver は、
+最新 4 件にすでに含まれる pin を重複排除します。包括的な published
+update migration coverage には、Full Release CI ではなく、別個の Update
+Migration workflow で `all-since-2026.4.23` を使用します。legacy pre-date
+anchor も含めたより広い手動サンプリングが必要な場合は、`release-history` も引き続き利用できます。
 
-複数の公開済みアップグレード生存者ベースラインが選択されている場合、再利用可能なDockerワークフローは各ベースラインをそれぞれ専用のランナージョブへシャードします。各ベースラインシャードは選択されたシナリオセットを引き続き実行しますが、ログと成果物はベースラインごとに保持され、実行時間は1つの大きな直列ジョブではなく最も遅いシャードによって制限されます。
+複数の published-upgrade survivor baseline が選択されている場合、再利用可能な
+Docker workflow は各 baseline を専用 runner job に shard します。各
+baseline shard は選択された scenario set を引き続き実行しますが、logs と artifacts は
+baseline ごとに分かれ、wall time は 1 つの大きな serial job ではなく最も遅い shard によって制限されます。
 
-リリース前に候補を検証するときは、パッケージプロファイルを手動で実行します。
+リリース前に候補を検証する場合は、package profile を手動実行します。
 
 ```bash
 gh workflow run package-acceptance.yml \
@@ -150,49 +210,68 @@ gh workflow run package-acceptance.yml \
   -f telegram_mode=mock-openai
 ```
 
-リリース上の問いにMCPチャンネル、Cron/サブエージェントのクリーンアップ、OpenAIウェブ検索、またはOpenWebUIが含まれる場合は、`suite_profile=product` を使います。完全なDockerリリースパスのカバレッジが必要な場合にのみ、`suite_profile=full` を使います。
+リリース上の問いに MCP channels、cron/subagent cleanup、OpenAI web search、または OpenWebUI が含まれる場合は、`suite_profile=product` を使用します。完全な Docker release-path coverage が必要な場合にのみ、`suite_profile=full` を使用します。
 
 ## リリースのデフォルト
 
 リリース候補では、デフォルトの証明スタックは次のとおりです。
 
-1. ソースレベルのリグレッション用の `pnpm check:changed` と `pnpm test:changed`。
-2. パッケージ成果物の整合性用の `pnpm release:check`。
-3. インストール/更新/Plugin契約用のパッケージ受け入れ `package` プロファイルまたはリリースチェックのカスタムパッケージレーン。
-4. OS固有のインストーラー、オンボーディング、プラットフォーム動作用のクロスOSリリースチェック。
-5. 変更された面がプロバイダーまたはホステッドサービスの動作に触れる場合のみ、ライブスイート。
+1. ソースレベルの回帰向けに `pnpm check:changed` と `pnpm test:changed`。
+2. パッケージ成果物の整合性向けに `pnpm release:check`。
+3. install/update/restart/plugin 契約向けに Package Acceptance `package` profile、または release-check custom package
+   lanes。
+4. OS 固有の installer、オンボーディング、platform
+   behavior 向けに Cross-OS release checks。
+5. 変更面が provider または hosted-service
+   behavior に触れる場合のみ、live suites。
 
-メンテナーのマシンでは、明示的にローカル証明を行う場合を除き、広範なゲートとDocker/パッケージの製品証明はTestboxで実行するべきです。
+メンテナーマシンでは、明示的にローカル証明を行う場合を除き、広範なゲートと Docker/package product proof は
+Testbox で実行するべきです。
 
 ## レガシー互換性
 
-互換性の寛容さは狭く、期限付きです。
+互換性の緩和は狭く、期限付きです。
 
-- `2026.4.25` までのパッケージ（`2026.4.25-beta.*` を含む）は、パッケージ受け入れにおいて、すでに出荷済みのパッケージメタデータ欠落を許容できます。
-- 公開済みの `2026.4.26` パッケージは、すでに出荷済みのローカルビルドメタデータスタンプファイルに対して警告できます。
-- それ以降のパッケージは現代的な契約を満たす必要があります。同じ欠落は、警告やスキップではなく失敗になります。
+- `2026.4.25` までのパッケージ（`2026.4.25-beta.*` を含む）は、
+  Package Acceptance で、すでに出荷済みの package metadata gaps を許容できます。
+- 公開済みの `2026.4.26` パッケージは、すでに出荷済みの local build metadata stamp
+  files について警告してもかまいません。
+- それ以降のパッケージは現代の契約を満たす必要があります。同じ gaps は
+  警告やスキップではなく失敗になります。
 
-これらの古い形状に対して新しい起動時マイグレーションを追加しないでください。doctor修復を追加または拡張し、`upgrade-survivor` または `published-upgrade-survivor` で証明してください。
+これらの古い形状向けに新しい起動時マイグレーションを追加しないでください。doctor
+repair を追加または拡張し、更新コマンドが再起動を所有する場合は `upgrade-survivor`、`published-upgrade-survivor`、または
+`update-restart-auth` で証明します。
 
 ## カバレッジの追加
 
-更新またはPluginの動作を変更するときは、正しい理由で失敗できる最も低いレイヤーにカバレッジを追加します。
+更新または Plugin の挙動を変更する場合は、正しい理由で失敗できる最下層にカバレッジを追加します。
 
-- 純粋なパスまたはメタデータロジック: ソースの横に単体テスト。
-- パッケージインベントリまたはパック済みファイルの動作: `package-dist-inventory` またはtarballチェッカーテスト。
-- CLIインストール/更新動作: Dockerレーンのアサーションまたはフィクスチャ。
-- 公開済みリリースのマイグレーション動作: `published-upgrade-survivor` シナリオ。
-- レジストリ/パッケージソースの動作: `test:docker:plugins` フィクスチャまたはClawHubフィクスチャサーバー。
-- 依存関係レイアウトまたはクリーンアップ動作: ランタイム実行とファイルシステム境界の両方を検証します。npm依存関係は管理対象のnpmルートの下に巻き上げられる可能性があるため、テストではパッケージローカルの `node_modules` ツリーを仮定するのではなく、ルートがスキャン/クリーンアップされることを証明するべきです。
+- Pure path または metadata logic: ソースの隣の unit test。
+- Package inventory または packed-file behavior: `package-dist-inventory` または tarball
+  checker test。
+- CLI install/update behavior: Docker lane assertion または fixture。
+- Published-release migration behavior: `published-upgrade-survivor` scenario。
+- Update-owned restart behavior: `update-restart-auth`。
+- Registry/package source behavior: `test:docker:plugins` fixture または ClawHub
+  fixture server。
+- Dependency layout または cleanup behavior: runtime execution と
+  filesystem boundary の両方をアサートします。npm dependencies は managed npm
+  root 配下に hoist される場合があるため、tests は package-local の `node_modules` tree を仮定するのではなく、root が scan/clean されることを証明するべきです。
 
-新しいDockerフィクスチャはデフォルトで密閉した状態に保ちます。テストの目的がライブレジストリ動作でない限り、ローカルフィクスチャレジストリと偽パッケージを使います。
+新しい Docker fixtures はデフォルトで hermetic に保ちます。テストの目的が live registry behavior でない限り、
+ローカル fixture registries と fake packages を使用します。
 
 ## 失敗のトリアージ
 
-成果物の同一性から始めます。
+まず artifact identity から始めます。
 
-- パッケージ受け入れの `resolve_package` サマリー: ソース、バージョン、SHA-256、成果物名。
-- Docker成果物: `.artifacts/docker-tests/**/summary.json`、`failures.json`、レーンログ、再実行コマンド。
-- アップグレード生存者サマリー: `.artifacts/upgrade-survivor/summary.json`。ベースラインバージョン、候補バージョン、シナリオ、フェーズタイミング、レシピ手順を含みます。
+- パッケージ受け入れ `resolve_package` の概要: ソース、バージョン、SHA-256、および
+  アーティファクト名。
+- Docker アーティファクト: `.artifacts/docker-tests/**/summary.json`、
+  `failures.json`、レーンログ、および再実行コマンド。
+- アップグレードサバイバーの概要: `.artifacts/upgrade-survivor/summary.json`、
+  ベースラインバージョン、候補バージョン、シナリオ、フェーズタイミング、および
+  レシピ手順を含む。
 
-リリース全体の傘を再実行するよりも、同じパッケージ成果物で失敗した正確なレーンを再実行することを優先します。
+リリース全体のアンブレラを再実行するよりも、同じパッケージアーティファクトで失敗した正確なレーンを再実行することを優先してください。
