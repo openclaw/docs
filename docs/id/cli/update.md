@@ -1,15 +1,15 @@
 ---
 read_when:
     - Anda ingin memperbarui checkout kode sumber dengan aman
-    - Anda sedang menelusuri galat pada keluaran atau opsi `openclaw update`
+    - Anda sedang menelusuri kesalahan pada keluaran atau opsi `openclaw update`
     - Anda perlu memahami perilaku singkatan `--update`
 summary: Referensi CLI untuk `openclaw update` (pembaruan sumber yang relatif aman + mulai ulang otomatis Gateway)
 title: Perbarui
 x-i18n:
-    generated_at: "2026-05-03T21:29:37Z"
+    generated_at: "2026-05-05T01:45:03Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 53ec06b8db5e2aba4000922f92a36834e8782986a77f6b5889bb19031a59f1b8
+    source_hash: b12b1837ae80a3688fb7805d78d5a354f07dccdaba175cfa429e18145e543a1f
     source_path: cli/update.md
     workflow: 16
 ---
@@ -18,8 +18,8 @@ x-i18n:
 
 Perbarui OpenClaw dengan aman dan beralih antara kanal stable/beta/dev.
 
-Jika Anda memasang melalui **npm/pnpm/bun** (instalasi global, tanpa metadata git),
-pembaruan dilakukan melalui alur manajer paket di [Memperbarui](/id/install/updating).
+Jika Anda menginstal melalui **npm/pnpm/bun** (instalasi global, tanpa metadata git),
+pembaruan dilakukan melalui alur pengelola paket di [Memperbarui](/id/install/updating).
 
 ## Penggunaan
 
@@ -40,31 +40,31 @@ openclaw --update
 
 ## Opsi
 
-- `--no-restart`: lewati memulai ulang layanan Gateway setelah pembaruan berhasil. Pembaruan manajer paket yang memulai ulang Gateway memverifikasi bahwa layanan yang dimulai ulang melaporkan versi terbaru yang diharapkan sebelum perintah berhasil.
+- `--no-restart`: lewati pemulaian ulang layanan Gateway setelah pembaruan berhasil. Pembaruan pengelola paket yang memang memulai ulang Gateway memverifikasi bahwa layanan yang dimulai ulang melaporkan versi terbaru yang diharapkan sebelum perintah berhasil.
 - `--channel <stable|beta|dev>`: atur kanal pembaruan (git + npm; disimpan dalam konfigurasi).
 - `--tag <dist-tag|version|spec>`: timpa target paket hanya untuk pembaruan ini. Untuk instalasi paket, `main` dipetakan ke `github:openclaw/openclaw#main`.
-- `--dry-run`: pratinjau tindakan pembaruan yang direncanakan (alur kanal/tag/target/mulai ulang) tanpa menulis konfigurasi, memasang, menyinkronkan plugin, atau memulai ulang.
+- `--dry-run`: pratinjau tindakan pembaruan yang direncanakan (alur kanal/tag/target/mulai ulang) tanpa menulis konfigurasi, menginstal, menyinkronkan Plugin, atau memulai ulang.
 - `--json`: cetak JSON `UpdateRunResult` yang dapat dibaca mesin, termasuk
-  `postUpdate.plugins.integrityDrifts` saat drift artefak plugin npm
-  terdeteksi selama sinkronisasi plugin pascapembaruan.
+  `postUpdate.plugins.integrityDrifts` saat drift artefak Plugin npm
+  terdeteksi selama sinkronisasi Plugin pascapembaruan.
 - `--timeout <seconds>`: batas waktu per langkah (default 1800 dtk).
 - `--yes`: lewati prompt konfirmasi (misalnya konfirmasi downgrade).
 
 `openclaw update` tidak memiliki flag `--verbose`. Gunakan `--dry-run` untuk mempratinjau
-tindakan kanal/tag/instal/mulai ulang yang direncanakan, `--json` untuk hasil
-yang dapat dibaca mesin, dan `openclaw update status --json` saat Anda hanya memerlukan detail
-kanal dan ketersediaan. Jika Anda men-debug log Gateway di sekitar pembaruan,
-verbositas konsol dan level log file terpisah: Gateway `--verbose` memengaruhi
-keluaran terminal/WebSocket, sementara log file memerlukan `logging.level: "debug"` atau
+tindakan kanal/tag/instal/mulai ulang yang direncanakan, `--json` untuk hasil yang
+dapat dibaca mesin, dan `openclaw update status --json` saat Anda hanya membutuhkan
+detail kanal dan ketersediaan. Jika Anda men-debug log Gateway di sekitar pembaruan,
+verbositas konsol dan level log file terpisah: `--verbose` Gateway memengaruhi
+keluaran terminal/WebSocket, sedangkan log file memerlukan `logging.level: "debug"` atau
 `"trace"` dalam konfigurasi. Lihat [logging Gateway](/id/gateway/logging).
 
 <Warning>
-Downgrade memerlukan konfirmasi karena versi lama dapat merusak konfigurasi.
+Downgrade memerlukan konfirmasi karena versi yang lebih lama dapat merusak konfigurasi.
 </Warning>
 
 ## `update status`
 
-Tampilkan kanal pembaruan aktif + tag/branch/SHA git (untuk checkout sumber), serta ketersediaan pembaruan.
+Tampilkan kanal pembaruan aktif + tag/cabang/SHA git (untuk checkout sumber), ditambah ketersediaan pembaruan.
 
 ```bash
 openclaw update status
@@ -80,7 +80,7 @@ Opsi:
 ## `update wizard`
 
 Alur interaktif untuk memilih kanal pembaruan dan mengonfirmasi apakah akan memulai ulang Gateway
-setelah pembaruan (default-nya memulai ulang). Jika Anda memilih `dev` tanpa checkout git, alur ini
+setelah memperbarui (default-nya adalah memulai ulang). Jika Anda memilih `dev` tanpa checkout git, alur ini
 menawarkan untuk membuatnya.
 
 Opsi:
@@ -93,62 +93,62 @@ Saat Anda beralih kanal secara eksplisit (`--channel ...`), OpenClaw juga menjag
 metode instalasi tetap selaras:
 
 - `dev` → memastikan checkout git (default: `~/openclaw`, timpa dengan `OPENCLAW_GIT_DIR`),
-  memperbaruinya, dan memasang CLI global dari checkout tersebut.
-- `stable` → memasang dari npm menggunakan `latest`.
-- `beta` → memprioritaskan dist-tag npm `beta`, tetapi fallback ke `latest` saat beta
-  tidak ada atau lebih lama daripada rilis stable saat ini.
+  memperbaruinya, dan menginstal CLI global dari checkout tersebut.
+- `stable` → menginstal dari npm menggunakan `latest`.
+- `beta` → mengutamakan dist-tag npm `beta`, tetapi mundur ke `latest` saat beta
+  tidak ada atau lebih lama dari rilis stable saat ini.
 
 Pembaruan otomatis inti Gateway (saat diaktifkan melalui konfigurasi) meluncurkan jalur pembaruan CLI
-di luar handler permintaan Gateway yang sedang aktif. Pembaruan manajer paket control-plane `update.run`
-memaksa mulai ulang pembaruan yang tidak ditunda dan tanpa cooldown setelah penggantian paket,
+di luar handler permintaan Gateway yang sedang berjalan. Pembaruan pengelola paket
+`update.run` pada control plane memaksa pemulaian ulang pembaruan tanpa penundaan dan tanpa cooldown setelah penukaran paket,
 karena proses Gateway lama mungkin masih memiliki chunk dalam memori yang menunjuk ke
 file yang dihapus oleh paket baru.
 
-Untuk instalasi manajer paket, `openclaw update` menyelesaikan versi paket target
-sebelum memanggil manajer paket. Instalasi global npm menggunakan instalasi bertahap:
-OpenClaw memasang paket baru ke prefix npm sementara, memverifikasi inventaris
-`dist` yang dipaketkan di sana, lalu menukar pohon paket bersih itu ke prefix
-global asli. Jika verifikasi gagal, doctor pascapembaruan, sinkronisasi plugin, dan
-pekerjaan mulai ulang tidak dijalankan dari pohon yang dicurigai. Bahkan saat versi terpasang
-sudah cocok dengan target, perintah ini menyegarkan instalasi paket global,
-lalu menjalankan sinkronisasi plugin, penyegaran penyelesaian perintah inti, dan pekerjaan mulai ulang. Ini
-menjaga sidecar terpaketkan dan catatan plugin milik kanal tetap selaras dengan
-build OpenClaw yang terpasang sambil menyerahkan pembangunan ulang penyelesaian perintah plugin penuh ke
-eksekusi `openclaw completion --write-state` eksplisit.
+Untuk instalasi pengelola paket, `openclaw update` menyelesaikan versi paket target
+sebelum menjalankan pengelola paket. Instalasi global npm menggunakan instalasi bertahap:
+OpenClaw menginstal paket baru ke prefiks npm sementara, memverifikasi inventaris
+`dist` yang dipaketkan di sana, lalu menukar pohon paket bersih itu ke
+prefiks global sebenarnya. Jika verifikasi gagal, doctor pascapembaruan, sinkronisasi Plugin, dan
+pekerjaan mulai ulang tidak dijalankan dari pohon yang dicurigai. Bahkan saat versi terinstal
+sudah cocok dengan target, perintah menyegarkan instalasi paket global,
+lalu menjalankan sinkronisasi Plugin, penyegaran penyelesaian perintah inti, dan pekerjaan mulai ulang. Ini
+menjaga sidecar yang dipaketkan dan catatan Plugin milik kanal tetap selaras dengan
+build OpenClaw yang terinstal sambil menyerahkan pembuatan ulang penyelesaian perintah Plugin penuh ke
+pemanggilan eksplisit `openclaw completion --write-state`.
 
-Saat layanan Gateway terkelola lokal terpasang dan mulai ulang diaktifkan,
-pembaruan manajer paket menghentikan layanan yang berjalan sebelum mengganti pohon paket,
+Saat layanan Gateway terkelola lokal terinstal dan mulai ulang diaktifkan,
+pembaruan pengelola paket menghentikan layanan yang berjalan sebelum mengganti pohon paket,
 lalu menyegarkan metadata layanan dari instalasi yang diperbarui, memulai ulang
 layanan, dan memverifikasi Gateway yang dimulai ulang melaporkan versi yang diharapkan sebelum
-melaporkan keberhasilan. Di macOS, pemeriksaan pascapembaruan juga memverifikasi LaunchAgent
+melaporkan keberhasilan. Di macOS, pemeriksaan pascapembaruan juga memverifikasi bahwa LaunchAgent
 dimuat/berjalan untuk profil aktif dan port loopback yang dikonfigurasi
-sehat. Jika plist terpasang tetapi launchd tidak mengawasinya, OpenClaw
-mem-bootstrap ulang LaunchAgent secara otomatis, lalu menjalankan ulang
+sehat. Jika plist terinstal tetapi launchd tidak mengawasinya, OpenClaw
+melakukan bootstrap ulang LaunchAgent secara otomatis, lalu menjalankan ulang
 pemeriksaan kesiapan kesehatan/versi/kanal. Bootstrap baru memuat job RunAtLoad
-secara langsung, sehingga pemulihan pembaruan tidak langsung `kickstart -k` Gateway
+secara langsung, sehingga pemulihan pembaruan tidak segera menjalankan `kickstart -k` pada Gateway
 yang baru dibuat. Jika Gateway tetap tidak menjadi sehat, perintah keluar
-non-zero dan mencetak path log mulai ulang plus instruksi mulai ulang, instal ulang, dan
-rollback paket yang eksplisit. Dengan `--no-restart`,
+dengan non-zero dan mencetak jalur log mulai ulang serta instruksi mulai ulang, instal ulang, dan
+rollback paket secara eksplisit. Dengan `--no-restart`,
 penggantian paket tetap berjalan tetapi layanan terkelola tidak dihentikan atau
-dimulai ulang, sehingga Gateway yang sedang berjalan mungkin tetap memakai kode lama sampai Anda memulai ulang
+dimulai ulang, sehingga Gateway yang berjalan mungkin tetap menggunakan kode lama sampai Anda memulai ulang
 secara manual.
 
-## Alur checkout git
+## Alur checkout Git
 
 ### Pemilihan kanal
 
 - `stable`: checkout tag non-beta terbaru, lalu build dan doctor.
-- `beta`: prioritaskan tag `-beta` terbaru, tetapi fallback ke tag stable terbaru saat beta tidak ada atau lebih lama.
+- `beta`: utamakan tag `-beta` terbaru, tetapi mundur ke tag stable terbaru saat beta tidak ada atau lebih lama.
 - `dev`: checkout `main`, lalu fetch dan rebase.
 
 ### Langkah pembaruan
 
 <Steps>
   <Step title="Verifikasi worktree bersih">
-    Mengharuskan tidak ada perubahan yang belum di-commit.
+    Memerlukan tidak ada perubahan yang belum di-commit.
   </Step>
   <Step title="Beralih kanal">
-    Beralih ke kanal yang dipilih (tag atau branch).
+    Beralih ke kanal yang dipilih (tag atau cabang).
   </Step>
   <Step title="Fetch upstream">
     Hanya dev.
@@ -159,44 +159,45 @@ secara manual.
   <Step title="Rebase">
     Melakukan rebase ke commit yang dipilih (hanya dev).
   </Step>
-  <Step title="Pasang dependensi">
-    Menggunakan manajer paket repo. Untuk checkout pnpm, updater mem-bootstrap `pnpm` sesuai kebutuhan (melalui `corepack` terlebih dahulu, lalu fallback `npm install pnpm@10` sementara) alih-alih menjalankan `npm run build` di dalam workspace pnpm.
+  <Step title="Instal dependensi">
+    Menggunakan pengelola paket repo. Untuk checkout pnpm, updater melakukan bootstrap `pnpm` sesuai kebutuhan (melalui `corepack` terlebih dahulu, lalu fallback `npm install pnpm@10` sementara) alih-alih menjalankan `npm run build` di dalam workspace pnpm.
   </Step>
   <Step title="Build Control UI">
-    Mem-build gateway dan Control UI.
+    Membangun gateway dan Control UI.
   </Step>
   <Step title="Jalankan doctor">
     `openclaw doctor` berjalan sebagai pemeriksaan pembaruan aman terakhir.
   </Step>
-  <Step title="Sinkronkan plugin">
-    Menyinkronkan plugin ke kanal aktif. Dev menggunakan plugin bawaan; stable dan beta menggunakan npm. Memperbarui instalasi plugin yang dilacak.
+  <Step title="Sinkronkan Plugin">
+    Menyinkronkan Plugin ke kanal aktif. Dev menggunakan Plugin bawaan; stable dan beta menggunakan npm. Memperbarui instalasi Plugin yang dilacak.
   </Step>
 </Steps>
 
-Pada kanal pembaruan beta, instalasi plugin npm dan ClawHub yang dilacak yang mengikuti
-baris default/latest mencoba rilis plugin `@beta` terlebih dahulu. Jika plugin tidak memiliki
-rilis beta, OpenClaw fallback ke spesifikasi default/latest yang tercatat. Versi eksak
-dan tag eksplisit tidak ditulis ulang.
+Pada kanal pembaruan beta, instalasi Plugin npm dan ClawHub yang dilacak dan mengikuti
+jalur default/latest mencoba rilis Plugin `@beta` terlebih dahulu. Jika Plugin tidak memiliki
+rilis beta, OpenClaw mundur ke spesifikasi default/latest yang direkam. Untuk Plugin npm,
+OpenClaw juga mundur saat paket beta ada tetapi gagal validasi instalasi.
+Versi persis dan tag eksplisit tidak ditulis ulang.
 
 <Warning>
-Jika pembaruan plugin npm yang dipin secara eksak diselesaikan ke artefak yang integritasnya berbeda dari catatan instalasi tersimpan, `openclaw update` membatalkan pembaruan artefak plugin tersebut alih-alih memasangnya. Instal ulang atau perbarui plugin secara eksplisit hanya setelah memverifikasi bahwa Anda memercayai artefak baru tersebut.
+Jika pembaruan Plugin npm yang dipin secara persis diselesaikan ke artefak yang integritasnya berbeda dari catatan instalasi tersimpan, `openclaw update` membatalkan pembaruan artefak Plugin tersebut alih-alih menginstalnya. Instal ulang atau perbarui Plugin secara eksplisit hanya setelah memverifikasi bahwa Anda memercayai artefak baru tersebut.
 </Warning>
 
 <Note>
-Kegagalan sinkronisasi plugin pascapembaruan menggagalkan hasil pembaruan dan menghentikan pekerjaan lanjutan mulai ulang. Perbaiki kesalahan instalasi atau pembaruan plugin, lalu jalankan ulang `openclaw update`.
+Kegagalan sinkronisasi Plugin pascapembaruan menggagalkan hasil pembaruan dan menghentikan pekerjaan lanjutan mulai ulang. Perbaiki kesalahan instalasi atau pembaruan Plugin, lalu jalankan ulang `openclaw update`.
 
-Saat Gateway yang diperbarui dimulai, pemuatan plugin bersifat hanya verifikasi: startup tidak menjalankan manajer paket atau mengubah pohon dependensi. Mulai ulang `update.run` manajer paket melewati penundaan idle normal dan cooldown mulai ulang setelah pohon paket ditukar, sehingga proses lama tidak dapat terus lazy-load chunk yang telah dihapus.
+Saat Gateway yang diperbarui dimulai, pemuatan Plugin bersifat hanya verifikasi: startup tidak menjalankan pengelola paket atau mengubah pohon dependensi. Pemulaian ulang `update.run` pengelola paket melewati penundaan idle normal dan cooldown mulai ulang setelah pohon paket ditukar, sehingga proses lama tidak dapat terus memuat lambat chunk yang sudah dihapus.
 
-Jika bootstrap pnpm tetap gagal, updater berhenti lebih awal dengan kesalahan khusus manajer paket alih-alih mencoba `npm run build` di dalam checkout.
+Jika bootstrap pnpm tetap gagal, updater berhenti lebih awal dengan kesalahan khusus pengelola paket alih-alih mencoba `npm run build` di dalam checkout.
 </Note>
 
-## Singkatan `--update`
+## Pintasan `--update`
 
 `openclaw --update` ditulis ulang menjadi `openclaw update` (berguna untuk shell dan skrip launcher).
 
 ## Terkait
 
-- `openclaw doctor` (menawarkan untuk menjalankan update terlebih dahulu pada checkout git)
+- `openclaw doctor` (menawarkan menjalankan pembaruan terlebih dahulu pada checkout git)
 - [Kanal pengembangan](/id/install/development-channels)
 - [Memperbarui](/id/install/updating)
 - [Referensi CLI](/id/cli)
