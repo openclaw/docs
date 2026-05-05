@@ -102,7 +102,7 @@
     },
     {
       "source": "/tools/capability-cookbook",
-      "destination": "/plugins/architecture"
+      "destination": "/plugins/adding-capabilities"
     },
     {
       "source": "/brave-search",
@@ -1221,6 +1221,7 @@
                       "plugins/hooks",
                       "plugins/sdk-channel-plugins",
                       "plugins/sdk-provider-plugins",
+                      "plugins/adding-capabilities",
                       "plugins/compatibility",
                       "plugins/sdk-migration"
                     ]
@@ -1543,7 +1544,6 @@
                     "group": "Networking and discovery",
                     "pages": [
                       "network",
-                      "gateway/network-model",
                       "gateway/pairing",
                       "gateway/discovery",
                       "gateway/bonjour"
@@ -2711,6 +2711,7 @@
                       "zh-TW/plugins/hooks",
                       "zh-TW/plugins/sdk-channel-plugins",
                       "zh-TW/plugins/sdk-provider-plugins",
+                      "zh-TW/plugins/adding-capabilities",
                       "zh-TW/plugins/compatibility",
                       "zh-TW/plugins/sdk-migration"
                     ]
@@ -3033,7 +3034,6 @@
                     "group": "Networking and discovery",
                     "pages": [
                       "zh-TW/network",
-                      "zh-TW/gateway/network-model",
                       "zh-TW/gateway/pairing",
                       "zh-TW/gateway/discovery",
                       "zh-TW/gateway/bonjour"
@@ -3586,6 +3586,7 @@
                       "ja-JP/plugins/hooks",
                       "ja-JP/plugins/sdk-channel-plugins",
                       "ja-JP/plugins/sdk-provider-plugins",
+                      "ja-JP/plugins/adding-capabilities",
                       "ja-JP/plugins/compatibility",
                       "ja-JP/plugins/sdk-migration"
                     ]
@@ -3908,7 +3909,6 @@
                     "group": "Networking and discovery",
                     "pages": [
                       "ja-JP/network",
-                      "ja-JP/gateway/network-model",
                       "ja-JP/gateway/pairing",
                       "ja-JP/gateway/discovery",
                       "ja-JP/gateway/bonjour"
@@ -4461,6 +4461,7 @@
                       "es/plugins/hooks",
                       "es/plugins/sdk-channel-plugins",
                       "es/plugins/sdk-provider-plugins",
+                      "es/plugins/adding-capabilities",
                       "es/plugins/compatibility",
                       "es/plugins/sdk-migration"
                     ]
@@ -4783,7 +4784,6 @@
                     "group": "Networking and discovery",
                     "pages": [
                       "es/network",
-                      "es/gateway/network-model",
                       "es/gateway/pairing",
                       "es/gateway/discovery",
                       "es/gateway/bonjour"
@@ -5336,6 +5336,7 @@
                       "pt-BR/plugins/hooks",
                       "pt-BR/plugins/sdk-channel-plugins",
                       "pt-BR/plugins/sdk-provider-plugins",
+                      "pt-BR/plugins/adding-capabilities",
                       "pt-BR/plugins/compatibility",
                       "pt-BR/plugins/sdk-migration"
                     ]
@@ -5658,7 +5659,6 @@
                     "group": "Networking and discovery",
                     "pages": [
                       "pt-BR/network",
-                      "pt-BR/gateway/network-model",
                       "pt-BR/gateway/pairing",
                       "pt-BR/gateway/discovery",
                       "pt-BR/gateway/bonjour"
@@ -6211,6 +6211,7 @@
                       "ko/plugins/hooks",
                       "ko/plugins/sdk-channel-plugins",
                       "ko/plugins/sdk-provider-plugins",
+                      "ko/plugins/adding-capabilities",
                       "ko/plugins/compatibility",
                       "ko/plugins/sdk-migration"
                     ]
@@ -6533,7 +6534,6 @@
                     "group": "Networking and discovery",
                     "pages": [
                       "ko/network",
-                      "ko/gateway/network-model",
                       "ko/gateway/pairing",
                       "ko/gateway/discovery",
                       "ko/gateway/bonjour"
@@ -7086,6 +7086,7 @@
                       "de/plugins/hooks",
                       "de/plugins/sdk-channel-plugins",
                       "de/plugins/sdk-provider-plugins",
+                      "de/plugins/adding-capabilities",
                       "de/plugins/compatibility",
                       "de/plugins/sdk-migration"
                     ]
@@ -7408,7 +7409,6 @@
                     "group": "Networking and discovery",
                     "pages": [
                       "de/network",
-                      "de/gateway/network-model",
                       "de/gateway/pairing",
                       "de/gateway/discovery",
                       "de/gateway/bonjour"
@@ -7961,6 +7961,7 @@
                       "fr/plugins/hooks",
                       "fr/plugins/sdk-channel-plugins",
                       "fr/plugins/sdk-provider-plugins",
+                      "fr/plugins/adding-capabilities",
                       "fr/plugins/compatibility",
                       "fr/plugins/sdk-migration"
                     ]
@@ -8283,7 +8284,6 @@
                     "group": "Networking and discovery",
                     "pages": [
                       "fr/network",
-                      "fr/gateway/network-model",
                       "fr/gateway/pairing",
                       "fr/gateway/discovery",
                       "fr/gateway/bonjour"
@@ -8836,6 +8836,7 @@
                       "ar/plugins/hooks",
                       "ar/plugins/sdk-channel-plugins",
                       "ar/plugins/sdk-provider-plugins",
+                      "ar/plugins/adding-capabilities",
                       "ar/plugins/compatibility",
                       "ar/plugins/sdk-migration"
                     ]
@@ -9158,7 +9159,6 @@
                     "group": "Networking and discovery",
                     "pages": [
                       "ar/network",
-                      "ar/gateway/network-model",
                       "ar/gateway/pairing",
                       "ar/gateway/discovery",
                       "ar/gateway/bonjour"
@@ -9711,6 +9711,7 @@
                       "it/plugins/hooks",
                       "it/plugins/sdk-channel-plugins",
                       "it/plugins/sdk-provider-plugins",
+                      "it/plugins/adding-capabilities",
                       "it/plugins/compatibility",
                       "it/plugins/sdk-migration"
                     ]
@@ -10033,7 +10034,6 @@
                     "group": "Networking and discovery",
                     "pages": [
                       "it/network",
-                      "it/gateway/network-model",
                       "it/gateway/pairing",
                       "it/gateway/discovery",
                       "it/gateway/bonjour"
@@ -10586,6 +10586,7 @@
                       "vi/plugins/hooks",
                       "vi/plugins/sdk-channel-plugins",
                       "vi/plugins/sdk-provider-plugins",
+                      "vi/plugins/adding-capabilities",
                       "vi/plugins/compatibility",
                       "vi/plugins/sdk-migration"
                     ]
@@ -10908,7 +10909,6 @@
                     "group": "Networking and discovery",
                     "pages": [
                       "vi/network",
-                      "vi/gateway/network-model",
                       "vi/gateway/pairing",
                       "vi/gateway/discovery",
                       "vi/gateway/bonjour"
@@ -11461,6 +11461,7 @@
                       "nl/plugins/hooks",
                       "nl/plugins/sdk-channel-plugins",
                       "nl/plugins/sdk-provider-plugins",
+                      "nl/plugins/adding-capabilities",
                       "nl/plugins/compatibility",
                       "nl/plugins/sdk-migration"
                     ]
@@ -11783,7 +11784,6 @@
                     "group": "Networking and discovery",
                     "pages": [
                       "nl/network",
-                      "nl/gateway/network-model",
                       "nl/gateway/pairing",
                       "nl/gateway/discovery",
                       "nl/gateway/bonjour"
@@ -12336,6 +12336,7 @@
                       "tr/plugins/hooks",
                       "tr/plugins/sdk-channel-plugins",
                       "tr/plugins/sdk-provider-plugins",
+                      "tr/plugins/adding-capabilities",
                       "tr/plugins/compatibility",
                       "tr/plugins/sdk-migration"
                     ]
@@ -12658,7 +12659,6 @@
                     "group": "Networking and discovery",
                     "pages": [
                       "tr/network",
-                      "tr/gateway/network-model",
                       "tr/gateway/pairing",
                       "tr/gateway/discovery",
                       "tr/gateway/bonjour"
@@ -13211,6 +13211,7 @@
                       "uk/plugins/hooks",
                       "uk/plugins/sdk-channel-plugins",
                       "uk/plugins/sdk-provider-plugins",
+                      "uk/plugins/adding-capabilities",
                       "uk/plugins/compatibility",
                       "uk/plugins/sdk-migration"
                     ]
@@ -13533,7 +13534,6 @@
                     "group": "Networking and discovery",
                     "pages": [
                       "uk/network",
-                      "uk/gateway/network-model",
                       "uk/gateway/pairing",
                       "uk/gateway/discovery",
                       "uk/gateway/bonjour"
@@ -14086,6 +14086,7 @@
                       "id/plugins/hooks",
                       "id/plugins/sdk-channel-plugins",
                       "id/plugins/sdk-provider-plugins",
+                      "id/plugins/adding-capabilities",
                       "id/plugins/compatibility",
                       "id/plugins/sdk-migration"
                     ]
@@ -14408,7 +14409,6 @@
                     "group": "Networking and discovery",
                     "pages": [
                       "id/network",
-                      "id/gateway/network-model",
                       "id/gateway/pairing",
                       "id/gateway/discovery",
                       "id/gateway/bonjour"
@@ -14961,6 +14961,7 @@
                       "pl/plugins/hooks",
                       "pl/plugins/sdk-channel-plugins",
                       "pl/plugins/sdk-provider-plugins",
+                      "pl/plugins/adding-capabilities",
                       "pl/plugins/compatibility",
                       "pl/plugins/sdk-migration"
                     ]
@@ -15283,7 +15284,6 @@
                     "group": "Networking and discovery",
                     "pages": [
                       "pl/network",
-                      "pl/gateway/network-model",
                       "pl/gateway/pairing",
                       "pl/gateway/discovery",
                       "pl/gateway/bonjour"
