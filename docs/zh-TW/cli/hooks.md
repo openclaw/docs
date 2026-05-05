@@ -1,23 +1,23 @@
 ---
 read_when:
-    - 你想要管理代理程式鉤子
-    - 您想要檢查 hook 可用性或啟用工作區 hook
-summary: '`openclaw hooks` 的 CLI 參考（代理掛鉤）'
+    - 您想要管理代理程式鉤子
+    - 您想檢查掛鉤可用性或啟用工作區掛鉤
+summary: '`openclaw hooks`（代理掛鉤）的 CLI 參考'
 title: 掛鉤
 x-i18n:
-    generated_at: "2026-05-02T20:44:20Z"
+    generated_at: "2026-05-05T08:25:34Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3b02c176b4a310adba3fa1fde3758f6c8a19d454aeec58e919458b3f1a66c87d
+    source_hash: 8e860d4a20a09526e804fa1aff8c983a75396fcd1e6e24f742252fdf1812f6b7
     source_path: cli/hooks.md
     workflow: 16
 ---
 
 # `openclaw hooks`
 
-管理代理掛鉤（用於 `/new`、`/reset` 和 Gateway 啟動等命令的事件驅動自動化）。
+管理代理掛鉤（用於 `/new`、`/reset` 與 Gateway 啟動等命令的事件驅動自動化）。
 
-不帶子命令執行 `openclaw hooks` 等同於 `openclaw hooks list`。
+執行不帶子命令的 `openclaw hooks` 等同於 `openclaw hooks list`。
 
 相關：
 
@@ -30,8 +30,8 @@ x-i18n:
 openclaw hooks list
 ```
 
-列出從工作區、受管理、額外和內建目錄中探索到的所有掛鉤。
-Gateway 啟動時，除非至少設定了一個內部掛鉤，否則不會載入內部掛鉤處理器。
+列出從工作區、受管理、額外與內建目錄探索到的所有掛鉤。
+在至少設定一個內部掛鉤之前，Gateway 啟動不會載入內部掛鉤處理常式。
 
 **選項：**
 
@@ -39,7 +39,7 @@ Gateway 啟動時，除非至少設定了一個內部掛鉤，否則不會載入
 - `--json`：以 JSON 輸出
 - `-v, --verbose`：顯示詳細資訊，包括缺少的需求
 
-**範例輸出：**
+**輸出範例：**
 
 ```
 Hooks (4/4 ready)
@@ -57,7 +57,7 @@ Ready:
 openclaw hooks list --verbose
 ```
 
-顯示不符合資格掛鉤缺少的需求。
+顯示不符合資格掛鉤的缺少需求。
 
 **範例（JSON）：**
 
@@ -65,7 +65,7 @@ openclaw hooks list --verbose
 openclaw hooks list --json
 ```
 
-傳回結構化 JSON 供程式化使用。
+傳回可供程式使用的結構化 JSON。
 
 ## 取得掛鉤資訊
 
@@ -113,13 +113,13 @@ Requirements:
 openclaw hooks check
 ```
 
-顯示掛鉤資格狀態摘要（多少已就緒、多少尚未就緒）。
+顯示掛鉤資格狀態摘要（就緒與未就緒的數量）。
 
 **選項：**
 
 - `--json`：以 JSON 輸出
 
-**範例輸出：**
+**輸出範例：**
 
 ```
 Hooks Status
@@ -137,7 +137,7 @@ openclaw hooks enable <name>
 
 透過將特定掛鉤加入你的設定（預設為 `~/.openclaw/openclaw.json`）來啟用它。
 
-**注意：** 工作區掛鉤預設停用，直到在此處或設定中啟用為止。由 Plugin 管理的掛鉤會在 `openclaw hooks list` 中顯示 `plugin:<id>`，且無法在此處啟用/停用。請改為啟用/停用該 Plugin。
+**注意：** 工作區掛鉤預設為停用，直到在此處或設定中啟用為止。由 plugins 管理的掛鉤會在 `openclaw hooks list` 中顯示 `plugin:<id>`，且無法在此處啟用/停用。請改為啟用/停用該 plugin。
 
 **引數：**
 
@@ -155,17 +155,17 @@ openclaw hooks enable session-memory
 ✓ Enabled hook: 💾 session-memory
 ```
 
-**它會執行：**
+**作用：**
 
 - 檢查掛鉤是否存在且符合資格
 - 在你的設定中更新 `hooks.internal.entries.<name>.enabled = true`
-- 將設定儲存到磁碟
+- 將設定儲存至磁碟
 
-如果掛鉤來自 `<workspace>/hooks/`，Gateway 載入它之前必須完成這個選擇加入步驟。
+如果掛鉤來自 `<workspace>/hooks/`，則在 Gateway 載入它之前必須完成此選擇加入步驟。
 
 **啟用後：**
 
-- 重新啟動 gateway，讓掛鉤重新載入（在 macOS 上重新啟動選單列應用程式，或在開發環境中重新啟動你的 gateway 程序）。
+- 重新啟動 Gateway，讓掛鉤重新載入（macOS 上重新啟動選單列 app，或在開發環境中重新啟動你的 Gateway 程序）。
 
 ## 停用掛鉤
 
@@ -193,12 +193,12 @@ openclaw hooks disable command-logger
 
 **停用後：**
 
-- 重新啟動 gateway，讓掛鉤重新載入
+- 重新啟動 Gateway，讓掛鉤重新載入
 
-## 附註
+## 注意事項
 
-- `openclaw hooks list --json`、`info --json` 和 `check --json` 會直接將結構化 JSON 寫入 stdout。
-- 由 Plugin 管理的掛鉤無法在此處啟用或停用；請改為啟用或停用擁有它的 Plugin。
+- `openclaw hooks list --json`、`info --json` 與 `check --json` 會將結構化 JSON 直接寫入 stdout。
+- 由 Plugin 管理的掛鉤無法在此處啟用或停用；請改為啟用或停用擁有它的 plugin。
 
 ## 安裝掛鉤套件
 
@@ -213,20 +213,20 @@ openclaw plugins install <path>           # local path
 
 `openclaw hooks install` 仍可作為相容性別名使用，但它會列印棄用警告，並轉送至 `openclaw plugins install`。
 
-Npm 規格為**僅限 registry**（套件名稱 + 選用的**精確版本**或 **dist-tag**）。Git/URL/file 規格和 semver 範圍會被拒絕。為了安全，即使你的 shell 有全域 npm install 設定，依賴安裝也會以專案本機方式搭配 `--ignore-scripts` 執行。
+Npm 規格為**僅限 registry**（套件名稱 + 選用的**精確版本**或 **dist-tag**）。Git/URL/file 規格與 semver 範圍會被拒絕。為了安全，即使你的 shell 有全域 npm 安裝設定，依賴項安裝仍會以專案本機方式搭配 `--ignore-scripts` 執行。
 
-裸規格和 `@latest` 會停留在穩定軌道。如果 npm 將其中任一項解析為預發行版本，OpenClaw 會停止並要求你使用預發行標籤（例如 `@beta`/`@rc`）或精確預發行版本明確選擇加入。
+裸規格與 `@latest` 會留在穩定軌道。如果 npm 將其中任一項解析為預發布版本，OpenClaw 會停止並要求你使用 `@beta`/`@rc` 等預發布標籤或精確的預發布版本明確選擇加入。
 
-**它會執行：**
+**作用：**
 
 - 將掛鉤套件複製到 `~/.openclaw/hooks/<id>`
 - 在 `hooks.internal.entries.*` 中啟用已安裝的掛鉤
-- 將安裝記錄在 `hooks.internal.installs` 之下
+- 將安裝記錄於 `hooks.internal.installs`
 
 **選項：**
 
-- `-l, --link`：連結本機目錄而不是複製（將其加入 `hooks.internal.load.extraDirs`）
-- `--pin`：將 npm 安裝以精確解析的 `name@version` 記錄在 `hooks.internal.installs` 中
+- `-l, --link`：連結本機目錄而非複製（將其加入 `hooks.internal.load.extraDirs`）
+- `--pin`：在 `hooks.internal.installs` 中將 npm 安裝記錄為精確解析的 `name@version`
 
 **支援的封存檔：** `.zip`、`.tgz`、`.tar.gz`、`.tar`
 
@@ -246,7 +246,7 @@ openclaw plugins install @openclaw/my-hook-pack
 openclaw plugins install -l ./my-hook-pack
 ```
 
-已連結的掛鉤套件會被視為來自操作者設定目錄的受管理掛鉤，而不是工作區掛鉤。
+已連結的掛鉤套件會被視為來自操作員設定目錄的受管理掛鉤，而不是工作區掛鉤。
 
 ## 更新掛鉤套件
 
@@ -255,22 +255,22 @@ openclaw plugins update <id>
 openclaw plugins update --all
 ```
 
-透過統一的 plugins 更新程式更新已追蹤的 npm 型掛鉤套件。
+透過統一的 plugins 更新程式更新已追蹤、以 npm 為基礎的掛鉤套件。
 
 `openclaw hooks update` 仍可作為相容性別名使用，但它會列印棄用警告，並轉送至 `openclaw plugins update`。
 
 **選項：**
 
 - `--all`：更新所有已追蹤的掛鉤套件
-- `--dry-run`：顯示會變更的內容，但不寫入
+- `--dry-run`：顯示將變更的內容但不寫入
 
-當存在已儲存的完整性雜湊，且擷取到的成品雜湊發生變化時，OpenClaw 會列印警告並要求確認後才繼續。請使用全域 `--yes` 在 CI/非互動式執行中略過提示。
+當存在已儲存的完整性雜湊且擷取到的成品雜湊發生變更時，OpenClaw 會列印警告並要求確認後再繼續。在 CI/非互動式執行中使用全域 `--yes` 可略過提示。
 
 ## 內建掛鉤
 
 ### session-memory
 
-當你發出 `/new` 或 `/reset` 時，將工作階段內容儲存到記憶體。
+在你發出 `/new` 或 `/reset` 時，將工作階段脈絡儲存至記憶體。
 
 **啟用：**
 
@@ -278,9 +278,9 @@ openclaw plugins update --all
 openclaw hooks enable session-memory
 ```
 
-**輸出：** `~/.openclaw/workspace/memory/YYYY-MM-DD-slug.md`
+**輸出：** 預設為 `~/.openclaw/workspace/memory/YYYY-MM-DD-HHMM.md`。設定 `hooks.internal.entries.session-memory.llmSlug: true` 以使用模型產生的檔名 slug。
 
-**參閱：** [session-memory 文件](/zh-TW/automation/hooks#session-memory)
+**參見：** [session-memory 文件](/zh-TW/automation/hooks#session-memory)
 
 ### bootstrap-extra-files
 
@@ -292,7 +292,7 @@ openclaw hooks enable session-memory
 openclaw hooks enable bootstrap-extra-files
 ```
 
-**參閱：** [bootstrap-extra-files 文件](/zh-TW/automation/hooks#bootstrap-extra-files)
+**參見：** [bootstrap-extra-files 文件](/zh-TW/automation/hooks#bootstrap-extra-files)
 
 ### command-logger
 
@@ -319,11 +319,11 @@ cat ~/.openclaw/logs/commands.log | jq .
 grep '"action":"new"' ~/.openclaw/logs/commands.log | jq .
 ```
 
-**參閱：** [command-logger 文件](/zh-TW/automation/hooks#command-logger)
+**參見：** [command-logger 文件](/zh-TW/automation/hooks#command-logger)
 
 ### boot-md
 
-在 gateway 啟動時（頻道啟動後）執行 `BOOT.md`。
+在 Gateway 啟動時（通道啟動後）執行 `BOOT.md`。
 
 **事件**：`gateway:startup`
 
@@ -333,7 +333,7 @@ grep '"action":"new"' ~/.openclaw/logs/commands.log | jq .
 openclaw hooks enable boot-md
 ```
 
-**參閱：** [boot-md 文件](/zh-TW/automation/hooks#boot-md)
+**參見：** [boot-md 文件](/zh-TW/automation/hooks#boot-md)
 
 ## 相關
 
