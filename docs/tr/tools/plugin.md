@@ -7,25 +7,26 @@ sidebarTitle: Install and Configure
 summary: OpenClaw Plugin'lerini yükleyin, yapılandırın ve yönetin
 title: Pluginler
 x-i18n:
-    generated_at: "2026-05-03T21:39:30Z"
+    generated_at: "2026-05-05T01:50:51Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 30e3cffc15c5c52dd539e21103c207c9e38955f9fd3acd561a52964eefafb8f0
+    source_hash: 1de640f7766a6b312a2385075ae1abdb19f5c2afcb0e7063eba0d3edde697004
     source_path: tools/plugin.md
     workflow: 16
 ---
 
-Plugin'ler OpenClaw'u yeni yeteneklerle genişletir: kanallar, model sağlayıcıları,
-ajan çalıştırma düzenekleri, araçlar, skills, konuşma, gerçek zamanlı transkripsiyon, gerçek zamanlı
-ses, medya anlama, görüntü oluşturma, video oluşturma, web getirme, web
-arama ve daha fazlası. Bazı plugin'ler **çekirdek**tir (OpenClaw ile birlikte gelir), diğerleri
-**harici**dir. Çoğu harici plugin [ClawHub](/tr/tools/clawhub) üzerinden yayımlanır ve keşfedilir. Npm, doğrudan kurulumlar ve bu geçiş tamamlanırken
-OpenClaw'un sahip olduğu geçici bir plugin paketi kümesi için desteklenmeye devam eder.
+Pluginler OpenClaw'u yeni yeteneklerle genişletir: kanallar, model sağlayıcıları,
+ajan bağlayıcıları, araçlar, Skills, konuşma, gerçek zamanlı transkripsiyon, gerçek zamanlı
+ses, medya-anlama, görüntü üretimi, video üretimi, web getirme, web
+arama ve daha fazlası. Bazı pluginler **çekirdek**tir (OpenClaw ile birlikte gönderilir), bazıları
+**harici**dir. Çoğu harici plugin
+[ClawHub](/tr/tools/clawhub) üzerinden yayımlanır ve keşfedilir. Npm, doğrudan kurulumlar ve
+bu geçiş tamamlanırken OpenClaw'a ait geçici bir plugin paketleri kümesi için desteklenmeye devam eder.
 
 ## Hızlı başlangıç
 
-Kopyala-yapıştır kurulum, listeleme, kaldırma, güncelleme ve yayımlama örnekleri için
-[Plugin'leri yönetin](/tr/plugins/manage-plugins) bölümüne bakın.
+Kopyala-yapıştır kurulum, listeleme, kaldırma, güncelleme ve yayımlama örnekleri için bkz.
+[Pluginleri yönet](/tr/plugins/manage-plugins).
 
 <Steps>
   <Step title="Nelerin yüklendiğini görün">
@@ -64,17 +65,17 @@ Kopyala-yapıştır kurulum, listeleme, kaldırma, güncelleme ve yayımlama ör
 
   </Step>
 
-  <Step title="Sohbet yerel yönetimi">
+  <Step title="Sohbete özgü yönetim">
     Çalışan bir Gateway'de, yalnızca sahiplerin kullanabildiği `/plugins enable` ve `/plugins disable`
-    Gateway yapılandırma yeniden yükleyicisini tetikler. Gateway, plugin çalışma zamanı
-    yüzeylerini süreç içinde yeniden yükler ve yeni ajan dönüşleri araç listesini
-    yenilenmiş kayıt defterinden yeniden oluşturur. `/plugins install` plugin kaynak kodunu değiştirir, bu nedenle
-    Gateway, mevcut sürecin zaten içe aktarılmış modülleri güvenli şekilde
+    Gateway yapılandırma yeniden yükleyicisini tetikler. Gateway, plugin runtime
+    yüzeylerini süreç içinde yeniden yükler ve yeni ajan dönüşleri araç listelerini
+    yenilenmiş kayıt defterinden yeniden oluşturur. `/plugins install`, plugin kaynak kodunu değiştirir; bu nedenle
+    Gateway, mevcut sürecin zaten içe aktarılmış modülleri güvenle
     yeniden yükleyebileceğini varsaymak yerine yeniden başlatma ister.
 
   </Step>
 
-  <Step title="Plugin'i doğrulayın">
+  <Step title="Plugini doğrulayın">
     ```bash
     openclaw plugins inspect <plugin-id> --runtime --json
 
@@ -82,14 +83,14 @@ Kopyala-yapıştır kurulum, listeleme, kaldırma, güncelleme ve yayımlama ör
     openclaw <plugin-command> --help
     ```
 
-    Kayıtlı araçları, hizmetleri, gateway yöntemlerini, hook'ları veya plugin'e ait CLI komutlarını
+    Kayıtlı araçları, hizmetleri, gateway yöntemlerini, hook'ları veya pluginin sahip olduğu CLI komutlarını
     kanıtlamanız gerektiğinde `--runtime` kullanın. Düz `inspect`, soğuk bir
-    manifest/kayıt defteri denetimidir ve plugin çalışma zamanını içe aktarmaktan bilerek kaçınır.
+    manifesto/kayıt defteri denetimidir ve plugin runtime'ını içe aktarmaktan bilerek kaçınır.
 
   </Step>
 </Steps>
 
-Sohbet yerel denetimi tercih ediyorsanız `commands.plugins: true` etkinleştirin ve şunları kullanın:
+Sohbete özgü denetimi tercih ediyorsanız `commands.plugins: true` etkinleştirin ve şunları kullanın:
 
 ```text
 /plugin install clawhub:<package>
@@ -99,50 +100,50 @@ Sohbet yerel denetimi tercih ediyorsanız `commands.plugins: true` etkinleştiri
 
 Kurulum yolu CLI ile aynı çözücüyü kullanır: yerel yol/arşiv, açık
 `clawhub:<pkg>`, açık `npm:<pkg>`, açık `git:<repo>` veya npm üzerinden yalın paket
-belirteci.
+belirtimi.
 
 Yapılandırma geçersizse kurulum normalde kapalı başarısız olur ve sizi
 `openclaw doctor --fix` komutuna yönlendirir. Tek kurtarma istisnası,
-`openclaw.install.allowInvalidConfigRecovery` seçeneğine katılan plugin'ler için dar kapsamlı bir birlikte gelen plugin
-yeniden kurulum yoludur.
-Gateway başlatılırken geçersiz plugin yapılandırması, diğer geçersiz yapılandırmalar gibi kapalı başarısız olur.
-Hatalı plugin yapılandırmasını karantinaya almak için `openclaw doctor --fix` çalıştırın; bu işlem
-ilgili plugin girdisini devre dışı bırakır ve geçersiz yapılandırma yükünü kaldırır; normal
-yapılandırma yedeği önceki değerleri korur.
-Bir kanal yapılandırması artık keşfedilemeyen bir plugin'e başvuruyorsa ancak
-aynı eski plugin kimliği plugin yapılandırmasında veya kurulum kayıtlarında duruyorsa, Gateway başlatma
-uyarılar kaydeder ve diğer tüm kanalları engellemek yerine bu kanalı atlar.
-Eski kanal/plugin girdilerini kaldırmak için `openclaw doctor --fix` çalıştırın; eski plugin kanıtı olmayan bilinmeyen
-kanal anahtarları yine de doğrulamada başarısız olur, böylece yazım hataları görünür kalır.
-`plugins.enabled: false` ayarlanmışsa eski plugin başvuruları etkisiz kabul edilir:
-Gateway başlatma plugin keşif/yükleme işini atlar ve `openclaw doctor`
-devre dışı plugin yapılandırmasını otomatik kaldırmak yerine korur. Eski plugin kimliklerinin kaldırılmasını
-istiyorsanız doctor temizliği çalıştırmadan önce plugin'leri yeniden etkinleştirin.
+`openclaw.install.allowInvalidConfigRecovery` seçeneğine katılan pluginler için
+dar kapsamlı bir paketlenmiş-plugin yeniden kurulum yoludur.
+Gateway başlatılırken geçersiz plugin yapılandırması, diğer tüm geçersiz
+yapılandırmalar gibi kapalı başarısız olur. Hatalı plugin yapılandırmasını, o plugin girdisini
+devre dışı bırakarak ve geçersiz yapılandırma yükünü kaldırarak karantinaya almak için
+`openclaw doctor --fix` çalıştırın; normal yapılandırma yedeği önceki değerleri korur.
+Bir kanal yapılandırması artık keşfedilemeyen bir plugine başvuruyorsa ancak aynı
+eskimiş plugin kimliği plugin yapılandırmasında veya kurulum kayıtlarında kalıyorsa,
+Gateway başlangıcı uyarılar kaydeder ve diğer tüm kanalları engellemek yerine o kanalı atlar.
+Eskimiş kanal/plugin girdilerini kaldırmak için `openclaw doctor --fix` çalıştırın; eskimiş-plugin
+kanıtı olmayan bilinmeyen kanal anahtarları yine de doğrulamayı başarısız kılar, böylece yazım hataları
+görünür kalır.
+`plugins.enabled: false` ayarlıysa eskimiş plugin başvuruları etkisiz kabul edilir:
+Gateway başlangıcı plugin keşif/yükleme işini atlar ve `openclaw doctor`, devre dışı
+plugin yapılandırmasını otomatik kaldırmak yerine korur. Eskimiş plugin kimliklerinin kaldırılmasını
+istiyorsanız doctor temizliğini çalıştırmadan önce pluginleri yeniden etkinleştirin.
 
-Plugin bağımlılık kurulumu yalnızca açık kurulum/güncelleme veya
-doctor onarım akışları sırasında gerçekleşir. Gateway başlatma, yapılandırma yeniden yükleme ve çalışma zamanı incelemesi
-paket yöneticilerini çalıştırmaz veya bağımlılık ağaçlarını onarmaz. Yerel plugin'lerin
-bağımlılıkları zaten kurulmuş olmalıdır; npm, git ve ClawHub plugin'leri ise
-OpenClaw'un yönettiği plugin kökleri altında kurulur. npm bağımlılıkları
-OpenClaw'un yönettiği npm kökü içinde yukarı taşınabilir; kurulum/güncelleme güvenmeden önce
-bu yönetilen kökü tarar ve kaldırma, npm tarafından yönetilen paketleri npm üzerinden kaldırır. Harici plugin'ler
-ve özel yükleme yolları yine de `openclaw plugins install` ile kurulmalıdır.
-Çalışma zamanı kodunu içe aktarmadan veya bağımlılıkları onarmadan her görünür plugin için statik
-`dependencyStatus` bilgisini görmek üzere `openclaw plugins list --json` kullanın.
-Kurulum zamanı yaşam döngüsü için [Plugin bağımlılık çözümlemesi](/tr/plugins/dependency-resolution) bölümüne bakın.
+Plugin bağımlılığı kurulumu yalnızca açık kurulum/güncelleme veya
+doctor onarım akışları sırasında gerçekleşir. Gateway başlangıcı, yapılandırma yeniden yükleme ve runtime incelemesi
+paket yöneticilerini çalıştırmaz veya bağımlılık ağaçlarını onarmaz. Yerel pluginlerin bağımlılıkları zaten
+kurulu olmalıdır; npm, git ve ClawHub pluginleri ise
+OpenClaw'un yönetilen plugin kökleri altına kurulur. npm bağımlılıkları OpenClaw'un
+yönetilen npm kökü içinde hoist edilebilir; kurulum/güncelleme, güvenmeden önce bu yönetilen kökü tarar
+ve kaldırma, npm tarafından yönetilen paketleri npm üzerinden kaldırır. Harici pluginler
+ve özel yükleme yolları yine de `openclaw plugins install` üzerinden kurulmalıdır.
+Runtime kodunu içe aktarmadan veya bağımlılıkları onarmadan her görünür plugin için statik
+`dependencyStatus` değerini görmek için `openclaw plugins list --json` kullanın.
+Kurulum zamanı yaşam döngüsü için bkz. [Plugin bağımlılık çözümlemesi](/tr/plugins/dependency-resolution).
 
-npm kurulumları için `latest` veya bir dist-tag gibi değişken seçiciler
-kurulumdan önce çözümlenir ve ardından OpenClaw'un yönettiği npm kökünde doğrulanmış tam sürüme
-sabitlenir. npm tamamlandıktan sonra OpenClaw, kurulu
-`package-lock.json` girdisinin hâlâ çözümlenen sürüm ve bütünlükle eşleştiğini doğrular. npm farklı paket
-meta verisi yazarsa, kurulum başarısız olur ve farklı bir plugin yapıtını kabul etmek yerine
-yönetilen paket geri alınır.
+npm kurulumları için `latest` veya dist-tag gibi değişken seçiciler kurulumdan önce çözülür
+ve ardından OpenClaw'un yönetilen npm kökünde kesin doğrulanmış sürüme sabitlenir.
+npm tamamlandıktan sonra OpenClaw, kurulu `package-lock.json` girdisinin hâlâ çözülmüş
+sürüm ve bütünlükle eşleştiğini doğrular. npm farklı paket meta verileri yazarsa,
+kurulum başarısız olur ve farklı bir plugin yapıtını kabul etmek yerine yönetilen paket
+geri alınır.
 
-Kaynak checkout'ları pnpm çalışma alanlarıdır. Birlikte gelen plugin'ler üzerinde çalışmak için OpenClaw'u klonlarsanız
-`pnpm install` çalıştırın; OpenClaw ardından birlikte gelen plugin'leri
-`extensions/<id>` konumundan yükler, böylece düzenlemeler ve pakete yerel bağımlılıklar doğrudan kullanılır.
-Düz npm kök kurulumları kaynak checkout
-geliştirmesi için değil, paketlenmiş OpenClaw içindir.
+Kaynak checkout'ları pnpm workspace'leridir. Paketlenmiş pluginler üzerinde çalışmak için OpenClaw'u klonlarsanız
+`pnpm install` çalıştırın; OpenClaw ardından paketlenmiş pluginleri `extensions/<id>` konumundan yükler,
+böylece düzenlemeler ve pakete yerel bağımlılıklar doğrudan kullanılır.
+Düz npm kök kurulumları, kaynak checkout geliştirmesi için değil paketlenmiş OpenClaw içindir.
 
 ## Plugin türleri
 
@@ -150,10 +151,10 @@ OpenClaw iki plugin biçimini tanır:
 
 | Biçim     | Nasıl çalışır                                                       | Örnekler                                               |
 | ---------- | ------------------------------------------------------------------ | ------------------------------------------------------ |
-| **Yerel** | `openclaw.plugin.json` + çalışma zamanı modülü; süreç içinde çalışır       | Resmi plugin'ler, topluluk npm paketleri               |
-| **Paket** | Codex/Claude/Cursor uyumlu düzen; OpenClaw özelliklerine eşlenir | `.codex-plugin/`, `.claude-plugin/`, `.cursor-plugin/` |
+| **Yerel** | `openclaw.plugin.json` + runtime modülü; süreç içinde yürütülür       | Resmi pluginler, topluluk npm paketleri               |
+| **Bundle** | Codex/Claude/Cursor uyumlu düzen; OpenClaw özelliklerine eşlenir | `.codex-plugin/`, `.claude-plugin/`, `.cursor-plugin/` |
 
-İkisi de `openclaw plugins list` altında görünür. Paket ayrıntıları için [Plugin Paketleri](/tr/plugins/bundles) bölümüne bakın.
+Her ikisi de `openclaw plugins list` altında görünür. Bundle ayrıntıları için bkz. [Plugin Bundle'ları](/tr/plugins/bundles).
 
 Yerel bir plugin yazıyorsanız [Plugin Oluşturma](/tr/plugins/building-plugins)
 ve [Plugin SDK Genel Bakış](/tr/plugins/sdk-overview) ile başlayın.
@@ -161,19 +162,18 @@ ve [Plugin SDK Genel Bakış](/tr/plugins/sdk-overview) ile başlayın.
 ## Paket giriş noktaları
 
 Yerel plugin npm paketleri `package.json` içinde `openclaw.extensions` bildirmelidir.
-Her girdi paket dizini içinde kalmalı ve okunabilir bir çalışma zamanı dosyasına
-veya `src/index.ts` dosyasından `dist/index.js` dosyasına olduğu gibi çıkarımlanmış oluşturulmuş JavaScript
-eş dosyası bulunan bir TypeScript kaynak dosyasına çözümlenmelidir.
-Paketlenmiş kurulumlar bu JavaScript çalışma zamanı çıktısını içermelidir. TypeScript
-kaynak geri dönüşü npm paketlerinin OpenClaw'un yönettiği plugin köküne kurulması için değil,
+Her girdi paket dizini içinde kalmalı ve okunabilir bir runtime dosyasına
+veya `src/index.ts` için `dist/index.js` gibi çıkarımlı derlenmiş JavaScript
+eşine sahip bir TypeScript kaynak dosyasına çözülmelidir.
+Paketlenmiş kurulumlar bu JavaScript runtime çıktısını göndermelidir. TypeScript
+kaynak fallback'i, OpenClaw'un yönetilen plugin köküne kurulan npm paketleri için değil,
 kaynak checkout'ları ve yerel geliştirme yolları içindir.
 
-Yayımlanan çalışma zamanı dosyaları kaynak girdilerle aynı yollarda bulunmuyorsa
-`openclaw.runtimeExtensions` kullanın. Mevcut olduğunda, `runtimeExtensions` her `extensions` girdisi için
-tam olarak bir girdi içermelidir. Eşleşmeyen listeler sessizce kaynak yollara geri dönmek yerine kurulumun ve
-plugin keşfinin başarısız olmasına neden olur. `openclaw.setupEntry` de
-yayımlıyorsanız, oluşturulmuş JavaScript eş dosyası için `openclaw.runtimeSetupEntry` kullanın;
-bildirildiğinde bu dosya gereklidir.
+Yayımlanan runtime dosyaları kaynak girdilerle aynı yollarda bulunmuyorsa `openclaw.runtimeExtensions`
+kullanın. Varsa, `runtimeExtensions` her `extensions` girdisi için tam olarak bir girdi içermelidir.
+Eşleşmeyen listeler, sessizce kaynak yollarına geri dönmek yerine kurulumu ve
+plugin keşfini başarısız kılar. `openclaw.setupEntry` de yayımlıyorsanız, bunun derlenmiş
+JavaScript eşi için `openclaw.runtimeSetupEntry` kullanın; bildirildiğinde bu dosya zorunludur.
 
 ```json
 {
@@ -185,19 +185,19 @@ bildirildiğinde bu dosya gereklidir.
 }
 ```
 
-## Resmi plugin'ler
+## Resmi pluginler
 
-### Geçiş sırasında OpenClaw sahipli npm paketleri
+### Geçiş sırasında OpenClaw'a ait npm paketleri
 
 ClawHub çoğu plugin için birincil dağıtım yoludur. Mevcut paketlenmiş
-OpenClaw sürümleri zaten birçok resmi plugin'i içerir, bu nedenle normal kurulumlarda bunlar için
-ayrı npm kurulumları gerekmez. OpenClaw sahipli her plugin
-ClawHub'a taşınana kadar OpenClaw, eski/özel kurulumlar ve doğrudan npm iş akışları için npm üzerinde
-bazı `@openclaw/*` plugin paketleri yayımlamaya devam eder.
+OpenClaw sürümleri zaten birçok resmi plugini içerir; bu yüzden normal kurulumlarda bunların ayrı npm
+kurulumlarına ihtiyacı yoktur. OpenClaw'a ait her plugin ClawHub'a geçene kadar,
+OpenClaw eski/özel kurulumlar ve doğrudan npm iş akışları için npm üzerinde bazı `@openclaw/*`
+plugin paketleri göndermeye devam eder.
 
-npm bir `@openclaw/*` plugin paketini kullanımdan kaldırılmış olarak bildirirse, bu paket
-sürümü daha eski bir harici paket hattındandır. Daha yeni bir npm paketi yayımlanana kadar
-mevcut OpenClaw'dan birlikte gelen plugin'i veya yerel bir checkout'u kullanın.
+npm bir `@openclaw/*` plugin paketini kullanımdan kaldırılmış olarak bildirirse, o paket
+sürümü eski bir harici paket hattındandır. Daha yeni bir npm paketi yayımlanana kadar
+mevcut OpenClaw'daki paketlenmiş plugini veya yerel checkout'u kullanın.
 
 | Plugin          | Paket                    | Dokümanlar                                       |
 | --------------- | -------------------------- | ------------------------------------------ |
@@ -215,10 +215,10 @@ mevcut OpenClaw'dan birlikte gelen plugin'i veya yerel bir checkout'u kullanın.
 | Zalo            | `@openclaw/zalo`           | [Zalo](/tr/channels/zalo)                     |
 | Zalo Personal   | `@openclaw/zalouser`       | [Zalo Personal](/tr/plugins/zalouser)         |
 
-### Çekirdek (OpenClaw ile birlikte gelir)
+### Çekirdek (OpenClaw ile birlikte gönderilir)
 
 <AccordionGroup>
-  <Accordion title="Model sağlayıcıları (varsayılan olarak etkindir)">
+  <Accordion title="Model sağlayıcıları (varsayılan olarak etkin)">
     `anthropic`, `byteplus`, `cloudflare-ai-gateway`, `github-copilot`, `google`,
     `huggingface`, `kilocode`, `kimi-coding`, `minimax`, `mistral`, `qwen`,
     `moonshot`, `nvidia`, `openai`, `opencode`, `opencode-go`, `openrouter`,
@@ -226,27 +226,27 @@ mevcut OpenClaw'dan birlikte gelen plugin'i veya yerel bir checkout'u kullanın.
     `vercel-ai-gateway`, `volcengine`, `xiaomi`, `zai`
   </Accordion>
 
-  <Accordion title="Bellek plugin'leri">
-    - `memory-core` — birlikte gelen bellek araması (varsayılan olarak `plugins.slots.memory` üzerinden)
-    - `memory-lancedb` — otomatik geri çağırma/yakalama ile LanceDB destekli uzun süreli bellek (`plugins.slots.memory = "memory-lancedb"` ayarlayın)
+  <Accordion title="Bellek pluginleri">
+    - `memory-core` — paketlenmiş bellek araması (varsayılan olarak `plugins.slots.memory` üzerinden)
+    - `memory-lancedb` — otomatik hatırlama/yakalama ile LanceDB destekli uzun süreli bellek (`plugins.slots.memory = "memory-lancedb"` ayarlayın)
 
-    OpenAI uyumlu embedding kurulumu, Ollama örnekleri, geri çağırma sınırları ve sorun giderme için
-    [Memory LanceDB](/tr/plugins/memory-lancedb) bölümüne bakın.
+    OpenAI uyumlu embedding kurulumu, Ollama örnekleri, hatırlama sınırları ve sorun giderme için
+    bkz. [Memory LanceDB](/tr/plugins/memory-lancedb).
 
   </Accordion>
 
-  <Accordion title="Konuşma sağlayıcıları (varsayılan olarak etkindir)">
+  <Accordion title="Konuşma sağlayıcıları (varsayılan olarak etkin)">
     `elevenlabs`, `microsoft`
   </Accordion>
 
   <Accordion title="Diğer">
-    - `browser` — tarayıcı aracı, `openclaw browser` CLI, `browser.request` gateway yöntemi, tarayıcı çalışma zamanı ve varsayılan tarayıcı denetim hizmeti için birlikte gelen tarayıcı plugin'i (varsayılan olarak etkindir; değiştirmeden önce devre dışı bırakın)
-    - `copilot-proxy` — VS Code Copilot Proxy köprüsü (varsayılan olarak devre dışıdır)
+    - `browser` — tarayıcı aracı, `openclaw browser` CLI, `browser.request` gateway yöntemi, tarayıcı runtime'ı ve varsayılan tarayıcı denetim hizmeti için paketlenmiş tarayıcı plugini (varsayılan olarak etkin; değiştirmeden önce devre dışı bırakın)
+    - `copilot-proxy` — VS Code Copilot Proxy köprüsü (varsayılan olarak devre dışı)
 
   </Accordion>
 </AccordionGroup>
 
-Üçüncü taraf plugin'ler mi arıyorsunuz? [Topluluk Plugin'leri](/tr/plugins/community) bölümüne bakın.
+Üçüncü taraf pluginler mi arıyorsunuz? Bkz. [Topluluk Pluginleri](/tr/plugins/community).
 
 ## Yapılandırma
 
@@ -264,39 +264,28 @@ mevcut OpenClaw'dan birlikte gelen plugin'i veya yerel bir checkout'u kullanın.
 }
 ```
 
-| Alan            | Açıklama                                                 |
-| ---------------- | --------------------------------------------------------- |
-| `enabled`        | Ana aç/kapat anahtarı (varsayılan: `true`)                |
-| `allow`          | Plugin izin listesi (isteğe bağlı)                        |
-| `deny`           | Plugin ret listesi (isteğe bağlı; ret önceliklidir)       |
-| `load.paths`     | Ek Plugin dosyaları/dizinleri                             |
-| `slots`          | Özel slot seçicileri (örn. `memory`, `contextEngine`)     |
-| `entries.\<id\>` | Plugin başına aç/kapat anahtarları + yapılandırma         |
+| Alan               | Açıklama                                                  |
+| ------------------ | --------------------------------------------------------- |
+| `enabled`          | Ana anahtar (varsayılan: `true`)                          |
+| `allow`            | Plugin izin listesi (isteğe bağlı)                        |
+| `bundledDiscovery` | Paketli Plugin keşif modu (varsayılan: `allowlist`)       |
+| `deny`             | Plugin engel listesi (isteğe bağlı; engel kazanır)        |
+| `load.paths`       | Ek Plugin dosyaları/dizinleri                             |
+| `slots`            | Özel yuva seçicileri (örn. `memory`, `contextEngine`)     |
+| `entries.\<id\>`   | Plugin başına anahtarlar + yapılandırma                   |
 
-`plugins.allow` özeldir. Boş değilse yalnızca listelenen Plugin'ler yüklenebilir
-veya araç sunabilir; `tools.allow` içinde `"*"` ya da belirli bir Plugin'e ait
-araç adı bulunsa bile. Bir araç izin listesi Plugin araçlarına başvuruyorsa,
-sahip Plugin kimliklerini `plugins.allow` içine ekleyin ya da `plugins.allow` öğesini kaldırın; `openclaw doctor` bu
-yapı hakkında uyarır.
+`plugins.allow` dışlayıcıdır. Boş olmadığında, `tools.allow` içinde `"*"` veya belirli bir Plugin'e ait araç adı bulunsa bile yalnızca listelenen Plugin'ler yüklenebilir ya da araçları açığa çıkarabilir. Bir araç izin listesi Plugin araçlarına başvuruyorsa, sahibi olan Plugin kimliklerini `plugins.allow` öğesine ekleyin veya `plugins.allow` öğesini kaldırın; `openclaw doctor` bu yapı hakkında uyarır.
 
-`/plugins enable` veya `/plugins disable` ile yapılan yapılandırma değişiklikleri,
-süreç içi Gateway Plugin yeniden yüklemesini tetikler. Yeni ajan turları araç listelerini
-yenilenmiş Plugin kayıt defterinden yeniden oluşturur. Kurulum,
-güncelleme ve kaldırma gibi kaynak değiştiren işlemler yine de Gateway sürecini yeniden başlatır; çünkü önceden içe aktarılmış
-Plugin modülleri yerinde güvenli şekilde değiştirilemez.
+`plugins.bundledDiscovery` yeni yapılandırmalar için varsayılan olarak `"allowlist"` değerindedir, bu yüzden kısıtlayıcı bir `plugins.allow` envanteri, çalışma zamanı web araması sağlayıcı keşfi dahil olmak üzere atlanan paketli sağlayıcı Plugin'lerini de engeller. Doctor, eski kısıtlayıcı izin listesi yapılandırmalarını geçiş sırasında `"compat"` ile damgalar; böylece yükseltmeler, operatör daha katı moda geçene kadar eski paketli sağlayıcı davranışını korur. Boş bir `plugins.allow` yine ayarlanmamış/açık kabul edilir.
 
-`openclaw plugins list`, yerel Plugin kayıt defteri/yapılandırma anlık görüntüsüdür. Orada
-`enabled` olan bir Plugin, kalıcı kayıt defterinin ve mevcut yapılandırmanın
-Plugin'in katılmasına izin verdiği anlamına gelir. Bu, zaten çalışan bir uzak Gateway'in
-aynı Plugin koduyla yeniden yüklendiğini veya yeniden başlatıldığını kanıtlamaz. VPS/container kurulumlarında
-sarmalayıcı süreçlerle, yeniden başlatmaları veya yeniden yüklemeyi tetikleyen yazmaları gerçek
-`openclaw gateway run` sürecine gönderin ya da yeniden yükleme bir hata bildiriyorsa çalışan
-Gateway'e karşı `openclaw gateway restart` kullanın.
+`/plugins enable` veya `/plugins disable` üzerinden yapılan yapılandırma değişiklikleri, süreç içinde Gateway Plugin yeniden yüklemesini tetikler. Yeni aracı dönüşleri, araç listelerini yenilenmiş Plugin kayıt defterinden yeniden oluşturur. Kurulum, güncelleme ve kaldırma gibi kaynak değiştiren işlemler Gateway sürecini hâlâ yeniden başlatır, çünkü zaten içe aktarılmış Plugin modülleri yerinde güvenli şekilde değiştirilemez.
 
-<Accordion title="Plugin durumları: devre dışı, eksik, geçersiz">
+`openclaw plugins list` yerel bir Plugin kayıt defteri/yapılandırma anlık görüntüsüdür. Orada `enabled` görünen bir Plugin, kalıcı kayıt defteri ve mevcut yapılandırmanın Plugin'in katılmasına izin verdiği anlamına gelir. Bu, zaten çalışan uzak bir Gateway'in aynı Plugin koduna yeniden yüklenmiş veya yeniden başlatılmış olduğunu kanıtlamaz. Sarmalayıcı süreçlere sahip VPS/kapsayıcı kurulumlarında, yeniden başlatmaları veya yeniden yüklemeyi tetikleyen yazmaları gerçek `openclaw gateway run` sürecine gönderin ya da yeniden yükleme hata bildirirse çalışan Gateway'e karşı `openclaw gateway restart` kullanın.
+
+<Accordion title="Plugin durumları: devre dışı vs eksik vs geçersiz">
   - **Devre dışı**: Plugin vardır ancak etkinleştirme kuralları onu kapatmıştır. Yapılandırma korunur.
   - **Eksik**: yapılandırma, keşfin bulamadığı bir Plugin kimliğine başvurur.
-  - **Geçersiz**: Plugin vardır ancak yapılandırması bildirilen şemayla eşleşmez. Gateway başlangıcı yalnızca o Plugin'i atlar; `openclaw doctor --fix`, geçersiz girdiyi devre dışı bırakıp yapılandırma yükünü kaldırarak karantinaya alabilir.
+  - **Geçersiz**: Plugin vardır ancak yapılandırması bildirilen şemayla eşleşmez. Gateway başlatma yalnızca o Plugin'i atlar; `openclaw doctor --fix`, geçersiz girdiyi devre dışı bırakarak ve yapılandırma yükünü kaldırarak karantinaya alabilir.
 
 </Accordion>
 
@@ -306,9 +295,7 @@ OpenClaw Plugin'leri şu sırayla tarar (ilk eşleşme kazanır):
 
 <Steps>
   <Step title="Yapılandırma yolları">
-    `plugins.load.paths` — açık dosya veya dizin yolları. OpenClaw'ın kendi paketlenmiş ve birlikte gelen Plugin dizinlerine
-    geri işaret eden yollar yok sayılır;
-    bu eski takma adları kaldırmak için `openclaw doctor --fix` çalıştırın.
+    `plugins.load.paths` — açık dosya veya dizin yolları. OpenClaw'ın kendi paketli paketlenmiş Plugin dizinlerine geri işaret eden yollar yok sayılır; bu eski takma adları kaldırmak için `openclaw doctor --fix` çalıştırın.
   </Step>
 
   <Step title="Çalışma alanı Plugin'leri">
@@ -319,64 +306,40 @@ OpenClaw Plugin'leri şu sırayla tarar (ilk eşleşme kazanır):
     `~/.openclaw/<plugin-root>/*.ts` ve `~/.openclaw/<plugin-root>/*/index.ts`.
   </Step>
 
-  <Step title="Birlikte gelen Plugin'ler">
-    OpenClaw ile gönderilir. Birçoğu varsayılan olarak etkindir (model sağlayıcıları, konuşma).
+  <Step title="Paketli Plugin'ler">
+    OpenClaw ile birlikte gelir. Birçoğu varsayılan olarak etkindir (model sağlayıcıları, konuşma).
     Diğerleri açık etkinleştirme gerektirir.
   </Step>
 </Steps>
 
-Paketlenmiş kurulumlar ve Docker imajları normalde birlikte gelen Plugin'leri
-derlenmiş `dist/extensions` ağacından çözer. Bir birlikte gelen Plugin kaynak dizini
-eşleşen paketlenmiş kaynak yolunun üzerine bind mount edilirse, örneğin
-`/app/extensions/synology-chat`, OpenClaw bu mount edilmiş kaynak dizinini
-birlikte gelen kaynak katmanı olarak ele alır ve paketlenmiş
-`/app/dist/extensions/synology-chat` paketinden önce keşfeder. Bu, bakımcı container
-döngülerinin her birlikte gelen Plugin'i tekrar TypeScript kaynağına geçirmeden
-çalışmasını sağlar. Kaynak katmanı mount'ları mevcut olsa bile paketlenmiş dist paketlerini
-zorlamak için `OPENCLAW_DISABLE_BUNDLED_SOURCE_OVERLAYS=1` ayarlayın.
+Paketlenmiş kurulumlar ve Docker imajları normalde paketli Plugin'leri derlenmiş `dist/extensions` ağacından çözümler. Bir paketli Plugin kaynak dizini eşleşen paketlenmiş kaynak yolu üzerine bind-mounted edilirse, örneğin `/app/extensions/synology-chat`, OpenClaw bu bağlanmış kaynak dizinini paketli kaynak katmanı olarak ele alır ve paketlenmiş `/app/dist/extensions/synology-chat` paketinden önce keşfeder. Bu, her paketli Plugin'i yeniden TypeScript kaynağına geçirmeden bakımcı kapsayıcı döngülerinin çalışmasını sağlar. Kaynak katmanı bağlamaları mevcut olsa bile paketlenmiş dist paketlerini zorlamak için `OPENCLAW_DISABLE_BUNDLED_SOURCE_OVERLAYS=1` ayarlayın.
 
 ### Etkinleştirme kuralları
 
-- `plugins.enabled: false` tüm Plugin'leri devre dışı bırakır ve Plugin keşfi/yükleme işini atlar
-- `plugins.deny` her zaman izin listesine göre önceliklidir
+- `plugins.enabled: false` tüm Plugin'leri devre dışı bırakır ve Plugin keşif/yükleme işini atlar
+- `plugins.deny` her zaman izne üstün gelir
 - `plugins.entries.\<id\>.enabled: false` o Plugin'i devre dışı bırakır
-- Çalışma alanı kaynaklı Plugin'ler **varsayılan olarak devre dışıdır** (açıkça etkinleştirilmelidir)
-- Birlikte gelen Plugin'ler, geçersiz kılınmadıkça yerleşik varsayılan açık kümesini izler
-- Özel slotlar, seçilen Plugin'i o slot için zorla etkinleştirebilir
-- Bazı birlikte gelen isteğe bağlı Plugin'ler, yapılandırma bir sağlayıcı model referansı, kanal yapılandırması veya harness
-  çalışma zamanı gibi Plugin'e ait bir yüzeyi adlandırdığında otomatik olarak etkinleştirilir
-- `plugins.enabled: false` etkin olduğu sürece eski Plugin yapılandırması korunur;
-  eski kimliklerin kaldırılmasını istiyorsanız doctor temizliğini çalıştırmadan önce Plugin'leri yeniden etkinleştirin
+- Çalışma alanı kökenli Plugin'ler **varsayılan olarak devre dışıdır** (açıkça etkinleştirilmelidir)
+- Paketli Plugin'ler, üzerine yazılmadıkça yerleşik varsayılan açık kümesini izler
+- Özel yuvalar, seçilen Plugin'i o yuva için zorla etkinleştirebilir
+- Bazı paketli katılım gerektiren Plugin'ler, yapılandırma sağlayıcı model başvurusu, kanal yapılandırması veya harness çalışma zamanı gibi Plugin'e ait bir yüzeyi adlandırdığında otomatik olarak etkinleştirilir
+- `plugins.enabled: false` etkin olduğu sürece eski Plugin yapılandırması korunur; eski kimliklerin kaldırılmasını istiyorsanız doctor temizliğini çalıştırmadan önce Plugin'leri yeniden etkinleştirin
 - OpenAI ailesi Codex rotaları ayrı Plugin sınırlarını korur:
-  `openai-codex/*` OpenAI Plugin'ine aittir, birlikte gelen Codex
-  app-server Plugin'i ise `agentRuntime.id: "codex"` veya eski
-  `codex/*` model referanslarıyla seçilir
+  `openai-codex/*` OpenAI Plugin'ine aittir; paketli Codex app-server Plugin'i ise `agentRuntime.id: "codex"` veya eski `codex/*` model başvuruları tarafından seçilir
 
-## Çalışma zamanı hook'larında sorun giderme
+## Çalışma zamanı kancalarında sorun giderme
 
-Bir Plugin `plugins list` içinde görünüyorsa ancak `register(api)` yan etkileri veya hook'ları
-canlı sohbet trafiğinde çalışmıyorsa önce şunları kontrol edin:
+Bir Plugin `plugins list` içinde görünmesine rağmen `register(api)` yan etkileri veya kancaları canlı sohbet trafiğinde çalışmıyorsa, önce şunları kontrol edin:
 
-- `openclaw gateway status --deep --require-rpc` çalıştırın ve etkin
-  Gateway URL'sinin, profilin, yapılandırma yolunun ve sürecin düzenledikleriniz olduğundan emin olun.
-- Plugin kurulum/yapılandırma/kod değişikliklerinden sonra canlı Gateway'i yeniden başlatın. Sarmalayıcı
-  container'larda PID 1 yalnızca bir supervisor olabilir; alt
-  `openclaw gateway run` sürecini yeniden başlatın veya ona sinyal gönderin.
-- Hook kayıtlarını ve tanılamaları doğrulamak için `openclaw plugins inspect <id> --runtime --json` kullanın.
-  `llm_input`,
-  `llm_output`, `before_agent_finalize` ve `agent_end` gibi birlikte gelmeyen konuşma hook'ları
-  `plugins.entries.<id>.hooks.allowConversationAccess=true` gerektirir.
-- Model değiştirme için `before_model_resolve` tercih edin. Ajan turları için model
-  çözümlemesinden önce çalışır; `llm_output` yalnızca bir model denemesi
-  asistan çıktısı ürettikten sonra çalışır.
-- Etkin oturum modelinin kanıtı için `openclaw sessions` ya da
-  Gateway oturum/durum yüzeylerini kullanın ve sağlayıcı yüklerinde hata ayıklarken
-  Gateway'i `--raw-stream --raw-stream-path <path>` ile başlatın.
+- `openclaw gateway status --deep --require-rpc` çalıştırın ve etkin Gateway URL'sinin, profilin, yapılandırma yolunun ve sürecin düzenlediğiniz öğeler olduğunu doğrulayın.
+- Plugin kurulum/yapılandırma/kod değişikliklerinden sonra canlı Gateway'i yeniden başlatın. Sarmalayıcı kapsayıcılarda PID 1 yalnızca bir supervisor olabilir; alt `openclaw gateway run` sürecini yeniden başlatın veya sinyal gönderin.
+- Kanca kayıtlarını ve tanılamaları doğrulamak için `openclaw plugins inspect <id> --runtime --json` kullanın. `llm_input`, `llm_output`, `before_agent_finalize` ve `agent_end` gibi paketli olmayan konuşma kancaları `plugins.entries.<id>.hooks.allowConversationAccess=true` gerektirir.
+- Model değiştirme için `before_model_resolve` tercih edin. Aracı dönüşleri için model çözümlemeden önce çalışır; `llm_output` yalnızca bir model denemesi asistan çıktısı ürettikten sonra çalışır.
+- Etkin oturum modelinin kanıtı için `openclaw sessions` veya Gateway oturum/durum yüzeylerini kullanın ve sağlayıcı yüklerinde hata ayıklarken Gateway'i `--raw-stream --raw-stream-path <path>` ile başlatın.
 
 ### Yavaş Plugin aracı kurulumu
 
-Ajan turları araçları hazırlarken takılıyor gibi görünüyorsa izleme günlüğünü etkinleştirin ve
-Plugin aracı factory zamanlama satırlarını kontrol edin:
+Aracı dönüşleri araçları hazırlarken takılıyor gibi görünüyorsa, izleme günlüğünü etkinleştirin ve Plugin araç factory zamanlama satırlarını kontrol edin:
 
 ```bash
 openclaw config set logging.level trace
@@ -389,24 +352,17 @@ openclaw logs --follow
 [trace:plugin-tools] factory timings ...
 ```
 
-Özet, toplam factory süresini ve en yavaş Plugin aracı factory'lerini listeler;
-Plugin kimliği, bildirilen araç adları, sonuç şekli ve aracın isteğe bağlı olup olmadığı dahildir. Yavaş satırlar,
-tek bir factory en az 1 sn sürdüğünde veya toplam Plugin aracı factory hazırlığı en az 5 sn sürdüğünde
-uyarıya yükseltilir.
+Özet, toplam factory süresini ve en yavaş Plugin araç factory'lerini listeler; buna Plugin kimliği, bildirilen araç adları, sonuç şekli ve aracın isteğe bağlı olup olmadığı dahildir. Tek bir factory en az 1 sn sürdüğünde veya toplam Plugin araç factory hazırlığı en az 5 sn sürdüğünde yavaş satırlar uyarılara yükseltilir.
 
-OpenClaw, aynı etkin istek bağlamıyla tekrarlanan çözümlemeler için başarılı Plugin aracı factory sonuçlarını önbelleğe alır.
-Önbellek anahtarı etkin çalışma zamanı yapılandırmasını, çalışma alanını, ajan/oturum kimliklerini, sandbox politikasını, tarayıcı ayarlarını,
-teslim bağlamını, istek yapan kimliğini ve sahiplik durumunu içerir; bu nedenle bu güvenilir alanlara
-bağlı factory'ler bağlam değiştiğinde yeniden çalıştırılır.
+OpenClaw, aynı etkin istek bağlamıyla yinelenen çözümlemeler için başarılı Plugin araç factory sonuçlarını önbelleğe alır. Önbellek anahtarı etkin çalışma zamanı yapılandırmasını, çalışma alanını, aracı/oturum kimliklerini, sandbox ilkesini, tarayıcı ayarlarını, teslim bağlamını, istek sahibi kimliğini ve sahiplik durumunu içerir; bu yüzden bu güvenilir alanlara bağlı factory'ler bağlam değiştiğinde yeniden çalıştırılır.
 
-Zamanlamaya bir Plugin hakimse çalışma zamanı kayıtlarını inceleyin:
+Zamanlamayı tek bir Plugin domine ediyorsa, çalışma zamanı kayıtlarını inceleyin:
 
 ```bash
 openclaw plugins inspect <plugin-id> --runtime --json
 ```
 
-Ardından o Plugin'i güncelleyin, yeniden kurun veya devre dışı bırakın. Plugin yazarları,
-pahalı bağımlılık yüklemeyi araç factory'si içinde yapmak yerine araç yürütme yolunun arkasına taşımalıdır.
+Ardından o Plugin'i güncelleyin, yeniden kurun veya devre dışı bırakın. Plugin yazarları pahalı bağımlılık yüklemeyi araç factory'si içinde yapmak yerine araç yürütme yolunun arkasına taşımalıdır.
 
 ### Yinelenen kanal veya araç sahipliği
 
@@ -416,32 +372,22 @@ Belirtiler:
 - `channel setup already registered: <channel-id> (<plugin-id>)`
 - `plugin tool name conflict (<plugin-id>): <tool-name>`
 
-Bunlar, birden fazla etkin Plugin'in aynı kanalın,
-kurulum akışının veya araç adının sahibi olmaya çalıştığı anlamına gelir. En yaygın neden, artık aynı kanal kimliğini sağlayan birlikte gelen bir Plugin'in
-yanına harici bir kanal Plugin'inin kurulmuş olmasıdır.
+Bunlar, birden fazla etkin Plugin'in aynı kanala, kurulum akışına veya araç adına sahip olmaya çalıştığı anlamına gelir. En yaygın neden, artık aynı kanal kimliğini sağlayan paketli bir Plugin'in yanına harici bir kanal Plugin'inin kurulmuş olmasıdır.
 
 Hata ayıklama adımları:
 
 - Her etkin Plugin'i ve kökenini görmek için `openclaw plugins list --enabled --verbose` çalıştırın.
-- Şüpheli her Plugin için `openclaw plugins inspect <id> --runtime --json` çalıştırın ve
-  `channels`, `channelConfigs`, `tools` ve tanılamaları karşılaştırın.
-- Plugin paketlerini kurduktan veya kaldırdıktan sonra kalıcı meta verilerin mevcut kurulumu yansıtması için
-  `openclaw plugins registry --refresh` çalıştırın.
+- Şüpheli her Plugin için `openclaw plugins inspect <id> --runtime --json` çalıştırın ve `channels`, `channelConfigs`, `tools` ile tanılamaları karşılaştırın.
+- Plugin paketlerini kurduktan veya kaldırdıktan sonra kalıcı metadata'nın mevcut kurulumu yansıtması için `openclaw plugins registry --refresh` çalıştırın.
 - Kurulum, kayıt defteri veya yapılandırma değişikliklerinden sonra Gateway'i yeniden başlatın.
 
 Düzeltme seçenekleri:
 
-- Bir Plugin aynı kanal kimliği için kasıtlı olarak başka birinin yerini alıyorsa,
-  tercih edilen Plugin düşük öncelikli Plugin kimliğiyle `channelConfigs.<channel-id>.preferOver` bildirmelidir.
-  Bkz. [/plugins/manifest#replacing-another-channel-plugin](/tr/plugins/manifest#replacing-another-channel-plugin).
-- Yinelenme yanlışlıkla oluştuysa bir tarafı
-  `plugins.entries.<plugin-id>.enabled: false` ile devre dışı bırakın veya eski Plugin
-  kurulumunu kaldırın.
-- İki Plugin'i de açıkça etkinleştirdiyseniz OpenClaw bu isteği korur ve
-  çakışmayı bildirir. Kanal için tek bir sahip seçin veya çalışma zamanı yüzeyinin
-  belirsiz olmaması için Plugin'e ait araçları yeniden adlandırın.
+- Bir Plugin aynı kanal kimliği için kasıtlı olarak başka birinin yerine geçiyorsa, tercih edilen Plugin `channelConfigs.<channel-id>.preferOver` öğesini daha düşük öncelikli Plugin kimliğiyle bildirmelidir. Bkz. [/plugins/manifest#replacing-another-channel-plugin](/tr/plugins/manifest#replacing-another-channel-plugin).
+- Yinelenme kazara oluştuysa, bir tarafı `plugins.entries.<plugin-id>.enabled: false` ile devre dışı bırakın veya eski Plugin kurulumunu kaldırın.
+- Her iki Plugin'i de açıkça etkinleştirdiyseniz, OpenClaw bu isteği korur ve çakışmayı bildirir. Kanal için tek bir sahip seçin veya çalışma zamanı yüzeyinin belirsiz olmaması için Plugin'e ait araçları yeniden adlandırın.
 
-## Plugin slotları (özel kategoriler)
+## Plugin yuvaları (özel kategoriler)
 
 Bazı kategoriler özeldir (aynı anda yalnızca biri etkin olabilir):
 
@@ -456,10 +402,10 @@ Bazı kategoriler özeldir (aynı anda yalnızca biri etkin olabilir):
 }
 ```
 
-| Slot            | Neyi denetler             | Varsayılan          |
-| --------------- | ------------------------- | ------------------- |
-| `memory`        | Active Memory Plugin'i    | `memory-core`       |
-| `contextEngine` | Etkin bağlam motoru       | `legacy` (yerleşik) |
+| Yuva            | Neyi denetler           | Varsayılan          |
+| --------------- | ----------------------- | ------------------- |
+| `memory`        | Active memory Plugin'i  | `memory-core`       |
+| `contextEngine` | Etkin context engine    | `legacy` (built-in) |
 
 ## CLI başvurusu
 
@@ -509,45 +455,35 @@ openclaw plugins enable <id>
 openclaw plugins disable <id>
 ```
 
-Paketle gelen plugin'ler OpenClaw ile birlikte gelir. Birçoğu varsayılan olarak etkindir (örneğin
-paketle gelen model sağlayıcıları, paketle gelen konuşma sağlayıcıları ve paketle gelen tarayıcı
-plugin'i). Diğer paketle gelen plugin'ler için yine de `openclaw plugins enable <id>` gerekir.
+Paketle gelen Plugin'ler OpenClaw ile birlikte sunulur. Birçoğu varsayılan olarak etkindir (örneğin paketle gelen model sağlayıcıları, paketle gelen konuşma sağlayıcıları ve paketle gelen tarayıcı Plugin'i). Diğer paketle gelen Plugin'ler için yine de `openclaw plugins enable <id>` gerekir.
 
-`--force`, mevcut yüklü bir plugin'in veya hook paketinin üzerine yerinde yazar. İzlenen npm
-plugin'lerinin rutin yükseltmeleri için `openclaw plugins update <id-or-npm-spec>` kullanın.
-Yönetilen bir yükleme hedefinin üzerine kopyalamak yerine kaynak yolunu yeniden kullanan `--link`
-ile desteklenmez.
+`--force`, mevcut yüklü bir Plugin'in veya hook paketinin üzerine yerinde yazar. İzlenen npm Plugin'lerinin rutin yükseltmeleri için `openclaw plugins update <id-or-npm-spec>` kullanın. Yönetilen kurulum hedefinin üzerine kopyalamak yerine kaynak yolunu yeniden kullanan `--link` ile desteklenmez.
 
-`plugins.allow` zaten ayarlanmışsa, `openclaw plugins install` yüklü
-plugin kimliğini etkinleştirmeden önce bu izin listesine ekler. Aynı plugin kimliği
-`plugins.deny` içinde varsa, kurulum bu eski deny girdisini kaldırır; böylece
-açık kurulum yeniden başlatmadan sonra hemen yüklenebilir olur.
+`plugins.allow` zaten ayarlanmışsa, `openclaw plugins install` yüklü Plugin kimliğini etkinleştirmeden önce bu izin listesine ekler. Aynı Plugin kimliği `plugins.deny` içinde varsa, kurulum bu bayat deny girdisini kaldırır; böylece açık kurulum yeniden başlatmadan sonra hemen yüklenebilir olur.
 
-OpenClaw, plugin envanteri, katkı sahipliği ve başlangıç planlaması için soğuk okuma modeli olarak kalıcı bir yerel plugin kayıt defteri tutar. Kurulum, güncelleme, kaldırma, etkinleştirme ve devre dışı bırakma akışları, plugin durumunu değiştirdikten sonra bu kayıt defterini yeniler. Aynı `plugins/installs.json` dosyası, üst düzey `installRecords` içinde kalıcı kurulum metadata'sını ve `plugins` içinde yeniden oluşturulabilir manifest metadata'sını tutar. Kayıt defteri eksik, eski veya geçersizse, `openclaw plugins registry --refresh` plugin runtime modüllerini yüklemeden manifest görünümünü kurulum kayıtlarından, config ilkesinden ve manifest/package metadata'sından yeniden oluşturur.
-`openclaw plugins update <id-or-npm-spec>` izlenen kurulumlara uygulanır. Dist-tag veya tam sürüm içeren bir npm package spec geçirmek, package adını izlenen plugin kaydına geri çözer ve gelecekteki güncellemeler için yeni spec'i kaydeder. Package adını sürüm olmadan geçirmek, tam sabitlenmiş bir kurulumu kayıt defterinin varsayılan yayın hattına geri taşır. Yüklü npm plugin'i çözümlenen sürüm ve kaydedilen artifact kimliğiyle zaten eşleşiyorsa, OpenClaw indirme, yeniden kurma veya config'i yeniden yazma yapmadan güncellemeyi atlar.
-`openclaw update` beta kanalında çalıştığında, varsayılan hat npm ve ClawHub plugin kayıtları önce `@beta` dener ve plugin beta sürümü yoksa default/latest'e geri döner. Tam sürümler ve açık etiketler sabit kalır.
+OpenClaw, Plugin envanteri, katkı sahipliği ve başlangıç planlaması için soğuk okuma modeli olarak kalıcı bir yerel Plugin kayıt defteri tutar. Kurulum, güncelleme, kaldırma, etkinleştirme ve devre dışı bırakma akışları Plugin durumunu değiştirdikten sonra bu kayıt defterini yeniler. Aynı `plugins/installs.json` dosyası, üst düzey `installRecords` içinde kalıcı kurulum metadatasını ve `plugins` içinde yeniden oluşturulabilir manifest metadatasını tutar. Kayıt defteri eksik, bayat veya geçersizse, `openclaw plugins registry --refresh` Plugin çalışma zamanı modüllerini yüklemeden manifest görünümünü kurulum kayıtlarından, config politikasından ve manifest/package metadatasından yeniden oluşturur.
+`openclaw plugins update <id-or-npm-spec>` izlenen kurulumlara uygulanır. dist-tag veya kesin sürüm içeren bir npm paket belirtimi vermek, paket adını izlenen Plugin kaydına geri çözer ve gelecekteki güncellemeler için yeni belirtimi kaydeder. Paket adını sürümsüz vermek, kesin olarak sabitlenmiş bir kurulumu kayıt defterinin varsayılan yayın çizgisine geri taşır. Yüklü npm Plugin'i çözümlenen sürüm ve kaydedilmiş artifact kimliğiyle zaten eşleşiyorsa, OpenClaw indirme, yeniden kurma veya config'i yeniden yazma yapmadan güncellemeyi atlar.
+`openclaw update` beta kanalında çalıştığında, varsayılan çizgideki npm ve ClawHub Plugin kayıtları önce `@beta` dener ve Plugin beta yayını yoksa default/latest değerine geri döner. Kesin sürümler ve açık etiketler sabit kalır.
 
-`--pin` yalnızca npm içindir. Marketplace kurulumları npm spec yerine marketplace kaynak metadata'sını kalıcılaştırdığı için `--marketplace` ile desteklenmez.
+`--pin` yalnızca npm içindir. `--marketplace` ile desteklenmez, çünkü marketplace kurulumları npm belirtimi yerine marketplace kaynak metadatasını kalıcı hale getirir.
 
-`--dangerously-force-unsafe-install`, yerleşik tehlikeli kod tarayıcısından gelen yanlış pozitifler için acil durum override'ıdır. Plugin kurulumlarının ve plugin güncellemelerinin yerleşik `critical` bulgularını geçerek devam etmesine izin verir, ancak yine de plugin `before_install` ilke engellerini veya tarama hatası engellemesini atlamaz. Kurulum taramaları, paketlenmiş test mock'larını engellememek için `tests/`, `__tests__/`, `*.test.*` ve `*.spec.*` gibi yaygın test dosyalarını ve dizinlerini yok sayar; bildirilen plugin runtime giriş noktaları bu adlardan birini kullansa bile yine taranır.
+`--dangerously-force-unsafe-install`, yerleşik tehlikeli kod tarayıcısından gelen yanlış pozitifler için acil durum geçersiz kılma seçeneğidir. Plugin kurulumlarının ve Plugin güncellemelerinin yerleşik `critical` bulgulardan sonra devam etmesine izin verir, ancak yine de Plugin `before_install` politika engellerini veya tarama hatası engellemesini atlatmaz. Kurulum taramaları, paketlenmiş test mock'larının engellenmesini önlemek için `tests/`, `__tests__/`, `*.test.*` ve `*.spec.*` gibi yaygın test dosyalarını ve dizinlerini yok sayar; bildirilen Plugin çalışma zamanı giriş noktaları, bu adlardan birini kullansalar bile yine de taranır.
 
-Bu CLI flag yalnızca plugin kurulum/güncelleme akışları için geçerlidir. Gateway destekli skill bağımlılık kurulumları bunun yerine eşleşen `dangerouslyForceUnsafeInstall` istek override'ını kullanır; `openclaw skills install` ise ayrı ClawHub skill indirme/kurulum akışı olarak kalır.
+Bu CLI bayrağı yalnızca Plugin kurulum/güncelleme akışları için geçerlidir. Gateway destekli Skills bağımlılık kurulumları bunun yerine eşleşen `dangerouslyForceUnsafeInstall` istek geçersiz kılmasını kullanır; `openclaw skills install` ise ayrı ClawHub Skills indirme/kurulum akışı olarak kalır.
 
-ClawHub'da yayımladığınız bir plugin tarama nedeniyle gizlenmiş veya engellenmişse, ClawHub'ın yeniden kontrol etmesini istemek için ClawHub panosunu açın veya `clawhub package rescan <name>` çalıştırın. `--dangerously-force-unsafe-install` yalnızca kendi makinenizdeki kurulumları etkiler; ClawHub'dan plugin'i yeniden taramasını veya engellenmiş bir yayını herkese açık yapmasını istemez.
+ClawHub'da yayımladığınız bir Plugin bir tarama tarafından gizlenmiş veya engellenmişse, ClawHub'ın yeniden kontrol etmesini istemek için ClawHub panosunu açın veya `clawhub package rescan <name>` çalıştırın. `--dangerously-force-unsafe-install` yalnızca kendi makinenizdeki kurulumları etkiler; ClawHub'dan Plugin'i yeniden taramasını veya engellenmiş bir yayını herkese açık hale getirmesini istemez.
 
-Uyumlu bundle'lar aynı plugin listeleme/inceleme/etkinleştirme/devre dışı bırakma akışına katılır. Geçerli runtime desteği bundle skill'lerini, Claude command-skill'lerini, Claude `settings.json` varsayılanlarını, Claude `.lsp.json` ve manifest tarafından bildirilen `lspServers` varsayılanlarını, Cursor command-skill'lerini ve uyumlu Codex hook dizinlerini içerir.
+Uyumlu paketler aynı Plugin listeleme/inceleme/etkinleştirme/devre dışı bırakma akışına katılır. Mevcut çalışma zamanı desteği paket Skills, Claude komut-Skills, Claude `settings.json` varsayılanları, Claude `.lsp.json` ve manifest tarafından bildirilen `lspServers` varsayılanları, Cursor komut-Skills ve uyumlu Codex hook dizinlerini içerir.
 
-`openclaw plugins inspect <id>`, bundle destekli plugin'ler için algılanan bundle yeteneklerini ve desteklenen ya da desteklenmeyen MCP ve LSP sunucu girdilerini de raporlar.
+`openclaw plugins inspect <id>` ayrıca algılanan paket yeteneklerini ve paket destekli Plugin'ler için desteklenen veya desteklenmeyen MCP ve LSP sunucu girdilerini raporlar.
 
-Marketplace kaynakları, `~/.claude/plugins/known_marketplaces.json` dosyasından bir Claude bilinen marketplace adı, yerel bir marketplace kökü veya `marketplace.json` yolu, `owner/repo` gibi bir GitHub kısaltması, bir GitHub repo URL'si ya da bir git URL'si olabilir. Uzak marketplace'ler için plugin girdileri klonlanan marketplace repo'sunun içinde kalmalı ve yalnızca göreli yol kaynakları kullanmalıdır.
+Marketplace kaynakları, `~/.claude/plugins/known_marketplaces.json` içindeki Claude bilinen marketplace adı, yerel marketplace kökü veya `marketplace.json` yolu, `owner/repo` gibi bir GitHub kısaltması, GitHub repo URL'si ya da git URL'si olabilir. Uzak marketplace'ler için Plugin girdileri klonlanan marketplace repo'sunun içinde kalmalı ve yalnızca göreli yol kaynakları kullanmalıdır.
 
-Tüm ayrıntılar için [`openclaw plugins` CLI referansı](/tr/cli/plugins) bölümüne bakın.
+Tüm ayrıntılar için [`openclaw plugins` CLI başvurusu](/tr/cli/plugins) bölümüne bakın.
 
 ## Plugin API genel bakışı
 
-Native plugin'ler `register(api)` sunan bir giriş nesnesi dışa aktarır. Eski
-plugin'ler hâlâ legacy alias olarak `activate(api)` kullanabilir, ancak yeni plugin'ler
-`register` kullanmalıdır.
+Yerel Plugin'ler `register(api)` sunan bir giriş nesnesi dışa aktarır. Eski Plugin'ler eski bir alias olarak hâlâ `activate(api)` kullanabilir, ancak yeni Plugin'ler `register` kullanmalıdır.
 
 ```typescript
 export default definePluginEntry({
@@ -567,60 +503,60 @@ export default definePluginEntry({
 });
 ```
 
-OpenClaw giriş nesnesini yükler ve plugin etkinleştirme sırasında `register(api)` çağırır. Loader, eski plugin'ler için hâlâ `activate(api)` yöntemine geri döner, ancak paketle gelen plugin'ler ve yeni harici plugin'ler `register` öğesini public contract olarak ele almalıdır.
+OpenClaw, Plugin etkinleştirme sırasında giriş nesnesini yükler ve `register(api)` çağırır. Yükleyici eski Plugin'ler için hâlâ `activate(api)` seçeneğine geri düşer, ancak paketle gelen Plugin'ler ve yeni harici Plugin'ler `register` değerini genel sözleşme olarak ele almalıdır.
 
-`api.registrationMode`, bir plugin'e girişinin neden yüklendiğini bildirir:
+`api.registrationMode`, bir Plugin'e girişinin neden yüklendiğini söyler:
 
 | Mod             | Anlam                                                                                                                            |
 | --------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| `full`          | Runtime etkinleştirme. Araçları, hook'ları, servisleri, komutları, route'ları ve diğer canlı yan etkileri kaydedin.             |
-| `discovery`     | Salt okunur yetenek keşfi. Sağlayıcıları ve metadata'yı kaydedin; güvenilen plugin giriş kodu yüklenebilir, ancak canlı yan etkileri atlayın. |
-| `setup-only`    | Hafif bir setup girişi üzerinden kanal setup metadata'sı yükleme.                                                                |
-| `setup-runtime` | Runtime girişini de gerektiren kanal setup yükleme.                                                                              |
-| `cli-metadata`  | Yalnızca CLI komut metadata'sı toplama.                                                                                          |
+| `full`          | Çalışma zamanı etkinleştirme. Araçları, hook'ları, servisleri, komutları, route'ları ve diğer canlı yan etkileri kaydedin.       |
+| `discovery`     | Salt okunur yetenek keşfi. Sağlayıcıları ve metadatayı kaydedin; güvenilir Plugin giriş kodu yüklenebilir, ancak canlı yan etkileri atlayın. |
+| `setup-only`    | Hafif bir kurulum girişi üzerinden kanal kurulum metadatası yükleme.                                                             |
+| `setup-runtime` | Çalışma zamanı girişine de ihtiyaç duyan kanal kurulum yüklemesi.                                                                |
+| `cli-metadata`  | Yalnızca CLI komut metadatası toplama.                                                                                           |
 
-Soketler, veritabanları, arka plan worker'ları veya uzun ömürlü istemciler açan plugin girişleri bu yan etkileri `api.registrationMode === "full"` ile korumalıdır. Keşif yüklemeleri, etkinleştirme yüklemelerinden ayrı olarak önbelleğe alınır ve çalışan Gateway kayıt defterinin yerini almaz. Keşif etkinleştirmesizdir, import'suz değildir: OpenClaw snapshot'ı oluşturmak için güvenilen plugin girişini veya kanal plugin modülünü değerlendirebilir. Modül üst düzeylerini hafif ve yan etkisiz tutun; ağ istemcilerini, alt süreçleri, dinleyicileri, kimlik bilgisi okumalarını ve servis başlatmayı full-runtime yollarının arkasına taşıyın.
+Soketler, veritabanları, arka plan worker'ları veya uzun ömürlü istemciler açan Plugin girişleri, bu yan etkileri `api.registrationMode === "full"` ile korumalıdır. Keşif yüklemeleri, etkinleştirme yüklemelerinden ayrı olarak önbelleğe alınır ve çalışan Gateway kayıt defterinin yerini almaz. Keşif etkinleştirici değildir, ancak import'suz da değildir: OpenClaw, snapshot oluşturmak için güvenilir Plugin girişini veya kanal Plugin modülünü değerlendirebilir. Modül üst düzeylerini hafif ve yan etkisiz tutun; ağ istemcilerini, alt süreçleri, dinleyicileri, kimlik bilgisi okumalarını ve servis başlangıcını tam çalışma zamanı yollarının arkasına taşıyın.
 
 Yaygın kayıt yöntemleri:
 
-| Yöntem                                  | Kaydettiği şey               |
+| Yöntem                                  | Ne kaydeder                  |
 | --------------------------------------- | ---------------------------- |
 | `registerProvider`                      | Model sağlayıcısı (LLM)      |
 | `registerChannel`                       | Sohbet kanalı                |
 | `registerTool`                          | Agent aracı                  |
-| `registerHook` / `on(...)`              | Lifecycle hook'ları          |
-| `registerSpeechProvider`                | Text-to-speech / STT         |
-| `registerRealtimeTranscriptionProvider` | Streaming STT                |
-| `registerRealtimeVoiceProvider`         | Duplex gerçek zamanlı ses    |
+| `registerHook` / `on(...)`              | Yaşam döngüsü hook'ları      |
+| `registerSpeechProvider`                | Metinden konuşmaya / STT     |
+| `registerRealtimeTranscriptionProvider` | Akışlı STT                   |
+| `registerRealtimeVoiceProvider`         | Çift yönlü gerçek zamanlı ses |
 | `registerMediaUnderstandingProvider`    | Görüntü/ses analizi          |
 | `registerImageGenerationProvider`       | Görüntü üretimi              |
 | `registerMusicGenerationProvider`       | Müzik üretimi                |
 | `registerVideoGenerationProvider`       | Video üretimi                |
 | `registerWebFetchProvider`              | Web getirme / scrape sağlayıcısı |
-| `registerWebSearchProvider`             | Web araması                  |
-| `registerHttpRoute`                     | HTTP endpoint                |
+| `registerWebSearchProvider`             | Web arama                    |
+| `registerHttpRoute`                     | HTTP endpoint'i              |
 | `registerCommand` / `registerCli`       | CLI komutları                |
-| `registerContextEngine`                 | Context engine               |
+| `registerContextEngine`                 | Bağlam motoru                |
 | `registerService`                       | Arka plan servisi            |
 
-Typed lifecycle hook'ları için hook guard davranışı:
+Tipli yaşam döngüsü hook'ları için hook koruma davranışı:
 
-- `before_tool_call`: `{ block: true }` terminaldir; daha düşük öncelikli handler'lar atlanır.
-- `before_tool_call`: `{ block: false }` no-op'tur ve daha önceki bir block'u temizlemez.
-- `before_install`: `{ block: true }` terminaldir; daha düşük öncelikli handler'lar atlanır.
-- `before_install`: `{ block: false }` no-op'tur ve daha önceki bir block'u temizlemez.
-- `message_sending`: `{ cancel: true }` terminaldir; daha düşük öncelikli handler'lar atlanır.
-- `message_sending`: `{ cancel: false }` no-op'tur ve daha önceki bir cancel'ı temizlemez.
+- `before_tool_call`: `{ block: true }` sonlandırıcıdır; daha düşük öncelikli handler'lar atlanır.
+- `before_tool_call`: `{ block: false }` işlem yapmaz ve önceki bir engellemeyi temizlemez.
+- `before_install`: `{ block: true }` sonlandırıcıdır; daha düşük öncelikli handler'lar atlanır.
+- `before_install`: `{ block: false }` işlem yapmaz ve önceki bir engellemeyi temizlemez.
+- `message_sending`: `{ cancel: true }` sonlandırıcıdır; daha düşük öncelikli handler'lar atlanır.
+- `message_sending`: `{ cancel: false }` işlem yapmaz ve önceki bir iptali temizlemez.
 
-Native Codex app-server, bridge Codex-native tool event'lerini bu hook yüzeyine geri çalıştırır. Plugin'ler `before_tool_call` üzerinden native Codex araçlarını engelleyebilir, `after_tool_call` üzerinden sonuçları gözlemleyebilir ve Codex `PermissionRequest` onaylarına katılabilir. Bridge henüz Codex-native tool argümanlarını yeniden yazmaz. Tam Codex runtime destek sınırı [Codex harness v1 destek sözleşmesi](/tr/plugins/codex-harness#v1-support-contract) içinde yer alır.
+Yerel Codex app-server, Codex'e özgü yerel araç olaylarını bu hook yüzeyine geri köprüler. Plugin'ler `before_tool_call` üzerinden yerel Codex araçlarını engelleyebilir, `after_tool_call` üzerinden sonuçları gözlemleyebilir ve Codex `PermissionRequest` onaylarına katılabilir. Köprü, Codex'e özgü yerel araç argümanlarını henüz yeniden yazmaz. Kesin Codex çalışma zamanı destek sınırı [Codex harness v1 destek sözleşmesi](/tr/plugins/codex-harness#v1-support-contract) içinde yer alır.
 
-Tam typed hook davranışı için [SDK genel bakışı](/tr/plugins/sdk-overview#hook-decision-semantics) bölümüne bakın.
+Tam tipli hook davranışı için [SDK genel bakışı](/tr/plugins/sdk-overview#hook-decision-semantics) bölümüne bakın.
 
 ## İlgili
 
-- [Plugin oluşturma](/tr/plugins/building-plugins) — kendi plugin'inizi oluşturun
-- [Plugin bundle'ları](/tr/plugins/bundles) — Codex/Claude/Cursor bundle uyumluluğu
-- [Plugin manifest'i](/tr/plugins/manifest) — manifest schema'sı
-- [Araç kaydetme](/tr/plugins/building-plugins#registering-agent-tools) — bir plugin'e agent araçları ekleyin
-- [Plugin internals](/tr/plugins/architecture) — yetenek modeli ve yükleme pipeline'ı
-- [Community plugin'leri](/tr/plugins/community) — üçüncü taraf listeleri
+- [Plugin oluşturma](/tr/plugins/building-plugins) — kendi Plugin'inizi oluşturun
+- [Plugin paketleri](/tr/plugins/bundles) — Codex/Claude/Cursor paket uyumluluğu
+- [Plugin manifesti](/tr/plugins/manifest) — manifest şeması
+- [Araçları kaydetme](/tr/plugins/building-plugins#registering-agent-tools) — bir Plugin içinde ajan araçları ekleyin
+- [Plugin iç işleyişi](/tr/plugins/architecture) — yetenek modeli ve yükleme işlem hattı
+- [Topluluk Plugin'leri](/tr/plugins/community) — üçüncü taraf listelemeleri

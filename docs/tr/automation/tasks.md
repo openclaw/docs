@@ -1,51 +1,51 @@
 ---
 read_when:
     - Devam eden veya yakın zamanda tamamlanan arka plan çalışmalarını inceleme
-    - Ayrık ajan çalıştırmalarında iletim hatalarını ayıklama
-    - Arka plan çalıştırmalarının oturumlar, Cron ve Heartbeat ile nasıl ilişkili olduğunu anlama
+    - Ayrık ajan çalıştırmalarında teslimat hatalarını ayıklama
+    - Arka plan çalıştırmalarının oturumlar, Cron ve Heartbeat ile ilişkisini anlama
 sidebarTitle: Background tasks
-summary: 'Arka plan görev takibi: ACP çalıştırmaları, alt ajanlar, yalıtılmış Cron işleri ve CLI işlemleri'
+summary: ACP çalıştırmaları, alt ajanlar, yalıtılmış Cron işleri ve CLI işlemleri için arka plan görevi takibi
 title: Arka plan görevleri
 x-i18n:
-    generated_at: "2026-05-01T08:58:44Z"
+    generated_at: "2026-05-05T01:44:38Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8782987a79989264ae3bd1ca4b16755bdfb7e295e4f77933bf3a38c136d837f4
+    source_hash: 60d6ea6178535b19b95d761b8e8b05a665234584ae69852fd21097988aa32991
     source_path: automation/tasks.md
     workflow: 16
 ---
 
 <Note>
-Zamanlama mı arıyorsunuz? Doğru mekanizmayı seçmek için [Otomasyon ve görevler](/tr/automation) sayfasına bakın. Bu sayfa arka plan işi için etkinlik defteridir, zamanlayıcı değildir.
+Zamanlama mı arıyorsunuz? Doğru mekanizmayı seçmek için [Otomasyon ve görevler](/tr/automation) bölümüne bakın. Bu sayfa, zamanlayıcı değil, arka plan çalışmaları için etkinlik defteridir.
 </Note>
 
 Arka plan görevleri, **ana konuşma oturumunuzun dışında** çalışan işleri izler: ACP çalıştırmaları, alt ajan başlatmaları, yalıtılmış cron işi yürütmeleri ve CLI tarafından başlatılan işlemler.
 
-Görevler oturumların, cron işlerinin veya heartbeart'lerin yerini **almaz**; bunlar, hangi ayrılmış işin ne zaman gerçekleştiğini ve başarılı olup olmadığını kaydeden **etkinlik defteridir**.
+Görevler oturumların, cron işlerinin veya heartbeat'lerin yerini **almaz**; ayrık çalışmada ne olduğunu, ne zaman olduğunu ve başarılı olup olmadığını kaydeden **etkinlik defteridir**.
 
 <Note>
-Her ajan çalıştırması bir görev oluşturmaz. Heartbeat turları ve normal etkileşimli sohbet oluşturmaz. Tüm cron yürütmeleri, ACP başlatmaları, alt ajan başlatmaları ve CLI ajan komutları oluşturur.
+Her ajan çalıştırması bir görev oluşturmaz. Heartbeat dönüşleri ve normal etkileşimli sohbet oluşturmaz. Tüm cron yürütmeleri, ACP başlatmaları, alt ajan başlatmaları ve CLI ajan komutları oluşturur.
 </Note>
 
-## TL;DR
+## Kısa Özet
 
-- Görevler **kayıtlardır**, zamanlayıcı değildir; cron ve Heartbeat işin _ne zaman_ çalışacağını belirler, görevler _ne olduğunu_ izler.
-- ACP, alt ajanlar, tüm cron işleri ve CLI işlemleri görev oluşturur. Heartbeat turları oluşturmaz.
-- Her görev `queued → running → terminal` durumlarından geçer (succeeded, failed, timed_out, cancelled veya lost).
-- Cron görevleri, cron çalışma zamanı hâlâ işe sahip olduğu sürece canlı kalır; bellek içi çalışma zamanı durumu kaybolursa görev bakımı, bir görevi kayıp olarak işaretlemeden önce kalıcı cron çalıştırma geçmişini kontrol eder.
-- Tamamlanma push odaklıdır: ayrılmış iş, bittiğinde doğrudan bildirim gönderebilir veya istekte bulunan oturumu/Heartbeat'i uyandırabilir; bu nedenle durum yoklama döngüleri genellikle yanlış biçimdir.
-- Yalıtılmış cron çalıştırmaları ve alt ajan tamamlanmaları, son temizlik kayıtlarından önce alt oturumları için izlenen tarayıcı sekmelerini/süreçlerini en iyi çabayla temizler.
-- Yalıtılmış cron teslimi, alt alt ajan işi hâlâ boşalırken eski ara üst yanıtları bastırır ve teslimden önce geldiğinde son alt çıktıyı tercih eder.
-- Tamamlanma bildirimleri doğrudan bir kanala iletilir veya bir sonraki Heartbeat için kuyruğa alınır.
+- Görevler zamanlayıcı değil, **kayıtlardır**; cron ve heartbeat işin _ne zaman_ çalışacağını belirler, görevler _ne olduğunu_ izler.
+- ACP, alt ajanlar, tüm cron işleri ve CLI işlemleri görev oluşturur. Heartbeat dönüşleri oluşturmaz.
+- Her görev `queued → running → terminal` akışından geçer (succeeded, failed, timed_out, cancelled veya lost).
+- Cron görevleri, cron çalışma zamanı işi hâlâ sahiplenirken canlı kalır; bellek içi çalışma zamanı durumu yoksa görev bakımı, bir görevi lost olarak işaretlemeden önce kalıcı cron çalışma geçmişini kontrol eder.
+- Tamamlanma push tabanlıdır: ayrık çalışma doğrudan bildirim gönderebilir veya bittiğinde istekte bulunan oturumu/heartbeat'i uyandırabilir; bu yüzden durum yoklama döngüleri genellikle yanlış kalıptır.
+- Yalıtılmış cron çalıştırmaları ve alt ajan tamamlanmaları, son temizlik kayıtlarından önce alt oturumları için izlenen tarayıcı sekmelerini/süreçlerini mümkün olduğunca temizler.
+- Yalıtılmış cron teslimi, alt alt ajan çalışması hâlâ boşalırken bayat ara ebeveyn yanıtlarını bastırır ve teslimden önce ulaştığında son alt çıktıyı tercih eder.
+- Tamamlanma bildirimleri doğrudan bir kanala teslim edilir veya bir sonraki heartbeat için kuyruğa alınır.
 - `openclaw tasks list` tüm görevleri gösterir; `openclaw tasks audit` sorunları ortaya çıkarır.
-- Terminal kayıtları 7 gün tutulur, ardından otomatik olarak budanır.
+- Terminal kayıtları 7 gün saklanır, sonra otomatik olarak budanır.
 
 ## Hızlı başlangıç
 
 <Tabs>
   <Tab title="Listele ve filtrele">
     ```bash
-    # Tüm görevleri listele (önce en yeni)
+    # Tüm görevleri listele (en yeniler önce)
     openclaw tasks list
 
     # Çalışma zamanına veya duruma göre filtrele
@@ -56,7 +56,7 @@ Her ajan çalıştırması bir görev oluşturmaz. Heartbeat turları ve normal 
   </Tab>
   <Tab title="İncele">
     ```bash
-    # Belirli bir görevin ayrıntılarını göster (ID, çalıştırma ID'si veya oturum anahtarına göre)
+    # Belirli bir görevin ayrıntılarını göster (ID, çalışma ID'si veya oturum anahtarına göre)
     openclaw tasks show <lookup>
     ```
   </Tab>
@@ -65,7 +65,7 @@ Her ajan çalıştırması bir görev oluşturmaz. Heartbeat turları ve normal 
     # Çalışan bir görevi iptal et (alt oturumu sonlandırır)
     openclaw tasks cancel <lookup>
 
-    # Bir görev için bildirim politikasını değiştir
+    # Bir görevin bildirim ilkesini değiştir
     openclaw tasks notify <lookup> state_changes
     ```
 
@@ -81,7 +81,7 @@ Her ajan çalıştırması bir görev oluşturmaz. Heartbeat turları ve normal 
     ```
 
   </Tab>
-  <Tab title="Görev akışı">
+  <Tab title="TaskFlow akışı">
     ```bash
     # TaskFlow durumunu incele
     openclaw tasks flow list
@@ -91,29 +91,29 @@ Her ajan çalıştırması bir görev oluşturmaz. Heartbeat turları ve normal 
   </Tab>
 </Tabs>
 
-## Görevi ne oluşturur?
+## Bir görevi ne oluşturur?
 
-| Kaynak                 | Çalışma zamanı türü | Görev kaydının oluşturulduğu zaman                      | Varsayılan bildirim politikası |
-| ---------------------- | ------------------- | ------------------------------------------------------- | ------------------------------ |
-| ACP arka plan çalıştırmaları | `acp`        | Alt ACP oturumu başlatıldığında                         | `done_only`                    |
-| Alt ajan orkestrasyonu | `subagent`          | `sessions_spawn` ile bir alt ajan başlatıldığında       | `done_only`                    |
-| Cron işleri (tüm türler) | `cron`             | Her cron yürütmesi (ana oturum ve yalıtılmış)           | `silent`                       |
-| CLI işlemleri          | `cli`               | Gateway üzerinden çalışan `openclaw agent` komutları    | `silent`                       |
-| Ajan medya işleri      | `cli`               | Oturum destekli `music_generate`/`video_generate` çalıştırmaları | `silent`              |
+| Kaynak                 | Çalışma zamanı türü | Görev kaydı ne zaman oluşturulur                       | Varsayılan bildirim ilkesi |
+| ---------------------- | ------------ | ------------------------------------------------------ | --------------------- |
+| ACP arka plan çalıştırmaları    | `acp`        | Bir alt ACP oturumu başlatılırken                           | `done_only`           |
+| Alt ajan orkestrasyonu | `subagent`   | `sessions_spawn` ile bir alt ajan başlatılırken               | `done_only`           |
+| Cron işleri (tüm türler)  | `cron`       | Her cron yürütmesi (ana oturum ve yalıtılmış)       | `silent`              |
+| CLI işlemleri         | `cli`        | Gateway üzerinden çalışan `openclaw agent` komutları | `silent`              |
+| Ajan medya işleri       | `cli`        | Oturum destekli `music_generate`/`video_generate` çalıştırmaları  | `silent`              |
 
 <AccordionGroup>
   <Accordion title="Cron ve medya için bildirim varsayılanları">
-    Ana oturum cron görevleri varsayılan olarak `silent` bildirim politikasını kullanır; izleme için kayıt oluştururlar ancak bildirim üretmezler. Yalıtılmış cron görevleri de varsayılan olarak `silent` kullanır, ancak kendi oturumlarında çalıştıkları için daha görünürdür.
+    Ana oturum cron görevleri varsayılan olarak `silent` bildirim ilkesini kullanır; izleme için kayıt oluştururlar ancak bildirim üretmezler. Yalıtılmış cron görevleri de varsayılan olarak `silent` kullanır, ancak kendi oturumlarında çalıştıkları için daha görünürdür.
 
-    Oturum destekli `music_generate` ve `video_generate` çalıştırmaları da `silent` bildirim politikasını kullanır. Yine de görev kayıtları oluştururlar, ancak tamamlanma, ajanın takip mesajını yazıp tamamlanan medyayı kendisi ekleyebilmesi için iç uyandırma olarak özgün ajan oturumuna geri verilir. `tools.media.asyncCompletion.directSend` seçeneğini etkinleştirirseniz, zaman uyumsuz `video_generate` tamamlanmaları önce doğrudan kanal teslimini deneyebilir; zaman uyumsuz `music_generate` tamamlanmaları istekte bulunan oturumun uyandırma yolunda kalır.
+    Oturum destekli `music_generate` ve `video_generate` çalıştırmaları da `silent` bildirim ilkesini kullanır. Yine de görev kayıtları oluştururlar, ancak tamamlanma özgün ajan oturumuna dahili bir uyandırma olarak geri verilir; böylece ajan takip mesajını yazabilir ve tamamlanan medyayı kendisi ekleyebilir. Grup/kanal tamamlanmaları normal görünür yanıt ilkesini izler, bu yüzden kaynak teslimi gerektirdiğinde ajan mesaj aracını kullanır.
 
   </Accordion>
-  <Accordion title="Eşzamanlı video_generate koruma sınırı">
-    Oturum destekli bir `video_generate` görevi hâlâ etkinken, araç aynı zamanda bir koruma sınırı gibi davranır: aynı oturumdaki yinelenen `video_generate` çağrıları, ikinci bir eşzamanlı üretim başlatmak yerine etkin görev durumunu döndürür. Ajan tarafında açık bir ilerleme/durum araması istediğinizde `action: "status"` kullanın.
+  <Accordion title="Eşzamanlı video_generate güvenlik sınırı">
+    Oturum destekli bir `video_generate` görevi hâlâ etkinken araç aynı zamanda bir güvenlik sınırı görevi görür: aynı oturumda tekrarlanan `video_generate` çağrıları, ikinci bir eşzamanlı üretim başlatmak yerine etkin görev durumunu döndürür. Ajan tarafında açık bir ilerleme/durum sorgusu istediğinizde `action: "status"` kullanın.
   </Accordion>
-  <Accordion title="Neler görev oluşturmaz?">
-    - Heartbeat turları; ana oturum, bkz. [Heartbeat](/tr/gateway/heartbeat)
-    - Normal etkileşimli sohbet turları
+  <Accordion title="Ne görev oluşturmaz?">
+    - Heartbeat dönüşleri; ana oturum, bkz. [Heartbeat](/tr/gateway/heartbeat)
+    - Normal etkileşimli sohbet dönüşleri
     - Doğrudan `/command` yanıtları
 
   </Accordion>
@@ -133,52 +133,52 @@ stateDiagram-v2
     running --> lost : session gone > 5 min
 ```
 
-| Durum       | Anlamı                                                                     |
+| Durum      | Anlamı                                                              |
 | ----------- | -------------------------------------------------------------------------- |
-| `queued`    | Oluşturuldu, ajanın başlaması bekleniyor                                   |
-| `running`   | Ajan turu etkin olarak yürütülüyor                                         |
-| `succeeded` | Başarıyla tamamlandı                                                       |
-| `failed`    | Bir hatayla tamamlandı                                                     |
-| `timed_out` | Yapılandırılan zaman aşımı aşıldı                                          |
-| `cancelled` | Operatör tarafından `openclaw tasks cancel` ile durduruldu                 |
+| `queued`    | Oluşturuldu, ajanın başlamasını bekliyor                                    |
+| `running`   | Ajan dönüşü etkin olarak yürütülüyor                                           |
+| `succeeded` | Başarıyla tamamlandı                                                     |
+| `failed`    | Bir hatayla tamamlandı                                                    |
+| `timed_out` | Yapılandırılmış zaman aşımını aştı                                            |
+| `cancelled` | Operatör tarafından `openclaw tasks cancel` ile durduruldu                        |
 | `lost`      | Çalışma zamanı, 5 dakikalık ek süreden sonra yetkili destek durumunu kaybetti |
 
-Geçişler otomatik olarak gerçekleşir; ilişkili ajan çalıştırması sona erdiğinde görev durumu buna uyacak şekilde güncellenir.
+Geçişler otomatik olarak gerçekleşir; ilişkili ajan çalıştırması bittiğinde görev durumu buna uyacak şekilde güncellenir.
 
-Ajan çalıştırmasının tamamlanması, etkin görev kayıtları için yetkilidir. Başarılı bir ayrılmış çalıştırma `succeeded` olarak sonlanır, olağan çalıştırma hataları `failed` olarak sonlanır ve zaman aşımı veya iptal sonuçları `timed_out` olarak sonlanır. Bir operatör görevi zaten iptal ettiyse veya çalışma zamanı `failed`, `timed_out` ya da `lost` gibi daha güçlü bir terminal durumu zaten kaydettiyse, daha sonraki bir başarı sinyali bu terminal durumunu düşürmez.
+Ajan çalıştırmasının tamamlanması, etkin görev kayıtları için yetkilidir. Başarılı bir ayrık çalıştırma `succeeded` olarak sonlandırılır, olağan çalıştırma hataları `failed` olarak sonlandırılır ve zaman aşımı veya iptal sonuçları `timed_out` olarak sonlandırılır. Operatör görevi zaten iptal ettiyse veya çalışma zamanı `failed`, `timed_out` ya da `lost` gibi daha güçlü bir terminal durumunu zaten kaydettiyse, sonradan gelen başarı sinyali bu terminal durumu düşürmez.
 
 `lost` çalışma zamanının farkındadır:
 
 - ACP görevleri: destekleyen ACP alt oturum meta verileri kayboldu.
 - Alt ajan görevleri: destekleyen alt oturum hedef ajan deposundan kayboldu.
-- Cron görevleri: cron çalışma zamanı artık işi etkin olarak izlemiyor ve kalıcı cron çalıştırma geçmişi o çalıştırma için terminal bir sonuç göstermiyor. Çevrimdışı CLI denetimi, kendi boş süreç içi cron çalışma zamanı durumunu yetkili kabul etmez.
-- CLI görevleri: yalıtılmış alt oturum görevleri alt oturumu kullanır; sohbet destekli CLI görevleri bunun yerine canlı çalıştırma bağlamını kullanır, bu nedenle kalan kanal/grup/doğrudan oturum satırları onları canlı tutmaz. Gateway destekli `openclaw agent` çalıştırmaları da çalıştırma sonuçlarından sonlanır, bu nedenle tamamlanmış çalıştırmalar süpürücü onları `lost` olarak işaretleyene kadar etkin kalmaz.
+- Cron görevleri: cron çalışma zamanı işi artık etkin olarak izlemiyor ve kalıcı cron çalışma geçmişi bu çalıştırma için terminal sonuç göstermiyor. Çevrimdışı CLI denetimi, kendi boş süreç içi cron çalışma zamanı durumunu yetkili kabul etmez.
+- CLI görevleri: yalıtılmış alt oturum görevleri alt oturumu kullanır; sohbet destekli CLI görevleri bunun yerine canlı çalıştırma bağlamını kullanır, bu yüzden kalan kanal/grup/doğrudan oturum satırları onları canlı tutmaz. Gateway destekli `openclaw agent` çalıştırmaları da çalıştırma sonucundan sonlandırılır, bu yüzden tamamlanan çalıştırmalar süpürücü onları `lost` olarak işaretleyene kadar etkin kalmaz.
 
 ## Teslim ve bildirimler
 
 Bir görev terminal duruma ulaştığında OpenClaw sizi bilgilendirir. İki teslim yolu vardır:
 
-**Doğrudan teslim** — görevin bir kanal hedefi varsa (`requesterOrigin`), tamamlanma mesajı doğrudan o kanala gider (Telegram, Discord, Slack vb.). Alt ajan tamamlanmaları için OpenClaw, varsa bağlı iş parçacığı/konu yönlendirmesini de korur ve doğrudan teslimden vazgeçmeden önce eksik bir `to` / hesabı, istekte bulunan oturumun depolanan rotasından (`lastChannel` / `lastTo` / `lastAccountId`) doldurabilir.
+**Doğrudan teslim** — görevin bir kanal hedefi varsa (`requesterOrigin`), tamamlanma mesajı doğrudan o kanala gider (Telegram, Discord, Slack vb.). Alt ajan tamamlanmaları için OpenClaw ayrıca mevcut olduğunda bağlı iş parçacığı/konu yönlendirmesini korur ve doğrudan teslimden vazgeçmeden önce eksik `to` / hesabı, istekte bulunan oturumun saklanan rotasından (`lastChannel` / `lastTo` / `lastAccountId`) doldurabilir.
 
-**Oturum kuyruğuna alınan teslim** — doğrudan teslim başarısız olursa veya kaynak ayarlanmamışsa, güncelleme istekte bulunanın oturumunda bir sistem olayı olarak kuyruğa alınır ve bir sonraki Heartbeat'te görünür.
+**Oturum kuyruğuna alınmış teslim** — doğrudan teslim başarısız olursa veya origin ayarlı değilse, güncelleme istekte bulunan oturumda sistem olayı olarak kuyruğa alınır ve bir sonraki heartbeat'te görünür.
 
 <Tip>
-Görev tamamlanması anında bir Heartbeat uyandırması tetikler, böylece sonucu hızlıca görürsünüz; bir sonraki zamanlanmış Heartbeat tikini beklemeniz gerekmez.
+Görev tamamlanması anında bir heartbeat uyandırması tetikler, böylece sonucu hızlıca görürsünüz; bir sonraki zamanlanmış heartbeat anını beklemeniz gerekmez.
 </Tip>
 
-Bu, olağan iş akışının push tabanlı olduğu anlamına gelir: ayrılmış işi bir kez başlatın, ardından çalışma zamanının tamamlanma sırasında sizi uyandırmasına veya bilgilendirmesine izin verin. Görev durumunu yalnızca hata ayıklama, müdahale veya açık bir denetim gerektiğinde yoklayın.
+Bu, olağan iş akışının push tabanlı olduğu anlamına gelir: ayrık işi bir kez başlatın, sonra çalışma zamanının tamamlanınca sizi uyandırmasına veya bilgilendirmesine izin verin. Görev durumunu yalnızca hata ayıklama, müdahale veya açık bir denetim gerektiğinde yoklayın.
 
-### Bildirim politikaları
+### Bildirim ilkeleri
 
 Her görev hakkında ne kadar duyacağınızı denetleyin:
 
-| Politika              | Teslim edilenler                                                       |
-| --------------------- | --------------------------------------------------------------------- |
+| İlke                | Ne teslim edilir                                                       |
+| --------------------- | ----------------------------------------------------------------------- |
 | `done_only` (varsayılan) | Yalnızca terminal durum (succeeded, failed vb.) — **varsayılan budur** |
-| `state_changes`       | Her durum geçişi ve ilerleme güncellemesi                             |
-| `silent`              | Hiçbir şey                                                            |
+| `state_changes`       | Her durum geçişi ve ilerleme güncellemesi                              |
+| `silent`              | Hiçbir şey                                                          |
 
-Bir görev çalışırken politikayı değiştirin:
+Bir görev çalışırken ilkeyi değiştirin:
 
 ```bash
 openclaw tasks notify <lookup> state_changes
@@ -192,7 +192,7 @@ openclaw tasks notify <lookup> state_changes
     openclaw tasks list [--runtime <acp|subagent|cron|cli>] [--status <status>] [--json]
     ```
 
-    Çıktı sütunları: Görev ID'si, Tür, Durum, Teslim, Çalıştırma ID'si, Alt Oturum, Özet.
+    Çıktı sütunları: Görev ID'si, Tür, Durum, Teslim, Çalışma ID'si, Alt Oturum, Özet.
 
   </Accordion>
   <Accordion title="tasks show">
@@ -200,7 +200,7 @@ openclaw tasks notify <lookup> state_changes
     openclaw tasks show <lookup>
     ```
 
-    Arama belirteci bir görev ID'si, çalıştırma ID'si veya oturum anahtarı kabul eder. Zamanlama, teslim durumu, hata ve terminal özeti dahil tam kaydı gösterir.
+    Arama belirteci bir görev ID'si, çalışma ID'si veya oturum anahtarı kabul eder. Zamanlama, teslim durumu, hata ve terminal özet dahil tam kaydı gösterir.
 
   </Accordion>
   <Accordion title="tasks cancel">
@@ -208,7 +208,7 @@ openclaw tasks notify <lookup> state_changes
     openclaw tasks cancel <lookup>
     ```
 
-    ACP ve alt ajan görevleri için bu, alt oturumu sonlandırır. CLI ile izlenen görevler için iptal, görev kayıt defterine kaydedilir (ayrı bir alt çalışma zamanı tanıtıcısı yoktur). Durum `cancelled` olarak değişir ve uygulanabilir olduğunda bir teslim bildirimi gönderilir.
+    ACP ve alt ajan görevleri için bu, alt oturumu sonlandırır. CLI tarafından izlenen görevler için iptal görev kayıt defterine kaydedilir (ayrı bir alt çalışma zamanı tanıtıcısı yoktur). Durum `cancelled` değerine geçer ve geçerli olduğunda teslim bildirimi gönderilir.
 
   </Accordion>
   <Accordion title="tasks notify">
@@ -221,65 +221,65 @@ openclaw tasks notify <lookup> state_changes
     openclaw tasks audit [--json]
     ```
 
-    Operasyonel sorunları ortaya çıkarır. Sorunlar algılandığında bulgular `openclaw status` içinde de görünür.
+    Operasyonel sorunları ortaya çıkarır. Bulgular, sorunlar algılandığında `openclaw status` içinde de görünür.
 
-    | Bulgular                 | Önem     | Tetikleyici                                                                                                   |
-    | ------------------------- | -------- | ------------------------------------------------------------------------------------------------------------- |
-    | `stale_queued`            | uyarı    | 10 dakikadan uzun süredir kuyrukta                                                                            |
-    | `stale_running`           | hata     | 30 dakikadan uzun süredir çalışıyor                                                                           |
-    | `lost`                    | uyarı/hata | Çalışma zamanı destekli görev sahipliği kayboldu; tutulan kayıp görevler `cleanupAfter` zamanına kadar uyarı verir, sonra hataya dönüşür |
-    | `delivery_failed`         | uyarı    | Teslimat başarısız oldu ve bildirim ilkesi `silent` değil                                                     |
-    | `missing_cleanup`         | uyarı    | Temizleme zaman damgası olmayan terminal görev                                                                |
-    | `inconsistent_timestamps` | uyarı    | Zaman çizelgesi ihlali (örneğin başlamadan önce bitmiş)                                                       |
+    | Bulgu                     | Önem       | Tetikleyici                                                                                                      |
+    | ------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------ |
+    | `stale_queued`            | uyarı      | 10 dakikadan uzun süredir kuyrukta                                                                              |
+    | `stale_running`           | hata       | 30 dakikadan uzun süredir çalışıyor                                                                             |
+    | `lost`                    | uyarı/hata | Çalışma zamanınca desteklenen görev sahipliği kayboldu; tutulan kayıp görevler `cleanupAfter` değerine kadar uyarı verir, sonra hataya dönüşür |
+    | `delivery_failed`         | uyarı      | Teslim başarısız oldu ve bildirim ilkesi `silent` değil                                                            |
+    | `missing_cleanup`         | uyarı      | Temizleme zaman damgası olmayan sonlanmış görev                                                                      |
+    | `inconsistent_timestamps` | uyarı      | Zaman çizelgesi ihlali (örneğin başlamadan önce bitmiş)                                                        |
 
   </Accordion>
-  <Accordion title="tasks maintenance">
+  <Accordion title="görev bakımı">
     ```bash
     openclaw tasks maintenance [--json]
     openclaw tasks maintenance --apply [--json]
     ```
 
-    Bunu görevler ve Görev Akışı durumu için uzlaştırma, temizleme damgalama ve budamayı önizlemek veya uygulamak için kullanın.
+    Bunu görevler ve TaskFlow durumu için uzlaştırmayı, temizleme damgalamasını ve budamayı önizlemek veya uygulamak için kullanın.
 
-    Uzlaştırma çalışma zamanının farkındadır:
+    Uzlaştırma çalışma zamanı farkındadır:
 
-    - ACP/alt aracı görevleri, bunları destekleyen alt oturumu denetler.
-    - Alt oturumu yeniden başlatma-kurtarma mezar taşına sahip olan alt aracı görevleri, kurtarılabilir destek oturumları olarak ele alınmak yerine kayıp olarak işaretlenir.
-    - Cron görevleri, cron çalışma zamanının işi hâlâ sahiplenip sahiplenmediğini denetler, ardından `lost` durumuna düşmeden önce kalıcı cron çalıştırma günlüklerinden/iş durumundan terminal durumunu kurtarır. Bellek içi cron etkin iş kümesi için yalnızca Gateway süreci yetkilidir; çevrimdışı CLI denetimi dayanıklı geçmişi kullanır ancak yalnızca bu yerel Set boş olduğu için bir cron görevini kayıp olarak işaretlemez.
-    - Sohbet destekli CLI görevleri, yalnızca sohbet oturumu satırını değil, sahip olan canlı çalıştırma bağlamını denetler.
+    - ACP/alt ajan görevleri, arkalarındaki çocuk oturumu denetler.
+    - Çocuk oturumunda yeniden başlatma kurtarma mezar taşı bulunan alt ajan görevleri, kurtarılabilir arka oturumlar olarak ele alınmak yerine kayıp olarak işaretlenir.
+    - Cron görevleri, cron çalışma zamanının işi hâlâ sahiplenip sahiplenmediğini denetler, ardından `lost` durumuna düşmeden önce kalıcı cron çalışma günlüklerinden/iş durumundan sonlanmış durumu kurtarır. Bellek içi cron etkin iş kümesi için yalnızca Gateway işlemi yetkilidir; çevrimdışı CLI denetimi kalıcı geçmişi kullanır ancak yalnızca bu yerel Set boş olduğu için bir cron görevini kayıp olarak işaretlemez.
+    - Sohbet destekli CLI görevleri yalnızca sohbet oturumu satırını değil, sahip olan canlı çalıştırma bağlamını denetler.
 
-    Tamamlanma temizliği de çalışma zamanının farkındadır:
+    Tamamlama temizliği de çalışma zamanı farkındadır:
 
-    - Alt aracı tamamlanması, duyuru temizliği devam etmeden önce alt oturum için izlenen tarayıcı sekmelerini/süreçlerini en iyi çabayla kapatır.
-    - Yalıtılmış cron tamamlanması, çalıştırma tamamen kapatılmadan önce cron oturumu için izlenen tarayıcı sekmelerini/süreçlerini en iyi çabayla kapatır.
-    - Yalıtılmış cron teslimatı, gerektiğinde alt aracı takip işlemlerini bekler ve duyurmak yerine bayat üst onay metnini bastırır.
-    - Alt aracı tamamlanma teslimatı, en son görünür asistan metnini tercih eder; bu boşsa temizlenmiş en son tool/toolResult metnine geri döner ve yalnızca zaman aşımına uğramış araç çağrısı çalıştırmaları kısa bir kısmi ilerleme özetine indirgenebilir. Terminal başarısız çalıştırmalar, yakalanan yanıt metnini yeniden oynatmadan başarısızlık durumunu duyurur.
-    - Temizleme hataları gerçek görev sonucunu gizlemez.
+    - Alt ajan tamamlaması, duyuru temizliği devam etmeden önce çocuk oturum için izlenen tarayıcı sekmelerini/işlemlerini en iyi çabayla kapatır.
+    - Yalıtılmış cron tamamlaması, çalıştırma tamamen sökülmeden önce cron oturumu için izlenen tarayıcı sekmelerini/işlemlerini en iyi çabayla kapatır.
+    - Yalıtılmış cron teslimi, gerektiğinde alt soy alt ajan takibini bekler ve bunu duyurmak yerine bayat üst onay metnini bastırır.
+    - Alt ajan tamamlama teslimi en son görünür asistan metnini tercih eder; bu boşsa temizlenmiş en son araç/toolResult metnine geri döner ve yalnızca zaman aşımına uğramış araç çağrısı çalıştırmaları kısa bir kısmi ilerleme özetine daralabilir. Sonlanmış başarısız çalıştırmalar, yakalanan yanıt metnini yeniden oynatmadan hata durumunu duyurur.
+    - Temizleme hataları gerçek görev sonucunu maskelemez.
 
   </Accordion>
-  <Accordion title="tasks flow list | show | cancel">
+  <Accordion title="görev akışı listele | göster | iptal et">
     ```bash
     openclaw tasks flow list [--status <status>] [--json]
     openclaw tasks flow show <lookup> [--json]
     openclaw tasks flow cancel <lookup>
     ```
 
-    Tek bir arka plan görev kaydı yerine düzenleyici Görev Akışı ile ilgileniyorsanız bunları kullanın.
+    Tek bir arka plan görev kaydı yerine önemsediğiniz şey düzenleyici TaskFlow olduğunda bunları kullanın.
 
   </Accordion>
 </AccordionGroup>
 
 ## Sohbet görev panosu (`/tasks`)
 
-Bu oturuma bağlı arka plan görevlerini görmek için herhangi bir sohbet oturumunda `/tasks` kullanın. Pano, etkin ve yakın zamanda tamamlanan görevleri çalışma zamanı, durum, zamanlama ve ilerleme ya da hata ayrıntısıyla gösterir.
+Bu oturuma bağlı arka plan görevlerini görmek için herhangi bir sohbet oturumunda `/tasks` kullanın. Pano, etkin ve yakın zamanda tamamlanmış görevleri çalışma zamanı, durum, zamanlama ve ilerleme ya da hata ayrıntısıyla gösterir.
 
-Geçerli oturumda görünür bağlı görev yoksa, `/tasks` aracı yerel görev sayılarına geri döner; böylece diğer oturum ayrıntılarını sızdırmadan yine de bir genel bakış alırsınız.
+Geçerli oturumda görünür bağlı görev yoksa, `/tasks` ajan yerel görev sayılarına geri döner; böylece diğer oturum ayrıntılarını sızdırmadan yine de bir genel görünüm elde edersiniz.
 
-Tam operatör defteri için CLI kullanın: `openclaw tasks list`.
+Tam operatör defteri için CLI'yi kullanın: `openclaw tasks list`.
 
 ## Durum entegrasyonu (görev baskısı)
 
-`openclaw status`, hızlı bakışlık bir görev özeti içerir:
+`openclaw status` hızlı bakış için bir görev özeti içerir:
 
 ```
 Tasks: 3 queued · 2 running · 1 issues
@@ -289,72 +289,72 @@ Tasks: 3 queued · 2 running · 1 issues
 
 - **active** — `queued` + `running` sayısı
 - **failures** — `failed` + `timed_out` + `lost` sayısı
-- **byRuntime** — `acp`, `subagent`, `cron`, `cli` bazında döküm
+- **byRuntime** — `acp`, `subagent`, `cron`, `cli` bazında dağılım
 
-Hem `/status` hem de `session_status` aracı temizleme farkındalıklı bir görev anlık görüntüsü kullanır: etkin görevler tercih edilir, bayat tamamlanmış satırlar gizlenir ve son başarısızlıklar yalnızca etkin iş kalmadığında yüzeye çıkar. Bu, durum kartının şu anda önemli olana odaklanmasını sağlar.
+Hem `/status` hem de `session_status` aracı temizleme farkındalığı olan bir görev anlık görüntüsü kullanır: etkin görevler tercih edilir, bayat tamamlanmış satırlar gizlenir ve son hatalar yalnızca etkin iş kalmadığında görünür. Bu, durum kartının şu anda önemli olana odaklanmasını sağlar.
 
 ## Depolama ve bakım
 
-### Görevler nerede bulunur
+### Görevlerin yaşadığı yer
 
-Görev kayıtları SQLite içinde kalıcıdır:
+Görev kayıtları SQLite içinde şu konumda kalıcıdır:
 
 ```
 $OPENCLAW_STATE_DIR/tasks/runs.sqlite
 ```
 
-Kayıt defteri Gateway başlangıcında belleğe yüklenir ve yeniden başlatmalar arasında dayanıklılık için yazmaları SQLite ile eşitler.
-Gateway, SQLite'ın varsayılan otomatik denetim noktası eşiğini ve periyodik ile kapatma zamanı `TRUNCATE` denetim noktalarını kullanarak SQLite write-ahead log'unu sınırlı tutar.
+Kayıt defteri Gateway başlangıcında belleğe yüklenir ve yeniden başlatmalar arasında dayanıklılık için yazımları SQLite ile eşitler.
+Gateway, SQLite'ın varsayılan otomatik denetim noktası eşiğini ve periyodik ile kapanış `TRUNCATE` denetim noktalarını kullanarak SQLite ileri yazma günlüğünü sınırlı tutar.
 
 ### Otomatik bakım
 
-Bir süpürücü her **60 saniyede** bir çalışır ve dört şeyi ele alır:
+Bir süpürücü her **60 saniyede** çalışır ve dört şeyi yönetir:
 
 <Steps>
-  <Step title="Reconciliation">
-    Etkin görevlerin hâlâ yetkili çalışma zamanı desteğine sahip olup olmadığını denetler. ACP/alt aracı görevleri alt oturum durumunu, cron görevleri etkin iş sahipliğini ve sohbet destekli CLI görevleri sahip olan çalıştırma bağlamını kullanır. Bu destek durumu 5 dakikadan uzun süre yoksa görev `lost` olarak işaretlenir.
+  <Step title="Uzlaştırma">
+    Etkin görevlerin hâlâ yetkili çalışma zamanı desteğine sahip olup olmadığını denetler. ACP/alt ajan görevleri çocuk oturum durumunu, cron görevleri etkin iş sahipliğini, sohbet destekli CLI görevleri ise sahip olan çalıştırma bağlamını kullanır. Bu destek durumu 5 dakikadan uzun süre yoksa görev `lost` olarak işaretlenir.
   </Step>
-  <Step title="ACP session repair">
-    Terminal veya yetim üst sahipli tek kullanımlık ACP oturumlarını kapatır ve bayat terminal ya da yetim kalıcı ACP oturumlarını yalnızca etkin konuşma bağı kalmadığında kapatır.
+  <Step title="ACP oturumu onarımı">
+    Sonlanmış veya yetim kalmış üst sahipli tek seferlik ACP oturumlarını kapatır ve bayat sonlanmış ya da yetim kalmış kalıcı ACP oturumlarını yalnızca etkin konuşma bağı kalmadığında kapatır.
   </Step>
-  <Step title="Cleanup stamping">
-    Terminal görevlere bir `cleanupAfter` zaman damgası ayarlar (endedAt + 7 gün). Saklama sırasında kayıp görevler denetimde hâlâ uyarı olarak görünür; `cleanupAfter` süresi dolduktan sonra veya temizleme meta verileri eksik olduğunda hata olurlar.
+  <Step title="Temizleme damgalaması">
+    Sonlanmış görevlerde bir `cleanupAfter` zaman damgası ayarlar (endedAt + 7 gün). Saklama süresince kayıp görevler denetimde hâlâ uyarı olarak görünür; `cleanupAfter` süresi dolduktan sonra veya temizleme metadatası eksik olduğunda bunlar hatadır.
   </Step>
-  <Step title="Pruning">
-    `cleanupAfter` tarihini geçmiş kayıtları siler.
+  <Step title="Budama">
+    `cleanupAfter` tarihini geçen kayıtları siler.
   </Step>
 </Steps>
 
 <Note>
-**Saklama:** terminal görev kayıtları **7 gün** tutulur, ardından otomatik olarak budanır. Yapılandırma gerekmez.
+**Saklama:** sonlanmış görev kayıtları **7 gün** tutulur, ardından otomatik olarak budanır. Yapılandırma gerekmez.
 </Note>
 
 ## Görevlerin diğer sistemlerle ilişkisi
 
 <AccordionGroup>
-  <Accordion title="Tasks and Task Flow">
-    [Görev Akışı](/tr/automation/taskflow), arka plan görevlerinin üzerindeki akış düzenleme katmanıdır. Tek bir akış, ömrü boyunca yönetilen veya yansıtılmış eşitleme modlarını kullanarak birden çok görevi koordine edebilir. Tek tek görev kayıtlarını incelemek için `openclaw tasks`, düzenleyici akışı incelemek için `openclaw tasks flow` kullanın.
+  <Accordion title="Görevler ve TaskFlow">
+    [TaskFlow](/tr/automation/taskflow), arka plan görevlerinin üzerindeki akış düzenleme katmanıdır. Tek bir akış, ömrü boyunca yönetilen veya aynalanan eşitleme modlarını kullanarak birden fazla görevi koordine edebilir. Tekil görev kayıtlarını incelemek için `openclaw tasks`, düzenleyici akışı incelemek için `openclaw tasks flow` kullanın.
 
-    Ayrıntılar için bkz. [Görev Akışı](/tr/automation/taskflow).
+    Ayrıntılar için [TaskFlow](/tr/automation/taskflow) bölümüne bakın.
 
   </Accordion>
-  <Accordion title="Tasks and cron">
-    Bir cron işi **tanımı** `~/.openclaw/cron/jobs.json` içinde bulunur; çalışma zamanı yürütme durumu onun yanında `~/.openclaw/cron/jobs-state.json` içinde bulunur. **Her** cron yürütmesi bir görev kaydı oluşturur — hem ana oturum hem de yalıtılmış olanlar. Ana oturum cron görevleri varsayılan olarak `silent` bildirim ilkesini kullanır; böylece bildirim oluşturmadan izlenirler.
+  <Accordion title="Görevler ve cron">
+    Bir cron işi **tanımı** `~/.openclaw/cron/jobs.json` içinde yaşar; çalışma zamanı yürütme durumu yanında `~/.openclaw/cron/jobs-state.json` içinde yaşar. **Her** cron yürütmesi bir görev kaydı oluşturur; hem ana oturum hem de yalıtılmış olanlar. Ana oturum cron görevleri, bildirim üretmeden izlenmeleri için varsayılan olarak `silent` bildirim ilkesini kullanır.
 
     Bkz. [Cron İşleri](/tr/automation/cron-jobs).
 
   </Accordion>
-  <Accordion title="Tasks and heartbeat">
-    Heartbeat çalıştırmaları ana oturum turlarıdır — görev kaydı oluşturmazlar. Bir görev tamamlandığında, sonucu hemen görmeniz için bir heartbeat uyandırmasını tetikleyebilir.
+  <Accordion title="Görevler ve Heartbeat">
+    Heartbeat çalıştırmaları ana oturum dönüşleridir; görev kaydı oluşturmazlar. Bir görev tamamlandığında sonucu hızlıca görmeniz için bir Heartbeat uyandırması tetikleyebilir.
 
     Bkz. [Heartbeat](/tr/gateway/heartbeat).
 
   </Accordion>
-  <Accordion title="Tasks and sessions">
-    Bir görev bir `childSessionKey` (işin çalıştığı yer) ve bir `requesterSessionKey` (onu başlatan kişi) başvurusu içerebilir. Oturumlar konuşma bağlamıdır; görevler bunun üzerindeki etkinlik takibidir.
+  <Accordion title="Görevler ve oturumlar">
+    Bir görev bir `childSessionKey` (işin çalıştığı yer) ve bir `requesterSessionKey` (onu başlatan kişi) referans gösterebilir. Oturumlar konuşma bağlamıdır; görevler bunun üzerinde etkinlik takibidir.
   </Accordion>
-  <Accordion title="Tasks and agent runs">
-    Bir görevin `runId` değeri, işi yapan aracı çalıştırmasına bağlanır. Aracı yaşam döngüsü olayları (başlama, bitiş, hata) görev durumunu otomatik olarak günceller — yaşam döngüsünü elle yönetmeniz gerekmez.
+  <Accordion title="Görevler ve ajan çalıştırmaları">
+    Bir görevin `runId` değeri, işi yapan ajan çalıştırmasına bağlanır. Ajan yaşam döngüsü olayları (başlangıç, bitiş, hata) görev durumunu otomatik olarak günceller; yaşam döngüsünü elle yönetmeniz gerekmez.
   </Accordion>
 </AccordionGroup>
 
@@ -362,6 +362,6 @@ Bir süpürücü her **60 saniyede** bir çalışır ve dört şeyi ele alır:
 
 - [Otomasyon ve Görevler](/tr/automation) — tüm otomasyon mekanizmalarına hızlı bakış
 - [CLI: Görevler](/tr/cli/tasks) — CLI komut başvurusu
-- [Heartbeat](/tr/gateway/heartbeat) — periyodik ana oturum turları
+- [Heartbeat](/tr/gateway/heartbeat) — periyodik ana oturum dönüşleri
 - [Zamanlanmış Görevler](/tr/automation/cron-jobs) — arka plan işini zamanlama
-- [Görev Akışı](/tr/automation/taskflow) — görevlerin üzerindeki akış düzenleme
+- [TaskFlow](/tr/automation/taskflow) — görevlerin üzerindeki akış düzenleme

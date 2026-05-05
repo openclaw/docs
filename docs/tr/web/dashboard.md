@@ -1,108 +1,111 @@
 ---
 read_when:
-    - Gösterge paneli kimlik doğrulamasını veya görünürlük modlarını değiştirme
-summary: Gateway gösterge paneli (Control UI) erişimi ve kimlik doğrulama
-title: Gösterge paneli
+    - Pano kimlik doğrulamasını veya erişime açma modlarını değiştirme
+summary: Gateway panosuna (Kontrol UI) erişim ve kimlik doğrulama
+title: Kontrol Paneli
 x-i18n:
-    generated_at: "2026-04-25T14:01:01Z"
-    model: gpt-5.4
+    generated_at: "2026-05-05T01:51:01Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 5e0e7c8cebe715f96e7f0e967e9fd86c4c6c54f7cc08a4291b02515fc0933a1a
+    source_hash: 0e2086587fee6303221663748c3047886a5beae29862d66e2edf78e02bfe3da1
     source_path: web/dashboard.md
-    workflow: 15
+    workflow: 16
 ---
 
-Gateway gösterge paneli, varsayılan olarak `/` yolunda sunulan tarayıcı tabanlı Control UI'dir
-(`gateway.controlUi.basePath` ile geçersiz kılınabilir).
+Gateway panosu, varsayılan olarak `/` adresinde sunulan tarayıcı Kontrol Arayüzüdür
+(`gateway.controlUi.basePath` ile geçersiz kılın).
 
-Hızlı açılış (yerel Gateway):
+Hızlı açma (yerel Gateway):
 
 - [http://127.0.0.1:18789/](http://127.0.0.1:18789/) (veya [http://localhost:18789/](http://localhost:18789/))
-- `gateway.tls.enabled: true` ile `https://127.0.0.1:18789/` kullanın ve
-  WebSocket uç noktası için `wss://127.0.0.1:18789` kullanın.
+- `gateway.tls.enabled: true` ile WebSocket uç noktası için `https://127.0.0.1:18789/` ve
+  `wss://127.0.0.1:18789` kullanın.
 
 Temel başvurular:
 
-- Kullanım ve UI yetenekleri için [Control UI](/tr/web/control-ui).
+- Kullanım ve UI yetenekleri için [Kontrol Arayüzü](/tr/web/control-ui).
 - Serve/Funnel otomasyonu için [Tailscale](/tr/gateway/tailscale).
 - Bağlama modları ve güvenlik notları için [Web yüzeyleri](/tr/web).
 
-Kimlik doğrulama, yapılandırılmış gateway
-kimlik doğrulama yolu üzerinden WebSocket handshake sırasında zorunlu kılınır:
+Kimlik doğrulama, yapılandırılmış Gateway kimlik doğrulama yolu üzerinden WebSocket
+el sıkışmasında zorunlu tutulur:
 
 - `connect.params.auth.token`
 - `connect.params.auth.password`
 - `gateway.auth.allowTailscale: true` olduğunda Tailscale Serve kimlik üst bilgileri
-- `gateway.auth.mode: "trusted-proxy"` olduğunda trusted-proxy kimlik üst bilgileri
+- `gateway.auth.mode: "trusted-proxy"` olduğunda güvenilen proxy kimlik üst bilgileri
 
-Bkz. [Gateway yapılandırması](/tr/gateway/configuration) içindeki `gateway.auth`.
+[Gateway yapılandırması](/tr/gateway/configuration) içinde `gateway.auth` bölümüne bakın.
 
-Güvenlik notu: Control UI bir **yönetici yüzeyidir** (sohbet, yapılandırma, exec onayları).
-Bunu herkese açık şekilde yayınlamayın. UI, gösterge paneli URL token'larını mevcut tarayıcı sekmesi oturumu
-ve seçili gateway URL'si için sessionStorage içinde tutar ve yüklemeden sonra bunları URL'den kaldırır.
-localhost, Tailscale Serve veya SSH tüneli tercih edin.
+Güvenlik notu: Kontrol Arayüzü bir **yönetici yüzeyidir** (sohbet, yapılandırma, yürütme onayları).
+Bunu herkese açık olarak yayınlamayın. UI, pano URL token'larını geçerli tarayıcı sekmesi oturumu
+ve seçili Gateway URL'si için sessionStorage içinde tutar ve yüklemeden sonra bunları URL'den kaldırır.
+localhost, Tailscale Serve veya SSH tünelini tercih edin.
 
-## Hızlı yol (önerilen)
+## Hızlı yol (önerilir)
 
-- Onboarding sonrasında CLI gösterge panelini otomatik açar ve temiz (token içermeyen) bir bağlantı yazdırır.
-- İstediğiniz zaman yeniden açın: `openclaw dashboard` (bağlantıyı kopyalar, mümkünse tarayıcıyı açar, headless ise SSH ipucunu gösterir).
+- İlk kurulumdan sonra CLI panoyu otomatik açar ve temiz (token içermeyen) bir bağlantı yazdırır.
+- İstediğiniz zaman yeniden açın: `openclaw dashboard` (bağlantıyı kopyalar, mümkünse tarayıcıyı açar, başsız ortamda SSH ipucu gösterir).
+- Pano ve tarayıcı teslimi başarısız olursa, `openclaw dashboard` yine de temiz URL'yi yazdırır ve
+  `OPENCLAW_GATEWAY_TOKEN` veya `gateway.auth.token` içindeki token'ı URL parça anahtarı `token` olarak
+  kullanmanızı söyler; token değerlerini günlüklere yazdırmaz.
 - UI paylaşılan gizli anahtar kimlik doğrulaması isterse, yapılandırılmış token'ı veya
-  parolayı Control UI ayarlarına yapıştırın.
+  parolayı Kontrol Arayüzü ayarlarına yapıştırın.
 
 ## Kimlik doğrulama temelleri (yerel ve uzak)
 
 - **Localhost**: `http://127.0.0.1:18789/` adresini açın.
-- **Gateway TLS**: `gateway.tls.enabled: true` olduğunda gösterge paneli/durum bağlantıları
-  `https://`, Control UI WebSocket bağlantıları ise `wss://` kullanır.
+- **Gateway TLS**: `gateway.tls.enabled: true` olduğunda pano/durum bağlantıları
+  `https://`, Kontrol Arayüzü WebSocket bağlantıları ise `wss://` kullanır.
 - **Paylaşılan gizli token kaynağı**: `gateway.auth.token` (veya
-  `OPENCLAW_GATEWAY_TOKEN`); `openclaw dashboard` bunu tek seferlik önyükleme için
-  URL fragment aracılığıyla geçirebilir ve Control UI bunu localStorage yerine geçerli
-  tarayıcı sekmesi oturumu ve seçilen gateway URL'si için sessionStorage içinde tutar.
-- `gateway.auth.token` SecretRef tarafından yönetiliyorsa, `openclaw dashboard`
-  tasarım gereği token içermeyen bir URL yazdırır/kopyalar/açar. Bu, harici olarak
-  yönetilen token'ların shell günlüklerinde, pano geçmişinde veya tarayıcı başlatma
-  argümanlarında açığa çıkmasını önler.
-- `gateway.auth.token` bir SecretRef olarak yapılandırılmışsa ve mevcut shell ortamınızda
-  çözümlenmemişse, `openclaw dashboard` yine de token içermeyen bir URL ile
-  eyleme dönüştürülebilir kimlik doğrulama kurulum yönergeleri yazdırır.
+  `OPENCLAW_GATEWAY_TOKEN`); `openclaw dashboard` bunu tek seferlik başlangıç için URL parçası üzerinden
+  geçirebilir ve Kontrol Arayüzü bunu localStorage yerine geçerli tarayıcı sekmesi oturumu
+  ve seçili Gateway URL'si için sessionStorage içinde tutar.
+- `gateway.auth.token` SecretRef ile yönetiliyorsa, `openclaw dashboard`
+  tasarım gereği token içermeyen bir URL yazdırır/kopyalar/açar. Bu, harici olarak yönetilen
+  token'ların kabuk günlüklerinde, pano geçmişinde veya tarayıcı başlatma bağımsız değişkenlerinde
+  açığa çıkmasını önler.
+- `gateway.auth.token` SecretRef olarak yapılandırılmışsa ve geçerli kabuğunuzda çözümlenmemişse,
+  `openclaw dashboard` yine de token içermeyen bir URL ile uygulanabilir kimlik doğrulama kurulum
+  rehberliği yazdırır.
 - **Paylaşılan gizli parola**: yapılandırılmış `gateway.auth.password` değerini (veya
-  `OPENCLAW_GATEWAY_PASSWORD`) kullanın. Gösterge paneli parolaları yeniden yüklemeler arasında
-  kalıcı olarak saklamaz.
-- **Kimlik taşıyan modlar**: `gateway.auth.allowTailscale: true` olduğunda Tailscale Serve,
-  kimlik üst bilgileri üzerinden Control UI/WebSocket
-  kimlik doğrulamasını karşılayabilir ve döngüsel olmayan kimlik farkındalığına sahip bir reverse proxy,
-  `gateway.auth.mode: "trusted-proxy"` durumunda bunu karşılayabilir. Bu modlarda
-  gösterge panelinin WebSocket için yapıştırılmış paylaşılan gizli anahtara ihtiyacı yoktur.
-- **Localhost değilse**: Tailscale Serve, döngüsel olmayan paylaşılan gizli anahtar bağı, `gateway.auth.mode: "trusted-proxy"` ile
-  döngüsel olmayan kimlik farkındalığına sahip reverse proxy veya SSH tüneli kullanın. HTTP API'leri yine de
-  siz bilerek özel giriş `gateway.auth.mode: "none"` veya trusted-proxy HTTP kimlik doğrulaması
-  çalıştırmadığınız sürece paylaşılan gizli anahtar kimlik doğrulamasını kullanır. Bkz.
+  `OPENCLAW_GATEWAY_PASSWORD`) kullanın. Pano, parolaları yeniden yüklemeler arasında kalıcı tutmaz.
+- **Kimlik taşıyan modlar**: Tailscale Serve, `gateway.auth.allowTailscale: true` olduğunda
+  kimlik üst bilgileri üzerinden Kontrol Arayüzü/WebSocket kimlik doğrulamasını karşılayabilir ve
+  local loopback olmayan, kimlik farkında bir ters proxy
+  `gateway.auth.mode: "trusted-proxy"` değerini karşılayabilir. Bu modlarda pano,
+  WebSocket için yapıştırılmış bir paylaşılan gizli anahtara ihtiyaç duymaz.
+- **Localhost değilse**: Tailscale Serve, local loopback olmayan paylaşılan gizli anahtar bağlaması,
+  `gateway.auth.mode: "trusted-proxy"` kullanan local loopback olmayan kimlik farkında bir ters proxy
+  veya SSH tüneli kullanın. HTTP API'leri, özellikle özel giriş
+  `gateway.auth.mode: "none"` veya trusted-proxy HTTP kimlik doğrulaması çalıştırmadığınız sürece
+  paylaşılan gizli anahtar kimlik doğrulamasını kullanmaya devam eder. Bkz.
   [Web yüzeyleri](/tr/web).
 
 <a id="if-you-see-unauthorized-1008"></a>
 
 ## "unauthorized" / 1008 görürseniz
 
-- Gateway'e erişilebildiğinden emin olun (yerel: `openclaw status`; uzak: SSH tüneli `ssh -N -L 18789:127.0.0.1:18789 user@host`, ardından `http://127.0.0.1:18789/` adresini açın).
-- `AUTH_TOKEN_MISMATCH` için istemciler, gateway yeniden deneme ipuçları döndürdüğünde önbelleğe alınmış cihaz token'ı ile güvenilir tek bir yeniden deneme yapabilir. Bu önbelleğe alınmış token yeniden denemesi, token'ın önbelleğe alınmış onaylı kapsamlarını yeniden kullanır; açık `deviceToken` / açık `scopes` çağıranları ise istenen kapsam kümesini korur. Bu yeniden denemeden sonra kimlik doğrulama hâlâ başarısız olursa, token kaymasını manuel olarak çözün.
-- Bu yeniden deneme yolunun dışında, bağlantı kimlik doğrulama önceliği önce açık paylaşılan token/parola, sonra açık `deviceToken`, sonra kayıtlı cihaz token'ı, sonra önyükleme token'ıdır.
-- Eşzamansız Tailscale Serve Control UI yolunda, aynı
-  `{scope, ip}` için başarısız denemeler, başarısız kimlik doğrulama sınırlayıcısı bunları kaydetmeden önce serileştirilir; bu nedenle ikinci eşzamanlı kötü yeniden deneme zaten `retry later` gösterebilir.
-- Token kayması onarım adımları için [Token drift recovery checklist](/tr/cli/devices#token-drift-recovery-checklist) belgesini izleyin.
-- Paylaşılan gizli anahtarı gateway host'undan alın veya sağlayın:
+- Gateway'in erişilebilir olduğundan emin olun (yerel: `openclaw status`; uzak: SSH tüneli `ssh -N -L 18789:127.0.0.1:18789 user@host`, ardından `http://127.0.0.1:18789/` adresini açın).
+- `AUTH_TOKEN_MISMATCH` için, Gateway yeniden deneme ipuçları döndürdüğünde istemciler önbelleğe alınmış cihaz token'ıyla güvenilen tek bir yeniden deneme yapabilir. Bu önbelleğe alınmış token yeniden denemesi, token'ın önbelleğe alınmış onaylı kapsamlarını yeniden kullanır; açık `deviceToken` / açık `scopes` çağırıcıları kendi istedikleri kapsam kümesini korur. Bu yeniden denemeden sonra kimlik doğrulama hâlâ başarısız olursa, token sapmasını elle çözün.
+- Bu yeniden deneme yolu dışında, bağlantı kimlik doğrulaması önceliği önce açık paylaşılan token/parola, sonra açık `deviceToken`, sonra saklanan cihaz token'ı, sonra başlangıç token'ıdır.
+- Eşzamansız Tailscale Serve Kontrol Arayüzü yolunda, aynı
+  `{scope, ip}` için başarısız girişimler, başarısız kimlik doğrulama sınırlayıcısı bunları kaydetmeden önce serileştirilir; bu nedenle
+  ikinci eşzamanlı hatalı yeniden deneme zaten `retry later` gösterebilir.
+- Token sapması onarım adımları için [Token sapması kurtarma kontrol listesi](/tr/cli/devices#token-drift-recovery-checklist) bölümünü izleyin.
+- Paylaşılan gizli anahtarı Gateway ana makinesinden alın veya sağlayın:
   - Token: `openclaw config get gateway.auth.token`
   - Parola: yapılandırılmış `gateway.auth.password` veya
     `OPENCLAW_GATEWAY_PASSWORD` değerini çözümleyin
-  - SecretRef tarafından yönetilen token: harici gizli bilgi sağlayıcısını çözümleyin veya
-    bu shell ortamında `OPENCLAW_GATEWAY_TOKEN` dışa aktarın, sonra `openclaw dashboard`
-    komutunu yeniden çalıştırın
-  - Yapılandırılmış paylaşılan gizli anahtar yoksa: `openclaw doctor --generate-gateway-token`
-- Gösterge paneli ayarlarında token'ı veya parolayı kimlik doğrulama alanına
-  yapıştırın, ardından bağlanın.
-- UI dil seçici **Overview -> Gateway Access -> Language** bölümündedir.
-  Appearance bölümünün değil, erişim kartının parçasıdır.
+  - SecretRef ile yönetilen token: harici gizli anahtar sağlayıcısını çözümleyin veya
+    bu kabukta `OPENCLAW_GATEWAY_TOKEN` dışa aktarın, ardından `openclaw dashboard` komutunu yeniden çalıştırın
+  - Paylaşılan gizli anahtar yapılandırılmamış: `openclaw doctor --generate-gateway-token`
+- Pano ayarlarında token'ı veya parolayı kimlik doğrulama alanına yapıştırın,
+  ardından bağlanın.
+- UI dil seçici **Genel Bakış -> Gateway Erişimi -> Dil** içindedir.
+  Görünüm bölümünün değil, erişim kartının parçasıdır.
 
 ## İlgili
 
-- [Control UI](/tr/web/control-ui)
+- [Kontrol Arayüzü](/tr/web/control-ui)
 - [WebChat](/tr/web/webchat)
