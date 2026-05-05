@@ -1,58 +1,58 @@
 ---
 read_when:
-    - Tìm tổng quan về các khả năng xử lý phương tiện của OpenClaw
+    - Tìm thông tin tổng quan về các khả năng đa phương tiện của OpenClaw
     - Quyết định nhà cung cấp phương tiện nào cần cấu hình
-    - Tìm hiểu cách hoạt động của quá trình tạo nội dung đa phương tiện bất đồng bộ
+    - Tìm hiểu cách hoạt động của tính năng tạo nội dung đa phương tiện bất đồng bộ
 sidebarTitle: Media overview
-summary: Tổng quan về các khả năng hình ảnh, video, âm nhạc, giọng nói và hiểu nội dung đa phương tiện
-title: Tổng quan về nội dung đa phương tiện
+summary: Tổng quan nhanh về các khả năng hình ảnh, video, âm nhạc, giọng nói và hiểu nội dung phương tiện
+title: Tổng quan về phương tiện
 x-i18n:
-    generated_at: "2026-05-05T01:51:35Z"
+    generated_at: "2026-05-05T06:19:09Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1bd6b93fd79897001d24f3ba5a5c8cb9bd17281116fad17262a6389214db7059
+    source_hash: fd02d4418fe294fda5f1437dd3a07c4aeb4de3b46a1b70bfe36914bc27123cc4
     source_path: tools/media-overview.md
     workflow: 16
 ---
 
-OpenClaw tạo hình ảnh, video và nhạc, hiểu nội dung đa phương tiện nhận vào
+OpenClaw tạo hình ảnh, video và nhạc, hiểu phương tiện đến
 (hình ảnh, âm thanh, video), và đọc to câu trả lời bằng chuyển văn bản thành giọng nói. Tất cả
-khả năng về nội dung đa phương tiện đều được điều khiển bằng công cụ: tác nhân quyết định khi nào dùng chúng dựa
+năng lực phương tiện đều do công cụ điều khiển: tác nhân quyết định khi nào dùng chúng dựa
 trên cuộc trò chuyện, và mỗi công cụ chỉ xuất hiện khi có ít nhất một
 nhà cung cấp hỗ trợ được cấu hình.
 
-## Khả năng
+## Năng lực
 
 <CardGroup cols={2}>
-  <Card title="Tạo hình ảnh" href="/vi/tools/image-generation" icon="image">
-    Tạo và chỉnh sửa hình ảnh từ prompt văn bản hoặc hình ảnh tham chiếu qua
+  <Card title="Image generation" href="/vi/tools/image-generation" icon="image">
+    Tạo và chỉnh sửa hình ảnh từ lời nhắc văn bản hoặc hình ảnh tham chiếu qua
     `image_generate`. Đồng bộ — hoàn tất ngay trong câu trả lời.
   </Card>
-  <Card title="Tạo video" href="/vi/tools/video-generation" icon="video">
-    Văn bản thành video, hình ảnh thành video và video thành video qua `video_generate`.
+  <Card title="Video generation" href="/vi/tools/video-generation" icon="video">
+    Văn bản thành video, hình ảnh thành video, và video thành video qua `video_generate`.
     Bất đồng bộ — chạy trong nền và đăng kết quả khi sẵn sàng.
   </Card>
-  <Card title="Tạo nhạc" href="/vi/tools/music-generation" icon="music">
+  <Card title="Music generation" href="/vi/tools/music-generation" icon="music">
     Tạo nhạc hoặc bản âm thanh qua `music_generate`. Bất đồng bộ trên các
     nhà cung cấp dùng chung; đường dẫn quy trình ComfyUI chạy đồng bộ.
   </Card>
-  <Card title="Chuyển văn bản thành giọng nói" href="/vi/tools/tts" icon="microphone">
-    Chuyển câu trả lời gửi ra thành âm thanh lời nói qua công cụ `tts` cùng
+  <Card title="Text-to-speech" href="/vi/tools/tts" icon="microphone">
+    Chuyển câu trả lời gửi đi thành âm thanh nói qua công cụ `tts` cộng với
     cấu hình `messages.tts`. Đồng bộ.
   </Card>
-  <Card title="Hiểu nội dung đa phương tiện" href="/vi/nodes/media-understanding" icon="eye">
-    Tóm tắt hình ảnh, âm thanh và video nhận vào bằng các nhà cung cấp mô hình
-    có khả năng thị giác và các Plugin chuyên dụng để hiểu nội dung đa phương tiện.
+  <Card title="Media understanding" href="/vi/nodes/media-understanding" icon="eye">
+    Tóm tắt hình ảnh, âm thanh và video đến bằng các nhà cung cấp mô hình
+    có khả năng thị giác và các Plugin hiểu phương tiện chuyên dụng.
   </Card>
-  <Card title="Chuyển lời nói thành văn bản" href="/vi/nodes/audio" icon="ear-listen">
-    Phiên âm tin nhắn thoại nhận vào thông qua nhà cung cấp STT theo lô hoặc
-    STT truyền phát cho Cuộc gọi thoại.
+  <Card title="Speech-to-text" href="/vi/nodes/audio" icon="ear-listen">
+    Chép lời tin nhắn thoại đến thông qua STT theo lô hoặc các nhà cung cấp
+    STT phát trực tuyến cho Voice Call.
   </Card>
 </CardGroup>
 
-## Ma trận khả năng của nhà cung cấp
+## Ma trận năng lực nhà cung cấp
 
-| Nhà cung cấp | Hình ảnh | Video | Nhạc | TTS | STT | Giọng nói thời gian thực | Hiểu nội dung đa phương tiện |
+| Nhà cung cấp | Hình ảnh | Video | Nhạc | TTS | STT | Giọng nói thời gian thực | Hiểu phương tiện |
 | ----------- | :---: | :---: | :---: | :-: | :-: | :------------: | :-----------------: |
 | Alibaba     |       |   ✓   |       |     |     |                |                     |
 | BytePlus    |       |   ✓   |       |     |     |                |                     |
@@ -63,7 +63,7 @@ nhà cung cấp hỗ trợ được cấu hình.
 | fal         |   ✓   |   ✓   |       |     |     |                |                     |
 | Google      |   ✓   |   ✓   |   ✓   |  ✓  |     |       ✓        |          ✓          |
 | Gradium     |       |       |       |  ✓  |     |                |                     |
-| CLI cục bộ  |       |       |       |  ✓  |     |                |                     |
+| Local CLI   |       |       |       |  ✓  |     |                |                     |
 | Microsoft   |       |       |       |  ✓  |     |                |                     |
 | MiniMax     |   ✓   |   ✓   |   ✓   |  ✓  |     |                |                     |
 | Mistral     |       |       |       |     |  ✓  |                |                     |
@@ -78,66 +78,68 @@ nhà cung cấp hỗ trợ được cấu hình.
 | Xiaomi MiMo |   ✓   |       |       |  ✓  |     |                |          ✓          |
 
 <Note>
-Hiểu nội dung đa phương tiện dùng bất kỳ mô hình có khả năng thị giác hoặc âm thanh nào được đăng ký
-trong cấu hình nhà cung cấp của bạn. Ma trận ở trên liệt kê các nhà cung cấp có hỗ trợ
-hiểu nội dung đa phương tiện chuyên dụng; hầu hết nhà cung cấp LLM đa phương thức (Anthropic, Google,
-OpenAI, v.v.) cũng có thể hiểu nội dung đa phương tiện nhận vào khi được cấu hình làm
-mô hình trả lời đang hoạt động.
+Hiểu phương tiện dùng bất kỳ mô hình có khả năng thị giác hoặc âm thanh nào được đăng ký
+trong cấu hình nhà cung cấp của bạn. Ma trận trên liệt kê các nhà cung cấp có hỗ trợ
+hiểu phương tiện chuyên dụng; hầu hết nhà cung cấp LLM đa phương thức (Anthropic, Google,
+OpenAI, v.v.) cũng có thể hiểu phương tiện đến khi được cấu hình làm mô hình
+trả lời đang hoạt động.
 </Note>
 
 ## Bất đồng bộ so với đồng bộ
 
-| Khả năng      | Chế độ         | Lý do                                                                |
-| --------------- | ------------ | ------------------------------------------------------------------ |
-| Hình ảnh           | Đồng bộ  | Phản hồi của nhà cung cấp trả về trong vài giây; hoàn tất ngay trong câu trả lời. |
-| Chuyển văn bản thành giọng nói  | Đồng bộ  | Phản hồi của nhà cung cấp trả về trong vài giây; được đính kèm vào âm thanh câu trả lời. |
-| Video           | Bất đồng bộ | Quá trình xử lý của nhà cung cấp mất từ 30 giây đến vài phút.                 |
-| Nhạc (dùng chung)  | Bất đồng bộ | Có cùng đặc điểm xử lý phía nhà cung cấp như video.                  |
-| Nhạc (ComfyUI) | Đồng bộ  | Quy trình cục bộ chạy ngay với máy chủ ComfyUI đã cấu hình.  |
+| Năng lực | Chế độ | Lý do                                                                                                  |
+| --------------- | ------------ | ---------------------------------------------------------------------------------------------------- |
+| Hình ảnh | Đồng bộ | Phản hồi của nhà cung cấp trả về trong vài giây; hoàn tất ngay trong câu trả lời.                                   |
+| Chuyển văn bản thành giọng nói | Đồng bộ | Phản hồi của nhà cung cấp trả về trong vài giây; được đính kèm vào âm thanh trả lời.                                   |
+| Video | Bất đồng bộ | Quá trình xử lý của nhà cung cấp mất từ 30 giây đến vài phút; hàng đợi chậm có thể chạy tới thời hạn chờ đã cấu hình. |
+| Nhạc (dùng chung) | Bất đồng bộ | Có cùng đặc điểm xử lý của nhà cung cấp như video.                                                    |
+| Nhạc (ComfyUI) | Đồng bộ | Quy trình cục bộ chạy ngay với máy chủ ComfyUI đã cấu hình.                                    |
 
-Đối với công cụ bất đồng bộ, OpenClaw gửi yêu cầu đến nhà cung cấp, trả về id tác vụ
-ngay lập tức, và theo dõi công việc trong sổ cái tác vụ. Tác nhân tiếp tục
-phản hồi các tin nhắn khác trong khi công việc chạy. Khi nhà cung cấp hoàn tất,
-OpenClaw đánh thức tác nhân với các đường dẫn nội dung đa phương tiện đã tạo để nó có thể báo cho
-người dùng và, khi chính sách phân phối nguồn yêu cầu, chuyển tiếp kết quả qua
-công cụ nhắn tin.
+Với công cụ bất đồng bộ, OpenClaw gửi yêu cầu tới nhà cung cấp, trả về một mã tác vụ
+ngay lập tức, và theo dõi công việc trong sổ theo dõi tác vụ. Tác nhân tiếp tục
+trả lời các tin nhắn khác trong khi công việc chạy. Khi nhà cung cấp hoàn tất,
+OpenClaw đánh thức tác nhân bằng các đường dẫn phương tiện đã tạo để nó có thể báo cho
+người dùng và, khi chính sách phân phối theo nguồn yêu cầu, chuyển tiếp kết quả qua
+công cụ nhắn tin. Với các tuyến nhóm/kênh chỉ dùng công cụ nhắn tin, OpenClaw xem
+việc thiếu bằng chứng phân phối qua công cụ nhắn tin là một lần hoàn tất thất bại và gửi
+phương tiện đã tạo dự phòng trực tiếp tới kênh ban đầu.
 
-## Chuyển lời nói thành văn bản và Cuộc gọi thoại
+## Chuyển giọng nói thành văn bản và Voice Call
 
-Deepgram, DeepInfra, ElevenLabs, Mistral, OpenAI, SenseAudio và xAI đều có thể phiên âm
-âm thanh nhận vào qua đường dẫn `tools.media.audio` theo lô khi được cấu hình.
-Các Plugin kênh kiểm tra trước ghi chú thoại để gác cổng lượt nhắc đến hoặc phân tích cú pháp
-lệnh sẽ đánh dấu tệp đính kèm đã phiên âm trên ngữ cảnh nhận vào, để lượt
-hiểu nội dung đa phương tiện dùng chung tái sử dụng bản phiên âm đó thay vì thực hiện lệnh gọi
+Deepgram, DeepInfra, ElevenLabs, Mistral, OpenAI, SenseAudio và xAI đều có thể chép lời
+âm thanh đến thông qua đường dẫn `tools.media.audio` theo lô khi được cấu hình.
+Các Plugin kênh kiểm tra trước ghi chú thoại để chặn theo lượt nhắc đến hoặc phân tích
+lệnh sẽ đánh dấu tệp đính kèm đã chép lời trên ngữ cảnh đến, để lượt
+hiểu phương tiện dùng chung tái sử dụng bản chép lời đó thay vì thực hiện lệnh gọi
 STT thứ hai cho cùng âm thanh.
 
-Deepgram, ElevenLabs, Mistral, OpenAI và xAI cũng đăng ký các nhà cung cấp
-STT truyền phát cho Cuộc gọi thoại, để âm thanh điện thoại trực tiếp có thể được chuyển tiếp đến
-nhà cung cấp đã chọn mà không cần chờ bản ghi hoàn tất.
+Deepgram, ElevenLabs, Mistral, OpenAI và xAI cũng đăng ký các nhà cung cấp STT
+phát trực tuyến cho Voice Call, nên âm thanh điện thoại trực tiếp có thể được chuyển tiếp tới nhà cung cấp
+đã chọn mà không cần chờ bản ghi hoàn tất.
 
-## Ánh xạ nhà cung cấp (cách các nhà cung cấp tách theo bề mặt)
+## Ánh xạ nhà cung cấp (cách nhà cung cấp phân tách theo bề mặt)
 
 <AccordionGroup>
   <Accordion title="Google">
-    Các bề mặt hình ảnh, video, nhạc, TTS theo lô, giọng nói thời gian thực ở backend và
-    hiểu nội dung đa phương tiện.
+    Các bề mặt hình ảnh, video, nhạc, TTS theo lô, giọng nói thời gian thực phía backend, và
+    hiểu phương tiện.
   </Accordion>
   <Accordion title="OpenAI">
-    Các bề mặt hình ảnh, video, TTS theo lô, STT theo lô, STT truyền phát cho Cuộc gọi thoại, giọng nói
-    thời gian thực ở backend và embedding bộ nhớ.
+    Các bề mặt hình ảnh, video, TTS theo lô, STT theo lô, STT phát trực tuyến cho Voice Call, giọng nói
+    thời gian thực phía backend, và embedding bộ nhớ.
   </Accordion>
   <Accordion title="DeepInfra">
     Các bề mặt định tuyến chat/mô hình, tạo/chỉnh sửa hình ảnh, văn bản thành video, TTS theo lô,
-    STT theo lô, hiểu nội dung hình ảnh và embedding bộ nhớ.
-    Các mô hình rerank/phân loại/phát hiện đối tượng gốc của DeepInfra chưa được
+    STT theo lô, hiểu phương tiện hình ảnh, và embedding bộ nhớ.
+    Các mô hình xếp hạng lại/phân loại/phát hiện đối tượng gốc DeepInfra chưa được
     đăng ký cho đến khi OpenClaw có hợp đồng nhà cung cấp chuyên dụng cho các
     danh mục đó.
   </Accordion>
   <Accordion title="xAI">
-    Hình ảnh, video, tìm kiếm, thực thi mã, TTS theo lô, STT theo lô và STT truyền phát cho Cuộc gọi
-    thoại. Giọng nói thời gian thực của xAI là một khả năng thượng nguồn nhưng
+    Hình ảnh, video, tìm kiếm, thực thi mã, TTS theo lô, STT theo lô, và STT phát trực tuyến cho Voice
+    Call. Giọng nói thời gian thực của xAI là một năng lực thượng nguồn nhưng
     chưa được đăng ký trong OpenClaw cho đến khi hợp đồng giọng nói thời gian thực dùng chung có thể
-    biểu diễn nó.
+    biểu diễn năng lực đó.
   </Accordion>
 </AccordionGroup>
 
@@ -147,5 +149,5 @@ nhà cung cấp đã chọn mà không cần chờ bản ghi hoàn tất.
 - [Tạo video](/vi/tools/video-generation)
 - [Tạo nhạc](/vi/tools/music-generation)
 - [Chuyển văn bản thành giọng nói](/vi/tools/tts)
-- [Hiểu nội dung đa phương tiện](/vi/nodes/media-understanding)
+- [Hiểu phương tiện](/vi/nodes/media-understanding)
 - [Nút âm thanh](/vi/nodes/audio)

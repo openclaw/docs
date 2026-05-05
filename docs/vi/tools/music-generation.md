@@ -1,35 +1,26 @@
 ---
 read_when:
-    - Tạo nhạc hoặc âm thanh thông qua tác tử
-    - Cấu hình nhà cung cấp và mô hình tạo nhạc
+    - Tạo nhạc hoặc âm thanh thông qua tác nhân
+    - Cấu hình các nhà cung cấp và mô hình tạo nhạc
     - Tìm hiểu các tham số của công cụ music_generate
 sidebarTitle: Music generation
-summary: Tạo nhạc qua music_generate trong các quy trình làm việc của Google Lyria, MiniMax và ComfyUI
+summary: Tạo nhạc thông qua music_generate trên các quy trình làm việc của Google Lyria, MiniMax và ComfyUI
 title: Tạo nhạc
 x-i18n:
-    generated_at: "2026-05-05T01:51:34Z"
+    generated_at: "2026-05-05T06:19:11Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 0e14a5a10dd485c2d3dbbd23a0fc2c12de500d9f7bfb7db471c27ed2a99ad650
+    source_hash: f5e74aa7d43ffe00adb6d6c170d36dbc107f2baf0069243733c5dd6e4582175a
     source_path: tools/music-generation.md
     workflow: 16
 ---
 
-Công cụ `music_generate` cho phép tác tử tạo nhạc hoặc âm thanh thông qua
-năng lực tạo nhạc dùng chung với các nhà cung cấp đã cấu hình — hiện nay là
-Google, MiniMax và ComfyUI được cấu hình bằng workflow.
+Công cụ `music_generate` cho phép agent tạo nhạc hoặc âm thanh thông qua năng lực tạo nhạc dùng chung với các nhà cung cấp đã cấu hình — hiện gồm Google, MiniMax và ComfyUI được cấu hình bằng quy trình làm việc.
 
-Đối với các lượt chạy tác tử có phiên hậu thuẫn, OpenClaw bắt đầu tạo nhạc như một
-tác vụ nền, theo dõi tác vụ đó trong sổ cái tác vụ, rồi đánh thức tác tử lần nữa
-khi bản nhạc đã sẵn sàng để tác tử có thể báo cho người dùng và đính kèm âm thanh
-hoàn chỉnh. Trong các cuộc trò chuyện nhóm/kênh dùng cách gửi hiển thị chỉ qua công cụ tin nhắn,
-tác tử chuyển tiếp kết quả thông qua công cụ tin nhắn.
+Đối với các lượt chạy agent có phiên hỗ trợ, OpenClaw bắt đầu tạo nhạc như một tác vụ nền, theo dõi tác vụ đó trong sổ cái tác vụ, rồi đánh thức lại agent khi bản nhạc sẵn sàng để agent có thể báo cho người dùng và đính kèm âm thanh đã hoàn tất. Trong các cuộc trò chuyện nhóm/kênh dùng cơ chế gửi hiển thị chỉ qua công cụ tin nhắn, agent chuyển tiếp kết quả qua công cụ tin nhắn. Nếu agent hoàn tất chỉ viết phản hồi cuối riêng tư, OpenClaw sẽ dự phòng bằng cách gửi trực tiếp qua kênh cùng phương tiện đã tạo. Lượt đánh thức khi hoàn tất cảnh báo rõ cho agent rằng các phản hồi cuối thông thường là riêng tư trong các tuyến đó.
 
 <Note>
-Công cụ dùng chung tích hợp sẵn chỉ xuất hiện khi có ít nhất một nhà cung cấp
-tạo nhạc khả dụng. Nếu bạn không thấy `music_generate` trong các công cụ của
-tác tử, hãy cấu hình `agents.defaults.musicGenerationModel` hoặc thiết lập một
-khóa API của nhà cung cấp.
+Công cụ dùng chung tích hợp chỉ xuất hiện khi có ít nhất một nhà cung cấp tạo nhạc khả dụng. Nếu bạn không thấy `music_generate` trong các công cụ của agent, hãy cấu hình `agents.defaults.musicGenerationModel` hoặc thiết lập khóa API của nhà cung cấp.
 </Note>
 
 ## Bắt đầu nhanh
@@ -55,24 +46,24 @@ khóa API của nhà cung cấp.
         ```
       </Step>
       <Step title="Ask the agent">
-        _"Tạo một bản synthpop sôi động về chuyến lái xe ban đêm qua một
+        _"Tạo một bản nhạc synthpop sôi động về chuyến lái xe ban đêm qua một
         thành phố neon."_
 
-        Tác tử tự động gọi `music_generate`. Không cần danh sách cho phép
+        Agent tự động gọi `music_generate`. Không cần danh sách cho phép
         công cụ.
       </Step>
     </Steps>
 
-    Đối với các ngữ cảnh đồng bộ trực tiếp không có lượt chạy tác tử có phiên hậu thuẫn,
-    công cụ tích hợp sẵn vẫn dùng phương án dự phòng tạo nội tuyến và trả về
-    đường dẫn phương tiện cuối cùng trong kết quả công cụ.
+    Đối với các ngữ cảnh đồng bộ trực tiếp không có lượt chạy agent có phiên
+    hỗ trợ, công cụ tích hợp vẫn dự phòng sang tạo nội tuyến và trả về
+    đường dẫn phương tiện cuối trong kết quả công cụ.
 
   </Tab>
   <Tab title="ComfyUI workflow">
     <Steps>
       <Step title="Configure the workflow">
-        Cấu hình `plugins.entries.comfy.config.music` bằng workflow
-        JSON và các nút prompt/đầu ra.
+        Cấu hình `plugins.entries.comfy.config.music` với JSON quy trình
+        làm việc và các nút lời nhắc/đầu ra.
       </Step>
       <Step title="Cloud auth (optional)">
         Với Comfy Cloud, đặt `COMFY_API_KEY` hoặc `COMFY_CLOUD_API_KEY`.
@@ -86,7 +77,7 @@ khóa API của nhà cung cấp.
   </Tab>
 </Tabs>
 
-Ví dụ prompt:
+Ví dụ lời nhắc:
 
 ```text
 Generate a cinematic piano track with soft strings and no vocals.
@@ -98,31 +89,29 @@ Generate an energetic chiptune loop about launching a rocket at sunrise.
 
 ## Nhà cung cấp được hỗ trợ
 
-| Nhà cung cấp | Mô hình mặc định       | Đầu vào tham chiếu | Điều khiển được hỗ trợ                                | Xác thực                                |
-| -------- | ---------------------- | ---------------- | --------------------------------------------------------- | -------------------------------------- |
-| ComfyUI  | `workflow`             | Tối đa 1 hình ảnh | Nhạc hoặc âm thanh do workflow định nghĩa                 | `COMFY_API_KEY`, `COMFY_CLOUD_API_KEY` |
-| Google   | `lyria-3-clip-preview` | Tối đa 10 hình ảnh | `lyrics`, `instrumental`, `format`                        | `GEMINI_API_KEY`, `GOOGLE_API_KEY`     |
-| MiniMax  | `music-2.6`            | Không có          | `lyrics`, `instrumental`, `durationSeconds`, `format=mp3` | `MINIMAX_API_KEY` hoặc MiniMax OAuth   |
+| Nhà cung cấp | Mô hình mặc định       | Đầu vào tham chiếu | Điều khiển được hỗ trợ                                | Xác thực                               |
+| ------------ | ---------------------- | ------------------ | ----------------------------------------------------- | -------------------------------------- |
+| ComfyUI      | `workflow`             | Tối đa 1 ảnh       | Nhạc hoặc âm thanh do quy trình làm việc định nghĩa   | `COMFY_API_KEY`, `COMFY_CLOUD_API_KEY` |
+| Google       | `lyria-3-clip-preview` | Tối đa 10 ảnh      | `lyrics`, `instrumental`, `format`                    | `GEMINI_API_KEY`, `GOOGLE_API_KEY`     |
+| MiniMax      | `music-2.6`            | Không có           | `lyrics`, `instrumental`, `durationSeconds`, `format=mp3` | `MINIMAX_API_KEY` hoặc MiniMax OAuth   |
 
 ### Ma trận năng lực
 
-Hợp đồng chế độ tường minh được `music_generate`, các kiểm thử hợp đồng và
-đợt quét trực tiếp dùng chung sử dụng:
+Hợp đồng chế độ tường minh được `music_generate`, các kiểm thử hợp đồng và lượt quét trực tiếp dùng chung sử dụng:
 
 | Nhà cung cấp | `generate` | `edit` | Giới hạn chỉnh sửa | Làn trực tiếp dùng chung                                                   |
-| -------- | :--------: | :----: | ---------- | ------------------------------------------------------------------------- |
-| ComfyUI  |     ✓      |   ✓    | 1 hình ảnh | Không nằm trong đợt quét dùng chung; được bao phủ bởi `extensions/comfy/comfy.live.test.ts` |
-| Google   |     ✓      |   ✓    | 10 hình ảnh | `generate`, `edit`                                                        |
-| MiniMax  |     ✓      |   —    | Không có   | `generate`                                                                |
+| ------------ | :--------: | :----: | ------------------ | -------------------------------------------------------------------------- |
+| ComfyUI      |     ✓      |   ✓    | 1 ảnh              | Không nằm trong lượt quét dùng chung; được bao phủ bởi `extensions/comfy/comfy.live.test.ts` |
+| Google       |     ✓      |   ✓    | 10 ảnh             | `generate`, `edit`                                                         |
+| MiniMax      |     ✓      |   —    | Không có           | `generate`                                                                 |
 
-Dùng `action: "list"` để kiểm tra các nhà cung cấp và mô hình dùng chung khả dụng
-tại thời điểm chạy:
+Dùng `action: "list"` để kiểm tra các nhà cung cấp và mô hình dùng chung khả dụng lúc chạy:
 
 ```text
 /tool music_generate action=list
 ```
 
-Dùng `action: "status"` để kiểm tra tác vụ nhạc có phiên hậu thuẫn đang hoạt động:
+Dùng `action: "status"` để kiểm tra tác vụ nhạc có phiên hỗ trợ đang hoạt động:
 
 ```text
 /tool music_generate action=status
@@ -137,7 +126,7 @@ Ví dụ tạo trực tiếp:
 ## Tham số công cụ
 
 <ParamField path="prompt" type="string" required>
-  Prompt tạo nhạc. Bắt buộc với `action: "generate"`.
+  Lời nhắc tạo nhạc. Bắt buộc với `action: "generate"`.
 </ParamField>
 <ParamField path="action" type='"generate" | "status" | "list"' default="generate">
   `"status"` trả về tác vụ phiên hiện tại; `"list"` kiểm tra các nhà cung cấp.
@@ -150,13 +139,13 @@ Ví dụ tạo trực tiếp:
   Lời bài hát tùy chọn khi nhà cung cấp hỗ trợ đầu vào lời bài hát tường minh.
 </ParamField>
 <ParamField path="instrumental" type="boolean">
-  Yêu cầu đầu ra chỉ có nhạc không lời khi nhà cung cấp hỗ trợ.
+  Yêu cầu đầu ra chỉ có nhạc cụ khi nhà cung cấp hỗ trợ.
 </ParamField>
 <ParamField path="image" type="string">
-  Đường dẫn hoặc URL của một hình ảnh tham chiếu.
+  Đường dẫn hoặc URL ảnh tham chiếu đơn.
 </ParamField>
 <ParamField path="images" type="string[]">
-  Nhiều hình ảnh tham chiếu (tối đa 10 trên các nhà cung cấp hỗ trợ).
+  Nhiều ảnh tham chiếu (tối đa 10 trên các nhà cung cấp hỗ trợ).
 </ParamField>
 <ParamField path="durationSeconds" type="number">
   Thời lượng mục tiêu tính bằng giây khi nhà cung cấp hỗ trợ gợi ý thời lượng.
@@ -168,43 +157,28 @@ Ví dụ tạo trực tiếp:
 <ParamField path="timeoutMs" type="number">Thời gian chờ yêu cầu nhà cung cấp tùy chọn tính bằng mili giây. Các giá trị dưới 10000ms được nâng lên 10000ms và được báo cáo trong kết quả công cụ.</ParamField>
 
 <Note>
-Không phải tất cả nhà cung cấp đều hỗ trợ mọi tham số. OpenClaw vẫn xác thực
-các giới hạn cứng như số lượng đầu vào trước khi gửi. Khi một nhà cung cấp hỗ trợ
-thời lượng nhưng dùng mức tối đa ngắn hơn giá trị được yêu cầu, OpenClaw
-giới hạn về thời lượng được hỗ trợ gần nhất. Các gợi ý tùy chọn thật sự không được hỗ trợ
-sẽ bị bỏ qua kèm cảnh báo khi nhà cung cấp hoặc mô hình đã chọn không thể đáp ứng
-chúng. Kết quả công cụ báo cáo các cài đặt đã áp dụng; `details.normalization`
-ghi lại mọi ánh xạ từ giá trị được yêu cầu sang giá trị đã áp dụng.
+Không phải mọi nhà cung cấp đều hỗ trợ tất cả tham số. OpenClaw vẫn xác thực các giới hạn cứng như số lượng đầu vào trước khi gửi. Khi một nhà cung cấp hỗ trợ thời lượng nhưng dùng mức tối đa ngắn hơn giá trị được yêu cầu, OpenClaw kẹp về thời lượng được hỗ trợ gần nhất. Các gợi ý tùy chọn thực sự không được hỗ trợ sẽ bị bỏ qua kèm cảnh báo khi nhà cung cấp hoặc mô hình đã chọn không thể đáp ứng chúng. Kết quả công cụ báo cáo các thiết lập đã áp dụng; `details.normalization` ghi lại mọi ánh xạ từ giá trị được yêu cầu sang giá trị đã áp dụng.
 </Note>
 
 ## Hành vi bất đồng bộ
 
-Tạo nhạc có phiên hậu thuẫn chạy dưới dạng tác vụ nền:
+Tạo nhạc có phiên hỗ trợ chạy như một tác vụ nền:
 
-- **Tác vụ nền:** `music_generate` tạo một tác vụ nền, trả về phản hồi
-  đã bắt đầu/tác vụ ngay lập tức, và đăng bản nhạc hoàn chỉnh sau đó trong
-  một tin nhắn tác tử tiếp theo.
-- **Ngăn trùng lặp:** khi một tác vụ đang `queued` hoặc `running`, các lệnh gọi
-  `music_generate` sau đó trong cùng phiên sẽ trả về trạng thái tác vụ thay vì
-  bắt đầu một lượt tạo khác. Dùng `action: "status"` để kiểm tra tường minh.
-- **Tra cứu trạng thái:** `openclaw tasks list` hoặc `openclaw tasks show <taskId>`
-  kiểm tra trạng thái đang chờ, đang chạy và trạng thái kết thúc.
-- **Đánh thức khi hoàn tất:** OpenClaw chèn một sự kiện hoàn tất nội bộ trở lại
-  cùng phiên để mô hình có thể tự viết phản hồi tiếp theo hướng tới người dùng.
-- **Gợi ý prompt:** các lượt người dùng/thủ công sau đó trong cùng phiên nhận được
-  một gợi ý nhỏ lúc chạy khi một tác vụ nhạc đã đang thực thi, để mô hình
-  không gọi mù quáng `music_generate` lần nữa.
-- **Dự phòng không có phiên:** các ngữ cảnh trực tiếp/cục bộ không có phiên tác tử
-  thật sẽ chạy nội tuyến và trả về kết quả âm thanh cuối cùng trong cùng lượt.
+- **Tác vụ nền:** `music_generate` tạo một tác vụ nền, trả về phản hồi đã bắt đầu/tác vụ ngay lập tức, rồi đăng bản nhạc đã hoàn tất sau đó trong một tin nhắn agent tiếp theo.
+- **Ngăn trùng lặp:** khi một tác vụ đang ở trạng thái `queued` hoặc `running`, các lệnh gọi `music_generate` sau đó trong cùng phiên sẽ trả về trạng thái tác vụ thay vì bắt đầu một lượt tạo khác. Dùng `action: "status"` để kiểm tra tường minh.
+- **Tra cứu trạng thái:** `openclaw tasks list` hoặc `openclaw tasks show <taskId>` kiểm tra trạng thái đang xếp hàng, đang chạy và trạng thái kết thúc.
+- **Đánh thức khi hoàn tất:** OpenClaw chèn một sự kiện hoàn tất nội bộ trở lại cùng phiên để mô hình có thể tự viết phần tiếp theo hướng tới người dùng.
+- **Gợi ý lời nhắc:** các lượt người dùng/thủ công sau trong cùng phiên nhận được một gợi ý nhỏ lúc chạy khi một tác vụ nhạc đang được thực hiện, để mô hình không gọi lại `music_generate` một cách mù quáng.
+- **Dự phòng không có phiên:** các ngữ cảnh trực tiếp/cục bộ không có phiên agent thực sẽ chạy nội tuyến và trả về kết quả âm thanh cuối trong cùng lượt.
 
 ### Vòng đời tác vụ
 
-| Trạng thái  | Ý nghĩa                                                                                        |
-| ----------- | ---------------------------------------------------------------------------------------------- |
-| `queued`    | Tác vụ đã được tạo, đang chờ nhà cung cấp chấp nhận.                                           |
-| `running`   | Nhà cung cấp đang xử lý (thường từ 30 giây đến 3 phút tùy nhà cung cấp và thời lượng). |
-| `succeeded` | Bản nhạc đã sẵn sàng; tác tử được đánh thức và đăng nó vào cuộc trò chuyện.                                 |
-| `failed`    | Lỗi nhà cung cấp hoặc hết thời gian chờ; tác tử được đánh thức cùng chi tiết lỗi.                                 |
+| Trạng thái  | Ý nghĩa                                                                                         |
+| ----------- | ----------------------------------------------------------------------------------------------- |
+| `queued`    | Tác vụ đã được tạo, đang chờ nhà cung cấp chấp nhận.                                            |
+| `running`   | Nhà cung cấp đang xử lý (thường 30 giây đến 3 phút tùy theo nhà cung cấp và thời lượng).        |
+| `succeeded` | Bản nhạc đã sẵn sàng; agent được đánh thức và đăng vào cuộc trò chuyện.                         |
+| `failed`    | Lỗi nhà cung cấp hoặc hết thời gian chờ; agent được đánh thức với chi tiết lỗi.                 |
 
 Kiểm tra trạng thái từ CLI:
 
@@ -235,57 +209,46 @@ openclaw tasks cancel <taskId>
 
 OpenClaw thử các nhà cung cấp theo thứ tự này:
 
-1. Tham số `model` từ lệnh gọi công cụ (nếu tác tử chỉ định).
+1. Tham số `model` từ lệnh gọi công cụ (nếu agent chỉ định).
 2. `musicGenerationModel.primary` từ cấu hình.
 3. `musicGenerationModel.fallbacks` theo thứ tự.
-4. Tự động phát hiện chỉ bằng các mặc định nhà cung cấp có xác thực hậu thuẫn:
+4. Tự động phát hiện chỉ bằng các mặc định nhà cung cấp có xác thực:
    - nhà cung cấp mặc định hiện tại trước;
-   - các nhà cung cấp tạo nhạc đã đăng ký còn lại theo thứ tự mã định danh nhà cung cấp.
+   - các nhà cung cấp tạo nhạc còn lại đã đăng ký theo thứ tự mã định danh nhà cung cấp.
 
-Nếu một nhà cung cấp thất bại, ứng viên tiếp theo sẽ được thử tự động. Nếu tất cả
-đều thất bại, lỗi sẽ bao gồm chi tiết từ từng lần thử.
+Nếu một nhà cung cấp thất bại, ứng viên tiếp theo sẽ được thử tự động. Nếu tất cả đều thất bại, lỗi sẽ bao gồm chi tiết từ từng lần thử.
 
-Đặt `agents.defaults.mediaGenerationAutoProviderFallback: false` để chỉ dùng
-các mục `model`, `primary` và `fallbacks` tường minh.
+Đặt `agents.defaults.mediaGenerationAutoProviderFallback: false` để chỉ dùng các mục `model`, `primary` và `fallbacks` tường minh.
 
-## Ghi chú về nhà cung cấp
+## Ghi chú nhà cung cấp
 
 <AccordionGroup>
   <Accordion title="ComfyUI">
-    Được dẫn dắt bởi workflow và phụ thuộc vào đồ thị đã cấu hình cùng ánh xạ nút
-    cho các trường prompt/đầu ra. Plugin `comfy` đi kèm cắm vào
-    công cụ `music_generate` dùng chung thông qua registry nhà cung cấp
-    tạo nhạc.
+    Được điều khiển bởi quy trình làm việc và phụ thuộc vào đồ thị đã cấu hình cùng ánh xạ nút cho các trường lời nhắc/đầu ra. Plugin `comfy` đi kèm kết nối với công cụ `music_generate` dùng chung thông qua registry nhà cung cấp tạo nhạc.
   </Accordion>
   <Accordion title="Google (Lyria 3)">
-    Sử dụng tạo theo lô Lyria 3. Luồng đi kèm hiện tại hỗ trợ
-    prompt, văn bản lời bài hát tùy chọn và hình ảnh tham chiếu tùy chọn.
+    Dùng tạo theo lô Lyria 3. Luồng đi kèm hiện tại hỗ trợ lời nhắc, văn bản lời bài hát tùy chọn và ảnh tham chiếu tùy chọn.
   </Accordion>
   <Accordion title="MiniMax">
-    Sử dụng endpoint `music_generation` theo lô. Hỗ trợ prompt, lời bài hát
-    tùy chọn, chế độ nhạc không lời, điều hướng thời lượng và đầu ra mp3 thông qua
-    xác thực khóa API `minimax` hoặc OAuth `minimax-portal`.
+    Dùng endpoint `music_generation` theo lô. Hỗ trợ lời nhắc, lời bài hát tùy chọn, chế độ nhạc cụ, điều hướng thời lượng và đầu ra mp3 thông qua xác thực khóa API `minimax` hoặc OAuth `minimax-portal`.
   </Accordion>
 </AccordionGroup>
 
-## Chọn hướng đi phù hợp
+## Chọn hướng phù hợp
 
-- **Dùng chung có nhà cung cấp hậu thuẫn** khi bạn muốn chọn mô hình, chuyển đổi dự phòng
-  nhà cung cấp và luồng tác vụ/trạng thái bất đồng bộ tích hợp sẵn.
-- **Đường dẫn Plugin (ComfyUI)** khi bạn cần đồ thị workflow tùy chỉnh hoặc một
-  nhà cung cấp không thuộc năng lực nhạc dùng chung đi kèm.
+- **Được hỗ trợ bởi nhà cung cấp dùng chung** khi bạn muốn chọn mô hình, chuyển đổi dự phòng nhà cung cấp và luồng tác vụ/trạng thái bất đồng bộ tích hợp.
+- **Đường dẫn Plugin (ComfyUI)** khi bạn cần đồ thị quy trình làm việc tùy chỉnh hoặc một nhà cung cấp không thuộc năng lực nhạc dùng chung đi kèm.
 
-Nếu bạn đang gỡ lỗi hành vi riêng của ComfyUI, xem
-[ComfyUI](/vi/providers/comfy). Nếu bạn đang gỡ lỗi hành vi nhà cung cấp dùng chung,
-hãy bắt đầu với [Google (Gemini)](/vi/providers/google) hoặc
+Nếu bạn đang gỡ lỗi hành vi dành riêng cho ComfyUI, xem
+[ComfyUI](/vi/providers/comfy). Nếu bạn đang gỡ lỗi hành vi nhà cung cấp dùng chung, hãy bắt đầu với [Google (Gemini)](/vi/providers/google) hoặc
 [MiniMax](/vi/providers/minimax).
 
-## Chế độ năng lực của nhà cung cấp
+## Chế độ năng lực nhà cung cấp
 
-Hợp đồng tạo nhạc dùng chung hỗ trợ khai báo chế độ tường minh:
+Hợp đồng tạo nhạc dùng chung hỗ trợ các khai báo chế độ tường minh:
 
-- `generate` cho tạo chỉ bằng prompt.
-- `edit` khi yêu cầu bao gồm một hoặc nhiều hình ảnh tham chiếu.
+- `generate` để tạo chỉ bằng lời nhắc.
+- `edit` khi yêu cầu bao gồm một hoặc nhiều ảnh tham chiếu.
 
 Các triển khai nhà cung cấp mới nên ưu tiên các khối chế độ tường minh:
 
@@ -306,41 +269,35 @@ capabilities: {
 ```
 
 Các trường phẳng cũ như `maxInputImages`, `supportsLyrics` và
-`supportsFormat` **không** đủ để quảng bá hỗ trợ chỉnh sửa. Nhà cung cấp
-nên khai báo `generate` và `edit` tường minh để kiểm thử trực tiếp, kiểm thử hợp đồng
-và công cụ `music_generate` dùng chung có thể xác thực hỗ trợ chế độ
-một cách tất định.
+`supportsFormat` **không** đủ để quảng bá hỗ trợ chỉnh sửa. Nhà cung cấp nên khai báo `generate` và `edit` tường minh để các kiểm thử trực tiếp, kiểm thử hợp đồng và công cụ `music_generate` dùng chung có thể xác thực hỗ trợ chế độ một cách xác định.
 
 ## Kiểm thử trực tiếp
 
-Phạm vi kiểm thử trực tiếp tự chọn cho các nhà cung cấp dùng chung đi kèm:
+Phạm vi trực tiếp tự chọn cho các nhà cung cấp dùng chung đi kèm:
 
 ```bash
 OPENCLAW_LIVE_TEST=1 pnpm test:live -- extensions/music-generation-providers.live.test.ts
 ```
 
-Wrapper repo:
+Trình bao repo:
 
 ```bash
 pnpm test:live:media music
 ```
 
-Tệp trực tiếp này tải các biến môi trường nhà cung cấp còn thiếu từ `~/.profile`, ưu tiên
-khóa API trực tiếp/môi trường hơn hồ sơ xác thực đã lưu theo mặc định, và chạy cả
-phạm vi `generate` lẫn `edit` đã khai báo khi nhà cung cấp bật chế độ chỉnh sửa.
-Phạm vi hiện nay:
+Tệp trực tiếp này tải các biến môi trường nhà cung cấp còn thiếu từ `~/.profile`, mặc định ưu tiên khóa API trực tiếp/từ môi trường trước các hồ sơ xác thực đã lưu, và chạy cả phạm vi `generate` lẫn `edit` đã khai báo khi nhà cung cấp bật chế độ chỉnh sửa. Phạm vi hiện nay:
 
-- `google`: `generate` cộng với `edit`
+- `google`: `generate` cùng với `edit`
 - `minimax`: chỉ `generate`
-- `comfy`: phạm vi trực tiếp Comfy riêng, không nằm trong đợt quét nhà cung cấp dùng chung
+- `comfy`: phạm vi kiểm thử live Comfy riêng, không phải đợt quét nhà cung cấp dùng chung
 
-Phạm vi kiểm thử trực tiếp tự chọn cho đường dẫn nhạc ComfyUI đi kèm:
+Phạm vi kiểm thử live tùy chọn cho đường dẫn nhạc ComfyUI đi kèm:
 
 ```bash
 OPENCLAW_LIVE_TEST=1 COMFY_LIVE_TEST=1 pnpm test:live -- extensions/comfy/comfy.live.test.ts
 ```
 
-Tệp live của Comfy cũng bao phủ các quy trình xử lý hình ảnh và video của comfy khi các
+Tệp live của Comfy cũng bao phủ các quy trình ảnh và video của comfy khi các
 phần đó được cấu hình.
 
 ## Liên quan
