@@ -1,21 +1,21 @@
 ---
 read_when:
-    - Vuoi aprire la UI di controllo con il tuo token attuale
+    - Vuoi aprire l'interfaccia utente di controllo con il tuo token corrente
     - Vuoi stampare l'URL senza avviare un browser
-summary: Riferimento CLI per `openclaw dashboard` (apri la UI di controllo)
-title: Dashboard
+summary: Riferimento CLI per `openclaw dashboard` (apri la Control UI)
+title: Cruscotto
 x-i18n:
-    generated_at: "2026-04-25T13:43:45Z"
-    model: gpt-5.4
+    generated_at: "2026-05-05T01:44:17Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: ce485388465fb93551be8ccf0aa01ea52e4feb949ef0d48c96b4f8ea65a6551c
+    source_hash: 51b3326b3884013ebcf570b417e66efe62ea89dcdedb5ab3173f39fb021de89f
     source_path: cli/dashboard.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw dashboard`
 
-Apri la UI di controllo usando l'autenticazione attuale.
+Apri la UI di controllo usando la tua autenticazione corrente.
 
 ```bash
 openclaw dashboard
@@ -24,11 +24,15 @@ openclaw dashboard --no-open
 
 Note:
 
-- `dashboard` risolve i SecretRef configurati di `gateway.auth.token` quando possibile.
+- `dashboard` risolve le SecretRef configurate in `gateway.auth.token` quando possibile.
 - `dashboard` segue `gateway.tls.enabled`: i Gateway con TLS abilitato stampano/aprono
-  URL della UI di controllo `https://` e si connettono tramite `wss://`.
+  gli URL `https://` della UI di controllo e si connettono tramite `wss://`.
+- Se la consegna tramite appunti/browser non riesce per un URL della dashboard autenticato con token,
+  `dashboard` registra un suggerimento sicuro per l'autenticazione manuale che nomina `OPENCLAW_GATEWAY_TOKEN`,
+  `gateway.auth.token` e la chiave di frammento `token` senza stampare il valore
+  del token.
 - Per i token gestiti da SecretRef (risolti o non risolti), `dashboard` stampa/copia/apre un URL senza token per evitare di esporre segreti esterni nell'output del terminale, nella cronologia degli appunti o negli argomenti di avvio del browser.
-- Se `gateway.auth.token` è gestito da SecretRef ma non è risolto in questo percorso di comando, il comando stampa un URL senza token e indicazioni operative esplicite per la correzione invece di incorporare un segnaposto di token non valido.
+- Se `gateway.auth.token` è gestito da SecretRef ma non viene risolto in questo percorso di comando, il comando stampa un URL senza token e indicazioni esplicite per la risoluzione invece di incorporare un segnaposto di token non valido.
 
 ## Correlati
 
