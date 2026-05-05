@@ -1,45 +1,45 @@
 ---
 read_when:
-    - تريد إدارة خطافات الوكيل
-    - تريد فحص توفر الخطافات أو تمكين خطافات مساحة العمل
+    - تريد إدارة خطافات الوكلاء
+    - تريد التحقق من توفّر الخطافات أو تمكين خطافات مساحة العمل
 summary: مرجع CLI لـ `openclaw hooks` (خطافات الوكيل)
 title: الخطافات
 x-i18n:
-    generated_at: "2026-05-02T20:42:19Z"
+    generated_at: "2026-05-05T08:25:29Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3b02c176b4a310adba3fa1fde3758f6c8a19d454aeec58e919458b3f1a66c87d
+    source_hash: 8e860d4a20a09526e804fa1aff8c983a75396fcd1e6e24f742252fdf1812f6b7
     source_path: cli/hooks.md
     workflow: 16
 ---
 
 # `openclaw hooks`
 
-إدارة آليات ربط الوكيل (عمليات أتمتة مدفوعة بالأحداث لأوامر مثل `/new` و`/reset` وبدء تشغيل Gateway).
+إدارة خطافات الوكيل (أتمتات مدفوعة بالأحداث لأوامر مثل `/new` و`/reset` وبدء تشغيل Gateway).
 
-تشغيل `openclaw hooks` دون أمر فرعي يعادل `openclaw hooks list`.
+تشغيل `openclaw hooks` بدون أمر فرعي يعادل `openclaw hooks list`.
 
 ذات صلة:
 
-- آليات الربط: [آليات الربط](/ar/automation/hooks)
-- آليات ربط Plugin: [آليات ربط Plugin](/ar/plugins/hooks)
+- الخطافات: [الخطافات](/ar/automation/hooks)
+- خطافات Plugin: [خطافات Plugin](/ar/plugins/hooks)
 
-## عرض جميع آليات الربط
+## عرض كل الخطافات
 
 ```bash
 openclaw hooks list
 ```
 
-يعرض جميع آليات الربط المكتشفة من دلائل مساحة العمل، والمدارة، والإضافية، والمضمّنة.
-لا يحمّل بدء تشغيل Gateway معالجات آليات الربط الداخلية حتى يتم تكوين آلية ربط داخلية واحدة على الأقل.
+يعرض كل الخطافات المكتشفة من أدلة مساحة العمل، والمُدارة، والإضافية، والمضمّنة.
+لا يحمّل بدء تشغيل Gateway معالجات الخطافات الداخلية حتى تتم تهيئة خطاف داخلي واحد على الأقل.
 
 **الخيارات:**
 
-- `--eligible`: عرض آليات الربط المؤهلة فقط (المتطلبات مستوفاة)
-- `--json`: إخراج بصيغة JSON
-- `-v, --verbose`: عرض معلومات مفصلة تشمل المتطلبات المفقودة
+- `--eligible`: اعرض الخطافات المؤهلة فقط (المتطلبات مستوفاة)
+- `--json`: أخرج بصيغة JSON
+- `-v, --verbose`: اعرض معلومات تفصيلية تشمل المتطلبات المفقودة
 
-**مثال على الإخراج:**
+**مثال على المخرجات:**
 
 ```
 Hooks (4/4 ready)
@@ -51,13 +51,13 @@ Ready:
   💾 session-memory ✓ - Save session context to memory when /new or /reset command is issued
 ```
 
-**مثال (مفصل):**
+**مثال (تفصيلي):**
 
 ```bash
 openclaw hooks list --verbose
 ```
 
-يعرض المتطلبات المفقودة لآليات الربط غير المؤهلة.
+يعرض المتطلبات المفقودة للخطافات غير المؤهلة.
 
 **مثال (JSON):**
 
@@ -65,23 +65,23 @@ openclaw hooks list --verbose
 openclaw hooks list --json
 ```
 
-يعيد JSON منظّماً للاستخدام البرمجي.
+يرجع JSON منظمًا للاستخدام البرمجي.
 
-## الحصول على معلومات آلية ربط
+## الحصول على معلومات الخطاف
 
 ```bash
 openclaw hooks info <name>
 ```
 
-يعرض معلومات مفصلة حول آلية ربط محددة.
+اعرض معلومات تفصيلية عن خطاف محدد.
 
 **الوسائط:**
 
-- `<name>`: اسم آلية الربط أو مفتاح آلية الربط (مثل `session-memory`)
+- `<name>`: اسم الخطاف أو مفتاح الخطاف (مثل `session-memory`)
 
 **الخيارات:**
 
-- `--json`: إخراج بصيغة JSON
+- `--json`: أخرج بصيغة JSON
 
 **مثال:**
 
@@ -89,7 +89,7 @@ openclaw hooks info <name>
 openclaw hooks info session-memory
 ```
 
-**الإخراج:**
+**المخرجات:**
 
 ```
 💾 session-memory ✓ Ready
@@ -107,19 +107,19 @@ Requirements:
   Config: ✓ workspace.dir
 ```
 
-## التحقق من أهلية آليات الربط
+## التحقق من أهلية الخطافات
 
 ```bash
 openclaw hooks check
 ```
 
-يعرض ملخصاً لحالة أهلية آليات الربط (عدد الجاهزة مقابل غير الجاهزة).
+اعرض ملخصًا لحالة أهلية الخطافات (كم عدد الجاهزة مقابل غير الجاهزة).
 
 **الخيارات:**
 
-- `--json`: إخراج بصيغة JSON
+- `--json`: أخرج بصيغة JSON
 
-**مثال على الإخراج:**
+**مثال على المخرجات:**
 
 ```
 Hooks Status
@@ -129,19 +129,19 @@ Ready: 4
 Not ready: 0
 ```
 
-## تفعيل آلية ربط
+## تفعيل خطاف
 
 ```bash
 openclaw hooks enable <name>
 ```
 
-يفعّل آلية ربط محددة بإضافتها إلى تكوينك (`~/.openclaw/openclaw.json` افتراضياً).
+فعّل خطافًا محددًا بإضافته إلى التهيئة لديك (`~/.openclaw/openclaw.json` افتراضيًا).
 
-**ملاحظة:** تكون آليات ربط مساحة العمل معطلة افتراضياً حتى يتم تفعيلها هنا أو في التكوين. تعرض آليات الربط التي تديرها Plugins القيمة `plugin:<id>` في `openclaw hooks list` ولا يمكن تفعيلها/تعطيلها هنا. فعّل/عطّل الـ Plugin بدلاً من ذلك.
+**ملاحظة:** تكون خطافات مساحة العمل معطلة افتراضيًا حتى يتم تفعيلها هنا أو في التهيئة. تعرض الخطافات التي تديرها Plugins القيمة `plugin:<id>` في `openclaw hooks list` ولا يمكن تفعيلها أو تعطيلها هنا. فعّل أو عطّل Plugin بدلًا من ذلك.
 
 **الوسائط:**
 
-- `<name>`: اسم آلية الربط (مثل `session-memory`)
+- `<name>`: اسم الخطاف (مثل `session-memory`)
 
 **مثال:**
 
@@ -149,7 +149,7 @@ openclaw hooks enable <name>
 openclaw hooks enable session-memory
 ```
 
-**الإخراج:**
+**المخرجات:**
 
 ```
 ✓ Enabled hook: 💾 session-memory
@@ -157,28 +157,27 @@ openclaw hooks enable session-memory
 
 **ما الذي يفعله:**
 
-- يتحقق مما إذا كانت آلية الربط موجودة ومؤهلة
-- يحدّث `hooks.internal.entries.<name>.enabled = true` في تكوينك
-- يحفظ التكوين على القرص
+- يتحقق مما إذا كان الخطاف موجودًا ومؤهلًا
+- يحدّث `hooks.internal.entries.<name>.enabled = true` في التهيئة لديك
+- يحفظ التهيئة إلى القرص
 
-إذا كانت آلية الربط آتية من `<workspace>/hooks/`، فهذه الخطوة الاختيارية مطلوبة قبل
-أن يحمّلها Gateway.
+إذا كان الخطاف قادمًا من `<workspace>/hooks/`، فهذه الخطوة الاختيارية الصريحة مطلوبة قبل أن يحمّله Gateway.
 
 **بعد التفعيل:**
 
-- أعد تشغيل Gateway حتى تُعاد تحميل آليات الربط (إعادة تشغيل تطبيق شريط القوائم على macOS، أو إعادة تشغيل عملية Gateway في التطوير).
+- أعد تشغيل Gateway حتى تعاد تحميل الخطافات (إعادة تشغيل تطبيق شريط القوائم على macOS، أو إعادة تشغيل عملية Gateway لديك في التطوير).
 
-## تعطيل آلية ربط
+## تعطيل خطاف
 
 ```bash
 openclaw hooks disable <name>
 ```
 
-يعطّل آلية ربط محددة بتحديث تكوينك.
+عطّل خطافًا محددًا بتحديث التهيئة لديك.
 
 **الوسائط:**
 
-- `<name>`: اسم آلية الربط (مثل `command-logger`)
+- `<name>`: اسم الخطاف (مثل `command-logger`)
 
 **مثال:**
 
@@ -186,7 +185,7 @@ openclaw hooks disable <name>
 openclaw hooks disable command-logger
 ```
 
-**الإخراج:**
+**المخرجات:**
 
 ```
 ⏸ Disabled hook: 📝 command-logger
@@ -194,14 +193,14 @@ openclaw hooks disable command-logger
 
 **بعد التعطيل:**
 
-- أعد تشغيل Gateway حتى تُعاد تحميل آليات الربط
+- أعد تشغيل Gateway حتى تعاد تحميل الخطافات
 
 ## ملاحظات
 
-- تكتب `openclaw hooks list --json` و`info --json` و`check --json` بيانات JSON منظّمة مباشرة إلى stdout.
-- لا يمكن تفعيل آليات الربط المُدارة من Plugin أو تعطيلها هنا؛ فعّل أو عطّل الـ Plugin المالك بدلاً من ذلك.
+- تكتب `openclaw hooks list --json` و`info --json` و`check --json` بيانات JSON منظمة مباشرة إلى stdout.
+- لا يمكن تفعيل الخطافات المُدارة بواسطة Plugin أو تعطيلها هنا؛ فعّل أو عطّل Plugin المالك بدلًا من ذلك.
 
-## تثبيت حزم آليات الربط
+## تثبيت حزم الخطافات
 
 ```bash
 openclaw plugins install <package>        # npm by default
@@ -210,29 +209,24 @@ openclaw plugins install <package> --pin  # pin version
 openclaw plugins install <path>           # local path
 ```
 
-ثبّت حزم آليات الربط عبر مثبّت Plugins الموحّد.
+ثبّت حزم الخطافات عبر مثبّت Plugins الموحد.
 
-ما زال `openclaw hooks install` يعمل كاسم بديل للتوافق، لكنه يطبع
-تحذير إهمال ويمرّر التنفيذ إلى `openclaw plugins install`.
+لا يزال `openclaw hooks install` يعمل كاسم مستعار للتوافق، لكنه يطبع تحذير إهمال ويمرر إلى `openclaw plugins install`.
 
-مواصفات npm هي **من السجل فقط** (اسم الحزمة + **إصدار دقيق** اختياري أو
-**dist-tag**). تُرفض مواصفات Git/URL/file ونطاقات semver. تعمل عمليات تثبيت الاعتماديات محلياً ضمن المشروع مع `--ignore-scripts` للسلامة، حتى عندما
-تحتوي صدفتك على إعدادات تثبيت npm عامة.
+مواصفات npm هي **من السجل فقط** (اسم الحزمة + **إصدار دقيق** اختياري أو **dist-tag**). تُرفض مواصفات Git/URL/file ونطاقات semver. تعمل تثبيتات الاعتماديات محليًا على المشروع مع `--ignore-scripts` للأمان، حتى عندما تتضمن الصدفة لديك إعدادات تثبيت npm عامة.
 
-تبقى المواصفات المجردة و`@latest` على المسار المستقر. إذا حلّ npm أياً من
-هذين إلى إصدار تمهيدي، يتوقف OpenClaw ويطلب منك الاشتراك صراحة باستخدام
-وسم إصدار تمهيدي مثل `@beta`/`@rc` أو إصدار تمهيدي دقيق.
+تبقى المواصفات العارية و`@latest` على مسار الإصدار المستقر. إذا حلّ npm أيًا منهما إلى إصدار تمهيدي، يتوقف OpenClaw ويطلب منك الاشتراك صراحةً باستخدام وسم إصدار تمهيدي مثل `@beta`/`@rc` أو إصدار تمهيدي دقيق.
 
 **ما الذي يفعله:**
 
-- ينسخ حزمة آلية الربط إلى `~/.openclaw/hooks/<id>`
-- يفعّل آليات الربط المثبتة في `hooks.internal.entries.*`
+- ينسخ حزمة الخطافات إلى `~/.openclaw/hooks/<id>`
+- يفعّل الخطافات المثبتة في `hooks.internal.entries.*`
 - يسجل التثبيت ضمن `hooks.internal.installs`
 
 **الخيارات:**
 
-- `-l, --link`: ربط دليل محلي بدلاً من نسخه (يضيفه إلى `hooks.internal.load.extraDirs`)
-- `--pin`: تسجيل تثبيتات npm كـ `name@version` محلولة بدقة في `hooks.internal.installs`
+- `-l, --link`: اربط دليلًا محليًا بدلًا من نسخه (يضيفه إلى `hooks.internal.load.extraDirs`)
+- `--pin`: سجّل تثبيتات npm كقيمة `name@version` محلولة بدقة في `hooks.internal.installs`
 
 **الأرشيفات المدعومة:** `.zip`، `.tgz`، `.tar.gz`، `.tar`
 
@@ -252,69 +246,65 @@ openclaw plugins install @openclaw/my-hook-pack
 openclaw plugins install -l ./my-hook-pack
 ```
 
-تُعامل حزم آليات الربط المرتبطة كآليات ربط مُدارة من دليل مكوَّن بواسطة المشغّل،
-وليست كآليات ربط مساحة عمل.
+تُعامل حزم الخطافات المرتبطة كخطافات مُدارة من دليل يهيئه المشغّل، وليس كخطافات مساحة عمل.
 
-## تحديث حزم آليات الربط
+## تحديث حزم الخطافات
 
 ```bash
 openclaw plugins update <id>
 openclaw plugins update --all
 ```
 
-حدّث حزم آليات الربط المستندة إلى npm والمتتبعة عبر محدّث Plugins الموحّد.
+حدّث حزم الخطافات المستندة إلى npm والمتتبعة عبر محدّث Plugins الموحد.
 
-ما زال `openclaw hooks update` يعمل كاسم بديل للتوافق، لكنه يطبع
-تحذير إهمال ويمرّر التنفيذ إلى `openclaw plugins update`.
+لا يزال `openclaw hooks update` يعمل كاسم مستعار للتوافق، لكنه يطبع تحذير إهمال ويمرر إلى `openclaw plugins update`.
 
 **الخيارات:**
 
-- `--all`: تحديث جميع حزم آليات الربط المتتبعة
-- `--dry-run`: عرض ما سيتغير دون كتابة
+- `--all`: حدّث كل حزم الخطافات المتتبعة
+- `--dry-run`: اعرض ما سيتغير بدون كتابة
 
-عندما توجد بصمة سلامة مخزنة وتتغير بصمة الأثر الذي تم جلبه،
-يطبع OpenClaw تحذيراً ويطلب التأكيد قبل المتابعة. استخدم
-`--yes` العامة لتجاوز المطالبات في CI/عمليات التشغيل غير التفاعلية.
+عند وجود تجزئة سلامة مخزنة وتغيّر تجزئة الأثر المُجلَب، يطبع OpenClaw تحذيرًا ويطلب التأكيد قبل المتابعة. استخدم الخيار العام `--yes` لتجاوز المطالبات في CI/التشغيلات غير التفاعلية.
 
-## آليات الربط المضمّنة
+## الخطافات المضمّنة
 
 ### session-memory
 
 يحفظ سياق الجلسة في الذاكرة عند إصدار `/new` أو `/reset`.
 
-**التفعيل:**
+**تفعيل:**
 
 ```bash
 openclaw hooks enable session-memory
 ```
 
-**الإخراج:** `~/.openclaw/workspace/memory/YYYY-MM-DD-slug.md`
+**المخرجات:** `~/.openclaw/workspace/memory/YYYY-MM-DD-HHMM.md` افتراضيًا. عيّن `hooks.internal.entries.session-memory.llmSlug: true` لشرائح أسماء ملفات مولّدة بواسطة النموذج.
 
-**انظر:** [توثيق session-memory](/ar/automation/hooks#session-memory)
+**راجع:** [توثيق session-memory](/ar/automation/hooks#session-memory)
 
 ### bootstrap-extra-files
 
-يحقن ملفات bootstrap إضافية (على سبيل المثال `AGENTS.md` / `TOOLS.md` محلية لمستودع أحادي) أثناء `agent:bootstrap`.
+يحقن ملفات تمهيد إضافية (على سبيل المثال `AGENTS.md` / `TOOLS.md` المحلية في المستودع الأحادي) أثناء `agent:bootstrap`.
 
-**التفعيل:**
+**تفعيل:**
 
 ```bash
 openclaw hooks enable bootstrap-extra-files
 ```
 
-**انظر:** [توثيق bootstrap-extra-files](/ar/automation/hooks#bootstrap-extra-files)
+**راجع:** [توثيق bootstrap-extra-files](/ar/automation/hooks#bootstrap-extra-files)
 
 ### command-logger
 
-يسجل جميع أحداث الأوامر في ملف تدقيق مركزي.
+يسجل كل أحداث الأوامر في ملف تدقيق مركزي.
 
-**التفعيل:**
+**تفعيل:**
 
 ```bash
 openclaw hooks enable command-logger
 ```
 
-**الإخراج:** `~/.openclaw/logs/commands.log`
+**المخرجات:** `~/.openclaw/logs/commands.log`
 
 **عرض السجلات:**
 
@@ -329,7 +319,7 @@ cat ~/.openclaw/logs/commands.log | jq .
 grep '"action":"new"' ~/.openclaw/logs/commands.log | jq .
 ```
 
-**انظر:** [توثيق command-logger](/ar/automation/hooks#command-logger)
+**راجع:** [توثيق command-logger](/ar/automation/hooks#command-logger)
 
 ### boot-md
 
@@ -337,15 +327,15 @@ grep '"action":"new"' ~/.openclaw/logs/commands.log | jq .
 
 **الأحداث**: `gateway:startup`
 
-**التفعيل**:
+**تفعيل**:
 
 ```bash
 openclaw hooks enable boot-md
 ```
 
-**انظر:** [توثيق boot-md](/ar/automation/hooks#boot-md)
+**راجع:** [توثيق boot-md](/ar/automation/hooks#boot-md)
 
 ## ذات صلة
 
 - [مرجع CLI](/ar/cli)
-- [آليات ربط الأتمتة](/ar/automation/hooks)
+- [خطافات الأتمتة](/ar/automation/hooks)
