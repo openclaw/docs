@@ -1,31 +1,31 @@
 ---
 read_when:
     - De Gateway uitvoeren vanuit de CLI (ontwikkeling of servers)
-    - Debuggen van Gateway-authenticatie, bind-modi en connectiviteit
-    - Gateways ontdekken via Bonjour (lokale + wide-area DNS-SD)
+    - Fouten opsporen in Gateway-authenticatie, bindmodi en connectiviteit
+    - Gateways ontdekken via Bonjour (lokaal + wide-area DNS-SD)
 sidebarTitle: Gateway
-summary: OpenClaw Gateway CLI (`openclaw gateway`) — gateways starten, bevragen en ontdekken
+summary: OpenClaw Gateway CLI (`openclaw gateway`) — Gateways uitvoeren, opvragen en ontdekken
 title: Gateway
 x-i18n:
-    generated_at: "2026-05-05T01:44:41Z"
+    generated_at: "2026-05-05T08:25:38Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 521558189b150b2faa22f95ec32419ac9e02c5f47c72b9095f40d1432840c038
+    source_hash: 89f798724971151cdd297fcdbbc1fe79dedc19f57521f2ad2c1fff0f9acf9b24
     source_path: cli/gateway.md
     workflow: 16
 ---
 
-De Gateway is de WebSocket-server van OpenClaw (channels, nodes, sessies, hooks). Subcommands op deze pagina staan onder `openclaw gateway …`.
+De Gateway is OpenClaw's WebSocket-server (kanalen, nodes, sessies, hooks). Subcommando's op deze pagina vallen onder `openclaw gateway …`.
 
 <CardGroup cols={3}>
-  <Card title="Bonjour-discovery" href="/nl/gateway/bonjour">
-    Instellen van lokale mDNS + wide-area DNS-SD.
+  <Card title="Bonjour discovery" href="/nl/gateway/bonjour">
+    Lokale mDNS + wide-area DNS-SD-installatie.
   </Card>
-  <Card title="Discovery-overzicht" href="/nl/gateway/discovery">
+  <Card title="Discovery overview" href="/nl/gateway/discovery">
     Hoe OpenClaw gateways adverteert en vindt.
   </Card>
-  <Card title="Configuratie" href="/nl/gateway/configuration">
-    Configuratiesleutels op het hoogste niveau voor de gateway.
+  <Card title="Configuration" href="/nl/gateway/configuration">
+    Configuratiesleutels op het hoogste gateway-niveau.
   </Card>
 </CardGroup>
 
@@ -44,13 +44,13 @@ openclaw gateway run
 ```
 
 <AccordionGroup>
-  <Accordion title="Opstartgedrag">
-    - Standaard weigert de Gateway te starten tenzij `gateway.mode=local` is ingesteld in `~/.openclaw/openclaw.json`. Gebruik `--allow-unconfigured` voor ad-hoc-/dev-runs.
-    - `openclaw onboard --mode local` en `openclaw setup` worden geacht `gateway.mode=local` te schrijven. Als het bestand bestaat maar `gateway.mode` ontbreekt, behandel dat dan als een kapotte of overschreven configuratie en herstel die in plaats van impliciet de lokale modus aan te nemen.
-    - Als het bestand bestaat en `gateway.mode` ontbreekt, behandelt de Gateway dat als verdachte configuratieschade en weigert hij voor jou "lokaal te raden".
-    - Binden buiten loopback zonder auth wordt geblokkeerd (veiligheidsvangrail).
-    - `SIGUSR1` activeert een herstart binnen het proces wanneer dit is geautoriseerd (`commands.restart` is standaard ingeschakeld; stel `commands.restart: false` in om handmatige herstart te blokkeren, terwijl gateway-tool/config apply/update toegestaan blijven).
-    - `SIGINT`/`SIGTERM`-handlers stoppen het gatewayproces, maar ze herstellen geen aangepaste terminalstatus. Als je de CLI met een TUI of raw-mode invoer omwikkelt, herstel dan de terminal vóór het afsluiten.
+  <Accordion title="Startup behavior">
+    - Standaard weigert de Gateway te starten tenzij `gateway.mode=local` is ingesteld in `~/.openclaw/openclaw.json`. Gebruik `--allow-unconfigured` voor ad-hoc-/ontwikkelruns.
+    - Van `openclaw onboard --mode local` en `openclaw setup` wordt verwacht dat ze `gateway.mode=local` schrijven. Als het bestand bestaat maar `gateway.mode` ontbreekt, behandel dat dan als een kapotte of overschreven configuratie en herstel die in plaats van impliciet de lokale modus aan te nemen.
+    - Als het bestand bestaat en `gateway.mode` ontbreekt, behandelt de Gateway dat als verdachte configuratieschade en weigert deze voor je "lokaal te raden".
+    - Binding buiten loopback zonder auth wordt geblokkeerd (veiligheidsvangrail).
+    - `SIGUSR1` activeert een herstart binnen het proces wanneer dit geautoriseerd is (`commands.restart` is standaard ingeschakeld; stel `commands.restart: false` in om handmatig herstarten te blokkeren, terwijl toepassen/bijwerken van Gateway-tools/-configuratie toegestaan blijft).
+    - `SIGINT`/`SIGTERM`-handlers stoppen het Gateway-proces, maar herstellen geen aangepaste terminalstatus. Als je de CLI inpakt met een TUI of raw-mode-invoer, herstel dan de terminal voordat je afsluit.
 
   </Accordion>
 </AccordionGroup>
@@ -58,22 +58,22 @@ openclaw gateway run
 ### Opties
 
 <ParamField path="--port <port>" type="number">
-  WebSocket-poort (standaard komt uit config/env; meestal `18789`).
+  WebSocket-poort (standaardwaarde komt uit configuratie/env; meestal `18789`).
 </ParamField>
 <ParamField path="--bind <loopback|lan|tailnet|auto|custom>" type="string">
-  Bindmodus van de listener.
+  Bindmodus voor listener.
 </ParamField>
 <ParamField path="--auth <token|password>" type="string">
   Overschrijving van auth-modus.
 </ParamField>
 <ParamField path="--token <token>" type="string">
-  Tokenoverschrijving (stelt ook `OPENCLAW_GATEWAY_TOKEN` in voor het proces).
+  Overschrijving van token (stelt ook `OPENCLAW_GATEWAY_TOKEN` in voor het proces).
 </ParamField>
 <ParamField path="--password <password>" type="string">
-  Wachtwoordoverschrijving.
+  Overschrijving van wachtwoord.
 </ParamField>
 <ParamField path="--password-file <path>" type="string">
-  Lees het gatewaywachtwoord uit een bestand.
+  Lees het Gateway-wachtwoord uit een bestand.
 </ParamField>
 <ParamField path="--tailscale <off|serve|funnel>" type="string">
   Stel de Gateway beschikbaar via Tailscale.
@@ -82,16 +82,16 @@ openclaw gateway run
   Reset de Tailscale serve/funnel-configuratie bij afsluiten.
 </ParamField>
 <ParamField path="--allow-unconfigured" type="boolean">
-  Sta toe dat de gateway start zonder `gateway.mode=local` in de configuratie. Omzeilt de opstartbeveiliging alleen voor ad-hoc-/dev-bootstrap; schrijft of herstelt het configuratiebestand niet.
+  Sta toe dat de Gateway start zonder `gateway.mode=local` in de configuratie. Omzeilt de startbeveiliging alleen voor ad-hoc-/ontwikkelbootstrap; schrijft of herstelt het configuratiebestand niet.
 </ParamField>
 <ParamField path="--dev" type="boolean">
-  Maak een dev-configuratie + workspace aan als die ontbreken (slaat BOOTSTRAP.md over).
+  Maak een ontwikkelconfiguratie + werkruimte aan als deze ontbreken (slaat BOOTSTRAP.md over).
 </ParamField>
 <ParamField path="--reset" type="boolean">
-  Reset dev-configuratie + referenties + sessies + workspace (vereist `--dev`).
+  Reset ontwikkelconfiguratie + referenties + sessies + werkruimte (vereist `--dev`).
 </ParamField>
 <ParamField path="--force" type="boolean">
-  Beëindig vóór het starten elke bestaande listener op de geselecteerde poort.
+  Beëindig een bestaande listener op de geselecteerde poort voordat wordt gestart.
 </ParamField>
 <ParamField path="--verbose" type="boolean">
   Uitgebreide logs.
@@ -106,7 +106,7 @@ openclaw gateway run
   Alias voor `--ws-log compact`.
 </ParamField>
 <ParamField path="--raw-stream" type="boolean">
-  Log ruwe modelstream-events naar jsonl.
+  Log ruwe modelstreamevents naar jsonl.
 </ParamField>
 <ParamField path="--raw-stream-path <path>" type="string">
   Pad voor ruwe stream-jsonl.
@@ -120,35 +120,35 @@ openclaw gateway restart --safe
 openclaw gateway restart --force
 ```
 
-`openclaw gateway restart --safe` vraagt de draaiende Gateway om actief OpenClaw-werk vóór het herstarten vooraf te controleren. Als bewerkingen in de wachtrij, antwoordbezorging, ingebedde runs of taakruns actief zijn, meldt de Gateway de blokkades, voegt hij dubbele veilige herstartverzoeken samen en herstart hij zodra het actieve werk is afgehandeld. Gewoon `restart` behoudt het bestaande gedrag van de servicebeheerder voor compatibiliteit. Gebruik `--force` alleen wanneer je expliciet het directe overschrijvingspad wilt.
+`openclaw gateway restart --safe` vraagt de actieve Gateway om actief OpenClaw-werk vooraf te controleren voordat er opnieuw wordt gestart. Als bewerkingen in de wachtrij, antwoordbezorging, embedded runs of taakruns actief zijn, rapporteert de Gateway de blokkades, voegt deze dubbele veilige herstartverzoeken samen en herstart zodra het actieve werk is afgehandeld. Gewoon `restart` behoudt het bestaande service-manager-gedrag voor compatibiliteit. Gebruik `--force` alleen wanneer je expliciet het directe overschrijvingspad wilt.
 
 <Warning>
-Inline `--password` kan zichtbaar zijn in lokale proceslijsten. Gebruik bij voorkeur `--password-file`, env of een door SecretRef ondersteunde `gateway.auth.password`.
+Inline `--password` kan zichtbaar zijn in lokale proceslijsten. Geef de voorkeur aan `--password-file`, env of een door SecretRef ondersteunde `gateway.auth.password`.
 </Warning>
 
-### Opstartprofilering
+### Startprofilering
 
-- Stel `OPENCLAW_GATEWAY_STARTUP_TRACE=1` in om fasetimings tijdens het opstarten van de Gateway te loggen, inclusief per-fase `eventLoopMax`-vertraging en timing van plugin-lookup-tabellen voor installed-index, manifestregister, opstartplanning en owner-map-werk.
-- Stel `OPENCLAW_DIAGNOSTICS=timeline` in met `OPENCLAW_DIAGNOSTICS_TIMELINE_PATH=<path>` om een best-effort JSONL-opstartdiagnosetijdlijn te schrijven voor externe QA-harnassen. Je kunt de vlag ook inschakelen met `diagnostics.flags: ["timeline"]` in de configuratie; het pad blijft via env aangeleverd. Voeg `OPENCLAW_DIAGNOSTICS_EVENT_LOOP=1` toe om event-loop-samples op te nemen.
-- Voer `pnpm test:startup:gateway -- --runs 5 --warmup 1` uit om het opstarten van de Gateway te benchmarken. De benchmark registreert de eerste procesuitvoer, `/healthz`, `/readyz`, opstarttracetimings, event-loop-vertraging en timingdetails van plugin-lookup-tabellen.
+- Stel `OPENCLAW_GATEWAY_STARTUP_TRACE=1` in om fasetimings tijdens het starten van de Gateway te loggen, inclusief `eventLoopMax`-vertraging per fase en timings voor Plugin-opzoektabellen voor installed-index, manifestregister, startplanning en owner-map-werk.
+- Stel `OPENCLAW_DIAGNOSTICS=timeline` in met `OPENCLAW_DIAGNOSTICS_TIMELINE_PATH=<path>` om een best-effort JSONL-startdiagnostiektijdlijn te schrijven voor externe QA-harnassen. Je kunt de vlag ook inschakelen met `diagnostics.flags: ["timeline"]` in de configuratie; het pad wordt nog steeds via env geleverd. Voeg `OPENCLAW_DIAGNOSTICS_EVENT_LOOP=1` toe om event-loop-samples op te nemen.
+- Voer `pnpm test:startup:gateway -- --runs 5 --warmup 1` uit om de start van de Gateway te benchmarken. De benchmark registreert eerste procesuitvoer, `/healthz`, `/readyz`, starttracetimings, event-loop-vertraging en timingdetails van Plugin-opzoektabellen.
 
-## Een draaiende Gateway bevragen
+## Een actieve Gateway opvragen
 
-Alle querycommando's gebruiken WebSocket RPC.
+Alle querycommando's gebruiken WebSocket-RPC.
 
 <Tabs>
-  <Tab title="Uitvoermodi">
+  <Tab title="Output modes">
     - Standaard: leesbaar voor mensen (gekleurd in TTY).
     - `--json`: machineleesbare JSON (geen styling/spinner).
     - `--no-color` (of `NO_COLOR=1`): schakel ANSI uit terwijl de menselijke lay-out behouden blijft.
 
   </Tab>
-  <Tab title="Gedeelde opties">
-    - `--url <url>`: Gateway WebSocket-URL.
+  <Tab title="Shared options">
+    - `--url <url>`: Gateway-WebSocket-URL.
     - `--token <token>`: Gateway-token.
     - `--password <password>`: Gateway-wachtwoord.
-    - `--timeout <ms>`: time-out/budget (verschilt per commando).
-    - `--expect-final`: wacht op een "final"-respons (agentaanroepen).
+    - `--timeout <ms>`: timeout/budget (verschilt per commando).
+    - `--expect-final`: wacht op een "final"-antwoord (agentaanroepen).
 
   </Tab>
 </Tabs>
@@ -163,7 +163,7 @@ Wanneer je `--url` instelt, valt de CLI niet terug op configuratie- of omgevings
 openclaw gateway health --url ws://127.0.0.1:18789
 ```
 
-Het HTTP-`/healthz`-endpoint is een liveness-probe: het retourneert zodra de server HTTP kan beantwoorden. Het HTTP-`/readyz`-endpoint is strenger en blijft rood terwijl opstartende plugin-sidecars, channels of geconfigureerde hooks nog aan het stabiliseren zijn. Lokale of geauthenticeerde gedetailleerde readiness-responsen bevatten een `eventLoop`-diagnoseblok met event-loop-vertraging, event-loop-gebruik, CPU-kernratio en een `degraded`-vlag.
+Het HTTP-`/healthz`-eindpunt is een liveness-probe: het retourneert zodra de server HTTP kan beantwoorden. Het HTTP-`/readyz`-eindpunt is strikter en blijft rood terwijl Plugin-sidecars, kanalen of geconfigureerde hooks bij het starten nog aan het stabiliseren zijn. Lokale of geauthenticeerde gedetailleerde readiness-antwoorden bevatten een diagnostisch `eventLoop`-blok met event-loop-vertraging, event-loop-gebruik, CPU-coreverhouding en een `degraded`-vlag.
 
 ### `gateway usage-cost`
 
@@ -176,12 +176,12 @@ openclaw gateway usage-cost --json
 ```
 
 <ParamField path="--days <days>" type="number" default="30">
-  Aantal op te nemen dagen.
+  Aantal dagen om op te nemen.
 </ParamField>
 
 ### `gateway stability`
 
-Haal de recente diagnostische stabiliteitsrecorder op uit een draaiende Gateway.
+Haal de recente diagnostische stabiliteitsrecorder op uit een actieve Gateway.
 
 ```bash
 openclaw gateway stability
@@ -192,7 +192,7 @@ openclaw gateway stability --json
 ```
 
 <ParamField path="--limit <limit>" type="number" default="25">
-  Maximumaantal recente events om op te nemen (max `1000`).
+  Maximumaantal recente events om op te nemen (max. `1000`).
 </ParamField>
 <ParamField path="--type <type>" type="string">
   Filter op diagnostisch eventtype, zoals `payload.large` of `diagnostic.memory.pressure`.
@@ -201,26 +201,26 @@ openclaw gateway stability --json
   Neem alleen events op na een diagnostisch volgnummer.
 </ParamField>
 <ParamField path="--bundle [path]" type="string">
-  Lees een opgeslagen stabiliteitsbundel in plaats van de draaiende Gateway aan te roepen. Gebruik `--bundle latest` (of alleen `--bundle`) voor de nieuwste bundel onder de statusdirectory, of geef direct een JSON-pad naar een bundel door.
+  Lees een opgeslagen stabiliteitsbundel in plaats van de actieve Gateway aan te roepen. Gebruik `--bundle latest` (of alleen `--bundle`) voor de nieuwste bundel onder de statusmap, of geef direct een JSON-pad naar een bundel door.
 </ParamField>
 <ParamField path="--export" type="boolean">
-  Schrijf een deelbare zip met ondersteuningsdiagnoses in plaats van stabiliteitsdetails af te drukken.
+  Schrijf een deelbare zip met supportdiagnostiek in plaats van stabiliteitsdetails af te drukken.
 </ParamField>
 <ParamField path="--output <path>" type="string">
   Uitvoerpad voor `--export`.
 </ParamField>
 
 <AccordionGroup>
-  <Accordion title="Privacy- en bundelgedrag">
-    - Records bewaren operationele metadata: eventnamen, aantallen, bytegroottes, geheugenuitlezingen, wachtrij-/sessiestatus, channel-/pluginnamen en geredigeerde sessiesamenvattingen. Ze bewaren geen chattekst, webhook-bodies, tooluitvoer, ruwe request- of response-bodies, tokens, cookies, geheime waarden, hostnamen of ruwe sessie-id's. Stel `diagnostics.enabled: false` in om de recorder volledig uit te schakelen.
-    - Bij fatale Gateway-afsluitingen, shutdown-time-outs en opstartherstartfouten schrijft OpenClaw dezelfde diagnostische snapshot naar `~/.openclaw/logs/stability/openclaw-stability-*.json` wanneer de recorder events heeft. Inspecteer de nieuwste bundel met `openclaw gateway stability --bundle latest`; `--limit`, `--type` en `--since-seq` zijn ook van toepassing op bundeluitvoer.
+  <Accordion title="Privacy and bundle behavior">
+    - Records bewaren operationele metadata: eventnamen, aantallen, bytegroottes, geheugenmetingen, wachtrij-/sessiestatus, kanaal-/Plugin-namen en geredigeerde sessiesamenvattingen. Ze bewaren geen chattekst, Webhook-bodies, tooluitvoer, ruwe request- of response-bodies, tokens, cookies, geheime waarden, hostnamen of ruwe sessie-id's. Stel `diagnostics.enabled: false` in om de recorder volledig uit te schakelen.
+    - Bij fatale Gateway-afsluitingen, timeouts bij afsluiten en fouten tijdens herstarten schrijft OpenClaw dezelfde diagnostische snapshot naar `~/.openclaw/logs/stability/openclaw-stability-*.json` wanneer de recorder events heeft. Inspecteer de nieuwste bundel met `openclaw gateway stability --bundle latest`; `--limit`, `--type` en `--since-seq` gelden ook voor bundeluitvoer.
 
   </Accordion>
 </AccordionGroup>
 
 ### `gateway diagnostics export`
 
-Schrijf een lokale diagnosezip die is bedoeld om aan bugrapporten toe te voegen. Zie [Diagnose-export](/nl/gateway/diagnostics) voor het privacymodel en de inhoud van de bundel.
+Schrijf een lokale diagnostiekzip die is bedoeld om aan bugrapporten toe te voegen. Zie [Diagnostiekexport](/nl/gateway/diagnostics) voor het privacymodel en de bundelinhoud.
 
 ```bash
 openclaw gateway diagnostics export
@@ -229,7 +229,7 @@ openclaw gateway diagnostics export --json
 ```
 
 <ParamField path="--output <path>" type="string">
-  Uitvoerpad voor de zip. Standaard een supportexport onder de statusdirectory.
+  Uitvoerpad voor zip. Standaard naar een supportexport onder de statusmap.
 </ParamField>
 <ParamField path="--log-lines <count>" type="number" default="5000">
   Maximumaantal opgeschoonde logregels om op te nemen.
@@ -238,7 +238,7 @@ openclaw gateway diagnostics export --json
   Maximumaantal logbytes om te inspecteren.
 </ParamField>
 <ParamField path="--url <url>" type="string">
-  Gateway WebSocket-URL voor de health-snapshot.
+  Gateway-WebSocket-URL voor de health-snapshot.
 </ParamField>
 <ParamField path="--token <token>" type="string">
   Gateway-token voor de health-snapshot.
@@ -247,7 +247,7 @@ openclaw gateway diagnostics export --json
   Gateway-wachtwoord voor de health-snapshot.
 </ParamField>
 <ParamField path="--timeout <ms>" type="number" default="3000">
-  Time-out voor status-/health-snapshot.
+  Timeout voor status-/health-snapshot.
 </ParamField>
 <ParamField path="--no-stability-bundle" type="boolean">
   Sla het opzoeken van opgeslagen stabiliteitsbundels over.
@@ -258,11 +258,11 @@ openclaw gateway diagnostics export --json
 
 De export bevat een manifest, een Markdown-samenvatting, configuratievorm, opgeschoonde configuratiedetails, opgeschoonde logsamenvattingen, opgeschoonde Gateway-status-/health-snapshots en de nieuwste stabiliteitsbundel wanneer die bestaat.
 
-Hij is bedoeld om te worden gedeeld. Hij bewaart operationele details die helpen bij foutopsporing, zoals veilige OpenClaw-logvelden, subsystemenamen, statuscodes, duurwaarden, geconfigureerde modi, poorten, plugin-id's, provider-id's, niet-geheime functie-instellingen en geredigeerde operationele logberichten. Hij laat chattekst, webhook-bodies, tooluitvoer, referenties, cookies, account-/bericht-id's, prompt-/instructietekst, hostnamen en geheime waarden weg of redigeert ze. Wanneer een LogTape-achtig bericht lijkt op payloadtekst van gebruiker/chat/tool, bewaart de export alleen dat een bericht is weggelaten plus het aantal bytes ervan.
+Deze is bedoeld om te delen. De export bewaart operationele details die helpen bij debuggen, zoals veilige OpenClaw-logvelden, subsystemnamen, statuscodes, duurwaarden, geconfigureerde modi, poorten, Plugin-id's, provider-id's, niet-geheime feature-instellingen en geredigeerde operationele logberichten. Chattekst, Webhook-bodies, tooluitvoer, referenties, cookies, account-/bericht-id's, prompt-/instructietekst, hostnamen en geheime waarden worden weggelaten of geredigeerd. Wanneer een LogTape-achtig bericht lijkt op tekst van een gebruikers-/chat-/toolpayload, bewaart de export alleen dat een bericht is weggelaten plus het aantal bytes ervan.
 
 ### `gateway status`
 
-`gateway status` toont de Gateway-service (launchd/systemd/schtasks) plus een optionele probe van connectiviteit/auth-capaciteit.
+`gateway status` toont de Gateway-service (launchd/systemd/schtasks) plus een optionele probe van connectiviteit/auth-mogelijkheden.
 
 ```bash
 openclaw gateway status
@@ -271,16 +271,16 @@ openclaw gateway status --require-rpc
 ```
 
 <ParamField path="--url <url>" type="string">
-  Voeg een expliciet probe-doel toe. Geconfigureerde remote + localhost worden nog steeds geprobed.
+  Voeg een expliciet probe-doel toe. De geconfigureerde remote + localhost worden nog steeds geprobed.
 </ParamField>
 <ParamField path="--token <token>" type="string">
-  Token-auth voor de probe.
+  Token-authenticatie voor de probe.
 </ParamField>
 <ParamField path="--password <password>" type="string">
-  Wachtwoord-auth voor de probe.
+  Wachtwoordauthenticatie voor de probe.
 </ParamField>
 <ParamField path="--timeout <ms>" type="number" default="10000">
-  Probe-time-out.
+  Time-out voor de probe.
 </ParamField>
 <ParamField path="--no-probe" type="boolean">
   Sla de connectiviteitsprobe over (alleen serviceweergave).
@@ -289,45 +289,46 @@ openclaw gateway status --require-rpc
   Scan ook services op systeemniveau.
 </ParamField>
 <ParamField path="--require-rpc" type="boolean">
-  Upgrade de standaard connectiviteitsprobe naar een leesprobe en sluit af met een niet-nulstatus wanneer die leesprobe mislukt. Kan niet worden gecombineerd met `--no-probe`.
+  Upgrade de standaard connectiviteitsprobe naar een leesprobe en sluit af met een niet-nulwaarde wanneer die leesprobe mislukt. Kan niet worden gecombineerd met `--no-probe`.
 </ParamField>
 
 <AccordionGroup>
   <Accordion title="Statussemantiek">
     - `gateway status` blijft beschikbaar voor diagnostiek, zelfs wanneer de lokale CLI-configuratie ontbreekt of ongeldig is.
-    - Standaard bewijst `gateway status` de servicestatus, WebSocket-verbinding en de auth-mogelijkheid die tijdens de handshake zichtbaar is. Het bewijst geen lees-/schrijf-/adminbewerkingen.
-    - Diagnostische probes muteren niets voor eerste apparaat-auth: ze hergebruiken een bestaande gecachete apparaattoken wanneer die bestaat, maar maken geen nieuwe CLI-apparaatidentiteit of alleen-lezen-apparaatkoppelingsrecord aan alleen om de status te controleren.
-    - `gateway status` lost geconfigureerde auth-SecretRefs op voor probe-auth wanneer dat mogelijk is.
-    - Als een vereiste auth-SecretRef in dit commandopad niet is opgelost, rapporteert `gateway status --json` `rpc.authWarning` wanneer probe-connectiviteit/auth mislukt; geef `--token`/`--password` expliciet door of los eerst de secretbron op.
-    - Als de probe slaagt, worden waarschuwingen over niet-opgeloste auth-refs onderdrukt om fout-positieven te vermijden.
-    - Gebruik `--require-rpc` in scripts en automatisering wanneer een luisterende service niet genoeg is en ook lees-scope RPC-aanroepen gezond moeten zijn.
-    - `--deep` voegt een best-effort scan toe voor extra launchd/systemd/schtasks-installaties. Wanneer meerdere gateway-achtige services worden gedetecteerd, toont menselijke output opruimhints en waarschuwt dat de meeste setups één Gateway per machine zouden moeten draaien.
-    - Menselijke output bevat het opgeloste pad naar het bestandslog plus een snapshot van CLI-versus-service-configuratiepaden/geldigheid om drift in profiel of state-dir te helpen diagnosticeren.
+    - Standaard bewijst `gateway status` de servicestatus, WebSocket-verbinding en de authenticatiecapaciteit die zichtbaar is tijdens de handshake. Het bewijst geen lees-/schrijf-/beheerbewerkingen.
+    - Diagnostische probes muteren niets voor eerste apparaat-authenticatie: ze hergebruiken een bestaande gecachete apparaattoken wanneer die bestaat, maar maken geen nieuwe CLI-apparaatidentiteit of alleen-lezen apparaatkoppelingsrecord aan alleen om de status te controleren.
+    - `gateway status` lost geconfigureerde authenticatie-SecretRefs op voor probe-authenticatie wanneer dat mogelijk is.
+    - Als een vereiste authenticatie-SecretRef in dit commandopad niet kan worden opgelost, meldt `gateway status --json` `rpc.authWarning` wanneer probe-connectiviteit/-authenticatie mislukt; geef `--token`/`--password` expliciet door of los eerst de geheime bron op.
+    - Als de probe slaagt, worden waarschuwingen over niet-opgeloste auth-referenties onderdrukt om fout-positieven te vermijden.
+    - Gebruik `--require-rpc` in scripts en automatisering wanneer een luisterende service niet genoeg is en RPC-aanroepen met leesbereik ook gezond moeten zijn.
+    - `--deep` voegt een best-effort scan toe voor extra launchd-/systemd-/schtasks-installaties. Wanneer meerdere gateway-achtige services worden gedetecteerd, toont mensleesbare uitvoer opruimtips en waarschuwt die dat de meeste setups één Gateway per machine zouden moeten draaien.
+    - `--deep` meldt ook een recente overdracht van een Gateway-supervisorherstart wanneer het serviceproces netjes is afgesloten voor een externe supervisorherstart.
+    - Mensleesbare uitvoer bevat het opgeloste bestandslogpad plus een snapshot van de CLI-versus-service-configuratiepaden/-geldigheid om profiel- of state-dir-afwijkingen te helpen diagnosticeren.
 
   </Accordion>
-  <Accordion title="Linux systemd-auth-driftcontroles">
-    - Op Linux systemd-installaties lezen service-auth-driftcontroles zowel `Environment=`- als `EnvironmentFile=`-waarden uit de unit (inclusief `%h`, paden met aanhalingstekens, meerdere bestanden en optionele `-`-bestanden).
-    - Driftcontroles lossen `gateway.auth.token` SecretRefs op met samengevoegde runtime-env (eerst servicecommando-env, daarna proces-env als fallback).
-    - Als token-auth niet effectief actief is (expliciete `gateway.auth.mode` van `password`/`none`/`trusted-proxy`, of modus niet ingesteld waarbij wachtwoord kan winnen en geen tokenkandidaat kan winnen), slaan token-driftcontroles configuratietoken-resolutie over.
+  <Accordion title="Linux systemd-controles op auth-drift">
+    - Bij Linux systemd-installaties lezen controles op service-auth-drift zowel `Environment=`- als `EnvironmentFile=`-waarden uit de unit (inclusief `%h`, gequote paden, meerdere bestanden en optionele `-`-bestanden).
+    - Driftcontroles lossen `gateway.auth.token` SecretRefs op met de samengevoegde runtime-omgeving (eerst de servicecommando-omgeving, daarna de procesomgeving als fallback).
+    - Als tokenauthenticatie feitelijk niet actief is (expliciete `gateway.auth.mode` van `password`/`none`/`trusted-proxy`, of modus niet ingesteld waarbij wachtwoord kan winnen en geen tokenkandidaat kan winnen), slaan token-driftcontroles configuratietokenresolutie over.
 
   </Accordion>
 </AccordionGroup>
 
 ### `gateway probe`
 
-`gateway probe` is het commando om "alles te debuggen". Het probet altijd:
+`gateway probe` is de opdracht voor "alles debuggen". Deze probeit altijd:
 
-- je geconfigureerde remote Gateway (indien ingesteld), en
+- je geconfigureerde remote gateway (als die is ingesteld), en
 - localhost (loopback) **zelfs als remote is geconfigureerd**.
 
-Als je `--url` doorgeeft, wordt dat expliciete doel vóór beide toegevoegd. Menselijke output labelt de doelen als:
+Als je `--url` doorgeeft, wordt dat expliciete doel vóór beide toegevoegd. Mensleesbare uitvoer labelt de doelen als:
 
 - `URL (explicit)`
 - `Remote (configured)` of `Remote (configured, inactive)`
 - `Local loopback`
 
 <Note>
-Als meerdere gateways bereikbaar zijn, drukt het ze allemaal af. Meerdere gateways worden ondersteund wanneer je geïsoleerde profielen/poorten gebruikt (bijv. een reddingsbot), maar de meeste installaties draaien nog steeds één Gateway.
+Als meerdere gateways bereikbaar zijn, drukt dit ze allemaal af. Meerdere gateways worden ondersteund wanneer je geïsoleerde profielen/poorten gebruikt (bijvoorbeeld een reddingsbot), maar de meeste installaties draaien nog steeds één gateway.
 </Note>
 
 ```bash
@@ -338,50 +339,50 @@ openclaw gateway probe --json
 <AccordionGroup>
   <Accordion title="Interpretatie">
     - `Reachable: yes` betekent dat ten minste één doel een WebSocket-verbinding heeft geaccepteerd.
-    - `Capability: read-only|write-capable|admin-capable|pairing-pending|connect-only` rapporteert wat de probe over auth kon bewijzen. Dit staat los van bereikbaarheid.
-    - `Read probe: ok` betekent dat detail-RPC-aanroepen met lees-scope (`health`/`status`/`system-presence`/`config.get`) ook zijn geslaagd.
-    - `Read probe: limited - missing scope: operator.read` betekent dat verbinden is gelukt, maar RPC met lees-scope beperkt is. Dit wordt gerapporteerd als **gedegradeerde** bereikbaarheid, niet als volledige mislukking.
-    - `Read probe: failed` na `Connect: ok` betekent dat de Gateway de WebSocket-verbinding heeft geaccepteerd, maar dat vervolgleesdiagnostiek is verlopen of mislukt. Dit is ook **gedegradeerde** bereikbaarheid, geen onbereikbare Gateway.
-    - Net als `gateway status` hergebruikt probe bestaande gecachete apparaat-auth, maar maakt geen eerste apparaatidentiteit of koppelingsstatus aan.
-    - De afsluitcode is alleen niet-nul wanneer geen enkel geprobed doel bereikbaar is.
+    - `Capability: read-only|write-capable|admin-capable|pairing-pending|connect-only` meldt wat de probe over authenticatie kon bewijzen. Dit staat los van bereikbaarheid.
+    - `Read probe: ok` betekent dat detail-RPC-aanroepen met leesbereik (`health`/`status`/`system-presence`/`config.get`) ook zijn geslaagd.
+    - `Read probe: limited - missing scope: operator.read` betekent dat verbinden is gelukt, maar dat RPC met leesbereik beperkt is. Dit wordt gemeld als **verminderde** bereikbaarheid, niet als volledige mislukking.
+    - `Read probe: failed` na `Connect: ok` betekent dat de Gateway de WebSocket-verbinding heeft geaccepteerd, maar dat vervolgleesdiagnostiek is verlopen of mislukt. Dit is ook **verminderde** bereikbaarheid, geen onbereikbare Gateway.
+    - Net als `gateway status` hergebruikt probe bestaande gecachete apparaatauthenticatie, maar maakt het geen eerste apparaatidentiteit of koppelingsstatus aan.
+    - De afsluitcode is alleen niet nul wanneer geen enkel geprobed doel bereikbaar is.
 
   </Accordion>
-  <Accordion title="JSON-output">
-    Topniveau:
+  <Accordion title="JSON-uitvoer">
+    Bovenste niveau:
 
     - `ok`: ten minste één doel is bereikbaar.
-    - `degraded`: ten minste één doel accepteerde een verbinding, maar voltooide niet de volledige detail-RPC-diagnostiek.
-    - `capability`: beste mogelijkheid die is gezien bij bereikbare doelen (`read_only`, `write_capable`, `admin_capable`, `pairing_pending`, `connected_no_operator_scope` of `unknown`).
-    - `primaryTargetId`: beste doel om als actieve winnaar te behandelen in deze volgorde: expliciete URL, SSH-tunnel, geconfigureerde remote en daarna local loopback.
+    - `degraded`: ten minste één doel heeft een verbinding geaccepteerd, maar heeft niet alle detail-RPC-diagnostiek voltooid.
+    - `capability`: beste capaciteit die is gezien over bereikbare doelen (`read_only`, `write_capable`, `admin_capable`, `pairing_pending`, `connected_no_operator_scope` of `unknown`).
+    - `primaryTargetId`: beste doel om als actieve winnaar te behandelen, in deze volgorde: expliciete URL, SSH-tunnel, geconfigureerde remote en daarna local loopback.
     - `warnings[]`: best-effort waarschuwingsrecords met `code`, `message` en optionele `targetIds`.
-    - `network`: local loopback-/tailnet-URL-hints afgeleid van huidige configuratie en hostnetwerk.
-    - `discovery.timeoutMs` en `discovery.count`: het werkelijke discoverybudget/aantal resultaten dat voor deze probe-pass is gebruikt.
+    - `network`: local loopback-/tailnet-URL-hints afgeleid van de huidige configuratie en hostnetwerken.
+    - `discovery.timeoutMs` en `discovery.count`: het daadwerkelijke discovery-budget/resultaantal dat voor deze probe-run is gebruikt.
 
     Per doel (`targets[].connect`):
 
-    - `ok`: bereikbaarheid na verbinden + gedegradeerde classificatie.
+    - `ok`: bereikbaarheid na verbinding + classificatie als verminderd.
     - `rpcOk`: volledige detail-RPC geslaagd.
-    - `scopeLimited`: detail-RPC mislukt door ontbrekende operator-scope.
+    - `scopeLimited`: detail-RPC mislukt door ontbrekend operatorbereik.
 
     Per doel (`targets[].auth`):
 
-    - `role`: auth-rol gerapporteerd in `hello-ok` wanneer beschikbaar.
-    - `scopes`: toegekende scopes gerapporteerd in `hello-ok` wanneer beschikbaar.
-    - `capability`: de getoonde auth-mogelijkheidsclassificatie voor dat doel.
+    - `role`: authenticatierol gerapporteerd in `hello-ok` wanneer beschikbaar.
+    - `scopes`: toegekende bereiken gerapporteerd in `hello-ok` wanneer beschikbaar.
+    - `capability`: de getoonde classificatie van authenticatiecapaciteit voor dat doel.
 
   </Accordion>
   <Accordion title="Veelvoorkomende waarschuwingscodes">
-    - `ssh_tunnel_failed`: SSH-tunnel instellen is mislukt; het commando viel terug op directe probes.
+    - `ssh_tunnel_failed`: instellen van SSH-tunnel is mislukt; de opdracht viel terug op directe probes.
     - `multiple_gateways`: meer dan één doel was bereikbaar; dit is ongebruikelijk tenzij je bewust geïsoleerde profielen draait, zoals een reddingsbot.
-    - `auth_secretref_unresolved`: een geconfigureerde auth-SecretRef kon niet worden opgelost voor een mislukt doel.
-    - `probe_scope_limited`: WebSocket-verbinding is gelukt, maar de leesprobe werd beperkt door ontbrekende `operator.read`.
+    - `auth_secretref_unresolved`: een geconfigureerde authenticatie-SecretRef kon niet worden opgelost voor een mislukt doel.
+    - `probe_scope_limited`: WebSocket-verbinding is gelukt, maar de leesprobe was beperkt door ontbrekende `operator.read`.
 
   </Accordion>
 </AccordionGroup>
 
 #### Remote via SSH (pariteit met Mac-app)
 
-De macOS-appmodus "Remote via SSH" gebruikt een lokale poort-forward zodat de remote Gateway (die mogelijk alleen aan loopback is gebonden) bereikbaar wordt op `ws://127.0.0.1:<port>`.
+De modus "Remote via SSH" van de macOS-app gebruikt een lokale port-forward zodat de remote gateway (die mogelijk alleen aan loopback is gebonden) bereikbaar wordt op `ws://127.0.0.1:<port>`.
 
 CLI-equivalent:
 
@@ -396,7 +397,7 @@ openclaw gateway probe --ssh user@gateway-host
   Identiteitsbestand.
 </ParamField>
 <ParamField path="--ssh-auto" type="boolean">
-  Kies de eerste ontdekte gatewayhost als SSH-doel uit het opgeloste discovery-eindpunt (`local.` plus het geconfigureerde wide-area-domein, indien aanwezig). Hints met alleen TXT worden genegeerd.
+  Kies de eerste ontdekte gateway-host als SSH-doel uit het opgeloste discovery-eindpunt (`local.` plus het geconfigureerde wide-area domein, indien aanwezig). Alleen-TXT-hints worden genegeerd.
 </ParamField>
 
 Configuratie (optioneel, gebruikt als standaardwaarden):
@@ -414,10 +415,10 @@ openclaw gateway call logs.tail --params '{"sinceMs": 60000}'
 ```
 
 <ParamField path="--params <json>" type="string" default="{}">
-  JSON-objectstring voor params.
+  JSON-objectstring voor parameters.
 </ParamField>
 <ParamField path="--url <url>" type="string">
-  Gateway WebSocket-URL.
+  Gateway-WebSocket-URL.
 </ParamField>
 <ParamField path="--token <token>" type="string">
   Gateway-token.
@@ -432,14 +433,14 @@ openclaw gateway call logs.tail --params '{"sinceMs": 60000}'
   Vooral voor agent-achtige RPC's die tussentijdse events streamen vóór een definitieve payload.
 </ParamField>
 <ParamField path="--json" type="boolean">
-  Machineleesbare JSON-output.
+  Machinaal leesbare JSON-uitvoer.
 </ParamField>
 
 <Note>
 `--params` moet geldige JSON zijn.
 </Note>
 
-## Beheer de Gateway-service
+## De Gateway-service beheren
 
 ```bash
 openclaw gateway install
@@ -451,9 +452,9 @@ openclaw gateway uninstall
 
 ### Installeren met een wrapper
 
-Gebruik `--wrapper` wanneer de beheerde service via een ander uitvoerbaar bestand moet starten, bijvoorbeeld een
-secrets-manager-shim of een run-as-helper. De wrapper ontvangt de normale Gateway-args en is
-verantwoordelijk voor het uiteindelijk exec'en van `openclaw` of Node met die args.
+Gebruik `--wrapper` wanneer de beheerde service moet starten via een ander uitvoerbaar bestand, bijvoorbeeld een
+shim voor secretsbeheer of een run-as-helper. De wrapper ontvangt de normale Gateway-argumenten en is
+verantwoordelijk voor het uiteindelijk exec'en van `openclaw` of Node met die argumenten.
 
 ```bash
 cat > ~/.local/bin/openclaw-doppler <<'EOF'
@@ -493,18 +494,18 @@ openclaw gateway restart
 
   </Accordion>
   <Accordion title="Lifecycle-gedrag">
-    - Gebruik `gateway restart` om een beheerde service opnieuw te starten. Schakel `gateway stop` en `gateway start` niet aaneen als vervanging voor opnieuw starten; op macOS schakelt `gateway stop` de LaunchAgent bewust uit voordat die wordt gestopt.
-    - `gateway restart --safe` vraagt de actieve Gateway om actief OpenClaw-werk vooraf te controleren en het opnieuw starten uit te stellen tot antwoordlevering, embedded runs en taakruns zijn leeggelopen. `--safe` kan niet worden gecombineerd met `--force` of `--wait`.
-    - `gateway restart --wait 30s` overschrijft het geconfigureerde drainbudget voor opnieuw starten voor die herstart. Kale getallen zijn milliseconden; eenheden zoals `s`, `m` en `h` worden geaccepteerd. `--wait 0` wacht onbeperkt.
-    - `gateway restart --force` slaat het leeg laten lopen van actief werk over en start onmiddellijk opnieuw. Gebruik dit wanneer een operator de vermelde taakblokkeerders al heeft geïnspecteerd en de Gateway nu terug wil.
-    - Lifecycle-commando's accepteren `--json` voor scripts.
+    - Gebruik `gateway restart` om een beheerde service opnieuw te starten. Keten `gateway stop` en `gateway start` niet als vervanging voor een herstart; op macOS schakelt `gateway stop` de LaunchAgent bewust uit voordat deze wordt gestopt.
+    - `gateway restart --safe` vraagt de draaiende Gateway om actief OpenClaw-werk vooraf te controleren en de herstart uit te stellen totdat antwoordlevering, embedded runs en taakruns zijn leeggelopen. `--safe` kan niet worden gecombineerd met `--force` of `--wait`.
+    - `gateway restart --wait 30s` overschrijft het geconfigureerde drain-budget voor herstarts voor die herstart. Losse getallen zijn milliseconden; eenheden zoals `s`, `m` en `h` worden geaccepteerd. `--wait 0` wacht onbeperkt.
+    - `gateway restart --force` slaat het leeglopen van actief werk over en herstart onmiddellijk. Gebruik dit wanneer een operator de vermelde taakblokkades al heeft geïnspecteerd en de gateway nu terug wil.
+    - Lifecycle-commando's accepteren `--json` voor scripting.
 
   </Accordion>
-  <Accordion title="Authenticatie en SecretRefs tijdens installatie">
-    - Wanneer tokenauthenticatie een token vereist en `gateway.auth.token` door SecretRef wordt beheerd, valideert `gateway install` dat de SecretRef oplosbaar is, maar bewaart het opgeloste token niet in de service-omgevingsmetadata.
-    - Als tokenauthenticatie een token vereist en de geconfigureerde token-SecretRef niet is opgelost, mislukt de installatie gesloten in plaats van fallback-plattetekst te bewaren.
-    - Gebruik voor wachtwoordauthenticatie bij `gateway run` bij voorkeur `OPENCLAW_GATEWAY_PASSWORD`, `--password-file` of een door SecretRef ondersteunde `gateway.auth.password` in plaats van inline `--password`.
-    - In afgeleide authenticatiemodus versoepelt alleen-shell `OPENCLAW_GATEWAY_PASSWORD` de tokenvereisten voor installatie niet; gebruik duurzame configuratie (`gateway.auth.password` of configuratie `env`) bij het installeren van een beheerde service.
+  <Accordion title="Auth en SecretRefs tijdens installatie">
+    - Wanneer tokenauth een token vereist en `gateway.auth.token` door SecretRef wordt beheerd, valideert `gateway install` dat de SecretRef kan worden opgelost, maar slaat het opgeloste token niet op in metadata van de serviceomgeving.
+    - Als tokenauth een token vereist en de geconfigureerde token-SecretRef niet is opgelost, faalt de installatie gesloten in plaats van platte fallback-tekst op te slaan.
+    - Geef voor wachtwoordauth bij `gateway run` de voorkeur aan `OPENCLAW_GATEWAY_PASSWORD`, `--password-file` of een door SecretRef ondersteunde `gateway.auth.password` boven inline `--password`.
+    - In afgeleide auth-modus versoepelt alleen-shell `OPENCLAW_GATEWAY_PASSWORD` de vereisten voor installatietokens niet; gebruik duurzame configuratie (`gateway.auth.password` of config `env`) bij het installeren van een beheerde service.
     - Als zowel `gateway.auth.token` als `gateway.auth.password` zijn geconfigureerd en `gateway.auth.mode` niet is ingesteld, wordt installatie geblokkeerd totdat de modus expliciet is ingesteld.
 
   </Accordion>
@@ -512,22 +513,22 @@ openclaw gateway restart
 
 ## Gateways ontdekken (Bonjour)
 
-`gateway discover` scant op Gateway-bakens (`_openclaw-gw._tcp`).
+`gateway discover` scant naar Gateway-bakens (`_openclaw-gw._tcp`).
 
 - Multicast DNS-SD: `local.`
 - Unicast DNS-SD (Wide-Area Bonjour): kies een domein (voorbeeld: `openclaw.internal.`) en stel split-DNS + een DNS-server in; zie [Bonjour](/nl/gateway/bonjour).
 
-Alleen gateways waarvoor Bonjour-discovery is ingeschakeld (standaard), adverteren het baken.
+Alleen gateways waarvoor Bonjour-detectie is ingeschakeld (standaard) adverteren het baken.
 
-Wide-Area discovery-records bevatten (TXT):
+Wide-Area-detectierecords bevatten (TXT):
 
-- `role` (hint voor Gateway-rol)
+- `role` (hint voor gatewayrol)
 - `transport` (transporthint, bijv. `gateway`)
 - `gatewayPort` (WebSocket-poort, meestal `18789`)
-- `sshPort` (optioneel; clients gebruiken standaard `22` als SSH-doel wanneer dit ontbreekt)
+- `sshPort` (optioneel; clients gebruiken standaard `22` als SSH-doel wanneer deze ontbreekt)
 - `tailnetDns` (MagicDNS-hostnaam, indien beschikbaar)
 - `gatewayTls` / `gatewayTlsSha256` (TLS ingeschakeld + certificaatvingerafdruk)
-- `cliPath` (remote-install-hint die naar de wide-area-zone wordt geschreven)
+- `cliPath` (hint voor externe installatie die naar de wide-area-zone wordt geschreven)
 
 ### `gateway discover`
 
@@ -536,7 +537,7 @@ openclaw gateway discover
 ```
 
 <ParamField path="--timeout <ms>" type="number" default="2000">
-  Timeout per opdracht (bladeren/oplossen).
+  Time-out per opdracht (browse/resolve).
 </ParamField>
 <ParamField path="--json" type="boolean">
   Machineleesbare uitvoer (schakelt ook styling/spinner uit).
