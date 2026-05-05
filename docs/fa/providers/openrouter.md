@@ -4,33 +4,33 @@ read_when:
     - می‌خواهید مدل‌ها را از طریق OpenRouter در OpenClaw اجرا کنید
     - می‌خواهید از OpenRouter برای تولید تصویر استفاده کنید
     - می‌خواهید از OpenRouter برای تولید ویدیو استفاده کنید
-summary: از رابط برنامه‌نویسی یکپارچهٔ OpenRouter برای دسترسی به مدل‌های متعدد در OpenClaw استفاده کنید
+summary: از API یکپارچهٔ OpenRouter برای دسترسی به مدل‌های متعدد در OpenClaw استفاده کنید
 title: OpenRouter
 x-i18n:
-    generated_at: "2026-05-04T02:27:06Z"
+    generated_at: "2026-05-05T01:51:06Z"
     model: gpt-5.5
     provider: openai
-    source_hash: f6b7299408aa0de7530e2248c7fa5dae8c09095e2d20a0e9d12a64cab83966fc
+    source_hash: b2876669c6fcc958ac13c19930cd23977b8ec27ae57069d9231932cc13c75244
     source_path: providers/openrouter.md
     workflow: 16
 ---
 
-OpenRouter یک **API یکپارچه** ارائه می‌کند که درخواست‌ها را از پشت یک
-endpoint و کلید API واحد به مدل‌های زیادی مسیریابی می‌کند. با OpenAI سازگار است، بنابراین بیشتر SDKهای OpenAI با تغییر URL پایه کار می‌کنند.
+OpenRouter یک **API یکپارچه** ارائه می‌کند که درخواست‌ها را به مدل‌های زیادی پشت یک
+نقطهٔ پایانی و کلید API واحد مسیریابی می‌کند. با OpenAI سازگار است، بنابراین بیشتر SDKهای OpenAI با تغییر URL پایه کار می‌کنند.
 
 ## شروع به کار
 
 <Steps>
-  <Step title="کلید API خود را بگیرید">
-    یک کلید API در [openrouter.ai/keys](https://openrouter.ai/keys) بسازید.
+  <Step title="دریافت کلید API">
+    یک کلید API در [openrouter.ai/keys](https://openrouter.ai/keys) ایجاد کنید.
   </Step>
-  <Step title="onboarding را اجرا کنید">
+  <Step title="اجرای راه‌اندازی اولیه">
     ```bash
     openclaw onboard --auth-choice openrouter-api-key
     ```
   </Step>
-  <Step title="(اختیاری) به یک مدل مشخص تغییر دهید">
-    مقدار پیش‌فرض onboarding برابر `openrouter/auto` است. بعدا یک مدل مشخص انتخاب کنید:
+  <Step title="(اختیاری) جابه‌جایی به یک مدل مشخص">
+    راه‌اندازی اولیه به‌صورت پیش‌فرض از `openrouter/auto` استفاده می‌کند. بعداً یک مدل مشخص انتخاب کنید:
 
     ```bash
     openclaw models set openrouter/<provider>/<model>
@@ -39,7 +39,7 @@ endpoint و کلید API واحد به مدل‌های زیادی مسیریاب
   </Step>
 </Steps>
 
-## نمونه پیکربندی
+## نمونهٔ پیکربندی
 
 ```json5
 {
@@ -56,10 +56,10 @@ endpoint و کلید API واحد به مدل‌های زیادی مسیریاب
 
 <Note>
 ارجاع‌های مدل از الگوی `openrouter/<provider>/<model>` پیروی می‌کنند. برای فهرست کامل
-providerها و مدل‌های در دسترس، [/concepts/model-providers](/fa/concepts/model-providers) را ببینید.
+ارائه‌دهندگان و مدل‌های در دسترس، [/concepts/model-providers](/fa/concepts/model-providers) را ببینید.
 </Note>
 
-نمونه‌های fallback همراه بسته:
+نمونه‌های جایگزین همراه:
 
 | ارجاع مدل                         | یادداشت‌ها                        |
 | --------------------------------- | ---------------------------- |
@@ -68,7 +68,7 @@ providerها و مدل‌های در دسترس، [/concepts/model-providers](/f
 
 ## تولید تصویر
 
-OpenRouter همچنین می‌تواند پشتوانه ابزار `image_generate` باشد. از یک مدل تصویر OpenRouter زیر `agents.defaults.imageGenerationModel` استفاده کنید:
+OpenRouter همچنین می‌تواند پشتوانهٔ ابزار `image_generate` باشد. از یک مدل تصویر OpenRouter زیر `agents.defaults.imageGenerationModel` استفاده کنید:
 
 ```json5
 {
@@ -84,11 +84,11 @@ OpenRouter همچنین می‌تواند پشتوانه ابزار `image_gener
 }
 ```
 
-OpenClaw درخواست‌های تصویر را با `modalities: ["image", "text"]` به API تصویر تکمیل‌های گفت‌وگوی OpenRouter می‌فرستد. مدل‌های تصویر Gemini راهنمایی‌های پشتیبانی‌شده `aspectRatio` و `resolution` را از طریق `image_config` متعلق به OpenRouter دریافت می‌کنند. برای مدل‌های تصویر کندتر OpenRouter از `agents.defaults.imageGenerationModel.timeoutMs` استفاده کنید؛ پارامتر `timeoutMs` در هر فراخوانی ابزار `image_generate` همچنان اولویت دارد.
+OpenClaw درخواست‌های تصویر را با `modalities: ["image", "text"]` به API تصویر تکمیل‌های گفت‌وگوی OpenRouter می‌فرستد. مدل‌های تصویر Gemini راهنمایی‌های پشتیبانی‌شدهٔ `aspectRatio` و `resolution` را از طریق `image_config` در OpenRouter دریافت می‌کنند. برای مدل‌های تصویر کندتر OpenRouter از `agents.defaults.imageGenerationModel.timeoutMs` استفاده کنید؛ پارامتر `timeoutMs` در هر فراخوانی ابزار `image_generate` همچنان اولویت دارد.
 
 ## تولید ویدیو
 
-OpenRouter همچنین می‌تواند از طریق API ناهمگام `/videos` پشتوانه ابزار `video_generate` باشد. از یک مدل ویدیوی OpenRouter زیر `agents.defaults.videoGenerationModel` استفاده کنید:
+OpenRouter همچنین می‌تواند از طریق API ناهمگام `/videos` خود پشتوانهٔ ابزار `video_generate` باشد. از یک مدل ویدیوی OpenRouter زیر `agents.defaults.videoGenerationModel` استفاده کنید:
 
 ```json5
 {
@@ -103,16 +103,19 @@ OpenRouter همچنین می‌تواند از طریق API ناهمگام `/vid
 }
 ```
 
-OpenClaw کارهای تبدیل متن به ویدیو و تصویر به ویدیو را به OpenRouter ارسال می‌کند، `polling_url` برگشتی را polling می‌کند، و ویدیوی تکمیل‌شده را از
-`unsigned_urls` متعلق به OpenRouter یا endpoint مستندشده محتوای کار دانلود می‌کند.
-تصاویر مرجع به‌طور پیش‌فرض به‌عنوان تصاویر فریم اول/آخر فرستاده می‌شوند؛ تصاویر
-برچسب‌خورده با `reference_image` به‌عنوان ارجاع‌های ورودی OpenRouter فرستاده می‌شوند. مقدار پیش‌فرض همراه بسته `google/veo-3.1-fast` مدت‌های 4/6/8
-ثانیه‌ای، وضوح‌های `720P`/`1080P`، و نسبت‌های تصویر `16:9`/`9:16` را که در حال حاضر پشتیبانی می‌شوند اعلام می‌کند. تبدیل ویدیو به ویدیو برای OpenRouter ثبت نشده است، زیرا API بالادستی تولید ویدیو در حال حاضر متن و ارجاع‌های تصویر را می‌پذیرد.
+OpenClaw کارهای متن‌به‌ویدیو و تصویر‌به‌ویدیو را به OpenRouter ارسال می‌کند، `polling_url`
+برگشتی را نظرسنجی می‌کند، و ویدیوی تکمیل‌شده را از `unsigned_urls` متعلق به OpenRouter
+یا نقطهٔ پایانی مستندشدهٔ محتوای کار دانلود می‌کند. تصویرهای مرجع به‌صورت پیش‌فرض به‌عنوان
+تصویرهای فریم اول/آخر فرستاده می‌شوند؛ تصویرهایی که با `reference_image` برچسب‌گذاری شده‌اند
+به‌عنوان ارجاع‌های ورودی OpenRouter ارسال می‌شوند. پیش‌فرض همراه `google/veo-3.1-fast`
+مدت‌های ۴/۶/۸ ثانیه‌ای، وضوح‌های `720P`/`1080P` و نسبت‌های تصویر `16:9`/`9:16`
+را که در حال حاضر پشتیبانی می‌شوند اعلام می‌کند. ویدیو‌به‌ویدیو برای OpenRouter ثبت نشده است،
+زیرا API بالادستی تولید ویدیو در حال حاضر متن و ارجاع‌های تصویری را می‌پذیرد.
 
-## تبدیل متن به گفتار
+## متن‌به‌گفتار
 
-OpenRouter همچنین می‌تواند از طریق endpoint سازگار با OpenAI یعنی
-`/audio/speech` به‌عنوان provider TTS استفاده شود.
+OpenRouter همچنین می‌تواند از طریق نقطهٔ پایانی سازگار با OpenAI یعنی
+`/audio/speech` به‌عنوان ارائه‌دهندهٔ TTS استفاده شود.
 
 ```json5
 {
@@ -135,29 +138,29 @@ OpenRouter همچنین می‌تواند از طریق endpoint سازگار ب
 اگر `messages.tts.providers.openrouter.apiKey` حذف شود، TTS دوباره از
 `models.providers.openrouter.apiKey` و سپس `OPENROUTER_API_KEY` استفاده می‌کند.
 
-## احراز هویت و headerها
+## احراز هویت و سرآیندها
 
-OpenRouter در پشت صحنه از یک توکن Bearer همراه با کلید API شما استفاده می‌کند.
+OpenRouter در پشت‌صحنه از توکن Bearer همراه با کلید API شما استفاده می‌کند.
 
 در درخواست‌های واقعی OpenRouter (`https://openrouter.ai/api/v1`)، OpenClaw همچنین
-headerهای مستندشده انتساب برنامه OpenRouter را اضافه می‌کند:
+سرآیندهای مستندشدهٔ OpenRouter برای انتساب برنامه را اضافه می‌کند:
 
-| Header                    | مقدار                                                                                                  |
+| سرآیند                    | مقدار                                                                                                  |
 | ------------------------- | ------------------------------------------------------------------------------------------------------ |
 | `HTTP-Referer`            | `https://openclaw.ai`                                                                                  |
 | `X-OpenRouter-Title`      | `OpenClaw`                                                                                             |
 | `X-OpenRouter-Categories` | `cli-agent,cloud-agent,programming-app,creative-writing,writing-assistant,general-chat,personal-agent` |
 
 <Warning>
-اگر provider OpenRouter را به proxy یا URL پایه دیگری تغییر دهید، OpenClaw
-آن headerهای ویژه OpenRouter یا نشانگرهای cache متعلق به Anthropic را تزریق **نمی‌کند**.
+اگر ارائه‌دهندهٔ OpenRouter را به پراکسی یا URL پایهٔ دیگری اشاره دهید، OpenClaw
+آن سرآیندهای ویژهٔ OpenRouter یا نشانگرهای کش Anthropic را تزریق **نمی‌کند**.
 </Warning>
 
 ## پیکربندی پیشرفته
 
 <AccordionGroup>
-  <Accordion title="cache کردن پاسخ">
-    cache کردن پاسخ در OpenRouter اختیاری است. آن را برای هر مدل OpenRouter با
+  <Accordion title="کش‌کردن پاسخ">
+    کش‌کردن پاسخ در OpenRouter اختیاری است. آن را برای هر مدل OpenRouter با
     پارامترهای مدل فعال کنید:
 
     ```json5
@@ -177,60 +180,62 @@ headerهای مستندشده انتساب برنامه OpenRouter را اضاف
     }
     ```
 
-    OpenClaw مقدار `X-OpenRouter-Cache: true` را می‌فرستد و، وقتی پیکربندی شده باشد،
-    `X-OpenRouter-Cache-TTL` را نیز ارسال می‌کند. `responseCacheClear: true` برای
-    درخواست فعلی یک تازه‌سازی اجباری انجام می‌دهد و پاسخ جایگزین را ذخیره می‌کند. aliasهای snake_case
-    (`response_cache`، `response_cache_ttl_seconds`، و
+    OpenClaw مقدار `X-OpenRouter-Cache: true` و، در صورت پیکربندی،
+    `X-OpenRouter-Cache-TTL` را می‌فرستد. `responseCacheClear: true` برای
+    درخواست فعلی بازخوانی را اجباری می‌کند و پاسخ جایگزین را ذخیره می‌کند. نام‌های مستعار snake_case
+    (`response_cache`، `response_cache_ttl_seconds` و
     `response_cache_clear`) نیز پذیرفته می‌شوند.
 
-    این مورد از cache کردن prompt در provider و از نشانگرهای
-    `cache_control` متعلق به Anthropic در OpenRouter جداست. فقط روی مسیرهای
-    تاییدشده `openrouter.ai` اعمال می‌شود، نه URLهای پایه proxy سفارشی.
+    این مورد از کش‌کردن پرامپت ارائه‌دهنده و از نشانگرهای Anthropic
+    `cache_control` در OpenRouter جدا است. فقط روی مسیرهای تأییدشدهٔ
+    `openrouter.ai` اعمال می‌شود، نه URLهای پایهٔ پراکسی سفارشی.
 
   </Accordion>
 
-  <Accordion title="نشانگرهای cache متعلق به Anthropic">
-    در مسیرهای تاییدشده OpenRouter، ارجاع‌های مدل Anthropic نشانگرهای
-    ویژه OpenRouter یعنی `cache_control` متعلق به Anthropic را نگه می‌دارند که OpenClaw برای
-    استفاده مجدد بهتر از cache prompt روی بلوک‌های prompt سیستم/توسعه‌دهنده استفاده می‌کند.
+  <Accordion title="نشانگرهای کش Anthropic">
+    در مسیرهای تأییدشدهٔ OpenRouter، ارجاع‌های مدل Anthropic نشانگرهای ویژهٔ OpenRouter
+    یعنی `cache_control` مربوط به Anthropic را نگه می‌دارند که OpenClaw برای
+    استفادهٔ بهتر از کش پرامپت روی بلوک‌های پرامپت سیستم/توسعه‌دهنده به کار می‌برد.
   </Accordion>
 
-  <Accordion title="prefill استدلال Anthropic">
-    در مسیرهای تاییدشده OpenRouter، ارجاع‌های مدل Anthropic با استدلال فعال،
-    turnهای پایانی prefill دستیار را پیش از رسیدن درخواست به OpenRouter حذف می‌کنند،
-    تا با الزام Anthropic که گفت‌وگوهای استدلال باید با یک turn کاربر پایان یابند هماهنگ باشد.
+  <Accordion title="پیش‌پرکردن استدلال Anthropic">
+    در مسیرهای تأییدشدهٔ OpenRouter، ارجاع‌های مدل Anthropic که استدلال در آن‌ها فعال است
+    نوبت‌های پیش‌پرشدهٔ انتهایی assistant را پیش از رسیدن درخواست به OpenRouter حذف می‌کنند،
+    مطابق با الزام Anthropic که گفت‌وگوهای استدلالی باید با نوبت کاربر پایان یابند.
   </Accordion>
 
-  <Accordion title="تزریق thinking / reasoning">
-    در مسیرهای غیر `auto` پشتیبانی‌شده، OpenClaw سطح thinking انتخاب‌شده را به
-    payloadهای استدلال proxy متعلق به OpenRouter نگاشت می‌کند. راهنمایی‌های مدل پشتیبانی‌نشده و
+  <Accordion title="تزریق تفکر / استدلال">
+    در مسیرهای پشتیبانی‌شدهٔ غیر `auto`، OpenClaw سطح تفکر انتخاب‌شده را به
+    محموله‌های استدلال پراکسی OpenRouter نگاشت می‌کند. راهنمایی‌های مدل پشتیبانی‌نشده و
     `openrouter/auto` آن تزریق استدلال را رد می‌کنند. Hunter Alpha همچنین
-    استدلال proxy را برای ارجاع‌های مدل پیکربندی‌شده قدیمی رد می‌کند، زیرا OpenRouter ممکن است
+    برای ارجاع‌های مدل پیکربندی‌شدهٔ قدیمی، استدلال پراکسی را رد می‌کند، زیرا OpenRouter ممکن است
     برای آن مسیر بازنشسته، متن پاسخ نهایی را در فیلدهای استدلال برگرداند.
   </Accordion>
 
   <Accordion title="بازپخش استدلال DeepSeek V4">
-    در مسیرهای تاییدشده OpenRouter، `openrouter/deepseek/deepseek-v4-flash` و
-    `openrouter/deepseek/deepseek-v4-pro` مقدار `reasoning_content` گم‌شده را در
-    turnهای بازپخش‌شده دستیار پر می‌کنند تا گفت‌وگوهای thinking/tool شکل پیگیری
-    موردنیاز DeepSeek V4 را حفظ کنند.
+    در مسیرهای تأییدشدهٔ OpenRouter، `openrouter/deepseek/deepseek-v4-flash` و
+    `openrouter/deepseek/deepseek-v4-pro` مقدارهای گمشدهٔ `reasoning_content` را در
+    نوبت‌های assistant بازپخش‌شده پر می‌کنند تا گفت‌وگوهای تفکر/ابزار شکل پیگیری موردنیاز DeepSeek V4
+    را حفظ کنند. OpenClaw مقدارهای پشتیبانی‌شدهٔ OpenRouter برای
+    `reasoning_effort` را برای این مسیرها می‌فرستد؛ `xhigh` بالاترین سطح اعلام‌شده است
+    و بازنویسی‌های قدیمی `max` به `xhigh` نگاشت می‌شوند.
   </Accordion>
 
-  <Accordion title="شکل‌دهی درخواست فقط OpenAI">
-    OpenRouter همچنان از مسیر سازگار با OpenAI به سبک proxy عبور می‌کند، بنابراین
-    شکل‌دهی درخواست بومی و فقط OpenAI مانند `serviceTier`، `store` در Responses،
-    payloadهای سازگار با استدلال OpenAI، و راهنمایی‌های cache prompt ارسال نمی‌شوند.
+  <Accordion title="شکل‌دهی درخواست فقط مخصوص OpenAI">
+    OpenRouter همچنان از مسیر سازگار با OpenAI به سبک پراکسی عبور می‌کند، بنابراین
+    شکل‌دهی درخواست بومی و فقط مخصوص OpenAI مانند `serviceTier`، مقدار `store` در Responses،
+    محموله‌های سازگاری استدلال OpenAI و راهنمایی‌های کش پرامپت ارسال نمی‌شود.
   </Accordion>
 
-  <Accordion title="مسیرهای مبتنی بر Gemini">
-    ارجاع‌های OpenRouter مبتنی بر Gemini روی مسیر proxy-Gemini باقی می‌مانند: OpenClaw پاک‌سازی
-    thought-signature متعلق به Gemini را در آنجا حفظ می‌کند، اما اعتبارسنجی بازپخش بومی Gemini
-    یا بازنویسی‌های bootstrap را فعال نمی‌کند.
+  <Accordion title="مسیرهای پشتوانه‌دار با Gemini">
+    ارجاع‌های OpenRouter که پشتوانهٔ Gemini دارند روی مسیر پراکسی-Gemini می‌مانند: OpenClaw
+    پاک‌سازی امضای تفکر Gemini را در آنجا نگه می‌دارد، اما اعتبارسنجی بازپخش بومی Gemini
+    یا بازنویسی‌های بوت‌استرپ را فعال نمی‌کند.
   </Accordion>
 
-  <Accordion title="فراداده مسیریابی provider">
-    اگر مسیریابی provider متعلق به OpenRouter را زیر پارامترهای مدل پاس دهید، OpenClaw
-    پیش از اجرای wrapperهای stream مشترک، آن را به‌عنوان فراداده مسیریابی OpenRouter ارسال می‌کند.
+  <Accordion title="فرادادهٔ مسیریابی ارائه‌دهنده">
+    اگر مسیریابی ارائه‌دهندهٔ OpenRouter را زیر پارامترهای مدل ارسال کنید، OpenClaw
+    آن را پیش از اجرای wrapperهای جریان مشترک، به‌عنوان فرادادهٔ مسیریابی OpenRouter ارسال می‌کند.
   </Accordion>
 </AccordionGroup>
 
@@ -238,9 +243,9 @@ headerهای مستندشده انتساب برنامه OpenRouter را اضاف
 
 <CardGroup cols={2}>
   <Card title="انتخاب مدل" href="/fa/concepts/model-providers" icon="layers">
-    انتخاب providerها، ارجاع‌های مدل، و رفتار failover.
+    انتخاب ارائه‌دهندگان، ارجاع‌های مدل، و رفتار failover.
   </Card>
   <Card title="مرجع پیکربندی" href="/fa/gateway/configuration-reference" icon="gear">
-    مرجع کامل پیکربندی برای agentها، مدل‌ها، و providerها.
+    مرجع کامل پیکربندی برای عامل‌ها، مدل‌ها، و ارائه‌دهندگان.
   </Card>
 </CardGroup>

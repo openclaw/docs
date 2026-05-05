@@ -1,109 +1,98 @@
 ---
 read_when:
-    - تغییر احراز هویت یا حالت‌های در معرض قرارگیری داشبورد
-summary: دسترسی و احراز هویت داشبورد Gateway (رابط کاربری کنترل)
+    - تغییر حالت‌های احراز هویت یا در معرض قرارگیری داشبورد
+summary: دسترسی و احراز هویت داشبورد Gateway (Control UI)
 title: داشبورد
 x-i18n:
-    generated_at: "2026-04-29T23:49:00Z"
+    generated_at: "2026-05-05T01:54:01Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 5e0e7c8cebe715f96e7f0e967e9fd86c4c6c54f7cc08a4291b02515fc0933a1a
+    source_hash: 0e2086587fee6303221663748c3047886a5beae29862d66e2edf78e02bfe3da1
     source_path: web/dashboard.md
     workflow: 16
 ---
 
-The Gateway dashboard is the browser Control UI served at `/` by default
-(override with `gateway.controlUi.basePath`).
+داشبورد Gateway همان رابط کاربری کنترل در مرورگر است که به‌طور پیش‌فرض در `/` ارائه می‌شود
+(با `gateway.controlUi.basePath` بازنویسی کنید).
 
-Quick open (local Gateway):
+باز کردن سریع (Gateway محلی):
 
-- [http://127.0.0.1:18789/](http://127.0.0.1:18789/) (or [http://localhost:18789/](http://localhost:18789/))
-- With `gateway.tls.enabled: true`, use `https://127.0.0.1:18789/` and
-  `wss://127.0.0.1:18789` for the WebSocket endpoint.
+- [http://127.0.0.1:18789/](http://127.0.0.1:18789/) (یا [http://localhost:18789/](http://localhost:18789/))
+- با `gateway.tls.enabled: true`، از `https://127.0.0.1:18789/` و
+  `wss://127.0.0.1:18789` برای نقطه پایانی WebSocket استفاده کنید.
 
-Key references:
+ارجاعات کلیدی:
 
-- [Control UI](/fa/web/control-ui) for usage and UI capabilities.
-- [Tailscale](/fa/gateway/tailscale) for Serve/Funnel automation.
-- [Web surfaces](/fa/web) for bind modes and security notes.
+- [رابط کاربری کنترل](/fa/web/control-ui) برای استفاده و قابلیت‌های رابط کاربری.
+- [Tailscale](/fa/gateway/tailscale) برای خودکارسازی Serve/Funnel.
+- [سطوح وب](/fa/web) برای حالت‌های bind و نکات امنیتی.
 
-Authentication is enforced at the WebSocket handshake via the configured gateway
-auth path:
+احراز هویت در مرحله handshake مربوط به WebSocket و از طریق مسیر احراز هویت پیکربندی‌شده Gateway
+اعمال می‌شود:
 
 - `connect.params.auth.token`
 - `connect.params.auth.password`
-- Tailscale Serve identity headers when `gateway.auth.allowTailscale: true`
-- trusted-proxy identity headers when `gateway.auth.mode: "trusted-proxy"`
+- سرآیندهای هویت Tailscale Serve وقتی `gateway.auth.allowTailscale: true` است
+- سرآیندهای هویت trusted-proxy وقتی `gateway.auth.mode: "trusted-proxy"` است
 
-See `gateway.auth` in [Gateway configuration](/fa/gateway/configuration).
+`gateway.auth` را در [پیکربندی Gateway](/fa/gateway/configuration) ببینید.
 
-Security note: the Control UI is an **admin surface** (chat, config, exec approvals).
-Do not expose it publicly. The UI keeps dashboard URL tokens in sessionStorage
-for the current browser tab session and selected gateway URL, and strips them from the URL after load.
-Prefer localhost, Tailscale Serve, or an SSH tunnel.
+نکته امنیتی: رابط کاربری کنترل یک **سطح مدیریتی** است (چت، پیکربندی، تأییدهای exec).
+آن را عمومی در دسترس قرار ندهید. رابط کاربری توکن‌های URL داشبورد را برای نشست تب فعلی مرورگر و URL انتخاب‌شده Gateway در sessionStorage نگه می‌دارد و پس از بارگذاری آن‌ها را از URL حذف می‌کند.
+localhost، Tailscale Serve یا تونل SSH را ترجیح دهید.
 
-## Fast path (recommended)
+## مسیر سریع (توصیه‌شده)
 
-- After onboarding, the CLI auto-opens the dashboard and prints a clean (non-tokenized) link.
-- Re-open anytime: `openclaw dashboard` (copies link, opens browser if possible, shows SSH hint if headless).
-- If the UI prompts for shared-secret auth, paste the configured token or
-  password into Control UI settings.
+- پس از onboarding، CLI داشبورد را خودکار باز می‌کند و یک لینک پاک (بدون توکن) چاپ می‌کند.
+- باز کردن دوباره در هر زمان: `openclaw dashboard` (لینک را کپی می‌کند، اگر ممکن باشد مرورگر را باز می‌کند، و اگر headless باشد راهنمای SSH نشان می‌دهد).
+- اگر تحویل از طریق clipboard و مرورگر شکست بخورد، `openclaw dashboard` همچنان URL پاک را چاپ می‌کند
+  و به شما می‌گوید از توکن `OPENCLAW_GATEWAY_TOKEN` یا
+  `gateway.auth.token` به‌عنوان کلید fragment URL یعنی `token` استفاده کنید؛ مقدار توکن‌ها را در لاگ‌ها چاپ نمی‌کند.
+- اگر رابط کاربری برای احراز هویت با shared-secret درخواست داد، توکن یا
+  گذرواژه پیکربندی‌شده را در تنظیمات رابط کاربری کنترل جای‌گذاری کنید.
 
-## Auth basics (local vs remote)
+## مبانی احراز هویت (محلی در برابر راه‌دور)
 
-- **Localhost**: open `http://127.0.0.1:18789/`.
-- **Gateway TLS**: when `gateway.tls.enabled: true`, dashboard/status links use
-  `https://` and Control UI WebSocket links use `wss://`.
-- **Shared-secret token source**: `gateway.auth.token` (or
-  `OPENCLAW_GATEWAY_TOKEN`); `openclaw dashboard` can pass it via URL fragment
-  for one-time bootstrap, and the Control UI keeps it in sessionStorage for the
-  current browser tab session and selected gateway URL instead of localStorage.
-- If `gateway.auth.token` is SecretRef-managed, `openclaw dashboard`
-  prints/copies/opens a non-tokenized URL by design. This avoids exposing
-  externally managed tokens in shell logs, clipboard history, or browser-launch
-  arguments.
-- If `gateway.auth.token` is configured as a SecretRef and is unresolved in your
-  current shell, `openclaw dashboard` still prints a non-tokenized URL plus
-  actionable auth setup guidance.
-- **Shared-secret password**: use the configured `gateway.auth.password` (or
-  `OPENCLAW_GATEWAY_PASSWORD`). The dashboard does not persist passwords across
-  reloads.
-- **Identity-bearing modes**: Tailscale Serve can satisfy Control UI/WebSocket
-  auth via identity headers when `gateway.auth.allowTailscale: true`, and a
-  non-loopback identity-aware reverse proxy can satisfy
-  `gateway.auth.mode: "trusted-proxy"`. In those modes the dashboard does not
-  need a pasted shared secret for the WebSocket.
-- **Not localhost**: use Tailscale Serve, a non-loopback shared-secret bind, a
-  non-loopback identity-aware reverse proxy with
-  `gateway.auth.mode: "trusted-proxy"`, or an SSH tunnel. HTTP APIs still use
-  shared-secret auth unless you intentionally run private-ingress
-  `gateway.auth.mode: "none"` or trusted-proxy HTTP auth. See
-  [Web surfaces](/fa/web).
+- **Localhost**: `http://127.0.0.1:18789/` را باز کنید.
+- **TLS مربوط به Gateway**: وقتی `gateway.tls.enabled: true` باشد، لینک‌های داشبورد/وضعیت از
+  `https://` و لینک‌های WebSocket رابط کاربری کنترل از `wss://` استفاده می‌کنند.
+- **منبع توکن shared-secret**: `gateway.auth.token` (یا
+  `OPENCLAW_GATEWAY_TOKEN`)؛ `openclaw dashboard` می‌تواند آن را از طریق fragment URL برای bootstrap یک‌باره عبور دهد، و رابط کاربری کنترل آن را برای نشست تب فعلی مرورگر و URL انتخاب‌شده Gateway به‌جای localStorage در sessionStorage نگه می‌دارد.
+- اگر `gateway.auth.token` با SecretRef مدیریت شود، `openclaw dashboard`
+  طبق طراحی یک URL بدون توکن چاپ/کپی/باز می‌کند. این کار از افشای توکن‌های مدیریت‌شده خارجی در لاگ‌های shell، تاریخچه clipboard یا آرگومان‌های راه‌اندازی مرورگر جلوگیری می‌کند.
+- اگر `gateway.auth.token` به‌صورت SecretRef پیکربندی شده و در shell فعلی شما resolve نشده باشد، `openclaw dashboard` همچنان یک URL بدون توکن به‌همراه راهنمای عملی برای تنظیم احراز هویت چاپ می‌کند.
+- **گذرواژه shared-secret**: از `gateway.auth.password` پیکربندی‌شده (یا
+  `OPENCLAW_GATEWAY_PASSWORD`) استفاده کنید. داشبورد گذرواژه‌ها را بین reloadها نگه نمی‌دارد.
+- **حالت‌های دارای هویت**: Tailscale Serve می‌تواند احراز هویت رابط کاربری کنترل/WebSocket را از طریق سرآیندهای هویت وقتی `gateway.auth.allowTailscale: true` است برآورده کند، و یک reverse proxy غیر local loopback و آگاه از هویت می‌تواند
+  `gateway.auth.mode: "trusted-proxy"` را برآورده کند. در این حالت‌ها داشبورد برای WebSocket به shared secret جای‌گذاری‌شده نیاز ندارد.
+- **غیر از localhost**: از Tailscale Serve، یک bind غیر local loopback با shared-secret، یک reverse proxy غیر local loopback و آگاه از هویت با
+  `gateway.auth.mode: "trusted-proxy"`، یا یک تونل SSH استفاده کنید. APIهای HTTP همچنان از احراز هویت shared-secret استفاده می‌کنند مگر اینکه عمداً
+  `gateway.auth.mode: "none"` برای private-ingress یا احراز هویت HTTP از نوع trusted-proxy را اجرا کنید. [سطوح وب](/fa/web) را ببینید.
 
 <a id="if-you-see-unauthorized-1008"></a>
 
-## If you see "unauthorized" / 1008
+## اگر "unauthorized" / 1008 را می‌بینید
 
-- Ensure the gateway is reachable (local: `openclaw status`; remote: SSH tunnel `ssh -N -L 18789:127.0.0.1:18789 user@host` then open `http://127.0.0.1:18789/`).
-- For `AUTH_TOKEN_MISMATCH`, clients may do one trusted retry with a cached device token when the gateway returns retry hints. That cached-token retry reuses the token's cached approved scopes; explicit `deviceToken` / explicit `scopes` callers keep their requested scope set. If auth still fails after that retry, resolve token drift manually.
-- Outside that retry path, connect auth precedence is explicit shared token/password first, then explicit `deviceToken`, then stored device token, then bootstrap token.
-- On the async Tailscale Serve Control UI path, failed attempts for the same
-  `{scope, ip}` are serialized before the failed-auth limiter records them, so
-  the second concurrent bad retry can already show `retry later`.
-- For token drift repair steps, follow [Token drift recovery checklist](/fa/cli/devices#token-drift-recovery-checklist).
-- Retrieve or supply the shared secret from the gateway host:
-  - Token: `openclaw config get gateway.auth.token`
-  - Password: resolve the configured `gateway.auth.password` or
-    `OPENCLAW_GATEWAY_PASSWORD`
-  - SecretRef-managed token: resolve the external secret provider or export
-    `OPENCLAW_GATEWAY_TOKEN` in this shell, then rerun `openclaw dashboard`
-  - No shared secret configured: `openclaw doctor --generate-gateway-token`
-- In the dashboard settings, paste the token or password into the auth field,
-  then connect.
-- The UI language picker is in **Overview -> Gateway Access -> Language**.
-  It is part of the access card, not the Appearance section.
+- مطمئن شوید Gateway در دسترس است (محلی: `openclaw status`؛ راه‌دور: تونل SSH با `ssh -N -L 18789:127.0.0.1:18789 user@host` سپس `http://127.0.0.1:18789/` را باز کنید).
+- برای `AUTH_TOKEN_MISMATCH`، کلاینت‌ها ممکن است وقتی Gateway راهنمای retry برمی‌گرداند، یک retry مورد اعتماد با توکن device ذخیره‌شده انجام دهند. آن retry با توکن ذخیره‌شده، scopeهای تأییدشده ذخیره‌شده توکن را دوباره استفاده می‌کند؛ فراخوان‌های دارای `deviceToken` صریح / `scopes` صریح مجموعه scope درخواستی خود را نگه می‌دارند. اگر احراز هویت پس از آن retry همچنان شکست خورد، drift توکن را دستی برطرف کنید.
+- خارج از آن مسیر retry، تقدم احراز هویت اتصال ابتدا shared token/password صریح، سپس `deviceToken` صریح، سپس توکن device ذخیره‌شده، سپس توکن bootstrap است.
+- در مسیر ناهمگام رابط کاربری کنترل Tailscale Serve، تلاش‌های ناموفق برای همان
+  `{scope, ip}` پیش از ثبت آن‌ها توسط محدودکننده failed-auth به‌صورت ترتیبی انجام می‌شوند، بنابراین
+  دومین retry بد هم‌زمان می‌تواند از قبل `retry later` را نشان دهد.
+- برای مراحل ترمیم drift توکن، [چک‌لیست بازیابی drift توکن](/fa/cli/devices#token-drift-recovery-checklist) را دنبال کنید.
+- shared secret را از میزبان Gateway بازیابی یا فراهم کنید:
+  - توکن: `openclaw config get gateway.auth.token`
+  - گذرواژه: `gateway.auth.password` پیکربندی‌شده یا
+    `OPENCLAW_GATEWAY_PASSWORD` را resolve کنید
+  - توکن مدیریت‌شده با SecretRef: ارائه‌دهنده secret خارجی را resolve کنید یا
+    `OPENCLAW_GATEWAY_TOKEN` را در این shell export کنید، سپس `openclaw dashboard` را دوباره اجرا کنید
+  - shared secret پیکربندی نشده است: `openclaw doctor --generate-gateway-token`
+- در تنظیمات داشبورد، توکن یا گذرواژه را در فیلد احراز هویت جای‌گذاری کنید،
+  سپس وصل شوید.
+- انتخاب‌گر زبان رابط کاربری در **نمای کلی -> دسترسی Gateway -> زبان** قرار دارد.
+  این بخش جزئی از کارت دسترسی است، نه بخش ظاهر.
 
-## Related
+## مرتبط
 
-- [Control UI](/fa/web/control-ui)
+- [رابط کاربری کنترل](/fa/web/control-ui)
 - [WebChat](/fa/web/webchat)
