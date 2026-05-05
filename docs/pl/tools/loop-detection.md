@@ -1,33 +1,33 @@
 ---
 read_when:
-    - Użytkownik zgłasza, że agenci zawieszają się, powtarzając wywołania narzędzi
-    - Należy dostroić ochronę przed powtarzającymi się wywołaniami
-    - Edytujesz zasady narzędzi i środowiska uruchomieniowego agenta
+    - Użytkownik zgłasza, że agenci utykają, powtarzając wywołania narzędzi
+    - Należy dostroić zabezpieczenie przed powtarzającymi się wywołaniami
+    - Edytujesz zasady narzędzi/środowiska uruchomieniowego agenta
 summary: Jak włączyć i dostroić zabezpieczenia wykrywające powtarzające się pętle wywołań narzędzi
 title: Wykrywanie pętli narzędzi
 x-i18n:
-    generated_at: "2026-05-03T21:38:38Z"
+    generated_at: "2026-05-05T01:50:08Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1b3976948d5735cf08b7ce854bab048a77a778a07a9f3f66d17c15aed0d42a97
+    source_hash: b9221e1716d3f4c2814a4705b160253839510cd6d11fe4ccd598c67958851afb
     source_path: tools/loop-detection.md
     workflow: 16
 ---
 
-OpenClaw może zapobiegać blokowaniu się agentów w powtarzających się wzorcach wywołań narzędzi.
-Mechanizm ochronny jest **domyślnie wyłączony**.
+OpenClaw może zapobiegać utknięciu agentów w powtarzających się wzorcach wywołań narzędzi.
+Zabezpieczenie jest **domyślnie wyłączone**.
 
-Włączaj go tylko tam, gdzie jest potrzebny, ponieważ przy rygorystycznych ustawieniach może blokować uzasadnione powtarzające się wywołania.
+Włączaj je tylko tam, gdzie jest potrzebne, ponieważ przy rygorystycznych ustawieniach może blokować prawidłowe powtarzające się wywołania.
 
 ## Dlaczego to istnieje
 
-- Wykrywanie powtarzalnych sekwencji, które nie przynoszą postępu.
-- Wykrywanie pętli bez wyników o wysokiej częstotliwości (to samo narzędzie, te same dane wejściowe, powtarzające się błędy).
-- Wykrywanie konkretnych wzorców powtarzających się wywołań dla znanych narzędzi odpytywania.
+- Wykrywa powtarzalne sekwencje, które nie przynoszą postępu.
+- Wykrywa wysokoczęstotliwościowe pętle bez wyników (to samo narzędzie, te same dane wejściowe, powtarzające się błędy).
+- Wykrywa konkretne wzorce powtarzających się wywołań dla znanych narzędzi odpytujących.
 
 ## Blok konfiguracji
 
-Globalne wartości domyślne:
+Domyślne wartości globalne:
 
 ```json5
 {
@@ -48,7 +48,7 @@ Globalne wartości domyślne:
 }
 ```
 
-Nadpisanie dla poszczególnych agentów (opcjonalne):
+Nadpisanie dla agenta (opcjonalne):
 
 ```json5
 {
@@ -71,44 +71,67 @@ Nadpisanie dla poszczególnych agentów (opcjonalne):
 
 ### Zachowanie pól
 
-- `enabled`: Przełącznik główny. `false` oznacza, że wykrywanie pętli nie jest wykonywane.
+- `enabled`: przełącznik główny. `false` oznacza, że wykrywanie pętli nie jest wykonywane.
 - `historySize`: liczba ostatnich wywołań narzędzi przechowywanych do analizy.
-- `warningThreshold`: próg przed sklasyfikowaniem wzorca jako wyłącznie ostrzegawczego.
+- `warningThreshold`: próg przed sklasyfikowaniem wzorca jako samego ostrzeżenia.
 - `criticalThreshold`: próg blokowania powtarzalnych wzorców pętli.
-- `globalCircuitBreakerThreshold`: globalny próg wyłącznika braku postępu.
-- `detectors.genericRepeat`: wykrywa powtarzające się wzorce tego samego narzędzia + tych samych parametrów.
+- `globalCircuitBreakerThreshold`: globalny próg wyłącznika dla braku postępu.
+- `detectors.genericRepeat`: wykrywa powtarzające się wzorce tego samego narzędzia i tych samych parametrów.
 - `detectors.knownPollNoProgress`: wykrywa znane wzorce podobne do odpytywania bez zmiany stanu.
 - `detectors.pingPong`: wykrywa naprzemienne wzorce ping-pong.
 
-W przypadku `exec` kontrole braku postępu porównują stabilne wyniki poleceń i ignorują zmienne metadane czasu wykonania, takie jak czas trwania, PID, identyfikator sesji i katalog roboczy.
-Gdy dostępny jest identyfikator uruchomienia, historia ostatnich wywołań narzędzi jest oceniana tylko w ramach tego uruchomienia, dzięki czemu zaplanowane cykle Heartbeat i nowe uruchomienia nie dziedziczą nieaktualnych liczników pętli z wcześniejszych uruchomień.
+W przypadku `exec` kontrole braku postępu porównują stabilne wyniki polecenia i ignorują zmienne metadane czasu wykonania, takie jak czas trwania, PID, identyfikator sesji i katalog roboczy.
+Gdy dostępny jest identyfikator uruchomienia, historia ostatnich wywołań narzędzi jest oceniana tylko w obrębie tego uruchomienia, więc zaplanowane cykle Heartbeat i nowe uruchomienia nie dziedziczą nieaktualnych liczników pętli z wcześniejszych uruchomień.
 
 ## Zalecana konfiguracja
 
-- W przypadku mniejszych modeli zacznij od `enabled: true` i pozostaw wartości domyślne bez zmian. Modele flagowe rzadko potrzebują wykrywania pętli i mogą pozostawić je wyłączone.
-- Utrzymuj progi w kolejności `warningThreshold < criticalThreshold < globalCircuitBreakerThreshold`.
+- W przypadku mniejszych modeli zacznij od `enabled: true`, bez zmieniania wartości domyślnych. Modele flagowe rzadko potrzebują wykrywania pętli i mogą pozostawić je wyłączone.
+- Zachowaj kolejność progów jako `warningThreshold < criticalThreshold < globalCircuitBreakerThreshold`.
 - Jeśli wystąpią fałszywe alarmy:
   - podnieś `warningThreshold` i/lub `criticalThreshold`
   - (opcjonalnie) podnieś `globalCircuitBreakerThreshold`
   - wyłącz tylko detektor powodujący problemy
-  - zmniejsz `historySize`, aby kontekst historyczny był mniej rygorystyczny
+  - zmniejsz `historySize`, aby uzyskać mniej rygorystyczny kontekst historyczny
+
+## Zabezpieczenie po Compaction
+
+Gdy runner zakończy automatyczną próbę ponowienia po Compaction (po przepełnieniu kontekstu), uzbraja zabezpieczenie o krótkim oknie, które obserwuje kilka następnych wywołań narzędzi. Jeśli agent wyemituje ten _sam_ trójkę `(toolName, args, result)` wiele razy w tym oknie, zabezpieczenie uznaje, że Compaction nie przerwała pętli, i przerywa uruchomienie z błędem `compaction_loop_persisted`.
+
+To osobna ścieżka kodu względem globalnych detektorów `tools.loopDetection`. Można ją konfigurować niezależnie:
+
+```json5
+{
+  tools: {
+    loopDetection: {
+      enabled: true, // existing master switch; set false to disable loop guards
+      postCompactionGuard: {
+        windowSize: 3, // default: 3
+      },
+    },
+  },
+}
+```
+
+- `windowSize`: liczba wywołań narzędzi po Compaction, podczas których zabezpieczenie pozostaje uzbrojone, _oraz_ liczba identycznych trójek (narzędzie, argumenty, wynik), która wyzwala przerwanie.
+
+Zabezpieczenie nigdy nie przerywa działania, gdy wyniki się zmieniają, a tylko wtedy, gdy wyniki są identyczne bajtowo w całym oknie. Jest celowo wąskie: uruchamia się wyłącznie bezpośrednio po próbie ponowienia po Compaction.
 
 ## Logi i oczekiwane zachowanie
 
-Gdy pętla zostanie wykryta, OpenClaw zgłasza zdarzenie pętli i blokuje lub tłumi następny cykl narzędzi w zależności od ważności.
-Chroni to użytkowników przed niekontrolowanymi wydatkami na tokeny i zawieszeniami, zachowując jednocześnie normalny dostęp do narzędzi.
+Gdy pętla zostanie wykryta, OpenClaw zgłasza zdarzenie pętli i blokuje albo tłumi następny cykl narzędzi w zależności od wagi problemu.
+Chroni to użytkowników przed niekontrolowanym zużyciem tokenów i blokadami, zachowując normalny dostęp do narzędzi.
 
 - Najpierw preferuj ostrzeżenie i tymczasowe tłumienie.
-- Eskaluj tylko wtedy, gdy zgromadzą się powtarzające się dowody.
+- Eskaluj dopiero wtedy, gdy zgromadzą się powtarzające dowody.
 
 ## Uwagi
 
 - `tools.loopDetection` jest scalane z nadpisaniami na poziomie agenta.
-- Konfiguracja dla poszczególnych agentów w pełni nadpisuje lub rozszerza wartości globalne.
-- Jeśli konfiguracja nie istnieje, mechanizmy ochronne pozostają wyłączone.
+- Konfiguracja per agent w pełni nadpisuje lub rozszerza wartości globalne.
+- Jeśli konfiguracja nie istnieje, zabezpieczenia pozostają wyłączone.
 
 ## Powiązane
 
-- [Zatwierdzenia Exec](/pl/tools/exec-approvals)
+- [Zatwierdzenia exec](/pl/tools/exec-approvals)
 - [Poziomy myślenia](/pl/tools/thinking)
-- [Podagenci](/pl/tools/subagents)
+- [Subagenci](/pl/tools/subagents)

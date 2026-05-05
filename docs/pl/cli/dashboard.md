@@ -1,21 +1,21 @@
 ---
 read_when:
-    - Chcesz otworzyć interfejs Control UI przy użyciu bieżącego tokenu
-    - Chcesz wypisać URL bez uruchamiania przeglądarki
-summary: Dokumentacja CLI dla `openclaw dashboard` (otwórz interfejs Control UI)
-title: Pulpit nawigacyjny
+    - Chcesz otworzyć Control UI z bieżącym tokenem
+    - Chcesz wypisać adres URL bez uruchamiania przeglądarki
+summary: Dokumentacja referencyjna CLI dla `openclaw dashboard` (otwórz Control UI)
+title: Panel
 x-i18n:
-    generated_at: "2026-04-25T13:44:00Z"
-    model: gpt-5.4
+    generated_at: "2026-05-05T01:44:34Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: ce485388465fb93551be8ccf0aa01ea52e4feb949ef0d48c96b4f8ea65a6551c
+    source_hash: 51b3326b3884013ebcf570b417e66efe62ea89dcdedb5ab3173f39fb021de89f
     source_path: cli/dashboard.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw dashboard`
 
-Otwórz interfejs Control UI przy użyciu bieżącego uwierzytelniania.
+Otwórz Control UI przy użyciu bieżącego uwierzytelnienia.
 
 ```bash
 openclaw dashboard
@@ -24,13 +24,17 @@ openclaw dashboard --no-open
 
 Uwagi:
 
-- `dashboard` rozwiązuje skonfigurowane SecretRef `gateway.auth.token`, gdy to możliwe.
-- `dashboard` przestrzega `gateway.tls.enabled`: gatewaye z włączonym TLS wypisują/otwierają
-  adresy URL interfejsu Control UI z `https://` i łączą się przez `wss://`.
-- Dla tokenów zarządzanych przez SecretRef (rozwiązanych lub nierozwiązanych) `dashboard` wypisuje/kopiuje/otwiera URL bez tokenu, aby uniknąć ujawniania zewnętrznych sekretów w wyjściu terminala, historii schowka lub argumentach uruchamiania przeglądarki.
-- Jeśli `gateway.auth.token` jest zarządzany przez SecretRef, ale nierozwiązany w tej ścieżce polecenia, polecenie wypisuje URL bez tokenu oraz jawne wskazówki naprawcze zamiast osadzać nieprawidłowy placeholder tokenu.
+- `dashboard` rozwiązuje skonfigurowane SecretRefs `gateway.auth.token`, gdy to możliwe.
+- `dashboard` respektuje `gateway.tls.enabled`: Gateway z włączonym TLS wypisuje/otwiera
+  adresy URL Control UI z `https://` i łączy się przez `wss://`.
+- Jeśli dostarczenie adresu URL pulpitu uwierzytelnionego tokenem przez schowek/przeglądarkę się nie powiedzie,
+  `dashboard` rejestruje bezpieczną wskazówkę dotyczącą ręcznego uwierzytelnienia, wskazującą `OPENCLAW_GATEWAY_TOKEN`,
+  `gateway.auth.token` oraz klucz fragmentu `token`, bez wypisywania wartości
+  tokenu.
+- W przypadku tokenów zarządzanych przez SecretRef (rozwiązanych lub nierozwiązanych) `dashboard` wypisuje/kopiuje/otwiera adres URL bez tokenu, aby uniknąć ujawniania zewnętrznych sekretów w danych wyjściowych terminala, historii schowka lub argumentach uruchamiania przeglądarki.
+- Jeśli `gateway.auth.token` jest zarządzany przez SecretRef, ale nie został rozwiązany w tej ścieżce polecenia, polecenie wypisuje adres URL bez tokenu oraz wyraźne wskazówki naprawcze zamiast osadzać nieprawidłowy symbol zastępczy tokenu.
 
 ## Powiązane
 
 - [Dokumentacja CLI](/pl/cli)
-- [Pulpit nawigacyjny](/pl/web/dashboard)
+- [Dashboard](/pl/web/dashboard)

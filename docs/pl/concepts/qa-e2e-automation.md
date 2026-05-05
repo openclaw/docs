@@ -3,79 +3,79 @@ read_when:
     - Zrozumienie, jak stos QA składa się w całość
     - Rozszerzanie qa-lab, qa-channel lub adaptera transportu
     - Dodawanie scenariuszy QA opartych na repozytorium
-    - Tworzenie bardziej realistycznej automatyzacji QA wokół panelu Gateway
-summary: 'Przegląd stosu QA: qa-lab, qa-channel, scenariusze oparte na repozytorium, ścieżki transportu na żywo, adaptery transportu i raportowanie.'
+    - Tworzenie bardziej realistycznej automatyzacji QA dla panelu Gateway
+summary: 'Przegląd stosu QA: qa-lab, qa-channel, scenariusze oparte na repozytorium, ścieżki transportowe na żywo, adaptery transportu i raportowanie.'
 title: Omówienie QA
 x-i18n:
-    generated_at: "2026-05-04T07:04:39Z"
+    generated_at: "2026-05-05T01:45:33Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 067f5aa0831724659ae36d548ef2e7bd28b40aad9cef45f325a01a2748003b29
+    source_hash: 83adbe934d73265a1b47ee463c98fdd3eddfb1cd063d3a46a83dfc7568df0a96
     source_path: concepts/qa-e2e-automation.md
     workflow: 16
 ---
 
-Prywatny stos QA ma sprawdzać OpenClaw w bardziej realistyczny,
-ukształtowany przez kanały sposób niż pojedynczy test jednostkowy.
+Prywatny stos QA ma testować OpenClaw w bardziej realistyczny,
+kanałowy sposób niż pojedynczy test jednostkowy.
 
 Obecne elementy:
 
-- `extensions/qa-channel`: syntetyczny kanał wiadomości z powierzchniami DM, kanału, wątku,
+- `extensions/qa-channel`: syntetyczny kanał wiadomości z powierzchniami wiadomości prywatnych, kanału, wątku,
   reakcji, edycji i usuwania.
 - `extensions/qa-lab`: interfejs debuggera i magistrala QA do obserwowania transkrypcji,
-  wstrzykiwania wiadomości przychodzących i eksportowania raportu Markdown.
-- `extensions/qa-matrix`, przyszłe pluginy runnera: adaptery transportu live, które
-  sterują prawdziwym kanałem w podrzędnym Gateway QA.
-- `qa/`: zasoby seed oparte na repozytorium dla zadania startowego i bazowych
+  wstrzykiwania wiadomości przychodzących oraz eksportowania raportu Markdown.
+- `extensions/qa-matrix`, przyszłe Pluginy uruchamiające: adaptery transportu na żywo, które
+  sterują prawdziwym kanałem wewnątrz podrzędnego Gateway QA.
+- `qa/`: zasoby początkowe przechowywane w repozytorium dla zadania startowego i bazowych
   scenariuszy QA.
-- [Mantis](/pl/concepts/mantis): weryfikacja live przed i po dla błędów, które
-  wymagają prawdziwych transportów, zrzutów ekranu przeglądarki, stanu VM i dowodów PR.
+- [Mantis](/pl/concepts/mantis): weryfikacja przed i po na żywo dla błędów, które
+  wymagają prawdziwych transportów, zrzutów ekranu przeglądarki, stanu maszyny wirtualnej i dowodów PR.
 
 ## Powierzchnia poleceń
 
-Każdy przepływ QA działa pod `pnpm openclaw qa <subcommand>`. Wiele ma aliasy skryptów `pnpm qa:*`;
+Każdy przepływ QA działa pod `pnpm openclaw qa <subcommand>`. Wiele z nich ma aliasy skryptów `pnpm qa:*`;
 obsługiwane są obie formy.
 
-| Polecenie                                           | Cel                                                                                                                                                                                         |
-| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `qa run`                                            | Wbudowany samosprawdzian QA; zapisuje raport Markdown.                                                                                                                                      |
-| `qa suite`                                          | Uruchom scenariusze oparte na repozytorium względem ścieżki Gateway QA. Aliasy: `pnpm openclaw qa suite --runner multipass` dla jednorazowej VM z Linuksem.                                |
-| `qa coverage`                                       | Wypisz inwentarz pokrycia scenariuszy w markdown (`--json` dla wyjścia maszynowego).                                                                                                       |
-| `qa parity-report`                                  | Porównaj dwa pliki `qa-suite-summary.json` i zapisz agentowy raport parytetu.                                                                                                              |
-| `qa character-eval`                                 | Uruchom scenariusz QA postaci na wielu modelach live z ocenionym raportem. Zobacz [Raportowanie](#reporting).                                                                              |
-| `qa manual`                                         | Uruchom jednorazowy prompt względem wybranej ścieżki dostawcy/modelu.                                                                                                                      |
-| `qa ui`                                             | Uruchom interfejs debuggera QA i lokalną magistralę QA (alias: `pnpm qa:lab:ui`).                                                                                                          |
-| `qa docker-build-image`                             | Zbuduj wstępnie przygotowany obraz Docker QA.                                                                                                                                               |
-| `qa docker-scaffold`                                | Zapisz szkielet docker-compose dla dashboardu QA + ścieżki Gateway.                                                                                                                        |
-| `qa up`                                             | Zbuduj witrynę QA, uruchom stos oparty na Dockerze, wypisz URL (alias: `pnpm qa:lab:up`; wariant `:fast` dodaje `--use-prebuilt-image --bind-ui-dist --skip-ui-build`).                    |
-| `qa aimock`                                         | Uruchom tylko serwer dostawcy AIMock.                                                                                                                                                       |
-| `qa mock-openai`                                    | Uruchom tylko świadomy scenariuszy serwer dostawcy `mock-openai`.                                                                                                                          |
-| `qa credentials doctor` / `add` / `list` / `remove` | Zarządzaj współdzieloną pulą poświadczeń Convex.                                                                                                                                            |
-| `qa matrix`                                         | Ścieżka transportu live względem jednorazowego homeservera Tuwunel. Zobacz [Matrix QA](/pl/concepts/qa-matrix).                                                                               |
-| `qa telegram`                                       | Ścieżka transportu live względem prawdziwej prywatnej grupy Telegram.                                                                                                                      |
-| `qa discord`                                        | Ścieżka transportu live względem prawdziwego prywatnego kanału gildii Discord.                                                                                                             |
-| `qa slack`                                          | Ścieżka transportu live względem prawdziwego prywatnego kanału Slack.                                                                                                                      |
-| `qa mantis`                                         | Runner weryfikacji przed i po dla błędów transportu live, z dowodami reakcji statusowych Discord, smoke Crabbox desktop/browser i smoke Slack w VNC. Zobacz [Mantis](/pl/concepts/mantis).    |
+| Polecenie                                           | Cel                                                                                                                                                                                          |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `qa run`                                            | Wbudowany autotest QA; zapisuje raport Markdown.                                                                                                                                             |
+| `qa suite`                                          | Uruchom scenariusze z repozytorium wobec ścieżki Gateway QA. Aliasy: `pnpm openclaw qa suite --runner multipass` dla jednorazowej maszyny wirtualnej Linux.                                  |
+| `qa coverage`                                       | Wypisz inwentarz pokrycia scenariuszy w formacie markdown (`--json` dla wyjścia maszynowego).                                                                                                |
+| `qa parity-report`                                  | Porównaj dwa pliki `qa-suite-summary.json` i zapisz agentowy raport parytetu.                                                                                                                |
+| `qa character-eval`                                 | Uruchom scenariusz QA postaci na wielu modelach na żywo z ocenianym raportem. Zobacz [Raportowanie](#reporting).                                                                             |
+| `qa manual`                                         | Uruchom jednorazowy prompt wobec wybranej ścieżki dostawcy/modelu.                                                                                                                           |
+| `qa ui`                                             | Uruchom interfejs debuggera QA i lokalną magistralę QA (alias: `pnpm qa:lab:ui`).                                                                                                             |
+| `qa docker-build-image`                             | Zbuduj gotowy obraz Docker QA.                                                                                                                                                               |
+| `qa docker-scaffold`                                | Zapisz szkielet docker-compose dla panelu QA + ścieżki Gateway.                                                                                                                              |
+| `qa up`                                             | Zbuduj witrynę QA, uruchom stos oparty na Dockerze, wypisz URL (alias: `pnpm qa:lab:up`; wariant `:fast` dodaje `--use-prebuilt-image --bind-ui-dist --skip-ui-build`).                      |
+| `qa aimock`                                         | Uruchom tylko serwer dostawcy AIMock.                                                                                                                                                        |
+| `qa mock-openai`                                    | Uruchom tylko świadomy scenariuszy serwer dostawcy `mock-openai`.                                                                                                                            |
+| `qa credentials doctor` / `add` / `list` / `remove` | Zarządzaj współdzieloną pulą poświadczeń Convex.                                                                                                                                             |
+| `qa matrix`                                         | Ścieżka transportu na żywo wobec jednorazowego serwera domowego Tuwunel. Zobacz [QA Matrix](/pl/concepts/qa-matrix).                                                                            |
+| `qa telegram`                                       | Ścieżka transportu na żywo wobec prawdziwej prywatnej grupy Telegram.                                                                                                                        |
+| `qa discord`                                        | Ścieżka transportu na żywo wobec prawdziwego prywatnego kanału gildii Discord.                                                                                                               |
+| `qa slack`                                          | Ścieżka transportu na żywo wobec prawdziwego prywatnego kanału Slack.                                                                                                                        |
+| `qa mantis`                                         | Runner weryfikacji przed i po dla błędów transportu na żywo, z dowodami reakcji statusu Discord, smoke testem pulpitu/przeglądarki Crabbox i smoke testem Slack w VNC. Zobacz [Mantis](/pl/concepts/mantis). |
 
 ## Przepływ operatora
 
 Obecny przepływ operatora QA to dwupanelowa witryna QA:
 
-- Po lewej: dashboard Gateway (Control UI) z agentem.
-- Po prawej: QA Lab, pokazujący transkrypcję w stylu Slack i plan scenariusza.
+- Lewy: panel Gateway (Control UI) z agentem.
+- Prawy: QA Lab, pokazujący transkrypcję w stylu Slacka i plan scenariusza.
 
-Uruchom ją przez:
+Uruchom go poleceniem:
 
 ```bash
 pnpm qa:lab:up
 ```
 
 To buduje witrynę QA, uruchamia ścieżkę Gateway opartą na Dockerze i udostępnia
-stronę QA Lab, gdzie operator lub pętla automatyzacji może przekazać agentowi
-misję QA, obserwować prawdziwe zachowanie kanału oraz zapisać, co zadziałało, co się
-nie powiodło albo pozostało zablokowane.
+stronę QA Lab, gdzie operator lub pętla automatyzacji może dać agentowi
+misję QA, obserwować prawdziwe zachowanie kanału oraz zapisać, co zadziałało, zawiodło lub
+pozostało zablokowane.
 
-Dla szybszej iteracji interfejsu QA Lab bez przebudowywania obrazu Docker za każdym razem
+Aby szybciej iterować nad interfejsem QA Lab bez każdorazowego przebudowywania obrazu Docker,
 uruchom stos z podmontowanym pakietem QA Lab:
 
 ```bash
@@ -85,29 +85,29 @@ pnpm qa:lab:up:fast
 pnpm qa:lab:watch
 ```
 
-`qa:lab:up:fast` utrzymuje usługi Docker na wstępnie zbudowanym obrazie i montuje
+`qa:lab:up:fast` utrzymuje usługi Docker na wcześniej zbudowanym obrazie i podmontowuje
 `extensions/qa-lab/web/dist` do kontenera `qa-lab`. `qa:lab:watch`
-przebudowuje ten pakiet po zmianie, a przeglądarka automatycznie przeładowuje się, gdy zmienia się hash
+przebudowuje ten pakiet po zmianie, a przeglądarka automatycznie przeładowuje się, gdy zmieni się hash
 zasobu QA Lab.
 
-Dla lokalnego smoke śladu OpenTelemetry uruchom:
+Aby uruchomić lokalny smoke test śladu OpenTelemetry, wykonaj:
 
 ```bash
 pnpm qa:otel:smoke
 ```
 
-Ten skrypt uruchamia lokalny odbiornik śladów OTLP/HTTP, uruchamia scenariusz QA
-`otel-trace-smoke` z włączonym pluginem `diagnostics-otel`, następnie
-dekoduje wyeksportowane spany protobuf i sprawdza krytyczny dla wydania kształt:
+Ten skrypt uruchamia lokalny odbiornik śladów OTLP/HTTP, uruchamia
+scenariusz QA `otel-trace-smoke` z włączonym Pluginem `diagnostics-otel`, następnie
+dekoduje wyeksportowane spany protobuf i sprawdza kształt krytyczny dla wydania:
 `openclaw.run`, `openclaw.harness.run`, `openclaw.model.call`,
-`openclaw.context.assembled` i `openclaw.message.delivery` muszą być obecne;
-wywołania modeli nie mogą eksportować `StreamAbandoned` przy udanych turach; surowe identyfikatory diagnostyczne i
+`openclaw.context.assembled` oraz `openclaw.message.delivery` muszą być obecne;
+wywołania modelu nie mogą eksportować `StreamAbandoned` w udanych turach; surowe identyfikatory diagnostyczne i
 atrybuty `openclaw.content.*` muszą pozostać poza śladem. Zapisuje
-`otel-smoke-summary.json` obok artefaktów zestawu QA.
+`otel-smoke-summary.json` obok artefaktów pakietu QA.
 
-QA obserwowalności pozostaje wyłącznie dla checkoutu źródeł. Tarball npm celowo pomija
-QA Lab, więc ścieżki wydania Docker pakietu nie uruchamiają poleceń `qa`. Używaj
-`pnpm qa:otel:smoke` ze zbudowanego checkoutu źródeł przy zmianach instrumentacji
+QA obserwowalności pozostaje dostępne tylko z checkoutu źródeł. Paczka npm celowo pomija
+QA Lab, więc ścieżki wydania pakietu Docker nie uruchamiają poleceń `qa`. Użyj
+`pnpm qa:otel:smoke` ze zbudowanego checkoutu źródeł przy zmianie instrumentacji
 diagnostycznej.
 
 Dla ścieżki smoke Matrix z prawdziwym transportem uruchom:
@@ -116,7 +116,7 @@ Dla ścieżki smoke Matrix z prawdziwym transportem uruchom:
 pnpm openclaw qa matrix --profile fast --fail-fast
 ```
 
-Pełna dokumentacja CLI, katalog profili/scenariuszy, zmienne env i układ artefaktów dla tej ścieżki znajdują się w [Matrix QA](/pl/concepts/qa-matrix). W skrócie: aprowizuje jednorazowy homeserver Tuwunel w Dockerze, rejestruje tymczasowych użytkowników driver/SUT/observer, uruchamia prawdziwy Plugin Matrix w podrzędnym Gateway QA ograniczonym do tego transportu (bez `qa-channel`), a następnie zapisuje raport Markdown, podsumowanie JSON, artefakt zaobserwowanych zdarzeń i połączony dziennik wyjściowy w `.artifacts/qa-e2e/matrix-<timestamp>/`.
+Pełna referencja CLI, katalog profili/scenariuszy, zmienne środowiskowe i układ artefaktów dla tej ścieżki znajdują się w [QA Matrix](/pl/concepts/qa-matrix). W skrócie: tworzy jednorazowy serwer domowy Tuwunel w Dockerze, rejestruje tymczasowych użytkowników driver/SUT/observer, uruchamia prawdziwy Plugin Matrix wewnątrz podrzędnego Gateway QA ograniczonego do tego transportu (bez `qa-channel`), a następnie zapisuje raport Markdown, podsumowanie JSON, artefakt obserwowanych zdarzeń oraz połączony log wyjścia w `.artifacts/qa-e2e/matrix-<timestamp>/`.
 
 Dla ścieżek smoke Telegram, Discord i Slack z prawdziwym transportem:
 
@@ -126,9 +126,9 @@ pnpm openclaw qa discord
 pnpm openclaw qa slack
 ```
 
-Celują one w istniejący wcześniej prawdziwy kanał z dwoma botami (driver + SUT). Wymagane zmienne env, listy scenariuszy, artefakty wyjściowe i pula poświadczeń Convex są udokumentowane w [Dokumentacji QA Telegram, Discord i Slack](#telegram-discord-and-slack-qa-reference) poniżej.
+Celują one w istniejący wcześniej prawdziwy kanał z dwoma botami (driver + SUT). Wymagane zmienne środowiskowe, listy scenariuszy, artefakty wyjściowe i pula poświadczeń Convex są udokumentowane poniżej w [referencji QA Telegram, Discord i Slack](#telegram-discord-and-slack-qa-reference).
 
-Dla pełnego uruchomienia desktopowej VM Slack z ratunkowym VNC uruchom:
+Dla pełnego uruchomienia maszyny wirtualnej pulpitu Slack z ratunkowym VNC uruchom:
 
 ```bash
 pnpm openclaw qa mantis slack-desktop-smoke \
@@ -137,38 +137,38 @@ pnpm openclaw qa mantis slack-desktop-smoke \
   --keep-lease
 ```
 
-To polecenie dzierżawi maszynę desktop/browser Crabbox, uruchamia ścieżkę live Slack
-wewnątrz VM, otwiera Slack Web w przeglądarce VNC, przechwytuje pulpit i
+To polecenie dzierżawi maszynę Crabbox z pulpitem/przeglądarką, uruchamia ścieżkę Slack na żywo
+wewnątrz maszyny wirtualnej, otwiera Slack Web w przeglądarce VNC, przechwytuje pulpit i
 kopiuje `slack-qa/` oraz `slack-desktop-smoke.png` z powrotem do katalogu artefaktów
-Mantis. Użyj ponownie `--lease-id <cbx_...>` po ręcznym zalogowaniu do Slack Web
-przez VNC. Z `--gateway-setup` Mantis pozostawia trwały Gateway Slack OpenClaw
-działający wewnątrz VM na porcie `38973`; bez tego polecenie uruchamia
-normalną ścieżkę QA Slack bot-do-bota i kończy po przechwyceniu artefaktów.
+Mantis. Użyj ponownie `--lease-id <cbx_...>` po ręcznym zalogowaniu się do Slack Web
+przez VNC. Z `--gateway-setup` Mantis pozostawia trwały Gateway OpenClaw Slack
+działający wewnątrz maszyny wirtualnej na porcie `38973`; bez tej opcji polecenie uruchamia
+zwykłą ścieżkę QA Slack bot-do-bota i kończy działanie po przechwyceniu artefaktów.
 
-Przed użyciem poświadczeń live z puli uruchom:
+Przed użyciem współdzielonych poświadczeń na żywo uruchom:
 
 ```bash
 pnpm openclaw qa credentials doctor
 ```
 
-Doctor sprawdza env brokera Convex, waliduje ustawienia endpointu i weryfikuje osiągalność admin/list, gdy obecny jest sekret maintenera. Raportuje tylko status ustawione/brakujące dla sekretów.
+Doctor sprawdza środowisko brokera Convex, weryfikuje ustawienia endpointów i sprawdza osiągalność admin/list, gdy obecny jest sekret utrzymaniowy. Raportuje tylko status ustawione/brakujące dla sekretów.
 
-## Pokrycie transportu live
+## Pokrycie transportu na żywo
 
-Ścieżki transportu live współdzielą jeden kontrakt zamiast tworzyć własny kształt listy scenariuszy. `qa-channel` to szeroki syntetyczny zestaw zachowań produktu i nie jest częścią macierzy pokrycia transportu live.
+Ścieżki transportu na żywo współdzielą jeden kontrakt, zamiast każda wymyślać własny kształt listy scenariuszy. `qa-channel` jest szerokim syntetycznym pakietem zachowań produktu i nie jest częścią macierzy pokrycia transportu na żywo.
 
-| Ścieżka  | Canary | Bramka wzmianki | Bot-do-bota | Blokada allowlist | Odpowiedź najwyższego poziomu | Wznowienie po restarcie | Kontynuacja wątku | Izolacja wątku | Obserwacja reakcji | Polecenie pomocy | Rejestracja natywnego polecenia |
-| -------- | ------ | --------------- | ----------- | ----------------- | ----------------------------- | ----------------------- | ----------------- | -------------- | ------------------ | ---------------- | -------------------------------- |
-| Matrix   | x      | x               | x           | x                 | x                             | x                       | x                 | x              | x                  |                  |                                  |
-| Telegram | x      | x               | x           |                   |                               |                         |                   |                |                    | x                |                                  |
-| Discord  | x      | x               | x           |                   |                               |                         |                   |                |                    |                  | x                                |
-| Slack    | x      | x               | x           |                   |                               |                         |                   |                |                    |                  |                                  |
+| Ścieżka  | Canary | Bramkowanie wzmianką | Bot-do-bota | Blokada allowlist | Odpowiedź najwyższego poziomu | Wznowienie po restarcie | Kontynuacja wątku | Izolacja wątku | Obserwacja reakcji | Polecenie pomocy | Rejestracja polecenia natywnego |
+| -------- | ------ | -------------------- | ----------- | ----------------- | ----------------------------- | ----------------------- | ----------------- | -------------- | ------------------ | ---------------- | ------------------------------ |
+| Matrix   | x      | x                    | x           | x                 | x                             | x                       | x                 | x              | x                  |                  |                                |
+| Telegram | x      | x                    | x           |                   |                               |                         |                   |                |                    | x                |                                |
+| Discord  | x      | x                    | x           |                   |                               |                         |                   |                |                    |                  | x                              |
+| Slack    | x      | x                    | x           |                   |                               |                         |                   |                |                    |                  |                                |
 
-To utrzymuje `qa-channel` jako szeroki zestaw zachowań produktu, podczas gdy Matrix,
-Telegram i przyszłe transporty live współdzielą jedną wyraźną checklistę kontraktu
-transportu.
+To utrzymuje `qa-channel` jako szeroki pakiet zachowań produktu, podczas gdy Matrix,
+Telegram i przyszłe transporty na żywo współdzielą jedną jawną listę kontrolną
+kontraktu transportu.
 
-Dla jednorazowej ścieżki VM z Linuksem bez wprowadzania Dockera do ścieżki QA uruchom:
+Dla jednorazowej ścieżki maszyny wirtualnej Linux bez wprowadzania Dockera do ścieżki QA uruchom:
 
 ```bash
 pnpm openclaw qa suite --runner multipass --scenario channel-chat-baseline
@@ -177,39 +177,39 @@ pnpm openclaw qa suite --runner multipass --scenario channel-chat-baseline
 Uruchamia świeżego gościa Multipass, instaluje zależności, buduje OpenClaw
 wewnątrz gościa, uruchamia `qa suite`, a następnie kopiuje standardowy raport QA i
 podsumowanie z powrotem do `.artifacts/qa-e2e/...` na hoście.
-Używa tego samego zachowania wyboru scenariuszy co `qa suite` na hoście.
-Uruchomienia zestawu na hoście i w Multipass domyślnie wykonują wiele wybranych scenariuszy równolegle
-z izolowanymi workerami Gateway. `qa-channel` domyślnie używa współbieżności
+Wykorzystuje to samo zachowanie wyboru scenariuszy co `qa suite` na hoście.
+Uruchomienia pakietów testów na hoście i w Multipass domyślnie wykonują wiele wybranych scenariuszy równolegle
+z izolowanymi workerami gateway. `qa-channel` domyślnie używa współbieżności
 4, ograniczonej liczbą wybranych scenariuszy. Użyj `--concurrency <count>`, aby dostroić
 liczbę workerów, albo `--concurrency 1` do wykonania szeregowego.
-Polecenie kończy się kodem niezerowym, gdy którykolwiek scenariusz się nie powiedzie. Użyj `--allow-failures`, gdy
-chcesz uzyskać artefakty bez kodu wyjścia oznaczającego błąd.
-Uruchomienia live przekazują obsługiwane wejścia uwierzytelniania QA, które są praktyczne dla
-gościa: klucze dostawców oparte na env, ścieżkę konfiguracji dostawcy QA live oraz
-`CODEX_HOME`, gdy jest obecne. Trzymaj `--output-dir` pod katalogiem głównym repo, aby gość
+Polecenie kończy się kodem różnym od zera, gdy jakikolwiek scenariusz się nie powiedzie. Użyj `--allow-failures`, gdy
+chcesz uzyskać artefakty bez błędnego kodu wyjścia.
+Uruchomienia live przekazują obsługiwane dane uwierzytelniające QA, które są praktyczne dla
+gościa: klucze providerów oparte na env, ścieżkę konfiguracji providera QA live oraz
+`CODEX_HOME`, gdy jest obecne. Trzymaj `--output-dir` pod katalogiem głównym repozytorium, aby gość
 mógł zapisywać z powrotem przez zamontowany workspace.
 
-## Dokumentacja QA dla Telegram, Discord i Slack
+## Dokumentacja referencyjna QA dla Telegram, Discord i Slack
 
-Matrix ma [dedykowaną stronę](/pl/concepts/qa-matrix) ze względu na liczbę scenariuszy i provisionowanie homeservera oparte na Dockerze. Telegram, Discord i Slack są mniejsze — po kilka scenariuszy każdy, bez systemu profili, wobec istniejących wcześniej prawdziwych kanałów — więc ich dokumentacja znajduje się tutaj.
+Matrix ma [dedykowaną stronę](/pl/concepts/qa-matrix) ze względu na liczbę scenariuszy i provisionowanie homeservera oparte na Dockerze. Telegram, Discord i Slack są mniejsze — po kilka scenariuszy każdy, bez systemu profili, względem istniejących wcześniej rzeczywistych kanałów — więc ich dokumentacja referencyjna znajduje się tutaj.
 
 ### Wspólne flagi CLI
 
 Te ścieżki rejestrują się przez `extensions/qa-lab/src/live-transports/shared/live-transport-cli.ts` i akceptują te same flagi:
 
-| Flaga                                 | Domyślnie                                                      | Opis                                                                                                                  |
-| ------------------------------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `--scenario <id>`                     | —                                                              | Uruchom tylko ten scenariusz. Można powtarzać.                                                                        |
+| Flaga                                 | Domyślna wartość                                               | Opis                                                                                                                  |
+| ------------------------------------- | --------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `--scenario <id>`                     | —                                                               | Uruchom tylko ten scenariusz. Powtarzalna.                                                                            |
 | `--output-dir <path>`                 | `<repo>/.artifacts/qa-e2e/{telegram,discord,slack}-<timestamp>` | Miejsce zapisu raportów/podsumowania/zaobserwowanych wiadomości i logu wyjściowego. Ścieżki względne są rozwiązywane względem `--repo-root`. |
-| `--repo-root <path>`                  | `process.cwd()`                                                | Katalog główny repozytorium przy wywołaniu z neutralnego cwd.                                                         |
-| `--sut-account <id>`                  | `sut`                                                          | Tymczasowy identyfikator konta w konfiguracji QA Gateway.                                                             |
-| `--provider-mode <mode>`              | `live-frontier`                                                | `mock-openai` albo `live-frontier` (starsze `live-openai` nadal działa).                                              |
-| `--model <ref>` / `--alt-model <ref>` | domyślne dostawcy                                              | Referencje modelu podstawowego/alternatywnego.                                                                        |
-| `--fast`                              | wyłączone                                                      | Tryb szybki dostawcy tam, gdzie jest obsługiwany.                                                                     |
-| `--credential-source <env\|convex>`   | `env`                                                          | Zobacz [Pula poświadczeń Convex](#convex-credential-pool).                                                            |
-| `--credential-role <maintainer\|ci>`  | `ci` w CI, w przeciwnym razie `maintainer`                     | Rola używana, gdy `--credential-source convex`.                                                                       |
+| `--repo-root <path>`                  | `process.cwd()`                                                 | Katalog główny repozytorium podczas wywoływania z neutralnego cwd.                                                    |
+| `--sut-account <id>`                  | `sut`                                                           | Tymczasowy identyfikator konta w konfiguracji gateway QA.                                                             |
+| `--provider-mode <mode>`              | `live-frontier`                                                 | `mock-openai` albo `live-frontier` (starsze `live-openai` nadal działa).                                              |
+| `--model <ref>` / `--alt-model <ref>` | domyślna wartość providera                                      | Referencje modelu podstawowego/alternatywnego.                                                                        |
+| `--fast`                              | wyłączone                                                       | Szybki tryb providera tam, gdzie jest obsługiwany.                                                                    |
+| `--credential-source <env\|convex>`   | `env`                                                           | Zobacz [pulę poświadczeń Convex](#convex-credential-pool).                                                           |
+| `--credential-role <maintainer\|ci>`  | `ci` w CI, w przeciwnym razie `maintainer`                      | Rola używana, gdy `--credential-source convex`.                                                                       |
 
-Każda ścieżka kończy się kodem niezerowym przy dowolnym nieudanym scenariuszu. `--allow-failures` zapisuje artefakty bez ustawiania kodu wyjścia oznaczającego błąd.
+Każda ścieżka kończy się kodem różnym od zera przy dowolnym nieudanym scenariuszu. `--allow-failures` zapisuje artefakty bez ustawiania błędnego kodu wyjścia.
 
 ### QA Telegram
 
@@ -217,17 +217,17 @@ Każda ścieżka kończy się kodem niezerowym przy dowolnym nieudanym scenarius
 pnpm openclaw qa telegram
 ```
 
-Celuje w jedną prawdziwą prywatną grupę Telegram z dwoma różnymi botami (driver + SUT). Bot SUT musi mieć nazwę użytkownika Telegram; obserwacja bot-bot działa najlepiej, gdy oba boty mają włączony **Bot-to-Bot Communication Mode** w `@BotFather`.
+Celuje w jedną rzeczywistą prywatną grupę Telegram z dwoma różnymi botami (sterujący + SUT). Bot SUT musi mieć nazwę użytkownika Telegram; obserwacja bot-bot działa najlepiej, gdy oba boty mają włączony **Bot-to-Bot Communication Mode** w `@BotFather`.
 
-Wymagane env, gdy `--credential-source env`:
+Wymagane env przy `--credential-source env`:
 
-- `OPENCLAW_QA_TELEGRAM_GROUP_ID` — numeryczny identyfikator czatu (ciąg znaków).
+- `OPENCLAW_QA_TELEGRAM_GROUP_ID` — numeryczny identyfikator czatu (string).
 - `OPENCLAW_QA_TELEGRAM_DRIVER_BOT_TOKEN`
 - `OPENCLAW_QA_TELEGRAM_SUT_BOT_TOKEN`
 
 Opcjonalne:
 
-- `OPENCLAW_QA_TELEGRAM_CAPTURE_CONTENT=1` zachowuje treść wiadomości w artefaktach zaobserwowanych wiadomości (domyślnie redaguje).
+- `OPENCLAW_QA_TELEGRAM_CAPTURE_CONTENT=1` zachowuje treści wiadomości w artefaktach zaobserwowanych wiadomości (domyślnie redaguje).
 
 Scenariusze (`extensions/qa-lab/src/live-transports/telegram/telegram-live.runtime.ts:44`):
 
@@ -243,7 +243,7 @@ Scenariusze (`extensions/qa-lab/src/live-transports/telegram/telegram-live.runti
 Artefakty wyjściowe:
 
 - `telegram-qa-report.md`
-- `telegram-qa-summary.json` — zawiera RTT dla każdej odpowiedzi (wysłanie drivera → zaobserwowana odpowiedź SUT), zaczynając od canary.
+- `telegram-qa-summary.json` — zawiera RTT dla każdej odpowiedzi (wysłanie przez sterującego → zaobserwowana odpowiedź SUT), zaczynając od canary.
 - `telegram-qa-observed-messages.json` — treści redagowane, chyba że `OPENCLAW_QA_TELEGRAM_CAPTURE_CONTENT=1`.
 
 ### QA Discord
@@ -252,26 +252,26 @@ Artefakty wyjściowe:
 pnpm openclaw qa discord
 ```
 
-Celuje w jeden prawdziwy prywatny kanał gildii Discord z dwoma botami: botem drivera kontrolowanym przez harness oraz botem SUT uruchamianym przez podrzędny OpenClaw Gateway przez dołączony Plugin Discord. Weryfikuje obsługę wzmianek kanału, to, że bot SUT zarejestrował natywne polecenie `/help` w Discord, oraz opcjonalne scenariusze dowodowe Mantis.
+Celuje w jeden rzeczywisty prywatny kanał gildii Discord z dwoma botami: botem sterującym kontrolowanym przez harness oraz botem SUT uruchamianym przez podrzędny OpenClaw gateway przez dołączony Plugin Discord. Weryfikuje obsługę wzmianek kanału, to, że bot SUT zarejestrował natywne polecenie `/help` w Discord, oraz scenariusze dowodowe Mantis opt-in.
 
-Wymagane env, gdy `--credential-source env`:
+Wymagane env przy `--credential-source env`:
 
 - `OPENCLAW_QA_DISCORD_GUILD_ID`
 - `OPENCLAW_QA_DISCORD_CHANNEL_ID`
 - `OPENCLAW_QA_DISCORD_DRIVER_BOT_TOKEN`
 - `OPENCLAW_QA_DISCORD_SUT_BOT_TOKEN`
-- `OPENCLAW_QA_DISCORD_SUT_APPLICATION_ID` — musi pasować do identyfikatora użytkownika bota SUT zwróconego przez Discord (w przeciwnym razie ścieżka szybko kończy się błędem).
+- `OPENCLAW_QA_DISCORD_SUT_APPLICATION_ID` — musi odpowiadać identyfikatorowi użytkownika bota SUT zwróconemu przez Discord (w przeciwnym razie ścieżka szybko kończy się błędem).
 
 Opcjonalne:
 
-- `OPENCLAW_QA_DISCORD_CAPTURE_CONTENT=1` zachowuje treść wiadomości w artefaktach zaobserwowanych wiadomości.
+- `OPENCLAW_QA_DISCORD_CAPTURE_CONTENT=1` zachowuje treści wiadomości w artefaktach zaobserwowanych wiadomości.
 
 Scenariusze (`extensions/qa-lab/src/live-transports/discord/discord-live.runtime.ts:36`):
 
 - `discord-canary`
 - `discord-mention-gating`
 - `discord-native-help-command-registration`
-- `discord-status-reactions-tool-only` — opcjonalny scenariusz Mantis. Działa samodzielnie, ponieważ przełącza SUT na zawsze włączone odpowiedzi gildii wyłącznie narzędziowe z `messages.statusReactions.enabled=true`, a następnie przechwytuje oś czasu reakcji REST oraz artefakt wizualny HTML/PNG.
+- `discord-status-reactions-tool-only` — scenariusz Mantis opt-in. Uruchamia się samodzielnie, ponieważ przełącza SUT na zawsze włączone odpowiedzi gildii wyłącznie przez narzędzia z `messages.statusReactions.enabled=true`, a następnie przechwytuje oś czasu reakcji REST oraz artefakt wizualny HTML/PNG.
 
 Uruchom scenariusz reakcji statusu Mantis jawnie:
 
@@ -289,7 +289,7 @@ Artefakty wyjściowe:
 - `discord-qa-report.md`
 - `discord-qa-summary.json`
 - `discord-qa-observed-messages.json` — treści redagowane, chyba że `OPENCLAW_QA_DISCORD_CAPTURE_CONTENT=1`.
-- `discord-qa-reaction-timelines.json` i `discord-status-reactions-tool-only-timeline.png`, gdy uruchamiany jest scenariusz reakcji statusu.
+- `discord-qa-reaction-timelines.json` i `discord-status-reactions-tool-only-timeline.png`, gdy uruchamia się scenariusz reakcji statusu.
 
 ### QA Slack
 
@@ -297,9 +297,9 @@ Artefakty wyjściowe:
 pnpm openclaw qa slack
 ```
 
-Celuje w jeden prawdziwy prywatny kanał Slack z dwoma różnymi botami: botem drivera kontrolowanym przez harness oraz botem SUT uruchamianym przez podrzędny OpenClaw Gateway przez dołączony Plugin Slack.
+Celuje w jeden rzeczywisty prywatny kanał Slack z dwoma różnymi botami: botem sterującym kontrolowanym przez harness oraz botem SUT uruchamianym przez podrzędny OpenClaw gateway przez dołączony Plugin Slack.
 
-Wymagane env, gdy `--credential-source env`:
+Wymagane env przy `--credential-source env`:
 
 - `OPENCLAW_QA_SLACK_CHANNEL_ID`
 - `OPENCLAW_QA_SLACK_DRIVER_BOT_TOKEN`
@@ -308,7 +308,7 @@ Wymagane env, gdy `--credential-source env`:
 
 Opcjonalne:
 
-- `OPENCLAW_QA_SLACK_CAPTURE_CONTENT=1` zachowuje treść wiadomości w artefaktach zaobserwowanych wiadomości.
+- `OPENCLAW_QA_SLACK_CAPTURE_CONTENT=1` zachowuje treści wiadomości w artefaktach zaobserwowanych wiadomości.
 
 Scenariusze (`extensions/qa-lab/src/live-transports/slack/slack-live.runtime.ts:39`):
 
@@ -321,134 +321,295 @@ Artefakty wyjściowe:
 - `slack-qa-summary.json`
 - `slack-qa-observed-messages.json` — treści redagowane, chyba że `OPENCLAW_QA_SLACK_CAPTURE_CONTENT=1`.
 
-### Pula poświadczeń Convex
+#### Konfigurowanie workspace Slack
 
-Ścieżki Telegram, Discord i Slack mogą dzierżawić poświadczenia ze współdzielonej puli Convex zamiast odczytywać powyższe zmienne env. Przekaż `--credential-source convex` (albo ustaw `OPENCLAW_QA_CREDENTIAL_SOURCE=convex`); QA Lab uzyskuje wyłączną dzierżawę, wysyła Heartbeat przez czas trwania uruchomienia i zwalnia ją przy zamykaniu. Rodzaje puli to `"telegram"`, `"discord"` i `"slack"`.
+Ścieżka wymaga dwóch różnych aplikacji Slack w jednym workspace oraz kanału, którego członkami są oba boty:
 
-Kształty payloadów, które broker waliduje przy `admin/add`:
+- `channelId` — identyfikator `Cxxxxxxxxxx` kanału, do którego zaproszono oba boty. Użyj dedykowanego kanału; ścieżka publikuje wpisy przy każdym uruchomieniu.
+- `driverBotToken` — token bota (`xoxb-...`) aplikacji **Driver**.
+- `sutBotToken` — token bota (`xoxb-...`) aplikacji **SUT**, która musi być osobną aplikacją Slack względem sterującego, aby jej identyfikator użytkownika bota był odrębny.
+- `sutAppToken` — token na poziomie aplikacji (`xapp-...`) aplikacji SUT z `connections:write`, używany przez Socket Mode, aby aplikacja SUT mogła odbierać zdarzenia.
 
-- Telegram (`kind: "telegram"`): `{ groupId: string, driverToken: string, sutToken: string }` — `groupId` musi być numerycznym ciągiem chat-id.
+Preferuj workspace Slack dedykowany QA zamiast ponownego używania workspace produkcyjnego.
+
+Poniższy manifest SUT odzwierciedla produkcyjną instalację dołączonego Plugin Slack (`extensions/slack/src/setup-shared.ts:10`). Konfiguracja kanału produkcyjnego widoczna dla użytkowników znajduje się w [szybkiej konfiguracji kanału Slack](/pl/channels/slack#quick-setup); para QA Driver/SUT jest celowo oddzielna, ponieważ ścieżka wymaga dwóch różnych identyfikatorów użytkowników botów w jednym workspace.
+
+**1. Utwórz aplikację Driver**
+
+Przejdź do [api.slack.com/apps](https://api.slack.com/apps) → _Create New App_ → _From a manifest_ → wybierz workspace QA, wklej następujący manifest, a następnie _Install to Workspace_:
+
+```json
+{
+  "display_information": {
+    "name": "OpenClaw QA Driver",
+    "description": "Test driver bot for OpenClaw QA Slack live lane"
+  },
+  "features": {
+    "bot_user": {
+      "display_name": "OpenClaw QA Driver",
+      "always_online": true
+    }
+  },
+  "oauth_config": {
+    "scopes": {
+      "bot": ["chat:write", "channels:history", "groups:history", "users:read"]
+    }
+  },
+  "settings": {
+    "socket_mode_enabled": false
+  }
+}
+```
+
+Skopiuj _Bot User OAuth Token_ (`xoxb-...`) — staje się on `driverBotToken`. Sterujący musi tylko publikować wiadomości i identyfikować siebie; bez zdarzeń, bez Socket Mode.
+
+**2. Utwórz aplikację SUT**
+
+Powtórz _Create New App → From a manifest_ w tym samym workspace. Zestaw zakresów odzwierciedla produkcyjną instalację dołączonego Plugin Slack (`extensions/slack/src/setup-shared.ts:10`):
+
+```json
+{
+  "display_information": {
+    "name": "OpenClaw QA SUT",
+    "description": "OpenClaw QA SUT connector for OpenClaw"
+  },
+  "features": {
+    "bot_user": {
+      "display_name": "OpenClaw QA SUT",
+      "always_online": true
+    },
+    "app_home": {
+      "home_tab_enabled": true,
+      "messages_tab_enabled": true,
+      "messages_tab_read_only_enabled": false
+    }
+  },
+  "oauth_config": {
+    "scopes": {
+      "bot": [
+        "app_mentions:read",
+        "assistant:write",
+        "channels:history",
+        "channels:read",
+        "chat:write",
+        "commands",
+        "emoji:read",
+        "files:read",
+        "files:write",
+        "groups:history",
+        "groups:read",
+        "im:history",
+        "im:read",
+        "im:write",
+        "mpim:history",
+        "mpim:read",
+        "mpim:write",
+        "pins:read",
+        "pins:write",
+        "reactions:read",
+        "reactions:write",
+        "usergroups:read",
+        "users:read"
+      ]
+    }
+  },
+  "settings": {
+    "socket_mode_enabled": true,
+    "event_subscriptions": {
+      "bot_events": [
+        "app_home_opened",
+        "app_mention",
+        "channel_rename",
+        "member_joined_channel",
+        "member_left_channel",
+        "message.channels",
+        "message.groups",
+        "message.im",
+        "message.mpim",
+        "pin_added",
+        "pin_removed",
+        "reaction_added",
+        "reaction_removed"
+      ]
+    }
+  }
+}
+```
+
+Po utworzeniu aplikacji przez Slack wykonaj dwie czynności na jej stronie ustawień:
+
+- _Install to Workspace_ → skopiuj _Bot User OAuth Token_ → staje się on `sutBotToken`.
+- _Basic Information → App-Level Tokens → Generate Token and Scopes_ → dodaj zakres `connections:write` → zapisz → skopiuj wartość `xapp-...` → staje się ona `sutAppToken`.
+
+Zweryfikuj, że dwa boty mają różne identyfikatory użytkowników, wywołując `auth.test` dla każdego tokenu. Runtime rozróżnia sterownik i SUT według identyfikatora użytkownika; ponowne użycie jednej aplikacji dla obu ról natychmiast spowoduje niepowodzenie bramkowania wzmianek.
+
+**3. Utwórz kanał**
+
+W obszarze roboczym QA utwórz kanał (np. `#openclaw-qa`) i zaproś oba boty z wnętrza kanału:
+
+```
+/invite @OpenClaw QA Driver
+/invite @OpenClaw QA SUT
+```
+
+Skopiuj identyfikator `Cxxxxxxxxxx` z _informacje o kanale → Informacje → Channel ID_ — staje się on `channelId`. Kanał publiczny działa; jeśli użyjesz kanału prywatnego, obie aplikacje już mają `groups:history`, więc odczyty historii przez harness nadal się powiodą.
+
+**4. Zarejestruj dane uwierzytelniające**
+
+Dwie opcje. Użyj zmiennych środowiskowych do debugowania na jednej maszynie (ustaw cztery zmienne `OPENCLAW_QA_SLACK_*` i przekaż `--credential-source env`) albo zasiej współdzieloną pulę Convex, aby CI i inni maintainerzy mogli je dzierżawić.
+
+Dla puli Convex zapisz cztery pola do pliku JSON:
+
+```json
+{
+  "channelId": "Cxxxxxxxxxx",
+  "driverBotToken": "xoxb-...",
+  "sutBotToken": "xoxb-...",
+  "sutAppToken": "xapp-..."
+}
+```
+
+Po wyeksportowaniu `OPENCLAW_QA_CONVEX_SITE_URL` i `OPENCLAW_QA_CONVEX_SECRET_MAINTAINER` w powłoce zarejestruj i zweryfikuj:
+
+```bash
+pnpm openclaw qa credentials add \
+  --kind slack \
+  --payload-file slack-creds.json \
+  --note "QA Slack pool seed"
+
+pnpm openclaw qa credentials list --kind slack --status all --json
+```
+
+Oczekuj `count: 1`, `status: "active"`, bez pola `lease`.
+
+**5. Zweryfikuj od końca do końca**
+
+Uruchom lane lokalnie, aby potwierdzić, że oba boty mogą komunikować się ze sobą przez brokera:
+
+```bash
+pnpm openclaw qa slack \
+  --credential-source convex \
+  --credential-role maintainer \
+  --output-dir .artifacts/qa-e2e/slack-local
+```
+
+Zielone uruchomienie kończy się znacznie poniżej 30 sekund, a `slack-qa-report.md` pokazuje zarówno `slack-canary`, jak i `slack-mention-gating` ze statusem `pass`. Jeśli lane zawiesza się na około 90 sekund i kończy komunikatem `Convex credential pool exhausted for kind "slack"`, pula jest pusta albo każdy wiersz jest dzierżawiony — `qa credentials list --kind slack --status all --json` pokaże, który przypadek zachodzi.
+
+### Pula danych uwierzytelniających Convex
+
+Lane'y Telegram, Discord i Slack mogą dzierżawić dane uwierzytelniające ze współdzielonej puli Convex zamiast odczytywać powyższe zmienne środowiskowe. Przekaż `--credential-source convex` (albo ustaw `OPENCLAW_QA_CREDENTIAL_SOURCE=convex`); QA Lab pozyskuje wyłączną dzierżawę, wysyła dla niej Heartbeat przez czas trwania uruchomienia i zwalnia ją przy zamykaniu. Rodzaje puli to `"telegram"`, `"discord"` i `"slack"`.
+
+Kształty payloadów, które broker waliduje w `admin/add`:
+
+- Telegram (`kind: "telegram"`): `{ groupId: string, driverToken: string, sutToken: string }` — `groupId` musi być numerycznym ciągiem identyfikatora czatu.
 - Discord (`kind: "discord"`): `{ guildId: string, channelId: string, driverBotToken: string, sutBotToken: string, sutApplicationId: string }`.
+- Slack (`kind: "slack"`): `{ channelId: string, driverBotToken: string, sutBotToken: string, sutAppToken: string }` — `channelId` musi pasować do `^[A-Z][A-Z0-9]+$` (identyfikator Slack, taki jak `Cxxxxxxxxxx`). Zobacz [Konfigurowanie obszaru roboczego Slack](#setting-up-the-slack-workspace), aby przygotować aplikację i zakresy.
 
-Operacyjne zmienne env i kontrakt endpointu brokera Convex znajdują się w [Testowanie → Współdzielone poświadczenia Telegram przez Convex](/pl/help/testing#shared-telegram-credentials-via-convex-v1) (nazwa sekcji poprzedza obsługę Discord; semantyka brokera jest identyczna dla obu rodzajów).
+Operacyjne zmienne środowiskowe i kontrakt endpointu brokera Convex znajdują się w [Testowanie → Współdzielone dane uwierzytelniające Telegram przez Convex](/pl/help/testing#shared-telegram-credentials-via-convex-v1) (nazwa sekcji powstała przed obsługą Discord; semantyka brokera jest identyczna dla obu rodzajów).
 
-## Seedy oparte na repo
+## Seedy oparte na repozytorium
 
 Zasoby seedów znajdują się w `qa/`:
 
 - `qa/scenarios/index.md`
 - `qa/scenarios/<theme>/*.md`
 
-Są celowo trzymane w git, aby plan QA był widoczny zarówno dla ludzi, jak i dla
-agenta.
+Celowo są w git, aby plan QA był widoczny zarówno dla ludzi, jak i dla agenta.
 
-`qa-lab` powinien pozostać generycznym runnerem markdown. Każdy plik markdown scenariusza jest
-źródłem prawdy dla jednego uruchomienia testu i powinien definiować:
+`qa-lab` powinien pozostać generycznym runnerem Markdown. Każdy plik scenariusza Markdown jest źródłem prawdy dla jednego uruchomienia testu i powinien definiować:
 
 - metadane scenariusza
-- opcjonalne metadane kategorii, capability, ścieżki i ryzyka
-- referencje dokumentacji i kodu
+- opcjonalne metadane kategorii, możliwości, lane'u i ryzyka
+- referencje do dokumentacji i kodu
 - opcjonalne wymagania Plugin
-- opcjonalną poprawkę konfiguracji Gateway
+- opcjonalną łatkę konfiguracji Gateway
 - wykonywalny `qa-flow`
 
-Wielokrotnego użytku powierzchnia runtime, która obsługuje `qa-flow`, może pozostać generyczna
-i przekrojowa. Na przykład scenariusze markdown mogą łączyć pomocniki po stronie transportu
-z pomocnikami po stronie przeglądarki, które sterują osadzonym Control UI przez
-seam Gateway `browser.request`, bez dodawania runnera do przypadku szczególnego.
+Wielokrotnego użytku powierzchnia runtime, która obsługuje `qa-flow`, może pozostać generyczna i przekrojowa. Na przykład scenariusze Markdown mogą łączyć helpery po stronie transportu z helperami po stronie przeglądarki, które sterują osadzonym Control UI przez seam `browser.request` w Gateway, bez dodawania runnera dla szczególnego przypadku.
 
-Pliki scenariuszy powinny być grupowane według capability produktu, a nie folderu
-drzewa źródłowego. Utrzymuj stabilne identyfikatory scenariuszy, gdy pliki są przenoszone; używaj `docsRefs` i `codeRefs`
-do śledzenia implementacji.
+Pliki scenariuszy powinny być grupowane według możliwości produktu, a nie folderu drzewa źródłowego. Zachowuj stabilne identyfikatory scenariuszy podczas przenoszenia plików; używaj `docsRefs` i `codeRefs` do śledzenia implementacji.
 
 Lista bazowa powinna pozostać wystarczająco szeroka, aby obejmować:
 
-- DM i czat kanału
+- czat DM i kanałowy
 - zachowanie wątków
 - cykl życia akcji wiadomości
-- callbacki cron
+- wywołania zwrotne cron
 - przywoływanie pamięci
 - przełączanie modeli
 - przekazanie subagentowi
-- czytanie repo i czytanie dokumentacji
+- czytanie repozytorium i dokumentacji
 - jedno małe zadanie build, takie jak Lobster Invaders
 
-## Ścieżki mock dostawców
+## Lane'y mock providerów
 
-`qa suite` ma dwie lokalne ścieżki mock dostawców:
+`qa suite` ma dwa lokalne lane'y mock providerów:
 
-- `mock-openai` to świadomy scenariuszy mock OpenClaw. Pozostaje domyślną
-  deterministyczną ścieżką mock dla QA opartego na repo i bramek parzystości.
-- `aimock` uruchamia serwer dostawcy oparty na AIMock dla eksperymentalnego pokrycia protokołu,
-  fixture, record/replay i chaos. Jest addytywny i nie
-  zastępuje dyspozytora scenariuszy `mock-openai`.
+- `mock-openai` to świadomy scenariuszy mock OpenClaw. Pozostaje domyślnym deterministycznym lane'em mock dla QA opartego na repozytorium i bramek zgodności.
+- `aimock` uruchamia serwer providera oparty na AIMock do eksperymentalnego pokrycia protokołu, fixture'ów, record/replay i chaosu. Jest dodatkiem i nie zastępuje dyspozytora scenariuszy `mock-openai`.
 
-Implementacja ścieżek dostawców znajduje się pod `extensions/qa-lab/src/providers/`.
-Każdy dostawca posiada swoje wartości domyślne, uruchamianie lokalnego serwera, konfigurację modelu Gateway,
-potrzeby przygotowania profilu uwierzytelniania oraz flagi capability live/mock. Współdzielony zestaw i
-kod Gateway powinny routować przez rejestr dostawców zamiast rozgałęziać się po
-nazwach dostawców.
+Implementacja lane'ów providerów znajduje się w `extensions/qa-lab/src/providers/`. Każdy provider posiada swoje wartości domyślne, uruchamianie lokalnego serwera, konfigurację modelu Gateway, potrzeby stagingu profilu uwierzytelniania oraz flagi możliwości live/mock. Wspólny kod suite i Gateway powinien przechodzić przez rejestr providerów zamiast rozgałęziać się po nazwach providerów.
 
 ## Adaptery transportu
 
-`qa-lab` posiada generyczny seam transportu dla scenariuszy QA markdown. `qa-channel` jest pierwszym adapterem na tym seamie, ale cel projektowy jest szerszy: przyszłe kanały prawdziwe lub syntetyczne powinny wpinać się do tego samego runnera zestawu zamiast dodawać runner QA specyficzny dla transportu.
+`qa-lab` posiada generyczny seam transportu dla scenariuszy QA Markdown. `qa-channel` jest pierwszym adapterem na tym seamie, ale cel projektowy jest szerszy: przyszłe rzeczywiste lub syntetyczne kanały powinny podłączać się do tego samego runnera suite zamiast dodawać runner QA specyficzny dla transportu.
 
-Na poziomie architektury podział jest następujący:
+Na poziomie architektury podział wygląda tak:
 
-- `qa-lab` odpowiada za generyczne wykonywanie scenariuszy, współbieżność workerów, zapisywanie artefaktów i raportowanie.
-- Adapter transportu odpowiada za konfigurację Gateway, gotowość, obserwację wejściową i wyjściową, akcje transportu oraz znormalizowany stan transportu.
-- Pliki scenariuszy markdown pod `qa/scenarios/` definiują uruchomienie testu; `qa-lab` zapewnia wielokrotnego użytku powierzchnię runtime, która je wykonuje.
+- `qa-lab` posiada generyczne wykonywanie scenariuszy, współbieżność workerów, zapisywanie artefaktów i raportowanie.
+- Adapter transportu posiada konfigurację Gateway, gotowość, obserwację przychodzącą i wychodzącą, akcje transportu oraz znormalizowany stan transportu.
+- Pliki scenariuszy Markdown w `qa/scenarios/` definiują uruchomienie testu; `qa-lab` dostarcza wielokrotnego użytku powierzchnię runtime, która je wykonuje.
 
 ### Dodawanie kanału
 
-Dodanie kanału do systemu QA markdown wymaga dokładnie dwóch rzeczy:
+Dodanie kanału do systemu QA Markdown wymaga dokładnie dwóch rzeczy:
 
 1. Adaptera transportu dla kanału.
-2. Pakietu scenariuszy, który sprawdza kontrakt kanału.
+2. Pakietu scenariuszy, który ćwiczy kontrakt kanału.
 
-Nie dodawaj nowego katalogu głównego poleceń QA najwyższego poziomu, gdy współdzielony host `qa-lab` może być właścicielem przepływu.
+Nie dodawaj nowego głównego korzenia poleceń QA, gdy współdzielony host `qa-lab` może posiadać przepływ.
 
-`qa-lab` odpowiada za współdzieloną mechanikę hosta:
+`qa-lab` posiada współdzieloną mechanikę hosta:
 
 - korzeń polecenia `openclaw qa`
-- uruchamianie i zamykanie zestawu
+- uruchamianie i zamykanie suite
 - współbieżność workerów
 - zapisywanie artefaktów
-- generowanie raportów
+- generowanie raportu
 - wykonywanie scenariuszy
 - aliasy zgodności dla starszych scenariuszy `qa-channel`
 
-Pluginy runnerów odpowiadają za kontrakt transportu:
+Pluginy runnerów posiadają kontrakt transportu:
 
-- sposób montowania `openclaw qa <runner>` pod współdzielonym korzeniem `qa`
-- sposób konfigurowania gatewaya dla tego transportu
-- sposób sprawdzania gotowości
-- sposób wstrzykiwania zdarzeń przychodzących
-- sposób obserwowania wiadomości wychodzących
-- sposób udostępniania transkrypcji i znormalizowanego stanu transportu
-- sposób wykonywania akcji wspieranych przez transport
-- sposób obsługi resetowania lub czyszczenia specyficznego dla transportu
+- jak `openclaw qa <runner>` jest montowany pod współdzielonym korzeniem `qa`
+- jak Gateway jest konfigurowany dla tego transportu
+- jak sprawdzana jest gotowość
+- jak wstrzykiwane są zdarzenia przychodzące
+- jak obserwowane są wiadomości wychodzące
+- jak udostępniane są transkrypty i znormalizowany stan transportu
+- jak wykonywane są akcje oparte na transporcie
+- jak obsługiwany jest reset lub cleanup specyficzny dla transportu
 
 Minimalny próg adopcji dla nowego kanału:
 
 1. Zachowaj `qa-lab` jako właściciela współdzielonego korzenia `qa`.
-2. Zaimplementuj runner transportu na współdzielonym styku hosta `qa-lab`.
-3. Trzymaj mechanikę specyficzną dla transportu wewnątrz plugina runnera lub harnessu kanału.
-4. Zamontuj runner jako `openclaw qa <runner>` zamiast rejestrować konkurencyjne polecenie główne. Pluginy runnerów powinny deklarować `qaRunners` w `openclaw.plugin.json` i eksportować pasującą tablicę `qaRunnerCliRegistrations` z `runtime-api.ts`. Utrzymuj `runtime-api.ts` jako lekki plik; leniwe CLI i wykonywanie runnera powinny pozostać za osobnymi punktami wejścia.
-5. Utwórz lub dostosuj scenariusze Markdown w tematycznych katalogach `qa/scenarios/`.
-6. Używaj ogólnych helperów scenariuszy dla nowych scenariuszy.
-7. Zachowaj działanie istniejących aliasów zgodności, chyba że repozytorium przeprowadza celową migrację.
+2. Zaimplementuj runner transportu na współdzielonym seamie hosta `qa-lab`.
+3. Trzymaj mechanikę specyficzną dla transportu wewnątrz Pluginu runnera lub harnessu kanału.
+4. Zamontuj runner jako `openclaw qa <runner>` zamiast rejestrować konkurencyjne polecenie główne. Pluginy runnerów powinny deklarować `qaRunners` w `openclaw.plugin.json` i eksportować odpowiadającą tablicę `qaRunnerCliRegistrations` z `runtime-api.ts`. Utrzymuj `runtime-api.ts` jako lekki; leniwe CLI i wykonywanie runnera powinny pozostać za oddzielnymi punktami wejścia.
+5. Utwórz albo dostosuj scenariusze Markdown w tematycznych katalogach `qa/scenarios/`.
+6. Używaj generycznych helperów scenariuszy dla nowych scenariuszy.
+7. Utrzymuj istniejące aliasy zgodności, chyba że repozytorium przeprowadza intencjonalną migrację.
 
 Reguła decyzyjna jest ścisła:
 
 - Jeśli zachowanie można wyrazić raz w `qa-lab`, umieść je w `qa-lab`.
-- Jeśli zachowanie zależy od jednego transportu kanału, trzymaj je w tym pluginie runnera lub harnessie plugina.
-- Jeśli scenariusz potrzebuje nowej możliwości, której może użyć więcej niż jeden kanał, dodaj ogólny helper zamiast gałęzi specyficznej dla kanału w `suite.ts`.
-- Jeśli zachowanie ma sens tylko dla jednego transportu, zachowaj scenariusz jako specyficzny dla transportu i jasno zaznacz to w kontrakcie scenariusza.
+- Jeśli zachowanie zależy od jednego transportu kanału, trzymaj je w tym Pluginie runnera lub harnessie Pluginu.
+- Jeśli scenariusz potrzebuje nowej możliwości, której może użyć więcej niż jeden kanał, dodaj generyczny helper zamiast gałęzi specyficznej dla kanału w `suite.ts`.
+- Jeśli zachowanie ma sens tylko dla jednego transportu, zachowaj scenariusz jako specyficzny dla transportu i zaznacz to wyraźnie w kontrakcie scenariusza.
 
 ### Nazwy helperów scenariuszy
 
-Preferowane ogólne helpery dla nowych scenariuszy:
+Preferowane generyczne helpery dla nowych scenariuszy:
 
 - `waitForTransportReady`
 - `waitForChannelReady`
@@ -463,22 +624,21 @@ Preferowane ogólne helpery dla nowych scenariuszy:
 - `formatTransportTranscript`
 - `resetTransport`
 
-Aliasy zgodności pozostają dostępne dla istniejących scenariuszy — `waitForQaChannelReady`, `waitForOutboundMessage`, `waitForNoOutbound`, `formatConversationTranscript`, `resetBus` — ale przy tworzeniu nowych scenariuszy należy używać nazw ogólnych. Aliasy istnieją po to, aby uniknąć jednorazowej migracji, a nie jako model na przyszłość.
+Aliasy zgodności pozostają dostępne dla istniejących scenariuszy — `waitForQaChannelReady`, `waitForOutboundMessage`, `waitForNoOutbound`, `formatConversationTranscript`, `resetBus` — ale nowe scenariusze powinny używać nazw generycznych. Aliasy istnieją, aby uniknąć migracji typu flag day, a nie jako model na przyszłość.
 
 ## Raportowanie
 
-`qa-lab` eksportuje raport protokołu w Markdown z obserwowanej osi czasu magistrali.
-Raport powinien odpowiadać na pytania:
+`qa-lab` eksportuje raport protokołu Markdown z obserwowanej osi czasu magistrali.
+Raport powinien odpowiadać:
 
 - Co zadziałało
 - Co się nie powiodło
 - Co pozostało zablokowane
 - Jakie scenariusze uzupełniające warto dodać
 
-Aby uzyskać inwentarz dostępnych scenariuszy — przydatny przy szacowaniu dalszych prac lub podłączaniu nowego transportu — uruchom `pnpm openclaw qa coverage` (dodaj `--json`, aby uzyskać dane wyjściowe czytelne maszynowo).
+Aby uzyskać inwentarz dostępnych scenariuszy — przydatny przy szacowaniu prac uzupełniających lub podłączaniu nowego transportu — uruchom `pnpm openclaw qa coverage` (dodaj `--json`, aby uzyskać wyjście czytelne maszynowo).
 
-W przypadku kontroli charakteru i stylu uruchom ten sam scenariusz na wielu żywych referencjach modeli
-i zapisz oceniony raport Markdown:
+Dla kontroli charakteru i stylu uruchom ten sam scenariusz na wielu referencjach modeli live i zapisz oceniony raport Markdown:
 
 ```bash
 pnpm openclaw qa character-eval \
@@ -497,42 +657,46 @@ pnpm openclaw qa character-eval \
   --judge-concurrency 16
 ```
 
-Polecenie uruchamia lokalne procesy potomne gatewaya QA, nie Docker. Scenariusze oceny charakteru
-powinny ustawiać personę przez `SOUL.md`, a następnie wykonywać zwykłe tury użytkownika,
-takie jak czat, pomoc w obszarze roboczym i małe zadania na plikach. Model kandydacki nie powinien
-być informowany, że jest oceniany. Polecenie zachowuje każdą pełną
-transkrypcję, zapisuje podstawowe statystyki uruchomienia, a następnie prosi modele oceniające w trybie szybkim z
-rozumowaniem `xhigh`, tam gdzie jest obsługiwane, o uszeregowanie uruchomień według naturalności, klimatu i humoru.
-Użyj `--blind-judge-models` podczas porównywania dostawców: prompt oceniającego nadal otrzymuje
-każdą transkrypcję i status uruchomienia, ale referencje kandydatów są zastępowane neutralnymi
-etykietami, takimi jak `candidate-01`; raport mapuje rankingi z powrotem na rzeczywiste referencje po
-parsowaniu.
-Uruchomienia kandydatów domyślnie używają myślenia `high`, z `medium` dla GPT-5.5 i `xhigh`
-dla starszych referencji ewaluacyjnych OpenAI, które je obsługują. Nadpisz konkretnego kandydata inline za pomocą
+Polecenie uruchamia lokalne procesy potomne Gateway QA, a nie Docker. Scenariusze
+ewaluacji postaci powinny ustawiać personę przez `SOUL.md`, a następnie uruchamiać
+zwykłe tury użytkownika, takie jak czat, pomoc w obszarze roboczym i małe zadania
+na plikach. Model kandydujący nie powinien być informowany, że jest oceniany.
+Polecenie zachowuje każdy pełny transkrypt, zapisuje podstawowe statystyki
+uruchomienia, a następnie prosi modele oceniające w trybie szybkim z rozumowaniem
+`xhigh`, jeśli jest obsługiwane, o uszeregowanie uruchomień według naturalności,
+klimatu i humoru. Użyj `--blind-judge-models` podczas porównywania dostawców:
+prompt oceniający nadal otrzymuje każdy transkrypt i status uruchomienia, ale
+referencje kandydatów są zastępowane neutralnymi etykietami, takimi jak
+`candidate-01`; raport po parsowaniu mapuje rankingi z powrotem na rzeczywiste
+referencje.
+Uruchomienia kandydatów domyślnie używają myślenia `high`, z `medium` dla GPT-5.5
+i `xhigh` dla starszych referencji ewaluacyjnych OpenAI, które je obsługują.
+Nadpisz konkretnego kandydata w wierszu polecenia za pomocą
 `--model provider/model,thinking=<level>`. `--thinking <level>` nadal ustawia
-globalną wartość zapasową, a starsza forma `--model-thinking <provider/model=level>` jest
-zachowana dla zgodności.
-Referencje kandydatów OpenAI domyślnie używają trybu szybkiego, dzięki czemu przetwarzanie priorytetowe jest używane tam,
-gdzie dostawca je obsługuje. Dodaj inline `,fast`, `,no-fast` lub `,fast=false`, gdy
-pojedynczy kandydat lub oceniający wymaga nadpisania. Przekaż `--fast` tylko wtedy, gdy chcesz
-wymusić tryb szybki dla każdego modelu kandydackiego. Czasy trwania kandydatów i oceniających są
-zapisywane w raporcie do analizy porównawczej, ale prompty oceniających wyraźnie wskazują,
-aby nie klasyfikować według szybkości.
-Uruchomienia modeli kandydackich i oceniających domyślnie używają współbieżności 16. Obniż
-`--concurrency` lub `--judge-concurrency`, gdy limity dostawcy lub lokalne obciążenie gatewaya
-sprawiają, że uruchomienie jest zbyt zaszumione.
-Gdy nie podano kandydata `--model`, ocena charakteru domyślnie używa
-`openai/gpt-5.5`, `openai/gpt-5.2`, `openai/gpt-5`, `anthropic/claude-opus-4-6`,
-`anthropic/claude-sonnet-4-6`, `zai/glm-5.1`,
-`moonshot/kimi-k2.5` oraz
-`google/gemini-3.1-pro-preview`, gdy nie podano `--model`.
-Gdy nie podano `--judge-model`, domyślnymi oceniającymi są
+globalną wartość zapasową, a starsza forma `--model-thinking <provider/model=level>`
+jest zachowana dla zgodności.
+Referencje kandydatów OpenAI domyślnie używają trybu szybkiego, aby tam, gdzie
+dostawca go obsługuje, wykorzystywać przetwarzanie priorytetowe. Dodaj w wierszu
+polecenia `,fast`, `,no-fast` lub `,fast=false`, gdy pojedynczy kandydat albo
+model oceniający wymaga nadpisania. Przekaż `--fast` tylko wtedy, gdy chcesz
+wymusić tryb szybki dla każdego modelu kandydującego. Czasy trwania kandydatów i
+modeli oceniających są zapisywane w raporcie na potrzeby analizy benchmarków, ale
+prompty oceniające wyraźnie mówią, aby nie klasyfikować według szybkości.
+Uruchomienia modeli kandydujących i oceniających domyślnie używają współbieżności
+16. Zmniejsz `--concurrency` lub `--judge-concurrency`, gdy limity dostawcy albo
+obciążenie lokalnego Gateway powodują zbyt zaszumione uruchomienie.
+Gdy nie przekazano żadnego kandydującego `--model`, ewaluacja postaci domyślnie
+używa `openai/gpt-5.5`, `openai/gpt-5.2`, `openai/gpt-5`,
+`anthropic/claude-opus-4-6`, `anthropic/claude-sonnet-4-6`, `zai/glm-5.1`,
+`moonshot/kimi-k2.5` i `google/gemini-3.1-pro-preview`, gdy nie przekazano
+`--model`.
+Gdy nie przekazano `--judge-model`, modele oceniające domyślnie używają
 `openai/gpt-5.5,thinking=xhigh,fast` oraz
 `anthropic/claude-opus-4-6,thinking=high`.
 
 ## Powiązana dokumentacja
 
-- [Matrix QA](/pl/concepts/qa-matrix)
-- [QA Channel](/pl/channels/qa-channel)
+- [Macierz QA](/pl/concepts/qa-matrix)
+- [Kanał QA](/pl/channels/qa-channel)
 - [Testowanie](/pl/help/testing)
-- [Dashboard](/pl/web/dashboard)
+- [Panel](/pl/web/dashboard)
