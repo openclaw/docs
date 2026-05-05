@@ -45,6 +45,14 @@ const index = fs.readFileSync(path.join(site, "index.html"), "utf8");
 if (/src="\/assets\//.test(index) || /href="\/assets\//.test(index)) {
   throw new Error("index: absolute asset paths were not base-path rewritten");
 }
+const platformsIndex = fs.readFileSync(path.join(site, "platforms/index.html"), "utf8");
+if (/VPS &amp;amp; hosting/.test(platformsIndex)) {
+  throw new Error("platforms index: TOC double-escaped ampersand");
+}
+const dateTime = fs.readFileSync(path.join(site, "date-time/index.html"), "utf8");
+if (/Current Date &amp;amp; Time/.test(dateTime)) {
+  throw new Error("date-time: TOC double-escaped ampersand");
+}
 const legacyDigitalOcean = path.join(site, "docs/platforms/digitalocean/index.html");
 if (!fs.existsSync(legacyDigitalOcean)) {
   throw new Error("legacy DigitalOcean redirect: missing /docs/platforms/digitalocean compatibility file");

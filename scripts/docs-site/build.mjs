@@ -211,7 +211,7 @@ function navLink(activePage, page) {
 
 function tableOfContents(html) {
   return [...html.matchAll(/<h([23])\b[^>]*\bid="([^"]+)"[^>]*>([\s\S]*?)<\/h\1>/g)]
-    .map((m) => ({ level: Number(m[1]), id: m[2], title: stripTags(m[3]).replace(/^#\s*/, "") }))
+    .map((m) => ({ level: Number(m[1]), id: m[2], title: decodeHtmlEntities(stripTags(m[3]).replace(/^#\s*/, "")) }))
     .slice(0, 24);
 }
 
@@ -372,6 +372,19 @@ function titleize(value) {
 
 function stripTags(value) {
   return value.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+}
+
+function decodeHtmlEntities(value) {
+  return String(value).replace(/&(#x[0-9a-f]+|#\d+|amp|lt|gt|quot|apos);/gi, (match, entity) => {
+    const lower = entity.toLowerCase();
+    if (lower === "amp") return "&";
+    if (lower === "lt") return "<";
+    if (lower === "gt") return ">";
+    if (lower === "quot") return "\"";
+    if (lower === "apos") return "'";
+    const code = lower.startsWith("#x") ? Number.parseInt(lower.slice(2), 16) : Number.parseInt(lower.slice(1), 10);
+    return Number.isFinite(code) ? String.fromCodePoint(code) : match;
+  });
 }
 
 function escapeHtml(value) {
