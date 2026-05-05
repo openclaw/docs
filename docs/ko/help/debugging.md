@@ -1,25 +1,25 @@
 ---
 read_when:
-    - 추론 유출 여부를 확인하려면 모델의 원시 출력을 검사해야 합니다
-    - 반복 작업 중 Gateway를 감시 모드로 실행하려는 경우
+    - 추론 유출 여부를 확인하려면 원시 모델 출력을 검사해야 합니다
+    - 반복 작업 중 Gateway를 watch 모드로 실행하려는 경우
     - 반복 가능한 디버깅 워크플로가 필요합니다
-summary: '디버깅 도구: 감시 모드, 원시 모델 스트림, 추론 누출 추적'
+summary: '디버깅 도구: 감시 모드, 원시 모델 스트림, 추론 유출 추적'
 title: 디버깅
 x-i18n:
-    generated_at: "2026-05-03T21:33:53Z"
+    generated_at: "2026-05-05T01:47:04Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7230112013a8db8d6a3853b765f4302a61609051ac4ffaf35a6f09de328deafc
+    source_hash: 9d86bd9b5dd08615d3c283f3fcb2a885f5134fa7e1cdece86b6a796d08a659ec
     source_path: help/debugging.md
     workflow: 16
 ---
 
-스트리밍 출력용 디버깅 헬퍼입니다. 특히 provider가 reasoning을 일반 텍스트에 섞어 넣을 때 유용합니다.
+스트리밍 출력을 디버깅하기 위한 헬퍼입니다. 특히 공급자가 reasoning을 일반 텍스트에 섞는 경우에 유용합니다.
 
-## 런타임 디버그 오버라이드
+## 런타임 디버그 재정의
 
-채팅에서 `/debug`를 사용해 **런타임 전용** config 오버라이드(디스크가 아닌 메모리)를 설정합니다.
-`/debug`는 기본적으로 비활성화되어 있으며, `commands.debug: true`로 활성화합니다.
+채팅에서 `/debug`를 사용해 **런타임 전용** 설정 재정의(디스크가 아닌 메모리)를 지정합니다.
+`/debug`는 기본적으로 비활성화되어 있습니다. `commands.debug: true`로 활성화하세요.
 `openclaw.json`을 편집하지 않고 잘 드러나지 않는 설정을 전환해야 할 때 유용합니다.
 
 예시:
@@ -31,11 +31,12 @@ x-i18n:
 /debug reset
 ```
 
-`/debug reset`은 모든 오버라이드를 지우고 디스크에 있는 config로 되돌립니다.
+`/debug reset`은 모든 재정의를 지우고 디스크상의 설정으로 되돌립니다.
 
-## 세션 trace 출력
+## 세션 추적 출력
 
-전체 verbose 모드를 켜지 않고 한 세션에서 Plugin 소유 trace/debug 줄을 보고 싶을 때 `/trace`를 사용합니다.
+전체 자세한 모드를 켜지 않고 한 세션에서 Plugin 소유 추적/디버그 줄을 보고 싶을 때
+`/trace`를 사용합니다.
 
 예시:
 
@@ -45,12 +46,16 @@ x-i18n:
 /trace off
 ```
 
-Active Memory debug 요약 같은 Plugin 진단에는 `/trace`를 사용합니다.
-일반 verbose 상태/tool 출력에는 계속 `/verbose`를 사용하고, 런타임 전용 config 오버라이드에는 계속 `/debug`를 사용합니다.
+Active Memory 디버그 요약 같은 Plugin 진단에는 `/trace`를 사용하세요.
+일반적인 자세한 상태/도구 출력에는 계속 `/verbose`를 사용하고, 런타임 전용 설정
+재정의에는 계속 `/debug`를 사용하세요.
 
-## Plugin lifecycle trace
+## Plugin 수명 주기 추적
 
-Plugin lifecycle command가 느리게 느껴지고 Plugin metadata, discovery, registry, runtime mirror, config mutation, refresh 작업에 대한 내장 phase breakdown이 필요할 때 `OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1`을 사용합니다. trace는 opt-in이며 stderr에 쓰므로 JSON command 출력은 계속 파싱할 수 있습니다.
+Plugin 수명 주기 명령이 느리게 느껴지고 Plugin 메타데이터, 검색, 레지스트리,
+런타임 미러, 설정 변경, 새로 고침 작업에 대한 내장 단계별 분석이 필요할 때
+`OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1`을 사용하세요. 추적은 옵트인 방식이며 stderr에
+기록되므로 JSON 명령 출력은 계속 파싱할 수 있습니다.
 
 예시:
 
@@ -66,12 +71,14 @@ OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1 openclaw plugins install tokenjuice --force
 [plugins:lifecycle] phase="registry refresh" ms=51.56 status=ok command="install" reason="source-changed"
 ```
 
-CPU 프로파일러를 사용하기 전에 Plugin lifecycle 조사에 이것을 사용하세요.
-command를 source checkout에서 실행 중이라면 `pnpm build` 후 `node dist/entry.js ...`로 빌드된 런타임을 측정하는 것이 좋습니다. `pnpm openclaw ...`는 source-runner 오버헤드도 측정합니다.
+CPU 프로파일러를 사용하기 전에 Plugin 수명 주기를 조사할 때 이 기능을 사용하세요.
+명령이 소스 체크아웃에서 실행 중이라면 `pnpm build` 후 `node dist/entry.js ...`로
+빌드된 런타임을 측정하는 편이 좋습니다. `pnpm openclaw ...`는 소스 러너 오버헤드도
+함께 측정합니다.
 
-## CLI 시작 및 command 프로파일링
+## CLI 시작 및 명령 프로파일링
 
-command가 느리게 느껴질 때 체크인된 시작 벤치마크를 사용합니다.
+명령이 느리게 느껴질 때는 체크인된 시작 벤치마크를 사용하세요.
 
 ```bash
 pnpm test:startup:bench:smoke
@@ -79,113 +86,155 @@ pnpm tsx scripts/bench-cli-startup.ts --preset real --case status --runs 3
 pnpm tsx scripts/bench-cli-startup.ts --preset real --cpu-prof-dir .artifacts/cli-cpu
 ```
 
-일반 source runner를 통한 일회성 프로파일링에는 `OPENCLAW_RUN_NODE_CPU_PROF_DIR`을 설정합니다.
+일반 소스 러너를 통한 일회성 프로파일링에는 `OPENCLAW_RUN_NODE_CPU_PROF_DIR`를
+설정하세요.
 
 ```bash
 OPENCLAW_RUN_NODE_CPU_PROF_DIR=.artifacts/cli-cpu pnpm openclaw status
 ```
 
-source runner는 Node CPU profile flag를 추가하고 command용 `.cpuprofile`을 씁니다. command 코드에 임시 instrumentation을 추가하기 전에 이것을 사용하세요.
+소스 러너는 Node CPU 프로파일 플래그를 추가하고 해당 명령에 대한 `.cpuprofile`을
+기록합니다. 명령 코드에 임시 계측을 추가하기 전에 이 방법을 사용하세요.
 
-## Gateway watch 모드
+시작 지연이 동기 파일 시스템 또는 모듈 로더 작업처럼 보인다면 소스 러너를 통해
+Node의 동기 I/O 추적 플래그를 추가하세요.
 
-빠른 반복 작업을 위해 file watcher 아래에서 Gateway를 실행합니다.
+```bash
+OPENCLAW_TRACE_SYNC_IO=1 pnpm openclaw gateway --force
+```
+
+`pnpm gateway:watch`는 감시 중인 Gateway 자식에 대해 이 플래그를 기본적으로
+활성화합니다. watch 모드에서 Node 동기 I/O 추적 출력을 숨기려면
+`OPENCLAW_TRACE_SYNC_IO=0`을 설정하세요.
+
+## Gateway 감시 모드
+
+빠른 반복 작업을 위해 파일 감시기 아래에서 Gateway를 실행하세요.
 
 ```bash
 pnpm gateway:watch
 ```
 
-기본적으로 이것은 `openclaw-gateway-watch-main`이라는 tmux 세션(또는 `openclaw-gateway-watch-dev-19001` 같은 profile/port별 변형)을 시작하거나 재시작하고, 대화형 터미널에서는 자동으로 attach합니다.
-비대화형 shell, CI, agent exec 호출은 detached 상태를 유지하고 대신 attach 안내를 출력합니다. 필요할 때 수동으로 attach합니다.
+기본적으로 이는 `openclaw-gateway-watch-main`이라는 이름의 tmux 세션을
+시작하거나 다시 시작합니다(또는 `openclaw-gateway-watch-dev-19001`처럼
+프로필/포트별 변형). 그리고 대화형 터미널에서는 자동으로 attach합니다.
+비대화형 셸, CI, 에이전트 exec 호출은 detached 상태를 유지하고 대신 attach
+안내를 출력합니다. 필요할 때 수동으로 attach하세요.
 
 ```bash
 tmux attach -t openclaw-gateway-watch-main
 ```
 
-tmux pane은 raw watcher를 실행합니다.
+tmux 패널은 원시 감시기를 실행합니다.
 
 ```bash
 node scripts/watch-node.mjs gateway --force
 ```
 
-tmux를 원하지 않을 때는 foreground 모드를 사용합니다.
+tmux가 필요 없을 때는 포그라운드 모드를 사용하세요.
 
 ```bash
 pnpm gateway:watch:raw
-# or
+# 또는
 OPENCLAW_GATEWAY_WATCH_TMUX=0 pnpm gateway:watch
 ```
 
-tmux 관리는 유지하면서 auto-attach를 비활성화합니다.
+tmux 관리는 유지하면서 자동 attach를 비활성화하려면 다음을 사용하세요.
 
 ```bash
 OPENCLAW_GATEWAY_WATCH_ATTACH=0 pnpm gateway:watch
 ```
 
-시작/런타임 hotspot을 디버깅할 때 watched Gateway CPU 시간을 프로파일링합니다.
+시작/런타임 핫스팟을 디버깅할 때 감시 중인 Gateway CPU 시간을 프로파일링하세요.
 
 ```bash
 pnpm gateway:watch --benchmark
 ```
 
-watch wrapper는 Gateway를 호출하기 전에 `--benchmark`를 소비하고, `.artifacts/gateway-watch-profiles/` 아래에 Gateway child exit마다 V8 `.cpuprofile` 하나를 씁니다. watched gateway를 중지하거나 재시작해 현재 profile을 flush한 다음 Chrome DevTools 또는 Speedscope로 엽니다.
+watch 래퍼는 Gateway를 호출하기 전에 `--benchmark`를 소비하고, Gateway 자식이
+종료될 때마다 `.artifacts/gateway-watch-profiles/` 아래에 V8 `.cpuprofile`을
+하나씩 기록합니다. 현재 프로파일을 flush하려면 감시 중인 gateway를 중지하거나
+다시 시작한 뒤 Chrome DevTools 또는 Speedscope로 여세요.
 
 ```bash
 npx speedscope .artifacts/gateway-watch-profiles/*.cpuprofile
 ```
 
-profile을 다른 위치에 두고 싶으면 `--benchmark-dir <path>`를 사용합니다.
-benchmarked child가 기본 `--force` port cleanup을 건너뛰고 Gateway port가 이미 사용 중이면 빠르게 실패하게 하려면 `--benchmark-no-force`를 사용합니다.
+프로파일을 다른 위치에 저장하려면 `--benchmark-dir <path>`를 사용하세요.
+벤치마크 대상 자식이 기본 `--force` 포트 정리를 건너뛰고 Gateway 포트가 이미
+사용 중이면 빠르게 실패하게 하려면 `--benchmark-no-force`를 사용하세요.
+벤치마크 모드는 기본적으로 sync-I/O 추적 스팸을 숨깁니다. CPU 프로파일과 Node
+sync-I/O 스택 추적을 모두 명시적으로 원할 때는 `--benchmark`와 함께
+`OPENCLAW_TRACE_SYNC_IO=1`을 설정하세요. 벤치마크 모드에서는 해당 추적 블록이
+벤치마크 디렉터리 아래 `gateway-watch-output.log`에 기록되고 터미널 패널에서는
+필터링됩니다. 일반 Gateway 로그는 계속 표시됩니다.
 
-tmux wrapper는 `OPENCLAW_PROFILE`, `OPENCLAW_CONFIG_PATH`, `OPENCLAW_STATE_DIR`, `OPENCLAW_GATEWAY_PORT`, `OPENCLAW_SKIP_CHANNELS` 같은 일반적인 비밀이 아닌 런타임 selector를 pane으로 전달합니다. provider credential은 일반 profile/config에 넣거나, 일회성 ephemeral secret에는 raw foreground 모드를 사용합니다.
-watched Gateway가 시작 중 종료되면 watcher는 `openclaw doctor --fix --non-interactive`를 한 번 실행하고 Gateway child를 재시작합니다. dev 전용 repair pass 없이 원래 시작 실패를 보고 싶으면 `OPENCLAW_GATEWAY_WATCH_AUTO_DOCTOR=0`을 사용합니다.
-managed tmux pane은 가독성을 위해 기본적으로 컬러 Gateway log를 사용합니다. ANSI 출력을 비활성화하려면 `pnpm gateway:watch`를 시작할 때 `FORCE_COLOR=0`을 설정합니다.
+tmux 래퍼는 `OPENCLAW_PROFILE`, `OPENCLAW_CONFIG_PATH`, `OPENCLAW_STATE_DIR`,
+`OPENCLAW_GATEWAY_PORT`, `OPENCLAW_SKIP_CHANNELS` 같은 일반적인 비밀이 아닌
+런타임 선택자를 패널로 전달합니다. 공급자 자격 증명은 일반 프로필/설정에 넣거나,
+일회성 임시 비밀에는 원시 포그라운드 모드를 사용하세요.
+감시 중인 Gateway가 시작 중 종료되면 감시기는 `openclaw doctor --fix --non-interactive`를
+한 번 실행하고 Gateway 자식을 다시 시작합니다. dev 전용 복구 패스 없이 원래의
+시작 실패를 보고 싶을 때는 `OPENCLAW_GATEWAY_WATCH_AUTO_DOCTOR=0`을 사용하세요.
+관리되는 tmux 패널도 가독성을 위해 기본적으로 컬러 Gateway 로그를 사용합니다.
+ANSI 출력을 비활성화하려면 `pnpm gateway:watch`를 시작할 때 `FORCE_COLOR=0`을
+설정하세요.
 
-watcher는 `src/` 아래 build 관련 파일, extension source 파일, extension `package.json` 및 `openclaw.plugin.json` metadata, `tsconfig.json`, `package.json`, `tsdown.config.ts` 변경 시 재시작합니다. extension metadata 변경은 `tsdown` rebuild를 강제하지 않고 gateway를 재시작합니다. source 및 config 변경은 여전히 먼저 `dist`를 rebuild합니다.
+감시기는 `src/` 아래의 빌드 관련 파일, 확장 소스 파일, 확장 `package.json` 및
+`openclaw.plugin.json` 메타데이터, `tsconfig.json`, `package.json`,
+`tsdown.config.ts` 변경 시 다시 시작합니다. 확장 메타데이터 변경은 `tsdown`
+재빌드를 강제하지 않고 gateway를 다시 시작합니다. 소스 및 설정 변경은 여전히
+먼저 `dist`를 재빌드합니다.
 
-Gateway CLI flag는 `gateway:watch` 뒤에 추가하면 각 재시작에 그대로 전달됩니다. 같은 watch command를 다시 실행하면 이름이 지정된 tmux pane을 다시 생성하고, raw watcher는 여전히 single-watcher lock을 유지하므로 중복 watcher parent가 쌓이지 않고 교체됩니다.
+gateway CLI 플래그는 `gateway:watch` 뒤에 추가하면 각 재시작에 그대로 전달됩니다.
+같은 watch 명령을 다시 실행하면 이름이 지정된 tmux 패널을 다시 생성하며, 원시
+감시기는 계속 단일 감시기 잠금을 유지하므로 중복 감시기 부모가 쌓이는 대신
+교체됩니다.
 
-## Dev profile + dev gateway (--dev)
+## Dev 프로필 + dev gateway (`--dev`)
 
-debugging을 위해 state를 격리하고 안전한 일회용 setup을 띄우려면 dev profile을 사용합니다. `--dev` flag는 **두 가지**가 있습니다.
+디버깅을 위해 상태를 격리하고 안전하게 폐기 가능한 설정을 띄우려면 dev 프로필을
+사용하세요. `--dev` 플래그는 **두 가지**가 있습니다.
 
-- **Global `--dev` (profile):** state를 `~/.openclaw-dev` 아래로 격리하고 gateway port를 기본적으로 `19001`로 설정합니다(파생 port도 함께 이동).
-- **`gateway --dev`: 누락된 경우 Gateway에 기본 config + workspace를 자동 생성하도록 지시합니다**(그리고 BOOTSTRAP.md를 건너뜁니다).
+- **전역 `--dev`(프로필):** 상태를 `~/.openclaw-dev` 아래로 격리하고 gateway 포트를
+  기본값 `19001`로 설정합니다(파생 포트도 함께 이동).
+- **`gateway --dev`: 누락된 경우 Gateway가 기본 설정 + 워크스페이스를 자동 생성하도록 지시합니다**
+  (그리고 BOOTSTRAP.md를 건너뜁니다).
 
-권장 흐름(dev profile + dev bootstrap):
+권장 흐름(dev 프로필 + dev 부트스트랩):
 
 ```bash
 pnpm gateway:dev
 OPENCLAW_PROFILE=dev openclaw tui
 ```
 
-아직 global install이 없다면 `pnpm openclaw ...`로 CLI를 실행하세요.
+아직 전역 설치가 없다면 `pnpm openclaw ...`를 통해 CLI를 실행하세요.
 
 이 작업이 수행하는 내용:
 
-1. **Profile 격리**(global `--dev`)
+1. **프로필 격리**(전역 `--dev`)
    - `OPENCLAW_PROFILE=dev`
    - `OPENCLAW_STATE_DIR=~/.openclaw-dev`
    - `OPENCLAW_CONFIG_PATH=~/.openclaw-dev/openclaw.json`
-   - `OPENCLAW_GATEWAY_PORT=19001`(browser/canvas도 이에 맞춰 이동)
+   - `OPENCLAW_GATEWAY_PORT=19001`(브라우저/canvas도 그에 맞춰 이동)
 
-2. **Dev bootstrap**(`gateway --dev`)
-   - 누락된 경우 최소 config를 씁니다(`gateway.mode=local`, bind loopback).
-   - `agent.workspace`를 dev workspace로 설정합니다.
+2. **Dev 부트스트랩**(`gateway --dev`)
+   - 누락된 경우 최소 설정을 기록합니다(`gateway.mode=local`, bind loopback).
+   - `agent.workspace`를 dev 워크스페이스로 설정합니다.
    - `agent.skipBootstrap=true`를 설정합니다(BOOTSTRAP.md 없음).
-   - 누락된 경우 workspace file을 seed합니다:
+   - 누락된 경우 워크스페이스 파일을 시드합니다:
      `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`.
-   - 기본 identity: **C3‑PO**(protocol droid).
-   - dev 모드에서 channel provider를 건너뜁니다(`OPENCLAW_SKIP_CHANNELS=1`).
+   - 기본 정체성: **C3‑PO**(프로토콜 드로이드).
+   - dev 모드에서 채널 공급자를 건너뜁니다(`OPENCLAW_SKIP_CHANNELS=1`).
 
-Reset 흐름(새로 시작):
+재설정 흐름(새로 시작):
 
 ```bash
 pnpm gateway:dev:reset
 ```
 
 <Note>
-`--dev`는 **global** profile flag이며 일부 runner가 소비합니다. 명시해야 한다면 env var 형식을 사용하세요.
+`--dev`는 **전역** 프로필 플래그이며 일부 러너에서 소비됩니다. 명시적으로 적어야 한다면 env var 형식을 사용하세요.
 
 ```bash
 OPENCLAW_PROFILE=dev openclaw gateway --dev --reset
@@ -193,10 +242,11 @@ OPENCLAW_PROFILE=dev openclaw gateway --dev --reset
 
 </Note>
 
-`--reset`은 config, credential, session, dev workspace를 지우고(`rm`이 아닌 `trash` 사용) 기본 dev setup을 다시 생성합니다.
+`--reset`은 설정, 자격 증명, 세션, dev 워크스페이스를 지웁니다(`rm`이 아니라
+`trash` 사용). 그런 다음 기본 dev 설정을 다시 생성합니다.
 
 <Tip>
-non-dev gateway가 이미 실행 중이라면(launchd 또는 systemd) 먼저 중지하세요.
+dev가 아닌 gateway가 이미 실행 중이라면(launchd 또는 systemd) 먼저 중지하세요.
 
 ```bash
 openclaw gateway stop
@@ -204,18 +254,19 @@ openclaw gateway stop
 
 </Tip>
 
-## Raw stream logging (OpenClaw)
+## 원시 스트림 로깅(OpenClaw)
 
-OpenClaw는 filtering/formatting 전에 **raw assistant stream**을 log로 남길 수 있습니다.
-이것은 reasoning이 plain text delta로 도착하는지(또는 별도의 thinking block으로 도착하는지)를 확인하는 가장 좋은 방법입니다.
+OpenClaw는 필터링/포맷팅 전에 **원시 assistant 스트림**을 기록할 수 있습니다.
+reasoning이 일반 텍스트 델타로 도착하는지(또는 별도 thinking 블록으로 도착하는지)
+확인하는 가장 좋은 방법입니다.
 
-CLI로 활성화합니다.
+CLI로 활성화하세요.
 
 ```bash
 pnpm gateway:watch --raw-stream
 ```
 
-선택적 path override:
+선택적 경로 재정의:
 
 ```bash
 pnpm gateway:watch --raw-stream --raw-stream-path ~/.openclaw/logs/raw-stream.jsonl
@@ -228,35 +279,37 @@ OPENCLAW_RAW_STREAM=1
 OPENCLAW_RAW_STREAM_PATH=~/.openclaw/logs/raw-stream.jsonl
 ```
 
-기본 file:
+기본 파일:
 
 `~/.openclaw/logs/raw-stream.jsonl`
 
-## Raw chunk logging (pi-mono)
+## 원시 청크 로깅(pi-mono)
 
-block으로 파싱되기 전에 **raw OpenAI-compat chunk**를 캡처하기 위해 pi-mono는 별도의 logger를 제공합니다.
+블록으로 파싱되기 전의 **원시 OpenAI 호환 청크**를 캡처하기 위해 pi-mono는 별도의
+로거를 제공합니다.
 
 ```bash
 PI_RAW_STREAM=1
 ```
 
-선택적 path:
+선택적 경로:
 
 ```bash
 PI_RAW_STREAM_PATH=~/.pi-mono/logs/raw-openai-completions.jsonl
 ```
 
-기본 file:
+기본 파일:
 
 `~/.pi-mono/logs/raw-openai-completions.jsonl`
 
-> 참고: 이것은 pi-mono의 `openai-completions` provider를 사용하는 process에서만 emit됩니다.
+> 참고: 이는 pi-mono의 `openai-completions` 공급자를 사용하는 프로세스에서만
+> 방출됩니다.
 
 ## 안전 참고 사항
 
-- Raw stream log에는 전체 prompt, tool output, user data가 포함될 수 있습니다.
-- log를 local에 보관하고 debugging 후 삭제하세요.
-- log를 공유하는 경우 secret과 PII를 먼저 제거하세요.
+- 원시 스트림 로그에는 전체 프롬프트, 도구 출력, 사용자 데이터가 포함될 수 있습니다.
+- 로그는 로컬에 보관하고 디버깅 후 삭제하세요.
+- 로그를 공유한다면 먼저 비밀과 PII를 제거하세요.
 
 ## 관련 항목
 
