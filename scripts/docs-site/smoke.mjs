@@ -45,6 +45,13 @@ const index = fs.readFileSync(path.join(site, "index.html"), "utf8");
 if (/src="\/assets\//.test(index) || /href="\/assets\//.test(index)) {
   throw new Error("index: absolute asset paths were not base-path rewritten");
 }
+const legacyDigitalOcean = path.join(site, "docs/platforms/digitalocean/index.html");
+if (!fs.existsSync(legacyDigitalOcean)) {
+  throw new Error("legacy DigitalOcean redirect: missing /docs/platforms/digitalocean compatibility file");
+}
+if (!/url=\/docs\/install\/digitalocean/.test(fs.readFileSync(legacyDigitalOcean, "utf8"))) {
+  throw new Error("legacy DigitalOcean redirect: wrong destination");
+}
 const showcase = fs.readFileSync(path.join(site, "start/showcase/index.html"), "utf8");
 if (!/href="https:\/\/www\.youtube\.com\/watch\?v=SaWSPZoPX34"/.test(showcase)) {
   throw new Error("showcase: external card href was not rendered");

@@ -233,11 +233,16 @@ function writeRedirects() {
   for (const redirect of config.redirects ?? []) {
     const source = cleanPath(redirect.source);
     const dest = cleanPath(redirect.destination);
-    const target = path.join(outDir, source.replace(/^\//, ""), "index.html");
-    if (fs.existsSync(target)) continue;
-    fs.mkdirSync(path.dirname(target), { recursive: true });
-    fs.writeFileSync(target, redirectHtml(publicPath(dest)), "utf8");
+    writeRedirectFile(source, publicPath(dest));
+    if (basePath) writeRedirectFile(`${basePath}${source}`, publicPath(dest));
   }
+}
+
+function writeRedirectFile(source, dest) {
+  const target = path.join(outDir, source.replace(/^\//, ""), "index.html");
+  if (fs.existsSync(target)) return;
+  fs.mkdirSync(path.dirname(target), { recursive: true });
+  fs.writeFileSync(target, redirectHtml(dest), "utf8");
 }
 
 function redirectHtml(dest) {
