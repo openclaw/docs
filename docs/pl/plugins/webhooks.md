@@ -1,33 +1,35 @@
 ---
 read_when:
-    - Chcesz wyzwalać przepływy TaskFlow lub sterować nimi z systemu zewnętrznego
-    - Konfigurujesz dołączony Plugin webhooków
+    - Chcesz wyzwalać lub sterować przepływami TaskFlow z systemu zewnętrznego
+    - Konfigurujesz dołączony plugin webhooków
 summary: 'Plugin Webhooks: uwierzytelnione wejście TaskFlow dla zaufanej automatyzacji zewnętrznej'
-title: Plugin Webhook
+title: Plugin Webhooks
 x-i18n:
-    generated_at: "2026-04-30T10:11:37Z"
+    generated_at: "2026-05-06T17:59:21Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 70b195e330264af48a9e9c619bb5a0937bb15b2640edd3dd2b5517a13424e9fe
+    source_hash: 9d21d96f680fa24d4a53c1ed5759f800d3cfdc3336789c42c15266edd8ce9e80
     source_path: plugins/webhooks.md
     workflow: 16
 ---
 
-# Webhooks (Plugin)
+Plugin Webhooks dodaje uwierzytelnione trasy HTTP, które łączą zewnętrzną
+automatyzację z TaskFlow OpenClaw.
 
-Plugin Webhooks dodaje uwierzytelnione trasy HTTP, które wiążą zewnętrzną automatyzację z TaskFlow OpenClaw.
-
-Użyj go, gdy chcesz, aby zaufany system, taki jak Zapier, n8n, zadanie CI lub usługa wewnętrzna, tworzył i prowadził zarządzane TaskFlow bez wcześniejszego pisania niestandardowego Plugin.
+Użyj go, gdy chcesz, aby zaufany system, taki jak Zapier, n8n, zadanie CI lub
+usługa wewnętrzna, tworzył i obsługiwał zarządzane TaskFlow bez wcześniejszego
+pisania niestandardowego pluginu.
 
 ## Gdzie działa
 
 Plugin Webhooks działa wewnątrz procesu Gateway.
 
-Jeśli Twój Gateway działa na innej maszynie, zainstaluj i skonfiguruj Plugin na tym hoście Gateway, a następnie uruchom ponownie Gateway.
+Jeśli Twój Gateway działa na innym komputerze, zainstaluj i skonfiguruj plugin
+na tym hoście Gateway, a następnie uruchom ponownie Gateway.
 
 ## Konfigurowanie tras
 
-Ustaw konfigurację w `plugins.entries.webhooks.config`:
+Ustaw konfigurację pod `plugins.entries.webhooks.config`:
 
 ```json5
 {
@@ -46,7 +48,7 @@ Ustaw konfigurację w `plugins.entries.webhooks.config`:
                 id: "OPENCLAW_WEBHOOK_SECRET",
               },
               controllerId: "webhooks/zapier",
-              description: "Zapier TaskFlow bridge",
+              description: "Most TaskFlow Zapier",
             },
           },
         },
@@ -65,31 +67,34 @@ Pola trasy:
 - `controllerId`: opcjonalny identyfikator kontrolera dla utworzonych zarządzanych przepływów
 - `description`: opcjonalna notatka operatora
 
-Obsługiwane wejścia `secret`:
+Obsługiwane dane wejściowe `secret`:
 
-- Zwykły ciąg tekstowy
+- Zwykły ciąg znaków
 - SecretRef z `source: "env" | "file" | "exec"`
 
-Jeśli trasa oparta na sekrecie nie może rozwiązać swojego sekretu podczas uruchamiania, Plugin pomija tę trasę i zapisuje ostrzeżenie w dzienniku zamiast ujawniać uszkodzony punkt końcowy.
+Jeśli trasa oparta na sekrecie nie może rozwiązać swojego sekretu podczas uruchamiania,
+plugin pomija tę trasę i rejestruje ostrzeżenie zamiast udostępniać niedziałający punkt końcowy.
 
-## Model bezpieczeństwa
+## Model zabezpieczeń
 
-Każda trasa jest zaufana do działania z uprawnieniami TaskFlow skonfigurowanego `sessionKey`.
+Każda trasa jest zaufana do działania z uprawnieniami TaskFlow skonfigurowanego
+`sessionKey`.
 
-Oznacza to, że trasa może sprawdzać i modyfikować TaskFlow należące do tej sesji, więc należy:
+Oznacza to, że trasa może sprawdzać i modyfikować TaskFlow należące do tej sesji, więc
+należy:
 
 - Używać silnego, unikalnego sekretu dla każdej trasy
-- Preferować odwołania do sekretów zamiast sekretów w postaci zwykłego tekstu w konfiguracji
+- Preferować odwołania do sekretów zamiast sekretów zapisanych jawnie w konfiguracji
 - Wiązać trasy z najwęższą sesją pasującą do przepływu pracy
-- Ujawniać tylko konkretną ścieżkę Webhook, której potrzebujesz
+- Udostępniać tylko konkretną ścieżkę Webhook, której potrzebujesz
 
 Plugin stosuje:
 
 - Uwierzytelnianie współdzielonym sekretem
-- Limity rozmiaru treści żądania i czasu oczekiwania
-- Ograniczanie szybkości w stałym oknie
-- Ograniczanie liczby równoczesnych żądań
-- Powiązany z właścicielem dostęp do TaskFlow przez `api.runtime.tasks.managedFlows.bindSession(...)`
+- Ograniczenia rozmiaru treści żądania i czasu oczekiwania
+- Limitowanie szybkości w stałym oknie
+- Limitowanie równoległych żądań w toku
+- Dostęp do TaskFlow powiązany z właścicielem przez `api.runtime.tasks.managedFlows.bindSession(...)`
 
 ## Format żądania
 
@@ -127,7 +132,7 @@ Plugin obecnie akceptuje następujące wartości JSON `action`:
 
 ### `create_flow`
 
-Tworzy zarządzany TaskFlow dla powiązanej sesji trasy.
+Tworzy zarządzany TaskFlow dla sesji powiązanej z trasą.
 
 Przykład:
 
@@ -142,7 +147,7 @@ Przykład:
 
 ### `run_task`
 
-Tworzy zarządzane zadanie podrzędne wewnątrz istniejącego zarządzanego TaskFlow.
+Tworzy zarządzane zadanie podrzędne w istniejącym zarządzanym TaskFlow.
 
 Dozwolone środowiska uruchomieniowe to:
 
@@ -190,5 +195,5 @@ Plugin celowo usuwa metadane właściciela/sesji z odpowiedzi Webhook.
 ## Powiązana dokumentacja
 
 - [SDK środowiska uruchomieniowego Plugin](/pl/plugins/sdk-runtime)
-- [Omówienie hooków i Webhook](/pl/automation/hooks)
-- [Webhook CLI](/pl/cli/webhooks)
+- [Omówienie hooków i Webhooków](/pl/automation/hooks)
+- [Webhooki CLI](/pl/cli/webhooks)

@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Tworzenie lub debugowanie klientów Node (tryb Node na iOS/Android/macOS)
-    - Badanie awarii parowania lub autoryzacji bridge
-    - Audyt powierzchni Node udostępnianej przez gateway
-summary: 'Historyczny protokół bridge (starsze Node): TCP JSONL, parowanie, RPC z ograniczonym zakresem'
-title: Protokół bridge
+    - Budowanie lub debugowanie klientów Node (tryb Node dla iOS/Android/macOS)
+    - Badanie błędów parowania lub uwierzytelniania mostka
+    - Audyt powierzchni Node udostępnianej przez Gateway
+summary: 'Historyczny protokół mostu (starsze węzły): TCP JSONL, parowanie, RPC o ograniczonym zakresie'
+title: Protokół mostka
 x-i18n:
-    generated_at: "2026-04-25T13:46:11Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T17:55:25Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: cb07ec4dab4394dd03b4c0002d6a842a9d77d12a1fc2f141f01d5a306fab1615
+    source_hash: f84c4b5c344d880d4283eebd8596e8b5b0aad5cae747694784011deb1547db30
     source_path: gateway/bridge-protocol.md
-    workflow: 15
+    workflow: 16
 ---
 
 <Warning>
-TCP bridge został **usunięty**. Bieżące kompilacje OpenClaw nie zawierają listenera bridge, a klucze konfiguracji `bridge.*` nie są już częścią schematu. Ta strona jest zachowana wyłącznie jako odniesienie historyczne. Używaj [Protokołu Gateway](/pl/gateway/protocol) dla wszystkich klientów Node/operatora.
+Most TCP został **usunięty**. Obecne kompilacje OpenClaw nie zawierają listenera mostu, a klucze konfiguracji `bridge.*` nie znajdują się już w schemacie. Ta strona jest zachowana wyłącznie jako odniesienie historyczne. Używaj [protokołu Gateway](/pl/gateway/protocol) dla wszystkich klientów węzłów/operatorów.
 </Warning>
 
 ## Dlaczego istniał
 
-- **Granica bezpieczeństwa**: bridge udostępnia małą listę dozwolonych elementów zamiast
-  pełnej powierzchni API gateway.
-- **Parowanie + tożsamość Node**: dopuszczenie Node jest zarządzane przez gateway i powiązane
-  z tokenem per Node.
-- **UX wykrywania**: Node mogą wykrywać gateway przez Bonjour w sieci LAN albo łączyć się
+- **Granica bezpieczeństwa**: most udostępnia małą listę dozwolonych elementów zamiast
+  pełnej powierzchni API Gateway.
+- **Parowanie + tożsamość węzła**: dopuszczanie węzłów jest zarządzane przez Gateway i powiązane
+  z tokenem przypisanym do konkretnego węzła.
+- **UX wykrywania**: węzły mogą wykrywać Gateway przez Bonjour w sieci LAN albo łączyć się
   bezpośrednio przez tailnet.
 - **Loopback WS**: pełna płaszczyzna sterowania WS pozostaje lokalna, chyba że zostanie tunelowana przez SSH.
 
@@ -32,67 +32,68 @@ TCP bridge został **usunięty**. Bieżące kompilacje OpenClaw nie zawierają l
 
 - TCP, jeden obiekt JSON na linię (JSONL).
 - Opcjonalny TLS (gdy `bridge.tls.enabled` ma wartość true).
-- Historyczny domyślny port listenera to `18790` (bieżące kompilacje nie uruchamiają
-  TCP bridge).
+- Historyczny domyślny port listenera to `18790` (obecne kompilacje nie uruchamiają
+  mostu TCP).
 
-Gdy TLS jest włączony, rekordy discovery TXT zawierają `bridgeTls=1` oraz
-`bridgeTlsSha256` jako niejawną podpowiedź. Pamiętaj, że rekordy TXT Bonjour/mDNS są
-nieuwierzytelnione; klienci nie mogą traktować reklamowanego fingerprint jako
-autorytatywnego pinu bez wyraźnej intencji użytkownika lub innej weryfikacji poza pasmem.
+Gdy TLS jest włączony, rekordy TXT wykrywania zawierają `bridgeTls=1` oraz
+`bridgeTlsSha256` jako niejawną wskazówkę, która nie jest sekretem. Pamiętaj, że rekordy TXT Bonjour/mDNS
+nie są uwierzytelniane; klienci nie mogą traktować reklamowanego odcisku palca jako
+autorytatywnego przypięcia bez wyraźnej intencji użytkownika lub innej weryfikacji poza pasmem.
 
 ## Handshake + parowanie
 
-1. Klient wysyła `hello` z metadanymi Node + tokenem (jeśli jest już sparowany).
-2. Jeśli nie jest sparowany, gateway odpowiada `error` (`NOT_PAIRED`/`UNAUTHORIZED`).
+1. Klient wysyła `hello` z metadanymi węzła + tokenem (jeśli jest już sparowany).
+2. Jeśli nie jest sparowany, Gateway odpowiada `error` (`NOT_PAIRED`/`UNAUTHORIZED`).
 3. Klient wysyła `pair-request`.
 4. Gateway czeka na zatwierdzenie, a następnie wysyła `pair-ok` i `hello-ok`.
 
-Historycznie `hello-ok` zwracał `serverName` i mógł zawierać
+Historycznie `hello-ok` zwracało `serverName` i mogło zawierać
 `canvasHostUrl`.
 
 ## Ramki
 
 Klient → Gateway:
 
-- `req` / `res`: RPC gateway o ograniczonym zakresie (chat, sessions, config, health, voicewake, skills.bins)
-- `event`: sygnały Node (transkrypcja głosu, żądanie agenta, subskrypcja czatu, cykl życia exec)
+- `req` / `res`: zakresowe RPC Gateway (chat, sesje, konfiguracja, kondycja, voicewake, skills.bins)
+- `event`: sygnały węzła (transkrypcja głosowa, żądanie agenta, subskrypcja czatu, cykl życia exec)
 
 Gateway → Klient:
 
-- `invoke` / `invoke-res`: polecenia Node (`canvas.*`, `camera.*`, `screen.record`,
+- `invoke` / `invoke-res`: polecenia węzła (`canvas.*`, `camera.*`, `screen.record`,
   `location.get`, `sms.send`)
 - `event`: aktualizacje czatu dla subskrybowanych sesji
 - `ping` / `pong`: keepalive
 
-Historyczne egzekwowanie listy dozwolonych znajdowało się w `src/gateway/server-bridge.ts` (usunięte).
+Starsze wymuszanie listy dozwolonych elementów znajdowało się w `src/gateway/server-bridge.ts` (usunięte).
 
 ## Zdarzenia cyklu życia exec
 
-Node mogą emitować zdarzenia `exec.finished` lub `exec.denied`, aby ujawniać aktywność system.run.
-Są one mapowane na zdarzenia systemowe w gateway. (Starsze Node mogą nadal emitować `exec.started`.)
+Węzły mogą emitować zdarzenia `exec.finished` lub `exec.denied`, aby ujawniać aktywność system.run.
+Są one mapowane na zdarzenia systemowe w Gateway. (Starsze węzły mogą nadal emitować `exec.started`.)
 
-Pola payloadu (wszystkie opcjonalne, chyba że zaznaczono inaczej):
+Pola ładunku (wszystkie opcjonalne, chyba że zaznaczono inaczej):
 
 - `sessionKey` (wymagane): sesja agenta, która ma otrzymać zdarzenie systemowe.
-- `runId`: unikalny identyfikator exec do grupowania.
+- `runId`: unikatowy identyfikator exec do grupowania.
 - `command`: surowy lub sformatowany ciąg polecenia.
 - `exitCode`, `timedOut`, `success`, `output`: szczegóły zakończenia (tylko finished).
 - `reason`: powód odmowy (tylko denied).
 
 ## Historyczne użycie tailnet
 
-- Powiąż bridge z adresem IP tailnet: `bridge.bind: "tailnet"` w
+- Powiąż most z adresem IP tailnet: `bridge.bind: "tailnet"` w
   `~/.openclaw/openclaw.json` (tylko historycznie; `bridge.*` nie jest już prawidłowe).
-- Klienci łączą się przez nazwę MagicDNS albo adres IP tailnet.
-- Bonjour **nie** działa między sieciami; w razie potrzeby użyj ręcznie hosta/portu albo DNS‑SD dla szerokiego obszaru.
+- Klienci łączą się przez nazwę MagicDNS lub adres IP tailnet.
+- Bonjour **nie** działa między sieciami; w razie potrzeby użyj ręcznego hosta/portu lub DNS-SD
+  dla sieci rozległych.
 
 ## Wersjonowanie
 
-Bridge był **niejawną wersją v1** (bez negocjacji min/max). Ta sekcja stanowi
-wyłącznie odniesienie historyczne; bieżący klienci Node/operatora używają WebSocket
-[Protokołu Gateway](/pl/gateway/protocol).
+Most był **niejawnym v1** (bez negocjacji min/max). Ta sekcja jest
+wyłącznie odniesieniem historycznym; obecni klienci węzłów/operatorów używają WebSocketowego
+[protokołu Gateway](/pl/gateway/protocol).
 
 ## Powiązane
 
 - [Protokół Gateway](/pl/gateway/protocol)
-- [Node](/pl/nodes)
+- [Węzły](/pl/nodes)

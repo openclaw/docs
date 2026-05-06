@@ -1,81 +1,79 @@
 ---
 read_when:
-    - Chcesz, aby OpenClaw działał 24/7 na VPS-ie w chmurze (nie na swoim laptopie)
-    - Chcesz mieć produkcyjnej klasy, stale działający Gateway na własnym VPS-ie
-    - Chcesz mieć pełną kontrolę nad utrwalaniem danych, plikami binarnymi i zachowaniem podczas ponownego uruchamiania
-    - Korzystasz z OpenClaw uruchomionego w Dockerze na Hetznerze lub u podobnego dostawcy
-summary: Uruchamiaj OpenClaw Gateway 24/7 na tanim VPS-ie Hetzner (Docker) z trwałym stanem i wbudowanymi plikami binarnymi
+    - Chcesz, aby OpenClaw działał 24/7 na VPS-ie w chmurze (nie na Twoim laptopie)
+    - Chcesz mieć stale działający Gateway klasy produkcyjnej na własnym serwerze VPS
+    - Chcesz mieć pełną kontrolę nad utrwalaniem danych, plikami binarnymi i zachowaniem podczas restartu
+    - Uruchamiasz OpenClaw w Dockerze na Hetznerze lub u podobnego dostawcy
+summary: Uruchom OpenClaw Gateway 24/7 na niedrogim VPS-ie Hetzner (Docker) z trwałym stanem i wbudowanymi plikami binarnymi
 title: Hetzner
 x-i18n:
-    generated_at: "2026-05-06T09:18:47Z"
+    generated_at: "2026-05-06T17:57:19Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 2625a028b6242f653d29b8f45035bf2d796c5c60453582cf269fd1c3776eca52
+    source_hash: 6102649b381b3b1ecd6f52e1cf518fc36147fe143ebc8fd4be5f44ab26cb3b4d
     source_path: install/hetzner.md
     workflow: 16
 ---
 
-# OpenClaw na Hetznerze (Docker, przewodnik po produkcyjnym VPS)
-
 ## Cel
 
-Uruchom trwały OpenClaw Gateway na VPS-ie Hetznera za pomocą Dockera, z trwałym stanem, wbudowanymi binariami i bezpiecznym zachowaniem przy restarcie.
+Uruchom trwały OpenClaw Gateway na Hetzner VPS przy użyciu Docker, z trwałym stanem, wbudowanymi plikami binarnymi i bezpiecznym zachowaniem przy ponownym uruchamianiu.
 
-Jeśli chcesz mieć „OpenClaw 24/7 za około 5 USD”, to jest najprostsza niezawodna konfiguracja.
-Ceny Hetznera się zmieniają; wybierz najmniejszy VPS z Debianem/Ubuntu i skaluj w górę, jeśli napotkasz błędy OOM.
+Jeśli chcesz „OpenClaw 24/7 za około 5 USD”, to jest najprostsza niezawodna konfiguracja.
+Ceny Hetzner się zmieniają; wybierz najmniejszy Debian/Ubuntu VPS i zwiększ zasoby, jeśli napotkasz błędy OOM.
 
 Przypomnienie modelu bezpieczeństwa:
 
-- Agenci współdzieleni w firmie są w porządku, gdy wszyscy znajdują się w tej samej granicy zaufania, a środowisko uruchomieniowe jest wyłącznie biznesowe.
-- Zachowaj ścisłą separację: dedykowany VPS/środowisko uruchomieniowe + dedykowane konta; bez osobistych profili Apple/Google/przeglądarki/menedżera haseł na tym hoście.
-- Jeśli użytkownicy są wobec siebie antagonistyczni, rozdziel ich według gatewaya/hosta/użytkownika systemu operacyjnego.
+- Agenci współdzieleni w firmie są w porządku, gdy wszyscy znajdują się w tej samej granicy zaufania, a runtime jest wyłącznie biznesowy.
+- Zachowaj ścisłą separację: dedykowany VPS/runtime + dedykowane konta; bez osobistych profili Apple/Google/przeglądarki/menedżera haseł na tym hoście.
+- Jeśli użytkownicy są wobec siebie adwersarialni, rozdziel ich według gateway/hosta/użytkownika OS.
 
 Zobacz [Bezpieczeństwo](/pl/gateway/security) i [Hosting VPS](/pl/vps).
 
 ## Co robimy (w prostych słowach)?
 
-- Wynajmujemy mały serwer Linux (VPS Hetznera)
-- Instalujemy Dockera (izolowane środowisko uruchomieniowe aplikacji)
-- Uruchamiamy OpenClaw Gateway w Dockerze
-- Utrwalamy `~/.openclaw` + `~/.openclaw/workspace` na hoście (przetrwa restarty/przebudowy)
+- Wynajmujemy mały serwer Linux (Hetzner VPS)
+- Instalujemy Docker (izolowany runtime aplikacji)
+- Uruchamiamy OpenClaw Gateway w Docker
+- Utrwalamy `~/.openclaw` + `~/.openclaw/workspace` na hoście (przetrwa ponowne uruchomienia/przebudowy)
 - Uzyskujemy dostęp do Control UI z laptopa przez tunel SSH
 
-Ten zamontowany stan `~/.openclaw` obejmuje `openclaw.json`, przypisany do agenta
+Ten zamontowany stan `~/.openclaw` obejmuje `openclaw.json`, osobne dla agentów
 `agents/<agentId>/agent/auth-profiles.json` oraz `.env`.
 
-Dostęp do Gatewaya można uzyskać przez:
+Do Gateway można uzyskać dostęp przez:
 
 - przekierowanie portu SSH z laptopa
 - bezpośrednie wystawienie portu, jeśli samodzielnie zarządzasz zaporą i tokenami
 
-Ten przewodnik zakłada Ubuntu lub Debiana na Hetznerze.  
-Jeśli używasz innego VPS-a z Linuksem, dobierz odpowiednie pakiety.
-Ogólny przepływ Dockera znajdziesz w [Docker](/pl/install/docker).
+Ten przewodnik zakłada Ubuntu lub Debian na Hetzner.  
+Jeśli używasz innego Linux VPS, odpowiednio dopasuj pakiety.
+Ogólny przepływ Docker znajdziesz w [Docker](/pl/install/docker).
 
 ---
 
 ## Szybka ścieżka (doświadczeni operatorzy)
 
-1. Utwórz VPS Hetznera
-2. Zainstaluj Dockera
+1. Utwórz Hetzner VPS
+2. Zainstaluj Docker
 3. Sklonuj repozytorium OpenClaw
 4. Utwórz trwałe katalogi hosta
 5. Skonfiguruj `.env` i `docker-compose.yml`
-6. Wbuduj wymagane binaria w obraz
+6. Wbuduj wymagane pliki binarne w obraz
 7. `docker compose up -d`
-8. Zweryfikuj trwałość i dostęp do Gatewaya
+8. Zweryfikuj trwałość i dostęp do Gateway
 
 ---
 
 ## Czego potrzebujesz
 
-- VPS Hetznera z dostępem root
+- Hetzner VPS z dostępem root
 - Dostęp SSH z laptopa
-- Podstawowa swoboda pracy z SSH + kopiowaniem/wklejaniem
+- Podstawowa swoboda w użyciu SSH + kopiuj/wklej
 - Około 20 minut
 - Docker i Docker Compose
-- Dane uwierzytelniania modelu
-- Opcjonalne dane uwierzytelniania dostawców
+- Dane uwierzytelniające modelu
+- Opcjonalne dane uwierzytelniające dostawców
   - kod QR WhatsApp
   - token bota Telegram
   - Gmail OAuth
@@ -84,7 +82,7 @@ Ogólny przepływ Dockera znajdziesz w [Docker](/pl/install/docker).
 
 <Steps>
   <Step title="Utwórz VPS">
-    Utwórz VPS z Ubuntu lub Debianem w Hetznerze.
+    Utwórz Ubuntu lub Debian VPS w Hetzner.
 
     Połącz się jako root:
 
@@ -97,7 +95,7 @@ Ogólny przepływ Dockera znajdziesz w [Docker](/pl/install/docker).
 
   </Step>
 
-  <Step title="Zainstaluj Dockera (na VPS-ie)">
+  <Step title="Zainstaluj Docker (na VPS)">
     ```bash
     apt-get update
     apt-get install -y git curl ca-certificates
@@ -119,12 +117,12 @@ Ogólny przepływ Dockera znajdziesz w [Docker](/pl/install/docker).
     cd openclaw
     ```
 
-    Ten przewodnik zakłada, że zbudujesz niestandardowy obraz, aby zagwarantować trwałość binariów.
+    Ten przewodnik zakłada, że zbudujesz własny obraz, aby zagwarantować trwałość plików binarnych.
 
   </Step>
 
   <Step title="Utwórz trwałe katalogi hosta">
-    Kontenery Dockera są efemeryczne.
+    Kontenery Docker są efemeryczne.
     Cały długotrwały stan musi znajdować się na hoście.
 
     ```bash
@@ -152,10 +150,11 @@ Ogólny przepływ Dockera znajdziesz w [Docker](/pl/install/docker).
     XDG_CONFIG_HOME=/home/node/.openclaw
     ```
 
-    Pozostaw `OPENCLAW_GATEWAY_TOKEN` puste, chyba że wyraźnie chcesz
-    zarządzać nim przez `.env`; OpenClaw zapisuje losowy token gatewaya w
-    konfiguracji przy pierwszym uruchomieniu. Wygeneruj hasło pęku kluczy i wklej je do
-    `GOG_KEYRING_PASSWORD`:
+    Ustaw `OPENCLAW_GATEWAY_TOKEN`, gdy chcesz zarządzać stabilnym tokenem gateway
+    przez `.env`; w przeciwnym razie skonfiguruj `gateway.auth.token` przed
+    poleganiem na klientach między ponownymi uruchomieniami. Jeśli żadne z tych źródeł nie istnieje, OpenClaw używa
+    tokenu tylko dla runtime dla tego uruchomienia. Wygeneruj hasło keyring i wklej
+    je do `GOG_KEYRING_PASSWORD`:
 
     ```bash
     openssl rand -hex 32
@@ -163,8 +162,8 @@ Ogólny przepływ Dockera znajdziesz w [Docker](/pl/install/docker).
 
     **Nie commituj tego pliku.**
 
-    Ten plik `.env` służy do zmiennych środowiskowych kontenera/środowiska uruchomieniowego, takich jak `OPENCLAW_GATEWAY_TOKEN`.
-    Zapisane uwierzytelnianie OAuth/API-key dostawców znajduje się w zamontowanym
+    Ten plik `.env` jest przeznaczony dla zmiennych środowiskowych kontenera/runtime, takich jak `OPENCLAW_GATEWAY_TOKEN`.
+    Zapisane uwierzytelnianie dostawców OAuth/kluczami API znajduje się w zamontowanym
     `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`.
 
   </Step>
@@ -210,36 +209,36 @@ Ogólny przepływ Dockera znajdziesz w [Docker](/pl/install/docker).
           ]
     ```
 
-    `--allow-unconfigured` służy tylko wygodzie bootstrapu; nie zastępuje właściwej konfiguracji gatewaya. Nadal ustaw uwierzytelnianie (`gateway.auth.token` lub hasło) i używaj bezpiecznych ustawień bind dla swojego wdrożenia.
+    `--allow-unconfigured` służy tylko wygodzie bootstrapu, nie zastępuje właściwej konfiguracji gateway. Nadal ustaw auth (`gateway.auth.token` lub hasło) i użyj bezpiecznych ustawień bind dla swojego wdrożenia.
 
   </Step>
 
-  <Step title="Wspólne kroki środowiska uruchomieniowego Docker VM">
-    Użyj wspólnego przewodnika po środowisku uruchomieniowym dla typowego przepływu hosta Docker:
+  <Step title="Wspólne kroki runtime Docker VM">
+    Użyj współdzielonego przewodnika runtime dla typowego przepływu hosta Docker:
 
-    - [Wbuduj wymagane binaria w obraz](/pl/install/docker-vm-runtime#bake-required-binaries-into-the-image)
+    - [Wbuduj wymagane pliki binarne w obraz](/pl/install/docker-vm-runtime#bake-required-binaries-into-the-image)
     - [Zbuduj i uruchom](/pl/install/docker-vm-runtime#build-and-launch)
-    - [Co gdzie jest utrwalane](/pl/install/docker-vm-runtime#what-persists-where)
+    - [Co utrzymuje się gdzie](/pl/install/docker-vm-runtime#what-persists-where)
     - [Aktualizacje](/pl/install/docker-vm-runtime#updates)
 
   </Step>
 
-  <Step title="Dostęp specyficzny dla Hetznera">
+  <Step title="Dostęp specyficzny dla Hetzner">
     Po wykonaniu wspólnych kroków budowania i uruchamiania dokończ poniższą konfigurację, aby otworzyć tunel:
 
-    **Wymaganie wstępne:** Upewnij się, że konfiguracja sshd na VPS-ie pozwala na przekierowanie TCP. Jeśli
+    **Wymaganie wstępne:** Upewnij się, że konfiguracja sshd na VPS pozwala na przekierowanie TCP. Jeśli
     utwardziłeś konfigurację SSH, sprawdź `/etc/ssh/sshd_config` i ustaw:
 
     ```
     AllowTcpForwarding local
     ```
 
-    `local` pozwala na lokalne przekierowania `ssh -L` z laptopa, blokując jednocześnie
-    przekierowania zdalne z serwera. Ustawienie na `no` spowoduje niepowodzenie tunelu
+    `local` pozwala na lokalne przekierowania `ssh -L` z laptopa, jednocześnie blokując
+    zdalne przekierowania z serwera. Ustawienie na `no` spowoduje niepowodzenie tunelu
     z komunikatem:
     `channel 3: open failed: administratively prohibited: open failed`
 
-    Po potwierdzeniu, że przekierowanie TCP jest włączone, zrestartuj usługę SSH
+    Po potwierdzeniu, że przekierowanie TCP jest włączone, uruchom ponownie usługę SSH
     (`systemctl restart ssh`) i uruchom tunel z laptopa:
 
     ```bash
@@ -250,44 +249,44 @@ Ogólny przepływ Dockera znajdziesz w [Docker](/pl/install/docker).
 
     `http://127.0.0.1:18789/`
 
-    Wklej skonfigurowany współdzielony sekret. Ten przewodnik domyślnie używa tokenu gatewaya;
-    jeśli przełączyłeś się na uwierzytelnianie hasłem, użyj zamiast niego tego hasła.
+    Wklej skonfigurowany współdzielony sekret. Ten przewodnik domyślnie używa tokenu gateway;
+    jeśli przełączyłeś się na uwierzytelnianie hasłem, użyj tego hasła.
 
   </Step>
 </Steps>
 
-Wspólna mapa trwałości znajduje się w [Środowisko uruchomieniowe Docker VM](/pl/install/docker-vm-runtime#what-persists-where).
+Wspólna mapa trwałości znajduje się w [Docker VM Runtime](/pl/install/docker-vm-runtime#what-persists-where).
 
-## Infrastruktura jako kod (Terraform)
+## Infrastructure as Code (Terraform)
 
-Dla zespołów preferujących przepływy pracy infrastruktury jako kodu społecznościowo utrzymywana konfiguracja Terraform zapewnia:
+Dla zespołów preferujących przepływy infrastructure-as-code społecznościowo utrzymywana konfiguracja Terraform zapewnia:
 
-- Modularną konfigurację Terraform ze zdalnym zarządzaniem stanem
+- Modułową konfigurację Terraform ze zdalnym zarządzaniem stanem
 - Automatyczne provisionowanie przez cloud-init
 - Skrypty wdrożeniowe (bootstrap, deploy, backup/restore)
 - Utwardzenie bezpieczeństwa (zapora, UFW, dostęp tylko przez SSH)
-- Konfigurację tunelu SSH do dostępu do gatewaya
+- Konfigurację tunelu SSH do dostępu do gateway
 
 **Repozytoria:**
 
 - Infrastruktura: [openclaw-terraform-hetzner](https://github.com/andreesg/openclaw-terraform-hetzner)
-- Konfiguracja Dockera: [openclaw-docker-config](https://github.com/andreesg/openclaw-docker-config)
+- Konfiguracja Docker: [openclaw-docker-config](https://github.com/andreesg/openclaw-docker-config)
 
-To podejście uzupełnia powyższą konfigurację Dockera o powtarzalne wdrożenia, infrastrukturę kontrolowaną wersjami i automatyczne odzyskiwanie po awarii.
+To podejście uzupełnia powyższą konfigurację Docker o powtarzalne wdrożenia, infrastrukturę kontrolowaną wersjami i automatyczne odzyskiwanie po awarii.
 
 <Note>
-Utrzymywane przez społeczność. W przypadku problemów lub chęci wniesienia wkładu zobacz powyższe linki do repozytoriów.
+Utrzymywane przez społeczność. W sprawie problemów lub wkładu zobacz powyższe linki do repozytoriów.
 </Note>
 
 ## Następne kroki
 
 - Skonfiguruj kanały komunikacji: [Kanały](/pl/channels)
-- Skonfiguruj Gateway: [Konfiguracja Gatewaya](/pl/gateway/configuration)
-- Utrzymuj OpenClaw na bieżąco: [Aktualizowanie](/pl/install/updating)
+- Skonfiguruj Gateway: [Konfiguracja Gateway](/pl/gateway/configuration)
+- Aktualizuj OpenClaw: [Aktualizowanie](/pl/install/updating)
 
 ## Powiązane
 
-- [Omówienie instalacji](/pl/install)
+- [Przegląd instalacji](/pl/install)
 - [Fly.io](/pl/install/fly)
 - [Docker](/pl/install/docker)
 - [Hosting VPS](/pl/vps)

@@ -1,28 +1,28 @@
 ---
 read_when:
     - Chcesz zarządzać hookami agentów
-    - Chcesz sprawdzić dostępność hooków lub włączyć hooki w obszarze roboczym
-summary: Referencja CLI dla `openclaw hooks` (hooki agentów)
+    - Chcesz sprawdzić dostępność hooków lub włączyć hooki obszaru roboczego
+summary: Dokumentacja referencyjna CLI dla `openclaw hooks` (hooki agentów)
 title: Hooki
 x-i18n:
-    generated_at: "2026-05-05T08:25:46Z"
+    generated_at: "2026-05-06T17:53:22Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8e860d4a20a09526e804fa1aff8c983a75396fcd1e6e24f742252fdf1812f6b7
+    source_hash: 56dd1ef82458dde3280e2cdfb4f3835211726517416e90625d3272d128eb9e0e
     source_path: cli/hooks.md
     workflow: 16
 ---
 
 # `openclaw hooks`
 
-Zarządzaj hookami agentów (automatyzacjami sterowanymi zdarzeniami dla poleceń takich jak `/new`, `/reset` oraz uruchamiania Gateway).
+Zarządzaj hookami agentów (automatyzacjami sterowanymi zdarzeniami dla poleceń takich jak `/new`, `/reset` oraz uruchamianie gatewaya).
 
 Uruchomienie `openclaw hooks` bez podpolecenia jest równoważne z `openclaw hooks list`.
 
 Powiązane:
 
 - Hooki: [Hooki](/pl/automation/hooks)
-- Hooki Plugin: [Hooki Plugin](/pl/plugins/hooks)
+- Hooki Pluginów: [Hooki Pluginów](/pl/plugins/hooks)
 
 ## Wyświetl wszystkie hooki
 
@@ -30,13 +30,13 @@ Powiązane:
 openclaw hooks list
 ```
 
-Wyświetl wszystkie wykryte hooki z katalogów obszaru roboczego, zarządzanych, dodatkowych i dołączonych.
-Uruchamianie Gateway nie ładuje wewnętrznych handlerów hooków, dopóki nie zostanie skonfigurowany co najmniej jeden wewnętrzny hook.
+Wyświetla wszystkie wykryte hooki z katalogów workspace, zarządzanych, dodatkowych i dołączonych.
+Uruchomienie Gateway nie ładuje wewnętrznych handlerów hooków, dopóki nie zostanie skonfigurowany co najmniej jeden wewnętrzny hook.
 
 **Opcje:**
 
 - `--eligible`: Pokaż tylko kwalifikujące się hooki (spełnione wymagania)
-- `--json`: Wyprowadź jako JSON
+- `--json`: Wyjście jako JSON
 - `-v, --verbose`: Pokaż szczegółowe informacje, w tym brakujące wymagania
 
 **Przykładowe wyjście:**
@@ -51,7 +51,7 @@ Ready:
   💾 session-memory ✓ - Save session context to memory when /new or /reset command is issued
 ```
 
-**Przykład (szczegółowy):**
+**Przykład (szczegółowo):**
 
 ```bash
 openclaw hooks list --verbose
@@ -65,7 +65,7 @@ Pokazuje brakujące wymagania dla niekwalifikujących się hooków.
 openclaw hooks list --json
 ```
 
-Zwraca ustrukturyzowany JSON do użycia programowego.
+Zwraca strukturalny JSON do użycia programowego.
 
 ## Pobierz informacje o hooku
 
@@ -73,7 +73,7 @@ Zwraca ustrukturyzowany JSON do użycia programowego.
 openclaw hooks info <name>
 ```
 
-Pokaż szczegółowe informacje o konkretnym hooku.
+Pokaż szczegółowe informacje o określonym hooku.
 
 **Argumenty:**
 
@@ -81,7 +81,7 @@ Pokaż szczegółowe informacje o konkretnym hooku.
 
 **Opcje:**
 
-- `--json`: Wyprowadź jako JSON
+- `--json`: Wyjście jako JSON
 
 **Przykład:**
 
@@ -113,11 +113,11 @@ Requirements:
 openclaw hooks check
 ```
 
-Pokaż podsumowanie stanu kwalifikowalności hooków (ile jest gotowych, a ile niegotowych).
+Pokaż podsumowanie statusu kwalifikowalności hooków (ile jest gotowych, a ile niegotowych).
 
 **Opcje:**
 
-- `--json`: Wyprowadź jako JSON
+- `--json`: Wyjście jako JSON
 
 **Przykładowe wyjście:**
 
@@ -135,9 +135,9 @@ Not ready: 0
 openclaw hooks enable <name>
 ```
 
-Włącz konkretny hook, dodając go do swojej konfiguracji (domyślnie `~/.openclaw/openclaw.json`).
+Włącz określony hook, dodając go do swojej konfiguracji (domyślnie `~/.openclaw/openclaw.json`).
 
-**Uwaga:** Hooki obszaru roboczego są domyślnie wyłączone, dopóki nie zostaną włączone tutaj lub w konfiguracji. Hooki zarządzane przez pluginy pokazują `plugin:<id>` w `openclaw hooks list` i nie można ich tutaj włączać ani wyłączać. Zamiast tego włącz lub wyłącz plugin.
+**Uwaga:** Hooki workspace są domyślnie wyłączone, dopóki nie zostaną włączone tutaj albo w konfiguracji. Hooki zarządzane przez Pluginy pokazują `plugin:<id>` w `openclaw hooks list` i nie można ich tutaj włączać ani wyłączać. Zamiast tego włącz lub wyłącz Plugin.
 
 **Argumenty:**
 
@@ -157,16 +157,16 @@ openclaw hooks enable session-memory
 
 **Co to robi:**
 
-- Sprawdza, czy hook istnieje i kwalifikuje się
-- Aktualizuje `hooks.internal.entries.<name>.enabled = true` w twojej konfiguracji
+- Sprawdza, czy hook istnieje i czy jest kwalifikowalny
+- Aktualizuje `hooks.internal.entries.<name>.enabled = true` w Twojej konfiguracji
 - Zapisuje konfigurację na dysku
 
-Jeśli hook pochodzi z `<workspace>/hooks/`, ten krok wyrażenia zgody jest wymagany, zanim
+Jeśli hook pochodzi z `<workspace>/hooks/`, ten krok akceptacji jest wymagany, zanim
 Gateway go załaduje.
 
 **Po włączeniu:**
 
-- Uruchom ponownie gateway, aby hooki zostały załadowane ponownie (restart aplikacji paska menu w macOS albo restart procesu gateway w trybie deweloperskim).
+- Uruchom ponownie gateway, aby hooki zostały przeładowane (restart aplikacji paska menu w macOS albo restart procesu gatewaya w trybie deweloperskim).
 
 ## Wyłącz hook
 
@@ -174,7 +174,7 @@ Gateway go załaduje.
 openclaw hooks disable <name>
 ```
 
-Wyłącz konkretny hook, aktualizując swoją konfigurację.
+Wyłącz określony hook, aktualizując swoją konfigurację.
 
 **Argumenty:**
 
@@ -194,35 +194,35 @@ openclaw hooks disable command-logger
 
 **Po wyłączeniu:**
 
-- Uruchom ponownie gateway, aby hooki zostały załadowane ponownie
+- Uruchom ponownie gateway, aby hooki zostały przeładowane
 
 ## Uwagi
 
-- `openclaw hooks list --json`, `info --json` oraz `check --json` zapisują ustrukturyzowany JSON bezpośrednio do stdout.
-- Hooków zarządzanych przez pluginy nie można tutaj włączać ani wyłączać; zamiast tego włącz lub wyłącz plugin będący ich właścicielem.
+- `openclaw hooks list --json`, `info --json` oraz `check --json` zapisują strukturalny JSON bezpośrednio do stdout.
+- Hooków zarządzanych przez Pluginy nie można tutaj włączać ani wyłączać; zamiast tego włącz lub wyłącz właścicielski Plugin.
 
-## Instalowanie pakietów hooków
+## Zainstaluj pakiety hooków
 
 ```bash
-openclaw plugins install <package>        # npm by default
-openclaw plugins install npm:<package>    # npm only
-openclaw plugins install <package> --pin  # pin version
-openclaw plugins install <path>           # local path
+openclaw plugins install <package>        # npm domyślnie
+openclaw plugins install npm:<package>    # tylko npm
+openclaw plugins install <package> --pin  # przypnij wersję
+openclaw plugins install <path>           # ścieżka lokalna
 ```
 
-Instaluj pakiety hooków przez zunifikowany instalator pluginów.
+Instaluj pakiety hooków przez ujednolicony instalator Pluginów.
 
-`openclaw hooks install` nadal działa jako alias zgodności, ale wyświetla
-ostrzeżenie o wycofaniu i przekazuje do `openclaw plugins install`.
+`openclaw hooks install` nadal działa jako alias zgodności, ale wypisuje
+ostrzeżenie o wycofaniu i przekazuje dalej do `openclaw plugins install`.
 
-Specyfikacje npm są **wyłącznie rejestrowe** (nazwa pakietu + opcjonalnie **dokładna wersja** lub
-**dist-tag**). Specyfikacje Git/URL/plików oraz zakresy semver są odrzucane. Instalacje zależności
-działają lokalnie dla projektu z `--ignore-scripts` ze względów bezpieczeństwa, nawet jeśli twoja
+Specyfikacje npm są **tylko z rejestru** (nazwa pakietu + opcjonalna **dokładna wersja** lub
+**dist-tag**). Specyfikacje Git/URL/plik i zakresy semver są odrzucane. Instalacje zależności
+działają lokalnie dla projektu z `--ignore-scripts` ze względów bezpieczeństwa, nawet gdy Twoja
 powłoka ma globalne ustawienia instalacji npm.
 
 Gołe specyfikacje i `@latest` pozostają na stabilnej ścieżce. Jeśli npm rozwiąże którąkolwiek z nich
-do wydania wstępnego, OpenClaw zatrzyma się i poprosi o wyraźną zgodę z użyciem
-tagu wydania wstępnego, takiego jak `@beta`/`@rc`, albo dokładnej wersji wydania wstępnego.
+do wersji przedpremierowej, OpenClaw zatrzyma się i poprosi o jednoznaczną akceptację za pomocą
+tagu przedpremierowego, takiego jak `@beta`/`@rc`, albo dokładnej wersji przedpremierowej.
 
 **Co to robi:**
 
@@ -232,49 +232,49 @@ tagu wydania wstępnego, takiego jak `@beta`/`@rc`, albo dokładnej wersji wydan
 
 **Opcje:**
 
-- `-l, --link`: Podlinkuj katalog lokalny zamiast go kopiować (dodaje go do `hooks.internal.load.extraDirs`)
-- `--pin`: Rejestruj instalacje npm jako dokładnie rozwiązaną wartość `name@version` w `hooks.internal.installs`
+- `-l, --link`: Połącz katalog lokalny zamiast go kopiować (dodaje go do `hooks.internal.load.extraDirs`)
+- `--pin`: Zapisz instalacje npm jako dokładnie rozwiązane `name@version` w `hooks.internal.installs`
 
 **Obsługiwane archiwa:** `.zip`, `.tgz`, `.tar.gz`, `.tar`
 
 **Przykłady:**
 
 ```bash
-# Local directory
+# Katalog lokalny
 openclaw plugins install ./my-hook-pack
 
-# Local archive
+# Archiwum lokalne
 openclaw plugins install ./my-hook-pack.zip
 
-# NPM package
+# Pakiet NPM
 openclaw plugins install @openclaw/my-hook-pack
 
-# Link a local directory without copying
+# Połącz katalog lokalny bez kopiowania
 openclaw plugins install -l ./my-hook-pack
 ```
 
-Podlinkowane pakiety hooków są traktowane jako zarządzane hooki z katalogu
-skonfigurowanego przez operatora, a nie jako hooki obszaru roboczego.
+Połączone pakiety hooków są traktowane jako zarządzane hooki z katalogu
+skonfigurowanego przez operatora, a nie jako hooki workspace.
 
-## Aktualizowanie pakietów hooków
+## Aktualizuj pakiety hooków
 
 ```bash
 openclaw plugins update <id>
 openclaw plugins update --all
 ```
 
-Aktualizuj śledzone pakiety hooków oparte na npm przez zunifikowany aktualizator pluginów.
+Aktualizuj śledzone pakiety hooków oparte na npm przez ujednolicony aktualizator Pluginów.
 
-`openclaw hooks update` nadal działa jako alias zgodności, ale wyświetla
-ostrzeżenie o wycofaniu i przekazuje do `openclaw plugins update`.
+`openclaw hooks update` nadal działa jako alias zgodności, ale wypisuje
+ostrzeżenie o wycofaniu i przekazuje dalej do `openclaw plugins update`.
 
 **Opcje:**
 
 - `--all`: Aktualizuj wszystkie śledzone pakiety hooków
 - `--dry-run`: Pokaż, co by się zmieniło, bez zapisywania
 
-Gdy istnieje zapisany hash integralności, a hash pobranego artefaktu się zmieni,
-OpenClaw wyświetla ostrzeżenie i prosi o potwierdzenie przed kontynuowaniem. Użyj
+Gdy istnieje zapisany hash integralności i hash pobranego artefaktu się zmieni,
+OpenClaw wypisuje ostrzeżenie i prosi o potwierdzenie przed kontynuowaniem. Użyj
 globalnego `--yes`, aby pominąć monity w CI/uruchomieniach nieinteraktywnych.
 
 ## Dołączone hooki
@@ -295,7 +295,7 @@ openclaw hooks enable session-memory
 
 ### bootstrap-extra-files
 
-Wstrzykuje dodatkowe pliki startowe (na przykład lokalne dla monorepo `AGENTS.md` / `TOOLS.md`) podczas `agent:bootstrap`.
+Wstrzykuje dodatkowe pliki bootstrapu (na przykład lokalne dla monorepo `AGENTS.md` / `TOOLS.md`) podczas `agent:bootstrap`.
 
 **Włącz:**
 
@@ -320,13 +320,13 @@ openclaw hooks enable command-logger
 **Wyświetl logi:**
 
 ```bash
-# Recent commands
+# Ostatnie polecenia
 tail -n 20 ~/.openclaw/logs/commands.log
 
-# Pretty-print
+# Ładne formatowanie
 cat ~/.openclaw/logs/commands.log | jq .
 
-# Filter by action
+# Filtruj według akcji
 grep '"action":"new"' ~/.openclaw/logs/commands.log | jq .
 ```
 

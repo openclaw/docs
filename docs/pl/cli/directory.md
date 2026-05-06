@@ -1,34 +1,34 @@
 ---
 read_when:
-    - Chcesz wyszukać identyfikatory kontaktów, grup lub własne identyfikatory dla kanału
+    - Chcesz wyszukać identyfikatory kontaktów/grup/własne dla kanału
     - Tworzysz adapter katalogu kanałów
-summary: Dokumentacja referencyjna CLI dla `openclaw directory` (własne, równorzędne, grupy)
+summary: Dokumentacja referencyjna CLI dla `openclaw directory` (siebie, równorzędnych, grup)
 title: Katalog
 x-i18n:
-    generated_at: "2026-05-02T20:41:36Z"
+    generated_at: "2026-05-06T17:52:25Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 011f762d6f53605a37bd12b31c767594c0efa5681da4b2aabe7fb358751b1542
+    source_hash: 855f9312790134f2d1da53ffbb106167c190155510a7bdef212b5d38c2fba0b3
     source_path: cli/directory.md
     workflow: 16
 ---
 
 # `openclaw directory`
 
-Wyszukiwania w katalogu dla kanałów, które je obsługują (kontakty/peers, grupy oraz „me”).
+Wyszukiwania w katalogu dla kanałów, które je obsługują (kontakty/uczestnicy, grupy i „ja”).
 
 ## Wspólne flagi
 
-- `--channel <name>`: identyfikator/alias kanału (wymagane, gdy skonfigurowano wiele kanałów; automatycznie, gdy skonfigurowano tylko jeden)
+- `--channel <name>`: identyfikator/alias kanału (wymagane, gdy skonfigurowano wiele kanałów; automatyczne, gdy skonfigurowano tylko jeden)
 - `--account <id>`: identyfikator konta (domyślnie: domyślne konto kanału)
 - `--json`: wyjście JSON
 
 ## Uwagi
 
-- `directory` ma pomóc w znalezieniu identyfikatorów, które można wkleić do innych poleceń (zwłaszcza `openclaw message send --target ...`).
-- Dla wielu kanałów wyniki są oparte na konfiguracji (listy dozwolonych / skonfigurowane grupy), a nie na aktywnym katalogu dostawcy.
-- Zainstalowane Pluginy kanałów nadal mogą nie obsługiwać katalogu; w takim przypadku polecenie zgłasza nieobsługiwaną operację katalogu zamiast ponownie instalować Plugin.
-- Domyślne wyjście to `id` (a czasem `name`) oddzielone tabulatorem; użyj `--json` do skryptów.
+- `directory` ma pomóc znaleźć identyfikatory, które można wkleić do innych poleceń (zwłaszcza `openclaw message send --target ...`).
+- Dla wielu kanałów wyniki są oparte na konfiguracji (listy dozwolonych / skonfigurowane grupy), a nie na katalogu dostawcy na żywo.
+- Zainstalowane pluginy kanałów nadal mogą nie obsługiwać katalogu; w takim przypadku polecenie zgłasza nieobsługiwaną operację katalogu zamiast ponownie instalować plugin.
+- Domyślnym wyjściem jest `id` (a czasem `name`) oddzielone tabulatorem; użyj `--json` do skryptów.
 
 ## Używanie wyników z `message send`
 
@@ -39,22 +39,22 @@ openclaw message send --channel slack --target user:U012ABCDEF --message "hello"
 
 ## Formaty identyfikatorów (według kanału)
 
-- WhatsApp: `+15551234567` (DM), `1234567890-1234567890@g.us` (grupa), `120363123456789@newsletter` (cel wychodzący kanału/newslettera)
-- Telegram: `@username` lub numeryczny identyfikator czatu; grupy mają numeryczne identyfikatory
+- WhatsApp: `+15551234567` (DM), `1234567890-1234567890@g.us` (grupa), `120363123456789@newsletter` (docelowy adres wychodzący kanału/newslettera)
+- Telegram: `@username` lub numeryczny identyfikator czatu; grupy mają identyfikatory numeryczne
 - Slack: `user:U…` i `channel:C…`
 - Discord: `user:<id>` i `channel:<id>`
-- Matrix (Plugin): `user:@user:server`, `room:!roomId:server` lub `#alias:server`
-- Microsoft Teams (Plugin): `user:<id>` i `conversation:<id>`
-- Zalo (Plugin): identyfikator użytkownika (Bot API)
-- Zalo Personal / `zalouser` (Plugin): identyfikator wątku (DM/grupa) z `zca` (`me`, `friend list`, `group list`)
+- Matrix (plugin): `user:@user:server`, `room:!roomId:server` lub `#alias:server`
+- Microsoft Teams (plugin): `user:<id>` i `conversation:<id>`
+- Zalo (plugin): identyfikator użytkownika (Bot API)
+- Zalo Personal / `zalouser` (plugin): identyfikator wątku (DM/grupa) z `zca` (`me`, `friend list`, `group list`)
 
-## Własny użytkownik („me”)
+## Ja („me”)
 
 ```bash
 openclaw directory self --channel zalouser
 ```
 
-## Peers (kontakty/użytkownicy)
+## Uczestnicy (kontakty/użytkownicy)
 
 ```bash
 openclaw directory peers list --channel zalouser

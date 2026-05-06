@@ -1,19 +1,17 @@
 ---
 read_when:
     - Chcesz wybrać dostawcę modelu
-    - Potrzebujesz szybkich przykładów konfiguracji uwierzytelniania LLM i wyboru modelu
+    - Potrzebujesz szybkich przykładów konfiguracji uwierzytelniania LLM + wyboru modelu
 summary: Dostawcy modeli (LLM) obsługiwani przez OpenClaw
 title: Szybki start z dostawcą modeli
 x-i18n:
-    generated_at: "2026-04-30T10:14:10Z"
+    generated_at: "2026-05-06T18:00:05Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3f71f9ab34df2b545128bfeed3cab82f31b741d4a66263113068568ce6b77cd6
+    source_hash: 7e95d37f3e332a9b2eb58a15dc356ad02b4cbf409926adb3faf1923825219887
     source_path: providers/models.md
     workflow: 16
 ---
-
-# Dostawcy modeli
 
 OpenClaw może używać wielu dostawców LLM. Wybierz jednego, uwierzytelnij się, a następnie ustaw domyślny
 model jako `provider/model`.
@@ -29,7 +27,7 @@ model jako `provider/model`.
 }
 ```
 
-## Obsługiwani dostawcy (zestaw początkowy)
+## Obsługiwani dostawcy (zestaw startowy)
 
 - [Alibaba Model Studio](/pl/providers/alibaba)
 - [Amazon Bedrock](/pl/providers/bedrock)
@@ -41,7 +39,7 @@ model jako `provider/model`.
 - [DeepInfra](/pl/providers/deepinfra)
 - [fal](/pl/providers/fal)
 - [Fireworks](/pl/providers/fireworks)
-- [modele GLM](/pl/providers/glm)
+- [Modele GLM](/pl/providers/glm)
 - [MiniMax](/pl/providers/minimax)
 - [Mistral](/pl/providers/mistral)
 - [Moonshot AI (Kimi + Kimi Coding)](/pl/providers/moonshot)
@@ -60,15 +58,15 @@ model jako `provider/model`.
 
 ## Dodatkowe dołączone warianty dostawców
 
-- `anthropic-vertex` - niejawna obsługa Anthropic w Google Vertex, gdy dostępne są dane uwierzytelniające Vertex; brak osobnego wyboru uwierzytelniania podczas onboardingu
-- `copilot-proxy` - lokalny most VS Code Copilot Proxy; użyj `openclaw onboard --auth-choice copilot-proxy`
+- `anthropic-vertex` - niejawna obsługa Anthropic w Google Vertex, gdy dostępne są dane uwierzytelniające Vertex; bez oddzielnego wyboru uwierzytelniania podczas onboardingu
+- `copilot-proxy` - lokalny pomost VS Code Copilot Proxy; użyj `openclaw onboard --auth-choice copilot-proxy`
 - `google-gemini-cli` - nieoficjalny przepływ OAuth Gemini CLI; wymaga lokalnej instalacji `gemini` (`brew install gemini-cli` lub `npm install -g @google/gemini-cli`); domyślny model `google-gemini-cli/gemini-3-flash-preview`; użyj `openclaw onboard --auth-choice google-gemini-cli` lub `openclaw models auth login --provider google-gemini-cli --set-default`
 
 Pełny katalog dostawców (xAI, Groq, Mistral itd.) oraz zaawansowaną konfigurację
-znajdziesz w sekcji [Dostawcy modeli](/pl/concepts/model-providers).
+znajdziesz w [Dostawcy modeli](/pl/concepts/model-providers).
 
 ## Powiązane
 
 - [Wybór modelu](/pl/concepts/model-providers)
-- [Przełączanie awaryjne modelu](/pl/concepts/model-failover)
+- [Przełączanie awaryjne modeli](/pl/concepts/model-failover)
 - [CLI modeli](/pl/cli/models)

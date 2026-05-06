@@ -1,21 +1,25 @@
 ---
 read_when:
-    - Przeprowadzasz konfigurację pierwszego uruchomienia bez pełnego wdrożenia w CLI
+    - Przeprowadzasz konfigurację pierwszego uruchomienia bez pełnego procesu wdrażania CLI
     - Chcesz ustawić domyślną ścieżkę obszaru roboczego
-summary: Dokumentacja referencyjna CLI dla `openclaw setup` (inicjalizacja konfiguracji + przestrzeni roboczej)
+summary: Dokumentacja referencyjna CLI dla `openclaw setup` (inicjalizacja konfiguracji + obszaru roboczego)
 title: Konfiguracja
 x-i18n:
-    generated_at: "2026-05-02T20:42:55Z"
+    generated_at: "2026-05-06T17:54:33Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 805f60c81f5fc216fc446641efe0bcb60bb6c34b3a50a6fc9e767461206e5f90
+    source_hash: 9a47d41f8c6c59395eaa4bc6055fa09f863af819c7920e29969793904180c910
     source_path: cli/setup.md
     workflow: 16
 ---
 
 # `openclaw setup`
 
-Zainicjuj `~/.openclaw/openclaw.json` i przestrzeń roboczą agenta.
+Zainicjuj `~/.openclaw/openclaw.json` oraz obszar roboczy agenta.
+
+<Note>
+`openclaw setup` służy do instalacji z modyfikowalną konfiguracją. W trybie Nix (`OPENCLAW_NIX_MODE=1`) OpenClaw odmawia zapisu przez setup, ponieważ plik konfiguracji jest zarządzany przez Nix. Agenci powinni użyć oficjalnego [nix-openclaw Quick Start](https://github.com/openclaw/nix-openclaw#quick-start) lub równoważnej konfiguracji źródłowej dla innego pakietu Nix.
+</Note>
 
 Powiązane:
 
@@ -34,15 +38,15 @@ openclaw setup --non-interactive --mode remote --remote-url wss://gateway-host:1
 
 ## Opcje
 
-- `--workspace <dir>`: katalog przestrzeni roboczej agenta (przechowywany jako `agents.defaults.workspace`)
+- `--workspace <dir>`: katalog obszaru roboczego agenta (przechowywany jako `agents.defaults.workspace`)
 - `--wizard`: uruchom wdrażanie
 - `--non-interactive`: uruchom wdrażanie bez monitów
 - `--mode <local|remote>`: tryb wdrażania
 - `--import-from <provider>`: dostawca migracji do uruchomienia podczas wdrażania
 - `--import-source <path>`: źródłowy katalog domowy agenta dla `--import-from`
-- `--import-secrets`: importuj obsługiwane sekrety podczas migracji we wdrażaniu
-- `--remote-url <url>`: zdalny URL WebSocket Gateway
-- `--remote-token <token>`: zdalny token Gateway
+- `--import-secrets`: importuj obsługiwane sekrety podczas migracji wdrożeniowej
+- `--remote-url <url>`: adres URL WebSocket zdalnego Gateway
+- `--remote-token <token>`: token zdalnego Gateway
 
 Aby uruchomić wdrażanie przez setup:
 
@@ -52,10 +56,10 @@ openclaw setup --wizard
 
 Uwagi:
 
-- Zwykłe `openclaw setup` inicjuje konfigurację i przestrzeń roboczą bez pełnego przepływu wdrażania.
-- Po zwykłej konfiguracji uruchom `openclaw configure`, aby wybrać modele, kanały, Gateway, pluginy, skills lub kontrole kondycji.
+- Zwykłe `openclaw setup` inicjuje konfigurację i obszar roboczy bez pełnego przepływu wdrażania.
+- Po zwykłym setup uruchom `openclaw configure`, aby wybrać modele, kanały, Gateway, pluginy, Skills lub kontrole stanu.
 - Wdrażanie uruchamia się automatycznie, gdy obecne są jakiekolwiek flagi wdrażania (`--wizard`, `--non-interactive`, `--mode`, `--import-from`, `--import-source`, `--import-secrets`, `--remote-url`, `--remote-token`).
-- Jeśli zostanie wykryty stan Hermes, interaktywne wdrażanie może automatycznie zaoferować migrację. Wdrażanie z importem wymaga świeżej konfiguracji; użyj [Migracji](/pl/cli/migrate), aby poza wdrażaniem przygotować plany próbne, kopie zapasowe i tryb nadpisywania.
+- Jeśli zostanie wykryty stan Hermes, interaktywne wdrażanie może automatycznie zaoferować migrację. Wdrażanie importu wymaga świeżej konfiguracji; użyj [Migracja](/pl/cli/migrate), aby poza wdrażaniem tworzyć plany próbne, kopie zapasowe i używać trybu nadpisywania.
 
 ## Powiązane
 

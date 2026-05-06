@@ -1,27 +1,25 @@
 ---
 read_when:
-    - Chcesz mieć jeden klucz API do wielu LLM-ów
+    - Potrzebujesz jednego klucza API do wielu LLM-ów
     - Chcesz uruchamiać modele za pośrednictwem Kilo Gateway w OpenClaw
-summary: Użyj ujednoliconego API Kilo Gateway, aby uzyskać dostęp do wielu modeli w OpenClaw
-title: Kilocode
+summary: Użyj ujednoliconego interfejsu API Kilo Gateway, aby uzyskać dostęp do wielu modeli w OpenClaw
+title: Kilo Gateway
 x-i18n:
-    generated_at: "2026-04-30T10:13:49Z"
+    generated_at: "2026-05-06T17:59:53Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c51012b94d4b720795356b67c8482ae7ee0b37d401689e923be0b7732d77c4aa
+    source_hash: 6105f5aafa0a36de2b140909e8dd21234aa8284259367a49c67d7040eaa0a93c
     source_path: providers/kilocode.md
     workflow: 16
 ---
 
-# Kilo Gateway
-
-Kilo Gateway udostępnia **ujednolicone API**, które kieruje żądania do wielu modeli za jednym
-endpointem i kluczem API. Jest zgodne z OpenAI, więc większość SDK OpenAI działa po zmianie bazowego URL.
+Kilo Gateway zapewnia **ujednolicone API**, które kieruje żądania do wielu modeli za jednym
+punktem końcowym i kluczem API. Jest zgodne z OpenAI, więc większość OpenAI SDK działa po zmianie bazowego URL.
 
 | Właściwość | Wartość                            |
 | ---------- | ---------------------------------- |
 | Dostawca   | `kilocode`                         |
-| Uwierzytelnianie | `KILOCODE_API_KEY`          |
+| Uwierzytelnianie | `KILOCODE_API_KEY`           |
 | API        | Zgodne z OpenAI                    |
 | Bazowy URL | `https://api.kilo.ai/api/gateway/` |
 
@@ -29,14 +27,14 @@ endpointem i kluczem API. Jest zgodne z OpenAI, więc większość SDK OpenAI dz
 
 <Steps>
   <Step title="Utwórz konto">
-    Przejdź do [app.kilo.ai](https://app.kilo.ai), zaloguj się lub utwórz konto, a następnie przejdź do API Keys i wygeneruj nowy klucz.
+    Przejdź do [app.kilo.ai](https://app.kilo.ai), zaloguj się lub utwórz konto, następnie przejdź do API Keys i wygeneruj nowy klucz.
   </Step>
-  <Step title="Uruchom onboarding">
+  <Step title="Uruchom wdrożenie">
     ```bash
     openclaw onboard --auth-choice kilocode-api-key
     ```
 
-    Możesz też ustawić zmienną środowiskową bezpośrednio:
+    Albo ustaw zmienną środowiskową bezpośrednio:
 
     ```bash
     export KILOCODE_API_KEY="<your-kilocode-api-key>" # pragma: allowlist secret
@@ -50,10 +48,10 @@ endpointem i kluczem API. Jest zgodne z OpenAI, więc większość SDK OpenAI dz
   </Step>
 </Steps>
 
-## Domyślny model
+## Model domyślny
 
-Domyślny model to `kilocode/kilo/auto`, należący do dostawcy model inteligentnego routingu
-zarządzany przez Kilo Gateway.
+Domyślnym modelem jest `kilocode/kilo/auto`, należący do dostawcy model
+inteligentnego routingu zarządzany przez Kilo Gateway.
 
 <Note>
 OpenClaw traktuje `kilocode/kilo/auto` jako stabilną domyślną referencję, ale nie
@@ -67,7 +65,7 @@ zakodowany na stałe w OpenClaw.
 OpenClaw dynamicznie wykrywa dostępne modele z Kilo Gateway podczas uruchamiania. Użyj
 `/models kilocode`, aby zobaczyć pełną listę modeli dostępnych na Twoim koncie.
 
-Każdego modelu dostępnego w Gateway można używać z prefiksem `kilocode/`:
+Każdy model dostępny w gateway może być używany z prefiksem `kilocode/`:
 
 | Referencja modelu                      | Uwagi                              |
 | -------------------------------------- | ---------------------------------- |
@@ -78,9 +76,9 @@ Każdego modelu dostępnego w Gateway można używać z prefiksem `kilocode/`:
 | ...i wiele więcej                      | Użyj `/models kilocode`, aby wyświetlić wszystkie |
 
 <Tip>
-Podczas uruchamiania OpenClaw odpytuje `GET https://api.kilo.ai/api/gateway/models` i scala
+Podczas uruchamiania OpenClaw wysyła zapytanie `GET https://api.kilo.ai/api/gateway/models` i scala
 wykryte modele przed statycznym katalogiem awaryjnym. Dołączony katalog awaryjny zawsze
-obejmuje `kilocode/kilo/auto` (`Kilo Auto`) z `input: ["text", "image"]`,
+zawiera `kilocode/kilo/auto` (`Kilo Auto`) z `input: ["text", "image"]`,
 `reasoning: true`, `contextWindow: 1000000` oraz `maxTokens: 128000`.
 </Tip>
 
@@ -100,22 +98,22 @@ obejmuje `kilocode/kilo/auto` (`Kilo Auto`) z `input: ["text", "image"]`,
 <AccordionGroup>
   <Accordion title="Transport i zgodność">
     Kilo Gateway jest udokumentowany w źródle jako zgodny z OpenRouter, więc pozostaje na
-    ścieżce proxy zgodnej z OpenAI zamiast natywnego kształtowania żądań OpenAI.
+    ścieżce zgodnej z OpenAI w stylu proxy, zamiast używać natywnego kształtowania żądań OpenAI.
 
     - Referencje Kilo oparte na Gemini pozostają na ścieżce proxy-Gemini, więc OpenClaw zachowuje
-      tam oczyszczanie sygnatur myślowych Gemini bez włączania natywnej walidacji
-      powtórek Gemini ani przepisywania bootstrapu.
-    - Kilo Gateway używa pod spodem tokenu Bearer z Twoim kluczem API.
+      tam oczyszczanie sygnatur myśli Gemini bez włączania natywnej walidacji
+      odtwarzania Gemini ani przepisywania bootstrapu.
+    - Kilo Gateway używa tokena Bearer z Twoim kluczem API pod spodem.
 
   </Accordion>
 
-  <Accordion title="Wrapper strumienia i reasoning">
+  <Accordion title="Wrapper strumienia i rozumowanie">
     Wspólny wrapper strumienia Kilo dodaje nagłówek aplikacji dostawcy i normalizuje
-    ładunki proxy reasoning dla obsługiwanych konkretnych referencji modeli.
+    ładunki rozumowania proxy dla obsługiwanych konkretnych referencji modeli.
 
     <Warning>
-    `kilocode/kilo/auto` i inne wskazówki bez obsługi proxy reasoning pomijają wstrzykiwanie reasoning.
-    Jeśli potrzebujesz obsługi reasoning, użyj konkretnej referencji modelu, takiej jak
+    `kilocode/kilo/auto` i inne wskazówki nieobsługujące rozumowania proxy pomijają wstrzykiwanie
+    rozumowania. Jeśli potrzebujesz obsługi rozumowania, użyj konkretnej referencji modelu, takiej jak
     `kilocode/anthropic/claude-sonnet-4`.
     </Warning>
 
@@ -133,7 +131,7 @@ obejmuje `kilocode/kilo/auto` (`Kilo Auto`) z `input: ["text", "image"]`,
 
 <CardGroup cols={2}>
   <Card title="Wybór modelu" href="/pl/concepts/model-providers" icon="layers">
-    Wybór dostawców, referencji modeli i zachowania failover.
+    Wybieranie dostawców, referencji modeli i zachowania przełączania awaryjnego.
   </Card>
   <Card title="Dokumentacja konfiguracji" href="/pl/gateway/configuration-reference" icon="gear">
     Pełna dokumentacja konfiguracji OpenClaw.
