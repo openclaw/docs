@@ -1,33 +1,27 @@
 ---
 read_when:
     - Você quer acionar ou conduzir TaskFlows a partir de um sistema externo
-    - Você está configurando o Plugin de Webhooks incluído
-summary: 'Plugin Webhooks: ingresso autenticado do TaskFlow para automação externa confiável'
+    - Você está configurando o Plugin de Webhook incluído
+summary: 'Plugin Webhooks: entrada TaskFlow autenticada para automação externa confiável'
 title: Plugin de Webhooks
 x-i18n:
-    generated_at: "2026-04-30T10:03:19Z"
+    generated_at: "2026-05-06T17:59:31Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 70b195e330264af48a9e9c619bb5a0937bb15b2640edd3dd2b5517a13424e9fe
+    source_hash: 9d21d96f680fa24d4a53c1ed5759f800d3cfdc3336789c42c15266edd8ce9e80
     source_path: plugins/webhooks.md
     workflow: 16
 ---
 
-# Webhooks (Plugin)
+O Plugin Webhooks adiciona rotas HTTP autenticadas que vinculam automações externas a TaskFlows do OpenClaw.
 
-O Plugin Webhooks adiciona rotas HTTP autenticadas que vinculam automações
-externas aos TaskFlows do OpenClaw.
-
-Use-o quando quiser que um sistema confiável, como Zapier, n8n, um job de CI ou um
-serviço interno, crie e conduza TaskFlows gerenciados sem precisar escrever primeiro
-um Plugin personalizado.
+Use-o quando quiser que um sistema confiável, como Zapier, n8n, um job de CI ou um serviço interno, crie e conduza TaskFlows gerenciados sem escrever primeiro um Plugin personalizado.
 
 ## Onde ele é executado
 
-O Plugin Webhooks é executado dentro do processo do Gateway.
+O Plugin Webhooks é executado dentro do processo Gateway.
 
-Se o seu Gateway for executado em outra máquina, instale e configure o Plugin nesse
-host do Gateway e reinicie o Gateway.
+Se o seu Gateway for executado em outra máquina, instale e configure o Plugin nesse host do Gateway e, em seguida, reinicie o Gateway.
 
 ## Configurar rotas
 
@@ -64,43 +58,40 @@ Campos da rota:
 
 - `enabled`: opcional, o padrão é `true`
 - `path`: opcional, o padrão é `/plugins/webhooks/<routeId>`
-- `sessionKey`: sessão obrigatória que possui os TaskFlows vinculados
-- `secret`: segredo compartilhado ou SecretRef obrigatório
-- `controllerId`: id opcional do controlador para fluxos gerenciados criados
-- `description`: nota opcional para o operador
+- `sessionKey`: sessão obrigatória proprietária dos TaskFlows vinculados
+- `secret`: segredo compartilhado obrigatório ou SecretRef
+- `controllerId`: id de controlador opcional para fluxos gerenciados criados
+- `description`: observação opcional para o operador
 
 Entradas de `secret` compatíveis:
 
 - String simples
 - SecretRef com `source: "env" | "file" | "exec"`
 
-Se uma rota baseada em segredo não conseguir resolver seu segredo na inicialização,
-o Plugin ignora essa rota e registra um aviso em vez de expor um endpoint quebrado.
+Se uma rota baseada em segredo não conseguir resolver seu segredo na inicialização, o Plugin ignora essa rota e registra um aviso em vez de expor um endpoint quebrado.
 
 ## Modelo de segurança
 
-Cada rota é confiável para agir com a autoridade de TaskFlow de sua `sessionKey`
-configurada.
+Cada rota é confiável para agir com a autoridade de TaskFlow de seu `sessionKey` configurado.
 
-Isso significa que a rota pode inspecionar e modificar TaskFlows pertencentes a essa
-sessão, portanto você deve:
+Isso significa que a rota pode inspecionar e modificar TaskFlows pertencentes a essa sessão, portanto você deve:
 
 - Usar um segredo forte e exclusivo por rota
-- Preferir referências de segredo em vez de segredos em texto simples embutidos
-- Vincular rotas à sessão mais restrita que atenda ao fluxo de trabalho
+- Preferir referências de segredo a segredos em texto simples inline
+- Vincular rotas à sessão mais restrita que se ajuste ao fluxo de trabalho
 - Expor apenas o caminho de Webhook específico de que você precisa
 
 O Plugin aplica:
 
 - Autenticação por segredo compartilhado
-- Proteções de tamanho e tempo limite do corpo da requisição
-- Limitação de taxa em janela fixa
-- Limitação de requisições em andamento
-- Acesso a TaskFlows vinculado ao proprietário por meio de `api.runtime.tasks.managedFlows.bindSession(...)`
+- Proteções de tamanho e timeout do corpo da solicitação
+- Limitação de taxa por janela fixa
+- Limitação de solicitações em andamento
+- Acesso a TaskFlow vinculado ao proprietário por meio de `api.runtime.tasks.managedFlows.bindSession(...)`
 
-## Formato da requisição
+## Formato da solicitação
 
-Envie requisições `POST` com:
+Envie solicitações `POST` com:
 
 - `Content-Type: application/json`
 - `Authorization: Bearer <secret>` ou `x-openclaw-webhook-secret: <secret>`
@@ -116,7 +107,7 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
 
 ## Ações compatíveis
 
-No momento, o Plugin aceita estes valores JSON de `action`:
+Atualmente, o Plugin aceita estes valores JSON de `action`:
 
 - `create_flow`
 - `get_flow`
@@ -180,7 +171,7 @@ Respostas bem-sucedidas retornam:
 }
 ```
 
-Requisições rejeitadas retornam:
+Solicitações rejeitadas retornam:
 
 ```json
 {
@@ -196,6 +187,6 @@ O Plugin remove intencionalmente metadados de proprietário/sessão das resposta
 
 ## Documentação relacionada
 
-- [SDK de runtime do Plugin](/pt-BR/plugins/sdk-runtime)
+- [SDK de runtime de Plugin](/pt-BR/plugins/sdk-runtime)
 - [Visão geral de hooks e webhooks](/pt-BR/automation/hooks)
 - [Webhooks da CLI](/pt-BR/cli/webhooks)

@@ -3,18 +3,18 @@ read_when:
     - Você quer instalações reproduzíveis e reversíveis
     - Você já está usando Nix/NixOS/Home Manager
     - Você quer tudo fixado e gerenciado de forma declarativa
-summary: Instale o OpenClaw de forma declarativa com Nix
+summary: Instale o OpenClaw declarativamente com Nix
 title: Nix
 x-i18n:
-    generated_at: "2026-05-06T06:01:16Z"
+    generated_at: "2026-05-06T17:57:46Z"
     model: gpt-5.5
     provider: openai
-    source_hash: f0c25b97fb46a906bb726a13de095ead1e6c3642d28f66173b488acfbc5e0001
+    source_hash: 1b4c2eca298ac7ae60baea4d06855edb73c0b8bfe253a3f478d93e934b31253b
     source_path: install/nix.md
     workflow: 16
 ---
 
-Instale o OpenClaw de forma declarativa com **[nix-openclaw](https://github.com/openclaw/nix-openclaw)** - um módulo Home Manager completo.
+Instale o OpenClaw declarativamente com **[nix-openclaw](https://github.com/openclaw/nix-openclaw)** - o módulo Home Manager oficial, completo e pronto para uso.
 
 <Info>
 O repositório [nix-openclaw](https://github.com/openclaw/nix-openclaw) é a fonte da verdade para a instalação com Nix. Esta página é uma visão geral rápida.
@@ -22,33 +22,33 @@ O repositório [nix-openclaw](https://github.com/openclaw/nix-openclaw) é a fon
 
 ## O que você recebe
 
-- Gateway + aplicativo macOS + ferramentas (whisper, spotify, cameras) -- tudo fixado
+- Gateway + app macOS + ferramentas (whisper, spotify, cameras) -- tudo com versões fixadas
 - Serviço launchd que sobrevive a reinicializações
 - Sistema de Plugin com configuração declarativa
-- Reversão instantânea: `home-manager switch --rollback`
+- Rollback instantâneo: `home-manager switch --rollback`
 
 ## Início rápido
 
 <Steps>
-  <Step title="Install Determinate Nix">
+  <Step title="Instale o Determinate Nix">
     Se o Nix ainda não estiver instalado, siga as instruções do [instalador Determinate Nix](https://github.com/DeterminateSystems/nix-installer).
   </Step>
-  <Step title="Create a local flake">
-    Use o template agent-first do repositório nix-openclaw:
+  <Step title="Crie um flake local">
+    Use o modelo agent-first do repositório nix-openclaw:
     ```bash
     mkdir -p ~/code/openclaw-local
     # Copy templates/agent-first/flake.nix from the nix-openclaw repo
     ```
   </Step>
-  <Step title="Configure secrets">
+  <Step title="Configure segredos">
     Configure o token do seu bot de mensagens e a chave de API do provedor de modelo. Arquivos simples em `~/.secrets/` funcionam bem.
   </Step>
-  <Step title="Fill in template placeholders and switch">
+  <Step title="Preencha os placeholders do modelo e aplique">
     ```bash
     home-manager switch
     ```
   </Step>
-  <Step title="Verify">
+  <Step title="Verifique">
     Confirme que o serviço launchd está em execução e que seu bot responde a mensagens.
   </Step>
 </Steps>
@@ -57,7 +57,7 @@ Consulte o [README do nix-openclaw](https://github.com/openclaw/nix-openclaw) pa
 
 ## Comportamento de runtime no modo Nix
 
-Quando `OPENCLAW_NIX_MODE=1` está definido (automático com nix-openclaw), o OpenClaw entra em um modo determinístico que desativa fluxos de instalação automática.
+Quando `OPENCLAW_NIX_MODE=1` está definido (automaticamente com nix-openclaw), o OpenClaw entra em um modo determinístico para instalações gerenciadas pelo Nix. Outros pacotes Nix podem definir o mesmo modo; o nix-openclaw é a referência oficial.
 
 Você também pode defini-lo manualmente:
 
@@ -65,7 +65,7 @@ Você também pode defini-lo manualmente:
 export OPENCLAW_NIX_MODE=1
 ```
 
-No macOS, o aplicativo GUI não herda automaticamente variáveis de ambiente do shell. Em vez disso, habilite o modo Nix via defaults:
+No macOS, o app com GUI não herda automaticamente variáveis de ambiente do shell. Em vez disso, habilite o modo Nix via defaults:
 
 ```bash
 defaults write ai.openclaw.mac openclaw.nixMode -bool true
@@ -73,27 +73,29 @@ defaults write ai.openclaw.mac openclaw.nixMode -bool true
 
 ### O que muda no modo Nix
 
-- Fluxos de instalação automática e automutação são desativados
+- Fluxos de instalação automática e automutação são desabilitados
+- `openclaw.json` é tratado como imutável. Padrões derivados da inicialização permanecem somente em runtime, e gravadores de configuração como setup, onboarding, `openclaw update` mutável, instalação/atualização/desinstalação/habilitação de plugins, `doctor --fix`, `doctor --generate-gateway-token` e `openclaw config set` se recusam a editar o arquivo.
+- Agentes devem editar a fonte Nix em vez disso. Para nix-openclaw, use o [Início rápido](https://github.com/openclaw/nix-openclaw#quick-start) agent-first e defina a configuração em `programs.openclaw.config` ou `instances.<name>.config`.
 - Dependências ausentes exibem mensagens de correção específicas do Nix
 - A UI exibe um banner de modo Nix somente leitura
 
 ### Caminhos de configuração e estado
 
-O OpenClaw lê a configuração JSON5 de `OPENCLAW_CONFIG_PATH` e armazena dados mutáveis em `OPENCLAW_STATE_DIR`. Ao executar com Nix, defina esses caminhos explicitamente para locais gerenciados pelo Nix, para que o estado de runtime e a configuração fiquem fora da store imutável.
+O OpenClaw lê a configuração JSON5 de `OPENCLAW_CONFIG_PATH` e armazena dados mutáveis em `OPENCLAW_STATE_DIR`. Ao executar sob o Nix, defina esses valores explicitamente para locais gerenciados pelo Nix, para que o estado de runtime e a configuração fiquem fora do store imutável.
 
-| Variável               | Padrão                                  |
+| Variável               | Padrão                                 |
 | ---------------------- | --------------------------------------- |
 | `OPENCLAW_HOME`        | `HOME` / `USERPROFILE` / `os.homedir()` |
 | `OPENCLAW_STATE_DIR`   | `~/.openclaw`                           |
 | `OPENCLAW_CONFIG_PATH` | `$OPENCLAW_STATE_DIR/openclaw.json`     |
 
-### Descoberta de PATH do serviço
+### Descoberta do PATH do serviço
 
-O serviço Gateway do launchd/systemd descobre automaticamente binários do perfil Nix para que
-plugins e ferramentas que executam shell para executáveis instalados por `nix` funcionem sem
+O serviço Gateway launchd/systemd descobre automaticamente binários de perfis Nix para que
+plugins e ferramentas que executam executáveis instalados por `nix` via shell funcionem sem
 configuração manual de PATH:
 
-- Quando `NIX_PROFILES` está definido, cada entrada é adicionada ao PATH do serviço em
+- Quando `NIX_PROFILES` está definido, cada entrada é adicionada ao PATH do serviço com
   precedência da direita para a esquerda (corresponde à precedência do shell Nix - o mais à direita vence).
 - Quando `NIX_PROFILES` não está definido, `~/.nix-profile/bin` é adicionado como fallback.
 
@@ -105,13 +107,13 @@ Isso se aplica aos ambientes de serviço launchd do macOS e systemd do Linux.
   <Card title="nix-openclaw" href="https://github.com/openclaw/nix-openclaw" icon="arrow-up-right-from-square">
     Módulo Home Manager fonte da verdade e guia completo de configuração.
   </Card>
-  <Card title="Setup wizard" href="/pt-BR/start/wizard" icon="wand-magic-sparkles">
-    Passo a passo de configuração da CLI sem Nix.
+  <Card title="Assistente de configuração" href="/pt-BR/start/wizard" icon="wand-magic-sparkles">
+    Passo a passo de configuração via CLI sem Nix.
   </Card>
   <Card title="Docker" href="/pt-BR/install/docker" icon="docker">
     Configuração conteinerizada como alternativa sem Nix.
   </Card>
-  <Card title="Updating" href="/pt-BR/install/updating" icon="arrow-up-right-from-square">
+  <Card title="Atualização" href="/pt-BR/install/updating" icon="arrow-up-right-from-square">
     Atualização de instalações gerenciadas pelo Home Manager junto com o pacote.
   </Card>
 </CardGroup>

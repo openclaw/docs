@@ -1,35 +1,35 @@
 ---
 read_when:
-    - Você quer enviar o uso de modelos do OpenClaw, o fluxo de mensagens ou métricas de sessão para um coletor OpenTelemetry
-    - Você está integrando rastreamentos, métricas ou registros ao Grafana, Datadog, Honeycomb, New Relic, Tempo ou a outro back-end OTLP
-    - Você precisa dos nomes exatos das métricas, dos nomes dos spans ou das estruturas dos atributos para criar painéis ou alertas
+    - Você quer enviar o uso do modelo, o fluxo de mensagens ou as métricas de sessão do OpenClaw para um coletor OpenTelemetry
+    - Você está integrando rastreamentos, métricas ou logs ao Grafana, Datadog, Honeycomb, New Relic, Tempo ou outro backend OTLP
+    - Você precisa dos nomes exatos das métricas, dos nomes dos spans ou dos formatos dos atributos para criar dashboards ou alertas
 summary: Exporte os diagnósticos do OpenClaw para qualquer coletor OpenTelemetry por meio do Plugin diagnostics-otel (OTLP/HTTP)
 title: Exportação do OpenTelemetry
 x-i18n:
-    generated_at: "2026-05-06T05:55:53Z"
+    generated_at: "2026-05-06T17:56:25Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 2d52e5072fcdb097a3dce36a13d9470cea8c169d2af49998cd727814013c411e
+    source_hash: b09453a4a1592d2698de6340e5f006ef16edfd8e86132285c48865d468d20ab6
     source_path: gateway/opentelemetry.md
     workflow: 16
 ---
 
 OpenClaw exporta diagnósticos por meio do plugin oficial `diagnostics-otel`
 usando **OTLP/HTTP (protobuf)**. Qualquer coletor ou backend que aceite OTLP/HTTP
-funciona sem alterações de código. Para logs em arquivos locais e como lê-los, veja
-[Logs](/pt-BR/logging).
+funciona sem alterações de código. Para logs em arquivo locais e como lê-los, consulte
+[Logging](/pt-BR/logging).
 
 ## Como tudo se encaixa
 
 - **Eventos de diagnóstico** são registros estruturados, em processo, emitidos pelo
   Gateway e pelos plugins incluídos para execuções de modelo, fluxo de mensagens, sessões, filas
   e exec.
-- **Plugin `diagnostics-otel`** assina esses eventos e os exporta como
-  **métricas**, **traces** e **logs** do OpenTelemetry por OTLP/HTTP.
+- O **plugin `diagnostics-otel`** assina esses eventos e os exporta como
+  **métricas**, **traces** e **logs** do OpenTelemetry via OTLP/HTTP.
 - **Chamadas de provedor** recebem um cabeçalho W3C `traceparent` do contexto de span
   confiável de chamada de modelo do OpenClaw quando o transporte do provedor aceita cabeçalhos
   personalizados. O contexto de trace emitido por plugin não é propagado.
-- Exportadores só são anexados quando tanto a superfície de diagnósticos quanto o plugin estão
+- Exportadores só são anexados quando a superfície de diagnóstico e o plugin estão
   habilitados, então o custo em processo permanece próximo de zero por padrão.
 
 ## Início rápido
@@ -72,19 +72,19 @@ openclaw plugins enable diagnostics-otel
 ```
 
 <Note>
-No momento, `protocol` oferece suporte apenas a `http/protobuf`. `grpc` é ignorado.
+No momento, `protocol` aceita apenas `http/protobuf`. `grpc` é ignorado.
 </Note>
 
 ## Sinais exportados
 
-| Sinal       | O que entra nele                                                                                                                                    |
-| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Métricas** | Contadores e histogramas para uso de tokens, custo, duração de execução, fluxo de mensagens, faixas de fila, estado de sessão, exec e pressão de memória. |
-| **Traces**  | Spans para uso de modelo, chamadas de modelo, ciclo de vida do harness, execução de ferramentas, exec, processamento de Webhook/mensagens, montagem de contexto e loops de ferramentas. |
-| **Logs**    | Registros estruturados `logging.file` exportados por OTLP quando `diagnostics.otel.logs` está habilitado.                                           |
+| Sinal       | O que entra nele                                                                                                                                                 |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Métricas** | Contadores e histogramas para uso de tokens, custo, duração de execução, fluxo de mensagens, eventos Talk, lanes de fila, estado/recuperação de sessão, exec e pressão de memória. |
+| **Traces**  | Spans para uso de modelo, chamadas de modelo, ciclo de vida do harness, execução de ferramentas, exec, processamento de webhook/mensagens, montagem de contexto e loops de ferramentas. |
+| **Logs**    | Registros estruturados de `logging.file` exportados via OTLP quando `diagnostics.otel.logs` está habilitado.                                                       |
 
 Alterne `traces`, `metrics` e `logs` de forma independente. Todos os três ficam ativados por padrão
-quando `diagnostics.otel.enabled` é true.
+quando `diagnostics.otel.enabled` é verdadeiro.
 
 ## Referência de configuração
 
@@ -121,30 +121,33 @@ quando `diagnostics.otel.enabled` é true.
 
 ### Variáveis de ambiente
 
-| Variável                                                                                                          | Finalidade                                                                                                                                                                                                                                      |
-| ----------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `OTEL_EXPORTER_OTLP_ENDPOINT`                                                                                     | Substitui `diagnostics.otel.endpoint`. Se o valor já contiver `/v1/traces`, `/v1/metrics` ou `/v1/logs`, ele será usado como está.                                                                                                              |
+| Variável                                                                                                          | Finalidade                                                                                                                                                                                                                                  |
+| ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `OTEL_EXPORTER_OTLP_ENDPOINT`                                                                                     | Substitui `diagnostics.otel.endpoint`. Se o valor já contiver `/v1/traces`, `/v1/metrics` ou `/v1/logs`, ele será usado como está.                                                                                                          |
 | `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` / `OTEL_EXPORTER_OTLP_METRICS_ENDPOINT` / `OTEL_EXPORTER_OTLP_LOGS_ENDPOINT` | Substituições de endpoint específicas por sinal usadas quando a chave de configuração `diagnostics.otel.*Endpoint` correspondente não está definida. A configuração específica por sinal vence o env específico por sinal, que vence o endpoint compartilhado. |
-| `OTEL_SERVICE_NAME`                                                                                               | Substitui `diagnostics.otel.serviceName`.                                                                                                                                                                                                       |
-| `OTEL_EXPORTER_OTLP_PROTOCOL`                                                                                     | Substitui o protocolo de transmissão (somente `http/protobuf` é respeitado hoje).                                                                                                                                                               |
-| `OTEL_SEMCONV_STABILITY_OPT_IN`                                                                                   | Defina como `gen_ai_latest_experimental` para emitir o atributo de span GenAI experimental mais recente (`gen_ai.provider.name`) em vez do legado `gen_ai.system`. Métricas GenAI sempre usam atributos semânticos limitados e de baixa cardinalidade independentemente disso. |
-| `OPENCLAW_OTEL_PRELOADED`                                                                                         | Defina como `1` quando outro preload ou processo host já registrou o SDK global do OpenTelemetry. O plugin então ignora seu próprio ciclo de vida do NodeSDK, mas ainda conecta listeners de diagnóstico e respeita `traces`/`metrics`/`logs`. |
+| `OTEL_SERVICE_NAME`                                                                                               | Substitui `diagnostics.otel.serviceName`.                                                                                                                                                                                                   |
+| `OTEL_EXPORTER_OTLP_PROTOCOL`                                                                                     | Substitui o protocolo de transmissão (hoje, apenas `http/protobuf` é respeitado).                                                                                                                                                          |
+| `OTEL_SEMCONV_STABILITY_OPT_IN`                                                                                   | Defina como `gen_ai_latest_experimental` para emitir o atributo de span GenAI experimental mais recente (`gen_ai.provider.name`) em vez do legado `gen_ai.system`. Métricas GenAI sempre usam atributos semânticos limitados e de baixa cardinalidade, independentemente disso. |
+| `OPENCLAW_OTEL_PRELOADED`                                                                                         | Defina como `1` quando outro preload ou processo host já tiver registrado o SDK global do OpenTelemetry. O plugin então ignora seu próprio ciclo de vida NodeSDK, mas ainda conecta listeners de diagnóstico e respeita `traces`/`metrics`/`logs`. |
 
 ## Privacidade e captura de conteúdo
 
-Conteúdo bruto de modelo/ferramenta **não** é exportado por padrão. Spans carregam identificadores
-limitados (canal, provedor, modelo, categoria de erro, ids de requisição somente por hash)
-e nunca incluem texto de prompt, texto de resposta, entradas de ferramentas, saídas de ferramentas ou
+Conteúdo bruto de modelo/ferramenta **não** é exportado por padrão. Spans carregam
+identificadores limitados (canal, provedor, modelo, categoria de erro, ids de solicitação apenas com hash)
+e nunca incluem texto de prompt, texto de resposta, entradas de ferramenta, saídas de ferramenta ou
 chaves de sessão.
+Métricas Talk exportam apenas metadados de evento limitados, como modo, transporte,
+provedor e tipo de evento. Elas não incluem transcrições, payloads de áudio,
+ids de sessão, ids de turno, ids de chamada, ids de sala ou tokens de handoff.
 
-Requisições de modelo de saída podem incluir um cabeçalho W3C `traceparent`. Esse cabeçalho é
+Solicitações de modelo de saída podem incluir um cabeçalho W3C `traceparent`. Esse cabeçalho é
 gerado apenas a partir do contexto de trace de diagnóstico pertencente ao OpenClaw para a chamada de modelo
 ativa. Cabeçalhos `traceparent` existentes fornecidos pelo chamador são substituídos, então plugins ou
-opções personalizadas de provedor não podem falsificar ancestralidade de trace entre serviços.
+opções personalizadas de provedor não podem forjar ancestralidade de trace entre serviços.
 
-Defina `diagnostics.otel.captureContent.*` como `true` somente quando seu coletor e
-sua política de retenção forem aprovados para texto de prompt, resposta, ferramenta ou prompt de sistema.
-Cada subchave é opt-in independentemente:
+Defina `diagnostics.otel.captureContent.*` como `true` apenas quando seu coletor e
+sua política de retenção estiverem aprovados para texto de prompt, resposta, ferramenta ou prompt de sistema.
+Cada subchave é opt-in de forma independente:
 
 - `inputMessages` - conteúdo do prompt do usuário.
 - `outputMessages` - conteúdo da resposta do modelo.
@@ -152,25 +155,25 @@ Cada subchave é opt-in independentemente:
 - `toolOutputs` - payloads de resultados de ferramenta.
 - `systemPrompt` - prompt de sistema/desenvolvedor montado.
 
-Quando qualquer subchave é habilitada, spans de modelo e ferramenta recebem atributos
-`openclaw.content.*` limitados e redigidos apenas para essa classe.
+Quando qualquer subchave está habilitada, spans de modelo e ferramenta recebem atributos
+`openclaw.content.*` limitados e redigidos apenas para aquela classe.
 
 ## Amostragem e flush
 
-- **Traces:** `diagnostics.otel.sampleRate` (somente span raiz, `0.0` descarta tudo,
+- **Traces:** `diagnostics.otel.sampleRate` (apenas root-span, `0.0` descarta tudo,
   `1.0` mantém tudo).
 - **Métricas:** `diagnostics.otel.flushIntervalMs` (mínimo `1000`).
-- **Logs:** logs OTLP respeitam `logging.level` (nível de log do arquivo). Eles usam o
-  caminho de redação de registros de log de diagnóstico, não a formatação do console. Instalações
-  de alto volume devem preferir amostragem/filtragem do coletor OTLP em vez de amostragem local.
-- **Correlação de logs de arquivo:** logs de arquivo JSONL incluem `traceId`,
-  `spanId`, `parentSpanId` e `traceFlags` no nível superior quando a chamada de log carrega um contexto
+- **Logs:** logs OTLP respeitam `logging.level` (nível de log em arquivo). Eles usam o
+  caminho de redação de registro de log de diagnóstico, não a formatação de console. Instalações de
+  alto volume devem preferir amostragem/filtragem no coletor OTLP em vez de amostragem local.
+- **Correlação de logs em arquivo:** logs JSONL em arquivo incluem `traceId`,
+  `spanId`, `parentSpanId` e `traceFlags` de nível superior quando a chamada de log carrega um contexto
   de trace de diagnóstico válido, o que permite que processadores de log juntem linhas de log locais com
   spans exportados.
-- **Correlação de requisições:** requisições HTTP do Gateway e frames WebSocket criam um
-  escopo interno de trace de requisição. Logs e eventos de diagnóstico dentro desse escopo
-  herdam o trace da requisição por padrão, enquanto spans de execução de agente e chamada de modelo são
-  criados como filhos para que cabeçalhos `traceparent` de provedor permaneçam no mesmo trace.
+- **Correlação de solicitação:** solicitações HTTP do Gateway e frames WebSocket criam um
+  escopo interno de trace de solicitação. Logs e eventos de diagnóstico dentro desse escopo
+  herdam o trace da solicitação por padrão, enquanto spans de execução de agente e chamada de modelo são
+  criados como filhos para que cabeçalhos `traceparent` do provedor permaneçam no mesmo trace.
 
 ## Métricas exportadas
 
@@ -181,11 +184,11 @@ Quando qualquer subchave é habilitada, spans de modelo e ferramenta recebem atr
 - `openclaw.run.duration_ms` (histograma, attrs: `openclaw.channel`, `openclaw.provider`, `openclaw.model`)
 - `openclaw.context.tokens` (histograma, attrs: `openclaw.context`, `openclaw.channel`, `openclaw.provider`, `openclaw.model`)
 - `gen_ai.client.token.usage` (histograma, métrica de convenções semânticas GenAI, attrs: `gen_ai.token.type` = `input`/`output`, `gen_ai.provider.name`, `gen_ai.operation.name`, `gen_ai.request.model`)
-- `gen_ai.client.operation.duration` (histograma, segundos, métrica de convenções semânticas GenAI, attrs: `gen_ai.provider.name`, `gen_ai.operation.name`, `gen_ai.request.model`, opcional `error.type`)
+- `gen_ai.client.operation.duration` (histograma, segundos, métrica de convenções semânticas GenAI, attrs: `gen_ai.provider.name`, `gen_ai.operation.name`, `gen_ai.request.model`, `error.type` opcional)
 - `openclaw.model_call.duration_ms` (histograma, attrs: `openclaw.provider`, `openclaw.model`, `openclaw.api`, `openclaw.transport`, mais `openclaw.errorCategory` e `openclaw.failureKind` em erros classificados)
-- `openclaw.model_call.request_bytes` (histograma, tamanho em bytes UTF-8 do payload final da requisição de modelo; nenhum conteúdo bruto do payload)
-- `openclaw.model_call.response_bytes` (histograma, tamanho em bytes UTF-8 de eventos de resposta de modelo transmitidos por streaming; nenhum conteúdo bruto da resposta)
-- `openclaw.model_call.time_to_first_byte_ms` (histograma, tempo decorrido antes do primeiro evento de resposta transmitido por streaming)
+- `openclaw.model_call.request_bytes` (histograma, tamanho em bytes UTF-8 do payload final da solicitação de modelo; sem conteúdo bruto do payload)
+- `openclaw.model_call.response_bytes` (histograma, tamanho em bytes UTF-8 de eventos de resposta de modelo em streaming; sem conteúdo bruto da resposta)
+- `openclaw.model_call.time_to_first_byte_ms` (histograma, tempo decorrido antes do primeiro evento de resposta em streaming)
 
 ### Fluxo de mensagens
 
@@ -198,65 +201,55 @@ Quando qualquer subchave é habilitada, spans de modelo e ferramenta recebem atr
 - `openclaw.message.delivery.started` (contador, attrs: `openclaw.channel`, `openclaw.delivery.kind`)
 - `openclaw.message.delivery.duration_ms` (histograma, attrs: `openclaw.channel`, `openclaw.delivery.kind`, `openclaw.outcome`, `openclaw.errorCategory`)
 
+### Talk
+
+- `openclaw.talk.event` (contador, attrs: `openclaw.talk.event_type`, `openclaw.talk.mode`, `openclaw.talk.transport`, `openclaw.talk.brain`, `openclaw.talk.provider`)
+- `openclaw.talk.event.duration_ms` (histograma, attrs: os mesmos de `openclaw.talk.event`; emitido quando um evento Talk relata duração)
+- `openclaw.talk.audio.bytes` (histograma, attrs: os mesmos de `openclaw.talk.event`; emitido para eventos de frame de áudio Talk que relatam tamanho em bytes)
+
 ### Filas e sessões
 
-- `openclaw.queue.lane.enqueue` (contador, attrs: `openclaw.lane`)
-- `openclaw.queue.lane.dequeue` (contador, attrs: `openclaw.lane`)
-- `openclaw.queue.depth` (histograma, attrs: `openclaw.lane` ou `openclaw.channel=heartbeat`)
-- `openclaw.queue.wait_ms` (histograma, attrs: `openclaw.lane`)
-- `openclaw.session.state` (contador, attrs: `openclaw.state`, `openclaw.reason`)
-- `openclaw.session.stuck` (contador, attrs: `openclaw.state`; emitido somente para contabilização de sessão obsoleta sem trabalho ativo)
-- `openclaw.session.stuck_age_ms` (histograma, attrs: `openclaw.state`; emitido somente para contabilização de sessão obsoleta sem trabalho ativo)
-- `openclaw.run.attempt` (contador, attrs: `openclaw.attempt`)
+- `openclaw.queue.lane.enqueue` (contador, atributos: `openclaw.lane`)
+- `openclaw.queue.lane.dequeue` (contador, atributos: `openclaw.lane`)
+- `openclaw.queue.depth` (histograma, atributos: `openclaw.lane` ou `openclaw.channel=heartbeat`)
+- `openclaw.queue.wait_ms` (histograma, atributos: `openclaw.lane`)
+- `openclaw.session.state` (contador, atributos: `openclaw.state`, `openclaw.reason`)
+- `openclaw.session.stuck` (contador, atributos: `openclaw.state`; emitido apenas para escrituração de sessões obsoletas sem trabalho ativo)
+- `openclaw.session.stuck_age_ms` (histograma, atributos: `openclaw.state`; emitido apenas para escrituração de sessões obsoletas sem trabalho ativo)
+- `openclaw.session.recovery.requested` (contador, atributos: `openclaw.state`, `openclaw.action`, `openclaw.active_work_kind`, `openclaw.reason`)
+- `openclaw.session.recovery.completed` (contador, atributos: `openclaw.state`, `openclaw.action`, `openclaw.status`, `openclaw.active_work_kind`, `openclaw.reason`)
+- `openclaw.session.recovery.age_ms` (histograma, atributos: iguais aos do contador de recuperação correspondente)
+- `openclaw.run.attempt` (contador, atributos: `openclaw.attempt`)
 
-### Telemetria de vivacidade da sessão
+### Telemetria de atividade da sessão
 
-`diagnostics.stuckSessionWarnMs` é o limite de idade sem progresso para diagnósticos
-de vivacidade da sessão. Uma sessão `processing` não envelhece em direção a esse limite
-enquanto o OpenClaw observa progresso de resposta, ferramenta, status, bloco ou runtime ACP.
-Keepalives de digitação não são contados como progresso, então um modelo ou harness silencioso ainda pode
-ser detectado.
+`diagnostics.stuckSessionWarnMs` é o limite de idade sem progresso para diagnósticos de atividade da sessão. Uma sessão `processing` não avança em direção a esse limite enquanto o OpenClaw observa progresso de resposta, ferramenta, status, bloco ou runtime ACP. Keepalives de digitação não contam como progresso, portanto um modelo ou harness silencioso ainda pode ser detectado.
 
-OpenClaw classifica sessões pelo trabalho que ainda consegue observar:
+O OpenClaw classifica as sessões pelo trabalho que ainda consegue observar:
 
-- `session.long_running`: trabalho incorporado ativo, chamadas de modelo ou chamadas de ferramentas
-  ainda estão progredindo.
-- `session.stalled`: há trabalho ativo, mas a execução ativa não relatou
-  progresso recente. Execuções incorporadas paradas permanecem inicialmente apenas em observação e depois
-  fazem abort-drain após `diagnostics.stuckSessionAbortMs` sem progresso para que turnos
-  enfileirados atrás da lane possam retomar. Quando não definido, o limite de aborto usa por padrão
-  a janela estendida mais segura de pelo menos 10 minutos e 5x
-  `diagnostics.stuckSessionWarnMs`.
-- `session.stuck`: controle de sessão obsoleto sem trabalho ativo. Isso libera
-  imediatamente a lane da sessão afetada.
+- `session.long_running`: trabalho incorporado ativo, chamadas de modelo ou chamadas de ferramenta ainda estão avançando.
+- `session.stalled`: há trabalho ativo, mas a execução ativa não relatou progresso recente. Execuções incorporadas paralisadas permanecem inicialmente apenas em observação e, em seguida, abortam e drenam após `diagnostics.stuckSessionAbortMs` sem progresso para que os turnos enfileirados atrás da lane possam retomar. Quando não definido, o limite de aborto assume como padrão a janela estendida mais segura de pelo menos 10 minutos e 5x `diagnostics.stuckSessionWarnMs`.
+- `session.stuck`: escrituração de sessão obsoleta sem trabalho ativo. Isso libera imediatamente a lane da sessão afetada.
 
-A recuperação emite eventos estruturados `session.recovery.requested` e
-`session.recovery.completed`. O estado diagnóstico da sessão é marcado como ocioso
-somente após um resultado de recuperação mutável (`aborted` ou `released`) e somente se a
-mesma geração de processamento ainda for a atual.
+A recuperação emite eventos estruturados `session.recovery.requested` e `session.recovery.completed`. O estado de sessão de diagnóstico é marcado como ocioso somente após um resultado de recuperação mutável (`aborted` ou `released`) e somente se a mesma geração de processamento ainda for a atual.
 
-Somente `session.stuck` emite o contador `openclaw.session.stuck`, o
-histograma `openclaw.session.stuck_age_ms` e o span `openclaw.session.stuck`.
-Diagnósticos `session.stuck` repetidos fazem backoff enquanto a sessão permanece
-inalterada, portanto dashboards devem alertar sobre aumentos sustentados, em vez de cada
-tick de heartbeat. Para o ajuste de configuração e os padrões, consulte
-[Referência de configuração](/pt-BR/gateway/configuration-reference#diagnostics).
+Somente `session.stuck` emite o contador `openclaw.session.stuck`, o histograma `openclaw.session.stuck_age_ms` e o span `openclaw.session.stuck`. Diagnósticos `session.stuck` repetidos recuam enquanto a sessão permanece inalterada, então dashboards devem alertar sobre aumentos sustentados em vez de cada tick de heartbeat. Para o controle de configuração e os padrões, consulte a [Referência de configuração](/pt-BR/gateway/configuration-reference#diagnostics).
 
 ### Ciclo de vida do harness
 
-- `openclaw.harness.duration_ms` (histograma, attrs: `openclaw.harness.id`, `openclaw.harness.plugin`, `openclaw.outcome`, `openclaw.harness.phase` em erros)
+- `openclaw.harness.duration_ms` (histograma, atributos: `openclaw.harness.id`, `openclaw.harness.plugin`, `openclaw.outcome`, `openclaw.harness.phase` em erros)
 
 ### Execução
 
-- `openclaw.exec.duration_ms` (histograma, attrs: `openclaw.exec.target`, `openclaw.exec.mode`, `openclaw.outcome`, `openclaw.failureKind`)
+- `openclaw.exec.duration_ms` (histograma, atributos: `openclaw.exec.target`, `openclaw.exec.mode`, `openclaw.outcome`, `openclaw.failureKind`)
 
-### Componentes internos de diagnóstico (memória e loop de ferramentas)
+### Detalhes internos de diagnóstico (memória e loop de ferramentas)
 
-- `openclaw.memory.heap_used_bytes` (histograma, attrs: `openclaw.memory.kind`)
+- `openclaw.memory.heap_used_bytes` (histograma, atributos: `openclaw.memory.kind`)
 - `openclaw.memory.rss_bytes` (histograma)
-- `openclaw.memory.pressure` (contador, attrs: `openclaw.memory.level`)
-- `openclaw.tool.loop.iterations` (contador, attrs: `openclaw.toolName`, `openclaw.outcome`)
-- `openclaw.tool.loop.duration_ms` (histograma, attrs: `openclaw.toolName`, `openclaw.outcome`)
+- `openclaw.memory.pressure` (contador, atributos: `openclaw.memory.level`)
+- `openclaw.tool.loop.iterations` (contador, atributos: `openclaw.toolName`, `openclaw.outcome`)
+- `openclaw.tool.loop.duration_ms` (histograma, atributos: `openclaw.toolName`, `openclaw.outcome`)
 
 ## Spans exportados
 
@@ -272,7 +265,7 @@ tick de heartbeat. Para o ajuste de configuração e os padrões, consulte
   - `gen_ai.request.model`, `gen_ai.operation.name`, `openclaw.provider`, `openclaw.model`, `openclaw.api`, `openclaw.transport`
   - `openclaw.errorCategory` e `openclaw.failureKind` opcional em erros
   - `openclaw.model_call.request_bytes`, `openclaw.model_call.response_bytes`, `openclaw.model_call.time_to_first_byte_ms`
-  - `openclaw.provider.request_id_hash` (hash limitado baseado em SHA do id da requisição do provedor upstream; ids brutos não são exportados)
+  - `openclaw.provider.request_id_hash` (hash limitado baseado em SHA do id de solicitação do provedor upstream; ids brutos não são exportados)
 - `openclaw.harness.run`
   - `openclaw.harness.id`, `openclaw.harness.plugin`, `openclaw.outcome`, `openclaw.provider`, `openclaw.model`, `openclaw.channel`
   - Na conclusão: `openclaw.harness.result_classification`, `openclaw.harness.yield_detected`, `openclaw.harness.items.started`, `openclaw.harness.items.completed`, `openclaw.harness.items.active`
@@ -294,25 +287,19 @@ tick de heartbeat. Para o ajuste de configuração e os padrões, consulte
 - `openclaw.context.assembled`
   - `openclaw.prompt.size`, `openclaw.history.size`, `openclaw.context.tokens`, `openclaw.errorCategory` (sem conteúdo de prompt, histórico, resposta ou chave de sessão)
 - `openclaw.tool.loop`
-  - `openclaw.toolName`, `openclaw.outcome`, `openclaw.iterations`, `openclaw.errorCategory` (sem mensagens de loop, params ou saída de ferramenta)
+  - `openclaw.toolName`, `openclaw.outcome`, `openclaw.iterations`, `openclaw.errorCategory` (sem mensagens de loop, parâmetros ou saída de ferramenta)
 - `openclaw.memory.pressure`
   - `openclaw.memory.level`, `openclaw.memory.heap_used_bytes`, `openclaw.memory.rss_bytes`
 
-Quando a captura de conteúdo é habilitada explicitamente, spans de modelo e ferramenta também podem
-incluir atributos `openclaw.content.*` limitados e redigidos para as classes de
-conteúdo específicas que você habilitou.
+Quando a captura de conteúdo é habilitada explicitamente, spans de modelo e ferramenta também podem incluir atributos `openclaw.content.*` limitados e redigidos para as classes de conteúdo específicas que você habilitou.
 
 ## Catálogo de eventos de diagnóstico
 
-Os eventos abaixo sustentam as métricas e spans acima. Plugins também podem assiná-los
-diretamente sem exportação OTLP.
+Os eventos abaixo sustentam as métricas e os spans acima. Plugins também podem se inscrever diretamente neles sem exportação OTLP.
 
 **Uso do modelo**
 
-- `model.usage` - tokens, custo, duração, contexto, provedor/modelo/canal,
-  ids de sessão. `usage` é a contabilidade de provedor/turno para custo e telemetria;
-  `context.used` é o snapshot atual de prompt/contexto e pode ser menor que
-  `usage.total` do provedor quando entrada em cache ou chamadas de loop de ferramentas estão envolvidas.
+- `model.usage` - tokens, custo, duração, contexto, provedor/modelo/canal, ids de sessão. `usage` é a contabilidade de provedor/turno para custo e telemetria; `context.used` é o snapshot atual de prompt/contexto e pode ser menor que `usage.total` do provedor quando input em cache ou chamadas de loop de ferramentas estão envolvidos.
 
 **Fluxo de mensagens**
 
@@ -329,24 +316,15 @@ diretamente sem exportação OTLP.
 
 **Ciclo de vida do harness**
 
-- `harness.run.started` / `harness.run.completed` / `harness.run.error` -
-  ciclo de vida por execução para o harness do agente. Inclui `harnessId`, `pluginId`
-  opcional, provedor/modelo/canal e id da execução. A conclusão adiciona
-  `durationMs`, `outcome`, `resultClassification` opcional, `yieldDetected`
-  e contagens de `itemLifecycle`. Erros adicionam `phase`
-  (`prepare`/`start`/`send`/`resolve`/`cleanup`), `errorCategory` e
-  `cleanupFailed` opcional.
+- `harness.run.started` / `harness.run.completed` / `harness.run.error` - ciclo de vida por execução para o harness do agente. Inclui `harnessId`, `pluginId` opcional, provedor/modelo/canal e id da execução. A conclusão adiciona `durationMs`, `outcome`, `resultClassification` opcional, `yieldDetected` e contagens de `itemLifecycle`. Erros adicionam `phase` (`prepare`/`start`/`send`/`resolve`/`cleanup`), `errorCategory` e `cleanupFailed` opcional.
 
 **Execução**
 
-- `exec.process.completed` - resultado terminal, duração, destino, modo, código
-  de saída e tipo de falha. Texto do comando e diretórios de trabalho não são
-  incluídos.
+- `exec.process.completed` - resultado terminal, duração, destino, modo, código de saída e tipo de falha. O texto do comando e diretórios de trabalho não são incluídos.
 
 ## Sem um exportador
 
-Você pode manter eventos de diagnóstico disponíveis para Plugins ou sinks personalizados sem
-executar `diagnostics-otel`:
+Você pode manter eventos de diagnóstico disponíveis para Plugins ou coletores personalizados sem executar `diagnostics-otel`:
 
 ```json5
 {
@@ -354,9 +332,7 @@ executar `diagnostics-otel`:
 }
 ```
 
-Para saída de depuração direcionada sem elevar `logging.level`, use flags de diagnóstico.
-Flags não diferenciam maiúsculas de minúsculas e aceitam curingas (por exemplo, `telegram.*` ou
-`*`):
+Para saída de depuração direcionada sem elevar `logging.level`, use flags de diagnóstico. Flags não diferenciam maiúsculas de minúsculas e aceitam curingas (por exemplo, `telegram.*` ou `*`):
 
 ```json5
 {
@@ -364,15 +340,13 @@ Flags não diferenciam maiúsculas de minúsculas e aceitam curingas (por exempl
 }
 ```
 
-Ou como uma substituição pontual de env:
+Ou como uma sobrescrita pontual de env:
 
 ```bash
 OPENCLAW_DIAGNOSTICS=telegram.http,telegram.payload openclaw gateway
 ```
 
-A saída de flags vai para o arquivo de log padrão (`logging.file`) e ainda é
-redigida por `logging.redactSensitive`. Guia completo:
-[Flags de diagnóstico](/pt-BR/diagnostics/flags).
+A saída de flags vai para o arquivo de log padrão (`logging.file`) e ainda é redigida por `logging.redactSensitive`. Guia completo: [Flags de diagnóstico](/pt-BR/diagnostics/flags).
 
 ## Desabilitar
 
@@ -382,13 +356,12 @@ redigida por `logging.redactSensitive`. Guia completo:
 }
 ```
 
-Você também pode deixar `diagnostics-otel` fora de `plugins.allow` ou executar
-`openclaw plugins disable diagnostics-otel`.
+Você também pode deixar `diagnostics-otel` fora de `plugins.allow` ou executar `openclaw plugins disable diagnostics-otel`.
 
 ## Relacionado
 
-- [Logging](/pt-BR/logging) - logs em arquivo, saída do console, acompanhamento pela CLI e a aba Logs da Control UI
-- [Componentes internos de logging do Gateway](/pt-BR/gateway/logging) - estilos de log WS, prefixos de subsistema e captura do console
-- [Flags de diagnóstico](/pt-BR/diagnostics/flags) - flags direcionadas de log de depuração
+- [Logging](/pt-BR/logging) - logs em arquivo, saída de console, acompanhamento pela CLI e a aba Logs da Control UI
+- [Detalhes internos de logging do Gateway](/pt-BR/gateway/logging) - estilos de log WS, prefixos de subsistema e captura de console
+- [Flags de diagnóstico](/pt-BR/diagnostics/flags) - flags de log de depuração direcionado
 - [Exportação de diagnóstico](/pt-BR/gateway/diagnostics) - ferramenta de pacote de suporte para operadores (separada da exportação OTEL)
-- [Referência de configuração](/pt-BR/gateway/configuration-reference#diagnostics) - referência completa dos campos `diagnostics.*`
+- [Referência de configuração](/pt-BR/gateway/configuration-reference#diagnostics) - referência completa de campos `diagnostics.*`

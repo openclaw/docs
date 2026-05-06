@@ -3,18 +3,18 @@ read_when:
     - Aprendendo a configurar o OpenClaw
     - Procurando exemplos de configuração
     - Configurando o OpenClaw pela primeira vez
-summary: Exemplos de configuração precisos em relação ao esquema para configurações comuns do OpenClaw
+summary: Exemplos de configuração compatíveis com o esquema para configurações comuns do OpenClaw
 title: Exemplos de configuração
 x-i18n:
-    generated_at: "2026-05-04T05:52:46Z"
+    generated_at: "2026-05-06T17:55:34Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 60c8c2d731f8dce93c4d14657041d72043bc36e3d71ab6cb13c02993ba90dbe3
+    source_hash: 01dd16c73f1156c4012fd3956083062141825b502722b6aa34f1f90462a6823a
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Os exemplos abaixo estão alinhados ao schema de configuração atual. Para a referência exaustiva e observações por campo, consulte [Configuração](/pt-BR/gateway/configuration).
+Os exemplos abaixo estão alinhados ao esquema de configuração atual. Para a referência completa e observações por campo, consulte [Configuração](/pt-BR/gateway/configuration).
 
 ## Início rápido
 
@@ -29,7 +29,7 @@ Os exemplos abaixo estão alinhados ao schema de configuração atual. Para a re
 
 Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta ao bot a partir desse número.
 
-### Ponto de partida recomendado
+### Configuração inicial recomendada
 
 ```json5
 {
@@ -59,7 +59,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
 
 ## Exemplo expandido (principais opções)
 
-> JSON5 permite usar comentários e vírgulas finais. JSON comum também funciona.
+> O JSON5 permite usar comentários e vírgulas finais. JSON normal também funciona.
 
 ```json5
 {
@@ -473,7 +473,7 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
 
 ## Padrões comuns
 
-### Linha de base compartilhada de skill com uma substituição
+### Linha de base de Skills compartilhada com uma substituição
 
 ```json5
 {
@@ -490,8 +490,8 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
 }
 ```
 
-- `agents.defaults.skills` é a linha de base compartilhada.
-- `agents.list[].skills` substitui essa linha de base para um agente.
+- `agents.defaults.skills` é a base compartilhada.
+- `agents.list[].skills` substitui essa base para um agente.
 - Use `skills: []` quando um agente não deve ver nenhuma Skills.
 
 ### Configuração multiplataforma
@@ -517,9 +517,9 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta 
 
 ### Aprovação automática de rede de Node confiável
 
-Mantenha o emparelhamento de dispositivos manual, a menos que você controle o caminho de rede. Para um laboratório dedicado
-ou uma sub-rede tailnet, você pode optar pela aprovação automática de dispositivos Node
-na primeira vez com CIDRs ou IPs exatos:
+Mantenha o pareamento de dispositivos manual, a menos que você controle o caminho de rede. Para um
+laboratório dedicado ou uma sub-rede tailnet, você pode ativar a aprovação automática
+de dispositivos Node no primeiro uso com CIDRs ou IPs exatos:
 
 ```json5
 {
@@ -533,13 +533,13 @@ na primeira vez com CIDRs ou IPs exatos:
 }
 ```
 
-Isso permanece desativado quando não configurado. Aplica-se apenas a emparelhamentos novos com `role: node`
-sem escopos solicitados. Clientes operador/navegador e upgrades de função, escopo, metadados ou
+Isso permanece desativado quando não configurado. Aplica-se apenas ao pareamento novo de `role: node` com
+nenhum escopo solicitado. Clientes operador/navegador e atualizações de função, escopo, metadados ou
 chave pública ainda exigem aprovação manual.
 
-### Modo de DM seguro (caixa de entrada compartilhada / DMs multiusuário)
+### Modo DM seguro (caixa de entrada compartilhada / DMs multiusuário)
 
-Se mais de uma pessoa puder enviar DM para seu bot (várias entradas em `allowFrom`, aprovações de emparelhamento para várias pessoas ou `dmPolicy: "open"`), ative o **modo de DM seguro** para que DMs de remetentes diferentes não compartilhem um contexto por padrão:
+Se mais de uma pessoa puder enviar DM para seu bot (várias entradas em `allowFrom`, aprovações de pareamento para várias pessoas ou `dmPolicy: "open"`), ative o **modo DM seguro** para que DMs de remetentes diferentes não compartilhem um único contexto por padrão:
 
 ```json5
 {
@@ -563,10 +563,10 @@ Se mais de uma pessoa puder enviar DM para seu bot (várias entradas em `allowFr
 }
 ```
 
-Para Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, a autorização do remetente é baseada em ID por padrão.
-Ative a correspondência direta mutável por nome/e-mail/apelido com `dangerouslyAllowNameMatching: true` de cada canal somente se você aceitar explicitamente esse risco.
+Para Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, a autorização do remetente prioriza ID por padrão.
+Ative a correspondência direta por nome/e-mail/apelido mutáveis com `dangerouslyAllowNameMatching: true` de cada canal somente se você aceitar explicitamente esse risco.
 
-### Chave de API da Anthropic + fallback do MiniMax
+### Chave de API da Anthropic + fallback MiniMax
 
 ```json5
 {
@@ -625,7 +625,7 @@ Ative a correspondência direta mutável por nome/e-mail/apelido com `dangerousl
 }
 ```
 
-### Apenas modelos locais
+### Somente modelos locais
 
 ```json5
 {
@@ -660,7 +660,7 @@ Ative a correspondência direta mutável por nome/e-mail/apelido com `dangerousl
 ## Dicas
 
 - Se você definir `dmPolicy: "open"`, a lista `allowFrom` correspondente deve incluir `"*"`.
-- IDs de provedores diferem (números de telefone, IDs de usuário, IDs de canal). Use a documentação do provedor para confirmar o formato.
+- Os IDs de provedores diferem (números de telefone, IDs de usuário, IDs de canal). Use a documentação do provedor para confirmar o formato.
 - Seções opcionais para adicionar depois: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
 - Consulte [Provedores](/pt-BR/providers) e [Solução de problemas](/pt-BR/gateway/troubleshooting) para notas de configuração mais detalhadas.
 

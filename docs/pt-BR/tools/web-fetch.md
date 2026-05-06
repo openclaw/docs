@@ -1,16 +1,16 @@
 ---
 read_when:
     - Você quer buscar uma URL e extrair conteúdo legível
-    - Você precisa configurar web_fetch ou sua alternativa Firecrawl
+    - Você precisa configurar web_fetch ou seu mecanismo alternativo Firecrawl
     - Você quer entender os limites e o armazenamento em cache do web_fetch
 sidebarTitle: Web Fetch
 summary: ferramenta web_fetch -- busca HTTP com extração de conteúdo legível
-title: Busca na Web
+title: Busca na web
 x-i18n:
-    generated_at: "2026-05-04T05:56:18Z"
+    generated_at: "2026-05-06T18:01:19Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c8c3efbf4a640b2fd69cc9532dcb06a873a6830a2e8a85ab7510ab38207c8670
+    source_hash: 337174898861db217bf0db052d8e8749989c295e89c73d9d5a6911f6335ba03d
     source_path: tools/web-fetch.md
     workflow: 16
 ---
@@ -47,14 +47,14 @@ Trunca a saída para esta quantidade de caracteres.
 ## Como funciona
 
 <Steps>
-  <Step title="Buscar">
+  <Step title="Fetch">
     Envia um HTTP GET com um User-Agent semelhante ao Chrome e o cabeçalho
-    `Accept-Language`. Bloqueia nomes de host privados/internos e verifica redirecionamentos novamente.
+    `Accept-Language`. Bloqueia hostnames privados/internos e verifica redirects novamente.
   </Step>
-  <Step title="Extrair">
+  <Step title="Extract">
     Executa Readability (extração do conteúdo principal) na resposta HTML.
   </Step>
-  <Step title="Fallback (opcional)">
+  <Step title="Fallback (optional)">
     Se Readability falhar e Firecrawl estiver configurado, tenta novamente pela
     API do Firecrawl com modo de contorno de bots.
   </Step>
@@ -125,65 +125,64 @@ Se a extração do Readability falhar, `web_fetch` pode recorrer ao
 }
 ```
 
-`plugins.entries.firecrawl.config.webFetch.apiKey` oferece suporte a objetos SecretRef.
+`plugins.entries.firecrawl.config.webFetch.apiKey` aceita objetos SecretRef.
 A configuração legada `tools.web.fetch.firecrawl.*` é migrada automaticamente por `openclaw doctor --fix`.
 
 <Note>
-  Se o Firecrawl estiver habilitado e seu SecretRef não for resolvido sem fallback da variável de ambiente
+  Se o Firecrawl estiver habilitado e seu SecretRef não for resolvido, sem fallback pela env
   `FIRECRAWL_API_KEY`, a inicialização do Gateway falha rapidamente.
 </Note>
 
 <Note>
   Substituições de `baseUrl` do Firecrawl são restritas: tráfego hospedado usa
   `https://api.firecrawl.dev`; substituições auto-hospedadas devem apontar para endpoints privados ou
-  internos, e `http://` é aceito apenas para esses destinos privados.
+  internos, e `http://` é aceito somente para esses destinos privados.
 </Note>
 
-Comportamento atual em tempo de execução:
+Comportamento atual em runtime:
 
 - `tools.web.fetch.provider` seleciona explicitamente o provedor de fallback de busca.
-- Se `provider` for omitido, o OpenClaw detecta automaticamente o primeiro provedor de web-fetch
-  pronto a partir das credenciais disponíveis. `web_fetch` sem sandbox pode usar
+- Se `provider` for omitido, o OpenClaw detecta automaticamente o primeiro provedor pronto de web-fetch
+  a partir das credenciais disponíveis. `web_fetch` fora do sandbox pode usar
   plugins instalados que declaram `contracts.webFetchProviders` e registram um
-  provedor correspondente em tempo de execução. Hoje, o provedor incluído é o Firecrawl.
-- Chamadas `web_fetch` em sandbox permanecem limitadas a provedores incluídos.
+  provedor correspondente em runtime. Hoje, o provedor incluído é o Firecrawl.
+- Chamadas `web_fetch` em sandbox permanecem limitadas aos provedores incluídos.
 - Se Readability estiver desabilitado, `web_fetch` pula direto para o fallback do
   provedor selecionado. Se nenhum provedor estiver disponível, ela falha fechada.
 
-## Proxy de ambiente confiável
+## Proxy env confiável
 
 Se sua implantação exigir que `web_fetch` passe por um proxy de saída
 HTTP(S) confiável, defina `tools.web.fetch.useTrustedEnvProxy: true`.
 
-Nesse modo, o OpenClaw ainda aplica verificações SSRF baseadas em nome de host antes de enviar
-a solicitação, mas permite que o proxy resolva DNS em vez de fazer fixação de DNS
-local. Habilite isso apenas quando o proxy for controlado pelo operador e aplicar
-política de saída após a resolução de DNS.
+Nesse modo, o OpenClaw ainda aplica verificações SSRF baseadas em hostname antes de enviar
+a requisição, mas permite que o proxy resolva DNS em vez de fazer fixação de DNS local.
+Habilite isso somente quando o proxy for controlado pelo operador e aplicar
+a política de saída após a resolução de DNS.
 
 <Note>
-  Se nenhuma variável de ambiente de proxy HTTP(S) estiver configurada, ou se o host de destino for excluído por
-  `NO_PROXY`, `web_fetch` volta para o caminho estrito normal com fixação de DNS
-  local.
+  Se nenhuma env var de proxy HTTP(S) estiver configurada, ou o host de destino for excluído por
+  `NO_PROXY`, `web_fetch` volta ao caminho estrito normal com fixação de DNS local.
 </Note>
 
 ## Limites e segurança
 
 - `maxChars` é limitado a `tools.web.fetch.maxCharsCap`
-- O corpo da resposta é limitado a `maxResponseBytes` antes da análise; respostas grandes demais
-  são truncadas com um aviso
-- Nomes de host privados/internos são bloqueados
+- O corpo da resposta é limitado a `maxResponseBytes` antes do parsing; respostas
+  grandes demais são truncadas com um aviso
+- Hostnames privados/internos são bloqueados
 - `tools.web.fetch.ssrfPolicy.allowRfc2544BenchmarkRange` e
-  `tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange` são opções de adesão restritas
-  para pilhas de proxy de IP falso confiáveis; deixe-as indefinidas a menos que seu proxy controle
-  esses intervalos sintéticos e aplique sua própria política de destino
-- Redirecionamentos são verificados e limitados por `maxRedirects`
-- `useTrustedEnvProxy` é uma adesão explícita e deve ser habilitada apenas para
+  `tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange` são opt-ins restritos
+  para stacks de proxy fake-IP confiáveis; deixe-os indefinidos, a menos que seu proxy seja dono
+  desses intervalos sintéticos e aplique sua própria política de destino
+- Redirects são verificados e limitados por `maxRedirects`
+- `useTrustedEnvProxy` é um opt-in explícito e só deve ser habilitado para
   proxies controlados pelo operador que ainda apliquem política de saída após a resolução de DNS
-- `web_fetch` funciona por melhor esforço -- alguns sites precisam do [Navegador Web](/pt-BR/tools/browser)
+- `web_fetch` é de melhor esforço -- alguns sites precisam do [Navegador Web](/pt-BR/tools/browser)
 
 ## Perfis de ferramentas
 
-Se você usa perfis de ferramentas ou listas de permissões, adicione `web_fetch` ou `group:web`:
+Se você usa perfis de ferramentas ou allowlists, adicione `web_fetch` ou `group:web`:
 
 ```json5
 {
@@ -196,6 +195,6 @@ Se você usa perfis de ferramentas ou listas de permissões, adicione `web_fetch
 
 ## Relacionados
 
-- [Busca Web](/pt-BR/tools/web) -- pesquise na web com múltiplos provedores
-- [Navegador Web](/pt-BR/tools/browser) -- automação completa do navegador para sites com muito JS
-- [Firecrawl](/pt-BR/tools/firecrawl) -- ferramentas de busca e scraping do Firecrawl
+- [Pesquisa Web](/pt-BR/tools/web) -- pesquise na web com vários provedores
+- [Navegador Web](/pt-BR/tools/browser) -- automação completa de navegador para sites com muito JS
+- [Firecrawl](/pt-BR/tools/firecrawl) -- ferramentas de pesquisa e scraping do Firecrawl
