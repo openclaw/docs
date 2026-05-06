@@ -45,7 +45,7 @@ jobs:
 
       - name: Build
         env:
-          DOCS_SITE_BASE_PATH: /docs
+          DOCS_SITE_CNAME: documentation.openclaw.ai
         run: npm run docs:build
 
       - name: Smoke generated site

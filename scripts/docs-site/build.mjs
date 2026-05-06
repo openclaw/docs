@@ -13,6 +13,7 @@ const outDir = path.join(root, "dist", "docs-site");
 const config = JSON.parse(fs.readFileSync(path.join(docsDir, "docs.json"), "utf8"));
 const md = createMarkdownRenderer();
 const basePath = normalizeBasePath(process.env.DOCS_SITE_BASE_PATH ?? "");
+const legacyBasePath = normalizeBasePath(process.env.DOCS_SITE_LEGACY_BASE_PATH ?? "/docs");
 
 fs.rmSync(outDir, { recursive: true, force: true });
 fs.mkdirSync(outDir, { recursive: true });
@@ -272,7 +273,9 @@ function writeRedirects() {
     const source = cleanPath(redirect.source);
     const dest = cleanPath(redirect.destination);
     writeRedirectFile(source, publicPath(dest));
-    if (basePath) writeRedirectFile(`${basePath}${source}`, publicPath(dest));
+    for (const prefix of new Set([basePath, legacyBasePath].filter(Boolean))) {
+      writeRedirectFile(`${prefix}${source}`, publicPath(dest));
+    }
   }
 }
 
@@ -294,7 +297,7 @@ function writeStaticAssets() {
   fs.writeFileSync(path.join(assetsDir, "docs-site.js"), siteJs(), "utf8");
   fs.writeFileSync(path.join(outDir, ".nojekyll"), "", "utf8");
   if (process.env.DOCS_SITE_CNAME) {
-    fs.writeFileSync(path.join(outDir, "CNAME"), process.env.DOCS_SITE_CNAME, "utf8");
+    fs.writeFileSync(path.join(outDir, "CNAME"), `${process.env.DOCS_SITE_CNAME}\n`, "utf8");
   }
 }
 

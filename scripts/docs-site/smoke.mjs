@@ -56,8 +56,17 @@ if (!/data-language-picker/.test(index) || !/class="language-option active"[^>]*
 if (!/Português \(BR\)/.test(index)) {
   throw new Error("index: language picker labels were not rendered");
 }
-if (/src="\/assets\//.test(index) || /href="\/assets\//.test(index)) {
+if (process.env.DOCS_SITE_BASE_PATH && (/src="\/assets\//.test(index) || /href="\/assets\//.test(index))) {
   throw new Error("index: absolute asset paths were not base-path rewritten");
+}
+if (!process.env.DOCS_SITE_BASE_PATH && !/href="\/assets\/docs-site\.css"/.test(index)) {
+  throw new Error("index: custom-domain build did not emit root asset paths");
+}
+if (process.env.DOCS_SITE_CNAME) {
+  const cnamePath = path.join(site, "CNAME");
+  if (!fs.existsSync(cnamePath) || fs.readFileSync(cnamePath, "utf8").trim() !== process.env.DOCS_SITE_CNAME) {
+    throw new Error("CNAME: custom domain file missing or wrong");
+  }
 }
 const siteJs = fs.readFileSync(path.join(site, "assets/docs-site.js"), "utf8");
 if (!/function syncSidebar/.test(siteJs) || !/async function navigateTo/.test(siteJs)) {
@@ -78,7 +87,7 @@ const legacyDigitalOcean = path.join(site, "docs/platforms/digitalocean/index.ht
 if (!fs.existsSync(legacyDigitalOcean)) {
   throw new Error("legacy DigitalOcean redirect: missing /docs/platforms/digitalocean compatibility file");
 }
-if (!/url=\/docs\/install\/digitalocean/.test(fs.readFileSync(legacyDigitalOcean, "utf8"))) {
+if (!/url=\/(?:docs\/)?install\/digitalocean/.test(fs.readFileSync(legacyDigitalOcean, "utf8"))) {
   throw new Error("legacy DigitalOcean redirect: wrong destination");
 }
 const showcase = fs.readFileSync(path.join(site, "start/showcase/index.html"), "utf8");
