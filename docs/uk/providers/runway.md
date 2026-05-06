@@ -1,61 +1,73 @@
 ---
 read_when:
     - Ви хочете використовувати генерацію відео Runway в OpenClaw
-    - Вам потрібне налаштування API key/env для Runway
-    - Ви хочете зробити Runway типовим провайдером відео
+    - Вам потрібні ключ API Runway і налаштування середовища
+    - Ви хочете зробити Runway постачальником відео за замовчуванням
 summary: Налаштування генерації відео Runway в OpenClaw
-title: Runway
+title: Злітна смуга
 x-i18n:
-    generated_at: "2026-04-24T03:48:45Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T00:20:39Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 9648ca4403283cd23bf899d697f35a6b63986e8860227628c0d5789fceee3ce8
+    source_hash: 51980217868c6d2f168f897106f81ea38dfcfde5265b14e394d4e232324a46b7
     source_path: providers/runway.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw постачається з вбудованим провайдером `runway` для hosted-генерації відео.
+OpenClaw постачається з вбудованим провайдером `runway` для хостингової генерації відео. Plugin увімкнено за замовчуванням, і він реєструє провайдер `runway` для контракту `videoGenerationProviders`.
 
-| Property    | Value                                                             |
-| ----------- | ----------------------------------------------------------------- |
-| Provider id | `runway`                                                          |
-| Auth        | `RUNWAYML_API_SECRET` (канонічний) або `RUNWAY_API_KEY`           |
-| API         | Генерація відео Runway на основі завдань (`GET /v1/tasks/{id}` polling) |
+| Властивість    | Значення                                                          |
+| --------------- | ----------------------------------------------------------------- |
+| Ідентифікатор провайдера | `runway`                                                |
+| Plugin          | вбудований, `enabledByDefault: true`                              |
+| Змінні середовища автентифікації | `RUNWAYML_API_SECRET` (канонічна) або `RUNWAY_API_KEY` |
+| Прапорець онбордингу | `--auth-choice runway-api-key`                              |
+| Прямий прапорець CLI | `--runway-api-key <key>`                                    |
+| API             | генерація відео Runway на основі завдань (опитування `GET /v1/tasks/{id}`) |
+| Модель за замовчуванням | `runway/gen4.5`                                         |
 
-## Швидкий старт
+## Початок роботи
 
 <Steps>
-  <Step title="Задайте API key">
+  <Step title="Set the API key">
     ```bash
     openclaw onboard --auth-choice runway-api-key
     ```
   </Step>
-  <Step title="Зробіть Runway типовим провайдером відео">
+  <Step title="Set Runway as the default video provider">
     ```bash
     openclaw config set agents.defaults.videoGenerationModel.primary "runway/gen4.5"
     ```
   </Step>
-  <Step title="Згенеруйте відео">
+  <Step title="Generate a video">
     Попросіть агента згенерувати відео. Runway буде використано автоматично.
   </Step>
 </Steps>
 
-## Підтримувані режими
+## Підтримувані режими та моделі
 
-| Mode           | Model              | Reference input              |
-| -------------- | ------------------ | ---------------------------- |
-| Text-to-video  | `gen4.5` (типово)  | Немає                        |
-| Image-to-video | `gen4.5`           | 1 локальне або віддалене зображення |
-| Video-to-video | `gen4_aleph`       | 1 локальне або віддалене відео |
+Провайдер надає сім моделей Runway, розподілених між трьома режимами. Той самий ідентифікатор моделі може обслуговувати більше ніж один режим (наприклад, `gen4.5` працює як для перетворення тексту на відео, так і для перетворення зображення на відео).
 
-<Note>
-Підтримуються локальні reference image і video через data URI. Для запусків лише з текстом
-наразі доступні співвідношення сторін `16:9` і `9:16`.
-</Note>
+| Режим          | Моделі                                                                 | Вхідні еталонні дані   |
+| -------------- | ---------------------------------------------------------------------- | ----------------------- |
+| Текст у відео  | `gen4.5` (за замовчуванням), `veo3.1`, `veo3.1_fast`, `veo3`           | Немає                  |
+| Зображення у відео | `gen4.5`, `gen4_turbo`, `gen3a_turbo`, `veo3.1`, `veo3.1_fast`, `veo3` | 1 локальне або віддалене зображення |
+| Відео у відео  | `gen4_aleph`                                                           | 1 локальне або віддалене відео |
+
+Локальні посилання на зображення та відео підтримуються через URI даних.
+
+| Співвідношення сторін | Дозволені значення                         |
+| --------------------- | ------------------------------------------- |
+| Текст у відео         | `16:9`, `9:16`                              |
+| Редагування зображень і відео | `1:1`, `16:9`, `9:16`, `3:4`, `4:3`, `21:9` |
 
 <Warning>
-Video-to-video наразі вимагає саме `runway/gen4_aleph`.
+  Для режиму відео у відео зараз потрібен `runway/gen4_aleph`. Інші ідентифікатори моделей Runway відхиляють вхідні відеопосилання.
 </Warning>
+
+<Note>
+  Вибір ідентифікатора моделі Runway з неправильного стовпця спричиняє явну помилку до того, як API-запит залишить OpenClaw. Провайдер перевіряє `model` за списком дозволених значень режиму (`TEXT_ONLY_MODELS`, `IMAGE_MODELS`, `VIDEO_MODELS`) у `extensions/runway/video-generation-provider.ts`.
+</Note>
 
 ## Конфігурація
 
@@ -74,25 +86,25 @@ Video-to-video наразі вимагає саме `runway/gen4_aleph`.
 ## Розширена конфігурація
 
 <AccordionGroup>
-  <Accordion title="Псевдоніми змінних середовища">
-    OpenClaw розпізнає і `RUNWAYML_API_SECRET` (канонічний), і `RUNWAY_API_KEY`.
-    Будь-яка з цих змінних автентифікує провайдера Runway.
+  <Accordion title="Environment variable aliases">
+    OpenClaw розпізнає як `RUNWAYML_API_SECRET` (канонічну), так і `RUNWAY_API_KEY`.
+    Будь-яка з цих змінних автентифікує провайдер Runway.
   </Accordion>
 
-  <Accordion title="Опитування завдань">
+  <Accordion title="Task polling">
     Runway використовує API на основі завдань. Після надсилання запиту на генерацію OpenClaw
-    опитує `GET /v1/tasks/{id}` доти, доки відео не буде готове. Додаткове
-    налаштування для цієї поведінки polling не потрібне.
+    опитує `GET /v1/tasks/{id}`, доки відео не буде готове. Для поведінки опитування
+    не потрібна додаткова конфігурація.
   </Accordion>
 </AccordionGroup>
 
 ## Пов’язане
 
 <CardGroup cols={2}>
-  <Card title="Генерація відео" href="/uk/tools/video-generation" icon="video">
+  <Card title="Video generation" href="/uk/tools/video-generation" icon="video">
     Спільні параметри інструмента, вибір провайдера та асинхронна поведінка.
   </Card>
   <Card title="Configuration reference" href="/uk/gateway/config-agents#agent-defaults" icon="gear">
-    Типові налаштування агентів, включно з моделлю генерації відео.
+    Параметри агента за замовчуванням, зокрема модель генерації відео.
   </Card>
 </CardGroup>
