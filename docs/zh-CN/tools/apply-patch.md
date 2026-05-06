@@ -1,21 +1,21 @@
 ---
 read_when:
-    - 你需要在多个文件中进行结构化编辑
+    - 你需要跨多个文件进行结构化文件编辑
     - 你想记录或调试基于补丁的编辑
 summary: 使用 apply_patch 工具应用多文件补丁
 title: apply_patch 工具
 x-i18n:
-    generated_at: "2026-04-23T23:04:10Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T01:42:07Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 9ed6d8282166de3cacf5be7f253498a230bceb2ad6c82a08846aed5bc613da53
+    source_hash: 9ff2f8e6ecd55ff1bdc553619ab3d590d0967efe7a9a90a31946ad15fd89a1dc
     source_path: tools/apply-patch.md
-    workflow: 15
+    workflow: 16
 ---
 
-使用结构化补丁格式应用文件更改。这非常适合多文件或多处代码块编辑，因为单次 `edit` 调用在这种情况下会比较脆弱。
+使用结构化补丁格式应用文件更改。它很适合多文件或多 hunk 编辑，在这些场景中单个 `edit` 调用会比较脆弱。
 
-该工具接受一个 `input` 字符串参数，其中包裹一个或多个文件操作：
+该工具接受单个 `input` 字符串，其中包装一个或多个文件操作：
 
 ```
 *** Begin Patch
@@ -32,19 +32,19 @@ x-i18n:
 
 ## 参数
 
-- `input`（必填）：完整的补丁内容，必须包含 `*** Begin Patch` 和 `*** End Patch`。
+- `input`（必需）：完整补丁内容，包括 `*** Begin Patch` 和 `*** End Patch`。
 
 ## 说明
 
-- 补丁路径支持相对路径（相对于工作区目录）和绝对路径。
-- `tools.exec.applyPatch.workspaceOnly` 默认值为 `true`（仅限工作区内）。只有在你明确希望 `apply_patch` 在工作区目录之外写入/删除时，才将其设为 `false`。
-- 在 `*** Update File:` 代码块中使用 `*** Move to:` 可重命名文件。
-- 必要时，可使用 `*** End of File` 标记仅在 EOF 处插入内容。
-- 默认适用于 OpenAI 和 OpenAI Codex 模型。设置
-  `tools.exec.applyPatch.enabled: false` 可禁用该功能。
-- 也可以通过
+- 补丁路径支持相对路径（从工作区目录开始）和绝对路径。
+- `tools.exec.applyPatch.workspaceOnly` 默认值为 `true`（限制在工作区内）。仅当你有意让 `apply_patch` 在工作区目录外写入/删除时，才将它设为 `false`。
+- 在 `*** Update File:` hunk 中使用 `*** Move to:` 来重命名文件。
+- `*** End of File` 在需要时标记仅 EOF 插入。
+- 默认可用于 OpenAI 和 OpenAI Codex 模型。设置
+  `tools.exec.applyPatch.enabled: false` 可禁用它。
+- 可选择通过
   `tools.exec.applyPatch.allowModels`
-  按模型进行限制。
+  按模型设置门控。
 - 配置仅位于 `tools.exec` 下。
 
 ## 示例
@@ -56,8 +56,16 @@ x-i18n:
 }
 ```
 
-## 相关内容
+## 相关
 
-- [Diffs](/zh-CN/tools/diffs)
-- [Exec 工具](/zh-CN/tools/exec)
-- [代码执行](/zh-CN/tools/code-execution)
+<CardGroup cols={2}>
+  <Card title="Diffs" href="/zh-CN/tools/diffs" icon="code-compare">
+    用于变更呈现的只读 diff 查看器。
+  </Card>
+  <Card title="Exec tool" href="/zh-CN/tools/exec" icon="terminal">
+    来自智能体的 shell 命令执行。
+  </Card>
+  <Card title="Code execution" href="/zh-CN/tools/code-execution" icon="square-code">
+    使用 xAI 的沙箱隔离远程 Python 分析。
+  </Card>
+</CardGroup>

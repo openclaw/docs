@@ -1,42 +1,42 @@
 ---
 read_when:
-    - 你想了解 “context” 在 OpenClaw 中的含义
-    - 你正在调试为什么模型“知道”某些内容（或为什么忘记了它）
-    - 你想减少上下文开销（`/context`、`/status`、`/compact`）
-summary: 上下文：模型会看到什么、它是如何构建的，以及如何检查它
+    - 你想了解 OpenClaw 中的“上下文”是什么意思
+    - 你正在调试为什么模型“知道”某些内容（或忘记了它）
+    - 你想减少上下文开销（/context、/status、/compact）
+summary: 上下文：模型看到的内容、它如何构建，以及如何检查它
 title: 上下文
 x-i18n:
-    generated_at: "2026-04-24T03:39:01Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T01:42:17Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 537c989d1578a186a313698d3b97d75111fedb641327fb7a8b72e47b71b84b85
+    source_hash: 1bd23094ef23928ee277c1b84ee17b9324aaea963d72a0c4c73da359409a5de9
     source_path: concepts/context.md
-    workflow: 15
+    workflow: 16
 ---
 
-“上下文”是**OpenClaw 在一次运行中发送给模型的所有内容**。它受模型的**上下文窗口**（token 限制）约束。
+“上下文”是 **OpenClaw 为一次运行发送给模型的全部内容**。它受模型的 **上下文窗口**（token 限制）约束。
 
-适合初学者的理解模型：
+初学者心智模型：
 
-- **系统提示词**（由 OpenClaw 构建）：规则、工具、Skills 列表、时间/运行时信息，以及注入的工作区文件。
-- **对话历史**：你在此会话中的消息 + 助手消息。
+- **系统提示**（由 OpenClaw 构建）：规则、工具、Skills 列表、时间/运行时，以及注入的工作区文件。
+- **对话历史**：你在此会话中的消息 + 助手的消息。
 - **工具调用/结果 + 附件**：命令输出、文件读取、图片/音频等。
 
-上下文 _并不等同于_ “memory”：memory 可以存储在磁盘上并在之后重新加载；上下文则是模型当前窗口中的内容。
+上下文 _不同于_ “记忆”：记忆可以存储在磁盘上并在之后重新加载；上下文是模型当前窗口里的内容。
 
 ## 快速开始（检查上下文）
 
-- `/status` → 快速查看“我的窗口用了多少？”以及会话设置。
-- `/context list` → 查看注入了什么内容 + 粗略大小（按文件 + 总计）。
-- `/context detail` → 更深入的明细：每个文件、每个工具 schema 的大小、每个 skill 条目的大小，以及系统提示词大小。
-- `/usage tokens` → 在普通回复后追加每次回复的用量页脚。
-- `/compact` → 将较早的历史总结为一条紧凑条目，以释放窗口空间。
+- `/status` → 快速查看“我的窗口还剩多少空间？”视图 + 会话设置。
+- `/context list` → 已注入的内容 + 粗略大小（按文件 + 总计）。
+- `/context detail` → 更深入的拆分：按文件、按工具 schema 大小、按 Skills 条目大小，以及系统提示大小。
+- `/usage tokens` → 在普通回复后附加每条回复的用量页脚。
+- `/compact` → 将较旧的历史总结成一个紧凑条目，以释放窗口空间。
 
-另见：[斜杠命令](/zh-CN/tools/slash-commands)、[Token 使用与成本](/zh-CN/reference/token-use)、[压缩](/zh-CN/concepts/compaction)。
+另请参阅：[斜杠命令](/zh-CN/tools/slash-commands)、[Token 使用与费用](/zh-CN/reference/token-use)、[压缩](/zh-CN/concepts/compaction)。
 
 ## 示例输出
 
-具体数值会因模型、提供商、工具策略以及你的工作区内容而异。
+值会因模型、提供商、工具策略和你的工作区内容而异。
 
 ### `/context list`
 
@@ -83,29 +83,29 @@ Top tools (schema size):
 
 ## 哪些内容会计入上下文窗口
 
-模型接收到的所有内容都会计入，包括：
+模型接收的所有内容都会计入，包括：
 
-- 系统提示词（所有部分）。
+- 系统提示（所有部分）。
 - 对话历史。
 - 工具调用 + 工具结果。
-- 附件/转录内容（图片/音频/文件）。
-- 压缩摘要和裁剪产物。
-- 提供商“包装层”或隐藏请求头（你看不到，但仍会计入）。
+- 附件/转录（图片/音频/文件）。
+- 压缩摘要和剪枝产物。
+- 提供商“包装器”或隐藏标头（不可见，但仍会计入）。
 
-## OpenClaw 如何构建系统提示词
+## OpenClaw 如何构建系统提示
 
-系统提示词由 **OpenClaw 持有**，并会在每次运行时重新构建。它包括：
+系统提示由 **OpenClaw 所有**，并会在每次运行时重新构建。它包括：
 
 - 工具列表 + 简短描述。
 - Skills 列表（仅元数据；见下文）。
 - 工作区位置。
-- 时间（UTC + 如果已配置，则转换后的用户时间）。
-- 运行时元数据（主机/操作系统/模型/思考模式）。
-- **Project Context** 下被注入的工作区 bootstrap 文件。
+- 时间（UTC + 配置后的用户时间转换）。
+- 运行时元数据（主机/操作系统/模型/thinking）。
+- **项目上下文** 下的已注入工作区 bootstrap 文件。
 
-完整明细见：[System Prompt](/zh-CN/concepts/system-prompt)。
+完整拆分：[系统提示](/zh-CN/concepts/system-prompt)。
 
-## 注入的工作区文件（Project Context）
+## 已注入工作区文件（项目上下文）
 
 默认情况下，OpenClaw 会注入一组固定的工作区文件（如果存在）：
 
@@ -117,68 +117,78 @@ Top tools (schema size):
 - `HEARTBEAT.md`
 - `BOOTSTRAP.md`（仅首次运行）
 
-大文件会按文件使用 `agents.defaults.bootstrapMaxChars`（默认 `12000` 个字符）进行截断。OpenClaw 还会通过 `agents.defaults.bootstrapTotalMaxChars`（默认 `60000` 个字符）对所有文件的 bootstrap 注入总量施加上限。`/context` 会显示**原始大小与注入后大小**，以及是否发生了截断。
+大文件会按文件使用 `agents.defaults.bootstrapMaxChars`（默认 `12000` 字符）截断。OpenClaw 还会使用 `agents.defaults.bootstrapTotalMaxChars`（默认 `60000` 字符）对跨文件的 bootstrap 注入总量施加上限。`/context` 会显示 **原始与已注入** 大小，以及是否发生了截断。
 
-发生截断时，运行时可以在 Project Context 下方注入一段提示词内警告块。可通过 `agents.defaults.bootstrapPromptTruncationWarning` 进行配置（`off`、`once`、`always`；默认 `once`）。
+发生截断时，运行时可以在项目上下文下注入一个提示内警告块。使用 `agents.defaults.bootstrapPromptTruncationWarning`（`off`、`once`、`always`；默认 `once`）配置此行为。
 
-## Skills：预注入与按需加载
+## Skills：已注入与按需加载
 
-系统提示词中包含一个精简的 **Skills 列表**（名称 + 描述 + 位置）。这个列表会带来真实的开销。
+系统提示包含紧凑的 **Skills 列表**（名称 + 描述 + 位置）。此列表有真实开销。
 
-默认情况下不会包含 skill 指令本身。模型应仅在需要时才 `read` 该 skill 的 `SKILL.md`。
+Skills 指令默认 _不会_ 包含。模型应当 **仅在需要时** `read` 该 Skills 的 `SKILL.md`。
 
-## Tools：有两种成本
+## 工具：有两类成本
 
-工具会通过两种方式影响上下文：
+工具会以两种方式影响上下文：
 
-1. 系统提示词中的**工具列表文本**（也就是你看到的 “Tooling”）。
-2. **工具 schemas**（JSON）。这些内容会发送给模型，以便它调用工具。即使你看不到它们的纯文本形式，它们仍然会计入上下文。
+1. 系统提示中的 **工具列表文本**（你看到的“Tooling”）。
+2. **工具 schema**（JSON）。这些会发送给模型，以便模型调用工具。它们会计入上下文，即使你不会看到它们作为纯文本出现。
 
-`/context detail` 会拆解占用最大的工具 schema，这样你就能看出主要开销来自哪里。
+`/context detail` 会拆分最大的工具 schema，让你看到哪些部分占比最高。
 
-## Commands、directives 和 “inline shortcuts”
+## 命令、指令和“内联快捷方式”
 
-斜杠命令由 Gateway 网关处理。这里有几种不同的行为：
+斜杠命令由 Gateway 网关处理。有几种不同行为：
 
-- **独立命令**：如果一条消息只有 `/...`，它会作为命令运行。
-- **Directives**：`/think`、`/verbose`、`/trace`、`/reasoning`、`/elevated`、`/model`、`/queue` 会在模型看到消息前被剥离。
-  - 仅包含 directive 的消息会持久化会话设置。
-  - 普通消息中的内联 directive 会作为单条消息级别的提示。
-- **Inline shortcuts**（仅 allowlisted 发送者）：普通消息中的某些 `/...` token 可以立即运行（例如：“hey /status”），并会在模型看到剩余文本前被剥离。
+- **独立命令**：仅包含 `/...` 的消息会作为命令运行。
+- **指令**：`/think`、`/verbose`、`/trace`、`/reasoning`、`/elevated`、`/model`、`/queue` 会在模型看到消息前被移除。
+  - 仅指令消息会持久化会话设置。
+  - 普通消息中的内联指令会作为单条消息提示。
+- **内联快捷方式**（仅允许列表中的发送者）：普通消息中的某些 `/...` token 可以立即运行（示例：“hey /status”），并会在模型看到剩余文本前被移除。
 
-详情见：[斜杠命令](/zh-CN/tools/slash-commands)。
+详情：[斜杠命令](/zh-CN/tools/slash-commands)。
 
-## 会话、压缩和裁剪（哪些会持久化）
+## 会话、压缩和剪枝（哪些内容会持久化）
 
-哪些内容会在消息之间保留，取决于所使用的机制：
+跨消息持久化的内容取决于机制：
 
-- **普通历史** 会保留在会话转录中，直到按策略被压缩/裁剪。
-- **压缩** 会将摘要持久化到转录中，同时保留最近的消息不变。
-- **裁剪** 会从**内存中的**提示词里移除旧的工具结果，以释放上下文窗口空间，但不会重写会话转录 —— 完整历史仍可在磁盘上检查。
+- **普通历史** 会持久化在会话转录中，直到按策略压缩/剪枝。
+- **压缩** 会将摘要持久化到转录中，并保留最近消息不变。
+- **剪枝** 会从 _内存中的_ 提示里丢弃旧工具结果，以释放上下文窗口空间，但不会重写会话转录 - 完整历史仍可在磁盘上检查。
 
-文档：[会话](/zh-CN/concepts/session)、[压缩](/zh-CN/concepts/compaction)、[会话裁剪](/zh-CN/concepts/session-pruning)。
+文档：[会话](/zh-CN/concepts/session)、[压缩](/zh-CN/concepts/compaction)、[会话剪枝](/zh-CN/concepts/session-pruning)。
 
-默认情况下，OpenClaw 使用内置的 `legacy` 上下文引擎来进行组装和
-压缩。如果你安装了一个提供 `kind: "context-engine"` 的插件，并
-通过 `plugins.slots.contextEngine` 选择它，OpenClaw 就会将上下文
-组装、`/compact` 以及相关的子智能体上下文生命周期钩子委托给该
+默认情况下，OpenClaw 使用内置的 `legacy` 上下文引擎进行组装和
+压缩。如果你安装了一个提供 `kind: "context-engine"` 的插件，并使用
+`plugins.slots.contextEngine` 选择它，OpenClaw 就会改为把上下文
+组装、`/compact` 以及相关子智能体上下文生命周期钩子委托给该
 引擎。`ownsCompaction: false` 不会自动回退到 legacy
-引擎；当前激活的引擎仍必须正确实现 `compact()`。完整的
-可插拔接口、生命周期钩子和配置请参见
-[Context Engine](/zh-CN/concepts/context-engine)。
+引擎；活跃引擎仍必须正确实现 `compact()`。完整的
+可插拔接口、生命周期钩子和配置请参阅
+[上下文引擎](/zh-CN/concepts/context-engine)。
 
-## `/context` 实际报告了什么
+## `/context` 实际报告的内容
 
-在可用时，`/context` 会优先使用最新的**基于运行构建的**系统提示词报告：
+`/context` 会优先使用最新的 **运行构建** 系统提示报告（如果可用）：
 
-- `System prompt (run)` = 从上一次嵌入式（支持工具）运行中捕获，并持久化到会话存储中的报告。
-- `System prompt (estimate)` = 当没有运行报告可用时即时计算（或者在使用不会生成该报告的 CLI 后端运行时计算）。
+- `System prompt (run)` = 从上一次嵌入式（支持工具的）运行中捕获，并持久化到会话存储中。
+- `System prompt (estimate)` = 在没有运行报告时即时计算（或通过不会生成该报告的 CLI 后端运行时计算）。
 
-无论哪种方式，它都会报告大小和主要贡献项；它**不会**转储完整的系统提示词或工具 schema。
+无论哪种方式，它都会报告大小和主要贡献项；它 **不会** 转储完整的系统提示或工具 schema。
 
-## 相关内容
+## 相关
 
-- [Context Engine](/zh-CN/concepts/context-engine) — 通过插件进行自定义上下文注入
-- [压缩](/zh-CN/concepts/compaction) — 总结长对话
-- [System Prompt](/zh-CN/concepts/system-prompt) — 系统提示词是如何构建的
-- [智能体循环](/zh-CN/concepts/agent-loop) — 完整的智能体执行周期
+<CardGroup cols={2}>
+  <Card title="Context engine" href="/zh-CN/concepts/context-engine" icon="puzzle-piece">
+    通过插件自定义上下文注入。
+  </Card>
+  <Card title="Compaction" href="/zh-CN/concepts/compaction" icon="compress">
+    总结长对话，使其保持在模型窗口内。
+  </Card>
+  <Card title="System prompt" href="/zh-CN/concepts/system-prompt" icon="message-lines">
+    系统提示如何构建，以及它在每一轮注入什么内容。
+  </Card>
+  <Card title="Agent loop" href="/zh-CN/concepts/agent-loop" icon="arrows-rotate">
+    从入站消息到最终回复的完整智能体执行周期。
+  </Card>
+</CardGroup>
