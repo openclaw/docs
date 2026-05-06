@@ -56,6 +56,9 @@ if (!/data-language-picker/.test(index) || !/class="language-option active"[^>]*
 if (!/Português \(BR\)/.test(index)) {
   throw new Error("index: language picker labels were not rendered");
 }
+if (!/data-docs-chat/.test(index) || !/OPENCLAW_DOCS_CHAT_API/.test(index)) {
+  throw new Error("index: docs chat widget was not rendered");
+}
 if (process.env.DOCS_SITE_BASE_PATH && (/src="\/assets\//.test(index) || /href="\/assets\//.test(index))) {
   throw new Error("index: absolute asset paths were not base-path rewritten");
 }
@@ -74,6 +77,9 @@ if (!/function syncSidebar/.test(siteJs) || !/async function navigateTo/.test(si
 }
 if (/data-locale/.test(siteJs)) {
   throw new Error("assets: stale native language select handler is still present");
+}
+if (!/function initChat/.test(siteJs) || !/data-chat-form/.test(siteJs)) {
+  throw new Error("assets: docs chat behavior is missing");
 }
 const platformsIndex = fs.readFileSync(path.join(site, "platforms/index.html"), "utf8");
 if (/VPS &amp;amp; hosting/.test(platformsIndex)) {

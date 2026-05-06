@@ -14,6 +14,7 @@ const config = JSON.parse(fs.readFileSync(path.join(docsDir, "docs.json"), "utf8
 const md = createMarkdownRenderer();
 const basePath = normalizeBasePath(process.env.DOCS_SITE_BASE_PATH ?? "");
 const legacyBasePath = normalizeBasePath(process.env.DOCS_SITE_LEGACY_BASE_PATH ?? "/docs");
+const chatApiUrl = process.env.DOCS_SITE_CHAT_API_URL ?? "https://openclaw-chat-api.vercel.app/api/chat";
 
 fs.rmSync(outDir, { recursive: true, force: true });
 fs.mkdirSync(outDir, { recursive: true });
@@ -165,7 +166,7 @@ function layout({ page, nav, activeTab, html, toc, prev, next }) {
 <title>${escapeHtml(title)}</title>
 <link rel="icon" href="${publicPath("/assets/pixel-lobster.svg")}">
 <link rel="stylesheet" href="${publicPath("/assets/docs-site.css")}">
-<script>window.OPENCLAW_DOCS_BASE=${JSON.stringify(basePath)};document.documentElement.dataset.theme=localStorage.getItem("theme")||"dark"</script>
+<script>window.OPENCLAW_DOCS_BASE=${JSON.stringify(basePath)};window.OPENCLAW_DOCS_CHAT_API=${JSON.stringify(chatApiUrl)};document.documentElement.dataset.theme=localStorage.getItem("theme")||"dark"</script>
 </head>
 <body>
 ${siteHeader(page, nav, activeTab)}
@@ -184,6 +185,7 @@ ${tocHtml(toc)}
 </main>
 </div>
 ${searchModal()}
+${chatWidget()}
 <script type="module" src="${publicPath("/assets/docs-site.js")}"></script>
 </body>
 </html>`;
@@ -266,6 +268,20 @@ function pager(prev, next) {
 
 function searchModal() {
   return `<div class="search-modal"><div class="search-panel"><div class="search-head"><input data-search-input placeholder="Search docs"><button data-search-close>Close</button></div><div class="search-results" data-search-results></div></div></div>`;
+}
+
+function chatWidget() {
+  if (!chatApiUrl) return "";
+  return `<section class="docs-chat" data-docs-chat aria-label="OpenClaw docs assistant">
+<button class="docs-chat-launcher" type="button" data-chat-toggle aria-expanded="false" aria-controls="docs-chat-panel"><span aria-hidden="true">*</span><span>Ask Molty</span></button>
+<div class="docs-chat-panel" id="docs-chat-panel" role="dialog" aria-modal="false" aria-labelledby="docs-chat-title">
+<header class="docs-chat-head"><div><p>Docs agent</p><h2 id="docs-chat-title">Ask OpenClaw</h2></div><button type="button" data-chat-close aria-label="Close docs assistant">x</button></header>
+<div class="docs-chat-log" data-chat-log aria-live="polite">
+<div class="docs-chat-message assistant"><p>Ask about install, channels, gateway config, or plugin APIs.</p></div>
+</div>
+<form class="docs-chat-form" data-chat-form><textarea data-chat-input rows="2" maxlength="2000" placeholder="How do I connect Telegram?"></textarea><button type="submit" data-chat-submit>Ask</button></form>
+</div>
+</section>`;
 }
 
 function writeRedirects() {
