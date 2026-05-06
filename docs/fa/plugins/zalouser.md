@@ -1,19 +1,17 @@
 ---
 read_when:
-    - شما خواهان پشتیبانی از Zalo Personal (غیررسمی) در OpenClaw هستید
-    - شما در حال پیکربندی یا توسعهٔ Plugin zalouser هستید
+    - شما پشتیبانی از Zalo Personal (غیررسمی) را در OpenClaw می‌خواهید
+    - شما در حال پیکربندی یا توسعه‌ی Plugin zalouser هستید
 summary: 'Plugin شخصی Zalo: ورود با QR + پیام‌رسانی از طریق zca-js بومی (نصب Plugin + پیکربندی کانال + ابزار)'
 title: Plugin شخصی Zalo
 x-i18n:
-    generated_at: "2026-05-02T22:25:05Z"
+    generated_at: "2026-05-06T18:01:32Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b8bcead1a6425587a2cae40e4e817c45b9adf8afbfce6dc673065cc98353f844
+    source_hash: 423325f99ddb5b39bba4c5f3aa71215edfdc092c872f92b5d2f00b6ea691246f
     source_path: plugins/zalouser.md
     workflow: 16
 ---
-
-# Zalo Personal (Plugin)
 
 پشتیبانی Zalo Personal برای OpenClaw از طریق یک Plugin، با استفاده از `zca-js` بومی برای خودکارسازی یک حساب کاربری عادی Zalo.
 
@@ -23,29 +21,29 @@ x-i18n:
 
 ## نام‌گذاری
 
-شناسه کانال `zalouser` است تا به‌صراحت نشان دهد که این مورد یک **حساب کاربری شخصی Zalo** را خودکارسازی می‌کند (غیررسمی). ما `zalo` را برای یک یکپارچه‌سازی احتمالی رسمی API مربوط به Zalo در آینده محفوظ نگه می‌داریم.
+شناسه کانال `zalouser` است تا صریح باشد که این یک **حساب کاربری شخصی Zalo** را خودکار می‌کند (غیررسمی). ما `zalo` را برای یک یکپارچه‌سازی احتمالی آینده با API رسمی Zalo رزرو نگه می‌داریم.
 
 ## محل اجرا
 
 این Plugin **داخل فرایند Gateway** اجرا می‌شود.
 
-اگر از یک Gateway راه دور استفاده می‌کنید، آن را روی **دستگاهی که Gateway را اجرا می‌کند** نصب/پیکربندی کنید، سپس Gateway را بازراه‌اندازی کنید.
+اگر از Gateway راه‌دور استفاده می‌کنید، آن را روی **دستگاهی که Gateway را اجرا می‌کند** نصب/پیکربندی کنید، سپس Gateway را دوباره راه‌اندازی کنید.
 
 هیچ باینری CLI خارجی `zca`/`openzca` لازم نیست.
 
 ## نصب
 
-### گزینه A: نصب از npm
+### گزینه الف: نصب از npm
 
 ```bash
 openclaw plugins install @openclaw/zalouser
 ```
 
-برای دنبال کردن برچسب انتشار رسمی فعلی، از بسته بدون نسخه استفاده کنید. فقط زمانی نسخه دقیق را پین کنید که به نصب بازتولیدپذیر نیاز دارید.
+از بسته بدون نسخه استفاده کنید تا برچسب انتشار رسمی فعلی را دنبال کند. فقط زمانی یک نسخه دقیق را پین کنید که به نصب بازتولیدپذیر نیاز دارید.
 
-پس از آن Gateway را بازراه‌اندازی کنید.
+پس از آن Gateway را دوباره راه‌اندازی کنید.
 
-### گزینه B: نصب از یک پوشه محلی (توسعه)
+### گزینه ب: نصب از یک پوشه محلی (توسعه)
 
 ```bash
 PLUGIN_SRC=./path/to/local/zalouser-plugin
@@ -53,11 +51,11 @@ openclaw plugins install "$PLUGIN_SRC"
 cd "$PLUGIN_SRC" && pnpm install
 ```
 
-پس از آن Gateway را بازراه‌اندازی کنید.
+پس از آن Gateway را دوباره راه‌اندازی کنید.
 
 ## پیکربندی
 
-پیکربندی کانال زیر `channels.zalouser` قرار می‌گیرد (نه `plugins.entries.*`):
+پیکربندی کانال زیر `channels.zalouser` قرار دارد (نه `plugins.entries.*`):
 
 ```json5
 {
@@ -84,9 +82,9 @@ openclaw directory peers list --channel zalouser --query "name"
 
 نام ابزار: `zalouser`
 
-اقدام‌ها: `send`، `image`، `link`، `friends`، `groups`، `me`، `status`
+کنش‌ها: `send`، `image`، `link`، `friends`، `groups`، `me`، `status`
 
-اقدام‌های پیام کانال همچنین از `react` برای واکنش‌های پیام پشتیبانی می‌کنند.
+کنش‌های پیام کانال همچنین برای واکنش‌های پیام از `react` پشتیبانی می‌کنند.
 
 ## مرتبط
 

@@ -1,90 +1,88 @@
 ---
 read_when:
-    - می‌خواهید OpenClaw به‌صورت 24/7 روی یک VPS ابری اجرا شود (نه روی لپ‌تاپ شما)
-    - به یک Gateway همیشه‌فعال و در سطح تولید روی سرور خصوصی مجازی خودتان نیاز دارید
-    - می‌خواهید کنترل کاملی بر ماندگاری، باینری‌ها و رفتار راه‌اندازی مجدد داشته باشید
-    - شما OpenClaw را در Docker روی Hetzner یا یک ارائه‌دهنده مشابه اجرا می‌کنید
-summary: OpenClaw Gateway را به‌صورت ۲۴/۷ روی یک VPS ارزان Hetzner (Docker) با وضعیت پایدار و باینری‌های تعبیه‌شده اجرا کنید
+    - می‌خواهید OpenClaw به‌صورت ۲۴/۷ روی یک VPS ابری اجرا شود (نه روی لپ‌تاپتان)
+    - شما یک Gateway در سطح تولید و همیشه روشن روی VPS خودتان می‌خواهید
+    - شما می‌خواهید کنترل کامل بر ماندگاری، باینری‌ها و رفتار راه‌اندازی مجدد داشته باشید
+    - شما در حال اجرای OpenClaw در Docker روی Hetzner یا یک ارائه‌دهندهٔ مشابه هستید
+summary: اجرای ۲۴/۷ OpenClaw Gateway روی یک VPS ارزان Hetzner (Docker) با وضعیت ماندگار و باینری‌های تعبیه‌شده
 title: Hetzner
 x-i18n:
-    generated_at: "2026-05-06T09:25:53Z"
+    generated_at: "2026-05-06T17:58:33Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 2625a028b6242f653d29b8f45035bf2d796c5c60453582cf269fd1c3776eca52
+    source_hash: 6102649b381b3b1ecd6f52e1cf518fc36147fe143ebc8fd4be5f44ab26cb3b4d
     source_path: install/hetzner.md
     workflow: 16
 ---
 
-# OpenClaw روی Hetzner (Docker، راهنمای VPS تولید)
-
 ## هدف
 
-اجرای یک Gateway پایدار OpenClaw روی یک VPS از Hetzner با استفاده از Docker، همراه با وضعیت ماندگار، باینری‌های ازپیش‌پخته‌شده، و رفتار راه‌اندازی مجدد ایمن.
+یک OpenClaw Gateway پایدار را روی یک Hetzner VPS با استفاده از Docker اجرا کنید، با وضعیت ماندگار، باینری‌های از پیش تعبیه‌شده، و رفتار راه‌اندازی مجدد ایمن.
 
-اگر «OpenClaw ۲۴/۷ با حدود ۵ دلار» می‌خواهید، این ساده‌ترین راه‌اندازی قابل‌اعتماد است.
-قیمت‌های Hetzner تغییر می‌کنند؛ کوچک‌ترین VPS با Debian/Ubuntu را انتخاب کنید و اگر به خطاهای کمبود حافظه برخوردید، آن را بزرگ‌تر کنید.
+اگر «OpenClaw شبانه‌روزی با حدود ۵ دلار» می‌خواهید، این ساده‌ترین راه‌اندازی قابل اتکا است.
+قیمت‌گذاری Hetzner تغییر می‌کند؛ کوچک‌ترین VPS با Debian/Ubuntu را انتخاب کنید و اگر با OOM مواجه شدید، آن را ارتقا دهید.
 
 یادآوری مدل امنیتی:
 
-- عامل‌های مشترک شرکتی وقتی مناسب‌اند که همه در یک مرز اعتماد باشند و runtime فقط کاری باشد.
-- جداسازی سخت‌گیرانه را حفظ کنید: VPS/runtime اختصاصی + حساب‌های اختصاصی؛ هیچ پروفایل شخصی Apple/Google/مرورگر/مدیر گذرواژه‌ای روی آن میزبان نباشد.
-- اگر کاربران نسبت به هم خصمانه‌اند، بر اساس gateway/host/کاربر OS جدا کنید.
+- عامل‌های مشترک شرکتی وقتی همه در یک مرز اعتماد هستند و محیط اجرا فقط کاری است، مشکلی ندارند.
+- جداسازی سخت‌گیرانه را حفظ کنید: VPS/محیط اجرای اختصاصی + حساب‌های اختصاصی؛ هیچ پروفایل شخصی Apple/Google/مرورگر/مدیر گذرواژه روی آن میزبان نداشته باشید.
+- اگر کاربران نسبت به یکدیگر خصمانه‌اند، آن‌ها را بر اساس gateway/میزبان/کاربر OS جدا کنید.
 
 [امنیت](/fa/gateway/security) و [میزبانی VPS](/fa/vps) را ببینید.
 
-## داریم چه کار می‌کنیم (به زبان ساده)؟
+## در حال انجام چه کاری هستیم (به زبان ساده)؟
 
-- اجاره یک سرور Linux کوچک (VPS از Hetzner)
-- نصب Docker (runtime ایزوله برای برنامه)
-- راه‌اندازی OpenClaw Gateway در Docker
-- ماندگار کردن `~/.openclaw` + `~/.openclaw/workspace` روی میزبان (پس از راه‌اندازی مجدد/بازسازی باقی می‌ماند)
-- دسترسی به Control UI از لپ‌تاپ از طریق یک تونل SSH
+- یک سرور Linux کوچک اجاره می‌کنیم (Hetzner VPS)
+- Docker را نصب می‌کنیم (محیط اجرای برنامه ایزوله)
+- OpenClaw Gateway را در Docker راه‌اندازی می‌کنیم
+- `~/.openclaw` + `~/.openclaw/workspace` را روی میزبان ماندگار می‌کنیم (پس از راه‌اندازی مجدد/بازسازی باقی می‌ماند)
+- از لپ‌تاپ خود از طریق یک تونل SSH به Control UI دسترسی پیدا می‌کنیم
 
-آن وضعیت mount‌شده‌ی `~/.openclaw` شامل `openclaw.json`، فایل‌های هر عامل
+آن وضعیت mount‌شده‌ی `~/.openclaw` شامل `openclaw.json`، فایل‌های هر عامل در
 `agents/<agentId>/agent/auth-profiles.json`، و `.env` است.
 
-Gateway از این راه‌ها قابل دسترسی است:
+Gateway از این روش‌ها قابل دسترسی است:
 
-- پورت‌فورواردینگ SSH از لپ‌تاپ
-- در معرض گذاشتن مستقیم پورت، اگر firewall و tokenها را خودتان مدیریت می‌کنید
+- بازارسال پورت SSH از لپ‌تاپ شما
+- در معرض‌گذاری مستقیم پورت، اگر خودتان دیواره آتش و توکن‌ها را مدیریت می‌کنید
 
 این راهنما Ubuntu یا Debian روی Hetzner را فرض می‌کند.  
-اگر روی VPS لینوکسی دیگری هستید، بسته‌ها را متناسب با آن نگاشت کنید.
+اگر روی VPS Linux دیگری هستید، بسته‌ها را متناسب با آن نگاشت کنید.
 برای جریان عمومی Docker، [Docker](/fa/install/docker) را ببینید.
 
 ---
 
 ## مسیر سریع (برای اپراتورهای باتجربه)
 
-1. ساخت VPS در Hetzner
-2. نصب Docker
-3. clone کردن مخزن OpenClaw
-4. ایجاد دایرکتوری‌های ماندگار روی میزبان
-5. پیکربندی `.env` و `docker-compose.yml`
-6. پختن باینری‌های لازم در image
+1. Hetzner VPS را provision کنید
+2. Docker را نصب کنید
+3. مخزن OpenClaw را clone کنید
+4. دایرکتوری‌های ماندگار میزبان را ایجاد کنید
+5. `.env` و `docker-compose.yml` را پیکربندی کنید
+6. باینری‌های لازم را داخل image قرار دهید
 7. `docker compose up -d`
-8. تأیید ماندگاری و دسترسی Gateway
+8. ماندگاری و دسترسی Gateway را تأیید کنید
 
 ---
 
-## چیزهایی که نیاز دارید
+## آنچه نیاز دارید
 
-- VPS از Hetzner با دسترسی root
-- دسترسی SSH از لپ‌تاپ
+- Hetzner VPS با دسترسی root
+- دسترسی SSH از لپ‌تاپ شما
 - آشنایی پایه با SSH + کپی/پیست
 - حدود ۲۰ دقیقه
 - Docker و Docker Compose
 - اعتبارنامه‌های احراز هویت مدل
 - اعتبارنامه‌های اختیاری provider
-  - QR واتساپ
-  - token ربات Telegram
-  - OAuth جیمیل
+  - کد QR برای WhatsApp
+  - توکن ربات Telegram
+  - Gmail OAuth
 
 ---
 
 <Steps>
   <Step title="Provision the VPS">
-    یک VPS با Ubuntu یا Debian در Hetzner بسازید.
+    یک VPS با Ubuntu یا Debian در Hetzner ایجاد کنید.
 
     به‌عنوان root وصل شوید:
 
@@ -92,7 +90,7 @@ Gateway از این راه‌ها قابل دسترسی است:
     ssh root@YOUR_VPS_IP
     ```
 
-    این راهنما فرض می‌کند VPS حالت‌مند است.
+    این راهنما فرض می‌کند VPS وضعیت‌مند است.
     با آن مثل زیرساخت دورریختنی رفتار نکنید.
 
   </Step>
@@ -125,7 +123,7 @@ Gateway از این راه‌ها قابل دسترسی است:
 
   <Step title="Create persistent host directories">
     کانتینرهای Docker گذرا هستند.
-    همه وضعیت‌های بلندمدت باید روی میزبان زندگی کنند.
+    همه وضعیت‌های بلندمدت باید روی میزبان قرار بگیرند.
 
     ```bash
     mkdir -p /root/.openclaw/workspace
@@ -137,7 +135,7 @@ Gateway از این راه‌ها قابل دسترسی است:
   </Step>
 
   <Step title="Configure environment variables">
-    در ریشه مخزن، `.env` بسازید.
+    فایل `.env` را در ریشه مخزن ایجاد کنید.
 
     ```bash
     OPENCLAW_IMAGE=openclaw:latest
@@ -152,10 +150,12 @@ Gateway از این راه‌ها قابل دسترسی است:
     XDG_CONFIG_HOME=/home/node/.openclaw
     ```
 
-    `OPENCLAW_GATEWAY_TOKEN` را خالی بگذارید، مگر اینکه صراحتاً بخواهید آن را
-    از طریق `.env` مدیریت کنید؛ OpenClaw در اولین شروع یک token تصادفی gateway
-    را در config می‌نویسد. یک گذرواژه keyring بسازید و آن را در
-    `GOG_KEYRING_PASSWORD` وارد کنید:
+    وقتی می‌خواهید توکن پایدار gateway را از طریق `.env` مدیریت کنید،
+    `OPENCLAW_GATEWAY_TOKEN` را تنظیم کنید؛ در غیر این صورت، پیش از تکیه بر
+    کلاینت‌ها در راه‌اندازی‌های مجدد، `gateway.auth.token` را پیکربندی کنید.
+    اگر هیچ‌کدام از این منابع وجود نداشته باشد، OpenClaw برای آن راه‌اندازی
+    از یک توکن فقط در زمان اجرا استفاده می‌کند. یک گذرواژه keyring تولید کنید
+    و آن را در `GOG_KEYRING_PASSWORD` جای‌گذاری کنید:
 
     ```bash
     openssl rand -hex 32
@@ -163,14 +163,14 @@ Gateway از این راه‌ها قابل دسترسی است:
 
     **این فایل را commit نکنید.**
 
-    این فایل `.env` برای env کانتینر/runtime مانند `OPENCLAW_GATEWAY_TOKEN` است.
-    احراز هویت OAuth/API-key ذخیره‌شده‌ی providerها در فایل mount‌شده‌ی
-    `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` قرار می‌گیرد.
+    این فایل `.env` برای env کانتینر/محیط اجرا مانند `OPENCLAW_GATEWAY_TOKEN` است.
+    احراز هویت ذخیره‌شده OAuth/API-key مربوط به providerها در مسیر mount‌شده‌ی
+    `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` قرار دارد.
 
   </Step>
 
   <Step title="Docker Compose configuration">
-    `docker-compose.yml` را بسازید یا به‌روزرسانی کنید.
+    `docker-compose.yml` را ایجاد یا به‌روزرسانی کنید.
 
     ```yaml
     services:
@@ -210,14 +210,14 @@ Gateway از این راه‌ها قابل دسترسی است:
           ]
     ```
 
-    `--allow-unconfigured` فقط برای راحتی bootstrap است و جایگزین پیکربندی درست gateway نیست. همچنان auth (`gateway.auth.token` یا گذرواژه) را تنظیم کنید و برای استقرار خود از تنظیمات bind ایمن استفاده کنید.
+    `--allow-unconfigured` فقط برای راحتی bootstrap است و جایگزین پیکربندی درست gateway نیست. همچنان auth (`gateway.auth.token` یا گذرواژه) را تنظیم کنید و برای deployment خود از تنظیمات bind ایمن استفاده کنید.
 
   </Step>
 
   <Step title="Shared Docker VM runtime steps">
-    برای جریان مشترک میزبان Docker از راهنمای runtime مشترک استفاده کنید:
+    برای جریان مشترک میزبان Docker از راهنمای محیط اجرای مشترک استفاده کنید:
 
-    - [پختن باینری‌های لازم در image](/fa/install/docker-vm-runtime#bake-required-binaries-into-the-image)
+    - [قراردادن باینری‌های لازم داخل image](/fa/install/docker-vm-runtime#bake-required-binaries-into-the-image)
     - [ساخت و راه‌اندازی](/fa/install/docker-vm-runtime#build-and-launch)
     - [چه چیزی کجا ماندگار می‌شود](/fa/install/docker-vm-runtime#what-persists-where)
     - [به‌روزرسانی‌ها](/fa/install/docker-vm-runtime#updates)
@@ -225,22 +225,22 @@ Gateway از این راه‌ها قابل دسترسی است:
   </Step>
 
   <Step title="Hetzner-specific access">
-    پس از مراحل ساخت و راه‌اندازی مشترک، برای باز کردن تونل این راه‌اندازی را کامل کنید:
+    پس از مراحل ساخت و راه‌اندازی مشترک، برای باز کردن تونل، راه‌اندازی زیر را کامل کنید:
 
-    **پیش‌نیاز:** مطمئن شوید پیکربندی sshd روی VPS اجازه TCP forwarding می‌دهد. اگر
+    **پیش‌نیاز:** مطمئن شوید پیکربندی sshd در VPS شما بازارسال TCP را مجاز می‌کند. اگر
     پیکربندی SSH خود را سخت‌گیرانه کرده‌اید، `/etc/ssh/sshd_config` را بررسی کنید و تنظیم کنید:
 
     ```
     AllowTcpForwarding local
     ```
 
-    `local` اجازه forward محلی `ssh -L` را از لپ‌تاپ شما می‌دهد، در حالی که
-    forwardهای remote از سرور را مسدود می‌کند. تنظیم آن روی `no` باعث شکست تونل
-    با این خطا می‌شود:
+    `local` بازارسال‌های محلی `ssh -L` از لپ‌تاپ شما را مجاز می‌کند و هم‌زمان
+    بازارسال‌های راه‌دور از سرور را مسدود می‌کند. تنظیم آن روی `no` باعث شکست تونل
+    با این پیام می‌شود:
     `channel 3: open failed: administratively prohibited: open failed`
 
-    پس از تأیید فعال بودن TCP forwarding، سرویس SSH را restart کنید
-    (`systemctl restart ssh`) و تونل را از لپ‌تاپ اجرا کنید:
+    پس از تأیید فعال بودن بازارسال TCP، سرویس SSH را راه‌اندازی مجدد کنید
+    (`systemctl restart ssh`) و تونل را از لپ‌تاپ خود اجرا کنید:
 
     ```bash
     ssh -N -L 18789:127.0.0.1:18789 root@YOUR_VPS_IP
@@ -250,33 +250,33 @@ Gateway از این راه‌ها قابل دسترسی است:
 
     `http://127.0.0.1:18789/`
 
-    secret مشترک پیکربندی‌شده را paste کنید. این راهنما به‌صورت پیش‌فرض از token
-    gateway استفاده می‌کند؛ اگر به احراز هویت با گذرواژه تغییر داده‌اید، به‌جای آن از همان گذرواژه استفاده کنید.
+    راز مشترک پیکربندی‌شده را جای‌گذاری کنید. این راهنما به‌صورت پیش‌فرض از توکن gateway
+    استفاده می‌کند؛ اگر به احراز هویت با گذرواژه تغییر داده‌اید، به‌جای آن از همان گذرواژه استفاده کنید.
 
   </Step>
 </Steps>
 
-نقشه ماندگاری مشترک در [Docker VM Runtime](/fa/install/docker-vm-runtime#what-persists-where) قرار دارد.
+نقشه ماندگاری مشترک در [محیط اجرای Docker VM](/fa/install/docker-vm-runtime#what-persists-where) قرار دارد.
 
-## زیرساخت به‌عنوان کد (Terraform)
+## زیرساخت به‌صورت کد (Terraform)
 
-برای تیم‌هایی که جریان‌های کاری زیرساخت‌به‌عنوان‌کد را ترجیح می‌دهند، یک راه‌اندازی Terraform نگهداری‌شده توسط جامعه این موارد را فراهم می‌کند:
+برای تیم‌هایی که گردش‌کارهای زیرساخت‌به‌صورت‌کد را ترجیح می‌دهند، یک راه‌اندازی Terraform نگه‌داری‌شده توسط جامعه این موارد را فراهم می‌کند:
 
-- پیکربندی ماژولار Terraform با مدیریت remote state
-- provisioning خودکار از طریق cloud-init
-- اسکریپت‌های استقرار (bootstrap، deploy، backup/restore)
-- سخت‌سازی امنیتی (firewall، UFW، دسترسی فقط از طریق SSH)
-- پیکربندی تونل SSH برای دسترسی gateway
+- پیکربندی ماژولار Terraform با مدیریت وضعیت راه‌دور
+- provision خودکار از طریق cloud-init
+- اسکریپت‌های deployment (bootstrap، deploy، backup/restore)
+- سخت‌سازی امنیتی (دیواره آتش، UFW، دسترسی فقط از طریق SSH)
+- پیکربندی تونل SSH برای دسترسی به gateway
 
-**مخزن‌ها:**
+**مخازن:**
 
 - زیرساخت: [openclaw-terraform-hetzner](https://github.com/andreesg/openclaw-terraform-hetzner)
 - پیکربندی Docker: [openclaw-docker-config](https://github.com/andreesg/openclaw-docker-config)
 
-این رویکرد راه‌اندازی Docker بالا را با استقرارهای تکرارپذیر، زیرساخت version-controlled، و بازیابی خودکار در بحران تکمیل می‌کند.
+این رویکرد راه‌اندازی Docker بالا را با deploymentهای بازتولیدپذیر، زیرساخت نسخه‌بندی‌شده، و بازیابی خودکار از فاجعه تکمیل می‌کند.
 
 <Note>
-نگهداری‌شده توسط جامعه. برای issues یا مشارکت‌ها، پیوندهای مخزن بالا را ببینید.
+نگه‌داری‌شده توسط جامعه. برای مشکلات یا مشارکت‌ها، پیوندهای مخزن بالا را ببینید.
 </Note>
 
 ## گام‌های بعدی

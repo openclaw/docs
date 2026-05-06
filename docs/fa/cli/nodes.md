@@ -1,14 +1,14 @@
 ---
 read_when:
-    - شما در حال مدیریت گره‌های جفت‌شده هستید (دوربین‌ها، صفحه‌نمایش، بوم)
-    - باید درخواست‌ها را تأیید کنید یا فرمان‌های Node را اجرا کنید
+    - شما گره‌های جفت‌شده را مدیریت می‌کنید (دوربین‌ها، صفحه‌نمایش، بوم)
+    - باید درخواست‌ها را تأیید کنید یا فرمان‌های node را فراخوانی کنید
 summary: مرجع CLI برای `openclaw nodes` (وضعیت، جفت‌سازی، فراخوانی، دوربین/بوم/صفحه‌نمایش)
-title: Node‌ها
+title: Nodeها
 x-i18n:
-    generated_at: "2026-04-29T22:37:56Z"
+    generated_at: "2026-05-06T17:54:51Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3229db91d7e64b0d37bee29bd51895d90796f5fd33b67e3d900fd8bda2b6e7e9
+    source_hash: f3eb0d23037c939e4022115a2d65e0e9cb25a872daed715b8652979ce6707cf7
     source_path: cli/nodes.md
     workflow: 16
 ---
@@ -43,16 +43,16 @@ openclaw nodes status --connected
 openclaw nodes status --last-connected 24h
 ```
 
-`nodes list` جدول‌های در انتظار/جفت‌شده را چاپ می‌کند. ردیف‌های جفت‌شده شامل سن تازه‌ترین اتصال (آخرین اتصال) هستند.
-از `--connected` برای نمایش فقط Nodeهای در حال حاضر متصل استفاده کنید. از `--last-connected <duration>` برای
-فیلتر کردن Nodeهایی استفاده کنید که در یک بازه زمانی متصل شده‌اند (مثلاً `24h`، `7d`).
-از `nodes remove --node <id|name|ip>` برای حذف یک رکورد جفت‌سازی Node قدیمی که مالک آن Gateway است استفاده کنید.
+`nodes list` جدول‌های در انتظار/جفت‌شده را چاپ می‌کند. ردیف‌های جفت‌شده شامل سن جدیدترین اتصال هستند (Last Connect).
+از `--connected` برای نمایش فقط Nodeهایی که در حال حاضر متصل هستند استفاده کنید. از `--last-connected <duration>` برای
+فیلتر کردن به Nodeهایی استفاده کنید که در یک بازه زمانی متصل شده‌اند (مثلاً `24h`، `7d`).
+از `nodes remove --node <id|name|ip>` برای حذف رکورد جفت‌سازی Node قدیمی متعلق به Gateway استفاده کنید.
 
 نکته تأیید:
 
 - `openclaw nodes pending` فقط به دامنه جفت‌سازی نیاز دارد.
 - `gateway.nodes.pairing.autoApproveCidrs` می‌تواند مرحله در انتظار را فقط برای
-  جفت‌سازی دستگاه `role: node` صراحتاً مورد اعتماد و بار اول رد کند. این گزینه به‌طور
+  جفت‌سازی دستگاه `role: node` برای نخستین بار، به‌صورت صریح مورد اعتماد، رد کند. این گزینه به‌صورت
   پیش‌فرض خاموش است و ارتقاها را تأیید نمی‌کند.
 - `openclaw nodes approve <requestId>` الزامات دامنه اضافی را از درخواست
   در انتظار به ارث می‌برد:
@@ -70,12 +70,12 @@ openclaw nodes invoke --node <id|name|ip> --command <command> --params <json>
 
 - `--params <json>`: رشته شیء JSON (پیش‌فرض `{}`).
 - `--invoke-timeout <ms>`: مهلت زمانی فراخوانی Node (پیش‌فرض `15000`).
-- `--idempotency-key <key>`: کلید اختیاری idempotency.
+- `--idempotency-key <key>`: کلید idempotency اختیاری.
 - `system.run` و `system.run.prepare` اینجا مسدود هستند؛ برای اجرای shell از ابزار `exec` با `host=node` استفاده کنید.
 
 برای اجرای shell روی یک Node، به‌جای `openclaw nodes run` از ابزار `exec` با `host=node` استفاده کنید.
 CLI مربوط به `nodes` اکنون بر قابلیت‌ها متمرکز است: RPC مستقیم از طریق `nodes invoke`، به‌علاوه جفت‌سازی، دوربین،
-صفحه، موقعیت مکانی، canvas، و اعلان‌ها.
+صفحه‌نمایش، مکان، canvas و اعلان‌ها.
 
 ## مرتبط
 

@@ -1,24 +1,24 @@
 ---
 read_when:
-    - شما نمونه‌های سریع نصب، فهرست کردن، به‌روزرسانی یا حذف Plugin را می‌خواهید
+    - نمونه‌های سریعی برای نصب، فهرست‌کردن، به‌روزرسانی یا حذف Plugin می‌خواهید
     - می‌خواهید بین ClawHub و توزیع Plugin از طریق npm انتخاب کنید
-    - شما در حال انتشار یک بسته Plugin هستید
+    - در حال انتشار یک بسته Plugin هستید
 sidebarTitle: Manage plugins
-summary: نمونه‌های سریع برای نصب، فهرست کردن، حذف نصب، به‌روزرسانی و انتشار Plugin‌های OpenClaw
-title: مدیریت Plugin‌ها
+summary: نمونه‌های سریع برای نصب، فهرست‌کردن، حذف نصب، به‌روزرسانی و انتشار Pluginهای OpenClaw
+title: مدیریت Pluginها
 x-i18n:
-    generated_at: "2026-05-05T01:50:35Z"
+    generated_at: "2026-05-06T18:01:03Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7fa7aa78c1ba9c83ba09bea073987ed5e037031f7c7f29307fe18934b0bd2a1c
+    source_hash: 265777b03434dd07caee6191765c34e17fda4c8347e0327c2f37d47f9dd7a054
     source_path: plugins/manage-plugins.md
     workflow: 16
 ---
 
-بیشتر گردش‌کارهای Plugin چند فرمان هستند: جستجو، نصب، راه‌اندازی دوباره‌ی Gateway،
-راستی‌آزمایی، و حذف نصب زمانی که دیگر به Plugin نیاز ندارید.
+بیشتر گردش‌کارهای Plugin با چند فرمان انجام می‌شوند: جست‌وجو، نصب، راه‌اندازی دوباره Gateway،
+تأیید، و حذف نصب وقتی دیگر به Plugin نیاز ندارید.
 
-## فهرست‌کردن Pluginها
+## فهرست Plugin‌ها
 
 ```bash
 openclaw plugins list
@@ -27,20 +27,20 @@ openclaw plugins list --verbose
 openclaw plugins list --json
 ```
 
-برای اسکریپت‌ها از `--json` استفاده کنید. این خروجی شامل عیب‌یابی‌های رجیستری و
-`dependencyStatus` ایستای هر Plugin است، زمانی که بسته‌ی Plugin
-`dependencies` یا `optionalDependencies` را اعلام کرده باشد.
+از `--json` برای اسکریپت‌ها استفاده کنید. این خروجی شامل عیب‌یابی‌های رجیستری و
+`dependencyStatus` ایستای هر Plugin است، وقتی بسته Plugin مقدار `dependencies` یا
+`optionalDependencies` را اعلام کرده باشد.
 
 ```bash
 openclaw plugins list --json \
   | jq '.plugins[] | {id, enabled, format, source, dependencyStatus}'
 ```
 
-`plugins list` یک بررسی موجودی سرد است. نشان می‌دهد OpenClaw چه چیزهایی را می‌تواند
-از پیکربندی، مانیفست‌ها، و رجیستری Plugin کشف کند؛ اما ثابت نمی‌کند که یک فرایند
-Gateway که از قبل در حال اجراست، زمان اجرای Plugin را import کرده است.
+`plugins list` یک بررسی موجودی سرد است. نشان می‌دهد OpenClaw از پیکربندی،
+مانیفست‌ها، و رجیستری Plugin چه چیزهایی را می‌تواند کشف کند؛ اما ثابت نمی‌کند که
+فرآیند Gateway که از قبل در حال اجراست، زمان اجرای Plugin را وارد کرده باشد.
 
-## نصب Pluginها
+## نصب Plugin‌ها
 
 ```bash
 # Search ClawHub for plugin packages.
@@ -65,18 +65,18 @@ openclaw plugins install ./my-plugin
 openclaw plugins install --link ./my-plugin
 ```
 
-پس از نصب کد Plugin، Gatewayای را که به کانال‌های شما سرویس می‌دهد دوباره راه‌اندازی کنید:
+پس از نصب کد Plugin، Gateway را که کانال‌های شما را سرویس می‌دهد دوباره راه‌اندازی کنید:
 
 ```bash
 openclaw gateway restart
 openclaw plugins inspect <plugin-id> --runtime --json
 ```
 
-زمانی از `inspect --runtime` استفاده کنید که به مدرکی نیاز دارید مبنی بر اینکه Plugin
-سطوح زمان اجرا مانند ابزارها، hookها، سرویس‌ها، متدهای Gateway، یا فرمان‌های CLI
-متعلق به Plugin را ثبت کرده است.
+وقتی به مدرک نیاز دارید که Plugin سطح‌های زمان اجرا مانند ابزارها، هوک‌ها،
+سرویس‌ها، روش‌های Gateway، یا فرمان‌های CLI متعلق به Plugin را ثبت کرده است،
+از `inspect --runtime` استفاده کنید.
 
-## به‌روزرسانی Pluginها
+## به‌روزرسانی Plugin‌ها
 
 ```bash
 openclaw plugins update <plugin-id>
@@ -84,25 +84,26 @@ openclaw plugins update <npm-package-or-spec>
 openclaw plugins update --all
 ```
 
-اگر Plugin از یک dist-tag مربوط به npm مانند `@beta` نصب شده باشد، فراخوانی‌های بعدی
-`update <plugin-id>` همان tag ثبت‌شده را دوباره استفاده می‌کنند. عبور دادن یک spec
-صریح npm، نصب ردیابی‌شده را برای به‌روزرسانی‌های آینده به همان spec تغییر می‌دهد.
+اگر یک Plugin از یک برچسب انتشار npm مانند `@beta` نصب شده باشد، فراخوانی‌های بعدی
+`update <plugin-id>` همان برچسب ثبت‌شده را دوباره استفاده می‌کنند. عبور دادن یک مشخصات npm صریح
+نصب رهگیری‌شده را برای به‌روزرسانی‌های آینده به همان مشخصات تغییر می‌دهد.
 
 ```bash
 openclaw plugins update @scope/openclaw-plugin@beta
 openclaw plugins update @scope/openclaw-plugin
 ```
 
-فرمان دوم یک Plugin را وقتی پیش‌تر به یک نسخه یا tag دقیق سنجاق شده بود، به خط انتشار
-پیش‌فرض رجیستری برمی‌گرداند.
+فرمان دوم یک Plugin را، وقتی قبلاً به یک نسخه دقیق یا برچسب سنجاق شده باشد،
+به خط انتشار پیش‌فرض رجیستری برمی‌گرداند.
 
-وقتی `openclaw update` روی کانال beta اجرا می‌شود، رکوردهای Plugin مربوط به npm خط
-پیش‌فرض و ClawHub ابتدا انتشار `@beta` متناظر Plugin را امتحان می‌کنند. اگر آن انتشار
-beta وجود نداشته باشد، OpenClaw به spec پیش‌فرض/آخرینِ ثبت‌شده برمی‌گردد. برای Pluginهای
-npm، اگر بسته‌ی beta وجود داشته باشد اما در اعتبارسنجی نصب شکست بخورد، OpenClaw نیز
-عقب‌گرد می‌کند. نسخه‌های دقیق و tagهای صریح مانند `@rc` یا `@beta` حفظ می‌شوند.
+وقتی `openclaw update` روی کانال بتا اجرا می‌شود، رکوردهای Plugin خط پیش‌فرض npm و ClawHub
+ابتدا انتشار `@beta` متناظر Plugin را امتحان می‌کنند. اگر آن انتشار بتا
+وجود نداشته باشد، OpenClaw به مشخصات پیش‌فرض/آخرین ثبت‌شده برمی‌گردد.
+برای Plugin‌های npm، وقتی بسته بتا وجود دارد اما در اعتبارسنجی نصب شکست می‌خورد نیز
+OpenClaw به حالت جایگزین برمی‌گردد. نسخه‌های دقیق و برچسب‌های صریح مانند `@rc` یا `@beta`
+حفظ می‌شوند.
 
-## حذف نصب Pluginها
+## حذف نصب Plugin‌ها
 
 ```bash
 openclaw plugins uninstall <plugin-id> --dry-run
@@ -111,19 +112,25 @@ openclaw plugins uninstall <plugin-id> --keep-files
 openclaw gateway restart
 ```
 
-حذف نصب، ورودی پیکربندی Plugin، رکورد شاخص Plugin، ورودی‌های فهرست مجاز/ممنوع،
-و مسیرهای بارگذاری پیوندشده را در صورت کاربرد حذف می‌کند. دایرکتوری‌های نصب مدیریت‌شده
+حذف نصب، ورودی پیکربندی Plugin، رکورد شاخص Plugin، ورودی‌های فهرست مجاز/مسدود،
+و مسیرهای بارگذاری لینک‌شده را در صورت کاربرد حذف می‌کند. دایرکتوری‌های نصب مدیریت‌شده
 حذف می‌شوند، مگر اینکه `--keep-files` را عبور دهید.
 
-## انتشار Pluginها
+در حالت Nix (`OPENCLAW_NIX_MODE=1`)، فرمان‌های نصب، به‌روزرسانی، حذف نصب، فعال‌سازی،
+و غیرفعال‌سازی Plugin غیرفعال هستند. در عوض این انتخاب‌ها را در منبع Nix مربوط به
+نصب مدیریت کنید؛ برای nix-openclaw، از
+[شروع سریع](https://github.com/openclaw/nix-openclaw#quick-start) عامل‌محور استفاده کنید.
 
-می‌توانید Pluginهای خارجی را در [ClawHub](https://clawhub.ai)، npmjs.com، یا هر دو
-منتشر کنید.
+## انتشار Plugin‌ها
+
+می‌توانید Plugin‌های بیرونی را در [ClawHub](https://clawhub.ai)، npmjs.com، یا
+هر دو منتشر کنید.
 
 ### انتشار در ClawHub
 
-ClawHub سطح اصلی کشف عمومی برای Pluginهای OpenClaw است. پیش از نصب، فراداده‌ی قابل
-جستجو، تاریخچه‌ی نسخه، و نتایج اسکن رجیستری را به کاربران می‌دهد.
+ClawHub سطح اصلی کشف عمومی برای Plugin‌های OpenClaw است. پیش از نصب،
+فراداده قابل جست‌وجو، تاریخچه نسخه، و نتایج اسکن رجیستری را در اختیار
+کاربران می‌گذارد.
 
 ```bash
 npm i -g clawhub
@@ -140,12 +147,11 @@ openclaw plugins install clawhub:<package>
 openclaw plugins install <package>
 ```
 
-فرم بدون پیشوند همچنان ابتدا ClawHub را بررسی می‌کند.
+فرم ساده همچنان ابتدا ClawHub را بررسی می‌کند.
 
 ### انتشار در npmjs.com
 
-Pluginهای بومی npm باید شامل یک مانیفست Plugin و فراداده‌ی نقطه ورود OpenClaw در
-`package.json` باشند.
+Plugin‌های بومی npm باید شامل یک مانیفست Plugin و فراداده نقطه ورود OpenClaw در `package.json` باشند.
 
 ```json package.json
 {
@@ -162,7 +168,7 @@ Pluginهای بومی npm باید شامل یک مانیفست Plugin و فرا
 npm publish --access public
 ```
 
-کاربران فقط با npm به این شکل نصب می‌کنند:
+کاربران موردهای فقط npm را با این فرمان نصب می‌کنند:
 
 ```bash
 openclaw plugins install npm:@acme/openclaw-plugin
@@ -170,23 +176,23 @@ openclaw plugins install npm:@acme/openclaw-plugin@beta
 openclaw plugins install npm:@acme/openclaw-plugin@1.0.0
 ```
 
-اگر همان بسته در ClawHub هم موجود باشد، `npm:` جستجوی ClawHub را رد می‌کند و
-تفکیک npm را اجباری می‌کند.
+اگر همان بسته در ClawHub نیز در دسترس باشد، `npm:` جست‌وجوی ClawHub را رد می‌کند و
+حل‌وفصل npm را اجباری می‌کند.
 
 ## انتخاب منبع
 
-- **ClawHub**: زمانی استفاده کنید که کشف بومی OpenClaw، خلاصه‌های اسکن،
-  نسخه‌ها، و راهنمایی‌های نصب را می‌خواهید.
-- **npmjs.com**: زمانی استفاده کنید که از قبل بسته‌های JavaScript منتشر می‌کنید یا به گردش‌کارهای
-  dist-tag/رجیستری خصوصی npm نیاز دارید.
-- **Git**: زمانی استفاده کنید که می‌خواهید مستقیماً از یک شاخه، tag، یا commit نصب کنید.
-- **مسیر محلی**: زمانی استفاده کنید که در حال توسعه یا آزمایش یک Plugin روی همان
-  دستگاه هستید.
+- **ClawHub**: وقتی می‌خواهید کشف بومی OpenClaw، خلاصه‌های اسکن،
+  نسخه‌ها، و راهنمایی‌های نصب داشته باشید، استفاده کنید.
+- **npmjs.com**: وقتی از قبل بسته‌های JavaScript منتشر می‌کنید یا به
+  گردش‌کارهای برچسب انتشار/رجیستری خصوصی npm نیاز دارید، استفاده کنید.
+- **Git**: وقتی می‌خواهید مستقیماً از یک شاخه، برچسب، یا کامیت نصب کنید، استفاده کنید.
+- **مسیر محلی**: وقتی در حال توسعه یا آزمایش یک Plugin روی همان
+  ماشین هستید، استفاده کنید.
 
 ## مرتبط
 
-- [Pluginها](/fa/tools/plugin) - نمای کلی و عیب‌یابی
+- [Plugin‌ها](/fa/tools/plugin) - نمای کلی و عیب‌یابی
 - [`openclaw plugins`](/fa/cli/plugins) - مرجع کامل CLI
-- [ClawHub](/fa/tools/clawhub) - عملیات انتشار و رجیستری
-- [ساخت Pluginها](/fa/plugins/building-plugins) - ایجاد یک بسته‌ی Plugin
-- [مانیفست Plugin](/fa/plugins/manifest) - مانیفست و فراداده‌ی بسته
+- [ClawHub](/fa/tools/clawhub) - انتشار و عملیات رجیستری
+- [ساخت Plugin‌ها](/fa/plugins/building-plugins) - ایجاد یک بسته Plugin
+- [مانیفست Plugin](/fa/plugins/manifest) - مانیفست و فراداده بسته
