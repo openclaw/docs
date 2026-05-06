@@ -1,15 +1,15 @@
 ---
 read_when:
     - Je wilt dat je agent minder generiek klinkt
-    - Je bewerkt SOUL.md
-    - Je wilt een sterkere persoonlijkheid zonder afbreuk te doen aan veiligheid of beknoptheid
-summary: Gebruik SOUL.md om je OpenClaw-agent een echte stem te geven in plaats van generieke assistentenbrij
+    - U bewerkt SOUL.md
+    - Je wilt een sterkere persoonlijkheid zonder veiligheid of beknoptheid aan te tasten
+summary: Gebruik SOUL.md om je OpenClaw-agent een echte eigen stem te geven in plaats van generieke assistentenbrij
 title: SOUL.md-persoonlijkheidsgids
 x-i18n:
-    generated_at: "2026-04-29T22:41:28Z"
+    generated_at: "2026-05-06T09:10:48Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c0268ef086f272257c83e2147ec1f4fa7772645cdd93cdf59dd4e661a311830a
+    source_hash: 2101c0c7a22ab1fe5acfd0d2d413a002326dca380fc6e020a7d77a242d13c3d7
     source_path: concepts/soul.md
     workflow: 16
 ---
@@ -17,42 +17,42 @@ x-i18n:
 `SOUL.md` is waar de stem van je agent leeft.
 
 OpenClaw injecteert het in normale sessies, dus het heeft echt gewicht. Als je agent
-vlak, ontwijkend of vreemd corporate klinkt, is dit meestal het bestand dat je moet aanpassen.
+vlak, weifelend of vreemd corporate klinkt, is dit meestal het bestand dat je moet aanpassen.
 
 ## Wat hoort in SOUL.md
 
-Zet hier de dingen die veranderen hoe de agent aanvoelt om mee te praten:
+Zet er de dingen in die veranderen hoe het voelt om met de agent te praten:
 
 - toon
 - meningen
-- bondigheid
+- beknoptheid
 - humor
 - grenzen
 - standaardniveau van directheid
 
-Maak er **geen** van:
+Maak er **geen** dit van:
 
 - een levensverhaal
 - een changelog
 - een dump van beveiligingsbeleid
-- een enorme muur van vibes zonder gedragseffect
+- een enorme muur van vibes zonder gedragsmatig effect
 
 Kort verslaat lang. Scherp verslaat vaag.
 
 ## Waarom dit werkt
 
-Dit sluit aan op OpenAI's promptrichtlijnen:
+Dit sluit aan bij OpenAI's promptrichtlijnen:
 
 - De promptengineeringgids zegt dat gedrag op hoog niveau, toon, doelen en
   voorbeelden thuishoren in de instructielaag met hoge prioriteit, niet begraven in de
   gebruikersbeurt.
-- Dezelfde gids raadt aan om prompts te behandelen als iets waarop je itereert,
-  dat je vastpint en evalueert, niet als magische proza die je één keer schrijft en vergeet.
+- Dezelfde gids raadt aan prompts te behandelen als iets waarop je itereert,
+  dat je vastzet en evalueert, niet als magische tekst die je één keer schrijft en vergeet.
 
 Voor OpenClaw is `SOUL.md` die laag.
 
-Als je meer persoonlijkheid wilt, schrijf sterkere instructies. Als je stabiele
-persoonlijkheid wilt, houd ze beknopt en versieerd.
+Als je een betere persoonlijkheid wilt, schrijf sterkere instructies. Als je een stabiele
+persoonlijkheid wilt, houd ze beknopt en geversioneerd.
 
 OpenAI-referenties:
 
@@ -63,7 +63,7 @@ OpenAI-referenties:
 
 Plak dit in je agent en laat die `SOUL.md` herschrijven.
 
-Pad vastgezet voor OpenClaw-workspaces: gebruik `SOUL.md`, niet `http://SOUL.md`.
+Pad vast voor OpenClaw-werkruimten: gebruik `SOUL.md`, niet `http://SOUL.md`.
 
 ```md
 Read your `SOUL.md`. Now rewrite it with these changes:
@@ -87,7 +87,7 @@ Goede `SOUL.md`-regels klinken zo:
 - heb een standpunt
 - sla opvulling over
 - wees grappig wanneer het past
-- wijs slechte ideeën vroeg aan
+- benoem slechte ideeën vroeg
 - blijf beknopt tenzij diepgang echt nuttig is
 
 Slechte `SOUL.md`-regels klinken zo:
@@ -96,20 +96,28 @@ Slechte `SOUL.md`-regels klinken zo:
 - bied uitgebreide en doordachte hulp
 - zorg voor een positieve en ondersteunende ervaring
 
-Die tweede lijst is hoe je pap krijgt.
+Die tweede lijst is hoe je brij krijgt.
 
 ## Eén waarschuwing
 
 Persoonlijkheid is geen toestemming om slordig te zijn.
 
-Gebruik `AGENTS.md` voor operationele regels. Gebruik `SOUL.md` voor stem, houding en
+Gebruik `AGENTS.md` voor werkregels. Gebruik `SOUL.md` voor stem, houding en
 stijl. Als je agent werkt in gedeelde kanalen, openbare antwoorden of klantgerichte
-oppervlakken, zorg dan dat de toon nog steeds bij de situatie past.
+oppervlakken, zorg dan dat de toon nog steeds bij de ruimte past.
 
 Scherp is goed. Irritant is dat niet.
 
-## Gerelateerde docs
+## Gerelateerd
 
-- [Agent-workspace](/nl/concepts/agent-workspace)
-- [Systeemprompt](/nl/concepts/system-prompt)
-- [SOUL.md-sjabloon](/nl/reference/templates/SOUL)
+<CardGroup cols={2}>
+  <Card title="Agentwerkruimte" href="/nl/concepts/agent-workspace" icon="folder-open">
+    Werkruimtebestanden die OpenClaw in de systeemprompt injecteert.
+  </Card>
+  <Card title="Systeemprompt" href="/nl/concepts/system-prompt" icon="message-lines">
+    Hoe `SOUL.md` wordt samengesteld in de systeemprompt per beurt.
+  </Card>
+  <Card title="SOUL.md-template" href="/nl/reference/templates/SOUL" icon="file-lines">
+    Startsjabloon voor een persoonlijkheidsbestand.
+  </Card>
+</CardGroup>

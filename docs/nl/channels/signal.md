@@ -1,14 +1,14 @@
 ---
 read_when:
     - Signal-ondersteuning instellen
-    - Verzenden/ontvangen via Signal debuggen
-summary: Signal-ondersteuning via signal-cli (JSON-RPC + SSE), installatiepaden en nummermodel
+    - Foutopsporing voor verzenden/ontvangen via Signal
+summary: Signal-ondersteuning via signal-cli (JSON-RPC + SSE), instelpaden en nummermodel
 title: Signal
 x-i18n:
-    generated_at: "2026-04-30T16:27:59Z"
+    generated_at: "2026-05-06T09:03:56Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 111b6ebe3bde4e03c7ed432f52d663f0b471f0fc4a4bf835c1ac1972467e0b96
+    source_hash: b0290318ed0cda8f258a96da379b9774418fd888e1b78271a051c98b327a2f45
     source_path: channels/signal.md
     workflow: 16
 ---
@@ -18,18 +18,18 @@ Status: externe CLI-integratie. Gateway communiceert met `signal-cli` via HTTP J
 ## Vereisten
 
 - OpenClaw geïnstalleerd op je server (Linux-flow hieronder getest op Ubuntu 24).
-- `signal-cli` beschikbaar op de host waarop de gateway draait.
+- `signal-cli` beschikbaar op de host waarop de Gateway draait.
 - Een telefoonnummer dat één verificatie-sms kan ontvangen (voor het registratiepad via sms).
 - Browsertoegang voor Signal-captcha (`signalcaptchas.org`) tijdens registratie.
 
-## Snelle installatie (beginner)
+## Snelle configuratie (beginner)
 
 1. Gebruik een **apart Signal-nummer** voor de bot (aanbevolen).
 2. Installeer `signal-cli` (Java vereist als je de JVM-build gebruikt).
-3. Kies één installatiepad:
+3. Kies één configuratiepad:
    - **Pad A (QR-koppeling):** `signal-cli link -n "OpenClaw"` en scan met Signal.
-   - **Pad B (sms-registratie):** registreer een speciaal nummer met captcha + sms-verificatie.
-4. Configureer OpenClaw en herstart de gateway.
+   - **Pad B (registreren via sms):** registreer een toegewezen nummer met captcha + sms-verificatie.
+4. Configureer OpenClaw en herstart de Gateway.
 5. Stuur een eerste DM en keur koppeling goed (`openclaw pairing approve signal <CODE>`).
 
 Minimale configuratie:
@@ -54,7 +54,7 @@ Veldreferentie:
 | ----------- | ------------------------------------------------- |
 | `account`   | Bot-telefoonnummer in E.164-indeling (`+15551234567`) |
 | `cliPath`   | Pad naar `signal-cli` (`signal-cli` indien op `PATH`) |
-| `dmPolicy`  | DM-toegangsbeleid (`pairing` aanbevolen)          |
+| `dmPolicy`  | Toegangsbeleid voor DM's (`pairing` aanbevolen)   |
 | `allowFrom` | Telefoonnummers of `uuid:<id>`-waarden die mogen DM'en |
 
 ## Wat het is
@@ -63,9 +63,9 @@ Veldreferentie:
 - Deterministische routering: antwoorden gaan altijd terug naar Signal.
 - DM's delen de hoofdsessie van de agent; groepen zijn geïsoleerd (`agent:<agentId>:signal:group:<groupId>`).
 
-## Configuratiewijzigingen schrijven
+## Configuratieschrijfacties
 
-Signal mag standaard configuratie-updates schrijven die door `/config set|unset` worden geactiveerd (vereist `commands.config: true`).
+Standaard mag Signal configuratie-updates schrijven die door `/config set|unset` worden geactiveerd (vereist `commands.config: true`).
 
 Uitschakelen met:
 
@@ -77,16 +77,16 @@ Uitschakelen met:
 
 ## Het nummermodel (belangrijk)
 
-- De gateway maakt verbinding met een **Signal-apparaat** (het `signal-cli`-account).
-- Als je de bot op **je persoonlijke Signal-account** draait, negeert deze je eigen berichten (lusbescherming).
-- Gebruik een **apart botnummer** voor "ik stuur de bot een bericht en hij antwoordt".
+- De Gateway maakt verbinding met een **Signal-apparaat** (het `signal-cli`-account).
+- Als je de bot uitvoert op **je persoonlijke Signal-account**, negeert deze je eigen berichten (lusbescherming).
+- Gebruik voor "ik stuur de bot een bericht en hij antwoordt" een **apart botnummer**.
 
-## Installatiepad A: bestaand Signal-account koppelen (QR)
+## Configuratiepad A: bestaand Signal-account koppelen (QR)
 
 1. Installeer `signal-cli` (JVM- of native build).
 2. Koppel een botaccount:
    - `signal-cli link -n "OpenClaw"` en scan daarna de QR in Signal.
-3. Configureer Signal en start de gateway.
+3. Configureer Signal en start de Gateway.
 
 Voorbeeld:
 
@@ -106,13 +106,13 @@ Voorbeeld:
 
 Ondersteuning voor meerdere accounts: gebruik `channels.signal.accounts` met configuratie per account en optionele `name`. Zie [`gateway/configuration`](/nl/gateway/config-channels#multi-account-all-channels) voor het gedeelde patroon.
 
-## Installatiepad B: speciaal botnummer registreren (sms, Linux)
+## Configuratiepad B: toegewezen botnummer registreren (sms, Linux)
 
-Gebruik dit wanneer je een speciaal botnummer wilt in plaats van een bestaand Signal-appaccount te koppelen.
+Gebruik dit wanneer je een toegewezen botnummer wilt in plaats van een bestaand Signal-appaccount te koppelen.
 
-1. Regel een nummer dat sms kan ontvangen (of spraakverificatie voor vaste lijnen).
-   - Gebruik een speciaal botnummer om account-/sessieconflicten te voorkomen.
-2. Installeer `signal-cli` op de gateway-host:
+1. Verkrijg een nummer dat sms kan ontvangen (of spraakverificatie voor vaste lijnen).
+   - Gebruik een toegewezen botnummer om account-/sessieconflicten te voorkomen.
+2. Installeer `signal-cli` op de Gateway-host:
 
 ```bash
 VERSION=$(curl -Ls -o /dev/null -w %{url_effective} https://github.com/AsamK/signal-cli/releases/latest | sed -e 's/^.*\/v//')
@@ -122,8 +122,8 @@ sudo ln -sf /opt/signal-cli /usr/local/bin/
 signal-cli --version
 ```
 
-Als je de JVM-build (`signal-cli-${VERSION}.tar.gz`) gebruikt, installeer dan eerst JRE 25+.
-Houd `signal-cli` bijgewerkt; upstream vermeldt dat oude releases kunnen breken wanneer Signal-server-API's veranderen.
+Als je de JVM-build gebruikt (`signal-cli-${VERSION}.tar.gz`), installeer dan eerst JRE 25+.
+Houd `signal-cli` bijgewerkt; upstream vermeldt dat oude releases kunnen breken wanneer Signal-server-API's wijzigen.
 
 3. Registreer en verifieer het nummer:
 
@@ -134,8 +134,8 @@ signal-cli -a +<BOT_PHONE_NUMBER> register
 Als captcha vereist is:
 
 1. Open `https://signalcaptchas.org/registration/generate.html`.
-2. Voltooi de captcha, kopieer het `signalcaptcha://...`-linkdoel uit "Open Signal".
-3. Voer waar mogelijk uit vanaf hetzelfde externe IP-adres als de browsersessie.
+2. Voltooi de captcha, kopieer het doel van de link `signalcaptcha://...` uit "Open Signal".
+3. Voer indien mogelijk uit vanaf hetzelfde externe IP-adres als de browsersessie.
 4. Voer registratie direct opnieuw uit (captcha-tokens verlopen snel):
 
 ```bash
@@ -143,13 +143,13 @@ signal-cli -a +<BOT_PHONE_NUMBER> register --captcha '<SIGNALCAPTCHA_URL>'
 signal-cli -a +<BOT_PHONE_NUMBER> verify <VERIFICATION_CODE>
 ```
 
-4. Configureer OpenClaw, herstart gateway, verifieer het kanaal:
+4. Configureer OpenClaw, herstart de Gateway, verifieer het kanaal:
 
 ```bash
-# If you run the gateway as a user systemd service:
+# Als je de Gateway als een systemd-gebruikersservice uitvoert:
 systemctl --user restart openclaw-gateway.service
 
-# Then verify:
+# Verifieer daarna:
 openclaw doctor
 openclaw channels status --probe
 ```
@@ -160,7 +160,7 @@ openclaw channels status --probe
    - Sla het botnummer op als contact op je telefoon om "Onbekend contact" te voorkomen.
 
 <Warning>
-Het registreren van een telefoonnummeraccount met `signal-cli` kan de hoofd-Signal-appsessie voor dat nummer de-autoriseren. Gebruik bij voorkeur een speciaal botnummer, of gebruik QR-koppelingsmodus als je je bestaande telefoonappinstallatie wilt behouden.
+Het registreren van een telefoonnummeraccount met `signal-cli` kan de hoofdsessie van de Signal-app voor dat nummer de-autoriseren. Gebruik bij voorkeur een toegewezen botnummer, of gebruik de QR-koppelingsmodus als je je bestaande telefoonappconfiguratie wilt behouden.
 </Warning>
 
 Upstream-referenties:
@@ -171,7 +171,7 @@ Upstream-referenties:
 
 ## Externe daemonmodus (httpUrl)
 
-Als je `signal-cli` zelf wilt beheren (trage JVM-koude starts, containerinitialisatie of gedeelde CPU's), draai de daemon dan apart en wijs OpenClaw ernaar:
+Als je `signal-cli` zelf wilt beheren (trage JVM-koude starts, container-initialisatie of gedeelde CPU's), voer de daemon dan apart uit en verwijs OpenClaw ernaar:
 
 ```json5
 {
@@ -184,7 +184,7 @@ Als je `signal-cli` zelf wilt beheren (trage JVM-koude starts, containerinitiali
 }
 ```
 
-Dit slaat automatisch starten en de opstartwachttijd binnen OpenClaw over. Stel voor trage starts bij automatisch starten `channels.signal.startupTimeoutMs` in.
+Dit slaat automatisch starten en het wachten tijdens opstarten binnen OpenClaw over. Stel voor trage starts bij automatisch starten `channels.signal.startupTimeoutMs` in.
 
 ## Toegangscontrole (DM's + groepen)
 
@@ -195,44 +195,44 @@ DM's:
 - Goedkeuren via:
   - `openclaw pairing list signal`
   - `openclaw pairing approve signal <CODE>`
-- Koppelen is de standaard tokenuitwisseling voor Signal-DM's. Details: [Koppelen](/nl/channels/pairing)
+- Koppeling is de standaard tokenuitwisseling voor Signal-DM's. Details: [Koppeling](/nl/channels/pairing)
 - Afzenders met alleen UUID (uit `sourceUuid`) worden opgeslagen als `uuid:<id>` in `channels.signal.allowFrom`.
 
 Groepen:
 
 - `channels.signal.groupPolicy = open | allowlist | disabled`.
-- `channels.signal.groupAllowFrom` bepaalt welke groepen of afzenders groepsantwoorden kunnen activeren wanneer `allowlist` is ingesteld; vermeldingen kunnen Signal-groeps-ID's zijn (raw, `group:<id>` of `signal:group:<id>`), telefoonnummers van afzenders, `uuid:<id>`-waarden of `*`.
+- `channels.signal.groupAllowFrom` bepaalt welke groepen of afzenders groepsantwoorden kunnen activeren wanneer `allowlist` is ingesteld; vermeldingen kunnen Signal-groeps-ID's zijn (onbewerkt, `group:<id>` of `signal:group:<id>`), telefoonnummers van afzenders, `uuid:<id>`-waarden of `*`.
 - `channels.signal.groups["<group-id>" | "*"]` kan groepsgedrag overschrijven met `requireMention`, `tools` en `toolsBySender`.
-- Gebruik `channels.signal.accounts.<id>.groups` voor overschrijvingen per account in installaties met meerdere accounts.
-- Het toestaan van een Signal-groep via `groupAllowFrom` schakelt mention-gating niet op zichzelf uit. Een specifiek geconfigureerde vermelding `channels.signal.groups["<group-id>"]` verwerkt elk groepsbericht tenzij `requireMention=true` is ingesteld.
+- Gebruik `channels.signal.accounts.<id>.groups` voor overschrijvingen per account in configuraties met meerdere accounts.
+- Het toestaan van een Signal-groep via `groupAllowFrom` schakelt vermeldingscontrole op zichzelf niet uit. Een specifiek geconfigureerde vermelding `channels.signal.groups["<group-id>"]` verwerkt elk groepsbericht tenzij `requireMention=true` is ingesteld.
 - Runtime-opmerking: als `channels.signal` volledig ontbreekt, valt runtime terug op `groupPolicy="allowlist"` voor groepscontroles (zelfs als `channels.defaults.groupPolicy` is ingesteld).
 
 ## Hoe het werkt (gedrag)
 
-- `signal-cli` draait als daemon; de gateway leest gebeurtenissen via SSE.
+- `signal-cli` draait als daemon; de Gateway leest gebeurtenissen via SSE.
 - Inkomende berichten worden genormaliseerd naar de gedeelde kanaalenvelop.
 - Antwoorden worden altijd teruggeleid naar hetzelfde nummer of dezelfde groep.
 
 ## Media + limieten
 
 - Uitgaande tekst wordt opgesplitst tot `channels.signal.textChunkLimit` (standaard 4000).
-- Optioneel opsplitsen op nieuwe regels: stel `channels.signal.chunkMode="newline"` in om te splitsen op lege regels (alineagrenzen) vóór opsplitsing op lengte.
-- Bijlagen worden ondersteund (base64 opgehaald uit `signal-cli`).
-- Spraaknotitiebijlagen gebruiken de `signal-cli`-bestandsnaam als MIME-fallback wanneer `contentType` ontbreekt, zodat audiotranscriptie AAC-spraakmemo's nog steeds kan classificeren.
+- Optioneel opsplitsen op nieuwe regels: stel `channels.signal.chunkMode="newline"` in om op lege regels (alineagrenzen) te splitsen vóór opsplitsing op lengte.
+- Bijlagen ondersteund (base64 opgehaald uit `signal-cli`).
+- Bijlagen met spraaknotities gebruiken de bestandsnaam van `signal-cli` als MIME-terugval wanneer `contentType` ontbreekt, zodat audiotranscriptie AAC-spraakmemo's nog steeds kan classificeren.
 - Standaard medialimiet: `channels.signal.mediaMaxMb` (standaard 8).
 - Gebruik `channels.signal.ignoreAttachments` om het downloaden van media over te slaan.
-- Context voor groepsgeschiedenis gebruikt `channels.signal.historyLimit` (of `channels.signal.accounts.*.historyLimit`) en valt terug op `messages.groupChat.historyLimit`. Stel in op `0` om uit te schakelen (standaard 50).
+- Groepsgeschiedeniscontext gebruikt `channels.signal.historyLimit` (of `channels.signal.accounts.*.historyLimit`) en valt terug op `messages.groupChat.historyLimit`. Stel `0` in om uit te schakelen (standaard 50).
 
-## Typen + leesbevestigingen
+## Typen + leesbewijzen
 
-- **Typindicatoren**: OpenClaw stuurt typsignalen via `signal-cli sendTyping` en vernieuwt ze terwijl een antwoord loopt.
-- **Leesbevestigingen**: wanneer `channels.signal.sendReadReceipts` waar is, stuurt OpenClaw leesbevestigingen door voor toegestane DM's.
-- Signal-cli stelt geen leesbevestigingen voor groepen beschikbaar.
+- **Typindicatoren**: OpenClaw stuurt typsignalen via `signal-cli sendTyping` en vernieuwt deze terwijl een antwoord wordt uitgevoerd.
+- **Leesbewijzen**: wanneer `channels.signal.sendReadReceipts` true is, stuurt OpenClaw leesbewijzen door voor toegestane DM's.
+- Signal-cli stelt geen leesbewijzen voor groepen beschikbaar.
 
 ## Reacties (berichttool)
 
 - Gebruik `message action=react` met `channel=signal`.
-- Doelen: afzender E.164 of UUID (gebruik `uuid:<id>` uit de koppelingsuitvoer; kale UUID werkt ook).
+- Doelen: E.164 van afzender of UUID (gebruik `uuid:<id>` uit koppelingsuitvoer; kale UUID werkt ook).
 - `messageId` is de Signal-tijdstempel voor het bericht waarop je reageert.
 - Groepsreacties vereisen `targetAuthor` of `targetAuthorUuid`.
 
@@ -246,7 +246,7 @@ message action=react channel=signal target=signal:group:<groupId> targetAuthor=u
 
 Configuratie:
 
-- `channels.signal.actions.reactions`: reactieacties inschakelen/uitschakelen (standaard waar).
+- `channels.signal.actions.reactions`: reactieacties in-/uitschakelen (standaard true).
 - `channels.signal.reactionLevel`: `off | ack | minimal | extensive`.
   - `off`/`ack` schakelt agentreacties uit (berichttool `react` geeft een fout).
   - `minimal`/`extensive` schakelt agentreacties in en stelt het begeleidingsniveau in.
@@ -257,7 +257,7 @@ Configuratie:
 - DM's: `signal:+15551234567` (of gewone E.164).
 - UUID-DM's: `uuid:<id>` (of kale UUID).
 - Groepen: `signal:group:<groupId>`.
-- Gebruikersnamen: `username:<name>` (indien ondersteund door je Signal-account).
+- Gebruikersnamen: `username:<name>` (als ondersteund door je Signal-account).
 
 ## Probleemoplossing
 
@@ -271,7 +271,7 @@ openclaw doctor
 openclaw channels status --probe
 ```
 
-Controleer daarna indien nodig de DM-koppelingsstatus:
+Bevestig daarna indien nodig de DM-koppelingsstatus:
 
 ```bash
 openclaw pairing list signal
@@ -281,7 +281,7 @@ Veelvoorkomende fouten:
 
 - Daemon bereikbaar maar geen antwoorden: verifieer account-/daemoninstellingen (`httpUrl`, `account`) en ontvangstmodus.
 - DM's genegeerd: afzender wacht op goedkeuring voor koppeling.
-- Groepsberichten genegeerd: groepsafzender-/mention-gating blokkeert bezorging.
+- Groepsberichten genegeerd: afzender-/vermeldingscontrole voor groep blokkeert bezorging.
 - Configuratievalidatiefouten na bewerkingen: voer `openclaw doctor --fix` uit.
 - Signal ontbreekt in diagnostiek: bevestig `channels.signal.enabled: true`.
 
@@ -295,12 +295,12 @@ grep -i "signal" "/tmp/openclaw/openclaw-$(date +%Y-%m-%d).log" | tail -20
 
 Voor triageflow: [/channels/troubleshooting](/nl/channels/troubleshooting).
 
-## Beveiligingsnotities
+## Beveiligingsopmerkingen
 
 - `signal-cli` slaat accountsleutels lokaal op (meestal `~/.local/share/signal-cli/data/`).
 - Maak een back-up van de Signal-accountstatus vóór servermigratie of herbouw.
 - Houd `channels.signal.dmPolicy: "pairing"` aan tenzij je expliciet bredere DM-toegang wilt.
-- Sms-verificatie is alleen nodig voor registratie- of herstelflows, maar verlies van controle over het nummer/account kan herregistratie ingewikkeld maken.
+- Sms-verificatie is alleen nodig voor registratie- of herstelflows, maar controleverlies over het nummer/account kan herregistratie bemoeilijken.
 
 ## Configuratiereferentie (Signal)
 
@@ -308,27 +308,27 @@ Volledige configuratie: [Configuratie](/nl/gateway/configuration)
 
 Provideropties:
 
-- `channels.signal.enabled`: kanaalstart in-/uitschakelen.
+- `channels.signal.enabled`: schakel het opstarten van het kanaal in/uit.
 - `channels.signal.account`: E.164 voor het botaccount.
 - `channels.signal.cliPath`: pad naar `signal-cli`.
-- `channels.signal.httpUrl`: volledige daemon-URL (overschrijft host/port).
-- `channels.signal.httpHost`, `channels.signal.httpPort`: daemonbinding (standaard 127.0.0.1:8080).
+- `channels.signal.httpUrl`: volledige daemon-URL (overschrijft host/poort).
+- `channels.signal.httpHost`, `channels.signal.httpPort`: daemon-bind (standaard 127.0.0.1:8080).
 - `channels.signal.autoStart`: daemon automatisch starten (standaard true als `httpUrl` niet is ingesteld).
-- `channels.signal.startupTimeoutMs`: wachttijdlimiet voor opstarten in ms (maximum 120000).
+- `channels.signal.startupTimeoutMs`: time-out voor wachten bij opstarten in ms (maximum 120000).
 - `channels.signal.receiveMode`: `on-start | manual`.
 - `channels.signal.ignoreAttachments`: downloads van bijlagen overslaan.
-- `channels.signal.ignoreStories`: verhalen van de daemon negeren.
+- `channels.signal.ignoreStories`: stories van de daemon negeren.
 - `channels.signal.sendReadReceipts`: leesbevestigingen doorsturen.
 - `channels.signal.dmPolicy`: `pairing | allowlist | open | disabled` (standaard: pairing).
-- `channels.signal.allowFrom`: DM-toestaanlijst (E.164 of `uuid:<id>`). `open` vereist `"*"`. Signal heeft geen gebruikersnamen; gebruik telefoon-/UUID-id's.
+- `channels.signal.allowFrom`: DM-toelatingslijst (E.164 of `uuid:<id>`). `open` vereist `"*"`. Signal heeft geen gebruikersnamen; gebruik telefoon-/UUID-id's.
 - `channels.signal.groupPolicy`: `open | allowlist | disabled` (standaard: allowlist).
-- `channels.signal.groupAllowFrom`: groepstoestaanlijst; accepteert Signal-groeps-ID's (raw, `group:<id>` of `signal:group:<id>`), E.164-nummers van afzenders of `uuid:<id>`-waarden.
-- `channels.signal.groups`: overschrijvingen per groep, gesleuteld op Signal-groeps-ID (of `"*"`). Ondersteunde velden: `requireMention`, `tools`, `toolsBySender`.
+- `channels.signal.groupAllowFrom`: groepstoelatingslijst; accepteert Signal-groeps-ID's (ruw, `group:<id>` of `signal:group:<id>`), E.164-nummers van afzenders of `uuid:<id>`-waarden.
+- `channels.signal.groups`: overschrijvingen per groep, gesleuteld op Signal-groeps-id (of `"*"`). Ondersteunde velden: `requireMention`, `tools`, `toolsBySender`.
 - `channels.signal.accounts.<id>.groups`: versie per account van `channels.signal.groups` voor configuraties met meerdere accounts.
-- `channels.signal.historyLimit`: maximaal aantal groepsberichten om als context op te nemen (0 schakelt uit).
+- `channels.signal.historyLimit`: maximumaantal groepsberichten om als context op te nemen (0 schakelt dit uit).
 - `channels.signal.dmHistoryLimit`: limiet voor DM-geschiedenis in gebruikersbeurten. Overschrijvingen per gebruiker: `channels.signal.dms["<phone_or_uuid>"].historyLimit`.
-- `channels.signal.textChunkLimit`: grootte van uitgaande stukken (tekens).
-- `channels.signal.chunkMode`: `length` (standaard) of `newline` om te splitsen op lege regels (alineagrenzen) vóór splitsing op lengte.
+- `channels.signal.textChunkLimit`: grootte van uitgaande chunks (tekens).
+- `channels.signal.chunkMode`: `length` (standaard) of `newline` om op lege regels (alineagrenzen) te splitsen vóór chunking op lengte.
 - `channels.signal.mediaMaxMb`: limiet voor inkomende/uitgaande media (MB).
 
 Gerelateerde globale opties:
@@ -339,8 +339,8 @@ Gerelateerde globale opties:
 
 ## Gerelateerd
 
-- [Kanalenoverzicht](/nl/channels) — alle ondersteunde kanalen
-- [Koppeling](/nl/channels/pairing) — DM-authenticatie en koppelingsstroom
-- [Groepen](/nl/channels/groups) — gedrag van groepschats en vermeldingsafscherming
+- [Overzicht van kanalen](/nl/channels) — alle ondersteunde kanalen
+- [Koppelen](/nl/channels/pairing) — DM-authenticatie en koppelingsstroom
+- [Groepen](/nl/channels/groups) — groepschatgedrag en mention-gating
 - [Kanaalroutering](/nl/channels/channel-routing) — sessieroutering voor berichten
 - [Beveiliging](/nl/gateway/security) — toegangsmodel en hardening

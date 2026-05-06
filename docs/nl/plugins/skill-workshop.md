@@ -1,23 +1,23 @@
 ---
 read_when:
-    - Je wilt dat agenten correcties of herbruikbare procedures omzetten in werkruimte-Skills
+    - Je wilt dat agents correcties of herbruikbare procedures omzetten in werkruimte-Skills
     - Je configureert procedureel vaardigheidsgeheugen
-    - Je debugt het gedrag van de skill_workshop-tool
-    - Je bepaalt of je automatische aanmaak van Skills wilt inschakelen
-summary: Experimentele vastlegging van herbruikbare procedures als werkruimte-Skills met beoordeling, goedkeuring, quarantaine en directe Skills-vernieuwing
-title: Skill-workshop-Plugin
+    - Je debugt het gedrag van het hulpprogramma skill_workshop
+    - U bepaalt of u het automatisch aanmaken van Skills wilt inschakelen
+summary: Experimentele vastlegging van herbruikbare procedures als werkruimte-Skills met beoordeling, goedkeuring, quarantaine en directe Skill-verversing
+title: Skills-workshop-Plugin
 x-i18n:
-    generated_at: "2026-04-29T23:07:11Z"
+    generated_at: "2026-05-06T09:27:50Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e6063843bf15e639d7f5943db1bab52fbffce6ec30af350221d8b3cd711e227b
+    source_hash: 03c4259777823d256bd00374858b9f47d310e727db360db37f9ba7ad3583d9dc
     source_path: plugins/skill-workshop.md
     workflow: 16
 ---
 
-Skill Workshop is **experimenteel**. Het is standaard uitgeschakeld, de capture-heuristieken en reviewer-prompts kunnen tussen releases veranderen, en automatische schrijfacties moeten alleen worden gebruikt in vertrouwde workspaces nadat de uitvoer in pending-modus eerst is beoordeeld.
+Skill Workshop is **experimenteel**. Het is standaard uitgeschakeld, de capture-heuristieken en reviewer-prompts kunnen tussen releases veranderen, en automatische schrijfbewerkingen mogen alleen in vertrouwde werkruimten worden gebruikt nadat eerst de output in pending-modus is beoordeeld.
 
-Skill Workshop is procedureel geheugen voor workspace-Skills. Het laat een agent herbruikbare workflows, gebruikerscorrecties, moeizaam gevonden oplossingen en terugkerende valkuilen omzetten in `SKILL.md`-bestanden onder:
+Skill Workshop is procedureel geheugen voor werkruimte-Skills. Hiermee kan een agent herbruikbare workflows, gebruikerscorrecties, moeizaam gevonden oplossingen en terugkerende valkuilen omzetten in `SKILL.md`-bestanden onder:
 
 ```text
 <workspace>/skills/<skill-name>/SKILL.md
@@ -25,38 +25,38 @@ Skill Workshop is procedureel geheugen voor workspace-Skills. Het laat een agent
 
 Dit verschilt van langetermijngeheugen:
 
-- **Memory** bewaart feiten, voorkeuren, entiteiten en eerdere context.
+- **Geheugen** bewaart feiten, voorkeuren, entiteiten en eerdere context.
 - **Skills** bewaren herbruikbare procedures die de agent bij toekomstige taken moet volgen.
-- **Skill Workshop** is de brug van een nuttige beurt naar een duurzame workspace-Skill, met veiligheidscontroles en optionele goedkeuring.
+- **Skill Workshop** is de brug van een nuttige beurt naar een duurzame werkruimte-Skill, met veiligheidscontroles en optionele goedkeuring.
 
-Skill Workshop is nuttig wanneer de agent een procedure leert zoals:
+Skill Workshop is nuttig wanneer de agent een procedure leert, zoals:
 
 - hoe extern verkregen geanimeerde GIF-assets te valideren
 - hoe screenshot-assets te vervangen en afmetingen te verifiëren
 - hoe een repo-specifiek QA-scenario uit te voeren
-- hoe een terugkerende providerfout te debuggen
-- hoe een verouderde lokale workflownotitie te herstellen
+- hoe een terugkerende provider-fout te debuggen
+- hoe een verouderde lokale workflow-notitie te repareren
 
 Het is niet bedoeld voor:
 
-- feiten zoals “de gebruiker houdt van blauw”
-- brede autobiografische herinneringen
+- feiten zoals "de gebruiker houdt van blauw"
+- breed autobiografisch geheugen
 - ruwe transcriptarchivering
-- secrets, inloggegevens of verborgen prompttekst
+- geheimen, referenties of verborgen prompttekst
 - eenmalige instructies die zich niet zullen herhalen
 
 ## Standaardstatus
 
-De gebundelde plugin is **experimenteel** en **standaard uitgeschakeld**, tenzij deze expliciet is ingeschakeld in `plugins.entries.skill-workshop`.
+De gebundelde Plugin is **experimenteel** en **standaard uitgeschakeld**, tenzij deze expliciet is ingeschakeld in `plugins.entries.skill-workshop`.
 
-Het pluginmanifest stelt `enabledByDefault: true` niet in. De standaardwaarde `enabled: true` binnen het configuratieschema van de plugin geldt alleen nadat de pluginvermelding al is geselecteerd en geladen.
+Het Plugin-manifest stelt `enabledByDefault: true` niet in. De standaardwaarde `enabled: true` binnen het Plugin-configuratieschema geldt pas nadat de Plugin-vermelding al is geselecteerd en geladen.
 
 Experimenteel betekent:
 
-- de plugin wordt voldoende ondersteund voor opt-in testen en dogfooding
-- opslag van voorstellen, reviewer-drempels en capture-heuristieken kunnen evolueren
-- goedkeuring in pending-modus is de aanbevolen startmodus
-- automatisch toepassen is voor vertrouwde persoonlijke/workspace-setups, niet voor gedeelde of vijandige omgevingen met veel invoer
+- de Plugin wordt voldoende ondersteund voor opt-in testen en dogfooding
+- opslag van voorstellen, reviewerdrempels en capture-heuristieken kunnen evolueren
+- pending-goedkeuring is de aanbevolen startmodus
+- automatisch toepassen is bedoeld voor vertrouwde persoonlijke/werkruimte-setups, niet voor gedeelde of vijandige omgevingen met veel invoer
 
 ## Inschakelen
 
@@ -82,11 +82,11 @@ Minimale veilige configuratie:
 Met deze configuratie:
 
 - is de tool `skill_workshop` beschikbaar
-- worden expliciete herbruikbare correcties in de wachtrij gezet als pending voorstellen
-- kunnen reviewer-runs op basis van drempels Skill-updates voorstellen
-- wordt er geen Skill-bestand geschreven totdat een pending voorstel wordt toegepast
+- worden expliciete herbruikbare correcties in de wachtrij gezet als pending-voorstellen
+- kunnen drempelgebaseerde reviewer-runs Skill-updates voorstellen
+- wordt er geen Skill-bestand geschreven totdat een pending-voorstel is toegepast
 
-Gebruik automatische schrijfacties alleen in vertrouwde workspaces:
+Gebruik automatische schrijfbewerkingen alleen in vertrouwde werkruimten:
 
 ```json5
 {
@@ -105,21 +105,21 @@ Gebruik automatische schrijfacties alleen in vertrouwde workspaces:
 }
 ```
 
-`approvalPolicy: "auto"` gebruikt nog steeds dezelfde scanner en quarantaineroute. Het past geen voorstellen toe met kritieke bevindingen.
+`approvalPolicy: "auto"` gebruikt nog steeds dezelfde scanner en hetzelfde quarantainepad. Het past geen voorstellen toe met kritieke bevindingen.
 
 ## Configuratie
 
-| Sleutel              | Standaard   | Bereik / waarden                            | Betekenis                                                            |
-| -------------------- | ----------- | ------------------------------------------- | -------------------------------------------------------------------- |
-| `enabled`            | `true`      | boolean                                     | Schakelt de plugin in nadat de pluginvermelding is geladen.          |
-| `autoCapture`        | `true`      | boolean                                     | Schakelt capture/review na de beurt in bij geslaagde agentbeurten.   |
-| `approvalPolicy`     | `"pending"` | `"pending"`, `"auto"`                       | Zet voorstellen in de wachtrij of schrijft veilige voorstellen automatisch. |
-| `reviewMode`         | `"hybrid"`  | `"off"`, `"heuristic"`, `"llm"`, `"hybrid"` | Kiest expliciete capture van correcties, LLM-reviewer, beide of geen van beide. |
-| `reviewInterval`     | `15`        | `1..200`                                    | Voer de reviewer uit na zoveel geslaagde beurten.                    |
-| `reviewMinToolCalls` | `8`         | `1..500`                                    | Voer de reviewer uit na zoveel waargenomen toolaanroepen.            |
-| `reviewTimeoutMs`    | `45000`     | `5000..180000`                              | Timeout voor de ingebedde reviewer-run.                              |
-| `maxPending`         | `50`        | `1..200`                                    | Maximaal aantal pending/gequarantaineerde voorstellen dat per workspace wordt bewaard. |
-| `maxSkillBytes`      | `40000`     | `1024..200000`                              | Maximale grootte van gegenereerd Skill-/ondersteuningsbestand.       |
+| Sleutel              | Standaard   | Bereik / waarden                            | Betekenis                                                           |
+| -------------------- | ----------- | ------------------------------------------- | ------------------------------------------------------------------- |
+| `enabled`            | `true`      | boolean                                     | Schakelt de Plugin in nadat de Plugin-vermelding is geladen.        |
+| `autoCapture`        | `true`      | boolean                                     | Schakelt capture/review na de beurt in bij geslaagde agentbeurten.  |
+| `approvalPolicy`     | `"pending"` | `"pending"`, `"auto"`                       | Zet voorstellen in de wachtrij of schrijf veilige voorstellen automatisch. |
+| `reviewMode`         | `"hybrid"`  | `"off"`, `"heuristic"`, `"llm"`, `"hybrid"` | Kiest expliciete correctie-capture, LLM-reviewer, beide of geen van beide. |
+| `reviewInterval`     | `15`        | `1..200`                                    | Voer de reviewer uit na zoveel geslaagde beurten.                   |
+| `reviewMinToolCalls` | `8`         | `1..500`                                    | Voer de reviewer uit na zoveel waargenomen tool-aanroepen.          |
+| `reviewTimeoutMs`    | `45000`     | `5000..180000`                              | Time-out voor de ingebedde reviewer-run.                            |
+| `maxPending`         | `50`        | `1..200`                                    | Maximaal aantal pending/gequarantaineerde voorstellen per werkruimte. |
+| `maxSkillBytes`      | `40000`     | `1024..200000`                              | Maximale grootte van gegenereerd Skill-/ondersteuningsbestand.      |
 
 Aanbevolen profielen:
 
@@ -159,19 +159,19 @@ Aanbevolen profielen:
 }
 ```
 
-## Capture-routes
+## Capture-paden
 
-Skill Workshop heeft drie capture-routes.
+Skill Workshop heeft drie capture-paden.
 
-### Toolsuggesties
+### Tool-suggesties
 
-Het model kan `skill_workshop` rechtstreeks aanroepen wanneer het een herbruikbare procedure ziet of wanneer de gebruiker vraagt een Skill op te slaan/bij te werken.
+Het model kan `skill_workshop` direct aanroepen wanneer het een herbruikbare procedure ziet of wanneer de gebruiker vraagt om een Skill op te slaan/bij te werken.
 
-Dit is de meest expliciete route en werkt zelfs met `autoCapture: false`.
+Dit is het meest expliciete pad en werkt zelfs met `autoCapture: false`.
 
 ### Heuristische capture
 
-Wanneer `autoCapture` is ingeschakeld en `reviewMode` `heuristic` of `hybrid` is, scant de plugin geslaagde beurten op expliciete gebruikerscorrecties:
+Wanneer `autoCapture` is ingeschakeld en `reviewMode` `heuristic` of `hybrid` is, scant de Plugin geslaagde beurten op expliciete correctiezinnen van gebruikers:
 
 - `next time`
 - `from now on`
@@ -181,10 +181,10 @@ Wanneer `autoCapture` is ingeschakeld en `reviewMode` `heuristic` of `hybrid` is
 - `prefer ... when/for/instead/use`
 - `when asked`
 
-De heuristiek maakt een voorstel op basis van de meest recente overeenkomende gebruikersinstructie. Ze gebruikt onderwerphints om Skill-namen te kiezen voor veelvoorkomende workflows:
+De heuristiek maakt een voorstel op basis van de meest recente overeenkomende gebruikersinstructie. Deze gebruikt onderwerphints om Skill-namen te kiezen voor veelvoorkomende workflows:
 
 - geanimeerde GIF-taken -> `animated-gif-workflow`
-- screenshot- of asset-taken -> `screenshot-asset-workflow`
+- screenshot- of assettaken -> `screenshot-asset-workflow`
 - QA- of scenariotaken -> `qa-scenario-workflow`
 - GitHub PR-taken -> `github-pr-workflow`
 - fallback -> `learned-workflows`
@@ -193,14 +193,14 @@ Heuristische capture is bewust smal. Het is bedoeld voor duidelijke correcties e
 
 ### LLM-reviewer
 
-Wanneer `autoCapture` is ingeschakeld en `reviewMode` `llm` of `hybrid` is, voert de plugin een compacte ingebedde reviewer uit nadat drempels zijn bereikt.
+Wanneer `autoCapture` is ingeschakeld en `reviewMode` `llm` of `hybrid` is, voert de Plugin een compacte ingebedde reviewer uit nadat drempels zijn bereikt.
 
 De reviewer ontvangt:
 
 - de recente transcripttekst, beperkt tot de laatste 12.000 tekens
-- maximaal 12 bestaande workspace-Skills
+- maximaal 12 bestaande werkruimte-Skills
 - maximaal 2.000 tekens uit elke bestaande Skill
-- instructies die alleen JSON toestaan
+- instructies uitsluitend in JSON
 
 De reviewer heeft geen tools:
 
@@ -208,7 +208,7 @@ De reviewer heeft geen tools:
 - `toolsAllow: []`
 - `disableMessageTool: true`
 
-De reviewer retourneert ofwel `{ "action": "none" }` of één voorstel. Het veld `action` is `create`, `append` of `replace` — geef de voorkeur aan `append`/`replace` wanneer er al een relevante Skill bestaat; gebruik `create` alleen wanneer geen bestaande Skill past.
+De reviewer retourneert ofwel `{ "action": "none" }` of één voorstel. Het veld `action` is `create`, `append` of `replace` - geef de voorkeur aan `append`/`replace` wanneer er al een relevante Skill bestaat; gebruik `create` alleen wanneer er geen bestaande Skill past.
 
 Voorbeeld van `create`:
 
@@ -233,35 +233,35 @@ Elke gegenereerde update wordt een voorstel met:
 - `createdAt`
 - `updatedAt`
 - `workspaceDir`
-- optioneel `agentId`
-- optioneel `sessionId`
+- optionele `agentId`
+- optionele `sessionId`
 - `skillName`
 - `title`
 - `reason`
 - `source`: `tool`, `agent_end` of `reviewer`
 - `status`
 - `change`
-- optioneel `scanFindings`
-- optioneel `quarantineReason`
+- optionele `scanFindings`
+- optionele `quarantineReason`
 
 Voorstelstatussen:
 
 - `pending` - wacht op goedkeuring
 - `applied` - geschreven naar `<workspace>/skills`
-- `rejected` - afgewezen door operator/model
+- `rejected` - geweigerd door operator/model
 - `quarantined` - geblokkeerd door kritieke scannerbevindingen
 
-Status wordt per werkruimte opgeslagen onder de Gateway-statusmap:
+De status wordt per workspace opgeslagen onder de Gateway-statusmap:
 
 ```text
 <stateDir>/skill-workshop/<workspace-hash>.json
 ```
 
-Wachtende en in quarantaine geplaatste voorstellen worden gededupliceerd op skillnaam en wijzigingspayload. De opslag bewaart de nieuwste wachtende/in quarantaine geplaatste voorstellen tot maximaal `maxPending`.
+Voorstellen in behandeling en in quarantaine worden ontdubbeld op skillnaam en wijzigingspayload. De opslag bewaart de nieuwste voorstellen in behandeling/in quarantaine tot maximaal `maxPending`.
 
 ## Toolreferentie
 
-De plugin registreert één agenttool:
+De Plugin registreert één agenttool:
 
 ```text
 skill_workshop
@@ -269,13 +269,13 @@ skill_workshop
 
 ### `status`
 
-Tel voorstellen per status voor de actieve werkruimte.
+Tel voorstellen per status voor de actieve workspace.
 
 ```json
 { "action": "status" }
 ```
 
-Resultaatstructuur:
+Resultaatvorm:
 
 ```json
 {
@@ -289,7 +289,7 @@ Resultaatstructuur:
 
 ### `list_pending`
 
-Maak een lijst van wachtende voorstellen.
+Geef voorstellen in behandeling weer.
 
 ```json
 { "action": "list_pending" }
@@ -310,18 +310,17 @@ Geldige `status`-waarden:
 
 ### `list_quarantine`
 
-Maak een lijst van in quarantaine geplaatste voorstellen.
+Geef voorstellen in quarantaine weer.
 
 ```json
 { "action": "list_quarantine" }
 ```
 
-Gebruik dit wanneer automatische vastlegging niets lijkt te doen en de logboeken
-`skill-workshop: quarantined <skill>` vermelden.
+Gebruik dit wanneer automatische vastlegging niets lijkt te doen en de logs `skill-workshop: quarantined <skill>` vermelden.
 
 ### `inspect`
 
-Haal een voorstel op aan de hand van de id.
+Haal een voorstel op met id.
 
 ```json
 {
@@ -332,7 +331,7 @@ Haal een voorstel op aan de hand van de id.
 
 ### `suggest`
 
-Maak een voorstel aan. Met `approvalPolicy: "pending"` (standaard) wordt dit in de wachtrij geplaatst in plaats van geschreven.
+Maak een voorstel. Met `approvalPolicy: "pending"` (standaard) wordt dit in de wachtrij gezet in plaats van geschreven.
 
 ```json
 {
@@ -346,7 +345,7 @@ Maak een voorstel aan. Met `approvalPolicy: "pending"` (standaard) wordt dit in 
 ```
 
 <AccordionGroup>
-  <Accordion title="Force a safe write (apply: true)">
+  <Accordion title="Een veilige schrijfactie afdwingen (apply: true)">
 
 ```json
 {
@@ -360,7 +359,7 @@ Maak een voorstel aan. Met `approvalPolicy: "pending"` (standaard) wordt dit in 
 
   </Accordion>
 
-  <Accordion title="Force pending under auto policy (apply: false)">
+  <Accordion title="In behandeling afdwingen onder automatisch beleid (apply: false)">
 
 ```json
 {
@@ -374,7 +373,7 @@ Maak een voorstel aan. Met `approvalPolicy: "pending"` (standaard) wordt dit in 
 
   </Accordion>
 
-  <Accordion title="Append to a named section">
+  <Accordion title="Toevoegen aan een benoemde sectie">
 
 ```json
 {
@@ -388,7 +387,7 @@ Maak een voorstel aan. Met `approvalPolicy: "pending"` (standaard) wordt dit in 
 
   </Accordion>
 
-  <Accordion title="Replace exact text">
+  <Accordion title="Exacte tekst vervangen">
 
 ```json
 {
@@ -404,7 +403,7 @@ Maak een voorstel aan. Met `approvalPolicy: "pending"` (standaard) wordt dit in 
 
 ### `apply`
 
-Pas een wachtend voorstel toe.
+Pas een voorstel in behandeling toe.
 
 ```json
 {
@@ -413,7 +412,7 @@ Pas een wachtend voorstel toe.
 }
 ```
 
-`apply` weigert in quarantaine geplaatste voorstellen:
+`apply` weigert voorstellen in quarantaine:
 
 ```text
 quarantined proposal cannot be applied
@@ -421,7 +420,7 @@ quarantined proposal cannot be applied
 
 ### `reject`
 
-Markeer een voorstel als afgewezen.
+Markeer een voorstel als geweigerd.
 
 ```json
 {
@@ -434,7 +433,7 @@ Markeer een voorstel als afgewezen.
 
 Schrijf een ondersteunend bestand binnen een bestaande of voorgestelde skillmap.
 
-Toegestane ondersteuningsmappen op het hoogste niveau:
+Toegestane ondersteuningsmappen op topniveau:
 
 - `references/`
 - `templates/`
@@ -455,7 +454,7 @@ Voorbeeld:
 Ondersteuningsbestanden zijn werkruimte-gebonden, pad-gecontroleerd, byte-beperkt door
 `maxSkillBytes`, gescand en atomair geschreven.
 
-## Skill-schrijfacties
+## Skill-schrijfbewerkingen
 
 Skill Workshop schrijft alleen onder:
 
@@ -478,7 +477,7 @@ Voor `create`:
 
 Voor `append`:
 
-- als de skill bestaat, voegt Skill Workshop toe aan de aangevraagde sectie
+- als de skill bestaat, voegt Skill Workshop toe aan de gevraagde sectie
 - als deze niet bestaat, maakt Skill Workshop een minimale skill en voegt daarna toe
 
 Voor `replace`:
@@ -487,29 +486,28 @@ Voor `replace`:
 - `oldText` moet exact aanwezig zijn
 - alleen de eerste exacte overeenkomst wordt vervangen
 
-Alle schrijfacties zijn atomair en verversen de in-memory skills-snapshot meteen, zodat
-de nieuwe of bijgewerkte skill zichtbaar kan worden zonder een Gateway-herstart.
+Alle schrijfbewerkingen zijn atomair en vernieuwen de skills-snapshot in het geheugen onmiddellijk, zodat
+de nieuwe of bijgewerkte skill zichtbaar kan worden zonder herstart van de Gateway.
 
 ## Veiligheidsmodel
 
-Skill Workshop heeft een veiligheidsscanner voor gegenereerde `SKILL.md`-inhoud en
-ondersteuningsbestanden.
+Skill Workshop heeft een veiligheidsscanner voor gegenereerde `SKILL.md`-inhoud en ondersteuningsbestanden.
 
 Kritieke bevindingen plaatsen voorstellen in quarantaine:
 
-| Regel-id                               | Blokkeert inhoud die...                                              |
-| -------------------------------------- | -------------------------------------------------------------------- |
-| `prompt-injection-ignore-instructions` | de agent vertelt eerdere/hogere instructies te negeren               |
+| Regel-id                               | Blokkeert inhoud die...                                             |
+| -------------------------------------- | ------------------------------------------------------------------- |
+| `prompt-injection-ignore-instructions` | de agent vertelt eerdere/hogere instructies te negeren              |
 | `prompt-injection-system`              | verwijst naar systeemprompts, ontwikkelaarsberichten of verborgen instructies |
-| `prompt-injection-tool`                | aanmoedigt om tooltoestemming/-goedkeuring te omzeilen               |
-| `shell-pipe-to-shell`                  | `curl`/`wget` bevat die naar `sh`, `bash` of `zsh` wordt gepiped     |
-| `secret-exfiltration`                  | env-/proces-env-gegevens over het netwerk lijkt te verzenden         |
+| `prompt-injection-tool`                | aanmoedigt om tooltoestemming/-goedkeuring te omzeilen              |
+| `shell-pipe-to-shell`                  | `curl`/`wget` bevat dat naar `sh`, `bash` of `zsh` wordt gepiped    |
+| `secret-exfiltration`                  | env-/proces-env-gegevens via het netwerk lijkt te versturen         |
 
-Waarschuwingsbevindingen blijven behouden, maar blokkeren op zichzelf niet:
+Waarschuwingsbevindingen blijven behouden maar blokkeren op zichzelf niet:
 
-| Regel-id             | Waarschuwt bij...                    |
-| -------------------- | ------------------------------------ |
-| `destructive-delete` | brede opdrachten in `rm -rf`-stijl   |
+| Regel-id             | Waarschuwt bij...                     |
+| -------------------- | ------------------------------------- |
+| `destructive-delete` | brede opdrachten in `rm -rf`-stijl    |
 | `unsafe-permissions` | permissiegebruik in `chmod 777`-stijl |
 
 Voorstellen in quarantaine:
@@ -519,61 +517,61 @@ Voorstellen in quarantaine:
 - verschijnen in `list_quarantine`
 - kunnen niet worden toegepast via `apply`
 
-Om te herstellen van een voorstel in quarantaine, maak je een nieuw veilig voorstel met de
-onveilige inhoud verwijderd. Bewerk de store-JSON niet handmatig.
+Om te herstellen van een voorstel in quarantaine, maak je een nieuw veilig voorstel waaruit de
+onveilige inhoud is verwijderd. Bewerk de store-JSON niet handmatig.
 
 ## Promptrichtlijnen
 
 Wanneer ingeschakeld, injecteert Skill Workshop een korte promptsectie die de agent vertelt
-`skill_workshop` te gebruiken voor duurzame procedurele herinnering.
+`skill_workshop` te gebruiken voor duurzaam procedureel geheugen.
 
 De richtlijnen benadrukken:
 
 - procedures, geen feiten/voorkeuren
 - correcties van gebruikers
-- niet-voor-de-hand-liggende succesvolle procedures
+- niet voor de hand liggende succesvolle procedures
 - terugkerende valkuilen
-- reparatie van verouderde/dunne/onjuiste skills via append/replace
-- herbruikbare procedure opslaan na lange tool-lussen of moeilijke fixes
+- herstel van verouderde/dunne/verkeerde skills via append/replace
+- herbruikbare procedure opslaan na lange tool-lussen of lastige fixes
 - korte imperatieve skill-tekst
 - geen transcriptdumps
 
-De tekst voor schrijfmodus verandert met `approvalPolicy`:
+De tekst voor de schrijfmodus verandert met `approvalPolicy`:
 
-- pending-modus: suggesties in de wachtrij zetten; alleen toepassen na expliciete goedkeuring
-- auto-modus: veilige updates van werkruimte-skills toepassen wanneer ze duidelijk herbruikbaar zijn
+- pending-modus: suggesties in de wachtrij plaatsen; alleen toepassen na expliciete goedkeuring
+- auto-modus: veilige werkruimte-skill-updates toepassen wanneer ze duidelijk herbruikbaar zijn
 
 ## Kosten en runtimegedrag
 
-Heuristische capture roept geen model aan.
+Heuristische vastlegging roept geen model aan.
 
-LLM-review gebruikt een ingebedde run op het actieve/standaard agentmodel. Deze is
-drempelgebaseerd, zodat deze standaard niet bij elke beurt draait.
+LLM-review gebruikt een embedded run op het actieve/standaard agentmodel. Deze is
+drempelgebaseerd, zodat hij standaard niet bij elke beurt wordt uitgevoerd.
 
 De reviewer:
 
-- gebruikt waar beschikbaar dezelfde geconfigureerde provider-/modelcontext
-- valt terug op runtime-standaarden van de agent
+- gebruikt dezelfde geconfigureerde provider-/modelcontext wanneer beschikbaar
+- valt terug op runtime-agentstandaarden
 - heeft `reviewTimeoutMs`
 - gebruikt lichte bootstrapcontext
 - heeft geen tools
-- schrijft niets direct
-- kan alleen een voorstel uitsturen dat door de normale scanner en het
-  goedkeurings-/quarantainepad gaat
+- schrijft niets rechtstreeks
+- kan alleen een voorstel uitbrengen dat door de normale scanner- en
+  goedkeurings-/quarantainepaden gaat
 
-Als de reviewer faalt, een time-out krijgt of ongeldige JSON teruggeeft, logt de Plugin een
+Als de reviewer faalt, een time-out krijgt of ongeldige JSON retourneert, logt de plugin een
 waarschuwings-/debugbericht en slaat die reviewpass over.
 
 ## Bedieningspatronen
 
 Gebruik Skill Workshop wanneer de gebruiker zegt:
 
-- “volgende keer, doe X”
-- “vanaf nu, geef de voorkeur aan Y”
-- “zorg dat je Z verifieert”
-- “sla dit op als workflow”
-- “dit duurde even; onthoud het proces”
-- “werk de lokale skill hiervoor bij”
+- "volgende keer, doe X"
+- "vanaf nu, geef de voorkeur aan Y"
+- "zorg dat je Z verifieert"
+- "sla dit op als workflow"
+- "dit duurde even; onthoud het proces"
+- "werk de lokale skill hiervoor bij"
 
 Goede skill-tekst:
 
@@ -599,23 +597,23 @@ Redenen waarom de slechte versie niet moet worden opgeslagen:
 - transcriptvormig
 - niet imperatief
 - bevat ruisachtige eenmalige details
-- vertelt de volgende agent niet wat te doen
+- vertelt de volgende agent niet wat die moet doen
 
-## Debuggen
+## Debugging
 
-Controleer of de Plugin is geladen:
+Controleer of de plugin is geladen:
 
 ```bash
 openclaw plugins list --enabled
 ```
 
-Controleer aantallen voorstellen vanuit een agent-/toolcontext:
+Controleer voorstelaantallen vanuit een agent-/toolcontext:
 
 ```json
 { "action": "status" }
 ```
 
-Inspecteer openstaande voorstellen:
+Inspecteer voorstellen in behandeling:
 
 ```json
 { "action": "list_pending" }
@@ -629,15 +627,15 @@ Inspecteer voorstellen in quarantaine:
 
 Veelvoorkomende symptomen:
 
-| Symptoom                              | Waarschijnlijke oorzaak                                                             | Controle                                                             |
+| Symptoom                              | Waarschijnlijke oorzaak                                                            | Controle                                                             |
 | ------------------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
 | Tool is niet beschikbaar              | Plugin-vermelding is niet ingeschakeld                                              | `plugins.entries.skill-workshop.enabled` en `openclaw plugins list`  |
-| Er verschijnt geen automatisch voorstel | `autoCapture: false`, `reviewMode: "off"` of drempels niet gehaald                 | Configuratie, voorstelstatus, Gateway-logs                           |
-| Heuristiek heeft niet gecaptured      | Formulering van gebruiker kwam niet overeen met correctiepatronen                   | Gebruik expliciet `skill_workshop.suggest` of schakel LLM-reviewer in |
-| Reviewer heeft geen voorstel gemaakt  | Reviewer gaf `none`, ongeldige JSON terug of kreeg een time-out                     | Gateway-logs, `reviewTimeoutMs`, drempels                            |
-| Voorstel wordt niet toegepast         | `approvalPolicy: "pending"`                                                         | `list_pending`, daarna `apply`                                       |
-| Voorstel is verdwenen uit pending     | Dubbel voorstel hergebruikt, max-pending pruning, of toegepast/geweigerd/in quarantaine geplaatst | `status`, `list_pending` met statusfilters, `list_quarantine`        |
-| Skill-bestand bestaat maar model mist het | Skill-snapshot niet ververst of skill-gating sluit het uit                        | `openclaw skills`-status en geschiktheid van werkruimte-skill        |
+| Er verschijnt geen automatisch voorstel | `autoCapture: false`, `reviewMode: "off"`, of drempels niet gehaald               | Config, voorstelstatus, Gateway-logs                                 |
+| Heuristiek heeft niet vastgelegd      | Gebruikersformulering kwam niet overeen met correctiepatronen                       | Gebruik expliciet `skill_workshop.suggest` of schakel LLM-reviewer in |
+| Reviewer heeft geen voorstel gemaakt  | Reviewer retourneerde `none`, ongeldige JSON, of kreeg een time-out                 | Gateway-logs, `reviewTimeoutMs`, drempels                            |
+| Voorstel is niet toegepast            | `approvalPolicy: "pending"`                                                         | `list_pending`, daarna `apply`                                       |
+| Voorstel is verdwenen uit pending     | Dubbel voorstel hergebruikt, max-pending-pruning, of toegepast/afgewezen/in quarantaine geplaatst | `status`, `list_pending` met statusfilters, `list_quarantine` |
+| Skill-bestand bestaat maar model mist het | Skill-snapshot niet vernieuwd of skill-gating sluit het uit                      | `openclaw skills`-status en geschiktheid van werkruimte-skill        |
 
 Relevante logs:
 
@@ -650,7 +648,7 @@ Relevante logs:
 
 ## QA-scenario's
 
-Repo-backed QA-scenario's:
+Repo-ondersteunde QA-scenario's:
 
 - `qa/scenarios/plugins/skill-workshop-animated-gif-autocreate.md`
 - `qa/scenarios/plugins/skill-workshop-pending-approval.md`
@@ -665,7 +663,7 @@ pnpm openclaw qa suite \
   --concurrency 1
 ```
 
-Voer reviewerdekking uit:
+Voer reviewer-dekking uit:
 
 ```bash
 pnpm openclaw qa suite \
@@ -673,23 +671,23 @@ pnpm openclaw qa suite \
   --concurrency 1
 ```
 
-Het reviewerscenario is bewust afzonderlijk omdat het
-`reviewMode: "llm"` inschakelt en de ingebedde reviewerpass uitvoert.
+Het reviewer-scenario is bewust apart omdat het
+`reviewMode: "llm"` inschakelt en de embedded reviewerpass uitvoert.
 
-## Wanneer auto-apply niet in te schakelen
+## Wanneer auto apply niet in te schakelen
 
 Vermijd `approvalPolicy: "auto"` wanneer:
 
 - de werkruimte gevoelige procedures bevat
-- de agent aan niet-vertrouwde invoer werkt
+- de agent werkt aan niet-vertrouwde invoer
 - skills worden gedeeld binnen een breed team
-- je prompts of scannerregels nog aan het afstemmen bent
+- je prompts of scannerregels nog aan het afstellen bent
 - het model vaak vijandige web-/e-mailinhoud verwerkt
 
 Gebruik eerst pending-modus. Schakel pas over naar auto-modus nadat je het soort
 skills hebt beoordeeld dat de agent in die werkruimte voorstelt.
 
-## Gerelateerde docs
+## Gerelateerde documentatie
 
 - [Skills](/nl/tools/skills)
 - [Plugins](/nl/tools/plugin)

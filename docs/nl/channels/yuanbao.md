@@ -1,48 +1,46 @@
 ---
 read_when:
-    - Je wilt een Yuanbao-bot koppelen
-    - Je configureert het Yuanbao-kanaal
+    - Je wilt een Yuanbao-bot verbinden
+    - U configureert het Yuanbao-kanaal
 summary: Overzicht, functies en configuratie van de Yuanbao-bot
 title: Yuanbao
 x-i18n:
-    generated_at: "2026-04-29T22:29:13Z"
+    generated_at: "2026-05-06T09:04:35Z"
     model: gpt-5.5
     provider: openai
-    source_hash: d82b6d275ae8aa4cc5e62321772c5ba2b5044c6058be0d2e5215cdb1488118e9
+    source_hash: 3830af0206854e500132edfc9340724fe97f90ca60fa23ce05202d96d9cacf04
     source_path: channels/yuanbao.md
     workflow: 16
 ---
-
-# Yuanbao
 
 Tencent Yuanbao is het AI-assistentplatform van Tencent. De OpenClaw-kanaal-Plugin
 verbindt Yuanbao-bots met OpenClaw via WebSocket, zodat ze met gebruikers kunnen communiceren
 via directe berichten en groepschats.
 
-**Status:** productieklaar voor bot-DM's + groepschats. WebSocket is de enige ondersteunde verbindingsmodus.
+**Status:** productiegereed voor bot-DM's + groepschats. WebSocket is de enige ondersteunde verbindingsmodus.
 
 ---
 
-## Snel aan de slag
+## Snelstart
 
-> **Vereist OpenClaw 2026.4.10 of hoger.** Voer `openclaw --version` uit om dit te controleren. Upgrade met `openclaw update`.
+> **Vereist OpenClaw 2026.4.10 of hoger.** Voer `openclaw --version` uit om dit te controleren. Werk bij met `openclaw update`.
 
 <Steps>
   <Step title="Voeg het Yuanbao-kanaal toe met je referenties">
   ```bash
   openclaw channels add --channel yuanbao --token "appKey:appSecret"
   ```
-  De waarde `--token` gebruikt de door dubbele punt gescheiden indeling `appKey:appSecret`. Je kunt deze verkrijgen in de Yuanbao-app door een robot te maken in de instellingen van je applicatie.
+  De waarde `--token` gebruikt de door dubbele punten gescheiden indeling `appKey:appSecret`. Je kunt deze verkrijgen in de Yuanbao-app door een robot te maken in je applicatie-instellingen.
   </Step>
 
-  <Step title="Start de Gateway opnieuw nadat de installatie is voltooid om de wijzigingen toe te passen">
+  <Step title="Nadat de configuratie is voltooid, herstart je de gateway om de wijzigingen toe te passen">
   ```bash
   openclaw gateway restart
   ```
   </Step>
 </Steps>
 
-### Interactieve installatie (alternatief)
+### Interactieve configuratie (alternatief)
 
 Je kunt ook de interactieve wizard gebruiken:
 
@@ -60,12 +58,12 @@ Volg de prompts om je App ID en App Secret in te voeren.
 
 Configureer `dmPolicy` om te bepalen wie de bot een DM kan sturen:
 
-- `"pairing"` — onbekende gebruikers ontvangen een koppelingscode; keur goed via CLI
-- `"allowlist"` — alleen gebruikers die in `allowFrom` staan, kunnen chatten
-- `"open"` — sta alle gebruikers toe (standaard)
-- `"disabled"` — schakel alle DM's uit
+- `"pairing"` - onbekende gebruikers ontvangen een koppelingscode; keur goed via CLI
+- `"allowlist"` - alleen gebruikers die in `allowFrom` staan, kunnen chatten
+- `"open"` - alle gebruikers toestaan (standaard)
+- `"disabled"` - alle DM's uitschakelen
 
-**Keur een koppelingsverzoek goed:**
+**Een koppelingsverzoek goedkeuren:**
 
 ```bash
 openclaw pairing list yuanbao
@@ -76,8 +74,8 @@ openclaw pairing approve yuanbao <CODE>
 
 **Vermeldingsvereiste** (`channels.yuanbao.requireMention`):
 
-- `true` — vereis @vermelding (standaard)
-- `false` — reageer zonder @vermelding
+- `true` - @mention vereisen (standaard)
+- `false` - reageren zonder @mention
 
 Antwoorden op het bericht van de bot in een groepschat wordt behandeld als een impliciete vermelding.
 
@@ -85,7 +83,7 @@ Antwoorden op het bericht van de bot in een groepschat wordt behandeld als een i
 
 ## Configuratievoorbeelden
 
-### Basisinstallatie met open DM-beleid
+### Basisconfiguratie met open DM-beleid
 
 ```json5
 {
@@ -101,7 +99,7 @@ Antwoorden op het bericht van de bot in een groepschat wordt behandeld als een i
 }
 ```
 
-### Beperk DM's tot specifieke gebruikers
+### DM's beperken tot specifieke gebruikers
 
 ```json5
 {
@@ -118,7 +116,7 @@ Antwoorden op het bericht van de bot in een groepschat wordt behandeld als een i
 }
 ```
 
-### Schakel de @vermeldingsvereiste in groepen uit
+### @mention-vereiste in groepen uitschakelen
 
 ```json5
 {
@@ -130,7 +128,7 @@ Antwoorden op het bericht van de bot in een groepschat wordt behandeld als een i
 }
 ```
 
-### Optimaliseer levering van uitgaande berichten
+### Uitgaande berichtbezorging optimaliseren
 
 ```json5
 {
@@ -143,7 +141,7 @@ Antwoorden op het bericht van de bot in een groepschat wordt behandeld als een i
 }
 ```
 
-### Stem de merge-text-strategie af
+### Merge-text-strategie afstemmen
 
 ```json5
 {
@@ -162,16 +160,16 @@ Antwoorden op het bericht van de bot in een groepschat wordt behandeld als een i
 
 ## Veelgebruikte opdrachten
 
-| Opdracht   | Beschrijving                       |
-| ---------- | ---------------------------------- |
-| `/help`    | Toon beschikbare opdrachten        |
-| `/status`  | Toon botstatus                     |
-| `/new`     | Start een nieuwe sessie            |
-| `/stop`    | Stop de huidige run                |
-| `/restart` | Start OpenClaw opnieuw             |
-| `/compact` | Comprimeer de sessiecontext        |
+| Opdracht   | Beschrijving                         |
+| ---------- | ------------------------------------ |
+| `/help`    | Beschikbare opdrachten tonen         |
+| `/status`  | Botstatus tonen                      |
+| `/new`     | Een nieuwe sessie starten            |
+| `/stop`    | De huidige uitvoering stoppen        |
+| `/restart` | OpenClaw herstarten                  |
+| `/compact` | De sessiecontext compacteren         |
 
-> Yuanbao ondersteunt native menu's voor slash-opdrachten. Opdrachten worden automatisch met het platform gesynchroniseerd wanneer de Gateway start.
+> Yuanbao ondersteunt native slash-command-menu's. Opdrachten worden automatisch met het platform gesynchroniseerd wanneer de gateway start.
 
 ---
 
@@ -180,27 +178,27 @@ Antwoorden op het bericht van de bot in een groepschat wordt behandeld als een i
 ### Bot reageert niet in groepschats
 
 1. Zorg dat de bot aan de groep is toegevoegd
-2. Zorg dat je de bot @vermeldt (standaard vereist)
-3. Controleer de logs: `openclaw logs --follow`
+2. Zorg dat je de bot @mentiont (standaard vereist)
+3. Controleer logs: `openclaw logs --follow`
 
 ### Bot ontvangt geen berichten
 
 1. Zorg dat de bot is gemaakt en goedgekeurd in de Yuanbao-app
 2. Zorg dat `appKey` en `appSecret` correct zijn geconfigureerd
-3. Zorg dat de Gateway actief is: `openclaw gateway status`
-4. Controleer de logs: `openclaw logs --follow`
+3. Zorg dat de gateway draait: `openclaw gateway status`
+4. Controleer logs: `openclaw logs --follow`
 
-### Bot verzendt lege antwoorden of fallback-antwoorden
+### Bot stuurt lege of fallback-antwoorden
 
-1. Controleer of het AI-model geldige inhoud retourneert
+1. Controleer of het AI-model geldige content retourneert
 2. Het standaard fallback-antwoord is: "暂时无法解答，你可以换个问题问问我哦"
 3. Pas dit aan via `channels.yuanbao.fallbackReply`
 
 ### App Secret gelekt
 
 1. Reset de App Secret in YuanBao APP
-2. Werk de waarde bij in je configuratie
-3. Start de Gateway opnieuw: `openclaw gateway restart`
+2. Werk de waarde in je configuratie bij
+3. Herstart de gateway: `openclaw gateway restart`
 
 ---
 
@@ -231,17 +229,17 @@ Antwoorden op het bericht van de bot in een groepschat wordt behandeld als een i
 }
 ```
 
-`defaultAccount` bepaalt welk account wordt gebruikt wanneer uitgaande API's geen `accountId` opgeven.
+`defaultAccount` bepaalt welk account wordt gebruikt wanneer uitgaande API's geen `accountId` specificeren.
 
 ### Berichtlimieten
 
-- `maxChars` — maximaal aantal tekens voor één bericht (standaard: `3000` tekens)
-- `mediaMaxMb` — limiet voor media-upload/download (standaard: `20` MB)
-- `overflowPolicy` — gedrag wanneer een bericht de limiet overschrijdt: `"split"` (standaard) of `"stop"`
+- `maxChars` - maximaal aantal tekens voor één bericht (standaard: `3000` tekens)
+- `mediaMaxMb` - upload-/downloadlimiet voor media (standaard: `20` MB)
+- `overflowPolicy` - gedrag wanneer bericht limiet overschrijdt: `"split"` (standaard) of `"stop"`
 
 ### Streaming
 
-Yuanbao ondersteunt streaming-uitvoer op blokniveau. Wanneer dit is ingeschakeld, verzendt de bot tekst in delen terwijl deze wordt gegenereerd.
+Yuanbao ondersteunt streaminguitvoer op blokniveau. Wanneer ingeschakeld, verzendt de bot tekst in chunks terwijl deze wordt gegenereerd.
 
 ```json5
 {
@@ -255,7 +253,7 @@ Yuanbao ondersteunt streaming-uitvoer op blokniveau. Wanneer dit is ingeschakeld
 
 Stel `disableBlockStreaming: true` in om het volledige antwoord in één bericht te verzenden.
 
-### Geschiedeniscontext van groepschats
+### Context van groepschatgeschiedenis
 
 Bepaal hoeveel historische berichten worden opgenomen in de AI-context voor groepschats:
 
@@ -271,7 +269,7 @@ Bepaal hoeveel historische berichten worden opgenomen in de AI-context voor groe
 
 ### Reply-to-modus
 
-Bepaal hoe de bot berichten citeert bij het antwoorden in groepschats:
+Bepaal hoe de bot berichten citeert bij antwoorden in groepschats:
 
 ```json5
 {
@@ -283,15 +281,15 @@ Bepaal hoe de bot berichten citeert bij het antwoorden in groepschats:
 }
 ```
 
-| Waarde    | Gedrag                                                   |
-| --------- | -------------------------------------------------------- |
-| `"off"`   | Geen geciteerd antwoord                                  |
-| `"first"` | Citeer alleen het eerste antwoord per inkomend bericht (standaard) |
-| `"all"`   | Citeer elk antwoord                                      |
+| Waarde    | Gedrag                                                  |
+| --------- | ------------------------------------------------------- |
+| `"off"`   | Geen citaatantwoord                                     |
+| `"first"` | Alleen het eerste antwoord per binnenkomend bericht citeren (standaard) |
+| `"all"`   | Elk antwoord citeren                                    |
 
 ### Markdown-hintinjectie
 
-Standaard injecteert de bot instructies in de systeemprompt om te voorkomen dat het AI-model het volledige antwoord in markdown-codeblokken verpakt.
+Standaard injecteert de bot instructies in de systeemprompt om te voorkomen dat het AI-model het volledige antwoord in markdown-codeblokken plaatst.
 
 ```json5
 {
@@ -305,7 +303,7 @@ Standaard injecteert de bot instructies in de systeemprompt om te voorkomen dat 
 
 ### Debugmodus
 
-Schakel ongefilterde loguitvoer in voor specifieke bot-ID's:
+Schakel niet-gezuiverde loguitvoer in voor specifieke bot-ID's:
 
 ```json5
 {
@@ -317,9 +315,9 @@ Schakel ongefilterde loguitvoer in voor specifieke bot-ID's:
 }
 ```
 
-### Routering met meerdere agents
+### Routing voor meerdere agents
 
-Gebruik `bindings` om Yuanbao-DM's of -groepen naar verschillende agents te routeren.
+Gebruik `bindings` om Yuanbao-DM's of groepen naar verschillende agents te routeren.
 
 ```json5
 {
@@ -349,7 +347,7 @@ Gebruik `bindings` om Yuanbao-DM's of -groepen naar verschillende agents te rout
 }
 ```
 
-Routeringsvelden:
+Routingvelden:
 
 - `match.channel`: `"yuanbao"`
 - `match.peer.kind`: `"direct"` (DM) of `"group"` (groepschat)
@@ -363,28 +361,28 @@ Volledige configuratie: [Gateway-configuratie](/nl/gateway/configuration)
 
 | Instelling                                 | Beschrijving                                      | Standaard                              |
 | ------------------------------------------ | ------------------------------------------------- | -------------------------------------- |
-| `channels.yuanbao.enabled`                 | Schakel het kanaal in/uit                         | `true`                                 |
-| `channels.yuanbao.defaultAccount`          | Standaardaccount voor uitgaande routering         | `default`                              |
-| `channels.yuanbao.accounts.<id>.appKey`    | App Key (gebruikt voor ondertekening en ticketgeneratie) | —                                      |
-| `channels.yuanbao.accounts.<id>.appSecret` | App Secret (gebruikt voor ondertekening)          | —                                      |
-| `channels.yuanbao.accounts.<id>.token`     | Vooraf ondertekend token (slaat automatische ticketondertekening over) | —                                      |
-| `channels.yuanbao.accounts.<id>.name`      | Weergavenaam van account                          | —                                      |
-| `channels.yuanbao.accounts.<id>.enabled`   | Schakel een specifiek account in/uit              | `true`                                 |
+| `channels.yuanbao.enabled`                 | Het kanaal in-/uitschakelen                       | `true`                                 |
+| `channels.yuanbao.defaultAccount`          | Standaardaccount voor uitgaande routing           | `default`                              |
+| `channels.yuanbao.accounts.<id>.appKey`    | App Key (gebruikt voor ondertekening en ticketgeneratie) | -                                      |
+| `channels.yuanbao.accounts.<id>.appSecret` | App Secret (gebruikt voor ondertekening)          | -                                      |
+| `channels.yuanbao.accounts.<id>.token`     | Vooraf ondertekend token (slaat automatische ticketondertekening over) | -                                      |
+| `channels.yuanbao.accounts.<id>.name`      | Weergavenaam van account                          | -                                      |
+| `channels.yuanbao.accounts.<id>.enabled`   | Een specifiek account in-/uitschakelen            | `true`                                 |
 | `channels.yuanbao.dm.policy`               | DM-beleid                                         | `open`                                 |
-| `channels.yuanbao.dm.allowFrom`            | DM-allowlist (lijst met gebruikers-ID's)          | —                                      |
-| `channels.yuanbao.requireMention`          | Vereis @vermelding in groepen                     | `true`                                 |
+| `channels.yuanbao.dm.allowFrom`            | DM-toestaanlijst (lijst met gebruikers-ID's)      | -                                      |
+| `channels.yuanbao.requireMention`          | @mention vereisen in groepen                      | `true`                                 |
 | `channels.yuanbao.overflowPolicy`          | Afhandeling van lange berichten (`split` of `stop`) | `split`                                |
-| `channels.yuanbao.replyToMode`             | Reply-to-strategie voor groepen (`off`, `first`, `all`) | `first`                                |
+| `channels.yuanbao.replyToMode`             | Strategie voor groepsantwoord-citaten (`off`, `first`, `all`) | `first`                                |
 | `channels.yuanbao.outboundQueueStrategy`   | Uitgaande strategie (`merge-text` of `immediate`) | `merge-text`                           |
-| `channels.yuanbao.minChars`                | Merge-text: minimumaantal tekens om verzending te activeren | `2800`                                 |
-| `channels.yuanbao.maxChars`                | Merge-text: maximumaantal tekens per bericht      | `3000`                                 |
-| `channels.yuanbao.idleMs`                  | Merge-text: inactiviteitstime-out vóór automatisch flushen (ms) | `5000`                                 |
+| `channels.yuanbao.minChars`                | Merge-text: min. aantal tekens om verzending te activeren | `2800`                                 |
+| `channels.yuanbao.maxChars`                | Merge-text: max. aantal tekens per bericht        | `3000`                                 |
+| `channels.yuanbao.idleMs`                  | Merge-text: time-out bij inactiviteit vóór auto-flush (ms) | `5000`                                 |
 | `channels.yuanbao.mediaMaxMb`              | Limiet voor mediagrootte (MB)                     | `20`                                   |
 | `channels.yuanbao.historyLimit`            | Contextitems voor groepschatgeschiedenis          | `100`                                  |
-| `channels.yuanbao.disableBlockStreaming`   | Schakel streaming-uitvoer op blokniveau uit       | `false`                                |
-| `channels.yuanbao.fallbackReply`           | Fallback-antwoord wanneer AI geen inhoud retourneert | `暂时无法解答，你可以换个问题问问我哦` |
-| `channels.yuanbao.markdownHintEnabled`     | Injecteer markdown-anti-wrapping-instructies      | `true`                                 |
-| `channels.yuanbao.debugBotIds`             | Debug-allowlist met bot-ID's (ongefilterde logs)  | `[]`                                   |
+| `channels.yuanbao.disableBlockStreaming`   | Streaminguitvoer op blokniveau uitschakelen       | `false`                                |
+| `channels.yuanbao.fallbackReply`           | Fallback-antwoord wanneer AI geen content retourneert | `暂时无法解答，你可以换个问题问问我哦` |
+| `channels.yuanbao.markdownHintEnabled`     | Markdown-instructies tegen omwikkelen injecteren  | `true`                                 |
+| `channels.yuanbao.debugBotIds`             | Debug-toestaanlijst met bot-ID's (niet-gezuiverde logs) | `[]`                                   |
 
 ---
 
@@ -395,9 +393,9 @@ Volledige configuratie: [Gateway-configuratie](/nl/gateway/configuration)
 - ✅ Tekst
 - ✅ Afbeeldingen
 - ✅ Bestanden
-- ✅ Audio / Spraak
+- ✅ Audio / spraak
 - ✅ Video
-- ✅ Stickers / Aangepaste emoji
+- ✅ Stickers / aangepaste emoji
 - ✅ Aangepaste elementen (linkkaarten, enz.)
 
 ### Verzenden
@@ -411,15 +409,15 @@ Volledige configuratie: [Gateway-configuratie](/nl/gateway/configuration)
 
 ### Threads en antwoorden
 
-- ✅ Geciteerde antwoorden (configureerbaar via `replyToMode`)
+- ✅ Citaatantwoorden (configureerbaar via `replyToMode`)
 - ❌ Thread-antwoorden (niet ondersteund door platform)
 
 ---
 
 ## Gerelateerd
 
-- [Kanalenoverzicht](/nl/channels) — alle ondersteunde kanalen
-- [Koppeling](/nl/channels/pairing) — DM-authenticatie en koppelingsflow
-- [Groepen](/nl/channels/groups) — gedrag van groepschats en vermeldingsafscherming
-- [Kanaalroutering](/nl/channels/channel-routing) — sessieroutering voor berichten
-- [Beveiliging](/nl/gateway/security) — toegangsmodel en hardening
+- [Kanalenoverzicht](/nl/channels) - alle ondersteunde kanalen
+- [Koppelen](/nl/channels/pairing) - DM-authenticatie en koppelingsflow
+- [Groepen](/nl/channels/groups) - groepschatgedrag en vermeldingsgating
+- [Kanaalrouting](/nl/channels/channel-routing) - sessierouting voor berichten
+- [Beveiliging](/nl/gateway/security) - toegangsmodel en hardening

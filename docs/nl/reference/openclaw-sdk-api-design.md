@@ -1,16 +1,16 @@
 ---
 read_when:
-    - Je implementeert de voorgestelde publieke OpenClaw-app-SDK
-    - Je hebt het conceptnaamruimte-, gebeurtenis-, resultaat-, artefact-, goedkeurings- of beveiligingscontract voor de app-SDK nodig
-    - Je vergelijkt Gateway-protocolresources met de wrapper op hoog niveau van de OpenClaw App SDK
+    - Je implementeert de voorgestelde openbare OpenClaw-SDK voor apps
+    - Je hebt het conceptcontract voor naamruimte, gebeurtenis, resultaat, artefact, goedkeuring of beveiliging voor de app-SDK nodig
+    - Je vergelijkt Gateway-protocolresources met de high-level OpenClaw App SDK-wrapper
 sidebarTitle: App SDK API design
 summary: Referentieontwerp voor de openbare OpenClaw App SDK-API, gebeurtenistaxonomie, artefacten, goedkeuringen en pakketstructuur
-title: OpenClaw App SDK API-ontwerp
+title: API-ontwerp van de OpenClaw App SDK
 x-i18n:
-    generated_at: "2026-04-30T09:41:01Z"
+    generated_at: "2026-05-06T09:31:30Z"
     model: gpt-5.5
     provider: openai
-    source_hash: cacc5329942798b6876dba6ab8d6a9193291ddda81db5cb2ed492cc42a810099
+    source_hash: 1c49afb4b3b23653e1c6512c22c7465dc1778fc9ea2b28864ca9eaa3ccc90f2f
     source_path: reference/openclaw-sdk-api-design.md
     workflow: 16
 ---
@@ -21,19 +21,19 @@ de [Plugin SDK](/nl/plugins/sdk-overview).
 
 <Note>
   `@openclaw/sdk` is het externe app-/clientpakket om met de
-  Gateway te communiceren. `openclaw/plugin-sdk/*` is het in-process contract voor pluginauteurs.
+  Gateway te communiceren. `openclaw/plugin-sdk/*` is het in-process contract voor het maken van plugins.
   Importeer geen Plugin SDK-subpaden vanuit apps die alleen agents hoeven uit te voeren.
 </Note>
 
 De openbare app-SDK moet in twee lagen worden gebouwd:
 
-1. Een gegenereerde Gateway-client op laag niveau.
-2. Een ergonomische wrapper op hoog niveau met `OpenClaw`-, `Agent`-, `Session`-, `Run`-,
-   `Task`-, `Artifact`-, `Approval`- en `Environment`-objecten.
+1. Een laag-niveau gegenereerde Gateway-client.
+2. Een hoog-niveau ergonomische wrapper met `OpenClaw`, `Agent`, `Session`, `Run`,
+   `Task`, `Artifact`, `Approval` en `Environment`-objecten.
 
-## Namespace-ontwerp
+## Naamruimteontwerp
 
-De namespaces op laag niveau moeten Gateway-resources nauw volgen:
+De laag-niveau naamruimten moeten Gateway-resources nauw volgen:
 
 ```typescript
 oc.agents.list();
@@ -65,22 +65,22 @@ oc.models.list();
 oc.models.status(); // Gateway models.authStatus
 
 oc.tools.list();
-oc.tools.invoke(...); // future API: current SDK throws unsupported
+oc.tools.invoke("tool-name", { sessionKey, idempotencyKey });
 
-oc.artifacts.list({ runId }); // future API: current SDK throws unsupported
-oc.artifacts.get(artifactId); // future API: current SDK throws unsupported
-oc.artifacts.download(artifactId); // future API: current SDK throws unsupported
+oc.artifacts.list({ runId });
+oc.artifacts.get(artifactId, { runId });
+oc.artifacts.download(artifactId, { runId });
 
 oc.approvals.list();
 oc.approvals.respond(approvalId, ...);
 
-oc.environments.list(); // future API: current SDK throws unsupported
+oc.environments.list();
 oc.environments.create(...); // future API: current SDK throws unsupported
-oc.environments.status(environmentId); // future API: current SDK throws unsupported
+oc.environments.status(environmentId);
 oc.environments.delete(environmentId); // future API: current SDK throws unsupported
 ```
 
-Wrappers op hoog niveau moeten objecten retourneren die gangbare flows prettig maken:
+Hoog-niveau wrappers moeten objecten teruggeven die veelvoorkomende flows prettig maken:
 
 ```typescript
 const run = await agent.run(inputOrParams);
@@ -97,7 +97,7 @@ const session = await run.session();
 
 ## Eventcontract
 
-De openbare SDK moet geversioneerde, opnieuw afspeelbare, genormaliseerde events beschikbaar stellen.
+De openbare SDK moet geversioneerde, opnieuw afspeelbare, genormaliseerde events beschikbaar maken.
 
 ```typescript
 type OpenClawEvent = {
@@ -115,8 +115,8 @@ type OpenClawEvent = {
 };
 ```
 
-`id` is een replay-cursor. Consumers moeten opnieuw verbinding kunnen maken met
-`events({ after: id })` en gemiste events ontvangen wanneer de retentie dat toestaat.
+`id` is een replay-cursor. Consumers moeten opnieuw kunnen verbinden met
+`events({ after: id })` en gemiste events ontvangen wanneer retentie dat toestaat.
 
 Aanbevolen genormaliseerde eventfamilies:
 
@@ -124,15 +124,15 @@ Aanbevolen genormaliseerde eventfamilies:
 | --------------------- | ----------------------------------------------------------- |
 | `run.created`         | Run geaccepteerd.                                           |
 | `run.queued`          | Run wacht op een sessielane, runtime of omgeving.           |
-| `run.started`         | Runtime is begonnen met uitvoeren.                          |
+| `run.started`         | Runtime is met uitvoering begonnen.                         |
 | `run.completed`       | Run is succesvol voltooid.                                  |
 | `run.failed`          | Run is geëindigd met een fout.                              |
 | `run.cancelled`       | Run is geannuleerd.                                         |
-| `run.timed_out`       | Run heeft de timeout overschreden.                          |
+| `run.timed_out`       | Run heeft de time-out overschreden.                         |
 | `assistant.delta`     | Tekstdelta van de assistant.                                |
 | `assistant.message`   | Volledig assistant-bericht of vervanging.                   |
 | `thinking.delta`      | Redeneer- of plandelta, wanneer beleid blootstelling toestaat. |
-| `tool.call.started`   | Toolaanroep begonnen.                                       |
+| `tool.call.started`   | Toolaanroep is begonnen.                                    |
 | `tool.call.delta`     | Toolaanroep streamde voortgang of gedeeltelijke uitvoer.    |
 | `tool.call.completed` | Toolaanroep is succesvol teruggekeerd.                      |
 | `tool.call.failed`    | Toolaanroep is mislukt.                                     |
@@ -144,18 +144,18 @@ Aanbevolen genormaliseerde eventfamilies:
 | `artifact.updated`    | Bestaand artifact gewijzigd.                                |
 | `session.created`     | Sessie aangemaakt.                                          |
 | `session.updated`     | Sessiemetadata gewijzigd.                                   |
-| `session.compacted`   | Sessie-Compaction heeft plaatsgevonden.                     |
+| `session.compacted`   | Sessie-Compaction uitgevoerd.                               |
 | `task.updated`        | Status van achtergrondtaak gewijzigd.                       |
 | `git.branch`          | Runtime heeft branchstatus waargenomen of gewijzigd.        |
 | `git.diff`            | Runtime heeft een diff geproduceerd of gewijzigd.           |
 | `git.pr`              | Runtime heeft een pull request geopend, bijgewerkt of gekoppeld. |
 
-Runtime-eigen payloads moeten beschikbaar zijn via `raw`, maar apps zouden
+Runtime-native payloads moeten beschikbaar zijn via `raw`, maar apps zouden
 `raw` niet hoeven te parsen voor normale UI.
 
 ## Resultaatcontract
 
-`Run.wait()` moet een stabiele resultaatenvelop retourneren:
+`Run.wait()` moet een stabiele resultaatenvelop teruggeven:
 
 ```typescript
 type RunResult = {
@@ -181,19 +181,19 @@ type RunResult = {
 };
 ```
 
-Het resultaat moet saai en stabiel zijn. Tijdstempelwaarden behouden de Gateway-vorm,
-waardoor huidige runs met lifecycle-ondersteuning meestal epoch-milliseconden
-rapporteren, terwijl adapters nog steeds ISO-strings kunnen tonen. Rijke UI, tooltraces en
-runtime-eigen details horen thuis in events en artifacts.
+Het resultaat moet eenvoudig en stabiel zijn. Tijdstempelwaarden behouden de Gateway-vorm,
+waardoor huidige lifecycle-backed runs meestal epoch-millisecondennummers rapporteren,
+terwijl adapters nog steeds ISO-strings kunnen tonen. Rijke UI, tooltraces en
+runtime-native details horen thuis in events en artifacts.
 
-`accepted` is een niet-terminaal wachtresultaat: het betekent dat de Gateway-wachtdeadline
-verliep voordat de run een lifecycle-einde of -fout produceerde. Het mag niet worden behandeld als
-`timed_out`; `timed_out` is gereserveerd voor een run die zijn eigen runtime-timeout
+`accepted` is een niet-terminale wait-resultaat: het betekent dat de Gateway-waitdeadline
+verliep voordat de run een lifecycle-einde/fout produceerde. Het mag niet worden behandeld als
+`timed_out`; `timed_out` is gereserveerd voor een run die zijn eigen runtime-time-out
 heeft overschreden.
 
 ## Goedkeuringen en vragen
 
-Goedkeuringen moeten first-class zijn omdat coding agents voortdurend veiligheidsgrenzen
+Goedkeuringen moeten first-class zijn, omdat coding agents voortdurend veiligheidsgrenzen
 overschrijden.
 
 ```typescript
@@ -215,15 +215,15 @@ Goedkeuringsevents moeten bevatten:
 - toolnaam of omgevingsactie
 - risiconiveau
 - beschikbare beslissingen
-- vervaldatum
-- of de beslissing kan worden hergebruikt
+- verloopmoment
+- of de beslissing opnieuw kan worden gebruikt
 
 Vragen staan los van goedkeuringen. Een vraag vraagt de gebruiker of host-app om
 informatie. Een goedkeuring vraagt om toestemming om een actie uit te voeren.
 
 ## ToolSpace-model
 
-Apps moeten het tooloppervlak begrijpen zonder plugin-internals te importeren.
+Apps moeten het tooloppervlak begrijpen zonder Plugin-internals te importeren.
 
 ```typescript
 const tools = await run.toolSpace();
@@ -233,17 +233,17 @@ for (const tool of tools.list()) {
 }
 ```
 
-De SDK moet beschikbaar stellen:
+De SDK moet beschikbaar maken:
 
 - genormaliseerde toolmetadata
 - bron: OpenClaw, MCP, plugin, kanaal, runtime of app
-- schemasamenvatting
+- schema-samenvatting
 - goedkeuringsbeleid
 - runtimecompatibiliteit
-- of een tool verborgen, readonly, schrijfgeschikt of hostgeschikt is
+- of een tool verborgen, alleen-lezen, schrijfcapabel of hostcapabel is
 
-Toolaanroep via de SDK moet expliciet en afgebakend zijn. De meeste apps moeten
-agents uitvoeren, niet willekeurige tools rechtstreeks aanroepen.
+Toolaanroep via de SDK moet expliciet en scoped zijn. De meeste apps moeten
+agents uitvoeren, niet rechtstreeks willekeurige tools aanroepen.
 
 ## Artifact-model
 
@@ -280,41 +280,41 @@ Veelvoorkomende voorbeelden:
 - screenshots en media-uitvoer
 - logs en tracebundels
 - pull request-links
-- runtimetrajecten
-- snapshots van werkruimtes in beheerde omgevingen
+- runtime-trajectories
+- snapshots van beheerde omgevingsworkspaces
 
 Artifact-toegang moet redactie, retentie en download-URL's ondersteunen zonder
 aan te nemen dat elk artifact een normaal lokaal bestand is.
 
 ## Beveiligingsmodel
 
-De app-SDK moet expliciet zijn over autoriteit.
+De app-SDK moet expliciet zijn over bevoegdheid.
 
 Aanbevolen tokenscopes:
 
 | Scope               | Staat toe                                           |
-| ------------------- | --------------------------------------------------- |
-| `agent.read`        | Agents weergeven en inspecteren.                    |
-| `agent.run`         | Runs starten.                                       |
-| `session.read`      | Sessiemetadata en berichten lezen.                  |
+| ------------------- | -------------------------------------------------- |
+| `agent.read`        | Agents opsommen en inspecteren.                    |
+| `agent.run`         | Runs starten.                                      |
+| `session.read`      | Sessiemetadata en berichten lezen.                 |
 | `session.write`     | Sessies aanmaken, ernaar verzenden, forken, compacten en afbreken. |
-| `task.read`         | Status van achtergrondtaken lezen.                  |
-| `task.write`        | Taaknotificatiebeleid annuleren of wijzigen.        |
-| `approval.respond`  | Verzoeken goedkeuren of weigeren.                   |
-| `tools.invoke`      | Blootgestelde tools rechtstreeks aanroepen.         |
-| `artifacts.read`    | Artifacts weergeven en downloaden.                  |
-| `environment.write` | Beheerde omgevingen aanmaken of vernietigen.        |
-| `admin`             | Beheertaken.                                        |
+| `task.read`         | Status van achtergrondtaken lezen.                 |
+| `task.write`        | Taaknotificatiebeleid annuleren of wijzigen.       |
+| `approval.respond`  | Verzoeken goedkeuren of weigeren.                  |
+| `tools.invoke`      | Blootgestelde tools rechtstreeks aanroepen.        |
+| `artifacts.read`    | Artifacts opsommen en downloaden.                  |
+| `environment.write` | Beheerde omgevingen aanmaken of vernietigen.       |
+| `admin`             | Administratieve bewerkingen.                       |
 
 Standaarden:
 
-- standaard geen doorsturen van geheimen
-- geen onbeperkte doorgifte van omgevingsvariabelen
-- geheimverwijzingen in plaats van geheime waarden
+- standaard geen secrets doorsturen
+- geen onbeperkte environment-variabele pass-through
+- secretreferenties in plaats van secretwaarden
 - expliciet sandbox- en netwerkbeleid
-- expliciete retentie voor externe omgevingen
-- goedkeuringen voor hostuitvoering tenzij beleid anders bewijst
-- ruwe runtime-events worden geredigeerd voordat ze de Gateway verlaten, tenzij de aanroeper een
+- expliciete retentie van externe omgevingen
+- goedkeuringen voor hostuitvoering, tenzij beleid anders bewijst
+- raw runtime-events geredigeerd voordat ze de Gateway verlaten, tenzij de aanroeper een
   sterkere diagnostische scope heeft
 
 ## Provider voor beheerde omgevingen
@@ -337,12 +337,12 @@ type EnvironmentProvider = {
 };
 ```
 
-De eerste implementatie hoeft geen gehoste SaaS te zijn. Deze kan zich richten op
-bestaande Node-hosts, kortstondige werkruimtes, CI-achtige runners of Testbox-achtige
+De eerste implementatie hoeft geen gehoste SaaS te zijn. Deze kan gericht zijn op
+bestaande Node-hosts, tijdelijke workspaces, CI-achtige runners of Testbox-achtige
 omgevingen. Het belangrijke contract is:
 
-1. werkruimte voorbereiden
-2. veilige omgeving en geheimen binden
+1. workspace voorbereiden
+2. veilige omgeving en secrets binden
 3. run starten
 4. events streamen
 5. artifacts verzamelen
@@ -357,23 +357,23 @@ Aanbevolen pakketten:
 
 | Pakket                  | Doel                                                          |
 | ----------------------- | ------------------------------------------------------------- |
-| `@openclaw/sdk`         | Openbare SDK op hoog niveau en gegenereerde Gateway-client op laag niveau. |
+| `@openclaw/sdk`         | Openbare hoog-niveau SDK en gegenereerde laag-niveau Gateway-client. |
 | `@openclaw/sdk-react`   | Optionele React-hooks voor dashboards en appbouwers.          |
 | `@openclaw/sdk-testing` | Testhelpers en nep-Gateway-server voor appintegraties.        |
 
-De repo heeft al `openclaw/plugin-sdk/*` voor plugins. Houd die namespace
-gescheiden om te voorkomen dat pluginauteurs worden verward met appontwikkelaars.
+De repo heeft al `openclaw/plugin-sdk/*` voor plugins. Houd die naamruimte
+gescheiden om verwarring tussen pluginauteurs en appontwikkelaars te voorkomen.
 
-## Gegenereerde clientstrategie
+## Strategie voor gegenereerde client
 
-De low-level client moet worden gegenereerd uit geversioneerde Gateway-protocolschema's
-en daarna worden omhuld met handgeschreven ergonomische klassen.
+De laag-niveau client moet worden gegenereerd uit geversioneerde Gateway-protocolschema's
+en vervolgens worden gewrapt door handgeschreven ergonomische klassen.
 
-Lagen:
+Gelaagdheid:
 
 1. Gateway-schema als bron van waarheid.
 2. Gegenereerde low-level TypeScript-client.
-3. Runtime-validators voor externe invoer en event-payloads.
+3. Runtimevalidators voor externe invoer en event-payloads.
 4. High-level `OpenClaw`, `Agent`, `Session`, `Run`, `Task` en `Artifact`
    wrappers.
 5. Cookbook-voorbeelden en integratietests.
@@ -383,15 +383,15 @@ Voordelen:
 - protocoldrift is zichtbaar
 - tests kunnen gegenereerde methoden vergelijken met Gateway-exports
 - App SDK blijft onafhankelijk van Plugin SDK-internals
-- low-level consumenten houden volledige protocoltoegang
-- high-level consumenten krijgen de kleine product-API
+- low-level gebruikers behouden volledige protocoltoegang
+- high-level gebruikers krijgen de kleine product-API
 
-## Gerelateerde documentatie
+## Gerelateerd
 
 - [OpenClaw App SDK](/nl/concepts/openclaw-sdk)
 - [Gateway RPC-referentie](/nl/reference/rpc)
-- [Agentlus](/nl/concepts/agent-loop)
-- [Agent-runtimeomgevingen](/nl/concepts/agent-runtimes)
+- [Agent-loop](/nl/concepts/agent-loop)
+- [Agent-runtimes](/nl/concepts/agent-runtimes)
 - [Achtergrondtaken](/nl/automation/tasks)
-- [ACP-agents](/nl/tools/acp-agents)
-- [Overzicht van de Plugin SDK](/nl/plugins/sdk-overview)
+- [ACP-agenten](/nl/tools/acp-agents)
+- [Overzicht van Plugin SDK](/nl/plugins/sdk-overview)

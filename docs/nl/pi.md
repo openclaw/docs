@@ -1,47 +1,47 @@
 ---
 read_when:
     - Inzicht in het integratieontwerp van de Pi SDK in OpenClaw
-    - Levenscyclus van agentsessies, hulpprogramma's of providerkoppeling voor Pi wijzigen
+    - De levenscyclus van agentsessies, hulpmiddelen of providerbedrading voor Pi wijzigen
 summary: Architectuur van de ingebedde Pi-agentintegratie en sessielevenscyclus van OpenClaw
 title: Pi-integratiearchitectuur
 x-i18n:
-    generated_at: "2026-04-29T22:57:56Z"
+    generated_at: "2026-05-06T09:22:20Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 0b155cd5296875f2f187c68c6929c48aba27cef047f0caad74f560bcde5533e5
+    source_hash: abd9e828b0a72ac4e796f33c247bb2b5d7143ddf5e897ad9d7380cfbfce1eb64
     source_path: pi.md
     workflow: 16
 ---
 
-OpenClaw integreert met [pi-coding-agent](https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent) en de bijbehorende pakketten (`pi-ai`, `pi-agent-core`, `pi-tui`) om zijn mogelijkheden voor AI-agents aan te sturen.
+OpenClaw integreert met [pi-coding-agent](https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent) en de bijbehorende pakketten (`pi-ai`, `pi-agent-core`, `pi-tui`) om de mogelijkheden voor AI-agents aan te sturen.
 
 ## Overzicht
 
-OpenClaw gebruikt de pi-SDK om een AI-codeeragent in zijn messaging-Gateway-architectuur in te bedden. In plaats van pi als subproces te starten of de RPC-modus te gebruiken, importeert en instantieert OpenClaw rechtstreeks pi's `AgentSession` via `createAgentSession()`. Deze ingebedde aanpak biedt:
+OpenClaw gebruikt de pi SDK om een AI-codeeragent in zijn messaging-gatewayarchitectuur in te bedden. In plaats van pi als subprocess te starten of RPC-modus te gebruiken, importeert en instantieert OpenClaw pi's `AgentSession` rechtstreeks via `createAgentSession()`. Deze ingebedde aanpak biedt:
 
-- Volledige controle over sessielevenscyclus en eventafhandeling
-- Aangepaste toolinjectie (messaging, sandbox, kanaalspecifieke acties)
-- Aanpassing van systeemprompt per kanaal/context
-- Sessiepersistentie met ondersteuning voor vertakking/Compaction
+- Volledige controle over de sessielevenscyclus en gebeurtenisafhandeling
+- Injectie van aangepaste tools (messaging, sandbox, kanaalspecifieke acties)
+- Aanpassing van de systeemprompt per kanaal/context
+- Sessiepersistentie met ondersteuning voor branching/Compaction
 - Rotatie van authenticatieprofielen voor meerdere accounts met failover
-- Provider-agnostisch wisselen van model
+- Providersonafhankelijk wisselen van model
 
 ## Pakketafhankelijkheden
 
 ```json
 {
-  "@mariozechner/pi-agent-core": "0.70.2",
-  "@mariozechner/pi-ai": "0.70.2",
-  "@mariozechner/pi-coding-agent": "0.70.2",
-  "@mariozechner/pi-tui": "0.70.2"
+  "@mariozechner/pi-agent-core": "0.73.0",
+  "@mariozechner/pi-ai": "0.73.0",
+  "@mariozechner/pi-coding-agent": "0.73.0",
+  "@mariozechner/pi-tui": "0.73.0"
 }
 ```
 
 | Pakket            | Doel                                                                                                   |
 | ----------------- | ------------------------------------------------------------------------------------------------------ |
 | `pi-ai`           | Kernabstracties voor LLM's: `Model`, `streamSimple`, berichttypen, provider-API's                      |
-| `pi-agent-core`   | Agentlus, tooluitvoering, `AgentMessage`-typen                                                         |
-| `pi-coding-agent` | SDK op hoog niveau: `createAgentSession`, `SessionManager`, `AuthStorage`, `ModelRegistry`, ingebouwde tools |
+| `pi-agent-core`   | Agent-loop, tooluitvoering, `AgentMessage`-typen                                                       |
+| `pi-coding-agent` | High-level SDK: `createAgentSession`, `SessionManager`, `AuthStorage`, `ModelRegistry`, ingebouwde tools |
 | `pi-tui`          | Terminal-UI-componenten (gebruikt in OpenClaw's lokale TUI-modus)                                      |
 
 ## Bestandsstructuur
@@ -134,18 +134,19 @@ src/agents/
 └── ...
 ```
 
-Kanaalspecifieke runtimes voor berichtacties bevinden zich nu in de Plugin-eigen extensiemappen in plaats van onder `src/agents/tools`, bijvoorbeeld:
+Kanaalspecifieke runtimes voor berichtacties bevinden zich nu in de Plugin-beheerde extensionmappen
+in plaats van onder `src/agents/tools`, bijvoorbeeld:
 
-- de runtimebestanden voor Discord-Plugin-acties
-- het runtimebestand voor Slack-Plugin-acties
-- het runtimebestand voor Telegram-Plugin-acties
-- het runtimebestand voor WhatsApp-Plugin-acties
+- de runtimebestanden voor Discord-Pluginacties
+- het runtimebestand voor Slack-Pluginacties
+- het runtimebestand voor Telegram-Pluginacties
+- het runtimebestand voor WhatsApp-Pluginacties
 
 ## Kernintegratiestroom
 
-### 1. Een ingebedde agent uitvoeren
+### 1. Een embedded agent uitvoeren
 
-Het belangrijkste entrypoint is `runEmbeddedPiAgent()` in `pi-embedded-runner/run.ts`:
+Het belangrijkste toegangspunt is `runEmbeddedPiAgent()` in `pi-embedded-runner/run.ts`:
 
 ```typescript
 import { runEmbeddedPiAgent } from "./agents/pi-embedded-runner.js";
@@ -167,9 +168,9 @@ const result = await runEmbeddedPiAgent({
 });
 ```
 
-### 2. Sessie maken
+### 2. Sessie aanmaken
 
-Binnen `runEmbeddedAttempt()` (aangeroepen door `runEmbeddedPiAgent()`) wordt de pi-SDK gebruikt:
+Binnen `runEmbeddedAttempt()` (aangeroepen door `runEmbeddedPiAgent()`) wordt de pi SDK gebruikt:
 
 ```typescript
 import {
@@ -204,9 +205,9 @@ const { session } = await createAgentSession({
 applySystemPromptOverrideToSession(session, systemPromptOverride);
 ```
 
-### 3. Abonneren op events
+### 3. Abonneren op gebeurtenissen
 
-`subscribeEmbeddedPiSession()` abonneert zich op pi's `AgentSession`-events:
+`subscribeEmbeddedPiSession()` abonneert zich op pi's `AgentSession`-gebeurtenissen:
 
 ```typescript
 const subscription = subscribeEmbeddedPiSession({
@@ -223,7 +224,7 @@ const subscription = subscribeEmbeddedPiSession({
 });
 ```
 
-Afgehandelde events omvatten:
+Afgehandelde gebeurtenissen zijn onder andere:
 
 - `message_start` / `message_end` / `message_update` (streaming tekst/denken)
 - `tool_execution_start` / `tool_execution_update` / `tool_execution_end`
@@ -231,17 +232,19 @@ Afgehandelde events omvatten:
 - `agent_start` / `agent_end`
 - `compaction_start` / `compaction_end`
 
-### 4. Prompten
+### 4. Prompting
 
-Na de setup wordt de sessie geprompt:
+Na de setup krijgt de sessie een prompt:
 
 ```typescript
 await session.prompt(effectivePrompt, { images: imageResult.images });
 ```
 
-De SDK handelt de volledige agentlus af: verzenden naar de LLM, toolcalls uitvoeren, responses streamen.
+De SDK handelt de volledige agent-loop af: verzenden naar de LLM, toolaanroepen uitvoeren, reacties streamen.
 
-Afbeeldingsinjectie is promptlokaal: OpenClaw laadt afbeeldingsreferenties uit de huidige prompt en geeft ze alleen voor die beurt door via `images`. Het scant oudere geschiedenisbeurten niet opnieuw om afbeeldingspayloads opnieuw te injecteren.
+Afbeeldingsinjectie is promptlokaal: OpenClaw laadt afbeeldingsreferenties uit de huidige prompt en
+geeft ze via `images` alleen voor die beurt door. Oudere geschiedenisbeurten worden niet opnieuw gescand
+om afbeeldingspayloads opnieuw te injecteren.
 
 ## Toolarchitectuur
 
@@ -249,15 +252,15 @@ Afbeeldingsinjectie is promptlokaal: OpenClaw laadt afbeeldingsreferenties uit d
 
 1. **Basistools**: pi's `codingTools` (read, bash, edit, write)
 2. **Aangepaste vervangingen**: OpenClaw vervangt bash door `exec`/`process`, past read/edit/write aan voor sandbox
-3. **OpenClaw-tools**: messaging, browser, canvas, sessies, Cron, Gateway, enz.
-4. **Kanaaltools**: Discord/Telegram/Slack/WhatsApp-specifieke actietools
+3. **OpenClaw-tools**: messaging, browser, canvas, sessions, Cron, Gateway, enzovoort
+4. **Kanaaltools**: Discord-/Telegram-/Slack-/WhatsApp-specifieke actietools
 5. **Beleidsfiltering**: tools gefilterd op profiel, provider, agent, groep, sandboxbeleid
-6. **Schemanormalisatie**: schema's opgeschoond voor Gemini/OpenAI-eigenaardigheden
+6. **Schemanormalisatie**: schema's opgeschoond voor Gemini-/OpenAI-eigenaardigheden
 7. **AbortSignal-wrapping**: tools gewrapt om abortsignalen te respecteren
 
-### Adapter voor tooldefinities
+### Tooldefinitieadapter
 
-`AgentTool` van pi-agent-core heeft een andere `execute`-signatuur dan `ToolDefinition` van pi-coding-agent. De adapter in `pi-tool-definition-adapter.ts` overbrugt dit:
+pi-agent-core's `AgentTool` heeft een andere `execute`-signatuur dan pi-coding-agent's `ToolDefinition`. De adapter in `pi-tool-definition-adapter.ts` overbrugt dit:
 
 ```typescript
 export function toToolDefinitions(tools: AnyAgentTool[]): ToolDefinition[] {
@@ -289,9 +292,9 @@ export function splitSdkTools(options: { tools: AnyAgentTool[]; sandboxEnabled: 
 
 Dit zorgt ervoor dat OpenClaw's beleidsfiltering, sandboxintegratie en uitgebreide toolset consistent blijven tussen providers.
 
-## Systeempromptconstructie
+## Opbouw van de systeemprompt
 
-De systeemprompt wordt opgebouwd in `buildAgentSystemPrompt()` (`system-prompt.ts`). Deze stelt een volledige prompt samen met secties zoals Tooling, Tool Call Style, Safety guardrails, OpenClaw CLI reference, Skills, Docs, Workspace, Sandbox, Messaging, Reply Tags, Voice, Silent Replies, Heartbeats, Runtime metadata, plus Memory en Reactions wanneer ingeschakeld, en optionele contextbestanden en extra systeempromptinhoud. Secties worden ingekort voor de minimale promptmodus die door subagents wordt gebruikt.
+De systeemprompt wordt opgebouwd in `buildAgentSystemPrompt()` (`system-prompt.ts`). Deze stelt een volledige prompt samen met secties zoals Tooling, Tool Call Style, Safety guardrails, OpenClaw CLI-referentie, Skills, Docs, Werkruimte, Sandbox, Messaging, Reply Tags, Voice, Silent Replies, Heartbeats, runtimemetadata, plus Memory en Reactions wanneer ingeschakeld, en optionele contextbestanden en extra systeempromptinhoud. Secties worden ingekort voor de minimale promptmodus die door subagents wordt gebruikt.
 
 De prompt wordt na het aanmaken van de sessie toegepast via `applySystemPromptOverrideToSession()`:
 
@@ -304,7 +307,7 @@ applySystemPromptOverrideToSession(session, systemPromptOverride);
 
 ### Sessiebestanden
 
-Sessies zijn JSONL-bestanden met een boomstructuur (koppeling via id/parentId). Pi's `SessionManager` verwerkt persistentie:
+Sessies zijn JSONL-bestanden met een boomstructuur (koppeling via id/parentId). Pi's `SessionManager` handelt persistentie af:
 
 ```typescript
 const sessionManager = SessionManager.open(params.sessionFile);
@@ -324,16 +327,16 @@ trackSessionManagerAccess(params.sessionFile);
 
 ### Geschiedenis beperken
 
-`limitHistoryTurns()` kort de gespreksgeschiedenis in op basis van kanaaltype (DM versus groep).
+`limitHistoryTurns()` kort gespreksgeschiedenis in op basis van het kanaaltype (DM versus groep).
 
 ### Compaction
 
-Automatische Compaction wordt geactiveerd bij contextoverloop. Veelvoorkomende overloopsignaturen
-zijn onder andere `request_too_large`, `context length exceeded`, `input exceeds the
+Automatische Compaction wordt geactiveerd bij contextoverflow. Veelvoorkomende overflowsignaturen
+zijn onder meer `request_too_large`, `context length exceeded`, `input exceeds the
 maximum number of tokens`, `input token count exceeds the maximum number of
 input tokens`, `input is too long for the model` en `ollama error: context
-length exceeded`. `compactEmbeddedPiSessionDirect()` verwerkt handmatige
-Compaction:
+length exceeded`. `compactEmbeddedPiSessionDirect()` handelt handmatige
+Compaction af:
 
 ```typescript
 const compactResult = await compactEmbeddedPiSessionDirect({
@@ -345,7 +348,7 @@ const compactResult = await compactEmbeddedPiSessionDirect({
 
 ### Auth-profielen
 
-OpenClaw onderhoudt een opslag voor auth-profielen met meerdere API-sleutels per provider:
+OpenClaw beheert een opslag voor auth-profielen met meerdere API-sleutels per provider:
 
 ```typescript
 const authStore = ensureAuthProfileStore(agentDir, { allowKeychainPrompt: false });
@@ -377,7 +380,7 @@ authStorage.setRuntimeApiKey(model.provider, apiKeyInfo.apiKey);
 
 ### Failover
 
-`FailoverError` activeert terugval naar een ander model wanneer dit is geconfigureerd:
+`FailoverError` activeert modelterugval wanneer dit is geconfigureerd:
 
 ```typescript
 if (fallbackConfigured && isFailoverErrorMessage(errorText)) {
@@ -393,11 +396,11 @@ if (fallbackConfigured && isFailoverErrorMessage(errorText)) {
 
 ## Pi-extensies
 
-OpenClaw laadt aangepaste Pi-extensies voor gespecialiseerd gedrag:
+OpenClaw laadt aangepaste pi-extensies voor gespecialiseerd gedrag:
 
 ### Compaction-beveiliging
 
-`src/agents/pi-hooks/compaction-safeguard.ts` voegt guardrails toe aan Compaction, waaronder adaptieve tokenbudgettering plus samenvattingen van toolfouten en bestandsbewerkingen:
+`src/agents/pi-hooks/compaction-safeguard.ts` voegt beveiligingsregels toe aan Compaction, inclusief adaptieve tokenbudgettering plus samenvattingen van toolfouten en bestandsbewerkingen:
 
 ```typescript
 if (resolveCompactionMode(params.cfg) === "safeguard") {
@@ -406,9 +409,9 @@ if (resolveCompactionMode(params.cfg) === "safeguard") {
 }
 ```
 
-### Contextopschoning
+### Context snoeien
 
-`src/agents/pi-hooks/context-pruning.ts` implementeert contextopschoning op basis van cache-TTL:
+`src/agents/pi-hooks/context-pruning.ts` implementeert context-snoeien op basis van cache-TTL:
 
 ```typescript
 if (cfg?.agents?.defaults?.contextPruning?.mode === "cache-ttl") {
@@ -432,9 +435,9 @@ if (cfg?.agents?.defaults?.contextPruning?.mode === "cache-ttl") {
 const blockChunker = blockChunking ? new EmbeddedBlockChunker(blockChunking) : null;
 ```
 
-### Denken-/Final-tagverwijdering
+### Denken/Final Tag-verwijdering
 
-Streaminguitvoer wordt verwerkt om `<think>`/`<thinking>`-blokken te verwijderen en `<final>`-inhoud te extraheren:
+Streamingoutput wordt verwerkt om `<think>`/`<thinking>`-blokken te verwijderen en `<final>`-inhoud te extraheren:
 
 ```typescript
 const stripBlockTags = (text: string, state: { thinking: boolean; final: boolean }) => {
@@ -445,7 +448,7 @@ const stripBlockTags = (text: string, state: { thinking: boolean; final: boolean
 
 ### Antwoorddirectieven
 
-Antwoorddirectieven zoals `[[media:url]]`, `[[voice]]`, `[[reply:id]]` worden geparseerd en geëxtraheerd:
+Antwoorddirectieven zoals `[[media:url]]`, `[[voice]]`, `[[reply:id]]` worden geparsed en geëxtraheerd:
 
 ```typescript
 const { text: cleanedText, mediaUrls, audioAsVoice, replyToId } = consumeReplyDirectives(chunk);
@@ -468,7 +471,7 @@ classifyFailoverReason(errorText)     // "auth" | "rate_limit" | "quota" | "time
 
 ### Terugval voor denkniveau
 
-Als een denkniveau niet wordt ondersteund, wordt erop teruggevallen:
+Als een denkniveau niet wordt ondersteund, valt het terug:
 
 ```typescript
 const fallbackThinking = pickFallbackThinkingLevel({
@@ -499,43 +502,43 @@ if (sandboxRoot) {
 }
 ```
 
-## Provider-specifieke afhandeling
+## Providerspecifieke afhandeling
 
 ### Anthropic
 
 - Opschonen van magische weigeringsstrings
-- Beurtvalidatie voor opeenvolgende rollen
-- Strikte upstream Pi-validatie van toolparameters
+- Turn-validatie voor opeenvolgende rollen
+- Strikte upstream Pi-toolparametervalidatie
 
 ### Google/Gemini
 
-- Door Plugin beheerde sanering van toolschema's
+- Plugin-eigen opschoning van toolschema's
 
 ### OpenAI
 
 - `apply_patch`-tool voor Codex-modellen
-- Afhandeling van downgrade van denkniveau
+- Afhandeling van downgrade voor denkniveau
 
 ## TUI-integratie
 
-OpenClaw heeft ook een lokale TUI-modus die pi-tui-componenten rechtstreeks gebruikt:
+OpenClaw heeft ook een lokale TUI-modus die pi-tui-componenten direct gebruikt:
 
 ```typescript
 // src/tui/tui.ts
 import { ... } from "@mariozechner/pi-tui";
 ```
 
-Dit biedt de interactieve terminalervaring die lijkt op Pi's native modus.
+Dit biedt de interactieve terminalervaring die vergelijkbaar is met de native modus van pi.
 
 ## Belangrijkste verschillen met Pi CLI
 
-| Aspect          | Pi CLI                  | Ingebedde OpenClaw                                                                            |
+| Aspect          | Pi CLI                  | OpenClaw Embedded                                                                              |
 | --------------- | ----------------------- | ---------------------------------------------------------------------------------------------- |
-| Aanroep         | `pi`-opdracht / RPC     | SDK via `createAgentSession()`                                                                 |
-| Tools           | Standaard codingtools   | Aangepaste OpenClaw-toolset                                                                    |
+| Aanroep         | `pi`-commando / RPC     | SDK via `createAgentSession()`                                                                 |
+| Tools           | Standaard codeertools   | Aangepaste OpenClaw-toolsuite                                                                  |
 | Systeemprompt   | AGENTS.md + prompts     | Dynamisch per kanaal/context                                                                   |
 | Sessieopslag    | `~/.pi/agent/sessions/` | `~/.openclaw/agents/<agentId>/sessions/` (of `$OPENCLAW_STATE_DIR/agents/<agentId>/sessions/`) |
-| Auth            | Eén credential          | Meerdere profielen met rotatie                                                                 |
+| Auth            | Enkele credential       | Meerdere profielen met rotatie                                                                 |
 | Extensies       | Geladen vanaf schijf    | Programmatisch + schijfpaden                                                                   |
 | Eventafhandeling | TUI-rendering          | Callback-gebaseerd (onBlockReply, enz.)                                                        |
 
@@ -543,11 +546,11 @@ Dit biedt de interactieve terminalervaring die lijkt op Pi's native modus.
 
 Gebieden voor mogelijke herwerking:
 
-1. **Afstemming van toolsignatures**: Momenteel wordt aangepast tussen pi-agent-core- en pi-coding-agent-signatures
-2. **Omhullen van sessiemanager**: `guardSessionManager` voegt veiligheid toe, maar verhoogt de complexiteit
-3. **Laden van extensies**: Zou Pi's `ResourceLoader` directer kunnen gebruiken
+1. **Uitlijning van toolsignaturen**: Past momenteel aan tussen pi-agent-core- en pi-coding-agent-signaturen
+2. **Omhulling van sessiebeheerder**: `guardSessionManager` voegt veiligheid toe, maar verhoogt de complexiteit
+3. **Laden van extensies**: Zou pi's `ResourceLoader` directer kunnen gebruiken
 4. **Complexiteit van streaminghandler**: `subscribeEmbeddedPiSession` is groot geworden
-5. **Provider-eigenaardigheden**: Veel provider-specifieke codepaden die Pi mogelijk zou kunnen afhandelen
+5. **Provider-eigenaardigheden**: Veel providerspecifieke codepaden die pi mogelijk zou kunnen afhandelen
 
 ## Tests
 
@@ -569,7 +572,7 @@ Live/opt-in:
 
 - `src/agents/pi-embedded-runner-extraparams.live.test.ts` (schakel `OPENCLAW_LIVE_TEST=1` in)
 
-Zie [Pi-ontwikkelworkflow](/nl/pi-dev) voor actuele uitvoeropdrachten.
+Zie [Pi-ontwikkelworkflow](/nl/pi-dev) voor actuele uitvoercommando's.
 
 ## Gerelateerd
 

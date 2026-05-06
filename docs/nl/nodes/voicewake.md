@@ -1,28 +1,28 @@
 ---
 read_when:
-    - Gedrag of standaardinstellingen van spraakactiveringswoorden wijzigen
-    - Nieuwe Node-platforms toevoegen die wekwoord-synchronisatie nodig hebben
-summary: Globale spraakwekwoorden (beheerd door Gateway) en hoe ze tussen nodes worden gesynchroniseerd
+    - Gedrag of standaardinstellingen voor spraakwekwoorden wijzigen
+    - Nieuwe Node-platforms toevoegen waarvoor synchronisatie van wekwoorden nodig is
+summary: Globale spraakwekwoorden (in beheer van de Gateway) en hoe ze tussen nodes synchroniseren
 title: Spraakactivering
 x-i18n:
-    generated_at: "2026-04-29T22:57:41Z"
+    generated_at: "2026-05-06T09:22:04Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ac638cdf89f09404cdf293b416417f6cb3e31865b09f04ef87b9604e436dcbbe
+    source_hash: a284cbe3e12784a8d7a3eab6ba8ae230123557bca7593c956111199b94b91b73
     source_path: nodes/voicewake.md
     workflow: 16
 ---
 
-OpenClaw behandelt **wake words als één globale lijst** die eigendom is van de **Gateway**.
+OpenClaw behandelt **wekwoorden als één globale lijst** die eigendom is van de **Gateway**.
 
-- Er zijn **geen aangepaste wake words per node**.
-- **Elke node/app-UI mag** de lijst bewerken; wijzigingen worden door de Gateway opgeslagen en naar iedereen uitgezonden.
-- macOS en iOS behouden lokale schakelaars voor **Spraakactivering ingeschakeld/uitgeschakeld** (lokale UX + toestemmingen verschillen).
-- Android houdt Spraakactivering momenteel uitgeschakeld en gebruikt een handmatige microfoonflow op het tabblad Spraak.
+- Er zijn **geen aangepaste wekwoorden per node**.
+- **Elke node-/app-UI kan** de lijst bewerken; wijzigingen worden door de Gateway opgeslagen en naar iedereen uitgezonden.
+- macOS en iOS behouden lokale schakelaars voor **spraakactivering ingeschakeld/uitgeschakeld** (lokale UX en machtigingen verschillen).
+- Android houdt spraakactivering momenteel uitgeschakeld en gebruikt een handmatige microfoonflow in het tabblad Spraak.
 
 ## Opslag (Gateway-host)
 
-Wake words worden op de gatewaymachine opgeslagen op:
+Wekwoorden worden op de gatewaymachine opgeslagen op:
 
 - `~/.openclaw/settings/voicewake.json`
 
@@ -37,7 +37,7 @@ Vorm:
 ### Methoden
 
 - `voicewake.get` → `{ triggers: string[] }`
-- `voicewake.set` met parameters `{ triggers: string[] }` → `{ triggers: string[] }`
+- `voicewake.set` met params `{ triggers: string[] }` → `{ triggers: string[] }`
 
 Opmerkingen:
 
@@ -47,7 +47,7 @@ Opmerkingen:
 ### Routeringsmethoden (trigger → doel)
 
 - `voicewake.routing.get` → `{ config: VoiceWakeRoutingConfig }`
-- `voicewake.routing.set` met parameters `{ config: VoiceWakeRoutingConfig }` → `{ config: VoiceWakeRoutingConfig }`
+- `voicewake.routing.set` met params `{ config: VoiceWakeRoutingConfig }` → `{ config: VoiceWakeRoutingConfig }`
 
 Vorm van `VoiceWakeRoutingConfig`:
 
@@ -71,27 +71,27 @@ Routedoelen ondersteunen exact één van:
 - `voicewake.changed` payload `{ triggers: string[] }`
 - `voicewake.routing.changed` payload `{ config: VoiceWakeRoutingConfig }`
 
-Wie ontvangt dit:
+Wie dit ontvangt:
 
 - Alle WebSocket-clients (macOS-app, WebChat, enz.)
-- Alle verbonden nodes (iOS/Android), en ook bij het verbinden van een node als initiële push van de “huidige toestand”.
+- Alle verbonden nodes (iOS/Android), en ook bij het verbinden van een node als een initiële push met de "huidige status".
 
 ## Clientgedrag
 
 ### macOS-app
 
-- Gebruikt de globale lijst om `VoiceWakeRuntime`-triggers te regelen.
-- Het bewerken van “Triggerwoorden” in de instellingen voor Spraakactivering roept `voicewake.set` aan en vertrouwt vervolgens op de uitzending om andere clients gesynchroniseerd te houden.
+- Gebruikt de globale lijst om `VoiceWakeRuntime`-triggers te gate'en.
+- Het bewerken van "Triggerwoorden" in de instellingen voor spraakactivering roept `voicewake.set` aan en vertrouwt vervolgens op de broadcast om andere clients gesynchroniseerd te houden.
 
 ### iOS-node
 
-- Gebruikt de globale lijst voor triggerdetectie in `VoiceWakeManager`.
-- Het bewerken van Wake Words in Instellingen roept `voicewake.set` aan (via de Gateway-WS) en houdt ook lokale wake-word-detectie responsief.
+- Gebruikt de globale lijst voor triggerdetectie door `VoiceWakeManager`.
+- Het bewerken van wekwoorden in Instellingen roept `voicewake.set` aan (via de Gateway-WS) en houdt lokale wekwoorddetectie ook responsief.
 
 ### Android-node
 
-- Spraakactivering is momenteel uitgeschakeld in Android-runtime/Instellingen.
-- Android-spraak gebruikt handmatige microfoonopname op het tabblad Spraak in plaats van wake-word-triggers.
+- Spraakactivering is momenteel uitgeschakeld in de Android-runtime/-instellingen.
+- Android-spraak gebruikt handmatige microfoonopname in het tabblad Spraak in plaats van wekwoordtriggers.
 
 ## Gerelateerd
 

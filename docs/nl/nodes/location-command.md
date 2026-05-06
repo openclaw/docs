@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Ondersteuning voor locatie-node of machtigingeninterface toevoegen
+    - Ondersteuning voor locatie-Node of machtigingen-UI toevoegen
     - Android-locatiemachtigingen of voorgrondgedrag ontwerpen
-summary: Locatiecommando voor nodes (location.get), machtigingsmodi en Android-gedrag op de voorgrond
+summary: Locatiecommando voor nodes (location.get), machtigingsmodi en Android-voorgrondgedrag
 title: Locatiecommando
 x-i18n:
-    generated_at: "2026-04-29T22:57:06Z"
+    generated_at: "2026-05-06T09:21:46Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fcd7ae3bf411be4331d62494a5d5263e8cda345475c5f849913122c029377f06
+    source_hash: 63ed754bfdda1cf379dcb7ac40817c0b93cc1efe4526512d70258072da4bc8a7
     source_path: nodes/location-command.md
     workflow: 16
 ---
@@ -18,17 +18,17 @@ x-i18n:
 - `location.get` is een Node-opdracht (via `node.invoke`).
 - Standaard uitgeschakeld.
 - Android-appinstellingen gebruiken een selector: Uit / Tijdens gebruik.
-- Afzonderlijke schakelaar: Precieze locatie.
+- Aparte schakelaar: Nauwkeurige locatie.
 
 ## Waarom een selector (niet alleen een schakelaar)
 
-OS-machtigingen hebben meerdere niveaus. We kunnen in de app een selector tonen, maar het OS bepaalt nog steeds de daadwerkelijke toekenning.
+Besturingssysteemmachtigingen hebben meerdere niveaus. We kunnen in de app een selector aanbieden, maar het besturingssysteem bepaalt nog steeds de daadwerkelijke toekenning.
 
 - iOS/macOS kan **Tijdens gebruik** of **Altijd** tonen in systeemprompts/Instellingen.
-- De Android-app ondersteunt momenteel alleen voorgrondlocatie.
-- Precieze locatie is een afzonderlijke toestemming (iOS 14+ “Precies”, Android “fine” versus “coarse”).
+- De Android-app ondersteunt momenteel alleen locatie op de voorgrond.
+- Nauwkeurige locatie is een aparte toekenning (iOS 14+ "Nauwkeurig", Android "fine" vs "coarse").
 
-De selector in de UI stuurt onze gevraagde modus; de daadwerkelijke toekenning staat in de OS-instellingen.
+De selector in de UI bepaalt de modus die wij aanvragen; de daadwerkelijke toekenning bevindt zich in de instellingen van het besturingssysteem.
 
 ## Instellingenmodel
 
@@ -39,12 +39,12 @@ Per Node-apparaat:
 
 UI-gedrag:
 
-- Het selecteren van `whileUsing` vraagt om voorgrondmachtiging.
-- Als het OS het gevraagde niveau weigert, val terug op het hoogste toegekende niveau en toon de status.
+- Het selecteren van `whileUsing` vraagt toestemming voor gebruik op de voorgrond.
+- Als het besturingssysteem het gevraagde niveau weigert, val terug naar het hoogste toegekende niveau en toon de status.
 
 ## Machtigingstoewijzing (node.permissions)
 
-Optioneel. macOS-Node rapporteert `location` via de machtigingenmap; iOS/Android kan dit weglaten.
+Optioneel. De macOS-Node rapporteert `location` via de machtigingenmap; iOS/Android kan dit weglaten.
 
 ## Opdracht: `location.get`
 
@@ -79,28 +79,28 @@ Antwoordpayload:
 Fouten (stabiele codes):
 
 - `LOCATION_DISABLED`: selector staat uit.
-- `LOCATION_PERMISSION_REQUIRED`: machtiging ontbreekt voor de gevraagde modus.
-- `LOCATION_BACKGROUND_UNAVAILABLE`: app draait op de achtergrond maar alleen Tijdens gebruik is toegestaan.
-- `LOCATION_TIMEOUT`: geen fix binnen de tijd.
+- `LOCATION_PERMISSION_REQUIRED`: toestemming ontbreekt voor de gevraagde modus.
+- `LOCATION_BACKGROUND_UNAVAILABLE`: app draait op de achtergrond, maar alleen Tijdens gebruik is toegestaan.
+- `LOCATION_TIMEOUT`: geen positiebepaling op tijd.
 - `LOCATION_UNAVAILABLE`: systeemfout / geen providers.
 
 ## Achtergrondgedrag
 
-- De Android-app weigert `location.get` wanneer deze op de achtergrond draait.
+- De Android-app weigert `location.get` terwijl deze op de achtergrond draait.
 - Houd OpenClaw open wanneer je locatie op Android opvraagt.
 - Andere Node-platforms kunnen verschillen.
 
-## Integratie met model/tooling
+## Model-/toolingintegratie
 
 - Tooloppervlak: `nodes`-tool voegt de actie `location_get` toe (Node vereist).
 - CLI: `openclaw nodes location get --node <id>`.
-- Agentrichtlijnen: roep dit alleen aan wanneer de gebruiker locatie heeft ingeschakeld en de reikwijdte begrijpt.
+- Agentrichtlijnen: alleen aanroepen wanneer de gebruiker locatie heeft ingeschakeld en de reikwijdte begrijpt.
 
 ## UX-tekst (voorgesteld)
 
-- Uit: “Locatie delen is uitgeschakeld.”
-- Tijdens gebruik: “Alleen wanneer OpenClaw open is.”
-- Precies: “Gebruik precieze GPS-locatie. Schakel uit om geschatte locatie te delen.”
+- Uit: "Locatie delen is uitgeschakeld."
+- Tijdens gebruik: "Alleen wanneer OpenClaw open is."
+- Nauwkeurig: "Gebruik nauwkeurige GPS-locatie. Schakel uit om een geschatte locatie te delen."
 
 ## Gerelateerd
 

@@ -1,26 +1,34 @@
 ---
 read_when:
-    - Je wilt Mistral-modellen gebruiken in OpenClaw
-    - Je wilt realtime Voxtral-transcriptie voor Spraakoproep
-    - Je hebt onboarding voor de Mistral-API-sleutel en modelreferenties nodig
-summary: Gebruik Mistral-modellen en Voxtral-transcriptie met OpenClaw
+    - Je wilt Mistral-modellen in OpenClaw gebruiken
+    - Je wilt Voxtral-realtimetranscriptie voor Spraakoproep
+    - Je hebt onboarding voor Mistral-API-sleutels en modelverwijzingen nodig
+summary: Mistral-modellen en Voxtral-transcriptie gebruiken met OpenClaw
 title: Mistral
 x-i18n:
-    generated_at: "2026-04-29T23:11:43Z"
+    generated_at: "2026-05-06T09:29:59Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7fdba72a5a526bed78ef3a6ea633839634efca3f9d2e96b305315d534d115122
+    source_hash: fb55915526e292210df61b646e1bbcdb2da86a0e46ea4bd5afd63d244f8da71a
     source_path: providers/mistral.md
     workflow: 16
 ---
 
-OpenClaw ondersteunt Mistral voor zowel routering van tekst-/beeldmodellen (`mistral/...`) als
-audiotranscriptie via Voxtral in media-inzicht.
-Mistral kan ook worden gebruikt voor geheugen-embeddings (`memorySearch.provider = "mistral"`).
+OpenClaw bevat een gebundelde Mistral-Plugin die vier contracten registreert: chatvoltooiingen, mediabegrip (Voxtral-batchtranscriptie), realtime STT voor Voice Call (Voxtral Realtime) en geheugenembeddings (`mistral-embed`).
 
-- Provider: `mistral`
-- Authenticatie: `MISTRAL_API_KEY`
-- API: Mistral Chat Completions (`https://api.mistral.ai/v1`)
+| Eigenschap       | Waarde                                      |
+| ---------------- | ------------------------------------------- |
+| Provider-id      | `mistral`                                   |
+| Plugin           | gebundeld, `enabledByDefault: true`         |
+| Auth-env-var     | `MISTRAL_API_KEY`                           |
+| Onboarding-vlag  | `--auth-choice mistral-api-key`             |
+| Directe CLI-vlag | `--mistral-api-key <key>`                   |
+| API              | OpenAI-compatibel (`openai-completions`)    |
+| Basis-URL        | `https://api.mistral.ai/v1`                 |
+| Standaardmodel   | `mistral/mistral-large-latest`              |
+| Embeddingmodel   | `mistral-embed`                             |
+| Voxtral-batch    | `voxtral-mini-latest` (audiotranscriptie)   |
+| Voxtral-realtime | `voxtral-mini-transcribe-realtime-2602`     |
 
 ## Aan de slag
 
@@ -33,7 +41,7 @@ Mistral kan ook worden gebruikt voor geheugen-embeddings (`memorySearch.provider
     openclaw onboard --auth-choice mistral-api-key
     ```
 
-    Of geef de sleutel direct door:
+    Of geef de sleutel direct mee:
 
     ```bash
     openclaw onboard --mistral-api-key "$MISTRAL_API_KEY"
@@ -57,22 +65,22 @@ Mistral kan ook worden gebruikt voor geheugen-embeddings (`memorySearch.provider
 
 ## Ingebouwde LLM-catalogus
 
-OpenClaw levert momenteel deze gebundelde Mistral-catalogus mee:
+OpenClaw levert momenteel deze gebundelde Mistral-catalogus:
 
-| Modelref                         | Invoer      | Context | Maximale uitvoer | Opmerkingen                                                      |
-| -------------------------------- | ----------- | ------- | ---------------- | ---------------------------------------------------------------- |
-| `mistral/mistral-large-latest`   | tekst, beeld | 262,144 | 16,384           | Standaardmodel                                                   |
-| `mistral/mistral-medium-2508`    | tekst, beeld | 262,144 | 8,192            | Mistral Medium 3.1                                               |
-| `mistral/mistral-small-latest`   | tekst, beeld | 128,000 | 16,384           | Mistral Small 4; aanpasbaar redeneren via API `reasoning_effort` |
-| `mistral/pixtral-large-latest`   | tekst, beeld | 128,000 | 32,768           | Pixtral                                                          |
-| `mistral/codestral-latest`       | tekst       | 256,000 | 4,096            | Coderen                                                          |
-| `mistral/devstral-medium-latest` | tekst       | 262,144 | 32,768           | Devstral 2                                                       |
-| `mistral/magistral-small`        | tekst       | 128,000 | 40,000           | Redeneren ingeschakeld                                           |
+| Modelref                         | Invoer      | Context | Max. uitvoer | Opmerkingen                                                     |
+| -------------------------------- | ----------- | ------- | ------------ | --------------------------------------------------------------- |
+| `mistral/mistral-large-latest`   | tekst, beeld | 262,144 | 16,384       | Standaardmodel                                                  |
+| `mistral/mistral-medium-2508`    | tekst, beeld | 262,144 | 8,192        | Mistral Medium 3.1                                              |
+| `mistral/mistral-small-latest`   | tekst, beeld | 128,000 | 16,384       | Mistral Small 4; instelbare redenatie via API `reasoning_effort` |
+| `mistral/pixtral-large-latest`   | tekst, beeld | 128,000 | 32,768       | Pixtral                                                         |
+| `mistral/codestral-latest`       | tekst       | 256,000 | 4,096        | Coderen                                                         |
+| `mistral/devstral-medium-latest` | tekst       | 262,144 | 32,768       | Devstral 2                                                      |
+| `mistral/magistral-small`        | tekst       | 128,000 | 40,000       | Redeneren ingeschakeld                                          |
 
 ## Audiotranscriptie (Voxtral)
 
-Gebruik Voxtral voor batchgewijze audiotranscriptie via de pipeline voor
-media-inzicht.
+Gebruik Voxtral voor batchgewijze audiotranscriptie via de pijplijn voor
+mediabegrip.
 
 ```json5
 {
@@ -88,20 +96,19 @@ media-inzicht.
 ```
 
 <Tip>
-Het pad voor mediatranscriptie gebruikt `/v1/audio/transcriptions`. Het standaard audiomodel voor Mistral is `voxtral-mini-latest`.
+Het pad voor mediatranscriptie gebruikt `/v1/audio/transcriptions`. Het standaardaudiomodel voor Mistral is `voxtral-mini-latest`.
 </Tip>
 
 ## Streaming-STT voor Voice Call
 
-De gebundelde `mistral` Plugin registreert Voxtral Realtime als een
-streaming-STT-provider voor Voice Call.
+De gebundelde `mistral`-Plugin registreert Voxtral Realtime als streaming-STT-provider voor Voice Call.
 
-| Instelling   | Configuratiepad                                                       | Standaard                               |
-| ------------ | ---------------------------------------------------------------------- | --------------------------------------- |
-| API-sleutel  | `plugins.entries.voice-call.config.streaming.providers.mistral.apiKey` | Valt terug op `MISTRAL_API_KEY`         |
-| Model        | `...mistral.model`                                                     | `voxtral-mini-transcribe-realtime-2602` |
-| Codering     | `...mistral.encoding`                                                  | `pcm_mulaw`                             |
-| Samplefrequentie | `...mistral.sampleRate`                                           | `8000`                                  |
+| Instelling    | Configuratiepad                                                       | Standaard                               |
+| ------------- | ---------------------------------------------------------------------- | --------------------------------------- |
+| API-sleutel   | `plugins.entries.voice-call.config.streaming.providers.mistral.apiKey` | Valt terug op `MISTRAL_API_KEY`         |
+| Model         | `...mistral.model`                                                     | `voxtral-mini-transcribe-realtime-2602` |
+| Codering      | `...mistral.encoding`                                                  | `pcm_mulaw`                             |
+| Samplefrequentie | `...mistral.sampleRate`                                             | `8000`                                  |
 | Doelvertraging | `...mistral.targetStreamingDelayMs`                                  | `800`                                   |
 
 ```json5
@@ -128,16 +135,16 @@ streaming-STT-provider voor Voice Call.
 ```
 
 <Note>
-OpenClaw stelt Mistral realtime STT standaard in op `pcm_mulaw` bij 8 kHz, zodat Voice Call
+OpenClaw stelt Mistral realtime-STT standaard in op `pcm_mulaw` bij 8 kHz, zodat Voice Call
 Twilio-mediaframes direct kan doorsturen. Gebruik `encoding: "pcm_s16le"` en een
-bijpassende `sampleRate` alleen als je upstream-stream al ruwe PCM is.
+overeenkomende `sampleRate` alleen als je upstream-stream al ruwe PCM is.
 </Note>
 
 ## Geavanceerde configuratie
 
 <AccordionGroup>
-  <Accordion title="Aanpasbaar redeneren (mistral-small-latest)">
-    `mistral/mistral-small-latest` wordt gekoppeld aan Mistral Small 4 en ondersteunt [aanpasbaar redeneren](https://docs.mistral.ai/capabilities/reasoning/adjustable) in de Chat Completions API via `reasoning_effort` (`none` minimaliseert extra nadenken in de uitvoer; `high` toont volledige denksporen vóór het definitieve antwoord).
+  <Accordion title="Instelbare redenatie (mistral-small-latest)">
+    `mistral/mistral-small-latest` verwijst naar Mistral Small 4 en ondersteunt [instelbare redenatie](https://docs.mistral.ai/capabilities/reasoning/adjustable) op de Chat Completions-API via `reasoning_effort` (`none` minimaliseert extra denkstappen in de uitvoer; `high` toont volledige denksporen vóór het uiteindelijke antwoord).
 
     OpenClaw koppelt het **thinking**-niveau van de sessie aan de API van Mistral:
 
@@ -147,13 +154,13 @@ bijpassende `sampleRate` alleen als je upstream-stream al ruwe PCM is.
     | **low** / **medium** / **high** / **xhigh** / **adaptive** / **max** | `high`     |
 
     <Note>
-    Andere gebundelde Mistral-catalogusmodellen gebruiken deze parameter niet. Blijf `magistral-*`-modellen gebruiken wanneer je Mistrals native gedrag voor redeneren eerst wilt.
+    Andere gebundelde Mistral-catalogusmodellen gebruiken deze parameter niet. Blijf `magistral-*`-modellen gebruiken wanneer je het native reasoning-first-gedrag van Mistral wilt.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Geheugen-embeddings">
-    Mistral kan geheugen-embeddings leveren via `/v1/embeddings` (standaardmodel: `mistral-embed`).
+  <Accordion title="Geheugenembeddings">
+    Mistral kan geheugenembeddings leveren via `/v1/embeddings` (standaardmodel: `mistral-embed`).
 
     ```json5
     {
@@ -163,11 +170,11 @@ bijpassende `sampleRate` alleen als je upstream-stream al ruwe PCM is.
 
   </Accordion>
 
-  <Accordion title="Authenticatie en basis-URL">
-    - Mistral-authenticatie gebruikt `MISTRAL_API_KEY`.
-    - De basis-URL van de provider is standaard `https://api.mistral.ai/v1`.
+  <Accordion title="Auth en basis-URL">
+    - Mistral-auth gebruikt `MISTRAL_API_KEY` (Bearer-header).
+    - De basis-URL van de provider is standaard `https://api.mistral.ai/v1` en accepteert de standaard OpenAI-compatibele aanvraagvorm voor chat-completions.
     - Het standaardmodel voor onboarding is `mistral/mistral-large-latest`.
-    - Z.AI gebruikt Bearer-authenticatie met je API-sleutel.
+    - Overschrijf de basis-URL onder `models.providers.mistral.baseUrl` alleen wanneer Mistral expliciet een regionale endpoint publiceert die je nodig hebt.
 
   </Accordion>
 </AccordionGroup>
@@ -178,7 +185,7 @@ bijpassende `sampleRate` alleen als je upstream-stream al ruwe PCM is.
   <Card title="Modelselectie" href="/nl/concepts/model-providers" icon="layers">
     Providers, modelrefs en failovergedrag kiezen.
   </Card>
-  <Card title="Media-inzicht" href="/nl/nodes/media-understanding" icon="microphone">
+  <Card title="Mediabegrip" href="/nl/nodes/media-understanding" icon="microphone">
     Instelling van audiotranscriptie en providerselectie.
   </Card>
 </CardGroup>

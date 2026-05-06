@@ -1,44 +1,42 @@
 ---
 read_when:
     - Een nieuwe assistentinstantie onboarden
-    - Veiligheids- en machtigingsimplicaties beoordelen
-summary: End-to-end handleiding voor het draaien van OpenClaw als persoonlijke assistent met veiligheidswaarschuwingen
+    - Implicaties voor veiligheid en machtigingen beoordelen
+summary: End-to-end-gids voor het draaien van OpenClaw als persoonlijke assistent met veiligheidswaarschuwingen
 title: Persoonlijke assistent instellen
 x-i18n:
-    generated_at: "2026-05-02T22:22:42Z"
+    generated_at: "2026-05-06T09:33:05Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9f6087d0756c98741166135df8b915eb5a0803b23e68e486d2d25ec98d4dca79
+    source_hash: 6fea1194e6b9e8d8816cc712296940487b38faaabea463bd45ba1f37ff52d44d
     source_path: start/openclaw.md
     workflow: 16
 ---
 
-# Een persoonlijke assistent bouwen met OpenClaw
-
-OpenClaw is een zelfgehoste gateway die Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo en meer verbindt met AI-agenten. Deze handleiding behandelt de installatie voor een "persoonlijke assistent": een speciaal WhatsApp-nummer dat zich gedraagt als je altijd beschikbare AI-assistent.
+OpenClaw is een zelfgehoste Gateway die Discord, Google Chat, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo en meer verbindt met AI-agenten. Deze gids behandelt de installatie voor een "persoonlijke assistent": een speciaal WhatsApp-nummer dat zich gedraagt als je altijd beschikbare AI-assistent.
 
 ## ⚠️ Veiligheid eerst
 
-Je plaatst een agent in een positie om:
+Je plaatst een agent in een positie waarin deze:
 
-- opdrachten op je machine uit te voeren (afhankelijk van je toolbeleid)
-- bestanden in je werkruimte te lezen/schrijven
-- berichten terug te sturen via WhatsApp/Telegram/Discord/Mattermost en andere meegeleverde kanalen
+- opdrachten op je machine kan uitvoeren (afhankelijk van je toolbeleid)
+- bestanden in je workspace kan lezen/schrijven
+- berichten kan terugsturen via WhatsApp/Telegram/Discord/Mattermost en andere meegeleverde kanalen
 
-Begin conservatief:
+Begin behoudend:
 
 - Stel altijd `channels.whatsapp.allowFrom` in (draai nooit open voor de hele wereld op je persoonlijke Mac).
 - Gebruik een speciaal WhatsApp-nummer voor de assistent.
-- Heartbeats staan nu standaard op elke 30 minuten. Schakel ze uit totdat je de setup vertrouwt door `agents.defaults.heartbeat.every: "0m"` in te stellen.
+- Heartbeats staan nu standaard op elke 30 minuten. Schakel ze uit totdat je de installatie vertrouwt door `agents.defaults.heartbeat.every: "0m"` in te stellen.
 
 ## Vereisten
 
-- OpenClaw geïnstalleerd en onboarded — zie [Aan de slag](/nl/start/getting-started) als je dit nog niet hebt gedaan
-- Een tweede telefoonnummer (sim/eSIM/prepaid) voor de assistent
+- OpenClaw geïnstalleerd en onboarded - zie [Aan de slag](/nl/start/getting-started) als je dit nog niet hebt gedaan
+- Een tweede telefoonnummer (SIM/eSIM/prepaid) voor de assistent
 
-## De setup met twee telefoons (aanbevolen)
+## De installatie met twee telefoons (aanbevolen)
 
-Je wilt dit:
+Dit is wat je wilt:
 
 ```mermaid
 flowchart TB
@@ -46,9 +44,9 @@ flowchart TB
     B -- linked via QR --> C["<b>Your Mac (openclaw)<br></b><br>AI agent"]
 ```
 
-Als je je persoonlijke WhatsApp aan OpenClaw koppelt, wordt elk bericht aan jou “agentinvoer”. Dat is zelden wat je wilt.
+Als je je persoonlijke WhatsApp aan OpenClaw koppelt, wordt elk bericht aan jou "agentinvoer". Dat is zelden wat je wilt.
 
-## Snelstart in 5 minuten
+## Snelle start in 5 minuten
 
 1. Koppel WhatsApp Web (toont QR; scan met de assistenttelefoon):
 
@@ -62,7 +60,7 @@ openclaw channels login
 openclaw gateway --port 18789
 ```
 
-3. Plaats een minimale config in `~/.openclaw/openclaw.json`:
+3. Zet een minimale configuratie in `~/.openclaw/openclaw.json`:
 
 ```json5
 {
@@ -71,28 +69,28 @@ openclaw gateway --port 18789
 }
 ```
 
-Stuur nu een bericht naar het assistentnummer vanaf je allowlisted telefoon.
+Stuur nu een bericht naar het assistentnummer vanaf je toegestane telefoon.
 
-Wanneer onboarding is afgerond, opent OpenClaw automatisch het dashboard en drukt een schone link af (zonder token). Als het dashboard om auth vraagt, plak je het geconfigureerde gedeelde geheim in de instellingen van Control UI. Onboarding gebruikt standaard een token (`gateway.auth.token`), maar wachtwoordauthenticatie werkt ook als je `gateway.auth.mode` hebt omgezet naar `password`. Later opnieuw openen: `openclaw dashboard`.
+Wanneer onboarding klaar is, opent OpenClaw automatisch het dashboard en print het een schone link (zonder token). Als het dashboard om authenticatie vraagt, plak je het geconfigureerde gedeelde geheim in de Control UI-instellingen. Onboarding gebruikt standaard een token (`gateway.auth.token`), maar wachtwoordauthenticatie werkt ook als je `gateway.auth.mode` hebt gewijzigd naar `password`. Later opnieuw openen: `openclaw dashboard`.
 
-## Geef de agent een werkruimte (AGENTS)
+## Geef de agent een workspace (AGENTS)
 
-OpenClaw leest bedieningsinstructies en “geheugen” uit de werkruimtemap.
+OpenClaw leest werkinstructies en "geheugen" uit de workspace-map.
 
-Standaard gebruikt OpenClaw `~/.openclaw/workspace` als agentwerkruimte, en maakt deze (plus starterbestanden `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`) automatisch aan bij setup/eerste agentrun. `BOOTSTRAP.md` wordt alleen aangemaakt wanneer de werkruimte volledig nieuw is (het hoort niet terug te komen nadat je het verwijdert). `MEMORY.md` is optioneel (wordt niet automatisch aangemaakt); wanneer het aanwezig is, wordt het geladen voor normale sessies. Subagentsessies injecteren alleen `AGENTS.md` en `TOOLS.md`.
+Standaard gebruikt OpenClaw `~/.openclaw/workspace` als agent-workspace en maakt deze automatisch aan (plus starterbestanden `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`) tijdens de installatie/eerste agent-run. `BOOTSTRAP.md` wordt alleen aangemaakt wanneer de workspace helemaal nieuw is (het hoort niet terug te komen nadat je het hebt verwijderd). `MEMORY.md` is optioneel (wordt niet automatisch aangemaakt); wanneer het aanwezig is, wordt het geladen voor normale sessies. Subagentsessies injecteren alleen `AGENTS.md` en `TOOLS.md`.
 
 <Tip>
-Behandel deze map als het geheugen van OpenClaw en maak er een git-repo van (idealiter privé), zodat je `AGENTS.md` en geheugenbestanden worden geback-upt. Als git is geïnstalleerd, worden gloednieuwe werkruimtes automatisch geïnitialiseerd.
+Behandel deze map als het geheugen van OpenClaw en maak er een git-repo van (idealiter privé), zodat je `AGENTS.md` en geheugenbestanden worden geback-upt. Als git is geïnstalleerd, worden gloednieuwe workspaces automatisch geïnitialiseerd.
 </Tip>
 
 ```bash
 openclaw setup
 ```
 
-Volledige werkruimte-indeling + back-uphandleiding: [Agentwerkruimte](/nl/concepts/agent-workspace)
+Volledige workspace-indeling + back-upgids: [Agent-workspace](/nl/concepts/agent-workspace)
 Geheugenworkflow: [Geheugen](/nl/concepts/memory)
 
-Optioneel: kies een andere werkruimte met `agents.defaults.workspace` (ondersteunt `~`).
+Optioneel: kies een andere workspace met `agents.defaults.workspace` (ondersteunt `~`).
 
 ```json5
 {
@@ -104,7 +102,7 @@ Optioneel: kies een andere werkruimte met `agents.defaults.workspace` (ondersteu
 }
 ```
 
-Als je al je eigen werkruimtebestanden vanuit een repo levert, kun je het aanmaken van bootstrapbestanden volledig uitschakelen:
+Als je al je eigen workspace-bestanden vanuit een repo levert, kun je het aanmaken van bootstrapbestanden volledig uitschakelen:
 
 ```json5
 {
@@ -116,13 +114,13 @@ Als je al je eigen werkruimtebestanden vanuit een repo levert, kun je het aanmak
 }
 ```
 
-## De config die er "een assistent" van maakt
+## De configuratie die er "een assistent" van maakt
 
-OpenClaw gebruikt standaard een goede assistentsetup, maar meestal wil je het volgende afstemmen:
+OpenClaw gebruikt standaard een goede assistentconfiguratie, maar meestal wil je dit afstemmen:
 
 - persona/instructies in [`SOUL.md`](/nl/concepts/soul)
-- denkstandaarden (indien gewenst)
-- heartbeats (zodra je het vertrouwt)
+- standaardinstellingen voor denken (indien gewenst)
+- Heartbeats (zodra je het vertrouwt)
 
 Voorbeeld:
 
@@ -165,21 +163,21 @@ Voorbeeld:
 ## Sessies en geheugen
 
 - Sessiebestanden: `~/.openclaw/agents/<agentId>/sessions/{{SessionId}}.jsonl`
-- Sessie-metadata (tokengebruik, laatste route, enzovoort): `~/.openclaw/agents/<agentId>/sessions/sessions.json` (legacy: `~/.openclaw/sessions/sessions.json`)
+- Sessiemetadata (tokengebruik, laatste route, enzovoort): `~/.openclaw/agents/<agentId>/sessions/sessions.json` (legacy: `~/.openclaw/sessions/sessions.json`)
 - `/new` of `/reset` start een nieuwe sessie voor die chat (configureerbaar via `resetTriggers`). Als dit los wordt verzonden, bevestigt OpenClaw de reset zonder het model aan te roepen.
 - `/compact [instructions]` comprimeert de sessiecontext en rapporteert het resterende contextbudget.
 
 ## Heartbeats (proactieve modus)
 
-Standaard draait OpenClaw elke 30 minuten een Heartbeat met de prompt:
+Standaard voert OpenClaw elke 30 minuten een Heartbeat uit met de prompt:
 `Read HEARTBEAT.md if it exists (workspace context). Follow it strictly. Do not infer or repeat old tasks from prior chats. If nothing needs attention, reply HEARTBEAT_OK.`
 Stel `agents.defaults.heartbeat.every: "0m"` in om dit uit te schakelen.
 
 - Als `HEARTBEAT.md` bestaat maar effectief leeg is (alleen lege regels en markdownkoppen zoals `# Heading`), slaat OpenClaw de Heartbeat-run over om API-aanroepen te besparen.
-- Als het bestand ontbreekt, draait de Heartbeat nog steeds en beslist het model wat er moet gebeuren.
-- Als de agent antwoordt met `HEARTBEAT_OK` (optioneel met korte padding; zie `agents.defaults.heartbeat.ackMaxChars`), onderdrukt OpenClaw uitgaande levering voor die Heartbeat.
-- Standaard is Heartbeat-levering aan DM-achtige doelen `user:<id>` toegestaan. Stel `agents.defaults.heartbeat.directPolicy: "block"` in om levering aan directe doelen te onderdrukken terwijl Heartbeat-runs actief blijven.
-- Heartbeats draaien volledige agentbeurten — kortere intervallen verbruiken meer tokens.
+- Als het bestand ontbreekt, draait de Heartbeat nog steeds en beslist het model wat het moet doen.
+- Als de agent antwoordt met `HEARTBEAT_OK` (optioneel met korte opvulling; zie `agents.defaults.heartbeat.ackMaxChars`), onderdrukt OpenClaw uitgaande levering voor die Heartbeat.
+- Standaard is Heartbeat-levering aan DM-achtige `user:<id>`-doelen toegestaan. Stel `agents.defaults.heartbeat.directPolicy: "block"` in om levering aan directe doelen te onderdrukken terwijl Heartbeat-runs actief blijven.
+- Heartbeats voeren volledige agentbeurten uit - kortere intervallen verbruiken meer tokens.
 
 ```json5
 {
@@ -191,7 +189,7 @@ Stel `agents.defaults.heartbeat.every: "0m"` in om dit uit te schakelen.
 
 ## Media in en uit
 
-Inkomende bijlagen (afbeeldingen/audio/documenten) kunnen via sjablonen aan je opdracht beschikbaar worden gemaakt:
+Binnenkomende bijlagen (afbeeldingen/audio/documenten) kunnen via sjablonen aan je opdracht worden aangeboden:
 
 - `{{MediaPath}}` (lokaal tijdelijk bestandspad)
 - `{{MediaUrl}}` (pseudo-URL)
@@ -200,20 +198,20 @@ Inkomende bijlagen (afbeeldingen/audio/documenten) kunnen via sjablonen aan je o
 Uitgaande bijlagen van de agent: neem `MEDIA:<path-or-url>` op een eigen regel op (geen spaties). Voorbeeld:
 
 ```
-Here’s the screenshot.
+Here's the screenshot.
 MEDIA:https://example.com/screenshot.png
 ```
 
-OpenClaw haalt deze eruit en verstuurt ze als media naast de tekst.
+OpenClaw haalt deze eruit en verzendt ze als media naast de tekst.
 
 Gedrag voor lokale paden volgt hetzelfde vertrouwensmodel voor bestandslezen als de agent:
 
-- Als `tools.fs.workspaceOnly` `true` is, blijven uitgaande lokale paden met `MEDIA:` beperkt tot de tijdelijke root van OpenClaw, de mediacache, paden in de agentwerkruimte en door de sandbox gegenereerde bestanden.
+- Als `tools.fs.workspaceOnly` `true` is, blijven uitgaande lokale `MEDIA:`-paden beperkt tot de tijdelijke root van OpenClaw, de mediacache, agent-workspacepaden en door de sandbox gegenereerde bestanden.
 - Als `tools.fs.workspaceOnly` `false` is, kan uitgaande `MEDIA:` host-lokale bestanden gebruiken die de agent al mag lezen.
-- Lokale paden kunnen absoluut, werkruimte-relatief of home-relatief zijn met `~/`.
-- Host-lokale verzending staat nog steeds alleen media en veilige documenttypen toe (afbeeldingen, audio, video, PDF en Office-documenten). Platte tekst en geheimachtig ogende bestanden worden niet behandeld als verzendbare media.
+- Lokale paden kunnen absoluut, relatief aan de workspace of relatief aan de homemap met `~/` zijn.
+- Host-lokale verzending staat nog steeds alleen media en veilige documenttypen toe (afbeeldingen, audio, video, PDF en Office-documenten). Platte tekst en bestanden die op geheimen lijken, worden niet behandeld als verzendbare media.
 
-Dat betekent dat gegenereerde afbeeldingen/bestanden buiten de werkruimte nu kunnen worden verzonden wanneer je fs-beleid die leesacties al toestaat, zonder willekeurige exfiltratie van hosttekstbijlagen opnieuw mogelijk te maken.
+Dat betekent dat gegenereerde afbeeldingen/bestanden buiten de workspace nu kunnen worden verzonden wanneer je fs-beleid die leesacties al toestaat, zonder willekeurige exfiltratie via host-tekstbijlagen opnieuw mogelijk te maken.
 
 ## Operationele checklist
 
@@ -230,10 +228,10 @@ Logs staan onder `/tmp/openclaw/` (standaard: `openclaw-YYYY-MM-DD.log`).
 
 - WebChat: [WebChat](/nl/web/webchat)
 - Gateway-ops: [Gateway-runbook](/nl/gateway)
-- Cron + wake-ups: [Cron-taken](/nl/automation/cron-jobs)
+- Cron + wakeups: [Cron-taken](/nl/automation/cron-jobs)
 - macOS-menubalkcompanion: [OpenClaw macOS-app](/nl/platforms/macos)
-- iOS Node-app: [iOS-app](/nl/platforms/ios)
-- Android Node-app: [Android-app](/nl/platforms/android)
+- iOS-Node-app: [iOS-app](/nl/platforms/ios)
+- Android-Node-app: [Android-app](/nl/platforms/android)
 - Windows-status: [Windows (WSL2)](/nl/platforms/windows)
 - Linux-status: [Linux-app](/nl/platforms/linux)
 - Beveiliging: [Beveiliging](/nl/gateway/security)
@@ -241,5 +239,5 @@ Logs staan onder `/tmp/openclaw/` (standaard: `openclaw-YYYY-MM-DD.log`).
 ## Gerelateerd
 
 - [Aan de slag](/nl/start/getting-started)
-- [Setup](/nl/start/setup)
+- [Installatie](/nl/start/setup)
 - [Kanalenoverzicht](/nl/channels)

@@ -1,54 +1,62 @@
 ---
 read_when:
-    - Een gebruiker meldt dat agenten vastlopen doordat ze tool-aanroepen blijven herhalen
-    - Je moet de bescherming tegen herhaalde aanroepen afstemmen
-    - Je bewerkt agenttool-/runtimebeleid
-summary: Beveiligingsrails inschakelen en afstemmen die repetitieve toolaanroeplussen detecteren
+    - Een gebruiker meldt dat agenten vastlopen doordat ze toolaanroepen blijven herhalen
+    - U moet de bescherming tegen herhaalde aanroepen afstemmen
+    - Je bewerkt beleid voor agenttools en de uitvoeringsomgeving
+    - Je krijgt `compaction_loop_persisted`-afbrekingen na een nieuwe poging vanwege context-overflow
+summary: Beveiligingsmaatregelen inschakelen en afstemmen die herhalende lussen met toolaanroepen detecteren
 title: Detectie van hulpmiddellussen
 x-i18n:
-    generated_at: "2026-05-05T01:50:49Z"
+    generated_at: "2026-05-06T09:37:18Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b9221e1716d3f4c2814a4705b160253839510cd6d11fe4ccd598c67958851afb
+    source_hash: 48773b2af3ba38db48f14c65e9f359c80b2503bd29c8e3edfaca2e4ced7e1713
     source_path: tools/loop-detection.md
     workflow: 16
 ---
 
-OpenClaw kan voorkomen dat agents vastlopen in herhaalde tool-call-patronen.
-De bewaking is **standaard uitgeschakeld**.
+OpenClaw heeft twee samenwerkende vangrails voor repetitieve toolaanroeppatronen:
 
-Schakel deze alleen in waar nodig, omdat strikte instellingen legitieme herhaalde calls kunnen blokkeren.
+1. **Lusdetectie** (`tools.loopDetection.enabled`) — standaard uitgeschakeld. Bewaakt de doorlopende toolaanroepgeschiedenis op herhaalde patronen en pogingen met onbekende tools.
+2. **Post-Compaction-bewaking** (`tools.loopDetection.postCompactionGuard`) — standaard ingeschakeld, tenzij `tools.loopDetection.enabled` expliciet `false` is. Wordt geactiveerd na elke Compaction-retry en breekt de run af wanneer de agent binnen het venster dezelfde `(tool, args, result)`-triple uitzendt.
+
+Beide worden geconfigureerd onder hetzelfde `tools.loopDetection`-blok, maar de post-Compaction-bewaking draait wanneer de hoofdschakelaar niet expliciet uitstaat. Stel `tools.loopDetection.enabled: false` in om beide oppervlakken uit te schakelen.
 
 ## Waarom dit bestaat
 
-- Detecteer repetitieve reeksen die geen voortgang maken.
-- Detecteer hoogfrequente lussen zonder resultaat (dezelfde tool, dezelfde invoer, herhaalde fouten).
-- Detecteer specifieke patronen van herhaalde calls voor bekende pollingtools.
+- Repetitieve reeksen detecteren die geen voortgang boeken.
+- Hoogfrequente lussen zonder resultaat detecteren (dezelfde tool, dezelfde invoer, herhaalde fouten).
+- Specifieke herhaalde-aanroeppatronen detecteren voor bekende pollingtools.
+- Voorkomen dat cycli van contextoverloop, daarna Compaction en daarna dezelfde lus eindeloos blijven draaien.
 
 ## Configuratieblok
 
-Globale standaardwaarden:
+Globale standaardwaarden, met elk gedocumenteerd veld weergegeven:
 
 ```json5
 {
   tools: {
     loopDetection: {
-      enabled: false,
+      enabled: false, // master switch for the rolling-history detectors
       historySize: 30,
       warningThreshold: 10,
       criticalThreshold: 20,
+      unknownToolThreshold: 10,
       globalCircuitBreakerThreshold: 30,
       detectors: {
         genericRepeat: true,
         knownPollNoProgress: true,
         pingPong: true,
       },
+      postCompactionGuard: {
+        windowSize: 3, // armed after compaction-retry; runs unless enabled is explicitly false
+      },
     },
   },
 }
 ```
 
-Per-agent override (optioneel):
+Override per agent (optioneel):
 
 ```json5
 {
@@ -71,67 +79,83 @@ Per-agent override (optioneel):
 
 ### Veldgedrag
 
-- `enabled`: Hoofdschakelaar. `false` betekent dat er geen lusdetectie wordt uitgevoerd.
-- `historySize`: aantal recente tool-calls dat voor analyse wordt bewaard.
-- `warningThreshold`: drempel voordat een patroon als alleen-waarschuwing wordt geclassificeerd.
-- `criticalThreshold`: drempel voor het blokkeren van repetitieve luspatronen.
-- `globalCircuitBreakerThreshold`: globale breaker-drempel voor geen voortgang.
-- `detectors.genericRepeat`: detecteert herhaalde patronen met dezelfde tool + dezelfde parameters.
-- `detectors.knownPollNoProgress`: detecteert bekende pollingachtige patronen zonder statuswijziging.
-- `detectors.pingPong`: detecteert afwisselende pingpongpatronen.
+| Veld                             | Standaard | Effect                                                                                                                                    |
+| -------------------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `enabled`                        | `false`   | Hoofdschakelaar voor de rolling-history-detectors. Instellen op `false` schakelt ook de post-Compaction-bewaking uit.                    |
+| `historySize`                    | `30`      | Aantal recente toolaanroepen dat voor analyse wordt bewaard.                                                                              |
+| `warningThreshold`               | `10`      | Drempel voordat een patroon alleen als waarschuwing wordt geclassificeerd.                                                                |
+| `criticalThreshold`              | `20`      | Drempel voor het blokkeren van repetitieve luspatronen.                                                                                   |
+| `unknownToolThreshold`           | `10`      | Blokkeer herhaalde aanroepen naar dezelfde niet-beschikbare tool na zoveel missers.                                                       |
+| `globalCircuitBreakerThreshold`  | `30`      | Globale no-progress-breakerdrempel over alle detectors heen.                                                                              |
+| `detectors.genericRepeat`        | `true`    | Detecteert herhaalde patronen met dezelfde tool en dezelfde parameters.                                                                   |
+| `detectors.knownPollNoProgress`  | `true`    | Detecteert bekende pollingachtige patronen zonder statuswijziging.                                                                        |
+| `detectors.pingPong`             | `true`    | Detecteert afwisselende pingpongpatronen.                                                                                                 |
+| `postCompactionGuard.windowSize` | `3`       | Aantal post-Compaction-toolaanroepen waarin de bewaking actief blijft en het aantal identieke triples dat de run afbreekt.                |
 
-Voor `exec` vergelijken controles op geen voortgang stabiele opdrachtresultaten en negeren ze vluchtige runtime-metadata zoals duur, PID, sessie-ID en werkmap.
-Wanneer een run-id beschikbaar is, wordt de recente tool-call-geschiedenis alleen binnen die run geëvalueerd, zodat geplande Heartbeat-cycli en nieuwe runs geen verouderde lustellingen van eerdere runs overnemen.
+Voor `exec` vergelijken no-progress-controles stabiele commandouitkomsten en negeren ze vluchtige runtime-metadata zoals duur, PID, sessie-ID en werkdirectory. Wanneer een run-ID beschikbaar is, wordt recente toolaanroepgeschiedenis alleen binnen die run geëvalueerd, zodat geplande Heartbeat-cycli en nieuwe runs geen verouderde lustellingen van eerdere runs erven.
 
-## Aanbevolen instelling
+## Aanbevolen configuratie
 
-- Begin voor kleinere modellen met `enabled: true`, met ongewijzigde standaardwaarden. Flagship-modellen hebben zelden lusdetectie nodig en kunnen deze uitgeschakeld laten.
+- Stel voor kleinere modellen `enabled: true` in en laat de drempels op hun standaardwaarden staan. Topmodellen hebben rolling-history-detectie zelden nodig en kunnen de hoofdschakelaar op `false` laten staan terwijl ze nog steeds profiteren van de post-Compaction-bewaking.
 - Houd drempels geordend als `warningThreshold < criticalThreshold < globalCircuitBreakerThreshold`.
-- Als fout-positieven optreden:
-  - verhoog `warningThreshold` en/of `criticalThreshold`
-  - verhoog (optioneel) `globalCircuitBreakerThreshold`
-  - schakel alleen de detector uit die problemen veroorzaakt
-  - verlaag `historySize` voor een minder strikte historische context
+- Als er fout-positieven optreden:
+  - Verhoog `warningThreshold` en/of `criticalThreshold`.
+  - Verhoog eventueel `globalCircuitBreakerThreshold`.
+  - Schakel alleen de specifieke detector uit die problemen veroorzaakt (`detectors.<name>: false`).
+  - Verlaag `historySize` voor minder strikte historische context.
+- Om alles uit te schakelen (inclusief de post-Compaction-bewaking), stel je `tools.loopDetection.enabled: false` expliciet in.
 
 ## Post-Compaction-bewaking
 
-Wanneer de runner een automatische Compaction-herhaalpoging voltooit (na een context-overflow), activeert deze een bewaking met een kort venster die de volgende paar tool-calls controleert. Als de agent meerdere keren binnen dat venster dezelfde `(toolName, args, result)`-triple uitzendt, concludeert de bewaking dat Compaction de lus niet heeft doorbroken en breekt deze de run af met een `compaction_loop_persisted`-fout.
+Wanneer de runner na een contextoverloop een Compaction-retry voltooit, activeert hij een kort-vensterbewaking die de volgende paar toolaanroepen bewaakt. Als de agent binnen het venster meerdere keren dezelfde `(toolName, argsHash, resultHash)`-triple uitzendt, concludeert de bewaking dat Compaction de lus niet heeft doorbroken en breekt hij de run af met een `compaction_loop_persisted`-fout.
 
-Dit is een afzonderlijk codepad naast de globale `tools.loopDetection`-detectoren. Het is onafhankelijk configureerbaar:
+De bewaking wordt afgeschermd door de hoofdvlag `tools.loopDetection.enabled`, met één nuance: hij blijft **ingeschakeld wanneer de vlag niet is ingesteld of `true` is** en wordt alleen gedeactiveerd wanneer de vlag expliciet `false` is. Dit is opzettelijk. De bewaking bestaat om uit Compaction-lussen te komen die anders onbeperkt tokens zouden verbruiken, zodat een gebruiker zonder configuratie nog steeds beschermd is.
 
 ```json5
 {
   tools: {
     loopDetection: {
-      enabled: true, // existing master switch; set false to disable loop guards
+      // master switch; set false to disable the guard along with the rolling detectors
+      enabled: true,
       postCompactionGuard: {
-        windowSize: 3, // default: 3
+        windowSize: 3, // default
       },
     },
   },
 }
 ```
 
-- `windowSize`: aantal tool-calls na Compaction waarin de bewaking actief blijft _en_ het aantal identieke (tool, args, result)-triples dat een afbreking triggert.
+- Een lagere `windowSize` is strikter (minder pogingen vóór afbreken).
+- Een hogere `windowSize` geeft de agent meer herstelpogingen.
+- De bewaking breekt nooit af wanneer resultaten veranderen, alleen wanneer resultaten byte-identiek zijn over het venster.
+- De bewaking is opzettelijk smal: hij vuurt alleen direct na een Compaction-retry.
 
-De bewaking breekt nooit af wanneer resultaten veranderen, alleen wanneer resultaten byte-identiek zijn binnen het venster. Deze is bewust smal: hij gaat alleen af direct na een Compaction-herhaalpoging.
+<Note>
+  De post-Compaction-bewaking draait wanneer de hoofdvlag niet expliciet `false` is, zelfs als je nooit een `tools.loopDetection`-blok hebt geschreven. Controleer dit door direct na een Compaction-gebeurtenis in het Gateway-log naar `post-compaction guard armed for N attempts` te zoeken.
+</Note>
 
 ## Logs en verwacht gedrag
 
-Wanneer een lus wordt gedetecteerd, rapporteert OpenClaw een lusgebeurtenis en blokkeert of dempt het de volgende tool-cyclus, afhankelijk van de ernst.
-Dit beschermt gebruikers tegen onbeheersbare tokenkosten en vastlopers, terwijl normale tooltoegang behouden blijft.
+Wanneer een lus wordt gedetecteerd, rapporteert OpenClaw een lusgebeurtenis en dempt of blokkeert het de volgende toolcyclus, afhankelijk van de ernst. Dit beschermt gebruikers tegen op hol geslagen tokenverbruik en vastlopers, terwijl normale tooltoegang behouden blijft.
 
-- Geef eerst de voorkeur aan waarschuwing en tijdelijke onderdrukking.
-- Escaleer alleen wanneer herhaald bewijs zich opstapelt.
-
-## Opmerkingen
-
-- `tools.loopDetection` wordt samengevoegd met overrides op agentniveau.
-- Per-agent configuratie overschrijft globale waarden volledig of breidt ze uit.
-- Als er geen configuratie bestaat, blijven guardrails uitgeschakeld.
+- Waarschuwingen komen eerst.
+- Onderdrukking volgt wanneer patronen voorbij de waarschuwingsdrempel blijven bestaan.
+- Kritieke drempels blokkeren de volgende toolcyclus en tonen een duidelijke lusdetectiereden in het runrecord.
+- De post-Compaction-bewaking emitteert `compaction_loop_persisted`-fouten met de naam van de overtredende tool en het aantal identieke aanroepen.
 
 ## Gerelateerd
 
-- [Exec-goedkeuringen](/nl/tools/exec-approvals)
-- [Denkniveaus](/nl/tools/thinking)
-- [Subagents](/nl/tools/subagents)
+<CardGroup cols={2}>
+  <Card title="Exec approvals" href="/nl/tools/exec-approvals" icon="shield">
+    Beleid voor toestaan/weigeren van shelluitvoering.
+  </Card>
+  <Card title="Thinking levels" href="/nl/tools/thinking" icon="brain">
+    Niveaus voor redeneerinspanning en interactie met providerbeleid.
+  </Card>
+  <Card title="Sub-agents" href="/nl/tools/subagents" icon="users">
+    Geïsoleerde agents starten om op hol geslagen gedrag te begrenzen.
+  </Card>
+  <Card title="Configuration reference" href="/nl/gateway/configuration-reference" icon="gear">
+    Volledig `tools.loopDetection`-schema en samenvoegsemantiek.
+  </Card>
+</CardGroup>

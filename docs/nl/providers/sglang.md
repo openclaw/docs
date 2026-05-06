@@ -1,33 +1,38 @@
 ---
 read_when:
-    - Je wilt OpenClaw gebruiken met een lokale SGLang-server
+    - Je wilt OpenClaw uitvoeren met een lokale SGLang-server
     - Je wilt OpenAI-compatibele /v1-eindpunten met je eigen modellen
 summary: OpenClaw uitvoeren met SGLang (OpenAI-compatibele zelfgehoste server)
 title: SGLang
 x-i18n:
-    generated_at: "2026-04-29T23:13:08Z"
+    generated_at: "2026-05-06T09:30:06Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8ed6767f85bcf099fb25dfe72a48b8a09e04ba13212125651616d2d93607beba
+    source_hash: 3e65e38868e061e03d15348725971880ca503dc61a7425c1fbdc718fd684728f
     source_path: providers/sglang.md
     workflow: 16
 ---
 
-SGLang kan open-sourcemodellen aanbieden via een **OpenAI-compatibele** HTTP-API.
-OpenClaw kan verbinding maken met SGLang met de `openai-completions`-API.
+SGLang serveert open-weightmodellen via een OpenAI-compatibele HTTP-API. OpenClaw maakt verbinding met SGLang via de `openai-completions`-providerfamilie met automatische ontdekking van beschikbare modellen.
 
-OpenClaw kan beschikbare modellen ook **automatisch ontdekken** vanuit SGLang wanneer je je aanmeldt
-met `SGLANG_API_KEY` (elke waarde werkt als je server geen verificatie afdwingt)
-en je geen expliciete `models.providers.sglang`-vermelding definieert.
+| Eigenschap                | Waarde                                                       |
+| ------------------------- | ------------------------------------------------------------ |
+| Provider-id               | `sglang`                                                     |
+| Plugin                    | meegeleverd, `enabledByDefault: true`                        |
+| Auth-omgevingsvariabele   | `SGLANG_API_KEY` (elke niet-lege waarde als de server geen auth heeft) |
+| Onboarding-vlag           | `--auth-choice sglang`                                       |
+| API                       | OpenAI-compatibel (`openai-completions`)                     |
+| Standaardbasis-URL        | `http://127.0.0.1:30000/v1`                                  |
+| Standaardmodel-placeholder | `sglang/Qwen/Qwen3-8B`                                      |
+| Streaminggebruik          | Ja (`supportsStreamingUsage: true`)                          |
+| Prijzen                   | Gemarkeerd als extern-gratis (`modelPricing.external: false`) |
 
-OpenClaw behandelt `sglang` als een lokale OpenAI-compatibele provider die
-gestreamde gebruiksregistratie ondersteunt, zodat status-/context-tokentellingen kunnen worden bijgewerkt vanuit
-`stream_options.include_usage`-responsen.
+OpenClaw **ontdekt ook automatisch** beschikbare modellen van SGLang wanneer je je aanmeldt met `SGLANG_API_KEY` en je geen expliciete `models.providers.sglang`-vermelding definieert — zie [Modelontdekking (impliciete provider)](#model-discovery-implicit-provider) hieronder.
 
 ## Aan de slag
 
 <Steps>
-  <Step title="SGLang starten">
+  <Step title="Start SGLang">
     Start SGLang met een OpenAI-compatibele server. Je basis-URL moet
     `/v1`-eindpunten aanbieden (bijvoorbeeld `/v1/models`, `/v1/chat/completions`). SGLang
     draait vaak op:
@@ -35,15 +40,15 @@ gestreamde gebruiksregistratie ondersteunt, zodat status-/context-tokentellingen
     - `http://127.0.0.1:30000/v1`
 
   </Step>
-  <Step title="Een API-sleutel instellen">
-    Elke waarde werkt als er geen verificatie op je server is geconfigureerd:
+  <Step title="Stel een API-sleutel in">
+    Elke waarde werkt als er geen auth op je server is geconfigureerd:
 
     ```bash
     export SGLANG_API_KEY="sglang-local"
     ```
 
   </Step>
-  <Step title="Onboarding uitvoeren of rechtstreeks een model instellen">
+  <Step title="Voer onboarding uit of stel direct een model in">
     ```bash
     openclaw onboard
     ```
@@ -63,17 +68,17 @@ gestreamde gebruiksregistratie ondersteunt, zodat status-/context-tokentellingen
   </Step>
 </Steps>
 
-## Modeldetectie (impliciete provider)
+## Modelontdekking (impliciete provider)
 
-Wanneer `SGLANG_API_KEY` is ingesteld (of er een verificatieprofiel bestaat) en je **geen**
-`models.providers.sglang` definieert, voert OpenClaw een query uit naar:
+Wanneer `SGLANG_API_KEY` is ingesteld (of er een auth-profiel bestaat) en je **geen**
+`models.providers.sglang` definieert, zal OpenClaw dit opvragen:
 
 - `GET http://127.0.0.1:30000/v1/models`
 
-en zet de geretourneerde ID's om naar modelvermeldingen.
+en de geretourneerde ID's omzetten in modelvermeldingen.
 
 <Note>
-Als je `models.providers.sglang` expliciet instelt, wordt automatische detectie overgeslagen en
+Als je `models.providers.sglang` expliciet instelt, wordt automatische ontdekking overgeslagen en
 moet je modellen handmatig definiëren.
 </Note>
 
@@ -82,7 +87,7 @@ moet je modellen handmatig definiëren.
 Gebruik expliciete configuratie wanneer:
 
 - SGLang op een andere host/poort draait.
-- Je `contextWindow`-/`maxTokens`-waarden wilt vastzetten.
+- Je `contextWindow`/`maxTokens`-waarden wilt vastzetten.
 - Je server een echte API-sleutel vereist (of je headers wilt beheren).
 
 ```json5
@@ -119,14 +124,14 @@ Gebruik expliciete configuratie wanneer:
 
     | Gedrag | SGLang |
     |----------|--------|
-    | Verzoekvorming alleen voor OpenAI | Niet toegepast |
-    | `service_tier`, Responses `store`, prompt-cachehints | Niet verzonden |
-    | Payloadvorming voor redeneringscompatibiliteit | Niet toegepast |
+    | OpenAI-specifieke request-vormgeving | Niet toegepast |
+    | `service_tier`, Responses `store`, prompt-cache hints | Niet verzonden |
+    | Redeneringscompatibele payload-vormgeving | Niet toegepast |
     | Verborgen attributieheaders (`originator`, `version`, `User-Agent`) | Niet geïnjecteerd op aangepaste SGLang-basis-URL's |
 
   </Accordion>
 
-  <Accordion title="Problemen oplossen">
+  <Accordion title="Probleemoplossing">
     **Server niet bereikbaar**
 
     Controleer of de server draait en reageert:
@@ -135,15 +140,15 @@ Gebruik expliciete configuratie wanneer:
     curl http://127.0.0.1:30000/v1/models
     ```
 
-    **Verificatiefouten**
+    **Auth-fouten**
 
-    Als verzoeken mislukken met verificatiefouten, stel dan een echte `SGLANG_API_KEY` in die overeenkomt
+    Als requests mislukken met auth-fouten, stel dan een echte `SGLANG_API_KEY` in die overeenkomt
     met je serverconfiguratie, of configureer de provider expliciet onder
     `models.providers.sglang`.
 
     <Tip>
-    Als je SGLang zonder verificatie uitvoert, is elke niet-lege waarde voor
-    `SGLANG_API_KEY` voldoende om je aan te melden voor modeldetectie.
+    Als je SGLang zonder authenticatie draait, is elke niet-lege waarde voor
+    `SGLANG_API_KEY` voldoende om je aan te melden voor modelontdekking.
     </Tip>
 
   </Accordion>
@@ -153,7 +158,7 @@ Gebruik expliciete configuratie wanneer:
 
 <CardGroup cols={2}>
   <Card title="Modelselectie" href="/nl/concepts/model-providers" icon="layers">
-    Providers, modelverwijzingen en failovergedrag kiezen.
+    Providers, modelverwijzingen en failover-gedrag kiezen.
   </Card>
   <Card title="Configuratiereferentie" href="/nl/gateway/configuration-reference" icon="gear">
     Volledig configuratieschema inclusief providervermeldingen.

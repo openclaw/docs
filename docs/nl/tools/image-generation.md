@@ -1,29 +1,29 @@
 ---
 read_when:
     - Afbeeldingen genereren of bewerken via de agent
-    - Aanbieders en modellen voor beeldgeneratie configureren
-    - Inzicht in de parameters van de tool image_generate
+    - Aanbieders en modellen voor afbeeldingsgeneratie configureren
+    - De parameters van de image_generate-tool begrijpen
 sidebarTitle: Image generation
-summary: Genereer en bewerk afbeeldingen via image_generate in OpenAI, Google, fal, MiniMax, ComfyUI, DeepInfra, OpenRouter, LiteLLM, xAI, Vydra
-title: Afbeeldingsgeneratie
+summary: Afbeeldingen genereren en bewerken via image_generate voor OpenAI, Google, fal, MiniMax, ComfyUI, DeepInfra, OpenRouter, LiteLLM, xAI, Vydra
+title: Afbeeldingen genereren
 x-i18n:
-    generated_at: "2026-04-29T23:24:17Z"
+    generated_at: "2026-05-06T09:36:10Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 2237ad82279d8daf28d70a550727a5900d7a820a0c9ba09de8b7bae5b6575401
+    source_hash: 8036e8846c38e9bfce4e618caac13fa35e89ae183f81e5a496a29feeb9656369
     source_path: tools/image-generation.md
     workflow: 16
 ---
 
-De tool `image_generate` laat de agent afbeeldingen maken en bewerken met je
-geconfigureerde providers. Gegenereerde afbeeldingen worden automatisch als media-
-bijlagen in het antwoord van de agent geleverd.
+De `image_generate`-tool laat de agent afbeeldingen maken en bewerken met je
+geconfigureerde providers. Gegenereerde afbeeldingen worden automatisch geleverd als media-
+bijlagen in het antwoord van de agent.
 
 <Note>
-De tool verschijnt alleen wanneer er ten minste één provider voor
-afbeeldingsgeneratie beschikbaar is. Als je `image_generate` niet ziet in de
-tools van je agent, configureer dan `agents.defaults.imageGenerationModel`, stel
-een provider-API-sleutel in, of meld je aan met OpenAI Codex OAuth.
+De tool verschijnt alleen wanneer er ten minste één provider voor het genereren van afbeeldingen
+beschikbaar is. Als je `image_generate` niet ziet in de tools van je agent,
+configureer dan `agents.defaults.imageGenerationModel`, stel een provider-API-sleutel in,
+of meld je aan met OpenAI Codex OAuth.
 </Note>
 
 ## Snel aan de slag
@@ -47,62 +47,63 @@ een provider-API-sleutel in, of meld je aan met OpenAI Codex OAuth.
     }
     ```
 
-    Codex OAuth gebruikt dezelfde modelverwijzing `openai/gpt-image-2`. Wanneer een
-    OAuth-profiel `openai-codex` is geconfigureerd, routeert OpenClaw afbeeldings-
-    aanvragen via dat OAuth-profiel in plaats van eerst `OPENAI_API_KEY` te proberen.
-    Expliciete configuratie van `models.providers.openai` (API-sleutel,
-    aangepaste/Azure-basis-URL) kiest weer voor de directe route via de OpenAI Images API.
+    Codex OAuth gebruikt dezelfde modelreferentie `openai/gpt-image-2`. Wanneer een
+    `openai-codex` OAuth-profiel is geconfigureerd, routeert OpenClaw afbeeldings-
+    aanvragen via dat OAuth-profiel in plaats van eerst
+    `OPENAI_API_KEY` te proberen. Expliciete `models.providers.openai`-configuratie (API-sleutel,
+    aangepaste/Azure-basis-URL) schakelt terug naar de directe OpenAI Images API-
+    route.
 
   </Step>
   <Step title="Vraag het de agent">
     _"Genereer een afbeelding van een vriendelijke robotmascotte."_
 
-    De agent roept `image_generate` automatisch aan. Er is geen toestemmingslijst
-    voor tools nodig — het is standaard ingeschakeld wanneer er een provider beschikbaar is.
+    De agent roept `image_generate` automatisch aan. Geen allow-listing voor tools
+    nodig - deze is standaard ingeschakeld wanneer er een provider beschikbaar is.
 
   </Step>
 </Steps>
 
 <Warning>
-Voor OpenAI-compatibele LAN-eindpunten zoals LocalAI behoud je de aangepaste
-`models.providers.openai.baseUrl` en kies je expliciet voor
-`browser.ssrfPolicy.dangerouslyAllowPrivateNetwork: true`. Privé- en interne
-afbeeldingseindpunten blijven standaard geblokkeerd.
+Voor OpenAI-compatibele LAN-eindpunten zoals LocalAI moet je de aangepaste
+`models.providers.openai.baseUrl` behouden en expliciet inschakelen met
+`browser.ssrfPolicy.dangerouslyAllowPrivateNetwork: true`. Privé- en
+interne afbeeldingseindpunten blijven standaard geblokkeerd.
 </Warning>
 
-## Algemene routes
+## Veelgebruikte routes
 
-| Doel                                                 | Modelverwijzing                                   | Auth                                   |
+| Doel                                                 | Modelreferentie                                    | Authenticatie                         |
 | ---------------------------------------------------- | -------------------------------------------------- | -------------------------------------- |
 | OpenAI-afbeeldingsgeneratie met API-facturering      | `openai/gpt-image-2`                               | `OPENAI_API_KEY`                       |
-| OpenAI-afbeeldingsgeneratie met Codex-abonnementsauth | `openai/gpt-image-2`                              | OpenAI Codex OAuth                     |
-| OpenAI PNG/WebP met transparante achtergrond         | `openai/gpt-image-1.5`                             | `OPENAI_API_KEY` of OpenAI Codex OAuth |
+| OpenAI-afbeeldingsgeneratie met Codex-abonnementsauthenticatie | `openai/gpt-image-2`                      | OpenAI Codex OAuth                     |
+| OpenAI-PNG/WebP met transparante achtergrond         | `openai/gpt-image-1.5`                             | `OPENAI_API_KEY` of OpenAI Codex OAuth |
 | DeepInfra-afbeeldingsgeneratie                      | `deepinfra/black-forest-labs/FLUX-1-schnell`       | `DEEPINFRA_API_KEY`                    |
 | OpenRouter-afbeeldingsgeneratie                     | `openrouter/google/gemini-3.1-flash-image-preview` | `OPENROUTER_API_KEY`                   |
 | LiteLLM-afbeeldingsgeneratie                        | `litellm/gpt-image-2`                              | `LITELLM_API_KEY`                      |
 | Google Gemini-afbeeldingsgeneratie                  | `google/gemini-3.1-flash-image-preview`            | `GEMINI_API_KEY` of `GOOGLE_API_KEY`   |
 
-Dezelfde tool `image_generate` verwerkt tekst-naar-afbeelding en bewerking met
-referentieafbeeldingen. Gebruik `image` voor één referentie of `images` voor
-meerdere referenties. Door de provider ondersteunde uitvoerhints zoals `quality`,
-`outputFormat` en `background` worden doorgestuurd wanneer beschikbaar en
-gerapporteerd als genegeerd wanneer een provider ze niet ondersteunt. Gebundelde
-ondersteuning voor transparante achtergronden is specifiek voor OpenAI; andere
-providers kunnen PNG-alpha nog steeds behouden als hun backend die uitvoert.
+Dezelfde `image_generate`-tool verwerkt tekst-naar-afbeelding en bewerking met
+referentieafbeeldingen. Gebruik `image` voor één referentie of `images` voor meerdere referenties.
+Door de provider ondersteunde uitvoerhints zoals `quality`, `outputFormat` en
+`background` worden doorgestuurd wanneer ze beschikbaar zijn en gerapporteerd als genegeerd wanneer een
+provider ze niet ondersteunt. Gebundelde ondersteuning voor transparante achtergronden is
+OpenAI-specifiek; andere providers kunnen PNG-alpha nog steeds behouden als hun
+backend die uitgeeft.
 
 ## Ondersteunde providers
 
-| Provider   | Standaardmodel                         | Bewerkingsondersteuning             | Auth                                                  |
+| Provider   | Standaardmodel                         | Bewerkingsondersteuning             | Authenticatie                                         |
 | ---------- | --------------------------------------- | ---------------------------------- | ----------------------------------------------------- |
-| ComfyUI    | `workflow`                              | Ja (1 afbeelding, workflow-geconfigureerd) | `COMFY_API_KEY` of `COMFY_CLOUD_API_KEY` voor cloud |
+| ComfyUI    | `workflow`                              | Ja (1 afbeelding, door workflow geconfigureerd) | `COMFY_API_KEY` of `COMFY_CLOUD_API_KEY` voor cloud |
 | DeepInfra  | `black-forest-labs/FLUX-1-schnell`      | Ja (1 afbeelding)                  | `DEEPINFRA_API_KEY`                                   |
-| fal        | `fal-ai/flux/dev`                       | Ja                                 | `FAL_KEY`                                             |
-| Google     | `gemini-3.1-flash-image-preview`        | Ja                                 | `GEMINI_API_KEY` of `GOOGLE_API_KEY`                  |
+| fal        | `fal-ai/flux/dev`                       | Ja                                | `FAL_KEY`                                             |
+| Google     | `gemini-3.1-flash-image-preview`        | Ja                                | `GEMINI_API_KEY` of `GOOGLE_API_KEY`                  |
 | LiteLLM    | `gpt-image-2`                           | Ja (tot 5 invoerafbeeldingen)      | `LITELLM_API_KEY`                                     |
 | MiniMax    | `image-01`                              | Ja (onderwerpreferentie)           | `MINIMAX_API_KEY` of MiniMax OAuth (`minimax-portal`) |
 | OpenAI     | `gpt-image-2`                           | Ja (tot 4 afbeeldingen)            | `OPENAI_API_KEY` of OpenAI Codex OAuth                |
 | OpenRouter | `google/gemini-3.1-flash-image-preview` | Ja (tot 5 invoerafbeeldingen)      | `OPENROUTER_API_KEY`                                  |
-| Vydra      | `grok-imagine`                          | Nee                                | `VYDRA_API_KEY`                                       |
+| Vydra      | `grok-imagine`                          | Nee                               | `VYDRA_API_KEY`                                       |
 | xAI        | `grok-imagine-image`                    | Ja (tot 5 afbeeldingen)            | `XAI_API_KEY`                                         |
 
 Gebruik `action: "list"` om beschikbare providers en modellen tijdens runtime te inspecteren:
@@ -115,11 +116,11 @@ Gebruik `action: "list"` om beschikbare providers en modellen tijdens runtime te
 
 | Mogelijkheid          | ComfyUI            | DeepInfra | fal               | Google         | MiniMax               | OpenAI         | Vydra | xAI            |
 | --------------------- | ------------------ | --------- | ----------------- | -------------- | --------------------- | -------------- | ----- | -------------- |
-| Genereren (max. aantal) | Workflow-gedefinieerd | 4       | 4                 | 4              | 9                     | 4              | 1     | 4              |
-| Bewerken / referentie | 1 afbeelding (workflow) | 1 afbeelding | 1 afbeelding | Tot 5 afbeeldingen | 1 afbeelding (onderwerpreferentie) | Tot 5 afbeeldingen | — | Tot 5 afbeeldingen |
-| Grootteregeling       | —                  | ✓         | ✓                 | ✓              | —                     | Tot 4K         | —     | —              |
-| Beeldverhouding       | —                  | —         | ✓ (alleen genereren) | ✓            | ✓                     | —              | —     | ✓              |
-| Resolutie (1K/2K/4K)  | —                  | —         | ✓                 | ✓              | —                     | —              | —     | 1K, 2K         |
+| Genereren (max. aantal) | Door workflow gedefinieerd | 4         | 4                 | 4              | 9                     | 4              | 1     | 4              |
+| Bewerken / referentie | 1 afbeelding (workflow) | 1 afbeelding | 1 afbeelding     | Tot 5 afbeeldingen | 1 afbeelding (onderwerpreferentie) | Tot 5 afbeeldingen | -     | Tot 5 afbeeldingen |
+| Groottecontrole       | -                  | ✓         | ✓                 | ✓              | -                     | Tot 4K         | -     | -              |
+| Beeldverhouding       | -                  | -         | ✓ (alleen genereren) | ✓            | ✓                     | -              | -     | ✓              |
+| Resolutie (1K/2K/4K)  | -                  | -         | ✓                 | ✓              | -                     | -              | -     | 1K, 2K         |
 
 ## Toolparameters
 
@@ -130,11 +131,11 @@ Gebruik `action: "list"` om beschikbare providers en modellen tijdens runtime te
   Gebruik `"list"` om beschikbare providers en modellen tijdens runtime te inspecteren.
 </ParamField>
 <ParamField path="model" type="string">
-  Provider-/modeloverride (bijv. `openai/gpt-image-2`). Gebruik
+  Overschrijving van provider/model (bijv. `openai/gpt-image-2`). Gebruik
   `openai/gpt-image-1.5` voor transparante OpenAI-achtergronden.
 </ParamField>
 <ParamField path="image" type="string">
-  Pad of URL naar één referentieafbeelding voor bewerkingsmodus.
+  Pad of URL van één referentieafbeelding voor bewerkingsmodus.
 </ParamField>
 <ParamField path="images" type="string[]">
   Meerdere referentieafbeeldingen voor bewerkingsmodus (tot 5 bij ondersteunende providers).
@@ -147,31 +148,29 @@ Gebruik `action: "list"` om beschikbare providers en modellen tijdens runtime te
 </ParamField>
 <ParamField path="resolution" type='"1K" | "2K" | "4K"'>Resolutiehint.</ParamField>
 <ParamField path="quality" type='"low" | "medium" | "high" | "auto"'>
-  Kwaliteitshint wanneer de provider die ondersteunt.
+  Kwaliteitshint wanneer de provider dit ondersteunt.
 </ParamField>
 <ParamField path="outputFormat" type='"png" | "jpeg" | "webp"'>
-  Hint voor uitvoerindeling wanneer de provider die ondersteunt.
+  Uitvoerformaat-hint wanneer de provider dit ondersteunt.
 </ParamField>
 <ParamField path="background" type='"transparent" | "opaque" | "auto"'>
-  Achtergrondhint wanneer de provider die ondersteunt. Gebruik `transparent` met
+  Achtergrondhint wanneer de provider dit ondersteunt. Gebruik `transparent` met
   `outputFormat: "png"` of `"webp"` voor providers die transparantie ondersteunen.
 </ParamField>
-<ParamField path="count" type="number">Aantal te genereren afbeeldingen (1–4).</ParamField>
-<ParamField path="timeoutMs" type="number">Optionele time-out voor providerverzoek in milliseconden.</ParamField>
+<ParamField path="count" type="number">Aantal te genereren afbeeldingen (1-4).</ParamField>
+<ParamField path="timeoutMs" type="number">Optionele time-out voor providerverzoeken in milliseconden.</ParamField>
 <ParamField path="filename" type="string">Hint voor uitvoerbestandsnaam.</ParamField>
 <ParamField path="openai" type="object">
   Alleen-OpenAI-hints: `background`, `moderation`, `outputCompression` en `user`.
 </ParamField>
 
 <Note>
-Niet alle providers ondersteunen alle parameters. Wanneer een fallbackprovider
-een verwante geometrieoptie ondersteunt in plaats van de exact aangevraagde,
-wijst OpenClaw vóór indiening opnieuw toe naar de dichtstbijzijnde ondersteunde
-grootte, beeldverhouding of resolutie. Niet-ondersteunde uitvoerhints worden
-weggelaten voor providers die ondersteuning niet declareren en worden in het
-toolresultaat gerapporteerd. Toolresultaten rapporteren de toegepaste
-instellingen; `details.normalization` legt elke vertaling van aangevraagd naar
-toegepast vast.
+Niet alle providers ondersteunen alle parameters. Wanneer een fallbackprovider een
+nabije geometrieoptie ondersteunt in plaats van de exact aangevraagde, herleidt OpenClaw naar
+de dichtstbijzijnde ondersteunde grootte, beeldverhouding of resolutie vóór verzending.
+Niet-ondersteunde uitvoerhints worden verwijderd voor providers die geen
+ondersteuning declareren en worden gerapporteerd in het toolresultaat. Toolresultaten rapporteren de toegepaste
+instellingen; `details.normalization` legt elke vertaling van aangevraagd naar toegepast vast.
 </Note>
 
 ## Configuratie
@@ -196,72 +195,73 @@ toegepast vast.
 }
 ```
 
-### Providerselectievolgorde
+### Selectievolgorde van providers
 
 OpenClaw probeert providers in deze volgorde:
 
 1. **`model`-parameter** uit de toolaanroep (als de agent er een opgeeft).
-2. **`imageGenerationModel.primary`** uit configuratie.
+2. **`imageGenerationModel.primary`** uit de configuratie.
 3. **`imageGenerationModel.fallbacks`** op volgorde.
-4. **Automatische detectie** — alleen auth-gedekte providerstandaarden:
+4. **Automatische detectie** - alleen auth-ondersteunde providerstandaarden:
    - huidige standaardprovider eerst;
-   - resterende geregistreerde providers voor afbeeldingsgeneratie op volgorde van provider-id.
+   - overige geregistreerde providers voor afbeeldingsgeneratie in provider-id-volgorde.
 
-Als een provider faalt (authenticatiefout, snelheidslimiet, enz.), wordt de volgende
-geconfigureerde kandidaat automatisch geprobeerd. Als alles faalt, bevat de fout details
+Als een provider faalt (authenticatiefout, ratelimiet, enz.), wordt de volgende geconfigureerde
+kandidaat automatisch geprobeerd. Als ze allemaal falen, bevat de fout details
 van elke poging.
 
 <AccordionGroup>
-  <Accordion title="Modeloverrides per aanroep zijn exact">
-    Een `model`-override per aanroep probeert alleen die provider/dat model en gaat
-    niet door naar geconfigureerde primaire/fallback- of automatisch gedetecteerde providers.
+  <Accordion title="Modeloverschrijvingen per aanroep zijn exact">
+    Een `model`-overschrijving per aanroep probeert alleen die provider/dat model en gaat
+    niet door naar geconfigureerde primary/fallback- of automatisch gedetecteerde providers.
   </Accordion>
   <Accordion title="Automatische detectie is auth-bewust">
-    Een providerstandaard komt alleen in de kandidatenlijst wanneer OpenClaw die provider
-    daadwerkelijk kan authenticeren. Stel
-    `agents.defaults.mediaGenerationAutoProviderFallback: false` in om alleen expliciete
-    vermeldingen voor `model`, `primary` en `fallbacks` te gebruiken.
+    Een providerstandaard komt alleen in de kandidatenlijst wanneer OpenClaw die
+    provider daadwerkelijk kan authenticeren. Stel
+    `agents.defaults.mediaGenerationAutoProviderFallback: false` in om alleen
+    expliciete `model`-, `primary`- en `fallbacks`-vermeldingen te gebruiken.
   </Accordion>
   <Accordion title="Time-outs">
     Stel `agents.defaults.imageGenerationModel.timeoutMs` in voor trage afbeeldings-
     backends. Een `timeoutMs`-toolparameter per aanroep overschrijft de geconfigureerde
-    standaardwaarde.
+    standaard.
   </Accordion>
   <Accordion title="Inspecteren tijdens runtime">
     Gebruik `action: "list"` om de momenteel geregistreerde providers,
-    hun standaardmodellen en auth-env-var-hints te inspecteren.
+    hun standaardmodellen en hints voor auth-env-vars te inspecteren.
   </Accordion>
 </AccordionGroup>
 
 ### Afbeeldingen bewerken
 
-OpenAI, OpenRouter, Google, DeepInfra, fal, MiniMax, ComfyUI en xAI ondersteunen het bewerken
-van referentieafbeeldingen. Geef een pad of URL naar een referentieafbeelding door:
+OpenAI, OpenRouter, Google, DeepInfra, fal, MiniMax, ComfyUI en xAI ondersteunen het bewerken van
+referentieafbeeldingen. Geef een pad of URL van een referentieafbeelding door:
 
 ```text
 "Genereer een aquarelversie van deze foto" + image: "/path/to/photo.jpg"
 ```
 
 OpenAI, OpenRouter, Google en xAI ondersteunen tot 5 referentieafbeeldingen via de
-parameter `images`. fal, MiniMax en ComfyUI ondersteunen er 1.
+`images`-parameter. fal, MiniMax en ComfyUI ondersteunen 1.
 
-## Diepgaande informatie per provider
+## Providerverdiepingen
 
 <AccordionGroup>
   <Accordion title="OpenAI gpt-image-2 (en gpt-image-1.5)">
     OpenAI-afbeeldingsgeneratie gebruikt standaard `openai/gpt-image-2`. Als er een
     `openai-codex` OAuth-profiel is geconfigureerd, hergebruikt OpenClaw hetzelfde
-    OAuth-profiel dat door Codex-abonnementschatmodellen wordt gebruikt en stuurt het
-    de afbeeldingsaanvraag via de Codex Responses-backend. Verouderde Codex-basis-
-    URL's zoals `https://chatgpt.com/backend-api` worden voor afbeeldingsaanvragen
-    gecanoniseerd naar `https://chatgpt.com/backend-api/codex`. OpenClaw
-    valt voor die aanvraag **niet** stilzwijgend terug op `OPENAI_API_KEY` —
-    configureer `models.providers.openai` expliciet met een API-sleutel,
-    aangepaste basis-URL of Azure-eindpunt om directe routering via de OpenAI Images API af te dwingen.
+    OAuth-profiel dat door Codex-abonnement-chatmodellen wordt gebruikt en stuurt het
+    de afbeeldingsaanvraag via de Codex Responses-backend. Verouderde Codex-basis-URL's
+    zoals `https://chatgpt.com/backend-api` worden voor afbeeldingsaanvragen gecanonicaliseerd naar
+    `https://chatgpt.com/backend-api/codex`. OpenClaw
+    valt voor die aanvraag **niet** stilzwijgend terug op `OPENAI_API_KEY` -
+    om routering rechtstreeks via de OpenAI Images API af te dwingen, configureer je
+    `models.providers.openai` expliciet met een API-sleutel, aangepaste basis-URL
+    of Azure-eindpunt.
 
     De modellen `openai/gpt-image-1.5`, `openai/gpt-image-1` en
     `openai/gpt-image-1-mini` kunnen nog steeds expliciet worden geselecteerd. Gebruik
-    `gpt-image-1.5` voor PNG/WebP-uitvoer met transparante achtergrond; de huidige
+    `gpt-image-1.5` voor PNG-/WebP-uitvoer met transparante achtergrond; de huidige
     `gpt-image-2`-API weigert `background: "transparent"`.
 
     `gpt-image-2` ondersteunt zowel tekst-naar-afbeelding-generatie als
@@ -269,10 +269,10 @@ parameter `images`. fal, MiniMax en ComfyUI ondersteunen er 1.
     OpenClaw stuurt `prompt`, `count`, `size`, `quality`, `outputFormat`
     en referentieafbeeldingen door naar OpenAI. OpenAI ontvangt
     `aspectRatio` of `resolution` **niet** rechtstreeks; waar mogelijk zet OpenClaw
-    deze om naar een ondersteunde `size`, anders meldt de tool ze als
+    die om naar een ondersteunde `size`, anders meldt de tool ze als
     genegeerde overrides.
 
-    OpenAI-specifieke opties staan onder het object `openai`:
+    OpenAI-specifieke opties staan onder het `openai`-object:
 
     ```json
     {
@@ -291,21 +291,21 @@ parameter `images`. fal, MiniMax en ComfyUI ondersteunen er 1.
     transparante uitvoer vereist `outputFormat` `png` of `webp` en een
     OpenAI-afbeeldingsmodel dat transparantie ondersteunt. OpenClaw routeert standaard
     `gpt-image-2`-aanvragen met transparante achtergrond naar `gpt-image-1.5`.
-    `openai.outputCompression` is van toepassing op JPEG/WebP-uitvoer.
+    `openai.outputCompression` is van toepassing op JPEG-/WebP-uitvoer.
 
-    De hint `background` op het hoogste niveau is providerneutraal en wordt momenteel
-    gekoppeld aan hetzelfde OpenAI-aanvraagveld `background` wanneer de OpenAI-provider
+    De hint `background` op topniveau is providerneutraal en wordt momenteel
+    toegewezen aan hetzelfde OpenAI-aanvraagveld `background` wanneer de OpenAI-provider
     is geselecteerd. Providers die geen achtergrondondersteuning declareren, retourneren
     deze in `ignoredOverrides` in plaats van de niet-ondersteunde parameter te ontvangen.
 
-    Zie [Azure OpenAI-eindpunten](/nl/providers/openai#azure-openai-endpoints) om
-    OpenAI-afbeeldingsgeneratie via een Azure OpenAI-implementatie te routeren
-    in plaats van via `api.openai.com`.
+    Om OpenAI-afbeeldingsgeneratie via een Azure OpenAI-implementatie te routeren
+    in plaats van via `api.openai.com`, zie
+    [Azure OpenAI-eindpunten](/nl/providers/openai#azure-openai-endpoints).
 
   </Accordion>
   <Accordion title="OpenRouter-afbeeldingsmodellen">
     OpenRouter-afbeeldingsgeneratie gebruikt dezelfde `OPENROUTER_API_KEY` en
-    routeert via OpenRouter's chat completions-afbeeldings-API. Selecteer
+    routeert via OpenRouters chat completions image API. Selecteer
     OpenRouter-afbeeldingsmodellen met het voorvoegsel `openrouter/`:
 
     ```json5
@@ -325,15 +325,15 @@ parameter `images`. fal, MiniMax en ComfyUI ondersteunen er 1.
     Huidige ingebouwde snelkoppelingen voor OpenRouter-afbeeldingsmodellen omvatten
     `google/gemini-3.1-flash-image-preview`,
     `google/gemini-3-pro-image-preview` en `openai/gpt-5.4-image-2`. Gebruik
-    `action: "list"` om te zien wat je geconfigureerde Plugin blootstelt.
+    `action: "list"` om te zien wat je geconfigureerde Plugin beschikbaar stelt.
 
   </Accordion>
   <Accordion title="MiniMax dubbele authenticatie">
     MiniMax-afbeeldingsgeneratie is beschikbaar via beide gebundelde MiniMax-
     authenticatiepaden:
 
-    - `minimax/image-01` voor configuraties met API-sleutel
-    - `minimax-portal/image-01` voor configuraties met OAuth
+    - `minimax/image-01` voor setups met API-sleutel
+    - `minimax-portal/image-01` voor OAuth-setups
 
   </Accordion>
   <Accordion title="xAI grok-imagine-image">
@@ -347,9 +347,10 @@ parameter `images`. fal, MiniMax en ComfyUI ondersteunen er 1.
     - Resoluties: `1K`, `2K`
     - Uitvoer: geretourneerd als door OpenClaw beheerde afbeeldingsbijlagen
 
-    OpenClaw stelt bewust geen xAI-native `quality`, `mask`,
-    `user` of extra native-only beeldverhoudingen beschikbaar totdat die bedieningselementen
-    bestaan in het gedeelde provideroverschrijdende `image_generate`-contract.
+    OpenClaw stelt xAI-native `quality`, `mask`,
+    `user` of extra uitsluitend native beeldverhoudingen bewust niet beschikbaar
+    totdat die besturingselementen bestaan in het gedeelde provideroverschrijdende
+    `image_generate`-contract.
 
   </Accordion>
 </AccordionGroup>
@@ -396,21 +397,21 @@ openclaw infer image generate \
   </Tab>
 </Tabs>
 
-Dezelfde flags `--output-format` en `--background` zijn beschikbaar op
-`openclaw infer image edit`; `--openai-background` blijft een
-OpenAI-specifieke alias. Andere gebundelde providers dan OpenAI declareren
-momenteel geen expliciete achtergrondbediening, dus `background: "transparent"` wordt
-voor hen als genegeerd gemeld.
+Dezelfde vlaggen `--output-format` en `--background` zijn beschikbaar op
+`openclaw infer image edit`; `--openai-background` blijft bestaan als
+OpenAI-specifieke alias. Gebundelde providers anders dan OpenAI declareren vandaag
+geen expliciete achtergrondbesturing, dus `background: "transparent"` wordt voor hen
+als genegeerd gerapporteerd.
 
 ## Gerelateerd
 
-- [Toolsoverzicht](/nl/tools) — alle beschikbare agenttools
-- [ComfyUI](/nl/providers/comfy) — configuratie van lokale ComfyUI- en Comfy Cloud-workflows
-- [fal](/nl/providers/fal) — configuratie van de fal-provider voor afbeeldingen en video
-- [Google (Gemini)](/nl/providers/google) — configuratie van de Gemini-afbeeldingsprovider
-- [MiniMax](/nl/providers/minimax) — configuratie van de MiniMax-afbeeldingsprovider
-- [OpenAI](/nl/providers/openai) — configuratie van de OpenAI Images-provider
-- [Vydra](/nl/providers/vydra) — configuratie van Vydra voor afbeeldingen, video en spraak
-- [xAI](/nl/providers/xai) — configuratie van Grok voor afbeeldingen, video, zoeken, code-uitvoering en TTS
-- [Configuratiereferentie](/nl/gateway/config-agents#agent-defaults) — `imageGenerationModel`-configuratie
-- [Modellen](/nl/concepts/models) — modelconfiguratie en failover
+- [Tools-overzicht](/nl/tools) - alle beschikbare agenttools
+- [ComfyUI](/nl/providers/comfy) - lokale ComfyUI- en Comfy Cloud-workflowsetup
+- [fal](/nl/providers/fal) - setup van fal-afbeeldings- en videoprovider
+- [Google (Gemini)](/nl/providers/google) - setup van Gemini-afbeeldingsprovider
+- [MiniMax](/nl/providers/minimax) - setup van MiniMax-afbeeldingsprovider
+- [OpenAI](/nl/providers/openai) - setup van OpenAI Images-provider
+- [Vydra](/nl/providers/vydra) - setup van Vydra voor afbeeldingen, video en spraak
+- [xAI](/nl/providers/xai) - setup van Grok voor afbeeldingen, video, zoeken, code-uitvoering en TTS
+- [Configuratiereferentie](/nl/gateway/config-agents#agent-defaults) - `imageGenerationModel`-configuratie
+- [Modellen](/nl/concepts/models) - modelconfiguratie en failover

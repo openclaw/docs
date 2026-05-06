@@ -5,28 +5,33 @@ read_when:
 summary: Gebruik Xiaomi MiMo-modellen met OpenClaw
 title: Xiaomi MiMo
 x-i18n:
-    generated_at: "2026-04-29T23:14:26Z"
+    generated_at: "2026-05-06T09:30:43Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7781973c3a1d14101cdb0a8d1affe3fd076a968552ed2a8630a91a8947daeb3a
+    source_hash: a7bb33bf107cb44414b0f3a6140d60fdfecb3b7154c3197e7cbed982d9a6450b
     source_path: providers/xiaomi.md
     workflow: 16
 ---
 
-Xiaomi MiMo is het API-platform voor **MiMo**-modellen. OpenClaw gebruikt het Xiaomi
-OpenAI-compatibele eindpunt met authenticatie via API-sleutel.
+Xiaomi MiMo is het API-platform voor **MiMo**-modellen. OpenClaw bevat een gebundelde `xiaomi`-Plugin die zowel een OpenAI-compatibele chatprovider als een spraakprovider (TTS) registreert met dezelfde `XIAOMI_API_KEY`.
 
-| Eigenschap | Waarde                          |
-| ---------- | -------------------------------- |
-| Provider   | `xiaomi`                        |
-| Auth       | `XIAOMI_API_KEY`                |
-| API        | OpenAI-compatibel               |
-| Basis-URL  | `https://api.xiaomimimo.com/v1` |
+| Eigenschap       | Waarde                                   |
+| ---------------- | ---------------------------------------- |
+| Provider-id      | `xiaomi`                                 |
+| Plugin           | gebundeld, `enabledByDefault: true`      |
+| Auth-env-var     | `XIAOMI_API_KEY`                         |
+| Onboarding-vlag  | `--auth-choice xiaomi-api-key`           |
+| Directe CLI-vlag | `--xiaomi-api-key <key>`                 |
+| Contracten       | chataanvullingen + `speechProviders`     |
+| API              | OpenAI-compatibel (`openai-completions`) |
+| Basis-URL        | `https://api.xiaomimimo.com/v1`          |
+| Standaardmodel   | `xiaomi/mimo-v2-flash`                   |
+| TTS-standaard    | `mimo-v2.5-tts`, stem `mimo_default`     |
 
 ## Aan de slag
 
 <Steps>
-  <Step title="Een API-sleutel verkrijgen">
+  <Step title="Een API-sleutel ophalen">
     Maak een API-sleutel aan in de [Xiaomi MiMo-console](https://platform.xiaomimimo.com/#/console/api-keys).
   </Step>
   <Step title="Onboarding uitvoeren">
@@ -41,7 +46,7 @@ OpenAI-compatibele eindpunt met authenticatie via API-sleutel.
     ```
 
   </Step>
-  <Step title="Verifiëren dat het model beschikbaar is">
+  <Step title="Controleren of het model beschikbaar is">
     ```bash
     openclaw models list --provider xiaomi
     ```
@@ -50,21 +55,21 @@ OpenAI-compatibele eindpunt met authenticatie via API-sleutel.
 
 ## Ingebouwde catalogus
 
-| Modelverwijzing        | Invoer      | Context   | Maximale uitvoer | Redeneren | Opmerkingen      |
-| ---------------------- | ----------- | --------- | ---------------- | --------- | ---------------- |
-| `xiaomi/mimo-v2-flash` | tekst       | 262,144   | 8,192            | Nee       | Standaardmodel   |
-| `xiaomi/mimo-v2-pro`   | tekst       | 1,048,576 | 32,000           | Ja        | Grote context    |
-| `xiaomi/mimo-v2-omni`  | tekst, beeld | 262,144   | 32,000           | Ja        | Multimodaal      |
+| Model-ref              | Invoer      | Context   | Max. uitvoer | Redeneren | Opmerkingen   |
+| ---------------------- | ----------- | --------- | ------------- | --------- | ------------- |
+| `xiaomi/mimo-v2-flash` | tekst       | 262,144   | 8,192         | Nee       | Standaardmodel |
+| `xiaomi/mimo-v2-pro`   | tekst       | 1,048,576 | 32,000        | Ja        | Grote context |
+| `xiaomi/mimo-v2-omni`  | tekst, afbeelding | 262,144   | 32,000        | Ja        | Multimodaal   |
 
 <Tip>
-De standaardmodelverwijzing is `xiaomi/mimo-v2-flash`. De provider wordt automatisch geïnjecteerd wanneer `XIAOMI_API_KEY` is ingesteld of wanneer er een authenticatieprofiel bestaat.
+De standaardmodel-ref is `xiaomi/mimo-v2-flash`. De provider wordt automatisch geïnjecteerd wanneer `XIAOMI_API_KEY` is ingesteld of wanneer er een auth-profiel bestaat.
 </Tip>
 
 ## Tekst-naar-spraak
 
-De meegeleverde `xiaomi`-plugin registreert Xiaomi MiMo ook als spraakprovider voor
-`messages.tts`. Deze roept Xiaomi's TTS-contract voor chat-completions aan met de tekst als
-een `assistant`-bericht en optionele stijlrichtlijnen als een `user`-bericht.
+De gebundelde `xiaomi`-Plugin registreert Xiaomi MiMo ook als spraakprovider voor
+`messages.tts`. Deze roept Xiaomi's TTS-contract voor chataanvullingen aan met de tekst als
+een `assistant`-bericht en optionele stijlinstructies als een `user`-bericht.
 
 | Eigenschap | Waarde                                   |
 | ---------- | ---------------------------------------- |
@@ -72,7 +77,7 @@ een `assistant`-bericht en optionele stijlrichtlijnen als een `user`-bericht.
 | Auth       | `XIAOMI_API_KEY`                         |
 | API        | `POST /v1/chat/completions` met `audio`  |
 | Standaard  | `mimo-v2.5-tts`, stem `mimo_default`     |
-| Uitvoer    | Standaard MP3; WAV wanneer geconfigureerd |
+| Uitvoer    | standaard MP3; WAV wanneer geconfigureerd |
 
 ```json5
 {
@@ -96,9 +101,9 @@ een `assistant`-bericht en optionele stijlrichtlijnen als een `user`-bericht.
 
 Ondersteunde ingebouwde stemmen zijn onder andere `mimo_default`, `default_zh`, `default_en`,
 `Mia`, `Chloe`, `Milo` en `Dean`. `mimo-v2-tts` wordt ondersteund voor oudere MiMo
-TTS-accounts; de standaard gebruikt het huidige MiMo-V2.5 TTS-model. Voor doelen voor spraaknotities
-zoals Feishu en Telegram transcodeert OpenClaw Xiaomi-uitvoer naar 48 kHz
-Opus met `ffmpeg` vóór aflevering.
+TTS-accounts; de standaard gebruikt het huidige MiMo-V2.5 TTS-model. Voor voice-note-
+doelen zoals Feishu en Telegram transcodeert OpenClaw Xiaomi-uitvoer naar 48kHz
+Opus met `ffmpeg` vóór levering.
 
 ## Configuratievoorbeeld
 
@@ -150,13 +155,13 @@ Opus met `ffmpeg` vóór aflevering.
 
 <AccordionGroup>
   <Accordion title="Gedrag voor automatische injectie">
-    De `xiaomi`-provider wordt automatisch geïnjecteerd wanneer `XIAOMI_API_KEY` in je omgeving is ingesteld of wanneer er een authenticatieprofiel bestaat. Je hoeft de provider niet handmatig te configureren, tenzij je modelmetadata of de basis-URL wilt overschrijven.
+    De `xiaomi`-provider wordt automatisch geïnjecteerd wanneer `XIAOMI_API_KEY` in je omgeving is ingesteld of wanneer er een auth-profiel bestaat. Je hoeft de provider niet handmatig te configureren, tenzij je modelmetadata of de basis-URL wilt overschrijven.
   </Accordion>
 
   <Accordion title="Modeldetails">
     - **mimo-v2-flash** — lichtgewicht en snel, ideaal voor algemene teksttaken. Geen ondersteuning voor redeneren.
-    - **mimo-v2-pro** — ondersteunt redeneren met een contextvenster van 1 miljoen tokens voor workloads met lange documenten.
-    - **mimo-v2-omni** — multimodaal model met redeneren ingeschakeld dat zowel tekst- als beeldinvoer accepteert.
+    - **mimo-v2-pro** — ondersteunt redeneren met een contextvenster van 1M tokens voor workloads met lange documenten.
+    - **mimo-v2-omni** — multimodaal model met redeneren dat zowel tekst- als afbeeldingsinvoer accepteert.
 
     <Note>
     Alle modellen gebruiken het voorvoegsel `xiaomi/` (bijvoorbeeld `xiaomi/mimo-v2-pro`).
@@ -169,7 +174,7 @@ Opus met `ffmpeg` vóór aflevering.
     - Wanneer de Gateway als daemon draait, zorg er dan voor dat de sleutel beschikbaar is voor dat proces (bijvoorbeeld in `~/.openclaw/.env` of via `env.shellEnv`).
 
     <Warning>
-    Sleutels die alleen in je interactieve shell zijn ingesteld, zijn niet zichtbaar voor door een daemon beheerde gatewayprocessen. Gebruik `~/.openclaw/.env` of `env.shellEnv`-configuratie voor blijvende beschikbaarheid.
+    Sleutels die alleen in je interactieve shell zijn ingesteld, zijn niet zichtbaar voor door een daemon beheerde gatewayprocessen. Gebruik `~/.openclaw/.env` of `env.shellEnv`-configuratie voor permanente beschikbaarheid.
     </Warning>
 
   </Accordion>
@@ -179,12 +184,12 @@ Opus met `ffmpeg` vóór aflevering.
 
 <CardGroup cols={2}>
   <Card title="Modelselectie" href="/nl/concepts/model-providers" icon="layers">
-    Providers, modelverwijzingen en failovergedrag kiezen.
+    Providers, model-refs en failovergedrag kiezen.
   </Card>
   <Card title="Configuratiereferentie" href="/nl/gateway/configuration-reference" icon="gear">
     Volledige OpenClaw-configuratiereferentie.
   </Card>
   <Card title="Xiaomi MiMo-console" href="https://platform.xiaomimimo.com" icon="arrow-up-right-from-square">
-    Xiaomi MiMo-dashboard en beheer van API-sleutels.
+    Xiaomi MiMo-dashboard en API-sleutelbeheer.
   </Card>
 </CardGroup>

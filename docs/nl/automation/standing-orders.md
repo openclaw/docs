@@ -1,57 +1,57 @@
 ---
 read_when:
     - Autonome agentworkflows instellen die zonder prompts per taak worden uitgevoerd
-    - Bepalen wat de agent zelfstandig kan doen versus waarvoor menselijke goedkeuring nodig is
-    - Agenten met meerdere programma's structureren met duidelijke grenzen en escalatieregels
+    - Bepalen wat de agent zelfstandig kan doen en waarvoor menselijke goedkeuring nodig is
+    - Multi-programma-agents structureren met duidelijke grenzen en escalatieregels
 summary: Definieer permanente operationele bevoegdheid voor autonome agentprogramma's
 title: Vaste instructies
 x-i18n:
-    generated_at: "2026-04-29T22:23:32Z"
+    generated_at: "2026-05-06T09:02:22Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ff895378cbd53f7e8058137389037ab40201ce2cdfb34c135f480dfef775919b
+    source_hash: a04e871bbd3f51b50ce162576936d4b37acbdc5a94edcd73e390adc784465aa4
     source_path: automation/standing-orders.md
     workflow: 16
 ---
 
-Doorlopende opdrachten geven je agent **permanente operationele bevoegdheid** voor gedefinieerde programma's. In plaats van telkens afzonderlijke taak instructies te geven, definieer je programma's met een duidelijke scope, triggers en escalatieregels — en de agent voert autonoom uit binnen die grenzen.
+Vaste opdrachten geven je agent **permanente operationele bevoegdheid** voor gedefinieerde programma's. In plaats van telkens afzonderlijke taakopdrachten te geven, definieer je programma's met een duidelijke scope, triggers en escalatieregels - en de agent voert ze autonoom uit binnen die grenzen.
 
-Dit is het verschil tussen je assistent elke vrijdag vertellen "verstuur het weekrapport" en doorlopende bevoegdheid geven: "Jij bent verantwoordelijk voor het weekrapport. Stel het elke vrijdag samen, verstuur het, en escaleer alleen als er iets niet klopt."
+Dit is het verschil tussen je assistent elke vrijdag vertellen "stuur het wekelijkse rapport" en vaste bevoegdheid geven: "Jij beheert het wekelijkse rapport. Stel het elke vrijdag samen, verstuur het en escaleer alleen als er iets verkeerd lijkt."
 
-## Waarom doorlopende opdrachten
+## Waarom vaste opdrachten
 
-**Zonder doorlopende opdrachten:**
+**Zonder vaste opdrachten:**
 
 - Je moet de agent voor elke taak prompten
 - De agent blijft inactief tussen verzoeken
 - Routinematig werk wordt vergeten of vertraagd
 - Jij wordt de bottleneck
 
-**Met doorlopende opdrachten:**
+**Met vaste opdrachten:**
 
 - De agent voert autonoom uit binnen gedefinieerde grenzen
-- Routinematig werk gebeurt volgens schema zonder prompt
+- Routinematig werk gebeurt volgens planning zonder prompting
 - Je wordt alleen betrokken bij uitzonderingen en goedkeuringen
-- De agent vult inactieve tijd productief in
+- De agent vult inactieve tijd productief
 
 ## Hoe ze werken
 
-Doorlopende opdrachten worden gedefinieerd in de bestanden van je [agentwerkruimte](/nl/concepts/agent-workspace). De aanbevolen aanpak is om ze direct in `AGENTS.md` op te nemen (dat elke sessie automatisch wordt geïnjecteerd), zodat de agent ze altijd in context heeft. Voor grotere configuraties kun je ze ook in een speciaal bestand plaatsen, zoals `standing-orders.md`, en ernaar verwijzen vanuit `AGENTS.md`.
+Vaste opdrachten worden gedefinieerd in de bestanden van je [agentwerkruimte](/nl/concepts/agent-workspace). De aanbevolen aanpak is om ze direct op te nemen in `AGENTS.md` (dat elke sessie automatisch wordt geïnjecteerd), zodat de agent ze altijd in context heeft. Voor grotere configuraties kun je ze ook in een speciaal bestand plaatsen, zoals `standing-orders.md`, en daarnaar verwijzen vanuit `AGENTS.md`.
 
 Elk programma specificeert:
 
-1. **Scope** — wat de agent bevoegd is om te doen
-2. **Triggers** — wanneer er wordt uitgevoerd (schema, gebeurtenis of voorwaarde)
-3. **Goedkeuringspoorten** — waarvoor menselijke goedkeuring nodig is voordat er wordt gehandeld
-4. **Escalatieregels** — wanneer er moet worden gestopt en om hulp moet worden gevraagd
+1. **Scope** - wat de agent mag doen
+2. **Triggers** - wanneer er moet worden uitgevoerd (planning, gebeurtenis of voorwaarde)
+3. **Goedkeuringspoorten** - waarvoor menselijke goedkeuring nodig is voordat er wordt gehandeld
+4. **Escalatieregels** - wanneer er moet worden gestopt en om hulp moet worden gevraagd
 
-De agent laadt deze instructies elke sessie via de bootstrapbestanden van de werkruimte (zie [Agentwerkruimte](/nl/concepts/agent-workspace) voor de volledige lijst met automatisch geïnjecteerde bestanden) en voert ze uit, gecombineerd met [Cron-taken](/nl/automation/cron-jobs) voor tijdgebaseerde handhaving.
+De agent laadt deze instructies elke sessie via de bootstrapbestanden van de werkruimte (zie [Agentwerkruimte](/nl/concepts/agent-workspace) voor de volledige lijst met automatisch geïnjecteerde bestanden) en voert ze uit, gecombineerd met [Cron jobs](/nl/automation/cron-jobs) voor tijdgebaseerde afdwinging.
 
 <Tip>
-Plaats doorlopende opdrachten in `AGENTS.md` om te garanderen dat ze elke sessie worden geladen. De werkruimte-bootstrap injecteert automatisch `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` en `MEMORY.md` — maar geen willekeurige bestanden in submappen.
+Plaats vaste opdrachten in `AGENTS.md` om te garanderen dat ze elke sessie worden geladen. De werkruimtebootstrap injecteert automatisch `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` en `MEMORY.md` - maar geen willekeurige bestanden in submappen.
 </Tip>
 
-## Anatomie van een doorlopende opdracht
+## Anatomie van een vaste opdracht
 
 ```markdown
 ## Program: Weekly Status Report
@@ -73,12 +73,12 @@ Plaats doorlopende opdrachten in `AGENTS.md` om te garanderen dat ze elke sessie
 
 - Do not send reports to external parties
 - Do not modify source data
-- Do not skip delivery if metrics look bad — report accurately
+- Do not skip delivery if metrics look bad - report accurately
 ```
 
-## Doorlopende opdrachten plus Cron-taken
+## Vaste opdrachten plus Cron jobs
 
-Doorlopende opdrachten definiëren **wat** de agent bevoegd is om te doen. [Cron-taken](/nl/automation/cron-jobs) definiëren **wanneer** het gebeurt. Ze werken samen:
+Vaste opdrachten definiëren **wat** de agent mag doen. [Cron jobs](/nl/automation/cron-jobs) definiëren **wanneer** het gebeurt. Ze werken samen:
 
 ```
 Standing Order: "You own the daily inbox triage"
@@ -88,7 +88,7 @@ Cron Job (8 AM daily): "Execute inbox triage per standing orders"
 Agent: Reads standing orders → executes steps → reports results
 ```
 
-De prompt voor de Cron-taak moet verwijzen naar de doorlopende opdracht in plaats van die te dupliceren:
+De prompt van de Cron job moet naar de vaste opdracht verwijzen in plaats van deze te dupliceren:
 
 ```bash
 openclaw cron add \
@@ -116,7 +116,7 @@ openclaw cron add \
 ### Weekly cycle
 
 - **Monday:** Review platform metrics and audience engagement
-- **Tuesday–Thursday:** Draft social posts, create blog content
+- **Tuesday-Thursday:** Draft social posts, create blog content
 - **Friday:** Compile weekly marketing brief → deliver to owner
 
 ### Content rules
@@ -127,7 +127,7 @@ openclaw cron add \
 - Focus on value to audience, not self-promotion
 ```
 
-### Voorbeeld 2: financiële operaties (gebeurtenisgestuurd)
+### Voorbeeld 2: financiële werkzaamheden (gebeurtenisgestuurd)
 
 ```markdown
 ## Program: Financial Processing
@@ -181,11 +181,11 @@ openclaw cron add \
 
 ## Patroon uitvoeren-verifiëren-rapporteren
 
-Doorlopende opdrachten werken het best wanneer ze worden gecombineerd met strikte uitvoeringsdiscipline. Elke taak in een doorlopende opdracht moet deze lus volgen:
+Vaste opdrachten werken het best wanneer ze worden gecombineerd met strikte uitvoeringsdiscipline. Elke taak in een vaste opdracht moet deze lus volgen:
 
-1. **Uitvoeren** — Doe het daadwerkelijke werk (bevestig niet alleen de instructie)
-2. **Verifiëren** — Bevestig dat het resultaat correct is (bestand bestaat, bericht bezorgd, data geparseerd)
-3. **Rapporteren** — Vertel de eigenaar wat er is gedaan en wat is geverifieerd
+1. **Uitvoeren** - Doe het daadwerkelijke werk (erken de instructie niet alleen)
+2. **Verifiëren** - Bevestig dat het resultaat correct is (bestand bestaat, bericht afgeleverd, data geparset)
+3. **Rapporteren** - Vertel de eigenaar wat is gedaan en wat is geverifieerd
 
 ```markdown
 ### Execution rules
@@ -195,14 +195,14 @@ Doorlopende opdrachten werken het best wanneer ze worden gecombineerd met strikt
 - "Done" without verification is not acceptable. Prove it.
 - If execution fails: retry once with adjusted approach.
 - If still fails: report failure with diagnosis. Never silently fail.
-- Never retry indefinitely — 3 attempts max, then escalate.
+- Never retry indefinitely - 3 attempts max, then escalate.
 ```
 
-Dit patroon voorkomt de meest voorkomende faalmodus van agents: een taak bevestigen zonder die te voltooien.
+Dit patroon voorkomt de meest voorkomende faalmodus van agents: een taak erkennen zonder deze af te ronden.
 
-## Architectuur met meerdere programma's
+## Multiprogramma-architectuur
 
-Voor agents die meerdere aandachtsgebieden beheren, organiseer je doorlopende opdrachten als afzonderlijke programma's met duidelijke grenzen:
+Voor agents die meerdere aandachtsgebieden beheren, organiseer je vaste opdrachten als afzonderlijke programma's met duidelijke grenzen:
 
 ```markdown
 ## Program 1: [Domain A] (Weekly)
@@ -235,23 +235,23 @@ Elk programma moet hebben:
 
 - Begin met beperkte bevoegdheid en breid uit naarmate het vertrouwen groeit
 - Definieer expliciete goedkeuringspoorten voor risicovolle acties
-- Neem secties "Wat NIET te doen" op — grenzen zijn net zo belangrijk als permissies
-- Combineer met Cron-taken voor betrouwbare tijdgebaseerde uitvoering
-- Controleer agentlogs wekelijks om te verifiëren dat doorlopende opdrachten worden gevolgd
-- Werk doorlopende opdrachten bij naarmate je behoeften veranderen — het zijn levende documenten
+- Neem secties "Wat NIET te doen" op - grenzen zijn net zo belangrijk als machtigingen
+- Combineer met Cron jobs voor betrouwbare tijdgebaseerde uitvoering
+- Bekijk agentlogs wekelijks om te controleren of vaste opdrachten worden gevolgd
+- Werk vaste opdrachten bij naarmate je behoeften veranderen - het zijn levende documenten
 
 ### Vermijden
 
-- Op dag één brede bevoegdheid geven ("doe wat jij denkt dat het beste is")
-- Escalatieregels overslaan — elk programma heeft een clausule nodig voor "wanneer stoppen en vragen"
-- Aannemen dat de agent mondelinge instructies onthoudt — zet alles in het bestand
-- Aandachtsgebieden mengen in één programma — afzonderlijke programma's voor afzonderlijke domeinen
-- Vergeten af te dwingen met Cron-taken — doorlopende opdrachten zonder triggers worden suggesties
+- Op dag één brede bevoegdheid geven ("doe wat jij het beste vindt")
+- Escalatieregels overslaan - elk programma heeft een clausule nodig voor "wanneer stoppen en vragen"
+- Aannemen dat de agent mondelinge instructies onthoudt - zet alles in het bestand
+- Aandachtsgebieden mengen in één programma - afzonderlijke programma's voor afzonderlijke domeinen
+- Vergeten af te dwingen met Cron jobs - vaste opdrachten zonder triggers worden suggesties
 
 ## Gerelateerd
 
-- [Automatisering en taken](/nl/automation): alle automatiseringsmechanismen in één oogopslag.
-- [Cron-taken](/nl/automation/cron-jobs): schemahandhaving voor doorlopende opdrachten.
-- [Hooks](/nl/automation/hooks): gebeurtenisgestuurde scripts voor lifecycle-gebeurtenissen van agents.
+- [Automatisering en taken](/nl/automation): alle automatiseringsmechanismen in één overzicht.
+- [Cron jobs](/nl/automation/cron-jobs): planningsafdwinging voor vaste opdrachten.
+- [Hooks](/nl/automation/hooks): gebeurtenisgestuurde scripts voor levenscyclusgebeurtenissen van agents.
 - [Webhooks](/nl/automation/cron-jobs#webhooks): inkomende HTTP-gebeurtenistriggers.
-- [Agentwerkruimte](/nl/concepts/agent-workspace): waar doorlopende opdrachten staan, inclusief de volledige lijst met automatisch geïnjecteerde bootstrapbestanden (`AGENTS.md`, `SOUL.md`, enz.).
+- [Agentwerkruimte](/nl/concepts/agent-workspace): waar vaste opdrachten staan, inclusief de volledige lijst met automatisch geïnjecteerde bootstrapbestanden (`AGENTS.md`, `SOUL.md`, enz.).

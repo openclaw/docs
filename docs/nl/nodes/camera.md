@@ -1,32 +1,32 @@
 ---
 read_when:
-    - Cameravastlegging toevoegen of wijzigen op iOS-/Android-knooppunten of macOS
-    - Voor agenten toegankelijke MEDIA-workflows voor tijdelijke bestanden uitbreiden
-summary: 'Camera-opname (iOS-/Android-nodes + macOS-app) voor gebruik door agents: foto''s (jpg) en korte videoclips (mp4)'
+    - Cameravastlegging toevoegen of wijzigen op iOS-/Android-Nodes of macOS
+    - Agent-toegankelijke MEDIA-workflows voor tijdelijke bestanden uitbreiden
+summary: 'Camera-opname (iOS/Android-nodes + macOS-app) voor gebruik door agenten: foto''s (jpg) en korte videoclips (mp4)'
 title: Camera-opname
 x-i18n:
-    generated_at: "2026-04-29T22:56:54Z"
+    generated_at: "2026-05-06T09:21:38Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 33e23a382cdcea57e20ab1466bf32e54dd17e3b7918841dbd6d3ebf59547ad93
+    source_hash: 226b9f44e8d56b9b366d679c6c2f974c714afc4cb962afddba89d17dcdfc09eb
     source_path: nodes/camera.md
     workflow: 16
 ---
 
 OpenClaw ondersteunt **camera-opname** voor agentworkflows:
 
-- **iOS-node** (gekoppeld via Gateway): leg een **foto** (`jpg`) of **korte videoclip** (`mp4`, met optionele audio) vast via `node.invoke`.
-- **Android-node** (gekoppeld via Gateway): leg een **foto** (`jpg`) of **korte videoclip** (`mp4`, met optionele audio) vast via `node.invoke`.
-- **macOS-app** (node via Gateway): leg een **foto** (`jpg`) of **korte videoclip** (`mp4`, met optionele audio) vast via `node.invoke`.
+- **iOS-node** (gekoppeld via Gateway): maak een **foto** (`jpg`) of **korte videoclip** (`mp4`, met optionele audio) via `node.invoke`.
+- **Android-node** (gekoppeld via Gateway): maak een **foto** (`jpg`) of **korte videoclip** (`mp4`, met optionele audio) via `node.invoke`.
+- **macOS-app** (node via Gateway): maak een **foto** (`jpg`) of **korte videoclip** (`mp4`, met optionele audio) via `node.invoke`.
 
-Alle cameratoegang wordt afgeschermd achter **door de gebruiker beheerde instellingen**.
+Alle cameratoegang wordt afgeschermd door **door de gebruiker beheerde instellingen**.
 
 ## iOS-node
 
 ### Gebruikersinstelling (standaard aan)
 
 - iOS-tabblad Instellingen → **Camera** → **Camera toestaan** (`camera.enabled`)
-  - Standaard: **aan** (ontbrekende sleutel wordt als ingeschakeld behandeld).
+  - Standaard: **aan** (ontbrekende sleutel wordt behandeld als ingeschakeld).
   - Wanneer uit: `camera.*`-opdrachten retourneren `CAMERA_DISABLED`.
 
 ### Opdrachten (via Gateway `node.invoke`)
@@ -42,7 +42,7 @@ Alle cameratoegang wordt afgeschermd achter **door de gebruiker beheerde instell
     - `quality`: `0..1` (optioneel; standaard `0.9`)
     - `format`: momenteel `jpg`
     - `delayMs`: getal (optioneel; standaard `0`)
-    - `deviceId`: tekenreeks (optioneel; uit `camera.list`)
+    - `deviceId`: string (optioneel; uit `camera.list`)
   - Antwoordpayload:
     - `format: "jpg"`
     - `base64: "<...>"`
@@ -55,14 +55,14 @@ Alle cameratoegang wordt afgeschermd achter **door de gebruiker beheerde instell
     - `durationMs`: getal (standaard `3000`, begrensd op maximaal `60000`)
     - `includeAudio`: boolean (standaard `true`)
     - `format`: momenteel `mp4`
-    - `deviceId`: tekenreeks (optioneel; uit `camera.list`)
+    - `deviceId`: string (optioneel; uit `camera.list`)
   - Antwoordpayload:
     - `format: "mp4"`
     - `base64: "<...>"`
     - `durationMs`
     - `hasAudio`
 
-### Vereiste van voorgrond
+### Vereiste voorgrond
 
 Net als `canvas.*` staat de iOS-node `camera.*`-opdrachten alleen toe op de **voorgrond**. Aanroepen op de achtergrond retourneren `NODE_BACKGROUND_UNAVAILABLE`.
 
@@ -82,14 +82,14 @@ openclaw nodes camera clip --node <id> --no-audio
 Opmerkingen:
 
 - `nodes camera snap` gebruikt standaard **beide** richtingen om de agent beide weergaven te geven.
-- Uitvoerbestanden zijn tijdelijk (in de tijdelijke map van het OS), tenzij u uw eigen wrapper bouwt.
+- Uitvoerbestanden zijn tijdelijk (in de tijdelijke map van het OS), tenzij je je eigen wrapper bouwt.
 
 ## Android-node
 
 ### Android-gebruikersinstelling (standaard aan)
 
-- Android-instellingenblad → **Camera** → **Camera toestaan** (`camera.enabled`)
-  - Standaard: **aan** (ontbrekende sleutel wordt als ingeschakeld behandeld).
+- Android-instellingenpaneel → **Camera** → **Camera toestaan** (`camera.enabled`)
+  - Standaard: **aan** (ontbrekende sleutel wordt behandeld als ingeschakeld).
   - Wanneer uit: `camera.*`-opdrachten retourneren `CAMERA_DISABLED`.
 
 ### Machtigingen
@@ -98,10 +98,10 @@ Opmerkingen:
   - `CAMERA` voor zowel `camera.snap` als `camera.clip`.
   - `RECORD_AUDIO` voor `camera.clip` wanneer `includeAudio=true`.
 
-Als machtigingen ontbreken, vraagt de app er wanneer mogelijk om; als ze worden geweigerd, mislukken `camera.*`-verzoeken met een
+Als machtigingen ontbreken, vraagt de app er waar mogelijk om; als ze worden geweigerd, mislukken `camera.*`-aanvragen met een
 `*_PERMISSION_REQUIRED`-fout.
 
-### Android-vereiste van voorgrond
+### Vereiste voorgrond op Android
 
 Net als `canvas.*` staat de Android-node `camera.*`-opdrachten alleen toe op de **voorgrond**. Aanroepen op de achtergrond retourneren `NODE_BACKGROUND_UNAVAILABLE`.
 
@@ -123,9 +123,9 @@ De macOS-begeleidende app toont een selectievakje:
 
 - **Instellingen → Algemeen → Camera toestaan** (`openclaw.cameraEnabled`)
   - Standaard: **uit**
-  - Wanneer uit: cameraverzoeken retourneren “Camera uitgeschakeld door gebruiker”.
+  - Wanneer uit: camera-aanvragen retourneren "Camera uitgeschakeld door gebruiker".
 
-### CLI-helper (node aanroepen)
+### CLI-helper (node-aanroep)
 
 Gebruik de hoofd-CLI `openclaw` om cameraopdrachten op de macOS-node aan te roepen.
 
@@ -146,17 +146,17 @@ openclaw nodes camera clip --node <id> --no-audio
 Opmerkingen:
 
 - `openclaw nodes camera snap` gebruikt standaard `maxWidth=1600`, tenzij overschreven.
-- Op macOS wacht `camera.snap` `delayMs` (standaard 2000 ms) na opwarming/belichtingsstabilisatie voordat de opname wordt gemaakt.
+- Op macOS wacht `camera.snap` `delayMs` (standaard 2000 ms) na opwarming/belichtingsstabilisatie voordat er wordt vastgelegd.
 - Fotopayloads worden opnieuw gecomprimeerd om base64 onder 5 MB te houden.
 
 ## Veiligheid + praktische limieten
 
-- Camera- en microfoontoegang activeren de gebruikelijke OS-machtigingsprompts (en vereisen gebruiksteksten in Info.plist).
+- Camera- en microfoontoegang activeren de gebruikelijke toestemmingsprompts van het OS (en vereisen gebruiksstrings in Info.plist).
 - Videoclips zijn begrensd (momenteel `<= 60s`) om te grote node-payloads te voorkomen (base64-overhead + berichtlimieten).
 
 ## macOS-schermvideo (OS-niveau)
 
-Gebruik voor _schermvideo_ (geen camera) de macOS-begeleidende app:
+Gebruik voor _scherm_-video (niet camera) de macOS-begeleidende app:
 
 ```bash
 openclaw nodes screen record --node <id> --duration 10s --fps 15   # prints MEDIA:<path>

@@ -1,20 +1,20 @@
 ---
 read_when:
-    - Het macOS-Canvas-paneel implementeren
-    - Agentbediening toevoegen voor de visuele werkruimte
-    - Foutopsporing bij het laden van WKWebView-canvas
-summary: Door agent aangestuurd Canvas-paneel ingesloten via WKWebView + aangepast URL-schema
-title: Werkvlak
+    - Het macOS Canvas-paneel implementeren
+    - Agentbedieningselementen toevoegen voor visuele werkruimte
+    - Fouten opsporen bij het laden van WKWebView-canvas
+summary: Door agent aangestuurd Canvas-paneel ingebed via WKWebView + aangepast URL-schema
+title: Canvas
 x-i18n:
-    generated_at: "2026-04-29T22:59:24Z"
+    generated_at: "2026-05-06T09:23:05Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1a791f7841193a55b7f9cc5cc26168258d72d972279bba4c68fd1b15ef16f1c4
+    source_hash: d8e53f5d1c2e5b3b46e77cb74632e56123f3312dfcc395aa5ac8182c8d58b6cf
     source_path: platforms/mac/canvas.md
     workflow: 16
 ---
 
-De macOS-app bevat een door een agent aangestuurd **Canvas-paneel** met `WKWebView`. Het
+De macOS-app integreert een agentgestuurd **Canvas-paneel** met `WKWebView`. Het
 is een lichte visuele werkruimte voor HTML/CSS/JS, A2UI en kleine interactieve
 UI-oppervlakken.
 
@@ -34,21 +34,21 @@ Voorbeelden:
 - `openclaw-canvas://main/assets/app.css` → `<canvasRoot>/main/assets/app.css`
 - `openclaw-canvas://main/widgets/todo/` → `<canvasRoot>/main/widgets/todo/index.html`
 
-Als er geen `index.html` in de hoofdmap bestaat, toont de app een **ingebouwde scaffoldpagina**.
+Als er geen `index.html` in de root bestaat, toont de app een **ingebouwde scaffoldpagina**.
 
 ## Paneelgedrag
 
-- Randloos, aanpasbaar paneel verankerd bij de menubalk (of muiscursor).
+- Randloos, aanpasbaar paneel dat is verankerd bij de menubalk (of muiscursor).
 - Onthoudt grootte/positie per sessie.
 - Herlaadt automatisch wanneer lokale Canvas-bestanden wijzigen.
-- Er is maar één Canvas-paneel tegelijk zichtbaar (de sessie wordt zo nodig gewisseld).
+- Er is maar één Canvas-paneel tegelijk zichtbaar (sessie wordt indien nodig gewisseld).
 
-Canvas kan worden uitgeschakeld via Settings → **Allow Canvas**. Wanneer uitgeschakeld, retourneren canvas
+Canvas kan worden uitgeschakeld via Settings → **Canvas toestaan**. Wanneer uitgeschakeld, retourneren canvas
 node-opdrachten `CANVAS_DISABLED`.
 
 ## Agent-API-oppervlak
 
-Canvas wordt beschikbaar gesteld via de **Gateway WebSocket**, zodat de agent het volgende kan:
+Canvas wordt beschikbaar gesteld via de **Gateway WebSocket**, zodat de agent het volgende kan doen:
 
 - het paneel tonen/verbergen
 - naar een pad of URL navigeren
@@ -71,11 +71,11 @@ Opmerkingen:
 
 ## A2UI in Canvas
 
-A2UI wordt gehost door de Canvas-host van de Gateway en gerenderd binnen het Canvas-paneel.
-Wanneer de Gateway een Canvas-host adverteert, navigeert de macOS-app bij de eerste keer openen automatisch naar de
-A2UI-hostpagina.
+A2UI wordt gehost door de Gateway-canvas-host en weergegeven binnen het Canvas-paneel.
+Wanneer de Gateway een Canvas-host adverteert, navigeert de macOS-app bij het
+eerste openen automatisch naar de A2UI-hostpagina.
 
-Standaard-URL van de A2UI-host:
+Standaard-URL van A2UI-host:
 
 ```
 http://<gateway-host>:18789/__openclaw__/a2ui/
@@ -109,9 +109,9 @@ Snelle smoke-test:
 openclaw nodes canvas a2ui push --node <id> --text "Hello from A2UI"
 ```
 
-## Agentruns activeren vanuit Canvas
+## Agent-runs vanuit Canvas starten
 
-Canvas kan nieuwe agentruns activeren via deep links:
+Canvas kan nieuwe agent-runs starten via deep links:
 
 - `openclaw://agent?...`
 
@@ -125,8 +125,8 @@ De app vraagt om bevestiging, tenzij er een geldige sleutel is opgegeven.
 
 ## Beveiligingsopmerkingen
 
-- Het Canvas-schema blokkeert directory traversal; bestanden moeten onder de sessiehoofdmap staan.
-- Lokale Canvas-inhoud gebruikt een aangepast schema (geen local loopback-server vereist).
+- Het Canvas-schema blokkeert directory traversal; bestanden moeten onder de sessieroot staan.
+- Lokale Canvas-inhoud gebruikt een aangepast schema (geen loopbackserver vereist).
 - Externe `http(s)`-URL's zijn alleen toegestaan wanneer er expliciet naartoe wordt genavigeerd.
 
 ## Gerelateerd

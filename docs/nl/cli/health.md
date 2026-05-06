@@ -1,20 +1,20 @@
 ---
 read_when:
-    - Je wilt snel de gezondheid van de draaiende Gateway controleren
+    - Je wilt snel de status van de draaiende Gateway controleren
 summary: CLI-referentie voor `openclaw health` (Gateway-gezondheidssnapshot via RPC)
 title: Gezondheid
 x-i18n:
-    generated_at: "2026-04-29T22:32:33Z"
+    generated_at: "2026-05-06T09:05:34Z"
     model: gpt-5.5
     provider: openai
-    source_hash: bf5f5b9c3ec5c08090134764966d2657241ed0ebbd28a9dc7fafde0b8c7216d6
+    source_hash: 443684af04efce2c54a6679e13b0bff0a5c1869f85d60fae0e853aed0a362226
     source_path: cli/health.md
     workflow: 16
 ---
 
 # `openclaw health`
 
-Haalt de status op van de actieve Gateway.
+Haal health op van de actieve Gateway.
 
 Opties:
 
@@ -35,14 +35,14 @@ openclaw health --debug
 
 Opmerkingen:
 
-- Standaard vraagt `openclaw health` de actieve Gateway om de statussnapshot. Wanneer de
-  Gateway al een recente gecachete snapshot heeft, kan deze die gecachete payload retourneren en
+- Standaard vraagt `openclaw health` de actieve Gateway om de health-momentopname. Wanneer de
+  Gateway al een recente gecachete momentopname heeft, kan deze die gecachete payload teruggeven en
   op de achtergrond vernieuwen.
-- `--verbose` dwingt een livecontrole af, toont verbindingsdetails van de Gateway en breidt de
-  leesbare uitvoer uit over alle geconfigureerde accounts en agents.
+- `--verbose` dwingt een live-probe af, toont Gateway-verbindingsdetails en breidt de
+  voor mensen leesbare uitvoer uit over alle geconfigureerde accounts en agents.
 - Uitvoer bevat sessiestores per agent wanneer meerdere agents zijn geconfigureerd.
 
 ## Gerelateerd
 
 - [CLI-referentie](/nl/cli)
-- [Gateway-status](/nl/gateway/health)
+- [Gateway-health](/nl/gateway/health)

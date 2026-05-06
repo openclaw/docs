@@ -1,23 +1,23 @@
 ---
 read_when:
     - Je wilt agentuitvoeringen starten vanuit scripts of de opdrachtregel
-    - Je moet agentantwoorden programmatisch naar een chatkanaal sturen
-summary: Voer agentbeurten uit vanuit de CLI en lever reacties optioneel af aan kanalen
+    - Je moet programmatisch agentreacties aan een chatkanaal leveren
+summary: Voer agentbeurten uit vanuit de CLI en stuur antwoorden optioneel naar kanalen
 title: Agent verzenden
 x-i18n:
-    generated_at: "2026-04-29T23:20:49Z"
+    generated_at: "2026-05-06T09:33:34Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8f29ab906ed8179b265138ee27312c8f4b318d09b73ad61843fca6809c32bd31
+    source_hash: 1339ebd74e2349669942ff93f200b53a69ad05f2186d6ff76437c779f312a291
     source_path: tools/agent-send.md
     workflow: 16
 ---
 
-`openclaw agent` voert een enkele agentbeurt uit vanaf de opdrachtregel zonder dat
+`openclaw agent` voert één agentbeurt uit vanaf de opdrachtregel zonder dat er
 een inkomend chatbericht nodig is. Gebruik het voor gescripte workflows, testen en
 programmatische levering.
 
-## Snelstart
+## Snel aan de slag
 
 <Steps>
   <Step title="Voer een eenvoudige agentbeurt uit">
@@ -25,7 +25,7 @@ programmatische levering.
     openclaw agent --message "What is the weather today?"
     ```
 
-    Dit verstuurt het bericht via de Gateway en drukt het antwoord af.
+    Dit stuurt het bericht via de Gateway en drukt het antwoord af.
 
   </Step>
 
@@ -58,22 +58,22 @@ programmatische levering.
 
 ## Vlaggen
 
-| Vlag                          | Beschrijving                                                 |
-| ----------------------------- | ------------------------------------------------------------ |
-| `--message \<text\>`          | Te versturen bericht (vereist)                               |
-| `--to \<dest\>`               | Leid de sessiesleutel af van een doel (telefoon, chat-id)    |
+| Vlag                          | Beschrijving                                                |
+| ----------------------------- | ----------------------------------------------------------- |
+| `--message \<text\>`          | Te verzenden bericht (vereist)                              |
+| `--to \<dest\>`               | Leid de sessiesleutel af van een doel (telefoon, chat-id)   |
 | `--agent \<id\>`              | Richt op een geconfigureerde agent (gebruikt de `main`-sessie) |
-| `--session-id \<id\>`         | Hergebruik een bestaande sessie op id                        |
-| `--local`                     | Forceer lokale ingebedde runtime (sla Gateway over)          |
-| `--deliver`                   | Stuur het antwoord naar een chatkanaal                       |
-| `--channel \<name\>`          | Leveringskanaal (whatsapp, telegram, discord, slack, enz.)   |
-| `--reply-to \<target\>`       | Overschrijving van leveringsdoel                             |
-| `--reply-channel \<name\>`    | Overschrijving van leveringskanaal                           |
-| `--reply-account \<id\>`      | Overschrijving van leveringsaccount-id                       |
-| `--thinking \<level\>`        | Stel het denkniveau in voor het geselecteerde modelprofiel   |
-| `--verbose \<on\|full\|off\>` | Stel het verbose-niveau in                                   |
-| `--timeout \<seconds\>`       | Overschrijf de agent-time-out                                |
-| `--json`                      | Voer gestructureerde JSON uit                                |
+| `--session-id \<id\>`         | Hergebruik een bestaande sessie op id                       |
+| `--local`                     | Forceer de lokale ingebedde runtime (sla Gateway over)      |
+| `--deliver`                   | Stuur het antwoord naar een chatkanaal                      |
+| `--channel \<name\>`          | Afleveringskanaal (whatsapp, telegram, discord, slack, enz.) |
+| `--reply-to \<target\>`       | Overschrijving van afleveringsdoel                          |
+| `--reply-channel \<name\>`    | Overschrijving van afleveringskanaal                        |
+| `--reply-account \<id\>`      | Overschrijving van afleveringsaccount-id                    |
+| `--thinking \<level\>`        | Stel het denkniveau in voor het geselecteerde modelprofiel  |
+| `--verbose \<on\|full\|off\>` | Stel het uitgebreide niveau in                              |
+| `--timeout \<seconds\>`       | Overschrijf de agent-time-out                               |
+| `--json`                      | Voer gestructureerde JSON uit                               |
 
 ## Gedrag
 
@@ -81,8 +81,8 @@ programmatische levering.
   ingebedde runtime op de huidige machine te forceren.
 - Als de Gateway onbereikbaar is, **valt de CLI terug** op de lokale ingebedde uitvoering.
 - Sessieselectie: `--to` leidt de sessiesleutel af (groep-/kanaaldoelen
-  behouden isolatie; directe chats vallen samen tot `main`).
-- Thinking- en verbose-vlaggen blijven bewaard in de sessieopslag.
+  behouden isolatie; directe chats vouwen samen naar `main`).
+- Denk- en uitgebreide vlaggen blijven behouden in de sessieopslag.
 - Uitvoer: standaard platte tekst, of `--json` voor gestructureerde payload + metadata.
 
 ## Voorbeelden
@@ -100,6 +100,17 @@ openclaw agent --agent ops --message "Alert" --deliver --reply-channel telegram 
 
 ## Gerelateerd
 
-- [Agent CLI-referentie](/nl/cli/agent)
-- [Subagents](/nl/tools/subagents) — subagent-spawning op de achtergrond
-- [Sessies](/nl/concepts/session) — hoe sessiesleutels werken
+<CardGroup cols={2}>
+  <Card title="Agent-CLI-referentie" href="/nl/cli/agent" icon="terminal">
+    Volledige referentie voor vlaggen en opties van `openclaw agent`.
+  </Card>
+  <Card title="Subagents" href="/nl/tools/subagents" icon="users">
+    Subagents op de achtergrond starten.
+  </Card>
+  <Card title="Sessies" href="/nl/concepts/session" icon="comments">
+    Hoe sessiesleutels werken en hoe `--to`, `--agent` en `--session-id` ze oplossen.
+  </Card>
+  <Card title="Slash-opdrachten" href="/nl/tools/slash-commands" icon="slash">
+    Systeemeigen opdrachtencatalogus die binnen agentsessies wordt gebruikt.
+  </Card>
+</CardGroup>

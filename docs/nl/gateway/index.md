@@ -1,31 +1,31 @@
 ---
 read_when:
     - Het Gateway-proces uitvoeren of debuggen
-summary: Runbook voor de Gateway-service, levenscyclus en operationeel beheer
+summary: Draaiboek voor de Gateway-service, levenscyclus en beheer
 title: Gateway-draaiboek
 x-i18n:
-    generated_at: "2026-04-29T22:45:19Z"
+    generated_at: "2026-05-06T09:13:19Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 14f3d288c426848bc176291ff084a2b63b00e81739cd02f31fdf517d230d8111
+    source_hash: 592eb379cc75402246676cbb23b1dca39b98f559c214c92983b5a3685cff7ab7
     source_path: gateway/index.md
     workflow: 16
 ---
 
-Gebruik deze pagina voor day-1-opstart en day-2-beheer van de Gateway-service.
+Gebruik deze pagina voor dag-1-opstart en dag-2-beheer van de Gateway-service.
 
 <CardGroup cols={2}>
-  <Card title="Grondige probleemoplossing" icon="siren" href="/nl/gateway/troubleshooting">
-    Symptoomgerichte diagnostiek met exacte commandoladders en logsignaturen.
+  <Card title="Diepgaande probleemoplossing" icon="siren" href="/nl/gateway/troubleshooting">
+    Symptoomgerichte diagnostiek met exacte commandoreeksen en logsignaturen.
   </Card>
   <Card title="Configuratie" icon="sliders" href="/nl/gateway/configuration">
     Taakgerichte installatiegids + volledige configuratiereferentie.
   </Card>
   <Card title="Geheimenbeheer" icon="key-round" href="/nl/gateway/secrets">
-    SecretRef-contract, gedrag van runtime-snapshots en migreer-/herlaadbewerkingen.
+    SecretRef-contract, gedrag van runtimesnapshots en migreer-/herlaadbewerkingen.
   </Card>
   <Card title="Contract voor geheimenplan" icon="shield-check" href="/nl/gateway/secrets-plan-contract">
-    Exacte `secrets apply`-regels voor doel/pad en ref-only gedrag voor auth-profielen.
+    Exacte doel-/padregels voor `secrets apply` en ref-only gedrag voor auth-profielen.
   </Card>
 </CardGroup>
 
@@ -44,7 +44,7 @@ openclaw gateway --force
 
   </Step>
 
-  <Step title="Controleer de servicegezondheid">
+  <Step title="Controleer de servicestatus">
 
 ```bash
 openclaw gateway status
@@ -52,7 +52,7 @@ openclaw status
 openclaw logs --follow
 ```
 
-Gezonde basislijn: `Runtime: running`, `Connectivity probe: ok` en `Capability: ...` die overeenkomt met wat je verwacht. Gebruik `openclaw gateway status --require-rpc` wanneer je RPC-bewijs met leesbereik nodig hebt, niet alleen bereikbaarheid.
+Gezonde basislijn: `Runtime: running`, `Connectivity probe: ok` en `Capability: ...` die overeenkomt met wat je verwacht. Gebruik `openclaw gateway status --require-rpc` wanneer je bewijs van RPC met leesscope nodig hebt, niet alleen bereikbaarheid.
 
   </Step>
 
@@ -63,7 +63,8 @@ openclaw channels status --probe
 ```
 
 Met een bereikbare gateway voert dit live kanaalprobes per account en optionele audits uit.
-Als de gateway niet bereikbaar is, valt de CLI terug op configuratie-only kanaalsamenvattingen in plaats van live probe-uitvoer.
+Als de gateway onbereikbaar is, valt de CLI terug op configuratie-only kanaalsamenvattingen in plaats
+van live probe-uitvoer.
 
   </Step>
 </Steps>
@@ -71,25 +72,25 @@ Als de gateway niet bereikbaar is, valt de CLI terug op configuratie-only kanaal
 <Note>
 Het herladen van Gateway-configuratie bewaakt het actieve configuratiebestandspad (opgelost vanuit profiel-/statusstandaarden, of `OPENCLAW_CONFIG_PATH` wanneer ingesteld).
 De standaardmodus is `gateway.reload.mode="hybrid"`.
-Na de eerste succesvolle laadactie bedient het actieve proces de actieve in-memory configuratiesnapshot; een succesvolle herlaadactie vervangt die snapshot atomair.
+Na de eerste geslaagde laadactie bedient het draaiende proces de actieve configuratiesnapshot in het geheugen; een geslaagde herlaadactie wisselt die snapshot atomisch om.
 </Note>
 
 ## Runtimemodel
 
 - Eén altijd actief proces voor routering, control plane en kanaalverbindingen.
 - Eén gemultiplexte poort voor:
-  - WebSocket-control/RPC
+  - WebSocket-besturing/RPC
   - HTTP-API's, OpenAI-compatibel (`/v1/models`, `/v1/embeddings`, `/v1/chat/completions`, `/v1/responses`, `/tools/invoke`)
-  - Control UI en hooks
+  - Besturings-UI en hooks
 - Standaard bindmodus: `loopback`.
-- Auth is standaard vereist. Installaties met gedeeld geheim gebruiken
+- Auth is standaard vereist. Setups met gedeeld geheim gebruiken
   `gateway.auth.token` / `gateway.auth.password` (of
   `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`), en niet-loopback
-  reverse-proxy-installaties kunnen `gateway.auth.mode: "trusted-proxy"` gebruiken.
+  reverse-proxy-setups kunnen `gateway.auth.mode: "trusted-proxy"` gebruiken.
 
-## OpenAI-compatibele endpoints
+## OpenAI-compatibele eindpunten
 
-OpenClaw’s compatibiliteitsoppervlak met de meeste hefboomwerking is nu:
+OpenClaw's compatibiliteitsoppervlak met de hoogste impact is nu:
 
 - `GET /v1/models`
 - `GET /v1/models/{id}`
@@ -107,35 +108,35 @@ Planningsopmerking:
 
 - `/v1/models` is agent-first: het retourneert `openclaw`, `openclaw/default` en `openclaw/<agentId>`.
 - `openclaw/default` is de stabiele alias die altijd verwijst naar de geconfigureerde standaardagent.
-- Gebruik `x-openclaw-model` wanneer je een override voor backendprovider/model wilt; anders blijven het normale model en de embeddinginstallatie van de geselecteerde agent leidend.
+- Gebruik `x-openclaw-model` wanneer je een override voor backendprovider/model wilt; anders blijft de normale model- en embeddingsetup van de geselecteerde agent leidend.
 
-Al deze endpoints draaien op de hoofdpoort van de Gateway en gebruiken dezelfde auth-grens voor vertrouwde operators als de rest van de Gateway HTTP-API.
+Al deze eindpunten draaien op de hoofdpoort van de Gateway en gebruiken dezelfde vertrouwde operator-authgrens als de rest van de Gateway HTTP-API.
 
-### Poort- en bindprioriteit
+### Poort- en bindvolgorde
 
-| Instelling    | Oplosvolgorde                                                |
+| Instelling    | Oplossingsvolgorde                                           |
 | ------------- | ------------------------------------------------------------ |
 | Gateway-poort | `--port` → `OPENCLAW_GATEWAY_PORT` → `gateway.port` → `18789` |
 | Bindmodus     | CLI/override → `gateway.bind` → `loopback`                   |
 
-Geïnstalleerde gateway-services slaan de opgeloste `--port` op in supervisormetadata. Voer na het wijzigen van `gateway.port` `openclaw doctor --fix` of `openclaw gateway install --force` uit zodat launchd/systemd/schtasks het proces op de nieuwe poort start.
+Geïnstalleerde gatewayservices registreren de opgeloste `--port` in supervisormetadata. Voer na het wijzigen van `gateway.port` `openclaw doctor --fix` of `openclaw gateway install --force` uit, zodat launchd/systemd/schtasks het proces op de nieuwe poort start.
 
 Gateway-opstart gebruikt dezelfde effectieve poort en bind wanneer het lokale
-Control UI-origins seedt voor niet-loopback binds. Bijvoorbeeld, `--bind lan --port 3000`
-seedt `http://localhost:3000` en `http://127.0.0.1:3000` voordat runtimevalidatie
-wordt uitgevoerd. Voeg externe browserorigins, zoals HTTPS-proxy-URL's, expliciet toe aan
+oorsprongen voor de besturings-UI seedt voor niet-loopback binds. Bijvoorbeeld: `--bind lan --port 3000`
+seedt `http://localhost:3000` en `http://127.0.0.1:3000` voordat runtime-
+validatie wordt uitgevoerd. Voeg externe browseroorsprongen, zoals HTTPS-proxy-URL's, expliciet toe aan
 `gateway.controlUi.allowedOrigins`.
 
-### Hot reload-modi
+### Hot-reloadmodi
 
 | `gateway.reload.mode` | Gedrag                                      |
 | --------------------- | ------------------------------------------- |
 | `off`                 | Geen configuratieherlaadactie               |
-| `hot`                 | Pas alleen hot-safe wijzigingen toe         |
-| `restart`             | Herstart bij wijzigingen die herstart vereisen |
-| `hybrid` (standaard)  | Hot-toepassen wanneer veilig, herstarten wanneer vereist |
+| `hot`                 | Alleen hot-safe wijzigingen toepassen       |
+| `restart`             | Herstarten bij wijzigingen die herstart vereisen |
+| `hybrid` (standaard)  | Hot toepassen wanneer veilig, herstarten wanneer vereist |
 
-## Operator-commandoset
+## Operatorset met commando's
 
 ```bash
 openclaw gateway status
@@ -149,14 +150,15 @@ openclaw logs --follow
 openclaw doctor
 ```
 
-`gateway status --deep` is bedoeld voor extra servicedetectie (LaunchDaemons/systemd-systeemunits/schtasks), niet voor een diepere RPC-gezondheidsprobe.
+`gateway status --deep` is bedoeld voor extra servicedetectie (LaunchDaemons/systemd system
+units/schtasks), niet voor een diepere RPC-gezondheidsprobe.
 
-## Meerdere gateways (dezelfde host)
+## Meerdere gateways (zelfde host)
 
-De meeste installaties moeten één gateway per machine uitvoeren. Eén gateway kan meerdere
+De meeste installaties zouden één gateway per machine moeten draaien. Eén gateway kan meerdere
 agents en kanalen hosten.
 
-Je hebt alleen meerdere gateways nodig wanneer je bewust isolatie of een reddingsbot wilt.
+Je hebt alleen meerdere gateways nodig wanneer je bewust isolatie of een rescue-bot wilt.
 
 Nuttige controles:
 
@@ -171,7 +173,7 @@ Wat je kunt verwachten:
   en opruimhints afdrukken wanneer verouderde launchd/systemd/schtasks-installaties nog aanwezig zijn.
 - `gateway probe` kan waarschuwen voor `multiple reachable gateways` wanneer meer dan één doel
   antwoordt.
-- Als dat opzettelijk is, isoleer dan poorten, configuratie/status en werkruimteroots per gateway.
+- Als dat de bedoeling is, isoleer dan poorten, configuratie/status en workspace-roots per gateway.
 
 Checklist per instantie:
 
@@ -187,46 +189,11 @@ OPENCLAW_CONFIG_PATH=~/.openclaw/a.json OPENCLAW_STATE_DIR=~/.openclaw-a opencla
 OPENCLAW_CONFIG_PATH=~/.openclaw/b.json OPENCLAW_STATE_DIR=~/.openclaw-b openclaw gateway --port 19002
 ```
 
-Gedetailleerde installatie: [/gateway/multiple-gateways](/nl/gateway/multiple-gateways).
+Gedetailleerde setup: [/gateway/multiple-gateways](/nl/gateway/multiple-gateways).
 
-## VoiceClaw realtime brein-endpoint
+## Externe toegang
 
-OpenClaw biedt een VoiceClaw-compatibel realtime WebSocket-endpoint op
-`/voiceclaw/realtime`. Gebruik dit wanneer een VoiceClaw-desktopclient direct
-met een realtime OpenClaw-brein moet praten in plaats van via een afzonderlijk relayproces.
-
-Het endpoint gebruikt Gemini Live voor realtime audio en roept OpenClaw aan als het
-brein door OpenClaw-tools direct aan Gemini Live beschikbaar te stellen. Toolaanroepen retourneren een
-direct `working`-resultaat om de spraakbeurt responsief te houden, waarna OpenClaw
-de daadwerkelijke tool asynchroon uitvoert en het resultaat terug injecteert in de
-live sessie. Stel `GEMINI_API_KEY` in de procesomgeving van de gateway in. Als
-gateway-auth is ingeschakeld, verzendt de desktopclient het gateway-token of wachtwoord
-in zijn eerste `session.config`-bericht.
-
-Realtime breintoegang voert door de eigenaar geautoriseerde OpenClaw-agentcommando's uit. Beperk
-`gateway.auth.mode: "none"` tot testinstanties met alleen loopback. Niet-lokale
-realtime breinverbindingen vereisen gateway-auth.
-
-Voer voor een geïsoleerde testgateway een afzonderlijke instantie uit met een eigen poort, configuratie
-en status:
-
-```bash
-OPENCLAW_CONFIG_PATH=/path/to/openclaw-realtime/openclaw.json \
-OPENCLAW_STATE_DIR=/path/to/openclaw-realtime/state \
-OPENCLAW_SKIP_CHANNELS=1 \
-GEMINI_API_KEY=... \
-openclaw gateway --port 19789
-```
-
-Configureer VoiceClaw daarna om te gebruiken:
-
-```text
-ws://127.0.0.1:19789/voiceclaw/realtime
-```
-
-## Toegang op afstand
-
-Aanbevolen: Tailscale/VPN.
+Voorkeur: Tailscale/VPN.
 Fallback: SSH-tunnel.
 
 ```bash
@@ -237,11 +204,11 @@ Verbind clients daarna lokaal met `ws://127.0.0.1:18789`.
 
 <Warning>
 SSH-tunnels omzeilen gateway-auth niet. Voor auth met gedeeld geheim moeten clients nog steeds
-`token`/`password` verzenden, ook via de tunnel. Voor modi met identiteit
+`token`/`password` sturen, ook via de tunnel. Voor modi met identiteit
 moet het verzoek nog steeds aan dat auth-pad voldoen.
 </Warning>
 
-Zie: [Remote Gateway](/nl/gateway/remote), [Authenticatie](/nl/gateway/authentication), [Tailscale](/nl/gateway/tailscale).
+Zie: [Externe Gateway](/nl/gateway/remote), [Authenticatie](/nl/gateway/authentication), [Tailscale](/nl/gateway/tailscale).
 
 ## Supervisie en servicelevenscyclus
 
@@ -257,13 +224,13 @@ openclaw gateway restart
 openclaw gateway stop
 ```
 
-Gebruik `openclaw gateway restart` voor herstarts. Chain `openclaw gateway stop` en `openclaw gateway start` niet; op macOS schakelt `gateway stop` de LaunchAgent bewust uit voordat deze wordt gestopt.
+Gebruik `openclaw gateway restart` voor herstarts. Keten `openclaw gateway stop` en `openclaw gateway start` niet; op macOS schakelt `gateway stop` de LaunchAgent bewust uit voordat deze wordt gestopt.
 
-LaunchAgent-labels zijn `ai.openclaw.gateway` (standaard) of `ai.openclaw.<profile>` (benoemd profiel). `openclaw doctor` auditt en repareert drift in serviceconfiguratie.
+LaunchAgent-labels zijn `ai.openclaw.gateway` (standaard) of `ai.openclaw.<profile>` (benoemd profiel). `openclaw doctor` audit en herstelt afwijkingen in serviceconfiguratie.
 
   </Tab>
 
-  <Tab title="Linux (systemd-gebruiker)">
+  <Tab title="Linux (systemd user)">
 
 ```bash
 openclaw gateway install
@@ -277,7 +244,7 @@ Schakel lingering in voor persistentie na uitloggen:
 sudo loginctl enable-linger <user>
 ```
 
-Voorbeeld van een handmatige gebruikersunit wanneer je een aangepast installatiepad nodig hebt:
+Voorbeeld van een handmatige user-unit wanneer je een aangepast installatiepad nodig hebt:
 
 ```ini
 [Unit]
@@ -309,32 +276,32 @@ openclaw gateway restart
 openclaw gateway stop
 ```
 
-Native Windows beheerde opstart gebruikt een Scheduled Task met de naam `OpenClaw Gateway`
-(of `OpenClaw Gateway (<profile>)` voor benoemde profielen). Als het maken van een Scheduled Task
+Native door Windows beheerde opstart gebruikt een Scheduled Task met de naam `OpenClaw Gateway`
+(of `OpenClaw Gateway (<profile>)` voor benoemde profielen). Als het aanmaken van de Scheduled Task
 wordt geweigerd, valt OpenClaw terug op een launcher in de Startup-map per gebruiker
-die verwijst naar `gateway.cmd` in de statusmap.
+die wijst naar `gateway.cmd` binnen de statusdirectory.
 
   </Tab>
 
-  <Tab title="Linux (systeemservice)">
+  <Tab title="Linux (system service)">
 
-Gebruik een systeemunit voor multi-user/altijd actieve hosts.
+Gebruik een system-unit voor multi-user/altijd actieve hosts.
 
 ```bash
 sudo systemctl daemon-reload
 sudo systemctl enable --now openclaw-gateway[-<profile>].service
 ```
 
-Gebruik dezelfde servicebody als de gebruikersunit, maar installeer deze onder
+Gebruik dezelfde servicebody als de user-unit, maar installeer deze onder
 `/etc/systemd/system/openclaw-gateway[-<profile>].service` en pas
 `ExecStart=` aan als je `openclaw`-binary ergens anders staat.
 
-Laat `openclaw doctor --fix` niet ook een gateway-service op gebruikersniveau installeren voor hetzelfde profiel/dezelfde poort. Doctor weigert die automatische installatie wanneer het een OpenClaw-gateway-service op systeemniveau vindt; gebruik `OPENCLAW_SERVICE_REPAIR_POLICY=external` wanneer de systeemunit de levenscyclus beheert.
+Laat `openclaw doctor --fix` niet ook een gatewayservice op gebruikersniveau installeren voor hetzelfde profiel/dezelfde poort. Doctor weigert die automatische installatie wanneer het een OpenClaw-gatewayservice op systeemniveau vindt; gebruik `OPENCLAW_SERVICE_REPAIR_POLICY=external` wanneer de system-unit eigenaar is van de levenscyclus.
 
   </Tab>
 </Tabs>
 
-## Snelle route voor dev-profiel
+## Snel pad voor dev-profiel
 
 ```bash
 openclaw --dev setup
@@ -342,34 +309,34 @@ openclaw --dev gateway --allow-unconfigured
 openclaw --dev status
 ```
 
-Standaarden bevatten geïsoleerde status/configuratie en basisgatewaypoort `19001`.
+Standaarden omvatten geïsoleerde status/configuratie en basisgatewaypoort `19001`.
 
 ## Snelle protocolreferentie (operatorweergave)
 
 - Het eerste clientframe moet `connect` zijn.
 - Gateway retourneert `hello-ok`-snapshot (`presence`, `health`, `stateVersion`, `uptimeMs`, limieten/beleid).
-- `hello-ok.features.methods` / `events` zijn een conservatieve ontdekkingslijst, geen
-  gegenereerde dump van elke aanroepbare helperroute.
+- `hello-ok.features.methods` / `events` zijn een conservatieve detectielijst, niet
+  een gegenereerde dump van elke aanroepbare helperroute.
 - Verzoeken: `req(method, params)` → `res(ok/payload|error)`.
-- Veelvoorkomende gebeurtenissen zijn onder meer `connect.challenge`, `agent`, `chat`,
+- Veelvoorkomende events omvatten `connect.challenge`, `agent`, `chat`,
   `session.message`, `session.tool`, `sessions.changed`, `presence`, `tick`,
-  `health`, `heartbeat`, pairing-/goedkeuringslevenscyclusgebeurtenissen en `shutdown`.
+  `health`, `heartbeat`, lifecycle-events voor pairing/approval en `shutdown`.
 
 Agentruns verlopen in twee fasen:
 
 1. Direct geaccepteerde ack (`status:"accepted"`)
-2. Definitieve voltooiingsrespons (`status:"ok"|"error"`), met gestreamde `agent`-gebeurtenissen ertussen.
+2. Eindrespons bij voltooiing (`status:"ok"|"error"`), met gestreamde `agent`-events ertussen.
 
-Zie de volledige protocoldocumentatie: [Gateway-protocol](/nl/gateway/protocol).
+Zie volledige protocoldocumentatie: [Gateway-protocol](/nl/gateway/protocol).
 
 ## Operationele controles
 
 ### Liveness
 
 - Open WS en stuur `connect`.
-- Verwacht een `hello-ok`-antwoord met momentopname.
+- Verwacht een `hello-ok`-respons met snapshot.
 
-### Gereedheid
+### Readiness
 
 ```bash
 openclaw gateway status
@@ -377,26 +344,26 @@ openclaw channels status --probe
 openclaw health
 ```
 
-### Herstel bij hiaten
+### Gap-herstel
 
-Gebeurtenissen worden niet opnieuw afgespeeld. Vernieuw bij sequentiehiaten de toestand (`health`, `system-presence`) voordat je verdergaat.
+Events worden niet opnieuw afgespeeld. Vernieuw bij sequence gaps de status (`health`, `system-presence`) voordat je doorgaat.
 
 ## Veelvoorkomende foutsignaturen
 
-| Signatuur                                                      | Waarschijnlijk probleem                                                                    |
-| -------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| `refusing to bind gateway ... without auth`                    | Niet-loopback-binding zonder geldig Gateway-authenticatiepad                                |
-| `another gateway instance is already listening` / `EADDRINUSE` | Poortconflict                                                                              |
-| `Gateway start blocked: set gateway.mode=local`                | Configuratie ingesteld op externe modus, of local-modus-stempel ontbreekt in een beschadigde configuratie |
-| `unauthorized` tijdens verbinden                              | Authenticatie komt niet overeen tussen client en Gateway                                    |
+| Signatuur                                                      | Waarschijnlijk probleem                                                        |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `refusing to bind gateway ... without auth`                    | Niet-loopback bind zonder geldig gateway-authpad                               |
+| `another gateway instance is already listening` / `EADDRINUSE` | Poortconflict                                                                 |
+| `Gateway start blocked: set gateway.mode=local`                | Configuratie ingesteld op externe modus, of local-mode stamp ontbreekt in een beschadigde configuratie |
+| `unauthorized` tijdens connect                                  | Auth-mismatch tussen client en gateway                                         |
 
-Gebruik [Gateway-probleemoplossing](/nl/gateway/troubleshooting) voor volledige diagnoseladders.
+Gebruik [Gateway-probleemoplossing](/nl/gateway/troubleshooting) voor volledige diagnosereeksen.
 
 ## Veiligheidsgaranties
 
-- Gateway-protocolclients falen snel wanneer Gateway niet beschikbaar is (geen impliciete fallback naar direct kanaal).
-- Ongeldige/niet-`connect`-eerste frames worden geweigerd en gesloten.
-- Gecontroleerd afsluiten verzendt een `shutdown`-gebeurtenis voordat de socket wordt gesloten.
+- Gateway-protocolclients falen snel wanneer Gateway niet beschikbaar is (geen impliciete fallback naar een direct kanaal).
+- Ongeldige eerste frames of eerste frames zonder connect worden geweigerd en gesloten.
+- Gecontroleerd afsluiten zendt de `shutdown`-gebeurtenis uit voordat de socket wordt gesloten.
 
 ---
 
@@ -405,7 +372,7 @@ Gerelateerd:
 - [Probleemoplossing](/nl/gateway/troubleshooting)
 - [Achtergrondproces](/nl/gateway/background-process)
 - [Configuratie](/nl/gateway/configuration)
-- [Health](/nl/gateway/health)
+- [Gezondheid](/nl/gateway/health)
 - [Doctor](/nl/gateway/doctor)
 - [Authenticatie](/nl/gateway/authentication)
 

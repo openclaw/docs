@@ -5,28 +5,33 @@ read_when:
 summary: OpenClaw hosten op een DigitalOcean Droplet
 title: DigitalOcean
 x-i18n:
-    generated_at: "2026-04-29T22:53:06Z"
+    generated_at: "2026-05-06T09:19:04Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 0b3d06a38e257f4a8ab88d1f228c659a6cf1a276fe91c8ba7b89a0084658a314
+    source_hash: 7aa09915d845c9ede27db794cac464490ba038e8e5e0a2ef0f5bfc62ef7e59ff
     source_path: install/digitalocean.md
     workflow: 16
 ---
 
-Voer een permanente OpenClaw Gateway uit op een DigitalOcean Droplet.
+Voer een persistente OpenClaw Gateway uit op een DigitalOcean Droplet (~$6/maand voor het 1 GB Basic-abonnement).
+
+DigitalOcean is de eenvoudigste betaalde VPS-route. Als je goedkopere of gratis opties verkiest:
+
+- [Hetzner](/nl/install/hetzner) — €3,79/maand, meer cores/RAM per dollar.
+- [Oracle Cloud](/nl/install/oracle) — Always Free ARM (tot 4 OCPU, 24 GB RAM), maar aanmelden kan lastig zijn en het is alleen ARM.
 
 ## Vereisten
 
-- DigitalOcean-account ([registreren](https://cloud.digitalocean.com/registrations/new))
+- DigitalOcean-account ([aanmelden](https://cloud.digitalocean.com/registrations/new))
 - SSH-sleutelpaar (of bereidheid om wachtwoordauthenticatie te gebruiken)
 - Ongeveer 20 minuten
 
-## Instellen
+## Installatie
 
 <Steps>
-  <Step title="Create a Droplet">
+  <Step title="Maak een Droplet aan">
     <Warning>
-    Gebruik een schone basisimage (Ubuntu 24.04 LTS). Vermijd 1-klik-images van derden uit de Marketplace, tenzij je hun opstartscripts en standaardinstellingen voor de firewall hebt gecontroleerd.
+    Gebruik een schone basisimage (Ubuntu 24.04 LTS). Vermijd 1-klik-images van derden uit de Marketplace, tenzij je hun opstartscripts en firewallstandaarden hebt gecontroleerd.
     </Warning>
 
     1. Log in bij [DigitalOcean](https://cloud.digitalocean.com/).
@@ -40,7 +45,7 @@ Voer een permanente OpenClaw Gateway uit op een DigitalOcean Droplet.
 
   </Step>
 
-  <Step title="Connect and install">
+  <Step title="Maak verbinding en installeer">
     ```bash
     ssh root@YOUR_DROPLET_IP
 
@@ -57,16 +62,16 @@ Voer een permanente OpenClaw Gateway uit op een DigitalOcean Droplet.
 
   </Step>
 
-  <Step title="Run onboarding">
+  <Step title="Voer onboarding uit">
     ```bash
     openclaw onboard --install-daemon
     ```
 
-    De wizard leidt je door modelauthenticatie, kanaalinstelling, Gateway-tokenaanmaak en daemoninstallatie (systemd).
+    De wizard leidt je door modelauthenticatie, kanaalconfiguratie, het genereren van een Gateway-token en daemon-installatie (systemd).
 
   </Step>
 
-  <Step title="Add swap (recommended for 1 GB Droplets)">
+  <Step title="Voeg swap toe (aanbevolen voor 1 GB Droplets)">
     ```bash
     fallocate -l 2G /swapfile
     chmod 600 /swapfile
@@ -76,7 +81,7 @@ Voer een permanente OpenClaw Gateway uit op een DigitalOcean Droplet.
     ```
   </Step>
 
-  <Step title="Verify the gateway">
+  <Step title="Controleer de Gateway">
     ```bash
     openclaw status
     systemctl --user status openclaw-gateway.service
@@ -84,7 +89,7 @@ Voer een permanente OpenClaw Gateway uit op een DigitalOcean Droplet.
     ```
   </Step>
 
-  <Step title="Access the Control UI">
+  <Step title="Open de Control UI">
     De Gateway bindt standaard aan loopback. Kies een van deze opties.
 
     **Optie A: SSH-tunnel (eenvoudigst)**
@@ -107,7 +112,9 @@ Voer een permanente OpenClaw Gateway uit op een DigitalOcean Droplet.
 
     Open daarna `https://<magicdns>/` vanaf elk apparaat op je tailnet.
 
-    **Optie C: Tailnet-binding (zonder Serve)**
+    Tailscale Serve authenticeert verkeer van de Control UI en WebSocket-verkeer via tailnet-identiteitsheaders, waarbij wordt aangenomen dat de Gateway-host zelf vertrouwd is. HTTP API-eindpunten volgen hoe dan ook de normale authenticatiemodus van de Gateway (token/wachtwoord). Stel `gateway.auth.allowTailscale: false` in en gebruik `gateway.auth.mode: "token"` of `"password"` om expliciete shared-secret-credentials via Serve te vereisen.
+
+    **Optie C: Tailnet-bind (zonder Serve)**
 
     ```bash
     openclaw config set gateway.bind tailnet
@@ -119,13 +126,37 @@ Voer een permanente OpenClaw Gateway uit op een DigitalOcean Droplet.
   </Step>
 </Steps>
 
+## Persistentie en back-ups
+
+OpenClaw-status staat onder:
+
+- `~/.openclaw/` — `openclaw.json`, per-agent `auth-profiles.json`, kanaal-/providerstatus en sessiegegevens.
+- `~/.openclaw/workspace/` — de agentwerkruimte (SOUL.md, geheugen, artefacten).
+
+Deze blijven behouden na Droplet-herstarts. Maak een draagbare snapshot met:
+
+```bash
+openclaw backup create
+```
+
+DigitalOcean-snapshots maken een back-up van de hele Droplet; `openclaw backup create` is overdraagbaar tussen hosts.
+
+## Tips voor 1 GB RAM
+
+De Droplet van $6 heeft slechts 1 GB RAM. Om alles soepel te houden:
+
+- Zorg dat de swapstap hierboven in `/etc/fstab` staat, zodat deze herstarts overleeft.
+- Geef de voorkeur aan API-gebaseerde modellen (Claude, GPT) boven lokale modellen — lokale LLM-inferentie past niet in 1 GB.
+- Stel `agents.defaults.model.primary` in op een kleiner model als je OOM's krijgt bij grote prompts.
+- Monitor met `free -h` en `htop`.
+
 ## Probleemoplossing
 
 **Gateway start niet** -- Voer `openclaw doctor --non-interactive` uit en controleer logs met `journalctl --user -u openclaw-gateway.service -n 50`.
 
 **Poort is al in gebruik** -- Voer `lsof -i :18789` uit om het proces te vinden en stop het daarna.
 
-**Onvoldoende geheugen** -- Controleer met `free -h` of swap actief is. Als je nog steeds OOM-fouten krijgt, gebruik dan API-gebaseerde modellen (Claude, GPT) in plaats van lokale modellen, of upgrade naar een Droplet van 2 GB.
+**Onvoldoende geheugen** -- Controleer met `free -h` of swap actief is. Als je nog steeds OOM krijgt, gebruik dan API-gebaseerde modellen (Claude, GPT) in plaats van lokale modellen, of upgrade naar een Droplet van 2 GB.
 
 ## Volgende stappen
 
@@ -135,7 +166,7 @@ Voer een permanente OpenClaw Gateway uit op een DigitalOcean Droplet.
 
 ## Gerelateerd
 
-- [Installatie-overzicht](/nl/install)
+- [Installatieoverzicht](/nl/install)
 - [Fly.io](/nl/install/fly)
 - [Hetzner](/nl/install/hetzner)
 - [VPS-hosting](/nl/vps)

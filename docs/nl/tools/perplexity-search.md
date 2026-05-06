@@ -1,25 +1,23 @@
 ---
 read_when:
-    - Je wilt Perplexity Search gebruiken om op het web te zoeken
+    - U wilt Perplexity Search gebruiken voor zoekopdrachten op het web
     - Je moet PERPLEXITY_API_KEY of OPENROUTER_API_KEY hebben ingesteld
 summary: Perplexity Search API en Sonar/OpenRouter-compatibiliteit voor web_search
-title: Perplexity-zoekopdracht
+title: Perplexity-zoekfunctie
 x-i18n:
-    generated_at: "2026-04-29T23:25:49Z"
+    generated_at: "2026-05-06T09:37:21Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 6f85aa953ff406237013fdc9a06b86756a26e62d41e5a3e3aa732563960e4ba9
+    source_hash: 113abafae66acd8aaa0302b687ba13347eb44a81a4217b61bb68f07d8a119cb0
     source_path: tools/perplexity-search.md
     workflow: 16
 ---
 
-# Perplexity Search API
-
-OpenClaw ondersteunt Perplexity Search API als `web_search`-provider.
+OpenClaw ondersteunt de Perplexity Search API als een `web_search`-provider.
 Deze retourneert gestructureerde resultaten met de velden `title`, `url` en `snippet`.
 
 Voor compatibiliteit ondersteunt OpenClaw ook verouderde Perplexity Sonar/OpenRouter-configuraties.
-Als je `OPENROUTER_API_KEY`, een `sk-or-...`-sleutel in `plugins.entries.perplexity.config.webSearch.apiKey` gebruikt, of `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` instelt, schakelt de provider over naar het chat-completions-pad en retourneert deze door AI gesynthetiseerde antwoorden met citaten in plaats van gestructureerde Search API-resultaten.
+Als je `OPENROUTER_API_KEY` gebruikt, een `sk-or-...`-sleutel in `plugins.entries.perplexity.config.webSearch.apiKey`, of `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` instelt, schakelt de provider over naar het chat-completions-pad en retourneert AI-gegenereerde antwoorden met bronvermeldingen in plaats van gestructureerde Search API-resultaten.
 
 ## Een Perplexity API-sleutel verkrijgen
 
@@ -63,7 +61,7 @@ Optionele compatibiliteitsinstellingen:
 }
 ```
 
-### OpenRouter / Sonar-compatibiliteit
+### OpenRouter- / Sonar-compatibiliteit
 
 ```json5
 {
@@ -90,17 +88,17 @@ Optionele compatibiliteitsinstellingen:
 }
 ```
 
-## Waar de sleutel instellen
+## Waar je de sleutel instelt
 
-**Via configuratie:** voer `openclaw configure --section web` uit. Hiermee wordt de sleutel opgeslagen in
+**Via configuratie:** voer `openclaw configure --section web` uit. Dit slaat de sleutel op in
 `~/.openclaw/openclaw.json` onder `plugins.entries.perplexity.config.webSearch.apiKey`.
 Dat veld accepteert ook SecretRef-objecten.
 
 **Via omgeving:** stel `PERPLEXITY_API_KEY` of `OPENROUTER_API_KEY` in
-in de procesomgeving van de Gateway. Plaats deze voor een gateway-installatie in
-`~/.openclaw/.env` (of je serviceomgeving). Zie [Omgevingsvariabelen](/nl/help/faq#env-vars-and-env-loading).
+in de procesomgeving van de Gateway. Plaats dit voor een gateway-installatie in
+`~/.openclaw/.env` (of in je serviceomgeving). Zie [Omgevingsvariabelen](/nl/help/faq#env-vars-and-env-loading).
 
-Als `provider: "perplexity"` is geconfigureerd en de Perplexity-sleutel SecretRef niet kan worden opgelost zonder env-terugval, mislukt starten/herladen direct.
+Als `provider: "perplexity"` is geconfigureerd en de SecretRef voor de Perplexity-sleutel niet kan worden opgelost zonder env-fallback, mislukt starten/herladen direct.
 
 ## Toolparameters
 
@@ -111,7 +109,7 @@ Zoekopdracht.
 </ParamField>
 
 <ParamField path="count" type="number" default="5">
-Aantal te retourneren resultaten (1–10).
+Aantal resultaten om te retourneren (1-10).
 </ParamField>
 
 <ParamField path="country" type="string">
@@ -123,19 +121,19 @@ ISO 639-1-taalcode (bijv. `en`, `de`, `fr`).
 </ParamField>
 
 <ParamField path="freshness" type="'day' | 'week' | 'month' | 'year'">
-Tijdfilter — `day` is 24 uur.
+Tijdfilter - `day` is 24 uur.
 </ParamField>
 
 <ParamField path="date_after" type="string">
-Alleen resultaten gepubliceerd na deze datum (`YYYY-MM-DD`).
+Alleen resultaten die na deze datum zijn gepubliceerd (`YYYY-MM-DD`).
 </ParamField>
 
 <ParamField path="date_before" type="string">
-Alleen resultaten gepubliceerd vóór deze datum (`YYYY-MM-DD`).
+Alleen resultaten die vóór deze datum zijn gepubliceerd (`YYYY-MM-DD`).
 </ParamField>
 
 <ParamField path="domain_filter" type="string[]">
-Array met toegestane/geblokkeerde domeinen (max. 20).
+Domein-allowlist/denylist-array (max. 20).
 </ParamField>
 
 <ParamField path="max_tokens" type="number" default="25000">
@@ -146,12 +144,12 @@ Totaal inhoudsbudget (max. 1000000).
 Tokenlimiet per pagina.
 </ParamField>
 
-Voor het verouderde Sonar/OpenRouter-compatibiliteitspad:
+Voor het compatibiliteitspad voor legacy Sonar/OpenRouter:
 
 - `query`, `count` en `freshness` worden geaccepteerd
-- `count` is daar alleen voor compatibiliteit; de respons is nog steeds één gesynthetiseerd
-  antwoord met citaten in plaats van een lijst met N resultaten
-- Filters die alleen voor Search API gelden, zoals `country`, `language`, `date_after`,
+- `count` is daar alleen voor compatibiliteit; het antwoord is nog steeds één gesynthetiseerd
+  antwoord met citaties in plaats van een lijst met N resultaten
+- Filters die alleen voor de Search API gelden, zoals `country`, `language`, `date_after`,
   `date_before`, `domain_filter`, `max_tokens` en `max_tokens_per_page`
   retourneren expliciete fouten
 
@@ -201,19 +199,29 @@ await web_search({
 ### Regels voor domeinfilters
 
 - Maximaal 20 domeinen per filter
-- Toegestane en geblokkeerde domeinen kunnen niet in hetzelfde verzoek worden gecombineerd
-- Gebruik het voorvoegsel `-` voor vermeldingen in de blokkeerlijst (bijv. `["-reddit.com"]`)
+- Kan geen allowlist en denylist combineren in dezelfde aanvraag
+- Gebruik het voorvoegsel `-` voor denylist-vermeldingen (bijv. `["-reddit.com"]`)
 
 ## Opmerkingen
 
 - Perplexity Search API retourneert gestructureerde webzoekresultaten (`title`, `url`, `snippet`)
-- OpenRouter of expliciete `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` schakelt Perplexity voor compatibiliteit terug naar Sonar-chatcompletions
-- Sonar/OpenRouter-compatibiliteit retourneert één gesynthetiseerd antwoord met citaten, geen gestructureerde resultaatrijen
+- OpenRouter of expliciete `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` schakelt Perplexity voor compatibiliteit terug naar Sonar-chatvoltooiingen
+- Sonar/OpenRouter-compatibiliteit retourneert één gesynthetiseerd antwoord met citaties, geen gestructureerde resultaatrijen
 - Resultaten worden standaard 15 minuten gecachet (configureerbaar via `cacheTtlMinutes`)
 
 ## Gerelateerd
 
-- [Overzicht van Web Search](/nl/tools/web) -- alle providers en automatische detectie
-- [Documentatie van Perplexity Search API](https://docs.perplexity.ai/docs/search/quickstart) -- officiële Perplexity-documentatie
-- [Brave Search](/nl/tools/brave-search) -- gestructureerde resultaten met land-/taalfilters
-- [Exa Search](/nl/tools/exa-search) -- neurale zoekfunctie met inhoudsextractie
+<CardGroup cols={2}>
+  <Card title="Web search overview" href="/nl/tools/web" icon="globe">
+    Alle providers en regels voor automatische detectie.
+  </Card>
+  <Card title="Brave search" href="/nl/tools/brave-search" icon="shield">
+    Gestructureerde resultaten met land- en taalfilters.
+  </Card>
+  <Card title="Exa search" href="/nl/tools/exa-search" icon="magnifying-glass">
+    Neuraal zoeken met inhoudsextractie.
+  </Card>
+  <Card title="Perplexity Search API docs" href="https://docs.perplexity.ai/docs/search/quickstart" icon="arrow-up-right-from-square">
+    Officiële quickstart en referentie voor de Perplexity Search API.
+  </Card>
+</CardGroup>

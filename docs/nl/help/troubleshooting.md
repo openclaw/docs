@@ -1,23 +1,23 @@
 ---
 read_when:
-    - OpenClaw werkt niet en je hebt de snelste weg naar een oplossing nodig
-    - Je wilt een triageflow voordat je je verdiept in uitgebreide runbooks
-summary: Symptoomgericht probleemoplossingscentrum voor OpenClaw
+    - OpenClaw werkt niet en u hebt de snelste weg naar een oplossing nodig
+    - Je wilt een triageproces voordat je in uitgebreide draaiboeken duikt
+summary: Symptoomgerichte probleemoplossingshub voor OpenClaw
 title: Algemene probleemoplossing
 x-i18n:
-    generated_at: "2026-04-29T22:51:40Z"
+    generated_at: "2026-05-06T09:18:01Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c832c3f7609c56a5461515ed0f693d2255310bf2d3958f69f57c482bcbef97f0
+    source_hash: 624fa34cda3b440fa9cc636beb3fe6e3608a77a332933fa593097ebc556ac745
     source_path: help/troubleshooting.md
     workflow: 16
 ---
 
-Als je slechts 2 minuten hebt, gebruik deze pagina dan als triage-ingang.
+Als u maar 2 minuten hebt, gebruik deze pagina dan als triage-ingang.
 
 ## Eerste 60 seconden
 
-Voer deze exacte ladder in volgorde uit:
+Voer deze exacte ladder op volgorde uit:
 
 ```bash
 openclaw status
@@ -31,41 +31,41 @@ openclaw logs --follow
 
 Goede uitvoer in één regel:
 
-- `openclaw status` → toont geconfigureerde kanalen en geen duidelijke authenticatiefouten.
+- `openclaw status` → toont geconfigureerde kanalen en geen duidelijke verificatiefouten.
 - `openclaw status --all` → volledig rapport is aanwezig en deelbaar.
-- `openclaw gateway probe` → het verwachte gateway-doel is bereikbaar (`Reachable: yes`). `Capability: ...` vertelt welk authenticatieniveau de probe kon aantonen, en `Read probe: limited - missing scope: operator.read` is beperkte diagnostiek, geen verbindingsfout.
-- `openclaw gateway status` → `Runtime: running`, `Connectivity probe: ok` en een plausibele regel `Capability: ...`. Gebruik `--require-rpc` als je ook RPC-bewijs voor lees-scope nodig hebt.
+- `openclaw gateway probe` → het verwachte gatewaydoel is bereikbaar (`Reachable: yes`). `Capability: ...` vertelt welk verificatieniveau de probe kon aantonen, en `Read probe: limited - missing scope: operator.read` is beperkte diagnostiek, geen verbindingsfout.
+- `openclaw gateway status` → `Runtime: running`, `Connectivity probe: ok`, en een plausibele `Capability: ...`-regel. Gebruik `--require-rpc` als u ook RPC-bewijs met lees-scope nodig hebt.
 - `openclaw doctor` → geen blokkerende configuratie- of servicefouten.
-- `openclaw channels status --probe` → bereikbare Gateway geeft live transportstatus per account terug plus probe-/auditresultaten zoals `works` of `audit ok`; als de Gateway onbereikbaar is, valt de opdracht terug op samenvattingen op basis van alleen configuratie.
-- `openclaw logs --follow` → stabiele activiteit, geen herhaalde fatale fouten.
+- `openclaw channels status --probe` → bereikbare Gateway retourneert live transportstatus per account plus probe-/auditresultaten zoals `works` of `audit ok`; als de Gateway onbereikbaar is, valt de opdracht terug op alleen-configuratie-samenvattingen.
+- `openclaw logs --follow` → stabiele activiteit, geen herhalende fatale fouten.
 
 ## Anthropic lange context 429
 
-Als je dit ziet:
+Als u dit ziet:
 `HTTP 429: rate_limit_error: Extra usage is required for long context requests`,
-ga dan naar [/gateway/troubleshooting#anthropic-429-extra-usage-required-for-long-context](/nl/gateway/troubleshooting#anthropic-429-extra-usage-required-for-long-context).
+ga naar [/gateway/troubleshooting#anthropic-429-extra-usage-required-for-long-context](/nl/gateway/troubleshooting#anthropic-429-extra-usage-required-for-long-context).
 
-## Lokale OpenAI-compatibele backend werkt direct maar faalt in OpenClaw
+## Lokale OpenAI-compatibele backend werkt rechtstreeks maar faalt in OpenClaw
 
-Als je lokale of zelf gehoste `/v1`-backend kleine directe
+Als uw lokale of zelfgehoste `/v1`-backend kleine directe
 `/v1/chat/completions`-probes beantwoordt maar faalt bij `openclaw infer model run` of normale
-agent-beurten:
+agentbeurten:
 
-1. Als de fout meldt dat `messages[].content` een string verwacht, stel dan
+1. Als de fout meldt dat `messages[].content` een tekenreeks verwacht, stel dan
    `models.providers.<provider>.models[].compat.requiresStringContent: true` in.
 2. Als de backend nog steeds alleen bij OpenClaw-agentbeurten faalt, stel dan
    `models.providers.<provider>.models[].compat.supportsTools: false` in en probeer opnieuw.
 3. Als kleine directe aanroepen nog steeds werken maar grotere OpenClaw-prompts de
-   backend laten crashen, behandel het resterende probleem dan als een beperking van het upstreammodel of de upstreamserver en
-   ga verder in het uitgebreide runbook:
+   backend laten crashen, behandel het resterende probleem dan als een beperking van het upstream model/de upstream server en
+   ga verder in het diepgaande runbook:
    [/gateway/troubleshooting#local-openai-compatible-backend-passes-direct-probes-but-agent-runs-fail](/nl/gateway/troubleshooting#local-openai-compatible-backend-passes-direct-probes-but-agent-runs-fail)
 
-## Plugin-installatie faalt met ontbrekende openclaw-extensies
+## Plugininstallatie faalt door ontbrekende openclaw-extensies
 
-Als installatie faalt met `package.json missing openclaw.extensions`, gebruikt het Plugin-pakket
-een oude vorm die OpenClaw niet langer accepteert.
+Als installatie faalt met `package.json missing openclaw.extensions`, gebruikt het pluginpakket
+een oude vorm die OpenClaw niet meer accepteert.
 
-Los dit op in het Plugin-pakket:
+Los dit op in het pluginpakket:
 
 1. Voeg `openclaw.extensions` toe aan `package.json`.
 2. Laat vermeldingen verwijzen naar gebouwde runtimebestanden (meestal `./dist/index.js`).
@@ -83,32 +83,66 @@ Voorbeeld:
 }
 ```
 
-Referentie: [Plugin-architectuur](/nl/plugins/architecture)
+Referentie: [Pluginarchitectuur](/nl/plugins/architecture)
+
+## Plugin aanwezig maar geblokkeerd door verdachte eigendom
+
+Als `openclaw doctor`, setup of opstartwaarschuwingen dit tonen:
+
+```text
+blocked plugin candidate: suspicious ownership (... uid=1000, expected uid=0 or root)
+plugin present but blocked
+```
+
+zijn de pluginbestanden eigendom van een andere Unix-gebruiker dan het proces dat
+ze laadt. Verwijder de pluginconfiguratie niet. Herstel het bestandseigendom of voer OpenClaw uit als
+dezelfde gebruiker die eigenaar is van de statusmap.
+
+Docker-installaties draaien normaal als `node` (uid `1000`). Herstel voor de standaard Docker-
+setup de host-bindmounts:
+
+```bash
+sudo chown -R 1000:1000 /path/to/openclaw-config /path/to/openclaw-workspace
+openclaw doctor --fix
+```
+
+Als u OpenClaw bewust als root uitvoert, herstel dan in plaats daarvan de beheerde pluginroot naar
+root-eigendom:
+
+```bash
+sudo chown -R root:root /path/to/openclaw-config/npm
+openclaw doctor --fix
+```
+
+Diepere documentatie:
+
+- [Eigendom van Plugin-pad](/nl/tools/plugin#blocked-plugin-path-ownership)
+- [Docker-machtigingen](/nl/install/docker#permissions-and-eacces)
 
 ## Beslisboom
 
 ```mermaid
 flowchart TD
-  A[OpenClaw is not working] --> B{What breaks first}
-  B --> C[No replies]
-  B --> D[Dashboard or Control UI will not connect]
-  B --> E[Gateway will not start or service not running]
-  B --> F[Channel connects but messages do not flow]
-  B --> G[Cron or heartbeat did not fire or did not deliver]
-  B --> H[Node is paired but camera canvas screen exec fails]
-  B --> I[Browser tool fails]
+  A[OpenClaw werkt niet] --> B{Wat gaat als eerste mis}
+  B --> C[Geen antwoorden]
+  B --> D[Dashboard of Control UI maakt geen verbinding]
+  B --> E[Gateway start niet of service draait niet]
+  B --> F[Kanaal maakt verbinding maar berichten stromen niet]
+  B --> G[Cron of Heartbeat is niet geactiveerd of niet afgeleverd]
+  B --> H[Node is gekoppeld maar camera canvas screen exec faalt]
+  B --> I[Browsertool faalt]
 
-  C --> C1[/No replies section/]
-  D --> D1[/Control UI section/]
-  E --> E1[/Gateway section/]
-  F --> F1[/Channel flow section/]
-  G --> G1[/Automation section/]
-  H --> H1[/Node tools section/]
-  I --> I1[/Browser section/]
+  C --> C1[/Sectie Geen antwoorden/]
+  D --> D1[/Sectie Control UI/]
+  E --> E1[/Sectie Gateway/]
+  F --> F1[/Sectie Kanaalstroom/]
+  G --> G1[/Sectie Automatisering/]
+  H --> H1[/Sectie Node-tools/]
+  I --> I1[/Sectie Browser/]
 ```
 
 <AccordionGroup>
-  <Accordion title="Geen antwoorden">
+  <Accordion title="No replies">
     ```bash
     openclaw status
     openclaw gateway status
@@ -117,13 +151,13 @@ flowchart TD
     openclaw logs --follow
     ```
 
-    Goede uitvoer ziet er zo uit:
+    Goede uitvoer ziet er als volgt uit:
 
     - `Runtime: running`
     - `Connectivity probe: ok`
-    - `Capability: read-only`, `write-capable` of `admin-capable`
-    - Je kanaal toont dat het transport verbonden is en, waar ondersteund, `works` of `audit ok` in `channels status --probe`
-    - Afzender lijkt goedgekeurd (of DM-beleid is open/allowlist)
+    - `Capability: read-only`, `write-capable`, of `admin-capable`
+    - Uw kanaal toont dat transport verbonden is en, waar ondersteund, `works` of `audit ok` in `channels status --probe`
+    - Afzender lijkt goedgekeurd (of DM-beleid staat open/is een toestemmingslijst)
 
     Veelvoorkomende logsignaturen:
 
@@ -131,7 +165,7 @@ flowchart TD
     - `pairing request` → afzender is niet goedgekeurd en wacht op goedkeuring voor DM-koppeling.
     - `blocked` / `allowlist` in kanaallogs → afzender, ruimte of groep wordt gefilterd.
 
-    Uitgebreide pagina's:
+    Diepere pagina's:
 
     - [/gateway/troubleshooting#no-replies](/nl/gateway/troubleshooting#no-replies)
     - [/channels/troubleshooting](/nl/channels/troubleshooting)
@@ -139,7 +173,7 @@ flowchart TD
 
   </Accordion>
 
-  <Accordion title="Dashboard of Control UI maakt geen verbinding">
+  <Accordion title="Dashboard or Control UI will not connect">
     ```bash
     openclaw status
     openclaw gateway status
@@ -148,31 +182,31 @@ flowchart TD
     openclaw channels status --probe
     ```
 
-    Goede uitvoer ziet er zo uit:
+    Goede uitvoer ziet er als volgt uit:
 
-    - `Dashboard: http://...` wordt weergegeven in `openclaw gateway status`
+    - `Dashboard: http://...` wordt getoond in `openclaw gateway status`
     - `Connectivity probe: ok`
-    - `Capability: read-only`, `write-capable` of `admin-capable`
-    - Geen authenticatielus in logs
+    - `Capability: read-only`, `write-capable`, of `admin-capable`
+    - Geen verificatielus in logs
 
     Veelvoorkomende logsignaturen:
 
-    - `device identity required` → HTTP-/niet-beveiligde context kan apparaat-authenticatie niet voltooien.
-    - `origin not allowed` → browser-`Origin` is niet toegestaan voor het Gateway-doel van de Control UI.
+    - `device identity required` → HTTP/niet-beveiligde context kan apparaatverificatie niet voltooien.
+    - `origin not allowed` → browser-`Origin` is niet toegestaan voor het Gatewaydoel van de Control UI.
     - `AUTH_TOKEN_MISMATCH` met retry-hints (`canRetryWithDeviceToken=true`) → één vertrouwde retry met apparaattoken kan automatisch plaatsvinden.
-    - Die retry met gecachte token hergebruikt de gecachte scopeset die bij de gekoppelde
+    - Die cached-token-retry hergebruikt de gecachte scope-set die bij het gekoppelde
       apparaattoken is opgeslagen. Aanroepers met expliciete `deviceToken` / expliciete `scopes` behouden
-      in plaats daarvan hun aangevraagde scopeset.
-    - Op het async Tailscale Serve Control UI-pad worden mislukte pogingen voor dezelfde
+      in plaats daarvan hun aangevraagde scope-set.
+    - Op het asynchrone Tailscale Serve Control UI-pad worden mislukte pogingen voor dezelfde
       `{scope, ip}` geserialiseerd voordat de limiter de fout registreert, waardoor een
       tweede gelijktijdige slechte retry al `retry later` kan tonen.
-    - `too many failed authentication attempts (retry later)` vanuit een localhost
-      browser-origin → herhaalde fouten vanaf dezelfde `Origin` worden tijdelijk
-      uitgesloten; een andere localhost-origin gebruikt een aparte bucket.
-    - herhaalde `unauthorized` na die retry → verkeerde token/wachtwoord, mismatch in authenticatiemodus of verlopen gekoppelde apparaattoken.
-    - `gateway connect failed:` → UI gebruikt de verkeerde URL/poort of een onbereikbare Gateway.
+    - `too many failed authentication attempts (retry later)` vanaf een localhost-
+      browserorigin → herhaalde fouten vanaf diezelfde `Origin` worden tijdelijk
+      geblokkeerd; een andere localhost-origin gebruikt een aparte bucket.
+    - herhaald `unauthorized` na die retry → verkeerd token/wachtwoord, mismatch in verificatiemodus of verouderd gekoppeld apparaattoken.
+    - `gateway connect failed:` → UI richt zich op de verkeerde URL/poort of een onbereikbare Gateway.
 
-    Uitgebreide pagina's:
+    Diepere pagina's:
 
     - [/gateway/troubleshooting#dashboard-control-ui-connectivity](/nl/gateway/troubleshooting#dashboard-control-ui-connectivity)
     - [/web/control-ui](/nl/web/control-ui)
@@ -180,7 +214,7 @@ flowchart TD
 
   </Accordion>
 
-  <Accordion title="Gateway start niet of service is geïnstalleerd maar draait niet">
+  <Accordion title="Gateway will not start or service installed but not running">
     ```bash
     openclaw status
     openclaw gateway status
@@ -189,20 +223,20 @@ flowchart TD
     openclaw channels status --probe
     ```
 
-    Goede uitvoer ziet er zo uit:
+    Goede uitvoer ziet er als volgt uit:
 
     - `Service: ... (loaded)`
     - `Runtime: running`
     - `Connectivity probe: ok`
-    - `Capability: read-only`, `write-capable` of `admin-capable`
+    - `Capability: read-only`, `write-capable`, of `admin-capable`
 
     Veelvoorkomende logsignaturen:
 
-    - `Gateway start blocked: set gateway.mode=local` of `existing config is missing gateway.mode` → Gateway-modus is remote, of het configuratiebestand mist de local-mode-stempel en moet worden gerepareerd.
-    - `refusing to bind gateway ... without auth` → non-loopback-bind zonder geldig Gateway-authenticatiepad (token/wachtwoord, of trusted-proxy waar geconfigureerd).
+    - `Gateway start blocked: set gateway.mode=local` of `existing config is missing gateway.mode` → gatewaymodus is remote, of het configuratiebestand mist de local-mode-stempel en moet worden hersteld.
+    - `refusing to bind gateway ... without auth` → non-loopback-bind zonder geldig Gateway-verificatiepad (token/wachtwoord, of trusted-proxy waar geconfigureerd).
     - `another gateway instance is already listening` of `EADDRINUSE` → poort is al in gebruik.
 
-    Uitgebreide pagina's:
+    Diepere pagina's:
 
     - [/gateway/troubleshooting#gateway-service-not-running](/nl/gateway/troubleshooting#gateway-service-not-running)
     - [/gateway/background-process](/nl/gateway/background-process)
@@ -210,7 +244,7 @@ flowchart TD
 
   </Accordion>
 
-  <Accordion title="Kanaal maakt verbinding maar berichten stromen niet door">
+  <Accordion title="Channel connects but messages do not flow">
     ```bash
     openclaw status
     openclaw gateway status
@@ -219,26 +253,26 @@ flowchart TD
     openclaw channels status --probe
     ```
 
-    Goede uitvoer ziet er zo uit:
+    Goede uitvoer ziet er als volgt uit:
 
     - Kanaaltransport is verbonden.
-    - Pairing-/allowlist-controles slagen.
+    - Koppelings-/allowlist-controles slagen.
     - Vermeldingen worden gedetecteerd waar vereist.
 
     Veelvoorkomende logsignaturen:
 
     - `mention required` → groepsmention-gating blokkeerde verwerking.
     - `pairing` / `pending` → DM-afzender is nog niet goedgekeurd.
-    - `not_in_channel`, `missing_scope`, `Forbidden`, `401/403` → probleem met kanaalpermissietoken.
+    - `not_in_channel`, `missing_scope`, `Forbidden`, `401/403` → probleem met kanaalmachtigingstoken.
 
-    Uitgebreide pagina's:
+    Diepere pagina's:
 
     - [/gateway/troubleshooting#channel-connected-messages-not-flowing](/nl/gateway/troubleshooting#channel-connected-messages-not-flowing)
     - [/channels/troubleshooting](/nl/channels/troubleshooting)
 
   </Accordion>
 
-  <Accordion title="Cron of Heartbeat is niet gestart of niet afgeleverd">
+  <Accordion title="Cron or heartbeat did not fire or did not deliver">
     ```bash
     openclaw status
     openclaw gateway status
@@ -248,7 +282,7 @@ flowchart TD
     openclaw logs --follow
     ```
 
-    Goede uitvoer ziet er zo uit:
+    Goede uitvoer ziet er als volgt uit:
 
     - `cron.status` toont ingeschakeld met een volgende wake.
     - `cron runs` toont recente `ok`-vermeldingen.
@@ -258,13 +292,13 @@ flowchart TD
 
     - `cron: scheduler disabled; jobs will not run automatically` → Cron is uitgeschakeld.
     - `heartbeat skipped` met `reason=quiet-hours` → buiten geconfigureerde actieve uren.
-    - `heartbeat skipped` met `reason=empty-heartbeat-file` → `HEARTBEAT.md` bestaat maar bevat alleen lege scaffolding of scaffolding met alleen koppen.
-    - `heartbeat skipped` met `reason=no-tasks-due` → `HEARTBEAT.md`-taakmodus is actief maar geen van de taakintervallen is al aan de beurt.
-    - `heartbeat skipped` met `reason=alerts-disabled` → alle zichtbaarheid van Heartbeat is uitgeschakeld (`showOk`, `showAlerts` en `useIndicator` staan allemaal uit).
+    - `heartbeat skipped` met `reason=empty-heartbeat-file` → `HEARTBEAT.md` bestaat maar bevat alleen lege/header-only scaffolding.
+    - `heartbeat skipped` met `reason=no-tasks-due` → taakmodus van `HEARTBEAT.md` is actief, maar geen van de taakintervallen is al aan de beurt.
+    - `heartbeat skipped` met `reason=alerts-disabled` → alle Heartbeat-zichtbaarheid is uitgeschakeld (`showOk`, `showAlerts` en `useIndicator` staan allemaal uit).
     - `requests-in-flight` → hoofdlane bezig; Heartbeat-wake is uitgesteld.
-    - `unknown accountId` → doelaccount voor Heartbeat-levering bestaat niet.
+    - `unknown accountId` → doelaccount voor Heartbeat-aflevering bestaat niet.
 
-    Uitgebreide pagina's:
+    Diepere pagina's:
 
     - [/gateway/troubleshooting#cron-and-heartbeat-delivery](/nl/gateway/troubleshooting#cron-and-heartbeat-delivery)
     - [/automation/cron-jobs#troubleshooting](/nl/automation/cron-jobs#troubleshooting)
@@ -272,7 +306,7 @@ flowchart TD
 
   </Accordion>
 
-  <Accordion title="Node is gekoppeld maar tool faalt voor camera canvas screen exec">
+  <Accordion title="Node is paired but tool fails camera canvas screen exec">
     ```bash
     openclaw status
     openclaw gateway status
@@ -281,20 +315,20 @@ flowchart TD
     openclaw logs --follow
     ```
 
-    Goede uitvoer ziet er zo uit:
+    Goede uitvoer ziet er als volgt uit:
 
     - Node wordt vermeld als verbonden en gekoppeld voor rol `node`.
-    - Capability bestaat voor de opdracht die je aanroept.
-    - Permissiestatus is verleend voor de tool.
+    - Capability bestaat voor de opdracht die u aanroept.
+    - Machtigingsstatus is verleend voor de tool.
 
     Veelvoorkomende logsignaturen:
 
     - `NODE_BACKGROUND_UNAVAILABLE` → breng de Node-app naar de voorgrond.
-    - `*_PERMISSION_REQUIRED` → OS-permissie is geweigerd/ontbreekt.
+    - `*_PERMISSION_REQUIRED` → OS-toestemming is geweigerd of ontbreekt.
     - `SYSTEM_RUN_DENIED: approval required` → exec-goedkeuring is in behandeling.
-    - `SYSTEM_RUN_DENIED: allowlist miss` → opdracht staat niet op exec-allowlist.
+    - `SYSTEM_RUN_DENIED: allowlist miss` → opdracht staat niet op de exec-allowlist.
 
-    Uitgebreide pagina's:
+    Diepgaande pagina's:
 
     - [/gateway/troubleshooting#node-paired-tool-fails](/nl/gateway/troubleshooting#node-paired-tool-fails)
     - [/nodes/troubleshooting](/nl/nodes/troubleshooting)
@@ -314,10 +348,10 @@ flowchart TD
 
     - Als `tools.exec.host` niet is ingesteld, is de standaardwaarde `auto`.
     - `host=auto` wordt omgezet naar `sandbox` wanneer een sandboxruntime actief is, anders naar `gateway`.
-    - `host=auto` is alleen routering; het promptloze "YOLO"-gedrag komt van `security=full` plus `ask=off` op gateway/node.
-    - Op `gateway` en `node` is de standaardwaarde voor niet-ingestelde `tools.exec.security` `full`.
-    - De standaardwaarde voor niet-ingestelde `tools.exec.ask` is `off`.
-    - Resultaat: als je goedkeuringen ziet, heeft een hostlokaal of sessiespecifiek beleid exec strenger gemaakt dan de huidige standaardwaarden.
+    - `host=auto` bepaalt alleen de routering; het promptloze "YOLO"-gedrag komt van `security=full` plus `ask=off` op gateway/node.
+    - Op `gateway` en `node` gebruikt een niet-ingestelde `tools.exec.security` standaard `full`.
+    - Een niet-ingestelde `tools.exec.ask` gebruikt standaard `off`.
+    - Resultaat: als je goedkeuringen ziet, heeft een host-lokaal of sessiespecifiek beleid exec aangescherpt ten opzichte van de huidige standaardwaarden.
 
     Herstel het huidige standaardgedrag zonder goedkeuring:
 
@@ -337,7 +371,7 @@ flowchart TD
     Veelvoorkomende logsignaturen:
 
     - `Approval required.` → opdracht wacht op `/approve ...`.
-    - `SYSTEM_RUN_DENIED: approval required` → goedkeuring voor node-host-exec is in behandeling.
+    - `SYSTEM_RUN_DENIED: approval required` → node-host exec-goedkeuring is in behandeling.
     - `exec host=sandbox requires a sandbox runtime for this session` → impliciete/expliciete sandboxselectie, maar sandboxmodus staat uit.
 
     Diepgaande pagina's:
@@ -348,7 +382,7 @@ flowchart TD
 
   </Accordion>
 
-  <Accordion title="Browsertool mislukt">
+  <Accordion title="Browsertool faalt">
     ```bash
     openclaw status
     openclaw gateway status
@@ -365,14 +399,14 @@ flowchart TD
     Veelvoorkomende logsignaturen:
 
     - `unknown command "browser"` of `unknown command 'browser'` → `plugins.allow` is ingesteld en bevat `browser` niet.
-    - `Failed to start Chrome CDP on port` → starten van lokale browser is mislukt.
+    - `Failed to start Chrome CDP on port` → lokale browserstart is mislukt.
     - `browser.executablePath not found` → geconfigureerd binair pad is onjuist.
     - `browser.cdpUrl must be http(s) or ws(s)` → de geconfigureerde CDP-URL gebruikt een niet-ondersteund schema.
-    - `browser.cdpUrl has invalid port` → de geconfigureerde CDP-URL heeft een ongeldige poort of een poort buiten het bereik.
+    - `browser.cdpUrl has invalid port` → de geconfigureerde CDP-URL heeft een ongeldige poort of een poort buiten het toegestane bereik.
     - `No Chrome tabs found for profile="user"` → het Chrome MCP-koppelprofiel heeft geen geopende lokale Chrome-tabbladen.
     - `Remote CDP for profile "<name>" is not reachable` → het geconfigureerde externe CDP-eindpunt is niet bereikbaar vanaf deze host.
-    - `Browser attachOnly is enabled ... not reachable` of `Browser attachOnly is enabled and CDP websocket ... is not reachable` → attach-only-profiel heeft geen live CDP-doel.
-    - verouderde viewport-/donkere-modus-/locale-/offline-overschrijvingen op attach-only- of externe CDP-profielen → voer `openclaw browser stop --browser-profile <name>` uit om de actieve controlesessie te sluiten en de emulatiestatus vrij te geven zonder de gateway opnieuw te starten.
+    - `Browser attachOnly is enabled ... not reachable` of `Browser attachOnly is enabled and CDP websocket ... is not reachable` → attach-only-profiel heeft geen actief CDP-doel.
+    - verouderde viewport-/dark-mode-/locale-/offline-overschrijvingen op attach-only- of externe CDP-profielen → voer `openclaw browser stop --browser-profile <name>` uit om de actieve besturingssessie te sluiten en de emulatiestatus vrij te geven zonder de gateway opnieuw te starten.
 
     Diepgaande pagina's:
 
@@ -388,7 +422,7 @@ flowchart TD
 ## Gerelateerd
 
 - [FAQ](/nl/help/faq) — veelgestelde vragen
-- [Gateway-probleemoplossing](/nl/gateway/troubleshooting) — gateway-specifieke problemen
+- [Gateway-probleemoplossing](/nl/gateway/troubleshooting) — Gateway-specifieke problemen
 - [Doctor](/nl/gateway/doctor) — geautomatiseerde gezondheidscontroles en reparaties
 - [Kanaalprobleemoplossing](/nl/channels/troubleshooting) — problemen met kanaalconnectiviteit
-- [Automatiseringsprobleemoplossing](/nl/automation/cron-jobs#troubleshooting) — problemen met cron en heartbeat
+- [Automatiseringsprobleemoplossing](/nl/automation/cron-jobs#troubleshooting) — problemen met cron en Heartbeat

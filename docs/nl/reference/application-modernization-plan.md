@@ -1,122 +1,120 @@
 ---
 read_when:
     - Een brede moderniseringsronde voor de OpenClaw-applicatie plannen
-    - Bijwerken van frontend-implementatiestandaarden voor app- of Control UI-werk
-    - Een brede beoordeling van de productkwaliteit omzetten in gefaseerd engineeringwerk
-summary: Uitgebreid moderniseringsplan voor applicaties met updates voor vaardigheden voor frontendoplevering
+    - Frontend-implementatiestandaarden bijwerken voor app- of Control UI-werk
+    - Een brede productkwaliteitsreview omzetten in gefaseerd engineeringwerk
+summary: Uitgebreid moderniseringsplan voor applicaties met updates voor frontendleveringsvaardigheden
 title: Plan voor applicatiemodernisering
 x-i18n:
-    generated_at: "2026-04-29T23:15:25Z"
+    generated_at: "2026-05-06T09:31:03Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 667a133cb867bb1d4d09e097925704c8b77d20ca6117a62a4c60d29ab1097283
+    source_hash: 8c97bd9c76492b9e7beb0a2623f583a54b5461bebb848fa3ac7e4495322f6456
     source_path: reference/application-modernization-plan.md
     workflow: 16
 ---
 
-# Moderniseringsplan voor de applicatie
-
 ## Doel
 
-Breng de applicatie richting een schoner, sneller en beter onderhoudbaar product zonder
-huidige workflows te breken of risico te verbergen in brede refactors. Het werk moet
-landen als kleine, beoordeelbare onderdelen met bewijs voor elk geraakt oppervlak.
+Breng de toepassing richting een schoner, sneller en beter onderhoudbaar product zonder
+bestaande workflows te breken of risico te verbergen in brede refactors. Het werk moet
+landen als kleine, controleerbare delen met bewijs voor elk geraakt oppervlak.
 
 ## Principes
 
-- Behoud de huidige architectuur tenzij een grens aantoonbaar zorgt voor churn,
-  prestatiekosten of voor gebruikers zichtbare bugs.
-- Geef de voorkeur aan de kleinste correcte patch voor elk probleem en herhaal dat.
+- Behoud de huidige architectuur tenzij een grens aantoonbaar churn,
+  prestatiekosten of voor gebruikers zichtbare bugs veroorzaakt.
+- Geef de voorkeur aan de kleinste correcte patch voor elk probleem en herhaal daarna.
 - Scheid vereiste fixes van optionele verfijning, zodat maintainers werk met hoge
   waarde kunnen landen zonder te wachten op subjectieve beslissingen.
-- Houd Plugin-gerichte gedrag gedocumenteerd en achterwaarts compatibel.
-- Verifieer uitgebracht gedrag, dependency-contracten en tests voordat je claimt dat een
+- Houd gedrag richting plugins gedocumenteerd en achterwaarts compatibel.
+- Verifieer geleverd gedrag, dependency-contracten en tests voordat je claimt dat een
   regressie is opgelost.
-- Verbeter eerst het belangrijkste gebruikerspad: onboarding, auth, chat, providerinstelling,
-  Plugin-beheer en diagnostiek.
+- Verbeter eerst het belangrijkste gebruikerspad: onboarding, auth, chat, providerconfiguratie,
+  pluginbeheer en diagnostiek.
 
 ## Fase 1: Baseline-audit
 
-Inventariseer de huidige applicatie voordat je deze wijzigt.
+Inventariseer de huidige toepassing voordat je deze wijzigt.
 
-- Identificeer de belangrijkste gebruikersworkflows en de code-oppervlakken die ze beheren.
-- Maak een lijst van dode affordances, dubbele instellingen, onduidelijke foutstatussen en dure
+- Identificeer de belangrijkste gebruikersworkflows en de codeoppervlakken die ze bezitten.
+- Maak een lijst van dode affordances, dubbele instellingen, onduidelijke fouttoestanden en dure
   renderpaden.
 - Leg de huidige validatiecommando's vast voor elk oppervlak.
 - Markeer problemen als vereist, aanbevolen of optioneel.
-- Documenteer bekende blokkades die owner-review nodig hebben, vooral API-, security-,
-  release- en Plugin-contractwijzigingen.
+- Documenteer bekende blockers waarvoor owner-review nodig is, vooral API-, security-,
+  release- en plugin-contractwijzigingen.
 
-Definitie van gereed:
+Definitie van klaar:
 
-- Eén issuelijst met repo-root bestandsverwijzingen.
+- Eén issue-lijst met bestandsverwijzingen vanaf de repo-root.
 - Elk issue heeft ernst, owner-oppervlak, verwachte gebruikersimpact en een voorgesteld
   validatiepad.
-- Geen speculatieve opruimitems zijn vermengd met vereiste fixes.
+- Er zijn geen speculatieve opschoonitems vermengd met vereiste fixes.
 
-## Fase 2: Product- en UX-opruiming
+## Fase 2: Product- en UX-opschoning
 
-Geef prioriteit aan zichtbare workflows en verwijder verwarring.
+Geef prioriteit aan zichtbare workflows en neem verwarring weg.
 
-- Maak onboardingtekst en lege toestanden rond model-auth, Gateway-status
-  en Plugin-instelling strakker.
-- Verwijder of schakel dode affordances uit waar geen actie mogelijk is.
+- Maak onboardingtekst en lege toestanden rond model-auth, gatewaystatus
+  en pluginconfiguratie strakker.
+- Verwijder of schakel dode affordances uit wanneer geen actie mogelijk is.
 - Houd belangrijke acties zichtbaar over responsieve breedtes heen in plaats van ze te verbergen
-  achter kwetsbare layout-aannames.
-- Consolideer herhaalde statustaal zodat fouten één bron van waarheid hebben.
-- Voeg progressieve onthulling toe voor geavanceerde instellingen terwijl de kerninstelling snel blijft.
+  achter kwetsbare layoutaannames.
+- Consolideer herhaalde statusteksten zodat fouten één bron van waarheid hebben.
+- Voeg progressieve openbaarmaking toe voor geavanceerde instellingen terwijl de kernconfiguratie snel blijft.
 
 Aanbevolen validatie:
 
-- Handmatig happy path voor eerste configuratie en opstarten door bestaande gebruikers.
-- Gerichte tests voor logica rond routing, config-persistentie of statusafleiding.
+- Handmatig happy path voor eerste installatie en start door bestaande gebruikers.
+- Gerichte tests voor routering, configuratiepersistentie of logica voor statusafleiding.
 - Browserscreenshots voor gewijzigde responsieve oppervlakken.
 
 ## Fase 3: Frontendarchitectuur aanscherpen
 
 Verbeter onderhoudbaarheid zonder brede herschrijving.
 
-- Verplaats herhaalde UI-statustransformaties naar smalle getypeerde helpers.
+- Verplaats herhaalde UI-statetransformaties naar smalle getypte helpers.
 - Houd verantwoordelijkheden voor data ophalen, persistentie en presentatie gescheiden.
 - Geef de voorkeur aan bestaande hooks, stores en componentpatronen boven nieuwe abstracties.
-- Splits te grote componenten alleen wanneer dat koppeling vermindert of tests verduidelijkt.
-- Vermijd de introductie van brede globale state voor lokale paneelinteracties.
+- Splits te grote componenten alleen wanneer dit koppeling vermindert of tests verduidelijkt.
+- Vermijd het introduceren van brede globale state voor lokale paneelinteracties.
 
 Vereiste vangrails:
 
-- Wijzig publiek gedrag niet als neveneffect van het splitsen van bestanden.
+- Wijzig publiek gedrag niet als neveneffect van bestandssplitsing.
 - Houd toegankelijkheidsgedrag intact voor menu's, dialogen, tabs en toetsenbordnavigatie.
 - Verifieer dat laad-, lege, fout- en optimistische toestanden nog steeds renderen.
 
 ## Fase 4: Prestaties en betrouwbaarheid
 
-Richt je op gemeten pijn in plaats van brede theoretische optimalisatie.
+Richt je op gemeten pijnpunten in plaats van brede theoretische optimalisatie.
 
 - Meet kosten voor opstarten, routeovergangen, grote lijsten en chattranscripten.
-- Vervang herhaalde dure afgeleide data door gememoiseerde selectors of gecachete
+- Vervang herhaald dure afgeleide data door gememoiseerde selectors of gecachete
   helpers waar profiling waarde bewijst.
 - Verminder vermijdbare netwerk- of bestandssysteemscans op hot paths.
-- Houd deterministische ordening voor prompt-, registry-, bestands-, Plugin- en netwerk-
-  inputs vóór constructie van modelpayloads.
-- Voeg lichte regressietests toe voor hot helpers en contractgrenzen.
+- Houd deterministische volgorde aan voor prompt-, registry-, bestands-, plugin- en netwerkinputs
+  voordat modelpayloads worden opgebouwd.
+- Voeg lichtgewicht regressietests toe voor hot helpers en contractgrenzen.
 
-Definitie van gereed:
+Definitie van klaar:
 
 - Elke prestatiewijziging legt baseline, verwachte impact, werkelijke impact en
   resterende kloof vast.
-- Geen perf-patch landt uitsluitend op intuïtie wanneer goedkope meting beschikbaar is.
+- Geen prestatiepatch landt uitsluitend op intuïtie wanneer goedkope meting beschikbaar is.
 
-## Fase 5: Type-, contract- en testverharding
+## Fase 5: Types, contracten en tests verharden
 
-Verhoog correctheid op de grenspunten waarvan gebruikers en Plugin-auteurs afhankelijk zijn.
+Verhoog correctheid op de grenspunten waarvan gebruikers en plugin-auteurs afhankelijk zijn.
 
 - Vervang losse runtime-strings door discriminated unions of gesloten codelijsten.
 - Valideer externe inputs met bestaande schemahelpers of zod.
-- Voeg contracttests toe rond Plugin-manifesten, providercatalogi, Gateway-protocol-
-  berichten en config-migratiegedrag.
-- Houd compatibiliteitspaden in doctor- of reparatiestromen in plaats van verborgen migraties
+- Voeg contracttests toe rond pluginmanifesten, providercatalogi, gatewayprotocolberichten
+  en configuratiemigratiegedrag.
+- Houd compatibiliteitspaden in doctor- of repairflows in plaats van verborgen migraties
   tijdens het opstarten.
-- Vermijd test-only koppeling aan Plugin-internals; gebruik SDK-facades en gedocumenteerde
+- Vermijd test-only koppeling aan plugin-internals; gebruik SDK-facades en gedocumenteerde
   barrels.
 
 Aanbevolen validatie:
@@ -129,37 +127,36 @@ Aanbevolen validatie:
 
 Houd gebruikersgerichte documentatie afgestemd op gedrag.
 
-- Werk documentatie bij voor wijzigingen in gedrag, API, config, onboarding of Plugin.
-- Voeg changelogvermeldingen alleen toe voor voor gebruikers zichtbare wijzigingen.
-- Houd Plugin-terminologie gebruikersgericht; gebruik interne pakketnamen alleen waar
+- Werk documentatie bij met gedrags-, API-, configuratie-, onboarding- of pluginwijzigingen.
+- Voeg changelogitems alleen toe voor gebruikerszichtbare wijzigingen.
+- Houd pluginterminologie gebruikersgericht; gebruik interne pakketnamen alleen waar
   nodig voor contributors.
-- Bevestig dat release- en installatie-instructies nog steeds overeenkomen met het huidige commando-
-  oppervlak.
+- Bevestig dat release- en installatie-instructies nog steeds overeenkomen met het huidige
+  commando-oppervlak.
 
-Definitie van gereed:
+Definitie van klaar:
 
 - Relevante documentatie is bijgewerkt in dezelfde branch als gedragswijzigingen.
-- Gegenereerde documentatie- of API-driftchecks slagen wanneer ze geraakt zijn.
-- De handoff noemt alle overgeslagen validatie en waarom die is overgeslagen.
+- Checks voor gegenereerde documentatie of API-drift slagen wanneer ze geraakt zijn.
+- De overdracht noemt eventuele overgeslagen validatie en waarom die is overgeslagen.
 
-## Aanbevolen eerste onderdeel
+## Aanbevolen eerste deel
 
-Begin met een afgebakende Control UI- en onboardingpass:
+Begin met een afgebakende Control UI- en onboarding-pass:
 
-- Audit eerste configuratie, gereedheid van provider-auth, Gateway-status en Plugin-
-  instellingsoppervlakken.
+- Audit eerste installatie, gereedheid van provider-auth, gatewaystatus en pluginconfiguratieoppervlakken.
 - Verwijder dode acties en verduidelijk fouttoestanden.
-- Voeg gerichte tests toe of werk ze bij voor statusafleiding en config-persistentie.
+- Voeg gerichte tests toe of werk ze bij voor statusafleiding en configuratiepersistentie.
 - Voer `pnpm check:changed` uit.
 
 Dit levert hoge gebruikerswaarde op met beperkt architectuurrisico.
 
-## Update voor frontend-Skill
+## Frontend-skillupdate
 
 Gebruik deze sectie om de frontendgerichte `SKILL.md` bij te werken die met de
-moderniseringstaak is meegeleverd. Als je deze richtlijnen overneemt als repo-lokale OpenClaw-Skill,
-maak dan eerst `.agents/skills/openclaw-frontend/SKILL.md` aan, behoud de frontmatter
-die in die doelskill thuishoort en voeg daarna de bodyrichtlijnen toe of vervang ze door
+moderniseringstaak is meegeleverd. Als je deze richtlijnen adopteert als repo-lokale OpenClaw-skill,
+maak dan eerst `.agents/skills/openclaw-frontend/SKILL.md`, behoud de frontmatter
+die bij die doelskill hoort en voeg daarna de body-richtlijnen toe of vervang ze door
 de volgende inhoud.
 
 ```markdown

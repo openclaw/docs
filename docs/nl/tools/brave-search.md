@@ -1,21 +1,19 @@
 ---
 read_when:
     - Je wilt Brave Search gebruiken voor web_search
-    - Je hebt een BRAVE_API_KEY of abonnementsgegevens nodig
-summary: Brave Search API-configuratie voor web_search
-title: Brave-zoekfunctie
+    - Je hebt een BRAVE_API_KEY of plangegevens nodig
+summary: Configuratie van de Brave Search API voor web_search
+title: Brave zoeken
 x-i18n:
-    generated_at: "2026-05-02T11:28:50Z"
+    generated_at: "2026-05-06T09:34:02Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b1ecb9e3e5475bb26f4058311429b558f49cdd1df907a622f93f297ac6569d65
+    source_hash: d2bff7589ddb54d002853898c6fc37e613fd32b0fa69cb0d712d5955973efb39
     source_path: tools/brave-search.md
     workflow: 16
 ---
 
-# Brave Search API
-
-OpenClaw ondersteunt Brave Search API als `web_search`-aanbieder.
+OpenClaw ondersteunt de Brave Search API als `web_search`-provider.
 
 ## Een API-sleutel verkrijgen
 
@@ -52,32 +50,32 @@ OpenClaw ondersteunt Brave Search API als `web_search`-aanbieder.
 }
 ```
 
-Brave-zoekinstellingen die specifiek zijn voor de aanbieder staan nu onder `plugins.entries.brave.config.webSearch.*`.
+Providerspecifieke Brave-zoekinstellingen staan nu onder `plugins.entries.brave.config.webSearch.*`.
 De verouderde `tools.web.search.apiKey` wordt nog steeds geladen via de compatibiliteitsshim, maar is niet langer het canonieke configuratiepad.
 
-`webSearch.mode` regelt het Brave-transport:
+`webSearch.mode` bepaalt de Brave-transportlaag:
 
-- `web` (standaard): normale Brave-webzoekopdracht met titels, URL's en fragmenten
-- `llm-context`: Brave LLM Context API met vooraf geëxtraheerde tekstblokken en bronnen voor onderbouwing
+- `web` (standaard): normale Brave-webzoekfunctie met titels, URL's en snippets
+- `llm-context`: Brave LLM Context API met vooraf geëxtraheerde tekstfragmenten en bronnen voor grounding
 
 `webSearch.baseUrl` kan Brave-verzoeken naar een vertrouwde Brave-compatibele proxy
-of Gateway sturen. OpenClaw voegt `/res/v1/web/search` of `/res/v1/llm/context` toe aan
-de geconfigureerde basis-URL en behoudt de basis-URL in de cachesleutel. Openbare
-eindpunten moeten `https://` gebruiken; `http://` wordt alleen geaccepteerd voor vertrouwde loopback-
-of privénetwerkproxyhosts.
+of Gateway laten wijzen. OpenClaw voegt `/res/v1/web/search` of `/res/v1/llm/context` toe aan
+de geconfigureerde basis-URL en houdt de basis-URL in de cachesleutel. Publieke
+endpoints moeten `https://` gebruiken; `http://` wordt alleen geaccepteerd voor vertrouwde loopback-
+of privénetwerk-proxyhosts.
 
 ## Toolparameters
 
 <ParamField path="query" type="string" required>
-Zoekopdracht.
+Zoekquery.
 </ParamField>
 
 <ParamField path="count" type="number" default="5">
-Aantal resultaten om terug te geven (1-10).
+Aantal resultaten om terug te geven (1–10).
 </ParamField>
 
 <ParamField path="country" type="string">
-ISO-landcode van 2 letters (bijv. `US`, `DE`).
+2-letterige ISO-landcode (bijv. `US`, `DE`).
 </ParamField>
 
 <ParamField path="language" type="string">
@@ -85,7 +83,7 @@ ISO 639-1-taalcode voor zoekresultaten (bijv. `en`, `de`, `fr`).
 </ParamField>
 
 <ParamField path="search_lang" type="string">
-Brave-code voor zoektaal (bijv. `en`, `en-gb`, `zh-hans`).
+Brave-zoektaalcode (bijv. `en`, `en-gb`, `zh-hans`).
 </ParamField>
 
 <ParamField path="ui_lang" type="string">
@@ -130,19 +128,19 @@ await web_search({
 
 ## Opmerkingen
 
-- OpenClaw gebruikt het Brave **Search**-abonnement. Als je een verouderd abonnement hebt (bijv. het oorspronkelijke Free-abonnement met 2.000 query's/maand), blijft dit geldig, maar het bevat geen nieuwere functies zoals LLM Context of hogere snelheidslimieten.
-- Elk Brave-abonnement bevat **\$5/maand aan gratis tegoed** (verlengend). Het Search-abonnement kost \$5 per 1.000 verzoeken, dus het tegoed dekt 1.000 query's/maand. Stel je gebruikslimiet in het Brave-dashboard in om onverwachte kosten te voorkomen. Zie de [Brave API-portal](https://brave.com/search/api/) voor actuele abonnementen.
-- Het Search-abonnement bevat het LLM Context-eindpunt en rechten voor AI-inferentie. Voor het opslaan van resultaten om modellen te trainen of af te stemmen is een abonnement met expliciete opslagrechten vereist. Zie de Brave [Servicevoorwaarden](https://api-dashboard.search.brave.com/terms-of-service).
-- De `llm-context`-modus geeft onderbouwde bronvermeldingen terug in plaats van de normale fragmentstructuur voor webzoekopdrachten.
-- De `llm-context`-modus ondersteunt `freshness` en begrensde bereiken met `date_after` + `date_before`. Deze modus ondersteunt geen `ui_lang`; `date_before` zonder `date_after` wordt geweigerd omdat Brave vereist dat aangepaste versheidsbereiken zowel een begin- als einddatum bevatten.
-- `ui_lang` moet een regio-subtag bevatten, zoals `en-US`.
+- OpenClaw gebruikt het Brave **Search**-abonnement. Als je een verouderd abonnement hebt (bijv. het oorspronkelijke Free-abonnement met 2.000 query's/maand), blijft dit geldig, maar het bevat geen nieuwere functies zoals LLM Context of hogere limieten.
+- Elk Brave-abonnement bevat **\$5/maand aan gratis tegoed** (vernieuwend). Het Search-abonnement kost \$5 per 1.000 verzoeken, dus het tegoed dekt 1.000 query's/maand. Stel je gebruikslimiet in het Brave-dashboard in om onverwachte kosten te voorkomen. Zie de [Brave API-portal](https://brave.com/search/api/) voor actuele abonnementen.
+- Het Search-abonnement bevat het LLM Context-endpoint en AI-inferentierechten. Resultaten opslaan om modellen te trainen of af te stemmen vereist een abonnement met expliciete opslagrechten. Zie de Brave [Servicevoorwaarden](https://api-dashboard.search.brave.com/terms-of-service).
+- De `llm-context`-modus retourneert gegronde bronitems in plaats van de normale snippetstructuur voor webzoekresultaten.
+- De `llm-context`-modus ondersteunt `freshness` en begrensde `date_after` + `date_before`-bereiken. Deze ondersteunt geen `ui_lang`; `date_before` zonder `date_after` wordt geweigerd omdat Brave vereist dat aangepaste versheidsbereiken zowel een begin- als einddatum bevatten.
+- `ui_lang` moet een regiosubtag bevatten, zoals `en-US`.
 - Resultaten worden standaard 15 minuten gecachet (configureerbaar via `cacheTtlMinutes`).
 - Aangepaste `webSearch.baseUrl`-waarden worden opgenomen in de Brave-cache-identiteit, zodat
-  proxy-specifieke antwoorden niet botsen.
-- Schakel de diagnosevlag `brave.http` in om Brave-verzoek-URL's/queryparameters, antwoordstatus/timing en hit/miss/schrijfgebeurtenissen van de zoekcache te loggen tijdens probleemoplossing. De vlag logt nooit de API-sleutel of antwoordbody's, maar zoekopdrachten kunnen gevoelig zijn.
+  proxyspecifieke antwoorden niet botsen.
+- Schakel de diagnostische vlag `brave.http` in om Brave-verzoek-URL's/queryparameters, responsstatus/timing en zoekcache-hit/miss/write-gebeurtenissen te loggen tijdens probleemoplossing. De vlag logt nooit de API-sleutel of responsbody's, maar zoekquery's kunnen gevoelig zijn.
 
 ## Gerelateerd
 
-- [Overzicht van Web Search](/nl/tools/web) -- alle aanbieders en automatische detectie
+- [Overzicht van Web Search](/nl/tools/web) -- alle providers en automatische detectie
 - [Perplexity Search](/nl/tools/perplexity-search) -- gestructureerde resultaten met domeinfiltering
 - [Exa Search](/nl/tools/exa-search) -- neurale zoekfunctie met inhoudsextractie

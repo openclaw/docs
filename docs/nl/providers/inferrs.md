@@ -1,25 +1,32 @@
 ---
 read_when:
-    - Je wilt OpenClaw uitvoeren met een lokale inferrs-server
-    - Je serveert Gemma of een ander model via inferrs
+    - Je wilt OpenClaw gebruiken met een lokale inferrs-server
+    - Je stelt Gemma of een ander model beschikbaar via inferrs
     - Je hebt de exacte OpenClaw-compatibiliteitsvlaggen voor inferrs nodig
 summary: OpenClaw uitvoeren via inferrs (OpenAI-compatibele lokale server)
 title: Leidt af
 x-i18n:
-    generated_at: "2026-04-29T23:10:55Z"
+    generated_at: "2026-05-06T09:29:35Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 53547c48febe584cf818507b0bf879db0471c575fa8a3ebfec64c658a7090675
+    source_hash: 216783689527229835acf4f0fb6d2981d1915bd5df28e631b5384c4cbb9ee158
     source_path: providers/inferrs.md
     workflow: 16
 ---
 
-[inferrs](https://github.com/ericcurtin/inferrs) kan lokale modellen aanbieden achter een
-OpenAI-compatibele `/v1`-API. OpenClaw werkt met `inferrs` via het generieke
-`openai-completions`-pad.
+[inferrs](https://github.com/ericcurtin/inferrs) kan lokale modellen aanbieden achter een OpenAI-compatibele `/v1`-API. OpenClaw werkt met `inferrs` via het generieke `openai-completions`-pad.
 
-`inferrs` kan momenteel het best worden behandeld als een aangepaste zelfgehoste OpenAI-compatibele
-backend, niet als een speciale OpenClaw-provider-Plugin.
+| Eigenschap         | Waarde                                                             |
+| ------------------ | ------------------------------------------------------------------ |
+| Provider-id        | `inferrs` (aangepast; configureer onder `models.providers.inferrs`) |
+| Plugin             | geen — `inferrs` is geen meegeleverde OpenClaw-provider-Plugin     |
+| Auth-omgevingsvariabele | Optioneel. Elke waarde werkt als je inferrs-server geen auth heeft |
+| API                | OpenAI-compatibel (`openai-completions`)                           |
+| Voorgestelde basis-URL | `http://127.0.0.1:8080/v1` (of waar je inferrs-server ook draait) |
+
+<Note>
+  `inferrs` kan momenteel het best worden behandeld als een aangepaste, zelf gehoste OpenAI-compatibele backend, niet als een specifieke OpenClaw-provider-Plugin. Je configureert dit via `models.providers.inferrs` in plaats van met een onboarding-keuzevlag. Als je een echte meegeleverde Plugin met automatische detectie nodig hebt, zie [SGLang](/nl/providers/sglang) of [vLLM](/nl/providers/vllm).
+</Note>
 
 ## Aan de slag
 
@@ -39,7 +46,7 @@ backend, niet als een speciale OpenClaw-provider-Plugin.
     ```
   </Step>
   <Step title="Voeg een OpenClaw-providervermelding toe">
-    Voeg een expliciete providervermelding toe en wijs je standaardmodel ernaar. Zie het volledige configuratievoorbeeld hieronder.
+    Voeg een expliciete providervermelding toe en wijs je standaardmodel daarnaar. Zie het volledige configuratievoorbeeld hieronder.
   </Step>
 </Steps>
 
@@ -90,8 +97,8 @@ Dit voorbeeld gebruikt Gemma 4 op een lokale `inferrs`-server.
 
 <AccordionGroup>
   <Accordion title="Waarom requiresStringContent belangrijk is">
-    Sommige `inferrs` Chat Completions-routes accepteren alleen tekenreekswaarden voor
-    `messages[].content`, geen gestructureerde arrays met inhoudsonderdelen.
+    Sommige `inferrs` Chat Completions-routes accepteren alleen string
+    `messages[].content`, geen gestructureerde content-part-arrays.
 
     <Warning>
     Als OpenClaw-runs mislukken met een fout zoals:
@@ -109,12 +116,12 @@ Dit voorbeeld gebruikt Gemma 4 op een lokale `inferrs`-server.
     }
     ```
 
-    OpenClaw vlakt pure tekstinhoudsonderdelen af tot gewone tekenreeksen voordat
-    het verzoek wordt verzonden.
+    OpenClaw vlakt zuivere tekstcontentdelen af naar gewone strings voordat het
+    verzoek wordt verzonden.
 
   </Accordion>
 
-  <Accordion title="Kanttekening bij Gemma en toolschema">
+  <Accordion title="Gemma en aandachtspunt voor tool-schema's">
     Sommige huidige combinaties van `inferrs` + Gemma accepteren kleine directe
     `/v1/chat/completions`-verzoeken, maar mislukken nog steeds bij volledige OpenClaw-agent-runtime
     beurten.
@@ -128,12 +135,12 @@ Dit voorbeeld gebruikt Gemma 4 op een lokale `inferrs`-server.
     }
     ```
 
-    Dat schakelt het toolschema-oppervlak van OpenClaw voor het model uit en kan de promptdruk
+    Dat schakelt OpenClaw's tool-schema-oppervlak voor het model uit en kan de promptdruk
     op striktere lokale backends verminderen.
 
-    Als zeer kleine directe verzoeken nog steeds werken maar normale OpenClaw-agentbeurten blijven
+    Als heel kleine directe verzoeken nog steeds werken maar normale OpenClaw-agentbeurten blijven
     crashen binnen `inferrs`, ligt het resterende probleem meestal bij upstream model-/servergedrag
-    in plaats van bij de transportlaag van OpenClaw.
+    in plaats van bij OpenClaw's transportlaag.
 
   </Accordion>
 
@@ -153,7 +160,7 @@ Dit voorbeeld gebruikt Gemma 4 op een lokale `inferrs`-server.
       --json
     ```
 
-    Als de eerste opdracht werkt maar de tweede mislukt, controleer dan de sectie voor probleemoplossing hieronder.
+    Als het eerste commando werkt maar het tweede mislukt, raadpleeg dan de sectie probleemoplossing hieronder.
 
   </Accordion>
 
@@ -161,9 +168,9 @@ Dit voorbeeld gebruikt Gemma 4 op een lokale `inferrs`-server.
     `inferrs` wordt behandeld als een proxy-achtige OpenAI-compatibele `/v1`-backend, niet als een
     native OpenAI-eindpunt.
 
-    - Native alleen-OpenAI-verzoekvorming is hier niet van toepassing
+    - Native OpenAI-only request shaping is hier niet van toepassing
     - Geen `service_tier`, geen Responses `store`, geen prompt-cache-hints en geen
-      OpenAI reasoning-compat-payloadvorming
+      OpenAI reasoning-compat payload shaping
     - Verborgen OpenClaw-attributieheaders (`originator`, `version`, `User-Agent`)
       worden niet geïnjecteerd op aangepaste `inferrs`-basis-URL's
 
@@ -175,41 +182,41 @@ Dit voorbeeld gebruikt Gemma 4 op een lokale `inferrs`-server.
 <AccordionGroup>
   <Accordion title="curl /v1/models mislukt">
     `inferrs` draait niet, is niet bereikbaar of is niet gebonden aan de verwachte
-    host/poort. Zorg ervoor dat de server is gestart en luistert op het adres dat je
+    host/poort. Zorg dat de server is gestart en luistert op het adres dat je
     hebt geconfigureerd.
   </Accordion>
 
-  <Accordion title="messages[].content verwacht een tekenreeks">
+  <Accordion title="messages[].content verwacht een string">
     Stel `compat.requiresStringContent: true` in de modelvermelding in. Zie de
     sectie `requiresStringContent` hierboven voor details.
   </Accordion>
 
   <Accordion title="Directe /v1/chat/completions-aanroepen slagen, maar openclaw infer model run mislukt">
-    Probeer `compat.supportsTools: false` in te stellen om het toolschema-oppervlak uit te schakelen.
-    Zie de kanttekening bij het Gemma-toolschema hierboven.
+    Probeer `compat.supportsTools: false` in te stellen om het tool-schema-oppervlak uit te schakelen.
+    Zie het aandachtspunt voor Gemma-tool-schema's hierboven.
   </Accordion>
 
   <Accordion title="inferrs crasht nog steeds bij grotere agentbeurten">
     Als OpenClaw geen schemafouten meer krijgt maar `inferrs` nog steeds crasht bij grotere
-    agentbeurten, behandel dit dan als een upstream beperking van `inferrs` of het model. Verminder
+    agentbeurten, behandel dit dan als een upstream `inferrs`- of modelbeperking. Verminder
     de promptdruk of schakel over naar een andere lokale backend of een ander model.
   </Accordion>
 </AccordionGroup>
 
 <Tip>
-Zie voor algemene hulp [Probleemoplossing](/nl/help/troubleshooting) en [FAQ](/nl/help/faq).
+Voor algemene hulp, zie [Probleemoplossing](/nl/help/troubleshooting) en [FAQ](/nl/help/faq).
 </Tip>
 
 ## Gerelateerd
 
 <CardGroup cols={2}>
   <Card title="Lokale modellen" href="/nl/gateway/local-models" icon="server">
-    OpenClaw uitvoeren tegen lokale modelservers.
+    OpenClaw uitvoeren met lokale modelservers.
   </Card>
   <Card title="Gateway-probleemoplossing" href="/nl/gateway/troubleshooting#local-openai-compatible-backend-passes-direct-probes-but-agent-runs-fail" icon="wrench">
     Lokale OpenAI-compatibele backends debuggen die probes doorstaan maar mislukken bij agent-runs.
   </Card>
   <Card title="Modelselectie" href="/nl/concepts/model-providers" icon="layers">
-    Overzicht van alle providers, modelverwijzingen en failovergedrag.
+    Overzicht van alle providers, modelrefs en failover-gedrag.
   </Card>
 </CardGroup>

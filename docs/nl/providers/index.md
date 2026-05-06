@@ -1,26 +1,23 @@
 ---
 read_when:
     - Je wilt een modelprovider kiezen
-    - Je hebt een kort overzicht van ondersteunde LLM-backends nodig
-summary: Modelproviders (LLM's) die door OpenClaw worden ondersteund
+    - Je hebt een snel overzicht nodig van ondersteunde LLM-backends
+summary: Modelaanbieders (LLM's) ondersteund door OpenClaw
 title: Providerdirectory
 x-i18n:
-    generated_at: "2026-04-29T23:10:44Z"
+    generated_at: "2026-05-06T09:29:21Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 61143200b2e7a74392cf8871bfcd210fe35dbd5118e2e8bc7b15265192fd2bde
+    source_hash: cfc3a15880a5e1881c1a58c60c9ad7e5624350a8db848d03c7cef6ee18c14b81
     source_path: providers/index.md
     workflow: 16
 ---
 
-# Modelproviders
+OpenClaw kan veel LLM-providers gebruiken. Kies een provider, authenticeer en stel vervolgens het standaardmodel in als `provider/model`.
 
-OpenClaw kan veel LLM-providers gebruiken. Kies een provider, authenticeer en stel daarna het
-standaardmodel in als `provider/model`.
+Op zoek naar docs voor chatkanalen (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/enz.)? Zie [Kanalen](/nl/channels).
 
-Zoek je documentatie voor chatkanalen (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/enz.)? Zie [Kanalen](/nl/channels).
-
-## Snel starten
+## Snel aan de slag
 
 1. Authenticeer bij de provider (meestal via `openclaw onboard`).
 2. Stel het standaardmodel in:
@@ -31,7 +28,7 @@ Zoek je documentatie voor chatkanalen (WhatsApp/Telegram/Discord/Slack/Mattermos
 }
 ```
 
-## Providerdocumentatie
+## Provider-docs
 
 - [Alibaba Model Studio](/nl/providers/alibaba)
 - [Amazon Bedrock](/nl/providers/bedrock)
@@ -56,7 +53,7 @@ Zoek je documentatie voor chatkanalen (WhatsApp/Telegram/Discord/Slack/Mattermos
 - [Hugging Face (inferentie)](/nl/providers/huggingface)
 - [inferrs (lokale modellen)](/nl/providers/inferrs)
 - [Kilocode](/nl/providers/kilocode)
-- [LiteLLM (uniforme Gateway)](/nl/providers/litellm)
+- [LiteLLM (uniforme gateway)](/nl/providers/litellm)
 - [LM Studio (lokale modellen)](/nl/providers/lmstudio)
 - [MiniMax](/nl/providers/minimax)
 - [Mistral](/nl/providers/mistral)
@@ -67,7 +64,7 @@ Zoek je documentatie voor chatkanalen (WhatsApp/Telegram/Discord/Slack/Mattermos
 - [OpenCode](/nl/providers/opencode)
 - [OpenCode Go](/nl/providers/opencode-go)
 - [OpenRouter](/nl/providers/openrouter)
-- [Perplexity (webzoekopdracht)](/nl/providers/perplexity-provider)
+- [Perplexity (zoeken op het web)](/nl/providers/perplexity-provider)
 - [Qianfan](/nl/providers/qianfan)
 - [Qwen Cloud](/nl/providers/qwen)
 - [Runway](/nl/providers/runway)
@@ -77,7 +74,7 @@ Zoek je documentatie voor chatkanalen (WhatsApp/Telegram/Discord/Slack/Mattermos
 - [Synthetic](/nl/providers/synthetic)
 - [Tencent Cloud (TokenHub)](/nl/providers/tencent)
 - [Together AI](/nl/providers/together)
-- [Venice (Venice AI, privacygericht)](/nl/providers/venice)
+- [Venice (Venice AI, gericht op privacy)](/nl/providers/venice)
 - [Vercel AI Gateway](/nl/providers/vercel-ai-gateway)
 - [vLLM (lokale modellen)](/nl/providers/vllm)
 - [Volcengine (Doubao)](/nl/providers/volcengine)
@@ -89,9 +86,9 @@ Zoek je documentatie voor chatkanalen (WhatsApp/Telegram/Discord/Slack/Mattermos
 ## Gedeelde overzichtspagina's
 
 - [Aanvullende gebundelde varianten](/nl/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy en Gemini CLI OAuth
-- [Afbeeldingsgeneratie](/nl/tools/image-generation) - Gedeelde `image_generate`-tool, providerselectie en failover
-- [Muziekgeneratie](/nl/tools/music-generation) - Gedeelde `music_generate`-tool, providerselectie en failover
-- [Videogeneratie](/nl/tools/video-generation) - Gedeelde `video_generate`-tool, providerselectie en failover
+- [Afbeeldingen genereren](/nl/tools/image-generation) - Gedeelde `image_generate`-tool, providerselectie en failover
+- [Muziek genereren](/nl/tools/music-generation) - Gedeelde `music_generate`-tool, providerselectie en failover
+- [Video genereren](/nl/tools/video-generation) - Gedeelde `video_generate`-tool, providerselectie en failover
 
 ## Transcriptieproviders
 
@@ -102,9 +99,8 @@ Zoek je documentatie voor chatkanalen (WhatsApp/Telegram/Discord/Slack/Mattermos
 - [SenseAudio](/nl/providers/senseaudio)
 - [xAI](/nl/providers/xai#speech-to-text)
 
-## Communitytools
+## Community-tools
 
-- [Claude Max API Proxy](/nl/providers/claude-max-api-proxy) - Communityproxy voor Claude-abonnementsgegevens (controleer Anthropic-beleid/-voorwaarden voor gebruik)
+- [Claude Max API Proxy](/nl/providers/claude-max-api-proxy) - Community-proxy voor Claude-abonnementsreferenties (controleer het Anthropic-beleid/de voorwaarden vóór gebruik)
 
-Voor de volledige providercatalogus (xAI, Groq, Mistral, enz.) en geavanceerde configuratie,
-zie [Modelproviders](/nl/concepts/model-providers).
+Zie [Modelproviders](/nl/concepts/model-providers) voor de volledige providercatalogus (xAI, Groq, Mistral, enz.) en geavanceerde configuratie.

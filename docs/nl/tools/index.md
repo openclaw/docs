@@ -1,53 +1,53 @@
 ---
 read_when:
-    - Je wilt begrijpen welke hulpmiddelen OpenClaw biedt
+    - Je wilt begrijpen welke tools OpenClaw biedt
     - Je moet tools configureren, toestaan of weigeren
     - Je kiest tussen ingebouwde tools, Skills en plugins
-summary: 'Overzicht van OpenClaw-tools en -plugins: wat de agent kan doen en hoe je deze kunt uitbreiden'
+summary: 'Overzicht van OpenClaw-tools en -plugins: wat de agent kan doen en hoe u deze kunt uitbreiden'
 title: Hulpmiddelen en plugins
 x-i18n:
-    generated_at: "2026-05-03T21:38:33Z"
+    generated_at: "2026-05-06T09:36:29Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 4d1f776639ec2a90d8c02418c4b2c62ae7534ea535f626bc1172f1301c32c6f0
+    source_hash: 894f6dc7e840f3153e95696a63c470a200886af7d3dc8399e87446cf0fb1b027
     source_path: tools/index.md
     workflow: 16
 ---
 
-Alles wat de agent doet naast tekst genereren, gebeurt via **tools**.
-Tools zijn hoe de agent bestanden leest, opdrachten uitvoert, op het web browset, berichten
-verstuurt en met apparaten communiceert.
+Alles wat de agent doet buiten het genereren van tekst gebeurt via **tools**.
+Tools zijn hoe de agent bestanden leest, opdrachten uitvoert, op het web surft,
+berichten verstuurt en met apparaten communiceert.
 
 ## Tools, Skills en plugins
 
 OpenClaw heeft drie lagen die samenwerken:
 
 <Steps>
-  <Step title="Tools are what the agent calls">
+  <Step title="Tools zijn wat de agent aanroept">
     Een tool is een getypeerde functie die de agent kan aanroepen (bijv. `exec`, `browser`,
-    `web_search`, `message`). OpenClaw levert een set **ingebouwde tools** mee en
-    plugins kunnen aanvullende tools registreren.
+    `web_search`, `message`). OpenClaw levert een set **ingebouwde tools** en
+    plugins kunnen extra tools registreren.
 
     De agent ziet tools als gestructureerde functiedefinities die naar de model-API worden gestuurd.
 
   </Step>
 
-  <Step title="Skills teach the agent when and how">
+  <Step title="Skills leren de agent wanneer en hoe">
     Een skill is een markdownbestand (`SKILL.md`) dat in de systeemprompt wordt geïnjecteerd.
     Skills geven de agent context, beperkingen en stapsgewijze begeleiding voor
-    effectief gebruik van tools. Skills staan in je werkruimte, in gedeelde mappen,
-    of worden binnen plugins meegeleverd.
+    het effectief gebruiken van tools. Skills staan in je workspace, in gedeelde mappen,
+    of worden meegeleverd in plugins.
 
     [Skills-referentie](/nl/tools/skills) | [Skills maken](/nl/tools/creating-skills)
 
   </Step>
 
-  <Step title="Plugins package everything together">
+  <Step title="Plugins verpakken alles samen">
     Een plugin is een pakket dat elke combinatie van mogelijkheden kan registreren:
     kanalen, modelproviders, tools, Skills, spraak, realtime transcriptie,
-    realtime stem, mediabegrip, afbeeldingsgeneratie, videogeneratie,
-    webophalen, webzoeken en meer. Sommige plugins zijn **core** (meegeleverd met
-    OpenClaw), andere zijn **extern** (door de community gepubliceerd op npm).
+    realtime spraak, mediabegrip, afbeeldingsgeneratie, videogeneratie,
+    web ophalen, web zoeken en meer. Sommige plugins zijn **core** (meegeleverd met
+    OpenClaw), andere zijn **extern** (door de community op npm gepubliceerd).
 
     [Plugins installeren en configureren](/nl/tools/plugin) | [Bouw je eigen plugin](/nl/plugins/building-plugins)
 
@@ -58,24 +58,24 @@ OpenClaw heeft drie lagen die samenwerken:
 
 Deze tools worden met OpenClaw meegeleverd en zijn beschikbaar zonder plugins te installeren:
 
-| Tool                                       | Wat het doet                                                          | Pagina                                                       |
-| ------------------------------------------ | --------------------------------------------------------------------- | ------------------------------------------------------------ |
-| `exec` / `process`                         | Shellopdrachten uitvoeren, achtergrondprocessen beheren               | [Exec](/nl/tools/exec), [Exec-goedkeuringen](/nl/tools/exec-approvals) |
-| `code_execution`                           | Gesandboxte externe Python-analyse uitvoeren                          | [Code-uitvoering](/nl/tools/code-execution)                     |
-| `browser`                                  | Een Chromium-browser bedienen (navigeren, klikken, screenshot maken)  | [Browser](/nl/tools/browser)                                    |
-| `web_search` / `x_search` / `web_fetch`    | Het web doorzoeken, X-berichten doorzoeken, pagina-inhoud ophalen     | [Web](/nl/tools/web), [Web Fetch](/nl/tools/web-fetch)             |
-| `read` / `write` / `edit`                  | Bestands-I/O in de werkruimte                                         |                                                              |
-| `apply_patch`                              | Bestandspatches met meerdere hunks                                    | [Apply Patch](/nl/tools/apply-patch)                            |
-| `message`                                  | Berichten versturen via alle kanalen                                  | [Agent verzenden](/nl/tools/agent-send)                         |
-| `canvas`                                   | Node Canvas aansturen (presenteren, evalueren, snapshot maken)        |                                                              |
-| `nodes`                                    | Gekoppelde apparaten ontdekken en targeten                            |                                                              |
+| Tool                                       | Wat het doet                                                         | Pagina                                                       |
+| ------------------------------------------ | -------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `exec` / `process`                         | Shellopdrachten uitvoeren, achtergrondprocessen beheren              | [Exec](/nl/tools/exec), [Exec-goedkeuringen](/nl/tools/exec-approvals) |
+| `code_execution`                           | Gesandboxte externe Python-analyse uitvoeren                         | [Code-uitvoering](/nl/tools/code-execution)                     |
+| `browser`                                  | Een Chromium-browser bedienen (navigeren, klikken, screenshot)       | [Browser](/nl/tools/browser)                                    |
+| `web_search` / `x_search` / `web_fetch`    | Het web doorzoeken, X-berichten doorzoeken, pagina-inhoud ophalen    | [Web](/nl/tools/web), [Web ophalen](/nl/tools/web-fetch)           |
+| `read` / `write` / `edit`                  | Bestands-I/O in de workspace                                         |                                                              |
+| `apply_patch`                              | Bestandswijzigingen met meerdere hunks                               | [Patch toepassen](/nl/tools/apply-patch)                        |
+| `message`                                  | Berichten via alle kanalen verzenden                                 | [Agent verzenden](/nl/tools/agent-send)                         |
+| `canvas`                                   | Node Canvas aansturen (presenteren, evalueren, snapshot)             |                                                              |
+| `nodes`                                    | Gekoppelde apparaten ontdekken en targeten                           |                                                              |
 | `cron` / `gateway`                         | Geplande taken beheren; de Gateway inspecteren, patchen, herstarten of bijwerken |                                                              |
-| `image` / `image_generate`                 | Afbeeldingen analyseren of genereren                                  | [Afbeeldingsgeneratie](/nl/tools/image-generation)              |
-| `music_generate`                           | Muziektracks genereren                                                | [Muziekgeneratie](/nl/tools/music-generation)                   |
-| `video_generate`                           | Video's genereren                                                     | [Videogeneratie](/nl/tools/video-generation)                    |
-| `tts`                                      | Eenmalige tekst-naar-spraakconversie                                  | [TTS](/nl/tools/tts)                                            |
-| `sessions_*` / `subagents` / `agents_list` | Sessiebeheer, status en subagentorkestratie                           | [Subagents](/nl/tools/subagents)                                |
-| `session_status`                           | Lichtgewicht `/status`-achtige teruglezing en sessiemodel-override    | [Sessietools](/nl/concepts/session-tool)                        |
+| `image` / `image_generate`                 | Afbeeldingen analyseren of genereren                                 | [Afbeeldingsgeneratie](/nl/tools/image-generation)              |
+| `music_generate`                           | Muziektracks genereren                                               | [Muziekgeneratie](/nl/tools/music-generation)                   |
+| `video_generate`                           | Video's genereren                                                    | [Videogeneratie](/nl/tools/video-generation)                    |
+| `tts`                                      | Eenmalige tekst-naar-spraakconversie                                 | [TTS](/nl/tools/tts)                                            |
+| `sessions_*` / `subagents` / `agents_list` | Sessiebeheer, status en subagentorkestratie                          | [Subagenten](/nl/tools/subagents)                               |
+| `session_status`                           | Lichtgewicht `/status`-achtige teruglezing en modeloverride voor sessies | [Sessietools](/nl/concepts/session-tool)                        |
 
 Gebruik voor afbeeldingswerk `image` voor analyse en `image_generate` voor generatie of bewerking. Als je `openai/*`, `google/*`, `fal/*` of een andere niet-standaard afbeeldingsprovider target, configureer dan eerst de auth/API-sleutel van die provider.
 
@@ -83,53 +83,53 @@ Gebruik voor muziekwerk `music_generate`. Als je `google/*`, `minimax/*` of een 
 
 Gebruik voor videowerk `video_generate`. Als je `qwen/*` of een andere niet-standaard videoprovider target, configureer dan eerst de auth/API-sleutel van die provider.
 
-Gebruik voor workflowgestuurde audiogeneratie `music_generate` wanneer een plugin zoals
+Gebruik voor workflow-gestuurde audiogeneratie `music_generate` wanneer een plugin zoals
 ComfyUI die registreert. Dit staat los van `tts`, wat tekst-naar-spraak is.
 
 `session_status` is de lichtgewicht status-/terugleestool in de sessiegroep.
-Het beantwoordt `/status`-achtige vragen over de huidige sessie en kan
+Deze beantwoordt `/status`-achtige vragen over de huidige sessie en kan
 optioneel een modelspecifieke override per sessie instellen; `model=default` wist die
-override. Net als `/status` kan het beperkte token-/cachetellers en het
-actieve runtime-modellabel aanvullen vanuit de nieuwste transcriptgebruikvermelding.
+override. Net als `/status` kan deze schaarse token-/cachetellers en het
+actieve runtimemodellabel aanvullen vanuit de nieuwste transcriptgebruiksvermelding.
 
-`gateway` is de runtime-tool alleen voor eigenaren voor Gateway-bewerkingen:
+`gateway` is de alleen-voor-eigenaren runtimetool voor Gateway-bewerkingen:
 
-- `config.schema.lookup` voor één padgebonden configuratiesubtree vóór bewerkingen
-- `config.get` voor de huidige configuratiesnapshot + hash
-- `config.patch` voor gedeeltelijke configuratie-updates met herstart
-- `config.apply` alleen voor volledige configuratievervanging
+- `config.schema.lookup` voor één padgebonden config-subtree vóór bewerkingen
+- `config.get` voor de huidige config-snapshot + hash
+- `config.patch` voor gedeeltelijke config-updates met herstart
+- `config.apply` alleen voor volledige config-vervanging
 - `update.run` voor expliciete zelfupdate + herstart
 
 Geef voor gedeeltelijke wijzigingen de voorkeur aan `config.schema.lookup` en daarna `config.patch`. Gebruik
-`config.apply` alleen wanneer je bewust de volledige configuratie vervangt.
-Lees voor bredere configuratiedocumentatie [Configuratie](/nl/gateway/configuration) en
+`config.apply` alleen wanneer je bewust de volledige config vervangt.
+Lees voor bredere config-documentatie [Configuratie](/nl/gateway/configuration) en
 [Configuratiereferentie](/nl/gateway/configuration-reference).
 De tool weigert ook `tools.exec.ask` of `tools.exec.security` te wijzigen;
 legacy `tools.bash.*`-aliassen normaliseren naar dezelfde beschermde exec-paden.
 
 ### Door plugins geleverde tools
 
-Plugins kunnen aanvullende tools registreren. Enkele voorbeelden:
+Plugins kunnen extra tools registreren. Enkele voorbeelden:
 
 - [Diffs](/nl/tools/diffs) — diffviewer en renderer
-- [LLM-taak](/nl/tools/llm-task) — LLM-stap alleen voor JSON voor gestructureerde uitvoer
+- [LLM-taak](/nl/tools/llm-task) — JSON-only LLM-stap voor gestructureerde uitvoer
 - [Lobster](/nl/tools/lobster) — getypeerde workflowruntime met hervatbare goedkeuringen
-- [Muziekgeneratie](/nl/tools/music-generation) — gedeelde `music_generate`-tool met workflow-ondersteunde providers
+- [Muziekgeneratie](/nl/tools/music-generation) — gedeelde `music_generate`-tool met workflow-backed providers
 - [OpenProse](/nl/prose) — markdown-first workfloworkestratie
 - [Tokenjuice](/nl/tools/tokenjuice) — compacte ruisige `exec`- en `bash`-toolresultaten
 
-Plugintools worden nog steeds gemaakt met `api.registerTool(...)` en gedeclareerd in
+Plugin-tools worden nog steeds gemaakt met `api.registerTool(...)` en gedeclareerd in
 de `contracts.tools`-lijst van het pluginmanifest. OpenClaw legt de gevalideerde
-tooldescriptor vast tijdens ontdekking en cachet die per pluginbron en contract, zodat
+tooldescriptor vast tijdens discovery en cachet die per pluginbron en contract, zodat
 latere toolplanning het laden van de pluginruntime kan overslaan. Tooluitvoering laadt nog steeds
 de eigenaar-plugin en roept de live geregistreerde implementatie aan.
 
 ## Toolconfiguratie
 
-### Toestaan- en weigerenlijsten
+### Allow- en deny-lijsten
 
 Bepaal welke tools de agent kan aanroepen via `tools.allow` / `tools.deny` in
-configuratie. Weigeren wint altijd van toestaan.
+config. Deny wint altijd van allow.
 
 ```json5
 {
@@ -140,46 +140,46 @@ configuratie. Weigeren wint altijd van toestaan.
 }
 ```
 
-OpenClaw faalt gesloten wanneer een expliciete toestaanlijst geen aanroepbare tools oplevert.
+OpenClaw faalt gesloten wanneer een expliciete allowlist tot geen aanroepbare tools leidt.
 Bijvoorbeeld: `tools.allow: ["query_db"]` werkt alleen als een geladen plugin daadwerkelijk
-`query_db` registreert. Als geen ingebouwde, plugin- of gebundelde MCP-tool overeenkomt met de
-toestaanlijst, stopt de run vóór de modelaanroep in plaats van door te gaan als een
-alleen-tekst-run die toolresultaten zou kunnen hallucineren.
+`query_db` registreert. Als geen ingebouwde tool, plugin of gebundelde MCP-tool overeenkomt met de
+allowlist, stopt de run vóór de modelaanroep in plaats van door te gaan als een
+tekst-only run die toolresultaten zou kunnen hallucineren.
 
 ### Toolprofielen
 
-`tools.profile` stelt een basistoestaanlijst in voordat `allow`/`deny` wordt toegepast.
+`tools.profile` stelt een basis-allowlist in voordat `allow`/`deny` wordt toegepast.
 Override per agent: `agents.list[].tools.profile`.
 
-| Profiel     | Wat het bevat                                                                                                                                    |
+| Profiel     | Wat het bevat                                                                                                                                     |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `full`      | Alle core- en optionele plugintools; onbeperkte basis voor bredere opdracht-/besturingstoegang                                                    |
+| `full`      | Alle core- en optionele plugintools; onbeperkte basis voor bredere opdracht-/controletoegang                                                       |
 | `coding`    | `group:fs`, `group:runtime`, `group:web`, `group:sessions`, `group:memory`, `cron`, `image`, `image_generate`, `music_generate`, `video_generate` |
 | `messaging` | `group:messaging`, `sessions_list`, `sessions_history`, `sessions_send`, `session_status`                                                         |
 | `minimal`   | Alleen `session_status`                                                                                                                           |
 
 <Note>
 `tools.profile: "messaging"` is bewust smal voor kanaalgerichte
-agents. Het laat bredere opdracht-/besturingstools zoals bestandssysteem, runtime,
-browser, canvas, nodes, cron en Gateway-besturing weg. Gebruik `tools.profile: "full"`
-als de onbeperkte basis voor bredere opdracht-/besturingstoegang, en beperk daarna
+agenten. Het laat bredere opdracht-/controletools weg, zoals bestandssysteem, runtime,
+browser, canvas, nodes, cron en Gateway-besturing. Gebruik `tools.profile: "full"`
+als de onbeperkte basis voor bredere opdracht-/controletoegang, en beperk daarna
 toegang met `tools.allow` / `tools.deny` wanneer nodig.
 </Note>
 
 `coding` bevat lichtgewicht webtools (`web_search`, `web_fetch`, `x_search`)
-maar niet de volledige browserbesturingstool. Browserautomatisering kan echte
-sessies en ingelogde profielen aansturen, dus voeg die expliciet toe met
+maar niet de volledige tool voor browserbesturing. Browserautomatisering kan echte
+sessies en ingelogde profielen aansturen, dus voeg deze expliciet toe met
 `tools.alsoAllow: ["browser"]` of een per-agent
 `agents.list[].tools.alsoAllow: ["browser"]`.
 
 <Note>
-Het configureren van `tools.exec` of `tools.fs` onder een beperkend profiel (`messaging`, `minimal`) verbreedt de toestaanlijst van het profiel niet impliciet. Voeg expliciete `tools.alsoAllow`-vermeldingen toe (bijvoorbeeld `["exec", "process"]` voor exec, of `["read", "write", "edit"]` voor fs) wanneer je wilt dat een beperkend profiel die geconfigureerde secties gebruikt. OpenClaw logt een opstartwaarschuwing wanneer een configuratiesectie aanwezig is zonder een bijbehorende `alsoAllow`-toekenning.
+Het configureren van `tools.exec` of `tools.fs` onder een restrictief profiel (`messaging`, `minimal`) verbreedt de allowlist van het profiel niet impliciet. Voeg expliciete `tools.alsoAllow`-vermeldingen toe (bijvoorbeeld `["exec", "process"]` voor exec, of `["read", "write", "edit"]` voor fs) wanneer je wilt dat een restrictief profiel die geconfigureerde secties gebruikt. OpenClaw logt een startwaarschuwing wanneer een config-sectie aanwezig is zonder een overeenkomende `alsoAllow`-toekenning.
 </Note>
 
-De profielen `coding` en `messaging` staan ook geconfigureerde gebundelde MCP-tools toe
+De profielen `coding` en `messaging` staan ook geconfigureerde bundle-MCP-tools toe
 onder de pluginsleutel `bundle-mcp`. Voeg `tools.deny: ["bundle-mcp"]` toe wanneer je
 wilt dat een profiel zijn normale ingebouwde tools behoudt maar alle geconfigureerde MCP-tools verbergt.
-Het profiel `minimal` bevat geen gebundelde MCP-tools.
+Het profiel `minimal` bevat geen bundle-MCP-tools.
 
 Voorbeeld (standaard het breedste tooloppervlak):
 
@@ -193,7 +193,7 @@ Voorbeeld (standaard het breedste tooloppervlak):
 
 ### Toolgroepen
 
-Gebruik `group:*`-verkortingen in toestaan-/weigerenlijsten:
+Gebruik `group:*`-afkortingen in allow-/deny-lijsten:
 
 | Groep              | Tools                                                                                                     |
 | ------------------ | --------------------------------------------------------------------------------------------------------- |
@@ -203,21 +203,21 @@ Gebruik `group:*`-verkortingen in toestaan-/weigerenlijsten:
 | `group:memory`     | memory_search, memory_get                                                                                 |
 | `group:web`        | web_search, x_search, web_fetch                                                                           |
 | `group:ui`         | browser, canvas                                                                                           |
-| `group:automation` | cron, gateway                                                                                             |
+| `group:automation` | heartbeat_respond, cron, gateway                                                                          |
 | `group:messaging`  | message                                                                                                   |
 | `group:nodes`      | nodes                                                                                                     |
-| `group:agents`     | agents_list                                                                                               |
+| `group:agents`     | agents_list, update_plan                                                                                  |
 | `group:media`      | image, image_generate, music_generate, video_generate, tts                                                |
-| `group:openclaw`   | Alle ingebouwde OpenClaw-tools (exclusief Plugin-tools)                                                   |
+| `group:openclaw`   | Alle ingebouwde OpenClaw-tools (exclusief plugin-tools)                                                   |
 
-`sessions_history` retourneert een begrensde, veiligheidsgefilterde recall-weergave. Het verwijdert
-thinking-tags, `<relevant-memories>`-scaffolding, tool-call-XML-payloads in platte tekst
+`sessions_history` retourneert een begrensde, op veiligheid gefilterde recall-weergave. Het verwijdert
+thinking-tags, `<relevant-memories>`-scaffolding, XML-payloads voor platte-tekst tool-calls
 (inclusief `<tool_call>...</tool_call>`,
 `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`,
 `<function_calls>...</function_calls>` en afgekorte tool-call-blokken),
-gedegradeerde tool-call-scaffolding, gelekte ASCII-/volledige-breedte-modelbesturingstokens
-en misvormde MiniMax-tool-call-XML uit assistenttekst, en past daarna
-redactie/afkapping en mogelijke plaatsaanduidingen voor te grote rijen toe in plaats van te fungeren
+gedegradeerde tool-call-scaffolding, gelekte ASCII-/full-width modelbesturingstokens
+en ongeldige MiniMax tool-call-XML uit assistenttekst, en past vervolgens
+redactie/afkapping en mogelijke tijdelijke aanduidingen voor te grote rijen toe in plaats van te fungeren
 als een ruwe transcriptdump.
 
 ### Providerspecifieke beperkingen
