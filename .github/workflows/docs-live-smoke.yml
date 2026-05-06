@@ -21,7 +21,7 @@ jobs:
 
       - name: Smoke live docs pages
         env:
-          BASE_URL: https://docs.openclaw.ai
+          BASE_URL: https://documentation.openclaw.ai
           GITHUB_SHA: ${{ github.sha }}
           PAGES: |
             /tools/reactions
@@ -81,6 +81,24 @@ jobs:
             }
             console.log(`${path}: ok (${title})`);
           };
+          const assertMarkdown = async (path) => {
+            const url = new URL(path, baseUrl);
+            const response = await fetch(url, {
+              headers: {
+                accept: "text/markdown",
+                "cache-control": "no-cache",
+                pragma: "no-cache",
+              },
+            });
+            if (!response.ok) throw new Error(`${path}: markdown HTTP ${response.status}`);
+            const text = await response.text();
+            const contentType = response.headers.get("content-type") ?? "";
+            if (!contentType.includes("text/markdown")) {
+              throw new Error(`${path}: expected markdown content-type, got ${contentType}`);
+            }
+            if (!/^---\n/m.test(text)) throw new Error(`${path}: markdown frontmatter missing`);
+            console.log(`${path}: ok (markdown)`);
+          };
           const deadline = Date.now() + 20 * 60 * 1000;
           let lastError;
           for (let attempt = 1; Date.now() < deadline; attempt += 1) {
@@ -88,6 +106,7 @@ jobs:
               for (const page of pages) {
                 await assertPage(page, attempt);
               }
+              await assertMarkdown("/concepts/models");
               process.exit(0);
             } catch (error) {
               lastError = error;

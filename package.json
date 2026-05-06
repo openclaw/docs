@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "docs:build": "node scripts/docs-site/build.mjs && node scripts/docs-site/source-index.mjs && pagefind --site dist/docs-site --output-path dist/docs-site/pagefind",
+    "docs:build:cloudflare": "npm run docs:build && node scripts/docs-site/cloudflare-prune.mjs",
     "docs:smoke": "node scripts/docs-site/smoke.mjs",
     "docs:check": "npm run docs:build && npm run docs:smoke"
   },

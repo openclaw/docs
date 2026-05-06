@@ -1,0 +1,13 @@
+name = "openclaw-docs-router"
+main = "workers/docs-router.ts"
+account_id = "91b59577e757131d68d55a471fe32aca"
+compatibility_date = "2026-05-06"
+routes = [
+  { pattern = "documentation.openclaw.ai/*", zone_name = "openclaw.ai" }
+]
+
+[assets]
+directory = "./dist/docs-site"
+binding = "ASSETS"
+html_handling = "none"
+not_found_handling = "none"

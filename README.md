@@ -10,7 +10,7 @@ Source of truth lives in [`openclaw/openclaw`](https://github.com/openclaw/openc
 2. `openclaw/openclaw/.github/workflows/docs-sync-publish.yml` mirrors the docs tree into this repo.
 3. This repo stores the published docs tree plus generated locale output.
 4. `openclaw/docs/.github/workflows/translate-all.yml` debounces docs changes, runs locale translation in parallel, and commits one aggregate locale refresh.
-5. `.github/workflows/pages.yml` builds `dist/docs-site` from the mirrored docs and deploys it to GitHub Pages.
+5. `.github/workflows/pages.yml` builds `dist/docs-site` from the mirrored docs and deploys it to Cloudflare Workers Static Assets.
 
 ## Translation behavior
 
@@ -30,14 +30,17 @@ Source of truth lives in [`openclaw/openclaw`](https://github.com/openclaw/openc
 - Locale pages under `docs/<locale>/**` are generated output.
 - `.openclaw-sync/source.json` records which `openclaw/openclaw` commit this mirror was synced from.
 
-## GitHub Pages build
+## Static site build
 
 - `npm run docs:build` renders the mirrored Mintlify-flavored docs into `dist/docs-site`.
+- `npm run docs:build:cloudflare` prunes deploy-only duplicates so the Worker asset manifest stays below Cloudflare Free's 20,000-file limit.
 - `npm run docs:smoke` checks representative English and locale pages plus the Pagefind search bundle.
 - `npm run docs:check` runs both steps.
 - The generated site includes the language picker and static full-text search via Pagefind.
+- Cloudflare deploys `workers/docs-router.ts`, which serves slashless page URLs and English markdown responses for `.md` paths or `Accept: text/markdown`.
 
 ## Secrets
 
 - `OPENCLAW_DOCS_SYNC_TOKEN` lives in `openclaw/openclaw` and lets the source repo push into this repo.
 - `OPENCLAW_DOCS_I18N_OPENAI_API_KEY` lives in this repo and powers locale translation refreshes.
+- `CLOUDFLARE_API_TOKEN` lives in this repo and deploys `documentation.openclaw.ai`.

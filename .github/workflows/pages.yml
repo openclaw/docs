@@ -16,8 +16,6 @@ on:
 permissions:
   actions: write
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: pages
@@ -29,8 +27,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      name: cloudflare
+      url: https://documentation.openclaw.ai
     steps:
       - name: Check out
         uses: actions/checkout@v6
@@ -72,22 +70,15 @@ jobs:
           DOCS_SOURCE_REPO_DIR: source
           DOCS_SOURCE_REPO_URL: https://github.com/${{ steps.source-meta.outputs.repository }}
           DOCS_SOURCE_SHA: ${{ steps.source-meta.outputs.sha }}
-        run: npm run docs:build
+        run: npm run docs:build:cloudflare
 
       - name: Smoke generated site
         run: npm run docs:smoke
 
-      - name: Configure Pages
-        uses: actions/configure-pages@v6
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v5
-        with:
-          path: dist/docs-site
-
-      - name: Deploy
-        id: deployment
-        uses: actions/deploy-pages@v5
+      - name: Deploy to Cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: npx wrangler@4.88.0 deploy --config wrangler.toml
 
       - name: Dispatch live smoke
         env:
