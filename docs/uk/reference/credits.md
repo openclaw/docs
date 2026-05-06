@@ -1,42 +1,40 @@
 ---
 read_when:
-    - Ви хочете дізнатися історію проєкту або подяки учасникам
+    - Вам потрібна передісторія проєкту або подяки учасникам
 summary: Походження проєкту, учасники та ліцензія.
 title: Подяки
 x-i18n:
-    generated_at: "2026-04-24T03:48:49Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T05:00:56Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 914041bdfa43c8668149c83b28c3466787342620d047cc95e487bcf6ee21e388
+    source_hash: 4cda0d96a66d4a6fcf81553d39315ebe01e7ebb4a21bb2994e9a503825bc7fb6
     source_path: reference/credits.md
-    workflow: 15
+    workflow: 16
 ---
-
-# Подяки та визнання
 
 ## Назва
 
-OpenClaw = CLAW + TARDIS, тому що кожному космічному лобстеру потрібна машина часу і простору.
+OpenClaw = CLAW + TARDIS, бо кожному космічному омару потрібна машина часу й простору.
 
 ## Подяки
 
-- **Peter Steinberger** ([@steipete](https://x.com/steipete)) - Творець, заклинач лобстерів
-- **Mario Zechner** ([@badlogicc](https://x.com/badlogicgames)) - Творець Pi, тестувальник безпеки на проникнення
-- **Clawd** - Космічний лобстер, який вимагав кращої назви
+- **Peter Steinberger** ([@steipete](https://x.com/steipete)) - Творець, заклинач омарів
+- **Mario Zechner** ([@badlogicc](https://x.com/badlogicgames)) - Творець Pi, пентестер безпеки
+- **Clawd** - Космічний омар, який вимагав кращої назви
 
 ## Основні учасники
 
-- **Maxim Vovshin** (@Hyaxia, [36747317+Hyaxia@users.noreply.github.com](mailto:36747317+Hyaxia@users.noreply.github.com)) - Skill Blogwatcher
-- **Nacho Iacovino** (@nachoiacovino, [nacho.iacovino@gmail.com](mailto:nacho.iacovino@gmail.com)) - Розбір геолокації (Telegram і WhatsApp)
-- **Vincent Koc** ([@vincentkoc](https://github.com/vincentkoc), [@vincent_koc](https://x.com/vincent_koc)) - Агенти, телеметрія, Hooks, безпека
+- **Maxim Vovshin** (@Hyaxia, [36747317+Hyaxia@users.noreply.github.com](mailto:36747317+Hyaxia@users.noreply.github.com)) - навичка Blogwatcher
+- **Nacho Iacovino** (@nachoiacovino, [nacho.iacovino@gmail.com](mailto:nacho.iacovino@gmail.com)) - Розбір місцезнаходження (Telegram і WhatsApp)
+- **Vincent Koc** ([@vincentkoc](https://github.com/vincentkoc), [@vincent_koc](https://x.com/vincent_koc)) - Агенти, телеметрія, хуки, безпека
 
 ## Ліцензія
 
-MIT - Вільно, як лобстер в океані.
+MIT - Вільний, як омар в океані.
 
-> "Ми всі просто граємося з власними prompts." (Імовірно, AI під кайфом від токенів)
+> "Ми всі просто граємося зі своїми власними промптами." (ШІ, мабуть, під кайфом від токенів)
 
 ## Пов’язане
 
 - [Використання токенів і витрати](/uk/reference/token-use)
-- [Політика релізів](/uk/reference/RELEASING)
+- [Політика випусків](/uk/reference/RELEASING)
