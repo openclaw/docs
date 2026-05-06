@@ -74,6 +74,7 @@ La **ubicación** de la habilidad y la **visibilidad** de la habilidad son contr
     - Define `agents.list[].skills: []` para no permitir habilidades.
     - Una lista no vacía `agents.list[].skills` es el conjunto **final** para ese agente: no se fusiona con los valores predeterminados.
     - La lista de permitidos efectiva se aplica a la construcción de prompts, el descubrimiento de comandos slash de habilidades, la sincronización de sandbox y las instantáneas de habilidades.
+
   </Accordion>
 </AccordionGroup>
 
