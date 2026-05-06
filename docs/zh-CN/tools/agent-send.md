@@ -1,20 +1,19 @@
 ---
 read_when:
-- 你希望通过脚本或命令行触发智能体运行
-- 你需要以编程方式将智能体回复投递到聊天渠道
-summary: 从 CLI 运行智能体轮次，并可选择将回复投递到渠道
+    - 你想从脚本或命令行触发智能体运行
+    - 你需要以编程方式将智能体回复发送到聊天渠道
+summary: 从 CLI 运行智能体轮次，并可选择将回复发送到渠道
 title: 智能体发送
 x-i18n:
-  generated_at: '2026-04-23T21:06:22Z'
-  model: gpt-5.4
-  provider: openai
-  source_hash: 8f29ab906ed8179b265138ee27312c8f4b318d09b73ad61843fca6809c32bd31
-  source_path: tools/agent-send.md
-  workflow: 15
+    generated_at: "2026-05-06T01:18:37Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 1339ebd74e2349669942ff93f200b53a69ad05f2186d6ff76437c779f312a291
+    source_path: tools/agent-send.md
+    workflow: 16
 ---
-`openclaw agent` 可在命令行中运行单次智能体轮次，而无需
-入站聊天消息。可将其用于脚本工作流、测试和
-程序化投递。
+
+`openclaw agent` 从命令行运行单个智能体轮次，无需收到入站聊天消息。可用于脚本化工作流、测试和程序化投递。
 
 ## 快速开始
 
@@ -24,30 +23,30 @@ x-i18n:
     openclaw agent --message "What is the weather today?"
     ```
 
-    这会通过 Gateway 网关发送该消息并打印回复。
+    这会通过 Gateway 网关发送消息并打印回复。
 
   </Step>
 
-  <Step title="指定某个智能体或会话">
+  <Step title="指定特定智能体或会话">
     ```bash
-    # 指定某个智能体
+    # Target a specific agent
     openclaw agent --agent ops --message "Summarize logs"
 
-    # 指定一个电话号码（派生会话键）
+    # Target a phone number (derives session key)
     openclaw agent --to +15555550123 --message "Status update"
 
-    # 复用一个现有会话
+    # Reuse an existing session
     openclaw agent --session-id abc123 --message "Continue the task"
     ```
 
   </Step>
 
-  <Step title="将回复投递到某个渠道">
+  <Step title="将回复投递到渠道">
     ```bash
-    # 投递到 WhatsApp（默认渠道）
+    # Deliver to WhatsApp (default channel)
     openclaw agent --to +15555550123 --message "Report ready" --deliver
 
-    # 投递到 Slack
+    # Deliver to Slack
     openclaw agent --agent ops --message "Generate report" \
       --deliver --reply-channel slack --reply-to "#reports"
     ```
@@ -57,46 +56,57 @@ x-i18n:
 
 ## 标志
 
-| 标志 | 描述 |
+| 标志                          | 描述                                                 |
 | ----------------------------- | ----------------------------------------------------------- |
-| `--message \<text\>` | 要发送的消息（必需） |
-| `--to \<dest\>` | 从目标（电话、chat id）派生会话键 |
-| `--agent \<id\>` | 指定一个已配置的智能体（使用其 `main` 会话） |
-| `--session-id \<id\>` | 按 id 复用一个现有会话 |
-| `--local` | 强制使用本地嵌入式运行时（跳过 Gateway 网关） |
-| `--deliver` | 将回复发送到聊天渠道 |
-| `--channel \<name\>` | 投递渠道（whatsapp、telegram、discord、slack 等） |
-| `--reply-to \<target\>` | 投递目标覆盖 |
-| `--reply-channel \<name\>` | 投递渠道覆盖 |
-| `--reply-account \<id\>` | 投递账户 id 覆盖 |
-| `--thinking \<level\>` | 为所选模型 profile 设置 thinking 级别 |
-| `--verbose \<on\|full\|off\>` | 设置 verbose 级别 |
-| `--timeout \<seconds\>` | 覆盖智能体超时时间 |
-| `--json` | 输出结构化 JSON |
+| `--message \<text\>`          | 要发送的消息（必填）                                  |
+| `--to \<dest\>`               | 从目标（电话号码、聊天 ID）派生会话键           |
+| `--agent \<id\>`              | 指定已配置的智能体（使用其 `main` 会话）         |
+| `--session-id \<id\>`         | 按 ID 复用现有会话                             |
+| `--local`                     | 强制使用本地嵌入式运行时（跳过 Gateway 网关）                 |
+| `--deliver`                   | 将回复发送到聊天渠道                            |
+| `--channel \<name\>`          | 投递渠道（whatsapp、telegram、discord、slack 等） |
+| `--reply-to \<target\>`       | 投递目标覆盖                                    |
+| `--reply-channel \<name\>`    | 投递渠道覆盖                                   |
+| `--reply-account \<id\>`      | 投递账号 ID 覆盖                                |
+| `--thinking \<level\>`        | 为所选模型配置文件设置思考级别           |
+| `--verbose \<on\|full\|off\>` | 设置详细输出级别                                           |
+| `--timeout \<seconds\>`       | 覆盖智能体超时时间                                      |
+| `--json`                      | 输出结构化 JSON                                      |
 
 ## 行为
 
-- 默认情况下，CLI 会**通过 Gateway 网关**运行。添加 `--local` 可强制在当前机器上使用嵌入式运行时。
+- 默认情况下，CLI 会**通过 Gateway 网关**。添加 `--local` 可强制在当前机器上使用嵌入式运行时。
 - 如果 Gateway 网关不可达，CLI 会**回退**到本地嵌入式运行。
-- 会话选择：`--to` 会派生会话键（群组/频道目标保持隔离；私聊会折叠到 `main`）。
-- Thinking 和 verbose 标志会持久化到会话存储中。
-- 输出：默认是纯文本，或使用 `--json` 获取结构化负载 + 元数据。
+- 会话选择：`--to` 会派生会话键（群组/渠道目标会保持隔离；直接聊天会折叠到 `main`）。
+- 思考和详细输出标志会持久化到会话存储中。
+- 输出：默认是纯文本，或使用 `--json` 输出结构化载荷 + 元数据。
 
 ## 示例
 
 ```bash
-# 带 JSON 输出的简单轮次
+# Simple turn with JSON output
 openclaw agent --to +15555550123 --message "Trace logs" --verbose on --json
 
-# 带 thinking 级别的轮次
+# Turn with thinking level
 openclaw agent --session-id 1234 --message "Summarize inbox" --thinking medium
 
-# 投递到与当前会话不同的渠道
+# Deliver to a different channel than the session
 openclaw agent --agent ops --message "Alert" --deliver --reply-channel telegram --reply-to "@admin"
 ```
 
-## 相关内容
+## 相关
 
-- [智能体 CLI 参考](/zh-CN/cli/agent)
-- [子智能体](/zh-CN/tools/subagents) — 后台子智能体生成
-- [会话](/zh-CN/concepts/session) — 会话键的工作方式
+<CardGroup cols={2}>
+  <Card title="智能体 CLI 参考" href="/zh-CN/cli/agent" icon="terminal">
+    完整的 `openclaw agent` 标志和选项参考。
+  </Card>
+  <Card title="子智能体" href="/zh-CN/tools/subagents" icon="users">
+    后台子智能体生成。
+  </Card>
+  <Card title="会话" href="/zh-CN/concepts/session" icon="comments">
+    会话键的工作方式，以及 `--to`、`--agent` 和 `--session-id` 如何解析它们。
+  </Card>
+  <Card title="斜杠命令" href="/zh-CN/tools/slash-commands" icon="slash">
+    智能体会话中使用的原生命令目录。
+  </Card>
+</CardGroup>
