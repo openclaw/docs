@@ -1,29 +1,30 @@
 ---
 read_when:
-    - شما در حال ساخت یک Plugin هستید که به before_tool_call، before_agent_reply، قلاب‌های پیام یا قلاب‌های چرخهٔ حیات نیاز دارد
-    - لازم است فراخوانی‌های ابزار از یک Plugin را مسدود یا بازنویسی کنید، یا تأیید آن‌ها را الزامی کنید
-    - در حال تصمیم‌گیری بین هوک‌های داخلی و هوک‌های Plugin هستید
-summary: 'هوک‌های Plugin: رویدادهای چرخهٔ عمر عامل، ابزار، پیام، نشست و Gateway را رهگیری می‌کنند'
+    - در حال ساخت Pluginی هستید که به before_tool_call، before_agent_reply، هوک‌های پیام یا هوک‌های چرخهٔ حیات نیاز دارد
+    - باید فراخوانی‌های ابزار از یک Plugin را مسدود یا بازنویسی کنید، یا برای آن‌ها تأییدیه الزامی کنید.
+    - شما در حال تصمیم‌گیری بین هوک‌های داخلی و هوک‌های Plugin هستید
+summary: 'هوک‌های Plugin: رویدادهای چرخه عمر عامل، ابزار، پیام، نشست و Gateway را رهگیری کنید'
 title: هوک‌های Plugin
 x-i18n:
-    generated_at: "2026-05-06T09:32:37Z"
+    generated_at: "2026-05-06T11:59:04Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 92a149e1b343ea2d3f55855c2d02f4a9519337f0450c8a1428d52cd77ab4046a
+    source_hash: 3741b95bcccdff4e24b4c1f05de54649b48a6c0a2ca1dc4376475eb1823ae185
     source_path: plugins/hooks.md
     workflow: 16
 ---
 
-هوک‌های Plugin نقاط گسترش درون‌فرایندی برای Pluginهای OpenClaw هستند. از آن‌ها
-زمانی استفاده کنید که یک Plugin لازم دارد اجرای agent، فراخوانی‌های ابزار، جریان پیام،
-چرخهٔ حیات session، مسیریابی subagent، نصب‌ها، یا راه‌اندازی Gateway را بررسی یا تغییر دهد.
+هوک‌های Plugin نقاط گسترش درون‌فرایندی برای Pluginهای OpenClaw هستند. زمانی از آن‌ها استفاده کنید
+که یک Plugin نیاز دارد اجرای عامل‌ها، فراخوانی ابزارها، جریان پیام،
+چرخه عمر نشست، مسیریابی زیرعامل، نصب‌ها، یا راه‌اندازی Gateway را بررسی یا تغییر دهد.
 
-به‌جای آن، وقتی یک اسکریپت کوچک `HOOK.md` نصب‌شده توسط اپراتور برای رویدادهای فرمان و Gateway مانند
-`/new`، `/reset`، `/stop`، `agent:bootstrap`، یا `gateway:startup` می‌خواهید، از [هوک‌های داخلی](/fa/automation/hooks) استفاده کنید.
+وقتی یک اسکریپت کوچک `HOOK.md` نصب‌شده توسط اپراتور برای رویدادهای فرمان و Gateway مانند
+`/new`، `/reset`، `/stop`، `agent:bootstrap`، یا `gateway:startup` می‌خواهید،
+به‌جای آن از [هوک‌های داخلی](/fa/automation/hooks) استفاده کنید.
 
 ## شروع سریع
 
-هوک‌های Plugin تایپ‌شده را با `api.on(...)` از ورودی Plugin خود ثبت کنید:
+هوک‌های تایپ‌شده Plugin را با `api.on(...)` از ورودی Plugin خود ثبت کنید:
 
 ```typescript
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
@@ -55,18 +56,18 @@ export default definePluginEntry({
 });
 ```
 
-مدیریت‌کننده‌های هوک به‌ترتیب نزولی `priority` به‌صورت متوالی اجرا می‌شوند. هوک‌های با اولویت یکسان
+گرداننده‌های هوک به‌ترتیب نزولی `priority` و به‌صورت ترتیبی اجرا می‌شوند. هوک‌های با اولویت یکسان
 ترتیب ثبت را حفظ می‌کنند.
 
-`api.on(name, handler, opts?)` می‌پذیرد:
+`api.on(name, handler, opts?)` موارد زیر را می‌پذیرد:
 
-- `priority` - ترتیب مدیریت‌کننده‌ها (مقدار بالاتر زودتر اجرا می‌شود).
-- `timeoutMs` - بودجهٔ اختیاری برای هر هوک. وقتی تنظیم شود، اجراکنندهٔ هوک پس از پایان بودجه آن
-  مدیریت‌کننده را متوقف می‌کند و به مورد بعدی ادامه می‌دهد، به‌جای آنکه اجازه دهد راه‌اندازی کند یا کار فراخوانی کند
-  timeout مدل پیکربندی‌شدهٔ فراخواننده را مصرف کند. برای استفاده از timeout پیش‌فرض مشاهده/تصمیم که
-  اجراکنندهٔ هوک به‌صورت عمومی اعمال می‌کند، آن را حذف کنید.
+- `priority` - ترتیب گرداننده‌ها (عدد بالاتر زودتر اجرا می‌شود).
+- `timeoutMs` - بودجه اختیاری برای هر هوک. وقتی تنظیم شود، اجراکننده هوک پس از سپری‌شدن بودجه،
+  آن گرداننده را متوقف می‌کند و به مورد بعدی ادامه می‌دهد، به‌جای اینکه اجازه دهد راه‌اندازی کند یا کار یادآوری کند
+  زمان مدل پیکربندی‌شده فراخواننده را مصرف کند. برای استفاده از زمان‌سنج پیش‌فرض مشاهده/تصمیم که
+  اجراکننده هوک به‌صورت عمومی اعمال می‌کند، آن را حذف کنید.
 
-اپراتورها همچنین می‌توانند بودجه‌های هوک را بدون patch کردن کد Plugin تنظیم کنند:
+اپراتورها همچنین می‌توانند بودجه‌های هوک را بدون وصله‌کردن کد Plugin تنظیم کنند:
 
 ```json
 {
@@ -86,81 +87,84 @@ export default definePluginEntry({
 }
 ```
 
-`hooks.timeouts.<hookName>` مقدار `hooks.timeoutMs` را override می‌کند، و آن نیز مقدار
-`api.on(..., { timeoutMs })` نوشته‌شده توسط نویسندهٔ Plugin را override می‌کند. هر مقدار پیکربندی‌شده باید
-یک عدد صحیح مثبت و حداکثر برابر با 600000 میلی‌ثانیه باشد. برای هوک‌های کند شناخته‌شده،
-overrideهای مخصوص هر هوک را ترجیح دهید تا یک Plugin در همه‌جا بودجهٔ طولانی‌تری نگیرد.
+`hooks.timeouts.<hookName>` مقدار `hooks.timeoutMs` را بازنویسی می‌کند، و آن نیز مقدار
+نوشته‌شده توسط Plugin در `api.on(..., { timeoutMs })` را بازنویسی می‌کند. هر مقدار پیکربندی‌شده باید
+یک عدد صحیح مثبت و حداکثر برابر با 600000 میلی‌ثانیه باشد. برای هوک‌های کند شناخته‌شده، بازنویسی‌های مخصوص هر هوک را ترجیح دهید
+تا یک Plugin در همه‌جا بودجه طولانی‌تری نگیرد.
 
-هر هوک `event.context.pluginConfig` را دریافت می‌کند؛ پیکربندی resolve‌شده برای
-Pluginی که آن مدیریت‌کننده را ثبت کرده است. برای تصمیم‌های هوکی که به گزینه‌های فعلی Plugin نیاز دارند
-از آن استفاده کنید؛ OpenClaw آن را برای هر مدیریت‌کننده تزریق می‌کند بدون اینکه object رویداد مشترک دیده‌شده توسط Pluginهای دیگر را تغییر دهد.
+هر هوک `event.context.pluginConfig` را دریافت می‌کند؛ یعنی پیکربندی حل‌شده برای
+Pluginی که آن گرداننده را ثبت کرده است. از آن برای تصمیم‌های هوکی استفاده کنید که به
+گزینه‌های فعلی Plugin نیاز دارند؛ OpenClaw آن را برای هر گرداننده تزریق می‌کند، بدون اینکه
+شیء رویداد مشترک دیده‌شده توسط دیگر Pluginها را تغییر دهد.
 
-## کاتالوگ هوک
+## کاتالوگ هوک‌ها
 
-هوک‌ها بر اساس سطحی که گسترش می‌دهند گروه‌بندی شده‌اند. نام‌های **پررنگ** نتیجهٔ تصمیم
-(مسدود کردن، لغو، override، یا درخواست تأیید) را می‌پذیرند؛ همهٔ موارد دیگر فقط برای مشاهده هستند.
+هوک‌ها بر اساس سطحی که گسترش می‌دهند گروه‌بندی شده‌اند. نام‌های **پررنگ** یک
+نتیجه تصمیم را می‌پذیرند (مسدودسازی، لغو، بازنویسی، یا درخواست تأیید)؛ سایر موارد
+فقط برای مشاهده هستند.
 
-**نوبت Agent**
+**نوبت عامل**
 
-- `before_model_resolve` - provider یا model را پیش از بارگذاری پیام‌های session override می‌کند
-- `agent_turn_prepare` - تزریق‌های نوبت Plugin صف‌شده را مصرف می‌کند و پیش از هوک‌های prompt، context همان نوبت را اضافه می‌کند
-- `before_prompt_build` - پیش از فراخوانی model، context پویا یا متن system-prompt را اضافه می‌کند
+- `before_model_resolve` - بازنویسی ارائه‌دهنده یا مدل پیش از بارگذاری پیام‌های نشست
+- `agent_turn_prepare` - مصرف تزریق‌های نوبت Plugin در صف و افزودن زمینه همان نوبت پیش از هوک‌های پرامپت
+- `before_prompt_build` - افزودن زمینه پویا یا متن پرامپت سیستمی پیش از فراخوانی مدل
 - `before_agent_start` - فاز ترکیبی فقط برای سازگاری؛ دو هوک بالا را ترجیح دهید
-- **`before_agent_reply`** - نوبت model را با یک پاسخ synthetic یا سکوت short-circuit می‌کند
-- **`before_agent_finalize`** - پاسخ نهایی طبیعی را بررسی می‌کند و یک گذر دیگر model درخواست می‌کند
-- `agent_end` - پیام‌های نهایی، وضعیت موفقیت، و مدت اجرای run را مشاهده می‌کند
-- `heartbeat_prompt_contribution` - context مخصوص Heartbeat را برای monitor پس‌زمینه و Pluginهای چرخهٔ حیات اضافه می‌کند
+- **`before_agent_run`** - بررسی پرامپت نهایی و پیام‌های نشست پیش از ارسال به مدل و، در صورت نیاز، مسدودکردن اجرا
+- **`before_agent_reply`** - کوتاه‌کردن نوبت مدل با یک پاسخ مصنوعی یا سکوت
+- **`before_agent_finalize`** - بررسی پاسخ نهایی طبیعی و درخواست یک گذر دیگر مدل
+- `agent_end` - مشاهده پیام‌های نهایی، وضعیت موفقیت، و مدت اجرا
+- `heartbeat_prompt_contribution` - افزودن زمینه فقط مخصوص Heartbeat برای Pluginهای پایش پس‌زمینه و چرخه عمر
 
-**مشاهدهٔ مکالمه**
+**مشاهده مکالمه**
 
-- `model_call_started` / `model_call_ended` - metadata پاک‌سازی‌شدهٔ فراخوانی provider/model، زمان‌بندی، نتیجه، و hashهای محدود request-id را بدون محتوای prompt یا response مشاهده می‌کند
-- `llm_input` - ورودی provider را مشاهده می‌کند (system prompt، prompt، history)
-- `llm_output` - خروجی provider را مشاهده می‌کند
+- `model_call_started` / `model_call_ended` - مشاهده فراداده پاک‌سازی‌شده فراخوانی ارائه‌دهنده/مدل، زمان‌بندی، نتیجه، و هش‌های محدود شناسه درخواست بدون محتوای پرامپت یا پاسخ
+- `llm_input` - مشاهده ورودی ارائه‌دهنده (پرامپت سیستمی، پرامپت، تاریخچه)
+- `llm_output` - مشاهده خروجی ارائه‌دهنده
 
 **ابزارها**
 
-- **`before_tool_call`** - params ابزار را بازنویسی می‌کند، اجرا را مسدود می‌کند، یا تأیید درخواست می‌کند
-- `after_tool_call` - نتایج ابزار، خطاها، و مدت را مشاهده می‌کند
-- **`tool_result_persist`** - پیام assistant تولیدشده از نتیجهٔ ابزار را بازنویسی می‌کند
-- **`before_message_write`** - نوشتن پیام در حال انجام را بررسی یا مسدود می‌کند (نادر)
+- **`before_tool_call`** - بازنویسی پارامترهای ابزار، مسدودکردن اجرا، یا درخواست تأیید
+- `after_tool_call` - مشاهده نتایج ابزار، خطاها، و مدت‌زمان
+- **`tool_result_persist`** - بازنویسی پیام دستیار تولیدشده از نتیجه ابزار
+- **`before_message_write`** - بررسی یا مسدودکردن نوشتن پیام در حال انجام (نادر)
 
 **پیام‌ها و تحویل**
 
-- **`inbound_claim`** - یک پیام ورودی را پیش از مسیریابی agent claim می‌کند (پاسخ‌های synthetic)
-- `message_received` - محتوای ورودی، فرستنده، thread، و metadata را مشاهده می‌کند
-- **`message_sending`** - محتوای خروجی را بازنویسی می‌کند یا تحویل را لغو می‌کند
-- `message_sent` - موفقیت یا شکست تحویل خروجی را مشاهده می‌کند
-- **`before_dispatch`** - یک dispatch خروجی را پیش از تحویل به channel بررسی یا بازنویسی می‌کند
-- **`reply_dispatch`** - در pipeline نهایی reply-dispatch مشارکت می‌کند
+- **`inbound_claim`** - تصاحب یک پیام ورودی پیش از مسیریابی عامل (پاسخ‌های مصنوعی)
+- `message_received` - مشاهده محتوای ورودی، فرستنده، رشته، و فراداده
+- **`message_sending`** - بازنویسی محتوای خروجی یا لغو تحویل
+- `message_sent` - مشاهده موفقیت یا شکست تحویل خروجی
+- **`before_dispatch`** - بررسی یا بازنویسی یک ارسال خروجی پیش از تحویل به کانال
+- **`reply_dispatch`** - مشارکت در خط لوله نهایی ارسال پاسخ
 
-**Sessionها و Compaction**
+**نشست‌ها و Compaction**
 
-- `session_start` / `session_end` - مرزهای چرخهٔ حیات session را ردیابی می‌کند
-- `before_compaction` / `after_compaction` - چرخه‌های Compaction را مشاهده یا annotate می‌کند
-- `before_reset` - رویدادهای reset کردن session را مشاهده می‌کند (`/reset`، resetهای برنامه‌ای)
+- `session_start` / `session_end` - ردیابی مرزهای چرخه عمر نشست
+- `before_compaction` / `after_compaction` - مشاهده یا حاشیه‌نویسی چرخه‌های Compaction
+- `before_reset` - مشاهده رویدادهای بازنشانی نشست (`/reset`، بازنشانی‌های برنامه‌نویسی‌شده)
 
-**Subagentها**
+**زیرعامل‌ها**
 
-- `subagent_spawning` / `subagent_delivery_target` / `subagent_spawned` / `subagent_ended` - مسیریابی subagent و تحویل تکمیل را هماهنگ می‌کند
+- `subagent_spawning` / `subagent_delivery_target` / `subagent_spawned` / `subagent_ended` - هماهنگ‌کردن مسیریابی زیرعامل و تحویل تکمیل
 
-**چرخهٔ حیات**
+**چرخه عمر**
 
-- `gateway_start` / `gateway_stop` - سرویس‌های متعلق به Plugin را همراه با Gateway شروع یا متوقف می‌کند
-- `cron_changed` - تغییرات چرخهٔ حیات Cron متعلق به gateway را مشاهده می‌کند (افزوده، به‌روزشده، حذف‌شده، شروع‌شده، تمام‌شده، زمان‌بندی‌شده)
-- **`before_install`** - scanهای نصب skill یا Plugin را بررسی می‌کند و به‌صورت اختیاری مسدود می‌کند
+- `gateway_start` / `gateway_stop` - شروع یا توقف سرویس‌های متعلق به Plugin همراه با Gateway
+- `cron_changed` - مشاهده تغییرات چرخه عمر Cron متعلق به Gateway (افزوده‌شده، به‌روزرسانی‌شده، حذف‌شده، شروع‌شده، پایان‌یافته، زمان‌بندی‌شده)
+- **`before_install`** - بررسی اسکن‌های نصب Skills یا Plugin و، در صورت نیاز، مسدودکردن
 
 ## سیاست فراخوانی ابزار
 
-`before_tool_call` دریافت می‌کند:
+`before_tool_call` موارد زیر را دریافت می‌کند:
 
 - `event.toolName`
 - `event.params`
 - `event.runId` اختیاری
 - `event.toolCallId` اختیاری
-- فیلدهای context مانند `ctx.agentId`، `ctx.sessionKey`، `ctx.sessionId`،
-  `ctx.runId`، `ctx.jobId` (در runهای هدایت‌شده با Cron تنظیم می‌شود)، و `ctx.trace` تشخیصی
+- فیلدهای زمینه مانند `ctx.agentId`، `ctx.sessionKey`، `ctx.sessionId`،
+  `ctx.runId`، `ctx.jobId` (روی اجراهای هدایت‌شده با Cron تنظیم می‌شود)، و `ctx.trace` تشخیصی
 
-می‌تواند بازگرداند:
+می‌تواند این را برگرداند:
 
 ```typescript
 type BeforeToolCallResult = {
@@ -183,85 +187,103 @@ type BeforeToolCallResult = {
 
 قواعد:
 
-- `block: true` نهایی است و مدیریت‌کننده‌های با اولویت پایین‌تر را رد می‌کند.
-- `block: false` مانند نبود تصمیم در نظر گرفته می‌شود.
+- `block: true` پایانی است و گرداننده‌های با اولویت پایین‌تر را رد می‌کند.
+- `block: false` به‌عنوان نبود تصمیم در نظر گرفته می‌شود.
 - `params` پارامترهای ابزار را برای اجرا بازنویسی می‌کند.
-- `requireApproval` اجرای agent را متوقف می‌کند و از طریق تأییدهای Plugin از کاربر می‌پرسد. فرمان `/approve` می‌تواند هم تأییدهای exec و هم تأییدهای Plugin را تأیید کند.
-- یک `block: true` با اولویت پایین‌تر همچنان می‌تواند پس از اینکه هوک با اولویت بالاتر درخواست تأیید کرد، مسدود کند.
-- `onResolution` تصمیم تأیید resolve‌شده را دریافت می‌کند - `allow-once`،
+- `requireApproval` اجرای عامل را متوقف می‌کند و از کاربر از طریق تأییدهای Plugin
+  درخواست می‌گیرد. فرمان `/approve` می‌تواند هم تأییدهای exec و هم تأییدهای Plugin را تأیید کند.
+- یک `block: true` با اولویت پایین‌تر همچنان می‌تواند پس از درخواست تأیید توسط یک هوک با اولویت بالاتر
+  مسدود کند.
+- `onResolution` تصمیم تأیید حل‌شده را دریافت می‌کند - `allow-once`،
   `allow-always`، `deny`، `timeout`، یا `cancelled`.
 
-Pluginهای bundled که به سیاست سطح host نیاز دارند می‌توانند سیاست‌های ابزار trusted را با
-`api.registerTrustedToolPolicy(...)` ثبت کنند. این‌ها پیش از هوک‌های معمولی
-`before_tool_call` و پیش از تصمیم‌های Plugin خارجی اجرا می‌شوند. آن‌ها را فقط
-برای gateهای trusted توسط host مانند سیاست workspace، اعمال بودجه، یا
-ایمنی workflowهای reserved استفاده کنید. Pluginهای خارجی باید از هوک‌های عادی `before_tool_call`
-استفاده کنند.
+Pluginهای همراه که به سیاست سطح میزبان نیاز دارند می‌توانند سیاست‌های ابزار مورد اعتماد را
+با `api.registerTrustedToolPolicy(...)` ثبت کنند. این‌ها پیش از هوک‌های معمولی
+`before_tool_call` و پیش از تصمیم‌های Plugin خارجی اجرا می‌شوند. فقط برای
+دروازه‌های مورد اعتماد میزبان مانند سیاست فضای کاری، اعمال بودجه، یا
+ایمنی جریان‌کاری رزرو‌شده از آن‌ها استفاده کنید. Pluginهای خارجی باید از هوک‌های معمول
+`before_tool_call` استفاده کنند.
 
-### پایدارسازی نتیجهٔ ابزار
+### ماندگارسازی نتیجه ابزار
 
-نتایج ابزار می‌توانند شامل `details` ساختاریافته برای رندر UI، diagnostics،
-مسیریابی media، یا metadata متعلق به Plugin باشند. با `details` به‌عنوان metadata زمان اجرا رفتار کنید،
-نه محتوای prompt:
+نتایج ابزار می‌توانند شامل `details` ساختاریافته برای رندر UI، تشخیص‌ها،
+مسیریابی رسانه، یا فراداده متعلق به Plugin باشند. با `details` به‌عنوان فراداده زمان اجرا برخورد کنید،
+نه محتوای پرامپت:
 
-- OpenClaw پیش از replay provider و ورودی Compaction، `toolResult.details` را حذف می‌کند
-  تا metadata به context مدل تبدیل نشود.
-- ورودی‌های session پایدارشده فقط `details` محدودشده را نگه می‌دارند. details بیش از حد بزرگ
-  با یک خلاصهٔ فشرده و `persistedDetailsTruncated: true` جایگزین می‌شوند.
-- `tool_result_persist` و `before_message_write` پیش از cap نهایی پایداری اجرا می‌شوند.
-  هوک‌ها همچنان باید `details` برگشتی را کوچک نگه دارند و از قرار دادن متن مرتبط با prompt فقط در `details` پرهیز کنند؛ خروجی ابزار قابل‌مشاهده برای model را
-  در `content` قرار دهید.
+- OpenClaw پیش از بازپخش ارائه‌دهنده و ورودی Compaction،
+  `toolResult.details` را حذف می‌کند تا فراداده به زمینه مدل تبدیل نشود.
+- ورودی‌های نشست ماندگارشده فقط `details` محدود را نگه می‌دارند. جزئیات بیش‌ازحد بزرگ
+  با یک خلاصه فشرده و `persistedDetailsTruncated: true` جایگزین می‌شوند.
+- `tool_result_persist` و `before_message_write` پیش از سقف نهایی
+  ماندگارسازی اجرا می‌شوند. هوک‌ها همچنان باید `details` برگشتی را کوچک نگه دارند و از
+  قرار دادن متن مرتبط با پرامپت فقط در `details` پرهیز کنند؛ خروجی ابزار قابل مشاهده برای مدل را
+  در `content` بگذارید.
 
-## هوک‌های Prompt و model
+## هوک‌های پرامپت و مدل
 
 برای Pluginهای جدید از هوک‌های مخصوص هر فاز استفاده کنید:
 
-- `before_model_resolve`: فقط prompt فعلی و metadata پیوست را دریافت می‌کند.
-  `providerOverride` یا `modelOverride` را بازگردانید.
-- `agent_turn_prepare`: prompt فعلی، پیام‌های آماده‌شدهٔ session،
-  و هر تزریق صف‌شدهٔ exactly-once تخلیه‌شده برای این session را دریافت می‌کند. `prependContext` یا `appendContext` را بازگردانید.
-- `before_prompt_build`: prompt فعلی و پیام‌های session را دریافت می‌کند.
+- `before_model_resolve`: فقط پرامپت فعلی و فراداده پیوست را دریافت می‌کند.
+  `providerOverride` یا `modelOverride` را برگردانید.
+- `agent_turn_prepare`: پرامپت فعلی، پیام‌های نشست آماده‌شده،
+  و هر تزریق دقیقاً یک‌باره در صف که برای این نشست تخلیه شده را دریافت می‌کند. `prependContext` یا `appendContext` را برگردانید.
+- `before_prompt_build`: پرامپت فعلی و پیام‌های نشست را دریافت می‌کند.
   `prependContext`، `appendContext`، `systemPrompt`،
-  `prependSystemContext`، یا `appendSystemContext` را بازگردانید.
+  `prependSystemContext`، یا `appendSystemContext` را برگردانید.
 - `heartbeat_prompt_contribution`: فقط برای نوبت‌های Heartbeat اجرا می‌شود و
-  `prependContext` یا `appendContext` را بازمی‌گرداند. این برای monitorهای پس‌زمینه در نظر گرفته شده است
-  که باید وضعیت فعلی را بدون تغییر دادن نوبت‌های آغازشده توسط کاربر خلاصه کنند.
+  `prependContext` یا `appendContext` را برمی‌گرداند. این هوک برای پایشگرهای پس‌زمینه‌ای در نظر گرفته شده است
+  که باید وضعیت فعلی را بدون تغییر نوبت‌های آغازشده توسط کاربر خلاصه کنند.
 
 `before_agent_start` برای سازگاری باقی می‌ماند. هوک‌های صریح بالا را ترجیح دهید
-تا Plugin شما به یک فاز ترکیبی legacy وابسته نباشد.
+تا Plugin شما به یک فاز ترکیبی قدیمی وابسته نباشد.
 
-`before_agent_start` و `agent_end` وقتی OpenClaw بتواند run فعال را
-شناسایی کند شامل `event.runId` هستند. همان مقدار روی `ctx.runId` نیز در دسترس است.
-runهای هدایت‌شده با Cron همچنین `ctx.jobId` را expose می‌کنند (شناسهٔ cron job مبدأ) تا
-هوک‌های Plugin بتوانند metricها، side effectها، یا state را به یک job زمان‌بندی‌شدهٔ خاص
-محدود کنند.
+`before_agent_run` پس از ساخت پرامپت و پیش از هر ورودی مدل اجرا می‌شود،
+از جمله بارگذاری تصویر محلی پرامپت و مشاهده `llm_input`. این هوک
+ورودی فعلی کاربر را به‌عنوان `prompt`، به‌علاوه تاریخچه نشست بارگذاری‌شده در `messages`
+و پرامپت سیستمی فعال دریافت می‌کند. برای توقف اجرا پیش از اینکه مدل بتواند پرامپت را بخواند،
+`{ outcome: "block", reason, message? }` را برگردانید. `reason` داخلی است؛
+`message` جایگزین روبه‌روی کاربر است. تنها نتایج پشتیبانی‌شده
+`pass` و `block` هستند؛ شکل‌های تصمیم پشتیبانی‌نشده بسته شکست می‌خورند.
 
-برای runهایی که از channel سرچشمه می‌گیرند، `ctx.messageProvider` سطح provider مانند
-`discord` یا `telegram` است، در حالی که `ctx.channelId` شناسهٔ هدف مکالمه است
-وقتی OpenClaw بتواند آن را از session key یا metadata تحویل استخراج کند.
+وقتی یک اجرا مسدود می‌شود، OpenClaw فقط متن جایگزین را در
+`message.content` به‌همراه فراداده مسدودسازی غیرحساس مانند شناسه Plugin مسدودکننده
+و مهر زمانی ذخیره می‌کند. متن اصلی کاربر در رونویس یا زمینه آینده نگه داشته نمی‌شود.
+دلایل مسدودسازی داخلی حساس در نظر گرفته می‌شوند و از بارهای رونویس،
+تاریخچه، پخش، لاگ، و تشخیص حذف می‌شوند. مشاهده‌پذیری باید از فیلدهای پاک‌سازی‌شده
+مانند شناسه مسدودکننده، نتیجه، مهر زمانی، یا یک دسته‌بندی امن استفاده کند.
 
-`agent_end` یک هوک مشاهده است و پس از نوبت به‌صورت fire-and-forget اجرا می‌شود. اجراکنندهٔ
-هوک یک timeout برابر با 30 ثانیه اعمال می‌کند تا یک Plugin گیرکرده یا endpoint embedding
-نتواند promise هوک را برای همیشه pending نگه دارد. timeout ثبت می‌شود و
-OpenClaw ادامه می‌دهد؛ کار network متعلق به Plugin را لغو نمی‌کند مگر اینکه
-Plugin از سیگنال abort خودش نیز استفاده کند.
+`before_agent_start` و `agent_end` زمانی `event.runId` را شامل می‌شوند که OpenClaw بتواند
+اجرای فعال را شناسایی کند. همان مقدار روی `ctx.runId` نیز در دسترس است.
+اجراهای هدایت‌شده با Cron همچنین `ctx.jobId` (شناسه کار Cron مبدأ) را آشکار می‌کنند تا
+هوک‌های Plugin بتوانند معیارها، اثرات جانبی، یا وضعیت را به یک کار زمان‌بندی‌شده مشخص محدود کنند.
 
-از `model_call_started` و `model_call_ended` برای telemetry فراخوانی provider استفاده کنید
-که نباید promptهای خام، history، responseها، headerها، request
-bodyها، یا request IDهای provider را دریافت کند. این هوک‌ها metadata پایدار مانند
-`runId`، `callId`، `provider`، `model`، `api`/`transport` اختیاری، مقادیر پایانی
-`durationMs`/`outcome`، و `upstreamRequestIdHash` را وقتی OpenClaw بتواند یک
-hash محدود provider request-id استخراج کند شامل می‌شوند.
+برای اجراهای منشأگرفته از کانال، `ctx.messageProvider` سطح ارائه‌دهنده مانند
+`discord` یا `telegram` است، درحالی‌که `ctx.channelId` شناسه هدف مکالمه است
+وقتی OpenClaw بتواند آن را از کلید نشست یا فراداده تحویل استخراج کند.
 
-`before_agent_finalize` فقط وقتی اجرا می‌شود که یک harness در آستانهٔ پذیرش یک پاسخ نهایی طبیعی
-assistant باشد. این مسیر لغو `/stop` نیست و وقتی کاربر یک نوبت را abort می‌کند
-اجرا نمی‌شود. برای درخواست یک گذر دیگر model پیش از finalization مقدار `{ action: "revise", reason }` را بازگردانید، برای اجبار finalization مقدار `{ action:
-"finalize", reason? }` را بازگردانید، یا برای ادامه نتیجه‌ای حذف کنید.
-هوک‌های native `Stop` در Codex به‌عنوان تصمیم‌های OpenClaw
-`before_agent_finalize` به این هوک relay می‌شوند.
+`agent_end` یک هوک مشاهده است و پس از نوبت به‌صورت fire-and-forget اجرا می‌شود. اجراکننده
+هوک یک زمان‌سنج 30 ثانیه‌ای اعمال می‌کند تا یک Plugin گیرکرده یا نقطه پایانی embedding
+نتواند promise هوک را برای همیشه در حالت معلق رها کند. timeout ثبت می‌شود و
+OpenClaw ادامه می‌دهد؛ مگر اینکه خود Plugin نیز از سیگنال abort خود استفاده کند،
+کار شبکه‌ای متعلق به Plugin را لغو نمی‌کند.
 
-هنگام بازگرداندن `action: "revise"`، Pluginها می‌توانند metadata `retry` را شامل کنند تا
-گذر اضافی model محدود و replay-safe باشد:
+برای دورسنجی فراخوانی ارائه‌دهنده که نباید پرامپت‌های خام، تاریخچه، پاسخ‌ها، سربرگ‌ها، بدنه‌های درخواست،
+یا شناسه‌های درخواست ارائه‌دهنده را دریافت کند، از `model_call_started` و `model_call_ended` استفاده کنید.
+این هوک‌ها شامل فراداده پایدار مانند
+`runId`، `callId`، `provider`، `model`، `api`/`transport` اختیاری، مقدار پایانی
+`durationMs`/`outcome`، و `upstreamRequestIdHash` هستند، وقتی OpenClaw بتواند یک
+هش محدود شناسه درخواست ارائه‌دهنده را استخراج کند.
+
+`before_agent_finalize` فقط زمانی اجرا می‌شود که یک harness در آستانه پذیرش یک
+پاسخ نهایی طبیعی دستیار باشد. این مسیر لغو `/stop` نیست و زمانی که
+کاربر یک نوبت را abort می‌کند اجرا نمی‌شود. برای درخواست یک گذر دیگر مدل از
+harness پیش از نهایی‌سازی، `{ action: "revise", reason }` را برگردانید؛ برای اجبار به نهایی‌سازی،
+`{ action: "finalize", reason? }` را برگردانید؛ یا برای ادامه، نتیجه‌ای برنگردانید.
+هوک‌های بومی `Stop` در Codex به‌عنوان تصمیم‌های
+`before_agent_finalize` در OpenClaw به این هوک منتقل می‌شوند.
+
+هنگام برگرداندن `action: "revise"`، Pluginها می‌توانند فراداده `retry` را اضافه کنند تا
+گذر اضافی مدل محدود و ایمن برای بازپخش باشد:
 
 ```typescript
 type BeforeAgentFinalizeRetry = {
@@ -271,13 +293,12 @@ type BeforeAgentFinalizeRetry = {
 };
 ```
 
-`instruction` به دلیل revision ارسال‌شده به harness افزوده می‌شود.
-`idempotencyKey` به host اجازه می‌دهد retryها را برای همان درخواست Plugin در میان
-تصمیم‌های finalize معادل بشمارد، و `maxAttempts` تعداد گذرهای اضافی‌ای را که
-host پیش از ادامه با پاسخ نهایی طبیعی اجازه می‌دهد محدود می‌کند.
+`instruction` به دلیل بازبینی‌ای که به هارنس ارسال می‌شود افزوده می‌شود.
+`idempotencyKey` به میزبان اجازه می‌دهد تلاش‌های دوباره برای همان درخواست Plugin را در تصمیم‌های finalize معادل بشمارد، و `maxAttempts` محدود می‌کند میزبان پیش از ادامه دادن با پاسخ نهایی طبیعی، چند گذر اضافه را مجاز بداند.
 
-Pluginهای non-bundled که به `llm_input`، `llm_output`،
-`before_agent_finalize`، یا `agent_end` نیاز دارند باید تنظیم کنند:
+Pluginهای غیرباندل‌شده‌ای که به قلاب‌های خام مکالمه (`before_model_resolve`,
+`before_agent_reply`, `llm_input`, `llm_output`, `before_agent_finalize`,
+`agent_end`، یا `before_agent_run`) نیاز دارند باید تنظیم کنند:
 
 ```json
 {
@@ -293,113 +314,70 @@ Pluginهای non-bundled که به `llm_input`، `llm_output`،
 }
 ```
 
-هوک‌های تغییردهندهٔ prompt و تزریق‌های پایدار نوبت بعدی را می‌توان برای هر Plugin
-با `plugins.entries.<id>.hooks.allowPromptInjection=false` غیرفعال کرد.
+قلاب‌هایی که پرامپت را تغییر می‌دهند و تزریق‌های پایدار نوبت بعدی را می‌توان برای هر Plugin با `plugins.entries.<id>.hooks.allowPromptInjection=false` غیرفعال کرد.
 
-### گسترش‌های Session و تزریق‌های نوبت بعدی
+### افزونه‌های نشست و تزریق‌های نوبت بعدی
 
-Pluginهای گردش کار می‌توانند وضعیت جلسهٔ کوچک و سازگار با JSON را با
-`api.registerSessionExtension(...)` پایدار کنند و آن را از طریق متد
-`sessions.pluginPatch` در Gateway به‌روزرسانی کنند. ردیف‌های جلسه وضعیت extension ثبت‌شده را
-از طریق `pluginExtensions` نمایش می‌دهند و به Control UI و سایر clientها اجازه می‌دهند
-وضعیت متعلق به Plugin را بدون دانستن جزئیات داخلی Plugin رندر کنند.
+Pluginهای گردش کار می‌توانند وضعیت نشست کوچکِ سازگار با JSON را با `api.registerSessionExtension(...)` پایدار کنند و آن را از طریق متد `sessions.pluginPatch` در Gateway به‌روزرسانی کنند. ردیف‌های نشست، وضعیت افزونه ثبت‌شده را از طریق `pluginExtensions` نمایش می‌دهند و به Control UI و کلاینت‌های دیگر اجازه می‌دهند وضعیت متعلق به Plugin را بدون دانستن جزئیات داخلی Plugin رندر کنند.
 
-وقتی یک Plugin نیاز دارد context پایدار دقیقاً یک‌بار به نوبت مدل بعدی برسد، از
-`api.enqueueNextTurnInjection(...)` استفاده کنید. OpenClaw تزریق‌های صف‌شده را پیش از
-hookهای prompt تخلیه می‌کند، تزریق‌های منقضی‌شده را حذف می‌کند، و بر اساس `idempotencyKey`
-برای هر Plugin deduplicate می‌کند. این seam مناسب برای resumeهای تأیید، خلاصه‌های policy،
-deltaهای مانیتور پس‌زمینه، و ادامهٔ commandهایی است که باید در نوبت بعدی برای
-مدل قابل مشاهده باشند اما نباید به متن دائمی system prompt تبدیل شوند.
+وقتی یک Plugin نیاز دارد زمینه پایدار دقیقاً یک‌بار به نوبت بعدی مدل برسد، از `api.enqueueNextTurnInjection(...)` استفاده کنید. OpenClaw تزریق‌های صف‌شده را پیش از قلاب‌های پرامپت تخلیه می‌کند، تزریق‌های منقضی‌شده را حذف می‌کند، و بر اساس `idempotencyKey` برای هر Plugin موارد تکراری را حذف می‌کند. این درز مناسب برای ازسرگیری‌های تأیید، خلاصه‌های خط‌مشی، دلتاهای پایش پس‌زمینه، و ادامه‌های فرمانی است که باید در نوبت بعدی برای مدل قابل مشاهده باشند اما نباید به متن دائمی پرامپت سیستم تبدیل شوند.
 
-معناشناسی cleanup بخشی از contract است. cleanup مربوط به session extension و
-callbackهای cleanup چرخهٔ عمر runtime مقدارهای `reset`، `delete`، `disable`، یا
-`restart` را دریافت می‌کنند. host وضعیت session extension پایدار متعلق به Plugin مالک
-و تزریق‌های pending نوبت بعدی را برای reset/delete/disable حذف می‌کند؛ restart وضعیت
-session پایدار را نگه می‌دارد، در حالی که callbackهای cleanup به Pluginها اجازه می‌دهند
-jobهای scheduler، context اجرا، و سایر resourceهای خارج از باند مربوط به generation قدیمی
-runtime را آزاد کنند.
+معناشناسی پاک‌سازی بخشی از قرارداد است. پاک‌سازی افزونه نشست و کال‌بک‌های پاک‌سازی چرخه عمر زمان اجرا `reset`، `delete`، `disable`، یا `restart` دریافت می‌کنند. میزبان وضعیت افزونه نشست پایدار متعلق به Plugin و تزریق‌های در انتظار نوبت بعدی را برای reset/delete/disable حذف می‌کند؛ restart وضعیت نشست پایدار را نگه می‌دارد، در حالی که کال‌بک‌های پاک‌سازی به Pluginها اجازه می‌دهند کارهای زمان‌بند، زمینه اجرا، و منابع خارج از باند دیگر را برای نسل قدیمی زمان اجرا آزاد کنند.
 
-## hookهای پیام
+## قلاب‌های پیام
 
-از hookهای پیام برای routing سطح کانال و policy تحویل استفاده کنید:
+از قلاب‌های پیام برای مسیریابی سطح کانال و خط‌مشی تحویل استفاده کنید:
 
-- `message_received`: محتوای ورودی، فرستنده، `threadId`، `messageId`،
-  `senderId`، ارتباط اختیاری run/session، و metadata را مشاهده کنید.
-- `message_sending`: مقدار `content` را بازنویسی کنید یا `{ cancel: true }` برگردانید.
+- `message_received`: محتوای ورودی، فرستنده، `threadId`، `messageId`، `senderId`، همبستگی اختیاری اجرا/نشست، و فراداده را مشاهده کنید.
+- `message_sending`: `content` را بازنویسی کنید یا `{ cancel: true }` برگردانید.
 - `message_sent`: موفقیت یا شکست نهایی را مشاهده کنید.
 
-برای پاسخ‌های TTS فقط صوتی، `content` ممکن است transcript گفتاری پنهان را داشته باشد
-حتی وقتی payload کانال متن/caption قابل مشاهده‌ای ندارد. بازنویسی آن
-`content` فقط transcript قابل مشاهده برای hook را به‌روزرسانی می‌کند؛ به‌عنوان
-caption رسانه رندر نمی‌شود.
+برای پاسخ‌های TTS فقط صوتی، `content` ممکن است حتی وقتی بار کانال متن/کپشن قابل مشاهده ندارد، رونوشت گفتاری پنهان را در خود داشته باشد. بازنویسی آن `content` فقط رونوشت قابل مشاهده برای قلاب را به‌روزرسانی می‌کند؛ به‌عنوان کپشن رسانه رندر نمی‌شود.
 
-contextهای hook پیام، وقتی در دسترس باشند، fieldهای correlation پایدار را expose می‌کنند:
-`ctx.sessionKey`، `ctx.runId`، `ctx.messageId`، `ctx.senderId`، `ctx.trace`,
-`ctx.traceId`، `ctx.spanId`، `ctx.parentSpanId`، و `ctx.callDepth`. پیش از خواندن
-metadata قدیمی، این fieldهای first-class را ترجیح دهید.
+زمینه‌های قلاب پیام وقتی در دسترس باشند فیلدهای همبستگی پایدار را آشکار می‌کنند:
+`ctx.sessionKey`، `ctx.runId`، `ctx.messageId`، `ctx.senderId`، `ctx.trace`،
+`ctx.traceId`، `ctx.spanId`، `ctx.parentSpanId`، و `ctx.callDepth`. پیش از خواندن فراداده قدیمی، این فیلدهای درجه‌اول را ترجیح دهید.
 
-پیش از استفاده از metadata اختصاصی کانال، fieldهای typed `threadId` و `replyToId` را ترجیح دهید.
+پیش از استفاده از فراداده ویژه کانال، فیلدهای تایپ‌شده `threadId` و `replyToId` را ترجیح دهید.
 
-قواعد تصمیم:
+قواعد تصمیم‌گیری:
 
 - `message_sending` با `cancel: true` نهایی است.
 - `message_sending` با `cancel: false` به‌عنوان نبود تصمیم در نظر گرفته می‌شود.
-- `content` بازنویسی‌شده به hookهای با اولویت پایین‌تر ادامه می‌یابد، مگر اینکه hook بعدی
-  تحویل را لغو کند.
+- `content` بازنویسی‌شده به قلاب‌های با اولویت پایین‌تر ادامه می‌دهد مگر اینکه قلابی بعدی تحویل را لغو کند.
 
-## hookهای نصب
+## قلاب‌های نصب
 
-`before_install` پس از scan داخلی برای نصب‌های skill و Plugin اجرا می‌شود.
-یافته‌های اضافی یا `{ block: true, blockReason }` را برای متوقف کردن
-نصب برگردانید.
+`before_install` پس از اسکن داخلی برای نصب‌های Skills و Plugin اجرا می‌شود. یافته‌های اضافی یا `{ block: true, blockReason }` را برگردانید تا نصب متوقف شود.
 
 `block: true` نهایی است. `block: false` به‌عنوان نبود تصمیم در نظر گرفته می‌شود.
 
-## چرخهٔ عمر Gateway
+## چرخه عمر Gateway
 
-برای serviceهای Plugin که به وضعیت متعلق به Gateway نیاز دارند، از `gateway_start` استفاده کنید.
-context مقدارهای `ctx.config`، `ctx.workspaceDir`، و `ctx.getCron?.()` را برای
-بازرسی و به‌روزرسانی‌های cron expose می‌کند. برای پاک‌سازی resourceهای طولانی‌مدت
-از `gateway_stop` استفاده کنید.
+برای سرویس‌های Plugin که به وضعیت متعلق به Gateway نیاز دارند، از `gateway_start` استفاده کنید. زمینه `ctx.config`، `ctx.workspaceDir`، و `ctx.getCron?.()` را برای بازرسی و به‌روزرسانی‌های cron آشکار می‌کند. برای پاک‌سازی منابع بلندمدت از `gateway_stop` استفاده کنید.
 
-برای serviceهای runtime متعلق به Plugin به hook داخلی `gateway:startup` تکیه نکنید.
+برای سرویس‌های زمان اجرای متعلق به Plugin به قلاب داخلی `gateway:startup` تکیه نکنید.
 
-`cron_changed` برای رویدادهای چرخهٔ عمر cron متعلق به gateway با یک payload رویداد typed
-برای دلایل `added`، `updated`، `removed`، `started`، `finished`،
-و `scheduled` اجرا می‌شود. رویداد یک snapshot از `PluginHookGatewayCronJob`
-(شامل `state.nextRunAtMs`، `state.lastRunStatus`، و
-`state.lastError` در صورت وجود) به‌همراه یک `PluginHookGatewayCronDeliveryStatus`
-از `not-requested` | `delivered` | `not-delivered` | `unknown` را حمل می‌کند. رویدادهای حذف‌شده
-همچنان snapshot job حذف‌شده را حمل می‌کنند تا schedulerهای خارجی بتوانند
-وضعیت را reconcile کنند. هنگام همگام‌سازی wake schedulerهای خارجی، از `ctx.getCron?.()` و
-`ctx.config` در context runtime استفاده کنید، و OpenClaw را به‌عنوان
-منبع حقیقت برای due checkها و اجرا نگه دارید.
+`cron_changed` برای رویدادهای چرخه عمر cron متعلق به gateway با بار رویداد تایپ‌شده‌ای اجرا می‌شود که دلیل‌های `added`، `updated`، `removed`، `started`، `finished`، و `scheduled` را پوشش می‌دهد. رویداد یک اسنپ‌شات `PluginHookGatewayCronJob` (شامل `state.nextRunAtMs`، `state.lastRunStatus`، و `state.lastError` در صورت وجود) به‌همراه یک `PluginHookGatewayCronDeliveryStatus` از `not-requested` | `delivered` | `not-delivered` | `unknown` حمل می‌کند. رویدادهای حذف‌شده همچنان اسنپ‌شات کار حذف‌شده را حمل می‌کنند تا زمان‌بندهای خارجی بتوانند وضعیت را همگام کنند. هنگام همگام‌سازی زمان‌بندهای بیدارباش خارجی، از `ctx.getCron?.()` و `ctx.config` از زمینه زمان اجرا استفاده کنید، و OpenClaw را منبع حقیقت برای بررسی‌های موعد و اجرا نگه دارید.
 
-## deprecationهای آینده
+## منسوخ‌سازی‌های پیش‌رو
 
-چند سطح hook-adjacent منسوخ شده‌اند اما همچنان پشتیبانی می‌شوند. پیش از
-انتشار major بعدی migrate کنید:
+چند سطح مجاور قلاب منسوخ شده‌اند اما هنوز پشتیبانی می‌شوند. پیش از انتشار اصلی بعدی مهاجرت کنید:
 
-- **envelopeهای plaintext کانال** در handlerهای `inbound_claim` و `message_received`.
-  به‌جای parse کردن متن envelope تخت، `BodyForAgent` و بلوک‌های ساختاریافتهٔ user-context را
-  بخوانید. ببینید:
-  [envelopeهای plaintext کانال → BodyForAgent](/fa/plugins/sdk-migration#active-deprecations).
-- **`before_agent_start`** برای سازگاری باقی می‌ماند. Pluginهای جدید باید به‌جای phase ترکیبی
-  از `before_model_resolve` و `before_prompt_build` استفاده کنند.
-- **`onResolution` در `before_tool_call`** اکنون به‌جای `string` آزاد، از union typed
-  `PluginApprovalResolution` (`allow-once` / `allow-always` / `deny` /
+- **پاکت‌های کانال متن ساده** در هندلرهای `inbound_claim` و `message_received`. به‌جای پارس کردن متن تخت پاکت، `BodyForAgent` و بلوک‌های ساخت‌یافته زمینه کاربر را بخوانید. ببینید
+  [پاکت‌های کانال متن ساده ← BodyForAgent](/fa/plugins/sdk-migration#active-deprecations).
+- **`before_agent_start`** برای سازگاری باقی می‌ماند. Pluginهای جدید باید به‌جای فاز ترکیبی، از `before_model_resolve` و `before_prompt_build` استفاده کنند.
+- **`onResolution` در `before_tool_call`** اکنون به‌جای `string` آزاد، از union تایپ‌شده `PluginApprovalResolution` (`allow-once` / `allow-always` / `deny` /
   `timeout` / `cancelled`) استفاده می‌کند.
 
-برای فهرست کامل - ثبت capability حافظه، profile تفکر provider،
-providerهای auth خارجی، typeهای کشف provider، accessorهای runtime task،
-و تغییر نام `command-auth` → `command-status` - ببینید
-[مهاجرت Plugin SDK → deprecationهای فعال](/fa/plugins/sdk-migration#active-deprecations).
+برای فهرست کامل - ثبت قابلیت حافظه، پروفایل تفکر ارائه‌دهنده، ارائه‌دهندگان احراز هویت خارجی، انواع کشف ارائه‌دهنده، دسترسی‌دهنده‌های زمان اجرای وظیفه، و تغییر نام `command-auth` به `command-status` - ببینید
+[مهاجرت SDK Plugin ← منسوخ‌سازی‌های فعال](/fa/plugins/sdk-migration#active-deprecations).
 
 ## مرتبط
 
-- [مهاجرت Plugin SDK](/fa/plugins/sdk-migration) - deprecationهای فعال و timeline حذف
+- [مهاجرت SDK Plugin](/fa/plugins/sdk-migration) - منسوخ‌سازی‌های فعال و جدول زمانی حذف
 - [ساخت Pluginها](/fa/plugins/building-plugins)
-- [نمای کلی Plugin SDK](/fa/plugins/sdk-overview)
+- [نمای کلی SDK Plugin](/fa/plugins/sdk-overview)
 - [نقاط ورود Plugin](/fa/plugins/sdk-entrypoints)
-- [hookهای داخلی](/fa/automation/hooks)
+- [قلاب‌های داخلی](/fa/automation/hooks)
 - [جزئیات داخلی معماری Plugin](/fa/plugins/architecture-internals)
