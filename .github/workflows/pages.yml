@@ -62,6 +62,9 @@ jobs:
       - name: Install
         run: npm ci
 
+      - name: Install librsvg2-bin
+        run: sudo apt-get update && sudo apt-get install -y librsvg2-bin
+
       - name: Build
         env:
           DOCS_SITE_CNAME: documentation.openclaw.ai

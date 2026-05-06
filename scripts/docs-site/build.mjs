@@ -1,19 +1,29 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
+import { execFile, execFileSync } from "node:child_process";
+import { promisify } from "node:util";
+
+const execFileAsync = promisify(execFile);
 import matter from "gray-matter";
 
 import { ignoredDocDirs, ignoredDocFiles, localeLabels, mintlifyLocaleToDir, rtlLocales } from "./config.mjs";
 import { siteCss, siteJs } from "./assets.mjs";
 import { createMarkdownRenderer, renderMdxish } from "./mdx-ish.mjs";
+import { renderPageOgSvg } from "./og-card-template.mjs";
 
 const root = process.cwd();
 const docsDir = path.join(root, "docs");
+const siteAssetsDir = path.join(root, "scripts", "docs-site");
 const outDir = path.join(root, "dist", "docs-site");
 const config = JSON.parse(fs.readFileSync(path.join(docsDir, "docs.json"), "utf8"));
 const md = createMarkdownRenderer();
 const basePath = normalizeBasePath(process.env.DOCS_SITE_BASE_PATH ?? "");
 const legacyBasePath = normalizeBasePath(process.env.DOCS_SITE_LEGACY_BASE_PATH ?? "/docs");
+const canonicalOrigin = (process.env.DOCS_SITE_CANONICAL_ORIGIN ?? (process.env.DOCS_SITE_CNAME ? `https://${process.env.DOCS_SITE_CNAME}` : "")).replace(/\/$/, "");
+const ogImagePath = "/og-card.png";
+const renderedPageOgCards = new Set();
+const rsvgAvailable = checkRsvg();
 const chatApiUrl = process.env.DOCS_SITE_CHAT_API_URL ?? "https://docs-chat.openclaw.ai/api/chat";
 
 fs.rmSync(outDir, { recursive: true, force: true });
@@ -49,6 +59,7 @@ const localePickerLabels = {
 };
 
 copyPublicFiles();
+await renderPageOgCards();
 for (const page of pages) writePage(page);
 writeLlmsFull();
 writeRedirects();
@@ -162,13 +173,37 @@ function layout({ page, nav, activeTab, html, toc, prev, next }) {
   const lang = htmlLang(page.locale);
   const dir = rtlLocales.has(page.locale) ? "rtl" : "ltr";
   const title = `${page.title} - ${config.name}`;
+  const description = page.summary || config.description || "";
+  const ogTitle = page.slug === "index" ? config.name : `${page.title} · ${config.name}`;
+  const canonicalUrl = canonicalOrigin ? `${canonicalOrigin}${pageRoute(page)}` : "";
+  const pageOgPath = page.locale === "en" && renderedPageOgCards.has(page.slug)
+    ? `/og/${page.slug}.png`
+    : ogImagePath;
+  const ogImageUrl = canonicalOrigin ? `${canonicalOrigin}${pageOgPath}` : publicPath(pageOgPath);
   return `<!doctype html>
 <html lang="${lang}" dir="${dir}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="${escapeAttr(page.summary || config.description || "")}">
+<meta name="description" content="${escapeAttr(description)}">
 <title>${escapeHtml(title)}</title>
+${canonicalUrl ? `<link rel="canonical" href="${escapeAttr(canonicalUrl)}">` : ""}
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="${escapeAttr(config.name)}">
+<meta property="og:title" content="${escapeAttr(ogTitle)}">
+<meta property="og:description" content="${escapeAttr(description)}">
+${canonicalUrl ? `<meta property="og:url" content="${escapeAttr(canonicalUrl)}">` : ""}
+<meta property="og:image" content="${escapeAttr(ogImageUrl)}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="${escapeAttr(`${config.name} — ${description}`)}">
+<meta property="og:locale" content="${escapeAttr(htmlLang(page.locale).replace("-", "_"))}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${escapeAttr(ogTitle)}">
+<meta name="twitter:description" content="${escapeAttr(description)}">
+<meta name="twitter:image" content="${escapeAttr(ogImageUrl)}">
+<meta name="twitter:image:alt" content="${escapeAttr(`${config.name} — ${description}`)}">
+<meta name="theme-color" content="#FF5A36">
 <link rel="icon" href="${publicPath("/assets/pixel-lobster.svg")}">
 <link rel="stylesheet" href="${publicPath("/assets/docs-site.css")}">
 <script>window.OPENCLAW_DOCS_BASE=${JSON.stringify(basePath)};window.OPENCLAW_DOCS_CHAT_API=${JSON.stringify(chatApiUrl)};document.documentElement.dataset.theme=localStorage.getItem("theme")||"dark"</script>
@@ -205,11 +240,11 @@ function siteHeader(page, nav, activeTab) {
   return `<header class="site-header">
 <div class="header-row">
 <div class="header-left"><a class="brand" href="${pageUrl(pageByKey.get(pageKey(page.locale, "index")) ?? page)}"><img src="${publicPath("/assets/pixel-lobster.svg")}" alt=""></a>${languagePicker(page)}</div>
-<button class="search-button" type="button" data-search-open>Search... <span>⌘K</span></button>
-<nav class="header-links">${topLink("GitHub", "https://github.com/openclaw/openclaw")}${topLink("Releases", "https://github.com/openclaw/openclaw/releases")}${topLink("Discord", "https://discord.com/invite/clawd")}<button type="button" data-theme-toggle aria-label="Toggle theme">◐</button></nav>
+<button class="search-button" type="button" data-search-open>${icon("search")}<span class="search-label">Search...</span><span class="search-shortcut">⌘K</span></button>
+<nav class="header-links">${topLink("GitHub", "https://github.com/openclaw/openclaw", "github")}${topLink("Releases", "https://github.com/openclaw/openclaw/releases", "package")}${topLink("Discord", "https://discord.com/invite/clawd", "discord")}<button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme">${icon("moon")}</button></nav>
 <button class="nav-toggle" type="button" data-nav-toggle>Menu</button>
 </div>
-<nav class="tabs">${tabs}</nav>
+<nav class="tabs">${tabs}<span class="tab-underline" aria-hidden="true"></span></nav>
 </header>`;
 }
 
@@ -228,7 +263,7 @@ function languagePicker(page) {
     const active = locale.code === page.locale;
     return `<a class="language-option${active ? " active" : ""}" role="option" aria-selected="${active ? "true" : "false"}" href="${escapeAttr(localeUrlForSlug(locale.code, page.slug))}" data-locale-option><span class="locale-flag" aria-hidden="true">${escapeHtml(localeFlag(locale.code))}</span><span class="language-name">${escapeHtml(localeDisplayName(locale.code))}</span><span class="language-check" aria-hidden="true">✓</span></a>`;
   }).join("");
-  return `<div class="language-picker" data-language-picker><button class="language-trigger" type="button" data-language-trigger aria-haspopup="listbox" aria-expanded="false"><span class="locale-flag" aria-hidden="true">${escapeHtml(currentFlag)}</span><span class="language-current">${escapeHtml(currentLabel)}</span><span class="language-chevron" aria-hidden="true">⌃</span></button><div class="language-menu" role="listbox" aria-label="Language">${options}</div></div>`;
+  return `<div class="language-picker" data-language-picker><button class="language-trigger" type="button" data-language-trigger aria-haspopup="listbox" aria-expanded="false"><span class="locale-flag" aria-hidden="true">${escapeHtml(currentFlag)}</span><span class="language-current">${escapeHtml(currentLabel)}</span><span class="language-chevron" aria-hidden="true">${icon("chevron-down")}</span></button><div class="language-menu" role="listbox" aria-label="Language">${options}</div></div>`;
 }
 
 function localeFlag(code) {
@@ -239,8 +274,21 @@ function localeDisplayName(code) {
   return localePickerLabels[code] ?? localeLabels[code] ?? code;
 }
 
-function topLink(label, href) {
-  return `<a href="${escapeAttr(href)}">${escapeHtml(label)}</a>`;
+function topLink(label, href, iconName) {
+  return `<a href="${escapeAttr(href)}">${icon(iconName)}<span>${escapeHtml(label)}</span></a>`;
+}
+
+function icon(name) {
+  const attrs = `class="icon icon-${escapeAttr(name)}" viewBox="0 0 24 24" aria-hidden="true" focusable="false"`;
+  if (name === "github") return `<svg ${attrs} fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.42-4.04-1.42-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.08 1.84 2.82 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.66-.3-5.46-1.33-5.46-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.8 5.62-5.47 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.69.83.57A12 12 0 0 0 12 .5Z"/></svg>`;
+  if (name === "discord") return `<svg ${attrs} fill="currentColor"><path d="M20.32 4.37A19.8 19.8 0 0 0 15.37 2.84a13.77 13.77 0 0 0-.63 1.31 18.4 18.4 0 0 0-5.48 0 13.7 13.7 0 0 0-.64-1.31 19.72 19.72 0 0 0-4.95 1.54C.55 9.07-.32 13.64.1 18.15a19.9 19.9 0 0 0 6.07 3.07 14.6 14.6 0 0 0 1.3-2.11 12.9 12.9 0 0 1-2.05-.98c.17-.13.34-.26.5-.39a14.2 14.2 0 0 0 12.16 0c.17.14.33.27.5.39-.65.38-1.33.7-2.05.98.38.74.82 1.45 1.3 2.11a19.86 19.86 0 0 0 6.08-3.07c.5-5.23-.84-9.76-3.59-13.78ZM8.02 15.38c-1.18 0-2.15-1.08-2.15-2.41 0-1.33.95-2.42 2.15-2.42 1.2 0 2.18 1.1 2.15 2.42 0 1.33-.95 2.41-2.15 2.41Zm7.96 0c-1.18 0-2.15-1.08-2.15-2.41 0-1.33.95-2.42 2.15-2.42 1.2 0 2.17 1.1 2.15 2.42 0 1.33-.95 2.41-2.15 2.41Z"/></svg>`;
+  const paths = {
+    "search": '<path d="m21 21-4.35-4.35"/><circle cx="11" cy="11" r="7"/>',
+    "package": '<path d="m21 8-9-5-9 5 9 5 9-5Z"/><path d="m3 8 9 5 9-5"/><path d="M12 22V13"/><path d="m3 8v8l9 6 9-6V8"/>',
+    "moon": '<path d="M20.9 13.5a8.5 8.5 0 0 1-10.4-10.4 8.5 8.5 0 1 0 10.4 10.4Z"/>',
+    "chevron-down": '<path d="m6 9 6 6 6-6"/>',
+  };
+  return `<svg ${attrs} fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${paths[name] ?? ""}</svg>`;
 }
 
 function navGroupHtml(activePage, group) {
@@ -338,12 +386,77 @@ function componentLabel(name, attrs) {
   return label ? `\n${label}\n` : `\n${name}\n`;
 }
 
+async function renderPageOgCards() {
+  if (!rsvgAvailable) {
+    console.warn("rsvg-convert unavailable; skipping per-page OG cards (using base og-card.png)");
+    return;
+  }
+  const enNav = navByLocale.get("en") ?? [];
+  const navSlugs = collectNavSlugs(enNav);
+  const ogDir = path.join(outDir, "og");
+  const targets = pages.filter((page) =>
+    page.locale === "en" && page.slug !== "index" && navSlugs.has(page.slug)
+  );
+  const start = Date.now();
+  const concurrency = Math.max(2, Math.min(8, Number(process.env.DOCS_SITE_OG_CONCURRENCY) || 6));
+  let cursor = 0;
+  let count = 0;
+  await Promise.all(Array.from({ length: concurrency }, async () => {
+    while (cursor < targets.length) {
+      const page = targets[cursor++];
+      const kicker = groupForPage(enNav, page.slug) ?? activeTabTitle(enNav, page.slug) ?? config.name;
+      const svg = renderPageOgSvg({ title: page.title, kicker, summary: page.summary });
+      const outFile = path.join(ogDir, `${page.slug}.png`);
+      fs.mkdirSync(path.dirname(outFile), { recursive: true });
+      try {
+        const child = execFile("rsvg-convert", ["-w", "1200", "-h", "630", "-o", outFile]);
+        child.stdin.end(svg);
+        await new Promise((resolve, reject) => {
+          child.on("error", reject);
+          child.on("close", (code) => code === 0 ? resolve() : reject(new Error(`rsvg-convert exit ${code}`)));
+        });
+        renderedPageOgCards.add(page.slug);
+        count++;
+      } catch (err) {
+        console.warn(`og card render failed for ${page.slug}: ${err.message}`);
+      }
+    }
+  }));
+  console.log(`rendered ${count}/${targets.length} per-page og cards in ${Date.now() - start}ms`);
+}
+
+function collectNavSlugs(nav) {
+  const slugs = new Set();
+  for (const tab of nav) {
+    for (const group of tab.groups ?? []) {
+      for (const entry of group.pages ?? []) {
+        if (entry.group) for (const sub of entry.pages ?? []) slugs.add(sub.slug);
+        else if (entry.slug) slugs.add(entry.slug);
+      }
+    }
+  }
+  return slugs;
+}
+
+function checkRsvg() {
+  try {
+    execFileSync("rsvg-convert", ["--version"], { stdio: "ignore" });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function writeStaticAssets() {
   const assetsDir = path.join(outDir, "assets");
   fs.mkdirSync(assetsDir, { recursive: true });
   fs.writeFileSync(path.join(assetsDir, "docs-site.css"), siteCss(), "utf8");
   fs.writeFileSync(path.join(assetsDir, "docs-site.js"), siteJs(), "utf8");
   fs.writeFileSync(path.join(outDir, ".nojekyll"), "", "utf8");
+  for (const file of ["og-card.png", "og-card.svg"]) {
+    const source = path.join(siteAssetsDir, file);
+    if (fs.existsSync(source)) fs.copyFileSync(source, path.join(outDir, file));
+  }
   if (process.env.DOCS_SITE_CNAME) {
     fs.writeFileSync(path.join(outDir, "CNAME"), `${process.env.DOCS_SITE_CNAME}\n`, "utf8");
   }
