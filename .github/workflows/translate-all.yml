@@ -84,6 +84,7 @@ jobs:
     outputs:
       mode: ${{ steps.prepare.outputs.mode }}
       publish_ref: ${{ steps.prepare.outputs.publish_ref }}
+      should_translate: ${{ steps.prepare.outputs.should_translate }}
       source_repository: ${{ steps.prepare.outputs.source_repository }}
       source_sha: ${{ steps.prepare.outputs.source_sha }}
     steps:
@@ -178,9 +179,38 @@ jobs:
             fi
           done
 
+          should_translate="true"
+          if [ "${EVENT_NAME}" = "push" ] && [ "${mode}" = "incremental" ] && [ -n "${BEFORE_SHA}" ]; then
+            changed_paths="$(git diff --name-only "${BEFORE_SHA}" "${publish_ref}" || true)"
+            if printf '%s\n' "${changed_paths}" | grep -Eq '^docs/\.i18n/glossary\..*\.json$'; then
+              mode="full"
+            elif ! printf '%s\n' "${changed_paths}" | node -e '
+              const fs = require("node:fs");
+              const locales = new Set([
+                "ar", "de", "es", "fa", "fr", "id", "it", "ja-JP", "ko", "nl",
+                "pl", "pt-BR", "th", "tr", "uk", "vi", "zh-CN", "zh-TW",
+              ]);
+              const paths = fs.readFileSync(0, "utf8").split(/\r?\n/).filter(Boolean);
+              const hasTranslatable = paths.some((path) => {
+                if (!path.startsWith("docs/")) return false;
+                const rel = path.slice("docs/".length);
+                const first = rel.split("/", 1)[0];
+                if (locales.has(first)) return false;
+                if (rel.startsWith(".generated/") || rel.startsWith(".i18n/")) return false;
+                return /\.(md|mdx)$/i.test(rel);
+              });
+              process.exit(hasTranslatable ? 0 : 1);
+            '
+            then
+              echo "No translatable docs changed after cooldown; skipping translation matrix."
+              should_translate="false"
+            fi
+          fi
+
           {
             echo "mode=${mode}"
             echo "publish_ref=${publish_ref}"
+            echo "should_translate=${should_translate}"
             echo "source_repository=${source_repository}"
             echo "source_sha=${source_sha}"
           } >> "${GITHUB_OUTPUT}"
@@ -192,11 +222,13 @@ jobs:
             echo "- publish ref: \`${publish_ref}\`"
             echo "- source: \`${source_repository}@${source_sha}\`"
             echo "- cooldown seconds: \`${cooldown}\`"
+            echo "- should translate: \`${should_translate}\`"
           } >> "${GITHUB_STEP_SUMMARY}"
 
   translate:
     name: Translate ${{ matrix.locale }}
     needs: prepare
+    if: needs.prepare.outputs.should_translate == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -251,7 +283,7 @@ jobs:
     needs:
       - prepare
       - translate
-    if: always() && needs.prepare.result == 'success'
+    if: always() && needs.prepare.result == 'success' && needs.prepare.outputs.should_translate == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Check out latest main
