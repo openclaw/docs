@@ -84,6 +84,7 @@ degli agenti decidono quali Skills un agente può effettivamente usare.
     - Imposta `agents.list[].skills: []` per nessuna skill.
     - Un elenco `agents.list[].skills` non vuoto è l'insieme **finale** per quell'agente - non viene unito ai valori predefiniti.
     - L'allowlist effettiva si applica a creazione dei prompt, individuazione degli slash command delle skill, sincronizzazione della sandbox e snapshot delle skill.
+
   </Accordion>
 </AccordionGroup>
 

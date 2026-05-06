@@ -418,6 +418,7 @@ Realtime voice sessions，會在此記錄為上游能力，而不是隱藏的 Pl
     - `grok-4.20-multi-agent-experimental-beta-0304` 不支援一般 xAI Provider 路徑，因為它需要的上游 API 介面不同於標準 OpenClaw xAI 傳輸層。
     - xAI Realtime 語音尚未註冊為 OpenClaw Provider。它需要不同於批次 STT 或串流轉錄的雙向語音工作階段合約。
     - xAI 圖片 `quality`、圖片 `mask`，以及額外僅原生支援的長寬比，在共享 `image_generate` 工具具備對應的跨 Provider 控制之前不會公開。
+
   </Accordion>
 
   <Accordion title="進階注意事項">

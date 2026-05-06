@@ -74,6 +74,7 @@ A **localização** da skill e a **visibilidade** da skill são controles separa
     - Defina `agents.list[].skills: []` para não ter skills.
     - Uma lista `agents.list[].skills` não vazia é o conjunto **final** para esse agente - ela não é mesclada com os padrões.
     - A lista de permissão efetiva se aplica à construção de prompts, descoberta de comandos de barra de skill, sincronização do sandbox e snapshots de skills.
+
   </Accordion>
 </AccordionGroup>
 

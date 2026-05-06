@@ -74,6 +74,7 @@ OpenClaw โหลด skill จากแหล่งเหล่านี้ โ
     - ตั้งค่า `agents.list[].skills: []` เพื่อไม่ให้มี skill
     - รายการ `agents.list[].skills` ที่ไม่ว่างคือชุด**สุดท้าย**สำหรับเอเจนต์นั้น - จะไม่ผสานกับค่าเริ่มต้น
     - allowlist ที่มีผลจะถูกใช้ครอบคลุมการสร้างพรอมป์ การค้นพบ slash-command ของ skill การซิงก์ sandbox และ snapshot ของ skill
+
   </Accordion>
 </AccordionGroup>
 

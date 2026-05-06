@@ -74,6 +74,7 @@ Nama yang sama di beberapa tempat → sumber tertinggi menang. Workspace mengala
     - Setel `agents.list[].skills: []` untuk tanpa skill.
     - Daftar `agents.list[].skills` yang tidak kosong adalah set **final** untuk agen tersebut - daftar ini tidak digabungkan dengan default.
     - Allowlist efektif berlaku di pembuatan prompt, penemuan slash-command skill, sinkronisasi sandbox, dan snapshot skill.
+
   </Accordion>
 </AccordionGroup>
 

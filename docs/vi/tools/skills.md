@@ -74,6 +74,7 @@ Cùng tên ở nhiều nơi → nguồn cao nhất sẽ thắng. Workspace thắ
     - Đặt `agents.list[].skills: []` để không có skill.
     - Danh sách `agents.list[].skills` không rỗng là tập hợp **cuối cùng** cho agent đó - nó không hợp nhất với mặc định.
     - Danh sách cho phép hiệu lực được áp dụng xuyên suốt quá trình dựng prompt, khám phá slash-command của skill, đồng bộ sandbox và snapshot skill.
+
   </Accordion>
 </AccordionGroup>
 
