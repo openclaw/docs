@@ -1,22 +1,20 @@
 ---
 read_when:
     - Застаріле посилання на agent-tools
-summary: Перенаправлення до Building Plugins (розділ реєстрації інструментів)
+summary: Переспрямовує до розділу «Створення Plugin» (розділ реєстрації інструментів)
 title: Реєстрація інструментів
 x-i18n:
-    generated_at: "2026-04-23T23:02:08Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T16:04:49Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: c84450ddc31f8f6a605bd553a1a9d7d295f5b575504a134b5c50a2c7d77e3e63
+    source_hash: e73137487a9394454dd037d449bc2a0896725cddc7d0f174eda41f5fdc451982
     source_path: plugins/agent-tools.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Реєстрація інструментів у plugin
+Цю сторінку переміщено. Див. [Створення Plugins: реєстрація інструментів агента](/uk/plugins/building-plugins#registering-agent-tools).
 
-Цю сторінку переміщено. Див. [Building Plugins: Registering agent tools](/uk/plugins/building-plugins#registering-agent-tools).
+## Пов’язане
 
-## Пов’язано
-
-- [Створення plugin](/uk/plugins/building-plugins)
+- [Створення plugins](/uk/plugins/building-plugins)
 - [Налаштування Plugin SDK](/uk/plugins/sdk-setup)
