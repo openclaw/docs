@@ -21,6 +21,30 @@ const locales = buildLocales(config);
 const pages = collectPages(locales);
 const pageByKey = new Map(pages.map((page) => [pageKey(page.locale, page.slug), page]));
 const navByLocale = new Map(locales.map((locale) => [locale.code, buildNav(locale)]));
+const localeFlags = {
+  en: "🇺🇸",
+  "zh-CN": "🇨🇳",
+  "zh-TW": "🇨🇳",
+  "ja-JP": "🇯🇵",
+  es: "🇪🇸",
+  "pt-BR": "🇧🇷",
+  ko: "🇰🇷",
+  de: "🇩🇪",
+  fr: "🇫🇷",
+  ar: "🇸🇦",
+  it: "🇮🇹",
+  vi: "🇻🇳",
+  nl: "🇳🇱",
+  tr: "🇹🇷",
+  uk: "🇺🇦",
+  id: "🇮🇩",
+  pl: "🇵🇱",
+  fa: "🇮🇷",
+  th: "🇹🇭"
+};
+const localePickerLabels = {
+  "pt-BR": "Português (BR)"
+};
 
 copyPublicFiles();
 for (const page of pages) writePage(page);
@@ -165,7 +189,6 @@ ${searchModal()}
 }
 
 function siteHeader(page, nav, activeTab) {
-  const options = localeOptions(page);
   const tabs = nav.map((tab) => {
     const href = pageUrl(firstPage(tab));
     const active = tab.title === activeTab ? " active" : "";
@@ -173,7 +196,7 @@ function siteHeader(page, nav, activeTab) {
   }).join("");
   return `<header class="site-header">
 <div class="header-row">
-<div class="header-left"><a class="brand" href="${pageUrl(pageByKey.get(pageKey(page.locale, "index")) ?? page)}"><img src="${publicPath("/assets/pixel-lobster.svg")}" alt=""></a><select data-locale aria-label="Language">${options}</select></div>
+<div class="header-left"><a class="brand" href="${pageUrl(pageByKey.get(pageKey(page.locale, "index")) ?? page)}"><img src="${publicPath("/assets/pixel-lobster.svg")}" alt=""></a>${languagePicker(page)}</div>
 <button class="search-button" type="button" data-search-open>Search... <span>⌘K</span></button>
 <nav class="header-links">${topLink("GitHub", "https://github.com/openclaw/openclaw")}${topLink("Releases", "https://github.com/openclaw/openclaw/releases")}${topLink("Discord", "https://discord.com/invite/clawd")}<button type="button" data-theme-toggle aria-label="Toggle theme">◐</button></nav>
 <button class="nav-toggle" type="button" data-nav-toggle>Menu</button>
@@ -189,13 +212,23 @@ function sidebar(page, nav, activeTab) {
 </aside>`;
 }
 
-function localeOptions(page) {
-  return locales.map((locale) => {
-    const url = localeUrlForSlug(locale.code, page.slug);
-    const selected = locale.code === page.locale ? " selected" : "";
-    const label = locale.code === "en" ? "🇺🇸 English" : (localeLabels[locale.code] ?? locale.code);
-    return `<option value="${locale.code}" data-url="${escapeAttr(url)}"${selected}>${escapeHtml(label)}</option>`;
+function languagePicker(page) {
+  const current = locales.find((locale) => locale.code === page.locale) ?? locales[0];
+  const currentLabel = localeDisplayName(current.code);
+  const currentFlag = localeFlag(current.code);
+  const options = locales.map((locale) => {
+    const active = locale.code === page.locale;
+    return `<a class="language-option${active ? " active" : ""}" role="option" aria-selected="${active ? "true" : "false"}" href="${escapeAttr(localeUrlForSlug(locale.code, page.slug))}" data-locale-option><span class="locale-flag" aria-hidden="true">${escapeHtml(localeFlag(locale.code))}</span><span class="language-name">${escapeHtml(localeDisplayName(locale.code))}</span><span class="language-check" aria-hidden="true">✓</span></a>`;
   }).join("");
+  return `<div class="language-picker" data-language-picker><button class="language-trigger" type="button" data-language-trigger aria-haspopup="listbox" aria-expanded="false"><span class="locale-flag" aria-hidden="true">${escapeHtml(currentFlag)}</span><span class="language-current">${escapeHtml(currentLabel)}</span><span class="language-chevron" aria-hidden="true">⌃</span></button><div class="language-menu" role="listbox" aria-label="Language">${options}</div></div>`;
+}
+
+function localeFlag(code) {
+  return localeFlags[code] ?? "🌐";
+}
+
+function localeDisplayName(code) {
+  return localePickerLabels[code] ?? localeLabels[code] ?? code;
 }
 
 function topLink(label, href) {

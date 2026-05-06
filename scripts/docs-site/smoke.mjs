@@ -36,7 +36,7 @@ for (const rel of required) {
   }
 }
 const zhReactions = fs.readFileSync(path.join(site, "zh-CN/tools/reactions/index.html"), "utf8");
-if (!/data-url="(?:\/docs)?\/zh-CN\/tools\/reactions\/"/.test(zhReactions)) {
+if (!/href="(?:\/docs)?\/zh-CN\/tools\/reactions\/"/.test(zhReactions)) {
   throw new Error("zh-CN reactions: language picker does not preserve current page");
 }
 if (!/href="(?:\/docs)?\/zh-CN\/tools\/agent-send/.test(zhReactions)) {
@@ -50,6 +50,12 @@ if (!/<section class="nav-section"><h2>Overview<\/h2>/.test(itChannels)) {
   throw new Error("it channels: localized sidebar is missing");
 }
 const index = fs.readFileSync(path.join(site, "index.html"), "utf8");
+if (!/data-language-picker/.test(index) || !/class="language-option active"[^>]*aria-selected="true"/.test(index)) {
+  throw new Error("index: custom language picker is missing active state");
+}
+if (!/Português \(BR\)/.test(index)) {
+  throw new Error("index: language picker labels were not rendered");
+}
 if (/src="\/assets\//.test(index) || /href="\/assets\//.test(index)) {
   throw new Error("index: absolute asset paths were not base-path rewritten");
 }
