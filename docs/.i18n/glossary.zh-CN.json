@@ -60,6 +60,10 @@
     "target": "Gateway RPC 参考"
   },
   {
+    "source": "Secure file operations",
+    "target": "安全文件操作"
+  },
+  {
     "source": "Sessions",
     "target": "会话"
   },
@@ -758,5 +762,9 @@
   {
     "source": "/cli/config",
     "target": "/cli/config"
+  },
+  {
+    "source": "fs-safe Cleanup Plan",
+    "target": "fs-safe Cleanup Plan"
   }
 ]

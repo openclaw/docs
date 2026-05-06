@@ -1523,6 +1523,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "gateway/security/index",
+                      "gateway/security/secure-file-operations",
                       "gateway/security/audit-checks",
                       "gateway/operator-scopes",
                       "gateway/sandboxing",
@@ -3015,6 +3016,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "zh-TW/gateway/security/index",
+                      "zh-TW/gateway/security/secure-file-operations",
                       "zh-TW/gateway/security/audit-checks",
                       "zh-TW/gateway/operator-scopes",
                       "zh-TW/gateway/sandboxing",
@@ -3892,6 +3894,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "ja-JP/gateway/security/index",
+                      "ja-JP/gateway/security/secure-file-operations",
                       "ja-JP/gateway/security/audit-checks",
                       "ja-JP/gateway/operator-scopes",
                       "ja-JP/gateway/sandboxing",
@@ -4769,6 +4772,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "es/gateway/security/index",
+                      "es/gateway/security/secure-file-operations",
                       "es/gateway/security/audit-checks",
                       "es/gateway/operator-scopes",
                       "es/gateway/sandboxing",
@@ -5646,6 +5650,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "pt-BR/gateway/security/index",
+                      "pt-BR/gateway/security/secure-file-operations",
                       "pt-BR/gateway/security/audit-checks",
                       "pt-BR/gateway/operator-scopes",
                       "pt-BR/gateway/sandboxing",
@@ -6523,6 +6528,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "ko/gateway/security/index",
+                      "ko/gateway/security/secure-file-operations",
                       "ko/gateway/security/audit-checks",
                       "ko/gateway/operator-scopes",
                       "ko/gateway/sandboxing",
@@ -7400,6 +7406,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "de/gateway/security/index",
+                      "de/gateway/security/secure-file-operations",
                       "de/gateway/security/audit-checks",
                       "de/gateway/operator-scopes",
                       "de/gateway/sandboxing",
@@ -8277,6 +8284,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "fr/gateway/security/index",
+                      "fr/gateway/security/secure-file-operations",
                       "fr/gateway/security/audit-checks",
                       "fr/gateway/operator-scopes",
                       "fr/gateway/sandboxing",
@@ -9154,6 +9162,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "ar/gateway/security/index",
+                      "ar/gateway/security/secure-file-operations",
                       "ar/gateway/security/audit-checks",
                       "ar/gateway/operator-scopes",
                       "ar/gateway/sandboxing",
@@ -10031,6 +10040,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "it/gateway/security/index",
+                      "it/gateway/security/secure-file-operations",
                       "it/gateway/security/audit-checks",
                       "it/gateway/operator-scopes",
                       "it/gateway/sandboxing",
@@ -10908,6 +10918,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "vi/gateway/security/index",
+                      "vi/gateway/security/secure-file-operations",
                       "vi/gateway/security/audit-checks",
                       "vi/gateway/operator-scopes",
                       "vi/gateway/sandboxing",
@@ -11785,6 +11796,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "nl/gateway/security/index",
+                      "nl/gateway/security/secure-file-operations",
                       "nl/gateway/security/audit-checks",
                       "nl/gateway/operator-scopes",
                       "nl/gateway/sandboxing",
@@ -12662,6 +12674,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "tr/gateway/security/index",
+                      "tr/gateway/security/secure-file-operations",
                       "tr/gateway/security/audit-checks",
                       "tr/gateway/operator-scopes",
                       "tr/gateway/sandboxing",
@@ -13539,6 +13552,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "uk/gateway/security/index",
+                      "uk/gateway/security/secure-file-operations",
                       "uk/gateway/security/audit-checks",
                       "uk/gateway/operator-scopes",
                       "uk/gateway/sandboxing",
@@ -14416,6 +14430,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "id/gateway/security/index",
+                      "id/gateway/security/secure-file-operations",
                       "id/gateway/security/audit-checks",
                       "id/gateway/operator-scopes",
                       "id/gateway/sandboxing",
@@ -15293,6 +15308,7 @@
                     "group": "Security and sandboxing",
                     "pages": [
                       "pl/gateway/security/index",
+                      "pl/gateway/security/secure-file-operations",
                       "pl/gateway/security/audit-checks",
                       "pl/gateway/operator-scopes",
                       "pl/gateway/sandboxing",
