@@ -38,6 +38,7 @@ Source of truth lives in [`openclaw/openclaw`](https://github.com/openclaw/openc
 - `npm run docs:check` runs both steps.
 - The generated site includes the language picker and static full-text search via Pagefind.
 - Cloudflare deploys `workers/docs-router.ts`, which serves slashless page URLs and English markdown responses for `.md` paths or `Accept: text/markdown`.
+- Cloudflare hosting details and limitations are documented in `CLOUDFLARE.md`.
 
 ## Secrets
 
