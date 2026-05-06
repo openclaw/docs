@@ -1,77 +1,77 @@
 ---
 read_when:
-    - Trabalhar em caminhos de ativação por voz ou PTT
-summary: Modos de ativação por voz e push-to-talk, além de detalhes de roteamento no app macOS
+    - Trabalhando em fluxos de ativação por voz ou PTT
+summary: Modos de ativação por voz e pressionar para falar, além de detalhes de roteamento no app para Mac
 title: Ativação por voz (macOS)
 x-i18n:
-    generated_at: "2026-04-24T06:01:51Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:05:47Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 0273c24764f0baf440a19f31435d6ee62ab040c1ec5a97d7733d3ec8b81b0641
+    source_hash: 312895b5767c447233bd77cbcd48ea81bb6c700080abc31974188b610a1b1ef0
     source_path: platforms/mac/voicewake.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Ativação por voz e Push-to-Talk
+# Ativação por Voz e Pressione-para-Falar
 
 ## Modos
 
-- **Modo de palavra de ativação** (padrão): o reconhecedor de fala sempre ativo aguarda tokens de disparo (`swabbleTriggerWords`). Ao detectar uma correspondência, ele inicia a captura, mostra a sobreposição com texto parcial e envia automaticamente após silêncio.
-- **Push-to-talk (segurar Option direito)**: segure a tecla Option direita para capturar imediatamente — sem precisar de gatilho. A sobreposição aparece enquanto a tecla estiver pressionada; ao soltar, a captura é finalizada e encaminhada após um curto atraso para que você possa ajustar o texto.
+- **Modo de palavra de ativação** (padrão): o reconhecedor de fala sempre ativo aguarda tokens de acionamento (`swabbleTriggerWords`). Ao encontrar uma correspondência, ele inicia a captura, mostra a sobreposição com texto parcial e envia automaticamente após silêncio.
+- **Pressione-para-falar (segurar Option direito)**: segure a tecla Option direita para capturar imediatamente, sem precisar de acionamento. A sobreposição aparece enquanto a tecla é segurada; soltar finaliza e encaminha após um curto atraso para que você possa ajustar o texto.
 
 ## Comportamento em runtime (palavra de ativação)
 
 - O reconhecedor de fala fica em `VoiceWakeRuntime`.
-- O gatilho só dispara quando há uma **pausa significativa** entre a palavra de ativação e a próxima palavra (intervalo de ~0,55s). A sobreposição/toque pode começar nessa pausa, mesmo antes de o comando começar.
-- Janelas de silêncio: 2,0s quando a fala está fluindo, 5,0s se apenas o gatilho tiver sido ouvido.
-- Parada forçada: 120s para evitar sessões descontroladas.
-- Debounce entre sessões: 350ms.
-- A sobreposição é controlada por `VoiceWakeOverlayController` com coloração de texto confirmado/volátil.
-- Após o envio, o reconhecedor reinicia corretamente para ouvir o próximo gatilho.
+- O acionamento só dispara quando há uma **pausa significativa** entre a palavra de ativação e a próxima palavra (intervalo de ~0,55 s). A sobreposição/som pode começar na pausa mesmo antes do comando começar.
+- Janelas de silêncio: 2,0 s quando a fala está fluindo, 5,0 s se apenas o acionamento foi ouvido.
+- Parada forçada: 120 s para evitar sessões descontroladas.
+- Debounce entre sessões: 350 ms.
+- A sobreposição é controlada via `VoiceWakeOverlayController` com coloração confirmada/volátil.
+- Após o envio, o reconhecedor reinicia de forma limpa para escutar o próximo acionamento.
 
 ## Invariantes de ciclo de vida
 
-- Se a ativação por voz estiver ativada e as permissões tiverem sido concedidas, o reconhecedor de palavra de ativação deve estar ouvindo (exceto durante uma captura explícita por push-to-talk).
-- A visibilidade da sobreposição (incluindo fechamento manual pelo botão X) nunca deve impedir que o reconhecedor volte a funcionar.
+- Se a Ativação por Voz estiver habilitada e as permissões tiverem sido concedidas, o reconhecedor de palavra de ativação deve estar escutando (exceto durante uma captura explícita de pressionar-para-falar).
+- A visibilidade da sobreposição (incluindo dispensa manual pelo botão X) nunca deve impedir que o reconhecedor seja retomado.
 
-## Modo de falha de sobreposição travada (anterior)
+## Modo de falha de sobreposição fixa (anterior)
 
-Antes, se a sobreposição ficasse visível travada e você a fechasse manualmente, a ativação por voz podia parecer “morta” porque a tentativa de reinicialização do runtime podia ser bloqueada pela visibilidade da sobreposição e nenhuma reinicialização posterior era agendada.
+Anteriormente, se a sobreposição ficasse travada visível e você a fechasse manualmente, a Ativação por Voz podia parecer "morta" porque a tentativa de reinício do runtime podia ser bloqueada pela visibilidade da sobreposição, e nenhum reinício subsequente era agendado.
 
 Reforço:
 
-- A reinicialização do runtime de ativação por voz não é mais bloqueada pela visibilidade da sobreposição.
-- A conclusão do fechamento da sobreposição aciona `VoiceWakeRuntime.refresh(...)` via `VoiceSessionCoordinator`, então o fechamento manual pelo X sempre retoma a escuta.
+- O reinício do runtime de ativação não é mais bloqueado pela visibilidade da sobreposição.
+- A conclusão da dispensa da sobreposição aciona um `VoiceWakeRuntime.refresh(...)` via `VoiceSessionCoordinator`, então a dispensa manual pelo X sempre retoma a escuta.
 
-## Especificidades de push-to-talk
+## Especificidades de pressionar-para-falar
 
-- A detecção de hotkey usa um monitor global `.flagsChanged` para **Option direito** (`keyCode 61` + `.option`). Apenas observamos eventos (sem interceptá-los).
-- O pipeline de captura fica em `VoicePushToTalk`: inicia Speech imediatamente, transmite parciais para a sobreposição e chama `VoiceWakeForwarder` ao soltar.
-- Quando o push-to-talk começa, pausamos o runtime de palavra de ativação para evitar taps de áudio concorrentes; ele reinicia automaticamente após soltar.
-- Permissões: exige Microfone + Speech; para enxergar eventos, é necessária aprovação de Accessibility/Input Monitoring.
-- Teclados externos: alguns podem não expor o Option direito como esperado — ofereça um atalho alternativo se usuários relatarem falhas.
+- A detecção de tecla de atalho usa um monitor global `.flagsChanged` para **Option direito** (`keyCode 61` + `.option`). Apenas observamos eventos (sem interceptá-los).
+- O pipeline de captura fica em `VoicePushToTalk`: inicia o Speech imediatamente, transmite parciais para a sobreposição e chama `VoiceWakeForwarder` ao soltar.
+- Quando pressionar-para-falar começa, pausamos o runtime de palavra de ativação para evitar capturas de áudio concorrentes; ele reinicia automaticamente após soltar.
+- Permissões: requer Microfone + Speech; ver eventos exige aprovação de Acessibilidade/Monitoramento de Entrada.
+- Teclados externos: alguns podem não expor o Option direito como esperado; ofereça um atalho alternativo se os usuários relatarem falhas.
 
 ## Configurações voltadas ao usuário
 
-- Alternância **Voice Wake**: ativa o runtime de palavra de ativação.
-- **Segure Cmd+Fn para falar**: ativa o monitor de push-to-talk. Desativado no macOS < 26.
-- Seletores de idioma e microfone, medidor de nível ao vivo, tabela de palavras de ativação, testador (apenas local; não encaminha).
-- O seletor de microfone preserva a última seleção se um dispositivo for desconectado, mostra uma dica de desconexão e recorre temporariamente ao padrão do sistema até que ele retorne.
-- **Sons**: toques ao detectar gatilho e ao enviar; por padrão usa o som do sistema macOS “Glass”. Você pode escolher qualquer arquivo carregável por `NSSound` (por exemplo MP3/WAV/AIFF) para cada evento ou escolher **No Sound**.
+- Alternância **Ativação por Voz**: habilita o runtime de palavra de ativação.
+- **Segurar Cmd+Fn para falar**: habilita o monitor de pressionar-para-falar. Desabilitado no macOS < 26.
+- Seletores de idioma e microfone, medidor de nível ao vivo, tabela de palavras de acionamento, testador (somente local; não encaminha).
+- O seletor de microfone preserva a última seleção se um dispositivo desconectar, mostra uma dica de desconectado e recorre temporariamente ao padrão do sistema até ele retornar.
+- **Sons**: sons ao detectar acionamento e ao enviar; o padrão é o som do sistema macOS "Glass". Você pode escolher qualquer arquivo carregável por `NSSound` (por exemplo, MP3/WAV/AIFF) para cada evento ou escolher **Sem som**.
 
 ## Comportamento de encaminhamento
 
-- Quando a ativação por voz está ativada, as transcrições são encaminhadas para o gateway/agente ativo (o mesmo modo local vs remoto usado pelo restante do app macOS).
-- As respostas são entregues ao **último provider principal usado** (WhatsApp/Telegram/Discord/WebChat). Se a entrega falhar, o erro é registrado em log e a execução ainda fica visível via WebChat/logs de sessão.
+- Quando a Ativação por Voz está habilitada, as transcrições são encaminhadas para o Gateway/agente ativo (o mesmo modo local versus remoto usado pelo restante do app para Mac).
+- As respostas são entregues ao **último provedor principal usado** (WhatsApp/Telegram/Discord/WebChat). Se a entrega falhar, o erro é registrado e a execução ainda fica visível via logs do WebChat/sessão.
 
 ## Payload de encaminhamento
 
-- `VoiceWakeForwarder.prefixedTranscript(_:)` adiciona a dica da máquina antes do envio. Compartilhado entre os caminhos de palavra de ativação e push-to-talk.
+- `VoiceWakeForwarder.prefixedTranscript(_:)` prefixa a dica da máquina antes de enviar. Compartilhado entre os caminhos de palavra de ativação e pressionar-para-falar.
 
 ## Verificação rápida
 
-- Ative o push-to-talk, segure Cmd+Fn, fale, solte: a sobreposição deve mostrar parciais e depois enviar.
-- Enquanto estiver segurando, as “orelhas” da barra de menus devem permanecer ampliadas (usa `triggerVoiceEars(ttl:nil)`); elas diminuem após soltar.
+- Ative pressionar-para-falar, segure Cmd+Fn, fale, solte: a sobreposição deve mostrar parciais e então enviar.
+- Enquanto estiver segurando, as orelhas na barra de menus devem permanecer ampliadas (usa `triggerVoiceEars(ttl:nil)`); elas diminuem após soltar.
 
 ## Relacionado
 

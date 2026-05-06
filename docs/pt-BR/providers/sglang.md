@@ -1,41 +1,46 @@
 ---
 read_when:
-- You want to run OpenClaw against a local SGLang server
-- Você quer endpoints `/v1` compatíveis com OpenAI com seus próprios modelos
-summary: Executar o OpenClaw com SGLang (servidor auto-hospedado compatível com OpenAI)
+    - Você quer executar o OpenClaw com um servidor SGLang local
+    - Você quer endpoints /v1 compatíveis com OpenAI para seus próprios modelos
+summary: Execute o OpenClaw com SGLang (servidor auto-hospedado compatível com OpenAI)
 title: SGLang
 x-i18n:
-  generated_at: '2026-04-24T06:09:12Z'
-  refreshed_at: '2026-04-28T05:23:26Z'
-  model: gpt-5.4
-  provider: openai
-  source_hash: 8ed6767f85bcf099fb25dfe72a48b8a09e04ba13212125651616d2d93607beba
-  source_path: providers/sglang.md
-  workflow: 15
+    generated_at: "2026-05-06T09:11:41Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 3e65e38868e061e03d15348725971880ca503dc61a7425c1fbdc718fd684728f
+    source_path: providers/sglang.md
+    workflow: 16
 ---
 
-O SGLang pode servir modelos open-source por meio de uma API HTTP **compatível com OpenAI**.
-O OpenClaw pode se conectar ao SGLang usando a API `openai-completions`.
+SGLang serve modelos de pesos abertos por meio de uma API HTTP compatível com OpenAI. O OpenClaw se conecta ao SGLang usando a família de provedores `openai-completions` com descoberta automática dos modelos disponíveis.
 
-O OpenClaw também pode **descobrir automaticamente** modelos disponíveis no SGLang quando você faz opt-in
-com `SGLANG_API_KEY` (qualquer valor funciona se seu servidor não exigir autenticação)
-e você não define uma entrada explícita `models.providers.sglang`.
+| Propriedade               | Valor                                                        |
+| ------------------------- | ------------------------------------------------------------ |
+| ID do provedor            | `sglang`                                                     |
+| Plugin                    | incluído, `enabledByDefault: true`                           |
+| Variável de ambiente de autenticação | `SGLANG_API_KEY` (qualquer valor não vazio se o servidor não tiver autenticação) |
+| Sinalizador de integração inicial | `--auth-choice sglang`                                       |
+| API                       | compatível com OpenAI (`openai-completions`)                 |
+| URL base padrão           | `http://127.0.0.1:30000/v1`                                  |
+| Espaço reservado do modelo padrão | `sglang/Qwen/Qwen3-8B`                                       |
+| Uso de streaming          | Sim (`supportsStreamingUsage: true`)                         |
+| Precificação              | Marcado como externo gratuito (`modelPricing.external: false`) |
 
-O OpenClaw trata `sglang` como um provider local compatível com OpenAI que oferece suporte
-a contabilização de uso em streaming, então contagens de status/tokens de contexto podem ser atualizadas a partir de respostas `stream_options.include_usage`.
+O OpenClaw também **descobre automaticamente** os modelos disponíveis do SGLang quando você adere com `SGLANG_API_KEY` e não define uma entrada explícita `models.providers.sglang` — veja [Descoberta de modelos (provedor implícito)](#model-discovery-implicit-provider) abaixo.
 
 ## Primeiros passos
 
 <Steps>
-  <Step title="Iniciar o SGLang">
-    Inicie o SGLang com um servidor compatível com OpenAI. Sua base URL deve expor
-    endpoints `/v1` (por exemplo `/v1/models`, `/v1/chat/completions`). O SGLang
-    normalmente roda em:
+  <Step title="Inicie o SGLang">
+    Inicie o SGLang com um servidor compatível com OpenAI. Sua URL base deve expor
+    endpoints `/v1` (por exemplo, `/v1/models`, `/v1/chat/completions`). O SGLang
+    geralmente roda em:
 
     - `http://127.0.0.1:30000/v1`
 
   </Step>
-  <Step title="Definir uma chave de API">
+  <Step title="Defina uma chave de API">
     Qualquer valor funciona se nenhuma autenticação estiver configurada no seu servidor:
 
     ```bash
@@ -43,7 +48,7 @@ a contabilização de uso em streaming, então contagens de status/tokens de con
     ```
 
   </Step>
-  <Step title="Executar o onboarding ou definir um modelo diretamente">
+  <Step title="Execute a integração inicial ou defina um modelo diretamente">
     ```bash
     openclaw onboard
     ```
@@ -63,7 +68,7 @@ a contabilização de uso em streaming, então contagens de status/tokens de con
   </Step>
 </Steps>
 
-## Descoberta de modelo (provider implícito)
+## Descoberta de modelos (provedor implícito)
 
 Quando `SGLANG_API_KEY` está definido (ou existe um perfil de autenticação) e você **não**
 define `models.providers.sglang`, o OpenClaw consultará:
@@ -73,8 +78,8 @@ define `models.providers.sglang`, o OpenClaw consultará:
 e converterá os IDs retornados em entradas de modelo.
 
 <Note>
-Se você definir `models.providers.sglang` explicitamente, a descoberta automática é ignorada e
-você deve definir os modelos manualmente.
+Se você definir `models.providers.sglang` explicitamente, a descoberta automática será ignorada e
+você deverá definir os modelos manualmente.
 </Note>
 
 ## Configuração explícita (modelos manuais)
@@ -113,16 +118,16 @@ Use configuração explícita quando:
 ## Configuração avançada
 
 <AccordionGroup>
-  <Accordion title="Comportamento em estilo proxy">
-    O SGLang é tratado como um backend `/v1` compatível com OpenAI em estilo proxy, não como um
+  <Accordion title="Comportamento no estilo proxy">
+    O SGLang é tratado como um backend `/v1` compatível com OpenAI no estilo proxy, não como um
     endpoint nativo da OpenAI.
 
     | Comportamento | SGLang |
     |----------|--------|
-    | Formatação de requisição apenas da OpenAI | Não aplicada |
-    | `service_tier`, `store` do Responses, hints de cache de prompt | Não enviados |
-    | Formatação de payload compatível com reasoning | Não aplicada |
-    | Cabeçalhos ocultos de atribuição (`originator`, `version`, `User-Agent`) | Não são injetados em base URLs SGLang personalizadas |
+    | Formatação de solicitação exclusiva da OpenAI | Não aplicada |
+    | `service_tier`, `store` de Responses, dicas de cache de prompt | Não enviados |
+    | Formatação de payload compatível com raciocínio | Não aplicada |
+    | Cabeçalhos de atribuição ocultos (`originator`, `version`, `User-Agent`) | Não injetados em URLs base personalizadas do SGLang |
 
   </Accordion>
 
@@ -137,25 +142,25 @@ Use configuração explícita quando:
 
     **Erros de autenticação**
 
-    Se as requisições falharem com erros de autenticação, defina uma `SGLANG_API_KEY` real que corresponda
-    à configuração do seu servidor, ou configure o provider explicitamente em
+    Se as solicitações falharem com erros de autenticação, defina um `SGLANG_API_KEY` real que corresponda
+    à configuração do seu servidor, ou configure o provedor explicitamente em
     `models.providers.sglang`.
 
     <Tip>
-    Se você executa o SGLang sem autenticação, qualquer valor não vazio para
-    `SGLANG_API_KEY` é suficiente para fazer opt-in da descoberta de modelo.
+    Se você executar o SGLang sem autenticação, qualquer valor não vazio para
+    `SGLANG_API_KEY` é suficiente para aderir à descoberta de modelos.
     </Tip>
 
   </Accordion>
 </AccordionGroup>
 
-## Relacionado
+## Relacionados
 
 <CardGroup cols={2}>
-  <Card title="Seleção de modelo" href="/pt-BR/concepts/model-providers" icon="layers">
-    Escolha de providers, refs de modelo e comportamento de failover.
+  <Card title="Seleção de modelos" href="/pt-BR/concepts/model-providers" icon="layers">
+    Escolha de provedores, referências de modelo e comportamento de failover.
   </Card>
   <Card title="Referência de configuração" href="/pt-BR/gateway/configuration-reference" icon="gear">
-    Schema completo de configuração, incluindo entradas de provider.
+    Esquema completo de configuração, incluindo entradas de provedor.
   </Card>
 </CardGroup>

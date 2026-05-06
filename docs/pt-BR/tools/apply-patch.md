@@ -1,22 +1,22 @@
 ---
 read_when:
     - Você precisa de edições estruturadas em vários arquivos
-    - Você quer documentar ou depurar edições baseadas em patch
+    - Você quer documentar ou depurar edições baseadas em patches
 summary: Aplicar patches em vários arquivos com a ferramenta apply_patch
 title: ferramenta apply_patch
 x-i18n:
-    generated_at: "2026-04-24T06:14:26Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:14:48Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 9ed6d8282166de3cacf5be7f253498a230bceb2ad6c82a08846aed5bc613da53
+    source_hash: 9ff2f8e6ecd55ff1bdc553619ab3d590d0967efe7a9a90a31946ad15fd89a1dc
     source_path: tools/apply-patch.md
-    workflow: 15
+    workflow: 16
 ---
 
-Aplicar alterações em arquivos usando um formato de patch estruturado. Isso é ideal para edições com vários arquivos
-ou vários hunks, em que uma única chamada `edit` seria frágil.
+Aplique alterações em arquivos usando um formato de patch estruturado. Isso é ideal para edições em vários arquivos
+ou com vários hunks, em que uma única chamada `edit` seria frágil.
 
-A ferramenta aceita uma única string `input` que encapsula uma ou mais operações em arquivos:
+A ferramenta aceita uma única string `input` que envolve uma ou mais operações de arquivo:
 
 ```
 *** Begin Patch
@@ -33,19 +33,19 @@ A ferramenta aceita uma única string `input` que encapsula uma ou mais operaç�
 
 ## Parâmetros
 
-- `input` (obrigatório): conteúdo completo do patch, incluindo `*** Begin Patch` e `*** End Patch`.
+- `input` (obrigatório): Conteúdo completo do patch, incluindo `*** Begin Patch` e `*** End Patch`.
 
 ## Observações
 
-- Caminhos de patch oferecem suporte a caminhos relativos (a partir do diretório do workspace) e caminhos absolutos.
-- `tools.exec.applyPatch.workspaceOnly` usa `true` por padrão (contido no workspace). Defina como `false` apenas se você quiser intencionalmente que `apply_patch` grave/exclua fora do diretório do workspace.
+- Os caminhos do patch aceitam caminhos relativos (a partir do diretório do workspace) e caminhos absolutos.
+- `tools.exec.applyPatch.workspaceOnly` assume `true` como padrão (contido no workspace). Defina como `false` somente se você intencionalmente quiser que `apply_patch` grave/exclua fora do diretório do workspace.
 - Use `*** Move to:` dentro de um hunk `*** Update File:` para renomear arquivos.
-- `*** End of File` marca uma inserção apenas em EOF quando necessário.
+- `*** End of File` marca uma inserção somente EOF quando necessário.
 - Disponível por padrão para modelos OpenAI e OpenAI Codex. Defina
-  `tools.exec.applyPatch.enabled: false` para desativá-la.
-- Opcionalmente faça controle por modelo via
+  `tools.exec.applyPatch.enabled: false` para desativá-lo.
+- Opcionalmente, restrinja por modelo via
   `tools.exec.applyPatch.allowModels`.
-- A configuração existe apenas em `tools.exec`.
+- A configuração fica somente em `tools.exec`.
 
 ## Exemplo
 
@@ -56,8 +56,16 @@ A ferramenta aceita uma única string `input` que encapsula uma ou mais operaç�
 }
 ```
 
-## Relacionado
+## Relacionados
 
-- [Diffs](/pt-BR/tools/diffs)
-- [Ferramenta exec](/pt-BR/tools/exec)
-- [Execução de código](/pt-BR/tools/code-execution)
+<CardGroup cols={2}>
+  <Card title="Diffs" href="/pt-BR/tools/diffs" icon="code-compare">
+    Visualizador de diff somente leitura para apresentação de alterações.
+  </Card>
+  <Card title="Exec tool" href="/pt-BR/tools/exec" icon="terminal">
+    Execução de comandos de shell a partir do agente.
+  </Card>
+  <Card title="Code execution" href="/pt-BR/tools/code-execution" icon="square-code">
+    Análise remota de Python em sandbox com xAI.
+  </Card>
+</CardGroup>

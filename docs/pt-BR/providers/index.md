@@ -1,24 +1,22 @@
 ---
 read_when:
-    - Você quer escolher um provedor de modelo
-    - Você precisa de uma visão geral rápida dos backends de LLM compatíveis
+    - Você quer escolher um provedor de modelos
+    - Você precisa de uma visão geral rápida dos backends de LLM com suporte
 summary: Provedores de modelos (LLMs) compatíveis com o OpenClaw
 title: Diretório de provedores
 x-i18n:
-    generated_at: "2026-04-30T10:04:45Z"
+    generated_at: "2026-05-06T09:10:59Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 61143200b2e7a74392cf8871bfcd210fe35dbd5118e2e8bc7b15265192fd2bde
+    source_hash: cfc3a15880a5e1881c1a58c60c9ad7e5624350a8db848d03c7cef6ee18c14b81
     source_path: providers/index.md
     workflow: 16
 ---
 
-# Provedores de modelos
-
-O OpenClaw pode usar muitos provedores de LLM. Escolha um provedor, autentique-se e então defina o
+OpenClaw pode usar muitos provedores de LLM. Escolha um provedor, autentique-se e defina o
 modelo padrão como `provider/model`.
 
-Procurando a documentação de canais de chat (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/etc.)? Consulte [Canais](/pt-BR/channels).
+Procurando documentação de canais de chat (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/etc.)? Consulte [Canais](/pt-BR/channels).
 
 ## Início rápido
 
@@ -49,14 +47,14 @@ Procurando a documentação de canais de chat (WhatsApp/Telegram/Discord/Slack/M
 - [fal](/pt-BR/providers/fal)
 - [Fireworks](/pt-BR/providers/fireworks)
 - [GitHub Copilot](/pt-BR/providers/github-copilot)
-- [Modelos GLM](/pt-BR/providers/glm)
+- [modelos GLM](/pt-BR/providers/glm)
 - [Google (Gemini)](/pt-BR/providers/google)
 - [Gradium](/pt-BR/providers/gradium)
 - [Groq (inferência LPU)](/pt-BR/providers/groq)
-- [Hugging Face (inferência)](/pt-BR/providers/huggingface)
+- [Hugging Face (Inferência)](/pt-BR/providers/huggingface)
 - [inferrs (modelos locais)](/pt-BR/providers/inferrs)
 - [Kilocode](/pt-BR/providers/kilocode)
-- [LiteLLM (Gateway unificado)](/pt-BR/providers/litellm)
+- [LiteLLM (gateway unificado)](/pt-BR/providers/litellm)
 - [LM Studio (modelos locais)](/pt-BR/providers/lmstudio)
 - [MiniMax](/pt-BR/providers/minimax)
 - [Mistral](/pt-BR/providers/mistral)
@@ -89,9 +87,9 @@ Procurando a documentação de canais de chat (WhatsApp/Telegram/Discord/Slack/M
 ## Páginas de visão geral compartilhadas
 
 - [Variantes adicionais incluídas](/pt-BR/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy e Gemini CLI OAuth
-- [Geração de imagens](/pt-BR/tools/image-generation) - Ferramenta compartilhada `image_generate`, seleção de provedor e alternância em caso de falha
-- [Geração de música](/pt-BR/tools/music-generation) - Ferramenta compartilhada `music_generate`, seleção de provedor e alternância em caso de falha
-- [Geração de vídeo](/pt-BR/tools/video-generation) - Ferramenta compartilhada `video_generate`, seleção de provedor e alternância em caso de falha
+- [Geração de imagens](/pt-BR/tools/image-generation) - Ferramenta `image_generate` compartilhada, seleção de provedor e failover
+- [Geração de música](/pt-BR/tools/music-generation) - Ferramenta `music_generate` compartilhada, seleção de provedor e failover
+- [Geração de vídeo](/pt-BR/tools/video-generation) - Ferramenta `video_generate` compartilhada, seleção de provedor e failover
 
 ## Provedores de transcrição
 
@@ -104,7 +102,7 @@ Procurando a documentação de canais de chat (WhatsApp/Telegram/Discord/Slack/M
 
 ## Ferramentas da comunidade
 
-- [Claude Max API Proxy](/pt-BR/providers/claude-max-api-proxy) - Proxy da comunidade para credenciais de assinatura do Claude (verifique as políticas/termos da Anthropic antes de usar)
+- [Claude Max API Proxy](/pt-BR/providers/claude-max-api-proxy) - Proxy da comunidade para credenciais de assinatura Claude (verifique a política/os termos da Anthropic antes de usar)
 
-Para o catálogo completo de provedores (xAI, Groq, Mistral etc.) e configuração avançada,
+Para o catálogo completo de provedores (xAI, Groq, Mistral, etc.) e configuração avançada,
 consulte [Provedores de modelos](/pt-BR/concepts/model-providers).

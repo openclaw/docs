@@ -1,63 +1,63 @@
 ---
 read_when:
-    - Você quer usar o harness de app-server do Codex incluído
+    - Você quer usar o arcabouço app-server incluído no Codex
     - Você precisa de exemplos de configuração do ambiente de execução do Codex
-    - Você quer que implantações apenas com Codex falhem em vez de recorrerem ao Pi
-summary: Execute turnos de agente embutido do OpenClaw pela estrutura de execução app-server incluída no Codex
-title: Estrutura de execução do Codex
+    - Você quer que as implantações somente com Codex falhem em vez de recorrerem ao PI
+summary: Execute turnos de agentes incorporados do OpenClaw por meio do arcabouço de servidor de aplicativo do Codex incluído
+title: Ambiente de execução do Codex
 x-i18n:
-    generated_at: "2026-05-05T01:48:12Z"
+    generated_at: "2026-05-06T09:07:01Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 76302351e7e162e858dd6e3cffca84b3fd54497dd060104da9f90fe4c1a33f9b
+    source_hash: a35ab08c1a7327437aadb6c2517bd962071bbb25982718d4c0b043680163ab70
     source_path: plugins/codex-harness.md
     workflow: 16
 ---
 
-O Plugin `codex` incluído permite que o OpenClaw execute turnos de agente incorporados pelo
+O plugin `codex` incluído permite que o OpenClaw execute turnos de agente incorporados por meio do
 app-server do Codex em vez do harness PI integrado.
 
-Use isso quando quiser que o Codex seja responsável pela sessão de agente de baixo nível: descoberta de
-modelos, retomada nativa de thread, compaction nativa e execução no app-server.
-O OpenClaw ainda é responsável por canais de chat, arquivos de sessão, seleção de modelo, ferramentas,
+Use isso quando quiser que o Codex controle a sessão de agente de baixo nível: descoberta de
+modelo, retomada nativa de thread, compaction nativa e execução do app-server.
+O OpenClaw ainda controla canais de chat, arquivos de sessão, seleção de modelo, ferramentas,
 aprovações, entrega de mídia e o espelho visível da transcrição.
 
 Quando um turno de chat de origem é executado pelo harness do Codex, as respostas visíveis usam por padrão
 a ferramenta `message` do OpenClaw se a implantação não tiver configurado explicitamente
-`messages.visibleReplies`. O agente ainda pode concluir seu turno do Codex de forma privada;
+`messages.visibleReplies`. O agente ainda pode finalizar seu turno do Codex em privado;
 ele só publica no canal quando chama `message(action="send")`. Defina
 `messages.visibleReplies: "automatic"` para manter as respostas finais de chat direto no
 caminho legado de entrega automática.
 
-Turnos de heartbeat do Codex também recebem a ferramenta `heartbeat_respond` por padrão, para que o
+Os turnos de Heartbeat do Codex também recebem a ferramenta `heartbeat_respond` por padrão, para que o
 agente possa registrar se o despertar deve permanecer silencioso ou notificar sem codificar
 esse fluxo de controle no texto final.
 
-A orientação de iniciativa específica de Heartbeat é enviada como uma instrução de desenvolvedor em
-modo de colaboração do Codex no próprio turno de heartbeat. Turnos de chat comuns restauram
-o modo padrão do Codex em vez de carregar a filosofia de heartbeat no prompt normal
-de runtime.
+Orientações de iniciativa específicas de Heartbeat são enviadas como uma instrução de desenvolvedor
+em modo de colaboração do Codex no próprio turno de Heartbeat. Turnos de chat comuns restauram
+o modo Padrão do Codex em vez de carregar a filosofia de Heartbeat em seu prompt de
+runtime normal.
 
 Se você está tentando se orientar, comece com
 [Runtimes de agente](/pt-BR/concepts/agent-runtimes). A versão curta é:
 `openai/gpt-5.5` é a referência de modelo, `codex` é o runtime, e Telegram,
-Discord, Slack ou outro canal continua sendo a superfície de comunicação.
+Discord, Slack ou outro canal permanece como a superfície de comunicação.
 
 ## Configuração rápida
 
-A maioria dos usuários que quer "Codex no OpenClaw" quer esta rota: entrar com uma
-assinatura ChatGPT/Codex e então executar turnos de agente incorporados pelo runtime nativo
-do app-server do Codex. A referência de modelo ainda permanece canônica como
+A maioria dos usuários que querem "Codex no OpenClaw" quer esta rota: entrar com uma
+assinatura ChatGPT/Codex e então executar turnos de agente incorporados por meio do runtime
+nativo do app-server do Codex. A referência de modelo ainda permanece canônica como
 `openai/gpt-*`; a autenticação por assinatura vem da conta/perfil do Codex, não
 de um prefixo de modelo `openai-codex/*`.
 
-Primeiro entre com OAuth do Codex, se ainda não tiver feito isso:
+Primeiro entre com OAuth do Codex se ainda não fez isso:
 
 ```bash
 openclaw models auth login --provider openai-codex
 ```
 
-Então habilite o Plugin `codex` incluído e force o runtime do Codex:
+Em seguida, habilite o plugin `codex` incluído e force o runtime do Codex:
 
 ```json5
 {
@@ -94,38 +94,41 @@ Se sua configuração usa `plugins.allow`, inclua `codex` ali também:
 }
 ```
 
-Não use `openai-codex/gpt-*` quando você quer dizer runtime nativo do Codex. Esse prefixo
-é a rota explícita "OAuth do Codex pelo PI". Alterações de configuração se aplicam a sessões novas ou
-redefinidas; sessões existentes mantêm o runtime registrado delas.
+Não use `openai-codex/gpt-*` na configuração. Esse prefixo é uma rota legada que
+`openclaw doctor --fix` reescreve para `openai/gpt-*` em modelos primários,
+fallbacks, substituições de heartbeat/subagente/compaction, hooks, substituições de canal
+e pinos obsoletos de rota de sessão persistida.
 
-## O que este Plugin altera
+## O que este plugin altera
 
-O Plugin `codex` incluído contribui com várias capacidades separadas:
+O plugin `codex` incluído contribui com várias capacidades separadas:
 
-| Capacidade                         | Como você a usa                                     | O que ela faz                                                                 |
-| ---------------------------------- | --------------------------------------------------- | ----------------------------------------------------------------------------- |
-| Runtime incorporado nativo         | `agentRuntime.id: "codex"`                          | Executa turnos de agente incorporados do OpenClaw pelo app-server do Codex.   |
-| Comandos nativos de controle de chat | `/codex bind`, `/codex resume`, `/codex steer`, ... | Vincula e controla threads do app-server do Codex a partir de uma conversa de mensagens. |
-| Provedor/catálogo do app-server do Codex | Internos de `codex`, expostos pelo harness      | Permite que o runtime descubra e valide modelos do app-server.                |
-| Caminho de entendimento de mídia do Codex | Caminhos de compatibilidade de modelos de imagem `codex/*` | Executa turnos limitados do app-server do Codex para modelos compatíveis de entendimento de imagem. |
-| Relay de hooks nativos             | Hooks de Plugin ao redor de eventos nativos do Codex | Permite que o OpenClaw observe/bloqueie eventos compatíveis de ferramenta/finalização nativos do Codex. |
+| Capacidade                        | Como você a usa                                      | O que ela faz                                                                  |
+| --------------------------------- | --------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Runtime incorporado nativo           | `agentRuntime.id: "codex"`                          | Executa turnos de agente incorporados do OpenClaw por meio do app-server do Codex.                  |
+| Comandos nativos de controle de chat      | `/codex bind`, `/codex resume`, `/codex steer`, ... | Vincula e controla threads do app-server do Codex a partir de uma conversa de mensagens.    |
+| Provedor/catálogo do app-server do Codex | internos de `codex`, expostos por meio do harness     | Permite que o runtime descubra e valide modelos do app-server.                     |
+| Caminho de compreensão de mídia do Codex    | caminhos de compatibilidade de modelo de imagem `codex/*`           | Executa turnos limitados do app-server do Codex para modelos compatíveis de compreensão de imagem. |
+| Relay nativo de hook                 | Hooks de plugin em torno de eventos nativos do Codex             | Permite que o OpenClaw observe/bloqueie eventos compatíveis nativos do Codex de ferramenta/finalização.  |
 
-Habilitar o Plugin disponibiliza essas capacidades. Ele **não**:
+Habilitar o plugin disponibiliza essas capacidades. Ele **não**:
 
-- começa a usar o Codex para todo modelo OpenAI
-- converte referências de modelo `openai-codex/*` no runtime nativo
+- começa a usar o Codex para todos os modelos OpenAI
+- converte referências de modelo `openai-codex/*` no runtime nativo sem o doctor
+  verificar que o Codex está instalado, habilitado, contribui com o harness `codex`
+  e está pronto para OAuth
 - torna ACP/acpx o caminho padrão do Codex
-- troca em tempo real sessões existentes que já registraram um runtime PI
-- substitui entrega por canal, arquivos de sessão, armazenamento de perfil de autenticação ou
-  roteamento de mensagens do OpenClaw
+- troca automaticamente sessões existentes que já registraram um runtime PI
+- substitui entrega de canais do OpenClaw, arquivos de sessão, armazenamento de perfil de autenticação ou
+  roteamento de mensagens
 
-O mesmo Plugin também é responsável pela superfície nativa de comandos de controle de chat `/codex`. Se
-o Plugin está habilitado e o usuário pede para vincular, retomar, direcionar, parar ou inspecionar
-threads do Codex pelo chat, agentes devem preferir `/codex ...` em vez de ACP. ACP continua sendo
-o fallback explícito quando o usuário pede ACP/acpx ou está testando o adaptador Codex
-do ACP.
+O mesmo plugin também controla a superfície nativa de comando de controle de chat `/codex`. Se
+o plugin estiver habilitado e o usuário pedir para vincular, retomar, direcionar, parar ou inspecionar
+threads do Codex a partir do chat, os agentes devem preferir `/codex ...` em vez de ACP. ACP permanece
+o fallback explícito quando o usuário pede ACP/acpx ou está testando o adaptador ACP
+do Codex.
 
-Turnos nativos do Codex mantêm os hooks de Plugin do OpenClaw como a camada pública de compatibilidade.
+Turnos nativos do Codex mantêm os hooks de plugin do OpenClaw como a camada pública de compatibilidade.
 Estes são hooks em processo do OpenClaw, não hooks de comando `hooks.json` do Codex:
 
 - `before_prompt_build`
@@ -133,172 +136,172 @@ Estes são hooks em processo do OpenClaw, não hooks de comando `hooks.json` do 
 - `llm_input`, `llm_output`
 - `before_tool_call`, `after_tool_call`
 - `before_message_write` para registros espelhados de transcrição
-- `before_agent_finalize` pelo relay `Stop` do Codex
+- `before_agent_finalize` por meio do relay `Stop` do Codex
 - `agent_end`
 
-Plugins também podem registrar middleware de resultado de ferramenta neutro quanto ao runtime para reescrever
-resultados dinâmicos de ferramentas do OpenClaw depois que o OpenClaw executa a ferramenta e antes que o
-resultado seja retornado ao Codex. Isso é separado do hook público de Plugin
-`tool_result_persist`, que transforma escritas de resultado de ferramenta na transcrição pertencentes ao OpenClaw.
+Plugins também podem registrar middleware de resultado de ferramenta neutro em runtime para reescrever
+resultados de ferramentas dinâmicas do OpenClaw depois que o OpenClaw executa a ferramenta e antes que o
+resultado seja retornado ao Codex. Isso é separado do hook público de plugin
+`tool_result_persist`, que transforma gravações de resultado de ferramenta na transcrição
+controladas pelo OpenClaw.
 
-Para a semântica dos próprios hooks de Plugin, consulte [Hooks de Plugin](/pt-BR/plugins/hooks)
-e [Comportamento de guarda de Plugin](/pt-BR/tools/plugin).
+Para a semântica dos hooks de plugin em si, consulte [Hooks de plugin](/pt-BR/plugins/hooks)
+e [Comportamento de guarda de plugin](/pt-BR/tools/plugin).
 
-O harness fica desativado por padrão. Novas configurações devem manter referências de modelo OpenAI
+O harness fica desativado por padrão. Novas configurações devem manter as referências de modelo OpenAI
 canônicas como `openai/gpt-*` e forçar explicitamente
-`agentRuntime.id: "codex"` ou `OPENCLAW_AGENT_RUNTIME=codex` quando quiserem
-execução nativa no app-server. Referências de modelo legadas `codex/*` ainda selecionam automaticamente
-o harness por compatibilidade, mas prefixos de provedor legados com suporte de runtime
+`agentRuntime.id: "codex"` ou `OPENCLAW_AGENT_RUNTIME=codex` quando
+quiserem execução nativa no app-server. Referências legadas de modelo `codex/*` ainda selecionam automaticamente
+o harness por compatibilidade, mas prefixos legados de provedor com suporte de runtime
 não são exibidos como escolhas normais de modelo/provedor.
 
-Se o Plugin `codex` estiver habilitado, mas o modelo primário ainda for
-`openai-codex/*`, `openclaw doctor` avisa em vez de alterar a rota. Isso é
-intencional: `openai-codex/*` continua sendo o caminho PI de OAuth/assinatura do Codex, e
-a execução nativa no app-server continua sendo uma escolha explícita de runtime.
+Se qualquer rota de modelo configurada ainda for `openai-codex/*`, `openclaw doctor --fix`
+a reescreve para `openai/*`. Para rotas de agente correspondentes, ele define o runtime do agente
+como `codex` apenas quando o plugin Codex está instalado, habilitado, contribui com o
+harness `codex` e tem OAuth utilizável; caso contrário, define o runtime como `pi`.
 
 ## Mapa de rotas
 
 Use esta tabela antes de alterar a configuração:
 
-| Comportamento desejado                              | Referência de modelo       | Configuração de runtime                | Rota de autenticação/perfil  | Rótulo de status esperado      |
-| --------------------------------------------------- | -------------------------- | -------------------------------------- | ---------------------------- | ------------------------------ |
+| Comportamento desejado                                     | Referência de modelo                  | Configuração de runtime                         | Rota de autenticação/perfil           | Rótulo de status esperado          |
+| ---------------------------------------------------- | -------------------------- | -------------------------------------- | ---------------------------- | ------------------------------ |
 | Assinatura ChatGPT/Codex com runtime nativo do Codex | `openai/gpt-*`             | `agentRuntime.id: "codex"`             | OAuth do Codex ou conta do Codex | `Runtime: OpenAI Codex`        |
-| API da OpenAI pelo executor normal do OpenClaw       | `openai/gpt-*`             | omitido ou `runtime: "pi"`             | Chave de API da OpenAI       | `Runtime: OpenClaw Pi Default` |
-| Assinatura ChatGPT/Codex pelo PI                    | `openai-codex/gpt-*`       | omitido ou `runtime: "pi"`             | Provedor OAuth OpenAI Codex  | `Runtime: OpenClaw Pi Default` |
-| Provedores mistos com modo automático conservador    | referências específicas do provedor | `agentRuntime.id: "auto"`              | Por provedor selecionado     | Depende do runtime selecionado |
-| Sessão explícita do adaptador Codex ACP              | depende de prompt/modelo ACP | `sessions_spawn` com `runtime: "acp"` | Autenticação do backend ACP  | Status de tarefa/sessão ACP    |
+| API da OpenAI pelo executor normal do OpenClaw            | `openai/gpt-*`             | omitido ou `runtime: "pi"`             | Chave de API da OpenAI               | `Runtime: OpenClaw Pi Default` |
+| Configuração legada que precisa de reparo pelo doctor               | `openai-codex/gpt-*`       | reparado para `codex` ou `pi`            | Autenticação configurada existente     | Verifique novamente após `doctor --fix`   |
+| Provedores mistos com modo automático conservador          | referências específicas do provedor     | `agentRuntime.id: "auto"`              | Por provedor selecionado        | Depende do runtime selecionado    |
+| Sessão explícita do adaptador ACP do Codex                   | dependente de prompt/modelo ACP | `sessions_spawn` com `runtime: "acp"` | Autenticação do backend ACP             | Status de tarefa/sessão ACP        |
 
-A divisão importante é provedor versus runtime:
+A separação importante é provedor versus runtime:
 
-- `openai-codex/*` responde "qual rota de provedor/autenticação o PI deve usar?"
-- `agentRuntime.id: "codex"` responde "qual loop deve executar este
-  turno incorporado?"
+- `openai-codex/*` é uma rota legada que o doctor reescreve.
+- `agentRuntime.id: "codex"` exige o harness do Codex e falha de forma fechada se ele
+  estiver indisponível.
+- `agentRuntime.id: "auto"` permite que harnesses registrados reivindiquem rotas de provedor
+  correspondentes, mas referências canônicas da OpenAI ainda pertencem ao PI, a menos que um harness seja compatível
+  com esse par provedor/modelo.
 - `/codex ...` responde "a qual conversa nativa do Codex este chat deve se vincular
   ou controlar?"
 - ACP responde "qual processo de harness externo o acpx deve iniciar?"
 
-## Escolha o prefixo de modelo correto
+## Escolha o prefixo de modelo certo
 
 Rotas da família OpenAI são específicas por prefixo. Para a configuração comum de assinatura mais
 runtime nativo do Codex, use `openai/*` com `agentRuntime.id: "codex"`.
-Use `openai-codex/*` apenas quando você quiser intencionalmente OAuth do Codex pelo PI:
+Trate `openai-codex/*` como configuração legada que o doctor deve reescrever:
 
-| Referência de modelo                         | Caminho de runtime                         | Use quando                                                                 |
-| -------------------------------------------- | ------------------------------------------ | -------------------------------------------------------------------------- |
-| `openai/gpt-5.4`                             | Provedor OpenAI pelo encanamento OpenClaw/PI | Você quer acesso atual direto à API da OpenAI Platform com `OPENAI_API_KEY`. |
-| `openai-codex/gpt-5.5`                       | OAuth OpenAI Codex pelo OpenClaw/PI        | Você quer autenticação por assinatura ChatGPT/Codex com o executor PI padrão. |
-| `openai/gpt-5.5` + `agentRuntime.id: "codex"` | Harness do app-server do Codex             | Você quer autenticação por assinatura ChatGPT/Codex com execução nativa do Codex. |
+| Referência de modelo                                     | Caminho de runtime                                 | Use quando                                                                  |
+| --------------------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------- |
+| `openai/gpt-5.4`                              | Provedor OpenAI por meio do encanamento OpenClaw/PI | Você quer acesso atual direto à API da OpenAI Platform com `OPENAI_API_KEY`. |
+| `openai-codex/gpt-5.5`                        | Rota legada reparada pelo doctor              | Você está em uma configuração antiga; execute `openclaw doctor --fix` para reescrevê-la.         |
+| `openai/gpt-5.5` + `agentRuntime.id: "codex"` | Harness do app-server do Codex                     | Você quer autenticação por assinatura ChatGPT/Codex com execução nativa do Codex.     |
 
-GPT-5.5 pode aparecer em rotas de chave de API direta da OpenAI e de assinatura do Codex
-quando sua conta as expõe. Use `openai/gpt-5.5` com o harness do app-server
-do Codex para runtime nativo do Codex, `openai-codex/gpt-5.5` para OAuth pelo PI, ou
-`openai/gpt-5.5` sem uma substituição de runtime do Codex para tráfego direto por chave de API.
+GPT-5.5 pode aparecer tanto em rotas diretas com chave de API da OpenAI quanto em rotas de assinatura Codex
+quando sua conta as expõe. Use `openai/gpt-5.5` com o harness do app-server do Codex
+para runtime nativo do Codex, ou `openai/gpt-5.5` sem uma substituição de runtime do Codex
+para tráfego direto com chave de API.
 
-Referências legadas `codex/gpt-*` continuam aceitas como aliases de compatibilidade. A migração de
-compatibilidade do doctor reescreve referências legadas de runtime primário para referências de modelo
-canônicas e registra a política de runtime separadamente, enquanto referências legadas apenas de fallback
-ficam inalteradas porque o runtime é configurado para todo o contêiner do agente.
-Novas configurações de OAuth PI do Codex devem usar `openai-codex/gpt-*`; novas configurações nativas
-do harness do app-server devem usar `openai/gpt-*` mais
-`agentRuntime.id: "codex"`.
+Referências legadas `codex/gpt-*` continuam aceitas como aliases de compatibilidade. A migração
+de compatibilidade do doctor reescreve referências legadas de runtime para referências canônicas de modelo
+e registra a política de runtime separadamente. Novas configurações do harness nativo do app-server
+devem usar `openai/gpt-*` mais `agentRuntime.id: "codex"`.
 
-`agents.defaults.imageModel` segue a mesma divisão de prefixos. Use
-`openai-codex/gpt-*` quando o entendimento de imagem deve ser executado pelo caminho de provedor OAuth
-OpenAI Codex. Use `codex/gpt-*` quando o entendimento de imagem deve ser executado
-por um turno limitado do app-server do Codex. O modelo do app-server do Codex deve
-anunciar suporte a entrada de imagem; modelos Codex somente texto falham antes que o turno de mídia
-comece.
+`agents.defaults.imageModel` segue a mesma divisão de prefixo. Use
+`openai/gpt-*` para a rota normal da OpenAI e `codex/gpt-*` quando a compreensão de imagem
+deve ser executada por meio de um turno limitado do app-server do Codex. Não use
+`openai-codex/gpt-*`; o doctor reescreve esse prefixo legado para `openai/gpt-*`. O
+modelo do app-server do Codex deve anunciar suporte a entrada de imagem; modelos Codex
+somente texto falham antes do início do turno de mídia.
 
-Use `/status` para confirmar o harness efetivo da sessão atual. Se a seleção
-for surpreendente, habilite logs de depuração para o subsistema `agents/harness`
+Use `/status` para confirmar o harness efetivo da sessão atual. Se a
+seleção for surpreendente, habilite logs de depuração para o subsistema `agents/harness`
 e inspecione o registro estruturado `agent harness selected` do Gateway. Ele
-inclui o id do harness selecionado, motivo da seleção, política de runtime/fallback e,
-no modo `auto`, o resultado de suporte de cada candidato de Plugin.
+inclui o id do harness selecionado, o motivo da seleção, a política de runtime/fallback e,
+no modo `auto`, o resultado de suporte de cada candidato de plugin.
 
-### O que os avisos do doctor significam
+### O que significam os avisos do doctor
 
-`openclaw doctor` avisa quando todos estes itens são verdadeiros:
+`openclaw doctor` avisa quando referências de modelo configuradas ou estado persistido de rota de sessão
+ainda usam `openai-codex/*`. `openclaw doctor --fix` reescreve essas rotas
+para:
 
-- o Plugin `codex` incluído está habilitado ou permitido
-- o modelo primário de um agente é `openai-codex/*`
-- o runtime efetivo desse agente não é `codex`
+- `openai/<model>`
+- `agentRuntime.id: "codex"` quando o Codex está instalado, habilitado, contribui com o
+  harness `codex` e tem OAuth utilizável
+- `agentRuntime.id: "pi"` caso contrário
 
-Esse aviso existe porque usuários costumam esperar que "Plugin do Codex habilitado" implique
-"runtime nativo do app-server do Codex." O OpenClaw não faz esse salto. O aviso
-significa:
-
-- **Nenhuma alteração é necessária** se você pretendia usar OAuth ChatGPT/Codex pelo PI.
-- Altere o modelo para `openai/<model>` e defina
-  `agentRuntime.id: "codex"` se você pretendia execução nativa no app-server.
-- Sessões existentes ainda precisam de `/new` ou `/reset` depois de uma alteração de runtime,
-  porque pins de runtime de sessão são persistentes.
+A rota `codex` força o harness nativo do Codex. A rota `pi` mantém o
+agente no executor padrão do OpenClaw em vez de habilitar ou instalar o Codex como
+efeito colateral da limpeza da rota legada.
+O doctor também repara pinos obsoletos de sessão persistida nos armazenamentos de sessão de agente
+descobertos para que conversas antigas não fiquem presas na rota removida.
 
 A seleção de harness não é um controle de sessão ao vivo. Quando um turno incorporado é executado,
-o OpenClaw registra o id do harness selecionado nessa sessão e continua a usá-lo para
+o OpenClaw registra o id do harness selecionado nessa sessão e continua usando-o para
 turnos posteriores no mesmo id de sessão. Altere a configuração `agentRuntime` ou
 `OPENCLAW_AGENT_RUNTIME` quando quiser que sessões futuras usem outro harness;
-use `/new` ou `/reset` para iniciar uma sessão nova antes de alternar uma conversa existente
-entre PI e Codex. Isso evita reproduzir uma transcrição por dois sistemas de sessão nativa
-incompatíveis.
+use `/new` ou `/reset` para iniciar uma nova sessão antes de alternar uma conversa
+existente entre PI e Codex. Isso evita reproduzir uma transcrição por meio de
+dois sistemas de sessão nativos incompatíveis.
 
-As sessões legadas criadas antes das fixações do ambiente de execução são tratadas como fixadas ao Pi assim que
-tiverem histórico de transcrição. Use `/new` ou `/reset` para optar por incluir essa conversa no
-Codex após alterar a configuração.
+Sessões legadas criadas antes dos pins de harness são tratadas como fixadas ao PI depois que
+têm histórico de transcrição. Use `/new` ou `/reset` para optar essa conversa pelo
+Codex depois de alterar a configuração.
 
-`/status` mostra o runtime efetivo do modelo. O ambiente de execução padrão do Pi aparece como
-`Runtime: OpenClaw Pi Default`, e o ambiente de execução do servidor de aplicativo do Codex aparece como
+`/status` mostra o runtime de modelo efetivo. O harness padrão do PI aparece como
+`Runtime: OpenClaw Pi Default`, e o harness app-server do Codex aparece como
 `Runtime: OpenAI Codex`.
 
 ## Requisitos
 
 - OpenClaw com o Plugin `codex` incluído disponível.
-- Servidor de aplicativo do Codex `0.125.0` ou mais recente. O Plugin incluído gerencia um binário
-  compatível do servidor de aplicativo do Codex por padrão, portanto comandos `codex` locais no `PATH` não
-  afetam a inicialização normal do ambiente de execução.
-- Autenticação do Codex disponível para o processo do servidor de aplicativo ou para a ponte de autenticação Codex
-  do OpenClaw. Inicializações locais do servidor de aplicativo usam uma home do Codex gerenciada pelo OpenClaw para cada
-  agente e um `HOME` filho isolado, portanto, por padrão, elas não leem sua conta pessoal
-  `~/.codex`, Skills, plugins, configuração, estado de threads ou
-  `$HOME/.agents/skills` nativo.
+- Codex app-server `0.125.0` ou mais recente. O Plugin incluído gerencia um binário
+  Codex app-server compatível por padrão, portanto comandos `codex` locais em `PATH` não
+  afetam a inicialização normal do harness.
+- Autenticação do Codex disponível para o processo do app-server ou para a ponte de autenticação
+  Codex do OpenClaw. Inicializações locais do app-server usam um Codex home gerenciado pelo OpenClaw para cada
+  agente e um `HOME` filho isolado, portanto não leem sua conta pessoal
+  `~/.codex`, Skills, Plugins, configuração, estado de threads ou
+  `$HOME/.agents/skills` nativo por padrão.
 
-O Plugin bloqueia handshakes de servidor de aplicativo mais antigos ou sem versão. Isso mantém o
-OpenClaw na superfície de protocolo contra a qual ele foi testado.
+O Plugin bloqueia handshakes de app-server mais antigos ou sem versão. Isso mantém
+o OpenClaw na superfície de protocolo contra a qual ele foi testado.
 
-Para testes smoke ao vivo e Docker, a autenticação geralmente vem da conta da CLI do Codex
-ou de um perfil de autenticação `openai-codex` do OpenClaw. Inicializações locais do servidor de aplicativo via stdio
-também podem recorrer a `CODEX_API_KEY` / `OPENAI_API_KEY` quando nenhuma conta estiver presente.
+Para testes smoke ao vivo e em Docker, a autenticação geralmente vem da conta da Codex CLI
+ou de um perfil de autenticação `openai-codex` do OpenClaw. Inicializações locais do app-server via stdio também podem
+recorrer a `CODEX_API_KEY` / `OPENAI_API_KEY` quando nenhuma conta está presente.
 
 ## Arquivos de bootstrap do workspace
 
-O Codex lida com `AGENTS.md` por conta própria por meio da descoberta nativa de documentação de projeto. O OpenClaw
-não grava arquivos sintéticos de documentação de projeto do Codex nem depende de nomes de arquivo de fallback do Codex
+O Codex lida com `AGENTS.md` por conta própria por meio da descoberta nativa de docs do projeto. O OpenClaw
+não grava arquivos sintéticos de docs de projeto do Codex nem depende de nomes de arquivo fallback do Codex
 para arquivos de persona, porque os fallbacks do Codex só se aplicam quando
 `AGENTS.md` está ausente.
 
-Para paridade de workspace do OpenClaw, o ambiente de execução do Codex resolve os outros arquivos de bootstrap
+Para paridade de workspace do OpenClaw, o harness Codex resolve os outros arquivos de bootstrap
 (`SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`,
-`BOOTSTRAP.md` e `MEMORY.md`, quando presentes) e os encaminha pelas instruções de configuração do Codex
+`BOOTSTRAP.md` e `MEMORY.md`, quando presentes) e os encaminha por meio das instruções de desenvolvedor do Codex
 em `thread/start` e `thread/resume`. Isso mantém
-`SOUL.md` e o contexto relacionado de persona/perfil do workspace visíveis sem
-duplicar `AGENTS.md`.
+`SOUL.md` e o contexto relacionado de persona/perfil do workspace visíveis na via nativa
+de modelagem de comportamento do Codex sem duplicar `AGENTS.md`.
 
-## Adicionar Codex ao lado de outros modelos
+## Adicionar Codex junto a outros modelos
 
 Não defina `agentRuntime.id: "codex"` globalmente se o mesmo agente deve alternar livremente
-entre o Codex e modelos de provedores não Codex. Um runtime forçado se aplica a cada
+entre Codex e modelos de provedores não Codex. Um runtime forçado se aplica a todo
 turno incorporado desse agente ou sessão. Se você selecionar um modelo Anthropic enquanto
-esse runtime estiver forçado, o OpenClaw ainda tentará usar o ambiente de execução do Codex e falhará de modo fechado
-em vez de encaminhar silenciosamente esse turno pelo Pi.
+esse runtime estiver forçado, o OpenClaw ainda tenta o harness Codex e falha fechado
+em vez de rotear silenciosamente esse turno pelo PI.
 
-Use um destes formatos em vez disso:
+Use uma destas formas em vez disso:
 
 - Coloque o Codex em um agente dedicado com `agentRuntime.id: "codex"`.
-- Mantenha o agente padrão em `agentRuntime.id: "auto"` e o fallback do Pi para uso normal misto
-  de provedores.
-- Use referências legadas `codex/*` apenas para compatibilidade. Novas configurações devem preferir
-  `openai/*` mais uma política explícita de runtime do Codex.
+- Mantenha o agente padrão em `agentRuntime.id: "auto"` e o fallback do PI para uso normal misto
+  entre provedores.
+- Use refs legadas `codex/*` apenas para compatibilidade. Novas configurações devem preferir
+  `openai/*` mais uma política explícita de runtime Codex.
 
-Por exemplo, isto mantém o agente padrão na seleção automática normal e
+Por exemplo, isso mantém o agente padrão na seleção automática normal e
 adiciona um agente Codex separado:
 
 ```json5
@@ -335,39 +338,39 @@ adiciona um agente Codex separado:
 }
 ```
 
-Com este formato:
+Com esta forma:
 
-- O agente padrão `main` usa o caminho normal do provedor e o fallback de compatibilidade do Pi.
-- O agente `codex` usa o ambiente de execução do servidor de aplicativo do Codex.
-- Se o Codex estiver ausente ou não for compatível para o agente `codex`, o turno falha
-  em vez de usar o Pi silenciosamente.
+- O agente padrão `main` usa o caminho normal do provedor e o fallback de compatibilidade do PI.
+- O agente `codex` usa o harness Codex app-server.
+- Se o Codex estiver ausente ou sem suporte para o agente `codex`, o turno falha
+  em vez de usar silenciosamente o PI.
 
 ## Roteamento de comandos de agente
 
-Os agentes devem rotear solicitações de usuário por intenção, não apenas pela palavra "Codex":
+Agentes devem rotear solicitações de usuário por intenção, não apenas pela palavra "Codex":
 
-| Usuário pede para...                                    | Agente deve usar...                              |
+| Usuário pede para...                                   | Agente deve usar...                               |
 | ------------------------------------------------------ | ------------------------------------------------ |
-| "Vincular este chat ao Codex"                           | `/codex bind`                                    |
-| "Retomar thread do Codex `<id>` aqui"                   | `/codex resume <id>`                             |
-| "Mostrar threads do Codex"                              | `/codex threads`                                 |
+| "Vincular este chat ao Codex"                          | `/codex bind`                                    |
+| "Retomar a thread Codex `<id>` aqui"                   | `/codex resume <id>`                             |
+| "Mostrar threads do Codex"                             | `/codex threads`                                 |
 | "Registrar um relatório de suporte para uma execução ruim do Codex" | `/diagnostics [note]`                            |
 | "Enviar feedback do Codex apenas para esta thread anexada" | `/codex diagnostics [note]`                      |
-| "Usar minha assinatura do ChatGPT/Codex com runtime do Codex" | `openai/*` mais `agentRuntime.id: "codex"`       |
-| "Usar minha assinatura do ChatGPT/Codex pelo Pi"        | referências de modelo `openai-codex/*`           |
-| "Executar Codex por ACP/acpx"                           | ACP `sessions_spawn({ runtime: "acp", ... })`    |
+| "Usar minha assinatura ChatGPT/Codex com o runtime Codex" | `openai/*` mais `agentRuntime.id: "codex"`       |
+| "Reparar pins antigos de config/sessão `openai-codex/*`" | `openclaw doctor --fix`                          |
+| "Executar Codex por meio de ACP/acpx"                  | ACP `sessions_spawn({ runtime: "acp", ... })`    |
 | "Iniciar Claude Code/Gemini/OpenCode/Cursor em uma thread" | ACP/acpx, não `/codex` e não subagentes nativos |
 
-O OpenClaw só anuncia orientação de spawn do ACP para agentes quando o ACP está habilitado,
-pode ser despachado e é apoiado por um backend de runtime carregado. Se o ACP não estiver disponível,
-o prompt do sistema e as Skills de Plugin não devem ensinar o agente sobre roteamento
-do ACP.
+O OpenClaw só anuncia orientação de spawn ACP a agentes quando ACP está habilitado,
+despachável e apoiado por um backend de runtime carregado. Se ACP não estiver disponível,
+o prompt do sistema e as Skills do Plugin não devem ensinar o agente sobre roteamento
+ACP.
 
-## Implantações somente com Codex
+## Implantações apenas com Codex
 
-Force o ambiente de execução do Codex quando precisar provar que cada turno de agente incorporado
-usa Codex. Runtimes explícitos de Plugin falham de modo fechado e nunca são repetidos silenciosamente
-pelo Pi:
+Force o harness Codex quando precisar provar que todo turno de agente incorporado
+usa Codex. Runtimes explícitos de Plugin falham fechado e nunca são tentados novamente silenciosamente
+pelo PI:
 
 ```json5
 {
@@ -388,12 +391,12 @@ Sobrescrita de ambiente:
 OPENCLAW_AGENT_RUNTIME=codex openclaw gateway run
 ```
 
-Com Codex forçado, o OpenClaw falha cedo se o Plugin Codex estiver desativado, o
-servidor de aplicativo for antigo demais ou o servidor de aplicativo não conseguir iniciar.
+Com Codex forçado, o OpenClaw falha cedo se o Plugin Codex estiver desabilitado, se o
+app-server for antigo demais ou se o app-server não puder iniciar.
 
 ## Codex por agente
 
-Você pode tornar um agente exclusivo para Codex enquanto o agente padrão mantém a
+Você pode tornar um agente exclusivo do Codex enquanto o agente padrão mantém a
 seleção automática normal:
 
 ```json5
@@ -423,15 +426,15 @@ seleção automática normal:
 }
 ```
 
-Use comandos normais de sessão para alternar agentes e modelos. `/new` cria uma nova
-sessão do OpenClaw, e o ambiente de execução do Codex cria ou retoma sua thread
-auxiliar de servidor de aplicativo conforme necessário. `/reset` limpa a vinculação da sessão do OpenClaw para essa thread
-e permite que o próximo turno resolva o ambiente de execução a partir da configuração atual novamente.
+Use comandos normais de sessão para alternar agentes e modelos. `/new` cria uma nova sessão
+OpenClaw, e o harness Codex cria ou retoma sua thread sidecar do app-server
+conforme necessário. `/reset` limpa a vinculação da sessão OpenClaw para essa thread
+e permite que o próximo turno resolva novamente o harness a partir da configuração atual.
 
 ## Descoberta de modelos
 
-Por padrão, o Plugin Codex pede ao servidor de aplicativo os modelos disponíveis. Se a
-descoberta falhar ou atingir o tempo limite, ele usa um catálogo de fallback incluído para:
+Por padrão, o Plugin Codex pede ao app-server os modelos disponíveis. Se
+a descoberta falhar ou atingir timeout, ele usa um catálogo fallback incluído para:
 
 - GPT-5.5
 - GPT-5.4 mini
@@ -457,8 +460,8 @@ Você pode ajustar a descoberta em `plugins.entries.codex.config.discovery`:
 }
 ```
 
-Desative a descoberta quando quiser que a inicialização evite sondar o Codex e fique no
-catálogo de fallback:
+Desabilite a descoberta quando quiser que a inicialização evite sondar o Codex e fique no
+catálogo fallback:
 
 ```json5
 {
@@ -477,24 +480,24 @@ catálogo de fallback:
 }
 ```
 
-## Conexão e política do servidor de aplicativo
+## Conexão e política do app-server
 
-Por padrão, o Plugin inicia localmente o binário gerenciado do Codex do OpenClaw com:
+Por padrão, o Plugin inicia localmente o binário Codex gerenciado pelo OpenClaw com:
 
 ```bash
 codex app-server --listen stdio://
 ```
 
 O binário gerenciado é enviado com o pacote do Plugin `codex`. Isso mantém a
-versão do servidor de aplicativo vinculada ao Plugin incluído em vez de qualquer CLI
-Codex separada que por acaso esteja instalada localmente. Defina `appServer.command` apenas quando
+versão do app-server vinculada ao Plugin incluído, em vez de a qualquer Codex CLI separada
+que esteja instalada localmente. Defina `appServer.command` apenas quando
 você quiser intencionalmente executar um executável diferente.
 
-Por padrão, o OpenClaw inicia sessões locais do ambiente de execução do Codex no modo YOLO:
+Por padrão, o OpenClaw inicia sessões locais do harness Codex em modo YOLO:
 `approvalPolicy: "never"`, `approvalsReviewer: "user"` e
-`sandbox: "danger-full-access"`. Esta é a postura confiável de operador local usada
-para Heartbeats autônomos: o Codex pode usar ferramentas de shell e rede sem
-parar em prompts de aprovação nativos que ninguém está por perto para responder.
+`sandbox: "danger-full-access"`. Essa é a postura confiável de operador local usada
+para heartbeats autônomos: Codex pode usar ferramentas de shell e rede sem
+parar em prompts nativos de aprovação que ninguém está presente para responder.
 
 Para optar por aprovações revisadas pelo guardião do Codex, defina `appServer.mode:
 "guardian"`:
@@ -517,21 +520,21 @@ Para optar por aprovações revisadas pelo guardião do Codex, defina `appServer
 }
 ```
 
-O modo guardião usa o caminho de aprovação com revisão automática nativo do Codex. Quando o Codex pede para
-sair da sandbox, gravar fora do workspace ou adicionar permissões como acesso à rede,
-o Codex encaminha essa solicitação de aprovação ao revisor nativo em vez de a um
+O modo Guardian usa o caminho de aprovação de auto-review nativo do Codex. Quando Codex pede para
+sair do sandbox, escrever fora do workspace ou adicionar permissões como acesso à rede,
+Codex roteia essa solicitação de aprovação para o revisor nativo em vez de um
 prompt humano. O revisor aplica o framework de risco do Codex e aprova ou nega
-a solicitação específica. Use Guardião quando quiser mais proteções que o modo YOLO,
-mas ainda precisar que agentes não supervisionados avancem.
+a solicitação específica. Use Guardian quando quiser mais proteções do que no modo YOLO,
+mas ainda precisar que agentes autônomos avancem.
 
-A predefinição `guardian` se expande para `approvalPolicy: "on-request"`,
+O preset `guardian` se expande para `approvalPolicy: "on-request"`,
 `approvalsReviewer: "auto_review"` e `sandbox: "workspace-write"`.
-Campos de política individuais ainda sobrescrevem `mode`, portanto implantações avançadas podem combinar
-a predefinição com escolhas explícitas. O valor de revisor mais antigo `guardian_subagent`
-ainda é aceito como alias de compatibilidade, mas novas configurações devem usar
+Campos individuais de política ainda sobrescrevem `mode`, portanto implantações avançadas podem combinar
+o preset com escolhas explícitas. O valor de revisor mais antigo `guardian_subagent` ainda é
+aceito como alias de compatibilidade, mas novas configurações devem usar
 `auto_review`.
 
-Para um servidor de aplicativo já em execução, use transporte WebSocket:
+Para um app-server já em execução, use transporte WebSocket:
 
 ```json5
 {
@@ -553,46 +556,46 @@ Para um servidor de aplicativo já em execução, use transporte WebSocket:
 }
 ```
 
-Inicializações do servidor de aplicativo via stdio herdam o ambiente de processo do OpenClaw por padrão,
-mas o OpenClaw possui a ponte de conta do servidor de aplicativo do Codex e define tanto
-`CODEX_HOME` quanto `HOME` para diretórios por agente sob o estado do OpenClaw
-desse agente. O carregador de Skills próprio do Codex lê `$CODEX_HOME/skills` e
-`$HOME/.agents/skills`, portanto ambos os valores são isolados para inicializações locais do servidor de aplicativo.
-Isso mantém Skills, plugins, configuração, contas e estado de threads nativos do Codex
-escopados ao agente OpenClaw em vez de vazarem da home pessoal da CLI do Codex
+Inicializações do app-server via stdio herdam o ambiente de processo do OpenClaw por padrão,
+mas o OpenClaw controla a ponte de conta do app-server Codex e define tanto
+`CODEX_HOME` quanto `HOME` para diretórios por agente no estado OpenClaw desse agente.
+O carregador de Skills próprio do Codex lê `$CODEX_HOME/skills` e
+`$HOME/.agents/skills`, portanto ambos os valores são isolados para inicializações locais do app-server.
+Isso mantém Skills, Plugins, configuração, contas e estado de threads nativos do Codex
+escopados ao agente OpenClaw, em vez de vazarem do Codex CLI home pessoal
 do operador.
 
 Plugins do OpenClaw e snapshots de Skills do OpenClaw ainda fluem pelo próprio
-registro de Plugins e carregador de Skills do OpenClaw. Ativos pessoais da CLI do Codex não. Se você tiver
-Skills ou plugins úteis da CLI do Codex que devam se tornar parte de um agente OpenClaw,
-faça um inventário deles explicitamente:
+registro de Plugins e carregador de Skills do OpenClaw. Ativos pessoais da Codex CLI não. Se você tiver
+Skills ou Plugins úteis da Codex CLI que devem se tornar parte de um agente OpenClaw,
+inventarie-os explicitamente:
 
 ```bash
 openclaw migrate codex --dry-run
 openclaw migrate apply codex --yes
 ```
 
-O provedor de migração do Codex copia Skills para o workspace atual do agente OpenClaw.
-Plugins, hooks e arquivos de configuração nativos do Codex são relatados ou arquivados
+O provedor de migração Codex copia Skills para o workspace do agente OpenClaw atual.
+Plugins nativos do Codex, hooks e arquivos de configuração são relatados ou arquivados
 para revisão manual em vez de serem ativados automaticamente, porque podem
 executar comandos, expor servidores MCP ou carregar credenciais.
 
 A autenticação é selecionada nesta ordem:
 
 1. Um perfil explícito de autenticação Codex do OpenClaw para o agente.
-2. A conta existente do servidor de aplicativo na home do Codex desse agente.
-3. Apenas para inicializações locais do servidor de aplicativo via stdio, `CODEX_API_KEY`, depois
-   `OPENAI_API_KEY`, quando nenhuma conta de servidor de aplicativo estiver presente e a autenticação da OpenAI
-   ainda for necessária.
+2. A conta existente do app-server no Codex home desse agente.
+3. Apenas para inicializações locais do app-server via stdio, `CODEX_API_KEY`, depois
+   `OPENAI_API_KEY`, quando nenhuma conta do app-server está presente e a autenticação OpenAI
+   ainda é necessária.
 
-Quando o OpenClaw vê um perfil de autenticação Codex no estilo de assinatura do ChatGPT, ele remove
+Quando OpenClaw vê um perfil de autenticação do Codex no estilo assinatura do ChatGPT, ele remove
 `CODEX_API_KEY` e `OPENAI_API_KEY` do processo filho do Codex gerado. Isso
-mantém chaves de API no nível do Gateway disponíveis para embeddings ou modelos OpenAI diretos
-sem fazer com que turnos nativos do servidor de aplicativo do Codex sejam cobrados pela API por acidente.
-Perfis explícitos de chave de API do Codex e fallback de chave de ambiente via stdio local usam login do servidor de aplicativo
-em vez de ambiente herdado do processo filho. Conexões WebSocket ao servidor de aplicativo
-não recebem fallback de chave de API de ambiente do Gateway; use um perfil de autenticação explícito ou a
-conta própria do servidor de aplicativo remoto.
+mantém as chaves de API no nível do Gateway disponíveis para embeddings ou modelos diretos da OpenAI
+sem fazer, por acidente, turnos nativos do servidor de app do Codex serem cobrados pela API.
+Perfis explícitos de chave de API do Codex e fallback local de chave de ambiente stdio usam login do servidor de app
+em vez do ambiente herdado do processo filho. Conexões WebSocket do servidor de app
+não recebem fallback de chave de API do ambiente do Gateway; use um perfil de autenticação explícito ou a
+própria conta do servidor de app remoto.
 
 Se uma implantação precisar de isolamento adicional de ambiente, adicione essas variáveis a
 `appServer.clearEnv`:
@@ -614,53 +617,54 @@ Se uma implantação precisar de isolamento adicional de ambiente, adicione essa
 }
 ```
 
-`appServer.clearEnv` afeta apenas o processo filho do app-server do Codex gerado.
+`appServer.clearEnv` afeta apenas o processo filho do servidor de app do Codex gerado.
 
-As ferramentas dinâmicas do Codex usam por padrão o perfil `native-first`. Nesse modo,
-o OpenClaw não expõe ferramentas dinâmicas que duplicam operações nativas de workspace
-do Codex: `read`, `write`, `edit`, `apply_patch`, `exec`, `process` e
+Ferramentas dinâmicas do Codex usam por padrão o perfil `native-first`. Nesse modo,
+OpenClaw não expõe ferramentas dinâmicas que duplicam operações de workspace nativas do Codex:
+`read`, `write`, `edit`, `apply_patch`, `exec`, `process` e
 `update_plan`. Ferramentas de integração do OpenClaw, como mensagens, sessões, mídia,
-cron, navegador, nós, gateway, `heartbeat_respond` e `web_search`, continuam
+cron, navegador, nós, gateway, `heartbeat_respond` e `web_search`, permanecem
 disponíveis.
 
-Campos de nível superior do Plugin Codex com suporte:
+Campos de Plugin Codex de nível superior compatíveis:
 
 | Campo                      | Padrão          | Significado                                                                                   |
-| -------------------------- | ---------------- | --------------------------------------------------------------------------------------------- |
-| `codexDynamicToolsProfile` | `"native-first"` | Use `"openclaw-compat"` para expor o conjunto completo de ferramentas dinâmicas do OpenClaw ao app-server do Codex. |
-| `codexDynamicToolsExclude` | `[]`             | Nomes adicionais de ferramentas dinâmicas do OpenClaw a omitir dos turnos do app-server do Codex.               |
+| -------------------------- | ---------------- | ----------------------------------------------------------------------------------------- |
+| `codexDynamicToolsProfile` | `"native-first"` | Use `"openclaw-compat"` para expor o conjunto completo de ferramentas dinâmicas do OpenClaw ao servidor de app do Codex. |
+| `codexDynamicToolsExclude` | `[]`             | Nomes adicionais de ferramentas dinâmicas do OpenClaw a omitir dos turnos do servidor de app do Codex.               |
 
-Campos de `appServer` com suporte:
+Campos de `appServer` compatíveis:
 
 | Campo               | Padrão                                  | Significado                                                                                                                                                                                                                              |
-| ------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `transport`         | `"stdio"`                                | `"stdio"` inicia o Codex; `"websocket"` se conecta a `url`.                                                                                                                                                                             |
-| `command`           | binário gerenciado do Codex              | Executável para transporte stdio. Deixe indefinido para usar o binário gerenciado; defina apenas para uma substituição explícita.                                                                                                      |
+| ------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `transport`         | `"stdio"`                                | `"stdio"` gera o Codex; `"websocket"` conecta a `url`.                                                                                                                                                                             |
+| `command`           | binário gerenciado do Codex                     | Executável para transporte stdio. Deixe indefinido para usar o binário gerenciado; defina apenas para uma substituição explícita.                                                                                                                         |
 | `args`              | `["app-server", "--listen", "stdio://"]` | Argumentos para transporte stdio.                                                                                                                                                                                                       |
-| `url`               | indefinido                               | URL WebSocket do app-server.                                                                                                                                                                                                            |
-| `authToken`         | indefinido                               | Token Bearer para transporte WebSocket.                                                                                                                                                                                                 |
-| `headers`           | `{}`                                     | Cabeçalhos WebSocket extras.                                                                                                                                                                                                            |
-| `clearEnv`          | `[]`                                     | Nomes extras de variáveis de ambiente removidos do processo app-server stdio gerado depois que o OpenClaw cria seu ambiente herdado. `CODEX_HOME` e `HOME` são reservados para o isolamento Codex por agente do OpenClaw em inicializações locais. |
-| `requestTimeoutMs`  | `60000`                                  | Tempo limite para chamadas do plano de controle do app-server.                                                                                                                                                                         |
-| `mode`              | `"yolo"`                                 | Predefinição para execução YOLO ou revisada pelo guardian.                                                                                                                                                                             |
-| `approvalPolicy`    | `"never"`                                | Política de aprovação nativa do Codex enviada para início/retomada/turno de thread.                                                                                                                                                    |
-| `sandbox`           | `"danger-full-access"`                   | Modo sandbox nativo do Codex enviado para início/retomada de thread.                                                                                                                                                                  |
-| `approvalsReviewer` | `"user"`                                 | Use `"auto_review"` para permitir que o Codex revise prompts de aprovação nativos. `guardian_subagent` continua sendo um alias legado.                                                                                                  |
-| `serviceTier`       | indefinido                               | Camada de serviço opcional do app-server do Codex: `"fast"`, `"flex"` ou `null`. Valores legados inválidos são ignorados.                                                                                                             |
+| `url`               | indefinido                                    | URL WebSocket do servidor de app.                                                                                                                                                                                                            |
+| `authToken`         | indefinido                                    | Token bearer para transporte WebSocket.                                                                                                                                                                                                |
+| `headers`           | `{}`                                     | Cabeçalhos WebSocket extras.                                                                                                                                                                                                             |
+| `clearEnv`          | `[]`                                     | Nomes extras de variáveis de ambiente removidas do processo stdio do servidor de app gerado depois que OpenClaw cria seu ambiente herdado. `CODEX_HOME` e `HOME` são reservados para o isolamento Codex por agente do OpenClaw em inicializações locais. |
+| `requestTimeoutMs`  | `60000`                                  | Tempo limite para chamadas do plano de controle do servidor de app.                                                                                                                                                                                          |
+| `mode`              | `"yolo"`                                 | Predefinição para execução YOLO ou revisada pelo guardian.                                                                                                                                                                                      |
+| `approvalPolicy`    | `"never"`                                | Política de aprovação nativa do Codex enviada para início/retomada/turno de thread.                                                                                                                                                                       |
+| `sandbox`           | `"danger-full-access"`                   | Modo de sandbox nativo do Codex enviado para início/retomada de thread.                                                                                                                                                                               |
+| `approvalsReviewer` | `"user"`                                 | Use `"auto_review"` para permitir que Codex revise prompts de aprovação nativos. `guardian_subagent` permanece como alias legado.                                                                                                                         |
+| `serviceTier`       | indefinido                                    | Camada de serviço opcional do servidor de app do Codex: `"fast"`, `"flex"` ou `null`. Valores legados inválidos são ignorados.                                                                                                                            |
 
-Chamadas de ferramentas dinâmicas de propriedade do OpenClaw são limitadas independentemente de
-`appServer.requestTimeoutMs`: cada solicitação `item/tool/call` do Codex deve receber
-uma resposta do OpenClaw em até 30 segundos. Em caso de tempo limite, o OpenClaw aborta o sinal da ferramenta
-quando houver suporte e retorna uma resposta de ferramenta dinâmica com falha ao Codex para que
+Chamadas de ferramentas dinâmicas de propriedade do OpenClaw são limitadas de forma independente de
+`appServer.requestTimeoutMs`: cada solicitação Codex `item/tool/call` deve receber
+uma resposta do OpenClaw em até 30 segundos. Em caso de tempo limite, OpenClaw aborta o sinal da ferramenta
+quando compatível e retorna uma resposta de ferramenta dinâmica com falha ao Codex para que
 o turno possa continuar em vez de deixar a sessão em `processing`.
 
-Depois que o OpenClaw responde a uma solicitação do app-server com escopo de turno do Codex, o harness
-também espera que o Codex finalize o turno nativo com `turn/completed`. Se o
-app-server ficar sem responder por 60 segundos após essa resposta, o OpenClaw tenta, em melhor esforço,
-interromper o turno do Codex, registra um tempo limite de diagnóstico e libera a raia da sessão do
-OpenClaw para que mensagens de chat seguintes não fiquem enfileiradas atrás de um turno nativo obsoleto.
+Depois que OpenClaw responde a uma solicitação de servidor de app com escopo de turno do Codex, o harness
+também espera que Codex finalize o turno nativo com `turn/completed`. Se o
+servidor de app ficar silencioso por 60 segundos depois dessa resposta, OpenClaw interrompe
+o turno do Codex em melhor esforço, registra um tempo limite de diagnóstico e libera a
+faixa de sessão do OpenClaw para que mensagens de chat subsequentes não fiquem enfileiradas atrás de um
+turno nativo obsoleto.
 
-Substituições de ambiente continuam disponíveis para testes locais:
+Substituições de ambiente permanecem disponíveis para testes locais:
 
 - `OPENCLAW_CODEX_APP_SERVER_BIN`
 - `OPENCLAW_CODEX_APP_SERVER_ARGS`
@@ -679,18 +683,18 @@ mesmo arquivo revisado que o restante da configuração do harness do Codex.
 
 ## Uso do computador
 
-O Uso do computador é abordado em seu próprio guia de configuração:
-[Uso do computador do Codex](/pt-BR/plugins/codex-computer-use).
+Computer Use é coberto em seu próprio guia de configuração:
+[Codex Computer Use](/pt-BR/plugins/codex-computer-use).
 
-A versão curta: o OpenClaw não inclui como vendored o aplicativo de controle de desktop nem executa
-ações de desktop por conta própria. Ele prepara o app-server do Codex, verifica se o
-servidor MCP `computer-use` está disponível e então permite que o Codex lide com as chamadas nativas de ferramentas
-MCP durante turnos em modo Codex.
+A versão curta: OpenClaw não inclui como vendor o app de controle de desktop nem executa
+ações de desktop por conta própria. Ele prepara o servidor de app do Codex, verifica se o
+servidor MCP `computer-use` está disponível e então deixa o Codex lidar com as chamadas
+nativas de ferramenta MCP durante turnos em modo Codex.
 
 Para acesso direto ao driver TryCua fora do fluxo do marketplace do Codex, registre
 `cua-driver mcp` com `openclaw mcp set cua-driver '{"command":"cua-driver","args":["mcp"]}'`.
-Veja [Uso do computador do Codex](/pt-BR/plugins/codex-computer-use) para a distinção
-entre Uso do computador pertencente ao Codex e registro MCP direto.
+Veja [Codex Computer Use](/pt-BR/plugins/codex-computer-use) para a distinção
+entre Computer Use de propriedade do Codex e registro MCP direto.
 
 Configuração mínima:
 
@@ -726,19 +730,19 @@ A configuração pode ser verificada ou instalada pela superfície de comando:
 - `/codex computer-use install --source <marketplace-source>`
 - `/codex computer-use install --marketplace-path <path>`
 
-O Uso do computador é específico do macOS e pode exigir permissões locais do sistema operacional antes que o
-servidor MCP do Codex possa controlar aplicativos. Se `computerUse.enabled` for true e o servidor MCP
-estiver indisponível, turnos em modo Codex falham antes que a thread seja iniciada, em vez de
-executar silenciosamente sem as ferramentas nativas de Uso do computador. Veja
-[Uso do computador do Codex](/pt-BR/plugins/codex-computer-use) para opções de marketplace,
+Computer Use é específico do macOS e pode exigir permissões locais do SO antes que o
+servidor MCP do Codex possa controlar apps. Se `computerUse.enabled` for true e o servidor MCP
+estiver indisponível, turnos em modo Codex falham antes de a thread iniciar, em vez de
+rodarem silenciosamente sem as ferramentas nativas de Computer Use. Veja
+[Codex Computer Use](/pt-BR/plugins/codex-computer-use) para opções de marketplace,
 limites do catálogo remoto, motivos de status e solução de problemas.
 
-Quando `computerUse.autoInstall` é true, o OpenClaw pode registrar o marketplace padrão
+Quando `computerUse.autoInstall` é true, OpenClaw pode registrar o marketplace padrão
 incluído do Codex Desktop a partir de
 `/Applications/Codex.app/Contents/Resources/plugins/openai-bundled` se o Codex
 ainda não tiver descoberto um marketplace local. Use `/new` ou `/reset` depois de
-alterar a configuração de runtime ou de Uso do computador para que sessões existentes não mantenham uma vinculação antiga
-de PI ou thread do Codex.
+alterar a configuração de runtime ou Computer Use para que sessões existentes não mantenham uma
+vinculação antiga de PI ou thread do Codex.
 
 ## Receitas comuns
 
@@ -800,7 +804,7 @@ Aprovações do Codex revisadas pelo guardian:
 }
 ```
 
-App-server remoto com cabeçalhos explícitos:
+Servidor de app remoto com cabeçalhos explícitos:
 
 ```json5
 {
@@ -823,96 +827,96 @@ App-server remoto com cabeçalhos explícitos:
 }
 ```
 
-A troca de modelo permanece controlada pelo OpenClaw. Quando uma sessão do OpenClaw está anexada
-a uma thread existente do Codex, o próximo turno envia novamente ao
-app-server o modelo OpenAI, provedor, política de aprovação, sandbox e camada de serviço
-atualmente selecionados. Trocar de `openai/gpt-5.5` para `openai/gpt-5.2` mantém a
-vinculação da thread, mas pede ao Codex para continuar com o modelo recém-selecionado.
+A troca de modelo continua controlada pelo OpenClaw. Quando uma sessão do OpenClaw é anexada
+a uma thread existente do Codex, o próximo turno envia novamente o modelo OpenAI
+atualmente selecionado, provedor, política de aprovação, sandbox e camada de serviço ao
+servidor de app. Trocar de `openai/gpt-5.5` para `openai/gpt-5.2` mantém a
+vinculação da thread, mas pede ao Codex que continue com o modelo recém-selecionado.
 
 ## Comando Codex
 
 O Plugin incluído registra `/codex` como um comando de barra autorizado. Ele é
-genérico e funciona em qualquer canal que dê suporte a comandos de texto do OpenClaw.
+genérico e funciona em qualquer canal que aceite comandos de texto do OpenClaw.
 
 Formas comuns:
 
 - `/codex status` mostra conectividade ativa com o servidor de aplicativo, modelos, conta, limites de taxa, servidores MCP e Skills.
-- `/codex models` lista os modelos ativos do servidor de aplicativo do Codex.
+- `/codex models` lista modelos ativos do servidor de aplicativo do Codex.
 - `/codex threads [filter]` lista threads recentes do Codex.
 - `/codex resume <thread-id>` anexa a sessão atual do OpenClaw a uma thread existente do Codex.
 - `/codex compact` pede ao servidor de aplicativo do Codex para compactar a thread anexada.
 - `/codex review` inicia a revisão nativa do Codex para a thread anexada.
-- `/codex diagnostics [note]` solicita confirmação antes de enviar feedback de diagnóstico do Codex para a thread anexada.
-- `/codex computer-use status` verifica o plugin Computer Use configurado e o servidor MCP.
-- `/codex computer-use install` instala o plugin Computer Use configurado e recarrega os servidores MCP.
+- `/codex diagnostics [note]` pede confirmação antes de enviar feedback de diagnóstico do Codex para a thread anexada.
+- `/codex computer-use status` verifica o Plugin Computer Use configurado e o servidor MCP.
+- `/codex computer-use install` instala o Plugin Computer Use configurado e recarrega os servidores MCP.
 - `/codex account` mostra o status da conta e dos limites de taxa.
 - `/codex mcp` lista o status dos servidores MCP do servidor de aplicativo do Codex.
-- `/codex skills` lista as Skills do servidor de aplicativo do Codex.
+- `/codex skills` lista Skills do servidor de aplicativo do Codex.
 
 Quando o Codex relata uma falha de limite de uso, o OpenClaw inclui o próximo
 horário de redefinição do servidor de aplicativo quando o Codex fornece um. Use `/codex account` na mesma
 conversa para inspecionar a conta atual e as janelas de limite de taxa.
 
-### Fluxo comum de depuração
+### Fluxo de depuração comum
 
-Quando um agente baseado no Codex faz algo inesperado no Telegram, Discord, Slack,
+Quando um agente baseado no Codex faz algo inesperado no Telegram, Discord, Slack
 ou outro canal, comece pela conversa onde o problema aconteceu:
 
-1. Execute `/diagnostics bad tool choice after image upload` ou outra nota curta
+1. Execute `/diagnostics bad tool choice after image upload` ou outra observação curta
    que descreva o que você viu.
-2. Aprove a solicitação de diagnóstico uma vez. A aprovação cria o zip local de
-   diagnóstico do Gateway e, como a sessão está usando o harness do Codex, também
+2. Aprove a solicitação de diagnóstico uma vez. A aprovação cria o zip de diagnóstico
+   local do Gateway e, como a sessão está usando o harness do Codex, também
    envia o pacote de feedback relevante do Codex para os servidores da OpenAI.
 3. Copie a resposta de diagnóstico concluída para o relatório de bug ou thread de suporte.
-   Ela inclui o caminho do pacote local, o resumo de privacidade, ids de sessão do OpenClaw,
-   ids de thread do Codex e uma linha `Inspect locally` para cada thread do Codex.
-4. Se você quiser depurar a execução por conta própria, execute o comando `Inspect locally`
+   Ela inclui o caminho do pacote local, o resumo de privacidade, IDs de sessão do OpenClaw,
+   IDs de threads do Codex e uma linha `Inspect locally` para cada thread do Codex.
+4. Se quiser depurar a execução por conta própria, execute o comando `Inspect locally`
    impresso em um terminal. Ele se parece com `codex resume <thread-id>` e abre a
    thread nativa do Codex para que você possa inspecionar a conversa, continuá-la localmente
    ou perguntar ao Codex por que ele escolheu uma ferramenta ou plano específico.
 
-Use `/codex diagnostics [note]` somente quando você quiser especificamente o upload de
-feedback do Codex para a thread atualmente anexada sem o pacote completo de diagnósticos do
-Gateway do OpenClaw. Para a maioria dos relatórios de suporte, `/diagnostics [note]` é
-o melhor ponto de partida, porque vincula o estado local do Gateway e os ids de thread do Codex
-em uma única resposta. Consulte [Exportação de diagnósticos](/pt-BR/gateway/diagnostics)
-para o modelo completo de privacidade e o comportamento em chats de grupo.
+Use `/codex diagnostics [note]` somente quando quiser especificamente o upload de
+feedback do Codex para a thread atualmente anexada sem o pacote completo de diagnóstico
+do Gateway do OpenClaw. Para a maioria dos relatórios de suporte, `/diagnostics [note]` é
+o melhor ponto de partida porque vincula o estado local do Gateway e os IDs de threads do Codex
+em uma única resposta. Consulte [Exportação de diagnóstico](/pt-BR/gateway/diagnostics)
+para ver o modelo completo de privacidade e o comportamento em chats em grupo.
 
 O núcleo do OpenClaw também expõe `/diagnostics [note]`, somente para proprietários, como o comando geral
-de diagnósticos do Gateway. O prompt de aprovação mostra o preâmbulo de dados sensíveis,
-links para [Exportação de diagnósticos](/pt-BR/gateway/diagnostics) e solicita
-`openclaw gateway diagnostics export --json` por meio de aprovação explícita de exec
-todas as vezes. Não aprove diagnósticos com uma regra permitir-tudo. Após a aprovação,
-o OpenClaw envia um relatório colável com o caminho do pacote local e o resumo do
-manifesto. Quando a sessão ativa do OpenClaw está usando o harness do Codex, essa
+de diagnóstico do Gateway. Seu prompt de aprovação mostra o preâmbulo de dados sensíveis,
+links para [Exportação de Diagnóstico](/pt-BR/gateway/diagnostics) e solicita
+`openclaw gateway diagnostics export --json` por meio de aprovação explícita de execução
+todas as vezes. Não aprove diagnósticos com uma regra de permitir tudo. Após a aprovação,
+o OpenClaw envia um relatório colável com o caminho do pacote local e o resumo do manifesto.
+Quando a sessão ativa do OpenClaw está usando o harness do Codex, essa
 mesma aprovação também autoriza o envio dos pacotes de feedback relevantes do Codex para
-os servidores da OpenAI. O prompt de aprovação diz que o feedback do Codex será enviado, mas
-não lista ids de sessão ou thread do Codex antes da aprovação.
+os servidores da OpenAI. O prompt de aprovação informa que o feedback do Codex será enviado, mas
+não lista IDs de sessão ou thread do Codex antes da aprovação.
 
-Se `/diagnostics` for invocado por um proprietário em um chat de grupo, o OpenClaw mantém o
-canal compartilhado limpo: o grupo recebe apenas um aviso curto, enquanto o
-preâmbulo de diagnóstico, os prompts de aprovação e os ids de sessão/thread do Codex são enviados ao
-proprietário pela rota privada de aprovação. Se não houver rota privada para o proprietário,
-o OpenClaw recusa a solicitação do grupo e pede que o proprietário a execute por DM.
+Se `/diagnostics` for invocado por um proprietário em um chat em grupo, o OpenClaw mantém o
+canal compartilhado limpo: o grupo recebe apenas uma breve notificação, enquanto o
+preâmbulo de diagnóstico, os prompts de aprovação e os IDs de sessão/thread do Codex são enviados ao
+proprietário pela rota privada de aprovação. Se não houver uma rota privada para o proprietário,
+o OpenClaw recusa a solicitação do grupo e pede que o proprietário a execute a partir de uma DM.
 
-O upload aprovado do Codex chama `feedback/upload` no servidor de aplicativo do Codex e pede
-ao servidor de aplicativo para incluir logs para cada thread listada e subthreads do Codex geradas,
-quando disponíveis. O upload passa pelo caminho normal de feedback do Codex para os servidores da OpenAI;
-se o feedback do Codex estiver desativado nesse servidor de aplicativo, o comando retorna
+O upload aprovado do Codex chama `feedback/upload` do servidor de aplicativo do Codex e pede
+ao servidor de aplicativo para incluir logs de cada thread listada e subthreads geradas do Codex
+quando disponíveis. O upload segue o caminho normal de feedback do Codex para os servidores da OpenAI;
+se o feedback do Codex estiver desabilitado nesse servidor de aplicativo, o comando retorna
 o erro do servidor de aplicativo. A resposta de diagnóstico concluída lista os canais,
-ids de sessão do OpenClaw, ids de thread do Codex e comandos locais `codex resume <thread-id>`
+IDs de sessão do OpenClaw, IDs de threads do Codex e comandos locais `codex resume <thread-id>`
 para as threads que foram enviadas. Se você negar ou ignorar a aprovação,
-o OpenClaw não imprime esses ids do Codex. Esse upload não substitui a exportação local
-de diagnósticos do Gateway.
+o OpenClaw não imprime esses IDs do Codex. Esse upload não substitui a exportação local
+de diagnóstico do Gateway.
 
-`/codex resume` grava o mesmo arquivo de associação auxiliar que o harness usa para
+`/codex resume` grava o mesmo arquivo de vinculação auxiliar que o harness usa para
 turnos normais. Na próxima mensagem, o OpenClaw retoma essa thread do Codex, passa o
-modelo OpenClaw selecionado no momento para o servidor de aplicativo e mantém o histórico estendido
-ativado.
+modelo do OpenClaw atualmente selecionado para o servidor de aplicativo e mantém o histórico estendido
+habilitado.
 
 ### Inspecionar uma thread do Codex pela CLI
 
-A maneira mais rápida de entender uma execução ruim do Codex costuma ser abrir a thread nativa do Codex
+A maneira mais rápida de entender uma execução problemática do Codex muitas vezes é abrir a thread nativa do Codex
 diretamente:
 
 ```sh
@@ -922,159 +926,159 @@ codex resume <thread-id>
 Use isso quando notar um bug em uma conversa de canal e quiser inspecionar a
 sessão problemática do Codex, continuá-la localmente ou perguntar ao Codex por que ele fez uma
 escolha específica de ferramenta ou raciocínio. O caminho mais fácil geralmente é executar
-`/diagnostics [note]` primeiro: depois que você o aprova, o relatório concluído lista
+`/diagnostics [note]` primeiro: depois que você aprova, o relatório concluído lista
 cada thread do Codex e imprime um comando `Inspect locally`, por exemplo
 `codex resume <thread-id>`. Você pode copiar esse comando diretamente para um terminal.
 
 Você também pode obter um id de thread em `/codex binding` para o chat atual ou
-`/codex threads [filter]` para threads recentes do servidor de aplicativo do Codex e, em seguida, executar o mesmo
+`/codex threads [filter]` para threads recentes do app-server do Codex e, em seguida, executar o mesmo
 comando `codex resume` no seu shell.
 
-A superfície de comandos exige o servidor de aplicativo do Codex `0.125.0` ou mais recente. Métodos
-individuais de controle são relatados como `unsupported by this Codex app-server` se um
-servidor de aplicativo futuro ou personalizado não expuser esse método JSON-RPC.
+A superfície de comandos exige Codex app-server `0.125.0` ou mais recente. Métodos
+de controle individuais são relatados como `unsupported by this Codex app-server` se um
+app-server futuro ou personalizado não expuser esse método JSON-RPC.
 
 ## Limites de hooks
 
-O harness do Codex tem três camadas de hook:
+O harness do Codex tem três camadas de hooks:
 
-| Camada                                | Proprietário              | Finalidade                                                          |
-| ------------------------------------- | ------------------------- | ------------------------------------------------------------------- |
-| Hooks de plugins do OpenClaw          | OpenClaw                  | Compatibilidade de produto/plugin entre harnesses de PI e Codex.    |
-| Middleware de extensão do servidor de aplicativo do Codex | Plugins incluídos do OpenClaw | Comportamento de adaptador por turno em torno das ferramentas dinâmicas do OpenClaw. |
-| Hooks nativos do Codex                | Codex                     | Ciclo de vida de baixo nível do Codex e política de ferramentas nativas pela configuração do Codex. |
+| Camada                                | Proprietário             | Finalidade                                                          |
+| ------------------------------------- | ------------------------ | ------------------------------------------------------------------- |
+| Hooks de plugin do OpenClaw           | OpenClaw                 | Compatibilidade de produto/plugin entre harnesses PI e Codex.       |
+| Middleware de extensão do app-server do Codex | Plugins empacotados do OpenClaw | Comportamento do adaptador por turno em torno de ferramentas dinâmicas do OpenClaw. |
+| Hooks nativos do Codex                | Codex                    | Ciclo de vida de baixo nível do Codex e política de ferramentas nativas a partir da configuração do Codex. |
 
-O OpenClaw não usa arquivos `hooks.json` globais ou de projeto do Codex para rotear
-comportamento de plugins do OpenClaw. Para a ponte compatível de ferramentas nativas e permissões,
+O OpenClaw não usa arquivos `hooks.json` de projeto ou globais do Codex para rotear
+o comportamento de plugins do OpenClaw. Para a ponte de permissões e ferramentas nativas com suporte,
 o OpenClaw injeta configuração do Codex por thread para `PreToolUse`, `PostToolUse`,
 `PermissionRequest` e `Stop`. Outros hooks do Codex, como `SessionStart` e
-`UserPromptSubmit`, continuam sendo controles em nível do Codex; eles não são expostos como
-hooks de plugins do OpenClaw no contrato v1.
+`UserPromptSubmit`, permanecem controles no nível do Codex; eles não são expostos como
+hooks de plugin do OpenClaw no contrato v1.
 
 Para ferramentas dinâmicas do OpenClaw, o OpenClaw executa a ferramenta depois que o Codex solicita a
-chamada, então o OpenClaw aciona o comportamento de plugin e middleware que ele possui no
-adaptador de harness. Para ferramentas nativas do Codex, o Codex possui o registro canônico da ferramenta.
+chamada, portanto o OpenClaw aciona o comportamento de plugin e middleware que possui no
+adaptador do harness. Para ferramentas nativas do Codex, o Codex é dono do registro canônico da ferramenta.
 O OpenClaw pode espelhar eventos selecionados, mas não pode reescrever a thread nativa do Codex
-a menos que o Codex exponha essa operação pelo servidor de aplicativo ou por callbacks de hook nativo.
+a menos que o Codex exponha essa operação por meio do app-server ou de callbacks de hooks nativos.
 
-Projeções de Compaction e ciclo de vida de LLM vêm de notificações do servidor de aplicativo do Codex
-e do estado do adaptador do OpenClaw, não de comandos de hook nativos do Codex.
+Projeções de Compaction e do ciclo de vida do LLM vêm de notificações do Codex app-server
+e do estado do adaptador do OpenClaw, não de comandos de hooks nativos do Codex.
 Os eventos `before_compaction`, `after_compaction`, `llm_input` e
-`llm_output` do OpenClaw são observações em nível de adaptador, não capturas byte a byte
+`llm_output` do OpenClaw são observações no nível do adaptador, não capturas byte a byte
 da solicitação interna ou dos payloads de Compaction do Codex.
 
-As notificações `hook/started` e `hook/completed` nativas do Codex no servidor de aplicativo são
+As notificações nativas `hook/started` e `hook/completed` do app-server do Codex são
 projetadas como eventos de agente `codex_app_server.hook` para trajetória e depuração.
-Elas não invocam hooks de plugins do OpenClaw.
+Elas não invocam hooks de plugin do OpenClaw.
 
-## Contrato de suporte V1
+## Contrato de suporte v1
 
-O modo Codex não é PI com uma chamada de modelo diferente por baixo. O Codex possui mais do
+O modo Codex não é PI com uma chamada de modelo diferente por baixo. O Codex controla mais do
 loop de modelo nativo, e o OpenClaw adapta suas superfícies de plugin e sessão
 em torno desse limite.
 
-Compatível no runtime Codex v1:
+Compatível com o runtime v1 do Codex:
 
-| Superfície                                    | Suporte                                 | Por quê                                                                                                                                                                                              |
+| Superfície                                     | Suporte                                 | Motivo                                                                                                                                                                                               |
 | --------------------------------------------- | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Loop de modelo da OpenAI pelo Codex           | Compatível                              | O servidor de aplicativo do Codex possui o turno da OpenAI, a retomada de thread nativa e a continuação de ferramentas nativas.                                                                       |
-| Roteamento e entrega de canais do OpenClaw    | Compatível                              | Telegram, Discord, Slack, WhatsApp, iMessage e outros canais ficam fora do runtime do modelo.                                                                                                        |
-| Ferramentas dinâmicas do OpenClaw             | Compatível                              | O Codex pede ao OpenClaw para executar essas ferramentas, então o OpenClaw permanece no caminho de execução.                                                                                         |
-| Plugins de prompt e contexto                  | Compatível                              | O OpenClaw constrói sobreposições de prompt e projeta contexto no turno do Codex antes de iniciar ou retomar a thread.                                                                               |
-| Ciclo de vida do motor de contexto            | Compatível                              | Montagem, ingestão ou manutenção pós-turno e coordenação de Compaction do motor de contexto são executadas para turnos do Codex.                                                                     |
-| Hooks de ferramentas dinâmicas                | Compatível                              | `before_tool_call`, `after_tool_call` e middleware de resultado de ferramenta são executados em torno de ferramentas dinâmicas pertencentes ao OpenClaw.                                             |
-| Hooks de ciclo de vida                        | Compatíveis como observações do adaptador | `llm_input`, `llm_output`, `agent_end`, `before_compaction` e `after_compaction` disparam com payloads honestos do modo Codex.                                                                       |
-| Gate de revisão de resposta final             | Compatível por meio do relay de hook nativo | `Stop` do Codex é repassado para `before_agent_finalize`; `revise` pede ao Codex mais uma passagem de modelo antes da finalização.                                                                   |
-| Bloqueio ou observação de shell, patch e MCP nativos | Compatível por meio do relay de hook nativo | `PreToolUse` e `PostToolUse` do Codex são repassados para superfícies de ferramentas nativas confirmadas, incluindo payloads MCP no servidor de aplicativo do Codex `0.125.0` ou mais recente. Bloqueio é compatível; reescrita de argumentos não é. |
-| Política de permissões nativa                 | Compatível por meio do relay de hook nativo | `PermissionRequest` do Codex pode ser roteado pela política do OpenClaw onde o runtime a expõe. Se o OpenClaw não retornar decisão, o Codex continua pelo caminho normal de guardião ou aprovação do usuário. |
-| Captura de trajetória do servidor de aplicativo | Compatível                            | O OpenClaw registra a solicitação que enviou ao servidor de aplicativo e as notificações do servidor de aplicativo que recebe.                                                                        |
+| Loop de modelo OpenAI por meio do Codex        | Compatível                              | O Codex app-server controla o turno da OpenAI, a retomada de thread nativa e a continuação de ferramenta nativa.                                                                                     |
+| Roteamento e entrega de canais do OpenClaw     | Compatível                              | Telegram, Discord, Slack, WhatsApp, iMessage e outros canais ficam fora do runtime do modelo.                                                                                                       |
+| Ferramentas dinâmicas do OpenClaw              | Compatível                              | O Codex pede ao OpenClaw para executar essas ferramentas, então o OpenClaw permanece no caminho de execução.                                                                                         |
+| Plugins de prompt e contexto                   | Compatível                              | O OpenClaw cria sobreposições de prompt e projeta contexto no turno do Codex antes de iniciar ou retomar a thread.                                                                                  |
+| Ciclo de vida do mecanismo de contexto         | Compatível                              | Montagem, ingestão ou manutenção pós-turno e coordenação de Compaction do mecanismo de contexto são executadas para turnos do Codex.                                                                 |
+| Hooks de ferramentas dinâmicas                 | Compatível                              | `before_tool_call`, `after_tool_call` e middleware de resultado de ferramenta são executados em torno de ferramentas dinâmicas pertencentes ao OpenClaw.                                             |
+| Hooks de ciclo de vida                         | Compatível como observações do adaptador | `llm_input`, `llm_output`, `agent_end`, `before_compaction` e `after_compaction` disparam com payloads honestos do modo Codex.                                                                       |
+| Gate de revisão da resposta final              | Compatível por meio do relay de hook nativo | `Stop` do Codex é retransmitido para `before_agent_finalize`; `revise` pede ao Codex mais uma passagem de modelo antes da finalização.                                                               |
+| Shell nativo, patch e bloco ou observação de MCP | Compatível por meio do relay de hook nativo | `PreToolUse` e `PostToolUse` do Codex são retransmitidos para superfícies de ferramentas nativas confirmadas, incluindo payloads MCP no Codex app-server `0.125.0` ou mais recente. O bloqueio é compatível; reescrita de argumentos não. |
+| Política de permissão nativa                   | Compatível por meio do relay de hook nativo | `PermissionRequest` do Codex pode ser roteado pela política do OpenClaw onde o runtime a expõe. Se o OpenClaw não retornar nenhuma decisão, o Codex continua pelo seu caminho normal de guardião ou aprovação do usuário. |
+| Captura de trajetória do app-server            | Compatível                              | O OpenClaw registra a solicitação enviada ao app-server e as notificações do app-server que recebe.                                                                                                  |
 
-Não compatível no runtime Codex v1:
+Não compatível com o runtime v1 do Codex:
 
-| Superfície                                          | Limite da V1                                                                                                                                    | Caminho futuro                                                                            |
-| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| Mutação de argumentos de ferramenta nativa          | Hooks nativos pré-ferramenta do Codex podem bloquear, mas o OpenClaw não reescreve argumentos de ferramentas nativas do Codex.                 | Requer suporte de hook/esquema do Codex para substituir a entrada da ferramenta.          |
-| Histórico editável de transcrição nativa do Codex   | O Codex é dono do histórico canônico da thread nativa. O OpenClaw possui um espelho e pode projetar contexto futuro, mas não deve mutar internos sem suporte. | Adicionar APIs explícitas do app-server do Codex se for necessária cirurgia na thread nativa. |
-| `tool_result_persist` para registros de ferramentas nativas do Codex | Esse hook transforma gravações de transcrição pertencentes ao OpenClaw, não registros de ferramentas nativas do Codex.                          | Poderia espelhar registros transformados, mas a reescrita canônica precisa de suporte do Codex. |
-| Metadados ricos de Compaction nativa                | O OpenClaw observa o início e a conclusão da Compaction, mas não recebe uma lista estável de itens mantidos/removidos, delta de tokens ou payload de resumo. | Precisa de eventos de Compaction mais ricos do Codex.                                     |
-| Intervenção de Compaction                           | Os hooks atuais de Compaction do OpenClaw ficam no nível de notificação no modo Codex.                                                           | Adicionar hooks pré/pós-Compaction do Codex se os plugins precisarem vetar ou reescrever a Compaction nativa. |
-| Captura byte a byte de solicitação à API do modelo  | O OpenClaw pode capturar solicitações e notificações do app-server, mas o núcleo do Codex constrói internamente a solicitação final à API da OpenAI. | Precisa de um evento de rastreamento de solicitação de modelo do Codex ou de uma API de depuração. |
+| Superfície                                         | Limite da V1                                                                                                                                   | Caminho futuro                                                                                     |
+| -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Mutação de argumentos de ferramentas nativas       | Hooks nativos pré-ferramenta do Codex podem bloquear, mas o OpenClaw não reescreve argumentos de ferramentas nativas do Codex.                | Requer suporte de hook/esquema do Codex para substituir a entrada da ferramenta.                   |
+| Histórico editável de transcrições nativas do Codex | O Codex é dono do histórico canônico de threads nativas. O OpenClaw mantém um espelho e pode projetar contexto futuro, mas não deve mutar componentes internos sem suporte. | Adicionar APIs explícitas do servidor de app do Codex se for necessária cirurgia em threads nativas. |
+| `tool_result_persist` para registros de ferramentas nativas do Codex | Esse hook transforma gravações de transcrição pertencentes ao OpenClaw, não registros de ferramentas nativas do Codex.                         | Poderia espelhar registros transformados, mas a reescrita canônica precisa de suporte do Codex.    |
+| Metadados ricos de compactação nativa              | O OpenClaw observa o início e a conclusão da compactação, mas não recebe uma lista estável de mantidos/descartados, delta de tokens ou payload de resumo. | Precisa de eventos de compactação mais ricos do Codex.                                             |
+| Intervenção de compactação                         | Os hooks atuais de compactação do OpenClaw estão em nível de notificação no modo Codex.                                                        | Adicionar hooks pré/pós-compactação do Codex se plugins precisarem vetar ou reescrever a compactação nativa. |
+| Captura byte a byte de solicitação da API de modelo | O OpenClaw pode capturar solicitações e notificações do servidor de app, mas o núcleo do Codex constrói internamente a solicitação final da API da OpenAI. | Precisa de um evento de rastreamento de solicitação de modelo do Codex ou de uma API de depuração. |
 
-## Ferramentas, mídia e Compaction
+## Ferramentas, mídia e compactação
 
 O harness do Codex altera apenas o executor de agente incorporado de baixo nível.
 
-O OpenClaw ainda monta a lista de ferramentas e recebe resultados de ferramentas dinâmicas do
-harness. Texto, imagens, vídeo, música, TTS, aprovações e saída de ferramentas de mensagens
+O OpenClaw ainda constrói a lista de ferramentas e recebe resultados dinâmicos de ferramentas do
+harness. Texto, imagens, vídeo, música, TTS, aprovações e saída de ferramentas de mensagem
 continuam pelo caminho normal de entrega do OpenClaw.
 
 O relay de hooks nativos é intencionalmente genérico, mas o contrato de suporte da v1 é
-limitado aos caminhos de ferramentas e permissões nativos do Codex que o OpenClaw testa. No
+limitado aos caminhos de ferramentas nativas e permissões do Codex que o OpenClaw testa. No
 runtime do Codex, isso inclui payloads de shell, patch e MCP `PreToolUse`,
-`PostToolUse` e `PermissionRequest`. Não presuma que todo evento de hook futuro do
-Codex seja uma superfície de Plugin do OpenClaw até que o contrato do runtime o nomeie.
+`PostToolUse` e `PermissionRequest`. Não presuma que todo evento futuro de hook do
+Codex seja uma superfície de Plugin do OpenClaw até que o contrato de runtime o nomeie.
 
 Para `PermissionRequest`, o OpenClaw retorna apenas decisões explícitas de permitir ou negar
-quando a política decide. Um resultado sem decisão não é uma permissão. O Codex o trata como
-ausência de decisão de hook e segue para seu próprio caminho de guardião ou aprovação do usuário.
+quando a política decide. Um resultado sem decisão não é uma permissão. O Codex o trata como sem
+decisão de hook e segue para seu próprio caminho de guardian ou aprovação do usuário.
 
-Solicitações de aprovação de ferramentas MCP do Codex são roteadas pelo fluxo de aprovação de
-Plugin do OpenClaw quando o Codex marca `_meta.codex_approval_kind` como
-`"mcp_tool_call"`. Prompts `request_user_input` do Codex são enviados de volta ao chat
-de origem, e a próxima mensagem de acompanhamento enfileirada responde a essa solicitação do
-servidor nativo em vez de ser direcionada como contexto extra. Outras solicitações de elicitação
-MCP ainda falham de forma fechada.
+As solicitações de aprovação de ferramentas MCP do Codex são roteadas pelo fluxo de
+aprovação de Plugin do OpenClaw quando o Codex marca `_meta.codex_approval_kind` como
+`"mcp_tool_call"`. Prompts `request_user_input` do Codex são enviados de volta ao
+chat de origem, e a próxima mensagem de acompanhamento na fila responde a essa solicitação nativa
+do servidor em vez de ser direcionada como contexto extra. Outras solicitações de elicitação MCP
+ainda falham fechadas.
 
-O direcionamento da fila de execução ativa é mapeado para `turn/steer` do app-server do Codex. Com o
-padrão `messages.queue.mode: "steer"`, o OpenClaw agrupa mensagens de chat enfileiradas
-pela janela de silêncio configurada e as envia como uma solicitação `turn/steer` em
+O direcionamento da fila de execuções ativas é mapeado para `turn/steer` do servidor de app do Codex. Com o
+padrão `messages.queue.mode: "steer"`, o OpenClaw agrupa mensagens de chat na fila
+pela janela de silêncio configurada e as envia como uma única solicitação `turn/steer` na
 ordem de chegada. O modo legado `queue` envia solicitações `turn/steer` separadas. Turnos de
-revisão e Compaction manual do Codex podem rejeitar direcionamento no mesmo turno, caso em que
+revisão do Codex e compactação manual podem rejeitar direcionamento no mesmo turno; nesse caso,
 o OpenClaw usa a fila de acompanhamento quando o modo selecionado permite fallback. Veja
 [Fila de direcionamento](/pt-BR/concepts/queue-steering).
 
-Quando o modelo selecionado usa o harness do Codex, a Compaction da thread nativa é
-delegada ao app-server do Codex. O OpenClaw mantém um espelho de transcrição para histórico
-do canal, busca, `/new`, `/reset` e futura troca de modelo ou harness. O
+Quando o modelo selecionado usa o harness do Codex, a compactação de threads nativas é
+delegada ao servidor de app do Codex. O OpenClaw mantém um espelho da transcrição para histórico
+do canal, busca, `/new`, `/reset` e futuras trocas de modelo ou harness. O
 espelho inclui o prompt do usuário, o texto final do assistente e registros leves de raciocínio
-ou plano do Codex quando o app-server os emite. Hoje, o OpenClaw registra apenas
-sinais de início e conclusão da Compaction nativa. Ele ainda não expõe um resumo de
-Compaction legível por humanos nem uma lista auditável de quais entradas o Codex
-manteve após a Compaction.
+ou plano do Codex quando o servidor de app os emite. Hoje, o OpenClaw registra apenas
+sinais de início e conclusão de compactação nativa. Ele ainda não expõe um resumo de
+compactação legível por humanos nem uma lista auditável de quais entradas o Codex
+manteve após a compactação.
 
 Como o Codex é dono da thread nativa canônica, `tool_result_persist` atualmente não
-reescreve registros de resultados de ferramentas nativas do Codex. Ele só se aplica quando
+reescreve registros de resultado de ferramentas nativas do Codex. Ele só se aplica quando
 o OpenClaw está gravando um resultado de ferramenta de transcrição de sessão pertencente ao OpenClaw.
 
-A geração de mídia não requer PI. Imagem, vídeo, música, PDF, TTS e compreensão de mídia
-continuam usando as configurações de provedor/modelo correspondentes, como
+A geração de mídia não requer PI. Imagem, vídeo, música, PDF, TTS e entendimento de mídia
+continuam usando as configurações correspondentes de provedor/modelo, como
 `agents.defaults.imageGenerationModel`, `videoGenerationModel`, `pdfModel` e
 `messages.tts`.
 
 ## Solução de problemas
 
-**O Codex não aparece como um provedor `/model` normal:** isso é esperado para
+**Codex não aparece como um provedor `/model` normal:** isso é esperado para
 novas configurações. Selecione um modelo `openai/gpt-*` com
 `agentRuntime.id: "codex"` (ou uma referência legada `codex/*`), habilite
 `plugins.entries.codex.enabled` e verifique se `plugins.allow` exclui
 `codex`.
 
-**O OpenClaw usa PI em vez de Codex:** `agentRuntime.id: "auto"` ainda pode usar PI como o
-backend de compatibilidade quando nenhum harness do Codex reivindica a execução. Defina
+**OpenClaw usa PI em vez de Codex:** `agentRuntime.id: "auto"` ainda pode usar PI como o
+backend de compatibilidade quando nenhum harness do Codex assume a execução. Defina
 `agentRuntime.id: "codex"` para forçar a seleção do Codex durante testes. Um
-runtime Codex forçado falha em vez de fazer fallback para PI. Depois que o app-server do Codex
+runtime Codex forçado falha em vez de cair para PI. Depois que o servidor de app do Codex
 é selecionado, suas falhas aparecem diretamente.
 
-**O app-server é rejeitado:** atualize o Codex para que o handshake do app-server
-reporte a versão `0.125.0` ou mais recente. Pré-lançamentos da mesma versão ou versões
-com sufixo de build, como `0.125.0-alpha.2` ou `0.125.0+custom`, são rejeitados porque o
-piso estável de protocolo `0.125.0` é o que o OpenClaw testa.
+**O servidor de app é rejeitado:** atualize o Codex para que o handshake do servidor de app
+informe a versão `0.125.0` ou mais recente. Pré-lançamentos da mesma versão ou versões com sufixo
+de build, como `0.125.0-alpha.2` ou `0.125.0+custom`, são rejeitados porque o
+piso do protocolo estável `0.125.0` é o que o OpenClaw testa.
 
 **A descoberta de modelos está lenta:** reduza `plugins.entries.codex.config.discovery.timeoutMs`
 ou desabilite a descoberta.
 
 **O transporte WebSocket falha imediatamente:** verifique `appServer.url`, `authToken`
-e se o app-server remoto fala a mesma versão do protocolo de app-server do Codex.
+e se o servidor de app remoto fala a mesma versão do protocolo do servidor de app do Codex.
 
 **Um modelo que não é Codex usa PI:** isso é esperado, a menos que você tenha forçado
 `agentRuntime.id: "codex"` para esse agente ou selecionado uma referência legada
@@ -1082,11 +1086,11 @@ e se o app-server remoto fala a mesma versão do protocolo de app-server do Code
 normal do provedor no modo `auto`. Se você forçar `agentRuntime.id: "codex"`, todo turno incorporado
 desse agente deve ser um modelo OpenAI compatível com Codex.
 
-**O Computer Use está instalado, mas as ferramentas não executam:** verifique
-`/codex computer-use status` em uma sessão nova. Se uma ferramenta reportar
+**Computer Use está instalado, mas as ferramentas não executam:** verifique
+`/codex computer-use status` em uma sessão nova. Se uma ferramenta relatar
 `Native hook relay unavailable`, use `/new` ou `/reset`; se persistir, reinicie
-o gateway para limpar registros obsoletos de hooks nativos. Se `computer-use.list_apps`
-expirar, reinicie o Codex Computer Use ou o Codex Desktop e tente novamente.
+o Gateway para limpar registros obsoletos de hooks nativos. Se `computer-use.list_apps`
+atingir timeout, reinicie o Codex Computer Use ou o Codex Desktop e tente novamente.
 
 ## Relacionados
 

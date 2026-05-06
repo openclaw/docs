@@ -1,32 +1,30 @@
 ---
 read_when:
-    - Você quer o speech-to-text do SenseAudio para anexos de áudio
+    - Você quer o recurso de conversão de fala em texto do SenseAudio para anexos de áudio
     - Você precisa da variável de ambiente da chave de API do SenseAudio ou do caminho de configuração de áudio
-summary: SenseAudio em lote para speech-to-text de notas de voz recebidas
+summary: Conversão em lote de fala para texto do SenseAudio para notas de voz recebidas
 title: SenseAudio
 x-i18n:
-    generated_at: "2026-04-25T13:55:00Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:11:37Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 0c39e195458af94f710eb31e46d588a2c61ffe1e3461a9156c9638adae9943f8
+    source_hash: f53af21c746cdd44c71485cbad669f4a01a6e5be956675c73831e7b5f15df8c4
     source_path: providers/senseaudio.md
-    workflow: 15
+    workflow: 16
 ---
 
-# SenseAudio
+SenseAudio pode transcrever anexos de áudio de entrada e notas de voz pelo pipeline compartilhado `tools.media.audio` do OpenClaw. O OpenClaw publica áudio multipart no endpoint de transcrição compatível com OpenAI e injeta o texto retornado como `{{Transcript}}`, além de um bloco `[Audio]`.
 
-O SenseAudio pode transcrever anexos de áudio/notas de voz recebidos por meio do
-pipeline compartilhado `tools.media.audio` do OpenClaw. O OpenClaw envia áudio multipart
-para o endpoint de transcrição compatível com OpenAI e injeta o texto retornado
-como `{{Transcript}}` mais um bloco `[Audio]`.
-
-| Detalhe       | Valor                                            |
+| Propriedade   | Valor                                            |
 | ------------- | ------------------------------------------------ |
-| Site          | [senseaudio.cn](https://senseaudio.cn)           |
-| Documentação  | [senseaudio.cn/docs](https://senseaudio.cn/docs) |
-| Autenticação  | `SENSEAUDIO_API_KEY`                             |
+| ID do provedor | `senseaudio`                                    |
+| Plugin        | incluído, `enabledByDefault: true`               |
+| Contrato      | `mediaUnderstandingProviders` (áudio)            |
+| Var. de ambiente de autenticação | `SENSEAUDIO_API_KEY`            |
 | Modelo padrão | `senseaudio-asr-pro-1.5-260319`                  |
 | URL padrão    | `https://api.senseaudio.cn/v1`                   |
+| Site          | [senseaudio.cn](https://senseaudio.cn)           |
+| Documentação  | [senseaudio.cn/docs](https://senseaudio.cn/docs) |
 
 ## Primeiros passos
 
@@ -36,7 +34,7 @@ como `{{Transcript}}` mais um bloco `[Audio]`.
     export SENSEAUDIO_API_KEY="..."
     ```
   </Step>
-  <Step title="Habilite o provedor de áudio">
+  <Step title="Ative o provedor de áudio">
     ```json5
     {
       tools: {
@@ -51,22 +49,27 @@ como `{{Transcript}}` mais um bloco `[Audio]`.
     ```
   </Step>
   <Step title="Envie uma nota de voz">
-    Envie uma mensagem de áudio por qualquer canal conectado. O OpenClaw faz upload do
+    Envie uma mensagem de áudio por qualquer canal conectado. O OpenClaw envia o
     áudio para o SenseAudio e usa a transcrição no pipeline de resposta.
   </Step>
 </Steps>
 
 ## Opções
 
-| Opção      | Caminho                               | Descrição                                  |
-| ---------- | ------------------------------------- | ------------------------------------------ |
-| `model`    | `tools.media.audio.models[].model`    | id do modelo ASR do SenseAudio             |
-| `language` | `tools.media.audio.models[].language` | dica opcional de idioma                    |
-| `prompt`   | `tools.media.audio.prompt`            | prompt opcional de transcrição             |
-| `baseUrl`  | `tools.media.audio.baseUrl` ou modelo | substitui a base compatível com OpenAI     |
-| `headers`  | `tools.media.audio.request.headers`   | cabeçalhos extras da solicitação           |
+| Opção      | Caminho                               | Descrição                           |
+| ---------- | ------------------------------------- | ----------------------------------- |
+| `model`    | `tools.media.audio.models[].model`    | ID do modelo ASR do SenseAudio      |
+| `language` | `tools.media.audio.models[].language` | Dica opcional de idioma             |
+| `prompt`   | `tools.media.audio.prompt`            | Prompt opcional de transcrição      |
+| `baseUrl`  | `tools.media.audio.baseUrl` ou modelo | Substitui a base compatível com OpenAI |
+| `headers`  | `tools.media.audio.request.headers`   | Cabeçalhos extras da solicitação    |
 
 <Note>
-O SenseAudio é somente STT em lote no OpenClaw. A transcrição em tempo real de Voice Call
-continua usando provedores com suporte a streaming STT.
+O SenseAudio é apenas STT em lote no OpenClaw. A transcrição em tempo real de Voice Call
+continua usando provedores com suporte a STT por streaming.
 </Note>
+
+## Relacionados
+
+- [Entendimento de mídia (áudio)](/pt-BR/nodes/audio)
+- [Provedores de modelos](/pt-BR/concepts/model-providers)
