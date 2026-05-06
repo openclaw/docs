@@ -1,29 +1,28 @@
 ---
 read_when:
-    - تغيير سلوك أو إعدادات كلمات تنبيه الصوت الافتراضية
-    - إضافة منصات Nodes جديدة تحتاج إلى مزامنة كلمات التنبيه
-summary: كلمات تنبيه الصوت العامة (المملوكة لـ Gateway) وكيفية مزامنتها عبر العقد
-title: تنبيه الصوت
+    - تغيير سلوك كلمات التنبيه الصوتية أو إعداداتها الافتراضية
+    - إضافة منصات Node جديدة تحتاج إلى مزامنة كلمة التنبيه
+summary: كلمات التنبيه الصوتية العامة (المملوكة لـ Gateway) وكيفية مزامنتها عبر العُقد
+title: الإيقاظ الصوتي
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-26T11:34:54Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: ac638cdf89f09404cdf293b416417f6cb3e31865b09f04ef87b9604e436dcbbe
-  source_path: nodes/voicewake.md
-  workflow: 15
+    generated_at: "2026-05-06T08:03:26Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: a284cbe3e12784a8d7a3eab6ba8ae230123557bca7593c956111199b94b91b73
+    source_path: nodes/voicewake.md
+    workflow: 16
 ---
 
-يتعامل OpenClaw مع **كلمات تنبيه الصوت كقائمة عامة واحدة** تملكها **Gateway**.
+OpenClaw يتعامل مع **كلمات التنبيه كقائمة عامة واحدة** يملكها **Gateway**.
 
-- **لا توجد كلمات تنبيه مخصصة لكل Node**.
-- يمكن **لأي واجهة عقدة/تطبيق تعديل** القائمة؛ ويتم حفظ التغييرات بواسطة Gateway وبثها إلى الجميع.
-- يحتفظ macOS وiOS بمفاتيح تبديل محلية لـ **Voice Wake enabled/disabled** ‏(تختلف تجربة الاستخدام المحلية والأذونات).
-- يحتفظ Android حاليًا بخيار Voice Wake معطّلًا ويستخدم تدفق ميكروفون يدويًا في تبويب Voice.
+- لا توجد **كلمات تنبيه مخصصة لكل عقدة**.
+- يمكن **لأي واجهة مستخدم لعقدة/تطبيق تعديل** القائمة؛ يحفظ Gateway التغييرات ويبثها للجميع.
+- يحتفظ macOS وiOS بمفاتيح تبديل محلية **لتفعيل/تعطيل التنبيه الصوتي** (تختلف تجربة المستخدم المحلية + الأذونات).
+- يحتفظ Android حاليًا بإيقاف التنبيه الصوتي ويستخدم تدفق ميكروفون يدويًا في علامة تبويب الصوت.
 
 ## التخزين (مضيف Gateway)
 
-تُخزن كلمات التنبيه على جهاز gateway في:
+تُخزَّن كلمات التنبيه على جهاز Gateway في:
 
 - `~/.openclaw/settings/voicewake.json`
 
@@ -37,18 +36,18 @@ x-i18n:
 
 ### الطرق
 
-- `voicewake.get` → ‏`{ triggers: string[] }`
-- `voicewake.set` مع الوسائط `{ triggers: string[] }` → ‏`{ triggers: string[] }`
+- `voicewake.get` → `{ triggers: string[] }`
+- `voicewake.set` مع المعاملات `{ triggers: string[] }` → `{ triggers: string[] }`
 
 ملاحظات:
 
-- تتم تسوية Triggers ‏(إزالة المسافات، وإسقاط القيم الفارغة). وتعود القوائم الفارغة إلى القيم الافتراضية.
-- يتم فرض حدود لأسباب السلامة (حدود العدد/الطول).
+- تُطبَّع المشغلات (إزالة المسافات الزائدة، وإسقاط القيم الفارغة). تعود القوائم الفارغة إلى القيم الافتراضية.
+- تُفرض حدود للسلامة (حدود العدد/الطول).
 
-### طرق التوجيه (trigger → target)
+### طرق التوجيه (المشغل → الهدف)
 
-- `voicewake.routing.get` → ‏`{ config: VoiceWakeRoutingConfig }`
-- `voicewake.routing.set` مع الوسائط `{ config: VoiceWakeRoutingConfig }` → ‏`{ config: VoiceWakeRoutingConfig }`
+- `voicewake.routing.get` → `{ config: VoiceWakeRoutingConfig }`
+- `voicewake.routing.set` مع المعاملات `{ config: VoiceWakeRoutingConfig }` → `{ config: VoiceWakeRoutingConfig }`
 
 شكل `VoiceWakeRoutingConfig`:
 
@@ -61,7 +60,7 @@ x-i18n:
 }
 ```
 
-تدعم أهداف التوجيه واحدًا فقط من:
+تدعم أهداف المسارات واحدًا فقط من الآتي:
 
 - `{ "mode": "current" }`
 - `{ "agentId": "main" }`
@@ -69,33 +68,33 @@ x-i18n:
 
 ### الأحداث
 
-- حمولة `voicewake.changed` ‏`{ triggers: string[] }`
-- حمولة `voicewake.routing.changed` ‏`{ config: VoiceWakeRoutingConfig }`
+- حمولة `voicewake.changed` هي `{ triggers: string[] }`
+- حمولة `voicewake.routing.changed` هي `{ config: VoiceWakeRoutingConfig }`
 
-من الذي يتلقاها:
+من يتلقاها:
 
-- كل عملاء WebSocket ‏(تطبيق macOS وWebChat وما إلى ذلك)
-- كل Nodes المتصلة (iOS/Android)، وكذلك عند اتصال node كدفعة أولية لـ "الحالة الحالية"
+- جميع عملاء WebSocket (تطبيق macOS وWebChat وما إلى ذلك)
+- جميع العقد المتصلة (iOS/Android)، وكذلك عند اتصال العقدة كدفع أولي لـ"الحالة الحالية".
 
 ## سلوك العميل
 
 ### تطبيق macOS
 
 - يستخدم القائمة العامة للتحكم في مشغلات `VoiceWakeRuntime`.
-- يؤدي تعديل "Trigger words" في إعدادات Voice Wake إلى استدعاء `voicewake.set` ثم يعتمد على البث للحفاظ على مزامنة العملاء الآخرين.
+- تعديل "كلمات التشغيل" في إعدادات التنبيه الصوتي يستدعي `voicewake.set` ثم يعتمد على البث لإبقاء العملاء الآخرين متزامنين.
 
 ### عقدة iOS
 
-- تستخدم القائمة العامة لاكتشاف المشغلات في `VoiceWakeManager`.
-- يؤدي تعديل Wake Words في Settings إلى استدعاء `voicewake.set` ‏(عبر Gateway WS) كما يحافظ أيضًا على استجابة اكتشاف كلمات التنبيه محليًا.
+- تستخدم القائمة العامة لاكتشاف مشغلات `VoiceWakeManager`.
+- تعديل كلمات التنبيه في الإعدادات يستدعي `voicewake.set` (عبر Gateway WS) ويحافظ أيضًا على استجابة اكتشاف كلمات التنبيه المحلي.
 
 ### عقدة Android
 
-- يكون Voice Wake معطّلًا حاليًا في وقت تشغيل/إعدادات Android.
-- يستخدم Android voice التقاط ميكروفون يدويًا في تبويب Voice بدلًا من مشغلات كلمات التنبيه.
+- التنبيه الصوتي معطل حاليًا في وقت تشغيل/إعدادات Android.
+- يستخدم صوت Android التقاط الميكروفون اليدوي في علامة تبويب الصوت بدلًا من مشغلات كلمات التنبيه.
 
-## ذو صلة
+## ذات صلة
 
-- [وضع Talk](/ar/nodes/talk)
-- [الصوت والملاحظات الصوتية](/ar/nodes/audio)
+- [وضع التحدث](/ar/nodes/talk)
+- [ملاحظات الصوت والصوتيات](/ar/nodes/audio)
 - [فهم الوسائط](/ar/nodes/media-understanding)

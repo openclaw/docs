@@ -1,48 +1,48 @@
 ---
 read_when:
-    - فهم تصميم تكامل مجموعة تطوير برمجيات Pi في OpenClaw
-    - تعديل دورة حياة جلسة الوكيل أو الأدوات أو ربط المزوّدين لـ Pi
-summary: بنية تكامل وكيل Pi المضمّن الخاص بـ OpenClaw ودورة حياة الجلسة
-title: معمارية تكامل Pi
+    - فهم تصميم تكامل Pi SDK في OpenClaw
+    - تعديل دورة حياة جلسة الوكيل أو الأدوات أو ربط المزوّد لـ Pi
+summary: بنية تكامل وكيل Pi المضمّن في OpenClaw ودورة حياة الجلسة
+title: بنية تكامل Pi
 x-i18n:
-    generated_at: "2026-04-30T08:10:24Z"
+    generated_at: "2026-05-06T08:03:33Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 0b155cd5296875f2f187c68c6929c48aba27cef047f0caad74f560bcde5533e5
+    source_hash: abd9e828b0a72ac4e796f33c247bb2b5d7143ddf5e897ad9d7380cfbfce1eb64
     source_path: pi.md
     workflow: 16
 ---
 
-يتكامل OpenClaw مع [pi-coding-agent](https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent) وحزمه الشقيقة (`pi-ai` و`pi-agent-core` و`pi-tui`) لتشغيل قدرات وكيل الذكاء الاصطناعي لديه.
+تتكامل OpenClaw مع [pi-coding-agent](https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent) وحزمها الشقيقة (`pi-ai`، `pi-agent-core`، `pi-tui`) لتشغيل قدرات وكيل الذكاء الاصطناعي لديها.
 
 ## نظرة عامة
 
-يستخدم OpenClaw مجموعة تطوير pi لتضمين وكيل ترميز ذكاء اصطناعي في معمارية Gateway الخاصة بالمراسلة. وبدلا من تشغيل pi كعملية فرعية أو استخدام وضع RPC، يستورد OpenClaw مباشرة `AgentSession` الخاص بـ pi وينشئه عبر `createAgentSession()`. يوفر هذا النهج المضمّن ما يلي:
+تستخدم OpenClaw حزمة pi SDK لتضمين وكيل ترميز بالذكاء الاصطناعي داخل بنية Gateway للمراسلة الخاصة بها. بدلا من تشغيل pi كعملية فرعية أو استخدام وضع RPC، تستورد OpenClaw مباشرة `AgentSession` الخاصة بـ pi وتنشئ مثيلا منها عبر `createAgentSession()`. يوفر هذا النهج المضمن:
 
-- تحكم كامل في دورة حياة الجلسة ومعالجة الأحداث
-- حقن أدوات مخصصة (المراسلة، الصندوق الرملي، الإجراءات الخاصة بالقناة)
-- تخصيص مطالبة النظام لكل قناة/سياق
-- استمرار الجلسات مع دعم التفريع/Compaction
-- تدوير ملفات تعريف المصادقة متعددة الحسابات مع تجاوز الأعطال
-- تبديل النماذج بلا اعتماد على مزود محدد
+- تحكما كاملا في دورة حياة الجلسة ومعالجة الأحداث
+- حقن أدوات مخصصة (المراسلة، صندوق العزل، إجراءات خاصة بالقنوات)
+- تخصيص موجه النظام لكل قناة/سياق
+- استمرارية الجلسة مع دعم التفريع/Compaction
+- تدوير ملفات تعريف المصادقة متعددة الحسابات مع تجاوز الفشل
+- تبديل النماذج دون التقيد بموفر معين
 
 ## اعتماديات الحزم
 
 ```json
 {
-  "@mariozechner/pi-agent-core": "0.70.2",
-  "@mariozechner/pi-ai": "0.70.2",
-  "@mariozechner/pi-coding-agent": "0.70.2",
-  "@mariozechner/pi-tui": "0.70.2"
+  "@mariozechner/pi-agent-core": "0.73.0",
+  "@mariozechner/pi-ai": "0.73.0",
+  "@mariozechner/pi-coding-agent": "0.73.0",
+  "@mariozechner/pi-tui": "0.73.0"
 }
 ```
 
-| الحزمة             | الغرض                                                                                                      |
-| ----------------- | ---------------------------------------------------------------------------------------------------------- |
-| `pi-ai`           | تجريدات LLM الأساسية: `Model` و`streamSimple` وأنواع الرسائل وواجهات API للمزودين                         |
-| `pi-agent-core`   | حلقة الوكيل، وتنفيذ الأدوات، وأنواع `AgentMessage`                                                         |
-| `pi-coding-agent` | مجموعة تطوير عالية المستوى: `createAgentSession` و`SessionManager` و`AuthStorage` و`ModelRegistry` والأدوات المدمجة |
-| `pi-tui`          | مكونات واجهة المستخدم الطرفية (تُستخدم في وضع TUI المحلي الخاص بـ OpenClaw)                                |
+| الحزمة            | الغرض                                                                                                  |
+| ----------------- | ------------------------------------------------------------------------------------------------------ |
+| `pi-ai`           | تجريدات LLM الأساسية: `Model`، `streamSimple`، أنواع الرسائل، واجهات API للموفرين                      |
+| `pi-agent-core`   | حلقة الوكيل، تنفيذ الأدوات، أنواع `AgentMessage`                                                       |
+| `pi-coding-agent` | SDK عالي المستوى: `createAgentSession`، `SessionManager`، `AuthStorage`، `ModelRegistry`، الأدوات المضمنة |
+| `pi-tui`          | مكونات واجهة المستخدم الطرفية (تستخدم في وضع TUI المحلي في OpenClaw)                                  |
 
 ## بنية الملفات
 
@@ -134,16 +134,17 @@ src/agents/
 └── ...
 ```
 
-توجد الآن بيئات تشغيل إجراءات الرسائل الخاصة بالقنوات داخل أدلة Plugin المملوكة للـ Plugin بدلا من وجودها تحت `src/agents/tools`، على سبيل المثال:
+توجد الآن أوقات تشغيل إجراءات الرسائل الخاصة بالقنوات في أدلة Plugin المملوكة للـ Plugin
+بدلا من أن تكون تحت `src/agents/tools`، على سبيل المثال:
 
-- ملفات بيئة تشغيل إجراءات Plugin الخاص بـ Discord
-- ملف بيئة تشغيل إجراءات Plugin الخاص بـ Slack
-- ملف بيئة تشغيل إجراءات Plugin الخاص بـ Telegram
-- ملف بيئة تشغيل إجراءات Plugin الخاص بـ WhatsApp
+- ملفات وقت تشغيل إجراءات Plugin الخاص بـ Discord
+- ملف وقت تشغيل إجراءات Plugin الخاص بـ Slack
+- ملف وقت تشغيل إجراءات Plugin الخاص بـ Telegram
+- ملف وقت تشغيل إجراءات Plugin الخاص بـ WhatsApp
 
 ## تدفق التكامل الأساسي
 
-### 1. تشغيل وكيل مضمّن
+### 1. تشغيل وكيل مضمن
 
 نقطة الدخول الرئيسية هي `runEmbeddedPiAgent()` في `pi-embedded-runner/run.ts`:
 
@@ -169,7 +170,7 @@ const result = await runEmbeddedPiAgent({
 
 ### 2. إنشاء الجلسة
 
-داخل `runEmbeddedAttempt()` (التي يستدعيها `runEmbeddedPiAgent()`)، تُستخدم مجموعة تطوير pi:
+داخل `runEmbeddedAttempt()` (الذي يستدعيه `runEmbeddedPiAgent()`)، يتم استخدام pi SDK:
 
 ```typescript
 import {
@@ -231,33 +232,35 @@ const subscription = subscribeEmbeddedPiSession({
 - `agent_start` / `agent_end`
 - `compaction_start` / `compaction_end`
 
-### 4. المطالبة
+### 4. التوجيه
 
-بعد الإعداد، تُرسل المطالبة إلى الجلسة:
+بعد الإعداد، يتم إرسال الموجه إلى الجلسة:
 
 ```typescript
 await session.prompt(effectivePrompt, { images: imageResult.images });
 ```
 
-تتولى مجموعة تطوير البرمجيات حلقة الوكيل الكاملة: الإرسال إلى LLM، وتنفيذ استدعاءات الأدوات، وبث الردود.
+يتولى SDK حلقة الوكيل الكاملة: الإرسال إلى LLM، وتنفيذ استدعاءات الأدوات، وبث الاستجابات.
 
-يكون حقن الصور محليا للمطالبة: يحمّل OpenClaw مراجع الصور من المطالبة الحالية ويمررها عبر `images` لذلك الدور فقط. ولا يعيد فحص أدوار السجل الأقدم لإعادة حقن حمولات الصور.
+حقن الصور محلي للموجه: تحمل OpenClaw مراجع الصور من الموجه الحالي
+وتمررها عبر `images` لتلك الجولة فقط. وهي لا تعيد فحص جولات السجل الأقدم
+لإعادة حقن حمولات الصور.
 
-## معمارية الأدوات
+## بنية الأدوات
 
 ### مسار الأدوات
 
-1. **الأدوات الأساسية**: `codingTools` الخاصة بـ pi (read وbash وedit وwrite)
-2. **الاستبدالات المخصصة**: يستبدل OpenClaw bash بـ `exec`/`process`، ويخصص read/edit/write للصندوق الرملي
-3. **أدوات OpenClaw**: المراسلة، والمتصفح، واللوحة، والجلسات، وCron، وGateway، وغيرها
-4. **أدوات القنوات**: أدوات إجراءات خاصة بـ Discord/Telegram/Slack/WhatsApp
-5. **تصفية السياسات**: تُصفى الأدوات حسب ملف التعريف، والمزود، والوكيل، والمجموعة، وسياسات الصندوق الرملي
-6. **تطبيع المخططات**: تُنظف المخططات للتعامل مع خصوصيات Gemini/OpenAI
-7. **تغليف AbortSignal**: تُغلف الأدوات لاحترام إشارات الإجهاض
+1. **الأدوات الأساسية**: أدوات `codingTools` الخاصة بـ pi (read، bash، edit، write)
+2. **الاستبدالات المخصصة**: تستبدل OpenClaw bash بـ `exec`/`process`، وتخصص read/edit/write لصندوق العزل
+3. **أدوات OpenClaw**: المراسلة، المتصفح، اللوحة، الجلسات، Cron، Gateway، وغير ذلك
+4. **أدوات القنوات**: أدوات الإجراءات الخاصة بـ Discord/Telegram/Slack/WhatsApp
+5. **تصفية السياسات**: تتم تصفية الأدوات حسب ملف التعريف، والموفر، والوكيل، والمجموعة، وسياسات صندوق العزل
+6. **تطبيع المخططات**: تنظيف المخططات للتعامل مع خصوصيات Gemini/OpenAI
+7. **تغليف AbortSignal**: تغليف الأدوات بحيث تراعي إشارات الإحباط
 
-### محول تعريفات الأدوات
+### مهايئ تعريف الأداة
 
-يملك `AgentTool` الخاص بـ pi-agent-core توقيع `execute` مختلفا عن `ToolDefinition` الخاص بـ pi-coding-agent. يسد المحول في `pi-tool-definition-adapter.ts` هذه الفجوة:
+لدى `AgentTool` في pi-agent-core توقيع `execute` مختلف عن `ToolDefinition` في pi-coding-agent. يربط المهايئ في `pi-tool-definition-adapter.ts` بينهما:
 
 ```typescript
 export function toToolDefinitions(tools: AnyAgentTool[]): ToolDefinition[] {
@@ -287,13 +290,13 @@ export function splitSdkTools(options: { tools: AnyAgentTool[]; sandboxEnabled: 
 }
 ```
 
-هذا يضمن بقاء تصفية سياسات OpenClaw، وتكامل sandbox، ومجموعة الأدوات الموسعة متسقة عبر المزوّدين.
+يضمن هذا بقاء تصفية سياسة OpenClaw، وتكامل الصندوق الرملي، ومجموعة الأدوات الموسعة متسقة عبر المزوّدين.
 
-## إنشاء مطالبة النظام
+## إنشاء موجه النظام
 
-تُنشأ مطالبة النظام في `buildAgentSystemPrompt()` (`system-prompt.ts`). وهي تجمع مطالبة كاملة بأقسام تشمل الأدوات، ونمط استدعاء الأدوات، وحواجز الأمان، ومرجع OpenClaw CLI، وSkills، والوثائق، ومساحة العمل، وsandbox، والمراسلة، ووسوم الرد، والصوت، والردود الصامتة، وHeartbeats، وبيانات runtime الوصفية، إضافة إلى Memory وReactions عند تفعيلهما، وملفات السياق الاختيارية ومحتوى مطالبة النظام الإضافي. تُختصر الأقسام في وضع المطالبة الأدنى المستخدم بواسطة الوكلاء الفرعيين.
+يُبنى موجه النظام في `buildAgentSystemPrompt()` (`system-prompt.ts`). ويجمع موجهًا كاملًا بأقسام تشمل الأدوات، ونمط استدعاء الأدوات، وحواجز السلامة، ومرجع OpenClaw CLI، وSkills، والوثائق، ومساحة العمل، والصندوق الرملي، والمراسلة، ووسوم الرد، والصوت، والردود الصامتة، وHeartbeats، وبيانات تشغيلية وصفية، إضافة إلى الذاكرة والتفاعلات عند تمكينها، وملفات سياق اختيارية ومحتوى إضافي لموجه النظام. تُقتطع الأقسام لوضع الموجه المصغّر المستخدم بواسطة الوكلاء الفرعيين.
 
-تُطبّق المطالبة بعد إنشاء الجلسة عبر `applySystemPromptOverrideToSession()`:
+يُطبق الموجه بعد إنشاء الجلسة عبر `applySystemPromptOverrideToSession()`:
 
 ```typescript
 const systemPromptOverride = createSystemPromptOverride(appendPrompt);
@@ -302,19 +305,19 @@ applySystemPromptOverrideToSession(session, systemPromptOverride);
 
 ## إدارة الجلسات
 
-### ملفات الجلسة
+### ملفات الجلسات
 
-الجلسات هي ملفات JSONL ببنية شجرية (ربط id/parentId). يتولى `SessionManager` الخاص بـ Pi الاستمرارية:
+الجلسات هي ملفات JSONL ذات بنية شجرية (ربط id/parentId). يتولى `SessionManager` في Pi الاستمرارية:
 
 ```typescript
 const sessionManager = SessionManager.open(params.sessionFile);
 ```
 
-يلف OpenClaw هذا باستخدام `guardSessionManager()` من أجل أمان نتائج الأدوات.
+يلف OpenClaw هذا باستخدام `guardSessionManager()` لضمان سلامة نتائج الأدوات.
 
 ### التخزين المؤقت للجلسات
 
-يخزّن `session-manager-cache.ts` مثيلات SessionManager مؤقتًا لتجنّب تحليل الملفات بشكل متكرر:
+يخزّن `session-manager-cache.ts` مثيلات SessionManager مؤقتًا لتجنب تحليل الملفات بشكل متكرر:
 
 ```typescript
 await prewarmSessionFile(params.sessionFile);
@@ -324,11 +327,11 @@ trackSessionManagerAccess(params.sessionFile);
 
 ### تحديد السجل
 
-يقلّص `limitHistoryTurns()` سجل المحادثة بناءً على نوع القناة (رسالة مباشرة مقابل مجموعة).
+تقتطع `limitHistoryTurns()` سجل المحادثة بناءً على نوع القناة (رسالة مباشرة مقابل مجموعة).
 
 ### Compaction
 
-يُفعّل Compaction التلقائي عند تجاوز السياق. تشمل بصمات التجاوز الشائعة `request_too_large`، و`context length exceeded`، و`input exceeds the maximum number of tokens`، و`input token count exceeds the maximum number of input tokens`، و`input is too long for the model`، و`ollama error: context length exceeded`. يتعامل `compactEmbeddedPiSessionDirect()` مع Compaction اليدوي:
+يُشغّل الضغط التلقائي عند تجاوز السياق. تتضمن بصمات التجاوز الشائعة `request_too_large`، و`context length exceeded`، و`input exceeds the maximum number of tokens`، و`input token count exceeds the maximum number of input tokens`، و`input is too long for the model`، و`ollama error: context length exceeded`. يتولى `compactEmbeddedPiSessionDirect()` الضغط اليدوي:
 
 ```typescript
 const compactResult = await compactEmbeddedPiSessionDirect({
@@ -340,7 +343,7 @@ const compactResult = await compactEmbeddedPiSessionDirect({
 
 ### ملفات تعريف المصادقة
 
-يحافظ OpenClaw على مخزن لملفات تعريف المصادقة مع عدة مفاتيح API لكل مزوّد:
+يحافظ OpenClaw على مخزن ملفات تعريف مصادقة مع عدة مفاتيح API لكل مزوّد:
 
 ```typescript
 const authStore = ensureAuthProfileStore(agentDir, { allowKeychainPrompt: false });
@@ -370,9 +373,9 @@ const { model, error, authStorage, modelRegistry } = resolveModel(
 authStorage.setRuntimeApiKey(model.provider, apiKeyInfo.apiKey);
 ```
 
-### تجاوز الأعطال
+### تجاوز الفشل
 
-يشغّل `FailoverError` الرجوع إلى نموذج بديل عند ضبط ذلك:
+يشغّل `FailoverError` الرجوع إلى نموذج بديل عند تهيئته:
 
 ```typescript
 if (fallbackConfigured && isFailoverErrorMessage(errorText)) {
@@ -392,7 +395,7 @@ if (fallbackConfigured && isFailoverErrorMessage(errorText)) {
 
 ### حماية Compaction
 
-يضيف `src/agents/pi-hooks/compaction-safeguard.ts` حواجز حماية إلى Compaction، بما في ذلك ميزانية الرموز التكيفية إضافة إلى ملخصات إخفاق الأدوات وعمليات الملفات:
+يضيف `src/agents/pi-hooks/compaction-safeguard.ts` حواجز إلى الضغط، بما في ذلك ميزنة رموز تكيفية وملخصات إخفاق الأدوات وعمليات الملفات:
 
 ```typescript
 if (resolveCompactionMode(params.cfg) === "safeguard") {
@@ -401,9 +404,9 @@ if (resolveCompactionMode(params.cfg) === "safeguard") {
 }
 ```
 
-### تهذيب السياق
+### تقليم السياق
 
-ينفّذ `src/agents/pi-hooks/context-pruning.ts` تهذيب السياق بناءً على cache-TTL:
+ينفذ `src/agents/pi-hooks/context-pruning.ts` تقليم السياق بناءً على cache-TTL:
 
 ```typescript
 if (cfg?.agents?.defaults?.contextPruning?.mode === "cache-ttl") {
@@ -417,11 +420,11 @@ if (cfg?.agents?.defaults?.contextPruning?.mode === "cache-ttl") {
 }
 ```
 
-## البث والردود الكتلية
+## البث وردود الكتل
 
-### تقسيم الكتل
+### تقطيع الكتل
 
-يدير `EmbeddedBlockChunker` بث النص في كتل رد منفصلة:
+يدير `EmbeddedBlockChunker` بث النص إلى كتل رد منفصلة:
 
 ```typescript
 const blockChunker = blockChunking ? new EmbeddedBlockChunker(blockChunking) : null;
@@ -429,7 +432,7 @@ const blockChunker = blockChunking ? new EmbeddedBlockChunker(blockChunking) : n
 
 ### تجريد وسوم التفكير/النهائي
 
-تُعالج مخرجات البث لتجريد كتل `<think>`/`<thinking>` واستخراج محتوى `<final>`:
+تُعالج مخرجات البث لإزالة كتل `<think>`/`<thinking>` واستخراج محتوى `<final>`:
 
 ```typescript
 const stripBlockTags = (text: string, state: { thinking: boolean; final: boolean }) => {
@@ -440,7 +443,7 @@ const stripBlockTags = (text: string, state: { thinking: boolean; final: boolean
 
 ### توجيهات الرد
 
-تُحلّل توجيهات الرد مثل `[[media:url]]`، و`[[voice]]`، و`[[reply:id]]` وتُستخرج:
+تُحلل وتُستخرج توجيهات الرد مثل `[[media:url]]`، و`[[voice]]`، و`[[reply:id]]`:
 
 ```typescript
 const { text: cleanedText, mediaUrls, audioAsVoice, replyToId } = consumeReplyDirectives(chunk);
@@ -450,7 +453,7 @@ const { text: cleanedText, mediaUrls, audioAsVoice, replyToId } = consumeReplyDi
 
 ### تصنيف الأخطاء
 
-يصنّف `pi-embedded-helpers.ts` الأخطاء للمعالجة المناسبة:
+يصنف `pi-embedded-helpers.ts` الأخطاء للتعامل الملائم معها:
 
 ```typescript
 isContextOverflowError(errorText)     // Context too large
@@ -463,7 +466,7 @@ classifyFailoverReason(errorText)     // "auth" | "rate_limit" | "quota" | "time
 
 ### الرجوع في مستوى التفكير
 
-إذا كان مستوى التفكير غير مدعوم، فإنه يرجع إلى بديل:
+إذا كان مستوى التفكير غير مدعوم، فإنه يرجع إلى مستوى بديل:
 
 ```typescript
 const fallbackThinking = pickFallbackThinkingLevel({
@@ -476,9 +479,9 @@ if (fallbackThinking) {
 }
 ```
 
-## تكامل sandbox
+## تكامل الصندوق الرملي
 
-عند تفعيل وضع sandbox، تُقيّد الأدوات والمسارات:
+عند تمكين وضع الصندوق الرملي، تُقيّد الأدوات والمسارات:
 
 ```typescript
 const sandbox = await resolveSandboxContext({
@@ -494,17 +497,17 @@ if (sandboxRoot) {
 }
 ```
 
-## المعالجة الخاصة بالمزوّدين
+## معالجة خاصة بالمزوّدين
 
 ### Anthropic
 
-- تنظيف سلسلة الرفض السحرية
-- التحقق من الأدوار المتتالية في الدور
-- تحقق صارم من معاملات أداة Pi الصادرة من المنبع
+- تنقية سلسلة الرفض السحرية
+- التحقق من صحة الأدوار المتتالية في الأدوار
+- تحقق صارم من معاملات أداة Pi الصاعدة
 
 ### Google/Gemini
 
-- تنقية مخطط الأدوات المملوك لـ Plugin
+- تعقيم مخطط الأدوات المملوك من Plugin
 
 ### OpenAI
 
@@ -513,7 +516,7 @@ if (sandboxRoot) {
 
 ## تكامل TUI
 
-لدى OpenClaw أيضًا وضع TUI محلي يستخدم مكوّنات pi-tui مباشرة:
+يمتلك OpenClaw أيضًا وضع TUI محلي يستخدم مكونات pi-tui مباشرة:
 
 ```typescript
 // src/tui/tui.ts
@@ -522,27 +525,27 @@ import { ... } from "@mariozechner/pi-tui";
 
 يوفر هذا تجربة الطرفية التفاعلية المشابهة للوضع الأصلي في pi.
 
-## الفروقات الرئيسية عن Pi CLI
+## الاختلافات الرئيسية عن Pi CLI
 
-| الجانب | Pi CLI | OpenClaw المضمّن |
+| الجانب          | Pi CLI                  | OpenClaw المضمّن                                                                              |
 | --------------- | ----------------------- | ---------------------------------------------------------------------------------------------- |
-| الاستدعاء | أمر `pi` / RPC | SDK عبر `createAgentSession()` |
-| الأدوات | أدوات الترميز الافتراضية | حزمة أدوات OpenClaw مخصصة |
-| مطالبة النظام | AGENTS.md + المطالبات | ديناميكية حسب القناة/السياق |
-| تخزين الجلسة | `~/.pi/agent/sessions/` | `~/.openclaw/agents/<agentId>/sessions/` (أو `$OPENCLAW_STATE_DIR/agents/<agentId>/sessions/`) |
-| المصادقة | اعتماد واحد | ملفات تعريف متعددة مع تدوير |
-| الامتدادات | محمّلة من القرص | برمجية + مسارات قرص |
-| معالجة الأحداث | عرض TUI | قائمة على الاستدعاءات (onBlockReply، إلخ) |
+| الاستدعاء       | أمر `pi` / RPC          | SDK عبر `createAgentSession()`                                                                 |
+| الأدوات         | أدوات ترميز افتراضية    | حزمة أدوات OpenClaw مخصصة                                                                     |
+| موجه النظام     | AGENTS.md + موجهات      | ديناميكي حسب القناة/السياق                                                                    |
+| تخزين الجلسات   | `~/.pi/agent/sessions/` | `~/.openclaw/agents/<agentId>/sessions/` (أو `$OPENCLAW_STATE_DIR/agents/<agentId>/sessions/`) |
+| المصادقة        | بيانات اعتماد واحدة     | ملفات تعريف متعددة مع التدوير                                                                 |
+| الامتدادات      | محمّلة من القرص         | برمجية + مسارات قرصية                                                                         |
+| معالجة الأحداث  | عرض TUI                 | قائمة على الاستدعاءات الراجعة (onBlockReply، إلخ.)                                            |
 
 ## اعتبارات مستقبلية
 
-مجالات محتملة لإعادة العمل:
+مجالات لإعادة العمل المحتملة:
 
-1. **محاذاة توقيع الأدوات**: يجري حاليًا التكييف بين تواقيع pi-agent-core وpi-coding-agent
-2. **تغليف مدير الجلسات**: يضيف `guardSessionManager` أمانًا لكنه يزيد التعقيد
-3. **تحميل الامتدادات**: يمكن استخدام `ResourceLoader` الخاص بـ pi بشكل مباشر أكثر
+1. **محاذاة توقيع الأدوات**: يجري حاليًا التكييف بين توقيعات pi-agent-core وpi-coding-agent
+2. **لف مدير الجلسات**: يضيف `guardSessionManager` السلامة لكنه يزيد التعقيد
+3. **تحميل الامتدادات**: يمكن استخدام `ResourceLoader` الخاص بـ pi بشكل أكثر مباشرة
 4. **تعقيد معالج البث**: أصبح `subscribeEmbeddedPiSession` كبيرًا
-5. **خصوصيات المزوّدين**: مسارات تعليمات برمجية كثيرة خاصة بالمزوّدين قد يتمكن pi من معالجتها
+5. **خصوصيات المزوّدين**: العديد من مسارات التعليمات البرمجية الخاصة بالمزوّدين التي قد يتمكن pi من التعامل معها
 
 ## الاختبارات
 
@@ -560,7 +563,7 @@ import { ... } from "@mariozechner/pi-tui";
 - `src/agents/pi-settings.test.ts`
 - `src/agents/pi-hooks/**/*.test.ts`
 
-اختبارات حية/اختيارية:
+مباشر/اختياري:
 
 - `src/agents/pi-embedded-runner-extraparams.live.test.ts` (فعّل `OPENCLAW_LIVE_TEST=1`)
 

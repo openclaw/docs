@@ -1,74 +1,73 @@
 ---
 read_when:
-    - ضبط سلوك تراكب الصوت
-summary: دورة حياة تراكب الصوت عندما يتداخل wake-word مع push-to-talk
-title: تراكب الصوت
+    - ضبط سلوك التراكب الصوتي
+summary: دورة حياة تراكب الصوت عند تداخل كلمة التنبيه مع الضغط للتحدث
+title: تراكب صوتي
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T07:52:57Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: 3ae98afad57dffe73e2c878eef4f3253e4464d68cadf531e9239b017cc160f28
-  source_path: platforms/mac/voice-overlay.md
-  workflow: 15
+    generated_at: "2026-05-06T08:05:00Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 5b30f50512e557bd5a50f0e4e8b7955a847b3b554694347d56638581fcda9514
+    source_path: platforms/mac/voice-overlay.md
+    workflow: 16
 ---
 
 # دورة حياة تراكب الصوت (macOS)
 
-الجمهور: المساهمون في تطبيق macOS. الهدف: إبقاء تراكب الصوت متوقعًا عندما يتداخل wake-word مع push-to-talk.
+الجمهور: مساهمو تطبيق macOS. الهدف: الحفاظ على قابلية توقع تراكب الصوت عندما تتداخل كلمة التنبيه مع اضغط للتحدث.
 
 ## النية الحالية
 
-- إذا كان التراكب ظاهرًا بالفعل بسبب wake-word وضغط المستخدم مفتاح الاختصار، فإن جلسة مفتاح الاختصار _تتبنى_ النص الموجود بدلًا من إعادة ضبطه. ويبقى التراكب ظاهرًا ما دام مفتاح الاختصار مضغوطًا. وعندما يحرر المستخدم المفتاح: يتم الإرسال إذا كان هناك نص مقصوص، وإلا يتم الإخفاء.
-- ما تزال wake-word وحدها ترسل تلقائيًا عند الصمت؛ بينما ترسل push-to-talk فورًا عند التحرير.
+- إذا كان التراكب ظاهرًا بالفعل بسبب كلمة التنبيه وضغط المستخدم مفتاح الاختصار، فإن جلسة مفتاح الاختصار _تتبنى_ النص الموجود بدلًا من إعادة تعيينه. يبقى التراكب ظاهرًا أثناء الضغط على مفتاح الاختصار. عند إفلات المستخدم: يتم الإرسال إذا وُجد نص بعد إزالة المسافات الطرفية، وإلا يتم الإخفاء.
+- كلمة التنبيه وحدها لا تزال ترسل تلقائيًا عند الصمت؛ أما اضغط للتحدث فيرسل فورًا عند الإفلات.
 
-## المُنفّذ (9 ديسمبر 2025)
+## تم التنفيذ (9 ديسمبر 2025)
 
-- أصبحت جلسات التراكب تحمل token لكل التقاط (wake-word أو push-to-talk). ويتم إسقاط تحديثات partial/final/send/dismiss/level عندما لا يتطابق token، مما يمنع callbacks القديمة.
-- تتبنى push-to-talk أي نص ظاهر في التراكب كلاحقة أولية (لذلك فإن ضغط مفتاح الاختصار أثناء ظهور تراكب wake يبقي النص ويضيف إليه الكلام الجديد). وهي تنتظر حتى 1.5 ثانية للحصول على transcript نهائي قبل الرجوع إلى النص الحالي.
-- يتم إصدار تسجيل chime/overlay عند المستوى `info` ضمن الفئات `voicewake.overlay` و`voicewake.ptt` و`voicewake.chime` (بدء الجلسة، وpartial، وfinal، وsend، وdismiss، وسبب chime).
+- تحمل جلسات التراكب الآن رمزًا مميزًا لكل التقاط (كلمة تنبيه أو اضغط للتحدث). يتم إسقاط تحديثات الجزئي/النهائي/الإرسال/الإخفاء/المستوى عندما لا يطابق الرمز المميز، مما يتجنب ردود النداء القديمة.
+- يتبنى اضغط للتحدث أي نص تراكب ظاهر كبادئة (لذلك فإن الضغط على مفتاح الاختصار أثناء ظهور تراكب التنبيه يُبقي النص ويضيف الكلام الجديد). ينتظر حتى 1.5 ثانية للحصول على نسخة نهائية قبل الرجوع إلى النص الحالي.
+- يتم إصدار سجلات الرنين/التراكب عند `info` في الفئات `voicewake.overlay` و`voicewake.ptt` و`voicewake.chime` (بدء الجلسة، جزئي، نهائي، إرسال، إخفاء، سبب الرنين).
 
 ## الخطوات التالية
 
-1. **VoiceSessionCoordinator (actor)**
-   - يملك `VoiceSession` واحدة فقط في كل مرة.
-   - API (قائمة على token): `beginWakeCapture`, `beginPushToTalk`, `updatePartial`, `endCapture`, `cancel`, `applyCooldown`.
-   - يسقط callbacks التي تحمل tokens قديمة (لمنع recognizers القديمة من إعادة فتح التراكب).
-2. **VoiceSession (model)**
-   - الحقول: `token`, `source` (`wakeWord|pushToTalk`), نص committed/volatile, أعلام chime, مؤقتات (auto-send, idle), `overlayMode` (`display|editing|sending`), موعد cooldown النهائي.
+1. **`VoiceSessionCoordinator` (ممثل)**
+   - يمتلك `VoiceSession` واحدة بالضبط في كل مرة.
+   - API (مستند إلى الرمز المميز): `beginWakeCapture` و`beginPushToTalk` و`updatePartial` و`endCapture` و`cancel` و`applyCooldown`.
+   - يسقط ردود النداء التي تحمل رموزًا مميزة قديمة (يمنع أدوات التعرف القديمة من إعادة فتح التراكب).
+2. **`VoiceSession` (نموذج)**
+   - الحقول: `token` و`source` (`wakeWord|pushToTalk`) والنص المثبت/المتقلب، وأعلام الرنين، والمؤقتات (الإرسال التلقائي، الخمول)، و`overlayMode` (`display|editing|sending`) وموعد انتهاء فترة التهدئة.
 3. **ربط التراكب**
-   - يقوم `VoiceSessionPublisher` (`ObservableObject`) بعكس الجلسة النشطة إلى SwiftUI.
-   - يعرض `VoiceWakeOverlayView` فقط عبر publisher؛ ولا يغيّر global singletons مباشرةً أبدًا.
-   - تستدعي إجراءات المستخدم في التراكب (`sendNow`, `dismiss`, `edit`) coordinator باستخدام token الخاص بالجلسة.
-4. **مسار إرسال موحّد**
-   - عند `endCapture`: إذا كان النص المقصوص فارغًا → إخفاء؛ وإلا `performSend(session:)` (يشغّل send chime مرة واحدة، ويمرر، ثم يخفي).
-   - push-to-talk: بلا تأخير؛ wake-word: تأخير اختياري للإرسال التلقائي.
-   - طبّق cooldown قصيرة على بيئة تشغيل wake بعد انتهاء push-to-talk حتى لا تُعاد wake-word فورًا.
+   - يعكس `VoiceSessionPublisher` (`ObservableObject`) الجلسة النشطة إلى SwiftUI.
+   - يعرض `VoiceWakeOverlayView` عبر الناشر فقط؛ ولا يغيّر الكائنات المفردة العامة مباشرة أبدًا.
+   - تستدعي إجراءات مستخدم التراكب (`sendNow` و`dismiss` و`edit`) المنسق مع الرمز المميز للجلسة.
+4. **مسار إرسال موحد**
+   - عند `endCapture`: إذا كان النص بعد إزالة المسافات الطرفية فارغًا ← إخفاء؛ وإلا `performSend(session:)` (يشغل رنين الإرسال مرة واحدة، ويمرر، ثم يخفي).
+   - اضغط للتحدث: بلا تأخير؛ كلمة التنبيه: تأخير اختياري للإرسال التلقائي.
+   - طبّق فترة تهدئة قصيرة على وقت تشغيل التنبيه بعد انتهاء اضغط للتحدث حتى لا تعيد كلمة التنبيه التشغيل فورًا.
 5. **التسجيل**
-   - يصدر coordinator سجلات `.info` في subsystem `ai.openclaw`، والفئتين `voicewake.overlay` و`voicewake.chime`.
-   - الأحداث الأساسية: `session_started`, `adopted_by_push_to_talk`, `partial`, `finalized`, `send`, `dismiss`, `cancel`, `cooldown`.
+   - يصدر المنسق سجلات `.info` في النظام الفرعي `ai.openclaw`، ضمن الفئتين `voicewake.overlay` و`voicewake.chime`.
+   - الأحداث الرئيسية: `session_started` و`adopted_by_push_to_talk` و`partial` و`finalized` و`send` و`dismiss` و`cancel` و`cooldown`.
 
-## قائمة التحقق لتصحيح الأخطاء
+## قائمة التحقق للتصحيح
 
-- ابث السجلات أثناء إعادة إنتاج مشكلة تراكب عالق:
+- دفق السجلات أثناء إعادة إنتاج تراكب عالق:
 
   ```bash
   sudo log stream --predicate 'subsystem == "ai.openclaw" AND category CONTAINS "voicewake"' --level info --style compact
   ```
 
-- تحقّق من وجود token نشطة واحدة فقط للجلسة؛ يجب أن يقوم coordinator بإسقاط callbacks القديمة.
-- تأكد من أن تحرير push-to-talk يستدعي دائمًا `endCapture` باستخدام token النشطة؛ وإذا كان النص فارغًا، فتوقع `dismiss` من دون chime أو send.
+- تحقق من وجود رمز مميز واحد فقط لجلسة نشطة؛ يجب أن يسقط المنسق ردود النداء القديمة.
+- تأكد من أن إفلات اضغط للتحدث يستدعي دائمًا `endCapture` مع الرمز المميز النشط؛ إذا كان النص فارغًا، فتوقع `dismiss` بدون رنين أو إرسال.
 
 ## خطوات الترحيل (مقترحة)
 
 1. أضف `VoiceSessionCoordinator` و`VoiceSession` و`VoiceSessionPublisher`.
-2. أعد هيكلة `VoiceWakeRuntime` بحيث ينشئ/يحدّث/ينهي الجلسات بدلًا من لمس `VoiceWakeOverlayController` مباشرة.
-3. أعد هيكلة `VoicePushToTalk` بحيث يتبنى الجلسات الموجودة ويستدعي `endCapture` عند التحرير؛ وطبّق cooldown على بيئة التشغيل.
-4. اربط `VoiceWakeOverlayController` بـ publisher؛ وأزل الاستدعاءات المباشرة من runtime/PTT.
-5. أضف اختبارات integration لتبني الجلسة، وcooldown، وإخفاء النص الفارغ.
+2. أعد هيكلة `VoiceWakeRuntime` لإنشاء الجلسات/تحديثها/إنهائها بدلًا من لمس `VoiceWakeOverlayController` مباشرة.
+3. أعد هيكلة `VoicePushToTalk` لتبني الجلسات الموجودة واستدعاء `endCapture` عند الإفلات؛ وطبّق فترة تهدئة وقت التشغيل.
+4. اربط `VoiceWakeOverlayController` بالناشر؛ وأزل الاستدعاءات المباشرة من وقت التشغيل/اضغط للتحدث.
+5. أضف اختبارات تكامل لتبني الجلسات، وفترة التهدئة، وإخفاء النص الفارغ.
 
 ## ذو صلة
 
 - [تطبيق macOS](/ar/platforms/macos)
-- [Voice wake (macOS)](/ar/platforms/mac/voicewake)
-- [Talk mode](/ar/nodes/talk)
+- [التنبيه الصوتي (macOS)](/ar/platforms/mac/voicewake)
+- [وضع التحدث](/ar/nodes/talk)

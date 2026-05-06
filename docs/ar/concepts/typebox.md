@@ -1,28 +1,24 @@
 ---
 read_when:
-    - تحديث مخططات البروتوكول أو توليد الشيفرة
-summary: مخططات TypeBox بوصفها المصدر الوحيد للحقيقة لبروتوكول Gateway
+    - تحديث مخططات البروتوكول أو توليد الكود
+summary: مخططات TypeBox باعتبارها المصدر الوحيد للحقيقة لبروتوكول Gateway
 title: TypeBox
 x-i18n:
-    generated_at: "2026-04-24T07:39:28Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T07:51:33Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 0496db919ee5c50a5932aa9e51eb54e1f54791bc0a271f39d6fb9e6fe17a2a28
+    source_hash: 3e188ec0fefcbaf01c8b575a1898eafbbcf309d3032930aa0c09c2d9a63b93e5
     source_path: concepts/typebox.md
-    workflow: 15
+    workflow: 16
 ---
 
-# TypeBox بوصفها المصدر الوحيد للحقيقة للبروتوكول
+TypeBox هي مكتبة مخططات مصممة أولا لـ TypeScript. نستخدمها لتعريف **بروتوكول Gateway
+WebSocket** (المصافحة، الطلب/الاستجابة، أحداث الخادم). تقود هذه المخططات
+**التحقق في وقت التشغيل**، و**تصدير JSON Schema**، و**توليد كود Swift** لتطبيق
+macOS. مصدر حقيقة واحد؛ وكل ما عداه مولد.
 
-آخر تحديث: 2026-01-10
-
-TypeBox هي مكتبة مخططات تعتمد على TypeScript أولًا. نستخدمها لتعريف **بروتوكول Gateway
-عبر WebSocket** (المصافحة، والطلب/الاستجابة، وأحداث الخادم). وتدفع هذه المخططات
-عملية **التحقق وقت التشغيل**، و**تصدير JSON Schema**، و**توليد Swift code** لتطبيق macOS.
-مصدر واحد للحقيقة؛ وكل شيء آخر مُولَّد.
-
-إذا كنت تريد سياق البروتوكول الأعلى مستوى، فابدأ من
-[بنية Gateway](/ar/concepts/architecture).
+إذا أردت سياق البروتوكول الأعلى مستوى، فابدأ من
+[معمارية Gateway](/ar/concepts/architecture).
 
 ## النموذج الذهني (30 ثانية)
 
@@ -32,9 +28,9 @@ TypeBox هي مكتبة مخططات تعتمد على TypeScript أولًا. ن
 - **استجابة**: `{ type: "res", id, ok, payload | error }`
 - **حدث**: `{ type: "event", event, payload, seq?, stateVersion? }`
 
-**يجب** أن يكون الإطار الأول طلب `connect`. وبعد ذلك، يمكن للعملاء استدعاء
-الطرق (مثل `health` و`send` و`chat.send`) والاشتراك في الأحداث (مثل
-`presence` و`tick` و`agent`).
+يجب أن يكون الإطار الأول **حتما** طلب `connect`. بعد ذلك، يمكن للعملاء استدعاء
+الطرق (مثل `health`، و`send`، و`chat.send`) والاشتراك في الأحداث (مثل
+`presence`، و`tick`، و`agent`).
 
 تدفق الاتصال (الحد الأدنى):
 
@@ -47,52 +43,53 @@ Client                    Gateway
   |<---- res:health ----------|
 ```
 
-الطرق + الأحداث الشائعة:
+الطرق والأحداث الشائعة:
 
-| الفئة      | أمثلة                                                      | ملاحظات                           |
-| ---------- | ---------------------------------------------------------- | --------------------------------- |
-| الأساسية   | `connect`, `health`, `status`                              | يجب أن تكون `connect` أولًا       |
-| المراسلة   | `send`, `agent`, `agent.wait`, `system-event`, `logs.tail` | تحتاج التأثيرات الجانبية إلى `idempotencyKey` |
-| الدردشة    | `chat.history`, `chat.send`, `chat.abort`                  | يستخدم WebChat هذه                |
-| الجلسات    | `sessions.list`, `sessions.patch`, `sessions.delete`       | إدارة الجلسات                     |
-| الأتمتة    | `wake`, `cron.list`, `cron.run`, `cron.runs`               | التحكم في wake + Cron             |
-| Nodes      | `node.list`, `node.invoke`, `node.pair.*`                  | إجراءات Gateway WS + Node         |
-| الأحداث    | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown`  | دفع من الخادم                     |
+| الفئة | أمثلة | ملاحظات |
+| ---------- | ---------------------------------------------------------- | ---------------------------------- |
+| الأساس | `connect`, `health`, `status` | يجب أن يكون `connect` أولا |
+| المراسلة | `send`, `agent`, `agent.wait`, `system-event`, `logs.tail` | تحتاج الآثار الجانبية إلى `idempotencyKey` |
+| الدردشة | `chat.history`, `chat.send`, `chat.abort` | يستخدم WebChat هذه |
+| الجلسات | `sessions.list`, `sessions.patch`, `sessions.delete` | إدارة الجلسات |
+| الأتمتة | `wake`, `cron.list`, `cron.run`, `cron.runs` | التحكم في wake وcron |
+| العقد | `node.list`, `node.invoke`, `node.pair.*` | Gateway WS + إجراءات العقد |
+| الأحداث | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown` | دفع من الخادم |
 
-يوجد مخزون **الاكتشاف** المعلن والمرجعي في
+مخزون **الاكتشاف** المعلن والموثوق موجود في
 `src/gateway/server-methods-list.ts` (`listGatewayMethods`, `GATEWAY_EVENTS`).
 
 ## أين توجد المخططات
 
 - المصدر: `src/gateway/protocol/schema.ts`
-- أدوات التحقق وقت التشغيل (AJV): `src/gateway/protocol/index.ts`
+- أدوات التحقق في وقت التشغيل (AJV): `src/gateway/protocol/index.ts`
 - سجل الميزات/الاكتشاف المعلن: `src/gateway/server-methods-list.ts`
 - مصافحة الخادم + توزيع الطرق: `src/gateway/server.impl.ts`
 - عميل Node: `src/gateway/client.ts`
-- JSON Schema المُولَّد: `dist/protocol.schema.json`
-- نماذج Swift المُولَّدة: `apps/macos/Sources/OpenClawProtocol/GatewayModels.swift`
+- JSON Schema المولد: `dist/protocol.schema.json`
+- نماذج Swift المولدة: `apps/macos/Sources/OpenClawProtocol/GatewayModels.swift`
 
-## خط الأنابيب الحالي
+## المسار الحالي
 
 - `pnpm protocol:gen`
-  - يكتب JSON Schema ‏(draft‑07) إلى `dist/protocol.schema.json`
+  - يكتب JSON Schema (draft-07) إلى `dist/protocol.schema.json`
 - `pnpm protocol:gen:swift`
-  - يولد نماذج Swift الخاصة بـ gateway
+  - يولد نماذج Swift الخاصة بـ Gateway
 - `pnpm protocol:check`
-  - يشغّل كلا المولّدين ويتحقق من أن المخرجات مُلتزَم بها
+  - يشغل كلا المولدين ويتحقق من أن المخرجات ملتزم بها
 
-## كيف تُستخدم المخططات وقت التشغيل
+## كيف تستخدم المخططات في وقت التشغيل
 
-- **على جانب الخادم**: يتم التحقق من كل إطار وارد باستخدام AJV. ولا تقبل المصافحة إلا
-  طلب `connect` whose params match `ConnectParams`.
-- **على جانب العميل**: يتحقق عميل JS من إطارات الأحداث والاستجابة قبل
+- **جانب الخادم**: يتم التحقق من كل إطار وارد باستخدام AJV. لا تقبل المصافحة إلا
+  طلب `connect` تطابق معاملاته `ConnectParams`.
+- **جانب العميل**: يتحقق عميل JS من إطارات الأحداث والاستجابات قبل
   استخدامها.
-- **اكتشاف الميزات**: يرسل Gateway قائمة محافظة `features.methods`
-  و`features.events` في `hello-ok` من `listGatewayMethods()` و
+- **اكتشاف الميزات**: يرسل Gateway قائمة محافظة من `features.methods`
+  و`features.events` ضمن `hello-ok` من `listGatewayMethods()` و
   `GATEWAY_EVENTS`.
-- قائمة الاكتشاف هذه ليست تفريغًا مولدًا لكل مساعد قابل للاستدعاء في
-  `coreGatewayHandlers`; إذ إن بعض RPCs المساعدة منفذة في
-  `src/gateway/server-methods/*.ts` من دون أن تُعدَّد في قائمة الميزات المعلنة.
+- قائمة الاكتشاف هذه ليست تفريغا مولدا لكل مساعد قابل للاستدعاء في
+  `coreGatewayHandlers`؛ بعض مساعدات RPC منفذة في
+  `src/gateway/server-methods/*.ts` من دون إدراجها في قائمة
+  الميزات المعلنة.
 
 ## أمثلة على الإطارات
 
@@ -157,9 +154,9 @@ Connect (الرسالة الأولى):
 { "type": "event", "event": "tick", "payload": { "ts": 1730000000 }, "seq": 12 }
 ```
 
-## عميل مصغر (Node.js)
+## عميل بسيط (Node.js)
 
-أصغر تدفق مفيد: connect + health.
+أصغر تدفق مفيد: الاتصال + الصحة.
 
 ```ts
 import { WebSocket } from "ws";
@@ -201,9 +198,9 @@ ws.on("message", (data) => {
 
 ## مثال عملي: إضافة طريقة من البداية إلى النهاية
 
-مثال: أضف طلب `system.echo` جديدًا يعيد `{ ok: true, text }`.
+مثال: أضف طلب `system.echo` جديدا يعيد `{ ok: true, text }`.
 
-1. **المخطط (المصدر الوحيد للحقيقة)**
+1. **المخطط (مصدر الحقيقة)**
 
 أضف إلى `src/gateway/protocol/schema.ts`:
 
@@ -219,7 +216,7 @@ export const SystemEchoResultSchema = Type.Object(
 );
 ```
 
-أضف كليهما إلى `ProtocolSchemas` وصدّر الأنواع:
+أضف الاثنين إلى `ProtocolSchemas` وصدّر الأنواع:
 
 ```ts
   SystemEchoParams: SystemEchoParamsSchema,
@@ -241,7 +238,7 @@ export const validateSystemEchoParams = ajv.compile<SystemEchoParams>(SystemEcho
 
 3. **سلوك الخادم**
 
-أضف معالجًا في `src/gateway/server-methods/system.ts`:
+أضف معالجا في `src/gateway/server-methods/system.ts`:
 
 ```ts
 export const systemHandlers: GatewayRequestHandlers = {
@@ -252,65 +249,65 @@ export const systemHandlers: GatewayRequestHandlers = {
 };
 ```
 
-سجّله في `src/gateway/server-methods.ts` (الذي يدمج `systemHandlers` بالفعل)،
-ثم أضف `"system.echo"` إلى مدخل `listGatewayMethods` في
+سجله في `src/gateway/server-methods.ts` (يدمج `systemHandlers` بالفعل)،
+ثم أضف `"system.echo"` إلى دخل `listGatewayMethods` في
 `src/gateway/server-methods-list.ts`.
 
-إذا كانت الطريقة قابلة للاستدعاء بواسطة عملاء operator أو Node، فصنّفها أيضًا في
-`src/gateway/method-scopes.ts` بحيث يبقى فرض النطاقات وإعلان الميزات في `hello-ok`
+إذا كانت الطريقة قابلة للاستدعاء من عملاء المشغل أو العقد، فصنفها أيضا في
+`src/gateway/method-scopes.ts` حتى يظل فرض النطاق وإعلان ميزات `hello-ok`
 متوافقين.
 
-4. **أعد التوليد**
+4. **إعادة التوليد**
 
 ```bash
 pnpm protocol:check
 ```
 
-5. **الاختبارات + الوثائق**
+5. **الاختبارات + المستندات**
 
-أضف اختبار خادم في `src/gateway/server.*.test.ts` واذكر الطريقة في الوثائق.
+أضف اختبار خادم في `src/gateway/server.*.test.ts` واذكر الطريقة في المستندات.
 
-## سلوك توليد Swift code
+## سلوك توليد كود Swift
 
-يولد مولد Swift ما يلي:
+ينشئ مولد Swift ما يلي:
 
-- تعداد `GatewayFrame` بحالات `req` و`res` و`event` و`unknown`
-- بنيات/تعدادات payload قوية الكتابة
+- تعداد `GatewayFrame` مع حالات `req`، و`res`، و`event`، و`unknown`
+- بنيات/تعدادات payload ذات أنواع قوية
 - قيم `ErrorCode` و`GATEWAY_PROTOCOL_VERSION`
 
-تُحفَظ أنواع الإطارات غير المعروفة كحمولات خام للتوافق المستقبلي.
+تحتفظ أنواع الإطارات غير المعروفة كحمولات خام من أجل التوافق المستقبلي.
 
-## الإصدار + التوافق
+## تعيين الإصدارات + التوافق
 
-- توجد `PROTOCOL_VERSION` في `src/gateway/protocol/schema.ts`.
-- يرسل العملاء `minProtocol` + `maxProtocol`; ويرفض الخادم حالات عدم التطابق.
+- يوجد `PROTOCOL_VERSION` في `src/gateway/protocol/schema.ts`.
+- يرسل العملاء `minProtocol` + `maxProtocol`؛ ويرفض الخادم حالات عدم التطابق.
 - تحتفظ نماذج Swift بأنواع الإطارات غير المعروفة لتجنب كسر العملاء الأقدم.
 
 ## أنماط المخططات والاصطلاحات
 
-- تستخدم معظم الكائنات `additionalProperties: false` لحمولات صارمة.
-- يُعد `NonEmptyString` الخيار الافتراضي للمعرّفات وأسماء الطرق/الأحداث.
-- يستخدم `GatewayFrame` على المستوى الأعلى **مميزًا** على `type`.
-- تتطلب الطرق ذات التأثيرات الجانبية عادةً `idempotencyKey` في params
-  (مثال: `send`, `poll`, `agent`, `chat.send`).
-- يقبل `agent` قيمة `internalEvents` اختيارية لسياق التنسيق المولّد وقت التشغيل
-  (على سبيل المثال تسليم إكمال مهمة وكيل فرعي/Cron); تعامل مع هذا على أنه سطح API داخلي.
+- تستخدم معظم الكائنات `additionalProperties: false` للحمولات الصارمة.
+- `NonEmptyString` هو الافتراضي للمعرفات وأسماء الطرق/الأحداث.
+- يستخدم `GatewayFrame` في المستوى الأعلى **مميزا** على `type`.
+- تتطلب الطرق ذات الآثار الجانبية عادة `idempotencyKey` ضمن المعاملات
+  (مثال: `send`، و`poll`، و`agent`، و`chat.send`).
+- يقبل `agent` اختياريا `internalEvents` لسياق التنسيق المولد في وقت التشغيل
+  (مثل تسليم إكمال مهمة الوكيل الفرعي/cron)؛ تعامل مع هذا كسطح API داخلي.
 
-## JSON الحي للمخطط
+## JSON Schema المباشر
 
-يوجد JSON Schema المُولَّد في المستودع ضمن `dist/protocol.schema.json`. ويكون
-الملف الخام المنشور متاحًا عادةً على:
+يوجد JSON Schema المولد في المستودع عند `dist/protocol.schema.json`. يكون
+الملف الخام المنشور متاحا عادة عند:
 
 - [https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json](https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json)
 
-## عندما تغيّر المخططات
+## عند تغيير المخططات
 
 1. حدّث مخططات TypeBox.
-2. سجّل الطريقة/الحدث في `src/gateway/server-methods-list.ts`.
-3. حدّث `src/gateway/method-scopes.ts` عندما يحتاج RPC الجديد إلى تصنيف نطاق operator أو
-   Node.
-4. شغّل `pnpm protocol:check`.
-5. التزم بالمخطط المُعاد توليده + نماذج Swift.
+2. سجل الطريقة/الحدث في `src/gateway/server-methods-list.ts`.
+3. حدّث `src/gateway/method-scopes.ts` عندما يحتاج RPC الجديد إلى تصنيف نطاق المشغل أو
+   العقدة.
+4. شغل `pnpm protocol:check`.
+5. التزم بالمخطط المعاد توليده + نماذج Swift.
 
 ## ذو صلة
 

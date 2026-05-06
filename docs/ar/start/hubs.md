@@ -1,38 +1,38 @@
 ---
 read_when:
-    - أنت تريد خريطة كاملة للتوثيق
+    - تريد خريطة كاملة للتوثيق
 summary: محاور ترتبط بكل مستندات OpenClaw
-title: محاور التوثيق
+title: مراكز التوثيق
 x-i18n:
-    generated_at: "2026-04-25T13:58:15Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T08:13:55Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: db591029047b57e65141c5992760a81b838580602b1073e94d1bc2690415c0aa
+    source_hash: 9c5822f46d0c4014ec5874d06c40f9adbe4439e8164cc75709e15c519b3e11af
     source_path: start/hubs.md
-    workflow: 15
+    workflow: 16
 ---
 
 <Note>
-إذا كنت جديدًا على OpenClaw، فابدأ من [البدء](/ar/start/getting-started).
+إذا كنت جديدًا على OpenClaw، فابدأ بـ [بدء الاستخدام](/ar/start/getting-started).
 </Note>
 
-استخدم هذه المحاور لاكتشاف كل صفحة، بما في ذلك الشروحات المتعمقة والوثائق المرجعية التي لا تظهر في شريط التنقل الأيسر.
+استخدم هذه المراكز لاكتشاف كل صفحة، بما في ذلك الشروحات المتعمقة ووثائق المرجع التي لا تظهر في شريط التنقل الأيسر.
 
-## ابدأ من هنا
+## ابدأ هنا
 
 - [الفهرس](/ar)
-- [البدء](/ar/start/getting-started)
+- [بدء الاستخدام](/ar/start/getting-started)
 - [الإعداد الأولي](/ar/start/onboarding)
 - [الإعداد الأولي (CLI)](/ar/start/wizard)
 - [الإعداد](/ar/start/setup)
-- [لوحة التحكم (Gateway محلي)](http://127.0.0.1:18789/)
+- [لوحة المعلومات (Gateway المحلي)](http://127.0.0.1:18789/)
 - [المساعدة](/ar/help)
-- [دليل التوثيق](/ar/start/docs-directory)
-- [الإعدادات](/ar/gateway/configuration)
-- [أمثلة على الإعدادات](/ar/gateway/configuration-examples)
+- [دليل الوثائق](/ar/start/docs-directory)
+- [التكوين](/ar/gateway/configuration)
+- [أمثلة التكوين](/ar/gateway/configuration-examples)
 - [مساعد OpenClaw](/ar/start/openclaw)
 - [العرض](/ar/start/showcase)
-- [Lore](/ar/start/lore)
+- [السرد](/ar/start/lore)
 
 ## التثبيت + التحديثات
 
@@ -45,35 +45,35 @@ x-i18n:
 
 - [البنية](/ar/concepts/architecture)
 - [الميزات](/ar/concepts/features)
-- [محور الشبكة](/ar/network)
-- [وقت تشغيل العامل](/ar/concepts/agent)
-- [مساحة عمل العامل](/ar/concepts/agent-workspace)
+- [مركز الشبكة](/ar/network)
+- [بيئة تشغيل الوكيل](/ar/concepts/agent)
+- [مساحة عمل الوكيل](/ar/concepts/agent-workspace)
 - [الذاكرة](/ar/concepts/memory)
-- [حلقة العامل](/ar/concepts/agent-loop)
+- [حلقة الوكيل](/ar/concepts/agent-loop)
 - [البث + التقسيم إلى أجزاء](/ar/concepts/streaming)
-- [التوجيه متعدد الوكلاء](/ar/concepts/multi-agent)
+- [توجيه الوكلاء المتعددين](/ar/concepts/multi-agent)
 - [Compaction](/ar/concepts/compaction)
 - [الجلسات](/ar/concepts/session)
-- [تهذيب الجلسات](/ar/concepts/session-pruning)
+- [تنقيح الجلسات](/ar/concepts/session-pruning)
 - [أدوات الجلسة](/ar/concepts/session-tool)
-- [الطابور](/ar/concepts/queue)
+- [قائمة الانتظار](/ar/concepts/queue)
 - [أوامر الشرطة المائلة](/ar/tools/slash-commands)
-- [محوّلات RPC](/ar/reference/rpc)
+- [محولات RPC](/ar/reference/rpc)
 - [مخططات TypeBox](/ar/concepts/typebox)
-- [التعامل مع المنطقة الزمنية](/ar/concepts/timezone)
+- [معالجة المنطقة الزمنية](/ar/concepts/timezone)
 - [الحضور](/ar/concepts/presence)
 - [الاكتشاف + وسائل النقل](/ar/gateway/discovery)
 - [Bonjour](/ar/gateway/bonjour)
 - [توجيه القنوات](/ar/channels/channel-routing)
 - [المجموعات](/ar/channels/groups)
 - [رسائل المجموعات](/ar/channels/group-messages)
-- [التبديل الاحتياطي للنماذج](/ar/concepts/model-failover)
+- [الانتقال الاحتياطي للنموذج](/ar/concepts/model-failover)
 - [OAuth](/ar/concepts/oauth)
 
-## المزوّدون + الإدخال
+## المزوّدون + الدخول
 
-- [محور قنوات الدردشة](/ar/channels)
-- [محور مزوّدي النماذج](/ar/providers/models)
+- [مركز قنوات الدردشة](/ar/channels)
+- [مركز مزوّدي النماذج](/ar/providers/models)
 - [WhatsApp](/ar/channels/whatsapp)
 - [Telegram](/ar/channels/telegram)
 - [Slack](/ar/channels/slack)
@@ -81,7 +81,7 @@ x-i18n:
 - [Mattermost](/ar/channels/mattermost)
 - [Signal](/ar/channels/signal)
 - [BlueBubbles (iMessage)](/ar/channels/bluebubbles)
-- [QQ Bot](/ar/channels/qqbot)
+- [روبوت QQ](/ar/channels/qqbot)
 - [iMessage (قديم)](/ar/channels/imessage)
 - [تحليل الموقع](/ar/channels/location)
 - [WebChat](/ar/web/webchat)
@@ -91,19 +91,19 @@ x-i18n:
 ## Gateway + العمليات
 
 - [دليل تشغيل Gateway](/ar/gateway)
-- [نموذج الشبكة](/ar/gateway/network-model)
+- [نموذج الشبكة](/ar/network#core-model)
 - [إقران Gateway](/ar/gateway/pairing)
 - [قفل Gateway](/ar/gateway/gateway-lock)
-- [العملية الخلفية](/ar/gateway/background-process)
-- [السلامة](/ar/gateway/health)
+- [عملية الخلفية](/ar/gateway/background-process)
+- [الصحة](/ar/gateway/health)
 - [Heartbeat](/ar/gateway/heartbeat)
 - [Doctor](/ar/gateway/doctor)
 - [التسجيل](/ar/gateway/logging)
 - [العزل](/ar/gateway/sandboxing)
-- [لوحة التحكم](/ar/web/dashboard)
-- [Control UI](/ar/web/control-ui)
+- [لوحة المعلومات](/ar/web/dashboard)
+- [واجهة التحكم](/ar/web/control-ui)
 - [الوصول عن بُعد](/ar/gateway/remote)
-- [README الخاصة بـ Gateway البعيد](/ar/gateway/remote-gateway-readme)
+- [README لـ Gateway البعيد](/ar/gateway/remote-gateway-readme)
 - [Tailscale](/ar/gateway/tailscale)
 - [الأمان](/ar/gateway/security)
 - [استكشاف الأخطاء وإصلاحها](/ar/gateway/troubleshooting)
@@ -113,23 +113,23 @@ x-i18n:
 - [سطح الأدوات](/ar/tools)
 - [OpenProse](/ar/prose)
 - [مرجع CLI](/ar/cli)
-- [أداة Exec](/ar/tools/exec)
+- [أداة التنفيذ](/ar/tools/exec)
 - [أداة PDF](/ar/tools/pdf)
 - [الوضع المرتفع](/ar/tools/elevated)
-- [وظائف Cron](/ar/automation/cron-jobs)
+- [مهام Cron](/ar/automation/cron-jobs)
 - [الأتمتة والمهام](/ar/automation)
 - [التفكير + الإسهاب](/ar/tools/thinking)
 - [النماذج](/ar/concepts/models)
 - [الوكلاء الفرعيون](/ar/tools/subagents)
-- [CLI إرسال العامل](/ar/tools/agent-send)
+- [CLI لإرسال الوكيل](/ar/tools/agent-send)
 - [واجهة الطرفية](/ar/web/tui)
 - [التحكم في المتصفح](/ar/tools/browser)
 - [المتصفح (استكشاف أخطاء Linux وإصلاحها)](/ar/tools/browser-linux-troubleshooting)
-- [الاستطلاعات](/ar/cli/message)
+- [استطلاعات الرأي](/ar/cli/message)
 
-## Node والوسائط والصوت
+## Nodes والوسائط والصوت
 
-- [نظرة عامة على Node](/ar/nodes)
+- [نظرة عامة على Nodes](/ar/nodes)
 - [الكاميرا](/ar/nodes/camera)
 - [الصور](/ar/nodes/images)
 - [الصوت](/ar/nodes/audio)
@@ -147,44 +147,44 @@ x-i18n:
 - [Linux](/ar/platforms/linux)
 - [أسطح الويب](/ar/web)
 
-## تطبيق macOS المرافق (متقدم)
+## التطبيق المرافق لـ macOS (متقدم)
 
 - [إعداد تطوير macOS](/ar/platforms/mac/dev-setup)
 - [شريط قوائم macOS](/ar/platforms/mac/menu-bar)
 - [تنبيه الصوت في macOS](/ar/platforms/mac/voicewake)
-- [طبقة الصوت في macOS](/ar/platforms/mac/voice-overlay)
+- [تراكب الصوت في macOS](/ar/platforms/mac/voice-overlay)
 - [WebChat على macOS](/ar/platforms/mac/webchat)
 - [Canvas على macOS](/ar/platforms/mac/canvas)
-- [العملية الفرعية في macOS](/ar/platforms/mac/child-process)
-- [السلامة في macOS](/ar/platforms/mac/health)
+- [عملية فرعية في macOS](/ar/platforms/mac/child-process)
+- [صحة macOS](/ar/platforms/mac/health)
 - [أيقونة macOS](/ar/platforms/mac/icon)
-- [التسجيل في macOS](/ar/platforms/mac/logging)
+- [تسجيل macOS](/ar/platforms/mac/logging)
 - [أذونات macOS](/ar/platforms/mac/permissions)
-- [الوصول عن بُعد في macOS](/ar/platforms/mac/remote)
+- [macOS عن بُعد](/ar/platforms/mac/remote)
 - [توقيع macOS](/ar/platforms/mac/signing)
-- [Gateway في macOS (launchd)](/ar/platforms/mac/bundled-gateway)
-- [XPC في macOS](/ar/platforms/mac/xpc)
+- [Gateway على macOS (launchd)](/ar/platforms/mac/bundled-gateway)
+- [macOS XPC](/ar/platforms/mac/xpc)
 - [Skills على macOS](/ar/platforms/mac/skills)
-- [Peekaboo على macOS](/ar/platforms/mac/peekaboo)
+- [macOS Peekaboo](/ar/platforms/mac/peekaboo)
 
 ## Plugins
 
 - [نظرة عامة على Plugins](/ar/tools/plugin)
-- [بناء Plugins](/ar/plugins/building-plugins)
+- [بناء plugins](/ar/plugins/building-plugins)
 - [خطافات Plugin](/ar/plugins/hooks)
-- [manifest الـ Plugin](/ar/plugins/manifest)
-- [أدوات العامل](/ar/plugins/building-plugins#registering-agent-tools)
-- [حِزم Plugin](/ar/plugins/bundles)
+- [بيان Plugin](/ar/plugins/manifest)
+- [أدوات الوكيل](/ar/plugins/building-plugins#registering-agent-tools)
+- [حزم Plugin](/ar/plugins/bundles)
 - [Plugins المجتمع](/ar/plugins/community)
-- [كتاب وصفات القدرات](/ar/plugins/architecture)
-- [Plugin المكالمات الصوتية](/ar/plugins/voice-call)
+- [وصفة الإمكانات](/ar/plugins/adding-capabilities)
+- [Plugin مكالمات الصوت](/ar/plugins/voice-call)
 - [Plugin مستخدم Zalo](/ar/plugins/zalouser)
 
 ## مساحة العمل + القوالب
 
 - [Skills](/ar/tools/skills)
 - [ClawHub](/ar/tools/clawhub)
-- [إعداد Skills](/ar/tools/skills-config)
+- [تكوين Skills](/ar/tools/skills-config)
 - [AGENTS الافتراضي](/ar/reference/AGENTS.default)
 - [القوالب: AGENTS](/ar/reference/templates/AGENTS)
 - [القوالب: BOOTSTRAP](/ar/reference/templates/BOOTSTRAP)
@@ -196,7 +196,7 @@ x-i18n:
 
 ## المشروع
 
-- [شكر وتقدير](/ar/reference/credits)
+- [الشكر والتقدير](/ar/reference/credits)
 
 ## الاختبار + الإصدار
 
@@ -204,6 +204,6 @@ x-i18n:
 - [سياسة الإصدار](/ar/reference/RELEASING)
 - [نماذج الأجهزة](/ar/reference/device-models)
 
-## ذو صلة
+## ذات صلة
 
-- [البدء](/ar/start/getting-started)
+- [بدء الاستخدام](/ar/start/getting-started)

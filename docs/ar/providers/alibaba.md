@@ -1,35 +1,56 @@
 ---
 read_when:
-    - تريد استخدام توليد الفيديو Wan من Alibaba في OpenClaw
+    - تريد استخدام توليد الفيديو عبر Alibaba Wan في OpenClaw
     - تحتاج إلى إعداد مفتاح API لـ Model Studio أو DashScope لتوليد الفيديو
-summary: توليد الفيديو Alibaba Model Studio Wan في OpenClaw
+summary: توليد الفيديو باستخدام Alibaba Model Studio Wan في OpenClaw
 title: Alibaba Model Studio
 x-i18n:
-    generated_at: "2026-04-24T07:57:42Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T08:08:50Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: c5abfe9ab595f2a323d6113995bf3075aa92c7f329b934d048e7ece256d94899
+    source_hash: c390da201e2c8685fafa6171a6028bf18fc676b2d46f784651f91cdc6137fdf2
     source_path: providers/alibaba.md
-    workflow: 15
+    workflow: 16
 ---
 
-يشحن OpenClaw مزوّد توليد فيديو `alibaba` مجمّعًا لنماذج Wan على
-Alibaba Model Studio / DashScope.
+OpenClaw يوفّر Plugin مضمّنًا باسم `alibaba` يسجّل موفّرًا لتوليد الفيديو لنماذج Wan على Alibaba Model Studio (الاسم الدولي لـ DashScope). يكون الـ Plugin مفعّلًا افتراضيًا؛ ما عليك سوى تعيين مفتاح API.
 
-- المزوّد: `alibaba`
-- المصادقة المفضلة: `MODELSTUDIO_API_KEY`
-- المقبول أيضًا: `DASHSCOPE_API_KEY`، و`QWEN_API_KEY`
-- API: توليد فيديو غير متزامن عبر DashScope / Model Studio
+| الخاصية              | القيمة                                                                          |
+| -------------------- | ------------------------------------------------------------------------------- |
+| معرّف الموفّر         | `alibaba`                                                                       |
+| Plugin               | مضمّن، `enabledByDefault: true`                                                 |
+| متغيرات بيئة المصادقة | `MODELSTUDIO_API_KEY` → `DASHSCOPE_API_KEY` → `QWEN_API_KEY` (أول تطابق يفوز) |
+| علامة الإعداد الأولي  | `--auth-choice alibaba-model-studio-api-key`                                    |
+| علامة CLI المباشرة    | `--alibaba-model-studio-api-key <key>`                                          |
+| النموذج الافتراضي     | `alibaba/wan2.6-t2v`                                                            |
+| عنوان URL الأساسي الافتراضي | `https://dashscope-intl.aliyuncs.com`                                           |
 
 ## البدء
 
 <Steps>
-  <Step title="اضبط مفتاح API">
+  <Step title="Set an API key">
+    استخدم الإعداد الأولي لتخزين المفتاح مقابل موفّر `alibaba`:
+
     ```bash
-    openclaw onboard --auth-choice qwen-standard-api-key
+    openclaw onboard --auth-choice alibaba-model-studio-api-key
     ```
+
+    أو مرّر المفتاح مباشرة أثناء التثبيت/الإعداد الأولي:
+
+    ```bash
+    openclaw onboard --alibaba-model-studio-api-key <your-key>
+    ```
+
+    أو صدّر أيًا من متغيرات البيئة المقبولة قبل بدء Gateway:
+
+    ```bash
+    export MODELSTUDIO_API_KEY=sk-...
+    # or DASHSCOPE_API_KEY=...
+    # or QWEN_API_KEY=...
+    ```
+
   </Step>
-  <Step title="اضبط نموذج فيديو افتراضي">
+  <Step title="Set a default video model">
     ```json5
     {
       agents: {
@@ -42,80 +63,103 @@ Alibaba Model Studio / DashScope.
     }
     ```
   </Step>
-  <Step title="تحقّق من توفر المزوّد">
+  <Step title="Verify the provider is configured">
     ```bash
     openclaw models list --provider alibaba
     ```
+
+    يجب أن تتضمن القائمة جميع نماذج Wan الخمسة المضمّنة. إذا لم يتم حل `MODELSTUDIO_API_KEY`، فإن `openclaw models status --json` يبلّغ عن بيانات الاعتماد المفقودة ضمن `auth.unusableProfiles`.
+
   </Step>
 </Steps>
 
 <Note>
-أي من مفاتيح المصادقة المقبولة (`MODELSTUDIO_API_KEY`، أو `DASHSCOPE_API_KEY`، أو `QWEN_API_KEY`) سيعمل. ويقوم خيار onboarding ‏`qwen-standard-api-key` بتهيئة بيانات اعتماد DashScope المشتركة.
+  يتوثّق كل من Plugin Alibaba و[Plugin Qwen](/ar/providers/qwen) مقابل DashScope ويقبلان متغيرات بيئة متداخلة. استخدم معرّفات النماذج `alibaba/...` لتشغيل سطح فيديو Wan المخصص؛ واستخدم معرّفات `qwen/...` عندما تريد سطح الدردشة أو التضمين أو فهم الوسائط الخاص بـ Qwen.
 </Note>
 
-## نماذج Wan المدمجة
+## نماذج Wan المضمّنة
 
-يسجل مزود `alibaba` المجمّع حاليًا ما يلي:
+| مرجع النموذج               | الوضع                    |
+| -------------------------- | ------------------------ |
+| `alibaba/wan2.6-t2v`       | نص إلى فيديو (افتراضي)  |
+| `alibaba/wan2.6-i2v`       | صورة إلى فيديو          |
+| `alibaba/wan2.6-r2v`       | مرجع إلى فيديو          |
+| `alibaba/wan2.6-r2v-flash` | مرجع إلى فيديو (سريع)   |
+| `alibaba/wan2.7-r2v`       | مرجع إلى فيديو          |
 
-| مرجع النموذج | الوضع |
-| -------------------------- | ------------------------- |
-| `alibaba/wan2.6-t2v` | نص إلى فيديو |
-| `alibaba/wan2.6-i2v` | صورة إلى فيديو |
-| `alibaba/wan2.6-r2v` | مرجع إلى فيديو |
-| `alibaba/wan2.6-r2v-flash` | مرجع إلى فيديو (سريع) |
-| `alibaba/wan2.7-r2v` | مرجع إلى فيديو |
+## القدرات والحدود
 
-## الحدود الحالية
+يعكس الموفّر المضمّن حدود واجهة API لفيديو Wan في DashScope. تشترك الأوضاع الثلاثة كلها في عدد الفيديوهات لكل طلب وحد مدة الفيديو نفسه؛ ويختلف شكل الإدخال فقط.
 
-| المعلمة | الحد |
-| --------------------- | --------------------------------------------------------- |
-| مقاطع الفيديو الناتجة | حتى **1** لكل طلب |
-| الصور المدخلة | حتى **1** |
-| مقاطع الفيديو المدخلة | حتى **4** |
-| المدة | حتى **10 ثوانٍ** |
-| عناصر التحكم المدعومة | `size`، و`aspectRatio`، و`resolution`، و`audio`، و`watermark` |
-| صورة/فيديو مرجعي | عناوين URL بعيدة من نوع `http(s)` فقط |
+| الوضع              | الحد الأقصى للفيديوهات الناتجة | الحد الأقصى لصور الإدخال | الحد الأقصى لفيديوهات الإدخال | الحد الأقصى للمدة | عناصر التحكم المدعومة                                      |
+| ------------------ | ------------------------------ | ------------------------- | ------------------------------ | ----------------- | ---------------------------------------------------------- |
+| نص إلى فيديو       | 1                              | غير متاح                  | غير متاح                       | 10 ث              | `size`, `aspectRatio`, `resolution`, `audio`, `watermark` |
+| صورة إلى فيديو     | 1                              | 1                         | غير متاح                       | 10 ث              | `size`, `aspectRatio`, `resolution`, `audio`, `watermark` |
+| مرجع إلى فيديو     | 1                              | غير متاح                  | 4                              | 10 ث              | `size`, `aspectRatio`, `resolution`, `audio`, `watermark` |
+
+عندما لا يضمّن الطلب `durationSeconds`، يرسل الموفّر القيمة الافتراضية المقبولة لدى DashScope وهي **5 ثوانٍ**. عيّن `durationSeconds` صراحةً في [أداة توليد الفيديو](/ar/tools/video-generation) للتمديد حتى 10 ثوانٍ.
 
 <Warning>
-يتطلب وضع الصورة/الفيديو المرجعي حاليًا **عناوين URL بعيدة من نوع http(s)**. ولا يتم دعم مسارات الملفات المحلية للمدخلات المرجعية.
+  يجب أن تكون إدخالات الصور والفيديو المرجعية عناوين URL بعيدة من نوع `http(s)`. لا تقبل أوضاع المرجع في DashScope مسارات الملفات المحلية؛ ارفعها إلى تخزين كائنات أولًا أو استخدم مسار [أداة الوسائط](/ar/tools/media-overview) الذي ينتج عنوان URL عامًا بالفعل.
 </Warning>
 
-## إعداد متقدم
+## الإعدادات المتقدمة
 
 <AccordionGroup>
-  <Accordion title="العلاقة مع Qwen">
-    يستخدم مزوّد `qwen` المجمّع أيضًا نقاط نهاية DashScope المستضافة لدى Alibaba من أجل
-    توليد فيديو Wan. استخدم:
+  <Accordion title="Override the DashScope base URL">
+    يستخدم الموفّر نقطة نهاية DashScope الدولية افتراضيًا. لاستهداف نقطة نهاية منطقة الصين، عيّن:
 
-    - `qwen/...` عندما تريد سطح مزود Qwen القياسي
-    - `alibaba/...` عندما تريد سطح فيديو Wan المباشر المملوك للمورّد
+    ```json5
+    {
+      models: {
+        providers: {
+          alibaba: {
+            baseUrl: "https://dashscope.aliyuncs.com",
+          },
+        },
+      },
+    }
+    ```
 
-    راجع [وثائق مزود Qwen](/ar/providers/qwen) لمزيد من التفاصيل.
+    يزيل الموفّر الشرطات المائلة اللاحقة قبل إنشاء عناوين URL لمهام AIGC.
 
   </Accordion>
 
-  <Accordion title="أولوية مفتاح المصادقة">
-    يتحقق OpenClaw من مفاتيح المصادقة بهذا الترتيب:
+  <Accordion title="Auth env priority">
+    يحل OpenClaw مفتاح API الخاص بـ Alibaba من متغيرات البيئة بهذا الترتيب، مع أخذ أول قيمة غير فارغة:
 
-    1. `MODELSTUDIO_API_KEY` (المفضل)
+    1. `MODELSTUDIO_API_KEY`
     2. `DASHSCOPE_API_KEY`
     3. `QWEN_API_KEY`
 
-    يقوم أي من هذه المفاتيح بالمصادقة على مزود `alibaba`.
+    تتجاوز إدخالات `auth.profiles` المضبوطة (عبر `openclaw models auth login`) حل متغيرات البيئة. راجع [ملفات تعريف المصادقة في الأسئلة الشائعة للنماذج](/ar/help/faq-models#what-is-an-auth-profile) لمعرفة آليات تدوير الملفات الشخصية وفترات التهدئة والتجاوز.
+
+  </Accordion>
+
+  <Accordion title="Relationship to the Qwen plugin">
+    يتصل كلا الـ Pluginين المضمّنين بـ DashScope ويقبلان مفاتيح API متداخلة. استخدم:
+
+    - معرّفات `alibaba/wan*.*` لتشغيل موفّر فيديو Wan المخصص الموثّق في هذه الصفحة.
+    - معرّفات `qwen/*` لدردشة Qwen والتضمين وفهم الوسائط (راجع [Qwen](/ar/providers/qwen)).
+
+    تعيين `MODELSTUDIO_API_KEY` مرة واحدة يصادق كلا الـ Pluginين لأن قائمة متغيرات بيئة المصادقة تتداخل عمدًا؛ لست بحاجة إلى إعداد كل Plugin على حدة.
 
   </Accordion>
 </AccordionGroup>
 
-## ذو صلة
+## ذات صلة
 
 <CardGroup cols={2}>
-  <Card title="توليد الفيديو" href="/ar/tools/video-generation" icon="video">
-    معلمات أداة الفيديو المشتركة واختيار المزوّد.
+  <Card title="Video generation" href="/ar/tools/video-generation" icon="video">
+    معلمات أداة الفيديو المشتركة واختيار الموفّر.
   </Card>
   <Card title="Qwen" href="/ar/providers/qwen" icon="microchip">
-    إعداد مزوّد Qwen وتكامل DashScope.
+    إعداد دردشة Qwen والتضمين وفهم الوسائط باستخدام مصادقة DashScope نفسها.
   </Card>
-  <Card title="مرجع الإعداد" href="/ar/gateway/config-agents#agent-defaults" icon="gear">
-    افتراضيات الوكيل وإعداد النموذج.
+  <Card title="Configuration reference" href="/ar/gateway/config-agents#agent-defaults" icon="gear">
+    الإعدادات الافتراضية للوكلاء وإعدادات النماذج.
+  </Card>
+  <Card title="Models FAQ" href="/ar/help/faq-models" icon="circle-question">
+    ملفات تعريف المصادقة، وتبديل النماذج، وحل أخطاء "no profile".
   </Card>
 </CardGroup>

@@ -1,27 +1,32 @@
 ---
 read_when:
-    - أنت تريد نماذج Xiaomi MiMo في OpenClaw
-    - تحتاج إلى إعداد `XIAOMI_API_KEY`
-summary: استخدم نماذج Xiaomi MiMo مع OpenClaw
+    - تريد نماذج Xiaomi MiMo في OpenClaw
+    - يلزم إعداد XIAOMI_API_KEY
+summary: استخدام نماذج Xiaomi MiMo مع OpenClaw
 title: Xiaomi MiMo
 x-i18n:
-    generated_at: "2026-04-25T13:57:20Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T08:11:50Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 7781973c3a1d14101cdb0a8d1affe3fd076a968552ed2a8630a91a8947daeb3a
+    source_hash: a7bb33bf107cb44414b0f3a6140d60fdfecb3b7154c3197e7cbed982d9a6450b
     source_path: providers/xiaomi.md
-    workflow: 15
+    workflow: 16
 ---
 
-Xiaomi MiMo هي منصة API الخاصة بنماذج **MiMo**. يستخدم OpenClaw
-نقطة النهاية المتوافقة مع OpenAI من Xiaomi مع مصادقة مفتاح API.
+Xiaomi MiMo هي منصة API لنماذج **MiMo**. يتضمن OpenClaw ‏Plugin مضمنا باسم `xiaomi` يسجل موفر محادثة متوافقا مع OpenAI وموفر كلام (TTS) مقابل `XIAOMI_API_KEY` نفسه.
 
-| الخاصية | القيمة                          |
-| -------- | ------------------------------- |
-| المزوّد  | `xiaomi`                        |
-| المصادقة | `XIAOMI_API_KEY`                |
-| API      | متوافقة مع OpenAI               |
-| Base URL | `https://api.xiaomimimo.com/v1` |
+| الخاصية        | القيمة                                   |
+| --------------- | ---------------------------------------- |
+| معرف الموفر     | `xiaomi`                                 |
+| Plugin          | مضمن، `enabledByDefault: true`           |
+| متغير بيئة المصادقة | `XIAOMI_API_KEY`                         |
+| علم الإعداد الأولي | `--auth-choice xiaomi-api-key`           |
+| علم CLI المباشر | `--xiaomi-api-key <key>`                 |
+| العقود          | إكمالات المحادثة + `speechProviders`     |
+| API             | متوافق مع OpenAI (`openai-completions`) |
+| عنوان URL الأساسي | `https://api.xiaomimimo.com/v1`          |
+| النموذج الافتراضي | `xiaomi/mimo-v2-flash`                   |
+| TTS الافتراضي   | `mimo-v2.5-tts`، الصوت `mimo_default`    |
 
 ## البدء
 
@@ -29,50 +34,50 @@ Xiaomi MiMo هي منصة API الخاصة بنماذج **MiMo**. يستخدم O
   <Step title="احصل على مفتاح API">
     أنشئ مفتاح API في [وحدة تحكم Xiaomi MiMo](https://platform.xiaomimimo.com/#/console/api-keys).
   </Step>
-  <Step title="شغّل الإعداد الأولي">
+  <Step title="شغل الإعداد الأولي">
     ```bash
     openclaw onboard --auth-choice xiaomi-api-key
     ```
 
-    أو مرّر المفتاح مباشرة:
+    أو مرر المفتاح مباشرة:
 
     ```bash
     openclaw onboard --auth-choice xiaomi-api-key --xiaomi-api-key "$XIAOMI_API_KEY"
     ```
 
   </Step>
-  <Step title="تحقق من أن النموذج متاح">
+  <Step title="تحقق من توفر النموذج">
     ```bash
     openclaw models list --provider xiaomi
     ```
   </Step>
 </Steps>
 
-## الكتالوج المضمّن
+## الفهرس المدمج
 
-| مرجع النموذج            | الإدخال      | السياق    | الحد الأقصى للإخراج | الاستدلال | ملاحظات          |
-| ---------------------- | ------------ | --------- | ------------------- | --------- | ---------------- |
-| `xiaomi/mimo-v2-flash` | نص           | 262,144   | 8,192               | لا        | النموذج الافتراضي |
-| `xiaomi/mimo-v2-pro`   | نص           | 1,048,576 | 32,000              | نعم       | سياق كبير        |
-| `xiaomi/mimo-v2-omni`  | نص، صورة     | 262,144   | 32,000              | نعم       | متعدد الوسائط    |
+| مرجع النموذج           | الإدخال     | السياق    | الحد الأقصى للإخراج | الاستدلال | ملاحظات            |
+| ---------------------- | ----------- | --------- | ---------- | --------- | ------------- |
+| `xiaomi/mimo-v2-flash` | نص          | 262,144   | 8,192      | لا        | النموذج الافتراضي |
+| `xiaomi/mimo-v2-pro`   | نص          | 1,048,576 | 32,000     | نعم       | سياق كبير          |
+| `xiaomi/mimo-v2-omni`  | نص، صورة    | 262,144   | 32,000     | نعم       | متعدد الوسائط      |
 
 <Tip>
-مرجع النموذج الافتراضي هو `xiaomi/mimo-v2-flash`. ويُحقن المزوّد تلقائيًا عند ضبط `XIAOMI_API_KEY` أو عند وجود ملف تعريف مصادقة.
+مرجع النموذج الافتراضي هو `xiaomi/mimo-v2-flash`. يتم حقن الموفر تلقائيا عند تعيين `XIAOMI_API_KEY` أو عند وجود ملف تعريف مصادقة.
 </Tip>
 
 ## تحويل النص إلى كلام
 
-يسجّل Plugin `xiaomi` المضمّن أيضًا Xiaomi MiMo كمزوّد كلام من أجل
-`messages.tts`. ويستدعي عقد TTS الخاص بإكمالات الدردشة لدى Xiaomi مع النص بوصفه
-رسالة `assistant`، ومع توجيه أسلوب اختياري بوصفه رسالة `user`.
+يسجل Plugin المضمن `xiaomi` أيضا Xiaomi MiMo كموفر كلام لـ
+`messages.tts`. يستدعي عقد TTS الخاص بإكمالات محادثة Xiaomi مع النص كرسالة
+`assistant` وإرشادات النمط الاختيارية كرسالة `user`.
 
 | الخاصية | القيمة                                   |
 | -------- | ---------------------------------------- |
-| معرّف TTS | `xiaomi` (الاسم البديل `mimo`)          |
+| معرف TTS | `xiaomi` (الاسم المستعار `mimo`)         |
 | المصادقة | `XIAOMI_API_KEY`                         |
 | API      | `POST /v1/chat/completions` مع `audio`   |
-| الافتراضي | `mimo-v2.5-tts`، الصوت `mimo_default`   |
-| الإخراج  | `MP3` افتراضيًا؛ و`WAV` عند الضبط       |
+| الافتراضي | `mimo-v2.5-tts`، الصوت `mimo_default`    |
+| الإخراج  | MP3 افتراضيا؛ WAV عند تهيئته            |
 
 ```json5
 {
@@ -86,7 +91,7 @@ Xiaomi MiMo هي منصة API الخاصة بنماذج **MiMo**. يستخدم O
           model: "mimo-v2.5-tts",
           voice: "mimo_default",
           format: "mp3",
-          style: "نبرة مشرقة وطبيعية وحوارية.",
+          style: "Bright, natural, conversational tone.",
         },
       },
     },
@@ -94,13 +99,13 @@ Xiaomi MiMo هي منصة API الخاصة بنماذج **MiMo**. يستخدم O
 }
 ```
 
-تشمل الأصوات المضمّنة المدعومة `mimo_default` و`default_zh` و`default_en`
-و`Mia` و`Chloe` و`Milo` و`Dean`. كما أن `mimo-v2-tts` مدعوم للحسابات
-الأقدم الخاصة بـ MiMo TTS؛ ويستخدم الافتراضي نموذج MiMo-V2.5 TTS الحالي. وبالنسبة إلى أهداف
-الملاحظات الصوتية مثل Feishu وTelegram، يقوم OpenClaw بتحويل خرج Xiaomi إلى 48kHz
-Opus باستخدام `ffmpeg` قبل التسليم.
+تشمل الأصوات المدمجة المدعومة `mimo_default` و`default_zh` و`default_en`
+و`Mia` و`Chloe` و`Milo` و`Dean`. يدعم `mimo-v2-tts` حسابات MiMo TTS
+الأقدم؛ ويستخدم الافتراضي نموذج MiMo-V2.5 TTS الحالي. بالنسبة إلى أهداف
+الملاحظات الصوتية مثل Feishu وTelegram، يحول OpenClaw مخرجات Xiaomi إلى Opus
+بتردد 48kHz باستخدام `ffmpeg` قبل التسليم.
 
-## مثال على الإعداد
+## مثال التهيئة
 
 ```json5
 {
@@ -150,26 +155,26 @@ Opus باستخدام `ffmpeg` قبل التسليم.
 
 <AccordionGroup>
   <Accordion title="سلوك الحقن التلقائي">
-    يُحقن المزوّد `xiaomi` تلقائيًا عندما يكون `XIAOMI_API_KEY` مضبوطًا في بيئتك أو عندما يوجد ملف تعريف مصادقة. لا تحتاج إلى ضبط المزوّد يدويًا إلا إذا كنت تريد تجاوز بيانات تعريف النموذج أو Base URL.
+    يتم حقن موفر `xiaomi` تلقائيا عند تعيين `XIAOMI_API_KEY` في بيئتك أو عند وجود ملف تعريف مصادقة. لا تحتاج إلى تهيئة الموفر يدويا إلا إذا أردت تجاوز بيانات تعريف النموذج أو عنوان URL الأساسي.
   </Accordion>
 
-  <Accordion title="تفاصيل النماذج">
-    - **mimo-v2-flash** — خفيف وسريع، ومثالي للمهام النصية العامة. لا يدعم الاستدلال.
-    - **mimo-v2-pro** — يدعم الاستدلال مع نافذة سياق بحجم 1M token لأحمال العمل الخاصة بالمستندات الطويلة.
-    - **mimo-v2-omni** — نموذج متعدد الوسائط مفعّل للاستدلال ويقبل مدخلات النص والصور معًا.
+  <Accordion title="تفاصيل النموذج">
+    - **mimo-v2-flash** — خفيف وسريع، ومثالي لمهام النص العامة. لا يدعم الاستدلال.
+    - **mimo-v2-pro** — يدعم الاستدلال مع نافذة سياق بحجم 1M من الرموز لأعباء عمل المستندات الطويلة.
+    - **mimo-v2-omni** — نموذج متعدد الوسائط ممكّن للاستدلال يقبل إدخالات النص والصورة معا.
 
     <Note>
-    تستخدم جميع النماذج البادئة `xiaomi/` (مثلًا `xiaomi/mimo-v2-pro`).
+    تستخدم جميع النماذج البادئة `xiaomi/` (على سبيل المثال `xiaomi/mimo-v2-pro`).
     </Note>
 
   </Accordion>
 
   <Accordion title="استكشاف الأخطاء وإصلاحها">
-    - إذا لم تظهر النماذج، فتأكد من أن `XIAOMI_API_KEY` مضبوط وصالح.
-    - عندما يعمل Gateway كخدمة، تأكد من أن المفتاح متاح لتلك العملية (مثلًا في `~/.openclaw/.env` أو عبر `env.shellEnv`).
+    - إذا لم تظهر النماذج، فتأكد من أن `XIAOMI_API_KEY` معين وصالح.
+    - عندما يعمل Gateway كخادم خلفي، تأكد من توفر المفتاح لتلك العملية (على سبيل المثال في `~/.openclaw/.env` أو عبر `env.shellEnv`).
 
     <Warning>
-    المفاتيح المضبوطة فقط في الصدفة التفاعلية الخاصة بك لا تكون مرئية لعمليات Gateway المُدارة كخدمة. استخدم `~/.openclaw/.env` أو إعداد `env.shellEnv` للإتاحة الدائمة.
+    المفاتيح المعينة فقط في الصدفة التفاعلية لديك لا تكون مرئية لعمليات gateway التي يديرها الخادم الخلفي. استخدم تهيئة `~/.openclaw/.env` أو `env.shellEnv` لضمان التوفر الدائم.
     </Warning>
 
   </Accordion>
@@ -179,12 +184,12 @@ Opus باستخدام `ffmpeg` قبل التسليم.
 
 <CardGroup cols={2}>
   <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
-    اختيار المزوّدين، ومراجع النماذج، وسلوك التبديل الاحتياطي.
+    اختيار الموفرين ومراجع النماذج وسلوك تجاوز الفشل.
   </Card>
-  <Card title="مرجع الإعداد" href="/ar/gateway/configuration-reference" icon="gear">
-    المرجع الكامل لإعداد OpenClaw.
+  <Card title="مرجع التهيئة" href="/ar/gateway/configuration-reference" icon="gear">
+    مرجع تهيئة OpenClaw الكامل.
   </Card>
   <Card title="وحدة تحكم Xiaomi MiMo" href="https://platform.xiaomimimo.com" icon="arrow-up-right-from-square">
-    لوحة تحكم Xiaomi MiMo وإدارة مفاتيح API.
+    لوحة معلومات Xiaomi MiMo وإدارة مفاتيح API.
   </Card>
 </CardGroup>

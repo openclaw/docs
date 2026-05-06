@@ -1,25 +1,24 @@
 ---
 read_when:
-    - أنت تحتاج إلى تعديلات منظَّمة على الملفات عبر عدة ملفات
-    - أنت تريد توثيق التعديلات المعتمدة على الترقيعات أو تصحيح أخطائها
-summary: طبّق ترقيعات متعددة الملفات باستخدام أداة `apply_patch`
-title: أداة `apply_patch`
+    - تحتاج إلى إجراء تعديلات منظَّمة على ملفات متعددة
+    - تريد توثيق التعديلات القائمة على التصحيحات أو استكشاف أخطائها وإصلاحها
+summary: طبّق تصحيحات متعددة الملفات باستخدام أداة apply_patch
+title: أداة apply_patch
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T08:06:53Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: 9ed6d8282166de3cacf5be7f253498a230bceb2ad6c82a08846aed5bc613da53
-  source_path: tools/apply-patch.md
-  workflow: 15
+    generated_at: "2026-05-06T08:15:01Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 9ff2f8e6ecd55ff1bdc553619ab3d590d0967efe7a9a90a31946ad15fd89a1dc
+    source_path: tools/apply-patch.md
+    workflow: 16
 ---
 
-طبّق تغييرات الملفات باستخدام تنسيق ترقية منظّم. وهذا مثالي للتعديلات متعددة الملفات
+طبّق تغييرات الملفات باستخدام صيغة تصحيح منظّمة. يُعدّ هذا مثاليًا للتعديلات متعددة الملفات
 أو متعددة المقاطع حيث يكون استدعاء `edit` واحد هشًا.
 
-تقبل الأداة سلسلة `input` واحدة تلتف حول عملية واحدة أو أكثر على الملفات:
+تقبل الأداة سلسلة `input` واحدة تغلّف عملية ملف واحدة أو أكثر:
 
-```text
+```
 *** Begin Patch
 *** Add File: path/to/file.txt
 +line 1
@@ -34,19 +33,19 @@ x-i18n:
 
 ## المعاملات
 
-- `input` (مطلوب): محتوى الترقية الكامل بما في ذلك `*** Begin Patch` و`*** End Patch`.
+- `input` (مطلوب): محتويات التصحيح كاملة بما في ذلك `*** Begin Patch` و `*** End Patch`.
 
 ## ملاحظات
 
-- تدعم مسارات الترقية المسارات النسبية (انطلاقًا من دليل مساحة العمل) والمسارات المطلقة.
-- تكون القيمة الافتراضية لـ `tools.exec.applyPatch.workspaceOnly` هي `true` (ضمن مساحة العمل فقط). اضبطها على `false` فقط إذا كنت تقصد عمدًا أن تكتب `apply_patch` أو تحذف خارج دليل مساحة العمل.
-- استخدم `*** Move to:` داخل مقطع `*** Update File:` لإعادة تسمية الملفات.
-- تشير `*** End of File` إلى إدراج عند نهاية الملف فقط عند الحاجة.
-- تكون متاحة افتراضيًا لنماذج OpenAI وOpenAI Codex. اضبط
+- تدعم مسارات التصحيح المسارات النسبية (من دليل مساحة العمل) والمسارات المطلقة.
+- القيمة الافتراضية لـ `tools.exec.applyPatch.workspaceOnly` هي `true` (محصورة ضمن مساحة العمل). عيّنها إلى `false` فقط إذا كنت تريد عمدًا أن يكتب `apply_patch` أو يحذف خارج دليل مساحة العمل.
+- استخدم `*** Move to:` ضمن مقطع `*** Update File:` لإعادة تسمية الملفات.
+- يضع `*** End of File` علامة على إدراج خاص بنهاية الملف فقط عند الحاجة.
+- متاحة افتراضيًا لنماذج OpenAI و OpenAI Codex. عيّن
   `tools.exec.applyPatch.enabled: false` لتعطيلها.
-- ويمكنك اختياريًا تقييدها حسب النموذج عبر
+- يمكن اختياريًا تقييدها حسب النموذج عبر
   `tools.exec.applyPatch.allowModels`.
-- يوجد الإعداد فقط تحت `tools.exec`.
+- الإعدادات موجودة فقط ضمن `tools.exec`.
 
 ## مثال
 
@@ -57,8 +56,16 @@ x-i18n:
 }
 ```
 
-## ذو صلة
+## ذات صلة
 
-- [Diffs](/ar/tools/diffs)
-- [أداة Exec](/ar/tools/exec)
-- [تنفيذ الشيفرة](/ar/tools/code-execution)
+<CardGroup cols={2}>
+  <Card title="Diffs" href="/ar/tools/diffs" icon="code-compare">
+    عارض فروق للقراءة فقط لعرض التغييرات.
+  </Card>
+  <Card title="Exec tool" href="/ar/tools/exec" icon="terminal">
+    تنفيذ أوامر Shell من الوكيل.
+  </Card>
+  <Card title="Code execution" href="/ar/tools/code-execution" icon="square-code">
+    تحليل Python بعيد ضمن صندوق عزل باستخدام xAI.
+  </Card>
+</CardGroup>

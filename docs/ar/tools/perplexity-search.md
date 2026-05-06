@@ -1,44 +1,42 @@
 ---
 read_when:
     - تريد استخدام Perplexity Search للبحث على الويب
-    - تحتاج إلى إعداد `PERPLEXITY_API_KEY` أو `OPENROUTER_API_KEY`
-summary: واجهة Perplexity Search API وتوافق Sonar/OpenRouter لـ `web_search`
+    - تحتاج إلى إعداد PERPLEXITY_API_KEY أو OPENROUTER_API_KEY
+summary: واجهة برمجة تطبيقات بحث Perplexity وتوافق Sonar/OpenRouter لـ web_search
 title: بحث Perplexity
 x-i18n:
-    generated_at: "2026-04-24T08:10:17Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T08:18:33Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 6f85aa953ff406237013fdc9a06b86756a26e62d41e5a3e3aa732563960e4ba9
+    source_hash: 113abafae66acd8aaa0302b687ba13347eb44a81a4217b61bb68f07d8a119cb0
     source_path: tools/perplexity-search.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Perplexity Search API
+يدعم OpenClaw واجهة Perplexity Search API كموفّر `web_search`.
+تُرجع نتائج منظّمة تحتوي على حقول `title` و`url` و`snippet`.
 
-يدعم OpenClaw خدمة Perplexity Search API كمزوّد `web_search`.
-وهي تعيد نتائج منظّمة تتضمن الحقول `title` و`url` و`snippet`.
-
-ولأغراض التوافق، يدعم OpenClaw أيضًا إعدادات Perplexity Sonar/OpenRouter القديمة.
-إذا كنت تستخدم `OPENROUTER_API_KEY`، أو مفتاح `sk-or-...` في `plugins.entries.perplexity.config.webSearch.apiKey`، أو تضبط `plugins.entries.perplexity.config.webSearch.baseUrl` / `model`، فإن المزوّد ينتقل إلى مسار chat-completions ويعيد إجابات مركّبة بواسطة AI مع استشهادات بدلًا من نتائج Search API المنظّمة.
+للتوافق، يدعم OpenClaw أيضًا إعدادات Perplexity Sonar/OpenRouter القديمة.
+إذا كنت تستخدم `OPENROUTER_API_KEY`، أو مفتاحًا يبدأ بـ `sk-or-...` في `plugins.entries.perplexity.config.webSearch.apiKey`، أو ضبطت `plugins.entries.perplexity.config.webSearch.baseUrl` / `model`، فسينتقل الموفّر إلى مسار إكمالات الدردشة ويُرجع إجابات مولّدة بالذكاء الاصطناعي مع اقتباسات بدلًا من نتائج Search API المنظّمة.
 
 ## الحصول على مفتاح Perplexity API
 
 1. أنشئ حساب Perplexity على [perplexity.ai/settings/api](https://www.perplexity.ai/settings/api)
-2. ولّد مفتاح API من لوحة التحكم
-3. خزّن المفتاح في التهيئة أو اضبط `PERPLEXITY_API_KEY` في بيئة Gateway.
+2. أنشئ مفتاح API في لوحة التحكم
+3. خزّن المفتاح في الإعدادات أو اضبط `PERPLEXITY_API_KEY` في بيئة Gateway.
 
-## توافق OpenRouter
+## التوافق مع OpenRouter
 
-إذا كنت تستخدم OpenRouter بالفعل من أجل Perplexity Sonar، فاحتفظ بـ `provider: "perplexity"` واضبط `OPENROUTER_API_KEY` في بيئة Gateway، أو خزّن مفتاح `sk-or-...` في `plugins.entries.perplexity.config.webSearch.apiKey`.
+إذا كنت تستخدم OpenRouter بالفعل مع Perplexity Sonar، فأبقِ `provider: "perplexity"` واضبط `OPENROUTER_API_KEY` في بيئة Gateway، أو خزّن مفتاحًا يبدأ بـ `sk-or-...` في `plugins.entries.perplexity.config.webSearch.apiKey`.
 
-عناصر تحكم توافقية اختيارية:
+عناصر تحكم التوافق الاختيارية:
 
 - `plugins.entries.perplexity.config.webSearch.baseUrl`
 - `plugins.entries.perplexity.config.webSearch.model`
 
-## أمثلة التهيئة
+## أمثلة الإعدادات
 
-### Perplexity Search API الأصلية
+### واجهة Perplexity Search API الأصلية
 
 ```json5
 {
@@ -92,38 +90,38 @@ x-i18n:
 
 ## أين تضبط المفتاح
 
-**عبر التهيئة:** شغّل `openclaw configure --section web`. ويخزّن المفتاح في
+**عبر الإعدادات:** شغّل `openclaw configure --section web`. يخزّن المفتاح في
 `~/.openclaw/openclaw.json` تحت `plugins.entries.perplexity.config.webSearch.apiKey`.
-كما يقبل هذا الحقل أيضًا كائنات SecretRef.
+يقبل هذا الحقل أيضًا كائنات SecretRef.
 
 **عبر البيئة:** اضبط `PERPLEXITY_API_KEY` أو `OPENROUTER_API_KEY`
-في بيئة عملية Gateway. في تثبيت gateway، ضعه في
-`~/.openclaw/.env` ‏(أو بيئة خدمتك). راجع [متغيرات البيئة](/ar/help/faq#env-vars-and-env-loading).
+في بيئة عملية Gateway. لتثبيت Gateway، ضعه في
+`~/.openclaw/.env` (أو بيئة خدمتك). راجع [متغيرات البيئة](/ar/help/faq#env-vars-and-env-loading).
 
-إذا تم ضبط `provider: "perplexity"` وكان SecretRef الخاص بمفتاح Perplexity غير محلول من دون fallback بيئي، فإن بدء التشغيل/إعادة التحميل يفشل سريعًا.
+إذا تم تكوين `provider: "perplexity"` وكان SecretRef لمفتاح Perplexity غير قابل للحل ولا يوجد بديل من البيئة، يفشل بدء التشغيل/إعادة التحميل بسرعة.
 
-## معلمات الأداة
+## معاملات الأداة
 
-تنطبق هذه المعلمات على مسار Perplexity Search API الأصلي.
+تنطبق هذه المعاملات على مسار Perplexity Search API الأصلي.
 
 <ParamField path="query" type="string" required>
 استعلام البحث.
 </ParamField>
 
 <ParamField path="count" type="number" default="5">
-عدد النتائج المطلوب إرجاعها (1–10).
+عدد النتائج المطلوب إرجاعها (1-10).
 </ParamField>
 
 <ParamField path="country" type="string">
-رمز بلد ISO مكوّن من حرفين (مثل `US` أو `DE`).
+رمز البلد ISO المكوّن من حرفين (مثل `US`، `DE`).
 </ParamField>
 
 <ParamField path="language" type="string">
-رمز لغة ISO 639-1 ‏(مثل `en` أو `de` أو `fr`).
+رمز اللغة ISO 639-1 (مثل `en`، `de`، `fr`).
 </ParamField>
 
 <ParamField path="freshness" type="'day' | 'week' | 'month' | 'year'">
-مرشح زمني — `day` تعني 24 ساعة.
+مرشح الوقت - `day` يعني 24 ساعة.
 </ParamField>
 
 <ParamField path="date_after" type="string">
@@ -135,62 +133,62 @@ x-i18n:
 </ParamField>
 
 <ParamField path="domain_filter" type="string[]">
-مصفوفة قائمة سماح/قائمة حظر للنطاقات (بحد أقصى 20).
+مصفوفة قائمة السماح/قائمة الحظر للنطاقات (الحد الأقصى 20).
 </ParamField>
 
 <ParamField path="max_tokens" type="number" default="25000">
-الميزانية الإجمالية للمحتوى (الحد الأقصى 1000000).
+إجمالي ميزانية المحتوى (الحد الأقصى 1000000).
 </ParamField>
 
 <ParamField path="max_tokens_per_page" type="number" default="2048">
-حد tokens لكل صفحة.
+حد الرموز لكل صفحة.
 </ParamField>
 
-بالنسبة إلى مسار التوافق القديم Sonar/OpenRouter:
+بالنسبة إلى مسار توافق Sonar/OpenRouter القديم:
 
-- تُقبل `query` و`count` و`freshness`
-- تكون `count` للتوافق فقط هناك؛ وتبقى الاستجابة إجابة واحدة مركّبة
-  مع استشهادات بدلًا من قائمة من N نتائج
-- تُرجع المرشحات الخاصة بـ Search API فقط مثل `country` و`language` و`date_after`,
+- يتم قبول `query` و`count` و`freshness`
+- `count` مخصص للتوافق فقط هناك؛ تظل الاستجابة إجابة واحدة مولّدة
+  مع اقتباسات بدلًا من قائمة من N نتيجة
+- مرشحات Search API فقط مثل `country` و`language` و`date_after`
   و`date_before` و`domain_filter` و`max_tokens` و`max_tokens_per_page`
-  أخطاء صريحة
+  تُرجع أخطاء صريحة
 
 **أمثلة:**
 
 ```javascript
-// بحث خاص ببلد ولغة محددين
+// Country and language-specific search
 await web_search({
   query: "renewable energy",
   country: "DE",
   language: "de",
 });
 
-// نتائج حديثة (خلال الأسبوع الماضي)
+// Recent results (past week)
 await web_search({
   query: "AI news",
   freshness: "week",
 });
 
-// بحث ضمن نطاق تاريخي
+// Date range search
 await web_search({
   query: "AI developments",
   date_after: "2024-01-01",
   date_before: "2024-06-30",
 });
 
-// ترشيح حسب النطاق (قائمة سماح)
+// Domain filtering (allowlist)
 await web_search({
   query: "climate research",
   domain_filter: ["nature.com", "science.org", ".edu"],
 });
 
-// ترشيح حسب النطاق (قائمة حظر - أضف البادئة -)
+// Domain filtering (denylist - prefix with -)
 await web_search({
   query: "product reviews",
   domain_filter: ["-reddit.com", "-pinterest.com"],
 });
 
-// استخراج محتوى أكثر
+// More content extraction
 await web_search({
   query: "detailed AI research",
   max_tokens: 50000,
@@ -198,22 +196,32 @@ await web_search({
 });
 ```
 
-### قواعد ترشيح النطاق
+### قواعد مرشح النطاق
 
-- الحد الأقصى 20 نطاقًا لكل مرشح
-- لا يمكن خلط قائمة سماح وقائمة حظر في الطلب نفسه
+- 20 نطاقًا كحد أقصى لكل مرشح
+- لا يمكن مزج قائمة السماح وقائمة الحظر في الطلب نفسه
 - استخدم البادئة `-` لإدخالات قائمة الحظر (مثل `["-reddit.com"]`)
 
 ## ملاحظات
 
-- تعيد Perplexity Search API نتائج بحث ويب منظّمة (`title`, `url`, `snippet`)
-- يؤدي OpenRouter أو `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` الصريح إلى إعادة Perplexity إلى Sonar chat completions من أجل التوافق
-- يعيد توافق Sonar/OpenRouter إجابة واحدة مركّبة مع استشهادات، وليس صفوف نتائج منظّمة
-- تُخزَّن النتائج مؤقتًا لمدة 15 دقيقة افتراضيًا (قابلة للتهيئة عبر `cacheTtlMinutes`)
+- تُرجع Perplexity Search API نتائج بحث ويب منظّمة (`title`، `url`، `snippet`)
+- يؤدي OpenRouter أو تحديد `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` صراحةً إلى إعادة Perplexity إلى إكمالات دردشة Sonar للتوافق
+- يُرجع توافق Sonar/OpenRouter إجابة واحدة مولّدة مع اقتباسات، وليس صفوف نتائج منظّمة
+- تُخزّن النتائج مؤقتًا لمدة 15 دقيقة افتراضيًا (قابل للتكوين عبر `cacheTtlMinutes`)
 
-## ذو صلة
+## ذات صلة
 
-- [نظرة عامة على Web Search](/ar/tools/web) -- جميع المزوّدين والاكتشاف التلقائي
-- [توثيق Perplexity Search API](https://docs.perplexity.ai/docs/search/quickstart) -- التوثيق الرسمي لـ Perplexity
-- [Brave Search](/ar/tools/brave-search) -- نتائج منظّمة مع مرشحات البلد/اللغة
-- [بحث Exa](/ar/tools/exa-search) -- بحث عصبي مع استخراج المحتوى
+<CardGroup cols={2}>
+  <Card title="نظرة عامة على بحث الويب" href="/ar/tools/web" icon="globe">
+    جميع الموفّرين وقواعد الاكتشاف التلقائي.
+  </Card>
+  <Card title="بحث Brave" href="/ar/tools/brave-search" icon="shield">
+    نتائج منظّمة مع مرشحات البلد واللغة.
+  </Card>
+  <Card title="بحث Exa" href="/ar/tools/exa-search" icon="magnifying-glass">
+    بحث عصبي مع استخراج المحتوى.
+  </Card>
+  <Card title="وثائق Perplexity Search API" href="https://docs.perplexity.ai/docs/search/quickstart" icon="arrow-up-right-from-square">
+    دليل البدء السريع والمرجع الرسميان لـ Perplexity Search API.
+  </Card>
+</CardGroup>

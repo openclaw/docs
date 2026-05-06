@@ -1,29 +1,27 @@
 ---
 read_when:
-    - تريد استخدام Brave Search من أجل web_search
+    - تريد استخدام Brave Search لـ web_search
     - تحتاج إلى BRAVE_API_KEY أو تفاصيل الخطة
-summary: إعداد واجهة برمجة تطبيقات Brave Search لـ web_search
+summary: إعداد Brave Search API لـ web_search
 title: بحث Brave
 x-i18n:
-    generated_at: "2026-05-02T21:04:14Z"
+    generated_at: "2026-05-06T08:15:05Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b1ecb9e3e5475bb26f4058311429b558f49cdd1df907a622f93f297ac6569d65
+    source_hash: d2bff7589ddb54d002853898c6fc37e613fd32b0fa69cb0d712d5955973efb39
     source_path: tools/brave-search.md
     workflow: 16
 ---
 
-# Brave Search API
-
-يدعم OpenClaw ‏Brave Search API بصفته مزود `web_search`.
+OpenClaw يدعم Brave Search API كمزود `web_search`.
 
 ## الحصول على مفتاح API
 
 1. أنشئ حساب Brave Search API على [https://brave.com/search/api/](https://brave.com/search/api/)
-2. في لوحة المعلومات، اختر خطة **البحث** وأنشئ مفتاح API.
-3. خزّن المفتاح في الإعدادات أو عيّن `BRAVE_API_KEY` في بيئة Gateway.
+2. في لوحة التحكم، اختر خطة **Search** وأنشئ مفتاح API.
+3. خزّن المفتاح في الإعدادات أو اضبط `BRAVE_API_KEY` في بيئة Gateway.
 
-## مثال إعدادات
+## مثال الإعدادات
 
 ```json5
 {
@@ -52,18 +50,18 @@ x-i18n:
 }
 ```
 
-توجد الآن إعدادات بحث Brave الخاصة بالمزود ضمن `plugins.entries.brave.config.webSearch.*`.
-ما زال `tools.web.search.apiKey` القديم يُحمّل عبر طبقة التوافق، لكنه لم يعد مسار الإعدادات القياسي.
+إعدادات بحث Brave الخاصة بالمزود أصبحت الآن ضمن `plugins.entries.brave.config.webSearch.*`.
+لا يزال `tools.web.search.apiKey` القديم يُحمّل عبر طبقة التوافق، لكنه لم يعد مسار الإعدادات المعتمد.
 
 يتحكم `webSearch.mode` في نقل Brave:
 
-- `web` (الافتراضي): بحث ويب Brave عادي مع العناوين وعناوين URL والمقتطفات
-- `llm-context`: واجهة Brave LLM Context API مع مقاطع نصية ومصادر مستخرجة مسبقًا للتأصيل
+- `web` (الافتراضي): بحث ويب Brave عادي مع عناوين وروابط URL ومقتطفات
+- `llm-context`: Brave LLM Context API مع مقاطع نصية ومصادر مستخرجة مسبقًا للتأصيل
 
 يمكن أن يشير `webSearch.baseUrl` بطلبات Brave إلى وكيل موثوق متوافق مع Brave
-أو Gateway. يضيف OpenClaw ‏`/res/v1/web/search` أو `/res/v1/llm/context` إلى
-عنوان URL الأساسي المهيأ ويحافظ على عنوان URL الأساسي في مفتاح التخزين المؤقت. يجب أن تستخدم
-نقاط النهاية العامة `https://`؛ ولا يُقبل `http://` إلا لمضيفي local loopback موثوقين
+أو gateway. يضيف OpenClaw المسار `/res/v1/web/search` أو `/res/v1/llm/context` إلى
+عنوان URL الأساسي المضبوط، ويحافظ على عنوان URL الأساسي في مفتاح التخزين المؤقت. يجب أن تستخدم
+نقاط النهاية العامة `https://`؛ ولا يُقبل `http://` إلا لمضيفي local loopback الموثوقين
 أو مضيفي وكلاء الشبكات الخاصة.
 
 ## معاملات الأداة
@@ -73,19 +71,19 @@ x-i18n:
 </ParamField>
 
 <ParamField path="count" type="number" default="5">
-عدد النتائج المطلوب إرجاعها (1–10).
+عدد النتائج المراد إرجاعها (1–10).
 </ParamField>
 
 <ParamField path="country" type="string">
-رمز بلد ISO المكوّن من حرفين (مثل `US`، `DE`).
+رمز البلد وفق ISO من حرفين (مثل `US` و`DE`).
 </ParamField>
 
 <ParamField path="language" type="string">
-رمز لغة ISO 639-1 لنتائج البحث (مثل `en`، `de`، `fr`).
+رمز لغة ISO 639-1 لنتائج البحث (مثل `en` و`de` و`fr`).
 </ParamField>
 
 <ParamField path="search_lang" type="string">
-رمز لغة بحث Brave (مثل `en`، `en-gb`، `zh-hans`).
+رمز لغة البحث في Brave (مثل `en` و`en-gb` و`zh-hans`).
 </ParamField>
 
 <ParamField path="ui_lang" type="string">
@@ -130,16 +128,16 @@ await web_search({
 
 ## ملاحظات
 
-- يستخدم OpenClaw خطة **البحث** من Brave. إذا كان لديك اشتراك قديم (مثل الخطة المجانية الأصلية التي توفر 2,000 استعلام/شهر)، فسيظل صالحًا لكنه لا يتضمن ميزات أحدث مثل LLM Context أو حدود المعدلات الأعلى.
-- تتضمن كل خطة من Brave **رصيدًا مجانيًا بقيمة \$5/شهر** (يتجدد). تبلغ تكلفة خطة البحث \$5 لكل 1,000 طلب، لذا يغطي الرصيد 1,000 استعلام/شهر. عيّن حد الاستخدام في لوحة معلومات Brave لتجنب الرسوم غير المتوقعة. راجع [بوابة Brave API](https://brave.com/search/api/) للاطلاع على الخطط الحالية.
-- تتضمن خطة البحث نقطة نهاية LLM Context وحقوق استدلال الذكاء الاصطناعي. يتطلب تخزين النتائج لتدريب النماذج أو ضبطها خطة ذات حقوق تخزين صريحة. راجع [شروط خدمة](https://api-dashboard.search.brave.com/terms-of-service) Brave.
-- يعيد وضع `llm-context` إدخالات مصادر مؤصلة بدلًا من شكل مقتطف بحث الويب العادي.
-- يدعم وضع `llm-context` ‏`freshness` ونطاقات `date_after` + `date_before` المحدودة. ولا يدعم `ui_lang`؛ ويتم رفض `date_before` بدون `date_after` لأن Brave يتطلب أن تتضمن نطاقات الحداثة المخصصة تاريخي بدء وانتهاء.
+- يستخدم OpenClaw خطة **Search** من Brave. إذا كان لديك اشتراك قديم (مثل الخطة Free الأصلية مع 2,000 استعلام/شهر)، فسيظل صالحًا لكنه لا يتضمن ميزات أحدث مثل LLM Context أو حدود معدلات أعلى.
+- تتضمن كل خطة من Brave **رصيدًا مجانيًا قدره \$5/شهر** (يتجدد). تبلغ تكلفة خطة Search ‏\$5 لكل 1,000 طلب، لذا يغطي الرصيد 1,000 استعلام/شهر. اضبط حد الاستخدام في لوحة تحكم Brave لتجنب الرسوم غير المتوقعة. راجع [بوابة Brave API](https://brave.com/search/api/) للاطلاع على الخطط الحالية.
+- تتضمن خطة Search نقطة نهاية LLM Context وحقوق استدلال الذكاء الاصطناعي. يتطلب تخزين النتائج لتدريب النماذج أو ضبطها خطة ذات حقوق تخزين صريحة. راجع [شروط خدمة](https://api-dashboard.search.brave.com/terms-of-service) Brave.
+- يعيد وضع `llm-context` إدخالات مصادر مؤصلة بدلًا من شكل مقتطفات بحث الويب العادي.
+- يدعم وضع `llm-context` النطاقات `freshness` والنطاقات المحددة بـ `date_after` + `date_before`. ولا يدعم `ui_lang`؛ ويتم رفض `date_before` بدون `date_after` لأن Brave يتطلب أن تتضمن نطاقات الحداثة المخصصة تاريخي بداية ونهاية.
 - يجب أن يتضمن `ui_lang` وسمًا فرعيًا للمنطقة مثل `en-US`.
-- تُخزّن النتائج مؤقتًا لمدة 15 دقيقة افتراضيًا (قابلة للتهيئة عبر `cacheTtlMinutes`).
-- تُضمّن قيم `webSearch.baseUrl` المخصصة في هوية التخزين المؤقت لـ Brave، لذلك
-  لا تتداخل الاستجابات الخاصة بالوكيل.
-- فعّل علم التشخيصات `brave.http` لتسجيل عناوين URL/معاملات الاستعلام لطلبات Brave، وحالة/توقيت الاستجابة، وأحداث إصابة/إخفاق/كتابة ذاكرة التخزين المؤقت للبحث أثناء استكشاف المشكلات وإصلاحها. لا يسجل العلم مفتاح API أو نصوص الاستجابة أبدًا، لكن استعلامات البحث قد تكون حساسة.
+- تُخزّن النتائج مؤقتًا لمدة 15 دقيقة افتراضيًا (قابلة للضبط عبر `cacheTtlMinutes`).
+- تُضمّن قيم `webSearch.baseUrl` المخصصة في هوية ذاكرة التخزين المؤقت لـ Brave، بحيث
+  لا تتصادم الاستجابات الخاصة بالوكيل.
+- فعّل علم التشخيصات `brave.http` لتسجيل عناوين URL/معاملات الاستعلام لطلبات Brave، وحالة الاستجابة/توقيتها، وأحداث إصابة/فوات/كتابة ذاكرة التخزين المؤقت للبحث أثناء استكشاف المشكلات وإصلاحها. لا يسجل العلم مفتاح API أو أجسام الاستجابات مطلقًا، لكن استعلامات البحث قد تكون حساسة.
 
 ## ذات صلة
 

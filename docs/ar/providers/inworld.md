@@ -1,43 +1,46 @@
 ---
 read_when:
-    - تريد توليد الكلام من Inworld للردود الصادرة
-    - تحتاج إلى خرج PCM للاتصالات الهاتفية أو OGG_OPUS للملاحظات الصوتية من Inworld
-summary: تحويل النص إلى كلام عبر البث من Inworld لردود OpenClaw
+    - تريد توليد الكلام عبر Inworld للردود الصادرة
+    - تحتاج إلى مخرجات PCM للاتصالات الهاتفية أو مخرجات ملاحظة صوتية بتنسيق OGG_OPUS من Inworld
+summary: تحويل النص إلى كلام بالبث من Inworld لردود OpenClaw
 title: Inworld
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-26T11:39:06Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: 4c3908b6ab11fd7bd2e18e5c56d1fdc1ac2e52448538d31cc6c83c2c97917641
-  source_path: providers/inworld.md
-  workflow: 15
+    generated_at: "2026-05-06T08:11:00Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: caf291bab5da946262ecaf4263c188c168be08ddb43fda72f250b8f8db87b3ff
+    source_path: providers/inworld.md
+    workflow: 16
 ---
 
-Inworld هو مزوّد بث لتحويل النص إلى كلام (TTS). وفي OpenClaw
-يولّد الصوت للردود الصادرة (بصيغة MP3 افتراضيًا، وOGG_OPUS للملاحظات الصوتية)
-وصوت PCM لقنوات الاتصالات الهاتفية مثل Voice Call.
+Inworld هو مزوّد تحويل النص إلى كلام (TTS) بالبث. في OpenClaw، يقوم
+بتوليف صوت الردود الصادرة (MP3 افتراضيًا، وOGG_OPUS للملاحظات الصوتية)
+وصوت PCM لقنوات الاتصالات الهاتفية مثل المكالمة الصوتية.
 
-يرسل OpenClaw طلبات إلى نقطة نهاية TTS المتدفقة في Inworld، ويجمع
-الكتل الصوتية المعادة والمشفرة بـ base64 في مخزن واحد،
-ثم يمرّر النتيجة إلى مسار صوت الرد القياسي.
+ينشر OpenClaw إلى نقطة نهاية TTS بالبث الخاصة بـ Inworld، ويجمع مقاطع الصوت
+المرجعة بترميز base64 في مخزن مؤقت واحد، ثم يمرر النتيجة إلى
+مسار صوت الرد القياسي.
 
-| التفاصيل      | القيمة                                                      |
-| ------------- | ----------------------------------------------------------- |
-| الموقع        | [inworld.ai](https://inworld.ai)                            |
-| الوثائق       | [docs.inworld.ai/tts/tts](https://docs.inworld.ai/tts/tts)  |
-| المصادقة      | `INWORLD_API_KEY` ‏(HTTP Basic، بيانات اعتماد dashboard بتنسيق Base64) |
-| الصوت الافتراضي | `Sarah`                                                    |
-| النموذج الافتراضي | `inworld-tts-1.5-max`                                    |
+| الخاصية      | القيمة                                                           |
+| ------------- | --------------------------------------------------------------- |
+| معرّف المزوّد   | `inworld`                                                       |
+| Plugin        | مضمن، `enabledByDefault: true`                               |
+| العقد      | `speechProviders` (TTS فقط)                                    |
+| متغير بيئة المصادقة  | `INWORLD_API_KEY` (HTTP Basic، اعتماد لوحة المعلومات Base64)     |
+| عنوان URL الأساسي      | `https://api.inworld.ai`                                        |
+| الصوت الافتراضي | `Sarah`                                                         |
+| النموذج الافتراضي | `inworld-tts-1.5-max`                                           |
+| الإخراج        | MP3 (افتراضي)، OGG_OPUS (ملاحظات صوتية)، PCM 22050 Hz (اتصالات هاتفية) |
+| الموقع الإلكتروني       | [inworld.ai](https://inworld.ai)                                |
+| المستندات          | [docs.inworld.ai/tts/tts](https://docs.inworld.ai/tts/tts)      |
 
 ## البدء
 
 <Steps>
-  <Step title="اضبط مفتاح API الخاص بك">
-    انسخ بيانات الاعتماد من لوحة تحكم Inworld ‏(Workspace > API Keys)
-    واضبطها كمتغير env. تُرسَل القيمة كما هي تمامًا كبيانات اعتماد HTTP Basic،
-    لذلك لا تُعِد ترميزها بـ Base64 مرة أخرى ولا تحوّلها إلى
-    bearer token.
+  <Step title="عيّن مفتاح API الخاص بك">
+    انسخ الاعتماد من لوحة معلومات Inworld الخاصة بك (Workspace > API Keys)
+    وعيّنه كمتغير بيئة. تُرسل القيمة كما هي كاعتماد HTTP Basic،
+    لذلك لا ترمّزها بـ Base64 مرة أخرى ولا تحوّلها إلى رمز bearer.
 
     ```
     INWORLD_API_KEY=<base64-credential-from-dashboard>
@@ -63,61 +66,61 @@ Inworld هو مزوّد بث لتحويل النص إلى كلام (TTS). وفي
     ```
   </Step>
   <Step title="أرسل رسالة">
-    أرسل ردًا عبر أي قناة متصلة. سيولّد OpenClaw
-    الصوت باستخدام Inworld ويسلّمه بصيغة MP3 ‏(أو OGG_OPUS عندما تتوقع القناة
+    أرسل ردًا عبر أي قناة متصلة. يقوم OpenClaw بتوليف الصوت
+    باستخدام Inworld ويسلّمه كـ MP3 (أو OGG_OPUS عندما تتوقع القناة
     ملاحظة صوتية).
   </Step>
 </Steps>
 
-## خيارات الإعدادات
+## خيارات التكوين
 
-| الخيار         | المسار                                       | الوصف                                                              |
-| -------------- | -------------------------------------------- | ------------------------------------------------------------------ |
-| `apiKey`       | `messages.tts.providers.inworld.apiKey`      | بيانات اعتماد dashboard بتنسيق Base64. وتعود إلى `INWORLD_API_KEY`. |
-| `baseUrl`      | `messages.tts.providers.inworld.baseUrl`     | تجاوز عنوان API الأساسي لـ Inworld ‏(الافتراضي `https://api.inworld.ai`). |
-| `voiceId`      | `messages.tts.providers.inworld.voiceId`     | معرّف الصوت ‏(الافتراضي `Sarah`).                                  |
-| `modelId`      | `messages.tts.providers.inworld.modelId`     | معرّف نموذج TTS ‏(الافتراضي `inworld-tts-1.5-max`).                 |
-| `temperature`  | `messages.tts.providers.inworld.temperature` | درجة حرارة أخذ العينات `0..2` ‏(اختياري).                           |
+| الخيار        | المسار                                         | الوصف                                                       |
+| ------------- | -------------------------------------------- | ----------------------------------------------------------------- |
+| `apiKey`      | `messages.tts.providers.inworld.apiKey`      | اعتماد لوحة المعلومات Base64. يعود إلى `INWORLD_API_KEY` عند عدم ضبطه.     |
+| `baseUrl`     | `messages.tts.providers.inworld.baseUrl`     | تجاوز عنوان URL الأساسي لـ API الخاص بـ Inworld (الافتراضي `https://api.inworld.ai`). |
+| `voiceId`     | `messages.tts.providers.inworld.voiceId`     | معرّف الصوت (الافتراضي `Sarah`).                               |
+| `modelId`     | `messages.tts.providers.inworld.modelId`     | معرّف نموذج TTS (الافتراضي `inworld-tts-1.5-max`).                     |
+| `temperature` | `messages.tts.providers.inworld.temperature` | درجة حرارة أخذ العينات `0..2` (اختياري).                           |
 
 ## ملاحظات
 
 <AccordionGroup>
   <Accordion title="المصادقة">
-    تستخدم Inworld مصادقة HTTP Basic مع سلسلة بيانات اعتماد واحدة
-    مشفرة بـ Base64. انسخها كما هي من لوحة تحكم Inworld. ويرسلها المزوّد
-    بالشكل `Authorization: Basic <apiKey>` من دون أي ترميز إضافي،
-    لذلك لا تقم بترميزها بـ Base64 بنفسك ولا تمرر رمزًا بنمط bearer.
+    يستخدم Inworld مصادقة HTTP Basic بسلسلة اعتماد واحدة مرمّزة بـ Base64.
+    انسخها كما هي من لوحة معلومات Inworld. يرسلها المزوّد
+    كـ `Authorization: Basic <apiKey>` دون أي ترميز إضافي، لذلك
+    لا ترمّزها بـ Base64 بنفسك ولا تمرر رمزًا بأسلوب bearer.
     راجع [ملاحظات مصادقة TTS](/ar/tools/tts#inworld-primary) للاطلاع على التنبيه نفسه.
   </Accordion>
   <Accordion title="النماذج">
-    معرّفات النماذج المدعومة: `inworld-tts-1.5-max` ‏(الافتراضي)،
-    و`inworld-tts-1.5-mini`، و`inworld-tts-1-max`، و`inworld-tts-1`.
+    معرّفات النماذج المدعومة: `inworld-tts-1.5-max` (افتراضي)،
+    `inworld-tts-1.5-mini`، `inworld-tts-1-max`، `inworld-tts-1`.
   </Accordion>
   <Accordion title="مخرجات الصوت">
-    تستخدم الردود MP3 افتراضيًا. وعندما يكون هدف القناة هو `voice-note`
-    يطلب OpenClaw من Inworld الصيغة `OGG_OPUS` بحيث يعمل الصوت كفقاعة
-    صوتية أصلية. وتستخدم عملية التوليد الخاصة بالاتصالات الهاتفية `PCM` خامًا بتردد 22050 هرتز لتغذية
+    تستخدم الردود MP3 افتراضيًا. عندما يكون هدف القناة هو `voice-note`
+    يطلب OpenClaw من Inworld استخدام `OGG_OPUS` بحيث يُشغّل الصوت كفقاعة
+    صوتية أصلية. يستخدم توليف الاتصالات الهاتفية `PCM` خامًا عند 22050 Hz لتغذية
     جسر الاتصالات الهاتفية.
   </Accordion>
-  <Accordion title="نقاط نهاية مخصصة">
-    تجاوز مضيف API عبر `messages.tts.providers.inworld.baseUrl`.
-    وتُزال الشرطات المائلة اللاحقة قبل إرسال الطلبات.
+  <Accordion title="نقاط النهاية المخصصة">
+    تجاوز مضيف API باستخدام `messages.tts.providers.inworld.baseUrl`.
+    تُزال الشرطات المائلة اللاحقة قبل إرسال الطلبات.
   </Accordion>
 </AccordionGroup>
 
-## ذو صلة
+## ذات صلة
 
 <CardGroup cols={2}>
   <Card title="تحويل النص إلى كلام" href="/ar/tools/tts" icon="waveform-lines">
-    نظرة عامة على TTS، والمزوّدين، وإعدادات `messages.tts`.
+    نظرة عامة على TTS، والمزوّدون، وتكوين `messages.tts`.
   </Card>
-  <Card title="الإعدادات" href="/ar/gateway/configuration" icon="gear">
-    مرجع الإعدادات الكامل بما في ذلك إعدادات `messages.tts`.
+  <Card title="التكوين" href="/ar/gateway/configuration" icon="gear">
+    مرجع التكوين الكامل بما في ذلك إعدادات `messages.tts`.
   </Card>
   <Card title="المزوّدون" href="/ar/providers" icon="grid">
-    جميع مزوّدي OpenClaw المضمّنين.
+    جميع مزوّدي OpenClaw المضمنين.
   </Card>
   <Card title="استكشاف الأخطاء وإصلاحها" href="/ar/help/troubleshooting" icon="wrench">
-    المشكلات الشائعة وخطوات تصحيح الأخطاء.
+    المشكلات الشائعة وخطوات التصحيح.
   </Card>
 </CardGroup>

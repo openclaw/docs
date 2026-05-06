@@ -1,55 +1,56 @@
 ---
 read_when:
     - تحتاج إلى نظرة عامة على بنية الشبكة + الأمان
-    - أنت تقوم بتصحيح الوصول المحلي مقابل tailnet أو الاقتران
-    - تريد القائمة المرجعية لوثائق الشبكات الرسمية
-summary: 'مركز الشبكة: أسطح Gateway، والاقتران، والاكتشاف، والأمان'
+    - أنت تستكشف أخطاء الوصول المحلي مقابل الوصول عبر شبكة tailnet أو الاقتران وإصلاحها
+    - تريد القائمة المعتمدة لوثائق الشبكات
+summary: 'محور الشبكة: واجهات Gateway، والاقتران، والاكتشاف، والأمان'
 title: الشبكة
 x-i18n:
-    generated_at: "2026-04-24T07:50:02Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T08:02:38Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 663f372555f044146a5d381566371e9a38185e7f295243bfd61314f12e3a4f06
+    source_hash: 7b0ff6c4ee46005aeac1612ea40f1ce3d5824aa507d0842788dbf4bffbaccfcc
     source_path: network.md
-    workflow: 15
+    workflow: 16
 ---
 
-# مركز الشبكة
-
-يربط هذا المركز المستندات الأساسية الخاصة بكيفية اتصال OpenClaw، واقترانه، وتأمينه
-للأجهزة عبر localhost، وLAN، وtailnet.
+يربط هذا المركز الوثائق الأساسية لكيفية اتصال OpenClaw بالأجهزة وإقرانها وتأمينها
+عبر المضيف المحلي، وLAN، وشبكة tailnet.
 
 ## النموذج الأساسي
 
-تتدفق معظم العمليات عبر Gateway ‏(`openclaw gateway`)، وهي عملية واحدة طويلة التشغيل تمتلك اتصالات القنوات وcontrol plane الخاص بـ WebSocket.
+تمر معظم العمليات عبر Gateway (`openclaw gateway`)، وهي عملية واحدة طويلة التشغيل تمتلك اتصالات القنوات ومستوى التحكم WebSocket.
 
-- **أولًا loopback**: تكون القيمة الافتراضية لـ Gateway WS هي `ws://127.0.0.1:18789`.
-  وتتطلب عمليات الربط خارج loopback مسار مصادقة صالحًا لـ gateway: مصادقة
-  الرمز/كلمة المرور بالسر المشترك، أو نشر `trusted-proxy`
-  مضبوطًا بشكل صحيح خارج loopback.
-- يوصى باستخدام **Gateway واحدة لكل مضيف**. ومن أجل العزل، شغّل عدة Gateways مع ملفات تعريف ومنافذ معزولة ([Gateways متعددة](/ar/gateway/multiple-gateways)).
-- يتم تقديم **مضيف Canvas** على المنفذ نفسه الخاص بـ Gateway ‏(`/__openclaw__/canvas/` و`/__openclaw__/a2ui/`) ويُحمى بواسطة مصادقة Gateway عند الربط خارج loopback.
-- يكون **الوصول البعيد** عادةً عبر نفق SSH أو Tailscale VPN ‏([الوصول البعيد](/ar/gateway/remote)).
+- **Loopback أولاً**: القيمة الافتراضية لـ Gateway WS هي `ws://127.0.0.1:18789`.
+  تتطلب الارتباطات خارج loopback مسار مصادقة Gateway صالحاً: مصادقة
+  الرمز/كلمة المرور بسر مشترك، أو نشر `trusted-proxy`
+  خارج loopback مهيأ بشكل صحيح.
+- يوصى باستخدام **Gateway واحد لكل مضيف**. للعزل، شغّل عدة بوابات بملفات تعريف ومنافذ معزولة ([بوابات متعددة](/ar/gateway/multiple-gateways)).
+- يتم تقديم **مضيف Canvas** على المنفذ نفسه مثل Gateway (`/__openclaw__/canvas/`, `/__openclaw__/a2ui/`)، ومحمي بمصادقة Gateway عند ربطه بما يتجاوز loopback.
+- يكون **الوصول البعيد** عادةً عبر نفق SSH أو Tailscale VPN ([الوصول البعيد](/ar/gateway/remote)).
 
-المراجع الأساسية:
+المراجع الرئيسية:
 
 - [بنية Gateway](/ar/concepts/architecture)
 - [بروتوكول Gateway](/ar/gateway/protocol)
 - [دليل تشغيل Gateway](/ar/gateway)
 - [أسطح الويب + أوضاع الربط](/ar/web)
 
-## الاقتران + الهوية
+## الإقران + الهوية
 
-- [نظرة عامة على الاقتران (الرسائل المباشرة + Nodes)](/ar/channels/pairing)
-- [اقتران Node المملوك لـ Gateway](/ar/gateway/pairing)
-- [CLI الخاص بالأجهزة (الاقتران + تدوير الرموز)](/ar/cli/devices)
-- [CLI الخاص بالاقتران (موافقات الرسائل المباشرة)](/ar/cli/pairing)
+- [نظرة عامة على الإقران (رسائل مباشرة + عُقد)](/ar/channels/pairing)
+- [إقران العُقد المملوك لـ Gateway](/ar/gateway/pairing)
+- [CLI الأجهزة (الإقران + تدوير الرموز)](/ar/cli/devices)
+- [CLI الإقران (موافقات الرسائل المباشرة)](/ar/cli/pairing)
 
 الثقة المحلية:
 
-- يمكن الموافقة تلقائيًا على اتصالات loopback المحلية المباشرة من أجل الاقتران للحفاظ على سلاسة تجربة الاستخدام على المضيف نفسه.
-- يمتلك OpenClaw أيضًا مسار self-connect ضيقًا محليًا للواجهة الخلفية/الحاوية من أجل تدفقات helper الموثوقة ذات السر المشترك.
-- لا تزال عملاء tailnet وLAN، بما في ذلك ارتباطات tailnet على المضيف نفسه، تتطلب موافقة اقتران صريحة.
+- يمكن اعتماد اتصالات local loopback المباشرة تلقائياً للإقران للحفاظ على
+  سلاسة تجربة المستخدم على المضيف نفسه.
+- لدى OpenClaw أيضاً مسار ضيق للاتصال الذاتي المحلي داخل الخلفية/الحاوية
+  لتدفقات المساعد الموثوقة ذات السر المشترك.
+- لا يزال عملاء tailnet وLAN، بما في ذلك ارتباطات tailnet على المضيف نفسه، يتطلبون
+  موافقة إقران صريحة.
 
 ## الاكتشاف + وسائل النقل
 
@@ -58,12 +59,12 @@ x-i18n:
 - [الوصول البعيد (SSH)](/ar/gateway/remote)
 - [Tailscale](/ar/gateway/tailscale)
 
-## Nodes + وسائل النقل
+## العُقد + وسائل النقل
 
-- [نظرة عامة على Nodes](/ar/nodes)
-- [بروتوكول Bridge ‏(Nodes القديمة، تاريخي)](/ar/gateway/bridge-protocol)
-- [دليل تشغيل Node: iOS](/ar/platforms/ios)
-- [دليل تشغيل Node: Android](/ar/platforms/android)
+- [نظرة عامة على العُقد](/ar/nodes)
+- [بروتوكول الجسر (العُقد القديمة، تاريخي)](/ar/gateway/bridge-protocol)
+- [دليل تشغيل العُقد: iOS](/ar/platforms/ios)
+- [دليل تشغيل العُقد: Android](/ar/platforms/android)
 
 ## الأمان
 
@@ -72,7 +73,7 @@ x-i18n:
 - [استكشاف الأخطاء وإصلاحها](/ar/gateway/troubleshooting)
 - [Doctor](/ar/gateway/doctor)
 
-## ذو صلة
+## ذات صلة
 
-- [نموذج شبكة Gateway](/ar/gateway/network-model)
+- [دليل تشغيل Gateway](/ar/gateway)
 - [الوصول البعيد](/ar/gateway/remote)

@@ -1,58 +1,56 @@
 ---
 read_when:
-    - تريد تشغيل OpenClaw على مدار الساعة طوال أيام الأسبوع على Azure مع تعزيز الأمان باستخدام Network Security Group
-    - تريد OpenClaw Gateway بدرجة إنتاجية ويعمل دائمًا على جهاز Azure Linux VM الخاص بك
-    - تريد إدارة آمنة عبر Azure Bastion SSH
-summary: تشغيل OpenClaw Gateway على مدار الساعة طوال أيام الأسبوع على جهاز Azure Linux VM مع حالة دائمة
+    - تريد تشغيل OpenClaw على Azure على مدار الساعة طوال أيام الأسبوع مع تقوية مجموعة أمان الشبكة.
+    - تريد OpenClaw Gateway جاهزًا للإنتاج ودائم التشغيل على VM بنظام Linux الخاص بك في Azure
+    - تريد إدارة آمنة باستخدام Azure Bastion SSH
+summary: تشغيل OpenClaw Gateway على مدار الساعة طوال أيام الأسبوع على جهاز افتراضي يعمل بنظام Linux على Azure مع حالة دائمة
 title: Azure
 x-i18n:
-    generated_at: "2026-04-24T07:46:59Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T07:59:44Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: e42e1a35e0340b959b73c548bc1efd6366bee38cf4c8cd23d986c5f14e5da0e0
+    source_hash: 7ab1b7d09dd66c495983aebd4766ce760d659cc6f362bbcd999d1c1345ae38f7
     source_path: install/azure.md
-    workflow: 15
+    workflow: 16
 ---
 
-# OpenClaw على Azure Linux VM
+يعد هذا الدليل جهاز Azure Linux VM باستخدام Azure CLI، ويطبق تقوية Network Security Group (NSG)، ويهيئ Azure Bastion للوصول عبر SSH، ويثبت OpenClaw.
 
-يشرح هذا الدليل كيفية إعداد Azure Linux VM باستخدام Azure CLI، وتطبيق تعزيز الأمان عبر Network Security Group ‏(NSG)، وتهيئة Azure Bastion للوصول عبر SSH، ثم تثبيت OpenClaw.
+## ما ستفعله
 
-## ما الذي ستفعله
-
-- إنشاء موارد Azure للشبكة والحوسبة (VNet، والشبكات الفرعية، وNSG) باستخدام Azure CLI
-- تطبيق قواعد Network Security Group بحيث يُسمح بـ SSH إلى VM فقط من Azure Bastion
-- استخدام Azure Bastion للوصول عبر SSH ‏(من دون عنوان IP عام على VM)
-- تثبيت OpenClaw باستخدام سكربت المثبت
+- إنشاء موارد الشبكات في Azure (VNet، والشبكات الفرعية، وNSG) وموارد الحوسبة باستخدام Azure CLI
+- تطبيق قواعد Network Security Group بحيث يسمح بالوصول إلى VM عبر SSH من Azure Bastion فقط
+- استخدام Azure Bastion للوصول عبر SSH (من دون عنوان IP عام على VM)
+- تثبيت OpenClaw باستخدام سكربت التثبيت
 - التحقق من Gateway
 
-## ما الذي تحتاج إليه
+## ما تحتاج إليه
 
-- اشتراك Azure مع صلاحية إنشاء موارد الحوسبة والشبكة
-- Azure CLI مثبتًا (راجع [خطوات تثبيت Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli) إذا لزم الأمر)
-- زوج مفاتيح SSH ‏(ويغطي الدليل توليده إذا لزم الأمر)
-- حوالي 20-30 دقيقة
+- اشتراك Azure مع صلاحية إنشاء موارد الحوسبة والشبكات
+- تثبيت Azure CLI (راجع [خطوات تثبيت Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli) عند الحاجة)
+- زوج مفاتيح SSH (يغطي الدليل إنشاء واحد عند الحاجة)
+- نحو 20-30 دقيقة
 
 ## تهيئة النشر
 
 <Steps>
-  <Step title="سجّل الدخول إلى Azure CLI">
+  <Step title="تسجيل الدخول إلى Azure CLI">
     ```bash
     az login
     az extension add -n ssh
     ```
 
-    امتداد `ssh` مطلوب من أجل Azure Bastion native SSH tunneling.
+    يلزم ملحق `ssh` لأنفاق SSH الأصلية عبر Azure Bastion.
 
   </Step>
 
-  <Step title="سجّل موفري الموارد المطلوبين (مرة واحدة)">
+  <Step title="تسجيل موفري الموارد المطلوبين (مرة واحدة)">
     ```bash
     az provider register --namespace Microsoft.Compute
     az provider register --namespace Microsoft.Network
     ```
 
-    تحقّق من التسجيل. انتظر حتى يظهر `Registered` لكليهما.
+    تحقق من التسجيل. انتظر حتى يعرض كلاهما `Registered`.
 
     ```bash
     az provider show --namespace Microsoft.Compute --query registrationState -o tsv
@@ -61,7 +59,7 @@ x-i18n:
 
   </Step>
 
-  <Step title="اضبط متغيرات النشر">
+  <Step title="تعيين متغيرات النشر">
     ```bash
     RG="rg-openclaw"
     LOCATION="westus2"
@@ -77,18 +75,18 @@ x-i18n:
     BASTION_PIP_NAME="pip-openclaw-bastion"
     ```
 
-    عدّل الأسماء ونطاقات CIDR بما يناسب بيئتك. يجب أن تكون شبكة Bastion الفرعية على الأقل `/26`.
+    عدل الأسماء ونطاقات CIDR بما يناسب بيئتك. يجب أن تكون شبكة Bastion الفرعية على الأقل `/26`.
 
   </Step>
 
-  <Step title="اختر مفتاح SSH">
+  <Step title="اختيار مفتاح SSH">
     استخدم مفتاحك العام الحالي إذا كان لديك واحد:
 
     ```bash
     SSH_PUB_KEY="$(cat ~/.ssh/id_ed25519.pub)"
     ```
 
-    وإذا لم يكن لديك مفتاح SSH بعد، فأنشئ واحدًا:
+    إذا لم يكن لديك مفتاح SSH بعد، فأنشئ واحدا:
 
     ```bash
     ssh-keygen -t ed25519 -a 100 -f ~/.ssh/id_ed25519 -C "you@example.com"
@@ -97,17 +95,17 @@ x-i18n:
 
   </Step>
 
-  <Step title="اختر حجم VM وحجم قرص نظام التشغيل">
+  <Step title="اختيار حجم VM وحجم قرص نظام التشغيل">
     ```bash
     VM_SIZE="Standard_B2as_v2"
     OS_DISK_SIZE_GB=64
     ```
 
-    اختر حجم VM وحجم قرص نظام تشغيل متاحين في اشتراكك والمنطقة الخاصة بك:
+    اختر حجم VM وحجم قرص نظام تشغيل متاحين في اشتراكك ومنطقتك:
 
-    - ابدأ بحجم أصغر للاستخدام الخفيف ثم قم بالتوسعة لاحقًا
-    - استخدم vCPU/RAM/قرص أكثر للأتمتة الأثقل، أو المزيد من القنوات، أو أحمال النماذج/الأدوات الأكبر
-    - إذا لم يكن حجم VM متاحًا في منطقتك أو ضمن حصة اشتراكك، فاختر أقرب SKU متاح
+    - ابدأ بحجم أصغر للاستخدام الخفيف، ثم وسع لاحقا
+    - استخدم مزيدا من vCPU/RAM/القرص للأتمتة الأثقل، أو المزيد من القنوات، أو أحمال عمل النماذج/الأدوات الأكبر
+    - إذا كان حجم VM غير متاح في منطقتك أو حصة اشتراكك، فاختر أقرب SKU متاح
 
     اعرض أحجام VM المتاحة في منطقتك المستهدفة:
 
@@ -115,7 +113,7 @@ x-i18n:
     az vm list-skus --location "${LOCATION}" --resource-type virtualMachines -o table
     ```
 
-    تحقّق من استخدام/حصة vCPU والقرص الحالية:
+    تحقق من استخدامك/حصتك الحالية من vCPU والقرص:
 
     ```bash
     az vm list-usage --location "${LOCATION}" -o table
@@ -127,14 +125,14 @@ x-i18n:
 ## نشر موارد Azure
 
 <Steps>
-  <Step title="أنشئ مجموعة الموارد">
+  <Step title="إنشاء مجموعة الموارد">
     ```bash
     az group create -n "${RG}" -l "${LOCATION}"
     ```
   </Step>
 
-  <Step title="أنشئ مجموعة أمان الشبكة">
-    أنشئ NSG وأضف القواعد بحيث لا يتمكن من الوصول عبر SSH إلى VM إلا Bastion subnet.
+  <Step title="إنشاء مجموعة أمان الشبكة">
+    أنشئ NSG وأضف قواعد بحيث لا تتمكن إلا شبكة Bastion الفرعية من الوصول إلى VM عبر SSH.
 
     ```bash
     az network nsg create \
@@ -165,12 +163,12 @@ x-i18n:
       --destination-port-ranges 22
     ```
 
-    تُقيَّم القواعد حسب الأولوية (الرقم الأقل أولًا): يُسمح بحركة Bastion عند 100، ثم يُحظر باقي SSH عند 110 و120.
+    تقيم القواعد حسب الأولوية (أقل رقم أولا): يسمح بحركة Bastion عند 100، ثم يحظر كل SSH الآخر عند 110 و120.
 
   </Step>
 
-  <Step title="أنشئ الشبكة الافتراضية والشبكات الفرعية">
-    أنشئ VNet مع شبكة VM الفرعية (مع إرفاق NSG)، ثم أضف شبكة Bastion الفرعية.
+  <Step title="إنشاء الشبكة الافتراضية والشبكات الفرعية">
+    أنشئ VNet مع شبكة VM الفرعية (مع ربط NSG)، ثم أضف شبكة Bastion الفرعية.
 
     ```bash
     az network vnet create \
@@ -193,8 +191,8 @@ x-i18n:
 
   </Step>
 
-  <Step title="أنشئ VM">
-    لا يحتوي VM على عنوان IP عام. ويكون الوصول عبر SSH حصريًا من خلال Azure Bastion.
+  <Step title="إنشاء VM">
+    لا يحتوي VM على عنوان IP عام. الوصول عبر SSH يتم حصريا من خلال Azure Bastion.
 
     ```bash
     az vm create \
@@ -211,9 +209,9 @@ x-i18n:
       --nsg ""
     ```
 
-    يؤدي `--public-ip-address ""` إلى منع تعيين عنوان IP عام. أما `--nsg ""` فيتجاوز إنشاء NSG لكل NIC (إذ تتولى NSG على مستوى الشبكة الفرعية الأمان).
+    يمنع `--public-ip-address ""` تعيين عنوان IP عام. يتخطى `--nsg ""` إنشاء NSG لكل NIC (يتولى NSG على مستوى الشبكة الفرعية الأمان).
 
-    **إمكانية إعادة الإنتاج:** يستخدم الأمر أعلاه `latest` لصورة Ubuntu. ولتثبيت إصدار محدد، اعرض الإصدارات المتاحة واستبدل `latest`:
+    **قابلية إعادة الإنتاج:** يستخدم الأمر أعلاه `latest` لصورة Ubuntu. لتثبيت إصدار محدد، اعرض الإصدارات المتاحة واستبدل `latest`:
 
     ```bash
     az vm image list \
@@ -223,8 +221,8 @@ x-i18n:
 
   </Step>
 
-  <Step title="أنشئ Azure Bastion">
-    يوفّر Azure Bastion وصولًا مُدارًا عبر SSH إلى VM من دون كشف عنوان IP عام. ويتطلب Standard SKU مع tunneling لاستخدام `az network bastion ssh` المعتمد على CLI.
+  <Step title="إنشاء Azure Bastion">
+    يوفر Azure Bastion وصول SSH مدارا إلى VM من دون تعريض عنوان IP عام. يلزم Standard SKU مع تمكين الأنفاق لاستخدام `az network bastion ssh` المستند إلى CLI.
 
     ```bash
     az network public-ip create \
@@ -238,7 +236,7 @@ x-i18n:
       --sku Standard --enable-tunneling true
     ```
 
-    يستغرق توفير Bastion عادةً 5-10 دقائق، لكنه قد يستغرق حتى 15-30 دقيقة في بعض المناطق.
+    يستغرق توفير Bastion عادة 5-10 دقائق، لكنه قد يستغرق حتى 15-30 دقيقة في بعض المناطق.
 
   </Step>
 </Steps>
@@ -246,7 +244,7 @@ x-i18n:
 ## تثبيت OpenClaw
 
 <Steps>
-  <Step title="ادخل إلى VM عبر SSH من خلال Azure Bastion">
+  <Step title="الوصول إلى VM عبر SSH من خلال Azure Bastion">
     ```bash
     VM_ID="$(az vm show -g "${RG}" -n "${VM_NAME}" --query id -o tsv)"
 
@@ -261,44 +259,44 @@ x-i18n:
 
   </Step>
 
-  <Step title="ثبّت OpenClaw (داخل shell الخاصة بـ VM)">
+  <Step title="تثبيت OpenClaw (داخل shell الخاص بـ VM)">
     ```bash
     curl -fsSL https://openclaw.ai/install.sh -o /tmp/install.sh
     bash /tmp/install.sh
     rm -f /tmp/install.sh
     ```
 
-    يقوم المثبت بتثبيت Node LTS والتبعيات إذا لم تكن موجودة، ويثبّت OpenClaw، ويطلق معالج onboarding. راجع [التثبيت](/ar/install) للتفاصيل.
+    يثبت المثبت Node LTS والتبعيات إذا لم تكن موجودة بالفعل، ويثبت OpenClaw، ويشغل معالج الإعداد الأولي. راجع [التثبيت](/ar/install) للحصول على التفاصيل.
 
   </Step>
 
-  <Step title="تحقق من Gateway">
-    بعد اكتمال onboarding:
+  <Step title="التحقق من Gateway">
+    بعد اكتمال الإعداد الأولي:
 
     ```bash
     openclaw gateway status
     ```
 
-    تمتلك معظم فرق Azure المؤسسية بالفعل تراخيص GitHub Copilot. وإذا كان هذا ينطبق على حالتك، فنوصي باختيار مزود GitHub Copilot في معالج onboarding الخاص بـ OpenClaw. راجع [مزود GitHub Copilot](/ar/providers/github-copilot).
+    لدى معظم فرق Azure المؤسسية تراخيص GitHub Copilot بالفعل. إذا كان هذا هو حالك، نوصي باختيار موفر GitHub Copilot في معالج الإعداد الأولي في OpenClaw. راجع [موفر GitHub Copilot](/ar/providers/github-copilot).
 
   </Step>
 </Steps>
 
 ## اعتبارات التكلفة
 
-تعمل Azure Bastion Standard SKU بتكلفة تقارب **\$140/شهريًا** ويعمل VM ‏(Standard_B2as_v2) بتكلفة تقارب **\$55/شهريًا**.
+يعمل Azure Bastion Standard SKU بتكلفة تقارب **\$140/شهريا** ويعمل VM (Standard_B2as_v2) بتكلفة تقارب **\$55/شهريا**.
 
 لتقليل التكاليف:
 
-- **ألغِ تخصيص VM** عندما لا تكون بحاجة إليه (يوقف فوترة الحوسبة؛ وتبقى رسوم الأقراص). ولن يكون OpenClaw Gateway قابلاً للوصول أثناء إلغاء تخصيص VM — أعد تشغيله عندما تحتاج إلى أن يكون متاحًا مجددًا:
+- **إلغاء تخصيص VM** عند عدم استخدامه (يوقف فوترة الحوسبة؛ تبقى رسوم القرص). لن يكون OpenClaw Gateway قابلا للوصول أثناء إلغاء تخصيص VM — أعد تشغيله عندما تحتاج إلى تشغيله مباشرة مرة أخرى:
 
   ```bash
   az vm deallocate -g "${RG}" -n "${VM_NAME}"
   az vm start -g "${RG}" -n "${VM_NAME}"   # restart later
   ```
 
-- **احذف Bastion عندما لا تحتاج إليه** وأعد إنشاؤه عندما تحتاج إلى الوصول عبر SSH. ويُعد Bastion أكبر عنصر في التكلفة ولا يستغرق سوى بضع دقائق للتوفير.
-- **استخدم Basic Bastion SKU** ‏(~\$38/شهريًا) إذا كنت تحتاج فقط إلى SSH عبر البوابة ولا تحتاج إلى tunneling عبر CLI ‏(`az network bastion ssh`).
+- **احذف Bastion عندما لا تحتاج إليه** وأعد إنشاءه عندما تحتاج إلى وصول SSH. Bastion هو أكبر مكون تكلفة ولا يستغرق توفيره إلا بضع دقائق.
+- **استخدم Basic Bastion SKU** (~\$38/شهريا) إذا كنت تحتاج فقط إلى SSH المستند إلى Portal ولا تحتاج إلى أنفاق CLI (`az network bastion ssh`).
 
 ## التنظيف
 
@@ -308,14 +306,14 @@ x-i18n:
 az group delete -n "${RG}" --yes --no-wait
 ```
 
-يؤدي ذلك إلى إزالة مجموعة الموارد وكل ما بداخلها (VM، وVNet، وNSG، وBastion، وIP العام).
+يزيل هذا مجموعة الموارد وكل ما بداخلها (VM، وVNet، وNSG، وBastion، وعنوان IP العام).
 
 ## الخطوات التالية
 
-- اضبط قنوات المراسلة: [القنوات](/ar/channels)
-- اقترن بالأجهزة المحلية كعُقد: [العُقد](/ar/nodes)
-- اضبط Gateway: [إعدادات Gateway](/ar/gateway/configuration)
-- لمزيد من التفاصيل حول نشر OpenClaw على Azure مع مزود نماذج GitHub Copilot: [OpenClaw on Azure with GitHub Copilot](https://github.com/johnsonshi/openclaw-azure-github-copilot)
+- إعداد قنوات المراسلة: [القنوات](/ar/channels)
+- إقران الأجهزة المحلية كعقد: [العقد](/ar/nodes)
+- تهيئة Gateway: [تهيئة Gateway](/ar/gateway/configuration)
+- لمزيد من التفاصيل حول نشر OpenClaw على Azure باستخدام موفر نموذج GitHub Copilot: [OpenClaw على Azure مع GitHub Copilot](https://github.com/johnsonshi/openclaw-azure-github-copilot)
 
 ## ذو صلة
 

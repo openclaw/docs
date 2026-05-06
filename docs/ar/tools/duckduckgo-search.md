@@ -1,34 +1,34 @@
 ---
 read_when:
-    - تريد مزوّد بحث ويب لا يتطلب مفتاح API
-    - تريد استخدام DuckDuckGo مع `web_search`
-    - تحتاج إلى حل بحث احتياطي بلا إعدادات
-summary: بحث الويب DuckDuckGo -- مزوّد احتياطي بلا مفاتيح (تجريبي، قائم على HTML)
+    - تريد موفّر بحث على الويب لا يتطلب مفتاح API
+    - تريد استخدام DuckDuckGo من أجل web_search
+    - تحتاج إلى بديل احتياطي للبحث بلا إعدادات
+summary: بحث الويب عبر DuckDuckGo -- مزوّد احتياطي لا يتطلب مفتاحاً (تجريبي، مستند إلى HTML)
 title: بحث DuckDuckGo
 x-i18n:
-    generated_at: "2026-04-24T08:08:17Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T08:16:05Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 6828830079b0bee1321f0971ec120ae98bc72ab040ad3a0fe30fe89217ed0722
+    source_hash: 89c23535730dc272b88e22d1dbeef61abd55a7968d9e57bdce20594df8a2c0f2
     source_path: tools/duckduckgo-search.md
-    workflow: 15
+    workflow: 16
 ---
 
-يدعم OpenClaw محرك DuckDuckGo كمزوّد `web_search` **بلا مفاتيح**. لا حاجة إلى
-مفتاح API أو حساب.
+يدعم OpenClaw DuckDuckGo بوصفه مزوّد `web_search` **بلا مفتاح**. لا يلزم
+أي مفتاح API أو حساب.
 
 <Warning>
-  يُعد تكامل DuckDuckGo تكاملًا **تجريبيًا وغير رسمي** يسحب النتائج
-  من صفحات البحث غير المعتمدة على JavaScript في DuckDuckGo — وليس من API رسمية. توقّع
-  حدوث أعطال متقطعة بسبب صفحات تحدي الروبوتات أو تغيّرات HTML.
+  تكامل DuckDuckGo **تجريبي وغير رسمي** يجلب النتائج من صفحات البحث غير المعتمدة
+  على JavaScript في DuckDuckGo - وليس من API رسمية. توقّع حدوث أعطال
+  أحيانًا بسبب صفحات تحدّي البوتات أو تغييرات HTML.
 </Warning>
 
 ## الإعداد
 
-لا حاجة إلى مفتاح API — فقط اضبط DuckDuckGo كمزوّد لديك:
+لا حاجة إلى مفتاح API - فقط اضبط DuckDuckGo كمزوّدك:
 
 <Steps>
-  <Step title="التهيئة">
+  <Step title="التكوين">
     ```bash
     openclaw configure --section web
     # Select "duckduckgo" as the provider
@@ -36,7 +36,7 @@ x-i18n:
   </Step>
 </Steps>
 
-## الإعداد
+## التكوين
 
 ```json5
 {
@@ -69,48 +69,48 @@ x-i18n:
 }
 ```
 
-## معلمات الأداة
+## معاملات الأداة
 
 <ParamField path="query" type="string" required>
 استعلام البحث.
 </ParamField>
 
 <ParamField path="count" type="number" default="5">
-النتائج المطلوب إرجاعها (من 1 إلى 10).
+النتائج المطلوب إرجاعها (1-10).
 </ParamField>
 
 <ParamField path="region" type="string">
-رمز المنطقة في DuckDuckGo (مثل `us-en`، و`uk-en`، و`de-de`).
+رمز منطقة DuckDuckGo (مثل `us-en`، `uk-en`، `de-de`).
 </ParamField>
 
 <ParamField path="safeSearch" type="'strict' | 'moderate' | 'off'" default="moderate">
 مستوى SafeSearch.
 </ParamField>
 
-يمكن أيضًا ضبط المنطقة وSafeSearch في إعداد Plugin (انظر أعلاه) — وتتجاوز
-معلمات الأداة قيم الإعداد لكل استعلام.
+يمكن أيضًا ضبط المنطقة وSafeSearch في تكوين Plugin (انظر أعلاه) - معاملات
+الأداة تتجاوز قيم التكوين لكل استعلام.
 
 ## ملاحظات
 
-- **من دون مفتاح API** — يعمل مباشرة، ومن دون أي إعداد
-- **تجريبي** — يجمع النتائج من صفحات بحث DuckDuckGo HTML غير المعتمدة على JavaScript،
-  وليس من API أو SDK رسميين
-- **خطر تحدي الروبوتات** — قد تعرض DuckDuckGo اختبارات CAPTCHA أو تحظر الطلبات
-  عند الاستخدام الكثيف أو المؤتمت
-- **تحليل HTML** — تعتمد النتائج على بنية الصفحة، والتي قد تتغير
-  من دون إشعار
-- **ترتيب الاكتشاف التلقائي** — DuckDuckGo هي أول مزوّد احتياطي بلا مفاتيح
-  (الترتيب 100) في الاكتشاف التلقائي. تعمل المزوّدات المعتمدة على API والمهيأة بمفاتيح
-  أولًا، ثم Ollama Web Search (الترتيب 110)، ثم SearXNG (الترتيب 200)
-- **تفترض SafeSearch القيمة moderate افتراضيًا** عند عدم التهيئة
+- **لا يوجد مفتاح API** - يعمل مباشرة، بدون أي تكوين
+- **تجريبي** - يجمع النتائج من صفحات بحث HTML غير المعتمدة على JavaScript في
+  DuckDuckGo، وليس من API أو SDK رسمي
+- **خطر تحدّي البوتات** - قد يعرض DuckDuckGo اختبارات CAPTCHA أو يحظر الطلبات
+  عند الاستخدام الكثيف أو الآلي
+- **تحليل HTML** - تعتمد النتائج على بنية الصفحة، والتي يمكن أن تتغيّر بدون
+  إشعار
+- **ترتيب الاكتشاف التلقائي** - DuckDuckGo هو أول بديل بلا مفتاح
+  (الترتيب 100) في الاكتشاف التلقائي. تعمل المزوّدات المدعومة بواجهة API
+  ذات المفاتيح المكوّنة أولًا، ثم Ollama Web Search (الترتيب 110)، ثم SearXNG (الترتيب 200)
+- **SafeSearch افتراضيًا moderate** عندما لا يكون مكوّنًا
 
 <Tip>
-  للاستخدام الإنتاجي، فكّر في [Brave Search](/ar/tools/brave-search) (تتوفر
-  طبقة مجانية) أو مزود آخر مدعوم عبر API.
+  للاستخدام الإنتاجي، ضع في اعتبارك [Brave Search](/ar/tools/brave-search) (تتوفر
+  طبقة مجانية) أو مزوّدًا آخر مدعومًا بواجهة API.
 </Tip>
 
 ## ذو صلة
 
-- [نظرة عامة على Web Search](/ar/tools/web) -- جميع المزوّدين والاكتشاف التلقائي
+- [نظرة عامة على Web Search](/ar/tools/web) -- جميع المزوّدات والاكتشاف التلقائي
 - [Brave Search](/ar/tools/brave-search) -- نتائج منظمة مع طبقة مجانية
 - [Exa Search](/ar/tools/exa-search) -- بحث عصبي مع استخراج المحتوى
