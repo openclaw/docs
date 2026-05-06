@@ -257,8 +257,8 @@ current OpenClaw or a local checkout until a newer npm package is published.
   </Accordion>
 
   <Accordion title="Memory plugins">
-    - `memory-core` — bundled memory search (default via `plugins.slots.memory`)
-    - `memory-lancedb` — LanceDB-backed long-term memory with auto-recall/capture (set `plugins.slots.memory = "memory-lancedb"`)
+    - `memory-core` - bundled memory search (default via `plugins.slots.memory`)
+    - `memory-lancedb` - LanceDB-backed long-term memory with auto-recall/capture (set `plugins.slots.memory = "memory-lancedb"`)
 
     See [Memory LanceDB](/plugins/memory-lancedb) for OpenAI-compatible
     embedding setup, Ollama examples, recall limits, and troubleshooting.
@@ -270,8 +270,8 @@ current OpenClaw or a local checkout until a newer npm package is published.
   </Accordion>
 
   <Accordion title="Other">
-    - `browser` — bundled browser plugin for the browser tool, `openclaw browser` CLI, `browser.request` gateway method, browser runtime, and default browser control service (enabled by default; disable before replacing it)
-    - `copilot-proxy` — VS Code Copilot Proxy bridge (disabled by default)
+    - `browser` - bundled browser plugin for the browser tool, `openclaw browser` CLI, `browser.request` gateway method, browser runtime, and default browser control service (enabled by default; disable before replacing it)
+    - `copilot-proxy` - VS Code Copilot Proxy bridge (disabled by default)
 
   </Accordion>
 </AccordionGroup>
@@ -344,7 +344,7 @@ OpenClaw scans for plugins in this order (first match wins):
 
 <Steps>
   <Step title="Config paths">
-    `plugins.load.paths` — explicit file or directory paths. Paths that point
+    `plugins.load.paths` - explicit file or directory paths. Paths that point
     back at OpenClaw's own packaged bundled plugin directories are ignored;
     run `openclaw doctor --fix` to remove those stale aliases.
   </Step>
@@ -714,9 +714,9 @@ For full typed hook behavior, see [SDK overview](/plugins/sdk-overview#hook-deci
 
 ## Related
 
-- [Building plugins](/plugins/building-plugins) — create your own plugin
-- [Plugin bundles](/plugins/bundles) — Codex/Claude/Cursor bundle compatibility
-- [Plugin manifest](/plugins/manifest) — manifest schema
-- [Registering tools](/plugins/building-plugins#registering-agent-tools) — add agent tools in a plugin
-- [Plugin internals](/plugins/architecture) — capability model and load pipeline
-- [Community plugins](/plugins/community) — third-party listings
+- [Building plugins](/plugins/building-plugins) - create your own plugin
+- [Plugin bundles](/plugins/bundles) - Codex/Claude/Cursor bundle compatibility
+- [Plugin manifest](/plugins/manifest) - manifest schema
+- [Registering tools](/plugins/building-plugins#registering-agent-tools) - add agent tools in a plugin
+- [Plugin internals](/plugins/architecture) - capability model and load pipeline
+- [Community plugins](/plugins/community) - third-party listings
