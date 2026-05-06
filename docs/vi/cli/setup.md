@@ -1,26 +1,30 @@
 ---
 read_when:
-    - Bạn đang thực hiện thiết lập lần chạy đầu tiên mà không có đầy đủ quy trình hướng dẫn ban đầu của CLI
-    - Bạn muốn thiết lập đường dẫn không gian làm việc mặc định
-summary: Tài liệu tham chiếu CLI cho `openclaw setup` (khởi tạo cấu hình + không gian làm việc)
+    - Bạn đang thực hiện thiết lập lần chạy đầu tiên mà không có quy trình hướng dẫn làm quen CLI đầy đủ
+    - Bạn muốn đặt đường dẫn không gian làm việc mặc định
+summary: Tài liệu tham khảo CLI cho `openclaw setup` (khởi tạo cấu hình + không gian làm việc)
 title: Thiết lập
 x-i18n:
-    generated_at: "2026-05-02T20:42:46Z"
+    generated_at: "2026-05-06T17:54:20Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 805f60c81f5fc216fc446641efe0bcb60bb6c34b3a50a6fc9e767461206e5f90
+    source_hash: 9a47d41f8c6c59395eaa4bc6055fa09f863af819c7920e29969793904180c910
     source_path: cli/setup.md
     workflow: 16
 ---
 
 # `openclaw setup`
 
-Khởi tạo `~/.openclaw/openclaw.json` và không gian làm việc của tác nhân.
+Khởi tạo `~/.openclaw/openclaw.json` và không gian làm việc của agent.
+
+<Note>
+`openclaw setup` dành cho các bản cài đặt cấu hình có thể thay đổi. Ở chế độ Nix (`OPENCLAW_NIX_MODE=1`), OpenClaw từ chối ghi thiết lập vì tệp cấu hình được Nix quản lý. Agent nên dùng [nix-openclaw Quick Start](https://github.com/openclaw/nix-openclaw#quick-start) chính thức hoặc cấu hình nguồn tương đương cho một gói Nix khác.
+</Note>
 
 Liên quan:
 
 - Bắt đầu: [Bắt đầu](/vi/start/getting-started)
-- Thiết lập ban đầu CLI: [Thiết lập ban đầu (CLI)](/vi/start/wizard)
+- Nhập môn CLI: [Nhập môn (CLI)](/vi/start/wizard)
 
 ## Ví dụ
 
@@ -34,17 +38,17 @@ openclaw setup --non-interactive --mode remote --remote-url wss://gateway-host:1
 
 ## Tùy chọn
 
-- `--workspace <dir>`: thư mục không gian làm việc của tác nhân (được lưu dưới dạng `agents.defaults.workspace`)
-- `--wizard`: chạy quy trình thiết lập ban đầu
-- `--non-interactive`: chạy quy trình thiết lập ban đầu mà không có lời nhắc
-- `--mode <local|remote>`: chế độ thiết lập ban đầu
-- `--import-from <provider>`: nhà cung cấp di chuyển để chạy trong quá trình thiết lập ban đầu
-- `--import-source <path>`: home tác nhân nguồn cho `--import-from`
-- `--import-secrets`: nhập các bí mật được hỗ trợ trong quá trình di chuyển khi thiết lập ban đầu
-- `--remote-url <url>`: URL WebSocket của Gateway từ xa
+- `--workspace <dir>`: thư mục không gian làm việc của agent (được lưu dưới dạng `agents.defaults.workspace`)
+- `--wizard`: chạy nhập môn
+- `--non-interactive`: chạy nhập môn không có lời nhắc
+- `--mode <local|remote>`: chế độ nhập môn
+- `--import-from <provider>`: nhà cung cấp di chuyển sẽ chạy trong quá trình nhập môn
+- `--import-source <path>`: thư mục chính của agent nguồn cho `--import-from`
+- `--import-secrets`: nhập các bí mật được hỗ trợ trong quá trình di chuyển khi nhập môn
+- `--remote-url <url>`: URL WebSocket Gateway từ xa
 - `--remote-token <token>`: token Gateway từ xa
 
-Để chạy quy trình thiết lập ban đầu qua setup:
+Để chạy nhập môn qua thiết lập:
 
 ```bash
 openclaw setup --wizard
@@ -52,10 +56,10 @@ openclaw setup --wizard
 
 Ghi chú:
 
-- Lệnh `openclaw setup` đơn thuần khởi tạo cấu hình + không gian làm việc mà không chạy toàn bộ luồng thiết lập ban đầu.
-- Sau khi setup đơn thuần, hãy chạy `openclaw configure` để chọn mô hình, kênh, Gateway, plugin, skills hoặc kiểm tra tình trạng.
-- Quy trình thiết lập ban đầu tự động chạy khi có bất kỳ cờ thiết lập ban đầu nào (`--wizard`, `--non-interactive`, `--mode`, `--import-from`, `--import-source`, `--import-secrets`, `--remote-url`, `--remote-token`).
-- Nếu phát hiện trạng thái Hermes, quy trình thiết lập ban đầu tương tác có thể tự động đề xuất di chuyển. Thiết lập ban đầu nhập dữ liệu yêu cầu setup mới; dùng [Di chuyển](/vi/cli/migrate) cho kế hoạch chạy thử, bản sao lưu và chế độ ghi đè ngoài quy trình thiết lập ban đầu.
+- `openclaw setup` thông thường khởi tạo cấu hình + không gian làm việc mà không chạy toàn bộ luồng nhập môn.
+- Sau khi thiết lập thông thường, chạy `openclaw configure` để chọn mô hình, kênh, Gateway, plugins, skills hoặc kiểm tra tình trạng.
+- Nhập môn tự động chạy khi có bất kỳ cờ nhập môn nào (`--wizard`, `--non-interactive`, `--mode`, `--import-from`, `--import-source`, `--import-secrets`, `--remote-url`, `--remote-token`).
+- Nếu phát hiện trạng thái Hermes, nhập môn tương tác có thể tự động đề xuất di chuyển. Nhập môn bằng cách nhập yêu cầu một thiết lập mới; dùng [Di chuyển](/vi/cli/migrate) cho kế hoạch chạy thử, bản sao lưu và chế độ ghi đè bên ngoài nhập môn.
 
 ## Liên quan
 

@@ -1,69 +1,69 @@
 ---
 read_when:
     - Bạn muốn OpenClaw chạy 24/7 trên GCP
-    - Bạn muốn một Gateway cấp sản xuất, luôn hoạt động trên VM của riêng mình
-    - Bạn muốn toàn quyền kiểm soát việc lưu giữ dữ liệu, các tệp nhị phân và hành vi khởi động lại
+    - Bạn muốn một Gateway đạt chuẩn triển khai thực tế, luôn hoạt động trên máy ảo của riêng mình
+    - Bạn muốn toàn quyền kiểm soát việc lưu trữ bền vững, các tệp nhị phân và hành vi khởi động lại
 summary: Chạy OpenClaw Gateway 24/7 trên máy ảo GCP Compute Engine (Docker) với trạng thái bền vững
 title: GCP
 x-i18n:
-    generated_at: "2026-05-06T09:18:01Z"
+    generated_at: "2026-05-06T17:56:29Z"
     model: gpt-5.5
     provider: openai
-    source_hash: eefd3a324ababdaa3072cda5354c1d59ddfe80c2f88f24a4ad21208f54636e89
+    source_hash: 678253bd90f0694668400ffddba957e442f8aaed3f5308af3c2481940e104733
     source_path: install/gcp.md
     workflow: 16
 ---
 
-Chạy một OpenClaw Gateway bền bỉ trên VM GCP Compute Engine bằng Docker, với trạng thái lâu bền, các binary được tích hợp sẵn, và hành vi khởi động lại an toàn.
+Chạy một OpenClaw Gateway lâu dài trên VM GCP Compute Engine bằng Docker, với trạng thái bền vững, các binary được tích hợp sẵn và hành vi khởi động lại an toàn.
 
 Nếu bạn muốn "OpenClaw 24/7 với ~$5-12/tháng", đây là một thiết lập đáng tin cậy trên Google Cloud.
-Giá thay đổi theo loại máy và khu vực; hãy chọn VM nhỏ nhất phù hợp với khối lượng công việc của bạn và tăng quy mô nếu gặp OOM.
+Giá thay đổi theo loại máy và khu vực; hãy chọn VM nhỏ nhất phù hợp với workload của bạn và nâng cấp nếu gặp OOM.
 
 ## Chúng ta đang làm gì (nói đơn giản)?
 
 - Tạo một dự án GCP và bật thanh toán
 - Tạo một VM Compute Engine
-- Cài đặt Docker (môi trường chạy ứng dụng cô lập)
+- Cài đặt Docker (runtime ứng dụng cô lập)
 - Khởi động OpenClaw Gateway trong Docker
-- Lưu bền bỉ `~/.openclaw` + `~/.openclaw/workspace` trên máy chủ (sống sót qua các lần khởi động lại/tạo lại)
-- Truy cập Giao diện điều khiển từ máy tính xách tay của bạn qua một SSH tunnel
+- Lưu bền vững `~/.openclaw` + `~/.openclaw/workspace` trên host (tồn tại sau khi khởi động lại/rebuild)
+- Truy cập Control UI từ laptop của bạn qua SSH tunnel
 
 Trạng thái `~/.openclaw` được mount đó bao gồm `openclaw.json`, từng agent
 `agents/<agentId>/agent/auth-profiles.json`, và `.env`.
 
 Gateway có thể được truy cập qua:
 
-- Chuyển tiếp cổng SSH từ máy tính xách tay của bạn
+- Chuyển tiếp cổng SSH từ laptop của bạn
 - Mở cổng trực tiếp nếu bạn tự quản lý firewall và token
 
 Hướng dẫn này dùng Debian trên GCP Compute Engine.
-Ubuntu cũng hoạt động; ánh xạ các gói tương ứng.
+Ubuntu cũng hoạt động; hãy ánh xạ package tương ứng.
 Để xem luồng Docker chung, xem [Docker](/vi/install/docker).
 
 ---
 
-## Lộ trình nhanh (người vận hành có kinh nghiệm)
+## Lộ trình nhanh (operator có kinh nghiệm)
 
 1. Tạo dự án GCP + bật Compute Engine API
 2. Tạo VM Compute Engine (e2-small, Debian 12, 20GB)
 3. SSH vào VM
 4. Cài đặt Docker
-5. Clone kho lưu trữ OpenClaw
-6. Tạo các thư mục máy chủ bền bỉ
+5. Clone repository OpenClaw
+6. Tạo các thư mục host bền vững
 7. Cấu hình `.env` và `docker-compose.yml`
-8. Tích hợp các binary cần thiết, build, và khởi chạy
+8. Tích hợp các binary cần thiết, build và khởi chạy
 
 ---
 
 ## Bạn cần gì
 
 - Tài khoản GCP (đủ điều kiện free tier cho e2-micro)
-- Đã cài gcloud CLI (hoặc dùng Cloud Console)
-- Quyền truy cập SSH từ máy tính xách tay của bạn
+- Đã cài đặt gcloud CLI (hoặc dùng Cloud Console)
+- Quyền truy cập SSH từ laptop của bạn
 - Quen cơ bản với SSH + sao chép/dán
 - ~20-30 phút
 - Docker và Docker Compose
-- Thông tin xác thực auth mô hình
+- Thông tin xác thực model
 - Thông tin xác thực provider tùy chọn
   - Mã QR WhatsApp
   - Token bot Telegram
@@ -86,7 +86,7 @@ Ubuntu cũng hoạt động; ánh xạ các gói tương ứng.
 
     **Tùy chọn B: Cloud Console**
 
-    Tất cả các bước có thể được thực hiện qua giao diện web tại [https://console.cloud.google.com](https://console.cloud.google.com)
+    Tất cả các bước có thể thực hiện qua UI web tại [https://console.cloud.google.com](https://console.cloud.google.com)
 
   </Step>
 
@@ -108,21 +108,21 @@ Ubuntu cũng hoạt động; ánh xạ các gói tương ứng.
 
     **Console:**
 
-    1. Đi tới IAM & Admin > Create Project
+    1. Vào IAM & Admin > Create Project
     2. Đặt tên và tạo
     3. Bật thanh toán cho dự án
-    4. Điều hướng tới APIs & Services > Enable APIs > tìm "Compute Engine API" > Enable
+    4. Điều hướng đến APIs & Services > Enable APIs > tìm "Compute Engine API" > Enable
 
   </Step>
 
   <Step title="Tạo VM">
     **Loại máy:**
 
-    | Loại      | Thông số                    | Chi phí               | Ghi chú                                        |
+    | Loại      | Thông số                 | Chi phí            | Ghi chú                                      |
     | --------- | ------------------------ | ------------------ | -------------------------------------------- |
-    | e2-medium | 2 vCPU, 4GB RAM          | ~$25/tháng            | Đáng tin cậy nhất cho các bản build Docker cục bộ        |
-    | e2-small  | 2 vCPU, 2GB RAM          | ~$12/tháng            | Tối thiểu được khuyến nghị cho build Docker         |
-    | e2-micro  | 2 vCPU (dùng chung), 1GB RAM | Đủ điều kiện free tier | Thường lỗi với Docker build OOM (exit 137) |
+    | e2-medium | 2 vCPU, 4GB RAM          | ~$25/tháng         | Đáng tin cậy nhất cho build Docker cục bộ    |
+    | e2-small  | 2 vCPU, 2GB RAM          | ~$12/tháng         | Mức tối thiểu khuyến nghị cho build Docker   |
+    | e2-micro  | 2 vCPU (shared), 1GB RAM | Đủ điều kiện free tier | Thường thất bại với OOM khi build Docker (exit 137) |
 
     **CLI:**
 
@@ -137,11 +137,11 @@ Ubuntu cũng hoạt động; ánh xạ các gói tương ứng.
 
     **Console:**
 
-    1. Đi tới Compute Engine > VM instances > Create instance
+    1. Vào Compute Engine > VM instances > Create instance
     2. Tên: `openclaw-gateway`
-    3. Khu vực: `us-central1`, Vùng: `us-central1-a`
+    3. Khu vực: `us-central1`, Zone: `us-central1-a`
     4. Loại máy: `e2-small`
-    5. Đĩa khởi động: Debian 12, 20GB
+    5. Boot disk: Debian 12, 20GB
     6. Tạo
 
   </Step>
@@ -155,9 +155,9 @@ Ubuntu cũng hoạt động; ánh xạ các gói tương ứng.
 
     **Console:**
 
-    Nhấp vào nút "SSH" cạnh VM của bạn trong bảng điều khiển Compute Engine.
+    Nhấp nút "SSH" bên cạnh VM của bạn trong dashboard Compute Engine.
 
-    Lưu ý: Việc truyền khóa SSH có thể mất 1-2 phút sau khi tạo VM. Nếu kết nối bị từ chối, hãy chờ rồi thử lại.
+    Lưu ý: Việc lan truyền khóa SSH có thể mất 1-2 phút sau khi tạo VM. Nếu kết nối bị từ chối, hãy chờ rồi thử lại.
 
   </Step>
 
@@ -190,19 +190,19 @@ Ubuntu cũng hoạt động; ánh xạ các gói tương ứng.
 
   </Step>
 
-  <Step title="Clone kho lưu trữ OpenClaw">
+  <Step title="Clone repository OpenClaw">
     ```bash
     git clone https://github.com/openclaw/openclaw.git
     cd openclaw
     ```
 
-    Hướng dẫn này giả định rằng bạn sẽ build một image tùy chỉnh để đảm bảo binary được lưu bền bỉ.
+    Hướng dẫn này giả định bạn sẽ build image tùy chỉnh để đảm bảo binary được lưu bền vững.
 
   </Step>
 
-  <Step title="Tạo các thư mục máy chủ bền bỉ">
-    Container Docker là tạm thời.
-    Mọi trạng thái dài hạn phải nằm trên máy chủ.
+  <Step title="Tạo các thư mục host bền vững">
+    Docker container là tạm thời.
+    Mọi trạng thái tồn tại lâu dài phải nằm trên host.
 
     ```bash
     mkdir -p ~/.openclaw
@@ -212,7 +212,7 @@ Ubuntu cũng hoạt động; ánh xạ các gói tương ứng.
   </Step>
 
   <Step title="Cấu hình biến môi trường">
-    Tạo `.env` trong gốc kho lưu trữ.
+    Tạo `.env` ở root của repository.
 
     ```bash
     OPENCLAW_IMAGE=openclaw:latest
@@ -227,10 +227,11 @@ Ubuntu cũng hoạt động; ánh xạ các gói tương ứng.
     XDG_CONFIG_HOME=/home/node/.openclaw
     ```
 
-    Để trống `OPENCLAW_GATEWAY_TOKEN` trừ khi bạn rõ ràng muốn
-    quản lý nó thông qua `.env`; OpenClaw ghi một gateway token ngẫu nhiên vào
-    cấu hình trong lần khởi động đầu tiên. Tạo một mật khẩu keyring và dán vào
-    `GOG_KEYRING_PASSWORD`:
+    Đặt `OPENCLAW_GATEWAY_TOKEN` khi bạn muốn quản lý token Gateway ổn định
+    thông qua `.env`; nếu không, hãy cấu hình `gateway.auth.token` trước khi
+    dựa vào client qua các lần khởi động lại. Nếu không có nguồn nào tồn tại,
+    OpenClaw dùng token chỉ trong runtime cho lần khởi động đó. Tạo mật khẩu keyring và dán
+    vào `GOG_KEYRING_PASSWORD`:
 
     ```bash
     openssl rand -hex 32
@@ -239,8 +240,8 @@ Ubuntu cũng hoạt động; ánh xạ các gói tương ứng.
     **Không commit tệp này.**
 
     Tệp `.env` này dành cho env container/runtime như `OPENCLAW_GATEWAY_TOKEN`.
-    OAuth/API-key auth của provider được lưu trữ nằm trong
-    `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` đã được mount.
+    Auth OAuth/API-key của provider đã lưu nằm trong
+    `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` được mount.
 
   </Step>
 
@@ -285,35 +286,35 @@ Ubuntu cũng hoạt động; ánh xạ các gói tương ứng.
           ]
     ```
 
-    `--allow-unconfigured` chỉ để tiện bootstrap, nó không thay thế cho cấu hình gateway đúng cách. Vẫn đặt auth (`gateway.auth.token` hoặc mật khẩu) và dùng các thiết lập bind an toàn cho triển khai của bạn.
+    `--allow-unconfigured` chỉ để tiện bootstrap, không phải thay thế cho cấu hình gateway đúng cách. Vẫn cần đặt auth (`gateway.auth.token` hoặc mật khẩu) và dùng thiết lập bind an toàn cho deployment của bạn.
 
   </Step>
 
   <Step title="Các bước runtime VM Docker dùng chung">
-    Dùng hướng dẫn runtime dùng chung cho luồng máy chủ Docker phổ biến:
+    Dùng hướng dẫn runtime dùng chung cho luồng host Docker phổ biến:
 
     - [Tích hợp các binary cần thiết vào image](/vi/install/docker-vm-runtime#bake-required-binaries-into-the-image)
     - [Build và khởi chạy](/vi/install/docker-vm-runtime#build-and-launch)
-    - [Những gì được lưu bền bỉ ở đâu](/vi/install/docker-vm-runtime#what-persists-where)
+    - [Những gì được lưu bền vững ở đâu](/vi/install/docker-vm-runtime#what-persists-where)
     - [Cập nhật](/vi/install/docker-vm-runtime#updates)
 
   </Step>
 
   <Step title="Ghi chú khởi chạy riêng cho GCP">
-    Trên GCP, nếu build lỗi với `Killed` hoặc `exit code 137` trong khi chạy `pnpm install --frozen-lockfile`, VM đã hết bộ nhớ. Dùng tối thiểu `e2-small`, hoặc `e2-medium` để các bản build đầu tiên đáng tin cậy hơn.
+    Trên GCP, nếu build thất bại với `Killed` hoặc `exit code 137` trong lúc chạy `pnpm install --frozen-lockfile`, VM đã hết bộ nhớ. Dùng tối thiểu `e2-small`, hoặc `e2-medium` để các lần build đầu tiên đáng tin cậy hơn.
 
-    Khi bind vào LAN (`OPENCLAW_GATEWAY_BIND=lan`), hãy cấu hình một origin trình duyệt đáng tin cậy trước khi tiếp tục:
+    Khi bind vào LAN (`OPENCLAW_GATEWAY_BIND=lan`), hãy cấu hình origin trình duyệt đáng tin cậy trước khi tiếp tục:
 
     ```bash
     docker compose run --rm openclaw-cli config set gateway.controlUi.allowedOrigins '["http://127.0.0.1:18789"]' --strict-json
     ```
 
-    Nếu bạn đã thay đổi cổng gateway, thay `18789` bằng cổng đã cấu hình của bạn.
+    Nếu bạn đã đổi cổng gateway, thay `18789` bằng cổng đã cấu hình.
 
   </Step>
 
-  <Step title="Truy cập từ máy tính xách tay của bạn">
-    Tạo một SSH tunnel để chuyển tiếp cổng Gateway:
+  <Step title="Truy cập từ laptop của bạn">
+    Tạo SSH tunnel để chuyển tiếp cổng Gateway:
 
     ```bash
     gcloud compute ssh openclaw-gateway --zone=us-central1-a -- -L 18789:127.0.0.1:18789
@@ -323,26 +324,26 @@ Ubuntu cũng hoạt động; ánh xạ các gói tương ứng.
 
     `http://127.0.0.1:18789/`
 
-    In lại một liên kết bảng điều khiển sạch:
+    In lại liên kết dashboard sạch:
 
     ```bash
     docker compose run --rm openclaw-cli dashboard --no-open
     ```
 
-    Nếu UI nhắc auth shared-secret, hãy dán token hoặc
-    mật khẩu đã cấu hình vào phần cài đặt Giao diện điều khiển. Luồng Docker này ghi một token theo
+    Nếu UI yêu cầu auth bằng shared-secret, hãy dán token hoặc
+    mật khẩu đã cấu hình vào thiết lập Control UI. Luồng Docker này ghi token theo
     mặc định; nếu bạn chuyển cấu hình container sang auth bằng mật khẩu, hãy dùng
     mật khẩu đó thay thế.
 
-    Nếu Giao diện điều khiển hiển thị `unauthorized` hoặc `disconnected (1008): pairing required`, hãy phê duyệt thiết bị trình duyệt:
+    Nếu Control UI hiển thị `unauthorized` hoặc `disconnected (1008): pairing required`, hãy phê duyệt thiết bị trình duyệt:
 
     ```bash
     docker compose run --rm openclaw-cli devices list
     docker compose run --rm openclaw-cli devices approve <requestId>
     ```
 
-    Cần lại tài liệu tham khảo về lưu bền bỉ và cập nhật dùng chung?
-    Xem [Docker VM Runtime](/vi/install/docker-vm-runtime#what-persists-where) và [cập nhật Docker VM Runtime](/vi/install/docker-vm-runtime#updates).
+    Cần lại tham chiếu về lưu bền vững và cập nhật dùng chung?
+    Xem [Docker VM Runtime](/vi/install/docker-vm-runtime#what-persists-where) và [các cập nhật Docker VM Runtime](/vi/install/docker-vm-runtime#updates).
 
   </Step>
 </Steps>
@@ -353,7 +354,7 @@ Ubuntu cũng hoạt động; ánh xạ các gói tương ứng.
 
 **Kết nối SSH bị từ chối**
 
-Việc truyền khóa SSH có thể mất 1-2 phút sau khi tạo VM. Hãy chờ rồi thử lại.
+Việc lan truyền khóa SSH có thể mất 1-2 phút sau khi tạo VM. Hãy chờ rồi thử lại.
 
 **Sự cố OS Login**
 
@@ -367,7 +368,7 @@ gcloud compute os-login describe-profile
 
 **Hết bộ nhớ (OOM)**
 
-Nếu Docker build lỗi với `Killed` và `exit code 137`, VM đã bị OOM-killed. Nâng cấp lên e2-small (tối thiểu) hoặc e2-medium (khuyến nghị để build cục bộ đáng tin cậy):
+Nếu build Docker thất bại với `Killed` và `exit code 137`, VM đã bị OOM-killed. Nâng cấp lên e2-small (tối thiểu) hoặc e2-medium (khuyến nghị để build cục bộ đáng tin cậy):
 
 ```bash
 # Stop the VM first
@@ -386,7 +387,7 @@ gcloud compute instances start openclaw-gateway --zone=us-central1-a
 
 ## Service account (thực hành bảo mật tốt nhất)
 
-Để dùng cá nhân, tài khoản người dùng mặc định của bạn hoạt động ổn.
+Đối với sử dụng cá nhân, tài khoản người dùng mặc định của bạn hoạt động tốt.
 
 Đối với tự động hóa hoặc pipeline CI/CD, hãy tạo một service account chuyên dụng với quyền tối thiểu:
 
@@ -405,7 +406,7 @@ gcloud compute instances start openclaw-gateway --zone=us-central1-a
      --role="roles/compute.instanceAdmin.v1"
    ```
 
-Tránh dùng vai trò Owner cho tự động hóa. Áp dụng nguyên tắc đặc quyền tối thiểu.
+Tránh dùng vai trò Owner cho tự động hóa. Hãy áp dụng nguyên tắc đặc quyền tối thiểu.
 
 Xem [https://cloud.google.com/iam/docs/understanding-roles](https://cloud.google.com/iam/docs/understanding-roles) để biết chi tiết về vai trò IAM.
 
@@ -414,7 +415,7 @@ Xem [https://cloud.google.com/iam/docs/understanding-roles](https://cloud.google
 ## Các bước tiếp theo
 
 - Thiết lập các kênh nhắn tin: [Kênh](/vi/channels)
-- Ghép nối thiết bị cục bộ dưới dạng nút: [Nút](/vi/nodes)
+- Ghép nối thiết bị cục bộ làm nút: [Nút](/vi/nodes)
 - Cấu hình Gateway: [Cấu hình Gateway](/vi/gateway/configuration)
 
 ## Liên quan
