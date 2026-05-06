@@ -7,50 +7,43 @@ sidebarTitle: Getting Started
 summary: 几分钟内创建你的第一个 OpenClaw 插件
 title: 构建插件
 x-i18n:
-    generated_at: "2026-05-03T23:45:54Z"
+    generated_at: "2026-05-06T04:01:40Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3e6c55c551629da54b3f150ce6299694186fe4434cfd7978a2d43d175d33a5d9
+    source_hash: 1e9718f8226a3586db06eae6715502edbd7a286f448e24cbef0a08f19a921c3a
     source_path: plugins/building-plugins.md
     workflow: 16
 ---
 
-插件通过新能力扩展 OpenClaw：渠道、模型提供商、语音、实时转写、实时语音、媒体理解、图像生成、视频生成、网页抓取、Web 搜索、智能体工具，或这些能力的任意组合。
+插件为 OpenClaw 扩展新能力：渠道、模型提供商、语音、实时转写、实时语音、媒体理解、图像生成、视频生成、Web 获取、Web 搜索、智能体工具，或它们的任意组合。
 
-你不需要把你的插件加入 OpenClaw 仓库。发布到
-[ClawHub](/zh-CN/tools/clawhub)，用户可通过
-`openclaw plugins install clawhub:<package-name>` 安装。在发布切换期间，裸包规格仍会从 npm 安装。
+你不需要把你的插件添加到 OpenClaw 仓库。发布到 [ClawHub](/zh-CN/tools/clawhub)，用户使用 `openclaw plugins install clawhub:<package-name>` 安装。在发布切换期间，裸包规格仍会从 npm 安装。
 
-## 前置条件
+## 前提条件
 
 - Node >= 22 和一个包管理器（npm 或 pnpm）
 - 熟悉 TypeScript（ESM）
-- 对于仓库内插件：已克隆仓库并完成 `pnpm install`。源码
-  checkout 插件开发仅支持 pnpm，因为 OpenClaw 会从 `extensions/*` 工作区包加载内置
-  插件。
+- 对于仓库内插件：已克隆仓库并完成 `pnpm install`。源码检出式插件开发仅支持 pnpm，因为 OpenClaw 会从 `extensions/*` 工作区包加载内置插件。
 
-## 哪种插件？
+## 什么类型的插件？
 
 <CardGroup cols={3}>
-  <Card title="渠道插件" icon="messages-square" href="/zh-CN/plugins/sdk-channel-plugins">
+  <Card title="Channel plugin" icon="messages-square" href="/zh-CN/plugins/sdk-channel-plugins">
     将 OpenClaw 连接到消息平台（Discord、IRC 等）
   </Card>
-  <Card title="提供商插件" icon="cpu" href="/zh-CN/plugins/sdk-provider-plugins">
-    添加一个模型提供商（LLM、代理或自定义端点）
+  <Card title="Provider plugin" icon="cpu" href="/zh-CN/plugins/sdk-provider-plugins">
+    添加模型提供商（LLM、代理或自定义端点）
   </Card>
-  <Card title="工具 / 钩子插件" icon="wrench" href="/zh-CN/plugins/hooks">
-    注册智能体工具、事件钩子或服务 — 继续阅读下文
+  <Card title="Tool / hook plugin" icon="wrench" href="/zh-CN/plugins/hooks">
+    注册智能体工具、事件钩子或服务 - 继续阅读下文
   </Card>
 </CardGroup>
 
-对于无法保证在新手引导/设置运行时已安装的渠道插件，请使用
-`openclaw/plugin-sdk/channel-setup` 中的 `createOptionalChannelSetupSurface(...)`。
-它会生成一组设置适配器 + 向导，用于告知安装要求，并且在插件安装之前对真实配置写入采取失败关闭策略。
+对于在新手引导/设置运行时不保证已安装的渠道插件，请使用 `openclaw/plugin-sdk/channel-setup` 中的 `createOptionalChannelSetupSurface(...)`。它会生成一对设置适配器 + 向导，用于声明安装要求，并且在插件安装之前，对真实配置写入采取失败关闭策略。
 
 ## 快速开始：工具插件
 
-本 walkthrough 会创建一个注册智能体工具的最小插件。渠道
-和提供商插件有上方链接的专门指南。
+本演练会创建一个注册智能体工具的最小插件。渠道和提供商插件有上方链接的专用指南。
 
 <Steps>
   <Step title="创建包和清单">
@@ -93,12 +86,7 @@ x-i18n:
     ```
     </CodeGroup>
 
-    每个插件都需要一个清单，即使没有配置也是如此。运行时注册的工具
-    必须列在 `contracts.tools` 中，这样 OpenClaw 才能在不加载每个插件运行时的情况下发现所属
-    插件。插件还应有意声明
-    `activation.onStartup`。本示例将其设为 `true`。完整 schema 请参阅
-    [清单](/zh-CN/plugins/manifest)。规范的 ClawHub
-    发布代码片段位于 `docs/snippets/plugin-publish/`。
+    每个插件都需要清单，即使没有配置也是如此。运行时注册的工具必须列在 `contracts.tools` 中，这样 OpenClaw 才能在不加载每个插件运行时的情况下发现所属插件。插件也应该有意声明 `activation.onStartup`。此示例将其设为 `true`。完整 schema 见 [插件清单](/zh-CN/plugins/manifest)。规范的 ClawHub 发布片段位于 `docs/snippets/plugin-publish/`。
 
   </Step>
 
@@ -126,13 +114,11 @@ x-i18n:
     });
     ```
 
-    `definePluginEntry` 用于非渠道插件。对于渠道，请使用
-    `defineChannelPluginEntry` — 参阅 [渠道插件](/zh-CN/plugins/sdk-channel-plugins)。
-    如需完整入口点选项，请参阅 [入口点](/zh-CN/plugins/sdk-entrypoints)。
+    `definePluginEntry` 用于非渠道插件。对于渠道，请使用 `defineChannelPluginEntry` - 见 [渠道插件](/zh-CN/plugins/sdk-channel-plugins)。完整入口点选项见 [入口点](/zh-CN/plugins/sdk-entrypoints)。
 
   </Step>
 
-  <Step title="测试和发布">
+  <Step title="测试并发布">
 
     **外部插件：** 使用 ClawHub 验证并发布，然后安装：
 
@@ -142,10 +128,9 @@ x-i18n:
     openclaw plugins install clawhub:@myorg/openclaw-my-plugin
     ```
 
-    像 `@myorg/openclaw-my-plugin` 这样的裸包规格会在发布切换期间从 npm 安装。
-    当你希望使用 ClawHub 解析时，请使用 `clawhub:`。
+    在发布切换期间，像 `@myorg/openclaw-my-plugin` 这样的裸包规格会从 npm 安装。当你想使用 ClawHub 解析时，请使用 `clawhub:`。
 
-    **仓库内插件：** 放在内置插件工作区树下 — 会被自动发现。
+    **仓库内插件：** 放在内置插件工作区树下 - 会被自动发现。
 
     ```bash
     pnpm test -- <bundled-plugin-root>/my-plugin/
@@ -170,57 +155,47 @@ x-i18n:
 | 图像生成               | `api.registerImageGenerationProvider(...)`       | [提供商插件](/zh-CN/plugins/sdk-provider-plugins#step-5-add-extra-capabilities)       |
 | 音乐生成               | `api.registerMusicGenerationProvider(...)`       | [提供商插件](/zh-CN/plugins/sdk-provider-plugins#step-5-add-extra-capabilities)       |
 | 视频生成               | `api.registerVideoGenerationProvider(...)`       | [提供商插件](/zh-CN/plugins/sdk-provider-plugins#step-5-add-extra-capabilities)       |
-| 网页抓取               | `api.registerWebFetchProvider(...)`              | [提供商插件](/zh-CN/plugins/sdk-provider-plugins#step-5-add-extra-capabilities)       |
+| Web 获取               | `api.registerWebFetchProvider(...)`              | [提供商插件](/zh-CN/plugins/sdk-provider-plugins#step-5-add-extra-capabilities)       |
 | Web 搜索               | `api.registerWebSearchProvider(...)`             | [提供商插件](/zh-CN/plugins/sdk-provider-plugins#step-5-add-extra-capabilities)       |
 | 工具结果中间件         | `api.registerAgentToolResultMiddleware(...)`     | [SDK 概览](/zh-CN/plugins/sdk-overview#registration-api)                              |
-| 智能体工具             | `api.registerTool(...)`                          | 下方                                                                            |
+| 智能体工具             | `api.registerTool(...)`                          | 下文                                                                            |
 | 自定义命令             | `api.registerCommand(...)`                       | [入口点](/zh-CN/plugins/sdk-entrypoints)                                              |
 | 插件钩子               | `api.on(...)`                                    | [插件钩子](/zh-CN/plugins/hooks)                                                      |
 | 内部事件钩子           | `api.registerHook(...)`                          | [入口点](/zh-CN/plugins/sdk-entrypoints)                                              |
 | HTTP 路由              | `api.registerHttpRoute(...)`                     | [内部机制](/zh-CN/plugins/architecture-internals#gateway-http-routes)                 |
 | CLI 子命令             | `api.registerCli(...)`                           | [入口点](/zh-CN/plugins/sdk-entrypoints)                                              |
 
-如需完整注册 API，请参阅 [SDK 概览](/zh-CN/plugins/sdk-overview#registration-api)。
+完整注册 API 见 [SDK 概览](/zh-CN/plugins/sdk-overview#registration-api)。
 
-当内置插件需要在模型看到输出前异步重写工具结果时，可以使用
-`api.registerAgentToolResultMiddleware(...)`。请在
-`contracts.agentToolResultMiddleware` 中声明目标运行时，例如
-`["pi", "codex"]`。这是受信任的内置插件接口；外部
-插件应优先使用常规 OpenClaw 插件钩子，除非 OpenClaw 为此能力引入明确的信任策略。
+当内置插件需要在模型看到输出之前异步重写工具结果时，可以使用 `api.registerAgentToolResultMiddleware(...)`。在 `contracts.agentToolResultMiddleware` 中声明目标运行时，例如 `["pi", "codex"]`。这是一个受信任的内置插件接口；除非 OpenClaw 为此能力扩展出明确的信任策略，否则外部插件应优先使用常规 OpenClaw 插件钩子。
 
-如果你的插件注册自定义 Gateway 网关 RPC 方法，请将它们放在
-插件专属前缀下。核心管理员命名空间（`config.*`、
-`exec.approvals.*`、`wizard.*`、`update.*`）保持保留，并始终解析为
-`operator.admin`，即使插件请求更窄的作用域也是如此。
+如果你的插件注册自定义 Gateway 网关 RPC 方法，请把它们放在插件专用前缀下。核心管理命名空间（`config.*`、`exec.approvals.*`、`wizard.*`、`update.*`）保持保留，并且始终解析为 `operator.admin`，即使插件请求更窄的作用域也是如此。
 
-需要记住的钩子守卫语义：
+需要记住的钩子保护语义：
 
-- `before_tool_call`：`{ block: true }` 是终止性结果，会停止较低优先级处理程序。
-- `before_tool_call`：`{ block: false }` 会被视为没有决定。
-- `before_tool_call`：`{ requireApproval: true }` 会暂停智能体执行，并通过 exec approval overlay、Telegram 按钮、Discord 交互或任意渠道上的 `/approve` 命令提示用户批准。
-- `before_install`：`{ block: true }` 是终止性结果，会停止较低优先级处理程序。
-- `before_install`：`{ block: false }` 会被视为没有决定。
-- `message_sending`：`{ cancel: true }` 是终止性结果，会停止较低优先级处理程序。
-- `message_sending`：`{ cancel: false }` 会被视为没有决定。
-- `message_received`：当你需要入站 thread/topic 路由时，优先使用类型化的 `threadId` 字段。将 `metadata` 保留给渠道特定的额外内容。
-- `message_sending`：优先使用类型化的 `replyToId` / `threadId` 路由字段，而不是渠道特定的 metadata 键。
+- `before_tool_call`：`{ block: true }` 是终止性的，会停止低优先级处理器。
+- `before_tool_call`：`{ block: false }` 被视为未作决定。
+- `before_tool_call`：`{ requireApproval: true }` 会暂停智能体执行，并通过执行批准覆盖层、Telegram 按钮、Discord 交互或任意渠道上的 `/approve` 命令提示用户批准。
+- `before_install`：`{ block: true }` 是终止性的，会停止低优先级处理器。
+- `before_install`：`{ block: false }` 被视为未作决定。
+- `message_sending`：`{ cancel: true }` 是终止性的，会停止低优先级处理器。
+- `message_sending`：`{ cancel: false }` 被视为未作决定。
+- `message_received`：当你需要入站线程/话题路由时，优先使用有类型的 `threadId` 字段。将 `metadata` 保留给渠道特定的额外信息。
+- `message_sending`：优先使用有类型的 `replyToId` / `threadId` 路由字段，而不是渠道特定的元数据键。
 
-`/approve` 命令会通过有界回退同时处理 exec 和插件批准：当找不到 exec approval id 时，OpenClaw 会使用同一个 id 重试插件批准。插件批准转发可以通过配置中的 `approvals.plugin` 独立配置。
+`/approve` 命令会通过有界回退同时处理执行批准和插件批准：当找不到执行批准 ID 时，OpenClaw 会用同一 ID 重试插件批准。插件批准转发可以通过配置中的 `approvals.plugin` 独立配置。
 
-如果自定义批准管道需要检测同一个有界回退情况，
-请优先使用 `openclaw/plugin-sdk/error-runtime` 中的 `isApprovalNotFoundError`，
-而不是手动匹配批准过期字符串。
+如果自定义批准管线需要检测同一个有界回退场景，请优先使用 `openclaw/plugin-sdk/error-runtime` 中的 `isApprovalNotFoundError`，而不是手动匹配批准过期字符串。
 
-示例和钩子参考请参阅 [插件钩子](/zh-CN/plugins/hooks)。
+示例和钩子参考见 [插件钩子](/zh-CN/plugins/hooks)。
 
 ## 注册智能体工具
 
-工具是 LLM 可以调用的类型化函数。它们可以是必需的（始终
-可用），也可以是可选的（用户选择加入）：
+工具是 LLM 可以调用的类型化函数。它们可以是必需的（始终可用），也可以是可选的（用户选择启用）：
 
 ```typescript
 register(api) {
-  // Required tool — always available
+  // Required tool - always available
   api.registerTool({
     name: "my_tool",
     description: "Do a thing",
@@ -230,7 +205,7 @@ register(api) {
     },
   });
 
-  // Optional tool — user must add to allowlist
+  // Optional tool - user must add to allowlist
   api.registerTool(
     {
       name: "workflow_tool",
@@ -245,8 +220,7 @@ register(api) {
 }
 ```
 
-每个通过 `api.registerTool(...)` 注册的工具都必须同时在
-插件清单中声明：
+每个通过 `api.registerTool(...)` 注册的工具也必须在插件清单中声明：
 
 ```json
 {
@@ -261,15 +235,14 @@ register(api) {
 }
 ```
 
-OpenClaw 会捕获并缓存来自已注册工具的已验证描述符，
-因此插件无需在清单中重复 `description` 或 schema 数据。该
-清单契约只声明所有权和设备发现；执行时仍会调用
-实际已注册的工具实现。
-对于使用 `api.registerTool(..., { optional: true })` 注册的工具，
-请设置 `toolMetadata.<tool>.optional: true`，这样 OpenClaw 可以避免加载该
-插件运行时，直到该工具被显式加入允许列表。
+OpenClaw 会捕获并缓存已注册工具中的已验证描述符，
+因此插件无需在清单中重复 `description` 或 schema 数据。清单
+契约只声明所有权和发现；执行时仍然会调用实时注册的工具实现。
+对于使用 `api.registerTool(..., { optional: true })` 注册的工具，请设置
+`toolMetadata.<tool>.optional: true`，这样 OpenClaw 就可以避免在工具被明确加入允许列表之前加载该
+插件运行时。
 
-用户在配置中启用可选工具：
+用户可在配置中启用可选工具：
 
 ```json5
 {
@@ -278,15 +251,15 @@ OpenClaw 会捕获并缓存来自已注册工具的已验证描述符，
 ```
 
 - 工具名称不得与核心工具冲突（冲突项会被跳过）
-- 注册对象格式错误的工具（包括缺少 `parameters`）会被跳过，并在插件诊断中报告，而不会中断智能体运行
-- 对有副作用或有额外二进制要求的工具使用 `optional: true`
-- 用户可以通过把插件 ID 添加到 `tools.allow` 来启用某个插件的所有工具
+- 注册对象格式错误的工具（包括缺少 `parameters`）会被跳过，并在插件诊断中报告，而不是破坏智能体运行
+- 对具有副作用或额外二进制依赖要求的工具使用 `optional: true`
+- 用户可以通过把插件 id 添加到 `tools.allow` 来启用某个插件的所有工具
 
 ## 注册 CLI 命令
 
-插件可以通过 `api.registerCli` 添加根级 `openclaw` 命令组。为每个顶级命令根提供
-`descriptors`，这样 OpenClaw 无需急切加载每个插件运行时，就可以显示并路由
-该命令。
+插件可以使用 `api.registerCli` 添加根级 `openclaw` 命令组。请为每个
+顶层命令根提供 `descriptors`，这样 OpenClaw 就可以展示和路由
+命令，而无需急切加载每个插件运行时。
 
 ```typescript
 register(api) {
@@ -335,24 +308,24 @@ import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
 import { ... } from "openclaw/plugin-sdk";
 ```
 
-完整子路径参考请参阅 [SDK 概览](/zh-CN/plugins/sdk-overview)。
+完整子路径参考见 [SDK 概览](/zh-CN/plugins/sdk-overview)。
 
-在你的插件内部，使用本地 barrel 文件（`api.ts`、`runtime-api.ts`）进行
-内部导入 — 不要通过插件自己的 SDK 路径导入自身。
+在你的插件内部，对内部导入使用本地桶文件（`api.ts`、`runtime-api.ts`）-
+切勿通过它的 SDK 路径导入你自己的插件。
 
-对于提供商插件，请把提供商特定 helper 保留在这些包根级
-barrel 中，除非该接缝确实是通用的。当前内置示例：
+对于提供商插件，除非 seam 确实是通用的，否则请把提供商专用辅助工具保留在这些包根
+桶文件中。当前内置示例：
 
-- Anthropic：Claude 流包装器和 `service_tier` / beta helper
-- OpenAI：提供商 builder、默认模型 helper、实时提供商
-- OpenRouter：提供商 builder 以及新手引导/配置 helper
+- Anthropic：Claude 流包装器和 `service_tier` / beta 辅助工具
+- OpenAI：提供商构建器、默认模型辅助工具、实时提供商
+- OpenRouter：提供商构建器以及新手引导/配置辅助工具
 
-如果某个 helper 只在一个内置提供商包内有用，请将其保留在该
-包根级接缝上，而不是提升到 `openclaw/plugin-sdk/*`。
+如果某个辅助工具只在一个内置提供商包内部有用，请把它保留在该
+包根 seam 上，而不是提升到 `openclaw/plugin-sdk/*` 中。
 
-某些生成的 `openclaw/plugin-sdk/<bundled-id>` helper 接缝仍然存在，
-用于有跟踪所有者用法的内置插件维护。请将这些视为保留表面，
-而不是新第三方插件的默认模式。
+某些生成的 `openclaw/plugin-sdk/<bundled-id>` 辅助 seam 仍然存在，
+用于在有已跟踪所有者使用情况时维护内置插件。请把这些视为
+保留表面，而不是新第三方插件的默认模式。
 
 ## 提交前检查清单
 
@@ -366,26 +339,26 @@ barrel 中，除非该接缝确实是通用的。当前内置示例：
 
 ## Beta 发布测试
 
-1. 关注 [openclaw/openclaw](https://github.com/openclaw/openclaw/releases) 上的 GitHub 发布标签，并通过 `Watch` > `Releases` 订阅。Beta 标签形如 `v2026.3.N-beta.1`。你也可以为官方 OpenClaw X 账号 [@openclaw](https://x.com/openclaw) 开启通知，以接收发布公告。
-2. beta 标签一出现，就用它测试你的插件。稳定版发布前的窗口通常只有几个小时。
-3. 测试后，在 `plugin-forum` Discord 渠道中你的插件讨论串里发布 `all good` 或说明破损内容。如果你还没有讨论串，请创建一个。
-4. 如果有东西破损，请打开或更新标题为 `Beta blocker: <plugin-name> - <summary>` 的 issue，并应用 `beta-blocker` 标签。把 issue 链接放到你的讨论串里。
-5. 打开一个指向 `main` 的 PR，标题为 `fix(<plugin-id>): beta blocker - <summary>`，并在 PR 和你的 Discord 讨论串中链接该 issue。贡献者无法给 PR 加标签，因此标题是给维护者和自动化系统的 PR 侧信号。有 PR 的阻塞问题会被合并；没有 PR 的阻塞问题可能仍会随版本发布。维护者会在 beta 测试期间关注这些讨论串。
-6. 沉默即表示绿色。如果你错过窗口，你的修复很可能会进入下一个周期。
+1. 关注 [openclaw/openclaw](https://github.com/openclaw/openclaw/releases) 上的 GitHub 发布标签，并通过 `Watch` > `Releases` 订阅。Beta 标签类似 `v2026.3.N-beta.1`。你也可以开启 OpenClaw 官方 X 账号 [@openclaw](https://x.com/openclaw) 的通知，以接收发布公告。
+2. Beta 标签一出现，就用它测试你的插件。稳定版发布前的窗口通常只有几个小时。
+3. 测试后，在 `plugin-forum` Discord 频道中你的插件线程里发布 `all good` 或说明损坏内容。如果还没有线程，请创建一个。
+4. 如果出现损坏，请打开或更新一个标题为 `Beta blocker: <plugin-name> - <summary>` 的 issue，并应用 `beta-blocker` 标签。把 issue 链接放到你的线程中。
+5. 打开一个指向 `main` 的 PR，标题为 `fix(<plugin-id>): beta blocker - <summary>`，并在 PR 和你的 Discord 线程中链接该 issue。贡献者无法给 PR 打标签，因此标题是给维护者和自动化的 PR 侧信号。有 PR 的阻塞问题会被合并；没有 PR 的阻塞问题仍可能随版本发布。维护者会在 Beta 测试期间关注这些线程。
+6. 沉默表示绿色通过。如果你错过窗口，你的修复很可能会进入下一个周期。
 
 ## 后续步骤
 
 <CardGroup cols={2}>
   <Card title="渠道插件" icon="messages-square" href="/zh-CN/plugins/sdk-channel-plugins">
-    构建消息渠道插件
+    构建一个消息渠道插件
   </Card>
   <Card title="提供商插件" icon="cpu" href="/zh-CN/plugins/sdk-provider-plugins">
-    构建模型提供商插件
+    构建一个模型提供商插件
   </Card>
   <Card title="SDK 概览" icon="book-open" href="/zh-CN/plugins/sdk-overview">
     导入映射和注册 API 参考
   </Card>
-  <Card title="运行时 helper" icon="settings" href="/zh-CN/plugins/sdk-runtime">
+  <Card title="运行时辅助工具" icon="settings" href="/zh-CN/plugins/sdk-runtime">
     通过 api.runtime 使用 TTS、搜索、子智能体
   </Card>
   <Card title="测试" icon="test-tubes" href="/zh-CN/plugins/sdk-testing">
@@ -396,10 +369,10 @@ barrel 中，除非该接缝确实是通用的。当前内置示例：
   </Card>
 </CardGroup>
 
-## 相关
+## 相关内容
 
-- [插件架构](/zh-CN/plugins/architecture) — 内部架构深度解析
-- [SDK 概览](/zh-CN/plugins/sdk-overview) — 插件 SDK 参考
-- [清单](/zh-CN/plugins/manifest) — 插件清单格式
-- [渠道插件](/zh-CN/plugins/sdk-channel-plugins) — 构建渠道插件
-- [提供商插件](/zh-CN/plugins/sdk-provider-plugins) — 构建提供商插件
+- [插件架构](/zh-CN/plugins/architecture) - 内部架构深度解析
+- [SDK 概览](/zh-CN/plugins/sdk-overview) - 插件 SDK 参考
+- [清单](/zh-CN/plugins/manifest) - 插件清单格式
+- [渠道插件](/zh-CN/plugins/sdk-channel-plugins) - 构建渠道插件
+- [提供商插件](/zh-CN/plugins/sdk-provider-plugins) - 构建提供商插件
