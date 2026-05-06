@@ -1,16 +1,16 @@
 ---
 read_when:
     - Vous voulez qu’OpenClaw fonctionne 24 h/24 et 7 j/7 sur un VPS cloud (pas sur votre ordinateur portable)
-    - Vous voulez un Gateway prêt pour la production, toujours actif, sur votre propre VPS
-    - Vous souhaitez un contrôle total de la persistance, des binaires et du comportement de redémarrage
-    - Vous exécutez OpenClaw dans Docker sur Hetzner ou un fournisseur similaire
-summary: Exécuter OpenClaw Gateway 24 h/24 et 7 j/7 sur un VPS Hetzner économique (Docker) avec un état persistant et des binaires intégrés
+    - Vous voulez un Gateway de niveau production, toujours actif, sur votre propre VPS
+    - Vous voulez un contrôle total sur la persistance, les binaires et le comportement de redémarrage
+    - Vous exécutez OpenClaw dans Docker sur Hetzner ou chez un fournisseur similaire
+summary: Exécuter OpenClaw Gateway 24 h/24 et 7 j/7 sur un VPS Hetzner économique (Docker) avec un état durable et des binaires intégrés
 title: Hetzner
 x-i18n:
-    generated_at: "2026-04-30T07:33:54Z"
+    generated_at: "2026-05-06T07:28:35Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 96b5b54bfd8d976c575ecffcd229106fc322b9a53828a9d7358f583434b7bbc2
+    source_hash: 2625a028b6242f653d29b8f45035bf2d796c5c60453582cf269fd1c3776eca52
     source_path: install/hetzner.md
     workflow: 16
 ---
@@ -22,15 +22,15 @@ x-i18n:
 Exécuter un Gateway OpenClaw persistant sur un VPS Hetzner avec Docker, avec un état durable, des binaires intégrés et un comportement de redémarrage sûr.
 
 Si vous voulez « OpenClaw 24/7 pour environ 5 $ », c’est la configuration fiable la plus simple.
-Les tarifs Hetzner changent ; choisissez le plus petit VPS Debian/Ubuntu et augmentez la taille si vous rencontrez des OOM.
+Les prix Hetzner changent ; choisissez le plus petit VPS Debian/Ubuntu et augmentez la capacité si vous rencontrez des OOM.
 
 Rappel du modèle de sécurité :
 
-- Les agents partagés à l’échelle de l’entreprise conviennent lorsque tout le monde se trouve dans la même frontière de confiance et que le runtime est réservé à un usage professionnel.
-- Maintenez une séparation stricte : VPS/runtime dédié + comptes dédiés ; aucun profil personnel Apple/Google/navigateur/gestionnaire de mots de passe sur cet hôte.
-- Si les utilisateurs sont adversaires les uns des autres, séparez par gateway/hôte/utilisateur OS.
+- Les agents partagés à l’échelle d’une entreprise conviennent lorsque tout le monde est dans le même périmètre de confiance et que le runtime est réservé à un usage professionnel.
+- Gardez une séparation stricte : VPS/runtime dédiés + comptes dédiés ; aucun profil personnel Apple/Google/navigateur/gestionnaire de mots de passe sur cet hôte.
+- Si les utilisateurs sont adversaires les uns des autres, séparez par Gateway/hôte/utilisateur OS.
 
-Voir [Sécurité](/fr/gateway/security) et [Hébergement VPS](/fr/vps).
+Consultez [Sécurité](/fr/gateway/security) et [Hébergement VPS](/fr/vps).
 
 ## Que faisons-nous (en termes simples) ?
 
@@ -40,26 +40,26 @@ Voir [Sécurité](/fr/gateway/security) et [Hébergement VPS](/fr/vps).
 - Persister `~/.openclaw` + `~/.openclaw/workspace` sur l’hôte (survit aux redémarrages/reconstructions)
 - Accéder à l’interface utilisateur de contrôle depuis votre ordinateur portable via un tunnel SSH
 
-Cet état `~/.openclaw` monté inclut `openclaw.json`, les fichiers par agent
-`agents/<agentId>/agent/auth-profiles.json`, et `.env`.
+Cet état monté `~/.openclaw` inclut `openclaw.json`, les fichiers par agent
+`agents/<agentId>/agent/auth-profiles.json` et `.env`.
 
 Le Gateway est accessible via :
 
-- Redirection de port SSH depuis votre ordinateur portable
+- Transfert de port SSH depuis votre ordinateur portable
 - Exposition directe du port si vous gérez vous-même le pare-feu et les jetons
 
-Ce guide suppose Ubuntu ou Debian sur Hetzner.  
-Si vous êtes sur un autre VPS Linux, adaptez les paquets en conséquence.
-Pour le flux Docker générique, voir [Docker](/fr/install/docker).
+Ce guide suppose l’utilisation d’Ubuntu ou Debian sur Hetzner.  
+Si vous utilisez un autre VPS Linux, adaptez les paquets en conséquence.
+Pour le flux Docker générique, consultez [Docker](/fr/install/docker).
 
 ---
 
-## Parcours rapide (opérateurs expérimentés)
+## Chemin rapide (opérateurs expérimentés)
 
 1. Provisionner le VPS Hetzner
 2. Installer Docker
 3. Cloner le dépôt OpenClaw
-4. Créer des répertoires hôtes persistants
+4. Créer des répertoires hôte persistants
 5. Configurer `.env` et `docker-compose.yml`
 6. Intégrer les binaires requis dans l’image
 7. `docker compose up -d`
@@ -71,7 +71,7 @@ Pour le flux Docker générique, voir [Docker](/fr/install/docker).
 
 - VPS Hetzner avec accès root
 - Accès SSH depuis votre ordinateur portable
-- Aisance de base avec SSH + copier/coller
+- Aisance de base avec SSH + copier-coller
 - Environ 20 minutes
 - Docker et Docker Compose
 - Identifiants d’authentification du modèle
@@ -84,7 +84,7 @@ Pour le flux Docker générique, voir [Docker](/fr/install/docker).
 
 <Steps>
   <Step title="Provisionner le VPS">
-    Créez un VPS Ubuntu ou Debian chez Hetzner.
+    Créez un VPS Ubuntu ou Debian dans Hetzner.
 
     Connectez-vous en tant que root :
 
@@ -92,7 +92,7 @@ Pour le flux Docker générique, voir [Docker](/fr/install/docker).
     ssh root@YOUR_VPS_IP
     ```
 
-    Ce guide suppose que le VPS est stateful.
+    Ce guide suppose que le VPS est avec état.
     Ne le traitez pas comme une infrastructure jetable.
 
   </Step>
@@ -123,9 +123,9 @@ Pour le flux Docker générique, voir [Docker](/fr/install/docker).
 
   </Step>
 
-  <Step title="Créer des répertoires hôtes persistants">
+  <Step title="Créer des répertoires hôte persistants">
     Les conteneurs Docker sont éphémères.
-    Tout état de longue durée doit résider sur l’hôte.
+    Tout état durable doit vivre sur l’hôte.
 
     ```bash
     mkdir -p /root/.openclaw/workspace
@@ -152,8 +152,8 @@ Pour le flux Docker générique, voir [Docker](/fr/install/docker).
     XDG_CONFIG_HOME=/home/node/.openclaw
     ```
 
-    Laissez `OPENCLAW_GATEWAY_TOKEN` vide sauf si vous souhaitez explicitement
-    le gérer via `.env` ; OpenClaw écrit un jeton de gateway aléatoire dans la
+    Laissez `OPENCLAW_GATEWAY_TOKEN` vide sauf si vous souhaitez explicitement le
+    gérer via `.env` ; OpenClaw écrit un jeton de gateway aléatoire dans la
     configuration au premier démarrage. Générez un mot de passe de trousseau et collez-le dans
     `GOG_KEYRING_PASSWORD` :
 
@@ -163,8 +163,8 @@ Pour le flux Docker générique, voir [Docker](/fr/install/docker).
 
     **Ne commitez pas ce fichier.**
 
-    Ce fichier `.env` sert aux variables d’environnement du conteneur/runtime comme `OPENCLAW_GATEWAY_TOKEN`.
-    L’authentification OAuth/clé API stockée pour les fournisseurs réside dans le fichier monté
+    Ce fichier `.env` sert aux variables d’environnement du conteneur/runtime, comme `OPENCLAW_GATEWAY_TOKEN`.
+    L’authentification OAuth/clé API de fournisseur stockée vit dans le fichier monté
     `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`.
 
   </Step>
@@ -210,12 +210,12 @@ Pour le flux Docker générique, voir [Docker](/fr/install/docker).
           ]
     ```
 
-    `--allow-unconfigured` sert uniquement à faciliter l’amorçage ; ce n’est pas un remplacement d’une configuration de gateway appropriée. Configurez tout de même l’authentification (`gateway.auth.token` ou mot de passe) et utilisez des paramètres de bind sûrs pour votre déploiement.
+    `--allow-unconfigured` sert uniquement à faciliter l’amorçage ; ce n’est pas un remplacement pour une configuration correcte du Gateway. Configurez quand même l’authentification (`gateway.auth.token` ou mot de passe) et utilisez des paramètres de liaison sûrs pour votre déploiement.
 
   </Step>
 
-  <Step title="Étapes de runtime Docker VM partagé">
-    Utilisez le guide de runtime partagé pour le flux commun de l’hôte Docker :
+  <Step title="Étapes de runtime VM Docker partagées">
+    Utilisez le guide de runtime partagé pour le flux courant d’hôte Docker :
 
     - [Intégrer les binaires requis dans l’image](/fr/install/docker-vm-runtime#bake-required-binaries-into-the-image)
     - [Construire et lancer](/fr/install/docker-vm-runtime#build-and-launch)
@@ -225,21 +225,21 @@ Pour le flux Docker générique, voir [Docker](/fr/install/docker).
   </Step>
 
   <Step title="Accès propre à Hetzner">
-    Après les étapes de construction et de lancement partagées, terminez la configuration suivante pour ouvrir le tunnel :
+    Après les étapes partagées de construction et de lancement, effectuez la configuration suivante pour ouvrir le tunnel :
 
-    **Prérequis :** Assurez-vous que la configuration sshd de votre VPS autorise la redirection TCP. Si vous
+    **Prérequis :** assurez-vous que la configuration sshd de votre VPS autorise le transfert TCP. Si vous
     avez renforcé votre configuration SSH, vérifiez `/etc/ssh/sshd_config` et définissez :
 
     ```
     AllowTcpForwarding local
     ```
 
-    `local` autorise les redirections locales `ssh -L` depuis votre ordinateur portable tout en bloquant
-    les redirections distantes depuis le serveur. Le définir sur `no` fera échouer le tunnel
+    `local` autorise les transferts locaux `ssh -L` depuis votre ordinateur portable tout en bloquant
+    les transferts distants depuis le serveur. Le définir sur `no` fera échouer le tunnel
     avec :
     `channel 3: open failed: administratively prohibited: open failed`
 
-    Après avoir confirmé que la redirection TCP est activée, redémarrez le service SSH
+    Après avoir confirmé que le transfert TCP est activé, redémarrez le service SSH
     (`systemctl restart ssh`) et exécutez le tunnel depuis votre ordinateur portable :
 
     ```bash
@@ -250,23 +250,23 @@ Pour le flux Docker générique, voir [Docker](/fr/install/docker).
 
     `http://127.0.0.1:18789/`
 
-    Collez le secret partagé configuré. Ce guide utilise par défaut le jeton de gateway ;
-    si vous êtes passé à l’authentification par mot de passe, utilisez plutôt ce mot de passe.
+    Collez le secret partagé configuré. Ce guide utilise le jeton du Gateway par
+    défaut ; si vous êtes passé à l’authentification par mot de passe, utilisez plutôt ce mot de passe.
 
   </Step>
 </Steps>
 
-La carte de persistance partagée se trouve dans [Docker VM Runtime](/fr/install/docker-vm-runtime#what-persists-where).
+La carte de persistance partagée se trouve dans [Runtime VM Docker](/fr/install/docker-vm-runtime#what-persists-where).
 
 ## Infrastructure as Code (Terraform)
 
-Pour les équipes qui préfèrent les workflows d’infrastructure-as-code, une configuration Terraform maintenue par la communauté fournit :
+Pour les équipes qui préfèrent les flux infrastructure-as-code, une configuration Terraform maintenue par la communauté fournit :
 
 - Configuration Terraform modulaire avec gestion d’état distant
 - Provisionnement automatisé via cloud-init
 - Scripts de déploiement (bootstrap, déploiement, sauvegarde/restauration)
-- Renforcement de la sécurité (pare-feu, UFW, accès SSH uniquement)
-- Configuration de tunnel SSH pour l’accès au gateway
+- Renforcement de sécurité (pare-feu, UFW, accès SSH uniquement)
+- Configuration de tunnel SSH pour l’accès au Gateway
 
 **Dépôts :**
 
@@ -276,7 +276,7 @@ Pour les équipes qui préfèrent les workflows d’infrastructure-as-code, une 
 Cette approche complète la configuration Docker ci-dessus avec des déploiements reproductibles, une infrastructure versionnée et une reprise après sinistre automatisée.
 
 <Note>
-Maintenu par la communauté. Pour les problèmes ou contributions, consultez les liens de dépôt ci-dessus.
+Maintenu par la communauté. Pour les problèmes ou les contributions, consultez les liens des dépôts ci-dessus.
 </Note>
 
 ## Étapes suivantes

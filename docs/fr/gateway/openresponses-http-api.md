@@ -5,17 +5,17 @@ read_when:
 summary: Exposer un point de terminaison HTTP /v1/responses compatible avec OpenResponses depuis le Gateway
 title: API OpenResponses
 x-i18n:
-    generated_at: "2026-04-30T07:28:20Z"
+    generated_at: "2026-05-06T07:24:06Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1cfba4c2572fab2d2ef6bceecd1ae0a022850c46125c62d5a5f3969d07d03aff
+    source_hash: 69d46dc448a8856a6f3213f2fbfdba000a342ec4dcf258435b7029102cfb8119
     source_path: gateway/openresponses-http-api.md
     workflow: 16
 ---
 
-Le Gateway d’OpenClaw peut servir un point de terminaison `POST /v1/responses` compatible OpenResponses.
+Le Gateway d’OpenClaw peut servir un endpoint `POST /v1/responses` compatible avec OpenResponses.
 
-Ce point de terminaison est **désactivé par défaut**. Activez-le d’abord dans la configuration.
+Cet endpoint est **désactivé par défaut**. Activez-le d’abord dans la configuration.
 
 - `POST /v1/responses`
 - Même port que le Gateway (multiplexage WS + HTTP) : `http://<gateway-host>:<port>/v1/responses`
@@ -29,31 +29,31 @@ Le comportement opérationnel correspond à [OpenAI Chat Completions](/fr/gatewa
 
 - utilisez le chemin d’authentification HTTP Gateway correspondant :
   - authentification par secret partagé (`gateway.auth.mode="token"` ou `"password"`) : `Authorization: Bearer <token-or-password>`
-  - authentification par proxy de confiance (`gateway.auth.mode="trusted-proxy"`) : en-têtes de proxy sensibles à l’identité provenant d’une source de proxy de confiance configurée ; les proxies loopback sur le même hôte nécessitent explicitement `gateway.auth.trustedProxy.allowLoopback = true`
-  - authentification ouverte en entrée privée (`gateway.auth.mode="none"`) : aucun en-tête d’authentification
-- traitez le point de terminaison comme un accès opérateur complet pour l’instance du Gateway
-- pour les modes d’authentification par secret partagé (`token` et `password`), ignorez les valeurs `x-openclaw-scopes` plus restreintes déclarées par le bearer et restaurez les valeurs par défaut normales d’opérateur complet
-- pour les modes HTTP portant une identité de confiance (par exemple l’authentification par proxy de confiance ou `gateway.auth.mode="none"`), respectez `x-openclaw-scopes` lorsqu’il est présent et, sinon, revenez à l’ensemble normal de portées par défaut de l’opérateur
+  - authentification par proxy de confiance (`gateway.auth.mode="trusted-proxy"`) : en-têtes de proxy tenant compte de l’identité provenant d’une source de proxy de confiance configurée ; les proxys loopback sur le même hôte nécessitent explicitement `gateway.auth.trustedProxy.allowLoopback = true`
+  - authentification ouverte pour ingress privé (`gateway.auth.mode="none"`) : aucun en-tête d’authentification
+- traitez l’endpoint comme un accès opérateur complet pour l’instance de gateway
+- pour les modes d’authentification par secret partagé (`token` et `password`), ignorez les valeurs `x-openclaw-scopes` plus restreintes déclarées par bearer et restaurez les valeurs par défaut normales d’opérateur complet
+- pour les modes HTTP avec identité de confiance (par exemple l’authentification par proxy de confiance ou `gateway.auth.mode="none"`), respectez `x-openclaw-scopes` lorsqu’il est présent, sinon revenez à l’ensemble de portées par défaut normal de l’opérateur
 - sélectionnez les agents avec `model: "openclaw"`, `model: "openclaw/default"`, `model: "openclaw/<agentId>"` ou `x-openclaw-agent-id`
 - utilisez `x-openclaw-model` lorsque vous voulez remplacer le modèle backend de l’agent sélectionné
-- utilisez `x-openclaw-session-key` pour un routage de session explicite
-- utilisez `x-openclaw-message-channel` lorsque vous voulez un contexte de canal d’entrée synthétique non défini par défaut
+- utilisez `x-openclaw-session-key` pour un routage explicite de session
+- utilisez `x-openclaw-message-channel` lorsque vous voulez un contexte de canal d’ingress synthétique autre que celui par défaut
 
 Matrice d’authentification :
 
 - `gateway.auth.mode="token"` ou `"password"` + `Authorization: Bearer ...`
-  - prouve la possession du secret opérateur partagé du gateway
+  - prouve la possession du secret opérateur gateway partagé
   - ignore `x-openclaw-scopes` plus restreint
-  - restaure l’ensemble complet des portées d’opérateur par défaut :
+  - restaure l’ensemble complet de portées opérateur par défaut :
     `operator.admin`, `operator.approvals`, `operator.pairing`,
     `operator.read`, `operator.talk.secrets`, `operator.write`
-  - traite les tours de chat sur ce point de terminaison comme des tours envoyés par le propriétaire
-- modes HTTP portant une identité de confiance (par exemple l’authentification par proxy de confiance, ou `gateway.auth.mode="none"` sur une entrée privée)
+  - traite les tours de chat sur cet endpoint comme des tours envoyés par le propriétaire
+- modes HTTP avec identité de confiance (par exemple l’authentification par proxy de confiance, ou `gateway.auth.mode="none"` sur un ingress privé)
   - respectent `x-openclaw-scopes` lorsque l’en-tête est présent
-  - reviennent à l’ensemble normal de portées par défaut de l’opérateur lorsque l’en-tête est absent
+  - reviennent à l’ensemble de portées par défaut normal de l’opérateur lorsque l’en-tête est absent
   - ne perdent la sémantique de propriétaire que lorsque l’appelant restreint explicitement les portées et omet `operator.admin`
 
-Activez ou désactivez ce point de terminaison avec `gateway.http.endpoints.responses.enabled`.
+Activez ou désactivez cet endpoint avec `gateway.http.endpoints.responses.enabled`.
 
 La même surface de compatibilité inclut également :
 
@@ -62,23 +62,23 @@ La même surface de compatibilité inclut également :
 - `POST /v1/embeddings`
 - `POST /v1/chat/completions`
 
-Pour l’explication canonique de la façon dont les modèles ciblant les agents, `openclaw/default`, le pass-through des embeddings et les remplacements de modèle backend s’articulent, consultez [OpenAI Chat Completions](/fr/gateway/openai-http-api#agent-first-model-contract) et [Liste des modèles et routage des agents](/fr/gateway/openai-http-api#model-list-and-agent-routing).
+Pour l’explication canonique de la façon dont les modèles ciblant un agent, `openclaw/default`, la transmission des embeddings et les remplacements de modèle backend s’articulent, consultez [OpenAI Chat Completions](/fr/gateway/openai-http-api#agent-first-model-contract) et [Liste des modèles et routage des agents](/fr/gateway/openai-http-api#model-list-and-agent-routing).
 
 ## Comportement de session
 
-Par défaut, le point de terminaison est **sans état par requête** (une nouvelle clé de session est générée à chaque appel).
+Par défaut, l’endpoint est **sans état par requête** (une nouvelle clé de session est générée à chaque appel).
 
 Si la requête inclut une chaîne OpenResponses `user`, le Gateway en dérive une clé de session stable,
 afin que les appels répétés puissent partager une session d’agent.
 
-## Forme de la requête (prise en charge)
+## Forme de requête (prise en charge)
 
 La requête suit l’API OpenResponses avec une entrée basée sur des éléments. Prise en charge actuelle :
 
 - `input` : chaîne ou tableau d’objets élément.
-- `instructions` : fusionné dans le prompt système.
+- `instructions` : fusionnées dans l’invite système.
 - `tools` : définitions d’outils client (outils de fonction).
-- `tool_choice` : filtre ou impose des outils client.
+- `tool_choice` : filtre ou exige des outils client.
 - `stream` : active le streaming SSE.
 - `max_output_tokens` : limite de sortie au mieux (dépend du fournisseur).
 - `user` : routage de session stable.
@@ -101,11 +101,11 @@ Pris en charge :
 
 Rôles : `system`, `developer`, `user`, `assistant`.
 
-- `system` et `developer` sont ajoutés au prompt système.
+- `system` et `developer` sont ajoutés à l’invite système.
 - L’élément `user` ou `function_call_output` le plus récent devient le « message actuel ».
 - Les messages utilisateur/assistant antérieurs sont inclus comme historique pour le contexte.
 
-### `function_call_output` (outils basés sur les tours)
+### `function_call_output` (outils par tour)
 
 Renvoyez les résultats d’outil au modèle :
 
@@ -119,14 +119,14 @@ Renvoyez les résultats d’outil au modèle :
 
 ### `reasoning` et `item_reference`
 
-Acceptés pour la compatibilité du schéma, mais ignorés lors de la construction du prompt.
+Acceptés pour la compatibilité du schéma, mais ignorés lors de la construction de l’invite.
 
 ## Outils (outils de fonction côté client)
 
 Fournissez des outils avec `tools: [{ type: "function", function: { name, description?, parameters? } }]`.
 
 Si l’agent décide d’appeler un outil, la réponse renvoie un élément de sortie `function_call`.
-Vous envoyez ensuite une requête de suivi avec `function_call_output` pour poursuivre le tour.
+Vous envoyez ensuite une requête de suivi avec `function_call_output` pour continuer le tour.
 
 ## Images (`input_image`)
 
@@ -165,37 +165,37 @@ Taille maximale (actuelle) : 5 Mo.
 
 Comportement actuel :
 
-- Le contenu du fichier est décodé et ajouté au **prompt système**, pas au message utilisateur,
-  afin qu’il reste éphémère (non persistant dans l’historique de session).
-- Le texte décodé du fichier est enveloppé comme **contenu externe non fiable** avant d’être ajouté,
+- Le contenu du fichier est décodé et ajouté à l’**invite système**, pas au message utilisateur,
+  afin qu’il reste éphémère (non conservé dans l’historique de session).
+- Le texte de fichier décodé est enveloppé comme **contenu externe non fiable** avant d’être ajouté,
   afin que les octets du fichier soient traités comme des données, et non comme des instructions fiables.
 - Le bloc injecté utilise des marqueurs de limite explicites comme
   `<<<EXTERNAL_UNTRUSTED_CONTENT id="...">>>` /
   `<<<END_EXTERNAL_UNTRUSTED_CONTENT id="...">>>` et inclut une ligne de métadonnées
   `Source: External`.
 - Ce chemin d’entrée de fichier omet intentionnellement la longue bannière `SECURITY NOTICE:` afin de
-  préserver le budget de prompt ; les marqueurs de limite et les métadonnées restent néanmoins en place.
-- Les PDF sont d’abord analysés pour extraire le texte. Si peu de texte est trouvé, les premières pages sont
-  rastérisées en images et transmises au modèle, et le bloc de fichier injecté utilise
+  préserver le budget d’invite ; les marqueurs de limite et les métadonnées restent toutefois en place.
+- Les PDF sont d’abord analysés pour en extraire le texte. Si peu de texte est trouvé, les premières pages sont
+  rasterisées en images et transmises au modèle, et le bloc de fichier injecté utilise
   l’espace réservé `[PDF content rendered to images]`.
 
-L’analyse des PDF est fournie par le Plugin groupé `document-extract`, qui utilise la version legacy
-compatible Node de `pdfjs-dist` (sans worker). La version moderne de PDF.js
-attend des workers navigateur et des globales DOM ; elle n’est donc pas utilisée dans le Gateway.
+L’analyse des PDF est fournie par le Plugin `document-extract` intégré, qui utilise la build héritée
+compatible Node de `pdfjs-dist` (sans worker). La build PDF.js moderne
+attend des workers de navigateur et des globales DOM ; elle n’est donc pas utilisée dans le Gateway.
 
 Valeurs par défaut de récupération d’URL :
 
 - `files.allowUrl` : `true`
 - `images.allowUrl` : `true`
-- `maxUrlParts` : `8` (nombre total de parties `input_file` + `input_image` basées sur des URL par requête)
-- Les requêtes sont protégées (résolution DNS, blocage des IP privées, limites de redirection, délais d’expiration).
-- Des listes d’autorisation de noms d’hôte facultatives sont prises en charge par type d’entrée (`files.urlAllowlist`, `images.urlAllowlist`).
+- `maxUrlParts` : `8` (nombre total de parties `input_file` + `input_image` basées sur URL par requête)
+- Les requêtes sont protégées (résolution DNS, blocage des IP privées, plafonds de redirection, délais d’expiration).
+- Les listes d’autorisation de noms d’hôte facultatives sont prises en charge par type d’entrée (`files.urlAllowlist`, `images.urlAllowlist`).
   - Hôte exact : `"cdn.example.com"`
   - Sous-domaines génériques : `"*.assets.example.com"` (ne correspond pas à l’apex)
-  - Les listes d’autorisation vides ou omises signifient qu’aucune restriction de liste d’autorisation de nom d’hôte ne s’applique.
-- Pour désactiver entièrement les récupérations basées sur des URL, définissez `files.allowUrl: false` et/ou `images.allowUrl: false`.
+  - Les listes d’autorisation vides ou omises signifient qu’il n’y a aucune restriction par liste d’autorisation de nom d’hôte.
+- Pour désactiver entièrement les récupérations basées sur URL, définissez `files.allowUrl: false` et/ou `images.allowUrl: false`.
 
-## Limites de fichiers + images (configuration)
+## Limites des fichiers et images (configuration)
 
 Les valeurs par défaut peuvent être ajustées sous `gateway.http.endpoints.responses` :
 
@@ -265,14 +265,14 @@ Valeurs par défaut en cas d’omission :
 - `images.maxBytes` : 10 Mo
 - `images.maxRedirects` : 3
 - `images.timeoutMs` : 10 s
-- Les sources `input_image` HEIC/HEIF sont acceptées et normalisées en JPEG avant la livraison au fournisseur.
+- Les sources HEIC/HEIF `input_image` sont acceptées et normalisées en JPEG avant la livraison au fournisseur.
 
 Note de sécurité :
 
 - Les listes d’autorisation d’URL sont appliquées avant la récupération et lors des sauts de redirection.
 - Autoriser un nom d’hôte ne contourne pas le blocage des IP privées/internes.
-- Pour les gateways exposés à Internet, appliquez des contrôles de sortie réseau en plus des protections au niveau applicatif.
-  Consultez [Sécurité](/fr/gateway/security).
+- Pour les gateways exposés à Internet, appliquez des contrôles de sortie réseau en plus des protections au niveau de l’application.
+  Voir [Sécurité](/fr/gateway/security).
 
 ## Streaming (SSE)
 
@@ -297,9 +297,9 @@ Types d’événements actuellement émis :
 
 ## Utilisation
 
-`usage` est renseigné lorsque le fournisseur sous-jacent rapporte les nombres de tokens.
+`usage` est renseigné lorsque le fournisseur sous-jacent rapporte le nombre de tokens.
 OpenClaw normalise les alias courants de style OpenAI avant que ces compteurs n’atteignent
-les surfaces de statut/session en aval, notamment `input_tokens` / `output_tokens`
+les surfaces de statut/session en aval, y compris `input_tokens` / `output_tokens`
 et `prompt_tokens` / `completion_tokens`.
 
 ## Erreurs
@@ -347,5 +347,5 @@ curl -N http://127.0.0.1:18789/v1/responses \
 
 ## Connexe
 
-- [OpenAI chat completions](/fr/gateway/openai-http-api)
+- [Complétions de chat OpenAI](/fr/gateway/openai-http-api)
 - [OpenAI](/fr/providers/openai)

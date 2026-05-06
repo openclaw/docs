@@ -1,26 +1,24 @@
 ---
 read_when:
-    - Vous modifiez la façon dont les horodatages sont présentés au modèle ou aux utilisateurs
-    - Vous déboguez le formatage de l’heure dans les messages ou dans la sortie du prompt système
-summary: Gestion de la date et de l’heure à travers les enveloppes, les prompts, les outils et les connecteurs
+    - Vous modifiez la façon dont les horodatages sont affichés au modèle ou aux utilisateurs
+    - Vous déboguez le formatage de l’heure dans les messages ou la sortie de l’invite système
+summary: Gestion des dates et des heures dans les enveloppes, les invites, les outils et les connecteurs
 title: Date et heure
 x-i18n:
-    generated_at: "2026-04-24T07:08:46Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T07:21:29Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: c3d54da4077ac985ae1209b4364e049afb83b5746276e164181c1a30f0faa06e
+    source_hash: 5f695a5009c949cc24689bfb8950d96cf72f0b2a1472efe88923182527b56b74
     source_path: date-time.md
-    workflow: 15
+    workflow: 16
 ---
-
-# Date et heure
 
 OpenClaw utilise par défaut **l’heure locale de l’hôte pour les horodatages de transport** et **le fuseau horaire de l’utilisateur uniquement dans le prompt système**.
 Les horodatages des fournisseurs sont préservés afin que les outils conservent leur sémantique native (l’heure actuelle est disponible via `session_status`).
 
-## Enveloppes de message (locales par défaut)
+## Enveloppes de messages (locales par défaut)
 
-Les messages entrants sont encapsulés avec un horodatage (précision à la minute) :
+Les messages entrants sont enveloppés avec un horodatage (précision à la minute) :
 
 ```
 [Provider ... 2026-01-05 16:26 PST] message text
@@ -28,13 +26,13 @@ Les messages entrants sont encapsulés avec un horodatage (précision à la minu
 
 Cet horodatage d’enveloppe est **local à l’hôte par défaut**, quel que soit le fuseau horaire du fournisseur.
 
-Vous pouvez surcharger ce comportement :
+Vous pouvez remplacer ce comportement :
 
 ```json5
 {
   agents: {
     defaults: {
-      envelopeTimezone: "local", // "utc" | "local" | "user" | fuseau horaire IANA
+      envelopeTimezone: "local", // "utc" | "local" | "user" | IANA timezone
       envelopeTimestamp: "on", // "on" | "off"
       envelopeElapsed: "on", // "on" | "off"
     },
@@ -42,12 +40,12 @@ Vous pouvez surcharger ce comportement :
 }
 ```
 
-- `envelopeTimezone: "utc"` utilise l’UTC.
+- `envelopeTimezone: "utc"` utilise UTC.
 - `envelopeTimezone: "local"` utilise le fuseau horaire de l’hôte.
-- `envelopeTimezone: "user"` utilise `agents.defaults.userTimezone` (revient au fuseau horaire de l’hôte).
-- Utilisez un fuseau horaire IANA explicite (par exemple `"America/Chicago"`) pour un fuseau fixe.
+- `envelopeTimezone: "user"` utilise `agents.defaults.userTimezone` (avec repli sur le fuseau horaire de l’hôte).
+- Utilisez un fuseau horaire IANA explicite (par exemple, `"America/Chicago"`) pour une zone fixe.
 - `envelopeTimestamp: "off"` supprime les horodatages absolus des en-têtes d’enveloppe.
-- `envelopeElapsed: "off"` supprime les suffixes de temps écoulé (style `+2m`).
+- `envelopeElapsed: "off"` supprime les suffixes de temps écoulé (le style `+2m`).
 
 ### Exemples
 
@@ -57,7 +55,7 @@ Vous pouvez surcharger ce comportement :
 [WhatsApp +1555 2026-01-18 00:19 PST] hello
 ```
 
-**Fuseau horaire utilisateur :**
+**Fuseau horaire de l’utilisateur :**
 
 ```
 [WhatsApp +1555 2026-01-18 00:19 CST] hello
@@ -72,20 +70,20 @@ Vous pouvez surcharger ce comportement :
 ## Prompt système : date et heure actuelles
 
 Si le fuseau horaire de l’utilisateur est connu, le prompt système inclut une section dédiée
-**Date et heure actuelles** avec **uniquement le fuseau horaire** (sans format d’heure/horloge)
-pour garder stable le cache du prompt :
+**Date et heure actuelles** avec **uniquement le fuseau horaire** (sans horloge ni format d’heure)
+afin de stabiliser la mise en cache du prompt :
 
 ```
 Time zone: America/Chicago
 ```
 
-Lorsque l’agent a besoin de l’heure actuelle, utilisez l’outil `session_status` ; la carte d’état
-inclut une ligne d’horodatage.
+Lorsque l’agent a besoin de l’heure actuelle, utilisez l’outil `session_status` ; la carte
+d’état inclut une ligne d’horodatage.
 
 ## Lignes d’événements système (locales par défaut)
 
-Les événements système mis en file insérés dans le contexte de l’agent sont préfixés par un horodatage utilisant la
-même sélection de fuseau horaire que les enveloppes de message (par défaut : heure locale de l’hôte).
+Les événements système en file d’attente insérés dans le contexte de l’agent sont préfixés par un horodatage utilisant la
+même sélection de fuseau horaire que les enveloppes de messages (par défaut : local à l’hôte).
 
 ```
 System: [2026-01-12 12:19:17 PST] Model switched.
@@ -105,25 +103,25 @@ System: [2026-01-12 12:19:17 PST] Model switched.
 ```
 
 - `userTimezone` définit le **fuseau horaire local de l’utilisateur** pour le contexte du prompt.
-- `timeFormat` contrôle l’affichage en **12 h/24 h** dans le prompt. `auto` suit les préférences de l’OS.
+- `timeFormat` contrôle **l’affichage 12 h/24 h** dans le prompt. `auto` suit les préférences du système d’exploitation.
 
 ## Détection du format horaire (auto)
 
-Lorsque `timeFormat: "auto"` est défini, OpenClaw inspecte la préférence de l’OS (macOS/Windows)
-et revient au formatage selon la locale. La valeur détectée est **mise en cache par processus**
+Lorsque `timeFormat: "auto"`, OpenClaw inspecte les préférences du système d’exploitation (macOS/Windows)
+et se replie sur le formatage des paramètres régionaux. La valeur détectée est **mise en cache par processus**
 afin d’éviter des appels système répétés.
 
 ## Charges utiles d’outils + connecteurs (heure brute du fournisseur + champs normalisés)
 
-Les outils de canal renvoient des **horodatages natifs du fournisseur** et ajoutent des champs normalisés pour la cohérence :
+Les outils de canaux renvoient des **horodatages natifs du fournisseur** et ajoutent des champs normalisés par souci de cohérence :
 
-- `timestampMs` : millisecondes epoch (UTC)
+- `timestampMs` : millisecondes depuis l’époque Unix (UTC)
 - `timestampUtc` : chaîne UTC ISO 8601
 
-Les champs bruts du fournisseur sont préservés afin qu’aucune information ne soit perdue.
+Les champs bruts du fournisseur sont préservés afin que rien ne soit perdu.
 
 - Slack : chaînes de type epoch provenant de l’API
-- Discord : horodatages UTC ISO
+- Discord : horodatages ISO UTC
 - Telegram/WhatsApp : horodatages numériques/ISO spécifiques au fournisseur
 
 Si vous avez besoin de l’heure locale, convertissez-la en aval à l’aide du fuseau horaire connu.

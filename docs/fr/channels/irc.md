@@ -1,20 +1,20 @@
 ---
 read_when:
     - Vous voulez connecter OpenClaw à des canaux IRC ou à des messages privés
-    - Vous configurez des listes d’autorisation IRC, une stratégie de groupe ou un contrôle des mentions
+    - Vous configurez des listes d’autorisation IRC, une stratégie de groupe ou un filtrage des mentions
 summary: Configuration du Plugin IRC, contrôles d’accès et dépannage
 title: IRC
 x-i18n:
-    generated_at: "2026-05-04T02:21:42Z"
+    generated_at: "2026-05-06T07:14:48Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 43c3098fe49a5e7405443df73e1bf752a579460dc0b2070c3d07f43b512bb555
+    source_hash: 7de49784dec1b6a21a5a65b298552c66ce82543e3f0a7075abedb442b4ebff7e
     source_path: channels/irc.md
     workflow: 16
 ---
 
 Utilisez IRC lorsque vous voulez OpenClaw dans des canaux classiques (`#room`) et des messages directs.
-IRC est fourni comme Plugin groupé, mais il se configure dans la configuration principale sous `channels.irc`.
+IRC est fourni comme Plugin intégré, mais il est configuré dans la configuration principale sous `channels.irc`.
 
 ## Démarrage rapide
 
@@ -36,7 +36,7 @@ IRC est fourni comme Plugin groupé, mais il se configure dans la configuration 
 }
 ```
 
-Préférez un serveur IRC privé pour la coordination des bots. Si vous utilisez intentionnellement un réseau IRC public, les choix courants incluent Libera.Chat, OFTC et Snoonet. Évitez les canaux publics prévisibles pour le trafic de canal de communication secondaire de bot ou d’essaim.
+Préférez un serveur IRC privé pour la coordination des bots. Si vous utilisez volontairement un réseau IRC public, les choix courants incluent Libera.Chat, OFTC et Snoonet. Évitez les canaux publics prévisibles pour le trafic de bot ou de canal de coordination d’essaim.
 
 3. Démarrez/redémarrez le Gateway :
 
@@ -46,41 +46,41 @@ openclaw gateway run
 
 ## Paramètres de sécurité par défaut
 
-- IRC utilise des sockets TCP/TLS brutes en dehors du routage par proxy de transfert géré par l’opérateur OpenClaw. Dans les déploiements qui exigent que tout le trafic sortant passe par ce proxy de transfert, définissez `channels.irc.enabled=false` sauf si le trafic sortant IRC direct est explicitement approuvé.
+- IRC utilise des sockets TCP/TLS bruts en dehors du routage par proxy direct géré par l’opérateur OpenClaw. Dans les déploiements qui exigent que toute sortie passe par ce proxy direct, définissez `channels.irc.enabled=false` sauf si la sortie IRC directe est explicitement approuvée.
 - `channels.irc.dmPolicy` vaut par défaut `"pairing"`.
 - `channels.irc.groupPolicy` vaut par défaut `"allowlist"`.
 - Avec `groupPolicy="allowlist"`, définissez `channels.irc.groups` pour définir les canaux autorisés.
-- Utilisez TLS (`channels.irc.tls=true`) sauf si vous acceptez intentionnellement un transport en texte clair.
+- Utilisez TLS (`channels.irc.tls=true`) sauf si vous acceptez volontairement le transport en texte clair.
 
 ## Contrôle d’accès
 
-Il existe deux « portes » séparées pour les canaux IRC :
+Il existe deux « portes » distinctes pour les canaux IRC :
 
 1. **Accès au canal** (`groupPolicy` + `groups`) : si le bot accepte ou non les messages d’un canal.
 2. **Accès de l’expéditeur** (`groupAllowFrom` / `groups["#channel"].allowFrom` par canal) : qui est autorisé à déclencher le bot dans ce canal.
 
 Clés de configuration :
 
-- Liste d’autorisation des MD (accès des expéditeurs de MD) : `channels.irc.allowFrom`
+- Liste d’autorisation des DM (accès des expéditeurs DM) : `channels.irc.allowFrom`
 - Liste d’autorisation des expéditeurs de groupe (accès des expéditeurs du canal) : `channels.irc.groupAllowFrom`
-- Contrôles par canal (règles de canal + expéditeur + mention) : `channels.irc.groups["#channel"]`
-- `channels.irc.groupPolicy="open"` autorise les canaux non configurés (**toujours soumis aux mentions par défaut**)
+- Contrôles par canal (règles de canal, d’expéditeur et de mention) : `channels.irc.groups["#channel"]`
+- `channels.irc.groupPolicy="open"` autorise les canaux non configurés (**toujours soumis à une mention par défaut**)
 
 Les entrées de liste d’autorisation doivent utiliser des identités d’expéditeur stables (`nick!user@host`).
 La correspondance par simple pseudo est mutable et n’est activée que lorsque `channels.irc.dangerouslyAllowNameMatching: true`.
 
-### Piège courant : `allowFrom` sert aux MD, pas aux canaux
+### Piège courant : `allowFrom` concerne les DM, pas les canaux
 
 Si vous voyez des journaux comme :
 
 - `irc: drop group sender alice!ident@host (policy=allowlist)`
 
-…cela signifie que l’expéditeur n’était pas autorisé pour les messages de **groupe/canal**. Corrigez cela soit en :
+...cela signifie que l’expéditeur n’était pas autorisé pour les messages de **groupe/canal**. Corrigez-le soit en :
 
 - définissant `channels.irc.groupAllowFrom` (global pour tous les canaux), soit en
 - définissant des listes d’autorisation d’expéditeurs par canal : `channels.irc.groups["#channel"].allowFrom`
 
-Exemple (autoriser n’importe qui dans `#tuirc-dev` à parler au bot) :
+Exemple (autoriser toute personne dans `#tuirc-dev` à parler au bot) :
 
 ```json5
 {
@@ -99,7 +99,7 @@ Exemple (autoriser n’importe qui dans `#tuirc-dev` à parler au bot) :
 
 Même si un canal est autorisé (via `groupPolicy` + `groups`) et que l’expéditeur est autorisé, OpenClaw applique par défaut une **porte par mention** dans les contextes de groupe.
 
-Cela signifie que vous pouvez voir des journaux comme `drop channel … (missing-mention)`, sauf si le message inclut un motif de mention qui correspond au bot.
+Cela signifie que vous pouvez voir des journaux comme `drop channel … (missing-mention)` sauf si le message inclut un motif de mention correspondant au bot.
 
 Pour que le bot réponde dans un canal IRC **sans nécessiter de mention**, désactivez la porte par mention pour ce canal :
 
@@ -160,7 +160,7 @@ Pour réduire le risque, restreignez les outils pour ce canal.
 
 ### Outils différents par expéditeur (le propriétaire obtient plus de pouvoir)
 
-Utilisez `toolsBySender` pour appliquer une politique plus stricte à `"*"` et une politique plus souple à votre pseudo :
+Utilisez `toolsBySender` pour appliquer une politique plus stricte à `"*"` et une plus souple à votre pseudo :
 
 ```json5
 {
@@ -184,18 +184,18 @@ Utilisez `toolsBySender` pour appliquer une politique plus stricte à `"*"` et u
 }
 ```
 
-Notes :
+Remarques :
 
 - Les clés `toolsBySender` doivent utiliser `id:` pour les valeurs d’identité d’expéditeur IRC :
   `id:eigen` ou `id:eigen!~eigen@174.127.248.171` pour une correspondance plus forte.
-- Les clés héritées sans préfixe sont toujours acceptées et correspondent uniquement comme `id:`.
+- Les anciennes clés sans préfixe sont toujours acceptées et correspondent uniquement comme `id:`.
 - La première politique d’expéditeur correspondante l’emporte ; `"*"` est le repli générique.
 
-Pour en savoir plus sur l’accès de groupe par rapport à la porte par mention (et sur leur interaction), consultez : [/channels/groups](/fr/channels/groups).
+Pour en savoir plus sur l’accès aux groupes par rapport à la porte par mention (et leur interaction), consultez : [/channels/groups](/fr/channels/groups).
 
 ## NickServ
 
-Pour vous identifier auprès de NickServ après la connexion :
+Pour s’identifier auprès de NickServ après la connexion :
 
 ```json5
 {
@@ -211,7 +211,7 @@ Pour vous identifier auprès de NickServ après la connexion :
 }
 ```
 
-Inscription ponctuelle facultative à la connexion :
+Inscription unique facultative à la connexion :
 
 ```json5
 {
@@ -226,7 +226,7 @@ Inscription ponctuelle facultative à la connexion :
 }
 ```
 
-Désactivez `register` une fois le pseudo enregistré afin d’éviter les tentatives REGISTER répétées.
+Désactivez `register` après l’enregistrement du pseudo afin d’éviter les tentatives REGISTER répétées.
 
 ## Variables d’environnement
 
@@ -239,7 +239,7 @@ Le compte par défaut prend en charge :
 - `IRC_USERNAME`
 - `IRC_REALNAME`
 - `IRC_PASSWORD`
-- `IRC_CHANNELS` (séparé par des virgules)
+- `IRC_CHANNELS` (séparés par des virgules)
 - `IRC_NICKSERV_PASSWORD`
 - `IRC_NICKSERV_REGISTER_EMAIL`
 
@@ -254,7 +254,7 @@ Le compte par défaut prend en charge :
 ## Connexe
 
 - [Vue d’ensemble des canaux](/fr/channels) — tous les canaux pris en charge
-- [Appairage](/fr/channels/pairing) — authentification par MD et flux d’appairage
+- [Appairage](/fr/channels/pairing) — authentification DM et flux d’appairage
 - [Groupes](/fr/channels/groups) — comportement des discussions de groupe et porte par mention
 - [Routage des canaux](/fr/channels/channel-routing) — routage de session pour les messages
 - [Sécurité](/fr/gateway/security) — modèle d’accès et durcissement

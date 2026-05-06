@@ -1,36 +1,33 @@
 ---
 read_when:
-    - Vous souhaitez basculer entre stable/bêta/dev
-    - Vous voulez épingler une version, une balise ou un SHA spécifique
+    - Vous voulez basculer entre stable/bêta/dev
+    - Vous souhaitez épingler une version, une étiquette ou un SHA spécifique
     - Vous créez des tags ou publiez des préversions
 sidebarTitle: Release Channels
-summary: 'Canaux stable, bêta et dev : sémantique, changement, épinglage et étiquetage'
+summary: 'Canaux stable, bêta et de développement : sémantique, basculement, épinglage et étiquetage'
 title: Canaux de publication
 x-i18n:
-    generated_at: "2026-04-30T07:32:50Z"
+    generated_at: "2026-05-06T07:28:04Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 741d8ed2a1599264e1b41a99e81fac4b06d14cb026aa945a8757b15e5733f682
+    source_hash: d2516165635eb8fbaddf19e07fbb591b659479b5226c2bf467e29247552ababb
     source_path: install/development-channels.md
     workflow: 16
 ---
 
-# Canaux de développement
-
-OpenClaw fournit trois canaux de mise à jour :
+OpenClaw propose trois canaux de mise à jour :
 
 - **stable** : dist-tag npm `latest`. Recommandé pour la plupart des utilisateurs.
-- **beta** : dist-tag npm `beta` lorsqu’il est actuel ; si beta est absent ou antérieur à
+- **beta** : dist-tag npm `beta` lorsqu’il est actuel ; si beta est absent ou plus ancien que
   la dernière version stable, le flux de mise à jour se rabat sur `latest`.
-- **dev** : pointe mobile de `main` (git). dist-tag npm : `dev` (lorsqu’il est publié).
+- **dev** : tête mobile de `main` (git). dist-tag npm : `dev` (lorsqu’il est publié).
   La branche `main` est destinée à l’expérimentation et au développement actif. Elle peut contenir
   des fonctionnalités incomplètes ou des changements incompatibles. Ne l’utilisez pas pour des Gateway de production.
 
-Nous publions généralement d’abord les builds stables sur **beta**, les y testons, puis exécutons une
-étape explicite de promotion qui déplace le build validé vers `latest` sans
-modifier le numéro de version. Les mainteneurs peuvent aussi publier une version stable
-directement sur `latest` si nécessaire. Les dist-tags sont la source de vérité pour les
-installations npm.
+Nous publions généralement d’abord les builds stables sur **beta**, les testons à cet endroit, puis exécutons une
+étape de promotion explicite qui déplace le build validé vers `latest` sans
+changer le numéro de version. Les mainteneurs peuvent aussi publier une version stable
+directement vers `latest` si nécessaire. Les dist-tags sont la source de vérité pour les installations npm.
 
 ## Changer de canal
 
@@ -45,51 +42,51 @@ méthode d’installation :
 
 - **`stable`** (installations de paquet) : mises à jour via le dist-tag npm `latest`.
 - **`beta`** (installations de paquet) : privilégie le dist-tag npm `beta`, mais se rabat sur
-  `latest` lorsque `beta` est absent ou antérieur au tag stable actuel.
-- **`stable`** (installations git) : extrait le dernier tag git stable.
-- **`beta`** (installations git) : privilégie le dernier tag git beta, mais se rabat sur
-  le dernier tag git stable lorsque beta est absent ou antérieur.
+  `latest` lorsque `beta` est absent ou plus ancien que l’étiquette stable actuelle.
+- **`stable`** (installations git) : extrait la dernière étiquette git stable.
+- **`beta`** (installations git) : privilégie la dernière étiquette git beta, mais se rabat sur
+  la dernière étiquette git stable lorsque beta est absent ou plus ancien.
 - **`dev`** : garantit un checkout git (`~/openclaw` par défaut, remplaçable avec
-  `OPENCLAW_GIT_DIR`), bascule sur `main`, rebase sur l’amont, construit et
+  `OPENCLAW_GIT_DIR`), bascule vers `main`, rebase sur l’amont, construit et
   installe la CLI globale depuis ce checkout.
 
 <Tip>
-Si vous voulez utiliser stable et dev en parallèle, conservez deux clones et pointez votre Gateway vers le clone stable.
+Si vous voulez utiliser stable et dev en parallèle, conservez deux clones et faites pointer votre Gateway vers le clone stable.
 </Tip>
 
-## Cibler une version ou un tag ponctuellement
+## Cibler ponctuellement une version ou une étiquette
 
-Utilisez `--tag` pour cibler un dist-tag, une version ou une spécification de paquet précise pour une seule
+Utilisez `--tag` pour cibler un dist-tag, une version ou une spécification de paquet précis pour une seule
 mise à jour **sans** modifier votre canal conservé :
 
 ```bash
-# Installer une version précise
+# Install a specific version
 openclaw update --tag 2026.4.1-beta.1
 
-# Installer depuis le dist-tag beta (ponctuel, non conservé)
+# Install from the beta dist-tag (one-off, does not persist)
 openclaw update --tag beta
 
-# Installer depuis la branche main de GitHub (tarball npm)
+# Install from GitHub main branch (npm tarball)
 openclaw update --tag main
 
-# Installer une spécification de paquet npm précise
+# Install a specific npm package spec
 openclaw update --tag openclaw@2026.4.1-beta.1
 ```
 
-Notes :
+Remarques :
 
-- `--tag` s’applique uniquement aux **installations de paquet (npm)**. Les installations git l’ignorent.
-- Le tag n’est pas conservé. Votre prochain `openclaw update` utilisera votre canal
-  configuré comme d’habitude.
-- Protection contre le retour à une version antérieure : si la version cible est antérieure à votre version actuelle,
+- `--tag` s’applique **uniquement aux installations de paquet (npm)**. Les installations git l’ignorent.
+- L’étiquette n’est pas conservée. Votre prochain `openclaw update` utilise votre canal configuré
+  comme d’habitude.
+- Protection contre le retour à une version antérieure : si la version cible est plus ancienne que votre version actuelle,
   OpenClaw demande une confirmation (à ignorer avec `--yes`).
-- `--channel beta` diffère de `--tag beta` : le flux de canal peut se rabattre
-  sur stable/latest lorsque beta est absent ou antérieur, tandis que `--tag beta` cible le
-  dist-tag brut `beta` pour cette exécution unique.
+- `--channel beta` est différent de `--tag beta` : le flux de canal peut se rabattre
+  sur stable/latest lorsque beta est absent ou plus ancien, tandis que `--tag beta` cible le
+  dist-tag `beta` brut pour cette seule exécution.
 
 ## Simulation
 
-Prévisualisez ce que ferait `openclaw update` sans appliquer de changements :
+Prévisualisez ce que `openclaw update` ferait sans effectuer de changements :
 
 ```bash
 openclaw update --dry-run
@@ -103,11 +100,11 @@ si une confirmation de retour à une version antérieure serait requise.
 
 ## Plugins et canaux
 
-Lorsque vous changez de canal avec `openclaw update`, OpenClaw synchronise aussi les sources des plugins :
+Lorsque vous changez de canal avec `openclaw update`, OpenClaw synchronise également les sources des plugins :
 
-- `dev` privilégie les plugins inclus depuis le checkout git.
+- `dev` privilégie les plugins inclus dans le checkout git.
 - `stable` et `beta` restaurent les paquets de plugins installés via npm.
-- Les plugins installés via npm sont mis à jour après la fin de la mise à jour du cœur.
+- Les plugins installés via npm sont mis à jour une fois la mise à jour du cœur terminée.
 
 ## Vérifier l’état actuel
 
@@ -116,28 +113,28 @@ openclaw update status
 ```
 
 Affiche le canal actif, le type d’installation (git ou paquet), la version actuelle et
-la source (configuration, tag git, branche git ou valeur par défaut).
+la source (configuration, étiquette git, branche git ou valeur par défaut).
 
-## Bonnes pratiques de taggage
+## Bonnes pratiques d’étiquetage
 
-- Taguez les versions sur lesquelles les checkouts git doivent atterrir (`vYYYY.M.D` pour stable,
+- Étiquetez les versions sur lesquelles vous voulez que les checkouts git arrivent (`vYYYY.M.D` pour stable,
   `vYYYY.M.D-beta.N` pour beta).
-- `vYYYY.M.D.beta.N` est également reconnu pour la compatibilité, mais préférez `-beta.N`.
-- Les tags hérités `vYYYY.M.D-<patch>` sont toujours reconnus comme stables (non-beta).
-- Gardez les tags immuables : ne déplacez ni ne réutilisez jamais un tag.
+- `vYYYY.M.D.beta.N` est également reconnu pour compatibilité, mais préférez `-beta.N`.
+- Les anciennes étiquettes `vYYYY.M.D-<patch>` sont toujours reconnues comme stables (non beta).
+- Gardez les étiquettes immuables : ne déplacez ou ne réutilisez jamais une étiquette.
 - Les dist-tags npm restent la source de vérité pour les installations npm :
   - `latest` -> stable
-  - `beta` -> build candidat ou build stable d’abord publié sur beta
+  - `beta` -> build candidat ou build stable publié d’abord sur beta
   - `dev` -> instantané de main (facultatif)
 
-## Disponibilité de l’application macOS
+## Disponibilité de l’app macOS
 
-Les builds beta et dev peuvent **ne pas** inclure de version de l’application macOS. C’est acceptable :
+Les builds beta et dev peuvent **ne pas** inclure de publication d’app macOS. C’est acceptable :
 
-- Le tag git et le dist-tag npm peuvent toujours être publiés.
-- Mentionnez « pas de build macOS pour cette beta » dans les notes de version ou le changelog.
+- L’étiquette git et le dist-tag npm peuvent quand même être publiés.
+- Indiquez « pas de build macOS pour cette beta » dans les notes de publication ou le changelog.
 
 ## Connexe
 
 - [Mise à jour](/fr/install/updating)
-- [Internes de l’installateur](/fr/install/installer)
+- [Fonctionnement interne de l’installateur](/fr/install/installer)

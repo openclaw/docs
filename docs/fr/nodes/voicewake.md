@@ -1,32 +1,32 @@
 ---
 read_when:
-    - Modification du comportement ou des valeurs par défaut des mots d’activation vocale
-    - Ajout de nouvelles plateformes de nœuds nécessitant la synchronisation des mots d’activation vocale
-summary: Mots d’activation vocale globaux (gérés par la Gateway) et mode de synchronisation sur les nœuds
+    - Modifier le comportement ou les valeurs par défaut des mots d’activation vocale
+    - Ajout de nouvelles plateformes Node nécessitant la synchronisation du mot d’activation
+summary: Mots d’activation vocale globaux (gérés par le Gateway) et leur synchronisation entre les nœuds
 title: Réveil vocal
 x-i18n:
-    generated_at: "2026-04-26T11:33:41Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T07:30:28Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: ac638cdf89f09404cdf293b416417f6cb3e31865b09f04ef87b9604e436dcbbe
+    source_hash: a284cbe3e12784a8d7a3eab6ba8ae230123557bca7593c956111199b94b91b73
     source_path: nodes/voicewake.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw traite les **mots d’activation** comme une liste globale unique gérée par la **Gateway**.
+OpenClaw traite les **mots d’activation comme une liste globale unique** détenue par le **Gateway**.
 
-- Il n’existe **pas de mots d’activation personnalisés par nœud**.
-- **Toute UI de nœud/application peut modifier** la liste ; les modifications sont persistées par la Gateway et diffusées à tout le monde.
+- Il n’y a **aucun mot d’activation personnalisé par nœud**.
+- **Toute UI de nœud/application peut modifier** la liste ; les changements sont persistés par le Gateway et diffusés à tous.
 - macOS et iOS conservent des bascules locales **Réveil vocal activé/désactivé** (l’UX locale et les autorisations diffèrent).
-- Android garde actuellement le réveil vocal désactivé et utilise un flux micro manuel dans l’onglet Voice.
+- Android garde actuellement le réveil vocal désactivé et utilise un flux manuel de micro dans l’onglet Voix.
 
-## Stockage (hôte Gateway)
+## Stockage (hôte du Gateway)
 
-Les mots d’activation sont stockés sur la machine Gateway à l’emplacement :
+Les mots d’activation sont stockés sur la machine du gateway à l’emplacement suivant :
 
 - `~/.openclaw/settings/voicewake.json`
 
-Structure :
+Forme :
 
 ```json
 { "triggers": ["openclaw", "claude", "computer"], "updatedAtMs": 1730000000000 }
@@ -39,17 +39,17 @@ Structure :
 - `voicewake.get` → `{ triggers: string[] }`
 - `voicewake.set` avec les paramètres `{ triggers: string[] }` → `{ triggers: string[] }`
 
-Remarques :
+Notes :
 
-- Les déclencheurs sont normalisés (espaces supprimés en début/fin, valeurs vides supprimées). Les listes vides reviennent aux valeurs par défaut.
-- Des limites sont appliquées pour des raisons de sécurité (plafonds de nombre/longueur).
+- Les déclencheurs sont normalisés (espaces supprimés, valeurs vides retirées). Les listes vides reviennent aux valeurs par défaut.
+- Des limites sont appliquées par sécurité (plafonds de nombre/longueur).
 
 ### Méthodes de routage (déclencheur → cible)
 
 - `voicewake.routing.get` → `{ config: VoiceWakeRoutingConfig }`
 - `voicewake.routing.set` avec les paramètres `{ config: VoiceWakeRoutingConfig }` → `{ config: VoiceWakeRoutingConfig }`
 
-Structure de `VoiceWakeRoutingConfig` :
+Forme de `VoiceWakeRoutingConfig` :
 
 ```json
 {
@@ -60,7 +60,7 @@ Structure de `VoiceWakeRoutingConfig` :
 }
 ```
 
-Les cibles de route prennent en charge exactement l’une des formes suivantes :
+Les cibles de route prennent en charge exactement l’un des éléments suivants :
 
 - `{ "mode": "current" }`
 - `{ "agentId": "main" }`
@@ -68,33 +68,33 @@ Les cibles de route prennent en charge exactement l’une des formes suivantes :
 
 ### Événements
 
-- `voicewake.changed` charge utile `{ triggers: string[] }`
-- `voicewake.routing.changed` charge utile `{ config: VoiceWakeRoutingConfig }`
+- Charge utile `voicewake.changed` `{ triggers: string[] }`
+- Charge utile `voicewake.routing.changed` `{ config: VoiceWakeRoutingConfig }`
 
 Qui les reçoit :
 
 - Tous les clients WebSocket (application macOS, WebChat, etc.)
-- Tous les nœuds connectés (iOS/Android), ainsi qu’au moment de la connexion d’un nœud sous forme de push initial de « l’état actuel ».
+- Tous les nœuds connectés (iOS/Android), ainsi qu’au moment de la connexion du nœud sous forme d’envoi initial de « l’état actuel ».
 
-## Comportement du client
+## Comportement client
 
 ### Application macOS
 
-- Utilise la liste globale pour contrôler les déclencheurs `VoiceWakeRuntime`.
-- Modifier « Trigger words » dans les paramètres de réveil vocal appelle `voicewake.set`, puis s’appuie sur la diffusion pour garder les autres clients synchronisés.
+- Utilise la liste globale pour filtrer les déclencheurs de `VoiceWakeRuntime`.
+- La modification de « Mots déclencheurs » dans les réglages du réveil vocal appelle `voicewake.set`, puis s’appuie sur la diffusion pour garder les autres clients synchronisés.
 
 ### Nœud iOS
 
-- Utilise la liste globale pour la détection de déclencheurs `VoiceWakeManager`.
-- Modifier les mots d’activation dans Réglages appelle `voicewake.set` (via la Gateway WS) et maintient également la réactivité de la détection locale des mots d’activation.
+- Utilise la liste globale pour la détection des déclencheurs par `VoiceWakeManager`.
+- La modification des mots d’activation dans les réglages appelle `voicewake.set` (via le WS du Gateway) et garde également la détection locale des mots d’activation réactive.
 
 ### Nœud Android
 
-- Le réveil vocal est actuellement désactivé dans l’exécution/les réglages Android.
-- La voix sur Android utilise une capture micro manuelle dans l’onglet Voice au lieu de déclencheurs par mot d’activation.
+- Le réveil vocal est actuellement désactivé dans le runtime/les réglages Android.
+- La voix sur Android utilise une capture micro manuelle dans l’onglet Voix au lieu de déclencheurs par mots d’activation.
 
-## Liens connexes
+## Associé
 
-- [Mode Talk](/fr/nodes/talk)
+- [Mode conversation](/fr/nodes/talk)
 - [Audio et notes vocales](/fr/nodes/audio)
 - [Compréhension des médias](/fr/nodes/media-understanding)

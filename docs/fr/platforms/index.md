@@ -1,25 +1,25 @@
 ---
 read_when:
-    - À la recherche de la prise en charge des OS ou des parcours d’installation
-    - Décider où exécuter le Gateway
-summary: Vue d’ensemble de la prise en charge des plateformes (Gateway + apps compagnons)
+    - Recherche de la prise en charge des systèmes d’exploitation ou des chemins d’installation
+    - Choisir où exécuter le Gateway
+summary: Vue d’ensemble de la prise en charge des plateformes (Gateway + applications d’accompagnement)
 title: Plateformes
 x-i18n:
-    generated_at: "2026-04-24T07:19:50Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T07:30:56Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 3ebed9f219f3072ef760006eef47ca78f87169c40a6098c3585dfaf6169fc594
+    source_hash: dd1fbd1af8b03a12014d91b2f300fb8ec65b9c42c38ada2b9ca089181140a75c
     source_path: platforms/index.md
-    workflow: 15
+    workflow: 16
 ---
 
-Le cœur d’OpenClaw est écrit en TypeScript. **Node est le runtime recommandé**.
+OpenClaw core est écrit en TypeScript. **Node est l’environnement d’exécution recommandé**.
 Bun n’est pas recommandé pour le Gateway — problèmes connus avec les canaux WhatsApp et
-Telegram ; voir [Bun (expérimental)](/fr/install/bun) pour les détails.
+Telegram ; consultez [Bun (expérimental)](/fr/install/bun) pour plus de détails.
 
-Des apps compagnons existent pour macOS (app de barre de menus) et pour les nodes mobiles (iOS/Android). Les apps compagnons Windows et
-Linux sont prévues, mais le Gateway est entièrement pris en charge dès aujourd’hui.
-Des apps compagnons natives pour Windows sont également prévues ; le Gateway est recommandé via WSL2.
+Des applications compagnons existent pour macOS (application de barre de menus) et les nœuds mobiles (iOS/Android). Des applications compagnons Windows et
+Linux sont prévues, mais le Gateway est entièrement pris en charge aujourd’hui.
+Des applications compagnons natives pour Windows sont également prévues ; le Gateway est recommandé via WSL2.
 
 ## Choisissez votre OS
 
@@ -40,28 +40,28 @@ Des apps compagnons natives pour Windows sont également prévues ; le Gateway e
 
 ## Liens courants
 
-- Guide d’installation : [Premiers pas](/fr/start/getting-started)
-- Guide d’exploitation du Gateway : [Gateway](/fr/gateway)
+- Guide d’installation : [Bien démarrer](/fr/start/getting-started)
+- Runbook du Gateway : [Gateway](/fr/gateway)
 - Configuration du Gateway : [Configuration](/fr/gateway/configuration)
 - État du service : `openclaw gateway status`
 
 ## Installation du service Gateway (CLI)
 
-Utilisez l’une de ces méthodes (toutes prises en charge) :
+Utilisez l’une de ces options (toutes prises en charge) :
 
 - Assistant (recommandé) : `openclaw onboard --install-daemon`
-- Directement : `openclaw gateway install`
-- Flux de configuration : `openclaw configure` → sélectionner **Gateway service**
+- Direct : `openclaw gateway install`
+- Flux de configuration : `openclaw configure` → sélectionnez **service Gateway**
 - Réparer/migrer : `openclaw doctor` (propose d’installer ou de corriger le service)
 
-La cible de service dépend de l’OS :
+La cible du service dépend de l’OS :
 
-- macOS : LaunchAgent (`ai.openclaw.gateway` ou `ai.openclaw.<profile>` ; anciennement `com.openclaw.*`)
+- macOS : LaunchAgent (`ai.openclaw.gateway` ou `ai.openclaw.<profile>` ; ancien `com.openclaw.*`)
 - Linux/WSL2 : service utilisateur systemd (`openclaw-gateway[-<profile>].service`)
-- Windows natif : tâche planifiée (`OpenClaw Gateway` ou `OpenClaw Gateway (<profile>)`), avec repli sur un élément de connexion du dossier Startup par utilisateur si la création de tâche est refusée
+- Windows natif : tâche planifiée (`OpenClaw Gateway` ou `OpenClaw Gateway (<profile>)`), avec un élément de connexion de secours dans le dossier de démarrage par utilisateur si la création de la tâche est refusée
 
-## Articles connexes
+## Connexe
 
 - [Vue d’ensemble de l’installation](/fr/install)
-- [App macOS](/fr/platforms/macos)
-- [App iOS](/fr/platforms/ios)
+- [Application macOS](/fr/platforms/macos)
+- [Application iOS](/fr/platforms/ios)

@@ -1,28 +1,36 @@
 ---
 read_when:
-    - Vous voulez utiliser les modèles Mistral dans OpenClaw
+    - Vous souhaitez utiliser les modèles Mistral dans OpenClaw
     - Vous souhaitez la transcription en temps réel de Voxtral pour les appels vocaux
     - Vous avez besoin de l’intégration de la clé API Mistral et des références de modèles
 summary: Utiliser les modèles Mistral et la transcription Voxtral avec OpenClaw
 title: Mistral
 x-i18n:
-    generated_at: "2026-04-30T07:44:43Z"
+    generated_at: "2026-05-06T07:36:38Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7fdba72a5a526bed78ef3a6ea633839634efca3f9d2e96b305315d534d115122
+    source_hash: fb55915526e292210df61b646e1bbcdb2da86a0e46ea4bd5afd63d244f8da71a
     source_path: providers/mistral.md
     workflow: 16
 ---
 
-OpenClaw prend en charge Mistral pour le routage des modèles texte/image (`mistral/...`) ainsi que pour
-la transcription audio via Voxtral dans la compréhension des médias.
-Mistral peut également être utilisé pour les embeddings de mémoire (`memorySearch.provider = "mistral"`).
+OpenClaw inclut un Plugin Mistral intégré qui enregistre quatre contrats : complétions de chat, compréhension multimédia (transcription par lots Voxtral), STT en temps réel pour les appels vocaux (Voxtral Realtime) et embeddings de mémoire (`mistral-embed`).
 
-- Fournisseur : `mistral`
-- Authentification : `MISTRAL_API_KEY`
-- API : Chat Completions de Mistral (`https://api.mistral.ai/v1`)
+| Propriété           | Valeur                                      |
+| ------------------- | ------------------------------------------- |
+| ID du fournisseur   | `mistral`                                   |
+| Plugin              | intégré, `enabledByDefault: true`           |
+| Var. d’env. d’auth. | `MISTRAL_API_KEY`                           |
+| Option d’onboarding | `--auth-choice mistral-api-key`             |
+| Option CLI directe  | `--mistral-api-key <key>`                   |
+| API                 | compatible OpenAI (`openai-completions`)    |
+| URL de base         | `https://api.mistral.ai/v1`                 |
+| Modèle par défaut   | `mistral/mistral-large-latest`              |
+| Modèle d’embedding  | `mistral-embed`                             |
+| Lot Voxtral         | `voxtral-mini-latest` (transcription audio) |
+| Voxtral temps réel  | `voxtral-mini-transcribe-realtime-2602`     |
 
-## Bien démarrer
+## Premiers pas
 
 <Steps>
   <Step title="Obtenir votre clé API">
@@ -71,8 +79,8 @@ OpenClaw fournit actuellement ce catalogue Mistral intégré :
 
 ## Transcription audio (Voxtral)
 
-Utilisez Voxtral pour la transcription audio par lots via le pipeline de compréhension
-des médias.
+Utilisez Voxtral pour la transcription audio par lots via le pipeline de
+compréhension multimédia.
 
 ```json5
 {
@@ -88,13 +96,13 @@ des médias.
 ```
 
 <Tip>
-Le chemin de transcription des médias utilise `/v1/audio/transcriptions`. Le modèle audio par défaut pour Mistral est `voxtral-mini-latest`.
+Le chemin de transcription multimédia utilise `/v1/audio/transcriptions`. Le modèle audio par défaut pour Mistral est `voxtral-mini-latest`.
 </Tip>
 
-## STT en streaming pour Voice Call
+## STT en streaming pour les appels vocaux
 
 Le Plugin `mistral` intégré enregistre Voxtral Realtime comme fournisseur STT
-en streaming pour Voice Call.
+en streaming pour les appels vocaux.
 
 | Paramètre    | Chemin de configuration                                                | Par défaut                              |
 | ------------ | ---------------------------------------------------------------------- | --------------------------------------- |
@@ -128,20 +136,20 @@ en streaming pour Voice Call.
 ```
 
 <Note>
-OpenClaw définit par défaut le STT temps réel de Mistral sur `pcm_mulaw` à 8 kHz afin que Voice Call
-puisse transférer directement les trames multimédias Twilio. Utilisez `encoding: "pcm_s16le"` et un
-`sampleRate` correspondant uniquement si votre flux amont est déjà du PCM brut.
+OpenClaw configure par défaut le STT temps réel Mistral sur `pcm_mulaw` à 8 kHz afin que les appels vocaux
+puissent transmettre directement les trames multimédias Twilio. Utilisez `encoding: "pcm_s16le"` et un
+`sampleRate` correspondant uniquement si votre flux en amont est déjà du PCM brut.
 </Note>
 
 ## Configuration avancée
 
 <AccordionGroup>
   <Accordion title="Raisonnement ajustable (mistral-small-latest)">
-    `mistral/mistral-small-latest` correspond à Mistral Small 4 et prend en charge le [raisonnement ajustable](https://docs.mistral.ai/capabilities/reasoning/adjustable) sur l’API Chat Completions via `reasoning_effort` (`none` minimise la réflexion supplémentaire dans la sortie ; `high` expose les traces complètes de réflexion avant la réponse finale).
+    `mistral/mistral-small-latest` correspond à Mistral Small 4 et prend en charge le [raisonnement ajustable](https://docs.mistral.ai/capabilities/reasoning/adjustable) sur l’API Chat Completions via `reasoning_effort` (`none` minimise la réflexion supplémentaire dans la sortie ; `high` affiche les traces complètes de réflexion avant la réponse finale).
 
-    OpenClaw mappe le niveau de **thinking** de la session à l’API de Mistral :
+    OpenClaw mappe le niveau de **thinking** de la session à l’API Mistral :
 
-    | Niveau de thinking OpenClaw                      | `reasoning_effort` Mistral |
+    | Niveau de thinking OpenClaw                    | `reasoning_effort` Mistral |
     | ------------------------------------------------ | -------------------------- |
     | **off** / **minimal**                            | `none`                     |
     | **low** / **medium** / **high** / **xhigh** / **adaptive** / **max** | `high`     |
@@ -164,21 +172,21 @@ puisse transférer directement les trames multimédias Twilio. Utilisez `encodin
   </Accordion>
 
   <Accordion title="Authentification et URL de base">
-    - L’authentification Mistral utilise `MISTRAL_API_KEY`.
-    - L’URL de base du fournisseur est par défaut `https://api.mistral.ai/v1`.
-    - Le modèle par défaut d’onboarding est `mistral/mistral-large-latest`.
-    - Z.AI utilise l’authentification Bearer avec votre clé API.
+    - L’authentification Mistral utilise `MISTRAL_API_KEY` (en-tête Bearer).
+    - L’URL de base du fournisseur est par défaut `https://api.mistral.ai/v1` et accepte le format de requête chat-completions standard compatible OpenAI.
+    - Le modèle d’onboarding par défaut est `mistral/mistral-large-latest`.
+    - Remplacez l’URL de base sous `models.providers.mistral.baseUrl` uniquement lorsque Mistral publie explicitement un point de terminaison régional dont vous avez besoin.
 
   </Accordion>
 </AccordionGroup>
 
-## Articles associés
+## Associé
 
 <CardGroup cols={2}>
   <Card title="Sélection du modèle" href="/fr/concepts/model-providers" icon="layers">
-    Choisir les fournisseurs, les références de modèle et le comportement de basculement.
+    Choix des fournisseurs, des références de modèles et du comportement de basculement.
   </Card>
-  <Card title="Compréhension des médias" href="/fr/nodes/media-understanding" icon="microphone">
+  <Card title="Compréhension multimédia" href="/fr/nodes/media-understanding" icon="microphone">
     Configuration de la transcription audio et sélection du fournisseur.
   </Card>
 </CardGroup>

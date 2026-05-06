@@ -1,26 +1,26 @@
 ---
 read_when:
-    - Modifier la sortie ou les formats de journalisation
-    - Débogage de la sortie de la CLI ou du Gateway
-summary: Surfaces de journalisation, journaux de fichiers, styles de journaux WS et formatage de la console
+    - Modification de la sortie ou des formats de journalisation
+    - Débogage de la sortie CLI ou Gateway
+summary: Surfaces de journalisation, journaux de fichiers, styles de journaux WS et mise en forme de la console
 title: Journalisation du Gateway
 x-i18n:
-    generated_at: "2026-05-05T01:47:08Z"
+    generated_at: "2026-05-06T07:23:38Z"
     model: gpt-5.5
     provider: openai
-    source_hash: d49ca112d3cc4ec76ecfc8b14d16dae64f74ca1f761fdb2b7bb470f73b66a246
+    source_hash: 078b4196ef1c5af5f7f0a4253f704d90d474a3ff668ec555559cab56cbcb15c6
     source_path: gateway/logging.md
     workflow: 16
 ---
 
 # Journalisation
 
-Pour une vue d’ensemble destinée aux utilisateurs (CLI + interface de contrôle + configuration), consultez [/logging](/fr/logging).
+Pour une vue d’ensemble orientée utilisateur (CLI + Control UI + configuration), consultez [/logging](/fr/logging).
 
-OpenClaw dispose de deux « surfaces » de journaux :
+OpenClaw a deux « surfaces » de journalisation :
 
-- **Sortie console** (ce que vous voyez dans le terminal / l’interface de débogage).
-- **Journaux de fichier** (lignes JSON) écrits par le journaliseur du Gateway.
+- **Sortie console** (ce que vous voyez dans le terminal / Debug UI).
+- **Journaux fichier** (lignes JSON) écrits par le logger du Gateway.
 
 Au démarrage, le Gateway journalise le modèle d’agent par défaut résolu avec les
 valeurs par défaut de mode qui affectent les nouvelles sessions, par exemple :
@@ -30,43 +30,43 @@ agent model: openai-codex/gpt-5.5 (thinking=medium, fast=on)
 ```
 
 `thinking` provient de l’agent par défaut, des paramètres du modèle ou de la valeur
-par défaut globale de l’agent ; lorsqu’il n’est pas défini, le résumé de démarrage
-affiche `medium`. `fast` provient de l’agent par défaut ou des paramètres
-`fastMode` du modèle.
+globale par défaut de l’agent ; lorsqu’il n’est pas défini, le résumé de démarrage
+affiche `medium`. `fast` provient de l’agent par défaut ou des paramètres `fastMode`
+du modèle.
 
-## Journaliseur basé sur les fichiers
+## Logger basé sur fichier
 
-- Le fichier de journal tournant par défaut se trouve sous `/tmp/openclaw/` (un fichier par jour) : `openclaw-YYYY-MM-DD.log`
+- Le fichier journal rotatif par défaut se trouve sous `/tmp/openclaw/` (un fichier par jour) : `openclaw-YYYY-MM-DD.log`
   - La date utilise le fuseau horaire local de l’hôte du Gateway.
-- Les fichiers de journal actifs tournent à `logging.maxFileBytes` (par défaut : 100 Mo), en conservant
+- Les fichiers journaux actifs effectuent une rotation à `logging.maxFileBytes` (par défaut : 100 Mo), en conservant
   jusqu’à cinq archives numérotées et en continuant à écrire dans un nouveau fichier actif.
-- Le chemin et le niveau du fichier de journal peuvent être configurés via `~/.openclaw/openclaw.json` :
+- Le chemin et le niveau du fichier journal peuvent être configurés via `~/.openclaw/openclaw.json` :
   - `logging.file`
   - `logging.level`
 
-Le format de fichier est d’un objet JSON par ligne.
+Le format du fichier est d’un objet JSON par ligne.
 
-L’onglet Journaux de l’interface de contrôle suit ce fichier via le Gateway (`logs.tail`).
+L’onglet Logs de la Control UI suit ce fichier via le Gateway (`logs.tail`).
 La CLI peut faire la même chose :
 
 ```bash
 openclaw logs --follow
 ```
 
-**Mode détaillé vs niveaux de journalisation**
+**Verbeux et niveaux de journalisation**
 
-- Les **journaux de fichier** sont contrôlés exclusivement par `logging.level`.
-- `--verbose` affecte uniquement la **verbosité de la console** (et le style des journaux WS) ; il ne
-  relève **pas** le niveau des journaux de fichier.
-- Pour capturer les détails disponibles uniquement en mode détaillé dans les journaux de fichier, définissez `logging.level` sur `debug` ou
+- Les **journaux fichier** sont contrôlés exclusivement par `logging.level`.
+- `--verbose` n’affecte que la **verbosité de la console** (et le style des journaux WS) ; il **n’augmente pas**
+  le niveau de journalisation du fichier.
+- Pour capturer dans les journaux fichier les détails visibles uniquement en mode verbeux, définissez `logging.level` sur `debug` ou
   `trace`.
-- La journalisation de trace inclut aussi des résumés de diagnostic de minutage pour certains chemins critiques,
-  comme la préparation de la fabrique d’outils de Plugin. Voir
+- La journalisation trace inclut aussi des résumés de chronométrage de diagnostic pour certains chemins critiques,
+  comme la préparation de la factory d’outils de Plugin. Voir
   [/tools/plugin#slow-plugin-tool-setup](/fr/tools/plugin#slow-plugin-tool-setup).
 
-## Capture de la console
+## Capture console
 
-La CLI capture `console.log/info/warn/error/debug/trace` et les écrit dans les journaux de fichier,
+La CLI capture `console.log/info/warn/error/debug/trace` et les écrit dans les journaux fichier,
 tout en continuant à les afficher sur stdout/stderr.
 
 Vous pouvez régler indépendamment la verbosité de la console via :
@@ -76,41 +76,41 @@ Vous pouvez régler indépendamment la verbosité de la console via :
 
 ## Caviardage
 
-OpenClaw peut masquer les jetons sensibles avant que la sortie de journal ou de transcript ne quitte le
-processus. Cette politique de caviardage de journalisation est appliquée aux récepteurs de texte console,
-journal de fichier, enregistrement de journal OTLP et transcript de session, afin que les valeurs secrètes
-correspondantes soient masquées avant que les lignes JSONL ou les messages soient écrits sur disque.
+OpenClaw peut masquer les jetons sensibles avant que la sortie de journal ou de transcription ne quitte le
+processus. Cette politique de caviardage de la journalisation est appliquée aux sorties texte de console, de journal fichier, d’enregistrement
+de journal OTLP et de transcription de session, de sorte que les valeurs secrètes correspondantes sont
+masquées avant l’écriture des lignes JSONL ou des messages sur disque.
 
 - `logging.redactSensitive` : `off` | `tools` (par défaut : `tools`)
 - `logging.redactPatterns` : tableau de chaînes regex (remplace les valeurs par défaut)
-  - Utilisez des chaînes regex brutes (`gi` automatique), ou `/pattern/flags` si vous avez besoin de drapeaux personnalisés.
+  - Utilisez des chaînes regex brutes (`gi` automatique), ou `/pattern/flags` si vous avez besoin de flags personnalisés.
   - Les correspondances sont masquées en conservant les 6 premiers + 4 derniers caractères (longueur >= 18), sinon `***`.
-  - Les valeurs par défaut couvrent les affectations de clés courantes, les options de CLI, les champs JSON, les en-têtes bearer, les blocs PEM, les préfixes de jetons populaires et les noms de champs d’identifiants de paiement comme le numéro de carte, le CVC/CVV, le jeton de paiement partagé et l’identifiant de paiement.
+  - Les valeurs par défaut couvrent les affectations de clés courantes, les flags CLI, les champs JSON, les en-têtes bearer, les blocs PEM, les préfixes de jetons populaires et les noms de champs d’identifiants de paiement comme le numéro de carte, CVC/CVV, le jeton de paiement partagé et l’identifiant de paiement.
 
-Certaines limites de sécurité caviardent toujours, quelle que soit la valeur de `logging.redactSensitive`.
-Cela inclut les événements d’appels d’outils de l’interface de contrôle, la sortie d’outil
-`sessions_history`, les exports de support de diagnostics, les observations d’erreurs de fournisseur,
-l’affichage des commandes d’approbation exec et les journaux du protocole WebSocket du Gateway. Ces surfaces peuvent toujours utiliser
+Certaines limites de sécurité caviardent toujours, indépendamment de `logging.redactSensitive`.
+Cela inclut les événements d’appels d’outils de la Control UI, la sortie de l’outil `sessions_history`,
+les exports de support de diagnostic, les observations d’erreurs de fournisseurs, l’affichage des commandes
+d’approbation d’exécution et les journaux du protocole WebSocket du Gateway. Ces surfaces peuvent toujours utiliser
 `logging.redactPatterns` comme motifs supplémentaires, mais `redactSensitive: "off"`
 ne leur fait pas émettre de secrets bruts.
 
 ## Journaux WebSocket du Gateway
 
-Le Gateway affiche les journaux du protocole WebSocket selon deux modes :
+Le gateway affiche les journaux du protocole WebSocket selon deux modes :
 
 - **Mode normal (sans `--verbose`)** : seuls les résultats RPC « intéressants » sont affichés :
   - erreurs (`ok=false`)
   - appels lents (seuil par défaut : `>= 50ms`)
   - erreurs d’analyse
-- **Mode détaillé (`--verbose`)** : affiche tout le trafic de requêtes/réponses WS.
+- **Mode verbeux (`--verbose`)** : affiche tout le trafic de requêtes/réponses WS.
 
 ### Style des journaux WS
 
-`openclaw gateway` prend en charge un sélecteur de style par Gateway :
+`openclaw gateway` prend en charge un commutateur de style par gateway :
 
-- `--ws-log auto` (par défaut) : le mode normal est optimisé ; le mode détaillé utilise une sortie compacte
-- `--ws-log compact` : sortie compacte (requête/réponse appariées) en mode détaillé
-- `--ws-log full` : sortie complète par trame en mode détaillé
+- `--ws-log auto` (par défaut) : le mode normal est optimisé ; le mode verbeux utilise une sortie compacte
+- `--ws-log compact` : sortie compacte (requête/réponse appariées) en mode verbeux
+- `--ws-log full` : sortie complète par trame en mode verbeux
 - `--compact` : alias de `--ws-log compact`
 
 Exemples :
@@ -128,25 +128,25 @@ openclaw gateway --verbose --ws-log full
 
 ## Formatage de la console (journalisation par sous-système)
 
-Le formateur de console est **conscient du TTY** et affiche des lignes cohérentes et préfixées.
-Les journaliseurs de sous-système gardent la sortie groupée et facile à parcourir.
+Le formateur de console est **compatible TTY** et affiche des lignes préfixées cohérentes.
+Les loggers de sous-système gardent la sortie regroupée et facile à parcourir.
 
 Comportement :
 
-- **Préfixes de sous-système** sur chaque ligne (par ex. `[gateway]`, `[canvas]`, `[tailscale]`)
-- **Couleurs de sous-système** (stables par sous-système) plus coloration du niveau
+- **Préfixes de sous-système** sur chaque ligne (p. ex. `[gateway]`, `[canvas]`, `[tailscale]`)
+- **Couleurs de sous-système** (stables par sous-système) plus coloration par niveau
 - **Couleur lorsque la sortie est un TTY ou que l’environnement ressemble à un terminal riche** (`TERM`/`COLORTERM`/`TERM_PROGRAM`), respecte `NO_COLOR`
-- **Préfixes de sous-système raccourcis** : supprime les préfixes initiaux `gateway/` + `channels/`, conserve les 2 derniers segments (par ex. `whatsapp/outbound`)
-- **Sous-journaliseurs par sous-système** (préfixe automatique + champ structuré `{ subsystem }`)
+- **Préfixes de sous-système raccourcis** : supprime les `gateway/` + `channels/` initiaux, conserve les 2 derniers segments (p. ex. `whatsapp/outbound`)
+- **Sous-loggers par sous-système** (préfixe automatique + champ structuré `{ subsystem }`)
 - **`logRaw()`** pour la sortie QR/UX (sans préfixe, sans formatage)
-- **Styles de console** (par ex. `pretty | compact | json`)
-- **Niveau de journalisation console** séparé du niveau de journalisation fichier (le fichier conserve tous les détails lorsque `logging.level` est défini sur `debug`/`trace`)
-- **Corps des messages WhatsApp** journalisés à `debug` (utilisez `--verbose` pour les voir)
+- **Styles de console** (p. ex. `pretty | compact | json`)
+- **Niveau de journalisation console** séparé du niveau de journalisation fichier (le fichier conserve tous les détails quand `logging.level` est défini sur `debug`/`trace`)
+- Les **corps de messages WhatsApp** sont journalisés au niveau `debug` (utilisez `--verbose` pour les voir)
 
-Cela maintient la stabilité des journaux de fichier existants tout en rendant la sortie interactive facile à parcourir.
+Cela garde les journaux fichier existants stables tout en rendant la sortie interactive facile à parcourir.
 
 ## Connexe
 
 - [Journalisation](/fr/logging)
 - [Export OpenTelemetry](/fr/gateway/opentelemetry)
-- [Export de diagnostics](/fr/gateway/diagnostics)
+- [Export de diagnostic](/fr/gateway/diagnostics)

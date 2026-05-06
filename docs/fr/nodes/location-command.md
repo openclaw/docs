@@ -1,50 +1,50 @@
 ---
 read_when:
-    - Ajouter la prise en charge du node de localisation ou l’interface des permissions
-    - Concevoir les permissions de localisation Android ou le comportement au premier plan
-summary: Commande de localisation pour les nodes (`location.get`), modes d’autorisation et comportement Android au premier plan
+    - Ajout de la prise en charge des nœuds de localisation ou de l’interface des autorisations
+    - Conception des autorisations de localisation Android ou du comportement au premier plan
+summary: Commande de localisation pour les nœuds (location.get), modes d’autorisation et comportement Android au premier plan
 title: Commande de localisation
 x-i18n:
-    generated_at: "2026-04-24T07:18:59Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T07:30:18Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: fcd7ae3bf411be4331d62494a5d5263e8cda345475c5f849913122c029377f06
+    source_hash: 63ed754bfdda1cf379dcb7ac40817c0b93cc1efe4526512d70258072da4bc8a7
     source_path: nodes/location-command.md
-    workflow: 15
+    workflow: 16
 ---
 
-## En bref
+## TL;DR
 
-- `location.get` est une commande node (via `node.invoke`).
+- `location.get` est une commande de nœud (via `node.invoke`).
 - Désactivée par défaut.
-- Les paramètres de l’app Android utilisent un sélecteur : Désactivé / Pendant l’utilisation.
-- Commutateur séparé : Localisation précise.
+- Les paramètres de l’application Android utilisent un sélecteur : Désactivé / Lors de l’utilisation.
+- Option séparée : localisation précise.
 
-## Pourquoi un sélecteur (et pas juste un interrupteur)
+## Pourquoi un sélecteur (et pas seulement un interrupteur)
 
-Les permissions de l’OS ont plusieurs niveaux. Nous pouvons exposer un sélecteur dans l’app, mais l’OS décide toujours de l’autorisation effective.
+Les autorisations du système d’exploitation comportent plusieurs niveaux. Nous pouvons exposer un sélecteur dans l’application, mais le système d’exploitation décide toujours de l’autorisation réelle.
 
-- iOS/macOS peuvent exposer **Pendant l’utilisation** ou **Toujours** dans les invites système/Paramètres.
-- L’app Android ne prend actuellement en charge que la localisation au premier plan.
+- iOS/macOS peuvent exposer **Lors de l’utilisation** ou **Toujours** dans les invites système/Paramètres.
+- L’application Android prend actuellement uniquement en charge la localisation au premier plan.
 - La localisation précise est une autorisation séparée (iOS 14+ « Precise », Android « fine » vs « coarse »).
 
-Le sélecteur dans l’interface pilote notre mode demandé ; l’autorisation effective vit dans les paramètres de l’OS.
+Le sélecteur dans l’interface utilisateur pilote le mode que nous demandons ; l’autorisation réelle se trouve dans les paramètres du système d’exploitation.
 
 ## Modèle de paramètres
 
-Par appareil node :
+Par appareil de nœud :
 
-- `location.enabledMode` : `off | whileUsing`
-- `location.preciseEnabled` : bool
+- `location.enabledMode`: `off | whileUsing`
+- `location.preciseEnabled`: bool
 
-Comportement de l’interface :
+Comportement de l’interface utilisateur :
 
-- Sélectionner `whileUsing` demande l’autorisation de premier plan.
-- Si l’OS refuse le niveau demandé, revenir au plus haut niveau accordé et afficher l’état.
+- Sélectionner `whileUsing` demande l’autorisation au premier plan.
+- Si le système d’exploitation refuse le niveau demandé, revenir au niveau le plus élevé accordé et afficher l’état.
 
-## Correspondance des permissions (`node.permissions`)
+## Correspondance des autorisations (node.permissions)
 
-Facultatif. Le node macOS signale `location` via la carte des permissions ; iOS/Android peuvent l’omettre.
+Facultatif. Le nœud macOS signale `location` via la carte des autorisations ; iOS/Android peuvent l’omettre.
 
 ## Commande : `location.get`
 
@@ -79,31 +79,31 @@ Charge utile de réponse :
 Erreurs (codes stables) :
 
 - `LOCATION_DISABLED` : le sélecteur est désactivé.
-- `LOCATION_PERMISSION_REQUIRED` : permission manquante pour le mode demandé.
-- `LOCATION_BACKGROUND_UNAVAILABLE` : l’app est en arrière-plan mais seule l’autorisation Pendant l’utilisation est accordée.
-- `LOCATION_TIMEOUT` : aucun point obtenu à temps.
-- `LOCATION_UNAVAILABLE` : échec système / aucun fournisseur.
+- `LOCATION_PERMISSION_REQUIRED` : autorisation manquante pour le mode demandé.
+- `LOCATION_BACKGROUND_UNAVAILABLE` : l’application est en arrière-plan, mais seul Lors de l’utilisation est autorisé.
+- `LOCATION_TIMEOUT` : aucune position obtenue à temps.
+- `LOCATION_UNAVAILABLE` : défaillance système / aucun fournisseur.
 
 ## Comportement en arrière-plan
 
-- L’app Android refuse `location.get` lorsqu’elle est en arrière-plan.
-- Gardez OpenClaw ouvert lorsque vous demandez la localisation sur Android.
-- Les autres plateformes node peuvent se comporter différemment.
+- L’application Android refuse `location.get` lorsqu’elle est en arrière-plan.
+- Gardez OpenClaw ouvert lors de la demande de localisation sur Android.
+- Les autres plateformes de nœud peuvent différer.
 
 ## Intégration modèle/outillage
 
-- Surface d’outil : l’outil `nodes` ajoute l’action `location_get` (node requis).
+- Surface d’outil : l’outil `nodes` ajoute l’action `location_get` (nœud requis).
 - CLI : `openclaw nodes location get --node <id>`.
-- Recommandations pour l’agent : n’appeler que lorsque l’utilisateur a activé la localisation et comprend la portée.
+- Directives pour les agents : appeler uniquement lorsque l’utilisateur a activé la localisation et comprend la portée.
 
 ## Texte UX (suggéré)
 
-- Désactivé : « Le partage de position est désactivé. »
-- Pendant l’utilisation : « Uniquement lorsque OpenClaw est ouvert. »
-- Précise : « Utiliser la position GPS précise. Désactivez pour partager une position approximative. »
+- Désactivé : « Le partage de localisation est désactivé. »
+- Lors de l’utilisation : « Uniquement quand OpenClaw est ouvert. »
+- Précise : « Utiliser la localisation GPS précise. Désactivez cette option pour partager une localisation approximative. »
 
-## Articles connexes
+## Associé
 
-- [Analyse des positions de canal](/fr/channels/location)
-- [Capture caméra](/fr/nodes/camera)
-- [Mode Talk](/fr/nodes/talk)
+- [Analyse de la localisation du canal](/fr/channels/location)
+- [Capture de la caméra](/fr/nodes/camera)
+- [Mode conversation](/fr/nodes/talk)

@@ -4,13 +4,13 @@ read_when:
     - Intégration de Peekaboo via Swift Package Manager
     - Modification du protocole/des chemins de PeekabooBridge
     - Choisir entre PeekabooBridge, Codex Computer Use et cua-driver MCP
-summary: Intégration de PeekabooBridge pour l’automatisation de l’interface utilisateur macOS
+summary: Intégration de PeekabooBridge pour l’automatisation de l’interface utilisateur sur macOS
 title: Passerelle coucou
 x-i18n:
-    generated_at: "2026-04-30T07:36:55Z"
+    generated_at: "2026-05-06T07:31:58Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 92effdd6cfe4002fff2b8cd1092999f837e93694acf110eaebd30648b0a6946e
+    source_hash: 724bc6f29b991eb824df01d2b23e87b5d5cf32eb5ebaa0cbbc321dd8fca53c9e
     source_path: platforms/mac/peekaboo.md
     workflow: 16
 ---
@@ -23,16 +23,16 @@ OpenClaw peut héberger **PeekabooBridge** comme courtier local d’automatisati
 - **Client** : utilisez la CLI `peekaboo` (pas de surface `openclaw ui ...` distincte).
 - **Interface utilisateur** : les superpositions visuelles restent dans Peekaboo.app ; OpenClaw est un hôte courtier léger.
 
-## Relation avec Computer Use
+## Relation avec l’utilisation de l’ordinateur
 
-OpenClaw dispose de trois chemins de contrôle du bureau, qui restent intentionnellement séparés :
+OpenClaw dispose de trois chemins de contrôle du bureau, et ils restent volontairement séparés :
 
 - **Hôte PeekabooBridge** : OpenClaw.app peut héberger le socket PeekabooBridge local.
   La CLI `peekaboo` reste le client et utilise les autorisations macOS d’OpenClaw.app pour les primitives d’automatisation Peekaboo telles que les captures d’écran, les clics, les menus, les boîtes de dialogue, les actions du Dock et la gestion des fenêtres.
-- **Codex Computer Use** : le plugin `codex` fourni prépare le serveur d’application Codex, vérifie que le serveur MCP `computer-use` de Codex est disponible, puis laisse Codex posséder les appels d’outils natifs de contrôle du bureau pendant les tours en mode Codex. OpenClaw ne relaie pas ces actions via PeekabooBridge.
-- **MCP `cua-driver` direct** : OpenClaw peut enregistrer le serveur `cua-driver mcp` amont de TryCua comme serveur MCP normal. Cela donne aux agents les schémas propres au pilote CUA et le flux de travail pid/fenêtre/index d’élément, sans routage via la marketplace Codex ni le socket PeekabooBridge.
+- **Utilisation de l’ordinateur par Codex** : le Plugin `codex` intégré prépare le serveur d’application Codex, vérifie que le serveur MCP `computer-use` de Codex est disponible, puis laisse Codex prendre en charge les appels d’outils natifs de contrôle du bureau pendant les tours en mode Codex. OpenClaw ne relaie pas ces actions via PeekabooBridge.
+- **MCP `cua-driver` direct** : OpenClaw peut enregistrer le serveur `cua-driver mcp` amont de TryCua comme serveur MCP normal. Cela donne aux agents les schémas propres au pilote CUA et le flux de travail pid/fenêtre/index-d’élément sans passer par la place de marché Codex ni par le socket PeekabooBridge.
 
-Utilisez Peekaboo lorsque vous voulez la large surface d’automatisation macOS et l’hôte de pont d’OpenClaw.app tenant compte des autorisations. Utilisez Codex Computer Use lorsqu’un agent en mode Codex doit s’appuyer sur le plugin natif de computer-use de Codex. Utilisez `cua-driver mcp` direct lorsque vous voulez exposer le pilote CUA à n’importe quel runtime géré par OpenClaw comme serveur MCP normal.
+Utilisez Peekaboo lorsque vous voulez la vaste surface d’automatisation macOS et l’hôte de pont tenant compte des autorisations d’OpenClaw.app. Utilisez l’utilisation de l’ordinateur par Codex lorsqu’un agent en mode Codex doit s’appuyer sur le Plugin natif `computer-use` de Codex. Utilisez directement `cua-driver mcp` lorsque vous voulez exposer le pilote CUA à n’importe quel environnement d’exécution géré par OpenClaw comme serveur MCP normal.
 
 ## Activer le pont
 
@@ -40,14 +40,14 @@ Dans l’application macOS :
 
 - Réglages → **Activer Peekaboo Bridge**
 
-Lorsqu’il est activé, OpenClaw démarre un serveur de socket UNIX local. S’il est désactivé, l’hôte est arrêté et `peekaboo` se rabattra sur les autres hôtes disponibles.
+Lorsque cette option est activée, OpenClaw démarre un serveur de socket UNIX local. Si elle est désactivée, l’hôte est arrêté et `peekaboo` se rabattra sur les autres hôtes disponibles.
 
-## Ordre de découverte des clients
+## Ordre de découverte du client
 
 Les clients Peekaboo essaient généralement les hôtes dans cet ordre :
 
 1. Peekaboo.app (expérience utilisateur complète)
-2. Claude.app (si installé)
+2. Claude.app (si installée)
 3. OpenClaw.app (courtier léger)
 
 Utilisez `peekaboo bridge status --verbose` pour voir quel hôte est actif et quel chemin de socket est utilisé. Vous pouvez le remplacer avec :
@@ -60,19 +60,19 @@ export PEEKABOO_BRIDGE_SOCKET=/path/to/bridge.sock
 
 - Le pont valide les **signatures de code des appelants** ; une liste d’autorisation de TeamIDs est appliquée (TeamID de l’hôte Peekaboo + TeamID de l’application OpenClaw).
 - Les requêtes expirent après environ 10 secondes.
-- Si des autorisations requises sont manquantes, le pont renvoie un message d’erreur clair au lieu de lancer Réglages Système.
+- Si les autorisations requises sont absentes, le pont renvoie un message d’erreur clair au lieu de lancer Réglages Système.
 
 ## Comportement des instantanés (automatisation)
 
-Les instantanés sont stockés en mémoire et expirent automatiquement après une courte fenêtre.
-Si vous avez besoin d’une conservation plus longue, capturez à nouveau depuis le client.
+Les instantanés sont stockés en mémoire et expirent automatiquement après une courte période.
+Si vous avez besoin d’une conservation plus longue, effectuez une nouvelle capture depuis le client.
 
 ## Dépannage
 
-- Si `peekaboo` signale « le client du pont n’est pas autorisé », assurez-vous que le client est correctement signé ou exécutez l’hôte avec `PEEKABOO_ALLOW_UNSIGNED_SOCKET_CLIENTS=1` en mode **debug** uniquement.
+- Si `peekaboo` signale "bridge client is not authorized", assurez-vous que le client est correctement signé ou exécutez l’hôte avec `PEEKABOO_ALLOW_UNSIGNED_SOCKET_CLIENTS=1` en mode **debug** uniquement.
 - Si aucun hôte n’est trouvé, ouvrez l’une des applications hôtes (Peekaboo.app ou OpenClaw.app) et confirmez que les autorisations sont accordées.
 
-## Connexe
+## Associés
 
 - [application macOS](/fr/platforms/macos)
 - [autorisations macOS](/fr/platforms/mac/permissions)

@@ -5,42 +5,64 @@ read_when:
 summary: Configuration de Cerebras (authentification + sélection du modèle)
 title: Cerebras
 x-i18n:
-    generated_at: "2026-04-30T07:43:11Z"
+    generated_at: "2026-05-06T07:35:12Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 96f94b23e55340414633ff48e352623907ee36dd2715e5ab053a93c86df1b49a
+    source_hash: 6ba12fcc214ac756111a94f16ec619d26dc01ee2acc1eaef013fcb70bf752610
     source_path: providers/cerebras.md
     workflow: 16
 ---
 
-[Cerebras](https://www.cerebras.ai) fournit une inférence à haut débit compatible avec OpenAI.
+[Cerebras](https://www.cerebras.ai) fournit une inférence haute vitesse compatible avec OpenAI sur du matériel d’inférence personnalisé. OpenClaw inclut un Plugin fournisseur Cerebras intégré avec un catalogue statique de quatre modèles.
 
-| Propriété       | Valeur                       |
-| --------------- | ---------------------------- |
-| Fournisseur     | `cerebras`                   |
-| Authentification | `CEREBRAS_API_KEY`          |
-| API             | Compatible avec OpenAI       |
-| URL de base     | `https://api.cerebras.ai/v1` |
+| Propriété                  | Valeur                                   |
+| -------------------------- | ---------------------------------------- |
+| ID du fournisseur          | `cerebras`                               |
+| Plugin                     | intégré, `enabledByDefault: true`        |
+| Variable d’env. d’auth.    | `CEREBRAS_API_KEY`                       |
+| Option d’intégration       | `--auth-choice cerebras-api-key`         |
+| Option CLI directe         | `--cerebras-api-key <key>`               |
+| API                        | compatible OpenAI (`openai-completions`) |
+| URL de base                | `https://api.cerebras.ai/v1`             |
+| Modèle par défaut          | `cerebras/zai-glm-4.7`                   |
 
-## Démarrage
+## Premiers pas
 
 <Steps>
   <Step title="Obtenir une clé API">
-    Créez une clé API dans la [console Cerebras Cloud](https://cloud.cerebras.ai).
+    Créez une clé API dans la [console cloud Cerebras](https://cloud.cerebras.ai).
   </Step>
-  <Step title="Exécuter l’onboarding">
-    ```bash
-    openclaw onboard --auth-choice cerebras-api-key
-    ```
+  <Step title="Lancer l’intégration initiale">
+    <CodeGroup>
+
+```bash Intégration initiale
+openclaw onboard --auth-choice cerebras-api-key
+```
+
+```bash Option directe
+openclaw onboard --non-interactive \
+  --auth-choice cerebras-api-key \
+  --cerebras-api-key "$CEREBRAS_API_KEY"
+```
+
+```bash Env uniquement
+export CEREBRAS_API_KEY=csk-...
+```
+
+    </CodeGroup>
+
   </Step>
   <Step title="Vérifier que les modèles sont disponibles">
     ```bash
     openclaw models list --provider cerebras
     ```
+
+    La liste doit inclure les quatre modèles intégrés. Si `CEREBRAS_API_KEY` n’est pas résolu, `openclaw models status --json` signale l’identifiant manquant sous `auth.unusableProfiles`.
+
   </Step>
 </Steps>
 
-### Configuration non interactive
+## Configuration non interactive
 
 ```bash
 openclaw onboard --non-interactive \
@@ -51,27 +73,26 @@ openclaw onboard --non-interactive \
 
 ## Catalogue intégré
 
-OpenClaw fournit un catalogue Cerebras statique pour le point de terminaison public compatible avec OpenAI :
+OpenClaw fournit un catalogue Cerebras statique qui reflète le point de terminaison public compatible avec OpenAI. Les quatre modèles partagent un contexte de 128k et 8 192 tokens de sortie maximum.
 
-| Référence de modèle                       | Nom                  | Notes                                      |
-| ----------------------------------------- | -------------------- | ------------------------------------------ |
-| `cerebras/zai-glm-4.7`                    | Z.ai GLM 4.7         | Modèle par défaut ; modèle de raisonnement en préversion |
-| `cerebras/gpt-oss-120b`                   | GPT OSS 120B         | Modèle de raisonnement de production       |
-| `cerebras/qwen-3-235b-a22b-instruct-2507` | Qwen 3 235B Instruct | Modèle sans raisonnement en préversion     |
-| `cerebras/llama3.1-8b`                    | Llama 3.1 8B         | Modèle de production axé sur la vitesse    |
+| Référence du modèle                      | Nom                  | Raisonnement | Notes                                      |
+| ---------------------------------------- | -------------------- | ------------ | ------------------------------------------ |
+| `cerebras/zai-glm-4.7`                    | Z.ai GLM 4.7         | oui          | Modèle par défaut ; modèle de raisonnement en aperçu |
+| `cerebras/gpt-oss-120b`                   | GPT OSS 120B         | oui          | Modèle de raisonnement de production       |
+| `cerebras/qwen-3-235b-a22b-instruct-2507` | Qwen 3 235B Instruct | non          | Modèle sans raisonnement en aperçu         |
+| `cerebras/llama3.1-8b`                    | Llama 3.1 8B         | non          | Modèle de production axé sur la vitesse    |
 
 <Warning>
-Cerebras marque `zai-glm-4.7` et `qwen-3-235b-a22b-instruct-2507` comme modèles en préversion, et `llama3.1-8b` / `qwen-3-235b-a22b-instruct-2507` sont documentés comme devant être abandonnés le 27 mai 2026. Consultez la page des modèles pris en charge de Cerebras avant de vous y fier en production.
+  Cerebras marque `zai-glm-4.7` et `qwen-3-235b-a22b-instruct-2507` comme modèles en aperçu, et `llama3.1-8b` ainsi que `qwen-3-235b-a22b-instruct-2507` sont documentés comme devant être dépréciés le 27 mai 2026. Consultez la page des modèles pris en charge par Cerebras avant de vous appuyer sur eux pour des charges de travail de production.
 </Warning>
 
 ## Configuration manuelle
 
-Le Plugin fourni signifie généralement que vous n’avez besoin que de la clé API. Utilisez la configuration explicite
-`models.providers.cerebras` lorsque vous souhaitez remplacer les métadonnées des modèles :
+Le Plugin intégré signifie généralement que vous n’avez besoin que de la clé API. Utilisez une configuration `models.providers.cerebras` explicite lorsque vous voulez remplacer les métadonnées de modèle ou exécuter en `mode: "merge"` avec le catalogue statique :
 
 ```json5
 {
-  env: { CEREBRAS_API_KEY: "sk-..." },
+  env: { CEREBRAS_API_KEY: "csk-..." },
   agents: {
     defaults: {
       model: { primary: "cerebras/zai-glm-4.7" },
@@ -95,7 +116,22 @@ Le Plugin fourni signifie généralement que vous n’avez besoin que de la clé
 ```
 
 <Note>
-Si le Gateway s’exécute en tant que démon (launchd/systemd), assurez-vous que `CEREBRAS_API_KEY`
-est disponible pour ce processus, par exemple dans `~/.openclaw/.env` ou via
-`env.shellEnv`.
+  Si le Gateway s’exécute comme daemon (launchd, systemd, Docker), assurez-vous que `CEREBRAS_API_KEY` est disponible pour ce processus, par exemple dans `~/.openclaw/.env` ou via `env.shellEnv`. Une clé présente uniquement dans `~/.profile` n’aidera pas un service géré, sauf si l’environnement est importé séparément.
 </Note>
+
+## Connexe
+
+<CardGroup cols={2}>
+  <Card title="Fournisseurs de modèles" href="/fr/concepts/model-providers" icon="layers">
+    Choisir des fournisseurs, des références de modèles et le comportement de basculement.
+  </Card>
+  <Card title="Modes de réflexion" href="/fr/tools/thinking" icon="brain">
+    Niveaux d’effort de raisonnement pour les deux modèles Cerebras capables de raisonnement.
+  </Card>
+  <Card title="Référence de configuration" href="/fr/gateway/config-agents#agent-defaults" icon="gear">
+    Valeurs par défaut des agents et configuration des modèles.
+  </Card>
+  <Card title="FAQ sur les modèles" href="/fr/help/faq-models" icon="circle-question">
+    Profils d’authentification, changement de modèles et résolution des erreurs « no profile ».
+  </Card>
+</CardGroup>

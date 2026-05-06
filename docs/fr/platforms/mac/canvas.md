@@ -1,24 +1,24 @@
 ---
 read_when:
-    - implémentation du panneau Canvas macOS
-    - ajout de contrôles d’agent pour l’espace de travail visuel
-    - débogage des chargements Canvas WKWebView
-summary: panneau Canvas contrôlé par l’agent intégré via WKWebView + schéma d’URL personnalisé
-title: Canvas
+    - Implémentation du panneau Canvas macOS
+    - Ajout de contrôles d’agent pour l’espace de travail visuel
+    - Débogage des chargements de canvas dans WKWebView
+summary: Panneau Canvas contrôlé par l’agent intégré via WKWebView + schéma d’URL personnalisé
+title: Canevas
 x-i18n:
-    generated_at: "2026-04-24T07:20:30Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T07:31:09Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 1a791f7841193a55b7f9cc5cc26168258d72d972279bba4c68fd1b15ef16f1c4
+    source_hash: d8e53f5d1c2e5b3b46e77cb74632e56123f3312dfcc395aa5ac8182c8d58b6cf
     source_path: platforms/mac/canvas.md
-    workflow: 15
+    workflow: 16
 ---
 
 L’app macOS intègre un **panneau Canvas** contrôlé par l’agent à l’aide de `WKWebView`. Il
 s’agit d’un espace de travail visuel léger pour HTML/CSS/JS, A2UI et de petites
-surfaces d’interface interactives.
+surfaces d’UI interactives.
 
-## Où vit Canvas
+## Où se trouve Canvas
 
 L’état de Canvas est stocké sous Application Support :
 
@@ -34,21 +34,21 @@ Exemples :
 - `openclaw-canvas://main/assets/app.css` → `<canvasRoot>/main/assets/app.css`
 - `openclaw-canvas://main/widgets/todo/` → `<canvasRoot>/main/widgets/todo/index.html`
 
-Si aucun `index.html` n’existe à la racine, l’app affiche une **page d’échafaudage intégrée**.
+Si aucun fichier `index.html` n’existe à la racine, l’app affiche une **page d’échafaudage intégrée**.
 
 ## Comportement du panneau
 
-- Panneau sans bordure, redimensionnable, ancré près de la barre de menus (ou du curseur de la souris).
-- Mémorise la taille/la position par session.
+- Panneau sans bordure et redimensionnable, ancré près de la barre de menus (ou du curseur de la souris).
+- Mémorise la taille et la position par session.
 - Se recharge automatiquement lorsque les fichiers Canvas locaux changent.
-- Un seul panneau Canvas est visible à la fois (la session change selon les besoins).
+- Un seul panneau Canvas est visible à la fois (la session est changée si nécessaire).
 
-Canvas peut être désactivé depuis Réglages → **Allow Canvas**. Lorsqu’il est désactivé, les
+Canvas peut être désactivé depuis Réglages → **Autoriser Canvas**. Lorsqu’il est désactivé, les
 commandes de nœud canvas renvoient `CANVAS_DISABLED`.
 
 ## Surface d’API de l’agent
 
-Canvas est exposé via le **WebSocket Gateway**, afin que l’agent puisse :
+Canvas est exposé via le **Gateway WebSocket**, ce qui permet à l’agent de :
 
 - afficher/masquer le panneau
 - naviguer vers un chemin ou une URL
@@ -64,18 +64,18 @@ openclaw nodes canvas eval --node <id> --js "document.title"
 openclaw nodes canvas snapshot --node <id>
 ```
 
-Remarques :
+Notes :
 
-- `canvas.navigate` accepte des **chemins Canvas locaux**, des URL `http(s)` et des URL `file://`.
+- `canvas.navigate` accepte les **chemins Canvas locaux**, les URL `http(s)` et les URL `file://`.
 - Si vous passez `"/"`, Canvas affiche l’échafaudage local ou `index.html`.
 
 ## A2UI dans Canvas
 
-A2UI est hébergé par le canvas host de la Gateway et rendu dans le panneau Canvas.
-Lorsque la Gateway annonce un canvas host, l’app macOS navigue automatiquement vers la
+A2UI est hébergé par l’hôte Canvas du Gateway et rendu dans le panneau Canvas.
+Lorsque le Gateway annonce un hôte Canvas, l’app macOS navigue automatiquement vers la
 page hôte A2UI à la première ouverture.
 
-URL hôte A2UI par défaut :
+URL par défaut de l’hôte A2UI :
 
 ```
 http://<gateway-host>:18789/__openclaw__/a2ui/
@@ -121,15 +121,15 @@ Exemple (en JS) :
 window.location.href = "openclaw://agent?message=Review%20this%20design";
 ```
 
-L’app demande confirmation sauf si une clé valide est fournie.
+L’app demande une confirmation sauf si une clé valide est fournie.
 
-## Remarques de sécurité
+## Notes de sécurité
 
-- Le schéma Canvas bloque la traversée de répertoires ; les fichiers doivent vivre sous la racine de session.
-- Le contenu Canvas local utilise un schéma personnalisé (aucun serveur loopback requis).
+- Le schéma Canvas bloque la traversée de répertoires ; les fichiers doivent se trouver sous la racine de la session.
+- Le contenu Canvas local utilise un schéma personnalisé (aucun serveur local loopback requis).
 - Les URL `http(s)` externes ne sont autorisées que lorsqu’elles sont explicitement utilisées pour la navigation.
 
-## Liens associés
+## Connexe
 
 - [app macOS](/fr/platforms/macos)
 - [WebChat](/fr/web/webchat)
