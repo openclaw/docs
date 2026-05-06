@@ -1,21 +1,19 @@
 ---
 read_when:
     - Anda menginginkan dukungan Zalo Personal (tidak resmi) di OpenClaw
-    - Anda sedang mengonfigurasi atau mengembangkan Plugin zalouser
-summary: 'Plugin Zalo Personal: login QR + perpesanan melalui zca-js asli (instalasi Plugin + konfigurasi saluran + alat)'
+    - Anda sedang mengonfigurasi atau mengembangkan plugin zalouser
+summary: 'Plugin Zalo Personal: login QR + pengiriman pesan melalui zca-js native (instalasi Plugin + konfigurasi saluran + alat)'
 title: Plugin pribadi Zalo
 x-i18n:
-    generated_at: "2026-05-02T22:22:10Z"
+    generated_at: "2026-05-06T17:59:07Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b8bcead1a6425587a2cae40e4e817c45b9adf8afbfce6dc673065cc98353f844
+    source_hash: 423325f99ddb5b39bba4c5f3aa71215edfdc092c872f92b5d2f00b6ea691246f
     source_path: plugins/zalouser.md
     workflow: 16
 ---
 
-# Zalo Personal (Plugin)
-
-Dukungan Zalo Personal untuk OpenClaw melalui Plugin, menggunakan `zca-js` native untuk mengotomatiskan akun pengguna Zalo biasa.
+Dukungan Zalo Personal untuk OpenClaw melalui Plugin, menggunakan `zca-js` native untuk mengotomatisasi akun pengguna Zalo biasa.
 
 <Warning>
 Otomatisasi tidak resmi dapat menyebabkan penangguhan atau pemblokiran akun. Gunakan dengan risiko Anda sendiri.
@@ -23,7 +21,7 @@ Otomatisasi tidak resmi dapat menyebabkan penangguhan atau pemblokiran akun. Gun
 
 ## Penamaan
 
-ID saluran adalah `zalouser` untuk menegaskan bahwa ini mengotomatiskan **akun pengguna Zalo pribadi** (tidak resmi). Kami mempertahankan `zalo` untuk kemungkinan integrasi API Zalo resmi di masa mendatang.
+ID channel adalah `zalouser` untuk menegaskan bahwa ini mengotomatisasi **akun pengguna Zalo personal** (tidak resmi). Kami mempertahankan `zalo` untuk kemungkinan integrasi API Zalo resmi di masa mendatang.
 
 ## Tempat menjalankannya
 
@@ -41,7 +39,7 @@ Tidak diperlukan biner CLI eksternal `zca`/`openzca`.
 openclaw plugins install @openclaw/zalouser
 ```
 
-Gunakan paket bare untuk mengikuti tag rilis resmi saat ini. Sematkan versi yang tepat hanya saat Anda memerlukan instalasi yang dapat direproduksi.
+Gunakan paket polos untuk mengikuti tag rilis resmi saat ini. Sematkan versi yang tepat hanya saat Anda membutuhkan instalasi yang dapat direproduksi.
 
 Mulai ulang Gateway setelahnya.
 
@@ -57,7 +55,7 @@ Mulai ulang Gateway setelahnya.
 
 ## Konfigurasi
 
-Konfigurasi saluran berada di bawah `channels.zalouser` (bukan `plugins.entries.*`):
+Konfigurasi channel berada di bawah `channels.zalouser` (bukan `plugins.entries.*`):
 
 ```json5
 {
@@ -80,13 +78,13 @@ openclaw message send --channel zalouser --target <threadId> --message "Hello fr
 openclaw directory peers list --channel zalouser --query "name"
 ```
 
-## Alat agen
+## Alat agent
 
 Nama alat: `zalouser`
 
-Tindakan: `send`, `image`, `link`, `friends`, `groups`, `me`, `status`
+Aksi: `send`, `image`, `link`, `friends`, `groups`, `me`, `status`
 
-Tindakan pesan saluran juga mendukung `react` untuk reaksi pesan.
+Aksi pesan channel juga mendukung `react` untuk reaksi pesan.
 
 ## Terkait
 

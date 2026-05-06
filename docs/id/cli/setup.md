@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Anda melakukan penyiapan pertama kali tanpa proses orientasi awal CLI lengkap
-    - Anda ingin menetapkan jalur ruang kerja default
+    - Anda melakukan penyiapan pertama kali tanpa proses orientasi CLI lengkap
+    - Anda ingin mengatur jalur ruang kerja default
 summary: Referensi CLI untuk `openclaw setup` (inisialisasi konfigurasi + ruang kerja)
 title: Penyiapan
 x-i18n:
-    generated_at: "2026-05-02T20:43:21Z"
+    generated_at: "2026-05-06T17:54:31Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 805f60c81f5fc216fc446641efe0bcb60bb6c34b3a50a6fc9e767461206e5f90
+    source_hash: 9a47d41f8c6c59395eaa4bc6055fa09f863af819c7920e29969793904180c910
     source_path: cli/setup.md
     workflow: 16
 ---
@@ -17,10 +17,14 @@ x-i18n:
 
 Inisialisasi `~/.openclaw/openclaw.json` dan ruang kerja agen.
 
+<Note>
+`openclaw setup` ditujukan untuk instalasi konfigurasi yang dapat diubah. Dalam mode Nix (`OPENCLAW_NIX_MODE=1`), OpenClaw menolak penulisan setup karena file konfigurasi dikelola oleh Nix. Agen sebaiknya menggunakan [nix-openclaw Quick Start](https://github.com/openclaw/nix-openclaw#quick-start) pihak pertama atau konfigurasi sumber yang setara untuk paket Nix lain.
+</Note>
+
 Terkait:
 
 - Memulai: [Memulai](/id/start/getting-started)
-- Orientasi awal CLI: [Orientasi Awal (CLI)](/id/start/wizard)
+- Onboarding CLI: [Onboarding (CLI)](/id/start/wizard)
 
 ## Contoh
 
@@ -35,16 +39,16 @@ openclaw setup --non-interactive --mode remote --remote-url wss://gateway-host:1
 ## Opsi
 
 - `--workspace <dir>`: direktori ruang kerja agen (disimpan sebagai `agents.defaults.workspace`)
-- `--wizard`: jalankan orientasi awal
-- `--non-interactive`: jalankan orientasi awal tanpa prompt
-- `--mode <local|remote>`: mode orientasi awal
-- `--import-from <provider>`: penyedia migrasi yang dijalankan selama orientasi awal
-- `--import-source <path>`: direktori home agen sumber untuk `--import-from`
-- `--import-secrets`: impor rahasia yang didukung selama migrasi orientasi awal
+- `--wizard`: jalankan onboarding
+- `--non-interactive`: jalankan onboarding tanpa prompt
+- `--mode <local|remote>`: mode onboarding
+- `--import-from <provider>`: penyedia migrasi yang dijalankan selama onboarding
+- `--import-source <path>`: beranda agen sumber untuk `--import-from`
+- `--import-secrets`: impor rahasia yang didukung selama migrasi onboarding
 - `--remote-url <url>`: URL WebSocket Gateway jarak jauh
 - `--remote-token <token>`: token Gateway jarak jauh
 
-Untuk menjalankan orientasi awal melalui setup:
+Untuk menjalankan onboarding melalui setup:
 
 ```bash
 openclaw setup --wizard
@@ -52,12 +56,12 @@ openclaw setup --wizard
 
 Catatan:
 
-- `openclaw setup` biasa menginisialisasi konfigurasi + ruang kerja tanpa alur orientasi awal penuh.
-- Setelah setup biasa, jalankan `openclaw configure` untuk memilih model, saluran, Gateway, plugin, skills, atau pemeriksaan kesehatan.
-- Orientasi awal berjalan otomatis saat ada flag orientasi awal apa pun (`--wizard`, `--non-interactive`, `--mode`, `--import-from`, `--import-source`, `--import-secrets`, `--remote-url`, `--remote-token`).
-- Jika status Hermes terdeteksi, orientasi awal interaktif dapat menawarkan migrasi secara otomatis. Orientasi awal impor memerlukan setup baru; gunakan [Migrasi](/id/cli/migrate) untuk rencana simulasi, cadangan, dan mode penimpaan di luar orientasi awal.
+- `openclaw setup` biasa menginisialisasi konfigurasi + ruang kerja tanpa alur onboarding penuh.
+- Setelah setup biasa, jalankan `openclaw configure` untuk memilih model, saluran, Gateway, Plugin, Skills, atau pemeriksaan kesehatan.
+- Onboarding berjalan otomatis ketika flag onboarding apa pun ada (`--wizard`, `--non-interactive`, `--mode`, `--import-from`, `--import-source`, `--import-secrets`, `--remote-url`, `--remote-token`).
+- Jika status Hermes terdeteksi, onboarding interaktif dapat menawarkan migrasi secara otomatis. Onboarding impor memerlukan setup baru; gunakan [Migrasi](/id/cli/migrate) untuk rencana dry-run, cadangan, dan mode timpa di luar onboarding.
 
 ## Terkait
 
 - [Referensi CLI](/id/cli)
-- [Ringkasan instalasi](/id/install)
+- [Ikhtisar instalasi](/id/install)

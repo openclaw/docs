@@ -1,30 +1,30 @@
 ---
 read_when:
     - Anda ingin mengambil URL dan mengekstrak konten yang dapat dibaca
-    - Anda perlu mengonfigurasi web_fetch atau cadangan Firecrawl-nya
+    - Anda perlu mengonfigurasi web_fetch atau mekanisme cadangan Firecrawl-nya
     - Anda ingin memahami batasan web_fetch dan penyimpanan cache
 sidebarTitle: Web Fetch
-summary: alat web_fetch -- pengambilan HTTP dengan ekstraksi konten yang dapat dibaca
+summary: web_fetch tool -- pengambilan HTTP dengan ekstraksi konten yang dapat dibaca
 title: Pengambilan web
 x-i18n:
-    generated_at: "2026-05-04T07:09:28Z"
+    generated_at: "2026-05-06T18:01:00Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c8c3efbf4a640b2fd69cc9532dcb06a873a6830a2e8a85ab7510ab38207c8670
+    source_hash: 337174898861db217bf0db052d8e8749989c295e89c73d9d5a6911f6335ba03d
     source_path: tools/web-fetch.md
     workflow: 16
 ---
 
 Alat `web_fetch` melakukan HTTP GET biasa dan mengekstrak konten yang dapat dibaca
-(HTML ke markdown atau teks). Alat ini **tidak** mengeksekusi JavaScript.
+(HTML ke markdown atau teks). Alat ini **tidak** menjalankan JavaScript.
 
 Untuk situs yang sangat bergantung pada JS atau halaman yang dilindungi login, gunakan
-[Browser Web](/id/tools/browser) sebagai gantinya.
+[Peramban Web](/id/tools/browser) sebagai gantinya.
 
 ## Mulai cepat
 
-`web_fetch` **diaktifkan secara default** -- tidak perlu konfigurasi. Agen dapat
-langsung memanggilnya:
+`web_fetch` **diaktifkan secara default** -- tidak perlu konfigurasi. Agent dapat
+memanggilnya langsung:
 
 ```javascript
 await web_fetch({ url: "https://example.com/article" });
@@ -41,14 +41,14 @@ Format keluaran setelah ekstraksi konten utama.
 </ParamField>
 
 <ParamField path="maxChars" type="number">
-Pangkas keluaran hingga sejumlah karakter ini.
+Potong keluaran hingga sebanyak karakter ini.
 </ParamField>
 
 ## Cara kerjanya
 
 <Steps>
   <Step title="Fetch">
-    Mengirim HTTP GET dengan header User-Agent mirip Chrome dan
+    Mengirim HTTP GET dengan User-Agent mirip Chrome dan header
     `Accept-Language`. Memblokir hostname privat/internal dan memeriksa ulang pengalihan.
   </Step>
   <Step title="Extract">
@@ -56,11 +56,11 @@ Pangkas keluaran hingga sejumlah karakter ini.
   </Step>
   <Step title="Fallback (optional)">
     Jika Readability gagal dan Firecrawl dikonfigurasi, mencoba ulang melalui
-    API Firecrawl dengan mode penghindaran bot.
+    API Firecrawl dengan mode pengelakan bot.
   </Step>
   <Step title="Cache">
-    Hasil disimpan dalam cache selama 15 menit (dapat dikonfigurasi) untuk mengurangi
-    pengambilan berulang atas URL yang sama.
+    Hasil di-cache selama 15 menit (dapat dikonfigurasi) untuk mengurangi
+    pengambilan berulang URL yang sama.
   </Step>
 </Steps>
 
@@ -94,8 +94,8 @@ Pangkas keluaran hingga sejumlah karakter ini.
 
 ## Fallback Firecrawl
 
-Jika ekstraksi Readability gagal, `web_fetch` dapat melakukan fallback ke
-[Firecrawl](/id/tools/firecrawl) untuk penghindaran bot dan ekstraksi yang lebih baik:
+Jika ekstraksi Readability gagal, `web_fetch` dapat menggunakan fallback ke
+[Firecrawl](/id/tools/firecrawl) untuk pengelakan bot dan ekstraksi yang lebih baik:
 
 ```json5
 {
@@ -126,43 +126,43 @@ Jika ekstraksi Readability gagal, `web_fetch` dapat melakukan fallback ke
 ```
 
 `plugins.entries.firecrawl.config.webFetch.apiKey` mendukung objek SecretRef.
-Konfigurasi lama `tools.web.fetch.firecrawl.*` dimigrasikan otomatis oleh `openclaw doctor --fix`.
+Konfigurasi legacy `tools.web.fetch.firecrawl.*` dimigrasikan otomatis oleh `openclaw doctor --fix`.
 
 <Note>
   Jika Firecrawl diaktifkan dan SecretRef-nya tidak terselesaikan tanpa fallback env
-  `FIRECRAWL_API_KEY`, startup Gateway akan gagal cepat.
+  `FIRECRAWL_API_KEY`, startup gateway gagal dengan cepat.
 </Note>
 
 <Note>
-  Penggantian `baseUrl` Firecrawl dikunci ketat: lalu lintas hosted menggunakan
-  `https://api.firecrawl.dev`; penggantian self-hosted harus menargetkan endpoint privat atau
+  Override `baseUrl` Firecrawl dikunci ketat: lalu lintas hosted menggunakan
+  `https://api.firecrawl.dev`; override self-hosted harus menargetkan endpoint privat atau
   internal, dan `http://` hanya diterima untuk target privat tersebut.
 </Note>
 
 Perilaku runtime saat ini:
 
 - `tools.web.fetch.provider` memilih penyedia fallback pengambilan secara eksplisit.
-- Jika `provider` dihilangkan, OpenClaw mendeteksi otomatis penyedia web-fetch pertama yang siap
-  dari kredensial yang tersedia. `web_fetch` yang tidak disandbox dapat menggunakan
-  Plugin terinstal yang mendeklarasikan `contracts.webFetchProviders` dan mendaftarkan
-  penyedia yang cocok saat runtime. Saat ini penyedia bawaan adalah Firecrawl.
-- Panggilan `web_fetch` tersandbox tetap terbatas pada penyedia bawaan.
+- Jika `provider` dihilangkan, OpenClaw mendeteksi otomatis penyedia web-fetch
+  pertama yang siap dari kredensial yang tersedia. `web_fetch` non-sandbox dapat menggunakan
+  plugin terpasang yang mendeklarasikan `contracts.webFetchProviders` dan mendaftarkan
+  penyedia yang cocok pada runtime. Saat ini penyedia bawaan adalah Firecrawl.
+- Panggilan `web_fetch` yang di-sandbox tetap terbatas pada penyedia bawaan.
 - Jika Readability dinonaktifkan, `web_fetch` langsung melewati ke fallback
-  penyedia yang dipilih. Jika tidak ada penyedia yang tersedia, alat ini gagal tertutup.
+  penyedia yang dipilih. Jika tidak ada penyedia yang tersedia, alat ini gagal secara tertutup.
 
-## Proksi Env Tepercaya
+## Proxy env tepercaya
 
-Jika deployment Anda mengharuskan `web_fetch` melewati proksi keluar
-HTTP(S) tepercaya, atur `tools.web.fetch.useTrustedEnvProxy: true`.
+Jika deployment Anda mengharuskan `web_fetch` melewati proxy HTTP(S) keluar
+yang tepercaya, setel `tools.web.fetch.useTrustedEnvProxy: true`.
 
 Dalam mode ini, OpenClaw tetap menerapkan pemeriksaan SSRF berbasis hostname sebelum mengirim
-permintaan, tetapi membiarkan proksi menyelesaikan DNS alih-alih melakukan pinning DNS lokal.
-Aktifkan ini hanya ketika proksi dikendalikan operator dan menerapkan
+permintaan, tetapi membiarkan proxy menyelesaikan DNS alih-alih melakukan pinning DNS
+lokal. Aktifkan ini hanya ketika proxy dikendalikan operator dan memberlakukan
 kebijakan keluar setelah resolusi DNS.
 
 <Note>
-  Jika tidak ada variabel env proksi HTTP(S) yang dikonfigurasi, atau host target dikecualikan oleh
-  `NO_PROXY`, `web_fetch` kembali ke jalur ketat normal dengan pinning DNS
+  Jika tidak ada variabel env proxy HTTP(S) yang dikonfigurasi, atau host target dikecualikan oleh
+  `NO_PROXY`, `web_fetch` menggunakan fallback ke jalur ketat normal dengan pinning DNS
   lokal.
 </Note>
 
@@ -170,17 +170,17 @@ kebijakan keluar setelah resolusi DNS.
 
 - `maxChars` dibatasi ke `tools.web.fetch.maxCharsCap`
 - Body respons dibatasi pada `maxResponseBytes` sebelum parsing; respons yang terlalu besar
-  dipangkas dengan peringatan
+  dipotong dengan peringatan
 - Hostname privat/internal diblokir
 - `tools.web.fetch.ssrfPolicy.allowRfc2544BenchmarkRange` dan
   `tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange` adalah opt-in sempit
-  untuk stack proksi fake-IP tepercaya; biarkan tidak diatur kecuali proksi Anda memiliki
-  rentang sintetis tersebut dan menerapkan kebijakan tujuannya sendiri
+  untuk stack proxy fake-IP tepercaya; biarkan tidak disetel kecuali proxy Anda memiliki
+  rentang sintetis tersebut dan memberlakukan kebijakan tujuannya sendiri
 - Pengalihan diperiksa dan dibatasi oleh `maxRedirects`
-- `useTrustedEnvProxy` adalah opt-in eksplisit dan hanya boleh diaktifkan untuk
-  proksi yang dikendalikan operator yang tetap menerapkan kebijakan keluar setelah resolusi
+- `useTrustedEnvProxy` adalah opt-in eksplisit dan sebaiknya hanya diaktifkan untuk
+  proxy yang dikendalikan operator yang tetap memberlakukan kebijakan keluar setelah resolusi
   DNS
-- `web_fetch` bersifat upaya terbaik -- beberapa situs memerlukan [Browser Web](/id/tools/browser)
+- `web_fetch` bersifat best-effort -- beberapa situs memerlukan [Peramban Web](/id/tools/browser)
 
 ## Profil alat
 
@@ -198,5 +198,5 @@ Jika Anda menggunakan profil alat atau allowlist, tambahkan `web_fetch` atau `gr
 ## Terkait
 
 - [Pencarian Web](/id/tools/web) -- cari di web dengan beberapa penyedia
-- [Browser Web](/id/tools/browser) -- automasi browser penuh untuk situs yang sangat bergantung pada JS
-- [Firecrawl](/id/tools/firecrawl) -- alat pencarian dan scraping Firecrawl
+- [Peramban Web](/id/tools/browser) -- automasi browser penuh untuk situs yang sangat bergantung pada JS
+- [Firecrawl](/id/tools/firecrawl) -- alat pencarian dan scrape Firecrawl

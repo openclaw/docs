@@ -1,25 +1,24 @@
 ---
 read_when:
     - Anda ingin memilih penyedia model
-    - Anda menginginkan contoh penyiapan cepat untuk autentikasi LLM + pemilihan model
+    - Anda ingin contoh penyiapan cepat untuk autentikasi LLM + pemilihan model
 summary: Penyedia model (LLM) yang didukung oleh OpenClaw
-title: Mulai cepat penyedia model
+title: Panduan memulai cepat penyedia model
 x-i18n:
-    generated_at: "2026-04-30T10:07:53Z"
+    generated_at: "2026-05-06T17:59:20Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3f71f9ab34df2b545128bfeed3cab82f31b741d4a66263113068568ce6b77cd6
+    source_hash: 7e95d37f3e332a9b2eb58a15dc356ad02b4cbf409926adb3faf1923825219887
     source_path: providers/models.md
     workflow: 16
 ---
 
-# Penyedia Model
-
-OpenClaw dapat menggunakan banyak penyedia LLM. Pilih salah satu, autentikasi, lalu tetapkan model default sebagai `provider/model`.
+OpenClaw dapat menggunakan banyak penyedia LLM. Pilih salah satu, autentikasikan, lalu tetapkan model default
+sebagai `provider/model`.
 
 ## Mulai cepat (dua langkah)
 
-1. Autentikasi dengan penyedia (biasanya melalui `openclaw onboard`).
+1. Autentikasikan dengan penyedia (biasanya melalui `openclaw onboard`).
 2. Tetapkan model default:
 
 ```json5
@@ -57,13 +56,14 @@ OpenClaw dapat menggunakan banyak penyedia LLM. Pilih salah satu, autentikasi, l
 - [xAI](/id/providers/xai)
 - [Z.AI](/id/providers/zai)
 
-## Varian penyedia bundel tambahan
+## Varian penyedia tambahan yang dibundel
 
 - `anthropic-vertex` - dukungan Anthropic implisit di Google Vertex saat kredensial Vertex tersedia; tidak ada pilihan autentikasi onboarding terpisah
-- `copilot-proxy` - jembatan Proxy Copilot VS Code lokal; gunakan `openclaw onboard --auth-choice copilot-proxy`
+- `copilot-proxy` - bridge Proxy VS Code Copilot lokal; gunakan `openclaw onboard --auth-choice copilot-proxy`
 - `google-gemini-cli` - alur OAuth Gemini CLI tidak resmi; memerlukan instalasi `gemini` lokal (`brew install gemini-cli` atau `npm install -g @google/gemini-cli`); model default `google-gemini-cli/gemini-3-flash-preview`; gunakan `openclaw onboard --auth-choice google-gemini-cli` atau `openclaw models auth login --provider google-gemini-cli --set-default`
 
-Untuk katalog penyedia lengkap (xAI, Groq, Mistral, dll.) dan konfigurasi lanjutan, lihat [Penyedia model](/id/concepts/model-providers).
+Untuk katalog penyedia lengkap (xAI, Groq, Mistral, dll.) dan konfigurasi lanjutan,
+lihat [Penyedia model](/id/concepts/model-providers).
 
 ## Terkait
 

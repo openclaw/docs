@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Anda menggunakan pesan langsung dalam mode penyandingan dan perlu menyetujui pengirim
-summary: Referensi CLI untuk `openclaw pairing` (menyetujui/mencantumkan permintaan penyandingan)
+    - Anda menggunakan pesan langsung mode pemasangan dan perlu menyetujui pengirim
+summary: Referensi CLI untuk `openclaw pairing` (approve/list permintaan penyandingan)
 title: Penyandingan
 x-i18n:
-    generated_at: "2026-04-30T09:41:12Z"
+    generated_at: "2026-05-06T17:54:07Z"
     model: gpt-5.5
     provider: openai
-    source_hash: bffc70a8c08e298f42c8fbc2238fce06993572e72f333e87ad18dea3cf33fab5
+    source_hash: 022018239ab1134b18986be42b8e019f412a1a730a9671f422979909c4a31dc5
     source_path: cli/pairing.md
     workflow: 16
 ---
 
 # `openclaw pairing`
 
-Setujui atau periksa permintaan penyandingan pesan langsung (untuk kanal yang mendukung penyandingan).
+Setujui atau periksa permintaan pemasangan melalui pesan langsung (untuk saluran yang mendukung pemasangan).
 
 Terkait:
 
-- Alur penyandingan: [Penyandingan](/id/channels/pairing)
+- Alur pemasangan: [Pemasangan](/id/channels/pairing)
 
 ## Perintah
 
@@ -34,51 +34,51 @@ openclaw pairing approve --channel telegram --account work <code> --notify
 
 ## `pairing list`
 
-Cantumkan permintaan penyandingan yang tertunda untuk satu kanal.
+Cantumkan permintaan pemasangan yang tertunda untuk satu saluran.
 
 Opsi:
 
-- `[channel]`: id kanal posisional
-- `--channel <channel>`: id kanal eksplisit
-- `--account <accountId>`: id akun untuk kanal multi-akun
-- `--json`: output yang dapat dibaca mesin
+- `[channel]`: id saluran posisional
+- `--channel <channel>`: id saluran eksplisit
+- `--account <accountId>`: id akun untuk saluran multi-akun
+- `--json`: keluaran yang dapat dibaca mesin
 
 Catatan:
 
-- Jika beberapa kanal yang mendukung penyandingan dikonfigurasi, Anda harus memberikan kanal, baik secara posisional maupun dengan `--channel`.
-- Kanal ekstensi diizinkan selama id kanal valid.
+- Jika beberapa saluran yang mendukung pemasangan dikonfigurasi, Anda harus menyediakan saluran baik secara posisional maupun dengan `--channel`.
+- Saluran ekstensi diizinkan selama id saluran valid.
 
 ## `pairing approve`
 
-Setujui kode penyandingan yang tertunda dan izinkan pengirim tersebut.
+Setujui kode pemasangan yang tertunda dan izinkan pengirim tersebut.
 
 Penggunaan:
 
 - `openclaw pairing approve <channel> <code>`
 - `openclaw pairing approve --channel <channel> <code>`
-- `openclaw pairing approve <code>` ketika tepat satu kanal yang mendukung penyandingan dikonfigurasi
+- `openclaw pairing approve <code>` ketika tepat satu saluran yang mendukung pemasangan dikonfigurasi
 
 Opsi:
 
-- `--channel <channel>`: id kanal eksplisit
-- `--account <accountId>`: id akun untuk kanal multi-akun
-- `--notify`: kirim konfirmasi kembali ke peminta di kanal yang sama
+- `--channel <channel>`: id saluran eksplisit
+- `--account <accountId>`: id akun untuk saluran multi-akun
+- `--notify`: kirim konfirmasi kembali kepada pemohon di saluran yang sama
 
 Bootstrap pemilik:
 
-- Jika `commands.ownerAllowFrom` kosong saat Anda menyetujui kode penyandingan, OpenClaw juga mencatat pengirim yang disetujui sebagai pemilik perintah, menggunakan entri berlingkup kanal seperti `telegram:123456789`.
-- Ini hanya melakukan bootstrap pemilik pertama. Persetujuan penyandingan berikutnya tidak mengganti atau memperluas `commands.ownerAllowFrom`.
-- Pemilik perintah adalah akun operator manusia yang diizinkan menjalankan perintah khusus pemilik dan menyetujui tindakan berbahaya seperti `/diagnostics`, `/export-trajectory`, `/config`, dan persetujuan exec.
+- Jika `commands.ownerAllowFrom` kosong saat Anda menyetujui kode pemasangan, OpenClaw juga mencatat pengirim yang disetujui sebagai pemilik perintah, menggunakan entri berbasis cakupan saluran seperti `telegram:123456789`.
+- Ini hanya melakukan bootstrap pemilik pertama. Persetujuan pemasangan berikutnya tidak mengganti atau memperluas `commands.ownerAllowFrom`.
+- Pemilik perintah adalah akun operator manusia yang diizinkan menjalankan perintah khusus pemilik dan menyetujui tindakan berbahaya seperti `/diagnostics`, `/export-trajectory`, `/config`, dan persetujuan eksekusi.
 
 ## Catatan
 
-- Input kanal: berikan secara posisional (`pairing list telegram`) atau dengan `--channel <channel>`.
-- `pairing list` mendukung `--account <accountId>` untuk kanal multi-akun.
+- Input saluran: berikan secara posisional (`pairing list telegram`) atau dengan `--channel <channel>`.
+- `pairing list` mendukung `--account <accountId>` untuk saluran multi-akun.
 - `pairing approve` mendukung `--account <accountId>` dan `--notify`.
-- Jika hanya satu kanal yang mendukung penyandingan dikonfigurasi, `pairing approve <code>` diizinkan.
-- Jika Anda menyetujui pengirim sebelum bootstrap ini ada, jalankan `openclaw doctor`; perintah tersebut memperingatkan saat tidak ada pemilik perintah yang dikonfigurasi dan menampilkan perintah `openclaw config set commands.ownerAllowFrom ...` untuk memperbaikinya.
+- Jika hanya satu saluran yang mendukung pemasangan dikonfigurasi, `pairing approve <code>` diizinkan.
+- Jika Anda menyetujui pengirim sebelum bootstrap ini ada, jalankan `openclaw doctor`; perintah ini memperingatkan ketika tidak ada pemilik perintah yang dikonfigurasi dan menampilkan perintah `openclaw config set commands.ownerAllowFrom ...` untuk memperbaikinya.
 
 ## Terkait
 
 - [Referensi CLI](/id/cli)
-- [Penyandingan kanal](/id/channels/pairing)
+- [Pemasangan saluran](/id/channels/pairing)

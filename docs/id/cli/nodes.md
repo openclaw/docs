@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Anda sedang mengelola Node yang dipasangkan (kamera, layar, kanvas)
+    - Anda mengelola Node berpasangan (kamera, layar, kanvas)
     - Anda perlu menyetujui permintaan atau menjalankan perintah node
 summary: Referensi CLI untuk `openclaw nodes` (status, penyandingan, pemanggilan, kamera/kanvas/layar)
 title: Node
 x-i18n:
-    generated_at: "2026-04-30T09:40:53Z"
+    generated_at: "2026-05-06T17:54:10Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3229db91d7e64b0d37bee29bd51895d90796f5fd33b67e3d900fd8bda2b6e7e9
+    source_hash: f3eb0d23037c939e4022115a2d65e0e9cb25a872daed715b8652979ce6707cf7
     source_path: cli/nodes.md
     workflow: 16
 ---
 
 # `openclaw nodes`
 
-Kelola Node (perangkat) yang dipasangkan dan jalankan kapabilitas Node.
+Kelola node (perangkat) yang dipasangkan dan jalankan kapabilitas node.
 
 Terkait:
 
-- Ikhtisar Node: [Node](/id/nodes)
+- Ikhtisar node: [Node](/id/nodes)
 - Kamera: [Node kamera](/id/nodes/camera)
 - Gambar: [Node gambar](/id/nodes/images)
 
@@ -43,39 +43,39 @@ openclaw nodes status --connected
 openclaw nodes status --last-connected 24h
 ```
 
-`nodes list` mencetak tabel tertunda/terpasang. Baris yang terpasang menyertakan usia koneksi terbaru (Koneksi Terakhir).
-Gunakan `--connected` untuk hanya menampilkan Node yang saat ini terhubung. Gunakan `--last-connected <duration>` untuk
-memfilter ke Node yang terhubung dalam suatu durasi (misalnya `24h`, `7d`).
-Gunakan `nodes remove --node <id|name|ip>` untuk menghapus catatan pemasangan Node usang milik Gateway.
+`nodes list` mencetak tabel tertunda/terpasang. Baris yang terpasang menyertakan usia koneksi terbaru (Last Connect).
+Gunakan `--connected` untuk hanya menampilkan node yang saat ini terhubung. Gunakan `--last-connected <duration>` untuk
+memfilter node yang terhubung dalam suatu durasi (misalnya `24h`, `7d`).
+Gunakan `nodes remove --node <id|name|ip>` untuk menghapus catatan pemasangan node milik gateway yang sudah usang.
 
 Catatan persetujuan:
 
 - `openclaw nodes pending` hanya memerlukan cakupan pemasangan.
 - `gateway.nodes.pairing.autoApproveCidrs` dapat melewati langkah tertunda hanya untuk
-  pemasangan perangkat `role: node` pertama kali yang secara eksplisit dipercaya. Ini nonaktif secara
-  default dan tidak menyetujui peningkatan.
+  pemasangan perangkat `role: node` pertama kali yang secara eksplisit tepercaya. Fitur ini nonaktif secara
+  default dan tidak menyetujui pemutakhiran.
 - `openclaw nodes approve <requestId>` mewarisi persyaratan cakupan tambahan dari
   permintaan tertunda:
   - permintaan tanpa perintah: hanya pemasangan
-  - perintah Node non-exec: pemasangan + tulis
+  - perintah node non-exec: pemasangan + tulis
   - `system.run` / `system.run.prepare` / `system.which`: pemasangan + admin
 
-## Jalankan
+## Panggil
 
 ```bash
 openclaw nodes invoke --node <id|name|ip> --command <command> --params <json>
 ```
 
-Flag eksekusi:
+Flag pemanggilan:
 
 - `--params <json>`: string objek JSON (default `{}`).
-- `--invoke-timeout <ms>`: batas waktu eksekusi Node (default `15000`).
+- `--invoke-timeout <ms>`: batas waktu pemanggilan node (default `15000`).
 - `--idempotency-key <key>`: kunci idempotensi opsional.
-- `system.run` dan `system.run.prepare` diblokir di sini; gunakan alat `exec` dengan `host=node` untuk eksekusi shell.
+- `system.run` dan `system.run.prepare` diblokir di sini; gunakan tool `exec` dengan `host=node` untuk eksekusi shell.
 
-Untuk eksekusi shell pada Node, gunakan alat `exec` dengan `host=node`, bukan `openclaw nodes run`.
-CLI `nodes` kini berfokus pada kapabilitas: RPC langsung melalui `nodes invoke`, ditambah pemasangan, kamera,
-layar, lokasi, canvas, dan notifikasi.
+Untuk eksekusi shell pada node, gunakan tool `exec` dengan `host=node`, bukan `openclaw nodes run`.
+CLI `nodes` sekarang berfokus pada kapabilitas: RPC langsung melalui `nodes invoke`, ditambah pemasangan, kamera,
+layar, lokasi, kanvas, dan notifikasi.
 
 ## Terkait
 
