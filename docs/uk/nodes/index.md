@@ -1,35 +1,40 @@
 ---
 read_when:
     - Сполучення вузлів iOS/Android із Gateway
-    - Використання полотна/камери вузла для контексту агента
+    - Використання полотна/камери Node для контексту агента
     - Додавання нових команд Node або допоміжних засобів CLI
-summary: 'Nodes: створення пари, можливості, дозволи та CLI-помічники для canvas/camera/screen/device/notifications/system'
+summary: 'Вузли: сполучення, можливості, дозволи та допоміжні засоби CLI для canvas/camera/screen/device/notifications/system'
 title: Вузли
 x-i18n:
-    generated_at: "2026-04-30T04:07:51Z"
+    generated_at: "2026-05-06T01:51:45Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 060319f540fe3c4d168516df8cced9caad26d9281592c9a9537ab6df393dce43
+    source_hash: 7cb933edcd0df2151373ea7c3b0289a0aa1b2fc6af581147ce6eb780f9a76351
     source_path: nodes/index.md
     workflow: 16
 ---
 
-**Node** — це супровідний пристрій (macOS/iOS/Android/headless), який підключається до Gateway **WebSocket** (той самий порт, що й оператори) з `role: "node"` і надає набір команд (наприклад, `canvas.*`, `camera.*`, `device.*`, `notifications.*`, `system.*`) через `node.invoke`. Деталі протоколу: [протокол Gateway](/uk/gateway/protocol).
+**Node** — це супутній пристрій (macOS/iOS/Android/headless), який підключається до Gateway **WebSocket** (той самий порт, що й оператори) з `role: "node"` і надає командну поверхню (наприклад, `canvas.*`, `camera.*`, `device.*`, `notifications.*`, `system.*`) через `node.invoke`. Подробиці протоколу: [протокол Gateway](/uk/gateway/protocol).
 
 Застарілий транспорт: [протокол Bridge](/uk/gateway/bridge-protocol) (TCP JSONL;
-лише історично для поточних Node).
+лише історичний для поточних Node).
 
-macOS також може працювати в **режимі Node**: застосунок у рядку меню підключається до WS-сервера Gateway і надає свої локальні команди canvas/camera як Node (тому `openclaw nodes …` працює з цим Mac). У режимі віддаленого Gateway автоматизацію браузера обробляє CLI-хост Node (`openclaw node run` або встановлена служба Node), а не нативний Node застосунку.
+macOS також може працювати в **режимі Node**: застосунок у рядку меню підключається до
+WS-сервера Gateway і надає свої локальні команди canvas/camera як Node (тому
+`openclaw nodes …` працює з цим Mac). У режимі віддаленого Gateway автоматизацію браузера
+виконує хост Node CLI (`openclaw node run` або
+встановлена служба Node), а не Node нативного застосунку.
 
 Примітки:
 
 - Node — це **периферійні пристрої**, а не Gateway. Вони не запускають службу Gateway.
-- Повідомлення Telegram/WhatsApp/тощо потрапляють на **Gateway**, а не на Node.
+- Повідомлення Telegram/WhatsApp/тощо надходять на **Gateway**, а не на Node.
 - Runbook для усунення несправностей: [/nodes/troubleshooting](/uk/nodes/troubleshooting)
 
 ## Сполучення + статус
 
-**WS Node використовують сполучення пристроїв.** Node передають ідентичність пристрою під час `connect`; Gateway створює запит на сполучення пристрою для `role: node`. Схваліть через CLI пристроїв (або UI).
+**WS Node використовують сполучення пристроїв.** Node передають ідентичність пристрою під час `connect`; Gateway
+створює запит на сполучення пристрою для `role: node`. Схваліть через CLI пристроїв (або UI).
 
 Швидкий CLI:
 
@@ -41,22 +46,30 @@ openclaw nodes status
 openclaw nodes describe --node <idOrNameOrIp>
 ```
 
-Якщо Node повторює спробу зі зміненими даними автентифікації (роль/області доступу/публічний ключ), попередній запит, що очікував на розгляд, замінюється, і створюється новий `requestId`. Перед схваленням повторно виконайте `openclaw devices list`.
+Якщо Node повторює спробу зі зміненими даними автентифікації (роль/області доступу/публічний ключ), попередній
+очікуваний запит замінюється, і створюється новий `requestId`. Повторно виконайте
+`openclaw devices list` перед схваленням.
 
 Примітки:
 
-- `nodes status` позначає Node як **сполучений**, коли його роль сполучення пристрою включає `node`.
-- Запис сполучення пристрою є довговічним контрактом схваленої ролі. Ротація токенів лишається всередині цього контракту; вона не може підвищити сполучений Node до іншої ролі, яку схвалення сполучення ніколи не надавало.
-- `node.pair.*` (CLI: `openclaw nodes pending/approve/reject/remove/rename`) — це окреме сховище сполучень Node, яким володіє Gateway; воно **не** блокує handshake WS `connect`.
-- `openclaw nodes remove --node <id|name|ip>` видаляє застарілі записи з цього окремого сховища сполучень Node, яким володіє Gateway.
-- Область схвалення відповідає заявленим командам запиту, що очікує:
+- `nodes status` позначає Node як **сполучений**, коли його роль сполучення пристрою містить `node`.
+- Запис сполучення пристрою є сталим контрактом схваленої ролі. Ротація токенів
+  лишається всередині цього контракту; вона не може підвищити сполучений Node до
+  іншої ролі, яку схвалення сполучення ніколи не надавало.
+- `node.pair.*` (CLI: `openclaw nodes pending/approve/reject/remove/rename`) — це окреме сховище
+  сполучення Node, власником якого є Gateway; воно **не** контролює WS-рукостискання `connect`.
+- `openclaw nodes remove --node <id|name|ip>` видаляє застарілі записи з цього
+  окремого сховища сполучення Node, власником якого є Gateway.
+- Область схвалення відповідає оголошеним командам очікуваного запиту:
   - запит без команд: `operator.pairing`
   - команди Node без exec: `operator.pairing` + `operator.write`
   - `system.run` / `system.run.prepare` / `system.which`: `operator.pairing` + `operator.admin`
 
 ## Віддалений хост Node (system.run)
 
-Використовуйте **хост Node**, коли ваш Gateway працює на одній машині, а ви хочете виконувати команди на іншій. Модель усе ще спілкується з **Gateway**; Gateway переспрямовує виклики `exec` до **хоста Node**, коли вибрано `host=node`.
+Використовуйте **хост Node**, коли ваш Gateway працює на одній машині, а ви хочете, щоб команди
+виконувалися на іншій. Модель і надалі спілкується з **Gateway**; Gateway
+пересилає виклики `exec` до **хоста Node**, коли вибрано `host=node`.
 
 ### Що де виконується
 
@@ -66,9 +79,12 @@ openclaw nodes describe --node <idOrNameOrIp>
 
 Примітка щодо схвалень:
 
-- Запуски Node на основі схвалень прив’язують точний контекст запиту.
-- Для прямих виконань файлів shell/runtime OpenClaw також, наскільки можливо, прив’язує один конкретний локальний файловий операнд і відхиляє запуск, якщо цей файл змінюється до виконання.
-- Якщо OpenClaw не може визначити рівно один конкретний локальний файл для команди інтерпретатора/runtime, виконання на основі схвалення відхиляється замість удаваного повного покриття runtime. Для ширшої семантики інтерпретатора використовуйте ізоляцію, окремі хости або явний довірений allowlist/повний workflow.
+- Запуски Node зі схваленням прив’язують точний контекст запиту.
+- Для прямих виконань файлів shell/runtime OpenClaw також, за можливості, прив’язує один конкретний локальний
+  файловий операнд і відхиляє запуск, якщо цей файл змінюється перед виконанням.
+- Якщо OpenClaw не може визначити рівно один конкретний локальний файл для команди інтерпретатора/runtime,
+  виконання зі схваленням відхиляється замість удаваного повного покриття runtime. Використовуйте пісочницю,
+  окремі хости або явний довірений allowlist/повний робочий процес для ширшої семантики інтерпретатора.
 
 ### Запуск хоста Node (передній план)
 
@@ -78,9 +94,11 @@ openclaw nodes describe --node <idOrNameOrIp>
 openclaw node run --host <gateway-host> --port 18789 --display-name "Build Node"
 ```
 
-### Віддалений Gateway через SSH-тунель (loopback bind)
+### Віддалений Gateway через SSH-тунель (loopback-прив’язка)
 
-Якщо Gateway прив’язується до loopback (`gateway.bind=loopback`, стандартно в локальному режимі), віддалені хости Node не можуть підключитися напряму. Створіть SSH-тунель і вкажіть хосту Node локальний кінець тунелю.
+Якщо Gateway прив’язується до loopback (`gateway.bind=loopback`, типовий варіант у локальному режимі),
+віддалені хости Node не можуть підключатися напряму. Створіть SSH-тунель і вкажіть
+хосту Node локальний кінець тунелю.
 
 Приклад (хост Node -> хост Gateway):
 
@@ -95,12 +113,12 @@ openclaw node run --host 127.0.0.1 --port 18790 --display-name "Build Node"
 
 Примітки:
 
-- `openclaw node run` підтримує автентифікацію токеном або паролем.
+- `openclaw node run` підтримує автентифікацію через токен або пароль.
 - Змінні середовища є бажаними: `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`.
-- Резервна конфігурація: `gateway.auth.token` / `gateway.auth.password`.
+- Резервний варіант конфігурації: `gateway.auth.token` / `gateway.auth.password`.
 - У локальному режимі хост Node навмисно ігнорує `gateway.remote.token` / `gateway.remote.password`.
-- У віддаленому режимі `gateway.remote.token` / `gateway.remote.password` можуть використовуватися згідно з правилами пріоритету віддаленої конфігурації.
-- Якщо налаштовані активні локальні SecretRefs `gateway.auth.*`, але їх не розв’язано, автентифікація хоста Node завершується закритою відмовою.
+- У віддаленому режимі `gateway.remote.token` / `gateway.remote.password` можуть використовуватися за правилами пріоритету віддаленого режиму.
+- Якщо активні локальні SecretRefs `gateway.auth.*` налаштовані, але не розв’язані, автентифікація хоста Node завершується закритою відмовою.
 - Розв’язання автентифікації хоста Node враховує лише змінні середовища `OPENCLAW_GATEWAY_*`.
 
 ### Запуск хоста Node (служба)
@@ -111,7 +129,7 @@ openclaw node start
 openclaw node restart
 ```
 
-### Сполучення + ім’я
+### Сполучення + назва
 
 На хості Gateway:
 
@@ -121,12 +139,13 @@ openclaw devices approve <requestId>
 openclaw nodes status
 ```
 
-Якщо Node повторює спробу зі зміненими даними автентифікації, повторно виконайте `openclaw devices list` і схваліть поточний `requestId`.
+Якщо Node повторює спробу зі зміненими даними автентифікації, повторно виконайте `openclaw devices list`
+і схваліть поточний `requestId`.
 
-Параметри іменування:
+Варіанти іменування:
 
 - `--display-name` у `openclaw node run` / `openclaw node install` (зберігається в `~/.openclaw/node.json` на Node).
-- `openclaw nodes rename --node <id|name|ip> --name "Build Node"` (перевизначення на Gateway).
+- `openclaw nodes rename --node <id|name|ip> --name "Build Node"` (перевизначення Gateway).
 
 ### Додайте команди до allowlist
 
@@ -141,7 +160,7 @@ openclaw approvals allowlist add --node <id|name|ip> "/usr/bin/sw_vers"
 
 ### Спрямуйте exec на Node
 
-Налаштуйте стандартні значення (конфігурація Gateway):
+Налаштуйте типові значення (конфігурація Gateway):
 
 ```bash
 openclaw config set tools.exec.host node
@@ -149,17 +168,18 @@ openclaw config set tools.exec.security allowlist
 openclaw config set tools.exec.node "<id-or-name>"
 ```
 
-Або для окремого сеансу:
+Або для окремої сесії:
 
 ```
 /exec host=node security=allowlist node=<id-or-name>
 ```
 
-Після налаштування будь-який виклик `exec` з `host=node` виконується на хості Node (з урахуванням allowlist/схвалень Node).
+Після налаштування будь-який виклик `exec` з `host=node` виконується на хості Node (з урахуванням
+allowlist/схвалень Node).
 
-`host=auto` не вибиратиме Node неявно самостійно, але явний запит `host=node` для окремого виклику дозволений з `auto`. Якщо ви хочете, щоб exec на Node був стандартним для сеансу, явно задайте `tools.exec.host=node` або `/exec host=node ...`.
+`host=auto` не вибиратиме Node неявно самостійно, але явний запит `host=node` для окремого виклику дозволено з `auto`. Якщо ви хочете, щоб exec на Node був типовим для сесії, явно задайте `tools.exec.host=node` або `/exec host=node ...`.
 
-Пов’язане:
+Пов’язано:
 
 - [CLI хоста Node](/uk/cli/node)
 - [Інструмент exec](/uk/tools/exec)
@@ -167,32 +187,45 @@ openclaw config set tools.exec.node "<id-or-name>"
 
 ## Виклик команд
 
-Низький рівень (сирий RPC):
+Низький рівень (raw RPC):
 
 ```bash
 openclaw nodes invoke --node <idOrNameOrIp> --command canvas.eval --params '{"javaScript":"location.href"}'
 ```
 
-Для типових workflows “надати агенту вкладення MEDIA” існують допоміжні засоби вищого рівня.
+Для поширених робочих процесів «дати агенту вкладення MEDIA» існують допоміжні засоби вищого рівня.
 
 ## Політика команд
 
-Перед викликом команди Node мають пройти два шлюзи:
+Команди Node мають пройти двоє воріт, перш ніж їх можна буде викликати:
 
 1. Node має оголосити команду у своєму списку WebSocket `connect.commands`.
 2. Політика платформи Gateway має дозволяти оголошену команду.
 
-Супровідні Node для Windows і macOS стандартно дозволяють безпечні оголошені команди, як-от `canvas.*`, `camera.list`, `location.get` і `screen.snapshot`. Небезпечні або чутливі до приватності команди, як-от `camera.snap`, `camera.clip` і `screen.record`, усе одно потребують явного opt-in через `gateway.nodes.allowCommands`. `gateway.nodes.denyCommands` завжди має пріоритет над стандартними значеннями та додатковими записами allowlist.
+Супутні Node для Windows і macOS типово дозволяють безпечні оголошені команди, як-от
+`canvas.*`, `camera.list`, `location.get` і `screen.snapshot`.
+Довірені Node, які рекламують можливість `talk` або оголошують команди `talk.*`,
+також типово дозволяють оголошені push-to-talk-команди (`talk.ptt.start`, `talk.ptt.stop`,
+`talk.ptt.cancel`, `talk.ptt.once`), незалежно від мітки платформи.
+Небезпечні або чутливі до приватності команди, як-от `camera.snap`, `camera.clip` і
+`screen.record`, все одно потребують явного opt-in через
+`gateway.nodes.allowCommands`. `gateway.nodes.denyCommands` завжди має перевагу над
+типовими значеннями й додатковими записами allowlist.
 
-Команди Node, якими володіє Plugin, можуть додавати політику Gateway для node-invoke. Ця політика виконується після перевірки allowlist і перед переспрямуванням до Node, тож сирий `node.invoke`, допоміжні засоби CLI та спеціалізовані інструменти агента мають спільну межу дозволів Plugin. Небезпечні команди Node від Plugin усе одно потребують явного opt-in `gateway.nodes.allowCommands`.
+Команди Node, власником яких є Plugin, можуть додавати політику node-invoke Gateway. Ця політика
+виконується після перевірки allowlist і перед пересиланням до Node, тому raw
+`node.invoke`, допоміжні засоби CLI та спеціальні інструменти агента мають ту саму межу
+дозволів Plugin. Небезпечні команди Node Plugin все одно потребують явного
+opt-in через `gateway.nodes.allowCommands`.
 
-Після того як Node змінить свій оголошений список команд, відхиліть старе сполучення пристрою і схваліть новий запит, щоб Gateway зберіг оновлений знімок команд.
+Після того як Node змінює свій оголошений список команд, відхиліть старе сполучення пристрою
+і схваліть новий запит, щоб Gateway зберіг оновлений знімок команд.
 
 ## Знімки екрана (знімки canvas)
 
 Якщо Node показує Canvas (WebView), `canvas.snapshot` повертає `{ format, base64 }`.
 
-Допоміжний засіб CLI (записує у тимчасовий файл і друкує `MEDIA:<path>`):
+Допоміжний засіб CLI (записує в тимчасовий файл і друкує `MEDIA:<path>`):
 
 ```bash
 openclaw nodes canvas snapshot --node <idOrNameOrIp> --format png
@@ -210,7 +243,7 @@ openclaw nodes canvas eval --node <idOrNameOrIp> --js "document.title"
 
 Примітки:
 
-- `canvas present` приймає URL або локальні шляхи до файлів (`--target`), а також необов’язкові `--x/--y/--width/--height` для позиціювання.
+- `canvas present` приймає URL або локальні шляхи до файлів (`--target`), а також необов’язкові `--x/--y/--width/--height` для позиціонування.
 - `canvas eval` приймає inline JS (`--js`) або позиційний аргумент.
 
 ### A2UI (Canvas)
@@ -245,8 +278,8 @@ openclaw nodes camera clip --node <idOrNameOrIp> --duration 3000 --no-audio
 Примітки:
 
 - Node має бути **на передньому плані** для `canvas.*` і `camera.*` (фонові виклики повертають `NODE_BACKGROUND_UNAVAILABLE`).
-- Тривалість кліпу обмежується (наразі `<= 60s`), щоб уникнути завеликих payload base64.
-- Android за можливості запитає дозволи `CAMERA`/`RECORD_AUDIO`; відхилені дозволи завершуються помилкою `*_PERMISSION_REQUIRED`.
+- Тривалість кліпу обмежується (зараз `<= 60s`), щоб уникнути надмірно великих base64 payloads.
+- Android запитуватиме дозволи `CAMERA`/`RECORD_AUDIO`, коли це можливо; відхилені дозволи завершуються помилкою `*_PERMISSION_REQUIRED`.
 
 ## Записи екрана (Node)
 
@@ -264,9 +297,9 @@ openclaw nodes screen record --node <idOrNameOrIp> --duration 10s --fps 10 --no-
 - `--no-audio` вимикає захоплення мікрофона на підтримуваних платформах.
 - Використовуйте `--screen <index>`, щоб вибрати дисплей, коли доступно кілька екранів.
 
-## Геолокація (Node)
+## Локація (Node)
 
-Node надають `location.get`, коли в налаштуваннях увімкнено Location.
+Node надають `location.get`, коли Location увімкнено в налаштуваннях.
 
 Допоміжний засіб CLI:
 
@@ -277,8 +310,8 @@ openclaw nodes location get --node <idOrNameOrIp> --accuracy precise --max-age 1
 
 Примітки:
 
-- Location **вимкнено стандартно**.
-- “Always” потребує системного дозволу; фонове отримання виконується за принципом best-effort.
+- Location типово **вимкнено**.
+- “Always” потребує системного дозволу; фонове отримання виконується за можливості.
 - Відповідь містить lat/lon, точність (метри) і timestamp.
 
 ## SMS (Android Node)
@@ -293,12 +326,12 @@ openclaw nodes invoke --node <idOrNameOrIp> --command sms.send --params '{"to":"
 
 Примітки:
 
-- Запит дозволу потрібно прийняти на пристрої Android до того, як capability буде оголошено.
-- Пристрої лише з Wi-Fi без телефонії не оголошуватимуть `sms.send`.
+- Запит дозволу має бути прийнятий на пристрої Android до того, як можливість буде рекламована.
+- Пристрої лише з Wi-Fi без телефонії не рекламуватимуть `sms.send`.
 
-## Команди пристрою Android + персональних даних
+## Команди Android-пристрою + персональних даних
 
-Android Node можуть оголошувати додаткові сімейства команд, коли відповідні capability увімкнені.
+Android Node можуть рекламувати додаткові сімейства команд, коли відповідні можливості увімкнено.
 
 Доступні сімейства:
 
@@ -321,12 +354,12 @@ openclaw nodes invoke --node <idOrNameOrIp> --command photos.latest --params '{"
 
 Примітки:
 
-- Команди руху обмежуються можливостями наявних сенсорів.
+- Команди руху обмежуються можливостями доступних сенсорів.
 
-## Системні команди (хост вузла / вузол Mac)
+## Системні команди (хост Node / mac Node)
 
-Вузол macOS надає `system.run`, `system.notify` і `system.execApprovals.get/set`.
-Headless-хост вузла надає `system.run`, `system.which` і `system.execApprovals.get/set`.
+Node macOS надає `system.run`, `system.notify` і `system.execApprovals.get/set`.
+Безголовий хост Node надає `system.run`, `system.which` і `system.execApprovals.get/set`.
 
 Приклади:
 
@@ -337,28 +370,26 @@ openclaw nodes invoke --node <idOrNameOrIp> --command system.which --params '{"n
 
 Примітки:
 
-- `system.run` повертає stdout/stderr/код завершення в payload.
-- Виконання shell тепер проходить через інструмент `exec` з `host=node`; `nodes` залишається прямою RPC-поверхнею для явних команд вузла.
-- `nodes invoke` не відкриває доступ до `system.run` або `system.run.prepare`; вони залишаються лише на шляху exec.
-- Шлях exec готує канонічний `systemRunPlan` перед схваленням. Щойно
-  схвалення надано, gateway пересилає цей збережений план, а не будь-які пізніше
-  змінені викликачем поля command/cwd/session.
+- `system.run` повертає stdout/stderr/код виходу в корисному навантаженні.
+- Виконання оболонки тепер проходить через інструмент `exec` із `host=node`; `nodes` залишається прямою RPC-поверхнею для явних команд Node.
+- `nodes invoke` не надає `system.run` або `system.run.prepare`; вони залишаються лише на шляху exec.
+- Шлях exec готує канонічний `systemRunPlan` перед схваленням. Після надання схвалення Gateway пересилає цей збережений план, а не будь-які пізніше змінені викликачем поля command/cwd/session.
 - `system.notify` враховує стан дозволу на сповіщення в застосунку macOS.
-- Нерозпізнані метадані вузла `platform` / `deviceFamily` використовують консервативний типовий allowlist, який виключає `system.run` і `system.which`. Якщо вам навмисно потрібні ці команди для невідомої платформи, додайте їх явно через `gateway.nodes.allowCommands`.
+- Нерозпізнані метадані Node `platform` / `deviceFamily` використовують консервативний стандартний allowlist, який виключає `system.run` і `system.which`. Якщо вам навмисно потрібні ці команди для невідомої платформи, додайте їх явно через `gateway.nodes.allowCommands`.
 - `system.run` підтримує `--cwd`, `--env KEY=VAL`, `--command-timeout` і `--needs-screen-recording`.
-- Для shell-обгорток (`bash|sh|zsh ... -c/-lc`) значення `--env`, обмежені запитом, зводяться до явного allowlist (`TERM`, `LANG`, `LC_*`, `COLORTERM`, `NO_COLOR`, `FORCE_COLOR`).
-- Для рішень «завжди дозволяти» в режимі allowlist відомі диспетчерські обгортки (`env`, `nice`, `nohup`, `stdbuf`, `timeout`) зберігають шляхи внутрішніх виконуваних файлів замість шляхів обгорток. Якщо розгортання не є безпечним, запис allowlist автоматично не зберігається.
-- На хостах вузлів Windows у режимі allowlist запуск shell-обгортки через `cmd.exe /c` потребує схвалення (самого запису allowlist недостатньо для автоматичного дозволу форми з обгорткою).
+- Для обгорток оболонки (`bash|sh|zsh ... -c/-lc`) значення `--env` в межах запиту зводяться до явного allowlist (`TERM`, `LANG`, `LC_*`, `COLORTERM`, `NO_COLOR`, `FORCE_COLOR`).
+- Для рішень «завжди дозволяти» в режимі allowlist відомі обгортки диспетчеризації (`env`, `nice`, `nohup`, `stdbuf`, `timeout`) зберігають внутрішні шляхи виконуваних файлів замість шляхів обгорток. Якщо розгортання не є безпечним, запис allowlist автоматично не зберігається.
+- На хостах Node Windows у режимі allowlist запуски обгорток оболонки через `cmd.exe /c` потребують схвалення (самого запису allowlist недостатньо для автоматичного дозволу форми обгортки).
 - `system.notify` підтримує `--priority <passive|active|timeSensitive>` і `--delivery <system|overlay|auto>`.
-- Хости вузлів ігнорують перевизначення `PATH` і вилучають небезпечні ключі запуску/shell (`DYLD_*`, `LD_*`, `NODE_OPTIONS`, `PYTHON*`, `PERL*`, `RUBYOPT`, `SHELLOPTS`, `PS4`). Якщо вам потрібні додаткові записи PATH, налаштуйте середовище сервісу хоста вузла (або встановіть інструменти у стандартні місця) замість передавання `PATH` через `--env`.
-- У режимі вузла macOS `system.run` обмежується схваленнями exec у застосунку macOS (Settings → Exec approvals).
-  Ask/allowlist/full поводяться так само, як headless-хост вузла; відхилені запити повертають `SYSTEM_RUN_DENIED`.
-- На headless-хості вузла `system.run` обмежується схваленнями exec (`~/.openclaw/exec-approvals.json`).
+- Хости Node ігнорують перевизначення `PATH` і вилучають небезпечні ключі запуску/оболонки (`DYLD_*`, `LD_*`, `NODE_OPTIONS`, `PYTHON*`, `PERL*`, `RUBYOPT`, `SHELLOPTS`, `PS4`). Якщо вам потрібні додаткові записи PATH, налаштуйте середовище служби хоста Node (або встановіть інструменти у стандартні розташування), а не передавайте `PATH` через `--env`.
+- У режимі macOS Node `system.run` обмежується схваленнями exec у застосунку macOS (Settings → Exec approvals).
+  Ask/allowlist/full поводяться так само, як безголовий хост Node; відхилені запити повертають `SYSTEM_RUN_DENIED`.
+- На безголовому хості Node `system.run` обмежується схваленнями exec (`~/.openclaw/exec-approvals.json`).
 
-## Прив’язка вузла exec
+## Прив’язка exec до Node
 
-Коли доступно кілька вузлів, ви можете прив’язати exec до конкретного вузла.
-Це встановлює типовий вузол для `exec host=node` (і може бути перевизначено для окремого агента).
+Коли доступно кілька Node, ви можете прив’язати exec до конкретного Node.
+Це задає стандартний Node для `exec host=node` (і може бути перевизначено для окремого агента).
 
 Глобальне значення за замовчуванням:
 
@@ -373,7 +404,7 @@ openclaw config get agents.list
 openclaw config set agents.list[0].tools.exec.node "node-id-or-name"
 ```
 
-Скиньте, щоб дозволити будь-який вузол:
+Скасувати, щоб дозволити будь-який Node:
 
 ```bash
 openclaw config unset tools.exec.node
@@ -382,13 +413,11 @@ openclaw config unset agents.list[0].tools.exec.node
 
 ## Мапа дозволів
 
-Вузли можуть містити мапу `permissions` у `node.list` / `node.describe`, індексовану за назвою дозволу (наприклад, `screenRecording`, `accessibility`) з булевими значеннями (`true` = надано).
+Node можуть містити мапу `permissions` у `node.list` / `node.describe`, з ключами за назвою дозволу (наприклад, `screenRecording`, `accessibility`) і булевими значеннями (`true` = надано).
 
-## Headless-хост вузла (кросплатформний)
+## Безголовий хост Node (кросплатформний)
 
-OpenClaw може запускати **headless-хост вузла** (без UI), який підключається до WebSocket Gateway
-і надає `system.run` / `system.which`. Це корисно в Linux/Windows
-або для запуску мінімального вузла поруч із сервером.
+OpenClaw може запускати **безголовий хост Node** (без UI), який підключається до WebSocket Gateway і надає `system.run` / `system.which`. Це корисно на Linux/Windows або для запуску мінімального Node поряд із сервером.
 
 Запустіть його:
 
@@ -399,15 +428,13 @@ openclaw node run --host <gateway-host> --port 18789
 Примітки:
 
 - Сполучення все ще потрібне (Gateway покаже запит на сполучення пристрою).
-- Хост вузла зберігає свій id вузла, token, відображуване ім’я та інформацію про підключення до gateway в `~/.openclaw/node.json`.
+- Хост Node зберігає свій ідентифікатор Node, токен, відображуване ім’я та інформацію про підключення до Gateway у `~/.openclaw/node.json`.
 - Схвалення exec застосовуються локально через `~/.openclaw/exec-approvals.json`
   (див. [Схвалення exec](/uk/tools/exec-approvals)).
-- На macOS headless-хост вузла типово виконує `system.run` локально. Установіть
-  `OPENCLAW_NODE_EXEC_HOST=app`, щоб спрямувати `system.run` через exec-хост супровідного застосунку; додайте
-  `OPENCLAW_NODE_EXEC_FALLBACK=0`, щоб вимагати хост застосунку й безпечно завершуватися з помилкою, якщо він недоступний.
+- На macOS безголовий хост Node за замовчуванням виконує `system.run` локально. Встановіть `OPENCLAW_NODE_EXEC_HOST=app`, щоб спрямувати `system.run` через хост exec супровідного застосунку; додайте `OPENCLAW_NODE_EXEC_FALLBACK=0`, щоб вимагати хост застосунку й безпечно завершуватися з помилкою, якщо він недоступний.
 - Додайте `--tls` / `--tls-fingerprint`, коли Gateway WS використовує TLS.
 
-## Режим вузла Mac
+## Режим Mac Node
 
-- Застосунок macOS у рядку меню підключається до сервера Gateway WS як вузол (тож `openclaw nodes …` працює з цим Mac).
+- Застосунок панелі меню macOS підключається до сервера Gateway WS як Node (тож `openclaw nodes …` працює з цим Mac).
 - У віддаленому режимі застосунок відкриває SSH-тунель для порту Gateway і підключається до `localhost`.
