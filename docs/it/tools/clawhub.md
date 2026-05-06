@@ -1,16 +1,16 @@
 ---
 read_when:
-    - Ricerca, installazione o aggiornamento di Skills o Plugin
+    - Cercare, installare o aggiornare Skills o Plugin
     - Pubblicazione di Skills o Plugin nel registro
-    - Configurazione della CLI ClawHub o dei relativi override dell'ambiente
+    - Configurare la CLI clawhub o i relativi override di ambiente
 sidebarTitle: ClawHub
-summary: 'ClawHub: registro pubblico per Skills e plugin di OpenClaw, flussi di installazione nativi e CLI clawhub'
+summary: 'ClawHub: registro pubblico per Skills e Plugin di OpenClaw, flussi di installazione nativi e CLI clawhub'
 title: ClawHub
 x-i18n:
-    generated_at: "2026-05-02T21:01:26Z"
+    generated_at: "2026-05-06T09:10:59Z"
     model: gpt-5.5
     provider: openai
-    source_hash: cd422cb3e7e53fcc6d2b8a557ebc569debb0b470d5fcf141d90499c03fb4d7b3
+    source_hash: 78ccf1911344d71b3b1c2c94691e15108305348e09db62aaaf1d03d852984acd
     source_path: tools/clawhub.md
     workflow: 16
 ---
@@ -36,10 +36,10 @@ Sito: [clawhub.ai](https://clawhub.ai)
     ```
   </Step>
   <Step title="Usa">
-    Avvia una nuova sessione OpenClaw: rileverà il nuovo Skill.
+    Avvia una nuova sessione OpenClaw: rileverà la nuova skill.
   </Step>
-  <Step title="Pubblica (facoltativo)">
-    Per i flussi autenticati nel registro (pubblicazione, sincronizzazione, gestione), installa
+  <Step title="Pubblica (opzionale)">
+    Per i flussi autenticati dal registro (pubblicazione, sincronizzazione, gestione), installa
     la CLI separata `clawhub`:
 
     ```bash
@@ -61,8 +61,8 @@ Sito: [clawhub.ai](https://clawhub.ai)
     openclaw skills update --all
     ```
 
-    I comandi nativi `openclaw` installano nel tuo workspace attivo e
-    mantengono i metadati della sorgente, così le chiamate successive a `update` possono restare su ClawHub.
+    I comandi nativi `openclaw` installano nell'area di lavoro attiva e
+    conservano i metadati della sorgente, così le chiamate successive a `update` possono rimanere su ClawHub.
 
   </Tab>
   <Tab title="Plugin">
@@ -72,9 +72,9 @@ Sito: [clawhub.ai](https://clawhub.ai)
     openclaw plugins update --all
     ```
 
-    `plugins search` interroga il catalogo dei Plugin di ClawHub e stampa nomi di pacchetti
-    pronti per l’installazione. Usa `clawhub:<package>` quando vuoi la risoluzione tramite ClawHub.
-    Le specifiche Plugin npm-safe senza prefisso vengono installate da npm durante il passaggio di lancio:
+    `plugins search` interroga il catalogo Plugin di ClawHub e stampa nomi
+    di pacchetti pronti per l'installazione. Usa `clawhub:<package>` quando vuoi la risoluzione tramite ClawHub.
+    Le specifiche Plugin semplici compatibili con npm installano da npm durante la transizione di lancio:
 
     ```bash
     openclaw plugins install openclaw-codex-app-server
@@ -88,99 +88,101 @@ Sito: [clawhub.ai](https://clawhub.ai)
     ```
 
     Le installazioni dei Plugin convalidano la compatibilità dichiarata di `pluginApi` e
-    `minGatewayVersion` prima dell’installazione dell’archivio, così gli host incompatibili falliscono in modo chiuso fin dall’inizio invece di installare parzialmente
+    `minGatewayVersion` prima dell'esecuzione dell'installazione dell'archivio, così
+    gli host incompatibili si chiudono in modo sicuro in anticipo invece di installare parzialmente
     il pacchetto. Quando una versione del pacchetto pubblica un artefatto ClawPack,
-    OpenClaw preferisce il `.tgz` npm-pack caricato esatto, verifica l’header digest di ClawHub
-    e i byte scaricati, e registra tipo di artefatto, integrità npm,
-    shasum npm, nome del tarball e metadati digest ClawPack per aggiornamenti
-    successivi. Le versioni più vecchie dei pacchetti senza metadati ClawPack continuano a usare il
-    percorso legacy di verifica dell’archivio del pacchetto.
+    OpenClaw preferisce l'esatto `.tgz` npm-pack caricato, verifica l'header del digest ClawHub
+    e i byte scaricati, e registra il tipo di artefatto, l'integrità npm,
+    lo shasum npm, il nome del tarball e i metadati del digest ClawPack per gli
+    aggiornamenti successivi. Le versioni meno recenti dei pacchetti senza metadati ClawPack usano ancora
+    il percorso legacy di verifica dell'archivio del pacchetto.
 
   </Tab>
 </Tabs>
 
 <Note>
-`openclaw plugins install clawhub:...` accetta solo famiglie di Plugin
-installabili. Se un pacchetto ClawHub è in realtà uno Skill, OpenClaw si ferma e
+`openclaw plugins install clawhub:...` accetta solo famiglie Plugin
+installabili. Se un pacchetto ClawHub è in realtà una skill, OpenClaw si ferma e
 ti indirizza invece a `openclaw skills install <slug>`.
 
-Anche le installazioni anonime di Plugin ClawHub falliscono in modo chiuso per i pacchetti privati.
-I canali community o altri canali non ufficiali possono comunque essere installati, ma OpenClaw
-avvisa affinché gli operatori possano esaminare sorgente e verifica prima di abilitarli.
+Anche le installazioni anonime di Plugin ClawHub falliscono in modo sicuro per i pacchetti privati.
+Canali della community o altri canali non ufficiali possono comunque essere installati, ma OpenClaw
+mostra un avviso affinché gli operatori possano verificare sorgente e validazione prima di abilitarli.
 </Note>
 
-## Che cos’è ClawHub
+## Che cos'è ClawHub
 
 - Un registro pubblico per Skills e Plugin di OpenClaw.
-- Un archivio versionato di bundle e metadati degli Skill.
+- Un archivio versionato di bundle e metadati delle skill.
 - Una superficie di scoperta per ricerca, tag e segnali di utilizzo.
 
-Uno Skill tipico è un bundle versionato di file che include:
+Una skill tipica è un bundle versionato di file che include:
 
-- Un file `SKILL.md` con descrizione principale e modalità d’uso.
-- Configurazioni, script o file di supporto facoltativi usati dallo Skill.
+- Un file `SKILL.md` con la descrizione principale e l'utilizzo.
+- Configurazioni opzionali, script o file di supporto usati dalla skill.
 - Metadati come tag, riepilogo e requisiti di installazione.
 
-ClawHub usa i metadati per alimentare la scoperta ed esporre in sicurezza le
-capacità degli Skill. Il registro tiene traccia dei segnali di utilizzo (stelle, download) per
+ClawHub usa i metadati per alimentare la scoperta ed esporre in modo sicuro le
+capacità delle skill. Il registro traccia segnali di utilizzo (stelle, download) per
 migliorare ranking e visibilità. Ogni pubblicazione crea una nuova versione
-semver, e il registro conserva la cronologia delle versioni affinché gli utenti possano controllare
+semver e il registro conserva la cronologia delle versioni, così gli utenti possono controllare
 le modifiche.
 
-## Workspace e caricamento degli Skill
+## Area di lavoro e caricamento delle skill
 
-La CLI separata `clawhub` installa anche gli Skill in `./skills` sotto
-la directory di lavoro corrente. Se è configurato un workspace OpenClaw,
-`clawhub` ripiega su quel workspace a meno che tu non sovrascriva `--workdir`
-(o `CLAWHUB_WORKDIR`). OpenClaw carica gli Skill del workspace da
-`<workspace>/skills` e li rileva nella sessione **successiva**.
+Anche la CLI separata `clawhub` installa le skill in `./skills` sotto
+la directory di lavoro corrente. Se è configurata un'area di lavoro OpenClaw,
+`clawhub` ripiega su quell'area di lavoro a meno che tu non sovrascriva `--workdir`
+(o `CLAWHUB_WORKDIR`). OpenClaw carica le skill dell'area di lavoro da
+`<workspace>/skills` e le rileva nella sessione **successiva**.
 
-Se usi già `~/.openclaw/skills` o Skill inclusi, gli Skill del workspace
-hanno la precedenza. Per maggiori dettagli su come gli Skill vengono caricati,
-condivisi e sottoposti a gate, consulta [Skills](/it/tools/skills).
+Se usi già `~/.openclaw/skills` o skill incluse, le skill dell'area di lavoro
+hanno la precedenza. Per maggiori dettagli su come le skill vengono caricate,
+condivise e controllate, vedi [Skills](/it/tools/skills).
 
 ## Funzionalità del servizio
 
 | Funzionalità             | Note                                                                |
 | ------------------------ | ------------------------------------------------------------------- |
-| Navigazione pubblica     | Gli Skill e il loro contenuto `SKILL.md` sono visibili pubblicamente. |
+| Navigazione pubblica     | Le skill e il loro contenuto `SKILL.md` sono visibili pubblicamente. |
 | Ricerca                  | Basata su embedding (ricerca vettoriale), non solo parole chiave.   |
 | Versionamento            | Semver, changelog e tag (incluso `latest`).                         |
 | Download                 | Zip per versione.                                                   |
 | Stelle e commenti        | Feedback della community.                                           |
-| Riepiloghi scansioni di sicurezza | Le pagine di dettaglio mostrano lo stato più recente della scansione prima dell’installazione o del download. |
-| Pagine di dettaglio scanner | I risultati di VirusTotal, ClawScan e analisi statica hanno link profondi. |
-| Dashboard di recupero proprietario | Gli editori possono vedere da `/dashboard` i contenuti di loro proprietà trattenuti dalla scansione. |
+| Riepiloghi scansione sicurezza | Le pagine di dettaglio mostrano lo stato dell'ultima scansione prima di installare o scaricare. |
+| Pagine di dettaglio scanner | I risultati VirusTotal, ClawScan e di analisi statica hanno link profondi. |
+| Dashboard di recupero proprietario | Gli editori possono vedere da `/dashboard` contenuti di loro proprietà trattenuti dalla scansione. |
 | Nuove scansioni richieste dal proprietario | I proprietari possono richiedere nuove scansioni limitate per il recupero da falsi positivi. |
 | Moderazione              | Approvazioni e audit.                                               |
 | API adatta alla CLI      | Adatta ad automazione e scripting.                                  |
 
 ## Sicurezza e moderazione
 
-ClawHub è aperto per impostazione predefinita: chiunque può caricare Skill, ma un account GitHub
-deve avere **almeno una settimana** per pubblicare. Questo rallenta gli abusi
-senza bloccare i contributori legittimi.
+ClawHub è aperto per impostazione predefinita: chiunque può caricare skill, ma un account GitHub
+deve avere **almeno una settimana** per pubblicare. Questo rallenta
+gli abusi senza bloccare i contributori legittimi.
 
 <AccordionGroup>
   <Accordion title="Scansioni di sicurezza">
-    ClawHub esegue controlli di sicurezza automatizzati sugli Skill e sulle release dei Plugin
-    pubblicati. Le pagine di dettaglio pubbliche riassumono il risultato corrente, e le righe degli scanner
-    rimandano a pagine di dettaglio dedicate per VirusTotal, ClawScan e analisi statica.
+    ClawHub esegue controlli di sicurezza automatizzati sulle skill pubblicate e sulle release dei Plugin.
+    Le pagine di dettaglio pubbliche riassumono il risultato corrente e le righe degli scanner
+    collegano a pagine di dettaglio dedicate per VirusTotal, ClawScan e analisi
+    statica.
 
-    Le release trattenute dalla scansione o bloccate potrebbero non essere disponibili nel catalogo pubblico e
-    nelle superfici di installazione, pur restando visibili al loro proprietario in `/dashboard`.
+    Le release trattenute dalla scansione o bloccate possono non essere disponibili nel catalogo pubblico e
+    nelle superfici di installazione, pur rimanendo visibili al proprietario in `/dashboard`.
 
   </Accordion>
   <Accordion title="Segnalazioni">
-    - Qualsiasi utente con accesso effettuato può segnalare uno Skill.
+    - Qualsiasi utente autenticato può segnalare una skill.
     - I motivi della segnalazione sono obbligatori e registrati.
     - Ogni utente può avere fino a 20 segnalazioni attive alla volta.
-    - Gli Skill con più di 3 segnalazioni uniche vengono nascosti automaticamente per impostazione predefinita.
+    - Le skill con più di 3 segnalazioni uniche sono nascoste automaticamente per impostazione predefinita.
 
   </Accordion>
   <Accordion title="Moderazione">
-    - I moderatori possono visualizzare gli Skill nascosti, renderli nuovamente visibili, eliminarli o bannare utenti.
-    - L’abuso della funzionalità di segnalazione può comportare il ban dell’account.
+    - I moderatori possono visualizzare le skill nascoste, renderle di nuovo visibili, eliminarle o bannare utenti.
+    - L'abuso della funzione di segnalazione può comportare il ban dell'account.
     - Ti interessa diventare moderatore? Chiedi nel Discord di OpenClaw e contatta un moderatore o un maintainer.
 
   </Accordion>
@@ -188,22 +190,22 @@ senza bloccare i contributori legittimi.
 
 ## CLI ClawHub
 
-Ne hai bisogno solo per flussi autenticati nel registro, come
+Ti serve solo per flussi autenticati dal registro, come
 pubblicazione/sincronizzazione.
 
 ### Opzioni globali
 
 <ParamField path="--workdir <dir>" type="string">
-  Directory di lavoro. Predefinita: directory corrente; ripiega sul workspace OpenClaw.
+  Directory di lavoro. Predefinito: directory corrente; ripiega sull'area di lavoro OpenClaw.
 </ParamField>
 <ParamField path="--dir <dir>" type="string" default="skills">
-  Directory Skills, relativa a workdir.
+  Directory delle Skills, relativa a workdir.
 </ParamField>
 <ParamField path="--site <url>" type="string">
-  URL base del sito (login da browser).
+  URL base del sito (login tramite browser).
 </ParamField>
 <ParamField path="--registry <url>" type="string">
-  URL base dell’API del registro.
+  URL base dell'API del registro.
 </ParamField>
 <ParamField path="--no-input" type="boolean">
   Disabilita i prompt (non interattivo).
@@ -225,9 +227,9 @@ pubblicazione/sincronizzazione.
 
     Opzioni di login:
 
-    - `--token <token>` — incolla un token API.
-    - `--label <label>` — etichetta salvata per i token di login da browser (predefinita: `CLI token`).
-    - `--no-browser` — non aprire un browser (richiede `--token`).
+    - `--token <token>` - incolla un token API.
+    - `--label <label>` - etichetta archiviata per i token di login tramite browser (predefinito: `CLI token`).
+    - `--no-browser` - non aprire un browser (richiede `--token`).
 
   </Accordion>
   <Accordion title="Ricerca">
@@ -235,9 +237,9 @@ pubblicazione/sincronizzazione.
     clawhub search "query"
     ```
 
-    Cerca Skill. Per la scoperta di Plugin/pacchetti, usa `clawhub package explore`.
+    Cerca le skill. Per la scoperta di Plugin/pacchetti, usa `clawhub package explore`.
 
-    - `--limit <n>` — risultati massimi.
+    - `--limit <n>` - risultati massimi.
 
   </Accordion>
   <Accordion title="Sfoglia / ispeziona Plugin">
@@ -247,16 +249,16 @@ pubblicazione/sincronizzazione.
     clawhub package inspect episodic-claw
     ```
 
-    `package explore` e `package inspect` sono le superfici della CLI ClawHub per la scoperta di Plugin/pacchetti e l’ispezione dei metadati. Le installazioni native OpenClaw continuano a usare `openclaw plugins install clawhub:<package>`.
+    `package explore` e `package inspect` sono le superfici della CLI ClawHub per la scoperta di Plugin/pacchetti e l'ispezione dei metadati. Le installazioni native di OpenClaw usano comunque `openclaw plugins install clawhub:<package>`.
 
     Opzioni:
 
-    - `--family skill|code-plugin|bundle-plugin` — filtra la famiglia del pacchetto.
-    - `--official` — mostra solo pacchetti ufficiali.
-    - `--executes-code` — mostra solo pacchetti che eseguono codice.
-    - `--version <version>` / `--tag <tag>` — ispeziona una versione specifica del pacchetto.
-    - `--versions`, `--files`, `--file <path>` — ispeziona cronologia e file del pacchetto.
-    - `--json` — output leggibile da macchina.
+    - `--family skill|code-plugin|bundle-plugin` - filtra la famiglia del pacchetto.
+    - `--official` - mostra solo pacchetti ufficiali.
+    - `--executes-code` - mostra solo pacchetti che eseguono codice.
+    - `--version <version>` / `--tag <tag>` - ispeziona una versione specifica del pacchetto.
+    - `--versions`, `--files`, `--file <path>` - ispeziona la cronologia e i file del pacchetto.
+    - `--json` - output leggibile da macchina.
 
   </Accordion>
   <Accordion title="Installa / aggiorna / elenca">
@@ -269,23 +271,23 @@ pubblicazione/sincronizzazione.
 
     Opzioni:
 
-    - `--version <version>` — installa o aggiorna a una versione specifica (slug singolo solo su `update`).
-    - `--force` — sovrascrivi se la cartella esiste già, o quando i file locali non corrispondono ad alcuna versione pubblicata.
+    - `--version <version>` - installa o aggiorna a una versione specifica (slug singolo solo su `update`).
+    - `--force` - sovrascrivi se la cartella esiste già o quando i file locali non corrispondono ad alcuna versione pubblicata.
     - `clawhub list` legge `.clawhub/lock.json`.
 
   </Accordion>
-  <Accordion title="Pubblica Skill">
+  <Accordion title="Pubblica Skills">
     ```bash
     clawhub skill publish <path>
     ```
 
     Opzioni:
 
-    - `--slug <slug>` — slug dello Skill.
-    - `--name <name>` — nome visualizzato.
-    - `--version <version>` — versione semver.
-    - `--changelog <text>` — testo del changelog (può essere vuoto).
-    - `--tags <tags>` — tag separati da virgole (predefinito: `latest`).
+    - `--slug <slug>` - slug della skill.
+    - `--name <name>` - nome visualizzato.
+    - `--version <version>` - versione semver.
+    - `--changelog <text>` - testo del changelog (può essere vuoto).
+    - `--tags <tags>` - tag separati da virgole (predefinito: `latest`).
 
   </Accordion>
   <Accordion title="Pubblica Plugin">
@@ -298,9 +300,9 @@ pubblicazione/sincronizzazione.
 
     Opzioni:
 
-    - `--dry-run` — costruisce il piano esatto di pubblicazione senza caricare nulla.
-    - `--json` — emette output leggibile da macchina per CI.
-    - `--source-repo`, `--source-commit`, `--source-ref` — override facoltativi quando il rilevamento automatico non basta.
+    - `--dry-run` - crea il piano esatto di pubblicazione senza caricare nulla.
+    - `--json` - emetti output leggibile da macchina per CI.
+    - `--source-repo`, `--source-commit`, `--source-ref` - override opzionali quando il rilevamento automatico non basta.
 
   </Accordion>
   <Accordion title="Richiedi nuove scansioni">
@@ -312,15 +314,15 @@ pubblicazione/sincronizzazione.
     clawhub package rescan <name> --yes --json
     ```
 
-    I comandi di nuova scansione richiedono un token proprietario con accesso effettuato e prendono di mira la versione
-    pubblicata più recente dello Skill o la release del Plugin. Nelle esecuzioni non interattive, passa
+    I comandi di nuova scansione richiedono un token proprietario autenticato e puntano all'ultima
+    versione della skill pubblicata o release del Plugin. Nelle esecuzioni non interattive, passa
     `--yes`.
 
-    Le risposte JSON includono tipo di target, nome, versione, stato della nuova scansione e
-    conteggi richieste rimanenti/massime per quella versione o release.
+    Le risposte JSON includono il tipo del target, nome, versione, stato della nuova scansione e
+    conteggi residui/massimi delle richieste per quella versione o release.
 
   </Accordion>
-  <Accordion title="Elimina / ripristina (proprietario o admin)">
+  <Accordion title="Elimina / ripristina (proprietario o amministratore)">
     ```bash
     clawhub delete <slug> --yes
     clawhub undelete <slug> --yes
@@ -333,53 +335,53 @@ pubblicazione/sincronizzazione.
 
     Opzioni:
 
-    - `--root <dir...>` — root di scansione extra.
-    - `--all` — carica tutto senza prompt.
-    - `--dry-run` — mostra cosa verrebbe caricato.
-    - `--bump <type>` — `patch|minor|major` per gli aggiornamenti (predefinito: `patch`).
-    - `--changelog <text>` — changelog per aggiornamenti non interattivi.
-    - `--tags <tags>` — tag separati da virgole (predefinito: `latest`).
-    - `--concurrency <n>` — controlli del registro (predefinito: `4`).
+    - `--root <dir...>` - radici di scansione aggiuntive.
+    - `--all` - carica tutto senza prompt.
+    - `--dry-run` - mostra cosa verrebbe caricato.
+    - `--bump <type>` - `patch|minor|major` per gli aggiornamenti (predefinito: `patch`).
+    - `--changelog <text>` - changelog per aggiornamenti non interattivi.
+    - `--tags <tags>` - tag separati da virgole (predefinito: `latest`).
+    - `--concurrency <n>` - controlli del registro (predefinito: `4`).
 
   </Accordion>
 </AccordionGroup>
 
-## Flussi comuni
+## Flussi di lavoro comuni
 
 <Tabs>
-  <Tab title="Search">
+  <Tab title="Cerca">
     ```bash
     clawhub search "postgres backups"
     ```
   </Tab>
-  <Tab title="Find a plugin">
+  <Tab title="Trova un plugin">
     ```bash
     clawhub package explore --family code-plugin
     clawhub package explore "memory" --family code-plugin
     clawhub package inspect episodic-claw
     ```
   </Tab>
-  <Tab title="Install">
+  <Tab title="Installa">
     ```bash
     clawhub install my-skill-pack
     ```
   </Tab>
-  <Tab title="Update all">
+  <Tab title="Aggiorna tutto">
     ```bash
     clawhub update --all
     ```
   </Tab>
-  <Tab title="Publish a single skill">
+  <Tab title="Pubblica una singola skill">
     ```bash
     clawhub skill publish ./my-skill --slug my-skill --name "My Skill" --version 1.0.0 --tags latest
     ```
   </Tab>
-  <Tab title="Sync many skills">
+  <Tab title="Sincronizza molte skill">
     ```bash
     clawhub sync --all
     ```
   </Tab>
-  <Tab title="Publish a plugin from GitHub">
+  <Tab title="Pubblica un plugin da GitHub">
     ```bash
     clawhub package publish your-org/your-plugin --dry-run
     clawhub package publish your-org/your-plugin
@@ -389,7 +391,7 @@ pubblicazione/sincronizzazione.
   </Tab>
 </Tabs>
 
-### Metadati del pacchetto Plugin
+### Metadati del pacchetto plugin
 
 I plugin di codice devono includere i metadati OpenClaw richiesti in
 `package.json`:
@@ -414,41 +416,41 @@ I plugin di codice devono includere i metadati OpenClaw richiesti in
 }
 ```
 
-I pacchetti pubblicati dovrebbero includere **JavaScript compilato** e puntare
-`runtimeExtensions` a tale output. Le installazioni da checkout Git possono comunque
-ripiegare sul sorgente TypeScript quando non esistono file compilati, ma le voci
-runtime compilate evitano la compilazione TypeScript a runtime nei percorsi di avvio, doctor e
+I pacchetti pubblicati devono includere **JavaScript compilato** e puntare
+`runtimeExtensions` a tale output. Le installazioni da checkout Git possono comunque ricorrere
+al sorgente TypeScript quando non esistono file compilati, ma le voci runtime
+compilate evitano la compilazione TypeScript a runtime nei percorsi di avvio, doctor e
 caricamento dei plugin.
 
 ## Versionamento, lockfile e telemetria
 
 <AccordionGroup>
-  <Accordion title="Versioning and tags">
+  <Accordion title="Versionamento e tag">
     - Ogni pubblicazione crea una nuova `SkillVersion` **semver**.
     - I tag (come `latest`) puntano a una versione; spostare i tag consente di eseguire il rollback.
-    - I changelog sono allegati per versione e possono essere vuoti durante la sincronizzazione o la pubblicazione di aggiornamenti.
+    - I changelog sono associati per versione e possono essere vuoti durante la sincronizzazione o la pubblicazione di aggiornamenti.
 
   </Accordion>
-  <Accordion title="Local changes vs registry versions">
-    Gli aggiornamenti confrontano i contenuti locali della skill con le versioni del registry usando un
-    hash del contenuto. Se i file locali non corrispondono ad alcuna versione pubblicata, la
+  <Accordion title="Modifiche locali rispetto alle versioni del registro">
+    Gli aggiornamenti confrontano i contenuti locali della skill con le versioni del registro usando un
+    hash del contenuto. Se i file locali non corrispondono a nessuna versione pubblicata, la
     CLI chiede conferma prima di sovrascrivere (o richiede `--force` nelle
     esecuzioni non interattive).
   </Accordion>
-  <Accordion title="Sync scanning and fallback roots">
-    `clawhub sync` analizza prima la workdir corrente. Se non vengono trovate skill,
+  <Accordion title="Scansione di sync e radici di fallback">
+    `clawhub sync` esamina prima la directory di lavoro corrente. Se non vengono trovate skill,
     ripiega sulle posizioni legacy note (per esempio
-    `~/openclaw/skills` e `~/.openclaw/skills`). Questo è progettato per
-    trovare installazioni di skill meno recenti senza flag aggiuntivi.
+    `~/openclaw/skills` e `~/.openclaw/skills`). Questo è pensato per
+    trovare installazioni di skill più vecchie senza flag aggiuntivi.
   </Accordion>
-  <Accordion title="Storage and lockfile">
-    - Le skill installate sono registrate in `.clawhub/lock.json` nella tua workdir.
-    - I token di autenticazione sono archiviati nel file di configurazione della CLI ClawHub (sovrascrivibile tramite `CLAWHUB_CONFIG_PATH`).
+  <Accordion title="Archiviazione e lockfile">
+    - Le skill installate sono registrate in `.clawhub/lock.json` sotto la tua directory di lavoro.
+    - I token di autenticazione sono archiviati nel file di configurazione della CLI di ClawHub (sovrascrivibile tramite `CLAWHUB_CONFIG_PATH`).
 
   </Accordion>
-  <Accordion title="Telemetry (install counts)">
-    Quando esegui `clawhub sync` dopo l'accesso, la CLI invia uno snapshot minimo
-    per calcolare i conteggi delle installazioni. Puoi disabilitarlo completamente:
+  <Accordion title="Telemetria (conteggi di installazione)">
+    Quando esegui `clawhub sync` dopo aver effettuato l'accesso, la CLI invia uno snapshot
+    minimo per calcolare i conteggi di installazione. Puoi disattivarlo completamente:
 
     ```bash
     export CLAWHUB_DISABLE_TELEMETRY=1
@@ -457,15 +459,15 @@ caricamento dei plugin.
   </Accordion>
 </AccordionGroup>
 
-## Variabili d'ambiente
+## Variabili di ambiente
 
 | Variabile                     | Effetto                                         |
 | ----------------------------- | ----------------------------------------------- |
-| `CLAWHUB_SITE`                | Sostituisce l'URL del sito.                     |
-| `CLAWHUB_REGISTRY`            | Sostituisce l'URL dell'API del registry.        |
-| `CLAWHUB_CONFIG_PATH`         | Sostituisce la posizione in cui la CLI archivia il token/config. |
-| `CLAWHUB_WORKDIR`             | Sostituisce la workdir predefinita.             |
-| `CLAWHUB_DISABLE_TELEMETRY=1` | Disabilita la telemetria su `sync`.             |
+| `CLAWHUB_SITE`                | Sovrascrive l'URL del sito.                     |
+| `CLAWHUB_REGISTRY`            | Sovrascrive l'URL dell'API del registro.        |
+| `CLAWHUB_CONFIG_PATH`         | Sovrascrive dove la CLI archivia il token/configurazione. |
+| `CLAWHUB_WORKDIR`             | Sovrascrive la directory di lavoro predefinita. |
+| `CLAWHUB_DISABLE_TELEMETRY=1` | Disattiva la telemetria su `sync`.              |
 
 ## Correlati
 

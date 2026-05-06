@@ -1,75 +1,76 @@
 ---
 read_when:
-    - Stai creando un'app esterna, uno script, una dashboard, un job CI o un'estensione IDE che comunica con OpenClaw
-    - Stai scegliendo tra l'App SDK e il Plugin SDK
-    - Stai integrando esecuzioni degli agenti del Gateway, sessioni, eventi, approvazioni, modelli o strumenti
+    - Stai creando un'app esterna, uno script, un pannello di controllo, un'attività di CI o un'estensione per IDE che comunica con OpenClaw
+    - Stai scegliendo tra l'SDK per app e il Plugin SDK
+    - Stai integrando esecuzioni di agenti Gateway, sessioni, eventi, approvazioni, modelli o strumenti
 sidebarTitle: App SDK
-summary: SDK pubblico dell'app OpenClaw per app esterne, script, dashboard, job CI ed estensioni IDE
+summary: SDK pubblico per app OpenClaw per app esterne, script, dashboard, job CI ed estensioni IDE
 title: SDK dell'app OpenClaw
 x-i18n:
-    generated_at: "2026-05-01T08:30:14Z"
+    generated_at: "2026-05-06T08:46:44Z"
     model: gpt-5.5
     provider: openai
-    source_hash: a6b22e9f4f809a572cfd19fd22f633a706dd23b8bee2f3c244003a0861a41073
+    source_hash: 23d161958e8b100bfc829319ef6bfd2ea2bf7c873ef29a0d4a849b064e5a3b66
     source_path: concepts/openclaw-sdk.md
     workflow: 16
 ---
 
-**OpenClaw App SDK** è l'API client pubblica per le app esterne al
-processo OpenClaw. Usa `@openclaw/sdk` quando uno script, una dashboard, un job CI, un'estensione IDE
-o un'altra app esterna vuole connettersi al Gateway, avviare esecuzioni degli agenti,
+The **OpenClaw App SDK** è l’API client pubblica per le app esterne al
+processo OpenClaw. Usa `@openclaw/sdk` quando uno script, una dashboard, un job CI, un’estensione IDE
+o un’altra app esterna vuole connettersi al Gateway, avviare esecuzioni di agenti,
 trasmettere eventi in streaming, attendere risultati, annullare lavoro o ispezionare
 risorse del Gateway.
 
 <Note>
-  L'App SDK è diverso dal [Plugin SDK](/it/plugins/sdk-overview).
-  `@openclaw/sdk` comunica con il Gateway dall'esterno di OpenClaw.
-  `openclaw/plugin-sdk/*` è solo per i plugins che vengono eseguiti dentro OpenClaw e
+  L’App SDK è diverso dal [Plugin SDK](/it/plugins/sdk-overview).
+  `@openclaw/sdk` comunica con il Gateway dall’esterno di OpenClaw.
+  `openclaw/plugin-sdk/*` è solo per Plugin che vengono eseguiti dentro OpenClaw e
   registrano provider, canali, strumenti, hook o runtime attendibili.
 </Note>
 
-## Cosa Viene Fornito Oggi
+## Cosa è incluso oggi
 
 `@openclaw/sdk` include:
 
-| Superficie                | Stato  | Cosa fa                                                                    |
-| ------------------------- | ------ | -------------------------------------------------------------------------- |
-| `OpenClaw`                | Pronto | Punto di ingresso principale del client. Gestisce trasporto, connessione, richieste ed eventi. |
-| `GatewayClientTransport`  | Pronto | Trasporto WebSocket basato sul client Gateway.                             |
-| `oc.agents`               | Pronto | Elenca, crea, aggiorna, elimina e ottiene handle degli agenti.             |
-| `Agent.run()`             | Pronto | Avvia un'esecuzione `agent` del Gateway e restituisce un `Run`.            |
-| `oc.runs`                 | Pronto | Crea, ottiene, attende, annulla e trasmette in streaming le esecuzioni.    |
-| `Run.events()`            | Pronto | Trasmette in streaming eventi normalizzati per esecuzione con replay per esecuzioni rapide. |
-| `Run.wait()`              | Pronto | Chiama `agent.wait` e restituisce un `RunResult` stabile.                  |
-| `Run.cancel()`            | Pronto | Chiama `sessions.abort` per ID esecuzione, con chiave di sessione quando disponibile. |
-| `oc.sessions`             | Pronto | Crea, risolve, invia a, applica patch, compatta e ottiene handle di sessione. |
-| `Session.send()`          | Pronto | Chiama `sessions.send` e restituisce un `Run`.                             |
-| `oc.models`               | Pronto | Chiama `models.list` e l'RPC di stato `models.authStatus` corrente.        |
-| `oc.tools`                | Pronto | Elenca, definisce ambiti e invoca strumenti del Gateway attraverso la pipeline di policy. |
-| `oc.artifacts`            | Pronto | Elenca, ottiene e scarica artefatti di trascrizione del Gateway.           |
-| `oc.approvals`            | Pronto | Elenca e risolve approvazioni exec tramite RPC di approvazione del Gateway. |
-| `oc.rawEvents()`          | Pronto | Espone eventi grezzi del Gateway per consumatori avanzati.                 |
-| `normalizeGatewayEvent()` | Pronto | Converte eventi grezzi del Gateway nella forma evento stabile dell'SDK.    |
+| Superficie                | Stato    | Cosa fa                                                                           |
+| ------------------------- | -------- | --------------------------------------------------------------------------------- |
+| `OpenClaw`                | Pronto   | Punto di ingresso principale del client. Gestisce trasporto, connessione, richieste ed eventi. |
+| `GatewayClientTransport`  | Pronto   | Trasporto WebSocket basato sul client del Gateway.                                |
+| `oc.agents`               | Pronto   | Elenca, crea, aggiorna, elimina e ottiene handle degli agenti.                    |
+| `Agent.run()`             | Pronto   | Avvia un’esecuzione Gateway `agent` e restituisce un `Run`.                       |
+| `oc.runs`                 | Pronto   | Crea, ottiene, attende, annulla e trasmette in streaming le esecuzioni.           |
+| `Run.events()`            | Pronto   | Trasmette in streaming eventi normalizzati per esecuzione con replay per esecuzioni rapide. |
+| `Run.wait()`              | Pronto   | Chiama `agent.wait` e restituisce un `RunResult` stabile.                         |
+| `Run.cancel()`            | Pronto   | Chiama `sessions.abort` tramite id dell’esecuzione, con chiave di sessione quando disponibile. |
+| `oc.sessions`             | Pronto   | Crea, risolve, invia a, applica patch, compatta e ottiene handle di sessione.     |
+| `Session.send()`          | Pronto   | Chiama `sessions.send` e restituisce un `Run`.                                    |
+| `oc.models`               | Pronto   | Chiama `models.list` e l’attuale RPC di stato `models.authStatus`.                |
+| `oc.tools`                | Pronto   | Elenca, definisce gli ambiti e invoca strumenti del Gateway tramite la pipeline di policy. |
+| `oc.artifacts`            | Pronto   | Elenca, ottiene e scarica artefatti di trascrizione del Gateway.                  |
+| `oc.approvals`            | Pronto   | Elenca e risolve approvazioni exec tramite le RPC di approvazione del Gateway.    |
+| `oc.environments`         | Parziale | Elenca candidati di ambiente locali del Gateway e del nodo; creazione/eliminazione non sono collegate. |
+| `oc.rawEvents()`          | Pronto   | Espone eventi grezzi del Gateway per consumatori avanzati.                        |
+| `normalizeGatewayEvent()` | Pronto   | Converte eventi grezzi del Gateway nella forma evento stabile dell’SDK.           |
 
-L'SDK esporta anche i tipi principali usati da queste superfici:
+L’SDK esporta anche i tipi principali usati da queste superfici:
 `AgentRunParams`, `RunResult`, `RunStatus`, `OpenClawEvent`,
 `OpenClawEventType`, `GatewayEvent`, `OpenClawTransport`,
 `GatewayRequestOptions`, `SessionCreateParams`, `SessionSendParams`,
 `ArtifactSummary`, `ArtifactQuery`, `ArtifactsListResult`,
 `ArtifactsGetResult`, `ArtifactsDownloadResult`, `RuntimeSelection`,
-`EnvironmentSelection`, `WorkspaceSelection`, `ApprovalMode` e tipi di
-risultato correlati.
+`EnvironmentSelection`, `WorkspaceSelection`, `ApprovalMode` e i relativi
+tipi di risultato.
 
-## Connettersi A Un Gateway
+## Connettersi a un Gateway
 
-Crea un client con un URL Gateway esplicito oppure inietta un trasporto personalizzato per
-test e runtime di app incorporate.
+Crea un client con un URL Gateway esplicito, oppure inietta un trasporto personalizzato per
+test e runtime di app incorporati.
 
 ```typescript
 import { OpenClaw } from "@openclaw/sdk";
 
 const oc = new OpenClaw({
-  url: "ws://127.0.0.1:14565",
+  url: "ws://127.0.0.1:18789",
   token: process.env.OPENCLAW_GATEWAY_TOKEN,
   requestTimeoutMs: 30_000,
 });
@@ -77,9 +78,9 @@ const oc = new OpenClaw({
 await oc.connect();
 ```
 
-`new OpenClaw({ gateway: "ws://..." })` è equivalente a `url`. L'opzione
+`new OpenClaw({ gateway: "ws://..." })` è equivalente a `url`. L’opzione
 `gateway: "auto"` è accettata dal costruttore, ma la scoperta automatica del Gateway
-non è ancora una funzionalità SDK separata; passa `url` quando l'app non sa già
+non è ancora una funzionalità separata dell’SDK; passa `url` quando l’app non sa già
 come scoprire il Gateway.
 
 Per i test, passa un oggetto che implementa `OpenClawTransport`:
@@ -95,9 +96,9 @@ const oc = new OpenClaw({
 });
 ```
 
-## Eseguire Un Agente
+## Eseguire un agente
 
-Usa `oc.agents.get(id)` quando l'app vuole un handle di agente, poi chiama
+Usa `oc.agents.get(id)` quando l’app vuole un handle di agente, poi chiama
 `agent.run()`.
 
 ```typescript
@@ -121,18 +122,18 @@ const result = await run.wait({ timeoutMs: 120_000 });
 console.log(result.status);
 ```
 
-I riferimenti a modelli qualificati per provider come `openai/gpt-5.5` vengono suddivisi in override
-`provider` e `model` del Gateway. `timeoutMs` resta in millisecondi nell'SDK e
-viene convertito in secondi di timeout del Gateway per l'RPC `agent`.
+I riferimenti di modello qualificati per provider, come `openai/gpt-5.5`, vengono divisi in override Gateway
+`provider` e `model`. `timeoutMs` resta in millisecondi nell’SDK e
+viene convertito in secondi di timeout Gateway per la RPC `agent`.
 
-`run.wait()` usa l'RPC `agent.wait` del Gateway. Una scadenza di attesa che termina
-mentre l'esecuzione è ancora attiva restituisce `status: "accepted"` invece di fingere
-che l'esecuzione stessa sia andata in timeout. Timeout di runtime, esecuzioni interrotte ed esecuzioni annullate sono
+`run.wait()` usa la RPC Gateway `agent.wait`. Una scadenza di attesa che termina
+mentre l’esecuzione è ancora attiva restituisce `status: "accepted"` invece di fingere
+che l’esecuzione stessa sia scaduta. Timeout del runtime, esecuzioni interrotte ed esecuzioni annullate sono
 normalizzati in `timed_out` o `cancelled`.
 
-## Creare E Riutilizzare Sessioni
+## Creare e riutilizzare sessioni
 
-Usa le sessioni quando l'app vuole uno stato di trascrizione durevole.
+Usa le sessioni quando l’app vuole uno stato di trascrizione durevole.
 
 ```typescript
 const session = await oc.sessions.create({
@@ -144,8 +145,7 @@ const run = await session.send("Prepare release notes from the current diff.");
 await run.wait();
 ```
 
-`Session.send()` chiama `sessions.send` e restituisce un `Run`. Gli handle di sessione
-supportano anche:
+`Session.send()` chiama `sessions.send` e restituisce un `Run`. Gli handle di sessione supportano anche:
 
 ```typescript
 await session.abort(run.id);
@@ -153,9 +153,9 @@ await session.patch({ label: "renamed-session" });
 await session.compact({ maxLines: 200 });
 ```
 
-## Trasmettere Eventi In Streaming
+## Trasmettere eventi in streaming
 
-L'SDK normalizza gli eventi grezzi del Gateway in un envelope `OpenClawEvent` stabile:
+L’SDK normalizza gli eventi grezzi del Gateway in una busta `OpenClawEvent` stabile:
 
 ```typescript
 type OpenClawEvent = {
@@ -175,30 +175,30 @@ type OpenClawEvent = {
 
 I tipi di evento comuni includono:
 
-| Tipo di evento        | Evento Gateway sorgente                      |
+| Tipo di evento        | Evento Gateway di origine                  |
 | --------------------- | ------------------------------------------- |
-| `run.started`         | Avvio ciclo di vita `agent`                 |
-| `run.completed`       | Fine ciclo di vita `agent`                  |
-| `run.failed`          | Errore ciclo di vita `agent`                |
-| `run.cancelled`       | Fine ciclo di vita interrotto/annullato     |
-| `run.timed_out`       | Fine ciclo di vita per timeout              |
-| `assistant.delta`     | Delta di streaming dell'assistente          |
-| `assistant.message`   | Messaggio dell'assistente                   |
-| `thinking.delta`      | Flusso di pensiero o piano                  |
-| `tool.call.started`   | Avvio strumento/elemento/comando            |
-| `tool.call.delta`     | Aggiornamento strumento/elemento/comando    |
-| `tool.call.completed` | Completamento strumento/elemento/comando    |
+| `run.started`         | Avvio del ciclo di vita `agent`             |
+| `run.completed`       | Fine del ciclo di vita `agent`              |
+| `run.failed`          | Errore del ciclo di vita `agent`            |
+| `run.cancelled`       | Fine del ciclo di vita interrotta/annullata |
+| `run.timed_out`       | Fine del ciclo di vita per timeout          |
+| `assistant.delta`     | Delta di streaming dell’assistente          |
+| `assistant.message`   | Messaggio dell’assistente                   |
+| `thinking.delta`      | Flusso di ragionamento o piano              |
+| `tool.call.started`   | Avvio di strumento/elemento/comando         |
+| `tool.call.delta`     | Aggiornamento di strumento/elemento/comando |
+| `tool.call.completed` | Completamento di strumento/elemento/comando |
 | `tool.call.failed`    | Errore o stato bloccato di strumento/elemento/comando |
-| `approval.requested`  | Richiesta di approvazione exec o plugin     |
-| `approval.resolved`   | Risoluzione di approvazione exec o plugin   |
+| `approval.requested`  | Richiesta di approvazione exec o Plugin     |
+| `approval.resolved`   | Risoluzione di approvazione exec o Plugin   |
 | `session.created`     | Creazione `sessions.changed`                |
 | `session.updated`     | Aggiornamento `sessions.changed`            |
 | `session.compacted`   | Compaction `sessions.changed`               |
-| `task.updated`        | Eventi di aggiornamento attività            |
+| `task.updated`        | Eventi di aggiornamento task                |
 | `artifact.updated`    | Eventi del flusso patch                     |
 | `raw`                 | Qualsiasi evento senza ancora una mappatura SDK stabile |
 
-`Run.events()` filtra gli eventi su un ID esecuzione e riproduce gli eventi già visti per
+`Run.events()` filtra gli eventi su un solo id di esecuzione e riproduce gli eventi già visti per
 esecuzioni rapide. Questo significa che il flusso documentato è sicuro:
 
 ```typescript
@@ -211,21 +211,21 @@ for await (const event of run.events()) {
 }
 ```
 
-Per flussi a livello di app, usa `oc.events()`. Per frame Gateway grezzi, usa
+Per flussi a livello di app, usa `oc.events()`. Per frame grezzi del Gateway, usa
 `oc.rawEvents()`.
 
-## Modelli, Strumenti, Artefatti E Approvazioni
+## Modelli, strumenti, artefatti e approvazioni
 
-Gli helper dei modelli mappano ai metodi Gateway correnti:
+Gli helper dei modelli corrispondono ai metodi Gateway attuali:
 
 ```typescript
 await oc.models.list();
 await oc.models.status({ probe: false }); // calls models.authStatus
 ```
 
-Gli helper degli strumenti espongono il catalogo Gateway, la vista strumenti effettiva e l'invocazione diretta
-di strumenti Gateway. `oc.tools.invoke()` restituisce un envelope tipizzato invece
-di generare eccezioni per rifiuti di policy o approvazione.
+Gli helper degli strumenti espongono il catalogo Gateway, la vista effettiva degli strumenti e l’invocazione diretta
+degli strumenti Gateway. `oc.tools.invoke()` restituisce una busta tipizzata invece
+di generare eccezioni per rifiuti dovuti a policy o approvazione.
 
 ```typescript
 await oc.tools.list();
@@ -238,8 +238,8 @@ await oc.tools.invoke("tool-name", {
 });
 ```
 
-Gli helper degli artefatti espongono la proiezione artefatti del Gateway per il contesto di sessione, esecuzione o
-attività. Ogni chiamata richiede un ambito esplicito `sessionKey`, `runId` o
+Gli helper degli artefatti espongono la proiezione degli artefatti del Gateway per il contesto di sessione, esecuzione o
+task. Ogni chiamata richiede un ambito esplicito `sessionKey`, `runId` o
 `taskId`:
 
 ```typescript
@@ -260,58 +260,63 @@ const approvals = await oc.approvals.list();
 await oc.approvals.respond("approval-id", { decision: "approve" });
 ```
 
-## Esplicitamente Non Supportato Oggi
+Gli helper degli ambienti espongono la scoperta in sola lettura locale del Gateway e del nodo:
 
-L'SDK include nomi per il modello di prodotto che vogliamo, ma non finge silenziosamente
-che le RPC Gateway esistano. Queste chiamate attualmente generano errori espliciti di funzionalità
-non supportata:
+```typescript
+const { environments } = await oc.environments.list();
+await oc.environments.status(environments[0].id);
+```
+
+## Esplicitamente non supportato oggi
+
+L’SDK include nomi per il modello di prodotto desiderato, ma non finge silenziosamente
+che esistano RPC Gateway. Queste chiamate attualmente generano errori espliciti
+di funzionalità non supportata:
 
 ```typescript
 await oc.tasks.list();
 await oc.tasks.get("task-id");
 await oc.tasks.cancel("task-id");
 
-await oc.environments.list();
 await oc.environments.create({});
-await oc.environments.status("environment-id");
 await oc.environments.delete("environment-id");
 ```
 
 I campi per esecuzione `workspace`, `runtime`, `environment` e `approvals` sono tipizzati
-come forma futura, ma il Gateway corrente non supporta questi override
-sull'RPC `agent`. Se i chiamanti li passano, l'SDK genera un errore prima di inviare l'esecuzione,
-così il lavoro non viene eseguito accidentalmente con il comportamento predefinito di workspace, runtime,
+come forma futura, ma il Gateway attuale non supporta questi override sulla
+RPC `agent`. Se i chiamanti li passano, l’SDK genera un errore prima di inviare l’esecuzione,
+così il lavoro non viene eseguito accidentalmente con comportamento predefinito di workspace, runtime,
 ambiente o approvazione.
 
-## App SDK Rispetto A Plugin SDK
+## App SDK rispetto a Plugin SDK
 
-Usa l'App SDK quando il codice vive fuori da OpenClaw:
+Usa l’App SDK quando il codice vive fuori da OpenClaw:
 
 - script Node che avviano o osservano esecuzioni di agenti
 - job CI che chiamano un Gateway
 - dashboard e pannelli di amministrazione
 - estensioni IDE
-- bridge esterni che non devono diventare plugins di canale
+- bridge esterni che non devono diventare Plugin di canale
 - test di integrazione con trasporti Gateway finti o reali
 
 Usa il Plugin SDK quando il codice viene eseguito dentro OpenClaw:
 
-- plugins provider
-- plugins di canale
+- Plugin provider
+- Plugin di canale
 - hook di strumenti o ciclo di vita
-- plugins di harness per agenti
+- Plugin di harness per agenti
 - helper di runtime attendibili
 
-Il codice App SDK deve importare da `@openclaw/sdk`. Il codice Plugin deve importare dai
+Il codice App SDK dovrebbe importare da `@openclaw/sdk`. Il codice Plugin dovrebbe importare dai
 sottopercorsi documentati `openclaw/plugin-sdk/*`. Non mescolare i due contratti.
 
-## Documentazione Correlata
+## Correlati
 
-- [Progettazione dell'API OpenClaw App SDK](/it/reference/openclaw-sdk-api-design)
-- [Riferimento RPC Gateway](/it/reference/rpc)
-- [Ciclo dell'agente](/it/concepts/agent-loop)
+- [Progettazione API dell’OpenClaw App SDK](/it/reference/openclaw-sdk-api-design)
+- [Riferimento RPC del Gateway](/it/reference/rpc)
+- [Loop dell’agente](/it/concepts/agent-loop)
 - [Runtime degli agenti](/it/concepts/agent-runtimes)
 - [Sessioni](/it/concepts/session)
-- [Attività in background](/it/automation/tasks)
+- [Task in background](/it/automation/tasks)
 - [Agenti ACP](/it/tools/acp-agents)
 - [Panoramica del Plugin SDK](/it/plugins/sdk-overview)

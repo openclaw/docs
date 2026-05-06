@@ -1,79 +1,79 @@
 ---
 read_when:
-    - Stai modificando la formattazione Markdown o il chunking per i canali in uscita
-    - Stai aggiungendo un nuovo formatter di canale o una nuova mappatura di stile
-    - Stai eseguendo il debug di regressioni di formattazione tra canali diversi
+    - Stai modificando la formattazione Markdown o la suddivisione in blocchi per i canali in uscita
+    - Stai aggiungendo un nuovo formattatore di canale o una mappatura di stile
+    - Stai eseguendo il debug delle regressioni di formattazione nei vari canali
 summary: Pipeline di formattazione Markdown per i canali in uscita
 title: Formattazione Markdown
 x-i18n:
-    generated_at: "2026-04-24T08:36:37Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T08:45:33Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: cf052e11fe9fd075a4337ffa555391c7003a346240b57bb65054c3f08401dfd9
+    source_hash: e9dcc75cec0462d610f2b5bbd258a2686b15eeb4b9d369ee4d7727571da7edcc
     source_path: concepts/markdown-formatting.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw formatta il Markdown in uscita convertendolo in una rappresentazione
-intermedia (IR) condivisa prima di renderizzare l'output specifico del canale. L'IR mantiene
-intatto il testo sorgente mentre trasporta span di stile/link, così chunking e rendering possono
-restare coerenti tra i vari canali.
+OpenClaw formatta il Markdown in uscita convertendolo in una rappresentazione intermedia
+condivisa (IR) prima di generare l'output specifico per canale. L'IR mantiene
+intatto il testo sorgente mentre trasporta intervalli di stile/link, così la suddivisione in blocchi e il rendering possono
+restare coerenti tra i canali.
 
 ## Obiettivi
 
 - **Coerenza:** un unico passaggio di parsing, più renderer.
-- **Chunking sicuro:** dividere il testo prima del rendering in modo che la formattazione inline non
-  si rompa tra i chunk.
-- **Adattamento al canale:** mappare la stessa IR in Slack mrkdwn, HTML Telegram e
-  intervalli di stile Signal senza riparsare il Markdown.
+- **Suddivisione sicura in blocchi:** suddivide il testo prima del rendering in modo che la formattazione inline non si
+  interrompa mai tra i blocchi.
+- **Adattamento al canale:** mappa la stessa IR su mrkdwn di Slack, HTML di Telegram e intervalli di
+  stile di Signal senza ripetere il parsing del Markdown.
 
 ## Pipeline
 
-1. **Parse Markdown -> IR**
-   - L'IR è testo semplice più span di stile (grassetto/corsivo/barrato/codice/spoiler) e span di link.
-   - Gli offset sono unità di codice UTF-16 così gli intervalli di stile Signal si allineano con la sua API.
-   - Le tabelle vengono analizzate solo quando un canale attiva la conversione delle tabelle.
-2. **Chunk IR (prima il formato)**
-   - Il chunking avviene sul testo IR prima del rendering.
-   - La formattazione inline non si divide tra i chunk; gli span vengono ritagliati per chunk.
-3. **Render per canale**
+1. **Parsing Markdown -> IR**
+   - L'IR è testo semplice più intervalli di stile (grassetto/corsivo/barrato/codice/spoiler) e intervalli di link.
+   - Gli offset sono unità di codice UTF-16, così gli intervalli di stile di Signal si allineano con la sua API.
+   - Le tabelle vengono analizzate solo quando un canale abilita la conversione delle tabelle.
+2. **Suddivisione IR in blocchi (prima il formato)**
+   - La suddivisione avviene sul testo dell'IR prima del rendering.
+   - La formattazione inline non viene divisa tra blocchi; gli intervalli vengono sezionati per ciascun blocco.
+3. **Rendering per canale**
    - **Slack:** token mrkdwn (grassetto/corsivo/barrato/codice), link come `<url|label>`.
    - **Telegram:** tag HTML (`<b>`, `<i>`, `<s>`, `<code>`, `<pre><code>`, `<a href>`).
-   - **Signal:** testo semplice + intervalli `text-style`; i link diventano `label (url)` quando la label differisce.
+   - **Signal:** testo semplice + intervalli `text-style`; i link diventano `label (url)` quando l'etichetta è diversa.
 
-## Esempio IR
+## Esempio di IR
 
-Input Markdown:
+Markdown di input:
 
 ```markdown
-Hello **world** — see [docs](https://docs.openclaw.ai).
+Hello **world** - see [docs](https://docs.openclaw.ai).
 ```
 
-IR (schematico):
+IR (schematica):
 
 ```json
 {
-  "text": "Hello world — see docs.",
+  "text": "Hello world - see docs.",
   "styles": [{ "start": 6, "end": 11, "style": "bold" }],
   "links": [{ "start": 19, "end": 23, "href": "https://docs.openclaw.ai" }]
 }
 ```
 
-## Dove viene usato
+## Dove viene usata
 
 - Gli adattatori in uscita di Slack, Telegram e Signal eseguono il rendering dall'IR.
 - Altri canali (WhatsApp, iMessage, Microsoft Teams, Discord) usano ancora testo semplice o
-  proprie regole di formattazione, con la conversione delle tabelle Markdown applicata prima del
-  chunking quando abilitata.
+  le proprie regole di formattazione, con la conversione delle tabelle Markdown applicata prima della
+  suddivisione in blocchi quando è abilitata.
 
 ## Gestione delle tabelle
 
 Le tabelle Markdown non sono supportate in modo coerente tra i client di chat. Usa
 `markdown.tables` per controllare la conversione per canale (e per account).
 
-- `code`: renderizza le tabelle come blocchi di codice (predefinito per la maggior parte dei canali).
+- `code`: esegue il rendering delle tabelle come blocchi di codice (predefinito per la maggior parte dei canali).
 - `bullets`: converte ogni riga in punti elenco (predefinito per Signal + WhatsApp).
-- `off`: disattiva parsing e conversione delle tabelle; il testo grezzo della tabella passa invariato.
+- `off`: disabilita il parsing e la conversione delle tabelle; il testo grezzo della tabella passa invariato.
 
 Chiavi di configurazione:
 
@@ -88,53 +88,59 @@ channels:
           tables: off
 ```
 
-## Regole di chunking
+## Regole di suddivisione in blocchi
 
-- I limiti dei chunk provengono dagli adattatori/configurazione del canale e vengono applicati al testo IR.
-- Le recinzioni di codice vengono preservate come un singolo blocco con un newline finale così i canali
-  le renderizzano correttamente.
-- I prefissi degli elenchi e delle citazioni fanno parte del testo IR, quindi il chunking
-  non divide a metà prefisso.
-- Gli stili inline (grassetto/corsivo/barrato/codice inline/spoiler) non vengono mai divisi tra
-  i chunk; il renderer riapre gli stili all'interno di ogni chunk.
+- I limiti dei blocchi provengono dagli adattatori/configurazione del canale e vengono applicati al testo dell'IR.
+- I code fence vengono preservati come un unico blocco con una nuova riga finale, così i canali
+  li rendono correttamente.
+- I prefissi degli elenchi e delle citazioni a blocco fanno parte del testo dell'IR, quindi la suddivisione
+  non avviene a metà prefisso.
+- Gli stili inline (grassetto/corsivo/barrato/codice-inline/spoiler) non vengono mai divisi tra
+  blocchi; il renderer riapre gli stili dentro ciascun blocco.
 
-Se ti serve altro sul comportamento del chunking tra i canali, vedi
-[Streaming + chunking](/it/concepts/streaming).
+Se ti servono più dettagli sul comportamento della suddivisione in blocchi tra i canali, vedi
+[Streaming + suddivisione in blocchi](/it/concepts/streaming).
 
-## Criterio dei link
+## Criteri per i link
 
-- **Slack:** `[label](url)` -> `<url|label>`; gli URL semplici restano semplici. L'autolink
-  è disattivato durante il parsing per evitare doppio collegamento.
-- **Telegram:** `[label](url)` -> `<a href="url">label</a>` (modalità parse HTML).
-- **Signal:** `[label](url)` -> `label (url)` a meno che la label non corrisponda all'URL.
+- **Slack:** `[label](url)` -> `<url|label>`; gli URL semplici restano semplici. Il collegamento automatico
+  è disabilitato durante il parsing per evitare collegamenti doppi.
+- **Telegram:** `[label](url)` -> `<a href="url">label</a>` (modalità di parsing HTML).
+- **Signal:** `[label](url)` -> `label (url)` a meno che l'etichetta non corrisponda all'URL.
 
 ## Spoiler
 
-I marcatori spoiler (`||spoiler||`) vengono analizzati solo per Signal, dove vengono mappati in
+I marcatori spoiler (`||spoiler||`) vengono analizzati solo per Signal, dove sono mappati a
 intervalli di stile SPOILER. Gli altri canali li trattano come testo semplice.
 
 ## Come aggiungere o aggiornare un formatter di canale
 
-1. **Analizza una sola volta:** usa l'helper condiviso `markdownToIR(...)` con opzioni
-   appropriate per il canale (autolink, stile dei titoli, prefisso blockquote).
-2. **Renderizza:** implementa un renderer con `renderMarkdownWithMarkers(...)` e una
-   mappa dei marcatori di stile (o intervalli di stile Signal).
-3. **Chunk:** chiama `chunkMarkdownIR(...)` prima del rendering; renderizza ogni chunk.
-4. **Collega l'adattatore:** aggiorna l'adattatore in uscita del canale per usare il nuovo chunker
-   e renderer.
-5. **Testa:** aggiungi o aggiorna test di formattazione e un test di consegna in uscita se il
-   canale usa il chunking.
+1. **Parsing una sola volta:** usa l'helper condiviso `markdownToIR(...)` con opzioni appropriate per il canale
+   (collegamento automatico, stile delle intestazioni, prefisso delle citazioni a blocco).
+2. **Rendering:** implementa un renderer con `renderMarkdownWithMarkers(...)` e una
+   mappa dei marcatori di stile (o intervalli di stile di Signal).
+3. **Suddivisione in blocchi:** chiama `chunkMarkdownIR(...)` prima del rendering; esegui il rendering di ciascun blocco.
+4. **Collegamento dell'adattatore:** aggiorna l'adattatore in uscita del canale per usare il nuovo suddivisore in blocchi
+   e il renderer.
+5. **Test:** aggiungi o aggiorna i test di formato e un test di consegna in uscita se il
+   canale usa la suddivisione in blocchi.
 
 ## Problemi comuni
 
-- I token tra parentesi angolari di Slack (`<@U123>`, `<#C123>`, `<https://...>`) devono essere
-  preservati; esegui l'escape sicuro dell'HTML grezzo.
+- I token di Slack tra parentesi angolari (`<@U123>`, `<#C123>`, `<https://...>`) devono essere
+  preservati; esegui l'escape dell'HTML grezzo in modo sicuro.
 - L'HTML di Telegram richiede l'escape del testo fuori dai tag per evitare markup non valido.
-- Gli intervalli di stile di Signal dipendono dagli offset UTF-16; non usare offset per code point.
-- Preserva i newline finali per i blocchi di codice delimitati, così i marcatori di chiusura finiscono
-  sulla propria riga.
+- Gli intervalli di stile di Signal dipendono dagli offset UTF-16; non usare offset basati su punti di codice.
+- Preserva le nuove righe finali per i blocchi di codice delimitati, così i marcatori di chiusura finiscono sulla
+  propria riga.
 
 ## Correlati
 
-- [Streaming e chunking](/it/concepts/streaming)
-- [System prompt](/it/concepts/system-prompt)
+<CardGroup cols={2}>
+  <Card title="Streaming e suddivisione in blocchi" href="/it/concepts/streaming" icon="bars-staggered">
+    Comportamento dello streaming in uscita, confini dei blocchi e consegna specifica per canale.
+  </Card>
+  <Card title="Prompt di sistema" href="/it/concepts/system-prompt" icon="message-lines">
+    Ciò che il modello vede prima della conversazione, inclusi i file dell'area di lavoro iniettati.
+  </Card>
+</CardGroup>

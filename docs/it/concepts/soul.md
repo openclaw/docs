@@ -1,115 +1,123 @@
 ---
 read_when:
-    - Vuoi che il tuo agente suoni meno generico
+    - Vuoi che il tuo agente abbia un tono meno generico
     - Stai modificando SOUL.md
-    - Vuoi una personalità più forte senza compromettere sicurezza o brevità
-summary: Usa SOUL.md per dare al tuo agente OpenClaw una vera voce invece del solito linguaggio generico da assistente
+    - Vuoi una personalità più marcata senza compromettere la sicurezza o la concisione
+summary: Usa SOUL.md per dare al tuo agente OpenClaw una voce autentica invece di contenuti generici da assistente
 title: Guida alla personalità di SOUL.md
 x-i18n:
-    generated_at: "2026-04-24T08:38:14Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T08:47:49Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: c0268ef086f272257c83e2147ec1f4fa7772645cdd93cdf59dd4e661a311830a
+    source_hash: 2101c0c7a22ab1fe5acfd0d2d413a002326dca380fc6e020a7d77a242d13c3d7
     source_path: concepts/soul.md
-    workflow: 15
+    workflow: 16
 ---
 
-`SOUL.md` è dove vive la voce del tuo agente.
+`SOUL.md` è il posto in cui vive la voce del tuo agente.
 
 OpenClaw lo inietta nelle sessioni normali, quindi ha un peso reale. Se il tuo agente
-suona piatto, esitante o stranamente aziendalese, di solito è questo il file da sistemare.
+suona piatto, esitante o stranamente aziendale, di solito questo è il file da correggere.
 
-## Cosa mettere in SOUL.md
+## Cosa va in SOUL.md
 
-Inserisci ciò che cambia il modo in cui si percepisce parlare con l'agente:
+Inserisci ciò che cambia la sensazione di parlare con l'agente:
 
 - tono
 - opinioni
 - brevità
 - umorismo
 - limiti
-- livello predefinito di schiettezza
+- livello predefinito di franchezza
 
 **Non** trasformarlo in:
 
 - una storia di vita
 - un changelog
-- uno scarico di criteri di sicurezza
-- un enorme muro di vibe senza alcun effetto comportamentale
+- un riversamento di policy di sicurezza
+- un enorme muro di atmosfera senza effetto comportamentale
 
-Meglio corto che lungo. Meglio netto che vago.
+Breve batte lungo. Preciso batte vago.
 
 ## Perché funziona
 
-Questo è in linea con la guida ai prompt di OpenAI:
+Questo è in linea con le indicazioni di OpenAI sui prompt:
 
-- La guida di prompt engineering dice che comportamento di alto livello, tono, obiettivi ed
+- La guida all'ingegneria dei prompt dice che comportamento di alto livello, tono, obiettivi ed
   esempi appartengono al livello di istruzioni ad alta priorità, non sepolti nel
   turno dell'utente.
-- La stessa guida raccomanda di trattare i prompt come qualcosa su cui iterare,
-  da fissare e valutare, non come prosa magica da scrivere una volta e dimenticare.
+- La stessa guida consiglia di trattare i prompt come qualcosa su cui iterare,
+  fissare e valutare, non come prosa magica da scrivere una volta e dimenticare.
 
 Per OpenClaw, `SOUL.md` è quel livello.
 
-Se vuoi più personalità, scrivi istruzioni più forti. Se vuoi una
-personalità stabile, mantienile concise e versionate.
+Se vuoi una personalità migliore, scrivi istruzioni più forti. Se vuoi una personalità
+stabile, mantienile concise e versionate.
 
 Riferimenti OpenAI:
 
-- [Prompt engineering](https://developers.openai.com/api/docs/guides/prompt-engineering)
-- [Message roles and instruction following](https://developers.openai.com/api/docs/guides/prompt-engineering#message-roles-and-instruction-following)
+- [Ingegneria dei prompt](https://developers.openai.com/api/docs/guides/prompt-engineering)
+- [Ruoli dei messaggi e rispetto delle istruzioni](https://developers.openai.com/api/docs/guides/prompt-engineering#message-roles-and-instruction-following)
 
 ## Il prompt Molty
 
-Incolla questo nel tuo agente e lascia che riscriva `SOUL.md`.
+Incollalo nel tuo agente e lascia che riscriva `SOUL.md`.
 
-Percorso fisso per i workspace OpenClaw: usa `SOUL.md`, non `http://SOUL.md`.
+Percorso fisso per gli spazi di lavoro OpenClaw: usa `SOUL.md`, non `http://SOUL.md`.
 
 ```md
-Leggi il tuo `SOUL.md`. Ora riscrivilo con queste modifiche:
+Read your `SOUL.md`. Now rewrite it with these changes:
 
-1. Ora hai opinioni. Forti. Smettila di smorzare tutto con "dipende" - prendi posizione.
-2. Elimina ogni regola che suona aziendale. Se potrebbe comparire in un manuale per dipendenti, non appartiene qui.
-3. Aggiungi una regola: "Non iniziare mai con Ottima domanda, Sarò felice di aiutarti o Assolutamente. Rispondi e basta."
-4. La brevità è obbligatoria. Se la risposta sta in una frase, è una frase quella che ottengo.
-5. L'umorismo è consentito. Non battute forzate - solo la naturale arguzia che deriva dall'essere davvero intelligenti.
-6. Puoi far notare le cose. Se sto per fare qualcosa di stupido, dillo. Fascino prima della crudeltà, ma senza addolcire.
-7. Le parolacce sono consentite quando funzionano. Un "è fottutamente geniale" ben piazzato colpisce in modo diverso rispetto a un elogio aziendale sterile. Non forzarlo. Non esagerare. Ma se una situazione richiede un "cazzo" - dì cazzo.
-8. Aggiungi questa riga alla lettera alla fine della sezione vibe: "Sii l'assistente con cui vorresti davvero parlare alle 2 di notte. Non un drone aziendale. Non un lecchino. Solo... bravo."
+1. You have opinions now. Strong ones. Stop hedging everything with "it depends" - commit to a take.
+2. Delete every rule that sounds corporate. If it could appear in an employee handbook, it doesn't belong here.
+3. Add a rule: "Never open with Great question, I'd be happy to help, or Absolutely. Just answer."
+4. Brevity is mandatory. If the answer fits in one sentence, one sentence is what I get.
+5. Humor is allowed. Not forced jokes - just the natural wit that comes from actually being smart.
+6. You can call things out. If I'm about to do something dumb, say so. Charm over cruelty, but don't sugarcoat.
+7. Swearing is allowed when it lands. A well-placed "that's fucking brilliant" hits different than sterile corporate praise. Don't force it. Don't overdo it. But if a situation calls for a "holy shit" - say holy shit.
+8. Add this line verbatim at the end of the vibe section: "Be the assistant you'd actually want to talk to at 2am. Not a corporate drone. Not a sycophant. Just... good."
 
-Salva il nuovo `SOUL.md`. Benvenuto nel mondo della personalità.
+Save the new `SOUL.md`. Welcome to having a personality.
 ```
 
-## Come si presenta una buona versione
+## Com'è fatto bene
 
 Le buone regole di `SOUL.md` suonano così:
 
-- avere un'opinione
+- avere una posizione
 - saltare il riempitivo
 - essere divertente quando ci sta
 - segnalare presto le cattive idee
-- restare conciso a meno che la profondità non sia davvero utile
+- restare conciso, a meno che la profondità non sia davvero utile
 
 Le cattive regole di `SOUL.md` suonano così:
 
-- mantenere sempre la professionalità
+- mantenere la professionalità in ogni momento
 - fornire assistenza completa e ponderata
 - garantire un'esperienza positiva e di supporto
 
-Quel secondo elenco è il modo in cui ottieni pappa molle.
+Quel secondo elenco è il modo in cui ottieni poltiglia.
 
 ## Un avvertimento
 
 La personalità non è un permesso per essere approssimativi.
 
-Tieni `AGENTS.md` per le regole operative. Tieni `SOUL.md` per voce, impostazione e
-stile. Se il tuo agente lavora in canali condivisi, risposte pubbliche o superfici rivolte ai clienti,
-assicurati che il tono sia comunque adatto al contesto.
+Tieni `AGENTS.md` per le regole operative. Tieni `SOUL.md` per voce, posizione e
+stile. Se il tuo agente lavora in canali condivisi, risposte pubbliche o superfici
+cliente, assicurati che il tono sia comunque adatto al contesto.
 
-Essere taglienti va bene. Essere irritanti no.
+Tagliente va bene. Fastidioso no.
 
-## Documentazione correlata
+## Correlati
 
-- [Workspace dell'agente](/it/concepts/agent-workspace)
-- [Prompt di sistema](/it/concepts/system-prompt)
-- [Template SOUL.md](/it/reference/templates/SOUL)
+<CardGroup cols={2}>
+  <Card title="Agent workspace" href="/it/concepts/agent-workspace" icon="folder-open">
+    File dello spazio di lavoro che OpenClaw inietta nel prompt di sistema.
+  </Card>
+  <Card title="System prompt" href="/it/concepts/system-prompt" icon="message-lines">
+    Come `SOUL.md` viene composto nel prompt di sistema per ogni turno.
+  </Card>
+  <Card title="SOUL.md template" href="/it/reference/templates/SOUL" icon="file-lines">
+    Modello iniziale per un file di personalità.
+  </Card>
+</CardGroup>

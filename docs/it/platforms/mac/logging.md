@@ -1,37 +1,37 @@
 ---
 read_when:
-    - Acquisizione dei log macOS o analisi della registrazione di dati privati
-    - Debug dei problemi del ciclo di vita di attivazione/sessione vocale
-summary: 'Logging di OpenClaw: file di diagnostica rotante + flag di privacy del log unificato'
-title: Logging macOS
+    - Acquisizione dei log di macOS o analisi della registrazione nei log di dati privati
+    - Risoluzione dei problemi del ciclo di vita del risveglio vocale/sessione
+summary: 'Logging di OpenClaw: file di log diagnostico a rotazione + flag di privacy per il log unificato'
+title: Registrazione dei log di macOS
 x-i18n:
-    generated_at: "2026-04-24T08:50:14Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:00:25Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 84e8f56ef0f85ba9eae629d6a3cc1bcaf49cc70c82f67a10b9292f2f54b1ff6b
+    source_hash: 76c001008311d4e3f245add4cce32bdcc3eed9d897b30f6884c0649d2f0523df
     source_path: platforms/mac/logging.md
-    workflow: 15
+    workflow: 16
 ---
 
 # Logging (macOS)
 
-## File di log diagnostico rotante (pannello Debug)
+## Log diagnostico su file a rotazione (pannello Debug)
 
-OpenClaw instrada i log dell'app macOS tramite swift-log (logging unificato per impostazione predefinita) e può scrivere un file di log locale e rotante su disco quando ti serve una cattura durevole.
+OpenClaw instrada i log dell'app macOS tramite swift-log (logging unificato per impostazione predefinita) e può scrivere su disco un log locale su file, con rotazione, quando serve un'acquisizione persistente.
 
-- Verbosità: **Pannello Debug → Logs → App logging → Verbosity**
-- Abilita: **Pannello Debug → Logs → App logging → “Write rolling diagnostics log (JSONL)”**
+- Verbosità: **pannello Debug → Log → Logging dell'app → Verbosità**
+- Abilita: **pannello Debug → Log → Logging dell'app → "Scrivi log diagnostico a rotazione (JSONL)"**
 - Posizione: `~/Library/Logs/OpenClaw/diagnostics.jsonl` (ruota automaticamente; i file vecchi hanno suffissi `.1`, `.2`, …)
-- Cancella: **Pannello Debug → Logs → App logging → “Clear”**
+- Cancella: **pannello Debug → Log → Logging dell'app → "Cancella"**
 
 Note:
 
-- È **disattivato per impostazione predefinita**. Abilitalo solo durante un debug attivo.
+- È **disattivato per impostazione predefinita**. Abilitalo solo durante il debug attivo.
 - Tratta il file come sensibile; non condividerlo senza revisione.
 
-## Dati privati nel logging unificato su macOS
+## Dati privati del logging unificato su macOS
 
-Il logging unificato oscura la maggior parte dei payload a meno che un sottosistema non attivi `privacy -off`. Secondo l'articolo di Peter su macOS [logging privacy shenanigans](https://steipete.me/posts/2025/logging-privacy-shenanigans) (2025), questo è controllato da un plist in `/Library/Preferences/Logging/Subsystems/` indicizzato dal nome del sottosistema. Solo le nuove voci di log recepiscono il flag, quindi abilitalo prima di riprodurre un problema.
+Il logging unificato redige la maggior parte dei payload a meno che un sottosistema non attivi `privacy -off`. Secondo l'articolo di Peter sulle [bizzarrie della privacy del logging](https://steipete.me/posts/2025/logging-privacy-shenanigans) su macOS (2025), questa impostazione è controllata da un plist in `/Library/Preferences/Logging/Subsystems/` indicizzato per nome del sottosistema. Solo le nuove voci di log recepiscono il flag, quindi abilitalo prima di riprodurre un problema.
 
 ## Abilitare per OpenClaw (`ai.openclaw`)
 
@@ -54,16 +54,16 @@ EOF
 sudo install -m 644 -o root -g wheel /tmp/ai.openclaw.plist /Library/Preferences/Logging/Subsystems/ai.openclaw.plist
 ```
 
-- Non è richiesto alcun riavvio; `logd` rileva rapidamente il file, ma solo le nuove righe di log includeranno payload privati.
+- Non è richiesto alcun riavvio; logd rileva rapidamente il file, ma solo le nuove righe di log includeranno i payload privati.
 - Visualizza l'output più ricco con l'helper esistente, ad esempio `./scripts/clawlog.sh --category WebChat --last 5m`.
 
 ## Disabilitare dopo il debug
 
 - Rimuovi l'override: `sudo rm /Library/Preferences/Logging/Subsystems/ai.openclaw.plist`.
-- Facoltativamente esegui `sudo log config --reload` per forzare `logd` a rimuovere immediatamente l'override.
-- Ricorda che questa superficie può includere numeri di telefono e corpi dei messaggi; mantieni il plist attivo solo mentre ti serve davvero il livello di dettaglio aggiuntivo.
+- Facoltativamente esegui `sudo log config --reload` per forzare logd a scartare subito l'override.
+- Ricorda che questa superficie può includere numeri di telefono e corpi dei messaggi; lascia il plist in posizione solo mentre hai attivamente bisogno del dettaglio aggiuntivo.
 
 ## Correlati
 
-- [App macOS](/it/platforms/macos)
+- [app macOS](/it/platforms/macos)
 - [Logging del Gateway](/it/gateway/logging)

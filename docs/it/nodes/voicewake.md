@@ -1,28 +1,28 @@
 ---
 read_when:
     - Modifica del comportamento o dei valori predefiniti delle parole di attivazione vocale
-    - Aggiunta di nuove piattaforme Node che richiedono la sincronizzazione delle parole di attivazione
-summary: Parole di attivazione vocali globali (gestite dal Gateway) e come si sincronizzano tra i Node
+    - Aggiunta di nuove piattaforme Node che richiedono la sincronizzazione della parola di attivazione
+summary: Parole di attivazione vocale globali (gestite dal Gateway) e come si sincronizzano tra i nodi
 title: Attivazione vocale
 x-i18n:
-    generated_at: "2026-04-26T11:33:25Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T08:58:45Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: ac638cdf89f09404cdf293b416417f6cb3e31865b09f04ef87b9604e436dcbbe
+    source_hash: a284cbe3e12784a8d7a3eab6ba8ae230123557bca7593c956111199b94b91b73
     source_path: nodes/voicewake.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw tratta le **parole di attivazione** come un'unica lista globale gestita dal **Gateway**.
+OpenClaw tratta le **parole di attivazione come un unico elenco globale** gestito dal **Gateway**.
 
-- Non esistono **parole di attivazione personalizzate per Node**.
-- **Qualsiasi UI di Node/app può modificare** la lista; le modifiche vengono persistite dal Gateway e trasmesse a tutti.
-- macOS e iOS mantengono toggle locali **Voice Wake abilitato/disabilitato** (UX locale e permessi sono diversi).
-- Android attualmente mantiene Voice Wake disattivato e usa un flusso microfono manuale nella scheda Voice.
+- Non esistono **parole di attivazione personalizzate per nodo**.
+- **Qualsiasi interfaccia utente di nodo/app può modificare** l'elenco; le modifiche vengono mantenute dal Gateway e trasmesse a tutti.
+- macOS e iOS mantengono toggle locali per **abilitare/disabilitare Voice Wake** (UX locale + autorizzazioni diverse).
+- Android attualmente mantiene Voice Wake disattivato e usa un flusso microfono manuale nella scheda Voce.
 
 ## Archiviazione (host Gateway)
 
-Le parole di attivazione sono archiviate sulla macchina gateway in:
+Le parole di attivazione sono archiviate sulla macchina del gateway in:
 
 - `~/.openclaw/settings/voicewake.json`
 
@@ -41,10 +41,10 @@ Forma:
 
 Note:
 
-- I trigger vengono normalizzati (spazi rimossi ai bordi, valori vuoti eliminati). Le liste vuote tornano ai valori predefiniti.
-- I limiti vengono applicati per sicurezza (tetti su conteggio/lunghezza).
+- I trigger vengono normalizzati (spazi rimossi, valori vuoti scartati). Gli elenchi vuoti ripristinano i valori predefiniti.
+- Per sicurezza vengono applicati limiti (numero/lunghezza massimi).
 
-### Metodi di instradamento (trigger → target)
+### Metodi di routing (trigger → destinazione)
 
 - `voicewake.routing.get` → `{ config: VoiceWakeRoutingConfig }`
 - `voicewake.routing.set` con parametri `{ config: VoiceWakeRoutingConfig }` → `{ config: VoiceWakeRoutingConfig }`
@@ -60,7 +60,7 @@ Forma di `VoiceWakeRoutingConfig`:
 }
 ```
 
-I target di route supportano esattamente uno di:
+Le destinazioni delle route supportano esattamente una tra:
 
 - `{ "mode": "current" }`
 - `{ "agentId": "main" }`
@@ -74,27 +74,27 @@ I target di route supportano esattamente uno di:
 Chi lo riceve:
 
 - Tutti i client WebSocket (app macOS, WebChat, ecc.)
-- Tutti i Node connessi (iOS/Android), e anche alla connessione del Node come push iniziale dello “stato corrente”.
+- Tutti i nodi connessi (iOS/Android), e anche alla connessione del nodo come push iniziale dello "stato corrente".
 
 ## Comportamento del client
 
 ### App macOS
 
-- Usa la lista globale per filtrare i trigger di `VoiceWakeRuntime`.
-- La modifica di “Trigger words” nelle impostazioni di Voice Wake chiama `voicewake.set` e poi si affida alla trasmissione per mantenere sincronizzati gli altri client.
+- Usa l'elenco globale per controllare i trigger di `VoiceWakeRuntime`.
+- La modifica di "Parole trigger" nelle impostazioni di Voice Wake chiama `voicewake.set` e poi si affida alla trasmissione per mantenere sincronizzati gli altri client.
 
-### Node iOS
+### Nodo iOS
 
-- Usa la lista globale per il rilevamento dei trigger di `VoiceWakeManager`.
-- La modifica delle Wake Words nelle Settings chiama `voicewake.set` (tramite il Gateway WS) e mantiene anche reattivo il rilevamento locale delle parole di attivazione.
+- Usa l'elenco globale per il rilevamento dei trigger di `VoiceWakeManager`.
+- La modifica delle parole di attivazione nelle Impostazioni chiama `voicewake.set` (tramite il WS del Gateway) e mantiene reattivo anche il rilevamento locale delle parole di attivazione.
 
-### Node Android
+### Nodo Android
 
-- Voice Wake è attualmente disabilitato nel runtime/Settings Android.
-- L'audio Android usa l'acquisizione manuale del microfono nella scheda Voice invece dei trigger tramite parole di attivazione.
+- Voice Wake è attualmente disabilitato nel runtime/nelle Impostazioni di Android.
+- La voce Android usa l'acquisizione microfono manuale nella scheda Voce invece dei trigger con parole di attivazione.
 
 ## Correlati
 
-- [Modalità talk](/it/nodes/talk)
+- [Modalità Talk](/it/nodes/talk)
 - [Audio e note vocali](/it/nodes/audio)
 - [Comprensione dei media](/it/nodes/media-understanding)

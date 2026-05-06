@@ -1,54 +1,54 @@
 ---
 read_when:
-    - Configurazione di flussi di lavoro di agenti autonomi che vengono eseguiti senza richiedere istruzioni per ogni attività
-    - Definire cosa l'agente può fare in autonomia rispetto a ciò che richiede l'approvazione umana
-    - Strutturare agenti multi-programma con confini chiari e regole di escalation
+    - Configurazione di flussi di lavoro di agenti autonomi che vengono eseguiti senza istruzioni per ogni attività
+    - Definire ciò che l'agente può fare in autonomia rispetto a ciò che richiede l'approvazione umana
+    - Strutturare agenti multiprogramma con confini chiari e regole di escalation
 summary: Definire l'autorità operativa permanente per i programmi di agenti autonomi
 title: Istruzioni permanenti
 x-i18n:
-    generated_at: "2026-04-30T08:36:00Z"
+    generated_at: "2026-05-06T08:39:56Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ff895378cbd53f7e8058137389037ab40201ce2cdfb34c135f480dfef775919b
+    source_hash: a04e871bbd3f51b50ce162576936d4b37acbdc5a94edcd73e390adc784465aa4
     source_path: automation/standing-orders.md
     workflow: 16
 ---
 
-Gli ordini permanenti concedono al tuo agente **autorità operativa permanente** per programmi definiti. Invece di fornire ogni volta istruzioni per singole attività, definisci programmi con ambito, trigger e regole di escalation chiari, e l'agente esegue autonomamente entro quei confini.
+Gli ordini permanenti concedono al tuo agente **autorità operativa permanente** per programmi definiti. Invece di fornire ogni volta istruzioni per singole attività, definisci programmi con ambito, trigger e regole di escalation chiari - e l'agente opera autonomamente entro quei limiti.
 
-Questa è la differenza tra dire al tuo assistente "invia il report settimanale" ogni venerdì e concedere un'autorità permanente: "Sei responsabile del report settimanale. Compilalo ogni venerdì, invialo e fai escalation solo se qualcosa sembra errato."
+Questa è la differenza tra dire al tuo assistente "invia il report settimanale" ogni venerdì e concedere un'autorità permanente: "Sei responsabile del report settimanale. Compilalo ogni venerdì, invialo ed effettua escalation solo se qualcosa sembra anomalo."
 
-## Perché usare gli ordini permanenti
+## Perché gli ordini permanenti
 
 **Senza ordini permanenti:**
 
-- Devi sollecitare l'agente per ogni attività
+- Devi inviare un prompt all'agente per ogni attività
 - L'agente resta inattivo tra una richiesta e l'altra
 - Il lavoro di routine viene dimenticato o ritardato
 - Diventi il collo di bottiglia
 
-**Con gli ordini permanenti:**
+**Con ordini permanenti:**
 
-- L'agente esegue autonomamente entro confini definiti
-- Il lavoro di routine avviene secondo pianificazione senza prompt
+- L'agente opera autonomamente entro limiti definiti
+- Il lavoro di routine avviene in base alla pianificazione senza prompt
 - Vieni coinvolto solo per eccezioni e approvazioni
-- L'agente usa il tempo inattivo in modo produttivo
+- L'agente usa in modo produttivo il tempo di inattività
 
 ## Come funzionano
 
-Gli ordini permanenti sono definiti nei file del tuo [workspace dell'agente](/it/concepts/agent-workspace). L'approccio consigliato è includerli direttamente in `AGENTS.md` (che viene iniettato automaticamente in ogni sessione), così l'agente li ha sempre nel contesto. Per configurazioni più ampie, puoi anche inserirli in un file dedicato come `standing-orders.md` e farvi riferimento da `AGENTS.md`.
+Gli ordini permanenti sono definiti nei file della tua [area di lavoro dell'agente](/it/concepts/agent-workspace). L'approccio consigliato è includerli direttamente in `AGENTS.md` (che viene iniettato automaticamente in ogni sessione) in modo che l'agente li abbia sempre nel contesto. Per configurazioni più grandi, puoi anche inserirli in un file dedicato come `standing-orders.md` e farvi riferimento da `AGENTS.md`.
 
 Ogni programma specifica:
 
-1. **Ambito** — ciò che l'agente è autorizzato a fare
-2. **Trigger** — quando eseguire (pianificazione, evento o condizione)
-3. **Gate di approvazione** — cosa richiede l'approvazione umana prima di agire
-4. **Regole di escalation** — quando fermarsi e chiedere aiuto
+1. **Ambito** - cosa l'agente è autorizzato a fare
+2. **Trigger** - quando eseguire (pianificazione, evento o condizione)
+3. **Gate di approvazione** - cosa richiede l'approvazione umana prima di agire
+4. **Regole di escalation** - quando fermarsi e chiedere aiuto
 
-L'agente carica queste istruzioni a ogni sessione tramite i file di bootstrap del workspace (vedi [Workspace dell'agente](/it/concepts/agent-workspace) per l'elenco completo dei file iniettati automaticamente) e le esegue, combinate con i [job Cron](/it/automation/cron-jobs) per l'applicazione basata sul tempo.
+L'agente carica queste istruzioni a ogni sessione tramite i file di bootstrap dell'area di lavoro (vedi [Area di lavoro dell'agente](/it/concepts/agent-workspace) per l'elenco completo dei file iniettati automaticamente) e le esegue, combinate con i [job Cron](/it/automation/cron-jobs) per l'applicazione basata sul tempo.
 
 <Tip>
-Inserisci gli ordini permanenti in `AGENTS.md` per garantire che vengano caricati a ogni sessione. Il bootstrap del workspace inietta automaticamente `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` e `MEMORY.md`, ma non file arbitrari nelle sottodirectory.
+Inserisci gli ordini permanenti in `AGENTS.md` per garantire che vengano caricati a ogni sessione. Il bootstrap dell'area di lavoro inietta automaticamente `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` e `MEMORY.md` - ma non file arbitrari nelle sottodirectory.
 </Tip>
 
 ## Anatomia di un ordine permanente
@@ -73,12 +73,12 @@ Inserisci gli ordini permanenti in `AGENTS.md` per garantire che vengano caricat
 
 - Do not send reports to external parties
 - Do not modify source data
-- Do not skip delivery if metrics look bad — report accurately
+- Do not skip delivery if metrics look bad - report accurately
 ```
 
-## Ordini permanenti più job Cron
+## Ordini permanenti e job Cron
 
-Gli ordini permanenti definiscono **cosa** l'agente è autorizzato a fare. I [job Cron](/it/automation/cron-jobs) definiscono **quando** accade. Funzionano insieme:
+Gli ordini permanenti definiscono **cosa** l'agente è autorizzato a fare. I [job Cron](/it/automation/cron-jobs) definiscono **quando** avviene. Funzionano insieme:
 
 ```
 Standing Order: "You own the daily inbox triage"
@@ -116,7 +116,7 @@ openclaw cron add \
 ### Weekly cycle
 
 - **Monday:** Review platform metrics and audience engagement
-- **Tuesday–Thursday:** Draft social posts, create blog content
+- **Tuesday-Thursday:** Draft social posts, create blog content
 - **Friday:** Compile weekly marketing brief → deliver to owner
 
 ### Content rules
@@ -179,13 +179,13 @@ openclaw cron add \
 | Channel offline  | Log and retry next cycle | If offline > 2 hours     |
 ```
 
-## Schema esegui-verifica-riporta
+## Pattern esegui-verifica-riporta
 
-Gli ordini permanenti funzionano meglio quando sono combinati con una disciplina di esecuzione rigorosa. Ogni attività in un ordine permanente dovrebbe seguire questo ciclo:
+Gli ordini permanenti funzionano al meglio quando sono combinati con una disciplina di esecuzione rigorosa. Ogni attività in un ordine permanente dovrebbe seguire questo ciclo:
 
-1. **Esegui** — Svolgi il lavoro effettivo (non limitarti a confermare l'istruzione)
-2. **Verifica** — Conferma che il risultato sia corretto (il file esiste, il messaggio è stato consegnato, i dati sono stati analizzati)
-3. **Riporta** — Comunica al proprietario cosa è stato fatto e cosa è stato verificato
+1. **Esegui** - Svolgi il lavoro effettivo (non limitarti a confermare l'istruzione)
+2. **Verifica** - Conferma che il risultato sia corretto (il file esiste, il messaggio è stato consegnato, i dati sono stati analizzati)
+3. **Riporta** - Comunica al proprietario cosa è stato fatto e cosa è stato verificato
 
 ```markdown
 ### Execution rules
@@ -195,14 +195,14 @@ Gli ordini permanenti funzionano meglio quando sono combinati con una disciplina
 - "Done" without verification is not acceptable. Prove it.
 - If execution fails: retry once with adjusted approach.
 - If still fails: report failure with diagnosis. Never silently fail.
-- Never retry indefinitely — 3 attempts max, then escalate.
+- Never retry indefinitely - 3 attempts max, then escalate.
 ```
 
-Questo schema previene la modalità di errore più comune degli agenti: confermare un'attività senza completarla.
+Questo pattern previene la modalità di errore più comune degli agenti: confermare un'attività senza completarla.
 
 ## Architettura multiprogramma
 
-Per gli agenti che gestiscono più ambiti, organizza gli ordini permanenti come programmi separati con confini chiari:
+Per gli agenti che gestiscono più ambiti, organizza gli ordini permanenti come programmi separati con limiti chiari:
 
 ```markdown
 ## Program 1: [Domain A] (Weekly)
@@ -225,33 +225,33 @@ Per gli agenti che gestiscono più ambiti, organizza gli ordini permanenti come 
 
 Ogni programma dovrebbe avere:
 
-- La propria **cadenza di trigger** (settimanale, mensile, basata su eventi, continua)
+- La propria **cadenza di trigger** (settimanale, mensile, guidata da eventi, continua)
 - I propri **gate di approvazione** (alcuni programmi richiedono più supervisione di altri)
-- **Confini** chiari (l'agente dovrebbe sapere dove finisce un programma e dove ne inizia un altro)
+- **Limiti** chiari (l'agente dovrebbe sapere dove finisce un programma e ne inizia un altro)
 
-## Buone pratiche
+## Best practice
 
-### Da fare
+### Cosa fare
 
-- Inizia con un'autorità limitata ed espandila man mano che cresce la fiducia
+- Inizia con un'autorità ristretta ed espandila man mano che aumenta la fiducia
 - Definisci gate di approvazione espliciti per le azioni ad alto rischio
-- Includi sezioni "Cosa NON fare": i confini contano quanto i permessi
+- Includi sezioni "Cosa NON fare" - i limiti contano quanto le autorizzazioni
 - Combina con job Cron per un'esecuzione affidabile basata sul tempo
 - Rivedi settimanalmente i log dell'agente per verificare che gli ordini permanenti vengano seguiti
-- Aggiorna gli ordini permanenti man mano che le tue esigenze evolvono: sono documenti vivi
+- Aggiorna gli ordini permanenti man mano che le tue esigenze evolvono - sono documenti vivi
 
 ### Da evitare
 
-- Concedere ampia autorità il primo giorno ("fai quello che ritieni migliore")
-- Saltare le regole di escalation: ogni programma ha bisogno di una clausola "quando fermarsi e chiedere"
-- Dare per scontato che l'agente ricordi istruzioni verbali: metti tutto nel file
-- Mescolare ambiti in un singolo programma: programmi separati per domini separati
-- Dimenticare di applicarli con job Cron: gli ordini permanenti senza trigger diventano suggerimenti
+- Concedere un'autorità ampia il primo giorno ("fai quello che ritieni meglio")
+- Saltare le regole di escalation - ogni programma ha bisogno di una clausola "quando fermarsi e chiedere"
+- Presumere che l'agente ricordi istruzioni verbali - inserisci tutto nel file
+- Mescolare ambiti in un unico programma - programmi separati per domini separati
+- Dimenticare di applicare con job Cron - gli ordini permanenti senza trigger diventano suggerimenti
 
 ## Correlati
 
 - [Automazione e attività](/it/automation): tutti i meccanismi di automazione in sintesi.
 - [Job Cron](/it/automation/cron-jobs): applicazione della pianificazione per gli ordini permanenti.
-- [Hook](/it/automation/hooks): script basati su eventi per gli eventi del ciclo di vita dell'agente.
+- [Hook](/it/automation/hooks): script guidati da eventi per gli eventi del ciclo di vita dell'agente.
 - [Webhook](/it/automation/cron-jobs#webhooks): trigger di eventi HTTP in ingresso.
-- [Workspace dell'agente](/it/concepts/agent-workspace): dove risiedono gli ordini permanenti, incluso l'elenco completo dei file di bootstrap iniettati automaticamente (`AGENTS.md`, `SOUL.md`, ecc.).
+- [Area di lavoro dell'agente](/it/concepts/agent-workspace): dove risiedono gli ordini permanenti, incluso l'elenco completo dei file di bootstrap iniettati automaticamente (`AGENTS.md`, `SOUL.md`, ecc.).

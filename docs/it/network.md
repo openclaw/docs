@@ -1,79 +1,77 @@
 ---
 read_when:
-    - Hai bisogno di una panoramica dell'architettura di rete e della sicurezza
-    - Stai eseguendo il debug dell'accesso locale vs tailnet o del pairing
+    - Ti serve la panoramica sull'architettura di rete e sulla sicurezza
+    - Stai eseguendo il debug dell'accesso locale rispetto alla tailnet o dell'associazione
     - Vuoi l'elenco canonico della documentazione di rete
-summary: 'Hub di rete: superfici del gateway, pairing, discovery e sicurezza'
+summary: 'Hub di rete: superfici del Gateway, abbinamento, rilevamento e sicurezza'
 title: Rete
 x-i18n:
-    generated_at: "2026-04-24T08:48:17Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T08:57:59Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 663f372555f044146a5d381566371e9a38185e7f295243bfd61314f12e3a4f06
+    source_hash: 7b0ff6c4ee46005aeac1612ea40f1ce3d5824aa507d0842788dbf4bffbaccfcc
     source_path: network.md
-    workflow: 15
+    workflow: 16
 ---
-
-# Hub di rete
 
 Questo hub collega la documentazione principale su come OpenClaw connette, associa e protegge
 i dispositivi tra localhost, LAN e tailnet.
 
 ## Modello principale
 
-La maggior parte delle operazioni passa attraverso il Gateway (`openclaw gateway`), un singolo processo a lunga esecuzione che possiede le connessioni ai canali e il piano di controllo WebSocket.
+La maggior parte delle operazioni passa attraverso il Gateway (`openclaw gateway`), un singolo processo di lunga durata che gestisce le connessioni dei canali e il piano di controllo WebSocket.
 
-- **Loopback first**: il WS del Gateway usa per impostazione predefinita `ws://127.0.0.1:18789`.
-  I bind non-loopback richiedono un percorso di autenticazione del gateway valido: autenticazione a segreto condiviso
-  con token/password, oppure un deployment `trusted-proxy`
-  non-loopback correttamente configurato.
-- **Un Gateway per host** è consigliato. Per l'isolamento, esegui più gateway con profili e porte isolati ([Più Gateway](/it/gateway/multiple-gateways)).
-- **Canvas host** viene servito sulla stessa porta del Gateway (`/__openclaw__/canvas/`, `/__openclaw__/a2ui/`), protetto dall'autenticazione del Gateway quando è associato oltre il loopback.
-- **L'accesso remoto** è tipicamente tramite tunnel SSH o VPN Tailscale ([Accesso remoto](/it/gateway/remote)).
+- **Prima il loopback**: il WS del Gateway usa come valore predefinito `ws://127.0.0.1:18789`.
+  I bind non-loopback richiedono un percorso valido di autenticazione del gateway: autenticazione
+  con token/password a segreto condiviso, oppure una distribuzione `trusted-proxy`
+  non-loopback configurata correttamente.
+- **Un Gateway per host** è consigliato. Per l'isolamento, esegui più gateway con profili e porte isolati ([Gateway multipli](/it/gateway/multiple-gateways)).
+- **Host canvas** viene servito sulla stessa porta del Gateway (`/__openclaw__/canvas/`, `/__openclaw__/a2ui/`), protetto dall'autenticazione del Gateway quando è associato oltre il loopback.
+- **Accesso remoto** è in genere un tunnel SSH o una VPN Tailscale ([Accesso remoto](/it/gateway/remote)).
 
-Riferimenti chiave:
+Riferimenti principali:
 
 - [Architettura del Gateway](/it/concepts/architecture)
 - [Protocollo del Gateway](/it/gateway/protocol)
 - [Runbook del Gateway](/it/gateway)
-- [Superfici web + modalità bind](/it/web)
+- [Superfici web + modalità di bind](/it/web)
 
-## Pairing + identità
+## Associazione + identità
 
-- [Panoramica del pairing (DM + Node)](/it/channels/pairing)
-- [Pairing dei Node di proprietà del Gateway](/it/gateway/pairing)
-- [CLI devices (pairing + rotazione del token)](/it/cli/devices)
-- [CLI pairing (approvazioni DM)](/it/cli/pairing)
+- [Panoramica dell'associazione (DM + nodi)](/it/channels/pairing)
+- [Associazione dei nodi gestita dal Gateway](/it/gateway/pairing)
+- [CLI dei dispositivi (associazione + rotazione dei token)](/it/cli/devices)
+- [CLI di associazione (approvazioni DM)](/it/cli/pairing)
 
 Attendibilità locale:
 
-- Le connessioni loopback locali dirette possono essere approvate automaticamente per il pairing, in modo da mantenere fluida l'esperienza UX sullo stesso host.
-- OpenClaw ha anche un percorso ristretto di auto-connessione backend/container-locale per flussi helper attendibili con segreto condiviso.
+- Le connessioni dirette tramite local loopback possono essere approvate automaticamente per l'associazione, così da mantenere fluida l'esperienza sullo stesso host.
+- OpenClaw ha anche un percorso ristretto di auto-connessione backend/container-locale per flussi helper attendibili a segreto condiviso.
 - I client tailnet e LAN, inclusi i bind tailnet sullo stesso host, richiedono comunque
-  approvazione esplicita del pairing.
+  un'approvazione esplicita dell'associazione.
 
-## Discovery + trasporti
+## Rilevamento + trasporti
 
-- [Discovery e trasporti](/it/gateway/discovery)
+- [Rilevamento e trasporti](/it/gateway/discovery)
 - [Bonjour / mDNS](/it/gateway/bonjour)
 - [Accesso remoto (SSH)](/it/gateway/remote)
 - [Tailscale](/it/gateway/tailscale)
 
-## Node + trasporti
+## Nodi + trasporti
 
-- [Panoramica dei Node](/it/nodes)
-- [Protocollo Bridge (Node legacy, storico)](/it/gateway/bridge-protocol)
-- [Runbook Node: iOS](/it/platforms/ios)
-- [Runbook Node: Android](/it/platforms/android)
+- [Panoramica dei nodi](/it/nodes)
+- [Protocollo bridge (nodi legacy, storico)](/it/gateway/bridge-protocol)
+- [Runbook dei nodi: iOS](/it/platforms/ios)
+- [Runbook dei nodi: Android](/it/platforms/android)
 
 ## Sicurezza
 
 - [Panoramica della sicurezza](/it/gateway/security)
-- [Riferimento della configurazione del Gateway](/it/gateway/configuration)
+- [Riferimento alla configurazione del Gateway](/it/gateway/configuration)
 - [Risoluzione dei problemi](/it/gateway/troubleshooting)
 - [Doctor](/it/gateway/doctor)
 
 ## Correlati
 
-- [Modello di rete del Gateway](/it/gateway/network-model)
+- [Runbook del Gateway](/it/gateway)
 - [Accesso remoto](/it/gateway/remote)

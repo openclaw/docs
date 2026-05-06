@@ -1,42 +1,42 @@
 ---
 read_when:
-    - Vuoi capire cosa significa “contesto” in OpenClaw
-    - Stai eseguendo il debug del motivo per cui il modello “sa” qualcosa (o l'ha dimenticato)
-    - Vuoi ridurre l'overhead del contesto (/context, /status, /compact)
+    - Vuoi capire cosa significa "contesto" in OpenClaw
+    - Stai eseguendo il debug del motivo per cui il modello "sa" qualcosa (o l'ha dimenticata)
+    - Vuoi ridurre il sovraccarico di contesto (/context, /status, /compact)
 summary: 'Contesto: cosa vede il modello, come viene costruito e come ispezionarlo'
 title: Contesto
 x-i18n:
-    generated_at: "2026-04-24T08:36:06Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T08:45:18Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 537c989d1578a186a313698d3b97d75111fedb641327fb7a8b72e47b71b84b85
+    source_hash: 1bd23094ef23928ee277c1b84ee17b9324aaea963d72a0c4c73da359409a5de9
     source_path: concepts/context.md
-    workflow: 15
+    workflow: 16
 ---
 
-Il “contesto” è **tutto ciò che OpenClaw invia al modello per un'esecuzione**. È limitato dalla **finestra di contesto** del modello (limite di token).
+"Context" è **tutto ciò che OpenClaw invia al modello per un'esecuzione**. È limitato dalla **finestra di contesto** del modello (limite di token).
 
 Modello mentale per principianti:
 
-- **Prompt di sistema** (costruito da OpenClaw): regole, strumenti, elenco Skills, tempo/runtime e file del workspace iniettati.
+- **Prompt di sistema** (creato da OpenClaw): regole, strumenti, elenco Skills, ora/runtime e file dell'area di lavoro inseriti.
 - **Cronologia della conversazione**: i tuoi messaggi + i messaggi dell'assistente per questa sessione.
-- **Chiamate/risultati degli strumenti + allegati**: output di comandi, letture di file, immagini/audio, ecc.
+- **Chiamate/risultati degli strumenti + allegati**: output dei comandi, letture di file, immagini/audio, ecc.
 
-Il contesto _non è la stessa cosa_ della “memoria”: la memoria può essere archiviata su disco e ricaricata in seguito; il contesto è ciò che si trova nella finestra corrente del modello.
+Il contesto _non è la stessa cosa_ della "memoria": la memoria può essere archiviata su disco e ricaricata in seguito; il contesto è ciò che si trova nella finestra corrente del modello.
 
 ## Avvio rapido (ispezionare il contesto)
 
-- `/status` → vista rapida di “quanto è piena la mia finestra?” + impostazioni della sessione.
-- `/context list` → cosa viene iniettato + dimensioni approssimative (per file + totali).
-- `/context detail` → dettaglio più profondo: per file, dimensioni degli schemi degli strumenti, dimensioni delle voci Skills e dimensione del prompt di sistema.
-- `/usage tokens` → aggiunge un footer di utilizzo per risposta alle risposte normali.
-- `/compact` → riassume la cronologia più vecchia in una voce compatta per liberare spazio nella finestra.
+- `/status` → vista rapida "quanto è piena la mia finestra?" + impostazioni della sessione.
+- `/context list` → cosa è inserito + dimensioni approssimative (per file + totali).
+- `/context detail` → analisi più approfondita: dimensioni per file, per schema strumento, per voce Skill e dimensione del prompt di sistema.
+- `/usage tokens` → aggiungi alle risposte normali un piè di pagina con l'uso per risposta.
+- `/compact` → riassumi la cronologia meno recente in una voce compatta per liberare spazio nella finestra.
 
 Vedi anche: [Comandi slash](/it/tools/slash-commands), [Uso dei token e costi](/it/reference/token-use), [Compaction](/it/concepts/compaction).
 
-## Esempio di output
+## Output di esempio
 
-I valori variano in base a modello, provider, criteri degli strumenti e contenuto del workspace.
+I valori variano in base a modello, provider, policy degli strumenti e contenuti dell'area di lavoro.
 
 ### `/context list`
 
@@ -87,27 +87,27 @@ Conta tutto ciò che il modello riceve, inclusi:
 
 - Prompt di sistema (tutte le sezioni).
 - Cronologia della conversazione.
-- Chiamate degli strumenti + risultati degli strumenti.
+- Chiamate agli strumenti + risultati degli strumenti.
 - Allegati/trascrizioni (immagini/audio/file).
-- Riepiloghi di Compaction e artefatti di pruning.
-- “Wrapper” del provider o header nascosti (non visibili, ma comunque conteggiati).
+- Riassunti di Compaction e artefatti di pruning.
+- "Wrapper" del provider o intestazioni nascoste (non visibili, ma comunque conteggiati).
 
 ## Come OpenClaw costruisce il prompt di sistema
 
-Il prompt di sistema è **gestito da OpenClaw** e ricostruito a ogni esecuzione. Include:
+Il prompt di sistema è **di proprietà di OpenClaw** e viene ricostruito a ogni esecuzione. Include:
 
-- Elenco degli strumenti + descrizioni brevi.
+- Elenco degli strumenti + brevi descrizioni.
 - Elenco Skills (solo metadati; vedi sotto).
-- Posizione del workspace.
+- Posizione dell'area di lavoro.
 - Ora (UTC + ora utente convertita se configurata).
-- Metadati runtime (host/OS/modello/ragionamento).
-- File bootstrap del workspace iniettati sotto **Project Context**.
+- Metadati di runtime (host/OS/modello/thinking).
+- File bootstrap dell'area di lavoro inseriti in **Contesto del progetto**.
 
-Dettaglio completo: [Prompt di sistema](/it/concepts/system-prompt).
+Analisi completa: [Prompt di sistema](/it/concepts/system-prompt).
 
-## File del workspace iniettati (Project Context)
+## File dell'area di lavoro inseriti (Contesto del progetto)
 
-Per impostazione predefinita, OpenClaw inietta un insieme fisso di file del workspace (se presenti):
+Per impostazione predefinita, OpenClaw inserisce un insieme fisso di file dell'area di lavoro (se presenti):
 
 - `AGENTS.md`
 - `SOUL.md`
@@ -115,24 +115,24 @@ Per impostazione predefinita, OpenClaw inietta un insieme fisso di file del work
 - `IDENTITY.md`
 - `USER.md`
 - `HEARTBEAT.md`
-- `BOOTSTRAP.md` (solo alla prima esecuzione)
+- `BOOTSTRAP.md` (solo al primo avvio)
 
-I file grandi vengono troncati per file usando `agents.defaults.bootstrapMaxChars` (predefinito `12000` caratteri). OpenClaw applica anche un limite totale di iniezione bootstrap tra i file con `agents.defaults.bootstrapTotalMaxChars` (predefinito `60000` caratteri). `/context` mostra le dimensioni **raw vs injected** e se è avvenuto il troncamento.
+I file di grandi dimensioni vengono troncati per file usando `agents.defaults.bootstrapMaxChars` (predefinito `12000` caratteri). OpenClaw impone anche un limite totale all'inserimento bootstrap tra i file con `agents.defaults.bootstrapTotalMaxChars` (predefinito `60000` caratteri). `/context` mostra le dimensioni **grezze rispetto a quelle inserite** e se è avvenuto un troncamento.
 
-Quando avviene il troncamento, il runtime può iniettare un blocco di avviso nel prompt sotto Project Context. Configuralo con `agents.defaults.bootstrapPromptTruncationWarning` (`off`, `once`, `always`; predefinito `once`).
+Quando avviene un troncamento, il runtime può inserire un blocco di avviso nel prompt sotto Contesto del progetto. Configuralo con `agents.defaults.bootstrapPromptTruncationWarning` (`off`, `once`, `always`; predefinito `once`).
 
-## Skills: iniettate vs caricate su richiesta
+## Skills: inserite rispetto a caricate su richiesta
 
-Il prompt di sistema include un elenco compatto di **Skills** (nome + descrizione + posizione). Questo elenco ha un overhead reale.
+Il prompt di sistema include un **elenco Skills** compatto (nome + descrizione + posizione). Questo elenco ha un costo reale.
 
-Le istruzioni delle Skills _non_ sono incluse per impostazione predefinita. Ci si aspetta che il modello faccia `read` del file `SKILL.md` della Skill **solo quando serve**.
+Le istruzioni delle Skill _non_ sono incluse per impostazione predefinita. Ci si aspetta che il modello esegua `read` del file `SKILL.md` della Skill **solo quando necessario**.
 
 ## Strumenti: ci sono due costi
 
-Gli strumenti influenzano il contesto in due modi:
+Gli strumenti influiscono sul contesto in due modi:
 
-1. **Testo dell'elenco strumenti** nel prompt di sistema (quello che vedi come “Tooling”).
-2. **Schemi degli strumenti** (JSON). Vengono inviati al modello così può chiamare gli strumenti. Contano nel contesto anche se non li vedi come testo semplice.
+1. **Testo dell'elenco strumenti** nel prompt di sistema (ciò che vedi come "Tooling").
+2. **Schemi degli strumenti** (JSON). Questi vengono inviati al modello affinché possa chiamare gli strumenti. Contano nel contesto anche se non li vedi come testo semplice.
 
 `/context detail` suddivide gli schemi degli strumenti più grandi così puoi vedere cosa pesa di più.
 
@@ -140,11 +140,11 @@ Gli strumenti influenzano il contesto in due modi:
 
 I comandi slash sono gestiti dal Gateway. Esistono alcuni comportamenti diversi:
 
-- **Comandi standalone**: un messaggio che contiene solo `/...` viene eseguito come comando.
+- **Comandi autonomi**: un messaggio che contiene solo `/...` viene eseguito come comando.
 - **Direttive**: `/think`, `/verbose`, `/trace`, `/reasoning`, `/elevated`, `/model`, `/queue` vengono rimosse prima che il modello veda il messaggio.
   - I messaggi composti solo da direttive mantengono le impostazioni della sessione.
-  - Le direttive inline in un messaggio normale agiscono come hint per messaggio.
-- **Scorciatoie inline** (solo mittenti in allowlist): alcuni token `/...` all'interno di un messaggio normale possono essere eseguiti immediatamente (esempio: “hey /status”) e vengono rimossi prima che il modello veda il testo rimanente.
+  - Le direttive inline in un messaggio normale agiscono come suggerimenti per quel messaggio.
+- **Scorciatoie inline** (solo mittenti consentiti): alcuni token `/...` all'interno di un messaggio normale possono essere eseguiti immediatamente (esempio: "hey /status") e vengono rimossi prima che il modello veda il testo rimanente.
 
 Dettagli: [Comandi slash](/it/tools/slash-commands).
 
@@ -152,30 +152,43 @@ Dettagli: [Comandi slash](/it/tools/slash-commands).
 
 Ciò che persiste tra i messaggi dipende dal meccanismo:
 
-- **Cronologia normale** persiste nella trascrizione della sessione finché non viene compattata/eliminata secondo i criteri.
-- **Compaction** mantiene un riepilogo nella trascrizione e conserva intatti i messaggi recenti.
-- **Pruning** elimina i vecchi risultati degli strumenti dal prompt _in-memory_ per liberare spazio nella finestra di contesto, ma non riscrive la trascrizione della sessione — la cronologia completa resta ispezionabile su disco.
+- **Cronologia normale** persiste nella trascrizione della sessione finché non viene compattata/potata dalla policy.
+- **Compaction** mantiene un riassunto nella trascrizione e conserva intatti i messaggi recenti.
+- **Pruning** elimina i vecchi risultati degli strumenti dal prompt _in memoria_ per liberare spazio nella finestra di contesto, ma non riscrive la trascrizione della sessione: la cronologia completa resta comunque ispezionabile su disco.
 
 Documentazione: [Sessione](/it/concepts/session), [Compaction](/it/concepts/compaction), [Pruning della sessione](/it/concepts/session-pruning).
 
 Per impostazione predefinita, OpenClaw usa il motore di contesto integrato `legacy` per assemblaggio e
-compattazione. Se installi un Plugin che fornisce `kind: "context-engine"` e
-lo selezioni con `plugins.slots.contextEngine`, OpenClaw delega a quel
-motore l'assemblaggio del contesto, `/compact` e i relativi hook del ciclo di vita del contesto dei sottoagenti. `ownsCompaction: false` non attiva automaticamente un fallback al motore legacy; il motore attivo deve comunque implementare correttamente `compact()`. Consulta
-[Context Engine](/it/concepts/context-engine) per l'interfaccia collegabile completa, gli hook del ciclo di vita e la configurazione.
+Compaction. Se installi un plugin che fornisce `kind: "context-engine"` e
+lo selezioni con `plugins.slots.contextEngine`, OpenClaw delega l'assemblaggio
+del contesto, `/compact` e gli hook correlati del ciclo di vita del contesto dei subagent a quel
+motore. `ownsCompaction: false` non esegue automaticamente il fallback al motore
+legacy; il motore attivo deve comunque implementare correttamente `compact()`. Vedi
+[Motore di contesto](/it/concepts/context-engine) per l'interfaccia completa
+collegabile, gli hook del ciclo di vita e la configurazione.
 
-## Cosa riporta davvero `/context`
+## Cosa riporta effettivamente `/context`
 
-`/context` preferisce l'ultimo report del prompt di sistema **costruito in esecuzione** quando disponibile:
+`/context` preferisce l'ultimo report del prompt di sistema **creato dall'esecuzione** quando disponibile:
 
-- `System prompt (run)` = acquisito dall'ultima esecuzione embedded (capace di usare strumenti) e mantenuto nell'archivio della sessione.
-- `System prompt (estimate)` = calcolato al volo quando non esiste un report di esecuzione (o quando si esegue tramite un backend CLI che non genera il report).
+- `System prompt (run)` = acquisito dall'ultima esecuzione incorporata (con capacità di strumenti) e mantenuto nello store della sessione.
+- `System prompt (estimate)` = calcolato al volo quando non esiste alcun report di esecuzione (o quando si usa un backend CLI che non genera il report).
 
-In ogni caso, riporta dimensioni e principali contributori; **non** scarica il prompt di sistema completo o gli schemi degli strumenti.
+In entrambi i casi, riporta dimensioni e principali contributori; **non** scarica il prompt di sistema completo né gli schemi degli strumenti.
 
 ## Correlati
 
-- [Context Engine](/it/concepts/context-engine) — iniezione del contesto personalizzata tramite Plugin
-- [Compaction](/it/concepts/compaction) — riepilogo delle conversazioni lunghe
-- [Prompt di sistema](/it/concepts/system-prompt) — come viene costruito il prompt di sistema
-- [Ciclo dell'agente](/it/concepts/agent-loop) — il ciclo completo di esecuzione dell'agente
+<CardGroup cols={2}>
+  <Card title="Motore di contesto" href="/it/concepts/context-engine" icon="puzzle-piece">
+    Inserimento del contesto personalizzato tramite plugin.
+  </Card>
+  <Card title="Compaction" href="/it/concepts/compaction" icon="compress">
+    Riassumere conversazioni lunghe per mantenerle all'interno della finestra del modello.
+  </Card>
+  <Card title="Prompt di sistema" href="/it/concepts/system-prompt" icon="message-lines">
+    Come viene costruito il prompt di sistema e cosa inserisce a ogni turno.
+  </Card>
+  <Card title="Ciclo dell'agente" href="/it/concepts/agent-loop" icon="arrows-rotate">
+    Il ciclo completo di esecuzione dell'agente, dal messaggio in ingresso alla risposta finale.
+  </Card>
+</CardGroup>

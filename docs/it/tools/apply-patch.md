@@ -1,20 +1,20 @@
 ---
 read_when:
-    - Hai bisogno di modifiche strutturate ai file su più file
-    - Vuoi documentare o fare debug di modifiche basate su patch
-summary: Applicare patch multi-file con lo strumento apply_patch
+    - Sono necessarie modifiche strutturate ai file in più file
+    - Vuoi documentare o eseguire il debug di modifiche basate su patch
+summary: Applica patch su più file con lo strumento apply_patch
 title: strumento apply_patch
 x-i18n:
-    generated_at: "2026-04-24T09:03:55Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:09:58Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 9ed6d8282166de3cacf5be7f253498a230bceb2ad6c82a08846aed5bc613da53
+    source_hash: 9ff2f8e6ecd55ff1bdc553619ab3d590d0967efe7a9a90a31946ad15fd89a1dc
     source_path: tools/apply-patch.md
-    workflow: 15
+    workflow: 16
 ---
 
-Applica modifiche ai file usando un formato di patch strutturato. È ideale per modifiche multi-file
-o multi-hunk in cui una singola chiamata `edit` sarebbe fragile.
+Applica modifiche ai file usando un formato di patch strutturato. È ideale per
+modifiche su più file o con più blocchi, dove una singola chiamata `edit` sarebbe fragile.
 
 Lo strumento accetta una singola stringa `input` che racchiude una o più operazioni sui file:
 
@@ -37,13 +37,13 @@ Lo strumento accetta una singola stringa `input` che racchiude una o più operaz
 
 ## Note
 
-- I percorsi nella patch supportano percorsi relativi (dalla directory del workspace) e percorsi assoluti.
-- `tools.exec.applyPatch.workspaceOnly` ha come predefinito `true` (contenuto nel workspace). Impostalo su `false` solo se vuoi intenzionalmente che `apply_patch` scriva/elimini fuori dalla directory del workspace.
-- Usa `*** Move to:` all'interno di un hunk `*** Update File:` per rinominare i file.
-- `*** End of File` indica un inserimento solo-EOF quando necessario.
-- Disponibile per impostazione predefinita per modelli OpenAI e OpenAI Codex. Imposta
+- I percorsi delle patch supportano percorsi relativi (dalla directory dell'area di lavoro) e percorsi assoluti.
+- `tools.exec.applyPatch.workspaceOnly` ha valore predefinito `true` (limitato all'area di lavoro). Impostalo su `false` solo se vuoi intenzionalmente che `apply_patch` scriva/eliminini file al di fuori della directory dell'area di lavoro.
+- Usa `*** Move to:` all'interno di un blocco `*** Update File:` per rinominare i file.
+- `*** End of File` indica un inserimento solo EOF quando necessario.
+- Disponibile per impostazione predefinita per i modelli OpenAI e OpenAI Codex. Imposta
   `tools.exec.applyPatch.enabled: false` per disabilitarlo.
-- Facoltativamente puoi limitarlo per modello tramite
+- Facoltativamente, limita per modello tramite
   `tools.exec.applyPatch.allowModels`.
 - La configurazione si trova solo sotto `tools.exec`.
 
@@ -58,6 +58,14 @@ Lo strumento accetta una singola stringa `input` che racchiude una o più operaz
 
 ## Correlati
 
-- [Diff](/it/tools/diffs)
-- [Strumento exec](/it/tools/exec)
-- [Esecuzione del codice](/it/tools/code-execution)
+<CardGroup cols={2}>
+  <Card title="Diffs" href="/it/tools/diffs" icon="code-compare">
+    Visualizzatore diff in sola lettura per la presentazione delle modifiche.
+  </Card>
+  <Card title="Exec tool" href="/it/tools/exec" icon="terminal">
+    Esecuzione di comandi shell dall'agente.
+  </Card>
+  <Card title="Code execution" href="/it/tools/code-execution" icon="square-code">
+    Analisi Python remota in sandbox con xAI.
+  </Card>
+</CardGroup>

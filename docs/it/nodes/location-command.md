@@ -1,50 +1,50 @@
 ---
 read_when:
-    - Aggiunta del supporto Node per la posizione o della UI dei permessi
-    - Progettazione dei permessi di posizione Android o del comportamento in foreground
-summary: Comando posizione per i Node (`location.get`), modalità dei permessi e comportamento Android in foreground
-title: Comando posizione
+    - Aggiunta del supporto per il nodo di posizione o dell'interfaccia utente delle autorizzazioni
+    - Progettazione delle autorizzazioni di Android per la posizione o del comportamento in primo piano
+summary: Comando di localizzazione per i nodi (location.get), modalità di autorizzazione e comportamento in primo piano su Android
+title: Comando di posizione
 x-i18n:
-    generated_at: "2026-04-24T08:48:39Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T08:58:43Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: fcd7ae3bf411be4331d62494a5d5263e8cda345475c5f849913122c029377f06
+    source_hash: 63ed754bfdda1cf379dcb7ac40817c0b93cc1efe4526512d70258072da4bc8a7
     source_path: nodes/location-command.md
-    workflow: 15
+    workflow: 16
 ---
 
 ## In breve
 
-- `location.get` è un comando Node (tramite `node.invoke`).
+- `location.get` è un comando del nodo (tramite `node.invoke`).
 - Disattivato per impostazione predefinita.
-- Le impostazioni dell'app Android usano un selettore: Off / While Using.
-- Toggle separato: Precise Location.
+- Le impostazioni dell'app Android usano un selettore: Disattivato / Durante l'uso.
+- Interruttore separato: Posizione precisa.
 
 ## Perché un selettore (non solo un interruttore)
 
-I permessi del sistema operativo sono a più livelli. Possiamo esporre un selettore nell'app, ma il sistema operativo decide comunque la concessione effettiva.
+Le autorizzazioni del sistema operativo hanno più livelli. Possiamo esporre un selettore nell'app, ma il sistema operativo decide comunque l'autorizzazione effettiva.
 
-- iOS/macOS possono esporre **While Using** o **Always** nei prompt di sistema/nelle Impostazioni.
-- L'app Android attualmente supporta solo la posizione in foreground.
-- La posizione precisa è una concessione separata (iOS 14+ “Precise”, Android “fine” vs “coarse”).
+- iOS/macOS possono mostrare **Durante l'uso** o **Sempre** nei prompt di sistema/nelle Impostazioni.
+- L'app Android attualmente supporta solo la posizione in primo piano.
+- La posizione precisa è un'autorizzazione separata (iOS 14+ "Precise", Android "fine" vs "coarse").
 
-Il selettore nella UI guida la modalità richiesta; la concessione effettiva risiede nelle impostazioni del sistema operativo.
+Il selettore nell'UI determina la modalità richiesta; l'autorizzazione effettiva risiede nelle impostazioni del sistema operativo.
 
 ## Modello delle impostazioni
 
-Per dispositivo Node:
+Per dispositivo nodo:
 
 - `location.enabledMode`: `off | whileUsing`
 - `location.preciseEnabled`: bool
 
-Comportamento della UI:
+Comportamento dell'UI:
 
-- Selezionando `whileUsing` viene richiesta l'autorizzazione in foreground.
-- Se il sistema operativo nega il livello richiesto, torna al livello più alto concesso e mostra lo stato.
+- Selezionare `whileUsing` richiede l'autorizzazione in primo piano.
+- Se il sistema operativo nega il livello richiesto, ripristina il livello più alto concesso e mostra lo stato.
 
-## Mappatura dei permessi (`node.permissions`)
+## Mappatura delle autorizzazioni (node.permissions)
 
-Facoltativa. Il Node macOS riporta `location` tramite la mappa dei permessi; iOS/Android possono ometterlo.
+Facoltativa. Il nodo macOS segnala `location` tramite la mappa delle autorizzazioni; iOS/Android possono ometterla.
 
 ## Comando: `location.get`
 
@@ -79,8 +79,8 @@ Payload di risposta:
 Errori (codici stabili):
 
 - `LOCATION_DISABLED`: il selettore è disattivato.
-- `LOCATION_PERMISSION_REQUIRED`: manca il permesso per la modalità richiesta.
-- `LOCATION_BACKGROUND_UNAVAILABLE`: l'app è in background ma è consentito solo While Using.
+- `LOCATION_PERMISSION_REQUIRED`: autorizzazione mancante per la modalità richiesta.
+- `LOCATION_BACKGROUND_UNAVAILABLE`: l'app è in background ma è consentito solo Durante l'uso.
 - `LOCATION_TIMEOUT`: nessun fix in tempo.
 - `LOCATION_UNAVAILABLE`: errore di sistema / nessun provider.
 
@@ -88,22 +88,22 @@ Errori (codici stabili):
 
 - L'app Android nega `location.get` quando è in background.
 - Tieni OpenClaw aperto quando richiedi la posizione su Android.
-- Altre piattaforme Node possono comportarsi in modo diverso.
+- Altre piattaforme nodo possono comportarsi diversamente.
 
-## Integrazione modello/tooling
+## Integrazione con modello/strumenti
 
-- Superficie strumenti: lo strumento `nodes` aggiunge l'azione `location_get` (Node richiesto).
+- Superficie dello strumento: lo strumento `nodes` aggiunge l'azione `location_get` (nodo obbligatorio).
 - CLI: `openclaw nodes location get --node <id>`.
-- Linee guida per l'agente: chiamare solo quando l'utente ha abilitato la posizione e comprende l'ambito.
+- Linee guida per gli agenti: chiamare solo quando l'utente ha abilitato la posizione e comprende l'ambito.
 
 ## Testo UX (suggerito)
 
-- Off: “La condivisione della posizione è disabilitata.”
-- While Using: “Solo quando OpenClaw è aperto.”
-- Precise: “Usa la posizione GPS precisa. Disattiva l'opzione per condividere una posizione approssimativa.”
+- Disattivato: "La condivisione della posizione è disabilitata."
+- Durante l'uso: "Solo quando OpenClaw è aperto."
+- Precisa: "Usa la posizione GPS precisa. Disattiva l'opzione per condividere la posizione approssimativa."
 
 ## Correlati
 
-- [Parsing della posizione nei canali](/it/channels/location)
-- [Acquisizione della fotocamera](/it/nodes/camera)
-- [Modalità Talk](/it/nodes/talk)
+- [Analisi della posizione del canale](/it/channels/location)
+- [Acquisizione fotocamera](/it/nodes/camera)
+- [Modalità conversazione](/it/nodes/talk)

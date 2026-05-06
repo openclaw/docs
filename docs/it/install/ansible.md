@@ -1,22 +1,20 @@
 ---
 read_when:
     - Vuoi una distribuzione automatizzata del server con rafforzamento della sicurezza
-    - È necessaria una configurazione isolata tramite firewall con accesso VPN
+    - È necessaria una configurazione isolata da firewall con accesso VPN
     - Stai distribuendo su server Debian/Ubuntu remoti
-summary: Installazione automatizzata e rafforzata di OpenClaw con Ansible, VPN Tailscale e isolamento tramite firewall
+summary: Installazione OpenClaw automatizzata e rafforzata con Ansible, VPN Tailscale e isolamento tramite firewall
 title: Ansible
 x-i18n:
-    generated_at: "2026-05-02T08:26:33Z"
+    generated_at: "2026-05-06T08:54:59Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 789763c82483f4eec0963f4dccb06f2daa22d470a5e69e275f38c70a00a10ba4
+    source_hash: a7424e766619096f50fa0c83aa4e85e46adba11515b1871e58cf2406b7c8f815
     source_path: install/ansible.md
     workflow: 16
 ---
 
-# Installazione con Ansible
-
-Distribuisci OpenClaw su server di produzione con **[openclaw-ansible](https://github.com/openclaw/openclaw-ansible)** -- un programma di installazione automatizzato con un'architettura orientata alla sicurezza.
+Distribuisci OpenClaw su server di produzione con **[openclaw-ansible](https://github.com/openclaw/openclaw-ansible)** -- un installer automatizzato con architettura orientata prima alla sicurezza.
 
 <Info>
 Il repository [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) è la fonte di riferimento per la distribuzione con Ansible. Questa pagina è una panoramica rapida.
@@ -26,14 +24,14 @@ Il repository [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) �
 
 | Requisito   | Dettagli                                                  |
 | ----------- | --------------------------------------------------------- |
-| **OS**      | Debian 11+ o Ubuntu 20.04+                               |
+| **OS**      | Debian 11+ o Ubuntu 20.04+                                |
 | **Accesso** | Privilegi root o sudo                                     |
 | **Rete**    | Connessione Internet per l'installazione dei pacchetti    |
 | **Ansible** | 2.14+ (installato automaticamente dallo script quick-start) |
 
 ## Cosa ottieni
 
-- **Sicurezza firewall-first** -- UFW + isolamento Docker (accessibili solo SSH + Tailscale)
+- **Sicurezza firewall-first** -- isolamento UFW + Docker (solo SSH + Tailscale accessibili)
 - **VPN Tailscale** -- accesso remoto sicuro senza esporre pubblicamente i servizi
 - **Docker** -- container sandbox isolati, binding solo su localhost
 - **Difesa in profondità** -- architettura di sicurezza a 4 livelli
@@ -54,13 +52,13 @@ Il playbook Ansible installa e configura:
 
 1. **Tailscale** -- VPN mesh per accesso remoto sicuro
 2. **Firewall UFW** -- solo porte SSH + Tailscale
-3. **Docker CE + Compose V2** -- per il backend sandbox predefinito degli agenti
-4. **Node.js 24 + pnpm** -- dipendenze di runtime (Node 22 LTS, attualmente `22.14+`, rimane supportato)
+3. **Docker CE + Compose V2** -- per il backend sandbox predefinito dell'agente
+4. **Node.js 24 + pnpm** -- dipendenze di runtime (Node 22 LTS, attualmente `22.14+`, resta supportato)
 5. **OpenClaw** -- basato sull'host, non containerizzato
 6. **Servizio Systemd** -- avvio automatico con hardening di sicurezza
 
 <Note>
-Il Gateway viene eseguito direttamente sull'host (non in Docker). La sandbox degli agenti è
+Il gateway viene eseguito direttamente sull'host (non in Docker). Il sandboxing degli agenti è
 opzionale; questo playbook installa Docker perché è il backend sandbox
 predefinito. Consulta [Sandboxing](/it/gateway/sandboxing) per dettagli e altri backend.
 </Note>
@@ -115,19 +113,19 @@ openclaw channels login
 La distribuzione usa un modello di difesa a 4 livelli:
 
 1. **Firewall (UFW)** -- solo SSH (22) + Tailscale (41641/udp) esposti pubblicamente
-2. **VPN (Tailscale)** -- Gateway accessibile solo tramite mesh VPN
+2. **VPN (Tailscale)** -- gateway accessibile solo tramite mesh VPN
 3. **Isolamento Docker** -- la catena iptables DOCKER-USER impedisce l'esposizione di porte esterne
-4. **Hardening Systemd** -- NoNewPrivileges, PrivateTmp, utente non privilegiato
+4. **Hardening Systemd** -- NoNewPrivileges, PrivateTmp, utente senza privilegi
 
-Per verificare la superficie di attacco esterna:
+Per verificare la tua superficie di attacco esterna:
 
 ```bash
 nmap -p- YOUR_SERVER_IP
 ```
 
-Dovrebbe essere aperta solo la porta 22 (SSH). Tutti gli altri servizi (Gateway, Docker) sono bloccati.
+Solo la porta 22 (SSH) dovrebbe essere aperta. Tutti gli altri servizi (gateway, Docker) sono bloccati.
 
-Docker viene installato per le sandbox degli agenti (esecuzione isolata degli strumenti), non per eseguire il Gateway stesso. Consulta [Sandbox e strumenti multi-agente](/it/tools/multi-agent-sandbox-tools) per la configurazione della sandbox.
+Docker viene installato per le sandbox degli agenti (esecuzione isolata degli strumenti), non per eseguire il gateway stesso. Consulta [Sandbox multi-agente e strumenti](/it/tools/multi-agent-sandbox-tools) per la configurazione della sandbox.
 
 ## Installazione manuale
 
@@ -145,7 +143,7 @@ Se preferisci il controllo manuale rispetto all'automazione:
     cd openclaw-ansible
     ```
   </Step>
-  <Step title="Installa le collection Ansible">
+  <Step title="Installa le raccolte Ansible">
     ```bash
     ansible-galaxy collection install -r requirements.yml
     ```
@@ -166,16 +164,16 @@ Se preferisci il controllo manuale rispetto all'automazione:
 
 ## Aggiornamento
 
-Il programma di installazione Ansible configura OpenClaw per gli aggiornamenti manuali. Consulta [Aggiornamento](/it/install/updating) per il flusso di aggiornamento standard.
+L'installer Ansible configura OpenClaw per gli aggiornamenti manuali. Consulta [Aggiornamento](/it/install/updating) per il flusso di aggiornamento standard.
 
-Per eseguire nuovamente il playbook Ansible (ad esempio, per modifiche di configurazione):
+Per rieseguire il playbook Ansible (ad esempio, per modifiche di configurazione):
 
 ```bash
 cd openclaw-ansible
 ./run-playbook.sh
 ```
 
-È idempotente e può essere eseguito più volte in sicurezza.
+È idempotente e sicuro da eseguire più volte.
 
 ## Risoluzione dei problemi
 
@@ -183,7 +181,7 @@ cd openclaw-ansible
   <Accordion title="Il firewall blocca la mia connessione">
     - Assicurati prima di poter accedere tramite VPN Tailscale
     - L'accesso SSH (porta 22) è sempre consentito
-    - Il Gateway è accessibile solo tramite Tailscale per progettazione
+    - Il gateway è accessibile solo tramite Tailscale per progettazione
 
   </Accordion>
   <Accordion title="Il servizio non si avvia">
@@ -218,7 +216,7 @@ cd openclaw-ansible
 
   </Accordion>
   <Accordion title="L'accesso al provider non riesce">
-    Assicurati di eseguire il comando come utente `openclaw`:
+    Assicurati di essere in esecuzione come utente `openclaw`:
     ```bash
     sudo -i -u openclaw
     openclaw channels login
@@ -237,6 +235,6 @@ Per l'architettura di sicurezza dettagliata e la risoluzione dei problemi, consu
 ## Correlati
 
 - [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) -- guida completa alla distribuzione
-- [Docker](/it/install/docker) -- configurazione del Gateway containerizzato
+- [Docker](/it/install/docker) -- configurazione del gateway containerizzato
 - [Sandboxing](/it/gateway/sandboxing) -- configurazione della sandbox degli agenti
-- [Sandbox e strumenti multi-agente](/it/tools/multi-agent-sandbox-tools) -- isolamento per agente
+- [Sandbox multi-agente e strumenti](/it/tools/multi-agent-sandbox-tools) -- isolamento per agente

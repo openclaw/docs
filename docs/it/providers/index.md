@@ -1,24 +1,22 @@
 ---
 read_when:
     - Vuoi scegliere un provider di modelli
-    - Ti serve una rapida panoramica dei backend LLM supportati
+    - Serve una rapida panoramica dei backend LLM supportati
 summary: Provider di modelli (LLM) supportati da OpenClaw
 title: Directory dei provider
 x-i18n:
-    generated_at: "2026-04-30T09:08:49Z"
+    generated_at: "2026-05-06T09:05:52Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 61143200b2e7a74392cf8871bfcd210fe35dbd5118e2e8bc7b15265192fd2bde
+    source_hash: cfc3a15880a5e1881c1a58c60c9ad7e5624350a8db848d03c7cef6ee18c14b81
     source_path: providers/index.md
     workflow: 16
 ---
 
-# Provider di modelli
-
 OpenClaw può usare molti provider LLM. Scegli un provider, autenticati, quindi imposta il
 modello predefinito come `provider/model`.
 
-Cerchi la documentazione dei canali chat (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/ecc.)? Consulta [Canali](/it/channels).
+Cerchi la documentazione sui canali di chat (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/ecc.)? Vedi [Canali](/it/channels).
 
 ## Avvio rapido
 
@@ -49,11 +47,11 @@ Cerchi la documentazione dei canali chat (WhatsApp/Telegram/Discord/Slack/Matter
 - [fal](/it/providers/fal)
 - [Fireworks](/it/providers/fireworks)
 - [GitHub Copilot](/it/providers/github-copilot)
-- [Modelli GLM](/it/providers/glm)
+- [modelli GLM](/it/providers/glm)
 - [Google (Gemini)](/it/providers/google)
 - [Gradium](/it/providers/gradium)
 - [Groq (inferenza LPU)](/it/providers/groq)
-- [Hugging Face (Inferenza)](/it/providers/huggingface)
+- [Hugging Face (Inference)](/it/providers/huggingface)
 - [inferrs (modelli locali)](/it/providers/inferrs)
 - [Kilocode](/it/providers/kilocode)
 - [LiteLLM (gateway unificato)](/it/providers/litellm)
@@ -104,7 +102,7 @@ Cerchi la documentazione dei canali chat (WhatsApp/Telegram/Discord/Slack/Matter
 
 ## Strumenti della community
 
-- [Claude Max API Proxy](/it/providers/claude-max-api-proxy) - Proxy della community per le credenziali dell'abbonamento Claude (verifica le policy/i termini di Anthropic prima dell'uso)
+- [Claude Max API Proxy](/it/providers/claude-max-api-proxy) - Proxy della community per le credenziali di abbonamento Claude (verifica le policy/i termini di Anthropic prima dell'uso)
 
 Per il catalogo completo dei provider (xAI, Groq, Mistral, ecc.) e la configurazione avanzata,
-consulta [Provider di modelli](/it/concepts/model-providers).
+vedi [Provider di modelli](/it/concepts/model-providers).

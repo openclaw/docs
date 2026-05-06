@@ -1,31 +1,30 @@
 ---
 read_when:
-    - Vuoi un provider di ricerca web che non richieda chiave API
+    - Desideri un provider di ricerca web che non richieda una chiave API
     - Vuoi usare DuckDuckGo per web_search
-    - Hai bisogno di un fallback di ricerca a configurazione zero
+    - Serve un meccanismo di ricerca di ripiego senza configurazione.
 summary: Ricerca web DuckDuckGo -- provider di fallback senza chiave (sperimentale, basato su HTML)
 title: Ricerca DuckDuckGo
 x-i18n:
-    generated_at: "2026-04-24T09:05:09Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:11:01Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 6828830079b0bee1321f0971ec120ae98bc72ab040ad3a0fe30fe89217ed0722
+    source_hash: 89c23535730dc272b88e22d1dbeef61abd55a7968d9e57bdce20594df8a2c0f2
     source_path: tools/duckduckgo-search.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw supporta DuckDuckGo come provider `web_search` **senza chiave**. Non è
-richiesta alcuna chiave API né alcun account.
+OpenClaw supporta DuckDuckGo come provider `web_search` **senza chiave**. Non sono richiesti una chiave API o un account.
 
 <Warning>
-  DuckDuckGo è un'integrazione **sperimentale e non ufficiale** che recupera i risultati
-  dalle pagine di ricerca non-JavaScript di DuckDuckGo, non da un'API ufficiale. Aspettati
-  rotture occasionali dovute a pagine di bot-challenge o cambiamenti HTML.
+  DuckDuckGo è un'integrazione **sperimentale, non ufficiale** che recupera risultati
+  dalle pagine di ricerca non JavaScript di DuckDuckGo - non da un'API ufficiale. Sono possibili
+  occasionali interruzioni dovute a pagine di verifica anti-bot o modifiche HTML.
 </Warning>
 
 ## Configurazione
 
-Nessuna chiave API necessaria — basta impostare DuckDuckGo come provider:
+Non è necessaria alcuna chiave API - imposta semplicemente DuckDuckGo come provider:
 
 <Steps>
   <Step title="Configura">
@@ -50,7 +49,7 @@ Nessuna chiave API necessaria — basta impostare DuckDuckGo come provider:
 }
 ```
 
-Impostazioni facoltative a livello Plugin per regione e SafeSearch:
+Impostazioni opzionali a livello di plugin per area geografica e SafeSearch:
 
 ```json5
 {
@@ -76,40 +75,41 @@ Query di ricerca.
 </ParamField>
 
 <ParamField path="count" type="number" default="5">
-Risultati da restituire (1–10).
+Risultati da restituire (1-10).
 </ParamField>
 
 <ParamField path="region" type="string">
-Codice regione DuckDuckGo (ad esempio `us-en`, `uk-en`, `de-de`).
+Codice area geografica DuckDuckGo (ad es. `us-en`, `uk-en`, `de-de`).
 </ParamField>
 
 <ParamField path="safeSearch" type="'strict' | 'moderate' | 'off'" default="moderate">
 Livello SafeSearch.
 </ParamField>
 
-Regione e SafeSearch possono anche essere impostati nella configurazione del Plugin (vedi sopra) — i
-parametri dello strumento sovrascrivono i valori della configurazione per singola query.
+Area geografica e SafeSearch possono essere impostati anche nella configurazione del plugin (vedi sopra) - i parametri dello strumento
+sovrascrivono i valori di configurazione per ogni query.
 
 ## Note
 
-- **Nessuna chiave API** — funziona subito, configurazione zero
-- **Sperimentale** — raccoglie risultati dalle pagine HTML di ricerca non-JavaScript di DuckDuckGo, non da un'API o SDK ufficiale
-- **Rischio bot-challenge** — DuckDuckGo può servire CAPTCHA o bloccare richieste
+- **Nessuna chiave API** - funziona subito, senza configurazione
+- **Sperimentale** - raccoglie risultati dalle pagine HTML non JavaScript di ricerca
+  di DuckDuckGo, non da un'API o SDK ufficiale
+- **Rischio di verifica anti-bot** - DuckDuckGo può mostrare CAPTCHA o bloccare le richieste
   in caso di uso intenso o automatizzato
-- **Parsing HTML** — i risultati dipendono dalla struttura della pagina, che può cambiare senza
+- **Parsing HTML** - i risultati dipendono dalla struttura della pagina, che può cambiare senza
   preavviso
-- **Ordine di auto-rilevamento** — DuckDuckGo è il primo fallback senza chiave
-  (ordine 100) nell'auto-rilevamento. I provider supportati da API con chiavi configurate vengono eseguiti
+- **Ordine di rilevamento automatico** - DuckDuckGo è il primo fallback senza chiave
+  (ordine 100) nel rilevamento automatico. I provider basati su API con chiavi configurate vengono eseguiti
   per primi, poi Ollama Web Search (ordine 110), poi SearXNG (ordine 200)
-- **SafeSearch usa come predefinito moderate** quando non è configurato
+- **SafeSearch ha come valore predefinito moderate** quando non è configurato
 
 <Tip>
-  Per l'uso in produzione, valuta [Brave Search](/it/tools/brave-search) (con livello
-  gratuito disponibile) o un altro provider supportato da API.
+  Per l'uso in produzione, considera [Brave Search](/it/tools/brave-search) (piano gratuito
+  disponibile) o un altro provider basato su API.
 </Tip>
 
 ## Correlati
 
-- [Panoramica Web Search](/it/tools/web) -- tutti i provider e l'auto-rilevamento
-- [Brave Search](/it/tools/brave-search) -- risultati strutturati con livello gratuito
-- [Exa Search](/it/tools/exa-search) -- ricerca neurale con estrazione del contenuto
+- [Panoramica Web Search](/it/tools/web) -- tutti i provider e il rilevamento automatico
+- [Brave Search](/it/tools/brave-search) -- risultati strutturati con piano gratuito
+- [Exa Search](/it/tools/exa-search) -- ricerca neurale con estrazione dei contenuti

@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Cerchi supporto del sistema operativo o percorsi di installazione
-    - Decidere dove eseguire il Gateway
-summary: Panoramica del supporto delle piattaforme (Gateway + app companion)
+    - Cerchi supporto per il sistema operativo o percorsi di installazione
+    - Scegliere dove eseguire il Gateway
+summary: Panoramica del supporto delle piattaforme (Gateway + app complementari)
 title: Piattaforme
 x-i18n:
-    generated_at: "2026-04-24T08:49:28Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T08:59:10Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 3ebed9f219f3072ef760006eef47ca78f87169c40a6098c3585dfaf6169fc594
+    source_hash: dd1fbd1af8b03a12014d91b2f300fb8ec65b9c42c38ada2b9ca089181140a75c
     source_path: platforms/index.md
-    workflow: 15
+    workflow: 16
 ---
 
 Il core di OpenClaw è scritto in TypeScript. **Node è il runtime consigliato**.
-Bun non è consigliato per il Gateway — ci sono problemi noti con i canali WhatsApp e
-Telegram; vedi [Bun (experimental)](/it/install/bun) per i dettagli.
+Bun non è consigliato per il Gateway — problemi noti con i canali WhatsApp e
+Telegram; consulta [Bun (sperimentale)](/it/install/bun) per i dettagli.
 
-Esistono app companion per macOS (app nella barra dei menu) e Node mobili (iOS/Android). Le app companion per Windows e
-Linux sono pianificate, ma il Gateway è già pienamente supportato oggi.
-Sono pianificate anche app companion native per Windows; il Gateway è consigliato tramite WSL2.
+Esistono app complementari per macOS (app nella barra dei menu) e nodi mobili (iOS/Android). Le app complementari per Windows e
+Linux sono pianificate, ma il Gateway è pienamente supportato oggi.
+Sono pianificate anche app complementari native per Windows; il Gateway è consigliato tramite WSL2.
 
 ## Scegli il tuo sistema operativo
 
@@ -31,34 +31,34 @@ Sono pianificate anche app companion native per Windows; il Gateway è consiglia
 
 ## VPS e hosting
 
-- Hub VPS: [VPS hosting](/it/vps)
+- Hub VPS: [Hosting VPS](/it/vps)
 - Fly.io: [Fly.io](/it/install/fly)
 - Hetzner (Docker): [Hetzner](/it/install/hetzner)
 - GCP (Compute Engine): [GCP](/it/install/gcp)
-- Azure (Linux VM): [Azure](/it/install/azure)
+- Azure (VM Linux): [Azure](/it/install/azure)
 - exe.dev (VM + proxy HTTPS): [exe.dev](/it/install/exe-dev)
 
 ## Link comuni
 
-- Guida all'installazione: [Getting Started](/it/start/getting-started)
+- Guida all'installazione: [Per iniziare](/it/start/getting-started)
 - Runbook del Gateway: [Gateway](/it/gateway)
-- Configurazione del Gateway: [Configuration](/it/gateway/configuration)
+- Configurazione del Gateway: [Configurazione](/it/gateway/configuration)
 - Stato del servizio: `openclaw gateway status`
 
 ## Installazione del servizio Gateway (CLI)
 
-Usa una di queste opzioni (tutte supportate):
+Usa uno di questi metodi (tutti supportati):
 
 - Procedura guidata (consigliata): `openclaw onboard --install-daemon`
-- Diretto: `openclaw gateway install`
-- Flusso configure: `openclaw configure` → seleziona **Gateway service**
-- Riparazione/migrazione: `openclaw doctor` (offre di installare o correggere il servizio)
+- Diretta: `openclaw gateway install`
+- Flusso di configurazione: `openclaw configure` → seleziona **Servizio Gateway**
+- Riparazione/migrazione: `openclaw doctor` (propone di installare o correggere il servizio)
 
-La destinazione del servizio dipende dal sistema operativo:
+Il target del servizio dipende dal sistema operativo:
 
 - macOS: LaunchAgent (`ai.openclaw.gateway` o `ai.openclaw.<profile>`; legacy `com.openclaw.*`)
 - Linux/WSL2: servizio utente systemd (`openclaw-gateway[-<profile>].service`)
-- Windows nativo: Scheduled Task (`OpenClaw Gateway` oppure `OpenClaw Gateway (<profile>)`), con fallback a un elemento di accesso nella cartella Startup per utente se la creazione del task viene negata
+- Windows nativo: Attività pianificata (`OpenClaw Gateway` o `OpenClaw Gateway (<profile>)`), con fallback a un elemento di accesso nella cartella Esecuzione automatica per utente se la creazione dell'attività viene negata
 
 ## Correlati
 
