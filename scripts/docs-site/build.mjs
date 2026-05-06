@@ -50,6 +50,7 @@ const localePickerLabels = {
 
 copyPublicFiles();
 for (const page of pages) writePage(page);
+writeLlmsFull();
 writeRedirects();
 writeStaticAssets();
 console.log(`built ${pages.length} pages in ${path.relative(root, outDir)}`);
@@ -270,6 +271,18 @@ function searchModal() {
   return `<div class="search-modal"><div class="search-panel"><div class="search-head"><input data-search-input placeholder="Search docs"><button data-search-close>Close</button></div><div class="search-results" data-search-results></div></div></div>`;
 }
 
+function writeLlmsFull() {
+  const llmsOrigin = (process.env.DOCS_SITE_CANONICAL_ORIGIN ?? (process.env.DOCS_SITE_CNAME ? `https://${process.env.DOCS_SITE_CNAME}` : "")).replace(/\/$/, "");
+  const englishPages = pages
+    .filter((page) => page.locale === "en" && !localeLabels[page.rel.split("/")[0]])
+    .sort((a, b) => a.slug.localeCompare(b.slug));
+  const content = englishPages.map((page) => {
+    const source = llmsOrigin ? `${llmsOrigin}${pageRoute(page)}` : pageRoute(page);
+    return `# ${page.title}\nSource: ${source}\n\n${stripMdxForLlms(page.body).trim()}\n`;
+  }).join("\n\n---\n\n");
+  fs.writeFileSync(path.join(outDir, "llms-full.txt"), `${content}\n`, "utf8");
+}
+
 function chatWidget() {
   if (!chatApiUrl) return "";
   return `<section class="docs-chat" data-docs-chat aria-label="OpenClaw docs assistant">
@@ -304,6 +317,21 @@ function writeRedirectFile(source, dest) {
 
 function redirectHtml(dest) {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex"><meta http-equiv="refresh" content="0; url=${escapeAttr(dest)}"><link rel="canonical" href="${escapeAttr(dest)}"><title>Redirecting - ${escapeHtml(config.name)}</title><script>location.replace(${JSON.stringify(dest)})</script></head><body><a href="${escapeAttr(dest)}">Redirecting</a></body></html>`;
+}
+
+function stripMdxForLlms(input) {
+  return input
+    .replace(/^import\s+.+?;?\s*$/gm, "")
+    .replace(/<([A-Z][A-Za-z0-9_.-]*)([^>]*)\/>/g, (_, name, attrs) => componentLabel(name, attrs))
+    .replace(/<([A-Z][A-Za-z0-9_.-]*)([^>]*)>/g, (_, name, attrs) => componentLabel(name, attrs))
+    .replace(/<\/[A-Z][A-Za-z0-9_.-]*>/g, "")
+    .replace(/\n{3,}/g, "\n\n");
+}
+
+function componentLabel(name, attrs) {
+  const parsed = Object.fromEntries([...String(attrs).matchAll(/([A-Za-z0-9_-]+)=(?:"([^"]*)"|'([^']*)')/g)].map((match) => [match[1], match[2] ?? match[3] ?? ""]));
+  const label = parsed.title ?? parsed.name ?? parsed.href ?? "";
+  return label ? `\n${label}\n` : `\n${name}\n`;
 }
 
 function writeStaticAssets() {
