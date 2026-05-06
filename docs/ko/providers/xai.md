@@ -412,6 +412,7 @@ OpenClaw는 미디어 생성, 음성 및 일괄 전사에 xAI의 REST 이미지/
     - `grok-4.20-multi-agent-experimental-beta-0304`는 표준 OpenClaw xAI transport와 다른 upstream API surface가 필요하므로 일반 xAI provider 경로에서는 지원되지 않습니다.
     - xAI Realtime 음성은 아직 OpenClaw provider로 등록되어 있지 않습니다. batch STT 또는 streaming transcription과는 다른 양방향 음성 session contract가 필요합니다.
     - xAI image `quality`, image `mask`, 추가 native 전용 aspect ratio는 공유 `image_generate` 도구에 해당 cross-provider control이 생기기 전까지 노출되지 않습니다.
+
   </Accordion>
 
   <Accordion title="Advanced notes">
@@ -422,6 +423,7 @@ OpenClaw는 미디어 생성, 음성 및 일괄 전사에 xAI의 REST 이미지/
     - Grok `web_search`는 `plugins.entries.xai.config.webSearch.baseUrl`을 읽습니다. `x_search`는 `plugins.entries.xai.config.xSearch.baseUrl`을 읽은 다음 Grok web-search base URL로 fallback합니다.
     - `x_search`와 `code_execution`은 core model runtime에 hardcode되어 있지 않고 번들 xAI Plugin이 소유합니다.
     - `code_execution`은 로컬 [`exec`](/ko/tools/exec)이 아니라 원격 xAI sandbox execution입니다.
+
   </Accordion>
 </AccordionGroup>
 
