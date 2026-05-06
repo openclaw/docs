@@ -1,80 +1,80 @@
 ---
 read_when:
-    - 음성 wake 또는 PTT 경로 작업하기
-summary: mac 앱의 음성 wake 및 push-to-talk 모드와 라우팅 세부 사항
-title: Voice wake (macOS)
+    - 음성 깨우기 또는 눌러서 말하기 경로 작업 중
+summary: Mac 앱의 음성 깨우기 및 눌러서 말하기 모드와 라우팅 세부 정보
+title: 음성 깨우기 (macOS)
 x-i18n:
-    generated_at: "2026-04-24T06:24:55Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T06:33:39Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 0273c24764f0baf440a19f31435d6ee62ab040c1ec5a97d7733d3ec8b81b0641
+    source_hash: 312895b5767c447233bd77cbcd48ea81bb6c700080abc31974188b610a1b1ef0
     source_path: platforms/mac/voicewake.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Voice Wake & Push-to-Talk
+# 음성 깨우기 및 푸시 투 토크
 
 ## 모드
 
-- **Wake-word 모드**(기본값): 항상 켜져 있는 Speech 인식기가 트리거 토큰(`swabbleTriggerWords`)을 기다립니다. 일치하면 캡처를 시작하고, partial text와 함께 오버레이를 표시한 뒤, 침묵 후 자동 전송합니다.
-- **Push-to-talk (오른쪽 Option 길게 누르기)**: 오른쪽 Option 키를 길게 눌러 즉시 캡처합니다. 트리거가 필요 없습니다. 누르는 동안 오버레이가 표시되며, 놓으면 짧은 지연 후 확정되어 전달되므로 텍스트를 조금 수정할 수 있습니다.
+- **깨우기 단어 모드**(기본값): 항상 켜져 있는 음성 인식기가 트리거 토큰(`swabbleTriggerWords`)을 기다립니다. 일치하면 캡처를 시작하고, 부분 텍스트가 포함된 오버레이를 표시하며, 침묵 후 자동으로 전송합니다.
+- **푸시 투 토크(오른쪽 Option 누르고 있기)**: 오른쪽 Option 키를 누르고 있으면 트리거 없이 즉시 캡처합니다. 누르고 있는 동안 오버레이가 표시되며, 놓으면 텍스트를 조정할 수 있도록 짧은 지연 후 확정하고 전달합니다.
 
-## 런타임 동작(wake-word)
+## 런타임 동작(깨우기 단어)
 
-- Speech 인식기는 `VoiceWakeRuntime`에 존재합니다.
-- 트리거는 wake word와 다음 단어 사이에 **의미 있는 pause**가 있을 때만 발동합니다(약 0.55초 간격). 오버레이/차임은 명령이 시작되기 전이라도 그 pause 시점에 시작될 수 있습니다.
-- 침묵 시간 창: 말이 이어지는 중에는 2.0초, 트리거만 들린 경우에는 5.0초
-- 하드 중지: runaway 세션 방지를 위해 120초
-- 세션 간 debounce: 350ms
-- 오버레이는 `VoiceWakeOverlayController`로 구동되며 committed/volatile 색상을 사용합니다.
-- 전송 후 인식기는 다음 트리거를 듣기 위해 깔끔하게 재시작합니다.
+- 음성 인식기는 `VoiceWakeRuntime`에 있습니다.
+- 트리거는 깨우기 단어와 다음 단어 사이에 **의미 있는 일시 정지**가 있을 때만 실행됩니다(약 0.55초 간격). 명령이 시작되기 전이라도 일시 정지 시점에 오버레이/차임이 시작될 수 있습니다.
+- 침묵 시간 범위: 발화가 이어지는 중에는 2.0초, 트리거만 들린 경우에는 5.0초입니다.
+- 강제 중지: 세션 폭주를 방지하기 위해 120초입니다.
+- 세션 간 디바운스: 350ms입니다.
+- 오버레이는 커밋됨/휘발성 색상을 사용하는 `VoiceWakeOverlayController`를 통해 구동됩니다.
+- 전송 후 인식기가 깔끔하게 다시 시작되어 다음 트리거를 듣습니다.
 
 ## 수명 주기 불변 조건
 
-- Voice Wake가 활성화되어 있고 권한이 부여되었다면, wake-word 인식기는 listening 상태여야 합니다(명시적 push-to-talk 캡처 중인 경우 제외).
-- X 버튼으로 수동 dismiss한 경우를 포함해, 오버레이 가시성은 인식기 재개를 절대 막아서는 안 됩니다.
+- Voice Wake가 활성화되어 있고 권한이 부여된 경우, 깨우기 단어 인식기는 듣고 있어야 합니다(명시적인 푸시 투 토크 캡처 중은 제외).
+- 오버레이 표시 여부(X 버튼을 통한 수동 닫기 포함)는 인식기가 재개되는 것을 절대 막아서는 안 됩니다.
 
-## 오버레이 고착 실패 모드(이전)
+## 고정된 오버레이 실패 모드(이전)
 
-이전에는 오버레이가 화면에 고착된 상태에서 수동으로 닫으면 Voice Wake가 “죽은 것처럼” 보일 수 있었습니다. 런타임의 재시작 시도가 오버레이 가시성에 의해 막힐 수 있었고, 이후 재시작이 다시 예약되지 않았기 때문입니다.
+이전에는 오버레이가 표시된 상태로 고정되어 수동으로 닫으면, 런타임의 재시작 시도가 오버레이 표시 상태에 의해 차단될 수 있고 이후 재시작이 예약되지 않아 Voice Wake가 "죽은" 것처럼 보일 수 있었습니다.
 
-보강 내용:
+강화 내용:
 
-- 이제 wake runtime 재시작은 오버레이 가시성에 의해 차단되지 않습니다.
-- 오버레이 dismiss 완료 시 `VoiceSessionCoordinator`를 통해 `VoiceWakeRuntime.refresh(...)`가 트리거되므로, 수동 X-dismiss 후에도 항상 listening이 재개됩니다.
+- 깨우기 런타임 재시작은 더 이상 오버레이 표시 여부에 의해 차단되지 않습니다.
+- 오버레이 닫기 완료는 `VoiceSessionCoordinator`를 통해 `VoiceWakeRuntime.refresh(...)`를 트리거하므로, X로 수동 닫기해도 항상 듣기를 재개합니다.
 
-## Push-to-talk 세부 사항
+## 푸시 투 토크 세부 사항
 
-- 핫키 감지는 **오른쪽 Option**용 전역 `.flagsChanged` monitor를 사용합니다(`keyCode 61` + `.option`). 이벤트를 관찰만 하며, 삼키지는 않습니다.
-- 캡처 파이프라인은 `VoicePushToTalk`에 있습니다. Speech를 즉시 시작하고, partial을 오버레이로 스트리밍하며, 키를 놓으면 `VoiceWakeForwarder`를 호출합니다.
-- push-to-talk가 시작되면 오디오 탭 충돌을 피하기 위해 wake-word runtime을 일시 중지하며, 키를 놓은 후 자동으로 재시작합니다.
-- 권한: 마이크 + Speech가 필요하며, 이벤트를 보려면 Accessibility/Input Monitoring 승인이 필요합니다.
-- 외장 키보드: 일부는 오른쪽 Option을 예상대로 노출하지 않을 수 있으므로, 사용자가 누락을 보고하면 대체 단축키를 제공하세요.
+- 단축키 감지는 **오른쪽 Option**(`keyCode 61` + `.option`)에 대한 전역 `.flagsChanged` 모니터를 사용합니다. 이벤트만 관찰합니다(가로채지 않음).
+- 캡처 파이프라인은 `VoicePushToTalk`에 있습니다. 즉시 Speech를 시작하고, 부분 결과를 오버레이로 스트리밍하며, 놓을 때 `VoiceWakeForwarder`를 호출합니다.
+- 푸시 투 토크가 시작되면 경쟁하는 오디오 탭을 피하기 위해 깨우기 단어 런타임을 일시 중지합니다. 놓은 후 자동으로 다시 시작됩니다.
+- 권한: 마이크 + Speech가 필요합니다. 이벤트를 보려면 손쉬운 사용/입력 모니터링 승인이 필요합니다.
+- 외부 키보드: 일부는 오른쪽 Option을 예상대로 노출하지 않을 수 있습니다. 사용자가 누락을 보고하면 대체 단축키를 제공하세요.
 
-## 사용자 대상 설정
+## 사용자 표시 설정
 
-- **Voice Wake** 토글: wake-word runtime 활성화
-- **Hold Cmd+Fn to talk**: push-to-talk monitor 활성화. macOS < 26에서는 비활성화됨.
-- 언어 및 마이크 선택기, 실시간 레벨 미터, trigger-word 테이블, tester(로컬 전용, 전달하지 않음)
-- 마이크 선택기는 장치가 연결 해제되어도 마지막 선택을 보존하고, disconnected 힌트를 표시하며, 장치가 돌아올 때까지 일시적으로 시스템 기본값으로 대체합니다.
-- **Sounds**: 트리거 감지 시와 전송 시 차임을 재생하며, 기본값은 macOS “Glass” 시스템 사운드입니다. 각 이벤트마다 `NSSound`로 로드 가능한 파일(MP3/WAV/AIFF 등)을 선택하거나 **No Sound**를 선택할 수 있습니다.
+- **Voice Wake** 토글: 깨우기 단어 런타임을 활성화합니다.
+- **Cmd+Fn을 눌러 말하기**: 푸시 투 토크 모니터를 활성화합니다. macOS < 26에서는 비활성화됩니다.
+- 언어 및 마이크 선택기, 실시간 레벨 미터, 트리거 단어 표, 테스터(로컬 전용, 전달하지 않음).
+- 마이크 선택기는 장치 연결이 끊겨도 마지막 선택을 유지하고, 연결 끊김 힌트를 표시하며, 장치가 돌아올 때까지 일시적으로 시스템 기본값으로 대체합니다.
+- **소리**: 트리거 감지 시와 전송 시 차임을 울립니다. 기본값은 macOS "Glass" 시스템 사운드입니다. 각 이벤트에 대해 `NSSound`로 로드할 수 있는 파일(예: MP3/WAV/AIFF)을 선택하거나 **소리 없음**을 선택할 수 있습니다.
 
 ## 전달 동작
 
-- Voice Wake가 활성화되어 있으면 대화록은 활성 gateway/agent로 전달됩니다(mac 앱의 나머지 부분과 동일한 로컬 vs 원격 모드 사용).
-- 응답은 **마지막으로 사용한 main provider**(WhatsApp/Telegram/Discord/WebChat)로 전달됩니다. 전달에 실패하면 오류가 로그에 기록되며, 실행 내용은 여전히 WebChat/session logs를 통해 볼 수 있습니다.
+- Voice Wake가 활성화되면 전사 내용이 활성 Gateway/에이전트로 전달됩니다(나머지 Mac 앱에서 사용하는 것과 동일한 로컬 대 원격 모드).
+- 답장은 **마지막으로 사용한 기본 제공자**(WhatsApp/Telegram/Discord/WebChat)로 전달됩니다. 전달에 실패하면 오류가 기록되고 실행은 WebChat/세션 로그를 통해 계속 표시됩니다.
 
-## 전달 payload
+## 전달 페이로드
 
-- `VoiceWakeForwarder.prefixedTranscript(_:)`는 전송 전에 기계 힌트를 앞에 붙입니다. wake-word 경로와 push-to-talk 경로가 공유합니다.
+- `VoiceWakeForwarder.prefixedTranscript(_:)`는 전송하기 전에 기기 힌트를 앞에 붙입니다. 깨우기 단어와 푸시 투 토크 경로에서 공유됩니다.
 
-## 빠른 검증
+## 빠른 확인
 
-- push-to-talk를 켜고, Cmd+Fn을 길게 누르고, 말한 뒤, 놓습니다: 오버레이에 partial이 표시된 뒤 전송되어야 합니다.
-- 누르고 있는 동안 메뉴 막대 ears는 계속 커진 상태를 유지해야 합니다(`triggerVoiceEars(ttl:nil)` 사용). 놓으면 다시 작아집니다.
+- 푸시 투 토크를 켜고, Cmd+Fn을 누른 채 말한 뒤 놓습니다. 오버레이가 부분 결과를 표시한 다음 전송해야 합니다.
+- 누르고 있는 동안 메뉴 막대 귀는 확대된 상태를 유지해야 합니다(`triggerVoiceEars(ttl:nil)` 사용). 놓은 뒤에는 내려갑니다.
 
 ## 관련 항목
 
-- [Voice wake](/ko/nodes/voicewake)
-- [Voice overlay](/ko/platforms/mac/voice-overlay)
-- [macOS app](/ko/platforms/macos)
+- [음성 깨우기](/ko/nodes/voicewake)
+- [음성 오버레이](/ko/platforms/mac/voice-overlay)
+- [macOS 앱](/ko/platforms/macos)

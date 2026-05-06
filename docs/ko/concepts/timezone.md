@@ -1,101 +1,54 @@
 ---
 read_when:
-    - 모델에 대해 타임스탬프가 어떻게 정규화되는지 이해해야 합니다.
-    - 시스템 프롬프트용 사용자 시간대를 구성하는 중입니다.
-summary: 에이전트, 엔벌로프, 프롬프트에 대한 시간대 처리
+    - 시간대 처리를 빠르게 이해하기 위한 개념 모델이 필요합니다
+    - 시간대를 어디에서 설정하거나 재정의할지 결정하고 있습니다
+summary: 시간대가 OpenClaw에 나타나는 위치 — 엔벨로프, 도구 페이로드, 시스템 프롬프트
 title: 시간대
 x-i18n:
-    generated_at: "2026-04-24T06:12:29Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T06:23:41Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8318acb0269f446fb3d3198f47811d40490a9ee9593fed82f31353aef2bacb81
+    source_hash: 041b207a0fa2758a20e8f3c4eca852d3dd416560d045459cb4d86709b45449e3
     source_path: concepts/timezone.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw는 모델이 **하나의 기준 시간**을 보도록 타임스탬프를 표준화합니다.
+OpenClaw은 타임스탬프를 표준화하여 모델이 제공자별 로컬 시계가 뒤섞인 값 대신 **단일 기준 시간**을 보도록 합니다. 시간대가 표시되는 표면은 세 가지이며, 각각 목적이 다릅니다.
 
-## 메시지 엔벌로프(기본값: 로컬)
+## 세 가지 시간대 표면
 
-인바운드 메시지는 다음과 같은 엔벌로프로 래핑됩니다.
+| 표면              | 표시 내용                                                                                                | 기본값                                  | 설정 경로                                                |
+| ----------------- | -------------------------------------------------------------------------------------------------------- | --------------------------------------- | -------------------------------------------------------- |
+| 메시지 봉투       | 수신 채널 메시지를 감쌉니다: `[Signal +1555 2026-01-18 00:19 PST] hello`                                 | 호스트 로컬                             | `agents.defaults.envelopeTimezone`                       |
+| 도구 페이로드     | 채널 `readMessages` 스타일 도구는 원시 제공자 시간 + 정규화된 `timestampMs` / `timestampUtc`를 반환합니다 | UTC 필드는 항상 포함                    | 설정 불가 — 제공자 네이티브 타임스탬프를 보존            |
+| 시스템 프롬프트   | **시간대만** 포함하는 작은 `Current Date & Time` 블록입니다(캐시 안정성을 위해 시계 값 없음)              | `userTimezone`이 설정되지 않으면 호스트 시간대 | `agents.defaults.userTimezone`                           |
 
-```
-[Provider ... 2026-01-05 16:26 PST] message text
-```
+시스템 프롬프트는 턴 간 프롬프트 캐싱을 안정적으로 유지하기 위해 실시간 시계를 의도적으로 생략합니다. 에이전트가 현재 시간이 필요하면 `session_status`를 호출합니다.
 
-엔벌로프의 타임스탬프는 기본적으로 **호스트 로컬 시간대**이며, 분 단위 정밀도를 가집니다.
-
-다음으로 이를 재정의할 수 있습니다.
+## 사용자 시간대 설정
 
 ```json5
 {
   agents: {
     defaults: {
-      envelopeTimezone: "local", // "utc" | "local" | "user" | IANA timezone
-      envelopeTimestamp: "on", // "on" | "off"
-      envelopeElapsed: "on", // "on" | "off"
+      userTimezone: "America/Chicago",
     },
   },
 }
 ```
 
-- `envelopeTimezone: "utc"`는 UTC를 사용합니다.
-- `envelopeTimezone: "user"`는 `agents.defaults.userTimezone`을 사용합니다(없으면 호스트 시간대로 대체).
-- 고정 오프셋에는 명시적 IANA 시간대(예: `"Europe/Vienna"`)를 사용하세요.
-- `envelopeTimestamp: "off"`는 엔벌로프 헤더에서 절대 타임스탬프를 제거합니다.
-- `envelopeElapsed: "off"`는 경과 시간 접미사(`+2m` 형식)를 제거합니다.
+`userTimezone`이 설정되지 않으면 OpenClaw은 런타임에 호스트 시간대를 확인합니다(설정 쓰기 없음). `agents.defaults.timeFormat`(`auto` | `12` | `24`)은 봉투와 하위 표면에서 12시간/24시간 표시를 제어하며, 시스템 프롬프트 섹션에는 적용되지 않습니다.
 
-### 예시
+## 재정의해야 하는 경우
 
-**로컬(기본값):**
+- 서로 다른 지역의 호스트 간에 안정적인 타임스탬프를 원하거나 UTC 기준 로그를 진단 출력과 맞추고 싶다면 **UTC 봉투를 사용**하세요(`envelopeTimezone: "utc"`).
+- Gateway 호스트는 한 시간대에 있지만 사용자는 다른 시간대에 있고, 호스트가 이전되더라도 봉투를 사용자 시간대로 읽히게 하고 싶다면 **고정 IANA 시간대**(예: `"Europe/Vienna"`)를 사용하세요.
+- 타임스탬프 맥락이 대화에 유용하지 않을 때는 낮은 토큰 봉투를 위해 **`envelopeTimestamp: "off"`를 설정**하세요.
 
-```
-[Signal Alice +1555 2026-01-18 00:19 PST] hello
-```
-
-**고정 시간대:**
-
-```
-[Signal Alice +1555 2026-01-18 06:19 GMT+1] hello
-```
-
-**경과 시간:**
-
-```
-[Signal Alice +1555 +2m 2026-01-18T05:19Z] follow-up
-```
-
-## 도구 페이로드(원시 제공자 데이터 + 정규화된 필드)
-
-도구 호출(`channels.discord.readMessages`, `channels.slack.readMessages` 등)은 **원시 제공자 타임스탬프**를 반환합니다.
-일관성을 위해 정규화된 필드도 함께 첨부됩니다.
-
-- `timestampMs` (UTC epoch 밀리초)
-- `timestampUtc` (ISO 8601 UTC 문자열)
-
-원시 제공자 필드는 보존됩니다.
-
-## 시스템 프롬프트용 사용자 시간대
-
-모델에 사용자의 로컬 시간대를 알려주려면 `agents.defaults.userTimezone`을 설정하세요. 설정하지 않으면 OpenClaw는 **런타임에 호스트 시간대**를 확인합니다(config 쓰기 없음).
-
-```json5
-{
-  agents: { defaults: { userTimezone: "America/Chicago" } },
-}
-```
-
-시스템 프롬프트에는 다음이 포함됩니다.
-
-- 로컬 시간과 시간대가 포함된 `Current Date & Time` 섹션
-- `Time format: 12-hour` 또는 `24-hour`
-
-프롬프트 형식은 `agents.defaults.timeFormat` (`auto` | `12` | `24`)으로 제어할 수 있습니다.
-
-전체 동작과 예시는 [날짜 및 시간](/ko/date-time)을 참조하세요.
+전체 동작 참조, 제공자별 예시, 경과 시간 형식은 [날짜 및 시간](/ko/date-time)을 참조하세요.
 
 ## 관련 항목
 
-- [Heartbeat](/ko/gateway/heartbeat) — 활성 시간은 일정 계산에 시간대를 사용
-- [Cron 작업](/ko/automation/cron-jobs) — Cron 표현식은 일정 계산에 시간대를 사용
-- [날짜 및 시간](/ko/date-time) — 전체 날짜/시간 동작 및 예시
+- [날짜 및 시간](/ko/date-time) — 전체 봉투/도구/프롬프트 동작과 예시.
+- [Heartbeat](/ko/gateway/heartbeat) — 활성 시간은 예약에 시간대를 사용합니다.
+- [Cron 작업](/ko/automation/cron-jobs) — cron 표현식은 예약에 시간대를 사용합니다.

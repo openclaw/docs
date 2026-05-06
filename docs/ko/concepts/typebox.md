@@ -1,42 +1,36 @@
 ---
 read_when:
-    - 프로토콜 스키마 또는 코드 생성 업데이트하기
-summary: Gateway 프로토콜의 단일 정보원으로서의 TypeBox 스키마
+    - 프로토콜 스키마 또는 코드 생성 업데이트
+summary: Gateway 프로토콜의 단일 진실 공급원인 TypeBox 스키마
 title: TypeBox
 x-i18n:
-    generated_at: "2026-04-24T06:12:29Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T06:23:45Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 0496db919ee5c50a5932aa9e51eb54e1f54791bc0a271f39d6fb9e6fe17a2a28
+    source_hash: 3e188ec0fefcbaf01c8b575a1898eafbbcf309d3032930aa0c09c2d9a63b93e5
     source_path: concepts/typebox.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Gateway 프로토콜의 단일 정보원으로서의 TypeBox
+TypeBox는 TypeScript 우선 schema library입니다. 이를 사용해 **Gateway
+WebSocket protocol**(handshake, request/response, server events)을 정의합니다. 이러한 schema는 macOS app을 위한 **runtime validation**, **JSON Schema export**, **Swift codegen**을 구동합니다. 하나의 source of truth이며, 나머지는 모두 생성됩니다.
 
-최종 업데이트: 2026-01-10
+더 높은 수준의 protocol context를 원한다면
+[Gateway architecture](/ko/concepts/architecture)에서 시작하세요.
 
-TypeBox는 TypeScript 우선 스키마 라이브러리입니다. OpenClaw에서는 이를 사용해 **Gateway
-WebSocket 프로토콜**(핸드셰이크, 요청/응답, 서버 이벤트)을 정의합니다. 이 스키마는
-**런타임 검증**, **JSON Schema 내보내기**, 그리고 macOS 앱용 **Swift 코드 생성**을 구동합니다.
-단일 정보원, 나머지는 모두 생성됩니다.
+## Mental model(30초)
 
-더 상위 수준의 프로토콜 맥락이 필요하다면
-[Gateway architecture](/ko/concepts/architecture)부터 시작하세요.
+모든 Gateway WS 메시지는 다음 세 가지 frame 중 하나입니다.
 
-## 개념 모델(30초)
+- **Request**: `{ type: "req", id, method, params }`
+- **Response**: `{ type: "res", id, ok, payload | error }`
+- **Event**: `{ type: "event", event, payload, seq?, stateVersion? }`
 
-모든 Gateway WS 메시지는 다음 세 프레임 중 하나입니다.
-
-- **요청**: `{ type: "req", id, method, params }`
-- **응답**: `{ type: "res", id, ok, payload | error }`
-- **이벤트**: `{ type: "event", event, payload, seq?, stateVersion? }`
-
-첫 번째 프레임은 반드시 `connect` 요청이어야 합니다. 그 이후에는 클라이언트가
-메서드(예: `health`, `send`, `chat.send`)를 호출하고 이벤트(예:
+첫 번째 frame은 **반드시** `connect` request여야 합니다. 그 이후에는 client가
+method(예: `health`, `send`, `chat.send`)를 호출하고 event(예:
 `presence`, `tick`, `agent`)를 구독할 수 있습니다.
 
-연결 흐름(최소):
+Connection flow(최소):
 
 ```
 Client                    Gateway
@@ -47,56 +41,50 @@ Client                    Gateway
   |<---- res:health ----------|
 ```
 
-일반적인 메서드 + 이벤트:
+일반적인 method + event:
 
-| 범주 | 예시 | 참고 |
+| Category   | Examples                                                   | Notes                              |
 | ---------- | ---------------------------------------------------------- | ---------------------------------- |
-| 코어 | `connect`, `health`, `status` | `connect`가 반드시 첫 번째여야 함 |
-| 메시징 | `send`, `agent`, `agent.wait`, `system-event`, `logs.tail` | 부작용이 있으면 `idempotencyKey` 필요 |
-| 채팅 | `chat.history`, `chat.send`, `chat.abort` | WebChat에서 사용 |
-| 세션 | `sessions.list`, `sessions.patch`, `sessions.delete` | 세션 관리 |
-| 자동화 | `wake`, `cron.list`, `cron.run`, `cron.runs` | wake + Cron 제어 |
-| Node | `node.list`, `node.invoke`, `node.pair.*` | Gateway WS + Node 작업 |
-| 이벤트 | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown` | 서버 푸시 |
+| Core       | `connect`, `health`, `status`                              | `connect`가 먼저 와야 함           |
+| Messaging  | `send`, `agent`, `agent.wait`, `system-event`, `logs.tail` | side-effect에는 `idempotencyKey` 필요 |
+| Chat       | `chat.history`, `chat.send`, `chat.abort`                  | WebChat이 이를 사용함              |
+| Sessions   | `sessions.list`, `sessions.patch`, `sessions.delete`       | session admin                      |
+| Automation | `wake`, `cron.list`, `cron.run`, `cron.runs`               | wake + cron control                |
+| Nodes      | `node.list`, `node.invoke`, `node.pair.*`                  | Gateway WS + node actions          |
+| Events     | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown`  | server push                        |
 
-권위 있는 공개 **discovery** 인벤토리는
-`src/gateway/server-methods-list.ts`의 `listGatewayMethods`, `GATEWAY_EVENTS`에 있습니다.
+권위 있는 advertised **discovery** inventory는
+`src/gateway/server-methods-list.ts`(`listGatewayMethods`, `GATEWAY_EVENTS`)에 있습니다.
 
-## 스키마 위치
+## Schema 위치
 
-- 소스: `src/gateway/protocol/schema.ts`
-- 런타임 검증기(AJV): `src/gateway/protocol/index.ts`
-- 공개 기능/discovery 레지스트리: `src/gateway/server-methods-list.ts`
-- 서버 핸드셰이크 + 메서드 디스패치: `src/gateway/server.impl.ts`
-- Node 클라이언트: `src/gateway/client.ts`
-- 생성된 JSON Schema: `dist/protocol.schema.json`
-- 생성된 Swift 모델: `apps/macos/Sources/OpenClawProtocol/GatewayModels.swift`
+- Source: `src/gateway/protocol/schema.ts`
+- Runtime validators(AJV): `src/gateway/protocol/index.ts`
+- Advertised feature/discovery registry: `src/gateway/server-methods-list.ts`
+- Server handshake + method dispatch: `src/gateway/server.impl.ts`
+- Node client: `src/gateway/client.ts`
+- Generated JSON Schema: `dist/protocol.schema.json`
+- Generated Swift models: `apps/macos/Sources/OpenClawProtocol/GatewayModels.swift`
 
-## 현재 파이프라인
+## 현재 pipeline
 
 - `pnpm protocol:gen`
-  - JSON Schema(draft‑07)를 `dist/protocol.schema.json`에 기록
+  - JSON Schema(draft-07)를 `dist/protocol.schema.json`에 씁니다
 - `pnpm protocol:gen:swift`
-  - Swift gateway 모델 생성
+  - Swift gateway model을 생성합니다
 - `pnpm protocol:check`
-  - 두 생성기를 모두 실행하고 출력이 커밋되었는지 검증
+  - 두 generator를 모두 실행하고 output이 commit되었는지 확인합니다
 
-## 런타임에서 스키마가 사용되는 방식
+## Runtime에서 schema가 사용되는 방식
 
-- **서버 측**: 모든 인바운드 프레임은 AJV로 검증됩니다. 핸드셰이크는
-  `params`가 `ConnectParams`와 일치하는 `connect` 요청만 허용합니다.
-- **클라이언트 측**: JS 클라이언트는 사용 전에 이벤트 및 응답 프레임을 검증합니다.
-- **기능 discovery**: Gateway는 `hello-ok`에서 `listGatewayMethods()` 및
-  `GATEWAY_EVENTS`를 기반으로 보수적인 `features.methods`
-  및 `features.events` 목록을 전송합니다.
-- 이 discovery 목록은
-  `coreGatewayHandlers`의 모든 호출 가능한 헬퍼를 자동 생성한 덤프가 아닙니다. 일부 헬퍼 RPC는
-  `src/gateway/server-methods/*.ts`에 구현되어 있지만 공개 기능 목록에는
-  열거되지 않습니다.
+- **Server side**: 모든 inbound frame은 AJV로 validate됩니다. handshake는 params가 `ConnectParams`와 일치하는 `connect` request만 허용합니다.
+- **Client side**: JS client는 사용하기 전에 event와 response frame을 validate합니다.
+- **Feature discovery**: Gateway는 `listGatewayMethods()`와 `GATEWAY_EVENTS`에서 가져온 보수적인 `features.methods` 및 `features.events` list를 `hello-ok`에 담아 보냅니다.
+- 이 discovery list는 `coreGatewayHandlers`의 모든 callable helper를 generated dump한 것이 아닙니다. 일부 helper RPC는 advertised feature list에 열거되지 않고 `src/gateway/server-methods/*.ts`에 구현되어 있습니다.
 
-## 프레임 예시
+## Example frame
 
-Connect(첫 메시지):
+Connect(첫 번째 메시지):
 
 ```json
 {
@@ -118,7 +106,7 @@ Connect(첫 메시지):
 }
 ```
 
-Hello-ok 응답:
+Hello-ok response:
 
 ```json
 {
@@ -141,7 +129,7 @@ Hello-ok 응답:
 }
 ```
 
-요청 + 응답:
+Request + response:
 
 ```json
 { "type": "req", "id": "r1", "method": "health" }
@@ -151,15 +139,15 @@ Hello-ok 응답:
 { "type": "res", "id": "r1", "ok": true, "payload": { "ok": true } }
 ```
 
-이벤트:
+Event:
 
 ```json
 { "type": "event", "event": "tick", "payload": { "ts": 1730000000 }, "seq": 12 }
 ```
 
-## 최소 클라이언트(Node.js)
+## Minimal client(Node.js)
 
-가장 작은 유용한 흐름: connect + health.
+가장 작은 유용한 flow: connect + health.
 
 ```ts
 import { WebSocket } from "ws";
@@ -199,13 +187,13 @@ ws.on("message", (data) => {
 });
 ```
 
-## 실전 예시: 메서드를 엔드투엔드로 추가하기
+## Worked example: method를 end-to-end로 추가하기
 
-예시: `{ ok: true, text }`를 반환하는 새 `system.echo` 요청 추가.
+예: `{ ok: true, text }`를 반환하는 새 `system.echo` request를 추가합니다.
 
-1. **스키마(단일 정보원)**
+1. **Schema(source of truth)**
 
-`src/gateway/protocol/schema.ts`에 추가:
+`src/gateway/protocol/schema.ts`에 추가합니다.
 
 ```ts
 export const SystemEchoParamsSchema = Type.Object(
@@ -219,7 +207,7 @@ export const SystemEchoResultSchema = Type.Object(
 );
 ```
 
-둘 다 `ProtocolSchemas`에 추가하고 타입을 내보냅니다:
+둘 다 `ProtocolSchemas`에 추가하고 type을 export합니다.
 
 ```ts
   SystemEchoParams: SystemEchoParamsSchema,
@@ -231,17 +219,17 @@ export type SystemEchoParams = Static<typeof SystemEchoParamsSchema>;
 export type SystemEchoResult = Static<typeof SystemEchoResultSchema>;
 ```
 
-2. **검증**
+2. **Validation**
 
-`src/gateway/protocol/index.ts`에서 AJV 검증기를 내보냅니다:
+`src/gateway/protocol/index.ts`에서 AJV validator를 export합니다.
 
 ```ts
 export const validateSystemEchoParams = ajv.compile<SystemEchoParams>(SystemEchoParamsSchema);
 ```
 
-3. **서버 동작**
+3. **Server behavior**
 
-`src/gateway/server-methods/system.ts`에 핸들러 추가:
+`src/gateway/server-methods/system.ts`에 handler를 추가합니다.
 
 ```ts
 export const systemHandlers: GatewayRequestHandlers = {
@@ -252,66 +240,62 @@ export const systemHandlers: GatewayRequestHandlers = {
 };
 ```
 
-이를 `src/gateway/server-methods.ts`에 등록한 뒤(`systemHandlers`를 이미 병합함),
-`src/gateway/server-methods-list.ts`의 `listGatewayMethods` 입력에 `"system.echo"`를 추가하세요.
+`src/gateway/server-methods.ts`에 등록한 다음(`systemHandlers`는 이미 merge됨),
+`src/gateway/server-methods-list.ts`의 `listGatewayMethods` input에 `"system.echo"`를 추가합니다.
 
-이 메서드가 operator 또는 Node 클라이언트에서 호출 가능해야 한다면
-`src/gateway/method-scopes.ts`에도 분류를 추가해 범위 강제와 `hello-ok` 기능
-공개가 일치하도록 하세요.
+이 method를 operator 또는 node client가 호출할 수 있다면 scope enforcement와 `hello-ok` feature advertising이 정렬된 상태를 유지하도록 `src/gateway/method-scopes.ts`에서도 분류하세요.
 
-4. **재생성**
+4. **Regenerate**
 
 ```bash
 pnpm protocol:check
 ```
 
-5. **테스트 + 문서**
+5. **Tests + docs**
 
-`src/gateway/server.*.test.ts`에 서버 테스트를 추가하고 문서에도 메서드를 기록하세요.
+`src/gateway/server.*.test.ts`에 server test를 추가하고 docs에 method를 기록하세요.
 
-## Swift 코드 생성 동작
+## Swift codegen behavior
 
-Swift 생성기는 다음을 생성합니다.
+Swift generator는 다음을 emit합니다.
 
-- `req`, `res`, `event`, `unknown` 케이스를 가진 `GatewayFrame` enum
-- 강하게 타입 지정된 payload struct/enum
-- `ErrorCode` 값과 `GATEWAY_PROTOCOL_VERSION`
+- `req`, `res`, `event`, `unknown` case가 있는 `GatewayFrame` enum
+- 강하게 typed된 payload struct/enum
+- `ErrorCode` value와 `GATEWAY_PROTOCOL_VERSION`
 
-알 수 없는 프레임 타입은 전방 호환성을 위해 원시 payload로 보존됩니다.
+Forward compatibility를 위해 알 수 없는 frame type은 raw payload로 보존됩니다.
 
-## 버전 관리 + 호환성
+## Versioning + compatibility
 
 - `PROTOCOL_VERSION`은 `src/gateway/protocol/schema.ts`에 있습니다.
-- 클라이언트는 `minProtocol` + `maxProtocol`을 전송하며 서버는 불일치를 거부합니다.
-- Swift 모델은 오래된 클라이언트가 깨지지 않도록 알 수 없는 프레임 타입을 유지합니다.
+- Client는 `minProtocol` + `maxProtocol`을 보내며, server는 mismatch를 거부합니다.
+- Swift model은 older client가 깨지지 않도록 알 수 없는 frame type을 유지합니다.
 
-## 스키마 패턴 및 관례
+## Schema pattern과 convention
 
-- 대부분의 객체는 엄격한 payload를 위해 `additionalProperties: false`를 사용합니다.
-- `NonEmptyString`은 ID와 메서드/이벤트 이름의 기본값입니다.
-- 최상위 `GatewayFrame`은 `type`에 대한 **discriminator**를 사용합니다.
-- 부작용이 있는 메서드는 일반적으로 params에 `idempotencyKey`가 필요합니다
+- 대부분의 object는 strict payload를 위해 `additionalProperties: false`를 사용합니다.
+- `NonEmptyString`은 ID와 method/event name의 기본값입니다.
+- 최상위 `GatewayFrame`은 `type`에 **discriminator**를 사용합니다.
+- side effect가 있는 method는 보통 params에 `idempotencyKey`가 필요합니다
   (예: `send`, `poll`, `agent`, `chat.send`).
-- `agent`는 런타임 생성 오케스트레이션 컨텍스트를 위한 선택적 `internalEvents`를 받을 수 있습니다
-  (예: subagent/Cron 작업 완료 핸드오프). 이는 내부 API 표면으로 취급하세요.
+- `agent`는 runtime-generated orchestration context를 위한 선택적 `internalEvents`를 허용합니다
+  (예: subagent/cron task completion handoff). 이를 internal API surface로 취급하세요.
 
-## 라이브 스키마 JSON
+## Live schema JSON
 
-생성된 JSON Schema는 저장소의 `dist/protocol.schema.json`에 있습니다. 게시된
-raw 파일은 일반적으로 다음 위치에서 사용할 수 있습니다.
+Generated JSON Schema는 repo의 `dist/protocol.schema.json`에 있습니다. Published raw file은 일반적으로 다음 위치에서 사용할 수 있습니다.
 
 - [https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json](https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json)
 
-## 스키마를 변경할 때
+## Schema를 변경할 때
 
-1. TypeBox 스키마를 업데이트합니다.
-2. `src/gateway/server-methods-list.ts`에 메서드/이벤트를 등록합니다.
-3. 새 RPC에 operator 또는
-   Node 범위 분류가 필요하면 `src/gateway/method-scopes.ts`를 업데이트합니다.
+1. TypeBox schema를 update합니다.
+2. `src/gateway/server-methods-list.ts`에 method/event를 register합니다.
+3. 새 RPC에 operator 또는 node scope classification이 필요하면 `src/gateway/method-scopes.ts`를 update합니다.
 4. `pnpm protocol:check`를 실행합니다.
-5. 재생성된 스키마 + Swift 모델을 커밋합니다.
+5. Regenerated schema + Swift model을 commit합니다.
 
-## 관련 항목
+## Related
 
 - [Rich output protocol](/ko/reference/rich-output-protocol)
 - [RPC adapters](/ko/reference/rpc)
