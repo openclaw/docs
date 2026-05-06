@@ -1,26 +1,26 @@
 ---
 read_when:
     - 在 Oracle Cloud 上設定 OpenClaw
-    - 尋找適合 OpenClaw 的免費 VPS 託管服務
+    - 尋找適合 OpenClaw 的免費 VPS 託管
     - 想在小型伺服器上全天候執行 OpenClaw
 summary: 在 Oracle Cloud 的 Always Free ARM 層級上託管 OpenClaw
 title: Oracle Cloud
 x-i18n:
-    generated_at: "2026-04-30T03:16:46Z"
+    generated_at: "2026-05-06T02:51:43Z"
     model: gpt-5.5
     provider: openai
-    source_hash: dce0d2a33556c8e48a48df744f8d1341fcfa78c93ff5a5e02a5013d207f3e6ed
+    source_hash: 9115c83c7a78b78d8b6701b028a2f6e9f08a71f7fff14b7b45f1610b8052c14e
     source_path: install/oracle.md
     workflow: 16
 ---
 
-在 Oracle Cloud 的 **Always Free** ARM 層級（最多 4 個 OCPU、24 GB RAM、200 GB 儲存空間）上免費執行持續運作的 OpenClaw Gateway。
+在 Oracle Cloud 的 **Always Free** ARM 層級（最高 4 OCPU、24 GB RAM、200 GB 儲存空間）上免費執行持久的 OpenClaw Gateway。
 
 ## 先決條件
 
 - Oracle Cloud 帳號（[註冊](https://www.oracle.com/cloud/free/)）-- 如果遇到問題，請參閱[社群註冊指南](https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd)
 - Tailscale 帳號（可在 [tailscale.com](https://tailscale.com) 免費取得）
-- 一組 SSH 金鑰
+- 一組 SSH 金鑰對
 - 約 30 分鐘
 
 ## 設定
@@ -32,10 +32,10 @@ x-i18n:
     3. 設定：
        - **名稱：** `openclaw`
        - **映像檔：** Ubuntu 24.04 (aarch64)
-       - **Shape：** `VM.Standard.A1.Flex` (Ampere ARM)
-       - **OCPUs：** 2（或最多 4）
-       - **記憶體：** 12 GB（或最多 24 GB）
-       - **開機磁碟區：** 50 GB（免費最多 200 GB）
+       - **規格：** `VM.Standard.A1.Flex` (Ampere ARM)
+       - **OCPUs：** 2（或最高 4）
+       - **記憶體：** 12 GB（或最高 24 GB）
+       - **開機磁碟區：** 50 GB（免費最高 200 GB）
        - **SSH 金鑰：** 加入你的公開金鑰
     4. 按一下 **Create**，並記下公用 IP 位址。
 
@@ -53,11 +53,11 @@ x-i18n:
     sudo apt install -y build-essential
     ```
 
-    某些依賴項需要 `build-essential` 才能在 ARM 上編譯。
+    `build-essential` 是某些相依項目在 ARM 上編譯所必需的。
 
   </Step>
 
-  <Step title="設定使用者和主機名稱">
+  <Step title="設定使用者與主機名稱">
     ```bash
     sudo hostnamectl set-hostname openclaw
     sudo passwd ubuntu
@@ -84,12 +84,12 @@ x-i18n:
     source ~/.bashrc
     ```
 
-    當提示「How do you want to hatch your bot?」時，選擇 **Do this later**。
+    當系統提示「How do you want to hatch your bot?」時，選擇 **Do this later**。
 
   </Step>
 
   <Step title="設定 Gateway">
-    使用 token 驗證搭配 Tailscale Serve，以提供安全的遠端存取。
+    搭配 Tailscale Serve 使用權杖驗證，以提供安全的遠端存取。
 
     ```bash
     openclaw config set gateway.bind loopback
@@ -101,19 +101,19 @@ x-i18n:
     systemctl --user restart openclaw-gateway.service
     ```
 
-    這裡的 `gateway.trustedProxies=["127.0.0.1"]` 只用於本機 Tailscale Serve 代理的轉送 IP／本機用戶端處理。它**不是** `gateway.auth.mode: "trusted-proxy"`。在此設定中，diff 檢視器路由會維持失敗關閉行為：沒有轉送代理標頭的原始 `127.0.0.1` 檢視器請求可能會傳回 `Diff not found`。針對附件使用 `mode=file` / `mode=both`，或如果需要可分享的檢視器連結，請有意啟用遠端檢視器並設定 `plugins.entries.diffs.config.viewerBaseUrl`（或傳入代理 `baseUrl`）。
+    此處的 `gateway.trustedProxies=["127.0.0.1"]` 僅用於本機 Tailscale Serve 代理的轉送 IP／本機用戶端處理。這**不是** `gateway.auth.mode: "trusted-proxy"`。在此設定中，差異檢視器路由會保持失敗關閉行為：沒有轉送代理標頭的原始 `127.0.0.1` 檢視器請求可能會回傳 `Diff not found`。若要使用附件，請使用 `mode=file` / `mode=both`；如果需要可分享的檢視器連結，請明確啟用遠端檢視器並設定 `plugins.entries.diffs.config.viewerBaseUrl`（或傳入代理 `baseUrl`）。
 
   </Step>
 
   <Step title="鎖定 VCN 安全性">
-    在網路邊界阻擋除 Tailscale 以外的所有流量：
+    在網路邊界封鎖除 Tailscale 以外的所有流量：
 
     1. 在 OCI Console 中前往 **Networking > Virtual Cloud Networks**。
     2. 按一下你的 VCN，然後前往 **Security Lists > Default Security List**。
-    3. **移除** 除 `0.0.0.0/0 UDP 41641`（Tailscale）以外的所有輸入規則。
-    4. 保留預設輸出規則（允許所有外送流量）。
+    3. **移除**除 `0.0.0.0/0 UDP 41641` (Tailscale) 以外的所有輸入規則。
+    4. 保留預設輸出規則（允許所有對外流量）。
 
-    這會在網路邊界阻擋連接埠 22 的 SSH、HTTP、HTTPS，以及其他所有流量。從此刻起，你只能透過 Tailscale 連線。
+    這會在網路邊界封鎖連接埠 22 上的 SSH、HTTP、HTTPS，以及其他所有流量。從此時開始，你只能透過 Tailscale 連線。
 
   </Step>
 
@@ -125,7 +125,7 @@ x-i18n:
     curl http://localhost:18789
     ```
 
-    從 tailnet 上的任何裝置存取 Control UI：
+    從 tailnet 上的任何裝置存取控制 UI：
 
     ```
     https://openclaw.<tailnet-name>.ts.net/
@@ -136,9 +136,65 @@ x-i18n:
   </Step>
 </Steps>
 
-## 備用方案：SSH tunnel
+## 驗證安全態勢
 
-如果 Tailscale Serve 無法運作，請從你的本機電腦使用 SSH tunnel：
+在 VCN 已鎖定（僅開放 UDP 41641）且 Gateway 繫結至 loopback 的情況下，公用流量會在網路邊界被封鎖，管理存取僅限 tailnet。這讓多個傳統 VPS 強化步驟不再需要：
+
+| 傳統步驟           | 是否需要？   | 原因                                                                      |
+| ------------------ | ----------- | ------------------------------------------------------------------------- |
+| UFW 防火牆         | 否          | VCN 會在流量到達執行個體前封鎖它。                                       |
+| fail2ban           | 否          | 連接埠 22 在 VCN 被封鎖；沒有暴力破解攻擊面。                            |
+| sshd 強化          | 否          | Tailscale SSH 不使用 sshd。                                               |
+| 停用 root 登入     | 否          | Tailscale 依 tailnet 身分驗證，而不是系統使用者。                         |
+| 僅允許 SSH 金鑰驗證 | 否          | 同上 — tailnet 身分會取代系統 SSH 金鑰。                                  |
+| IPv6 強化          | 通常不需要 | 取決於 VCN／子網路設定；請驗證實際指派／暴露的內容。                     |
+
+仍建議：
+
+- `chmod 700 ~/.openclaw` 以限制認證檔案權限。
+- `openclaw security audit` 以進行 OpenClaw 專用的態勢檢查。
+- 定期執行 `sudo apt update && sudo apt upgrade` 以套用 OS 修補程式。
+- 定期檢閱 [Tailscale 管理控制台](https://login.tailscale.com/admin) 中的裝置。
+
+快速驗證命令：
+
+```bash
+# Confirm no public ports are listening
+sudo ss -tlnp | grep -v '127.0.0.1\|::1'
+
+# Verify Tailscale SSH is active
+tailscale status | grep -q 'offers: ssh' && echo "Tailscale SSH active"
+
+# Optional: disable sshd entirely once Tailscale SSH is confirmed working
+sudo systemctl disable --now ssh
+```
+
+## ARM 注意事項
+
+Always Free 層級是 ARM (`aarch64`)。大多數 OpenClaw 功能都能正常運作；少數原生二進位檔需要 ARM 建置：
+
+- Node.js、Telegram、WhatsApp (Baileys)：純 JavaScript，沒有問題。
+- 大多數含原生程式碼的 npm 套件：有可用的預先建置 `linux-arm64` 成品。
+- 選用 CLI 輔助程式（例如 Skills 隨附的 Go/Rust 二進位檔）：安裝前請確認是否有 `aarch64` / `linux-arm64` 發行版本。
+
+使用 `uname -m` 驗證架構（應輸出 `aarch64`）。對於沒有 ARM 建置的二進位檔，請從原始碼安裝或略過。
+
+## 持久性與備份
+
+OpenClaw 狀態位於：
+
+- `~/.openclaw/` — `openclaw.json`、每個代理的 `auth-profiles.json`、頻道／提供者狀態，以及工作階段資料。
+- `~/.openclaw/workspace/` — 代理工作區（SOUL.md、記憶、成品）。
+
+這些會在重新開機後保留。若要建立可攜式快照：
+
+```bash
+openclaw backup create
+```
+
+## 備援方案：SSH 通道
+
+如果 Tailscale Serve 無法運作，請從你的本機電腦使用 SSH 通道：
 
 ```bash
 ssh -L 18789:127.0.0.1:18789 ubuntu@openclaw
@@ -154,16 +210,16 @@ ssh -L 18789:127.0.0.1:18789 ubuntu@openclaw
 
 **Gateway 無法啟動** -- 執行 `openclaw doctor --non-interactive`，並使用 `journalctl --user -u openclaw-gateway.service -n 50` 檢查記錄。
 
-**ARM 二進位檔問題** -- 大多數 npm 套件可在 ARM64 上運作。若是原生二進位檔，請尋找 `linux-arm64` 或 `aarch64` 版本。使用 `uname -m` 驗證架構。
+**ARM 二進位檔問題** -- 大多數 npm 套件可在 ARM64 上運作。對於原生二進位檔，請尋找 `linux-arm64` 或 `aarch64` 發行版本。使用 `uname -m` 驗證架構。
 
 ## 後續步驟
 
-- [頻道](/zh-TW/channels) -- 連接 Telegram、WhatsApp、Discord 等服務
+- [頻道](/zh-TW/channels) -- 連接 Telegram、WhatsApp、Discord，以及更多服務
 - [Gateway 設定](/zh-TW/gateway/configuration) -- 所有設定選項
-- [更新](/zh-TW/install/updating) -- 讓 OpenClaw 保持最新狀態
+- [更新](/zh-TW/install/updating) -- 讓 OpenClaw 保持最新
 
-## 相關內容
+## 相關
 
-- [安裝概覽](/zh-TW/install)
+- [安裝概觀](/zh-TW/install)
 - [GCP](/zh-TW/install/gcp)
-- [VPS 主機代管](/zh-TW/vps)
+- [VPS 託管](/zh-TW/vps)

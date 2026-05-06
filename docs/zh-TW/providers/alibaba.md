@@ -1,32 +1,54 @@
 ---
 read_when:
-    - 您想在 OpenClaw 中使用 Alibaba Wan 影片生成
-    - 你需要設定 Model Studio 或 DashScope API 金鑰才能生成影片
+    - 你想在 OpenClaw 中使用 Alibaba Wan 影片生成
+    - 你需要設定 Model Studio 或 DashScope API 金鑰，才能產生影片
 summary: OpenClaw 中的 Alibaba Model Studio Wan 影片生成
 title: 阿里巴巴模型工作室
 x-i18n:
-    generated_at: "2026-04-30T03:29:02Z"
+    generated_at: "2026-05-06T02:55:15Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c5abfe9ab595f2a323d6113995bf3075aa92c7f329b934d048e7ece256d94899
+    source_hash: c390da201e2c8685fafa6171a6028bf18fc676b2d46f784651f91cdc6137fdf2
     source_path: providers/alibaba.md
     workflow: 16
 ---
 
-OpenClaw 隨附一個用於 Alibaba Model Studio / DashScope 上 Wan 模型的 `alibaba` 影片生成提供者。
+OpenClaw 隨附一個 `alibaba` Plugin，會為 Alibaba Model Studio（DashScope 的國際名稱）上的 Wan 模型註冊影片生成提供者。此 Plugin 預設啟用；你只需要設定 API 金鑰。
 
-- 提供者：`alibaba`
-- 建議的驗證：`MODELSTUDIO_API_KEY`
-- 也接受：`DASHSCOPE_API_KEY`、`QWEN_API_KEY`
-- API：DashScope / Model Studio 非同步影片生成
+| 屬性             | 值                                                                              |
+| ---------------- | ------------------------------------------------------------------------------- |
+| 提供者 id        | `alibaba`                                                                       |
+| Plugin           | 隨附，`enabledByDefault: true`                                                  |
+| Auth 環境變數    | `MODELSTUDIO_API_KEY` → `DASHSCOPE_API_KEY` → `QWEN_API_KEY`（第一個符合者優先） |
+| Onboarding 旗標  | `--auth-choice alibaba-model-studio-api-key`                                    |
+| 直接 CLI 旗標    | `--alibaba-model-studio-api-key <key>`                                          |
+| 預設模型         | `alibaba/wan2.6-t2v`                                                            |
+| 預設基礎 URL     | `https://dashscope-intl.aliyuncs.com`                                           |
 
 ## 開始使用
 
 <Steps>
   <Step title="設定 API 金鑰">
+    使用 onboarding 將金鑰儲存到 `alibaba` 提供者：
+
     ```bash
-    openclaw onboard --auth-choice qwen-standard-api-key
+    openclaw onboard --auth-choice alibaba-model-studio-api-key
     ```
+
+    或在安裝/onboarding 期間直接傳入金鑰：
+
+    ```bash
+    openclaw onboard --alibaba-model-studio-api-key <your-key>
+    ```
+
+    或在啟動 Gateway 前匯出任一受支援的環境變數：
+
+    ```bash
+    export MODELSTUDIO_API_KEY=sk-...
+    # or DASHSCOPE_API_KEY=...
+    # or QWEN_API_KEY=...
+    ```
+
   </Step>
   <Step title="設定預設影片模型">
     ```json5
@@ -41,66 +63,86 @@ OpenClaw 隨附一個用於 Alibaba Model Studio / DashScope 上 Wan 模型的 `
     }
     ```
   </Step>
-  <Step title="確認提供者可用">
+  <Step title="確認提供者已設定">
     ```bash
     openclaw models list --provider alibaba
     ```
+
+    清單應包含全部五個隨附的 Wan 模型。如果無法解析 `MODELSTUDIO_API_KEY`，`openclaw models status --json` 會在 `auth.unusableProfiles` 下回報缺少的認證。
+
   </Step>
 </Steps>
 
 <Note>
-任何接受的驗證金鑰（`MODELSTUDIO_API_KEY`、`DASHSCOPE_API_KEY`、`QWEN_API_KEY`）都可以使用。`qwen-standard-api-key` 入門設定選項會設定共用的 DashScope 憑證。
+  Alibaba Plugin 和 [Qwen Plugin](/zh-TW/providers/qwen) 都會對 DashScope 進行驗證，並接受重疊的環境變數。使用 `alibaba/...` 模型 id 來驅動專用的 Wan 影片介面；當你需要 Qwen 的聊天、嵌入或媒體理解介面時，請使用 `qwen/...` id。
 </Note>
 
 ## 內建 Wan 模型
 
-隨附的 `alibaba` 提供者目前註冊：
-
 | 模型參照                   | 模式                      |
 | -------------------------- | ------------------------- |
-| `alibaba/wan2.6-t2v`       | 文字轉影片                |
+| `alibaba/wan2.6-t2v`       | 文字轉影片（預設）        |
 | `alibaba/wan2.6-i2v`       | 圖片轉影片                |
-| `alibaba/wan2.6-r2v`       | 參考轉影片                |
-| `alibaba/wan2.6-r2v-flash` | 參考轉影片（快速）        |
-| `alibaba/wan2.7-r2v`       | 參考轉影片                |
+| `alibaba/wan2.6-r2v`       | 參照轉影片                |
+| `alibaba/wan2.6-r2v-flash` | 參照轉影片（快速）        |
+| `alibaba/wan2.7-r2v`       | 參照轉影片                |
 
-## 目前限制
+## 功能與限制
 
-| 參數                  | 限制                                                      |
-| --------------------- | --------------------------------------------------------- |
-| 輸出影片              | 每個請求最多 **1** 個                                    |
-| 輸入圖片              | 最多 **1** 張                                            |
-| 輸入影片              | 最多 **4** 個                                            |
-| 時長                  | 最多 **10 秒**                                           |
-| 支援的控制項          | `size`、`aspectRatio`、`resolution`、`audio`、`watermark` |
-| 參考圖片/影片         | 僅限遠端 `http(s)` URL                                   |
+隨附的提供者會對應 DashScope 的 Wan 影片 API 上限。三種模式共用相同的每次請求影片數量與時長上限；只有輸入形狀不同。
+
+| 模式               | 最大輸出影片數 | 最大輸入圖片數 | 最大輸入影片數 | 最長時長 | 支援的控制項                                              |
+| ------------------ | -------------- | -------------- | -------------- | -------- | --------------------------------------------------------- |
+| 文字轉影片         | 1              | n/a            | n/a            | 10 s     | `size`, `aspectRatio`, `resolution`, `audio`, `watermark` |
+| 圖片轉影片         | 1              | 1              | n/a            | 10 s     | `size`, `aspectRatio`, `resolution`, `audio`, `watermark` |
+| 參照轉影片         | 1              | n/a            | 4              | 10 s     | `size`, `aspectRatio`, `resolution`, `audio`, `watermark` |
+
+當請求省略 `durationSeconds` 時，提供者會傳送 DashScope 接受的預設值 **5 秒**。在[影片生成工具](/zh-TW/tools/video-generation)上明確設定 `durationSeconds`，可延長到最多 10 s。
 
 <Warning>
-參考圖片/影片模式目前需要**遠端 http(s) URL**。參考輸入不支援本機檔案路徑。
+  參照圖片與影片輸入必須是遠端 `http(s)` URL。DashScope 的參照模式不接受本機檔案路徑；請先上傳到物件儲存空間，或使用已會產生公開 URL 的[媒體工具](/zh-TW/tools/media-overview)流程。
 </Warning>
 
 ## 進階設定
 
 <AccordionGroup>
-  <Accordion title="與 Qwen 的關係">
-    隨附的 `qwen` 提供者也使用 Alibaba 託管的 DashScope 端點來進行
-    Wan 影片生成。請使用：
+  <Accordion title="覆寫 DashScope 基礎 URL">
+    提供者預設使用國際 DashScope 端點。若要指定中國區域端點，請設定：
 
-    - 當你想使用標準的 Qwen 提供者介面時，使用 `qwen/...`
-    - 當你想使用直接由供應商擁有的 Wan 影片介面時，使用 `alibaba/...`
+    ```json5
+    {
+      models: {
+        providers: {
+          alibaba: {
+            baseUrl: "https://dashscope.aliyuncs.com",
+          },
+        },
+      },
+    }
+    ```
 
-    如需更多詳細資訊，請參閱 [Qwen 提供者文件](/zh-TW/providers/qwen)。
+    提供者會在建構 AIGC 任務 URL 前移除結尾斜線。
 
   </Accordion>
 
-  <Accordion title="驗證金鑰優先順序">
-    OpenClaw 會依此順序檢查驗證金鑰：
+  <Accordion title="Auth 環境優先順序">
+    OpenClaw 會依下列順序從環境變數解析 Alibaba API 金鑰，並採用第一個非空值：
 
-    1. `MODELSTUDIO_API_KEY`（建議）
+    1. `MODELSTUDIO_API_KEY`
     2. `DASHSCOPE_API_KEY`
     3. `QWEN_API_KEY`
 
-    其中任何一個都可以驗證 `alibaba` 提供者。
+    已設定的 `auth.profiles` 項目（透過 `openclaw models auth login` 設定）會覆寫環境變數解析。請參閱[模型 FAQ 中的 Auth 設定檔](/zh-TW/help/faq-models#what-is-an-auth-profile)，了解設定檔輪換、冷卻與覆寫機制。
+
+  </Accordion>
+
+  <Accordion title="與 Qwen Plugin 的關係">
+    兩個隨附 Plugin 都會與 DashScope 通訊，並接受重疊的 API 金鑰。請使用：
+
+    - `alibaba/wan*.*` id 來驅動本頁所記錄的專用 Wan 影片提供者。
+    - `qwen/*` id 用於 Qwen 聊天、嵌入與媒體理解（請參閱 [Qwen](/zh-TW/providers/qwen)）。
+
+    只要設定一次 `MODELSTUDIO_API_KEY`，就會驗證兩個 Plugin，因為 auth 環境變數清單刻意重疊；你不需要分別 onboarding 每個 Plugin。
 
   </Accordion>
 </AccordionGroup>
@@ -112,9 +154,12 @@ OpenClaw 隨附一個用於 Alibaba Model Studio / DashScope 上 Wan 模型的 `
     共用影片工具參數與提供者選擇。
   </Card>
   <Card title="Qwen" href="/zh-TW/providers/qwen" icon="microchip">
-    Qwen 提供者設定與 DashScope 整合。
+    在相同 DashScope auth 上設定 Qwen 聊天、嵌入與媒體理解。
   </Card>
   <Card title="設定參考" href="/zh-TW/gateway/config-agents#agent-defaults" icon="gear">
     Agent 預設值與模型設定。
+  </Card>
+  <Card title="模型 FAQ" href="/zh-TW/help/faq-models" icon="circle-question">
+    Auth 設定檔、切換模型，以及解決「no profile」錯誤。
   </Card>
 </CardGroup>

@@ -1,28 +1,28 @@
 ---
 read_when:
-    - 你需要「開始使用」快速入門以外的安裝方法
-    - 你想要部署到雲端平台
-    - 您需要更新、遷移或解除安裝
-summary: 安裝 OpenClaw — 安裝指令碼、npm/pnpm/bun、從原始碼安裝、Docker 等
+    - 你需要「開始使用」快速入門以外的安裝方式
+    - 您想部署到雲端平台
+    - 你需要更新、遷移或解除安裝
+summary: 安裝 OpenClaw - 安裝程式指令碼、npm/pnpm/bun、從原始碼安裝、Docker 等
 title: 安裝
 x-i18n:
-    generated_at: "2026-04-30T03:15:12Z"
+    generated_at: "2026-05-06T02:51:10Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b8dc6b9511be6bf9060cc150a7c51daf3b6d556dab4a85910094b4b892145cd7
+    source_hash: 2d5b38787ad80f91c82aa1fd4020a11c99f440ccbf2e9b9309da336dd5883462
     source_path: install/index.md
     workflow: 16
 ---
 
 ## 系統需求
 
-- **Node 24**（建議）或 Node 22.14+ — 安裝程式腳本會自動處理
-- **macOS、Linux 或 Windows** — 支援原生 Windows 與 WSL2；WSL2 較穩定。請參閱 [Windows](/zh-TW/platforms/windows)。
+- **Node 24**（建議）或 Node 22.14+ - 安裝程式腳本會自動處理
+- **macOS、Linux 或 Windows** - 支援原生 Windows 和 WSL2；WSL2 較穩定。請參閱 [Windows](/zh-TW/platforms/windows)。
 - 只有從原始碼建置時才需要 `pnpm`
 
 ## 建議：安裝程式腳本
 
-最快的安裝方式。它會偵測你的作業系統，視需要安裝 Node，安裝 OpenClaw，並啟動入門設定。
+最快的安裝方式。它會偵測你的作業系統、視需要安裝 Node、安裝 OpenClaw，並啟動入門設定。
 
 <Tabs>
   <Tab title="macOS / Linux / WSL2">
@@ -52,26 +52,26 @@ x-i18n:
   </Tab>
 </Tabs>
 
-所有旗標與 CI/自動化選項，請參閱[安裝程式內部機制](/zh-TW/install/installer)。
+如需所有旗標和 CI/自動化選項，請參閱[安裝程式內部機制](/zh-TW/install/installer)。
 
-## 替代安裝方式
+## 其他安裝方式
 
-### 本機前綴安裝程式（`install-cli.sh`）
+### 本機 prefix 安裝程式（`install-cli.sh`）
 
-當你想將 OpenClaw 和 Node 保留在本機前綴（例如
-`~/.openclaw`）底下，而不依賴全系統的 Node 安裝時，請使用此方式：
+當你想將 OpenClaw 和 Node 保留在本機 prefix（例如
+`~/.openclaw`）底下，而不依賴系統範圍的 Node 安裝時，請使用此方式：
 
 ```bash
 curl -fsSL https://openclaw.ai/install-cli.sh | bash
 ```
 
-它預設支援 npm 安裝，也支援在相同前綴流程下進行 git checkout 安裝。完整參考：[安裝程式內部機制](/zh-TW/install/installer#install-clish)。
+它預設支援 npm 安裝，也支援在相同 prefix 流程下進行 git-checkout 安裝。完整參考：[安裝程式內部機制](/zh-TW/install/installer#install-clish)。
 
-已經安裝了嗎？可使用 `openclaw update --channel dev` 和 `openclaw update --channel stable` 在套件與 git 安裝之間切換。請參閱[更新](/zh-TW/install/updating#switch-between-npm-and-git-installs)。
+已經安裝了嗎？使用 `openclaw update --channel dev` 和 `openclaw update --channel stable` 在套件安裝與 git 安裝之間切換。請參閱[更新](/zh-TW/install/updating#switch-between-npm-and-git-installs)。
 
 ### npm、pnpm 或 bun
 
-如果你已經自行管理 Node：
+如果你已自行管理 Node：
 
 <Tabs>
   <Tab title="npm">
@@ -88,7 +88,7 @@ curl -fsSL https://openclaw.ai/install-cli.sh | bash
     ```
 
     <Note>
-    pnpm 對含有建置腳本的套件需要明確核准。第一次安裝後請執行 `pnpm approve-builds -g`。
+    pnpm 需要明確核准含有建置腳本的套件。第一次安裝後請執行 `pnpm approve-builds -g`。
     </Note>
 
   </Tab>
@@ -99,7 +99,7 @@ curl -fsSL https://openclaw.ai/install-cli.sh | bash
     ```
 
     <Note>
-    Bun 支援全域 CLI 安裝路徑。對於 Gateway 執行階段，Node 仍是建議的常駐程式執行階段。
+    全域 CLI 安裝路徑支援 Bun。對於 Gateway 執行階段，Node 仍是建議的 daemon 執行階段。
     </Note>
 
   </Tab>
@@ -116,7 +116,7 @@ SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install -g openclaw@latest
 
 ### 從原始碼安裝
 
-適合貢獻者或任何想從本機 checkout 執行的人：
+適用於貢獻者，或任何想從本機 checkout 執行的人：
 
 ```bash
 git clone https://github.com/openclaw/openclaw.git
@@ -126,7 +126,7 @@ pnpm link --global
 openclaw onboard --install-daemon
 ```
 
-或略過連結，並在 repo 內使用 `pnpm openclaw ...`。完整開發工作流程請參閱[設定](/zh-TW/start/setup)。
+或者略過 link，並在 repo 內使用 `pnpm openclaw ...`。完整開發工作流程請參閱[設定](/zh-TW/start/setup)。
 
 ### 從 GitHub main 安裝
 
@@ -138,10 +138,10 @@ npm install -g github:openclaw/openclaw#main
 
 <CardGroup cols={2}>
   <Card title="Docker" href="/zh-TW/install/docker" icon="container">
-    容器化或無頭部署。
+    容器化或無介面部署。
   </Card>
   <Card title="Podman" href="/zh-TW/install/podman" icon="container">
-    Docker 的無 root 容器替代方案。
+    Docker 的 rootless 容器替代方案。
   </Card>
   <Card title="Nix" href="/zh-TW/install/nix" icon="snowflake">
     透過 Nix flake 進行宣告式安裝。
@@ -150,7 +150,7 @@ npm install -g github:openclaw/openclaw#main
     自動化機群佈建。
   </Card>
   <Card title="Bun" href="/zh-TW/install/bun" icon="zap">
-    透過 Bun 執行階段僅使用 CLI。
+    透過 Bun 執行階段使用，僅限 CLI。
   </Card>
 </CardGroup>
 
@@ -162,11 +162,11 @@ openclaw doctor         # check for config issues
 openclaw gateway status # verify the Gateway is running
 ```
 
-如果你想在安裝後使用受管理的啟動方式：
+如果你想在安裝後使用受管理的啟動：
 
 - macOS：透過 `openclaw onboard --install-daemon` 或 `openclaw gateway install` 使用 LaunchAgent
 - Linux/WSL2：透過相同指令使用 systemd 使用者服務
-- 原生 Windows：優先使用排程工作；若工作建立遭拒，則改用每位使用者的 Startup 資料夾登入項目作為備援
+- 原生 Windows：優先使用排程工作；如果建立工作遭拒，則 fallback 到每位使用者的 Startup 資料夾登入項目
 
 ## 託管與部署
 
@@ -192,7 +192,7 @@ openclaw gateway status # verify the Gateway is running
     讓 OpenClaw 保持最新狀態。
   </Card>
   <Card title="Migrating" href="/zh-TW/install/migrating" icon="arrow-right">
-    移轉到新機器。
+    移至新機器。
   </Card>
   <Card title="Uninstall" href="/zh-TW/install/uninstall" icon="trash-2">
     完全移除 OpenClaw。
@@ -209,7 +209,7 @@ npm prefix -g     # Where are global packages?
 echo "$PATH"      # Is the global bin dir in PATH?
 ```
 
-如果 `$(npm prefix -g)/bin` 不在你的 `$PATH` 中，請將它加入 shell 啟動檔（`~/.zshrc` 或 `~/.bashrc`）：
+如果 `$(npm prefix -g)/bin` 不在你的 `$PATH` 中，請將它加入你的 shell 啟動檔（`~/.zshrc` 或 `~/.bashrc`）：
 
 ```bash
 export PATH="$(npm prefix -g)/bin:$PATH"

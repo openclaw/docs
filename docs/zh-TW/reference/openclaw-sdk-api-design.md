@@ -1,39 +1,39 @@
 ---
 read_when:
     - 你正在實作擬議的公開 OpenClaw 應用程式 SDK
-    - 你需要應用程式 SDK 的草稿命名空間、事件、結果、成品、核准或安全性合約
+    - 你需要應用程式 SDK 的草稿命名空間、事件、結果、成品、核准或安全性契約
     - 你正在比較 Gateway 協定資源與高階 OpenClaw App SDK 包裝器
 sidebarTitle: App SDK API design
-summary: 公開 OpenClaw App SDK API、事件分類法、產出物、核准流程與套件結構的參考設計
-title: OpenClaw 應用程式 SDK API 設計
+summary: 公開 OpenClaw App SDK API、事件分類法、成品、核准與套件結構的參考設計
+title: OpenClaw App SDK API 設計
 x-i18n:
-    generated_at: "2026-04-30T03:36:58Z"
+    generated_at: "2026-05-06T02:57:35Z"
     model: gpt-5.5
     provider: openai
-    source_hash: cacc5329942798b6876dba6ab8d6a9193291ddda81db5cb2ed492cc42a810099
+    source_hash: ca2d98914ab83c1752211489f9966ee62da13f7435781356548c0646f5739195
     source_path: reference/openclaw-sdk-api-design.md
     workflow: 16
 ---
 
 此頁是公開
-[OpenClaw App SDK](/zh-TW/concepts/openclaw-sdk) 的詳細 API 參考設計。它刻意與
+[OpenClaw 應用程式 SDK](/zh-TW/concepts/openclaw-sdk) 的詳細 API 參考設計。它刻意與
 [Plugin SDK](/zh-TW/plugins/sdk-overview) 分開。
 
 <Note>
-  `@openclaw/sdk` 是用來與 Gateway 溝通的外部應用程式/用戶端套件。
-  `openclaw/plugin-sdk/*` 是行程內 Plugin 作者合約。只需要執行代理程式的應用程式，
-  不要匯入 Plugin SDK 子路徑。
+  `@openclaw/sdk` 是用於與 Gateway 通訊的外部應用程式／用戶端套件。
+  `openclaw/plugin-sdk/*` 是行程內 Plugin 開發合約。
+  只需要執行 agents 的應用程式，不應匯入 Plugin SDK 子路徑。
 </Note>
 
-公開應用程式 SDK 應建構為兩層：
+公開應用程式 SDK 應分成兩層建構：
 
-1. 低階的已產生 Gateway 用戶端。
-2. 高階且符合人體工學的包裝器，提供 `OpenClaw`、`Agent`、`Session`、`Run`、
+1. 低階產生式 Gateway 用戶端。
+2. 高階易用包裝層，提供 `OpenClaw`、`Agent`、`Session`、`Run`、
    `Task`、`Artifact`、`Approval` 和 `Environment` 物件。
 
 ## 命名空間設計
 
-低階命名空間應緊密遵循 Gateway 資源：
+低階命名空間應緊密對應 Gateway 資源：
 
 ```typescript
 oc.agents.list();
@@ -65,22 +65,22 @@ oc.models.list();
 oc.models.status(); // Gateway models.authStatus
 
 oc.tools.list();
-oc.tools.invoke(...); // future API: current SDK throws unsupported
+oc.tools.invoke("tool-name", { sessionKey, idempotencyKey });
 
-oc.artifacts.list({ runId }); // future API: current SDK throws unsupported
-oc.artifacts.get(artifactId); // future API: current SDK throws unsupported
-oc.artifacts.download(artifactId); // future API: current SDK throws unsupported
+oc.artifacts.list({ runId });
+oc.artifacts.get(artifactId, { runId });
+oc.artifacts.download(artifactId, { runId });
 
 oc.approvals.list();
 oc.approvals.respond(approvalId, ...);
 
-oc.environments.list(); // future API: current SDK throws unsupported
+oc.environments.list();
 oc.environments.create(...); // future API: current SDK throws unsupported
-oc.environments.status(environmentId); // future API: current SDK throws unsupported
+oc.environments.status(environmentId);
 oc.environments.delete(environmentId); // future API: current SDK throws unsupported
 ```
 
-高階包裝器應回傳讓常見流程更順手的物件：
+高階包裝層應回傳物件，讓常見流程使用起來順手：
 
 ```typescript
 const run = await agent.run(inputOrParams);
@@ -97,7 +97,7 @@ const session = await run.session();
 
 ## 事件合約
 
-公開 SDK 應公開具版本、可重播、正規化的事件。
+公開 SDK 應公開具版本、可重播、已正規化的事件。
 
 ```typescript
 type OpenClawEvent = {
@@ -115,41 +115,41 @@ type OpenClawEvent = {
 };
 ```
 
-`id` 是重播游標。消費者應能透過 `events({ after: id })` 重新連線，並在保留政策允許時接收遺漏的事件。
+`id` 是重播游標。消費者應能使用 `events({ after: id })` 重新連線，並在保留期限允許時接收錯過的事件。
 
-建議的正規化事件家族：
+建議的正規化事件系列：
 
-| 事件                  | 意義                                               |
-| --------------------- | -------------------------------------------------- |
-| `run.created`         | 執行已接受。                                       |
-| `run.queued`          | 執行正在等待工作階段通道、執行階段或環境。         |
-| `run.started`         | 執行階段已開始執行。                               |
-| `run.completed`       | 執行已成功完成。                                   |
-| `run.failed`          | 執行以錯誤結束。                                   |
-| `run.cancelled`       | 執行已取消。                                       |
-| `run.timed_out`       | 執行超過其逾時限制。                               |
-| `assistant.delta`     | 助理文字增量。                                     |
-| `assistant.message`   | 完整助理訊息或替換內容。                           |
-| `thinking.delta`      | 推理或計畫增量，當政策允許公開時。                 |
-| `tool.call.started`   | 工具呼叫已開始。                                   |
-| `tool.call.delta`     | 工具呼叫串流進度或部分輸出。                       |
-| `tool.call.completed` | 工具呼叫成功回傳。                                 |
-| `tool.call.failed`    | 工具呼叫失敗。                                     |
-| `approval.requested`  | 某次執行或工具需要核准。                           |
-| `approval.resolved`   | 核准已授予、拒絕、過期或取消。                     |
-| `question.requested`  | 執行階段向使用者或主機應用程式要求輸入。           |
-| `question.answered`   | 主機應用程式已提供答案。                           |
-| `artifact.created`    | 新成品可用。                                       |
-| `artifact.updated`    | 既有成品已變更。                                   |
-| `session.created`     | 工作階段已建立。                                   |
-| `session.updated`     | 工作階段中繼資料已變更。                           |
-| `session.compacted`   | 工作階段 Compaction 已發生。                       |
-| `task.updated`        | 背景工作狀態已變更。                               |
-| `git.branch`          | 執行階段觀察到或變更了分支狀態。                   |
-| `git.diff`            | 執行階段產生或變更了差異。                         |
-| `git.pr`              | 執行階段開啟、更新或連結了拉取請求。               |
+| 事件                  | 意義                                                        |
+| --------------------- | ----------------------------------------------------------- |
+| `run.created`         | Run 已接受。                                                |
+| `run.queued`          | Run 正在等待 session lane、runtime 或 environment。         |
+| `run.started`         | Runtime 已開始執行。                                       |
+| `run.completed`       | Run 已成功完成。                                            |
+| `run.failed`          | Run 因錯誤結束。                                            |
+| `run.cancelled`       | Run 已取消。                                                |
+| `run.timed_out`       | Run 超過其逾時限制。                                        |
+| `assistant.delta`     | Assistant 文字增量。                                        |
+| `assistant.message`   | 完整 assistant 訊息或替換內容。                             |
+| `thinking.delta`      | 推理或計畫增量，於政策允許公開時使用。                      |
+| `tool.call.started`   | Tool 呼叫已開始。                                           |
+| `tool.call.delta`     | Tool 呼叫串流進度或部分輸出。                               |
+| `tool.call.completed` | Tool 呼叫成功回傳。                                         |
+| `tool.call.failed`    | Tool 呼叫失敗。                                             |
+| `approval.requested`  | Run 或 tool 需要核准。                                      |
+| `approval.resolved`   | 核准已授予、拒絕、到期或取消。                              |
+| `question.requested`  | Runtime 向使用者或主機應用程式要求輸入。                    |
+| `question.answered`   | 主機應用程式已提供答案。                                    |
+| `artifact.created`    | 新 Artifact 可用。                                          |
+| `artifact.updated`    | 現有 Artifact 已變更。                                      |
+| `session.created`     | Session 已建立。                                            |
+| `session.updated`     | Session metadata 已變更。                                   |
+| `session.compacted`   | Session Compaction 已發生。                                 |
+| `task.updated`        | 背景 task 狀態已變更。                                      |
+| `git.branch`          | Runtime 觀察到或變更了 branch 狀態。                        |
+| `git.diff`            | Runtime 產生或變更了 diff。                                 |
+| `git.pr`              | Runtime 開啟、更新或連結了 pull request。                   |
 
-執行階段原生承載應可透過 `raw` 取得，但應用程式不應需要解析 `raw` 才能建構一般 UI。
+Runtime 原生 payload 應可透過 `raw` 取得，但一般 UI 不應需要解析 `raw`。
 
 ## 結果合約
 
@@ -179,13 +179,13 @@ type RunResult = {
 };
 ```
 
-結果應平淡且穩定。時間戳記值會保留 Gateway 形狀，因此目前由生命週期支援的執行通常回報 Epoch 毫秒數字，而配接器仍可能公開 ISO 字串。豐富 UI、工具追蹤與執行階段原生細節應屬於事件和成品。
+結果應保持單純且穩定。時間戳值會保留 Gateway 的形狀，因此目前由 lifecycle 支援的 runs 通常會回報 epoch 毫秒數字，而 adapters 仍可能呈現 ISO 字串。豐富 UI、tool traces 與 runtime 原生細節應放在事件和 Artifacts 中。
 
-`accepted` 是非終止的等待結果：它表示 Gateway 等待期限在執行產生生命週期結束/錯誤之前已到期。不得將它視為 `timed_out`；`timed_out` 保留給超過自身執行階段逾時的執行。
+`accepted` 是非終止的等待結果：它表示 Gateway 等待期限在 run 產生 lifecycle end/error 前已到期。不得將它視為 `timed_out`；`timed_out` 保留給超過自身 runtime timeout 的 run。
 
 ## 核准與問題
 
-核准必須是一級功能，因為程式碼代理程式會持續跨越安全邊界。
+核准必須是一等概念，因為 coding agents 經常跨越安全邊界。
 
 ```typescript
 run.onApproval(async (request) => {
@@ -197,23 +197,23 @@ run.onApproval(async (request) => {
 });
 ```
 
-核准事件應攜帶：
+核准事件應包含：
 
-- 核准 ID
-- 執行 ID 和工作階段 ID
-- 請求種類
-- 要求動作摘要
-- 工具名稱或環境動作
-- 風險等級
-- 可用決策
-- 到期時間
+- approval id
+- run id 和 session id
+- request kind
+- requested action summary
+- tool name 或 environment action
+- risk level
+- available decisions
+- expiration
 - 決策是否可重複使用
 
-問題與核准是分開的。問題是向使用者或主機應用程式詢問資訊。核准是要求執行某個動作的權限。
+問題與核准不同。問題是向使用者或主機應用程式要求資訊。核准是要求執行某項動作的權限。
 
 ## ToolSpace 模型
 
-應用程式需要在不匯入 Plugin 內部實作的情況下理解工具介面。
+應用程式需要在不匯入 Plugin 內部實作的情況下理解 tool surface。
 
 ```typescript
 const tools = await run.toolSpace();
@@ -225,18 +225,18 @@ for (const tool of tools.list()) {
 
 SDK 應公開：
 
-- 正規化工具中繼資料
-- 來源：OpenClaw、MCP、Plugin、頻道、執行階段或應用程式
-- 結構描述摘要
-- 核准政策
-- 執行階段相容性
-- 工具是否為隱藏、唯讀、可寫入或主機可用
+- 正規化的 tool metadata
+- 來源：OpenClaw、MCP、Plugin、channel、runtime 或 app
+- schema 摘要
+- approval policy
+- runtime compatibility
+- tool 是否為 hidden、readonly、write capable 或 host capable
 
-透過 SDK 呼叫工具應明確且限定範圍。多數應用程式應執行代理程式，而不是直接呼叫任意工具。
+透過 SDK 呼叫 tool 應是明確且有範圍限制的。大多數應用程式應執行 agents，而不是直接呼叫任意 tools。
 
-## 成品模型
+## Artifact 模型
 
-成品應涵蓋不只是檔案。
+Artifacts 應涵蓋不只檔案。
 
 ```typescript
 type ArtifactSummary = {
@@ -263,50 +263,50 @@ type ArtifactSummary = {
 
 常見範例：
 
-- 檔案編輯與已產生檔案
-- 修補套件
-- VCS 差異
-- 螢幕截圖與媒體輸出
-- 記錄與追蹤套件
-- 拉取請求連結
-- 執行階段軌跡
-- 受管理環境工作區快照
+- 檔案編輯和產生的檔案
+- patch bundles
+- VCS diffs
+- screenshots 和 media outputs
+- logs 和 trace bundles
+- pull request links
+- runtime trajectories
+- managed environment workspace snapshots
 
-成品存取應支援遮罩、保留與下載 URL，而不假設每個成品都是一般本機檔案。
+Artifact 存取應支援遮罩、保留與下載 URL，而不假設每個 Artifact 都是一般本機檔案。
 
 ## 安全模型
 
 應用程式 SDK 必須明確說明權限。
 
-建議的權杖範圍：
+建議的 token scopes：
 
-| 範圍                | 允許                                               |
-| ------------------- | -------------------------------------------------- |
-| `agent.read`        | 列出並檢查代理程式。                               |
-| `agent.run`         | 開始執行。                                         |
-| `session.read`      | 讀取工作階段中繼資料與訊息。                       |
-| `session.write`     | 建立、傳送至、分叉、Compaction 和中止工作階段。    |
-| `task.read`         | 讀取背景工作狀態。                                 |
-| `task.write`        | 取消或修改工作通知政策。                           |
-| `approval.respond`  | 核准或拒絕請求。                                   |
-| `tools.invoke`      | 直接呼叫已公開工具。                               |
-| `artifacts.read`    | 列出並下載成品。                                   |
-| `environment.write` | 建立或銷毀受管理環境。                             |
-| `admin`             | 管理操作。                                         |
+| 範圍                | 允許                                                |
+| ------------------- | --------------------------------------------------- |
+| `agent.read`        | 列出並檢查 agents。                                 |
+| `agent.run`         | 啟動 runs。                                         |
+| `session.read`      | 讀取 session metadata 和 messages。                 |
+| `session.write`     | 建立、傳送至、fork、compact 及 abort sessions。     |
+| `task.read`         | 讀取背景 task 狀態。                                |
+| `task.write`        | 取消或修改 task notification policy。               |
+| `approval.respond`  | 核准或拒絕 requests。                               |
+| `tools.invoke`      | 直接呼叫公開的 tools。                              |
+| `artifacts.read`    | 列出並下載 Artifacts。                              |
+| `environment.write` | 建立或銷毀 managed environments。                   |
+| `admin`             | 管理作業。                                          |
 
 預設值：
 
-- 預設不轉送秘密
-- 不允許不受限制的環境變數傳遞
-- 使用秘密參照而非秘密值
-- 明確的沙箱與網路政策
-- 明確的遠端環境保留政策
-- 除非政策能證明不需要，否則主機執行需要核准
-- 原始執行階段事件在離開 Gateway 前會先遮罩，除非呼叫者擁有更強的診斷範圍
+- 預設不轉送 secret
+- 不允許不受限制的 environment variable pass-through
+- 使用 secret references，而不是 secret values
+- 明確的 sandbox 和 network policy
+- 明確的 remote environment retention
+- host execution 需要核准，除非 policy 證明無需核准
+- raw runtime events 離開 Gateway 前會先遮罩，除非呼叫端具有更強的 diagnostic scope
 
-## 受管理環境提供者
+## 受管理 environment provider
 
-受管理代理程式應實作為環境提供者。
+Managed agents 應實作為 environment providers。
 
 ```typescript
 type EnvironmentProvider = {
@@ -324,57 +324,56 @@ type EnvironmentProvider = {
 };
 ```
 
-第一個實作不需要是託管 SaaS。它可以鎖定既有 Node 主機、臨時工作區、CI 風格執行器或 Testbox 風格環境。重要的合約是：
+第一個實作不必是 hosted SaaS。它可以目標既有 Node hosts、ephemeral workspaces、CI-style runners 或 Testbox-style environments。重要合約是：
 
-1. 準備工作區
-2. 綁定安全環境與秘密
-3. 開始執行
-4. 串流事件
-5. 收集成品
-6. 依政策清理或保留
+1. 準備 workspace
+2. 綁定安全的 environment 和 secrets
+3. 啟動 run
+4. 串流 events
+5. 收集 Artifacts
+6. 依 policy 清理或保留
 
-一旦穩定後，託管雲端服務即可實作相同的提供者合約。
+一旦此合約穩定，hosted cloud service 就能實作相同的 provider contract。
 
 ## 套件結構
 
 建議套件：
 
-| 套件                    | 用途                                                          |
+| 套件                    | 目的                                                          |
 | ----------------------- | ------------------------------------------------------------- |
-| `@openclaw/sdk`         | 公開高階 SDK 與已產生的低階 Gateway 用戶端。                  |
-| `@openclaw/sdk-react`   | 適用於儀表板與應用程式建構者的選用 React hooks。              |
-| `@openclaw/sdk-testing` | 應用程式整合的測試輔助工具與假 Gateway 伺服器。               |
+| `@openclaw/sdk`         | 公開高階 SDK 與產生式低階 Gateway 用戶端。                    |
+| `@openclaw/sdk-react`   | 適用於 dashboards 和 app builders 的選用 React hooks。         |
+| `@openclaw/sdk-testing` | 用於 app integrations 的測試輔助工具與 fake Gateway server。  |
 
-此儲存庫已為 Plugin 提供 `openclaw/plugin-sdk/*`。請保持該命名空間分離，避免讓 Plugin 作者與應用程式開發者混淆。
+Repo 已有供 Plugins 使用的 `openclaw/plugin-sdk/*`。請將該命名空間分開，以免混淆 Plugin 作者與應用程式開發者。
 
-## 已產生用戶端策略
+## 產生式用戶端策略
 
-低階用戶端應從版本化的 Gateway 協定
-結構描述產生，然後由手寫的易用類別包裝。
+低階用戶端應從具版本的 Gateway protocol schemas 產生，再由手寫的易用 classes 包裝。
 
 分層：
 
-1. Gateway 結構描述作為單一事實來源。
+1. Gateway 結構描述的事實來源。
 2. 產生的低階 TypeScript 用戶端。
-3. 用於外部輸入和事件承載的執行階段驗證器。
+3. 外部輸入與事件酬載的執行階段驗證器。
 4. 高階 `OpenClaw`、`Agent`、`Session`、`Run`、`Task` 和 `Artifact`
    包裝器。
-5. Cookbook 範例和整合測試。
+5. 實用範例和整合測試。
 
 優點：
 
-- 協定漂移會變得可見
-- 測試可以將產生的方法與 Gateway 匯出進行比較
-- App SDK 保持不依賴 Plugin SDK 內部實作
+- 協定漂移可見
+- 測試可以比較產生的方法與 Gateway 匯出項目
+- App SDK 保持獨立於 Plugin SDK 內部
 - 低階消費者仍可完整存取協定
-- 高階消費者可取得小型產品 API
+- 高階消費者取得精簡的產品 API
 
 ## 相關文件
 
 - [OpenClaw App SDK](/zh-TW/concepts/openclaw-sdk)
 - [Gateway RPC 參考](/zh-TW/reference/rpc)
-- [代理程式迴圈](/zh-TW/concepts/agent-loop)
-- [代理程式執行階段](/zh-TW/concepts/agent-runtimes)
+- [Agent 迴圈](/zh-TW/concepts/agent-loop)
+- [Agent 執行階段](/zh-TW/concepts/agent-runtimes)
 - [背景工作](/zh-TW/automation/tasks)
-- [ACP 代理程式](/zh-TW/tools/acp-agents)
-- [Plugin SDK 概覽](/zh-TW/plugins/sdk-overview)
+- [ACP agents](/zh-TW/tools/acp-agents)
+- [Plugin SDK 概觀](/zh-TW/plugins/sdk-overview)

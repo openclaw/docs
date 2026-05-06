@@ -1,38 +1,33 @@
 ---
 read_when:
-    - 更新通訊協定結構描述或程式碼產生
-summary: TypeBox 結構描述作為 Gateway 協定的單一真實來源
+    - 更新協定結構描述或程式碼生成
+summary: TypeBox 結構描述作為 Gateway 協定的單一事實來源
 title: TypeBox
 x-i18n:
-    generated_at: "2026-04-30T03:03:06Z"
+    generated_at: "2026-05-06T02:47:05Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 0496db919ee5c50a5932aa9e51eb54e1f54791bc0a271f39d6fb9e6fe17a2a28
+    source_hash: d96322ee66bbca2405f1cd3f9027be2bdddc40075d663c24714b0d3149744253
     source_path: concepts/typebox.md
     workflow: 16
 ---
 
-# TypeBox 作為協定的單一真相來源
+TypeBox 是 TypeScript-first 的 schema 函式庫。我們用它來定義 **Gateway
+WebSocket 協定**（handshake、request/response、server events）。這些 schemas
+會驅動 **runtime validation**、**JSON Schema 匯出**，以及 macOS app 的 **Swift codegen**。單一事實來源；其他所有內容都是產生而來。
 
-最後更新：2026-01-10
-
-TypeBox 是 TypeScript 優先的結構描述函式庫。我們用它定義 **Gateway
-WebSocket 協定**（handshake、request/response、server events）。這些結構描述
-驅動**執行階段驗證**、**JSON Schema 匯出**，以及 macOS 應用程式的 **Swift 程式碼產生**。
-一個單一真相來源；其餘全部產生而來。
-
-如果你想了解較高層次的協定脈絡，請從
+如果你想了解較高層級的協定脈絡，請從
 [Gateway 架構](/zh-TW/concepts/architecture)開始。
 
 ## 心智模型（30 秒）
 
-每個 Gateway WS 訊息都是下列三種框架之一：
+每個 Gateway WS 訊息都是下列三種 frames 之一：
 
-- **Request**：`{ type: "req", id, method, params }`
-- **Response**：`{ type: "res", id, ok, payload | error }`
-- **Event**：`{ type: "event", event, payload, seq?, stateVersion? }`
+- **Request**: `{ type: "req", id, method, params }`
+- **Response**: `{ type: "res", id, ok, payload | error }`
+- **Event**: `{ type: "event", event, payload, seq?, stateVersion? }`
 
-第一個框架**必須**是 `connect` request。之後，clients 可以呼叫
+第一個 frame **必須**是 `connect` request。之後，clients 可以呼叫
 methods（例如 `health`、`send`、`chat.send`）並訂閱 events（例如
 `presence`、`tick`、`agent`）。
 
@@ -51,50 +46,51 @@ Client                    Gateway
 
 | 類別       | 範例                                                       | 備註                               |
 | ---------- | ---------------------------------------------------------- | ---------------------------------- |
-| 核心       | `connect`、`health`、`status`                              | `connect` 必須是第一個             |
-| 訊息       | `send`、`agent`、`agent.wait`、`system-event`、`logs.tail` | 副作用需要 `idempotencyKey`        |
-| 聊天       | `chat.history`、`chat.send`、`chat.abort`                  | WebChat 使用這些                   |
-| 工作階段   | `sessions.list`、`sessions.patch`、`sessions.delete`       | 工作階段管理                       |
-| 自動化     | `wake`、`cron.list`、`cron.run`、`cron.runs`               | 喚醒 + Cron 控制                   |
-| Node       | `node.list`、`node.invoke`、`node.pair.*`                  | Gateway WS + Node 動作             |
-| 事件       | `tick`、`presence`、`agent`、`chat`、`health`、`shutdown`  | server push                        |
+| 核心       | `connect`, `health`, `status`                              | `connect` 必須是第一個             |
+| 訊息       | `send`, `agent`, `agent.wait`, `system-event`, `logs.tail` | 有 side effects 需要 `idempotencyKey` |
+| 聊天       | `chat.history`, `chat.send`, `chat.abort`                  | WebChat 使用這些                   |
+| 工作階段   | `sessions.list`, `sessions.patch`, `sessions.delete`       | 工作階段管理                       |
+| 自動化     | `wake`, `cron.list`, `cron.run`, `cron.runs`               | wake + cron 控制                   |
+| Node       | `node.list`, `node.invoke`, `node.pair.*`                  | Gateway WS + node 動作             |
+| Events     | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown`  | server push                        |
 
-權威宣告的 **discovery** 清單位於
+權威的已宣告 **discovery** 清單位於
 `src/gateway/server-methods-list.ts`（`listGatewayMethods`、`GATEWAY_EVENTS`）。
 
-## 結構描述所在位置
+## schemas 的位置
 
 - 來源：`src/gateway/protocol/schema.ts`
-- 執行階段驗證器（AJV）：`src/gateway/protocol/index.ts`
-- 已宣告的功能/discovery 登錄檔：`src/gateway/server-methods-list.ts`
+- Runtime validators（AJV）：`src/gateway/protocol/index.ts`
+- 已宣告的功能/discovery registry：`src/gateway/server-methods-list.ts`
 - Server handshake + method dispatch：`src/gateway/server.impl.ts`
 - Node client：`src/gateway/client.ts`
 - 產生的 JSON Schema：`dist/protocol.schema.json`
 - 產生的 Swift models：`apps/macos/Sources/OpenClawProtocol/GatewayModels.swift`
 
-## 目前管線
+## 目前的 pipeline
 
 - `pnpm protocol:gen`
   - 將 JSON Schema（draft‑07）寫入 `dist/protocol.schema.json`
 - `pnpm protocol:gen:swift`
   - 產生 Swift gateway models
 - `pnpm protocol:check`
-  - 執行兩個產生器並驗證輸出已提交
+  - 執行兩個 generators，並驗證輸出已提交
 
-## 結構描述在執行階段如何使用
+## schemas 在 runtime 如何使用
 
-- **Server 端**：每個傳入框架都會以 AJV 驗證。handshake 只接受 params 符合
-  `ConnectParams` 的 `connect` request。
-- **Client 端**：JS client 會在使用前驗證 event 與 response 框架。
-- **功能 discovery**：Gateway 會在 `hello-ok` 中，從 `listGatewayMethods()` 和
-  `GATEWAY_EVENTS` 傳送保守的 `features.methods` 與 `features.events` 清單。
-- 該 discovery 清單不是 `coreGatewayHandlers` 中每個可呼叫 helper 的產生式傾印；
-  有些 helper RPC 實作在 `src/gateway/server-methods/*.ts` 中，但未列舉於已宣告的
-  功能清單。
+- **Server 端**：每個 inbound frame 都會用 AJV 驗證。handshake 只接受
+  params 符合 `ConnectParams` 的 `connect` request。
+- **Client 端**：JS client 會先驗證 event 和 response frames，再使用它們。
+- **功能 discovery**：Gateway 會從 `listGatewayMethods()` 和
+  `GATEWAY_EVENTS` 在 `hello-ok` 中送出保守的 `features.methods`
+  和 `features.events` 清單。
+- 該 discovery 清單不是 `coreGatewayHandlers` 中每個可呼叫 helper 的產生式 dump；某些 helper RPCs 實作於
+  `src/gateway/server-methods/*.ts`，但未列入已宣告的
+  feature 清單。
 
-## 範例框架
+## 範例 frames
 
-Connect（第一個訊息）：
+Connect（第一則訊息）：
 
 ```json
 {
@@ -199,9 +195,9 @@ ws.on("message", (data) => {
 
 ## 實作範例：端到端新增 method
 
-範例：新增一個 `system.echo` request，回傳 `{ ok: true, text }`。
+範例：新增會回傳 `{ ok: true, text }` 的 `system.echo` request。
 
-1. **結構描述（單一真相來源）**
+1. **Schema（事實來源）**
 
 新增至 `src/gateway/protocol/schema.ts`：
 
@@ -229,7 +225,7 @@ export type SystemEchoParams = Static<typeof SystemEchoParamsSchema>;
 export type SystemEchoResult = Static<typeof SystemEchoResultSchema>;
 ```
 
-2. **驗證**
+2. **Validation**
 
 在 `src/gateway/protocol/index.ts` 中，匯出 AJV validator：
 
@@ -239,7 +235,7 @@ export const validateSystemEchoParams = ajv.compile<SystemEchoParams>(SystemEcho
 
 3. **Server 行為**
 
-在 `src/gateway/server-methods/system.ts` 中新增 handler：
+在 `src/gateway/server-methods/system.ts` 新增 handler：
 
 ```ts
 export const systemHandlers: GatewayRequestHandlers = {
@@ -252,11 +248,11 @@ export const systemHandlers: GatewayRequestHandlers = {
 
 在 `src/gateway/server-methods.ts` 中註冊它（已經合併 `systemHandlers`），
 然後將 `"system.echo"` 加到
-`src/gateway/server-methods-list.ts` 的 `listGatewayMethods` 輸入。
+`src/gateway/server-methods-list.ts` 中的 `listGatewayMethods` input。
 
-如果該 method 可由 operator 或 Node clients 呼叫，也請在
-`src/gateway/method-scopes.ts` 中分類它，讓 scope enforcement 與 `hello-ok` 功能
-宣告保持一致。
+如果該 method 可由 operator 或 node clients 呼叫，也請在
+`src/gateway/method-scopes.ts` 中分類，讓 scope enforcement 和 `hello-ok` feature
+advertising 保持一致。
 
 4. **重新產生**
 
@@ -264,51 +260,52 @@ export const systemHandlers: GatewayRequestHandlers = {
 pnpm protocol:check
 ```
 
-5. **測試 + 文件**
+5. **Tests + docs**
 
-在 `src/gateway/server.*.test.ts` 中新增 server test，並在文件中註記該 method。
+在 `src/gateway/server.*.test.ts` 新增 server test，並在 docs 中記錄該 method。
 
-## Swift 程式碼產生行為
+## Swift codegen 行為
 
-Swift 產生器會輸出：
+Swift generator 會輸出：
 
 - 含有 `req`、`res`、`event` 和 `unknown` cases 的 `GatewayFrame` enum
 - 強型別 payload structs/enums
-- `ErrorCode` values 與 `GATEWAY_PROTOCOL_VERSION`
+- `ErrorCode` values 和 `GATEWAY_PROTOCOL_VERSION`
 
-未知框架類型會保留為原始 payload，以支援向前相容性。
+未知 frame types 會保留為 raw payloads，以支援 forward compatibility。
 
-## 版本化 + 相容性
+## 版本與相容性
 
 - `PROTOCOL_VERSION` 位於 `src/gateway/protocol/schema.ts`。
-- Clients 會傳送 `minProtocol` + `maxProtocol`；server 會拒絕不相符者。
-- Swift models 會保留未知框架類型，以避免破壞較舊的 clients。
+- Clients 送出 `minProtocol` + `maxProtocol`；server 會拒絕不相符者。
+- Swift models 會保留未知 frame types，以避免破壞較舊的 clients。
 
-## 結構描述模式與慣例
+## Schema patterns 與 conventions
 
-- 多數 objects 使用 `additionalProperties: false` 來實作嚴格 payloads。
-- `NonEmptyString` 是 IDs 與 method/event 名稱的預設值。
-- 最上層的 `GatewayFrame` 在 `type` 上使用 **discriminator**。
-- 具有副作用的 methods 通常要求 params 中有 `idempotencyKey`
+- 大多數 objects 會使用 `additionalProperties: false` 來建立嚴格 payloads。
+- `NonEmptyString` 是 IDs 和 method/event names 的預設值。
+- Top-level `GatewayFrame` 在 `type` 上使用 **discriminator**。
+- 有 side effects 的 methods 通常需要在 params 中提供 `idempotencyKey`
   （範例：`send`、`poll`、`agent`、`chat.send`）。
-- `agent` 接受選用的 `internalEvents`，用於執行階段產生的 orchestration context
-  （例如 subagent/Cron task completion handoff）；請將此視為內部 API surface。
+- `agent` 接受選用的 `internalEvents`，用於 runtime-generated orchestration context
+  （例如 subagent/cron task completion handoff）；請將此視為 internal API surface。
 
-## 即時 schema JSON
+## Live schema JSON
 
-產生的 JSON Schema 位於 repo 的 `dist/protocol.schema.json`。已發布的原始檔通常可在：
+產生的 JSON Schema 位於 repo 的 `dist/protocol.schema.json`。已發布的 raw file 通常可在：
 
 - [https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json](https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json)
 
-## 變更結構描述時
+## 變更 schemas 時
 
 1. 更新 TypeBox schemas。
-2. 在 `src/gateway/server-methods-list.ts` 中註冊 method/event。
-3. 當新的 RPC 需要 operator 或 Node scope 分類時，更新 `src/gateway/method-scopes.ts`。
+2. 在 `src/gateway/server-methods-list.ts` 註冊 method/event。
+3. 當新的 RPC 需要 operator 或
+   node scope classification 時，更新 `src/gateway/method-scopes.ts`。
 4. 執行 `pnpm protocol:check`。
 5. 提交重新產生的 schema + Swift models。
 
 ## 相關
 
-- [豐富輸出協定](/zh-TW/reference/rich-output-protocol)
+- [Rich output protocol](/zh-TW/reference/rich-output-protocol)
 - [RPC adapters](/zh-TW/reference/rpc)

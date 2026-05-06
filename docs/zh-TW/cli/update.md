@@ -1,25 +1,24 @@
 ---
 read_when:
-    - 您想安全地更新原始碼簽出目錄
+    - 你想要安全地更新原始碼簽出副本
     - 你正在偵錯 `openclaw update` 的輸出或選項
     - 你需要了解 `--update` 的簡寫行為
-summary: '`openclaw update` 的 CLI 參考（相對安全的原始碼更新 + Gateway 自動重新啟動）'
+summary: '`openclaw update` 的 CLI 參考（相對安全的來源更新 + Gateway 自動重新啟動）'
 title: 更新
 x-i18n:
-    generated_at: "2026-05-05T01:45:07Z"
+    generated_at: "2026-05-06T02:45:03Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b12b1837ae80a3688fb7805d78d5a354f07dccdaba175cfa429e18145e543a1f
+    source_hash: 92eff9aeaecd4bf4eaa98fa511a3b9ebaedaf5872ff9407398665f2a8c2ab7d9
     source_path: cli/update.md
     workflow: 16
 ---
 
 # `openclaw update`
 
-安全地更新 OpenClaw，並在 stable/beta/dev 通道之間切換。
+安全地更新 OpenClaw，並在 stable/beta/dev channel 之間切換。
 
-如果你是透過 **npm/pnpm/bun** 安裝（全域安裝，沒有 git 中繼資料），
-更新會透過 [更新](/zh-TW/install/updating) 中的套件管理器流程進行。
+如果你是透過 **npm/pnpm/bun** 安裝（全域安裝，沒有 git metadata），更新會透過 [更新](/zh-TW/install/updating) 中的 package-manager 流程進行。
 
 ## 用法
 
@@ -40,31 +39,23 @@ openclaw --update
 
 ## 選項
 
-- `--no-restart`：成功更新後略過重新啟動 Gateway 服務。會重新啟動 Gateway 的套件管理器更新，會先驗證重新啟動的服務回報預期的更新版本，命令才會成功。
-- `--channel <stable|beta|dev>`：設定更新通道（git + npm；會持久化到設定）。
-- `--tag <dist-tag|version|spec>`：僅針對這次更新覆寫套件目標。對於套件安裝，`main` 會對應到 `github:openclaw/openclaw#main`。
-- `--dry-run`：預覽預計的更新動作（通道/標籤/目標/重新啟動流程），不寫入設定、不安裝、不同步 plugins，也不重新啟動。
-- `--json`：列印機器可讀的 `UpdateRunResult` JSON，包括
-  在更新後 plugin 同步期間偵測到 npm plugin 成品漂移時的
-  `postUpdate.plugins.integrityDrifts`。
-- `--timeout <seconds>`：每個步驟的逾時時間（預設為 1800 秒）。
+- `--no-restart`：成功更新後略過重新啟動 Gateway service。會重新啟動 Gateway 的 package-manager 更新，會在指令成功前驗證重新啟動的 service 回報預期的更新後版本。
+- `--channel <stable|beta|dev>`：設定更新 channel（git + npm；會保存於 config）。
+- `--tag <dist-tag|version|spec>`：僅覆寫本次更新的 package 目標。對 package install 而言，`main` 會對應到 `github:openclaw/openclaw#main`。
+- `--dry-run`：預覽計畫中的更新動作（channel/tag/target/restart 流程），不寫入 config、不安裝、不同步 plugins，也不重新啟動。
+- `--json`：列印機器可讀的 `UpdateRunResult` JSON，包括核心更新成功後，損毀或無法載入的 managed plugins 需要修復時的 `postUpdate.plugins.warnings`，以及在更新後 Plugin 同步期間偵測到 npm Plugin artifact drift 時的 `postUpdate.plugins.integrityDrifts`。
+- `--timeout <seconds>`：每個步驟的逾時時間（預設為 1800s）。
 - `--yes`：略過確認提示（例如降級確認）。
 
-`openclaw update` 沒有 `--verbose` 旗標。使用 `--dry-run` 預覽
-預計的通道/標籤/安裝/重新啟動動作，使用 `--json` 取得機器可讀的
-結果；如果你只需要通道與可用性詳細資料，請使用
-`openclaw update status --json`。如果你正在除錯更新前後的 Gateway 記錄，
-主控台詳細程度與檔案記錄層級是分開的：Gateway `--verbose` 會影響
-終端機/WebSocket 輸出，而檔案記錄需要在設定中使用 `logging.level: "debug"` 或
-`"trace"`。請參閱 [Gateway 記錄](/zh-TW/gateway/logging)。
+`openclaw update` 沒有 `--verbose` flag。使用 `--dry-run` 預覽計畫中的 channel/tag/install/restart 動作，使用 `--json` 取得機器可讀結果；如果只需要 channel 和可用性詳細資訊，請使用 `openclaw update status --json`。如果你正在除錯更新前後的 Gateway logs，console 詳細程度和檔案 log level 是分開的：Gateway `--verbose` 會影響 terminal/WebSocket 輸出，而檔案 logs 需要在 config 中設定 `logging.level: "debug"` 或 `"trace"`。請參閱 [Gateway logging](/zh-TW/gateway/logging)。
 
 <Warning>
-降級需要確認，因為較舊版本可能會破壞設定。
+降級需要確認，因為舊版本可能會破壞設定。
 </Warning>
 
 ## `update status`
 
-顯示目前作用中的更新通道 + git 標籤/分支/SHA（對原始碼 checkout 而言），以及更新可用性。
+顯示作用中的更新 channel + git tag/branch/SHA（適用於 source checkout），以及更新可用性。
 
 ```bash
 openclaw update status
@@ -74,14 +65,12 @@ openclaw update status --timeout 10
 
 選項：
 
-- `--json`：列印機器可讀的狀態 JSON。
-- `--timeout <seconds>`：檢查的逾時時間（預設為 3 秒）。
+- `--json`：列印機器可讀的 status JSON。
+- `--timeout <seconds>`：檢查逾時時間（預設為 3s）。
 
 ## `update wizard`
 
-互動式流程，用於選擇更新通道，並確認更新後是否要重新啟動 Gateway
-（預設會重新啟動）。如果你選擇 `dev` 但沒有 git checkout，它會
-提議建立一個。
+互動式流程，用來選擇更新 channel，並確認更新後是否要重新啟動 Gateway（預設會重新啟動）。如果你在沒有 git checkout 的情況下選擇 `dev`，它會提議建立一個 checkout。
 
 選項：
 
@@ -89,113 +78,79 @@ openclaw update status --timeout 10
 
 ## 它會做什麼
 
-當你明確切換通道（`--channel ...`）時，OpenClaw 也會讓
-安裝方式保持一致：
+當你明確切換 channel（`--channel ...`）時，OpenClaw 也會讓安裝方法保持一致：
 
-- `dev` → 確保有 git checkout（預設：`~/openclaw`，可用 `OPENCLAW_GIT_DIR` 覆寫），
-  更新它，並從該 checkout 安裝全域 CLI。
+- `dev` → 確保有 git checkout（預設：`~/openclaw`，可用 `OPENCLAW_GIT_DIR` 覆寫）、更新它，並從該 checkout 安裝全域 CLI。
 - `stable` → 使用 `latest` 從 npm 安裝。
-- `beta` → 優先使用 npm dist-tag `beta`，但當 beta
-  缺失或比目前 stable 發行版本更舊時，會回退到 `latest`。
+- `beta` → 優先使用 npm dist-tag `beta`，但當 beta 缺失或比目前 stable release 更舊時，會退回 `latest`。
 
-Gateway 核心自動更新器（透過設定啟用時）會在即時 Gateway 請求處理常式之外
-啟動 CLI 更新路徑。控制平面 `update.run` 套件管理器更新會在套件替換後
-強制進行非延後、無冷卻時間的更新重新啟動，
-因為舊的 Gateway 程序可能仍有記憶體中的區塊指向
-新套件已移除的檔案。
+Gateway core auto-updater（透過 config 啟用時）會在即時 Gateway request handler 之外啟動 CLI 更新路徑。Control-plane `update.run` package-manager 更新會在 package swap 後強制執行非延後、無 cooldown 的更新重新啟動，因為舊 Gateway process 仍可能有指向新 package 已移除檔案的 in-memory chunks。
 
-對於套件管理器安裝，`openclaw update` 會在呼叫套件管理器之前解析目標套件
-版本。npm 全域安裝會使用分段安裝：OpenClaw 會把新套件安裝到暫存 npm 前綴，
-在其中驗證已封裝的 `dist` 清單，然後把該乾淨的套件樹替換到
-真正的全域前綴。如果驗證失敗，更新後 doctor、plugin 同步與
-重新啟動工作不會從可疑的樹執行。即使已安裝版本已經符合目標，
-此命令也會重新整理全域套件安裝，
-然後執行 plugin 同步、核心命令補全重新整理與重新啟動工作。這會讓
-已封裝的 sidecar 與通道擁有的 plugin 記錄和已安裝的 OpenClaw 建置保持一致，
-同時把完整的 plugin 命令補全重建留給
-明確的 `openclaw completion --write-state` 執行。
+對 package-manager installs 而言，`openclaw update` 會在叫用 package manager 前解析目標 package version。npm global installs 使用 staged install：OpenClaw 會將新 package 安裝到暫時的 npm prefix、在那裡驗證 packaged `dist` inventory，然後把乾淨的 package tree 交換到真正的 global prefix。若驗證失敗，更新後的 doctor、Plugin 同步與重新啟動工作不會從可疑的 tree 執行。即使已安裝版本已符合目標，該指令仍會重新整理全域 package install，然後執行 Plugin 同步、核心指令 completion refresh，以及重新啟動工作。這會讓 packaged sidecars 與 channel-owned Plugin records 和已安裝的 OpenClaw build 保持一致，同時把完整的 Plugin-command completion rebuild 留給明確的 `openclaw completion --write-state` 執行。
 
-當已安裝本機受管理的 Gateway 服務且已啟用重新啟動時，
-套件管理器更新會先停止執行中的服務，再替換套件
-樹，然後從更新後的安裝重新整理服務中繼資料，重新啟動
-服務，並在回報成功前驗證重新啟動的 Gateway 回報預期版本。
-在 macOS 上，更新後檢查也會驗證 LaunchAgent
-已針對作用中的設定檔載入/執行，且設定的迴路連接埠
-健康。如果 plist 已安裝但 launchd 未監督它，OpenClaw
-會自動重新 bootstrap LaunchAgent，然後重新執行
-健康/版本/通道就緒檢查。全新的 bootstrap 會直接載入 RunAtLoad
-作業，因此更新復原不會立即對新產生的 Gateway 執行 `kickstart -k`。
-如果 Gateway 仍然無法變得健康，命令會以非零狀態結束，
-並列印重新啟動記錄路徑，以及明確的重新啟動、重新安裝與
-套件回復指示。使用 `--no-restart` 時，
-套件替換仍會執行，但受管理服務不會被停止或
-重新啟動，因此執行中的 Gateway 可能會保留舊程式碼，直到你手動重新啟動它。
+當已安裝本機 managed Gateway service 且啟用重新啟動時，package-manager 更新會先停止正在執行的 service，再取代 package tree，接著從更新後的安裝重新整理 service metadata、重新啟動 service，並在回報成功前驗證重新啟動的 Gateway 回報預期版本。在 macOS 上，更新後檢查也會驗證 LaunchAgent 已為作用中的 profile 載入/執行，且設定的 loopback port 是健康的。如果 plist 已安裝但 launchd 沒有監督它，OpenClaw 會自動重新 bootstrap LaunchAgent，然後重新執行 health/version/channel readiness checks。新的 bootstrap 會直接載入 RunAtLoad job，因此更新復原不會立即對新產生的 Gateway 執行 `kickstart -k`。如果 Gateway 仍未變成健康狀態，指令會以非零狀態結束，並列印 restart log path，以及明確的重新啟動、重新安裝和 package rollback 指示。使用 `--no-restart` 時，package replacement 仍會執行，但 managed service 不會停止或重新啟動，因此正在執行的 Gateway 可能會保留舊程式碼，直到你手動重新啟動它。
 
 ## Git checkout 流程
 
-### 通道選擇
+### Channel 選擇
 
-- `stable`：checkout 最新的非 beta 標籤，然後建置並執行 doctor。
-- `beta`：優先使用最新的 `-beta` 標籤，但當 beta 缺失或較舊時，會回退到最新的 stable 標籤。
+- `stable`：checkout 最新的非 beta tag，然後 build 並執行 doctor。
+- `beta`：優先使用最新的 `-beta` tag，但當 beta 缺失或較舊時，會退回最新的 stable tag。
 - `dev`：checkout `main`，然後 fetch 並 rebase。
 
 ### 更新步驟
 
 <Steps>
   <Step title="驗證乾淨的 worktree">
-    要求沒有未提交的變更。
+    需要沒有未提交的變更。
   </Step>
-  <Step title="切換通道">
-    切換到所選通道（標籤或分支）。
+  <Step title="切換 channel">
+    切換到選取的 channel（tag 或 branch）。
   </Step>
-  <Step title="Fetch upstream">
-    僅限 dev。
+  <Step title="擷取 upstream">
+    僅適用 Dev。
   </Step>
-  <Step title="預檢建置（僅限 dev）">
-    在暫存 worktree 中執行 lint 與 TypeScript 建置。如果 tip 失敗，會往回最多 10 個 commit，以尋找最新的乾淨建置。
+  <Step title="Preflight build（僅適用 dev）">
+    在 temp worktree 中執行 TypeScript build。如果 tip 失敗，會向前回溯最多 10 個 commits，以找出最新可 build 的 commit。設定 `OPENCLAW_UPDATE_PREFLIGHT_LINT=1` 也會在此 preflight 期間執行 lint；lint 會以受限的 serial mode 執行，因為使用者的更新主機通常比 CI runners 更小。
   </Step>
   <Step title="Rebase">
-    Rebase 到所選 commit（僅限 dev）。
+    Rebase 到選取的 commit（僅適用 dev）。
   </Step>
-  <Step title="安裝相依套件">
-    使用 repo 套件管理器。對於 pnpm checkout，更新器會按需 bootstrap `pnpm`（先透過 `corepack`，再使用暫時的 `npm install pnpm@10` 回退），而不是在 pnpm workspace 內執行 `npm run build`。
+  <Step title="安裝 dependencies">
+    使用 repo package manager。對 pnpm checkouts 而言，updater 會視需要 bootstrap `pnpm`（先透過 `corepack`，再以暫時的 `npm install pnpm@10` fallback），而不是在 pnpm workspace 內執行 `npm run build`。
   </Step>
-  <Step title="建置 Control UI">
-    建置 gateway 與 Control UI。
+  <Step title="Build Control UI">
+    Build gateway 和 Control UI。
   </Step>
   <Step title="執行 doctor">
-    `openclaw doctor` 會作為最終安全更新檢查執行。
+    `openclaw doctor` 會作為最後的安全更新檢查執行。
   </Step>
   <Step title="同步 plugins">
-    將 plugins 同步到作用中的通道。Dev 使用隨附 plugins；stable 與 beta 使用 npm。更新已追蹤的 plugin 安裝。
+    將 plugins 同步到作用中的 channel。Dev 使用 bundled plugins；stable 和 beta 使用 npm。更新 tracked Plugin installs。
   </Step>
 </Steps>
 
-在 beta 更新通道上，遵循預設/latest 線的已追蹤 npm 與 ClawHub plugin 安裝
-會先嘗試 plugin `@beta` 發行版本。如果 plugin 沒有
-beta 發行版本，OpenClaw 會回退到已記錄的預設/latest 規格。對於 npm
-plugins，當 beta 套件存在但安裝驗證失敗時，OpenClaw 也會回退。
-精確版本與明確標籤不會被改寫。
+在 beta 更新 channel 上，遵循 default/latest 線的 tracked npm 和 ClawHub Plugin installs 會先嘗試 Plugin `@beta` release。如果 Plugin 沒有 beta release，OpenClaw 會退回記錄的 default/latest spec。對 npm plugins 而言，當 beta package 存在但 install validation 失敗時，OpenClaw 也會退回。Exact versions 和 explicit tags 不會被改寫。
 
 <Warning>
-如果精確釘選的 npm plugin 更新解析到的成品，其完整性與儲存的安裝記錄不同，`openclaw update` 會中止該 plugin 成品更新，而不是安裝它。只有在驗證你信任新成品後，才明確重新安裝或更新該 plugin。
+如果 exact pinned npm Plugin update 解析到的 artifact integrity 與儲存的 install record 不同，`openclaw update` 會中止該 Plugin artifact update，而不是安裝它。只有在驗證你信任新的 artifact 後，才明確重新安裝或更新該 Plugin。
 </Warning>
 
 <Note>
-更新後 plugin 同步失敗會讓更新結果失敗，並停止後續重新啟動工作。請修正 plugin 安裝或更新錯誤，然後重新執行 `openclaw update`。
+更新後的 Plugin 同步失敗如果只限於 managed Plugin，會在核心更新成功後回報為 warnings。JSON result 會保留 top-level update `status: "ok"`，並以 `openclaw doctor --fix` 和 `openclaw plugins inspect <id> --runtime --json` 指引回報 `postUpdate.plugins.status: "warning"`。非預期的 updater 或 sync exceptions 仍會讓更新結果失敗。修正 Plugin install 或 update error，然後重新執行 `openclaw doctor --fix` 或 `openclaw update`。
 
-當更新後的 Gateway 啟動時，plugin 載入只會進行驗證：啟動不會執行套件管理器，也不會變更相依樹。套件管理器 `update.run` 重新啟動會在套件樹已替換後，略過一般閒置延後與重新啟動冷卻時間，因此舊程序無法繼續 lazy-load 已移除的區塊。
+更新後的 Gateway 啟動時，Plugin loading 是 verify-only：startup 不會執行 package managers，也不會改動 dependency trees。Package-manager `update.run` 重新啟動會在 package tree 被交換後繞過一般的 idle deferral 和 restart cooldown，因此舊 process 無法繼續 lazy-loading 已移除的 chunks。
 
-如果 pnpm bootstrap 仍然失敗，更新器會提早停止並顯示套件管理器特定錯誤，而不是嘗試在 checkout 內執行 `npm run build`。
+如果 pnpm bootstrap 仍然失敗，updater 會提早停止並顯示 package-manager-specific error，而不是在 checkout 內嘗試 `npm run build`。
 </Note>
 
 ## `--update` 簡寫
 
-`openclaw --update` 會改寫為 `openclaw update`（對 shell 與 launcher 指令碼很有用）。
+`openclaw --update` 會改寫為 `openclaw update`（適合 shells 和 launcher scripts）。
 
 ## 相關
 
-- `openclaw doctor`（在 git checkout 上會提議先執行 update）
-- [開發通道](/zh-TW/install/development-channels)
+- `openclaw doctor`（在 git checkouts 上會提議先執行 update）
+- [Development channels](/zh-TW/install/development-channels)
 - [更新](/zh-TW/install/updating)
-- [CLI 參考](/zh-TW/cli)
+- [CLI reference](/zh-TW/cli)
