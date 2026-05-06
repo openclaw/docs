@@ -1,15 +1,15 @@
 ---
 read_when:
     - Sie möchten eine vollständige Liste dessen, was OpenClaw unterstützt
-summary: OpenClaw-Fähigkeiten über Kanäle, Routing, Medien und UX hinweg.
+summary: OpenClaw-Funktionen für Kanäle, Routing, Medien und UX.
 title: Funktionen
 x-i18n:
-    generated_at: "2026-04-24T06:34:12Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T06:43:27Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b188d786b06e1a51d42130242e8bef6290a728783f24b2fbce513bf4d6c9ec23
+    source_hash: d46085b326dd1e5f0d5531bdf8d7d84ac8c22b7fb4637b7183be2bd9d556c500
     source_path: concepts/features.md
-    workflow: 15
+    workflow: 16
 ---
 
 ## Highlights
@@ -30,8 +30,8 @@ x-i18n:
   <Card title="Apps und UI" icon="monitor" href="/de/web/control-ui">
     Web Control UI und macOS-Begleit-App.
   </Card>
-  <Card title="Mobile Nodes" icon="smartphone" href="/de/nodes">
-    iOS- und Android-Nodes mit Pairing, Sprache/Chat und umfangreichen Gerätebefehlen.
+  <Card title="Mobile Knoten" icon="smartphone" href="/de/nodes">
+    iOS- und Android-Knoten mit Kopplung, Sprache/Chat und umfangreichen Gerätebefehlen.
   </Card>
 </Columns>
 
@@ -39,48 +39,60 @@ x-i18n:
 
 **Kanäle:**
 
-- Zu den integrierten Kanälen gehören Discord, Google Chat, iMessage (Legacy), IRC, Signal, Slack, Telegram, WebChat und WhatsApp
-- Zu den gebündelten Plugin-Kanälen gehören BlueBubbles für iMessage, Feishu, LINE, Matrix, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Synology Chat, Tlon, Twitch, Zalo und Zalo Personal
-- Optional separat installierte Kanal-Plugins umfassen Voice Call und Drittanbieter-Pakete wie WeChat
-- Drittanbieter-Kanal-Plugins können das Gateway weiter erweitern, etwa mit WeChat
+- Integrierte Kanäle umfassen Discord, Google Chat, iMessage (Legacy), IRC, Signal, Slack, Telegram, WebChat und WhatsApp
+- Gebündelte Plugin-Kanäle umfassen BlueBubbles für iMessage, Feishu, LINE, Matrix, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Synology Chat, Tlon, Twitch, Zalo und Zalo Personal
+- Optional separat installierte Kanal-Plugins umfassen Voice Call und Drittanbieterpakete wie WeChat
+- Drittanbieter-Kanal-Plugins können den Gateway weiter erweitern, etwa mit WeChat
 - Unterstützung für Gruppenchats mit erwähnungsbasierter Aktivierung
-- DM-Sicherheit mit Allowlists und Pairing
+- DM-Sicherheit mit Allowlisten und Kopplung
 
 **Agent:**
 
-- Eingebettete Agentenlaufzeit mit Tool-Streaming
+- Eingebettete Agent-Laufzeit mit Tool-Streaming
 - Multi-Agent-Routing mit isolierten Sitzungen pro Workspace oder Absender
-- Sitzungen: Direktchats werden im gemeinsamen `main` zusammengeführt; Gruppen sind isoliert
+- Sitzungen: Direkte Chats werden in das gemeinsame `main` zusammengeführt; Gruppen sind isoliert
 - Streaming und Chunking für lange Antworten
 
-**Auth und Provider:**
+**Authentifizierung und Provider:**
 
 - Über 35 Modell-Provider (Anthropic, OpenAI, Google und mehr)
-- Abo-Authentifizierung über OAuth (z. B. OpenAI Codex)
-- Unterstützung für benutzerdefinierte und selbst gehostete Provider (vLLM, SGLang, Ollama und jeder mit OpenAI oder Anthropic kompatible Endpunkt)
+- Abonnement-Authentifizierung über OAuth (z. B. OpenAI Codex)
+- Unterstützung für benutzerdefinierte und selbst gehostete Provider (vLLM, SGLang, Ollama und jeder OpenAI-kompatible oder Anthropic-kompatible Endpunkt)
 
 **Medien:**
 
-- Bilder, Audio, Video und Dokumente hinein und hinaus
-- Gemeinsame Fähigkeitsoberflächen für Bild- und Videogenerierung
-- Transkription von Sprachnotizen
+- Bilder, Audio, Video und Dokumente ein- und ausgehend
+- Gemeinsame Funktionsoberflächen für Bildgenerierung und Videogenerierung
+- Transkription von Sprachnachrichten
 - Text-to-Speech mit mehreren Providern
 
-**Apps und Oberflächen:**
+**Apps und Schnittstellen:**
 
 - WebChat und browserbasierte Control UI
 - macOS-Menüleisten-Begleit-App
-- iOS-Node mit Pairing, Canvas, Kamera, Bildschirmaufnahme, Standort und Sprache
-- Android-Node mit Pairing, Chat, Sprache, Canvas, Kamera und Gerätebefehlen
+- iOS-Knoten mit Kopplung, Canvas, Kamera, Bildschirmaufnahme, Standort und Sprache
+- Android-Knoten mit Kopplung, Chat, Sprache, Canvas, Kamera und Gerätebefehlen
 
 **Tools und Automatisierung:**
 
-- Browser-Automatisierung, Exec, Sandboxing
+- Browserautomatisierung, Exec, Sandboxing
 - Websuche (Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG, Tavily)
 - Cron-Jobs und Heartbeat-Planung
 - Skills, Plugins und Workflow-Pipelines (Lobster)
 
-## Verwandt
+## Verwandte Themen
 
-- [Experimentelle Funktionen](/de/concepts/experimental-features)
-- [Agentenlaufzeit](/de/concepts/agent)
+<CardGroup cols={2}>
+  <Card title="Experimentelle Funktionen" href="/de/concepts/experimental-features" icon="flask">
+    Opt-in-Funktionen, die noch nicht für die Standardoberfläche ausgeliefert wurden.
+  </Card>
+  <Card title="Agent-Laufzeit" href="/de/concepts/agent" icon="robot">
+    Agent-Laufzeitmodell und wie Runs verteilt werden.
+  </Card>
+  <Card title="Kanäle" href="/de/channels" icon="message-square">
+    Verbinden Sie Telegram, WhatsApp, Discord, Slack und mehr über einen Gateway.
+  </Card>
+  <Card title="Plugins" href="/de/tools/plugin" icon="plug">
+    Gebündelte und Drittanbieter-Plugins, die OpenClaw erweitern.
+  </Card>
+</CardGroup>

@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Sie möchten reproduzierbare Installationen mit Rollback-Möglichkeit
+    - Sie möchten reproduzierbare, zurücksetzbare Installationen
     - Sie verwenden bereits Nix/NixOS/Home Manager
-    - Sie möchten, dass alles fixiert und deklarativ verwaltet wird
+    - Sie möchten alles festschreiben und deklarativ verwalten
 summary: OpenClaw deklarativ mit Nix installieren
 title: Nix
 x-i18n:
-    generated_at: "2026-04-25T13:49:17Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T06:53:55Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 7980e48d9fac49396d9dd06cf8516d572c97def1764db94cf66879d81d63694c
+    source_hash: f0c25b97fb46a906bb726a13de095ead1e6c3642d28f66173b488acfbc5e0001
     source_path: install/nix.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw deklarativ mit **[nix-openclaw](https://github.com/openclaw/nix-openclaw)** installieren — einem Home-Manager-Modul mit allem Nötigen.
+Installieren Sie OpenClaw deklarativ mit **[nix-openclaw](https://github.com/openclaw/nix-openclaw)** - einem umfassend ausgestatteten Home Manager-Modul.
 
 <Info>
-Das Repository [nix-openclaw](https://github.com/openclaw/nix-openclaw) ist die maßgebliche Quelle für die Installation mit Nix. Diese Seite ist ein kurzer Überblick.
+Das [nix-openclaw](https://github.com/openclaw/nix-openclaw)-Repo ist die maßgebliche Quelle für die Nix-Installation. Diese Seite bietet einen kurzen Überblick.
 </Info>
 
 ## Was Sie erhalten
 
-- Gateway + macOS-App + Tools (whisper, spotify, cameras) -- alles fixiert
-- Launchd-Dienst, der Neustarts übersteht
+- Gateway + macOS-App + Tools (whisper, spotify, cameras) -- alles fest versioniert
+- launchd-Dienst, der Neustarts übersteht
 - Plugin-System mit deklarativer Konfiguration
 - Sofortiges Rollback: `home-manager switch --rollback`
 
@@ -31,41 +31,41 @@ Das Repository [nix-openclaw](https://github.com/openclaw/nix-openclaw) ist die 
 
 <Steps>
   <Step title="Determinate Nix installieren">
-    Wenn Nix noch nicht installiert ist, folgen Sie den Anweisungen des [Determinate Nix installers](https://github.com/DeterminateSystems/nix-installer).
+    Wenn Nix noch nicht installiert ist, folgen Sie den Anweisungen des [Determinate Nix installer](https://github.com/DeterminateSystems/nix-installer).
   </Step>
-  <Step title="Ein lokales Flake erstellen">
-    Verwenden Sie das agentenorientierte Template aus dem Repository nix-openclaw:
+  <Step title="Lokale Flake erstellen">
+    Verwenden Sie das agent-first-Template aus dem nix-openclaw-Repo:
     ```bash
     mkdir -p ~/code/openclaw-local
-    # Kopieren Sie templates/agent-first/flake.nix aus dem Repository nix-openclaw
+    # Copy templates/agent-first/flake.nix from the nix-openclaw repo
     ```
   </Step>
   <Step title="Geheimnisse konfigurieren">
-    Richten Sie Ihr Messaging-Bot-Token und den API-Key Ihres Modell-Providers ein. Einfache Dateien unter `~/.secrets/` funktionieren gut.
+    Richten Sie Ihr Messaging-Bot-Token und den API-Schlüssel Ihres Modell-Providers ein. Einfache Dateien unter `~/.secrets/` funktionieren problemlos.
   </Step>
   <Step title="Template-Platzhalter ausfüllen und wechseln">
     ```bash
     home-manager switch
     ```
   </Step>
-  <Step title="Verifizieren">
+  <Step title="Überprüfen">
     Bestätigen Sie, dass der launchd-Dienst läuft und Ihr Bot auf Nachrichten antwortet.
   </Step>
 </Steps>
 
-Siehe die [nix-openclaw README](https://github.com/openclaw/nix-openclaw) für vollständige Moduloptionen und Beispiele.
+Im [nix-openclaw README](https://github.com/openclaw/nix-openclaw) finden Sie alle Moduloptionen und Beispiele.
 
 ## Laufzeitverhalten im Nix-Modus
 
-Wenn `OPENCLAW_NIX_MODE=1` gesetzt ist (automatisch mit nix-openclaw), wechselt OpenClaw in einen deterministischen Modus, der automatische Installationsabläufe deaktiviert.
+Wenn `OPENCLAW_NIX_MODE=1` gesetzt ist (automatisch mit nix-openclaw), wechselt OpenClaw in einen deterministischen Modus, der Auto-Installationsabläufe deaktiviert.
 
-Sie können es auch manuell setzen:
+Sie können dies auch manuell setzen:
 
 ```bash
 export OPENCLAW_NIX_MODE=1
 ```
 
-Unter macOS übernimmt die GUI-App Shell-Umgebungsvariablen nicht automatisch. Aktivieren Sie den Nix-Modus stattdessen über defaults:
+Unter macOS übernimmt die GUI-App Shell-Umgebungsvariablen nicht automatisch. Aktivieren Sie den Nix-Modus stattdessen über Defaults:
 
 ```bash
 defaults write ai.openclaw.mac openclaw.nixMode -bool true
@@ -73,13 +73,13 @@ defaults write ai.openclaw.mac openclaw.nixMode -bool true
 
 ### Was sich im Nix-Modus ändert
 
-- Auto-Install- und Self-Mutation-Abläufe sind deaktiviert
-- Fehlende Abhängigkeiten zeigen Nix-spezifische Hinweise zur Behebung an
-- Die UI zeigt ein schreibgeschütztes Nix-Modus-Banner an
+- Auto-Installations- und Selbstmutationsabläufe sind deaktiviert
+- Fehlende Abhängigkeiten zeigen Nix-spezifische Behebungsmeldungen an
+- Die UI zeigt ein schreibgeschütztes Banner für den Nix-Modus an
 
-### Konfigurations- und Statuspfade
+### Konfigurations- und Zustandspfade
 
-OpenClaw liest die JSON5-Konfiguration aus `OPENCLAW_CONFIG_PATH` und speichert veränderliche Daten in `OPENCLAW_STATE_DIR`. Wenn OpenClaw unter Nix läuft, setzen Sie diese explizit auf von Nix verwaltete Speicherorte, damit Laufzeitstatus und Konfiguration außerhalb des unveränderlichen Stores bleiben.
+OpenClaw liest die JSON5-Konfiguration aus `OPENCLAW_CONFIG_PATH` und speichert veränderliche Daten in `OPENCLAW_STATE_DIR`. Wenn OpenClaw unter Nix läuft, setzen Sie diese Werte explizit auf von Nix verwaltete Speicherorte, damit Laufzeitzustand und Konfiguration außerhalb des unveränderlichen Stores bleiben.
 
 | Variable               | Standard                                |
 | ---------------------- | --------------------------------------- |
@@ -87,20 +87,31 @@ OpenClaw liest die JSON5-Konfiguration aus `OPENCLAW_CONFIG_PATH` und speichert 
 | `OPENCLAW_STATE_DIR`   | `~/.openclaw`                           |
 | `OPENCLAW_CONFIG_PATH` | `$OPENCLAW_STATE_DIR/openclaw.json`     |
 
-### PATH-Erkennung für Dienste
+### Service-PATH-Erkennung
 
-Der launchd-/systemd-Gateway-Dienst erkennt Binärdateien aus Nix-Profilen automatisch, sodass
-Plugins und Tools, die per Shell auf mit `nix` installierte ausführbare Dateien zugreifen,
-ohne manuelle PATH-Konfiguration funktionieren:
+Der launchd-/systemd-Gateway-Dienst erkennt Nix-Profil-Binärdateien automatisch, sodass
+Plugins und Tools, die per Shell auf mit `nix` installierte ausführbare Dateien zugreifen, ohne
+manuelle PATH-Einrichtung funktionieren:
 
-- Wenn `NIX_PROFILES` gesetzt ist, wird jeder Eintrag dem Dienst-PATH mit
-  Priorität von rechts nach links hinzugefügt (entspricht der Priorität von Nix-Shells — ganz rechts gewinnt).
+- Wenn `NIX_PROFILES` gesetzt ist, wird jeder Eintrag dem Service-PATH mit
+  Priorität von rechts nach links hinzugefügt (entspricht der Nix-Shell-Priorität - der rechteste Eintrag gewinnt).
 - Wenn `NIX_PROFILES` nicht gesetzt ist, wird `~/.nix-profile/bin` als Fallback hinzugefügt.
 
-Dies gilt sowohl für launchd-Dienstumgebungen unter macOS als auch für systemd-Dienstumgebungen unter Linux.
+Dies gilt sowohl für macOS-launchd- als auch für Linux-systemd-Dienstumgebungen.
 
 ## Verwandt
 
-- [nix-openclaw](https://github.com/openclaw/nix-openclaw) -- vollständige Einrichtungsanleitung
-- [Wizard](/de/start/wizard) -- CLI-Setup ohne Nix
-- [Docker](/de/install/docker) -- containerisiertes Setup
+<CardGroup cols={2}>
+  <Card title="nix-openclaw" href="https://github.com/openclaw/nix-openclaw" icon="arrow-up-right-from-square">
+    Maßgebliches Home Manager-Modul und vollständige Einrichtungsanleitung.
+  </Card>
+  <Card title="Einrichtungsassistent" href="/de/start/wizard" icon="wand-magic-sparkles">
+    Anleitung zur Nicht-Nix-Einrichtung über die CLI.
+  </Card>
+  <Card title="Docker" href="/de/install/docker" icon="docker">
+    Containerisierte Einrichtung als Nicht-Nix-Alternative.
+  </Card>
+  <Card title="Aktualisierung" href="/de/install/updating" icon="arrow-up-right-from-square">
+    Aktualisierung von über Home Manager verwalteten Installationen zusammen mit dem Paket.
+  </Card>
+</CardGroup>

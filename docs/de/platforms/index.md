@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Nach OS-Unterstützung oder Installationspfaden suchen
+    - Suche nach Betriebssystemunterstützung oder Installationspfaden
     - Entscheiden, wo das Gateway ausgeführt werden soll
-summary: Überblick über die Plattformunterstützung (Gateway + Companion-Apps)
+summary: Überblick zur Plattformunterstützung (Gateway + Begleit-Apps)
 title: Plattformen
 x-i18n:
-    generated_at: "2026-04-24T06:47:14Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T06:55:35Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 3ebed9f219f3072ef760006eef47ca78f87169c40a6098c3585dfaf6169fc594
+    source_hash: dd1fbd1af8b03a12014d91b2f300fb8ec65b9c42c38ada2b9ca089181140a75c
     source_path: platforms/index.md
-    workflow: 15
+    workflow: 16
 ---
 
-Der OpenClaw-Core ist in TypeScript geschrieben. **Node ist die empfohlene Laufzeit**.
+OpenClaw-Kern ist in TypeScript geschrieben. **Node ist die empfohlene Runtime**.
 Bun wird für das Gateway nicht empfohlen — bekannte Probleme mit WhatsApp- und
-Telegram-Kanälen; siehe [Bun (experimentell)](/de/install/bun) für Details.
+Telegram-Kanälen; Details finden Sie unter [Bun (experimentell)](/de/install/bun).
 
-Companion-Apps existieren für macOS (Menüleisten-App) und mobile Nodes (iOS/Android). Companion-Apps für Windows und
-Linux sind geplant, aber das Gateway wird heute bereits vollständig unterstützt.
-Native Companion-Apps für Windows sind ebenfalls geplant; für das Gateway wird WSL2 empfohlen.
+Begleit-Apps gibt es für macOS (Menüleisten-App) und mobile Nodes (iOS/Android). Begleit-Apps für Windows und
+Linux sind geplant, aber das Gateway wird bereits heute vollständig unterstützt.
+Native Begleit-Apps für Windows sind ebenfalls geplant; das Gateway wird über WSL2 empfohlen.
 
 ## Wählen Sie Ihr Betriebssystem
 
@@ -29,7 +29,7 @@ Native Companion-Apps für Windows sind ebenfalls geplant; für das Gateway wird
 - Windows: [Windows](/de/platforms/windows)
 - Linux: [Linux](/de/platforms/linux)
 
-## VPS & Hosting
+## VPS und Hosting
 
 - VPS-Hub: [VPS-Hosting](/de/vps)
 - Fly.io: [Fly.io](/de/install/fly)
@@ -40,28 +40,28 @@ Native Companion-Apps für Windows sind ebenfalls geplant; für das Gateway wird
 
 ## Häufige Links
 
-- Installationsleitfaden: [Erste Schritte](/de/start/getting-started)
+- Installationsanleitung: [Erste Schritte](/de/start/getting-started)
 - Gateway-Runbook: [Gateway](/de/gateway)
 - Gateway-Konfiguration: [Konfiguration](/de/gateway/configuration)
 - Dienststatus: `openclaw gateway status`
 
 ## Installation des Gateway-Dienstes (CLI)
 
-Verwenden Sie eine der folgenden Optionen (alle werden unterstützt):
+Verwenden Sie eine dieser Optionen (alle werden unterstützt):
 
 - Assistent (empfohlen): `openclaw onboard --install-daemon`
 - Direkt: `openclaw gateway install`
-- Configure-Ablauf: `openclaw configure` → **Gateway service** auswählen
-- Reparieren/Migrieren: `openclaw doctor` (bietet an, den Dienst zu installieren oder zu reparieren)
+- Konfigurationsablauf: `openclaw configure` → **Gateway-Dienst** auswählen
+- Reparieren/migrieren: `openclaw doctor` (bietet an, den Dienst zu installieren oder zu reparieren)
 
 Das Dienstziel hängt vom Betriebssystem ab:
 
 - macOS: LaunchAgent (`ai.openclaw.gateway` oder `ai.openclaw.<profile>`; Legacy `com.openclaw.*`)
 - Linux/WSL2: systemd-Benutzerdienst (`openclaw-gateway[-<profile>].service`)
-- Natives Windows: Scheduled Task (`OpenClaw Gateway` oder `OpenClaw Gateway (<profile>)`), mit einem Fallback auf ein Login-Element im Startup-Ordner pro Benutzer, wenn die Erstellung der Aufgabe verweigert wird
+- Natives Windows: Geplante Aufgabe (`OpenClaw Gateway` oder `OpenClaw Gateway (<profile>)`), mit einem benutzerspezifischen Anmeldeelement im Autostart-Ordner als Fallback, falls die Aufgabenerstellung verweigert wird
 
 ## Verwandt
 
-- [Installationsüberblick](/de/install)
+- [Installationsübersicht](/de/install)
 - [macOS-App](/de/platforms/macos)
 - [iOS-App](/de/platforms/ios)

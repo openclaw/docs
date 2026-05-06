@@ -1,48 +1,48 @@
 ---
 read_when:
     - Implementieren von macOS-App-Funktionen
-    - Ändern des Gateway-Lebenszyklus oder des Node-Bridgings unter macOS
+    - Ändern des Gateway-Lebenszyklus oder der Node-Überbrückung unter macOS
 summary: OpenClaw-macOS-Begleit-App (Menüleiste + Gateway-Broker)
 title: macOS-App
 x-i18n:
-    generated_at: "2026-04-30T07:03:39Z"
+    generated_at: "2026-05-06T06:57:05Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 2ed98cd4865f2117728d4349c9be99d9c2e20f4d86a77c80f5ba0b5520eb81cd
+    source_hash: cc67a88303073bb771fcec09e7366f710a6bd5500f584f8782232deaa69e599d
     source_path: platforms/macos.md
     workflow: 16
 ---
 
-Die macOS-App ist der **Menüleistenbegleiter** für OpenClaw. Sie verwaltet Berechtigungen,
-verwaltet den Gateway lokal bzw. hängt sich daran an (launchd oder manuell) und stellt dem Agenten macOS-
-Funktionen als Node bereit.
+Die macOS-App ist die **Begleit-App in der Menüleiste** für OpenClaw. Sie verwaltet Berechtigungen,
+verwaltet den Gateway lokal bzw. hängt sich daran an (launchd oder manuell) und stellt macOS-
+Funktionen dem Agenten als Node bereit.
 
 ## Was sie tut
 
-- Zeigt native Benachrichtigungen und den Status in der Menüleiste an.
+- Zeigt native Benachrichtigungen und Status in der Menüleiste an.
 - Verwaltet TCC-Abfragen (Benachrichtigungen, Bedienungshilfen, Bildschirmaufnahme, Mikrofon,
   Spracherkennung, Automation/AppleScript).
-- Führt den Gateway aus oder verbindet sich damit (lokal oder remote).
+- Führt den Gateway aus oder verbindet sich mit ihm (lokal oder remote).
 - Stellt nur unter macOS verfügbare Tools bereit (Canvas, Kamera, Bildschirmaufnahme, `system.run`).
-- Startet den lokalen Node-Hostdienst im **Remote**-Modus (launchd) und stoppt ihn im **Lokal**-Modus.
-- Hostet optional **PeekabooBridge** für UI-Automation.
-- Installiert die globale CLI (`openclaw`) auf Anfrage über npm, pnpm oder bun (die App bevorzugt npm, dann pnpm, dann bun; Node bleibt die empfohlene Gateway-Laufzeitumgebung).
+- Startet den lokalen Node-Host-Dienst im **Remote**-Modus (launchd) und stoppt ihn im **lokalen** Modus.
+- Hostet optional **PeekabooBridge** für UI-Automatisierung.
+- Installiert auf Anfrage die globale CLI (`openclaw`) über npm, pnpm oder bun (die App bevorzugt npm, dann pnpm, dann bun; Node bleibt die empfohlene Gateway-Laufzeitumgebung).
 
 ## Lokaler vs. Remote-Modus
 
 - **Lokal** (Standard): Die App hängt sich an einen laufenden lokalen Gateway an, falls vorhanden;
   andernfalls aktiviert sie den launchd-Dienst über `openclaw gateway install`.
-- **Remote**: Die App verbindet sich über SSH/Tailscale mit einem Gateway und startet nie
+- **Remote**: Die App verbindet sich über SSH/Tailscale mit einem Gateway und startet niemals
   einen lokalen Prozess.
-  Die App startet den lokalen **Node-Hostdienst**, damit der Remote-Gateway diesen Mac erreichen kann.
+  Die App startet den lokalen **Node-Host-Dienst**, damit der Remote-Gateway diesen Mac erreichen kann.
   Die App startet den Gateway nicht als Kindprozess.
   Die Gateway-Erkennung bevorzugt jetzt Tailscale-MagicDNS-Namen gegenüber rohen Tailnet-IPs,
   sodass sich die Mac-App zuverlässiger erholt, wenn sich Tailnet-IPs ändern.
 
-## Launchd-Steuerung
+## launchd-Steuerung
 
-Die App verwaltet einen benutzerspezifischen LaunchAgent mit dem Label `ai.openclaw.gateway`
-(oder `ai.openclaw.<profile>` bei Verwendung von `--profile`/`OPENCLAW_PROFILE`; ältere `com.openclaw.*` werden weiterhin entladen).
+Die App verwaltet einen LaunchAgent pro Benutzer mit dem Label `ai.openclaw.gateway`
+(oder `ai.openclaw.<profile>` bei Verwendung von `--profile`/`OPENCLAW_PROFILE`; das ältere `com.openclaw.*` wird weiterhin entladen).
 
 ```bash
 launchctl kickstart -k gui/$UID/ai.openclaw.gateway
@@ -56,19 +56,19 @@ Wenn der LaunchAgent nicht installiert ist, aktivieren Sie ihn in der App oder f
 
 ## Node-Funktionen (Mac)
 
-Die macOS-App stellt sich selbst als Node dar. Häufige Befehle:
+Die macOS-App präsentiert sich als Node. Häufige Befehle:
 
 - Canvas: `canvas.present`, `canvas.navigate`, `canvas.eval`, `canvas.snapshot`, `canvas.a2ui.*`
 - Kamera: `camera.snap`, `camera.clip`
 - Bildschirm: `screen.snapshot`, `screen.record`
 - System: `system.run`, `system.notify`
 
-Die Node meldet eine `permissions`-Map, damit Agenten entscheiden können, was erlaubt ist.
+Der Node meldet eine `permissions`-Map, damit Agenten entscheiden können, was erlaubt ist.
 
 Node-Dienst + App-IPC:
 
-- Wenn der Headless-Node-Hostdienst läuft (Remote-Modus), verbindet er sich als Node mit dem Gateway-WS.
-- `system.run` wird in der macOS-App (UI-/TCC-Kontext) über einen lokalen Unix-Socket ausgeführt; Abfragen und Ausgaben bleiben in der App.
+- Wenn der Headless-Node-Host-Dienst läuft (Remote-Modus), verbindet er sich als Node mit dem Gateway-WS.
+- `system.run` wird in der macOS-App (UI/TCC-Kontext) über einen lokalen Unix-Socket ausgeführt; Abfragen + Ausgabe bleiben in der App.
 
 Diagramm (SCI):
 
@@ -82,7 +82,7 @@ Gateway -> Node Service (WS)
 ## Ausführungsgenehmigungen (system.run)
 
 `system.run` wird in der macOS-App über **Ausführungsgenehmigungen** gesteuert (Einstellungen → Ausführungsgenehmigungen).
-Sicherheit + Nachfrage + Allowlist werden lokal auf dem Mac gespeichert unter:
+Sicherheit + Nachfrage + Allowlist werden lokal auf dem Mac gespeichert in:
 
 ```
 ~/.openclaw/exec-approvals.json
@@ -110,11 +110,11 @@ Beispiel:
 Hinweise:
 
 - `allowlist`-Einträge sind Glob-Muster für aufgelöste Binärpfade oder reine Befehlsnamen für über PATH aufgerufene Befehle.
-- Roher Shell-Befehlstext, der Shell-Steuerungs- oder Erweiterungssyntax enthält (`&&`, `||`, `;`, `|`, `` ` ``, `$`, `<`, `>`, `(`, `)`), wird als Allowlist-Fehltreffer behandelt und erfordert eine ausdrückliche Genehmigung (oder die Aufnahme der Shell-Binärdatei in die Allowlist).
-- Die Auswahl von „Immer erlauben“ in der Abfrage fügt diesen Befehl zur Allowlist hinzu.
-- `system.run`-Umgebungsüberschreibungen werden gefiltert (`PATH`, `DYLD_*`, `LD_*`, `NODE_OPTIONS`, `PYTHON*`, `PERL*`, `RUBYOPT`, `SHELLOPTS`, `PS4` werden verworfen) und anschließend mit der Umgebung der App zusammengeführt.
-- Bei Shell-Wrappern (`bash|sh|zsh ... -c/-lc`) werden anfragebezogene Umgebungsüberschreibungen auf eine kleine explizite Allowlist reduziert (`TERM`, `LANG`, `LC_*`, `COLORTERM`, `NO_COLOR`, `FORCE_COLOR`).
-- Bei Immer-erlauben-Entscheidungen im Allowlist-Modus werden für bekannte Dispatch-Wrapper (`env`, `nice`, `nohup`, `stdbuf`, `timeout`) innere ausführbare Pfade statt Wrapper-Pfade gespeichert. Wenn das Entpacken nicht sicher ist, wird kein Allowlist-Eintrag automatisch gespeichert.
+- Roher Shell-Befehlstext, der Shell-Steuerungs- oder Erweiterungssyntax enthält (`&&`, `||`, `;`, `|`, `` ` ``, `$`, `<`, `>`, `(`, `)`), wird als Allowlist-Fehltreffer behandelt und erfordert eine explizite Genehmigung (oder das Hinzufügen der Shell-Binärdatei zur Allowlist).
+- Wenn Sie in der Abfrage „Immer erlauben“ wählen, wird dieser Befehl zur Allowlist hinzugefügt.
+- `system.run`-Umgebungsüberschreibungen werden gefiltert (entfernt `PATH`, `DYLD_*`, `LD_*`, `NODE_OPTIONS`, `PYTHON*`, `PERL*`, `RUBYOPT`, `SHELLOPTS`, `PS4`) und dann mit der Umgebung der App zusammengeführt.
+- Für Shell-Wrapper (`bash|sh|zsh ... -c/-lc`) werden anfragebezogene Umgebungsüberschreibungen auf eine kleine explizite Allowlist reduziert (`TERM`, `LANG`, `LC_*`, `COLORTERM`, `NO_COLOR`, `FORCE_COLOR`).
+- Bei „immer erlauben“-Entscheidungen im Allowlist-Modus speichern bekannte Dispatch-Wrapper (`env`, `nice`, `nohup`, `stdbuf`, `timeout`) innere ausführbare Pfade statt Wrapper-Pfaden dauerhaft. Wenn das Entpacken nicht sicher ist, wird kein Allowlist-Eintrag automatisch gespeichert.
 
 ## Deep Links
 
@@ -135,33 +135,33 @@ Abfrageparameter:
 
 Sicherheit:
 
-- Ohne `key` fragt die App nach Bestätigung.
-- Ohne `key` erzwingt die App ein kurzes Nachrichtenlimit für die Bestätigungsabfrage und ignoriert `deliver` / `to` / `channel`.
-- Mit einem gültigen `key` läuft die Ausführung unbeaufsichtigt (für persönliche Automationen vorgesehen).
+- Ohne `key` fordert die App eine Bestätigung an.
+- Ohne `key` erzwingt die App eine kurze Nachrichtenbegrenzung für die Bestätigungsabfrage und ignoriert `deliver` / `to` / `channel`.
+- Mit einem gültigen `key` läuft die Ausführung unbeaufsichtigt (für persönliche Automatisierungen gedacht).
 
 ## Onboarding-Ablauf (typisch)
 
 1. Installieren und starten Sie **OpenClaw.app**.
 2. Schließen Sie die Berechtigungs-Checkliste ab (TCC-Abfragen).
-3. Stellen Sie sicher, dass der **Lokal**-Modus aktiv ist und der Gateway läuft.
+3. Stellen Sie sicher, dass der **lokale** Modus aktiv ist und der Gateway läuft.
 4. Installieren Sie die CLI, wenn Sie Terminalzugriff wünschen.
 
-## Platzierung des Zustandsverzeichnisses (macOS)
+## Platzierung des State-Verzeichnisses (macOS)
 
-Vermeiden Sie es, Ihr OpenClaw-Zustandsverzeichnis in iCloud oder andere Cloud-synchronisierte Ordner zu legen.
-Synchronisierte Pfade können Latenz verursachen und gelegentlich Datei-Sperr-/Synchronisationsrennen bei
-Sitzungen und Anmeldedaten auslösen.
+Vermeiden Sie es, Ihr OpenClaw-State-Verzeichnis in iCloud oder anderen cloud-synchronisierten Ordnern abzulegen.
+Synchronisierte Pfade können Latenz hinzufügen und gelegentlich Datei-Sperr-/Synchronisationsrennen für
+Sitzungen und Anmeldedaten verursachen.
 
-Bevorzugen Sie einen lokalen, nicht synchronisierten Zustandspfad wie:
+Bevorzugen Sie einen lokalen, nicht synchronisierten State-Pfad wie:
 __OC_I18N_900005__
-Wenn `openclaw doctor` Zustand unter folgenden Pfaden erkennt:
+Wenn `openclaw doctor` State unter folgenden Pfaden erkennt:
 
 - `~/Library/Mobile Documents/com~apple~CloudDocs/...`
 - `~/Library/CloudStorage/...`
 
-gibt es eine Warnung aus und empfiehlt, zurück zu einem lokalen Pfad zu wechseln.
+warnt es und empfiehlt, zurück zu einem lokalen Pfad zu wechseln.
 
-## Build- & Entwicklungsworkflow (nativ)
+## Build- und Entwicklungsworkflow (nativ)
 
 - `cd apps/macos && swift build`
 - `swift run OpenClaw` (oder Xcode)
@@ -170,48 +170,48 @@ gibt es eine Warnung aus und empfiehlt, zurück zu einem lokalen Pfad zu wechsel
 ## Gateway-Konnektivität debuggen (macOS-CLI)
 
 Verwenden Sie die Debug-CLI, um denselben Gateway-WebSocket-Handshake und dieselbe Erkennungslogik
-zu testen, die die macOS-App verwendet, ohne die App zu starten.
+auszuführen, die die macOS-App verwendet, ohne die App zu starten.
 __OC_I18N_900006__
 Verbindungsoptionen:
 
 - `--url <ws://host:port>`: Konfiguration überschreiben
 - `--mode <local|remote>`: aus der Konfiguration auflösen (Standard: Konfiguration oder lokal)
-- `--probe`: eine frische Zustandsprüfung erzwingen
+- `--probe`: frische Health-Probe erzwingen
 - `--timeout <ms>`: Anfrage-Timeout (Standard: `15000`)
-- `--json`: strukturierte Ausgabe für Vergleiche
+- `--json`: strukturierte Ausgabe zum Vergleichen
 
 Erkennungsoptionen:
 
-- `--include-local`: Gateways einschließen, die als „lokal“ gefiltert würden
+- `--include-local`: Gateways einbeziehen, die als „lokal“ herausgefiltert würden
 - `--timeout <ms>`: gesamtes Erkennungsfenster (Standard: `2000`)
-- `--json`: strukturierte Ausgabe für Vergleiche
+- `--json`: strukturierte Ausgabe zum Vergleichen
 
 <Tip>
 Vergleichen Sie mit `openclaw gateway discover --json`, um zu sehen, ob sich die Erkennungspipeline der macOS-App (`local.` plus die konfigurierte Wide-Area-Domain, mit Wide-Area- und Tailscale-Serve-Fallbacks) von der `dns-sd`-basierten Erkennung der Node-CLI unterscheidet.
 </Tip>
 
-## Remote-Verbindungsinfrastruktur (SSH-Tunnel)
+## Remote-Verbindungsplumbing (SSH-Tunnel)
 
 Wenn die macOS-App im **Remote**-Modus läuft, öffnet sie einen SSH-Tunnel, damit lokale UI-
-Komponenten mit einem Remote-Gateway kommunizieren können, als befände er sich auf localhost.
+Komponenten mit einem Remote-Gateway sprechen können, als befände er sich auf localhost.
 
-### Steuerungstunnel (Gateway-WebSocket-Port)
+### Kontrolltunnel (Gateway-WebSocket-Port)
 
-- **Zweck:** Zustandsprüfungen, Status, Web Chat, Konfiguration und andere Control-Plane-Aufrufe.
+- **Zweck:** Health Checks, Status, Web Chat, Konfiguration und andere Control-Plane-Aufrufe.
 - **Lokaler Port:** der Gateway-Port (Standard `18789`), immer stabil.
 - **Remote-Port:** derselbe Gateway-Port auf dem Remote-Host.
-- **Verhalten:** kein zufälliger lokaler Port; die App verwendet einen vorhandenen fehlerfreien Tunnel erneut
+- **Verhalten:** kein zufälliger lokaler Port; die App verwendet einen vorhandenen intakten Tunnel erneut
   oder startet ihn bei Bedarf neu.
 - **SSH-Form:** `ssh -N -L <local>:127.0.0.1:<remote>` mit BatchMode +
   ExitOnForwardFailure + Keepalive-Optionen.
-- **IP-Bericht:** Der SSH-Tunnel verwendet loopback, daher sieht der Gateway die Node-
+- **IP-Meldung:** Der SSH-Tunnel verwendet Loopback, daher sieht der Gateway die Node-
   IP als `127.0.0.1`. Verwenden Sie den Transport **Direkt (ws/wss)**, wenn die echte Client-
   IP erscheinen soll (siehe [macOS-Remotezugriff](/de/platforms/mac/remote)).
 
 Einrichtungsschritte finden Sie unter [macOS-Remotezugriff](/de/platforms/mac/remote). Protokoll-
 details finden Sie unter [Gateway-Protokoll](/de/gateway/protocol).
 
-## Zugehörige Dokumentation
+## Verwandte Dokumentation
 
 - [Gateway-Runbook](/de/gateway)
 - [Gateway (macOS)](/de/platforms/mac/bundled-gateway)

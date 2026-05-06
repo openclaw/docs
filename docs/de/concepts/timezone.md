@@ -1,102 +1,54 @@
 ---
 read_when:
-    - Sie müssen verstehen, wie Zeitstempel für das Modell normalisiert werden
-    - Konfigurieren der Benutzerzeitzone für System-Prompts
-summary: Zeitzonenbehandlung für Agenten, Umschläge und Prompts
+    - Sie möchten ein schnelles mentales Modell für den Umgang mit Zeitzonen
+    - Sie entscheiden, wo Sie eine Zeitzone festlegen oder überschreiben
+summary: Wo Zeitzonen in OpenClaw vorkommen — Umschläge, Tool-Payloads, System-Prompt
 title: Zeitzonen
 x-i18n:
-    generated_at: "2026-04-24T06:35:53Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T06:46:18Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8318acb0269f446fb3d3198f47811d40490a9ee9593fed82f31353aef2bacb81
+    source_hash: 041b207a0fa2758a20e8f3c4eca852d3dd416560d045459cb4d86709b45449e3
     source_path: concepts/timezone.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw standardisiert Zeitstempel, damit das Modell **eine einzige Referenzzeit** sieht.
+OpenClaw standardisiert Zeitstempel, sodass das Modell eine **einzige Referenzzeit** statt einer Mischung aus Provider-lokalen Uhren sieht. Es gibt drei Oberflächen, auf denen Zeitzonen erscheinen, jeweils mit eigenem Zweck:
 
-## Nachrichtenumschläge (standardmäßig lokal)
+## Drei Zeitzonen-Oberflächen
 
-Eingehende Nachrichten werden in einen Umschlag wie diesen verpackt:
+| Oberfläche        | Was sie zeigt                                                                                           | Standard                              | Konfiguriert über                                      |
+| ----------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------- | ------------------------------------------------------ |
+| Nachrichten-Envelopes | Umschließt eingehende Kanalnachrichten: `[Signal +1555 2026-01-18 00:19 PST] hello`                     | Host-lokal                            | `agents.defaults.envelopeTimezone`                     |
+| Tool-Payloads     | Channel-Tools im Stil von `readMessages` geben rohe Provider-Zeit + normalisierte `timestampMs` / `timestampUtc` zurück | UTC-Felder immer vorhanden            | Nicht konfigurierbar — erhält Provider-native Zeitstempel |
+| System-Prompt     | Ein kleiner `Current Date & Time`-Block mit **nur der Zeitzone** (kein Uhrzeitwert, für Cache-Stabilität) | Host-Zeitzone, wenn `userTimezone` nicht gesetzt ist | `agents.defaults.userTimezone`                         |
 
-```
-[Provider ... 2026-01-05 16:26 PST] message text
-```
+Der System-Prompt lässt die Live-Uhr bewusst weg, um Prompt-Caching über Turns hinweg stabil zu halten. Wenn der Agent die aktuelle Uhrzeit benötigt, ruft er `session_status` auf.
 
-Der Zeitstempel im Umschlag ist standardmäßig **host-lokal**, mit Minutenpräzision.
-
-Sie können dies wie folgt überschreiben:
+## Benutzerzeitzone festlegen
 
 ```json5
 {
   agents: {
     defaults: {
-      envelopeTimezone: "local", // "utc" | "local" | "user" | IANA timezone
-      envelopeTimestamp: "on", // "on" | "off"
-      envelopeElapsed: "on", // "on" | "off"
+      userTimezone: "America/Chicago",
     },
   },
 }
 ```
 
-- `envelopeTimezone: "utc"` verwendet UTC.
-- `envelopeTimezone: "user"` verwendet `agents.defaults.userTimezone` (fällt auf die Host-Zeitzone zurück).
-- Verwenden Sie eine explizite IANA-Zeitzone (z. B. `"Europe/Vienna"`) für einen festen Offset.
-- `envelopeTimestamp: "off"` entfernt absolute Zeitstempel aus den Umschlag-Headern.
-- `envelopeElapsed: "off"` entfernt Suffixe für verstrichene Zeit (im Stil von `+2m`).
+Wenn `userTimezone` nicht gesetzt ist, löst OpenClaw die Host-Zeitzone zur Laufzeit auf (kein Schreiben in die Konfiguration). `agents.defaults.timeFormat` (`auto` | `12` | `24`) steuert die 12h-/24h-Darstellung in Envelopes und nachgelagerten Oberflächen, nicht im System-Prompt-Abschnitt.
 
-### Beispiele
+## Wann überschrieben werden sollte
 
-**Lokal (Standard):**
+- **Verwenden Sie UTC-Envelopes** (`envelopeTimezone: "utc"`), wenn Sie stabile Zeitstempel über Hosts in verschiedenen Regionen hinweg wünschen oder wenn UTC-ausgerichtete Logs mit Diagnoseausgaben übereinstimmen sollen.
+- **Verwenden Sie eine feste IANA-Zone** (z. B. `"Europe/Vienna"`), wenn sich der Gateway-Host in einer Zone befindet, der Benutzer aber in einer anderen, und Sie möchten, dass Envelopes unabhängig von einer Host-Migration in der Zeitzone des Benutzers gelesen werden.
+- **Setzen Sie `envelopeTimestamp: "off"`** für tokenarme Envelopes, wenn Zeitstempelkontext für die Unterhaltung nicht nützlich ist.
 
-```
-[Signal Alice +1555 2026-01-18 00:19 PST] hello
-```
-
-**Feste Zeitzone:**
-
-```
-[Signal Alice +1555 2026-01-18 06:19 GMT+1] hello
-```
-
-**Verstrichene Zeit:**
-
-```
-[Signal Alice +1555 +2m 2026-01-18T05:19Z] follow-up
-```
-
-## Tool-Payloads (rohe Provider-Daten + normalisierte Felder)
-
-Tool-Aufrufe (`channels.discord.readMessages`, `channels.slack.readMessages` usw.) geben **rohe Provider-Zeitstempel** zurück.
-Zusätzlich hängen wir normalisierte Felder zur Konsistenz an:
-
-- `timestampMs` (UTC-Epoch-Millisekunden)
-- `timestampUtc` (ISO-8601-UTC-Zeichenfolge)
-
-Rohe Provider-Felder bleiben erhalten.
-
-## Benutzerzeitzone für den System-Prompt
-
-Setzen Sie `agents.defaults.userTimezone`, um dem Modell die lokale Zeitzone des Benutzers mitzuteilen. Wenn sie
-nicht gesetzt ist, löst OpenClaw die **Host-Zeitzone zur Laufzeit** auf (kein Konfigurationsschreibvorgang).
-
-```json5
-{
-  agents: { defaults: { userTimezone: "America/Chicago" } },
-}
-```
-
-Der System-Prompt enthält:
-
-- Abschnitt `Current Date & Time` mit lokaler Zeit und Zeitzone
-- `Time format: 12-hour` oder `24-hour`
-
-Sie können das Prompt-Format mit `agents.defaults.timeFormat` steuern (`auto` | `12` | `24`).
-
-Siehe [Date & Time](/de/date-time) für das vollständige Verhalten und Beispiele.
+Die vollständige Verhaltensreferenz, Beispiele pro Provider und Formatierung verstrichener Zeit finden Sie unter [Datum & Uhrzeit](/de/date-time).
 
 ## Verwandt
 
-- [Heartbeat](/de/gateway/heartbeat) — aktive Stunden verwenden die Zeitzone für die Zeitplanung
-- [Cron Jobs](/de/automation/cron-jobs) — Cron-Ausdrücke verwenden die Zeitzone für die Zeitplanung
-- [Date & Time](/de/date-time) — vollständiges Datums-/Zeitverhalten und Beispiele
+- [Datum & Uhrzeit](/de/date-time) — vollständiges Verhalten und Beispiele für Envelopes, Tools und Prompt.
+- [Heartbeat](/de/gateway/heartbeat) — aktive Stunden verwenden die Zeitzone für die Planung.
+- [Cron Jobs](/de/automation/cron-jobs) — Cron-Ausdrücke verwenden die Zeitzone für die Planung.

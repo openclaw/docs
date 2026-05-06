@@ -1,40 +1,40 @@
 ---
 read_when:
-    - Sie möchten mehrschichtige Schutzmaßnahmen gegen SSRF- und DNS-Rebinding-Angriffe
-    - Externen Forward-Proxy für OpenClaw-Laufzeitdatenverkehr konfigurieren
-summary: So leiten Sie HTTP- und WebSocket-Traffic der OpenClaw-Runtime über einen vom Betreiber verwalteten Filter-Proxy
-title: Netzwerk-Proxy
+    - Sie möchten eine mehrschichtige Verteidigung gegen SSRF- und DNS-Rebinding-Angriffe
+    - Einen externen Forward-Proxy für OpenClaw-Runtime-Datenverkehr konfigurieren
+summary: So leiten Sie HTTP- und WebSocket-Datenverkehr der OpenClaw-Laufzeit über einen vom Betreiber verwalteten Filter-Proxy
+title: Netzwerkproxy
 x-i18n:
-    generated_at: "2026-05-05T01:49:19Z"
+    generated_at: "2026-05-06T07:03:16Z"
     model: gpt-5.5
     provider: openai
-    source_hash: f7ab345d172d63e388ff1221535efd19934dcbf3173f95bc69131f9ad672e0df
+    source_hash: d733c690b5f86ef62fe7a35d38fbfcd07910970bca12ca6f74fdb26c8ec4557b
     source_path: security/network-proxy.md
     workflow: 16
 ---
 
 # Netzwerk-Proxy
 
-OpenClaw kann Laufzeit-HTTP- und WebSocket-Datenverkehr über einen vom Betreiber verwalteten Forward-Proxy leiten. Dies ist eine optionale Defense-in-Depth-Maßnahme für Bereitstellungen, die zentrale Egress-Kontrolle, stärkeren SSRF-Schutz und bessere Netzwerkprüfbarkeit wünschen.
+OpenClaw kann Laufzeit-HTTP- und WebSocket-Datenverkehr über einen vom Betreiber verwalteten Forward-Proxy leiten. Dies ist eine optionale mehrschichtige Schutzmaßnahme für Bereitstellungen, die zentrale Egress-Kontrolle, stärkeren SSRF-Schutz und bessere Netzwerk-Auditierbarkeit wünschen.
 
-OpenClaw liefert keinen Proxy aus, lädt keinen Proxy herunter, startet, konfiguriert oder zertifiziert keinen Proxy. Sie betreiben die Proxy-Technologie, die zu Ihrer Umgebung passt, und OpenClaw leitet normale prozesslokale HTTP- und WebSocket-Clients darüber.
+OpenClaw liefert keinen Proxy aus, lädt keinen herunter, startet keinen, konfiguriert keinen und zertifiziert keinen. Sie betreiben die Proxy-Technologie, die zu Ihrer Umgebung passt, und OpenClaw leitet normale prozesslokale HTTP- und WebSocket-Clients darüber.
 
 ## Warum einen Proxy verwenden?
 
-Ein Proxy bietet Betreibern einen zentralen Netzwerk-Kontrollpunkt für ausgehenden HTTP- und WebSocket-Datenverkehr. Das kann auch außerhalb von SSRF-Härtung nützlich sein:
+Ein Proxy gibt Betreibern einen zentralen Netzwerkkontrollpunkt für ausgehenden HTTP- und WebSocket-Datenverkehr. Das kann auch außerhalb der SSRF-Härtung nützlich sein:
 
-- Zentrale Richtlinie: Pflegen Sie eine Egress-Richtlinie, statt sich darauf zu verlassen, dass jede HTTP-Aufrufstelle der Anwendung die Netzwerkregeln korrekt umsetzt.
+- Zentrale Richtlinie: Pflegen Sie eine Egress-Richtlinie, statt sich darauf zu verlassen, dass jede HTTP-Aufrufstelle der Anwendung die Netzwerkregeln richtig umsetzt.
 - Prüfungen beim Verbindungsaufbau: Bewerten Sie das Ziel nach der DNS-Auflösung und unmittelbar bevor der Proxy die Upstream-Verbindung öffnet.
 - Schutz vor DNS-Rebinding: Verringern Sie die Lücke zwischen einer DNS-Prüfung auf Anwendungsebene und der tatsächlichen ausgehenden Verbindung.
 - Breitere JavaScript-Abdeckung: Leiten Sie gewöhnliche `fetch`-, `node:http`-, `node:https`-, WebSocket-, axios-, got-, node-fetch- und ähnliche Clients über denselben Pfad.
-- Prüfbarkeit: Protokollieren Sie erlaubte und abgelehnte Ziele an der Egress-Grenze.
-- Betriebliche Kontrolle: Erzwingen Sie Zielregeln, Netzwerksegmentierung, Ratenbegrenzungen oder ausgehende Allowlists, ohne OpenClaw neu zu bauen.
+- Auditierbarkeit: Protokollieren Sie erlaubte und verweigerte Ziele an der Egress-Grenze.
+- Betriebliche Kontrolle: Erzwingen Sie Zielregeln, Netzwerksegmentierung, Ratenlimits oder ausgehende Allowlisten, ohne OpenClaw neu zu bauen.
 
-Proxy-Routing ist eine Schutzleitplanke auf Prozessebene für normalen HTTP- und WebSocket-Egress. Es gibt Betreibern einen Fail-Closed-Pfad, um unterstützte JavaScript-HTTP-Clients über ihren eigenen filternden Proxy zu leiten, ist aber keine Netzwerksandbox auf Betriebssystemebene und bedeutet nicht, dass OpenClaw die Zielrichtlinie des Proxys zertifiziert.
+Proxy-Routing ist eine Schutzplanke auf Prozessebene für normalen HTTP- und WebSocket-Egress. Es gibt Betreibern einen Fail-Closed-Pfad, um unterstützte JavaScript-HTTP-Clients durch ihren eigenen filternden Proxy zu leiten, ist aber keine Netzwerk-Sandbox auf Betriebssystemebene und bedeutet nicht, dass OpenClaw die Zielrichtlinie des Proxys zertifiziert.
 
 ## Wie OpenClaw Datenverkehr leitet
 
-Wenn `proxy.enabled=true` und eine Proxy-URL konfiguriert ist, leiten geschützte Laufzeitprozesse wie `openclaw gateway run`, `openclaw node run` und `openclaw agent --local` normalen HTTP- und WebSocket-Egress über den konfigurierten Proxy:
+Wenn `proxy.enabled=true` gesetzt und eine Proxy-URL konfiguriert ist, leiten geschützte Laufzeitprozesse wie `openclaw gateway run`, `openclaw node run` und `openclaw agent --local` normalen HTTP- und WebSocket-Egress über den konfigurierten Proxy:
 
 ```text
 OpenClaw process
@@ -43,28 +43,28 @@ OpenClaw process
   WebSocket clients      -> operator-managed filtering proxy -> public internet
 ```
 
-Der öffentliche Vertrag ist das Routing-Verhalten, nicht die internen Node-Hooks, mit denen es implementiert wird. OpenClaw-Gateway-Control-Plane-WebSocket-Clients verwenden einen schmalen direkten Pfad für local loopback-Gateway-RPC-Datenverkehr, wenn die Gateway-URL `localhost` oder eine literale Loopback-IP wie `127.0.0.1` oder `[::1]` verwendet. Dieser Control-Plane-Pfad muss Loopback-Gateways erreichen können, auch wenn der Betreiber-Proxy Loopback-Ziele blockiert. Normale Laufzeit-HTTP- und WebSocket-Anfragen verwenden weiterhin den konfigurierten Proxy.
+Der öffentliche Vertrag ist das Routing-Verhalten, nicht die internen Node-Hooks, mit denen es implementiert ist. OpenClaw Gateway-Control-Plane-WebSocket-Clients verwenden einen engen direkten Pfad für local loopback-Gateway-RPC-Datenverkehr, wenn die Gateway-URL `localhost` oder eine wörtliche Loopback-IP wie `127.0.0.1` oder `[::1]` verwendet. Dieser Control-Plane-Pfad muss Loopback-Gateways erreichen können, selbst wenn der Betreiber-Proxy Loopback-Ziele blockiert. Normale Laufzeit-HTTP- und WebSocket-Anfragen verwenden weiterhin den konfigurierten Proxy.
 
 Intern verwendet OpenClaw für diese Funktion zwei Routing-Hooks auf Prozessebene:
 
-- Undici-Dispatcher-Routing deckt `fetch`, Undici-basierte Clients und Transporte ab, die ihren eigenen Undici-Dispatcher bereitstellen.
-- `global-agent`-Routing deckt Node-Core-Aufrufer von `node:http` und `node:https` ab, einschließlich vieler Bibliotheken, die auf `http.request`, `https.request`, `http.get` und `https.get` aufbauen. Der verwaltete Proxy-Modus erzwingt diesen globalen Agent, damit explizite Node-HTTP-Agents den Betreiber-Proxy nicht versehentlich umgehen.
+- Undici-Dispatcher-Routing deckt `fetch`, Undici-gestützte Clients und Transporte ab, die ihren eigenen Undici-Dispatcher bereitstellen.
+- `global-agent`-Routing deckt Aufrufer von Node-Core-`node:http` und `node:https` ab, einschließlich vieler Bibliotheken, die auf `http.request`, `https.request`, `http.get` und `https.get` aufbauen. Der verwaltete Proxy-Modus erzwingt diesen globalen Agent, damit explizite Node-HTTP-Agents den Betreiber-Proxy nicht versehentlich umgehen.
 
-Einige Plugins besitzen benutzerdefinierte Transporte, die explizite Proxy-Verdrahtung benötigen, auch wenn Routing auf Prozessebene vorhanden ist. Beispielsweise verwendet der Bot-API-Transport von Telegram seinen eigenen HTTP/1-Undici-Dispatcher und berücksichtigt daher die Prozess-Proxy-Umgebung sowie den verwalteten `OPENCLAW_PROXY_URL`-Fallback in diesem owner-spezifischen Transportpfad.
+Einige Plugins besitzen benutzerdefinierte Transporte, die explizite Proxy-Verdrahtung benötigen, selbst wenn Routing auf Prozessebene vorhanden ist. Beispielsweise verwendet der Bot-API-Transport von Telegram seinen eigenen HTTP/1-Undici-Dispatcher und berücksichtigt daher die Prozess-Proxy-Umgebung plus den verwalteten `OPENCLAW_PROXY_URL`-Fallback in diesem eigentümerspezifischen Transportpfad.
 
-Die Proxy-URL selbst muss `http://` verwenden. HTTPS-Ziele werden weiterhin über den Proxy mit HTTP `CONNECT` unterstützt; das bedeutet lediglich, dass OpenClaw einen einfachen HTTP-Forward-Proxy-Listener wie `http://127.0.0.1:3128` erwartet.
+Die Proxy-URL selbst muss `http://` verwenden. HTTPS-Ziele werden weiterhin über den Proxy mit HTTP `CONNECT` unterstützt; dies bedeutet nur, dass OpenClaw einen einfachen HTTP-Forward-Proxy-Listener wie `http://127.0.0.1:3128` erwartet.
 
-Während der Proxy aktiv ist, löscht OpenClaw `no_proxy`, `NO_PROXY` und `GLOBAL_AGENT_NO_PROXY`. Diese Bypass-Listen sind zielbasiert, sodass `localhost` oder `127.0.0.1` dort risikoreiche SSRF-Ziele den filternden Proxy umgehen lassen würden.
+Während der Proxy aktiv ist, leert OpenClaw `no_proxy`, `NO_PROXY` und `GLOBAL_AGENT_NO_PROXY`. Diese Umgehungslisten sind zielbasiert, daher würden Einträge wie `localhost` oder `127.0.0.1` dort riskante SSRF-Ziele den filternden Proxy umgehen lassen.
 
-Beim Herunterfahren stellt OpenClaw die vorherige Proxy-Umgebung wieder her und setzt den zwischengespeicherten Prozess-Routing-Zustand zurück.
+Beim Herunterfahren stellt OpenClaw die vorherige Proxy-Umgebung wieder her und setzt zwischengespeicherten Prozess-Routing-Zustand zurück.
 
 ## Verwandte Proxy-Begriffe
 
 - `proxy.enabled` / `proxy.proxyUrl`: ausgehendes Forward-Proxy-Routing für OpenClaw-Laufzeit-Egress. Diese Seite dokumentiert diese Funktion.
 - `gateway.auth.mode: "trusted-proxy"`: eingehende identitätsbewusste Reverse-Proxy-Authentifizierung für Gateway-Zugriff. Siehe [Trusted-Proxy-Authentifizierung](/de/gateway/trusted-proxy-auth).
 - `openclaw proxy`: lokaler Debug-Proxy und Erfassungsinspektor für Entwicklung und Support. Siehe [openclaw proxy](/de/cli/proxy).
-- `tools.web.fetch.useTrustedEnvProxy`: Opt-in für `web_fetch`, damit ein betreibergesteuerter HTTP(S)-Umgebungsproxy DNS auflösen kann, während die standardmäßig strikte DNS-Pinning- und Hostnamen-Richtlinie beibehalten wird. Siehe [Web-Fetch](/de/tools/web-fetch#trusted-env-proxy).
-- Kanal- oder Provider-spezifische Proxy-Einstellungen: owner-spezifische Überschreibungen für einen bestimmten Transport. Bevorzugen Sie den verwalteten Netzwerk-Proxy, wenn das Ziel zentrale Egress-Kontrolle über die Laufzeit hinweg ist.
+- `tools.web.fetch.useTrustedEnvProxy`: Opt-in für `web_fetch`, damit ein betreibergesteuerter HTTP(S)-Umgebungsproxy DNS auflösen kann, während die standardmäßig strikte DNS-Pinnung und Hostnamenrichtlinie beibehalten werden. Siehe [Web fetch](/de/tools/web-fetch#trusted-env-proxy).
+- Kanal- oder Provider-spezifische Proxy-Einstellungen: eigentümerspezifische Überschreibungen für einen bestimmten Transport. Bevorzugen Sie den verwalteten Netzwerk-Proxy, wenn das Ziel zentrale Egress-Kontrolle über die gesamte Laufzeit ist.
 
 ## Konfiguration
 
@@ -82,9 +82,24 @@ OPENCLAW_PROXY_URL=http://127.0.0.1:3128 openclaw gateway run
 
 `proxy.proxyUrl` hat Vorrang vor `OPENCLAW_PROXY_URL`.
 
-Wenn `enabled=true` ist, aber keine gültige Proxy-URL konfiguriert ist, schlagen geschützte Befehle beim Start fehl, statt auf direkten Netzwerkzugriff zurückzufallen.
+### Gateway-Loopback-Modus
 
-Für verwaltete Gateway-Dienste, die mit `openclaw gateway start` gestartet werden, speichern Sie die URL vorzugsweise in der Konfiguration:
+Lokale Gateway-Control-Plane-Clients verbinden sich normalerweise mit einem Loopback-WebSocket wie `ws://127.0.0.1:18789`. Verwenden Sie `proxy.loopbackMode`, um auszuwählen, wie sich dieser Datenverkehr verhält, während der verwaltete Proxy aktiv ist:
+
+```yaml
+proxy:
+  enabled: true
+  proxyUrl: http://127.0.0.1:3128
+  loopbackMode: gateway-only # gateway-only, proxy, or block
+```
+
+- `gateway-only` (Standard): OpenClaw registriert die Gateway-Loopback-Autorität im aktiven `global-agent`-`NO_PROXY`-Controller, damit lokaler Gateway-WebSocket-Datenverkehr direkt verbinden kann. Benutzerdefinierte Loopback-Gateway-Ports funktionieren, weil Host und Port der aktiven Gateway-URL registriert werden.
+- `proxy`: OpenClaw registriert keine Gateway-Loopback-`NO_PROXY`-Autorität, sodass lokaler Gateway-Datenverkehr über den verwalteten Proxy gesendet wird. Wenn der Proxy remote ist, muss er spezielles Routing für den Loopback-Dienst des OpenClaw-Hosts bereitstellen, etwa eine Zuordnung zu einem vom Proxy erreichbaren Hostnamen, einer IP oder einem Tunnel. Standardmäßige Remote-Proxys lösen `127.0.0.1` und `localhost` vom Proxy-Host aus auf, nicht vom OpenClaw-Host.
+- `block`: OpenClaw verweigert Gateway-Control-Plane-Loopback-Verbindungen, bevor ein Socket geöffnet wird.
+
+Wenn `enabled=true` gesetzt ist, aber keine gültige Proxy-URL konfiguriert wurde, schlagen geschützte Befehle beim Start fehl, statt auf direkten Netzwerkzugriff zurückzufallen.
+
+Für verwaltete Gateway-Dienste, die mit `openclaw gateway start` gestartet werden, speichern Sie die URL bevorzugt in der Konfiguration:
 
 ```bash
 openclaw config set proxy.enabled true
@@ -93,9 +108,9 @@ openclaw gateway install --force
 openclaw gateway start
 ```
 
-Der Umgebungs-Fallback eignet sich am besten für Vordergrundläufe. Wenn Sie ihn mit einem installierten Dienst verwenden, legen Sie `OPENCLAW_PROXY_URL` in der dauerhaften Umgebung des Dienstes ab, etwa in `$OPENCLAW_STATE_DIR/.env` oder `~/.openclaw/.env`, und installieren Sie den Dienst anschließend neu, damit launchd, systemd oder Scheduled Tasks das Gateway mit diesem Wert startet.
+Der Umgebungs-Fallback eignet sich am besten für Vordergrundläufe. Wenn Sie ihn mit einem installierten Dienst verwenden, legen Sie `OPENCLAW_PROXY_URL` in der dauerhaften Umgebung des Dienstes ab, etwa in `$OPENCLAW_STATE_DIR/.env` oder `~/.openclaw/.env`, und installieren Sie den Dienst anschließend neu, damit launchd, systemd oder Scheduled Tasks das Gateway mit diesem Wert starten.
 
-Für `openclaw --container ...`-Befehle leitet OpenClaw `OPENCLAW_PROXY_URL` an die containerbezogene untergeordnete CLI weiter, wenn sie gesetzt ist. Die URL muss aus dem Container heraus erreichbar sein; `127.0.0.1` bezieht sich auf den Container selbst, nicht auf den Host. OpenClaw lehnt Loopback-Proxy-URLs für containerbezogene Befehle ab, sofern Sie diese Sicherheitsprüfung nicht explizit überschreiben.
+Für `openclaw --container ...`-Befehle leitet OpenClaw `OPENCLAW_PROXY_URL` an die containergerichtete untergeordnete CLI weiter, wenn es gesetzt ist. Die URL muss aus dem Container heraus erreichbar sein; `127.0.0.1` verweist auf den Container selbst, nicht auf den Host. OpenClaw weist Loopback-Proxy-URLs für containergerichtete Befehle zurück, sofern Sie diese Sicherheitsprüfung nicht ausdrücklich überschreiben.
 
 ## Proxy-Anforderungen
 
@@ -103,53 +118,53 @@ Die Proxy-Richtlinie ist die Sicherheitsgrenze. OpenClaw kann nicht überprüfen
 
 Konfigurieren Sie den Proxy so, dass er:
 
-- nur an Loopback oder eine private vertrauenswürdige Schnittstelle bindet.
-- den Zugriff so einschränkt, dass nur der OpenClaw-Prozess, Host, Container oder das Dienstkonto ihn verwenden kann.
+- Nur an Loopback oder eine private vertrauenswürdige Schnittstelle bindet.
+- Den Zugriff so beschränkt, dass nur der OpenClaw-Prozess, -Host, -Container oder das Dienstkonto ihn verwenden kann.
 - Ziele selbst auflöst und Ziel-IPs nach der DNS-Auflösung blockiert.
 - Richtlinien beim Verbindungsaufbau sowohl für einfache HTTP-Anfragen als auch für HTTPS-`CONNECT`-Tunnel anwendet.
-- zielbasierte Umgehungen für Loopback-, private, linklokale, Metadaten-, Multicast-, reservierte oder Dokumentationsbereiche ablehnt.
-- Hostnamen-Allowlists vermeidet, sofern Sie dem DNS-Auflösungspfad nicht vollständig vertrauen.
-- Ziel, Entscheidung, Status und Grund protokolliert, ohne Anfrage-Bodys, Autorisierungs-Header, Cookies oder andere Secrets zu protokollieren.
-- die Proxy-Richtlinie unter Versionskontrolle hält und Änderungen wie sicherheitssensible Konfiguration prüft.
+- Zielbasierte Umgehungen für Loopback-, private, link-lokale, Metadaten-, Multicast-, reservierte oder Dokumentationsbereiche zurückweist.
+- Hostnamen-Allowlisten vermeidet, sofern Sie dem DNS-Auflösungspfad nicht vollständig vertrauen.
+- Ziel, Entscheidung, Status und Grund protokolliert, ohne Anfragetexte, Autorisierungsheader, Cookies oder andere Geheimnisse zu protokollieren.
+- Proxy-Richtlinien unter Versionskontrolle hält und Änderungen wie sicherheitssensible Konfiguration prüft.
 
 ## Empfohlene blockierte Ziele
 
-Verwenden Sie diese Denylist als Ausgangspunkt für jeden Forward-Proxy, jede Firewall oder jede Egress-Richtlinie.
+Verwenden Sie diese Sperrliste als Ausgangspunkt für jede Forward-Proxy-, Firewall- oder Egress-Richtlinie.
 
-Die Klassifizierungslogik auf OpenClaw-Anwendungsebene befindet sich in `src/infra/net/ssrf.ts` und `src/shared/net/ip.ts`. Die relevanten Parity-Hooks sind `BLOCKED_HOSTNAMES`, `BLOCKED_IPV4_SPECIAL_USE_RANGES`, `BLOCKED_IPV6_SPECIAL_USE_RANGES`, `RFC2544_BENCHMARK_PREFIX` und die eingebettete IPv4-Sentinel-Behandlung für NAT64, 6to4, Teredo, ISATAP und IPv4-gemappte Formen. Diese Dateien sind nützliche Referenzen, wenn Sie eine externe Proxy-Richtlinie pflegen, aber OpenClaw exportiert oder erzwingt diese Regeln nicht automatisch in Ihrem Proxy.
+Die Klassifizierungslogik auf Anwendungsebene von OpenClaw befindet sich in `src/infra/net/ssrf.ts` und `src/shared/net/ip.ts`. Die relevanten Paritäts-Hooks sind `BLOCKED_HOSTNAMES`, `BLOCKED_IPV4_SPECIAL_USE_RANGES`, `BLOCKED_IPV6_SPECIAL_USE_RANGES`, `RFC2544_BENCHMARK_PREFIX` und die eingebettete IPv4-Sentinel-Behandlung für NAT64, 6to4, Teredo, ISATAP und IPv4-gemappte Formen. Diese Dateien sind nützliche Referenzen, wenn Sie eine externe Proxy-Richtlinie pflegen, aber OpenClaw exportiert oder erzwingt diese Regeln nicht automatisch in Ihrem Proxy.
 
-| Bereich oder Host                                                                    | Warum blockieren                                      |
-| ------------------------------------------------------------------------------------ | ---------------------------------------------------- |
-| `127.0.0.0/8`, `localhost`, `localhost.localdomain`                                  | IPv4-Loopback                                        |
-| `::1/128`                                                                            | IPv6-Loopback                                        |
-| `0.0.0.0/8`, `::/128`                                                                | Nicht angegebene und This-Network-Adressen           |
-| `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`                                      | Private RFC1918-Netzwerke                            |
-| `169.254.0.0/16`, `fe80::/10`                                                        | Linklokale Adressen und gängige Cloud-Metadatenpfade |
-| `169.254.169.254`, `metadata.google.internal`                                        | Cloud-Metadatendienste                               |
-| `100.64.0.0/10`                                                                      | Gemeinsamer Adressraum für Carrier-Grade-NAT         |
-| `198.18.0.0/15`, `2001:2::/48`                                                       | Benchmarking-Bereiche                                |
-| `192.0.0.0/24`, `192.0.2.0/24`, `198.51.100.0/24`, `203.0.113.0/24`, `2001:db8::/32` | Special-Use- und Dokumentationsbereiche              |
-| `224.0.0.0/4`, `ff00::/8`                                                            | Multicast                                            |
-| `240.0.0.0/4`                                                                        | Reserviertes IPv4                                    |
-| `fc00::/7`, `fec0::/10`                                                              | Lokale/private IPv6-Bereiche                         |
-| `100::/64`, `2001:20::/28`                                                           | IPv6-Discard- und ORCHIDv2-Bereiche                  |
-| `64:ff9b::/96`, `64:ff9b:1::/48`                                                     | NAT64-Präfixe mit eingebettetem IPv4                 |
-| `2002::/16`, `2001::/32`                                                             | 6to4 und Teredo mit eingebettetem IPv4               |
-| `::/96`, `::ffff:0:0/96`                                                             | IPv4-kompatibles und IPv4-gemapptes IPv6             |
+| Bereich oder Host                                                                     | Warum blockieren                                      |
+| ------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| `127.0.0.0/8`, `localhost`, `localhost.localdomain`                                   | IPv4-Loopback                                         |
+| `::1/128`                                                                             | IPv6-Loopback                                         |
+| `0.0.0.0/8`, `::/128`                                                                 | Nicht spezifizierte und Dieses-Netz-Adressen          |
+| `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`                                       | Private RFC1918-Netzwerke                             |
+| `169.254.0.0/16`, `fe80::/10`                                                         | Link-lokale Adressen und gängige Cloud-Metadatenpfade |
+| `169.254.169.254`, `metadata.google.internal`                                         | Cloud-Metadatendienste                                |
+| `100.64.0.0/10`                                                                       | Gemeinsamer Adressraum für Carrier-Grade NAT          |
+| `198.18.0.0/15`, `2001:2::/48`                                                        | Benchmarking-Bereiche                                 |
+| `192.0.0.0/24`, `192.0.2.0/24`, `198.51.100.0/24`, `203.0.113.0/24`, `2001:db8::/32`  | Spezialnutzungs- und Dokumentationsbereiche           |
+| `224.0.0.0/4`, `ff00::/8`                                                             | Multicast                                             |
+| `240.0.0.0/4`                                                                         | Reserviertes IPv4                                     |
+| `fc00::/7`, `fec0::/10`                                                               | Lokale/private IPv6-Bereiche                          |
+| `100::/64`, `2001:20::/28`                                                            | IPv6-Verwerfungs- und ORCHIDv2-Bereiche               |
+| `64:ff9b::/96`, `64:ff9b:1::/48`                                                      | NAT64-Präfixe mit eingebettetem IPv4                  |
+| `2002::/16`, `2001::/32`                                                              | 6to4 und Teredo mit eingebettetem IPv4                |
+| `::/96`, `::ffff:0:0/96`                                                              | IPv4-kompatibles und IPv4-gemapptes IPv6              |
 
 Wenn Ihr Cloud-Provider oder Ihre Netzwerkplattform zusätzliche Metadaten-Hosts oder reservierte Bereiche dokumentiert, fügen Sie diese ebenfalls hinzu.
 
 ## Validierung
 
-Validieren Sie den Proxy vom selben Host, Container oder Dienstkonto aus, das OpenClaw ausführt:
+Validieren Sie den Proxy vom selben Host, Container oder Dienstkonto aus, auf dem OpenClaw läuft:
 
 ```bash
 openclaw proxy validate --proxy-url http://127.0.0.1:3128
 ```
 
-Standardmäßig prüft der Befehl, wenn keine benutzerdefinierten Ziele angegeben sind, dass `https://example.com/` erfolgreich ist, und startet einen temporären Loopback-Canary, den der Proxy nicht erreichen darf. Die standardmäßige Ablehnungsprüfung gilt als bestanden, wenn der Proxy eine Nicht-2xx-Ablehnungsantwort zurückgibt oder den Canary mit einem Transportfehler blockiert; sie schlägt fehl, wenn eine erfolgreiche Antwort den Canary erreicht. Wenn kein Proxy aktiviert und konfiguriert ist, meldet die Validierung ein Konfigurationsproblem; verwenden Sie `--proxy-url` für einen einmaligen Preflight vor einer Konfigurationsänderung. Verwenden Sie `--allowed-url` und `--denied-url`, um bereitstellungsspezifische Erwartungen zu testen. Fügen Sie `--apns-reachable` hinzu, um außerdem zu prüfen, ob direkte APNs-HTTP/2-Zustellung einen CONNECT-Tunnel über den Proxy öffnen und eine Sandbox-APNs-Antwort empfangen kann; die Prüfung verwendet absichtlich ein ungültiges Provider-Token, daher wird `403 InvalidProviderToken` erwartet und als erreichbar gewertet. Benutzerdefinierte abgelehnte Ziele sind Fail-Closed: Jede HTTP-Antwort bedeutet, dass das Ziel über den Proxy erreichbar war, und jeder Transportfehler wird als nicht schlüssig gemeldet, weil OpenClaw nicht beweisen kann, dass der Proxy einen erreichbaren Ursprung blockiert hat. Bei einem Validierungsfehler beendet sich der Befehl mit Code 1.
+Standardmäßig prüft der Befehl, wenn keine benutzerdefinierten Ziele angegeben sind, dass `https://example.com/` erfolgreich ist, und startet einen temporären Loopback-Canary, den der Proxy nicht erreichen darf. Die standardmäßige verweigerte Prüfung gilt als bestanden, wenn der Proxy eine Nicht-2xx-Ablehnungsantwort zurückgibt oder den Canary mit einem Transportfehler blockiert; sie schlägt fehl, wenn eine erfolgreiche Antwort den Canary erreicht. Wenn kein Proxy aktiviert und konfiguriert ist, meldet die Validierung ein Konfigurationsproblem; verwenden Sie `--proxy-url` für einen einmaligen Preflight, bevor Sie die Konfiguration ändern. Verwenden Sie `--allowed-url` und `--denied-url`, um deployment-spezifische Erwartungen zu testen. Fügen Sie `--apns-reachable` hinzu, um auch zu verifizieren, dass die direkte APNs-HTTP/2-Zustellung einen CONNECT-Tunnel durch den Proxy öffnen und eine Sandbox-APNs-Antwort empfangen kann; die Prüfung verwendet absichtlich ein ungültiges Provider-Token, daher wird `403 InvalidProviderToken` erwartet und als erreichbar gewertet. Benutzerdefinierte verweigerte Ziele sind Fail-Closed: Jede HTTP-Antwort bedeutet, dass das Ziel durch den Proxy erreichbar war, und jeder Transportfehler wird als nicht eindeutig gemeldet, weil OpenClaw nicht beweisen kann, dass der Proxy einen erreichbaren Ursprung blockiert hat. Bei einem Validierungsfehler beendet sich der Befehl mit Code 1.
 
-Verwenden Sie `--json` zur Automatisierung. Die JSON-Ausgabe enthält das Gesamtergebnis, die effektive Quelle der Proxy-Konfiguration, etwaige Konfigurationsfehler und jede Zielprüfung. Anmeldedaten in Proxy-URLs werden in Text- und JSON-Ausgabe geschwärzt:
+Verwenden Sie `--json` für Automatisierung. Die JSON-Ausgabe enthält das Gesamtergebnis, die effektive Proxy-Konfigurationsquelle, alle Konfigurationsfehler und jede Zielprüfung. Anmeldedaten in Proxy-URLs werden in Text- und JSON-Ausgabe redigiert:
 
 ```json
 {
@@ -185,7 +200,7 @@ curl -x http://127.0.0.1:3128 http://127.0.0.1/
 curl -x http://127.0.0.1:3128 http://169.254.169.254/
 ```
 
-Die öffentliche Anfrage sollte erfolgreich sein. Die Loopback- und Metadatenanfragen sollten vom Proxy blockiert werden. Bei `openclaw proxy validate` kann der eingebaute Loopback-Canary eine Proxy-Ablehnung von einem erreichbaren Ursprung unterscheiden. Benutzerdefinierte `--denied-url`-Prüfungen haben diesen Canary nicht. Behandeln Sie daher sowohl HTTP-Antworten als auch mehrdeutige Transportfehler als Validierungsfehler, sofern Ihr Proxy kein deploymentspezifisches Ablehnungssignal bereitstellt, das Sie separat verifizieren können.
+Die öffentliche Anfrage sollte erfolgreich sein. Die Loopback- und Metadatenanfragen sollten vom Proxy blockiert werden. Für `openclaw proxy validate` kann der integrierte Loopback-Canary eine Proxy-Ablehnung von einem erreichbaren Ursprung unterscheiden. Benutzerdefinierte `--denied-url`-Prüfungen verfügen nicht über diesen Canary, behandeln Sie daher sowohl HTTP-Antworten als auch mehrdeutige Transportfehler als Validierungsfehler, sofern Ihr Proxy kein deployment-spezifisches Ablehnungssignal bereitstellt, das Sie separat verifizieren können.
 
 Aktivieren Sie anschließend das OpenClaw-Proxy-Routing:
 
@@ -195,7 +210,7 @@ openclaw config set proxy.proxyUrl http://127.0.0.1:3128
 openclaw gateway run
 ```
 
-oder legen Sie Folgendes fest:
+oder setzen Sie:
 
 ```yaml
 proxy:
@@ -205,11 +220,12 @@ proxy:
 
 ## Grenzen
 
-- Der Proxy verbessert die Abdeckung für prozesslokale JavaScript-HTTP- und WebSocket-Clients, ist aber keine Netzwerk-Sandbox auf Betriebssystemebene.
-- Rohe `net`-, `tls`- und `http2`-Sockets, native Add-ons und untergeordnete Prozesse können das Proxy-Routing auf Node-Ebene umgehen, sofern sie Proxy-Umgebungsvariablen nicht erben und beachten.
-- IRC ist ein roher TCP/TLS-Kanal außerhalb des operatorverwalteten Forward-Proxy-Routings. Setzen Sie in Deployments, die gesamten ausgehenden Datenverkehr über diesen Forward-Proxy erfordern, `channels.irc.enabled=false`, sofern direkter IRC-Egress nicht ausdrücklich genehmigt ist.
-- Der lokale Debug-Proxy ist Diagnosewerkzeug. Seine direkte Upstream-Weiterleitung für Proxy-Anfragen und CONNECT-Tunnel ist standardmäßig deaktiviert, solange der verwaltete Proxy-Modus aktiv ist. Aktivieren Sie direkte Weiterleitung nur für genehmigte lokale Diagnosen.
-- Lokale WebUIs der Benutzer und lokale Modellserver sollten bei Bedarf in der Operator-Proxy-Richtlinie auf die Allowlist gesetzt werden; OpenClaw stellt für sie keinen allgemeinen Bypass für lokale Netzwerke bereit.
-- Der Proxy-Bypass der Gateway-Steuerungsebene ist absichtlich auf `localhost` und literale Loopback-IP-URLs beschränkt. Verwenden Sie `ws://127.0.0.1:18789`, `ws://[::1]:18789` oder `ws://localhost:18789` für lokale direkte Gateway-Verbindungen zur Steuerungsebene; andere Hostnamen werden wie gewöhnlicher hostnamenbasierter Datenverkehr geroutet.
-- OpenClaw prüft, testet oder zertifiziert Ihre Proxy-Richtlinie nicht.
-- Behandeln Sie Änderungen an der Proxy-Richtlinie als sicherheitssensible betriebliche Änderungen.
+- Der Proxy verbessert die Abdeckung für prozesslokale JavaScript-HTTP- und WebSocket-Clients, ist aber keine Netzwerksandbox auf Betriebssystemebene.
+- Gateway-Loopback-Control-Plane-Datenverkehr verwendet standardmäßig eine direkte lokale Umgehung über `proxy.loopbackMode: "gateway-only"`. OpenClaw implementiert diese Umgehung, indem die aktive Gateway-Loopback-Authority im verwalteten `global-agent`-`NO_PROXY`-Controller registriert wird. Betreiber können `proxy.loopbackMode: "proxy"` setzen, um Gateway-Loopback-Datenverkehr durch den verwalteten Proxy zu senden, oder `proxy.loopbackMode: "block"`, um Loopback-Gateway-Verbindungen zu verweigern. Siehe [Gateway-Loopback-Modus](#gateway-loopback-mode) für den Vorbehalt zum Remote-Proxy.
+- Raw-`net`-, `tls`- und `http2`-Sockets, native Add-ons und Nicht-OpenClaw-Kindprozesse können Proxy-Routing auf Node-Ebene umgehen, sofern sie Proxy-Umgebungsvariablen nicht erben und beachten. Geforkte OpenClaw-Kind-CLIs erben die verwaltete Proxy-URL und den `proxy.loopbackMode`-Zustand.
+- IRC ist ein Raw-TCP/TLS-Kanal außerhalb des vom Betreiber verwalteten Forward-Proxy-Routings. Setzen Sie in Deployments, die den gesamten ausgehenden Datenverkehr durch diesen Forward-Proxy verlangen, `channels.irc.enabled=false`, sofern direkter IRC-Egress nicht ausdrücklich genehmigt ist.
+- Der lokale Debug-Proxy ist Diagnosewerkzeug, und seine direkte Upstream-Weiterleitung für Proxy-Anfragen und CONNECT-Tunnel ist standardmäßig deaktiviert, während der verwaltete Proxy-Modus aktiv ist; aktivieren Sie direkte Weiterleitung nur für genehmigte lokale Diagnosen.
+- Lokale WebUIs der Benutzer und lokale Modellserver sollten bei Bedarf in der Betreiber-Proxy-Richtlinie zugelassen werden; OpenClaw stellt für sie keine allgemeine Umgehung des lokalen Netzwerks bereit.
+- Die Proxy-Umgehung der Gateway-Control-Plane ist absichtlich auf `localhost` und literale Loopback-IP-URLs beschränkt. Verwenden Sie `ws://127.0.0.1:18789`, `ws://[::1]:18789` oder `ws://localhost:18789` für lokale direkte Gateway-Control-Plane-Verbindungen; andere Hostnamen werden wie gewöhnlicher hostnamenbasierter Datenverkehr geroutet.
+- OpenClaw inspiziert, testet oder zertifiziert Ihre Proxy-Richtlinie nicht.
+- Behandeln Sie Änderungen an Proxy-Richtlinien als sicherheitssensible Betriebsänderungen.

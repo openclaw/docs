@@ -1,28 +1,26 @@
 ---
 read_when:
     - Sie möchten einen Modell-Provider auswählen
-    - Sie benötigen einen schnellen Überblick über unterstützte LLM-Backends
+    - Sie benötigen einen schnellen Überblick über die unterstützten LLM-Backends
 summary: Von OpenClaw unterstützte Modell-Provider (LLMs)
 title: Provider-Verzeichnis
 x-i18n:
-    generated_at: "2026-04-30T07:10:43Z"
+    generated_at: "2026-05-06T07:00:57Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 61143200b2e7a74392cf8871bfcd210fe35dbd5118e2e8bc7b15265192fd2bde
+    source_hash: cfc3a15880a5e1881c1a58c60c9ad7e5624350a8db848d03c7cef6ee18c14b81
     source_path: providers/index.md
     workflow: 16
 ---
 
-# Modell-Provider
-
 OpenClaw kann viele LLM-Provider verwenden. Wählen Sie einen Provider aus, authentifizieren Sie sich und legen Sie dann das
 Standardmodell als `provider/model` fest.
 
-Suchen Sie die Dokumentation zu Chat-Kanälen (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/usw.)? Siehe [Kanäle](/de/channels).
+Suchen Sie Dokumentation zu Chat-Kanälen (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/usw.)? Siehe [Kanäle](/de/channels).
 
 ## Schnellstart
 
-1. Authentifizieren Sie sich beim Provider (normalerweise über `openclaw onboard`).
+1. Authentifizieren Sie sich beim Provider (in der Regel über `openclaw onboard`).
 2. Legen Sie das Standardmodell fest:
 
 ```json5
@@ -53,10 +51,10 @@ Suchen Sie die Dokumentation zu Chat-Kanälen (WhatsApp/Telegram/Discord/Slack/M
 - [Google (Gemini)](/de/providers/google)
 - [Gradium](/de/providers/gradium)
 - [Groq (LPU-Inferenz)](/de/providers/groq)
-- [Hugging Face (Inferenz)](/de/providers/huggingface)
+- [Hugging Face (Inference)](/de/providers/huggingface)
 - [inferrs (lokale Modelle)](/de/providers/inferrs)
 - [Kilocode](/de/providers/kilocode)
-- [LiteLLM (vereinheitlichter Gateway)](/de/providers/litellm)
+- [LiteLLM (einheitlicher Gateway)](/de/providers/litellm)
 - [LM Studio (lokale Modelle)](/de/providers/lmstudio)
 - [MiniMax](/de/providers/minimax)
 - [Mistral](/de/providers/mistral)
@@ -104,7 +102,7 @@ Suchen Sie die Dokumentation zu Chat-Kanälen (WhatsApp/Telegram/Discord/Slack/M
 
 ## Community-Tools
 
-- [Claude Max API Proxy](/de/providers/claude-max-api-proxy) - Community-Proxy für Claude-Abonnement-Zugangsdaten (prüfen Sie vor der Nutzung Anthropic-Richtlinien/-Bedingungen)
+- [Claude Max API Proxy](/de/providers/claude-max-api-proxy) - Community-Proxy für Claude-Abonnement-Anmeldedaten (prüfen Sie vor der Verwendung die Anthropic-Richtlinien/-Bedingungen)
 
-Den vollständigen Provider-Katalog (xAI, Groq, Mistral usw.) und erweiterte Konfiguration finden Sie unter
-[Modell-Provider](/de/concepts/model-providers).
+Den vollständigen Provider-Katalog (xAI, Groq, Mistral usw.) und erweiterte Konfiguration
+finden Sie unter [Modell-Provider](/de/concepts/model-providers).

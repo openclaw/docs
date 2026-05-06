@@ -1,52 +1,55 @@
 ---
 read_when:
-    - Du möchtest PDFs von Agenten aus analysieren.
-    - Du benötigst die genauen Parameter und Grenzen des PDF-Tools.
-    - Du untersuchst den nativen PDF-Modus im Vergleich zum Extraktions-Fallback.
-summary: Ein oder mehrere PDF-Dokumente mit nativer Anbieterunterstützung und Extraktions-Fallback analysieren
+    - Sie möchten PDFs von Agenten analysieren
+    - Sie benötigen genaue Parameter und Grenzwerte für das PDF-Tool
+    - Sie debuggen den nativen PDF-Modus im Vergleich zum Extraktions-Fallback
+summary: Analysieren Sie ein oder mehrere PDF-Dokumente mit nativer Provider-Unterstützung und Extraktions-Fallback
 title: PDF-Tool
 x-i18n:
-    generated_at: "2026-04-25T13:58:41Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T07:07:08Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 89bbc675f2b87729e283659f9604724be7a827b50b11edc853a42c448bbaaf6e
+    source_hash: ac1cbbc363975d5571fe5b46b39e2d897e1b80b5859a1f44ef81050f55554444
     source_path: tools/pdf.md
-    workflow: 15
+    workflow: 16
 ---
 
 `pdf` analysiert ein oder mehrere PDF-Dokumente und gibt Text zurück.
 
-Kurzüberblick zum Verhalten:
+Kurzverhalten:
 
-- Nativer Anbietermodus für die Modellanbieter Anthropic und Google.
-- Extraktions-Fallback-Modus für andere Anbieter (zuerst Text extrahieren, dann bei Bedarf Seitenbilder).
+- Nativer Provider-Modus für Anthropic- und Google-Modell-Provider.
+- Extraktions-Fallback-Modus für andere Provider (zuerst Text extrahieren, dann bei Bedarf Seitenbilder).
 - Unterstützt einzelne (`pdf`) oder mehrere (`pdfs`) Eingaben, maximal 10 PDFs pro Aufruf.
 
 ## Verfügbarkeit
 
-Das Tool wird nur registriert, wenn OpenClaw eine PDF-fähige Modellkonfiguration für den Agenten auflösen kann:
+Das Tool wird nur registriert, wenn OpenClaw eine PDF-fähige Modellkonfiguration für den Agent auflösen kann:
 
 1. `agents.defaults.pdfModel`
 2. Fallback auf `agents.defaults.imageModel`
-3. Fallback auf das aufgelöste Sitzungs-/Standardmodell des Agenten
-4. wenn native PDF-Anbieter Authentifizierung benötigen, werden sie vor generischen Image-Fallback-Kandidaten bevorzugt
+3. Fallback auf das aufgelöste Sitzungs-/Standardmodell des Agents
+4. Wenn native PDF-Provider authentifizierungsbasiert sind, werden sie generischen Bild-Fallback-Kandidaten vorgezogen
 
-Wenn kein nutzbares Modell aufgelöst werden kann, wird das Tool `pdf` nicht bereitgestellt.
+Wenn kein verwendbares Modell aufgelöst werden kann, wird das `pdf`-Tool nicht bereitgestellt.
 
 Hinweise zur Verfügbarkeit:
 
-- Die Fallback-Kette ist Auth-bewusst. Ein konfiguriertes `provider/model` zählt nur, wenn OpenClaw diesen Anbieter für den Agenten tatsächlich authentifizieren kann.
-- Native PDF-Anbieter sind derzeit **Anthropic** und **Google**.
-- Wenn der aufgelöste Sitzungs-/Standardanbieter bereits ein konfiguriertes Vision-/PDF-Modell hat, verwendet das PDF-Tool dieses erneut, bevor es auf andere Auth-gestützte Anbieter zurückfällt.
+- Die Fallback-Kette berücksichtigt die Authentifizierung. Ein konfiguriertes `provider/model` zählt nur, wenn
+  OpenClaw den Provider für den Agent tatsächlich authentifizieren kann.
+- Native PDF-Provider sind derzeit **Anthropic** und **Google**.
+- Wenn der aufgelöste Sitzungs-/Standard-Provider bereits ein konfiguriertes Vision-/PDF-
+  Modell hat, verwendet das PDF-Tool dieses erneut, bevor es auf andere authentifizierungsbasierte
+  Provider zurückfällt.
 
 ## Eingabereferenz
 
 <ParamField path="pdf" type="string">
-Ein PDF-Pfad oder eine PDF-URL.
+Ein PDF-Pfad oder eine URL.
 </ParamField>
 
 <ParamField path="pdfs" type="string[]">
-Mehrere PDF-Pfade oder -URLs, insgesamt bis zu 10.
+Mehrere PDF-Pfade oder URLs, insgesamt bis zu 10.
 </ParamField>
 
 <ParamField path="prompt" type="string" default="Analyze this PDF document.">
@@ -58,18 +61,18 @@ Seitenfilter wie `1-5` oder `1,3,7-9`.
 </ParamField>
 
 <ParamField path="model" type="string">
-Optionale Modellüberschreibung im Format `provider/model`.
+Optionale Modellüberschreibung in der Form `provider/model`.
 </ParamField>
 
 <ParamField path="maxBytesMb" type="number">
-Größenlimit pro PDF in MB. Standard ist `agents.defaults.pdfMaxBytesMb` oder `10`.
+Größenlimit pro PDF in MB. Standardmäßig `agents.defaults.pdfMaxBytesMb` oder `10`.
 </ParamField>
 
-Hinweise zur Eingabe:
+Eingabehinweise:
 
 - `pdf` und `pdfs` werden vor dem Laden zusammengeführt und dedupliziert.
-- Wenn keine PDF-Eingabe angegeben wird, gibt das Tool einen Fehler zurück.
-- `pages` wird als 1-basierte Seitenzahlen geparst, dedupliziert, sortiert und auf die konfigurierte maximale Seitenzahl begrenzt.
+- Wenn keine PDF-Eingabe bereitgestellt wird, gibt das Tool einen Fehler aus.
+- `pages` wird als 1-basierte Seitennummern geparst, dedupliziert, sortiert und auf die konfigurierte maximale Seitenanzahl begrenzt.
 - `maxBytesMb` ist standardmäßig `agents.defaults.pdfMaxBytesMb` oder `10`.
 
 ## Unterstützte PDF-Referenzen
@@ -77,43 +80,48 @@ Hinweise zur Eingabe:
 - lokaler Dateipfad (einschließlich `~`-Erweiterung)
 - `file://`-URL
 - `http://`- und `https://`-URL
-- von OpenClaw verwaltete eingehende Referenzen wie `media://inbound/<id>`
+- Von OpenClaw verwaltete eingehende Referenzen wie `media://inbound/<id>`
 
-Hinweise zu Referenzen:
+Referenzhinweise:
 
 - Andere URI-Schemata (zum Beispiel `ftp://`) werden mit `unsupported_pdf_reference` abgelehnt.
 - Im Sandbox-Modus werden entfernte `http(s)`-URLs abgelehnt.
-- Wenn eine Dateirichtlinie nur für den Workspace aktiviert ist, werden lokale Dateipfade außerhalb der erlaubten Wurzeln abgelehnt.
-- Verwaltete eingehende Referenzen und wiedergegebene Pfade unter OpenClaws eingehendem Medienspeicher sind mit einer Dateirichtlinie nur für den Workspace erlaubt.
+- Wenn die Nur-Workspace-Dateirichtlinie aktiviert ist, werden lokale Dateipfade außerhalb erlaubter Wurzeln abgelehnt.
+- Verwaltete eingehende Referenzen und erneut abgespielte Pfade unter OpenClaws eingehendem Medienspeicher sind mit der Nur-Workspace-Dateirichtlinie erlaubt.
 
 ## Ausführungsmodi
 
-### Nativer Anbietermodus
+### Nativer Provider-Modus
 
-Der native Modus wird für den Anbieter `anthropic` und `google` verwendet.
-Das Tool sendet rohe PDF-Bytes direkt an Anbieter-APIs.
+Der native Modus wird für die Provider `anthropic` und `google` verwendet.
+Das Tool sendet rohe PDF-Bytes direkt an Provider-APIs.
 
 Grenzen des nativen Modus:
 
-- `pages` wird nicht unterstützt. Wenn es gesetzt ist, gibt das Tool einen Fehler zurück.
-- Mehrere PDF-Eingaben werden unterstützt; jede PDF wird vor dem Prompt als nativer Dokumentblock bzw. inline-PDF-Teil gesendet.
+- `pages` wird nicht unterstützt. Wenn gesetzt, gibt das Tool einen Fehler zurück.
+- Eingaben mit mehreren PDFs werden unterstützt; jedes PDF wird vor dem Prompt als nativer Dokumentblock /
+  Inline-PDF-Teil gesendet.
 
 ### Extraktions-Fallback-Modus
 
-Der Fallback-Modus wird für nicht native Anbieter verwendet.
+Der Fallback-Modus wird für nicht-native Provider verwendet.
 
 Ablauf:
 
 1. Text aus ausgewählten Seiten extrahieren (bis zu `agents.defaults.pdfMaxPages`, Standard `20`).
-2. Wenn die Länge des extrahierten Texts unter `200` Zeichen liegt, ausgewählte Seiten als PNG-Bilder rendern und einschließen.
-3. Extrahierten Inhalt zusammen mit dem Prompt an das ausgewählte Modell senden.
+2. Wenn die extrahierte Textlänge unter `200` Zeichen liegt, ausgewählte Seiten als PNG-Bilder rendern und einbeziehen.
+3. Extrahierten Inhalt plus Prompt an das ausgewählte Modell senden.
 
-Details zum Fallback:
+Fallback-Details:
 
-- Die Extraktion von Seitenbildern verwendet ein Pixelbudget von `4,000,000`.
-- Wenn das Zielmodell keine Bildeingaben unterstützt und kein extrahierbarer Text vorhanden ist, gibt das Tool einen Fehler zurück.
-- Wenn die Textextraktion erfolgreich ist, die Bildextraktion aber Vision bei einem reinen Textmodell erfordern würde, verwirft OpenClaw die gerenderten Bilder und fährt nur mit dem extrahierten Text fort.
-- Der Extraktions-Fallback verwendet das gebündelte Plugin `document-extract`. Das Plugin besitzt `pdfjs-dist`; `@napi-rs/canvas` wird nur verwendet, wenn ein Fallback für das Rendern von Bildern verfügbar ist.
+- Die Seitenbildextraktion verwendet ein Pixelbudget von `4,000,000`.
+- Wenn das Zielmodell keine Bildeingabe unterstützt und kein extrahierbarer Text vorhanden ist, gibt das Tool einen Fehler aus.
+- Wenn die Textextraktion erfolgreich ist, die Bildextraktion jedoch Vision für ein
+  reines Textmodell erfordern würde, verwirft OpenClaw die gerenderten Bilder und fährt mit dem
+  extrahierten Text fort.
+- Der Extraktions-Fallback verwendet das gebündelte `document-extract`-Plugin. Das Plugin besitzt
+  `pdfjs-dist`; `@napi-rs/canvas` wird nur verwendet, wenn der Fallback für das Rendern von Bildern
+  verfügbar ist.
 
 ## Konfiguration
 
@@ -141,25 +149,25 @@ Das Tool gibt Text in `content[0].text` und strukturierte Metadaten in `details`
 Häufige `details`-Felder:
 
 - `model`: aufgelöste Modellreferenz (`provider/model`)
-- `native`: `true` für nativen Anbietermodus, `false` für Fallback
+- `native`: `true` für den nativen Provider-Modus, `false` für den Fallback
 - `attempts`: Fallback-Versuche, die vor dem Erfolg fehlgeschlagen sind
 
 Pfadfelder:
 
 - einzelne PDF-Eingabe: `details.pdf`
 - mehrere PDF-Eingaben: `details.pdfs[]` mit `pdf`-Einträgen
-- Metadaten zum Umschreiben von Sandbox-Pfaden (falls zutreffend): `rewrittenFrom`
+- Metadaten zur Sandbox-Pfadumschreibung (falls zutreffend): `rewrittenFrom`
 
 ## Fehlerverhalten
 
 - Fehlende PDF-Eingabe: löst `pdf required: provide a path or URL to a PDF document` aus
 - Zu viele PDFs: gibt einen strukturierten Fehler in `details.error = "too_many_pdfs"` zurück
 - Nicht unterstütztes Referenzschema: gibt `details.error = "unsupported_pdf_reference"` zurück
-- Nativer Modus mit `pages`: löst den eindeutigen Fehler `pages is not supported with native PDF providers` aus
+- Nativer Modus mit `pages`: löst einen klaren Fehler `pages is not supported with native PDF providers` aus
 
 ## Beispiele
 
-Einzelne PDF:
+Einzelnes PDF:
 
 ```json
 {
@@ -177,7 +185,7 @@ Mehrere PDFs:
 }
 ```
 
-Seitengefiltertes Fallback-Modell:
+Fallback-Modell mit Seitenfilter:
 
 ```json
 {
@@ -188,7 +196,7 @@ Seitengefiltertes Fallback-Modell:
 }
 ```
 
-## Zugehörig
+## Verwandt
 
-- [Tools-Übersicht](/de/tools) — alle verfügbaren Agenten-Tools
-- [Konfigurationsreferenz](/de/gateway/config-agents#agent-defaults) — Konfiguration für pdfMaxBytesMb und pdfMaxPages
+- [Tools-Übersicht](/de/tools) - alle verfügbaren Agent-Tools
+- [Konfigurationsreferenz](/de/gateway/config-agents#agent-defaults) - pdfMaxBytesMb- und pdfMaxPages-Konfiguration

@@ -1,32 +1,37 @@
 ---
 read_when:
-    - Sie möchten Xiaomi-MiMo-Modelle in OpenClaw ഉപയോഗել
-    - Sie benötigen die Einrichtung von `XIAOMI_API_KEY`
-summary: Xiaomi-MiMo-Modelle mit OpenClaw verwenden
+    - Sie möchten Xiaomi MiMo-Modelle in OpenClaw verwenden
+    - Sie müssen XIAOMI_API_KEY einrichten.
+summary: Xiaomi MiMo-Modelle mit OpenClaw verwenden
 title: Xiaomi MiMo
 x-i18n:
-    generated_at: "2026-04-25T13:55:52Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T07:01:54Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 7781973c3a1d14101cdb0a8d1affe3fd076a968552ed2a8630a91a8947daeb3a
+    source_hash: a7bb33bf107cb44414b0f3a6140d60fdfecb3b7154c3197e7cbed982d9a6450b
     source_path: providers/xiaomi.md
-    workflow: 15
+    workflow: 16
 ---
 
-Xiaomi MiMo ist die API-Plattform für **MiMo**-Modelle. OpenClaw verwendet den
-OpenAI-kompatiblen Endpoint von Xiaomi mit API-Key-Authentifizierung.
+Xiaomi MiMo ist die API-Plattform für **MiMo**-Modelle. OpenClaw enthält ein gebündeltes `xiaomi`-Plugin, das sowohl einen OpenAI-kompatiblen Chat-Provider als auch einen Sprach-Provider (TTS) mit demselben `XIAOMI_API_KEY` registriert.
 
-| Eigenschaft | Wert                            |
-| ----------- | ------------------------------- |
-| Provider    | `xiaomi`                        |
-| Auth        | `XIAOMI_API_KEY`                |
-| API         | OpenAI-kompatibel               |
-| Base URL    | `https://api.xiaomimimo.com/v1` |
+| Eigenschaft     | Wert                                     |
+| --------------- | ---------------------------------------- |
+| Provider-ID     | `xiaomi`                                 |
+| Plugin          | gebündelt, `enabledByDefault: true`      |
+| Auth-Env-Var    | `XIAOMI_API_KEY`                         |
+| Onboarding-Flag | `--auth-choice xiaomi-api-key`           |
+| Direkte CLI-Flag | `--xiaomi-api-key <key>`                |
+| Verträge        | Chat-Completions + `speechProviders`     |
+| API             | OpenAI-kompatibel (`openai-completions`) |
+| Basis-URL       | `https://api.xiaomimimo.com/v1`          |
+| Standardmodell  | `xiaomi/mimo-v2-flash`                   |
+| TTS-Standard    | `mimo-v2.5-tts`, Stimme `mimo_default`   |
 
 ## Erste Schritte
 
 <Steps>
-  <Step title="Einen API-Schlüssel abrufen">
+  <Step title="API-Schlüssel abrufen">
     Erstellen Sie einen API-Schlüssel in der [Xiaomi MiMo-Konsole](https://platform.xiaomimimo.com/#/console/api-keys).
   </Step>
   <Step title="Onboarding ausführen">
@@ -34,14 +39,14 @@ OpenAI-kompatiblen Endpoint von Xiaomi mit API-Key-Authentifizierung.
     openclaw onboard --auth-choice xiaomi-api-key
     ```
 
-    Oder den Schlüssel direkt übergeben:
+    Oder übergeben Sie den Schlüssel direkt:
 
     ```bash
     openclaw onboard --auth-choice xiaomi-api-key --xiaomi-api-key "$XIAOMI_API_KEY"
     ```
 
   </Step>
-  <Step title="Prüfen, ob das Modell verfügbar ist">
+  <Step title="Verfügbarkeit des Modells prüfen">
     ```bash
     openclaw models list --provider xiaomi
     ```
@@ -50,29 +55,29 @@ OpenAI-kompatiblen Endpoint von Xiaomi mit API-Key-Authentifizierung.
 
 ## Integrierter Katalog
 
-| Modell-Ref             | Eingabe     | Kontext   | Max. Ausgabe | Reasoning | Hinweise      |
-| ---------------------- | ----------- | --------- | ------------ | --------- | ------------- |
-| `xiaomi/mimo-v2-flash` | Text        | 262.144   | 8.192        | Nein      | Standardmodell |
-| `xiaomi/mimo-v2-pro`   | Text        | 1.048.576 | 32.000       | Ja        | Großer Kontext |
-| `xiaomi/mimo-v2-omni`  | Text, Bild  | 262.144   | 32.000       | Ja        | Multimodal    |
+| Modell-Ref             | Eingabe     | Kontext  | Maximale Ausgabe | Reasoning | Hinweise       |
+| ---------------------- | ----------- | -------- | ---------------- | --------- | -------------- |
+| `xiaomi/mimo-v2-flash` | Text        | 262.144  | 8.192            | Nein      | Standardmodell |
+| `xiaomi/mimo-v2-pro`   | Text        | 1.048.576 | 32.000          | Ja        | Großer Kontext |
+| `xiaomi/mimo-v2-omni`  | Text, Bild  | 262.144  | 32.000           | Ja        | Multimodal     |
 
 <Tip>
-Die Standard-Modell-Ref ist `xiaomi/mimo-v2-flash`. Der Provider wird automatisch eingefügt, wenn `XIAOMI_API_KEY` gesetzt ist oder ein Auth-Profil existiert.
+Die Standard-Modell-Ref ist `xiaomi/mimo-v2-flash`. Der Provider wird automatisch injiziert, wenn `XIAOMI_API_KEY` gesetzt ist oder ein Auth-Profil vorhanden ist.
 </Tip>
 
 ## Text-to-Speech
 
-Das gebündelte `xiaomi`-Plugin registriert Xiaomi MiMo auch als Speech-Provider für
-`messages.tts`. Es verwendet Xiaomis TTS-Vertrag für Chat-Completions mit dem Text als
-`assistant`-Nachricht und optionaler Stilvorgabe als `user`-Nachricht.
+Das gebündelte `xiaomi`-Plugin registriert Xiaomi MiMo außerdem als Sprach-Provider für
+`messages.tts`. Es ruft Xiaomis Chat-Completions-TTS-Vertrag mit dem Text als
+`assistant`-Nachricht und optionalen Stilvorgaben als `user`-Nachricht auf.
 
 | Eigenschaft | Wert                                     |
 | ----------- | ---------------------------------------- |
-| TTS-ID      | `xiaomi` (Alias `mimo`)                  |
+| TTS-ID      | `xiaomi` (`mimo`-Alias)                  |
 | Auth        | `XIAOMI_API_KEY`                         |
 | API         | `POST /v1/chat/completions` mit `audio`  |
 | Standard    | `mimo-v2.5-tts`, Stimme `mimo_default`   |
-| Ausgabe     | Standardmäßig MP3; WAV bei Konfiguration |
+| Ausgabe     | Standardmäßig MP3; WAV bei entsprechender Konfiguration |
 
 ```json5
 {
@@ -94,11 +99,11 @@ Das gebündelte `xiaomi`-Plugin registriert Xiaomi MiMo auch als Speech-Provider
 }
 ```
 
-Unterstützte integrierte Stimmen sind unter anderem `mimo_default`, `default_zh`, `default_en`,
+Zu den unterstützten integrierten Stimmen gehören `mimo_default`, `default_zh`, `default_en`,
 `Mia`, `Chloe`, `Milo` und `Dean`. `mimo-v2-tts` wird für ältere MiMo-
-TTS-Konten unterstützt; standardmäßig wird das aktuelle MiMo-V2.5-TTS-Modell verwendet. Für Ziele mit Sprachnotizen
-wie Feishu und Telegram transkodiert OpenClaw die Xiaomi-Ausgabe vor der Zustellung mit `ffmpeg` in 48-kHz-
-Opus.
+TTS-Konten unterstützt; der Standard verwendet das aktuelle MiMo-V2.5-TTS-Modell. Für Sprachnotiz-
+Ziele wie Feishu und Telegram transkodiert OpenClaw die Xiaomi-Ausgabe vor der Zustellung mit
+`ffmpeg` in 48-kHz-Opus.
 
 ## Konfigurationsbeispiel
 
@@ -149,14 +154,14 @@ Opus.
 ```
 
 <AccordionGroup>
-  <Accordion title="Verhalten bei automatischem Einfügen">
-    Der Provider `xiaomi` wird automatisch eingefügt, wenn `XIAOMI_API_KEY` in Ihrer Umgebung gesetzt ist oder ein Auth-Profil existiert. Sie müssen den Provider nicht manuell konfigurieren, es sei denn, Sie möchten Modellmetadaten oder die Base-URL überschreiben.
+  <Accordion title="Verhalten bei automatischer Injektion">
+    Der `xiaomi`-Provider wird automatisch injiziert, wenn `XIAOMI_API_KEY` in Ihrer Umgebung gesetzt ist oder ein Auth-Profil vorhanden ist. Sie müssen den Provider nicht manuell konfigurieren, es sei denn, Sie möchten Modellmetadaten oder die Basis-URL überschreiben.
   </Accordion>
 
   <Accordion title="Modelldetails">
-    - **mimo-v2-flash** — leichtgewichtig und schnell, ideal für allgemeine Textaufgaben. Keine Unterstützung für Reasoning.
-    - **mimo-v2-pro** — unterstützt Reasoning mit einem Kontextfenster von 1M Tokens für Workloads mit langen Dokumenten.
-    - **mimo-v2-omni** — multimodales Modell mit aktiviertem Reasoning, das sowohl Text- als auch Bildeingaben akzeptiert.
+    - **mimo-v2-flash** — leichtgewichtig und schnell, ideal für allgemeine Textaufgaben. Keine Reasoning-Unterstützung.
+    - **mimo-v2-pro** — unterstützt Reasoning mit einem Kontextfenster von 1 Mio. Token für Workloads mit langen Dokumenten.
+    - **mimo-v2-omni** — Reasoning-fähiges multimodales Modell, das sowohl Text- als auch Bildeingaben akzeptiert.
 
     <Note>
     Alle Modelle verwenden das Präfix `xiaomi/` (zum Beispiel `xiaomi/mimo-v2-pro`).
@@ -165,8 +170,8 @@ Opus.
   </Accordion>
 
   <Accordion title="Fehlerbehebung">
-    - Wenn Modelle nicht erscheinen, prüfen Sie, ob `XIAOMI_API_KEY` gesetzt und gültig ist.
-    - Wenn das Gateway als Daemon läuft, stellen Sie sicher, dass der Schlüssel diesem Prozess zur Verfügung steht (zum Beispiel in `~/.openclaw/.env` oder über `env.shellEnv`).
+    - Wenn Modelle nicht angezeigt werden, bestätigen Sie, dass `XIAOMI_API_KEY` gesetzt und gültig ist.
+    - Wenn der Gateway als Daemon ausgeführt wird, stellen Sie sicher, dass der Schlüssel für diesen Prozess verfügbar ist (zum Beispiel in `~/.openclaw/.env` oder über `env.shellEnv`).
 
     <Warning>
     Schlüssel, die nur in Ihrer interaktiven Shell gesetzt sind, sind für vom Daemon verwaltete Gateway-Prozesse nicht sichtbar. Verwenden Sie `~/.openclaw/.env` oder die Konfiguration `env.shellEnv` für dauerhafte Verfügbarkeit.
@@ -175,16 +180,16 @@ Opus.
   </Accordion>
 </AccordionGroup>
 
-## Verwandt
+## Verwandte Themen
 
 <CardGroup cols={2}>
   <Card title="Modellauswahl" href="/de/concepts/model-providers" icon="layers">
-    Auswahl von Providern, Modell-Refs und Failover-Verhalten.
+    Provider, Modell-Refs und Failover-Verhalten auswählen.
   </Card>
   <Card title="Konfigurationsreferenz" href="/de/gateway/configuration-reference" icon="gear">
     Vollständige OpenClaw-Konfigurationsreferenz.
   </Card>
   <Card title="Xiaomi MiMo-Konsole" href="https://platform.xiaomimimo.com" icon="arrow-up-right-from-square">
-    Xiaomi-MiMo-Dashboard und API-Key-Verwaltung.
+    Xiaomi MiMo-Dashboard und API-Schlüsselverwaltung.
   </Card>
 </CardGroup>

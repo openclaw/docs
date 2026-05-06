@@ -1,30 +1,38 @@
 ---
 read_when:
-    - Sie möchten Vydra-Mediengenerierung in OpenClaw.
-    - Sie benötigen eine Anleitung zur Einrichtung des Vydra-API keys.
-summary: Vydra-Bild, -Video und -Sprache in OpenClaw verwenden
+    - Sie möchten Vydra-Mediengenerierung in OpenClaw
+    - Sie benötigen eine Anleitung zur Einrichtung eines Vydra-API-Schlüssels
+summary: Bild-, Video- und Sprachfunktionen von Vydra in OpenClaw verwenden
 title: Vydra
 x-i18n:
-    generated_at: "2026-04-24T06:56:40Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T07:01:50Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 85420c3f337c13313bf571d5ee92c1f1988ff8119d401e7ec0ea0db1e74d9b69
+    source_hash: 6e73121300fc3121124d15ecd285603032644c7d3886703776adc58c7115401a
     source_path: providers/vydra.md
-    workflow: 15
+    workflow: 16
 ---
 
-Das gebündelte Vydra-Plugin fügt Folgendes hinzu:
+Das gebündelte Vydra-Plugin fügt hinzu:
 
 - Bildgenerierung über `vydra/grok-imagine`
 - Videogenerierung über `vydra/veo3` und `vydra/kling`
-- Sprachsynthese über die ElevenLabs-gestützte TTS-Route von Vydra
+- Sprachsynthese über Vydras ElevenLabs-gestützte TTS-Route
 
-OpenClaw verwendet für alle drei Fähigkeiten denselben `VYDRA_API_KEY`.
+OpenClaw verwendet denselben `VYDRA_API_KEY` für alle drei Funktionen.
+
+| Eigenschaft     | Wert                                                                      |
+| --------------- | ------------------------------------------------------------------------- |
+| Provider-ID     | `vydra`                                                                   |
+| Plugin          | gebündelt, `enabledByDefault: true`                                       |
+| Auth-Env-Var    | `VYDRA_API_KEY`                                                           |
+| Onboarding-Flag | `--auth-choice vydra-api-key`                                             |
+| Direkter CLI-Flag | `--vydra-api-key <key>`                                                 |
+| Verträge        | `imageGenerationProviders`, `videoGenerationProviders`, `speechProviders` |
+| Basis-URL       | `https://www.vydra.ai/api/v1` (verwenden Sie den Host `www`)              |
 
 <Warning>
-Verwenden Sie `https://www.vydra.ai/api/v1` als Base-URL.
-
-Der Apex-Host von Vydra (`https://vydra.ai/api/v1`) leitet derzeit zu `www` weiter. Manche HTTP-Clients verwerfen `Authorization` bei diesem hostübergreifenden Redirect, wodurch ein gültiger API key wie ein irreführender Auth-Fehler aussieht. Das gebündelte Plugin verwendet direkt die Base-URL mit `www`, um das zu vermeiden.
+  Verwenden Sie `https://www.vydra.ai/api/v1` als Basis-URL. Vydras Apex-Host (`https://vydra.ai/api/v1`) leitet derzeit zu `www` weiter. Einige HTTP-Clients entfernen `Authorization` bei dieser hostübergreifenden Weiterleitung, wodurch aus einem gültigen API-Schlüssel ein irreführender Authentifizierungsfehler wird. Das gebündelte Plugin verwendet direkt die `www`-Basis-URL, um dies zu vermeiden.
 </Warning>
 
 ## Einrichtung
@@ -35,19 +43,19 @@ Der Apex-Host von Vydra (`https://vydra.ai/api/v1`) leitet derzeit zu `www` weit
     openclaw onboard --auth-choice vydra-api-key
     ```
 
-    Oder die Env-Variable direkt setzen:
+    Oder setzen Sie die Env-Var direkt:
 
     ```bash
     export VYDRA_API_KEY="vydra_live_..."
     ```
 
   </Step>
-  <Step title="Eine Standard-Fähigkeit wählen">
-    Wählen Sie eine oder mehrere der folgenden Fähigkeiten aus (Bild, Video oder Sprache) und wenden Sie die passende Konfiguration an.
+  <Step title="Standardfunktion auswählen">
+    Wählen Sie eine oder mehrere der folgenden Funktionen aus (Bild, Video oder Sprache) und wenden Sie die passende Konfiguration an.
   </Step>
 </Steps>
 
-## Fähigkeiten
+## Funktionen
 
 <AccordionGroup>
   <Accordion title="Bildgenerierung">
@@ -55,7 +63,7 @@ Der Apex-Host von Vydra (`https://vydra.ai/api/v1`) leitet derzeit zu `www` weit
 
     - `vydra/grok-imagine`
 
-    Als Standard-Provider für Bilder setzen:
+    Legen Sie es als Standard-Bild-Provider fest:
 
     ```json5
     {
@@ -69,10 +77,10 @@ Der Apex-Host von Vydra (`https://vydra.ai/api/v1`) leitet derzeit zu `www` weit
     }
     ```
 
-    Die aktuelle gebündelte Unterstützung ist nur Text-zu-Bild. Die gehosteten Edit-Routen von Vydra erwarten entfernte Bild-URLs, und OpenClaw fügt im gebündelten Plugin bisher noch keine Vydra-spezifische Upload-Bridge hinzu.
+    Die aktuelle gebündelte Unterstützung umfasst nur Text-zu-Bild. Vydras gehostete Bearbeitungsrouten erwarten Remote-Bild-URLs, und OpenClaw fügt im gebündelten Plugin noch keine Vydra-spezifische Upload-Bridge hinzu.
 
     <Note>
-    Siehe [Image Generation](/de/tools/image-generation) für gemeinsame Tool-Parameter, Provider-Auswahl und Failover-Verhalten.
+    Siehe [Bildgenerierung](/de/tools/image-generation) für gemeinsame Tool-Parameter, Provider-Auswahl und Failover-Verhalten.
     </Note>
 
   </Accordion>
@@ -83,7 +91,7 @@ Der Apex-Host von Vydra (`https://vydra.ai/api/v1`) leitet derzeit zu `www` weit
     - `vydra/veo3` für Text-zu-Video
     - `vydra/kling` für Bild-zu-Video
 
-    Vydra als Standard-Provider für Video setzen:
+    Legen Sie Vydra als Standard-Video-Provider fest:
 
     ```json5
     {
@@ -99,18 +107,18 @@ Der Apex-Host von Vydra (`https://vydra.ai/api/v1`) leitet derzeit zu `www` weit
 
     Hinweise:
 
-    - `vydra/veo3` ist gebündelt nur als Text-zu-Video.
-    - `vydra/kling` erfordert derzeit eine Referenz auf eine entfernte Bild-URL. Lokale Datei-Uploads werden direkt abgelehnt.
-    - Die aktuelle `kling`-HTTP-Route von Vydra war uneinheitlich darin, ob sie `image_url` oder `video_url` verlangt; der gebündelte Provider mappt dieselbe entfernte Bild-URL auf beide Felder.
-    - Das gebündelte Plugin bleibt konservativ und leitet keine undokumentierten Stilparameter wie Seitenverhältnis, Auflösung, Wasserzeichen oder generiertes Audio weiter.
+    - `vydra/veo3` ist nur als Text-zu-Video gebündelt.
+    - `vydra/kling` erfordert derzeit eine Remote-Bild-URL-Referenz. Lokale Datei-Uploads werden vorab abgelehnt.
+    - Vydras aktuelle `kling`-HTTP-Route war bisher inkonsistent darin, ob sie `image_url` oder `video_url` erfordert; der gebündelte Provider ordnet dieselbe Remote-Bild-URL beiden Feldern zu.
+    - Das gebündelte Plugin bleibt konservativ und leitet keine undokumentierten Stiloptionen wie Seitenverhältnis, Auflösung, Wasserzeichen oder generiertes Audio weiter.
 
     <Note>
-    Siehe [Video Generation](/de/tools/video-generation) für gemeinsame Tool-Parameter, Provider-Auswahl und Failover-Verhalten.
+    Siehe [Videogenerierung](/de/tools/video-generation) für gemeinsame Tool-Parameter, Provider-Auswahl und Failover-Verhalten.
     </Note>
 
   </Accordion>
 
-  <Accordion title="Live-Tests für Video">
+  <Accordion title="Video-Live-Tests">
     Provider-spezifische Live-Abdeckung:
 
     ```bash
@@ -122,9 +130,9 @@ Der Apex-Host von Vydra (`https://vydra.ai/api/v1`) leitet derzeit zu `www` weit
     Die gebündelte Vydra-Live-Datei deckt jetzt ab:
 
     - `vydra/veo3` Text-zu-Video
-    - `vydra/kling` Bild-zu-Video mit einer entfernten Bild-URL
+    - `vydra/kling` Bild-zu-Video mit einer Remote-Bild-URL
 
-    Überschreiben Sie bei Bedarf das Fixture für die entfernte Bildreferenz:
+    Überschreiben Sie die Remote-Bild-Fixture bei Bedarf:
 
     ```bash
     export OPENCLAW_LIVE_VYDRA_KLING_IMAGE_URL="https://example.com/reference.png"
@@ -133,7 +141,7 @@ Der Apex-Host von Vydra (`https://vydra.ai/api/v1`) leitet derzeit zu `www` weit
   </Accordion>
 
   <Accordion title="Sprachsynthese">
-    Vydra als Sprach-Provider setzen:
+    Legen Sie Vydra als Sprach-Provider fest:
 
     ```json5
     {
@@ -156,7 +164,7 @@ Der Apex-Host von Vydra (`https://vydra.ai/api/v1`) leitet derzeit zu `www` weit
     - Modell: `elevenlabs/tts`
     - Voice-ID: `21m00Tcm4TlvDq8ikWAM`
 
-    Das gebündelte Plugin stellt derzeit eine bekannte funktionierende Standardstimme bereit und gibt MP3-Audiodateien zurück.
+    Das gebündelte Plugin stellt derzeit eine bewährte Standardstimme bereit und gibt MP3-Audiodateien zurück.
 
   </Accordion>
 </AccordionGroup>
@@ -164,16 +172,16 @@ Der Apex-Host von Vydra (`https://vydra.ai/api/v1`) leitet derzeit zu `www` weit
 ## Verwandt
 
 <CardGroup cols={2}>
-  <Card title="Provider directory" href="/de/providers/index" icon="list">
-    Alle verfügbaren Provider durchsuchen.
+  <Card title="Provider-Verzeichnis" href="/de/providers/index" icon="list">
+    Durchsuchen Sie alle verfügbaren Provider.
   </Card>
-  <Card title="Image generation" href="/de/tools/image-generation" icon="image">
-    Gemeinsame Parameter des Bild-Tools und Provider-Auswahl.
+  <Card title="Bildgenerierung" href="/de/tools/image-generation" icon="image">
+    Gemeinsame Bild-Tool-Parameter und Provider-Auswahl.
   </Card>
-  <Card title="Video generation" href="/de/tools/video-generation" icon="video">
-    Gemeinsame Parameter des Video-Tools und Provider-Auswahl.
+  <Card title="Videogenerierung" href="/de/tools/video-generation" icon="video">
+    Gemeinsame Video-Tool-Parameter und Provider-Auswahl.
   </Card>
-  <Card title="Configuration reference" href="/de/gateway/config-agents#agent-defaults" icon="gear">
-    Agent-Standards und Modellkonfiguration.
+  <Card title="Konfigurationsreferenz" href="/de/gateway/config-agents#agent-defaults" icon="gear">
+    Agent-Standardwerte und Modellkonfiguration.
   </Card>
 </CardGroup>

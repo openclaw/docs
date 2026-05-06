@@ -1,32 +1,30 @@
 ---
 read_when:
-    - Sie ändern, wie Zeitstempel dem Modell oder Benutzern angezeigt werden.
-    - Sie debuggen Zeitformatierung in Nachrichten oder der Ausgabe des System-Prompts.
-summary: Datums- und Zeitverarbeitung über Envelopes, Prompts, Tools und Connectors hinweg
+    - Sie ändern, wie Zeitstempel dem Modell oder den Nutzern angezeigt werden
+    - Sie debuggen die Zeitformatierung in Nachrichten oder in der Ausgabe des Systemprompts
+summary: Datums- und Uhrzeitbehandlung in Umschlägen, Eingabeaufforderungen, Werkzeugen und Konnektoren
 title: Datum und Uhrzeit
 x-i18n:
-    generated_at: "2026-04-24T06:36:14Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T06:46:50Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: c3d54da4077ac985ae1209b4364e049afb83b5746276e164181c1a30f0faa06e
+    source_hash: 5f695a5009c949cc24689bfb8950d96cf72f0b2a1472efe88923182527b56b74
     source_path: date-time.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Datum & Uhrzeit
+OpenClaw verwendet standardmäßig **hostlokale Zeit für Transport-Zeitstempel** und **die Benutzerzeitzone nur im System-Prompt**.
+Provider-Zeitstempel bleiben erhalten, damit Tools ihre native Semantik behalten (die aktuelle Zeit ist über `session_status` verfügbar).
 
-OpenClaw verwendet standardmäßig **Host-lokale Zeit für Transport-Zeitstempel** und die **Zeitzone des Benutzers nur im System-Prompt**.
-Zeitstempel von Providern bleiben erhalten, damit Tools ihre native Semantik behalten (die aktuelle Uhrzeit ist über `session_status` verfügbar).
+## Nachrichtenumschläge (standardmäßig lokal)
 
-## Nachrichten-Envelopes (standardmäßig lokal)
-
-Eingehende Nachrichten werden mit einem Zeitstempel umhüllt (Minutengenauigkeit):
+Eingehende Nachrichten werden mit einem Zeitstempel umschlossen (Minutengenauigkeit):
 
 ```
 [Provider ... 2026-01-05 16:26 PST] message text
 ```
 
-Dieser Envelope-Zeitstempel ist **standardmäßig Host-lokal**, unabhängig von der Zeitzone des Providers.
+Dieser Umschlag-Zeitstempel ist **standardmäßig hostlokal**, unabhängig von der Provider-Zeitzone.
 
 Sie können dieses Verhalten überschreiben:
 
@@ -46,8 +44,8 @@ Sie können dieses Verhalten überschreiben:
 - `envelopeTimezone: "local"` verwendet die Zeitzone des Hosts.
 - `envelopeTimezone: "user"` verwendet `agents.defaults.userTimezone` (fällt auf die Zeitzone des Hosts zurück).
 - Verwenden Sie eine explizite IANA-Zeitzone (z. B. `"America/Chicago"`) für eine feste Zone.
-- `envelopeTimestamp: "off"` entfernt absolute Zeitstempel aus Envelope-Headern.
-- `envelopeElapsed: "off"` entfernt Suffixe für verstrichene Zeit (im Stil von `+2m`).
+- `envelopeTimestamp: "off"` entfernt absolute Zeitstempel aus Umschlag-Headern.
+- `envelopeElapsed: "off"` entfernt Suffixe für verstrichene Zeit (der Stil `+2m`).
 
 ### Beispiele
 
@@ -57,7 +55,7 @@ Sie können dieses Verhalten überschreiben:
 [WhatsApp +1555 2026-01-18 00:19 PST] hello
 ```
 
-**Zeitzone des Benutzers:**
+**Benutzerzeitzone:**
 
 ```
 [WhatsApp +1555 2026-01-18 00:19 CST] hello
@@ -69,29 +67,27 @@ Sie können dieses Verhalten überschreiben:
 [WhatsApp +1555 +30s 2026-01-18T05:19Z] follow-up
 ```
 
-## System-Prompt: Current Date & Time
+## System-Prompt: aktuelles Datum und aktuelle Uhrzeit
 
-Wenn die Zeitzone des Benutzers bekannt ist, enthält der System-Prompt einen eigenen Abschnitt
-**Current Date & Time** nur mit der **Zeitzone** (kein Uhrzeit-/Zeitformat),
-damit Prompt-Caching stabil bleibt:
+Wenn die Benutzerzeitzone bekannt ist, enthält der System-Prompt einen eigenen
+Abschnitt **Aktuelles Datum und aktuelle Uhrzeit** mit **nur der Zeitzone** (kein Uhr-/Zeitformat),
+um das Prompt-Caching stabil zu halten:
 
 ```
 Time zone: America/Chicago
 ```
 
-Wenn der Agent die aktuelle Uhrzeit benötigt, verwenden Sie das Tool `session_status`; die Statuskarte
-enthält eine Zeitstempelzeile.
+Wenn der Agent die aktuelle Uhrzeit benötigt, verwenden Sie das Tool `session_status`; die Statuskarte enthält eine Zeitstempelzeile.
 
-## System-Event-Zeilen (standardmäßig lokal)
+## Systemereigniszeilen (standardmäßig lokal)
 
-In den Agent-Kontext eingefügte System-Events in der Warteschlange werden mit einem Zeitstempel präfixiert, der dieselbe
-Zeitzonenauswahl wie Nachrichten-Envelopes verwendet (Standard: Host-lokal).
+In den Agent-Kontext eingefügte Systemereignisse in der Warteschlange erhalten als Präfix einen Zeitstempel mit derselben Zeitzonenauswahl wie Nachrichtenumschläge (Standard: hostlokal).
 
 ```
 System: [2026-01-12 12:19:17 PST] Model switched.
 ```
 
-### Zeitzone des Benutzers + Format konfigurieren
+### Benutzerzeitzone + Format konfigurieren
 
 ```json5
 {
@@ -104,23 +100,21 @@ System: [2026-01-12 12:19:17 PST] Model switched.
 }
 ```
 
-- `userTimezone` setzt die **benutzerlokale Zeitzone** für den Prompt-Kontext.
-- `timeFormat` steuert die **12h-/24h-Anzeige** im Prompt. `auto` folgt den OS-Einstellungen.
+- `userTimezone` legt die **benutzerlokale Zeitzone** für den Prompt-Kontext fest.
+- `timeFormat` steuert die **12h-/24h-Anzeige** im Prompt. `auto` folgt den Betriebssystemeinstellungen.
 
-## Erkennung des Zeitformats (auto)
+## Zeitformaterkennung (auto)
 
-Wenn `timeFormat: "auto"` gesetzt ist, prüft OpenClaw die OS-Präferenz (macOS/Windows)
-und fällt auf lokalisierte Formatierung zurück. Der erkannte Wert wird **pro Prozess zwischengespeichert**,
-um wiederholte Systemaufrufe zu vermeiden.
+Bei `timeFormat: "auto"` prüft OpenClaw die Betriebssystemeinstellung (macOS/Windows) und fällt auf die Locale-Formatierung zurück. Der erkannte Wert wird **pro Prozess zwischengespeichert**, um wiederholte Systemaufrufe zu vermeiden.
 
-## Tool-Nutzlasten + Connectors (rohe Provider-Zeit + normalisierte Felder)
+## Tool-Payloads + Connectors (rohe Provider-Zeit + normalisierte Felder)
 
-Kanal-Tools geben **Providereigene Zeitstempel** zurück und fügen zur Konsistenz normalisierte Felder hinzu:
+Channel-Tools geben **Provider-native Zeitstempel** zurück und fügen zur Konsistenz normalisierte Felder hinzu:
 
 - `timestampMs`: Epoch-Millisekunden (UTC)
 - `timestampUtc`: ISO-8601-UTC-String
 
-Rohe Provider-Felder bleiben erhalten, sodass nichts verloren geht.
+Rohe Provider-Felder bleiben erhalten, damit nichts verloren geht.
 
 - Slack: epochähnliche Strings aus der API
 - Discord: UTC-ISO-Zeitstempel

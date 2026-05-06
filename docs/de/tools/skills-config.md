@@ -1,20 +1,20 @@
 ---
 read_when:
-    - Hinzufügen oder Ändern der Skills-Konfiguration
-    - Anpassen von gebündelter Allowlist oder Installationsverhalten
-summary: Konfigurationsschema und Beispiele für Skills
+    - Skills-Konfiguration hinzufügen oder ändern
+    - Anpassen der gebündelten Allowlist oder des Installationsverhaltens
+summary: Skills-Konfigurationsschema und Beispiele
 title: Skills-Konfiguration
 x-i18n:
-    generated_at: "2026-04-24T07:05:06Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T07:07:01Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 4d5e156adb9b88d7ade1976005c11faffe5107661e4f3da5d878cc0ac648bcbb
+    source_hash: 8996b3df73a9f0176b541c5d3f9670615f9a879a41838cf5d35d0a455e9f5088
     source_path: tools/skills-config.md
-    workflow: 15
+    workflow: 16
 ---
 
-Die meiste Konfiguration für Laden/Installieren von Skills liegt unter `skills` in
-`~/.openclaw/openclaw.json`. Agentenspezifische Sichtbarkeit von Skills liegt unter
+Die meiste Konfiguration für das Laden/Installieren von Skills befindet sich unter `skills` in
+`~/.openclaw/openclaw.json`. Agent-spezifische Sichtbarkeit von Skills befindet sich unter
 `agents.defaults.skills` und `agents.list[].skills`.
 
 ```json5
@@ -28,12 +28,12 @@ Die meiste Konfiguration für Laden/Installieren von Skills liegt unter `skills`
     },
     install: {
       preferBrew: true,
-      nodeManager: "npm", // npm | pnpm | yarn | bun (Gateway-Laufzeit bleibt Node; bun wird nicht empfohlen)
+      nodeManager: "npm", // npm | pnpm | yarn | bun (Gateway runtime still Node; bun not recommended)
     },
     entries: {
       "image-lab": {
         enabled: true,
-        apiKey: { source: "env", provider: "default", id: "GEMINI_API_KEY" }, // oder Klartext-Zeichenfolge
+        apiKey: { source: "env", provider: "default", id: "GEMINI_API_KEY" }, // or plaintext string
         env: {
           GEMINI_API_KEY: "GEMINI_KEY_HERE",
         },
@@ -46,11 +46,11 @@ Die meiste Konfiguration für Laden/Installieren von Skills liegt unter `skills`
 ```
 
 Für integrierte Bildgenerierung/-bearbeitung bevorzugen Sie `agents.defaults.imageGenerationModel`
-plus das Core-Tool `image_generate`. `skills.entries.*` ist nur für benutzerdefinierte oder
-Drittanbieter-Workflows mit Skills gedacht.
+zusammen mit dem Core-Tool `image_generate`. `skills.entries.*` ist nur für benutzerdefinierte oder
+Drittanbieter-Skill-Workflows vorgesehen.
 
-Wenn Sie einen bestimmten Bild-Provider/ein bestimmtes Bildmodell auswählen, konfigurieren Sie außerdem
-Auth/API key dieses Providers. Typische Beispiele: `GEMINI_API_KEY` oder `GOOGLE_API_KEY` für
+Wenn Sie einen bestimmten Bild-Provider/ein bestimmtes Modell auswählen, konfigurieren Sie auch den
+Auth-/API-Schlüssel dieses Providers. Typische Beispiele: `GEMINI_API_KEY` oder `GOOGLE_API_KEY` für
 `google/*`, `OPENAI_API_KEY` für `openai/*` und `FAL_KEY` für `fal/*`.
 
 Beispiele:
@@ -60,8 +60,8 @@ Beispiele:
 
 ## Agent-Skill-Allowlists
 
-Verwenden Sie die Agenten-Konfiguration, wenn Sie dieselben Skill-Roots für Maschine/Workspace wollen, aber
-pro Agent unterschiedliche sichtbare Skill-Sets.
+Verwenden Sie die Agent-Konfiguration, wenn Sie dieselben Skill-Wurzeln für Maschine/Workspace möchten, aber
+pro Agent einen anderen sichtbaren Skill-Satz.
 
 ```json5
 {
@@ -70,9 +70,9 @@ pro Agent unterschiedliche sichtbare Skill-Sets.
       skills: ["github", "weather"],
     },
     list: [
-      { id: "writer" }, // erbt Standardwerte -> github, weather
-      { id: "docs", skills: ["docs-search"] }, // ersetzt Standardwerte
-      { id: "locked-down", skills: [] }, // keine Skills
+      { id: "writer" }, // inherits defaults -> github, weather
+      { id: "docs", skills: ["docs-search"] }, // replaces defaults
+      { id: "locked-down", skills: [] }, // no skills
     ],
   },
 }
@@ -80,65 +80,77 @@ pro Agent unterschiedliche sichtbare Skill-Sets.
 
 Regeln:
 
-- `agents.defaults.skills`: gemeinsame Basis-Allowlist für Agenten, die
-  `agents.list[].skills` weglassen.
-- Lassen Sie `agents.defaults.skills` weg, um Skills standardmäßig unbeschränkt zu lassen.
-- `agents.list[].skills`: explizites finales Skill-Set für diesen Agenten; es
-  wird nicht mit Standardwerten zusammengeführt.
-- `agents.list[].skills: []`: für diesen Agenten keine Skills verfügbar machen.
+- `agents.defaults.skills`: gemeinsame Basis-Allowlist für Agents, die
+  `agents.list[].skills` auslassen.
+- Lassen Sie `agents.defaults.skills` weg, damit Skills standardmäßig uneingeschränkt bleiben.
+- `agents.list[].skills`: expliziter endgültiger Skill-Satz für diesen Agent; er wird nicht
+  mit den Defaults zusammengeführt.
+- `agents.list[].skills: []`: keine Skills für diesen Agent sichtbar machen.
 
 ## Felder
 
-- Integrierte Skill-Roots umfassen immer `~/.openclaw/skills`, `~/.agents/skills`,
+- Integrierte Skill-Wurzeln enthalten immer `~/.openclaw/skills`, `~/.agents/skills`,
   `<workspace>/.agents/skills` und `<workspace>/skills`.
 - `allowBundled`: optionale Allowlist nur für **gebündelte** Skills. Wenn gesetzt, sind nur
-  gebündelte Skills aus der Liste zulässig (verwaltete, Agent- und Workspace-Skills bleiben unberührt).
-- `load.extraDirs`: zusätzliche Skill-Verzeichnisse zum Scannen (niedrigste Priorität).
-- `load.watch`: Skill-Ordner überwachen und den Skills-Snapshot aktualisieren (Standard: true).
-- `load.watchDebounceMs`: Debounce für Skill-Watcher-Ereignisse in Millisekunden (Standard: 250).
-- `install.preferBrew`: bevorzugt, wenn verfügbar, Installer über brew (Standard: true).
-- `install.nodeManager`: Präferenz für Node-Installer (`npm` | `pnpm` | `yarn` | `bun`, Standard: npm).
-  Dies betrifft nur **Skill-Installationen**; die Gateway-Laufzeit sollte weiterhin Node
-  sein (Bun wird für WhatsApp/Telegram nicht empfohlen).
-  - `openclaw setup --node-manager` ist enger und akzeptiert derzeit `npm`,
+  gebündelte Skills in der Liste zulässig (verwaltete, Agent- und Workspace-Skills bleiben unberührt).
+- `load.extraDirs`: zusätzliche Skill-Verzeichnisse, die gescannt werden sollen (niedrigste Priorität).
+- `load.watch`: Skill-Ordner beobachten und den Skills-Snapshot aktualisieren (Standard: true).
+- `load.watchDebounceMs`: Entprellung für Skill-Watcher-Ereignisse in Millisekunden (Standard: 250).
+- `install.preferBrew`: brew-Installer bevorzugen, wenn verfügbar (Standard: true).
+- `install.nodeManager`: Node-Installer-Präferenz (`npm` | `pnpm` | `yarn` | `bun`, Standard: npm).
+  Dies betrifft nur **Skill-Installationen**; die Gateway-Laufzeit sollte weiterhin Node sein
+  (Bun wird für WhatsApp/Telegram nicht empfohlen).
+  - `openclaw setup --node-manager` ist enger gefasst und akzeptiert derzeit `npm`,
     `pnpm` oder `bun`. Setzen Sie `skills.install.nodeManager: "yarn"` manuell, wenn Sie
     Yarn-gestützte Skill-Installationen möchten.
 - `entries.<skillKey>`: Überschreibungen pro Skill.
-- `agents.defaults.skills`: optionale Standard-Skill-Allowlist, die von Agenten geerbt wird,
-  die `agents.list[].skills` weglassen.
-- `agents.list[].skills`: optionale finale Skill-Allowlist pro Agent; explizite
-  Listen ersetzen geerbte Standardwerte, statt sie zusammenzuführen.
+- `agents.defaults.skills`: optionale Standard-Skill-Allowlist, die von Agents geerbt wird,
+  die `agents.list[].skills` auslassen.
+- `agents.list[].skills`: optionale endgültige Skill-Allowlist pro Agent; explizite
+  Listen ersetzen geerbte Defaults, statt sie zusammenzuführen.
 
 Felder pro Skill:
 
-- `enabled`: auf `false` setzen, um einen Skill zu deaktivieren, auch wenn er gebündelt/installiert ist.
-- `env`: Umgebungsvariablen, die für den Agentenlauf injiziert werden (nur wenn noch nicht gesetzt).
-- `apiKey`: optionale Komfortfunktion für Skills, die eine primäre Env-Variable deklarieren.
-  Unterstützt Klartext-Zeichenfolge oder SecretRef-Objekt (`{ source, provider, id }`).
+- `enabled`: auf `false` setzen, um einen Skill zu deaktivieren, selbst wenn er gebündelt/installiert ist.
+- `env`: Umgebungsvariablen, die für den Agent-Lauf injiziert werden (nur wenn noch nicht gesetzt).
+- `apiKey`: optionale Komfortfunktion für Skills, die eine primäre Umgebungsvariable deklarieren.
+  Unterstützt Klartext-String oder SecretRef-Objekt (`{ source, provider, id }`).
 
 ## Hinweise
 
 - Schlüssel unter `entries` werden standardmäßig dem Skill-Namen zugeordnet. Wenn ein Skill
   `metadata.openclaw.skillKey` definiert, verwenden Sie stattdessen diesen Schlüssel.
-- Die Ladepriorität ist `<workspace>/skills` → `<workspace>/.agents/skills` →
+- Ladereihenfolge ist `<workspace>/skills` → `<workspace>/.agents/skills` →
   `~/.agents/skills` → `~/.openclaw/skills` → gebündelte Skills →
   `skills.load.extraDirs`.
-- Änderungen an Skills werden beim nächsten Agent-Durchlauf übernommen, wenn der Watcher aktiviert ist.
+- Änderungen an Skills werden beim nächsten Agent-Turn übernommen, wenn der Watcher aktiviert ist.
 
-### Sandboxed Skills + Env-Variablen
+### Sandboxed Skills und Umgebungsvariablen
 
-Wenn eine Sitzung **sandboxed** ist, laufen Skill-Prozesse innerhalb des konfigurierten
-Sandbox-Backends. Die Sandbox erbt **nicht** die Host-`process.env`.
+Wenn eine Sitzung **sandboxed** ist, laufen Skill-Prozesse innerhalb des konfigurierten Sandbox-Backends. Die Sandbox erbt **nicht** das Host-`process.env`.
 
-Verwenden Sie eines von:
+<Warning>
+  Globale `env` und `skills.entries.<skill>.env`/`apiKey` gelten nur für **Host**-Läufe. Innerhalb einer Sandbox haben sie keine Wirkung, daher schlägt ein Skill, der von `GEMINI_API_KEY` abhängt, mit `apiKey not configured` fehl, sofern die Variable der Sandbox nicht separat bereitgestellt wird.
+</Warning>
 
-- `agents.defaults.sandbox.docker.env` für das Docker-Backend (oder pro Agent `agents.list[].sandbox.docker.env`)
-- die Env in Ihr benutzerdefiniertes Sandbox-Image oder in die Remote-Sandbox-Umgebung einbacken
+Verwenden Sie eine der folgenden Optionen:
 
-Globales `env` und `skills.entries.<skill>.env/apiKey` gelten nur für **Host**-Läufe.
+- `agents.defaults.sandbox.docker.env` für das Docker-Backend (oder pro Agent `agents.list[].sandbox.docker.env`).
+- Backen Sie die Umgebungsvariable in Ihr benutzerdefiniertes Sandbox-Image oder Ihre Remote-Sandbox-Umgebung ein.
 
 ## Verwandt
 
-- [Skills](/de/tools/skills)
-- [Creating skills](/de/tools/creating-skills)
-- [Slash commands](/de/tools/slash-commands)
+<CardGroup cols={2}>
+  <Card title="Skills" href="/de/tools/skills" icon="puzzle-piece">
+    Was Skills sind und wie sie geladen werden.
+  </Card>
+  <Card title="Creating skills" href="/de/tools/creating-skills" icon="hammer">
+    Benutzerdefinierte Skill-Packs erstellen.
+  </Card>
+  <Card title="Slash commands" href="/de/tools/slash-commands" icon="terminal">
+    Nativer Befehlskatalog und Chat-Anweisungen.
+  </Card>
+  <Card title="Configuration reference" href="/de/gateway/configuration-reference" icon="gear">
+    Vollständiges Schema für `skills` und `agents.skills`.
+  </Card>
+</CardGroup>
