@@ -1,15 +1,15 @@
 ---
 read_when:
-    - Quieres indexar o buscar en la memoria semántica
-    - Estás depurando la disponibilidad de memoria o la indexación
+    - Desea indexar o buscar en la memoria semántica
+    - Estás depurando la disponibilidad de la memoria o la indexación
     - Quieres promover la memoria a corto plazo recuperada a `MEMORY.md`
 summary: Referencia de CLI para `openclaw memory` (status/index/search/promote/promote-explain/rem-harness)
 title: Memoria
 x-i18n:
-    generated_at: "2026-05-03T21:28:38Z"
+    generated_at: "2026-05-06T17:53:36Z"
     model: gpt-5.5
     provider: openai
-    source_hash: a33b848272c8853dd1a83e942124f0df30e096312e58a395c0ea08058e41f8fe
+    source_hash: 7137f8a9529095204699de5fee7a0baf5d5a377792dc93b4059145d0eefab737
     source_path: cli/memory.md
     workflow: 16
 ---
@@ -17,7 +17,7 @@ x-i18n:
 # `openclaw memory`
 
 Gestiona la indexación y búsqueda de memoria semántica.
-Proporcionado por el plugin de memoria activa (predeterminado: `memory-core`; establece `plugins.slots.memory = "none"` para deshabilitarlo).
+Proporcionado por el Plugin de Active Memory (predeterminado: `memory-core`; define `plugins.slots.memory = "none"` para deshabilitarlo).
 
 Relacionado:
 
@@ -53,17 +53,17 @@ openclaw memory index --agent main --verbose
 
 `memory status` y `memory index`:
 
-- `--agent <id>`: limita el alcance a un solo agente. Sin esta opción, estos comandos se ejecutan para cada agente configurado; si no hay una lista de agentes configurada, recurren al agente predeterminado.
-- `--verbose`: emite registros detallados durante las comprobaciones y la indexación.
+- `--agent <id>`: limita el alcance a un solo agente. Sin esta opción, estos comandos se ejecutan para cada agente configurado; si no hay ninguna lista de agentes configurada, recurren al agente predeterminado.
+- `--verbose`: emite registros detallados durante los sondeos y la indexación.
 
 `memory status`:
 
-- `--deep`: comprueba la preparación del almacén vectorial local, la preparación del proveedor de incrustaciones y la preparación de la búsqueda vectorial semántica. `memory status` simple se mantiene rápido y no ejecuta trabajo de incrustaciones en vivo ni de detección de proveedores; un estado desconocido del almacén vectorial o del vector semántico significa que no se comprobó en ese comando. `searchMode: "search"` léxico de QMD omite las comprobaciones de vectores semánticos y el mantenimiento de incrustaciones incluso con `--deep`.
+- `--deep`: sondea la preparación del almacén vectorial local, la preparación del proveedor de embeddings y la preparación de la búsqueda vectorial semántica. `memory status` simple se mantiene rápido y no ejecuta trabajo de embeddings en vivo ni de descubrimiento de proveedores; un estado desconocido del almacén vectorial o del vector semántico significa que no se sondeó en ese comando. El `searchMode: "search"` léxico de QMD omite los sondeos de vectores semánticos y el mantenimiento de embeddings incluso con `--deep`.
 - `--index`: ejecuta una reindexación si el almacén está sucio (implica `--deep`).
 - `--fix`: repara bloqueos de recuperación obsoletos y normaliza los metadatos de promoción.
-- `--json`: imprime salida JSON.
+- `--json`: imprime la salida JSON.
 
-Si `memory status` muestra `Dreaming status: blocked`, el cron gestionado de Dreaming está habilitado, pero el Heartbeat que lo impulsa no se está ejecutando para el agente predeterminado. Consulta [Dreaming nunca se ejecuta](/es/concepts/dreaming#dreaming-never-runs-status-shows-blocked) para ver las dos causas habituales.
+Si `memory status` muestra `Dreaming status: blocked`, el cron gestionado de Dreaming está habilitado, pero el Heartbeat que lo impulsa no se está activando para el agente predeterminado. Consulta [Dreaming nunca se ejecuta](/es/concepts/dreaming#dreaming-never-runs-status-shows-blocked) para ver las dos causas comunes.
 
 `memory index`:
 
@@ -72,11 +72,11 @@ Si `memory status` muestra `Dreaming status: blocked`, el cron gestionado de Dre
 `memory search`:
 
 - Entrada de consulta: pasa `[query]` posicional o `--query <text>`.
-- Si se proporcionan ambas, `--query` tiene prioridad.
-- Si no se proporciona ninguna, el comando sale con un error.
+- Si se proporcionan ambos, `--query` tiene prioridad.
+- Si no se proporciona ninguno, el comando sale con un error.
 - `--agent <id>`: limita el alcance a un solo agente (predeterminado: el agente predeterminado).
-- `--max-results <n>`: limita el número de resultados devueltos.
-- `--min-score <n>`: filtra las coincidencias de baja puntuación.
+- `--max-results <n>`: limita la cantidad de resultados devueltos.
+- `--min-score <n>`: filtra las coincidencias con puntuación baja.
 - `--json`: imprime resultados JSON.
 
 `memory promote`:
@@ -88,35 +88,35 @@ openclaw memory promote [--apply] [--limit <n>] [--include-promoted]
 ```
 
 - `--apply` -- escribe promociones en `MEMORY.md` (predeterminado: solo vista previa).
-- `--limit <n>` -- limita el número de candidatos mostrados.
-- `--include-promoted` -- incluye entradas ya promocionadas en ciclos anteriores.
+- `--limit <n>` -- limita la cantidad de candidatos mostrados.
+- `--include-promoted` -- incluye entradas ya promovidas en ciclos anteriores.
 
 Opciones completas:
 
-- Clasifica candidatos a corto plazo de `memory/YYYY-MM-DD.md` usando señales de promoción ponderadas (`frequency`, `relevance`, `query diversity`, `recency`, `consolidation`, `conceptual richness`).
-- Usa señales a corto plazo tanto de recuperaciones de memoria como de pasadas de ingesta diaria, además de señales de refuerzo de fases ligera/REM.
-- Cuando Dreaming está habilitado, `memory-core` gestiona automáticamente un trabajo de Cron que ejecuta un barrido completo (`light -> REM -> deep`) en segundo plano (no se requiere `openclaw cron add` manual).
+- Clasifica candidatos a corto plazo desde `memory/YYYY-MM-DD.md` usando señales ponderadas de promoción (`frequency`, `relevance`, `query diversity`, `recency`, `consolidation`, `conceptual richness`).
+- Usa señales a corto plazo tanto de recuperaciones de memoria como de pasadas de ingestión diaria, además de señales de refuerzo de fases ligera/REM.
+- Cuando Dreaming está habilitado, `memory-core` gestiona automáticamente una tarea Cron que ejecuta un barrido completo (`light -> REM -> deep`) en segundo plano (no se requiere `openclaw cron add` manual).
 - `--agent <id>`: limita el alcance a un solo agente (predeterminado: el agente predeterminado).
-- `--limit <n>`: máximo de candidatos que devolver/aplicar.
-- `--min-score <n>`: puntuación de promoción ponderada mínima.
-- `--min-recall-count <n>`: recuento mínimo de recuperaciones requerido para un candidato.
-- `--min-unique-queries <n>`: recuento mínimo de consultas distintas requerido para un candidato.
-- `--apply`: anexa los candidatos seleccionados a `MEMORY.md` y los marca como promocionados.
-- `--include-promoted`: incluye candidatos ya promocionados en la salida.
-- `--json`: imprime salida JSON.
+- `--limit <n>`: cantidad máxima de candidatos para devolver/aplicar.
+- `--min-score <n>`: puntuación ponderada mínima de promoción.
+- `--min-recall-count <n>`: cantidad mínima de recuperaciones requerida para un candidato.
+- `--min-unique-queries <n>`: cantidad mínima de consultas distintas requerida para un candidato.
+- `--apply`: añade los candidatos seleccionados a `MEMORY.md` y los marca como promovidos.
+- `--include-promoted`: incluye candidatos ya promovidos en la salida.
+- `--json`: imprime la salida JSON.
 
 `memory promote-explain`:
 
-Explica un candidato de promoción específico y el desglose de su puntuación.
+Explica un candidato específico de promoción y el desglose de su puntuación.
 
 ```bash
 openclaw memory promote-explain <selector> [--agent <id>] [--include-promoted] [--json]
 ```
 
-- `<selector>`: clave de candidato, fragmento de ruta o fragmento de texto que buscar.
+- `<selector>`: clave de candidato, fragmento de ruta o fragmento de texto para buscar.
 - `--agent <id>`: limita el alcance a un solo agente (predeterminado: el agente predeterminado).
-- `--include-promoted`: incluye candidatos ya promocionados.
-- `--json`: imprime salida JSON.
+- `--include-promoted`: incluye candidatos ya promovidos.
+- `--json`: imprime la salida JSON.
 
 `memory rem-harness`:
 
@@ -127,21 +127,21 @@ openclaw memory rem-harness [--agent <id>] [--include-promoted] [--json]
 ```
 
 - `--agent <id>`: limita el alcance a un solo agente (predeterminado: el agente predeterminado).
-- `--include-promoted`: incluye candidatos profundos ya promocionados.
-- `--json`: imprime salida JSON.
+- `--include-promoted`: incluye candidatos profundos ya promovidos.
+- `--json`: imprime la salida JSON.
 
 ## Dreaming
 
-Dreaming es el sistema de consolidación de memoria en segundo plano con tres fases cooperativas: **ligera** (ordenar/preparar material a corto plazo), **profunda** (promocionar hechos duraderos a `MEMORY.md`) y **REM** (reflexionar y mostrar temas).
+Dreaming es el sistema de consolidación de memoria en segundo plano con tres fases cooperativas: **ligera** (ordenar/preparar material a corto plazo), **profunda** (promover hechos duraderos a `MEMORY.md`) y **REM** (reflexionar y sacar temas a la superficie).
 
 - Habilítalo con `plugins.entries.memory-core.config.dreaming.enabled: true`.
 - Actívalo o desactívalo desde el chat con `/dreaming on|off` (o inspecciónalo con `/dreaming status`).
-- Dreaming se ejecuta con una programación de barrido gestionada (`dreaming.frequency`) y ejecuta las fases en orden: ligera, REM, profunda.
+- Dreaming se ejecuta en una programación de barrido gestionada (`dreaming.frequency`) y ejecuta las fases en orden: ligera, REM, profunda.
 - Solo la fase profunda escribe memoria duradera en `MEMORY.md`.
-- La salida de fases legible por humanos y las entradas de diario se escriben en `DREAMS.md` (o en el `dreams.md` existente), con informes opcionales por fase en `memory/dreaming/<phase>/YYYY-MM-DD.md`.
-- La clasificación usa señales ponderadas: frecuencia de recuperación, relevancia de recuperación, diversidad de consultas, recencia temporal, consolidación entre días y riqueza conceptual derivada.
-- La promoción vuelve a leer la nota diaria en vivo antes de escribir en `MEMORY.md`, de modo que los fragmentos a corto plazo editados o eliminados no se promocionan a partir de instantáneas obsoletas del almacén de recuperación.
-- Las ejecuciones programadas y manuales de `memory promote` comparten los mismos valores predeterminados de fase profunda salvo que pases sobrescrituras de umbral de CLI.
+- La salida de fase legible por humanos y las entradas de diario se escriben en `DREAMS.md` (o en el `dreams.md` existente), con informes opcionales por fase en `memory/dreaming/<phase>/YYYY-MM-DD.md`.
+- La clasificación usa señales ponderadas: frecuencia de recuperación, relevancia de recuperación, diversidad de consultas, actualidad temporal, consolidación entre días y riqueza conceptual derivada.
+- La promoción vuelve a leer la nota diaria en vivo antes de escribir en `MEMORY.md`, por lo que los fragmentos a corto plazo editados o eliminados no se promueven desde instantáneas obsoletas del almacén de recuperación.
+- Las ejecuciones programadas y manuales de `memory promote` comparten los mismos valores predeterminados de la fase profunda, a menos que pases reemplazos de umbral por CLI.
 - Las ejecuciones automáticas se distribuyen entre los espacios de trabajo de memoria configurados.
 
 Programación predeterminada:
@@ -171,14 +171,14 @@ Notas:
 
 - `memory index --verbose` imprime detalles por fase (proveedor, modelo, fuentes, actividad por lotes).
 - `memory status` incluye cualquier ruta adicional configurada mediante `memorySearch.extraPaths`.
-- Si los campos de clave de API remota de memoria activa efectiva están configurados como SecretRefs, el comando resuelve esos valores desde la instantánea activa de Gateway. Si Gateway no está disponible, el comando falla rápido.
-- Nota sobre desfase de versión de Gateway: esta ruta de comando requiere un Gateway que admita `secrets.resolve`; los gateways más antiguos devuelven un error de método desconocido.
-- Ajusta la cadencia de barrido programada con `dreaming.frequency`. La política de promoción profunda es, por lo demás, interna; usa las banderas de CLI en `memory promote` cuando necesites sobrescrituras manuales puntuales.
-- `memory rem-harness --path <file-or-dir> --grounded` previsualiza `What Happened`, `Reflections` y `Possible Lasting Updates` fundamentados a partir de notas diarias históricas sin escribir nada.
+- Si los campos de claves de API remota de Active Memory efectivamente activos están configurados como SecretRefs, el comando resuelve esos valores desde la instantánea activa del Gateway. Si el Gateway no está disponible, el comando falla rápidamente.
+- Nota sobre desfase de versión del Gateway: esta ruta de comando requiere un Gateway compatible con `secrets.resolve`; los gateways más antiguos devuelven un error de método desconocido.
+- Ajusta la cadencia del barrido programado con `dreaming.frequency`. La política de promoción profunda es interna en otros aspectos; usa marcas de CLI en `memory promote` cuando necesites reemplazos manuales puntuales.
+- `memory rem-harness --path <file-or-dir> --grounded` previsualiza `What Happened`, `Reflections` y `Possible Lasting Updates` fundamentados desde notas diarias históricas sin escribir nada.
 - `memory rem-backfill --path <file-or-dir>` escribe entradas de diario fundamentadas reversibles en `DREAMS.md` para revisión en la UI.
-- `memory rem-backfill --path <file-or-dir> --stage-short-term` también siembra candidatos duraderos fundamentados en el almacén de promoción a corto plazo en vivo para que la fase profunda normal pueda clasificarlos.
-- `memory rem-backfill --rollback` elimina entradas de diario fundamentadas escritas anteriormente, y `memory rem-backfill --rollback-short-term` elimina candidatos fundamentados a corto plazo preparados anteriormente.
-- Consulta [Dreaming](/es/concepts/dreaming) para ver descripciones completas de fases y la referencia de configuración.
+- `memory rem-backfill --path <file-or-dir> --stage-short-term` también inicializa candidatos duraderos fundamentados en el almacén activo de promoción a corto plazo para que la fase profunda normal pueda clasificarlos.
+- `memory rem-backfill --rollback` elimina entradas de diario fundamentadas escritas previamente, y `memory rem-backfill --rollback-short-term` elimina candidatos fundamentados a corto plazo preparados previamente.
+- Consulta [Dreaming](/es/concepts/dreaming) para ver descripciones completas de las fases y la referencia de configuración.
 
 ## Relacionado
 

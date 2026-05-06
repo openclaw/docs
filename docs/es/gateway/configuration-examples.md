@@ -3,13 +3,13 @@ read_when:
     - Aprender a configurar OpenClaw
     - Buscando ejemplos de configuración
     - Configurar OpenClaw por primera vez
-summary: Ejemplos de configuración conformes al esquema para configuraciones comunes de OpenClaw
+summary: Ejemplos de configuración precisos según el esquema para configuraciones comunes de OpenClaw
 title: Ejemplos de configuración
 x-i18n:
-    generated_at: "2026-05-04T02:23:58Z"
+    generated_at: "2026-05-06T17:55:33Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 60c8c2d731f8dce93c4d14657041d72043bc36e3d71ab6cb13c02993ba90dbe3
+    source_hash: 01dd16c73f1156c4012fd3956083062141825b502722b6aa34f1f90462a6823a
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
@@ -27,7 +27,7 @@ Los ejemplos siguientes están alineados con el esquema de configuración actual
 }
 ```
 
-Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar un mensaje directo al bot desde ese número.
+Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar un DM al bot desde ese número.
 
 ### Inicio recomendado
 
@@ -473,7 +473,7 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar un mensaje directo al 
 
 ## Patrones comunes
 
-### Base de skill compartida con una sobrescritura
+### Base compartida de Skills con una anulación
 
 ```json5
 {
@@ -515,9 +515,9 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar un mensaje directo al 
 }
 ```
 
-### Aprobación automática de red de nodos de confianza
+### Aprobación automática de red Node de confianza
 
-Mantén el emparejamiento de dispositivos manual a menos que controles la ruta de red. Para un laboratorio dedicado o una subred tailnet, puedes optar por la aprobación automática de dispositivos de nodo por primera vez con CIDR o IP exactas:
+Mantén el emparejamiento de dispositivos manual a menos que controles la ruta de red. Para un laboratorio dedicado o una subred de tailnet, puedes habilitar la aprobación automática de dispositivos Node la primera vez con CIDR o IP exactos:
 
 ```json5
 {
@@ -531,11 +531,11 @@ Mantén el emparejamiento de dispositivos manual a menos que controles la ruta d
 }
 ```
 
-Esto permanece desactivado si no se configura. Solo se aplica al emparejamiento nuevo de `role: node` sin ámbitos solicitados. Los clientes de operador/navegador y las actualizaciones de rol, ámbito, metadatos o clave pública aún requieren aprobación manual.
+Esto permanece desactivado cuando no se configura. Solo se aplica al emparejamiento nuevo con `role: node` sin ámbitos solicitados. Los clientes de operador/navegador y las actualizaciones de rol, ámbito, metadatos o clave pública todavía requieren aprobación manual.
 
-### Modo de DM seguro (bandeja compartida / DM multiusuario)
+### Modo de DM seguro (bandeja de entrada compartida / DMs multiusuario)
 
-Si más de una persona puede enviar DM a tu bot (varias entradas en `allowFrom`, aprobaciones de emparejamiento para varias personas o `dmPolicy: "open"`), habilita el **modo de DM seguro** para que los DM de distintos remitentes no compartan un mismo contexto de forma predeterminada:
+Si más de una persona puede enviar DM a tu bot (varias entradas en `allowFrom`, aprobaciones de emparejamiento para varias personas o `dmPolicy: "open"`), habilita el **modo de DM seguro** para que los DM de distintos remitentes no compartan un único contexto de forma predeterminada:
 
 ```json5
 {
@@ -559,10 +559,10 @@ Si más de una persona puede enviar DM a tu bot (varias entradas en `allowFrom`,
 }
 ```
 
-Para Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, la autorización del remitente se basa primero en el ID de forma predeterminada.
+Para Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, la autorización de remitentes prioriza el ID de forma predeterminada.
 Habilita la coincidencia directa por nombre/correo electrónico/apodo mutable con `dangerouslyAllowNameMatching: true` de cada canal solo si aceptas explícitamente ese riesgo.
 
-### Clave de API de Anthropic + reserva MiniMax
+### Clave de API de Anthropic + respaldo de MiniMax
 
 ```json5
 {
@@ -656,7 +656,7 @@ Habilita la coincidencia directa por nombre/correo electrónico/apodo mutable co
 ## Consejos
 
 - Si configuras `dmPolicy: "open"`, la lista `allowFrom` correspondiente debe incluir `"*"`.
-- Los ID de proveedor difieren (números de teléfono, ID de usuario, ID de canal). Usa la documentación del proveedor para confirmar el formato.
+- Los ID de proveedor varían (números de teléfono, ID de usuario, ID de canal). Usa la documentación del proveedor para confirmar el formato.
 - Secciones opcionales para agregar más adelante: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
 - Consulta [Proveedores](/es/providers) y [Solución de problemas](/es/gateway/troubleshooting) para ver notas de configuración más detalladas.
 

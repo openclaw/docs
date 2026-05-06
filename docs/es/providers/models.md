@@ -1,26 +1,24 @@
 ---
 read_when:
-    - Desea elegir un proveedor de modelos
-    - Quieres ejemplos de configuración rápida para autenticación de LLM + selección de modelo
+    - Quieres elegir un proveedor de modelos
+    - Quieres ejemplos rápidos de configuración para autenticación de LLM + selección de modelos
 summary: Proveedores de modelos (LLM) compatibles con OpenClaw
 title: Inicio rápido del proveedor de modelos
 x-i18n:
-    generated_at: "2026-04-30T05:58:03Z"
+    generated_at: "2026-05-06T18:00:22Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3f71f9ab34df2b545128bfeed3cab82f31b741d4a66263113068568ce6b77cd6
+    source_hash: 7e95d37f3e332a9b2eb58a15dc356ad02b4cbf409926adb3faf1923825219887
     source_path: providers/models.md
     workflow: 16
 ---
 
-# Proveedores de modelos
-
-OpenClaw puede usar muchos proveedores de LLM. Elige uno, autentícate y luego establece el modelo predeterminado como `provider/model`.
+OpenClaw puede usar muchos proveedores de LLM. Elige uno, autentícate y luego configura el modelo predeterminado como `provider/model`.
 
 ## Inicio rápido (dos pasos)
 
 1. Autentícate con el proveedor (normalmente mediante `openclaw onboard`).
-2. Establece el modelo predeterminado:
+2. Configura el modelo predeterminado:
 
 ```json5
 {
@@ -59,14 +57,14 @@ OpenClaw puede usar muchos proveedores de LLM. Elige uno, autentícate y luego e
 
 ## Variantes adicionales de proveedores incluidas
 
-- `anthropic-vertex` - compatibilidad implícita con Anthropic en Google Vertex cuando las credenciales de Vertex están disponibles; sin opción independiente de autenticación durante la incorporación
+- `anthropic-vertex` - compatibilidad implícita de Anthropic en Google Vertex cuando las credenciales de Vertex están disponibles; no hay una opción de autenticación de incorporación separada
 - `copilot-proxy` - puente local de VS Code Copilot Proxy; usa `openclaw onboard --auth-choice copilot-proxy`
 - `google-gemini-cli` - flujo OAuth no oficial de Gemini CLI; requiere una instalación local de `gemini` (`brew install gemini-cli` o `npm install -g @google/gemini-cli`); modelo predeterminado `google-gemini-cli/gemini-3-flash-preview`; usa `openclaw onboard --auth-choice google-gemini-cli` o `openclaw models auth login --provider google-gemini-cli --set-default`
 
-Para ver el catálogo completo de proveedores (xAI, Groq, Mistral, etc.) y la configuración avanzada, consulta [Proveedores de modelos](/es/concepts/model-providers).
+Para ver el catálogo completo de proveedores (xAI, Groq, Mistral, etc.) y la configuración avanzada, consulta [proveedores de modelos](/es/concepts/model-providers).
 
 ## Relacionado
 
-- [Selección de modelos](/es/concepts/model-providers)
+- [Selección de modelo](/es/concepts/model-providers)
 - [Conmutación por error de modelos](/es/concepts/model-failover)
 - [CLI de modelos](/es/cli/models)

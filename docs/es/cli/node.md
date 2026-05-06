@@ -1,49 +1,49 @@
 ---
 read_when:
-    - Ejecutando el host Node sin interfaz
-    - Emparejar un Node que no sea macOS para `system.run`
-summary: Referencia de CLI para `openclaw node` (host Node sin interfaz)
+    - Ejecutar el host de Node sin interfaz gráfica
+    - Emparejamiento de un nodo no macOS para system.run
+summary: Referencia de CLI para `openclaw node` (host de Node sin interfaz)
 title: Node
 x-i18n:
-    generated_at: "2026-04-26T11:26:11Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T17:53:50Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 40f623b163a3c3bcd2d3ff218c5e62a4acba45f7e3f16694d8da62a004b77706
+    source_hash: af4735ac4961dc36fd3f11299eb3ec4e156835e7257b21a79bb1d4b467445faa
     source_path: cli/node.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw node`
 
-Ejecuta un **host Node sin interfaz** que se conecta al WebSocket del Gateway y expone
+Ejecuta un **host Node sin interfaz gráfica** que se conecta al WebSocket del Gateway y expone
 `system.run` / `system.which` en esta máquina.
 
 ## ¿Por qué usar un host Node?
 
 Usa un host Node cuando quieras que los agentes **ejecuten comandos en otras máquinas** de tu
-red sin instalar allí una app complementaria completa para macOS.
+red sin instalar allí una app complementaria completa de macOS.
 
 Casos de uso comunes:
 
-- Ejecutar comandos en máquinas Linux/Windows remotas (servidores de compilación, máquinas de laboratorio, NAS).
-- Mantener exec **en sandbox** en el Gateway, pero delegar ejecuciones aprobadas a otros hosts.
-- Proporcionar un destino de ejecución ligero y sin interfaz para automatización o nodos de CI.
+- Ejecutar comandos en equipos Linux/Windows remotos (servidores de compilación, máquinas de laboratorio, NAS).
+- Mantener la ejecución **en sandbox** en el Gateway, pero delegar ejecuciones aprobadas a otros hosts.
+- Proporcionar un destino de ejecución ligero y sin interfaz gráfica para automatización o nodos de CI.
 
-La ejecución sigue estando protegida por **aprobaciones de ejecución** y listas de permitidos por agente en el
+La ejecución sigue protegida por **aprobaciones de ejecución** y listas de permitidos por agente en el
 host Node, para que puedas mantener el acceso a comandos acotado y explícito.
 
-## Proxy del navegador (configuración cero)
+## Proxy de navegador (sin configuración)
 
-Los hosts Node anuncian automáticamente un proxy del navegador si `browser.enabled` no está
-deshabilitado en el nodo. Esto permite que el agente use automatización del navegador en ese nodo
+Los hosts Node anuncian automáticamente un proxy de navegador si `browser.enabled` no está
+deshabilitado en el Node. Esto permite que el agente use automatización de navegador en ese Node
 sin configuración adicional.
 
-De forma predeterminada, el proxy expone la superficie normal del perfil de navegador del nodo. Si
-estableces `nodeHost.browserProxy.allowProfiles`, el proxy pasa a ser restrictivo:
-se rechaza la selección de perfiles no incluidos en la lista de permitidos y se bloquean
-las rutas persistentes de creación/eliminación de perfiles a través del proxy.
+De forma predeterminada, el proxy expone la superficie normal del perfil de navegador del Node. Si
+configuras `nodeHost.browserProxy.allowProfiles`, el proxy se vuelve restrictivo:
+se rechaza la selección de perfiles que no estén en la lista de permitidos, y las rutas de
+creación/eliminación de perfiles persistentes se bloquean a través del proxy.
 
-Desactívalo en el nodo si es necesario:
+Deshabilítalo en el Node si es necesario:
 
 ```json5
 {
@@ -63,34 +63,34 @@ openclaw node run --host <gateway-host> --port 18789
 
 Opciones:
 
-- `--host <host>`: host del WebSocket del Gateway (predeterminado: `127.0.0.1`)
-- `--port <port>`: puerto del WebSocket del Gateway (predeterminado: `18789`)
-- `--tls`: usa TLS para la conexión al Gateway
-- `--tls-fingerprint <sha256>`: huella digital esperada del certificado TLS (sha256)
-- `--node-id <id>`: sobrescribe el id del nodo (borra el token de emparejamiento)
-- `--display-name <name>`: sobrescribe el nombre visible del nodo
+- `--host <host>`: host WebSocket del Gateway (predeterminado: `127.0.0.1`)
+- `--port <port>`: puerto WebSocket del Gateway (predeterminado: `18789`)
+- `--tls`: usar TLS para la conexión con el gateway
+- `--tls-fingerprint <sha256>`: huella esperada del certificado TLS (sha256)
+- `--node-id <id>`: sobrescribir el id de Node (borra el token de emparejamiento)
+- `--display-name <name>`: sobrescribir el nombre visible del Node
 
-## Autenticación del Gateway para host Node
+## Autenticación de Gateway para host Node
 
-`openclaw node run` y `openclaw node install` resuelven la autenticación del Gateway desde config/env (sin flags `--token`/`--password` en los comandos de nodo):
+`openclaw node run` y `openclaw node install` resuelven la autenticación del gateway desde config/env (sin flags `--token`/`--password` en los comandos de Node):
 
 - `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD` se comprueban primero.
-- Luego se usa el respaldo de configuración local: `gateway.auth.token` / `gateway.auth.password`.
-- En modo local, el host Node intencionalmente no hereda `gateway.remote.token` / `gateway.remote.password`.
-- Si `gateway.auth.token` / `gateway.auth.password` está configurado explícitamente mediante SecretRef y no se resuelve, la resolución de autenticación del nodo falla de forma cerrada (sin enmascaramiento por respaldo remoto).
-- En `gateway.mode=remote`, los campos del cliente remoto (`gateway.remote.token` / `gateway.remote.password`) también pueden usarse según las reglas de precedencia remota.
+- Luego se usa la configuración local como alternativa: `gateway.auth.token` / `gateway.auth.password`.
+- En modo local, el host Node no hereda intencionadamente `gateway.remote.token` / `gateway.remote.password`.
+- Si `gateway.auth.token` / `gateway.auth.password` está configurado explícitamente mediante SecretRef y no se puede resolver, la resolución de autenticación de Node falla de forma cerrada (sin enmascaramiento mediante alternativa remota).
+- En `gateway.mode=remote`, los campos de cliente remoto (`gateway.remote.token` / `gateway.remote.password`) también son elegibles según las reglas de precedencia remota.
 - La resolución de autenticación del host Node solo respeta las variables de entorno `OPENCLAW_GATEWAY_*`.
 
-Para un nodo que se conecte a un Gateway `ws://` no loopback en una red privada de confianza,
-establece `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1`. Sin ello, el inicio del nodo falla de forma cerrada
-y te pide usar `wss://`, un túnel SSH o Tailscale.
-Esta es una activación por entorno de proceso, no una clave de configuración de `openclaw.json`.
-`openclaw node install` la conserva en el servicio supervisado del nodo cuando está
+Para un Node que se conecta a un Gateway `ws://` que no es local loopback en una red privada
+de confianza, configura `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1`. Sin esto, el inicio del Node
+falla de forma cerrada y te pide usar `wss://`, un túnel SSH o Tailscale.
+Esta es una habilitación explícita del entorno del proceso, no una clave de configuración de `openclaw.json`.
+`openclaw node install` la persiste en el servicio supervisado del Node cuando está
 presente en el entorno del comando de instalación.
 
 ## Servicio (segundo plano)
 
-Instala un host Node sin interfaz como servicio de usuario.
+Instala un host Node sin interfaz gráfica como servicio de usuario.
 
 ```bash
 openclaw node install --host <gateway-host> --port 18789
@@ -98,14 +98,14 @@ openclaw node install --host <gateway-host> --port 18789
 
 Opciones:
 
-- `--host <host>`: host del WebSocket del Gateway (predeterminado: `127.0.0.1`)
-- `--port <port>`: puerto del WebSocket del Gateway (predeterminado: `18789`)
-- `--tls`: usa TLS para la conexión al Gateway
-- `--tls-fingerprint <sha256>`: huella digital esperada del certificado TLS (sha256)
-- `--node-id <id>`: sobrescribe el id del nodo (borra el token de emparejamiento)
-- `--display-name <name>`: sobrescribe el nombre visible del nodo
-- `--runtime <runtime>`: entorno de ejecución del servicio (`node` o `bun`)
-- `--force`: reinstala/sobrescribe si ya está instalado
+- `--host <host>`: host WebSocket del Gateway (predeterminado: `127.0.0.1`)
+- `--port <port>`: puerto WebSocket del Gateway (predeterminado: `18789`)
+- `--tls`: usar TLS para la conexión con el gateway
+- `--tls-fingerprint <sha256>`: huella esperada del certificado TLS (sha256)
+- `--node-id <id>`: sobrescribir el id de Node (borra el token de emparejamiento)
+- `--display-name <name>`: sobrescribir el nombre visible del Node
+- `--runtime <runtime>`: runtime del servicio (`node` o `bun`)
+- `--force`: reinstalar/sobrescribir si ya está instalado
 
 Gestiona el servicio:
 
@@ -121,10 +121,10 @@ Usa `openclaw node run` para un host Node en primer plano (sin servicio).
 
 Los comandos de servicio aceptan `--json` para salida legible por máquina.
 
-El host Node reintenta internamente los reinicios del Gateway y los cierres de red. Si el
+El host Node reintenta el reinicio del Gateway y los cierres de red dentro del proceso. Si el
 Gateway informa una pausa terminal de autenticación por token/contraseña/bootstrap, el host Node
-registra el detalle del cierre y sale con valor distinto de cero para que launchd/systemd pueda reiniciarlo con
-configuración y credenciales nuevas. Las pausas que requieren emparejamiento se mantienen en el flujo
+registra el detalle del cierre y sale con código distinto de cero para que launchd/systemd pueda reiniciarlo con
+configuración y credenciales nuevas. Las pausas que requieren emparejamiento permanecen en el flujo
 de primer plano para que la solicitud pendiente pueda aprobarse.
 
 ## Emparejamiento
@@ -137,8 +137,8 @@ openclaw devices list
 openclaw devices approve <requestId>
 ```
 
-En redes de nodos muy controladas, el operador del Gateway puede activar explícitamente
-la aprobación automática del primer emparejamiento de nodos desde CIDR de confianza:
+En redes de Node estrictamente controladas, el operador del Gateway puede habilitar explícitamente
+la aprobación automática del emparejamiento inicial de Node desde CIDR de confianza:
 
 ```json5
 {
@@ -152,29 +152,29 @@ la aprobación automática del primer emparejamiento de nodos desde CIDR de conf
 }
 ```
 
-Esto está deshabilitado de forma predeterminada. Solo se aplica al emparejamiento inicial `role: node` sin
-alcances solicitados. Los clientes operator/browser, Control UI, WebChat y las ampliaciones de rol,
-alcance, metadatos o clave pública siguen requiriendo aprobación manual.
+Esto está deshabilitado de forma predeterminada. Solo se aplica al emparejamiento nuevo con `role: node`
+sin ámbitos solicitados. Los clientes de operador/navegador, Control UI, WebChat y las actualizaciones de rol,
+ámbito, metadatos o clave pública siguen requiriendo aprobación manual.
 
-Si el nodo vuelve a intentar el emparejamiento con detalles de autenticación cambiados (rol/alcances/clave pública),
+Si el Node reintenta el emparejamiento con detalles de autenticación cambiados (rol/ámbitos/clave pública),
 la solicitud pendiente anterior se reemplaza y se crea un nuevo `requestId`.
-Vuelve a ejecutar `openclaw devices list` antes de aprobar.
+Ejecuta `openclaw devices list` de nuevo antes de aprobar.
 
-El host Node almacena su id de nodo, token, nombre visible e información de conexión al gateway en
+El host Node almacena su id de Node, token, nombre visible e información de conexión del gateway en
 `~/.openclaw/node.json`.
 
 ## Aprobaciones de ejecución
 
-`system.run` está protegido por aprobaciones locales de ejecución:
+`system.run` está controlado por aprobaciones de ejecución locales:
 
 - `~/.openclaw/exec-approvals.json`
 - [Aprobaciones de ejecución](/es/tools/exec-approvals)
 - `openclaw approvals --node <id|name|ip>` (editar desde el Gateway)
 
-Para ejecución asíncrona aprobada en Node, OpenClaw prepara un `systemRunPlan`
-canónico antes de solicitar aprobación. El reenvío `system.run` aprobado posterior reutiliza ese
-plan almacenado, por lo que las ediciones de los campos command/cwd/session después de que se haya
-creado la solicitud de aprobación se rechazan en lugar de cambiar lo que ejecuta el nodo.
+Para la ejecución async aprobada en Node, OpenClaw prepara un `systemRunPlan`
+canónico antes de solicitar confirmación. El posterior reenvío aprobado de `system.run` reutiliza ese
+plan almacenado, por lo que las ediciones a los campos de comando/cwd/sesión después de que se haya creado la solicitud de aprobación
+se rechazan en lugar de cambiar lo que ejecuta el Node.
 
 ## Relacionado
 
