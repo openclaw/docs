@@ -1,22 +1,22 @@
 ---
 read_when: You hit 'sandbox jail' or see a tool/elevated refusal and want the exact config key to change.
 status: active
-summary: 'Por qué se bloquea una herramienta: runtime de sandbox, política de permitir/denegar herramientas y controles de ejecución elevada'
-title: Entorno aislado frente a política de herramientas frente a permisos elevados
+summary: 'Por qué se bloquea una herramienta: entorno de ejecución sandbox, política de permitir/denegar herramientas y controles de exec elevado'
+title: Entorno aislado vs. política de herramientas vs. privilegios elevados
 x-i18n:
-    generated_at: "2026-05-06T05:35:59Z"
+    generated_at: "2026-05-06T09:04:10Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 516632295f10c29f87047ad3eebd842e35ab2a8effa4f8a6108e87f58cea3e1b
+    source_hash: cd303355774e3d73161b5704ba664d7418160e9b6792a904c7d5092e0351b320
     source_path: gateway/sandbox-vs-tool-policy-vs-elevated.md
     workflow: 16
 ---
 
 OpenClaw tiene tres controles relacionados (pero diferentes):
 
-1. **Sandbox** (`agents.defaults.sandbox.*` / `agents.list[].sandbox.*`) decide **dónde se ejecutan las herramientas** (backend de sandbox frente a host).
+1. **Entorno aislado** (`agents.defaults.sandbox.*` / `agents.list[].sandbox.*`) decide **dónde se ejecutan las herramientas** (backend del entorno aislado frente al host).
 2. **Política de herramientas** (`tools.*`, `tools.sandbox.tools.*`, `agents.list[].tools.*`) decide **qué herramientas están disponibles/permitidas**.
-3. **Elevated** (`tools.elevated.*`, `agents.list[].tools.elevated.*`) es una **vía de escape solo para exec** para ejecutarse fuera del sandbox cuando estás en sandbox (`gateway` de forma predeterminada, o `node` cuando el destino de exec está configurado como `node`).
+3. **Elevated** (`tools.elevated.*`, `agents.list[].tools.elevated.*`) es una **salida de emergencia solo para exec** para ejecutar fuera del entorno aislado cuando estás en un entorno aislado (`gateway` de forma predeterminada, o `node` cuando el destino de exec está configurado como `node`).
 
 ## Depuración rápida
 
@@ -31,52 +31,52 @@ openclaw sandbox explain --json
 
 Imprime:
 
-- modo/ámbito/acceso al espacio de trabajo efectivos del sandbox
-- si la sesión está actualmente en sandbox (principal frente a no principal)
-- permiso/denegación efectivos de herramientas de sandbox (y si provienen de agente/global/predeterminado)
-- puertas de Elevated y rutas de claves para corregir
+- modo/alcance/acceso al espacio de trabajo efectivo del entorno aislado
+- si la sesión está actualmente en un entorno aislado (principal frente a no principal)
+- allow/deny efectivo de herramientas del entorno aislado (y si provino del agente/global/predeterminado)
+- compuertas de elevated y rutas de claves de corrección
 
-## Sandbox: dónde se ejecutan las herramientas
+## Entorno aislado: dónde se ejecutan las herramientas
 
-El sandbox se controla mediante `agents.defaults.sandbox.mode`:
+El aislamiento se controla mediante `agents.defaults.sandbox.mode`:
 
 - `"off"`: todo se ejecuta en el host.
-- `"non-main"`: solo las sesiones no principales están en sandbox (una “sorpresa” común para grupos/canales).
-- `"all"`: todo está en sandbox.
+- `"non-main"`: solo las sesiones no principales están aisladas (una "sorpresa" común para grupos/canales).
+- `"all"`: todo está aislado.
 
-Consulta [Sandbox](/es/gateway/sandboxing) para ver la matriz completa (ámbito, montajes de espacio de trabajo, imágenes).
+Consulta [Aislamiento](/es/gateway/sandboxing) para ver la matriz completa (alcance, montajes del espacio de trabajo, imágenes).
 
 ### Montajes bind (comprobación rápida de seguridad)
 
-- `docker.binds` _perfora_ el sistema de archivos del sandbox: todo lo que montes queda visible dentro del contenedor con el modo que definas (`:ro` o `:rw`).
+- `docker.binds` _perfora_ el sistema de archivos del entorno aislado: todo lo que montes será visible dentro del contenedor con el modo que establezcas (`:ro` o `:rw`).
 - El valor predeterminado es lectura-escritura si omites el modo; prefiere `:ro` para código fuente/secretos.
 - `scope: "shared"` ignora los binds por agente (solo se aplican los binds globales).
-- OpenClaw valida las fuentes de bind dos veces: primero en la ruta de origen normalizada, y luego de nuevo tras resolver a través del ancestro existente más profundo. Los escapes por padre con symlink no omiten las comprobaciones de rutas bloqueadas ni de raíces permitidas.
-- Las rutas hoja inexistentes se comprueban igualmente de forma segura. Si `/workspace/alias-out/new-file` se resuelve a través de un padre con symlink a una ruta bloqueada o fuera de las raíces permitidas configuradas, el bind se rechaza.
-- Vincular `/var/run/docker.sock` entrega efectivamente el control del host al sandbox; hazlo solo de forma intencional.
+- OpenClaw valida las fuentes de bind dos veces: primero en la ruta de origen normalizada y luego de nuevo tras resolver mediante el ancestro existente más profundo. Los escapes por padres con symlink no omiten las comprobaciones de rutas bloqueadas o raíces permitidas.
+- Las rutas hoja inexistentes siguen comprobándose de forma segura. Si `/workspace/alias-out/new-file` se resuelve mediante un padre con symlink hacia una ruta bloqueada o fuera de las raíces permitidas configuradas, el bind se rechaza.
+- Vincular `/var/run/docker.sock` entrega efectivamente el control del host al entorno aislado; hazlo solo de forma intencionada.
 - El acceso al espacio de trabajo (`workspaceAccess: "ro"`/`"rw"`) es independiente de los modos de bind.
 
-## Política de herramientas: qué herramientas existen/se pueden invocar
+## Política de herramientas: qué herramientas existen/pueden llamarse
 
 Importan dos capas:
 
-- **Perfil de herramientas**: `tools.profile` y `agents.list[].tools.profile` (lista base de permisos)
+- **Perfil de herramientas**: `tools.profile` y `agents.list[].tools.profile` (allowlist base)
 - **Perfil de herramientas del proveedor**: `tools.byProvider[provider].profile` y `agents.list[].tools.byProvider[provider].profile`
 - **Política de herramientas global/por agente**: `tools.allow`/`tools.deny` y `agents.list[].tools.allow`/`agents.list[].tools.deny`
 - **Política de herramientas del proveedor**: `tools.byProvider[provider].allow/deny` y `agents.list[].tools.byProvider[provider].allow/deny`
-- **Política de herramientas del sandbox** (solo se aplica cuando se está en sandbox): `tools.sandbox.tools.allow`/`tools.sandbox.tools.deny` y `agents.list[].tools.sandbox.tools.*`
+- **Política de herramientas del entorno aislado** (solo se aplica cuando está aislado): `tools.sandbox.tools.allow`/`tools.sandbox.tools.deny` y `agents.list[].tools.sandbox.tools.*`
 
 Reglas prácticas:
 
 - `deny` siempre gana.
 - Si `allow` no está vacío, todo lo demás se trata como bloqueado.
-- La política de herramientas es el límite definitivo: `/exec` no puede anular una herramienta `exec` denegada.
-- `/exec` solo cambia los valores predeterminados de sesión para remitentes autorizados; no concede acceso a herramientas.
-  Las claves de herramientas del proveedor aceptan `provider` (p. ej., `google-antigravity`) o `provider/model` (p. ej., `openai/gpt-5.4`).
+- La política de herramientas es el bloqueo definitivo: `/exec` no puede anular una herramienta `exec` denegada.
+- `/exec` solo cambia los valores predeterminados de la sesión para remitentes autorizados; no concede acceso a herramientas.
+  Las claves de herramientas de proveedor aceptan `provider` (por ejemplo, `google-antigravity`) o `provider/model` (por ejemplo, `openai/gpt-5.4`).
 
 ### Grupos de herramientas (abreviaturas)
 
-Las políticas de herramientas (global, agente, sandbox) admiten entradas `group:*` que se expanden a varias herramientas:
+Las políticas de herramientas (globales, de agente, de entorno aislado) admiten entradas `group:*` que se expanden a varias herramientas:
 
 ```json5
 {
@@ -104,43 +104,43 @@ Grupos disponibles:
 - `group:nodes`: `nodes`
 - `group:agents`: `agents_list`, `update_plan`
 - `group:media`: `image`, `image_generate`, `music_generate`, `video_generate`, `tts`
-- `group:openclaw`: todas las herramientas integradas de OpenClaw (excluye los plugins de proveedor)
+- `group:openclaw`: todas las herramientas integradas de OpenClaw (excluye plugins de proveedor)
 
-## Elevated: "ejecutar en host" solo para exec
+## Elevated: "ejecutar en el host" solo para exec
 
 Elevated **no** concede herramientas adicionales; solo afecta a `exec`.
 
-- Si estás en sandbox, `/elevated on` (o `exec` con `elevated: true`) se ejecuta fuera del sandbox (pueden seguir aplicándose aprobaciones).
+- Si estás en un entorno aislado, `/elevated on` (o `exec` con `elevated: true`) se ejecuta fuera del entorno aislado (las aprobaciones pueden seguir aplicándose).
 - Usa `/elevated full` para omitir las aprobaciones de exec en la sesión.
-- Si ya estás ejecutando directamente, Elevated es efectivamente una operación sin efecto (sigue sujeto a puertas).
+- Si ya estás ejecutando de forma directa, elevated es efectivamente una no-op (sigue estando sujeto a compuertas).
 - Elevated **no** está limitado por Skills y **no** anula allow/deny de herramientas.
-- Elevated no concede anulaciones arbitrarias entre hosts desde `host=auto`; sigue las reglas normales del destino de exec y solo preserva `node` cuando el destino configurado/de sesión ya es `node`.
-- `/exec` es independiente de Elevated. Solo ajusta los valores predeterminados de exec por sesión para remitentes autorizados.
+- Elevated no concede anulaciones arbitrarias entre hosts desde `host=auto`; sigue las reglas normales de destino de exec y solo conserva `node` cuando el destino configurado/de sesión ya es `node`.
+- `/exec` es independiente de elevated. Solo ajusta los valores predeterminados de exec por sesión para remitentes autorizados.
 
-Puertas:
+Compuertas:
 
 - Habilitación: `tools.elevated.enabled` (y opcionalmente `agents.list[].tools.elevated.enabled`)
-- Listas de remitentes permitidos: `tools.elevated.allowFrom.<provider>` (y opcionalmente `agents.list[].tools.elevated.allowFrom.<provider>`)
+- Allowlists de remitentes: `tools.elevated.allowFrom.<provider>` (y opcionalmente `agents.list[].tools.elevated.allowFrom.<provider>`)
 
 Consulta [Modo Elevated](/es/tools/elevated).
 
-## Correcciones comunes de "cárcel de sandbox"
+## Correcciones comunes de "cárcel del entorno aislado"
 
-### "Herramienta X bloqueada por la política de herramientas del sandbox"
+### "Tool X blocked by sandbox tool policy"
 
 Claves de corrección (elige una):
 
-- Deshabilitar sandbox: `agents.defaults.sandbox.mode=off` (o por agente `agents.list[].sandbox.mode=off`)
-- Permitir la herramienta dentro del sandbox:
+- Deshabilitar el entorno aislado: `agents.defaults.sandbox.mode=off` (o por agente `agents.list[].sandbox.mode=off`)
+- Permitir la herramienta dentro del entorno aislado:
   - eliminarla de `tools.sandbox.tools.deny` (o por agente `agents.list[].tools.sandbox.tools.deny`)
   - o agregarla a `tools.sandbox.tools.allow` (o al allow por agente)
 
-### "Creía que esto era principal, ¿por qué está en sandbox?"
+### "I thought this was main, why is it sandboxed?"
 
-En modo `"non-main"`, las claves de grupo/canal _no_ son principales. Usa la clave de sesión principal (mostrada por `sandbox explain`) o cambia el modo a `"off"`.
+En el modo `"non-main"`, las claves de grupo/canal _no_ son principales. Usa la clave de sesión principal (mostrada por `sandbox explain`) o cambia el modo a `"off"`.
 
 ## Relacionado
 
-- [Sandbox](/es/gateway/sandboxing) -- referencia completa del sandbox (modos, ámbitos, backends, imágenes)
-- [Sandbox y herramientas multiagente](/es/tools/multi-agent-sandbox-tools) -- anulaciones por agente y precedencia
+- [Aislamiento](/es/gateway/sandboxing) -- referencia completa del entorno aislado (modos, alcances, backends, imágenes)
+- [Entorno aislado y herramientas multiagente](/es/tools/multi-agent-sandbox-tools) -- anulaciones por agente y precedencia
 - [Modo Elevated](/es/tools/elevated)

@@ -5,25 +5,23 @@ read_when:
 summary: Proveedores de modelos (LLM) compatibles con OpenClaw
 title: Directorio de proveedores
 x-i18n:
-    generated_at: "2026-04-30T05:57:36Z"
+    generated_at: "2026-05-06T09:05:57Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 61143200b2e7a74392cf8871bfcd210fe35dbd5118e2e8bc7b15265192fd2bde
+    source_hash: cfc3a15880a5e1881c1a58c60c9ad7e5624350a8db848d03c7cef6ee18c14b81
     source_path: providers/index.md
     workflow: 16
 ---
 
-# Proveedores de modelos
-
-OpenClaw puede usar muchos proveedores de LLM. Elige un proveedor, autentícate y luego configura el
+OpenClaw puede usar muchos proveedores de LLM. Elige un proveedor, autentícate y luego establece el
 modelo predeterminado como `provider/model`.
 
-¿Buscas documentación de canales de chat (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/etc.)? Consulta [Canales](/es/channels).
+¿Buscas documentación de canales de chat (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/etc.)? Consulta [Canales](/es/channels).
 
 ## Inicio rápido
 
 1. Autentícate con el proveedor (normalmente mediante `openclaw onboard`).
-2. Configura el modelo predeterminado:
+2. Establece el modelo predeterminado:
 
 ```json5
 {
@@ -53,7 +51,7 @@ modelo predeterminado como `provider/model`.
 - [Google (Gemini)](/es/providers/google)
 - [Gradium](/es/providers/gradium)
 - [Groq (inferencia LPU)](/es/providers/groq)
-- [Hugging Face (inferencia)](/es/providers/huggingface)
+- [Hugging Face (Inference)](/es/providers/huggingface)
 - [inferrs (modelos locales)](/es/providers/inferrs)
 - [Kilocode](/es/providers/kilocode)
 - [LiteLLM (Gateway unificado)](/es/providers/litellm)
@@ -88,10 +86,10 @@ modelo predeterminado como `provider/model`.
 
 ## Páginas de resumen compartidas
 
-- [Variantes agrupadas adicionales](/es/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy y Gemini CLI OAuth
-- [Generación de imágenes](/es/tools/image-generation) - Herramienta compartida `image_generate`, selección de proveedor y conmutación por error
-- [Generación de música](/es/tools/music-generation) - Herramienta compartida `music_generate`, selección de proveedor y conmutación por error
-- [Generación de video](/es/tools/video-generation) - Herramienta compartida `video_generate`, selección de proveedor y conmutación por error
+- [Variantes adicionales incluidas](/es/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy y Gemini CLI OAuth
+- [Generación de imágenes](/es/tools/image-generation) - Herramienta `image_generate` compartida, selección de proveedor y conmutación por error
+- [Generación de música](/es/tools/music-generation) - Herramienta `music_generate` compartida, selección de proveedor y conmutación por error
+- [Generación de video](/es/tools/video-generation) - Herramienta `video_generate` compartida, selección de proveedor y conmutación por error
 
 ## Proveedores de transcripción
 
@@ -104,7 +102,7 @@ modelo predeterminado como `provider/model`.
 
 ## Herramientas de la comunidad
 
-- [Claude Max API Proxy](/es/providers/claude-max-api-proxy) - Proxy de la comunidad para credenciales de suscripción de Claude (verifica la política/términos de Anthropic antes de usarlo)
+- [Claude Max API Proxy](/es/providers/claude-max-api-proxy) - Proxy de la comunidad para credenciales de suscripción a Claude (verifica la política/términos de Anthropic antes de usarlo)
 
-Para consultar el catálogo completo de proveedores (xAI, Groq, Mistral, etc.) y la configuración avanzada,
+Para ver el catálogo completo de proveedores (xAI, Groq, Mistral, etc.) y la configuración avanzada,
 consulta [Proveedores de modelos](/es/concepts/model-providers).

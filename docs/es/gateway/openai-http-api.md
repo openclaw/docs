@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Integración de herramientas que esperan OpenAI Chat Completions
-summary: Expón un endpoint HTTP /v1/chat/completions compatible con OpenAI desde el Gateway
-title: Finalizaciones de chat de OpenAI
+    - Integrar herramientas que esperan OpenAI Chat Completions
+summary: Expón un endpoint HTTP compatible con OpenAI /v1/chat/completions desde el Gateway
+title: Completaciones de chat de OpenAI
 x-i18n:
-    generated_at: "2026-04-30T05:43:06Z"
+    generated_at: "2026-05-06T09:03:48Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9a19f9d9d6d8ce6d605f8af5324ae3eb0c100c167609341c8dfb569970b0b2c9
+    source_hash: 8cd0995cf5f897ae8f99f35fc4b8ea28ebde3cba41da0f3e768ec1de7874b2f2
     source_path: gateway/openai-http-api.md
     workflow: 16
 ---
 
-OpenClaw’s Gateway can serve a small OpenAI-compatible Chat Completions endpoint.
+OpenClaw's Gateway can serve a small OpenAI-compatible Chat Completions endpoint.
 
 This endpoint is **disabled by default**. Enable it in config first.
 
 - `POST /v1/chat/completions`
 - Same port as the Gateway (WS + HTTP multiplex): `http://<gateway-host>:<port>/v1/chat/completions`
 
-When the Gateway’s OpenAI-compatible HTTP surface is enabled, it also serves:
+When the Gateway's OpenAI-compatible HTTP surface is enabled, it also serves:
 
 - `GET /v1/models`
 - `GET /v1/models/{id}`

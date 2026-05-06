@@ -1,20 +1,20 @@
 ---
 read_when:
-    - Quieres comprobar rápidamente el estado de salud del Gateway en ejecución
-summary: Referencia de CLI para `openclaw health` (instantánea de estado de salud de Gateway mediante RPC)
-title: Salud
+    - Desea comprobar rápidamente el estado del Gateway en ejecución
+summary: Referencia de la CLI para `openclaw health` (instantánea de estado del Gateway mediante RPC)
+title: Estado
 x-i18n:
-    generated_at: "2026-04-24T05:22:52Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:02:12Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: bf5f5b9c3ec5c08090134764966d2657241ed0ebbd28a9dc7fafde0b8c7216d6
+    source_hash: 443684af04efce2c54a6679e13b0bff0a5c1869f85d60fae0e853aed0a362226
     source_path: cli/health.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw health`
 
-Obtiene el estado de salud del Gateway en ejecución.
+Obtiene la salud del Gateway en ejecución.
 
 Opciones:
 
@@ -35,14 +35,14 @@ openclaw health --debug
 
 Notas:
 
-- `openclaw health` de forma predeterminada solicita al gateway en ejecución su instantánea de estado de salud. Cuando el
-  gateway ya tiene una instantánea en caché reciente, puede devolver esa carga útil en caché y
-  actualizar en segundo plano.
-- `--verbose` fuerza una sonda activa, imprime detalles de conexión del gateway y amplía la
-  salida legible para humanos a todas las cuentas y agentes configurados.
-- La salida incluye almacenes de sesión por agente cuando hay varios agentes configurados.
+- De forma predeterminada, `openclaw health` solicita al gateway en ejecución su instantánea de salud. Cuando el
+  gateway ya tiene una instantánea almacenada en caché reciente, puede devolver esa carga útil en caché y
+  actualizarse en segundo plano.
+- `--verbose` fuerza una comprobación en vivo, imprime los detalles de conexión del gateway y expande la
+  salida legible por humanos en todas las cuentas y agentes configurados.
+- La salida incluye almacenes de sesiones por agente cuando hay varios agentes configurados.
 
 ## Relacionado
 
-- [Referencia de CLI](/es/cli)
-- [Estado de salud de Gateway](/es/gateway/health)
+- [Referencia de la CLI](/es/cli)
+- [Salud del Gateway](/es/gateway/health)

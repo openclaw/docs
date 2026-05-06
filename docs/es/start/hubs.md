@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Desea un mapa completo de la documentación
+    - Quieres un mapa completo de la documentación
 summary: Centros que enlazan a todos los documentos de OpenClaw
 title: Centros de documentación
 x-i18n:
-    generated_at: "2026-05-06T05:48:27Z"
+    generated_at: "2026-05-06T09:06:39Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 0d69e3e48c149f77778540c4a486ab05e8f18fc08bd81739f434721d2336e1f5
+    source_hash: 9c5822f46d0c4014ec5874d06c40f9adbe4439e8164cc75709e15c519b3e11af
     source_path: start/hubs.md
     workflow: 16
 ---
@@ -16,7 +16,7 @@ x-i18n:
 Si eres nuevo en OpenClaw, empieza con [Primeros pasos](/es/start/getting-started).
 </Note>
 
-Usa estos centros para descubrir todas las páginas, incluidos los análisis en profundidad y la documentación de referencia que no aparece en la navegación izquierda.
+Usa estos centros para descubrir todas las páginas, incluidas las guías detalladas y la documentación de referencia que no aparece en la navegación izquierda.
 
 ## Empieza aquí
 
@@ -24,29 +24,29 @@ Usa estos centros para descubrir todas las páginas, incluidos los análisis en 
 - [Primeros pasos](/es/start/getting-started)
 - [Incorporación](/es/start/onboarding)
 - [Incorporación (CLI)](/es/start/wizard)
-- [Configuración inicial](/es/start/setup)
+- [Configuración](/es/start/setup)
 - [Panel (Gateway local)](http://127.0.0.1:18789/)
 - [Ayuda](/es/help)
 - [Directorio de documentación](/es/start/docs-directory)
 - [Configuración](/es/gateway/configuration)
 - [Ejemplos de configuración](/es/gateway/configuration-examples)
 - [Asistente de OpenClaw](/es/start/openclaw)
-- [Escaparate](/es/start/showcase)
-- [Lore](/es/start/lore)
+- [Muestra](/es/start/showcase)
+- [Historia](/es/start/lore)
 
 ## Instalación + actualizaciones
 
 - [Docker](/es/install/docker)
 - [Nix](/es/install/nix)
 - [Actualización / reversión](/es/install/updating)
-- [Flujo de trabajo con Bun (experimental)](/es/install/bun)
+- [Flujo de trabajo de Bun (experimental)](/es/install/bun)
 
 ## Conceptos principales
 
 - [Arquitectura](/es/concepts/architecture)
 - [Funciones](/es/concepts/features)
 - [Centro de red](/es/network)
-- [Tiempo de ejecución del agente](/es/concepts/agent)
+- [Runtime de agente](/es/concepts/agent)
 - [Espacio de trabajo del agente](/es/concepts/agent-workspace)
 - [Memoria](/es/concepts/memory)
 - [Bucle del agente](/es/concepts/agent-loop)
@@ -57,10 +57,10 @@ Usa estos centros para descubrir todas las páginas, incluidos los análisis en 
 - [Poda de sesiones](/es/concepts/session-pruning)
 - [Herramientas de sesión](/es/concepts/session-tool)
 - [Cola](/es/concepts/queue)
-- [Comandos slash](/es/tools/slash-commands)
+- [Comandos de barra](/es/tools/slash-commands)
 - [Adaptadores RPC](/es/reference/rpc)
 - [Esquemas TypeBox](/es/concepts/typebox)
-- [Gestión de zonas horarias](/es/concepts/timezone)
+- [Gestión de zona horaria](/es/concepts/timezone)
 - [Presencia](/es/concepts/presence)
 - [Descubrimiento + transportes](/es/gateway/discovery)
 - [Bonjour](/es/gateway/bonjour)
@@ -81,7 +81,7 @@ Usa estos centros para descubrir todas las páginas, incluidos los análisis en 
 - [Mattermost](/es/channels/mattermost)
 - [Signal](/es/channels/signal)
 - [BlueBubbles (iMessage)](/es/channels/bluebubbles)
-- [QQ Bot](/es/channels/qqbot)
+- [Bot de QQ](/es/channels/qqbot)
 - [iMessage (heredado)](/es/channels/imessage)
 - [Análisis de ubicación](/es/channels/location)
 - [WebChat](/es/web/webchat)
@@ -90,7 +90,7 @@ Usa estos centros para descubrir todas las páginas, incluidos los análisis en 
 
 ## Gateway + operaciones
 
-- [Manual operativo de Gateway](/es/gateway)
+- [Runbook de Gateway](/es/gateway)
 - [Modelo de red](/es/network#core-model)
 - [Emparejamiento de Gateway](/es/gateway/pairing)
 - [Bloqueo de Gateway](/es/gateway/gateway-lock)
@@ -99,7 +99,7 @@ Usa estos centros para descubrir todas las páginas, incluidos los análisis en 
 - [Heartbeat](/es/gateway/heartbeat)
 - [Doctor](/es/gateway/doctor)
 - [Registro](/es/gateway/logging)
-- [Aislamiento en sandbox](/es/gateway/sandboxing)
+- [Aislamiento](/es/gateway/sandboxing)
 - [Panel](/es/web/dashboard)
 - [Interfaz de control](/es/web/control-ui)
 - [Acceso remoto](/es/gateway/remote)
@@ -113,23 +113,23 @@ Usa estos centros para descubrir todas las páginas, incluidos los análisis en 
 - [Superficie de herramientas](/es/tools)
 - [OpenProse](/es/prose)
 - [Referencia de CLI](/es/cli)
-- [Herramienta Exec](/es/tools/exec)
-- [Herramienta PDF](/es/tools/pdf)
+- [Herramienta de ejecución](/es/tools/exec)
+- [Herramienta de PDF](/es/tools/pdf)
 - [Modo elevado](/es/tools/elevated)
 - [Tareas Cron](/es/automation/cron-jobs)
 - [Automatización y tareas](/es/automation)
 - [Pensamiento + detallado](/es/tools/thinking)
 - [Modelos](/es/concepts/models)
 - [Subagentes](/es/tools/subagents)
-- [CLI de envío al agente](/es/tools/agent-send)
+- [CLI de envío a agente](/es/tools/agent-send)
 - [Interfaz de terminal](/es/web/tui)
 - [Control del navegador](/es/tools/browser)
 - [Navegador (solución de problemas en Linux)](/es/tools/browser-linux-troubleshooting)
 - [Encuestas](/es/cli/message)
 
-## Nodos, multimedia, voz
+## Nodes, medios, voz
 
-- [Resumen de nodos](/es/nodes)
+- [Resumen de Nodes](/es/nodes)
 - [Cámara](/es/nodes/camera)
 - [Imágenes](/es/nodes/images)
 - [Audio](/es/nodes/audio)
@@ -147,12 +147,12 @@ Usa estos centros para descubrir todas las páginas, incluidos los análisis en 
 - [Linux](/es/platforms/linux)
 - [Superficies web](/es/web)
 
-## Aplicación complementaria para macOS (avanzado)
+## Aplicación complementaria de macOS (avanzado)
 
 - [Configuración de desarrollo de macOS](/es/platforms/mac/dev-setup)
 - [Barra de menús de macOS](/es/platforms/mac/menu-bar)
-- [Activación por voz en macOS](/es/platforms/mac/voicewake)
-- [Superposición de voz en macOS](/es/platforms/mac/voice-overlay)
+- [Activación por voz de macOS](/es/platforms/mac/voicewake)
+- [Superposición de voz de macOS](/es/platforms/mac/voice-overlay)
 - [WebChat de macOS](/es/platforms/mac/webchat)
 - [Canvas de macOS](/es/platforms/mac/canvas)
 - [Proceso hijo de macOS](/es/platforms/mac/child-process)
@@ -202,7 +202,7 @@ Usa estos centros para descubrir todas las páginas, incluidos los análisis en 
 
 - [Pruebas](/es/reference/test)
 - [Política de lanzamiento](/es/reference/RELEASING)
-- [Modelos de dispositivos](/es/reference/device-models)
+- [Modelos de dispositivo](/es/reference/device-models)
 
 ## Relacionado
 
