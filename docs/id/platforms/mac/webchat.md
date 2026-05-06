@@ -1,53 +1,55 @@
 ---
 read_when:
     - Men-debug tampilan WebChat mac atau port loopback
-summary: Cara aplikasi macOS menyematkan WebChat gateway dan cara men-debug-nya
-title: WebChat (macOS)
+summary: Cara aplikasi Mac menyematkan Gateway WebChat dan cara men-debugnya
+title: Obrolan Web (macOS)
 x-i18n:
-    generated_at: "2026-04-24T09:17:42Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:20:41Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: c3e291a4b2a28e1016a9187f952b18ca4ea70660aa081564eeb27637cd8e8ae2
+    source_hash: 50680e099181421505e25cecab2ba331fdaf9839d07fef482ff04976b0fc583e
     source_path: platforms/mac/webchat.md
-    workflow: 15
+    workflow: 16
 ---
 
-Aplikasi menu bar macOS menyematkan UI WebChat sebagai tampilan SwiftUI native. Aplikasi ini
+Aplikasi bilah menu macOS menyematkan UI WebChat sebagai tampilan SwiftUI native. Aplikasi ini
 terhubung ke Gateway dan secara default menggunakan **sesi utama** untuk agen yang dipilih
-(dengan session switcher untuk sesi lain).
+(dengan pengalih sesi untuk sesi lain).
 
 - **Mode lokal**: terhubung langsung ke WebSocket Gateway lokal.
-- **Mode remote**: meneruskan port kontrol Gateway melalui SSH dan menggunakan
-  tunnel tersebut sebagai data plane.
+- **Mode jarak jauh**: meneruskan port kontrol Gateway melalui SSH dan menggunakan
+  tunnel tersebut sebagai bidang data.
 
-## Peluncuran & debugging
+## Peluncuran dan debugging
 
-- Manual: menu Lobster → “Open Chat”.
-- Auto-open untuk pengujian:
+- Manual: menu Lobster → "Buka Obrolan".
+- Buka otomatis untuk pengujian:
 
   ```bash
   dist/OpenClaw.app/Contents/MacOS/OpenClaw --webchat
   ```
 
-- Log: `./scripts/clawlog.sh` (subsystem `ai.openclaw`, category `WebChatSwiftUI`).
+- Log: `./scripts/clawlog.sh` (subsistem `ai.openclaw`, kategori `WebChatSwiftUI`).
 
-## Cara wiring-nya
+## Cara perangkaiannya
 
-- Data plane: metode Gateway WS `chat.history`, `chat.send`, `chat.abort`,
+- Bidang data: metode WS Gateway `chat.history`, `chat.send`, `chat.abort`,
   `chat.inject` dan event `chat`, `agent`, `presence`, `tick`, `health`.
-- `chat.history` mengembalikan baris transkrip yang dinormalisasi untuk tampilan: tag directive inline dihapus dari teks yang terlihat, payload XML tool-call teks biasa
+- `chat.history` mengembalikan baris transkrip yang dinormalisasi untuk tampilan: tag direktif
+  inline dihapus dari teks yang terlihat, payload XML pemanggilan alat teks biasa
   (termasuk `<tool_call>...</tool_call>`,
   `<function_call>...</function_call>`, `<tool_calls>...</tool_calls>`,
-  `<function_calls>...</function_calls>`, dan blok tool-call yang terpotong) serta
-  token kontrol model ASCII/full-width yang bocor dihapus, baris asisten token-diam murni seperti `NO_REPLY` / `no_reply` yang persis cocok
+  `<function_calls>...</function_calls>`, dan blok pemanggilan alat yang terpotong) serta
+  token kontrol model ASCII/lebar-penuh yang bocor dihapus, baris asisten yang hanya berisi
+  token senyap seperti persis `NO_REPLY` / `no_reply`
   dihilangkan, dan baris yang terlalu besar dapat diganti dengan placeholder.
-- Sesi: default ke sesi utama (`main`, atau `global` ketika cakupannya
+- Sesi: secara default menggunakan sesi utama (`main`, atau `global` saat cakupan bersifat
   global). UI dapat beralih antar sesi.
-- Onboarding menggunakan sesi khusus agar penyiapan pertama kali tetap terpisah.
+- Onboarding menggunakan sesi khusus untuk menjaga penyiapan pertama kali tetap terpisah.
 
 ## Permukaan keamanan
 
-- Mode remote hanya meneruskan port kontrol WebSocket Gateway melalui SSH.
+- Mode jarak jauh hanya meneruskan port kontrol WebSocket Gateway melalui SSH.
 
 ## Batasan yang diketahui
 
@@ -56,4 +58,4 @@ terhubung ke Gateway dan secara default menggunakan **sesi utama** untuk agen ya
 ## Terkait
 
 - [WebChat](/id/web/webchat)
-- [Aplikasi macOS](/id/platforms/macos)
+- [aplikasi macOS](/id/platforms/macos)

@@ -1,23 +1,23 @@
 ---
 read_when:
-    - Memaketkan OpenClaw.app
-    - Men-debug layanan launchd gateway macOS
-    - Menginstal CLI gateway untuk macOS
-summary: Runtime Gateway di macOS (layanan launchd eksternal)
+    - Pengemasan OpenClaw.app
+    - Men-debug layanan launchd Gateway macOS
+    - Menginstal CLI Gateway untuk macOS
+summary: Lingkungan eksekusi Gateway di macOS (layanan launchd eksternal)
 title: Gateway di macOS
 x-i18n:
-    generated_at: "2026-04-24T09:16:47Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:19:46Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: fb98905712504fdf5085ec1c00c9e3f911e4005cd14b1472efdb7a5ec7189b5c
+    source_hash: 3f5dcc73671140d7599ffefceeb98ac7ce34da1f944c1e7c70bc9e5810e6ca66
     source_path: platforms/mac/bundled-gateway.md
-    workflow: 15
+    workflow: 16
 ---
 
 OpenClaw.app tidak lagi membundel Node/Bun atau runtime Gateway. Aplikasi macOS
 mengharapkan instalasi CLI `openclaw` **eksternal**, tidak menjalankan Gateway sebagai
-child process, dan mengelola layanan launchd per pengguna untuk menjaga Gateway tetap
-berjalan (atau menempel ke Gateway lokal yang sudah ada jika memang sudah berjalan).
+proses anak, dan mengelola layanan launchd per pengguna agar Gateway tetap
+berjalan (atau terhubung ke Gateway lokal yang sudah ada jika sudah berjalan).
 
 ## Instal CLI (wajib untuk mode lokal)
 
@@ -27,32 +27,32 @@ Node 24 adalah runtime default di Mac. Node 22 LTS, saat ini `22.14+`, masih ber
 npm install -g openclaw@<version>
 ```
 
-Tombol **Install CLI** di aplikasi macOS menjalankan alur instalasi global yang sama dengan yang
-digunakan aplikasi secara internal: aplikasi ini lebih mengutamakan npm, lalu pnpm, lalu bun jika itu satu-satunya
-package manager yang terdeteksi. Node tetap menjadi runtime Gateway yang direkomendasikan.
+Tombol **Instal CLI** pada aplikasi macOS menjalankan alur instalasi global yang sama dengan yang digunakan aplikasi
+secara internal: aplikasi memprioritaskan npm terlebih dahulu, lalu pnpm, lalu bun jika itu satu-satunya
+pengelola paket yang terdeteksi. Node tetap menjadi runtime Gateway yang direkomendasikan.
 
 ## Launchd (Gateway sebagai LaunchAgent)
 
 Label:
 
-- `ai.openclaw.gateway` (atau `ai.openclaw.<profile>`; `com.openclaw.*` lama mungkin masih ada)
+- `ai.openclaw.gateway` (atau `ai.openclaw.<profile>`; `com.openclaw.*` lama mungkin tetap ada)
 
 Lokasi plist (per pengguna):
 
 - `~/Library/LaunchAgents/ai.openclaw.gateway.plist`
   (atau `~/Library/LaunchAgents/ai.openclaw.<profile>.plist`)
 
-Manajer:
+Pengelola:
 
-- Aplikasi macOS memiliki instalasi/pembaruan LaunchAgent dalam mode Lokal.
+- Aplikasi macOS mengelola instalasi/pembaruan LaunchAgent dalam mode Lokal.
 - CLI juga dapat menginstalnya: `openclaw gateway install`.
 
 Perilaku:
 
-- “OpenClaw Active” mengaktifkan/menonaktifkan LaunchAgent.
+- "OpenClaw Aktif" mengaktifkan/menonaktifkan LaunchAgent.
 - Keluar dari aplikasi **tidak** menghentikan gateway (launchd menjaganya tetap hidup).
-- Jika Gateway sudah berjalan pada port yang dikonfigurasi, aplikasi akan menempel
-  ke sana alih-alih memulai yang baru.
+- Jika Gateway sudah berjalan pada port yang dikonfigurasi, aplikasi akan terhubung ke
+  Gateway tersebut alih-alih memulai yang baru.
 
 Logging:
 
@@ -63,7 +63,7 @@ Logging:
 Aplikasi macOS memeriksa versi gateway terhadap versinya sendiri. Jika keduanya
 tidak kompatibel, perbarui CLI global agar cocok dengan versi aplikasi.
 
-## Smoke check
+## Pemeriksaan smoke
 
 ```bash
 openclaw --version
@@ -81,5 +81,5 @@ openclaw gateway call health --url ws://127.0.0.1:18999 --timeout 3000
 
 ## Terkait
 
-- [Aplikasi macOS](/id/platforms/macos)
+- [aplikasi macOS](/id/platforms/macos)
 - [Runbook Gateway](/id/gateway)

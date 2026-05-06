@@ -1,40 +1,37 @@
 ---
 read_when:
-    - Anda ingin OpenClaw berjalan 24/7 di Azure dengan hardening Network Security Group
-    - Anda menginginkan Gateway OpenClaw yang selalu aktif dan siap produksi di Azure Linux VM milik Anda sendiri
+    - Anda ingin OpenClaw berjalan 24/7 di Azure dengan penguatan Network Security Group
+    - Anda menginginkan OpenClaw Gateway kelas produksi yang selalu aktif di Azure Linux VM milik Anda sendiri
     - Anda menginginkan administrasi yang aman dengan SSH Azure Bastion
-summary: Jalankan Gateway OpenClaw 24/7 di Azure Linux VM dengan status yang persisten
+summary: Jalankan OpenClaw Gateway 24/7 di VM Azure Linux dengan status persisten
 title: Azure
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T09:12:19Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: e42e1a35e0340b959b73c548bc1efd6366bee38cf4c8cd23d986c5f14e5da0e0
-  source_path: install/azure.md
-  workflow: 15
+    generated_at: "2026-05-06T09:16:14Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 7ab1b7d09dd66c495983aebd4766ce760d659cc6f362bbcd999d1c1345ae38f7
+    source_path: install/azure.md
+    workflow: 16
 ---
 
-# OpenClaw di Azure Linux VM
-
-Panduan ini menyiapkan Azure Linux VM dengan Azure CLI, menerapkan hardening Network Security Group (NSG), mengonfigurasi Azure Bastion untuk akses SSH, dan memasang OpenClaw.
+Panduan ini menyiapkan VM Azure Linux dengan Azure CLI, menerapkan pengerasan Network Security Group (NSG), mengonfigurasi Azure Bastion untuk akses SSH, dan menginstal OpenClaw.
 
 ## Yang akan Anda lakukan
 
-- Membuat resource jaringan Azure (VNet, subnet, NSG) dan komputasi dengan Azure CLI
-- Menerapkan aturan Network Security Group sehingga SSH VM hanya diizinkan dari Azure Bastion
+- Membuat jaringan Azure (VNet, subnet, NSG) dan sumber daya komputasi dengan Azure CLI
+- Menerapkan aturan Network Security Group agar SSH VM hanya diizinkan dari Azure Bastion
 - Menggunakan Azure Bastion untuk akses SSH (tanpa IP publik pada VM)
-- Memasang OpenClaw dengan skrip installer
+- Menginstal OpenClaw dengan skrip penginstal
 - Memverifikasi Gateway
 
-## Yang Anda butuhkan
+## Yang Anda perlukan
 
-- Langganan Azure dengan izin untuk membuat resource komputasi dan jaringan
-- Azure CLI terpasang (lihat [langkah pemasangan Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli) bila diperlukan)
-- Sepasang kunci SSH (panduan ini mencakup pembuatan jika diperlukan)
+- Langganan Azure dengan izin untuk membuat sumber daya komputasi dan jaringan
+- Azure CLI terinstal (lihat [langkah instalasi Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli) jika diperlukan)
+- Pasangan kunci SSH (panduan ini mencakup cara membuatnya jika diperlukan)
 - ~20-30 menit
 
-## Konfigurasikan deployment
+## Konfigurasikan penerapan
 
 <Steps>
   <Step title="Masuk ke Azure CLI">
@@ -47,13 +44,13 @@ Panduan ini menyiapkan Azure Linux VM dengan Azure CLI, menerapkan hardening Net
 
   </Step>
 
-  <Step title="Daftarkan provider resource yang diperlukan (sekali saja)">
+  <Step title="Daftarkan penyedia sumber daya yang diperlukan (satu kali)">
     ```bash
     az provider register --namespace Microsoft.Compute
     az provider register --namespace Microsoft.Network
     ```
 
-    Verifikasi pendaftaran. Tunggu sampai keduanya menampilkan `Registered`.
+    Verifikasi pendaftaran. Tunggu hingga keduanya menampilkan `Registered`.
 
     ```bash
     az provider show --namespace Microsoft.Compute --query registrationState -o tsv
@@ -62,7 +59,7 @@ Panduan ini menyiapkan Azure Linux VM dengan Azure CLI, menerapkan hardening Net
 
   </Step>
 
-  <Step title="Tetapkan variabel deployment">
+  <Step title="Atur variabel penerapan">
     ```bash
     RG="rg-openclaw"
     LOCATION="westus2"
@@ -78,7 +75,7 @@ Panduan ini menyiapkan Azure Linux VM dengan Azure CLI, menerapkan hardening Net
     BASTION_PIP_NAME="pip-openclaw-bastion"
     ```
 
-    Sesuaikan nama dan rentang CIDR agar sesuai dengan environment Anda. Subnet Bastion harus minimal `/26`.
+    Sesuaikan nama dan rentang CIDR agar cocok dengan lingkungan Anda. Subnet Bastion harus minimal `/26`.
 
   </Step>
 
@@ -104,13 +101,13 @@ Panduan ini menyiapkan Azure Linux VM dengan Azure CLI, menerapkan hardening Net
     OS_DISK_SIZE_GB=64
     ```
 
-    Pilih ukuran VM dan ukuran disk OS yang tersedia pada langganan dan region Anda:
+    Pilih ukuran VM dan ukuran disk OS yang tersedia di langganan dan wilayah Anda:
 
     - Mulai dari yang lebih kecil untuk penggunaan ringan dan tingkatkan nanti
-    - Gunakan lebih banyak vCPU/RAM/disk untuk otomatisasi yang lebih berat, lebih banyak channel, atau beban kerja model/alat yang lebih besar
-    - Jika ukuran VM tidak tersedia di region atau kuota langganan Anda, pilih SKU terdekat yang tersedia
+    - Gunakan lebih banyak vCPU/RAM/disk untuk otomatisasi yang lebih berat, lebih banyak kanal, atau beban kerja model/alat yang lebih besar
+    - Jika ukuran VM tidak tersedia di wilayah atau kuota langganan Anda, pilih SKU terdekat yang tersedia
 
-    Daftar ukuran VM yang tersedia di region target Anda:
+    Daftar ukuran VM yang tersedia di wilayah target Anda:
 
     ```bash
     az vm list-skus --location "${LOCATION}" --resource-type virtualMachines -o table
@@ -125,23 +122,23 @@ Panduan ini menyiapkan Azure Linux VM dengan Azure CLI, menerapkan hardening Net
   </Step>
 </Steps>
 
-## Deploy resource Azure
+## Terapkan sumber daya Azure
 
 <Steps>
-  <Step title="Buat resource group">
+  <Step title="Buat grup sumber daya">
     ```bash
     az group create -n "${RG}" -l "${LOCATION}"
     ```
   </Step>
 
   <Step title="Buat network security group">
-    Buat NSG dan tambahkan aturan agar hanya subnet Bastion yang dapat SSH ke VM.
+    Buat NSG dan tambahkan aturan agar hanya subnet Bastion yang dapat melakukan SSH ke VM.
 
     ```bash
     az network nsg create \
       -g "${RG}" -n "${NSG_NAME}" -l "${LOCATION}"
 
-    # Izinkan SSH hanya dari subnet Bastion
+    # Allow SSH from the Bastion subnet only
     az network nsg rule create \
       -g "${RG}" --nsg-name "${NSG_NAME}" \
       -n AllowSshFromBastionSubnet --priority 100 \
@@ -149,7 +146,7 @@ Panduan ini menyiapkan Azure Linux VM dengan Azure CLI, menerapkan hardening Net
       --source-address-prefixes "${BASTION_SUBNET_PREFIX}" \
       --destination-port-ranges 22
 
-    # Tolak SSH dari internet publik
+    # Deny SSH from the public internet
     az network nsg rule create \
       -g "${RG}" --nsg-name "${NSG_NAME}" \
       -n DenyInternetSsh --priority 110 \
@@ -157,7 +154,7 @@ Panduan ini menyiapkan Azure Linux VM dengan Azure CLI, menerapkan hardening Net
       --source-address-prefixes Internet \
       --destination-port-ranges 22
 
-    # Tolak SSH dari sumber VNet lain
+    # Deny SSH from other VNet sources
     az network nsg rule create \
       -g "${RG}" --nsg-name "${NSG_NAME}" \
       -n DenyVnetSsh --priority 120 \
@@ -166,7 +163,7 @@ Panduan ini menyiapkan Azure Linux VM dengan Azure CLI, menerapkan hardening Net
       --destination-port-ranges 22
     ```
 
-    Aturan dievaluasi berdasarkan prioritas (angka terkecil lebih dulu): lalu lintas Bastion diizinkan pada 100, lalu semua SSH lain diblokir pada 110 dan 120.
+    Aturan dievaluasi berdasarkan prioritas (angka terendah terlebih dahulu): lalu lintas Bastion diizinkan pada 100, lalu semua SSH lainnya diblokir pada 110 dan 120.
 
   </Step>
 
@@ -180,12 +177,12 @@ Panduan ini menyiapkan Azure Linux VM dengan Azure CLI, menerapkan hardening Net
       --subnet-name "${VM_SUBNET_NAME}" \
       --subnet-prefixes "${VM_SUBNET_PREFIX}"
 
-    # Pasang NSG ke subnet VM
+    # Attach the NSG to the VM subnet
     az network vnet subnet update \
       -g "${RG}" --vnet-name "${VNET_NAME}" \
       -n "${VM_SUBNET_NAME}" --nsg "${NSG_NAME}"
 
-    # AzureBastionSubnet — nama ini diwajibkan oleh Azure
+    # AzureBastionSubnet — name is required by Azure
     az network vnet subnet create \
       -g "${RG}" --vnet-name "${VNET_NAME}" \
       -n AzureBastionSubnet \
@@ -195,7 +192,7 @@ Panduan ini menyiapkan Azure Linux VM dengan Azure CLI, menerapkan hardening Net
   </Step>
 
   <Step title="Buat VM">
-    VM tidak memiliki IP publik. Akses SSH dilakukan secara eksklusif melalui Azure Bastion.
+    VM tidak memiliki IP publik. Akses SSH sepenuhnya melalui Azure Bastion.
 
     ```bash
     az vm create \
@@ -212,9 +209,9 @@ Panduan ini menyiapkan Azure Linux VM dengan Azure CLI, menerapkan hardening Net
       --nsg ""
     ```
 
-    `--public-ip-address ""` mencegah IP publik ditetapkan. `--nsg ""` melewati pembuatan NSG per-NIC (NSG tingkat subnet menangani keamanan).
+    `--public-ip-address ""` mencegah IP publik ditetapkan. `--nsg ""` melewati pembuatan NSG per NIC (NSG tingkat subnet menangani keamanan).
 
-    **Reproduksibilitas:** Perintah di atas menggunakan `latest` untuk image Ubuntu. Untuk menyematkan versi tertentu, daftar versi yang tersedia lalu ganti `latest`:
+    **Reprodusibilitas:** Perintah di atas menggunakan `latest` untuk citra Ubuntu. Untuk mengunci versi tertentu, tampilkan versi yang tersedia dan ganti `latest`:
 
     ```bash
     az vm image list \
@@ -239,12 +236,12 @@ Panduan ini menyiapkan Azure Linux VM dengan Azure CLI, menerapkan hardening Net
       --sku Standard --enable-tunneling true
     ```
 
-    Provisioning Bastion biasanya memakan waktu 5-10 menit tetapi bisa sampai 15-30 menit di beberapa region.
+    Penyediaan Bastion biasanya memerlukan 5-10 menit, tetapi dapat memerlukan hingga 15-30 menit di beberapa wilayah.
 
   </Step>
 </Steps>
 
-## Pasang OpenClaw
+## Instal OpenClaw
 
 <Steps>
   <Step title="SSH ke VM melalui Azure Bastion">
@@ -262,14 +259,14 @@ Panduan ini menyiapkan Azure Linux VM dengan Azure CLI, menerapkan hardening Net
 
   </Step>
 
-  <Step title="Pasang OpenClaw (di shell VM)">
+  <Step title="Instal OpenClaw (di shell VM)">
     ```bash
     curl -fsSL https://openclaw.ai/install.sh -o /tmp/install.sh
     bash /tmp/install.sh
     rm -f /tmp/install.sh
     ```
 
-    Installer memasang Node LTS dan dependensi jika belum ada, memasang OpenClaw, dan meluncurkan wizard onboarding. Lihat [Install](/id/install) untuk detailnya.
+    Penginstal menginstal Node LTS dan dependensi jika belum ada, menginstal OpenClaw, dan meluncurkan wizard onboarding. Lihat [Instal](/id/install) untuk detail.
 
   </Step>
 
@@ -280,46 +277,46 @@ Panduan ini menyiapkan Azure Linux VM dengan Azure CLI, menerapkan hardening Net
     openclaw gateway status
     ```
 
-    Sebagian besar tim enterprise Azure sudah memiliki lisensi GitHub Copilot. Jika itu kasus Anda, kami merekomendasikan memilih provider GitHub Copilot di wizard onboarding OpenClaw. Lihat [provider GitHub Copilot](/id/providers/github-copilot).
+    Sebagian besar tim Azure perusahaan sudah memiliki lisensi GitHub Copilot. Jika demikian, kami menyarankan memilih penyedia GitHub Copilot di wizard onboarding OpenClaw. Lihat [penyedia GitHub Copilot](/id/providers/github-copilot).
 
   </Step>
 </Steps>
 
 ## Pertimbangan biaya
 
-Azure Bastion Standard SKU berjalan sekitar **\$140/bulan** dan VM (Standard_B2as_v2) berjalan sekitar **\$55/bulan**.
+Azure Bastion SKU Standard berjalan sekitar **\$140/bulan** dan VM (Standard_B2as_v2) berjalan sekitar **\$55/bulan**.
 
 Untuk mengurangi biaya:
 
-- **Deallocate VM** saat tidak digunakan (menghentikan penagihan komputasi; biaya disk tetap ada). Gateway OpenClaw tidak akan dapat dijangkau saat VM dideallocate — mulai lagi saat Anda membutuhkannya aktif:
+- **Deallocate VM** saat tidak digunakan (menghentikan penagihan komputasi; biaya disk tetap ada). Gateway OpenClaw tidak akan dapat dijangkau saat VM didealokasikan — mulai ulang saat Anda perlu mengaktifkannya kembali:
 
   ```bash
   az vm deallocate -g "${RG}" -n "${VM_NAME}"
-  az vm start -g "${RG}" -n "${VM_NAME}"   # mulai lagi nanti
+  az vm start -g "${RG}" -n "${VM_NAME}"   # restart later
   ```
 
-- **Hapus Bastion saat tidak diperlukan** dan buat ulang saat Anda membutuhkan akses SSH. Bastion adalah komponen biaya terbesar dan hanya memerlukan beberapa menit untuk provisioning.
-- **Gunakan Basic Bastion SKU** (~\$38/bulan) jika Anda hanya memerlukan SSH berbasis Portal dan tidak memerlukan tunneling CLI (`az network bastion ssh`).
+- **Hapus Bastion saat tidak diperlukan** dan buat ulang saat Anda memerlukan akses SSH. Bastion adalah komponen biaya terbesar dan hanya memerlukan beberapa menit untuk disediakan.
+- **Gunakan SKU Basic Bastion** (~\$38/bulan) jika Anda hanya memerlukan SSH berbasis Portal dan tidak memerlukan tunneling CLI (`az network bastion ssh`).
 
 ## Pembersihan
 
-Untuk menghapus semua resource yang dibuat oleh panduan ini:
+Untuk menghapus semua sumber daya yang dibuat oleh panduan ini:
 
 ```bash
 az group delete -n "${RG}" --yes --no-wait
 ```
 
-Ini menghapus resource group dan semua yang ada di dalamnya (VM, VNet, NSG, Bastion, IP publik).
+Ini menghapus grup sumber daya dan semua yang ada di dalamnya (VM, VNet, NSG, Bastion, IP publik).
 
-## Langkah selanjutnya
+## Langkah berikutnya
 
-- Siapkan channel pesan: [Channels](/id/channels)
-- Pair perangkat lokal sebagai node: [Nodes](/id/nodes)
+- Siapkan kanal perpesanan: [Kanal](/id/channels)
+- Pasangkan perangkat lokal sebagai Node: [Node](/id/nodes)
 - Konfigurasikan Gateway: [Konfigurasi Gateway](/id/gateway/configuration)
-- Untuk detail lebih lanjut tentang deployment OpenClaw di Azure dengan provider model GitHub Copilot: [OpenClaw on Azure with GitHub Copilot](https://github.com/johnsonshi/openclaw-azure-github-copilot)
+- Untuk detail selengkapnya tentang penerapan OpenClaw Azure dengan penyedia model GitHub Copilot: [OpenClaw di Azure dengan GitHub Copilot](https://github.com/johnsonshi/openclaw-azure-github-copilot)
 
 ## Terkait
 
-- [Ikhtisar instalasi](/id/install)
+- [Ringkasan instalasi](/id/install)
 - [GCP](/id/install/gcp)
 - [DigitalOcean](/id/install/digitalocean)

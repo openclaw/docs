@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Anda ingin menghubungkan OpenClaw ke kanal IRC atau pesan langsung
-    - Anda sedang mengonfigurasi daftar izin IRC, kebijakan grup, atau pembatasan penyebutan
+    - Anda ingin menghubungkan OpenClaw ke saluran IRC atau pesan langsung
+    - Anda mengonfigurasi daftar izin IRC, kebijakan grup, atau pembatasan penyebutan
 summary: Penyiapan Plugin IRC, kontrol akses, dan pemecahan masalah
 title: IRC
 x-i18n:
-    generated_at: "2026-05-04T02:21:38Z"
+    generated_at: "2026-05-06T09:02:52Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 43c3098fe49a5e7405443df73e1bf752a579460dc0b2070c3d07f43b512bb555
+    source_hash: 7de49784dec1b6a21a5a65b298552c66ce82543e3f0a7075abedb442b4ebff7e
     source_path: channels/irc.md
     workflow: 16
 ---
 
-Gunakan IRC saat Anda menginginkan OpenClaw di saluran klasik (`#room`) dan pesan langsung.
-IRC disertakan sebagai Plugin bawaan, tetapi dikonfigurasi di konfigurasi utama di bawah `channels.irc`.
+Gunakan IRC saat Anda ingin OpenClaw tersedia di channel klasik (`#room`) dan pesan langsung.
+IRC dikirim sebagai Plugin bawaan, tetapi dikonfigurasi di config utama pada `channels.irc`.
 
 ## Mulai cepat
 
-1. Aktifkan konfigurasi IRC di `~/.openclaw/openclaw.json`.
+1. Aktifkan config IRC di `~/.openclaw/openclaw.json`.
 2. Tetapkan setidaknya:
 
 ```json5
@@ -36,9 +36,9 @@ IRC disertakan sebagai Plugin bawaan, tetapi dikonfigurasi di konfigurasi utama 
 }
 ```
 
-Utamakan server IRC privat untuk koordinasi bot. Jika Anda sengaja menggunakan jaringan IRC publik, pilihan umum mencakup Libera.Chat, OFTC, dan Snoonet. Hindari saluran publik yang mudah ditebak untuk lalu lintas backchannel bot atau swarm.
+Utamakan server IRC privat untuk koordinasi bot. Jika Anda sengaja menggunakan jaringan IRC publik, pilihan umum meliputi Libera.Chat, OFTC, dan Snoonet. Hindari channel publik yang mudah ditebak untuk lalu lintas backchannel bot atau swarm.
 
-3. Mulai/jalankan ulang Gateway:
+3. Mulai/mulai ulang Gateway:
 
 ```bash
 openclaw gateway run
@@ -46,39 +46,39 @@ openclaw gateway run
 
 ## Default keamanan
 
-- IRC menggunakan soket TCP/TLS mentah di luar perutean forward proxy yang dikelola operator OpenClaw. Dalam deployment yang mewajibkan semua egress melalui forward proxy tersebut, tetapkan `channels.irc.enabled=false` kecuali egress IRC langsung disetujui secara eksplisit.
+- IRC menggunakan soket TCP/TLS mentah di luar routing forward proxy yang dikelola operator OpenClaw. Dalam deployment yang mewajibkan semua egress melalui forward proxy tersebut, tetapkan `channels.irc.enabled=false` kecuali egress IRC langsung disetujui secara eksplisit.
 - `channels.irc.dmPolicy` default ke `"pairing"`.
 - `channels.irc.groupPolicy` default ke `"allowlist"`.
-- Dengan `groupPolicy="allowlist"`, tetapkan `channels.irc.groups` untuk menentukan saluran yang diizinkan.
+- Dengan `groupPolicy="allowlist"`, tetapkan `channels.irc.groups` untuk menentukan channel yang diizinkan.
 - Gunakan TLS (`channels.irc.tls=true`) kecuali Anda sengaja menerima transport plaintext.
 
 ## Kontrol akses
 
-Ada dua “gerbang” terpisah untuk saluran IRC:
+Ada dua "gerbang" terpisah untuk channel IRC:
 
-1. **Akses saluran** (`groupPolicy` + `groups`): apakah bot menerima pesan dari suatu saluran sama sekali.
-2. **Akses pengirim** (`groupAllowFrom` / per-saluran `groups["#channel"].allowFrom`): siapa yang diizinkan memicu bot di dalam saluran tersebut.
+1. **Akses channel** (`groupPolicy` + `groups`): apakah bot menerima pesan dari suatu channel sama sekali.
+2. **Akses pengirim** (`groupAllowFrom` / per-channel `groups["#channel"].allowFrom`): siapa yang diizinkan memicu bot di dalam channel tersebut.
 
-Kunci konfigurasi:
+Kunci config:
 
 - Allowlist DM (akses pengirim DM): `channels.irc.allowFrom`
-- Allowlist pengirim grup (akses pengirim saluran): `channels.irc.groupAllowFrom`
-- Kontrol per-saluran (aturan saluran + pengirim + mention): `channels.irc.groups["#channel"]`
-- `channels.irc.groupPolicy="open"` mengizinkan saluran yang belum dikonfigurasi (**tetap dibatasi mention secara default**)
+- Allowlist pengirim grup (akses pengirim channel): `channels.irc.groupAllowFrom`
+- Kontrol per-channel (aturan channel + pengirim + mention): `channels.irc.groups["#channel"]`
+- `channels.irc.groupPolicy="open"` mengizinkan channel yang tidak dikonfigurasi (**tetap dibatasi mention secara default**)
 
 Entri allowlist sebaiknya menggunakan identitas pengirim yang stabil (`nick!user@host`).
 Pencocokan nick polos dapat berubah dan hanya diaktifkan saat `channels.irc.dangerouslyAllowNameMatching: true`.
 
-### Kekeliruan umum: `allowFrom` untuk DM, bukan saluran
+### Hal umum yang sering keliru: `allowFrom` untuk DM, bukan channel
 
 Jika Anda melihat log seperti:
 
 - `irc: drop group sender alice!ident@host (policy=allowlist)`
 
-…itu berarti pengirim tidak diizinkan untuk pesan **grup/saluran**. Perbaiki dengan salah satu cara berikut:
+...itu berarti pengirim tidak diizinkan untuk pesan **grup/channel**. Perbaiki dengan salah satu cara berikut:
 
-- menetapkan `channels.irc.groupAllowFrom` (global untuk semua saluran), atau
-- menetapkan allowlist pengirim per-saluran: `channels.irc.groups["#channel"].allowFrom`
+- menetapkan `channels.irc.groupAllowFrom` (global untuk semua channel), atau
+- menetapkan allowlist pengirim per-channel: `channels.irc.groups["#channel"].allowFrom`
 
 Contoh (izinkan siapa pun di `#tuirc-dev` berbicara dengan bot):
 
@@ -97,11 +97,11 @@ Contoh (izinkan siapa pun di `#tuirc-dev` berbicara dengan bot):
 
 ## Pemicu balasan (mention)
 
-Meskipun saluran diizinkan (melalui `groupPolicy` + `groups`) dan pengirim diizinkan, OpenClaw secara default menggunakan **pembatasan mention** dalam konteks grup.
+Meskipun sebuah channel diizinkan (melalui `groupPolicy` + `groups`) dan pengirim diizinkan, OpenClaw secara default menerapkan **pembatasan mention** dalam konteks grup.
 
-Artinya, Anda mungkin melihat log seperti `drop channel … (missing-mention)` kecuali pesan menyertakan pola mention yang cocok dengan bot.
+Ini berarti Anda mungkin melihat log seperti `drop channel … (missing-mention)` kecuali pesan menyertakan pola mention yang cocok dengan bot.
 
-Agar bot membalas di saluran IRC **tanpa memerlukan mention**, nonaktifkan pembatasan mention untuk saluran tersebut:
+Agar bot membalas di channel IRC **tanpa perlu mention**, nonaktifkan pembatasan mention untuk channel tersebut:
 
 ```json5
 {
@@ -119,7 +119,7 @@ Agar bot membalas di saluran IRC **tanpa memerlukan mention**, nonaktifkan pemba
 }
 ```
 
-Atau untuk mengizinkan **semua** saluran IRC (tanpa allowlist per-saluran) dan tetap membalas tanpa mention:
+Atau untuk mengizinkan **semua** channel IRC (tanpa allowlist per-channel) dan tetap membalas tanpa mention:
 
 ```json5
 {
@@ -134,12 +134,12 @@ Atau untuk mengizinkan **semua** saluran IRC (tanpa allowlist per-saluran) dan t
 }
 ```
 
-## Catatan keamanan (disarankan untuk saluran publik)
+## Catatan keamanan (direkomendasikan untuk channel publik)
 
-Jika Anda mengizinkan `allowFrom: ["*"]` di saluran publik, siapa pun dapat memberi prompt ke bot.
-Untuk mengurangi risiko, batasi alat untuk saluran tersebut.
+Jika Anda mengizinkan `allowFrom: ["*"]` di channel publik, siapa pun dapat memberi prompt ke bot.
+Untuk mengurangi risiko, batasi tool untuk channel tersebut.
 
-### Alat yang sama untuk semua orang di saluran
+### Tool yang sama untuk semua orang di channel
 
 ```json5
 {
@@ -158,9 +158,9 @@ Untuk mengurangi risiko, batasi alat untuk saluran tersebut.
 }
 ```
 
-### Alat berbeda per pengirim (pemilik mendapat lebih banyak kuasa)
+### Tool berbeda per pengirim (pemilik mendapatkan lebih banyak kuasa)
 
-Gunakan `toolsBySender` untuk menerapkan kebijakan yang lebih ketat ke `"*"` dan yang lebih longgar ke nick Anda:
+Gunakan `toolsBySender` untuk menerapkan kebijakan yang lebih ketat pada `"*"` dan yang lebih longgar pada nick Anda:
 
 ```json5
 {
@@ -191,11 +191,11 @@ Catatan:
 - Kunci lama tanpa prefiks masih diterima dan dicocokkan hanya sebagai `id:`.
 - Kebijakan pengirim pertama yang cocok akan berlaku; `"*"` adalah fallback wildcard.
 
-Untuk informasi lebih lanjut tentang akses grup vs pembatasan mention (dan bagaimana keduanya berinteraksi), lihat: [/channels/groups](/id/channels/groups).
+Untuk informasi lebih lanjut tentang akses grup dibandingkan pembatasan mention (dan bagaimana keduanya berinteraksi), lihat: [/channels/groups](/id/channels/groups).
 
 ## NickServ
 
-Untuk mengidentifikasi diri dengan NickServ setelah terhubung:
+Untuk mengidentifikasi dengan NickServ setelah terhubung:
 
 ```json5
 {
@@ -247,14 +247,14 @@ Akun default mendukung:
 
 ## Pemecahan masalah
 
-- Jika bot terhubung tetapi tidak pernah membalas di saluran, verifikasi `channels.irc.groups` **dan** apakah pembatasan mention menggugurkan pesan (`missing-mention`). Jika Anda ingin bot membalas tanpa ping, tetapkan `requireMention:false` untuk saluran tersebut.
+- Jika bot terhubung tetapi tidak pernah membalas di channel, verifikasi `channels.irc.groups` **dan** apakah pembatasan mention menjatuhkan pesan (`missing-mention`). Jika Anda ingin bot membalas tanpa ping, tetapkan `requireMention:false` untuk channel tersebut.
 - Jika login gagal, verifikasi ketersediaan nick dan kata sandi server.
-- Jika TLS gagal pada jaringan kustom, verifikasi host/port dan penyiapan sertifikat.
+- Jika TLS gagal pada jaringan khusus, verifikasi host/port dan penyiapan sertifikat.
 
 ## Terkait
 
-- [Ikhtisar Saluran](/id/channels) — semua saluran yang didukung
+- [Ringkasan Channel](/id/channels) — semua channel yang didukung
 - [Pairing](/id/channels/pairing) — autentikasi DM dan alur pairing
 - [Grup](/id/channels/groups) — perilaku chat grup dan pembatasan mention
-- [Perutean Saluran](/id/channels/channel-routing) — perutean sesi untuk pesan
+- [Routing Channel](/id/channels/channel-routing) — routing sesi untuk pesan
 - [Keamanan](/id/gateway/security) — model akses dan hardening

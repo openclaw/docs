@@ -1,47 +1,42 @@
 ---
 read_when:
     - Anda ingin OpenClaw berjalan 24/7 di GCP
-    - Anda menginginkan Gateway yang selalu aktif dan siap produksi di VM Anda sendiri
-    - Anda menginginkan kontrol penuh atas persistensi, biner, dan perilaku restart
-summary: Jalankan Gateway OpenClaw 24/7 di VM GCP Compute Engine (Docker) dengan status yang tahan lama
+    - Anda menginginkan Gateway kelas produksi yang selalu aktif di VM Anda sendiri
+    - Anda menginginkan kendali penuh atas persistensi, biner, dan perilaku mulai ulang
+summary: Jalankan OpenClaw Gateway 24/7 pada VM GCP Compute Engine (Docker) dengan status persisten
 title: GCP
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T09:13:30Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: 6c1416170484d4b9735dccf8297fd93bcf929b198ce4ead23ce8d0cea918c38c
-  source_path: install/gcp.md
-  workflow: 15
+    generated_at: "2026-05-06T09:17:09Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: eefd3a324ababdaa3072cda5354c1d59ddfe80c2f88f24a4ad21208f54636e89
+    source_path: install/gcp.md
+    workflow: 16
 ---
 
-# OpenClaw di GCP Compute Engine (Docker, Panduan VPS Produksi)
+Jalankan OpenClaw Gateway persisten pada VM GCP Compute Engine menggunakan Docker, dengan state yang tahan lama, binari yang sudah disertakan, dan perilaku restart yang aman.
 
-## Tujuan
+Jika Anda menginginkan "OpenClaw 24/7 seharga ~$5-12/bln", ini adalah penyiapan yang andal di Google Cloud.
+Harga bervariasi menurut jenis mesin dan region; pilih VM terkecil yang sesuai dengan workload Anda dan tingkatkan skalanya jika terjadi OOM.
 
-Jalankan Gateway OpenClaw yang persisten di VM GCP Compute Engine menggunakan Docker, dengan status yang tahan lama, biner yang dibenamkan, dan perilaku restart yang aman.
+## Apa yang kita lakukan (secara sederhana)?
 
-Jika Anda menginginkan "OpenClaw 24/7 dengan biaya sekitar ~$5-12/bulan", ini adalah penyiapan yang andal di Google Cloud.
-Harga bervariasi menurut jenis mesin dan region; pilih VM terkecil yang sesuai dengan beban kerja Anda dan tingkatkan jika Anda terkena OOM.
+- Membuat proyek GCP dan mengaktifkan penagihan
+- Membuat VM Compute Engine
+- Menginstal Docker (runtime aplikasi terisolasi)
+- Memulai OpenClaw Gateway di Docker
+- Mempertahankan `~/.openclaw` + `~/.openclaw/workspace` pada host (bertahan melewati restart/rebuild)
+- Mengakses Control UI dari laptop Anda melalui tunnel SSH
 
-## Apa yang kita lakukan (dengan istilah sederhana)?
-
-- Buat project GCP dan aktifkan billing
-- Buat VM Compute Engine
-- Instal Docker (runtime aplikasi terisolasi)
-- Jalankan Gateway OpenClaw di Docker
-- Persistensikan `~/.openclaw` + `~/.openclaw/workspace` di host (bertahan dari restart/rebuild)
-- Akses UI Control dari laptop Anda melalui SSH tunnel
-
-Status `~/.openclaw` yang di-mount itu mencakup `openclaw.json`, per-agent
+State `~/.openclaw` yang di-mount tersebut mencakup `openclaw.json`, per-agent
 `agents/<agentId>/agent/auth-profiles.json`, dan `.env`.
 
 Gateway dapat diakses melalui:
 
-- Port forwarding SSH dari laptop Anda
+- Penerusan port SSH dari laptop Anda
 - Eksposur port langsung jika Anda mengelola firewall dan token sendiri
 
-Panduan ini menggunakan Debian di GCP Compute Engine.
+Panduan ini menggunakan Debian pada GCP Compute Engine.
 Ubuntu juga berfungsi; sesuaikan paketnya.
 Untuk alur Docker generik, lihat [Docker](/id/install/docker).
 
@@ -49,14 +44,14 @@ Untuk alur Docker generik, lihat [Docker](/id/install/docker).
 
 ## Jalur cepat (operator berpengalaman)
 
-1. Buat project GCP + aktifkan Compute Engine API
+1. Buat proyek GCP + aktifkan Compute Engine API
 2. Buat VM Compute Engine (e2-small, Debian 12, 20GB)
 3. SSH ke VM
 4. Instal Docker
 5. Clone repositori OpenClaw
-6. Buat direktori host yang persisten
-7. Konfigurasikan `.env` dan `docker-compose.yml`
-8. Benamkan biner yang diperlukan, build, dan luncurkan
+6. Buat direktori host persisten
+7. Konfigurasi `.env` dan `docker-compose.yml`
+8. Sertakan binari yang diperlukan, build, dan jalankan
 
 ---
 
@@ -65,20 +60,20 @@ Untuk alur Docker generik, lihat [Docker](/id/install/docker).
 - Akun GCP (memenuhi syarat free tier untuk e2-micro)
 - gcloud CLI terinstal (atau gunakan Cloud Console)
 - Akses SSH dari laptop Anda
-- Kenyamanan dasar dengan SSH + copy/paste
+- Kenyamanan dasar dengan SSH + salin/tempel
 - ~20-30 menit
 - Docker dan Docker Compose
-- Kredensial auth model
+- Kredensial autentikasi model
 - Kredensial provider opsional
   - QR WhatsApp
-  - Token bot Telegram
-  - Gmail OAuth
+  - token bot Telegram
+  - OAuth Gmail
 
 ---
 
 <Steps>
   <Step title="Instal gcloud CLI (atau gunakan Console)">
-    **Opsi A: gcloud CLI** (disarankan untuk otomatisasi)
+    **Opsi A: gcloud CLI** (direkomendasikan untuk otomatisasi)
 
     Instal dari [https://cloud.google.com/sdk/docs/install](https://cloud.google.com/sdk/docs/install)
 
@@ -95,7 +90,7 @@ Untuk alur Docker generik, lihat [Docker](/id/install/docker).
 
   </Step>
 
-  <Step title="Buat project GCP">
+  <Step title="Buat proyek GCP">
     **CLI:**
 
     ```bash
@@ -103,7 +98,7 @@ Untuk alur Docker generik, lihat [Docker](/id/install/docker).
     gcloud config set project my-openclaw-project
     ```
 
-    Aktifkan billing di [https://console.cloud.google.com/billing](https://console.cloud.google.com/billing) (diperlukan untuk Compute Engine).
+    Aktifkan penagihan di [https://console.cloud.google.com/billing](https://console.cloud.google.com/billing) (diperlukan untuk Compute Engine).
 
     Aktifkan Compute Engine API:
 
@@ -114,8 +109,8 @@ Untuk alur Docker generik, lihat [Docker](/id/install/docker).
     **Console:**
 
     1. Buka IAM & Admin > Create Project
-    2. Beri nama lalu buat
-    3. Aktifkan billing untuk project
+    2. Beri nama dan buat
+    3. Aktifkan penagihan untuk proyek
     4. Buka APIs & Services > Enable APIs > cari "Compute Engine API" > Enable
 
   </Step>
@@ -123,10 +118,10 @@ Untuk alur Docker generik, lihat [Docker](/id/install/docker).
   <Step title="Buat VM">
     **Jenis mesin:**
 
-    | Type      | Spesifikasi              | Biaya              | Catatan                                      |
+    | Jenis     | Spesifikasi              | Biaya              | Catatan                                      |
     | --------- | ------------------------ | ------------------ | -------------------------------------------- |
-    | e2-medium | 2 vCPU, 4GB RAM          | ~$25/bulan         | Paling andal untuk build Docker lokal        |
-    | e2-small  | 2 vCPU, 2GB RAM          | ~$12/bulan         | Minimum yang direkomendasikan untuk build Docker |
+    | e2-medium | 2 vCPU, 4GB RAM          | ~$25/bln           | Paling andal untuk build Docker lokal        |
+    | e2-small  | 2 vCPU, 2GB RAM          | ~$12/bln           | Minimum yang direkomendasikan untuk build Docker |
     | e2-micro  | 2 vCPU (shared), 1GB RAM | Memenuhi syarat free tier | Sering gagal dengan OOM build Docker (exit 137) |
 
     **CLI:**
@@ -143,7 +138,7 @@ Untuk alur Docker generik, lihat [Docker](/id/install/docker).
     **Console:**
 
     1. Buka Compute Engine > VM instances > Create instance
-    2. Nama: `openclaw-gateway`
+    2. Name: `openclaw-gateway`
     3. Region: `us-central1`, Zone: `us-central1-a`
     4. Machine type: `e2-small`
     5. Boot disk: Debian 12, 20GB
@@ -160,13 +155,13 @@ Untuk alur Docker generik, lihat [Docker](/id/install/docker).
 
     **Console:**
 
-    Klik tombol "SSH" di samping VM Anda di dasbor Compute Engine.
+    Klik tombol "SSH" di sebelah VM Anda pada dasbor Compute Engine.
 
-    Catatan: propagasi key SSH dapat memakan waktu 1-2 menit setelah pembuatan VM. Jika koneksi ditolak, tunggu dan coba lagi.
+    Catatan: propagasi kunci SSH dapat memerlukan 1-2 menit setelah VM dibuat. Jika koneksi ditolak, tunggu dan coba lagi.
 
   </Step>
 
-  <Step title="Instal Docker (di VM)">
+  <Step title="Instal Docker (pada VM)">
     ```bash
     sudo apt-get update
     sudo apt-get install -y git curl ca-certificates
@@ -174,7 +169,7 @@ Untuk alur Docker generik, lihat [Docker](/id/install/docker).
     sudo usermod -aG docker $USER
     ```
 
-    Logout lalu login kembali agar perubahan grup berlaku:
+    Keluar lalu masuk kembali agar perubahan grup berlaku:
 
     ```bash
     exit
@@ -201,13 +196,13 @@ Untuk alur Docker generik, lihat [Docker](/id/install/docker).
     cd openclaw
     ```
 
-    Panduan ini mengasumsikan Anda akan membangun image kustom untuk menjamin persistensi biner.
+    Panduan ini mengasumsikan Anda akan membuat image kustom untuk menjamin persistensi binari.
 
   </Step>
 
-  <Step title="Buat direktori host yang persisten">
-    Container Docker bersifat ephemeral.
-    Semua status yang berumur panjang harus berada di host.
+  <Step title="Buat direktori host persisten">
+    Container Docker bersifat efemeral.
+    Semua state jangka panjang harus berada pada host.
 
     ```bash
     mkdir -p ~/.openclaw
@@ -216,7 +211,7 @@ Untuk alur Docker generik, lihat [Docker](/id/install/docker).
 
   </Step>
 
-  <Step title="Konfigurasikan variabel lingkungan">
+  <Step title="Konfigurasi variabel lingkungan">
     Buat `.env` di root repositori.
 
     ```bash
@@ -232,9 +227,9 @@ Untuk alur Docker generik, lihat [Docker](/id/install/docker).
     XDG_CONFIG_HOME=/home/node/.openclaw
     ```
 
-    Biarkan `OPENCLAW_GATEWAY_TOKEN` kosong kecuali Anda memang ingin
-    mengelolanya melalui `.env`; OpenClaw menulis token Gateway acak ke
-    konfigurasi saat start pertama. Buat kata sandi keyring dan tempelkan ke
+    Biarkan `OPENCLAW_GATEWAY_TOKEN` kosong kecuali Anda secara eksplisit ingin
+    mengelolanya melalui `.env`; OpenClaw menulis token gateway acak ke
+    config saat pertama kali dimulai. Buat kata sandi keyring dan tempelkan ke
     `GOG_KEYRING_PASSWORD`:
 
     ```bash
@@ -243,8 +238,8 @@ Untuk alur Docker generik, lihat [Docker](/id/install/docker).
 
     **Jangan commit file ini.**
 
-    File `.env` ini untuk env runtime/container seperti `OPENCLAW_GATEWAY_TOKEN`.
-    Auth OAuth/API-key provider yang disimpan berada di
+    File `.env` ini adalah untuk env container/runtime seperti `OPENCLAW_GATEWAY_TOKEN`.
+    Autentikasi OAuth/API-key provider yang tersimpan berada dalam
     `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` yang di-mount.
 
   </Step>
@@ -274,8 +269,8 @@ Untuk alur Docker generik, lihat [Docker](/id/install/docker).
           - ${OPENCLAW_CONFIG_DIR}:/home/node/.openclaw
           - ${OPENCLAW_WORKSPACE_DIR}:/home/node/.openclaw/workspace
         ports:
-          # Disarankan: pertahankan Gateway hanya loopback di VM; akses melalui SSH tunnel.
-          # Untuk mengeksposnya secara publik, hapus prefiks `127.0.0.1:` dan atur firewall sesuai kebutuhan.
+          # Recommended: keep the Gateway loopback-only on the VM; access via SSH tunnel.
+          # To expose it publicly, remove the `127.0.0.1:` prefix and firewall accordingly.
           - "127.0.0.1:${OPENCLAW_GATEWAY_PORT}:18789"
         command:
           [
@@ -290,35 +285,35 @@ Untuk alur Docker generik, lihat [Docker](/id/install/docker).
           ]
     ```
 
-    `--allow-unconfigured` hanya untuk kemudahan bootstrap, bukan pengganti konfigurasi Gateway yang benar. Tetap setel auth (`gateway.auth.token` atau kata sandi) dan gunakan pengaturan bind yang aman untuk deployment Anda.
+    `--allow-unconfigured` hanya untuk kemudahan bootstrap, bukan pengganti konfigurasi gateway yang tepat. Tetap atur autentikasi (`gateway.auth.token` atau kata sandi) dan gunakan pengaturan bind yang aman untuk deployment Anda.
 
   </Step>
 
   <Step title="Langkah runtime VM Docker bersama">
     Gunakan panduan runtime bersama untuk alur host Docker umum:
 
-    - [Benamkan biner yang diperlukan ke dalam image](/id/install/docker-vm-runtime#bake-required-binaries-into-the-image)
-    - [Build dan luncurkan](/id/install/docker-vm-runtime#build-and-launch)
-    - [Apa yang persisten dan disimpan di mana](/id/install/docker-vm-runtime#what-persists-where)
+    - [Sertakan binari yang diperlukan ke dalam image](/id/install/docker-vm-runtime#bake-required-binaries-into-the-image)
+    - [Build dan jalankan](/id/install/docker-vm-runtime#build-and-launch)
+    - [Apa yang persisten di mana](/id/install/docker-vm-runtime#what-persists-where)
     - [Pembaruan](/id/install/docker-vm-runtime#updates)
 
   </Step>
 
   <Step title="Catatan peluncuran khusus GCP">
-    Di GCP, jika build gagal dengan `Killed` atau `exit code 137` selama `pnpm install --frozen-lockfile`, VM kehabisan memori. Gunakan minimal `e2-small`, atau `e2-medium` untuk build pertama yang lebih andal.
+    Pada GCP, jika build gagal dengan `Killed` atau `exit code 137` selama `pnpm install --frozen-lockfile`, VM kehabisan memori. Gunakan minimal `e2-small`, atau `e2-medium` untuk build pertama yang lebih andal.
 
-    Saat bind ke LAN (`OPENCLAW_GATEWAY_BIND=lan`), konfigurasikan origin browser tepercaya sebelum melanjutkan:
+    Saat bind ke LAN (`OPENCLAW_GATEWAY_BIND=lan`), konfigurasi origin browser tepercaya sebelum melanjutkan:
 
     ```bash
     docker compose run --rm openclaw-cli config set gateway.controlUi.allowedOrigins '["http://127.0.0.1:18789"]' --strict-json
     ```
 
-    Jika Anda mengubah port Gateway, ganti `18789` dengan port yang Anda konfigurasi.
+    Jika Anda mengubah port gateway, ganti `18789` dengan port yang Anda konfigurasi.
 
   </Step>
 
   <Step title="Akses dari laptop Anda">
-    Buat SSH tunnel untuk meneruskan port Gateway:
+    Buat tunnel SSH untuk meneruskan port Gateway:
 
     ```bash
     gcloud compute ssh openclaw-gateway --zone=us-central1-a -- -L 18789:127.0.0.1:18789
@@ -334,20 +329,20 @@ Untuk alur Docker generik, lihat [Docker](/id/install/docker).
     docker compose run --rm openclaw-cli dashboard --no-open
     ```
 
-    Jika UI meminta auth shared-secret, tempel token atau
-    kata sandi yang dikonfigurasi ke pengaturan UI Control. Alur Docker ini menulis token secara
-    default; jika Anda mengubah konfigurasi container ke auth password, gunakan
-    kata sandi itu sebagai gantinya.
+    Jika UI meminta autentikasi shared-secret, tempelkan token atau
+    kata sandi yang dikonfigurasi ke pengaturan Control UI. Alur Docker ini menulis token secara
+    default; jika Anda mengganti config container ke autentikasi kata sandi, gunakan
+    kata sandi tersebut sebagai gantinya.
 
-    Jika UI Control menampilkan `unauthorized` atau `disconnected (1008): pairing required`, setujui perangkat browser:
+    Jika Control UI menampilkan `unauthorized` atau `disconnected (1008): pairing required`, setujui perangkat browser:
 
     ```bash
     docker compose run --rm openclaw-cli devices list
     docker compose run --rm openclaw-cli devices approve <requestId>
     ```
 
-    Butuh referensi persistensi dan pembaruan bersama lagi?
-    Lihat [Docker VM Runtime](/id/install/docker-vm-runtime#what-persists-where) dan [Pembaruan Docker VM Runtime](/id/install/docker-vm-runtime#updates).
+    Perlu referensi persistensi dan pembaruan bersama lagi?
+    Lihat [Runtime VM Docker](/id/install/docker-vm-runtime#what-persists-where) dan [pembaruan Runtime VM Docker](/id/install/docker-vm-runtime#updates).
 
   </Step>
 </Steps>
@@ -358,7 +353,7 @@ Untuk alur Docker generik, lihat [Docker](/id/install/docker).
 
 **Koneksi SSH ditolak**
 
-Propagasi key SSH dapat memakan waktu 1-2 menit setelah pembuatan VM. Tunggu dan coba lagi.
+Propagasi kunci SSH dapat memerlukan 1-2 menit setelah VM dibuat. Tunggu dan coba lagi.
 
 **Masalah OS Login**
 
@@ -372,30 +367,30 @@ Pastikan akun Anda memiliki izin IAM yang diperlukan (Compute OS Login atau Comp
 
 **Kehabisan memori (OOM)**
 
-Jika build Docker gagal dengan `Killed` dan `exit code 137`, VM dibunuh karena OOM. Tingkatkan ke e2-small (minimum) atau e2-medium (disarankan untuk build lokal yang andal):
+Jika build Docker gagal dengan `Killed` dan `exit code 137`, VM dihentikan oleh OOM. Upgrade ke e2-small (minimum) atau e2-medium (direkomendasikan untuk build lokal yang andal):
 
 ```bash
-# Hentikan VM terlebih dahulu
+# Stop the VM first
 gcloud compute instances stop openclaw-gateway --zone=us-central1-a
 
-# Ubah jenis mesin
+# Change machine type
 gcloud compute instances set-machine-type openclaw-gateway \
   --zone=us-central1-a \
   --machine-type=e2-small
 
-# Jalankan VM
+# Start the VM
 gcloud compute instances start openclaw-gateway --zone=us-central1-a
 ```
 
 ---
 
-## Service account (praktik terbaik keamanan)
+## Akun layanan (praktik terbaik keamanan)
 
-Untuk penggunaan pribadi, akun pengguna default Anda sudah cukup baik.
+Untuk penggunaan pribadi, akun pengguna default Anda sudah cukup.
 
-Untuk otomatisasi atau pipeline CI/CD, buat service account khusus dengan izin minimum:
+Untuk otomatisasi atau pipeline CI/CD, buat akun layanan khusus dengan izin minimal:
 
-1. Buat service account:
+1. Buat akun layanan:
 
    ```bash
    gcloud iam service-accounts create openclaw-deploy \
@@ -410,7 +405,7 @@ Untuk otomatisasi atau pipeline CI/CD, buat service account khusus dengan izin m
      --role="roles/compute.instanceAdmin.v1"
    ```
 
-Hindari menggunakan peran Owner untuk otomatisasi. Gunakan prinsip least privilege.
+Hindari penggunaan peran Owner untuk otomatisasi. Gunakan prinsip hak akses paling sedikit.
 
 Lihat [https://cloud.google.com/iam/docs/understanding-roles](https://cloud.google.com/iam/docs/understanding-roles) untuk detail peran IAM.
 
@@ -418,12 +413,12 @@ Lihat [https://cloud.google.com/iam/docs/understanding-roles](https://cloud.goog
 
 ## Langkah berikutnya
 
-- Siapkan channel pesan: [Channels](/id/channels)
-- Pair perangkat lokal sebagai node: [Nodes](/id/nodes)
+- Siapkan kanal perpesanan: [Kanal](/id/channels)
+- Pasangkan perangkat lokal sebagai Node: [Node](/id/nodes)
 - Konfigurasikan Gateway: [Konfigurasi Gateway](/id/gateway/configuration)
 
 ## Terkait
 
-- [Ikhtisar instalasi](/id/install)
+- [Ringkasan instalasi](/id/install)
 - [Azure](/id/install/azure)
 - [Hosting VPS](/id/vps)

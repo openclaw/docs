@@ -1,29 +1,29 @@
 ---
 read_when:
     - Memasangkan node iOS/Android ke Gateway
-    - Menggunakan kanvas/kamera node untuk konteks agen
-    - Menambahkan perintah Node baru atau fungsi bantu CLI
-summary: 'Node: pemasangan, kapabilitas, izin, dan helper CLI untuk kanvas/kamera/layar/perangkat/notifikasi/sistem'
+    - Menggunakan kanvas/kamera Node untuk konteks agen
+    - Menambahkan perintah Node atau helper CLI baru
+summary: 'Node: penyandingan, kapabilitas, izin, dan alat bantu CLI untuk kanvas/kamera/layar/perangkat/notifikasi/sistem'
 title: Node
 x-i18n:
-    generated_at: "2026-04-30T09:58:11Z"
+    generated_at: "2026-05-06T09:19:08Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 060319f540fe3c4d168516df8cced9caad26d9281592c9a9537ab6df393dce43
+    source_hash: 0ca35ddfb3efe374c0494e3883b0cb47b2e31511d4f7115a88f7c644b80d704f
     source_path: nodes/index.md
     workflow: 16
 ---
 
-**node** adalah perangkat pendamping (macOS/iOS/Android/headless) yang terhubung ke **WebSocket** Gateway (port yang sama dengan operator) dengan `role: "node"` dan mengekspos permukaan perintah (mis. `canvas.*`, `camera.*`, `device.*`, `notifications.*`, `system.*`) melalui `node.invoke`. Detail protokol: [Protokol Gateway](/id/gateway/protocol).
+**node** adalah perangkat pendamping (macOS/iOS/Android/headless) yang terhubung ke **WebSocket** Gateway (port yang sama dengan operator) dengan `role: "node"` dan mengekspos permukaan perintah (mis. `canvas.*`, `camera.*`, `device.*`, `notifications.*`, `system.*`) melalui `node.invoke`. Detail protokol: [protokol Gateway](/id/gateway/protocol).
 
-Transport lama: [Protokol Bridge](/id/gateway/bridge-protocol) (TCP JSONL;
+Transport lama: [protokol Bridge](/id/gateway/bridge-protocol) (TCP JSONL;
 hanya historis untuk node saat ini).
 
-macOS juga dapat berjalan dalam **mode node**: aplikasi bilah menu terhubung ke
-server WS Gateway dan mengekspos perintah canvas/camera lokalnya sebagai node (sehingga
-`openclaw nodes …` berfungsi terhadap Mac ini). Dalam mode gateway jarak jauh, otomasi
+macOS juga dapat berjalan dalam **mode node**: aplikasi menubar terhubung ke server
+WS milik Gateway dan mengekspos perintah canvas/camera lokalnya sebagai node (sehingga
+`openclaw nodes …` berfungsi terhadap Mac ini). Dalam mode gateway jarak jauh, automasi
 browser ditangani oleh host node CLI (`openclaw node run` atau layanan node
-yang terpasang), bukan oleh node aplikasi native.
+terpasang), bukan oleh node aplikasi native.
 
 Catatan:
 
@@ -31,10 +31,10 @@ Catatan:
 - Pesan Telegram/WhatsApp/dll. masuk ke **gateway**, bukan ke node.
 - Runbook pemecahan masalah: [/nodes/troubleshooting](/id/nodes/troubleshooting)
 
-## Penyandingan + status
+## Pairing + status
 
-**Node WS menggunakan penyandingan perangkat.** Node menyajikan identitas perangkat selama `connect`; Gateway
-membuat permintaan penyandingan perangkat untuk `role: node`. Setujui melalui CLI perangkat (atau UI).
+**Node WS menggunakan pairing perangkat.** Node menyajikan identitas perangkat saat `connect`; Gateway
+membuat permintaan pairing perangkat untuk `role: node`. Setujui melalui CLI perangkat (atau UI).
 
 CLI cepat:
 
@@ -46,19 +46,20 @@ openclaw nodes status
 openclaw nodes describe --node <idOrNameOrIp>
 ```
 
-Jika node mencoba ulang dengan detail autentikasi yang berubah (role/scope/kunci publik), permintaan
+Jika node mencoba ulang dengan detail auth yang berubah (role/scope/public key), permintaan
 tertunda sebelumnya digantikan dan `requestId` baru dibuat. Jalankan ulang
 `openclaw devices list` sebelum menyetujui.
 
 Catatan:
 
-- `nodes status` menandai node sebagai **tersanding** saat role penyandingan perangkatnya mencakup `node`.
-- Catatan penyandingan perangkat adalah kontrak role yang disetujui dan tahan lama. Rotasi
-  token tetap berada di dalam kontrak itu; rotasi tidak dapat meningkatkan node tersanding menjadi
-  role berbeda yang tidak pernah diberikan oleh persetujuan penyandingan.
-- `node.pair.*` (CLI: `openclaw nodes pending/approve/reject/remove/rename`) adalah penyimpanan penyandingan node terpisah milik gateway; ini **tidak** membatasi handshake WS `connect`.
-- `openclaw nodes remove --node <id|name|ip>` menghapus entri usang dari
-  penyimpanan penyandingan node terpisah milik gateway tersebut.
+- `nodes status` menandai node sebagai **paired** ketika role pairing perangkatnya mencakup `node`.
+- Catatan pairing perangkat adalah kontrak role yang disetujui dan tahan lama. Rotasi token
+  tetap berada di dalam kontrak tersebut; rotasi tidak dapat meningkatkan node yang sudah paired menjadi
+  role berbeda yang tidak pernah diberikan oleh persetujuan pairing.
+- `node.pair.*` (CLI: `openclaw nodes pending/approve/reject/remove/rename`) adalah penyimpanan pairing
+  node terpisah yang dimiliki gateway; ini **tidak** mengatur handshake WS `connect`.
+- `openclaw nodes remove --node <id|name|ip>` menghapus entri usang dari penyimpanan pairing node
+  terpisah yang dimiliki gateway tersebut.
 - Cakupan persetujuan mengikuti perintah yang dideklarasikan permintaan tertunda:
   - permintaan tanpa perintah: `operator.pairing`
   - perintah node non-exec: `operator.pairing` + `operator.write`
@@ -66,26 +67,26 @@ Catatan:
 
 ## Host node jarak jauh (system.run)
 
-Gunakan **host node** saat Gateway Anda berjalan di satu mesin dan Anda ingin perintah
-dieksekusi di mesin lain. Model tetap berbicara ke **gateway**; gateway
-meneruskan panggilan `exec` ke **host node** saat `host=node` dipilih.
+Gunakan **host node** ketika Gateway Anda berjalan di satu mesin dan Anda ingin perintah
+dijalankan di mesin lain. Model tetap berbicara ke **gateway**; gateway
+meneruskan panggilan `exec` ke **host node** ketika `host=node` dipilih.
 
 ### Apa yang berjalan di mana
 
-- **Host Gateway**: menerima pesan, menjalankan model, merutekan panggilan alat.
-- **Host node**: mengeksekusi `system.run`/`system.which` pada mesin node.
+- **Host Gateway**: menerima pesan, menjalankan model, merutekan panggilan tool.
+- **Host node**: menjalankan `system.run`/`system.which` pada mesin node.
 - **Persetujuan**: diberlakukan pada host node melalui `~/.openclaw/exec-approvals.json`.
 
 Catatan persetujuan:
 
-- Eksekusi node berbasis persetujuan mengikat konteks permintaan yang tepat.
-- Untuk eksekusi file shell/runtime langsung, OpenClaw juga berupaya mengikat satu operand file lokal konkret
-  dan menolak eksekusi jika file itu berubah sebelum eksekusi.
+- Eksekusi node berbasis persetujuan mengikat konteks permintaan yang persis.
+- Untuk eksekusi file shell/runtime langsung, OpenClaw juga berupaya mengikat satu operand file lokal
+  konkret dan menolak eksekusi jika file tersebut berubah sebelum eksekusi.
 - Jika OpenClaw tidak dapat mengidentifikasi tepat satu file lokal konkret untuk perintah interpreter/runtime,
   eksekusi berbasis persetujuan ditolak alih-alih berpura-pura memiliki cakupan runtime penuh. Gunakan sandboxing,
-  host terpisah, atau allowlist/alur kerja penuh tepercaya yang eksplisit untuk semantik interpreter yang lebih luas.
+  host terpisah, atau allowlist/workflow penuh tepercaya yang eksplisit untuk semantik interpreter yang lebih luas.
 
-### Mulai host node (foreground)
+### Memulai host node (foreground)
 
 Pada mesin node:
 
@@ -93,9 +94,9 @@ Pada mesin node:
 openclaw node run --host <gateway-host> --port 18789 --display-name "Build Node"
 ```
 
-### Gateway jarak jauh melalui tunnel SSH (bind loopback)
+### Gateway jarak jauh melalui tunnel SSH (loopback bind)
 
-Jika Gateway bind ke loopback (`gateway.bind=loopback`, default dalam mode lokal),
+Jika Gateway melakukan bind ke loopback (`gateway.bind=loopback`, default dalam mode lokal),
 host node jarak jauh tidak dapat terhubung langsung. Buat tunnel SSH dan arahkan
 host node ke ujung lokal tunnel.
 
@@ -112,15 +113,15 @@ openclaw node run --host 127.0.0.1 --port 18790 --display-name "Build Node"
 
 Catatan:
 
-- `openclaw node run` mendukung autentikasi token atau kata sandi.
-- Env var lebih disukai: `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`.
+- `openclaw node run` mendukung auth token atau kata sandi.
+- Env vars lebih disarankan: `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`.
 - Fallback konfigurasi adalah `gateway.auth.token` / `gateway.auth.password`.
 - Dalam mode lokal, host node sengaja mengabaikan `gateway.remote.token` / `gateway.remote.password`.
 - Dalam mode jarak jauh, `gateway.remote.token` / `gateway.remote.password` memenuhi syarat sesuai aturan prioritas jarak jauh.
-- Jika SecretRef `gateway.auth.*` lokal aktif dikonfigurasi tetapi tidak terselesaikan, autentikasi host node gagal tertutup.
-- Resolusi autentikasi host node hanya menghormati env var `OPENCLAW_GATEWAY_*`.
+- Jika SecretRefs `gateway.auth.*` lokal aktif dikonfigurasi tetapi tidak terselesaikan, auth host node gagal tertutup.
+- Resolusi auth host node hanya menghormati env vars `OPENCLAW_GATEWAY_*`.
 
-### Mulai host node (layanan)
+### Memulai host node (layanan)
 
 ```bash
 openclaw node install --host <gateway-host> --port 18789 --display-name "Build Node"
@@ -128,7 +129,7 @@ openclaw node start
 openclaw node restart
 ```
 
-### Sandingkan + beri nama
+### Pair + beri nama
 
 Pada host gateway:
 
@@ -138,7 +139,7 @@ openclaw devices approve <requestId>
 openclaw nodes status
 ```
 
-Jika node mencoba ulang dengan detail autentikasi yang berubah, jalankan ulang `openclaw devices list`
+Jika node mencoba ulang dengan detail auth yang berubah, jalankan ulang `openclaw devices list`
 dan setujui `requestId` saat ini.
 
 Opsi penamaan:
@@ -146,9 +147,9 @@ Opsi penamaan:
 - `--display-name` pada `openclaw node run` / `openclaw node install` (bertahan di `~/.openclaw/node.json` pada node).
 - `openclaw nodes rename --node <id|name|ip> --name "Build Node"` (override gateway).
 
-### Allowlist perintah
+### Masukkan perintah ke allowlist
 
-Persetujuan exec bersifat **per host node**. Tambahkan entri allowlist dari gateway:
+Persetujuan exec berlaku **per host node**. Tambahkan entri allowlist dari gateway:
 
 ```bash
 openclaw approvals allowlist add --node <id|name|ip> "/usr/bin/uname"
@@ -176,52 +177,55 @@ Atau per sesi:
 Setelah diatur, setiap panggilan `exec` dengan `host=node` berjalan pada host node (tunduk pada
 allowlist/persetujuan node).
 
-`host=auto` tidak akan secara implisit memilih node dengan sendirinya, tetapi permintaan eksplisit per panggilan `host=node` diizinkan dari `auto`. Jika Anda ingin exec node menjadi default untuk sesi, atur `tools.exec.host=node` atau `/exec host=node ...` secara eksplisit.
+`host=auto` tidak akan secara implisit memilih node sendiri, tetapi permintaan eksplisit per panggilan `host=node` diizinkan dari `auto`. Jika Anda ingin exec node menjadi default untuk sesi, atur `tools.exec.host=node` atau `/exec host=node ...` secara eksplisit.
 
 Terkait:
 
 - [CLI host node](/id/cli/node)
-- [Alat exec](/id/tools/exec)
+- [Tool exec](/id/tools/exec)
 - [Persetujuan exec](/id/tools/exec-approvals)
 
-## Memanggil perintah
+## Menjalankan perintah
 
-Tingkat rendah (RPC mentah):
+Level rendah (RPC mentah):
 
 ```bash
 openclaw nodes invoke --node <idOrNameOrIp> --command canvas.eval --params '{"javaScript":"location.href"}'
 ```
 
-Helper tingkat lebih tinggi tersedia untuk alur kerja umum “berikan lampiran MEDIA kepada agen”.
+Helper level lebih tinggi tersedia untuk workflow umum "beri agen lampiran MEDIA".
 
 ## Kebijakan perintah
 
-Perintah node harus melewati dua gerbang sebelum dapat dipanggil:
+Perintah node harus melewati dua gate sebelum dapat dijalankan:
 
-1. Node harus mendeklarasikan perintah dalam daftar WebSocket `connect.commands` miliknya.
+1. Node harus mendeklarasikan perintah dalam daftar WebSocket `connect.commands`.
 2. Kebijakan platform gateway harus mengizinkan perintah yang dideklarasikan.
 
-Node pendamping Windows dan macOS mengizinkan perintah terdeklarasi yang aman seperti
+Node pendamping Windows dan macOS mengizinkan perintah yang dideklarasikan dan aman seperti
 `canvas.*`, `camera.list`, `location.get`, dan `screen.snapshot` secara default.
-Perintah berbahaya atau berat privasi seperti `camera.snap`, `camera.clip`, dan
+Node tepercaya yang mengiklankan kapabilitas `talk` atau mendeklarasikan perintah `talk.*`
+juga mengizinkan perintah push-to-talk yang dideklarasikan (`talk.ptt.start`, `talk.ptt.stop`,
+`talk.ptt.cancel`, `talk.ptt.once`) secara default, terlepas dari label platform.
+Perintah berbahaya atau sangat sensitif terhadap privasi seperti `camera.snap`, `camera.clip`, dan
 `screen.record` tetap memerlukan opt-in eksplisit dengan
-`gateway.nodes.allowCommands`. `gateway.nodes.denyCommands` selalu mengalahkan
+`gateway.nodes.allowCommands`. `gateway.nodes.denyCommands` selalu menang atas
 default dan entri allowlist tambahan.
 
-Perintah node milik Plugin dapat menambahkan kebijakan pemanggilan node Gateway. Kebijakan itu
+Perintah node yang dimiliki Plugin dapat menambahkan kebijakan node-invoke Gateway. Kebijakan tersebut
 berjalan setelah pemeriksaan allowlist dan sebelum diteruskan ke node, sehingga
-`node.invoke` mentah, helper CLI, dan alat agen khusus berbagi batas izin Plugin
-yang sama. Perintah node Plugin yang berbahaya tetap memerlukan opt-in eksplisit
+`node.invoke` mentah, helper CLI, dan tool agen khusus berbagi batas izin plugin
+yang sama. Perintah node plugin yang berbahaya tetap memerlukan opt-in eksplisit
 `gateway.nodes.allowCommands`.
 
-Setelah node mengubah daftar perintah yang dideklarasikan, tolak penyandingan perangkat lama
+Setelah node mengubah daftar perintah yang dideklarasikannya, tolak pairing perangkat lama
 dan setujui permintaan baru agar gateway menyimpan snapshot perintah yang diperbarui.
 
-## Tangkapan layar (snapshot canvas)
+## Screenshot (snapshot canvas)
 
 Jika node menampilkan Canvas (WebView), `canvas.snapshot` mengembalikan `{ format, base64 }`.
 
-Helper CLI (menulis ke file sementara dan mencetak `MEDIA:<path>`):
+Helper CLI (menulis ke file temp dan mencetak `MEDIA:<path>`):
 
 ```bash
 openclaw nodes canvas snapshot --node <idOrNameOrIp> --format png
@@ -239,8 +243,8 @@ openclaw nodes canvas eval --node <idOrNameOrIp> --js "document.title"
 
 Catatan:
 
-- `canvas present` menerima URL atau path file lokal (`--target`), plus `--x/--y/--width/--height` opsional untuk penempatan.
-- `canvas eval` menerima JS inline (`--js`) atau argumen posisional.
+- `canvas present` menerima URL atau path file lokal (`--target`), ditambah opsional `--x/--y/--width/--height` untuk pemosisian.
+- `canvas eval` menerima JS inline (`--js`) atau arg posisi.
 
 ### A2UI (Canvas)
 
@@ -277,7 +281,7 @@ Catatan:
 - Durasi klip dibatasi (saat ini `<= 60s`) untuk menghindari payload base64 yang terlalu besar.
 - Android akan meminta izin `CAMERA`/`RECORD_AUDIO` jika memungkinkan; izin yang ditolak gagal dengan `*_PERMISSION_REQUIRED`.
 
-## Rekaman layar (node)
+## Perekaman layar (node)
 
 Node yang didukung mengekspos `screen.record` (mp4). Contoh:
 
@@ -289,13 +293,13 @@ openclaw nodes screen record --node <idOrNameOrIp> --duration 10s --fps 10 --no-
 Catatan:
 
 - Ketersediaan `screen.record` bergantung pada platform node.
-- Rekaman layar dibatasi hingga `<= 60s`.
+- Perekaman layar dibatasi hingga `<= 60s`.
 - `--no-audio` menonaktifkan penangkapan mikrofon pada platform yang didukung.
-- Gunakan `--screen <index>` untuk memilih tampilan saat beberapa layar tersedia.
+- Gunakan `--screen <index>` untuk memilih tampilan ketika beberapa layar tersedia.
 
 ## Lokasi (node)
 
-Node mengekspos `location.get` saat Lokasi diaktifkan di pengaturan.
+Node mengekspos `location.get` ketika Location diaktifkan di pengaturan.
 
 Helper CLI:
 
@@ -306,15 +310,15 @@ openclaw nodes location get --node <idOrNameOrIp> --accuracy precise --max-age 1
 
 Catatan:
 
-- Lokasi **nonaktif secara default**.
-- “Selalu” memerlukan izin sistem; pengambilan latar belakang bersifat upaya terbaik.
+- Location **nonaktif secara default**.
+- "Always" memerlukan izin sistem; fetch latar belakang dilakukan sebisa mungkin.
 - Respons mencakup lat/lon, akurasi (meter), dan timestamp.
 
 ## SMS (node Android)
 
-Node Android dapat mengekspos `sms.send` saat pengguna memberikan izin **SMS** dan perangkat mendukung telefoni.
+Node Android dapat mengekspos `sms.send` ketika pengguna memberikan izin **SMS** dan perangkat mendukung teleponi.
 
-Pemanggilan tingkat rendah:
+Invoke level rendah:
 
 ```bash
 openclaw nodes invoke --node <idOrNameOrIp> --command sms.send --params '{"to":"+15555550123","message":"Hello from OpenClaw"}'
@@ -323,11 +327,11 @@ openclaw nodes invoke --node <idOrNameOrIp> --command sms.send --params '{"to":"
 Catatan:
 
 - Prompt izin harus diterima pada perangkat Android sebelum kapabilitas diiklankan.
-- Perangkat khusus Wi-Fi tanpa telefoni tidak akan mengiklankan `sms.send`.
+- Perangkat khusus Wi-Fi tanpa teleponi tidak akan mengiklankan `sms.send`.
 
 ## Perintah perangkat Android + data pribadi
 
-Node Android dapat mengiklankan keluarga perintah tambahan saat kapabilitas terkait diaktifkan.
+Node Android dapat mengiklankan keluarga perintah tambahan ketika kapabilitas terkait diaktifkan.
 
 Keluarga yang tersedia:
 
@@ -352,10 +356,10 @@ Catatan:
 
 - Perintah gerakan dibatasi kemampuan berdasarkan sensor yang tersedia.
 
-## Perintah sistem (host node / node mac)
+## Perintah sistem (host node / node Mac)
 
 Node macOS mengekspos `system.run`, `system.notify`, dan `system.execApprovals.get/set`.
-Host node tanpa antarmuka mengekspos `system.run`, `system.which`, dan `system.execApprovals.get/set`.
+Host node headless mengekspos `system.run`, `system.which`, dan `system.execApprovals.get/set`.
 
 Contoh:
 
@@ -370,19 +374,19 @@ Catatan:
 - Eksekusi shell sekarang melalui alat `exec` dengan `host=node`; `nodes` tetap menjadi permukaan RPC langsung untuk perintah node eksplisit.
 - `nodes invoke` tidak mengekspos `system.run` atau `system.run.prepare`; keduanya tetap hanya berada di jalur exec.
 - Jalur exec menyiapkan `systemRunPlan` kanonis sebelum persetujuan. Setelah
-  persetujuan diberikan, Gateway meneruskan rencana tersimpan itu, bukan field
+  persetujuan diberikan, Gateway meneruskan rencana tersimpan tersebut, bukan kolom
   command/cwd/session yang kemudian diedit pemanggil.
 - `system.notify` mematuhi status izin notifikasi pada aplikasi macOS.
 - Metadata node `platform` / `deviceFamily` yang tidak dikenali menggunakan allowlist default konservatif yang mengecualikan `system.run` dan `system.which`. Jika Anda sengaja memerlukan perintah tersebut untuk platform yang tidak dikenal, tambahkan secara eksplisit melalui `gateway.nodes.allowCommands`.
 - `system.run` mendukung `--cwd`, `--env KEY=VAL`, `--command-timeout`, dan `--needs-screen-recording`.
 - Untuk pembungkus shell (`bash|sh|zsh ... -c/-lc`), nilai `--env` bercakupan permintaan dikurangi menjadi allowlist eksplisit (`TERM`, `LANG`, `LC_*`, `COLORTERM`, `NO_COLOR`, `FORCE_COLOR`).
-- Untuk keputusan selalu izinkan dalam mode allowlist, pembungkus dispatch yang dikenal (`env`, `nice`, `nohup`, `stdbuf`, `timeout`) mempertahankan path executable bagian dalam, bukan path pembungkus. Jika pembukaan pembungkus tidak aman, tidak ada entri allowlist yang dipertahankan secara otomatis.
+- Untuk keputusan selalu izinkan dalam mode allowlist, pembungkus dispatch yang dikenal (`env`, `nice`, `nohup`, `stdbuf`, `timeout`) mempertahankan jalur executable internal, bukan jalur pembungkus. Jika pembukaan pembungkus tidak aman, tidak ada entri allowlist yang dipertahankan secara otomatis.
 - Pada host node Windows dalam mode allowlist, proses pembungkus shell melalui `cmd.exe /c` memerlukan persetujuan (entri allowlist saja tidak otomatis mengizinkan bentuk pembungkus).
 - `system.notify` mendukung `--priority <passive|active|timeSensitive>` dan `--delivery <system|overlay|auto>`.
 - Host node mengabaikan override `PATH` dan menghapus kunci startup/shell berbahaya (`DYLD_*`, `LD_*`, `NODE_OPTIONS`, `PYTHON*`, `PERL*`, `RUBYOPT`, `SHELLOPTS`, `PS4`). Jika Anda memerlukan entri PATH tambahan, konfigurasikan lingkungan layanan host node (atau instal alat di lokasi standar), bukan meneruskan `PATH` melalui `--env`.
 - Pada mode node macOS, `system.run` dibatasi oleh persetujuan exec di aplikasi macOS (Settings → Exec approvals).
-  Ask/allowlist/full berperilaku sama seperti host node tanpa antarmuka; prompt yang ditolak mengembalikan `SYSTEM_RUN_DENIED`.
-- Pada host node tanpa antarmuka, `system.run` dibatasi oleh persetujuan exec (`~/.openclaw/exec-approvals.json`).
+  Ask/allowlist/full berperilaku sama seperti host node headless; prompt yang ditolak mengembalikan `SYSTEM_RUN_DENIED`.
+- Pada host node headless, `system.run` dibatasi oleh persetujuan exec (`~/.openclaw/exec-approvals.json`).
 
 ## Pengikatan node exec
 
@@ -402,7 +406,7 @@ openclaw config get agents.list
 openclaw config set agents.list[0].tools.exec.node "node-id-or-name"
 ```
 
-Hapus pengaturan agar node mana pun diizinkan:
+Hapus pengaturan untuk mengizinkan node apa pun:
 
 ```bash
 openclaw config unset tools.exec.node
@@ -411,13 +415,13 @@ openclaw config unset agents.list[0].tools.exec.node
 
 ## Peta izin
 
-Node dapat menyertakan peta `permissions` dalam `node.list` / `node.describe`, dengan kunci berupa nama izin (mis. `screenRecording`, `accessibility`) dan nilai boolean (`true` = diberikan).
+Node dapat menyertakan peta `permissions` di `node.list` / `node.describe`, dengan kunci berupa nama izin (misalnya `screenRecording`, `accessibility`) dan nilai boolean (`true` = diberikan).
 
-## Host node tanpa antarmuka (lintas platform)
+## Host node headless (lintas platform)
 
-OpenClaw dapat menjalankan **host node tanpa antarmuka** (tanpa UI) yang terhubung ke WebSocket Gateway
-dan mengekspos `system.run` / `system.which`. Ini berguna di Linux/Windows
-atau untuk menjalankan node minimal bersama server.
+OpenClaw dapat menjalankan **host node headless** (tanpa UI) yang terhubung ke WebSocket
+Gateway dan mengekspos `system.run` / `system.which`. Ini berguna di Linux/Windows
+atau untuk menjalankan node minimal berdampingan dengan server.
 
 Mulai:
 
@@ -431,12 +435,12 @@ Catatan:
 - Host node menyimpan id node, token, nama tampilan, dan info koneksi gateway di `~/.openclaw/node.json`.
 - Persetujuan exec diberlakukan secara lokal melalui `~/.openclaw/exec-approvals.json`
   (lihat [Persetujuan exec](/id/tools/exec-approvals)).
-- Pada macOS, host node tanpa antarmuka menjalankan `system.run` secara lokal secara default. Tetapkan
+- Pada macOS, host node headless mengeksekusi `system.run` secara lokal secara default. Setel
   `OPENCLAW_NODE_EXEC_HOST=app` untuk merutekan `system.run` melalui host exec aplikasi pendamping; tambahkan
   `OPENCLAW_NODE_EXEC_FALLBACK=0` untuk mewajibkan host aplikasi dan gagal tertutup jika tidak tersedia.
 - Tambahkan `--tls` / `--tls-fingerprint` saat WS Gateway menggunakan TLS.
 
 ## Mode node Mac
 
-- Aplikasi menubar macOS terhubung ke server WS Gateway sebagai node (sehingga `openclaw nodes …` bekerja terhadap Mac ini).
+- Aplikasi menubar macOS terhubung ke server WS Gateway sebagai node (sehingga `openclaw nodes …` berfungsi terhadap Mac ini).
 - Dalam mode jarak jauh, aplikasi membuka tunnel SSH untuk port Gateway dan terhubung ke `localhost`.

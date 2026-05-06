@@ -1,27 +1,31 @@
 ---
 read_when:
     - Anda ingin menggunakan Groq dengan OpenClaw
-    - Anda memerlukan variabel lingkungan kunci API atau pilihan autentikasi CLI
-summary: Penyiapan Groq (autentikasi + pemilihan model)
+    - Anda memerlukan variabel lingkungan untuk kunci API atau pilihan autentikasi CLI
+    - Anda sedang mengonfigurasi transkripsi audio Whisper di Groq
+summary: Penyiapan Groq (autentikasi + pemilihan model + transkripsi Whisper)
 title: Groq
 x-i18n:
-    generated_at: "2026-05-02T09:29:23Z"
+    generated_at: "2026-05-06T09:25:17Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 2cf6678047581a438906420894b250bafb68d71254fbaf30ea5dfcfc4799eac7
+    source_hash: 53ce6d702eb1e0abba0cf1efd3e86c766444f5e7cbf26c312b94a74fa410b700
     source_path: providers/groq.md
     workflow: 16
 ---
 
-[Groq](https://groq.com) menyediakan inferensi sangat cepat pada model sumber terbuka
-(Llama, Gemma, Mistral, dan lainnya) menggunakan perangkat keras LPU khusus. OpenClaw terhubung
-ke Groq melalui API-nya yang kompatibel dengan OpenAI.
+[Groq](https://groq.com) menyediakan inferensi sangat cepat pada model berbobot terbuka (Llama, Gemma, Kimi, Qwen, GPT OSS, dan lainnya) menggunakan perangkat keras LPU khusus. OpenClaw menyertakan Plugin Groq bawaan yang mendaftarkan penyedia chat yang kompatibel dengan OpenAI dan penyedia pemahaman media audio.
 
-| Properti | Nilai             |
-| -------- | ----------------- |
-| Penyedia | `groq`            |
-| Auth     | `GROQ_API_KEY`    |
-| API      | Kompatibel dengan OpenAI |
+| Properti               | Nilai                                    |
+| ---------------------- | ---------------------------------------- |
+| ID penyedia            | `groq`                                   |
+| Plugin                 | bawaan, `enabledByDefault: true`         |
+| Var env autentikasi    | `GROQ_API_KEY`                           |
+| Flag onboarding        | `--auth-choice groq-api-key`             |
+| API                    | kompatibel dengan OpenAI (`openai-completions`) |
+| URL dasar              | `https://api.groq.com/openai/v1`         |
+| Transkripsi audio      | `whisper-large-v3-turbo` (default)       |
+| Default chat yang disarankan | `groq/llama-3.3-70b-versatile`     |
 
 ## Memulai
 
@@ -29,12 +33,21 @@ ke Groq melalui API-nya yang kompatibel dengan OpenAI.
   <Step title="Dapatkan kunci API">
     Buat kunci API di [console.groq.com/keys](https://console.groq.com/keys).
   </Step>
-  <Step title="Atur kunci API">
-    ```bash
-    export GROQ_API_KEY="gsk_..."
-    ```
+  <Step title="Tetapkan kunci API">
+    <CodeGroup>
+
+```bash Onboarding
+openclaw onboard --auth-choice groq-api-key
+```
+
+```bash Env only
+export GROQ_API_KEY=gsk_...
+```
+
+    </CodeGroup>
+
   </Step>
-  <Step title="Atur model default">
+  <Step title="Tetapkan model default">
     ```json5
     {
       agents: {
@@ -43,6 +56,11 @@ ke Groq melalui API-nya yang kompatibel dengan OpenAI.
         },
       },
     }
+    ```
+  </Step>
+  <Step title="Verifikasi katalog dapat dijangkau">
+    ```bash
+    openclaw models list --provider groq
     ```
   </Step>
 </Steps>
@@ -62,36 +80,56 @@ ke Groq melalui API-nya yang kompatibel dengan OpenAI.
 
 ## Katalog bawaan
 
-OpenClaw menyertakan katalog Groq berbasis manifes untuk daftar model cepat
-yang difilter berdasarkan penyedia. Jalankan `openclaw models list --all --provider groq` untuk melihat baris
-bawaan, atau periksa
-[console.groq.com/docs/models](https://console.groq.com/docs/models).
+OpenClaw menyertakan katalog Groq berbasis manifes dengan entri reasoning dan non-reasoning. Jalankan `openclaw models list --provider groq` untuk melihat baris bawaan bagi versi yang terpasang, atau periksa [console.groq.com/docs/models](https://console.groq.com/docs/models) untuk daftar resmi Groq.
 
-| Model                       | Catatan                            |
-| --------------------------- | ---------------------------------- |
-| **Llama 3.3 70B Versatile** | Serbaguna, konteks besar           |
-| **Llama 3.1 8B Instant**    | Cepat, ringan                      |
-| **Gemma 2 9B**              | Ringkas, efisien                   |
-| **Mixtral 8x7B**            | Arsitektur MoE, penalaran kuat     |
+| Ref model                                            | Nama                          | Reasoning | Input        | Konteks |
+| ---------------------------------------------------- | ----------------------------- | --------- | ------------ | ------- |
+| `groq/llama-3.3-70b-versatile`                       | Llama 3.3 70B Versatile       | tidak     | teks         | 131,072 |
+| `groq/llama-3.1-8b-instant`                          | Llama 3.1 8B Instant          | tidak     | teks         | 131,072 |
+| `groq/meta-llama/llama-4-maverick-17b-128e-instruct` | Llama 4 Maverick 17B          | tidak     | teks + gambar | 131,072 |
+| `groq/meta-llama/llama-4-scout-17b-16e-instruct`     | Llama 4 Scout 17B             | tidak     | teks + gambar | 131,072 |
+| `groq/llama3-70b-8192`                               | Llama 3 70B                   | tidak     | teks         | 8,192   |
+| `groq/llama3-8b-8192`                                | Llama 3 8B                    | tidak     | teks         | 8,192   |
+| `groq/gemma2-9b-it`                                  | Gemma 2 9B                    | tidak     | teks         | 8,192   |
+| `groq/mistral-saba-24b`                              | Mistral Saba 24B              | tidak     | teks         | 32,768  |
+| `groq/moonshotai/kimi-k2-instruct`                   | Kimi K2 Instruct              | tidak     | teks         | 131,072 |
+| `groq/moonshotai/kimi-k2-instruct-0905`              | Kimi K2 Instruct 0905         | tidak     | teks         | 262,144 |
+| `groq/openai/gpt-oss-120b`                           | GPT OSS 120B                  | ya        | teks         | 131,072 |
+| `groq/openai/gpt-oss-20b`                            | GPT OSS 20B                   | ya        | teks         | 131,072 |
+| `groq/openai/gpt-oss-safeguard-20b`                  | Safety GPT OSS 20B            | ya        | teks         | 131,072 |
+| `groq/qwen-qwq-32b`                                  | Qwen QwQ 32B                  | ya        | teks         | 131,072 |
+| `groq/qwen/qwen3-32b`                                | Qwen3 32B                     | ya        | teks         | 131,072 |
+| `groq/deepseek-r1-distill-llama-70b`                 | DeepSeek R1 Distill Llama 70B | ya        | teks         | 131,072 |
+| `groq/groq/compound`                                 | Compound                      | ya        | teks         | 131,072 |
+| `groq/groq/compound-mini`                            | Compound Mini                 | ya        | teks         | 131,072 |
 
 <Tip>
-Gunakan `openclaw models list --all --provider groq` untuk baris Groq berbasis manifes
-yang diketahui oleh versi OpenClaw ini.
+  Katalog berkembang bersama setiap rilis OpenClaw. `openclaw models list --provider groq` menampilkan baris yang diketahui oleh versi yang terpasang; bandingkan dengan [console.groq.com/docs/models](https://console.groq.com/docs/models) untuk model yang baru ditambahkan atau tidak digunakan lagi.
 </Tip>
 
-## Model penalaran
+## Model reasoning
 
-OpenClaw memetakan level `/think` bersama ke nilai `reasoning_effort`
-khusus model milik Groq. Untuk `qwen/qwen3-32b`, penalaran yang dinonaktifkan mengirim
-`none` dan penalaran yang diaktifkan mengirim `default`. Untuk model penalaran Groq GPT-OSS,
-OpenClaw mengirim `low`, `medium`, atau `high`; penalaran yang dinonaktifkan menghilangkan
-`reasoning_effort` karena model tersebut tidak mendukung nilai nonaktif.
+OpenClaw memetakan level `/think` bersama ke nilai `reasoning_effort` khusus model milik Groq:
+
+- Untuk `qwen/qwen3-32b`, thinking yang dinonaktifkan mengirim `none` dan thinking yang diaktifkan mengirim `default`.
+- Untuk model reasoning Groq GPT OSS (`openai/gpt-oss-*`), OpenClaw mengirim `low`, `medium`, atau `high` berdasarkan level `/think`. Thinking yang dinonaktifkan menghilangkan `reasoning_effort` karena model tersebut tidak mendukung nilai nonaktif.
+- DeepSeek R1 Distill, Qwen QwQ, dan Compound menggunakan surface reasoning native milik Groq; `/think` mengontrol visibilitas, tetapi model selalu melakukan reasoning.
+
+Lihat [Mode thinking](/id/tools/thinking) untuk level `/think` bersama dan cara OpenClaw menerjemahkannya per penyedia.
 
 ## Transkripsi audio
 
-Groq juga menyediakan transkripsi audio berbasis Whisper yang cepat. Saat dikonfigurasi sebagai
-penyedia pemahaman media, OpenClaw menggunakan model `whisper-large-v3-turbo`
-milik Groq untuk mentranskripsi pesan suara melalui permukaan bersama `tools.media.audio`.
+Plugin bawaan Groq juga mendaftarkan **penyedia pemahaman media audio** agar pesan suara dapat ditranskripsi melalui surface bersama `tools.media.audio`.
+
+| Properti           | Nilai                                     |
+| ------------------ | ----------------------------------------- |
+| Jalur konfigurasi bersama | `tools.media.audio`                |
+| URL dasar default  | `https://api.groq.com/openai/v1`          |
+| Model default      | `whisper-large-v3-turbo`                  |
+| Prioritas otomatis | 20                                        |
+| Endpoint API       | kompatibel dengan OpenAI `/audio/transcriptions` |
+
+Untuk menjadikan Groq sebagai backend audio default:
 
 ```json5
 {
@@ -106,25 +144,27 @@ milik Groq untuk mentranskripsi pesan suara melalui permukaan bersama `tools.med
 ```
 
 <AccordionGroup>
-  <Accordion title="Detail transkripsi audio">
-    | Properti | Nilai |
-    |----------|-------|
-    | Jalur konfigurasi bersama | `tools.media.audio` |
-    | URL dasar default   | `https://api.groq.com/openai/v1` |
-    | Model default      | `whisper-large-v3-turbo` |
-    | Endpoint API       | `/audio/transcriptions` kompatibel dengan OpenAI |
-  </Accordion>
-
-  <Accordion title="Catatan lingkungan">
-    Jika Gateway berjalan sebagai daemon (launchd/systemd), pastikan `GROQ_API_KEY` tersedia
-    untuk proses tersebut (misalnya, di `~/.openclaw/.env` atau melalui
-    `env.shellEnv`).
+  <Accordion title="Ketersediaan lingkungan untuk daemon">
+    Jika Gateway berjalan sebagai layanan terkelola (launchd, systemd, Docker), `GROQ_API_KEY` harus terlihat oleh proses tersebut — bukan hanya oleh shell interaktif Anda.
 
     <Warning>
-    Kunci yang hanya diatur di shell interaktif Anda tidak terlihat oleh proses Gateway
-    yang dikelola daemon. Gunakan konfigurasi `~/.openclaw/.env` atau `env.shellEnv` untuk
-    ketersediaan persisten.
+      Kunci yang hanya berada di `~/.profile` tidak akan membantu daemon launchd atau systemd kecuali lingkungan tersebut juga diimpor ke sana. Tetapkan kunci di `~/.openclaw/.env` atau melalui `env.shellEnv` agar dapat dibaca dari proses Gateway.
     </Warning>
+
+  </Accordion>
+
+  <Accordion title="ID model Groq kustom">
+    OpenClaw menerima ID model Groq apa pun saat runtime. Gunakan ID persis seperti yang ditampilkan Groq dan beri prefiks `groq/`. Katalog bawaan mencakup kasus umum; ID yang tidak ada di katalog akan diteruskan ke template default yang kompatibel dengan OpenAI.
+
+    ```json5
+    {
+      agents: {
+        defaults: {
+          model: { primary: "groq/<your-model-id>" },
+        },
+      },
+    }
+    ```
 
   </Accordion>
 </AccordionGroup>
@@ -132,16 +172,16 @@ milik Groq untuk mentranskripsi pesan suara melalui permukaan bersama `tools.med
 ## Terkait
 
 <CardGroup cols={2}>
-  <Card title="Pemilihan model" href="/id/concepts/model-providers" icon="layers">
-    Memilih penyedia, referensi model, dan perilaku failover.
+  <Card title="Penyedia model" href="/id/concepts/model-providers" icon="layers">
+    Memilih penyedia, ref model, dan perilaku failover.
+  </Card>
+  <Card title="Mode thinking" href="/id/tools/thinking" icon="brain">
+    Level upaya reasoning dan interaksi kebijakan penyedia.
   </Card>
   <Card title="Referensi konfigurasi" href="/id/gateway/configuration-reference" icon="gear">
     Skema konfigurasi lengkap termasuk pengaturan penyedia dan audio.
   </Card>
   <Card title="Groq Console" href="https://console.groq.com" icon="arrow-up-right-from-square">
     Dasbor Groq, dokumentasi API, dan harga.
-  </Card>
-  <Card title="Daftar model Groq" href="https://console.groq.com/docs/models" icon="list">
-    Katalog model resmi Groq.
   </Card>
 </CardGroup>

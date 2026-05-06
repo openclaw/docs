@@ -1,80 +1,80 @@
 ---
 read_when:
-    - Mengerjakan jalur voice wake atau PTT
-summary: Mode voice wake dan push-to-talk beserta detail peruteannya di aplikasi Mac
-title: Voice wake (macOS)
+    - Mengerjakan jalur aktivasi suara atau PTT
+summary: Mode pengaktifan suara dan tekan untuk bicara serta detail perutean di aplikasi Mac
+title: Aktivasi suara (macOS)
 x-i18n:
-    generated_at: "2026-04-24T09:17:34Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:20:36Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 0273c24764f0baf440a19f31435d6ee62ab040c1ec5a97d7733d3ec8b81b0641
+    source_hash: 312895b5767c447233bd77cbcd48ea81bb6c700080abc31974188b610a1b1ef0
     source_path: platforms/mac/voicewake.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Voice Wake & Push-to-Talk
+# Aktivasi Suara & Tekan-untuk-Bicara
 
 ## Mode
 
-- **Mode wake-word** (default): recognizer Speech yang selalu aktif menunggu token pemicu (`swabbleTriggerWords`). Saat cocok, ia memulai capture, menampilkan overlay dengan teks parsial, dan mengirim otomatis setelah hening.
-- **Push-to-talk (tahan Right Option)**: tahan tombol Option kanan untuk langsung merekam—tanpa pemicu. Overlay muncul selama ditahan; saat dilepas, hasil difinalkan dan diteruskan setelah jeda singkat agar Anda bisa menyesuaikan teks.
+- **Mode kata pemicu** (default): pengenal Speech yang selalu aktif menunggu token pemicu (`swabbleTriggerWords`). Saat cocok, ia mulai menangkap, menampilkan overlay dengan teks parsial, dan mengirim otomatis setelah hening.
+- **Tekan-untuk-bicara (tahan Option kanan)**: tahan tombol Option kanan untuk langsung menangkap—tanpa perlu pemicu. Overlay muncul saat ditahan; melepasnya akan memfinalisasi dan meneruskan setelah jeda singkat agar Anda dapat menyesuaikan teks.
 
-## Perilaku runtime (wake-word)
+## Perilaku runtime (kata pemicu)
 
-- Recognizer Speech hidup di `VoiceWakeRuntime`.
-- Pemicu hanya aktif ketika ada **jeda yang bermakna** antara wake word dan kata berikutnya (~0,55 dtk). Overlay/chime dapat dimulai pada jeda tersebut bahkan sebelum perintah dimulai.
+- Pengenal Speech berada di `VoiceWakeRuntime`.
+- Pemicu hanya aktif saat ada **jeda bermakna** antara kata pemicu dan kata berikutnya (celah ~0,55 dtk). Overlay/chime dapat mulai pada jeda tersebut bahkan sebelum perintah dimulai.
 - Jendela hening: 2,0 dtk saat ucapan sedang mengalir, 5,0 dtk jika hanya pemicu yang terdengar.
-- Batas keras: 120 dtk untuk mencegah sesi yang tak terkendali.
+- Penghentian paksa: 120 dtk untuk mencegah sesi berjalan liar.
 - Debounce antar sesi: 350 md.
-- Overlay dikendalikan melalui `VoiceWakeOverlayController` dengan pewarnaan committed/volatile.
-- Setelah pengiriman, recognizer dimulai ulang dengan bersih untuk mendengarkan pemicu berikutnya.
+- Overlay digerakkan melalui `VoiceWakeOverlayController` dengan pewarnaan committed/volatile.
+- Setelah pengiriman, pengenal dimulai ulang dengan bersih untuk mendengarkan pemicu berikutnya.
 
 ## Invarian siklus hidup
 
-- Jika Voice Wake diaktifkan dan izin telah diberikan, recognizer wake-word seharusnya sedang mendengarkan (kecuali selama capture push-to-talk yang eksplisit).
-- Visibilitas overlay (termasuk penutupan manual melalui tombol X) tidak boleh mencegah recognizer melanjutkan.
+- Jika Voice Wake diaktifkan dan izin diberikan, pengenal kata pemicu harus mendengarkan (kecuali selama penangkapan tekan-untuk-bicara eksplisit).
+- Visibilitas overlay (termasuk penutupan manual melalui tombol X) tidak boleh pernah mencegah pengenal untuk melanjutkan.
 
 ## Mode kegagalan overlay lengket (sebelumnya)
 
-Sebelumnya, jika overlay tersangkut tetap terlihat dan Anda menutupnya secara manual, Voice Wake bisa tampak “mati” karena upaya restart runtime dapat terblokir oleh visibilitas overlay dan tidak ada restart berikutnya yang dijadwalkan.
+Sebelumnya, jika overlay macet terlihat dan Anda menutupnya secara manual, Voice Wake dapat tampak "mati" karena upaya mulai ulang runtime dapat diblokir oleh visibilitas overlay dan tidak ada mulai ulang berikutnya yang dijadwalkan.
 
-Penguatan:
+Pengerasan:
 
-- Restart runtime wake tidak lagi diblokir oleh visibilitas overlay.
-- Penyelesaian dismiss overlay memicu `VoiceWakeRuntime.refresh(...)` melalui `VoiceSessionCoordinator`, sehingga dismiss manual dengan X selalu melanjutkan mode mendengarkan.
+- Mulai ulang runtime wake tidak lagi diblokir oleh visibilitas overlay.
+- Penyelesaian penutupan overlay memicu `VoiceWakeRuntime.refresh(...)` melalui `VoiceSessionCoordinator`, sehingga penutupan manual dengan X selalu melanjutkan pendengaran.
 
-## Kekhususan push-to-talk
+## Detail tekan-untuk-bicara
 
-- Deteksi hotkey menggunakan monitor global `.flagsChanged` untuk **Right Option** (`keyCode 61` + `.option`). Kami hanya mengamati event (tidak menelannya).
-- Pipeline capture berada di `VoicePushToTalk`: langsung memulai Speech, mengalirkan parsial ke overlay, dan memanggil `VoiceWakeForwarder` saat dilepas.
-- Saat push-to-talk dimulai, kami menjeda runtime wake-word untuk menghindari audio tap yang saling berebut; runtime akan dimulai ulang otomatis setelah dilepas.
-- Izin: memerlukan Microphone + Speech; untuk melihat event dibutuhkan persetujuan Accessibility/Input Monitoring.
-- Keyboard eksternal: beberapa mungkin tidak mengekspos Right Option seperti yang diharapkan—sediakan shortcut fallback jika pengguna melaporkan ada yang terlewat.
+- Deteksi hotkey menggunakan monitor global `.flagsChanged` untuk **Option kanan** (`keyCode 61` + `.option`). Kami hanya mengamati peristiwa (tanpa menelannya).
+- Pipeline penangkapan berada di `VoicePushToTalk`: langsung memulai Speech, mengalirkan parsial ke overlay, dan memanggil `VoiceWakeForwarder` saat dilepas.
+- Saat tekan-untuk-bicara dimulai, kami menjeda runtime kata pemicu untuk menghindari tap audio yang saling bersaing; runtime dimulai ulang otomatis setelah dilepas.
+- Izin: memerlukan Mikrofon + Speech; melihat peristiwa memerlukan persetujuan Accessibility/Input Monitoring.
+- Keyboard eksternal: beberapa mungkin tidak mengekspos Option kanan seperti yang diharapkan—tawarkan pintasan cadangan jika pengguna melaporkan terlewat.
 
-## Pengaturan yang terlihat oleh pengguna
+## Pengaturan yang terlihat pengguna
 
-- Toggle **Voice Wake**: mengaktifkan runtime wake-word.
-- **Hold Cmd+Fn to talk**: mengaktifkan monitor push-to-talk. Dinonaktifkan di macOS < 26.
-- Pemilih bahasa & mic, meter level live, tabel trigger-word, tester (hanya lokal; tidak meneruskan).
-- Pemilih mic mempertahankan pilihan terakhir jika perangkat terputus, menampilkan petunjuk terputus, dan sementara fallback ke default sistem sampai perangkat kembali.
-- **Sounds**: chime saat pemicu terdeteksi dan saat pengiriman; default ke suara sistem macOS “Glass”. Anda dapat memilih file apa pun yang dapat dimuat `NSSound` (mis. MP3/WAV/AIFF) untuk tiap event atau memilih **No Sound**.
+- Toggle **Voice Wake**: mengaktifkan runtime kata pemicu.
+- **Tahan Cmd+Fn untuk berbicara**: mengaktifkan monitor tekan-untuk-bicara. Dinonaktifkan pada macOS < 26.
+- Pemilih bahasa & mikrofon, meter level langsung, tabel kata pemicu, penguji (hanya lokal; tidak meneruskan).
+- Pemilih mikrofon mempertahankan pilihan terakhir jika perangkat terputus, menampilkan petunjuk terputus, dan sementara beralih ke default sistem sampai perangkat kembali.
+- **Suara**: chime saat pemicu terdeteksi dan saat pengiriman; default ke suara sistem macOS "Glass". Anda dapat memilih file apa pun yang dapat dimuat `NSSound` (mis. MP3/WAV/AIFF) untuk tiap peristiwa atau memilih **Tanpa Suara**.
 
 ## Perilaku penerusan
 
-- Saat Voice Wake diaktifkan, transkrip diteruskan ke gateway/agen aktif (mode lokal vs remote yang sama dengan yang digunakan oleh aplikasi Mac lainnya).
-- Balasan dikirim ke **provider utama yang terakhir digunakan** (WhatsApp/Telegram/Discord/WebChat). Jika pengiriman gagal, galat dicatat ke log dan run tetap terlihat melalui log WebChat/sesi.
+- Saat Voice Wake diaktifkan, transkrip diteruskan ke gateway/agen aktif (mode lokal vs jarak jauh yang sama dengan bagian lain aplikasi Mac).
+- Balasan dikirimkan ke **penyedia utama terakhir digunakan** (WhatsApp/Telegram/Discord/WebChat). Jika pengiriman gagal, kesalahan dicatat dan run tetap terlihat melalui WebChat/log sesi.
 
 ## Payload penerusan
 
-- `VoiceWakeForwarder.prefixedTranscript(_:)` menambahkan petunjuk mesin di depan sebelum mengirim. Digunakan bersama antara jalur wake-word dan push-to-talk.
+- `VoiceWakeForwarder.prefixedTranscript(_:)` menambahkan petunjuk mesin di awal sebelum mengirim. Dibagikan antara jalur kata pemicu dan tekan-untuk-bicara.
 
 ## Verifikasi cepat
 
-- Aktifkan push-to-talk, tahan Cmd+Fn, bicara, lalu lepaskan: overlay seharusnya menampilkan parsial lalu mengirim.
-- Saat menahan, telinga di menu bar seharusnya tetap membesar (menggunakan `triggerVoiceEars(ttl:nil)`); ukurannya turun setelah dilepas.
+- Aktifkan tekan-untuk-bicara, tahan Cmd+Fn, bicara, lepaskan: overlay seharusnya menampilkan parsial lalu mengirim.
+- Saat ditahan, telinga bilah menu harus tetap membesar (menggunakan `triggerVoiceEars(ttl:nil)`); ukurannya turun setelah dilepas.
 
 ## Terkait
 
-- [Voice wake](/id/nodes/voicewake)
-- [Voice overlay](/id/platforms/mac/voice-overlay)
-- [macOS app](/id/platforms/macos)
+- [Aktivasi suara](/id/nodes/voicewake)
+- [Overlay suara](/id/platforms/mac/voice-overlay)
+- [Aplikasi macOS](/id/platforms/macos)

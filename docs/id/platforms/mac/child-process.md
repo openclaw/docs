@@ -1,35 +1,28 @@
 ---
 read_when:
     - Mengintegrasikan aplikasi Mac dengan siklus hidup Gateway
-summary: Siklus hidup Gateway di macOS (`launchd`)
-title: Siklus hidup Gateway
+summary: Siklus hidup Gateway di macOS (launchd)
+title: Siklus hidup Gateway di macOS
 x-i18n:
-    generated_at: "2026-04-24T09:16:54Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:19:36Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: a110d8f4384301987f7748cb9591f8899aa845fcf635035407a7aa401b132fc4
+    source_hash: 543327024f8c635d74ac656923e8e745dc47ca9df0aba5ec51215bd186db2b35
     source_path: platforms/mac/child-process.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Siklus hidup Gateway di macOS
+Aplikasi macOS **mengelola Gateway melalui launchd** secara default dan tidak menjalankan Gateway sebagai proses anak. Aplikasi pertama-tama mencoba terhubung ke Gateway yang sudah berjalan pada port yang dikonfigurasi; jika tidak ada yang dapat dijangkau, aplikasi mengaktifkan layanan launchd melalui CLI `openclaw` eksternal (tanpa runtime tertanam). Ini memberi Anda mulai otomatis yang andal saat masuk dan mulai ulang saat terjadi kegagalan.
 
-Aplikasi macOS **mengelola Gateway melalui `launchd`** secara default dan tidak memunculkan
-Gateway sebagai proses child. Aplikasi ini pertama-tama mencoba menempel ke
-Gateway yang sudah berjalan pada port yang dikonfigurasi; jika tidak ada yang dapat dijangkau, aplikasi ini mengaktifkan layanan `launchd`
-melalui CLI `openclaw` eksternal (tanpa runtime tersemat). Ini memberi Anda
-auto-start yang andal saat login dan restart saat crash.
+Mode proses anak (Gateway dijalankan langsung oleh aplikasi) **tidak digunakan** saat ini. Jika Anda memerlukan keterikatan yang lebih erat dengan UI, jalankan Gateway secara manual di terminal.
 
-Mode child-process (Gateway dimunculkan langsung oleh aplikasi) **tidak digunakan** saat ini.
-Jika Anda memerlukan coupling yang lebih ketat ke UI, jalankan Gateway secara manual di terminal.
+## Perilaku default (launchd)
 
-## Perilaku default (`launchd`)
-
-- Aplikasi memasang LaunchAgent per-pengguna berlabel `ai.openclaw.gateway`
-  (atau `ai.openclaw.<profile>` saat menggunakan `--profile`/`OPENCLAW_PROFILE`; `com.openclaw.*` legacy didukung).
-- Saat mode Local diaktifkan, aplikasi memastikan LaunchAgent dimuat dan
+- Aplikasi memasang LaunchAgent per pengguna berlabel `ai.openclaw.gateway`
+  (atau `ai.openclaw.<profile>` saat menggunakan `--profile`/`OPENCLAW_PROFILE`; `com.openclaw.*` lama didukung).
+- Saat mode Lokal diaktifkan, aplikasi memastikan LaunchAgent dimuat dan
   memulai Gateway jika diperlukan.
-- Log ditulis ke path log gateway `launchd` (terlihat di Debug Settings).
+- Log ditulis ke jalur log Gateway launchd (terlihat di Pengaturan Debug).
 
 Perintah umum:
 
@@ -38,44 +31,37 @@ launchctl kickstart -k gui/$UID/ai.openclaw.gateway
 launchctl bootout gui/$UID/ai.openclaw.gateway
 ```
 
-Ganti label dengan `ai.openclaw.<profile>` saat menjalankan profile bernama.
+Ganti label dengan `ai.openclaw.<profile>` saat menjalankan profil bernama.
 
 ## Build dev tanpa tanda tangan
 
-`scripts/restart-mac.sh --no-sign` digunakan untuk build lokal cepat saat Anda tidak memiliki
-kunci penandatanganan. Untuk mencegah `launchd` menunjuk ke biner relay yang tidak ditandatangani, perintah ini:
+`scripts/restart-mac.sh --no-sign` ditujukan untuk build lokal cepat saat Anda tidak memiliki kunci penandatanganan. Untuk mencegah launchd mengarah ke biner relay tanpa tanda tangan, perintah ini:
 
 - Menulis `~/.openclaw/disable-launchagent`.
 
-Run `scripts/restart-mac.sh` yang ditandatangani akan menghapus override ini jika penanda
-tersebut ada. Untuk mereset secara manual:
+Jalankan bertanda tangan dari `scripts/restart-mac.sh` akan menghapus pengesampingan ini jika marker ada. Untuk mengatur ulang secara manual:
 
 ```bash
 rm ~/.openclaw/disable-launchagent
 ```
 
-## Mode attach-only
+## Mode hanya terhubung
 
-Untuk memaksa aplikasi macOS **tidak pernah memasang atau mengelola `launchd`**, jalankan aplikasi dengan
-`--attach-only` (atau `--no-launchd`). Ini menyetel `~/.openclaw/disable-launchagent`,
-sehingga aplikasi hanya menempel ke Gateway yang sudah berjalan. Anda dapat mengubah perilaku yang sama
-di Debug Settings.
+Untuk memaksa aplikasi macOS **tidak pernah memasang atau mengelola launchd**, jalankan dengan `--attach-only` (atau `--no-launchd`). Ini menyetel `~/.openclaw/disable-launchagent`, sehingga aplikasi hanya terhubung ke Gateway yang sudah berjalan. Anda dapat mengaktifkan perilaku yang sama di Pengaturan Debug.
 
-## Mode remote
+## Mode jarak jauh
 
-Mode remote tidak pernah memulai Gateway lokal. Aplikasi menggunakan tunnel SSH ke
-host remote dan terhubung melalui tunnel tersebut.
+Mode jarak jauh tidak pernah memulai Gateway lokal. Aplikasi menggunakan tunnel SSH ke host jarak jauh dan terhubung melalui tunnel tersebut.
 
-## Mengapa kami memilih `launchd`
+## Mengapa kami memilih launchd
 
-- Auto-start saat login.
-- Semantik restart/KeepAlive bawaan.
+- Mulai otomatis saat masuk.
+- Semantik mulai ulang/KeepAlive bawaan.
 - Log dan supervisi yang dapat diprediksi.
 
-Jika mode child-process sejati suatu saat diperlukan lagi, mode tersebut seharusnya didokumentasikan sebagai
-mode dev-only terpisah yang eksplisit.
+Jika mode proses anak yang sebenarnya diperlukan lagi, mode tersebut harus didokumentasikan sebagai mode khusus pengembangan yang terpisah dan eksplisit.
 
 ## Terkait
 
-- [macOS app](/id/platforms/macos)
-- [Gateway runbook](/id/gateway)
+- [aplikasi macOS](/id/platforms/macos)
+- [Runbook Gateway](/id/gateway)

@@ -1,21 +1,21 @@
 ---
 read_when:
-    - Anda ingin memahami OAuth OpenClaw dari awal hingga akhir
-    - Anda mengalami masalah pembatalan validitas token / keluar
-    - Anda menginginkan alur autentikasi Claude CLI atau OAuth
-    - Anda menginginkan beberapa akun atau perutean profil
+    - Anda ingin memahami OAuth OpenClaw dari ujung ke ujung
+    - Anda mengalami masalah invalidasi token / keluar dari sesi
+    - Anda ingin alur autentikasi Claude CLI atau OAuth
+    - Anda ingin beberapa akun atau perutean profil
 summary: 'OAuth di OpenClaw: pertukaran token, penyimpanan, dan pola multi-akun'
 title: OAuth
 x-i18n:
-    generated_at: "2026-04-30T09:44:46Z"
+    generated_at: "2026-05-06T09:08:02Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b4b228c83a79afa4018e9572f790ddfef016a73d2383d2847facdc5bb61ed004
+    source_hash: 223480a24bd30f92f5d9fdc35e937e582f9e81f5bee2fb0e5c0ea445ac552a40
     source_path: concepts/oauth.md
     workflow: 16
 ---
 
-OpenClaw mendukung “autentikasi langganan” melalui OAuth untuk penyedia yang menawarkannya
+OpenClaw mendukung "autentikasi langganan" melalui OAuth untuk penyedia yang menawarkannya
 (terutama **OpenAI Codex (ChatGPT OAuth)**). Untuk Anthropic, pembagian praktisnya
 sekarang adalah:
 
@@ -29,7 +29,7 @@ OpenClaw. Halaman ini menjelaskan:
 Untuk Anthropic di produksi, autentikasi kunci API adalah jalur yang lebih aman dan direkomendasikan.
 
 - cara kerja **pertukaran token** OAuth (PKCE)
-- tempat **penyimpanan** token (dan alasannya)
+- tempat token **disimpan** (dan alasannya)
 - cara menangani **beberapa akun** (profil + penggantian per sesi)
 
 OpenClaw juga mendukung **Plugin penyedia** yang membawa alur OAuth atau kunci API
@@ -39,53 +39,53 @@ mereka sendiri. Jalankan melalui:
 openclaw models auth login --provider <id>
 ```
 
-## Penampung token (mengapa ini ada)
+## Penampung token (alasan keberadaannya)
 
-Penyedia OAuth umumnya membuat **refresh token baru** selama alur masuk/refresh. Beberapa penyedia (atau klien OAuth) dapat membatalkan refresh token lama saat token baru diterbitkan untuk pengguna/aplikasi yang sama.
+Penyedia OAuth umumnya membuat **token refresh baru** selama alur masuk/refresh. Beberapa penyedia (atau klien OAuth) dapat membatalkan token refresh lama saat token baru diterbitkan untuk pengguna/aplikasi yang sama.
 
 Gejala praktis:
 
-- Anda masuk melalui OpenClaw _dan_ melalui Claude Code / Codex CLI → salah satunya tiba-tiba “keluar” nanti
+- Anda masuk melalui OpenClaw _dan_ melalui Claude Code / Codex CLI → salah satunya nanti secara acak menjadi "keluar"
 
-Untuk mengurangi hal itu, OpenClaw memperlakukan `auth-profiles.json` sebagai **penampung token**:
+Untuk menguranginya, OpenClaw memperlakukan `auth-profiles.json` sebagai **penampung token**:
 
 - runtime membaca kredensial dari **satu tempat**
 - kami dapat menyimpan beberapa profil dan merutekannya secara deterministik
 - penggunaan ulang CLI eksternal bersifat spesifik penyedia: Codex CLI dapat mem-bootstrap profil
-  `openai-codex:default` yang kosong, tetapi setelah OpenClaw memiliki profil OAuth lokal,
-  refresh token lokal menjadi kanonis; integrasi lain dapat tetap
-  dikelola secara eksternal dan membaca ulang penyimpanan auth CLI mereka
+  `openai-codex:default` kosong, tetapi setelah OpenClaw memiliki profil OAuth lokal,
+  token refresh lokal menjadi kanonis; integrasi lain dapat tetap
+  dikelola secara eksternal dan membaca ulang penyimpanan autentikasi CLI mereka
 - jalur status dan startup yang sudah mengetahui cakupan set penyedia yang dikonfigurasi
   membatasi penemuan CLI eksternal ke set tersebut, sehingga penyimpanan login CLI yang tidak terkait
   tidak diperiksa untuk setup satu penyedia
 
 ## Penyimpanan (tempat token berada)
 
-Rahasia disimpan di penyimpanan auth agen:
+Rahasia disimpan di penyimpanan autentikasi agen:
 
-- Profil auth (OAuth + kunci API + ref tingkat nilai opsional): `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
+- Profil autentikasi (OAuth + kunci API + ref tingkat nilai opsional): `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
 - Berkas kompatibilitas lama: `~/.openclaw/agents/<agentId>/agent/auth.json`
   (entri `api_key` statis dibersihkan saat ditemukan)
 
 Berkas lama khusus impor (masih didukung, tetapi bukan penyimpanan utama):
 
-- `~/.openclaw/credentials/oauth.json` (diimpor ke `auth-profiles.json` pada penggunaan pertama)
+- `~/.openclaw/credentials/oauth.json` (diimpor ke `auth-profiles.json` saat pertama kali digunakan)
 
-Semua hal di atas juga menghormati `$OPENCLAW_STATE_DIR` (penggantian direktori status). Referensi lengkap: [/gateway/configuration](/id/gateway/configuration-reference#auth-storage)
+Semua yang disebutkan di atas juga menghormati `$OPENCLAW_STATE_DIR` (penggantian direktori state). Referensi lengkap: [/gateway/configuration](/id/gateway/configuration-reference#auth-storage)
 
 Untuk ref rahasia statis dan perilaku aktivasi snapshot runtime, lihat [Manajemen Rahasia](/id/gateway/secrets).
 
-Saat agen sekunder tidak memiliki profil auth lokal, OpenClaw menggunakan pewarisan
-read-through dari penyimpanan agen default/utama. Ini tidak mengkloning
-`auth-profiles.json` agen utama saat membaca. OAuth refresh token sangat
-sensitif: alur penyalinan normal melewatinya secara default karena beberapa penyedia memutar
-atau membatalkan refresh token setelah digunakan. Konfigurasikan login OAuth terpisah untuk sebuah
-agen saat memerlukan akun independen.
+Saat agen sekunder tidak memiliki profil autentikasi lokal, OpenClaw menggunakan pewarisan
+baca-tembus dari penyimpanan agen default/utama. OpenClaw tidak mengkloning
+`auth-profiles.json` milik agen utama saat membaca. Token refresh OAuth sangat
+sensitif: alur penyalinan normal melewatinya secara default karena beberapa penyedia merotasi
+atau membatalkan token refresh setelah digunakan. Konfigurasikan login OAuth terpisah untuk
+agen ketika agen tersebut membutuhkan akun independen.
 
 ## Kompatibilitas token lama Anthropic
 
 <Warning>
-Dokumentasi Claude Code publik Anthropic mengatakan penggunaan Claude Code langsung tetap berada dalam
+Dokumentasi publik Claude Code dari Anthropic menyatakan bahwa penggunaan langsung Claude Code tetap berada dalam
 batas langganan Claude, dan staf Anthropic memberi tahu kami bahwa penggunaan Claude
 CLI bergaya OpenClaw diizinkan lagi. Karena itu, OpenClaw memperlakukan penggunaan ulang Claude CLI dan
 penggunaan `claude -p` sebagai disetujui untuk integrasi ini kecuali Anthropic
@@ -106,8 +106,8 @@ OpenClaw juga mengekspos setup-token Anthropic sebagai jalur autentikasi token y
 
 ## Migrasi Anthropic Claude CLI
 
-OpenClaw mendukung penggunaan ulang Anthropic Claude CLI lagi. Jika Anda sudah memiliki login
-Claude lokal di host, onboarding/configure dapat menggunakannya kembali secara langsung.
+OpenClaw kembali mendukung penggunaan ulang Anthropic Claude CLI. Jika Anda sudah memiliki login
+Claude lokal di host, onboarding/konfigurasi dapat menggunakannya ulang secara langsung.
 
 ## Pertukaran OAuth (cara kerja login)
 
@@ -118,9 +118,9 @@ Alur login interaktif OpenClaw diimplementasikan di `@mariozechner/pi-ai` dan di
 Bentuk alur:
 
 1. mulai setup-token Anthropic atau paste-token dari OpenClaw
-2. OpenClaw menyimpan kredensial Anthropic yang dihasilkan dalam profil auth
-3. pemilihan model tetap pada `anthropic/...`
-4. profil auth Anthropic yang ada tetap tersedia untuk rollback/kontrol urutan
+2. OpenClaw menyimpan kredensial Anthropic yang dihasilkan dalam profil autentikasi
+3. pemilihan model tetap di `anthropic/...`
+4. profil autentikasi Anthropic yang sudah ada tetap tersedia untuk rollback/kontrol urutan
 
 ### OpenAI Codex (ChatGPT OAuth)
 
@@ -128,14 +128,14 @@ OAuth OpenAI Codex secara eksplisit didukung untuk digunakan di luar Codex CLI, 
 
 Bentuk alur (PKCE):
 
-1. buat verifier/challenge PKCE + `state` acak
+1. hasilkan verifier/challenge PKCE + `state` acak
 2. buka `https://auth.openai.com/oauth/authorize?...`
 3. coba tangkap callback di `http://127.0.0.1:1455/auth/callback`
-4. jika callback tidak dapat bind (atau Anda remote/headless), tempelkan URL/kode redirect
-5. tukarkan di `https://auth.openai.com/oauth/token`
-6. ekstrak `accountId` dari access token dan simpan `{ access, refresh, expires, accountId }`
+4. jika callback tidak dapat di-bind (atau Anda berada di remote/headless), tempel URL/kode redirect
+5. lakukan pertukaran di `https://auth.openai.com/oauth/token`
+6. ekstrak `accountId` dari token akses dan simpan `{ access, refresh, expires, accountId }`
 
-Jalur wizard adalah `openclaw onboard` → pilihan auth `openai-codex`.
+Jalur wizard adalah `openclaw onboard` → pilihan autentikasi `openai-codex`.
 
 ## Refresh + kedaluwarsa
 
@@ -143,16 +143,16 @@ Profil menyimpan timestamp `expires`.
 
 Saat runtime:
 
-- jika `expires` berada di masa depan → gunakan access token yang tersimpan
-- jika kedaluwarsa → refresh (di bawah file lock) dan timpa kredensial yang tersimpan
+- jika `expires` berada di masa depan → gunakan token akses yang disimpan
+- jika kedaluwarsa → refresh (di bawah file lock) dan timpa kredensial yang disimpan
 - jika agen sekunder membaca profil OAuth agen utama yang diwarisi, refresh
-  menulis kembali ke penyimpanan agen utama alih-alih menyalin refresh token ke
+  menulis kembali ke penyimpanan agen utama, bukan menyalin token refresh ke
   penyimpanan agen sekunder
 - pengecualian: beberapa kredensial CLI eksternal tetap dikelola secara eksternal; OpenClaw
-  membaca ulang penyimpanan auth CLI tersebut alih-alih menggunakan refresh token yang disalin.
-  Bootstrap Codex CLI sengaja lebih sempit: ini menanam profil
-  `openai-codex:default` yang kosong, lalu refresh milik OpenClaw menjaga profil
-  lokal tetap kanonis.
+  membaca ulang penyimpanan autentikasi CLI tersebut alih-alih menghabiskan token refresh yang disalin.
+  Bootstrap Codex CLI sengaja lebih sempit: ia menanam profil
+  `openai-codex:default` kosong, lalu refresh milik OpenClaw menjaga profil lokal
+  tetap kanonis.
 
 Alur refresh bersifat otomatis; umumnya Anda tidak perlu mengelola token secara manual.
 
@@ -162,29 +162,29 @@ Dua pola:
 
 ### 1) Disarankan: agen terpisah
 
-Jika Anda ingin “personal” dan “work” tidak pernah berinteraksi, gunakan agen terisolasi (sesi + kredensial + workspace terpisah):
+Jika Anda ingin "pribadi" dan "kerja" tidak pernah berinteraksi, gunakan agen terisolasi (sesi + kredensial + workspace terpisah):
 
 ```bash
 openclaw agents add work
 openclaw agents add personal
 ```
 
-Lalu konfigurasikan auth per agen (wizard) dan rutekan chat ke agen yang tepat.
+Lalu konfigurasikan autentikasi per agen (wizard) dan rutekan chat ke agen yang tepat.
 
 ### 2) Lanjutan: beberapa profil dalam satu agen
 
 `auth-profiles.json` mendukung beberapa ID profil untuk penyedia yang sama.
 
-Pilih profil yang digunakan:
+Pilih profil mana yang digunakan:
 
-- secara global melalui urutan config (`auth.order`)
+- secara global melalui urutan konfigurasi (`auth.order`)
 - per sesi melalui `/model ...@<profileId>`
 
 Contoh (penggantian sesi):
 
 - `/model Opus@anthropic:work`
 
-Cara melihat ID profil yang ada:
+Cara melihat ID profil yang tersedia:
 
 - `openclaw channels list --json` (menampilkan `auth[]`)
 
@@ -195,6 +195,6 @@ Dokumentasi terkait:
 
 ## Terkait
 
-- [Autentikasi](/id/gateway/authentication) — ikhtisar auth penyedia model
-- [Rahasia](/id/gateway/secrets) — penyimpanan kredensial dan SecretRef
-- [Referensi Konfigurasi](/id/gateway/configuration-reference#auth-storage) — kunci config auth
+- [Autentikasi](/id/gateway/authentication) - ikhtisar autentikasi penyedia model
+- [Rahasia](/id/gateway/secrets) - penyimpanan kredensial dan SecretRef
+- [Referensi Konfigurasi](/id/gateway/configuration-reference#auth-storage) - kunci konfigurasi autentikasi

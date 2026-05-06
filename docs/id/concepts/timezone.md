@@ -1,102 +1,54 @@
 ---
 read_when:
-    - Anda perlu memahami bagaimana stempel waktu dinormalisasi untuk model
-    - Mengonfigurasi zona waktu pengguna untuk system prompt
-summary: Penanganan zona waktu untuk agen, envelope, dan prompt
+    - Anda menginginkan model mental singkat untuk penanganan zona waktu
+    - Anda sedang menentukan di mana harus menetapkan atau menimpa zona waktu
+summary: Di mana zona waktu muncul di OpenClaw — amplop, muatan alat, prompt sistem
 title: Zona waktu
 x-i18n:
-    generated_at: "2026-04-24T09:06:04Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:09:48Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8318acb0269f446fb3d3198f47811d40490a9ee9593fed82f31353aef2bacb81
+    source_hash: 041b207a0fa2758a20e8f3c4eca852d3dd416560d045459cb4d86709b45449e3
     source_path: concepts/timezone.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw menstandarkan stempel waktu sehingga model melihat **satu waktu referensi**.
+OpenClaw menstandarkan stempel waktu sehingga model melihat **satu waktu referensi** alih-alih campuran jam lokal penyedia. Ada tiga permukaan tempat zona waktu muncul, masing-masing dengan tujuannya sendiri:
 
-## Envelope pesan (lokal secara default)
+## Tiga permukaan zona waktu
 
-Pesan masuk dibungkus dalam envelope seperti:
+| Permukaan         | Yang ditampilkan                                                                                         | Bawaan                                      | Dikonfigurasi melalui                                  |
+| ----------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------- | ------------------------------------------------------ |
+| Amplop pesan      | Membungkus pesan kanal masuk: `[Signal +1555 2026-01-18 00:19 PST] hello`                                 | Lokal host                                  | `agents.defaults.envelopeTimezone`                     |
+| Payload alat      | Alat bergaya `readMessages` kanal mengembalikan waktu mentah penyedia + `timestampMs` / `timestampUtc` ternormalisasi | Kolom UTC selalu ada                        | Tidak dapat dikonfigurasi — mempertahankan stempel waktu native penyedia |
+| Prompt sistem     | Blok kecil `Current Date & Time` dengan **zona waktu saja** (tanpa nilai jam, untuk stabilitas cache)      | Zona waktu host jika `userTimezone` belum diatur | `agents.defaults.userTimezone`                         |
 
-```
-[Provider ... 2026-01-05 16:26 PST] teks pesan
-```
+Prompt sistem sengaja menghilangkan jam langsung agar caching prompt tetap stabil antar giliran. Saat agent membutuhkan waktu saat ini, agent memanggil `session_status`.
 
-Stempel waktu dalam envelope adalah **lokal host secara default**, dengan presisi menit.
-
-Anda dapat meng-override ini dengan:
+## Mengatur zona waktu pengguna
 
 ```json5
 {
   agents: {
     defaults: {
-      envelopeTimezone: "local", // "utc" | "local" | "user" | zona waktu IANA
-      envelopeTimestamp: "on", // "on" | "off"
-      envelopeElapsed: "on", // "on" | "off"
+      userTimezone: "America/Chicago",
     },
   },
 }
 ```
 
-- `envelopeTimezone: "utc"` menggunakan UTC.
-- `envelopeTimezone: "user"` menggunakan `agents.defaults.userTimezone` (fallback ke zona waktu host).
-- Gunakan zona waktu IANA eksplisit (misalnya, `"Europe/Vienna"`) untuk offset tetap.
-- `envelopeTimestamp: "off"` menghapus stempel waktu absolut dari header envelope.
-- `envelopeElapsed: "off"` menghapus sufiks waktu berlalu (gaya `+2m`).
+Jika `userTimezone` belum diatur, OpenClaw menyelesaikan zona waktu host saat runtime (tanpa menulis konfigurasi). `agents.defaults.timeFormat` (`auto` | `12` | `24`) mengontrol rendering 12 jam/24 jam di amplop dan permukaan downstream, bukan di bagian prompt sistem.
 
-### Contoh
+## Kapan menimpa
 
-**Lokal (default):**
+- **Gunakan amplop UTC** (`envelopeTimezone: "utc"`) saat Anda menginginkan stempel waktu yang stabil di berbagai host di wilayah berbeda, atau saat Anda ingin log yang selaras UTC cocok dengan output diagnostik.
+- **Gunakan zona IANA tetap** (mis. `"Europe/Vienna"`) saat host Gateway berada di satu zona tetapi pengguna berada di zona lain dan Anda ingin amplop terbaca dalam zona pengguna terlepas dari migrasi host.
+- **Atur `envelopeTimestamp: "off"`** untuk amplop rendah token saat konteks stempel waktu tidak berguna untuk percakapan.
 
-```
-[Signal Alice +1555 2026-01-18 00:19 PST] hello
-```
-
-**Zona waktu tetap:**
-
-```
-[Signal Alice +1555 2026-01-18 06:19 GMT+1] hello
-```
-
-**Waktu berlalu:**
-
-```
-[Signal Alice +1555 +2m 2026-01-18T05:19Z] follow-up
-```
-
-## Payload alat (data provider mentah + field ternormalisasi)
-
-Pemanggilan alat (`channels.discord.readMessages`, `channels.slack.readMessages`, dll.) mengembalikan **stempel waktu provider mentah**.
-Kami juga melampirkan field ternormalisasi untuk konsistensi:
-
-- `timestampMs` (milidetik epoch UTC)
-- `timestampUtc` (string UTC ISO 8601)
-
-Field provider mentah dipertahankan.
-
-## Zona waktu pengguna untuk system prompt
-
-Setel `agents.defaults.userTimezone` untuk memberi tahu model zona waktu lokal pengguna. Jika
-tidak disetel, OpenClaw menyelesaikan **zona waktu host saat runtime** (tanpa penulisan config).
-
-```json5
-{
-  agents: { defaults: { userTimezone: "America/Chicago" } },
-}
-```
-
-System prompt mencakup:
-
-- bagian `Current Date & Time` dengan waktu lokal dan zona waktu
-- `Time format: 12-hour` atau `24-hour`
-
-Anda dapat mengontrol format prompt dengan `agents.defaults.timeFormat` (`auto` | `12` | `24`).
-
-Lihat [Date & Time](/id/date-time) untuk perilaku dan contoh lengkap.
+Untuk referensi perilaku lengkap, contoh per penyedia, dan format waktu berlalu, lihat [Tanggal & Waktu](/id/date-time).
 
 ## Terkait
 
-- [Heartbeat](/id/gateway/heartbeat) — active hours menggunakan zona waktu untuk penjadwalan
-- [Cron Jobs](/id/automation/cron-jobs) — ekspresi cron menggunakan zona waktu untuk penjadwalan
-- [Date & Time](/id/date-time) — perilaku tanggal/waktu lengkap dan contohnya
+- [Tanggal & Waktu](/id/date-time) — perilaku dan contoh lengkap untuk amplop/alat/prompt.
+- [Heartbeat](/id/gateway/heartbeat) — jam aktif menggunakan zona waktu untuk penjadwalan.
+- [Pekerjaan Cron](/id/automation/cron-jobs) — ekspresi cron menggunakan zona waktu untuk penjadwalan.

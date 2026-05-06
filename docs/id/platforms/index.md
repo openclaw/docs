@@ -5,20 +5,20 @@ read_when:
 summary: Ikhtisar dukungan platform (Gateway + aplikasi pendamping)
 title: Platform
 x-i18n:
-    generated_at: "2026-04-24T09:16:21Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:19:35Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 3ebed9f219f3072ef760006eef47ca78f87169c40a6098c3585dfaf6169fc594
+    source_hash: dd1fbd1af8b03a12014d91b2f300fb8ec65b9c42c38ada2b9ca089181140a75c
     source_path: platforms/index.md
-    workflow: 15
+    workflow: 16
 ---
 
-Inti OpenClaw ditulis dalam TypeScript. **Node adalah runtime yang direkomendasikan**.
-Bun tidak direkomendasikan untuk Gateway — ada masalah yang diketahui dengan saluran WhatsApp dan
+OpenClaw inti ditulis dalam TypeScript. **Node adalah runtime yang direkomendasikan**.
+Bun tidak direkomendasikan untuk Gateway — ada masalah yang diketahui dengan kanal WhatsApp dan
 Telegram; lihat [Bun (eksperimental)](/id/install/bun) untuk detail.
 
-Aplikasi pendamping tersedia untuk macOS (aplikasi menu bar) dan node seluler (iOS/Android). Aplikasi pendamping Windows dan
-Linux direncanakan, tetapi Gateway sudah didukung penuh saat ini.
+Aplikasi pendamping tersedia untuk macOS (aplikasi bilah menu) dan node seluler (iOS/Android). Aplikasi pendamping Windows dan
+Linux direncanakan, tetapi Gateway sudah didukung sepenuhnya saat ini.
 Aplikasi pendamping native untuk Windows juga direncanakan; Gateway direkomendasikan melalui WSL2.
 
 ## Pilih OS Anda
@@ -29,9 +29,9 @@ Aplikasi pendamping native untuk Windows juga direncanakan; Gateway direkomendas
 - Windows: [Windows](/id/platforms/windows)
 - Linux: [Linux](/id/platforms/linux)
 
-## VPS & hosting
+## VPS dan hosting
 
-- Pusat VPS: [Hosting VPS](/id/vps)
+- Hub VPS: [Hosting VPS](/id/vps)
 - Fly.io: [Fly.io](/id/install/fly)
 - Hetzner (Docker): [Hetzner](/id/install/hetzner)
 - GCP (Compute Engine): [GCP](/id/install/gcp)
@@ -40,25 +40,25 @@ Aplikasi pendamping native untuk Windows juga direncanakan; Gateway direkomendas
 
 ## Tautan umum
 
-- Panduan instalasi: [Getting Started](/id/start/getting-started)
+- Panduan instalasi: [Memulai](/id/start/getting-started)
 - Runbook Gateway: [Gateway](/id/gateway)
-- Konfigurasi Gateway: [Configuration](/id/gateway/configuration)
+- Konfigurasi Gateway: [Konfigurasi](/id/gateway/configuration)
 - Status layanan: `openclaw gateway status`
 
 ## Instalasi layanan Gateway (CLI)
 
 Gunakan salah satu dari ini (semuanya didukung):
 
-- Wizard (disarankan): `openclaw onboard --install-daemon`
+- Wizard (direkomendasikan): `openclaw onboard --install-daemon`
 - Langsung: `openclaw gateway install`
-- Alur configure: `openclaw configure` → pilih **Gateway service**
-- Perbaikan/migrasi: `openclaw doctor` (menawarkan untuk menginstal atau memperbaiki layanan)
+- Alur konfigurasi: `openclaw configure` → pilih **Layanan Gateway**
+- Perbaiki/migrasikan: `openclaw doctor` (menawarkan untuk menginstal atau memperbaiki layanan)
 
 Target layanan bergantung pada OS:
 
-- macOS: LaunchAgent (`ai.openclaw.gateway` atau `ai.openclaw.<profile>`; `com.openclaw.*` lama)
+- macOS: LaunchAgent (`ai.openclaw.gateway` atau `ai.openclaw.<profile>`; legacy `com.openclaw.*`)
 - Linux/WSL2: layanan pengguna systemd (`openclaw-gateway[-<profile>].service`)
-- Windows native: Scheduled Task (`OpenClaw Gateway` atau `OpenClaw Gateway (<profile>)`), dengan fallback item login Startup-folder per pengguna jika pembuatan task ditolak
+- Windows native: Scheduled Task (`OpenClaw Gateway` atau `OpenClaw Gateway (<profile>)`), dengan fallback item login folder Startup per pengguna jika pembuatan tugas ditolak
 
 ## Terkait
 

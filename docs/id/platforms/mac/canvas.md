@@ -1,23 +1,22 @@
 ---
 read_when:
-    - Mengimplementasikan panel Canvas macOS
-    - Menambahkan kontrol agen untuk workspace visual
-    - Men-debug pemuatan canvas WKWebView
-summary: Panel Canvas yang dikendalikan agen dan disematkan melalui WKWebView + skema URL kustom
-title: Canvas
+    - Mengimplementasikan panel Kanvas macOS
+    - Menambahkan kontrol agen untuk ruang kerja visual
+    - Men-debug pemuatan kanvas WKWebView
+summary: Panel Kanvas yang dikendalikan agen disematkan melalui WKWebView + skema URL khusus
+title: Kanvas
 x-i18n:
-    generated_at: "2026-04-24T09:17:08Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:19:54Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 1a791f7841193a55b7f9cc5cc26168258d72d972279bba4c68fd1b15ef16f1c4
+    source_hash: d8e53f5d1c2e5b3b46e77cb74632e56123f3312dfcc395aa5ac8182c8d58b6cf
     source_path: platforms/mac/canvas.md
-    workflow: 15
+    workflow: 16
 ---
 
-Aplikasi macOS menyematkan **panel Canvas** yang dikendalikan agen menggunakan `WKWebView`. Panel ini
-adalah workspace visual ringan untuk HTML/CSS/JS, A2UI, dan surface UI interaktif kecil.
+Aplikasi macOS menyematkan **panel Canvas** yang dikendalikan agen menggunakan `WKWebView`. Ini adalah ruang kerja visual ringan untuk HTML/CSS/JS, A2UI, dan permukaan UI interaktif kecil.
 
-## Tempat Canvas berada
+## Lokasi Canvas
 
 Status Canvas disimpan di bawah Application Support:
 
@@ -33,26 +32,25 @@ Contoh:
 - `openclaw-canvas://main/assets/app.css` → `<canvasRoot>/main/assets/app.css`
 - `openclaw-canvas://main/widgets/todo/` → `<canvasRoot>/main/widgets/todo/index.html`
 
-Jika tidak ada `index.html` pada root, aplikasi menampilkan **halaman scaffold bawaan**.
+Jika tidak ada `index.html` di root, aplikasi menampilkan **halaman scaffold bawaan**.
 
 ## Perilaku panel
 
-- Panel tanpa border, dapat diubah ukurannya, ditambatkan dekat menu bar (atau kursor mouse).
+- Panel tanpa bingkai yang dapat diubah ukurannya, ditambatkan di dekat bilah menu (atau kursor tetikus).
 - Mengingat ukuran/posisi per sesi.
 - Memuat ulang otomatis saat file canvas lokal berubah.
-- Hanya satu panel Canvas yang terlihat pada satu waktu (sesi diganti sesuai kebutuhan).
+- Hanya satu panel Canvas yang terlihat pada satu waktu (sesi dialihkan sesuai kebutuhan).
 
-Canvas dapat dinonaktifkan dari Settings → **Allow Canvas**. Saat dinonaktifkan, perintah
-Node canvas mengembalikan `CANVAS_DISABLED`.
+Canvas dapat dinonaktifkan dari Pengaturan → **Izinkan Canvas**. Saat dinonaktifkan, perintah node canvas mengembalikan `CANVAS_DISABLED`.
 
-## Surface API agen
+## Permukaan API agen
 
 Canvas diekspos melalui **Gateway WebSocket**, sehingga agen dapat:
 
 - menampilkan/menyembunyikan panel
 - bernavigasi ke path atau URL
 - mengevaluasi JavaScript
-- mengambil gambar snapshot
+- menangkap gambar snapshot
 
 Contoh CLI:
 
@@ -70,9 +68,7 @@ Catatan:
 
 ## A2UI di Canvas
 
-A2UI di-host oleh host canvas Gateway dan dirender di dalam panel Canvas.
-Saat Gateway mengiklankan host Canvas, aplikasi macOS otomatis bernavigasi ke
-halaman host A2UI saat pertama kali dibuka.
+A2UI di-host oleh host canvas Gateway dan dirender di dalam panel Canvas. Saat Gateway mengiklankan host Canvas, aplikasi macOS otomatis bernavigasi ke halaman host A2UI pada pembukaan pertama.
 
 URL host A2UI default:
 
@@ -82,7 +78,7 @@ http://<gateway-host>:18789/__openclaw__/a2ui/
 
 ### Perintah A2UI (v0.8)
 
-Canvas saat ini menerima pesan server→client **A2UI v0.8**:
+Canvas saat ini menerima pesan server→klien **A2UI v0.8**:
 
 - `beginRendering`
 - `surfaceUpdate`
@@ -102,15 +98,15 @@ EOFA2
 openclaw nodes canvas a2ui push --jsonl /tmp/a2ui-v0.8.jsonl --node <id>
 ```
 
-Smoke test cepat:
+Smoke cepat:
 
 ```bash
 openclaw nodes canvas a2ui push --node <id> --text "Hello from A2UI"
 ```
 
-## Memicu proses agen dari Canvas
+## Memicu run agen dari Canvas
 
-Canvas dapat memicu proses agen baru melalui deep link:
+Canvas dapat memicu run agen baru melalui deep link:
 
 - `openclaw://agent?...`
 
@@ -120,15 +116,15 @@ Contoh (dalam JS):
 window.location.href = "openclaw://agent?message=Review%20this%20design";
 ```
 
-Aplikasi akan meminta konfirmasi kecuali key yang valid diberikan.
+Aplikasi meminta konfirmasi kecuali kunci yang valid disediakan.
 
 ## Catatan keamanan
 
-- Skema Canvas memblokir directory traversal; file harus berada di bawah root sesi.
+- Skema Canvas memblokir traversal direktori; file harus berada di bawah root sesi.
 - Konten Canvas lokal menggunakan skema kustom (tidak memerlukan server loopback).
-- URL `http(s)` eksternal hanya diizinkan jika dinavigasikan secara eksplisit.
+- URL `http(s)` eksternal hanya diizinkan saat dinavigasikan secara eksplisit.
 
 ## Terkait
 
-- [Aplikasi macOS](/id/platforms/macos)
+- [aplikasi macOS](/id/platforms/macos)
 - [WebChat](/id/web/webchat)

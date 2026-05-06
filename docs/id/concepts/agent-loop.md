@@ -1,23 +1,23 @@
 ---
 read_when:
     - Anda memerlukan panduan langkah demi langkah yang tepat tentang loop agen atau peristiwa siklus hidup
-    - Anda sedang mengubah pengantrean sesi, penulisan transkrip, atau perilaku kunci penulisan sesi
-summary: Siklus hidup loop agen, aliran, dan semantik menunggu
+    - Anda mengubah pengantrean sesi, penulisan transkrip, atau perilaku kunci tulis sesi
+summary: Siklus hidup perulangan agen, aliran, dan semantik tunggu
 title: Siklus agen
 x-i18n:
-    generated_at: "2026-05-05T06:16:10Z"
+    generated_at: "2026-05-06T09:06:12Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1c7031a2b70e7a891f51fa127df6f04663db81400715717f50dd840a3fa5b745
+    source_hash: e040d090e686db47a432c8d6f13c167838825b16e491297422f909aba0add5f0
     source_path: concepts/agent-loop.md
     workflow: 16
 ---
 
-Loop agentik adalah seluruh eksekusi “nyata” dari sebuah agen: intake → perakitan konteks → inferensi model →
+Loop agentik adalah eksekusi "nyata" penuh dari sebuah agen: intake → penyusunan konteks → inferensi model →
 eksekusi alat → balasan streaming → persistensi. Ini adalah jalur otoritatif yang mengubah pesan
 menjadi tindakan dan balasan akhir, sambil menjaga status sesi tetap konsisten.
 
-Di OpenClaw, sebuah loop adalah satu eksekusi terserialisasi per sesi yang memancarkan peristiwa lifecycle dan stream
+Di OpenClaw, loop adalah satu eksekusi terserialisasi per sesi yang memancarkan peristiwa siklus hidup dan stream
 saat model berpikir, memanggil alat, dan melakukan streaming keluaran. Dokumen ini menjelaskan bagaimana loop autentik itu
 dirangkai dari ujung ke ujung.
 
@@ -28,89 +28,89 @@ dirangkai dari ujung ke ujung.
 
 ## Cara kerjanya (tingkat tinggi)
 
-1. RPC `agent` memvalidasi parameter, menyelesaikan sesi (sessionKey/sessionId), menyimpan metadata sesi, lalu segera mengembalikan `{ runId, acceptedAt }`.
+1. RPC `agent` memvalidasi parameter, menyelesaikan sesi (sessionKey/sessionId), mempertahankan metadata sesi, segera mengembalikan `{ runId, acceptedAt }`.
 2. `agentCommand` menjalankan agen:
    - menyelesaikan model + default thinking/verbose/trace
    - memuat snapshot Skills
    - memanggil `runEmbeddedPiAgent` (runtime pi-agent-core)
-   - memancarkan **lifecycle end/error** jika loop tertanam tidak memancarkannya
+   - memancarkan **akhir/kesalahan siklus hidup** jika loop tertanam tidak memancarkan salah satunya
 3. `runEmbeddedPiAgent`:
    - menserialkan eksekusi melalui antrean per-sesi + global
    - menyelesaikan model + profil autentikasi dan membangun sesi pi
-   - berlangganan ke peristiwa pi dan melakukan streaming delta asisten/alat
+   - berlangganan peristiwa pi dan melakukan streaming delta asisten/alat
    - memberlakukan timeout -> membatalkan eksekusi jika terlampaui
-   - untuk giliran app-server Codex, membatalkan giliran yang diterima jika berhenti menghasilkan progres app-server sebelum peristiwa terminal
+   - untuk giliran server aplikasi Codex, membatalkan giliran yang diterima yang berhenti menghasilkan progres server aplikasi sebelum peristiwa terminal
    - mengembalikan payload + metadata penggunaan
 4. `subscribeEmbeddedPiSession` menjembatani peristiwa pi-agent-core ke stream `agent` OpenClaw:
    - peristiwa alat => `stream: "tool"`
    - delta asisten => `stream: "assistant"`
-   - peristiwa lifecycle => `stream: "lifecycle"` (`phase: "start" | "end" | "error"`)
+   - peristiwa siklus hidup => `stream: "lifecycle"` (`phase: "start" | "end" | "error"`)
 5. `agent.wait` menggunakan `waitForAgentRun`:
-   - menunggu **lifecycle end/error** untuk `runId`
+   - menunggu **akhir/kesalahan siklus hidup** untuk `runId`
    - mengembalikan `{ status: ok|error|timeout, startedAt, endedAt, error? }`
 
-## Antrean + konkurensi
+## Pengantrean + konkurensi
 
-- Eksekusi diserialkan per kunci sesi (lane sesi) dan secara opsional melalui lane global.
+- Eksekusi diserialkan per kunci sesi (jalur sesi) dan secara opsional melalui jalur global.
 - Ini mencegah race alat/sesi dan menjaga riwayat sesi tetap konsisten.
-- Channel perpesanan dapat memilih mode antrean (collect/steer/followup) yang masuk ke sistem lane ini.
+- Kanal perpesanan dapat memilih mode antrean (collect/steer/followup) yang mengalirkan masukan ke sistem jalur ini.
   Lihat [Antrean Perintah](/id/concepts/queue).
-- Penulisan transkrip juga dilindungi oleh kunci tulis sesi pada berkas sesi. Kunci ini
-  sadar proses dan berbasis berkas, sehingga menangkap penulis yang melewati antrean dalam proses atau berasal dari
+- Penulisan transkrip juga dilindungi oleh kunci tulis sesi pada file sesi. Kunci ini
+  sadar proses dan berbasis file, sehingga menangkap penulis yang melewati antrean dalam-proses atau berasal dari
   proses lain. Penulis transkrip sesi menunggu hingga `session.writeLock.acquireTimeoutMs`
-  sebelum melaporkan sesi sebagai sibuk; default-nya adalah `60000` md.
+  sebelum melaporkan sesi sebagai sibuk; defaultnya adalah `60000` md.
 - Kunci tulis sesi secara default tidak reentrant. Jika helper sengaja menumpuk akuisisi
-  kunci yang sama sambil mempertahankan satu penulis logis, ia harus ikut serta secara eksplisit dengan
+  kunci yang sama sambil mempertahankan satu penulis logis, helper tersebut harus memilih ikut secara eksplisit dengan
   `allowReentrant: true`.
 
 ## Persiapan sesi + workspace
 
 - Workspace diselesaikan dan dibuat; eksekusi tersandbox dapat dialihkan ke root workspace sandbox.
-- Skills dimuat (atau digunakan ulang dari snapshot) dan disuntikkan ke env dan prompt.
-- Berkas bootstrap/konteks diselesaikan dan disuntikkan ke laporan prompt sistem.
-- Kunci tulis sesi diambil; `SessionManager` dibuka dan dipersiapkan sebelum streaming. Jalur
-  penulisan ulang transkrip, Compaction, atau pemangkasan apa pun setelahnya harus mengambil kunci yang sama sebelum membuka atau
-  memutasi berkas transkrip.
+- Skills dimuat (atau digunakan kembali dari snapshot) dan disuntikkan ke env dan prompt.
+- File bootstrap/konteks diselesaikan dan disuntikkan ke laporan prompt sistem.
+- Kunci tulis sesi diperoleh; `SessionManager` dibuka dan disiapkan sebelum streaming. Setiap
+  jalur penulisan ulang transkrip, Compaction, atau pemotongan nantinya harus mengambil kunci yang sama sebelum membuka atau
+  memutasi file transkrip.
 
-## Perakitan prompt + prompt sistem
+## Penyusunan prompt + prompt sistem
 
 - Prompt sistem dibangun dari prompt dasar OpenClaw, prompt Skills, konteks bootstrap, dan override per-eksekusi.
 - Batas khusus model dan token cadangan Compaction diberlakukan.
-- Lihat [Prompt sistem](/id/concepts/system-prompt) untuk apa yang dilihat model.
+- Lihat [Prompt sistem](/id/concepts/system-prompt) untuk mengetahui apa yang dilihat model.
 
-## Titik hook (tempat Anda dapat mengintersepsi)
+## Titik kait (tempat Anda dapat mengintersepsi)
 
-OpenClaw memiliki dua sistem hook:
+OpenClaw memiliki dua sistem kait:
 
-- **Hook internal** (hook Gateway): skrip berbasis peristiwa untuk perintah dan peristiwa lifecycle.
-- **Hook Plugin**: titik ekstensi di dalam lifecycle agen/alat dan pipeline gateway.
+- **Kait internal** (kait Gateway): skrip berbasis peristiwa untuk perintah dan peristiwa siklus hidup.
+- **Kait Plugin**: titik ekstensi di dalam siklus hidup agen/alat dan pipeline Gateway.
 
-### Hook internal (hook Gateway)
+### Kait internal (kait Gateway)
 
-- **`agent:bootstrap`**: berjalan saat membangun berkas bootstrap sebelum prompt sistem difinalisasi.
-  Gunakan ini untuk menambah/menghapus berkas konteks bootstrap.
-- **Hook perintah**: `/new`, `/reset`, `/stop`, dan peristiwa perintah lain (lihat dokumen Hook).
+- **`agent:bootstrap`**: berjalan saat membangun file bootstrap sebelum prompt sistem difinalisasi.
+  Gunakan ini untuk menambah/menghapus file konteks bootstrap.
+- **Kait perintah**: `/new`, `/reset`, `/stop`, dan peristiwa perintah lain (lihat dokumen Kait).
 
-Lihat [Hook](/id/automation/hooks) untuk penyiapan dan contoh.
+Lihat [Kait](/id/automation/hooks) untuk penyiapan dan contoh.
 
-### Hook Plugin (lifecycle agen + gateway)
+### Kait Plugin (siklus hidup agen + gateway)
 
 Ini berjalan di dalam loop agen atau pipeline gateway:
 
-- **`before_model_resolve`**: berjalan pra-sesi (tanpa `messages`) untuk menimpa provider/model secara deterministik sebelum resolusi model.
-- **`before_prompt_build`**: berjalan setelah sesi dimuat (dengan `messages`) untuk menyuntikkan `prependContext`, `systemPrompt`, `prependSystemContext`, atau `appendSystemContext` sebelum pengiriman prompt. Gunakan `prependContext` untuk teks dinamis per-giliran dan field konteks-sistem untuk panduan stabil yang harus berada di ruang prompt sistem.
-- **`before_agent_start`**: hook kompatibilitas lama yang dapat berjalan di fase mana pun; utamakan hook eksplisit di atas.
-- **`before_agent_reply`**: berjalan setelah tindakan inline dan sebelum panggilan LLM, memungkinkan Plugin mengklaim giliran dan mengembalikan balasan sintetis atau meniadakan giliran sepenuhnya.
+- **`before_model_resolve`**: berjalan pra-sesi (tanpa `messages`) untuk secara deterministik menimpa penyedia/model sebelum resolusi model.
+- **`before_prompt_build`**: berjalan setelah pemuatan sesi (dengan `messages`) untuk menyuntikkan `prependContext`, `systemPrompt`, `prependSystemContext`, atau `appendSystemContext` sebelum pengiriman prompt. Gunakan `prependContext` untuk teks dinamis per-giliran dan field konteks sistem untuk panduan stabil yang seharusnya berada di ruang prompt sistem.
+- **`before_agent_start`**: kait kompatibilitas lama yang dapat berjalan di salah satu fase; utamakan kait eksplisit di atas.
+- **`before_agent_reply`**: berjalan setelah tindakan inline dan sebelum panggilan LLM, memungkinkan Plugin mengklaim giliran dan mengembalikan balasan sintetis atau membisukan giliran sepenuhnya.
 - **`agent_end`**: memeriksa daftar pesan akhir dan metadata eksekusi setelah selesai.
 - **`before_compaction` / `after_compaction`**: mengamati atau menganotasi siklus Compaction.
 - **`before_tool_call` / `after_tool_call`**: mengintersepsi parameter/hasil alat.
 - **`before_install`**: memeriksa temuan pemindaian bawaan dan secara opsional memblokir instalasi skill atau Plugin.
-- **`tool_result_persist`**: mentransformasi hasil alat secara sinkron sebelum ditulis ke transkrip sesi milik OpenClaw.
-- **`message_received` / `message_sending` / `message_sent`**: hook pesan masuk + keluar.
-- **`session_start` / `session_end`**: batas lifecycle sesi.
-- **`gateway_start` / `gateway_stop`**: peristiwa lifecycle gateway.
+- **`tool_result_persist`**: secara sinkron mentransformasi hasil alat sebelum ditulis ke transkrip sesi milik OpenClaw.
+- **`message_received` / `message_sending` / `message_sent`**: kait pesan masuk + keluar.
+- **`session_start` / `session_end`**: batas siklus hidup sesi.
+- **`gateway_start` / `gateway_stop`**: peristiwa siklus hidup gateway.
 
-Aturan keputusan hook untuk guard keluar/alat:
+Aturan keputusan kait untuk penjaga keluar/alat:
 
 - `before_tool_call`: `{ block: true }` bersifat terminal dan menghentikan handler berprioritas lebih rendah.
 - `before_tool_call`: `{ block: false }` adalah no-op dan tidak menghapus blok sebelumnya.
@@ -119,41 +119,41 @@ Aturan keputusan hook untuk guard keluar/alat:
 - `message_sending`: `{ cancel: true }` bersifat terminal dan menghentikan handler berprioritas lebih rendah.
 - `message_sending`: `{ cancel: false }` adalah no-op dan tidak menghapus pembatalan sebelumnya.
 
-Lihat [Hook Plugin](/id/plugins/hooks) untuk API hook dan detail pendaftaran.
+Lihat [Kait Plugin](/id/plugins/hooks) untuk API kait dan detail pendaftaran.
 
-Harness dapat mengadaptasi hook ini secara berbeda. Harness app-server Codex menjaga
-hook Plugin OpenClaw sebagai kontrak kompatibilitas untuk surface terdokumentasi yang dicerminkan,
-sementara hook native Codex tetap menjadi mekanisme Codex tingkat lebih rendah yang terpisah.
+Harness dapat mengadaptasi kait ini secara berbeda. Harness server aplikasi Codex mempertahankan
+kait Plugin OpenClaw sebagai kontrak kompatibilitas untuk permukaan cermin yang terdokumentasi,
+sementara kait native Codex tetap menjadi mekanisme Codex tingkat lebih rendah yang terpisah.
 
 ## Streaming + balasan parsial
 
 - Delta asisten di-streaming dari pi-agent-core dan dipancarkan sebagai peristiwa `assistant`.
-- Streaming blok dapat memancarkan balasan parsial pada `text_end` atau `message_end`.
+- Streaming blok dapat memancarkan balasan parsial baik pada `text_end` maupun `message_end`.
 - Streaming penalaran dapat dipancarkan sebagai stream terpisah atau sebagai balasan blok.
-- Lihat [Streaming](/id/concepts/streaming) untuk perilaku chunking dan balasan blok.
+- Lihat [Streaming](/id/concepts/streaming) untuk perilaku pemotongan chunk dan balasan blok.
 
 ## Eksekusi alat + alat perpesanan
 
-- Peristiwa mulai/perbarui/selesai alat dipancarkan pada stream `tool`.
+- Peristiwa mulai/perbarui/akhir alat dipancarkan pada stream `tool`.
 - Hasil alat disanitasi untuk ukuran dan payload gambar sebelum dicatat/dipancarkan.
 - Pengiriman alat perpesanan dilacak untuk menekan konfirmasi asisten duplikat.
 
 ## Pembentukan balasan + penekanan
 
-- Payload akhir dirakit dari:
+- Payload akhir disusun dari:
   - teks asisten (dan penalaran opsional)
   - ringkasan alat inline (saat verbose + diizinkan)
-  - teks error asisten saat model mengalami error
-- Token senyap persis `NO_REPLY` / `no_reply` difilter dari
-  payload keluar.
+  - teks kesalahan asisten saat model mengalami kesalahan
+- Token diam persis `NO_REPLY` / `no_reply` difilter dari payload
+  keluar.
 - Duplikat alat perpesanan dihapus dari daftar payload akhir.
-- Jika tidak ada payload yang dapat dirender tersisa dan sebuah alat mengalami error, balasan error alat fallback dipancarkan
+- Jika tidak ada payload yang dapat dirender tersisa dan alat mengalami kesalahan, balasan kesalahan alat fallback dipancarkan
   (kecuali alat perpesanan sudah mengirim balasan yang terlihat oleh pengguna).
 
 ## Compaction + percobaan ulang
 
 - Compaction otomatis memancarkan peristiwa stream `compaction` dan dapat memicu percobaan ulang.
-- Pada percobaan ulang, buffer dalam memori dan ringkasan alat direset untuk menghindari keluaran duplikat.
+- Saat percobaan ulang, buffer dalam memori dan ringkasan alat direset untuk menghindari keluaran duplikat.
 - Lihat [Compaction](/id/concepts/compaction) untuk pipeline Compaction.
 
 ## Stream peristiwa (saat ini)
@@ -162,23 +162,23 @@ sementara hook native Codex tetap menjadi mekanisme Codex tingkat lebih rendah y
 - `assistant`: delta streaming dari pi-agent-core
 - `tool`: peristiwa alat streaming dari pi-agent-core
 
-## Penanganan channel chat
+## Penanganan kanal chat
 
-- Delta asisten dibuffer ke dalam pesan chat `delta`.
-- Chat `final` dipancarkan pada **lifecycle end/error**.
+- Delta asisten dibuffer menjadi pesan `delta` chat.
+- `final` chat dipancarkan pada **akhir/kesalahan siklus hidup**.
 
 ## Timeout
 
-- Default `agent.wait`: 30 dtk (hanya penantian). Parameter `timeoutMs` menimpa.
-- Runtime agen: default `agents.defaults.timeoutSeconds` 172800 dtk (48 jam); diberlakukan dalam timer pembatalan `runEmbeddedPiAgent`.
-- Runtime Cron: `timeoutSeconds` giliran-agen terisolasi dimiliki oleh cron. Scheduler memulai timer itu saat eksekusi dimulai, membatalkan eksekusi yang mendasarinya pada tenggat yang dikonfigurasi, lalu menjalankan pembersihan terbatas sebelum mencatat timeout sehingga sesi anak yang basi tidak dapat membuat lane tersangkut.
-- Diagnostik keaktifan sesi: dengan diagnostik diaktifkan, `diagnostics.stuckSessionWarnMs` mengklasifikasikan sesi `processing` yang panjang dan tidak memiliki balasan, alat, status, blok, atau progres ACP yang teramati. Eksekusi tertanam aktif, panggilan model, dan panggilan alat dilaporkan sebagai `session.long_running`; pekerjaan aktif tanpa progres terbaru dilaporkan sebagai `session.stalled`; `session.stuck` dicadangkan untuk pembukuan sesi basi tanpa pekerjaan aktif. Pembukuan sesi basi segera melepaskan lane sesi yang terdampak; eksekusi tertanam yang stalled hanya di-abort-drain setelah `diagnostics.stuckSessionAbortMs` (default: setidaknya 10 menit dan 5x ambang peringatan) sehingga pekerjaan antrean dapat dilanjutkan tanpa memutus eksekusi yang sekadar lambat. Pemulihan memancarkan hasil terstruktur requested/completed, dan status diagnostik ditandai idle hanya jika generasi processing yang sama masih current. Diagnostik `session.stuck` berulang melakukan back off selama sesi tetap tidak berubah.
-- Timeout idle model: OpenClaw membatalkan permintaan model ketika tidak ada chunk respons yang tiba sebelum jendela idle. `models.providers.<id>.timeoutSeconds` memperpanjang watchdog idle ini untuk provider lokal/self-hosted yang lambat; jika tidak, OpenClaw menggunakan `agents.defaults.timeoutSeconds` saat dikonfigurasi, dibatasi pada 120 dtk secara default. Eksekusi yang dipicu Cron tanpa timeout model atau agen eksplisit menonaktifkan watchdog idle dan mengandalkan timeout luar cron.
-- Timeout permintaan HTTP provider: `models.providers.<id>.timeoutSeconds` berlaku untuk fetch HTTP model provider tersebut, termasuk koneksi, header, body, timeout permintaan SDK, penanganan pembatalan guarded-fetch total, dan watchdog idle stream model. Gunakan ini untuk provider lokal/self-hosted yang lambat seperti Ollama sebelum menaikkan timeout runtime agen keseluruhan.
+- Default `agent.wait`: 30 dtk (hanya penantian). Parameter `timeoutMs` menimpa ini.
+- Runtime agen: default `agents.defaults.timeoutSeconds` 172800 dtk (48 jam); diberlakukan di timer pembatalan `runEmbeddedPiAgent`.
+- Runtime Cron: `timeoutSeconds` giliran-agen terisolasi dimiliki oleh cron. Penjadwal memulai timer itu saat eksekusi dimulai, membatalkan eksekusi yang mendasarinya pada tenggat yang dikonfigurasi, lalu menjalankan pembersihan berbatas sebelum mencatat timeout agar sesi anak yang stale tidak dapat membuat jalur tetap tersangkut.
+- Diagnostik keaktifan sesi: dengan diagnostik diaktifkan, `diagnostics.stuckSessionWarnMs` mengklasifikasikan sesi `processing` yang lama yang tidak memiliki balasan, alat, status, blok, atau progres ACP yang diamati. Eksekusi tertanam, panggilan model, dan panggilan alat yang aktif dilaporkan sebagai `session.long_running`; pekerjaan aktif tanpa progres terbaru dilaporkan sebagai `session.stalled`; `session.stuck` dicadangkan untuk pencatatan sesi stale tanpa pekerjaan aktif. Pencatatan sesi stale segera melepaskan jalur sesi yang terdampak; eksekusi tertanam yang macet hanya dibatalkan-dikuras setelah `diagnostics.stuckSessionAbortMs` (default: setidaknya 10 menit dan 5x ambang peringatan) agar pekerjaan yang mengantre dapat dilanjutkan tanpa memutus eksekusi yang hanya lambat. Pemulihan memancarkan hasil requested/completed terstruktur, dan status diagnostik ditandai idle hanya jika generasi pemrosesan yang sama masih berjalan. Diagnostik `session.stuck` berulang melakukan back off selama sesi tetap tidak berubah.
+- Timeout idle model: OpenClaw membatalkan permintaan model ketika tidak ada chunk respons yang tiba sebelum jendela idle. `models.providers.<id>.timeoutSeconds` memperpanjang watchdog idle ini untuk penyedia lokal/self-hosted yang lambat; jika tidak, OpenClaw menggunakan `agents.defaults.timeoutSeconds` saat dikonfigurasi, dibatasi pada 120 dtk secara default. Eksekusi yang dipicu Cron tanpa timeout model atau agen eksplisit menonaktifkan watchdog idle dan mengandalkan timeout luar cron.
+- Timeout permintaan HTTP penyedia: `models.providers.<id>.timeoutSeconds` berlaku untuk pengambilan HTTP model penyedia tersebut, termasuk koneksi, header, body, timeout permintaan SDK, penanganan pembatalan guarded-fetch total, dan watchdog idle stream model. Gunakan ini untuk penyedia lokal/self-hosted yang lambat seperti Ollama sebelum menaikkan seluruh timeout runtime agen.
 
 ## Tempat hal dapat berakhir lebih awal
 
-- Timeout agen (abort)
+- Timeout agen (batal)
 - AbortSignal (batal)
 - Pemutusan Gateway atau timeout RPC
 - Timeout `agent.wait` (hanya menunggu, tidak menghentikan agen)
@@ -186,7 +186,7 @@ sementara hook native Codex tetap menjadi mekanisme Codex tingkat lebih rendah y
 ## Terkait
 
 - [Alat](/id/tools) — alat agen yang tersedia
-- [Hook](/id/automation/hooks) — skrip berbasis peristiwa yang dipicu oleh peristiwa lifecycle agen
-- [Compaction](/id/concepts/compaction) — cara percakapan panjang dirangkum
+- [Kait](/id/automation/hooks) — skrip berbasis peristiwa yang dipicu oleh peristiwa siklus hidup agen
+- [Compaction](/id/concepts/compaction) — bagaimana percakapan panjang diringkas
 - [Persetujuan Exec](/id/tools/exec-approvals) — gerbang persetujuan untuk perintah shell
 - [Thinking](/id/tools/thinking) — konfigurasi tingkat berpikir/penalaran

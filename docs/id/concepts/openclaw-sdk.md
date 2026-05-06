@@ -4,54 +4,55 @@ read_when:
     - Anda sedang memilih antara App SDK dan Plugin SDK
     - Anda sedang berintegrasi dengan eksekusi agen Gateway, sesi, peristiwa, persetujuan, model, atau alat
 sidebarTitle: App SDK
-summary: SDK Aplikasi OpenClaw publik untuk aplikasi eksternal, skrip, dasbor, tugas CI, dan ekstensi IDE
+summary: SDK Aplikasi OpenClaw Publik untuk aplikasi eksternal, skrip, dasbor, pekerjaan CI, dan ekstensi IDE
 title: SDK Aplikasi OpenClaw
 x-i18n:
-    generated_at: "2026-05-01T09:23:59Z"
+    generated_at: "2026-05-06T09:08:02Z"
     model: gpt-5.5
     provider: openai
-    source_hash: a6b22e9f4f809a572cfd19fd22f633a706dd23b8bee2f3c244003a0861a41073
+    source_hash: 23d161958e8b100bfc829319ef6bfd2ea2bf7c873ef29a0d4a849b064e5a3b66
     source_path: concepts/openclaw-sdk.md
     workflow: 16
 ---
 
 **OpenClaw App SDK** adalah API klien publik untuk aplikasi di luar proses
-OpenClaw. Gunakan `@openclaw/sdk` ketika sebuah skrip, dasbor, tugas CI,
-ekstensi IDE, atau aplikasi eksternal lain ingin terhubung ke Gateway, memulai
-agent run, melakukan streaming event, menunggu hasil, membatalkan pekerjaan,
-atau memeriksa resource Gateway.
+OpenClaw. Gunakan `@openclaw/sdk` ketika skrip, dasbor, tugas CI, ekstensi IDE,
+atau aplikasi eksternal lain ingin terhubung ke Gateway, memulai run agen,
+mengalirkan peristiwa, menunggu hasil, membatalkan pekerjaan, atau memeriksa
+sumber daya Gateway.
 
 <Note>
   App SDK berbeda dari [Plugin SDK](/id/plugins/sdk-overview).
-  `@openclaw/sdk` berbicara ke Gateway dari luar OpenClaw.
-  `openclaw/plugin-sdk/*` hanya untuk plugin yang berjalan di dalam OpenClaw dan
-  mendaftarkan provider, channel, tool, hook, atau runtime tepercaya.
+  `@openclaw/sdk` berbicara dengan Gateway dari luar OpenClaw.
+  `openclaw/plugin-sdk/*` hanya untuk Plugin yang berjalan di dalam OpenClaw dan
+  mendaftarkan penyedia, kanal, alat, hook, atau runtime tepercaya.
 </Note>
 
-## Yang Tersedia Saat Ini
+## Yang tersedia saat ini
 
-`@openclaw/sdk` menyediakan:
+`@openclaw/sdk` tersedia dengan:
 
-| Permukaan                 | Status | Fungsinya                                                                  |
-| ------------------------- | ------ | -------------------------------------------------------------------------- |
-| `OpenClaw`                | Siap   | Titik masuk klien utama. Memiliki transport, koneksi, request, dan event.  |
-| `GatewayClientTransport`  | Siap   | Transport WebSocket yang didukung oleh klien Gateway.                      |
-| `oc.agents`               | Siap   | Mencantumkan, membuat, memperbarui, menghapus, dan mendapatkan handle agent. |
-| `Agent.run()`             | Siap   | Memulai run Gateway `agent` dan mengembalikan `Run`.                       |
-| `oc.runs`                 | Siap   | Membuat, mendapatkan, menunggu, membatalkan, dan melakukan streaming run.   |
-| `Run.events()`            | Siap   | Melakukan streaming event per-run yang dinormalisasi dengan replay untuk run cepat. |
-| `Run.wait()`              | Siap   | Memanggil `agent.wait` dan mengembalikan `RunResult` yang stabil.          |
-| `Run.cancel()`            | Siap   | Memanggil `sessions.abort` berdasarkan run id, dengan session key jika tersedia. |
-| `oc.sessions`             | Siap   | Membuat, menyelesaikan, mengirim ke, menambal, memadatkan, dan mendapatkan handle session. |
-| `Session.send()`          | Siap   | Memanggil `sessions.send` dan mengembalikan `Run`.                         |
-| `oc.models`               | Siap   | Memanggil `models.list` dan RPC status `models.authStatus` saat ini.        |
-| `oc.tools`                | Siap   | Mencantumkan, memberi scope, dan menjalankan tool Gateway melalui pipeline kebijakan. |
-| `oc.artifacts`            | Siap   | Mencantumkan, mendapatkan, dan mengunduh artifact transkrip Gateway.       |
-| `oc.approvals`            | Siap   | Mencantumkan dan menyelesaikan approval exec melalui RPC approval Gateway.  |
-| `oc.rawEvents()`          | Siap   | Mengekspos event Gateway mentah untuk konsumen tingkat lanjut.             |
-| `normalizeGatewayEvent()` | Siap   | Mengonversi event Gateway mentah ke bentuk event SDK yang stabil.          |
+| Antarmuka                | Status   | Apa fungsinya                                                                      |
+| ------------------------ | -------- | ---------------------------------------------------------------------------------- |
+| `OpenClaw`               | Siap     | Titik masuk klien utama. Mengelola transport, koneksi, permintaan, dan peristiwa. |
+| `GatewayClientTransport` | Siap     | Transport WebSocket yang didukung oleh klien Gateway.                              |
+| `oc.agents`              | Siap     | Mencantumkan, membuat, memperbarui, menghapus, dan mengambil handle agen.          |
+| `Agent.run()`            | Siap     | Memulai run Gateway `agent` dan mengembalikan `Run`.                               |
+| `oc.runs`                | Siap     | Membuat, mengambil, menunggu, membatalkan, dan mengalirkan run.                    |
+| `Run.events()`           | Siap     | Mengalirkan peristiwa per-run yang dinormalisasi dengan replay untuk run cepat.    |
+| `Run.wait()`             | Siap     | Memanggil `agent.wait` dan mengembalikan `RunResult` yang stabil.                  |
+| `Run.cancel()`           | Siap     | Memanggil `sessions.abort` berdasarkan id run, dengan kunci sesi bila tersedia.    |
+| `oc.sessions`            | Siap     | Membuat, me-resolve, mengirim ke, mem-patch, mengompaksi, dan mengambil handle sesi. |
+| `Session.send()`         | Siap     | Memanggil `sessions.send` dan mengembalikan `Run`.                                 |
+| `oc.models`              | Siap     | Memanggil `models.list` dan RPC status `models.authStatus` saat ini.               |
+| `oc.tools`               | Siap     | Mencantumkan, mencakup, dan memanggil alat Gateway melalui pipeline kebijakan.     |
+| `oc.artifacts`           | Siap     | Mencantumkan, mengambil, dan mengunduh artefak transkrip Gateway.                  |
+| `oc.approvals`           | Siap     | Mencantumkan dan me-resolve persetujuan exec melalui RPC persetujuan Gateway.      |
+| `oc.environments`        | Sebagian | Mencantumkan kandidat lingkungan lokal Gateway dan Node; create/delete belum tersambung. |
+| `oc.rawEvents()`         | Siap     | Mengekspos peristiwa Gateway mentah untuk konsumen tingkat lanjut.                 |
+| `normalizeGatewayEvent()` | Siap    | Mengonversi peristiwa Gateway mentah menjadi bentuk peristiwa SDK yang stabil.     |
 
-SDK juga mengekspor tipe inti yang digunakan oleh permukaan tersebut:
+SDK juga mengekspor tipe inti yang digunakan oleh antarmuka tersebut:
 `AgentRunParams`, `RunResult`, `RunStatus`, `OpenClawEvent`,
 `OpenClawEventType`, `GatewayEvent`, `OpenClawTransport`,
 `GatewayRequestOptions`, `SessionCreateParams`, `SessionSendParams`,
@@ -60,7 +61,7 @@ SDK juga mengekspor tipe inti yang digunakan oleh permukaan tersebut:
 `EnvironmentSelection`, `WorkspaceSelection`, `ApprovalMode`, dan tipe hasil
 terkait.
 
-## Terhubung Ke Gateway
+## Terhubung ke Gateway
 
 Buat klien dengan URL Gateway eksplisit, atau injeksikan transport kustom untuk
 pengujian dan runtime aplikasi tertanam.
@@ -69,7 +70,7 @@ pengujian dan runtime aplikasi tertanam.
 import { OpenClaw } from "@openclaw/sdk";
 
 const oc = new OpenClaw({
-  url: "ws://127.0.0.1:14565",
+  url: "ws://127.0.0.1:18789",
   token: process.env.OPENCLAW_GATEWAY_TOKEN,
   requestTimeoutMs: 30_000,
 });
@@ -78,11 +79,11 @@ await oc.connect();
 ```
 
 `new OpenClaw({ gateway: "ws://..." })` setara dengan `url`. Opsi
-`gateway: "auto"` diterima oleh konstruktor, tetapi discovery Gateway otomatis
-belum menjadi fitur SDK tersendiri; berikan `url` ketika aplikasi belum tahu
-cara menemukan Gateway.
+`gateway: "auto"` diterima oleh konstruktor, tetapi penemuan Gateway otomatis
+belum menjadi fitur SDK terpisah; teruskan `url` ketika aplikasi belum tahu cara
+menemukan Gateway.
 
-Untuk pengujian, berikan objek yang mengimplementasikan `OpenClawTransport`:
+Untuk pengujian, teruskan objek yang mengimplementasikan `OpenClawTransport`:
 
 ```typescript
 const oc = new OpenClaw({
@@ -95,9 +96,9 @@ const oc = new OpenClaw({
 });
 ```
 
-## Menjalankan Agent
+## Menjalankan agen
 
-Gunakan `oc.agents.get(id)` ketika aplikasi menginginkan handle agent, lalu
+Gunakan `oc.agents.get(id)` ketika aplikasi menginginkan handle agen, lalu
 panggil `agent.run()`.
 
 ```typescript
@@ -121,18 +122,18 @@ const result = await run.wait({ timeoutMs: 120_000 });
 console.log(result.status);
 ```
 
-Ref model yang menyertakan provider seperti `openai/gpt-5.5` dipecah menjadi
-override `provider` dan `model` Gateway. `timeoutMs` tetap dalam milidetik di
-SDK dan dikonversi menjadi detik timeout Gateway untuk RPC `agent`.
+Ref model berkualifikasi penyedia seperti `openai/gpt-5.5` dipisahkan menjadi
+override Gateway `provider` dan `model`. `timeoutMs` tetap dalam milidetik di SDK
+dan dikonversi menjadi detik timeout Gateway untuk RPC `agent`.
 
-`run.wait()` menggunakan RPC Gateway `agent.wait`. Deadline tunggu yang habis
+`run.wait()` menggunakan RPC Gateway `agent.wait`. Tenggat tunggu yang kedaluwarsa
 saat run masih aktif mengembalikan `status: "accepted"` alih-alih berpura-pura
-run itu sendiri mengalami timeout. Timeout runtime, run yang diaborsi, dan run
-yang dibatalkan dinormalisasi menjadi `timed_out` atau `cancelled`.
+bahwa run itu sendiri mengalami timeout. Timeout runtime, run yang dibatalkan,
+dan run yang dicancel dinormalisasi menjadi `timed_out` atau `cancelled`.
 
-## Membuat Dan Menggunakan Ulang Session
+## Membuat dan menggunakan ulang sesi
 
-Gunakan session ketika aplikasi menginginkan status transkrip yang tahan lama.
+Gunakan sesi ketika aplikasi menginginkan status transkrip yang tahan lama.
 
 ```typescript
 const session = await oc.sessions.create({
@@ -144,8 +145,8 @@ const run = await session.send("Prepare release notes from the current diff.");
 await run.wait();
 ```
 
-`Session.send()` memanggil `sessions.send` dan mengembalikan `Run`. Handle
-session juga mendukung:
+`Session.send()` memanggil `sessions.send` dan mengembalikan `Run`. Handle sesi
+juga mendukung:
 
 ```typescript
 await session.abort(run.id);
@@ -153,9 +154,9 @@ await session.patch({ label: "renamed-session" });
 await session.compact({ maxLines: 200 });
 ```
 
-## Streaming Event
+## Mengalirkan peristiwa
 
-SDK menormalisasi event Gateway mentah ke dalam envelope `OpenClawEvent` yang
+SDK menormalkan peristiwa Gateway mentah menjadi envelope `OpenClawEvent` yang
 stabil:
 
 ```typescript
@@ -174,33 +175,33 @@ type OpenClawEvent = {
 };
 ```
 
-Jenis event umum mencakup:
+Jenis peristiwa umum meliputi:
 
-| Jenis event           | Event Gateway sumber                       |
-| --------------------- | ------------------------------------------ |
-| `run.started`         | Awal lifecycle `agent`                     |
-| `run.completed`       | Akhir lifecycle `agent`                    |
-| `run.failed`          | Error lifecycle `agent`                    |
-| `run.cancelled`       | Akhir lifecycle yang diaborsi/dibatalkan   |
-| `run.timed_out`       | Akhir lifecycle timeout                    |
-| `assistant.delta`     | Delta streaming assistant                  |
-| `assistant.message`   | Pesan assistant                            |
-| `thinking.delta`      | Stream pemikiran atau rencana              |
-| `tool.call.started`   | Awal tool/item/command                     |
-| `tool.call.delta`     | Pembaruan tool/item/command                |
-| `tool.call.completed` | Penyelesaian tool/item/command             |
-| `tool.call.failed`    | Kegagalan tool/item/command atau status diblokir |
-| `approval.requested`  | Request approval exec atau plugin          |
-| `approval.resolved`   | Resolusi approval exec atau plugin         |
-| `session.created`     | Pembuatan `sessions.changed`               |
-| `session.updated`     | Pembaruan `sessions.changed`               |
-| `session.compacted`   | Compaction `sessions.changed`              |
-| `task.updated`        | Event pembaruan tugas                      |
-| `artifact.updated`    | Event stream patch                         |
-| `raw`                 | Event apa pun yang belum memiliki pemetaan SDK stabil |
+| Jenis peristiwa       | Peristiwa Gateway sumber                  |
+| --------------------- | ----------------------------------------- |
+| `run.started`         | Awal siklus hidup `agent`                 |
+| `run.completed`       | Akhir siklus hidup `agent`                |
+| `run.failed`          | Galat siklus hidup `agent`                |
+| `run.cancelled`       | Akhir siklus hidup yang dibatalkan        |
+| `run.timed_out`       | Akhir siklus hidup timeout                |
+| `assistant.delta`     | Delta streaming asisten                   |
+| `assistant.message`   | Pesan asisten                             |
+| `thinking.delta`      | Aliran pemikiran atau rencana             |
+| `tool.call.started`   | Awal alat/item/perintah                   |
+| `tool.call.delta`     | Pembaruan alat/item/perintah              |
+| `tool.call.completed` | Penyelesaian alat/item/perintah           |
+| `tool.call.failed`    | Kegagalan alat/item/perintah atau status diblokir |
+| `approval.requested`  | Permintaan persetujuan exec atau Plugin   |
+| `approval.resolved`   | Resolusi persetujuan exec atau Plugin     |
+| `session.created`     | Pembuatan `sessions.changed`              |
+| `session.updated`     | Pembaruan `sessions.changed`              |
+| `session.compacted`   | Compaction `sessions.changed`             |
+| `task.updated`        | Peristiwa pembaruan tugas                 |
+| `artifact.updated`    | Peristiwa aliran patch                    |
+| `raw`                 | Peristiwa apa pun yang belum memiliki pemetaan SDK stabil |
 
-`Run.events()` memfilter event ke satu run id dan memutar ulang event yang
-sudah terlihat untuk run cepat. Artinya alur yang didokumentasikan aman:
+`Run.events()` memfilter peristiwa ke satu id run dan memutar ulang peristiwa
+yang sudah terlihat untuk run cepat. Artinya, alur terdokumentasi ini aman:
 
 ```typescript
 const run = await agent.run("Summarize the latest session.");
@@ -212,21 +213,21 @@ for await (const event of run.events()) {
 }
 ```
 
-Untuk stream seluruh aplikasi, gunakan `oc.events()`. Untuk frame Gateway
+Untuk aliran seluruh aplikasi, gunakan `oc.events()`. Untuk frame Gateway
 mentah, gunakan `oc.rawEvents()`.
 
-## Model, Tool, Artifact, Dan Approval
+## Model, alat, artefak, dan persetujuan
 
-Helper model memetakan ke metode Gateway saat ini:
+Helper model dipetakan ke metode Gateway saat ini:
 
 ```typescript
 await oc.models.list();
 await oc.models.status({ probe: false }); // calls models.authStatus
 ```
 
-Helper tool mengekspos katalog Gateway, tampilan tool efektif, dan invocation
-tool Gateway langsung. `oc.tools.invoke()` mengembalikan envelope bertipe
-alih-alih melempar untuk penolakan kebijakan atau approval.
+Helper alat mengekspos katalog Gateway, tampilan alat efektif, dan pemanggilan
+alat Gateway langsung. `oc.tools.invoke()` mengembalikan envelope bertipe
+alih-alih melempar untuk penolakan kebijakan atau persetujuan.
 
 ```typescript
 await oc.tools.list();
@@ -239,9 +240,9 @@ await oc.tools.invoke("tool-name", {
 });
 ```
 
-Helper artifact mengekspos proyeksi artifact Gateway untuk konteks session,
-run, atau tugas. Setiap panggilan memerlukan satu scope eksplisit
-`sessionKey`, `runId`, atau `taskId`:
+Helper artefak mengekspos proyeksi artefak Gateway untuk konteks sesi, run, atau
+tugas. Setiap panggilan memerlukan satu cakupan eksplisit `sessionKey`, `runId`,
+atau `taskId`:
 
 ```typescript
 const { artifacts } = await oc.artifacts.list({ sessionKey: "main" });
@@ -254,66 +255,71 @@ if (first) {
 }
 ```
 
-Helper approval menggunakan RPC approval exec:
+Helper persetujuan menggunakan RPC persetujuan exec:
 
 ```typescript
 const approvals = await oc.approvals.list();
 await oc.approvals.respond("approval-id", { decision: "approve" });
 ```
 
-## Secara Eksplisit Belum Didukung Saat Ini
+Helper lingkungan mengekspos penemuan lokal Gateway dan Node yang hanya-baca:
 
-SDK menyertakan nama untuk model produk yang kami inginkan, tetapi tidak
-diam-diam berpura-pura RPC Gateway tersedia. Panggilan ini saat ini melempar
-error tidak didukung yang eksplisit:
+```typescript
+const { environments } = await oc.environments.list();
+await oc.environments.status(environments[0].id);
+```
+
+## Secara eksplisit belum didukung saat ini
+
+SDK menyertakan nama untuk model produk yang kami inginkan, tetapi tidak diam-diam
+berpura-pura bahwa RPC Gateway sudah ada. Panggilan ini saat ini melempar galat
+tidak didukung yang eksplisit:
 
 ```typescript
 await oc.tasks.list();
 await oc.tasks.get("task-id");
 await oc.tasks.cancel("task-id");
 
-await oc.environments.list();
 await oc.environments.create({});
-await oc.environments.status("environment-id");
 await oc.environments.delete("environment-id");
 ```
 
-Field per-run `workspace`, `runtime`, `environment`, dan `approvals` diberi tipe
+Field per-run `workspace`, `runtime`, `environment`, dan `approvals` diketik
 sebagai bentuk masa depan, tetapi Gateway saat ini tidak mendukung override
-tersebut pada RPC `agent`. Jika pemanggil memberikannya, SDK melempar sebelum
-mengirimkan run agar pekerjaan tidak tanpa sengaja dieksekusi dengan perilaku
-workspace, runtime, environment, atau approval default.
+tersebut pada RPC `agent`. Jika pemanggil meneruskannya, SDK melempar sebelum
+mengirimkan run agar pekerjaan tidak secara tidak sengaja dijalankan dengan
+perilaku workspace, runtime, lingkungan, atau persetujuan default.
 
-## App SDK Versus Plugin SDK
+## App SDK vs Plugin SDK
 
 Gunakan App SDK ketika kode berada di luar OpenClaw:
 
-- Skrip Node yang memulai atau mengamati agent run
+- Skrip Node yang memulai atau mengamati run agen
 - Tugas CI yang memanggil Gateway
 - dasbor dan panel admin
 - ekstensi IDE
-- bridge eksternal yang tidak perlu menjadi channel plugin
+- bridge eksternal yang tidak perlu menjadi Plugin kanal
 - pengujian integrasi dengan transport Gateway palsu atau nyata
 
 Gunakan Plugin SDK ketika kode berjalan di dalam OpenClaw:
 
-- provider plugin
-- channel plugin
-- hook tool atau lifecycle
-- plugin harness agent
+- Plugin penyedia
+- Plugin kanal
+- hook alat atau siklus hidup
+- Plugin harness agen
 - helper runtime tepercaya
 
 Kode App SDK harus mengimpor dari `@openclaw/sdk`. Kode Plugin harus mengimpor
 dari subpath `openclaw/plugin-sdk/*` yang terdokumentasi. Jangan mencampur kedua
 kontrak tersebut.
 
-## Dokumen Terkait
+## Terkait
 
 - [Desain API OpenClaw App SDK](/id/reference/openclaw-sdk-api-design)
 - [Referensi RPC Gateway](/id/reference/rpc)
-- [Loop agent](/id/concepts/agent-loop)
-- [Runtime agent](/id/concepts/agent-runtimes)
-- [Session](/id/concepts/session)
+- [Loop agen](/id/concepts/agent-loop)
+- [Runtime agen](/id/concepts/agent-runtimes)
+- [Sesi](/id/concepts/session)
 - [Tugas latar belakang](/id/automation/tasks)
-- [Agent ACP](/id/tools/acp-agents)
+- [Agen ACP](/id/tools/acp-agents)
 - [Ikhtisar Plugin SDK](/id/plugins/sdk-overview)

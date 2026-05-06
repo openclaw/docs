@@ -1,35 +1,33 @@
 ---
 read_when:
     - Anda ingin OpenClaw terisolasi dari lingkungan macOS utama Anda
-    - Anda ingin integrasi iMessage (BlueBubbles) dalam lingkungan terisolasi
-    - Anda menginginkan lingkungan macOS yang dapat diatur ulang dan dapat Anda kloning
-    - Anda ingin membandingkan opsi VM macOS lokal dan yang di-hosting
-summary: Jalankan OpenClaw di VM macOS dalam sandbox (lokal atau dihosting) saat Anda memerlukan isolasi atau iMessage
+    - Anda menginginkan integrasi iMessage (BlueBubbles) di lingkungan terisolasi
+    - Anda menginginkan lingkungan macOS yang dapat diatur ulang dan dapat dikloning
+    - Anda ingin membandingkan opsi VM macOS lokal dan yang di-host
+summary: Jalankan OpenClaw di VM macOS yang terisolasi dalam sandbox (lokal atau dihosting) saat Anda memerlukan isolasi atau iMessage
 title: Mesin virtual macOS
 x-i18n:
-    generated_at: "2026-04-30T09:56:51Z"
+    generated_at: "2026-05-06T09:17:47Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 49cd3d420db02bcdb80378c3a91a1c1243e7be2012525c31de1dd49db397d560
+    source_hash: e2b6841f66e63606346f364bb1b1b9ca4a3d52558e3d8c6f129c5b89387c6968
     source_path: install/macos-vm.md
     workflow: 16
 ---
 
-# OpenClaw di VM macOS (Sandboxing)
-
 ## Default yang direkomendasikan (sebagian besar pengguna)
 
 - **VPS Linux kecil** untuk Gateway yang selalu aktif dan biaya rendah. Lihat [hosting VPS](/id/vps).
-- **Perangkat keras khusus** (Mac mini atau mesin Linux) jika Anda menginginkan kendali penuh dan **IP residensial** untuk otomasi browser. Banyak situs memblokir IP pusat data, jadi penelusuran lokal sering bekerja lebih baik.
-- **Hibrida:** pertahankan Gateway di VPS murah, dan hubungkan Mac Anda sebagai **node** saat Anda memerlukan otomasi browser/UI. Lihat [Node](/id/nodes) dan [Gateway jarak jauh](/id/gateway/remote).
+- **Perangkat keras khusus** (Mac mini atau kotak Linux) jika Anda menginginkan kontrol penuh dan **IP residensial** untuk otomatisasi browser. Banyak situs memblokir IP pusat data, jadi penelusuran lokal sering bekerja lebih baik.
+- **Hibrida:** tetap jalankan Gateway di VPS murah, dan hubungkan Mac Anda sebagai **Node** saat Anda membutuhkan otomatisasi browser/UI. Lihat [Node](/id/nodes) dan [Gateway jarak jauh](/id/gateway/remote).
 
-Gunakan VM macOS saat Anda secara khusus memerlukan kemampuan khusus macOS (iMessage/BlueBubbles) atau menginginkan isolasi ketat dari Mac harian Anda.
+Gunakan VM macOS saat Anda secara khusus membutuhkan kemampuan yang hanya tersedia di macOS (iMessage/BlueBubbles) atau menginginkan isolasi ketat dari Mac harian Anda.
 
 ## Opsi VM macOS
 
-### VM lokal di Mac Apple Silicon Anda (Lume)
+### VM lokal di Apple Silicon Mac Anda (Lume)
 
-Jalankan OpenClaw di VM macOS tersandbox pada Mac Apple Silicon Anda yang sudah ada menggunakan [Lume](https://cua.ai/docs/lume).
+Jalankan OpenClaw dalam VM macOS tersandbox di Apple Silicon Mac yang sudah Anda miliki menggunakan [Lume](https://cua.ai/docs/lume).
 
 Ini memberi Anda:
 
@@ -40,10 +38,10 @@ Ini memberi Anda:
 
 ### Penyedia Mac ter-hosting (cloud)
 
-Jika Anda menginginkan macOS di cloud, penyedia Mac ter-hosting juga bisa digunakan:
+Jika Anda menginginkan macOS di cloud, penyedia Mac ter-hosting juga dapat digunakan:
 
 - [MacStadium](https://www.macstadium.com/) (Mac ter-hosting)
-- Vendor Mac ter-hosting lain juga bisa digunakan; ikuti dokumentasi VM + SSH mereka
+- Vendor Mac ter-hosting lainnya juga dapat digunakan; ikuti dokumentasi VM + SSH mereka
 
 Setelah Anda memiliki akses SSH ke VM macOS, lanjutkan ke langkah 6 di bawah.
 
@@ -53,18 +51,18 @@ Setelah Anda memiliki akses SSH ke VM macOS, lanjutkan ke langkah 6 di bawah.
 
 1. Instal Lume
 2. `lume create openclaw --os macos --ipsw latest`
-3. Selesaikan Setup Assistant, aktifkan Remote Login (SSH)
+3. Selesaikan Asisten Pengaturan, aktifkan Login Jarak Jauh (SSH)
 4. `lume run openclaw --no-display`
-5. Masuk lewat SSH, instal OpenClaw, konfigurasikan channel
+5. Masuk melalui SSH, instal OpenClaw, konfigurasikan channel
 6. Selesai
 
 ---
 
-## Yang Anda perlukan (Lume)
+## Yang Anda butuhkan (Lume)
 
-- Mac Apple Silicon (M1/M2/M3/M4)
-- macOS Sequoia atau yang lebih baru di host
-- ~60 GB ruang disk kosong per VM
+- Apple Silicon Mac (M1/M2/M3/M4)
+- macOS Sequoia atau lebih baru di host
+- Ruang disk kosong ~60 GB per VM
 - ~20 menit
 
 ---
@@ -100,24 +98,24 @@ lume create openclaw --os macos --ipsw latest
 Ini mengunduh macOS dan membuat VM. Jendela VNC terbuka secara otomatis.
 
 <Note>
-Pengunduhan bisa memakan waktu tergantung koneksi Anda.
+Pengunduhan dapat memakan waktu tergantung pada koneksi Anda.
 </Note>
 
 ---
 
-## 3) Selesaikan Setup Assistant
+## 3) Selesaikan Asisten Pengaturan
 
 Di jendela VNC:
 
 1. Pilih bahasa dan wilayah
-2. Lewati Apple ID (atau masuk jika Anda ingin iMessage nanti)
+2. Lewati Apple ID (atau masuk jika Anda ingin menggunakan iMessage nanti)
 3. Buat akun pengguna (ingat nama pengguna dan kata sandinya)
 4. Lewati semua fitur opsional
 
 Setelah penyiapan selesai, aktifkan SSH:
 
-1. Buka System Settings → General → Sharing
-2. Aktifkan "Remote Login"
+1. Buka Pengaturan Sistem → Umum → Berbagi
+2. Aktifkan "Login Jarak Jauh"
 
 ---
 
@@ -178,7 +176,7 @@ Tambahkan channel Anda:
 }
 ```
 
-Lalu login ke WhatsApp (pindai QR):
+Lalu masuk ke WhatsApp (pindai QR):
 
 ```bash
 openclaw channels login
@@ -186,7 +184,7 @@ openclaw channels login
 
 ---
 
-## 8) Jalankan VM tanpa tampilan
+## 8) Jalankan VM tanpa layar
 
 Hentikan VM dan mulai ulang tanpa tampilan:
 
@@ -207,13 +205,13 @@ ssh youruser@192.168.64.X "openclaw status"
 
 ## Bonus: integrasi iMessage
 
-Ini adalah fitur utama dari menjalankan di macOS. Gunakan [BlueBubbles](https://bluebubbles.app) untuk menambahkan iMessage ke OpenClaw.
+Ini adalah fitur unggulan dari menjalankan di macOS. Gunakan [BlueBubbles](https://bluebubbles.app) untuk menambahkan iMessage ke OpenClaw.
 
 Di dalam VM:
 
 1. Unduh BlueBubbles dari bluebubbles.app
 2. Masuk dengan Apple ID Anda
-3. Aktifkan Web API dan tetapkan kata sandi
+3. Aktifkan Web API dan atur kata sandi
 4. Arahkan webhook BlueBubbles ke gateway Anda (contoh: `https://your-gateway-host:3000/bluebubbles-webhook?password=<password>`)
 
 Tambahkan ke konfigurasi OpenClaw Anda:
@@ -236,7 +234,7 @@ Detail penyiapan lengkap: [channel BlueBubbles](/id/channels/bluebubbles)
 
 ---
 
-## Simpan image emas
+## Simpan citra emas
 
 Sebelum menyesuaikan lebih lanjut, buat snapshot kondisi bersih Anda:
 
@@ -255,15 +253,15 @@ lume run openclaw --no-display
 
 ---
 
-## Berjalan 24/7
+## Menjalankan 24/7
 
-Pertahankan VM tetap berjalan dengan:
+Jaga VM tetap berjalan dengan:
 
 - Menjaga Mac Anda tetap tersambung ke daya
-- Menonaktifkan tidur di System Settings → Energy Saver
+- Menonaktifkan tidur di Pengaturan Sistem → Penghemat Energi
 - Menggunakan `caffeinate` jika diperlukan
 
-Untuk yang benar-benar selalu aktif, pertimbangkan Mac mini khusus atau VPS kecil. Lihat [hosting VPS](/id/vps).
+Untuk benar-benar selalu aktif, pertimbangkan Mac mini khusus atau VPS kecil. Lihat [hosting VPS](/id/vps).
 
 ---
 
@@ -271,10 +269,10 @@ Untuk yang benar-benar selalu aktif, pertimbangkan Mac mini khusus atau VPS keci
 
 | Masalah                  | Solusi                                                                           |
 | ------------------------ | ---------------------------------------------------------------------------------- |
-| Tidak bisa SSH ke VM        | Pastikan "Remote Login" diaktifkan di System Settings VM                            |
-| IP VM tidak muncul        | Tunggu hingga VM selesai booting, jalankan `lume get openclaw` lagi                           |
+| Tidak bisa SSH ke VM        | Pastikan "Login Jarak Jauh" diaktifkan di Pengaturan Sistem VM                            |
+| IP VM tidak muncul        | Tunggu hingga VM selesai booting sepenuhnya, jalankan `lume get openclaw` lagi                           |
 | Perintah Lume tidak ditemukan   | Tambahkan `~/.local/bin` ke PATH Anda                                                    |
-| QR WhatsApp tidak terpindai | Pastikan Anda login ke VM (bukan host) saat menjalankan `openclaw channels login` |
+| QR WhatsApp tidak terpindai | Pastikan Anda masuk ke VM (bukan host) saat menjalankan `openclaw channels login` |
 
 ---
 

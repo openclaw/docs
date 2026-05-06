@@ -1,22 +1,20 @@
 ---
 read_when:
-    - Anda menginginkan penerapan server otomatis dengan pengerasan keamanan
-    - Anda memerlukan penyiapan yang terisolasi firewall dengan akses VPN
-    - Anda melakukan penerapan ke server Debian/Ubuntu jarak jauh
-summary: Instalasi OpenClaw otomatis yang diperkuat keamanannya dengan Ansible, VPN Tailscale, dan isolasi firewall
+    - Anda ingin penerapan server otomatis dengan pengerasan keamanan
+    - Anda memerlukan penyiapan yang terisolasi oleh firewall dengan akses VPN
+    - Anda sedang menerapkan ke server Debian/Ubuntu jarak jauh
+summary: Instalasi OpenClaw otomatis dan diperkuat dengan Ansible, VPN Tailscale, dan isolasi firewall
 title: Ansible
 x-i18n:
-    generated_at: "2026-05-02T09:24:27Z"
+    generated_at: "2026-05-06T09:15:55Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 789763c82483f4eec0963f4dccb06f2daa22d470a5e69e275f38c70a00a10ba4
+    source_hash: a7424e766619096f50fa0c83aa4e85e46adba11515b1871e58cf2406b7c8f815
     source_path: install/ansible.md
     workflow: 16
 ---
 
-# Instalasi Ansible
-
-Deploy OpenClaw ke server produksi dengan **[openclaw-ansible](https://github.com/openclaw/openclaw-ansible)** -- penginstal otomatis dengan arsitektur yang mengutamakan keamanan.
+Terapkan OpenClaw ke server produksi dengan **[openclaw-ansible](https://github.com/openclaw/openclaw-ansible)** -- penginstal otomatis dengan arsitektur yang mengutamakan keamanan.
 
 <Info>
 Repo [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) adalah sumber kebenaran untuk deployment Ansible. Halaman ini adalah ringkasan singkat.
@@ -27,17 +25,17 @@ Repo [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) adalah sum
 | Persyaratan | Detail                                                    |
 | ----------- | --------------------------------------------------------- |
 | **OS**      | Debian 11+ atau Ubuntu 20.04+                             |
-| **Akses**   | Hak istimewa root atau sudo                               |
+| **Akses**   | Hak akses root atau sudo                                  |
 | **Jaringan** | Koneksi internet untuk instalasi paket                   |
 | **Ansible** | 2.14+ (diinstal otomatis oleh skrip quick-start)          |
 
 ## Yang Anda dapatkan
 
-- **Keamanan yang mengutamakan firewall** -- isolasi UFW + Docker (hanya SSH + Tailscale yang dapat diakses)
-- **VPN Tailscale** -- akses jarak jauh aman tanpa mengekspos layanan secara publik
+- **Keamanan firewall-first** -- isolasi UFW + Docker (hanya SSH + Tailscale yang dapat diakses)
+- **VPN Tailscale** -- akses jarak jauh yang aman tanpa mengekspos layanan secara publik
 - **Docker** -- kontainer sandbox terisolasi, binding hanya localhost
 - **Pertahanan berlapis** -- arsitektur keamanan 4 lapis
-- **Integrasi systemd** -- mulai otomatis saat boot dengan hardening
+- **Integrasi Systemd** -- mulai otomatis saat boot dengan hardening
 - **Penyiapan satu perintah** -- deployment lengkap dalam hitungan menit
 
 ## Mulai cepat
@@ -54,15 +52,15 @@ Playbook Ansible menginstal dan mengonfigurasi:
 
 1. **Tailscale** -- VPN mesh untuk akses jarak jauh yang aman
 2. **Firewall UFW** -- hanya port SSH + Tailscale
-3. **Docker CE + Compose V2** -- untuk backend sandbox agen default
+3. **Docker CE + Compose V2** -- untuk backend sandbox agent default
 4. **Node.js 24 + pnpm** -- dependensi runtime (Node 22 LTS, saat ini `22.14+`, tetap didukung)
-5. **OpenClaw** -- berbasis host, tidak dikontainerisasi
-6. **Layanan systemd** -- mulai otomatis dengan hardening keamanan
+5. **OpenClaw** -- berbasis host, bukan dikontainerisasi
+6. **Layanan Systemd** -- mulai otomatis dengan hardening keamanan
 
 <Note>
-Gateway berjalan langsung di host (bukan di Docker). Sandboxing agen bersifat
-opsional; playbook ini menginstal Docker karena Docker adalah backend sandbox
-default. Lihat [Sandboxing](/id/gateway/sandboxing) untuk detail dan backend lain.
+Gateway berjalan langsung di host (bukan di Docker). Sandbox agent bersifat
+opsional; playbook ini menginstal Docker karena itu adalah backend sandbox
+default. Lihat [Sandboxing](/id/gateway/sandboxing) untuk detail dan backend lainnya.
 </Note>
 
 ## Penyiapan Setelah Instalasi
@@ -96,16 +94,16 @@ default. Lihat [Sandboxing](/id/gateway/sandboxing) untuk detail dan backend lai
 ### Perintah cepat
 
 ```bash
-# Periksa status layanan
+# Check service status
 sudo systemctl status openclaw
 
-# Lihat log live
+# View live logs
 sudo journalctl -u openclaw -f
 
-# Mulai ulang gateway
+# Restart gateway
 sudo systemctl restart openclaw
 
-# Login penyedia (jalankan sebagai pengguna openclaw)
+# Provider login (run as openclaw user)
 sudo -i -u openclaw
 openclaw channels login
 ```
@@ -114,10 +112,10 @@ openclaw channels login
 
 Deployment menggunakan model pertahanan 4 lapis:
 
-1. **Firewall (UFW)** -- hanya SSH (22) + Tailscale (41641/udp) yang diekspos secara publik
+1. **Firewall (UFW)** -- hanya SSH (22) + Tailscale (41641/udp) yang terekspos secara publik
 2. **VPN (Tailscale)** -- gateway hanya dapat diakses melalui mesh VPN
-3. **Isolasi Docker** -- chain iptables DOCKER-USER mencegah eksposur port eksternal
-4. **Hardening systemd** -- NoNewPrivileges, PrivateTmp, pengguna tanpa hak istimewa
+3. **Isolasi Docker** -- rantai iptables DOCKER-USER mencegah eksposur port eksternal
+4. **Hardening Systemd** -- NoNewPrivileges, PrivateTmp, pengguna tanpa hak istimewa
 
 Untuk memverifikasi permukaan serangan eksternal Anda:
 
@@ -127,11 +125,11 @@ nmap -p- YOUR_SERVER_IP
 
 Hanya port 22 (SSH) yang seharusnya terbuka. Semua layanan lain (gateway, Docker) dikunci.
 
-Docker diinstal untuk sandbox agen (eksekusi alat terisolasi), bukan untuk menjalankan gateway itu sendiri. Lihat [Multi-Agent Sandbox and Tools](/id/tools/multi-agent-sandbox-tools) untuk konfigurasi sandbox.
+Docker diinstal untuk sandbox agent (eksekusi tool terisolasi), bukan untuk menjalankan gateway itu sendiri. Lihat [Multi-Agent Sandbox and Tools](/id/tools/multi-agent-sandbox-tools) untuk konfigurasi sandbox.
 
 ## Instalasi manual
 
-Jika Anda lebih memilih kontrol manual daripada otomatisasi:
+Jika Anda lebih memilih kontrol manual atas otomatisasi:
 
 <Steps>
   <Step title="Instal prasyarat">
@@ -158,7 +156,7 @@ Jika Anda lebih memilih kontrol manual daripada otomatisasi:
     Atau, jalankan langsung lalu eksekusi skrip penyiapan secara manual setelahnya:
     ```bash
     ansible-playbook playbook.yml --ask-become-pass
-    # Lalu jalankan: /tmp/openclaw-setup.sh
+    # Then run: /tmp/openclaw-setup.sh
     ```
 
   </Step>
@@ -188,13 +186,13 @@ Ini idempoten dan aman dijalankan beberapa kali.
   </Accordion>
   <Accordion title="Layanan tidak dapat dimulai">
     ```bash
-    # Periksa log
+    # Check logs
     sudo journalctl -u openclaw -n 100
 
-    # Verifikasi izin
+    # Verify permissions
     sudo ls -la /opt/openclaw
 
-    # Uji mulai manual
+    # Test manual start
     sudo -i -u openclaw
     cd ~/openclaw
     openclaw gateway run
@@ -203,22 +201,22 @@ Ini idempoten dan aman dijalankan beberapa kali.
   </Accordion>
   <Accordion title="Masalah sandbox Docker">
     ```bash
-    # Verifikasi Docker sedang berjalan
+    # Verify Docker is running
     sudo systemctl status docker
 
-    # Periksa image sandbox
+    # Check sandbox image
     sudo docker images | grep openclaw-sandbox
 
-    # Build image sandbox jika tidak ada (memerlukan checkout sumber)
+    # Build sandbox image if missing (requires source checkout)
     cd /opt/openclaw/openclaw
     sudo -u openclaw ./scripts/sandbox-setup.sh
-    # Untuk instalasi npm tanpa checkout sumber, lihat
+    # For npm installs without a source checkout, see
     # https://docs.openclaw.ai/gateway/sandboxing#images-and-setup
     ```
 
   </Accordion>
   <Accordion title="Login penyedia gagal">
-    Pastikan Anda menjalankannya sebagai pengguna `openclaw`:
+    Pastikan Anda menjalankan sebagai pengguna `openclaw`:
     ```bash
     sudo -i -u openclaw
     openclaw channels login
@@ -228,7 +226,7 @@ Ini idempoten dan aman dijalankan beberapa kali.
 
 ## Konfigurasi lanjutan
 
-Untuk arsitektur keamanan dan pemecahan masalah terperinci, lihat repo openclaw-ansible:
+Untuk arsitektur keamanan dan pemecahan masalah yang mendetail, lihat repo openclaw-ansible:
 
 - [Arsitektur Keamanan](https://github.com/openclaw/openclaw-ansible/blob/main/docs/security.md)
 - [Detail Teknis](https://github.com/openclaw/openclaw-ansible/blob/main/docs/architecture.md)
@@ -237,6 +235,6 @@ Untuk arsitektur keamanan dan pemecahan masalah terperinci, lihat repo openclaw-
 ## Terkait
 
 - [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) -- panduan deployment lengkap
-- [Docker](/id/install/docker) -- penyiapan gateway terkontainerisasi
-- [Sandboxing](/id/gateway/sandboxing) -- konfigurasi sandbox agen
-- [Multi-Agent Sandbox and Tools](/id/tools/multi-agent-sandbox-tools) -- isolasi per agen
+- [Docker](/id/install/docker) -- penyiapan gateway yang dikontainerisasi
+- [Sandboxing](/id/gateway/sandboxing) -- konfigurasi sandbox agent
+- [Multi-Agent Sandbox and Tools](/id/tools/multi-agent-sandbox-tools) -- isolasi per agent

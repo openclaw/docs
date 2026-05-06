@@ -1,28 +1,26 @@
 ---
 read_when:
     - Anda ingin memilih penyedia model
-    - Anda membutuhkan gambaran umum singkat tentang backend LLM yang didukung
-summary: Penyedia model (LLM) yang didukung oleh OpenClaw
+    - Anda memerlukan gambaran singkat tentang backend LLM yang didukung
+summary: Penyedia model (model bahasa besar) yang didukung oleh OpenClaw
 title: Direktori penyedia
 x-i18n:
-    generated_at: "2026-04-30T10:07:12Z"
+    generated_at: "2026-05-06T09:25:17Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 61143200b2e7a74392cf8871bfcd210fe35dbd5118e2e8bc7b15265192fd2bde
+    source_hash: cfc3a15880a5e1881c1a58c60c9ad7e5624350a8db848d03c7cef6ee18c14b81
     source_path: providers/index.md
     workflow: 16
 ---
 
-# Penyedia Model
-
-OpenClaw dapat menggunakan banyak penyedia LLM. Pilih penyedia, autentikasi, lalu tetapkan
+OpenClaw dapat menggunakan banyak penyedia LLM. Pilih penyedia, autentikasikan, lalu tetapkan
 model default sebagai `provider/model`.
 
 Mencari dokumentasi kanal chat (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/dll.)? Lihat [Kanal](/id/channels).
 
 ## Mulai cepat
 
-1. Autentikasi dengan penyedia (biasanya melalui `openclaw onboard`).
+1. Autentikasikan dengan penyedia (biasanya melalui `openclaw onboard`).
 2. Tetapkan model default:
 
 ```json5
@@ -56,7 +54,7 @@ Mencari dokumentasi kanal chat (WhatsApp/Telegram/Discord/Slack/Mattermost (Plug
 - [Hugging Face (Inferensi)](/id/providers/huggingface)
 - [inferrs (model lokal)](/id/providers/inferrs)
 - [Kilocode](/id/providers/kilocode)
-- [LiteLLM (Gateway terpadu)](/id/providers/litellm)
+- [LiteLLM (gateway terpadu)](/id/providers/litellm)
 - [LM Studio (model lokal)](/id/providers/lmstudio)
 - [MiniMax](/id/providers/minimax)
 - [Mistral](/id/providers/mistral)
@@ -86,12 +84,12 @@ Mencari dokumentasi kanal chat (WhatsApp/Telegram/Discord/Slack/Mattermost (Plug
 - [Xiaomi](/id/providers/xiaomi)
 - [Z.AI](/id/providers/zai)
 
-## Halaman gambaran umum bersama
+## Halaman ikhtisar bersama
 
 - [Varian bawaan tambahan](/id/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy, dan Gemini CLI OAuth
-- [Pembuatan Gambar](/id/tools/image-generation) - Alat `image_generate` bersama, pemilihan penyedia, dan failover
-- [Pembuatan Musik](/id/tools/music-generation) - Alat `music_generate` bersama, pemilihan penyedia, dan failover
-- [Pembuatan Video](/id/tools/video-generation) - Alat `video_generate` bersama, pemilihan penyedia, dan failover
+- [Pembuatan Gambar](/id/tools/image-generation) - Alat bersama `image_generate`, pemilihan penyedia, dan failover
+- [Pembuatan Musik](/id/tools/music-generation) - Alat bersama `music_generate`, pemilihan penyedia, dan failover
+- [Pembuatan Video](/id/tools/video-generation) - Alat bersama `video_generate`, pemilihan penyedia, dan failover
 
 ## Penyedia transkripsi
 

@@ -1,44 +1,44 @@
 ---
 read_when:
-    - Mengubah perilaku atau default indikator mengetik
-summary: Kapan OpenClaw menampilkan indikator mengetik dan cara menyetelnya
-title: Indikator mengetik
+    - Mengubah perilaku atau nilai default indikator pengetikan
+summary: Kapan OpenClaw menampilkan indikator mengetik dan cara menyesuaikannya
+title: Indikator pengetikan
 x-i18n:
-    generated_at: "2026-04-24T09:05:58Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:09:50Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 80f5c3bb79cf87f79db5336978b877f4a01025f59c9e822ab66198f00907123f
+    source_hash: 59ee89a2f382b185e520fea178cf1860cbc4cfb8257c3b0ae7552fa4b1c79ef3
     source_path: concepts/typing-indicators.md
-    workflow: 15
+    workflow: 16
 ---
 
-Indikator mengetik dikirim ke channel chat saat sebuah run aktif. Gunakan
+Indikator pengetikan dikirim ke kanal chat saat sebuah run aktif. Gunakan
 `agents.defaults.typingMode` untuk mengontrol **kapan** pengetikan dimulai dan `typingIntervalSeconds`
 untuk mengontrol **seberapa sering** indikator diperbarui.
 
 ## Default
 
-Saat `agents.defaults.typingMode` **tidak diatur**, OpenClaw mempertahankan perilaku lama:
+Saat `agents.defaults.typingMode` **tidak disetel**, OpenClaw mempertahankan perilaku lama:
 
 - **Chat langsung**: pengetikan dimulai segera setelah loop model dimulai.
 - **Chat grup dengan mention**: pengetikan dimulai segera.
-- **Chat grup tanpa mention**: pengetikan dimulai hanya saat teks pesan mulai di-stream.
+- **Chat grup tanpa mention**: pengetikan dimulai hanya saat teks pesan mulai dialirkan.
 - **Run Heartbeat**: pengetikan dimulai saat run Heartbeat dimulai jika
   target Heartbeat yang di-resolve adalah chat yang mendukung pengetikan dan pengetikan tidak dinonaktifkan.
 
 ## Mode
 
-Atur `agents.defaults.typingMode` ke salah satu dari:
+Setel `agents.defaults.typingMode` ke salah satu dari:
 
-- `never` — tidak ada indikator mengetik, sama sekali.
-- `instant` — mulai mengetik **segera setelah loop model dimulai**, bahkan jika run
-  nantinya hanya mengembalikan token balasan senyap.
-- `thinking` — mulai mengetik pada **delta penalaran pertama** (memerlukan
+- `never` - tidak ada indikator pengetikan, kapan pun.
+- `instant` - mulai mengetik **segera setelah loop model dimulai**, bahkan jika run
+  kemudian hanya mengembalikan token balasan senyap.
+- `thinking` - mulai mengetik pada **delta penalaran pertama** (memerlukan
   `reasoningLevel: "stream"` untuk run tersebut).
-- `message` — mulai mengetik pada **delta teks non-senyap pertama** (mengabaikan
+- `message` - mulai mengetik pada **delta teks non-senyap pertama** (mengabaikan
   token senyap `NO_REPLY`).
 
-Urutan “seberapa cepat dipicu”:
+Urutan "seberapa dini ini dipicu":
 `never` → `message` → `thinking` → `instant`
 
 ## Konfigurasi
@@ -52,7 +52,7 @@ Urutan “seberapa cepat dipicu”:
 }
 ```
 
-Anda dapat menimpa mode atau cadence per sesi:
+Anda dapat mengganti mode atau irama per sesi:
 
 ```json5
 {
@@ -65,21 +65,27 @@ Anda dapat menimpa mode atau cadence per sesi:
 
 ## Catatan
 
-- Mode `message` tidak akan menampilkan indikator mengetik untuk balasan yang hanya senyap jika seluruh
-  payload adalah token senyap yang persis sama (misalnya `NO_REPLY` / `no_reply`,
-  dicocokkan tanpa peka huruf besar/kecil).
-- `thinking` hanya dipicu jika run men-stream penalaran (`reasoningLevel: "stream"`).
-  Jika model tidak mengeluarkan delta penalaran, pengetikan tidak akan dimulai.
-- Pengetikan Heartbeat adalah sinyal liveness untuk target pengiriman yang di-resolve. Ini
-  dimulai saat run Heartbeat dimulai alih-alih mengikuti waktu stream `message` atau `thinking`.
-  Atur `typingMode: "never"` untuk menonaktifkannya.
-- Heartbeat tidak menampilkan indikator mengetik saat `target: "none"`, saat target tidak dapat
+- Mode `message` tidak akan menampilkan pengetikan untuk balasan yang hanya senyap saat seluruh
+  payload adalah token senyap persis (misalnya `NO_REPLY` / `no_reply`,
+  dicocokkan tanpa membedakan huruf besar/kecil).
+- `thinking` hanya dipicu jika run mengalirkan penalaran (`reasoningLevel: "stream"`).
+  Jika model tidak memancarkan delta penalaran, pengetikan tidak akan dimulai.
+- Pengetikan Heartbeat adalah sinyal keaktifan untuk target pengiriman yang di-resolve. Ini
+  dimulai saat run Heartbeat dimulai, bukan mengikuti timing stream `message` atau `thinking`.
+  Setel `typingMode: "never"` untuk menonaktifkannya.
+- Heartbeat tidak menampilkan pengetikan saat `target: "none"`, saat target tidak dapat
   di-resolve, saat pengiriman chat dinonaktifkan untuk Heartbeat, atau saat
-  channel tidak mendukung pengetikan.
-- `typingIntervalSeconds` mengontrol **cadence penyegaran**, bukan waktu mulai.
+  kanal tidak mendukung pengetikan.
+- `typingIntervalSeconds` mengontrol **irama pembaruan**, bukan waktu mulai.
   Default-nya adalah 6 detik.
 
 ## Terkait
 
-- [Presence](/id/concepts/presence)
-- [Streaming dan chunking](/id/concepts/streaming)
+<CardGroup cols={2}>
+  <Card title="Presence" href="/id/concepts/presence" icon="signal">
+    Cara Gateway melacak klien yang terhubung dan menampilkannya di tab Instances macOS.
+  </Card>
+  <Card title="Streaming and chunking" href="/id/concepts/streaming" icon="bars-staggered">
+    Perilaku streaming keluar, batas chunk, dan pengiriman khusus kanal.
+  </Card>
+</CardGroup>

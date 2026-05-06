@@ -1,81 +1,78 @@
 ---
 read_when:
-    - Anda sedang mengubah pemformatan Markdown atau chunking untuk channel keluar
-    - Anda sedang menambahkan formatter channel baru atau pemetaan gaya
-    - Anda sedang men-debug regresi pemformatan di berbagai channel
-summary: Pipeline pemformatan Markdown untuk channel keluar
+    - Anda mengubah pemformatan Markdown atau pembagian chunk untuk saluran keluar
+    - Anda sedang menambahkan pemformat kanal baru atau pemetaan gaya
+    - Anda sedang menelusuri regresi pemformatan di seluruh saluran
+summary: Pipeline pemformatan Markdown untuk saluran keluar
 title: Pemformatan Markdown
 x-i18n:
-    generated_at: "2026-04-24T09:04:09Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:07:16Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: cf052e11fe9fd075a4337ffa555391c7003a346240b57bb65054c3f08401dfd9
+    source_hash: e9dcc75cec0462d610f2b5bbd258a2686b15eeb4b9d369ee4d7727571da7edcc
     source_path: concepts/markdown-formatting.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw memformat Markdown keluar dengan mengonversinya ke representasi
-menengah bersama (IR) sebelum merender output khusus channel. IR menjaga teks
-sumber tetap utuh sambil membawa span gaya/tautan sehingga chunking dan rendering dapat
-tetap konsisten di berbagai channel.
+OpenClaw memformat Markdown keluar dengan mengonversinya menjadi representasi perantara bersama (IR) sebelum merender keluaran khusus channel. IR menjaga teks sumber tetap utuh sambil membawa rentang gaya/tautan sehingga pemotongan dan rendering dapat tetap konsisten di seluruh channel.
 
 ## Tujuan
 
-- **Konsistensi:** satu langkah parsing, banyak renderer.
-- **Chunking aman:** pisahkan teks sebelum rendering agar pemformatan inline tidak
-  pernah rusak di antara potongan.
-- **Sesuai channel:** petakan IR yang sama ke Slack mrkdwn, HTML Telegram, dan rentang gaya Signal
-  tanpa mem-parsing ulang Markdown.
+- **Konsistensi:** satu langkah parse, beberapa renderer.
+- **Pemotongan aman:** pisahkan teks sebelum rendering sehingga format inline tidak pernah
+  terputus di antara potongan.
+- **Kesesuaian channel:** petakan IR yang sama ke Slack mrkdwn, HTML Telegram, dan rentang
+  gaya Signal tanpa mem-parse ulang Markdown.
 
 ## Pipeline
 
 1. **Parse Markdown -> IR**
-   - IR adalah teks biasa ditambah span gaya (tebal/miring/coret/kode/spoiler) dan span tautan.
-   - Offset menggunakan unit kode UTF-16 agar rentang gaya Signal selaras dengan API-nya.
-   - Tabel diparse hanya saat sebuah channel memilih konversi tabel.
-2. **Chunk IR (format-first)**
-   - Chunking terjadi pada teks IR sebelum rendering.
-   - Pemformatan inline tidak terpecah antar potongan; span diiris per potongan.
+   - IR adalah teks biasa ditambah rentang gaya (bold/italic/strike/code/spoiler) dan rentang tautan.
+   - Offset berupa unit kode UTF-16 sehingga rentang gaya Signal selaras dengan API-nya.
+   - Tabel hanya di-parse ketika sebuah channel memilih konversi tabel.
+2. **Potong IR (format-first)**
+   - Pemotongan terjadi pada teks IR sebelum rendering.
+   - Format inline tidak terpecah di antara potongan; rentang dipotong per potongan.
 3. **Render per channel**
-   - **Slack:** token mrkdwn (tebal/miring/coret/kode), tautan sebagai `<url|label>`.
+   - **Slack:** token mrkdwn (bold/italic/strike/code), tautan sebagai `<url|label>`.
    - **Telegram:** tag HTML (`<b>`, `<i>`, `<s>`, `<code>`, `<pre><code>`, `<a href>`).
-   - **Signal:** teks biasa + rentang `text-style`; tautan menjadi `label (url)` saat label berbeda.
+   - **Signal:** teks biasa + rentang `text-style`; tautan menjadi `label (url)` ketika label berbeda.
 
 ## Contoh IR
 
 Input Markdown:
 
 ```markdown
-Hello **world** — see [docs](https://docs.openclaw.ai).
+Hello **world** - see [docs](https://docs.openclaw.ai).
 ```
 
 IR (skematis):
 
 ```json
 {
-  "text": "Hello world — see docs.",
+  "text": "Hello world - see docs.",
   "styles": [{ "start": 6, "end": 11, "style": "bold" }],
   "links": [{ "start": 19, "end": 23, "href": "https://docs.openclaw.ai" }]
 }
 ```
 
-## Tempat digunakan
+## Tempat Ini Digunakan
 
 - Adapter keluar Slack, Telegram, dan Signal merender dari IR.
 - Channel lain (WhatsApp, iMessage, Microsoft Teams, Discord) masih menggunakan teks biasa atau
-  aturan pemformatan mereka sendiri, dengan konversi tabel Markdown diterapkan sebelum
-  chunking saat diaktifkan.
+  aturan pemformatannya sendiri, dengan konversi tabel Markdown diterapkan sebelum
+  pemotongan saat diaktifkan.
 
-## Penanganan tabel
+## Penanganan Tabel
 
 Tabel Markdown tidak didukung secara konsisten di berbagai klien chat. Gunakan
 `markdown.tables` untuk mengontrol konversi per channel (dan per akun).
 
 - `code`: render tabel sebagai blok kode (default untuk sebagian besar channel).
-- `bullets`: konversi setiap baris menjadi poin-poin (default untuk Signal + WhatsApp).
-- `off`: nonaktifkan parsing dan konversi tabel; teks tabel mentah diteruskan.
+- `bullets`: konversi setiap baris menjadi poin bullet (default untuk Signal + WhatsApp).
+- `off`: nonaktifkan parsing dan konversi tabel; teks tabel mentah diteruskan apa adanya.
 
-Key konfigurasi:
+Kunci konfigurasi:
 
 ```yaml
 channels:
@@ -88,53 +85,59 @@ channels:
           tables: off
 ```
 
-## Aturan chunking
+## Aturan Pemotongan
 
-- Batas potongan berasal dari adapter/konfigurasi channel dan diterapkan pada teks IR.
-- Pagar kode dipertahankan sebagai satu blok dengan newline penutup agar channel
+- Batas potongan berasal dari adapter/konfigurasi channel dan diterapkan ke teks IR.
+- Code fence dipertahankan sebagai satu blok dengan newline di akhir sehingga channel
   merendernya dengan benar.
-- Prefiks daftar dan prefiks blockquote adalah bagian dari teks IR, sehingga chunking
-  tidak terpecah di tengah prefiks.
-- Gaya inline (tebal/miring/coret/kode-inline/spoiler) tidak pernah dipecah di antara
-  potongan; renderer membuka ulang gaya di dalam setiap potongan.
+- Prefiks daftar dan prefiks blockquote adalah bagian dari teks IR, sehingga pemotongan
+  tidak membelah di tengah prefiks.
+- Gaya inline (bold/italic/strike/inline-code/spoiler) tidak pernah dipisah di antara
+  potongan; renderer membuka kembali gaya di dalam setiap potongan.
 
-Jika Anda memerlukan detail lebih lanjut tentang perilaku chunking di berbagai channel, lihat
-[Streaming + chunking](/id/concepts/streaming).
+Jika Anda membutuhkan informasi lebih lanjut tentang perilaku pemotongan di berbagai channel, lihat
+[Streaming + pemotongan](/id/concepts/streaming).
 
-## Kebijakan tautan
+## Kebijakan Tautan
 
 - **Slack:** `[label](url)` -> `<url|label>`; URL polos tetap polos. Autolink
-  dinonaktifkan saat parsing untuk menghindari tautan ganda.
+  dinonaktifkan saat parse untuk menghindari penautan ganda.
 - **Telegram:** `[label](url)` -> `<a href="url">label</a>` (mode parse HTML).
 - **Signal:** `[label](url)` -> `label (url)` kecuali label cocok dengan URL.
 
 ## Spoiler
 
-Penanda spoiler (`||spoiler||`) diparse hanya untuk Signal, tempat penanda itu dipetakan ke
+Penanda spoiler (`||spoiler||`) hanya di-parse untuk Signal, tempat penanda itu dipetakan ke
 rentang gaya SPOILER. Channel lain memperlakukannya sebagai teks biasa.
 
 ## Cara menambahkan atau memperbarui formatter channel
 
-1. **Parse sekali:** gunakan helper bersama `markdownToIR(...)` dengan opsi
-   yang sesuai untuk channel (autolink, gaya heading, prefiks blockquote).
+1. **Parse sekali:** gunakan helper bersama `markdownToIR(...)` dengan opsi yang sesuai untuk channel
+   (autolink, gaya heading, prefiks blockquote).
 2. **Render:** implementasikan renderer dengan `renderMarkdownWithMarkers(...)` dan
    peta penanda gaya (atau rentang gaya Signal).
-3. **Chunk:** panggil `chunkMarkdownIR(...)` sebelum rendering; render tiap potongan.
+3. **Potong:** panggil `chunkMarkdownIR(...)` sebelum rendering; render setiap potongan.
 4. **Hubungkan adapter:** perbarui adapter keluar channel agar menggunakan chunker
    dan renderer baru.
-5. **Uji:** tambahkan atau perbarui uji format dan uji pengiriman keluar jika
-   channel menggunakan chunking.
+5. **Uji:** tambahkan atau perbarui pengujian format dan pengujian pengiriman keluar jika
+   channel menggunakan pemotongan.
 
-## Hal umum yang perlu diwaspadai
+## Hal yang Sering Menjebak
 
-- Token tanda-kurung-sudut Slack (`<@U123>`, `<#C123>`, `<https://...>`) harus
+- Token kurung sudut Slack (`<@U123>`, `<#C123>`, `<https://...>`) harus
   dipertahankan; escape HTML mentah dengan aman.
-- HTML Telegram memerlukan escape teks di luar tag agar markup tidak rusak.
-- Rentang gaya Signal bergantung pada offset UTF-16; jangan gunakan offset code point.
-- Pertahankan newline penutup untuk blok kode berpagar agar penanda penutup berada
-  di barisnya sendiri.
+- HTML Telegram memerlukan escaping teks di luar tag untuk menghindari markup rusak.
+- Rentang gaya Signal bergantung pada offset UTF-16; jangan gunakan offset titik kode.
+- Pertahankan newline di akhir untuk blok kode berpagar agar penanda penutup berada di
+  barisnya sendiri.
 
 ## Terkait
 
-- [Streaming and chunking](/id/concepts/streaming)
-- [System prompt](/id/concepts/system-prompt)
+<CardGroup cols={2}>
+  <Card title="Streaming and chunking" href="/id/concepts/streaming" icon="bars-staggered">
+    Perilaku streaming keluar, batas potongan, dan pengiriman khusus channel.
+  </Card>
+  <Card title="System prompt" href="/id/concepts/system-prompt" icon="message-lines">
+    Apa yang dilihat model sebelum percakapan, termasuk file ruang kerja yang diinjeksi.
+  </Card>
+</CardGroup>

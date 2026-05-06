@@ -1,22 +1,22 @@
 ---
 read_when:
-    - Anda memerlukan pengeditan file terstruktur di beberapa file
+    - Anda perlu melakukan pengeditan file terstruktur di beberapa file
     - Anda ingin mendokumentasikan atau men-debug pengeditan berbasis patch
-summary: Terapkan patch multi-file dengan alat apply_patch
+summary: Terapkan tambalan pada beberapa file dengan alat apply_patch
 title: alat apply_patch
 x-i18n:
-    generated_at: "2026-04-24T09:29:11Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:28:56Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 9ed6d8282166de3cacf5be7f253498a230bceb2ad6c82a08846aed5bc613da53
+    source_hash: 9ff2f8e6ecd55ff1bdc553619ab3d590d0967efe7a9a90a31946ad15fd89a1dc
     source_path: tools/apply-patch.md
-    workflow: 15
+    workflow: 16
 ---
 
-Terapkan perubahan file menggunakan format patch terstruktur. Ini ideal untuk pengeditan multi-file
-atau multi-hunk ketika satu panggilan `edit` akan rapuh.
+Terapkan perubahan berkas menggunakan format patch terstruktur. Ini ideal untuk edit multi-berkas
+atau multi-segmen ketika satu pemanggilan `edit` akan rapuh.
 
-Alat ini menerima satu string `input` yang membungkus satu atau lebih operasi file:
+Alat ini menerima satu string `input` yang membungkus satu atau beberapa operasi berkas:
 
 ```
 *** Begin Patch
@@ -37,13 +37,13 @@ Alat ini menerima satu string `input` yang membungkus satu atau lebih operasi fi
 
 ## Catatan
 
-- Path patch mendukung path relatif (dari direktori workspace) dan path absolut.
-- `tools.exec.applyPatch.workspaceOnly` default ke `true` (hanya di dalam workspace). Tetapkan ke `false` hanya jika Anda memang ingin `apply_patch` menulis/menghapus di luar direktori workspace.
-- Gunakan `*** Move to:` di dalam hunk `*** Update File:` untuk mengganti nama file.
-- `*** End of File` menandai sisipan hanya di EOF bila diperlukan.
-- Tersedia secara default untuk model OpenAI dan OpenAI Codex. Tetapkan
+- Jalur patch mendukung jalur relatif (dari direktori workspace) dan jalur absolut.
+- `tools.exec.applyPatch.workspaceOnly` default-nya adalah `true` (terbatas dalam workspace). Atur ke `false` hanya jika Anda sengaja ingin `apply_patch` menulis/menghapus di luar direktori workspace.
+- Gunakan `*** Move to:` di dalam segmen `*** Update File:` untuk mengganti nama berkas.
+- `*** End of File` menandai penyisipan khusus EOF bila diperlukan.
+- Tersedia secara default untuk model OpenAI dan OpenAI Codex. Atur
   `tools.exec.applyPatch.enabled: false` untuk menonaktifkannya.
-- Secara opsional batasi berdasarkan model melalui
+- Secara opsional, batasi berdasarkan model melalui
   `tools.exec.applyPatch.allowModels`.
 - Konfigurasi hanya berada di bawah `tools.exec`.
 
@@ -58,6 +58,14 @@ Alat ini menerima satu string `input` yang membungkus satu atau lebih operasi fi
 
 ## Terkait
 
-- [Diff](/id/tools/diffs)
-- [Alat exec](/id/tools/exec)
-- [Eksekusi kode](/id/tools/code-execution)
+<CardGroup cols={2}>
+  <Card title="Diff" href="/id/tools/diffs" icon="code-compare">
+    Penampil diff hanya-baca untuk penyajian perubahan.
+  </Card>
+  <Card title="Alat exec" href="/id/tools/exec" icon="terminal">
+    Eksekusi perintah shell dari agen.
+  </Card>
+  <Card title="Eksekusi kode" href="/id/tools/code-execution" icon="square-code">
+    Analisis Python jarak jauh dalam sandbox dengan xAI.
+  </Card>
+</CardGroup>

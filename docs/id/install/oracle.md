@@ -3,22 +3,22 @@ read_when:
     - Menyiapkan OpenClaw di Oracle Cloud
     - Mencari hosting VPS gratis untuk OpenClaw
     - Ingin OpenClaw 24/7 di server kecil
-summary: Hosting OpenClaw di tier ARM Always Free Oracle Cloud
+summary: Jalankan OpenClaw di tingkat ARM Always Free Oracle Cloud
 title: Oracle Cloud
 x-i18n:
-    generated_at: "2026-04-24T09:14:48Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:18:11Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: dce0d2a33556c8e48a48df744f8d1341fcfa78c93ff5a5e02a5013d207f3e6ed
+    source_hash: 9115c83c7a78b78d8b6701b028a2f6e9f08a71f7fff14b7b45f1610b8052c14e
     source_path: install/oracle.md
-    workflow: 15
+    workflow: 16
 ---
 
-Jalankan Gateway OpenClaw persisten di tier ARM **Always Free** Oracle Cloud (hingga 4 OCPU, 24 GB RAM, 200 GB penyimpanan) tanpa biaya.
+Jalankan OpenClaw Gateway persisten di tier ARM **Always Free** Oracle Cloud (hingga 4 OCPU, RAM 24 GB, penyimpanan 200 GB) tanpa biaya.
 
 ## Prasyarat
 
-- Akun Oracle Cloud ([daftar](https://www.oracle.com/cloud/free/)) -- lihat [panduan pendaftaran komunitas](https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd) jika Anda mengalami masalah
+- Akun Oracle Cloud ([daftar](https://www.oracle.com/cloud/free/)) -- lihat [panduan pendaftaran komunitas](https://gist.github.com/rssnyder/51e3cfedd730e7dd5f4a816143b25dbd) jika mengalami masalah
 - Akun Tailscale (gratis di [tailscale.com](https://tailscale.com))
 - Sepasang kunci SSH
 - Sekitar 30 menit
@@ -28,16 +28,16 @@ Jalankan Gateway OpenClaw persisten di tier ARM **Always Free** Oracle Cloud (hi
 <Steps>
   <Step title="Buat instance OCI">
     1. Masuk ke [Oracle Cloud Console](https://cloud.oracle.com/).
-    2. Navigasikan ke **Compute > Instances > Create Instance**.
+    2. Buka **Compute > Instances > Create Instance**.
     3. Konfigurasikan:
-       - **Name:** `openclaw`
+       - **Nama:** `openclaw`
        - **Image:** Ubuntu 24.04 (aarch64)
        - **Shape:** `VM.Standard.A1.Flex` (Ampere ARM)
-       - **OCPUs:** 2 (atau hingga 4)
-       - **Memory:** 12 GB (atau hingga 24 GB)
-       - **Boot volume:** 50 GB (hingga 200 GB gratis)
-       - **SSH key:** Tambahkan kunci publik Anda
-    4. Klik **Create** dan catat alamat IP publik.
+       - **OCPU:** 2 (atau hingga 4)
+       - **Memori:** 12 GB (atau hingga 24 GB)
+       - **Volume boot:** 50 GB (gratis hingga 200 GB)
+       - **Kunci SSH:** Tambahkan kunci publik Anda
+    4. Klik **Create** dan catat alamat IP publiknya.
 
     <Tip>
     Jika pembuatan instance gagal dengan "Out of capacity", coba domain ketersediaan lain atau coba lagi nanti. Kapasitas tier gratis terbatas.
@@ -53,7 +53,7 @@ Jalankan Gateway OpenClaw persisten di tier ARM **Always Free** Oracle Cloud (hi
     sudo apt install -y build-essential
     ```
 
-    `build-essential` diperlukan untuk kompilasi ARM beberapa dependensi.
+    `build-essential` diperlukan untuk kompilasi ARM pada beberapa dependensi.
 
   </Step>
 
@@ -64,7 +64,7 @@ Jalankan Gateway OpenClaw persisten di tier ARM **Always Free** Oracle Cloud (hi
     sudo loginctl enable-linger ubuntu
     ```
 
-    Mengaktifkan linger menjaga layanan pengguna tetap berjalan setelah logout.
+    Mengaktifkan linger membuat layanan pengguna tetap berjalan setelah logout.
 
   </Step>
 
@@ -84,12 +84,12 @@ Jalankan Gateway OpenClaw persisten di tier ARM **Always Free** Oracle Cloud (hi
     source ~/.bashrc
     ```
 
-    Saat ditanya "How do you want to hatch your bot?", pilih **Do this later**.
+    Saat diminta "How do you want to hatch your bot?", pilih **Lakukan nanti**.
 
   </Step>
 
-  <Step title="Konfigurasikan gateway">
-    Gunakan auth token dengan Tailscale Serve untuk akses remote yang aman.
+  <Step title="Konfigurasikan Gateway">
+    Gunakan autentikasi token dengan Tailscale Serve untuk akses jarak jauh yang aman.
 
     ```bash
     openclaw config set gateway.bind loopback
@@ -101,7 +101,7 @@ Jalankan Gateway OpenClaw persisten di tier ARM **Always Free** Oracle Cloud (hi
     systemctl --user restart openclaw-gateway.service
     ```
 
-    `gateway.trustedProxies=["127.0.0.1"]` di sini hanya untuk penanganan forwarded-IP/local-client dari proxy Tailscale Serve lokal. Ini **bukan** `gateway.auth.mode: "trusted-proxy"`. Rute penampil diff mempertahankan perilaku fail-closed dalam penyiapan ini: permintaan penampil `127.0.0.1` mentah tanpa header proxy yang diteruskan dapat mengembalikan `Diff not found`. Gunakan `mode=file` / `mode=both` untuk lampiran, atau aktifkan penampil remote secara sengaja dan setel `plugins.entries.diffs.config.viewerBaseUrl` (atau berikan `baseUrl` proxy) jika Anda memerlukan tautan penampil yang dapat dibagikan.
+    `gateway.trustedProxies=["127.0.0.1"]` di sini hanya untuk penanganan forwarded-IP/klien-lokal dari proksi Tailscale Serve lokal. Ini **bukan** `gateway.auth.mode: "trusted-proxy"`. Rute penampil diff tetap mempertahankan perilaku fail-closed dalam penyiapan ini: permintaan penampil `127.0.0.1` mentah tanpa header proksi terusan dapat mengembalikan `Diff not found`. Gunakan `mode=file` / `mode=both` untuk lampiran, atau aktifkan penampil jarak jauh secara sengaja dan tetapkan `plugins.entries.diffs.config.viewerBaseUrl` (atau berikan `baseUrl` proksi) jika Anda memerlukan tautan penampil yang dapat dibagikan.
 
   </Step>
 
@@ -113,7 +113,7 @@ Jalankan Gateway OpenClaw persisten di tier ARM **Always Free** Oracle Cloud (hi
     3. **Hapus** semua aturan ingress kecuali `0.0.0.0/0 UDP 41641` (Tailscale).
     4. Pertahankan aturan egress default (izinkan semua lalu lintas keluar).
 
-    Ini memblokir SSH di port 22, HTTP, HTTPS, dan semua yang lain di tepi jaringan. Anda hanya dapat terhubung melalui Tailscale mulai dari titik ini.
+    Ini memblokir SSH pada port 22, HTTP, HTTPS, dan semua yang lain di tepi jaringan. Mulai titik ini, Anda hanya dapat terhubung melalui Tailscale.
 
   </Step>
 
@@ -125,7 +125,7 @@ Jalankan Gateway OpenClaw persisten di tier ARM **Always Free** Oracle Cloud (hi
     curl http://localhost:18789
     ```
 
-    Akses UI Control dari perangkat apa pun di tailnet Anda:
+    Akses UI Kontrol dari perangkat apa pun di tailnet Anda:
 
     ```
     https://openclaw.<tailnet-name>.ts.net/
@@ -135,6 +135,62 @@ Jalankan Gateway OpenClaw persisten di tier ARM **Always Free** Oracle Cloud (hi
 
   </Step>
 </Steps>
+
+## Verifikasi postur keamanan
+
+Dengan VCN terkunci (hanya UDP 41641 terbuka) dan Gateway terikat ke loopback, lalu lintas publik diblokir di tepi jaringan dan akses admin hanya melalui tailnet. Ini menghilangkan kebutuhan atas beberapa langkah hardening VPS tradisional:
+
+| Langkah tradisional     | Diperlukan?       | Alasan                                                                     |
+| ----------------------- | ----------------- | -------------------------------------------------------------------------- |
+| Firewall UFW            | Tidak             | VCN memblokir lalu lintas sebelum mencapai instance.                       |
+| fail2ban                | Tidak             | Port 22 diblokir di VCN; tidak ada permukaan brute-force.                  |
+| Hardening sshd          | Tidak             | SSH Tailscale tidak menggunakan sshd.                                      |
+| Nonaktifkan login root  | Tidak             | Tailscale mengautentikasi berdasarkan identitas tailnet, bukan pengguna sistem. |
+| Autentikasi khusus kunci SSH | Tidak        | Sama — identitas tailnet menggantikan kunci SSH sistem.                    |
+| Hardening IPv6          | Biasanya tidak    | Bergantung pada pengaturan VCN/subnet; verifikasi apa yang benar-benar ditetapkan/terekspos. |
+
+Tetap direkomendasikan:
+
+- `chmod 700 ~/.openclaw` untuk membatasi izin file kredensial.
+- `openclaw security audit` untuk pemeriksaan postur khusus OpenClaw.
+- `sudo apt update && sudo apt upgrade` secara berkala untuk patch OS.
+- Tinjau perangkat di [konsol admin Tailscale](https://login.tailscale.com/admin) secara berkala.
+
+Perintah verifikasi cepat:
+
+```bash
+# Confirm no public ports are listening
+sudo ss -tlnp | grep -v '127.0.0.1\|::1'
+
+# Verify Tailscale SSH is active
+tailscale status | grep -q 'offers: ssh' && echo "Tailscale SSH active"
+
+# Optional: disable sshd entirely once Tailscale SSH is confirmed working
+sudo systemctl disable --now ssh
+```
+
+## Catatan ARM
+
+Tier Always Free menggunakan ARM (`aarch64`). Sebagian besar fitur OpenClaw berfungsi dengan baik; sejumlah kecil biner native memerlukan build ARM:
+
+- Node.js, Telegram, WhatsApp (Baileys): JavaScript murni, tidak ada masalah.
+- Sebagian besar paket npm dengan kode native: artefak `linux-arm64` pre-built tersedia.
+- Pembantu CLI opsional (mis. biner Go/Rust yang dikirim oleh Skills): periksa apakah ada rilis `aarch64` / `linux-arm64` sebelum menginstal.
+
+Verifikasi arsitektur dengan `uname -m` (seharusnya mencetak `aarch64`). Untuk biner tanpa build ARM, instal dari sumber atau lewati.
+
+## Persistensi dan cadangan
+
+State OpenClaw berada di bawah:
+
+- `~/.openclaw/` — `openclaw.json`, `auth-profiles.json` per agen, state saluran/penyedia, dan data sesi.
+- `~/.openclaw/workspace/` — workspace agen (SOUL.md, memori, artefak).
+
+Ini tetap ada setelah reboot. Untuk mengambil snapshot portabel:
+
+```bash
+openclaw backup create
+```
 
 ## Fallback: tunnel SSH
 
@@ -148,9 +204,9 @@ Lalu buka `http://localhost:18789`.
 
 ## Pemecahan masalah
 
-**Pembuatan instance gagal ("Out of capacity")** -- Instance ARM tier gratis populer. Coba domain ketersediaan lain atau ulangi saat jam tidak sibuk.
+**Pembuatan instance gagal ("Out of capacity")** -- Instance ARM tier gratis populer. Coba domain ketersediaan lain atau coba lagi saat jam sepi.
 
-**Tailscale tidak mau terhubung** -- Jalankan `sudo tailscale up --ssh --hostname=openclaw --reset` untuk autentikasi ulang.
+**Tailscale tidak mau terhubung** -- Jalankan `sudo tailscale up --ssh --hostname=openclaw --reset` untuk mengautentikasi ulang.
 
 **Gateway tidak mau mulai** -- Jalankan `openclaw doctor --non-interactive` dan periksa log dengan `journalctl --user -u openclaw-gateway.service -n 50`.
 
@@ -158,12 +214,12 @@ Lalu buka `http://localhost:18789`.
 
 ## Langkah berikutnya
 
-- [Channels](/id/channels) -- hubungkan Telegram, WhatsApp, Discord, dan lainnya
-- [Gateway configuration](/id/gateway/configuration) -- semua opsi config
-- [Updating](/id/install/updating) -- jaga OpenClaw tetap terbaru
+- [Saluran](/id/channels) -- hubungkan Telegram, WhatsApp, Discord, dan lainnya
+- [Konfigurasi Gateway](/id/gateway/configuration) -- semua opsi konfigurasi
+- [Memperbarui](/id/install/updating) -- jaga OpenClaw tetap mutakhir
 
 ## Terkait
 
-- [Install overview](/id/install)
+- [Ikhtisar instalasi](/id/install)
 - [GCP](/id/install/gcp)
-- [VPS hosting](/id/vps)
+- [Hosting VPS](/id/vps)

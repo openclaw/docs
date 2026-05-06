@@ -1,23 +1,23 @@
 ---
 read_when:
-    - OpenClaw tidak berfungsi dan Anda memerlukan jalur tercepat menuju perbaikan
-    - Anda menginginkan alur triase sebelum masuk ke runbook mendalam
-summary: Hub pemecahan masalah OpenClaw yang berfokus pada gejala
+    - OpenClaw tidak berfungsi dan Anda memerlukan cara tercepat untuk memperbaikinya
+    - Anda menginginkan alur triase sebelum mendalami panduan operasional yang terperinci
+summary: Pusat pemecahan masalah berbasis gejala untuk OpenClaw
 title: Pemecahan masalah umum
 x-i18n:
-    generated_at: "2026-04-24T09:11:52Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:15:43Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: c832c3f7609c56a5461515ed0f693d2255310bf2d3958f69f57c482bcbef97f0
+    source_hash: 624fa34cda3b440fa9cc636beb3fe6e3608a77a332933fa593097ebc556ac745
     source_path: help/troubleshooting.md
-    workflow: 15
+    workflow: 16
 ---
 
-Jika Anda hanya punya 2 menit, gunakan halaman ini sebagai pintu depan triase.
+Jika Anda hanya punya 2 menit, gunakan halaman ini sebagai pintu masuk triase.
 
 ## 60 detik pertama
 
-Jalankan tangga ini persis sesuai urutan:
+Jalankan urutan persis ini secara berurutan:
 
 ```bash
 openclaw status
@@ -29,19 +29,17 @@ openclaw channels status --probe
 openclaw logs --follow
 ```
 
-Output yang baik dalam satu baris:
+Output baik dalam satu baris:
 
-- `openclaw status` → menampilkan kanal yang dikonfigurasi dan tidak ada error autentikasi yang jelas.
-- `openclaw status --all` → laporan lengkap ada dan dapat dibagikan.
-- `openclaw gateway probe` → target gateway yang diharapkan dapat dijangkau (`Reachable: yes`). `Capability: ...` memberi tahu tingkat autentikasi apa yang dapat dibuktikan oleh probe, dan `Read probe: limited - missing scope: operator.read` berarti diagnostik terdegradasi, bukan kegagalan koneksi.
-- `openclaw gateway status` → `Runtime: running`, `Connectivity probe: ok`, dan baris `Capability: ...` yang masuk akal. Gunakan `--require-rpc` jika Anda juga memerlukan bukti RPC dengan scope baca.
-- `openclaw doctor` → tidak ada error konfigurasi/layanan yang memblokir.
-- `openclaw channels status --probe` → gateway yang dapat dijangkau mengembalikan status transport live per akun
-  beserta hasil probe/audit seperti `works` atau `audit ok`; jika
-  gateway tidak dapat dijangkau, perintah fallback ke ringkasan berbasis konfigurasi.
-- `openclaw logs --follow` → aktivitas stabil, tidak ada error fatal yang berulang.
+- `openclaw status` → menampilkan channel yang dikonfigurasi dan tidak ada kesalahan autentikasi yang jelas.
+- `openclaw status --all` → laporan lengkap tersedia dan dapat dibagikan.
+- `openclaw gateway probe` → target gateway yang diharapkan dapat dijangkau (`Reachable: yes`). `Capability: ...` memberi tahu tingkat autentikasi apa yang dapat dibuktikan oleh probe, dan `Read probe: limited - missing scope: operator.read` adalah diagnostik yang menurun, bukan kegagalan koneksi.
+- `openclaw gateway status` → `Runtime: running`, `Connectivity probe: ok`, dan baris `Capability: ...` yang masuk akal. Gunakan `--require-rpc` jika Anda juga perlu bukti RPC dengan cakupan baca.
+- `openclaw doctor` → tidak ada kesalahan konfigurasi/layanan yang memblokir.
+- `openclaw channels status --probe` → gateway yang dapat dijangkau mengembalikan status transport per akun secara langsung plus hasil probe/audit seperti `works` atau `audit ok`; jika gateway tidak dapat dijangkau, perintah kembali ke ringkasan khusus konfigurasi.
+- `openclaw logs --follow` → aktivitas stabil, tidak ada kesalahan fatal yang berulang.
 
-## Anthropic long context 429
+## Konteks panjang Anthropic 429
 
 Jika Anda melihat:
 `HTTP 429: rate_limit_error: Extra usage is required for long context requests`,
@@ -49,25 +47,25 @@ buka [/gateway/troubleshooting#anthropic-429-extra-usage-required-for-long-conte
 
 ## Backend lokal yang kompatibel dengan OpenAI berfungsi langsung tetapi gagal di OpenClaw
 
-Jika backend `/v1` lokal atau self-hosted Anda menjawab probe langsung kecil
-`/v1/chat/completions` tetapi gagal pada `openclaw infer model run` atau giliran
+Jika backend lokal atau self-hosted `/v1` Anda menjawab probe kecil
+`/v1/chat/completions` secara langsung tetapi gagal pada `openclaw infer model run` atau giliran
 agen normal:
 
-1. Jika error menyebut `messages[].content` mengharapkan string, setel
+1. Jika kesalahan menyebut `messages[].content` mengharapkan string, atur
    `models.providers.<provider>.models[].compat.requiresStringContent: true`.
-2. Jika backend masih gagal hanya pada giliran agen OpenClaw, setel
-   `models.providers.<provider>.models[].compat.supportsTools: false` lalu coba lagi.
-3. Jika panggilan kecil langsung masih berfungsi tetapi prompt OpenClaw yang lebih besar membuat
-   backend crash, perlakukan masalah yang tersisa sebagai keterbatasan model/server upstream dan
-   lanjutkan ke runbook mendalam:
+2. Jika backend masih gagal hanya pada giliran agen OpenClaw, atur
+   `models.providers.<provider>.models[].compat.supportsTools: false` dan coba lagi.
+3. Jika panggilan langsung kecil masih berfungsi tetapi prompt OpenClaw yang lebih besar membuat
+   backend crash, perlakukan masalah tersisa sebagai keterbatasan model/server upstream dan
+   lanjutkan di runbook mendalam:
    [/gateway/troubleshooting#local-openai-compatible-backend-passes-direct-probes-but-agent-runs-fail](/id/gateway/troubleshooting#local-openai-compatible-backend-passes-direct-probes-but-agent-runs-fail)
 
-## Instalasi plugin gagal dengan openclaw extensions yang hilang
+## Instalasi Plugin gagal karena openclaw extensions hilang
 
 Jika instalasi gagal dengan `package.json missing openclaw.extensions`, paket plugin
 menggunakan bentuk lama yang tidak lagi diterima OpenClaw.
 
-Perbaiki pada paket plugin:
+Perbaiki di paket plugin:
 
 1. Tambahkan `openclaw.extensions` ke `package.json`.
 2. Arahkan entri ke file runtime hasil build (biasanya `./dist/index.js`).
@@ -87,25 +85,59 @@ Contoh:
 
 Referensi: [Arsitektur Plugin](/id/plugins/architecture)
 
+## Plugin ada tetapi diblokir oleh kepemilikan yang mencurigakan
+
+Jika `openclaw doctor`, penyiapan, atau peringatan startup menampilkan:
+
+```text
+blocked plugin candidate: suspicious ownership (... uid=1000, expected uid=0 or root)
+plugin present but blocked
+```
+
+file plugin dimiliki oleh pengguna Unix yang berbeda dari proses yang memuat
+file tersebut. Jangan hapus konfigurasi plugin. Perbaiki kepemilikan file atau jalankan OpenClaw sebagai
+pengguna yang sama yang memiliki direktori status.
+
+Instalasi Docker biasanya berjalan sebagai `node` (uid `1000`). Untuk penyiapan Docker
+default, perbaiki bind mount host:
+
+```bash
+sudo chown -R 1000:1000 /path/to/openclaw-config /path/to/openclaw-workspace
+openclaw doctor --fix
+```
+
+Jika Anda sengaja menjalankan OpenClaw sebagai root, perbaiki root plugin terkelola agar
+dimiliki root sebagai gantinya:
+
+```bash
+sudo chown -R root:root /path/to/openclaw-config/npm
+openclaw doctor --fix
+```
+
+Dokumentasi lebih mendalam:
+
+- [Kepemilikan path Plugin](/id/tools/plugin#blocked-plugin-path-ownership)
+- [Izin Docker](/id/install/docker#permissions-and-eacces)
+
 ## Pohon keputusan
 
 ```mermaid
 flowchart TD
   A[OpenClaw tidak berfungsi] --> B{Apa yang rusak lebih dulu}
   B --> C[Tidak ada balasan]
-  B --> D[Dashboard atau Control UI tidak mau terhubung]
-  B --> E[Gateway tidak mau mulai atau layanan tidak berjalan]
-  B --> F[Kanal terhubung tetapi pesan tidak mengalir]
+  B --> D[Dashboard atau Control UI tidak dapat terhubung]
+  B --> E[Gateway tidak dapat dimulai atau layanan tidak berjalan]
+  B --> F[Channel terhubung tetapi pesan tidak mengalir]
   B --> G[Cron atau heartbeat tidak berjalan atau tidak terkirim]
-  B --> H[Node sudah dipair tetapi camera canvas screen exec gagal]
-  B --> I[Tool browser gagal]
+  B --> H[Node sudah dipasangkan tetapi eksekusi alat camera canvas screen gagal]
+  B --> I[Alat browser gagal]
 
-  C --> C1[/Bagian Tidak ada balasan/]
+  C --> C1[/Bagian tidak ada balasan/]
   D --> D1[/Bagian Control UI/]
   E --> E1[/Bagian Gateway/]
-  F --> F1[/Bagian alur kanal/]
+  F --> F1[/Bagian aliran channel/]
   G --> G1[/Bagian otomatisasi/]
-  H --> H1[/Bagian tool node/]
+  H --> H1[/Bagian alat Node/]
   I --> I1[/Bagian browser/]
 ```
 
@@ -119,19 +151,19 @@ flowchart TD
     openclaw logs --follow
     ```
 
-    Output yang baik terlihat seperti:
+    Output baik terlihat seperti:
 
     - `Runtime: running`
     - `Connectivity probe: ok`
     - `Capability: read-only`, `write-capable`, atau `admin-capable`
-    - Kanal Anda menunjukkan transport terhubung dan, jika didukung, `works` atau `audit ok` dalam `channels status --probe`
+    - Channel Anda menampilkan transport terhubung dan, jika didukung, `works` atau `audit ok` di `channels status --probe`
     - Pengirim tampak disetujui (atau kebijakan DM terbuka/allowlist)
 
     Tanda umum di log:
 
     - `drop guild message (mention required` → gating mention memblokir pesan di Discord.
-    - `pairing request` → pengirim belum disetujui dan sedang menunggu persetujuan pairing DM.
-    - `blocked` / `allowlist` dalam log kanal → pengirim, room, atau grup difilter.
+    - `pairing request` → pengirim belum disetujui dan menunggu persetujuan pairing DM.
+    - `blocked` / `allowlist` di log channel → pengirim, room, atau grup difilter.
 
     Halaman mendalam:
 
@@ -141,7 +173,7 @@ flowchart TD
 
   </Accordion>
 
-  <Accordion title="Dashboard atau Control UI tidak mau terhubung">
+  <Accordion title="Dashboard atau Control UI tidak dapat terhubung">
     ```bash
     openclaw status
     openclaw gateway status
@@ -150,7 +182,7 @@ flowchart TD
     openclaw channels status --probe
     ```
 
-    Output yang baik terlihat seperti:
+    Output baik terlihat seperti:
 
     - `Dashboard: http://...` ditampilkan di `openclaw gateway status`
     - `Connectivity probe: ok`
@@ -159,21 +191,16 @@ flowchart TD
 
     Tanda umum di log:
 
-    - `device identity required` → HTTP/non-secure context tidak dapat menyelesaikan autentikasi perangkat.
-    - `origin not allowed` → browser `Origin` tidak diizinkan untuk
-      target gateway Control UI.
-    - `AUTH_TOKEN_MISMATCH` dengan petunjuk retry (`canRetryWithDeviceToken=true`) → satu retry device-token tepercaya dapat terjadi secara otomatis.
-    - Retry cached-token tersebut menggunakan ulang set scope yang di-cache bersama
-      token perangkat yang dipair. Pemanggil `deviceToken` / `scopes` eksplisit mempertahankan
-      set scope yang diminta.
-    - Pada jalur async Tailscale Serve Control UI, percobaan gagal untuk `{scope, ip}` yang sama
-      diserialkan sebelum limiter mencatat kegagalan, sehingga
-      retry buruk kedua yang bersamaan dapat langsung menampilkan `retry later`.
-    - `too many failed authentication attempts (retry later)` dari origin browser
-      localhost → kegagalan berulang dari `Origin` yang sama dikunci sementara;
-      origin localhost lain menggunakan bucket terpisah.
-    - `unauthorized` berulang setelah retry itu → token/password salah, mode autentikasi tidak cocok, atau token perangkat yang dipair sudah usang.
-    - `gateway connect failed:` → UI menargetkan URL/port yang salah atau gateway yang tidak dapat dijangkau.
+    - `device identity required` → konteks HTTP/tidak aman tidak dapat menyelesaikan autentikasi perangkat.
+    - `origin not allowed` → `Origin` browser tidak diizinkan untuk target gateway Control UI.
+    - `AUTH_TOKEN_MISMATCH` dengan petunjuk coba lagi (`canRetryWithDeviceToken=true`) → satu percobaan ulang token perangkat tepercaya dapat terjadi otomatis.
+    - Percobaan ulang token cache tersebut menggunakan kembali set cakupan cache yang disimpan dengan token perangkat yang dipasangkan. Pemanggil `deviceToken` eksplisit / `scopes` eksplisit tetap menggunakan set cakupan yang diminta.
+    - Pada jalur Control UI async Tailscale Serve, upaya gagal untuk
+      `{scope, ip}` yang sama diserialkan sebelum limiter mencatat kegagalan, sehingga
+      percobaan ulang buruk kedua yang konkuren sudah dapat menampilkan `retry later`.
+    - `too many failed authentication attempts (retry later)` dari origin browser localhost → kegagalan berulang dari `Origin` yang sama dikunci sementara; origin localhost lain menggunakan bucket terpisah.
+    - `unauthorized` berulang setelah percobaan ulang tersebut → token/kata sandi salah, mode autentikasi tidak cocok, atau token perangkat yang dipasangkan sudah usang.
+    - `gateway connect failed:` → UI menargetkan URL/port yang salah atau gateway tidak dapat dijangkau.
 
     Halaman mendalam:
 
@@ -183,7 +210,7 @@ flowchart TD
 
   </Accordion>
 
-  <Accordion title="Gateway tidak mau mulai atau layanan terinstal tetapi tidak berjalan">
+  <Accordion title="Gateway tidak dapat dimulai atau layanan terinstal tetapi tidak berjalan">
     ```bash
     openclaw status
     openclaw gateway status
@@ -192,7 +219,7 @@ flowchart TD
     openclaw channels status --probe
     ```
 
-    Output yang baik terlihat seperti:
+    Output baik terlihat seperti:
 
     - `Service: ... (loaded)`
     - `Runtime: running`
@@ -201,8 +228,8 @@ flowchart TD
 
     Tanda umum di log:
 
-    - `Gateway start blocked: set gateway.mode=local` atau `existing config is missing gateway.mode` → mode gateway adalah remote, atau file konfigurasi kehilangan stempel mode lokal dan harus diperbaiki.
-    - `refusing to bind gateway ... without auth` → bind non-loopback tanpa jalur autentikasi gateway yang valid (token/password, atau trusted-proxy jika dikonfigurasi).
+    - `Gateway start blocked: set gateway.mode=local` atau `existing config is missing gateway.mode` → mode gateway adalah remote, atau file konfigurasi kehilangan penanda mode lokal dan harus diperbaiki.
+    - `refusing to bind gateway ... without auth` → bind non-loopback tanpa jalur autentikasi gateway yang valid (token/kata sandi, atau trusted-proxy jika dikonfigurasi).
     - `another gateway instance is already listening` atau `EADDRINUSE` → port sudah digunakan.
 
     Halaman mendalam:
@@ -213,7 +240,7 @@ flowchart TD
 
   </Accordion>
 
-  <Accordion title="Kanal terhubung tetapi pesan tidak mengalir">
+  <Accordion title="Channel terhubung tetapi pesan tidak mengalir">
     ```bash
     openclaw status
     openclaw gateway status
@@ -222,17 +249,17 @@ flowchart TD
     openclaw channels status --probe
     ```
 
-    Output yang baik terlihat seperti:
+    Output baik terlihat seperti:
 
-    - Transport kanal terhubung.
+    - Transport channel terhubung.
     - Pemeriksaan pairing/allowlist lolos.
-    - Mention terdeteksi jika diwajibkan.
+    - Mention terdeteksi jika diperlukan.
 
     Tanda umum di log:
 
     - `mention required` → gating mention grup memblokir pemrosesan.
     - `pairing` / `pending` → pengirim DM belum disetujui.
-    - `not_in_channel`, `missing_scope`, `Forbidden`, `401/403` → masalah token izin kanal.
+    - `not_in_channel`, `missing_scope`, `Forbidden`, `401/403` → masalah token izin channel.
 
     Halaman mendalam:
 
@@ -251,20 +278,20 @@ flowchart TD
     openclaw logs --follow
     ```
 
-    Output yang baik terlihat seperti:
+    Output baik terlihat seperti:
 
-    - `cron.status` menunjukkan aktif dengan next wake.
-    - `cron runs` menunjukkan entri `ok` terbaru.
+    - `cron.status` menampilkan aktif dengan wake berikutnya.
+    - `cron runs` menampilkan entri `ok` terbaru.
     - Heartbeat diaktifkan dan tidak berada di luar jam aktif.
 
     Tanda umum di log:
 
-    - `cron: scheduler disabled; jobs will not run automatically` → Cron dinonaktifkan.
+    - `cron: scheduler disabled; jobs will not run automatically` → cron dinonaktifkan.
     - `heartbeat skipped` dengan `reason=quiet-hours` → di luar jam aktif yang dikonfigurasi.
-    - `heartbeat skipped` dengan `reason=empty-heartbeat-file` → `HEARTBEAT.md` ada tetapi hanya berisi scaffolding kosong/header saja.
+    - `heartbeat skipped` dengan `reason=empty-heartbeat-file` → `HEARTBEAT.md` ada tetapi hanya berisi scaffolding kosong/hanya header.
     - `heartbeat skipped` dengan `reason=no-tasks-due` → mode tugas `HEARTBEAT.md` aktif tetapi belum ada interval tugas yang jatuh tempo.
     - `heartbeat skipped` dengan `reason=alerts-disabled` → semua visibilitas heartbeat dinonaktifkan (`showOk`, `showAlerts`, dan `useIndicator` semuanya off).
-    - `requests-in-flight` → jalur utama sibuk; wake heartbeat ditunda.
+    - `requests-in-flight` → lane utama sibuk; wake heartbeat ditunda.
     - `unknown accountId` → akun target pengiriman heartbeat tidak ada.
 
     Halaman mendalam:
@@ -275,7 +302,7 @@ flowchart TD
 
   </Accordion>
 
-  <Accordion title="Node sudah dipair tetapi tool camera canvas screen exec gagal">
+  <Accordion title="Node sudah dipasangkan tetapi alat camera canvas screen exec gagal">
     ```bash
     openclaw status
     openclaw gateway status
@@ -284,17 +311,17 @@ flowchart TD
     openclaw logs --follow
     ```
 
-    Output yang baik terlihat seperti:
+    Output baik terlihat seperti:
 
-    - Node tercantum sebagai connected dan paired untuk role `node`.
-    - Kapabilitas tersedia untuk perintah yang Anda panggil.
-    - Status izin diberikan untuk tool tersebut.
+    - Node tercantum sebagai terhubung dan dipasangkan untuk peran `node`.
+    - Capability tersedia untuk perintah yang Anda panggil.
+    - Status izin diberikan untuk alat tersebut.
 
     Tanda umum di log:
 
-    - `NODE_BACKGROUND_UNAVAILABLE` → bawa aplikasi node ke foreground.
-    - `*_PERMISSION_REQUIRED` → izin OS ditolak/hilang.
-    - `SYSTEM_RUN_DENIED: approval required` → persetujuan exec tertunda.
+    - `NODE_BACKGROUND_UNAVAILABLE` → bawa aplikasi Node ke latar depan.
+    - `*_PERMISSION_REQUIRED` → izin OS ditolak/tidak ada.
+    - `SYSTEM_RUN_DENIED: approval required` → persetujuan exec sedang tertunda.
     - `SYSTEM_RUN_DENIED: allowlist miss` → perintah tidak ada di allowlist exec.
 
     Halaman mendalam:
@@ -313,16 +340,16 @@ flowchart TD
     openclaw gateway restart
     ```
 
-    Yang berubah:
+    Apa yang berubah:
 
-    - Jika `tools.exec.host` tidak diatur, default-nya adalah `auto`.
-    - `host=auto` diselesaikan ke `sandbox` saat runtime sandbox aktif, `gateway` jika tidak.
-    - `host=auto` hanya untuk routing; perilaku no-prompt "YOLO" berasal dari `security=full` plus `ask=off` pada gateway/node.
-    - Pada `gateway` dan `node`, `tools.exec.security` yang tidak diatur default-nya adalah `full`.
-    - `tools.exec.ask` yang tidak diatur default-nya adalah `off`.
-    - Hasilnya: jika Anda melihat persetujuan, berarti ada kebijakan host-local atau per-sesi yang memperketat exec dari default saat ini.
+    - Jika `tools.exec.host` belum diatur, default-nya adalah `auto`.
+    - `host=auto` diselesaikan menjadi `sandbox` saat runtime sandbox aktif, selain itu menjadi `gateway`.
+    - `host=auto` hanya untuk routing; perilaku "YOLO" tanpa prompt berasal dari `security=full` plus `ask=off` pada Gateway/Node.
+    - Pada `gateway` dan `node`, `tools.exec.security` yang belum diatur default ke `full`.
+    - `tools.exec.ask` yang belum diatur default ke `off`.
+    - Hasilnya: jika Anda melihat persetujuan, beberapa kebijakan host-lokal atau per-sesi memperketat exec dari default saat ini.
 
-    Pulihkan perilaku tanpa persetujuan sesuai default saat ini:
+    Pulihkan perilaku default saat ini tanpa persetujuan:
 
     ```bash
     openclaw config set tools.exec.host gateway
@@ -333,14 +360,14 @@ flowchart TD
 
     Alternatif yang lebih aman:
 
-    - Setel hanya `tools.exec.host=gateway` jika Anda hanya ingin routing host yang stabil.
-    - Gunakan `security=allowlist` dengan `ask=on-miss` jika Anda ingin host exec tetapi tetap ingin peninjauan saat terjadi allowlist miss.
-    - Aktifkan mode sandbox jika Anda ingin `host=auto` diselesaikan kembali ke `sandbox`.
+    - Atur hanya `tools.exec.host=gateway` jika Anda hanya menginginkan routing host yang stabil.
+    - Gunakan `security=allowlist` dengan `ask=on-miss` jika Anda menginginkan exec host tetapi tetap ingin peninjauan saat allowlist tidak cocok.
+    - Aktifkan mode sandbox jika Anda ingin `host=auto` diselesaikan kembali menjadi `sandbox`.
 
-    Tanda umum di log:
+    Tanda log umum:
 
     - `Approval required.` → perintah sedang menunggu `/approve ...`.
-    - `SYSTEM_RUN_DENIED: approval required` → persetujuan exec node-host sedang tertunda.
+    - `SYSTEM_RUN_DENIED: approval required` → persetujuan exec host Node sedang tertunda.
     - `exec host=sandbox requires a sandbox runtime for this session` → pemilihan sandbox implisit/eksplisit tetapi mode sandbox nonaktif.
 
     Halaman mendalam:
@@ -351,7 +378,7 @@ flowchart TD
 
   </Accordion>
 
-  <Accordion title="Tool browser gagal">
+  <Accordion title="Alat browser gagal">
     ```bash
     openclaw status
     openclaw gateway status
@@ -362,20 +389,20 @@ flowchart TD
 
     Output yang baik terlihat seperti:
 
-    - Status browser menampilkan `running: true` dan browser/profile yang dipilih.
-    - `openclaw` berhasil mulai, atau `user` dapat melihat tab Chrome lokal.
+    - Status browser menampilkan `running: true` dan browser/profil yang dipilih.
+    - `openclaw` dimulai, atau `user` dapat melihat tab Chrome lokal.
 
-    Tanda umum di log:
+    Tanda log umum:
 
     - `unknown command "browser"` atau `unknown command 'browser'` → `plugins.allow` diatur dan tidak menyertakan `browser`.
     - `Failed to start Chrome CDP on port` → peluncuran browser lokal gagal.
-    - `browser.executablePath not found` → path binary yang dikonfigurasi salah.
+    - `browser.executablePath not found` → jalur biner yang dikonfigurasi salah.
     - `browser.cdpUrl must be http(s) or ws(s)` → URL CDP yang dikonfigurasi menggunakan skema yang tidak didukung.
     - `browser.cdpUrl has invalid port` → URL CDP yang dikonfigurasi memiliki port yang buruk atau di luar rentang.
-    - `No Chrome tabs found for profile="user"` → profil attach Chrome MCP tidak memiliki tab Chrome lokal yang terbuka.
-    - `Remote CDP for profile "<name>" is not reachable` → endpoint CDP remote yang dikonfigurasi tidak dapat dijangkau dari host ini.
-    - `Browser attachOnly is enabled ... not reachable` atau `Browser attachOnly is enabled and CDP websocket ... is not reachable` → profil attach-only tidak memiliki target CDP live.
-    - override viewport / dark-mode / locale / offline yang usang pada profil attach-only atau remote CDP → jalankan `openclaw browser stop --browser-profile <name>` untuk menutup sesi kontrol aktif dan melepaskan status emulasi tanpa merestart gateway.
+    - `No Chrome tabs found for profile="user"` → profil attach MCP Chrome tidak memiliki tab Chrome lokal yang terbuka.
+    - `Remote CDP for profile "<name>" is not reachable` → endpoint CDP jarak jauh yang dikonfigurasi tidak dapat dijangkau dari host ini.
+    - `Browser attachOnly is enabled ... not reachable` atau `Browser attachOnly is enabled and CDP websocket ... is not reachable` → profil khusus attach tidak memiliki target CDP aktif.
+    - override viewport / mode gelap / lokal / offline yang usang pada profil khusus attach atau CDP jarak jauh → jalankan `openclaw browser stop --browser-profile <name>` untuk menutup sesi kontrol aktif dan melepaskan status emulasi tanpa memulai ulang Gateway.
 
     Halaman mendalam:
 
@@ -391,7 +418,7 @@ flowchart TD
 ## Terkait
 
 - [FAQ](/id/help/faq) — pertanyaan yang sering diajukan
-- [Gateway Troubleshooting](/id/gateway/troubleshooting) — masalah khusus gateway
+- [Pemecahan Masalah Gateway](/id/gateway/troubleshooting) — masalah khusus Gateway
 - [Doctor](/id/gateway/doctor) — pemeriksaan kesehatan dan perbaikan otomatis
-- [Channel Troubleshooting](/id/channels/troubleshooting) — masalah konektivitas kanal
-- [Automation Troubleshooting](/id/automation/cron-jobs#troubleshooting) — masalah cron dan heartbeat
+- [Pemecahan Masalah Channel](/id/channels/troubleshooting) — masalah konektivitas channel
+- [Pemecahan Masalah Otomasi](/id/automation/cron-jobs#troubleshooting) — masalah Cron dan Heartbeat

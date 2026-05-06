@@ -1,142 +1,164 @@
 ---
 read_when:
-    - Merencanakan tahap modernisasi aplikasi OpenClaw yang luas
+    - Perencanaan modernisasi aplikasi OpenClaw secara menyeluruh
     - Memperbarui standar implementasi frontend untuk pekerjaan aplikasi atau Control UI
-    - Mengubah tinjauan kualitas produk yang luas menjadi pekerjaan engineering bertahap
-summary: Rencana modernisasi aplikasi yang komprehensif dengan pembaruan keterampilan delivery frontend
+    - Mengubah tinjauan kualitas produk yang luas menjadi pekerjaan rekayasa bertahap
+summary: Rencana modernisasi aplikasi komprehensif dengan pembaruan keterampilan penyampaian antarmuka depan
 title: Rencana modernisasi aplikasi
 x-i18n:
-    generated_at: "2026-04-25T13:55:52Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:26:50Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 667a133cb867bb1d4d09e097925704c8b77d20ca6117a62a4c60d29ab1097283
+    source_hash: 8c97bd9c76492b9e7beb0a2623f583a54b5461bebb848fa3ac7e4495322f6456
     source_path: reference/application-modernization-plan.md
-    workflow: 15
+    workflow: 16
 ---
-
-# Rencana modernisasi aplikasi
 
 ## Tujuan
 
-Mengarahkan aplikasi menuju produk yang lebih bersih, lebih cepat, dan lebih mudah dipelihara tanpa merusak alur kerja saat ini atau menyembunyikan risiko dalam refaktor besar. Pekerjaan ini harus dirilis dalam irisan kecil yang dapat ditinjau, dengan bukti untuk setiap permukaan yang disentuh.
+Arahkan aplikasi menuju produk yang lebih bersih, lebih cepat, dan lebih mudah dipelihara tanpa
+merusak alur kerja saat ini atau menyembunyikan risiko dalam refaktor luas. Pekerjaan harus
+masuk sebagai irisan kecil yang dapat ditinjau dengan bukti untuk setiap permukaan yang disentuh.
 
 ## Prinsip
 
-- Pertahankan arsitektur saat ini kecuali suatu batas terbukti menyebabkan churn, biaya performa, atau bug yang terlihat oleh pengguna.
+- Pertahankan arsitektur saat ini kecuali sebuah batas terbukti menyebabkan churn,
+  biaya performa, atau bug yang terlihat pengguna.
 - Utamakan patch terkecil yang benar untuk setiap masalah, lalu ulangi.
-- Pisahkan perbaikan yang wajib dari polesan opsional agar maintainer dapat merilis pekerjaan bernilai tinggi tanpa menunggu keputusan yang subjektif.
-- Pertahankan perilaku yang berhadapan dengan Plugin tetap terdokumentasi dan kompatibel ke belakang.
-- Verifikasi perilaku yang sudah dirilis, kontrak dependensi, dan pengujian sebelum mengklaim bahwa suatu regresi telah diperbaiki.
-- Perbaiki jalur pengguna utama terlebih dahulu: onboarding, auth, chat, penyiapan penyedia, manajemen Plugin, dan diagnostik.
+- Pisahkan perbaikan wajib dari pemolesan opsional agar maintainer dapat memasukkan pekerjaan
+  bernilai tinggi tanpa menunggu keputusan subjektif.
+- Jaga perilaku yang menghadap Plugin tetap terdokumentasi dan kompatibel ke belakang.
+- Verifikasi perilaku yang sudah dirilis, kontrak dependensi, dan pengujian sebelum mengklaim
+  sebuah regresi sudah diperbaiki.
+- Perbaiki jalur pengguna utama terlebih dahulu: penyiapan awal, autentikasi, chat, penyiapan penyedia,
+  pengelolaan Plugin, dan diagnostik.
 
 ## Fase 1: Audit baseline
 
-Inventarisasikan aplikasi saat ini sebelum mengubahnya.
+Inventarisasi aplikasi saat ini sebelum mengubahnya.
 
-- Identifikasi alur kerja pengguna utama dan permukaan kode yang memilikinya.
-- Daftarkan affordance yang mati, pengaturan duplikat, status error yang tidak jelas, dan jalur render yang mahal.
+- Identifikasi alur kerja pengguna teratas dan permukaan kode yang memilikinya.
+- Daftar affordance mati, pengaturan duplikat, status error yang tidak jelas, dan jalur render
+  yang mahal.
 - Catat perintah validasi saat ini untuk setiap permukaan.
 - Tandai masalah sebagai wajib, direkomendasikan, atau opsional.
-- Dokumentasikan blocker yang diketahui dan memerlukan tinjauan owner, terutama perubahan API, keamanan, rilis, dan kontrak Plugin.
+- Dokumentasikan blocker yang diketahui yang membutuhkan tinjauan pemilik, terutama perubahan API, keamanan,
+  rilis, dan kontrak Plugin.
 
 Definisi selesai:
 
 - Satu daftar masalah dengan referensi file dari root repo.
-- Setiap masalah memiliki tingkat keparahan, permukaan owner, dampak yang diharapkan bagi pengguna, dan jalur validasi yang diusulkan.
-- Tidak ada item pembersihan spekulatif yang tercampur ke dalam perbaikan wajib.
+- Setiap masalah memiliki tingkat keparahan, permukaan pemilik, dampak pengguna yang diharapkan, dan jalur
+  validasi yang diusulkan.
+- Tidak ada item pembersihan spekulatif yang dicampur ke dalam perbaikan wajib.
 
 ## Fase 2: Pembersihan produk dan UX
 
 Prioritaskan alur kerja yang terlihat dan hilangkan kebingungan.
 
-- Rapikan copy onboarding dan status kosong di sekitar auth model, status Gateway, dan penyiapan Plugin.
-- Hapus atau nonaktifkan affordance mati saat tidak ada tindakan yang memungkinkan.
-- Pertahankan tindakan penting tetap terlihat di berbagai lebar responsif, alih-alih menyembunyikannya di balik asumsi layout yang rapuh.
+- Perketat salinan penyiapan awal dan status kosong seputar autentikasi model, status Gateway,
+  dan penyiapan Plugin.
+- Hapus atau nonaktifkan affordance mati ketika tidak ada tindakan yang mungkin dilakukan.
+- Jaga tindakan penting tetap terlihat di berbagai lebar responsif alih-alih menyembunyikannya
+  di balik asumsi tata letak yang rapuh.
 - Konsolidasikan bahasa status yang berulang agar error memiliki satu sumber kebenaran.
-- Tambahkan progressive disclosure untuk pengaturan lanjutan sambil tetap menjaga penyiapan inti tetap cepat.
+- Tambahkan pengungkapan progresif untuk pengaturan lanjutan sambil menjaga penyiapan inti tetap cepat.
 
 Validasi yang direkomendasikan:
 
-- Jalur happy path manual untuk penyiapan pertama kali dan startup pengguna yang sudah ada.
-- Pengujian terfokus untuk logika routing, persistensi config, atau penurunan status.
-- Screenshot browser untuk permukaan responsif yang diubah.
+- Jalur sukses manual untuk penyiapan pertama kali dan startup pengguna yang sudah ada.
+- Pengujian terfokus untuk logika routing, persistensi konfigurasi, atau derivasi status apa pun.
+- Tangkapan layar browser untuk permukaan responsif yang diubah.
 
 ## Fase 3: Pengetatan arsitektur frontend
 
-Tingkatkan kemudahan pemeliharaan tanpa penulisan ulang besar.
+Tingkatkan kemudahan pemeliharaan tanpa penulisan ulang luas.
 
-- Pindahkan transformasi state UI yang berulang ke helper bertipe sempit.
-- Pisahkan tanggung jawab pengambilan data, persistensi, dan presentasi.
-- Utamakan hook, store, dan pola komponen yang sudah ada dibanding abstraksi baru.
-- Pecah komponen yang terlalu besar hanya jika itu mengurangi coupling atau memperjelas pengujian.
-- Hindari memperkenalkan state global yang luas untuk interaksi panel lokal.
+- Pindahkan transformasi status UI yang berulang ke helper bertipe yang sempit.
+- Jaga tanggung jawab pengambilan data, persistensi, dan presentasi tetap terpisah.
+- Utamakan hook, store, dan pola komponen yang ada dibandingkan abstraksi baru.
+- Pecah komponen yang terlalu besar hanya ketika hal itu mengurangi coupling atau memperjelas pengujian.
+- Hindari memperkenalkan status global yang luas untuk interaksi panel lokal.
 
-Guardrail yang wajib:
+Guardrail wajib:
 
-- Jangan ubah perilaku publik sebagai efek samping dari pemecahan file.
-- Pertahankan perilaku aksesibilitas untuk menu, dialog, tab, dan navigasi keyboard.
+- Jangan mengubah perilaku publik sebagai efek samping dari pemecahan file.
+- Jaga perilaku aksesibilitas tetap utuh untuk menu, dialog, tab, dan navigasi
+  keyboard.
 - Verifikasi bahwa status loading, kosong, error, dan optimistis masih dirender.
 
 ## Fase 4: Performa dan keandalan
 
-Targetkan masalah yang terukur, bukan optimasi teoretis yang luas.
+Targetkan rasa sakit yang terukur, bukan optimisasi teoretis yang luas.
 
-- Ukur biaya startup, transisi rute, daftar besar, dan transkrip chat.
-- Ganti data turunan mahal yang berulang dengan selector termemoisasi atau helper tercache saat profiling membuktikan nilainya.
-- Kurangi pemindaian network atau filesystem yang dapat dihindari pada jalur panas.
-- Pertahankan urutan deterministik untuk input prompt, registri, file, Plugin, dan network sebelum konstruksi payload model.
-- Tambahkan pengujian regresi ringan untuk helper hot dan batas kontrak.
+- Ukur biaya startup, transisi route, daftar besar, dan transkrip chat.
+- Ganti data turunan mahal yang berulang dengan selektor bermemoisasi atau helper yang di-cache
+  ketika profiling membuktikan nilainya.
+- Kurangi pemindaian jaringan atau filesystem yang dapat dihindari di hot path.
+- Jaga pengurutan deterministik untuk input prompt, registry, file, Plugin, dan jaringan
+  sebelum konstruksi payload model.
+- Tambahkan pengujian regresi ringan untuk helper panas dan batas kontrak.
 
 Definisi selesai:
 
-- Setiap perubahan performa mencatat baseline, dampak yang diharapkan, dampak aktual, dan celah yang tersisa.
-- Tidak ada patch performa yang dirilis hanya berdasarkan intuisi ketika pengukuran murah tersedia.
+- Setiap perubahan performa mencatat baseline, dampak yang diharapkan, dampak aktual, dan
+  celah yang tersisa.
+- Tidak ada patch performa yang masuk semata-mata berdasarkan intuisi ketika pengukuran murah tersedia.
 
-## Fase 5: Penguatan type, kontrak, dan pengujian
+## Fase 5: Pengerasan tipe, kontrak, dan pengujian
 
-Tingkatkan ketepatan pada titik batas yang diandalkan pengguna dan author Plugin.
+Tingkatkan kebenaran pada titik batas yang diandalkan pengguna dan pembuat Plugin.
 
 - Ganti string runtime yang longgar dengan union terdiskriminasi atau daftar kode tertutup.
-- Validasi input eksternal dengan helper schema yang ada atau zod.
-- Tambahkan pengujian kontrak di sekitar manifest Plugin, katalog penyedia, pesan protokol Gateway, dan perilaku migrasi config.
-- Pertahankan jalur kompatibilitas dalam alur doctor atau repair, bukan migrasi tersembunyi saat startup.
-- Hindari coupling khusus pengujian ke internal Plugin; gunakan facade SDK dan barrel yang terdokumentasi.
+- Validasi input eksternal dengan helper skema yang ada atau zod.
+- Tambahkan pengujian kontrak seputar manifes Plugin, katalog penyedia, pesan protokol
+  Gateway, dan perilaku migrasi konfigurasi.
+- Simpan jalur kompatibilitas dalam alur doctor atau repair, bukan migrasi tersembunyi
+  saat startup.
+- Hindari coupling khusus pengujian ke internal Plugin; gunakan fasad SDK dan barrel
+  terdokumentasi.
 
 Validasi yang direkomendasikan:
 
 - `pnpm check:changed`
-- Pengujian terarah untuk setiap batas yang diubah.
-- `pnpm build` saat batas lazy, packaging, atau permukaan yang dipublikasikan berubah.
+- Pengujian bertarget untuk setiap batas yang diubah.
+- `pnpm build` ketika batas lazy, packaging, atau permukaan yang diterbitkan berubah.
 
 ## Fase 6: Dokumentasi dan kesiapan rilis
 
-Pastikan dokumentasi yang berhadapan dengan pengguna tetap selaras dengan perilaku.
+Jaga dokumen yang menghadap pengguna tetap selaras dengan perilaku.
 
-- Perbarui dokumentasi untuk perubahan perilaku, API, config, onboarding, atau Plugin.
-- Tambahkan entri changelog hanya untuk perubahan yang terlihat oleh pengguna.
-- Pertahankan terminologi Plugin untuk pengguna; gunakan nama package internal hanya bila diperlukan untuk kontributor.
-- Konfirmasikan bahwa instruksi rilis dan instalasi masih sesuai dengan permukaan perintah saat ini.
+- Perbarui dokumen dengan perubahan perilaku, API, konfigurasi, penyiapan awal, atau Plugin.
+- Tambahkan entri changelog hanya untuk perubahan yang terlihat pengguna.
+- Jaga terminologi Plugin tetap menghadap pengguna; gunakan nama paket internal hanya ketika
+  diperlukan untuk kontributor.
+- Konfirmasi instruksi rilis dan instalasi masih cocok dengan permukaan perintah saat ini.
 
 Definisi selesai:
 
-- Dokumentasi yang relevan diperbarui di branch yang sama dengan perubahan perilaku.
-- Pemeriksaan drift dokumentasi atau API yang dihasilkan lulus saat disentuh.
-- Handoff menyebutkan validasi apa pun yang dilewati dan alasan dilewati.
+- Dokumen yang relevan diperbarui di branch yang sama dengan perubahan perilaku.
+- Pemeriksaan dokumen yang dihasilkan atau drift API lulus ketika disentuh.
+- Handoff menyebutkan validasi apa pun yang dilewati dan mengapa validasi itu dilewati.
 
 ## Irisan pertama yang direkomendasikan
 
-Mulailah dengan tahap terbatas pada Control UI dan onboarding:
+Mulai dengan pass Control UI dan penyiapan awal yang terbatas cakupannya:
 
-- Audit penyiapan pertama kali, kesiapan auth penyedia, status Gateway, dan permukaan penyiapan Plugin.
+- Audit permukaan penyiapan pertama kali, kesiapan autentikasi penyedia, status Gateway, dan penyiapan
+  Plugin.
 - Hapus tindakan mati dan perjelas status kegagalan.
-- Tambahkan atau perbarui pengujian terfokus untuk penurunan status dan persistensi config.
+- Tambahkan atau perbarui pengujian terfokus untuk derivasi status dan persistensi konfigurasi.
 - Jalankan `pnpm check:changed`.
 
-Ini memberikan nilai tinggi bagi pengguna dengan risiko arsitektur yang terbatas.
+Ini memberikan nilai pengguna tinggi dengan risiko arsitektur terbatas.
 
 ## Pembaruan skill frontend
 
-Gunakan bagian ini untuk memperbarui `SKILL.md` berfokus frontend yang disediakan bersama tugas modernisasi. Jika mengadopsi panduan ini sebagai skill OpenClaw lokal repo, buat `.agents/skills/openclaw-frontend/SKILL.md` terlebih dahulu, pertahankan frontmatter yang termasuk dalam skill target tersebut, lalu tambahkan atau ganti panduan body dengan konten berikut.
+Gunakan bagian ini untuk memperbarui `SKILL.md` berfokus frontend yang disediakan dengan
+tugas modernisasi. Jika mengadopsi panduan ini sebagai skill OpenClaw lokal repo,
+buat `.agents/skills/openclaw-frontend/SKILL.md` terlebih dahulu, pertahankan frontmatter
+yang termasuk dalam skill target tersebut, lalu tambahkan atau ganti panduan body dengan
+konten berikut.
 
 ```markdown
 # Frontend Delivery Standards

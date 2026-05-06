@@ -1,28 +1,28 @@
 ---
 read_when:
-    - Mengubah perilaku atau default voice wake word
-    - Menambahkan platform node baru yang memerlukan sinkronisasi wake word
-summary: Wake word suara global (dimiliki Gateway) dan cara sinkronisasinya di seluruh node
-title: Voice wake
+    - Mengubah perilaku atau nilai default kata pemicu suara
+    - Menambahkan platform Node baru yang memerlukan sinkronisasi kata bangun
+summary: Kata bangun suara global (dimiliki Gateway) dan cara sinkronisasinya di seluruh node
+title: Aktivasi suara
 x-i18n:
-    generated_at: "2026-04-26T11:33:58Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:19:09Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: ac638cdf89f09404cdf293b416417f6cb3e31865b09f04ef87b9604e436dcbbe
+    source_hash: a284cbe3e12784a8d7a3eab6ba8ae230123557bca7593c956111199b94b91b73
     source_path: nodes/voicewake.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw memperlakukan **wake word sebagai satu daftar global** yang dimiliki oleh **Gateway**.
+OpenClaw memperlakukan **kata bangun sebagai satu daftar global** yang dimiliki oleh **Gateway**.
 
-- **Tidak ada wake word kustom per-node**.
-- **UI node/app mana pun dapat mengedit** daftar tersebut; perubahan dipersistenkan oleh Gateway dan dibroadcast ke semua orang.
-- macOS dan iOS tetap memiliki toggle lokal **Voice Wake aktif/nonaktif** (UX lokal + izin berbeda).
-- Android saat ini mempertahankan Voice Wake nonaktif dan menggunakan alur mic manual di tab Voice.
+- Tidak ada **kata bangun kustom per node**.
+- **UI node/aplikasi mana pun dapat mengedit** daftar tersebut; perubahan dipertahankan oleh Gateway dan disiarkan ke semua orang.
+- macOS dan iOS menyimpan toggle lokal **Voice Wake aktif/nonaktif** (UX lokal + izin berbeda).
+- Android saat ini tetap mematikan Voice Wake dan menggunakan alur mikrofon manual di tab Voice.
 
 ## Penyimpanan (host Gateway)
 
-Wake word disimpan pada mesin gateway di:
+Kata bangun disimpan di mesin gateway pada:
 
 - `~/.openclaw/settings/voicewake.json`
 
@@ -34,20 +34,20 @@ Bentuk:
 
 ## Protokol
 
-### Method
+### Metode
 
 - `voicewake.get` → `{ triggers: string[] }`
-- `voicewake.set` dengan parameter `{ triggers: string[] }` → `{ triggers: string[] }`
+- `voicewake.set` dengan params `{ triggers: string[] }` → `{ triggers: string[] }`
 
 Catatan:
 
-- Trigger dinormalisasi (spasi dipangkas, entri kosong dibuang). Daftar kosong fallback ke default.
-- Batas diterapkan demi keamanan (batas jumlah/panjang).
+- Pemicu dinormalisasi (dipangkas, nilai kosong dibuang). Daftar kosong kembali ke default.
+- Batas diterapkan untuk keamanan (batas jumlah/panjang).
 
-### Method perutean (trigger → target)
+### Metode perutean (pemicu → target)
 
 - `voicewake.routing.get` → `{ config: VoiceWakeRoutingConfig }`
-- `voicewake.routing.set` dengan parameter `{ config: VoiceWakeRoutingConfig }` → `{ config: VoiceWakeRoutingConfig }`
+- `voicewake.routing.set` dengan params `{ config: VoiceWakeRoutingConfig }` → `{ config: VoiceWakeRoutingConfig }`
 
 Bentuk `VoiceWakeRoutingConfig`:
 
@@ -60,41 +60,41 @@ Bentuk `VoiceWakeRoutingConfig`:
 }
 ```
 
-Target rute mendukung tepat satu dari:
+Target rute mendukung tepat salah satu dari:
 
 - `{ "mode": "current" }`
 - `{ "agentId": "main" }`
 - `{ "sessionKey": "agent:main:main" }`
 
-### Event
+### Peristiwa
 
-- `voicewake.changed` payload `{ triggers: string[] }`
-- `voicewake.routing.changed` payload `{ config: VoiceWakeRoutingConfig }`
+- payload `voicewake.changed` `{ triggers: string[] }`
+- payload `voicewake.routing.changed` `{ config: VoiceWakeRoutingConfig }`
 
 Siapa yang menerimanya:
 
-- Semua klien WebSocket (app macOS, WebChat, dll.)
-- Semua node yang terhubung (iOS/Android), dan juga saat node terhubung sebagai push “state saat ini” awal.
+- Semua klien WebSocket (aplikasi macOS, WebChat, dll.)
+- Semua node yang terhubung (iOS/Android), dan juga saat node terhubung sebagai push "status saat ini" awal.
 
 ## Perilaku klien
 
-### App macOS
+### Aplikasi macOS
 
-- Menggunakan daftar global untuk menggerbang trigger `VoiceWakeRuntime`.
-- Mengedit “Trigger words” di pengaturan Voice Wake memanggil `voicewake.set` lalu mengandalkan broadcast agar klien lain tetap sinkron.
+- Menggunakan daftar global untuk membatasi pemicu `VoiceWakeRuntime`.
+- Mengedit "Trigger words" di pengaturan Voice Wake memanggil `voicewake.set` lalu mengandalkan siaran untuk menjaga klien lain tetap sinkron.
 
 ### Node iOS
 
-- Menggunakan daftar global untuk deteksi trigger `VoiceWakeManager`.
-- Mengedit Wake Words di Settings memanggil `voicewake.set` (melalui WS Gateway) dan juga menjaga deteksi wake word lokal tetap responsif.
+- Menggunakan daftar global untuk deteksi pemicu `VoiceWakeManager`.
+- Mengedit Wake Words di Settings memanggil `voicewake.set` (melalui Gateway WS) dan juga menjaga deteksi kata bangun lokal tetap responsif.
 
 ### Node Android
 
 - Voice Wake saat ini dinonaktifkan di runtime/Settings Android.
-- Voice Android menggunakan pengambilan mic manual di tab Voice alih-alih trigger wake word.
+- Suara Android menggunakan penangkapan mikrofon manual di tab Voice, bukan pemicu kata bangun.
 
 ## Terkait
 
-- [Mode talk](/id/nodes/talk)
+- [Mode bicara](/id/nodes/talk)
 - [Audio dan catatan suara](/id/nodes/audio)
-- [Media understanding](/id/nodes/media-understanding)
+- [Pemahaman media](/id/nodes/media-understanding)

@@ -1,30 +1,30 @@
 ---
 read_when:
-    - Anda sedang menghubungkan transport QA sintetis ke proses uji lokal atau CI
-    - Anda memerlukan antarmuka konfigurasi qa-channel bawaan
-    - Anda sedang melakukan iterasi pada otomatisasi QA ujung-ke-ujung
+    - Anda sedang mengintegrasikan transport QA sintetis ke dalam proses pengujian lokal atau CI
+    - Anda memerlukan permukaan konfigurasi qa-channel bawaan
+    - Anda sedang melakukan iterasi pada otomatisasi QA ujung ke ujung
 summary: Plugin saluran kelas Slack sintetis untuk skenario QA OpenClaw yang deterministik
 title: Saluran QA
 x-i18n:
-    generated_at: "2026-05-01T09:22:15Z"
+    generated_at: "2026-05-06T09:03:47Z"
     model: gpt-5.5
     provider: openai
-    source_hash: efe057812de1fbc6d89d2b6d5860cd6af4648c3e86913efa3a69267c4e8c57b4
+    source_hash: 1990b64d8a3ed158b11fc08742f774c5355ee25b68402ec447b92316109ac2f2
     source_path: channels/qa-channel.md
     workflow: 16
 ---
 
-`qa-channel` adalah transport pesan sintetis bawaan untuk QA OpenClaw otomatis. Ini bukan channel produksi — channel ini ada untuk menguji batas Plugin channel yang sama yang digunakan oleh transport nyata sambil menjaga state tetap deterministik dan sepenuhnya dapat diperiksa.
+`qa-channel` adalah transport pesan sintetis bawaan untuk QA OpenClaw otomatis. Ini bukan channel produksi - ini ada untuk menguji batas Plugin channel yang sama yang digunakan oleh transport nyata sambil menjaga state tetap deterministik dan sepenuhnya dapat diinspeksi.
 
-## Fungsinya
+## Apa yang dilakukan
 
-- Tata bahasa target kelas Slack:
+- Tata bahasa target setara Slack:
   - `dm:<user>`
   - `channel:<room>`
   - `group:<room>`
   - `thread:<room>/<thread>`
-- Percakapan bersama `channel:` dan `group:` ditampilkan kepada agen sebagai giliran ruang grup/channel, sehingga menguji kebijakan balasan-terlihat dan perutean message-tool yang sama yang digunakan oleh Discord, Slack, Telegram, dan transport serupa.
-- Bus sintetis berbasis HTTP untuk injeksi pesan masuk, perekaman transkrip keluar, pembuatan thread, reaksi, edit, hapus, serta aksi cari/baca.
+- Percakapan bersama `channel:` dan `group:` ditampilkan kepada agen sebagai giliran ruang grup/channel, sehingga percakapan tersebut menguji kebijakan routing balasan-terlihat dan alat-pesan yang sama yang digunakan oleh Discord, Slack, Telegram, dan transport serupa.
+- Bus sintetis berbasis HTTP untuk injeksi pesan masuk, penangkapan transkrip keluar, pembuatan thread, reaksi, edit, hapus, serta tindakan pencarian/baca.
 - Runner pemeriksaan mandiri sisi host yang menulis laporan Markdown ke `.artifacts/qa-e2e/`.
 
 ## Konfigurasi
@@ -45,20 +45,20 @@ x-i18n:
 
 Kunci akun:
 
-- `enabled` — tombol aktif/nonaktif utama untuk akun ini.
-- `name` — label tampilan opsional.
-- `baseUrl` — URL bus sintetis.
-- `botUserId` — id pengguna bot bergaya Matrix yang digunakan dalam tata bahasa target.
-- `botDisplayName` — nama tampilan untuk pesan keluar.
-- `pollTimeoutMs` — jendela tunggu long-poll. Integer antara 100 dan 30000.
-- `allowFrom` — allowlist pengirim (id pengguna atau `"*"`).
-- `defaultTo` — target fallback ketika tidak ada yang diberikan.
-- `actions.messages` / `actions.reactions` / `actions.search` / `actions.threads` — pembatasan tool per aksi.
+- `enabled` - toggle utama untuk akun ini.
+- `name` - label tampilan opsional.
+- `baseUrl` - URL bus sintetis.
+- `botUserId` - id pengguna bot bergaya Matrix yang digunakan dalam tata bahasa target.
+- `botDisplayName` - nama tampilan untuk pesan keluar.
+- `pollTimeoutMs` - jendela tunggu long-poll. Bilangan bulat antara 100 dan 30000.
+- `allowFrom` - allowlist pengirim (id pengguna atau `"*"`).
+- `defaultTo` - target fallback saat tidak ada yang disediakan.
+- `actions.messages` / `actions.reactions` / `actions.search` / `actions.threads` - gating alat per tindakan.
 
 Kunci multi-akun di level teratas:
 
-- `accounts` — record override per akun bernama yang dikunci berdasarkan id akun.
-- `defaultAccount` — id akun pilihan ketika beberapa akun dikonfigurasi.
+- `accounts` - rekaman override per akun bernama yang dikunci berdasarkan id akun.
+- `defaultAccount` - id akun pilihan saat beberapa akun dikonfigurasi.
 
 ## Runner
 
@@ -68,15 +68,15 @@ Pemeriksaan mandiri sisi host (menulis laporan Markdown di bawah `.artifacts/qa-
 pnpm qa:e2e
 ```
 
-Ini merutekan melalui `qa-lab`, memulai bus QA dalam repo, melakukan boot pada slice runtime `qa-channel` bawaan, dan menjalankan pemeriksaan mandiri deterministik.
+Ini dirutekan melalui `qa-lab`, memulai bus QA dalam repo, mem-boot slice runtime `qa-channel` bawaan, dan menjalankan pemeriksaan mandiri deterministik.
 
-Suite skenario berbasis repo lengkap:
+Suite skenario penuh berbasis repo:
 
 ```bash
 pnpm openclaw qa suite
 ```
 
-Menjalankan skenario secara paralel terhadap lane Gateway QA. Lihat [ikhtisar QA](/id/concepts/qa-e2e-automation) untuk skenario, profil, dan mode provider.
+Menjalankan skenario secara paralel terhadap lane Gateway QA. Lihat [Ikhtisar QA](/id/concepts/qa-e2e-automation) untuk skenario, profil, dan mode penyedia.
 
 Situs QA berbasis Docker (Gateway + UI debugger QA Lab dalam satu stack):
 
@@ -84,12 +84,12 @@ Situs QA berbasis Docker (Gateway + UI debugger QA Lab dalam satu stack):
 pnpm qa:lab:up
 ```
 
-Membangun situs QA, memulai stack Gateway + QA Lab berbasis Docker, dan mencetak URL QA Lab. Dari sana Anda dapat memilih skenario, memilih lane model, meluncurkan run individual, dan melihat hasil secara langsung. Debugger QA Lab terpisah dari bundel Control UI yang dikirimkan.
+Membangun situs QA, memulai stack Gateway + QA Lab berbasis Docker, dan mencetak URL QA Lab. Dari sana Anda dapat memilih skenario, memilih lane model, meluncurkan run individual, dan menonton hasil secara live. Debugger QA Lab terpisah dari bundle Control UI yang dikirimkan.
 
 ## Terkait
 
-- [Ikhtisar QA](/id/concepts/qa-e2e-automation) — stack keseluruhan, adapter transport, penulisan skenario
-- [QA Matrix](/id/concepts/qa-matrix) — contoh runner transport live yang menggerakkan channel nyata
-- [Pemasangan](/id/channels/pairing)
+- [Ikhtisar QA](/id/concepts/qa-e2e-automation) - stack keseluruhan, adaptor transport, penulisan skenario
+- [QA Matrix](/id/concepts/qa-matrix) - contoh runner transport live yang menjalankan channel nyata
+- [Pairing](/id/channels/pairing)
 - [Grup](/id/channels/groups)
 - [Ikhtisar channel](/id/channels)

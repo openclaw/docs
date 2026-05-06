@@ -1,43 +1,57 @@
 ---
 read_when:
     - Anda ingin menggunakan pratinjau Tencent Hy3 dengan OpenClaw
-    - Anda memerlukan penyiapan kunci API TokenHub
+    - Anda perlu menyiapkan kunci API TokenHub
 summary: Penyiapan Tencent Cloud TokenHub untuk pratinjau Hy3
 title: Tencent Cloud (TokenHub)
 x-i18n:
-    generated_at: "2026-04-24T09:24:46Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:26:04Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: c64afffc66dccca256ec658235ae1fbc18e46608b594bc07875118f54b2a494d
+    source_hash: a194e10b0e77e2567e6835f08d1cc0fa2a32fa8d37b1851fb83024b172a03fe3
     source_path: providers/tencent.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Tencent Cloud TokenHub
+Tencent Cloud disediakan sebagai Plugin penyedia bawaan di OpenClaw. Plugin ini memberi akses ke pratinjau Tencent Hy3 melalui endpoint TokenHub (`tencent-tokenhub`) menggunakan API yang kompatibel dengan OpenAI.
 
-Tencent Cloud hadir sebagai **Plugin provider bawaan** di OpenClaw. Ini memberikan akses ke pratinjau Tencent Hy3 melalui endpoint TokenHub (`tencent-tokenhub`).
+| Properti         | Nilai                                                 |
+| ---------------- | ----------------------------------------------------- |
+| id penyedia      | `tencent-tokenhub`                                    |
+| Plugin           | bawaan, `enabledByDefault: true`                      |
+| Variabel env autentikasi | `TOKENHUB_API_KEY`                            |
+| Flag onboarding  | `--auth-choice tokenhub-api-key`                      |
+| Flag CLI langsung | `--tokenhub-api-key <key>`                           |
+| API              | kompatibel dengan OpenAI (`openai-completions`)       |
+| URL dasar default | `https://tokenhub.tencentmaas.com/v1`                |
+| URL dasar global | `https://tokenhub-intl.tencentmaas.com/v1` (penggantian) |
+| Model default    | `tencent-tokenhub/hy3-preview`                        |
 
-Provider ini menggunakan API yang kompatibel dengan OpenAI.
-
-| Properti      | Nilai                                      |
-| ------------- | ------------------------------------------ |
-| Provider      | `tencent-tokenhub`                         |
-| Model default | `tencent-tokenhub/hy3-preview`             |
-| Autentikasi          | `TOKENHUB_API_KEY`                         |
-| API           | chat completions yang kompatibel dengan OpenAI         |
-| Base URL      | `https://tokenhub.tencentmaas.com/v1`      |
-| URL global    | `https://tokenhub-intl.tencentmaas.com/v1` |
-
-## Memulai dengan cepat
+## Mulai cepat
 
 <Steps>
   <Step title="Buat kunci API TokenHub">
     Buat kunci API di Tencent Cloud TokenHub. Jika Anda memilih cakupan akses terbatas untuk kunci tersebut, sertakan **pratinjau Hy3** dalam model yang diizinkan.
   </Step>
   <Step title="Jalankan onboarding">
-    ```bash
-    openclaw onboard --auth-choice tokenhub-api-key
-    ```
+    <CodeGroup>
+
+```bash Onboarding
+openclaw onboard --auth-choice tokenhub-api-key
+```
+
+```bash Flag langsung
+openclaw onboard --non-interactive \
+  --auth-choice tokenhub-api-key \
+  --tokenhub-api-key "$TOKENHUB_API_KEY"
+```
+
+```bash Hanya env
+export TOKENHUB_API_KEY=...
+```
+
+    </CodeGroup>
+
   </Step>
   <Step title="Verifikasi model">
     ```bash
@@ -46,7 +60,7 @@ Provider ini menggunakan API yang kompatibel dengan OpenAI.
   </Step>
 </Steps>
 
-## Penyiapan non-interaktif
+## Penyiapan noninteraktif
 
 ```bash
 openclaw onboard --non-interactive \
@@ -59,45 +73,65 @@ openclaw onboard --non-interactive \
 
 ## Katalog bawaan
 
-| Referensi model                      | Nama                   | Input | Konteks | Output maks | Catatan                      |
-| ------------------------------ | ---------------------- | ----- | ------- | ---------- | -------------------------- |
-| `tencent-tokenhub/hy3-preview` | Pratinjau Hy3 (TokenHub) | text  | 256,000 | 64,000     | Default; reasoning-enabled |
+| Ref model                      | Nama                   | Input | Konteks | Output maks | Catatan                      |
+| ------------------------------ | ---------------------- | ----- | ------- | ----------- | ---------------------------- |
+| `tencent-tokenhub/hy3-preview` | Pratinjau Hy3 (TokenHub) | teks | 256,000 | 64,000      | Default; mendukung penalaran |
 
-Pratinjau Hy3 adalah model bahasa besar MoE Tencent Hunyuan untuk reasoning, mengikuti instruksi konteks panjang, kode, dan alur kerja agen. Contoh yang kompatibel dengan OpenAI dari Tencent menggunakan `hy3-preview` sebagai ID model dan mendukung pemanggilan alat chat-completions standar ditambah `reasoning_effort`.
+Pratinjau Hy3 adalah model bahasa MoE besar Tencent Hunyuan untuk penalaran, mengikuti instruksi konteks panjang, kode, dan alur kerja agen. Contoh Tencent yang kompatibel dengan OpenAI menggunakan `hy3-preview` sebagai id model dan mendukung pemanggilan alat chat-completions standar serta `reasoning_effort`.
 
 <Tip>
-ID modelnya adalah `hy3-preview`. Jangan bingung dengan model `HY-3D-*` milik Tencent, yang merupakan API pembuatan 3D dan bukan model chat OpenClaw yang dikonfigurasi oleh provider ini.
+  id model adalah `hy3-preview`. Jangan samakan dengan model `HY-3D-*` milik Tencent, yang merupakan API generasi 3D dan bukan model obrolan OpenClaw yang dikonfigurasi oleh penyedia ini.
 </Tip>
 
-## Override endpoint
+## Harga bertingkat
 
-OpenClaw secara default menggunakan endpoint `https://tokenhub.tencentmaas.com/v1` milik Tencent Cloud. Tencent juga mendokumentasikan endpoint TokenHub internasional:
+Katalog bawaan menyertakan metadata biaya bertingkat yang diskalakan berdasarkan panjang jendela input, sehingga estimasi biaya terisi tanpa penggantian manual.
 
-```bash
-openclaw config set models.providers.tencent-tokenhub.baseUrl "https://tokenhub-intl.tencentmaas.com/v1"
-```
+| Rentang token input | Tarif input | Tarif output | Baca cache |
+| ------------------- | ----------- | ------------ | ---------- |
+| 0 - 16,000          | 0.176       | 0.587        | 0.059      |
+| 16,000 - 32,000     | 0.235       | 0.939        | 0.088      |
+| 32,000+             | 0.293       | 1.173        | 0.117      |
 
-Lakukan override endpoint hanya jika akun atau wilayah TokenHub Anda memerlukannya.
+Tarif berlaku per satu juta token dalam USD sebagaimana diiklankan oleh Tencent. Ganti harga di bawah `models.providers.tencent-tokenhub` hanya ketika Anda memerlukan permukaan yang berbeda.
 
-## Catatan
+## Konfigurasi lanjutan
 
-- Referensi model TokenHub menggunakan `tencent-tokenhub/<modelId>`.
-- Katalog bawaan saat ini mencakup `hy3-preview`.
-- Plugin menandai pratinjau Hy3 sebagai mampu reasoning dan mampu streaming-usage.
-- Plugin disertai metadata harga Hy3 bertingkat, sehingga estimasi biaya terisi tanpa override harga manual.
-- Override metadata harga, konteks, atau endpoint di `models.providers` hanya bila diperlukan.
+<AccordionGroup>
+  <Accordion title="Penggantian endpoint">
+    OpenClaw menggunakan endpoint `https://tokenhub.tencentmaas.com/v1` Tencent Cloud secara default. Tencent juga mendokumentasikan endpoint TokenHub internasional:
 
-## Catatan lingkungan
+    ```bash
+    openclaw config set models.providers.tencent-tokenhub.baseUrl "https://tokenhub-intl.tencentmaas.com/v1"
+    ```
 
-Jika Gateway berjalan sebagai daemon (launchd/systemd), pastikan `TOKENHUB_API_KEY`
-tersedia untuk proses tersebut (misalnya, di `~/.openclaw/.env` atau melalui
-`env.shellEnv`).
+    Ganti endpoint hanya ketika akun atau wilayah TokenHub Anda memerlukannya.
 
-## Dokumentasi terkait
+  </Accordion>
 
-- [Konfigurasi OpenClaw](/id/gateway/configuration)
-- [Provider Model](/id/concepts/model-providers)
-- [Halaman produk Tencent TokenHub](https://cloud.tencent.com/product/tokenhub)
-- [Pembuatan teks Tencent TokenHub](https://cloud.tencent.com/document/product/1823/130079)
-- [Penyiapan Cline Tencent TokenHub untuk pratinjau Hy3](https://cloud.tencent.com/document/product/1823/130932)
-- [Kartu model Tencent Hy3 preview](https://huggingface.co/tencent/Hy3-preview)
+  <Accordion title="Ketersediaan lingkungan untuk daemon">
+    Jika Gateway berjalan sebagai layanan terkelola (launchd, systemd, Docker), `TOKENHUB_API_KEY` harus terlihat oleh proses tersebut. Atur di `~/.openclaw/.env` atau melalui `env.shellEnv` agar lingkungan launchd, systemd, atau Docker exec dapat membacanya.
+
+    <Warning>
+      Kunci yang hanya diatur di `~/.profile` tidak terlihat oleh proses gateway terkelola. Gunakan file env atau seam konfigurasi untuk ketersediaan persisten.
+    </Warning>
+
+  </Accordion>
+</AccordionGroup>
+
+## Terkait
+
+<CardGroup cols={2}>
+  <Card title="Penyedia model" href="/id/concepts/model-providers" icon="layers">
+    Memilih penyedia, ref model, dan perilaku failover.
+  </Card>
+  <Card title="Referensi konfigurasi" href="/id/gateway/configuration" icon="gear">
+    Skema konfigurasi lengkap termasuk pengaturan penyedia.
+  </Card>
+  <Card title="Tencent TokenHub" href="https://cloud.tencent.com/product/tokenhub" icon="arrow-up-right-from-square">
+    Halaman produk TokenHub Tencent Cloud.
+  </Card>
+  <Card title="Kartu model pratinjau Hy3" href="https://huggingface.co/tencent/Hy3-preview" icon="square-poll-horizontal">
+    Detail dan benchmark pratinjau Tencent Hunyuan Hy3.
+  </Card>
+</CardGroup>

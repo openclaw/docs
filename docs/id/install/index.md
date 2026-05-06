@@ -1,28 +1,28 @@
 ---
 read_when:
-    - Anda memerlukan metode instalasi selain panduan mulai cepat Getting Started
-    - Anda ingin melakukan deployment ke platform cloud
+    - Anda memerlukan metode instalasi selain panduan mulai cepat Memulai
+    - Anda ingin menerapkan ke platform cloud
     - Anda perlu memperbarui, memigrasikan, atau menghapus instalasi
-summary: Instal OpenClaw — skrip installer, npm/pnpm/bun, dari source, Docker, dan lainnya
+summary: Instal OpenClaw - skrip penginstal, npm/pnpm/bun, dari kode sumber, Docker, dan lainnya
 title: Instal
 x-i18n:
-    generated_at: "2026-04-26T11:32:32Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:17:32Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b8dc6b9511be6bf9060cc150a7c51daf3b6d556dab4a85910094b4b892145cd7
+    source_hash: 2d5b38787ad80f91c82aa1fd4020a11c99f440ccbf2e9b9309da336dd5883462
     source_path: install/index.md
-    workflow: 15
+    workflow: 16
 ---
 
 ## Persyaratan sistem
 
-- **Node 24** (disarankan) atau Node 22.14+ — skrip installer menangani ini secara otomatis
-- **macOS, Linux, atau Windows** — Windows native dan WSL2 keduanya didukung; WSL2 lebih stabil. Lihat [Windows](/id/platforms/windows).
-- `pnpm` hanya diperlukan jika Anda build dari source
+- **Node 24** (direkomendasikan) atau Node 22.14+ - skrip penginstal menanganinya secara otomatis
+- **macOS, Linux, atau Windows** - Windows native dan WSL2 didukung; WSL2 lebih stabil. Lihat [Windows](/id/platforms/windows).
+- `pnpm` hanya diperlukan jika Anda membangun dari source
 
-## Disarankan: skrip installer
+## Direkomendasikan: skrip penginstal
 
-Cara tercepat untuk menginstal. Skrip ini mendeteksi OS Anda, menginstal Node jika diperlukan, menginstal OpenClaw, dan meluncurkan onboarding.
+Cara tercepat untuk menginstal. Ini mendeteksi OS Anda, menginstal Node jika diperlukan, menginstal OpenClaw, dan meluncurkan onboarding.
 
 <Tabs>
   <Tab title="macOS / Linux / WSL2">
@@ -52,25 +52,25 @@ Untuk menginstal tanpa menjalankan onboarding:
   </Tab>
 </Tabs>
 
-Untuk semua flag dan opsi CI/otomasi, lihat [Bagian internal installer](/id/install/installer).
+Untuk semua flag dan opsi CI/otomatisasi, lihat [Internal penginstal](/id/install/installer).
 
-## Metode instalasi alternatif
+## Metode instal alternatif
 
-### Installer prefix lokal (`install-cli.sh`)
+### Penginstal prefix lokal (`install-cli.sh`)
 
-Gunakan ini jika Anda ingin OpenClaw dan Node disimpan di bawah prefix lokal seperti
-`~/.openclaw`, tanpa bergantung pada instalasi Node sistem:
+Gunakan ini ketika Anda ingin OpenClaw dan Node disimpan di bawah prefix lokal seperti
+`~/.openclaw`, tanpa bergantung pada instalasi Node di seluruh sistem:
 
 ```bash
 curl -fsSL https://openclaw.ai/install-cli.sh | bash
 ```
 
-Secara default ini mendukung instalasi npm, ditambah instalasi git-checkout dalam
-alur prefix yang sama. Referensi lengkap: [Bagian internal installer](/id/install/installer#install-clish).
+Ini mendukung instal npm secara default, plus instal git-checkout di bawah alur
+prefix yang sama. Referensi lengkap: [Internal penginstal](/id/install/installer#install-clish).
 
-Sudah terinstal? Beralih antara instalasi package dan git dengan
+Sudah terinstal? Beralih antara instal paket dan git dengan
 `openclaw update --channel dev` dan `openclaw update --channel stable`. Lihat
-[Updating](/id/install/updating#switch-between-npm-and-git-installs).
+[Memperbarui](/id/install/updating#switch-between-npm-and-git-installs).
 
 ### npm, pnpm, atau bun
 
@@ -91,7 +91,7 @@ Jika Anda sudah mengelola Node sendiri:
     ```
 
     <Note>
-    pnpm memerlukan persetujuan eksplisit untuk package dengan build script. Jalankan `pnpm approve-builds -g` setelah instalasi pertama.
+    pnpm memerlukan persetujuan eksplisit untuk paket dengan skrip build. Jalankan `pnpm approve-builds -g` setelah instal pertama.
     </Note>
 
   </Tab>
@@ -102,7 +102,7 @@ Jika Anda sudah mengelola Node sendiri:
     ```
 
     <Note>
-    Bun didukung untuk jalur instalasi CLI global. Untuk runtime Gateway, Node tetap menjadi runtime daemon yang disarankan.
+    Bun didukung untuk jalur instal CLI global. Untuk runtime Gateway, Node tetap menjadi runtime daemon yang direkomendasikan.
     </Note>
 
   </Tab>
@@ -129,7 +129,7 @@ pnpm link --global
 openclaw onboard --install-daemon
 ```
 
-Atau lewati link dan gunakan `pnpm openclaw ...` dari dalam repo. Lihat [Setup](/id/start/setup) untuk alur kerja pengembangan lengkap.
+Atau lewati link dan gunakan `pnpm openclaw ...` dari dalam repo. Lihat [Penyiapan](/id/start/setup) untuk alur kerja pengembangan lengkap.
 
 ### Instal dari GitHub main
 
@@ -137,20 +137,20 @@ Atau lewati link dan gunakan `pnpm openclaw ...` dari dalam repo. Lihat [Setup](
 npm install -g github:openclaw/openclaw#main
 ```
 
-### Container dan package manager
+### Container dan manajer paket
 
 <CardGroup cols={2}>
   <Card title="Docker" href="/id/install/docker" icon="container">
-    Deployment containerized atau headless.
+    Deployment terkontainerisasi atau headless.
   </Card>
   <Card title="Podman" href="/id/install/podman" icon="container">
     Alternatif container rootless untuk Docker.
   </Card>
   <Card title="Nix" href="/id/install/nix" icon="snowflake">
-    Instalasi deklaratif melalui flake Nix.
+    Instal deklaratif melalui Nix flake.
   </Card>
   <Card title="Ansible" href="/id/install/ansible" icon="server">
-    Provisioning armada otomatis.
+    Penyediaan fleet otomatis.
   </Card>
   <Card title="Bun" href="/id/install/bun" icon="zap">
     Penggunaan khusus CLI melalui runtime Bun.
@@ -160,16 +160,16 @@ npm install -g github:openclaw/openclaw#main
 ## Verifikasi instalasi
 
 ```bash
-openclaw --version      # konfirmasi CLI tersedia
-openclaw doctor         # periksa masalah config
-openclaw gateway status # verifikasi Gateway sedang berjalan
+openclaw --version      # confirm the CLI is available
+openclaw doctor         # check for config issues
+openclaw gateway status # verify the Gateway is running
 ```
 
-Jika Anda ingin startup terkelola setelah instalasi:
+Jika Anda menginginkan startup terkelola setelah instalasi:
 
 - macOS: LaunchAgent melalui `openclaw onboard --install-daemon` atau `openclaw gateway install`
-- Linux/WSL2: service systemd pengguna melalui perintah yang sama
-- Windows native: Scheduled Task terlebih dahulu, dengan fallback item login folder Startup per-pengguna jika pembuatan task ditolak
+- Linux/WSL2: layanan pengguna systemd melalui perintah yang sama
+- Windows native: Scheduled Task terlebih dahulu, dengan fallback item login folder Startup per pengguna jika pembuatan task ditolak
 
 ## Hosting dan deployment
 
@@ -191,13 +191,13 @@ Deploy OpenClaw di server cloud atau VPS:
 ## Perbarui, migrasikan, atau hapus instalasi
 
 <CardGroup cols={3}>
-  <Card title="Updating" href="/id/install/updating" icon="refresh-cw">
-    Jaga OpenClaw tetap mutakhir.
+  <Card title="Memperbarui" href="/id/install/updating" icon="refresh-cw">
+    Jaga OpenClaw tetap terbaru.
   </Card>
-  <Card title="Migrating" href="/id/install/migrating" icon="arrow-right">
+  <Card title="Migrasi" href="/id/install/migrating" icon="arrow-right">
     Pindah ke mesin baru.
   </Card>
-  <Card title="Uninstall" href="/id/install/uninstall" icon="trash-2">
+  <Card title="Hapus instalasi" href="/id/install/uninstall" icon="trash-2">
     Hapus OpenClaw sepenuhnya.
   </Card>
 </CardGroup>
@@ -207,15 +207,15 @@ Deploy OpenClaw di server cloud atau VPS:
 Jika instalasi berhasil tetapi `openclaw` tidak ditemukan di terminal Anda:
 
 ```bash
-node -v           # Node terinstal?
-npm prefix -g     # Di mana package global disimpan?
-echo "$PATH"      # Apakah direktori bin global ada di PATH?
+node -v           # Node installed?
+npm prefix -g     # Where are global packages?
+echo "$PATH"      # Is the global bin dir in PATH?
 ```
 
-Jika `$(npm prefix -g)/bin` tidak ada di `$PATH`, tambahkan ke file startup shell Anda (`~/.zshrc` atau `~/.bashrc`):
+Jika `$(npm prefix -g)/bin` tidak ada di `$PATH` Anda, tambahkan ke file startup shell Anda (`~/.zshrc` atau `~/.bashrc`):
 
 ```bash
 export PATH="$(npm prefix -g)/bin:$PATH"
 ```
 
-Lalu buka terminal baru. Lihat [Node setup](/id/install/node) untuk detail lebih lanjut.
+Kemudian buka terminal baru. Lihat [Penyiapan Node](/id/install/node) untuk detail lebih lanjut.

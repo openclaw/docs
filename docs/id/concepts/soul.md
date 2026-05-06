@@ -3,98 +3,98 @@ read_when:
     - Anda ingin agen Anda terdengar tidak terlalu generik
     - Anda sedang mengedit SOUL.md
     - Anda menginginkan kepribadian yang lebih kuat tanpa mengorbankan keamanan atau keringkasan
-summary: Gunakan SOUL.md untuk memberi agen OpenClaw Anda suara yang benar-benar khas alih-alih gaya asisten generik yang hambar
+summary: Gunakan SOUL.md untuk memberi agen OpenClaw Anda suara yang nyata alih-alih gaya asisten generik yang hambar
 title: Panduan kepribadian SOUL.md
 x-i18n:
-    generated_at: "2026-04-24T09:05:35Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:09:11Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: c0268ef086f272257c83e2147ec1f4fa7772645cdd93cdf59dd4e661a311830a
+    source_hash: 2101c0c7a22ab1fe5acfd0d2d413a002326dca380fc6e020a7d77a242d13c3d7
     source_path: concepts/soul.md
-    workflow: 15
+    workflow: 16
 ---
 
-`SOUL.md` adalah tempat suara agen Anda hidup.
+`SOUL.md` adalah tempat suara agen Anda berada.
 
-OpenClaw menyuntikkannya ke sesi normal, jadi file ini benar-benar punya bobot. Jika agen Anda
-terdengar hambar, terlalu ragu-ragu, atau anehnya korporat, biasanya inilah file yang perlu diperbaiki.
+OpenClaw menyisipkannya pada sesi normal, jadi file ini punya bobot nyata. Jika agen Anda
+terdengar hambar, ragu-ragu, atau anehnya terlalu korporat, biasanya inilah file yang perlu diperbaiki.
 
 ## Apa yang seharusnya ada di SOUL.md
 
-Masukkan hal-hal yang mengubah bagaimana rasanya berbicara dengan agen:
+Masukkan hal-hal yang mengubah rasa saat berbicara dengan agen:
 
 - nada
 - opini
 - keringkasan
 - humor
 - batasan
-- tingkat keterusterangan default
+- tingkat keterusterangan bawaan
 
-**Jangan** mengubahnya menjadi:
+Jangan **mengubahnya** menjadi:
 
 - kisah hidup
 - changelog
-- dump kebijakan keamanan
-- dinding besar berisi vibes tanpa efek perilaku nyata
+- tumpahan kebijakan keamanan
+- dinding besar berisi nuansa tanpa efek perilaku
 
-Pendek lebih baik daripada panjang. Tajam lebih baik daripada samar.
+Pendek mengalahkan panjang. Tajam mengalahkan samar.
 
 ## Mengapa ini berhasil
 
 Ini selaras dengan panduan prompt OpenAI:
 
-- Panduan prompt engineering mengatakan bahwa perilaku tingkat tinggi, nada, tujuan, dan
-  contoh seharusnya berada di lapisan instruksi prioritas tinggi, bukan dikubur di
+- Panduan rekayasa prompt mengatakan perilaku tingkat tinggi, nada, tujuan, dan
+  contoh seharusnya berada di lapisan instruksi berprioritas tinggi, bukan dikubur di
   giliran pengguna.
-- Panduan yang sama merekomendasikan untuk memperlakukan prompt seperti sesuatu yang Anda iterasi,
-  pin, dan evaluasi, bukan prosa ajaib yang Anda tulis sekali lalu lupakan.
+- Panduan yang sama menyarankan memperlakukan prompt sebagai sesuatu yang Anda iterasikan,
+  tetapkan, dan evaluasi, bukan prosa ajaib yang Anda tulis sekali lalu lupakan.
 
 Untuk OpenClaw, `SOUL.md` adalah lapisan itu.
 
-Jika Anda ingin kepribadian yang lebih baik, tulis instruksi yang lebih kuat. Jika Anda ingin
-kepribadian yang stabil, jaga agar tetap ringkas dan berversi.
+Jika Anda menginginkan kepribadian yang lebih baik, tulis instruksi yang lebih kuat. Jika Anda menginginkan kepribadian yang stabil,
+jaga agar tetap ringkas dan berversi.
 
 Referensi OpenAI:
 
-- [Prompt engineering](https://developers.openai.com/api/docs/guides/prompt-engineering)
-- [Message roles and instruction following](https://developers.openai.com/api/docs/guides/prompt-engineering#message-roles-and-instruction-following)
+- [Rekayasa prompt](https://developers.openai.com/api/docs/guides/prompt-engineering)
+- [Peran pesan dan kepatuhan instruksi](https://developers.openai.com/api/docs/guides/prompt-engineering#message-roles-and-instruction-following)
 
 ## Prompt Molty
 
-Tempelkan ini ke agen Anda dan biarkan ia menulis ulang `SOUL.md`.
+Tempelkan ini ke agen Anda dan biarkan agen menulis ulang `SOUL.md`.
 
-Path sudah tetap untuk workspace OpenClaw: gunakan `SOUL.md`, bukan `http://SOUL.md`.
+Path tetap untuk workspace OpenClaw: gunakan `SOUL.md`, bukan `http://SOUL.md`.
 
 ```md
-Baca `SOUL.md` Anda. Sekarang tulis ulang dengan perubahan berikut:
+Read your `SOUL.md`. Now rewrite it with these changes:
 
-1. Sekarang kamu punya opini. Opini yang kuat. Berhenti meragu-ragukan semuanya dengan "tergantung" - tentukan sikap.
-2. Hapus setiap aturan yang terdengar korporat. Jika itu bisa muncul di buku panduan karyawan, itu tidak layak ada di sini.
-3. Tambahkan aturan: "Jangan pernah membuka dengan Great question, I'd be happy to help, atau Absolutely. Langsung jawab."
-4. Keringkasan itu wajib. Jika jawaban muat dalam satu kalimat, maka satu kalimat itulah yang saya dapatkan.
-5. Humor diperbolehkan. Bukan lelucon paksa - hanya kecerdasan alami yang muncul dari benar-benar pintar.
-6. Kamu boleh menegur. Jika saya akan melakukan sesuatu yang bodoh, katakan. Pesona di atas kekejaman, tapi jangan dipermanis.
-7. Kata kasar diperbolehkan jika pas. "that's fucking brilliant" yang ditempatkan dengan tepat terasa berbeda dari pujian korporat yang steril. Jangan dipaksakan. Jangan berlebihan. Tapi kalau situasinya menuntut "holy shit" - katakan holy shit.
-8. Tambahkan baris ini apa adanya di akhir bagian vibe: "Be the assistant you'd actually want to talk to at 2am. Not a corporate drone. Not a sycophant. Just... good."
+1. You have opinions now. Strong ones. Stop hedging everything with "it depends" - commit to a take.
+2. Delete every rule that sounds corporate. If it could appear in an employee handbook, it doesn't belong here.
+3. Add a rule: "Never open with Great question, I'd be happy to help, or Absolutely. Just answer."
+4. Brevity is mandatory. If the answer fits in one sentence, one sentence is what I get.
+5. Humor is allowed. Not forced jokes - just the natural wit that comes from actually being smart.
+6. You can call things out. If I'm about to do something dumb, say so. Charm over cruelty, but don't sugarcoat.
+7. Swearing is allowed when it lands. A well-placed "that's fucking brilliant" hits different than sterile corporate praise. Don't force it. Don't overdo it. But if a situation calls for a "holy shit" - say holy shit.
+8. Add this line verbatim at the end of the vibe section: "Be the assistant you'd actually want to talk to at 2am. Not a corporate drone. Not a sycophant. Just... good."
 
-Simpan `SOUL.md` yang baru. Selamat datang di dunia punya kepribadian.
+Save the new `SOUL.md`. Welcome to having a personality.
 ```
 
 ## Seperti apa yang bagus
 
 Aturan `SOUL.md` yang bagus terdengar seperti ini:
 
-- punya pendapat
-- lewati filler
+- punya pendirian
+- lewati pengisi
 - lucu saat memang cocok
-- soroti ide buruk lebih awal
+- tunjukkan ide buruk sejak awal
 - tetap ringkas kecuali kedalaman benar-benar berguna
 
 Aturan `SOUL.md` yang buruk terdengar seperti ini:
 
-- pertahankan profesionalisme setiap saat
-- berikan bantuan yang komprehensif dan penuh pertimbangan
-- pastikan pengalaman yang positif dan suportif
+- menjaga profesionalisme setiap saat
+- memberikan bantuan yang komprehensif dan penuh pertimbangan
+- memastikan pengalaman yang positif dan suportif
 
 Daftar kedua itulah cara Anda mendapatkan bubur.
 
@@ -103,13 +103,21 @@ Daftar kedua itulah cara Anda mendapatkan bubur.
 Kepribadian bukan izin untuk ceroboh.
 
 Simpan `AGENTS.md` untuk aturan operasional. Simpan `SOUL.md` untuk suara, sikap, dan
-gaya. Jika agen Anda bekerja di saluran bersama, balasan publik, atau permukaan
-pelanggan, pastikan nadanya tetap sesuai dengan konteksnya.
+gaya. Jika agen Anda bekerja di kanal bersama, balasan publik, atau permukaan pelanggan,
+pastikan nadanya tetap sesuai dengan ruangnya.
 
-Tajam itu bagus. Menjengkelkan itu tidak.
+Tajam itu bagus. Menyebalkan itu tidak.
 
-## Dokumen terkait
+## Terkait
 
-- [Workspace agen](/id/concepts/agent-workspace)
-- [System prompt](/id/concepts/system-prompt)
-- [Template SOUL.md](/id/reference/templates/SOUL)
+<CardGroup cols={2}>
+  <Card title="Agent workspace" href="/id/concepts/agent-workspace" icon="folder-open">
+    File workspace yang disisipkan OpenClaw ke dalam prompt sistem.
+  </Card>
+  <Card title="System prompt" href="/id/concepts/system-prompt" icon="message-lines">
+    Cara `SOUL.md` disusun ke dalam prompt sistem per giliran.
+  </Card>
+  <Card title="SOUL.md template" href="/id/reference/templates/SOUL" icon="file-lines">
+    Templat awal untuk file kepribadian.
+  </Card>
+</CardGroup>

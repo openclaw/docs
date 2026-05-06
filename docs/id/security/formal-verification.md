@@ -1,50 +1,48 @@
 ---
 permalink: /security/formal-verification/
 read_when:
-    - Meninjau jaminan atau batas model keamanan formal
+    - Meninjau jaminan atau batasan model keamanan formal
     - Mereproduksi atau memperbarui pemeriksaan model keamanan TLA+/TLC
-summary: Model keamanan yang diperiksa mesin untuk jalur berisiko tertinggi OpenClaw.
+summary: Model keamanan yang diperiksa mesin untuk jalur berisiko tertinggi di OpenClaw.
 title: Verifikasi formal (model keamanan)
 x-i18n:
-    generated_at: "2026-04-24T09:27:46Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:27:32Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8f50fa9118a80054b8d556cd4f1901b2d5fcb37fb0866bd5357a1b0a46c74116
+    source_hash: 298b92f27abb8321be807fe4d95c7cd568a0fb8f543d168863b2adb9b3ddcde4
     source_path: security/formal-verification.md
-    workflow: 15
+    workflow: 16
 ---
 
-Halaman ini melacak **model keamanan formal** OpenClaw (saat ini TLA+/TLC; lebih banyak bila diperlukan).
+Halaman ini melacak **model keamanan formal** OpenClaw (TLA+/TLC saat ini; lainnya sesuai kebutuhan).
 
 > Catatan: beberapa tautan lama mungkin merujuk ke nama proyek sebelumnya.
 
-**Tujuan (arah utama):** menyediakan argumen yang diperiksa mesin bahwa OpenClaw menegakkan
-kebijakan keamanan yang dimaksudkan (otorisasi, isolasi sesi, pembatasan tool, dan
-keamanan salah konfigurasi), di bawah asumsi yang eksplisit.
+**Tujuan (arah utama):** menyediakan argumen yang diperiksa mesin bahwa OpenClaw menegakkan kebijakan keamanan yang dimaksudkan (otorisasi, isolasi sesi, pembatasan tool, dan keamanan terhadap salah konfigurasi), dengan asumsi yang eksplisit.
 
-**Apa ini (saat ini):** **suite regresi keamanan** yang dapat dijalankan dan digerakkan penyerang:
+**Apa ini (saat ini):** **rangkaian regresi keamanan** yang dapat dieksekusi dan digerakkan oleh penyerang:
 
-- Setiap klaim memiliki pemeriksaan model yang dapat dijalankan pada ruang state terbatas.
-- Banyak klaim memiliki **model negatif** berpasangan yang menghasilkan jejak counterexample untuk kelas bug yang realistis.
+- Setiap klaim memiliki pemeriksaan model yang dapat dijalankan pada ruang status terbatas.
+- Banyak klaim memiliki pasangan **model negatif** yang menghasilkan trace contoh tandingan untuk kelas bug yang realistis.
 
-**Apa ini bukan (belum):** bukti bahwa “OpenClaw aman dalam segala hal” atau bahwa implementasi TypeScript penuh sudah benar.
+**Apa ini bukan (belum):** bukti bahwa "OpenClaw aman dalam segala aspek" atau bahwa implementasi TypeScript penuh sudah benar.
 
 ## Tempat model berada
 
 Model dikelola di repo terpisah: [vignesh07/openclaw-formal-models](https://github.com/vignesh07/openclaw-formal-models).
 
-## Peringatan penting
+## Catatan penting
 
-- Ini adalah **model**, bukan implementasi TypeScript penuh. Drift antara model dan kode mungkin terjadi.
-- Hasil dibatasi oleh ruang state yang dieksplorasi oleh TLC; hasil “hijau” tidak menyiratkan keamanan di luar asumsi dan batas yang dimodelkan.
-- Beberapa klaim bergantung pada asumsi lingkungan yang eksplisit (misalnya deployment yang benar, input konfigurasi yang benar).
+- Ini adalah **model**, bukan implementasi TypeScript penuh. Drift antara model dan kode dapat terjadi.
+- Hasil dibatasi oleh ruang status yang dieksplorasi oleh TLC; status "hijau" tidak menyiratkan keamanan di luar asumsi dan batas yang dimodelkan.
+- Beberapa klaim bergantung pada asumsi lingkungan yang eksplisit (misalnya, deployment yang benar, input konfigurasi yang benar).
 
 ## Mereproduksi hasil
 
 Saat ini, hasil direproduksi dengan meng-clone repo model secara lokal dan menjalankan TLC (lihat di bawah). Iterasi mendatang dapat menawarkan:
 
-- model yang dijalankan di CI dengan artefak publik (jejak counterexample, log run)
-- alur kerja ter-host “jalankan model ini” untuk pemeriksaan kecil dan terbatas
+- model yang dijalankan CI dengan artefak publik (trace contoh tandingan, log eksekusi)
+- workflow "jalankan model ini" yang di-host untuk pemeriksaan kecil dan terbatas
 
 Memulai:
 
@@ -52,17 +50,17 @@ Memulai:
 git clone https://github.com/vignesh07/openclaw-formal-models
 cd openclaw-formal-models
 
-# Java 11+ diperlukan (TLC berjalan di JVM).
-# Repo ini mem-vendor `tla2tools.jar` yang dipin (tool TLA+) dan menyediakan `bin/tlc` + target Make.
+# Java 11+ required (TLC runs on the JVM).
+# The repo vendors a pinned `tla2tools.jar` (TLA+ tools) and provides `bin/tlc` + Make targets.
 
 make <target>
 ```
 
-### Eksposur gateway dan salah konfigurasi gateway terbuka
+### Eksposur Gateway dan salah konfigurasi Gateway terbuka
 
-**Klaim:** bind di luar loopback tanpa auth dapat memungkinkan kompromi remote / meningkatkan eksposur; token/password memblokir penyerang tanpa auth (sesuai asumsi model).
+**Klaim:** binding di luar loopback tanpa auth dapat membuat kompromi jarak jauh menjadi mungkin / meningkatkan eksposur; token/password memblokir penyerang tanpa auth (sesuai asumsi model).
 
-- Run hijau:
+- Eksekusi hijau:
   - `make gateway-exposure-v2`
   - `make gateway-exposure-v2-protected`
 - Merah (diharapkan):
@@ -70,60 +68,60 @@ make <target>
 
 Lihat juga: `docs/gateway-exposure-matrix.md` di repo model.
 
-### Pipeline exec node (kapabilitas berisiko tertinggi)
+### Pipeline exec Node (kapabilitas berisiko tertinggi)
 
-**Klaim:** `exec host=node` memerlukan (a) allowlist perintah node plus perintah yang dideklarasikan dan (b) persetujuan live bila dikonfigurasi; persetujuan diberi token untuk mencegah replay (di model).
+**Klaim:** `exec host=node` memerlukan (a) allowlist perintah Node plus perintah yang dideklarasikan dan (b) persetujuan live saat dikonfigurasi; persetujuan diberi token untuk mencegah replay (dalam model).
 
-- Run hijau:
+- Eksekusi hijau:
   - `make nodes-pipeline`
   - `make approvals-token`
 - Merah (diharapkan):
   - `make nodes-pipeline-negative`
   - `make approvals-token-negative`
 
-### Store pairing (gerbang DM)
+### Penyimpanan pairing (pembatasan DM)
 
 **Klaim:** permintaan pairing mematuhi TTL dan batas permintaan tertunda.
 
-- Run hijau:
+- Eksekusi hijau:
   - `make pairing`
   - `make pairing-cap`
 - Merah (diharapkan):
   - `make pairing-negative`
   - `make pairing-cap-negative`
 
-### Pembatasan ingress (mention + bypass control-command)
+### Pembatasan ingress (mention + bypass perintah kontrol)
 
-**Klaim:** dalam konteks grup yang memerlukan mention, “control command” yang tidak berwenang tidak dapat melewati gerbang mention.
+**Klaim:** dalam konteks grup yang memerlukan mention, "perintah kontrol" tanpa otorisasi tidak dapat melewati pembatasan mention.
 
 - Hijau:
   - `make ingress-gating`
 - Merah (diharapkan):
   - `make ingress-gating-negative`
 
-### Isolasi perutean/kunci sesi
+### Isolasi routing/kunci sesi
 
-**Klaim:** DM dari peer yang berbeda tidak runtuh ke sesi yang sama kecuali secara eksplisit ditautkan/dikonfigurasi.
+**Klaim:** DM dari peer berbeda tidak digabungkan ke sesi yang sama kecuali ditautkan/dikonfigurasi secara eksplisit.
 
 - Hijau:
   - `make routing-isolation`
 - Merah (diharapkan):
   - `make routing-isolation-negative`
 
-## v1++: model terbatas tambahan (konkurensi, retry, kebenaran jejak)
+## v1++: model terbatas tambahan (konkurensi, retry, kebenaran trace)
 
-Ini adalah model lanjutan yang memperketat fidelitas di sekitar mode kegagalan dunia nyata (pembaruan non-atomik, retry, dan fan-out pesan).
+Ini adalah model lanjutan yang memperketat fidelitas seputar mode kegagalan dunia nyata (pembaruan non-atomik, retry, dan fan-out pesan).
 
-### Konkurensi / idempotensi store pairing
+### Konkurensi / idempotensi penyimpanan pairing
 
-**Klaim:** store pairing harus menegakkan `MaxPending` dan idempotensi bahkan di bawah interleaving (yaitu, “check-then-write” harus atomik / terkunci; refresh tidak boleh membuat duplikat).
+**Klaim:** penyimpanan pairing harus menegakkan `MaxPending` dan idempotensi bahkan dalam interleaving (yaitu, "check-then-write" harus atomik / terkunci; refresh tidak boleh membuat duplikat).
 
 Artinya:
 
-- Di bawah permintaan konkurensi, Anda tidak dapat melampaui `MaxPending` untuk sebuah channel.
-- Permintaan/refresh berulang untuk `(channel, sender)` yang sama tidak boleh membuat baris pending live yang duplikat.
+- Dalam permintaan konkuren, Anda tidak bisa melampaui `MaxPending` untuk sebuah channel.
+- Permintaan/refresh berulang untuk `(channel, sender)` yang sama tidak boleh membuat baris pending live duplikat.
 
-- Run hijau:
+- Eksekusi hijau:
   - `make pairing-race` (pemeriksaan batas atomik/terkunci)
   - `make pairing-idempotency`
   - `make pairing-refresh`
@@ -134,15 +132,15 @@ Artinya:
   - `make pairing-refresh-negative`
   - `make pairing-refresh-race-negative`
 
-### Korelasi / idempotensi jejak ingress
+### Korelasi trace / idempotensi ingress
 
-**Klaim:** ingestion harus mempertahankan korelasi jejak di seluruh fan-out dan bersifat idempoten di bawah retry provider.
+**Klaim:** ingestion harus mempertahankan korelasi trace di seluruh fan-out dan bersifat idempoten saat terjadi retry provider.
 
 Artinya:
 
-- Saat satu peristiwa eksternal menjadi beberapa pesan internal, setiap bagian mempertahankan identitas jejak/peristiwa yang sama.
-- Retry tidak menghasilkan pemrosesan ganda.
-- Jika id peristiwa provider hilang, deduplikasi fallback ke kunci aman (misalnya trace ID) untuk menghindari pembuangan peristiwa yang berbeda.
+- Saat satu event eksternal menjadi beberapa pesan internal, setiap bagian mempertahankan identitas trace/event yang sama.
+- Retry tidak mengakibatkan pemrosesan ganda.
+- Jika ID event provider tidak ada, dedupe menggunakan kunci aman sebagai fallback (misalnya, ID trace) untuk menghindari penghapusan event yang berbeda.
 
 - Hijau:
   - `make ingress-trace`
@@ -155,14 +153,14 @@ Artinya:
   - `make ingress-idempotency-negative`
   - `make ingress-dedupe-fallback-negative`
 
-### Prioritas dmScope perutean + identityLinks
+### Presedensi dmScope routing + identityLinks
 
-**Klaim:** perutean harus menjaga sesi DM tetap terisolasi secara default, dan hanya meruntuhkan sesi saat dikonfigurasi secara eksplisit (prioritas channel + tautan identitas).
+**Klaim:** routing harus menjaga sesi DM tetap terisolasi secara default, dan hanya menggabungkan sesi saat dikonfigurasi secara eksplisit (presedensi channel + tautan identitas).
 
 Artinya:
 
-- Override dmScope khusus channel harus menang atas default global.
-- identityLinks hanya boleh meruntuhkan di dalam grup tertaut yang eksplisit, bukan di seluruh peer yang tidak terkait.
+- Override dmScope khusus channel harus mengalahkan default global.
+- identityLinks hanya boleh menggabungkan dalam grup yang ditautkan secara eksplisit, bukan lintas peer yang tidak terkait.
 
 - Hijau:
   - `make routing-precedence`

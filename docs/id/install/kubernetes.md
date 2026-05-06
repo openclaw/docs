@@ -1,36 +1,34 @@
 ---
 read_when:
-    - Anda ingin menjalankan OpenClaw di klaster Kubernetes
+    - Anda ingin menjalankan OpenClaw pada klaster Kubernetes
     - Anda ingin menguji OpenClaw di lingkungan Kubernetes
-summary: Deploy Gateway OpenClaw ke klaster Kubernetes dengan Kustomize
+summary: Terapkan OpenClaw Gateway ke klaster Kubernetes dengan Kustomize
 title: Kubernetes
 x-i18n:
-    generated_at: "2026-04-24T09:14:19Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:17:20Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 2f45e165569332277d1108cd34a4357f03f5a1cbfa93bbbcf478717945627bad
+    source_hash: c38e42ae9121864333574b668d95f4d1112cada30cd525613d2371f176de4505
     source_path: install/kubernetes.md
-    workflow: 15
+    workflow: 16
 ---
 
-# OpenClaw di Kubernetes
-
-Titik awal minimal untuk menjalankan OpenClaw di Kubernetes — belum merupakan deployment siap produksi. Ini mencakup resource inti dan dimaksudkan untuk disesuaikan dengan lingkungan Anda.
+Titik awal minimal untuk menjalankan OpenClaw di Kubernetes — bukan deployment siap produksi. Ini mencakup resource inti dan dimaksudkan untuk disesuaikan dengan lingkungan Anda.
 
 ## Mengapa bukan Helm?
 
-OpenClaw adalah satu container dengan beberapa file config. Kustomisasi yang menarik ada pada konten agen (file markdown, Skills, override config), bukan templating infrastruktur. Kustomize menangani overlay tanpa overhead chart Helm. Jika deployment Anda menjadi lebih kompleks, chart Helm dapat ditambahkan di atas manifest ini.
+OpenClaw adalah satu container dengan beberapa file konfigurasi. Kustomisasi yang penting ada pada konten agen (file markdown, skills, override konfigurasi), bukan templating infrastruktur. Kustomize menangani overlay tanpa overhead Helm chart. Jika deployment Anda menjadi lebih kompleks, Helm chart dapat dilapiskan di atas manifes ini.
 
 ## Yang Anda butuhkan
 
-- Klaster Kubernetes yang sedang berjalan (AKS, EKS, GKE, k3s, kind, OpenShift, dll.)
-- `kubectl` yang terhubung ke klaster Anda
-- API key untuk setidaknya satu provider model
+- Cluster Kubernetes yang berjalan (AKS, EKS, GKE, k3s, kind, OpenShift, dll.)
+- `kubectl` yang terhubung ke cluster Anda
+- Kunci API untuk setidaknya satu penyedia model
 
 ## Mulai cepat
 
 ```bash
-# Ganti dengan provider Anda: ANTHROPIC, GEMINI, OPENAI, atau OPENROUTER
+# Replace with your provider: ANTHROPIC, GEMINI, OPENAI, or OPENROUTER
 export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 
@@ -38,22 +36,22 @@ kubectl port-forward svc/openclaw 18789:18789 -n openclaw
 open http://localhost:18789
 ```
 
-Ambil shared secret yang dikonfigurasi untuk UI Control. Skrip deploy ini
-secara default membuat auth token:
+Ambil shared secret yang dikonfigurasi untuk Control UI. Skrip deploy ini
+membuat autentikasi token secara default:
 
 ```bash
 kubectl get secret openclaw-secrets -n openclaw -o jsonpath='{.data.OPENCLAW_GATEWAY_TOKEN}' | base64 -d
 ```
 
-Untuk debugging lokal, `./scripts/k8s/deploy.sh --show-token` mencetak token setelah deployment.
+Untuk debugging lokal, `./scripts/k8s/deploy.sh --show-token` mencetak token setelah deploy.
 
 ## Pengujian lokal dengan Kind
 
-Jika Anda tidak punya klaster, buat satu secara lokal dengan [Kind](https://kind.sigs.k8s.io/):
+Jika Anda tidak memiliki cluster, buat satu secara lokal dengan [Kind](https://kind.sigs.k8s.io/):
 
 ```bash
-./scripts/k8s/create-kind.sh           # mendeteksi docker atau podman secara otomatis
-./scripts/k8s/create-kind.sh --delete  # hapus
+./scripts/k8s/create-kind.sh           # auto-detects docker or podman
+./scripts/k8s/create-kind.sh --delete  # tear down
 ```
 
 Lalu deploy seperti biasa dengan `./scripts/k8s/deploy.sh`.
@@ -62,15 +60,15 @@ Lalu deploy seperti biasa dengan `./scripts/k8s/deploy.sh`.
 
 ### 1) Deploy
 
-**Opsi A** — API key di environment (satu langkah):
+**Opsi A** — kunci API di environment (satu langkah):
 
 ```bash
-# Ganti dengan provider Anda: ANTHROPIC, GEMINI, OPENAI, atau OPENROUTER
+# Replace with your provider: ANTHROPIC, GEMINI, OPENAI, or OPENROUTER
 export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-Skrip ini membuat Secret Kubernetes dengan API key dan token gateway yang dibuat otomatis, lalu melakukan deploy. Jika Secret sudah ada, skrip ini mempertahankan token gateway saat ini dan semua key provider yang tidak sedang diubah.
+Skrip ini membuat Kubernetes Secret dengan kunci API dan token Gateway yang dibuat otomatis, lalu melakukan deploy. Jika Secret sudah ada, skrip mempertahankan token Gateway saat ini dan kunci penyedia apa pun yang tidak sedang diubah.
 
 **Opsi B** — buat secret secara terpisah:
 
@@ -82,41 +80,41 @@ export <PROVIDER>_API_KEY="..."
 
 Gunakan `--show-token` dengan salah satu perintah jika Anda ingin token dicetak ke stdout untuk pengujian lokal.
 
-### 2) Akses gateway
+### 2) Akses Gateway
 
 ```bash
 kubectl port-forward svc/openclaw 18789:18789 -n openclaw
 open http://localhost:18789
 ```
 
-## Yang dideploy
+## Yang di-deploy
 
 ```
-Namespace: openclaw (dapat dikonfigurasi melalui OPENCLAW_NAMESPACE)
-├── Deployment/openclaw        # Pod tunggal, init container + gateway
-├── Service/openclaw           # ClusterIP di port 18789
-├── PersistentVolumeClaim      # 10Gi untuk status agen dan config
+Namespace: openclaw (configurable via OPENCLAW_NAMESPACE)
+├── Deployment/openclaw        # Single pod, init container + gateway
+├── Service/openclaw           # ClusterIP on port 18789
+├── PersistentVolumeClaim      # 10Gi for agent state and config
 ├── ConfigMap/openclaw-config  # openclaw.json + AGENTS.md
-└── Secret/openclaw-secrets    # Token Gateway + API key
+└── Secret/openclaw-secrets    # Gateway token + API keys
 ```
 
 ## Kustomisasi
 
 ### Instruksi agen
 
-Edit `AGENTS.md` di `scripts/k8s/manifests/configmap.yaml` lalu deploy ulang:
+Edit `AGENTS.md` di `scripts/k8s/manifests/configmap.yaml` dan deploy ulang:
 
 ```bash
 ./scripts/k8s/deploy.sh
 ```
 
-### Config Gateway
+### Konfigurasi Gateway
 
 Edit `openclaw.json` di `scripts/k8s/manifests/configmap.yaml`. Lihat [Konfigurasi Gateway](/id/gateway/configuration) untuk referensi lengkap.
 
-### Tambahkan provider
+### Tambahkan penyedia
 
-Jalankan ulang dengan key tambahan yang sudah diekspor:
+Jalankan ulang dengan kunci tambahan yang diekspor:
 
 ```bash
 export ANTHROPIC_API_KEY="..."
@@ -125,7 +123,7 @@ export OPENAI_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-Key provider yang ada tetap berada di Secret kecuali Anda menimpanya.
+Kunci penyedia yang ada tetap berada di Secret kecuali Anda menimpanya.
 
 Atau patch Secret secara langsung:
 
@@ -146,18 +144,18 @@ OPENCLAW_NAMESPACE=my-namespace ./scripts/k8s/deploy.sh
 Edit field `image` di `scripts/k8s/manifests/deployment.yaml`:
 
 ```yaml
-image: ghcr.io/openclaw/openclaw:latest # atau sematkan ke versi tertentu dari https://github.com/openclaw/openclaw/releases
+image: ghcr.io/openclaw/openclaw:latest # or pin to a specific version from https://github.com/openclaw/openclaw/releases
 ```
 
 ### Ekspos di luar port-forward
 
-Manifest default melakukan bind gateway ke loopback di dalam pod. Ini bekerja dengan `kubectl port-forward`, tetapi tidak bekerja dengan jalur `Service` atau Ingress Kubernetes yang perlu menjangkau IP pod.
+Manifes default mengikat Gateway ke loopback di dalam pod. Itu berfungsi dengan `kubectl port-forward`, tetapi tidak berfungsi dengan Kubernetes `Service` atau jalur Ingress yang perlu menjangkau IP pod.
 
-Jika Anda ingin mengekspos gateway melalui Ingress atau load balancer:
+Jika Anda ingin mengekspos Gateway melalui Ingress atau load balancer:
 
-- Ubah bind gateway di `scripts/k8s/manifests/configmap.yaml` dari `loopback` ke bind non-loopback yang sesuai dengan model deployment Anda
-- Pertahankan auth gateway tetap aktif dan gunakan entrypoint dengan terminasi TLS yang benar
-- Konfigurasikan UI Control untuk akses jarak jauh menggunakan model keamanan web yang didukung (misalnya HTTPS/Tailscale Serve dan allowed origins eksplisit bila diperlukan)
+- Ubah bind Gateway di `scripts/k8s/manifests/configmap.yaml` dari `loopback` ke bind non-loopback yang sesuai dengan model deployment Anda
+- Tetap aktifkan autentikasi Gateway dan gunakan entrypoint yang tepat dengan terminasi TLS
+- Konfigurasikan Control UI untuk akses jarak jauh menggunakan model keamanan web yang didukung (misalnya HTTPS/Tailscale Serve dan origin yang diizinkan secara eksplisit bila diperlukan)
 
 ## Deploy ulang
 
@@ -165,7 +163,7 @@ Jika Anda ingin mengekspos gateway melalui Ingress atau load balancer:
 ./scripts/k8s/deploy.sh
 ```
 
-Ini menerapkan semua manifest dan me-restart pod untuk mengambil perubahan config atau secret.
+Ini menerapkan semua manifes dan memulai ulang pod untuk mengambil perubahan konfigurasi atau secret apa pun.
 
 ## Teardown
 
@@ -177,25 +175,25 @@ Ini menghapus namespace dan semua resource di dalamnya, termasuk PVC.
 
 ## Catatan arsitektur
 
-- Gateway secara default melakukan bind ke loopback di dalam pod, sehingga penyiapan yang disertakan ditujukan untuk `kubectl port-forward`
-- Tidak ada resource tingkat klaster — semuanya berada dalam satu namespace
-- Keamanan: `readOnlyRootFilesystem`, kapabilitas `drop: ALL`, pengguna non-root (UID 1000)
-- Config default menjaga UI Control tetap pada jalur akses lokal yang lebih aman: bind loopback plus `kubectl port-forward` ke `http://127.0.0.1:18789`
-- Jika Anda bergerak melampaui akses localhost, gunakan model remote yang didukung: HTTPS/Tailscale plus bind gateway yang sesuai dan pengaturan origin UI Control
-- Secret dibuat di direktori sementara dan diterapkan langsung ke klaster — tidak ada material secret yang ditulis ke checkout repo
+- Gateway terikat ke loopback di dalam pod secara default, jadi setup yang disertakan ditujukan untuk `kubectl port-forward`
+- Tidak ada resource cluster-scoped — semuanya berada dalam satu namespace
+- Keamanan: kapabilitas `readOnlyRootFilesystem`, `drop: ALL`, pengguna non-root (UID 1000)
+- Konfigurasi default menjaga Control UI pada jalur akses lokal yang lebih aman: bind loopback plus `kubectl port-forward` ke `http://127.0.0.1:18789`
+- Jika Anda beralih dari akses localhost, gunakan model jarak jauh yang didukung: HTTPS/Tailscale plus bind Gateway yang sesuai dan pengaturan origin Control UI
+- Secret dibuat di direktori sementara dan diterapkan langsung ke cluster — tidak ada material secret yang ditulis ke checkout repo
 
 ## Struktur file
 
 ```
 scripts/k8s/
-├── deploy.sh                   # Membuat namespace + secret, deploy via kustomize
-├── create-kind.sh              # Klaster Kind lokal (mendeteksi docker/podman secara otomatis)
+├── deploy.sh                   # Creates namespace + secret, deploys via kustomize
+├── create-kind.sh              # Local Kind cluster (auto-detects docker/podman)
 └── manifests/
-    ├── kustomization.yaml      # Basis Kustomize
+    ├── kustomization.yaml      # Kustomize base
     ├── configmap.yaml          # openclaw.json + AGENTS.md
-    ├── deployment.yaml         # Spec pod dengan hardening keamanan
-    ├── pvc.yaml                # Penyimpanan persisten 10Gi
-    └── service.yaml            # ClusterIP di 18789
+    ├── deployment.yaml         # Pod spec with security hardening
+    ├── pvc.yaml                # 10Gi persistent storage
+    └── service.yaml            # ClusterIP on 18789
 ```
 
 ## Terkait

@@ -1,41 +1,41 @@
 ---
 read_when:
-    - Menangkap log macOS atau menyelidiki logging data privat
-    - Men-debug masalah siklus hidup voice wake/sesi
-summary: 'Logging OpenClaw: log file diagnostik bergulir + flag privasi unified log'
-title: logging macOS
+    - Mengambil log macOS atau menyelidiki pencatatan data pribadi
+    - Men-debug masalah siklus hidup wake/session suara
+summary: 'Pencatatan log OpenClaw: log file diagnostik bergulir + flag privasi log terpadu'
+title: Pencatatan log macOS
 x-i18n:
-    generated_at: "2026-04-24T09:17:13Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:20:21Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 84e8f56ef0f85ba9eae629d6a3cc1bcaf49cc70c82f67a10b9292f2f54b1ff6b
+    source_hash: 76c001008311d4e3f245add4cce32bdcc3eed9d897b30f6884c0649d2f0523df
     source_path: platforms/mac/logging.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Logging (macOS)
+# Pencatatan Log (macOS)
 
 ## Log file diagnostik bergulir (panel Debug)
 
-OpenClaw merutekan log aplikasi macOS melalui swift-log (unified logging secara default) dan dapat menulis log file lokal bergulir ke disk saat Anda memerlukan tangkapan yang tahan lama.
+OpenClaw mengarahkan log aplikasi macOS melalui swift-log (pencatatan log terpadu secara default) dan dapat menulis log file lokal yang berotasi ke disk saat Anda memerlukan tangkapan yang tahan lama.
 
-- Verbosity: **Debug pane → Logs → App logging → Verbosity**
-- Aktifkan: **Debug pane → Logs → App logging → “Write rolling diagnostics log (JSONL)”**
-- Lokasi: `~/Library/Logs/OpenClaw/diagnostics.jsonl` (berputar secara otomatis; file lama diberi sufiks `.1`, `.2`, …)
-- Hapus: **Debug pane → Logs → App logging → “Clear”**
+- Tingkat detail: **Panel Debug → Log → Pencatatan log aplikasi → Tingkat detail**
+- Aktifkan: **Panel Debug → Log → Pencatatan log aplikasi → "Tulis log diagnostik bergulir (JSONL)"**
+- Lokasi: `~/Library/Logs/OpenClaw/diagnostics.jsonl` (berotasi otomatis; file lama diberi sufiks `.1`, `.2`, …)
+- Hapus: **Panel Debug → Log → Pencatatan log aplikasi → "Hapus"**
 
 Catatan:
 
-- Ini **nonaktif secara default**. Aktifkan hanya saat sedang aktif men-debug.
-- Perlakukan file ini sebagai sensitif; jangan bagikan tanpa ditinjau.
+- Ini **nonaktif secara default**. Aktifkan hanya saat sedang melakukan debug secara aktif.
+- Perlakukan file ini sebagai sensitif; jangan membagikannya tanpa peninjauan.
 
-## Logging data privat di unified logging macOS
+## Data privat pencatatan log terpadu di macOS
 
-Unified logging menyunting sebagian besar payload kecuali suatu subsistem memilih `privacy -off`. Berdasarkan tulisan Peter tentang macOS [logging privacy shenanigans](https://steipete.me/posts/2025/logging-privacy-shenanigans) (2025), ini dikendalikan oleh plist di `/Library/Preferences/Logging/Subsystems/` yang dikunci oleh nama subsistem. Hanya entri log baru yang mengambil flag tersebut, jadi aktifkan sebelum mereproduksi masalah.
+Pencatatan log terpadu menyunting sebagian besar payload kecuali sebuah subsistem memilih ikut ke `privacy -off`. Menurut tulisan Peter tentang [keanehan privasi pencatatan log](https://steipete.me/posts/2025/logging-privacy-shenanigans) macOS (2025), ini dikendalikan oleh plist di `/Library/Preferences/Logging/Subsystems/` yang dikunci berdasarkan nama subsistem. Hanya entri log baru yang mengambil flag tersebut, jadi aktifkan sebelum mereproduksi masalah.
 
 ## Aktifkan untuk OpenClaw (`ai.openclaw`)
 
-- Tulis plist ke file temp terlebih dahulu, lalu instal secara atomik sebagai root:
+- Tulis plist ke file sementara terlebih dahulu, lalu instal secara atomik sebagai root:
 
 ```bash
 cat <<'EOF' >/tmp/ai.openclaw.plist
@@ -54,16 +54,16 @@ EOF
 sudo install -m 644 -o root -g wheel /tmp/ai.openclaw.plist /Library/Preferences/Logging/Subsystems/ai.openclaw.plist
 ```
 
-- Tidak perlu reboot; `logd` dengan cepat mengenali file tersebut, tetapi hanya baris log baru yang akan menyertakan payload privat.
-- Lihat output yang lebih kaya dengan helper yang ada, misalnya `./scripts/clawlog.sh --category WebChat --last 5m`.
+- Reboot tidak diperlukan; logd akan segera mendeteksi file tersebut, tetapi hanya baris log baru yang akan menyertakan payload privat.
+- Lihat keluaran yang lebih kaya dengan helper yang sudah ada, misalnya `./scripts/clawlog.sh --category WebChat --last 5m`.
 
-## Nonaktifkan setelah debugging
+## Nonaktifkan setelah debug
 
 - Hapus override: `sudo rm /Library/Preferences/Logging/Subsystems/ai.openclaw.plist`.
-- Opsional, jalankan `sudo log config --reload` untuk memaksa `logd` segera melepaskan override.
-- Ingat bahwa permukaan ini dapat menyertakan nomor telepon dan body pesan; pertahankan plist ini hanya selama Anda benar-benar memerlukan detail tambahan tersebut.
+- Secara opsional jalankan `sudo log config --reload` untuk memaksa logd segera melepas override.
+- Ingat bahwa permukaan ini dapat mencakup nomor telepon dan isi pesan; biarkan plist tetap ada hanya saat Anda secara aktif memerlukan detail tambahan.
 
 ## Terkait
 
-- [macOS app](/id/platforms/macos)
-- [Gateway logging](/id/gateway/logging)
+- [Aplikasi macOS](/id/platforms/macos)
+- [Pencatatan log Gateway](/id/gateway/logging)

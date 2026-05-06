@@ -1,34 +1,32 @@
 ---
 read_when:
-    - Anda sedang mengubah cara timestamp ditampilkan ke model atau pengguna
-    - Anda sedang men-debug pemformatan waktu dalam pesan atau output prompt sistem
-summary: Penanganan tanggal dan waktu di seluruh envelope, prompt, alat, dan konektor
+    - Anda mengubah cara stempel waktu ditampilkan kepada model atau pengguna
+    - Anda sedang memecahkan masalah pemformatan waktu dalam pesan atau keluaran prompt sistem
+summary: Penanganan tanggal dan waktu di seluruh amplop, prompt, alat, dan konektor
 title: Tanggal dan waktu
 x-i18n:
-    generated_at: "2026-04-24T09:06:06Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:10:24Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: c3d54da4077ac985ae1209b4364e049afb83b5746276e164181c1a30f0faa06e
+    source_hash: 5f695a5009c949cc24689bfb8950d96cf72f0b2a1472efe88923182527b56b74
     source_path: date-time.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Tanggal & Waktu
+OpenClaw secara default menggunakan **waktu lokal host untuk stempel waktu transport** dan **zona waktu pengguna hanya di prompt sistem**.
+Stempel waktu penyedia dipertahankan agar alat tetap menjaga semantik aslinya (waktu saat ini tersedia melalui `session_status`).
 
-OpenClaw secara default menggunakan **waktu lokal host untuk timestamp transport** dan **timezone pengguna hanya di prompt sistem**.
-Timestamp penyedia dipertahankan agar alat tetap memiliki semantik native-nya (waktu saat ini tersedia melalui `session_status`).
+## Amplop pesan (lokal secara default)
 
-## Envelope pesan (lokal secara default)
-
-Pesan masuk dibungkus dengan timestamp (presisi menit):
+Pesan masuk dibungkus dengan stempel waktu (presisi menit):
 
 ```
 [Provider ... 2026-01-05 16:26 PST] message text
 ```
 
-Timestamp envelope ini **lokal host secara default**, terlepas dari timezone penyedia.
+Stempel waktu amplop ini **lokal host secara default**, terlepas dari zona waktu penyedia.
 
-Anda dapat mengoverride perilaku ini:
+Anda dapat mengganti perilaku ini:
 
 ```json5
 {
@@ -43,10 +41,10 @@ Anda dapat mengoverride perilaku ini:
 ```
 
 - `envelopeTimezone: "utc"` menggunakan UTC.
-- `envelopeTimezone: "local"` menggunakan timezone host.
-- `envelopeTimezone: "user"` menggunakan `agents.defaults.userTimezone` (fallback ke timezone host).
-- Gunakan timezone IANA eksplisit (misalnya, `"America/Chicago"`) untuk zona tetap.
-- `envelopeTimestamp: "off"` menghapus timestamp absolut dari header envelope.
+- `envelopeTimezone: "local"` menggunakan zona waktu host.
+- `envelopeTimezone: "user"` menggunakan `agents.defaults.userTimezone` (kembali ke zona waktu host).
+- Gunakan zona waktu IANA eksplisit (misalnya, `"America/Chicago"`) untuk zona tetap.
+- `envelopeTimestamp: "off"` menghapus stempel waktu absolut dari header amplop.
 - `envelopeElapsed: "off"` menghapus sufiks waktu berlalu (gaya `+2m`).
 
 ### Contoh
@@ -57,7 +55,7 @@ Anda dapat mengoverride perilaku ini:
 [WhatsApp +1555 2026-01-18 00:19 PST] hello
 ```
 
-**Timezone pengguna:**
+**Zona waktu pengguna:**
 
 ```
 [WhatsApp +1555 2026-01-18 00:19 CST] hello
@@ -69,10 +67,10 @@ Anda dapat mengoverride perilaku ini:
 [WhatsApp +1555 +30s 2026-01-18T05:19Z] follow-up
 ```
 
-## Prompt sistem: Current Date & Time
+## Prompt sistem: tanggal dan waktu saat ini
 
-Jika timezone pengguna diketahui, prompt sistem menyertakan bagian khusus
-**Current Date & Time** dengan **hanya zona waktu** (tanpa format jam/waktu)
+Jika zona waktu pengguna diketahui, prompt sistem menyertakan bagian khusus
+**Tanggal & Waktu Saat Ini** dengan **zona waktu saja** (tanpa format jam/waktu)
 untuk menjaga cache prompt tetap stabil:
 
 ```
@@ -80,18 +78,18 @@ Time zone: America/Chicago
 ```
 
 Saat agen memerlukan waktu saat ini, gunakan alat `session_status`; kartu status
-menyertakan baris timestamp.
+menyertakan baris stempel waktu.
 
-## Baris event sistem (lokal secara default)
+## Baris peristiwa sistem (lokal secara default)
 
-Event sistem dalam antrean yang disisipkan ke konteks agen diberi prefiks timestamp menggunakan
-pemilihan timezone yang sama seperti envelope pesan (default: lokal host).
+Peristiwa sistem antrean yang dimasukkan ke dalam konteks agen diawali dengan stempel waktu menggunakan
+pemilihan zona waktu yang sama seperti amplop pesan (default: lokal host).
 
 ```
 System: [2026-01-12 12:19:17 PST] Model switched.
 ```
 
-### Konfigurasikan timezone pengguna + format
+### Konfigurasikan zona waktu pengguna + format
 
 ```json5
 {
@@ -104,32 +102,32 @@ System: [2026-01-12 12:19:17 PST] Model switched.
 }
 ```
 
-- `userTimezone` menetapkan **timezone lokal pengguna** untuk konteks prompt.
-- `timeFormat` mengontrol tampilan **12j/24j** di prompt. `auto` mengikuti preferensi OS.
+- `userTimezone` menetapkan **zona waktu lokal pengguna** untuk konteks prompt.
+- `timeFormat` mengontrol **tampilan 12j/24j** dalam prompt. `auto` mengikuti preferensi OS.
 
 ## Deteksi format waktu (auto)
 
 Saat `timeFormat: "auto"`, OpenClaw memeriksa preferensi OS (macOS/Windows)
-dan fallback ke pemformatan locale. Nilai yang terdeteksi **di-cache per proses**
+dan kembali ke pemformatan lokal. Nilai yang terdeteksi **di-cache per proses**
 untuk menghindari panggilan sistem berulang.
 
-## Payload alat + konektor (waktu mentah penyedia + field ternormalisasi)
+## Payload alat + konektor (waktu mentah penyedia + bidang ternormalisasi)
 
-Alat channel mengembalikan **timestamp native penyedia** dan menambahkan field ternormalisasi untuk konsistensi:
+Alat kanal mengembalikan **stempel waktu asli penyedia** dan menambahkan bidang ternormalisasi untuk konsistensi:
 
-- `timestampMs`: epoch milidetik (UTC)
+- `timestampMs`: milidetik epoch (UTC)
 - `timestampUtc`: string UTC ISO 8601
 
-Field mentah penyedia dipertahankan sehingga tidak ada yang hilang.
+Bidang mentah penyedia dipertahankan agar tidak ada yang hilang.
 
 - Slack: string mirip epoch dari API
-- Discord: timestamp ISO UTC
-- Telegram/WhatsApp: timestamp numerik/ISO spesifik penyedia
+- Discord: stempel waktu ISO UTC
+- Telegram/WhatsApp: stempel waktu numerik/ISO khusus penyedia
 
-Jika Anda memerlukan waktu lokal, konversikan di tahap downstream menggunakan timezone yang diketahui.
+Jika Anda memerlukan waktu lokal, konversikan di hilir menggunakan zona waktu yang diketahui.
 
-## Dokumentasi terkait
+## Dokumen terkait
 
-- [System Prompt](/id/concepts/system-prompt)
-- [Timezones](/id/concepts/timezone)
-- [Messages](/id/concepts/messages)
+- [Prompt Sistem](/id/concepts/system-prompt)
+- [Zona Waktu](/id/concepts/timezone)
+- [Pesan](/id/concepts/messages)

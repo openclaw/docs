@@ -1,20 +1,20 @@
 ---
 read_when:
     - Menambahkan atau mengubah konfigurasi Skills
-    - Menyesuaikan allowlist bawaan atau perilaku instalasi
-summary: Skema konfigurasi Skills dan contohnya
-title: konfigurasi Skills
+    - Menyesuaikan daftar izin bawaan atau perilaku instalasi
+summary: Skema konfigurasi Skills dan contoh
+title: Konfigurasi Skills
 x-i18n:
-    generated_at: "2026-04-24T09:32:37Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:31:53Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 4d5e156adb9b88d7ade1976005c11faffe5107661e4f3da5d878cc0ac648bcbb
+    source_hash: 8996b3df73a9f0176b541c5d3f9670615f9a879a41838cf5d35d0a455e9f5088
     source_path: tools/skills-config.md
-    workflow: 15
+    workflow: 16
 ---
 
-Sebagian besar konfigurasi loader/instalasi Skills berada di bawah `skills` di
-`~/.openclaw/openclaw.json`. Visibilitas skill spesifik agen berada di bawah
+Sebagian besar konfigurasi loader/instalasi Skills berada di bawah `skills` dalam
+`~/.openclaw/openclaw.json`. Visibilitas skill khusus agen berada di bawah
 `agents.defaults.skills` dan `agents.list[].skills`.
 
 ```json5
@@ -28,12 +28,12 @@ Sebagian besar konfigurasi loader/instalasi Skills berada di bawah `skills` di
     },
     install: {
       preferBrew: true,
-      nodeManager: "npm", // npm | pnpm | yarn | bun (runtime Gateway tetap Node; bun tidak direkomendasikan)
+      nodeManager: "npm", // npm | pnpm | yarn | bun (Gateway runtime still Node; bun not recommended)
     },
     entries: {
       "image-lab": {
         enabled: true,
-        apiKey: { source: "env", provider: "default", id: "GEMINI_API_KEY" }, // atau string plaintext
+        apiKey: { source: "env", provider: "default", id: "GEMINI_API_KEY" }, // or plaintext string
         env: {
           GEMINI_API_KEY: "GEMINI_KEY_HERE",
         },
@@ -46,17 +46,17 @@ Sebagian besar konfigurasi loader/instalasi Skills berada di bawah `skills` di
 ```
 
 Untuk pembuatan/pengeditan gambar bawaan, utamakan `agents.defaults.imageGenerationModel`
-ditambah alat inti `image_generate`. `skills.entries.*` hanya untuk alur kerja skill
-kustom atau pihak ketiga.
+ditambah alat inti `image_generate`. `skills.entries.*` hanya untuk alur kerja
+skill kustom atau pihak ketiga.
 
-Jika Anda memilih provider/model gambar tertentu, konfigurasikan juga
-auth/API key provider tersebut. Contoh umum: `GEMINI_API_KEY` atau `GOOGLE_API_KEY` untuk
+Jika Anda memilih penyedia/model gambar tertentu, konfigurasikan juga kunci
+autentikasi/API penyedia tersebut. Contoh umum: `GEMINI_API_KEY` atau `GOOGLE_API_KEY` untuk
 `google/*`, `OPENAI_API_KEY` untuk `openai/*`, dan `FAL_KEY` untuk `fal/*`.
 
 Contoh:
 
-- Penyiapan gaya Nano Banana Pro native: `agents.defaults.imageGenerationModel.primary: "google/gemini-3-pro-image-preview"`
-- Penyiapan fal native: `agents.defaults.imageGenerationModel.primary: "fal/fal-ai/flux/dev"`
+- Penyiapan native bergaya Nano Banana Pro: `agents.defaults.imageGenerationModel.primary: "google/gemini-3-pro-image-preview"`
+- Penyiapan native fal: `agents.defaults.imageGenerationModel.primary: "fal/fal-ai/flux/dev"`
 
 ## Allowlist skill agen
 
@@ -70,9 +70,9 @@ set skill yang terlihat berbeda per agen.
       skills: ["github", "weather"],
     },
     list: [
-      { id: "writer" }, // mewarisi default -> github, weather
-      { id: "docs", skills: ["docs-search"] }, // menggantikan default
-      { id: "locked-down", skills: [] }, // tanpa skill
+      { id: "writer" }, // inherits defaults -> github, weather
+      { id: "docs", skills: ["docs-search"] }, // replaces defaults
+      { id: "locked-down", skills: [] }, // no skills
     ],
   },
 }
@@ -80,65 +80,77 @@ set skill yang terlihat berbeda per agen.
 
 Aturan:
 
-- `agents.defaults.skills`: allowlist baseline bersama untuk agen yang menghilangkan
+- `agents.defaults.skills`: allowlist dasar bersama untuk agen yang menghilangkan
   `agents.list[].skills`.
-- Hilangkan `agents.defaults.skills` agar skill tetap tidak dibatasi secara default.
-- `agents.list[].skills`: set skill final eksplisit untuk agen itu; tidak
+- Hilangkan `agents.defaults.skills` agar skill tidak dibatasi secara default.
+- `agents.list[].skills`: set skill final eksplisit untuk agen tersebut; ini tidak
   digabungkan dengan default.
-- `agents.list[].skills: []`: tidak mengekspos skill untuk agen itu.
+- `agents.list[].skills: []`: jangan tampilkan skill apa pun untuk agen tersebut.
 
-## Field
+## Bidang
 
 - Root skill bawaan selalu mencakup `~/.openclaw/skills`, `~/.agents/skills`,
   `<workspace>/.agents/skills`, dan `<workspace>/skills`.
-- `allowBundled`: allowlist opsional hanya untuk skill **bundled**. Jika diatur, hanya
-  skill bundled yang ada dalam daftar yang memenuhi syarat (skill terkelola, agen, dan workspace tidak terpengaruh).
+- `allowBundled`: allowlist opsional hanya untuk Skills **bundel**. Jika disetel, hanya
+  Skills bundel dalam daftar yang memenuhi syarat (Skills terkelola, agen, dan workspace tidak terpengaruh).
 - `load.extraDirs`: direktori skill tambahan untuk dipindai (prioritas terendah).
-- `load.watch`: pantau folder skill dan segarkan snapshot skill (default: true).
-- `load.watchDebounceMs`: debounce untuk event watcher skill dalam milidetik (default: 250).
-- `install.preferBrew`: utamakan installer brew jika tersedia (default: true).
-- `install.nodeManager`: preferensi installer Node (`npm` | `pnpm` | `yarn` | `bun`, default: npm).
+- `load.watch`: pantau folder skill dan segarkan snapshot Skills (default: true).
+- `load.watchDebounceMs`: debounce untuk peristiwa watcher skill dalam milidetik (default: 250).
+- `install.preferBrew`: utamakan penginstal brew jika tersedia (default: true).
+- `install.nodeManager`: preferensi penginstal node (`npm` | `pnpm` | `yarn` | `bun`, default: npm).
   Ini hanya memengaruhi **instalasi skill**; runtime Gateway tetap harus Node
-  (`bun` tidak direkomendasikan untuk WhatsApp/Telegram).
+  (Bun tidak direkomendasikan untuk WhatsApp/Telegram).
   - `openclaw setup --node-manager` lebih sempit dan saat ini menerima `npm`,
-    `pnpm`, atau `bun`. Atur `skills.install.nodeManager: "yarn"` secara manual jika Anda
+    `pnpm`, atau `bun`. Setel `skills.install.nodeManager: "yarn"` secara manual jika Anda
     menginginkan instalasi skill berbasis Yarn.
 - `entries.<skillKey>`: override per skill.
 - `agents.defaults.skills`: allowlist skill default opsional yang diwarisi oleh agen
   yang menghilangkan `agents.list[].skills`.
 - `agents.list[].skills`: allowlist skill final opsional per agen; daftar eksplisit
-  menggantikan default yang diwarisi alih-alih menggabungkannya.
+  menggantikan default yang diwarisi, bukan menggabungkannya.
 
-Field per skill:
+Bidang per skill:
 
-- `enabled`: atur `false` untuk menonaktifkan skill meskipun skill itu bundled/terinstal.
-- `env`: environment variable yang diinjeksi untuk run agen (hanya jika belum disetel).
-- `apiKey`: kemudahan opsional untuk skill yang mendeklarasikan env var utama.
+- `enabled`: setel `false` untuk menonaktifkan skill meskipun dibundel/diinstal.
+- `env`: variabel lingkungan yang disuntikkan untuk run agen (hanya jika belum disetel).
+- `apiKey`: kemudahan opsional untuk Skills yang mendeklarasikan env var utama.
   Mendukung string plaintext atau objek SecretRef (`{ source, provider, id }`).
 
 ## Catatan
 
-- Key di bawah `entries` dipetakan ke nama skill secara default. Jika sebuah skill mendefinisikan
-  `metadata.openclaw.skillKey`, gunakan key itu sebagai gantinya.
-- Prioritas load adalah `<workspace>/skills` → `<workspace>/.agents/skills` →
-  `~/.agents/skills` → `~/.openclaw/skills` → skill bundled →
+- Kunci di bawah `entries` dipetakan ke nama skill secara default. Jika skill mendefinisikan
+  `metadata.openclaw.skillKey`, gunakan kunci tersebut sebagai gantinya.
+- Prioritas pemuatan adalah `<workspace>/skills` → `<workspace>/.agents/skills` →
+  `~/.agents/skills` → `~/.openclaw/skills` → Skills bundel →
   `skills.load.extraDirs`.
-- Perubahan pada skill akan diambil pada giliran agen berikutnya saat watcher diaktifkan.
+- Perubahan pada Skills diambil pada giliran agen berikutnya saat watcher diaktifkan.
 
-### Skill yang di-sandbox + env vars
+### Skills sandbox dan env vars
 
-Saat sebuah sesi **di-sandbox**, proses skill berjalan di dalam backend sandbox
-yang dikonfigurasi. Sandbox **tidak** mewarisi `process.env` host.
+Saat sesi **disandbox**, proses skill berjalan di dalam backend sandbox yang dikonfigurasi. Sandbox **tidak** mewarisi `process.env` host.
+
+<Warning>
+  `env` global dan `skills.entries.<skill>.env`/`apiKey` hanya berlaku untuk run **host**. Di dalam sandbox, keduanya tidak berpengaruh, sehingga skill yang bergantung pada `GEMINI_API_KEY` akan gagal dengan `apiKey not configured` kecuali sandbox diberi variabel tersebut secara terpisah.
+</Warning>
 
 Gunakan salah satu dari:
 
-- `agents.defaults.sandbox.docker.env` untuk backend Docker (atau `agents.list[].sandbox.docker.env` per agen)
-- bake env ke image sandbox kustom Anda atau environment sandbox jarak jauh
-
-`env` global dan `skills.entries.<skill>.env/apiKey` hanya berlaku untuk run **host**.
+- `agents.defaults.sandbox.docker.env` untuk backend Docker (atau `agents.list[].sandbox.docker.env` per agen).
+- Bake env ke dalam image sandbox kustom atau lingkungan sandbox jarak jauh Anda.
 
 ## Terkait
 
-- [Skills](/id/tools/skills)
-- [Membuat skills](/id/tools/creating-skills)
-- [Perintah slash](/id/tools/slash-commands)
+<CardGroup cols={2}>
+  <Card title="Skills" href="/id/tools/skills" icon="puzzle-piece">
+    Apa itu Skills dan bagaimana pemuatannya.
+  </Card>
+  <Card title="Creating skills" href="/id/tools/creating-skills" icon="hammer">
+    Menulis paket skill kustom.
+  </Card>
+  <Card title="Slash commands" href="/id/tools/slash-commands" icon="terminal">
+    Katalog perintah native dan direktif chat.
+  </Card>
+  <Card title="Configuration reference" href="/id/gateway/configuration-reference" icon="gear">
+    Skema lengkap `skills` dan `agents.skills`.
+  </Card>
+</CardGroup>

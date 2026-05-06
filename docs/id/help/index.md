@@ -1,46 +1,46 @@
 ---
 read_when:
     - Anda pengguna baru dan menginginkan panduan "apa yang harus saya klik/jalankan"
-    - Ada yang bermasalah dan Anda menginginkan cara tercepat untuk memperbaikinya
-summary: 'Pusat bantuan: perbaikan umum, pemeriksaan instalasi, dan tempat mencari saat terjadi masalah'
+    - Ada yang rusak dan Anda menginginkan cara tercepat untuk memperbaikinya
+summary: 'Pusat bantuan: perbaikan umum, pemeriksaan kesehatan instalasi, dan tempat mencari saat ada yang bermasalah'
 title: Bantuan
 x-i18n:
-    generated_at: "2026-05-02T09:23:39Z"
+    generated_at: "2026-05-06T09:14:59Z"
     model: gpt-5.5
     provider: openai
-    source_hash: bb85d5c74da9efdb83762c4d735d0871e252a26956e904c09b42ab293e4dffca
+    source_hash: 118e8ad2207d32739d3da7d0097604dfad8e7780843841f4f84a44cd77eb8736
     source_path: help/index.md
     workflow: 16
 ---
 
-Jalur cepat "keluar dari hambatan" untuk masalah yang paling umum:
+Jalur cepat untuk "keluar dari kebuntuan" pada masalah paling umum:
 
-- [Pemecahan masalah](/id/help/troubleshooting) — pohon keputusan berdasarkan gejala
-- [Debug](/id/help/debugging) — mode pemantauan, aliran mentah, profil pengembangan
-- [Pemeriksaan instalasi](/id/install/node#troubleshooting) — pemeriksaan Node / npm / PATH
-- [Pemecahan masalah Gateway](/id/gateway/troubleshooting) — masalah khusus Gateway
-- [Dokter](/id/gateway/doctor) — perbaikan otomatis + bundel diagnostik
+- [Pemecahan masalah](/id/help/troubleshooting) - pohon keputusan berdasarkan gejala
+- [Awakutu](/id/help/debugging) - mode pantau, stream mentah, profil dev
+- [Pemeriksaan instalasi](/id/install/node#troubleshooting) - pemeriksaan Node / npm / PATH
+- [Pemecahan masalah Gateway](/id/gateway/troubleshooting) - masalah khusus gateway
+- [Dokter](/id/gateway/doctor) - perbaikan otomatis + bundel diagnostik
 
-## Tanya Jawab Umum
+## FAQ
 
-- [Tanya Jawab Umum](/id/help/faq) — konsep sehari-hari dan pertanyaan operasional
-- [Tanya Jawab Umum penggunaan pertama](/id/help/faq-first-run) — instalasi, orientasi awal, autentikasi, langganan, kegagalan awal
-- [Tanya Jawab Umum model](/id/help/faq-models) — pemilihan model, failover, profil autentikasi
+- [FAQ](/id/help/faq) - konsep sehari-hari dan pertanyaan operasional
+- [FAQ penggunaan pertama](/id/help/faq-first-run) - instalasi, onboarding, autentikasi, langganan, kegagalan awal
+- [FAQ model](/id/help/faq-models) - pemilihan model, failover, profil autentikasi
 
 ## Diagnostik
 
-- [Variabel lingkungan](/id/help/environment) — tempat OpenClaw memuat variabel lingkungan dan urutan prioritasnya
-- [Flag diagnostik](/id/diagnostics/flags) — diagnostik runtime dan mode verbose
-- [Crash Node + tsx](/id/debug/node-issue) — skenario crash runtime Node / tsx tertentu
+- [Variabel lingkungan](/id/help/environment) - tempat OpenClaw memuat env var dan urutan prioritasnya
+- [Flag diagnostik](/id/diagnostics/flags) - diagnostik runtime dan mode verbose
+- [Kegagalan Node + tsx](/id/debug/node-issue) - skenario kegagalan runtime Node / tsx tertentu
 
 ## Pengujian
 
-- [Pengujian](/id/help/testing) — rangkaian pengujian dan runner Docker
-- [Pengujian pembaruan dan Plugin](/id/help/testing-updates-plugins) — pembaruan paket, migrasi, dan validasi instalasi Plugin
-- [Pengujian langsung](/id/help/testing-live) — smoke test penyedia dan CLI yang menyentuh jaringan
+- [Pengujian](/id/help/testing) - rangkaian pengujian dan runner Docker
+- [Pengujian pembaruan dan Plugin](/id/help/testing-updates-plugins) - pembaruan paket, migrasi, dan validasi instalasi Plugin
+- [Pengujian live](/id/help/testing-live) - smoke provider dan CLI yang menyentuh jaringan
 
 ## Komunitas dan meta
 
-- [Lore OpenClaw](/id/start/lore) — kisahnya
-- [Hub dokumentasi](/id/start/hubs) — cara dokumentasi ini diorganisasi
-- [Direktori dokumentasi](/id/start/docs-directory) — peta file lengkap
+- [Lore OpenClaw](/id/start/lore) - ceritanya
+- [Hub dokumentasi](/id/start/hubs) - bagaimana dokumentasi ini diorganisasi
+- [Direktori dokumentasi](/id/start/docs-directory) - peta file lengkap

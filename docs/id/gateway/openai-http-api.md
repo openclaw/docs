@@ -4,106 +4,106 @@ read_when:
 summary: Ekspos endpoint HTTP /v1/chat/completions yang kompatibel dengan OpenAI dari Gateway
 title: Penyelesaian chat OpenAI
 x-i18n:
-    generated_at: "2026-04-30T09:50:24Z"
+    generated_at: "2026-05-06T09:12:42Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9a19f9d9d6d8ce6d605f8af5324ae3eb0c100c167609341c8dfb569970b0b2c9
+    source_hash: 8cd0995cf5f897ae8f99f35fc4b8ea28ebde3cba41da0f3e768ec1de7874b2f2
     source_path: gateway/openai-http-api.md
     workflow: 16
 ---
 
-Gateway OpenClaw dapat menyajikan endpoint Chat Completions kecil yang kompatibel dengan OpenAI.
+OpenClaw's Gateway can serve a small OpenAI-compatible Chat Completions endpoint.
 
-Endpoint ini **dinonaktifkan secara default**. Aktifkan di konfigurasi terlebih dahulu.
+This endpoint is **disabled by default**. Enable it in config first.
 
 - `POST /v1/chat/completions`
-- Port yang sama dengan Gateway (multipleks WS + HTTP): `http://<gateway-host>:<port>/v1/chat/completions`
+- Same port as the Gateway (WS + HTTP multiplex): `http://<gateway-host>:<port>/v1/chat/completions`
 
-Saat permukaan HTTP Gateway yang kompatibel dengan OpenAI diaktifkan, ia juga menyajikan:
+When the Gateway's OpenAI-compatible HTTP surface is enabled, it also serves:
 
 - `GET /v1/models`
 - `GET /v1/models/{id}`
 - `POST /v1/embeddings`
 - `POST /v1/responses`
 
-Di balik layar, permintaan dijalankan sebagai proses agent Gateway normal (codepath yang sama seperti `openclaw agent`), sehingga perutean/izin/konfigurasi cocok dengan Gateway Anda.
+Under the hood, requests are executed as a normal Gateway agent run (same codepath as `openclaw agent`), so routing/permissions/config match your Gateway.
 
-## Autentikasi
+## Authentication
 
-Menggunakan konfigurasi autentikasi Gateway.
+Uses the Gateway auth configuration.
 
-Jalur autentikasi HTTP umum:
+Common HTTP auth paths:
 
-- autentikasi shared-secret (`gateway.auth.mode="token"` atau `"password"`):
+- shared-secret auth (`gateway.auth.mode="token"` or `"password"`):
   `Authorization: Bearer <token-or-password>`
-- autentikasi HTTP tepercaya yang membawa identitas (`gateway.auth.mode="trusted-proxy"`):
-  rutekan melalui proxy yang sadar identitas yang dikonfigurasi dan biarkan proxy itu menyuntikkan
-  header identitas yang diperlukan
-- autentikasi terbuka private-ingress (`gateway.auth.mode="none"`):
-  tidak memerlukan header autentikasi
+- trusted identity-bearing HTTP auth (`gateway.auth.mode="trusted-proxy"`):
+  route through the configured identity-aware proxy and let it inject the
+  required identity headers
+- private-ingress open auth (`gateway.auth.mode="none"`):
+  no auth header required
 
-Catatan:
+Notes:
 
-- Saat `gateway.auth.mode="token"`, gunakan `gateway.auth.token` (atau `OPENCLAW_GATEWAY_TOKEN`).
-- Saat `gateway.auth.mode="password"`, gunakan `gateway.auth.password` (atau `OPENCLAW_GATEWAY_PASSWORD`).
-- Saat `gateway.auth.mode="trusted-proxy"`, permintaan HTTP harus berasal dari
-  sumber proxy tepercaya yang dikonfigurasi; proxy loopback host yang sama memerlukan
-  `gateway.auth.trustedProxy.allowLoopback = true` secara eksplisit.
-- Jika `gateway.auth.rateLimit` dikonfigurasi dan terjadi terlalu banyak kegagalan autentikasi, endpoint mengembalikan `429` dengan `Retry-After`.
+- When `gateway.auth.mode="token"`, use `gateway.auth.token` (or `OPENCLAW_GATEWAY_TOKEN`).
+- When `gateway.auth.mode="password"`, use `gateway.auth.password` (or `OPENCLAW_GATEWAY_PASSWORD`).
+- When `gateway.auth.mode="trusted-proxy"`, the HTTP request must come from a
+  configured trusted proxy source; same-host loopback proxies require explicit
+  `gateway.auth.trustedProxy.allowLoopback = true`.
+- If `gateway.auth.rateLimit` is configured and too many auth failures occur, the endpoint returns `429` with `Retry-After`.
 
-## Batas keamanan (penting)
+## Security boundary (important)
 
-Perlakukan endpoint ini sebagai permukaan **akses operator penuh** untuk instans Gateway.
+Treat this endpoint as a **full operator-access** surface for the gateway instance.
 
-- Autentikasi bearer HTTP di sini bukan model cakupan per pengguna yang sempit.
-- Token/kata sandi Gateway yang valid untuk endpoint ini harus diperlakukan seperti kredensial pemilik/operator.
-- Permintaan berjalan melalui jalur agent control-plane yang sama seperti tindakan operator tepercaya.
-- Tidak ada batas tool non-pemilik/per pengguna yang terpisah pada endpoint ini; setelah pemanggil lolos autentikasi Gateway di sini, OpenClaw memperlakukan pemanggil itu sebagai operator tepercaya untuk Gateway ini.
-- Untuk mode autentikasi shared-secret (`token` dan `password`), endpoint memulihkan default operator penuh normal meskipun pemanggil mengirim header `x-openclaw-scopes` yang lebih sempit.
-- Mode HTTP tepercaya yang membawa identitas (misalnya autentikasi proxy tepercaya atau `gateway.auth.mode="none"`) menghormati `x-openclaw-scopes` saat ada dan jika tidak ada kembali ke set cakupan default operator normal.
-- Jika kebijakan agent target mengizinkan tool sensitif, endpoint ini dapat menggunakannya.
-- Simpan endpoint ini hanya di loopback/tailnet/ingress privat; jangan mengeksposnya langsung ke internet publik.
+- HTTP bearer auth here is not a narrow per-user scope model.
+- A valid Gateway token/password for this endpoint should be treated like an owner/operator credential.
+- Requests run through the same control-plane agent path as trusted operator actions.
+- There is no separate non-owner/per-user tool boundary on this endpoint; once a caller passes Gateway auth here, OpenClaw treats that caller as a trusted operator for this gateway.
+- For shared-secret auth modes (`token` and `password`), the endpoint restores the normal full operator defaults even if the caller sends a narrower `x-openclaw-scopes` header.
+- Trusted identity-bearing HTTP modes (for example trusted proxy auth or `gateway.auth.mode="none"`) honor `x-openclaw-scopes` when present and otherwise fall back to the normal operator default scope set.
+- If the target agent policy allows sensitive tools, this endpoint can use them.
+- Keep this endpoint on loopback/tailnet/private ingress only; do not expose it directly to the public internet.
 
-Matriks autentikasi:
+Auth matrix:
 
-- `gateway.auth.mode="token"` atau `"password"` + `Authorization: Bearer ...`
-  - membuktikan kepemilikan rahasia operator Gateway bersama
-  - mengabaikan `x-openclaw-scopes` yang lebih sempit
-  - memulihkan set cakupan operator default penuh:
+- `gateway.auth.mode="token"` or `"password"` + `Authorization: Bearer ...`
+  - proves possession of the shared gateway operator secret
+  - ignores narrower `x-openclaw-scopes`
+  - restores the full default operator scope set:
     `operator.admin`, `operator.approvals`, `operator.pairing`,
     `operator.read`, `operator.talk.secrets`, `operator.write`
-  - memperlakukan giliran chat pada endpoint ini sebagai giliran pengirim-pemilik
-- mode HTTP tepercaya yang membawa identitas (misalnya autentikasi proxy tepercaya, atau `gateway.auth.mode="none"` pada ingress privat)
-  - mengautentikasi identitas tepercaya luar atau batas deployment tertentu
-  - menghormati `x-openclaw-scopes` saat header ada
-  - kembali ke set cakupan default operator normal saat header tidak ada
-  - hanya kehilangan semantik pemilik saat pemanggil secara eksplisit mempersempit cakupan dan menghilangkan `operator.admin`
+  - treats chat turns on this endpoint as owner-sender turns
+- trusted identity-bearing HTTP modes (for example trusted proxy auth, or `gateway.auth.mode="none"` on private ingress)
+  - authenticate some outer trusted identity or deployment boundary
+  - honor `x-openclaw-scopes` when the header is present
+  - fall back to the normal operator default scope set when the header is absent
+  - only lose owner semantics when the caller explicitly narrows scopes and omits `operator.admin`
 
-Lihat [Keamanan](/id/gateway/security) dan [Akses jarak jauh](/id/gateway/remote).
+See [Security](/id/gateway/security) and [Remote access](/id/gateway/remote).
 
-## Kontrak model yang mengutamakan agent
+## Agent-first model contract
 
-OpenClaw memperlakukan field OpenAI `model` sebagai **target agent**, bukan id model provider mentah.
+OpenClaw treats the OpenAI `model` field as an **agent target**, not a raw provider model id.
 
-- `model: "openclaw"` merutekan ke agent default yang dikonfigurasi.
-- `model: "openclaw/default"` juga merutekan ke agent default yang dikonfigurasi.
-- `model: "openclaw/<agentId>"` merutekan ke agent tertentu.
+- `model: "openclaw"` routes to the configured default agent.
+- `model: "openclaw/default"` also routes to the configured default agent.
+- `model: "openclaw/<agentId>"` routes to a specific agent.
 
-Header permintaan opsional:
+Optional request headers:
 
-- `x-openclaw-model: <provider/model-or-bare-id>` mengganti model backend untuk agent yang dipilih.
-- `x-openclaw-agent-id: <agentId>` tetap didukung sebagai override kompatibilitas.
-- `x-openclaw-session-key: <sessionKey>` sepenuhnya mengontrol perutean sesi.
-- `x-openclaw-message-channel: <channel>` menetapkan konteks channel ingress sintetis untuk prompt dan kebijakan yang sadar channel.
+- `x-openclaw-model: <provider/model-or-bare-id>` overrides the backend model for the selected agent.
+- `x-openclaw-agent-id: <agentId>` remains supported as a compatibility override.
+- `x-openclaw-session-key: <sessionKey>` fully controls session routing.
+- `x-openclaw-message-channel: <channel>` sets the synthetic ingress channel context for channel-aware prompts and policies.
 
-Alias kompatibilitas yang masih diterima:
+Compatibility aliases still accepted:
 
 - `model: "openclaw:<agentId>"`
 - `model: "agent:<agentId>"`
 
-## Mengaktifkan endpoint
+## Enabling the endpoint
 
-Atur `gateway.http.endpoints.chatCompletions.enabled` ke `true`:
+Set `gateway.http.endpoints.chatCompletions.enabled` to `true`:
 
 ```json5
 {
@@ -117,9 +117,9 @@ Atur `gateway.http.endpoints.chatCompletions.enabled` ke `true`:
 }
 ```
 
-## Menonaktifkan endpoint
+## Disabling the endpoint
 
-Atur `gateway.http.endpoints.chatCompletions.enabled` ke `false`:
+Set `gateway.http.endpoints.chatCompletions.enabled` to `false`:
 
 ```json5
 {
@@ -133,96 +133,96 @@ Atur `gateway.http.endpoints.chatCompletions.enabled` ke `false`:
 }
 ```
 
-## Perilaku sesi
+## Session behavior
 
-Secara default endpoint ini **stateless per permintaan** (kunci sesi baru dibuat pada setiap panggilan).
+By default the endpoint is **stateless per request** (a new session key is generated each call).
 
-Jika permintaan menyertakan string OpenAI `user`, Gateway menurunkan kunci sesi stabil darinya, sehingga panggilan berulang dapat berbagi sesi agent.
+If the request includes an OpenAI `user` string, the Gateway derives a stable session key from it, so repeated calls can share an agent session.
 
-## Mengapa permukaan ini penting
+## Why this surface matters
 
-Ini adalah set kompatibilitas dengan leverage tertinggi untuk frontend dan tooling yang di-host sendiri:
+This is the highest-leverage compatibility set for self-hosted frontends and tooling:
 
-- Sebagian besar setup Open WebUI, LobeChat, dan LibreChat mengharapkan `/v1/models`.
-- Banyak sistem RAG mengharapkan `/v1/embeddings`.
-- Klien chat OpenAI yang ada biasanya dapat memulai dengan `/v1/chat/completions`.
-- Semakin banyak klien yang lebih native agent memilih `/v1/responses`.
+- Most Open WebUI, LobeChat, and LibreChat setups expect `/v1/models`.
+- Many RAG systems expect `/v1/embeddings`.
+- Existing OpenAI chat clients can usually start with `/v1/chat/completions`.
+- More agent-native clients increasingly prefer `/v1/responses`.
 
-## Daftar model dan perutean agent
+## Model list and agent routing
 
 <AccordionGroup>
   <Accordion title="What does `/v1/models` return?">
-    Daftar target agent OpenClaw.
+    An OpenClaw agent-target list.
 
-    Id yang dikembalikan adalah entri `openclaw`, `openclaw/default`, dan `openclaw/<agentId>`.
-    Gunakan langsung sebagai nilai OpenAI `model`.
+    The returned ids are `openclaw`, `openclaw/default`, and `openclaw/<agentId>` entries.
+    Use them directly as OpenAI `model` values.
 
   </Accordion>
   <Accordion title="Does `/v1/models` list agents or sub-agents?">
-    Ini mencantumkan target agent tingkat atas, bukan model provider backend dan bukan sub-agent.
+    It lists top-level agent targets, not backend provider models and not sub-agents.
 
-    Sub-agent tetap menjadi topologi eksekusi internal. Mereka tidak muncul sebagai pseudo-model.
+    Sub-agents remain internal execution topology. They do not appear as pseudo-models.
 
   </Accordion>
   <Accordion title="Why is `openclaw/default` included?">
-    `openclaw/default` adalah alias stabil untuk agent default yang dikonfigurasi.
+    `openclaw/default` is the stable alias for the configured default agent.
 
-    Artinya, klien dapat tetap menggunakan satu id yang dapat diprediksi meskipun id agent default sebenarnya berubah antar lingkungan.
+    That means clients can keep using one predictable id even if the real default agent id changes between environments.
 
   </Accordion>
   <Accordion title="How do I override the backend model?">
-    Gunakan `x-openclaw-model`.
+    Use `x-openclaw-model`.
 
-    Contoh:
+    Examples:
     `x-openclaw-model: openai/gpt-5.4`
     `x-openclaw-model: gpt-5.5`
 
-    Jika Anda menghilangkannya, agent yang dipilih berjalan dengan pilihan model normal yang dikonfigurasi.
+    If you omit it, the selected agent runs with its normal configured model choice.
 
   </Accordion>
   <Accordion title="How do embeddings fit this contract?">
-    `/v1/embeddings` menggunakan id `model` target agent yang sama.
+    `/v1/embeddings` uses the same agent-target `model` ids.
 
-    Gunakan `model: "openclaw/default"` atau `model: "openclaw/<agentId>"`.
-    Saat Anda memerlukan model embedding tertentu, kirimkan di `x-openclaw-model`.
-    Tanpa header itu, permintaan diteruskan ke setup embedding normal milik agent yang dipilih.
+    Use `model: "openclaw/default"` or `model: "openclaw/<agentId>"`.
+    When you need a specific embedding model, send it in `x-openclaw-model`.
+    Without that header, the request passes through to the selected agent's normal embedding setup.
 
   </Accordion>
 </AccordionGroup>
 
 ## Streaming (SSE)
 
-Atur `stream: true` untuk menerima Server-Sent Events (SSE):
+Set `stream: true` to receive Server-Sent Events (SSE):
 
 - `Content-Type: text/event-stream`
-- Setiap baris event adalah `data: <json>`
-- Stream berakhir dengan `data: [DONE]`
+- Each event line is `data: <json>`
+- Stream ends with `data: [DONE]`
 
-## Setup cepat Open WebUI
+## Open WebUI quick setup
 
-Untuk koneksi Open WebUI dasar:
+For a basic Open WebUI connection:
 
 - Base URL: `http://127.0.0.1:18789/v1`
-- Base URL Docker di macOS: `http://host.docker.internal:18789/v1`
-- API key: token bearer Gateway Anda
+- Docker on macOS base URL: `http://host.docker.internal:18789/v1`
+- API key: your Gateway bearer token
 - Model: `openclaw/default`
 
-Perilaku yang diharapkan:
+Expected behavior:
 
-- `GET /v1/models` harus mencantumkan `openclaw/default`
-- Open WebUI harus menggunakan `openclaw/default` sebagai id model chat
-- Jika Anda menginginkan provider/model backend tertentu untuk agent itu, atur model default normal milik agent atau kirim `x-openclaw-model`
+- `GET /v1/models` should list `openclaw/default`
+- Open WebUI should use `openclaw/default` as the chat model id
+- If you want a specific backend provider/model for that agent, set the agent's normal default model or send `x-openclaw-model`
 
-Smoke cepat:
+Quick smoke:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/models \
   -H 'Authorization: Bearer YOUR_TOKEN'
 ```
 
-Jika itu mengembalikan `openclaw/default`, sebagian besar setup Open WebUI dapat terhubung dengan Base URL dan token yang sama.
+If that returns `openclaw/default`, most Open WebUI setups can connect with the same base URL and token.
 
-## Contoh
+## Examples
 
 Non-streaming:
 
@@ -250,21 +250,21 @@ curl -N http://127.0.0.1:18789/v1/chat/completions \
   }'
 ```
 
-Daftar model:
+List models:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/models \
   -H 'Authorization: Bearer YOUR_TOKEN'
 ```
 
-Ambil satu model:
+Fetch one model:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/models/openclaw%2Fdefault \
   -H 'Authorization: Bearer YOUR_TOKEN'
 ```
 
-Buat embedding:
+Create embeddings:
 
 ```bash
 curl -sS http://127.0.0.1:18789/v1/embeddings \
@@ -277,14 +277,14 @@ curl -sS http://127.0.0.1:18789/v1/embeddings \
   }'
 ```
 
-Catatan:
+Notes:
 
-- `/v1/models` mengembalikan target agent OpenClaw, bukan katalog provider mentah.
-- `openclaw/default` selalu ada sehingga satu id stabil berfungsi di berbagai lingkungan.
-- Override provider/model backend ditempatkan di `x-openclaw-model`, bukan field OpenAI `model`.
-- `/v1/embeddings` mendukung `input` sebagai string atau array string.
+- `/v1/models` returns OpenClaw agent targets, not raw provider catalogs.
+- `openclaw/default` is always present so one stable id works across environments.
+- Backend provider/model overrides belong in `x-openclaw-model`, not the OpenAI `model` field.
+- `/v1/embeddings` supports `input` as a string or array of strings.
 
-## Terkait
+## Related
 
-- [Referensi konfigurasi](/id/gateway/configuration-reference)
+- [Configuration reference](/id/gateway/configuration-reference)
 - [OpenAI](/id/providers/openai)
