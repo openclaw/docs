@@ -1,27 +1,27 @@
 ---
 read_when:
-    - 你想要變更預設模型或查看提供者驗證狀態
-    - 你想要掃描可用的模型/提供者，並偵錯身分驗證設定檔
+    - 您想要變更預設模型，或檢視提供者驗證狀態
+    - 您想掃描可用的模型/提供者並偵錯身分驗證設定檔
 summary: '`openclaw models` 的 CLI 參考（status/list/set/scan、別名、備援、身分驗證）'
 title: 模型
 x-i18n:
-    generated_at: "2026-05-06T09:05:21Z"
+    generated_at: "2026-05-06T19:35:25Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c7a1cce7b1b21411540238b1858580a56b2271d54d0898e261b69bd21f88c0f5
+    source_hash: 7749d97382529587d54ea96466edc880a731f2c2d39eed1677e4fbf129f11435
     source_path: cli/models.md
     workflow: 16
 ---
 
 # `openclaw models`
 
-模型探索、掃描與設定（預設模型、後備模型、認證設定檔）。
+模型探索、掃描與設定（預設模型、備援、驗證設定檔）。
 
 相關：
 
-- 提供者 + 模型：[模型](/zh-TW/providers/models)
+- 供應商 + 模型：[模型](/zh-TW/providers/models)
 - 模型選擇概念 + `/models` 斜線命令：[模型概念](/zh-TW/concepts/models)
-- 提供者認證設定：[開始使用](/zh-TW/start/getting-started)
+- 供應商驗證設定：[入門](/zh-TW/start/getting-started)
 
 ## 常用命令
 
@@ -32,80 +32,85 @@ openclaw models set <model-or-alias>
 openclaw models scan
 ```
 
-`openclaw models status` 會顯示已解析的預設/後備模型，以及認證概覽。
-當提供者用量快照可用時，OAuth/API 金鑰狀態區段會包含
-提供者用量視窗和配額快照。
-目前的用量視窗提供者：Anthropic、GitHub Copilot、Gemini CLI、OpenAI
-Codex、MiniMax、Xiaomi 和 z.ai。用量認證會在可用時來自提供者特定的鉤子；
-否則 OpenClaw 會退回使用來自認證設定檔、環境或設定中相符的 OAuth/API 金鑰
-憑證。
-在 `--json` 輸出中，`auth.providers` 是感知環境/設定/儲存的提供者
-概覽，而 `auth.oauth` 僅是認證儲存區設定檔健康狀態。
-加入 `--probe` 可對每個已設定的提供者設定檔執行即時認證探測。
-探測是真實請求（可能會消耗權杖並觸發速率限制）。
-使用 `--agent <id>` 來檢查已設定代理的模型/認證狀態。省略時，
-此命令會使用已設定的預設代理，除非已設定 `OPENCLAW_AGENT_DIR`/`PI_CODING_AGENT_DIR`。
-探測列可來自認證設定檔、環境憑證或 `models.json`。
+`openclaw models status` 會顯示已解析的預設值/備援，以及驗證概覽。
+當供應商使用量快照可用時，OAuth/API-key 狀態區段會包含
+供應商使用量視窗與配額快照。
+目前的使用量視窗供應商：Anthropic、GitHub Copilot、Gemini CLI、OpenAI
+Codex、MiniMax、Xiaomi 和 z.ai。使用量驗證會在可用時來自供應商專屬 hook；
+否則 OpenClaw 會退回使用來自驗證設定檔、env 或 config 中相符的 OAuth/API-key
+credentials。
+在 `--json` 輸出中，`auth.providers` 是具備 env/config/store 感知的供應商
+概覽，而 `auth.oauth` 僅是 auth-store 設定檔健康狀態。
+加入 `--probe` 可對每個已設定的供應商設定檔執行即時驗證探測。
+探測是真實請求（可能會消耗 token 並觸發速率限制）。
+使用 `--agent <id>` 檢查已設定代理的模型/驗證狀態。省略時，
+命令會在已設定時使用 `OPENCLAW_AGENT_DIR`/`PI_CODING_AGENT_DIR`，否則使用
+已設定的預設代理。
+探測列可以來自驗證設定檔、env credentials 或 `models.json`。
+若要排解 Codex OAuth 問題，`openclaw models status`、
+`openclaw models auth list --provider openai-codex` 和
+`openclaw config get agents.defaults.model --json` 是確認代理是否透過 PI 使用
+`openai-codex/*`，或透過原生 Codex runtime 使用 `openai/*` 的最快方式。
+請參閱 [OpenAI 供應商設定](/zh-TW/providers/openai#check-and-recover-codex-oauth-routing)。
 
 注意事項：
 
 - `models set <model-or-alias>` 接受 `provider/model` 或別名。
-- `models list` 是唯讀的：它會讀取設定、認證設定檔、現有目錄
-  狀態，以及提供者擁有的目錄列，但不會重寫
+- `models list` 是唯讀的：它會讀取 config、驗證設定檔、既有目錄
+  狀態，以及供應商擁有的目錄列，但不會重寫
   `models.json`。
-- `Auth` 欄位是提供者層級且唯讀。它會根據本機
-  認證設定檔中繼資料、環境標記、已設定的提供者金鑰、本機提供者
-  標記、AWS Bedrock 環境/設定檔標記，以及 Plugin 合成認證中繼資料計算；
-  它不會載入提供者執行階段、讀取鑰匙圈祕密、呼叫提供者
-  API，或證明每個模型的精確執行就緒狀態。
-- `models list --all --provider <id>` 可以包含來自 Plugin 資訊清單或
-  內建提供者目錄中繼資料的提供者擁有靜態目錄列，即使你
-  尚未向該提供者認證。這些列在設定相符認證前仍會顯示為
-  不可用。
-- `models list` 會在提供者目錄探索速度緩慢時保持控制平面回應。
-  預設與已設定檢視會在短暫等待後退回到已設定或
-  合成模型列，並讓探索在背景完成。需要精確完整的已探索目錄且
-  願意等待提供者探索時，請使用 `--all`。
-- 廣泛的 `models list --all` 會將資訊清單目錄列合併覆蓋登錄列，
-  且不載入提供者執行階段補充鉤子。依提供者篩選的資訊清單
-  快速路徑只使用標記為 `static` 的提供者；標記為 `refreshable` 的提供者
-  會維持由登錄/快取支援，並將資訊清單列附加為補充，而
-  標記為 `runtime` 的提供者則維持在登錄/執行階段探索上。
-- `models list` 會區分原生模型中繼資料與執行階段上限。在表格
-  輸出中，當有效執行階段上限不同於原生內容視窗時，
-  `Ctx` 會顯示 `contextTokens/contextWindow`；當提供者公開該上限時，
-  JSON 列會包含 `contextTokens`。
-- `models list --provider <id>` 會依提供者 id 篩選，例如 `moonshot` 或
-  `openai-codex`。它不接受互動式提供者選擇器中的顯示標籤，
-  例如 `Moonshot AI`。
-- 模型參照會透過第一個 `/` 分割來解析。如果模型 ID 包含 `/`（OpenRouter 風格），請包含提供者前綴（範例：`openrouter/moonshotai/kimi-k2`）。
-- 如果省略提供者，OpenClaw 會先將輸入解析為別名，接著
-  解析為該精確模型 id 的唯一已設定提供者相符項，最後才
-  退回到已設定的預設提供者並顯示棄用警告。
-  如果該提供者不再公開已設定的預設模型，OpenClaw
-  會退回到第一個已設定的提供者/模型，而不是顯示
-  過時且已移除提供者的預設值。
-- `models status` 可能會在非祕密預留位置的認證輸出中顯示 `marker(<value>)`（例如 `OPENAI_API_KEY`、`secretref-managed`、`minimax-oauth`、`oauth:chutes`、`ollama-local`），而不是將它們遮罩為祕密。
+- `Auth` 欄位是供應商層級且唯讀。它是從本機
+  驗證設定檔中繼資料、env markers、已設定的供應商金鑰、local-provider
+  markers、AWS Bedrock env/profile markers，以及 plugin synthetic-auth 中繼資料計算而來；
+  它不會載入供應商 runtime、讀取 keychain secrets、呼叫供應商
+  APIs，或證明精確的逐模型執行就緒狀態。
+- `models list --all --provider <id>` 可以包含來自 Plugin manifest
+  或內建供應商目錄中繼資料、由供應商擁有的靜態目錄列，即使你
+  尚未向該供應商驗證也一樣。這些列仍會顯示為
+  不可用，直到設定相符的驗證。
+- `models list` 會在供應商目錄探索緩慢時保持控制平面回應順暢。
+  預設與已設定檢視會在短暫等待後退回使用已設定或
+  合成的模型列，並讓探索在背景完成。當你需要精確完整的已探索目錄且
+  願意等待供應商探索時，請使用 `--all`。
+- 廣泛的 `models list --all` 會將 manifest 目錄列合併覆蓋於 registry 列之上，
+  而不載入供應商 runtime supplement hooks。供應商篩選的 manifest
+  快速路徑只使用標記為 `static` 的供應商；標記為 `refreshable` 的供應商
+  會維持以 registry/cache 為後端，並附加 manifest 列作為補充，而
+  標記為 `runtime` 的供應商則維持在 registry/runtime 探索上。
+- `models list` 會區分原生模型中繼資料與 runtime caps。在表格
+  輸出中，當有效 runtime cap 不同於原生 context window 時，`Ctx` 會顯示
+  `contextTokens/contextWindow`；當供應商公開該 cap 時，JSON 列會包含 `contextTokens`。
+- `models list --provider <id>` 會依供應商 id 篩選，例如 `moonshot` 或
+  `openai-codex`。它不接受互動式供應商
+  選擇器中的顯示標籤，例如 `Moonshot AI`。
+- 模型 refs 會以**第一個** `/` 分割來解析。如果模型 ID 包含 `/`（OpenRouter 風格），請包含供應商前綴（範例：`openrouter/moonshotai/kimi-k2`）。
+- 如果你省略供應商，OpenClaw 會先將輸入解析為別名，接著
+  解析為該精確模型 id 在已設定供應商中的唯一相符項目，最後才
+  退回至已設定的預設供應商並顯示棄用警告。
+  如果該供應商不再公開已設定的預設模型，OpenClaw
+  會改為退回至第一個已設定的供應商/模型，而不是浮現
+  過時的已移除供應商預設值。
+- `models status` 可能會在驗證輸出中對非秘密預留位置顯示 `marker(<value>)`（例如 `OPENAI_API_KEY`、`secretref-managed`、`minimax-oauth`、`oauth:chutes`、`ollama-local`），而不是將它們遮蔽為秘密。
 
 ### 模型掃描
 
 `models scan` 會讀取 OpenRouter 的公開 `:free` 目錄，並為
-後備使用排序候選模型。目錄本身是公開的，因此僅中繼資料掃描不需要
+備援用途排序候選模型。目錄本身是公開的，因此僅中繼資料掃描不需要
 OpenRouter 金鑰。
 
-預設情況下，OpenClaw 會嘗試透過即時模型呼叫探測工具與圖片支援。
-如果未設定 OpenRouter 金鑰，此命令會退回到僅中繼資料
+預設情況下，OpenClaw 會嘗試使用即時模型呼叫探測工具與圖片支援。
+如果未設定 OpenRouter 金鑰，命令會退回至僅中繼資料
 輸出，並說明 `:free` 模型仍需要 `OPENROUTER_API_KEY` 才能進行
-探測和推論。
+探測與推論。
 
 選項：
 
-- `--no-probe`（僅中繼資料；不查找設定/祕密）
+- `--no-probe`（僅中繼資料；不查詢 config/secrets）
 - `--min-params <b>`
 - `--max-age-days <days>`
 - `--provider <name>`
 - `--max-candidates <n>`
-- `--timeout <ms>`（目錄請求與每次探測逾時）
+- `--timeout <ms>`（目錄請求與每次探測的逾時）
 - `--concurrency <n>`
 - `--yes`
 - `--no-input`
@@ -114,7 +119,7 @@ OpenRouter 金鑰。
 - `--json`
 
 `--set-default` 和 `--set-image` 需要即時探測；僅中繼資料掃描
-結果僅供參考，且不會套用到設定。
+結果僅供參考，且不會套用至 config。
 
 ### 模型狀態
 
@@ -122,18 +127,18 @@ OpenRouter 金鑰。
 
 - `--json`
 - `--plain`
-- `--check`（結束碼 1=已過期/遺失，2=即將過期）
-- `--probe`（即時探測已設定的認證設定檔）
-- `--probe-provider <name>`（探測一個提供者）
-- `--probe-profile <id>`（重複或以逗號分隔的設定檔 id）
+- `--check`（exit 1=已過期/缺失，2=即將過期）
+- `--probe`（對已設定的驗證設定檔進行即時探測）
+- `--probe-provider <name>`（探測一個供應商）
+- `--probe-profile <id>`（重複或以逗號分隔的設定檔 ids）
 - `--probe-timeout <ms>`
 - `--probe-concurrency <n>`
 - `--probe-max-tokens <n>`
 - `--agent <id>`（已設定的代理 id；覆寫 `OPENCLAW_AGENT_DIR`/`PI_CODING_AGENT_DIR`）
 
-`--json` 會保留 stdout 給 JSON 承載。認證設定檔、提供者
-與啟動診斷會路由至 stderr，讓指令碼可以將 stdout 直接管線輸入
-`jq` 等工具。
+`--json` 會保留 stdout 只輸出 JSON payload。驗證設定檔、供應商
+與啟動診斷會導向 stderr，因此 scripts 可以將 stdout 直接 pipe
+到 `jq` 等工具。
 
 探測狀態分類：
 
@@ -146,24 +151,24 @@ OpenRouter 金鑰。
 - `unknown`
 - `no_model`
 
-預期的探測詳細資訊/原因碼情況：
+可預期的探測詳細資訊/原因代碼案例：
 
 - `excluded_by_auth_order`：已存在儲存的設定檔，但明確的
-  `auth.order.<provider>` 省略了它，因此探測會回報排除原因，而不是
-  嘗試使用它。
+  `auth.order.<provider>` 省略了它，因此探測會回報排除，而不是
+  嘗試它。
 - `missing_credential`、`invalid_expires`、`expired`、`unresolved_ref`：
   設定檔存在，但不符合資格/無法解析。
-- `no_model`：提供者認證存在，但 OpenClaw 無法為該提供者解析出
-  可探測的模型候選項。
+- `no_model`：供應商驗證存在，但 OpenClaw 無法為該供應商解析出可探測的
+  模型候選。
 
-## 別名 + 後備模型
+## 別名 + 備援
 
 ```bash
 openclaw models aliases list
 openclaw models fallbacks list
 ```
 
-## 認證設定檔
+## 驗證設定檔
 
 ```bash
 openclaw models auth add
@@ -173,19 +178,20 @@ openclaw models auth setup-token --provider <id>
 openclaw models auth paste-token
 ```
 
-`models auth add` 是互動式認證輔助工具。它可以啟動提供者認證
-流程（OAuth/API 金鑰），或根據你選擇的提供者引導你手動貼上權杖。
+`models auth add` 是互動式驗證 helper。它可以啟動供應商驗證
+流程（OAuth/API key），或根據你選擇的
+供應商引導你手動貼上 token。
 
-`models auth list` 會列出所選代理儲存的認證設定檔，而不
-列印權杖、API 金鑰或 OAuth 祕密材料。使用 `--provider <id>` 可
-篩選為單一提供者，例如 `openai-codex`，並使用 `--json` 供指令碼使用。
+`models auth list` 會列出所選代理已儲存的驗證設定檔，而不
+列印 token、API-key 或 OAuth secret material。使用 `--provider <id>` 可
+篩選至單一供應商，例如 `openai-codex`；使用 `--json` 可供 scripting。
 
-`models auth login` 會執行提供者 Plugin 的認證流程（OAuth/API 金鑰）。使用
-`openclaw plugins list` 查看已安裝的提供者。
-使用 `openclaw models auth --agent <id> <subcommand>` 將認證結果寫入
-特定已設定代理儲存區。父層 `--agent` 旗標會由
+`models auth login` 會執行供應商 Plugin 的驗證流程（OAuth/API key）。使用
+`openclaw plugins list` 查看已安裝的供應商。
+使用 `openclaw models auth --agent <id> <subcommand>` 可將驗證結果寫入
+特定已設定代理 store。父層 `--agent` flag 會被
 `add`、`list`、`login`、`setup-token`、`paste-token` 和
-`login-github-copilot` 遵循。
+`login-github-copilot` 遵守。
 
 範例：
 
@@ -196,18 +202,18 @@ openclaw models auth list --provider openai-codex
 
 注意事項：
 
-- `setup-token` 和 `paste-token` 仍是提供者的通用權杖命令，
-  適用於公開權杖認證方法的提供者。
-- `setup-token` 需要互動式 TTY，並執行提供者的權杖認證
-  方法（當該提供者公開 `setup-token` 方法時，預設使用該方法）。
-- `paste-token` 接受在其他地方產生或來自自動化的權杖字串。
-- `paste-token` 需要 `--provider`，會提示輸入權杖值，並將其寫入
-  預設設定檔 id `<provider>:manual`，除非你傳入
+- `setup-token` 和 `paste-token` 仍是供公開 token auth 方法之供應商使用的通用 token 命令。
+- `setup-token` 需要互動式 TTY，並執行供應商的 token-auth
+  方法（當該供應商公開
+  一個方法時，預設為該供應商的 `setup-token` 方法）。
+- `paste-token` 接受在其他地方或由自動化產生的 token 字串。
+- `paste-token` 需要 `--provider`，會提示輸入 token 值，並將
+  它寫入預設設定檔 id `<provider>:manual`，除非你傳入
   `--profile-id`。
-- `paste-token --expires-in <duration>` 會根據相對持續時間（例如 `365d` 或 `12h`）
-  儲存絕對權杖到期時間。
-- Anthropic 注意事項：Anthropic 工作人員告訴我們，OpenClaw 風格的 Claude CLI 使用方式已再次被允許，因此 OpenClaw 會將 Claude CLI 重用和 `claude -p` 使用視為此整合已批准的方式，除非 Anthropic 發布新政策。
-- Anthropic `setup-token` / `paste-token` 仍可作為受支援的 OpenClaw 權杖路徑使用，但 OpenClaw 現在會在可用時優先使用 Claude CLI 重用和 `claude -p`。
+- `paste-token --expires-in <duration>` 會從像 `365d` 或 `12h` 這類
+  相對 duration 儲存絕對 token 到期時間。
+- Anthropic 注意事項：Anthropic staff 告知我們 OpenClaw 風格的 Claude CLI 使用已再次允許，因此除非 Anthropic 發布新政策，否則 OpenClaw 會將 Claude CLI 重用和 `claude -p` 使用視為此整合的已核准方式。
+- Anthropic `setup-token` / `paste-token` 仍可作為受支援的 OpenClaw token 路徑使用，但 OpenClaw 現在會優先使用可用的 Claude CLI 重用與 `claude -p`。
 
 ## 相關
 
