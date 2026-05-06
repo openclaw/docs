@@ -1,34 +1,34 @@
 ---
 read_when:
     - Пакування OpenClaw.app
-    - Налагодження служби launchd gateway на macOS
-    - Встановлення CLI gateway для macOS
+    - Налагодження служби launchd для Gateway у macOS
+    - Встановлення CLI Gateway для macOS
 summary: Середовище виконання Gateway на macOS (зовнішня служба launchd)
 title: Gateway на macOS
 x-i18n:
-    generated_at: "2026-04-24T04:16:13Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T05:21:07Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: fb98905712504fdf5085ec1c00c9e3f911e4005cd14b1472efdb7a5ec7189b5c
+    source_hash: 3f5dcc73671140d7599ffefceeb98ac7ce34da1f944c1e7c70bc9e5810e6ca66
     source_path: platforms/mac/bundled-gateway.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw.app більше не постачається в комплекті з Node/Bun або середовищем виконання Gateway. Застосунок macOS
+OpenClaw.app більше не включає Node/Bun або середовище виконання Gateway. Застосунок macOS
 очікує **зовнішнє** встановлення CLI `openclaw`, не запускає Gateway як
-дочірній процес і керує службою launchd для кожного користувача, щоб підтримувати Gateway
-у запущеному стані (або підключається до наявного локального Gateway, якщо він уже працює).
+дочірній процес і керує службою launchd для кожного користувача, щоб Gateway
+працював (або підключається до наявного локального Gateway, якщо він уже запущений).
 
 ## Встановіть CLI (обов’язково для локального режиму)
 
-Node 24 є типовим середовищем виконання на Mac. Node 22 LTS, наразі `22.14+`, також працює для сумісності. Потім встановіть `openclaw` глобально:
+Node 24 є стандартним середовищем виконання на Mac. Node 22 LTS, наразі `22.14+`, усе ще працює для сумісності. Потім встановіть `openclaw` глобально:
 
 ```bash
 npm install -g openclaw@<version>
 ```
 
-Кнопка **Install CLI** у застосунку macOS запускає той самий глобальний процес встановлення, який застосунок
-використовує внутрішньо: спочатку надається перевага npm, потім pnpm, потім bun, якщо це єдиний
+Кнопка **Встановити CLI** у застосунку macOS запускає той самий потік глобального встановлення, який застосунок
+використовує внутрішньо: спочатку він віддає перевагу npm, потім pnpm, а потім bun, якщо це єдиний
 виявлений менеджер пакетів. Node залишається рекомендованим середовищем виконання Gateway.
 
 ## Launchd (Gateway як LaunchAgent)
@@ -44,26 +44,26 @@ npm install -g openclaw@<version>
 
 Менеджер:
 
-- Застосунок macOS керує встановленням/оновленням LaunchAgent у локальному режимі.
-- CLI також може його встановити: `openclaw gateway install`.
+- Застосунок macOS відповідає за встановлення/оновлення LaunchAgent у локальному режимі.
+- CLI також може встановити його: `openclaw gateway install`.
 
 Поведінка:
 
-- “OpenClaw Active” вмикає/вимикає LaunchAgent.
-- Вихід із застосунку **не** зупиняє gateway (launchd підтримує його в живому стані).
-- Якщо Gateway уже працює на налаштованому порту, застосунок підключається
-  до нього замість запуску нового.
+- "OpenClaw Active" вмикає/вимикає LaunchAgent.
+- Вихід із застосунку **не** зупиняє gateway (launchd підтримує його роботу).
+- Якщо Gateway уже запущений на налаштованому порту, застосунок підключається до
+  нього замість запуску нового.
 
 Журналювання:
 
-- launchd stdout/err: `/tmp/openclaw/openclaw-gateway.log`
+- stdout/err launchd: `/tmp/openclaw/openclaw-gateway.log`
 
 ## Сумісність версій
 
-Застосунок macOS перевіряє версію gateway щодо власної версії. Якщо вони
-несумісні, оновіть глобальний CLI так, щоб він відповідав версії застосунку.
+Застосунок macOS перевіряє версію gateway відносно власної версії. Якщо вони
+несумісні, оновіть глобальний CLI, щоб він відповідав версії застосунку.
 
-## Smoke check
+## Smoke-перевірка
 
 ```bash
 openclaw --version
@@ -79,7 +79,7 @@ openclaw gateway --port 18999 --bind loopback
 openclaw gateway call health --url ws://127.0.0.1:18999 --timeout 3000
 ```
 
-## Пов’язане
+## Пов’язано
 
 - [Застосунок macOS](/uk/platforms/macos)
 - [Runbook Gateway](/uk/gateway)
