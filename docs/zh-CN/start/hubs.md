@@ -1,13 +1,13 @@
 ---
 read_when:
     - 你想要一份完整的文档地图
-summary: 链接到每篇 OpenClaw 文档的枢纽页
+summary: 链接到每篇 OpenClaw 文档的中心页面
 title: 文档中心
 x-i18n:
-    generated_at: "2026-05-05T16:52:58Z"
+    generated_at: "2026-05-06T06:20:00Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 0d69e3e48c149f77778540c4a486ab05e8f18fc08bd81739f434721d2336e1f5
+    source_hash: 9c5822f46d0c4014ec5874d06c40f9adbe4439e8164cc75709e15c519b3e11af
     source_path: start/hubs.md
     workflow: 16
 ---
@@ -16,7 +16,7 @@ x-i18n:
 如果你刚接触 OpenClaw，请从[入门指南](/zh-CN/start/getting-started)开始。
 </Note>
 
-使用这些中心页发现每个页面，包括左侧导航中未显示的深度解析和参考文档。
+使用这些中心发现每个页面，包括左侧导航中未显示的深入解析和参考文档。
 
 ## 从这里开始
 
@@ -25,14 +25,14 @@ x-i18n:
 - [新手引导](/zh-CN/start/onboarding)
 - [新手引导（CLI）](/zh-CN/start/wizard)
 - [设置](/zh-CN/start/setup)
-- [仪表盘（本地 Gateway 网关）](http://127.0.0.1:18789/)
+- [仪表板（本地 Gateway 网关）](http://127.0.0.1:18789/)
 - [帮助](/zh-CN/help)
 - [文档目录](/zh-CN/start/docs-directory)
 - [配置](/zh-CN/gateway/configuration)
 - [配置示例](/zh-CN/gateway/configuration-examples)
 - [OpenClaw 助手](/zh-CN/start/openclaw)
 - [展示](/zh-CN/start/showcase)
-- [背景设定](/zh-CN/start/lore)
+- [传说](/zh-CN/start/lore)
 
 ## 安装 + 更新
 
@@ -54,12 +54,12 @@ x-i18n:
 - [多智能体路由](/zh-CN/concepts/multi-agent)
 - [压缩](/zh-CN/concepts/compaction)
 - [会话](/zh-CN/concepts/session)
-- [会话剪枝](/zh-CN/concepts/session-pruning)
+- [会话修剪](/zh-CN/concepts/session-pruning)
 - [会话工具](/zh-CN/concepts/session-tool)
 - [队列](/zh-CN/concepts/queue)
 - [斜杠命令](/zh-CN/tools/slash-commands)
 - [RPC 适配器](/zh-CN/reference/rpc)
-- [TypeBox 架构](/zh-CN/concepts/typebox)
+- [TypeBox schema](/zh-CN/concepts/typebox)
 - [时区处理](/zh-CN/concepts/timezone)
 - [在线状态](/zh-CN/concepts/presence)
 - [设备发现 + 传输协议](/zh-CN/gateway/discovery)
@@ -85,7 +85,7 @@ x-i18n:
 - [iMessage（旧版）](/zh-CN/channels/imessage)
 - [位置解析](/zh-CN/channels/location)
 - [WebChat](/zh-CN/web/webchat)
-- [Webhooks](/zh-CN/automation/cron-jobs#webhooks)
+- [Webhook](/zh-CN/automation/cron-jobs#webhooks)
 - [Gmail Pub/Sub](/zh-CN/automation/cron-jobs#gmail-pubsub-integration)
 
 ## Gateway 网关 + 运维
@@ -100,8 +100,8 @@ x-i18n:
 - [Doctor](/zh-CN/gateway/doctor)
 - [日志记录](/zh-CN/gateway/logging)
 - [沙箱隔离](/zh-CN/gateway/sandboxing)
-- [仪表盘](/zh-CN/web/dashboard)
-- [控制界面](/zh-CN/web/control-ui)
+- [仪表板](/zh-CN/web/dashboard)
+- [控制 UI](/zh-CN/web/control-ui)
 - [远程访问](/zh-CN/gateway/remote)
 - [远程 Gateway 网关 README](/zh-CN/gateway/remote-gateway-readme)
 - [Tailscale](/zh-CN/gateway/tailscale)
@@ -113,16 +113,16 @@ x-i18n:
 - [工具界面](/zh-CN/tools)
 - [OpenProse](/zh-CN/prose)
 - [CLI 参考](/zh-CN/cli)
-- [执行工具](/zh-CN/tools/exec)
+- [Exec 工具](/zh-CN/tools/exec)
 - [PDF 工具](/zh-CN/tools/pdf)
 - [提权模式](/zh-CN/tools/elevated)
-- [Cron 任务](/zh-CN/automation/cron-jobs)
+- [Cron 作业](/zh-CN/automation/cron-jobs)
 - [自动化和任务](/zh-CN/automation)
 - [思考 + 详细输出](/zh-CN/tools/thinking)
 - [Models](/zh-CN/concepts/models)
 - [子智能体](/zh-CN/tools/subagents)
-- [Agent 发送 CLI](/zh-CN/tools/agent-send)
-- [终端界面](/zh-CN/web/tui)
+- [智能体发送 CLI](/zh-CN/tools/agent-send)
+- [终端 UI](/zh-CN/web/tui)
 - [浏览器控制](/zh-CN/tools/browser)
 - [浏览器（Linux 故障排除）](/zh-CN/tools/browser-linux-troubleshooting)
 - [投票](/zh-CN/cli/message)
@@ -135,7 +135,7 @@ x-i18n:
 - [音频](/zh-CN/nodes/audio)
 - [位置命令](/zh-CN/nodes/location-command)
 - [语音唤醒](/zh-CN/nodes/voicewake)
-- [对话模式](/zh-CN/nodes/talk)
+- [Talk 模式](/zh-CN/nodes/talk)
 
 ## 平台
 
@@ -152,7 +152,7 @@ x-i18n:
 - [macOS 开发设置](/zh-CN/platforms/mac/dev-setup)
 - [macOS 菜单栏](/zh-CN/platforms/mac/menu-bar)
 - [macOS 语音唤醒](/zh-CN/platforms/mac/voicewake)
-- [macOS 语音覆盖层](/zh-CN/platforms/mac/voice-overlay)
+- [macOS 语音叠层](/zh-CN/platforms/mac/voice-overlay)
 - [macOS WebChat](/zh-CN/platforms/mac/webchat)
 - [macOS Canvas](/zh-CN/platforms/mac/canvas)
 - [macOS 子进程](/zh-CN/platforms/mac/child-process)
