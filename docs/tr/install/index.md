@@ -1,28 +1,28 @@
 ---
 read_when:
-    - Getting Started hızlı başlangıcının dışında bir kurulum yöntemine ihtiyacınız var
-    - Bir bulut platformuna dağıtım yapmak istiyorsunuz
-    - Güncellemeniz, taşımanız veya kaldırmanız gerekiyor
-summary: OpenClaw'ı kurun — kurulum betiği, npm/pnpm/bun, kaynaktan, Docker ve daha fazlası
+    - Başlarken hızlı başlangıcının dışında bir kurulum yöntemine ihtiyacınız var
+    - Bir bulut platformuna dağıtmak istiyorsunuz
+    - Güncellemeniz, geçiş yapmanız veya kaldırmanız gerekiyor
+summary: OpenClaw'ı yükleyin - yükleyici betiği, npm/pnpm/bun, kaynak koddan, Docker ve daha fazlası
 title: Kurulum
 x-i18n:
-    generated_at: "2026-04-26T11:33:50Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:19:01Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b8dc6b9511be6bf9060cc150a7c51daf3b6d556dab4a85910094b4b892145cd7
+    source_hash: 2d5b38787ad80f91c82aa1fd4020a11c99f440ccbf2e9b9309da336dd5883462
     source_path: install/index.md
-    workflow: 15
+    workflow: 16
 ---
 
 ## Sistem gereksinimleri
 
-- **Node 24** (önerilir) veya Node 22.14+ — kurulum betiği bunu otomatik olarak halleder
-- **macOS, Linux veya Windows** — hem yerel Windows hem de WSL2 desteklenir; WSL2 daha kararlıdır. Bkz. [Windows](/tr/platforms/windows).
+- **Node 24** (önerilir) veya Node 22.14+ - yükleyici betiği bunu otomatik olarak halleder
+- **macOS, Linux veya Windows** - hem yerel Windows hem de WSL2 desteklenir; WSL2 daha kararlıdır. Bkz. [Windows](/tr/platforms/windows).
 - `pnpm` yalnızca kaynaktan derleme yaparsanız gerekir
 
-## Önerilen: kurulum betiği
+## Önerilen: yükleyici betiği
 
-Kurmanın en hızlı yolu. İşletim sisteminizi algılar, gerekirse Node'u kurar, OpenClaw'ı kurar ve eşleştirmeyi başlatır.
+Kurmanın en hızlı yolu. İşletim sisteminizi algılar, gerekirse Node yükler, OpenClaw'u kurar ve başlangıç yapılandırmasını başlatır.
 
 <Tabs>
   <Tab title="macOS / Linux / WSL2">
@@ -37,7 +37,7 @@ Kurmanın en hızlı yolu. İşletim sisteminizi algılar, gerekirse Node'u kura
   </Tab>
 </Tabs>
 
-Eşleştirmeyi çalıştırmadan kurmak için:
+Başlangıç yapılandırmasını çalıştırmadan kurmak için:
 
 <Tabs>
   <Tab title="macOS / Linux / WSL2">
@@ -52,21 +52,21 @@ Eşleştirmeyi çalıştırmadan kurmak için:
   </Tab>
 </Tabs>
 
-Tüm bayraklar ve CI/otomasyon seçenekleri için bkz. [Installer internals](/tr/install/installer).
+Tüm bayraklar ve CI/otomasyon seçenekleri için bkz. [Yükleyici iç ayrıntıları](/tr/install/installer).
 
 ## Alternatif kurulum yöntemleri
 
-### Yerel önek kurucusu (`install-cli.sh`)
+### Yerel önek yükleyicisi (`install-cli.sh`)
 
-OpenClaw ve Node'un sistem geneline kurulu bir Node'a bağlı olmadan
-`~/.openclaw` gibi yerel bir önek altında tutulmasını istiyorsanız bunu kullanın:
+OpenClaw ve Node'un sistem genelindeki bir Node kurulumuna bağlı olmadan
+`~/.openclaw` gibi yerel bir önek altında tutulmasını istediğinizde bunu kullanın:
 
 ```bash
 curl -fsSL https://openclaw.ai/install-cli.sh | bash
 ```
 
-Varsayılan olarak npm kurulumlarını destekler, ayrıca aynı
-önek akışı altında git checkout kurulumlarını da destekler. Tam başvuru: [Installer internals](/tr/install/installer#install-clish).
+Varsayılan olarak npm kurulumlarını ve aynı önek akışı altında git-checkout
+kurulumlarını destekler. Tam başvuru: [Yükleyici iç ayrıntıları](/tr/install/installer#install-clish).
 
 Zaten kurulu mu? Paket ve git kurulumları arasında
 `openclaw update --channel dev` ve `openclaw update --channel stable` ile geçiş yapın. Bkz.
@@ -102,14 +102,14 @@ Node'u zaten kendiniz yönetiyorsanız:
     ```
 
     <Note>
-    Bun, genel CLI kurulum yolu için desteklenir. Gateway çalışma zamanı için Node önerilen daemon çalışma zamanı olmaya devam eder.
+    Bun, global CLI kurulum yolu için desteklenir. Gateway çalışma zamanı için Node önerilen artalan hizmeti çalışma zamanı olmaya devam eder.
     </Note>
 
   </Tab>
 </Tabs>
 
-<Accordion title="Sorun giderme: sharp derleme hataları (npm)">
-  `sharp`, genel olarak kurulmuş bir libvips nedeniyle başarısız olursa:
+<Accordion title="Troubleshooting: sharp build errors (npm)">
+  `sharp`, global olarak kurulmuş libvips nedeniyle başarısız olursa:
 
 ```bash
 SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install -g openclaw@latest
@@ -119,7 +119,7 @@ SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install -g openclaw@latest
 
 ### Kaynaktan
 
-Katkıda bulunanlar veya yerel bir checkout üzerinden çalıştırmak isteyen herkes için:
+Katkıda bulunanlar veya yerel bir checkout'tan çalıştırmak isteyen herkes için:
 
 ```bash
 git clone https://github.com/openclaw/openclaw.git
@@ -129,28 +129,28 @@ pnpm link --global
 openclaw onboard --install-daemon
 ```
 
-Ya da link adımını atlayıp depo içinden `pnpm openclaw ...` kullanın. Tam geliştirme iş akışları için bkz. [Setup](/tr/start/setup).
+Alternatif olarak link adımını atlayıp depo içinden `pnpm openclaw ...` kullanın. Tam geliştirme iş akışları için bkz. [Kurulum](/tr/start/setup).
 
-### GitHub main üzerinden kurulum
+### GitHub main dalından kurulum
 
 ```bash
 npm install -g github:openclaw/openclaw#main
 ```
 
-### Container'lar ve paket yöneticileri
+### Konteynerler ve paket yöneticileri
 
 <CardGroup cols={2}>
   <Card title="Docker" href="/tr/install/docker" icon="container">
-    Container tabanlı veya headless dağıtımlar.
+    Konteynerleştirilmiş veya başsız dağıtımlar.
   </Card>
   <Card title="Podman" href="/tr/install/podman" icon="container">
-    Docker'a rootsuz container alternatifi.
+    Docker'a root'suz konteyner alternatifi.
   </Card>
   <Card title="Nix" href="/tr/install/nix" icon="snowflake">
-    Nix flake üzerinden bildirime dayalı kurulum.
+    Nix flake ile bildirimsel kurulum.
   </Card>
   <Card title="Ansible" href="/tr/install/ansible" icon="server">
-    Otomatik filo sağlama.
+    Otomatik filo hazırlama.
   </Card>
   <Card title="Bun" href="/tr/install/bun" icon="zap">
     Bun çalışma zamanı üzerinden yalnızca CLI kullanımı.
@@ -160,20 +160,20 @@ npm install -g github:openclaw/openclaw#main
 ## Kurulumu doğrulayın
 
 ```bash
-openclaw --version      # CLI'nin kullanılabildiğini doğrula
-openclaw doctor         # yapılandırma sorunlarını denetle
-openclaw gateway status # Gateway'in çalıştığını doğrula
+openclaw --version      # CLI'nin kullanılabilir olduğunu doğrulayın
+openclaw doctor         # yapılandırma sorunlarını denetleyin
+openclaw gateway status # Gateway'in çalıştığını doğrulayın
 ```
 
-Kurulumdan sonra yönetilen başlangıç istiyorsanız:
+Kurulumdan sonra yönetilen başlatma istiyorsanız:
 
 - macOS: `openclaw onboard --install-daemon` veya `openclaw gateway install` üzerinden LaunchAgent
 - Linux/WSL2: aynı komutlar üzerinden systemd kullanıcı hizmeti
-- Yerel Windows: önce Scheduled Task, görev oluşturma reddedilirse kullanıcı başına Startup klasörü oturum açma öğesi geri dönüşü
+- Yerel Windows: Önce Zamanlanmış Görev, görev oluşturma reddedilirse kullanıcı başına Başlangıç klasörü oturum açma öğesi yedeği
 
 ## Barındırma ve dağıtım
 
-OpenClaw'ı bir bulut sunucusuna veya VPS'e dağıtın:
+OpenClaw'u bir bulut sunucusuna veya VPS'e dağıtın:
 
 <CardGroup cols={3}>
   <Card title="VPS" href="/tr/vps">Herhangi bir Linux VPS</Card>
@@ -191,31 +191,31 @@ OpenClaw'ı bir bulut sunucusuna veya VPS'e dağıtın:
 ## Güncelleyin, taşıyın veya kaldırın
 
 <CardGroup cols={3}>
-  <Card title="Güncelleme" href="/tr/install/updating" icon="refresh-cw">
-    OpenClaw'ı güncel tutun.
+  <Card title="Updating" href="/tr/install/updating" icon="refresh-cw">
+    OpenClaw'u güncel tutun.
   </Card>
-  <Card title="Taşıma" href="/tr/install/migrating" icon="arrow-right">
+  <Card title="Migrating" href="/tr/install/migrating" icon="arrow-right">
     Yeni bir makineye taşıyın.
   </Card>
-  <Card title="Kaldırma" href="/tr/install/uninstall" icon="trash-2">
-    OpenClaw'ı tamamen kaldırın.
+  <Card title="Uninstall" href="/tr/install/uninstall" icon="trash-2">
+    OpenClaw'u tamamen kaldırın.
   </Card>
 </CardGroup>
 
 ## Sorun giderme: `openclaw` bulunamadı
 
-Kurulum başarılı olduysa ama terminalinizde `openclaw` bulunamıyorsa:
+Kurulum başarılı olduysa ancak terminalinizde `openclaw` bulunamıyorsa:
 
 ```bash
 node -v           # Node kurulu mu?
-npm prefix -g     # Genel paketler nerede?
-echo "$PATH"      # Genel bin dizini PATH içinde mi?
+npm prefix -g     # Global paketler nerede?
+echo "$PATH"      # Global bin dizini PATH içinde mi?
 ```
 
-`$(npm prefix -g)/bin`, `$PATH` içinde değilse bunu kabuk başlangıç dosyanıza (`~/.zshrc` veya `~/.bashrc`) ekleyin:
+`$(npm prefix -g)/bin`, `$PATH` içinde değilse kabuk başlangıç dosyanıza (`~/.zshrc` veya `~/.bashrc`) ekleyin:
 
 ```bash
 export PATH="$(npm prefix -g)/bin:$PATH"
 ```
 
-Ardından yeni bir terminal açın. Daha fazla ayrıntı için bkz. [Node setup](/tr/install/node).
+Ardından yeni bir terminal açın. Daha fazla ayrıntı için bkz. [Node kurulumu](/tr/install/node).

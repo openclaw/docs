@@ -1,70 +1,70 @@
 ---
 read_when:
     - Ses katmanı davranışını ayarlama
-summary: Uyandırma sözcüğü ve bas-konuş örtüştüğünde ses katmanı yaşam döngüsü
+summary: Uyandırma sözcüğü ve bas-konuş çakıştığında ses bindirmesi yaşam döngüsü
 title: Ses katmanı
 x-i18n:
-    generated_at: "2026-04-24T09:20:11Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:22:49Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 3ae98afad57dffe73e2c878eef4f3253e4464d68cadf531e9239b017cc160f28
+    source_hash: 5b30f50512e557bd5a50f0e4e8b7955a847b3b554694347d56638581fcda9514
     source_path: platforms/mac/voice-overlay.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Ses Katmanı Yaşam Döngüsü (macOS)
+# Ses Kaplaması Yaşam Döngüsü (macOS)
 
-Hedef kitle: macOS uygulama katkıcıları. Amaç: uyandırma sözcüğü ve bas-konuş çakıştığında ses katmanını öngörülebilir tutmak.
+Kitle: macOS uygulaması katkıda bulunanları. Amaç: uyandırma sözcüğü ve bas-konuş çakıştığında ses kaplamasını öngörülebilir tutmak.
 
-## Geçerli amaç
+## Mevcut amaç
 
-- Katman zaten uyandırma sözcüğünden dolayı görünürse ve kullanıcı kısayol tuşuna basarsa, kısayol oturumu mevcut metni sıfırlamak yerine _devralır_. Kısayol tuşu basılı tutulduğu sürece katman görünür kalır. Kullanıcı bıraktığında: kırpılmış metin varsa gönder, yoksa kapat.
-- Yalnızca uyandırma sözcüğü sessizlikte otomatik göndermeye devam eder; bas-konuş ise bırakıldığında hemen gönderir.
+- Kaplama uyandırma sözcüğü nedeniyle zaten görünür durumdaysa ve kullanıcı kısayol tuşuna basarsa, kısayol tuşu oturumu mevcut metni sıfırlamak yerine _devralır_. Kısayol tuşu basılı tutulduğu sürece kaplama açık kalır. Kullanıcı bıraktığında: kırpılmış metin varsa gönder, yoksa kapat.
+- Yalnızca uyandırma sözcüğü hâlâ sessizlikte otomatik gönderir; bas-konuş bırakıldığında hemen gönderir.
 
 ## Uygulandı (9 Aralık 2025)
 
-- Katman oturumları artık yakalama başına bir belirteç taşır (uyandırma sözcüğü veya bas-konuş). Belirteç eşleşmediğinde kısmi/son/gönder/kapat/seviye güncellemeleri düşürülür; böylece eski geri çağırmalar önlenir.
-- Bas-konuş görünür tüm katman metinlerini bir önek olarak devralır (böylece uyandırma katmanı açıkken kısayol tuşuna basmak metni korur ve yeni konuşmayı ekler). Geçerli metne geri düşmeden önce son bir yazıya döküm için 1,5 saniyeye kadar bekler.
-- Chime/katman günlükleri `voicewake.overlay`, `voicewake.ptt` ve `voicewake.chime` kategorilerinde `info` düzeyinde üretilir (oturum başlangıcı, kısmi, son, gönder, kapat, chime nedeni).
+- Kaplama oturumları artık her yakalama için bir token taşır (uyandırma sözcüğü veya bas-konuş). Token eşleşmediğinde kısmi/son/gönder/kapat/seviye güncellemeleri atılır; böylece bayat geri çağrılar önlenir.
+- Bas-konuş, görünür durumdaki kaplama metnini ön ek olarak devralır (yani uyandırma kaplaması açıkken kısayol tuşuna basmak metni korur ve yeni konuşmayı ekler). Mevcut metne geri dönmeden önce son transcript için 1,5 saniyeye kadar bekler.
+- Zil/kaplama günlükleri `voicewake.overlay`, `voicewake.ptt` ve `voicewake.chime` kategorilerinde `info` düzeyinde yayımlanır (oturum başlangıcı, kısmi, son, gönder, kapat, zil nedeni).
 
 ## Sonraki adımlar
 
 1. **VoiceSessionCoordinator (actor)**
    - Aynı anda tam olarak bir `VoiceSession` sahibi olur.
-   - API (belirteç tabanlı): `beginWakeCapture`, `beginPushToTalk`, `updatePartial`, `endCapture`, `cancel`, `applyCooldown`.
-   - Eski belirteçler taşıyan geri çağırmaları düşürür (eski tanıyıcıların katmanı yeniden açmasını önler).
+   - API (token tabanlı): `beginWakeCapture`, `beginPushToTalk`, `updatePartial`, `endCapture`, `cancel`, `applyCooldown`.
+   - Bayat token taşıyan geri çağrıları atar (eski tanıyıcıların kaplamayı yeniden açmasını önler).
 2. **VoiceSession (model)**
-   - Alanlar: `token`, `source` (`wakeWord|pushToTalk`), commit edilmiş/geçici metin, chime bayrakları, zamanlayıcılar (auto-send, idle), `overlayMode` (`display|editing|sending`), bekleme süresi son tarihi.
-3. **Katman bağlama**
-   - `VoiceSessionPublisher` (`ObservableObject`) etkin oturumu SwiftUI’ye yansıtır.
-   - `VoiceWakeOverlayView` yalnızca yayınlayıcı üzerinden oluşturur; asla genel singleton’ları doğrudan değiştirmez.
-   - Katman kullanıcı eylemleri (`sendNow`, `dismiss`, `edit`) oturum belirteciyle birlikte koordinatöre geri çağrı yapar.
+   - Alanlar: `token`, `source` (wakeWord|pushToTalk), işlenmiş/geçici metin, zil bayrakları, zamanlayıcılar (otomatik gönderme, boşta), `overlayMode` (display|editing|sending), bekleme süresi son tarihi.
+3. **Kaplama bağlama**
+   - `VoiceSessionPublisher` (`ObservableObject`) etkin oturumu SwiftUI içine yansıtır.
+   - `VoiceWakeOverlayView` yalnızca publisher üzerinden işler; global singleton’ları asla doğrudan değiştirmez.
+   - Kaplama kullanıcı eylemleri (`sendNow`, `dismiss`, `edit`) oturum token’ı ile koordinatöre geri çağrı yapar.
 4. **Birleşik gönderme yolu**
-   - `endCapture` sırasında: kırpılmış metin boşsa → kapat; değilse `performSend(session:)` (gönderme chime’ını bir kez çalar, iletir, kapatır).
-   - Bas-konuş: gecikme yok; uyandırma sözcüğü: otomatik gönderim için isteğe bağlı gecikme.
-   - Bas-konuş bittikten sonra uyandırma çalışma zamanına kısa bir bekleme süresi uygulayın, böylece uyandırma sözcüğü hemen yeniden tetiklenmez.
+   - `endCapture` sırasında: kırpılmış metin boşsa → kapat; değilse `performSend(session:)` (gönderme zilini bir kez çalar, iletir, kapatır).
+   - Bas-konuş: gecikme yok; uyandırma sözcüğü: otomatik gönderme için isteğe bağlı gecikme.
+   - Bas-konuş bittikten sonra uyandırma çalışma zamanına kısa bir bekleme süresi uygula; böylece uyandırma sözcüğü hemen yeniden tetiklenmez.
 5. **Günlükleme**
-   - Koordinatör, `ai.openclaw` alt sisteminde `voicewake.overlay` ve `voicewake.chime` kategorilerinde `.info` günlükleri üretir.
-   - Temel olaylar: `session_started`, `adopted_by_push_to_talk`, `partial`, `finalized`, `send`, `dismiss`, `cancel`, `cooldown`.
+   - Koordinatör, `ai.openclaw` alt sisteminde, `voicewake.overlay` ve `voicewake.chime` kategorilerinde `.info` günlükleri yayımlar.
+   - Anahtar olaylar: `session_started`, `adopted_by_push_to_talk`, `partial`, `finalized`, `send`, `dismiss`, `cancel`, `cooldown`.
 
-## Hata ayıklama denetim listesi
+## Hata ayıklama kontrol listesi
 
-- Yapışkan katmanı yeniden üretirken günlükleri akıtın:
+- Takılı kalan bir kaplamayı yeniden üretirken günlükleri akış olarak izle:
 
   ```bash
   sudo log stream --predicate 'subsystem == "ai.openclaw" AND category CONTAINS "voicewake"' --level info --style compact
   ```
 
-- Yalnızca bir etkin oturum belirteci olduğunu doğrulayın; eski geri çağırmalar koordinatör tarafından düşürülmelidir.
-- Bas-konuş bırakmanın her zaman etkin belirteçle `endCapture` çağırdığından emin olun; metin boşsa chime veya gönderme olmadan `dismiss` bekleyin.
+- Yalnızca bir etkin oturum token’ı olduğunu doğrula; bayat geri çağrılar koordinatör tarafından atılmalıdır.
+- Bas-konuş bırakma işleminin etkin token ile her zaman `endCapture` çağırdığından emin ol; metin boşsa zil veya gönderme olmadan `dismiss` bekle.
 
-## Taşıma adımları (önerilen)
+## Geçiş adımları (önerilen)
 
-1. `VoiceSessionCoordinator`, `VoiceSession` ve `VoiceSessionPublisher` ekleyin.
-2. `VoiceWakeRuntime` bileşenini `VoiceWakeOverlayController`’a doğrudan dokunmak yerine oturum oluşturacak/güncelleyecek/bitirecek şekilde yeniden düzenleyin.
-3. `VoicePushToTalk` bileşenini mevcut oturumları devralacak ve bırakıldığında `endCapture` çağıracak şekilde yeniden düzenleyin; çalışma zamanı bekleme süresi uygulayın.
-4. `VoiceWakeOverlayController`’ı yayınlayıcıya bağlayın; çalışma zamanı/PTT’den gelen doğrudan çağrıları kaldırın.
-5. Oturum devralma, bekleme süresi ve boş metin kapatma için entegrasyon testleri ekleyin.
+1. `VoiceSessionCoordinator`, `VoiceSession` ve `VoiceSessionPublisher` ekle.
+2. `VoiceWakeOverlayController` öğesine doğrudan dokunmak yerine oturumlar oluşturacak/güncelleyecek/sonlandıracak şekilde `VoiceWakeRuntime` öğesini yeniden düzenle.
+3. Mevcut oturumları devralacak ve bırakıldığında `endCapture` çağıracak şekilde `VoicePushToTalk` öğesini yeniden düzenle; çalışma zamanı bekleme süresini uygula.
+4. `VoiceWakeOverlayController` öğesini publisher’a bağla; çalışma zamanı/PTT tarafından yapılan doğrudan çağrıları kaldır.
+5. Oturum devralma, bekleme süresi ve boş metin kapatma için entegrasyon testleri ekle.
 
 ## İlgili
 

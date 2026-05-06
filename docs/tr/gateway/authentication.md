@@ -1,49 +1,47 @@
 ---
 read_when:
-    - Model kimlik doğrulamasında veya OAuth süresinin dolmasında hata ayıklama
-    - Kimlik doğrulamayı veya kimlik bilgisi depolamayı belgeleme
+    - Model kimlik doğrulaması veya OAuth süresi dolması sorunlarını giderme
+    - Kimlik doğrulamayı veya kimlik bilgilerinin depolanmasını belgeleme
 summary: 'Model kimlik doğrulaması: OAuth, API anahtarları, Claude CLI yeniden kullanımı ve Anthropic setup-token'
 title: Kimlik doğrulama
 x-i18n:
-    generated_at: "2026-04-30T09:19:27Z"
+    generated_at: "2026-05-06T09:11:32Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 225adf26963183f8b5ecc76ca7bdc143f6a8800797fbd4be9d53d65b434f36c7
+    source_hash: 34c83f8d2bb2016e20e5c0bbd65f8972f543aebdecdc5ad47b1f7df6d02ed783
     source_path: gateway/authentication.md
     workflow: 16
 ---
 
 <Note>
-Bu sayfa **model sağlayıcı** kimlik doğrulama başvurusudur (API anahtarları, OAuth, Claude CLI yeniden kullanımı ve Anthropic kurulum belirteci). **Gateway bağlantısı** kimlik doğrulaması (belirteç, parola, güvenilir proxy) için [Yapılandırma](/tr/gateway/configuration) ve [Güvenilir Proxy Kimlik Doğrulaması](/tr/gateway/trusted-proxy-auth) bölümlerine bakın.
+Bu sayfa, **model sağlayıcısı** kimlik doğrulama başvurusudur (API anahtarları, OAuth, Claude CLI yeniden kullanımı ve Anthropic kurulum belirteci). **Gateway bağlantısı** kimlik doğrulaması (belirteç, parola, güvenilir proxy) için bkz. [Yapılandırma](/tr/gateway/configuration) ve [Güvenilir Proxy Kimlik Doğrulaması](/tr/gateway/trusted-proxy-auth).
 </Note>
 
-OpenClaw, model sağlayıcıları için OAuth ve API anahtarlarını destekler. Sürekli açık Gateway
-ana makinelerinde API anahtarları genellikle en öngörülebilir seçenektir. Abonelik/OAuth
-akışları, sağlayıcı hesap modelinizle eşleştiğinde de desteklenir.
+OpenClaw, model sağlayıcıları için OAuth ve API anahtarlarını destekler. Her zaman açık Gateway
+ana makineleri için API anahtarları genellikle en öngörülebilir seçenektir. Abonelik/OAuth
+akışları da sağlayıcı hesabı modelinizle eşleştiğinde desteklenir.
 
-Tam OAuth akışı ve depolama
-düzeni için [/concepts/oauth](/tr/concepts/oauth) bölümüne bakın.
-SecretRef tabanlı kimlik doğrulama (`env`/`file`/`exec` sağlayıcıları) için [Gizli Bilgi Yönetimi](/tr/gateway/secrets) bölümüne bakın.
-`models status --probe` tarafından kullanılan kimlik bilgisi uygunluğu/neden kodu kuralları için
-[Kimlik Doğrulama Bilgisi Semantiği](/tr/auth-credential-semantics) bölümüne bakın.
+Tam OAuth akışı ve depolama düzeni için bkz. [/concepts/oauth](/tr/concepts/oauth).
+SecretRef tabanlı kimlik doğrulama (`env`/`file`/`exec` sağlayıcıları) için bkz. [Gizli Bilgi Yönetimi](/tr/gateway/secrets).
+`models status --probe` tarafından kullanılan kimlik bilgisi uygunluğu/neden kodu kuralları için bkz.
+[Kimlik Doğrulama Bilgisi Anlamları](/tr/auth-credential-semantics).
 
 ## Önerilen kurulum (API anahtarı, herhangi bir sağlayıcı)
 
-Uzun ömürlü bir Gateway çalıştırıyorsanız, seçtiğiniz
-sağlayıcı için bir API anahtarıyla başlayın.
+Uzun ömürlü bir Gateway çalıştırıyorsanız seçtiğiniz sağlayıcı için bir API anahtarıyla başlayın.
 Özellikle Anthropic için API anahtarı kimlik doğrulaması hâlâ en öngörülebilir sunucu
-kurulumudur, ancak OpenClaw yerel bir Claude CLI oturum açma bilgisinin yeniden kullanılmasını da destekler.
+kurulumudur, ancak OpenClaw yerel bir Claude CLI oturum açmasını yeniden kullanmayı da destekler.
 
 1. Sağlayıcı konsolunuzda bir API anahtarı oluşturun.
-2. Bunu **Gateway ana makinesine** (`openclaw gateway` çalıştıran makineye) yerleştirin.
+2. Bunu **Gateway ana makinesine** (`openclaw gateway` çalıştıran makineye) koyun.
 
 ```bash
 export <PROVIDER>_API_KEY="..."
 openclaw models status
 ```
 
-3. Gateway systemd/launchd altında çalışıyorsa, daemon’un okuyabilmesi için
-   anahtarı `~/.openclaw/.env` içine koymayı tercih edin:
+3. Gateway systemd/launchd altında çalışıyorsa, daemon'ın okuyabilmesi için anahtarı
+   tercihen `~/.openclaw/.env` içine koyun:
 
 ```bash
 cat >> ~/.openclaw/.env <<'EOF'
@@ -51,29 +49,27 @@ cat >> ~/.openclaw/.env <<'EOF'
 EOF
 ```
 
-Ardından daemon’u yeniden başlatın (veya Gateway sürecinizi yeniden başlatın) ve yeniden denetleyin:
+Ardından daemon'ı yeniden başlatın (veya Gateway sürecinizi yeniden başlatın) ve tekrar kontrol edin:
 
 ```bash
 openclaw models status
 openclaw doctor
 ```
 
-Env değişkenlerini kendiniz yönetmek istemiyorsanız, ilk kurulum
-API anahtarlarını daemon kullanımı için depolayabilir: `openclaw onboard`.
+Env değişkenlerini kendiniz yönetmek istemiyorsanız onboarding, daemon kullanımı için
+API anahtarlarını saklayabilir: `openclaw onboard`.
 
-Env devralma (`env.shellEnv`,
-`~/.openclaw/.env`, systemd/launchd) ayrıntıları için [Yardım](/tr/help) bölümüne bakın.
+Env devralma (`env.shellEnv`, `~/.openclaw/.env`, systemd/launchd) ayrıntıları için bkz. [Yardım](/tr/help).
 
 ## Anthropic: Claude CLI ve belirteç uyumluluğu
 
 Anthropic kurulum belirteci kimlik doğrulaması, desteklenen bir belirteç
-yolu olarak OpenClaw içinde hâlâ kullanılabilir. Anthropic çalışanları daha sonra bize OpenClaw tarzı Claude CLI kullanımına
-yeniden izin verildiğini söyledi, bu nedenle OpenClaw, Anthropic yeni bir politika yayımlamadığı sürece Claude CLI yeniden kullanımını ve `claude -p` kullanımını
-bu entegrasyon için onaylanmış kabul eder. Ana makinede
-Claude CLI yeniden kullanımı mevcutsa, artık tercih edilen yol budur.
+yolu olarak OpenClaw içinde hâlâ kullanılabilir. Anthropic personeli daha sonra bize OpenClaw tarzı Claude CLI kullanımına
+yeniden izin verildiğini söyledi; bu nedenle OpenClaw, Anthropic yeni bir politika yayımlamadığı sürece bu entegrasyon için Claude CLI yeniden kullanımını ve `claude -p` kullanımını
+onaylanmış kabul eder. Ana makinede Claude CLI yeniden kullanımı kullanılabiliyorsa artık tercih edilen yol budur.
 
 Uzun ömürlü Gateway ana makineleri için Anthropic API anahtarı hâlâ en öngörülebilir
-kurulumdur. Aynı ana makinede mevcut bir Claude oturumunu yeniden kullanmak istiyorsanız, ilk kurulum/yapılandırma içinde
+kurulumdur. Aynı ana makinede mevcut bir Claude oturum açmasını yeniden kullanmak istiyorsanız onboarding/configure içinde
 Anthropic Claude CLI yolunu kullanın.
 
 Claude CLI yeniden kullanımı için önerilen ana makine kurulumu:
@@ -87,20 +83,20 @@ openclaw models auth login --provider anthropic --method cli --set-default
 
 Bu iki adımlı bir kurulumdur:
 
-1. Claude Code’u Gateway ana makinesinde Anthropic’e oturum açtırın.
-2. OpenClaw’a Anthropic model seçimini yerel `claude-cli`
-   arka ucuna geçirmesini ve eşleşen OpenClaw kimlik doğrulama profilini depolamasını söyleyin.
+1. Gateway ana makinesinde Claude Code'un kendisini Anthropic'e oturum açtırın.
+2. OpenClaw'a Anthropic model seçimini yerel `claude-cli`
+   arka ucuna geçirmesini ve eşleşen OpenClaw kimlik doğrulama profilini saklamasını söyleyin.
 
-`claude`, `PATH` üzerinde değilse, önce Claude Code’u kurun veya
+`claude`, `PATH` üzerinde değilse önce Claude Code'u yükleyin veya
 `agents.defaults.cliBackends.claude-cli.command` değerini gerçek ikili dosya yoluna ayarlayın.
 
-Manuel belirteç girişi (herhangi bir sağlayıcı; `auth-profiles.json` yazar + yapılandırmayı günceller):
+Elle belirteç girişi (herhangi bir sağlayıcı; `auth-profiles.json` yazar ve config'i günceller):
 
 ```bash
 openclaw models auth paste-token --provider openrouter
 ```
 
-`auth-profiles.json` yalnızca kimlik bilgilerini depolar. Kanonik şekil şöyledir:
+`auth-profiles.json` yalnızca kimlik bilgilerini saklar. Kanonik biçim şudur:
 
 ```json
 {
@@ -115,15 +111,15 @@ openclaw models auth paste-token --provider openrouter
 }
 ```
 
-OpenClaw çalışma zamanında kanonik `version` + `profiles` şeklini bekler. Daha eski bir kurulumda hâlâ `{ "openrouter": { "apiKey": "..." } }` gibi düz bir dosya varsa, bunu bir `openrouter:default` API anahtarı profili olarak yeniden yazmak için `openclaw doctor --fix` komutunu çalıştırın; doctor, özgün dosyanın yanına bir `.legacy-flat.*.bak` kopyası koyar. `baseUrl`, `api`, model kimlikleri, başlıklar ve zaman aşımları gibi uç nokta ayrıntıları `auth-profiles.json` içinde değil, `openclaw.json` veya `models.json` içindeki `models.providers.<id>` altında yer almalıdır.
+OpenClaw çalışma zamanında kanonik `version` + `profiles` biçimini bekler. Daha eski bir kurulumda hâlâ `{ "openrouter": { "apiKey": "..." } }` gibi düz bir dosya varsa, bunu `openrouter:default` API anahtarı profili olarak yeniden yazmak için `openclaw doctor --fix` çalıştırın; doctor, özgün dosyanın yanında bir `.legacy-flat.*.bak` kopyası tutar. `baseUrl`, `api`, model kimlikleri, üstbilgiler ve zaman aşımları gibi uç nokta ayrıntıları `auth-profiles.json` içinde değil, `openclaw.json` veya `models.json` içindeki `models.providers.<id>` altında yer almalıdır.
 
-Kimlik doğrulama profili ref’leri statik kimlik bilgileri için de desteklenir:
+Statik kimlik bilgileri için kimlik doğrulama profili başvuruları da desteklenir:
 
 - `api_key` kimlik bilgileri `keyRef: { source, provider, id }` kullanabilir
 - `token` kimlik bilgileri `tokenRef: { source, provider, id }` kullanabilir
-- OAuth modundaki profiller SecretRef kimlik bilgilerini desteklemez; `auth.profiles.<id>.mode`, `"oauth"` olarak ayarlanmışsa, o profil için SecretRef destekli `keyRef`/`tokenRef` girdisi reddedilir.
+- OAuth modundaki profiller SecretRef kimlik bilgilerini desteklemez; `auth.profiles.<id>.mode` `"oauth"` olarak ayarlanmışsa, bu profil için SecretRef destekli `keyRef`/`tokenRef` girdisi reddedilir.
 
-Otomasyona uygun denetim (süresi dolduğunda/eksik olduğunda çıkış `1`, süresi dolmak üzere olduğunda `2`):
+Otomasyon dostu kontrol (süresi dolmuş/eksik olduğunda çıkış `1`, süresi dolmak üzere olduğunda `2`):
 
 ```bash
 openclaw models status --check
@@ -138,11 +134,11 @@ openclaw models status --probe
 Notlar:
 
 - Yoklama satırları kimlik doğrulama profillerinden, env kimlik bilgilerinden veya `models.json` içinden gelebilir.
-- Açık `auth.order.<provider>` depolanmış bir profili atlıyorsa, yoklama bu profil için denemek yerine
+- Açık `auth.order.<provider>` saklanan bir profili atlarsa, yoklama o profili denemek yerine
   `excluded_by_auth_order` bildirir.
-- Kimlik doğrulama mevcutsa ancak OpenClaw o sağlayıcı için yoklanabilir bir model adayı çözemiyorsa,
+- Kimlik doğrulama mevcutsa ancak OpenClaw bu sağlayıcı için yoklanabilir bir model adayı çözemiyorsa,
   yoklama `status: no_model` bildirir.
-- Hız sınırı bekleme süreleri model kapsamlı olabilir. Bir model için beklemede olan bir profil,
+- Hız sınırı bekleme süreleri modele özel olabilir. Bir model için beklemede olan bir profil,
   aynı sağlayıcıdaki kardeş bir model için hâlâ kullanılabilir olabilir.
 
 İsteğe bağlı operasyon betikleri (systemd/Termux) burada belgelenmiştir:
@@ -150,34 +146,32 @@ Notlar:
 
 ## Anthropic notu
 
-Anthropic `claude-cli` arka ucu yeniden desteklenmektedir.
+Anthropic `claude-cli` arka ucu yeniden destekleniyor.
 
-- Anthropic çalışanları bize bu OpenClaw entegrasyon yoluna yeniden izin verildiğini söyledi.
-- Bu nedenle OpenClaw, Anthropic yeni bir politika yayımlamadığı sürece Claude CLI yeniden kullanımını ve `claude -p` kullanımını Anthropic destekli çalıştırmalar için onaylanmış
-  kabul eder.
-- Anthropic API anahtarları, uzun ömürlü Gateway
-  ana makineleri ve açık sunucu tarafı faturalandırma denetimi için en öngörülebilir seçenek olmaya devam eder.
+- Anthropic personeli bize bu OpenClaw entegrasyon yoluna yeniden izin verildiğini söyledi.
+- Bu nedenle OpenClaw, Anthropic yeni bir politika yayımlamadığı sürece Anthropic destekli çalıştırmalar için Claude CLI yeniden kullanımını ve `claude -p` kullanımını
+  onaylanmış kabul eder.
+- Anthropic API anahtarları, uzun ömürlü Gateway ana makineleri ve açık sunucu tarafı faturalandırma denetimi için en öngörülebilir seçenek olmaya devam eder.
 
-## Model kimlik doğrulama durumunu denetleme
+## Model kimlik doğrulama durumunu kontrol etme
 
 ```bash
 openclaw models status
 openclaw doctor
 ```
 
-## API anahtarı döndürme davranışı (Gateway)
+## API anahtarı rotasyonu davranışı (Gateway)
 
-Bazı sağlayıcılar, bir API çağrısı sağlayıcı hız sınırına
-ulaştığında isteği alternatif anahtarlarla yeniden denemeyi destekler.
+Bazı sağlayıcılar, bir API çağrısı sağlayıcı hız sınırına takıldığında isteği alternatif anahtarlarla yeniden denemeyi destekler.
 
 - Öncelik sırası:
   - `OPENCLAW_LIVE_<PROVIDER>_KEY` (tek geçersiz kılma)
   - `<PROVIDER>_API_KEYS`
   - `<PROVIDER>_API_KEY`
   - `<PROVIDER>_API_KEY_*`
-- Google sağlayıcıları ek bir geri dönüş olarak `GOOGLE_API_KEY` de içerir.
-- Aynı anahtar listesi kullanılmadan önce yinelenenlerden arındırılır.
-- OpenClaw yalnızca hız sınırı hataları için bir sonraki anahtarla yeniden dener (örneğin
+- Google sağlayıcıları ek bir geri dönüş olarak `GOOGLE_API_KEY` değerini de içerir.
+- Aynı anahtar listesi kullanımdan önce yinelenenlerden arındırılır.
+- OpenClaw yalnızca hız sınırı hataları için sonraki anahtarla yeniden dener (örneğin
   `429`, `rate_limit`, `quota`, `resource exhausted`, `Too many concurrent
 requests`, `ThrottlingException`, `concurrency limit reached` veya
   `workers_ai ... quota limit exceeded`).
@@ -190,11 +184,11 @@ requests`, `ThrottlingException`, `concurrency limit reached` veya
 
 Geçerli oturum için belirli bir sağlayıcı kimlik bilgisini sabitlemek üzere `/model <alias-or-id>@<profileId>` kullanın (örnek profil kimlikleri: `anthropic:default`, `anthropic:work`).
 
-Kompakt bir seçici için `/model` (veya `/model list`) kullanın; tam görünüm için `/model status` kullanın (adaylar + sonraki kimlik doğrulama profili, ayrıca yapılandırıldığında sağlayıcı uç nokta ayrıntıları).
+Kompakt bir seçici için `/model` (veya `/model list`) kullanın; tam görünüm için `/model status` kullanın (adaylar + sonraki kimlik doğrulama profili, ayrıca yapılandırılmışsa sağlayıcı uç noktası ayrıntıları).
 
-### Ajan başına (CLI geçersiz kılma)
+### Agent başına (CLI geçersiz kılması)
 
-Bir ajan için açık bir kimlik doğrulama profili sırası geçersiz kılması ayarlayın (o ajanın `auth-state.json` dosyasında depolanır):
+Bir agent için açık bir kimlik doğrulama profili sırası geçersiz kılması ayarlayın (o agent'ın `auth-state.json` dosyasında saklanır):
 
 ```bash
 openclaw models auth order get --provider anthropic
@@ -202,18 +196,18 @@ openclaw models auth order set --provider anthropic anthropic:default
 openclaw models auth order clear --provider anthropic
 ```
 
-Belirli bir ajanı hedeflemek için `--agent <id>` kullanın; yapılandırılmış varsayılan ajanı kullanmak için bunu atlayın.
+Belirli bir agent'ı hedeflemek için `--agent <id>` kullanın; yapılandırılmış varsayılan agent'ı kullanmak için bunu atlayın.
 Sıra sorunlarını hata ayıklarken, `openclaw models status --probe` atlanan
-depolanmış profilleri sessizce atlamak yerine `excluded_by_auth_order` olarak gösterir.
-Bekleme süresi sorunlarını hata ayıklarken, hız sınırı bekleme sürelerinin
-tüm sağlayıcı profili yerine tek bir model kimliğine bağlı olabileceğini unutmayın.
+saklanan profilleri sessizce geçmek yerine `excluded_by_auth_order` olarak gösterir.
+Bekleme süresi sorunlarını hata ayıklarken, hız sınırı bekleme sürelerinin tüm sağlayıcı profili yerine
+tek bir model kimliğine bağlı olabileceğini unutmayın.
 
 ## Sorun giderme
 
-### "Kimlik bilgisi bulunamadı"
+### "No credentials found"
 
-Anthropic profili eksikse,
-**Gateway ana makinesinde** bir Anthropic API anahtarı yapılandırın veya Anthropic kurulum belirteci yolunu ayarlayın, ardından yeniden denetleyin:
+Anthropic profili eksikse, **Gateway ana makinesinde** bir Anthropic API anahtarı yapılandırın
+veya Anthropic kurulum belirteci yolunu ayarlayın, ardından tekrar kontrol edin:
 
 ```bash
 openclaw models status
@@ -222,8 +216,8 @@ openclaw models status
 ### Belirtecin süresi doluyor/dolmuş
 
 Hangi profilin süresinin dolduğunu doğrulamak için `openclaw models status` çalıştırın. Bir
-Anthropic belirteç profili eksikse veya süresi dolmuşsa, bu kurulumu
-kurulum belirteciyle yenileyin veya bir Anthropic API anahtarına geçin.
+Anthropic belirteç profili eksikse veya süresi dolmuşsa, bu kurulumu kurulum belirteciyle yenileyin
+veya Anthropic API anahtarına geçin.
 
 ## İlgili
 

@@ -1,79 +1,75 @@
 ---
 read_when:
     - Ağ mimarisi + güvenlik genel bakışına ihtiyacınız var
-    - Yerel ve tailnet erişimini veya eşleştirmeyi hata ayıklıyorsunuz
-    - Ağ belgelerinin standart listesini istiyorsunuz
-summary: 'Ağ merkezi: gateway yüzeyleri, eşleştirme, keşif ve güvenlik'
+    - Yerel erişim ile tailnet erişimi veya eşleştirme sorunlarını gideriyorsunuz
+    - Ağ belgelerinin kanonik listesini istiyorsunuz
+summary: 'Ağ merkezi: Gateway yüzeyleri, eşleştirme, keşif ve güvenlik'
 title: Ağ
 x-i18n:
-    generated_at: "2026-04-24T09:17:49Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:20:19Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 663f372555f044146a5d381566371e9a38185e7f295243bfd61314f12e3a4f06
+    source_hash: 7b0ff6c4ee46005aeac1612ea40f1ce3d5824aa507d0842788dbf4bffbaccfcc
     source_path: network.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Ağ merkezi
-
-Bu merkez, OpenClaw'ın localhost, LAN ve tailnet genelinde
-cihazları nasıl bağladığına, eşleştirdiğine ve güvence altına aldığına dair temel belgelere bağlantı verir.
+Bu merkez, OpenClaw'ın localhost, LAN ve tailnet genelinde cihazları nasıl bağladığı, eşleştirdiği ve güvenceye aldığıyla ilgili temel dokümanlara bağlantı verir.
 
 ## Temel model
 
-Çoğu işlem, kanal bağlantılarına ve WebSocket denetim düzlemine sahip olan
-tek uzun ömürlü süreç Gateway (`openclaw gateway`) üzerinden akar.
+Çoğu işlem, kanal bağlantılarının ve WebSocket denetim düzleminin sahibi olan tek ve uzun süre çalışan bir süreç olan Gateway (`openclaw gateway`) üzerinden akar.
 
 - **Önce loopback**: Gateway WS varsayılan olarak `ws://127.0.0.1:18789` kullanır.
-  Loopback olmayan bind'ler geçerli bir gateway auth yolu gerektirir: paylaşılan gizli
-  token/parola auth veya doğru yapılandırılmış loopback olmayan
+  Loopback dışı bind'ler geçerli bir gateway kimlik doğrulama yolu gerektirir: paylaşılan gizli
+  token/parola kimlik doğrulaması veya doğru yapılandırılmış loopback dışı
   `trusted-proxy` dağıtımı.
-- **Host başına bir Gateway** önerilir. Yalıtım için yalıtılmış profiller ve portlarla birden çok gateway çalıştırın ([Multiple Gateways](/tr/gateway/multiple-gateways)).
-- **Canvas host**, Gateway ile aynı port üzerinde sunulur (`/__openclaw__/canvas/`, `/__openclaw__/a2ui/`); loopback ötesinde bind edildiğinde Gateway auth ile korunur.
-- **Uzak erişim**, genellikle SSH tüneli veya Tailscale VPN üzerinden yapılır ([Remote Access](/tr/gateway/remote)).
+- **Host başına bir Gateway** önerilir. İzolasyon için, izole profiller ve portlarla birden çok gateway çalıştırın ([Birden çok Gateway](/tr/gateway/multiple-gateways)).
+- **Canvas host**, Gateway ile aynı portta sunulur (`/__openclaw__/canvas/`, `/__openclaw__/a2ui/`) ve loopback dışına bind edildiğinde Gateway kimlik doğrulamasıyla korunur.
+- **Uzaktan erişim** genellikle SSH tüneli veya Tailscale VPN'dir ([Uzaktan Erişim](/tr/gateway/remote)).
 
 Temel başvurular:
 
 - [Gateway mimarisi](/tr/concepts/architecture)
 - [Gateway protokolü](/tr/gateway/protocol)
-- [Gateway runbook](/tr/gateway)
+- [Gateway runbook'u](/tr/gateway)
 - [Web yüzeyleri + bind modları](/tr/web)
 
 ## Eşleştirme + kimlik
 
-- [Eşleştirme genel bakışı (DM + Node'lar)](/tr/channels/pairing)
-- [Gateway sahipli Node eşleştirmesi](/tr/gateway/pairing)
-- [Devices CLI (eşleştirme + token döndürme)](/tr/cli/devices)
-- [Pairing CLI (DM onayları)](/tr/cli/pairing)
+- [Eşleştirmeye genel bakış (DM + Node'lar)](/tr/channels/pairing)
+- [Gateway'in sahip olduğu Node eşleştirmesi](/tr/gateway/pairing)
+- [Cihazlar CLI'ı (eşleştirme + token döndürme)](/tr/cli/devices)
+- [Eşleştirme CLI'ı (DM onayları)](/tr/cli/pairing)
 
 Yerel güven:
 
-- Doğrudan yerel loopback bağlantıları, aynı host UX'ini akıcı tutmak için eşleştirme açısından otomatik onaylanabilir.
-- OpenClaw ayrıca güvenilen paylaşımlı gizli yardımcı akışları için dar bir arka uç/kapsayıcı-yerel kendi kendine bağlanma yoluna sahiptir.
+- Doğrudan local loopback bağlantıları, aynı host kullanıcı deneyimini sorunsuz tutmak için eşleştirme amacıyla otomatik onaylanabilir.
+- OpenClaw ayrıca güvenilir paylaşılan gizli yardımcı akışları için dar kapsamlı bir backend/konteyner-yerel kendi kendine bağlanma yoluna sahiptir.
 - Aynı host tailnet bind'leri dahil tailnet ve LAN istemcileri yine de açık eşleştirme onayı gerektirir.
 
-## Keşif + aktarımlar
+## Keşif + taşıyıcılar
 
-- [Keşif ve aktarımlar](/tr/gateway/discovery)
+- [Keşif ve taşıyıcılar](/tr/gateway/discovery)
 - [Bonjour / mDNS](/tr/gateway/bonjour)
-- [Uzak erişim (SSH)](/tr/gateway/remote)
+- [Uzaktan erişim (SSH)](/tr/gateway/remote)
 - [Tailscale](/tr/gateway/tailscale)
 
-## Node'lar + aktarımlar
+## Node'lar + taşıyıcılar
 
-- [Node genel bakışı](/tr/nodes)
-- [Bridge protocol (eski Node'lar, tarihsel)](/tr/gateway/bridge-protocol)
-- [Node runbook: iOS](/tr/platforms/ios)
-- [Node runbook: Android](/tr/platforms/android)
+- [Node'lara genel bakış](/tr/nodes)
+- [Bridge protokolü (eski Node'lar, tarihsel)](/tr/gateway/bridge-protocol)
+- [Node runbook'u: iOS](/tr/platforms/ios)
+- [Node runbook'u: Android](/tr/platforms/android)
 
 ## Güvenlik
 
-- [Güvenlik genel bakışı](/tr/gateway/security)
-- [Gateway yapılandırma başvurusu](/tr/gateway/configuration)
+- [Güvenliğe genel bakış](/tr/gateway/security)
+- [Gateway yapılandırma referansı](/tr/gateway/configuration)
 - [Sorun giderme](/tr/gateway/troubleshooting)
 - [Doctor](/tr/gateway/doctor)
 
 ## İlgili
 
-- [Gateway ağ modeli](/tr/gateway/network-model)
-- [Uzak erişim](/tr/gateway/remote)
+- [Gateway runbook'u](/tr/gateway)
+- [Uzaktan erişim](/tr/gateway/remote)

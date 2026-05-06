@@ -1,24 +1,24 @@
 ---
 read_when:
     - Skills veya Plugin arama, yükleme ya da güncelleme
-    - Skills veya Plugin’leri kayıt defterinde yayımlama
-    - ClawHub CLI'sini veya ortam geçersiz kılmalarını yapılandırma
+    - Skills veya Plugin'leri kayıt deposuna yayımlama
+    - ClawHub CLI'yi veya ortam geçersiz kılmalarını yapılandırma
 sidebarTitle: ClawHub
-summary: 'ClawHub: OpenClaw Skills ve Plugin''leri için herkese açık kayıt defteri, yerel kurulum akışları ve clawhub CLI'
+summary: 'ClawHub: OpenClaw Skills ve Plugin’leri, yerel kurulum akışları ve clawhub CLI için genel kayıt dizini'
 title: ClawHub
 x-i18n:
-    generated_at: "2026-05-02T21:01:04Z"
+    generated_at: "2026-05-06T09:33:05Z"
     model: gpt-5.5
     provider: openai
-    source_hash: cd422cb3e7e53fcc6d2b8a557ebc569debb0b470d5fcf141d90499c03fb4d7b3
+    source_hash: 78ccf1911344d71b3b1c2c94691e15108305348e09db62aaaf1d03d852984acd
     source_path: tools/clawhub.md
     workflow: 16
 ---
 
-ClawHub, **OpenClaw Skills ve Plugin'leri** için herkese açık kayıttır.
+ClawHub, **OpenClaw Skills ve Pluginleri** için herkese açık kayıt defteridir.
 
-- Skills aramak, kurmak ve güncellemek ve ClawHub'dan Plugin kurmak için yerel `openclaw` komutlarını kullanın.
-- Kayıt kimlik doğrulaması, yayımlama, silme/silmeyi geri alma ve eşitleme iş akışları için ayrı `clawhub` CLI'ını kullanın.
+- Skills aramak, yüklemek ve güncellemek; ayrıca ClawHub’dan Plugin yüklemek için yerel `openclaw` komutlarını kullanın.
+- Kayıt defteri kimlik doğrulaması, yayımlama, silme/silmeyi geri alma ve eşitleme iş akışları için ayrı `clawhub` CLI aracını kullanın.
 
 Site: [clawhub.ai](https://clawhub.ai)
 
@@ -30,17 +30,17 @@ Site: [clawhub.ai](https://clawhub.ai)
     openclaw skills search "calendar"
     ```
   </Step>
-  <Step title="Kur">
+  <Step title="Yükle">
     ```bash
     openclaw skills install <skill-slug>
     ```
   </Step>
   <Step title="Kullan">
-    Yeni bir OpenClaw oturumu başlatın; yeni skill'i algılar.
+    Yeni bir OpenClaw oturumu başlatın - yeni Skills’i algılar.
   </Step>
   <Step title="Yayımla (isteğe bağlı)">
-    Kayıt kimliği doğrulanmış iş akışları (yayımlama, eşitleme, yönetme) için
-    ayrı `clawhub` CLI'ını kurun:
+    Kayıt defteriyle kimliği doğrulanmış iş akışları (yayımlama, eşitleme, yönetme) için
+    ayrı `clawhub` CLI aracını yükleyin:
 
     ```bash
     npm i -g clawhub
@@ -61,142 +61,136 @@ Site: [clawhub.ai](https://clawhub.ai)
     openclaw skills update --all
     ```
 
-    Yerel `openclaw` komutları etkin çalışma alanınıza kurulum yapar ve
-    kaynak meta verilerini kalıcı hale getirir; böylece sonraki `update`
-    çağrıları ClawHub üzerinde kalabilir.
+    Yerel `openclaw` komutları etkin çalışma alanınıza yükleme yapar ve
+    kaynak meta verilerini kalıcı tutar; böylece sonraki `update` çağrıları ClawHub’da kalabilir.
 
   </Tab>
-  <Tab title="Plugin'ler">
+  <Tab title="Plugins">
     ```bash
     openclaw plugins search "calendar"
     openclaw plugins install clawhub:<package>
     openclaw plugins update --all
     ```
 
-    `plugins search`, ClawHub Plugin kataloğunu sorgular ve kuruluma hazır
-    paket adlarını yazdırır. ClawHub çözümlemesi istediğinizde
-    `clawhub:<package>` kullanın. Çıplak npm-güvenli Plugin tanımları,
-    lansman geçişi sırasında npm'den kurulur:
+    `plugins search`, ClawHub Plugin kataloğunu sorgular ve yüklemeye hazır
+    paket adlarını yazdırır. ClawHub çözümlemesi istediğinizde `clawhub:<package>` kullanın.
+    Çıplak npm uyumlu Plugin belirtimleri, başlatma geçişi sırasında npm’den yüklenir:
 
     ```bash
     openclaw plugins install openclaw-codex-app-server
     ```
 
-    `npm:<package>` de yalnızca npm içindir ve bir tanım aksi halde belirsiz
-    olabilecekse kullanışlıdır:
+    `npm:<package>` de yalnızca npm içindir ve bir belirtimin aksi halde
+    belirsiz olabileceği durumlarda yararlıdır:
 
     ```bash
     openclaw plugins install npm:openclaw-codex-app-server
     ```
 
-    Plugin kurulumları, arşiv kurulumu çalışmadan önce duyurulan `pluginApi`
-    ve `minGatewayVersion` uyumluluğunu doğrular; böylece uyumsuz ana makineler
-    paketi kısmen kurmak yerine erken aşamada kapalı hata verir. Bir paket
-    sürümü ClawPack yapıtı yayımladığında OpenClaw, tam olarak yüklenen npm-pack
-    `.tgz` dosyasını tercih eder, ClawHub özet başlığını ve indirilen baytları
-    doğrular ve sonraki güncellemeler için yapıt türünü, npm bütünlüğünü, npm
-    shasum değerini, tarball adını ve ClawPack özet meta verilerini kaydeder.
-    ClawPack meta verisi olmayan eski paket sürümleri, hâlâ eski paket arşivi
-    doğrulama yolunu kullanır.
+    Plugin yüklemeleri, arşiv yüklemesi çalışmadan önce duyurulan `pluginApi` ve
+    `minGatewayVersion` uyumluluğunu doğrular; böylece uyumsuz ana makineler paketi
+    kısmen yüklemek yerine erkenden kapalı şekilde başarısız olur. Bir paket sürümü
+    ClawPack yapıtı yayımladığında OpenClaw, tam olarak yüklenen npm-pack `.tgz`
+    dosyasını tercih eder, ClawHub özet başlığını ve indirilen baytları doğrular ve sonraki
+    güncellemeler için yapıt türünü, npm bütünlüğünü, npm shasum değerini, tarball adını
+    ve ClawPack özet meta verilerini kaydeder. ClawPack meta verileri olmayan daha eski
+    paket sürümleri, eski paket arşivi doğrulama yolunu kullanmaya devam eder.
 
   </Tab>
 </Tabs>
 
 <Note>
-`openclaw plugins install clawhub:...` yalnızca kurulabilir Plugin
-ailelerini kabul eder. Bir ClawHub paketi aslında bir skill ise OpenClaw durur
-ve bunun yerine sizi `openclaw skills install <slug>` komutuna yönlendirir.
+`openclaw plugins install clawhub:...` yalnızca yüklenebilir Plugin
+ailelerini kabul eder. Bir ClawHub paketi aslında Skills ise OpenClaw durur ve
+bunun yerine sizi `openclaw skills install <slug>` komutuna yönlendirir.
 
-Anonim ClawHub Plugin kurulumları özel paketler için de kapalı hata verir.
-Topluluk veya diğer resmi olmayan kanallar yine de kurulabilir, ancak OpenClaw
-operatörlerin bunları etkinleştirmeden önce kaynağı ve doğrulamayı
-inceleyebilmesi için uyarır.
+Anonim ClawHub Plugin yüklemeleri de özel paketler için kapalı şekilde başarısız olur.
+Topluluk veya diğer resmi olmayan kanallar yine de yüklenebilir, ancak OpenClaw
+operatörlerin bunları etkinleştirmeden önce kaynak ve doğrulamayı inceleyebilmesi için
+uyarı verir.
 </Note>
 
 ## ClawHub nedir
 
-- OpenClaw Skills ve Plugin'leri için herkese açık bir kayıt.
-- Skill paketlerinin ve meta verilerinin sürümlü bir deposu.
+- OpenClaw Skills ve Pluginleri için herkese açık bir kayıt defteri.
+- Skills paketlerinin ve meta verilerinin sürümlü deposu.
 - Arama, etiketler ve kullanım sinyalleri için bir keşif yüzeyi.
 
-Tipik bir skill, şunları içeren sürümlü bir dosya paketidir:
+Tipik bir Skills, şunları içeren sürümlü bir dosya paketidir:
 
-- Birincil açıklama ve kullanım bilgilerini içeren bir `SKILL.md` dosyası.
-- Skill tarafından kullanılan isteğe bağlı yapılandırmalar, betikler veya destekleyici dosyalar.
-- Etiketler, özet ve kurulum gereksinimleri gibi meta veriler.
+- Birincil açıklama ve kullanımı içeren bir `SKILL.md` dosyası.
+- Skills tarafından kullanılan isteğe bağlı yapılandırmalar, betikler veya destek dosyaları.
+- Etiketler, özet ve yükleme gereksinimleri gibi meta veriler.
 
-ClawHub, keşfi desteklemek ve skill yeteneklerini güvenli biçimde
-sunmak için meta verileri kullanır. Kayıt, sıralamayı ve görünürlüğü
-iyileştirmek için kullanım sinyallerini (yıldızlar, indirmeler) izler.
-Her yayımlama yeni bir semver sürümü oluşturur ve kayıt, kullanıcıların
-değişiklikleri denetleyebilmesi için sürüm geçmişini saklar.
+ClawHub, keşfi desteklemek ve Skills yeteneklerini güvenli şekilde ortaya çıkarmak için
+meta verileri kullanır. Kayıt defteri, sıralamayı ve görünürlüğü iyileştirmek için
+kullanım sinyallerini (yıldızlar, indirmeler) izler. Her yayımlama yeni bir semver
+sürümü oluşturur ve kayıt defteri, kullanıcıların değişiklikleri denetleyebilmesi için
+sürüm geçmişini saklar.
 
-## Çalışma alanı ve skill yükleme
+## Çalışma alanı ve Skills yükleme
 
-Ayrı `clawhub` CLI'ı, Skills'i geçerli çalışma dizininizin altındaki
-`./skills` konumuna da kurar. Bir OpenClaw çalışma alanı yapılandırılmışsa
-`clawhub`, `--workdir` (veya `CLAWHUB_WORKDIR`) ile geçersiz kılmadığınız sürece
-bu çalışma alanına geri döner. OpenClaw, çalışma alanı Skills'ini
-`<workspace>/skills` içinden yükler ve bunları **sonraki** oturumda algılar.
+Ayrı `clawhub` CLI aracı da Skills’i geçerli çalışma dizininizin altındaki
+`./skills` içine yükler. Bir OpenClaw çalışma alanı yapılandırılmışsa `clawhub`,
+`--workdir` (veya `CLAWHUB_WORKDIR`) ile geçersiz kılmadığınız sürece bu çalışma
+alanına geri döner. OpenClaw, çalışma alanı Skills’lerini `<workspace>/skills`
+konumundan yükler ve bunları **sonraki** oturumda algılar.
 
-Zaten `~/.openclaw/skills` veya paketle gelen Skills kullanıyorsanız, çalışma
-alanı Skills'i önceliklidir. Skills'in nasıl yüklendiği, paylaşıldığı ve
-geçitlerden geçirildiği hakkında daha fazla ayrıntı için [Skills](/tr/tools/skills)
-sayfasına bakın.
+Zaten `~/.openclaw/skills` veya paketlenmiş Skills kullanıyorsanız çalışma alanı
+Skills’leri önceliklidir. Skills’in nasıl yüklendiği, paylaşıldığı ve kapılandığı
+hakkında daha fazla ayrıntı için [Skills](/tr/tools/skills) sayfasına bakın.
 
 ## Hizmet özellikleri
 
 | Özellik                  | Notlar                                                               |
 | ------------------------ | ------------------------------------------------------------------- |
 | Herkese açık gezinme     | Skills ve `SKILL.md` içerikleri herkese açık olarak görüntülenebilir. |
-| Arama                    | Yalnızca anahtar kelimeler değil, embedding destekli (vektör arama). |
+| Arama                    | Yalnızca anahtar sözcükler değil, embedding destekli (vektör araması). |
 | Sürümleme                | Semver, değişiklik günlükleri ve etiketler (`latest` dahil).         |
 | İndirmeler               | Sürüm başına zip.                                                    |
 | Yıldızlar ve yorumlar    | Topluluk geri bildirimi.                                             |
-| Güvenlik taraması özetleri | Ayrıntı sayfaları, kurulum veya indirmeden önce en son tarama durumunu gösterir. |
+| Güvenlik taraması özetleri | Ayrıntı sayfaları yükleme veya indirme öncesinde en son tarama durumunu gösterir. |
 | Tarayıcı ayrıntı sayfaları | VirusTotal, ClawScan ve statik analiz sonuçlarında derin bağlantılar bulunur. |
-| Sahip kurtarma panosu    | Yayımcılar, taramada tutulan kendilerine ait içeriği `/dashboard` üzerinden görebilir. |
+| Sahip kurtarma panosu    | Yayımcılar, `/dashboard` üzerinden taramada bekletilen sahip oldukları içeriği görebilir. |
 | Sahip tarafından istenen yeniden taramalar | Sahipler, yanlış pozitif kurtarma için sınırlı yeniden taramalar isteyebilir. |
 | Moderasyon               | Onaylar ve denetimler.                                               |
 | CLI dostu API            | Otomasyon ve betik yazımı için uygundur.                             |
 
 ## Güvenlik ve moderasyon
 
-ClawHub varsayılan olarak açıktır; herkes Skills yükleyebilir, ancak yayımlamak
-için bir GitHub hesabının **en az bir haftalık** olması gerekir. Bu, meşru
-katkıda bulunanları engellemeden kötüye kullanımı yavaşlatır.
+ClawHub varsayılan olarak açıktır - herkes Skills yükleyebilir, ancak yayımlama
+yapabilmek için bir GitHub hesabının **en az bir haftalık** olması gerekir. Bu,
+meşru katkıda bulunanları engellemeden kötüye kullanımı yavaşlatır.
 
 <AccordionGroup>
   <Accordion title="Güvenlik taramaları">
-    ClawHub, yayımlanan Skills ve Plugin sürümleri üzerinde otomatik güvenlik
-    denetimleri çalıştırır. Herkese açık ayrıntı sayfaları geçerli sonucu
-    özetler ve tarayıcı satırları VirusTotal, ClawScan ve statik analiz için
-    ayrılmış ayrıntı sayfalarına bağlantı verir.
+    ClawHub, yayımlanan Skills ve Plugin sürümlerinde otomatik güvenlik denetimleri çalıştırır.
+    Herkese açık ayrıntı sayfaları geçerli sonucu özetler ve tarayıcı satırları VirusTotal,
+    ClawScan ve statik analiz için ayrılmış ayrıntı sayfalarına bağlanır.
 
-    Taramada tutulan veya engellenen sürümler, sahibine `/dashboard` içinde
-    görünmeye devam ederken herkese açık katalog ve kurulum yüzeylerinde
-    kullanılamayabilir.
+    Taramada bekletilen veya engellenen sürümler, sahipleri için `/dashboard` içinde görünür
+    kalırken herkese açık katalog ve yükleme yüzeylerinde kullanılamayabilir.
 
   </Accordion>
   <Accordion title="Raporlama">
-    - Oturum açmış herhangi bir kullanıcı bir skill'i raporlayabilir.
+    - Oturum açmış herhangi bir kullanıcı bir Skills’i raporlayabilir.
     - Rapor nedenleri zorunludur ve kaydedilir.
     - Her kullanıcının aynı anda en fazla 20 etkin raporu olabilir.
-    - 3'ten fazla benzersiz raporu olan Skills varsayılan olarak otomatik gizlenir.
+    - 3’ten fazla benzersiz raporu olan Skills varsayılan olarak otomatik gizlenir.
 
   </Accordion>
   <Accordion title="Moderasyon">
-    - Moderatörler gizli Skills'i görüntüleyebilir, yeniden görünür yapabilir, silebilir veya kullanıcıları yasaklayabilir.
-    - Raporlama özelliğinin kötüye kullanılması hesap yasaklarına neden olabilir.
-    - Moderatör olmak ister misiniz? OpenClaw Discord'da sorun ve bir moderatör veya bakımcıyla iletişime geçin.
+    - Moderatörler gizli Skills’i görüntüleyebilir, gizlemeyi kaldırabilir, silebilir veya kullanıcıları yasaklayabilir.
+    - Raporlama özelliğini kötüye kullanmak hesap yasaklarına neden olabilir.
+    - Moderatör olmak mı istiyorsunuz? OpenClaw Discord’da sorun ve bir moderatör veya bakım sorumlusuyla iletişime geçin.
 
   </Accordion>
 </AccordionGroup>
 
 ## ClawHub CLI
 
-Buna yalnızca yayımlama/eşitleme gibi kayıt kimliği doğrulanmış iş akışları için
-ihtiyacınız vardır.
+Buna yalnızca yayımlama/eşitleme gibi kayıt defteriyle kimliği doğrulanmış iş akışları için
+ihtiyaç duyarsınız.
 
 ### Genel seçenekler
 
@@ -204,19 +198,19 @@ ihtiyacınız vardır.
   Çalışma dizini. Varsayılan: geçerli dizin; OpenClaw çalışma alanına geri döner.
 </ParamField>
 <ParamField path="--dir <dir>" type="string" default="skills">
-  Workdir'e göreli Skills dizini.
+  Workdir’e göre göreli Skills dizini.
 </ParamField>
 <ParamField path="--site <url>" type="string">
-  Site temel URL'si (tarayıcıyla oturum açma).
+  Site taban URL’si (tarayıcı oturum açma).
 </ParamField>
 <ParamField path="--registry <url>" type="string">
-  Kayıt API temel URL'si.
+  Kayıt defteri API taban URL’si.
 </ParamField>
 <ParamField path="--no-input" type="boolean">
-  İstemleri devre dışı bırak (etkileşimsiz).
+  İstemleri devre dışı bırakır (etkileşimsiz).
 </ParamField>
 <ParamField path="-V, --cli-version" type="boolean">
-  CLI sürümünü yazdır.
+  CLI sürümünü yazdırır.
 </ParamField>
 
 ### Komutlar
@@ -232,9 +226,9 @@ ihtiyacınız vardır.
 
     Oturum açma seçenekleri:
 
-    - `--token <token>` — bir API token'ı yapıştırın.
-    - `--label <label>` — tarayıcı oturum açma token'ları için saklanan etiket (varsayılan: `CLI token`).
-    - `--no-browser` — tarayıcı açma (`--token` gerektirir).
+    - `--token <token>` - bir API token’ı yapıştırın.
+    - `--label <label>` - tarayıcı oturum açma token’ları için saklanan etiket (varsayılan: `CLI token`).
+    - `--no-browser` - tarayıcı açma (`--token` gerektirir).
 
   </Accordion>
   <Accordion title="Arama">
@@ -242,31 +236,31 @@ ihtiyacınız vardır.
     clawhub search "query"
     ```
 
-    Skills içinde arama yapar. Plugin/paket keşfi için `clawhub package explore` kullanın.
+    Skills arar. Plugin/paket keşfi için `clawhub package explore` kullanın.
 
-    - `--limit <n>` — en fazla sonuç sayısı.
+    - `--limit <n>` - en fazla sonuç.
 
   </Accordion>
-  <Accordion title="Plugin'lere göz at / incele">
+  <Accordion title="Pluginlere göz at / incele">
     ```bash
     clawhub package explore --family code-plugin
     clawhub package explore "episodic-claw" --family code-plugin
     clawhub package inspect episodic-claw
     ```
 
-    `package explore` ve `package inspect`, Plugin/paket keşfi ve meta veri incelemesi için ClawHub CLI yüzeyleridir. Yerel OpenClaw kurulumları yine `openclaw plugins install clawhub:<package>` kullanır.
+    `package explore` ve `package inspect`, Plugin/paket keşfi ve meta veri incelemesi için ClawHub CLI yüzeyleridir. Yerel OpenClaw yüklemeleri yine `openclaw plugins install clawhub:<package>` kullanır.
 
     Seçenekler:
 
-    - `--family skill|code-plugin|bundle-plugin` — paket ailesine göre filtrele.
-    - `--official` — yalnızca resmi paketleri göster.
-    - `--executes-code` — yalnızca kod çalıştıran paketleri göster.
-    - `--version <version>` / `--tag <tag>` — belirli bir paket sürümünü incele.
-    - `--versions`, `--files`, `--file <path>` — paket geçmişini ve dosyalarını incele.
-    - `--json` — makine tarafından okunabilir çıktı.
+    - `--family skill|code-plugin|bundle-plugin` - paket ailesini filtrele.
+    - `--official` - yalnızca resmi paketleri göster.
+    - `--executes-code` - yalnızca kod çalıştıran paketleri göster.
+    - `--version <version>` / `--tag <tag>` - belirli bir paket sürümünü incele.
+    - `--versions`, `--files`, `--file <path>` - paket geçmişini ve dosyalarını incele.
+    - `--json` - makine tarafından okunabilir çıktı.
 
   </Accordion>
-  <Accordion title="Kur / güncelle / listele">
+  <Accordion title="Yükle / güncelle / listele">
     ```bash
     clawhub install <slug>
     clawhub update <slug>
@@ -276,8 +270,8 @@ ihtiyacınız vardır.
 
     Seçenekler:
 
-    - `--version <version>` — belirli bir sürümü kur veya o sürüme güncelle (`update` üzerinde yalnızca tek slug).
-    - `--force` — klasör zaten varsa veya yerel dosyalar yayımlanmış herhangi bir sürümle eşleşmiyorsa üzerine yaz.
+    - `--version <version>` - belirli bir sürümü yükle veya güncelle (`update` üzerinde yalnızca tek slug).
+    - `--force` - klasör zaten varsa veya yerel dosyalar yayımlanmış herhangi bir sürümle eşleşmiyorsa üzerine yaz.
     - `clawhub list`, `.clawhub/lock.json` dosyasını okur.
 
   </Accordion>
@@ -288,26 +282,26 @@ ihtiyacınız vardır.
 
     Seçenekler:
 
-    - `--slug <slug>` — skill slug'ı.
-    - `--name <name>` — görünen ad.
-    - `--version <version>` — semver sürümü.
-    - `--changelog <text>` — değişiklik günlüğü metni (boş olabilir).
-    - `--tags <tags>` — virgülle ayrılmış etiketler (varsayılan: `latest`).
+    - `--slug <slug>` - Skills slug’ı.
+    - `--name <name>` - görünen ad.
+    - `--version <version>` - semver sürümü.
+    - `--changelog <text>` - değişiklik günlüğü metni (boş olabilir).
+    - `--tags <tags>` - virgülle ayrılmış etiketler (varsayılan: `latest`).
 
   </Accordion>
-  <Accordion title="Plugin'leri yayımla">
+  <Accordion title="Pluginleri yayımla">
     ```bash
     clawhub package publish <source>
     ```
 
     `<source>` yerel bir klasör, `owner/repo`, `owner/repo@ref` veya bir
-    GitHub URL'si olabilir.
+    GitHub URL’si olabilir.
 
     Seçenekler:
 
-    - `--dry-run` — hiçbir şey yüklemeden tam yayımlama planını oluştur.
-    - `--json` — CI için makine tarafından okunabilir çıktı üret.
-    - `--source-repo`, `--source-commit`, `--source-ref` — otomatik algılama yeterli olmadığında isteğe bağlı geçersiz kılmalar.
+    - `--dry-run` - hiçbir şey yüklemeden tam yayımlama planını oluştur.
+    - `--json` - CI için makine tarafından okunabilir çıktı üret.
+    - `--source-repo`, `--source-commit`, `--source-ref` - otomatik algılama yeterli olmadığında isteğe bağlı geçersiz kılmalar.
 
   </Accordion>
   <Accordion title="Yeniden tarama iste">
@@ -319,11 +313,11 @@ ihtiyacınız vardır.
     clawhub package rescan <name> --yes --json
     ```
 
-    Yeniden tarama komutları, oturum açmış bir sahip token'ı gerektirir ve en son
-    yayımlanan skill sürümünü veya Plugin sürümünü hedefler. Etkileşimsiz
-    çalıştırmalarda `--yes` geçin.
+    Yeniden tarama komutları, oturum açmış bir sahip token’ı gerektirir ve en son
+    yayımlanmış Skills sürümünü veya Plugin sürümünü hedefler. Etkileşimsiz çalışmalarda
+    `--yes` iletin.
 
-    JSON yanıtları; hedef türünü, adı, sürümü, yeniden tarama durumunu ve
+    JSON yanıtları hedef türünü, adı, sürümü, yeniden tarama durumunu ve
     o sürüm veya yayın için kalan/azami istek sayılarını içerir.
 
   </Accordion>
@@ -340,13 +334,13 @@ ihtiyacınız vardır.
 
     Seçenekler:
 
-    - `--root <dir...>` — ek tarama kökleri.
-    - `--all` — istem olmadan her şeyi yükle.
-    - `--dry-run` — neyin yükleneceğini göster.
-    - `--bump <type>` — güncellemeler için `patch|minor|major` (varsayılan: `patch`).
-    - `--changelog <text>` — etkileşimsiz güncellemeler için değişiklik günlüğü.
-    - `--tags <tags>` — virgülle ayrılmış etiketler (varsayılan: `latest`).
-    - `--concurrency <n>` — kayıt denetimleri (varsayılan: `4`).
+    - `--root <dir...>` - ek tarama kökleri.
+    - `--all` - istem olmadan her şeyi yükle.
+    - `--dry-run` - nelerin yükleneceğini göster.
+    - `--bump <type>` - güncellemeler için `patch|minor|major` (varsayılan: `patch`).
+    - `--changelog <text>` - etkileşimsiz güncellemeler için değişiklik günlüğü.
+    - `--tags <tags>` - virgülle ayrılmış etiketler (varsayılan: `latest`).
+    - `--concurrency <n>` - kayıt defteri denetimleri (varsayılan: `4`).
 
   </Accordion>
 </AccordionGroup>
@@ -398,7 +392,7 @@ ihtiyacınız vardır.
 
 ### Plugin paketi meta verileri
 
-Kod Plugin'leri gerekli OpenClaw meta verilerini
+Kod Plugin'leri, gerekli OpenClaw meta verilerini
 `package.json` içinde içermelidir:
 
 ```json
@@ -422,9 +416,9 @@ Kod Plugin'leri gerekli OpenClaw meta verilerini
 ```
 
 Yayımlanan paketler **derlenmiş JavaScript** ile gönderilmeli ve
-`runtimeExtensions` bu çıktıyı göstermelidir. Git checkout yüklemeleri,
-derlenmiş dosya bulunmadığında hâlâ TypeScript kaynağına geri dönebilir;
-ancak derlenmiş çalışma zamanı girişleri başlangıç, doctor ve
+`runtimeExtensions` bu çıktıyı göstermelidir. Git checkout kurulumları,
+derlenmiş dosya yoksa hâlâ TypeScript kaynağına geri dönebilir, ancak
+derlenmiş çalışma zamanı girişleri başlangıç, doctor ve
 Plugin yükleme yollarında çalışma zamanı TypeScript derlemesini önler.
 
 ## Sürümleme, lockfile ve telemetri
@@ -433,28 +427,28 @@ Plugin yükleme yollarında çalışma zamanı TypeScript derlemesini önler.
   <Accordion title="Sürümleme ve etiketler">
     - Her yayımlama yeni bir **semver** `SkillVersion` oluşturur.
     - Etiketler (`latest` gibi) bir sürümü gösterir; etiketleri taşımak geri almanıza olanak tanır.
-    - Değişiklik günlükleri sürüm bazında eklenir ve güncellemeleri eşitlerken veya yayımlarken boş olabilir.
+    - Değişiklik günlükleri sürüm başına eklenir ve güncellemeleri eşitlerken veya yayımlarken boş olabilir.
 
   </Accordion>
   <Accordion title="Yerel değişiklikler ve registry sürümleri">
-    Güncellemeler, yerel skill içeriklerini bir içerik karması kullanarak
+    Güncellemeler, yerel skill içeriklerini bir içerik hash'i kullanarak
     registry sürümleriyle karşılaştırır. Yerel dosyalar yayımlanmış
-    hiçbir sürümle eşleşmezse CLI üzerine yazmadan önce sorar (veya
-    etkileşimsiz çalıştırmalarda `--force` gerektirir).
+    herhangi bir sürümle eşleşmiyorsa CLI, üzerine yazmadan önce sorar
+    (veya etkileşimsiz çalıştırmalarda `--force` gerektirir).
   </Accordion>
-  <Accordion title="Eşitleme taraması ve fallback kökleri">
-    `clawhub sync` önce geçerli çalışma dizininizi tarar. Hiç skill
-    bulunamazsa bilinen eski konumlara (örneğin `~/openclaw/skills` ve
-    `~/.openclaw/skills`) geri döner. Bu, ek bayraklar olmadan eski
-    skill yüklemelerini bulmak için tasarlanmıştır.
+  <Accordion title="Eşitleme taraması ve yedek kökler">
+    `clawhub sync` önce geçerli workdir'inizi tarar. Hiç skill
+    bulunamazsa bilinen eski konumlara geri döner (örneğin
+    `~/openclaw/skills` ve `~/.openclaw/skills`). Bu, ek bayraklar olmadan
+    eski skill kurulumlarını bulmak için tasarlanmıştır.
   </Accordion>
   <Accordion title="Depolama ve lockfile">
-    - Yüklü skills, çalışma dizininizin altında `.clawhub/lock.json` içinde kaydedilir.
+    - Kurulu skill'ler workdir'iniz altında `.clawhub/lock.json` içine kaydedilir.
     - Kimlik doğrulama token'ları ClawHub CLI yapılandırma dosyasında saklanır (`CLAWHUB_CONFIG_PATH` ile geçersiz kılınabilir).
 
   </Accordion>
-  <Accordion title="Telemetri (yükleme sayıları)">
-    Oturum açmışken `clawhub sync` çalıştırdığınızda CLI, yükleme
+  <Accordion title="Telemetri (kurulum sayıları)">
+    Oturum açmışken `clawhub sync` çalıştırdığınızda CLI, kurulum
     sayılarını hesaplamak için minimal bir anlık görüntü gönderir. Bunu
     tamamen devre dışı bırakabilirsiniz:
 
@@ -469,10 +463,10 @@ Plugin yükleme yollarında çalışma zamanı TypeScript derlemesini önler.
 
 | Değişken                      | Etki                                            |
 | ----------------------------- | ----------------------------------------------- |
-| `CLAWHUB_SITE`                | Site URL'sini geçersiz kılar.                  |
-| `CLAWHUB_REGISTRY`            | Registry API URL'sini geçersiz kılar.          |
-| `CLAWHUB_CONFIG_PATH`         | CLI'nin token/yapılandırmayı nerede saklayacağını geçersiz kılar. |
-| `CLAWHUB_WORKDIR`             | Varsayılan çalışma dizinini geçersiz kılar.    |
+| `CLAWHUB_SITE`                | Site URL'sini geçersiz kılar.                   |
+| `CLAWHUB_REGISTRY`            | Registry API URL'sini geçersiz kılar.           |
+| `CLAWHUB_CONFIG_PATH`         | CLI'nin token/yapılandırmayı nerede sakladığını geçersiz kılar. |
+| `CLAWHUB_WORKDIR`             | Varsayılan workdir'i geçersiz kılar.            |
 | `CLAWHUB_DISABLE_TELEMETRY=1` | `sync` sırasında telemetriyi devre dışı bırakır. |
 
 ## İlgili

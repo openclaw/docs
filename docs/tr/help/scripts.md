@@ -1,44 +1,44 @@
 ---
 read_when:
-    - Repodaki betikleri çalıştırma
-    - '`./scripts` altına betik ekleme veya değiştirme'
-summary: 'Repo betikleri: amaç, kapsam ve güvenlik notları'
+    - Betikleri depodan çalıştırma
+    - ./scripts altında betik ekleme veya değiştirme
+summary: 'Depo betikleri: amaç, kapsam ve güvenlik notları'
 title: Betikler
 x-i18n:
-    generated_at: "2026-04-24T09:13:56Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:16:24Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8d76777402670abe355b9ad2a0337f96211af1323e36f2ab1ced9f04f87083f5
+    source_hash: 01f2e064891940959acf23c003d7e842386f67ac6c869d0677b802738ac04bdf
     source_path: help/scripts.md
-    workflow: 15
+    workflow: 16
 ---
 
 `scripts/` dizini, yerel iş akışları ve operasyon görevleri için yardımcı betikler içerir.
-Bir görev açıkça bir betiğe bağlıysa bunları kullanın; aksi halde CLI'yi tercih edin.
+Bir görev açıkça bir betiğe bağlı olduğunda bunları kullanın; aksi halde CLI'ı tercih edin.
 
 ## Kurallar
 
-- Belgelerde veya sürüm kontrol listelerinde başvurulmadıkça betikler **isteğe bağlıdır**.
-- Varsa CLI yüzeylerini tercih edin (örnek: auth izleme için `openclaw models status --check` kullanılır).
-- Betiklerin host'a özgü olduğunu varsayın; yeni bir makinede çalıştırmadan önce okuyun.
+- Dokümanlarda veya sürüm kontrol listelerinde atıfta bulunulmadıkça betikler **isteğe bağlıdır**.
+- Var olduklarında CLI yüzeylerini tercih edin (örnek: kimlik doğrulama izleme `openclaw models status --check` kullanır).
+- Betiklerin ana makineye özgü olduğunu varsayın; yeni bir makinede çalıştırmadan önce onları okuyun.
 
-## Auth izleme betikleri
+## Kimlik doğrulama izleme betikleri
 
-Auth izleme [Authentication](/tr/gateway/authentication) içinde ele alınır. `scripts/` altındaki betikler, systemd/Termux telefon iş akışları için isteğe bağlı ekstralardır.
+Kimlik doğrulama izleme [Kimlik Doğrulama](/tr/gateway/authentication) bölümünde ele alınır. `scripts/` altındaki betikler, systemd/Termux telefon iş akışları için isteğe bağlı ek araçlardır.
 
 ## GitHub okuma yardımcısı
 
-Repo kapsamlı okuma çağrıları için `gh`'nin bir GitHub App kurulum token'ı kullanmasını isterken, yazma işlemleri için normal `gh`'yi kişisel girişinizde bırakmak istiyorsanız `scripts/gh-read` kullanın.
+Normal `gh` komutunu yazma eylemleri için kişisel oturumunuzda bırakırken, repo kapsamlı okuma çağrıları için `gh` komutunun bir GitHub App kurulum belirteci kullanmasını istediğinizde `scripts/gh-read` kullanın.
 
-Gerekli ortam değişkenleri:
+Gerekli env:
 
 - `OPENCLAW_GH_READ_APP_ID`
 - `OPENCLAW_GH_READ_PRIVATE_KEY_FILE`
 
-İsteğe bağlı ortam değişkenleri:
+İsteğe bağlı env:
 
-- Repo tabanlı kurulum aramasını atlamak istiyorsanız `OPENCLAW_GH_READ_INSTALLATION_ID`
-- İstenecek okuma izin alt kümesini virgülle ayrılmış şekilde geçersiz kılmak için `OPENCLAW_GH_READ_PERMISSIONS`
+- Repo tabanlı kurulum aramasını atlamak istediğinizde `OPENCLAW_GH_READ_INSTALLATION_ID`
+- İstenecek okuma izni alt kümesini geçersiz kılmak için virgülle ayrılmış değer olarak `OPENCLAW_GH_READ_PERMISSIONS`
 
 Repo çözümleme sırası:
 
@@ -55,9 +55,9 @@ Repo çözümleme sırası:
 ## Betik eklerken
 
 - Betikleri odaklı ve belgelenmiş tutun.
-- İlgili belgeye kısa bir giriş ekleyin (veya eksikse oluşturun).
+- İlgili dokümana kısa bir giriş ekleyin (veya eksikse bir tane oluşturun).
 
 ## İlgili
 
-- [Testing](/tr/help/testing)
-- [Testing live](/tr/help/testing-live)
+- [Test Etme](/tr/help/testing)
+- [Canlı test etme](/tr/help/testing-live)

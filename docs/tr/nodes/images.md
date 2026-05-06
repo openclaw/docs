@@ -4,79 +4,79 @@ read_when:
 summary: Gönderim, Gateway ve ajan yanıtları için görüntü ve medya işleme kuralları
 title: Görsel ve medya desteği
 x-i18n:
-    generated_at: "2026-04-30T09:30:58Z"
+    generated_at: "2026-05-06T09:20:36Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1eb07bc638a755be5597e78c07041a52cfc0297b00d70c5adbfe5f3ad8c1a372
+    source_hash: a38224fdf42f32fe206ad8cf3fcc3b06a078b1978d447adeb671fdb3ff4e4b32
     source_path: nodes/images.md
     workflow: 16
 ---
 
-# Görsel ve Medya Desteği (2025-12-05)
+# Görüntü ve Medya Desteği (2025-12-05)
 
-WhatsApp kanalı **Baileys Web** üzerinden çalışır. Bu belge, gönderim, Gateway ve ajan yanıtları için geçerli medya işleme kurallarını özetler.
+WhatsApp kanalı **Baileys Web** üzerinden çalışır. Bu belge, gönderme, Gateway ve ajan yanıtları için geçerli medya işleme kurallarını kapsar.
 
 ## Hedefler
 
 - `openclaw message send --media` ile isteğe bağlı açıklamalı medya gönderin.
-- Web gelen kutusundan gelen otomatik yanıtların metnin yanında medya içermesine izin verin.
+- Web gelen kutusundan otomatik yanıtların metnin yanında medya içermesine izin verin.
 - Tür başına sınırları makul ve öngörülebilir tutun.
 
 ## CLI Yüzeyi
 
 - `openclaw message send --media <path-or-url> [--message <caption>]`
   - `--media` isteğe bağlıdır; yalnızca medya gönderimleri için açıklama boş olabilir.
-  - `--dry-run` çözümlenen yükü yazdırır; `--json`, `{ channel, to, messageId, mediaUrl, caption }` çıktısı verir.
+  - `--dry-run` çözümlenen yükü yazdırır; `--json` `{ channel, to, messageId, mediaUrl, caption }` çıktısı üretir.
 
 ## WhatsApp Web kanalı davranışı
 
 - Girdi: yerel dosya yolu **veya** HTTP(S) URL'si.
-- Akış: bir Buffer'a yükle, medya türünü algıla ve doğru yükü oluştur:
-  - **Görseller:** `channels.whatsapp.mediaMaxMb` hedeflenerek (varsayılan: 50 MB) JPEG'e yeniden boyutlandırılır ve yeniden sıkıştırılır (en uzun kenar en fazla 2048px).
-  - **Ses/Sesli/Video:** 16 MB'a kadar olduğu gibi aktarılır; ses, sesli not olarak gönderilir (`ptt: true`).
-  - **Belgeler:** diğer her şey, 100 MB'a kadar, varsa dosya adı korunarak.
+- Akış: Bir Buffer'a yükle, medya türünü algıla ve doğru yükü oluştur:
+  - **Görüntüler:** `channels.whatsapp.mediaMaxMb` hedeflenerek (varsayılan: 50 MB) JPEG'e yeniden boyutlandırılır ve yeniden sıkıştırılır (en uzun kenar en fazla 2048px).
+  - **Ses/Sesli/Video:** 16 MB'a kadar doğrudan geçirilir; ses, sesli not (`ptt: true`) olarak gönderilir.
+  - **Belgeler:** diğer her şey, mümkün olduğunda dosya adı korunarak 100 MB'a kadar.
 - WhatsApp GIF tarzı oynatma: mobil istemcilerin satır içinde döngüye alması için `gifPlayback: true` ile bir MP4 gönderin (CLI: `--gif-playback`).
-- MIME algılama önce sihirli baytları, ardından başlıkları, ardından dosya uzantısını tercih eder.
-- Açıklama `--message` veya `reply.text` üzerinden gelir; boş açıklamaya izin verilir.
+- MIME algılama önce sihirli baytları, sonra üst bilgileri, sonra dosya uzantısını tercih eder.
+- Açıklama `--message` veya `reply.text` değerinden gelir; boş açıklamaya izin verilir.
 - Günlükleme: ayrıntılı olmayan mod `↩️`/`✅` gösterir; ayrıntılı mod boyutu ve kaynak yolu/URL'sini içerir.
 
-## Otomatik Yanıt İş Hattı
+## Otomatik Yanıt İşlem Hattı
 
 - `getReplyFromConfig`, `{ text?, mediaUrl?, mediaUrls? }` döndürür.
-- Medya mevcut olduğunda web göndericisi, yerel yolları veya URL'leri `openclaw message send` ile aynı iş hattını kullanarak çözümler.
-- Sağlanırsa birden çok medya girdisi sırayla gönderilir.
+- Medya mevcut olduğunda web göndericisi, `openclaw message send` ile aynı işlem hattını kullanarak yerel yolları veya URL'leri çözümler.
+- Sağlanırsa birden fazla medya girdisi sırayla gönderilir.
 
 ## Komutlara gelen medya (Pi)
 
-- Gelen web mesajları medya içerdiğinde OpenClaw bir geçici dosyaya indirir ve şablon değişkenlerini kullanıma açar:
+- Gelen web mesajları medya içerdiğinde OpenClaw bunu geçici bir dosyaya indirir ve şablonlama değişkenlerini kullanıma sunar:
   - Gelen medya için `{{MediaUrl}}` sözde URL'si.
-  - Komutu çalıştırmadan önce yazılan yerel geçici yol `{{MediaPath}}`.
+  - Komut çalıştırılmadan önce yazılan yerel geçici yol `{{MediaPath}}`.
 - Oturum başına Docker korumalı alanı etkinleştirildiğinde, gelen medya korumalı alan çalışma alanına kopyalanır ve `MediaPath`/`MediaUrl`, `media/inbound/<filename>` gibi göreli bir yola yeniden yazılır.
-- Medya anlama (`tools.media.*` veya paylaşılan `tools.media.models` üzerinden yapılandırıldıysa) şablonlamadan önce çalışır ve `Body` içine `[Image]`, `[Audio]` ve `[Video]` blokları ekleyebilir.
-  - Ses, `{{Transcript}}` değerini ayarlar ve eğik çizgi komutlarının çalışmaya devam etmesi için komut ayrıştırmada transkripti kullanır.
-  - Video ve görsel açıklamaları, komut ayrıştırma için varsa açıklama metnini korur.
-  - Etkin birincil görsel modeli zaten yerel olarak görmeyi destekliyorsa OpenClaw, `[Image]` özet bloğunu atlar ve bunun yerine özgün görseli modele geçirir.
-- Varsayılan olarak yalnızca ilk eşleşen görsel/ses/video eki işlenir; birden çok eki işlemek için `tools.media.<cap>.attachments` ayarlayın.
+- Medya anlama (`tools.media.*` veya paylaşılan `tools.media.models` üzerinden yapılandırılmışsa) şablonlamadan önce çalışır ve `Body` içine `[Image]`, `[Audio]` ve `[Video]` blokları ekleyebilir.
+  - Ses, `{{Transcript}}` değerini ayarlar ve komut ayrıştırma için transkripti kullanır; böylece eğik çizgi komutları çalışmaya devam eder.
+  - Video ve görüntü açıklamaları, komut ayrıştırma için varsa açıklama metnini korur.
+  - Etkin birincil görüntü modeli görmeyi yerel olarak zaten destekliyorsa OpenClaw, `[Image]` özet bloğunu atlar ve bunun yerine özgün görüntüyü modele iletir.
+- Varsayılan olarak yalnızca ilk eşleşen görüntü/ses/video eki işlenir; birden fazla eki işlemek için `tools.media.<cap>.attachments` değerini ayarlayın.
 
-## Sınırlar ve Hatalar
+## Sınırlar ve hatalar
 
 **Giden gönderim sınırları (WhatsApp web gönderimi)**
 
-- Görseller: yeniden sıkıştırmadan sonra `channels.whatsapp.mediaMaxMb` değerine kadar (varsayılan: 50 MB).
+- Görüntüler: yeniden sıkıştırmadan sonra `channels.whatsapp.mediaMaxMb` değerine kadar (varsayılan: 50 MB).
 - Ses/sesli/video: 16 MB sınırı; belgeler: 100 MB sınırı.
 - Aşırı büyük veya okunamayan medya → günlüklerde açık hata ve yanıt atlanır.
 
 **Medya anlama sınırları (transkripsiyon/açıklama)**
 
-- Görsel varsayılanı: 10 MB (`tools.media.image.maxBytes`).
-- Ses varsayılanı: 20 MB (`tools.media.audio.maxBytes`).
-- Video varsayılanı: 50 MB (`tools.media.video.maxBytes`).
-- Aşırı büyük medya anlamayı atlar, ancak yanıtlar özgün gövdeyle yine de gönderilir.
+- Varsayılan görüntü: 10 MB (`tools.media.image.maxBytes`).
+- Varsayılan ses: 20 MB (`tools.media.audio.maxBytes`).
+- Varsayılan video: 50 MB (`tools.media.video.maxBytes`).
+- Aşırı büyük medya anlamayı atlar, ancak yanıtlar özgün gövdeyle yine de ilerler.
 
 ## Testler İçin Notlar
 
-- Görsel/ses/belge durumları için gönderim + yanıt akışlarını kapsayın.
-- Görseller için yeniden sıkıştırmayı (boyut sınırı) ve ses için sesli not bayrağını doğrulayın.
+- Görüntü/ses/belge durumları için gönderim + yanıt akışlarını kapsayın.
+- Görüntüler için yeniden sıkıştırmayı (boyut sınırı) ve ses için sesli not bayrağını doğrulayın.
 - Çoklu medya yanıtlarının sıralı gönderimler olarak yayıldığından emin olun.
 
 ## İlgili

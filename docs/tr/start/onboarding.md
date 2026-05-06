@@ -1,23 +1,22 @@
 ---
 read_when:
-    - macOS ilk kullanım asistanını tasarlama
-    - Kimlik doğrulama veya kimlik kurulumu uygulama
+    - macOS ilk kurulum asistanını tasarlama
+    - Kimlik doğrulama veya kimlik kurulumunu uygulama
 sidebarTitle: 'Onboarding: macOS App'
 summary: OpenClaw için ilk çalıştırma kurulum akışı (macOS uygulaması)
-title: İlk kullanım akışı (macOS uygulaması)
+title: İlk kurulum (macOS uygulaması)
 x-i18n:
-    generated_at: "2026-04-24T09:31:56Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:31:29Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: aa516f8f5b4c7318f27a5af4e7ac12f5685aef6f84579a68496c2497d6f9041d
+    source_hash: 6dc7ebea5de7b1398d7b64c00245255c59af8a7ef51315cdd0ef1cb4898a41a4
     source_path: start/onboarding.md
-    workflow: 15
+    workflow: 16
 ---
 
-Bu belge **geçerli** ilk çalıştırma kurulum akışını açıklar. Amaç,
-sorunsuz bir “0. gün” deneyimidir: Gateway'in nerede çalışacağını seçmek, kimlik doğrulamayı bağlamak, sihirbazı çalıştırmak ve
-agent'ın kendini bootstrap etmesine izin vermek.
-İlk kullanım yollarına genel bakış için bkz. [İlk Kullanım Genel Bakışı](/tr/start/onboarding-overview).
+Bu belge **mevcut** ilk çalıştırma kurulum akışını açıklar. Amaç,
+sorunsuz bir "0. gün" deneyimidir: Gateway'in nerede çalışacağını seçmek, kimlik doğrulamayı bağlamak, sihirbazı çalıştırmak ve ajanın kendini başlatmasına izin vermek.
+Katılım yollarına genel bir bakış için bkz. [Katılım Genel Bakışı](/tr/start/onboarding-overview).
 
 <Steps>
 <Step title="macOS uyarısını onaylayın">
@@ -25,22 +24,22 @@ agent'ın kendini bootstrap etmesine izin vermek.
 <img src="/assets/macos-onboarding/01-macos-warning.jpeg" alt="" />
 </Frame>
 </Step>
-<Step title="Yerel ağları bulma iznini onaylayın">
+<Step title="Yerel ağları bulmayı onaylayın">
 <Frame>
 <img src="/assets/macos-onboarding/02-local-networks.jpeg" alt="" />
 </Frame>
 </Step>
-<Step title="Hoş geldiniz ve güvenlik bildirimi">
+<Step title="Karşılama ve güvenlik bildirimi">
 <Frame caption="Gösterilen güvenlik bildirimini okuyun ve buna göre karar verin">
 <img src="/assets/macos-onboarding/03-security-notice.png" alt="" />
 </Frame>
 
 Güvenlik güven modeli:
 
-- Varsayılan olarak OpenClaw kişisel bir agent'tır: tek güvenilen operatör sınırı.
-- Paylaşılan/çok kullanıcılı kurulumlar sıkılaştırma gerektirir (güven sınırlarını ayırın, araç erişimini en düşük düzeyde tutun ve [Security](/tr/gateway/security) belgesini izleyin).
-- Yerel ilk kullanım akışı artık yeni yapılandırmalarda varsayılan olarak `tools.profile: "coding"` kullanır; böylece yeni yerel kurulumlar sınırsız `full` profilini zorlamadan dosya sistemi/çalışma zamanı araçlarını korur.
-- Hooks/Webhook'lar veya güvenilmeyen başka içerik beslemeleri etkinse güçlü, modern bir model katmanı kullanın ve katı araç ilkesi/sandboxing koruyun.
+- Varsayılan olarak OpenClaw kişisel bir ajandır: tek bir güvenilir operatör sınırı.
+- Paylaşılan/çok kullanıcılı kurulumlar sıkılaştırma gerektirir (güven sınırlarını ayırın, araç erişimini minimumda tutun ve [Güvenlik](/tr/gateway/security) yönergelerini izleyin).
+- Yerel katılım artık yeni yapılandırmalarda varsayılan olarak `tools.profile: "coding"` kullanır; böylece yeni yerel kurulumlar, sınırsız `full` profilini zorunlu kılmadan dosya sistemi/çalışma zamanı araçlarını korur.
+- Hook/webhook'lar veya diğer güvenilmeyen içerik beslemeleri etkinse, güçlü ve modern bir model katmanı kullanın ve sıkı araç politikası/korumalı alan uygulayın.
 
 </Step>
 <Step title="Yerel ve Uzak">
@@ -48,20 +47,20 @@ Güvenlik güven modeli:
 <img src="/assets/macos-onboarding/04-choose-gateway.png" alt="" />
 </Frame>
 
-**Gateway** nerede çalışıyor?
+**Gateway** nerede çalışır?
 
-- **Bu Mac (yalnızca yerel):** ilk kullanım akışı kimlik doğrulamayı yapılandırabilir ve
-  kimlik bilgilerini yerelde yazabilir.
-- **Uzak (SSH/Tailnet üzerinden):** ilk kullanım akışı yerel kimlik doğrulamayı **yapılandırmaz**;
-  kimlik bilgileri gateway ana makinesinde موجود olmalıdır.
+- **Bu Mac (Yalnızca yerel):** katılım, kimlik doğrulamayı yapılandırabilir ve kimlik bilgilerini
+  yerel olarak yazabilir.
+- **Uzak (SSH/Tailnet üzerinden):** katılım yerel kimlik doğrulamayı yapılandırmaz;
+  kimlik bilgilerinin gateway ana makinesinde mevcut olması gerekir.
 - **Daha sonra yapılandır:** kurulumu atlayın ve uygulamayı yapılandırılmamış bırakın.
 
 <Tip>
 **Gateway kimlik doğrulama ipucu:**
 
-- Sihirbaz artık loopback için bile bir **token** üretir; bu nedenle yerel WS istemcileri kimlik doğrulaması yapmalıdır.
-- Kimlik doğrulamayı devre dışı bırakırsanız herhangi bir yerel işlem bağlanabilir; bunu yalnızca tamamen güvenilen makinelerde kullanın.
-- Çok makineli erişim veya loopback olmayan bind'ler için **token** kullanın.
+- Sihirbaz artık loopback için bile bir **token** oluşturur, bu yüzden yerel WS istemcilerinin kimlik doğrulaması yapması gerekir.
+- Kimlik doğrulamayı devre dışı bırakırsanız herhangi bir yerel süreç bağlanabilir; bunu yalnızca tamamen güvenilir makinelerde kullanın.
+- Çok makineli erişim veya loopback dışı bağlamalar için bir **token** kullanın.
 
 </Tip>
 </Step>
@@ -70,33 +69,33 @@ Güvenlik güven modeli:
 <img src="/assets/macos-onboarding/05-permissions.png" alt="" />
 </Frame>
 
-İlk kullanım akışı şu izinler için gerekli TCC izinlerini ister:
+Katılım, şunlar için gereken TCC izinlerini ister:
 
-- Automation (AppleScript)
-- Notifications
-- Accessibility
-- Screen Recording
-- Microphone
-- Speech Recognition
-- Camera
-- Location
+- Otomasyon (AppleScript)
+- Bildirimler
+- Erişilebilirlik
+- Ekran Kaydı
+- Mikrofon
+- Konuşma Tanıma
+- Kamera
+- Konum
 
 </Step>
 <Step title="CLI">
   <Info>Bu adım isteğe bağlıdır</Info>
-  Uygulama, global `openclaw` CLI'yi npm, pnpm veya bun ile kurabilir.
-  Önce npm'yi, sonra pnpm'yi, bun yalnızca algılanan tek paket yöneticisi ise onu tercih eder.
-  Gateway çalışma zamanı için önerilen yol hâlâ Node'dur.
+  Uygulama, genel `openclaw` CLI'yi npm, pnpm veya bun aracılığıyla yükleyebilir.
+  Önce npm'i, ardından pnpm'i, yalnızca algılanan paket yöneticisi oysa bun'ı tercih eder.
+  Gateway çalışma zamanı için Node önerilen yol olmaya devam eder.
 </Step>
-<Step title="İlk Kullanım Sohbeti (ayrılmış oturum)">
-  Kurulumdan sonra uygulama, agent'ın
-  kendini tanıtabilmesi ve sonraki adımlarda rehberlik edebilmesi için ayrılmış bir ilk kullanım sohbet oturumu açar. Bu, ilk çalıştırma rehberliğini
-  normal konuşmanızdan ayrı tutar. İlk agent çalıştırması sırasında gateway ana makinesinde neler olduğu için
-  bkz. [Bootstrapping](/tr/start/bootstrapping).
+<Step title="Katılım Sohbeti (adanmış oturum)">
+  Kurulumdan sonra uygulama, ajanın kendini tanıtabilmesi ve sonraki adımlara
+  rehberlik edebilmesi için adanmış bir katılım sohbet oturumu açar. Bu, ilk çalıştırma rehberliğini
+  normal konuşmanızdan ayrı tutar. İlk ajan çalıştırması sırasında gateway ana makinesinde
+  neler olduğunu öğrenmek için bkz. [Başlatma](/tr/start/bootstrapping).
 </Step>
 </Steps>
 
 ## İlgili
 
-- [İlk kullanım genel bakışı](/tr/start/onboarding-overview)
-- [Başlangıç](/tr/start/getting-started)
+- [Katılım genel bakışı](/tr/start/onboarding-overview)
+- [Başlarken](/tr/start/getting-started)

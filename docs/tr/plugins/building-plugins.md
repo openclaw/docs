@@ -7,10 +7,10 @@ sidebarTitle: Getting Started
 summary: İlk OpenClaw Plugin'inizi dakikalar içinde oluşturun
 title: Plugin oluşturma
 x-i18n:
-    generated_at: "2026-05-04T07:06:45Z"
+    generated_at: "2026-05-06T09:23:42Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3e6c55c551629da54b3f150ce6299694186fe4434cfd7978a2d43d175d33a5d9
+    source_hash: 1e9718f8226a3586db06eae6715502edbd7a286f448e24cbef0a08f19a921c3a
     source_path: plugins/building-plugins.md
     workflow: 16
 ---
@@ -22,45 +22,45 @@ herhangi bir kombinasyonu.
 
 Plugin'inizi OpenClaw deposuna eklemeniz gerekmez. [ClawHub](/tr/tools/clawhub)
 üzerinde yayımlayın; kullanıcılar
-`openclaw plugins install clawhub:<package-name>` ile yükler. Çıplak paket
-belirtimleri, lansman geçişi sırasında hâlâ npm üzerinden yüklenir.
+`openclaw plugins install clawhub:<package-name>` ile yükler. Yalın paket
+tanımları, lansman geçişi sırasında hâlâ npm üzerinden yüklenir.
 
-## Önkoşullar
+## Ön koşullar
 
 - Node >= 22 ve bir paket yöneticisi (npm veya pnpm)
-- TypeScript (ESM) hakkında bilgi
-- Depo içi plugin'ler için: deponun klonlanmış ve `pnpm install` çalıştırılmış
-  olması. Kaynak checkout plugin geliştirme yalnızca pnpm ile yapılır çünkü
-  OpenClaw paketlenmiş plugin'leri `extensions/*` workspace paketlerinden
+- TypeScript (ESM) bilgisi
+- Depo içi Plugin'ler için: depo klonlanmış ve `pnpm install` yapılmış olmalı.
+  Kaynak checkout üzerinden Plugin geliştirme yalnızca pnpm ile yapılır çünkü
+  OpenClaw, paketlenmiş Plugin'leri `extensions/*` çalışma alanı paketlerinden
   yükler.
 
-## Ne tür bir plugin?
+## Ne tür Plugin?
 
 <CardGroup cols={3}>
-  <Card title="Kanal plugin'i" icon="messages-square" href="/tr/plugins/sdk-channel-plugins">
+  <Card title="Channel plugin" icon="messages-square" href="/tr/plugins/sdk-channel-plugins">
     OpenClaw'ı bir mesajlaşma platformuna bağlayın (Discord, IRC vb.)
   </Card>
-  <Card title="Sağlayıcı plugin'i" icon="cpu" href="/tr/plugins/sdk-provider-plugins">
-    Bir model sağlayıcı ekleyin (LLM, proxy veya özel endpoint)
+  <Card title="Provider plugin" icon="cpu" href="/tr/plugins/sdk-provider-plugins">
+    Bir model sağlayıcısı ekleyin (LLM, proxy veya özel uç nokta)
   </Card>
-  <Card title="Araç / hook plugin'i" icon="wrench" href="/tr/plugins/hooks">
-    Ajan araçları, olay hook'ları veya servisler kaydedin — aşağıdan devam edin
+  <Card title="Tool / hook plugin" icon="wrench" href="/tr/plugins/hooks">
+    Ajan araçları, olay hook'ları veya hizmetler kaydedin - aşağıdan devam edin
   </Card>
 </CardGroup>
 
-Onboarding/kurulum çalışırken yüklü olacağı garanti edilmeyen bir kanal plugin'i
-için `openclaw/plugin-sdk/channel-setup` içindeki
+Onboarding/kurulum çalıştığında yüklü olacağı garanti olmayan bir kanal Plugin'i
+için `openclaw/plugin-sdk/channel-setup` içinden
 `createOptionalChannelSetupSurface(...)` kullanın. Bu, yükleme gereksinimini
-duyuran ve plugin yüklenene kadar gerçek config yazımlarında kapalı başarısız
-olan bir kurulum adapter'ı + sihirbaz çifti üretir.
+duyuran ve Plugin yüklenene kadar gerçek yapılandırma yazımlarında kapalı hata
+veren bir kurulum adaptörü + sihirbaz çifti üretir.
 
-## Hızlı başlangıç: araç plugin'i
+## Hızlı başlangıç: araç Plugin'i
 
-Bu kılavuz, bir ajan aracı kaydeden minimal bir plugin oluşturur. Kanal ve
-sağlayıcı plugin'lerinin yukarıda bağlantısı verilen ayrı kılavuzları vardır.
+Bu kılavuz, bir ajan aracı kaydeden minimal bir Plugin oluşturur. Kanal ve
+sağlayıcı Plugin'leri için yukarıda bağlantısı verilen ayrı kılavuzlar vardır.
 
 <Steps>
-  <Step title="Paketi ve manifesti oluşturun">
+  <Step title="Create the package and manifest">
     <CodeGroup>
     ```json package.json
     {
@@ -100,17 +100,17 @@ sağlayıcı plugin'lerinin yukarıda bağlantısı verilen ayrı kılavuzları 
     ```
     </CodeGroup>
 
-    Config olmasa bile her plugin'in bir manifeste ihtiyacı vardır. Runtime'da
-    kaydedilen araçlar `contracts.tools` içinde listelenmelidir; böylece OpenClaw
-    her plugin runtime'ını yüklemeden sahibi olan plugin'i keşfedebilir.
-    Plugin'ler ayrıca `activation.onStartup` değerini bilinçli biçimde
-    bildirmelidir. Bu örnek bunu `true` olarak ayarlar. Tam şema için
+    Yapılandırması olmasa bile her Plugin'in bir manifest'e ihtiyacı vardır.
+    Çalışma zamanında kaydedilen araçlar `contracts.tools` içinde listelenmelidir;
+    böylece OpenClaw, her Plugin çalışma zamanını yüklemeden sahip Plugin'i
+    keşfedebilir. Plugin'ler ayrıca `activation.onStartup` değerini bilinçli
+    olarak bildirmelidir. Bu örnek bunu `true` olarak ayarlar. Tam şema için
     [Manifest](/tr/plugins/manifest) bölümüne bakın. Kanonik ClawHub yayımlama
-    snippet'leri `docs/snippets/plugin-publish/` içinde bulunur.
+    parçacıkları `docs/snippets/plugin-publish/` içinde bulunur.
 
   </Step>
 
-  <Step title="Giriş noktasını yazın">
+  <Step title="Write the entry point">
 
     ```typescript
     // index.ts
@@ -134,16 +134,15 @@ sağlayıcı plugin'lerinin yukarıda bağlantısı verilen ayrı kılavuzları 
     });
     ```
 
-    `definePluginEntry` kanal dışı plugin'ler içindir. Kanallar için
-    `defineChannelPluginEntry` kullanın — bkz.
-    [Kanal Plugin'leri](/tr/plugins/sdk-channel-plugins). Tüm giriş noktası
-    seçenekleri için [Giriş Noktaları](/tr/plugins/sdk-entrypoints) bölümüne bakın.
+    `definePluginEntry`, kanal olmayan Plugin'ler içindir. Kanallar için
+    `defineChannelPluginEntry` kullanın - bkz. [Kanal Plugin'leri](/tr/plugins/sdk-channel-plugins).
+    Tam giriş noktası seçenekleri için bkz. [Giriş Noktaları](/tr/plugins/sdk-entrypoints).
 
   </Step>
 
-  <Step title="Test edin ve yayımlayın">
+  <Step title="Test and publish">
 
-    **Harici plugin'ler:** ClawHub ile doğrulayın ve yayımlayın, ardından yükleyin:
+    **Harici Plugin'ler:** ClawHub ile doğrulayın ve yayımlayın, ardından yükleyin:
 
     ```bash
     clawhub package publish your-org/your-plugin --dry-run
@@ -151,11 +150,11 @@ sağlayıcı plugin'lerinin yukarıda bağlantısı verilen ayrı kılavuzları 
     openclaw plugins install clawhub:@myorg/openclaw-my-plugin
     ```
 
-    `@myorg/openclaw-my-plugin` gibi çıplak paket belirtimleri, lansman geçişi
+    `@myorg/openclaw-my-plugin` gibi yalın paket tanımları, lansman geçişi
     sırasında npm üzerinden yüklenir. ClawHub çözümlemesi istediğinizde
     `clawhub:` kullanın.
 
-    **Depo içi plugin'ler:** paketlenmiş plugin workspace ağacının altına yerleştirin — otomatik olarak keşfedilir.
+    **Depo içi Plugin'ler:** paketlenmiş Plugin çalışma alanı ağacının altına yerleştirin - otomatik olarak keşfedilir.
 
     ```bash
     pnpm test -- <bundled-plugin-root>/my-plugin/
@@ -166,13 +165,13 @@ sağlayıcı plugin'lerinin yukarıda bağlantısı verilen ayrı kılavuzları 
 
 ## Plugin yetenekleri
 
-Tek bir plugin, `api` nesnesi üzerinden herhangi sayıda yetenek kaydedebilir:
+Tek bir Plugin, `api` nesnesi üzerinden herhangi sayıda yetenek kaydedebilir:
 
-| Yetenek                | Kayıt yöntemi                                   | Ayrıntılı kılavuz                                                              |
+| Yetenek                | Kayıt yöntemi                                    | Ayrıntılı kılavuz                                                               |
 | ---------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------- |
-| Metin çıkarımı (LLM)   | `api.registerProvider(...)`                      | [Sağlayıcı Plugin'leri](/tr/plugins/sdk-provider-plugins)                         |
-| CLI çıkarım backend'i  | `api.registerCliBackend(...)`                    | [CLI Backend'leri](/tr/gateway/cli-backends)                                      |
-| Kanal / mesajlaşma     | `api.registerChannel(...)`                       | [Kanal Plugin'leri](/tr/plugins/sdk-channel-plugins)                              |
+| Metin çıkarımı (LLM)   | `api.registerProvider(...)`                      | [Sağlayıcı Plugin'leri](/tr/plugins/sdk-provider-plugins)                          |
+| CLI çıkarım arka ucu   | `api.registerCliBackend(...)`                    | [CLI Arka Uçları](/tr/gateway/cli-backends)                                        |
+| Kanal / mesajlaşma     | `api.registerChannel(...)`                       | [Kanal Plugin'leri](/tr/plugins/sdk-channel-plugins)                               |
 | Konuşma (TTS/STT)      | `api.registerSpeechProvider(...)`                | [Sağlayıcı Plugin'leri](/tr/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
 | Gerçek zamanlı transkripsiyon | `api.registerRealtimeTranscriptionProvider(...)` | [Sağlayıcı Plugin'leri](/tr/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
 | Gerçek zamanlı ses     | `api.registerRealtimeVoiceProvider(...)`         | [Sağlayıcı Plugin'leri](/tr/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
@@ -182,60 +181,59 @@ Tek bir plugin, `api` nesnesi üzerinden herhangi sayıda yetenek kaydedebilir:
 | Video oluşturma        | `api.registerVideoGenerationProvider(...)`       | [Sağlayıcı Plugin'leri](/tr/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
 | Web getirme            | `api.registerWebFetchProvider(...)`              | [Sağlayıcı Plugin'leri](/tr/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
 | Web arama              | `api.registerWebSearchProvider(...)`             | [Sağlayıcı Plugin'leri](/tr/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
-| Araç sonucu middleware'i | `api.registerAgentToolResultMiddleware(...)`   | [SDK Genel Bakış](/tr/plugins/sdk-overview#registration-api)                      |
+| Araç sonucu middleware | `api.registerAgentToolResultMiddleware(...)`     | [SDK Genel Bakış](/tr/plugins/sdk-overview#registration-api)                       |
 | Ajan araçları          | `api.registerTool(...)`                          | Aşağıda                                                                         |
-| Özel komutlar          | `api.registerCommand(...)`                       | [Giriş Noktaları](/tr/plugins/sdk-entrypoints)                                    |
-| Plugin hook'ları       | `api.on(...)`                                    | [Plugin hook'ları](/tr/plugins/hooks)                                             |
-| Dahili olay hook'ları  | `api.registerHook(...)`                          | [Giriş Noktaları](/tr/plugins/sdk-entrypoints)                                    |
-| HTTP rotaları          | `api.registerHttpRoute(...)`                     | [İç Yapı](/tr/plugins/architecture-internals#gateway-http-routes)                 |
-| CLI alt komutları      | `api.registerCli(...)`                           | [Giriş Noktaları](/tr/plugins/sdk-entrypoints)                                    |
+| Özel komutlar          | `api.registerCommand(...)`                       | [Giriş Noktaları](/tr/plugins/sdk-entrypoints)                                     |
+| Plugin hook'ları       | `api.on(...)`                                    | [Plugin hook'ları](/tr/plugins/hooks)                                              |
+| Dahili olay hook'ları  | `api.registerHook(...)`                          | [Giriş Noktaları](/tr/plugins/sdk-entrypoints)                                     |
+| HTTP rotaları          | `api.registerHttpRoute(...)`                     | [Dahililer](/tr/plugins/architecture-internals#gateway-http-routes)                |
+| CLI alt komutları      | `api.registerCli(...)`                           | [Giriş Noktaları](/tr/plugins/sdk-entrypoints)                                     |
 
-Tam kayıt API'si için [SDK Genel Bakış](/tr/plugins/sdk-overview#registration-api)
-bölümüne bakın.
+Tam kayıt API'si için bkz. [SDK Genel Bakış](/tr/plugins/sdk-overview#registration-api).
 
-Paketlenmiş plugin'ler, model çıktıyı görmeden önce async araç sonucu yeniden
+Paketlenmiş Plugin'ler, model çıktıyı görmeden önce asenkron araç sonucu yeniden
 yazımı gerektiğinde `api.registerAgentToolResultMiddleware(...)` kullanabilir.
-Hedeflenen runtime'ları `contracts.agentToolResultMiddleware` içinde bildirin,
-örneğin `["pi", "codex"]`. Bu güvenilen bir paketlenmiş-plugin arayüzüdür; harici
-plugin'ler, OpenClaw bu yetenek için açık bir güven politikası geliştirene kadar
-normal OpenClaw plugin hook'larını tercih etmelidir.
+Hedeflenen çalışma zamanlarını `contracts.agentToolResultMiddleware` içinde
+bildirin; örneğin `["pi", "codex"]`. Bu, güvenilir bir paketlenmiş Plugin
+sınırıdır; harici Plugin'ler, OpenClaw bu yetenek için açık bir güven politikası
+geliştirmedikçe normal OpenClaw Plugin hook'larını tercih etmelidir.
 
-Plugin'iniz özel gateway RPC yöntemleri kaydediyorsa, bunları plugin'e özgü bir
-prefix altında tutun. Çekirdek admin namespace'leri (`config.*`,
-`exec.approvals.*`, `wizard.*`, `update.*`) ayrılmış kalır ve bir plugin daha dar
-bir scope istese bile her zaman `operator.admin` değerine çözümlenir.
+Plugin'iniz özel Gateway RPC yöntemleri kaydediyorsa bunları Plugin'e özgü bir
+önek altında tutun. Çekirdek yönetici ad alanları (`config.*`,
+`exec.approvals.*`, `wizard.*`, `update.*`) ayrılmış kalır ve bir Plugin daha dar
+bir kapsam istese bile her zaman `operator.admin` olarak çözümlenir.
 
-Akılda tutulacak hook koruyucu semantikleri:
+Akılda tutulması gereken hook koruyucu anlamları:
 
-- `before_tool_call`: `{ block: true }` terminaldir ve daha düşük öncelikli handler'ları durdurur.
-- `before_tool_call`: `{ block: false }` karar yok olarak değerlendirilir.
+- `before_tool_call`: `{ block: true }` sonlandırıcıdır ve daha düşük öncelikli işleyicileri durdurur.
+- `before_tool_call`: `{ block: false }` karar yok olarak ele alınır.
 - `before_tool_call`: `{ requireApproval: true }` ajan yürütmesini duraklatır ve exec onay katmanı, Telegram düğmeleri, Discord etkileşimleri veya herhangi bir kanaldaki `/approve` komutu üzerinden kullanıcıdan onay ister.
-- `before_install`: `{ block: true }` terminaldir ve daha düşük öncelikli handler'ları durdurur.
-- `before_install`: `{ block: false }` karar yok olarak değerlendirilir.
-- `message_sending`: `{ cancel: true }` terminaldir ve daha düşük öncelikli handler'ları durdurur.
-- `message_sending`: `{ cancel: false }` karar yok olarak değerlendirilir.
-- `message_received`: gelen thread/konu yönlendirmesine ihtiyacınız olduğunda typed `threadId` alanını tercih edin. `metadata` alanını kanala özgü ekstralar için tutun.
-- `message_sending`: kanala özgü metadata anahtarları yerine typed `replyToId` / `threadId` yönlendirme alanlarını tercih edin.
+- `before_install`: `{ block: true }` sonlandırıcıdır ve daha düşük öncelikli işleyicileri durdurur.
+- `before_install`: `{ block: false }` karar yok olarak ele alınır.
+- `message_sending`: `{ cancel: true }` sonlandırıcıdır ve daha düşük öncelikli işleyicileri durdurur.
+- `message_sending`: `{ cancel: false }` karar yok olarak ele alınır.
+- `message_received`: gelen ileti dizisi/konu yönlendirmesine ihtiyacınız olduğunda tipli `threadId` alanını tercih edin. Kanala özgü ekler için `metadata` kullanın.
+- `message_sending`: kanala özgü metadata anahtarları yerine tipli `replyToId` / `threadId` yönlendirme alanlarını tercih edin.
 
-`/approve` komutu hem exec hem de plugin onaylarını sınırlı fallback ile işler:
-bir exec onay id'si bulunamadığında, OpenClaw aynı id'yi plugin onayları
-üzerinden yeniden dener. Plugin onayı yönlendirmesi config içinde
-`approvals.plugin` ile bağımsız olarak yapılandırılabilir.
+`/approve` komutu, sınırlı geri dönüşle hem exec hem de Plugin onaylarını işler:
+Bir exec onay kimliği bulunmadığında OpenClaw, aynı kimliği Plugin onayları
+üzerinden yeniden dener. Plugin onayı iletme, yapılandırmada `approvals.plugin`
+üzerinden bağımsız olarak yapılandırılabilir.
 
-Özel onay tesisatının aynı sınırlı fallback durumunu algılaması gerekiyorsa,
+Özel onay tesisatının aynı sınırlı geri dönüş durumunu algılaması gerekiyorsa
 onay süresi dolma dizelerini elle eşleştirmek yerine
-`openclaw/plugin-sdk/error-runtime` içindeki `isApprovalNotFoundError` kullanın.
+`openclaw/plugin-sdk/error-runtime` içinden `isApprovalNotFoundError` tercih edin.
 
-Örnekler ve hook referansı için [Plugin hook'ları](/tr/plugins/hooks) bölümüne bakın.
+Örnekler ve hook referansı için bkz. [Plugin hook'ları](/tr/plugins/hooks).
 
 ## Ajan araçlarını kaydetme
 
-Araçlar, LLM'nin çağırabileceği typed fonksiyonlardır. Zorunlu (her zaman
-kullanılabilir) veya isteğe bağlı (kullanıcı opt-in) olabilirler:
+Araçlar, LLM'nin çağırabileceği tipli işlevlerdir. Zorunlu (her zaman
+kullanılabilir) veya isteğe bağlı (kullanıcı katılımıyla) olabilirler:
 
 ```typescript
 register(api) {
-  // Required tool — always available
+  // Required tool - always available
   api.registerTool({
     name: "my_tool",
     description: "Do a thing",
@@ -245,7 +243,7 @@ register(api) {
     },
   });
 
-  // Optional tool — user must add to allowlist
+  // Optional tool - user must add to allowlist
   api.registerTool(
     {
       name: "workflow_tool",
@@ -260,7 +258,7 @@ register(api) {
 }
 ```
 
-`api.registerTool(...)` ile kaydedilen her araç, plugin manifestinde de
+`api.registerTool(...)` ile kaydedilen her araç, Plugin manifest'inde de
 bildirilmelidir:
 
 ```json
@@ -277,13 +275,12 @@ bildirilmelidir:
 ```
 
 OpenClaw, kayıtlı araçtan doğrulanmış tanımlayıcıyı yakalar ve önbelleğe alır,
-böylece plugin'ler manifest içinde `description` veya şema verilerini yinelemez. 
-Manifest sözleşmesi yalnızca sahipliği ve keşfi bildirir; yürütme hâlâ
+böylece Plugin'ler manifest içinde `description` veya şema verilerini yinelemez. Manifest
+sözleşmesi yalnızca sahipliği ve keşfi bildirir; yürütme yine de
 canlı kayıtlı araç uygulamasını çağırır.
-OpenClaw'ın araç açıkça izin verilenler listesine alınana kadar o
-plugin çalışma zamanını yüklemekten kaçınabilmesi için
-`api.registerTool(..., { optional: true })` ile kaydedilen araçlarda
-`toolMetadata.<tool>.optional: true` ayarını yapın.
+`api.registerTool(..., { optional: true })` ile kaydedilen araçlar için
+`toolMetadata.<tool>.optional: true` ayarlayın; böylece OpenClaw, araç açıkça izin listesine
+alınana kadar ilgili Plugin çalışma zamanını yüklemekten kaçınabilir.
 
 Kullanıcılar isteğe bağlı araçları yapılandırmada etkinleştirir:
 
@@ -294,14 +291,13 @@ Kullanıcılar isteğe bağlı araçları yapılandırmada etkinleştirir:
 ```
 
 - Araç adları çekirdek araçlarla çakışmamalıdır (çakışmalar atlanır)
-- Eksik `parameters` dahil hatalı biçimlendirilmiş kayıt nesnelerine sahip araçlar atlanır ve ajan çalıştırmalarını bozmak yerine plugin tanılamalarında raporlanır
+- Eksik `parameters` dahil olmak üzere hatalı biçimlendirilmiş kayıt nesnelerine sahip araçlar, ajan çalıştırmalarını bozmak yerine atlanır ve Plugin tanılamalarında raporlanır
 - Yan etkileri veya ek ikili gereksinimleri olan araçlar için `optional: true` kullanın
-- Kullanıcılar, plugin kimliğini `tools.allow` öğesine ekleyerek bir plugin'deki tüm araçları etkinleştirebilir
+- Kullanıcılar, `tools.allow` içine Plugin kimliğini ekleyerek bir Plugin'deki tüm araçları etkinleştirebilir
 
 ## CLI komutlarını kaydetme
 
-Plugin'ler `api.registerCli` ile kök `openclaw` komut grupları ekleyebilir. OpenClaw'ın her plugin çalışma zamanını hevesle yüklemeden komutu gösterebilmesi ve yönlendirebilmesi için her üst düzey komut kökü için
-`descriptors` sağlayın.
+Plugin'ler `api.registerCli` ile kök `openclaw` komut grupları ekleyebilir. OpenClaw'ın her Plugin çalışma zamanını istekli biçimde yüklemeden komutu gösterebilmesi ve yönlendirebilmesi için her üst düzey komut kökü için `descriptors` sağlayın.
 
 ```typescript
 register(api) {
@@ -340,7 +336,7 @@ openclaw demo-plugin ping
 
 ## İçe aktarma kuralları
 
-Her zaman odaklı `openclaw/plugin-sdk/<subpath>` yollarından içe aktarın:
+Her zaman odaklanmış `openclaw/plugin-sdk/<subpath>` yollarından içe aktarın:
 
 ```typescript
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
@@ -350,68 +346,66 @@ import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
 import { ... } from "openclaw/plugin-sdk";
 ```
 
-Tam alt yol referansı için [SDK Genel Bakışı](/tr/plugins/sdk-overview) bölümüne bakın.
+Tam alt yol başvurusu için bkz. [SDK Genel Bakış](/tr/plugins/sdk-overview).
 
-Plugin'inizin içinde, içe aktarmalar için yerel barrel dosyalarını (`api.ts`, `runtime-api.ts`) kullanın; kendi plugin'inizi asla SDK yolu üzerinden içe aktarmayın.
+Plugin'iniz içinde, dahili içe aktarmalar için yerel barrel dosyalarını (`api.ts`, `runtime-api.ts`) kullanın; kendi Plugin'inizi hiçbir zaman SDK yolu üzerinden içe aktarmayın.
 
-Sağlayıcı plugin'leri için, sağlayıcıya özgü yardımcıları, dikiş gerçekten genel olmadıkça bu paket kökü
-barrel'larında tutun. Geçerli paketlenmiş örnekler:
+Sağlayıcı Plugin'leri için, dikiş gerçekten genel değilse sağlayıcıya özgü yardımcıları ilgili paket kökü barrel'larında tutun. Geçerli gömülü örnekler:
 
 - Anthropic: Claude akış sarmalayıcıları ve `service_tier` / beta yardımcıları
-- OpenAI: sağlayıcı oluşturucular, varsayılan model yardımcıları, gerçek zamanlı sağlayıcılar
-- OpenRouter: sağlayıcı oluşturucu ile onboarding/yapılandırma yardımcıları
+- OpenAI: sağlayıcı oluşturucuları, varsayılan model yardımcıları, gerçek zamanlı sağlayıcılar
+- OpenRouter: sağlayıcı oluşturucu ve onboarding/yapılandırma yardımcıları
 
-Bir yardımcı yalnızca tek bir paketlenmiş sağlayıcı paketi içinde yararlıysa, onu
-`openclaw/plugin-sdk/*` içine yükseltmek yerine o paket kökü dikişinde tutun.
+Bir yardımcı yalnızca tek bir gömülü sağlayıcı paketi içinde yararlıysa, onu `openclaw/plugin-sdk/*` içine taşımak yerine ilgili paket kökü dikişinde tutun.
 
-Paketlenmiş plugin bakımı için, takip edilen sahip kullanımına sahip olduklarında oluşturulmuş bazı `openclaw/plugin-sdk/<bundled-id>` yardımcı dikişleri hâlâ vardır. Bunları yeni üçüncü taraf plugin'ler için varsayılan kalıp olarak değil, ayrılmış yüzeyler olarak değerlendirin.
+Bazı oluşturulmuş `openclaw/plugin-sdk/<bundled-id>` yardımcı dikişleri, izlenen sahip kullanımı olduğunda gömülü Plugin bakım için hâlâ mevcuttur. Bunları yeni üçüncü taraf Plugin'ler için varsayılan desen olarak değil, ayrılmış yüzeyler olarak ele alın.
 
 ## Gönderim öncesi kontrol listesi
 
 <Check>**package.json** doğru `openclaw` meta verilerine sahip</Check>
-<Check>**openclaw.plugin.json** manifest'i mevcut ve geçerli</Check>
+<Check>**openclaw.plugin.json** manifesti mevcut ve geçerli</Check>
 <Check>Giriş noktası `defineChannelPluginEntry` veya `definePluginEntry` kullanıyor</Check>
-<Check>Tüm içe aktarmalar odaklı `plugin-sdk/<subpath>` yollarını kullanıyor</Check>
-<Check>İç içe aktarmalar SDK öz içe aktarmalarını değil, yerel modülleri kullanıyor</Check>
+<Check>Tüm içe aktarmalar odaklanmış `plugin-sdk/<subpath>` yollarını kullanıyor</Check>
+<Check>Dahili içe aktarmalar SDK öz içe aktarmalarını değil, yerel modülleri kullanıyor</Check>
 <Check>Testler geçiyor (`pnpm test -- <bundled-plugin-root>/my-plugin/`)</Check>
-<Check>`pnpm check` geçiyor (depo içi plugin'ler)</Check>
+<Check>`pnpm check` geçiyor (repo içi Plugin'ler)</Check>
 
 ## Beta sürüm testi
 
-1. [openclaw/openclaw](https://github.com/openclaw/openclaw/releases) üzerindeki GitHub sürüm etiketlerini izleyin ve `Watch` > `Releases` yoluyla abone olun. Beta etiketleri `v2026.3.N-beta.1` biçimindedir. Sürüm duyuruları için resmi OpenClaw X hesabı [@openclaw](https://x.com/openclaw) bildirimlerini de açabilirsiniz.
-2. Plugin'inizi beta etiketi görünür görünmez ona karşı test edin. Kararlı sürümden önceki pencere genellikle yalnızca birkaç saattir.
-3. Testten sonra `plugin-forum` Discord kanalındaki plugin iş parçacığınızda `all good` veya neyin bozulduğunu paylaşın. Henüz bir iş parçacığınız yoksa oluşturun.
-4. Bir şey bozulursa `Beta blocker: <plugin-name> - <summary>` başlıklı bir issue açın veya güncelleyin ve `beta-blocker` etiketini uygulayın. Issue bağlantısını iş parçacığınıza koyun.
-5. `main` için `fix(<plugin-id>): beta blocker - <summary>` başlıklı bir PR açın ve issue'yu hem PR'da hem de Discord iş parçacığınızda bağlayın. Katkıda bulunanlar PR'ları etiketleyemez, bu nedenle başlık bakımcılar ve otomasyon için PR tarafındaki sinyaldir. PR'ı olan engelleyiciler birleştirilir; PR'ı olmayan engelleyiciler yine de yayımlanabilir. Bakımcılar beta testi sırasında bu iş parçacıklarını izler.
-6. Sessizlik yeşil demektir. Pencereyi kaçırırsanız, düzeltmeniz büyük olasılıkla sonraki döngüye kalır.
+1. [openclaw/openclaw](https://github.com/openclaw/openclaw/releases) üzerindeki GitHub sürüm etiketlerini izleyin ve `Watch` > `Releases` üzerinden abone olun. Beta etiketleri `v2026.3.N-beta.1` gibi görünür. Sürüm duyuruları için resmi OpenClaw X hesabı [@openclaw](https://x.com/openclaw) bildirimlerini de açabilirsiniz.
+2. Beta etiketi görünür görünmez Plugin'inizi bu etikete karşı test edin. Kararlı sürüm öncesindeki pencere genellikle yalnızca birkaç saattir.
+3. Testten sonra `plugin-forum` Discord kanalındaki Plugin başlığınızda `all good` veya neyin bozulduğunu paylaşın. Henüz bir başlığınız yoksa oluşturun.
+4. Bir şey bozulursa `Beta blocker: <plugin-name> - <summary>` başlıklı bir issue açın veya güncelleyin ve `beta-blocker` etiketini uygulayın. Issue bağlantısını başlığınıza koyun.
+5. `main` için `fix(<plugin-id>): beta blocker - <summary>` başlıklı bir PR açın ve issue'yu hem PR'da hem de Discord başlığınızda bağlayın. Katkıda bulunanlar PR'ları etiketleyemez; bu nedenle başlık, bakıcılar ve otomasyon için PR tarafındaki sinyaldir. PR'ı olan engelleyiciler birleştirilir; PR'ı olmayanlar yine de gönderilebilir. Bakıcılar beta testi sırasında bu başlıkları izler.
+6. Sessizlik yeşil demektir. Pencereyi kaçırırsanız düzeltmeniz muhtemelen sonraki döngüye girer.
 
 ## Sonraki adımlar
 
 <CardGroup cols={2}>
-  <Card title="Kanal Plugin'leri" icon="messages-square" href="/tr/plugins/sdk-channel-plugins">
-    Bir mesajlaşma kanalı plugin'i oluşturun
+  <Card title="Channel Plugins" icon="messages-square" href="/tr/plugins/sdk-channel-plugins">
+    Bir mesajlaşma kanalı Plugin'i oluşturun
   </Card>
-  <Card title="Sağlayıcı Plugin'leri" icon="cpu" href="/tr/plugins/sdk-provider-plugins">
-    Bir model sağlayıcı plugin'i oluşturun
+  <Card title="Provider Plugins" icon="cpu" href="/tr/plugins/sdk-provider-plugins">
+    Bir model sağlayıcı Plugin'i oluşturun
   </Card>
-  <Card title="SDK Genel Bakışı" icon="book-open" href="/tr/plugins/sdk-overview">
-    İçe aktarma haritası ve kayıt API referansı
+  <Card title="SDK Overview" icon="book-open" href="/tr/plugins/sdk-overview">
+    İçe aktarma haritası ve kayıt API başvurusu
   </Card>
-  <Card title="Çalışma Zamanı Yardımcıları" icon="settings" href="/tr/plugins/sdk-runtime">
+  <Card title="Runtime Helpers" icon="settings" href="/tr/plugins/sdk-runtime">
     api.runtime üzerinden TTS, arama, alt ajan
   </Card>
-  <Card title="Test Etme" icon="test-tubes" href="/tr/plugins/sdk-testing">
-    Test yardımcı programları ve kalıpları
+  <Card title="Testing" icon="test-tubes" href="/tr/plugins/sdk-testing">
+    Test yardımcıları ve desenleri
   </Card>
-  <Card title="Plugin Manifest'i" icon="file-json" href="/tr/plugins/manifest">
-    Tam manifest şeması referansı
+  <Card title="Plugin Manifest" icon="file-json" href="/tr/plugins/manifest">
+    Tam manifest şeması başvurusu
   </Card>
 </CardGroup>
 
 ## İlgili
 
-- [Plugin Mimarisi](/tr/plugins/architecture) — iç mimariye derinlemesine bakış
-- [SDK Genel Bakışı](/tr/plugins/sdk-overview) — Plugin SDK referansı
-- [Manifest](/tr/plugins/manifest) — plugin manifest biçimi
-- [Kanal Plugin'leri](/tr/plugins/sdk-channel-plugins) — kanal plugin'leri oluşturma
-- [Sağlayıcı Plugin'leri](/tr/plugins/sdk-provider-plugins) — sağlayıcı plugin'leri oluşturma
+- [Plugin Mimarisi](/tr/plugins/architecture) - dahili mimariye derinlemesine bakış
+- [SDK Genel Bakış](/tr/plugins/sdk-overview) - Plugin SDK başvurusu
+- [Manifest](/tr/plugins/manifest) - Plugin manifest biçimi
+- [Kanal Plugin'leri](/tr/plugins/sdk-channel-plugins) - kanal Plugin'leri oluşturma
+- [Sağlayıcı Plugin'leri](/tr/plugins/sdk-provider-plugins) - sağlayıcı Plugin'leri oluşturma

@@ -1,24 +1,22 @@
 ---
 read_when:
     - Bir model sağlayıcısı seçmek istiyorsunuz
-    - Desteklenen LLM arka uçları hakkında hızlı bir genel bakışa ihtiyacınız var
+    - Desteklenen LLM arka uçlarına hızlı bir genel bakışa ihtiyacınız var
 summary: OpenClaw tarafından desteklenen model sağlayıcıları (LLM'ler)
 title: Sağlayıcı dizini
 x-i18n:
-    generated_at: "2026-04-30T09:40:31Z"
+    generated_at: "2026-05-06T09:27:45Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 61143200b2e7a74392cf8871bfcd210fe35dbd5118e2e8bc7b15265192fd2bde
+    source_hash: cfc3a15880a5e1881c1a58c60c9ad7e5624350a8db848d03c7cef6ee18c14b81
     source_path: providers/index.md
     workflow: 16
 ---
 
-# Model Sağlayıcıları
-
-OpenClaw birçok LLM sağlayıcısını kullanabilir. Bir sağlayıcı seçin, kimlik doğrulaması yapın, ardından
+OpenClaw birçok LLM sağlayıcısı kullanabilir. Bir sağlayıcı seçin, kimlik doğrulaması yapın, ardından
 varsayılan modeli `provider/model` olarak ayarlayın.
 
-Sohbet kanalı belgelerini mi arıyorsunuz (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/vb.)? Bkz. [Kanallar](/tr/channels).
+Sohbet kanalı belgelerini mi arıyorsunuz (WhatsApp/Telegram/Discord/Slack/Mattermost (plugin)/vb.)? Bkz. [Kanallar](/tr/channels).
 
 ## Hızlı başlangıç
 
@@ -53,7 +51,7 @@ Sohbet kanalı belgelerini mi arıyorsunuz (WhatsApp/Telegram/Discord/Slack/Matt
 - [Google (Gemini)](/tr/providers/google)
 - [Gradium](/tr/providers/gradium)
 - [Groq (LPU çıkarımı)](/tr/providers/groq)
-- [Hugging Face (Inference)](/tr/providers/huggingface)
+- [Hugging Face (Çıkarım)](/tr/providers/huggingface)
 - [inferrs (yerel modeller)](/tr/providers/inferrs)
 - [Kilocode](/tr/providers/kilocode)
 - [LiteLLM (birleşik gateway)](/tr/providers/litellm)
@@ -88,10 +86,10 @@ Sohbet kanalı belgelerini mi arıyorsunuz (WhatsApp/Telegram/Discord/Slack/Matt
 
 ## Paylaşılan genel bakış sayfaları
 
-- [Ek paketlenmiş varyantlar](/tr/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy ve Gemini CLI OAuth
-- [Görüntü Üretimi](/tr/tools/image-generation) - Paylaşılan `image_generate` aracı, sağlayıcı seçimi ve yük devretme
-- [Müzik Üretimi](/tr/tools/music-generation) - Paylaşılan `music_generate` aracı, sağlayıcı seçimi ve yük devretme
-- [Video Üretimi](/tr/tools/video-generation) - Paylaşılan `video_generate` aracı, sağlayıcı seçimi ve yük devretme
+- [Ek paketli varyantlar](/tr/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy ve Gemini CLI OAuth
+- [Görüntü Oluşturma](/tr/tools/image-generation) - Paylaşılan `image_generate` aracı, sağlayıcı seçimi ve yük devretme
+- [Müzik Oluşturma](/tr/tools/music-generation) - Paylaşılan `music_generate` aracı, sağlayıcı seçimi ve yük devretme
+- [Video Oluşturma](/tr/tools/video-generation) - Paylaşılan `video_generate` aracı, sağlayıcı seçimi ve yük devretme
 
 ## Transkripsiyon sağlayıcıları
 

@@ -3,26 +3,24 @@ read_when:
     - Tam bir ajan turu çalıştırmadan araçları çağırma
     - Araç politikası uygulaması gerektiren otomasyonlar oluşturma
 summary: Gateway HTTP uç noktası üzerinden tek bir aracı doğrudan çağırın
-title: Araçlar API'yi çağırır
+title: Araçları çağırma API'si
 x-i18n:
-    generated_at: "2026-04-30T09:25:17Z"
+    generated_at: "2026-05-06T09:15:43Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7ba20b7471de76e7f6bccc4d7a3d72c00d9d7b9843ad4e74825685c992a33f1a
+    source_hash: 2fcd490d4eaa63f23b0d502e537c4094ade88afcdd04e2b7df1a5f0484a11c57
     source_path: gateway/tools-invoke-http-api.md
     workflow: 16
 ---
 
-# Araç Çağırma (HTTP)
-
-OpenClaw’ın Gateway’i, tek bir aracı doğrudan çağırmak için basit bir HTTP uç noktası sunar. Her zaman etkindir ve Gateway kimlik doğrulaması ile araç politikasını kullanır. OpenAI uyumlu `/v1/*` yüzeyinde olduğu gibi, paylaşılan gizli bearer kimlik doğrulaması tüm Gateway için güvenilir operatör erişimi olarak değerlendirilir.
+OpenClaw'ın Gateway'i, tek bir aracı doğrudan çağırmak için basit bir HTTP endpoint'i sunar. Her zaman etkindir ve Gateway kimlik doğrulamasını artı araç ilkesini kullanır. OpenAI uyumlu `/v1/*` yüzeyi gibi, paylaşılan gizli bearer kimlik doğrulaması tüm gateway için güvenilir operatör erişimi olarak ele alınır.
 
 - `POST /tools/invoke`
-- Gateway ile aynı port (WS + HTTP çoklama): `http://<gateway-host>:<port>/tools/invoke`
+- Gateway ile aynı port (WS + HTTP multiplex): `http://<gateway-host>:<port>/tools/invoke`
 
-Varsayılan azami yük boyutu 2 MB’dir.
+Varsayılan maksimum payload boyutu 2 MB'dir.
 
-## Kimlik doğrulama
+## Kimlik Doğrulama
 
 Gateway kimlik doğrulama yapılandırmasını kullanır.
 
@@ -32,44 +30,44 @@ Yaygın HTTP kimlik doğrulama yolları:
   `Authorization: Bearer <token-or-password>`
 - güvenilir kimlik taşıyan HTTP kimlik doğrulaması (`gateway.auth.mode="trusted-proxy"`):
   yapılandırılmış kimlik farkındalığı olan proxy üzerinden yönlendirin ve gerekli
-  kimlik başlıklarını eklemesine izin verin
+  kimlik header'larını onun enjekte etmesine izin verin
 - özel giriş açık kimlik doğrulaması (`gateway.auth.mode="none"`):
-  kimlik doğrulama başlığı gerekmez
+  kimlik doğrulama header'ı gerekmez
 
 Notlar:
 
-- `gateway.auth.mode="token"` olduğunda `gateway.auth.token` (veya `OPENCLAW_GATEWAY_TOKEN`) kullanın.
-- `gateway.auth.mode="password"` olduğunda `gateway.auth.password` (veya `OPENCLAW_GATEWAY_PASSWORD`) kullanın.
-- `gateway.auth.mode="trusted-proxy"` olduğunda HTTP isteği yapılandırılmış
-  güvenilir bir proxy kaynağından gelmelidir; aynı ana makine local loopback proxy’leri açıkça
+- `gateway.auth.mode="token"` olduğunda, `gateway.auth.token` (veya `OPENCLAW_GATEWAY_TOKEN`) kullanın.
+- `gateway.auth.mode="password"` olduğunda, `gateway.auth.password` (veya `OPENCLAW_GATEWAY_PASSWORD`) kullanın.
+- `gateway.auth.mode="trusted-proxy"` olduğunda, HTTP isteği yapılandırılmış
+  güvenilir bir proxy kaynağından gelmelidir; aynı ana makine loopback proxy'leri açıkça
   `gateway.auth.trustedProxy.allowLoopback = true` gerektirir.
-- `gateway.auth.rateLimit` yapılandırılmışsa ve çok fazla kimlik doğrulama hatası oluşursa uç nokta `Retry-After` ile `429` döndürür.
+- `gateway.auth.rateLimit` yapılandırılmışsa ve çok fazla kimlik doğrulama hatası oluşursa, endpoint `Retry-After` ile `429` döndürür.
 
 ## Güvenlik sınırı (önemli)
 
-Bu uç noktayı Gateway örneği için **tam operatör erişimi** yüzeyi olarak ele alın.
+Bu endpoint'i gateway instance'ı için **tam operatör erişimli** bir yüzey olarak ele alın.
 
 - Buradaki HTTP bearer kimlik doğrulaması dar bir kullanıcı başına kapsam modeli değildir.
-- Bu uç nokta için geçerli bir Gateway token/parolası, sahip/operatör kimlik bilgisi gibi ele alınmalıdır.
-- Paylaşılan gizli kimlik doğrulama modlarında (`token` ve `password`), çağıran daha dar bir `x-openclaw-scopes` başlığı gönderse bile uç nokta normal tam operatör varsayılanlarını geri yükler.
-- Paylaşılan gizli kimlik doğrulaması, bu uç noktadaki doğrudan araç çağrılarını da sahip-gönderen turları olarak değerlendirir.
-- Güvenilir kimlik taşıyan HTTP modları (örneğin güvenilir proxy kimlik doğrulaması veya özel girişte `gateway.auth.mode="none"`) mevcut olduğunda `x-openclaw-scopes` değerine uyar, aksi halde normal operatör varsayılan kapsam kümesine geri döner.
-- Bu uç noktayı yalnızca loopback/tailnet/özel giriş üzerinde tutun; doğrudan genel internete açmayın.
+- Bu endpoint için geçerli bir Gateway token'ı/parolası, sahip/operatör kimlik bilgisi gibi ele alınmalıdır.
+- Paylaşılan gizli kimlik doğrulama modları (`token` ve `password`) için, çağıran daha dar bir `x-openclaw-scopes` header'ı gönderse bile endpoint normal tam operatör varsayılanlarını geri yükler.
+- Paylaşılan gizli kimlik doğrulaması, bu endpoint üzerindeki doğrudan araç çağrılarını da sahip gönderen dönüşleri olarak ele alır.
+- Güvenilir kimlik taşıyan HTTP modları (örneğin güvenilir proxy kimlik doğrulaması veya özel bir ingress üzerinde `gateway.auth.mode="none"`) mevcut olduğunda `x-openclaw-scopes` değerini dikkate alır ve aksi halde normal operatör varsayılan kapsam kümesine geri döner.
+- Bu endpoint'i yalnızca loopback/tailnet/özel ingress üzerinde tutun; doğrudan herkese açık internete açmayın.
 
 Kimlik doğrulama matrisi:
 
 - `gateway.auth.mode="token"` veya `"password"` + `Authorization: Bearer ...`
-  - paylaşılan Gateway operatör sırrına sahip olunduğunu kanıtlar
+  - paylaşılan gateway operatör gizlisine sahip olunduğunu kanıtlar
   - daha dar `x-openclaw-scopes` değerlerini yok sayar
   - tam varsayılan operatör kapsam kümesini geri yükler:
     `operator.admin`, `operator.approvals`, `operator.pairing`,
     `operator.read`, `operator.talk.secrets`, `operator.write`
-  - bu uç noktadaki doğrudan araç çağrılarını sahip-gönderen turları olarak değerlendirir
-- güvenilir kimlik taşıyan HTTP modları (örneğin güvenilir proxy kimlik doğrulaması veya özel girişte `gateway.auth.mode="none"`)
-  - dıştaki güvenilir bir kimliği veya dağıtım sınırını kimlik doğrulamasından geçirir
-  - başlık mevcut olduğunda `x-openclaw-scopes` değerine uyar
-  - başlık yoksa normal operatör varsayılan kapsam kümesine geri döner
-  - yalnızca çağıran kapsamları açıkça daraltıp `operator.admin` değerini atladığında sahip anlamını kaybeder
+  - bu endpoint üzerindeki doğrudan araç çağrılarını sahip gönderen dönüşleri olarak ele alır
+- güvenilir kimlik taşıyan HTTP modları (örneğin güvenilir proxy kimlik doğrulaması veya özel ingress üzerinde `gateway.auth.mode="none"`)
+  - bir dış güvenilir kimliği veya dağıtım sınırını doğrular
+  - header mevcut olduğunda `x-openclaw-scopes` değerini dikkate alır
+  - header yoksa normal operatör varsayılan kapsam kümesine geri döner
+  - yalnızca çağıran kapsamları açıkça daraltıp `operator.admin` değerini atladığında sahip semantiğini kaybeder
 
 ## İstek gövdesi
 
@@ -86,60 +84,60 @@ Kimlik doğrulama matrisi:
 Alanlar:
 
 - `tool` (string, zorunlu): çağrılacak araç adı.
-- `action` (string, isteğe bağlı): araç şeması `action` değerini destekliyorsa ve args yükü bunu atlamışsa args içine eşlenir.
-- `args` (object, isteğe bağlı): araca özgü bağımsız değişkenler.
-- `sessionKey` (string, isteğe bağlı): hedef oturum anahtarı. Atlanırsa veya `"main"` ise Gateway yapılandırılmış ana oturum anahtarını kullanır (`session.mainKey` ve varsayılan aracıya uyar, ya da global kapsamda `global`).
-- `dryRun` (boolean, isteğe bağlı): gelecekte kullanım için ayrılmıştır; şu anda yok sayılır.
+- `action` (string, isteğe bağlı): araç şeması `action` destekliyorsa ve args payload'u bunu atladıysa args içine eşlenir.
+- `args` (object, isteğe bağlı): araca özgü argümanlar.
+- `sessionKey` (string, isteğe bağlı): hedef oturum anahtarı. Atlanırsa veya `"main"` ise Gateway yapılandırılmış ana oturum anahtarını kullanır (`session.mainKey` ve varsayılan agent'ı dikkate alır ya da global kapsamda `global` kullanır).
+- `dryRun` (boolean, isteğe bağlı): gelecekteki kullanım için ayrılmıştır; şu anda yok sayılır.
 
-## Politika + yönlendirme davranışı
+## İlke + yönlendirme davranışı
 
-Araç kullanılabilirliği, Gateway aracıları tarafından kullanılan aynı politika zinciri üzerinden filtrelenir:
+Araç kullanılabilirliği, Gateway agent'ları tarafından kullanılan aynı ilke zinciri üzerinden filtrelenir:
 
 - `tools.profile` / `tools.byProvider.profile`
 - `tools.allow` / `tools.byProvider.allow`
 - `agents.<id>.tools.allow` / `agents.<id>.tools.byProvider.allow`
-- grup politikaları (oturum anahtarı bir gruba veya kanala eşleniyorsa)
-- alt aracı politikası (alt aracı oturum anahtarıyla çağrıldığında)
+- grup ilkeleri (oturum anahtarı bir gruba veya kanala eşleniyorsa)
+- subagent ilkesi (bir subagent oturum anahtarıyla çağırırken)
 
-Bir araca politika tarafından izin verilmiyorsa uç nokta **404** döndürür.
+Bir araca ilke tarafından izin verilmiyorsa endpoint **404** döndürür.
 
 Önemli sınır notları:
 
-- Exec onayları, bu HTTP uç noktası için ayrı bir yetkilendirme sınırı değil, operatör koruma raylarıdır. Bir araca burada Gateway kimlik doğrulaması + araç politikası üzerinden erişilebiliyorsa `/tools/invoke` çağrı başına ek bir onay istemi eklemez.
-- Gateway bearer kimlik bilgilerini güvenilmeyen çağıranlarla paylaşmayın. Güven sınırları arasında ayrım gerekiyorsa ayrı gateway’ler (ve ideal olarak ayrı işletim sistemi kullanıcıları/ana makineleri) çalıştırın.
+- Exec onayları operatör guardrail'leridir, bu HTTP endpoint'i için ayrı bir yetkilendirme sınırı değildir. Bir araca burada Gateway kimlik doğrulaması + araç ilkesi üzerinden erişilebiliyorsa, `/tools/invoke` çağrı başına ek bir onay prompt'u eklemez.
+- Gateway bearer kimlik bilgilerini güvenilmeyen çağıranlarla paylaşmayın. Güven sınırları arasında ayrım gerekiyorsa ayrı gateway'ler çalıştırın (ve ideal olarak ayrı OS kullanıcıları/ana makineleri kullanın).
 
-Gateway HTTP ayrıca varsayılan olarak katı bir engelleme listesi uygular (oturum politikası araca izin verse bile):
+Gateway HTTP ayrıca varsayılan olarak katı bir reddetme listesi uygular (oturum ilkesi araca izin verse bile):
 
-- `exec` — doğrudan komut yürütme (RCE yüzeyi)
-- `spawn` — rastgele alt süreç oluşturma (RCE yüzeyi)
-- `shell` — kabuk komutu yürütme (RCE yüzeyi)
-- `fs_write` — ana makinede rastgele dosya değişikliği
-- `fs_delete` — ana makinede rastgele dosya silme
-- `fs_move` — ana makinede rastgele dosya taşıma/yeniden adlandırma
-- `apply_patch` — yama uygulama rastgele dosyaları yeniden yazabilir
-- `sessions_spawn` — oturum orkestrasyonu; uzaktan aracı başlatma RCE’dir
-- `sessions_send` — oturumlar arası mesaj ekleme
-- `cron` — kalıcı otomasyon kontrol düzlemi
-- `gateway` — Gateway kontrol düzlemi; HTTP üzerinden yeniden yapılandırmayı engeller
-- `nodes` — Node komut aktarma, eşleştirilmiş ana makinelerde system.run’a erişebilir
-- `whatsapp_login` — terminal QR taraması gerektiren etkileşimli kurulum; HTTP’de takılı kalır
+- `exec` - doğrudan komut yürütme (RCE yüzeyi)
+- `spawn` - rastgele alt süreç oluşturma (RCE yüzeyi)
+- `shell` - shell komutu yürütme (RCE yüzeyi)
+- `fs_write` - ana makinede rastgele dosya mutasyonu
+- `fs_delete` - ana makinede rastgele dosya silme
+- `fs_move` - ana makinede rastgele dosya taşıma/yeniden adlandırma
+- `apply_patch` - patch uygulaması rastgele dosyaları yeniden yazabilir
+- `sessions_spawn` - oturum orkestrasyonu; uzaktan agent oluşturmak RCE'dir
+- `sessions_send` - oturumlar arası mesaj enjeksiyonu
+- `cron` - kalıcı otomasyon kontrol düzlemi
+- `gateway` - gateway kontrol düzlemi; HTTP üzerinden yeniden yapılandırmayı engeller
+- `nodes` - node komut relay'i eşleştirilmiş ana makinelerde system.run'a ulaşabilir
+- `whatsapp_login` - terminal QR taraması gerektiren etkileşimli kurulum; HTTP üzerinde takılır
 
-Bu engelleme listesini `gateway.tools` aracılığıyla özelleştirebilirsiniz:
+Bu reddetme listesini `gateway.tools` üzerinden özelleştirebilirsiniz:
 
 ```json5
 {
   gateway: {
     tools: {
-      // HTTP /tools/invoke üzerinden engellenecek ek araçlar
+      // Additional tools to block over HTTP /tools/invoke
       deny: ["browser"],
-      // Varsayılan engelleme listesinden araçları kaldır
+      // Remove tools from the default deny list
       allow: ["gateway"],
     },
   },
 }
 ```
 
-Grup politikalarının bağlamı çözmesine yardımcı olmak için isteğe bağlı olarak şunları ayarlayabilirsiniz:
+Grup ilkelerinin bağlamı çözmesine yardımcı olmak için isteğe bağlı olarak şunları ayarlayabilirsiniz:
 
 - `x-openclaw-message-channel: <channel>` (örnek: `slack`, `telegram`)
 - `x-openclaw-account-id: <accountId>` (birden fazla hesap olduğunda)
@@ -147,12 +145,12 @@ Grup politikalarının bağlamı çözmesine yardımcı olmak için isteğe bağ
 ## Yanıtlar
 
 - `200` → `{ ok: true, result }`
-- `400` → `{ ok: false, error: { type, message } }` (geçersiz istek veya araç girdi hatası)
+- `400` → `{ ok: false, error: { type, message } }` (geçersiz istek veya araç girdisi hatası)
 - `401` → yetkisiz
-- `429` → kimlik doğrulama hız sınırına takıldı (`Retry-After` ayarlı)
-- `404` → araç kullanılamıyor (bulunamadı veya izin listesinde değil)
+- `429` → kimlik doğrulaması hız sınırına takıldı (`Retry-After` ayarlanır)
+- `404` → araç kullanılamıyor (bulunamadı veya allowlist'e alınmadı)
 - `405` → yönteme izin verilmiyor
-- `500` → `{ ok: false, error: { type, message } }` (beklenmeyen araç yürütme hatası; temizlenmiş mesaj)
+- `500` → `{ ok: false, error: { type, message } }` (beklenmeyen araç yürütme hatası; sterilize edilmiş mesaj)
 
 ## Örnek
 
@@ -170,4 +168,4 @@ curl -sS http://127.0.0.1:18789/tools/invoke \
 ## İlgili
 
 - [Gateway protokolü](/tr/gateway/protocol)
-- [Araçlar ve Plugin’ler](/tr/tools)
+- [Araçlar ve plugin'ler](/tr/tools)

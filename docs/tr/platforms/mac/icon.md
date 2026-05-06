@@ -1,41 +1,41 @@
 ---
 read_when:
     - Menü çubuğu simgesi davranışını değiştirme
-summary: macOS üzerinde OpenClaw için menü çubuğu simgesi durumları ve animasyonlar
+summary: macOS'te OpenClaw için menü çubuğu simge durumları ve animasyonları
 title: Menü çubuğu simgesi
 x-i18n:
-    generated_at: "2026-04-24T09:19:43Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:22:15Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 6900d702358afcf0481f713ea334236e1abf973d0eeff60eaf0afcf88f9327b2
+    source_hash: 5497927721ff7486e9585a8a3edc2d5140408b2b0707acdcef2388e87bca20ec
     source_path: platforms/mac/icon.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Menü Çubuğu Simge Durumları
+# Menü Çubuğu Simgesi Durumları
 
-Yazar: steipete · Güncelleme: 2025-12-06 · Kapsam: macOS uygulaması (`apps/macos`)
+Yazar: steipete · Güncellendi: 2025-12-06 · Kapsam: macOS uygulaması (`apps/macos`)
 
-- **Boşta:** Normal simge animasyonu (göz kırpma, ara sıra kıpırdanma).
+- **Boşta:** Normal simge animasyonu (göz kırpma, ara sıra hafif sallanma).
 - **Duraklatıldı:** Durum öğesi `appearsDisabled` kullanır; hareket yoktur.
-- **Ses tetikleyici (büyük kulaklar):** Sesle uyandırma algılayıcısı, uyandırma sözcüğü duyulduğunda `AppState.triggerVoiceEars(ttl: nil)` çağrısı yapar; ifade yakalanırken `earBoostActive=true` durumunu korur. Kulaklar büyür (1.9x), okunabilirlik için dairesel kulak delikleri alır, ardından 1 saniyelik sessizlikten sonra `stopVoiceEars()` ile normale döner. Yalnızca uygulama içi ses işlem hattından tetiklenir.
-- **Çalışıyor (agent çalışıyor):** `AppState.isWorking=true`, “kuyruk/bacak koşturması” mikro hareketini sürer: iş devam ederken daha hızlı bacak kıpırdaması ve hafif kayma olur. Şu anda WebChat agent çalıştırmaları etrafında açılıp kapatılıyor; diğer uzun görevlere bağladığınızda aynı geçişi onların etrafına da ekleyin.
+- **Ses tetikleyicisi (büyük kulaklar):** Sesle uyandırma algılayıcısı, uyandırma sözcüğü duyulduğunda `AppState.triggerVoiceEars(ttl: nil)` çağırır ve ifade yakalanırken `earBoostActive=true` değerini korur. Kulaklar büyür (1.9x), okunabilirlik için dairesel kulak delikleri alır, ardından 1 sn sessizlikten sonra `stopVoiceEars()` ile geri iner. Yalnızca uygulama içi ses işlem hattından tetiklenir.
+- **Çalışıyor (agent çalışıyor):** `AppState.isWorking=true`, "kuyruk/bacak koşturması" mikro hareketini çalıştırır: iş devam ederken daha hızlı bacak sallanması ve hafif kayma. Şu anda WebChat agent çalıştırmaları sırasında açılıp kapatılır; bunları bağladığınızda diğer uzun görevlerin etrafına da aynı açma/kapatmayı ekleyin.
 
 Bağlantı noktaları
 
-- Sesle uyandırma: çalışma zamanı/test aracı tetikleme anında `AppState.triggerVoiceEars(ttl: nil)` çağırır ve yakalama penceresiyle eşleşmesi için 1 saniyelik sessizlikten sonra `stopVoiceEars()` çağırır.
-- Agent etkinliği: çalışma aralıkları etrafında `AppStateStore.shared.setWorking(true/false)` ayarlayın (WebChat agent çağrısında zaten yapılıyor). Animasyonların takılı kalmasını önlemek için aralıkları kısa tutun ve `defer` bloklarında sıfırlayın.
+- Sesle uyandırma: runtime/tester, yakalama penceresiyle eşleşmesi için tetikleme sırasında `AppState.triggerVoiceEars(ttl: nil)` ve 1 sn sessizlikten sonra `stopVoiceEars()` çağırır.
+- Agent etkinliği: iş aralıkları sırasında `AppStateStore.shared.setWorking(true/false)` ayarlayın (WebChat agent çağrısında zaten yapılıyor). Takılı kalan animasyonları önlemek için aralıkları kısa tutun ve `defer` bloklarında sıfırlayın.
 
 Şekiller ve boyutlar
 
 - Temel simge `CritterIconRenderer.makeIcon(blink:legWiggle:earWiggle:earScale:earHoles:)` içinde çizilir.
-- Kulak ölçeği varsayılan olarak `1.0` değerindedir; ses güçlendirmesi `earScale=1.9` ayarlar ve genel çerçeveyi değiştirmeden `earHoles=true` durumunu açar (36×36 px Retina arka plan deposuna işlenen 18×18 pt şablon görsel).
-- Koşturma, küçük bir yatay kıpırdamayla birlikte yaklaşık `1.0` düzeyine kadar bacak kıpırdaması kullanır; mevcut boşta kıpırdamasına eklenir.
+- Kulak ölçeği varsayılan olarak `1.0` olur; ses güçlendirmesi genel çerçeveyi değiştirmeden `earScale=1.9` ayarlar ve `earHoles=true` açar (36×36 px Retina arka depoya işlenen 18×18 pt şablon görüntü).
+- Koşturma, küçük bir yatay titremeyle birlikte bacak sallanmasını yaklaşık ~1.0 değerine kadar kullanır; mevcut boşta sallanmasına eklenir.
 
 Davranış notları
 
-- Kulaklar/çalışma durumu için harici CLI/broker geçişi yoktur; yanlışlıkla sürekli açılıp kapanmayı önlemek için bunu uygulamanın kendi sinyallerine içsel tutun.
-- TTL değerlerini kısa tutun (`<10s`), böylece bir iş takılırsa simge hızla temel duruma döner.
+- Kulaklar/çalışma için harici CLI/broker açma kapaması yoktur; yanlışlıkla dalgalanmayı önlemek için bunu uygulamanın kendi sinyallerine dahili tutun.
+- TTL'leri kısa tutun (&lt;10 sn), böylece bir iş takılırsa simge hızla başlangıç durumuna döner.
 
 ## İlgili
 

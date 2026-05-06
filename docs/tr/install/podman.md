@@ -1,32 +1,32 @@
 ---
 read_when:
-    - Docker yerine Podman ile konteynerleştirilmiş bir Gateway istiyorsunuz
-summary: OpenClaw'u root yetkisiz bir Podman konteynerinde çalıştırın
+    - Docker yerine Podman ile kapsayıcılaştırılmış bir Gateway istiyorsunuz
+summary: OpenClaw'ı root yetkisiz bir Podman konteynerinde çalıştırın
 title: Podman
 x-i18n:
-    generated_at: "2026-04-30T09:30:23Z"
+    generated_at: "2026-05-06T09:19:44Z"
     model: gpt-5.5
     provider: openai
-    source_hash: bfdcbbdb62c2f8ca2d6d370b742003e6f92f6921a38c00ba19e810d83e350647
+    source_hash: 44f89feede7fe10325810599dad457f8fcc3adbd9c139e26df67b9ad12019d56
     source_path: install/podman.md
     workflow: 16
 ---
 
-OpenClaw Gateway'i, mevcut root olmayan kullanıcınız tarafından yönetilen rootless Podman konteynerinde çalıştırın.
+OpenClaw Gateway’i, geçerli root olmayan kullanıcınız tarafından yönetilen root’suz bir Podman kapsayıcısında çalıştırın.
 
 Amaçlanan model şudur:
 
-- Podman gateway konteynerini çalıştırır.
-- Host `openclaw` CLI'niz kontrol düzlemidir.
-- Kalıcı durum varsayılan olarak host üzerinde `~/.openclaw` altında bulunur.
-- Günlük yönetimde `sudo -u openclaw`, `podman exec` veya ayrı bir servis kullanıcısı yerine `openclaw --container <name> ...` kullanılır.
+- Podman, Gateway kapsayıcısını çalıştırır.
+- Ana makinenizdeki `openclaw` CLI kontrol düzlemidir.
+- Kalıcı durum varsayılan olarak ana makinede `~/.openclaw` altında bulunur.
+- Günlük yönetim, `sudo -u openclaw`, `podman exec` veya ayrı bir servis kullanıcısı yerine `openclaw --container <name> ...` kullanır.
 
 ## Önkoşullar
 
-- Rootless modda **Podman**
-- Host üzerinde yüklü **OpenClaw CLI**
-- **İsteğe bağlı:** Quadlet yönetimli otomatik başlatma istiyorsanız `systemd --user`
-- **İsteğe bağlı:** Başsız bir host üzerinde açılışta kalıcılık için `loginctl enable-linger "$(whoami)"` istiyorsanız yalnızca `sudo`
+- Root’suz modda **Podman**
+- Ana makinede kurulu **OpenClaw CLI**
+- **İsteğe bağlı:** Quadlet tarafından yönetilen otomatik başlatma istiyorsanız `systemd --user`
+- **İsteğe bağlı:** Başsız bir ana makinede önyükleme kalıcılığı için `loginctl enable-linger "$(whoami)"` istiyorsanız yalnızca `sudo`
 
 ## Hızlı başlangıç
 
@@ -35,66 +35,66 @@ Amaçlanan model şudur:
     Repo kökünden `./scripts/podman/setup.sh` komutunu çalıştırın.
   </Step>
 
-  <Step title="Gateway konteynerini başlatın">
-    Konteyneri `./scripts/run-openclaw-podman.sh launch` ile başlatın.
+  <Step title="Gateway kapsayıcısını başlatın">
+    Kapsayıcıyı `./scripts/run-openclaw-podman.sh launch` ile başlatın.
   </Step>
 
-  <Step title="Konteyner içinde onboarding çalıştırın">
+  <Step title="Kapsayıcı içinde ilk yapılandırmayı çalıştırın">
     `./scripts/run-openclaw-podman.sh launch setup` komutunu çalıştırın, ardından `http://127.0.0.1:18789/` adresini açın.
   </Step>
 
-  <Step title="Çalışan konteyneri host CLI'den yönetin">
-    `OPENCLAW_CONTAINER=openclaw` değerini ayarlayın, ardından host üzerinden normal `openclaw` komutlarını kullanın.
+  <Step title="Çalışan kapsayıcıyı ana makine CLI’ından yönetin">
+    `OPENCLAW_CONTAINER=openclaw` ayarlayın, ardından ana makineden normal `openclaw` komutlarını kullanın.
   </Step>
 </Steps>
 
 Kurulum ayrıntıları:
 
-- `./scripts/podman/setup.sh` varsayılan olarak rootless Podman deponuzda `openclaw:local` oluşturur veya ayarladıysanız `OPENCLAW_IMAGE` / `OPENCLAW_PODMAN_IMAGE` kullanır.
+- `./scripts/podman/setup.sh`, varsayılan olarak root’suz Podman deponuzda `openclaw:local` oluşturur veya ayarladıysanız `OPENCLAW_IMAGE` / `OPENCLAW_PODMAN_IMAGE` kullanır.
 - Eksikse `gateway.mode: "local"` ile `~/.openclaw/openclaw.json` oluşturur.
 - Eksikse `OPENCLAW_GATEWAY_TOKEN` ile `~/.openclaw/.env` oluşturur.
-- Manuel başlatmalar için yardımcı, `~/.openclaw/.env` içinden yalnızca Podman ile ilgili küçük bir izin listesindeki anahtarları okur ve konteynere açık runtime env değişkenleri geçirir; tüm env dosyasını Podman'a vermez.
+- Elle başlatmalar için yardımcı, `~/.openclaw/.env` dosyasından yalnızca Podman ile ilgili küçük bir izin listesindeki anahtarları okur ve kapsayıcıya açık çalışma zamanı ortam değişkenleri geçirir; tam ortam dosyasını Podman’a vermez.
 
-Quadlet yönetimli kurulum:
+Quadlet tarafından yönetilen kurulum:
 
 ```bash
 ./scripts/podman/setup.sh --quadlet
 ```
 
-Quadlet yalnızca Linux seçeneğidir çünkü systemd kullanıcı servislerine bağlıdır.
+Quadlet, systemd kullanıcı servislerine bağlı olduğu için yalnızca Linux seçeneğidir.
 
 Ayrıca `OPENCLAW_PODMAN_QUADLET=1` ayarlayabilirsiniz.
 
-İsteğe bağlı build/kurulum env değişkenleri:
+İsteğe bağlı derleme/kurulum ortam değişkenleri:
 
-- `OPENCLAW_IMAGE` veya `OPENCLAW_PODMAN_IMAGE` -- `openclaw:local` oluşturmak yerine mevcut/çekilmiş bir image kullanır
-- `OPENCLAW_DOCKER_APT_PACKAGES` -- image build sırasında ek apt paketleri yükler
-- `OPENCLAW_EXTENSIONS` -- build zamanında Plugin bağımlılıklarını önceden yükler
-- `OPENCLAW_INSTALL_BROWSER` -- tarayıcı otomasyonu için Chromium ve Xvfb'yi önceden yükler (etkinleştirmek için `1` olarak ayarlayın)
+- `OPENCLAW_IMAGE` veya `OPENCLAW_PODMAN_IMAGE` -- `openclaw:local` oluşturmak yerine mevcut/çekilmiş bir imaj kullanır
+- `OPENCLAW_DOCKER_APT_PACKAGES` -- imaj derlemesi sırasında ek apt paketleri kurar
+- `OPENCLAW_EXTENSIONS` -- derleme zamanında Plugin bağımlılıklarını önceden kurar
+- `OPENCLAW_INSTALL_BROWSER` -- tarayıcı otomasyonu için Chromium ve Xvfb’yi önceden kurar (etkinleştirmek için `1` olarak ayarlayın)
 
-Konteyner başlatma:
+Kapsayıcı başlatma:
 
 ```bash
 ./scripts/run-openclaw-podman.sh launch
 ```
 
-Betik, konteyneri mevcut uid/gid'niz olarak `--userns=keep-id` ile başlatır ve OpenClaw durumunuzu konteynere bind-mount eder.
+Betik, kapsayıcıyı geçerli uid/gid değerinizle `--userns=keep-id` kullanarak başlatır ve OpenClaw durumunuzu kapsayıcıya bağlama olarak ekler.
 
-Onboarding:
+İlk yapılandırma:
 
 ```bash
 ./scripts/run-openclaw-podman.sh launch setup
 ```
 
-Ardından `http://127.0.0.1:18789/` adresini açın ve `~/.openclaw/.env` içindeki token'ı kullanın.
+Ardından `http://127.0.0.1:18789/` adresini açın ve `~/.openclaw/.env` içindeki token’ı kullanın.
 
-Host CLI varsayılanı:
+Ana makine CLI varsayılanı:
 
 ```bash
 export OPENCLAW_CONTAINER=openclaw
 ```
 
-Ardından aşağıdakiler gibi komutlar otomatik olarak bu konteynerin içinde çalışır:
+Ardından aşağıdakiler gibi komutlar otomatik olarak bu kapsayıcı içinde çalışır:
 
 ```bash
 openclaw dashboard --no-open
@@ -103,21 +103,21 @@ openclaw doctor
 openclaw channels login
 ```
 
-macOS'ta Podman machine, tarayıcının gateway'e yerel olmayan şekilde görünmesine neden olabilir.
-Control UI, başlatmadan sonra cihaz kimlik doğrulama hataları bildirirse
-[Podman + Tailscale](#podman--tailscale) içindeki Tailscale yönergelerini kullanın.
+macOS’ta Podman makinesi, tarayıcının Gateway’e yerel olmayan şekilde görünmesine neden olabilir.
+Control UI başlatmadan sonra cihaz kimlik doğrulama hataları bildirirse
+[Podman ve Tailscale](#podman--tailscale) bölümündeki Tailscale yönergelerini kullanın.
 
 <a id="podman--tailscale"></a>
 
-## Podman + Tailscale
+## Podman ve Tailscale
 
 HTTPS veya uzak tarayıcı erişimi için ana Tailscale belgelerini izleyin.
 
-Podman'a özel not:
+Podman’a özgü not:
 
-- Podman publish host değerini `127.0.0.1` olarak tutun.
-- `openclaw gateway --tailscale serve` yerine host tarafından yönetilen `tailscale serve` tercih edin.
-- macOS'ta yerel tarayıcı cihaz kimlik doğrulama bağlamı güvenilir değilse geçici yerel tünel geçici çözümleri yerine Tailscale erişimi kullanın.
+- Podman yayımlama ana makinesini `127.0.0.1` olarak tutun.
+- `openclaw gateway --tailscale serve` yerine ana makine tarafından yönetilen `tailscale serve` tercih edin.
+- macOS’ta yerel tarayıcı cihaz kimlik doğrulama bağlamı güvenilir değilse geçici yerel tünel geçici çözümleri yerine Tailscale erişimini kullanın.
 
 Bkz.:
 
@@ -126,13 +126,13 @@ Bkz.:
 
 ## Systemd (Quadlet, isteğe bağlı)
 
-`./scripts/podman/setup.sh --quadlet` çalıştırdıysanız kurulum bir Quadlet dosyasını şuraya yükler:
+`./scripts/podman/setup.sh --quadlet` çalıştırdıysanız kurulum, şu konuma bir Quadlet dosyası yükler:
 
 ```bash
 ~/.config/containers/systemd/openclaw.container
 ```
 
-Kullanışlı komutlar:
+Yararlı komutlar:
 
 - **Başlat:** `systemctl --user start openclaw.service`
 - **Durdur:** `systemctl --user stop openclaw.service`
@@ -146,68 +146,68 @@ systemctl --user daemon-reload
 systemctl --user restart openclaw.service
 ```
 
-SSH/başsız hostlarda açılış kalıcılığı için mevcut kullanıcınızda lingering'i etkinleştirin:
+SSH/başsız ana makinelerde önyükleme kalıcılığı için geçerli kullanıcınızda kalıcı oturumu etkinleştirin:
 
 ```bash
 sudo loginctl enable-linger "$(whoami)"
 ```
 
-## Yapılandırma, env ve depolama
+## Yapılandırma, ortam ve depolama
 
 - **Yapılandırma dizini:** `~/.openclaw`
 - **Çalışma alanı dizini:** `~/.openclaw/workspace`
 - **Token dosyası:** `~/.openclaw/.env`
 - **Başlatma yardımcısı:** `./scripts/run-openclaw-podman.sh`
 
-Başlatma betiği ve Quadlet, host durumunu konteynere bind-mount eder:
+Başlatma betiği ve Quadlet, ana makine durumunu kapsayıcıya bağlama olarak ekler:
 
 - `OPENCLAW_CONFIG_DIR` -> `/home/node/.openclaw`
 - `OPENCLAW_WORKSPACE_DIR` -> `/home/node/.openclaw/workspace`
 
-Varsayılan olarak bunlar anonim konteyner durumu değil, host dizinleridir; bu nedenle
-`openclaw.json`, agent başına `auth-profiles.json`, channel/provider durumu,
-oturumlar ve çalışma alanı konteyner değişiminden sonra korunur.
-Podman kurulumu ayrıca yerel panonun konteynerin local loopback olmayan bind değeriyle çalışması için yayımlanan gateway portunda `127.0.0.1` ve `localhost` için `gateway.controlUi.allowedOrigins` değerini de hazırlar.
+Varsayılan olarak bunlar anonim kapsayıcı durumu değil, ana makine dizinleridir; bu nedenle
+`openclaw.json`, ajan başına `auth-profiles.json`, kanal/sağlayıcı durumu,
+oturumlar ve çalışma alanı kapsayıcı değişiminden sonra korunur.
+Podman kurulumu ayrıca yerel panonun kapsayıcının loopback olmayan bağlamasıyla çalışması için yayımlanan Gateway bağlantı noktasında `127.0.0.1` ve `localhost` için `gateway.controlUi.allowedOrigins` değerlerini hazırlar.
 
-Manuel başlatıcı için kullanışlı env değişkenleri:
+Elle başlatıcı için yararlı ortam değişkenleri:
 
-- `OPENCLAW_PODMAN_CONTAINER` -- konteyner adı (varsayılan olarak `openclaw`)
-- `OPENCLAW_PODMAN_IMAGE` / `OPENCLAW_IMAGE` -- çalıştırılacak image
-- `OPENCLAW_PODMAN_GATEWAY_HOST_PORT` -- konteyner `18789` portuna eşlenen host portu
-- `OPENCLAW_PODMAN_BRIDGE_HOST_PORT` -- konteyner `18790` portuna eşlenen host portu
-- `OPENCLAW_PODMAN_PUBLISH_HOST` -- yayımlanan portlar için host arayüzü; varsayılan `127.0.0.1`
-- `OPENCLAW_GATEWAY_BIND` -- konteyner içindeki gateway bind modu; varsayılan `lan`
+- `OPENCLAW_PODMAN_CONTAINER` -- kapsayıcı adı (varsayılan olarak `openclaw`)
+- `OPENCLAW_PODMAN_IMAGE` / `OPENCLAW_IMAGE` -- çalıştırılacak imaj
+- `OPENCLAW_PODMAN_GATEWAY_HOST_PORT` -- kapsayıcı `18789` bağlantı noktasına eşlenen ana makine bağlantı noktası
+- `OPENCLAW_PODMAN_BRIDGE_HOST_PORT` -- kapsayıcı `18790` bağlantı noktasına eşlenen ana makine bağlantı noktası
+- `OPENCLAW_PODMAN_PUBLISH_HOST` -- yayımlanan bağlantı noktaları için ana makine arabirimi; varsayılan `127.0.0.1`
+- `OPENCLAW_GATEWAY_BIND` -- kapsayıcı içindeki Gateway bağlama modu; varsayılan `lan`
 - `OPENCLAW_PODMAN_USERNS` -- `keep-id` (varsayılan), `auto` veya `host`
 
-Manuel başlatıcı, konteyner/image varsayılanlarını sonlandırmadan önce `~/.openclaw/.env` dosyasını okur; böylece bunları orada kalıcı hale getirebilirsiniz.
+Elle başlatıcı, kapsayıcı/imaj varsayılanlarını sonlandırmadan önce `~/.openclaw/.env` okur; bu nedenle bunları orada kalıcı hale getirebilirsiniz.
 
-Varsayılan olmayan bir `OPENCLAW_CONFIG_DIR` veya `OPENCLAW_WORKSPACE_DIR` kullanıyorsanız aynı değişkenleri hem `./scripts/podman/setup.sh` hem de daha sonraki `./scripts/run-openclaw-podman.sh launch` komutları için ayarlayın. Repo yerel başlatıcı, özel yol geçersiz kılmalarını kabuklar arasında kalıcı tutmaz.
+Varsayılan olmayan bir `OPENCLAW_CONFIG_DIR` veya `OPENCLAW_WORKSPACE_DIR` kullanıyorsanız aynı değişkenleri hem `./scripts/podman/setup.sh` hem de sonraki `./scripts/run-openclaw-podman.sh launch` komutları için ayarlayın. Repo yerel başlatıcı, özel yol geçersiz kılmalarını kabuklar arasında kalıcı tutmaz.
 
 Quadlet notu:
 
-- Oluşturulan Quadlet servisi bilerek sabit, güçlendirilmiş bir varsayılan yapı korur: `127.0.0.1` yayımlanan portlar, konteyner içinde `--bind lan` ve `keep-id` kullanıcı ad alanı.
+- Oluşturulan Quadlet servisi bilinçli olarak sabit ve güçlendirilmiş bir varsayılan şekli korur: `127.0.0.1` yayımlanmış bağlantı noktaları, kapsayıcı içinde `--bind lan` ve `keep-id` kullanıcı ad alanı.
 - `OPENCLAW_NO_RESPAWN=1`, `Restart=on-failure` ve `TimeoutStartSec=300` değerlerini sabitler.
-- Hem `127.0.0.1:18789:18789` (gateway) hem de `127.0.0.1:18790:18790` (bridge) yayımlar.
-- `OPENCLAW_GATEWAY_TOKEN` gibi değerler için runtime `EnvironmentFile` olarak `~/.openclaw/.env` dosyasını okur, ancak manuel başlatıcının Podman'a özel geçersiz kılma izin listesini kullanmaz.
-- Özel publish portlarına, publish hostuna veya başka container-run bayraklarına ihtiyacınız varsa manuel başlatıcıyı kullanın ya da `~/.config/containers/systemd/openclaw.container` dosyasını doğrudan düzenleyin, ardından servisi yeniden yükleyip yeniden başlatın.
+- Hem `127.0.0.1:18789:18789` (Gateway) hem de `127.0.0.1:18790:18790` (köprü) yayımlar.
+- `OPENCLAW_GATEWAY_TOKEN` gibi değerler için `~/.openclaw/.env` dosyasını çalışma zamanı `EnvironmentFile` olarak okur, ancak elle başlatıcının Podman’a özgü geçersiz kılma izin listesini tüketmez.
+- Özel yayımlama bağlantı noktalarına, yayımlama ana makinesine veya başka kapsayıcı çalıştırma bayraklarına ihtiyacınız varsa elle başlatıcıyı kullanın veya `~/.config/containers/systemd/openclaw.container` dosyasını doğrudan düzenleyin, ardından servisi yeniden yükleyip yeniden başlatın.
 
-## Kullanışlı komutlar
+## Yararlı komutlar
 
-- **Konteyner günlükleri:** `podman logs -f openclaw`
-- **Konteyneri durdur:** `podman stop openclaw`
-- **Konteyneri kaldır:** `podman rm -f openclaw`
-- **Host CLI'den pano URL'sini aç:** `openclaw dashboard --no-open`
-- **Host CLI üzerinden sağlık/durum:** `openclaw gateway status --deep` (RPC yoklaması + ek
+- **Kapsayıcı günlükleri:** `podman logs -f openclaw`
+- **Kapsayıcıyı durdur:** `podman stop openclaw`
+- **Kapsayıcıyı kaldır:** `podman rm -f openclaw`
+- **Ana makine CLI’ından pano URL’sini aç:** `openclaw dashboard --no-open`
+- **Ana makine CLI üzerinden sağlık/durum:** `openclaw gateway status --deep` (RPC yoklaması + ek
   servis taraması)
 
 ## Sorun giderme
 
-- **Yapılandırma veya çalışma alanında izin reddedildi (EACCES):** Konteyner varsayılan olarak `--userns=keep-id` ve `--user <your uid>:<your gid>` ile çalışır. Host yapılandırma/çalışma alanı yollarının mevcut kullanıcınıza ait olduğundan emin olun.
-- **Gateway başlangıcı engellendi (eksik `gateway.mode=local`):** `~/.openclaw/openclaw.json` dosyasının var olduğundan ve `gateway.mode="local"` ayarladığından emin olun. `scripts/podman/setup.sh` eksikse bunu oluşturur.
-- **Konteyner CLI komutları yanlış hedefe gidiyor:** Açıkça `openclaw --container <name> ...` kullanın veya kabuğunuzda `OPENCLAW_CONTAINER=<name>` dışa aktarın.
-- **`openclaw update`, `--container` ile başarısız oluyor:** Beklenen durum. Image'ı yeniden oluşturun/çekin, ardından konteyneri veya Quadlet servisini yeniden başlatın.
-- **Quadlet servisi başlamıyor:** `systemctl --user daemon-reload` çalıştırın, ardından `systemctl --user start openclaw.service`. Başsız sistemlerde ayrıca `sudo loginctl enable-linger "$(whoami)"` gerekebilir.
-- **SELinux bind mount'ları engelliyor:** Varsayılan mount davranışını olduğu gibi bırakın; başlatıcı, SELinux enforcing veya permissive moddayken Linux'ta otomatik olarak `:Z` ekler.
+- **Yapılandırma veya çalışma alanında izin reddedildi (EACCES):** Kapsayıcı varsayılan olarak `--userns=keep-id` ve `--user <your uid>:<your gid>` ile çalışır. Ana makine yapılandırma/çalışma alanı yollarının geçerli kullanıcınıza ait olduğundan emin olun.
+- **Gateway başlatması engellendi (eksik `gateway.mode=local`):** `~/.openclaw/openclaw.json` dosyasının var olduğundan ve `gateway.mode="local"` ayarladığından emin olun. `scripts/podman/setup.sh` eksikse bunu oluşturur.
+- **Kapsayıcı CLI komutları yanlış hedefe gidiyor:** Açıkça `openclaw --container <name> ...` kullanın veya kabuğunuzda `OPENCLAW_CONTAINER=<name>` dışa aktarın.
+- **`openclaw update`, `--container` ile başarısız oluyor:** Beklenen durum. İmajı yeniden oluşturun/çekin, ardından kapsayıcıyı veya Quadlet servisini yeniden başlatın.
+- **Quadlet servisi başlamıyor:** `systemctl --user daemon-reload` çalıştırın, ardından `systemctl --user start openclaw.service` çalıştırın. Başsız sistemlerde ayrıca `sudo loginctl enable-linger "$(whoami)"` gerekebilir.
+- **SELinux bağlamaları engelliyor:** Varsayılan bağlama davranışını olduğu gibi bırakın; başlatıcı, SELinux zorlama veya izin verici moddaysa Linux’ta otomatik olarak `:Z` ekler.
 
 ## İlgili
 

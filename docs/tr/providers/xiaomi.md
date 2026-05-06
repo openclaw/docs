@@ -1,40 +1,45 @@
 ---
 read_when:
-    - OpenClaw içinde Xiaomi MiMo modellerini istiyorsunuz
-    - '`XIAOMI_API_KEY` ayarını yapmanız gerekir'
-summary: Xiaomi MiMo modellerini OpenClaw ile kullanın
+    - OpenClaw'da Xiaomi MiMo modellerini istiyorsunuz
+    - XIAOMI_API_KEY ayarının yapılması gerekiyor
+summary: OpenClaw ile Xiaomi MiMo modellerini kullanın
 title: Xiaomi MiMo
 x-i18n:
-    generated_at: "2026-04-25T13:56:51Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:29:19Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 7781973c3a1d14101cdb0a8d1affe3fd076a968552ed2a8630a91a8947daeb3a
+    source_hash: a7bb33bf107cb44414b0f3a6140d60fdfecb3b7154c3197e7cbed982d9a6450b
     source_path: providers/xiaomi.md
-    workflow: 15
+    workflow: 16
 ---
 
-Xiaomi MiMo, **MiMo** modelleri için API platformudur. OpenClaw, API anahtarı kimlik doğrulamasıyla Xiaomi'nin
-OpenAI uyumlu uç noktasını kullanır.
+Xiaomi MiMo, **MiMo** modelleri için API platformudur. OpenClaw, aynı `XIAOMI_API_KEY` ile hem OpenAI uyumlu bir sohbet sağlayıcısı hem de bir konuşma (TTS) sağlayıcısı kaydeden, birlikte gelen bir `xiaomi` Plugin içerir.
 
-| Özellik  | Değer                          |
-| -------- | ------------------------------ |
-| Sağlayıcı | `xiaomi`                       |
-| Kimlik doğrulama | `XIAOMI_API_KEY`       |
-| API      | OpenAI uyumlu                 |
-| Temel URL | `https://api.xiaomimimo.com/v1` |
+| Özellik                 | Değer                                    |
+| ----------------------- | ---------------------------------------- |
+| Sağlayıcı kimliği       | `xiaomi`                                 |
+| Plugin                  | birlikte gelir, `enabledByDefault: true` |
+| Kimlik doğrulama env var | `XIAOMI_API_KEY`                         |
+| Başlatma bayrağı        | `--auth-choice xiaomi-api-key`           |
+| Doğrudan CLI bayrağı    | `--xiaomi-api-key <key>`                 |
+| Sözleşmeler             | sohbet tamamlama + `speechProviders`     |
+| API                     | OpenAI uyumlu (`openai-completions`)     |
+| Temel URL               | `https://api.xiaomimimo.com/v1`          |
+| Varsayılan model        | `xiaomi/mimo-v2-flash`                   |
+| TTS varsayılanı         | `mimo-v2.5-tts`, ses `mimo_default`      |
 
 ## Başlarken
 
 <Steps>
-  <Step title="Bir API anahtarı alın">
+  <Step title="API anahtarı alın">
     [Xiaomi MiMo konsolunda](https://platform.xiaomimimo.com/#/console/api-keys) bir API anahtarı oluşturun.
   </Step>
-  <Step title="Onboarding'i çalıştırın">
+  <Step title="Başlatmayı çalıştırın">
     ```bash
     openclaw onboard --auth-choice xiaomi-api-key
     ```
 
-    Veya anahtarı doğrudan geçin:
+    Ya da anahtarı doğrudan geçirin:
 
     ```bash
     openclaw onboard --auth-choice xiaomi-api-key --xiaomi-api-key "$XIAOMI_API_KEY"
@@ -50,30 +55,27 @@ OpenAI uyumlu uç noktasını kullanır.
 
 ## Yerleşik katalog
 
-| Model ref              | Girdi       | Bağlam    | Maks çıktı | Reasoning | Notlar        |
-| ---------------------- | ----------- | --------- | ---------- | --------- | ------------- |
-| `xiaomi/mimo-v2-flash` | text        | 262,144   | 8,192      | Hayır     | Varsayılan model |
-| `xiaomi/mimo-v2-pro`   | text        | 1,048,576 | 32,000     | Evet      | Geniş bağlam  |
-| `xiaomi/mimo-v2-omni`  | text, image | 262,144   | 32,000     | Evet      | Çok modlu     |
+| Model ref              | Girdi       | Bağlam    | En fazla çıktı | Akıl yürütme | Notlar             |
+| ---------------------- | ----------- | --------- | -------------- | ------------ | ------------------ |
+| `xiaomi/mimo-v2-flash` | metin       | 262,144   | 8,192          | Hayır        | Varsayılan model   |
+| `xiaomi/mimo-v2-pro`   | metin       | 1,048,576 | 32,000         | Evet         | Büyük bağlam       |
+| `xiaomi/mimo-v2-omni`  | metin, görüntü | 262,144   | 32,000         | Evet         | Çok modlu          |
 
 <Tip>
-Varsayılan model ref'i `xiaomi/mimo-v2-flash` değeridir. `XIAOMI_API_KEY` ayarlandığında veya bir kimlik doğrulama profili mevcut olduğunda sağlayıcı otomatik olarak eklenir.
+Varsayılan model ref değeri `xiaomi/mimo-v2-flash` şeklindedir. `XIAOMI_API_KEY` ayarlandığında veya bir kimlik doğrulama profili mevcut olduğunda sağlayıcı otomatik olarak enjekte edilir.
 </Tip>
 
 ## Metinden konuşmaya
 
-Paketle birlikte gelen `xiaomi` Plugin'i ayrıca Xiaomi MiMo'yu
-`messages.tts` için bir konuşma sağlayıcısı olarak kaydeder. Metni
-bir `assistant` mesajı ve isteğe bağlı stil yönlendirmesini bir `user` mesajı olarak
-kullanarak Xiaomi'nin chat-completions TTS sözleşmesini çağırır.
+Birlikte gelen `xiaomi` Plugin, Xiaomi MiMo'yu `messages.tts` için bir konuşma sağlayıcısı olarak da kaydeder. Metni bir `assistant` iletisi, isteğe bağlı üslup yönlendirmesini ise bir `user` iletisi olarak kullanarak Xiaomi'nin sohbet tamamlama TTS sözleşmesini çağırır.
 
-| Özellik  | Değer                                   |
-| -------- | --------------------------------------- |
-| TTS kimliği | `xiaomi` (`mimo` takma adı)           |
-| Kimlik doğrulama | `XIAOMI_API_KEY`                |
-| API      | `audio` ile `POST /v1/chat/completions` |
+| Özellik | Değer                                    |
+| ------- | ---------------------------------------- |
+| TTS kimliği | `xiaomi` (`mimo` diğer adı)          |
+| Kimlik doğrulama | `XIAOMI_API_KEY`                  |
+| API     | `audio` ile `POST /v1/chat/completions`  |
 | Varsayılan | `mimo-v2.5-tts`, ses `mimo_default`   |
-| Çıktı    | Varsayılan olarak MP3; yapılandırıldığında WAV |
+| Çıktı   | Varsayılan olarak MP3; yapılandırıldığında WAV |
 
 ```json5
 {
@@ -95,11 +97,7 @@ kullanarak Xiaomi'nin chat-completions TTS sözleşmesini çağırır.
 }
 ```
 
-Desteklenen yerleşik sesler arasında `mimo_default`, `default_zh`, `default_en`,
-`Mia`, `Chloe`, `Milo` ve `Dean` bulunur. `mimo-v2-tts`, daha eski MiMo
-TTS hesapları için desteklenir; varsayılan olarak güncel MiMo-V2.5 TTS modeli kullanılır. Sesli not
-hedefleri, örneğin Feishu ve Telegram için OpenClaw, teslimattan önce Xiaomi çıktısını `ffmpeg` ile 48kHz
-Opus biçimine dönüştürür.
+Desteklenen yerleşik sesler arasında `mimo_default`, `default_zh`, `default_en`, `Mia`, `Chloe`, `Milo` ve `Dean` bulunur. `mimo-v2-tts`, eski MiMo TTS hesapları için desteklenir; varsayılan, güncel MiMo-V2.5 TTS modelini kullanır. Feishu ve Telegram gibi sesli not hedefleri için OpenClaw, teslimattan önce Xiaomi çıktısını `ffmpeg` ile 48 kHz Opus'a dönüştürür.
 
 ## Yapılandırma örneği
 
@@ -150,14 +148,14 @@ Opus biçimine dönüştürür.
 ```
 
 <AccordionGroup>
-  <Accordion title="Otomatik ekleme davranışı">
-    `xiaomi` sağlayıcısı, ortamınızda `XIAOMI_API_KEY` ayarlandığında veya bir kimlik doğrulama profili mevcut olduğunda otomatik olarak eklenir. Model meta verilerini veya temel URL'yi geçersiz kılmak istemediğiniz sürece sağlayıcıyı manuel olarak yapılandırmanız gerekmez.
+  <Accordion title="Otomatik enjeksiyon davranışı">
+    Ortamınızda `XIAOMI_API_KEY` ayarlandığında veya bir kimlik doğrulama profili mevcut olduğunda `xiaomi` sağlayıcısı otomatik olarak enjekte edilir. Model meta verilerini veya temel URL'yi geçersiz kılmak istemediğiniz sürece sağlayıcıyı elle yapılandırmanız gerekmez.
   </Accordion>
 
   <Accordion title="Model ayrıntıları">
-    - **mimo-v2-flash** — hafif ve hızlıdır, genel amaçlı metin görevleri için idealdir. Reasoning desteği yoktur.
-    - **mimo-v2-pro** — uzun belge iş yükleri için 1M token bağlam penceresiyle Reasoning destekler.
-    - **mimo-v2-omni** — hem metin hem de görsel girdilerini kabul eden, Reasoning özellikli çok modlu modeldir.
+    - **mimo-v2-flash** — hafif ve hızlıdır, genel amaçlı metin görevleri için idealdir. Akıl yürütme desteği yoktur.
+    - **mimo-v2-pro** — uzun belge iş yükleri için 1M token bağlam penceresiyle akıl yürütmeyi destekler.
+    - **mimo-v2-omni** — hem metin hem de görüntü girdilerini kabul eden, akıl yürütme özellikli çok modlu model.
 
     <Note>
     Tüm modeller `xiaomi/` önekini kullanır (örneğin `xiaomi/mimo-v2-pro`).
@@ -166,11 +164,11 @@ Opus biçimine dönüştürür.
   </Accordion>
 
   <Accordion title="Sorun giderme">
-    - Modeller görünmüyorsa `XIAOMI_API_KEY` değerinin ayarlandığını ve geçerli olduğunu doğrulayın.
-    - Gateway bir daemon olarak çalışıyorsa anahtarın bu süreç için erişilebilir olduğundan emin olun (örneğin `~/.openclaw/.env` içinde veya `env.shellEnv` aracılığıyla).
+    - Modeller görünmüyorsa `XIAOMI_API_KEY` değerinin ayarlı ve geçerli olduğunu doğrulayın.
+    - Gateway bir daemon olarak çalıştığında, anahtarın o süreç tarafından kullanılabilir olduğundan emin olun (örneğin `~/.openclaw/.env` içinde veya `env.shellEnv` aracılığıyla).
 
     <Warning>
-    Yalnızca etkileşimli kabuğunuzda ayarlanan anahtarlar, daemon tarafından yönetilen Gateway süreçleri tarafından görülemez. Kalıcı erişilebilirlik için `~/.openclaw/.env` veya `env.shellEnv` yapılandırmasını kullanın.
+    Yalnızca etkileşimli kabuğunuzda ayarlanan anahtarlar, daemon tarafından yönetilen Gateway süreçleri tarafından görülemez. Kalıcı kullanılabilirlik için `~/.openclaw/.env` veya `env.shellEnv` yapılandırmasını kullanın.
     </Warning>
 
   </Accordion>
@@ -180,10 +178,10 @@ Opus biçimine dönüştürür.
 
 <CardGroup cols={2}>
   <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
-    Sağlayıcıları, model ref'lerini ve yük devretme davranışını seçme.
+    Sağlayıcıları, model ref değerlerini ve yük devretme davranışını seçme.
   </Card>
   <Card title="Yapılandırma başvurusu" href="/tr/gateway/configuration-reference" icon="gear">
-    OpenClaw için tam yapılandırma başvurusu.
+    Tam OpenClaw yapılandırma başvurusu.
   </Card>
   <Card title="Xiaomi MiMo konsolu" href="https://platform.xiaomimimo.com" icon="arrow-up-right-from-square">
     Xiaomi MiMo panosu ve API anahtarı yönetimi.

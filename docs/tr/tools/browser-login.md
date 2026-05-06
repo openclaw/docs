@@ -1,60 +1,58 @@
 ---
 read_when:
-    - Tarayıcı otomasyonu için sitelere giriş yapmanız gerekiyor
+    - Tarayıcı otomasyonu için sitelerde oturum açmanız gerekir
     - X/Twitter'da güncellemeler paylaşmak istiyorsunuz
-summary: Tarayıcı otomasyonu + X/Twitter paylaşımı için manuel girişler
-title: Tarayıcı girişi
+summary: Tarayıcı otomasyonu + X/Twitter'da gönderi paylaşma için manuel oturum açma
+title: Tarayıcı ile oturum açma
 x-i18n:
-    generated_at: "2026-04-24T09:33:32Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:32:24Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 3e70ae373fed861ffde0e03dfe6252b0589f7cc1946585e9b055cbed70de14b1
+    source_hash: 235194fd3a49724247f98e6d7c848c4cc3317f749ff4a8918c2172b73baf21e3
     source_path: tools/browser-login.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Tarayıcı girişi + X/Twitter paylaşımı
+## Manuel oturum açma (önerilir)
 
-## Manuel giriş (önerilir)
+Bir site oturum açmayı gerektirdiğinde, **host** tarayıcı profilinde (openclaw tarayıcısı) **manuel olarak oturum açın**.
 
-Bir site giriş gerektiriyorsa **host** browser profile'ında (**openclaw browser**) **elle giriş yapın**.
+Modele kimlik bilgilerinizi **vermeyin**. Otomatik oturum açmalar genellikle bot karşıtı savunmaları tetikler ve hesabı kilitleyebilir.
 
-Modele kimlik bilgilerinizi **vermeyin**. Otomatik girişler çoğu zaman anti-bot savunmalarını tetikler ve hesabı kilitleyebilir.
+Ana tarayıcı belgelerine geri dönün: [Tarayıcı](/tr/tools/browser).
 
-Ana browser belgelerine dönüş: [Browser](/tr/tools/browser).
+## Hangi Chrome profili kullanılır?
 
-## Hangi Chrome profile'ı kullanılır?
+OpenClaw, **özel bir Chrome profilini** (`openclaw` adlı, turuncu tonlu arayüz) kontrol eder. Bu, günlük tarayıcı profilinizden ayrıdır.
 
-OpenClaw, **ayrılmış bir Chrome profile'ını** (`openclaw` adlı, turuncu tonlu UI) denetler. Bu, günlük browser profile'ınızdan ayrıdır.
+Ajan tarayıcı aracı çağrıları için:
 
-Ajan browser aracı çağrıları için:
+- Varsayılan seçim: ajan, yalıtılmış `openclaw` tarayıcısını kullanmalıdır.
+- `profile="user"` değerini yalnızca mevcut oturum açılmış oturumlar önemli olduğunda ve kullanıcı herhangi bir bağlanma istemine tıklamak/onaylamak için bilgisayar başındaysa kullanın.
+- Birden çok kullanıcı tarayıcı profiliniz varsa, tahmin etmek yerine profili açıkça belirtin.
 
-- Varsayılan seçim: ajan yalıtılmış `openclaw` browser'ını kullanmalıdır.
-- Yalnızca mevcut giriş yapılmış oturumlar önemliyse ve kullanıcı bilgisayar başında olup bağlama istemlerini tıklayabilecek/onaylayabilecek durumdaysa `profile="user"` kullanın.
-- Birden çok kullanıcı browser profile'ınız varsa tahmin etmek yerine profile'ı açıkça belirtin.
+Ona erişmenin iki kolay yolu:
 
-Buna erişmenin iki kolay yolu vardır:
-
-1. **Ajandan browser'ı açmasını isteyin**, sonra kendiniz giriş yapın.
-2. **CLI ile açın**:
+1. **Ajandan tarayıcıyı açmasını isteyin** ve ardından kendiniz oturum açın.
+2. **CLI üzerinden açın**:
 
 ```bash
 openclaw browser start
 openclaw browser open https://x.com
 ```
 
-Birden çok profile varsa `--browser-profile <name>` geçin (varsayılan `openclaw`'dır).
+Birden çok profiliniz varsa `--browser-profile <name>` iletin (varsayılan `openclaw` değeridir).
 
 ## X/Twitter: önerilen akış
 
-- **Okuma/arama/konular:** **host** browser'ı kullanın (manuel giriş).
-- **Güncelleme paylaşma:** **host** browser'ı kullanın (manuel giriş).
+- **Okuma/arama/başlıklar:** **host** tarayıcıyı kullanın (manuel oturum açma).
+- **Güncelleme gönderme:** **host** tarayıcıyı kullanın (manuel oturum açma).
 
-## Sandboxing + host browser erişimi
+## Korumalı alan + host tarayıcı erişimi
 
-Sandboxed browser oturumları bot tespitini tetiklemeye **daha yatkındır**. X/Twitter (ve diğer katı siteler) için **host** browser'ı tercih edin.
+Korumalı alanlı tarayıcı oturumlarının bot algılamayı tetikleme olasılığı **daha yüksektir**. X/Twitter (ve diğer katı siteler) için **host** tarayıcıyı tercih edin.
 
-Ajan sandbox içindeyse browser aracı varsayılan olarak sandbox'ı hedefler. Host denetimine izin vermek için:
+Ajan korumalı alandaysa, tarayıcı aracı varsayılan olarak korumalı alanı kullanır. Host denetimine izin vermek için:
 
 ```json5
 {
@@ -71,16 +69,16 @@ Ajan sandbox içindeyse browser aracı varsayılan olarak sandbox'ı hedefler. H
 }
 ```
 
-Sonra host browser'ı hedefleyin:
+Ardından host tarayıcıyı hedefleyin:
 
 ```bash
 openclaw browser open https://x.com --browser-profile openclaw --target host
 ```
 
-Veya güncelleme paylaşan ajan için sandboxing'i devre dışı bırakın.
+Veya güncelleme gönderen ajan için korumalı alanı devre dışı bırakın.
 
 ## İlgili
 
-- [Browser](/tr/tools/browser)
-- [Browser Linux sorun giderme](/tr/tools/browser-linux-troubleshooting)
-- [Browser WSL2 sorun giderme](/tr/tools/browser-wsl2-windows-remote-cdp-troubleshooting)
+- [Tarayıcı](/tr/tools/browser)
+- [Tarayıcı Linux sorun giderme](/tr/tools/browser-linux-troubleshooting)
+- [Tarayıcı WSL2 sorun giderme](/tr/tools/browser-wsl2-windows-remote-cdp-troubleshooting)

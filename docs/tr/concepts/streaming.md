@@ -1,25 +1,25 @@
 ---
 read_when:
     - Kanallarda akışın veya parçalamanın nasıl çalıştığını açıklama
-    - Blok akışını veya kanal parçalama davranışını değiştirme
+    - Blok akışı veya kanal parçalama davranışını değiştirme
     - Yinelenen/erken blok yanıtlarında veya kanal önizleme akışında hata ayıklama
 summary: Akış + parçalama davranışı (blok yanıtları, kanal önizleme akışı, mod eşlemesi)
 title: Akış ve parçalama
 x-i18n:
-    generated_at: "2026-05-04T07:04:54Z"
+    generated_at: "2026-05-06T09:10:39Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ff7b6cd8127255352fe16fb746469e9828e7d5aea183d3799ab10cc768515bd1
+    source_hash: 7ccf763c5904b9b01d127d6e9a914e73100137eba9d791654581a2ec7d4949ed
     source_path: concepts/streaming.md
     workflow: 16
 ---
 
 OpenClaw iki ayrı akış katmanına sahiptir:
 
-- **Blok akışı (kanallar):** asistan yazarken tamamlanmış **blokları** yayınlar. Bunlar normal kanal mesajlarıdır (token deltaları değil).
+- **Blok akışı (kanallar):** asistan yazarken tamamlanmış **blokları** yayar. Bunlar normal kanal mesajlarıdır (token deltaları değil).
 - **Önizleme akışı (Telegram/Discord/Slack):** üretim sırasında geçici bir **önizleme mesajını** günceller.
 
-Bugün kanal mesajlarına yönelik **gerçek token-delta akışı yoktur**. Önizleme akışı mesaj tabanlıdır (gönderme + düzenlemeler/eklemeler).
+Bugün kanal mesajlarına yönelik **gerçek token-delta akışı** yoktur. Önizleme akışı mesaj tabanlıdır (gönderme + düzenlemeler/eklemeler).
 
 ## Blok akışı (kanal mesajları)
 
@@ -35,72 +35,72 @@ Model output
                    └─ channel send (block replies)
 ```
 
-Gösterge:
+Açıklama:
 
 - `text_delta/events`: model akış olayları (akışsız modeller için seyrek olabilir).
 - `chunker`: min/maks sınırlar + kesme tercihi uygulayan `EmbeddedBlockChunker`.
 - `channel send`: gerçek giden mesajlar (blok yanıtları).
 
-**Denetimler:**
+**Kontroller:**
 
 - `agents.defaults.blockStreamingDefault`: `"on"`/`"off"` (varsayılan kapalı).
 - Kanal geçersiz kılmaları: kanal başına `"on"`/`"off"` zorlamak için `*.blockStreaming` (ve hesap başına varyantlar).
 - `agents.defaults.blockStreamingBreak`: `"text_end"` veya `"message_end"`.
 - `agents.defaults.blockStreamingChunk`: `{ minChars, maxChars, breakPreference? }`.
-- `agents.defaults.blockStreamingCoalesce`: `{ minChars?, maxChars?, idleMs? }` (göndermeden önce akıştaki blokları birleştirir).
-- Kanal sabit sınırı: `*.textChunkLimit` (örn. `channels.whatsapp.textChunkLimit`).
-- Kanal parça modu: `*.chunkMode` (varsayılan `length`, `newline` uzunlukla parçalamadan önce boş satırlarda (paragraf sınırlarında) böler).
+- `agents.defaults.blockStreamingCoalesce`: `{ minChars?, maxChars?, idleMs? }` (göndermeden önce akan blokları birleştirir).
+- Kanal sabit üst sınırı: `*.textChunkLimit` (ör. `channels.whatsapp.textChunkLimit`).
+- Kanal parça modu: `*.chunkMode` (varsayılan `length`, `newline` uzunluğa göre parçalamadan önce boş satırlardan (paragraf sınırları) böler).
 - Discord yumuşak sınırı: `channels.discord.maxLinesPerMessage` (varsayılan 17), kullanıcı arayüzünde kırpılmayı önlemek için uzun yanıtları böler.
 
 **Sınır semantiği:**
 
-- `text_end`: chunker yayınlar yayınlamaz blokları akışa verir; her `text_end` üzerinde boşaltır.
-- `message_end`: asistan mesajı bitene kadar bekler, ardından arabelleğe alınmış çıktıyı boşaltır.
+- `text_end`: chunker yayar yaymaz blokları akıt; her `text_end` üzerinde boşalt.
+- `message_end`: asistan mesajı bitene kadar bekle, ardından arabellekteki çıktıyı boşalt.
 
-`message_end`, arabelleğe alınmış metin `maxChars` değerini aşarsa yine chunker kullanır; bu nedenle sonunda birden fazla parça yayınlayabilir.
+Arabellekteki metin `maxChars` değerini aşarsa `message_end` yine chunker kullanır; bu nedenle sonunda birden çok parça yayabilir.
 
 ### Blok akışıyla medya teslimi
 
-`MEDIA:` yönergeleri normal teslim meta verileridir. Blok akışı bir medya bloğunu erken gönderdiğinde OpenClaw bu teslimi ilgili tur için hatırlar. Son asistan yükü aynı medya URL'sini tekrarlarsa, son teslim eki tekrar göndermek yerine yinelenen medyayı çıkarır.
+`MEDIA:` yönergeleri normal teslim meta verileridir. Blok akışı bir medya bloğunu erken gönderdiğinde OpenClaw bu teslimi tur için hatırlar. Son asistan yükü aynı medya URL'sini tekrar ederse son teslim, eki yeniden göndermek yerine yinelenen medyayı çıkarır.
 
-Tam yinelenen son yükler bastırılır. Son yük, halihazırda akışla gönderilmiş medyanın etrafına farklı metin eklerse OpenClaw medyayı tek teslim olarak tutarken yeni metni yine gönderir. Bu, bir agent akış sırasında `MEDIA:` yayınladığında ve sağlayıcı bunu tamamlanmış yanıta da dahil ettiğinde Telegram gibi kanallarda yinelenen ses notlarını veya dosyaları önler.
+Tam yinelenen son yükler bastırılır. Son yük, zaten akıtılmış medyanın çevresine farklı metin eklerse OpenClaw yine de yeni metni gönderir ve medyanın tek teslim edilmesini korur. Bu, bir ajanın akış sırasında `MEDIA:` yaydığı ve sağlayıcının da bunu tamamlanmış yanıta eklediği Telegram gibi kanallarda yinelenen sesli notları veya dosyaları önler.
 
 ## Parçalama algoritması (alt/üst sınırlar)
 
 Blok parçalama `EmbeddedBlockChunker` tarafından uygulanır:
 
-- **Alt sınır:** arabellek >= `minChars` olana kadar yayınlama (zorlanmadıkça).
-- **Üst sınır:** `maxChars` öncesinde bölmeyi tercih et; zorlanırsa `maxChars` değerinde böl.
+- **Alt sınır:** arabellek >= `minChars` olana kadar yayma (zorlanmadıkça).
+- **Üst sınır:** `maxChars` öncesinde bölmeyi tercih et; zorlanırsa `maxChars` noktasında böl.
 - **Kesme tercihi:** `paragraph` → `newline` → `sentence` → `whitespace` → sert kesme.
-- **Kod çitleri:** çitlerin içinde asla bölme; `maxChars` değerinde zorlanınca Markdown geçerli kalsın diye çiti kapat + yeniden aç.
+- **Kod çitleri:** çitlerin içinde asla bölme; `maxChars` noktasında zorunlu bölme yaparken Markdown geçerli kalsın diye çiti kapat + yeniden aç.
 
-`maxChars`, kanalın `textChunkLimit` değerine sıkıştırılır; bu yüzden kanal başına sınırları aşamazsınız.
+`maxChars` kanalın `textChunkLimit` değerine sıkıştırılır, bu nedenle kanal başına sınırları aşamazsınız.
 
-## Birleştirme (akış bloklarını birleştirme)
+## Birleştirme (akan blokları birleştir)
 
-Blok akışı etkinleştirildiğinde OpenClaw, göndermeden önce **ardışık blok parçalarını birleştirebilir**. Bu, ilerlemeli çıktı sağlamaya devam ederken “tek satırlık spam” miktarını azaltır.
+Blok akışı etkinleştirildiğinde OpenClaw, göndermeden önce **ardışık blok parçalarını birleştirebilir**. Bu, ilerlemeli çıktı sağlamayı sürdürürken "tek satırlık spam"i azaltır.
 
 - Birleştirme, boşaltmadan önce **boşta kalma aralıklarını** (`idleMs`) bekler.
-- Arabellekler `maxChars` ile sınırlandırılır ve bunu aşarlarsa boşaltılır.
-- `minChars`, yeterli metin birikene kadar çok küçük parçaların gönderilmesini önler (son boşaltma kalan metni her zaman gönderir).
+- Arabellekler `maxChars` ile sınırlandırılır ve bunu aşarsa boşaltılır.
+- `minChars`, yeterli metin birikene kadar küçük parçaların gönderilmesini önler (son boşaltma her zaman kalan metni gönderir).
 - Birleştirici `blockStreamingChunk.breakPreference` değerinden türetilir (`paragraph` → `\n\n`, `newline` → `\n`, `sentence` → boşluk).
 - Kanal geçersiz kılmaları `*.blockStreamingCoalesce` üzerinden kullanılabilir (hesap başına yapılandırmalar dahil).
 - Varsayılan birleştirme `minChars` değeri, geçersiz kılınmadıkça Signal/Slack/Discord için 1500'e yükseltilir.
 
-## Bloklar arasında insana benzer tempo
+## Bloklar arasında insan benzeri tempo
 
-Blok akışı etkinleştirildiğinde blok yanıtları arasına (ilk bloktan sonra) **rastgeleleştirilmiş bir duraklama** ekleyebilirsiniz. Bu, çok baloncuklu yanıtların daha doğal hissettirmesini sağlar.
+Blok akışı etkinleştirildiğinde, blok yanıtları arasına (ilk bloktan sonra) **rastgeleleştirilmiş bir duraklama** ekleyebilirsiniz. Bu, çok baloncuklu yanıtların daha doğal hissettirmesini sağlar.
 
-- Yapılandırma: `agents.defaults.humanDelay` (agent başına `agents.list[].humanDelay` ile geçersiz kılın).
+- Yapılandırma: `agents.defaults.humanDelay` (ajan başına `agents.list[].humanDelay` ile geçersiz kılınır).
 - Modlar: `off` (varsayılan), `natural` (800-2500 ms), `custom` (`minMs`/`maxMs`).
 - Yalnızca **blok yanıtlarına** uygulanır; son yanıtlara veya araç özetlerine uygulanmaz.
 
-## "Parçaları veya her şeyi akışla gönder"
+## "Parçaları veya her şeyi akıt"
 
-Bu şunlara karşılık gelir:
+Bu şu şekilde eşlenir:
 
-- **Parçaları akışla gönder:** `blockStreamingDefault: "on"` + `blockStreamingBreak: "text_end"` (gittikçe yayınla). Telegram dışındaki kanallarda ayrıca `*.blockStreaming: true` gerekir.
-- **Her şeyi sonda akışla gönder:** `blockStreamingBreak: "message_end"` (bir kez boşaltır, çok uzunsa muhtemelen birden fazla parça).
+- **Parçaları akıt:** `blockStreamingDefault: "on"` + `blockStreamingBreak: "text_end"` (ilerledikçe yay). Telegram dışı kanallar ayrıca `*.blockStreaming: true` gerektirir.
+- **Her şeyi sonda akıt:** `blockStreamingBreak: "message_end"` (bir kez boşalt, çok uzunsa muhtemelen birden çok parça).
 - **Blok akışı yok:** `blockStreamingDefault: "off"` (yalnızca son yanıt).
 
 **Kanal notu:** `*.blockStreaming` açıkça `true` olarak ayarlanmadıkça blok akışı **kapalıdır**. Kanallar, blok yanıtları olmadan canlı önizleme akışı (`channels.<channel>.streaming`) yapabilir.
@@ -115,82 +115,84 @@ Modlar:
 
 - `off`: önizleme akışını devre dışı bırak.
 - `partial`: en son metinle değiştirilen tek önizleme.
-- `block`: önizleme parçalı/eklemeli adımlarla güncellenir.
+- `block`: önizleme parçalanmış/eklenmiş adımlarla güncellenir.
 - `progress`: üretim sırasında ilerleme/durum önizlemesi, tamamlandığında son yanıt.
 
-`streaming.mode: "block"`, Discord ve Telegram gibi düzenleme yapabilen kanallar için bir önizleme akışı modudur. Orada kanal blok teslimini etkinleştirmez. Normal blok yanıtları istediğinizde `streaming.block.enabled` veya eski `blockStreaming` kanal anahtarını kullanın. Microsoft Teams istisnadır: taslak önizleme blok aktarımı olmadığı için `streaming.mode: "block"` yerel kısmi/ilerleme akışı yerine Teams blok teslimine karşılık gelir.
+`streaming.mode: "block"`, Discord ve Telegram gibi düzenleme yapabilen kanallar için bir önizleme akışı modudur. Orada kanal blok teslimini etkinleştirmez. Normal blok yanıtları istediğinizde `streaming.block.enabled` veya eski `blockStreaming` kanal anahtarını kullanın. Microsoft Teams istisnadır: taslak-önizleme blok aktarımı yoktur, bu nedenle `streaming.mode: "block"` yerel kısmi/ilerleme akışı yerine Teams blok teslimine eşlenir.
 
 ### Kanal eşlemesi
 
-| Kanal      | `off` | `partial` | `block` | `progress`              |
-| ---------- | ----- | --------- | ------- | ----------------------- |
+| Kanal      | `off` | `partial` | `block` | `progress`                 |
+| ---------- | ----- | --------- | ------- | -------------------------- |
 | Telegram   | ✅    | ✅        | ✅      | düzenlenebilir ilerleme taslağı |
 | Discord    | ✅    | ✅        | ✅      | düzenlenebilir ilerleme taslağı |
-| Slack      | ✅    | ✅        | ✅      | ✅                      |
-| Mattermost | ✅    | ✅        | ✅      | ✅                      |
-| MS Teams   | ✅    | ✅        | ✅      | yerel ilerleme akışı    |
+| Slack      | ✅    | ✅        | ✅      | ✅                         |
+| Mattermost | ✅    | ✅        | ✅      | ✅                         |
+| MS Teams   | ✅    | ✅        | ✅      | yerel ilerleme akışı       |
 
 Yalnızca Slack:
 
-- `channels.slack.streaming.nativeTransport`, `channels.slack.streaming.mode="partial"` olduğunda Slack yerel akış API çağrılarını açar/kapatır (varsayılan: `true`).
-- Slack yerel akışı ve Slack asistan thread durumu bir yanıt thread hedefi gerektirir. Üst düzey DM'ler bu thread tarzı önizlemeyi göstermez, ancak yine de Slack taslak önizleme gönderilerini ve düzenlemelerini kullanabilir.
+- `channels.slack.streaming.nativeTransport`, `channels.slack.streaming.mode="partial"` olduğunda Slack yerel akış API çağrılarını açıp kapatır (varsayılan: `true`).
+- Slack yerel akışı ve Slack asistan iş parçacığı durumu bir yanıt iş parçacığı hedefi gerektirir. Üst düzey DM'ler bu iş parçacığı tarzı önizlemeyi göstermez, ancak yine de Slack taslak önizleme gönderilerini ve düzenlemelerini kullanabilirler.
 
 Eski anahtar geçişi:
 
-- Telegram: eski `streamMode` ve skaler/boolean `streaming` değerleri doctor/yapılandırma uyumluluk yolları tarafından algılanır ve `streaming.mode` değerine taşınır.
-- Discord: `streamMode` + boolean `streaming`, otomatik olarak `streaming` enum değerine taşınır.
-- Slack: `streamMode`, otomatik olarak `streaming.mode` değerine taşınır; boolean `streaming`, otomatik olarak `streaming.mode` artı `streaming.nativeTransport` değerine taşınır; eski `nativeStreaming`, otomatik olarak `streaming.nativeTransport` değerine taşınır.
+- Telegram: eski `streamMode` ve skaler/boolean `streaming` değerleri algılanır ve doctor/yapılandırma uyumluluk yolları tarafından `streaming.mode` değerine geçirilir.
+- Discord: `streamMode` + boolean `streaming` otomatik olarak `streaming` enum'una geçirilir.
+- Slack: `streamMode` otomatik olarak `streaming.mode` değerine geçirilir; boolean `streaming` otomatik olarak `streaming.mode` ile `streaming.nativeTransport` değerlerine geçirilir; eski `nativeStreaming` otomatik olarak `streaming.nativeTransport` değerine geçirilir.
 
 ### Çalışma zamanı davranışı
 
 Telegram:
 
-- DM'ler ve grup/konular genelinde `sendMessage` + `editMessageText` önizleme güncellemelerini kullanır.
-- Bir önizleme yaklaşık bir dakika görünür kaldığında yerinde düzenlemek yerine yeni bir son mesaj gönderir, ardından Telegram'ın zaman damgası yanıt tamamlanmasını yansıtsın diye önizlemeyi temizler.
+- DM'ler ve grup/konular genelinde önizleme güncellemeleri için `sendMessage` + `editMessageText` kullanır.
+- Son metin etkin önizlemeyi yerinde düzenler; uzun son yanıtlar ilk parça için o mesajı yeniden kullanır ve yalnızca kalan parçaları gönderir.
+- `progress` modu araç ilerlemesini düzenlenebilir bir durum taslağında tutar, tamamlandığında bu taslağı temizler ve son yanıtı normal teslim üzerinden gönderir.
+- Tamamlanmış metin doğrulanmadan önce son düzenleme başarısız olursa OpenClaw normal son teslimi kullanır ve bayat önizlemeyi temizler.
 - Telegram blok akışı açıkça etkinleştirildiğinde önizleme akışı atlanır (çift akışı önlemek için).
-- `/reasoning stream`, akıl yürütmeyi son teslimden sonra silinen geçici bir önizlemeye yazabilir.
+- `/reasoning stream`, son teslimden sonra silinen geçici bir önizlemeye akıl yürütmeyi yazabilir.
 
 Discord:
 
-- Gönderme + düzenleme önizleme mesajlarını kullanır.
+- Önizleme mesajlarında gönderme + düzenleme kullanır.
 - `block` modu taslak parçalamayı (`draftChunk`) kullanır.
 - Discord blok akışı açıkça etkinleştirildiğinde önizleme akışı atlanır.
-- Son medya, hata ve açık yanıt yükleri bekleyen önizlemeleri yeni bir taslak boşaltmadan iptal eder, ardından normal teslimi kullanır.
+- Son medya, hata ve açık-yanıt yükleri bekleyen önizlemeleri yeni bir taslak boşaltmadan iptal eder, ardından normal teslimi kullanır.
 
 Slack:
 
-- `partial`, mevcut olduğunda Slack yerel akışını (`chat.startStream`/`append`/`stop`) kullanabilir.
+- `partial`, kullanılabilir olduğunda Slack yerel akışını (`chat.startStream`/`append`/`stop`) kullanabilir.
 - `block`, ekleme tarzı taslak önizlemeleri kullanır.
 - `progress`, durum önizleme metnini, ardından son yanıtı kullanır.
-- Yanıt thread'i olmayan üst düzey DM'ler, Slack yerel akışı yerine taslak önizleme gönderileri ve düzenlemeleri kullanır.
-- Yerel ve taslak önizleme akışı, ilgili tur için blok yanıtlarını bastırır; böylece Slack yanıtı yalnızca bir teslim yolu tarafından akışa verilir.
-- Son medya/hata yükleri ve ilerleme sonları atılacak taslak mesajlar oluşturmaz; yalnızca önizlemeyi düzenleyebilen metin/blok sonları bekleyen taslak metni boşaltır.
+- Yanıt iş parçacığı olmayan üst düzey DM'ler, Slack yerel akışı yerine taslak önizleme gönderileri ve düzenlemeleri kullanır.
+- Yerel ve taslak önizleme akışı, o tur için blok yanıtlarını bastırır; böylece bir Slack yanıtı yalnızca tek bir teslim yolu tarafından akıtılır.
+- Son medya/hata yükleri ve ilerleme sonları tek kullanımlık taslak mesajlar oluşturmaz; yalnızca önizlemeyi düzenleyebilen metin/blok sonları bekleyen taslak metni boşaltır.
 
 Mattermost:
 
-- Düşünme, araç etkinliği ve kısmi yanıt metnini, son yanıt göndermeye güvenli olduğunda yerinde sonlandırılan tek bir taslak önizleme gönderisine akışla gönderir.
+- Düşünmeyi, araç etkinliğini ve kısmi yanıt metnini, son yanıtın gönderilmesi güvenli olduğunda yerinde sonlandırılan tek bir taslak önizleme gönderisine akıtır.
 - Önizleme gönderisi silinmişse veya sonlandırma sırasında başka şekilde kullanılamıyorsa yeni bir son gönderi göndermeye geri döner.
 - Son medya/hata yükleri, geçici bir önizleme gönderisini boşaltmak yerine normal teslimden önce bekleyen önizleme güncellemelerini iptal eder.
 
 Matrix:
 
-- Son metin önizleme olayını yeniden kullanabildiğinde taslak önizlemeler yerinde sonlandırılır.
-- Yalnızca medya, hata ve yanıt-hedefi-uyuşmazlığı sonları, normal teslimden önce bekleyen önizleme güncellemelerini iptal eder; halihazırda görünür olan eski bir önizleme redakte edilir.
+- Taslak önizlemeler, son metin önizleme olayını yeniden kullanabildiğinde yerinde sonlandırılır.
+- Yalnızca medya, hata ve yanıt-hedefi-uyuşmazlığı sonları normal teslimden önce bekleyen önizleme güncellemelerini iptal eder; zaten görünür olan bayat önizleme geri alınır.
 
-### Araç ilerlemesi önizleme güncellemeleri
+### Araç ilerleme önizleme güncellemeleri
 
-Önizleme akışı, araçlar çalışırken aynı önizleme mesajında, son yanıttan önce görünen "web'de arama yapılıyor", "dosya okunuyor" veya "araç çağrılıyor" gibi kısa durum satırları olan **araç ilerlemesi** güncellemelerini de içerebilir. Bu, çok adımlı araç turlarının ilk düşünme önizlemesi ile son yanıt arasında sessiz kalmak yerine görsel olarak canlı kalmasını sağlar.
+Önizleme akışı ayrıca, araçlar çalışırken aynı önizleme mesajında son yanıttan önce görünen "web'de arama yapılıyor", "dosya okunuyor" veya "araç çağrılıyor" gibi kısa durum satırları olan **araç ilerleme** güncellemelerini de içerebilir. Bu, çok adımlı araç turlarını ilk düşünme önizlemesi ile son yanıt arasında sessiz kalmak yerine görsel olarak canlı tutar.
 
 Desteklenen yüzeyler:
 
-- **Discord**, **Slack**, **Telegram** ve **Matrix**, önizleme akışı etkin olduğunda varsayılan olarak araç ilerlemesini canlı önizleme düzenlemesine akışla gönderir. Microsoft Teams kişisel sohbetlerde yerel ilerleme akışını kullanır.
+- **Discord**, **Slack**, **Telegram** ve **Matrix**, önizleme akışı etkinken varsayılan olarak araç ilerlemesini canlı önizleme düzenlemesine aktarır. Microsoft Teams kişisel sohbetlerde kendi yerel ilerleme akışını kullanır.
 - Telegram, `v2026.4.22` sürümünden beri araç ilerlemesi önizleme güncellemeleri etkin olarak yayımlandı; bunları etkin tutmak yayımlanmış davranışı korur.
-- **Mattermost** zaten araç etkinliğini tek taslak önizleme gönderisine dahil eder (yukarıya bakın).
-- Araç ilerlemesi düzenlemeleri etkin önizleme akışı modunu izler; önizleme akışı `off` olduğunda veya blok akışı mesajı devraldığında atlanır. Telegram'da `streaming.mode: "off"` yalnızca sondur: genel ilerleme konuşmaları bağımsız durum mesajları olarak teslim edilmek yerine bastırılır; onay istemleri, medya yükleri ve hatalar ise normal şekilde yönlendirilir.
-- Önizleme akışını koruyup araç ilerlemesi satırlarını gizlemek için ilgili kanal için `streaming.preview.toolProgress` değerini `false` olarak ayarlayın. Komut/exec metnini gizlerken araç ilerlemesi satırlarını görünür tutmak için `streaming.preview.commandText` değerini `"status"` veya `streaming.progress.commandText` değerini `"status"` olarak ayarlayın; varsayılan, yayımlanmış davranışı korumak için `"raw"` değeridir. Bu politika, Discord, Matrix, Microsoft Teams, Mattermost, Slack taslak önizlemeleri ve Telegram dahil olmak üzere OpenClaw'ın kompakt ilerleme işleyicisini kullanan taslak/ilerleme kanalları tarafından paylaşılır. Önizleme düzenlemelerini tamamen devre dışı bırakmak için `streaming.mode` değerini `off` olarak ayarlayın.
-- Telegram seçili alıntı yanıtları bir istisnadır: `replyToMode` `"off"` olmadığında ve seçili alıntı metni bulunduğunda OpenClaw, araç ilerlemesi önizleme satırları işlenemesin diye ilgili tur için yanıt önizleme akışını atlar. Seçili alıntı metni olmayan güncel mesaj yanıtları önizleme akışını korumaya devam eder. Ayrıntılar için [Telegram kanal belgelerine](/tr/channels/telegram) bakın.
+- **Mattermost** araç etkinliğini zaten tek taslak önizleme gönderisine dahil eder (yukarıya bakın).
+- Araç ilerlemesi düzenlemeleri etkin önizleme akışı modunu izler; önizleme akışı `off` olduğunda veya blok akışı iletiyi devraldığında atlanırlar. Telegram'da `streaming.mode: "off"` yalnızca son çıktı modudur: genel ilerleme konuşmaları bağımsız durum iletileri olarak teslim edilmek yerine bastırılır; onay istemleri, medya yükleri ve hatalar ise normal şekilde yönlendirilir.
+- Önizleme akışını koruyup araç ilerlemesi satırlarını gizlemek için ilgili kanal için `streaming.preview.toolProgress` değerini `false` olarak ayarlayın. Komut/çalıştırma metnini gizlerken araç ilerlemesi satırlarını görünür tutmak için `streaming.preview.commandText` değerini `"status"` veya `streaming.progress.commandText` değerini `"status"` olarak ayarlayın; varsayılan değer, yayımlanmış davranışı korumak için `"raw"` şeklindedir. Bu ilke, OpenClaw'ın kompakt ilerleme işleyicisini kullanan taslak/ilerleme kanalları tarafından paylaşılır; bunlara Discord, Matrix, Microsoft Teams, Mattermost, Slack taslak önizlemeleri ve Telegram dahildir. Önizleme düzenlemelerini tamamen devre dışı bırakmak için `streaming.mode` değerini `off` olarak ayarlayın.
+- Telegram seçili alıntı yanıtları bir istisnadır: `replyToMode` `"off"` değilse ve seçili alıntı metni mevcutsa, OpenClaw o tur için yanıt önizleme akışını atlar; bu nedenle araç ilerlemesi önizleme satırları işlenemez. Seçili alıntı metni olmayan geçerli ileti yanıtlarında önizleme akışı korunur. Ayrıntılar için [Telegram kanal belgelerine](/tr/channels/telegram) bakın.
 
-İlerleme satırlarını görünür tutun ancak ham komut/exec metnini gizleyin:
+İlerleme satırlarını görünür tutup ham komut/çalıştırma metnini gizleyin:
 
 ```json
 {
@@ -208,7 +210,7 @@ Desteklenen yüzeyler:
 }
 ```
 
-Aynı yapıyı başka bir kompakt ilerleme kanalı anahtarı altında kullanın; örneğin `channels.discord`, `channels.matrix`, `channels.msteams`, `channels.mattermost` veya Slack taslak önizlemeleri. İlerleme taslağı modu için aynı politikayı `streaming.progress` altına koyun:
+Aynı yapıyı başka bir kompakt ilerleme kanalı anahtarı altında kullanın; örneğin `channels.discord`, `channels.matrix`, `channels.msteams`, `channels.mattermost` veya Slack taslak önizlemeleri. İlerleme taslağı modu için aynı ilkeyi `streaming.progress` altına koyun:
 
 ```json
 {
@@ -228,7 +230,8 @@ Aynı yapıyı başka bir kompakt ilerleme kanalı anahtarı altında kullanın;
 
 ## İlgili
 
-- [İlerleme taslakları](/tr/concepts/progress-drafts) — uzun dönüşler sırasında güncellenen görünür devam eden çalışma mesajları
-- [Mesajlar](/tr/concepts/messages) — mesaj yaşam döngüsü ve teslim
-- [Yeniden deneme](/tr/concepts/retry) — teslim hatasında yeniden deneme davranışı
-- [Kanallar](/tr/channels) — kanal başına streaming desteği
+- [İleti yaşam döngüsü yeniden düzenlemesi](/tr/concepts/message-lifecycle-refactor) - paylaşılan önizleme, düzenleme, akış ve sonlandırma tasarımını hedefler
+- [İlerleme taslakları](/tr/concepts/progress-drafts) - uzun turlar sırasında güncellenen görünür devam eden çalışma iletileri
+- [İletiler](/tr/concepts/messages) - ileti yaşam döngüsü ve teslimat
+- [Yeniden deneme](/tr/concepts/retry) - teslimat hatasında yeniden deneme davranışı
+- [Kanallar](/tr/channels) - kanal başına akış desteği

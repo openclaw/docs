@@ -1,139 +1,142 @@
 ---
 read_when:
     - ACP tabanlı IDE entegrasyonlarını ayarlama
-    - ACP oturum yönlendirmesini Gateway'e hata ayıklama
+    - ACP oturumunun Gateway'e yönlendirilmesinde hata ayıklama
 summary: IDE entegrasyonları için ACP köprüsünü çalıştırın
 title: ACP
 x-i18n:
-    generated_at: "2026-04-24T09:00:50Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:04:48Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 88b4d5de9e8e7464fd929ace0471af7d85afc94789c0c45a1f4a00d39b7871e1
+    source_hash: c91de534078b4d49b2776d7a85264d2ba8d7bdd7a3cd715ce615b4b4b26c6528
     source_path: cli/acp.md
-    workflow: 15
+    workflow: 16
 ---
 
-Bir OpenClaw Gateway ile konuşan [Agent Client Protocol (ACP)](https://agentclientprotocol.com/) köprüsünü çalıştırın.
+[Agent Client Protocol (ACP)](https://agentclientprotocol.com/) köprüsünü, bir OpenClaw Gateway ile konuşacak şekilde çalıştırın.
 
 Bu komut, IDE'ler için stdio üzerinden ACP konuşur ve istemleri WebSocket
-üzerinden Gateway'e iletir. ACP oturumlarını Gateway oturum anahtarlarıyla eşlenmiş halde tutar.
+üzerinden Gateway'e iletir. ACP oturumlarını Gateway oturum anahtarlarıyla eşli
+tutar.
 
-`openclaw acp`, tam ACP-yerel bir düzenleyici çalışma zamanı değil, Gateway destekli bir ACP köprüsüdür.
-Oturum yönlendirmesine, istem teslimine ve temel akış
+`openclaw acp`, Gateway destekli bir ACP köprüsüdür; tam bir ACP yerel editör
+çalışma zamanı değildir. Oturum yönlendirme, istem iletimi ve temel akış
 güncellemelerine odaklanır.
 
-Harici bir MCP istemcisinin bir ACP koşum oturumu barındırmak yerine doğrudan OpenClaw kanal
-konuşmalarıyla konuşmasını istiyorsanız,
-bunun yerine [`openclaw mcp serve`](/tr/cli/mcp) kullanın.
+Bir ACP harness oturumu barındırmak yerine harici bir MCP istemcisinin doğrudan
+OpenClaw kanal konuşmalarıyla konuşmasını istiyorsanız bunun yerine
+[`openclaw mcp serve`](/tr/cli/mcp) kullanın.
 
 ## Bu ne değildir
 
-Bu sayfa sıkça ACP koşum oturumlarıyla karıştırılır.
+Bu sayfa sık sık ACP harness oturumlarıyla karıştırılır.
 
 `openclaw acp` şu anlama gelir:
 
-- OpenClaw bir ACP sunucusu olarak hareket eder
+- OpenClaw bir ACP sunucusu gibi davranır
 - bir IDE veya ACP istemcisi OpenClaw'a bağlanır
 - OpenClaw bu işi bir Gateway oturumuna iletir
 
-Bu, [ACP Agents](/tr/tools/acp-agents) sayfasından farklıdır; orada OpenClaw
-`acpx` üzerinden Codex veya Claude Code gibi harici bir koşumu çalıştırır.
+Bu, OpenClaw'ın Codex veya Claude Code gibi harici bir harness'i `acpx` üzerinden
+çalıştırdığı [ACP Aracıları](/tr/tools/acp-agents) durumundan farklıdır.
 
 Hızlı kural:
 
-- düzenleyici/istemci ACP ile OpenClaw'la konuşmak istiyorsa: `openclaw acp` kullanın
-- OpenClaw, Codex/Claude/Gemini'yi bir ACP koşumu olarak başlatmalıysa: `/acp spawn` ve [ACP Agents](/tr/tools/acp-agents) kullanın
+- editör/istemci OpenClaw ile ACP konuşmak istiyorsa: `openclaw acp` kullanın
+- OpenClaw, Codex/Claude/Gemini'yi ACP harness olarak başlatmalıysa: `/acp spawn` ve [ACP Aracıları](/tr/tools/acp-agents) kullanın
 
 ## Uyumluluk Matrisi
 
-| ACP alanı                                                             | Durum       | Notlar                                                                                                                                                                                                                                                 |
-| --------------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `initialize`, `newSession`, `prompt`, `cancel`                        | Uygulandı   | Stdio üzerinden Gateway chat/send + abort ile çekirdek köprü akışı.                                                                                                                                                                                   |
-| `listSessions`, slash komutları                                       | Uygulandı   | Oturum listesi Gateway oturum durumuna karşı çalışır; komutlar `available_commands_update` üzerinden ilan edilir.                                                                                                                                     |
-| `loadSession`                                                         | Kısmi       | ACP oturumunu bir Gateway oturum anahtarına yeniden bağlar ve saklanan kullanıcı/asistan metin geçmişini yeniden oynatır. Araç/sistem geçmişi henüz yeniden oluşturulmaz.                                                                            |
-| İstem içeriği (`text`, gömülü `resource`, resimler)                   | Kısmi       | Metin/kaynaklar sohbet girdisine düzleştirilir; resimler Gateway ekleri hâline gelir.                                                                                                                                                                 |
-| Oturum modları                                                        | Kısmi       | `session/set_mode` desteklenir ve köprü; düşünce düzeyi, araç ayrıntı seviyesi, muhakeme, kullanım ayrıntısı ve yükseltilmiş eylemler için başlangıç Gateway destekli oturum denetimlerini sunar. Daha geniş ACP-yerel kip/yapılandırma yüzeyleri hâlâ kapsam dışıdır. |
-| Oturum bilgisi ve kullanım güncellemeleri                             | Kısmi       | Köprü, önbelleğe alınmış Gateway oturum anlık görüntülerinden `session_info_update` ve en iyi çabayla `usage_update` bildirimleri yayar. Kullanım yaklaşık değerdir ve yalnızca Gateway token toplamlarını güncel olarak işaretlediğinde gönderilir. |
-| Araç akışı                                                            | Kısmi       | `tool_call` / `tool_call_update` olayları; Gateway araç bağımsız değişkenleri/sonuçları bunları ortaya çıkardığında ham G/Ç, metin içeriği ve en iyi çabayla dosya konumlarını içerir. Gömülü terminaller ve daha zengin diff-yerel çıktı hâlâ sunulmaz. |
-| Oturum başına MCP sunucuları (`mcpServers`)                           | Desteklenmiyor | Köprü modu, oturum başına MCP sunucusu isteklerini reddeder. Bunun yerine MCP'yi OpenClaw gateway veya aracı üzerinde yapılandırın.                                                                                                                 |
-| İstemci dosya sistemi yöntemleri (`fs/read_text_file`, `fs/write_text_file`) | Desteklenmiyor | Köprü, ACP istemci dosya sistemi yöntemlerini çağırmaz.                                                                                                                                                                                                |
-| İstemci terminal yöntemleri (`terminal/*`)                            | Desteklenmiyor | Köprü, ACP istemci terminalleri oluşturmaz veya araç çağrıları üzerinden terminal kimliklerini akıtmaz.                                                                                                                                             |
-| Oturum planları / düşünce akışı                                       | Desteklenmiyor | Köprü şu anda ACP plan veya düşünce güncellemeleri değil, çıktı metni ve araç durumu yayar.                                                                                                                                                          |
+| ACP alanı                                                             | Durum          | Notlar                                                                                                                                                                                                                                      |
+| --------------------------------------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `initialize`, `newSession`, `prompt`, `cancel`                        | Uygulandı      | stdio üzerinden Gateway chat/send + abort'a giden temel köprü akışı.                                                                                                                                                                        |
+| `listSessions`, slash komutları                                       | Uygulandı      | Oturum listesi Gateway oturum durumuna göre çalışır; komutlar `available_commands_update` üzerinden duyurulur.                                                                                                                             |
+| `loadSession`                                                         | Kısmi          | ACP oturumunu bir Gateway oturum anahtarına yeniden bağlar ve saklanan kullanıcı/asistan metin geçmişini yeniden oynatır. Araç/sistem geçmişi henüz yeniden oluşturulmaz.                                                                   |
+| İstem içeriği (`text`, gömülü `resource`, görseller)                  | Kısmi          | Metin/kaynaklar sohbet girdisine düzleştirilir; görseller Gateway eklerine dönüşür.                                                                                                                                                        |
+| Oturum modları                                                        | Kısmi          | `session/set_mode` desteklenir ve köprü; düşünce düzeyi, araç ayrıntı düzeyi, reasoning, kullanım ayrıntısı ve yükseltilmiş eylemler için başlangıç Gateway destekli oturum kontrolleri sunar. Daha geniş ACP yerel mod/yapılandırma yüzeyleri hâlâ kapsam dışıdır. |
+| Oturum bilgisi ve kullanım güncellemeleri                             | Kısmi          | Köprü, önbelleğe alınmış Gateway oturum anlık görüntülerinden `session_info_update` ve en iyi çaba `usage_update` bildirimleri yayar. Kullanım yaklaşıktır ve yalnızca Gateway token toplamları güncel olarak işaretlendiğinde gönderilir. |
+| Araç akışı                                                            | Kısmi          | `tool_call` / `tool_call_update` olayları, Gateway araç argümanları/sonuçları bunları açığa çıkardığında ham G/Ç, metin içeriği ve en iyi çaba dosya konumlarını içerir. Gömülü terminaller ve daha zengin diff yerel çıktı hâlâ sunulmaz. |
+| Oturum başına MCP sunucuları (`mcpServers`)                           | Desteklenmiyor | Köprü modu, oturum başına MCP sunucu isteklerini reddeder. MCP'yi bunun yerine OpenClaw Gateway veya aracı üzerinde yapılandırın.                                                                                                           |
+| İstemci dosya sistemi yöntemleri (`fs/read_text_file`, `fs/write_text_file`) | Desteklenmiyor | Köprü, ACP istemci dosya sistemi yöntemlerini çağırmaz.                                                                                                                                                                                     |
+| İstemci terminal yöntemleri (`terminal/*`)                            | Desteklenmiyor | Köprü, ACP istemci terminalleri oluşturmaz veya terminal kimliklerini araç çağrıları üzerinden akıtmaz.                                                                                                                                     |
+| Oturum planları / düşünce akışı                                       | Desteklenmiyor | Köprü şu anda ACP planı veya düşünce güncellemeleri değil, çıktı metni ve araç durumu yayar.                                                                                                                                                |
 
 ## Bilinen Sınırlamalar
 
-- `loadSession`, saklanan kullanıcı ve asistan metin geçmişini yeniden oynatır, ancak
-  geçmiş araç çağrılarını, sistem bildirimlerini veya daha zengin ACP-yerel olay
-  türlerini yeniden oluşturmaz.
-- Birden fazla ACP istemcisi aynı Gateway oturum anahtarını paylaşıyorsa, olay ve iptal
-  yönlendirmesi istemci başına katı biçimde yalıtılmış olmak yerine en iyi çabadır. Temiz düzenleyici-yerel
-  dönüşlere ihtiyaç duyduğunuzda varsayılan yalıtılmış `acp:<uuid>` oturumlarını tercih edin.
+- `loadSession`, saklanan kullanıcı ve asistan metin geçmişini yeniden oynatır,
+  ancak geçmiş araç çağrılarını, sistem bildirimlerini veya daha zengin ACP yerel
+  olay türlerini yeniden oluşturmaz.
+- Birden fazla ACP istemcisi aynı Gateway oturum anahtarını paylaşıyorsa olay ve
+  iptal yönlendirmesi, istemci başına katı biçimde yalıtılmış olmak yerine en
+  iyi çaba düzeyindedir. Temiz editör yerel dönüşlere ihtiyaç duyduğunuzda
+  varsayılan yalıtılmış `acp:<uuid>` oturumlarını tercih edin.
 - Gateway durdurma durumları ACP durdurma nedenlerine çevrilir, ancak bu eşleme
-  tam ACP-yerel bir çalışma zamanından daha az ifade gücüne sahiptir.
-- Başlangıç oturum denetimleri şu anda Gateway düğmelerinin odaklı bir alt kümesini sunar:
-  düşünce düzeyi, araç ayrıntı seviyesi, muhakeme, kullanım ayrıntısı ve yükseltilmiş
-  eylemler. Model seçimi ve exec-host denetimleri henüz ACP
-  yapılandırma seçenekleri olarak sunulmaz.
-- `session_info_update` ve `usage_update`, canlı ACP-yerel çalışma zamanı muhasebesinden değil,
-  Gateway oturum anlık görüntülerinden türetilir. Kullanım yaklaşık değerdir,
-  maliyet verisi taşımaz ve yalnızca Gateway toplam token
-  verilerini güncel olarak işaretlediğinde yayılır.
-- Araç takip verileri en iyi çabayladır. Köprü, bilinen araç bağımsız değişkenleri/sonuçlarında
-  görünen dosya yollarını gösterebilir, ancak henüz ACP terminalleri veya
-  yapılandırılmış dosya diff'leri yaymaz.
+  tamamen ACP yerel bir çalışma zamanına göre daha az ifade gücüne sahiptir.
+- Başlangıç oturum kontrolleri şu anda Gateway ayar düğmelerinin odaklı bir alt
+  kümesini sunar: düşünce düzeyi, araç ayrıntı düzeyi, reasoning, kullanım
+  ayrıntısı ve yükseltilmiş eylemler. Model seçimi ve exec-host kontrolleri
+  henüz ACP yapılandırma seçenekleri olarak sunulmaz.
+- `session_info_update` ve `usage_update`, canlı ACP yerel çalışma zamanı
+  muhasebesinden değil Gateway oturum anlık görüntülerinden türetilir. Kullanım
+  yaklaşıktır, maliyet verisi taşımaz ve yalnızca Gateway toplam token verisini
+  güncel olarak işaretlediğinde yayılır.
+- Araç izleme verisi en iyi çaba düzeyindedir. Köprü, bilinen araç
+  argümanlarında/sonuçlarında görünen dosya yollarını gösterebilir, ancak henüz
+  ACP terminalleri veya yapılandırılmış dosya diff'leri yaymaz.
 
 ## Kullanım
 
 ```bash
 openclaw acp
 
-# Uzak Gateway
+# Remote Gateway
 openclaw acp --url wss://gateway-host:18789 --token <token>
 
-# Uzak Gateway (dosyadan token)
+# Remote Gateway (token from file)
 openclaw acp --url wss://gateway-host:18789 --token-file ~/.openclaw/gateway.token
 
-# Var olan bir oturum anahtarına bağlan
+# Attach to an existing session key
 openclaw acp --session agent:main:main
 
-# Etikete göre bağlan (önceden var olmalıdır)
+# Attach by label (must already exist)
 openclaw acp --session-label "support inbox"
 
-# İlk istemden önce oturum anahtarını sıfırla
+# Reset the session key before the first prompt
 openclaw acp --session agent:main:main --reset-session
 ```
 
 ## ACP istemcisi (hata ayıklama)
 
-IDE olmadan köprüyü mantık denetiminden geçirmek için yerleşik ACP istemcisini kullanın.
-ACP köprüsünü başlatır ve istemleri etkileşimli olarak yazmanıza olanak tanır.
+Köprüyü bir IDE olmadan sağlamlık açısından kontrol etmek için yerleşik ACP
+istemcisini kullanın. ACP köprüsünü başlatır ve istemleri etkileşimli olarak
+yazmanıza olanak tanır.
 
 ```bash
 openclaw acp client
 
-# Başlatılan köprüyü uzak bir Gateway'e yönlendir
+# Point the spawned bridge at a remote Gateway
 openclaw acp client --server-args --url wss://gateway-host:18789 --token-file ~/.openclaw/gateway.token
 
-# Sunucu komutunu geçersiz kıl (varsayılan: openclaw)
+# Override the server command (default: openclaw)
 openclaw acp client --server "node" --server-args openclaw.mjs acp --url ws://127.0.0.1:19001
 ```
 
 İzin modeli (istemci hata ayıklama modu):
 
-- Otomatik onay, izin listesi tabanlıdır ve yalnızca güvenilen çekirdek araç kimliklerine uygulanır.
-- `read` otomatik onayı mevcut çalışma diziniyle sınırlıdır (`--cwd` ayarlıysa).
-- ACP yalnızca dar salt okunur sınıfları otomatik onaylar: etkin cwd altındaki kapsamlı `read` çağrıları ve salt okunur arama araçları (`search`, `web_search`, `memory_search`). Bilinmeyen/çekirdek olmayan araçlar, kapsam dışı okumalar, exec yetenekli araçlar, kontrol düzlemi araçları, değiştirici araçlar ve etkileşimli akışlar her zaman açık istem onayı gerektirir.
-- Sunucu tarafından sağlanan `toolCall.kind`, güvenilmeyen metadata olarak değerlendirilir (yetkilendirme kaynağı değildir).
-- Bu ACP köprü ilkesi, ACPX koşum izinlerinden ayrıdır. OpenClaw'ı `acpx` arka ucu üzerinden çalıştırırsanız, `plugins.entries.acpx.config.permissionMode=approve-all`, o koşum oturumu için acil durum “yolo” anahtarıdır.
+- Otomatik onay, izin listesi temellidir ve yalnızca güvenilir temel araç kimlikleri için geçerlidir.
+- `read` otomatik onayı, geçerli çalışma diziniyle kapsamlanır (`--cwd` ayarlandığında).
+- ACP yalnızca dar readonly sınıfları otomatik onaylar: etkin cwd altındaki kapsamlı `read` çağrıları ve readonly arama araçları (`search`, `web_search`, `memory_search`). Bilinmeyen/çekirdek dışı araçlar, kapsam dışı okumalar, exec yapabilen araçlar, kontrol düzlemi araçları, mutasyon yapan araçlar ve etkileşimli akışlar her zaman açık istem onayı gerektirir.
+- Sunucunun sağladığı `toolCall.kind`, güvenilmeyen metadata olarak ele alınır (yetkilendirme kaynağı değildir).
+- Bu ACP köprü ilkesi ACPX harness izinlerinden ayrıdır. OpenClaw'ı `acpx` arka ucu üzerinden çalıştırırsanız, `plugins.entries.acpx.config.permissionMode=approve-all` o harness oturumu için break-glass "yolo" anahtarıdır.
 
 ## Bunu nasıl kullanırsınız
 
-Bir IDE (veya başka bir istemci) Agent Client Protocol konuşuyorsa ve onun
-bir OpenClaw Gateway oturumunu sürmesini istiyorsanız ACP kullanın.
+Bir IDE (veya başka bir istemci) Agent Client Protocol konuşuyorsa ve bunun bir
+OpenClaw Gateway oturumunu sürmesini istiyorsanız ACP kullanın.
 
 1. Gateway'in çalıştığından emin olun (yerel veya uzak).
-2. Gateway hedefini yapılandırın (yapılandırma veya bayraklarla).
-3. IDE'nizi stdio üzerinden `openclaw acp` çalıştıracak şekilde yönlendirin.
+2. Gateway hedefini yapılandırın (yapılandırma veya bayraklar).
+3. IDE'nizi stdio üzerinden `openclaw acp` çalıştıracak şekilde ayarlayın.
 
 Örnek yapılandırma (kalıcı):
 
@@ -146,15 +149,15 @@ openclaw config set gateway.remote.token <token>
 
 ```bash
 openclaw acp --url wss://gateway-host:18789 --token <token>
-# yerel süreç güvenliği için tercih edilir
+# preferred for local process safety
 openclaw acp --url wss://gateway-host:18789 --token-file ~/.openclaw/gateway.token
 ```
 
 ## Aracı seçme
 
-ACP, aracıları doğrudan seçmez. Gateway oturum anahtarına göre yönlendirme yapar.
+ACP aracıları doğrudan seçmez. Gateway oturum anahtarına göre yönlendirir.
 
-Belirli bir aracıyı hedeflemek için aracı kapsamlı oturum anahtarları kullanın:
+Belirli bir aracı hedeflemek için aracı kapsamlı oturum anahtarlarını kullanın:
 
 ```bash
 openclaw acp --session agent:main:main
@@ -162,45 +165,47 @@ openclaw acp --session agent:design:main
 openclaw acp --session agent:qa:bug-123
 ```
 
-Her ACP oturumu tek bir Gateway oturum anahtarına eşlenir. Bir aracının birçok
-oturumu olabilir; anahtarı veya etiketi geçersiz kılmadığınız sürece ACP varsayılan olarak
-yalıtılmış bir `acp:<uuid>` oturumu kullanır.
+Her ACP oturumu tek bir Gateway oturum anahtarıyla eşlenir. Bir aracının birçok
+oturumu olabilir; anahtarı veya etiketi geçersiz kılmazsanız ACP varsayılan
+olarak yalıtılmış bir `acp:<uuid>` oturumunu kullanır.
 
-Oturum başına `mcpServers`, köprü modunda desteklenmez. Bir ACP istemcisi
-bunları `newSession` veya `loadSession` sırasında gönderirse köprü,
-sessizce yok saymak yerine açık bir hata döndürür.
+Köprü modunda oturum başına `mcpServers` desteklenmez. Bir ACP istemcisi bunları
+`newSession` veya `loadSession` sırasında gönderirse köprü, bunları sessizce
+yok saymak yerine açık bir hata döndürür.
 
-ACPX destekli oturumların OpenClaw Plugin araçlarını veya
-`cron` gibi seçili yerleşik araçları görmesini istiyorsanız, oturum başına `mcpServers`
-geçirmeye çalışmak yerine gateway tarafı ACPX MCP köprülerini etkinleştirin. Bkz.
-[ACP Agents](/tr/tools/acp-agents-setup#plugin-tools-mcp-bridge) ve
+ACPX destekli oturumların OpenClaw Plugin araçlarını veya `cron` gibi seçili
+yerleşik araçları görmesini istiyorsanız, oturum başına `mcpServers` geçirmeye
+çalışmak yerine Gateway tarafı ACPX MCP köprülerini etkinleştirin. Bkz.
+[ACP Aracıları](/tr/tools/acp-agents-setup#plugin-tools-mcp-bridge) ve
 [OpenClaw araçları MCP köprüsü](/tr/tools/acp-agents-setup#openclaw-tools-mcp-bridge).
 
-## `acpx` içinden kullanım (Codex, Claude, diğer ACP istemcileri)
+## `acpx` üzerinden kullanma (Codex, Claude, diğer ACP istemcileri)
 
-Codex veya Claude Code gibi bir kodlama aracısının
-OpenClaw botunuzla ACP üzerinden konuşmasını istiyorsanız, yerleşik `openclaw` hedefiyle `acpx` kullanın.
+Codex veya Claude Code gibi bir kodlama aracısının OpenClaw botunuzla ACP
+üzerinden konuşmasını istiyorsanız, yerleşik `openclaw` hedefiyle `acpx`
+kullanın.
 
 Tipik akış:
 
-1. Gateway'i çalıştırın ve ACP köprüsünün ona ulaşabildiğinden emin olun.
-2. `acpx openclaw` komutunu `openclaw acp` komutuna yönlendirin.
+1. Gateway'i çalıştırın ve ACP köprüsünün ona erişebildiğinden emin olun.
+2. `acpx openclaw` öğesini `openclaw acp` hedefine yöneltin.
 3. Kodlama aracısının kullanmasını istediğiniz OpenClaw oturum anahtarını hedefleyin.
 
 Örnekler:
 
 ```bash
-# Varsayılan OpenClaw ACP oturumunuza tek seferlik istek
-acpx openclaw exec "Etkin OpenClaw oturum durumunu özetle."
+# One-shot request into your default OpenClaw ACP session
+acpx openclaw exec "Summarize the active OpenClaw session state."
 
-# Takip dönüşleri için kalıcı adlandırılmış oturum
+# Persistent named session for follow-up turns
 acpx openclaw sessions ensure --name codex-bridge
 acpx openclaw -s codex-bridge --cwd /path/to/repo \
-  "OpenClaw iş aracımdan bu depoyla ilgili son bağlamı iste."
+  "Ask my OpenClaw work agent for recent context relevant to this repo."
 ```
 
-`acpx openclaw` komutunun her seferinde belirli bir Gateway ve oturum anahtarını hedeflemesini istiyorsanız,
-`~/.acpx/config.json` içindeki `openclaw` aracı komutunu geçersiz kılın:
+`acpx openclaw` komutunun her seferinde belirli bir Gateway ve oturum anahtarını
+hedeflemesini istiyorsanız, `~/.acpx/config.json` içindeki `openclaw` aracı
+komutunu geçersiz kılın:
 
 ```json
 {
@@ -212,19 +217,20 @@ acpx openclaw -s codex-bridge --cwd /path/to/repo \
 }
 ```
 
-Depo-yerel bir OpenClaw checkout'u için ACP akışının temiz kalması amacıyla
-geliştirme çalıştırıcısı yerine doğrudan CLI giriş noktasını kullanın. Örneğin:
+Depo yerel bir OpenClaw checkout'ı için dev runner yerine doğrudan CLI giriş
+noktasını kullanın, böylece ACP akışı temiz kalır. Örneğin:
 
 ```bash
 env OPENCLAW_HIDE_BANNER=1 OPENCLAW_SUPPRESS_NOTES=1 node openclaw.mjs acp ...
 ```
 
-Bu, Codex, Claude Code veya ACP farkındalığı olan başka bir istemcinin
-bir terminali kazımadan bir OpenClaw aracısından bağlamsal bilgi çekmesini sağlamanın en kolay yoludur.
+Bu, Codex, Claude Code veya ACP farkındalığı olan başka bir istemcinin terminal
+kazıması yapmadan bir OpenClaw aracısından bağlamsal bilgi çekmesini sağlamanın
+en kolay yoludur.
 
-## Zed düzenleyici kurulumu
+## Zed editörü kurulumu
 
-`~/.config/zed/settings.json` dosyasına özel bir ACP aracı ekleyin (veya Zed’in Ayarlar UI'sini kullanın):
+`~/.config/zed/settings.json` içine özel bir ACP aracısı ekleyin (veya Zed'in Settings UI'ını kullanın):
 
 ```json
 {
@@ -239,7 +245,7 @@ bir terminali kazımadan bir OpenClaw aracısından bağlamsal bilgi çekmesini 
 }
 ```
 
-Belirli bir Gateway veya aracıyı hedeflemek için:
+Belirli bir Gateway veya ajanı hedeflemek için:
 
 ```json
 {
@@ -262,16 +268,16 @@ Belirli bir Gateway veya aracıyı hedeflemek için:
 }
 ```
 
-Zed içinde Agent panelini açın ve bir iş parçacığı başlatmak için “OpenClaw ACP” seçeneğini seçin.
+Zed'de, bir iş parçacığı başlatmak için Ajan panelini açın ve "OpenClaw ACP" seçeneğini belirleyin.
 
-## Oturum eşleme
+## Oturum eşlemesi
 
-Varsayılan olarak ACP oturumları, `acp:` önekine sahip yalıtılmış bir Gateway oturum anahtarı alır.
+Varsayılan olarak, ACP oturumları `acp:` ön ekine sahip yalıtılmış bir Gateway oturum anahtarı alır.
 Bilinen bir oturumu yeniden kullanmak için bir oturum anahtarı veya etiketi geçirin:
 
-- `--session <key>`: belirli bir Gateway oturum anahtarını kullanır.
-- `--session-label <label>`: mevcut bir oturumu etikete göre çözümler.
-- `--reset-session`: bu anahtar için yeni bir oturum kimliği üretir (aynı anahtar, yeni transcript).
+- `--session <key>`: belirli bir Gateway oturum anahtarı kullanın.
+- `--session-label <label>`: mevcut bir oturumu etikete göre çözümleyin.
+- `--reset-session`: bu anahtar için yeni bir oturum kimliği üretin (aynı anahtar, yeni transkript).
 
 ACP istemciniz metadata destekliyorsa oturum başına geçersiz kılabilirsiniz:
 
@@ -289,39 +295,39 @@ Oturum anahtarları hakkında daha fazla bilgi için [/concepts/session](/tr/con
 
 ## Seçenekler
 
-- `--url <url>`: Gateway WebSocket URL'si (yapılandırılmışsa varsayılan olarak gateway.remote.url kullanılır).
-- `--token <token>`: Gateway kimlik doğrulama token'ı.
-- `--token-file <path>`: Gateway kimlik doğrulama token'ını dosyadan okur.
+- `--url <url>`: Gateway WebSocket URL'si (yapılandırıldığında varsayılan olarak gateway.remote.url kullanılır).
+- `--token <token>`: Gateway kimlik doğrulama belirteci.
+- `--token-file <path>`: Gateway kimlik doğrulama belirtecini dosyadan oku.
 - `--password <password>`: Gateway kimlik doğrulama parolası.
-- `--password-file <path>`: Gateway kimlik doğrulama parolasını dosyadan okur.
+- `--password-file <path>`: Gateway kimlik doğrulama parolasını dosyadan oku.
 - `--session <key>`: varsayılan oturum anahtarı.
 - `--session-label <label>`: çözümlenecek varsayılan oturum etiketi.
-- `--require-existing`: oturum anahtarı/etiketi yoksa başarısız olur.
-- `--reset-session`: ilk kullanımdan önce oturum anahtarını sıfırlar.
-- `--no-prefix-cwd`: istemlerin başına çalışma dizinini eklemez.
-- `--provenance <off|meta|meta+receipt>`: ACP provenance metadata veya receipt'lerini içerir.
-- `--verbose, -v`: stderr'e ayrıntılı günlükleme.
+- `--require-existing`: oturum anahtarı/etiketi yoksa başarısız ol.
+- `--reset-session`: ilk kullanımdan önce oturum anahtarını sıfırla.
+- `--no-prefix-cwd`: istemlerin başına çalışma dizinini ekleme.
+- `--provenance <off|meta|meta+receipt>`: ACP köken üst verilerini veya alındılarını dahil et.
+- `--verbose, -v`: stderr'ye ayrıntılı günlükleme.
 
 Güvenlik notu:
 
-- `--token` ve `--password`, bazı sistemlerde yerel süreç listelerinde görünebilir.
+- `--token` ve `--password` bazı sistemlerde yerel süreç listelerinde görünebilir.
 - `--token-file`/`--password-file` veya ortam değişkenlerini (`OPENCLAW_GATEWAY_TOKEN`, `OPENCLAW_GATEWAY_PASSWORD`) tercih edin.
 - Gateway kimlik doğrulama çözümlemesi, diğer Gateway istemcileri tarafından kullanılan paylaşılan sözleşmeyi izler:
-  - yerel mod: env (`OPENCLAW_GATEWAY_*`) -> `gateway.auth.*` -> yalnızca `gateway.auth.*` ayarlı değilse `gateway.remote.*` geri dönüşü (yapılandırılmış ancak çözümlenmemiş yerel SecretRef'ler kapalı varsayımla başarısız olur)
-  - uzak mod: uzak öncelik kurallarına göre env/yapılandırma geri dönüşü ile `gateway.remote.*`
-  - `--url` geçersiz kılma açısından güvenlidir ve örtük yapılandırma/env kimlik bilgilerini yeniden kullanmaz; açık `--token`/`--password` (veya dosya varyantları) geçirin
-- ACP çalışma zamanı arka uç alt süreçleri `OPENCLAW_SHELL=acp` alır; bu, bağlama özgü kabuk/profil kuralları için kullanılabilir.
-- `openclaw acp client`, başlatılan köprü sürecinde `OPENCLAW_SHELL=acp-client` ayarlar.
+  - yerel mod: env (`OPENCLAW_GATEWAY_*`) -> `gateway.auth.*` -> yalnızca `gateway.auth.*` ayarlanmamışsa `gateway.remote.*` yedeği (yapılandırılmış ama çözümlenmemiş yerel SecretRefs güvenli şekilde başarısız olur)
+  - uzak mod: uzak öncelik kurallarına göre env/config yedeğiyle `gateway.remote.*`
+  - `--url` geçersiz kılma açısından güvenlidir ve örtük config/env kimlik bilgilerini yeniden kullanmaz; açık `--token`/`--password` (veya dosya varyantlarını) iletin
+- ACP çalışma zamanı backend alt süreçleri `OPENCLAW_SHELL=acp` alır; bu, bağlama özgü kabuk/profil kuralları için kullanılabilir.
+- `openclaw acp client`, oluşturulan köprü sürecinde `OPENCLAW_SHELL=acp-client` ayarlar.
 
 ### `acp client` seçenekleri
 
 - `--cwd <dir>`: ACP oturumu için çalışma dizini.
 - `--server <command>`: ACP sunucu komutu (varsayılan: `openclaw`).
-- `--server-args <args...>`: ACP sunucusuna geçirilen ek bağımsız değişkenler.
-- `--server-verbose`: ACP sunucusunda ayrıntılı günlüklemeyi etkinleştirir.
+- `--server-args <args...>`: ACP sunucusuna iletilen ek argümanlar.
+- `--server-verbose`: ACP sunucusunda ayrıntılı günlüklemeyi etkinleştir.
 - `--verbose, -v`: ayrıntılı istemci günlüklemesi.
 
 ## İlgili
 
-- [CLI başvurusu](/tr/cli)
-- [ACP agents](/tr/tools/acp-agents)
+- [CLI referansı](/tr/cli)
+- [ACP ajanları](/tr/tools/acp-agents)

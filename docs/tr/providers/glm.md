@@ -1,47 +1,71 @@
 ---
 read_when:
-    - OpenClaw içinde GLM modellerini istiyorsunuz
+    - OpenClaw'da GLM modellerini kullanmak istiyorsunuz
     - Model adlandırma kuralına ve kuruluma ihtiyacınız var
-summary: GLM model ailesine genel bakış + OpenClaw içinde nasıl kullanılır
+summary: GLM model ailesine genel bakış ve OpenClaw'da nasıl kullanılacağı
 title: GLM (Zhipu)
 x-i18n:
-    generated_at: "2026-04-24T09:25:50Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:27:33Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 0272f0621559c0aba2c939dc52771ac2c94a20f9f7201c1f71d80a9c2197c7e7
+    source_hash: 190b8834e3f11cdb90c9bdb1844bfad3a79383776540f733e601437157b7a093
     source_path: providers/glm.md
-    workflow: 15
+    workflow: 16
 ---
 
-# GLM modelleri
+GLM, [Z.AI](https://z.ai) platformu üzerinden sunulan bir model ailesidir (şirket değil). OpenClaw’da GLM modellerine, `zai/glm-5.1` gibi ref’lerle paketle gelen `zai` sağlayıcısı üzerinden erişilir.
 
-GLM, Z.AI platformu üzerinden sunulan bir **model ailesidir** (bir şirket değildir). OpenClaw içinde GLM
-modellerine `zai` sağlayıcısı ve `zai/glm-5` gibi model kimlikleri aracılığıyla erişilir.
+| Özellik            | Değer                                                                       |
+| ------------------- | --------------------------------------------------------------------------- |
+| Sağlayıcı kimliği         | `zai`                                                                       |
+| Plugin              | paketle gelir, `enabledByDefault: true`                                           |
+| Kimlik doğrulama env değişkenleri       | `ZAI_API_KEY` veya `Z_AI_API_KEY`                                             |
+| Başlangıç seçenekleri  | `zai-api-key`, `zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn` |
+| API                 | OpenAI uyumlu                                                           |
+| Varsayılan temel URL    | `https://api.z.ai/api/paas/v4`                                              |
+| Önerilen varsayılan   | `zai/glm-5.1`                                                               |
+| Varsayılan görüntü modeli | `zai/glm-4.6v`                                                              |
 
 ## Başlarken
 
 <Steps>
-  <Step title="Bir kimlik doğrulama yolu seçin ve ilk kurulumu çalıştırın">
-    Z.AI planınıza ve bölgenize uygun ilk kurulum seçimini yapın:
+  <Step title="Bir kimlik doğrulama yolu seçin ve başlangıcı çalıştırın">
+    Z.AI planınız ve bölgenizle eşleşen başlangıç seçeneğini seçin. Genel `zai-api-key` seçeneği, anahtar biçiminden eşleşen endpoint’i otomatik algılar; belirli bir Coding Plan veya genel API yüzeyini zorlamak istediğinizde açık bölgesel seçenekleri kullanın.
 
-    | Kimlik doğrulama seçimi | En iyi kullanım alanı |
-    | ----------- | -------- |
-    | `zai-api-key` | Uç nokta otomatik algılamalı genel API anahtarı kurulumu |
-    | `zai-coding-global` | Coding Plan kullanıcıları (küresel) |
-    | `zai-coding-cn` | Coding Plan kullanıcıları (Çin bölgesi) |
-    | `zai-global` | Genel API (küresel) |
-    | `zai-cn` | Genel API (Çin bölgesi) |
+    | Kimlik doğrulama seçeneği         | En uygun kullanım                                            |
+    | ------------------- | --------------------------------------------------- |
+    | `zai-api-key`       | Endpoint otomatik algılamalı genel API anahtarı        |
+    | `zai-coding-global` | Coding Plan kullanıcıları (küresel)                          |
+    | `zai-coding-cn`     | Coding Plan kullanıcıları (Çin bölgesi)                    |
+    | `zai-global`        | Genel API (küresel)                                |
+    | `zai-cn`            | Genel API (Çin bölgesi)                          |
 
-    ```bash
-    # Örnek: genel otomatik algılama
-    openclaw onboard --auth-choice zai-api-key
+    <CodeGroup>
 
-    # Örnek: Coding Plan küresel
-    openclaw onboard --auth-choice zai-coding-global
-    ```
+```bash Auto-detect
+openclaw onboard --auth-choice zai-api-key
+```
+
+```bash Coding Plan (global)
+openclaw onboard --auth-choice zai-coding-global
+```
+
+```bash Coding Plan (China)
+openclaw onboard --auth-choice zai-coding-cn
+```
+
+```bash General API (global)
+openclaw onboard --auth-choice zai-global
+```
+
+```bash General API (China)
+openclaw onboard --auth-choice zai-cn
+```
+
+    </CodeGroup>
 
   </Step>
-  <Step title="GLM'yi varsayılan model olarak ayarlayın">
+  <Step title="GLM’i varsayılan model olarak ayarlayın">
     ```bash
     openclaw config set agents.defaults.model.primary "zai/glm-5.1"
     ```
@@ -63,45 +87,42 @@ modellerine `zai` sağlayıcısı ve `zai/glm-5` gibi model kimlikleri aracılı
 ```
 
 <Tip>
-`zai-api-key`, OpenClaw’un anahtardan eşleşen Z.AI uç noktasını algılamasını ve
-doğru temel URL’yi otomatik olarak uygulamasını sağlar. Belirli bir Coding Plan
-veya genel API yüzeyini zorlamak istediğinizde açık bölgesel seçimleri kullanın.
+  `zai-api-key`, OpenClaw’ın anahtar biçiminden eşleşen Z.AI endpoint’ini algılamasını ve doğru temel URL’yi otomatik olarak uygulamasını sağlar. Belirli bir Coding Plan veya genel API yüzeyini sabitlemek istediğinizde açık bölgesel seçenekleri kullanın.
 </Tip>
 
 ## Yerleşik katalog
 
-OpenClaw şu anda paketlenmiş `zai` sağlayıcısını şu GLM başvurularıyla başlatır:
+Paketle gelen `zai` sağlayıcısı 13 GLM model ref’i ekler. Aksi belirtilmedikçe tüm girdiler akıl yürütmeyi destekler; `glm-5v-turbo` ve `glm-4.6v` metnin yanı sıra görüntü girdisini de kabul eder.
 
-| Model           | Model            |
-| --------------- | ---------------- |
-| `glm-5.1`       | `glm-4.7`        |
-| `glm-5`         | `glm-4.7-flash`  |
-| `glm-5-turbo`   | `glm-4.7-flashx` |
-| `glm-5v-turbo`  | `glm-4.6`        |
-| `glm-4.5`       | `glm-4.6v`       |
-| `glm-4.5-air`   |                  |
-| `glm-4.5-flash` |                  |
-| `glm-4.5v`      |                  |
+| Model ref’i            | Notlar                                              |
+| -------------------- | -------------------------------------------------- |
+| `zai/glm-5.1`        | Varsayılan model. Akıl yürütme, yalnızca metin, 202k bağlam. |
+| `zai/glm-5`          | Akıl yürütme, yalnızca metin, 202k bağlam.                |
+| `zai/glm-5-turbo`    | Akıl yürütme, yalnızca metin, 202k bağlam.                |
+| `zai/glm-5v-turbo`   | Akıl yürütme, metin + görüntü, 202k bağlam.             |
+| `zai/glm-4.7`        | Akıl yürütme, yalnızca metin, 204k bağlam.                |
+| `zai/glm-4.7-flash`  | Akıl yürütme, yalnızca metin, 200k bağlam.                |
+| `zai/glm-4.7-flashx` | Akıl yürütme, yalnızca metin.                              |
+| `zai/glm-4.6`        | Akıl yürütme, yalnızca metin.                              |
+| `zai/glm-4.6v`       | Akıl yürütme, metin + görüntü. Varsayılan görüntü modeli.      |
+| `zai/glm-4.5`        | Akıl yürütme, yalnızca metin.                              |
+| `zai/glm-4.5-air`    | Akıl yürütme, yalnızca metin.                              |
+| `zai/glm-4.5-flash`  | Akıl yürütme, yalnızca metin.                              |
+| `zai/glm-4.5v`       | Akıl yürütme, metin + görüntü.                           |
 
 <Note>
-Varsayılan paketlenmiş model başvurusu `zai/glm-5.1`’dir. GLM sürümleri ve kullanılabilirliği
-değişebilir; en güncel bilgiler için Z.AI belgelerini kontrol edin.
+  GLM sürümleri ve kullanılabilirlik değişebilir. Kurulu sürümünüzün bildiği katalog satırlarını görmek için `openclaw models list --provider zai` çalıştırın ve yeni eklenen ya da kullanımdan kaldırılan modeller için Z.AI belgelerini kontrol edin.
 </Note>
 
 ## Gelişmiş yapılandırma
 
 <AccordionGroup>
-  <Accordion title="Uç nokta otomatik algılama">
-    `zai-api-key` kimlik doğrulama seçimini kullandığınızda OpenClaw, doğru Z.AI temel URL’sini belirlemek için
-    anahtar biçimini inceler. Açık bölgesel seçimler
-    (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`) otomatik algılamayı geçersiz kılar
-    ve uç noktayı doğrudan sabitler.
+  <Accordion title="Endpoint otomatik algılama">
+    `zai-api-key` kimlik doğrulama seçeneğini kullandığınızda OpenClaw, doğru Z.AI temel URL’sini belirlemek için anahtar biçimini inceler. Açık bölgesel seçenekler (`zai-coding-global`, `zai-coding-cn`, `zai-global`, `zai-cn`) otomatik algılamayı geçersiz kılar ve endpoint’i doğrudan sabitler.
   </Accordion>
 
   <Accordion title="Sağlayıcı ayrıntıları">
-    GLM modelleri `zai` çalışma zamanı sağlayıcısı tarafından sunulur. Tam sağlayıcı
-    yapılandırması, bölgesel uç noktalar ve ek yetenekler için
-    [Z.AI sağlayıcı belgeleri](/tr/providers/zai) sayfasına bakın.
+    GLM modelleri `zai` çalışma zamanı sağlayıcısı tarafından sunulur. Tam sağlayıcı yapılandırması, bölgesel endpoint’ler ve ek yetenekler için [Z.AI sağlayıcı sayfasına](/tr/providers/zai) bakın.
   </Accordion>
 </AccordionGroup>
 
@@ -109,9 +130,15 @@ değişebilir; en güncel bilgiler için Z.AI belgelerini kontrol edin.
 
 <CardGroup cols={2}>
   <Card title="Z.AI sağlayıcısı" href="/tr/providers/zai" icon="server">
-    Tam Z.AI sağlayıcı yapılandırması ve bölgesel uç noktalar.
+    Tam Z.AI sağlayıcı yapılandırması ve bölgesel endpoint’ler.
   </Card>
-  <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
-    Sağlayıcıları, model başvurularını ve yük devretme davranışını seçme.
+  <Card title="Model sağlayıcıları" href="/tr/concepts/model-providers" icon="layers">
+    Sağlayıcıları, model ref’lerini ve yük devretme davranışını seçme.
+  </Card>
+  <Card title="Düşünme modları" href="/tr/tools/thinking" icon="brain">
+    Akıl yürütme yetenekli GLM ailesi için `/think` seviyeleri.
+  </Card>
+  <Card title="Modeller SSS" href="/tr/help/faq-models" icon="circle-question">
+    Kimlik doğrulama profilleri, model değiştirme ve "no profile" hatalarını çözme.
   </Card>
 </CardGroup>

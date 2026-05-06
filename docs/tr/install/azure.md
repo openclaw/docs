@@ -1,58 +1,56 @@
 ---
 read_when:
-    - OpenClaw’ın Azure üzerinde Ağ Güvenlik Grubu sağlamlaştırması ile 7/24 çalışmasını istiyorsunuz
-    - Kendi Azure Linux VM’inizde üretim sınıfı, her zaman açık bir OpenClaw Gateway istiyorsunuz
+    - OpenClaw'ı Azure'da Network Security Group sıkılaştırmasıyla 7/24 çalıştırmak istiyorsunuz
+    - Kendi Azure Linux VM'nizde üretim düzeyinde, her zaman açık bir OpenClaw Gateway istiyorsunuz
     - Azure Bastion SSH ile güvenli yönetim istiyorsunuz
-summary: OpenClaw Gateway’i kalıcı durumla bir Azure Linux VM üzerinde 7/24 çalıştırın
+summary: OpenClaw Gateway'i kalıcı durumla bir Azure Linux VM üzerinde 7/24 çalıştırın
 title: Azure
 x-i18n:
-    generated_at: "2026-04-24T09:14:25Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:17:44Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: e42e1a35e0340b959b73c548bc1efd6366bee38cf4c8cd23d986c5f14e5da0e0
+    source_hash: 7ab1b7d09dd66c495983aebd4766ce760d659cc6f362bbcd999d1c1345ae38f7
     source_path: install/azure.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Azure Linux VM üzerinde OpenClaw
-
-Bu kılavuz, Azure CLI ile bir Azure Linux VM kurar, Network Security Group (NSG) sağlamlaştırması uygular, SSH erişimi için Azure Bastion yapılandırır ve OpenClaw’ı kurar.
+Bu kılavuz, Azure CLI ile bir Azure Linux VM kurar, Network Security Group (NSG) sıkılaştırması uygular, SSH erişimi için Azure Bastion yapılandırır ve OpenClaw yükler.
 
 ## Yapacaklarınız
 
-- Azure CLI ile Azure ağ (VNet, alt ağlar, NSG) ve işlem kaynakları oluşturmak
-- VM’ye SSH erişimine yalnızca Azure Bastion’dan izin verecek şekilde Network Security Group kuralları uygulamak
-- SSH erişimi için Azure Bastion kullanmak (VM’de genel IP olmadan)
-- Kurucu betiğiyle OpenClaw kurmak
-- Gateway’i doğrulamak
+- Azure CLI ile Azure ağını (VNet, alt ağlar, NSG) ve işlem kaynaklarını oluşturma
+- VM SSH erişimine yalnızca Azure Bastion üzerinden izin verilecek şekilde Network Security Group kurallarını uygulama
+- SSH erişimi için Azure Bastion kullanma (VM üzerinde genel IP yok)
+- Yükleyici betiğiyle OpenClaw yükleme
+- Gateway’i doğrulama
 
 ## Gerekenler
 
 - İşlem ve ağ kaynakları oluşturma iznine sahip bir Azure aboneliği
-- Kurulu Azure CLI (gerekirse [Azure CLI kurulum adımları](https://learn.microsoft.com/cli/azure/install-azure-cli))
-- Bir SSH anahtar çifti (gerekiyorsa bu kılavuz bir tane oluşturmayı kapsar)
+- Azure CLI yüklü (gerekirse [Azure CLI yükleme adımlarına](https://learn.microsoft.com/cli/azure/install-azure-cli) bakın)
+- Bir SSH anahtar çifti (gerekirse kılavuz bir tane oluşturmayı kapsar)
 - ~20-30 dakika
 
-## Dağıtımı yapılandırın
+## Dağıtımı yapılandırma
 
 <Steps>
-  <Step title="Azure CLI’a giriş yapın">
+  <Step title="Azure CLI’da oturum açın">
     ```bash
     az login
     az extension add -n ssh
     ```
 
-    Azure Bastion yerel SSH tünellemesi için `ssh` uzantısı gereklidir.
+    `ssh` uzantısı, Azure Bastion yerel SSH tünellemesi için gereklidir.
 
   </Step>
 
-  <Step title="Gerekli kaynak sağlayıcılarını kaydedin (tek seferlik)">
+  <Step title="Gerekli kaynak sağlayıcılarını kaydedin (bir kerelik)">
     ```bash
     az provider register --namespace Microsoft.Compute
     az provider register --namespace Microsoft.Network
     ```
 
-    Kaydı doğrulayın. Her ikisi de `Registered` gösterene kadar bekleyin.
+    Kaydı doğrulayın. İkisi de `Registered` gösterene kadar bekleyin.
 
     ```bash
     az provider show --namespace Microsoft.Compute --query registrationState -o tsv
@@ -81,14 +79,14 @@ Bu kılavuz, Azure CLI ile bir Azure Linux VM kurar, Network Security Group (NSG
 
   </Step>
 
-  <Step title="SSH anahtarını seçin">
+  <Step title="SSH anahtarı seçin">
     Varsa mevcut genel anahtarınızı kullanın:
 
     ```bash
     SSH_PUB_KEY="$(cat ~/.ssh/id_ed25519.pub)"
     ```
 
-    Henüz SSH anahtarınız yoksa bir tane oluşturun:
+    Henüz bir SSH anahtarınız yoksa bir tane oluşturun:
 
     ```bash
     ssh-keygen -t ed25519 -a 100 -f ~/.ssh/id_ed25519 -C "you@example.com"
@@ -97,19 +95,19 @@ Bu kılavuz, Azure CLI ile bir Azure Linux VM kurar, Network Security Group (NSG
 
   </Step>
 
-  <Step title="VM boyutu ve işletim sistemi disk boyutunu seçin">
+  <Step title="VM boyutunu ve OS disk boyutunu seçin">
     ```bash
     VM_SIZE="Standard_B2as_v2"
     OS_DISK_SIZE_GB=64
     ```
 
-    Aboneliğinizde ve bölgenizde kullanılabilir bir VM boyutu ve işletim sistemi disk boyutu seçin:
+    Aboneliğinizde ve bölgenizde kullanılabilir bir VM boyutu ve OS disk boyutu seçin:
 
-    - Hafif kullanım için daha küçük başlayın ve sonra büyütün
+    - Hafif kullanım için daha küçük başlayın ve daha sonra ölçek büyütün
     - Daha ağır otomasyon, daha fazla kanal veya daha büyük model/araç iş yükleri için daha fazla vCPU/RAM/disk kullanın
-    - Bir VM boyutu bölgenizde veya abonelik kotanızda yoksa en yakın uygun SKU’yu seçin
+    - Bir VM boyutu bölgenizde veya abonelik kotanızda kullanılamıyorsa, kullanılabilir en yakın SKU’yu seçin
 
-    Hedef bölgenizde mevcut VM boyutlarını listeleyin:
+    Hedef bölgenizde kullanılabilir VM boyutlarını listeleyin:
 
     ```bash
     az vm list-skus --location "${LOCATION}" --resource-type virtualMachines -o table
@@ -124,7 +122,7 @@ Bu kılavuz, Azure CLI ile bir Azure Linux VM kurar, Network Security Group (NSG
   </Step>
 </Steps>
 
-## Azure kaynaklarını dağıtın
+## Azure kaynaklarını dağıtma
 
 <Steps>
   <Step title="Kaynak grubunu oluşturun">
@@ -140,7 +138,7 @@ Bu kılavuz, Azure CLI ile bir Azure Linux VM kurar, Network Security Group (NSG
     az network nsg create \
       -g "${RG}" -n "${NSG_NAME}" -l "${LOCATION}"
 
-    # Yalnızca Bastion alt ağından SSH’ye izin ver
+    # Allow SSH from the Bastion subnet only
     az network nsg rule create \
       -g "${RG}" --nsg-name "${NSG_NAME}" \
       -n AllowSshFromBastionSubnet --priority 100 \
@@ -148,7 +146,7 @@ Bu kılavuz, Azure CLI ile bir Azure Linux VM kurar, Network Security Group (NSG
       --source-address-prefixes "${BASTION_SUBNET_PREFIX}" \
       --destination-port-ranges 22
 
-    # Genel internetten SSH’yi reddet
+    # Deny SSH from the public internet
     az network nsg rule create \
       -g "${RG}" --nsg-name "${NSG_NAME}" \
       -n DenyInternetSsh --priority 110 \
@@ -156,7 +154,7 @@ Bu kılavuz, Azure CLI ile bir Azure Linux VM kurar, Network Security Group (NSG
       --source-address-prefixes Internet \
       --destination-port-ranges 22
 
-    # Diğer VNet kaynaklarından SSH’yi reddet
+    # Deny SSH from other VNet sources
     az network nsg rule create \
       -g "${RG}" --nsg-name "${NSG_NAME}" \
       -n DenyVnetSsh --priority 120 \
@@ -165,12 +163,12 @@ Bu kılavuz, Azure CLI ile bir Azure Linux VM kurar, Network Security Group (NSG
       --destination-port-ranges 22
     ```
 
-    Kurallar önceliğe göre değerlendirilir (önce en küçük sayı): Bastion trafiğine 100’de izin verilir, sonra diğer tüm SSH 110 ve 120’de engellenir.
+    Kurallar önceliğe göre değerlendirilir (en düşük sayı önce): Bastion trafiğine 100’de izin verilir, ardından diğer tüm SSH erişimi 110 ve 120’de engellenir.
 
   </Step>
 
   <Step title="Sanal ağı ve alt ağları oluşturun">
-    VNet’i VM alt ağıyla (NSG ekli) oluşturun, ardından Bastion alt ağını ekleyin.
+    VM alt ağıyla (NSG bağlı) VNet’i oluşturun, ardından Bastion alt ağını ekleyin.
 
     ```bash
     az network vnet create \
@@ -179,12 +177,12 @@ Bu kılavuz, Azure CLI ile bir Azure Linux VM kurar, Network Security Group (NSG
       --subnet-name "${VM_SUBNET_NAME}" \
       --subnet-prefixes "${VM_SUBNET_PREFIX}"
 
-    # NSG’yi VM alt ağına ekle
+    # Attach the NSG to the VM subnet
     az network vnet subnet update \
       -g "${RG}" --vnet-name "${VNET_NAME}" \
       -n "${VM_SUBNET_NAME}" --nsg "${NSG_NAME}"
 
-    # AzureBastionSubnet — ad Azure tarafından zorunludur
+    # AzureBastionSubnet — name is required by Azure
     az network vnet subnet create \
       -g "${RG}" --vnet-name "${VNET_NAME}" \
       -n AzureBastionSubnet \
@@ -211,9 +209,9 @@ Bu kılavuz, Azure CLI ile bir Azure Linux VM kurar, Network Security Group (NSG
       --nsg ""
     ```
 
-    `--public-ip-address ""`, genel IP atanmasını engeller. `--nsg ""`, NIC başına NSG oluşturmayı atlar (güvenliği alt ağ düzeyindeki NSG yönetir).
+    `--public-ip-address ""` genel IP atanmasını engeller. `--nsg ""` NIC başına NSG oluşturmayı atlar (güvenliği alt ağ düzeyindeki NSG sağlar).
 
-    **Yeniden üretilebilirlik:** Yukarıdaki komut Ubuntu kalıbı için `latest` kullanır. Belirli bir sürümü sabitlemek için mevcut sürümleri listeleyin ve `latest` yerine onu koyun:
+    **Yeniden üretilebilirlik:** Yukarıdaki komut, Ubuntu imajı için `latest` kullanır. Belirli bir sürümü sabitlemek için kullanılabilir sürümleri listeleyin ve `latest` değerini değiştirin:
 
     ```bash
     az vm image list \
@@ -238,15 +236,15 @@ Bu kılavuz, Azure CLI ile bir Azure Linux VM kurar, Network Security Group (NSG
       --sku Standard --enable-tunneling true
     ```
 
-    Bastion sağlama işlemi genellikle 5-10 dakika sürer, ancak bazı bölgelerde 15-30 dakikaya kadar çıkabilir.
+    Bastion hazırlama genellikle 5-10 dakika sürer, ancak bazı bölgelerde 15-30 dakikaya kadar sürebilir.
 
   </Step>
 </Steps>
 
-## OpenClaw’ı kurun
+## OpenClaw yükleme
 
 <Steps>
-  <Step title="Azure Bastion üzerinden VM’ye SSH yapın">
+  <Step title="Azure Bastion üzerinden VM’ye SSH ile bağlanın">
     ```bash
     VM_ID="$(az vm show -g "${RG}" -n "${VM_NAME}" --query id -o tsv)"
 
@@ -261,64 +259,64 @@ Bu kılavuz, Azure CLI ile bir Azure Linux VM kurar, Network Security Group (NSG
 
   </Step>
 
-  <Step title="OpenClaw’ı kurun (VM kabuğunda)">
+  <Step title="OpenClaw yükleyin (VM kabuğunda)">
     ```bash
     curl -fsSL https://openclaw.ai/install.sh -o /tmp/install.sh
     bash /tmp/install.sh
     rm -f /tmp/install.sh
     ```
 
-    Kurucu, henüz yoksa Node LTS ve bağımlılıkları kurar, OpenClaw’ı kurar ve onboarding sihirbazını başlatır. Ayrıntılar için [Kurulum](/tr/install) sayfasına bakın.
+    Yükleyici, henüz mevcut değilse Node LTS ve bağımlılıkları yükler, OpenClaw’u yükler ve ilk kurulum sihirbazını başlatır. Ayrıntılar için [Yükleme](/tr/install) bölümüne bakın.
 
   </Step>
 
   <Step title="Gateway’i doğrulayın">
-    Onboarding tamamlandıktan sonra:
+    İlk kurulum tamamlandıktan sonra:
 
     ```bash
     openclaw gateway status
     ```
 
-    Çoğu kurumsal Azure ekibinin zaten GitHub Copilot lisansları vardır. Sizin durumunuz buysa OpenClaw onboarding sihirbazında GitHub Copilot sağlayıcısını seçmenizi öneririz. Bkz. [GitHub Copilot sağlayıcısı](/tr/providers/github-copilot).
+    Çoğu kurumsal Azure ekibinin zaten GitHub Copilot lisansları vardır. Durumunuz buysa, OpenClaw ilk kurulum sihirbazında GitHub Copilot sağlayıcısını seçmenizi öneririz. [GitHub Copilot sağlayıcısı](/tr/providers/github-copilot) bölümüne bakın.
 
   </Step>
 </Steps>
 
 ## Maliyet değerlendirmeleri
 
-Azure Bastion Standard SKU yaklaşık **\$140/ay**, VM (Standard_B2as_v2) ise yaklaşık **\$55/ay** çalışır.
+Azure Bastion Standard SKU yaklaşık **\$140/ay**, VM (Standard_B2as_v2) ise yaklaşık **\$55/ay** maliyetle çalışır.
 
 Maliyetleri azaltmak için:
 
-- **Kullanmadığınızda VM’yi serbest bırakın** (işlem faturalandırması durur; disk ücretleri devam eder). VM serbest bırakıldığında OpenClaw Gateway’e erişilemez — tekrar canlı gerektiğinde yeniden başlatın:
+- **VM’yi ayırın** kullanılmadığında (işlem faturalandırmasını durdurur; disk ücretleri devam eder). VM ayrılmış durumdayken OpenClaw Gateway’e erişilemez; tekrar canlı ihtiyacınız olduğunda yeniden başlatın:
 
   ```bash
   az vm deallocate -g "${RG}" -n "${VM_NAME}"
-  az vm start -g "${RG}" -n "${VM_NAME}"   # sonra yeniden başlat
+  az vm start -g "${RG}" -n "${VM_NAME}"   # restart later
   ```
 
-- **Gerekmediğinde Bastion’ı silin** ve SSH erişimine ihtiyaç duyduğunuzda yeniden oluşturun. Bastion en büyük maliyet bileşenidir ve sağlanması yalnızca birkaç dakika sürer.
-- Yalnızca Portal tabanlı SSH’ye ihtiyacınız varsa ve CLI tünellemesi (`az network bastion ssh`) gerekmiyorsa **Basic Bastion SKU** (~\$38/ay) kullanın.
+- **Gerekmediğinde Bastion’ı silin** ve SSH erişimine ihtiyacınız olduğunda yeniden oluşturun. Bastion en büyük maliyet bileşenidir ve hazırlanması yalnızca birkaç dakika sürer.
+- Yalnızca Portal tabanlı SSH gerekiyorsa ve CLI tünellemesi (`az network bastion ssh`) gerekmiyorsa **Basic Bastion SKU’yu** (~\$38/ay) kullanın.
 
 ## Temizleme
 
-Bu kılavuzun oluşturduğu tüm kaynakları silmek için:
+Bu kılavuz tarafından oluşturulan tüm kaynakları silmek için:
 
 ```bash
 az group delete -n "${RG}" --yes --no-wait
 ```
 
-Bu, kaynak grubunu ve içindeki her şeyi kaldırır (VM, VNet, NSG, Bastion, genel IP).
+Bu işlem kaynak grubunu ve içindeki her şeyi (VM, VNet, NSG, Bastion, genel IP) kaldırır.
 
 ## Sonraki adımlar
 
-- Mesajlaşma kanallarını kurun: [Kanallar](/tr/channels)
-- Yerel cihazları düğüm olarak eşleştirin: [Düğümler](/tr/nodes)
+- Mesajlaşma kanallarını ayarlayın: [Kanallar](/tr/channels)
+- Yerel cihazları Node olarak eşleyin: [Nodes](/tr/nodes)
 - Gateway’i yapılandırın: [Gateway yapılandırması](/tr/gateway/configuration)
-- GitHub Copilot model sağlayıcısıyla OpenClaw Azure dağıtımı hakkında daha fazla ayrıntı için: [OpenClaw on Azure with GitHub Copilot](https://github.com/johnsonshi/openclaw-azure-github-copilot)
+- GitHub Copilot model sağlayıcısıyla OpenClaw Azure dağıtımı hakkında daha fazla ayrıntı için: [GitHub Copilot ile Azure üzerinde OpenClaw](https://github.com/johnsonshi/openclaw-azure-github-copilot)
 
 ## İlgili
 
-- [Kuruluma genel bakış](/tr/install)
+- [Yüklemeye genel bakış](/tr/install)
 - [GCP](/tr/install/gcp)
 - [DigitalOcean](/tr/install/digitalocean)

@@ -1,24 +1,24 @@
 ---
 read_when:
     - Modelleri kendi GPU makinenizden sunmak istiyorsunuz
-    - LM Studio veya OpenAI uyumlu bir proxy bağlıyorsunuz
+    - LM Studio veya OpenAI uyumlu bir proxy yapılandırıyorsunuz
     - En güvenli yerel model rehberliğine ihtiyacınız var
 summary: OpenClaw'ı yerel LLM'lerde çalıştırın (LM Studio, vLLM, LiteLLM, özel OpenAI uç noktaları)
 title: Yerel modeller
 x-i18n:
-    generated_at: "2026-05-02T22:19:04Z"
+    generated_at: "2026-05-06T09:13:29Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 29ab8530620370e0c213714bf6fef67bafed878055102cea47935c85b6238ffb
+    source_hash: cf0a1f960c5d0bd93eebb49e10db1066c305b2bc64401eb5000bf559f7e62349
     source_path: gateway/local-models.md
     workflow: 16
 ---
 
-Yerel modeller yapılabilir. Ancak donanım, bağlam boyutu ve istem enjeksiyonu savunması çıtasını da yükseltirler; küçük veya agresif biçimde nicemlenmiş kartlar bağlamı keser ve güvenliği zayıflatır. Bu sayfa, üst seviye yerel yığınlar ve özel OpenAI uyumlu yerel sunucular için görüşlü bir kılavuzdur. En az sürtünmeyle başlangıç için [LM Studio](/tr/providers/lmstudio) veya [Ollama](/tr/providers/ollama) ile başlayın ve `openclaw onboard` kullanın.
+Yerel modeller mümkündür. Ancak donanım, bağlam boyutu ve prompt-injection savunması çıtasını da yükseltirler; küçük veya agresif biçimde quantize edilmiş kartlar bağlamı kırpar ve güvenliği zayıflatır. Bu sayfa, üst seviye yerel yığınlar ve özel OpenAI uyumlu yerel sunucular için görüşlü bir kılavuzdur. En düşük sürtünmeli başlangıç için [LM Studio](/tr/providers/lmstudio) veya [Ollama](/tr/providers/ollama) ile başlayın ve `openclaw onboard` çalıştırın.
 
-## Donanım alt sınırı
+## Donanım tabanı
 
-Yüksek hedefleyin: rahat bir agent döngüsü için **≥2 tam donanımlı Mac Studio veya eşdeğer bir GPU sistemi (~30 bin ABD doları+)**. Tek bir **24 GB** GPU yalnızca daha hafif istemlerde ve daha yüksek gecikmeyle işe yarar. Her zaman **barındırabileceğiniz en büyük / tam boyutlu varyantı** çalıştırın; küçük veya yoğun biçimde nicemlenmiş checkpoint'ler istem enjeksiyonu riskini artırır (bkz. [Güvenlik](/tr/gateway/security)).
+Yüksek hedefleyin: rahat bir ajan döngüsü için **≥2 tam donanımlı Mac Studio veya eşdeğer bir GPU sistemi (~$30k+)**. Tek bir **24 GB** GPU yalnızca daha hafif promptlar için, daha yüksek gecikmeyle çalışır. Her zaman **barındırabileceğiniz en büyük / tam boyutlu varyantı** çalıştırın; küçük veya yoğun biçimde quantize edilmiş checkpoint’ler prompt-injection riskini artırır (bkz. [Güvenlik](/tr/gateway/security)).
 
 ## Bir arka uç seçin
 
@@ -26,18 +26,18 @@ Yüksek hedefleyin: rahat bir agent döngüsü için **≥2 tam donanımlı Mac 
 | --------------------------------------------------- | ----------------------------------------------------------------------------- |
 | [LM Studio](/tr/providers/lmstudio)                    | İlk yerel kurulum, GUI yükleyici, yerel Responses API                         |
 | [Ollama](/tr/providers/ollama)                         | CLI iş akışı, model kitaplığı, müdahalesiz systemd servisi                    |
-| MLX / vLLM / SGLang                                 | OpenAI uyumlu HTTP endpoint'iyle yüksek verimli kendi barındırdığınız sunum   |
-| LiteLLM / OAI-proxy / özel OpenAI uyumlu proxy      | Başka bir model API'sinin önünde durur ve OpenClaw'ın onu OpenAI gibi ele almasını istersiniz |
+| MLX / vLLM / SGLang                                 | OpenAI uyumlu HTTP uç noktasıyla yüksek verimli kendi kendine barındırma      |
+| LiteLLM / OAI-proxy / özel OpenAI uyumlu proxy      | Başka bir model API’sini öne alır ve OpenClaw’ın onu OpenAI gibi ele almasını istersiniz |
 
-Arka uç desteklediğinde Responses API (`api: "openai-responses"`) kullanın (LM Studio destekler). Aksi halde Chat Completions (`api: "openai-completions"`) kullanın.
+Arka uç destekliyorsa Responses API (`api: "openai-responses"`) kullanın (LM Studio destekler). Aksi halde Chat Completions (`api: "openai-completions"`) ile devam edin.
 
 <Warning>
-**WSL2 + Ollama + NVIDIA/CUDA kullanıcıları:** Resmi Ollama Linux yükleyicisi, `Restart=always` ile bir systemd servisini etkinleştirir. WSL2 GPU kurulumlarında otomatik başlatma, önyükleme sırasında son modeli yeniden yükleyip ana makine belleğini sabitleyebilir. WSL2 VM'niz Ollama'yı etkinleştirdikten sonra tekrar tekrar yeniden başlıyorsa [WSL2 çökme döngüsü](/tr/providers/ollama#wsl2-crash-loop-repeated-reboots) bölümüne bakın.
+**WSL2 + Ollama + NVIDIA/CUDA kullanıcıları:** Resmi Ollama Linux yükleyicisi `Restart=always` içeren bir systemd servisini etkinleştirir. WSL2 GPU kurulumlarında otomatik başlatma, önyükleme sırasında son modeli yeniden yükleyebilir ve ana makine belleğini sabitleyebilir. WSL2 sanal makineniz Ollama etkinleştirildikten sonra tekrar tekrar yeniden başlıyorsa bkz. [WSL2 çökme döngüsü](/tr/providers/ollama#wsl2-crash-loop-repeated-reboots).
 </Warning>
 
 ## Önerilen: LM Studio + büyük yerel model (Responses API)
 
-Güncel en iyi yerel yığın. LM Studio'da büyük bir model yükleyin (örneğin tam boyutlu bir Qwen, DeepSeek veya Llama derlemesi), yerel sunucuyu etkinleştirin (varsayılan `http://127.0.0.1:1234`) ve akıl yürütmeyi nihai metinden ayrı tutmak için Responses API kullanın.
+Mevcut en iyi yerel yığın. LM Studio’da büyük bir model yükleyin (örneğin tam boyutlu bir Qwen, DeepSeek veya Llama derlemesi), yerel sunucuyu etkinleştirin (varsayılan `http://127.0.0.1:1234`) ve akıl yürütmeyi son metinden ayrı tutmak için Responses API kullanın.
 
 ```json5
 {
@@ -76,16 +76,16 @@ Güncel en iyi yerel yığın. LM Studio'da büyük bir model yükleyin (örneğ
 
 **Kurulum kontrol listesi**
 
-- LM Studio'yu yükleyin: [https://lmstudio.ai](https://lmstudio.ai)
-- LM Studio'da **mevcut en büyük model derlemesini** indirin (“small”/yoğun biçimde nicemlenmiş varyantlardan kaçının), sunucuyu başlatın, `http://127.0.0.1:1234/v1/models` adresinin modeli listelediğini doğrulayın.
-- `my-local-model` değerini LM Studio'da gösterilen gerçek model kimliğiyle değiştirin.
+- LM Studio’yu yükleyin: [https://lmstudio.ai](https://lmstudio.ai)
+- LM Studio’da **mevcut en büyük model derlemesini** indirin ("small"/yoğun biçimde quantize edilmiş varyantlardan kaçının), sunucuyu başlatın, `http://127.0.0.1:1234/v1/models` adresinin onu listelediğini doğrulayın.
+- `my-local-model` değerini LM Studio’da gösterilen gerçek model kimliğiyle değiştirin.
 - Modeli yüklü tutun; soğuk yükleme başlangıç gecikmesi ekler.
 - LM Studio derlemeniz farklıysa `contextWindow`/`maxTokens` değerlerini ayarlayın.
-- WhatsApp için Responses API kullanmaya devam edin; böylece yalnızca nihai metin gönderilir.
+- WhatsApp için Responses API ile devam edin; böylece yalnızca son metin gönderilir.
 
-Yerel çalıştırırken bile barındırılan modelleri yapılandırılmış tutun; yedeklerin kullanılabilir kalması için `models.mode: "merge"` kullanın.
+Yerel çalıştırırken bile barındırılan modelleri yapılandırılmış tutun; geri dönüşlerin kullanılabilir kalması için `models.mode: "merge"` kullanın.
 
-### Karma yapılandırma: barındırılan birincil, yerel yedek
+### Hibrit yapılandırma: barındırılan birincil, yerel geri dönüş
 
 ```json5
 {
@@ -126,22 +126,22 @@ Yerel çalıştırırken bile barındırılan modelleri yapılandırılmış tut
 }
 ```
 
-### Önce yerel, barındırılan güvenlik ağıyla
+### Barındırılan güvenlik ağıyla yerel öncelikli
 
-Birincil ve yedek sırasını değiştirin; yerel makine kapalıyken Sonnet veya Opus'a dönebilmek için aynı providers bloğunu ve `models.mode: "merge"` değerini koruyun.
+Birincil ve geri dönüş sırasını değiştirin; yerel kutu kapalıyken Sonnet veya Opus’a geri dönebilmek için aynı sağlayıcılar bloğunu ve `models.mode: "merge"` değerini koruyun.
 
 ### Bölgesel barındırma / veri yönlendirme
 
-- Barındırılan MiniMax/Kimi/GLM varyantları, bölgeye sabitlenmiş endpoint'lerle (ör. ABD'de barındırılan) OpenRouter'da da bulunur. Anthropic/OpenAI yedekleri için `models.mode: "merge"` kullanmaya devam ederken trafiği seçtiğiniz yargı alanında tutmak için oradaki bölgesel varyantı seçin.
-- Yalnızca yerel kullanım en güçlü gizlilik yoludur; barındırılan bölgesel yönlendirme, sağlayıcı özelliklerine ihtiyaç duyduğunuz ama veri akışı üzerinde kontrol istediğiniz orta yoldur.
+- Barındırılan MiniMax/Kimi/GLM varyantları OpenRouter’da bölgeye sabitlenmiş uç noktalarla da bulunur (ör. ABD’de barındırılan). Anthropic/OpenAI geri dönüşleri için `models.mode: "merge"` kullanmaya devam ederken trafiği seçtiğiniz yargı bölgesinde tutmak için oradaki bölgesel varyantı seçin.
+- Yalnızca yerel kullanım en güçlü gizlilik yoludur; sağlayıcı özelliklerine ihtiyaç duyduğunuz ama veri akışı üzerinde kontrol istediğiniz durumlarda barındırılan bölgesel yönlendirme orta yoldur.
 
-## Diğer OpenAI uyumlu yerel proxy'ler
+## Diğer OpenAI uyumlu yerel proxy’ler
 
 MLX (`mlx_lm.server`), vLLM, SGLang, LiteLLM, OAI-proxy veya özel
-Gateway'ler, OpenAI tarzı bir `/v1/chat/completions`
-endpoint'i sunduklarında çalışır. Arka uç açıkça `/v1/responses`
-desteğini belgelemedikçe Chat Completions bağdaştırıcısını kullanın. Yukarıdaki provider bloğunu kendi
-endpoint ve model kimliğinizle değiştirin:
+geçitler, OpenAI tarzı bir `/v1/chat/completions` uç noktası sundukları sürece
+çalışır. Arka uç açıkça `/v1/responses` desteğini belgelemiyorsa Chat
+Completions adaptörünü kullanın. Yukarıdaki sağlayıcı bloğunu kendi uç noktanız
+ve model kimliğinizle değiştirin:
 
 ```json5
 {
@@ -175,63 +175,72 @@ endpoint ve model kimliğinizle değiştirin:
 }
 ```
 
-`baseUrl` içeren özel bir provider'da `api` atlanırsa OpenClaw varsayılan olarak
-`openai-completions` kullanır. `127.0.0.1` gibi loopback endpoint'leri
-otomatik olarak güvenilir kabul edilir; LAN, tailnet ve özel DNS endpoint'leri yine de
+`baseUrl` içeren özel bir sağlayıcıda `api` atlanırsa OpenClaw varsayılan olarak
+`openai-completions` kullanır. `127.0.0.1` gibi loopback uç noktaları otomatik
+olarak güvenilir kabul edilir; LAN, tailnet ve özel DNS uç noktaları yine de
 `request.allowPrivateNetwork: true` gerektirir.
 
-`models.providers.<id>.models[].id` değeri provider'a yereldir. Buraya
-provider önekini eklemeyin. Örneğin
-`mlx_lm.server --model mlx-community/Qwen3-30B-A3B-6bit` ile başlatılan bir MLX sunucusu şu
-katalog kimliğini ve model referansını kullanmalıdır:
+`models.providers.<id>.models[].id` değeri sağlayıcıya özeldir. Buraya
+sağlayıcı önekini eklemeyin. Örneğin
+`mlx_lm.server --model mlx-community/Qwen3-30B-A3B-6bit` ile başlatılan bir MLX
+sunucusu şu katalog kimliğini ve model referansını kullanmalıdır:
 
 - `models.providers.mlx.models[].id: "mlx-community/Qwen3-30B-A3B-6bit"`
 - `agents.defaults.model.primary: "mlx/mlx-community/Qwen3-30B-A3B-6bit"`
 
-Görüntü eklerinin agent dönüşlerine enjekte edilmesi için yerel veya proxy üzerinden sunulan görüntü modellerinde
-`input: ["text", "image"]` ayarlayın. Etkileşimli özel provider
-başlatma, yaygın görüntü modeli kimliklerini çıkarır ve yalnızca bilinmeyen adlar için soru sorar.
-Etkileşimsiz başlatma aynı çıkarımı kullanır; bilinmeyen görüntü kimlikleri için `--custom-image-input`,
-endpoint'inizin arkasında metin odaklı olan ve bilinen bir modele benzeyen adlar için
-`--custom-text-input` kullanın.
+Görüntü eklerinin ajan dönüşlerine enjekte edilmesi için yerel veya proxy
+üzerinden kullanılan görsel modellerde `input: ["text", "image"]` ayarlayın.
+Etkileşimli özel sağlayıcı başlangıç kurulumu yaygın görsel model kimliklerini
+çıkarır ve yalnızca bilinmeyen adlar için soru sorar. Etkileşimsiz başlangıç
+kurulumu aynı çıkarımı kullanır; bilinmeyen görsel kimlikleri için
+`--custom-image-input`, uç noktanızın arkasında metinle sınırlı olan ama bilinen
+gibi görünen modeller için `--custom-text-input` kullanın.
 
-Barındırılan modellerin yedek olarak kullanılabilir kalması için `models.mode: "merge"` değerini koruyun.
-Yavaş yerel veya uzak model sunucuları için `agents.defaults.timeoutSeconds` değerini artırmadan önce
-`models.providers.<id>.timeoutSeconds` kullanın. Provider zaman aşımı,
-bağlantı, başlıklar, gövde akışı ve toplam korumalı getirme iptali dahil yalnızca model HTTP isteklerine uygulanır.
+Barındırılan modellerin geri dönüş olarak kullanılabilir kalması için
+`models.mode: "merge"` değerini koruyun. Yavaş yerel veya uzak model sunucuları
+için `agents.defaults.timeoutSeconds` değerini yükseltmeden önce
+`models.providers.<id>.timeoutSeconds` kullanın. Sağlayıcı zaman aşımı yalnızca
+bağlanma, başlıklar, gövde akışı ve toplam korumalı fetch iptali dahil model
+HTTP isteklerine uygulanır.
 
 <Note>
-Özel OpenAI uyumlu provider'lar için `baseUrl` loopback, özel LAN, `.local` veya yalın bir ana makine adına çözümlendiğinde `apiKey: "ollama-local"` gibi gizli olmayan bir yerel işaretin kalıcı olması kabul edilir. OpenClaw bunu eksik anahtar bildirmek yerine geçerli bir yerel kimlik bilgisi olarak ele alır. Genel ana makine adını kabul eden herhangi bir provider için gerçek bir değer kullanın.
+Özel OpenAI uyumlu sağlayıcılar için `baseUrl` loopback, özel LAN, `.local` veya yalın ana makine adına çözümlendiğinde `apiKey: "ollama-local"` gibi gizli olmayan bir yerel işaretçinin kalıcılaştırılması kabul edilir. OpenClaw bunu eksik anahtar bildirmek yerine geçerli bir yerel kimlik bilgisi olarak ele alır. Genel bir ana makine adını kabul eden tüm sağlayıcılar için gerçek bir değer kullanın.
 </Note>
 
-Yerel/proxy üzerinden sunulan `/v1` arka uçları için davranış notu:
+Yerel/proxy’li `/v1` arka uçları için davranış notu:
 
-- OpenClaw bunları yerel OpenAI endpoint'leri olarak değil, proxy tarzı OpenAI uyumlu rotalar olarak ele alır
-- yerel OpenAI'ye özgü istek şekillendirme burada uygulanmaz: `service_tier` yok,
-  Responses `store` yok, OpenAI akıl yürütme uyumluluğu payload
-  şekillendirmesi yok ve istem önbelleği ipuçları yok
+- OpenClaw bunları yerel OpenAI uç noktaları olarak değil, proxy tarzı OpenAI
+  uyumlu rotalar olarak ele alır
+- buraya yalnızca yerel OpenAI’ye özgü istek şekillendirme uygulanmaz:
+  `service_tier` yok, Responses `store` yok, OpenAI akıl yürütme uyumluluk
+  yükü şekillendirmesi yok ve prompt cache ipuçları yok
 - gizli OpenClaw atıf başlıkları (`originator`, `version`, `User-Agent`)
-  bu özel proxy URL'lerine enjekte edilmez
+  bu özel proxy URL’lerine enjekte edilmez
 
 Daha katı OpenAI uyumlu arka uçlar için uyumluluk notları:
 
-- Bazı sunucular Chat Completions üzerinde yalnızca string `messages[].content` kabul eder,
-  yapılandırılmış içerik parçası dizilerini kabul etmez. Bu endpoint'ler için
-  `models.providers.<provider>.models[].compat.requiresStringContent: true` ayarlayın.
-- Bazı yerel modeller metin olarak bağımsız köşeli parantezli araç istekleri yayar; örneğin
-  `[tool_name]`, ardından JSON ve `[END_TOOL_REQUEST]`. OpenClaw bunları yalnızca ad, o dönüş için kayıtlı bir
-  araçla tam olarak eşleştiğinde gerçek araç çağrılarına yükseltir; aksi halde blok desteklenmeyen metin olarak ele alınır ve
-  kullanıcıya görünen yanıtlardan gizlenir.
-- Bir model araç çağrısı gibi görünen JSON, XML veya ReAct tarzı metin yayarsa
-  ancak provider yapılandırılmış bir çağrı yaymadıysa OpenClaw bunu metin olarak bırakır
-  ve varsa çalışma kimliği, provider/model, algılanan desen ve
-  araç adıyla bir uyarı kaydeder. Bunu tamamlanmış bir araç çalıştırması değil,
-  provider/model araç çağrısı uyumsuzluğu olarak ele alın.
-- Araçlar çalışmak yerine assistant metni olarak görünüyorsa; örneğin ham JSON,
-  XML, ReAct sözdizimi veya provider yanıtında boş bir `tool_calls` dizisi varsa,
-  önce sunucunun araç çağrısı yapabilen bir sohbet şablonu/ayrıştırıcısı kullandığını doğrulayın.
-  Ayrıştırıcısı yalnızca araç kullanımı zorlandığında çalışan OpenAI uyumlu Chat Completions arka uçları için metin
-  ayrıştırmaya güvenmek yerine model başına istek geçersiz kılması ayarlayın:
+- Bazı sunucular Chat Completions üzerinde yapılandırılmış içerik parçası
+  dizileri yerine yalnızca string `messages[].content` kabul eder. Bu uç
+  noktalar için
+  `models.providers.<provider>.models[].compat.requiresStringContent: true`
+  ayarlayın.
+- Bazı yerel modeller metin olarak, örneğin `[tool_name]` ardından JSON ve
+  `[END_TOOL_REQUEST]` biçiminde bağımsız köşeli parantezli araç istekleri
+  yayar. OpenClaw bunları yalnızca ad, dönüş için kayıtlı bir araçla tam olarak
+  eşleştiğinde gerçek araç çağrılarına yükseltir; aksi halde blok
+  desteklenmeyen metin olarak ele alınır ve kullanıcıya görünen yanıtlardan
+  gizlenir.
+- Bir model araç çağrısına benzeyen JSON, XML veya ReAct tarzı metin yayıyor
+  ama sağlayıcı yapılandırılmış bir çağrı yaymıyorsa, OpenClaw bunu metin olarak
+  bırakır ve varsa çalıştırma kimliği, sağlayıcı/model, algılanan örüntü ve araç
+  adıyla birlikte bir uyarı günlüğe yazar. Bunu tamamlanmış bir araç çalıştırması
+  değil, sağlayıcı/model araç çağrısı uyumsuzluğu olarak değerlendirin.
+- Araçlar çalışmak yerine asistan metni olarak görünüyorsa, örneğin ham JSON,
+  XML, ReAct söz dizimi veya sağlayıcı yanıtında boş bir `tool_calls` dizisi
+  varsa, önce sunucunun araç çağrısı destekleyen bir sohbet şablonu/ayrıştırıcısı
+  kullandığını doğrulayın. Ayrıştırıcısı yalnızca araç kullanımı zorlandığında
+  çalışan OpenAI uyumlu Chat Completions arka uçları için metin ayrıştırmaya
+  güvenmek yerine model başına istek geçersiz kılması ayarlayın:
 
   ```json5
   {
@@ -251,18 +260,21 @@ Daha katı OpenAI uyumlu arka uçlar için uyumluluk notları:
   }
   ```
 
-  Bunu yalnızca her normal dönüşün bir araç çağırması gereken modeller/oturumlar için kullanın.
-  OpenClaw'ın varsayılan proxy değeri olan `tool_choice: "auto"` değerini geçersiz kılar.
-  `local/my-local-model` değerini `openclaw models list` tarafından gösterilen tam provider/model referansıyla değiştirin.
+  Bunu yalnızca her normal dönüşün bir araç çağırması gereken modeller/oturumlar
+  için kullanın. OpenClaw’ın varsayılan proxy değeri olan
+  `tool_choice: "auto"` değerini geçersiz kılar. `local/my-local-model` değerini
+  `openclaw models list` tarafından gösterilen tam sağlayıcı/model referansıyla
+  değiştirin.
 
   ```bash
   openclaw config set agents.defaults.models '{"local/my-local-model":{"params":{"extra_body":{"tool_choice":"required"}}}}' --strict-json --merge
   ```
 
-- Özel OpenAI uyumlu bir model, yerleşik profilin ötesinde OpenAI akıl yürütme çabalarını kabul ediyorsa
-  bunları model compat bloğunda bildirin. Buraya `"xhigh"` eklemek
-  `/think xhigh`, oturum seçicileri, Gateway doğrulaması ve `llm-task`
-  doğrulamasının bu yapılandırılmış provider/model referansı için düzeyi göstermesini sağlar:
+- Özel OpenAI uyumlu bir model, yerleşik profilin ötesindeki OpenAI akıl yürütme
+  çabalarını kabul ediyorsa bunları model uyumluluk bloğunda bildirin. Buraya
+  `"xhigh"` eklemek, yapılandırılan sağlayıcı/model referansı için `/think xhigh`,
+  oturum seçicileri, Gateway doğrulaması ve `llm-task` doğrulamasının bu seviyeyi
+  sunmasını sağlar:
 
   ```json5
   {
@@ -295,7 +307,7 @@ Daha katı OpenAI uyumlu arka uçlar için uyumluluk notları:
 
 ## Daha küçük veya daha katı arka uçlar
 
-Model sorunsuz yükleniyor ancak tam agent dönüşleri hatalı davranıyorsa yukarıdan aşağı çalışın; önce aktarımı doğrulayın, ardından yüzeyi daraltın.
+Model temiz biçimde yükleniyor ama tam ajan dönüşleri hatalı davranıyorsa yukarıdan aşağı çalışın; önce aktarımı doğrulayın, sonra yüzeyi daraltın.
 
 1. **Yerel modelin kendisinin yanıt verdiğini doğrulayın.** Araç yok, ajan bağlamı yok:
 
@@ -303,46 +315,33 @@ Model sorunsuz yükleniyor ancak tam agent dönüşleri hatalı davranıyorsa yu
    openclaw infer model run --local --model <provider/model> --prompt "Reply with exactly: pong" --json
    ```
 
-2. **Gateway yönlendirmesini doğrulayın.** Yalnızca sağlanan istemi gönderir; transkripti, AGENTS önyüklemesini, context-engine derlemesini, araçları ve paketli MCP sunucularını atlar, ancak yine de Gateway yönlendirmesini, kimlik doğrulamayı ve sağlayıcı seçimini çalıştırır:
+2. **Gateway yönlendirmesini doğrulayın.** Yalnızca sağlanan istemi gönderir; transkripti, AGENTS önyüklemesini, bağlam motoru derlemesini, araçları ve paketle gelen MCP sunucularını atlar, ancak yine de Gateway yönlendirmesini, kimlik doğrulamayı ve sağlayıcı seçimini çalıştırır:
 
    ```bash
    openclaw infer model run --gateway --model <provider/model> --prompt "Reply with exactly: pong" --json
    ```
 
-3. **Yalın modu deneyin.** Her iki yoklama da geçerse ancak gerçek ajan turları hatalı biçimlendirilmiş araç çağrıları veya aşırı büyük istemlerle başarısız olursa `agents.defaults.experimental.localModelLean: true` ayarını etkinleştirin. Bu, istem biçiminin daha küçük ve daha az kırılgan olması için en ağır üç varsayılan aracı (`browser`, `cron`, `message`) kaldırır. Tam açıklama, ne zaman kullanılacağı ve açık olduğunun nasıl doğrulanacağı için [Deneysel Özellikler → Yerel model yalın modu](/tr/concepts/experimental-features#local-model-lean-mode) bölümüne bakın.
+3. **Yalın modu deneyin.** Her iki prob da başarılı olmasına rağmen gerçek ajan turları hatalı biçimlendirilmiş araç çağrıları veya çok büyük istemlerle başarısız oluyorsa `agents.defaults.experimental.localModelLean: true` değerini etkinleştirin. Bu, istem biçiminin daha küçük ve daha az kırılgan olması için en ağır üç varsayılan aracı (`browser`, `cron`, `message`) kaldırır. Tam açıklama, ne zaman kullanılacağı ve açık olduğunu doğrulama yöntemi için [Deneysel Özellikler → Yerel model yalın modu](/tr/concepts/experimental-features#local-model-lean-mode) bölümüne bakın.
 
-4. **Son çare olarak araçları tamamen devre dışı bırakın.** Yalın mod yeterli değilse, o model girdisi için `models.providers.<provider>.models[].compat.supportsTools: false` ayarını yapın. Ajan, bu modelde araç çağrıları olmadan çalışır.
+4. **Son çare olarak araçları tamamen devre dışı bırakın.** Yalın mod yeterli değilse, ilgili model girdisi için `models.providers.<provider>.models[].compat.supportsTools: false` ayarlayın. Ajan daha sonra o modelde araç çağrıları olmadan çalışır.
 
-5. **Bundan sonra darboğaz yukarı akıştadır.** Arka uç, yalın moddan ve `supportsTools: false` ayarından sonra yalnızca daha büyük OpenClaw çalıştırmalarında hâlâ başarısız oluyorsa, kalan sorun genellikle yukarı akış modeli veya sunucu kapasitesidir: bağlam penceresi, GPU belleği, kv-cache tahliyesi veya bir arka uç hatası. Bu noktada sorun OpenClaw'ın taşıma katmanı değildir.
+5. **Bundan sonrası için darboğaz yukarı akıştadır.** Arka uç, yalın mod ve `supportsTools: false` sonrasında yalnızca daha büyük OpenClaw çalıştırmalarında hâlâ başarısız oluyorsa, kalan sorun genellikle yukarı akış model veya sunucu kapasitesidir: bağlam penceresi, GPU belleği, kv-cache çıkarma ya da bir arka uç hatası. Bu noktada sorun OpenClaw'ın taşıma katmanı değildir.
 
 ## Sorun giderme
 
-- Gateway proxy'ye erişebiliyor mu? `curl http://127.0.0.1:1234/v1/models`.
-- LM Studio modeli kaldırılmış mı? Yeniden yükleyin; soğuk başlatma yaygın bir “takılma” nedenidir.
-- Yerel sunucu `terminated`, `ECONNRESET` diyor veya akışı turun ortasında kapatıyor mu?
-  OpenClaw, tanılamalarda düşük kardinaliteli bir `model.call.error.failureKind` ile
-  OpenClaw işlemi RSS/heap anlık görüntüsünü kaydeder. LM Studio/Ollama
-  bellek baskısı için, model sunucusunun sonlandırılıp sonlandırılmadığını doğrulamak üzere
-  bu zaman damgasını sunucu günlüğüyle veya macOS çökme /
-  jetsam günlüğüyle eşleştirin.
-- OpenClaw, bağlam penceresi ön kontrol eşiklerini algılanan model penceresinden veya `agents.defaults.contextTokens` etkin pencereyi düşürdüğünde sınırsız model penceresinden türetir. %20'nin altında **8k** tabanıyla uyarır. Katı engellemeler, **4k** tabanıyla %10 eşiğini kullanır ve etkin bağlam penceresiyle sınırlandırılır; böylece aşırı büyük model meta verileri, aksi halde geçerli olan bir kullanıcı sınırını reddedemez. Bu ön kontrole takılırsanız sunucu/model bağlam sınırını yükseltin veya daha büyük bir model seçin.
+- Gateway proxy'ye ulaşabiliyor mu? `curl http://127.0.0.1:1234/v1/models`.
+- LM Studio modeli kaldırılmış mı? Yeniden yükleyin; soğuk başlatma, sık görülen bir "takılma" nedenidir.
+- Yerel sunucu `terminated`, `ECONNRESET` mi diyor ya da turun ortasında akışı kapatıyor mu?
+  OpenClaw, tanılama verilerinde düşük kardinaliteli bir `model.call.error.failureKind` değerinin yanı sıra OpenClaw sürecinin RSS/heap anlık görüntüsünü kaydeder. LM Studio/Ollama bellek baskısı için, model sunucusunun öldürülüp öldürülmediğini doğrulamak üzere bu zaman damgasını sunucu günlüğü veya macOS çökme / jetsam günlüğüyle eşleştirin.
+- OpenClaw, bağlam penceresi ön kontrol eşiklerini algılanan model penceresinden ya da `agents.defaults.contextTokens` etkili pencereyi düşürdüğünde sınırlanmamış model penceresinden türetir. %20'nin altında **8k** alt sınırıyla uyarır. Sert bloklamalar, etkili bağlam penceresiyle sınırlandırılmış **4k** alt sınırıyla %10 eşiğini kullanır; böylece aşırı büyük model meta verileri, aksi hâlde geçerli olan kullanıcı sınırını reddedemez. Bu ön kontrole takılırsanız sunucu/model bağlam sınırını artırın veya daha büyük bir model seçin.
 - Bağlam hataları mı var? `contextWindow` değerini düşürün veya sunucu sınırınızı yükseltin.
 - OpenAI uyumlu sunucu `messages[].content ... expected a string` mı döndürüyor?
-  Bu model girdisine `compat.requiresStringContent: true` ekleyin.
-- Doğrudan küçük `/v1/chat/completions` çağrıları çalışıyor, ancak `openclaw infer model run --local`
-  Gemma veya başka bir yerel modelde başarısız mı oluyor? Önce sağlayıcı URL'sini, model ref'ini, kimlik doğrulama
-  işaretleyicisini ve sunucu günlüklerini kontrol edin; yerel `model run` ajan araçlarını içermez.
-  Yerel `model run` başarılı olur ancak daha büyük ajan turları başarısız olursa, ajan
-  araç yüzeyini `localModelLean` veya `compat.supportsTools: false` ile azaltın.
-- Araç çağrıları ham JSON/XML/ReAct metni olarak mı görünüyor veya sağlayıcı
-  boş bir `tool_calls` dizisi mi döndürüyor? Asistan metnini körü körüne araç yürütmeye
-  dönüştüren bir proxy eklemeyin. Önce sunucu sohbet şablonunu/ayrıştırıcısını düzeltin. Model
-  yalnızca araç kullanımı zorunlu kılındığında çalışıyorsa, yukarıdaki model başına
-  `params.extra_body.tool_choice: "required"` geçersiz kılmasını ekleyin ve bu model
-  girdisini yalnızca her turda bir araç çağrısının beklendiği oturumlar için kullanın.
-- Güvenlik: yerel modeller sağlayıcı tarafı filtreleri atlar; istem enjeksiyonu etki alanını sınırlamak için ajanları dar kapsamlı ve Compaction'ı açık tutun.
+  İlgili model girdisine `compat.requiresStringContent: true` ekleyin.
+- Doğrudan küçük `/v1/chat/completions` çağrıları çalışıyor, ancak `openclaw infer model run --local` Gemma veya başka bir yerel modelde başarısız mı oluyor? Önce sağlayıcı URL'sini, model başvurusunu, kimlik doğrulama işaretleyicisini ve sunucu günlüklerini kontrol edin; yerel `model run` ajan araçlarını içermez. Yerel `model run` başarılı olmasına rağmen daha büyük ajan turları başarısız oluyorsa, ajan araç yüzeyini `localModelLean` veya `compat.supportsTools: false` ile azaltın.
+- Araç çağrıları ham JSON/XML/ReAct metni olarak mı görünüyor veya sağlayıcı boş bir `tool_calls` dizisi mi döndürüyor? Asistan metnini körü körüne araç yürütmeye dönüştüren bir proxy eklemeyin. Önce sunucu sohbet şablonunu/ayrıştırıcısını düzeltin. Model yalnızca araç kullanımı zorunlu tutulduğunda çalışıyorsa, yukarıdaki model başına `params.extra_body.tool_choice: "required"` geçersiz kılmasını ekleyin ve bu model girdisini yalnızca her turda bir araç çağrısı beklendiği oturumlar için kullanın.
+- Güvenlik: yerel modeller sağlayıcı tarafı filtreleri atlar; istem enjeksiyonu etki alanını sınırlamak için ajanları dar kapsamlı tutun ve Compaction açık olsun.
 
 ## İlgili
 
-- [Yapılandırma başvurusu](/tr/gateway/configuration-reference)
-- [Model failover](/tr/concepts/model-failover)
+- [Yapılandırma referansı](/tr/gateway/configuration-reference)
+- [Model yük devri](/tr/concepts/model-failover)

@@ -1,66 +1,67 @@
 ---
 permalink: /security/formal-verification/
 read_when:
-    - Biçimsel güvenlik modeli garantilerini veya sınırlarını gözden geçirme
-    - TLA+/TLC güvenlik model kontrollerini yeniden üretme veya güncelleme
-summary: OpenClaw'ın en yüksek riskli yolları için makine tarafından doğrulanan güvenlik modelleri.
+    - Biçimsel güvenlik modeli güvencelerini veya sınırlarını inceleme
+    - TLA+/TLC güvenlik modeli denetimlerini yeniden üretme veya güncelleme
+summary: OpenClaw'ın en yüksek riskli yolları için makine tarafından denetlenmiş güvenlik modelleri.
 title: Biçimsel doğrulama (güvenlik modelleri)
 x-i18n:
-    generated_at: "2026-04-24T09:31:19Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:30:35Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8f50fa9118a80054b8d556cd4f1901b2d5fcb37fb0866bd5357a1b0a46c74116
+    source_hash: 298b92f27abb8321be807fe4d95c7cd568a0fb8f543d168863b2adb9b3ddcde4
     source_path: security/formal-verification.md
-    workflow: 15
+    workflow: 16
 ---
 
-Bu sayfa, OpenClaw'ın **biçimsel güvenlik modellerini** izler (bugün TLA+/TLC; gerekirse daha fazlası).
+Bu sayfa OpenClaw'un **resmi güvenlik modellerini** izler (bugün TLA+/TLC; gerektiğinde daha fazlası).
 
 > Not: bazı eski bağlantılar önceki proje adına atıfta bulunabilir.
 
-**Amaç (kuzey yıldızı):** OpenClaw'ın amaçlanan güvenlik politikasını
-(yetkilendirme, oturum yalıtımı, araç geçitleme ve
-yanlış yapılandırma güvenliği), açık varsayımlar altında uyguladığına dair makine tarafından doğrulanmış bir argüman sağlamak.
+**Hedef (kuzey yıldızı):** açık varsayımlar altında OpenClaw'un amaçlanan
+güvenlik politikasını (yetkilendirme, oturum yalıtımı, araç geçitlemesi ve
+yanlış yapılandırma güvenliği) uyguladığına dair makine tarafından denetlenmiş
+bir argüman sağlamak.
 
-**Bugün bunun ne olduğu:** çalıştırılabilir, saldırgan odaklı bir **güvenlik regresyon paketi**:
+**Bu nedir (bugün):** çalıştırılabilir, saldırgan odaklı bir **güvenlik regresyon paketi**:
 
-- Her iddia, sonlu bir durum uzayı üzerinde çalıştırılabilir bir model kontrolüne sahiptir.
+- Her iddia, sonlu bir durum uzayı üzerinde çalıştırılabilir bir model denetimine sahiptir.
 - Birçok iddianın, gerçekçi bir hata sınıfı için karşı örnek izi üreten eşleştirilmiş bir **negatif modeli** vardır.
 
-**Henüz bunun ne olmadığı:** “OpenClaw her açıdan güvenlidir” veya tam TypeScript uygulamasının doğru olduğuna dair bir kanıt.
+**Bu ne değildir (henüz):** "OpenClaw her bakımdan güvenlidir" ya da tam TypeScript uygulamasının doğru olduğuna dair bir kanıt değildir.
 
-## Modeller nerede yaşar
+## Modeller nerede bulunur
 
-Modeller ayrı bir depoda tutulur: [vignesh07/openclaw-formal-models](https://github.com/vignesh07/openclaw-formal-models).
+Modeller ayrı bir repoda tutulur: [vignesh07/openclaw-formal-models](https://github.com/vignesh07/openclaw-formal-models).
 
 ## Önemli uyarılar
 
-- Bunlar tam TypeScript uygulaması değil, **modellerdir**. Model ile kod arasında sapma mümkündür.
-- Sonuçlar, TLC tarafından keşfedilen durum uzayı ile sınırlıdır; “yeşil” sonuç, modellenen varsayımların ve sınırların ötesinde güvenlik anlamına gelmez.
+- Bunlar **modellerdir**, tam TypeScript uygulaması değildir. Model ile kod arasında sapma olabilir.
+- Sonuçlar TLC tarafından keşfedilen durum uzayıyla sınırlıdır; "yeşil" olmak, modellenen varsayımlar ve sınırların ötesinde güvenlik anlamına gelmez.
 - Bazı iddialar açık çevresel varsayımlara dayanır (ör. doğru dağıtım, doğru yapılandırma girdileri).
 
 ## Sonuçları yeniden üretme
 
-Bugün sonuçlar, modeller deposunun yerelde klonlanması ve TLC'nin çalıştırılmasıyla yeniden üretilir (aşağıya bakın). Gelecekteki bir sürüm şunları sunabilir:
+Bugün sonuçlar, modeller reposu yerelde klonlanıp TLC çalıştırılarak yeniden üretilir (aşağıya bakın). Gelecekteki bir yineleme şunları sunabilir:
 
-- genel artifact'lerle CI üzerinde çalışan modeller (karşı örnek izleri, çalıştırma günlükleri)
-- küçük, sınırlı kontroller için barındırılan bir “bu modeli çalıştır” iş akışı
+- herkese açık yapıtlarla CI tarafından çalıştırılan modeller (karşı örnek izleri, çalışma günlükleri)
+- küçük, sınırlı denetimler için barındırılan bir "bu modeli çalıştır" iş akışı
 
-Başlangıç:
+Başlarken:
 
 ```bash
 git clone https://github.com/vignesh07/openclaw-formal-models
 cd openclaw-formal-models
 
-# Java 11+ gerekir (TLC JVM üzerinde çalışır).
-# Repo, sabitlenmiş bir `tla2tools.jar` (TLA+ araçları) paketler ve `bin/tlc` + Make hedefleri sağlar.
+# Java 11+ required (TLC runs on the JVM).
+# The repo vendors a pinned `tla2tools.jar` (TLA+ tools) and provides `bin/tlc` + Make targets.
 
 make <target>
 ```
 
-### Gateway açığa çıkma ve açık gateway yanlış yapılandırması
+### Gateway maruziyeti ve açık Gateway yanlış yapılandırması
 
-**İddia:** loopback dışına auth olmadan bağlanmak uzak ele geçirmeyi mümkün kılabilir / maruziyeti artırır; token/parola yetkisiz saldırganları engeller (model varsayımlarına göre).
+**İddia:** kimlik doğrulama olmadan loopback ötesine bağlanmak uzaktan ele geçirmeyi mümkün kılabilir / maruziyeti artırır; token/parola, yetkisiz saldırganları engeller (model varsayımlarına göre).
 
 - Yeşil çalıştırmalar:
   - `make gateway-exposure-v2`
@@ -68,11 +69,11 @@ make <target>
 - Kırmızı (beklenen):
   - `make gateway-exposure-v2-negative`
 
-Ayrıca bkz.: modeller deposundaki `docs/gateway-exposure-matrix.md`.
+Ayrıca bakın: modeller reposundaki `docs/gateway-exposure-matrix.md`.
 
 ### Node exec işlem hattı (en yüksek riskli yetenek)
 
-**İddia:** `exec host=node`, (a) node komut izin listesi + bildirilmiş komutları ve (b) yapılandırıldığında canlı onayı gerektirir; modelde yeniden oynatmayı önlemek için onaylar token'laştırılır.
+**İddia:** `exec host=node`, (a) Node komut izin listesi ve beyan edilmiş komutlar ile (b) yapılandırıldığında canlı onay gerektirir; onaylar yeniden oynatmayı önlemek için token'laştırılır (modelde).
 
 - Yeşil çalıştırmalar:
   - `make nodes-pipeline`
@@ -81,9 +82,9 @@ Ayrıca bkz.: modeller deposundaki `docs/gateway-exposure-matrix.md`.
   - `make nodes-pipeline-negative`
   - `make approvals-token-negative`
 
-### Pairing deposu (DM geçitlemesi)
+### Eşleştirme deposu (DM geçitlemesi)
 
-**İddia:** pairing istekleri TTL ve bekleyen istek üst sınırlarına uyar.
+**İddia:** eşleştirme istekleri TTL'ye ve bekleyen istek sınırlarına uyar.
 
 - Yeşil çalıştırmalar:
   - `make pairing`
@@ -92,9 +93,9 @@ Ayrıca bkz.: modeller deposundaki `docs/gateway-exposure-matrix.md`.
   - `make pairing-negative`
   - `make pairing-cap-negative`
 
-### Giriş geçitlemesi (mention + denetim komutu by-pass'ı)
+### Giriş geçitlemesi (bahsetmeler + kontrol komutu baypası)
 
-**İddia:** mention gerektiren grup bağlamlarında yetkisiz bir “denetim komutu” mention geçitlemesini by-pass edemez.
+**İddia:** bahsetme gerektiren grup bağlamlarında, yetkisiz bir "kontrol komutu" bahsetme geçitlemesini baypas edemez.
 
 - Yeşil:
   - `make ingress-gating`
@@ -103,7 +104,7 @@ Ayrıca bkz.: modeller deposundaki `docs/gateway-exposure-matrix.md`.
 
 ### Yönlendirme/oturum anahtarı yalıtımı
 
-**İddia:** farklı eşlerden gelen DM'ler açıkça bağlanmadıkça/yapılandırılmadıkça aynı oturuma çökmez.
+**İddia:** farklı eşlerden gelen DM'ler, açıkça bağlanmadıkça/yapılandırılmadıkça aynı oturumda birleşmez.
 
 - Yeşil:
   - `make routing-isolation`
@@ -112,37 +113,37 @@ Ayrıca bkz.: modeller deposundaki `docs/gateway-exposure-matrix.md`.
 
 ## v1++: ek sınırlı modeller (eşzamanlılık, yeniden denemeler, iz doğruluğu)
 
-Bunlar, gerçek dünya hata modları etrafındaki sadakati sıkılaştıran takip modelleridir (atomik olmayan güncellemeler, yeniden denemeler ve mesaj fan-out).
+Bunlar, gerçek dünya hata modları (atomik olmayan güncellemeler, yeniden denemeler ve mesaj fan-out'u) etrafında sadakati sıkılaştıran takip modelleridir.
 
-### Pairing deposu eşzamanlılığı / idempotency
+### Eşleştirme deposu eşzamanlılığı / idempotentlik
 
-**İddia:** pairing deposu, ara kesişmeler altında bile `MaxPending` ve idempotency'yi uygulamalıdır (yani “kontrol et-sonra yaz” işlemi atomik / kilitli olmalı; yenileme yinelenen kayıtlar oluşturmamalıdır).
+**İddia:** bir eşleştirme deposu, araya girmeler altında bile `MaxPending` ve idempotentliği uygulamalıdır (yani, "kontrol et, sonra yaz" atomik / kilitli olmalıdır; yenileme kopyalar oluşturmamalıdır).
 
-Bunun anlamı:
+Anlamı:
 
-- Eşzamanlı isteklerde, bir kanal için `MaxPending` değeri aşılamaz.
-- Aynı `(channel, sender)` için tekrarlanan istekler/yenilemeler yinelenen canlı bekleyen satırlar oluşturmamalıdır.
+- Eşzamanlı istekler altında, bir kanal için `MaxPending` aşılamaz.
+- Aynı `(channel, sender)` için tekrarlanan istekler/yenilemeler, yinelenen canlı bekleyen satırlar oluşturmamalıdır.
 
 - Yeşil çalıştırmalar:
-  - `make pairing-race` (atomik/kilitli üst sınır denetimi)
+  - `make pairing-race` (atomik/kilitli sınır denetimi)
   - `make pairing-idempotency`
   - `make pairing-refresh`
   - `make pairing-refresh-race`
 - Kırmızı (beklenen):
-  - `make pairing-race-negative` (atomik olmayan begin/commit üst sınır yarışı)
+  - `make pairing-race-negative` (atomik olmayan başlatma/işleme sınır yarışı)
   - `make pairing-idempotency-negative`
   - `make pairing-refresh-negative`
   - `make pairing-refresh-race-negative`
 
-### Giriş iz korelasyonu / idempotency
+### Giriş izi korelasyonu / idempotentlik
 
-**İddia:** alım, fan-out boyunca iz korelasyonunu korumalı ve sağlayıcı yeniden denemelerinde idempotent olmalıdır.
+**İddia:** alım, fan-out boyunca iz korelasyonunu korumalı ve sağlayıcı yeniden denemeleri altında idempotent olmalıdır.
 
-Bunun anlamı:
+Anlamı:
 
-- Bir dış olay birden çok iç mesaja dönüştüğünde her parça aynı iz/olay kimliğini korur.
-- Yeniden denemeler çift işlemeye yol açmaz.
-- Sağlayıcı olay kimlikleri eksikse dedupe, farklı olayları düşürmemek için güvenli bir anahtara (ör. trace ID) geri düşer.
+- Bir harici olay birden çok dahili mesaja dönüştüğünde, her parça aynı iz/olay kimliğini korur.
+- Yeniden denemeler çift işlemeyle sonuçlanmaz.
+- Sağlayıcı olay kimlikleri eksikse, tekilleştirme farklı olayları düşürmekten kaçınmak için güvenli bir anahtara (ör. iz kimliği) geri döner.
 
 - Yeşil:
   - `make ingress-trace`
@@ -157,12 +158,12 @@ Bunun anlamı:
 
 ### Yönlendirme dmScope önceliği + identityLinks
 
-**İddia:** yönlendirme, varsayılan olarak DM oturumlarını yalıtılmış tutmalı ve yalnızca açıkça yapılandırıldığında oturumları çökertmelidir (kanal önceliği + identity links).
+**İddia:** yönlendirme, DM oturumlarını varsayılan olarak yalıtılmış tutmalı ve oturumları yalnızca açıkça yapılandırıldığında birleştirmelidir (kanal önceliği + kimlik bağlantıları).
 
-Bunun anlamı:
+Anlamı:
 
-- Kanala özgü dmScope geçersiz kılmaları genel varsayılanların önüne geçmelidir.
-- identityLinks, ilgisiz eşler arasında değil, yalnızca açıkça bağlı gruplar içinde çökertme yapmalıdır.
+- Kanala özel dmScope geçersiz kılmaları, küresel varsayılanlara üstün gelmelidir.
+- identityLinks yalnızca açıkça bağlanmış gruplar içinde birleştirmeli, ilişkisiz eşler arasında birleştirmemelidir.
 
 - Yeşil:
   - `make routing-precedence`
@@ -174,4 +175,4 @@ Bunun anlamı:
 ## İlgili
 
 - [Tehdit modeli](/tr/security/THREAT-MODEL-ATLAS)
-- [Tehdit modeline katkı](/tr/security/CONTRIBUTING-THREAT-MODEL)
+- [Tehdit modeline katkıda bulunma](/tr/security/CONTRIBUTING-THREAT-MODEL)

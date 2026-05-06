@@ -1,20 +1,20 @@
 ---
 read_when:
     - Skills yapılandırmasını ekleme veya değiştirme
-    - Paketli izin listesini veya kurulum davranışını ayarlama
+    - Paketlenmiş izin listesini veya kurulum davranışını ayarlama
 summary: Skills yapılandırma şeması ve örnekleri
 title: Skills yapılandırması
 x-i18n:
-    generated_at: "2026-04-24T09:36:44Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:35:24Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 4d5e156adb9b88d7ade1976005c11faffe5107661e4f3da5d878cc0ac648bcbb
+    source_hash: 8996b3df73a9f0176b541c5d3f9670615f9a879a41838cf5d35d0a455e9f5088
     source_path: tools/skills-config.md
-    workflow: 15
+    workflow: 16
 ---
 
-Skills yükleyici/kurulum yapılandırmasının çoğu `~/.openclaw/openclaw.json`
-içinde `skills` altında bulunur. Ajana özgü Skill görünürlüğü ise
+Çoğu Skills yükleyici/kurulum yapılandırması `skills` altında,
+`~/.openclaw/openclaw.json` içinde bulunur. Ajana özgü Skills görünürlüğü
 `agents.defaults.skills` ve `agents.list[].skills` altında bulunur.
 
 ```json5
@@ -28,12 +28,12 @@ içinde `skills` altında bulunur. Ajana özgü Skill görünürlüğü ise
     },
     install: {
       preferBrew: true,
-      nodeManager: "npm", // npm | pnpm | yarn | bun (Gateway çalışma zamanı hâlâ Node; bun önerilmez)
+      nodeManager: "npm", // npm | pnpm | yarn | bun (Gateway runtime still Node; bun not recommended)
     },
     entries: {
       "image-lab": {
         enabled: true,
-        apiKey: { source: "env", provider: "default", id: "GEMINI_API_KEY" }, // veya düz metin dize
+        apiKey: { source: "env", provider: "default", id: "GEMINI_API_KEY" }, // or plaintext string
         env: {
           GEMINI_API_KEY: "GEMINI_KEY_HERE",
         },
@@ -45,24 +45,24 @@ içinde `skills` altında bulunur. Ajana özgü Skill görünürlüğü ise
 }
 ```
 
-Yerleşik görsel oluşturma/düzenleme için `agents.defaults.imageGenerationModel`
-ve çekirdek `image_generate` aracını tercih edin. `skills.entries.*` yalnızca özel veya
-üçüncü taraf Skill iş akışları içindir.
+Yerleşik görüntü üretimi/düzenleme için `agents.defaults.imageGenerationModel`
+ile birlikte çekirdek `image_generate` aracını tercih edin. `skills.entries.*`
+yalnızca özel veya üçüncü taraf Skills iş akışları içindir.
 
-Belirli bir görsel sağlayıcısı/modeli seçerseniz, ilgili sağlayıcının
-kimlik doğrulama/API anahtarını da yapılandırın. Tipik örnekler:
-`google/*` için `GEMINI_API_KEY` veya `GOOGLE_API_KEY`,
-`openai/*` için `OPENAI_API_KEY` ve `fal/*` için `FAL_KEY`.
+Belirli bir görüntü sağlayıcısı/modeli seçerseniz, o sağlayıcının kimlik
+doğrulamasını/API anahtarını da yapılandırın. Tipik örnekler: `google/*` için
+`GEMINI_API_KEY` veya `GOOGLE_API_KEY`, `openai/*` için `OPENAI_API_KEY` ve
+`fal/*` için `FAL_KEY`.
 
 Örnekler:
 
 - Yerel Nano Banana Pro tarzı kurulum: `agents.defaults.imageGenerationModel.primary: "google/gemini-3-pro-image-preview"`
 - Yerel fal kurulumu: `agents.defaults.imageGenerationModel.primary: "fal/fal-ai/flux/dev"`
 
-## Ajan Skill izin listeleri
+## Ajan Skills izin listeleri
 
-Aynı makine/çalışma alanı Skill köklerini, ancak
-ajan başına farklı görünür Skill kümesini istediğinizde ajan yapılandırmasını kullanın.
+Aynı makine/çalışma alanı Skills köklerini, ancak her ajan için farklı bir
+görünür Skills kümesini istediğinizde ajan yapılandırmasını kullanın.
 
 ```json5
 {
@@ -71,9 +71,9 @@ ajan başına farklı görünür Skill kümesini istediğinizde ajan yapılandı
       skills: ["github", "weather"],
     },
     list: [
-      { id: "writer" }, // varsayılanları devralır -> github, weather
-      { id: "docs", skills: ["docs-search"] }, // varsayılanların yerini alır
-      { id: "locked-down", skills: [] }, // Skill yok
+      { id: "writer" }, // inherits defaults -> github, weather
+      { id: "docs", skills: ["docs-search"] }, // replaces defaults
+      { id: "locked-down", skills: [] }, // no skills
     ],
   },
 }
@@ -81,65 +81,77 @@ ajan başına farklı görünür Skill kümesini istediğinizde ajan yapılandı
 
 Kurallar:
 
-- `agents.defaults.skills`: `agents.list[].skills`
-  içermeyen ajanlar için paylaşılan temel izin listesi.
-- Skills’i varsayılan olarak kısıtsız bırakmak için `agents.defaults.skills` değerini atlayın.
-- `agents.list[].skills`: o ajan için açık son Skill kümesi; varsayılanlarla
+- `agents.defaults.skills`: `agents.list[].skills` değerini atlayan ajanlar için
+  paylaşılan temel izin listesi.
+- Skills'ın varsayılan olarak kısıtlanmaması için `agents.defaults.skills` değerini atlayın.
+- `agents.list[].skills`: o ajan için açık nihai Skills kümesi; varsayılanlarla
   birleştirilmez.
-- `agents.list[].skills: []`: o ajan için hiç Skill açığa çıkarmaz.
+- `agents.list[].skills: []`: o ajan için hiçbir Skills göstermez.
 
 ## Alanlar
 
-- Yerleşik Skill kökleri her zaman `~/.openclaw/skills`, `~/.agents/skills`,
+- Yerleşik Skills kökleri her zaman `~/.openclaw/skills`, `~/.agents/skills`,
   `<workspace>/.agents/skills` ve `<workspace>/skills` değerlerini içerir.
 - `allowBundled`: yalnızca **paketlenmiş** Skills için isteğe bağlı izin listesi. Ayarlandığında, yalnızca
-  listedeki paketlenmiş Skills uygundur (yönetilen, ajan ve çalışma alanı Skills’i etkilenmez).
-- `load.extraDirs`: taranacak ek Skill dizinleri (en düşük öncelik).
-- `load.watch`: Skill klasörlerini izle ve Skills anlık görüntüsünü yenile (varsayılan: true).
-- `load.watchDebounceMs`: milisaniye cinsinden Skill izleyici olayları için debounce süresi (varsayılan: 250).
-- `install.preferBrew`: varsa brew yükleyicilerini tercih et (varsayılan: true).
+  listedeki paketlenmiş Skills uygun olur (yönetilen, ajan ve çalışma alanı Skills'ları etkilenmez).
+- `load.extraDirs`: taranacak ek Skills dizinleri (en düşük öncelik).
+- `load.watch`: Skills klasörlerini izler ve Skills anlık görüntüsünü yeniler (varsayılan: true).
+- `load.watchDebounceMs`: Skills izleyici olayları için milisaniye cinsinden debounce (varsayılan: 250).
+- `install.preferBrew`: mevcut olduğunda brew yükleyicilerini tercih eder (varsayılan: true).
 - `install.nodeManager`: node yükleyici tercihi (`npm` | `pnpm` | `yarn` | `bun`, varsayılan: npm).
-  Bu yalnızca **Skill kurulumlarını** etkiler; Gateway çalışma zamanı yine de Node
-  olmalıdır (WhatsApp/Telegram için Bun önerilmez).
+  Bu yalnızca **Skills kurulumlarını** etkiler; Gateway çalışma zamanı yine Node
+  olmalıdır (Bun, WhatsApp/Telegram için önerilmez).
   - `openclaw setup --node-manager` daha dardır ve şu anda `npm`,
-    `pnpm` veya `bun` kabul eder. Yarn destekli Skill kurulumları istiyorsanız
+    `pnpm` veya `bun` kabul eder. Yarn destekli Skills kurulumları istiyorsanız
     `skills.install.nodeManager: "yarn"` değerini elle ayarlayın.
-- `entries.<skillKey>`: Skill başına geçersiz kılmalar.
-- `agents.defaults.skills`: `agents.list[].skills`
-  içermeyen ajanlar tarafından devralınan isteğe bağlı varsayılan Skill izin listesi.
-- `agents.list[].skills`: isteğe bağlı ajan başına son Skill izin listesi; açık
-  listeler, devralınan varsayılanlarla birleşmek yerine onların yerini alır.
+- `entries.<skillKey>`: Skills başına geçersiz kılmalar.
+- `agents.defaults.skills`: `agents.list[].skills` değerini atlayan ajanlar tarafından
+  devralınan isteğe bağlı varsayılan Skills izin listesi.
+- `agents.list[].skills`: ajan başına isteğe bağlı nihai Skills izin listesi; açık
+  listeler, devralınan varsayılanları birleştirmek yerine onların yerini alır.
 
-Skill başına alanlar:
+Skills başına alanlar:
 
-- `enabled`: Skill paketli/kurulu olsa bile devre dışı bırakmak için `false` ayarlayın.
-- `env`: ajan çalıştırmasına eklenen ortam değişkenleri (yalnızca zaten ayarlanmamışsa).
-- `apiKey`: birincil ortam değişkeni bildiren Skills için isteğe bağlı kolaylık.
-  Düz metin dizeyi veya SecretRef nesnesini (`{ source, provider, id }`) destekler.
+- `enabled`: paketlenmiş/yüklü olsa bile bir Skills'ı devre dışı bırakmak için `false` olarak ayarlayın.
+- `env`: ajan çalıştırması için enjekte edilen ortam değişkenleri (yalnızca zaten ayarlanmamışsa).
+- `apiKey`: birincil env var bildiren Skills için isteğe bağlı kolaylık.
+  Düz metin dizesini veya SecretRef nesnesini (`{ source, provider, id }`) destekler.
 
 ## Notlar
 
-- `entries` altındaki anahtarlar varsayılan olarak Skill adına eşlenir. Bir Skill
+- `entries` altındaki anahtarlar varsayılan olarak Skills adına eşlenir. Bir Skills
   `metadata.openclaw.skillKey` tanımlıyorsa bunun yerine o anahtarı kullanın.
-- Yükleme önceliği `<workspace>/skills` → `<workspace>/.agents/skills` →
+- Yükleme önceliği şöyledir: `<workspace>/skills` → `<workspace>/.agents/skills` →
   `~/.agents/skills` → `~/.openclaw/skills` → paketlenmiş Skills →
-  `skills.load.extraDirs` şeklindedir.
-- Skills üzerindeki değişiklikler, izleyici etkinken bir sonraki ajan turunda alınır.
+  `skills.load.extraDirs`.
+- İzleyici etkin olduğunda Skills değişiklikleri bir sonraki ajan turunda alınır.
 
-### Sandbox içindeki Skills + ortam değişkenleri
+### Sandbox içindeki Skills ve env var'lar
 
-Bir oturum **sandbox içindeyse**, Skill süreçleri yapılandırılmış
-sandbox arka ucunda çalışır. Sandbox, ana makinenin `process.env` değerini devralmaz.
+Bir oturum **sandbox içinde** olduğunda, Skills süreçleri yapılandırılmış sandbox arka ucu içinde çalışır. Sandbox, ana makine `process.env` değerini devralmaz.
+
+<Warning>
+  Global `env` ve `skills.entries.<skill>.env`/`apiKey` yalnızca **ana makine** çalıştırmaları için geçerlidir. Sandbox içinde etkileri yoktur; bu nedenle `GEMINI_API_KEY` değerine bağlı bir Skills, sandbox'a değişken ayrıca verilmediği sürece `apiKey not configured` hatasıyla başarısız olur.
+</Warning>
 
 Şunlardan birini kullanın:
 
-- Docker arka ucu için `agents.defaults.sandbox.docker.env` (veya ajan başına `agents.list[].sandbox.docker.env`)
-- ortam değişkenlerini özel sandbox imajınıza veya uzak sandbox ortamınıza gömün
-
-Genel `env` ve `skills.entries.<skill>.env/apiKey` yalnızca **ana makine** çalıştırmaları için uygulanır.
+- Docker arka ucu için `agents.defaults.sandbox.docker.env` (veya ajan başına `agents.list[].sandbox.docker.env`).
+- Env'i özel sandbox görüntünüze veya uzak sandbox ortamınıza gömün.
 
 ## İlgili
 
-- [Skills](/tr/tools/skills)
-- [Skills oluşturma](/tr/tools/creating-skills)
-- [Slash komutları](/tr/tools/slash-commands)
+<CardGroup cols={2}>
+  <Card title="Skills" href="/tr/tools/skills" icon="puzzle-piece">
+    Skills'ın ne olduğu ve nasıl yüklendiği.
+  </Card>
+  <Card title="Creating skills" href="/tr/tools/creating-skills" icon="hammer">
+    Özel Skills paketleri yazma.
+  </Card>
+  <Card title="Slash commands" href="/tr/tools/slash-commands" icon="terminal">
+    Yerel komut kataloğu ve sohbet yönergeleri.
+  </Card>
+  <Card title="Configuration reference" href="/tr/gateway/configuration-reference" icon="gear">
+    Tam `skills` ve `agents.skills` şeması.
+  </Card>
+</CardGroup>

@@ -1,46 +1,46 @@
 ---
 read_when:
-    - Yeni başladıysanız ve bir "neye tıklayacağım/neyi çalıştıracağım" rehberi istiyorsanız
-    - Bir şey bozuldu ve düzeltmeye giden en hızlı yolu istiyorsunuz
-summary: 'Yardım merkezi: yaygın düzeltmeler, kurulum doğrulaması ve bir sorun çıktığında nereye bakılacağı'
+    - Yeniyseniz ve bir "neye tıklamalı/neyi çalıştırmalıyım" kılavuzu istiyorsanız
+    - Bir şey bozuldu ve düzeltmeye en hızlı yoldan ulaşmak istiyorsunuz
+summary: 'Yardım merkezi: yaygın düzeltmeler, kurulum doğrulaması ve bir şey bozulduğunda nereye bakılacağı'
 title: Yardım
 x-i18n:
-    generated_at: "2026-05-02T08:57:46Z"
+    generated_at: "2026-05-06T09:16:28Z"
     model: gpt-5.5
     provider: openai
-    source_hash: bb85d5c74da9efdb83762c4d735d0871e252a26956e904c09b42ab293e4dffca
+    source_hash: 118e8ad2207d32739d3da7d0097604dfad8e7780843841f4f84a44cd77eb8736
     source_path: help/index.md
     workflow: 16
 ---
 
-En yaygın sorunlar için hızlı "takılı kaldığınız yerden çıkma" yolu:
+Takıldığınız yerden çıkmak için en yaygın sorunlara yönelik hızlı yol:
 
-- [Sorun giderme](/tr/help/troubleshooting) — belirti odaklı karar ağacı
-- [Hata ayıklama](/tr/help/debugging) — izleme modu, ham akışlar, geliştirme profili
-- [Kurulum sağlamlık kontrolü](/tr/install/node#troubleshooting) — Node / npm / PATH kontrolleri
-- [Gateway sorun giderme](/tr/gateway/troubleshooting) — Gateway'e özgü sorunlar
-- [Doctor](/tr/gateway/doctor) — otomatik onarım + tanılama paketi
+- [Sorun giderme](/tr/help/troubleshooting) - belirti odaklı karar ağacı
+- [Hata ayıklama](/tr/help/debugging) - izleme modu, ham akışlar, geliştirici profili
+- [Kurulum sağlaması](/tr/install/node#troubleshooting) - Node / npm / PATH kontrolleri
+- [Gateway sorun giderme](/tr/gateway/troubleshooting) - Gateway’e özgü sorunlar
+- [Doctor](/tr/gateway/doctor) - otomatik onarım + tanılama paketi
 
 ## SSS
 
-- [SSS](/tr/help/faq) — günlük kavramlar ve operasyonel sorular
-- [İlk çalıştırma SSS](/tr/help/faq-first-run) — kurulum, ilk kullanım, kimlik doğrulama, abonelikler, erken hatalar
-- [Modeller SSS](/tr/help/faq-models) — model seçimi, yük devretme, kimlik doğrulama profilleri
+- [SSS](/tr/help/faq) - günlük kavramlar ve operasyonel sorular
+- [İlk çalıştırma SSS](/tr/help/faq-first-run) - kurulum, başlangıç süreci, kimlik doğrulama, abonelikler, erken hatalar
+- [Modeller SSS](/tr/help/faq-models) - model seçimi, yük devretme, kimlik doğrulama profilleri
 
 ## Tanılama
 
-- [Ortam değişkenleri](/tr/help/environment) — OpenClaw'ın env vars değişkenlerini nereden yüklediği ve öncelik sırası
-- [Tanılama bayrakları](/tr/diagnostics/flags) — çalışma zamanı tanılamaları ve ayrıntılı modlar
-- [Node + tsx çökmesi](/tr/debug/node-issue) — belirli Node / tsx çalışma zamanı çökme senaryoları
+- [Ortam değişkenleri](/tr/help/environment) - OpenClaw’ın env vars yüklediği yerler ve öncelik sırası
+- [Tanılama bayrakları](/tr/diagnostics/flags) - çalışma zamanı tanılaması ve ayrıntılı modlar
+- [Node + tsx çökmesi](/tr/debug/node-issue) - belirli Node / tsx çalışma zamanı çökme senaryoları
 
-## Test
+## Test Etme
 
-- [Test](/tr/help/testing) — test paketleri ve Docker çalıştırıcıları
-- [Güncelleme ve plugin testleri](/tr/help/testing-updates-plugins) — paket güncellemesi, geçiş ve plugin kurulum doğrulaması
-- [Canlı testler](/tr/help/testing-live) — ağa erişen sağlayıcı ve CLI smoke testleri
+- [Test etme](/tr/help/testing) - test paketleri ve Docker çalıştırıcıları
+- [Güncelleme ve Plugin testleri](/tr/help/testing-updates-plugins) - paket güncellemesi, geçiş ve Plugin kurulum doğrulaması
+- [Canlı testler](/tr/help/testing-live) - ağa dokunan sağlayıcı ve CLI duman testleri
 
 ## Topluluk ve meta
 
-- [OpenClaw hikayesi](/tr/start/lore) — hikaye
-- [Docs merkezleri](/tr/start/hubs) — bu dokümantasyonun nasıl düzenlendiği
-- [Docs dizini](/tr/start/docs-directory) — tam dosya haritası
+- [OpenClaw bilgisi](/tr/start/lore) - hikaye
+- [Dokümantasyon merkezleri](/tr/start/hubs) - bu dokümantasyonun nasıl düzenlendiği
+- [Dokümantasyon dizini](/tr/start/docs-directory) - tam dosya haritası

@@ -1,31 +1,29 @@
 ---
 read_when:
-    - Mac menüsü arayüzünde veya durum mantığında ince ayar yapma
-summary: Menü çubuğu durum mantığı ve kullanıcılara gösterilenler
+    - Mac menü kullanıcı arayüzünü veya durum mantığını ayarlama
+summary: Menü çubuğu durum mantığı ve kullanıcılara nelerin gösterildiği
 title: Menü çubuğu
 x-i18n:
-    generated_at: "2026-05-01T09:02:18Z"
+    generated_at: "2026-05-06T09:22:24Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 340b86a2e222fb1fe7fda4f0f0434127af1393a64348ea033ea284ba52866beb
+    source_hash: c569ced20b2f6a639d52d373cc8b55a42d7c015a0b234d5154ce67ac03c2eaf6
     source_path: platforms/mac/menu-bar.md
     workflow: 16
 ---
 
-# Menü Çubuğu Durum Mantığı
-
 ## Gösterilenler
 
-- Mevcut ajan çalışma durumunu menü çubuğu simgesinde ve menünün ilk durum satırında gösteririz.
+- Geçerli aracı çalışma durumunu menü çubuğu simgesinde ve menünün ilk durum satırında gösteririz.
 - Çalışma etkinken sağlık durumu gizlenir; tüm oturumlar boştayken geri döner.
-- Kök “Bağlam” alt menüsü, son oturumları doğrudan kök menüde genişletmek yerine içerir.
-- Kök menüdeki “Node'lar” bloğu yalnızca **cihazları** listeler (`node.list` üzerinden eşleştirilmiş Node'lar); istemci/varlık girdilerini listelemez.
-- Sağlayıcı kullanım anlık görüntüleri mevcut olduğunda Bağlam'ın altında kök “Kullanım” bölümü görünür; mevcutsa bunu kullanım maliyeti ayrıntıları izler.
+- Kök "Bağlam" alt menüsü, son oturumları doğrudan kök menüde genişletmek yerine içerir.
+- Kök menüdeki "Node'lar" bloğu, istemci/varlık girdilerini değil, yalnızca **cihazları** (`node.list` aracılığıyla eşleştirilmiş node'lar) listeler.
+- Sağlayıcı kullanım anlık görüntüleri mevcut olduğunda Bağlam'ın altında kök "Kullanım" bölümü görünür; mevcut olduğunda kullanım-maliyet ayrıntıları bunu izler.
 
 ## Durum modeli
 
-- Oturumlar: olaylar yük içinde `runId` (çalıştırma başına) ve `sessionKey` ile gelir. “Ana” oturum `main` anahtarıdır; yoksa en son güncellenen oturuma geri döneriz.
-- Öncelik: ana her zaman kazanır. Ana etkinse durumu hemen gösterilir. Ana boştaysa en son etkin olan ana olmayan oturum gösterilir. Etkinlik ortasında sürekli gidip gelmeyiz; yalnızca geçerli oturum boşa geçtiğinde veya ana etkin olduğunda geçiş yaparız.
+- Oturumlar: olaylar, payload içinde `sessionKey` ile birlikte `runId` (çalıştırma başına) ile gelir. "main" oturumu `main` anahtarıdır; yoksa en son güncellenen oturuma geri döneriz.
+- Öncelik: main her zaman kazanır. main etkinse durumu hemen gösterilir. main boştaysa en son etkin olan main dışı oturum gösterilir. Etkinlik sırasında gidip gelmeyiz; yalnızca geçerli oturum boşa geçtiğinde veya main etkin olduğunda geçiş yaparız.
 - Etkinlik türleri:
   - `job`: üst düzey komut yürütme (`state: started|streaming|done|error`).
   - `tool`: `toolName` ve `meta/args` ile `phase: start|result`.
@@ -49,17 +47,17 @@ x-i18n:
 ### Görsel eşleme
 
 - `idle`: normal karakter.
-- `workingMain`: glifli rozet, tam renk tonu, bacak “çalışıyor” animasyonu.
-- `workingOther`: glifli rozet, soluk renk tonu, koşuşturma yok.
-- `overridden`: etkinlikten bağımsız olarak seçilen glifi/renk tonunu kullanır.
+- `workingMain`: glifli rozet, tam ton, bacak "çalışıyor" animasyonu.
+- `workingOther`: glifli rozet, soluk ton, hızlı hareket yok.
+- `overridden`: etkinlikten bağımsız olarak seçilen glifi/tonu kullanır.
 
 ## Bağlam alt menüsü
 
-- Kök menü, oturum sayısı/durumuyla birlikte tek bir “Bağlam” satırı gösterir ve bir alt menü açar.
-- Bağlam alt menüsü başlığı, son 24 saatin etkin oturum sayısını gösterir.
-- Her oturum satırı kendi token çubuğunu, yaşını, önizlemesini, düşünme/ayrıntılı modunu, sıfırlama, compact ve silme eylemlerini korur.
-- Yükleme, bağlantı kesildi ve oturum yükleme hatası mesajları Bağlam alt menüsünde görünür.
-- Sağlayıcı kullanımı ve kullanım maliyeti ayrıntıları, alt menüyü açmadan hızlıca görülebilmeleri için Bağlam'ın altında kök düzeyinde kalır.
+- Kök menü, oturum sayısı/durumu içeren bir "Bağlam" satırı gösterir ve bir alt menü açar.
+- Bağlam alt menüsü başlığı, son 24 saat için etkin oturum sayısını gösterir.
+- Her oturum satırı token çubuğunu, yaşı, önizlemeyi, düşünme/ayrıntılı modu, sıfırlama, compact ve silme eylemlerini korur.
+- Yükleniyor, bağlantı kesildi ve oturum yükleme hatası mesajları Bağlam alt menüsünün içinde görünür.
+- Sağlayıcı kullanımı ve kullanım-maliyet ayrıntıları Bağlam'ın altında kök düzeyde kalır; böylece alt menüyü açmadan hızlıca görülebilirler.
 
 ## Durum satırı metni (menü)
 
@@ -74,14 +72,14 @@ x-i18n:
   - Başlatma/durdurma için `data.state` ile `stream: "job"`.
   - `data.phase`, `name`, isteğe bağlı `meta`/`args` ile `stream: "tool"`.
 - Etiketler:
-  - `exec`: `args.command` öğesinin ilk satırı.
+  - `exec`: `args.command` değerinin ilk satırı.
   - `read`/`write`: kısaltılmış yol.
-  - `edit`: yol artı `meta`/diff sayımlarından çıkarılan değişiklik türü.
+  - `edit`: yol ve `meta`/diff sayılarından çıkarılan değişiklik türü.
   - geri dönüş: araç adı.
 
 ## Hata ayıklama geçersiz kılması
 
-- Ayarlar ▸ Hata Ayıklama ▸ “Simge geçersiz kılması” seçici:
+- Ayarlar ▸ Hata Ayıklama ▸ "Simge geçersiz kılması" seçici:
   - `System (auto)` (varsayılan)
   - `Working: main` (araç türü başına)
   - `Working: other` (araç türü başına)
@@ -90,10 +88,10 @@ x-i18n:
 
 ## Test kontrol listesi
 
-- Ana oturum işini tetikleyin: simgenin hemen değiştiğini ve durum satırının ana etiketi gösterdiğini doğrulayın.
-- Ana boştayken ana olmayan oturum işini tetikleyin: simge/durum ana olmayanı gösterir; bitene kadar kararlı kalır.
-- Diğeri etkinken anayı başlatın: simge anında anaya döner.
-- Hızlı araç patlamaları: rozetin titremediğinden emin olun (araç sonuçlarında TTL ek süresi).
+- main oturum işi tetikle: simgenin hemen değiştiğini ve durum satırının main etiketini gösterdiğini doğrula.
+- main boşta iken main dışı oturum işi tetikle: simge/durum main dışını gösterir; bitene kadar kararlı kalır.
+- Diğeri etkinken main başlat: simge anında main'e döner.
+- Hızlı araç patlamaları: rozetin titremediğinden emin ol (araç sonuçlarında TTL toleransı).
 - Tüm oturumlar boşa geçtiğinde sağlık satırı yeniden görünür.
 
 ## İlgili

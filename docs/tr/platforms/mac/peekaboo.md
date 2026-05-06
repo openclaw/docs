@@ -1,74 +1,55 @@
 ---
 read_when:
-    - PeekabooBridge'i OpenClaw.app'te barındırma
-    - Swift Package Manager ile Peekaboo Entegrasyonu
+    - OpenClaw.app’te PeekabooBridge barındırma
+    - Peekaboo'yu Swift Package Manager aracılığıyla entegre etme
     - PeekabooBridge protokolünü/yollarını değiştirme
     - PeekabooBridge, Codex Computer Use ve cua-driver MCP arasında karar verme
 summary: macOS kullanıcı arayüzü otomasyonu için PeekabooBridge entegrasyonu
 title: Ce-ee köprüsü
 x-i18n:
-    generated_at: "2026-04-30T09:33:16Z"
+    generated_at: "2026-05-06T09:22:50Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 92effdd6cfe4002fff2b8cd1092999f837e93694acf110eaebd30648b0a6946e
+    source_hash: 724bc6f29b991eb824df01d2b23e87b5d5cf32eb5ebaa0cbbc321dd8fca53c9e
     source_path: platforms/mac/peekaboo.md
     workflow: 16
 ---
 
-OpenClaw, **PeekabooBridge**'i yerel, izinlere duyarlı bir UI otomasyon
-aracısı olarak barındırabilir. Bu, `peekaboo` CLI'nin macOS uygulamasının TCC
-izinlerini yeniden kullanırken UI otomasyonunu yürütmesini sağlar.
+OpenClaw, **PeekabooBridge**'i yerel, izin duyarlı bir UI otomasyon aracısı olarak barındırabilir. Bu, `peekaboo` CLI'nin macOS uygulamasının TCC izinlerini yeniden kullanırken UI otomasyonunu yürütmesini sağlar.
 
 ## Bu nedir (ve ne değildir)
 
-- **Host**: OpenClaw.app bir PeekabooBridge host'u olarak davranabilir.
-- **Client**: `peekaboo` CLI'yi kullanın (ayrı bir `openclaw ui ...` yüzeyi yoktur).
-- **UI**: görsel katmanlar Peekaboo.app içinde kalır; OpenClaw ince bir aracı host'tur.
+- **Ana makine**: OpenClaw.app bir PeekabooBridge ana makinesi olarak davranabilir.
+- **İstemci**: `peekaboo` CLI'yi kullanın (ayrı bir `openclaw ui ...` yüzeyi yoktur).
+- **UI**: görsel katmanlar Peekaboo.app içinde kalır; OpenClaw ince bir aracı ana makinedir.
 
 ## Computer Use ile ilişkisi
 
-OpenClaw'ın üç masaüstü denetimi yolu vardır ve bunlar bilinçli olarak ayrı tutulur:
+OpenClaw'ın üç masaüstü denetim yolu vardır ve bunlar bilinçli olarak ayrı tutulur:
 
-- **PeekabooBridge host'u**: OpenClaw.app yerel PeekabooBridge soketini barındırabilir.
-  `peekaboo` CLI client olarak kalır ve ekran görüntüleri, tıklamalar,
-  menüler, iletişim kutuları, Dock eylemleri ve pencere yönetimi gibi Peekaboo
-  otomasyon ilkelleri için OpenClaw.app'in macOS izinlerini kullanır.
-- **Codex Computer Use**: paketle gelen `codex` Plugin'i Codex app-server'ı hazırlar,
-  Codex'in `computer-use` MCP sunucusunun kullanılabilir olduğunu doğrular ve
-  ardından Codex modu dönüşlerinde yerel masaüstü denetimi araç çağrılarını
-  Codex'in üstlenmesini sağlar. OpenClaw bu eylemleri PeekabooBridge üzerinden
-  proxy'lemez.
-- **Doğrudan `cua-driver` MCP**: OpenClaw, TryCua'nın upstream
-  `cua-driver mcp` sunucusunu normal bir MCP sunucusu olarak kaydedebilir. Bu,
-  aracıların Codex marketplace veya PeekabooBridge soketi üzerinden yönlendirme
-  yapmadan CUA driver'ın kendi şemalarına ve pid/pencere/öğe dizini iş akışına
-  erişmesini sağlar.
+- **PeekabooBridge ana makinesi**: OpenClaw.app yerel PeekabooBridge soketini barındırabilir. `peekaboo` CLI istemci olarak kalır ve ekran görüntüleri, tıklamalar, menüler, iletişim kutuları, Dock eylemleri ve pencere yönetimi gibi Peekaboo otomasyon temel öğeleri için OpenClaw.app'in macOS izinlerini kullanır.
+- **Codex Computer Use**: birlikte gelen `codex` Plugin'i Codex uygulama sunucusunu hazırlar, Codex'in `computer-use` MCP sunucusunun kullanılabilir olduğunu doğrular ve ardından Codex modundaki turlarda yerel masaüstü denetim aracı çağrılarını Codex'in sahiplenmesini sağlar. OpenClaw bu eylemleri PeekabooBridge üzerinden vekillemez.
+- **Doğrudan `cua-driver` MCP**: OpenClaw, TryCua'nın yukarı akış `cua-driver mcp` sunucusunu normal bir MCP sunucusu olarak kaydedebilir. Bu, aracılara Codex marketplace veya PeekabooBridge soketi üzerinden yönlendirme yapmadan CUA sürücüsünün kendi şemalarını ve pid/pencere/öğe-dizini iş akışını verir.
 
-Geniş macOS otomasyon yüzeyini ve OpenClaw.app'in izinlere duyarlı bridge host'unu
-istediğinizde Peekaboo kullanın. Bir Codex modu aracısının Codex'in yerel
-computer-use Plugin'ine dayanması gerektiğinde Codex Computer Use kullanın.
-CUA driver'ı herhangi bir OpenClaw tarafından yönetilen çalışma zamanına normal
-bir MCP sunucusu olarak açmak istediğinizde doğrudan `cua-driver mcp` kullanın.
+Geniş macOS otomasyon yüzeyini ve OpenClaw.app'in izin duyarlı köprü ana makinesini istediğinizde Peekaboo'yu kullanın. Codex modundaki bir aracının Codex'in yerel computer-use Plugin'ine dayanması gerektiğinde Codex Computer Use'ı kullanın. CUA sürücüsünü normal bir MCP sunucusu olarak OpenClaw tarafından yönetilen herhangi bir çalışma zamanına açmak istediğinizde doğrudan `cua-driver mcp` kullanın.
 
-## Bridge'i etkinleştirme
+## Köprüyü etkinleştirme
 
 macOS uygulamasında:
 
 - Ayarlar → **Peekaboo Bridge'i Etkinleştir**
 
-Etkinleştirildiğinde OpenClaw yerel bir UNIX soket sunucusu başlatır. Devre dışı
-bırakılırsa host durdurulur ve `peekaboo` diğer kullanılabilir host'lara geri döner.
+Etkinleştirildiğinde OpenClaw yerel bir UNIX soket sunucusu başlatır. Devre dışı bırakılırsa ana makine durdurulur ve `peekaboo` diğer kullanılabilir ana makinelere geri döner.
 
-## Client keşif sırası
+## İstemci keşif sırası
 
-Peekaboo client'ları genellikle host'ları şu sırayla dener:
+Peekaboo istemcileri genellikle ana makineleri şu sırayla dener:
 
 1. Peekaboo.app (tam UX)
 2. Claude.app (yüklüyse)
 3. OpenClaw.app (ince aracı)
 
-Hangi host'un etkin olduğunu ve hangi soket yolunun kullanıldığını görmek için
-`peekaboo bridge status --verbose` kullanın. Şununla geçersiz kılabilirsiniz:
+Hangi ana makinenin etkin olduğunu ve hangi soket yolunun kullanıldığını görmek için `peekaboo bridge status --verbose` kullanın. Şununla geçersiz kılabilirsiniz:
 
 ```bash
 export PEEKABOO_BRIDGE_SOCKET=/path/to/bridge.sock
@@ -76,24 +57,18 @@ export PEEKABOO_BRIDGE_SOCKET=/path/to/bridge.sock
 
 ## Güvenlik ve izinler
 
-- Bridge **çağıran kod imzalarını** doğrular; TeamID allowlist'i uygulanır
-  (Peekaboo host TeamID + OpenClaw app TeamID).
-- İstekler ~10 saniye sonra zaman aşımına uğrar.
-- Gerekli izinler eksikse bridge, System Settings'i başlatmak yerine açık bir
-  hata iletisi döndürür.
+- Köprü **çağıran kod imzalarını** doğrular; TeamID'lerden oluşan bir izin listesi uygulanır (Peekaboo ana makine TeamID'si + OpenClaw uygulama TeamID'si).
+- İstekler yaklaşık 10 saniye sonra zaman aşımına uğrar.
+- Gerekli izinler eksikse köprü, Sistem Ayarları'nı başlatmak yerine açık bir hata mesajı döndürür.
 
-## Snapshot davranışı (otomasyon)
+## Anlık görüntü davranışı (otomasyon)
 
-Snapshot'lar bellekte saklanır ve kısa bir süre sonra otomatik olarak sona erer.
-Daha uzun saklama gerekiyorsa client'tan yeniden yakalayın.
+Anlık görüntüler bellekte saklanır ve kısa bir sürenin ardından otomatik olarak sona erer. Daha uzun saklama gerekiyorsa istemciden yeniden yakalayın.
 
 ## Sorun giderme
 
-- `peekaboo` “bridge client is not authorized” bildirirse client'ın düzgün
-  imzalandığından emin olun veya host'u yalnızca **debug** modunda
-  `PEEKABOO_ALLOW_UNSIGNED_SOCKET_CLIENTS=1` ile çalıştırın.
-- Hiç host bulunamazsa host uygulamalarından birini açın (Peekaboo.app veya OpenClaw.app)
-  ve izinlerin verildiğini doğrulayın.
+- `peekaboo` "bridge client is not authorized" bildirirse istemcinin düzgün şekilde imzalandığından emin olun veya ana makineyi yalnızca **hata ayıklama** modunda `PEEKABOO_ALLOW_UNSIGNED_SOCKET_CLIENTS=1` ile çalıştırın.
+- Hiçbir ana makine bulunamazsa ana makine uygulamalarından birini açın (Peekaboo.app veya OpenClaw.app) ve izinlerin verildiğini doğrulayın.
 
 ## İlgili
 

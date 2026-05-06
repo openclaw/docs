@@ -1,27 +1,27 @@
 ---
 read_when:
-    - OS desteği veya kurulum yollarını arıyorsunuz
-    - Gateway'i nerede çalıştıracağınıza karar verme
-summary: Platform desteği genel bakışı (Gateway + yardımcı uygulamalar)
+    - İşletim sistemi desteği veya kurulum yolları aranıyor
+    - Gateway’in nerede çalıştırılacağına karar verme
+summary: Platform desteğine genel bakış (Gateway + eşlik eden uygulamalar)
 title: Platformlar
 x-i18n:
-    generated_at: "2026-04-24T09:18:56Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:21:34Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 3ebed9f219f3072ef760006eef47ca78f87169c40a6098c3585dfaf6169fc594
+    source_hash: dd1fbd1af8b03a12014d91b2f300fb8ec65b9c42c38ada2b9ca089181140a75c
     source_path: platforms/index.md
-    workflow: 15
+    workflow: 16
 ---
 
 OpenClaw çekirdeği TypeScript ile yazılmıştır. **Node önerilen çalışma zamanıdır**.
-Gateway için Bun önerilmez — WhatsApp ve
-Telegram kanallarında bilinen sorunlar vardır; ayrıntılar için bkz. [Bun (experimental)](/tr/install/bun).
+Bun, Gateway için önerilmez; WhatsApp ve Telegram kanallarında bilinen
+sorunlar vardır. Ayrıntılar için [Bun (deneysel)](/tr/install/bun) bölümüne bakın.
 
-Yardımcı uygulamalar macOS (menü çubuğu uygulaması) ve mobil Node'lar (iOS/Android) için vardır. Windows ve
-Linux yardımcı uygulamaları planlanmaktadır, ancak Gateway bugün tamamen desteklenmektedir.
-Windows için yerel yardımcı uygulamalar da planlanmaktadır; Gateway için WSL2 önerilir.
+macOS (menü çubuğu uygulaması) ve mobil düğümler (iOS/Android) için eşlikçi uygulamalar vardır. Windows ve
+Linux eşlikçi uygulamaları planlanmaktadır, ancak Gateway bugün tam olarak desteklenmektedir.
+Windows için yerel eşlikçi uygulamalar da planlanmaktadır; Gateway'in WSL2 üzerinden kullanılması önerilir.
 
-## OS seçin
+## İşletim sisteminizi seçin
 
 - macOS: [macOS](/tr/platforms/macos)
 - iOS: [iOS](/tr/platforms/ios)
@@ -31,7 +31,7 @@ Windows için yerel yardımcı uygulamalar da planlanmaktadır; Gateway için WS
 
 ## VPS ve barındırma
 
-- VPS merkezi: [VPS hosting](/tr/vps)
+- VPS merkezi: [VPS barındırma](/tr/vps)
 - Fly.io: [Fly.io](/tr/install/fly)
 - Hetzner (Docker): [Hetzner](/tr/install/hetzner)
 - GCP (Compute Engine): [GCP](/tr/install/gcp)
@@ -40,28 +40,28 @@ Windows için yerel yardımcı uygulamalar da planlanmaktadır; Gateway için WS
 
 ## Yaygın bağlantılar
 
-- Kurulum kılavuzu: [Getting Started](/tr/start/getting-started)
-- Gateway runbook: [Gateway](/tr/gateway)
-- Gateway yapılandırması: [Configuration](/tr/gateway/configuration)
-- Servis durumu: `openclaw gateway status`
+- Kurulum kılavuzu: [Başlarken](/tr/start/getting-started)
+- Gateway runbook'u: [Gateway](/tr/gateway)
+- Gateway yapılandırması: [Yapılandırma](/tr/gateway/configuration)
+- Hizmet durumu: `openclaw gateway status`
 
-## Gateway servis kurulumu (CLI)
+## Gateway hizmet kurulumu (CLI)
 
-Şunlardan birini kullanın (hepsi desteklenir):
+Bunlardan birini kullanın (tümü desteklenir):
 
-- Sihirbaz (önerilen): `openclaw onboard --install-daemon`
+- Sihirbaz (önerilir): `openclaw onboard --install-daemon`
 - Doğrudan: `openclaw gateway install`
-- Yapılandırma akışı: `openclaw configure` → **Gateway service** seçin
-- Onarım/geçiş: `openclaw doctor` (servisi kurmayı veya düzeltmeyi önerir)
+- Yapılandırma akışı: `openclaw configure` → **Gateway hizmeti** seçeneğini belirleyin
+- Onar/taşı: `openclaw doctor` (hizmeti kurmayı veya düzeltmeyi teklif eder)
 
-Servis hedefi OS'e bağlıdır:
+Hizmet hedefi işletim sistemine bağlıdır:
 
 - macOS: LaunchAgent (`ai.openclaw.gateway` veya `ai.openclaw.<profile>`; eski `com.openclaw.*`)
-- Linux/WSL2: systemd kullanıcı servisi (`openclaw-gateway[-<profile>].service`)
-- Yerel Windows: Scheduled Task (`OpenClaw Gateway` veya `OpenClaw Gateway (<profile>)`), görev oluşturma reddedilirse kullanıcı başına Startup klasörü oturum açma öğesi fallback'i ile
+- Linux/WSL2: systemd kullanıcı hizmeti (`openclaw-gateway[-<profile>].service`)
+- Yerel Windows: Scheduled Task (`OpenClaw Gateway` veya `OpenClaw Gateway (<profile>)`), görev oluşturma reddedilirse kullanıcı başına Startup klasörü oturum açma öğesi yedeğiyle
 
 ## İlgili
 
-- [Install overview](/tr/install)
-- [macOS app](/tr/platforms/macos)
-- [iOS app](/tr/platforms/ios)
+- [Kurulum genel bakışı](/tr/install)
+- [macOS uygulaması](/tr/platforms/macos)
+- [iOS uygulaması](/tr/platforms/ios)

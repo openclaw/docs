@@ -1,55 +1,59 @@
 ---
 read_when:
-    - OpenClaw'ı yerel bir SGLang sunucusuna karşı çalıştırmak istiyorsunuz
-    - Kendi modellerinizle OpenAI uyumlu `/v1` uç noktalarını istiyorsunuz
-summary: OpenClaw'ı SGLang ile çalıştırma (OpenAI uyumlu kendi kendine barındırılan sunucu)
+    - OpenClaw'ı yerel bir SGLang sunucusuyla çalıştırmak istiyorsunuz
+    - Kendi modellerinizle OpenAI uyumlu /v1 uç noktaları istiyorsunuz
+summary: OpenClaw'u SGLang ile çalıştırın (OpenAI uyumlu, kendi kendine barındırılan sunucu)
 title: SGLang
 x-i18n:
-    generated_at: "2026-04-24T09:27:42Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:28:40Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8ed6767f85bcf099fb25dfe72a48b8a09e04ba13212125651616d2d93607beba
+    source_hash: 3e65e38868e061e03d15348725971880ca503dc61a7425c1fbdc718fd684728f
     source_path: providers/sglang.md
-    workflow: 15
+    workflow: 16
 ---
 
-SGLang, açık kaynak modelleri **OpenAI uyumlu** bir HTTP API üzerinden sunabilir.
-OpenClaw, SGLang'a `openai-completions` API kullanarak bağlanabilir.
+SGLang, açık ağırlıklı modelleri OpenAI uyumlu bir HTTP API üzerinden sunar. OpenClaw, kullanılabilir modellerin otomatik keşfiyle `openai-completions` sağlayıcı ailesini kullanarak SGLang’e bağlanır.
 
-OpenClaw, `SGLANG_API_KEY` ile katılım sağladığınızda
-(Sunucunuz kimlik doğrulamayı zorlamıyorsa herhangi bir değer çalışır)
-ve açık bir `models.providers.sglang` girdisi tanımlamadığınızda
-SGLang'dan kullanılabilir modelleri **otomatik keşfedebilir**.
+| Özellik                  | Değer                                                        |
+| ------------------------- | ------------------------------------------------------------ |
+| Sağlayıcı kimliği               | `sglang`                                                     |
+| Plugin                    | paketle birlikte gelir, `enabledByDefault: true`                            |
+| Kimlik doğrulama ortam değişkeni              | `SGLANG_API_KEY` (sunucuda kimlik doğrulama yoksa boş olmayan herhangi bir değer) |
+| İlk kurulum bayrağı           | `--auth-choice sglang`                                       |
+| API                       | OpenAI uyumlu (`openai-completions`)                     |
+| Varsayılan temel URL          | `http://127.0.0.1:30000/v1`                                  |
+| Varsayılan model yer tutucusu | `sglang/Qwen/Qwen3-8B`                                       |
+| Akış kullanım bilgisi           | Evet (`supportsStreamingUsage: true`)                         |
+| Fiyatlandırma                   | harici ücretsiz olarak işaretli (`modelPricing.external: false`)        |
 
-OpenClaw, `sglang` değerini yerel, OpenAI uyumlu bir sağlayıcı olarak ele alır ve
-akışlı kullanım muhasebesini destekler; böylece durum/bağlam token sayıları
-`stream_options.include_usage` yanıtlarından güncellenebilir.
+OpenClaw ayrıca `SGLANG_API_KEY` ile dahil olduğunuzda ve açık bir `models.providers.sglang` girdisi tanımlamadığınızda SGLang’den kullanılabilir modelleri **otomatik olarak keşfeder** — aşağıdaki [Model keşfi (örtük sağlayıcı)](#model-discovery-implicit-provider) bölümüne bakın.
 
-## Başlangıç
+## Başlarken
 
 <Steps>
-  <Step title="SGLang'ı başlatın">
-    OpenAI uyumlu bir sunucuyla SGLang'ı başlatın. Base URL'niz
+  <Step title="SGLang’i başlat">
+    SGLang’i OpenAI uyumlu bir sunucuyla başlatın. Temel URL’niz
     `/v1` uç noktalarını açığa çıkarmalıdır (örneğin `/v1/models`, `/v1/chat/completions`). SGLang
-    genellikle şu adreste çalışır:
+    genellikle şurada çalışır:
 
     - `http://127.0.0.1:30000/v1`
 
   </Step>
-  <Step title="Bir API anahtarı ayarlayın">
-    Sunucunuzda kimlik doğrulama yapılandırılmamışsa herhangi bir değer çalışır:
+  <Step title="Bir API anahtarı ayarla">
+    Sunucunuzda kimlik doğrulama yapılandırılmadıysa herhangi bir değer çalışır:
 
     ```bash
     export SGLANG_API_KEY="sglang-local"
     ```
 
   </Step>
-  <Step title="İlk kullanım akışını çalıştırın veya doğrudan bir model ayarlayın">
+  <Step title="İlk kurulumu çalıştır veya doğrudan bir model ayarla">
     ```bash
     openclaw onboard
     ```
 
-    Veya modeli el ile yapılandırın:
+    Veya modeli elle yapılandırın:
 
     ```json5
     {
@@ -66,25 +70,25 @@ akışlı kullanım muhasebesini destekler; böylece durum/bağlam token sayıla
 
 ## Model keşfi (örtük sağlayıcı)
 
-`SGLANG_API_KEY` ayarlandığında (veya bir kimlik doğrulama profili mevcut olduğunda) ve siz
-`models.providers.sglang` tanımlamadığınızda, OpenClaw şu sorguyu yapar:
+`SGLANG_API_KEY` ayarlandığında (veya bir kimlik doğrulama profili mevcut olduğunda) ve `models.providers.sglang`
+tanımlamadığınızda, OpenClaw şunu sorgular:
 
 - `GET http://127.0.0.1:30000/v1/models`
 
-ve dönen kimlikleri model girdilerine dönüştürür.
+ve döndürülen kimlikleri model girdilerine dönüştürür.
 
 <Note>
 `models.providers.sglang` değerini açıkça ayarlarsanız otomatik keşif atlanır ve
-modelleri el ile tanımlamanız gerekir.
+modelleri elle tanımlamanız gerekir.
 </Note>
 
-## Açık yapılandırma (el ile modeller)
+## Açık yapılandırma (elle modeller)
 
-Açık yapılandırmayı şu durumlarda kullanın:
+Şu durumlarda açık yapılandırma kullanın:
 
-- SGLang farklı bir ana makine/port üzerinde çalışıyorsa.
+- SGLang farklı bir ana makine/bağlantı noktasında çalışıyorsa.
 - `contextWindow`/`maxTokens` değerlerini sabitlemek istiyorsanız.
-- Sunucunuz gerçek bir API anahtarı gerektiriyorsa (veya başlıkları denetlemek istiyorsanız).
+- Sunucunuz gerçek bir API anahtarı gerektiriyorsa (veya üst bilgileri denetlemek istiyorsanız).
 
 ```json5
 {
@@ -97,7 +101,7 @@ Açık yapılandırmayı şu durumlarda kullanın:
         models: [
           {
             id: "your-model-id",
-            name: "Yerel SGLang Modeli",
+            name: "Local SGLang Model",
             reasoning: false,
             input: ["text"],
             cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
@@ -115,15 +119,14 @@ Açık yapılandırmayı şu durumlarda kullanın:
 
 <AccordionGroup>
   <Accordion title="Proxy tarzı davranış">
-    SGLang, yerel bir OpenAI uç noktası olarak değil,
-    proxy tarzı OpenAI uyumlu bir `/v1` arka ucu olarak ele alınır.
+    SGLang, yerel bir OpenAI uç noktası olarak değil, proxy tarzı OpenAI uyumlu bir `/v1` arka ucu olarak ele alınır.
 
     | Davranış | SGLang |
     |----------|--------|
-    | Yalnızca OpenAI'ye özgü istek şekillendirme | Uygulanmaz |
+    | Yalnızca OpenAI’ye özgü istek şekillendirme | Uygulanmaz |
     | `service_tier`, Responses `store`, prompt-cache ipuçları | Gönderilmez |
-    | Reasoning uyumluluk payload şekillendirmesi | Uygulanmaz |
-    | Gizli atıf başlıkları (`originator`, `version`, `User-Agent`) | Özel SGLang base URL'lerine enjekte edilmez |
+    | Akıl yürütme uyumlu yük şekillendirme | Uygulanmaz |
+    | Gizli atıf üst bilgileri (`originator`, `version`, `User-Agent`) | Özel SGLang temel URL’lerinde eklenmez |
 
   </Accordion>
 
@@ -138,13 +141,10 @@ Açık yapılandırmayı şu durumlarda kullanın:
 
     **Kimlik doğrulama hataları**
 
-    İstekler kimlik doğrulama hatalarıyla başarısız oluyorsa sunucu yapılandırmanızla eşleşen gerçek bir `SGLANG_API_KEY` ayarlayın
-    veya sağlayıcıyı
-    `models.providers.sglang` altında açıkça yapılandırın.
+    İstekler kimlik doğrulama hatalarıyla başarısız olursa sunucu yapılandırmanızla eşleşen gerçek bir `SGLANG_API_KEY` ayarlayın veya sağlayıcıyı `models.providers.sglang` altında açıkça yapılandırın.
 
     <Tip>
-    SGLang'ı kimlik doğrulama olmadan çalıştırıyorsanız model keşfine katılmak için
-    `SGLANG_API_KEY` için boş olmayan herhangi bir değer yeterlidir.
+    SGLang’i kimlik doğrulama olmadan çalıştırıyorsanız, `SGLANG_API_KEY` için boş olmayan herhangi bir değer model keşfine dahil olmak için yeterlidir.
     </Tip>
 
   </Accordion>
@@ -154,9 +154,9 @@ Açık yapılandırmayı şu durumlarda kullanın:
 
 <CardGroup cols={2}>
   <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
-    Sağlayıcı seçimi, model ref'leri ve failover davranışı.
+    Sağlayıcıları, model başvurularını ve yük devretme davranışını seçme.
   </Card>
   <Card title="Yapılandırma başvurusu" href="/tr/gateway/configuration-reference" icon="gear">
-    Sağlayıcı girdileri dâhil tam yapılandırma şeması.
+    Sağlayıcı girdileri dahil tam yapılandırma şeması.
   </Card>
 </CardGroup>

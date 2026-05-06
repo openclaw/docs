@@ -5,23 +5,21 @@ read_when:
 summary: web_search için Brave Search API kurulumu
 title: Brave araması
 x-i18n:
-    generated_at: "2026-05-02T09:07:17Z"
+    generated_at: "2026-05-06T09:32:17Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b1ecb9e3e5475bb26f4058311429b558f49cdd1df907a622f93f297ac6569d65
+    source_hash: d2bff7589ddb54d002853898c6fc37e613fd32b0fa69cb0d712d5955973efb39
     source_path: tools/brave-search.md
     workflow: 16
 ---
 
-# Brave Search API
-
 OpenClaw, Brave Search API'yi bir `web_search` sağlayıcısı olarak destekler.
 
-## API anahtarı alma
+## API anahtarı alın
 
-1. [https://brave.com/search/api/](https://brave.com/search/api/) adresinde bir Brave Search API hesabı oluşturun.
-2. Panoda **Search** planını seçin ve bir API anahtarı oluşturun.
-3. Anahtarı yapılandırmada saklayın veya Gateway ortamında `BRAVE_API_KEY` ayarlayın.
+1. [https://brave.com/search/api/](https://brave.com/search/api/) adresinde bir Brave Search API hesabı oluşturun
+2. Kontrol panelinde **Search** planını seçin ve bir API anahtarı oluşturun.
+3. Anahtarı yapılandırmada saklayın veya Gateway ortamında `BRAVE_API_KEY` değerini ayarlayın.
 
 ## Yapılandırma örneği
 
@@ -55,15 +53,14 @@ OpenClaw, Brave Search API'yi bir `web_search` sağlayıcısı olarak destekler.
 Sağlayıcıya özgü Brave arama ayarları artık `plugins.entries.brave.config.webSearch.*` altında bulunur.
 Eski `tools.web.search.apiKey` uyumluluk katmanı üzerinden hâlâ yüklenir, ancak artık kanonik yapılandırma yolu değildir.
 
-`webSearch.mode`, Brave aktarımını denetler:
+`webSearch.mode`, Brave aktarımını kontrol eder:
 
-- `web` (varsayılan): başlıklar, URL'ler ve özetlerle normal Brave web araması
-- `llm-context`: temellendirme için önceden çıkarılmış metin parçaları ve kaynaklar içeren Brave LLM Context API
+- `web` (varsayılan): başlıklar, URL'ler ve parçacıklarla normal Brave web araması
+- `llm-context`: önceden çıkarılmış metin parçaları ve temellendirme için kaynaklarla Brave LLM Context API
 
-`webSearch.baseUrl`, Brave isteklerini güvenilir bir Brave uyumlu proxy'ye
-veya Gateway'e yönlendirebilir. OpenClaw, yapılandırılan temel URL'ye
-`/res/v1/web/search` veya `/res/v1/llm/context` ekler ve temel URL'yi önbellek anahtarında tutar. Herkese açık
-uç noktalar `https://` kullanmalıdır; `http://` yalnızca güvenilir loopback
+`webSearch.baseUrl`, Brave isteklerini güvenilir Brave uyumlu bir proxy'ye
+veya gateway'e yönlendirebilir. OpenClaw, yapılandırılan temel URL'ye `/res/v1/web/search` veya `/res/v1/llm/context` ekler ve temel URL'yi önbellek anahtarında tutar. Genel
+uç noktalar `https://` kullanmalıdır; `http://` yalnızca güvenilir local loopback
 veya özel ağ proxy ana makineleri için kabul edilir.
 
 ## Araç parametreleri
@@ -130,19 +127,19 @@ await web_search({
 
 ## Notlar
 
-- OpenClaw, Brave **Search** planını kullanır. Eski bir aboneliğiniz varsa (örn. ayda 2.000 sorgulu orijinal Ücretsiz plan), geçerliliğini korur ancak LLM Context veya daha yüksek hız sınırları gibi yeni özellikleri içermez.
-- Her Brave planı **aylık \$5 ücretsiz kredi** içerir (yenilenir). Search planı 1.000 istek başına \$5 tutarındadır, bu nedenle kredi ayda 1.000 sorguyu kapsar. Beklenmeyen ücretleri önlemek için kullanım sınırınızı Brave panosunda ayarlayın. Güncel planlar için [Brave API portalına](https://brave.com/search/api/) bakın.
-- Search planı, LLM Context uç noktasını ve AI çıkarım haklarını içerir. Modelleri eğitmek veya ayarlamak için sonuçları saklamak, açık depolama hakları olan bir plan gerektirir. Brave [Hizmet Şartlarına](https://api-dashboard.search.brave.com/terms-of-service) bakın.
-- `llm-context` modu, normal web araması özeti biçimi yerine temellendirilmiş kaynak girişleri döndürür.
-- `llm-context` modu `freshness` ve sınırlandırılmış `date_after` + `date_before` aralıklarını destekler. `ui_lang` desteklemez; `date_after` olmadan `date_before` reddedilir çünkü Brave, özel güncellik aralıklarının hem başlangıç hem de bitiş tarihlerini içermesini gerektirir.
+- OpenClaw, Brave **Search** planını kullanır. Eski bir aboneliğiniz varsa (örn. ayda 2.000 sorgu içeren özgün Ücretsiz plan), geçerli kalır ancak LLM Context veya daha yüksek hız sınırları gibi daha yeni özellikleri içermez.
+- Her Brave planı **aylık \$5 ücretsiz kredi** (yenilenen) içerir. Search planı 1.000 istek başına \$5 tutarındadır, bu nedenle kredi ayda 1.000 sorguyu kapsar. Beklenmeyen ücretlerden kaçınmak için kullanım limitinizi Brave kontrol panelinde ayarlayın. Güncel planlar için [Brave API portalına](https://brave.com/search/api/) bakın.
+- Search planı, LLM Context uç noktasını ve AI çıkarım haklarını içerir. Modelleri eğitmek veya ince ayar yapmak için sonuçları saklamak, açık saklama hakları olan bir plan gerektirir. Brave [Hizmet Şartları](https://api-dashboard.search.brave.com/terms-of-service) sayfasına bakın.
+- `llm-context` modu, normal web araması parçacık biçimi yerine temellendirilmiş kaynak girdileri döndürür.
+- `llm-context` modu `freshness` ve sınırlandırılmış `date_after` + `date_before` aralıklarını destekler. `ui_lang` değerini desteklemez; `date_after` olmadan `date_before` reddedilir çünkü Brave, özel güncellik aralıklarının hem başlangıç hem de bitiş tarihlerini içermesini gerektirir.
 - `ui_lang`, `en-US` gibi bir bölge alt etiketi içermelidir.
 - Sonuçlar varsayılan olarak 15 dakika önbelleğe alınır (`cacheTtlMinutes` ile yapılandırılabilir).
-- Özel `webSearch.baseUrl` değerleri Brave önbellek kimliğine dahil edilir, böylece
+- Özel `webSearch.baseUrl` değerleri Brave önbellek kimliğine dahil edilir, bu nedenle
   proxy'ye özgü yanıtlar çakışmaz.
-- Sorun giderirken Brave istek URL'lerini/sorgu parametrelerini, yanıt durumunu/zamanlamasını ve arama önbelleği isabet/kaçırma/yazma olaylarını günlüğe kaydetmek için `brave.http` tanılama bayrağını etkinleştirin. Bayrak hiçbir zaman API anahtarını veya yanıt gövdelerini günlüğe kaydetmez, ancak arama sorguları hassas olabilir.
+- Sorun giderirken Brave istek URL'lerini/sorgu parametrelerini, yanıt durumunu/zamanlamasını ve arama önbelleği isabet/ıskalama/yazma olaylarını günlüğe kaydetmek için `brave.http` tanılama bayrağını etkinleştirin. Bayrak API anahtarını veya yanıt gövdelerini asla günlüğe kaydetmez, ancak arama sorguları hassas olabilir.
 
 ## İlgili
 
-- [Web Aramasına genel bakış](/tr/tools/web) -- tüm sağlayıcılar ve otomatik algılama
+- [Web Araması genel bakışı](/tr/tools/web) -- tüm sağlayıcılar ve otomatik algılama
 - [Perplexity Search](/tr/tools/perplexity-search) -- alan filtrelemeli yapılandırılmış sonuçlar
-- [Exa Search](/tr/tools/exa-search) -- içerik çıkarmalı nöral arama
+- [Exa Search](/tr/tools/exa-search) -- içerik çıkarımlı sinirsel arama

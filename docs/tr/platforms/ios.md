@@ -1,26 +1,26 @@
 ---
 read_when:
-    - iOS Node'unu eşleme veya yeniden bağlama
-    - iOS uygulamasını kaynak koddan çalıştırma
-    - Gateway keşfi veya tuval komutlarında hata ayıklama
-summary: 'iOS Node uygulaması: Gateway’e bağlanma, eşleştirme, canvas ve sorun giderme'
+    - iOS Node'unu eşleştirme veya yeniden bağlama
+    - iOS uygulamasını kaynaktan çalıştırma
+    - Gateway keşfinde veya canvas komutlarında hata ayıklama
+summary: 'iOS düğüm uygulaması: Gateway''e bağlanma, eşleştirme, tuval ve sorun giderme'
 title: iOS uygulaması
 x-i18n:
-    generated_at: "2026-04-30T09:32:14Z"
+    generated_at: "2026-05-06T09:21:51Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 6fdbe578f15d2641d1bcb147fee7626486210cceae0cc355a92b3b2dd6291c35
+    source_hash: aaa8c11d9fda32c743d2ff0d1c6fd5574bcd396aef43aa2e4e9b0cc7b55e5d21
     source_path: platforms/ios.md
     workflow: 16
 ---
 
-Kullanılabilirlik: dahili önizleme. iOS uygulaması henüz herkese açık olarak dağıtılmıyor.
+Kullanılabilirlik: dahili önizleme. iOS uygulaması henüz herkese açık dağıtılmıyor.
 
 ## Ne yapar
 
 - WebSocket üzerinden bir Gateway'e bağlanır (LAN veya tailnet).
-- Düğüm yeteneklerini sunar: Canvas, ekran anlık görüntüsü, kamera yakalama, konum, konuşma modu, sesle uyandırma.
-- `node.invoke` komutlarını alır ve düğüm durum olaylarını bildirir.
+- Node yeteneklerini sunar: Canvas, ekran anlık görüntüsü, kamera yakalama, konum, konuşma modu, sesle uyandırma.
+- `node.invoke` komutlarını alır ve Node durum olaylarını bildirir.
 
 ## Gereksinimler
 
@@ -28,7 +28,7 @@ Kullanılabilirlik: dahili önizleme. iOS uygulaması henüz herkese açık olar
 - Ağ yolu:
   - Bonjour üzerinden aynı LAN, **veya**
   - Unicast DNS-SD üzerinden tailnet (örnek etki alanı: `openclaw.internal.`), **veya**
-  - El ile host/port (yedek).
+  - Manuel ana makine/bağlantı noktası (yedek).
 
 ## Hızlı başlangıç (eşleştir + bağlan)
 
@@ -38,9 +38,9 @@ Kullanılabilirlik: dahili önizleme. iOS uygulaması henüz herkese açık olar
 openclaw gateway --port 18789
 ```
 
-2. iOS uygulamasında Ayarlar'ı açın ve keşfedilen bir gateway seçin (veya Manual Host'u etkinleştirip host/port girin).
+2. iOS uygulamasında Settings'i açın ve keşfedilen bir gateway seçin (veya Manual Host'u etkinleştirip ana makine/bağlantı noktası girin).
 
-3. Gateway host'unda eşleştirme isteğini onaylayın:
+3. Gateway ana makinesinde eşleştirme isteğini onaylayın:
 
 ```bash
 openclaw devices list
@@ -48,11 +48,11 @@ openclaw devices approve <requestId>
 ```
 
 Uygulama değişen kimlik doğrulama ayrıntılarıyla (rol/kapsamlar/açık anahtar)
-eşleştirmeyi yeniden denerse, önceki bekleyen istek geçersiz kılınır ve yeni bir `requestId` oluşturulur.
+eşleştirmeyi yeniden denerse, önceki bekleyen isteğin yerine yenisi geçer ve yeni bir `requestId` oluşturulur.
 Onaydan önce `openclaw devices list` komutunu yeniden çalıştırın.
 
-İsteğe bağlı: iOS düğümü her zaman sıkı denetlenen bir alt ağdan bağlanıyorsa,
-açık CIDR'ler veya tam IP'lerle ilk kez düğüm otomatik onayını etkinleştirebilirsiniz:
+İsteğe bağlı: iOS Node'u her zaman sıkı şekilde denetlenen bir alt ağdan bağlanıyorsa,
+açık CIDR'ler veya tam IP'lerle ilk seferde Node otomatik onayını etkinleştirebilirsiniz:
 
 ```json5
 {
@@ -66,9 +66,9 @@ açık CIDR'ler veya tam IP'lerle ilk kez düğüm otomatik onayını etkinleşt
 }
 ```
 
-Bu varsayılan olarak devre dışıdır. Yalnızca istenen kapsam olmayan yeni `role: node`
-eşleştirmeleri için geçerlidir. Operatör/tarayıcı eşleştirmesi ve herhangi bir rol, kapsam,
-meta veri veya açık anahtar değişikliği yine de el ile onay gerektirir.
+Bu varsayılan olarak devre dışıdır. Yalnızca istenen kapsamı olmayan yeni `role: node`
+eşleştirmesi için geçerlidir. Operatör/tarayıcı eşleştirmesi ve herhangi bir rol, kapsam, metadata veya
+açık anahtar değişikliği yine manuel onay gerektirir.
 
 4. Bağlantıyı doğrulayın:
 
@@ -77,10 +77,9 @@ openclaw nodes status
 openclaw gateway call node.list --params "{}"
 ```
 
-## Resmi derlemeler için relay destekli push
+## Resmi derlemeler için aktarıcı destekli anlık bildirim
 
-Resmi olarak dağıtılan iOS derlemeleri, ham APNs token'ını gateway'e yayımlamak yerine
-harici push relay'ini kullanır.
+Resmi olarak dağıtılan iOS derlemeleri, ham APNs token'ını gateway'e yayımlamak yerine harici anlık bildirim aktarıcısını kullanır.
 
 Gateway tarafı gereksinimi:
 
@@ -98,95 +97,94 @@ Gateway tarafı gereksinimi:
 }
 ```
 
-Akışın işleyişi:
+Akışın çalışma biçimi:
 
-- iOS uygulaması, App Attest ve StoreKit uygulama işlem JWS'si kullanarak relay'e kaydolur.
-- Relay, opak bir relay tanıtıcısı ve kayıt kapsamlı bir gönderme izni döndürür.
-- iOS uygulaması, eşleştirilmiş gateway kimliğini alır ve relay kaydına ekler; böylece relay destekli kayıt söz konusu gateway'e devredilir.
-- Uygulama, bu relay destekli kaydı `push.apns.register` ile eşleştirilmiş gateway'e iletir.
-- Gateway, `push.test`, arka plan uyandırmaları ve uyandırma dürtmeleri için bu saklanan relay tanıtıcısını kullanır.
-- Gateway relay temel URL'si, resmi/TestFlight iOS derlemesine gömülü relay URL'siyle eşleşmelidir.
-- Uygulama daha sonra farklı bir gateway'e veya farklı relay temel URL'sine sahip bir derlemeye bağlanırsa, eski bağlamayı yeniden kullanmak yerine relay kaydını yeniler.
+- iOS uygulaması, App Attest ve bir StoreKit uygulama işlem JWS'si kullanarak aktarıcıya kaydolur.
+- Aktarıcı opak bir aktarıcı tanıtıcısı ve kayda özgü bir gönderme izni döndürür.
+- iOS uygulaması eşleştirilmiş Gateway kimliğini alır ve bunu aktarıcı kaydına ekler; böylece aktarıcı destekli kayıt o belirli Gateway'e devredilir.
+- Uygulama, aktarıcı destekli bu kaydı `push.apns.register` ile eşleştirilmiş Gateway'e iletir.
+- Gateway, `push.test`, arka plan uyandırmaları ve uyandırma dürtmeleri için saklanan bu aktarıcı tanıtıcısını kullanır.
+- Gateway aktarıcı temel URL'si, resmi/TestFlight iOS derlemesine gömülen aktarıcı URL'siyle eşleşmelidir.
+- Uygulama daha sonra farklı bir Gateway'e veya farklı aktarıcı temel URL'sine sahip bir derlemeye bağlanırsa, eski bağlamayı yeniden kullanmak yerine aktarıcı kaydını yeniler.
 
-Gateway'in bu yol için ihtiyaç duymadığı şeyler:
+Gateway'in bu yol için **gereksinim duymadığı** şeyler:
 
-- Dağıtım genelinde relay token'ı yoktur.
-- Resmi/TestFlight relay destekli gönderimler için doğrudan APNs anahtarı yoktur.
+- Dağıtım genelinde aktarıcı token'ı yok.
+- Resmi/TestFlight aktarıcı destekli gönderimler için doğrudan APNs anahtarı yok.
 
 Beklenen operatör akışı:
 
 1. Resmi/TestFlight iOS derlemesini yükleyin.
 2. Gateway üzerinde `gateway.push.apns.relay.baseUrl` değerini ayarlayın.
-3. Uygulamayı gateway ile eşleştirin ve bağlantıyı tamamlamasına izin verin.
-4. Uygulama, APNs token'ına sahip olduktan, operatör oturumu bağlandıktan ve relay kaydı başarılı olduktan sonra `push.apns.register` değerini otomatik olarak yayımlar.
-5. Bundan sonra `push.test`, yeniden bağlanma uyandırmaları ve uyandırma dürtmeleri saklanan relay destekli kaydı kullanabilir.
+3. Uygulamayı Gateway ile eşleştirin ve bağlanmayı tamamlamasına izin verin.
+4. Uygulama, bir APNs token'ına sahip olduktan, operatör oturumu bağlandıktan ve aktarıcı kaydı başarılı olduktan sonra `push.apns.register` komutunu otomatik olarak yayımlar.
+5. Bundan sonra `push.test`, yeniden bağlanma uyandırmaları ve uyandırma dürtmeleri saklanan aktarıcı destekli kaydı kullanabilir.
 
-## Arka plan alive işaretleri
+## Arka plan canlılık işaretleri
 
-iOS, sessiz push, arka plan yenileme veya önemli konum olayı için uygulamayı uyandırdığında, uygulama
-kısa bir düğüm yeniden bağlantısı dener ve ardından `event: "node.presence.alive"` ile `node.event`
-çağırır. Gateway bunu, yalnızca kimliği doğrulanmış düğüm cihaz kimliği bilindikten sonra
-eşleştirilmiş düğüm/cihaz meta verilerinde `lastSeenAtMs`/`lastSeenReason` olarak kaydeder.
+iOS uygulamayı sessiz anlık bildirim, arka plan yenilemesi veya önemli konum olayı için uyandırdığında, uygulama
+kısa bir Node yeniden bağlanması dener ve ardından `event: "node.presence.alive"` ile `node.event` çağırır.
+Gateway bunu, yalnızca kimliği doğrulanmış Node cihaz kimliği bilindikten sonra eşleştirilmiş Node/cihaz metadata'sı üzerinde
+`lastSeenAtMs`/`lastSeenReason` olarak kaydeder.
 
-Uygulama, bir arka plan uyandırmasını yalnızca gateway yanıtı `handled: true` içerdiğinde
-başarıyla kaydedilmiş kabul eder. Eski gateway'ler `node.event` çağrısını `{ "ok": true }` ile
-onaylayabilir; bu yanıt uyumludur ancak kalıcı bir son görülme güncellemesi olarak sayılmaz.
+Uygulama, arka plan uyandırmasının başarıyla kaydedildiğini yalnızca Gateway yanıtı
+`handled: true` içerdiğinde kabul eder. Eski Gateway'ler `node.event` çağrısını `{ "ok": true }` ile onaylayabilir; bu yanıt
+uyumludur ancak kalıcı bir son görülme güncellemesi sayılmaz.
 
 Uyumluluk notu:
 
-- `OPENCLAW_APNS_RELAY_BASE_URL`, gateway için geçici env geçersiz kılması olarak çalışmaya devam eder.
+- `OPENCLAW_APNS_RELAY_BASE_URL`, Gateway için geçici env geçersiz kılması olarak hâlâ çalışır.
 
 ## Kimlik doğrulama ve güven akışı
 
-Relay, doğrudan gateway üzerinde APNs kullanımının resmi iOS derlemeleri için sağlayamayacağı
-iki kısıtı uygulamak için vardır:
+Aktarıcı, resmi iOS derlemeleri için doğrudan Gateway üzerinde APNs yolunun sağlayamayacağı iki kısıtı uygulamak amacıyla vardır:
 
-- Yalnızca Apple üzerinden dağıtılan gerçek OpenClaw iOS derlemeleri barındırılan relay'i kullanabilir.
-- Bir gateway, yalnızca o belirli gateway ile eşleştirilmiş iOS cihazları için relay destekli push gönderebilir.
+- Yalnızca Apple üzerinden dağıtılan özgün OpenClaw iOS derlemeleri barındırılan aktarıcıyı kullanabilir.
+- Bir Gateway, yalnızca o belirli Gateway ile eşleştirilmiş iOS cihazları için aktarıcı destekli anlık bildirim gönderebilir.
 
 Adım adım:
 
 1. `iOS app -> gateway`
-   - Uygulama önce normal Gateway kimlik doğrulama akışı üzerinden gateway ile eşleşir.
-   - Bu, uygulamaya kimliği doğrulanmış bir düğüm oturumu ve kimliği doğrulanmış bir operatör oturumu sağlar.
+   - Uygulama önce normal Gateway kimlik doğrulama akışıyla Gateway ile eşleşir.
+   - Bu, uygulamaya kimliği doğrulanmış bir Node oturumu ve kimliği doğrulanmış bir operatör oturumu sağlar.
    - Operatör oturumu `gateway.identity.get` çağrısı için kullanılır.
 
 2. `iOS app -> relay`
-   - Uygulama relay kayıt uç noktalarını HTTPS üzerinden çağırır.
-   - Kayıt, App Attest kanıtı ve StoreKit uygulama işlem JWS'si içerir.
-   - Relay, bundle ID'yi, App Attest kanıtını ve Apple dağıtım kanıtını doğrular ve
-     resmi/üretim dağıtım yolunu zorunlu kılar.
-   - Bu, yerel Xcode/dev derlemelerinin barındırılan relay'i kullanmasını engelleyen şeydir. Yerel bir derleme
-     imzalanmış olabilir, ancak relay'in beklediği resmi Apple dağıtım kanıtını karşılamaz.
+   - Uygulama, aktarıcı kayıt uç noktalarını HTTPS üzerinden çağırır.
+   - Kayıt, App Attest kanıtı ve bir StoreKit uygulama işlem JWS'si içerir.
+   - Aktarıcı paket kimliğini, App Attest kanıtını ve Apple dağıtım kanıtını doğrular ve
+     resmi/üretim dağıtım yolunu gerektirir.
+   - Barındırılan aktarıcıyı yerel Xcode/geliştirme derlemelerinin kullanmasını engelleyen budur. Yerel bir derleme
+     imzalanmış olabilir, ancak aktarıcının beklediği resmi Apple dağıtım kanıtını karşılamaz.
 
 3. `gateway identity delegation`
-   - Relay kaydından önce uygulama, eşleştirilmiş gateway kimliğini
+   - Aktarıcı kaydından önce uygulama, eşleştirilmiş Gateway kimliğini
      `gateway.identity.get` üzerinden alır.
-   - Uygulama bu gateway kimliğini relay kayıt yüküne ekler.
-   - Relay, bu gateway kimliğine devredilen bir relay tanıtıcısı ve kayıt kapsamlı bir gönderme izni döndürür.
+   - Uygulama bu Gateway kimliğini aktarıcı kayıt yüküne ekler.
+   - Aktarıcı, bu Gateway kimliğine devredilmiş bir aktarıcı tanıtıcısı ve kayda özgü bir gönderme izni döndürür.
 
 4. `gateway -> relay`
-   - Gateway, `push.apns.register` üzerinden gelen relay tanıtıcısını ve gönderme iznini saklar.
-   - `push.test`, yeniden bağlanma uyandırmaları ve uyandırma dürtmeleri sırasında gateway, gönderme isteğini kendi
-     cihaz kimliğiyle imzalar.
-   - Relay, hem saklanan gönderme iznini hem de gateway imzasını, kayıttan gelen devredilmiş
-     gateway kimliğine göre doğrular.
-   - Başka bir gateway, tanıtıcıyı bir şekilde elde etse bile bu saklanan kaydı yeniden kullanamaz.
+   - Gateway, `push.apns.register` üzerinden gelen aktarıcı tanıtıcısını ve gönderme iznini saklar.
+   - `push.test`, yeniden bağlanma uyandırmaları ve uyandırma dürtmelerinde Gateway, gönderme isteğini
+     kendi cihaz kimliğiyle imzalar.
+   - Aktarıcı, hem saklanan gönderme iznini hem de Gateway imzasını, kayıttan gelen devredilmiş
+     Gateway kimliğine karşı doğrular.
+   - Başka bir Gateway, tanıtıcıyı bir şekilde ele geçirse bile saklanan bu kaydı yeniden kullanamaz.
 
 5. `relay -> APNs`
-   - Relay, resmi derleme için üretim APNs kimlik bilgilerine ve ham APNs token'ına sahiptir.
-   - Gateway, relay destekli resmi derlemeler için ham APNs token'ını asla saklamaz.
-   - Relay, son push'u eşleştirilmiş gateway adına APNs'ye gönderir.
+   - Aktarıcı, resmi derleme için üretim APNs kimlik bilgilerine ve ham APNs token'ına sahiptir.
+   - Gateway, aktarıcı destekli resmi derlemeler için ham APNs token'ını hiçbir zaman saklamaz.
+   - Aktarıcı, eşleştirilmiş Gateway adına son anlık bildirimi APNs'ye gönderir.
 
-Bu tasarımın oluşturulma nedeni:
+Bu tasarımın oluşturulma nedenleri:
 
-- Üretim APNs kimlik bilgilerini kullanıcı gateway'lerinden uzak tutmak.
-- Ham resmi derleme APNs token'larını gateway üzerinde saklamaktan kaçınmak.
-- Barındırılan relay kullanımına yalnızca resmi/TestFlight OpenClaw derlemeleri için izin vermek.
-- Bir gateway'in farklı bir gateway'e ait iOS cihazlarına uyandırma push'ları göndermesini önlemek.
+- Üretim APNs kimlik bilgilerini kullanıcı Gateway'lerinden uzak tutmak.
+- Resmi derleme ham APNs token'larını Gateway'de saklamaktan kaçınmak.
+- Barındırılan aktarıcı kullanımını yalnızca resmi/TestFlight OpenClaw derlemelerine izinli kılmak.
+- Bir Gateway'in farklı bir Gateway'e ait iOS cihazlarına uyandırma anlık bildirimi göndermesini önlemek.
 
-Yerel/el ile derlemeler doğrudan APNs üzerinde kalır. Bu derlemeleri relay olmadan test ediyorsanız,
-gateway'in yine de doğrudan APNs kimlik bilgilerine ihtiyacı vardır:
+Yerel/manuel derlemeler doğrudan APNs üzerinde kalır. Bu derlemeleri aktarıcı olmadan test ediyorsanız,
+Gateway'in yine de doğrudan APNs kimlik bilgilerine ihtiyacı vardır:
 
 ```bash
 export OPENCLAW_APNS_TEAM_ID="TEAMID"
@@ -194,11 +192,11 @@ export OPENCLAW_APNS_KEY_ID="KEYID"
 export OPENCLAW_APNS_PRIVATE_KEY_P8="$(cat /path/to/AuthKey_KEYID.p8)"
 ```
 
-Bunlar gateway host çalışma zamanı env değişkenleridir, Fastlane ayarları değildir. `apps/ios/fastlane/.env` yalnızca
+Bunlar Gateway ana makinesi çalışma zamanı env var'larıdır, Fastlane ayarları değildir. `apps/ios/fastlane/.env` yalnızca
 `ASC_KEY_ID` ve `ASC_ISSUER_ID` gibi App Store Connect / TestFlight kimlik doğrulamasını saklar; yerel iOS derlemeleri için
-doğrudan APNs teslimatını yapılandırmaz.
+doğrudan APNs teslimini yapılandırmaz.
 
-Önerilen gateway host saklama konumu:
+Önerilen Gateway ana makinesi depolaması:
 
 ```bash
 mkdir -p ~/.openclaw/credentials/apns
@@ -208,29 +206,29 @@ chmod 600 ~/.openclaw/credentials/apns/AuthKey_KEYID.p8
 export OPENCLAW_APNS_PRIVATE_KEY_PATH="$HOME/.openclaw/credentials/apns/AuthKey_KEYID.p8"
 ```
 
-`.p8` dosyasını commit etmeyin veya repo checkout altına koymayın.
+`.p8` dosyasını commit etmeyin veya repo checkout'unun altına koymayın.
 
 ## Keşif yolları
 
 ### Bonjour (LAN)
 
 iOS uygulaması `local.` üzerinde `_openclaw-gw._tcp` ve yapılandırıldığında aynı
-geniş alan DNS-SD keşif etki alanını tarar. Aynı LAN gateway'leri `local.` üzerinden otomatik olarak görünür;
-ağlar arası keşif, beacon türünü değiştirmeden yapılandırılmış geniş alan etki alanını kullanabilir.
+geniş alan DNS-SD keşif etki alanını tarar. Aynı LAN Gateway'leri `local.` üzerinden otomatik olarak görünür;
+ağlar arası keşif, beacon türünü değiştirmeden yapılandırılan geniş alan etki alanını kullanabilir.
 
 ### Tailnet (ağlar arası)
 
-mDNS engellenmişse, unicast DNS-SD bölgesi (bir etki alanı seçin; örnek:
+mDNS engellenmişse bir unicast DNS-SD bölgesi kullanın (bir etki alanı seçin; örnek:
 `openclaw.internal.`) ve Tailscale split DNS kullanın.
-CoreDNS örneği için [Bonjour](/tr/gateway/bonjour) bölümüne bakın.
+CoreDNS örneği için [Bonjour](/tr/gateway/bonjour) sayfasına bakın.
 
-### El ile host/port
+### Manuel ana makine/bağlantı noktası
 
-Ayarlar'da **Manual Host** seçeneğini etkinleştirin ve gateway host + port değerini girin (varsayılan `18789`).
+Settings içinde **Manual Host** seçeneğini etkinleştirin ve Gateway ana makinesi + bağlantı noktasını girin (varsayılan `18789`).
 
 ## Canvas + A2UI
 
-iOS düğümü bir WKWebView canvas işler. Bunu yönetmek için `node.invoke` kullanın:
+iOS Node'u bir WKWebView canvas işler. Onu sürmek için `node.invoke` kullanın:
 
 ```bash
 openclaw nodes invoke --node "iOS Node" --command canvas.navigate --params '{"url":"http://<gateway-host>:18789/__openclaw__/canvas/"}'
@@ -238,21 +236,21 @@ openclaw nodes invoke --node "iOS Node" --command canvas.navigate --params '{"ur
 
 Notlar:
 
-- Gateway canvas host'u `/__openclaw__/canvas/` ve `/__openclaw__/a2ui/` sunar.
-- Gateway HTTP sunucusundan sunulur (`gateway.port` ile aynı port, varsayılan `18789`).
-- Bir canvas host URL'si duyurulduğunda iOS düğümü bağlantı sırasında otomatik olarak A2UI'ye gider.
-- Yerleşik iskelete dönmek için `canvas.navigate` ve `{"url":""}` kullanın.
+- Gateway canvas ana makinesi `/__openclaw__/canvas/` ve `/__openclaw__/a2ui/` sunar.
+- Gateway HTTP sunucusundan sunulur (`gateway.port` ile aynı bağlantı noktası, varsayılan `18789`).
+- Bir canvas ana makinesi URL'si duyurulduğunda iOS Node'u bağlantıda A2UI'ye otomatik olarak gider.
+- Yerleşik iskeleye `canvas.navigate` ve `{"url":""}` ile dönün.
 
 ## Computer Use ilişkisi
 
-iOS uygulaması bir mobil düğüm yüzeyidir, Codex Computer Use backend'i değildir. Codex
-Computer Use ve `cua-driver mcp`, MCP araçları üzerinden yerel bir macOS masaüstünü kontrol eder;
-iOS uygulaması ise `canvas.*`, `camera.*`, `screen.*`, `location.*` ve `talk.*` gibi
-OpenClaw düğüm komutları üzerinden iPhone yeteneklerini sunar.
+iOS uygulaması bir mobil Node yüzeyidir, Codex Computer Use arka ucu değildir. Codex
+Computer Use ve `cua-driver mcp`, MCP araçları üzerinden yerel bir macOS masaüstünü denetler;
+iOS uygulaması ise OpenClaw Node komutları üzerinden iPhone yeteneklerini sunar:
+`canvas.*`, `camera.*`, `screen.*`, `location.*` ve `talk.*`.
 
-Agent'lar, düğüm komutlarını çağırarak OpenClaw üzerinden iOS uygulamasını yine de çalıştırabilir,
-ancak bu çağrılar gateway düğüm protokolünden geçer ve iOS ön plan/arka plan sınırlarına uyar.
-Yerel masaüstü kontrolü için [Codex Computer Use](/tr/plugins/codex-computer-use), iOS düğüm yetenekleri için bu sayfayı kullanın.
+Agents, Node komutlarını çağırarak OpenClaw üzerinden iOS uygulamasını yine de çalıştırabilir,
+ancak bu çağrılar Gateway Node protokolünden geçer ve iOS ön plan/arka plan sınırlarına uyar.
+Yerel masaüstü denetimi için [Codex Computer Use](/tr/plugins/codex-computer-use), iOS Node yetenekleri için bu sayfayı kullanın.
 
 ### Canvas eval / anlık görüntü
 
@@ -266,18 +264,21 @@ openclaw nodes invoke --node "iOS Node" --command canvas.snapshot --params '{"ma
 
 ## Sesle uyandırma + konuşma modu
 
-- Sesle uyandırma ve konuşma modu Ayarlar'da kullanılabilir.
+- Sesle uyandırma ve konuşma modu Settings içinde kullanılabilir.
+- Konuşma destekli iOS Node'ları `talk` yeteneğini duyurur ve
+  `talk.ptt.start`, `talk.ptt.stop`, `talk.ptt.cancel` ve `talk.ptt.once` bildirebilir;
+  Gateway, güvenilir konuşma destekli Node'lar için bu bas-konuş komutlarına varsayılan olarak izin verir.
 - iOS arka plan sesini askıya alabilir; uygulama etkin değilken ses özelliklerini en iyi çaba olarak değerlendirin.
 
 ## Yaygın hatalar
 
 - `NODE_BACKGROUND_UNAVAILABLE`: iOS uygulamasını ön plana getirin (canvas/kamera/ekran komutları bunu gerektirir).
-- `A2UI_HOST_NOT_CONFIGURED`: Gateway bir canvas host URL'si duyurmadı; [Gateway yapılandırması](/tr/gateway/configuration) içinde `canvasHost` değerini kontrol edin.
-- Eşleştirme istemi hiç görünmüyor: `openclaw devices list` çalıştırın ve el ile onaylayın.
-- Yeniden yüklemeden sonra yeniden bağlanma başarısız oluyor: Keychain eşleştirme token'ı temizlenmiştir; düğümü yeniden eşleştirin.
+- `A2UI_HOST_NOT_CONFIGURED`: Gateway bir canvas ana makinesi URL'si duyurmadı; [Gateway yapılandırması](/tr/gateway/configuration) içinde `canvasHost` değerini kontrol edin.
+- Eşleştirme istemi hiç görünmüyor: `openclaw devices list` çalıştırın ve manuel olarak onaylayın.
+- Yeniden yüklemeden sonra yeniden bağlanma başarısız oluyor: Keychain eşleştirme token'ı temizlenmiştir; Node'u yeniden eşleştirin.
 
-## İlgili belgeler
+## İlgili dokümanlar
 
-- [Eşleştirme](/tr/channels/pairing)
-- [Keşif](/tr/gateway/discovery)
+- [Pairing](/tr/channels/pairing)
+- [Discovery](/tr/gateway/discovery)
 - [Bonjour](/tr/gateway/bonjour)

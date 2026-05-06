@@ -1,37 +1,37 @@
 ---
 read_when:
-    - OpenClaw'ın neleri desteklediğinin tam bir listesini istiyorsunuz
-summary: Kanallar, yönlendirme, medya ve UX genelinde OpenClaw yetenekleri.
+    - OpenClaw’ın desteklediklerinin tam listesini istiyorsunuz
+summary: Kanallar, yönlendirme, medya ve kullanıcı deneyimi genelinde OpenClaw yetenekleri.
 title: Özellikler
 x-i18n:
-    generated_at: "2026-04-24T09:05:18Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:07:34Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b188d786b06e1a51d42130242e8bef6290a728783f24b2fbce513bf4d6c9ec23
+    source_hash: d46085b326dd1e5f0d5531bdf8d7d84ac8c22b7fb4637b7183be2bd9d556c500
     source_path: concepts/features.md
-    workflow: 15
+    workflow: 16
 ---
 
-## Öne Çıkanlar
+## Öne çıkanlar
 
 <Columns>
   <Card title="Kanallar" icon="message-square" href="/tr/channels">
     Tek bir Gateway ile Discord, iMessage, Signal, Slack, Telegram, WhatsApp, WebChat ve daha fazlası.
   </Card>
-  <Card title="Plugins" icon="plug" href="/tr/tools/plugin">
-    Paketlenmiş Plugins, normal güncel sürümlerde ayrı kurulum gerektirmeden Matrix, Nextcloud Talk, Nostr, Twitch, Zalo ve daha fazlasını ekler.
+  <Card title="Pluginler" icon="plug" href="/tr/tools/plugin">
+    Paketli pluginler, normal güncel sürümlerde ayrı kurulum gerektirmeden Matrix, Nextcloud Talk, Nostr, Twitch, Zalo ve daha fazlasını ekler.
   </Card>
   <Card title="Yönlendirme" icon="route" href="/tr/concepts/multi-agent">
-    Yalıtılmış oturumlarla çoklu ajan yönlendirmesi.
+    Yalıtılmış oturumlarla çoklu aracı yönlendirmesi.
   </Card>
   <Card title="Medya" icon="image" href="/tr/nodes/images">
     Görseller, ses, video, belgeler ve görsel/video üretimi.
   </Card>
   <Card title="Uygulamalar ve UI" icon="monitor" href="/tr/web/control-ui">
-    Web Control UI ve macOS yardımcı uygulaması.
+    Web Control UI ve macOS eşlikçi uygulaması.
   </Card>
-  <Card title="Mobil Node'lar" icon="smartphone" href="/tr/nodes">
-    Eşleştirme, sesli/sohbet ve zengin cihaz komutları ile iOS ve Android Node'ları.
+  <Card title="Mobil düğümler" icon="smartphone" href="/tr/nodes">
+    Eşleştirme, ses/sohbet ve zengin cihaz komutlarıyla iOS ve Android düğümleri.
   </Card>
 </Columns>
 
@@ -39,48 +39,60 @@ x-i18n:
 
 **Kanallar:**
 
-- Yerleşik kanallar arasında Discord, Google Chat, iMessage (legacy), IRC, Signal, Slack, Telegram, WebChat ve WhatsApp bulunur
-- Paketlenmiş Plugin kanalları arasında iMessage için BlueBubbles, Feishu, LINE, Matrix, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Synology Chat, Tlon, Twitch, Zalo ve Zalo Personal bulunur
-- İsteğe bağlı ayrı kurulan kanal Plugins arasında Voice Call ve WeChat gibi üçüncü taraf paketler bulunur
-- WeChat gibi üçüncü taraf kanal Plugins, Gateway'i daha da genişletebilir
-- Mention tabanlı etkinleştirme ile grup sohbeti desteği
+- Yerleşik kanallar Discord, Google Chat, iMessage (eski), IRC, Signal, Slack, Telegram, WebChat ve WhatsApp içerir
+- Paketli plugin kanalları iMessage için BlueBubbles, Feishu, LINE, Matrix, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Synology Chat, Tlon, Twitch, Zalo ve Zalo Personal içerir
+- İsteğe bağlı olarak ayrı kurulan kanal pluginleri Voice Call ve WeChat gibi üçüncü taraf paketleri içerir
+- Üçüncü taraf kanal pluginleri Gateway'i WeChat gibi seçeneklerle daha da genişletebilir
+- Bahsetme tabanlı etkinleştirmeyle grup sohbeti desteği
 - İzin listeleri ve eşleştirme ile DM güvenliği
 
-**Ajan:**
+**Aracı:**
 
-- Araç akışı ile gömülü ajan çalışma zamanı
-- Çalışma alanı veya gönderen başına yalıtılmış oturumlarla çoklu ajan yönlendirmesi
-- Oturumlar: doğrudan sohbetler paylaşılan `main` içine çöker; gruplar yalıtılır
-- Uzun yanıtlar için akış ve parçalama
+- Araç akışıyla gömülü aracı çalışma zamanı
+- Çalışma alanı veya gönderici başına yalıtılmış oturumlarla çoklu aracı yönlendirmesi
+- Oturumlar: doğrudan sohbetler paylaşılan `main` içinde birleştirilir; gruplar yalıtılır
+- Uzun yanıtlar için akış ve parçalara ayırma
 
 **Kimlik doğrulama ve sağlayıcılar:**
 
-- 35'ten fazla model sağlayıcısı (Anthropic, OpenAI, Google ve daha fazlası)
-- OAuth üzerinden abonelik kimlik doğrulaması (ör. OpenAI Codex)
-- Özel ve self-hosted sağlayıcı desteği (vLLM, SGLang, Ollama ve OpenAI uyumlu veya Anthropic uyumlu herhangi bir uç nokta)
+- 35+ model sağlayıcısı (Anthropic, OpenAI, Google ve daha fazlası)
+- OAuth üzerinden abonelik kimlik doğrulaması (örn. OpenAI Codex)
+- Özel ve kendi barındırdığınız sağlayıcı desteği (vLLM, SGLang, Ollama ve OpenAI uyumlu veya Anthropic uyumlu herhangi bir uç nokta)
 
 **Medya:**
 
-- Görseller, ses, video ve belgeler girişte ve çıkışta
+- İçeri ve dışarı görseller, ses, video ve belgeler
 - Paylaşılan görsel üretimi ve video üretimi yetenek yüzeyleri
-- Sesli not transkripsiyonu
-- Birden çok sağlayıcıyla metinden sese
+- Sesli not deşifresi
+- Birden fazla sağlayıcıyla metinden konuşmaya dönüştürme
 
 **Uygulamalar ve arayüzler:**
 
 - WebChat ve tarayıcı Control UI
-- macOS menü çubuğu yardımcı uygulaması
-- Eşleştirme, Canvas, kamera, ekran kaydı, konum ve ses ile iOS Node'u
-- Eşleştirme, sohbet, ses, Canvas, kamera ve cihaz komutları ile Android Node'u
+- macOS menü çubuğu eşlikçi uygulaması
+- Eşleştirme, Canvas, kamera, ekran kaydı, konum ve ses özellikli iOS düğümü
+- Eşleştirme, sohbet, ses, Canvas, kamera ve cihaz komutları özellikli Android düğümü
 
 **Araçlar ve otomasyon:**
 
 - Tarayıcı otomasyonu, exec, sandboxing
 - Web araması (Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG, Tavily)
 - Cron işleri ve Heartbeat zamanlaması
-- Skills, Plugins ve iş akışı işlem hatları (Lobster)
+- Skills, pluginler ve iş akışı hatları (Lobster)
 
 ## İlgili
 
-- [Deneysel özellikler](/tr/concepts/experimental-features)
-- [Ajan çalışma zamanı](/tr/concepts/agent)
+<CardGroup cols={2}>
+  <Card title="Deneysel özellikler" href="/tr/concepts/experimental-features" icon="flask">
+    Henüz varsayılan yüzeye sunulmamış, isteğe bağlı etkinleştirilen özellikler.
+  </Card>
+  <Card title="Aracı çalışma zamanı" href="/tr/concepts/agent" icon="robot">
+    Aracı çalışma zamanı modeli ve çalıştırmaların nasıl dağıtıldığı.
+  </Card>
+  <Card title="Kanallar" href="/tr/channels" icon="message-square">
+    Telegram, WhatsApp, Discord, Slack ve daha fazlasını tek bir Gateway üzerinden bağlayın.
+  </Card>
+  <Card title="Pluginler" href="/tr/tools/plugin" icon="plug">
+    OpenClaw'ı genişleten paketli ve üçüncü taraf pluginler.
+  </Card>
+</CardGroup>

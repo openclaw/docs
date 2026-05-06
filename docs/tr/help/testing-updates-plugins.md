@@ -1,42 +1,42 @@
 ---
 read_when:
-    - OpenClaw güncelleme, tanılama, paket kabulü veya Plugin yükleme davranışını değiştirme
+    - OpenClaw güncelleme, doctor, paket kabulü veya Plugin yükleme davranışını değiştirme
     - Bir sürüm adayını hazırlama veya onaylama
-    - Paket güncellemesi, Plugin bağımlılığı temizliği veya Plugin kurulum regresyonlarında hata ayıklama
+    - Paket güncellemesi, Plugin bağımlılığı temizliği veya Plugin yükleme gerilemelerinde hata ayıklama
 sidebarTitle: Update and plugin tests
-summary: OpenClaw güncelleme yollarını, paket geçişlerini ve Plugin yükleme/güncelleme davranışını nasıl doğrular
-title: 'Test: güncellemeler ve Plugin''ler'
+summary: OpenClaw güncelleme yollarını, paket migrasyonlarını ve Plugin yükleme/güncelleme davranışını nasıl doğrular
+title: 'Test etme: güncellemeler ve Plugin''ler'
 x-i18n:
-    generated_at: "2026-05-05T06:17:58Z"
+    generated_at: "2026-05-06T09:17:11Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 19ae526d3daa8a1b67cb2f74225138b3e1fa192c9f956c9dd6d0e407581b9ed9
+    source_hash: db3790bb8c6b952458342727f3e326f9610b4d8155889dfdadb143e3ef07aa46
     source_path: help/testing-updates-plugins.md
     workflow: 16
 ---
 
 Bu, güncelleme ve Plugin doğrulaması için ayrılmış kontrol listesidir. Amaç
 basit: kurulabilir paketin gerçek kullanıcı durumunu güncelleyebildiğini, eski
-kalıcı durumu `doctor` üzerinden onarabildiğini ve desteklenen kaynaklardan
-Pluginleri hâlâ kurabildiğini, yükleyebildiğini, güncelleyebildiğini ve
+kalıcı durumu `doctor` ile onarabildiğini ve desteklenen kaynaklardan
+Plugin'leri hâlâ kurabildiğini, yükleyebildiğini, güncelleyebildiğini ve
 kaldırabildiğini kanıtlamak.
 
 Daha geniş test çalıştırıcı haritası için bkz. [Test Etme](/tr/help/testing). Canlı sağlayıcı
 anahtarları ve ağa dokunan paketler için bkz. [Canlı test etme](/tr/help/testing-live).
 
-## Neyi koruruz
+## Neyi koruyoruz
 
 Güncelleme ve Plugin testleri şu sözleşmeleri korur:
 
 - Bir paket tarball'ı eksiksizdir, geçerli bir `dist/postinstall-inventory.json`
-  içerir ve açılmış depo dosyalarına bağlı değildir.
-- Bir kullanıcı, yapılandırmayı, ajanları, oturumları, çalışma alanlarını, Plugin
-  izin listelerini veya kanal yapılandırmasını kaybetmeden eski yayımlanmış bir
-  paketten aday pakete geçebilir.
-- `openclaw doctor --fix --non-interactive`, eski temizlik ve onarım yollarının
-  sahibidir. Başlatma, kalıcı Plugin durumu için gizli uyumluluk geçişleri
-  büyütmemelidir.
-- Plugin kurulumları yerel dizinlerden, git depolarından, npm paketlerinden ve
+  içerir ve açılmamış repo dosyalarına bağlı değildir.
+- Kullanıcı, yapılandırmayı, ajanları, oturumları, çalışma alanlarını, Plugin
+  izin listelerini veya kanal yapılandırmasını kaybetmeden daha eski yayımlanmış
+  bir paketten aday pakete geçebilir.
+- `openclaw doctor --fix --non-interactive`, eski temizleme ve onarım
+  yollarının sahibidir. Başlangıç, kalıcı eski Plugin durumu için gizli
+  uyumluluk geçişleri büyütmemelidir.
+- Plugin kurulumları yerel dizinlerden, git repolarından, npm paketlerinden ve
   ClawHub kayıt yolu üzerinden çalışır.
 - Plugin npm bağımlılıkları yönetilen npm köküne kurulur, güvenden önce taranır
   ve kaldırma sırasında npm üzerinden kaldırılır; böylece yukarı taşınmış
@@ -54,32 +54,32 @@ pnpm check:changed
 pnpm test:changed
 ```
 
-Plugin kurma, kaldırma, bağımlılık veya paket envanteri değişiklikleri için,
-düzenlenen hattı kapsayan odaklı testleri de çalıştırın:
+Plugin kurulumu, kaldırması, bağımlılığı veya paket envanteri değişiklikleri için,
+düzenlenen yüzeyi kapsayan odaklı testleri de çalıştırın:
 
 ```bash
 pnpm test src/plugins/uninstall.test.ts src/infra/package-dist-inventory.test.ts test/scripts/package-acceptance-workflow.test.ts
 ```
 
-Herhangi bir paket Docker hattı bir tarball tüketmeden önce paket artefaktını
+Herhangi bir paket Docker hattı bir tarball tüketmeden önce paket yapıtını
 kanıtlayın:
 
 ```bash
 pnpm release:check
 ```
 
-`release:check`, config/docs/API sapma kontrollerini çalıştırır, paket dist
-envanterini yazar, `npm pack --dry-run` çalıştırır, yasaklı paketlenmiş
+`release:check`, yapılandırma/belge/API kayma kontrollerini çalıştırır, paket
+dist envanterini yazar, `npm pack --dry-run` çalıştırır, paketlenmesi yasak
 dosyaları reddeder, tarball'ı geçici bir öneke kurar, postinstall çalıştırır ve
-paketlenmiş kanal giriş noktalarında smoke testi yapar.
+paketli kanal giriş noktalarını duman testinden geçirir.
 
 ## Docker hatları
 
-Docker hatları ürün düzeyi kanıttır. Linux kapsayıcıları içinde gerçek bir
-paketi kurar veya günceller ve davranışı CLI komutları, Gateway başlatma, HTTP
+Docker hatları ürün düzeyi kanıttır. Linux kapsayıcıları içinde gerçek bir paketi
+kurar veya günceller ve davranışı CLI komutları, Gateway başlangıcı, HTTP
 yoklamaları, RPC durumu ve dosya sistemi durumu üzerinden doğrular.
 
-Yineleme sırasında odaklı hatları kullanın:
+Yineleme yaparken odaklı hatları kullanın:
 
 ```bash
 pnpm test:docker:plugins
@@ -93,40 +93,41 @@ pnpm test:docker:update-migration
 
 Önemli hatlar:
 
-- `test:docker:plugins`, Plugin kurulum smoke testini, yerel klasör kurulumlarını,
-  yerel klasör güncelleme atlama davranışını, önceden kurulu bağımlılıkları olan
-  yerel klasörleri, `file:` paket kurulumlarını, CLI yürütmeli git kurulumlarını,
-  git hareketli-ref güncellemelerini, yukarı taşınmış geçişli bağımlılıkları olan
-  npm kayıt kurulumlarını, npm güncelleme no-op'larını, yerel ClawHub fixture
-  kurulumlarını ve güncelleme no-op'larını, marketplace güncelleme davranışını ve
-  Claude-bundle etkinleştirme/incelemeyi doğrular. ClawHub bloğunu hermetik/çevrimdışı
+- `test:docker:plugins`, Plugin kurulum duman testini, yerel klasör
+  kurulumlarını, yerel klasör güncelleme atlama davranışını, önceden kurulu
+  bağımlılıkları olan yerel klasörleri, `file:` paket kurulumlarını, CLI
+  yürütmeli git kurulumlarını, hareket eden ref git güncellemelerini, yukarı
+  taşınmış geçişli bağımlılıklarla npm kayıt kurulumlarını, npm güncelleme
+  işlemsizliklerini, yerel ClawHub fixture kurulumlarını ve güncelleme
+  işlemsizliklerini, pazar yeri güncelleme davranışını ve Claude paketi
+  etkinleştirme/incelemesini doğrular. ClawHub bloğunu hermetik/çevrimdışı
   tutmak için `OPENCLAW_PLUGINS_E2E_CLAWHUB=0` ayarlayın.
-- `test:docker:plugin-lifecycle-matrix`, aday paketi çıplak bir kapsayıcıya
-  kurar; bir npm Pluginini kurma, inceleme, devre dışı bırakma, etkinleştirme,
-  açık yükseltme, açık düşürme ve Plugin kodu silindikten sonra kaldırma
+- `test:docker:plugin-lifecycle-matrix`, aday paketi boş bir kapsayıcıya kurar;
+  bir npm Plugin'ini kurulum, inceleme, devre dışı bırakma, etkinleştirme,
+  açık yükseltme, açık düşürme ve Plugin kodunu sildikten sonra kaldırma
   süreçlerinden geçirir. Her aşama için RSS ve CPU metriklerini günlüğe yazar.
-- `test:docker:plugin-update`, değişmemiş kurulu bir Pluginin
+- `test:docker:plugin-update`, değişmemiş kurulu bir Plugin'in
   `openclaw plugins update` sırasında yeniden kurulmadığını veya kurulum
-  meta verilerini kaybetmediğini doğrular.
-- `test:docker:upgrade-survivor`, aday tarball'ı kirli bir eski kullanıcı
-  fixture'ının üzerine kurar, paket güncellemesi ve etkileşimsiz doctor çalıştırır,
-  ardından bir loopback Gateway başlatır ve durumun korunduğunu kontrol eder.
-- `test:docker:published-upgrade-survivor`, önce yayımlanmış bir temel sürümü
-  kurar, onu gömülü bir `openclaw config set` tarifiyle yapılandırır, aday
-  tarball'a günceller, doctor çalıştırır, eski temizliği kontrol eder, Gateway'i
-  başlatır ve `/healthz`, `/readyz` ile RPC durumunu yoklar.
+  meta verisini kaybetmediğini doğrular.
+- `test:docker:upgrade-survivor`, aday tarball'ı kirli eski kullanıcı fixture'ı
+  üzerine kurar, paket güncellemesini ve etkileşimsiz doctor'ı çalıştırır,
+  ardından bir loopback Gateway başlatır ve durum korunmasını denetler.
+- `test:docker:published-upgrade-survivor`, önce yayımlanmış bir temeli kurar,
+  bunu gömülü bir `openclaw config set` tarifiyle yapılandırır, aday tarball'a
+  günceller, doctor'ı çalıştırır, eski temizlemeyi denetler, Gateway'i başlatır
+  ve `/healthz`, `/readyz` ile RPC durumunu yoklar.
 - `test:docker:update-restart-auth`, aday paketi kurar, yönetilen token-auth
   Gateway başlatır, `openclaw update --yes --json` için çağıranın gateway auth
-  env değerini kaldırır ve aday güncelleme komutunun normal yoklamalardan önce
+  ortamını kaldırır ve aday güncelleme komutunun normal yoklamalardan önce
   Gateway'i yeniden başlatmasını gerektirir.
-- `test:docker:update-migration`, temizlik ağırlıklı yayımlanmış güncelleme
-  hattıdır. Yapılandırılmış Discord/Telegram tarzı bir kullanıcı durumundan
-  başlar, yapılandırılmış Plugin bağımlılıklarının oluşma şansı olması için
-  temel doctor çalıştırır, yapılandırılmış paketlenmiş bir Plugin için eski
-  Plugin bağımlılık kalıntılarını eker, aday tarball'a günceller ve güncelleme
-  sonrası doctor'ın eski bağımlılık köklerini kaldırmasını gerektirir.
+- `test:docker:update-migration`, temizleme ağırlıklı yayımlanmış güncelleme
+  hattıdır. Yapılandırılmış Discord/Telegram tarzı kullanıcı durumundan başlar,
+  yapılandırılmış Plugin bağımlılıklarının oluşma şansı olması için temel
+  doctor'ı çalıştırır, yapılandırılmış paketli bir Plugin için eski Plugin
+  bağımlılık kalıntısı tohumlar, aday tarball'a günceller ve güncelleme sonrası
+  doctor'ın eski bağımlılık köklerini kaldırmasını gerektirir.
 
-Yararlı yayımlanmış yükseltme kurtulanı varyantları:
+Yararlı yayımlanmış yükseltme survivor varyantları:
 
 ```bash
 OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPEC=openclaw@2026.4.23 \
@@ -141,13 +142,13 @@ pnpm test:docker:published-upgrade-survivor
 Kullanılabilir senaryolar `base`, `feishu-channel`, `bootstrap-persona`,
 `plugin-deps-cleanup`, `configured-plugin-installs`,
 `stale-source-plugin-shadow`, `tilde-log-path` ve `versioned-runtime-deps` şeklindedir. Toplu çalıştırmalarda,
-`OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS=reported-issues`, yapılandırılmış Plugin
-kurulum geçişi dahil, bildirilen sorun biçimli tüm senaryolara genişler.
+`OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS=reported-issues` bildirilen tüm
+sorun biçimli senaryolara, yapılandırılmış Plugin kurulum geçişi dahil, genişler.
 
-Tam güncelleme geçişi kasıtlı olarak Full Release CI'dan ayrıdır. Sürüm sorusu
-"2026.4.23 ve sonrasındaki her yayımlanmış kararlı sürüm bu adaya güncellenip
-Plugin bağımlılık kalıntılarını temizleyebilir mi?" olduğunda manuel
-`Update Migration` iş akışını kullanın:
+Tam güncelleme geçişi, kasıtlı olarak Tam Sürüm CI'dan ayrıdır. Sürüm sorusu
+"2026.4.23'ten itibaren yayımlanmış her kararlı sürüm bu adaya güncellenip
+Plugin bağımlılık kalıntısını temizleyebilir mi?" olduğunda manuel `Update Migration`
+iş akışını kullanın:
 
 ```bash
 gh workflow run update-migration.yml \
@@ -160,34 +161,35 @@ gh workflow run update-migration.yml \
 
 ## Paket Kabulü
 
-Paket Kabulü GitHub yerel paket kapısıdır. Bir aday paketi `package-under-test`
-tarball'ına çözümler, sürüm ve SHA-256 kaydeder, ardından bu tam tarball'a karşı
-yeniden kullanılabilir Docker E2E hatlarını çalıştırır. İş akışı donanımının ref'i
-paket kaynak ref'inden ayrıdır; böylece geçerli test mantığı eski güvenilir
-sürümleri doğrulayabilir.
+Paket Kabulü, GitHub yerel paket kapısıdır. Bir aday paketi
+`package-under-test` tarball'ına çözer, sürümü ve SHA-256'yı kaydeder, ardından
+tam o tarball'a karşı yeniden kullanılabilir Docker E2E hatlarını çalıştırır. İş
+akışı koşum ref'i paket kaynak ref'inden ayrıdır; böylece güncel test mantığı
+daha eski güvenilir sürümleri doğrulayabilir.
 
 Aday kaynaklar:
 
-- `source=npm`: `openclaw@beta`, `openclaw@latest` veya tam bir yayımlanmış
+- `source=npm`: `openclaw@beta`, `openclaw@latest` veya tam yayımlanmış bir
   sürümü doğrulayın.
-- `source=ref`: seçilen güncel donanımla güvenilir bir dalı, etiketi veya commit'i
+- `source=ref`: seçili güncel koşumla güvenilir bir branch, tag veya commit'i
   paketleyin.
-- `source=url`: zorunlu `package_sha256` ile bir HTTPS tarball'ını doğrulayın.
-- `source=artifact`: başka bir Actions çalıştırması tarafından yüklenen bir
+- `source=url`: gerekli `package_sha256` ile bir HTTPS tarball'ını doğrulayın.
+- `source=artifact`: başka bir Actions çalıştırması tarafından yüklenmiş bir
   tarball'ı yeniden kullanın.
 
-Full Release Validation, çözümlenen sürüm SHA'sından oluşturulan `source=artifact`
-değerini varsayılan olarak kullanır. Yayın sonrası kanıt için
+Tam Sürüm Doğrulama, varsayılan olarak çözümlenen sürüm SHA'sından oluşturulan
+`source=artifact` kullanır. Yayım sonrası kanıt için
 `package_acceptance_package_spec=openclaw@YYYY.M.D` geçirin; böylece aynı
-yükseltme matrisi gönderilen npm paketini hedefler.
+yükseltme matrisi gönderilmiş npm paketini hedefler.
 
-Sürüm kontrolleri Paket Kabulü'nü package/update/restart/plugin setiyle çağırır:
+Sürüm kontrolleri, paket/güncelleme/yeniden başlatma/Plugin kümesiyle Paket
+Kabulü'nü çağırır:
 
 ```text
-doctor-switch update-channel-switch upgrade-survivor published-upgrade-survivor update-restart-auth plugins-offline plugin-update
+doctor-switch update-channel-switch update-corrupt-plugin upgrade-survivor published-upgrade-survivor update-restart-auth plugins-offline plugin-update
 ```
 
-Sürüm soak etkin olduğunda şunları da geçirirler:
+Sürüm bekletmesi etkin olduğunda şunları da geçirirler:
 
 ```text
 published_upgrade_survivor_baselines=last-stable-4 2026.4.23 2026.5.2 2026.4.15
@@ -195,26 +197,27 @@ published_upgrade_survivor_scenarios=reported-issues
 telegram_mode=mock-openai
 ```
 
-Bu, varsayılan sürüm paketi kapısını her yayımlanmış sürümü dolaştırmadan paket
-geçişini, güncelleme kanalı değiştirmeyi, kalıcı Plugin bağımlılık temizliğini,
-çevrimdışı Plugin kapsamını, Plugin güncelleme davranışını ve Telegram paket
-QA'sını aynı çözümlenmiş artefakta bağlı tutar.
+Bu, paket geçişini, güncelleme kanalı değiştirmeyi, bozuk yönetilen Plugin
+toleransını, eski Plugin bağımlılığı temizlemeyi, çevrimdışı Plugin kapsamını,
+Plugin güncelleme davranışını ve Telegram paket QA'sını aynı çözümlenmiş yapıt
+üzerinde tutar; varsayılan sürüm paket kapısının yayımlanmış her sürümü
+dolaşmasını gerektirmez.
 
 `last-stable-4`, npm'de yayımlanmış en son dört kararlı OpenClaw sürümüne
-çözümlenir. Sürüm paketi kabulü, ilk Plugin güncelleme uyumluluk sınırı olarak
-`2026.4.23` değerini, Plugin mimarisi değişim sınırı olarak `2026.5.2` değerini
-ve daha eski bir 2026.4.1x yayımlanmış güncelleme temeli olarak `2026.4.15`
-değerini sabitler; çözümleyici zaten en son dört sürümde bulunan sabitleri
-tekilleştirir. Kapsamlı yayımlanmış güncelleme geçiş kapsamı için Full Release
-CI yerine ayrı Update Migration iş akışında `all-since-2026.4.23` kullanın.
-`release-history`, eski tarih öncesi ankrajı da istediğinizde manuel daha geniş
-örnekleme için kullanılabilir kalır.
+çözümlenir. Sürüm paket kabulü, ilk Plugin güncelleme uyumluluk sınırı olarak
+`2026.4.23`'ü, Plugin mimarisi çalkantı sınırı olarak `2026.5.2`'yi ve daha eski
+bir 2026.4.1x yayımlanmış güncelleme temeli olarak `2026.4.15`'i sabitler;
+çözücü, zaten en son dört sürümde bulunan sabitlemeleri yinelerden arındırır.
+Kapsamlı yayımlanmış güncelleme geçişi kapsamı için Tam Sürüm CI yerine ayrı
+Update Migration iş akışında `all-since-2026.4.23` kullanın. Eski tarih öncesi
+çapayı da istediğiniz manuel daha geniş örnekleme için `release-history`
+kullanılabilir durumda kalır.
 
-Birden çok yayımlanmış yükseltme kurtulanı temeli seçildiğinde, yeniden
-kullanılabilir Docker iş akışı her temeli kendi hedefli çalıştırıcı işine böler.
-Her temel parçası seçilen senaryo setini yine çalıştırır, ancak günlükler ve
-artefaktlar temel başına kalır ve duvar saati tek büyük seri iş yerine en yavaş
-parçayla sınırlanır.
+Birden fazla yayımlanmış yükseltme survivor temeli seçildiğinde, yeniden
+kullanılabilir Docker iş akışı her temeli kendi hedefli çalıştırıcı işine
+parçalar. Her temel parçası seçili senaryo kümesini yine çalıştırır, ancak
+günlükler ve yapıtlar temel başına kalır ve duvar saati süresi tek büyük seri iş
+yerine en yavaş parçayla sınırlanır.
 
 Sürümden önce bir adayı doğrularken paket profilini manuel çalıştırın:
 
@@ -231,37 +234,37 @@ gh workflow run package-acceptance.yml \
 ```
 
 Sürüm sorusu MCP kanallarını, cron/subagent temizliğini, OpenAI web aramasını
-veya OpenWebUI'ı içerdiğinde `suite_profile=product` kullanın. `suite_profile=full`
-yalnızca tam Docker sürüm yolu kapsamına ihtiyacınız olduğunda kullanın.
+veya OpenWebUI'yi içerdiğinde `suite_profile=product` kullanın. Yalnızca tam
+Docker sürüm yolu kapsamına ihtiyaç duyduğunuzda `suite_profile=full` kullanın.
 
 ## Sürüm varsayılanı
 
 Sürüm adayları için varsayılan kanıt yığını şudur:
 
 1. Kaynak düzeyi regresyonlar için `pnpm check:changed` ve `pnpm test:changed`.
-2. Paket artefakt bütünlüğü için `pnpm release:check`.
+2. Paket yapıt bütünlüğü için `pnpm release:check`.
 3. Kurulum/güncelleme/yeniden başlatma/Plugin sözleşmeleri için Paket Kabulü
    `package` profili veya release-check özel paket hatları.
-4. İşletim sistemine özgü kurulum, onboarding ve platform davranışı için
+4. İşletim sistemine özgü yükleyici, onboarding ve platform davranışı için
    çapraz işletim sistemi sürüm kontrolleri.
-5. Canlı paketler yalnızca değişen yüzey sağlayıcı veya barındırılan servis
-   davranışına dokunduğunda.
+5. Yalnızca değişen yüzey sağlayıcı veya barındırılan hizmet davranışına
+   dokunduğunda canlı paketler.
 
-Maintainer makinelerinde, açıkça yerel kanıt üretilmediği sürece geniş kapılar
-ve Docker/paket ürün kanıtı Testbox içinde çalışmalıdır.
+Maintainer makinelerinde, geniş kapılar ve Docker/paket ürün kanıtı, açıkça
+yerel kanıt yapılmadığı sürece Testbox içinde çalışmalıdır.
 
 ## Eski uyumluluk
 
-Uyumluluk toleransı dar ve zaman sınırlıdır:
+Uyumluluk esnekliği dardır ve zaman sınırlıdır:
 
-- `2026.4.25-beta.*` dahil `2026.4.25` sürümüne kadar olan paketler, Paket
+- `2026.4.25` dahil `2026.4.25-beta.*` sürümüne kadar olan paketler, Paket
   Kabulü'nde zaten gönderilmiş paket meta verisi boşluklarını tolere edebilir.
-- Yayımlanmış `2026.4.26` paketi, zaten gönderilmiş yerel build meta verisi
+- Yayımlanmış `2026.4.26` paketi, zaten gönderilmiş yerel derleme meta verisi
   damga dosyaları için uyarı verebilir.
 - Daha sonraki paketler modern sözleşmeleri karşılamalıdır. Aynı boşluklar
-  uyarmak veya atlamak yerine başarısız olur.
+  uyarı vermek veya atlamak yerine başarısız olur.
 
-Bu eski şekiller için yeni başlatma geçişleri eklemeyin. Bir doctor onarımı
+Bu eski biçimler için yeni başlangıç geçişleri eklemeyin. Bir doctor onarımı
 ekleyin veya genişletin, ardından güncelleme komutu yeniden başlatmanın sahibi
 olduğunda bunu `upgrade-survivor`, `published-upgrade-survivor` veya
 `update-restart-auth` ile kanıtlayın.
@@ -271,34 +274,34 @@ olduğunda bunu `upgrade-survivor`, `published-upgrade-survivor` veya
 Güncelleme veya Plugin davranışını değiştirirken, doğru nedenle başarısız
 olabilecek en düşük katmana kapsam ekleyin:
 
-- Saf yol veya meta veri mantığı: kaynağın yanına birim testi.
-- Paket envanteri veya paketlenmiş dosya davranışı: `package-dist-inventory` veya
-  tarball denetleyici testi.
+- Saf yol veya meta veri mantığı: kaynağın yanında birim testi.
+- Paket envanteri veya paketlenmiş dosya davranışı: `package-dist-inventory`
+  veya tarball denetleyici testi.
 - CLI kurulum/güncelleme davranışı: Docker hattı doğrulaması veya fixture.
 - Yayımlanmış sürüm geçiş davranışı: `published-upgrade-survivor` senaryosu.
 - Güncellemenin sahip olduğu yeniden başlatma davranışı: `update-restart-auth`.
 - Kayıt/paket kaynak davranışı: `test:docker:plugins` fixture'ı veya ClawHub
   fixture sunucusu.
-- Bağımlılık düzeni veya temizlik davranışı: hem çalışma zamanı yürütmesini hem
+- Bağımlılık düzeni veya temizleme davranışı: hem çalışma zamanı yürütmesini hem
   de dosya sistemi sınırını doğrulayın. npm bağımlılıkları yönetilen npm kökü
   altında yukarı taşınmış olabilir; bu yüzden testler, paket yerel
-  `node_modules` ağacını varsaymak yerine kökün tarandığını/temizlendiğini
+  `node_modules` ağacı varsaymak yerine kökün tarandığını/temizlendiğini
   kanıtlamalıdır.
 
 Yeni Docker fixture'larını varsayılan olarak hermetik tutun. Testin amacı canlı
-kayıt davranışı değilse yerel fixture kayıtları ve sahte paketler kullanın.
+kayıt davranışı olmadıkça yerel fixture kayıtlarını ve sahte paketleri kullanın.
 
 ## Hata triyajı
 
-Artefakt kimliğiyle başlayın:
+Yapıt kimliğiyle başlayın:
 
-- Package Acceptance `resolve_package` özeti: kaynak, sürüm, SHA-256 ve
-  artifact adı.
-- Docker artifact'ları: `.artifacts/docker-tests/**/summary.json`,
-  `failures.json`, lane günlükleri ve yeniden çalıştırma komutları.
-- Yükseltme sağ kalan özeti: `.artifacts/upgrade-survivor/summary.json`,
-  başlangıç sürümü, aday sürüm, senaryo, faz zamanlamaları ve
+- Paket Kabulü `resolve_package` özeti: kaynak, sürüm, SHA-256 ve
+  artefakt adı.
+- Docker artefaktları: `.artifacts/docker-tests/**/summary.json`,
+  `failures.json`, hat günlükleri ve yeniden çalıştırma komutları.
+- Yükseltme sağ kalan özeti: `.artifacts/upgrade-survivor/summary.json`;
+  temel sürüm, aday sürüm, senaryo, aşama zamanlamaları ve
   tarif adımları dahil.
 
-Tüm release şemsiyesini yeniden çalıştırmak yerine, aynı paket artifact'ı ile
-başarısız olan tam lane'i yeniden çalıştırmayı tercih edin.
+Tüm sürüm şemsiyesini yeniden çalıştırmak yerine aynı paket artefaktıyla
+başarısız olan tam hattı yeniden çalıştırmayı tercih edin.

@@ -1,46 +1,46 @@
 ---
 read_when:
-    - OpenClaw’ın dizüstü bilgisayarınızda değil, bir bulut VPS üzerinde 7/24 çalışmasını istiyorsunuz
-    - Kendi VPS'nizde üretim sınıfı, sürekli çalışan bir Gateway istiyorsunuz
+    - OpenClaw'ı dizüstü bilgisayarınızda değil, bir bulut VPS üzerinde 7/24 çalıştırmak istiyorsunuz
+    - Kendi VPS'inizde üretim düzeyinde, her zaman açık bir Gateway istiyorsunuz
     - Kalıcılık, ikili dosyalar ve yeniden başlatma davranışı üzerinde tam denetim istiyorsunuz
-    - OpenClaw'ı Hetzner veya benzer bir sağlayıcıda Docker üzerinde çalıştırıyorsunuz
-summary: OpenClaw Gateway'i kalıcı durum ve içine gömülü ikili dosyalarla ucuz bir Hetzner VPS'sinde (Docker) 7/24 çalıştırın
+    - OpenClaw'u Docker'da, Hetzner veya benzer bir sağlayıcı üzerinde çalıştırıyorsunuz
+summary: OpenClaw Gateway'i ucuz bir Hetzner VPS (Docker) üzerinde kalıcı durum ve gömülü ikili dosyalarla 7/24 çalıştırın
 title: Hetzner
 x-i18n:
-    generated_at: "2026-04-30T09:29:29Z"
+    generated_at: "2026-05-06T09:19:05Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 96b5b54bfd8d976c575ecffcd229106fc322b9a53828a9d7358f583434b7bbc2
+    source_hash: 2625a028b6242f653d29b8f45035bf2d796c5c60453582cf269fd1c3776eca52
     source_path: install/hetzner.md
     workflow: 16
 ---
 
-# Hetzner üzerinde OpenClaw (Docker, Üretim VPS Kılavuzu)
+# Hetzner’da OpenClaw (Docker, Production VPS Kılavuzu)
 
 ## Amaç
 
-Docker kullanarak Hetzner VPS üzerinde kalıcı duruma, imaja gömülü ikili dosyalara ve güvenli yeniden başlatma davranışına sahip, sürekli çalışan bir OpenClaw Gateway çalıştırın.
+Docker kullanarak Hetzner VPS üzerinde kalıcı duruma, gömülü ikili dosyalara ve güvenli yeniden başlatma davranışına sahip kalıcı bir OpenClaw Gateway çalıştırın.
 
-“~5$ karşılığında 7/24 OpenClaw” istiyorsanız, bu en basit güvenilir kurulumdur.
+"~5$ karşılığında 7/24 OpenClaw" istiyorsanız, bu en basit güvenilir kurulumdur.
 Hetzner fiyatları değişir; en küçük Debian/Ubuntu VPS’i seçin ve OOM hatalarıyla karşılaşırsanız ölçeği büyütün.
 
 Güvenlik modeli hatırlatması:
 
-- Şirket içinde paylaşılan ajanlar, herkes aynı güven sınırı içindeyse ve çalışma zamanı yalnızca iş amaçlıysa uygundur.
-- Katı ayrım sağlayın: özel VPS/çalışma zamanı + özel hesaplar; bu host üzerinde kişisel Apple/Google/tarayıcı/parola yöneticisi profilleri bulundurmayın.
-- Kullanıcılar birbirine karşı adversary ise Gateway/host/OS kullanıcısına göre ayırın.
+- Şirket içinde paylaşılan ajanlar, herkes aynı güven sınırındaysa ve runtime yalnızca iş amaçlıysa uygundur.
+- Sıkı ayrım sağlayın: adanmış VPS/runtime + adanmış hesaplar; bu host üzerinde kişisel Apple/Google/tarayıcı/parola yöneticisi profilleri bulundurmayın.
+- Kullanıcılar birbirine karşı hasmane olabiliyorsa, gateway/host/OS kullanıcısına göre ayırın.
 
 Bkz. [Güvenlik](/tr/gateway/security) ve [VPS barındırma](/tr/vps).
 
 ## Ne yapıyoruz (basit ifadeyle)?
 
-- Küçük bir Linux sunucusu kirala (Hetzner VPS)
-- Docker kur (yalıtılmış uygulama çalışma zamanı)
-- OpenClaw Gateway’i Docker içinde başlat
-- Host üzerinde `~/.openclaw` + `~/.openclaw/workspace` kalıcı hale getir (yeniden başlatmalardan/yeniden derlemelerden etkilenmez)
-- Control UI’ye dizüstü bilgisayarınızdan bir SSH tüneli üzerinden eriş
+- Küçük bir Linux sunucu kiralama (Hetzner VPS)
+- Docker kurma (izole uygulama runtime’ı)
+- OpenClaw Gateway’i Docker içinde başlatma
+- Host üzerinde `~/.openclaw` + `~/.openclaw/workspace` kalıcı hale getirme (yeniden başlatmalardan/yeniden derlemelerden sonra korunur)
+- Dizüstü bilgisayarınızdan bir SSH tüneli üzerinden Control UI’ye erişme
 
-Bağlanan bu `~/.openclaw` durumu `openclaw.json`, her ajan için
+Bağlanan `~/.openclaw` durumu `openclaw.json`, ajan başına
 `agents/<agentId>/agent/auth-profiles.json` ve `.env` içerir.
 
 Gateway’e şu yollarla erişilebilir:
@@ -49,14 +49,14 @@ Gateway’e şu yollarla erişilebilir:
 - Güvenlik duvarını ve token’ları kendiniz yönetiyorsanız doğrudan port açma
 
 Bu kılavuz Hetzner üzerinde Ubuntu veya Debian varsayar.  
-Başka bir Linux VPS kullanıyorsanız paketleri buna göre eşleyin.
+Başka bir Linux VPS kullanıyorsanız paketleri buna göre eşleştirin.
 Genel Docker akışı için bkz. [Docker](/tr/install/docker).
 
 ---
 
 ## Hızlı yol (deneyimli operatörler)
 
-1. Hetzner VPS oluşturun
+1. Hetzner VPS sağlayın
 2. Docker kurun
 3. OpenClaw deposunu klonlayın
 4. Kalıcı host dizinleri oluşturun
@@ -77,13 +77,13 @@ Genel Docker akışı için bkz. [Docker](/tr/install/docker).
 - Model kimlik doğrulama bilgileri
 - İsteğe bağlı sağlayıcı kimlik bilgileri
   - WhatsApp QR
-  - Telegram bot token’ı
+  - Telegram bot token
   - Gmail OAuth
 
 ---
 
 <Steps>
-  <Step title="VPS’i oluşturun">
+  <Step title="VPS sağlayın">
     Hetzner’da bir Ubuntu veya Debian VPS oluşturun.
 
     Root olarak bağlanın:
@@ -92,8 +92,8 @@ Genel Docker akışı için bkz. [Docker](/tr/install/docker).
     ssh root@YOUR_VPS_IP
     ```
 
-    Bu kılavuz VPS’in durum bilgisi tuttuğunu varsayar.
-    Onu atılabilir altyapı gibi ele almayın.
+    Bu kılavuz VPS’in durum bilgili olduğunu varsayar.
+    Onu atılabilir altyapı olarak ele almayın.
 
   </Step>
 
@@ -119,18 +119,18 @@ Genel Docker akışı için bkz. [Docker](/tr/install/docker).
     cd openclaw
     ```
 
-    Bu kılavuz, ikili dosya kalıcılığını garanti etmek için özel bir imaj oluşturacağınızı varsayar.
+    Bu kılavuz, ikili dosya kalıcılığını garanti etmek için özel bir imaj derleyeceğinizi varsayar.
 
   </Step>
 
   <Step title="Kalıcı host dizinleri oluşturun">
     Docker container’ları geçicidir.
-    Tüm uzun ömürlü durum host üzerinde yaşamalıdır.
+    Uzun ömürlü tüm durum host üzerinde yaşamalıdır.
 
     ```bash
     mkdir -p /root/.openclaw/workspace
 
-    # Set ownership to the container user (uid 1000):
+    # Sahipliği container kullanıcısına ayarlayın (uid 1000):
     chown -R 1000:1000 /root/.openclaw
     ```
 
@@ -152,10 +152,10 @@ Genel Docker akışı için bkz. [Docker](/tr/install/docker).
     XDG_CONFIG_HOME=/home/node/.openclaw
     ```
 
-    `OPENCLAW_GATEWAY_TOKEN` değerini, bunu açıkça `.env` üzerinden
-    yönetmek istemediğiniz sürece boş bırakın; OpenClaw ilk başlatmada
-    yapılandırmaya rastgele bir Gateway token’ı yazar. Bir anahtarlık parolası
-    oluşturun ve `GOG_KEYRING_PASSWORD` içine yapıştırın:
+    `OPENCLAW_GATEWAY_TOKEN` değerini, özellikle `.env` üzerinden
+    yönetmek istemiyorsanız boş bırakın; OpenClaw ilk başlangıçta
+    yapılandırmaya rastgele bir gateway token yazar. Bir keyring parolası
+    üretin ve `GOG_KEYRING_PASSWORD` içine yapıştırın:
 
     ```bash
     openssl rand -hex 32
@@ -163,8 +163,8 @@ Genel Docker akışı için bkz. [Docker](/tr/install/docker).
 
     **Bu dosyayı commit etmeyin.**
 
-    Bu `.env` dosyası `OPENCLAW_GATEWAY_TOKEN` gibi container/çalışma zamanı ortam değişkenleri içindir.
-    Saklanan sağlayıcı OAuth/API anahtarı kimlik doğrulaması bağlanan
+    Bu `.env` dosyası `OPENCLAW_GATEWAY_TOKEN` gibi container/runtime env değerleri içindir.
+    Saklanan sağlayıcı OAuth/API anahtarı kimlik doğrulaması, bağlanan
     `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` içinde yaşar.
 
   </Step>
@@ -194,8 +194,8 @@ Genel Docker akışı için bkz. [Docker](/tr/install/docker).
           - ${OPENCLAW_CONFIG_DIR}:/home/node/.openclaw
           - ${OPENCLAW_WORKSPACE_DIR}:/home/node/.openclaw/workspace
         ports:
-          # Recommended: keep the Gateway loopback-only on the VPS; access via SSH tunnel.
-          # To expose it publicly, remove the `127.0.0.1:` prefix and firewall accordingly.
+          # Önerilen: Gateway’i VPS üzerinde yalnızca loopback’e açık tutun; SSH tüneliyle erişin.
+          # Herkese açık hale getirmek için `127.0.0.1:` ön ekini kaldırın ve güvenlik duvarını buna göre ayarlayın.
           - "127.0.0.1:${OPENCLAW_GATEWAY_PORT}:18789"
         command:
           [
@@ -210,12 +210,12 @@ Genel Docker akışı için bkz. [Docker](/tr/install/docker).
           ]
     ```
 
-    `--allow-unconfigured` yalnızca başlangıç kolaylığı içindir; düzgün bir Gateway yapılandırmasının yerine geçmez. Dağıtımınız için yine de kimlik doğrulamayı (`gateway.auth.token` veya parola) ayarlayın ve güvenli bind ayarları kullanın.
+    `--allow-unconfigured` yalnızca ilk kurulum kolaylığı içindir; düzgün bir gateway yapılandırmasının yerine geçmez. Dağıtımınız için yine de kimlik doğrulamayı (`gateway.auth.token` veya parola) ayarlayın ve güvenli bind ayarları kullanın.
 
   </Step>
 
-  <Step title="Paylaşılan Docker VM çalışma zamanı adımları">
-    Yaygın Docker host akışı için paylaşılan çalışma zamanı kılavuzunu kullanın:
+  <Step title="Paylaşılan Docker VM runtime adımları">
+    Ortak Docker host akışı için paylaşılan runtime kılavuzunu kullanın:
 
     - [Gerekli ikili dosyaları imaja gömün](/tr/install/docker-vm-runtime#bake-required-binaries-into-the-image)
     - [Derleyin ve başlatın](/tr/install/docker-vm-runtime#build-and-launch)
@@ -224,19 +224,19 @@ Genel Docker akışı için bkz. [Docker](/tr/install/docker).
 
   </Step>
 
-  <Step title="Hetzner’a özgü erişim">
-    Paylaşılan derleme ve başlatma adımlarından sonra, tüneli açmak için aşağıdaki kurulumu tamamlayın:
+  <Step title="Hetzner’a özel erişim">
+    Paylaşılan derleme ve başlatma adımlarından sonra tüneli açmak için aşağıdaki kurulumu tamamlayın:
 
-    **Önkoşul:** VPS sshd yapılandırmanızın TCP yönlendirmeye izin verdiğinden emin olun. SSH yapılandırmanızı sıkılaştırdıysanız `/etc/ssh/sshd_config` dosyasını kontrol edin ve şunu ayarlayın:
+    **Ön koşul:** VPS sshd yapılandırmanızın TCP yönlendirmesine izin verdiğinden emin olun. SSH yapılandırmanızı sıkılaştırdıysanız `/etc/ssh/sshd_config` dosyasını kontrol edin ve şunu ayarlayın:
 
     ```
     AllowTcpForwarding local
     ```
 
-    `local`, sunucudan uzak yönlendirmeleri engellerken dizüstü bilgisayarınızdan `ssh -L` yerel yönlendirmelerine izin verir. Bunu `no` olarak ayarlamak tünelin şu hatayla başarısız olmasına neden olur:
+    `local`, sunucudan uzak yönlendirmeleri engellerken dizüstü bilgisayarınızdan `ssh -L` yerel yönlendirmelerine izin verir. `no` olarak ayarlanması tünelin şu hatayla başarısız olmasına neden olur:
     `channel 3: open failed: administratively prohibited: open failed`
 
-    TCP yönlendirmenin etkin olduğunu doğruladıktan sonra SSH hizmetini yeniden başlatın
+    TCP yönlendirmenin etkin olduğunu doğruladıktan sonra SSH servisini yeniden başlatın
     (`systemctl restart ssh`) ve tüneli dizüstü bilgisayarınızdan çalıştırın:
 
     ```bash
@@ -247,19 +247,19 @@ Genel Docker akışı için bkz. [Docker](/tr/install/docker).
 
     `http://127.0.0.1:18789/`
 
-    Yapılandırılmış paylaşılan sırrı yapıştırın. Bu kılavuz varsayılan olarak Gateway token’ını kullanır; parola kimlik doğrulamasına geçtiyseniz bunun yerine o parolayı kullanın.
+    Yapılandırılan paylaşılan sırrı yapıştırın. Bu kılavuz varsayılan olarak gateway token’ını kullanır; parola kimlik doğrulamasına geçtiyseniz bunun yerine o parolayı kullanın.
 
   </Step>
 </Steps>
 
-Paylaşılan kalıcılık haritası [Docker VM Çalışma Zamanı](/tr/install/docker-vm-runtime#what-persists-where) içinde bulunur.
+Paylaşılan kalıcılık haritası [Docker VM Runtime](/tr/install/docker-vm-runtime#what-persists-where) içinde bulunur.
 
 ## Kod Olarak Altyapı (Terraform)
 
-Kod olarak altyapı iş akışlarını tercih eden ekipler için, topluluk tarafından bakımı yapılan bir Terraform kurulumu şunları sağlar:
+Kod olarak altyapı iş akışlarını tercih eden ekipler için topluluk tarafından sürdürülen bir Terraform kurulumu şunları sağlar:
 
-- Uzak durum yönetimiyle modüler Terraform yapılandırması
-- cloud-init üzerinden otomatik sağlama
+- Uzak durum yönetimli modüler Terraform yapılandırması
+- cloud-init aracılığıyla otomatik sağlama
 - Dağıtım betikleri (bootstrap, deploy, backup/restore)
 - Güvenlik sıkılaştırma (güvenlik duvarı, UFW, yalnızca SSH erişimi)
 - Gateway erişimi için SSH tüneli yapılandırması
@@ -269,15 +269,15 @@ Kod olarak altyapı iş akışlarını tercih eden ekipler için, topluluk taraf
 - Altyapı: [openclaw-terraform-hetzner](https://github.com/andreesg/openclaw-terraform-hetzner)
 - Docker yapılandırması: [openclaw-docker-config](https://github.com/andreesg/openclaw-docker-config)
 
-Bu yaklaşım yukarıdaki Docker kurulumunu tekrarlanabilir dağıtımlar, sürüm kontrollü altyapı ve otomatik felaket kurtarma ile tamamlar.
+Bu yaklaşım, yukarıdaki Docker kurulumunu tekrarlanabilir dağıtımlar, sürüm kontrollü altyapı ve otomatik olağanüstü durum kurtarma ile tamamlar.
 
 <Note>
-Topluluk tarafından bakımı yapılır. Sorunlar veya katkılar için yukarıdaki depo bağlantılarına bakın.
+Topluluk tarafından sürdürülür. Sorunlar veya katkılar için yukarıdaki depo bağlantılarına bakın.
 </Note>
 
 ## Sonraki adımlar
 
-- Mesajlaşma kanallarını ayarlayın: [Kanallar](/tr/channels)
+- Mesajlaşma kanallarını kurun: [Kanallar](/tr/channels)
 - Gateway’i yapılandırın: [Gateway yapılandırması](/tr/gateway/configuration)
 - OpenClaw’ı güncel tutun: [Güncelleme](/tr/install/updating)
 

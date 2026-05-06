@@ -1,50 +1,50 @@
 ---
 read_when:
-    - Konum Node desteği veya izin kullanıcı arayüzü ekleme
+    - Konum Node desteği veya izinler kullanıcı arayüzü ekleme
     - Android konum izinlerini veya ön plan davranışını tasarlama
-summary: Node'lar için konum komutu (`location.get`), izin modları ve Android ön plan davranışı
+summary: Düğümler için konum komutu (location.get), izin modları ve Android ön plan davranışı
 title: Konum komutu
 x-i18n:
-    generated_at: "2026-04-24T09:18:02Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:20:52Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: fcd7ae3bf411be4331d62494a5d5263e8cda345475c5f849913122c029377f06
+    source_hash: 63ed754bfdda1cf379dcb7ac40817c0b93cc1efe4526512d70258072da4bc8a7
     source_path: nodes/location-command.md
-    workflow: 15
+    workflow: 16
 ---
 
 ## Kısaca
 
-- `location.get`, bir Node komutudur (`node.invoke` üzerinden).
+- `location.get`, bir düğüm komutudur (`node.invoke` üzerinden).
 - Varsayılan olarak kapalıdır.
 - Android uygulama ayarları bir seçici kullanır: Kapalı / Kullanırken.
-- Ayrı geçiş: Hassas Konum.
+- Ayrı anahtar: Hassas Konum.
 
-## Neden seçici var (yalnızca bir anahtar değil)
+## Neden seçici (sadece anahtar değil)
 
-OS izinleri çok düzeylidir. Bunu uygulama içinde bir seçici olarak sunabiliriz, ancak gerçek izne yine OS karar verir.
+İşletim sistemi izinleri çok seviyelidir. Uygulama içinde bir seçici sunabiliriz, ancak gerçek izni yine işletim sistemi belirler.
 
-- iOS/macOS sistem istemlerinde/Ayarlar'da **Kullanırken** veya **Her Zaman** gösterebilir.
+- iOS/macOS, sistem istemlerinde/Ayarlar'da **Kullanırken** veya **Her Zaman** seçeneklerini gösterebilir.
 - Android uygulaması şu anda yalnızca ön plan konumunu destekler.
-- Hassas konum ayrı bir izindir (iOS 14+ “Precise”, Android “fine” ve “coarse”).
+- Hassas konum ayrı bir izindir (iOS 14+ "Hassas", Android "fine" ve "coarse").
 
-Kullanıcı arayüzündeki seçici istediğimiz modu belirler; gerçek izin OS ayarlarında yaşar.
+UI'daki seçici, istediğimiz modu yönlendirir; gerçek izin işletim sistemi ayarlarında tutulur.
 
-## Ayar modeli
+## Ayarlar modeli
 
-Node cihazı başına:
+Düğüm cihazı başına:
 
 - `location.enabledMode`: `off | whileUsing`
 - `location.preciseEnabled`: bool
 
-Kullanıcı arayüzü davranışı:
+UI davranışı:
 
 - `whileUsing` seçildiğinde ön plan izni istenir.
-- OS istenen düzeyi reddederse, verilen en yüksek düzeye geri dönülür ve durum gösterilir.
+- İşletim sistemi istenen seviyeyi reddederse, izin verilen en yüksek seviyeye geri dön ve durumu göster.
 
-## İzin eşlemesi (`node.permissions`)
+## İzin eşlemesi (node.permissions)
 
-İsteğe bağlı. macOS Node, izinler eşlemi üzerinden `location` bildirir; iOS/Android bunu atlayabilir.
+İsteğe bağlıdır. macOS düğümü, izinler haritası üzerinden `location` bildirir; iOS/Android bunu atlayabilir.
 
 ## Komut: `location.get`
 
@@ -60,7 +60,7 @@ Parametreler (önerilen):
 }
 ```
 
-Yanıt payload'ı:
+Yanıt yükü:
 
 ```json
 {
@@ -78,32 +78,32 @@ Yanıt payload'ı:
 
 Hatalar (kararlı kodlar):
 
-- `LOCATION_DISABLED`: seçici kapalı.
+- `LOCATION_DISABLED`: seçici kapalıdır.
 - `LOCATION_PERMISSION_REQUIRED`: istenen mod için izin eksik.
-- `LOCATION_BACKGROUND_UNAVAILABLE`: uygulama arka planda ama yalnızca Kullanırken izni var.
+- `LOCATION_BACKGROUND_UNAVAILABLE`: uygulama arka planda, ancak yalnızca Kullanırken izni verilmiş.
 - `LOCATION_TIMEOUT`: zamanında konum düzeltmesi alınamadı.
 - `LOCATION_UNAVAILABLE`: sistem hatası / sağlayıcı yok.
 
 ## Arka plan davranışı
 
-- Android uygulaması arka plandayken `location.get` isteğini reddeder.
+- Android uygulaması, arka plandayken `location.get` çağrısını reddeder.
 - Android'de konum isterken OpenClaw'ı açık tutun.
-- Diğer Node platformları farklı olabilir.
+- Diğer düğüm platformları farklı davranabilir.
 
 ## Model/araç entegrasyonu
 
-- Araç yüzeyi: `nodes` aracı `location_get` eylemini ekler (Node gerekir).
+- Araç yüzeyi: `nodes` aracı `location_get` eylemini ekler (düğüm gerekli).
 - CLI: `openclaw nodes location get --node <id>`.
-- Aracı yönergeleri: yalnızca kullanıcı konumu etkinleştirdiğinde ve kapsamı anladığında çağırın.
+- Ajan yönergeleri: yalnızca kullanıcı konumu etkinleştirdiğinde ve kapsamı anladığında çağırın.
 
-## Kullanıcı deneyimi metni (önerilen)
+## UX metni (önerilen)
 
-- Kapalı: “Konum paylaşımı devre dışı.”
-- Kullanırken: “Yalnızca OpenClaw açıkken.”
-- Hassas: “Hassas GPS konumunu kullan. Yaklaşık konumu paylaşmak için bunu kapat.”
+- Kapalı: "Konum paylaşımı devre dışı."
+- Kullanırken: "Yalnızca OpenClaw açıkken."
+- Hassas: "Hassas GPS konumunu kullan. Yaklaşık konumu paylaşmak için kapat."
 
 ## İlgili
 
-- [Kanal konum ayrıştırma](/tr/channels/location)
+- [Kanal konumu ayrıştırma](/tr/channels/location)
 - [Kamera yakalama](/tr/nodes/camera)
-- [Talk mode](/tr/nodes/talk)
+- [Konuşma modu](/tr/nodes/talk)

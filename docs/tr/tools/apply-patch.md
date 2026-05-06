@@ -1,19 +1,19 @@
 ---
 read_when:
-    - Birden çok dosyada yapılandırılmış dosya düzenlemelerine ihtiyacınız var
+    - Birden fazla dosyada yapılandırılmış dosya düzenlemeleri yapmanız gerekir
     - Yama tabanlı düzenlemeleri belgelemek veya hata ayıklamak istiyorsunuz
-summary: '`apply_patch` aracıyla çok dosyalı yamalar uygulama'
-title: '`apply_patch` aracı'
+summary: Çok dosyalı yamaları apply_patch aracıyla uygulayın
+title: apply_patch aracı
 x-i18n:
-    generated_at: "2026-04-24T09:32:56Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:32:11Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 9ed6d8282166de3cacf5be7f253498a230bceb2ad6c82a08846aed5bc613da53
+    source_hash: 9ff2f8e6ecd55ff1bdc553619ab3d590d0967efe7a9a90a31946ad15fd89a1dc
     source_path: tools/apply-patch.md
-    workflow: 15
+    workflow: 16
 ---
 
-Yapılandırılmış bir yama biçimi kullanarak dosya değişiklikleri uygulayın. Bu, tek bir `edit` çağrısının kırılgan olacağı çok dosyalı
+Yapılandırılmış bir yama formatı kullanarak dosya değişiklikleri uygulayın. Bu, tek bir `edit` çağrısının kırılgan olacağı çok dosyalı
 veya çok hunk'lı düzenlemeler için idealdir.
 
 Araç, bir veya daha fazla dosya işlemini saran tek bir `input` dizesi kabul eder:
@@ -33,18 +33,18 @@ Araç, bir veya daha fazla dosya işlemini saran tek bir `input` dizesi kabul ed
 
 ## Parametreler
 
-- `input` (zorunlu): `*** Begin Patch` ve `*** End Patch` dâhil tam yama içeriği.
+- `input` (gerekli): `*** Begin Patch` ve `*** End Patch` dahil tam yama içeriği.
 
 ## Notlar
 
 - Yama yolları göreli yolları (çalışma alanı dizininden) ve mutlak yolları destekler.
-- `tools.exec.applyPatch.workspaceOnly` varsayılan olarak `true` değerindedir (çalışma alanı içinde). `apply_patch` aracının çalışma alanı dizini dışına yazmasını/silmesini özellikle istiyorsanız bunu yalnızca `false` olarak ayarlayın.
-- Dosyaları yeniden adlandırmak için `*** Update File:` hunk'ı içinde `*** Move to:` kullanın.
-- Gerektiğinde yalnızca EOF ekleme için `*** End of File` kullanılır.
-- Varsayılan olarak OpenAI ve OpenAI Codex modelleri için kullanılabilir.
-  Devre dışı bırakmak için `tools.exec.applyPatch.enabled: false` ayarlayın.
-- İsteğe bağlı olarak
-  `tools.exec.applyPatch.allowModels` ile model bazında geçitleme yapın.
+- `tools.exec.applyPatch.workspaceOnly` varsayılan olarak `true` değerindedir (çalışma alanıyla sınırlı). Yalnızca `apply_patch` aracının çalışma alanı dizini dışında yazmasını/silmesini özellikle istiyorsanız bunu `false` olarak ayarlayın.
+- Dosyaları yeniden adlandırmak için bir `*** Update File:` hunk'ı içinde `*** Move to:` kullanın.
+- `*** End of File`, gerektiğinde yalnızca EOF eklemesini işaretler.
+- OpenAI ve OpenAI Codex modelleri için varsayılan olarak kullanılabilir. Devre dışı bırakmak için
+  `tools.exec.applyPatch.enabled: false` ayarlayın.
+- İsteğe bağlı olarak model bazında şu yapılandırmayla sınırlayın:
+  `tools.exec.applyPatch.allowModels`.
 - Yapılandırma yalnızca `tools.exec` altındadır.
 
 ## Örnek
@@ -58,6 +58,14 @@ Araç, bir veya daha fazla dosya işlemini saran tek bir `input` dizesi kabul ed
 
 ## İlgili
 
-- [Diff'ler](/tr/tools/diffs)
-- [Exec aracı](/tr/tools/exec)
-- [Kod yürütme](/tr/tools/code-execution)
+<CardGroup cols={2}>
+  <Card title="Diffs" href="/tr/tools/diffs" icon="code-compare">
+    Değişiklik sunumu için salt okunur diff görüntüleyici.
+  </Card>
+  <Card title="Exec tool" href="/tr/tools/exec" icon="terminal">
+    Agent tarafından shell komutu yürütme.
+  </Card>
+  <Card title="Code execution" href="/tr/tools/code-execution" icon="square-code">
+    xAI ile sandbox içinde uzak Python analizi.
+  </Card>
+</CardGroup>

@@ -1,71 +1,71 @@
 ---
 read_when:
-    - OpenClaw ile iletişim kuran harici bir uygulama, betik, pano, CI işi veya IDE uzantısı geliştiriyorsunuz
+    - OpenClaw ile iletişim kuran harici bir uygulama, betik, pano, CI işi veya IDE uzantısı oluşturuyorsunuz
     - App SDK ile Plugin SDK arasında seçim yapıyorsunuz
-    - Gateway ajan çalıştırmaları, oturumları, olayları, onayları, modelleri veya araçlarıyla entegrasyon yapıyorsunuz
+    - Gateway ajan çalıştırmaları, oturumları, etkinlikleri, onayları, modelleri veya araçlarıyla entegrasyon yapıyorsunuz
 sidebarTitle: App SDK
-summary: Harici uygulamalar, betikler, panolar, CI işleri ve IDE uzantıları için herkese açık OpenClaw App SDK
+summary: Harici uygulamalar, betikler, panolar, CI görevleri ve IDE uzantıları için herkese açık OpenClaw Uygulama SDK'sı
 title: OpenClaw Uygulama SDK'sı
 x-i18n:
-    generated_at: "2026-05-01T09:00:20Z"
+    generated_at: "2026-05-06T09:08:59Z"
     model: gpt-5.5
     provider: openai
-    source_hash: a6b22e9f4f809a572cfd19fd22f633a706dd23b8bee2f3c244003a0861a41073
+    source_hash: 23d161958e8b100bfc829319ef6bfd2ea2bf7c873ef29a0d4a849b064e5a3b66
     source_path: concepts/openclaw-sdk.md
     workflow: 16
 ---
 
-**OpenClaw App SDK**, OpenClaw sürecinin dışındaki uygulamalar için genel istemci API'sidir. Bir betik, pano, CI işi, IDE eklentisi veya başka bir harici uygulama Gateway'e bağlanmak, agent çalıştırmaları başlatmak, olayları akıtmak, sonuçları beklemek, işi iptal etmek ya da Gateway kaynaklarını incelemek istediğinde `@openclaw/sdk` kullanın.
+**OpenClaw App SDK**, OpenClaw sürecinin dışındaki uygulamalar için genel istemci API’sidir. Bir betik, pano, CI işi, IDE eklentisi veya başka bir dış uygulama Gateway’e bağlanmak, agent çalıştırmaları başlatmak, olayları akışla almak, sonuçları beklemek, işi iptal etmek ya da Gateway kaynaklarını incelemek istediğinde `@openclaw/sdk` kullanın.
 
 <Note>
-  App SDK, [Plugin SDK](/tr/plugins/sdk-overview)'den farklıdır.
-  `@openclaw/sdk`, Gateway ile OpenClaw dışından konuşur.
-  `openclaw/plugin-sdk/*` yalnızca OpenClaw içinde çalışan ve sağlayıcıları,
-  kanalları, araçları, hook'ları veya güvenilir çalışma zamanlarını kaydeden plugin'ler içindir.
+  App SDK, [Plugin SDK](/tr/plugins/sdk-overview)’den farklıdır.
+  `@openclaw/sdk`, OpenClaw dışından Gateway ile konuşur.
+  `openclaw/plugin-sdk/*` yalnızca OpenClaw içinde çalışan ve sağlayıcılar, kanallar, araçlar, hook’lar veya güvenilir çalışma zamanları kaydeden plugin’ler içindir.
 </Note>
 
-## Bugün Neler Sunuluyor
+## Bugün sunulanlar
 
-`@openclaw/sdk` şunlarla birlikte gelir:
+`@openclaw/sdk` şunlarla birlikte sunulur:
 
-| Yüzey                     | Durum  | Ne yapar                                                                   |
-| ------------------------- | ------ | -------------------------------------------------------------------------- |
-| `OpenClaw`                | Hazır  | Ana istemci giriş noktası. Taşıma, bağlantı, istekler ve olayları yönetir. |
-| `GatewayClientTransport`  | Hazır  | Gateway istemcisi tarafından desteklenen WebSocket taşıması.               |
-| `oc.agents`               | Hazır  | Agent handle'larını listeler, oluşturur, günceller, siler ve getirir.      |
-| `Agent.run()`             | Hazır  | Bir Gateway `agent` çalıştırması başlatır ve bir `Run` döndürür.           |
-| `oc.runs`                 | Hazır  | Çalıştırmaları oluşturur, getirir, bekler, iptal eder ve akıtır.           |
-| `Run.events()`            | Hazır  | Hızlı çalıştırmalar için yeniden oynatmayla normalleştirilmiş çalıştırma başına olayları akıtır. |
-| `Run.wait()`              | Hazır  | `agent.wait` çağırır ve kararlı bir `RunResult` döndürür.                  |
-| `Run.cancel()`            | Hazır  | Kullanılabilir olduğunda oturum anahtarıyla, çalıştırma kimliğine göre `sessions.abort` çağırır. |
-| `oc.sessions`             | Hazır  | Oturum handle'larını oluşturur, çözer, gönderir, yamalar, sıkıştırır ve getirir. |
-| `Session.send()`          | Hazır  | `sessions.send` çağırır ve bir `Run` döndürür.                             |
-| `oc.models`               | Hazır  | `models.list` ve geçerli `models.authStatus` durum RPC'sini çağırır.       |
-| `oc.tools`                | Hazır  | Gateway araçlarını ilke hattı üzerinden listeler, kapsamlandırır ve çağırır. |
-| `oc.artifacts`            | Hazır  | Gateway transkript artifact'lerini listeler, getirir ve indirir.           |
-| `oc.approvals`            | Hazır  | Gateway onay RPC'leri üzerinden exec onaylarını listeler ve çözer.         |
-| `oc.rawEvents()`          | Hazır  | Gelişmiş tüketiciler için ham Gateway olaylarını sunar.                    |
-| `normalizeGatewayEvent()` | Hazır  | Ham Gateway olaylarını kararlı SDK olay biçimine dönüştürür.               |
+| Yüzey                     | Durum  | Ne yapar                                                                                 |
+| ------------------------- | ------ | ---------------------------------------------------------------------------------------- |
+| `OpenClaw`                | Hazır  | Ana istemci giriş noktası. Aktarımı, bağlantıyı, istekleri ve olayları yönetir.           |
+| `GatewayClientTransport`  | Hazır  | Gateway istemcisi tarafından desteklenen WebSocket aktarımı.                             |
+| `oc.agents`               | Hazır  | Agent tanıtıcılarını listeler, oluşturur, günceller, siler ve alır.                       |
+| `Agent.run()`             | Hazır  | Bir Gateway `agent` çalıştırması başlatır ve bir `Run` döndürür.                         |
+| `oc.runs`                 | Hazır  | Çalıştırmaları oluşturur, alır, bekler, iptal eder ve akışla iletir.                     |
+| `Run.events()`            | Hazır  | Hızlı çalıştırmalar için yeniden oynatma ile çalıştırma başına normalize olayları akıtır. |
+| `Run.wait()`              | Hazır  | `agent.wait` çağırır ve kararlı bir `RunResult` döndürür.                                |
+| `Run.cancel()`            | Hazır  | Kullanılabiliyorsa oturum anahtarıyla birlikte çalıştırma kimliğine göre `sessions.abort` çağırır. |
+| `oc.sessions`             | Hazır  | Oturum tanıtıcılarını oluşturur, çözer, gönderir, yamalar, compaction uygular ve alır.    |
+| `Session.send()`          | Hazır  | `sessions.send` çağırır ve bir `Run` döndürür.                                           |
+| `oc.models`               | Hazır  | `models.list` ve geçerli `models.authStatus` durum RPC’sini çağırır.                     |
+| `oc.tools`                | Hazır  | Gateway araçlarını ilke hattı üzerinden listeler, kapsamlandırır ve çağırır.             |
+| `oc.artifacts`            | Hazır  | Gateway transcript artifact’lerini listeler, alır ve indirir.                            |
+| `oc.approvals`            | Hazır  | Gateway onay RPC’leri üzerinden exec onaylarını listeler ve çözer.                       |
+| `oc.environments`         | Kısmi  | Gateway-yerel ve node ortam adaylarını listeler; oluşturma/silme bağlı değildir.          |
+| `oc.rawEvents()`          | Hazır  | Gelişmiş tüketiciler için ham Gateway olaylarını açığa çıkarır.                          |
+| `normalizeGatewayEvent()` | Hazır  | Ham Gateway olaylarını kararlı SDK olay şekline dönüştürür.                              |
 
-SDK ayrıca bu yüzeylerin kullandığı temel türleri de dışa aktarır:
+SDK ayrıca bu yüzeyler tarafından kullanılan temel türleri dışa aktarır:
 `AgentRunParams`, `RunResult`, `RunStatus`, `OpenClawEvent`,
 `OpenClawEventType`, `GatewayEvent`, `OpenClawTransport`,
 `GatewayRequestOptions`, `SessionCreateParams`, `SessionSendParams`,
 `ArtifactSummary`, `ArtifactQuery`, `ArtifactsListResult`,
 `ArtifactsGetResult`, `ArtifactsDownloadResult`, `RuntimeSelection`,
-`EnvironmentSelection`, `WorkspaceSelection`, `ApprovalMode` ve ilişkili
+`EnvironmentSelection`, `WorkspaceSelection`, `ApprovalMode` ve ilgili
 sonuç türleri.
 
-## Bir Gateway'e Bağlanma
+## Bir Gateway’e bağlanma
 
-Açık bir Gateway URL'siyle bir istemci oluşturun ya da testler ve gömülü uygulama
-çalışma zamanları için özel bir taşıma enjekte edin.
+Açık bir Gateway URL’siyle bir istemci oluşturun veya testler ve gömülü
+uygulama çalışma zamanları için özel bir aktarım enjekte edin.
 
 ```typescript
 import { OpenClaw } from "@openclaw/sdk";
 
 const oc = new OpenClaw({
-  url: "ws://127.0.0.1:14565",
+  url: "ws://127.0.0.1:18789",
   token: process.env.OPENCLAW_GATEWAY_TOKEN,
   requestTimeoutMs: 30_000,
 });
@@ -73,10 +73,10 @@ const oc = new OpenClaw({
 await oc.connect();
 ```
 
-`new OpenClaw({ gateway: "ws://..." })`, `url` ile eşdeğerdir. `gateway: "auto"`
-seçeneği constructor tarafından kabul edilir, ancak otomatik Gateway keşfi henüz
-ayrı bir SDK özelliği değildir; uygulama Gateway'i nasıl keşfedeceğini zaten
-bilmiyorsa `url` iletin.
+`new OpenClaw({ gateway: "ws://..." })`, `url` ile eşdeğerdir.
+`gateway: "auto"` seçeneği kurucu tarafından kabul edilir, ancak otomatik Gateway
+keşfi henüz ayrı bir SDK özelliği değildir; uygulama Gateway’i nasıl keşfedeceğini
+zaten bilmiyorsa `url` iletin.
 
 Testler için `OpenClawTransport` uygulayan bir nesne iletin:
 
@@ -91,9 +91,9 @@ const oc = new OpenClaw({
 });
 ```
 
-## Bir Agent Çalıştırma
+## Bir agent çalıştırma
 
-Uygulama bir agent handle'ı istediğinde `oc.agents.get(id)` kullanın, ardından
+Uygulama bir agent tanıtıcısı istediğinde `oc.agents.get(id)` kullanın, ardından
 `agent.run()` çağırın.
 
 ```typescript
@@ -117,19 +117,19 @@ const result = await run.wait({ timeoutMs: 120_000 });
 console.log(result.status);
 ```
 
-`openai/gpt-5.5` gibi sağlayıcı nitelemeli model referansları Gateway `provider`
-ve `model` geçersiz kılmalarına ayrılır. `timeoutMs`, SDK içinde milisaniye olarak
-kalır ve `agent` RPC'si için Gateway zaman aşımı saniyelerine dönüştürülür.
+`openai/gpt-5.5` gibi sağlayıcı nitelikli model başvuruları Gateway `provider`
+ve `model` geçersiz kılmalarına ayrılır. `timeoutMs` SDK içinde milisaniye
+olarak kalır ve `agent` RPC’si için Gateway zaman aşımı saniyelerine dönüştürülür.
 
-`run.wait()`, Gateway `agent.wait` RPC'sini kullanır. Çalıştırma hâlâ etkinken
-süresi dolan bir bekleme son tarihi, çalıştırmanın kendisinin zaman aşımına
-uğradığını varsaymak yerine `status: "accepted"` döndürür. Çalışma zamanı zaman
-aşımları, durdurulan çalıştırmalar ve iptal edilen çalıştırmalar `timed_out` veya
-`cancelled` olarak normalleştirilir.
+`run.wait()`, Gateway `agent.wait` RPC’sini kullanır. Çalıştırma hâlâ etkinken
+süresi dolan bir bekleme son tarihi, çalıştırmanın kendisi zaman aşımına uğramış
+gibi davranmak yerine `status: "accepted"` döndürür. Çalışma zamanı zaman
+aşımları, durdurulan çalıştırmalar ve iptal edilen çalıştırmalar `timed_out`
+veya `cancelled` olarak normalize edilir.
 
-## Oturum Oluşturma ve Yeniden Kullanma
+## Oturum oluşturma ve yeniden kullanma
 
-Uygulama kalıcı transkript durumu istediğinde oturumları kullanın.
+Uygulama kalıcı transcript durumu istediğinde oturumları kullanın.
 
 ```typescript
 const session = await oc.sessions.create({
@@ -141,8 +141,8 @@ const run = await session.send("Prepare release notes from the current diff.");
 await run.wait();
 ```
 
-`Session.send()`, `sessions.send` çağırır ve bir `Run` döndürür. Oturum handle'ları
-şunları da destekler:
+`Session.send()`, `sessions.send` çağırır ve bir `Run` döndürür. Oturum
+tanıtıcıları ayrıca şunları destekler:
 
 ```typescript
 await session.abort(run.id);
@@ -150,9 +150,9 @@ await session.patch({ label: "renamed-session" });
 await session.compact({ maxLines: 200 });
 ```
 
-## Olayları Akıtma
+## Olayları akışla alma
 
-SDK, ham Gateway olaylarını kararlı bir `OpenClawEvent` zarfına normalleştirir:
+SDK, ham Gateway olaylarını kararlı bir `OpenClawEvent` zarfına normalize eder:
 
 ```typescript
 type OpenClawEvent = {
@@ -172,31 +172,31 @@ type OpenClawEvent = {
 
 Yaygın olay türleri şunlardır:
 
-| Olay türü             | Kaynak Gateway olayı                       |
-| --------------------- | ------------------------------------------ |
-| `run.started`         | `agent` yaşam döngüsü başlangıcı           |
-| `run.completed`       | `agent` yaşam döngüsü sonu                 |
-| `run.failed`          | `agent` yaşam döngüsü hatası               |
-| `run.cancelled`       | Durdurulan/iptal edilen yaşam döngüsü sonu |
-| `run.timed_out`       | Zaman aşımı yaşam döngüsü sonu             |
-| `assistant.delta`     | Assistant akış deltası                     |
-| `assistant.message`   | Assistant mesajı                           |
-| `thinking.delta`      | Düşünme veya plan akışı                    |
-| `tool.call.started`   | Araç/öğe/komut başlangıcı                  |
-| `tool.call.delta`     | Araç/öğe/komut güncellemesi                |
-| `tool.call.completed` | Araç/öğe/komut tamamlanması                |
+| Olay türü             | Kaynak Gateway olayı                         |
+| --------------------- | -------------------------------------------- |
+| `run.started`         | `agent` yaşam döngüsü başlangıcı             |
+| `run.completed`       | `agent` yaşam döngüsü sonu                   |
+| `run.failed`          | `agent` yaşam döngüsü hatası                 |
+| `run.cancelled`       | Durdurulan/iptal edilen yaşam döngüsü sonu   |
+| `run.timed_out`       | Zaman aşımı yaşam döngüsü sonu               |
+| `assistant.delta`     | Assistant akış deltası                       |
+| `assistant.message`   | Assistant iletisi                            |
+| `thinking.delta`      | Düşünme veya plan akışı                      |
+| `tool.call.started`   | Araç/öğe/komut başlangıcı                    |
+| `tool.call.delta`     | Araç/öğe/komut güncellemesi                  |
+| `tool.call.completed` | Araç/öğe/komut tamamlanması                  |
 | `tool.call.failed`    | Araç/öğe/komut hatası veya engellenmiş durum |
-| `approval.requested`  | Exec veya plugin onay isteği               |
-| `approval.resolved`   | Exec veya plugin onay çözümü               |
-| `session.created`     | `sessions.changed` oluşturma               |
-| `session.updated`     | `sessions.changed` güncelleme              |
-| `session.compacted`   | `sessions.changed` sıkıştırma              |
-| `task.updated`        | Görev güncelleme olayları                  |
-| `artifact.updated`    | Yama akışı olayları                        |
+| `approval.requested`  | Exec veya plugin onay isteği                 |
+| `approval.resolved`   | Exec veya plugin onay çözümü                 |
+| `session.created`     | `sessions.changed` oluşturma                 |
+| `session.updated`     | `sessions.changed` güncelleme                |
+| `session.compacted`   | `sessions.changed` compaction                |
+| `task.updated`        | Görev güncelleme olayları                    |
+| `artifact.updated`    | Yama akışı olayları                          |
 | `raw`                 | Henüz kararlı SDK eşlemesi olmayan herhangi bir olay |
 
-`Run.events()`, olayları tek bir çalıştırma kimliğine göre filtreler ve hızlı
-çalıştırmalar için önceden görülmüş olayları yeniden oynatır. Bu, belgelenen
+`Run.events()`, olayları tek bir çalıştırma kimliğine filtreler ve hızlı
+çalıştırmalar için daha önce görülmüş olayları yeniden oynatır. Bu, belgelenen
 akışın güvenli olduğu anlamına gelir:
 
 ```typescript
@@ -209,10 +209,10 @@ for await (const event of run.events()) {
 }
 ```
 
-Uygulama genelindeki akışlar için `oc.events()` kullanın. Ham Gateway frame'leri
+Uygulama genelindeki akışlar için `oc.events()` kullanın. Ham Gateway frame’leri
 için `oc.rawEvents()` kullanın.
 
-## Modeller, Araçlar, Artifact'ler ve Onaylar
+## Modeller, araçlar, artifact’ler ve onaylar
 
 Model yardımcıları geçerli Gateway yöntemlerine eşlenir:
 
@@ -222,8 +222,8 @@ await oc.models.status({ probe: false }); // calls models.authStatus
 ```
 
 Araç yardımcıları Gateway kataloğunu, etkili araç görünümünü ve doğrudan Gateway
-araç çağrısını sunar. `oc.tools.invoke()`, ilke veya onay retlerinde hata fırlatmak
-yerine türlendirilmiş bir zarf döndürür.
+araç çağrısını açığa çıkarır. `oc.tools.invoke()`, ilke veya onay reddetmeleri
+için hata fırlatmak yerine türlendirilmiş bir zarf döndürür.
 
 ```typescript
 await oc.tools.list();
@@ -236,9 +236,9 @@ await oc.tools.invoke("tool-name", {
 });
 ```
 
-Artifact yardımcıları, oturum, çalıştırma veya görev bağlamı için Gateway artifact
-projeksiyonunu sunar. Her çağrı açık bir `sessionKey`, `runId` veya `taskId`
-kapsamı gerektirir:
+Artifact yardımcıları, oturum, çalıştırma veya görev bağlamı için Gateway
+artifact projeksiyonunu açığa çıkarır. Her çağrı açıkça bir `sessionKey`,
+`runId` veya `taskId` kapsamı gerektirir:
 
 ```typescript
 const { artifacts } = await oc.artifacts.list({ sessionKey: "main" });
@@ -251,59 +251,64 @@ if (first) {
 }
 ```
 
-Onay yardımcıları exec onay RPC'lerini kullanır:
+Onay yardımcıları exec onay RPC’lerini kullanır:
 
 ```typescript
 const approvals = await oc.approvals.list();
 await oc.approvals.respond("approval-id", { decision: "approve" });
 ```
 
-## Bugün Açıkça Desteklenmeyenler
+Ortam yardımcıları salt okunur Gateway-yerel ve node keşfini açığa çıkarır:
 
-SDK, hedeflediğimiz ürün modeli için adlar içerir, ancak Gateway RPC'leri varmış
-gibi sessizce davranmaz. Bu çağrılar şu anda açık desteklenmiyor hataları fırlatır:
+```typescript
+const { environments } = await oc.environments.list();
+await oc.environments.status(environments[0].id);
+```
+
+## Bugün açıkça desteklenmeyenler
+
+SDK, istediğimiz ürün modeli için adlar içerir, ancak Gateway RPC’leri varmış
+gibi sessizce davranmaz. Bu çağrılar şu anda açık desteklenmeyen hata verir:
 
 ```typescript
 await oc.tasks.list();
 await oc.tasks.get("task-id");
 await oc.tasks.cancel("task-id");
 
-await oc.environments.list();
 await oc.environments.create({});
-await oc.environments.status("environment-id");
 await oc.environments.delete("environment-id");
 ```
 
 Çalıştırma başına `workspace`, `runtime`, `environment` ve `approvals` alanları
-gelecekteki biçim olarak türlendirilmiştir, ancak geçerli Gateway bu geçersiz
-kılmaları `agent` RPC'sinde desteklemez. Çağıranlar bunları iletirse SDK,
-çalıştırmayı göndermeden önce hata fırlatır; böylece işler yanlışlıkla varsayılan
-workspace, runtime, environment veya approval davranışıyla yürütülmez.
+gelecekteki şekil olarak türlendirilmiştir, ancak mevcut Gateway bu geçersiz
+kılmaları `agent` RPC’sinde desteklemez. Çağıranlar bunları iletirse, SDK
+çalıştırmayı göndermeden önce hata fırlatır; böylece iş yanlışlıkla varsayılan
+çalışma alanı, çalışma zamanı, ortam veya onay davranışıyla yürütülmez.
 
-## App SDK ve Plugin SDK Karşılaştırması
+## App SDK ve Plugin SDK
 
 Kod OpenClaw dışında yaşadığında App SDK kullanın:
 
 - Agent çalıştırmaları başlatan veya gözlemleyen Node betikleri
-- Bir Gateway çağıran CI işleri
+- Gateway çağıran CI işleri
 - panolar ve yönetim panelleri
 - IDE eklentileri
-- kanal plugin'i olması gerekmeyen harici köprüler
-- sahte veya gerçek Gateway taşımalarıyla entegrasyon testleri
+- kanal plugin’i olması gerekmeyen dış köprüler
+- sahte veya gerçek Gateway aktarımlarıyla entegrasyon testleri
 
 Kod OpenClaw içinde çalıştığında Plugin SDK kullanın:
 
-- sağlayıcı plugin'leri
-- kanal plugin'leri
-- araç veya yaşam döngüsü hook'ları
-- agent harness plugin'leri
+- sağlayıcı plugin’leri
+- kanal plugin’leri
+- araç veya yaşam döngüsü hook’ları
+- agent harness plugin’leri
 - güvenilir çalışma zamanı yardımcıları
 
 App SDK kodu `@openclaw/sdk` içinden içe aktarmalıdır. Plugin kodu belgelenmiş
 `openclaw/plugin-sdk/*` alt yollarından içe aktarmalıdır. İki sözleşmeyi
 karıştırmayın.
 
-## İlgili Belgeler
+## İlgili
 
 - [OpenClaw App SDK API tasarımı](/tr/reference/openclaw-sdk-api-design)
 - [Gateway RPC referansı](/tr/reference/rpc)
@@ -311,5 +316,5 @@ karıştırmayın.
 - [Agent çalışma zamanları](/tr/concepts/agent-runtimes)
 - [Oturumlar](/tr/concepts/session)
 - [Arka plan görevleri](/tr/automation/tasks)
-- [ACP agent'ları](/tr/tools/acp-agents)
+- [ACP agent’ları](/tr/tools/acp-agents)
 - [Plugin SDK genel bakışı](/tr/plugins/sdk-overview)

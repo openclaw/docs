@@ -1,52 +1,54 @@
 ---
 read_when:
-    - Ajanlardan PDF’leri analiz etmek istiyorsunuz
-    - Tam PDF aracı parametrelerine ve sınırlarına ihtiyacınız var
-    - Yerel PDF modu ile çıkarma fallback’ini hata ayıklıyorsunuz
-summary: Bir veya daha fazla PDF belgesini yerel sağlayıcı desteği ve çıkarma fallback’i ile analiz etme
+    - PDF'leri ajanlar üzerinden analiz etmek istiyorsunuz
+    - Kesin PDF aracı parametrelerine ve sınırlarına ihtiyacınız var
+    - Yerel PDF modu ile çıkarma yedek mekanizması arasındaki sorunu ayıklıyorsunuz
+summary: Bir veya daha fazla PDF belgesini yerel sağlayıcı desteği ve çıkarma geri dönüşüyle analiz edin
 title: PDF aracı
 x-i18n:
-    generated_at: "2026-04-25T13:59:43Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:35:23Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 89bbc675f2b87729e283659f9604724be7a827b50b11edc853a42c448bbaaf6e
+    source_hash: ac1cbbc363975d5571fe5b46b39e2d897e1b80b5859a1f44ef81050f55554444
     source_path: tools/pdf.md
-    workflow: 15
+    workflow: 16
 ---
 
 `pdf`, bir veya daha fazla PDF belgesini analiz eder ve metin döndürür.
 
-Hızlı davranış özeti:
+Hızlı davranış:
 
 - Anthropic ve Google model sağlayıcıları için yerel sağlayıcı modu.
-- Diğer sağlayıcılar için çıkarma fallback modu (önce metni çıkarır, gerektiğinde sayfa görsellerini kullanır).
-- Tek (`pdf`) veya çoklu (`pdfs`) girdi destekler; çağrı başına en fazla 10 PDF.
+- Diğer sağlayıcılar için çıkarma geri dönüş modu (önce metni, gerektiğinde sayfa görsellerini çıkarır).
+- Tekli (`pdf`) veya çoklu (`pdfs`) girdiyi destekler; çağrı başına en fazla 10 PDF.
 
 ## Kullanılabilirlik
 
-Araç yalnızca OpenClaw, ajan için PDF destekli bir model yapılandırmasını çözümleyebildiğinde kaydedilir:
+Araç yalnızca OpenClaw, ajan için PDF özellikli bir model yapılandırmasını çözümleyebildiğinde kaydedilir:
 
 1. `agents.defaults.pdfModel`
-2. fallback olarak `agents.defaults.imageModel`
-3. fallback olarak ajanın çözülmüş oturum/varsayılan modeli
-4. yerel PDF sağlayıcıları auth destekliyse, genel görsel fallback adaylarının önünde tercih edilir
+2. `agents.defaults.imageModel` değerine geri dönüş
+3. ajanın çözümlenen oturum/varsayılan modeline geri dönüş
+4. yerel-PDF sağlayıcıları kimlik doğrulama destekliyse, genel görsel geri dönüş adaylarından önce onları tercih et
 
-Kullanılabilir bir model çözümlenemezse `pdf` aracı sunulmaz.
+Kullanılabilir bir model çözümlenemezse `pdf` aracı gösterilmez.
 
 Kullanılabilirlik notları:
 
-- Fallback zinciri auth farkındalıklıdır. Yapılandırılmış bir `provider/model`, yalnızca OpenClaw ajan için o sağlayıcıda gerçekten kimlik doğrulaması yapabiliyorsa sayılır.
-- Yerel PDF sağlayıcıları şu anda **Anthropic** ve **Google**’dır.
-- Çözülmüş oturum/varsayılan sağlayıcı zaten yapılandırılmış bir vision/PDF modeline sahipse, PDF aracı diğer auth destekli sağlayıcılara fallback yapmadan önce bunu yeniden kullanır.
+- Geri dönüş zinciri kimlik doğrulama farkındadır. Yapılandırılmış bir `provider/model` yalnızca
+  OpenClaw ajan için o sağlayıcıda gerçekten kimlik doğrulayabiliyorsa geçerli sayılır.
+- Yerel PDF sağlayıcıları şu anda **Anthropic** ve **Google**.
+- Çözümlenen oturum/varsayılan sağlayıcının zaten yapılandırılmış bir görsel/PDF
+  modeli varsa PDF aracı, kimlik doğrulama destekli diğer sağlayıcılara geri dönmeden önce bunu yeniden kullanır.
 
-## Girdi başvurusu
+## Girdi referansı
 
 <ParamField path="pdf" type="string">
-Bir PDF yolu veya URL’si.
+Bir PDF yolu veya URL.
 </ParamField>
 
 <ParamField path="pdfs" type="string[]">
-Birden fazla PDF yolu veya URL’si, toplam en fazla 10 adet.
+En fazla toplam 10 adet olmak üzere birden fazla PDF yolu veya URL.
 </ParamField>
 
 <ParamField path="prompt" type="string" default="Analyze this PDF document.">
@@ -62,58 +64,63 @@ Analiz istemi.
 </ParamField>
 
 <ParamField path="maxBytesMb" type="number">
-PDF başına MB cinsinden boyut üst sınırı. Varsayılan `agents.defaults.pdfMaxBytesMb` veya `10` değeridir.
+PDF başına MB cinsinden boyut sınırı. Varsayılan olarak `agents.defaults.pdfMaxBytesMb` veya `10`.
 </ParamField>
 
 Girdi notları:
 
-- `pdf` ve `pdfs`, yüklemeden önce birleştirilir ve yinelenenler kaldırılır.
-- Hiç PDF girdisi verilmezse araç hata verir.
-- `pages`, 1 tabanlı sayfa numaraları olarak ayrıştırılır; yinelenenler kaldırılır, sıralanır ve yapılandırılmış en fazla sayfa sayısına göre sınırlandırılır.
-- `maxBytesMb`, varsayılan olarak `agents.defaults.pdfMaxBytesMb` veya `10` değerini kullanır.
+- `pdf` ve `pdfs`, yüklemeden önce birleştirilir ve tekilleştirilir.
+- PDF girdisi sağlanmazsa araç hata verir.
+- `pages`, 1 tabanlı sayfa numaraları olarak ayrıştırılır, tekilleştirilir, sıralanır ve yapılandırılmış en fazla sayfa sayısına sınırlandırılır.
+- `maxBytesMb` varsayılan olarak `agents.defaults.pdfMaxBytesMb` veya `10` olur.
 
-## Desteklenen PDF başvuruları
+## Desteklenen PDF referansları
 
 - yerel dosya yolu (`~` genişletmesi dahil)
 - `file://` URL
 - `http://` ve `https://` URL
-- `media://inbound/<id>` gibi OpenClaw tarafından yönetilen gelen başvurular
+- `media://inbound/<id>` gibi OpenClaw tarafından yönetilen gelen referanslar
 
-Başvuru notları:
+Referans notları:
 
-- Diğer URI şemaları (`ftp://` gibi) `unsupported_pdf_reference` ile reddedilir.
-- Sandbox modunda uzak `http(s)` URL’leri reddedilir.
-- Yalnızca çalışma alanı dosya politikası etkinse izin verilen köklerin dışındaki yerel dosya yolları reddedilir.
-- Yönetilen gelen başvurular ve OpenClaw’ın gelen medya deposu altındaki yeniden oynatılmış yollar, yalnızca çalışma alanı dosya politikası ile izinlidir.
+- Diğer URI şemaları (örneğin `ftp://`) `unsupported_pdf_reference` ile reddedilir.
+- Korumalı alan modunda uzak `http(s)` URL'leri reddedilir.
+- Yalnızca çalışma alanı dosya ilkesi etkinken, izin verilen köklerin dışındaki yerel dosya yolları reddedilir.
+- Yönetilen gelen referanslara ve OpenClaw'ın gelen medya deposu altındaki yeniden oynatılan yollara, yalnızca çalışma alanı dosya ilkesiyle izin verilir.
 
 ## Yürütme modları
 
 ### Yerel sağlayıcı modu
 
-Yerel mod, `anthropic` ve `google` sağlayıcısı için kullanılır.
-Araç ham PDF baytlarını doğrudan sağlayıcı API’lerine gönderir.
+Yerel mod, `anthropic` ve `google` sağlayıcıları için kullanılır.
+Araç ham PDF baytlarını doğrudan sağlayıcı API'lerine gönderir.
 
 Yerel mod sınırları:
 
-- `pages` desteklenmez. Ayarlanırsa araç hata döndürür.
-- Çoklu PDF girdisi desteklenir; her PDF, istemden önce yerel belge bloğu / satır içi PDF parçası olarak gönderilir.
+- `pages` desteklenmez. Ayarlanırsa araç bir hata döndürür.
+- Çoklu PDF girdisi desteklenir; her PDF istemden önce yerel belge bloğu /
+  satır içi PDF parçası olarak gönderilir.
 
-### Çıkarma fallback modu
+### Çıkarma geri dönüş modu
 
-Fallback modu, yerel olmayan sağlayıcılar için kullanılır.
+Geri dönüş modu, yerel olmayan sağlayıcılar için kullanılır.
 
 Akış:
 
-1. Seçilen sayfalardan metni çıkarır (`agents.defaults.pdfMaxPages` değerine kadar, varsayılan `20`).
-2. Çıkarılan metin uzunluğu `200` karakterin altındaysa seçilen sayfaları PNG görsellerine dönüştürür ve dahil eder.
-3. Çıkarılan içeriği ve istemi seçilen modele gönderir.
+1. Seçilen sayfalardan metin çıkar (`agents.defaults.pdfMaxPages` değerine kadar, varsayılan `20`).
+2. Çıkarılan metin uzunluğu `200` karakterin altındaysa, seçilen sayfaları PNG görsellerine dönüştür ve dahil et.
+3. Çıkarılan içeriği ve istemi seçilen modele gönder.
 
-Fallback ayrıntıları:
+Geri dönüş ayrıntıları:
 
-- Sayfa görseli çıkarma, `4,000,000` piksellik bir bütçe kullanır.
-- Hedef model görsel girdisini desteklemiyorsa ve çıkarılabilir metin yoksa araç hata verir.
-- Metin çıkarma başarılı olur ancak görsel çıkarma, yalnızca metin destekleyen bir modelde vision gerektirirse OpenClaw işlenmiş görselleri bırakır ve çıkarılmış metinle devam eder.
-- Çıkarma fallback’i paketlenmiş `document-extract` Plugin’ini kullanır. Plugin, `pdfjs-dist` sahipliğini üstlenir; `@napi-rs/canvas` yalnızca görsel işleme fallback’i mevcut olduğunda kullanılır.
+- Sayfa görseli çıkarma `4,000,000` piksel bütçesi kullanır.
+- Hedef model görsel girdiyi desteklemiyorsa ve çıkarılabilir metin yoksa araç hata verir.
+- Metin çıkarma başarılı olursa ancak görsel çıkarma, yalnızca metin destekleyen bir
+  modelde görsel yeteneği gerektirirse OpenClaw işlenen görselleri çıkarır ve
+  çıkarılan metinle devam eder.
+- Çıkarma geri dönüşü, paketlenmiş `document-extract` Plugin'ini kullanır. Plugin,
+  `pdfjs-dist` sahibidir; `@napi-rs/canvas` yalnızca görsel işleme geri dönüşü
+  kullanılabilir olduğunda kullanılır.
 
 ## Yapılandırma
 
@@ -132,30 +139,30 @@ Fallback ayrıntıları:
 }
 ```
 
-Tam alan ayrıntıları için [Configuration Reference](/tr/gateway/configuration-reference) bölümüne bakın.
+Tüm alan ayrıntıları için [Yapılandırma Referansı](/tr/gateway/configuration-reference) bölümüne bakın.
 
 ## Çıktı ayrıntıları
 
-Araç, `content[0].text` içinde metin ve `details` içinde yapılandırılmış meta veri döndürür.
+Araç metni `content[0].text` içinde, yapılandırılmış meta verileri ise `details` içinde döndürür.
 
 Yaygın `details` alanları:
 
-- `model`: çözümlenmiş model başvurusu (`provider/model`)
-- `native`: yerel sağlayıcı modu için `true`, fallback için `false`
-- `attempts`: başarıdan önce başarısız olan fallback denemeleri
+- `model`: çözümlenen model referansı (`provider/model`)
+- `native`: yerel sağlayıcı modu için `true`, geri dönüş için `false`
+- `attempts`: başarıdan önce başarısız olan geri dönüş denemeleri
 
 Yol alanları:
 
 - tek PDF girdisi: `details.pdf`
-- çoklu PDF girdileri: `pdf` girdileriyle `details.pdfs[]`
-- sandbox yol yeniden yazma meta verisi (uygulanabiliyorsa): `rewrittenFrom`
+- birden fazla PDF girdisi: `pdf` girdileriyle `details.pdfs[]`
+- korumalı alan yol yeniden yazma meta verileri (geçerli olduğunda): `rewrittenFrom`
 
 ## Hata davranışı
 
-- Eksik PDF girdisi: `pdf required: provide a path or URL to a PDF document` hatasını fırlatır
+- Eksik PDF girdisi: `pdf required: provide a path or URL to a PDF document` fırlatır
 - Çok fazla PDF: `details.error = "too_many_pdfs"` içinde yapılandırılmış hata döndürür
-- Desteklenmeyen başvuru şeması: `details.error = "unsupported_pdf_reference"` döndürür
-- `pages` ile yerel mod: açık `pages is not supported with native PDF providers` hatasını fırlatır
+- Desteklenmeyen referans şeması: `details.error = "unsupported_pdf_reference"` döndürür
+- `pages` ile yerel mod: net bir `pages is not supported with native PDF providers` hatası fırlatır
 
 ## Örnekler
 
@@ -177,7 +184,7 @@ Birden fazla PDF:
 }
 ```
 
-Sayfa filtreli fallback modeli:
+Sayfa filtreli geri dönüş modeli:
 
 ```json
 {
@@ -190,5 +197,5 @@ Sayfa filtreli fallback modeli:
 
 ## İlgili
 
-- [Araçlara Genel Bakış](/tr/tools) — kullanılabilir tüm ajan araçları
-- [Configuration Reference](/tr/gateway/config-agents#agent-defaults) — `pdfMaxBytesMb` ve `pdfMaxPages` yapılandırması
+- [Araçlara Genel Bakış](/tr/tools) - kullanılabilir tüm ajan araçları
+- [Yapılandırma Referansı](/tr/gateway/config-agents#agent-defaults) - pdfMaxBytesMb ve pdfMaxPages yapılandırması

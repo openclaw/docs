@@ -1,49 +1,49 @@
 ---
 read_when:
-    - Aracı çalışma zamanını, çalışma alanı önyüklemesini veya oturum davranışını değiştirme
+    - Ajan çalışma zamanını, çalışma alanı önyüklemesini veya oturum davranışını değiştirme
 summary: Ajan çalışma zamanı, çalışma alanı sözleşmesi ve oturum önyüklemesi
 title: Ajan çalışma zamanı
 x-i18n:
-    generated_at: "2026-05-04T02:22:25Z"
+    generated_at: "2026-05-06T09:06:42Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 89bbbd05a9bf2054d3a1f24aeed005a05b61152a047b593addfb46817baae05a
+    source_hash: 372cf6a02b35646c24e68d96938bba57721eeec512e17c2d40c8e721e7561bd1
     source_path: concepts/agent.md
     workflow: 16
 ---
 
-OpenClaw, **tek bir gömülü ajan çalışma zamanı** çalıştırır: Gateway başına bir ajan süreci; kendi çalışma alanı, başlangıç dosyaları ve oturum deposu vardır. Bu sayfa, çalışma zamanının sözleşmesini kapsar: çalışma alanında nelerin bulunması gerektiği, hangi dosyaların enjekte edildiği ve oturumların buna karşı nasıl başlatıldığı.
+OpenClaw, **tek bir gömülü ajan çalışma zamanı** çalıştırır - her Gateway için bir ajan süreci; kendi çalışma alanı, önyükleme dosyaları ve oturum deposu vardır. Bu sayfa bu çalışma zamanı sözleşmesini kapsar: çalışma alanının ne içermesi gerektiği, hangi dosyaların enjekte edildiği ve oturumların buna göre nasıl önyüklendiği.
 
-## Çalışma alanı (gerekli)
+## Çalışma alanı (zorunlu)
 
-OpenClaw, tek bir ajan çalışma alanı dizinini (`agents.defaults.workspace`) araçlar ve bağlam için ajanın **tek** çalışma dizini (`cwd`) olarak kullanır.
+OpenClaw, araçlar ve bağlam için ajanın **tek** çalışma dizini (`cwd`) olarak tek bir ajan çalışma alanı dizini (`agents.defaults.workspace`) kullanır.
 
-Önerilen: eksikse `~/.openclaw/openclaw.json` oluşturmak ve çalışma alanı dosyalarını başlatmak için `openclaw setup` kullanın.
+Önerilen: `~/.openclaw/openclaw.json` eksikse oluşturmak ve çalışma alanı dosyalarını başlatmak için `openclaw setup` kullanın.
 
 Tam çalışma alanı düzeni + yedekleme kılavuzu: [Ajan çalışma alanı](/tr/concepts/agent-workspace)
 
 `agents.defaults.sandbox` etkinse, ana olmayan oturumlar bunu `agents.defaults.sandbox.workspaceRoot` altındaki oturum başına çalışma alanlarıyla geçersiz kılabilir (bkz. [Gateway yapılandırması](/tr/gateway/configuration)).
 
-## Başlangıç dosyaları (enjekte edilir)
+## Önyükleme dosyaları (enjekte edilir)
 
-`agents.defaults.workspace` içinde OpenClaw şu kullanıcı tarafından düzenlenebilir dosyaları bekler:
+OpenClaw, `agents.defaults.workspace` içinde şu kullanıcı tarafından düzenlenebilir dosyaları bekler:
 
-- `AGENTS.md` — çalışma talimatları + “bellek”
-- `SOUL.md` — persona, sınırlar, ton
-- `TOOLS.md` — kullanıcı tarafından bakımı yapılan araç notları (örn. `imsg`, `sag`, kurallar)
-- `BOOTSTRAP.md` — tek seferlik ilk çalıştırma ritüeli (tamamlandıktan sonra silinir)
-- `IDENTITY.md` — ajan adı/havası/emoji
-- `USER.md` — kullanıcı profili + tercih edilen hitap
+- `AGENTS.md` - çalıştırma talimatları + "bellek"
+- `SOUL.md` - persona, sınırlar, ton
+- `TOOLS.md` - kullanıcı tarafından sürdürülen araç notları (örn. `imsg`, `sag`, kurallar)
+- `BOOTSTRAP.md` - tek seferlik ilk çalıştırma ritüeli (tamamlandıktan sonra silinir)
+- `IDENTITY.md` - ajan adı/havası/emoji
+- `USER.md` - kullanıcı profili + tercih edilen hitap
 
-Yeni bir oturumun ilk turunda OpenClaw, bu dosyaların içeriklerini sistem isteminin Proje Bağlamı içine enjekte eder.
+Yeni bir oturumun ilk turunda OpenClaw, bu dosyaların içeriklerini sistem isteminin Proje Bağlamı bölümüne enjekte eder.
 
-Boş dosyalar atlanır. Büyük dosyalar, istemlerin yalın kalması için bir işaretleyiciyle kısaltılır ve kesilir (tam içerik için dosyayı okuyun).
+Boş dosyalar atlanır. Büyük dosyalar kırpılır ve istemlerin hafif kalması için bir işaretçiyle kesilir (tam içerik için dosyayı okuyun).
 
-Bir dosya eksikse OpenClaw tek bir “eksik dosya” işaretleyici satırı enjekte eder (ve `openclaw setup` güvenli bir varsayılan şablon oluşturur).
+Bir dosya eksikse OpenClaw tek bir "eksik dosya" işaretçi satırı enjekte eder (ve `openclaw setup` güvenli bir varsayılan şablon oluşturur).
 
-`BOOTSTRAP.md` yalnızca **tamamen yeni bir çalışma alanı** için oluşturulur (başka başlangıç dosyası yoksa). Beklemedeyken OpenClaw bunu Proje Bağlamı içinde tutar ve kullanıcı mesajına kopyalamak yerine ilk ritüel için sistem istemine başlangıç rehberliği ekler. Ritüeli tamamladıktan sonra silerseniz, sonraki yeniden başlatmalarda tekrar oluşturulmamalıdır.
+`BOOTSTRAP.md` yalnızca **tamamen yeni bir çalışma alanı** için oluşturulur (başka önyükleme dosyası yoksa). Beklemedeyken OpenClaw bunu Proje Bağlamı içinde tutar ve kullanıcı iletisine kopyalamak yerine ilk ritüel için sistem istemine önyükleme rehberliği ekler. Ritüeli tamamladıktan sonra silerseniz, sonraki yeniden başlatmalarda yeniden oluşturulmamalıdır.
 
-Başlangıç dosyası oluşturmayı tamamen devre dışı bırakmak için (önceden hazırlanmış çalışma alanları için), şunu ayarlayın:
+Önyükleme dosyası oluşturmayı tamamen devre dışı bırakmak için (önceden hazırlanmış çalışma alanları için) şunu ayarlayın:
 
 ```json5
 { agents: { defaults: { skipBootstrap: true } } }
@@ -51,28 +51,28 @@ Başlangıç dosyası oluşturmayı tamamen devre dışı bırakmak için (önce
 
 ## Yerleşik araçlar
 
-Temel araçlar (okuma/yürütme/düzenleme/yazma ve ilgili sistem araçları), araç politikasına tabi olarak her zaman kullanılabilir. `apply_patch` isteğe bağlıdır ve `tools.exec.applyPatch` tarafından kapılanır. `TOOLS.md` hangi araçların var olduğunu kontrol etmez; bunların nasıl kullanılmasını _istediğinize_ dair rehberliktir.
+Çekirdek araçlar (read/exec/edit/write ve ilgili sistem araçları), araç politikasına tabi olarak her zaman kullanılabilir. `apply_patch` isteğe bağlıdır ve `tools.exec.applyPatch` tarafından denetlenir. `TOOLS.md` hangi araçların var olduğunu denetlemez; bu, _sizin_ onların nasıl kullanılmasını istediğinize dair rehberliktir.
 
 ## Skills
 
 OpenClaw, Skills öğelerini şu konumlardan yükler (en yüksek öncelik önce):
 
 - Çalışma alanı: `<workspace>/skills`
-- Proje ajan Skills öğeleri: `<workspace>/.agents/skills`
-- Kişisel ajan Skills öğeleri: `~/.agents/skills`
+- Proje ajan Skills: `<workspace>/.agents/skills`
+- Kişisel ajan Skills: `~/.agents/skills`
 - Yönetilen/yerel: `~/.openclaw/skills`
-- Birlikte gelenler (kurulumla gönderilen)
+- Paketlenmiş (kurulumla birlikte gelir)
 - Ek Skills klasörleri: `skills.load.extraDirs`
 
-Skills, yapılandırma/env tarafından kapılanabilir (bkz. [Gateway yapılandırması](/tr/gateway/configuration) içindeki `skills`).
+Skills yapılandırma/env ile kapılanabilir (bkz. [Gateway yapılandırması](/tr/gateway/configuration) içinde `skills`).
 
 ## Çalışma zamanı sınırları
 
-Gömülü ajan çalışma zamanı, Pi ajan çekirdeği (modeller, araçlar ve istem işlem hattı) üzerine kuruludur. Oturum yönetimi, keşif, araç bağlantıları ve kanal teslimi, bu çekirdeğin üzerindeki OpenClaw sahipliğindeki katmanlardır.
+Gömülü ajan çalışma zamanı, Pi ajan çekirdeği (modeller, araçlar ve istem işlem hattı) üzerine kuruludur. Oturum yönetimi, keşif, araç bağlama ve kanal teslimi, bu çekirdeğin üstündeki OpenClaw sahipli katmanlardır.
 
 ## Oturumlar
 
-Oturum dökümleri JSONL olarak şurada saklanır:
+Oturum transkriptleri JSONL olarak şurada saklanır:
 
 - `~/.openclaw/agents/<agentId>/sessions/<SessionId>.jsonl`
 
@@ -81,15 +81,15 @@ Diğer araçlardan gelen eski oturum klasörleri okunmaz.
 
 ## Akış sırasında yönlendirme
 
-Kuyruk modu `steer` olduğunda, gelen mesajlar mevcut çalıştırmaya enjekte edilir. Kuyruğa alınmış yönlendirme, **mevcut asistan turu araç çağrılarını yürütmeyi bitirdikten sonra**, bir sonraki LLM çağrısından önce teslim edilir. Pi, `steer` için bekleyen tüm yönlendirme mesajlarını birlikte boşaltır; eski `queue` ise model sınırı başına bir mesaj boşaltır. Yönlendirme artık mevcut asistan mesajındaki kalan araç çağrılarını atlamaz.
+Kuyruk modu `steer` olduğunda, gelen iletiler geçerli çalıştırmaya enjekte edilir. Kuyruğa alınan yönlendirme, **geçerli asistan turu araç çağrılarını yürütmeyi bitirdikten sonra**, bir sonraki LLM çağrısından önce teslim edilir. Pi, `steer` için bekleyen tüm yönlendirme iletilerini birlikte boşaltır; eski `queue`, model sınırı başına bir ileti boşaltır. Yönlendirme artık geçerli asistan iletisindeki kalan araç çağrılarını atlamaz.
 
-Kuyruk modu `followup` veya `collect` olduğunda, gelen mesajlar mevcut tur bitene kadar tutulur, ardından kuyruğa alınan yüklerle yeni bir ajan turu başlar. Mod ve sınır davranışı için [Kuyruk](/tr/concepts/queue) ve [Yönlendirme kuyruğu](/tr/concepts/queue-steering) sayfalarına bakın.
+Kuyruk modu `followup` veya `collect` olduğunda, gelen iletiler geçerli tur sona erene kadar tutulur; ardından kuyruktaki yüklerle yeni bir ajan turu başlar. Mod ve sınır davranışı için bkz. [Kuyruk](/tr/concepts/queue) ve [Yönlendirme kuyruğu](/tr/concepts/queue-steering).
 
 Blok akışı, tamamlanan asistan bloklarını biter bitmez gönderir; **varsayılan olarak kapalıdır** (`agents.defaults.blockStreamingDefault: "off"`).
 Sınırı `agents.defaults.blockStreamingBreak` ile ayarlayın (`text_end` ve `message_end`; varsayılan text_end).
-Yumuşak blok parçalamayı `agents.defaults.blockStreamingChunk` ile denetleyin (varsayılan 800–1200 karakter; paragraf sonlarını, sonra yeni satırları tercih eder; cümleler en son).
-Tek satırlık gereksiz yoğunluğu azaltmak için akıtılan parçaları `agents.defaults.blockStreamingCoalesce` ile birleştirin (göndermeden önce boşta kalmaya dayalı birleştirme). Telegram dışı kanalların blok yanıtlarını etkinleştirmek için açık `*.blockStreaming: true` gerekir.
-Ayrıntılı araç özetleri araç başlangıcında yayımlanır (debounce yok); Control UI, kullanılabildiğinde araç çıktısını ajan olayları üzerinden akıtır.
+Yumuşak blok parçalamayı `agents.defaults.blockStreamingChunk` ile denetleyin (varsayılan 800-1200 karakter; paragraf sonlarını, sonra yeni satırları tercih eder; cümleler en son).
+Tek satırlık spam’i azaltmak için aktarılan parçaları `agents.defaults.blockStreamingCoalesce` ile birleştirin (göndermeden önce boşta kalmaya dayalı birleştirme). Telegram dışı kanallar, blok yanıtlarını etkinleştirmek için açıkça `*.blockStreaming: true` gerektirir.
+Ayrıntılı araç özetleri araç başlangıcında yayılır (debounce yoktur); Control UI, mevcut olduğunda araç çıktısını ajan olayları üzerinden aktarır.
 Daha fazla ayrıntı: [Akış + parçalama](/tr/concepts/streaming).
 
 ## Model referansları
@@ -97,15 +97,15 @@ Daha fazla ayrıntı: [Akış + parçalama](/tr/concepts/streaming).
 Yapılandırmadaki model referansları (örneğin `agents.defaults.model` ve `agents.defaults.models`), **ilk** `/` karakterine göre bölünerek ayrıştırılır.
 
 - Modelleri yapılandırırken `provider/model` kullanın.
-- Model kimliğinin kendisi `/` içeriyorsa (OpenRouter tarzı), sağlayıcı önekini ekleyin (örnek: `openrouter/moonshotai/kimi-k2`).
-- Sağlayıcıyı atlarsanız OpenClaw önce bir takma adı, ardından tam bu model kimliği için benzersiz bir yapılandırılmış sağlayıcı eşleşmesini dener ve ancak bundan sonra yapılandırılmış varsayılan sağlayıcıya geri döner. Bu sağlayıcı artık yapılandırılmış varsayılan modeli sunmuyorsa OpenClaw, eskimiş kaldırılmış sağlayıcı varsayılanını göstermek yerine ilk yapılandırılmış sağlayıcı/modele geri döner.
+- Model kimliğinin kendisi `/` içeriyorsa (OpenRouter tarzı), sağlayıcı önekini dahil edin (örnek: `openrouter/moonshotai/kimi-k2`).
+- Sağlayıcıyı atlarsanız OpenClaw önce bir takma adı dener, ardından tam o model kimliği için benzersiz yapılandırılmış sağlayıcı eşleşmesini dener ve ancak bundan sonra yapılandırılmış varsayılan sağlayıcıya geri döner. Bu sağlayıcı artık yapılandırılmış varsayılan modeli sunmuyorsa OpenClaw, eski kaldırılmış sağlayıcı varsayılanını göstermek yerine ilk yapılandırılmış sağlayıcı/model çiftine geri döner.
 
 ## Yapılandırma (asgari)
 
 En azından şunları ayarlayın:
 
 - `agents.defaults.workspace`
-- `channels.whatsapp.allowFrom` (kesinlikle önerilir)
+- `channels.whatsapp.allowFrom` (şiddetle önerilir)
 
 ---
 

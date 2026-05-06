@@ -1,80 +1,80 @@
 ---
 read_when:
-    - Voice wake veya PTT yolları üzerinde çalışıyorsunuz
-summary: mac uygulamasında Voice wake ve push-to-talk modları ile yönlendirme ayrıntıları
-title: Voice wake (macOS)
+    - Sesle uyandırma veya PTT yolları üzerinde çalışma
+summary: Mac uygulamasında sesle uyandırma ve bas-konuş modları ile yönlendirme ayrıntıları
+title: Sesle uyandırma (macOS)
 x-i18n:
-    generated_at: "2026-04-24T09:20:18Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:22:45Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 0273c24764f0baf440a19f31435d6ee62ab040c1ec5a97d7733d3ec8b81b0641
+    source_hash: 312895b5767c447233bd77cbcd48ea81bb6c700080abc31974188b610a1b1ef0
     source_path: platforms/mac/voicewake.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Voice Wake & Push-to-Talk
+# Sesle Uyandırma ve Bas-Konuş
 
 ## Modlar
 
-- **Wake-word modu** (varsayılan): her zaman açık Speech tanıyıcısı tetikleyici token'ları (`swabbleTriggerWords`) bekler. Eşleşme olduğunda yakalamayı başlatır, kısmi metinle birlikte overlay'i gösterir ve sessizlikten sonra otomatik gönderir.
-- **Push-to-talk (sağ Option tuşunu basılı tutma)**: hemen yakalamak için sağ Option tuşunu basılı tutun — tetikleyici gerekmez. Basılı tutulurken overlay görünür; bırakmak kısa bir gecikmeden sonra sonlandırır ve iletir, böylece metni ayarlayabilirsiniz.
+- **Uyandırma sözcüğü modu** (varsayılan): her zaman açık Speech tanıyıcı tetikleme belirteçlerini (`swabbleTriggerWords`) bekler. Eşleşme olduğunda yakalamayı başlatır, kısmi metinle birlikte katmanı gösterir ve sessizlikten sonra otomatik olarak gönderir.
+- **Bas-konuş (Sağ Option basılı tutma)**: hemen yakalamak için sağ Option tuşunu basılı tutun; tetikleme gerekmez. Basılı tuttuğunuz sırada katman görünür; bıraktığınızda sonlandırılır ve metni düzenleyebilmeniz için kısa bir gecikmeden sonra iletilir.
 
-## Çalışma zamanı davranışı (wake-word)
+## Çalışma zamanı davranışı (uyandırma sözcüğü)
 
-- Speech tanıyıcısı `VoiceWakeRuntime` içinde yaşar.
-- Tetikleyici yalnızca uyandırma sözcüğü ile sonraki sözcük arasında **anlamlı bir duraklama** olduğunda çalışır (~0.55s boşluk). Komut başlamadan önce bile duraklamada overlay/zil başlayabilir.
-- Sessizlik pencereleri: konuşma akıyorsa 2.0s, yalnızca tetikleyici duyulduysa 5.0s.
-- Sert durdurma: kontrolden çıkan oturumları önlemek için 120s.
-- Oturumlar arası debounce: 350ms.
-- Overlay, committed/volatile renklendirme ile `VoiceWakeOverlayController` üzerinden sürülür.
-- Göndermeden sonra tanıyıcı, sonraki tetikleyiciyi dinlemek için temiz şekilde yeniden başlar.
+- Speech tanıyıcı `VoiceWakeRuntime` içinde bulunur.
+- Tetikleyici yalnızca uyandırma sözcüğü ile sonraki sözcük arasında **anlamlı bir duraklama** olduğunda çalışır (~0.55 sn boşluk). Katman/uyarı sesi, komut başlamadan önce bile duraklamada başlayabilir.
+- Sessizlik pencereleri: konuşma akıyorsa 2.0 sn, yalnızca tetikleyici duyulduysa 5.0 sn.
+- Zorunlu durdurma: kontrolden çıkan oturumları önlemek için 120 sn.
+- Oturumlar arası debounce: 350 ms.
+- Katman, işlenmiş/geçici renklendirme ile `VoiceWakeOverlayController` üzerinden yönetilir.
+- Gönderimden sonra tanıyıcı, sonraki tetikleyiciyi dinlemek için temiz biçimde yeniden başlatılır.
 
 ## Yaşam döngüsü değişmezleri
 
-- Voice Wake etkinse ve izinler verilmişse, wake-word tanıyıcısı dinliyor olmalıdır (açık bir push-to-talk yakalaması sırasında hariç).
-- Overlay görünürlüğü (X düğmesiyle manuel kapatma dahil) tanıyıcının yeniden başlamasını asla engellememelidir.
+- Voice Wake etkinse ve izinler verilmişse, uyandırma sözcüğü tanıyıcısı dinliyor olmalıdır (açık bir bas-konuş yakalaması sırasında hariç).
+- Katman görünürlüğü (X düğmesiyle elle kapatma dahil), tanıyıcının sürdürülmesini asla engellememelidir.
 
-## Yapışkan overlay hata modu (önceki)
+## Yapışkan katman hata modu (önceki)
 
-Daha önce, overlay görünür durumda takılı kalır ve siz bunu elle kapatırsanız Voice Wake “ölü” gibi görünebilirdi çünkü çalışma zamanının yeniden başlatma denemesi overlay görünürlüğü tarafından engellenebilir ve sonrasında başka bir yeniden başlatma planlanmazdı.
+Önceden, katman görünür halde takılı kalır ve siz elle kapatırsanız Voice Wake "ölü" görünebilirdi; çünkü çalışma zamanının yeniden başlatma denemesi katman görünürlüğü tarafından engellenebilir ve sonraki bir yeniden başlatma zamanlanmayabilirdi.
 
-Sertleştirme:
+Sağlamlaştırma:
 
-- Wake çalışma zamanı yeniden başlatması artık overlay görünürlüğü tarafından engellenmiyor.
-- Overlay kapatma tamamlanması, `VoiceSessionCoordinator` üzerinden bir `VoiceWakeRuntime.refresh(...)` tetikler; böylece manuel X ile kapatma her zaman dinlemeyi yeniden başlatır.
+- Wake çalışma zamanının yeniden başlatılması artık katman görünürlüğü tarafından engellenmez.
+- Katman kapatma tamamlandığında `VoiceSessionCoordinator` üzerinden `VoiceWakeRuntime.refresh(...)` tetiklenir; böylece X ile elle kapatma her zaman dinlemeyi sürdürür.
 
-## Push-to-talk ayrıntıları
+## Bas-konuş ayrıntıları
 
-- Hotkey algılama, **sağ Option** için global bir `.flagsChanged` izleyicisi kullanır (`keyCode 61` + `.option`). Yalnızca olayları gözlemleriz (engelleme yok).
-- Yakalama hattı `VoicePushToTalk` içinde yaşar: Speech'i hemen başlatır, kısmi sonuçları overlay'e akıtır ve bırakmada `VoiceWakeForwarder` çağırır.
-- Push-to-talk başladığında düello eden ses tap'lerini önlemek için wake-word çalışma zamanını duraklatırız; bırakmadan sonra otomatik yeniden başlar.
-- İzinler: Mikrofon + Speech gerekir; olayları görmek için Accessibility/Input Monitoring onayı gerekir.
-- Harici klavyeler: bazıları sağ Option'u beklendiği gibi sunmayabilir — kullanıcılar kaçırma bildirirse yedek kısayol sunun.
+- Kısayol algılama, **sağ Option** (`keyCode 61` + `.option`) için global bir `.flagsChanged` izleyicisi kullanır. Yalnızca olayları gözlemleriz (yutma yok).
+- Yakalama hattı `VoicePushToTalk` içindedir: Speech'i hemen başlatır, kısmi sonuçları katmana akıtır ve bırakıldığında `VoiceWakeForwarder` çağırır.
+- Bas-konuş başladığında, çakışan ses yakalamalarını önlemek için uyandırma sözcüğü çalışma zamanını duraklatırız; bırakıldıktan sonra otomatik olarak yeniden başlar.
+- İzinler: Mikrofon + Speech gerektirir; olayları görmek için Accessibility/Input Monitoring onayı gerekir.
+- Harici klavyeler: bazıları sağ Option tuşunu beklendiği gibi göstermeyebilir; kullanıcılar kaçırılan algılamalar bildirirse yedek bir kısayol sunun.
 
-## Kullanıcıya dönük ayarlar
+## Kullanıcıya yönelik ayarlar
 
-- **Voice Wake** anahtarı: wake-word çalışma zamanını etkinleştirir.
-- **Hold Cmd+Fn to talk**: push-to-talk izleyicisini etkinleştirir. macOS < 26 üzerinde devre dışıdır.
-- Dil ve mikrofon seçicileri, canlı seviye ölçeri, tetikleyici sözcük tablosu, test aracı (yalnızca yerel; iletmez).
-- Mic picker, bir cihaz bağlantısı kesilirse son seçimi korur, bağlantı kesildi ipucunu gösterir ve cihaz geri dönene kadar geçici olarak sistem varsayılanına fallback yapar.
-- **Sounds**: tetik algılama ve gönderimde zil sesleri; varsayılan olarak macOS “Glass” sistem sesi kullanılır. Her olay için `NSSound` ile yüklenebilir herhangi bir dosyayı (ör. MP3/WAV/AIFF) seçebilir veya **No Sound** seçebilirsiniz.
+- **Voice Wake** anahtarı: uyandırma sözcüğü çalışma zamanını etkinleştirir.
+- **Konuşmak için Cmd+Fn tuşlarını basılı tut**: bas-konuş izleyicisini etkinleştirir. macOS < 26 üzerinde devre dışıdır.
+- Dil ve mikrofon seçicileri, canlı seviye ölçer, tetikleme sözcüğü tablosu, test aracı (yalnızca yerel; iletmez).
+- Mikrofon seçici, bir aygıt bağlantısı kesilirse son seçimi korur, bağlantı kesildi ipucu gösterir ve aygıt geri gelene kadar geçici olarak sistem varsayılanına döner.
+- **Sesler**: tetikleyici algılandığında ve gönderimde uyarı sesleri; varsayılan olarak macOS "Glass" sistem sesini kullanır. Her olay için herhangi bir `NSSound` tarafından yüklenebilir dosya (ör. MP3/WAV/AIFF) seçebilir veya **Ses Yok** seçeneğini kullanabilirsiniz.
 
 ## İletme davranışı
 
-- Voice Wake etkin olduğunda transcript'ler etkin gateway/aracıya iletilir (mac uygulamasının geri kalanında kullanılan aynı yerel ve uzak mod).
-- Yanıtlar **en son kullanılan ana sağlayıcıya** teslim edilir (WhatsApp/Telegram/Discord/WebChat). Teslim başarısız olursa hata günlüğe kaydedilir ve çalışma yine de WebChat/oturum günlüklerinde görünür.
+- Voice Wake etkin olduğunda, dökümler etkin Gateway/ajan'a iletilir (Mac uygulamasının geri kalanında kullanılan aynı yerel ve uzak mod).
+- Yanıtlar **son kullanılan ana sağlayıcıya** (WhatsApp/Telegram/Discord/WebChat) teslim edilir. Teslim başarısız olursa hata günlüğe yazılır ve çalıştırma WebChat/oturum günlükleri üzerinden hâlâ görünür olur.
 
-## İletme payload'u
+## İletme yükü
 
-- `VoiceWakeForwarder.prefixedTranscript(_:)`, göndermeden önce makine ipucunu başa ekler. Wake-word ve push-to-talk yolları arasında paylaşılır.
+- `VoiceWakeForwarder.prefixedTranscript(_:)`, göndermeden önce makine ipucunu başa ekler. Uyandırma sözcüğü ve bas-konuş yolları arasında ortaktır.
 
 ## Hızlı doğrulama
 
-- Push-to-talk'u açın, Cmd+Fn'i basılı tutun, konuşun, bırakın: overlay kısmi sonuçları göstermeli ve ardından göndermelidir.
-- Basılı tutarken menü çubuğu kulakları büyümüş kalmalıdır (`triggerVoiceEars(ttl:nil)` kullanır); bırakmadan sonra inerler.
+- Bas-konuşu açın, Cmd+Fn tuşlarını basılı tutun, konuşun, bırakın: katman kısmi sonuçları göstermeli ve ardından göndermelidir.
+- Basılı tutarken menü çubuğu kulakları büyütülmüş kalmalıdır (`triggerVoiceEars(ttl:nil)` kullanır); bırakıldıktan sonra küçülürler.
 
 ## İlgili
 
-- [Voice wake](/tr/nodes/voicewake)
-- [Voice overlay](/tr/platforms/mac/voice-overlay)
-- [macOS app](/tr/platforms/macos)
+- [Sesle uyandırma](/tr/nodes/voicewake)
+- [Ses katmanı](/tr/platforms/mac/voice-overlay)
+- [macOS uygulaması](/tr/platforms/macos)

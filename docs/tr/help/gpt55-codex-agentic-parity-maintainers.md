@@ -1,90 +1,90 @@
 ---
 read_when:
-    - GPT-5.5 / Codex parity PR serisini gözden geçirme
-    - Parity programının arkasındaki altı sözleşmeli etmen mimarisini sürdürme
-summary: GPT-5.5 / Codex parity programını dört birleştirme birimi olarak nasıl gözden geçirebilirsiniz
-title: GPT-5.5 / Codex parity bakımcı notları
+    - GPT-5.5 / Codex eşdeğerlik PR serisinin incelenmesi
+    - Eşdeğerlik programının arkasındaki altı sözleşmeli ajan tabanlı mimariyi sürdürme
+summary: GPT-5.5 / Codex parite programını dört birleştirme birimi olarak inceleme
+title: GPT-5.5 / Codex eşdeğerliği bakımcı notları
 x-i18n:
-    generated_at: "2026-04-26T11:32:41Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:16:00Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8de69081f5985954b88583880c36388dc47116c3351c15d135b8ab3a660058e3
+    source_hash: 5752b4610f8b0d70b80d880ea10df75478b5f85ca431cdb73d3b61d745b23356
     source_path: help/gpt55-codex-agentic-parity-maintainers.md
-    workflow: 15
+    workflow: 16
 ---
 
-Bu not, özgün altı sözleşmeli mimariyi kaybetmeden GPT-5.5 / Codex parity programını dört birleştirme birimi olarak nasıl gözden geçireceğinizi açıklar.
+Bu not, özgün altı sözleşmeli mimariyi kaybetmeden GPT-5.5 / Codex parite programının dört birleştirme birimi olarak nasıl inceleneceğini açıklar.
 
 ## Birleştirme birimleri
 
-### PR A: strict-agentic execution
+### PR A: katı ajan odaklı yürütme
 
 Sahip oldukları:
 
 - `executionContract`
-- GPT-5 öncelikli aynı turda devam etme
+- GPT-5 öncelikli aynı turda takip
 - terminal olmayan ilerleme takibi olarak `update_plan`
-- yalnızca planla sessiz durmalar yerine açık engellenmiş durumlar
+- yalnızca planla sessizce durma yerine açık engellenmiş durumlar
 
 Sahip olmadıkları:
 
-- kimlik doğrulama/çalışma zamanı hata sınıflandırması
+- auth/runtime hata sınıflandırması
 - izin doğruluğu
-- replay/devam ettirme yeniden tasarımı
-- parity kıyaslaması
+- replay/devam yeniden tasarımı
+- parite kıyaslaması
 
-### PR B: runtime truthfulness
+### PR B: runtime doğruluğu
 
 Sahip oldukları:
 
 - Codex OAuth kapsam doğruluğu
-- türlenmiş sağlayıcı/çalışma zamanı hata sınıflandırması
+- tipli sağlayıcı/runtime hata sınıflandırması
 - doğru `/elevated full` kullanılabilirliği ve engellenme nedenleri
 
 Sahip olmadıkları:
 
-- araç şeması normalleştirme
+- araç şeması normalleştirmesi
 - replay/canlılık durumu
-- kıyaslama geçidi
+- kıyaslama kapısı
 
-### PR C: execution correctness
+### PR C: yürütme doğruluğu
 
 Sahip oldukları:
 
 - sağlayıcıya ait OpenAI/Codex araç uyumluluğu
 - parametresiz katı şema işleme
-- replay-invalid yüzeye çıkarma
+- replay-geçersiz durumunu görünür kılma
 - duraklatılmış, engellenmiş ve terk edilmiş uzun görev durumu görünürlüğü
 
 Sahip olmadıkları:
 
-- kendiliğinden seçilmiş devam ettirme
-- sağlayıcı kancaları dışındaki genel Codex lehçesi davranışı
-- kıyaslama geçidi
+- kendi seçtiği devam
+- sağlayıcı hook’ları dışındaki genel Codex lehçesi davranışı
+- kıyaslama kapısı
 
-### PR D: parity harness
+### PR D: parite iskeleti
 
 Sahip oldukları:
 
-- ilk dalga GPT-5.5 ve Opus 4.6 senaryo paketi
-- parity belgeleri
-- parity raporu ve sürüm geçidi mekanikleri
+- ilk dalga GPT-5.5 ile Opus 4.6 senaryo paketi
+- parite dokümantasyonu
+- parite raporu ve yayın kapısı mekanikleri
 
 Sahip olmadıkları:
 
-- QA-lab dışındaki çalışma zamanı davranışı değişiklikleri
-- harness içinde auth/proxy/DNS simülasyonu
+- QA-lab dışındaki runtime davranış değişiklikleri
+- iskelet içinde auth/proxy/DNS simülasyonu
 
 ## Özgün altı sözleşmeye geri eşleme
 
 | Özgün sözleşme                         | Birleştirme birimi |
 | -------------------------------------- | ------------------ |
-| Sağlayıcı taşıma/kimlik doğrulama doğruluğu | PR B           |
+| Sağlayıcı taşıma/auth doğruluğu        | PR B               |
 | Araç sözleşmesi/şema uyumluluğu        | PR C               |
-| Aynı turda yürütme                     | PR A               |
+| Aynı tur yürütme                       | PR A               |
 | İzin doğruluğu                         | PR B               |
-| Replay/devam ettirme/canlılık doğruluğu | PR C             |
-| Kıyaslama/sürüm geçidi                 | PR D               |
+| Replay/devam/canlılık doğruluğu       | PR C               |
+| Kıyaslama/yayın kapısı                 | PR D               |
 
 ## İnceleme sırası
 
@@ -93,111 +93,111 @@ Sahip olmadıkları:
 3. PR C
 4. PR D
 
-PR D kanıt katmanıdır. Çalışma zamanı doğruluğu PR'larının gecikme nedeni bu olmamalıdır.
+PR D kanıt katmanıdır. Runtime doğruluğu PR’larının gecikme nedeni olmamalıdır.
 
 ## Nelere bakılmalı
 
 ### PR A
 
-- GPT-5 çalıştırmaları yorumda durmak yerine eyleme geçiyor veya kapalı şekilde başarısız oluyor
-- `update_plan` artık tek başına ilerleme gibi görünmüyor
-- davranış GPT-5 öncelikli ve gömülü-Pi kapsamlı kalıyor
+- GPT-5 çalıştırmaları yorumda durmak yerine eyleme geçer veya kapalı şekilde başarısız olur
+- `update_plan` artık tek başına ilerleme gibi görünmez
+- davranış GPT-5 öncelikli ve gömülü Pi kapsamlı kalır
 
 ### PR B
 
-- auth/proxy/çalışma zamanı hataları genel “model failed” işlemesine çökmeyi bırakıyor
-- `/elevated full` yalnızca gerçekten kullanılabiliyorsa kullanılabilir olarak tanımlanıyor
-- engellenme nedenleri hem modele hem kullanıcıya dönük çalışma zamanına görünür oluyor
+- auth/proxy/runtime hataları genel "model failed" işlemeye indirgenmeyi bırakır
+- `/elevated full` yalnızca gerçekten kullanılabilir olduğunda kullanılabilir diye açıklanır
+- engellenme nedenleri hem modele hem de kullanıcıya dönük runtime’a görünür olur
 
 ### PR C
 
-- katı OpenAI/Codex araç kaydı öngörülebilir davranıyor
-- parametresiz araçlar katı şema denetimlerinde başarısız olmuyor
-- replay ve Compaction sonuçları doğru canlılık durumunu koruyor
+- katı OpenAI/Codex araç kaydı öngörülebilir davranır
+- parametresiz araçlar katı şema kontrollerinde başarısız olmaz
+- replay ve compaction sonuçları doğru canlılık durumunu korur
 
 ### PR D
 
-- senaryo paketi anlaşılır ve yeniden üretilebilir
-- paket yalnızca salt okunur akışları değil, değiştirici bir replay güvenliği hattını da içeriyor
-- raporlar insanlar ve otomasyon tarafından okunabilir
-- parity iddiaları anekdota değil kanıta dayanıyor
+- senaryo paketi anlaşılır ve yeniden üretilebilir olur
+- paket yalnızca salt okunur akışları değil, mutasyon yapan bir replay güvenliği hattını da içerir
+- raporlar insanlar ve otomasyon tarafından okunabilir olur
+- parite iddiaları anekdota değil kanıta dayanır
 
-PR D'den beklenen yapıtlar:
+PR D’den beklenen çıktılar:
 
 - her model çalıştırması için `qa-suite-report.md` / `qa-suite-summary.json`
-- toplu ve senaryo düzeyi karşılaştırma içeren `qa-agentic-parity-report.md`
-- makine tarafından okunabilir bir karar içeren `qa-agentic-parity-summary.json`
+- toplu ve senaryo düzeyinde karşılaştırma içeren `qa-agentic-parity-report.md`
+- makine tarafından okunabilir karar içeren `qa-agentic-parity-summary.json`
 
-## Sürüm geçidi
+## Yayın kapısı
 
-Şunlar gerçekleşmeden GPT-5.5 parity'si veya Opus 4.6'ya üstünlük iddiasında bulunmayın:
+Şunlar gerçekleşene kadar GPT-5.5’in Opus 4.6 ile pariteye ulaştığını veya ondan üstün olduğunu iddia etmeyin:
 
-- PR A, PR B ve PR C birleştirildi
-- PR D ilk dalga parity paketini temiz şekilde çalıştırdı
-- çalışma zamanı doğruluğu gerileme paketleri yeşil kaldı
-- parity raporu sahte başarı vakası ve durma davranışında gerileme göstermiyor
+- PR A, PR B ve PR C birleştirilmiş olmalı
+- PR D ilk dalga parite paketini temiz çalıştırmalı
+- runtime doğruluğu regresyon takımları yeşil kalmalı
+- parite raporu sahte başarı vakası göstermemeli ve durma davranışında regresyon olmamalı
 
 ```mermaid
 flowchart LR
-    A["PR A-C birleştirildi"] --> B["GPT-5.5 parity paketini çalıştır"]
-    A --> C["Opus 4.6 parity paketini çalıştır"]
+    A["PR A-C merged"] --> B["Run GPT-5.5 parity pack"]
+    A --> C["Run Opus 4.6 parity pack"]
     B --> D["qa-suite-summary.json"]
     C --> E["qa-suite-summary.json"]
     D --> F["qa parity-report"]
     E --> F
-    F --> G["Markdown raporu + JSON kararı"]
-    G --> H{"Geçti mi?"}
-    H -- "evet" --> I["Parity iddiasına izin verilir"]
-    H -- "hayır" --> J["Çalışma zamanı düzeltmeleri / inceleme döngüsü açık kalsın"]
+    F --> G["Markdown report + JSON verdict"]
+    G --> H{"Pass?"}
+    H -- "yes" --> I["Parity claim allowed"]
+    H -- "no" --> J["Keep runtime fixes / review loop open"]
 ```
 
-Parity harness tek kanıt kaynağı değildir. İncelemede bu ayrımı açık tutun:
+Parite iskeleti tek kanıt kaynağı değildir. İncelemede bu ayrımı açık tutun:
 
-- PR D, senaryo tabanlı GPT-5.5 ve Opus 4.6 karşılaştırmasının sahibidir
-- PR B deterministik paketleri hâlâ auth/proxy/DNS ve tam erişim doğruluğu kanıtının sahibidir
+- PR D, senaryo tabanlı GPT-5.5 ile Opus 4.6 karşılaştırmasına sahiptir
+- PR B deterministik takımları hâlâ auth/proxy/DNS ve tam erişim doğruluğu kanıtına sahiptir
 
-## Hızlı bakımcı birleştirme iş akışı
+## Hızlı maintainer birleştirme iş akışı
 
-Bir parity PR'ını göndermeye hazır olduğunuzda ve tekrarlanabilir, düşük riskli bir sıra istediğinizde bunu kullanın.
+Bir parite PR’ını indirmeye hazır olduğunuzda ve tekrarlanabilir, düşük riskli bir sıra istediğinizde bunu kullanın.
 
 1. Birleştirmeden önce kanıt eşiğinin karşılandığını doğrulayın:
    - yeniden üretilebilir belirti veya başarısız test
    - dokunulan kodda doğrulanmış kök neden
-   - suçlanan yolda düzeltme
-   - gerileme testi veya açık manuel doğrulama notu
-2. Birleştirmeden önce sınıflandırın/etiketleyin:
-   - PR'ın inmemesi gerekiyorsa ilgili `r:*` otomatik kapatma etiketlerini uygulayın
-   - birleştirme adaylarını çözülmemiş engelleyici başlıklardan uzak tutun
+   - ilgili yolda düzeltme
+   - regresyon testi veya açık manuel doğrulama notu
+2. Birleştirmeden önce triage/etiketleme yapın:
+   - PR inmemeliyse ilgili `r:*` otomatik kapatma etiketlerini uygulayın
+   - birleştirme adaylarını çözülmemiş engelleyici başlıklardan arındırın
 3. Dokunulan yüzeyde yerel olarak doğrulayın:
    - `pnpm check:changed`
-   - testler değiştiyse veya hata düzeltme güveni test kapsamına bağlıysa `pnpm test:changed`
-4. Standart bakımcı akışıyla gönderin (`/landpr` süreci), ardından doğrulayın:
-   - bağlantılı issue'ların otomatik kapanma davranışı
+   - testler değiştiğinde veya hata düzeltme güveni test kapsamına bağlı olduğunda `pnpm test:changed`
+4. Standart maintainer akışıyla indirin (`/landpr` süreci), ardından doğrulayın:
+   - bağlı issue’ların otomatik kapanma davranışı
    - `main` üzerindeki CI ve birleştirme sonrası durum
-5. Gönderdikten sonra ilgili açık PR/issue'lar için yinelenen arama yapın ve yalnızca kurallı bir referansla kapatın.
+5. İndirdikten sonra ilgili açık PR’lar/issue’lar için yinelenen araması çalıştırın ve yalnızca kanonik bir referansla kapatın.
 
 Kanıt eşiği öğelerinden herhangi biri eksikse birleştirmek yerine değişiklik isteyin.
 
-## Hedeften kanıta eşleme
+## Hedeften kanıta harita
 
-| Tamamlama geçidi öğesi                  | Birincil sahip | İnceleme yapıtı                                                     |
-| --------------------------------------- | -------------- | ------------------------------------------------------------------- |
-| Yalnızca plan kaynaklı duraklama yok    | PR A           | strict-agentic çalışma zamanı testleri ve `approval-turn-tool-followthrough` |
-| Sahte ilerleme veya sahte araç tamamlanması yok | PR A + PR D | parity sahte başarı sayısı artı senaryo düzeyi rapor ayrıntıları |
-| Yanlış `/elevated full` yönlendirmesi yok | PR B         | deterministik runtime-truthfulness paketleri                        |
-| Replay/canlılık hataları açık kalır     | PR C + PR D    | yaşam döngüsü/replay paketleri artı `compaction-retry-mutating-tool` |
-| GPT-5.5, Opus 4.6 ile eşleşir veya onu geçer | PR D      | `qa-agentic-parity-report.md` ve `qa-agentic-parity-summary.json`  |
+| Tamamlama kapısı öğesi                    | Birincil sahip | İnceleme çıktısı                                                     |
+| ----------------------------------------- | -------------- | ------------------------------------------------------------------- |
+| Yalnızca planla takılma yok               | PR A           | katı ajan odaklı runtime testleri ve `approval-turn-tool-followthrough` |
+| Sahte ilerleme veya sahte araç tamamlama yok | PR A + PR D | parite sahte başarı sayısı ve senaryo düzeyi rapor ayrıntıları      |
+| Yanlış `/elevated full` yönlendirmesi yok | PR B           | deterministik runtime doğruluğu takımları                           |
+| Replay/canlılık hataları açık kalır       | PR C + PR D    | yaşam döngüsü/replay takımları ve `compaction-retry-mutating-tool`  |
+| GPT-5.5, Opus 4.6 ile eşleşir veya onu geçer | PR D        | `qa-agentic-parity-report.md` ve `qa-agentic-parity-summary.json`   |
 
-## İnceleyenler için kısa özet: önce ve sonra
+## İnceleyici kısaltması: öncesi ve sonrası
 
-| Önceden kullanıcıya görünen sorun                         | Sonrasında inceleme sinyali                                                            |
-| --------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| GPT-5.5 planlamadan sonra duruyordu                       | PR A, yalnızca yorum temelli tamamlanma yerine eylem veya engellenme davranışı gösteriyor |
-| Katı OpenAI/Codex şemalarıyla araç kullanımı kırılgan hissediliyordu | PR C, araç kaydı ve parametresiz çağrıyı öngörülebilir tutuyor              |
-| `/elevated full` ipuçları bazen yanıltıcıydı              | PR B, yönlendirmeyi gerçek çalışma zamanı yeteneğine ve engellenme nedenlerine bağlıyor |
-| Uzun görevler replay/Compaction belirsizliğinde kaybolabiliyordu | PR C, açık paused, blocked, abandoned ve replay-invalid durumu yayıyor      |
-| Parity iddiaları anekdota dayanıyordu                     | PR D, her iki modelde de aynı senaryo kapsamıyla bir rapor ve JSON kararı üretiyor |
+| Önceden kullanıcıya görünen sorun                         | Sonrasında inceleme sinyali                                                             |
+| --------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| GPT-5.5 planlamadan sonra durdu                           | PR A, yalnızca yorumla tamamlama yerine eyleme geç veya engellen davranışını gösterir   |
+| Katı OpenAI/Codex şemalarıyla araç kullanımı kırılgan hissettirdi | PR C, araç kaydını ve parametresiz çağrıyı öngörülebilir tutar                  |
+| `/elevated full` ipuçları bazen yanıltıcıydı              | PR B, yönlendirmeyi gerçek runtime yeteneğine ve engellenme nedenlerine bağlar          |
+| Uzun görevler replay/compaction belirsizliğinde kaybolabiliyordu | PR C açık duraklatılmış, engellenmiş, terk edilmiş ve replay-geçersiz durumu yayar |
+| Parite iddiaları anekdottu                                | PR D, her iki modelde de aynı senaryo kapsamıyla bir rapor ve JSON kararı üretir        |
 
 ## İlgili
 
-- [GPT-5.5 / Codex agentic parity](/tr/help/gpt55-codex-agentic-parity)
+- [GPT-5.5 / Codex ajan odaklı paritesi](/tr/help/gpt55-codex-agentic-parity)

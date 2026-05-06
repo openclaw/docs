@@ -1,19 +1,19 @@
 ---
 read_when:
-    - Ajan çalıştırmalarını script'lerden veya komut satırından tetiklemek istiyorsunuz
-    - Ajan yanıtlarını programatik olarak bir sohbet kanalına teslim etmeniz gerekiyor
-summary: Ajan turlarını CLI'den çalıştırın ve isteğe bağlı olarak yanıtları kanallara teslim edin
+    - Ajan çalıştırmalarını betiklerden veya komut satırından tetiklemek istiyorsunuz
+    - Ajan yanıtlarını program aracılığıyla bir sohbet kanalına iletmeniz gerekir
+summary: Ajan turlarını CLI'dan çalıştırın ve isteğe bağlı olarak yanıtları kanallara iletin
 title: Ajan gönderimi
 x-i18n:
-    generated_at: "2026-04-24T09:32:56Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:32:03Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8f29ab906ed8179b265138ee27312c8f4b318d09b73ad61843fca6809c32bd31
+    source_hash: 1339ebd74e2349669942ff93f200b53a69ad05f2186d6ff76437c779f312a291
     source_path: tools/agent-send.md
-    workflow: 15
+    workflow: 16
 ---
 
-`openclaw agent`, gelen bir sohbet mesajına ihtiyaç duymadan komut satırından tek bir ajan turu çalıştırır. Bunu script'lenmiş iş akışları, test ve programatik teslim için kullanın.
+`openclaw agent`, gelen bir sohbet mesajı gerektirmeden komut satırından tek bir ajan turu çalıştırır. Betikli iş akışları, testler ve programatik teslim için kullanın.
 
 ## Hızlı başlangıç
 
@@ -29,13 +29,13 @@ x-i18n:
 
   <Step title="Belirli bir ajanı veya oturumu hedefleyin">
     ```bash
-    # Belirli bir ajanı hedefle
+    # Target a specific agent
     openclaw agent --agent ops --message "Summarize logs"
 
-    # Bir telefon numarasını hedefle (oturum anahtarını türetir)
+    # Target a phone number (derives session key)
     openclaw agent --to +15555550123 --message "Status update"
 
-    # Mevcut bir oturumu yeniden kullan
+    # Reuse an existing session
     openclaw agent --session-id abc123 --message "Continue the task"
     ```
 
@@ -43,10 +43,10 @@ x-i18n:
 
   <Step title="Yanıtı bir kanala teslim edin">
     ```bash
-    # WhatsApp'a teslim et (varsayılan kanal)
+    # Deliver to WhatsApp (default channel)
     openclaw agent --to +15555550123 --message "Report ready" --deliver
 
-    # Slack'e teslim et
+    # Deliver to Slack
     openclaw agent --agent ops --message "Generate report" \
       --deliver --reply-channel slack --reply-to "#reports"
     ```
@@ -56,46 +56,57 @@ x-i18n:
 
 ## Bayraklar
 
-| Bayrak                        | Açıklama                                                    |
-| ----------------------------- | ----------------------------------------------------------- |
-| `--message \<text\>`          | Gönderilecek mesaj (gerekli)                                |
-| `--to \<dest\>`               | Bir hedeften oturum anahtarı türetir (telefon, sohbet kimliği) |
-| `--agent \<id\>`              | Yapılandırılmış bir ajanı hedefler (`main` oturumunu kullanır) |
-| `--session-id \<id\>`         | Kimliğe göre mevcut bir oturumu yeniden kullanır            |
-| `--local`                     | Yerel gömülü çalışma zamanını zorlar (Gateway'i atlar)      |
-| `--deliver`                   | Yanıtı bir sohbet kanalına gönderir                         |
-| `--channel \<name\>`          | Teslim kanalı (whatsapp, telegram, discord, slack, vb.)    |
-| `--reply-to \<target\>`       | Teslim hedefi geçersiz kılması                              |
-| `--reply-channel \<name\>`    | Teslim kanalı geçersiz kılması                              |
-| `--reply-account \<id\>`      | Teslim hesap kimliği geçersiz kılması                       |
-| `--thinking \<level\>`        | Seçilen model profile'ı için thinking düzeyini ayarlar      |
-| `--verbose \<on\|full\|off\>` | Verbose düzeyini ayarlar                                    |
-| `--timeout \<seconds\>`       | Ajan zaman aşımını geçersiz kılar                           |
-| `--json`                      | Yapılandırılmış JSON çıktısı                                |
+| Bayrak                        | Açıklama                                                   |
+| ----------------------------- | ---------------------------------------------------------- |
+| `--message \<text\>`          | Gönderilecek mesaj (gerekli)                               |
+| `--to \<dest\>`               | Bir hedeften (telefon, sohbet kimliği) oturum anahtarı türet |
+| `--agent \<id\>`              | Yapılandırılmış bir ajanı hedefle (`main` oturumunu kullanır) |
+| `--session-id \<id\>`         | Mevcut bir oturumu kimliğine göre yeniden kullan           |
+| `--local`                     | Yerel gömülü çalışma zamanını zorla kullan (Gateway’i atla) |
+| `--deliver`                   | Yanıtı bir sohbet kanalına gönder                          |
+| `--channel \<name\>`          | Teslim kanalı (whatsapp, telegram, discord, slack vb.)     |
+| `--reply-to \<target\>`       | Teslim hedefi geçersiz kılması                             |
+| `--reply-channel \<name\>`    | Teslim kanalı geçersiz kılması                             |
+| `--reply-account \<id\>`      | Teslim hesabı kimliği geçersiz kılması                     |
+| `--thinking \<level\>`        | Seçilen model profili için düşünme düzeyini ayarla         |
+| `--verbose \<on\|full\|off\>` | Ayrıntılılık düzeyini ayarla                               |
+| `--timeout \<seconds\>`       | Ajan zaman aşımını geçersiz kıl                            |
+| `--json`                      | Yapılandırılmış JSON çıktısı ver                           |
 
 ## Davranış
 
-- Varsayılan olarak CLI, **Gateway üzerinden** gider. Bunu geçerli makinedeki gömülü çalışma zamanına zorlamak için `--local` ekleyin.
-- Gateway'e erişilemezse CLI, **yerel gömülü çalıştırmaya geri düşer**.
-- Oturum seçimi: `--to`, oturum anahtarını türetir (grup/kanal hedefleri yalıtımı korur; doğrudan sohbetler `main` içine çöker).
-- Thinking ve verbose bayrakları oturum deposunda kalıcı olur.
-- Çıktı: varsayılan olarak düz metin veya yapılandırılmış payload + meta veri için `--json`.
+- Varsayılan olarak CLI **Gateway üzerinden** gider. Geçerli makinede gömülü çalışma zamanını zorlamak için `--local` ekleyin.
+- Gateway’e ulaşılamıyorsa CLI yerel gömülü çalıştırmaya **geri döner**.
+- Oturum seçimi: `--to`, oturum anahtarını türetir (grup/kanal hedefleri izolasyonu korur; doğrudan sohbetler `main` altında birleşir).
+- Düşünme ve ayrıntılılık bayrakları oturum deposuna kalıcı olarak yazılır.
+- Çıktı: varsayılan olarak düz metin veya yapılandırılmış yük + meta veriler için `--json`.
 
 ## Örnekler
 
 ```bash
-# JSON çıktılı basit tur
+# Simple turn with JSON output
 openclaw agent --to +15555550123 --message "Trace logs" --verbose on --json
 
-# Thinking düzeyi ile tur
+# Turn with thinking level
 openclaw agent --session-id 1234 --message "Summarize inbox" --thinking medium
 
-# Oturumdan farklı bir kanala teslim et
+# Deliver to a different channel than the session
 openclaw agent --agent ops --message "Alert" --deliver --reply-channel telegram --reply-to "@admin"
 ```
 
 ## İlgili
 
-- [Agent CLI başvurusu](/tr/cli/agent)
-- [Alt ajanlar](/tr/tools/subagents) — arka plan alt ajan başlatma
-- [Oturumlar](/tr/concepts/session) — oturum anahtarlarının nasıl çalıştığı
+<CardGroup cols={2}>
+  <Card title="Agent CLI referansı" href="/tr/cli/agent" icon="terminal">
+    Tam `openclaw agent` bayrak ve seçenek referansı.
+  </Card>
+  <Card title="Alt ajanlar" href="/tr/tools/subagents" icon="users">
+    Arka planda alt ajan oluşturma.
+  </Card>
+  <Card title="Oturumlar" href="/tr/concepts/session" icon="comments">
+    Oturum anahtarlarının nasıl çalıştığı ve `--to`, `--agent` ile `--session-id` değerlerinin bunları nasıl çözdüğü.
+  </Card>
+  <Card title="Eğik çizgi komutları" href="/tr/tools/slash-commands" icon="slash">
+    Ajan oturumlarında kullanılan yerel komut kataloğu.
+  </Card>
+</CardGroup>

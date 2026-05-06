@@ -2,36 +2,36 @@
 read_when:
     - Belgelerin eksiksiz bir haritasını istiyorsunuz
 summary: Her OpenClaw belgesine bağlantı veren merkezler
-title: Belge merkezleri
+title: Dokümantasyon merkezleri
 x-i18n:
-    generated_at: "2026-04-25T13:57:40Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:31:16Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: db591029047b57e65141c5992760a81b838580602b1073e94d1bc2690415c0aa
+    source_hash: 9c5822f46d0c4014ec5874d06c40f9adbe4439e8164cc75709e15c519b3e11af
     source_path: start/hubs.md
-    workflow: 15
+    workflow: 16
 ---
 
 <Note>
-OpenClaw kullanmaya yeni başlıyorsanız, [Başlangıç](/tr/start/getting-started) ile başlayın.
+OpenClaw’a yeniyseniz [Başlarken](/tr/start/getting-started) ile başlayın.
 </Note>
 
-Sol gezinmede görünmeyen derinlemesine incelemeler ve başvuru belgeleri dahil her sayfayı keşfetmek için bu merkezleri kullanın.
+Sol gezinti menüsünde görünmeyen derinlemesine incelemeler ve referans belgeleri dahil her sayfayı keşfetmek için bu merkezleri kullanın.
 
 ## Buradan başlayın
 
 - [Dizin](/tr)
-- [Başlangıç](/tr/start/getting-started)
-- [Onboarding](/tr/start/onboarding)
-- [Onboarding (CLI)](/tr/start/wizard)
+- [Başlarken](/tr/start/getting-started)
+- [İlk kullanım](/tr/start/onboarding)
+- [İlk kullanım (CLI)](/tr/start/wizard)
 - [Kurulum](/tr/start/setup)
-- [Gösterge paneli (yerel Gateway)](http://127.0.0.1:18789/)
+- [Dashboard (yerel Gateway)](http://127.0.0.1:18789/)
 - [Yardım](/tr/help)
-- [Belge dizini](/tr/start/docs-directory)
+- [Belgeler dizini](/tr/start/docs-directory)
 - [Yapılandırma](/tr/gateway/configuration)
 - [Yapılandırma örnekleri](/tr/gateway/configuration-examples)
 - [OpenClaw asistanı](/tr/start/openclaw)
-- [Vitrin](/tr/start/showcase)
+- [Showcase](/tr/start/showcase)
 - [Lore](/tr/start/lore)
 
 ## Kurulum + güncellemeler
@@ -46,28 +46,28 @@ Sol gezinmede görünmeyen derinlemesine incelemeler ve başvuru belgeleri dahil
 - [Mimari](/tr/concepts/architecture)
 - [Özellikler](/tr/concepts/features)
 - [Ağ merkezi](/tr/network)
-- [Ajan çalışma zamanı](/tr/concepts/agent)
-- [Ajan çalışma alanı](/tr/concepts/agent-workspace)
+- [Agent çalışma zamanı](/tr/concepts/agent)
+- [Agent çalışma alanı](/tr/concepts/agent-workspace)
 - [Bellek](/tr/concepts/memory)
-- [Ajan döngüsü](/tr/concepts/agent-loop)
+- [Agent döngüsü](/tr/concepts/agent-loop)
 - [Akış + parçalama](/tr/concepts/streaming)
-- [Çok ajanlı yönlendirme](/tr/concepts/multi-agent)
+- [Çoklu agent yönlendirme](/tr/concepts/multi-agent)
 - [Compaction](/tr/concepts/compaction)
 - [Oturumlar](/tr/concepts/session)
 - [Oturum budama](/tr/concepts/session-pruning)
 - [Oturum araçları](/tr/concepts/session-tool)
 - [Kuyruk](/tr/concepts/queue)
-- [Eğik çizgi komutları](/tr/tools/slash-commands)
+- [Slash komutları](/tr/tools/slash-commands)
 - [RPC bağdaştırıcıları](/tr/reference/rpc)
 - [TypeBox şemaları](/tr/concepts/typebox)
 - [Saat dilimi işleme](/tr/concepts/timezone)
-- [Varlık durumu](/tr/concepts/presence)
-- [Keşif + taşıma katmanları](/tr/gateway/discovery)
+- [Varlık](/tr/concepts/presence)
+- [Keşif + taşıyıcılar](/tr/gateway/discovery)
 - [Bonjour](/tr/gateway/bonjour)
 - [Kanal yönlendirme](/tr/channels/channel-routing)
 - [Gruplar](/tr/channels/groups)
 - [Grup mesajları](/tr/channels/group-messages)
-- [Model yük devretme](/tr/concepts/model-failover)
+- [Model failover](/tr/concepts/model-failover)
 - [OAuth](/tr/concepts/oauth)
 
 ## Sağlayıcılar + giriş
@@ -85,23 +85,23 @@ Sol gezinmede görünmeyen derinlemesine incelemeler ve başvuru belgeleri dahil
 - [iMessage (eski)](/tr/channels/imessage)
 - [Konum ayrıştırma](/tr/channels/location)
 - [WebChat](/tr/web/webchat)
-- [Webhook'lar](/tr/automation/cron-jobs#webhooks)
+- [Webhook’lar](/tr/automation/cron-jobs#webhooks)
 - [Gmail Pub/Sub](/tr/automation/cron-jobs#gmail-pubsub-integration)
 
 ## Gateway + işlemler
 
-- [Gateway çalışma kılavuzu](/tr/gateway)
-- [Ağ modeli](/tr/gateway/network-model)
+- [Gateway runbook](/tr/gateway)
+- [Ağ modeli](/tr/network#core-model)
 - [Gateway eşleştirme](/tr/gateway/pairing)
 - [Gateway kilidi](/tr/gateway/gateway-lock)
-- [Arka plan süreci](/tr/gateway/background-process)
+- [Arka plan işlemi](/tr/gateway/background-process)
 - [Sağlık](/tr/gateway/health)
 - [Heartbeat](/tr/gateway/heartbeat)
 - [Doctor](/tr/gateway/doctor)
 - [Günlükleme](/tr/gateway/logging)
 - [Sandboxing](/tr/gateway/sandboxing)
-- [Gösterge paneli](/tr/web/dashboard)
-- [Kontrol UI](/tr/web/control-ui)
+- [Dashboard](/tr/web/dashboard)
+- [Control UI](/tr/web/control-ui)
 - [Uzaktan erişim](/tr/gateway/remote)
 - [Uzak Gateway README](/tr/gateway/remote-gateway-readme)
 - [Tailscale](/tr/gateway/tailscale)
@@ -112,26 +112,26 @@ Sol gezinmede görünmeyen derinlemesine incelemeler ve başvuru belgeleri dahil
 
 - [Araç yüzeyi](/tr/tools)
 - [OpenProse](/tr/prose)
-- [CLI başvurusu](/tr/cli)
+- [CLI referansı](/tr/cli)
 - [Exec aracı](/tr/tools/exec)
 - [PDF aracı](/tr/tools/pdf)
 - [Yükseltilmiş mod](/tr/tools/elevated)
 - [Cron işleri](/tr/automation/cron-jobs)
-- [Otomasyon ve görevler](/tr/automation)
+- [Otomasyon ve Görevler](/tr/automation)
 - [Düşünme + ayrıntılı](/tr/tools/thinking)
 - [Modeller](/tr/concepts/models)
-- [Alt ajanlar](/tr/tools/subagents)
-- [Ajan gönderme CLI](/tr/tools/agent-send)
+- [Alt agent’lar](/tr/tools/subagents)
+- [Agent gönderme CLI](/tr/tools/agent-send)
 - [Terminal UI](/tr/web/tui)
 - [Tarayıcı denetimi](/tr/tools/browser)
 - [Tarayıcı (Linux sorun giderme)](/tr/tools/browser-linux-troubleshooting)
 - [Anketler](/tr/cli/message)
 
-## Node'lar, medya, ses
+## Node’lar, medya, ses
 
-- [Node'lara genel bakış](/tr/nodes)
+- [Node’lara genel bakış](/tr/nodes)
 - [Kamera](/tr/nodes/camera)
-- [Görseller](/tr/nodes/images)
+- [Görüntüler](/tr/nodes/images)
 - [Ses](/tr/nodes/audio)
 - [Konum komutu](/tr/nodes/location-command)
 - [Sesle uyandırma](/tr/nodes/voicewake)
@@ -147,15 +147,15 @@ Sol gezinmede görünmeyen derinlemesine incelemeler ve başvuru belgeleri dahil
 - [Linux](/tr/platforms/linux)
 - [Web yüzeyleri](/tr/web)
 
-## macOS yardımcı uygulaması (gelişmiş)
+## macOS eşlikçi uygulaması (ileri düzey)
 
 - [macOS geliştirme kurulumu](/tr/platforms/mac/dev-setup)
 - [macOS menü çubuğu](/tr/platforms/mac/menu-bar)
 - [macOS sesle uyandırma](/tr/platforms/mac/voicewake)
-- [macOS ses kaplaması](/tr/platforms/mac/voice-overlay)
+- [macOS ses katmanı](/tr/platforms/mac/voice-overlay)
 - [macOS WebChat](/tr/platforms/mac/webchat)
 - [macOS Canvas](/tr/platforms/mac/canvas)
-- [macOS alt süreç](/tr/platforms/mac/child-process)
+- [macOS alt işlem](/tr/platforms/mac/child-process)
 - [macOS sağlık](/tr/platforms/mac/health)
 - [macOS simgesi](/tr/platforms/mac/icon)
 - [macOS günlükleme](/tr/platforms/mac/logging)
@@ -167,18 +167,18 @@ Sol gezinmede görünmeyen derinlemesine incelemeler ve başvuru belgeleri dahil
 - [macOS Skills](/tr/platforms/mac/skills)
 - [macOS Peekaboo](/tr/platforms/mac/peekaboo)
 
-## Plugin'ler
+## Plugin’ler
 
-- [Plugin'lere genel bakış](/tr/tools/plugin)
+- [Plugin’lere genel bakış](/tr/tools/plugin)
 - [Plugin oluşturma](/tr/plugins/building-plugins)
-- [Plugin hook'ları](/tr/plugins/hooks)
-- [Plugin bildirimi](/tr/plugins/manifest)
-- [Ajan araçları](/tr/plugins/building-plugins#registering-agent-tools)
+- [Plugin hook’ları](/tr/plugins/hooks)
+- [Plugin manifesti](/tr/plugins/manifest)
+- [Agent araçları](/tr/plugins/building-plugins#registering-agent-tools)
 - [Plugin paketleri](/tr/plugins/bundles)
-- [Topluluk Plugin'leri](/tr/plugins/community)
-- [Yetenek yemek kitabı](/tr/plugins/architecture)
-- [Sesli arama Plugin'i](/tr/plugins/voice-call)
-- [Zalo kullanıcı Plugin'i](/tr/plugins/zalouser)
+- [Topluluk Plugin’leri](/tr/plugins/community)
+- [Yetenek tarifleri](/tr/plugins/adding-capabilities)
+- [Sesli arama Plugin’i](/tr/plugins/voice-call)
+- [Zalo kullanıcı Plugin’i](/tr/plugins/zalouser)
 
 ## Çalışma alanı + şablonlar
 
@@ -201,9 +201,9 @@ Sol gezinmede görünmeyen derinlemesine incelemeler ve başvuru belgeleri dahil
 ## Test + sürüm
 
 - [Test](/tr/reference/test)
-- [Sürüm ilkesi](/tr/reference/RELEASING)
+- [Sürüm politikası](/tr/reference/RELEASING)
 - [Cihaz modelleri](/tr/reference/device-models)
 
 ## İlgili
 
-- [Başlangıç](/tr/start/getting-started)
+- [Başlarken](/tr/start/getting-started)
