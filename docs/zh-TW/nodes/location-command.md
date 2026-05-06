@@ -1,52 +1,52 @@
 ---
 read_when:
-    - 新增位置節點支援或權限使用者介面
+    - 新增位置節點支援或權限 UI
     - 設計 Android 位置權限或前景行為
-summary: 節點的位置命令 (location.get)、權限模式，以及 Android 前景行為
+summary: Node 的定位命令 (location.get)、權限模式與 Android 前景行為
 title: 位置命令
 x-i18n:
-    generated_at: "2026-04-30T03:18:00Z"
+    generated_at: "2026-05-06T09:12:57Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fcd7ae3bf411be4331d62494a5d5263e8cda345475c5f849913122c029377f06
+    source_hash: 63ed754bfdda1cf379dcb7ac40817c0b93cc1efe4526512d70258072da4bc8a7
     source_path: nodes/location-command.md
     workflow: 16
 ---
 
-## TL;DR
+## 重點摘要
 
-- `location.get` 是 Node 指令（透過 `node.invoke`）。
+- `location.get` 是節點命令（透過 `node.invoke`）。
 - 預設關閉。
-- Android 應用程式設定使用選擇器：關閉 / 使用時。
+- Android App 設定使用選擇器：關閉 / 使用期間。
 - 獨立切換：精確位置。
 
-## 為什麼使用選擇器（而不只是開關）
+## 為什麼使用選擇器（而不是只有開關）
 
-作業系統權限是多層級的。我們可以在應用程式內提供選擇器，但實際授權仍由作業系統決定。
+作業系統權限是多層級的。我們可以在 App 內公開選擇器，但作業系統仍會決定實際授權。
 
-- iOS/macOS 可能會在系統提示/設定中提供 **使用時** 或 **一律允許**。
-- Android 應用程式目前僅支援前景位置。
-- 精確位置是獨立授權（iOS 14+「精確」、Android「fine」與「coarse」）。
+- iOS/macOS 可能會在系統提示/設定中公開 **使用期間** 或 **永遠**。
+- Android App 目前只支援前景位置。
+- 精確位置是獨立授權（iOS 14+「精確」、Android 的「fine」與「coarse」）。
 
-UI 中的選擇器會驅動我們要求的模式；實際授權存在於作業系統設定中。
+UI 中的選擇器會驅動我們請求的模式；實際授權則存在於作業系統設定中。
 
 ## 設定模型
 
-每個 Node 裝置：
+每個節點裝置：
 
-- `location.enabledMode`：`off | whileUsing`
-- `location.preciseEnabled`：bool
+- `location.enabledMode`: `off | whileUsing`
+- `location.preciseEnabled`: bool
 
 UI 行為：
 
-- 選取 `whileUsing` 會要求前景權限。
-- 如果作業系統拒絕要求的層級，則還原為已授權的最高層級並顯示狀態。
+- 選擇 `whileUsing` 會請求前景權限。
+- 如果作業系統拒絕請求的層級，則還原為已授權的最高層級並顯示狀態。
 
 ## 權限對應（node.permissions）
 
-選用。macOS Node 會透過權限對應回報 `location`；iOS/Android 可能會省略它。
+選用。macOS 節點會透過權限對應回報 `location`；iOS/Android 可能會省略。
 
-## 指令：`location.get`
+## 命令：`location.get`
 
 透過 `node.invoke` 呼叫。
 
@@ -60,7 +60,7 @@ UI 行為：
 }
 ```
 
-回應 payload：
+回應酬載：
 
 ```json
 {
@@ -79,31 +79,31 @@ UI 行為：
 錯誤（穩定代碼）：
 
 - `LOCATION_DISABLED`：選擇器已關閉。
-- `LOCATION_PERMISSION_REQUIRED`：缺少所要求模式的權限。
-- `LOCATION_BACKGROUND_UNAVAILABLE`：應用程式在背景執行，但僅允許使用時。
+- `LOCATION_PERMISSION_REQUIRED`：請求模式缺少權限。
+- `LOCATION_BACKGROUND_UNAVAILABLE`：App 在背景中，但僅允許使用期間。
 - `LOCATION_TIMEOUT`：未能及時取得定位。
-- `LOCATION_UNAVAILABLE`：系統失敗 / 沒有提供者。
+- `LOCATION_UNAVAILABLE`：系統故障 / 沒有提供者。
 
 ## 背景行為
 
-- Android 應用程式在背景執行時會拒絕 `location.get`。
-- 在 Android 上要求位置時，請保持 OpenClaw 開啟。
-- 其他 Node 平台可能不同。
+- Android App 在背景中時會拒絕 `location.get`。
+- 在 Android 上請求位置時，請保持 OpenClaw 開啟。
+- 其他節點平台可能不同。
 
 ## 模型/工具整合
 
-- 工具介面：`nodes` 工具新增 `location_get` 動作（需要 Node）。
+- 工具介面：`nodes` 工具新增 `location_get` 動作（需要節點）。
 - CLI：`openclaw nodes location get --node <id>`。
-- Agent 指南：只有在使用者已啟用位置並了解範圍時才呼叫。
+- 代理指南：只有在使用者已啟用位置並理解範圍時才呼叫。
 
 ## UX 文案（建議）
 
 - 關閉：「位置分享已停用。」
-- 使用時：「僅在 OpenClaw 開啟時。」
-- 精確：「使用精確 GPS 位置。關閉可分享約略位置。」
+- 使用期間：「僅限 OpenClaw 開啟時。」
+- 精確：「使用精確 GPS 位置。關閉切換可分享大約位置。」
 
 ## 相關
 
 - [頻道位置解析](/zh-TW/channels/location)
 - [相機擷取](/zh-TW/nodes/camera)
-- [交談模式](/zh-TW/nodes/talk)
+- [對話模式](/zh-TW/nodes/talk)

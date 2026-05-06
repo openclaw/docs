@@ -1,21 +1,21 @@
 ---
 read_when:
-    - 你想要透過 Tailscale + CoreDNS 進行廣域探索（DNS-SD）
-    - You’re setting up split DNS for a custom discovery domain (example: openclaw.internal)
+    - 你想透過 Tailscale + CoreDNS 進行廣域探索 (DNS-SD)
+    - You're setting up split DNS for a custom discovery domain (example: openclaw.internal)
 summary: '`openclaw dns` 的 CLI 參考（廣域探索輔助工具）'
 title: DNS
 x-i18n:
-    generated_at: "2026-04-30T02:53:21Z"
+    generated_at: "2026-05-06T09:04:43Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 99dcf7c8c76833784a2b712b02f9e40c6c0548c37c9743a89b9d650fe503d385
+    source_hash: 460bdcbaa2c0c0fc1a4f5bdd76b904d8ac35195a25324c66421abfdc2044bb07
     source_path: cli/dns.md
     workflow: 16
 ---
 
 # `openclaw dns`
 
-用於廣域探索的 DNS 輔助工具（Tailscale + CoreDNS）。目前專注於 macOS + Homebrew CoreDNS。
+用於廣域探索的 DNS 協助工具（Tailscale + CoreDNS）。目前著重於 macOS + Homebrew CoreDNS。
 
 相關：
 
@@ -49,10 +49,10 @@ openclaw dns setup --apply
 
 注意事項：
 
-- 若不使用 `--apply`，此命令只作為規劃輔助工具，並會列印建議設定。
-- 如果省略 `--domain`，OpenClaw 會使用設定中的 `discovery.wideArea.domain`。
-- `--apply` 目前僅支援 macOS，並且需要 Homebrew CoreDNS。
-- `--apply` 會在需要時啟動區域檔案，確保 CoreDNS 匯入段落存在，並重新啟動 `coredns` brew 服務。
+- 若未使用 `--apply`，此命令僅作為規劃協助工具，並會列印建議的設定。
+- 若省略 `--domain`，OpenClaw 會使用設定中的 `discovery.wideArea.domain`。
+- `--apply` 目前僅支援 macOS，且預期使用 Homebrew CoreDNS。
+- `--apply` 會在需要時啟動建立區域檔案、確保 CoreDNS 匯入段落存在，並重新啟動 `coredns` brew 服務。
 
 ## 相關
 

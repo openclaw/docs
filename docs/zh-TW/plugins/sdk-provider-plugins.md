@@ -1,38 +1,38 @@
 ---
 read_when:
-    - 你正在建立新的模型提供者 Plugin
-    - 你想要將 OpenAI 相容代理或自訂 LLM 加入 OpenClaw
-    - 你需要了解提供者身份驗證、目錄和執行階段鉤子
+    - 您正在建置新的模型提供者 Plugin
+    - 你想將 OpenAI 相容的代理或自訂 LLM 新增到 OpenClaw
+    - 你需要了解提供者身分驗證、目錄與執行階段掛鉤
 sidebarTitle: Provider plugins
-summary: 建置 OpenClaw 模型提供者 Plugin 的逐步指南
+summary: 為 OpenClaw 建置模型提供者 Plugin 的逐步指南
 title: 建置提供者 Plugin
 x-i18n:
-    generated_at: "2026-05-06T02:54:06Z"
+    generated_at: "2026-05-06T09:16:39Z"
     model: gpt-5.5
     provider: openai
-    source_hash: d56e29767710ee2e027830787aa5671a31cb161c027284561fe25e1c07c34ae9
+    source_hash: 5f62f4b4df055412288b9d56f0344c76b9adfc3a04f3916eba37c04d22a3d808
     source_path: plugins/sdk-provider-plugins.md
     workflow: 16
 ---
 
-本指南逐步說明如何建置一個 provider Plugin，將模型供應商
-（LLM）新增到 OpenClaw。完成後，你將擁有一個具備模型目錄、
-API key 驗證，以及動態模型解析的 provider。
+本指南逐步說明如何建置 Provider Plugin，將模型供應商
+(LLM) 加入 OpenClaw。完成後，你會擁有一個具備模型目錄、
+API 金鑰驗證，以及動態模型解析的供應商。
 
 <Info>
-  如果你之前尚未建置過任何 OpenClaw Plugin，請先閱讀
-  [快速開始](/zh-TW/plugins/building-plugins)，了解基本的套件
+  如果你之前沒有建置過任何 OpenClaw Plugin，請先閱讀
+  [開始使用](/zh-TW/plugins/building-plugins)，了解基本套件
   結構與 manifest 設定。
 </Info>
 
 <Tip>
   Provider Plugin 會將模型加入 OpenClaw 的一般推論迴圈。如果模型
-  必須透過擁有 threads、Compaction 或工具事件的原生代理程式 daemon
-  執行，請將 provider 搭配 [agent harness](/zh-TW/plugins/sdk-agent-harness)
-  使用，而不是把 daemon protocol 細節放進 core。
+  必須透過擁有執行緒、Compaction 或工具
+  事件的原生代理程式 daemon 執行，請將該供應商與 [代理程式框架](/zh-TW/plugins/sdk-agent-harness)
+  搭配使用，而不是把 daemon 通訊協定細節放進核心。
 </Tip>
 
-## 逐步指南
+## 逐步解說
 
 <Steps>
   <Step title="Package and manifest">
@@ -95,18 +95,17 @@ API key 驗證，以及動態模型解析的 provider。
     ```
     </CodeGroup>
 
-    manifest 宣告 `providerAuthEnvVars`，讓 OpenClaw 能在不載入你的
-    Plugin runtime 的情況下偵測 credentials。當某個 provider 變體應該重用另一個
-    provider id 的 auth 時，請加入 `providerAuthAliases`。`modelSupport`
-    是選用項目，會讓 OpenClaw 在 runtime hooks 存在之前，就能從像
-    `acme-large` 這樣的簡寫 model id 自動載入你的 provider Plugin。如果你在
-    ClawHub 上發布這個 provider，`package.json` 中必須包含那些
-    `openclaw.compat` 與 `openclaw.build` 欄位。
+    manifest 會宣告 `providerAuthEnvVars`，讓 OpenClaw 無需載入你的 Plugin runtime
+    就能偵測憑證。當某個供應商變體應重用另一個供應商 ID 的驗證時，請加入 `providerAuthAliases`。
+    `modelSupport` 是選用的，可讓 OpenClaw 在 runtime hook 存在之前，
+    從像 `acme-large` 這樣的簡寫模型 ID 自動載入你的 Provider Plugin。
+    如果你在 ClawHub 發布該供應商，`package.json` 中必須包含那些
+    `openclaw.compat` 和 `openclaw.build` 欄位。
 
   </Step>
 
   <Step title="Register the provider">
-    最小可用的 provider 需要 `id`、`label`、`auth` 與 `catalog`：
+    最小供應商需要 `id`、`label`、`auth` 和 `catalog`：
 
     ```typescript index.ts
     import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
@@ -177,12 +176,12 @@ API key 驗證，以及動態模型解析的 provider。
     });
     ```
 
-    這就是可運作的 provider。使用者現在可以
+    這就是一個可運作的供應商。使用者現在可以
     `openclaw onboard --acme-ai-api-key <key>`，並選擇
     `acme-ai/acme-large` 作為他們的模型。
 
-    如果上游 provider 使用與 OpenClaw 不同的控制 token，請加入一個
-    小型雙向文字轉換，而不是替換 stream path：
+    如果上游供應商使用的控制 token 與 OpenClaw 不同，請加入一個
+    小型雙向文字轉換，而不是取代串流路徑：
 
     ```typescript
     api.registerTextTransforms({
@@ -199,12 +198,12 @@ API key 驗證，以及動態模型解析的 provider。
     });
     ```
 
-    `input` 會在傳輸前重寫最終 system prompt 與文字訊息內容。
-    `output` 會在 OpenClaw 解析自己的控制標記或 channel delivery 之前，
-    重寫 assistant 文字 delta 與最終文字。
+    `input` 會在傳輸前改寫最終系統提示詞和文字訊息內容。
+    `output` 會在 OpenClaw 解析自己的控制標記或通道傳遞之前，
+    改寫助理文字 delta 與最終文字。
 
-    對於只註冊一個具備 API-key auth 的文字 provider，加上單一以目錄為基礎的
-    runtime 的 bundled provider，請優先使用更窄的
+    對於只註冊一個採用 API 金鑰驗證、且有單一目錄支援 runtime 的文字供應商的內建供應商，
+    請優先使用較窄的
     `defineSingleProviderPluginEntry(...)` helper：
 
     ```typescript
@@ -245,31 +244,31 @@ API key 驗證，以及動態模型解析的 provider。
     });
     ```
 
-    `buildProvider` 是 OpenClaw 能解析真實 provider auth 時使用的 live catalog path。
-    它可以執行 provider 專屬的 discovery。只有在離線列可安全地於設定 auth 前顯示時，
-    才使用 `buildStaticProvider`；它不得要求 credentials 或發出網路請求。
-    OpenClaw 的 `models list --all` 顯示目前只會對 bundled provider Plugin
-    執行 static catalogs，且使用空 config、空 env，並且沒有 agent/workspace paths。
+    `buildProvider` 是 OpenClaw 能解析真實供應商驗證時使用的即時目錄路徑。
+    它可以執行供應商專屬的探索。只有在驗證設定之前即可安全顯示的離線列，
+    才使用 `buildStaticProvider`；它不得需要憑證或發出網路請求。
+    OpenClaw 的 `models list --all` 顯示目前只會對內建 Provider Plugin 執行靜態目錄，
+    並使用空設定、空環境，且不提供代理程式/工作區路徑。
 
-    如果你的 auth flow 也需要在 onboarding 期間修補 `models.providers.*`、
-    aliases，以及 agent default model，請使用
-    `openclaw/plugin-sdk/provider-onboard` 提供的 preset helpers。範圍最窄的 helpers 是
+    如果你的驗證流程也需要在 onboarding 期間修補 `models.providers.*`、別名，
+    以及代理程式預設模型，請使用
+    `openclaw/plugin-sdk/provider-onboard` 中的 preset helper。最窄的 helper 是
     `createDefaultModelPresetAppliers(...)`、
-    `createDefaultModelsPresetAppliers(...)` 與
+    `createDefaultModelsPresetAppliers(...)` 和
     `createModelCatalogPresetAppliers(...)`。
 
-    當 provider 的原生 endpoint 在一般 `openai-completions` transport 上支援
-    streamed usage blocks 時，請優先使用
-    `openclaw/plugin-sdk/provider-catalog-shared` 中的共用 catalog helpers，而不是硬編碼
-    provider-id checks。`supportsNativeStreamingUsageCompat(...)` 與
-    `applyProviderNativeStreamingUsageCompat(...)` 會從 endpoint capability map 偵測支援，
-    因此即使 Plugin 使用自訂 provider id，原生 Moonshot/DashScope 風格的 endpoints
+    當供應商的原生端點在一般 `openai-completions` 傳輸上支援串流 usage block 時，
+    請優先使用
+    `openclaw/plugin-sdk/provider-catalog-shared` 中的共用目錄 helper，
+    而不是硬編碼供應商 ID 檢查。`supportsNativeStreamingUsageCompat(...)` 和
+    `applyProviderNativeStreamingUsageCompat(...)` 會從
+    端點能力 map 偵測支援，因此原生 Moonshot/DashScope 風格端點即使在 Plugin 使用自訂供應商 ID 時，
     仍會選擇啟用。
 
   </Step>
 
   <Step title="Add dynamic model resolution">
-    如果你的 provider 接受任意 model ID（例如 proxy 或 router），
+    如果你的供應商接受任意模型 ID（例如 proxy 或 router），
     請加入 `resolveDynamicModel`：
 
     ```typescript
@@ -291,16 +290,16 @@ API key 驗證，以及動態模型解析的 provider。
     });
     ```
 
-    如果解析需要網路呼叫，請使用 `prepareDynamicModel` 進行 async
-    warm-up — 完成後 `resolveDynamicModel` 會再次執行。
+    如果解析需要網路呼叫，請使用 `prepareDynamicModel` 進行非同步
+    預熱 - `resolveDynamicModel` 會在完成後再次執行。
 
   </Step>
 
   <Step title="Add runtime hooks (as needed)">
-    大多數 provider 只需要 `catalog` + `resolveDynamicModel`。請依照
-    provider 需求逐步加入 hooks。
+    大多數供應商只需要 `catalog` + `resolveDynamicModel`。請依供應商需求
+    逐步加入 hook。
 
-    共用 helper builders 現在涵蓋最常見的 replay/tool-compat
+    共用 helper builder 現在涵蓋最常見的 replay/tool-compat
     系列，因此 Plugin 通常不需要逐一手動接線每個 hook：
 
     ```typescript
@@ -321,43 +320,43 @@ API key 驗證，以及動態模型解析的 provider。
     });
     ```
 
-    目前可用的 replay families：
-
-    | 系列 | 它接入的內容 | Bundled 範例 |
-    | --- | --- | --- |
-    | `openai-compatible` | OpenAI-compatible transports 的共用 OpenAI 風格 replay policy，包含 tool-call-id sanitation、assistant-first ordering fixes，以及 transport 需要時的 generic Gemini-turn validation | `moonshot`, `ollama`, `xai`, `zai` |
-    | `anthropic-by-model` | 由 `modelId` 選擇的 Claude-aware replay policy，因此 Anthropic-message transports 只有在解析出的模型實際上是 Claude id 時，才會取得 Claude 專屬的 thinking-block cleanup | `amazon-bedrock`, `anthropic-vertex` |
-    | `google-gemini` | 原生 Gemini replay policy，加上 bootstrap replay sanitation 與 tagged reasoning-output mode | `google`, `google-gemini-cli` |
-    | `passthrough-gemini` | 針對透過 OpenAI-compatible proxy transports 執行的 Gemini 模型進行 Gemini thought-signature sanitation；不會啟用原生 Gemini replay validation 或 bootstrap rewrites | `openrouter`, `kilocode`, `opencode`, `opencode-go` |
-    | `hybrid-anthropic-openai` | 適用於在同一 Plugin 中混合 Anthropic-message 與 OpenAI-compatible model surfaces 的 providers 的 hybrid policy；選用的 Claude-only thinking-block dropping 會維持限定在 Anthropic 端 | `minimax` |
-
-    目前可用的串流系列：
+    目前可用的 replay 系列：
 
     | 系列 | 接入內容 | 內建範例 |
     | --- | --- | --- |
-    | `google-thinking` | 共享串流路徑上的 Gemini 思考 payload 正規化 | `google`, `google-gemini-cli` |
-    | `kilocode-thinking` | 共享 proxy 串流路徑上的 Kilo 推理包裝器，並讓 `kilo/auto` 和不支援的 proxy 推理 ID 跳過注入的思考內容 | `kilocode` |
-    | `moonshot-thinking` | 從 config + `/think` 等級對應 Moonshot 二進位原生思考 payload | `moonshot` |
-    | `minimax-fast-mode` | 共享串流路徑上的 MiniMax 快速模式模型重寫 | `minimax`, `minimax-portal` |
-    | `openai-responses-defaults` | 共享的原生 OpenAI/Codex Responses 包裝器：歸因標頭、`/fast`/`serviceTier`、文字詳細程度、原生 Codex 網頁搜尋、推理相容 payload 形塑，以及 Responses context 管理 | `openai`, `openai-codex` |
-    | `openrouter-thinking` | proxy 路由的 OpenRouter 推理包裝器，集中處理不支援模型/`auto` 的略過邏輯 | `openrouter` |
-    | `tool-stream-default-on` | 給 Z.AI 這類預設需要工具串流、除非明確停用的 provider 使用的預設開啟 `tool_stream` 包裝器 | `zai` |
+    | `openai-compatible` | OpenAI 相容傳輸的共用 OpenAI 風格 replay 政策，包括工具呼叫 ID 清理、助理優先順序修正，以及傳輸需要時的通用 Gemini-turn 驗證 | `moonshot`, `ollama`, `xai`, `zai` |
+    | `anthropic-by-model` | 依 `modelId` 選擇的 Claude 感知 replay 政策，因此 Anthropic-message 傳輸只會在解析後的模型實際上是 Claude ID 時，取得 Claude 專屬的 thinking-block 清理 | `amazon-bedrock`, `anthropic-vertex` |
+    | `google-gemini` | 原生 Gemini replay 政策，加上 bootstrap replay 清理與帶標記的推理輸出模式 | `google`, `google-gemini-cli` |
+    | `passthrough-gemini` | 透過 OpenAI 相容 proxy 傳輸執行的 Gemini 模型適用的 Gemini thought-signature 清理；不會啟用原生 Gemini replay 驗證或 bootstrap 改寫 | `openrouter`, `kilocode`, `opencode`, `opencode-go` |
+    | `hybrid-anthropic-openai` | 適用於在一個 Plugin 中混合 Anthropic-message 與 OpenAI 相容模型介面的供應商的混合政策；選用的 Claude-only thinking-block 移除會限制在 Anthropic 端 | `minimax` |
 
-    <Accordion title="支援系列建構器的 SDK seam">
-      每個系列建構器都由同一個套件匯出的較低層級 public helper 組成；當 provider 需要脫離通用模式時，你可以使用這些 helper：
+    Available stream families today:
 
-      - `openclaw/plugin-sdk/provider-model-shared` — `ProviderReplayFamily`、`buildProviderReplayFamilyHooks(...)`，以及原始 replay 建構器（`buildOpenAICompatibleReplayPolicy`、`buildAnthropicReplayPolicyForModel`、`buildGoogleGeminiReplayPolicy`、`buildHybridAnthropicOrOpenAIReplayPolicy`）。也匯出 Gemini replay helper（`sanitizeGoogleGeminiReplayHistory`、`resolveTaggedReasoningOutputMode`）和 endpoint/model helper（`resolveProviderEndpoint`、`normalizeProviderId`、`normalizeGooglePreviewModelId`、`normalizeNativeXaiModelId`）。
-      - `openclaw/plugin-sdk/provider-stream` — `ProviderStreamFamily`、`buildProviderStreamFamilyHooks(...)`、`composeProviderStreamWrappers(...)`，加上共享的 OpenAI/Codex 包裝器（`createOpenAIAttributionHeadersWrapper`、`createOpenAIFastModeWrapper`、`createOpenAIServiceTierWrapper`、`createOpenAIResponsesContextManagementWrapper`、`createCodexNativeWebSearchWrapper`）、DeepSeek V4 OpenAI 相容包裝器（`createDeepSeekV4OpenAICompatibleThinkingWrapper`）、Anthropic Messages 思考 prefill 清理（`createAnthropicThinkingPrefillPayloadWrapper`），以及共享的 proxy/provider 包裝器（`createOpenRouterWrapper`、`createToolStreamWrapper`、`createMinimaxFastModeWrapper`）。
-      - `openclaw/plugin-sdk/provider-tools` — `ProviderToolCompatFamily`、`buildProviderToolCompatFamilyHooks("gemini")`、底層 Gemini schema helper（`normalizeGeminiToolSchemas`、`inspectGeminiToolSchemas`），以及 xAI 相容 helper（`resolveXaiModelCompatPatch()`、`applyXaiModelCompat(model)`）。內建的 xAI Plugin 會搭配這些使用 `normalizeResolvedModel` + `contributeResolvedModelCompat`，讓 xAI 規則由 provider 自行擁有。
+    | Family | What it wires in | Bundled examples |
+    | --- | --- | --- |
+    | `google-thinking` | Gemini thinking payload normalization on the shared stream path | `google`, `google-gemini-cli` |
+    | `kilocode-thinking` | Kilo reasoning wrapper on the shared proxy stream path, with `kilo/auto` and unsupported proxy reasoning ids skipping injected thinking | `kilocode` |
+    | `moonshot-thinking` | Moonshot binary native-thinking payload mapping from config + `/think` level | `moonshot` |
+    | `minimax-fast-mode` | MiniMax fast-mode model rewrite on the shared stream path | `minimax`, `minimax-portal` |
+    | `openai-responses-defaults` | Shared native OpenAI/Codex Responses wrappers: attribution headers, `/fast`/`serviceTier`, text verbosity, native Codex web search, reasoning-compat payload shaping, and Responses context management | `openai`, `openai-codex` |
+    | `openrouter-thinking` | OpenRouter reasoning wrapper for proxy routes, with unsupported-model/`auto` skips handled centrally | `openrouter` |
+    | `tool-stream-default-on` | Default-on `tool_stream` wrapper for providers like Z.AI that want tool streaming unless explicitly disabled | `zai` |
 
-      有些串流 helper 會刻意保留在 provider 本地。`@openclaw/anthropic-provider` 將 `wrapAnthropicProviderStream`、`resolveAnthropicBetas`、`resolveAnthropicFastMode`、`resolveAnthropicServiceTier`，以及較低層級的 Anthropic 包裝器建構器保留在自己的 public `api.ts` / `contract-api.ts` seam 中，因為它們會編碼 Claude OAuth beta 處理和 `context1m` gating。xAI Plugin 同樣會把原生 xAI Responses 形塑保留在自己的 `wrapStreamFn`（`/fast` alias、預設 `tool_stream`、不支援的 strict-tool 清理、xAI 特定推理 payload 移除）中。
+    <Accordion title="SDK seams powering the family builders">
+      Each family builder is composed from lower-level public helpers exported from the same package, which you can reach for when a provider needs to go off the common pattern:
 
-      同樣的套件根目錄模式也支援 `@openclaw/openai-provider`（provider 建構器、預設模型 helper、realtime provider 建構器）和 `@openclaw/openrouter-provider`（provider 建構器加上 onboarding/config helper）。
+      - `openclaw/plugin-sdk/provider-model-shared` - `ProviderReplayFamily`, `buildProviderReplayFamilyHooks(...)`, and the raw replay builders (`buildOpenAICompatibleReplayPolicy`, `buildAnthropicReplayPolicyForModel`, `buildGoogleGeminiReplayPolicy`, `buildHybridAnthropicOrOpenAIReplayPolicy`). Also exports Gemini replay helpers (`sanitizeGoogleGeminiReplayHistory`, `resolveTaggedReasoningOutputMode`) and endpoint/model helpers (`resolveProviderEndpoint`, `normalizeProviderId`, `normalizeGooglePreviewModelId`, `normalizeNativeXaiModelId`).
+      - `openclaw/plugin-sdk/provider-stream` - `ProviderStreamFamily`, `buildProviderStreamFamilyHooks(...)`, `composeProviderStreamWrappers(...)`, plus the shared OpenAI/Codex wrappers (`createOpenAIAttributionHeadersWrapper`, `createOpenAIFastModeWrapper`, `createOpenAIServiceTierWrapper`, `createOpenAIResponsesContextManagementWrapper`, `createCodexNativeWebSearchWrapper`), DeepSeek V4 OpenAI-compatible wrapper (`createDeepSeekV4OpenAICompatibleThinkingWrapper`), Anthropic Messages thinking prefill cleanup (`createAnthropicThinkingPrefillPayloadWrapper`), and shared proxy/provider wrappers (`createOpenRouterWrapper`, `createToolStreamWrapper`, `createMinimaxFastModeWrapper`).
+      - `openclaw/plugin-sdk/provider-tools` - `ProviderToolCompatFamily`, `buildProviderToolCompatFamilyHooks("gemini")`, underlying Gemini schema helpers (`normalizeGeminiToolSchemas`, `inspectGeminiToolSchemas`), and xAI compat helpers (`resolveXaiModelCompatPatch()`, `applyXaiModelCompat(model)`). The bundled xAI plugin uses `normalizeResolvedModel` + `contributeResolvedModelCompat` with these to keep xAI rules owned by the provider.
+
+      Some stream helpers stay provider-local on purpose. `@openclaw/anthropic-provider` keeps `wrapAnthropicProviderStream`, `resolveAnthropicBetas`, `resolveAnthropicFastMode`, `resolveAnthropicServiceTier`, and the lower-level Anthropic wrapper builders in its own public `api.ts` / `contract-api.ts` seam because they encode Claude OAuth beta handling and `context1m` gating. The xAI plugin similarly keeps native xAI Responses shaping in its own `wrapStreamFn` (`/fast` aliases, default `tool_stream`, unsupported strict-tool cleanup, xAI-specific reasoning-payload removal).
+
+      The same package-root pattern also backs `@openclaw/openai-provider` (provider builders, default-model helpers, realtime provider builders) and `@openclaw/openrouter-provider` (provider builder plus onboarding/config helpers).
     </Accordion>
 
     <Tabs>
       <Tab title="Token exchange">
-        針對每次 inference 呼叫前都需要 token exchange 的 provider：
+        For providers that need a token exchange before each inference call:
 
         ```typescript
         prepareRuntimeAuth: async (ctx) => {
@@ -370,8 +369,8 @@ API key 驗證，以及動態模型解析的 provider。
         },
         ```
       </Tab>
-      <Tab title="自訂標頭">
-        針對需要自訂 request header 或 body 修改的 provider：
+      <Tab title="Custom headers">
+        For providers that need custom request headers or body modifications:
 
         ```typescript
         // wrapStreamFn returns a StreamFn derived from ctx.streamFn
@@ -388,8 +387,9 @@ API key 驗證，以及動態模型解析的 provider。
         },
         ```
       </Tab>
-      <Tab title="原生傳輸身分">
-        針對需要在 generic HTTP 或 WebSocket transport 上加入原生 request/session header 或 metadata 的 provider：
+      <Tab title="Native transport identity">
+        For providers that need native request/session headers or metadata on
+        generic HTTP or WebSocket transports:
 
         ```typescript
         resolveTransportTurnState: (ctx) => ({
@@ -409,8 +409,8 @@ API key 驗證，以及動態模型解析的 provider。
         }),
         ```
       </Tab>
-      <Tab title="使用量與計費">
-        針對會公開使用量/計費資料的 provider：
+      <Tab title="Usage and billing">
+        For providers that expose usage/billing data:
 
         ```typescript
         resolveUsageAuth: async (ctx) => {
@@ -424,82 +424,83 @@ API key 驗證，以及動態模型解析的 provider。
       </Tab>
     </Tabs>
 
-    <Accordion title="所有可用的 provider hook">
-      OpenClaw 會依照以下順序呼叫 hook。大多數 provider 只會使用 2 到 3 個：
-      OpenClaw 不再呼叫的僅供相容 provider 欄位，例如
-      `ProviderPlugin.capabilities` 和 `suppressBuiltInModel`，未列於此處。
+    <Accordion title="All available provider hooks">
+      OpenClaw calls hooks in this order. Most providers only use 2-3:
+      Compatibility-only provider fields that OpenClaw no longer calls, such as
+      `ProviderPlugin.capabilities` and `suppressBuiltInModel`, are not listed
+      here.
 
-      | # | Hook | 使用時機 |
+      | # | Hook | When to use |
       | --- | --- | --- |
-      | 1 | `catalog` | 模型 catalog 或 base URL 預設值 |
-      | 2 | `applyConfigDefaults` | config materialization 期間 provider 擁有的全域預設值 |
-      | 3 | `normalizeModelId` | lookup 前清理 legacy/preview model-id alias |
-      | 4 | `normalizeTransport` | generic model assembly 前清理 provider-family `api` / `baseUrl` |
-      | 5 | `normalizeConfig` | 正規化 `models.providers.<id>` config |
-      | 6 | `applyNativeStreamingUsageCompat` | config provider 的原生 streaming-usage 相容重寫 |
-      | 7 | `resolveConfigApiKey` | provider 擁有的 env-marker auth 解析 |
-      | 8 | `resolveSyntheticAuth` | 本機/self-hosted 或 config-backed synthetic auth |
-      | 9 | `shouldDeferSyntheticProfileAuth` | 將 synthetic stored-profile placeholder 降到 env/config auth 之後 |
-      | 10 | `resolveDynamicModel` | 接受任意 upstream model ID |
-      | 11 | `prepareDynamicModel` | 解析前進行 async metadata fetch |
-      | 12 | `normalizeResolvedModel` | runner 前的 transport 重寫 |
-      | 13 | `contributeResolvedModelCompat` | 另一個 compatible transport 後方 vendor model 的 compat flag |
-      | 14 | `normalizeToolSchemas` | 註冊前由 provider 擁有的 tool-schema 清理 |
-      | 15 | `inspectToolSchemas` | 由 provider 擁有的 tool-schema diagnostics |
-      | 16 | `resolveReasoningOutputMode` | tagged vs native reasoning-output contract |
-      | 17 | `prepareExtraParams` | 預設 request params |
-      | 18 | `createStreamFn` | 完全自訂的 StreamFn transport |
-      | 19 | `wrapStreamFn` | 一般串流路徑上的自訂 header/body 包裝器 |
-      | 20 | `resolveTransportTurnState` | 原生 per-turn header/metadata |
-      | 21 | `resolveWebSocketSessionPolicy` | 原生 WS session header/cool-down |
-      | 22 | `formatApiKey` | 自訂 runtime token shape |
-      | 23 | `refreshOAuth` | 自訂 OAuth refresh |
-      | 24 | `buildAuthDoctorHint` | auth 修復指引 |
-      | 25 | `matchesContextOverflowError` | provider 擁有的 overflow 偵測 |
-      | 26 | `classifyFailoverReason` | provider 擁有的 rate-limit/overload 分類 |
-      | 27 | `isCacheTtlEligible` | prompt cache TTL gating |
-      | 28 | `buildMissingAuthMessage` | 自訂 missing-auth 提示 |
-      | 29 | `augmentModelCatalog` | synthetic forward-compat row |
-      | 30 | `resolveThinkingProfile` | model-specific `/think` option set |
-      | 31 | `isBinaryThinking` | binary thinking on/off 相容性 |
-      | 32 | `supportsXHighThinking` | `xhigh` reasoning support 相容性 |
-      | 33 | `resolveDefaultThinkingLevel` | 預設 `/think` policy 相容性 |
-      | 34 | `isModernModelRef` | live/smoke model matching |
-      | 35 | `prepareRuntimeAuth` | inference 前的 token exchange |
-      | 36 | `resolveUsageAuth` | 自訂 usage credential parsing |
-      | 37 | `fetchUsageSnapshot` | 自訂 usage endpoint |
-      | 38 | `createEmbeddingProvider` | provider 擁有、供 memory/search 使用的 embedding adapter |
-      | 39 | `buildReplayPolicy` | 自訂 transcript replay/compaction policy |
-      | 40 | `sanitizeReplayHistory` | generic cleanup 後的 provider-specific replay 重寫 |
-      | 41 | `validateReplayTurns` | embedded runner 前的嚴格 replay-turn 驗證 |
-      | 42 | `onModelSelected` | 選取後 callback（例如 telemetry） |
+      | 1 | `catalog` | Model catalog or base URL defaults |
+      | 2 | `applyConfigDefaults` | Provider-owned global defaults during config materialization |
+      | 3 | `normalizeModelId` | Legacy/preview model-id alias cleanup before lookup |
+      | 4 | `normalizeTransport` | Provider-family `api` / `baseUrl` cleanup before generic model assembly |
+      | 5 | `normalizeConfig` | Normalize `models.providers.<id>` config |
+      | 6 | `applyNativeStreamingUsageCompat` | Native streaming-usage compat rewrites for config providers |
+      | 7 | `resolveConfigApiKey` | Provider-owned env-marker auth resolution |
+      | 8 | `resolveSyntheticAuth` | Local/self-hosted or config-backed synthetic auth |
+      | 9 | `shouldDeferSyntheticProfileAuth` | Lower synthetic stored-profile placeholders behind env/config auth |
+      | 10 | `resolveDynamicModel` | Accept arbitrary upstream model IDs |
+      | 11 | `prepareDynamicModel` | Async metadata fetch before resolving |
+      | 12 | `normalizeResolvedModel` | Transport rewrites before the runner |
+      | 13 | `contributeResolvedModelCompat` | Compat flags for vendor models behind another compatible transport |
+      | 14 | `normalizeToolSchemas` | Provider-owned tool-schema cleanup before registration |
+      | 15 | `inspectToolSchemas` | Provider-owned tool-schema diagnostics |
+      | 16 | `resolveReasoningOutputMode` | Tagged vs native reasoning-output contract |
+      | 17 | `prepareExtraParams` | Default request params |
+      | 18 | `createStreamFn` | Fully custom StreamFn transport |
+      | 19 | `wrapStreamFn` | Custom headers/body wrappers on the normal stream path |
+      | 20 | `resolveTransportTurnState` | Native per-turn headers/metadata |
+      | 21 | `resolveWebSocketSessionPolicy` | Native WS session headers/cool-down |
+      | 22 | `formatApiKey` | Custom runtime token shape |
+      | 23 | `refreshOAuth` | Custom OAuth refresh |
+      | 24 | `buildAuthDoctorHint` | Auth repair guidance |
+      | 25 | `matchesContextOverflowError` | Provider-owned overflow detection |
+      | 26 | `classifyFailoverReason` | Provider-owned rate-limit/overload classification |
+      | 27 | `isCacheTtlEligible` | Prompt cache TTL gating |
+      | 28 | `buildMissingAuthMessage` | Custom missing-auth hint |
+      | 29 | `augmentModelCatalog` | Synthetic forward-compat rows |
+      | 30 | `resolveThinkingProfile` | Model-specific `/think` option set |
+      | 31 | `isBinaryThinking` | Binary thinking on/off compatibility |
+      | 32 | `supportsXHighThinking` | `xhigh` reasoning support compatibility |
+      | 33 | `resolveDefaultThinkingLevel` | Default `/think` policy compatibility |
+      | 34 | `isModernModelRef` | Live/smoke model matching |
+      | 35 | `prepareRuntimeAuth` | Token exchange before inference |
+      | 36 | `resolveUsageAuth` | Custom usage credential parsing |
+      | 37 | `fetchUsageSnapshot` | Custom usage endpoint |
+      | 38 | `createEmbeddingProvider` | Provider-owned embedding adapter for memory/search |
+      | 39 | `buildReplayPolicy` | Custom transcript replay/compaction policy |
+      | 40 | `sanitizeReplayHistory` | Provider-specific replay rewrites after generic cleanup |
+      | 41 | `validateReplayTurns` | Strict replay-turn validation before the embedded runner |
+      | 42 | `onModelSelected` | Post-selection callback (e.g. telemetry) |
 
-      Runtime fallback 備註：
+      Runtime fallback notes:
 
-      - `normalizeConfig` 會先檢查 matched provider，接著檢查其他支援 hook 的 provider Plugin，直到有一個實際變更 config 為止。如果沒有任何 provider hook 重寫支援的 Google-family config entry，內建的 Google config normalizer 仍會套用。
-      - `resolveConfigApiKey` 會在公開時使用 provider hook。內建的 `amazon-bedrock` 路徑也在此處有 built-in AWS env-marker resolver，即使 Bedrock runtime auth 本身仍使用 AWS SDK default chain。
-      - `resolveSystemPromptContribution` 讓 provider 為某個 model family 注入 cache-aware system-prompt 指引。當行為屬於單一 provider/model family 且應保留 stable/dynamic cache split 時，請優先使用它，而不是 `before_prompt_build`。
+      - `normalizeConfig` checks the matched provider first, then other hook-capable provider plugins until one actually changes the config. If no provider hook rewrites a supported Google-family config entry, the bundled Google config normalizer still applies.
+      - `resolveConfigApiKey` uses the provider hook when exposed. The bundled `amazon-bedrock` path also has a built-in AWS env-marker resolver here, even though Bedrock runtime auth itself still uses the AWS SDK default chain.
+      - `resolveSystemPromptContribution` lets a provider inject cache-aware system-prompt guidance for a model family. Prefer it over `before_prompt_build` when the behavior belongs to one provider/model family and should preserve the stable/dynamic cache split.
 
-      如需詳細說明和實際範例，請參閱 [內部機制：Provider Runtime Hooks](/zh-TW/plugins/architecture-internals#provider-runtime-hooks)。
+      For detailed descriptions and real-world examples, see [Internals: Provider Runtime Hooks](/zh-TW/plugins/architecture-internals#provider-runtime-hooks).
     </Accordion>
 
   </Step>
 
-  <Step title="新增額外能力（選用）">
-    ### 步驟 5：新增額外能力
+  <Step title="Add extra capabilities (optional)">
+    ### Step 5: Add extra capabilities
 
-    provider Plugin 可以在 text inference 之外，同時註冊 speech、realtime transcription、realtime
-    voice、media understanding、image generation、video generation、web fetch
-    和 web search。OpenClaw 將這歸類為
-    **hybrid-capability** Plugin，也就是公司 Plugin 的建議模式
-    （每個 vendor 一個 Plugin）。請參閱
-    [內部機制：Capability Ownership](/zh-TW/plugins/architecture#capability-ownership-model)。
+    A provider plugin can register speech, realtime transcription, realtime
+    voice, media understanding, image generation, video generation, web fetch,
+    and web search alongside text inference. OpenClaw classifies this as a
+    **hybrid-capability** plugin - the recommended pattern for company plugins
+    (one plugin per vendor). See
+    [Internals: Capability Ownership](/zh-TW/plugins/architecture#capability-ownership-model).
 
-    在 `register(api)` 內，於既有的
-    `api.registerProvider(...)` 呼叫旁註冊每項 capability。只選擇你需要的 tab：
+    Register each capability inside `register(api)` alongside your existing
+    `api.registerProvider(...)` call. Pick only the tabs you need:
 
     <Tabs>
-      <Tab title="Speech (TTS)">
+      <Tab title="語音 (TTS)">
         ```typescript
         import {
           assertOkOrThrowProviderError,
@@ -536,12 +537,12 @@ API key 驗證，以及動態模型解析的 provider。
 
         針對提供者 HTTP 失敗，請使用 `assertOkOrThrowProviderError(...)`，讓
         plugins 共用有上限的錯誤本文讀取、JSON 錯誤剖析，以及
-        請求 ID 後綴。
+        request-id 後綴。
       </Tab>
-      <Tab title="Realtime transcription">
-        優先使用 `createRealtimeTranscriptionWebSocketSession(...)` — 這個共用
-        輔助工具會處理代理擷取、重新連線退避、關閉時清空、ready
-        握手、音訊佇列，以及關閉事件診斷。你的 plugin
+      <Tab title="即時轉錄">
+        優先使用 `createRealtimeTranscriptionWebSocketSession(...)` - 這個共用
+        helper 會處理代理擷取、重新連線退避、關閉時清空、就緒
+        交握、音訊佇列，以及關閉事件診斷。你的 plugin
         只需對應上游事件。
 
         ```typescript
@@ -580,12 +581,13 @@ API key 驗證，以及動態模型解析的 provider。
         });
         ```
 
-        以 POST multipart 音訊的批次 STT 提供者，應使用
+        以 multipart 音訊進行 POST 的批次 STT 提供者，應使用
         `openclaw/plugin-sdk/provider-http` 中的
-        `buildAudioTranscriptionFormData(...)`。這個輔助工具會正規化上傳
-        檔名，包括需要 M4A 風格檔名才能相容於轉錄 API 的 AAC 上傳。
+        `buildAudioTranscriptionFormData(...)`。這個 helper 會正規化上傳
+        檔名，包括需要 M4A 風格檔名才能相容於
+        轉錄 API 的 AAC 上傳。
       </Tab>
-      <Tab title="Realtime voice">
+      <Tab title="即時語音">
         ```typescript
         api.registerRealtimeVoiceProvider({
           id: "acme-ai",
@@ -615,12 +617,12 @@ API key 驗證，以及動態模型解析的 provider。
         });
         ```
 
-        宣告 `capabilities`，讓 `talk.catalog` 能向瀏覽器與原生 Talk
-        用戶端公開有效模式、傳輸、音訊格式與功能旗標。當某個傳輸能偵測到
-        人類正在打斷助理播放，且提供者支援截斷或清除作用中的音訊回應時，
-        請實作 `handleBargeIn`。
+        宣告 `capabilities`，讓 `talk.catalog` 可以將有效模式、
+        傳輸、音訊格式與功能旗標公開給瀏覽器與原生 Talk
+        用戶端。當傳輸能偵測到使用者正在中斷助理播放，且提供者支援
+        截斷或清除作用中的音訊回應時，請實作 `handleBargeIn`。
       </Tab>
-      <Tab title="Media understanding">
+      <Tab title="媒體理解">
         ```typescript
         api.registerMediaUnderstandingProvider({
           id: "acme-ai",
@@ -630,11 +632,11 @@ API key 驗證，以及動態模型解析的 provider。
         });
         ```
       </Tab>
-      <Tab title="Image and video generation">
-        影片能力使用**模式感知**的形狀：`generate`、
+      <Tab title="圖像與影片生成">
+        影片能力使用**感知模式**的形狀：`generate`、
         `imageToVideo` 和 `videoToVideo`。像
-        `maxInputImages` / `maxInputVideos` / `maxDurationSeconds` 這類扁平彙總欄位，
-        不足以清楚宣告轉換模式支援或已停用的模式。
+        `maxInputImages` / `maxInputVideos` / `maxDurationSeconds` 這類扁平彙總欄位，不
+        足以清楚宣告轉換模式支援或停用的模式。
         音樂生成也遵循相同模式，使用明確的 `generate` /
         `edit` 區塊。
 
@@ -663,7 +665,7 @@ API key 驗證，以及動態模型解析的 provider。
         });
         ```
       </Tab>
-      <Tab title="Web fetch and search">
+      <Tab title="網頁擷取與搜尋">
         ```typescript
         api.registerWebFetchProvider({
           id: "acme-ai-fetch",
@@ -696,7 +698,7 @@ API key 驗證，以及動態模型解析的 provider。
 
   </Step>
 
-  <Step title="Test">
+  <Step title="測試">
     ### 步驟 6：測試
 
     ```typescript src/provider.test.ts
@@ -732,16 +734,16 @@ API key 驗證，以及動態模型解析的 provider。
   </Step>
 </Steps>
 
-## 發佈到 ClawHub
+## 發布到 ClawHub
 
-提供者 plugins 的發佈方式與任何其他外部程式碼 plugin 相同：
+Provider plugins 的發布方式與任何其他外部程式碼 plugin 相同：
 
 ```bash
 clawhub package publish your-org/your-plugin --dry-run
 clawhub package publish your-org/your-plugin
 ```
 
-請勿在此使用舊版的僅限 skill 發佈別名；plugin 套件應使用
+請勿在這裡使用舊版的僅限 skill 發布別名；plugin 套件應使用
 `clawhub package publish`。
 
 ## 檔案結構
@@ -756,27 +758,26 @@ clawhub package publish your-org/your-plugin
     └── usage.ts              # Usage endpoint (optional)
 ```
 
-## Catalog 順序參考
+## 目錄順序參考
 
-`catalog.order` 控制你的 catalog 相對於內建
-提供者的合併時機：
+`catalog.order` 控制你的目錄相對於內建提供者的合併時機：
 
 | 順序      | 時機          | 使用情境                                        |
 | --------- | ------------- | ----------------------------------------------- |
 | `simple`  | 第一輪        | 一般 API key 提供者                             |
-| `profile` | 在 simple 後  | 受 auth profiles 管制的提供者                   |
-| `paired`  | 在 profile 後 | 合成多個相關項目                                |
+| `profile` | simple 之後   | 受 auth profiles 控制的提供者                   |
+| `paired`  | profile 之後  | 合成多個相關項目                                |
 | `late`    | 最後一輪      | 覆寫既有提供者（衝突時勝出）                    |
 
-## 下一步
+## 後續步驟
 
-- [Channel Plugins](/zh-TW/plugins/sdk-channel-plugins) — 如果你的 plugin 也提供 channel
-- [SDK Runtime](/zh-TW/plugins/sdk-runtime) — `api.runtime` 輔助工具（TTS、搜尋、subagent）
-- [SDK 概觀](/zh-TW/plugins/sdk-overview) — 完整子路徑匯入參考
-- [Plugin 內部架構](/zh-TW/plugins/architecture-internals#provider-runtime-hooks) — hook 細節與 bundled 範例
+- [Channel Plugins](/zh-TW/plugins/sdk-channel-plugins) - 如果你的 plugin 也提供頻道
+- [SDK Runtime](/zh-TW/plugins/sdk-runtime) - `api.runtime` helpers（TTS、搜尋、subagent）
+- [SDK Overview](/zh-TW/plugins/sdk-overview) - 完整 subpath import 參考
+- [Plugin Internals](/zh-TW/plugins/architecture-internals#provider-runtime-hooks) - hook 詳細資料與內建範例
 
 ## 相關
 
 - [Plugin SDK 設定](/zh-TW/plugins/sdk-setup)
 - [建置 plugins](/zh-TW/plugins/building-plugins)
-- [建置 channel plugins](/zh-TW/plugins/sdk-channel-plugins)
+- [建置頻道 plugins](/zh-TW/plugins/sdk-channel-plugins)
