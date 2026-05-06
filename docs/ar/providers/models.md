@@ -1,27 +1,25 @@
 ---
 read_when:
-    - تريد اختيار مزوّد نماذج
-    - تريد أمثلة إعداد سريعة لمصادقة LLM + اختيار النموذج
-summary: مزودو النماذج (النماذج اللغوية الكبيرة) المدعومون من OpenClaw
-title: البدء السريع لموفّر النماذج
+    - تريد اختيار موفّر نموذج
+    - تريد أمثلة إعداد سريعة لمصادقة نماذج اللغة الكبيرة واختيار النموذج
+summary: موفرو النماذج (نماذج اللغة الكبيرة) المدعومون من OpenClaw
+title: بدء سريع لموفّر النماذج
 x-i18n:
-    generated_at: "2026-04-30T08:21:47Z"
+    generated_at: "2026-05-06T18:02:50Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3f71f9ab34df2b545128bfeed3cab82f31b741d4a66263113068568ce6b77cd6
+    source_hash: 7e95d37f3e332a9b2eb58a15dc356ad02b4cbf409926adb3faf1923825219887
     source_path: providers/models.md
     workflow: 16
 ---
 
-# مزودو النماذج
-
-يمكن لـ OpenClaw استخدام العديد من مزودي LLM. اختر واحدًا، وصادِق، ثم عيّن النموذج الافتراضي
+يمكن لـ OpenClaw استخدام العديد من مزوّدي LLM. اختر واحدًا، ثم صادق، ثم اضبط النموذج الافتراضي
 بصيغة `provider/model`.
 
 ## البدء السريع (خطوتان)
 
-1. صادِق مع المزود (عادةً عبر `openclaw onboard`).
-2. عيّن النموذج الافتراضي:
+1. صادق مع المزوّد (عادةً عبر `openclaw onboard`).
+2. اضبط النموذج الافتراضي:
 
 ```json5
 {
@@ -29,7 +27,7 @@ x-i18n:
 }
 ```
 
-## المزودون المدعومون (مجموعة البداية)
+## المزوّدون المدعومون (مجموعة البداية)
 
 - [Alibaba Model Studio](/ar/providers/alibaba)
 - [Amazon Bedrock](/ar/providers/bedrock)
@@ -58,14 +56,14 @@ x-i18n:
 - [xAI](/ar/providers/xai)
 - [Z.AI](/ar/providers/zai)
 
-## متغيرات إضافية للمزودين المضمنين
+## صيغ إضافية مجمّعة للمزوّدين
 
-- `anthropic-vertex` - دعم Anthropic الضمني على Google Vertex عند توفر بيانات اعتماد Vertex؛ لا يوجد خيار مصادقة إعداد منفصل
-- `copilot-proxy` - جسر وكيل VS Code Copilot Proxy المحلي؛ استخدم `openclaw onboard --auth-choice copilot-proxy`
+- `anthropic-vertex` - دعم Anthropic الضمني على Google Vertex عند توفر بيانات اعتماد Vertex؛ لا يوجد اختيار مصادقة إعداد أولي منفصل
+- `copilot-proxy` - جسر محلي إلى VS Code Copilot Proxy؛ استخدم `openclaw onboard --auth-choice copilot-proxy`
 - `google-gemini-cli` - تدفق OAuth غير رسمي لـ Gemini CLI؛ يتطلب تثبيت `gemini` محليًا (`brew install gemini-cli` أو `npm install -g @google/gemini-cli`)؛ النموذج الافتراضي `google-gemini-cli/gemini-3-flash-preview`؛ استخدم `openclaw onboard --auth-choice google-gemini-cli` أو `openclaw models auth login --provider google-gemini-cli --set-default`
 
-للاطلاع على كتالوج المزودين الكامل (xAI وGroq وMistral وغيرها) والتكوين المتقدم،
-راجع [مزودي النماذج](/ar/concepts/model-providers).
+للاطلاع على كتالوج المزوّدين الكامل (xAI وGroq وMistral وغيرها) والإعدادات المتقدمة،
+راجع [مزوّدي النماذج](/ar/concepts/model-providers).
 
 ## ذات صلة
 

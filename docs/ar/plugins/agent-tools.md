@@ -1,22 +1,20 @@
 ---
 read_when:
     - رابط قديم إلى agent-tools
-summary: إعادة التوجيه إلى Building Plugins (قسم تسجيل الأدوات)
+summary: يعيد التوجيه إلى بناء Plugins (قسم تسجيل الأدوات)
 title: تسجيل الأدوات
 x-i18n:
-    generated_at: "2026-04-24T07:53:21Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T18:00:48Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: c84450ddc31f8f6a605bd553a1a9d7d295f5b575504a134b5c50a2c7d77e3e63
+    source_hash: e73137487a9394454dd037d449bc2a0896725cddc7d0f174eda41f5fdc451982
     source_path: plugins/agent-tools.md
-    workflow: 15
+    workflow: 16
 ---
 
-# تسجيل الأدوات في Plugins
+انتقلت هذه الصفحة. راجع [بناء Plugins: تسجيل أدوات الوكيل](/ar/plugins/building-plugins#registering-agent-tools).
 
-تم نقل هذه الصفحة. راجع [Building Plugins: Registering agent tools](/ar/plugins/building-plugins#registering-agent-tools).
+## ذات صلة
 
-## ذو صلة
-
-- [Building plugins](/ar/plugins/building-plugins)
+- [بناء plugins](/ar/plugins/building-plugins)
 - [إعداد Plugin SDK](/ar/plugins/sdk-setup)
