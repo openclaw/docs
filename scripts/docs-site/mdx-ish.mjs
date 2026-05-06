@@ -24,7 +24,8 @@ export function createMarkdownRenderer() {
   return new MarkdownIt({
     html: true,
     linkify: true,
-    typographer: false
+    typographer: false,
+    highlight: highlightCode
   }).use(anchor, {
     permalink: anchor.permalink.linkInsideHeader({
       symbol: "#",
@@ -33,6 +34,88 @@ export function createMarkdownRenderer() {
       ariaHidden: true
     })
   });
+}
+
+function highlightCode(code, rawLang = "") {
+  const lang = normalizeLang(rawLang);
+  if (isShell(lang, code)) return highlightWith(code, shellToken, shellTokenClass);
+  if (["json", "jsonc"].includes(lang)) return highlightWith(code, jsonToken, jsonTokenClass);
+  if (["js", "jsx", "mjs", "cjs", "ts", "tsx"].includes(lang)) return highlightWith(code, jsToken, jsTokenClass);
+  if (["yaml", "yml"].includes(lang)) return highlightWith(code, yamlToken, yamlTokenClass);
+  if (["toml", "ini", "env"].includes(lang)) return highlightWith(code, configToken, configTokenClass);
+  return escapeHtml(code);
+}
+
+function normalizeLang(rawLang) {
+  return String(rawLang).trim().split(/\s+/)[0]?.toLowerCase().replace(/^language-/, "") ?? "";
+}
+
+function isShell(lang, code) {
+  return ["bash", "sh", "shell", "zsh", "console", "terminal", "text"].includes(lang)
+    || (!lang && /(^|\n)\s*(?:[$#]\s*)?(?:npm|pnpm|bun|npx|openclaw|git|curl|brew|docker|node)\b/.test(code));
+}
+
+function highlightWith(code, tokenPattern, tokenClass) {
+  let out = "";
+  let last = 0;
+  tokenPattern.lastIndex = 0;
+  for (const match of code.matchAll(tokenPattern)) {
+    out += escapeHtml(code.slice(last, match.index));
+    const className = tokenClass(match[0], match, code);
+    out += className
+      ? `<span class="${className}">${escapeHtml(match[0])}</span>`
+      : escapeHtml(match[0]);
+    last = match.index + match[0].length;
+  }
+  return out + escapeHtml(code.slice(last));
+}
+
+const shellToken = /(?<!\S)#[^\n]*|"(?:\\.|[^"])*"|'(?:\\.|[^'])*'|\$[A-Za-z_][A-Za-z0-9_]*|--?[A-Za-z0-9][A-Za-z0-9_-]*(?:=[^\s]+)?|\b(?:bun|brew|cat|cd|cp|curl|docker|export|git|grep|mkdir|mv|node|npm|npx|openclaw|pnpm|rg|rm|sudo)\b/g;
+const jsonToken = /"(?:\\.|[^"])*"(?=\s*:)|"(?:\\.|[^"])*"|\b(?:true|false|null)\b|-?\b\d+(?:\.\d+)?\b|[{}[\],:]/g;
+const jsToken = /\/\/[^\n]*|\/\*[\s\S]*?\*\/|"(?:\\.|[^"])*"|'(?:\\.|[^'])*'|`(?:\\.|[^`])*`|\b(?:await|break|case|catch|class|const|continue|default|else|export|false|finally|for|from|function|if|import|let|new|null|return|throw|true|try|type|undefined|while)\b|-?\b\d+(?:\.\d+)?\b/g;
+const yamlToken = /#[^\n]*|^\s*[-\w".'/]+\s*:|"(?:\\.|[^"])*"|'(?:\\.|[^'])*'|\b(?:true|false|null)\b|-?\b\d+(?:\.\d+)?\b/gm;
+const configToken = /#[^\n]*|^\s*[-\w".'/]+\s*=|"(?:\\.|[^"])*"|'(?:\\.|[^'])*'|\b(?:true|false|null)\b|-?\b\d+(?:\.\d+)?\b/gm;
+
+function shellTokenClass(token, match, code) {
+  const before = code[match.index - 1] ?? "\n";
+  const after = code[match.index + token.length] ?? "\n";
+  if (token.startsWith("#")) return "tok-comment";
+  if (token.startsWith("\"") || token.startsWith("'")) return "tok-string";
+  if (token.startsWith("$")) return "tok-var";
+  if (token.startsWith("-")) return /\s/.test(before) ? "tok-option" : "";
+  if (!/[\s|&;(]/.test(before) || /[@.:/#-]/.test(after)) return "";
+  return "tok-command";
+}
+
+function jsonTokenClass(token) {
+  if (token.startsWith("\"")) return token.endsWith(":") ? "tok-key" : "tok-string";
+  if (/^(?:true|false|null)$/.test(token)) return "tok-literal";
+  if (/^-?\d/.test(token)) return "tok-number";
+  return "tok-punct";
+}
+
+function jsTokenClass(token) {
+  if (token.startsWith("//") || token.startsWith("/*")) return "tok-comment";
+  if (/^["'`]/.test(token)) return "tok-string";
+  if (/^(?:true|false|null|undefined)$/.test(token)) return "tok-literal";
+  if (/^-?\d/.test(token)) return "tok-number";
+  return "tok-keyword";
+}
+
+function yamlTokenClass(token) {
+  if (token.trimStart().startsWith("#")) return "tok-comment";
+  if (token.trimEnd().endsWith(":")) return "tok-key";
+  if (/^["']/.test(token.trim())) return "tok-string";
+  if (/^(?:true|false|null)$/.test(token.trim())) return "tok-literal";
+  return "tok-number";
+}
+
+function configTokenClass(token) {
+  if (token.trimStart().startsWith("#")) return "tok-comment";
+  if (token.trimEnd().endsWith("=")) return "tok-key";
+  if (/^["']/.test(token.trim())) return "tok-string";
+  if (/^(?:true|false|null)$/.test(token.trim())) return "tok-literal";
+  return "tok-number";
 }
 
 export function renderMdxish(markdown, md) {
