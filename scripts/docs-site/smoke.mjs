@@ -9,6 +9,7 @@ const required = [
   "tools/reactions/index.html",
   "it/channels/index.html",
   "zh-CN/tools/reactions/index.html",
+  "concepts/models.md",
   "de/tools/reactions/index.html",
   "de/gateway/heartbeat/index.html",
   "pagefind/pagefind.js",
@@ -36,14 +37,14 @@ for (const rel of required) {
   }
 }
 const zhReactions = fs.readFileSync(path.join(site, "zh-CN/tools/reactions/index.html"), "utf8");
-if (!/href="(?:\/docs)?\/zh-CN\/tools\/reactions\/"/.test(zhReactions)) {
+if (!/href="(?:\/docs)?\/zh-CN\/tools\/reactions"/.test(zhReactions)) {
   throw new Error("zh-CN reactions: language picker does not preserve current page");
 }
 if (!/href="(?:\/docs)?\/zh-CN\/tools\/agent-send/.test(zhReactions)) {
   throw new Error("zh-CN reactions: article links do not stay in locale");
 }
 const itChannels = fs.readFileSync(path.join(site, "it/channels/index.html"), "utf8");
-if (!/class="tab-link active" href="(?:\/docs)?\/it\/channels\/"/.test(itChannels)) {
+if (!/class="tab-link active" href="(?:\/docs)?\/it\/channels"/.test(itChannels)) {
   throw new Error("it channels: localized tabs are missing active Channels tab");
 }
 if (!/<section class="nav-section"><h2>Overview<\/h2>/.test(itChannels)) {
@@ -58,6 +59,10 @@ if (!/Português \(BR\)/.test(index)) {
 }
 if (!/data-docs-chat/.test(index) || !/OPENCLAW_DOCS_CHAT_API/.test(index)) {
   throw new Error("index: docs chat widget was not rendered");
+}
+const modelsMarkdown = fs.readFileSync(path.join(site, "concepts/models.md"), "utf8");
+if (!/^---\nsummary: /m.test(modelsMarkdown) || !/title: "Models CLI"/m.test(modelsMarkdown)) {
+  throw new Error("concepts/models.md: source markdown was not emitted");
 }
 if (process.env.DOCS_SITE_BASE_PATH && (/src="\/assets\//.test(index) || /href="\/assets\//.test(index))) {
   throw new Error("index: absolute asset paths were not base-path rewritten");

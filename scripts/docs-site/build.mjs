@@ -87,6 +87,7 @@ function collectPages(localeList) {
         slug,
         file,
         rel,
+        raw,
         title,
         summary: parsed.data.summary ?? "",
         readWhen: parsed.data.read_when ?? [],
@@ -152,6 +153,9 @@ function writePage(page) {
   const outPath = path.join(outDir, pageRoute(page).replace(/^\//, ""), "index.html");
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
   fs.writeFileSync(outPath, layout({ page, nav, activeTab, html, toc, prev, next }), "utf8");
+  const mdPath = path.join(outDir, pageMarkdownRoute(page).replace(/^\//, ""));
+  fs.mkdirSync(path.dirname(mdPath), { recursive: true });
+  fs.writeFileSync(mdPath, page.raw, "utf8");
 }
 
 function layout({ page, nav, activeTab, html, toc, prev, next }) {
@@ -394,7 +398,12 @@ function pageUrl(page) {
 
 function pageRoute(page) {
   const prefix = page.locale === "en" ? "" : `/${page.locale}`;
-  return page.slug === "index" ? (prefix ? `${prefix}/` : "/") : `${prefix}/${page.slug}/`;
+  return page.slug === "index" ? (prefix || "/") : `${prefix}/${page.slug}`;
+}
+
+function pageMarkdownRoute(page) {
+  const prefix = page.locale === "en" ? "" : `/${page.locale}`;
+  return page.slug === "index" ? `${prefix || ""}/index.md` : `${prefix}/${page.slug}.md`;
 }
 
 function rewriteInternalUrls(html, locale) {
