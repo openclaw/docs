@@ -1,31 +1,39 @@
 ---
 read_when:
-- 你想让 OpenClaw 连接到本地 SGLang 服务器运行
-- 你想使用 OpenAI 兼容的 `/v1` 端点和自己的模型
-summary: 通过 SGLang（OpenAI 兼容的自托管服务器）运行 OpenClaw
+    - 你想让 OpenClaw 连接本地 SGLang 服务器运行
+    - 你想要使用自己的模型，并提供 OpenAI 兼容的 /v1 端点
+summary: 使用 SGLang 运行 OpenClaw（兼容 OpenAI 的自托管服务器）
 title: SGLang
 x-i18n:
-  generated_at: '2026-04-23T21:02:02Z'
-  model: gpt-5.4
-  provider: openai
-  source_hash: 8ed6767f85bcf099fb25dfe72a48b8a09e04ba13212125651616d2d93607beba
-  source_path: providers/sglang.md
-  workflow: 15
+    generated_at: "2026-05-06T00:02:08Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 3e65e38868e061e03d15348725971880ca503dc61a7425c1fbdc718fd684728f
+    source_path: providers/sglang.md
+    workflow: 16
 ---
-SGLang 可以通过 **OpenAI 兼容**的 HTTP API 提供开源模型服务。
-OpenClaw 可以使用 `openai-completions` API 连接到 SGLang。
 
-当你选择启用 `SGLANG_API_KEY` 时（如果你的服务器未启用认证，则任意值都可用），且你未显式定义 `models.providers.sglang` 条目，OpenClaw 还可以**自动发现** SGLang 上可用的模型。
+SGLang 通过兼容 OpenAI 的 HTTP API 提供开放权重模型服务。OpenClaw 使用 `openai-completions` 提供商系列连接到 SGLang，并自动发现可用模型。
 
-OpenClaw 将 `sglang` 视为一个本地的 OpenAI 兼容提供商，并支持
-流式使用量统计，因此状态/上下文 token 计数可以根据
-`stream_options.include_usage` 响应进行更新。
+| 属性                      | 值                                                           |
+| ------------------------- | ------------------------------------------------------------ |
+| 提供商 ID                 | `sglang`                                                     |
+| 插件                      | 内置，`enabledByDefault: true`                               |
+| 认证环境变量              | `SGLANG_API_KEY`（如果服务器没有认证，任意非空值均可）       |
+| 新手引导标志              | `--auth-choice sglang`                                       |
+| API                       | 兼容 OpenAI（`openai-completions`）                          |
+| 默认基础 URL              | `http://127.0.0.1:30000/v1`                                  |
+| 默认模型占位符            | `sglang/Qwen/Qwen3-8B`                                       |
+| 流式传输用量              | 是（`supportsStreamingUsage: true`）                         |
+| 定价                      | 标记为外部免费（`modelPricing.external: false`）             |
+
+当你通过 `SGLANG_API_KEY` 选择启用，并且没有定义显式的 `models.providers.sglang` 条目时，OpenClaw 还会从 SGLang **自动发现**可用模型。请参阅下方的[模型发现（隐式提供商）](#model-discovery-implicit-provider)。
 
 ## 入门指南
 
 <Steps>
   <Step title="启动 SGLang">
-    使用 OpenAI 兼容服务器启动 SGLang。你的 base URL 应暴露
+    使用兼容 OpenAI 的服务器启动 SGLang。你的基础 URL 应公开
     `/v1` 端点（例如 `/v1/models`、`/v1/chat/completions`）。SGLang
     通常运行在：
 
@@ -33,7 +41,7 @@ OpenClaw 将 `sglang` 视为一个本地的 OpenAI 兼容提供商，并支持
 
   </Step>
   <Step title="设置 API key">
-    如果你的服务器未配置认证，任意值都可用：
+    如果你的服务器未配置认证，任意值都可以：
 
     ```bash
     export SGLANG_API_KEY="sglang-local"
@@ -45,7 +53,7 @@ OpenClaw 将 `sglang` 视为一个本地的 OpenAI 兼容提供商，并支持
     openclaw onboard
     ```
 
-    或手动配置模型：
+    或者手动配置模型：
 
     ```json5
     {
@@ -62,8 +70,8 @@ OpenClaw 将 `sglang` 视为一个本地的 OpenAI 兼容提供商，并支持
 
 ## 模型发现（隐式提供商）
 
-当设置了 `SGLANG_API_KEY`（或存在 auth profile），并且你**没有**
-定义 `models.providers.sglang` 时，OpenClaw 会查询：
+当设置了 `SGLANG_API_KEY`（或存在认证配置档案），并且你**没有**
+定义 `models.providers.sglang` 时，OpenClaw 将查询：
 
 - `GET http://127.0.0.1:30000/v1/models`
 
@@ -76,11 +84,11 @@ OpenClaw 将 `sglang` 视为一个本地的 OpenAI 兼容提供商，并支持
 
 ## 显式配置（手动模型）
 
-在以下情况下请使用显式配置：
+在以下情况下使用显式配置：
 
-- SGLang 运行在不同的主机/端口上。
-- 你希望固定 `contextWindow`/`maxTokens` 值。
-- 你的服务器需要真实 API key（或你希望控制 headers）。
+- SGLang 运行在不同的主机/端口。
+- 你想固定 `contextWindow`/`maxTokens` 值。
+- 你的服务器需要真实的 API key（或你想控制标头）。
 
 ```json5
 {
@@ -111,22 +119,22 @@ OpenClaw 将 `sglang` 视为一个本地的 OpenAI 兼容提供商，并支持
 
 <AccordionGroup>
   <Accordion title="代理式行为">
-    SGLang 会被视为代理式 OpenAI 兼容 `/v1` 后端，而不是
+    SGLang 被视为代理式的兼容 OpenAI `/v1` 后端，而不是
     原生 OpenAI 端点。
 
     | 行为 | SGLang |
     |----------|--------|
-    | 仅 OpenAI 的请求整形 | 不应用 |
+    | 仅适用于 OpenAI 的请求塑形 | 不应用 |
     | `service_tier`、Responses `store`、提示缓存提示 | 不发送 |
-    | Reasoning 兼容负载整形 | 不应用 |
-    | 隐式归属请求头（`originator`、`version`、`User-Agent`） | 不会注入到自定义 SGLang base URL 上 |
+    | 推理兼容载荷塑形 | 不应用 |
+    | 隐藏归因标头（`originator`、`version`、`User-Agent`） | 在自定义 SGLang 基础 URL 上不注入 |
 
   </Accordion>
 
   <Accordion title="故障排除">
-    **服务器不可达**
+    **无法访问服务器**
 
-    请验证服务器正在运行并且有响应：
+    验证服务器正在运行并响应：
 
     ```bash
     curl http://127.0.0.1:30000/v1/models
@@ -134,24 +142,25 @@ OpenClaw 将 `sglang` 视为一个本地的 OpenAI 兼容提供商，并支持
 
     **认证错误**
 
-    如果请求因认证错误失败，请设置与你服务器配置匹配的真实 `SGLANG_API_KEY`，
-    或在 `models.providers.sglang` 下显式配置该提供商。
+    如果请求因认证错误而失败，请设置与你的服务器配置匹配的真实
+    `SGLANG_API_KEY`，或在 `models.providers.sglang` 下显式配置
+    提供商。
 
     <Tip>
-    如果你在无认证模式下运行 SGLang，只需为
-    `SGLANG_API_KEY` 设置任意非空值，即可选择启用模型发现。
+    如果你运行的 SGLang 没有启用认证，`SGLANG_API_KEY` 的任意非空值
+    都足以选择启用模型发现。
     </Tip>
 
   </Accordion>
 </AccordionGroup>
 
-## 相关内容
+## 相关
 
 <CardGroup cols={2}>
   <Card title="模型选择" href="/zh-CN/concepts/model-providers" icon="layers">
-    如何选择提供商、模型引用和故障转移行为。
+    选择提供商、模型引用和故障转移行为。
   </Card>
   <Card title="配置参考" href="/zh-CN/gateway/configuration-reference" icon="gear">
-    包括提供商条目在内的完整配置 schema。
+    包含提供商条目的完整配置架构。
   </Card>
 </CardGroup>
