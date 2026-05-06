@@ -1,30 +1,30 @@
 ---
 read_when:
     - Вам потрібне перетворення мовлення на текст SenseAudio для аудіовкладень
-    - Потрібна змінна середовища з API-ключем SenseAudio або шлях до конфігурації аудіо
+    - Потрібна змінна середовища ключа API SenseAudio або шлях до конфігурації аудіо
 summary: Пакетне перетворення мовлення на текст у SenseAudio для вхідних голосових повідомлень
 title: SenseAudio
 x-i18n:
-    generated_at: "2026-05-06T00:38:48Z"
+    generated_at: "2026-05-06T06:38:56Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 775d27439d8f1598c6639df936f8a80f105ced9b915e98f7ff73d9049ac1b6a2
+    source_hash: f53af21c746cdd44c71485cbad669f4a01a6e5be956675c73831e7b5f15df8c4
     source_path: providers/senseaudio.md
     workflow: 16
 ---
 
-SenseAudio може транскрибувати вхідні аудіо та вкладення голосових нотаток через спільний конвеєр OpenClaw `tools.media.audio`. OpenClaw надсилає multipart-аудіо до сумісної з OpenAI кінцевої точки транскрипції та вставляє повернений текст як `{{Transcript}}` разом із блоком `[Audio]`.
+SenseAudio може транскрибувати вхідні аудіо- та голосові вкладення через спільний конвеєр OpenClaw `tools.media.audio`. OpenClaw надсилає multipart-аудіо до OpenAI-сумісної кінцевої точки транскрипції та вставляє повернений текст як `{{Transcript}}` разом із блоком `[Audio]`.
 
-| Властивість       | Значення                                         |
-| ----------------- | ------------------------------------------------ |
-| ID провайдера     | `senseaudio`                                     |
-| Plugin            | вбудований, `enabledByDefault: true`             |
-| Контракт          | `mediaUnderstandingProviders` (аудіо)            |
-| Змінна env auth   | `SENSEAUDIO_API_KEY`                             |
-| Типова модель     | `senseaudio-asr-pro-1.5-260319`                  |
-| Типова URL-адреса | `https://api.senseaudio.cn/v1`                   |
-| Вебсайт           | [senseaudio.cn](https://senseaudio.cn)           |
-| Документація      | [senseaudio.cn/docs](https://senseaudio.cn/docs) |
+| Властивість   | Значення                                         |
+| ------------- | ------------------------------------------------ |
+| Ідентифікатор провайдера | `senseaudio`                          |
+| Plugin        | вбудований, `enabledByDefault: true`             |
+| Контракт      | `mediaUnderstandingProviders` (аудіо)            |
+| Змінна середовища автентифікації | `SENSEAUDIO_API_KEY`       |
+| Модель за замовчуванням | `senseaudio-asr-pro-1.5-260319`        |
+| URL за замовчуванням | `https://api.senseaudio.cn/v1`             |
+| Вебсайт       | [senseaudio.cn](https://senseaudio.cn)           |
+| Документація  | [senseaudio.cn/docs](https://senseaudio.cn/docs) |
 
 ## Початок роботи
 
@@ -48,23 +48,28 @@ SenseAudio може транскрибувати вхідні аудіо та в
     }
     ```
   </Step>
-  <Step title="Надішліть голосову нотатку">
+  <Step title="Надішліть голосове повідомлення">
     Надішліть аудіоповідомлення через будь-який підключений канал. OpenClaw завантажує
-    аудіо до SenseAudio та використовує транскрипт у конвеєрі відповіді.
+    аудіо до SenseAudio і використовує транскрипт у конвеєрі відповіді.
   </Step>
 </Steps>
 
 ## Параметри
 
-| Параметр  | Шлях                                  | Опис                                      |
-| --------- | ------------------------------------- | ----------------------------------------- |
-| `model`   | `tools.media.audio.models[].model`    | ID ASR-моделі SenseAudio                  |
-| `language` | `tools.media.audio.models[].language` | Необов’язкова підказка щодо мови          |
-| `prompt`  | `tools.media.audio.prompt`            | Необов’язковий prompt для транскрипції    |
-| `baseUrl` | `tools.media.audio.baseUrl` or model  | Перевизначити сумісну з OpenAI базову URL |
-| `headers` | `tools.media.audio.request.headers`   | Додаткові заголовки запиту                |
+| Параметр   | Шлях                                  | Опис                                |
+| ---------- | ------------------------------------- | ----------------------------------- |
+| `model`    | `tools.media.audio.models[].model`    | Ідентифікатор моделі ASR SenseAudio |
+| `language` | `tools.media.audio.models[].language` | Необов’язкова підказка мови         |
+| `prompt`   | `tools.media.audio.prompt`            | Необов’язкова підказка транскрипції |
+| `baseUrl`  | `tools.media.audio.baseUrl` або модель | Перевизначити OpenAI-сумісну базу  |
+| `headers`  | `tools.media.audio.request.headers`   | Додаткові заголовки запиту          |
 
 <Note>
-SenseAudio в OpenClaw підтримує лише пакетне STT. Транскрипція голосових викликів у реальному часі
+SenseAudio у OpenClaw підтримує лише пакетне STT. Транскрипція Voice Call у реальному часі
 й надалі використовує провайдерів із підтримкою потокового STT.
 </Note>
+
+## Пов’язане
+
+- [Розуміння медіа (аудіо)](/uk/nodes/audio)
+- [Провайдери моделей](/uk/concepts/model-providers)
