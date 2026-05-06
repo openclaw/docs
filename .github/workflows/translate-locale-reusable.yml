@@ -179,6 +179,8 @@ jobs:
             parts = rel.parts
             if parts and parts[0] in locale_dirs:
               continue
+            if rel.as_posix().startswith(".i18n/"):
+              continue
             if rel.as_posix().startswith(".generated/"):
               continue
             all_files.append(str(path.resolve()))
