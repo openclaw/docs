@@ -1,26 +1,26 @@
 ---
 read_when:
-    - Ви хочете запускати agent run-и зі скриптів або командного рядка
-    - Вам потрібно програмно доставляти відповіді агента в chat channel
-summary: Запускайте turn-и агента з CLI й за потреби доставляйте відповіді в channels
-title: Надсилання агенту
+    - Ви хочете запускати виконання агента зі скриптів або з командного рядка
+    - Вам потрібно програмно надсилати відповіді агента до каналу чату
+summary: Запускайте ходи агента з CLI та за бажанням доставляйте відповіді до каналів
+title: Надсилання агентом
 x-i18n:
-    generated_at: "2026-04-23T21:12:56Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T01:19:29Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8f29ab906ed8179b265138ee27312c8f4b318d09b73ad61843fca6809c32bd31
+    source_hash: 1339ebd74e2349669942ff93f200b53a69ad05f2186d6ff76437c779f312a291
     source_path: tools/agent-send.md
-    workflow: 15
+    workflow: 16
 ---
 
-`openclaw agent` запускає один turn агента з командного рядка без потреби
-у вхідному повідомленні чату. Використовуйте це для scripted workflow, testing і
+`openclaw agent` запускає один хід агента з командного рядка без потреби у
+вхідному повідомленні чату. Використовуйте його для скриптових робочих процесів, тестування та
 програмної доставки.
 
 ## Швидкий старт
 
 <Steps>
-  <Step title="Запустіть простий turn агента">
+  <Step title="Запустіть простий хід агента">
     ```bash
     openclaw agent --message "What is the weather today?"
     ```
@@ -29,7 +29,7 @@ x-i18n:
 
   </Step>
 
-  <Step title="Націліться на конкретного агента або сесію">
+  <Step title="Спрямуйте на конкретного агента або сеанс">
     ```bash
     # Target a specific agent
     openclaw agent --agent ops --message "Summarize logs"
@@ -43,7 +43,7 @@ x-i18n:
 
   </Step>
 
-  <Step title="Доставте відповідь у channel">
+  <Step title="Доставте відповідь у канал">
     ```bash
     # Deliver to WhatsApp (default channel)
     openclaw agent --to +15555550123 --message "Report ready" --deliver
@@ -61,29 +61,29 @@ x-i18n:
 | Прапорець                     | Опис                                                        |
 | ----------------------------- | ----------------------------------------------------------- |
 | `--message \<text\>`          | Повідомлення для надсилання (обов’язково)                   |
-| `--to \<dest\>`               | Вивести ключ сесії з цілі (телефон, chat id)                |
-| `--agent \<id\>`              | Націлитися на налаштованого агента (використовує його сесію `main`) |
-| `--session-id \<id\>`         | Повторно використати наявну сесію за id                     |
-| `--local`                     | Примусово використовувати локальний embedded runtime (обійти Gateway) |
-| `--deliver`                   | Надіслати відповідь у chat channel                          |
-| `--channel \<name\>`          | Channel доставки (whatsapp, telegram, discord, slack тощо)  |
+| `--to \<dest\>`               | Вивести ключ сеансу з цілі (телефон, id чату)               |
+| `--agent \<id\>`              | Спрямувати на налаштованого агента (використовує його сеанс `main`) |
+| `--session-id \<id\>`         | Повторно використати наявний сеанс за id                    |
+| `--local`                     | Примусово використати локальний вбудований runtime (оминає Gateway) |
+| `--deliver`                   | Надіслати відповідь у канал чату                            |
+| `--channel \<name\>`          | Канал доставки (whatsapp, telegram, discord, slack тощо)    |
 | `--reply-to \<target\>`       | Перевизначення цілі доставки                                |
-| `--reply-channel \<name\>`    | Перевизначення channel доставки                             |
+| `--reply-channel \<name\>`    | Перевизначення каналу доставки                              |
 | `--reply-account \<id\>`      | Перевизначення id облікового запису доставки                |
-| `--thinking \<level\>`        | Задати рівень thinking для вибраного профілю моделі         |
-| `--verbose \<on\|full\|off\>` | Задати рівень verbose                                       |
+| `--thinking \<level\>`        | Установити рівень мислення для вибраного профілю моделі     |
+| `--verbose \<on\|full\|off\>` | Установити рівень докладності                               |
 | `--timeout \<seconds\>`       | Перевизначити тайм-аут агента                               |
 | `--json`                      | Вивести структурований JSON                                 |
 
 ## Поведінка
 
 - За замовчуванням CLI працює **через Gateway**. Додайте `--local`, щоб примусово
-  використовувати embedded runtime на поточній машині.
-- Якщо Gateway недоступний, CLI **використовує fallback** до локального embedded run.
-- Вибір сесії: `--to` виводить ключ сесії (цілі груп/channel
+  використати вбудований runtime на поточній машині.
+- Якщо Gateway недоступний, CLI **повертається** до локального вбудованого запуску.
+- Вибір сеансу: `--to` виводить ключ сеансу (цілі груп/каналів
   зберігають ізоляцію; прямі чати згортаються до `main`).
-- Прапорці thinking і verbose зберігаються в session store.
-- Вивід: звичайний текст за замовчуванням або `--json` для структурованого payload + metadata.
+- Прапорці thinking і verbose зберігаються в сховищі сеансів.
+- Вивід: за замовчуванням звичайний текст або `--json` для структурованого payload + metadata.
 
 ## Приклади
 
@@ -100,6 +100,17 @@ openclaw agent --agent ops --message "Alert" --deliver --reply-channel telegram 
 
 ## Пов’язане
 
-- [Довідник CLI агента](/uk/cli/agent)
-- [Sub-agent-и](/uk/tools/subagents) — фоновий запуск sub-agent-ів
-- [Сесії](/uk/concepts/session) — як працюють ключі сесій
+<CardGroup cols={2}>
+  <Card title="Довідник Agent CLI" href="/uk/cli/agent" icon="terminal">
+    Повний довідник прапорців і параметрів `openclaw agent`.
+  </Card>
+  <Card title="Підагенти" href="/uk/tools/subagents" icon="users">
+    Фонове створення підагентів.
+  </Card>
+  <Card title="Сеанси" href="/uk/concepts/session" icon="comments">
+    Як працюють ключі сеансів і як `--to`, `--agent` та `--session-id` їх визначають.
+  </Card>
+  <Card title="Slash-команди" href="/uk/tools/slash-commands" icon="slash">
+    Власний каталог команд, що використовується всередині сеансів агентів.
+  </Card>
+</CardGroup>
