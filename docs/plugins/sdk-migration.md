@@ -187,8 +187,6 @@ Core owns Talk session semantics. Provider plugins own vendor session setup.
 Voice-call and Google Meet own telephony/meeting adapters. Browser and native
 apps own device capture/playback UX.
 
-The detailed implementation plan lives in [Talk refactor plan](/refactor/talk).
-
 ## Compatibility policy
 
 For external plugins, compatibility work follows this order:
