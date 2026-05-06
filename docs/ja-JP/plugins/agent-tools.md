@@ -1,22 +1,20 @@
 ---
 read_when:
     - agent-tools への旧リンク
-summary: Building Plugins へのリダイレクト（ツール登録セクション）
+summary: Building Plugins（ツール登録セクション）にリダイレクトします
 title: ツールの登録
 x-i18n:
-    generated_at: "2026-04-24T05:09:16Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T17:58:27Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: c84450ddc31f8f6a605bd553a1a9d7d295f5b575504a134b5c50a2c7d77e3e63
+    source_hash: e73137487a9394454dd037d449bc2a0896725cddc7d0f174eda41f5fdc451982
     source_path: plugins/agent-tools.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Pluginでのツール登録
-
-このページは移動しました。[Building Plugins: エージェントツールの登録](/ja-JP/plugins/building-plugins#registering-agent-tools) を参照してください。
+このページは移動しました。[Plugin の構築: エージェントツールの登録](/ja-JP/plugins/building-plugins#registering-agent-tools)を参照してください。
 
 ## 関連
 
-- [Building plugins](/ja-JP/plugins/building-plugins)
-- [Plugin SDK setup](/ja-JP/plugins/sdk-setup)
+- [Plugin の構築](/ja-JP/plugins/building-plugins)
+- [Plugin SDK のセットアップ](/ja-JP/plugins/sdk-setup)

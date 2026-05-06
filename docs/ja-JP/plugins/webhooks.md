@@ -1,23 +1,21 @@
 ---
 read_when:
-    - 外部システムから TaskFlow をトリガーまたは操作したい場合
-    - 同梱の Webhook Plugin を設定しています
-summary: 'Webhooks Plugin: 信頼済み外部自動化向けの認証付き TaskFlow 入口'
+    - 外部システムから TaskFlow をトリガーまたは駆動したい場合
+    - 同梱の webhooks Plugin を設定しています
+summary: 'Webhook Plugin: 信頼済み外部自動化向けの認証済み TaskFlow イングレス'
 title: Webhook Plugin
 x-i18n:
-    generated_at: "2026-04-30T05:29:10Z"
+    generated_at: "2026-05-06T17:59:20Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 70b195e330264af48a9e9c619bb5a0937bb15b2640edd3dd2b5517a13424e9fe
+    source_hash: 9d21d96f680fa24d4a53c1ed5759f800d3cfdc3336789c42c15266edd8ce9e80
     source_path: plugins/webhooks.md
     workflow: 16
 ---
 
-# Webhook (Plugin)
+Webhooks Plugin は、外部オートメーションを OpenClaw TaskFlow にバインドする認証付き HTTP ルートを追加します。
 
-Webhooks Plugin は、外部の自動化を OpenClaw TaskFlow に結び付ける認証付き HTTP ルートを追加します。
-
-Zapier、n8n、CI ジョブ、内部サービスなどの信頼済みシステムから、先にカスタム Plugin を書かずに、管理対象の TaskFlow を作成して操作したい場合に使用します。
+Zapier、n8n、CI ジョブ、内部サービスなどの信頼済みシステムで、先にカスタム Plugin を書かずに管理対象 TaskFlow を作成して進めたい場合に使用します。
 
 ## 実行場所
 
@@ -27,7 +25,7 @@ Gateway が別のマシンで実行されている場合は、その Gateway ホ
 
 ## ルートを設定する
 
-`plugins.entries.webhooks.config` の下に config を設定します。
+`plugins.entries.webhooks.config` 配下に設定します。
 
 ```json5
 {
@@ -58,30 +56,30 @@ Gateway が別のマシンで実行されている場合は、その Gateway ホ
 
 ルートフィールド:
 
-- `enabled`: 任意。デフォルトは `true`
-- `path`: 任意。デフォルトは `/plugins/webhooks/<routeId>`
-- `sessionKey`: バインドされた TaskFlow を所有する必須の session
+- `enabled`: 省略可能。デフォルトは `true`
+- `path`: 省略可能。デフォルトは `/plugins/webhooks/<routeId>`
+- `sessionKey`: バインドされた TaskFlow を所有する必須セッション
 - `secret`: 必須の共有シークレットまたは SecretRef
-- `controllerId`: 作成される管理対象 flow の任意の controller id
-- `description`: 任意の運用者向けメモ
+- `controllerId`: 作成される管理対象フロー用の省略可能なコントローラー ID
+- `description`: 省略可能なオペレーター向けメモ
 
-サポートされている `secret` 入力:
+サポートされる `secret` 入力:
 
 - プレーン文字列
 - `source: "env" | "file" | "exec"` を持つ SecretRef
 
-シークレットに基づくルートが起動時にシークレットを解決できない場合、Plugin は壊れた endpoint を公開する代わりに、そのルートをスキップして警告をログに記録します。
+シークレットに基づくルートが起動時にシークレットを解決できない場合、Plugin は壊れたエンドポイントを公開する代わりに、そのルートをスキップして警告をログに記録します。
 
 ## セキュリティモデル
 
 各ルートは、設定された `sessionKey` の TaskFlow 権限で動作するものとして信頼されます。
 
-つまり、そのルートはその session が所有する TaskFlow を検査および変更できるため、次の対応を行ってください。
+つまり、ルートはそのセッションが所有する TaskFlow を検査および変更できるため、次のことを行うべきです。
 
 - ルートごとに強力で一意のシークレットを使用する
-- インラインの平文シークレットよりもシークレット参照を優先する
-- ワークフローに適合する最も限定的な session にルートをバインドする
-- 必要な特定の Webhook パスのみを公開する
+- インラインの平文シークレットよりシークレット参照を優先する
+- ワークフローに適合する最も狭いセッションにルートをバインドする
+- 必要な特定の Webhook パスだけを公開する
 
 Plugin は次を適用します。
 
@@ -89,7 +87,7 @@ Plugin は次を適用します。
 - リクエスト本文サイズとタイムアウトのガード
 - 固定ウィンドウのレート制限
 - 実行中リクエストの制限
-- `api.runtime.tasks.managedFlows.bindSession(...)` による所有者にバインドされた TaskFlow アクセス
+- `api.runtime.tasks.managedFlows.bindSession(...)` による所有者バインドの TaskFlow アクセス
 
 ## リクエスト形式
 
@@ -107,7 +105,7 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
   -d '{"action":"create_flow","goal":"Review inbound queue"}'
 ```
 
-## サポートされている action
+## サポートされるアクション
 
 Plugin は現在、次の JSON `action` 値を受け付けます。
 
@@ -127,7 +125,7 @@ Plugin は現在、次の JSON `action` 値を受け付けます。
 
 ### `create_flow`
 
-ルートにバインドされた session の管理対象 TaskFlow を作成します。
+ルートにバインドされたセッション用の管理対象 TaskFlow を作成します。
 
 例:
 
@@ -142,9 +140,9 @@ Plugin は現在、次の JSON `action` 値を受け付けます。
 
 ### `run_task`
 
-既存の管理対象 TaskFlow 内に管理対象の子 task を作成します。
+既存の管理対象 TaskFlow 内に管理対象の子タスクを作成します。
 
-使用可能な runtime は次のとおりです。
+許可されるランタイムは次のとおりです。
 
 - `subagent`
 - `acp`
@@ -161,7 +159,7 @@ Plugin は現在、次の JSON `action` 値を受け付けます。
 }
 ```
 
-## レスポンスの形状
+## レスポンス形式
 
 成功したレスポンスは次を返します。
 
@@ -185,10 +183,10 @@ Plugin は現在、次の JSON `action` 値を受け付けます。
 }
 ```
 
-Plugin は、Webhook レスポンスから所有者/session メタデータを意図的に除去します。
+Plugin は意図的に、Webhook レスポンスから所有者/セッションのメタデータを取り除きます。
 
 ## 関連ドキュメント
 
-- [Plugin runtime SDK](/ja-JP/plugins/sdk-runtime)
-- [Hook と Webhook の概要](/ja-JP/automation/hooks)
+- [Plugin ランタイム SDK](/ja-JP/plugins/sdk-runtime)
+- [フックと Webhook の概要](/ja-JP/automation/hooks)
 - [CLI Webhook](/ja-JP/cli/webhooks)

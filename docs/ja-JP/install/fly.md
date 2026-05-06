@@ -1,35 +1,33 @@
 ---
 read_when:
-    - Fly.io に OpenClaw をデプロイする
+    - Fly.io での OpenClaw のデプロイ
     - Fly のボリューム、シークレット、初回実行設定のセットアップ
-summary: 永続ストレージと HTTPS を備えた OpenClaw の Fly.io デプロイ手順
+summary: OpenClaw を永続ストレージと HTTPS 付きで Fly.io にデプロイする手順
 title: Fly.io
 x-i18n:
-    generated_at: "2026-05-03T21:35:09Z"
+    generated_at: "2026-05-06T17:57:09Z"
     model: gpt-5.5
     provider: openai
-    source_hash: d9b98b2d1c102195e31ee7e93ba075e6cfa16080e78f8e17fc006a62d300ce1a
+    source_hash: 534a94e4ff69542604ba3112d468b7274492c18b3c5054f47379c21421f518bd
     source_path: install/fly.md
     workflow: 16
 ---
 
-# Fly.io デプロイ
-
-**目標:** 永続ストレージ、自動 HTTPS、Discord/チャンネルアクセスを備えた [Fly.io](https://fly.io) マシン上で OpenClaw Gateway を実行する。
+**目的:** 永続ストレージ、自動 HTTPS、Discord/チャンネルアクセスを備えた [Fly.io](https://fly.io) マシン上で OpenClaw Gateway を実行する。
 
 ## 必要なもの
 
 - [flyctl CLI](https://fly.io/docs/hands-on/install-flyctl/) のインストール
-- Fly.io アカウント（無料枠で可）
+- Fly.io アカウント（無料枠で利用可能）
 - モデル認証: 選択したモデルプロバイダーの API キー
-- チャンネル認証情報: Discord bot トークン、Telegram トークンなど
+- チャンネル認証情報: Discord bot token、Telegram token など
 
-## 初心者向けの簡単な手順
+## 初心者向けクイック手順
 
 1. リポジトリをクローン → `fly.toml` をカスタマイズ
 2. アプリ + ボリュームを作成 → シークレットを設定
 3. `fly deploy` でデプロイ
-4. SSH で入り、設定を作成するか Control UI を使用
+4. SSH で入って設定を作成、または Control UI を使用
 
 <Steps>
   <Step title="Create the Fly app">
@@ -45,14 +43,14 @@ x-i18n:
     fly volumes create openclaw_data --size 1 --region iad
     ```
 
-    **ヒント:** 自分に近いリージョンを選択する。一般的な選択肢: `lhr`（ロンドン）、`iad`（バージニア）、`sjc`（サンノゼ）。
+    **ヒント:** 自分に近いリージョンを選んでください。一般的な選択肢: `lhr`（ロンドン）、`iad`（バージニア）、`sjc`（サンノゼ）。
 
   </Step>
 
   <Step title="Configure fly.toml">
-    `fly.toml` を編集して、アプリ名と要件に合わせる。
+    アプリ名と要件に合わせて `fly.toml` を編集します。
 
-    **セキュリティ上の注意:** デフォルト設定は公開 URL を公開する。公開 IP のない強化されたデプロイについては、[プライベートデプロイ](#private-deployment-hardened) を参照するか、`deploy/fly.private.toml` を使用する。
+    **セキュリティ上の注意:** デフォルト設定では公開 URL が露出します。公開 IP のない強化されたデプロイについては、[プライベートデプロイ](#private-deployment-hardened) を参照するか、`deploy/fly.private.toml` を使用してください。
 
     ```toml
     app = "my-openclaw"  # Your app name
@@ -87,15 +85,15 @@ x-i18n:
       destination = "/data"
     ```
 
-    **主要な設定:**
+    **主な設定:**
 
-    | 設定                           | 理由                                                                        |
-    | ------------------------------ | --------------------------------------------------------------------------- |
-    | `--bind lan`                   | Fly のプロキシが Gateway に到達できるように `0.0.0.0` にバインドする       |
-    | `--allow-unconfigured`         | 設定ファイルなしで起動する（後で作成する）                                  |
-    | `internal_port = 3000`         | Fly のヘルスチェックでは `--port 3000`（または `OPENCLAW_GATEWAY_PORT`）と一致する必要がある |
-    | `memory = "2048mb"`            | 512MB は小さすぎる。2GB を推奨                                             |
-    | `OPENCLAW_STATE_DIR = "/data"` | ボリューム上に状態を永続化する                                              |
+    | 設定                           | 理由                                                                            |
+    | ------------------------------ | ------------------------------------------------------------------------------- |
+    | `--bind lan`                   | Fly のプロキシが Gateway に到達できるように `0.0.0.0` にバインドします          |
+    | `--allow-unconfigured`         | 設定ファイルなしで起動します（後で作成します）                                  |
+    | `internal_port = 3000`         | Fly のヘルスチェックのため、`--port 3000`（または `OPENCLAW_GATEWAY_PORT`）と一致している必要があります |
+    | `memory = "2048mb"`            | 512MB は小さすぎます。2GB を推奨します                                          |
+    | `OPENCLAW_STATE_DIR = "/data"` | ボリューム上に状態を永続化します                                                |
 
   </Step>
 
@@ -117,9 +115,9 @@ x-i18n:
 
     **注記:**
 
-    - 非 loopback バインド（`--bind lan`）には、有効な Gateway 認証パスが必要。この Fly.io の例では `OPENCLAW_GATEWAY_TOKEN` を使用しているが、`gateway.auth.password` または正しく設定された非 loopback の `trusted-proxy` デプロイでも要件を満たす。
-    - これらのトークンはパスワードと同様に扱う。
-    - **すべての API キーとトークンには、設定ファイルより env vars を優先する。** これにより、誤って公開またはログ出力される可能性がある `openclaw.json` にシークレットを入れずに済む。
+    - 非 loopback バインド（`--bind lan`）には、有効な Gateway 認証パスが必要です。この Fly.io の例では `OPENCLAW_GATEWAY_TOKEN` を使用していますが、`gateway.auth.password`、または正しく設定された非 loopback の `trusted-proxy` デプロイでも要件を満たします。
+    - これらのトークンはパスワードと同様に扱ってください。
+    - **すべての API キーとトークンには、設定ファイルよりも環境変数を優先してください**。これにより、誤って公開またはログ出力される可能性のある `openclaw.json` にシークレットを入れずに済みます。
 
   </Step>
 
@@ -128,16 +126,16 @@ x-i18n:
     fly deploy
     ```
 
-    初回デプロイでは Docker イメージをビルドする（約 2〜3 分）。以降のデプロイはより速い。
+    初回デプロイでは Docker イメージをビルドします（約 2～3 分）。以降のデプロイはより高速です。
 
-    デプロイ後、確認する:
+    デプロイ後、確認します。
 
     ```bash
     fly status
     fly logs
     ```
 
-    次のように表示されるはず:
+    次のように表示されるはずです。
 
     ```
     [gateway] listening on ws://0.0.0.0:3000 (PID xxx)
@@ -147,13 +145,13 @@ x-i18n:
   </Step>
 
   <Step title="Create config file">
-    SSH でマシンに入り、適切な設定を作成する:
+    適切な設定を作成するため、マシンに SSH で入ります。
 
     ```bash
     fly ssh console
     ```
 
-    設定ディレクトリとファイルを作成する:
+    設定ディレクトリとファイルを作成します。
 
     ```bash
     mkdir -p /data
@@ -214,22 +212,22 @@ x-i18n:
     EOF
     ```
 
-    **注記:** `OPENCLAW_STATE_DIR=/data` の場合、設定パスは `/data/openclaw.json`。
+    **注記:** `OPENCLAW_STATE_DIR=/data` の場合、設定パスは `/data/openclaw.json` です。
 
     **注記:** `https://my-openclaw.fly.dev` は実際の Fly アプリの
-    オリジンに置き換える。Gateway の起動時には、ランタイムの
+    オリジンに置き換えてください。Gateway の起動時にはランタイムの
     `--bind` と `--port` の値からローカル Control UI オリジンがシードされるため、
-    設定が存在する前でも初回起動を進められるが、Fly 経由でブラウザーアクセスするには
-    `gateway.controlUi.allowedOrigins` に正確な HTTPS オリジンを記載する必要がある。
+    設定が存在する前でも初回起動を進められますが、Fly 経由でブラウザアクセスするには、
+    `gateway.controlUi.allowedOrigins` に正確な HTTPS オリジンが listed されている必要があります。
 
-    **注記:** Discord トークンは次のどちらからでも取得できる:
+    **注記:** Discord トークンは次のいずれかから取得できます。
 
     - 環境変数: `DISCORD_BOT_TOKEN`（シークレットには推奨）
     - 設定ファイル: `channels.discord.token`
 
-    env var を使用する場合、設定にトークンを追加する必要はない。Gateway は `DISCORD_BOT_TOKEN` を自動的に読み取る。
+    環境変数を使用する場合、設定にトークンを追加する必要はありません。Gateway は `DISCORD_BOT_TOKEN` を自動的に読み取ります。
 
-    適用するために再起動する:
+    適用するには再起動します。
 
     ```bash
     exit
@@ -241,17 +239,17 @@ x-i18n:
   <Step title="Access the Gateway">
     ### Control UI
 
-    ブラウザーで開く:
+    ブラウザで開きます。
 
     ```bash
     fly open
     ```
 
-    または `https://my-openclaw.fly.dev/` にアクセスする
+    または `https://my-openclaw.fly.dev/` にアクセスします。
 
-    設定済みの共有シークレットで認証する。このガイドでは
-    `OPENCLAW_GATEWAY_TOKEN` の Gateway トークンを使用している。パスワード認証に切り替えた場合は、
-    代わりにそのパスワードを使用する。
+    設定済みの共有シークレットで認証します。このガイドでは
+    `OPENCLAW_GATEWAY_TOKEN` の Gateway トークンを使用しています。パスワード認証に切り替えた場合は、
+    代わりにそのパスワードを使用してください。
 
     ### ログ
 
@@ -271,57 +269,57 @@ x-i18n:
 
 ## トラブルシューティング
 
-### 「アプリが想定されたアドレスでリッスンしていない」
+### 「App is not listening on expected address」
 
-Gateway が `0.0.0.0` ではなく `127.0.0.1` にバインドしている。
+Gateway が `0.0.0.0` ではなく `127.0.0.1` にバインドされています。
 
-**修正:** `fly.toml` のプロセスコマンドに `--bind lan` を追加する。
+**修正:** `fly.toml` のプロセスコマンドに `--bind lan` を追加します。
 
 ### ヘルスチェック失敗 / 接続拒否
 
-Fly が設定済みポートで Gateway に到達できない。
+Fly が設定されたポートで Gateway に到達できません。
 
-**修正:** `internal_port` が Gateway ポートと一致していることを確認する（`--port 3000` または `OPENCLAW_GATEWAY_PORT=3000` を設定）。
+**修正:** `internal_port` が Gateway ポート（`--port 3000` または `OPENCLAW_GATEWAY_PORT=3000` を設定）と一致していることを確認します。
 
 ### OOM / メモリ問題
 
-コンテナーが再起動し続ける、または kill される。兆候: `SIGABRT`、`v8::internal::Runtime_AllocateInYoungGeneration`、または無言の再起動。
+コンテナが再起動し続ける、または強制終了されます。兆候: `SIGABRT`、`v8::internal::Runtime_AllocateInYoungGeneration`、または無言の再起動。
 
-**修正:** `fly.toml` でメモリを増やす:
+**修正:** `fly.toml` でメモリを増やします。
 
 ```toml
 [[vm]]
   memory = "2048mb"
 ```
 
-または既存のマシンを更新する:
+または既存のマシンを更新します。
 
 ```bash
 fly machine update <machine-id> --vm-memory 2048 -y
 ```
 
-**注記:** 512MB は小さすぎる。1GB でも動作する場合はあるが、負荷時や詳細ログ出力時に OOM になる可能性がある。**2GB を推奨。**
+**注記:** 512MB は小さすぎます。1GB でも動作する場合がありますが、負荷時や詳細ログ有効時に OOM になる可能性があります。**2GB を推奨します。**
 
 ### Gateway ロックの問題
 
-Gateway が「already running」エラーで起動を拒否する。
+Gateway が「already running」エラーで起動を拒否します。
 
-これは、コンテナーが再起動しても PID ロックファイルがボリューム上に残る場合に発生する。
+これは、コンテナが再起動したものの PID ロックファイルがボリューム上に残っている場合に発生します。
 
-**修正:** ロックファイルを削除する:
+**修正:** ロックファイルを削除します。
 
 ```bash
 fly ssh console --command "rm -f /data/gateway.*.lock"
 fly machine restart <machine-id>
 ```
 
-ロックファイルは `/data/gateway.*.lock` にある（サブディレクトリ内ではない）。
+ロックファイルは `/data/gateway.*.lock` にあります（サブディレクトリ内ではありません）。
 
 ### 設定が読み取られない
 
-`--allow-unconfigured` は起動ガードを迂回するだけ。`/data/openclaw.json` を作成または修復するわけではないため、通常のローカル Gateway 起動を行いたい場合は、実際の設定が存在し、`gateway.mode="local"` が含まれていることを確認する。
+`--allow-unconfigured` は起動ガードをバイパスするだけです。`/data/openclaw.json` を作成または修復するものではないため、通常のローカル Gateway 起動を行いたい場合は、実際の設定が存在し、`gateway.mode="local"` を含んでいることを確認してください。
 
-設定が存在することを確認する:
+設定が存在することを確認します。
 
 ```bash
 fly ssh console --command "cat /data/openclaw.json"
@@ -329,7 +327,7 @@ fly ssh console --command "cat /data/openclaw.json"
 
 ### SSH 経由で設定を書き込む
 
-`fly ssh console -C` コマンドはシェルリダイレクトをサポートしない。設定ファイルを書き込むには:
+`fly ssh console -C` コマンドはシェルのリダイレクトをサポートしていません。設定ファイルを書き込むには、次のようにします。
 
 ```bash
 # Use echo + tee (pipe from local to remote)
@@ -340,7 +338,7 @@ fly sftp shell
 > put /local/path/config.json /data/openclaw.json
 ```
 
-**注記:** ファイルがすでに存在する場合、`fly sftp` は失敗する可能性がある。先に削除する:
+**注記:** ファイルがすでに存在する場合、`fly sftp` は失敗することがあります。先に削除してください。
 
 ```bash
 fly ssh console --command "rm /data/openclaw.json"
@@ -348,10 +346,10 @@ fly ssh console --command "rm /data/openclaw.json"
 
 ### 状態が永続化されない
 
-再起動後に認証プロファイル、チャンネル/プロバイダーの状態、またはセッションが失われる場合、
-状態ディレクトリがコンテナーファイルシステムに書き込まれている。
+再起動後に認証プロファイル、チャンネル/プロバイダー状態、またはセッションが失われる場合、
+状態ディレクトリがコンテナファイルシステムに書き込まれています。
 
-**修正:** `OPENCLAW_STATE_DIR=/data` が `fly.toml` に設定されていることを確認し、再デプロイする。
+**修正:** `fly.toml` に `OPENCLAW_STATE_DIR=/data` が設定されていることを確認し、再デプロイします。
 
 ## 更新
 
@@ -382,31 +380,31 @@ fly machine update <machine-id> --command "node dist/index.js gateway --port 300
 fly machine update <machine-id> --vm-memory 2048 --command "node dist/index.js gateway --port 3000 --bind lan" -y
 ```
 
-**注記:** `fly deploy` の後、マシンコマンドは `fly.toml` 内の内容にリセットされる場合がある。手動変更を行った場合は、デプロイ後に再適用する。
+**注記:** `fly deploy` の後、マシンコマンドは `fly.toml` 内の内容にリセットされる場合があります。手動で変更した場合は、デプロイ後に再適用してください。
 
 ## プライベートデプロイ（強化）
 
-デフォルトでは、Fly は公開 IP を割り当てるため、Gateway は `https://your-app.fly.dev` でアクセス可能になる。これは便利だが、デプロイがインターネットスキャナー（Shodan、Censys など）に検出されることを意味する。
+デフォルトでは、Fly は公開 IP を割り当てるため、Gateway は `https://your-app.fly.dev` でアクセス可能になります。これは便利ですが、デプロイがインターネットスキャナー（Shodan、Censys など）に検出されることも意味します。
 
-**公開露出なし**の強化されたデプロイには、プライベートテンプレートを使用する。
+**公開露出のない**強化されたデプロイには、プライベートテンプレートを使用します。
 
-### プライベートデプロイを使用する場合
+### プライベートデプロイを使う場合
 
-- **送信** 呼び出し/メッセージのみを行う（受信 Webhook なし）
+- **アウトバウンド**の呼び出し/メッセージのみを行う（インバウンド Webhook がない）
 - Webhook コールバックに **ngrok または Tailscale** トンネルを使用する
-- ブラウザーではなく **SSH、プロキシ、または WireGuard** 経由で Gateway にアクセスする
-- デプロイを **インターネットスキャナーから隠したい**
+- ブラウザではなく **SSH、プロキシ、または WireGuard** 経由で Gateway にアクセスする
+- デプロイを**インターネットスキャナーから隠したい**
 
 ### セットアップ
 
-標準設定の代わりに `deploy/fly.private.toml` を使用する:
+標準設定の代わりに `deploy/fly.private.toml` を使用します。
 
 ```bash
 # Deploy with private config
 fly deploy -c deploy/fly.private.toml
 ```
 
-または既存のデプロイを変換する:
+または既存のデプロイを変換します。
 
 ```bash
 # List current IPs
@@ -424,7 +422,7 @@ fly deploy -c deploy/fly.private.toml
 fly ips allocate-v6 --private -a my-openclaw
 ```
 
-この後、`fly ips list` には `private` タイプの IP のみが表示されるはず:
+この後、`fly ips list` には `private` 型の IP のみが表示されるはずです。
 
 ```
 VERSION  IP                   TYPE             REGION
@@ -433,7 +431,7 @@ v6       fdaa:x:x:x:x::x      private          global
 
 ### プライベートデプロイへのアクセス
 
-公開 URL がないため、次のいずれかの方法を使用する:
+公開 URL がないため、次のいずれかの方法を使用します。
 
 **オプション 1: ローカルプロキシ（最も簡単）**
 
@@ -464,11 +462,11 @@ fly ssh console -a my-openclaw
 
 公開せずに Webhook コールバック（Twilio、Telnyx など）が必要な場合:
 
-1. **ngrok トンネル** - コンテナ内または sidecar として ngrok を実行します
-2. **Tailscale Funnel** - Tailscale 経由で特定のパスを公開します
-3. **アウトバウンドのみ** - 一部のプロバイダー（Twilio）は Webhook なしでもアウトバウンド通話では問題なく動作します
+1. **ngrok トンネル** - コンテナ内、またはサイドカーとして ngrok を実行する
+2. **Tailscale Funnel** - Tailscale 経由で特定のパスを公開する
+3. **送信専用** - 一部のプロバイダー（Twilio）は Webhook なしでも発信通話で問題なく動作する
 
-ngrok を使った音声通話設定の例:
+ngrok を使用した音声通話設定の例:
 
 ```json5
 {
@@ -489,38 +487,38 @@ ngrok を使った音声通話設定の例:
 }
 ```
 
-ngrok トンネルはコンテナ内で実行され、Fly アプリ自体を公開せずに公開 Webhook URL を提供します。転送されたホストヘッダーが受け入れられるように、`webhookSecurity.allowedHosts` を公開トンネルのホスト名に設定します。
+ngrok トンネルはコンテナ内で実行され、Fly アプリ自体を公開せずに公開 Webhook URL を提供します。転送されたホストヘッダーが受け入れられるように、`webhookSecurity.allowedHosts` を公開トンネルのホスト名に設定してください。
 
 ### セキュリティ上の利点
 
 | 観点              | 公開         | プライベート |
 | ----------------- | ------------ | ------------ |
-| インターネットスキャナー | 発見可能     | 非表示       |
+| インターネットスキャナー | 検出可能     | 非公開       |
 | 直接攻撃          | 可能         | ブロック     |
-| Control UI へのアクセス | ブラウザー   | プロキシ/VPN |
+| コントロール UI アクセス | ブラウザー   | プロキシ/VPN |
 | Webhook 配信      | 直接         | トンネル経由 |
 
 ## 注記
 
 - Fly.io は **x86 アーキテクチャ**（ARM ではありません）を使用します
 - Dockerfile は両方のアーキテクチャに対応しています
-- WhatsApp/Telegram のオンボーディングには `fly ssh console` を使用します
-- 永続データは `/data` のボリューム上にあります
-- Signal には Java + signal-cli が必要です。カスタムイメージを使用し、メモリを 2GB 以上に保ってください。
+- WhatsApp/Telegram オンボーディングでは、`fly ssh console` を使用してください
+- 永続データは `/data` のボリュームに保存されます
+- Signal には Java + signal-cli が必要です。カスタムイメージを使用し、メモリを 2GB 以上にしてください。
 
 ## コスト
 
-推奨設定（`shared-cpu-2x`、2GB RAM）の場合:
+推奨設定（`shared-cpu-2x`、2GB RAM）では:
 
-- 使用状況に応じて月額約$10-15
-- 無料枠には一部の利用枠が含まれます
+- 使用量に応じて月額約 $10〜15
+- 無料枠には一定の許容量が含まれます
 
 詳細は [Fly.io の料金](https://fly.io/docs/about/pricing/) を参照してください。
 
 ## 次のステップ
 
-- メッセージングチャンネルを設定する: [チャンネル](/ja-JP/channels)
-- Gateway を構成する: [Gateway 設定](/ja-JP/gateway/configuration)
+- メッセージングチャネルを設定する: [チャネル](/ja-JP/channels)
+- Gateway を設定する: [Gateway 設定](/ja-JP/gateway/configuration)
 - OpenClaw を最新の状態に保つ: [更新](/ja-JP/install/updating)
 
 ## 関連
