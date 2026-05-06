@@ -1,26 +1,26 @@
 ---
 read_when:
-    - Tailscale + CoreDNS を介した広域ディスカバリー（DNS-SD）が必要な場合
-    - You’re setting up split DNS for a custom discovery domain (example: openclaw.internal)
-summary: '`openclaw dns` の CLI リファレンス（広域ディスカバリーヘルパー）'
+    - Tailscale + CoreDNS 経由で広域検出（DNS-SD）を使いたい場合
+    - You're setting up split DNS for a custom discovery domain (example: openclaw.internal)
+summary: '`openclaw dns` の CLI リファレンス（広域検出ヘルパー）'
 title: DNS
 x-i18n:
-    generated_at: "2026-04-24T04:50:14Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:03:36Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 99dcf7c8c76833784a2b712b02f9e40c6c0548c37c9743a89b9d650fe503d385
+    source_hash: 460bdcbaa2c0c0fc1a4f5bdd76b904d8ac35195a25324c66421abfdc2044bb07
     source_path: cli/dns.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw dns`
 
-広域ディスカバリー（Tailscale + CoreDNS）用の DNS ヘルパーです。現在は macOS + Homebrew CoreDNS に主に対応しています。
+広域ディスカバリー用の DNS ヘルパー (Tailscale + CoreDNS)。現在は macOS + Homebrew CoreDNS に重点を置いています。
 
 関連:
 
-- Gateway ディスカバリー: [Discovery](/ja-JP/gateway/discovery)
-- 広域ディスカバリー設定: [Configuration](/ja-JP/gateway/configuration)
+- Gateway ディスカバリー: [ディスカバリー](/ja-JP/gateway/discovery)
+- 広域ディスカバリー設定: [設定](/ja-JP/gateway/configuration)
 
 ## セットアップ
 
@@ -32,29 +32,29 @@ openclaw dns setup --apply
 
 ## `dns setup`
 
-ユニキャスト DNS-SD ディスカバリーのための CoreDNS セットアップを計画または適用します。
+ユニキャスト DNS-SD ディスカバリー用の CoreDNS セットアップを計画または適用します。
 
 オプション:
 
-- `--domain <domain>`: 広域ディスカバリードメイン（例: `openclaw.internal`）
-- `--apply`: CoreDNS 設定をインストールまたは更新し、サービスを再起動します（sudo が必要。macOS のみ）
+- `--domain <domain>`: 広域ディスカバリードメイン (例: `openclaw.internal`)
+- `--apply`: CoreDNS 設定をインストールまたは更新し、サービスを再起動します (sudo が必要、macOS のみ)
 
 表示内容:
 
-- 解決済みディスカバリードメイン
+- 解決されたディスカバリードメイン
 - ゾーンファイルパス
 - 現在の tailnet IP
 - 推奨される `openclaw.json` ディスカバリー設定
-- 設定すべき Tailscale Split DNS のネームサーバー/ドメイン値
+- 設定する Tailscale Split DNS のネームサーバー/ドメイン値
 
-注:
+注記:
 
-- `--apply` を指定しない場合、このコマンドは計画ヘルパーとしてのみ動作し、推奨セットアップを表示します。
+- `--apply` なしでは、このコマンドは計画用ヘルパーのみとして機能し、推奨セットアップを出力します。
 - `--domain` を省略した場合、OpenClaw は設定の `discovery.wideArea.domain` を使用します。
-- `--apply` は現在 macOS のみをサポートしており、Homebrew CoreDNS を前提としています。
-- `--apply` は必要に応じてゾーンファイルをブートストラップし、CoreDNS の import stanza が存在することを確認し、`coredns` の brew service を再起動します。
+- `--apply` は現在 macOS のみをサポートし、Homebrew CoreDNS を前提としています。
+- `--apply` は必要に応じてゾーンファイルをブートストラップし、CoreDNS の import スタンザが存在することを確認し、`coredns` brew サービスを再起動します。
 
 ## 関連
 
 - [CLI リファレンス](/ja-JP/cli)
-- [Discovery](/ja-JP/gateway/discovery)
+- [ディスカバリー](/ja-JP/gateway/discovery)

@@ -1,26 +1,29 @@
 ---
 read_when:
-    - mac の WebChat ビューまたはループバックポートのデバッグ
-summary: macアプリがGateway WebChatを埋め込む仕組みとデバッグ方法
-title: Webチャット (macOS)
+    - mac WebChat ビューまたはループバックポートのデバッグ
+summary: Mac アプリが Gateway WebChat を埋め込む仕組みと、そのデバッグ方法
+title: WebChat（macOS）
 x-i18n:
-    generated_at: "2026-05-06T05:12:39Z"
+    generated_at: "2026-05-06T09:07:59Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b53eda688ff8786da4a4a615927a640090a1ecc71af8c08469c3a3c98a32af41
+    source_hash: 50680e099181421505e25cecab2ba331fdaf9839d07fef482ff04976b0fc583e
     source_path: platforms/mac/webchat.md
     workflow: 16
 ---
 
-macOS メニューバーアプリは、WebChat UI をネイティブの SwiftUI ビューとして組み込んでいます。これは Gateway に接続し、選択したエージェントの **メインセッション** をデフォルトで使用します（他のセッション用のセッション切り替え機能付き）。
+macOSメニューバーアプリは、WebChat UIをネイティブのSwiftUIビューとして埋め込みます。これは
+Gatewayに接続し、選択した
+エージェントの**メインセッション**をデフォルトにします（他のセッション用のセッション切り替え付き）。
 
-- **ローカルモード**: ローカルの Gateway WebSocket に直接接続します。
-- **リモートモード**: Gateway の制御ポートを SSH 経由で転送し、そのトンネルをデータプレーンとして使用します。
+- **ローカルモード**: ローカルのGateway WebSocketに直接接続します。
+- **リモートモード**: SSH経由でGateway制御ポートを転送し、その
+  トンネルをデータプレーンとして使用します。
 
 ## 起動とデバッグ
 
-- 手動: Lobster メニュー → 「チャットを開く」。
-- テスト用に自動で開く:
+- 手動: Lobsterメニュー → 「チャットを開く」。
+- テスト用の自動オープン:
 
   ```bash
   dist/OpenClaw.app/Contents/MacOS/OpenClaw --webchat
@@ -28,30 +31,31 @@ macOS メニューバーアプリは、WebChat UI をネイティブの SwiftUI 
 
 - ログ: `./scripts/clawlog.sh`（サブシステム `ai.openclaw`、カテゴリ `WebChatSwiftUI`）。
 
-## 接続の仕組み
+## 仕組み
 
-- データプレーン: Gateway WS メソッド `chat.history`、`chat.send`、`chat.abort`、
+- データプレーン: Gateway WSメソッド `chat.history`、`chat.send`、`chat.abort`、
   `chat.inject` と、イベント `chat`、`agent`、`presence`、`tick`、`health`。
-- `chat.history` は、表示用に正規化されたトランスクリプト行を返します。インラインディレクティブ
-  タグは表示テキストから取り除かれ、プレーンテキストのツール呼び出し XML ペイロード
+- `chat.history` は、表示用に正規化されたトランスクリプト行を返します。インライン指示
+  タグは表示テキストから取り除かれ、プレーンテキストのツール呼び出しXMLペイロード
   （`<tool_call>...</tool_call>`、
   `<function_call>...</function_call>`、`<tool_calls>...</tool_calls>`、
   `<function_calls>...</function_calls>`、および切り詰められたツール呼び出しブロックを含む）と、
-  漏出した ASCII/全角のモデル制御トークンは取り除かれます。正確に `NO_REPLY` / `no_reply` のような、
-  サイレントトークンだけのアシスタント行は
-  省略され、過大な行はプレースホルダーに置き換えられる場合があります。
-- セッション: プライマリセッション（`main`、またはスコープがグローバルの場合は `global`）がデフォルトです。UI ではセッションを切り替えられます。
+  漏出したASCII/全角のモデル制御トークンは取り除かれ、正確に `NO_REPLY` / `no_reply` のような
+  純粋なサイレントトークンのアシスタント行は
+  省略され、サイズが大きすぎる行はプレースホルダーに置き換えられる場合があります。
+- セッション: プライマリセッション（`main`、またはスコープが
+  グローバルの場合は `global`）をデフォルトにします。UIではセッションを切り替えられます。
 - オンボーディングでは、初回セットアップを分離しておくために専用セッションを使用します。
 
 ## セキュリティ面
 
-- リモートモードでは、Gateway WebSocket 制御ポートだけを SSH 経由で転送します。
+- リモートモードでは、Gateway WebSocket制御ポートのみをSSH経由で転送します。
 
-## 既知の制限事項
+## 既知の制限
 
-- UI はチャットセッション向けに最適化されています（完全なブラウザーサンドボックスではありません）。
+- UIはチャットセッション向けに最適化されています（完全なブラウザーサンドボックスではありません）。
 
 ## 関連
 
 - [WebChat](/ja-JP/web/webchat)
-- [macOS アプリ](/ja-JP/platforms/macos)
+- [macOSアプリ](/ja-JP/platforms/macos)

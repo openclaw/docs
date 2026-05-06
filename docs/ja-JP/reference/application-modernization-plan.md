@@ -1,186 +1,192 @@
 ---
 read_when:
-    - 広範な OpenClaw アプリケーションモダナイゼーション作業を計画しています
-    - app または Control UI 作業向けのフロントエンド実装標準を更新する
-    - 幅広い製品品質レビューを段階的なエンジニアリング作業に落とし込む
-summary: フロントエンド配信スキルの更新を含む包括的なアプリケーションモダナイゼーション計画
+    - 広範な OpenClaw アプリケーションのモダナイゼーション作業を計画する
+    - アプリまたは Control UI 作業向けのフロントエンド実装標準の更新
+    - 広範な製品品質レビューを段階的なエンジニアリング作業に落とし込む
+summary: フロントエンドデリバリーのスキル更新を含む包括的なアプリケーションモダナイゼーション計画
 title: アプリケーションモダナイゼーション計画
 x-i18n:
-    generated_at: "2026-04-25T13:58:24Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:09:17Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 667a133cb867bb1d4d09e097925704c8b77d20ca6117a62a4c60d29ab1097283
+    source_hash: 8c97bd9c76492b9e7beb0a2623f583a54b5461bebb848fa3ac7e4495322f6456
     source_path: reference/application-modernization-plan.md
-    workflow: 15
+    workflow: 16
 ---
-
-# アプリケーションモダナイゼーション計画
 
 ## 目標
 
-現在のワークフローを壊したり、広範なリファクタリングの中にリスクを隠したりすることなく、アプリケーションをよりクリーンで、高速で、保守しやすいプロダクトへと進めます。作業は、小さくレビューしやすい単位で着地させ、変更した各サーフェスに対する証拠を伴うべきです。
+現在のワークフローを壊したり、広範なリファクタリングにリスクを隠したりすることなく、
+アプリケーションをよりクリーンで高速、保守しやすいプロダクトへ進める。作業は、
+触れた各サーフェスの証拠を伴う、小さくレビュー可能な単位で着地させる。
 
 ## 原則
 
-- 境界が churn、性能コスト、またはユーザーに見えるバグの原因であることが実証されない限り、現在のアーキテクチャを維持する。
+- 境界が明確に変更の多発、パフォーマンスコスト、またはユーザーに見えるバグを引き起こしている場合を除き、現在のアーキテクチャを維持する。
 - 各問題に対して最小の正しいパッチを優先し、それを繰り返す。
-- 必須の修正と任意の磨き込みを分け、メンテナーが主観的な判断を待たずに高価値の作業を着地できるようにする。
-- Plugin 向けの動作は文書化し、後方互換性を維持する。
-- リグレッションが修正されたと主張する前に、実際に出荷されている動作、依存先コントラクト、テストを検証する。
-- まず主要なユーザーパスを改善する: オンボーディング、認証、chat、provider セットアップ、Plugin 管理、diagnostics。
+- 必須の修正と任意の磨き込みを分け、メンテナーが主観的な判断を待たずに高価値の作業を取り込めるようにする。
+- plugin 向けの挙動は文書化し、後方互換性を保つ。
+- リグレッションが修正されたと主張する前に、出荷済みの挙動、依存関係の契約、テストを検証する。
+- 主要なユーザーパスを先に良くする: オンボーディング、認証、チャット、プロバイダー設定、plugin 管理、診断。
 
 ## フェーズ 1: ベースライン監査
 
-変更を加える前に、現在のアプリケーションを棚卸しします。
+変更する前に現在のアプリケーションを棚卸しする。
 
-- 上位のユーザーワークフローと、それを所有するコードサーフェスを特定する。
-- 使われていない affordance、重複設定、不明瞭なエラー状態、高コストな render パスを列挙する。
+- 主要なユーザーワークフローと、それらを所有するコードサーフェスを特定する。
+- 使われていない操作要素、重複した設定、不明瞭なエラー状態、高コストなレンダリングパスを列挙する。
 - 各サーフェスの現在の検証コマンドを記録する。
-- 問題を required、recommended、optional に分類する。
-- 特に API、セキュリティ、リリース、Plugin コントラクト変更について、オーナーレビューが必要な既知のブロッカーを文書化する。
+- 問題を必須、推奨、任意に分類する。
+- 所有者レビューが必要な既知のブロッカーを文書化する。特に API、セキュリティ、リリース、plugin 契約の変更。
 
 完了の定義:
 
-- repo-root のファイル参照付きで、1 つの issue リストがあること。
-- 各 issue に重大度、オーナーサーフェス、想定されるユーザー影響、提案された検証パスがあること。
-- 必須修正の中に推測ベースの cleanup 項目が混ざっていないこと。
+- リポジトリルート基準のファイル参照付きの問題リストが 1 つある。
+- 各問題に重要度、所有サーフェス、想定されるユーザー影響、提案する検証パスがある。
+- 推測に基づくクリーンアップ項目が必須修正に混ざっていない。
 
-## フェーズ 2: プロダクトと UX の整理
+## フェーズ 2: プロダクトと UX のクリーンアップ
 
-目に見えるワークフローを優先し、混乱を取り除きます。
+見えるワークフローを優先し、混乱を取り除く。
 
-- model auth、Gateway status、Plugin セットアップ周辺のオンボーディング文言と空状態を改善する。
-- 実行可能なアクションがない場合は、使われていない affordance を削除または無効化する。
-- 重要なアクションを壊れやすいレイアウト前提の裏に隠さず、レスポンシブ幅全体で見えるように保つ。
-- 繰り返される status 文言を集約し、エラーに単一の情報源を持たせる。
-- 高度な設定には段階的開示を加えつつ、コアセットアップは高速なままに保つ。
+- モデル認証、Gateway 状態、plugin 設定まわりのオンボーディング文言と空状態を引き締める。
+- 実行できるアクションがない使われていない操作要素を削除または無効化する。
+- 重要なアクションを脆いレイアウト前提の背後に隠すのではなく、レスポンシブ幅全体で見える状態に保つ。
+- 繰り返される状態文言を統合し、エラーの信頼できる情報源を 1 つにする。
+- 中核のセットアップを高速に保ちながら、高度な設定には段階的開示を追加する。
 
 推奨される検証:
 
 - 初回セットアップと既存ユーザー起動の手動ハッピーパス。
-- ルーティング、config 永続化、status 導出ロジックに対する絞ったテスト。
-- 変更したレスポンシブサーフェスのブラウザスクリーンショット。
+- ルーティング、設定永続化、状態導出ロジックに対する集中テスト。
+- 変更されたレスポンシブサーフェスのブラウザスクリーンショット。
 
 ## フェーズ 3: フロントエンドアーキテクチャの引き締め
 
-広範な書き換えなしで保守性を改善します。
+広範な書き換えなしに保守性を改善する。
 
-- 繰り返される UI 状態変換を、狭く型付けされたヘルパーに移す。
-- データ取得、永続化、表示の責務を分離して保つ。
-- 新しい抽象化よりも、既存の hooks、stores、component パターンを優先する。
-- 巨大な component は、結合度を下げる、またはテストを明確にする場合にのみ分割する。
-- ローカルな panel の操作のために広範なグローバル state を導入しない。
+- 繰り返しの UI 状態変換を、狭く型付けされたヘルパーへ移す。
+- データ取得、永続化、表示の責務を分けて保つ。
+- 新しい抽象化よりも、既存のフック、ストア、コンポーネントパターンを優先する。
+- 過大なコンポーネントの分割は、結合度を下げるかテストを明確にする場合にのみ行う。
+- ローカルなパネル操作のために広範なグローバル状態を導入しない。
 
 必須ガードレール:
 
-- ファイル分割の副作用として公開動作を変更しない。
-- menus、dialogs、tabs、keyboard navigation のアクセシビリティ動作を維持する。
-- loading、empty、error、optimistic state が引き続き描画されることを検証する。
+- ファイル分割の副作用として公開挙動を変更しない。
+- メニュー、ダイアログ、タブ、キーボードナビゲーションのアクセシビリティ挙動を維持する。
+- 読み込み、空、エラー、楽観的状態が引き続きレンダリングされることを検証する。
 
 ## フェーズ 4: パフォーマンスと信頼性
 
-広範な理論上の最適化ではなく、測定された痛点を対象にします。
+広範で理論的な最適化ではなく、測定された痛点を対象にする。
 
-- startup、route transition、大規模リスト、chat transcript のコストを測定する。
-- プロファイリングで価値が証明された場合に限り、繰り返し発生する高コストな導出データを memoized selector または cached helper に置き換える。
-- ホットパスで避けられる network または filesystem scan を減らす。
-- model payload 構築前に、prompt、registry、file、plugin、network 入力の決定的順序を保つ。
-- ホット helper とコントラクト境界に対する軽量なリグレッションテストを追加する。
+- 起動、ルート遷移、大きなリスト、チャットトランスクリプトのコストを測定する。
+- プロファイリングで価値が証明された箇所では、繰り返し発生する高コストな派生データをメモ化セレクターまたはキャッシュ済みヘルパーに置き換える。
+- ホットパスで避けられるネットワークまたはファイルシステムスキャンを減らす。
+- モデルペイロード構築前に、プロンプト、レジストリ、ファイル、plugin、ネットワーク入力の決定的な順序を保つ。
+- ホットなヘルパーと契約境界に軽量なリグレッションテストを追加する。
 
 完了の定義:
 
-- 各性能変更に、ベースライン、期待効果、実際の効果、残る差分が記録されていること。
-- 安価な測定手段があるのに、直感だけで性能パッチを着地させないこと。
+- 各パフォーマンス変更は、ベースライン、期待される影響、実際の影響、残る差分を記録する。
+- 安価な測定が利用可能な場合、直感だけに基づくパフォーマンスパッチは着地させない。
 
-## フェーズ 5: 型、コントラクト、テストの強化
+## フェーズ 5: 型、契約、テストの強化
 
-ユーザーと Plugin 作者が依存する境界点での正しさを高めます。
+ユーザーと plugin 作者が依存する境界点の正しさを高める。
 
-- 緩いランタイム文字列を discriminated union または閉じたコード一覧に置き換える。
-- 外部入力を既存の schema helper または zod で検証する。
-- Plugin manifest、provider catalog、Gateway protocol メッセージ、config 移行動作の周辺にコントラクトテストを追加する。
-- 互換パスは、起動時の隠れた移行ではなく doctor または repair フローに置く。
-- テスト専用の Plugin 内部結合を避け、SDK facade と文書化された barrel を使う。
+- 緩いランタイム文字列を判別共用体または閉じたコードリストに置き換える。
+- 外部入力を既存のスキーマヘルパーまたは zod で検証する。
+- plugin マニフェスト、プロバイダーカタログ、Gateway プロトコルメッセージ、設定移行挙動のまわりに契約テストを追加する。
+- 互換性パスは、起動時の隠れた移行ではなく doctor または修復フローに置く。
+- plugin 内部へのテスト専用の結合を避け、SDK ファサードと文書化済みのバレルを使う。
 
 推奨される検証:
 
 - `pnpm check:changed`
-- 変更したすべての境界に対するターゲットテスト。
-- lazy 境界、パッケージング、または公開サーフェスが変わる場合は `pnpm build`。
+- 変更されたすべての境界に対する対象テスト。
+- 遅延境界、パッケージング、公開サーフェスが変更される場合は `pnpm build`。
 
 ## フェーズ 6: ドキュメントとリリース準備
 
-ユーザー向け docs を動作と一致させます。
+ユーザー向けドキュメントを挙動と揃えて保つ。
 
-- 動作、API、config、オンボーディング、または Plugin の変更に合わせて docs を更新する。
-- changelog エントリは、ユーザーに見える変更に対してのみ追加する。
-- Plugin 用語はユーザー向けに保ち、内部 package 名は contributor に必要な箇所でのみ使う。
-- リリース手順とインストール手順が現在のコマンドサーフェスと引き続き一致していることを確認する。
+- 挙動、API、設定、オンボーディング、plugin 変更に合わせてドキュメントを更新する。
+- ユーザーに見える変更にのみ changelog エントリを追加する。
+- plugin 用語はユーザー向けに保ち、内部パッケージ名はコントリビューターに必要な場合にのみ使う。
+- リリース手順とインストール手順が現在のコマンドサーフェスとまだ一致していることを確認する。
 
 完了の定義:
 
-- 関連 docs が、動作変更と同じブランチで更新されていること。
-- 該当する場合、生成 docs または API drift チェックが通ること。
-- handoff に、スキップした検証とその理由が記載されていること。
+- 関連ドキュメントが挙動変更と同じブランチで更新されている。
+- 触れた場合、生成ドキュメントまたは API ドリフトチェックが通る。
+- 引き継ぎには、スキップした検証とスキップした理由を明記する。
 
-## 推奨される最初のスライス
+## 推奨される最初の単位
 
-範囲を絞った Control UI とオンボーディングの作業から始めます。
+スコープを絞った Control UI とオンボーディングの確認から始める:
 
-- 初回セットアップ、provider auth readiness、Gateway status、Plugin セットアップサーフェスを監査する。
-- 使われていないアクションを削除し、失敗状態を明確化する。
-- status 導出と config 永続化に対する絞ったテストを追加または更新する。
+- 初回セットアップ、プロバイダー認証準備状況、Gateway 状態、plugin 設定サーフェスを監査する。
+- 使われていないアクションを削除し、失敗状態を明確にする。
+- 状態導出と設定永続化の集中テストを追加または更新する。
 - `pnpm check:changed` を実行する。
 
-これにより、アーキテクチャリスクを抑えつつ高いユーザー価値が得られます。
+これにより、アーキテクチャリスクを抑えながら高いユーザー価値を得られる。
 
-## フロントエンドスキル更新
+## フロントエンド skill 更新
 
-このセクションを使って、モダナイゼーション作業に付属するフロントエンド重視の `SKILL.md` を更新します。これを repo ローカルの OpenClaw スキルとして採用する場合は、まず `.agents/skills/openclaw-frontend/SKILL.md` を作成し、その対象スキルに属する frontmatter を維持したうえで、本文ガイダンスに以下の内容を追加または置き換えてください。
+このセクションは、モダナイゼーションタスクで提供されるフロントエンド重視の `SKILL.md` を更新するために使う。このガイダンスをリポジトリローカルの OpenClaw skill として採用する場合は、まず `.agents/skills/openclaw-frontend/SKILL.md` を作成し、そのターゲット skill に属する frontmatter を保持してから、本文ガイダンスを次の内容で追加または置き換える。
 
 ```markdown
-# フロントエンド配信標準
+# Frontend Delivery Standards
 
-このスキルは、ユーザー向けの React、Next.js、
-desktop webview、または app UI 作業を実装またはレビューするときに使います。
+Use this skill when implementing or reviewing user-facing React, Next.js,
+desktop webview, or app UI work.
 
-## 運用ルール
+## Operating rules
 
-- 既存のプロダクトワークフローとコード規約から始める。
-- 現在のユーザーパスを改善する最小の正しいパッチを優先する。
-- handoff では必須修正と任意の磨き込みを分ける。
-- リクエストがアプリケーションサーフェス向けである場合、マーケティングページを作らない。
-- サポートされる viewport サイズ全体で、アクションが見え、使える状態を保つ。
-- 実行できない control は残さず、使われていない affordance を削除する。
-- loading、empty、error、success、permission state を維持する。
-- 新しい primitive を追加する前に、既存の design-system components、hooks、stores、icons を使う。
+- Start from the existing product workflow and code conventions.
+- Prefer the smallest correct patch that improves the current user path.
+- Separate required fixes from optional polish in the handoff.
+- Do not build marketing pages when the request is for an application surface.
+- Keep actions visible and usable across supported viewport sizes.
+- Remove dead affordances instead of leaving controls that cannot act.
+- Preserve loading, empty, error, success, and permission states.
+- Use existing design-system components, hooks, stores, and icons before adding
+  new primitives.
 
-## 実装チェックリスト
+## Implementation checklist
 
-1. 主要なユーザータスクと、それを所有する component または route を特定する。
-2. 編集前にローカルの component パターンを読む。
-3. 問題を解決する最も狭いサーフェスにパッチを当てる。
-4. 固定形式の controls、toolbars、grids、counters にはレスポンシブ制約を追加し、text や hover state によってレイアウトが予期せず変わらないようにする。
-5. データ読み込み、state 導出、描画の責務を明確に保つ。
-6. ロジック、永続化、ルーティング、権限、共有 helper が変わる場合はテストを追加する。
-7. 主要なハッピーパスと、最も関連性の高い edge case を検証する。
+1. Identify the primary user task and the component or route that owns it.
+2. Read the local component patterns before editing.
+3. Patch the narrowest surface that solves the issue.
+4. Add responsive constraints for fixed-format controls, toolbars, grids, and
+   counters so text and hover states cannot resize the layout unexpectedly.
+5. Keep data loading, state derivation, and rendering responsibilities clear.
+6. Add tests when logic, persistence, routing, permissions, or shared helpers
+   change.
+7. Verify the main happy path and the most relevant edge case.
 
-## ビジュアル品質ゲート
+## Visual quality gates
 
-- text は mobile と desktop の両方でコンテナー内に収まらなければならない。
-- toolbars は折り返してもよいが、controls は到達可能なままでなければならない。
-- icons のほうが text より明確な場合、buttons は見慣れた icons を使うべきである。
-- cards は繰り返し項目、modals、枠付きツールに使い、すべてのページセクションには使わない。
-- 単調なカラーパレットや、運用コンテンツと競合する装飾的背景は避ける。
-- 密度の高いプロダクトサーフェスでは、一覧性、比較しやすさ、反復利用を最適化する。
+- Text must fit inside its container on mobile and desktop.
+- Toolbars may wrap, but controls must remain reachable.
+- Buttons should use familiar icons when the icon is clearer than text.
+- Cards should be used for repeated items, modals, and framed tools, not for
+  every page section.
+- Avoid one-note color palettes and decorative backgrounds that compete with
+  operational content.
+- Dense product surfaces should optimize for scanning, comparison, and repeated
+  use.
 
-## handoff 形式
+## Handoff format
 
-報告内容:
+Report:
 
-- 何を変更したか。
-- どのユーザー動作が変わったか。
-- 通過した必須検証。
-- スキップした検証と、その具体的な理由。
-- 任意の後続作業（必須修正と明確に分離すること）。
+- What changed.
+- What user behavior changed.
+- Required validation that passed.
+- Any validation skipped and the concrete reason.
+- Optional follow-up work, clearly separated from required fixes.
 ```

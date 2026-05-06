@@ -1,29 +1,28 @@
 ---
 read_when:
-- 音声ウェイクワードの動作やデフォルトを変更する
-- ウェイクワード同期が必要な新しいnodeプラットフォームを追加する
-summary: グローバル音声ウェイクワード（Gateway管理）と、それらがnode間でどのように同期されるか
-title: Voice wake
+    - 音声ウェイクワードの動作またはデフォルトの変更
+    - ウェイクワード同期が必要な新しいノードプラットフォームの追加
+summary: グローバル音声ウェイクワード（Gateway 所有）とノード間での同期方法
+title: 音声ウェイク
 x-i18n:
-  generated_at: '2026-04-26T11:35:02Z'
-  refreshed_at: '2026-04-28T05:23:26Z'
-  model: gpt-5.4
-  provider: openai
-  source_hash: ac638cdf89f09404cdf293b416417f6cb3e31865b09f04ef87b9604e436dcbbe
-  source_path: nodes/voicewake.md
-  workflow: 15
+    generated_at: "2026-05-06T09:06:47Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: a284cbe3e12784a8d7a3eab6ba8ae230123557bca7593c956111199b94b91b73
+    source_path: nodes/voicewake.md
+    workflow: 16
 ---
 
-OpenClawは、**ウェイクワードをGatewayが管理する単一のグローバルリスト** として扱います。
+OpenClaw は **ウェイクワードを Gateway が所有する単一のグローバルリスト**として扱います。
 
-- **nodeごとのカスタムウェイクワードはありません**。
-- **どのnode/app UIからでも** リストを編集できます。変更はGatewayに永続化され、全員にブロードキャストされます。
-- macOSとiOSは、ローカルの **音声ウェイクの有効/無効** トグルを保持します（ローカルUXと権限が異なるため）。
-- Androidは現在、音声ウェイクをオフにしており、Voiceタブで手動マイクフローを使用します。
+- **ノードごとのカスタムウェイクワードはありません**。
+- **どのノード/アプリ UI でも**リストを編集できます。変更は Gateway によって永続化され、全員にブロードキャストされます。
+- macOS と iOS はローカルの **Voice Wake の有効/無効**トグルを保持します（ローカル UX と権限が異なるため）。
+- Android は現在 Voice Wake をオフのままにしており、音声タブで手動マイクフローを使用します。
 
-## 保存場所（Gatewayホスト）
+## ストレージ（Gateway ホスト）
 
-ウェイクワードはgatewayマシン上の次の場所に保存されます。
+ウェイクワードは Gateway マシン上の次の場所に保存されます。
 
 - `~/.openclaw/settings/voicewake.json`
 
@@ -38,17 +37,17 @@ OpenClawは、**ウェイクワードをGatewayが管理する単一のグロー
 ### メソッド
 
 - `voicewake.get` → `{ triggers: string[] }`
-- パラメータ `{ triggers: string[] }` を持つ `voicewake.set` → `{ triggers: string[] }`
+- params `{ triggers: string[] }` を指定した `voicewake.set` → `{ triggers: string[] }`
 
-注意:
+注:
 
-- triggersは正規化されます（前後の空白を除去し、空要素を削除）。空リストはデフォルトにフォールバックします。
-- 安全のため制限が適用されます（件数/長さの上限）。
+- トリガーは正規化されます（トリムされ、空は削除されます）。空のリストはデフォルトにフォールバックします。
+- 安全のため制限が適用されます（数/長さの上限）。
 
-### ルーティングメソッド（trigger → target）
+### ルーティングメソッド（トリガー → ターゲット）
 
 - `voicewake.routing.get` → `{ config: VoiceWakeRoutingConfig }`
-- パラメータ `{ config: VoiceWakeRoutingConfig }` を持つ `voicewake.routing.set` → `{ config: VoiceWakeRoutingConfig }`
+- params `{ config: VoiceWakeRoutingConfig }` を指定した `voicewake.routing.set` → `{ config: VoiceWakeRoutingConfig }`
 
 `VoiceWakeRoutingConfig` の形式:
 
@@ -61,7 +60,7 @@ OpenClawは、**ウェイクワードをGatewayが管理する単一のグロー
 }
 ```
 
-route targetは、次のいずれか1つだけをサポートします。
+ルートターゲットは、次のいずれか 1 つだけをサポートします。
 
 - `{ "mode": "current" }`
 - `{ "agentId": "main" }`
@@ -72,30 +71,30 @@ route targetは、次のいずれか1つだけをサポートします。
 - `voicewake.changed` ペイロード `{ triggers: string[] }`
 - `voicewake.routing.changed` ペイロード `{ config: VoiceWakeRoutingConfig }`
 
-受信対象:
+受信者:
 
-- すべてのWebSocketクライアント（macOSアプリ、WebChatなど）
-- すべての接続済みnode（iOS/Android）、さらにnode接続時の初期「現在状態」プッシュでも送信されます。
+- すべての WebSocket クライアント（macOS アプリ、WebChat など）
+- 接続中のすべてのノード（iOS/Android）。また、ノード接続時にも初期の「現在の状態」プッシュとして送信されます。
 
 ## クライアントの動作
 
-### macOSアプリ
+### macOS アプリ
 
 - グローバルリストを使用して `VoiceWakeRuntime` トリガーを制御します。
-- Voice Wake設定の「Trigger words」を編集すると `voicewake.set` を呼び出し、その後はブロードキャストに依存して他のクライアントとの同期を保ちます。
+- Voice Wake 設定で「トリガーワード」を編集すると `voicewake.set` が呼び出され、その後ブロードキャストによって他のクライアントとの同期が保たれます。
 
-### iOS node
+### iOS ノード
 
-- `VoiceWakeManager` のトリガー検出にグローバルリストを使用します。
-- SettingsでWake Wordsを編集すると `voicewake.set`（Gateway WS経由）を呼び出し、同時にローカルのウェイクワード検出の応答性も維持します。
+- グローバルリストを `VoiceWakeManager` のトリガー検出に使用します。
+- 設定でウェイクワードを編集すると（Gateway WS 経由で）`voicewake.set` が呼び出され、ローカルのウェイクワード検出も応答性を保ちます。
 
-### Android node
+### Android ノード
 
-- 音声ウェイクは現在、Androidランタイム/Settingsでは無効です。
-- Android音声は、ウェイクワードトリガーの代わりにVoiceタブで手動マイクキャプチャを使用します。
+- Voice Wake は現在 Android ランタイム/設定で無効です。
+- Android の音声機能は、ウェイクワードトリガーの代わりに音声タブの手動マイクキャプチャを使用します。
 
 ## 関連
 
-- [Talk mode](/ja-JP/nodes/talk)
-- [Audio and voice notes](/ja-JP/nodes/audio)
-- [Media understanding](/ja-JP/nodes/media-understanding)
+- [トークモード](/ja-JP/nodes/talk)
+- [音声とボイスメモ](/ja-JP/nodes/audio)
+- [メディア理解](/ja-JP/nodes/media-understanding)
