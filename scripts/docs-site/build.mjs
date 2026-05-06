@@ -340,7 +340,7 @@ function chatWidget() {
   return `<section class="docs-chat" data-docs-chat aria-label="OpenClaw docs assistant">
 <button class="docs-chat-launcher" type="button" data-chat-toggle aria-expanded="false" aria-controls="docs-chat-panel"><span aria-hidden="true">*</span><span>Ask Molty</span></button>
 <div class="docs-chat-panel" id="docs-chat-panel" role="dialog" aria-modal="false" aria-labelledby="docs-chat-title">
-<header class="docs-chat-head"><div><p>Docs agent</p><h2 id="docs-chat-title">Ask OpenClaw</h2></div><button type="button" data-chat-close aria-label="Close docs assistant">x</button></header>
+<header class="docs-chat-head"><div><p>Docs agent</p><h2 id="docs-chat-title">Ask OpenClaw</h2></div><div class="docs-chat-actions"><button class="docs-chat-clear" type="button" data-chat-clear aria-label="Clear conversation" hidden>Clear</button><button type="button" data-chat-close aria-label="Close docs assistant">x</button></div></header>
 <div class="docs-chat-log" data-chat-log aria-live="polite">
 <div class="docs-chat-message assistant"><p>Ask about install, channels, gateway config, or plugin APIs.</p></div>
 </div>
