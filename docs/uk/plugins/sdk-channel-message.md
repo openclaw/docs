@@ -1,24 +1,22 @@
 ---
 read_when:
-    - Ви створюєте або виконуєте рефакторинг Plugin каналу обміну повідомленнями
-    - Вам потрібні надійна доставка фінальної відповіді, підтвердження отримання, фіналізація попереднього перегляду наживо або політика підтвердження отримання
-    - Ви мігруєте зі застарілого конвеєра відповідей або допоміжних функцій диспетчеризації вхідних відповідей
-summary: API життєвого циклу повідомлень для Plugin каналів, зокрема надійні надсилання, квитанції, живий попередній перегляд, політику підтвердження отримання та міграцію зі спадщини
+    - Ви створюєте або виконуєте рефакторинг Plugin для каналу обміну повідомленнями
+    - Вам потрібні надійна доставка остаточних відповідей, підтвердження, фіналізація попереднього перегляду в реальному часі або політика підтвердження отримання
+    - Ви мігруєте із застарілого конвеєра відповідей або допоміжних засобів диспетчеризації вхідних відповідей
+summary: API життєвого циклу повідомлень для плагінів каналів, зокрема надійні надсилання, квитанції, попередній перегляд наживо, політика підтвердження отримання та міграція зі застарілої версії
 title: API повідомлень каналу
 x-i18n:
-    generated_at: "2026-05-06T01:10:27Z"
+    generated_at: "2026-05-06T04:53:03Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 14eb3105ef63a0c770173f83ed2de442a9651acdb5c81337c2751c1775d4e1e8
+    source_hash: b4c96cdc6fe13f4063958d4b999fae97329f5906638caad52e61cabae40985dc
     source_path: plugins/sdk-channel-message.md
     workflow: 16
 ---
 
-# API повідомлень каналів
-
-Plugin-и каналів мають експортувати один адаптер `message` з
-`openclaw/plugin-sdk/channel-message`. Адаптер описує нативний життєвий цикл повідомлення,
-який підтримує платформа:
+Channel plugins мають надавати один адаптер `message` з
+`openclaw/plugin-sdk/channel-message`. Адаптер описує нативний життєвий цикл
+повідомлення, який підтримує платформа:
 
 ```text
 receive -> route and record -> agent turn -> durable final send
@@ -26,18 +24,19 @@ send -> render batch -> platform I/O -> receipt -> lifecycle side effects
 live preview -> final edit or fallback -> receipt
 ```
 
-Ядро відповідає за черги, стійкість, загальну політику повторів, hooks, receipts і
-спільний інструмент `message`. Plugin відповідає за нативні виклики send/edit/delete, нормалізацію цілей, потоки платформи, вибрані цитати, прапорці сповіщень, стан облікового запису та специфічні для платформи побічні ефекти.
+Core відповідає за черги, довговічність, загальну політику повторних спроб, hooks, receipts і
+спільний інструмент `message`. Plugin відповідає за нативні виклики send/edit/delete, нормалізацію цілі, потоки платформи, вибрані цитати, прапорці сповіщень, стан акаунта та специфічні для платформи побічні ефекти.
 
-Використовуйте цю сторінку разом із [Створенням Plugin-ів каналів](/uk/plugins/sdk-channel-plugins).
+Використовуйте цю сторінку разом із [Створенням channel plugins](/uk/plugins/sdk-channel-plugins).
 
-Підшлях `channel-message` навмисно достатньо легкий для гарячих файлів ініціалізації Plugin-ів, таких як `channel.ts`: він надає контракти адаптерів, підтвердження можливостей, receipts і фасади сумісності без завантаження вихідної доставки.
+Підшлях `channel-message` навмисно достатньо легкий для гарячих файлів початкового завантаження plugin, таких як `channel.ts`: він надає контракти адаптера, докази можливостей, receipts і фасади сумісності без завантаження вихідної доставки.
 Runtime-помічники доставки доступні з
-`openclaw/plugin-sdk/channel-message-runtime` для шляхів monitor/send, які вже виконують асинхронний ввід-вивід повідомлень.
+`openclaw/plugin-sdk/channel-message-runtime` для шляхів monitor/send, які
+вже виконують асинхронний message I/O.
 
 ## Мінімальний адаптер
 
-Більшість нових Plugin-ів каналів можуть почати з невеликого адаптера:
+Більшість нових channel plugins можуть почати з малого адаптера:
 
 ```typescript
 import {
@@ -80,7 +79,7 @@ export const demoMessageAdapter = defineChannelMessageAdapter({
 });
 ```
 
-Потім приєднайте його до Plugin-а каналу:
+Потім приєднайте його до channel plugin:
 
 ```typescript
 export const demoPlugin = createChatChannelPlugin({
@@ -93,12 +92,11 @@ export const demoPlugin = createChatChannelPlugin({
 ```
 
 Оголошуйте лише ті можливості, які адаптер справді зберігає. Кожна оголошена
-можливість має мати контрактний тест.
+можливість повинна мати контрактний тест.
 
-## Вихідний міст
+## Outbound-міст
 
-Якщо канал уже має сумісний адаптер `outbound`, краще виведіть адаптер
-повідомлень із нього, а не дублюйте код надсилання:
+Якщо канал уже має сумісний адаптер `outbound`, краще вивести message-адаптер із нього, а не дублювати код надсилання:
 
 ```typescript
 import { createChannelMessageAdapterFromOutbound } from "openclaw/plugin-sdk/channel-message";
@@ -109,25 +107,27 @@ const demoMessageAdapter = createChannelMessageAdapterFromOutbound({
 });
 ```
 
-Міст перетворює старі результати вихідного надсилання на значення `MessageReceipt`. Новий
-код має передавати receipts наскрізно й виводити застарілі ідентифікатори лише на межах сумісності за допомогою `listMessageReceiptPlatformIds(...)` або
+Міст перетворює старі результати outbound-надсилання на значення `MessageReceipt`. Новий
+код має передавати receipts наскрізно й виводити legacy ids лише на межах сумісності за допомогою `listMessageReceiptPlatformIds(...)` або
 `resolveMessageReceiptPrimaryId(...)`.
-Якщо політику отримання не надано, `createChannelMessageAdapterFromOutbound(...)`
-використовує політику підтвердження отримання `manual`. Це робить підтвердження платформи, яким володіє Plugin, явним без зміни каналів, які підтверджують webhooks,
-sockets або polling offsets поза загальним контекстом отримання.
+Якщо receive policy не надано, `createChannelMessageAdapterFromOutbound(...)`
+використовує політику receive acknowledgement `manual`. Це робить plugin-owned platform
+acknowledgement явним, не змінюючи канали, які підтверджують webhooks,
+sockets або polling offsets поза загальним receive context.
 
 ## Надсилання інструментом Message
 
-Спільний шлях `message(action="send")` має використовувати той самий життєвий цикл доставки ядра, що й фінальні відповіді. Якщо каналу потрібне специфічне для провайдера формування для надсилання інструментом, реалізуйте `actions.prepareSendPayload(...)` замість надсилання з
+Спільний шлях `message(action="send")` має використовувати той самий core delivery
+lifecycle, що й фінальні відповіді. Якщо каналу потрібне специфічне для провайдера формування для
+tool send, реалізуйте `actions.prepareSendPayload(...)` замість надсилання з
 `actions.handleAction(...)`.
 
-`prepareSendPayload(...)` отримує нормалізований ядром `ReplyPayload` плюс повний
-контекст дії. Поверніть payload зі специфічними для каналу даними в
-`payload.channelData.<channel>` і дозвольте ядру викликати `sendMessage(...)`,
-`deliverOutboundPayloads(...)`, випереджальну чергу запису, hooks надсилання повідомлень,
-повтор, відновлення та очищення ack.
+`prepareSendPayload(...)` отримує нормалізований core `ReplyPayload` плюс повний action context. Поверніть payload зі специфічними для каналу даними в
+`payload.channelData.<channel>` і дозвольте core викликати `sendMessage(...)`,
+`deliverOutboundPayloads(...)`, write-ahead queue, message-sending hooks,
+retry, recovery і ack cleanup.
 
-Поверніть `null` лише тоді, коли надсилання неможливо представити як стійкий payload, наприклад, тому що він містить несеріалізовну фабрику компонентів. Ядро збереже fallback застарілої дії Plugin-а для сумісності, але нові можливості надсилання каналом мають виражатися як стійкі дані payload.
+Повертайте `null` лише тоді, коли надсилання неможливо представити як durable payload, наприклад тому, що воно містить несеріалізовану component factory. Core збереже legacy plugin action fallback для сумісності, але нові функції channel send мають виражатися як durable payload data.
 
 ```typescript
 export const demoActions: ChannelMessageActionAdapter = {
@@ -150,45 +150,49 @@ export const demoActions: ChannelMessageActionAdapter = {
 };
 ```
 
-Потім вихідний адаптер читає `payload.channelData.demo` всередині `sendPayload`.
-Це залишає специфічний для платформи рендеринг у Plugin-і, тоді як ядро й далі відповідає за
-збереження, повтор, відновлення, hooks і ack.
+Outbound-адаптер потім читає `payload.channelData.demo` всередині `sendPayload`.
+Це зберігає специфічний для платформи rendering у plugin, тоді як core і далі відповідає за
+persist, retry, recover, hooks і ack.
 
-Підготовлені payload-и `message(action="send")` і загальна доставка фінальної відповіді за замовчуванням використовують доставку ядра з best-effort queueing. Обов’язкова стійка черга допустима лише після того, як ядро перевірить, що канал може узгодити надсилання, результат якого після збою невідомий. Якщо адаптер не може реалізувати `reconcileUnknownSend`,
-залишайте підготовлений шлях надсилання best-effort; ядро все одно спробує випереджальну чергу запису, але сталість черги або невизначене відновлення після збою не є частиною
-обов’язкового контракту доставки.
+Підготовлені payloads `message(action="send")` і загальна доставка final-reply використовують
+core delivery із best-effort queueing за замовчуванням. Обов’язкова durable queueing
+дійсна лише після того, як core перевірить, що канал може узгодити надсилання, результат якого
+невідомий після збою. Якщо адаптер не може реалізувати `reconcileUnknownSend`,
+залиште підготовлений send path best-effort; core все одно спробує write-ahead
+queue, але збереження черги або невизначене відновлення після збою не є частиною
+обов’язкового delivery contract.
 
-## Можливості стійкого фінального надсилання
+## Можливості durable final
 
-Стійка фінальна доставка вмикається окремо для кожного побічного ефекту. Ядро використовуватиме загальну
-стійку доставку лише тоді, коли адаптер оголошує кожну можливість, потрібну
-payload-у та параметрам доставки.
+Durable final delivery вмикається окремо для кожного побічного ефекту. Core використовуватиме загальну
+durable delivery лише тоді, коли адаптер оголошує всі можливості, потрібні для
+payload і параметрів доставки.
 
-| Можливість             | Оголошуйте, коли                                                                         |
+| Можливість             | Оголошуйте, коли                                                                      |
 | ---------------------- | ------------------------------------------------------------------------------------ |
-| `text`                 | Адаптер може надіслати текст і повернути receipt.                                      |
-| `media`                | Надсилання медіа повертають receipts для кожного видимого повідомлення платформи.                      |
-| `payload`              | Адаптер зберігає семантику розширеного payload відповіді, а не лише текст і один URL медіа. |
-| `replyTo`              | Нативні цілі відповіді доходять до платформи.                                             |
-| `thread`               | Нативні цілі thread, topic або channel thread доходять до платформи.                  |
-| `silent`               | Приглушення сповіщень доходить до платформи.                                       |
-| `nativeQuote`          | Метадані вибраної цитати доходять до платформи.                                        |
-| `messageSendingHooks`  | Hooks надсилання повідомлень ядра можуть скасувати або переписати вміст перед I/O платформи.        |
-| `batch`                | Багаточастинні відрендерені batch-и можна відтворити як один стійкий план.                      |
-| `reconcileUnknownSend` | Адаптер може розв’язати відновлення `unknown_after_send` без сліпого повторного відтворення.          |
-| `afterSendSuccess`     | Локальні для каналу побічні ефекти після надсилання виконуються один раз.                                      |
-| `afterCommit`          | Локальні для каналу побічні ефекти після commit виконуються один раз.                                    |
+| `text`                 | Адаптер може надсилати текст і повертати receipt.                                    |
+| `media`                | Media sends повертають receipts для кожного видимого повідомлення платформи.          |
+| `payload`              | Адаптер зберігає семантику rich reply payload, а не лише текст і один media URL.      |
+| `replyTo`              | Нативні reply targets доходять до платформи.                                         |
+| `thread`               | Нативні thread, topic або channel thread targets доходять до платформи.              |
+| `silent`               | Приглушення сповіщень доходить до платформи.                                         |
+| `nativeQuote`          | Метадані вибраної цитати доходять до платформи.                                      |
+| `messageSendingHooks`  | Core message-sending hooks можуть скасувати або переписати вміст до platform I/O.    |
+| `batch`                | Багаточастинні rendered batches можна відтворити як один durable plan.               |
+| `reconcileUnknownSend` | Адаптер може вирішити recovery `unknown_after_send` без сліпого replay.              |
+| `afterSendSuccess`     | Channel-local after-send side effects виконуються один раз.                          |
+| `afterCommit`          | Channel-local after-commit side effects виконуються один раз.                        |
 
-Фінальна доставка best-effort не потребує `reconcileUnknownSend`; вона використовує
-спільний життєвий цикл, коли адаптер зберігає видиму семантику payload-а, і
-повертається до прямого I/O платформи, якщо сталість черги недоступна. Обов’язкова
-стійка фінальна доставка має явно вимагати `reconcileUnknownSend`. Якщо
-адаптер не може визначити, чи розпочате/невідоме надсилання дійшло до платформи,
-не оголошуйте цю можливість; ядро відхилить обов’язкову стійку доставку
+Best-effort final delivery не потребує `reconcileUnknownSend`; вона використовує
+спільний lifecycle, коли адаптер зберігає видиму семантику payload, і
+повертається до прямого platform I/O, якщо queue persistence недоступна. Required
+durable final delivery має явно вимагати `reconcileUnknownSend`. Якщо
+адаптер не може визначити, чи started/unknown send дійшов до платформи,
+не оголошуйте цю можливість; core відхилить required durable delivery
 перед постановкою в чергу.
 
-Коли виклику потрібна стійка доставка, виводьте вимоги замість ручного
-створення мап:
+Коли caller потребує durable delivery, виводьте requirements замість ручного створення
+maps:
 
 ```typescript
 import { deriveDurableFinalDeliveryRequirements } from "openclaw/plugin-sdk/channel-message";
@@ -205,37 +209,37 @@ const requiredCapabilities = deriveDurableFinalDeliveryRequirements({
 });
 ```
 
-`messageSendingHooks` потрібен за замовчуванням. Встановлюйте `messageSendingHooks: false`
-лише для шляху, який навмисно не може запускати глобальні hooks надсилання повідомлень.
+`messageSendingHooks` є обов’язковим за замовчуванням. Установлюйте `messageSendingHooks: false`
+лише для шляху, який навмисно не може запускати global message-sending hooks.
 
-## Контракт стійкого надсилання
+## Контракт durable send
 
-Стійке фінальне надсилання має суворішу семантику, ніж застаріла доставка, якою володіє канал:
+Durable final send має суворішу семантику, ніж legacy channel-owned delivery:
 
-- Створюйте стійкий намір перед I/O платформи.
-- Якщо стійка доставка повертає оброблений результат, не переходьте до застарілого надсилання.
-- Вважайте скасування hook-ом і результати без надсилання термінальними.
-- Вважайте `unsupported` лише результатом до створення наміру.
-- Для обов’язкової стійкості завершуйтеся помилкою перед I/O платформи, якщо черга не може записати,
-  що надсилання на платформу розпочалося.
-- Для обов’язкової фінальної доставки й обов’язкових підготовлених надсилань інструментом повідомлень
-  виконуйте preflight `reconcileUnknownSend`; відновлення має бути здатне ack-нути
-  вже надіслане повідомлення або повторити лише після того, як адаптер доведе, що початкове надсилання
-  не відбулося.
-- Для `best_effort` помилки запису в чергу можуть переходити до прямого I/O платформи.
-- Передавайте abort signals до завантаження медіа та надсилань платформи.
-- Запускайте after-commit hooks після ack черги; прямий fallback best-effort запускає їх
-  після успішного I/O платформи, бо немає стійкого commit черги.
-- Повертайте receipts для кожного видимого ідентифікатора повідомлення платформи.
-- Використовуйте `reconcileUnknownSend`, коли платформа може перевірити, чи невизначене надсилання
-  вже дійшло до користувача.
+- Створіть durable intent перед platform I/O.
+- Якщо durable delivery повертає handled result, не повертайтеся до legacy send.
+- Вважайте hook cancellation і no-send results кінцевими.
+- Вважайте `unsupported` лише pre-intent result.
+- Для required durability завершуйтеся помилкою перед platform I/O, якщо черга не може записати,
+  що platform send розпочато.
+- Для required final delivery і required prepared message-tool sends
+  виконуйте preflight `reconcileUnknownSend`; recovery має бути здатне ack an
+  already-sent message або replay лише після того, як адаптер доведе, що початкового send
+  не було.
+- Для `best_effort` помилки queue write можуть повертатися до прямого platform I/O.
+- Передавайте abort signals до media loading і platform sends.
+- Запускайте after-commit hooks після queue ack; direct best-effort fallback запускає їх
+  після успішного platform I/O, бо durable queue commit немає.
+- Повертайте receipts для кожного видимого platform message id.
+- Використовуйте `reconcileUnknownSend`, коли платформа може перевірити, чи uncertain send
+  уже дійшов до користувача.
 
-Цей контракт запобігає дублюванню надсилань після збоїв і запобігає обходу
-hooks скасування надсилання повідомлень.
+Цей контракт уникає дубльованих sends після збоїв і не допускає обходу
+message-sending cancellation hooks.
 
 ## Receipts
 
-`MessageReceipt` — це новий внутрішній запис про те, що прийняла платформа:
+`MessageReceipt` є новим внутрішнім записом того, що прийняла платформа:
 
 ```typescript
 type MessageReceipt = {
@@ -252,14 +256,14 @@ type MessageReceipt = {
 ```
 
 Використовуйте `createMessageReceiptFromOutboundResults(...)` під час адаптації наявного
-результату надсилання. Використовуйте `createPreviewMessageReceipt(...)`, коли live preview повідомлення
-стає фінальним receipt. Уникайте додавання нових локальних для власника полів `messageIds`.
-Застарілий `ChannelDeliveryResult.messageIds` усе ще створюється на межах сумісності.
+send result. Використовуйте `createPreviewMessageReceipt(...)`, коли live preview message
+стає final receipt. Уникайте додавання нових owner-local полів `messageIds`.
+Legacy `ChannelDeliveryResult.messageIds` і далі створюється на межах сумісності.
 
-## Live Preview
+## Live preview
 
 Канали, які транслюють draft previews або progress updates, мають оголошувати live
-можливості:
+capabilities:
 
 ```typescript
 const demoMessageAdapter = defineChannelMessageAdapter({
@@ -285,15 +289,15 @@ const demoMessageAdapter = defineChannelMessageAdapter({
 ```
 
 Використовуйте `defineFinalizableLivePreviewAdapter(...)` і
-`deliverWithFinalizableLivePreviewAdapter(...)` для runtime-фіналізації. Фіналізатор
+`deliverWithFinalizableLivePreviewAdapter(...)` для runtime finalization. Finalizer
 вирішує, чи фінальна відповідь редагує preview на місці, надсилає
-звичайний fallback, відкидає очікуваний стан preview, зберігає неоднозначну невдалу правку
-без дублювання повідомлення та повертає фінальний receipt.
+normal fallback, відкидає pending preview state, зберігає ambiguous failed edit
+без дублювання повідомлення та повертає final receipt.
 
-## Політика Ack для отримання
+## Політика receive ack
 
-Вхідні receivers, які керують таймінгом підтвердження платформи, мають оголошувати
-політику отримання:
+Inbound receivers, які керують timing platform acknowledgement, мають оголошувати
+receive policy:
 
 ```typescript
 const demoMessageAdapter = defineChannelMessageAdapter({
@@ -305,7 +309,7 @@ const demoMessageAdapter = defineChannelMessageAdapter({
 });
 ```
 
-Адаптери, які не оголошують політику отримання, за замовчуванням мають:
+Адаптери, які не оголошують receive policy, за замовчуванням мають:
 
 ```typescript
 {
@@ -316,27 +320,22 @@ const demoMessageAdapter = defineChannelMessageAdapter({
 }
 ```
 
-Використовуйте типове значення, коли платформа не має підтвердження, яке можна відкласти, вже
-підтверджує до асинхронної обробки або потребує специфічної для протоколу
-семантики відповіді. Оголошуйте одну з поетапних політик лише тоді, коли отримувач справді
-використовує контекст отримання, щоб перенести підтвердження платформи на пізніший етап.
+Використовуйте типове значення, коли платформа не має підтвердження, яке можна відкласти, уже підтверджує перед асинхронною обробкою або потребує специфічної для протоколу семантики відповіді. Оголошуйте одну з поетапних політик лише тоді, коли приймач справді використовує контекст отримання, щоб перенести підтвердження платформи на пізніший момент.
 
 Політики:
 
-| Політика               | Коли використовувати                                                                 |
-| ---------------------- | ------------------------------------------------------------------------------------ |
-| `after_receive_record` | Платформу можна підтвердити після розбору й запису вхідної події.                    |
-| `after_agent_dispatch` | Платформа має чекати, доки диспетчеризацію агента буде прийнято.                     |
-| `after_durable_send`   | Платформа має чекати, доки фінальна доставка матиме довговічне рішення.              |
-| `manual`               | Plugin керує підтвердженням, бо семантика платформи не відповідає загальному етапу. |
+| Політика               | Використовуйте, коли                                                                     |
+| ---------------------- | ---------------------------------------------------------------------------------------- |
+| `after_receive_record` | Платформу можна підтвердити після розбору й запису вхідної події.                       |
+| `after_agent_dispatch` | Платформа має чекати, доки dispatch агента буде прийнято.                               |
+| `after_durable_send`   | Платформа має чекати, доки остаточна доставка матиме стійке рішення.                    |
+| `manual`               | Plugin відповідає за підтвердження, бо семантика платформи не відповідає generic-етапу. |
 
-Використовуйте `createMessageReceiveContext(...)` в отримувачах, які відкладають стан ack, і
-`shouldAckMessageAfterStage(...)`, коли отримувачу потрібно перевірити, чи
-етап задовольнив налаштовану політику.
+Використовуйте `createMessageReceiveContext(...)` у приймачах, які відкладають стан підтвердження, і `shouldAckMessageAfterStage(...)`, коли приймачу потрібно перевірити, чи етап задовольнив налаштовану політику.
 
 ## Контрактні тести
 
-Оголошення можливостей є частиною контракту plugin. Підтверджуйте їх тестами:
+Оголошення можливостей є частиною контракту Plugin. Підкріплюйте їх тестами:
 
 ```typescript
 import {
@@ -373,42 +372,32 @@ it("backs declared message capabilities", async () => {
 });
 ```
 
-Додайте набори доказових тестів для live і receive, коли адаптер оголошує ці функції.
-Відсутній доказ має провалювати тест, а не непомітно розширювати довговічну
-поверхню.
+Додавайте набори live- і receive-доказів, коли адаптер оголошує ці функції. Відсутній доказ має спричиняти збій тесту, а не непомітно розширювати стійку поверхню.
 
 ## Застарілі API сумісності
 
-Ці API залишаються доступними для імпорту задля сумісності зі сторонніми розробниками.
-Не використовуйте їх для нового коду каналів.
+Ці API залишаються доступними для імпорту заради сумісності зі сторонніми інтеграціями. Не використовуйте їх для нового коду каналів.
 
 | Застарілий API                              | Заміна                                                                                                              |
-| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
 | `openclaw/plugin-sdk/channel-reply-pipeline` | `openclaw/plugin-sdk/channel-message`                                                                               |
-| `createChannelTurnReplyPipeline(...)`        | `createChannelMessageReplyPipeline(...)` для диспетчерів сумісності або адаптер `message` для нового коду каналів |
-| `deliverDurableInboundReplyPayload(...)`     | `deliverInboundReplyWithMessageSendContext(...)` з `openclaw/plugin-sdk/channel-message-runtime`                   |
-| `dispatchInboundReplyWithBase(...)`          | `dispatchChannelMessageReplyWithBase(...)` лише для диспетчерів сумісності                                         |
-| `recordInboundSessionAndDispatchReply(...)`  | `recordChannelMessageReplyDispatch(...)` лише для диспетчерів сумісності                                           |
+| `createChannelTurnReplyPipeline(...)`        | `createChannelMessageReplyPipeline(...)` для dispatcher-ів сумісності або адаптер `message` для нового коду каналів |
+| `deliverDurableInboundReplyPayload(...)`     | `deliverInboundReplyWithMessageSendContext(...)` з `openclaw/plugin-sdk/channel-message-runtime`                    |
+| `dispatchInboundReplyWithBase(...)`          | `dispatchChannelMessageReplyWithBase(...)` лише для dispatcher-ів сумісності                                       |
+| `recordInboundSessionAndDispatchReply(...)`  | `recordChannelMessageReplyDispatch(...)` лише для dispatcher-ів сумісності                                         |
 | `resolveChannelSourceReplyDeliveryMode(...)` | `resolveChannelMessageSourceReplyDeliveryMode(...)`                                                                 |
-| `deliverFinalizableDraftPreview(...)`        | `defineFinalizableLivePreviewAdapter(...)` плюс `deliverWithFinalizableLivePreviewAdapter(...)`                    |
+| `deliverFinalizableDraftPreview(...)`        | `defineFinalizableLivePreviewAdapter(...)` плюс `deliverWithFinalizableLivePreviewAdapter(...)`                     |
 | `DraftPreviewFinalizerDraft`                 | `LivePreviewFinalizerDraft`                                                                                         |
 | `DraftPreviewFinalizerResult`                | `LivePreviewFinalizerResult`                                                                                        |
 
-Диспетчери сумісності все ще можуть використовувати `createReplyPrefixContext(...)`,
-`createReplyPrefixOptions(...)` і `createTypingCallbacks(...)` через
-фасад повідомлень. Новий код життєвого циклу має уникати старого
-підшляху `channel-reply-pipeline`.
+Dispatcher-и сумісності й надалі можуть використовувати `createReplyPrefixContext(...)`, `createReplyPrefixOptions(...)` і `createTypingCallbacks(...)` через фасад повідомлень. Новий код життєвого циклу має уникати старого підшляху `channel-reply-pipeline`.
 
 ## Контрольний список міграції
 
-1. Додайте `message: defineChannelMessageAdapter(...)` або
-   `message: createChannelMessageAdapterFromOutbound(...)` до plugin каналу.
+1. Додайте `message: defineChannelMessageAdapter(...)` або `message: createChannelMessageAdapterFromOutbound(...)` до Plugin каналу.
 2. Повертайте `MessageReceipt` з надсилань тексту, медіа й payload.
-3. Оголошуйте лише можливості, підкріплені нативною поведінкою та тестами.
-4. Замініть рукописні мапи довговічних вимог на
-   `deriveDurableFinalDeliveryRequirements(...)`.
-5. Перенесіть фіналізацію попереднього перегляду через допоміжні засоби live preview, коли канал
-   редагує чернетки повідомлень на місці.
-6. Оголошуйте політику receive ack лише тоді, коли отримувач справді може відкласти
-   підтвердження платформи.
-7. Залишайте застарілі допоміжні засоби диспетчеризації відповідей лише на межах сумісності.
+3. Оголошуйте лише можливості, підкріплені нативною поведінкою й тестами.
+4. Замініть власноруч написані мапи вимог до стійкості на `deriveDurableFinalDeliveryRequirements(...)`.
+5. Перенесіть фіналізацію попереднього перегляду через helpers live-перегляду, коли канал редагує draft-повідомлення на місці.
+6. Оголошуйте політику receive ack лише тоді, коли приймач справді може відкласти підтвердження платформи.
+7. Залишайте legacy helpers для dispatch відповідей лише на межах сумісності.
