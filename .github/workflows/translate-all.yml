@@ -101,6 +101,8 @@ jobs:
           AFTER_SHA: ${{ github.sha }}
           REQUESTED_MODE: ${{ inputs.mode || github.event.client_payload.mode || '' }}
           REQUESTED_COOLDOWN_SECONDS: ${{ inputs.cooldown_seconds || github.event.client_payload.cooldown_seconds || '' }}
+          DEFAULT_COOLDOWN_SECONDS: ${{ vars.OPENCLAW_DOCS_TRANSLATION_COOLDOWN_SECONDS || '3600' }}
+          DEFAULT_MAX_WAIT_SECONDS: ${{ vars.OPENCLAW_DOCS_TRANSLATION_MAX_WAIT_SECONDS || vars.OPENCLAW_DOCS_TRANSLATION_COOLDOWN_SECONDS || '3600' }}
         run: |
           set -euo pipefail
 
@@ -129,7 +131,7 @@ jobs:
           cooldown="${REQUESTED_COOLDOWN_SECONDS}"
           if [ -z "${cooldown}" ]; then
             case "${EVENT_NAME}" in
-              push|repository_dispatch) cooldown="300" ;;
+              push|repository_dispatch) cooldown="${DEFAULT_COOLDOWN_SECONDS}" ;;
               *) cooldown="0" ;;
             esac
           fi
@@ -139,6 +141,16 @@ jobs:
               exit 1
               ;;
           esac
+          max_wait="${DEFAULT_MAX_WAIT_SECONDS}"
+          case "${max_wait}" in
+            ''|*[!0-9]*)
+              echo "Invalid OPENCLAW_DOCS_TRANSLATION_MAX_WAIT_SECONDS: ${max_wait}" >&2
+              exit 1
+              ;;
+          esac
+          if [ "${max_wait}" -lt "${cooldown}" ]; then
+            max_wait="${cooldown}"
+          fi
 
           read_main_state() {
             git fetch --quiet origin main:refs/remotes/origin/main
@@ -152,7 +164,6 @@ jobs:
             fi
           }
 
-          max_wait=1200
           elapsed=0
           while :; do
             read_main_state
