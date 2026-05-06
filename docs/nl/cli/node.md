@@ -2,13 +2,13 @@
 read_when:
     - De headless Node-host uitvoeren
     - Een niet-macOS-Node koppelen voor system.run
-summary: CLI-referentie voor `openclaw node` (Node-host zonder grafische interface)
+summary: CLI-referentie voor `openclaw node` (nodehost zonder grafische interface)
 title: Node
 x-i18n:
-    generated_at: "2026-04-29T22:33:44Z"
+    generated_at: "2026-05-06T17:53:45Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 40f623b163a3c3bcd2d3ff218c5e62a4acba45f7e3f16694d8da62a004b77706
+    source_hash: af4735ac4961dc36fd3f11299eb3ec4e156835e7257b21a79bb1d4b467445faa
     source_path: cli/node.md
     workflow: 16
 ---
@@ -20,8 +20,8 @@ Voer een **headless Node-host** uit die verbinding maakt met de Gateway WebSocke
 
 ## Waarom een Node-host gebruiken?
 
-Gebruik een Node-host wanneer je agents **opdrachten op andere machines** in je
-netwerk wilt laten uitvoeren zonder daar een volledige macOS-companion-app te installeren.
+Gebruik een Node-host wanneer je wilt dat agents **opdrachten uitvoeren op andere machines** in je
+netwerk zonder daar een volledige macOS-begeleidende app te installeren.
 
 Veelvoorkomende gebruikssituaties:
 
@@ -29,10 +29,10 @@ Veelvoorkomende gebruikssituaties:
 - Houd exec **gesandboxt** op de Gateway, maar delegeer goedgekeurde uitvoeringen naar andere hosts.
 - Bied een lichtgewicht, headless uitvoeringsdoel voor automatisering of CI-nodes.
 
-Uitvoering wordt nog steeds bewaakt door **exec-goedkeuringen** en allowlists per agent op de
+Uitvoering blijft bewaakt door **exec-goedkeuringen** en toelatingslijsten per agent op de
 Node-host, zodat je opdrachttoegang afgebakend en expliciet kunt houden.
 
-## Browserproxy (zero-config)
+## Browserproxy (zonder configuratie)
 
 Node-hosts adverteren automatisch een browserproxy als `browser.enabled` niet is
 uitgeschakeld op de Node. Hierdoor kan de agent browserautomatisering op die Node gebruiken
@@ -40,8 +40,8 @@ zonder extra configuratie.
 
 Standaard stelt de proxy het normale browserprofieloppervlak van de Node beschikbaar. Als je
 `nodeHost.browserProxy.allowProfiles` instelt, wordt de proxy beperkend:
-profieltargeting buiten de allowlist wordt geweigerd, en routes voor het
-aanmaken/verwijderen van persistente profielen worden via de proxy geblokkeerd.
+het richten op profielen buiten de toelatingslijst wordt geweigerd, en routes voor het
+maken/verwijderen van persistente profielen worden via de proxy geblokkeerd.
 
 Schakel dit indien nodig uit op de Node:
 
@@ -67,25 +67,25 @@ Opties:
 - `--port <port>`: Gateway WebSocket-poort (standaard: `18789`)
 - `--tls`: Gebruik TLS voor de Gateway-verbinding
 - `--tls-fingerprint <sha256>`: Verwachte TLS-certificaatvingerafdruk (sha256)
-- `--node-id <id>`: Overschrijf Node-id (wist pairing-token)
+- `--node-id <id>`: Overschrijf Node-id (wist koppelingstoken)
 - `--display-name <name>`: Overschrijf de weergavenaam van de Node
 
-## Gateway-auth voor Node-host
+## Gateway-authenticatie voor Node-host
 
-`openclaw node run` en `openclaw node install` lossen Gateway-auth op uit config/env (geen `--token`/`--password`-vlaggen op Node-opdrachten):
+`openclaw node run` en `openclaw node install` lossen Gateway-authenticatie op uit config/env (geen `--token`/`--password`-flags op Node-opdrachten):
 
 - `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD` worden eerst gecontroleerd.
-- Daarna lokale config-fallback: `gateway.auth.token` / `gateway.auth.password`.
-- In lokale modus erft de Node-host bewust geen `gateway.remote.token` / `gateway.remote.password`.
-- Als `gateway.auth.token` / `gateway.auth.password` expliciet via SecretRef is geconfigureerd en niet kan worden opgelost, faalt Node-authresolutie gesloten (geen maskering door remote fallback).
-- In `gateway.mode=remote` komen remote-clientvelden (`gateway.remote.token` / `gateway.remote.password`) ook in aanmerking volgens remote-voorrangsregels.
-- Authresolutie van Node-hosts respecteert alleen `OPENCLAW_GATEWAY_*`-env-vars.
+- Daarna lokale configuratieterugval: `gateway.auth.token` / `gateway.auth.password`.
+- In lokale modus neemt de Node-host bewust geen `gateway.remote.token` / `gateway.remote.password` over.
+- Als `gateway.auth.token` / `gateway.auth.password` expliciet via SecretRef is geconfigureerd en niet kan worden opgelost, faalt de Node-authenticatieoplossing gesloten (geen maskering door externe terugval).
+- In `gateway.mode=remote` komen externe clientvelden (`gateway.remote.token` / `gateway.remote.password`) ook in aanmerking volgens de externe precedentieregels.
+- Authenticatieoplossing voor de Node-host respecteert alleen `OPENCLAW_GATEWAY_*`-env-vars.
 
-Voor een Node die verbinding maakt met een niet-loopback `ws://` Gateway op een vertrouwd privénetwerk
-stel je `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` in. Zonder dit faalt het starten van de Node
+Voor een Node die verbinding maakt met een niet-loopback `ws://` Gateway op een vertrouwd privé
+netwerk, stel `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` in. Zonder dit faalt het opstarten van de Node
 gesloten en wordt je gevraagd `wss://`, een SSH-tunnel of Tailscale te gebruiken.
-Dit is een opt-in via de procesomgeving, geen `openclaw.json`-configuratiesleutel.
-`openclaw node install` legt dit vast in de bewaakte Node-service wanneer het
+Dit is een opt-in via de procesomgeving, geen configuratiesleutel in `openclaw.json`.
+`openclaw node install` bewaart dit in de bewaakte Node-service wanneer het
 aanwezig is in de omgeving van de installatieopdracht.
 
 ## Service (achtergrond)
@@ -102,10 +102,10 @@ Opties:
 - `--port <port>`: Gateway WebSocket-poort (standaard: `18789`)
 - `--tls`: Gebruik TLS voor de Gateway-verbinding
 - `--tls-fingerprint <sha256>`: Verwachte TLS-certificaatvingerafdruk (sha256)
-- `--node-id <id>`: Overschrijf Node-id (wist pairing-token)
+- `--node-id <id>`: Overschrijf Node-id (wist koppelingstoken)
 - `--display-name <name>`: Overschrijf de weergavenaam van de Node
-- `--runtime <runtime>`: Service-runtime (`node` of `bun`)
-- `--force`: Herinstalleer/overschrijf als al geïnstalleerd
+- `--runtime <runtime>`: Serviceruntime (`node` of `bun`)
+- `--force`: Opnieuw installeren/overschrijven als al geinstalleerd
 
 Beheer de service:
 
@@ -121,24 +121,24 @@ Gebruik `openclaw node run` voor een Node-host op de voorgrond (geen service).
 
 Serviceopdrachten accepteren `--json` voor machineleesbare uitvoer.
 
-De Node-host probeert Gateway-herstarts en netwerkafsluitingen opnieuw binnen hetzelfde proces. Als de
-Gateway een terminale token-/wachtwoord-/bootstrap-authpauze rapporteert, logt de Node-host
-de sluitingsdetails en sluit af met een niet-nulstatus, zodat launchd/systemd hem met
-verse config en referenties kan herstarten. Pauzes waarvoor pairing vereist is, blijven in de voorgrondflow
-zodat het wachtende verzoek kan worden goedgekeurd.
+De Node-host probeert Gateway-herstarts en netwerkafsluitingen opnieuw binnen het proces. Als de
+Gateway een terminale token-/wachtwoord-/bootstrap-authenticatiepauze meldt, logt de Node-host
+het afsluitdetail en sluit hij af met een niet-nulcode zodat launchd/systemd hem opnieuw kan starten met
+verse configuratie en referenties. Pauzes waarvoor koppeling vereist is blijven in de voorgrondflow,
+zodat het openstaande verzoek kan worden goedgekeurd.
 
-## Pairing
+## Koppelen
 
-De eerste verbinding maakt een wachtend apparaatpairingverzoek (`role: node`) aan op de Gateway.
-Keur dit goed via:
+De eerste verbinding maakt een openstaand apparaatkoppelingsverzoek (`role: node`) aan op de Gateway.
+Keur het goed via:
 
 ```bash
 openclaw devices list
 openclaw devices approve <requestId>
 ```
 
-Op strikt gecontroleerde Node-netwerken kan de Gateway-operator expliciet opt-innen
-voor automatische goedkeuring van eerste Node-pairing vanaf vertrouwde CIDR's:
+Op strikt beheerde Node-netwerken kan de Gateway-operator expliciet kiezen voor
+automatische goedkeuring van eerste Node-koppelingen vanaf vertrouwde CIDR's:
 
 ```json5
 {
@@ -152,29 +152,29 @@ voor automatische goedkeuring van eerste Node-pairing vanaf vertrouwde CIDR's:
 }
 ```
 
-Dit is standaard uitgeschakeld. Het is alleen van toepassing op nieuwe `role: node`-pairing met
-geen gevraagde scopes. Operator-/browserclients, Control UI, WebChat, en upgrades van rol,
+Dit is standaard uitgeschakeld. Het is alleen van toepassing op nieuwe `role: node`-koppelingen zonder
+aangevraagde scopes. Operator-/browserclients, Control UI, WebChat en upgrades van rol,
 scope, metadata of publieke sleutel vereisen nog steeds handmatige goedkeuring.
 
-Als de Node pairing opnieuw probeert met gewijzigde authdetails (rol/scopes/publieke sleutel),
-wordt het vorige wachtende verzoek vervangen en wordt een nieuwe `requestId` aangemaakt.
-Voer `openclaw devices list` opnieuw uit vóór goedkeuring.
+Als de Node opnieuw probeert te koppelen met gewijzigde authenticatiedetails (rol/scopes/publieke sleutel),
+wordt het vorige openstaande verzoek vervangen en wordt een nieuw `requestId` aangemaakt.
+Voer `openclaw devices list` opnieuw uit voor goedkeuring.
 
-De Node-host slaat zijn Node-id, token, weergavenaam en Gateway-verbindingsinfo op in
+De Node-host bewaart zijn Node-id, token, weergavenaam en Gateway-verbindingsinfo in
 `~/.openclaw/node.json`.
 
 ## Exec-goedkeuringen
 
-`system.run` wordt gated door lokale exec-goedkeuringen:
+`system.run` wordt afgeschermd door lokale exec-goedkeuringen:
 
 - `~/.openclaw/exec-approvals.json`
 - [Exec-goedkeuringen](/nl/tools/exec-approvals)
 - `openclaw approvals --node <id|name|ip>` (bewerken vanaf de Gateway)
 
-Voor goedgekeurde async Node-exec bereidt OpenClaw een canoniek `systemRunPlan` voor
-voordat om bevestiging wordt gevraagd. De latere goedgekeurde `system.run`-forward hergebruikt dat opgeslagen
+Voor goedgekeurde asynchrone Node-exec bereidt OpenClaw een canoniek `systemRunPlan`
+voor voordat er wordt gevraagd. De later goedgekeurde doorsturing van `system.run` hergebruikt dat opgeslagen
 plan, zodat bewerkingen aan opdracht-/cwd-/sessievelden nadat het goedkeuringsverzoek is
-aangemaakt, worden geweigerd in plaats van te wijzigen wat de Node uitvoert.
+aangemaakt worden geweigerd in plaats van te wijzigen wat de Node uitvoert.
 
 ## Gerelateerd
 

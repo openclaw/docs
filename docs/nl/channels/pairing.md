@@ -2,42 +2,42 @@
 read_when:
     - DM-toegangscontrole instellen
     - Een nieuwe iOS-/Android-Node koppelen
-    - De beveiligingshouding van OpenClaw beoordelen
-summary: 'Koppelingsoverzicht: keur goed wie je rechtstreeks kan berichten + welke nodes kunnen deelnemen'
+    - Beveiligingshouding van OpenClaw beoordelen
+summary: 'Koppelingsoverzicht: keur goed wie je een DM mag sturen + welke nodes kunnen deelnemen'
 title: Koppelen
 x-i18n:
-    generated_at: "2026-05-06T09:03:48Z"
+    generated_at: "2026-05-06T17:52:32Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 5543c10868418234714b175cd4bd373818be8dd40327121ac6c44819ed7519b2
+    source_hash: dcee04ae47bf28caa76c5f6e7218e8b1b24f9ee70bc1b7b65d3f8859797a4645
     source_path: channels/pairing.md
     workflow: 16
 ---
 
-“Koppelen” is de expliciete stap voor toegangsgoedkeuring van OpenClaw.
-Het wordt op twee plaatsen gebruikt:
+"Koppeling" is de expliciete stap voor toegangstoestemming in OpenClaw.
+Deze wordt op twee plaatsen gebruikt:
 
 1. **DM-koppeling** (wie met de bot mag praten)
-2. **Node-koppeling** (welke apparaten/nodes mogen deelnemen aan het Gateway-netwerk)
+2. **Node-koppeling** (welke apparaten/nodes aan het Gateway-netwerk mogen deelnemen)
 
 Beveiligingscontext: [Beveiliging](/nl/gateway/security)
 
 ## 1) DM-koppeling (inkomende chattoegang)
 
-Wanneer een kanaal is geconfigureerd met DM-beleid `pairing`, krijgen onbekende afzenders een korte code en wordt hun bericht **niet verwerkt** totdat je het goedkeurt.
+Wanneer een kanaal is geconfigureerd met DM-beleid `pairing`, krijgen onbekende afzenders een korte code en wordt hun bericht **niet verwerkt** totdat je dit goedkeurt.
 
-Standaard DM-beleid is gedocumenteerd in: [Beveiliging](/nl/gateway/security)
+Standaard-DM-beleid is gedocumenteerd in: [Beveiliging](/nl/gateway/security)
 
 `dmPolicy: "open"` is alleen openbaar wanneer de effectieve DM-toelatingslijst `"*"` bevat.
-Setup en validatie vereisen die wildcard voor openbare-open configuraties. Als bestaande
-state `open` bevat met concrete `allowFrom`-vermeldingen, laat runtime nog steeds
-alleen die afzenders toe, en goedkeuringen in de pairing-store verbreden `open`-toegang niet.
+Voor installatie en validatie is die wildcard vereist voor openbaar-open configuraties. Als bestaande
+status `open` bevat met concrete `allowFrom`-vermeldingen, laat de runtime nog steeds
+alleen die afzenders toe, en goedkeuringen uit de koppelingsopslag verruimen `open`-toegang niet.
 
 Koppelingscodes:
 
 - 8 tekens, hoofdletters, geen verwarrende tekens (`0O1I`).
-- **Verlopen na 1 uur**. De bot verstuurt het koppelingsbericht alleen wanneer een nieuw verzoek wordt aangemaakt (ongeveer eenmaal per uur per afzender).
-- Wachtende DM-koppelingsverzoeken zijn standaard beperkt tot **3 per kanaal**; extra verzoeken worden genegeerd totdat er een verloopt of wordt goedgekeurd.
+- **Verlopen na 1 uur**. De bot stuurt het koppelingsbericht alleen wanneer een nieuw verzoek wordt aangemaakt (ongeveer eenmaal per uur per afzender).
+- Wachtende DM-koppelingsverzoeken zijn standaard beperkt tot **3 per kanaal**; aanvullende verzoeken worden genegeerd totdat er een verloopt of wordt goedgekeurd.
 
 ### Een afzender goedkeuren
 
@@ -46,17 +46,17 @@ openclaw pairing list telegram
 openclaw pairing approve telegram <CODE>
 ```
 
-Als er nog geen command-eigenaar is geconfigureerd, bootstrapt het goedkeuren van een DM-koppelingscode ook
+Als er nog geen opdracht-eigenaar is geconfigureerd, initialiseert het goedkeuren van een DM-koppelingscode ook
 `commands.ownerAllowFrom` naar de goedgekeurde afzender, zoals `telegram:123456789`.
-Dat geeft initiële setups een expliciete eigenaar voor bevoorrechte commands en exec-
-goedkeuringsprompts. Nadat er een eigenaar bestaat, verlenen latere koppelingsgoedkeuringen alleen DM-
-toegang; ze voegen geen extra eigenaren toe.
+Dat geeft eerste installaties een expliciete eigenaar voor bevoorrechte opdrachten en prompts voor exec-goedkeuring.
+Nadat er een eigenaar bestaat, verlenen latere koppelingsgoedkeuringen alleen DM-toegang;
+ze voegen geen extra eigenaars toe.
 
 Ondersteunde kanalen: `bluebubbles`, `discord`, `feishu`, `googlechat`, `imessage`, `irc`, `line`, `matrix`, `mattermost`, `msteams`, `nextcloud-talk`, `nostr`, `openclaw-weixin`, `signal`, `slack`, `synology-chat`, `telegram`, `twitch`, `whatsapp`, `zalo`, `zalouser`.
 
 ### Herbruikbare afzendergroepen
 
-Gebruik top-level `accessGroups` wanneer dezelfde set vertrouwde afzenders moet gelden voor
+Gebruik `accessGroups` op topniveau wanneer dezelfde set vertrouwde afzenders moet gelden voor
 meerdere berichtkanalen of voor zowel DM- als groepstoelatingslijsten.
 
 Statische groepen gebruiken `type: "message.senders"` en worden vanuit kanaaltoelatingslijsten
@@ -81,31 +81,31 @@ verwezen met `accessGroup:<name>`:
 }
 ```
 
-Toegangsgroepen zijn hier uitgebreid gedocumenteerd: [Toegangsgroepen](/nl/channels/access-groups)
+Toegangsgroepen worden hier uitgebreid gedocumenteerd: [Toegangsgroepen](/nl/channels/access-groups)
 
-### Waar de state staat
+### Waar de status staat
 
 Opgeslagen onder `~/.openclaw/credentials/`:
 
 - Wachtende verzoeken: `<channel>-pairing.json`
-- Goedgekeurde toelatingslijst-store:
+- Goedgekeurde toelatingslijstopslag:
   - Standaardaccount: `<channel>-allowFrom.json`
   - Niet-standaardaccount: `<channel>-<accountId>-allowFrom.json`
 
-Account-scopinggedrag:
+Gedrag voor accountscoping:
 
 - Niet-standaardaccounts lezen/schrijven alleen hun gescopete toelatingslijstbestand.
 - Standaardaccount gebruikt het kanaalgescopete, ongescopete toelatingslijstbestand.
 
-Behandel deze als gevoelig (ze bewaken toegang tot je assistent).
+Behandel deze als gevoelig (ze regelen toegang tot je assistent).
 
 <Note>
-De pairing-toelatingslijst-store is voor DM-toegang. Groepsautorisatie staat los.
-Het goedkeuren van een DM-koppelingscode staat die afzender niet automatisch toe om groeps-
-commands uit te voeren of de bot in groepen te bedienen. Bootstrap van de eerste eigenaar is aparte configuratie-
-state in `commands.ownerAllowFrom`, en levering in groepschats volgt nog steeds de
+De opslag voor de koppelings-toelatingslijst is voor DM-toegang. Groepsautorisatie staat daarvan los.
+Het goedkeuren van een DM-koppelingscode staat die afzender niet automatisch toe om groepsopdrachten
+uit te voeren of de bot in groepen te besturen. Initialisatie van de eerste eigenaar is aparte configuratiestatus
+in `commands.ownerAllowFrom`, en aflevering in groepschats volgt nog steeds de
 groepstoelatingslijsten van het kanaal (bijvoorbeeld `groupAllowFrom`, `groups`, of per-groep-
-of per-topic overrides, afhankelijk van het kanaal).
+of per-onderwerpoverschrijvingen, afhankelijk van het kanaal).
 </Note>
 
 ## 2) Node-apparaatkoppeling (iOS/Android/macOS/headless nodes)
@@ -115,37 +115,37 @@ maakt een apparaatkoppelingsverzoek aan dat moet worden goedgekeurd.
 
 ### Koppelen via Telegram (aanbevolen voor iOS)
 
-Als je de `device-pair` plugin gebruikt, kun je initiële apparaatkoppeling volledig vanuit Telegram doen:
+Als je de `device-pair`-Plugin gebruikt, kun je een eerste apparaatkoppeling volledig vanuit Telegram uitvoeren:
 
 1. Stuur in Telegram een bericht naar je bot: `/pair`
-2. De bot antwoordt met twee berichten: een instructiebericht en een apart **setupcode**-bericht (makkelijk te kopiëren/plakken in Telegram).
+2. De bot antwoordt met twee berichten: een instructiebericht en een afzonderlijk bericht met **installatiecode** (makkelijk te kopiëren/plakken in Telegram).
 3. Open op je telefoon de OpenClaw iOS-app → Instellingen → Gateway.
-4. Scan de QR-code of plak de setupcode en maak verbinding.
-5. Terug in Telegram: `/pair pending` (controleer verzoek-ID's, rol en scopes), en keur daarna goed.
+4. Scan de QR-code of plak de installatiecode en maak verbinding.
+5. Terug in Telegram: `/pair pending` (controleer verzoek-ID's, rol en scopes), keur daarna goed.
 
-De setupcode is een base64-gecodeerde JSON-payload die het volgende bevat:
+De installatiecode is een base64-gecodeerde JSON-payload die bevat:
 
-- `url`: de Gateway WebSocket-URL (`ws://...` of `wss://...`)
-- `bootstrapToken`: een kortlevend bootstrap-token voor één apparaat, gebruikt voor de initiële koppelingshandshake
+- `url`: de Gateway-WebSocket-URL (`ws://...` of `wss://...`)
+- `bootstrapToken`: een kortlevend bootstrap-token voor één apparaat dat wordt gebruikt voor de initiële koppelingshandshake
 
-Dat bootstrap-token draagt het ingebouwde pairing-bootstrapprofiel:
+Dat bootstrap-token draagt het ingebouwde koppelings-bootstrapprofiel:
 
 - primair overgedragen `node`-token blijft `scopes: []`
-- elk overgedragen `operator`-token blijft begrensd tot de bootstrap-toelatingslijst:
+- elk overgedragen `operator`-token blijft beperkt tot de bootstrap-toelatingslijst:
   `operator.approvals`, `operator.read`, `operator.talk.secrets`, `operator.write`
-- bootstrap-scopecontroles zijn rolgeprefixet, geen enkele platte scope-pool:
-  operator-scopevermeldingen voldoen alleen aan operator-verzoeken, en niet-operatorrollen
+- controles van bootstrap-scopes hebben een rolprefix en gebruiken niet één platte scopepool:
+  operatorscope-vermeldingen voldoen alleen aan operatorverzoeken, en niet-operatorrollen
   moeten nog steeds scopes aanvragen onder hun eigen rolprefix
-- latere tokenrotatie/-intrekking blijft begrensd door zowel het goedgekeurde
-  rolcontract van het apparaat als de operator-scopes van de aanroepende sessie
+- latere tokenrotatie/intrekking blijft beperkt door zowel het goedgekeurde
+  rolcontract van het apparaat als de operatorscopes van de aanroepende sessie
 
-Behandel de setupcode als een wachtwoord zolang die geldig is.
+Behandel de installatiecode als een wachtwoord zolang deze geldig is.
 
-Gebruik voor Tailscale, openbare of andere mobiele koppeling op afstand Tailscale Serve/Funnel
-of een andere `wss://` Gateway-URL. Plaintext `ws://`-setupcodes worden alleen geaccepteerd
-voor loopback, privé-LAN-adressen, `.local` Bonjour-hosts en de Android-
-emulatorhost. Tailnet CGNAT-adressen, `.ts.net`-namen en openbare hosts
-falen nog steeds gesloten vóór uitgifte van QR-/setupcode.
+Voor Tailscale, openbare of andere externe mobiele koppeling gebruik je Tailscale Serve/Funnel
+of een andere `wss://` Gateway-URL. Platte-tekst `ws://`-installatiecodes worden alleen geaccepteerd
+voor loopback, privé-LAN-adressen, `.local` Bonjour-hosts en de host van de Android-
+emulator. Tailnet-CGNAT-adressen, `.ts.net`-namen en openbare hosts falen nog steeds
+gesloten voordat QR-/installatiecode-uitgifte plaatsvindt.
 
 ### Een Node-apparaat goedkeuren
 
@@ -156,24 +156,24 @@ openclaw devices reject <requestId>
 ```
 
 Wanneer een expliciete goedkeuring wordt geweigerd omdat de goedkeurende gekoppelde-apparaatsessie
-is geopend met alleen pairing-scope, probeert de CLI hetzelfde verzoek opnieuw met
-`operator.admin`. Hierdoor kan een bestaand admin-capabel gekoppeld apparaat een nieuwe
-Control UI/browser-koppeling herstellen zonder `devices/paired.json` handmatig te bewerken. De
+is geopend met alleen-koppeling-scope, probeert de CLI hetzelfde verzoek opnieuw met
+`operator.admin`. Hierdoor kan een bestaand admin-geschikt gekoppeld apparaat een nieuwe
+Control UI/browser-koppeling herstellen zonder `devices/paired.json` met de hand te bewerken. De
 Gateway valideert de opnieuw geprobeerde verbinding nog steeds; tokens die niet kunnen authenticeren
 met `operator.admin` blijven geblokkeerd.
 
-Als hetzelfde apparaat het opnieuw probeert met andere auth-gegevens (bijvoorbeeld andere
-rol/scopes/publieke sleutel), wordt het vorige wachtende verzoek vervangen en wordt een nieuwe
+Als hetzelfde apparaat opnieuw probeert met andere authenticatiedetails (bijvoorbeeld een andere
+rol/scopes/publieke sleutel), wordt het vorige wachtende verzoek vervangen en wordt een nieuw
 `requestId` aangemaakt.
 
 <Note>
-Een al gekoppeld apparaat krijgt niet stilzwijgend bredere toegang. Als het opnieuw verbinding maakt en om meer scopes of een bredere rol vraagt, houdt OpenClaw de bestaande goedkeuring ongewijzigd en maakt het een nieuw wachtend upgradeverzoek aan. Gebruik `openclaw devices list` om de momenteel goedgekeurde toegang te vergelijken met de nieuw aangevraagde toegang voordat je goedkeurt.
+Een al gekoppeld apparaat krijgt niet stilzwijgend bredere toegang. Als het opnieuw verbinding maakt en om meer scopes of een bredere rol vraagt, laat OpenClaw de bestaande goedkeuring ongewijzigd en maakt een nieuw wachtend upgradeverzoek aan. Gebruik `openclaw devices list` om de momenteel goedgekeurde toegang te vergelijken met de nieuw aangevraagde toegang voordat je goedkeurt.
 </Note>
 
-### Optionele vertrouwde-CIDR automatische Node-goedkeuring
+### Optionele automatische goedkeuring van nodes op basis van vertrouwde CIDR
 
-Apparaatkoppeling blijft standaard handmatig. Voor strikt gecontroleerde node-netwerken
-kun je kiezen voor automatische eerste Node-goedkeuring met expliciete CIDR's of exacte IP's:
+Apparaatkoppeling blijft standaard handmatig. Voor strikt beheerde node-netwerken
+kun je je aanmelden voor automatische eerste node-goedkeuring met expliciete CIDR's of exacte IP's:
 
 ```json5
 {
@@ -189,10 +189,10 @@ kun je kiezen voor automatische eerste Node-goedkeuring met expliciete CIDR's of
 
 Dit geldt alleen voor nieuwe `role: node`-koppelingsverzoeken zonder aangevraagde
 scopes. Operator-, browser-, Control UI- en WebChat-clients vereisen nog steeds handmatige
-goedkeuring. Wijzigingen in rol, scope, metadata en publieke sleutel vereisen nog steeds handmatige
+goedkeuring. Wijzigingen aan rol, scope, metadata en publieke sleutel vereisen nog steeds handmatige
 goedkeuring.
 
-### Opslag van Node-koppelingsstate
+### Statusopslag voor Node-koppeling
 
 Opgeslagen onder `~/.openclaw/devices/`:
 
@@ -201,21 +201,21 @@ Opgeslagen onder `~/.openclaw/devices/`:
 
 ### Opmerkingen
 
-- De legacy `node.pair.*` API (CLI: `openclaw nodes pending|approve|reject|remove|rename`) is een
-  aparte, door de Gateway beheerde pairing-store. WS-nodes vereisen nog steeds apparaatkoppeling.
-- Het pairing-record is de duurzame bron van waarheid voor goedgekeurde rollen. Actieve
-  apparaattokens blijven begrensd tot die goedgekeurde rollenset; een verdwaalde tokenvermelding
-  buiten de goedgekeurde rollen creëert geen nieuwe toegang.
+- De verouderde `node.pair.*`-API (CLI: `openclaw nodes pending|approve|reject|remove|rename`) is een
+  afzonderlijke koppelingsopslag die eigendom is van de Gateway. WS-nodes vereisen nog steeds apparaatkoppeling.
+- De koppelingsrecord is de duurzame bron van waarheid voor goedgekeurde rollen. Actieve
+  apparaattokens blijven beperkt tot die goedgekeurde rollenset; een losse tokenvermelding
+  buiten de goedgekeurde rollen maakt geen nieuwe toegang aan.
 
-## Gerelateerde docs
+## Gerelateerde documentatie
 
-- Beveiligingsmodel + prompt injection: [Beveiliging](/nl/gateway/security)
+- Beveiligingsmodel + promptinjectie: [Beveiliging](/nl/gateway/security)
 - Veilig bijwerken (doctor uitvoeren): [Bijwerken](/nl/install/updating)
 - Kanaalconfiguraties:
   - Telegram: [Telegram](/nl/channels/telegram)
   - WhatsApp: [WhatsApp](/nl/channels/whatsapp)
   - Signal: [Signal](/nl/channels/signal)
   - BlueBubbles (iMessage): [BlueBubbles](/nl/channels/bluebubbles)
-  - iMessage (legacy): [iMessage](/nl/channels/imessage)
+  - iMessage (verouderd): [iMessage](/nl/channels/imessage)
   - Discord: [Discord](/nl/channels/discord)
   - Slack: [Slack](/nl/channels/slack)

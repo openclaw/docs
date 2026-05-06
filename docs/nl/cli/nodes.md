@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Je beheert gekoppelde Nodes (camera's, scherm, canvas)
-    - Je moet verzoeken goedkeuren of node-opdrachten aanroepen
+    - Je beheert gekoppelde nodes (camera's, scherm, canvas)
+    - U moet aanvragen goedkeuren of Node-opdrachten uitvoeren
 summary: CLI-referentie voor `openclaw nodes` (status, koppelen, aanroepen, camera/canvas/scherm)
 title: Nodes
 x-i18n:
-    generated_at: "2026-04-29T22:34:08Z"
+    generated_at: "2026-05-06T17:54:09Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3229db91d7e64b0d37bee29bd51895d90796f5fd33b67e3d900fd8bda2b6e7e9
+    source_hash: f3eb0d23037c939e4022115a2d65e0e9cb25a872daed715b8652979ce6707cf7
     source_path: cli/nodes.md
     workflow: 16
 ---
@@ -19,15 +19,15 @@ Beheer gekoppelde nodes (apparaten) en roep node-mogelijkheden aan.
 
 Gerelateerd:
 
-- Overzicht van nodes: [Nodes](/nl/nodes)
-- Camera: [Cameranodes](/nl/nodes/camera)
+- Nodes-overzicht: [Nodes](/nl/nodes)
+- Camera: [Camera-nodes](/nl/nodes/camera)
 - Afbeeldingen: [Afbeeldingsnodes](/nl/nodes/images)
 
-Algemene opties:
+Veelgebruikte opties:
 
 - `--url`, `--token`, `--timeout`, `--json`
 
-## Algemene opdrachten
+## Veelgebruikte opdrachten
 
 ```bash
 openclaw nodes list
@@ -43,21 +43,21 @@ openclaw nodes status --connected
 openclaw nodes status --last-connected 24h
 ```
 
-`nodes list` toont tabellen met in behandeling zijnde en gekoppelde items. Gekoppelde rijen bevatten de meest recente verbindingsleeftijd (laatste verbinding).
-Gebruik `--connected` om alleen momenteel verbonden nodes weer te geven. Gebruik `--last-connected <duration>` om
+`nodes list` drukt tabellen af met wachtende/gekoppelde nodes. Gekoppelde rijen bevatten de leeftijd van de meest recente verbinding (Laatste verbinding).
+Gebruik `--connected` om alleen momenteel verbonden nodes te tonen. Gebruik `--last-connected <duration>` om
 te filteren op nodes die binnen een duur verbinding hebben gemaakt (bijv. `24h`, `7d`).
-Gebruik `nodes remove --node <id|name|ip>` om een verouderde, Gateway-eigen node-koppelingsrecord te verwijderen.
+Gebruik `nodes remove --node <id|name|ip>` om een verouderd, door de gateway beheerd koppelingsrecord voor een node te verwijderen.
 
-Goedkeuringsopmerking:
+Opmerking over goedkeuring:
 
 - `openclaw nodes pending` heeft alleen het koppelingsbereik nodig.
-- `gateway.nodes.pairing.autoApproveCidrs` kan de stap in behandeling alleen overslaan voor
-  expliciet vertrouwde, eerste `role: node`-apparaatkoppeling. Het staat standaard uit
-  en keurt geen upgrades goed.
-- `openclaw nodes approve <requestId>` erft extra bereikvereisten van het
-  in behandeling zijnde verzoek:
-  - verzoek zonder opdracht: alleen koppeling
-  - niet-exec node-opdrachten: koppeling + schrijven
+- `gateway.nodes.pairing.autoApproveCidrs` kan de wachtende stap alleen overslaan voor
+  expliciet vertrouwde, eerste koppeling van apparaten met `role: node`. Dit staat standaard
+  uit en keurt geen upgrades goed.
+- `openclaw nodes approve <requestId>` erft extra bereikvereisten van de
+  wachtende aanvraag:
+  - aanvraag zonder opdracht: alleen koppeling
+  - node-opdrachten zonder exec: koppeling + schrijven
   - `system.run` / `system.run.prepare` / `system.which`: koppeling + admin
 
 ## Aanroepen
@@ -71,9 +71,9 @@ Aanroepvlaggen:
 - `--params <json>`: JSON-objecttekenreeks (standaard `{}`).
 - `--invoke-timeout <ms>`: time-out voor node-aanroep (standaard `15000`).
 - `--idempotency-key <key>`: optionele idempotentiesleutel.
-- `system.run` en `system.run.prepare` worden hier geblokkeerd; gebruik de `exec`-tool met `host=node` voor shell-uitvoering.
+- `system.run` en `system.run.prepare` worden hier geblokkeerd; gebruik de `exec`-tool met `host=node` voor shelluitvoering.
 
-Gebruik voor shell-uitvoering op een node de `exec`-tool met `host=node` in plaats van `openclaw nodes run`.
+Gebruik voor shelluitvoering op een node de `exec`-tool met `host=node` in plaats van `openclaw nodes run`.
 De `nodes`-CLI is nu gericht op mogelijkheden: directe RPC via `nodes invoke`, plus koppeling, camera,
 scherm, locatie, canvas en meldingen.
 

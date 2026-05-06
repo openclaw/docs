@@ -1,43 +1,41 @@
 ---
 read_when:
-    - Je wilt OpenClaw 24/7 op een cloud-VPS laten draaien (niet op je laptop)
-    - Je wilt een productieklare, altijd actieve Gateway op je eigen VPS
+    - Je wilt OpenClaw 24/7 laten draaien op een cloud-VPS (niet op je laptop)
+    - Je wilt een Gateway van productiekwaliteit die altijd actief is op je eigen VPS
     - Je wilt volledige controle over persistentie, binaire bestanden en herstartgedrag
-    - Je draait OpenClaw in Docker op Hetzner of een vergelijkbare provider
-summary: Voer OpenClaw Gateway 24/7 uit op een goedkope Hetzner VPS (Docker), met persistente status en ingebouwde binaire bestanden
+    - Je draait OpenClaw in Docker op Hetzner of bij een vergelijkbare aanbieder
+summary: Voer OpenClaw Gateway 24/7 uit op een goedkope Hetzner-VPS (Docker) met persistente status en ingebakken binaire bestanden
 title: Hetzner
 x-i18n:
-    generated_at: "2026-05-06T09:19:50Z"
+    generated_at: "2026-05-06T17:57:13Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 2625a028b6242f653d29b8f45035bf2d796c5c60453582cf269fd1c3776eca52
+    source_hash: 6102649b381b3b1ecd6f52e1cf518fc36147fe143ebc8fd4be5f44ab26cb3b4d
     source_path: install/hetzner.md
     workflow: 16
 ---
 
-# OpenClaw op Hetzner (Docker, productie-VPS-gids)
-
 ## Doel
 
-Voer een blijvende OpenClaw Gateway uit op een Hetzner-VPS met Docker, met duurzame status, ingebakken binaries en veilig herstartgedrag.
+Voer een permanente OpenClaw Gateway uit op een Hetzner-VPS met Docker, met duurzame status, ingebakken binaries en veilig herstartgedrag.
 
-Als je "OpenClaw 24/7 voor ~$5" wilt, is dit de eenvoudigste betrouwbare setup.
-Hetzner-prijzen veranderen; kies de kleinste Debian/Ubuntu-VPS en schaal op als je OOMs tegenkomt.
+Als je "OpenClaw 24/7 voor ongeveer $5" wilt, is dit de eenvoudigste betrouwbare installatie.
+De prijzen van Hetzner veranderen; kies de kleinste Debian/Ubuntu-VPS en schaal op als je OOMs tegenkomt.
 
 Herinnering aan het beveiligingsmodel:
 
-- Bedrijfsgedeelde agents zijn prima wanneer iedereen binnen dezelfde vertrouwensgrens valt en de runtime uitsluitend zakelijk is.
-- Houd strikte scheiding aan: toegewezen VPS/runtime + toegewezen accounts; geen persoonlijke Apple/Google/browser/wachtwoordbeheerprofielen op die host.
-- Als gebruikers onderling adversarieel zijn, splits dan per gateway/host/OS-gebruiker.
+- Bedrijfsgedeelde agents zijn prima wanneer iedereen binnen dezelfde vertrouwensgrens valt en de runtime alleen zakelijk wordt gebruikt.
+- Houd strikte scheiding aan: dedicated VPS/runtime + dedicated accounts; geen persoonlijke Apple/Google/browser-/wachtwoordmanagerprofielen op die host.
+- Als gebruikers onderling vijandig kunnen zijn, splits dan per gateway/host/OS-gebruiker.
 
 Zie [Beveiliging](/nl/gateway/security) en [VPS-hosting](/nl/vps).
 
-## Wat gaan we doen (eenvoudig gezegd)?
+## Wat doen we (simpel gezegd)?
 
 - Huur een kleine Linux-server (Hetzner-VPS)
 - Installeer Docker (geïsoleerde app-runtime)
 - Start de OpenClaw Gateway in Docker
-- Bewaar `~/.openclaw` + `~/.openclaw/workspace` op de host (overleeft herstarts/rebuilds)
+- Bewaar `~/.openclaw` + `~/.openclaw/workspace` op de host (overleeft herstarts/herbuilds)
 - Open de Control-UI vanaf je laptop via een SSH-tunnel
 
 Die aangekoppelde `~/.openclaw`-status bevat `openclaw.json`, per-agent
@@ -45,21 +43,21 @@ Die aangekoppelde `~/.openclaw`-status bevat `openclaw.json`, per-agent
 
 De Gateway is toegankelijk via:
 
-- SSH-port forwarding vanaf je laptop
+- SSH-poortdoorschakeling vanaf je laptop
 - Directe poortblootstelling als je firewalling en tokens zelf beheert
 
-Deze gids gaat uit van Ubuntu of Debian op Hetzner.  
-Als je een andere Linux-VPS gebruikt, vertaal de pakketten dan dienovereenkomstig.
+Deze handleiding gaat uit van Ubuntu of Debian op Hetzner.  
+Als je een andere Linux-VPS gebruikt, koppel de pakketten dan overeenkomstig.
 Zie [Docker](/nl/install/docker) voor de generieke Docker-flow.
 
 ---
 
-## Snel pad (ervaren beheerders)
+## Snelle route (ervaren operators)
 
-1. Richt de Hetzner-VPS in
+1. Richt een Hetzner-VPS in
 2. Installeer Docker
 3. Kloon de OpenClaw-repository
-4. Maak blijvende hostmappen
+4. Maak permanente hostmappen
 5. Configureer `.env` en `docker-compose.yml`
 6. Bak vereiste binaries in de image
 7. `docker compose up -d`
@@ -69,22 +67,22 @@ Zie [Docker](/nl/install/docker) voor de generieke Docker-flow.
 
 ## Wat je nodig hebt
 
-- Hetzner-VPS met root-toegang
+- Hetzner-VPS met roottoegang
 - SSH-toegang vanaf je laptop
-- Basiscomfort met SSH + kopiëren/plakken
-- ~20 minuten
+- Basisvertrouwen met SSH + kopiëren/plakken
+- Ongeveer 20 minuten
 - Docker en Docker Compose
-- Model-authreferenties
+- Model-authenticatiereferenties
 - Optionele providerreferenties
   - WhatsApp-QR
   - Telegram-bottoken
-  - Gmail-OAuth
+  - Gmail OAuth
 
 ---
 
 <Steps>
-  <Step title="Richt de VPS in">
-    Maak een Ubuntu- of Debian-VPS aan bij Hetzner.
+  <Step title="De VPS inrichten">
+    Maak een Ubuntu- of Debian-VPS aan in Hetzner.
 
     Verbind als root:
 
@@ -92,12 +90,12 @@ Zie [Docker](/nl/install/docker) voor de generieke Docker-flow.
     ssh root@YOUR_VPS_IP
     ```
 
-    Deze gids gaat ervan uit dat de VPS statusbehoudend is.
+    Deze handleiding gaat ervan uit dat de VPS stateful is.
     Behandel deze niet als wegwerpinfrastructuur.
 
   </Step>
 
-  <Step title="Installeer Docker (op de VPS)">
+  <Step title="Docker installeren (op de VPS)">
     ```bash
     apt-get update
     apt-get install -y git curl ca-certificates
@@ -113,19 +111,19 @@ Zie [Docker](/nl/install/docker) voor de generieke Docker-flow.
 
   </Step>
 
-  <Step title="Kloon de OpenClaw-repository">
+  <Step title="De OpenClaw-repository klonen">
     ```bash
     git clone https://github.com/openclaw/openclaw.git
     cd openclaw
     ```
 
-    Deze gids gaat ervan uit dat je een aangepaste image bouwt om binary-persistentie te garanderen.
+    Deze handleiding gaat ervan uit dat je een aangepaste image bouwt om binaire persistentie te garanderen.
 
   </Step>
 
-  <Step title="Maak blijvende hostmappen">
-    Docker-containers zijn vluchtig.
-    Alle langlevende status moet op de host staan.
+  <Step title="Permanente hostmappen maken">
+    Docker-containers zijn tijdelijk.
+    Alle langdurige status moet op de host staan.
 
     ```bash
     mkdir -p /root/.openclaw/workspace
@@ -136,8 +134,8 @@ Zie [Docker](/nl/install/docker) voor de generieke Docker-flow.
 
   </Step>
 
-  <Step title="Configureer omgevingsvariabelen">
-    Maak `.env` aan in de repository-root.
+  <Step title="Omgevingsvariabelen configureren">
+    Maak `.env` aan in de root van de repository.
 
     ```bash
     OPENCLAW_IMAGE=openclaw:latest
@@ -152,9 +150,10 @@ Zie [Docker](/nl/install/docker) voor de generieke Docker-flow.
     XDG_CONFIG_HOME=/home/node/.openclaw
     ```
 
-    Laat `OPENCLAW_GATEWAY_TOKEN` leeg, tenzij je deze expliciet via
-    `.env` wilt beheren; OpenClaw schrijft bij de eerste start een willekeurig
-    Gateway-token naar de configuratie. Genereer een keyring-wachtwoord en plak
+    Stel `OPENCLAW_GATEWAY_TOKEN` in wanneer je het stabiele gateway-token
+    via `.env` wilt beheren; configureer anders `gateway.auth.token` voordat
+    je vertrouwt op clients over herstarts heen. Als geen van beide bronnen bestaat, gebruikt OpenClaw
+    voor die opstart een token dat alleen tijdens runtime bestaat. Genereer een keyring-wachtwoord en plak
     het in `GOG_KEYRING_PASSWORD`:
 
     ```bash
@@ -163,8 +162,8 @@ Zie [Docker](/nl/install/docker) voor de generieke Docker-flow.
 
     **Commit dit bestand niet.**
 
-    Dit `.env`-bestand is bedoeld voor container/runtime-omgevingsvariabelen zoals `OPENCLAW_GATEWAY_TOKEN`.
-    Opgeslagen provider-OAuth/API-sleutel-auth leeft in het aangekoppelde
+    Dit `.env`-bestand is bedoeld voor container-/runtime-env zoals `OPENCLAW_GATEWAY_TOKEN`.
+    Opgeslagen OAuth/API-key-authenticatie van providers staat in de aangekoppelde
     `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`.
 
   </Step>
@@ -210,32 +209,32 @@ Zie [Docker](/nl/install/docker) voor de generieke Docker-flow.
           ]
     ```
 
-    `--allow-unconfigured` is alleen voor bootstrapgemak; het is geen vervanging voor een correcte Gateway-configuratie. Stel nog steeds auth in (`gateway.auth.token` of wachtwoord) en gebruik veilige bind-instellingen voor je deployment.
+    `--allow-unconfigured` is alleen bedoeld voor gemak bij bootstrap; het is geen vervanging voor een correcte Gateway-configuratie. Stel nog steeds auth in (`gateway.auth.token` of wachtwoord) en gebruik veilige bind-instellingen voor je deployment.
 
   </Step>
 
-  <Step title="Gedeelde runtime-stappen voor Docker-VM">
-    Gebruik de gedeelde runtimegids voor de algemene Docker-hostflow:
+  <Step title="Gedeelde Docker VM-runtime-stappen">
+    Gebruik de gedeelde runtimehandleiding voor de algemene Docker-hostflow:
 
-    - [Bak vereiste binaries in de image](/nl/install/docker-vm-runtime#bake-required-binaries-into-the-image)
-    - [Bouw en start](/nl/install/docker-vm-runtime#build-and-launch)
-    - [Wat waar behouden blijft](/nl/install/docker-vm-runtime#what-persists-where)
+    - [Vereiste binaries in de image bakken](/nl/install/docker-vm-runtime#bake-required-binaries-into-the-image)
+    - [Bouwen en starten](/nl/install/docker-vm-runtime#build-and-launch)
+    - [Wat waar persistent blijft](/nl/install/docker-vm-runtime#what-persists-where)
     - [Updates](/nl/install/docker-vm-runtime#updates)
 
   </Step>
 
   <Step title="Hetzner-specifieke toegang">
-    Rond na de gedeelde build- en startstappen de volgende setup af om de tunnel te openen:
+    Voltooi na de gedeelde bouw- en startstappen de volgende installatie om de tunnel te openen:
 
-    **Vereiste:** Zorg ervoor dat de sshd-configuratie van je VPS TCP-forwarding toestaat. Als je
-    je SSH-configuratie hebt verhard, controleer dan `/etc/ssh/sshd_config` en stel in:
+    **Vereiste:** Zorg dat de sshd-configuratie van je VPS TCP-forwarding toestaat. Als je
+    je SSH-configuratie hebt gehard, controleer dan `/etc/ssh/sshd_config` en stel in:
 
     ```
     AllowTcpForwarding local
     ```
 
-    `local` staat `ssh -L` lokale forwards vanaf je laptop toe en blokkeert tegelijk
-    remote forwards vanaf de server. Instellen op `no` laat de tunnel falen
+    `local` staat lokale `ssh -L`-forwards vanaf je laptop toe en blokkeert tegelijk
+    remote forwards vanaf de server. Als je dit op `no` zet, mislukt de tunnel
     met:
     `channel 3: open failed: administratively prohibited: open failed`
 
@@ -250,22 +249,22 @@ Zie [Docker](/nl/install/docker) voor de generieke Docker-flow.
 
     `http://127.0.0.1:18789/`
 
-    Plak het geconfigureerde gedeelde geheim. Deze gids gebruikt standaard het Gateway-token;
-    als je bent overgestapt op wachtwoord-auth, gebruik dan in plaats daarvan dat wachtwoord.
+    Plak het geconfigureerde gedeelde geheim. Deze handleiding gebruikt standaard het gateway-token;
+    als je bent overgestapt op wachtwoordauthenticatie, gebruik dan dat wachtwoord.
 
   </Step>
 </Steps>
 
-De gedeelde persistentiemap staat in [Docker-VM-runtime](/nl/install/docker-vm-runtime#what-persists-where).
+De gedeelde persistentiemap staat in [Docker VM Runtime](/nl/install/docker-vm-runtime#what-persists-where).
 
 ## Infrastructure as Code (Terraform)
 
-Voor teams die de voorkeur geven aan infrastructure-as-code-workflows, biedt een community-onderhouden Terraform-setup:
+Voor teams die de voorkeur geven aan infrastructure-as-code-workflows, biedt een door de community onderhouden Terraform-installatie:
 
-- Modulaire Terraform-configuratie met remote state management
-- Geautomatiseerde inrichting via cloud-init
-- Deploymentscripts (bootstrap, deploy, back-up/herstel)
-- Beveiligingshardening (firewall, UFW, alleen SSH-toegang)
+- Modulaire Terraform-configuratie met remote state-beheer
+- Geautomatiseerde provisioning via cloud-init
+- Deploymentscripts (bootstrap, deploy, backup/restore)
+- Beveiligingsverharding (firewall, UFW, alleen SSH-toegang)
 - SSH-tunnelconfiguratie voor Gateway-toegang
 
 **Repositories:**
@@ -273,15 +272,15 @@ Voor teams die de voorkeur geven aan infrastructure-as-code-workflows, biedt een
 - Infrastructuur: [openclaw-terraform-hetzner](https://github.com/andreesg/openclaw-terraform-hetzner)
 - Docker-configuratie: [openclaw-docker-config](https://github.com/andreesg/openclaw-docker-config)
 
-Deze aanpak vult de Docker-setup hierboven aan met reproduceerbare deployments, versiebeheerde infrastructuur en geautomatiseerd noodherstel.
+Deze aanpak vult de Docker-installatie hierboven aan met reproduceerbare deployments, versiebeheerde infrastructuur en geautomatiseerd disaster recovery.
 
 <Note>
-Community-onderhouden. Zie de repositorylinks hierboven voor problemen of bijdragen.
+Door de community onderhouden. Zie de repositorylinks hierboven voor issues of bijdragen.
 </Note>
 
 ## Volgende stappen
 
-- Stel messagingkanalen in: [Kanalen](/nl/channels)
+- Stel berichtkanalen in: [Kanalen](/nl/channels)
 - Configureer de Gateway: [Gateway-configuratie](/nl/gateway/configuration)
 - Houd OpenClaw up-to-date: [Bijwerken](/nl/install/updating)
 

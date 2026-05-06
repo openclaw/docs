@@ -1,31 +1,31 @@
 ---
 read_when:
-    - Je bouwt een Plugin die before_tool_call, before_agent_reply, berichthooks of levenscyclushooks nodig heeft
-    - Je moet toolaanroepen vanuit een Plugin blokkeren, herschrijven of hiervoor goedkeuring vereisen
+    - Je bouwt een Plugin die before_tool_call, before_agent_reply, bericht-hooks of levenscyclus-hooks nodig heeft
+    - Je moet toolaanroepen van een Plugin blokkeren, herschrijven of daarvoor goedkeuring vereisen.
     - Je kiest tussen interne hooks en Plugin-hooks
-summary: 'Plugin-hooks: onderschep levenscyclusgebeurtenissen van agents, tools, berichten, sessies en Gateway'
+summary: 'Plugin-hooks: onderschep levenscyclusgebeurtenissen van agent, tool, bericht, sessie en Gateway'
 title: Plugin-haken
 x-i18n:
-    generated_at: "2026-05-06T09:25:18Z"
+    generated_at: "2026-05-06T17:58:55Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 92a149e1b343ea2d3f55855c2d02f4a9519337f0450c8a1428d52cd77ab4046a
+    source_hash: 3741b95bcccdff4e24b4c1f05de54649b48a6c0a2ca1dc4376475eb1823ae185
     source_path: plugins/hooks.md
     workflow: 16
 ---
 
 Plugin-hooks zijn in-process uitbreidingspunten voor OpenClaw-plugins. Gebruik ze
 wanneer een plugin agentuitvoeringen, toolaanroepen, berichtenstroom,
-sessielevenscyclus, subagent-routering, installaties of Gateway-opstart moet
+sessielevenscyclus, subagentroutering, installaties of Gateway-opstart moet
 inspecteren of wijzigen.
 
 Gebruik in plaats daarvan [interne hooks](/nl/automation/hooks) wanneer je een klein
-door de operator geïnstalleerd `HOOK.md`-script wilt voor command- en Gateway-events zoals
+door de operator geinstalleerd `HOOK.md`-script wilt voor opdracht- en Gateway-gebeurtenissen zoals
 `/new`, `/reset`, `/stop`, `agent:bootstrap` of `gateway:startup`.
 
 ## Snelstart
 
-Registreer getypte plugin-hooks met `api.on(...)` vanuit je plugin-entry:
+Registreer getypeerde plugin-hooks met `api.on(...)` vanuit je plugin-entry:
 
 ```typescript
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
@@ -57,19 +57,19 @@ export default definePluginEntry({
 });
 ```
 
-Hook-handlers worden opeenvolgend uitgevoerd in aflopende `priority`. Hooks met
+Hook-handlers worden sequentieel uitgevoerd in aflopende `priority`. Hooks met
 dezelfde prioriteit behouden de registratievolgorde.
 
 `api.on(name, handler, opts?)` accepteert:
 
-- `priority` - handler-volgorde (hoger wordt eerst uitgevoerd).
+- `priority` - volgorde van handlers (hoger wordt eerst uitgevoerd).
 - `timeoutMs` - optioneel budget per hook. Wanneer dit is ingesteld, breekt de hook-runner die
   handler af nadat het budget is verstreken en gaat door met de volgende, in plaats van
-  traag opstart- of herinneringswerk de door de aanroeper geconfigureerde model-time-out
-  te laten gebruiken. Laat dit weg om de standaard observatie-/beslissingstime-out te gebruiken die de
+  trage setup- of recall-taken de door de aanroeper geconfigureerde model-time-out te laten
+  verbruiken. Laat dit weg om de standaard time-out voor observatie/beslissing te gebruiken die de
   hook-runner generiek toepast.
 
-Operators kunnen ook hook-budgetten instellen zonder plugincode te patchen:
+Operators kunnen ook hook-budgetten instellen zonder plugin-code te patchen:
 
 ```json
 {
@@ -90,13 +90,13 @@ Operators kunnen ook hook-budgetten instellen zonder plugincode te patchen:
 ```
 
 `hooks.timeouts.<hookName>` overschrijft `hooks.timeoutMs`, dat de door de
-plugin-auteur ingestelde waarde `api.on(..., { timeoutMs })` overschrijft. Elke geconfigureerde waarde moet
-een positief geheel getal zijn van maximaal 600000 milliseconden. Geef de voorkeur aan overschrijvingen per hook
-voor bekende trage hooks, zodat één plugin niet overal een langer budget krijgt.
+plugin-auteur ingestelde `api.on(..., { timeoutMs })`-waarde overschrijft. Elke geconfigureerde waarde moet
+een positief geheel getal zijn van niet meer dan 600000 milliseconden. Geef de voorkeur aan overrides per hook
+voor bekende trage hooks, zodat een plugin niet overal een langer budget krijgt.
 
 Elke hook ontvangt `event.context.pluginConfig`, de opgeloste configuratie voor de
 plugin die die handler heeft geregistreerd. Gebruik dit voor hook-beslissingen waarvoor
-huidige pluginopties nodig zijn; OpenClaw injecteert dit per handler zonder het
+huidige plugin-opties nodig zijn; OpenClaw injecteert dit per handler zonder het
 gedeelde event-object te muteren dat andere plugins zien.
 
 ## Hookcatalogus
@@ -107,54 +107,55 @@ alleen voor observatie.
 
 **Agentbeurt**
 
-- `before_model_resolve` - provider of model overschrijven voordat sessieberichten worden geladen
-- `agent_turn_prepare` - in de wachtrij geplaatste pluginbeurt-injecties verwerken en context voor dezelfde beurt toevoegen vóór prompt-hooks
-- `before_prompt_build` - dynamische context of systeemprompttekst toevoegen vóór de modelaanroep
-- `before_agent_start` - gecombineerde fase alleen voor compatibiliteit; geef de voorkeur aan de twee hooks hierboven
-- **`before_agent_reply`** - de modelbeurt kortsluiten met een synthetisch antwoord of stilte
-- **`before_agent_finalize`** - het natuurlijke definitieve antwoord inspecteren en nog één modelpass aanvragen
-- `agent_end` - definitieve berichten, successtatus en uitvoeringsduur observeren
-- `heartbeat_prompt_contribution` - alleen-heartbeat-context toevoegen voor achtergrondmonitor- en levenscyclusplugins
+- `before_model_resolve` - overschrijf provider of model voordat sessieberichten worden geladen
+- `agent_turn_prepare` - verwerk in de wachtrij geplaatste plugin-beurtinjecties en voeg context voor dezelfde beurt toe voor prompt-hooks
+- `before_prompt_build` - voeg dynamische context of systeemprompttekst toe voor de modelaanroep
+- `before_agent_start` - alleen gecombineerde fase voor compatibiliteit; geef de voorkeur aan de twee hooks hierboven
+- **`before_agent_run`** - inspecteer de definitieve prompt en sessieberichten voor modelinzending en blokkeer eventueel de uitvoering
+- **`before_agent_reply`** - onderbreek de modelbeurt met een synthetisch antwoord of stilte
+- **`before_agent_finalize`** - inspecteer het natuurlijke definitieve antwoord en vraag nog een modelpass aan
+- `agent_end` - observeer definitieve berichten, successtatus en uitvoeringsduur
+- `heartbeat_prompt_contribution` - voeg alleen-Heartbeat-context toe voor achtergrondmonitor- en levenscyclusplugins
 
 **Conversatieobservatie**
 
-- `model_call_started` / `model_call_ended` - opgeschoonde provider-/modelaanroepmetadata, timing, resultaat en begrensde request-id-hashes observeren zonder prompt- of response-inhoud
-- `llm_input` - providerinvoer observeren (systeemprompt, prompt, geschiedenis)
-- `llm_output` - provideruitvoer observeren
+- `model_call_started` / `model_call_ended` - observeer opgeschoonde metadata, timing, uitkomst en begrensde request-id-hashes van provider-/modelaanroepen zonder prompt- of responsinhoud
+- `llm_input` - observeer providerinvoer (systeemprompt, prompt, geschiedenis)
+- `llm_output` - observeer provideruitvoer
 
 **Tools**
 
-- **`before_tool_call`** - toolparameters herschrijven, uitvoering blokkeren of goedkeuring vereisen
-- `after_tool_call` - toolresultaten, fouten en duur observeren
-- **`tool_result_persist`** - het assistentbericht herschrijven dat uit een toolresultaat wordt geproduceerd
-- **`before_message_write`** - een lopende schrijfactie voor een bericht inspecteren of blokkeren (zeldzaam)
+- **`before_tool_call`** - herschrijf toolparameters, blokkeer uitvoering of vereis goedkeuring
+- `after_tool_call` - observeer toolresultaten, fouten en duur
+- **`tool_result_persist`** - herschrijf het assistentbericht dat uit een toolresultaat is geproduceerd
+- **`before_message_write`** - inspecteer of blokkeer een berichtschrijfactie die bezig is (zeldzaam)
 
-**Berichten en levering**
+**Berichten en aflevering**
 
-- **`inbound_claim`** - een inkomend bericht claimen vóór agent-routering (synthetische antwoorden)
-- `message_received` - inkomende inhoud, afzender, thread en metadata observeren
-- **`message_sending`** - uitgaande inhoud herschrijven of levering annuleren
-- `message_sent` - succesvolle of mislukte uitgaande levering observeren
-- **`before_dispatch`** - een uitgaande dispatch inspecteren of herschrijven vóór overdracht aan het kanaal
-- **`reply_dispatch`** - deelnemen aan de uiteindelijke reply-dispatch-pipeline
+- **`inbound_claim`** - claim een inkomend bericht voor agentroutering (synthetische antwoorden)
+- `message_received` - observeer inkomende inhoud, afzender, thread en metadata
+- **`message_sending`** - herschrijf uitgaande inhoud of annuleer aflevering
+- `message_sent` - observeer succes of mislukking van uitgaande aflevering
+- **`before_dispatch`** - inspecteer of herschrijf een uitgaande dispatch voor kanaaloverdracht
+- **`reply_dispatch`** - neem deel aan de definitieve reply-dispatch-pijplijn
 
 **Sessies en Compaction**
 
-- `session_start` / `session_end` - grenzen van de sessielevenscyclus volgen
-- `before_compaction` / `after_compaction` - Compaction-cycli observeren of annoteren
-- `before_reset` - sessie-reset-events observeren (`/reset`, programmatische resets)
+- `session_start` / `session_end` - volg grenzen van de sessielevenscyclus
+- `before_compaction` / `after_compaction` - observeer of annoteer Compaction-cycli
+- `before_reset` - observeer sessie-resetgebeurtenissen (`/reset`, programmatische resets)
 
 **Subagents**
 
-- `subagent_spawning` / `subagent_delivery_target` / `subagent_spawned` / `subagent_ended` - subagent-routering en voltooiingslevering coördineren
+- `subagent_spawning` / `subagent_delivery_target` / `subagent_spawned` / `subagent_ended` - coordineer subagentroutering en aflevering na voltooiing
 
 **Levenscyclus**
 
-- `gateway_start` / `gateway_stop` - door plugins beheerde services starten of stoppen met de Gateway
-- `cron_changed` - wijzigingen in de door de Gateway beheerde Cron-levenscyclus observeren (toegevoegd, bijgewerkt, verwijderd, gestart, voltooid, gepland)
-- **`before_install`** - scanresultaten van Skill- of plugininstallaties inspecteren en optioneel blokkeren
+- `gateway_start` / `gateway_stop` - start of stop door plugins beheerde services met de Gateway
+- `cron_changed` - observeer door de Gateway beheerde Cron-levenscycluswijzigingen (toegevoegd, bijgewerkt, verwijderd, gestart, voltooid, gepland)
+- **`before_install`** - inspecteer Skill- of plugin-installatiescans en blokkeer eventueel
 
-## Toolaanroepbeleid
+## Beleid voor toolaanroepen
 
 `before_tool_call` ontvangt:
 
@@ -163,9 +164,9 @@ alleen voor observatie.
 - optioneel `event.runId`
 - optioneel `event.toolCallId`
 - contextvelden zoals `ctx.agentId`, `ctx.sessionKey`, `ctx.sessionId`,
-  `ctx.runId`, `ctx.jobId` (ingesteld bij door cron aangestuurde uitvoeringen), en diagnostische `ctx.trace`
+  `ctx.runId`, `ctx.jobId` (ingesteld bij door Cron aangestuurde uitvoeringen) en diagnostische `ctx.trace`
 
-Het kan teruggeven:
+Het kan dit retourneren:
 
 ```typescript
 type BeforeToolCallResult = {
@@ -189,21 +190,21 @@ type BeforeToolCallResult = {
 Regels:
 
 - `block: true` is terminaal en slaat handlers met lagere prioriteit over.
-- `block: false` wordt behandeld alsof er geen beslissing is.
+- `block: false` wordt behandeld als geen beslissing.
 - `params` herschrijft de toolparameters voor uitvoering.
-- `requireApproval` pauzeert de agentuitvoering en vraagt de gebruiker via plugin-
-  goedkeuringen. De opdracht `/approve` kan zowel exec- als plugingoedkeuringen goedkeuren.
+- `requireApproval` pauzeert de agentuitvoering en vraagt de gebruiker via plugin-goedkeuringen.
+  De opdracht `/approve` kan zowel exec- als plugin-goedkeuringen goedkeuren.
 - Een `block: true` met lagere prioriteit kan nog steeds blokkeren nadat een hook met hogere prioriteit
   goedkeuring heeft aangevraagd.
 - `onResolution` ontvangt de opgeloste goedkeuringsbeslissing - `allow-once`,
   `allow-always`, `deny`, `timeout` of `cancelled`.
 
-Gebundelde plugins die hostniveau-beleid nodig hebben, kunnen vertrouwde toolpolicy's registreren
-met `api.registerTrustedToolPolicy(...)`. Deze worden uitgevoerd vóór gewone
-`before_tool_call`-hooks en vóór beslissingen van externe plugins. Gebruik ze alleen
-voor door de host vertrouwde gates zoals werkruimtebeleid, budgethandhaving of
-gereserveerde workflowveiligheid. Externe plugins moeten normale `before_tool_call`-
-hooks gebruiken.
+Gebundelde plugins die beleid op hostniveau nodig hebben, kunnen vertrouwd toolbeleid registreren
+met `api.registerTrustedToolPolicy(...)`. Deze worden uitgevoerd voor gewone
+`before_tool_call`-hooks en voor externe plugin-beslissingen. Gebruik ze alleen
+voor door de host vertrouwde poorten, zoals workspacebeleid, budgethandhaving of
+veiligheid van gereserveerde workflows. Externe plugins moeten normale `before_tool_call`-hooks
+gebruiken.
 
 ### Persistentie van toolresultaten
 
@@ -211,13 +212,13 @@ Toolresultaten kunnen gestructureerde `details` bevatten voor UI-rendering, diag
 mediaroutering of door plugins beheerde metadata. Behandel `details` als runtime-metadata,
 niet als promptinhoud:
 
-- OpenClaw verwijdert `toolResult.details` vóór provider-replay en Compaction-
-  invoer, zodat metadata geen modelcontext wordt.
+- OpenClaw verwijdert `toolResult.details` voor provider-replay en Compaction-invoer,
+  zodat metadata geen modelcontext wordt.
 - Gepersisteerde sessie-items behouden alleen begrensde `details`. Te grote details worden
   vervangen door een compacte samenvatting en `persistedDetailsTruncated: true`.
-- `tool_result_persist` en `before_message_write` worden uitgevoerd vóór de uiteindelijke
+- `tool_result_persist` en `before_message_write` worden uitgevoerd voor de definitieve
   persistentielimiet. Hooks moeten geretourneerde `details` nog steeds klein houden en vermijden
-  om promptrelevante tekst alleen in `details` te plaatsen; zet voor het model zichtbare tooluitvoer
+  om promptrelevante tekst alleen in `details` te plaatsen; zet modelzichtbare tooluitvoer
   in `content`.
 
 ## Prompt- en modelhooks
@@ -225,52 +226,68 @@ niet als promptinhoud:
 Gebruik de fasespecifieke hooks voor nieuwe plugins:
 
 - `before_model_resolve`: ontvangt alleen de huidige prompt en bijlagemetadata.
-  Geef `providerOverride` of `modelOverride` terug.
+  Retourneer `providerOverride` of `modelOverride`.
 - `agent_turn_prepare`: ontvangt de huidige prompt, voorbereide sessieberichten
-  en eventuele exact-één-keer-injecties uit de wachtrij die voor deze sessie zijn verwerkt. Geef
-  `prependContext` of `appendContext` terug.
+  en eventuele exact-eenmalige wachtrij-injecties die voor deze sessie zijn geleegd. Retourneer
+  `prependContext` of `appendContext`.
 - `before_prompt_build`: ontvangt de huidige prompt en sessieberichten.
-  Geef `prependContext`, `appendContext`, `systemPrompt`,
-  `prependSystemContext` of `appendSystemContext` terug.
-- `heartbeat_prompt_contribution`: wordt alleen uitgevoerd voor Heartbeat-beurten en geeft
-  `prependContext` of `appendContext` terug. Het is bedoeld voor achtergrondmonitors
-  die de huidige status moeten samenvatten zonder door de gebruiker geïnitieerde beurten te wijzigen.
+  Retourneer `prependContext`, `appendContext`, `systemPrompt`,
+  `prependSystemContext` of `appendSystemContext`.
+- `heartbeat_prompt_contribution`: wordt alleen uitgevoerd voor Heartbeat-beurten en retourneert
+  `prependContext` of `appendContext`. Het is bedoeld voor achtergrondmonitors
+  die de huidige status moeten samenvatten zonder door gebruikers geinitieerde beurten te wijzigen.
 
-`before_agent_start` blijft bestaan voor compatibiliteit. Geef de voorkeur aan de expliciete hooks hierboven
-zodat je plugin niet afhankelijk is van een legacy gecombineerde fase.
+`before_agent_start` blijft bestaan voor compatibiliteit. Geef de voorkeur aan de expliciete hooks hierboven,
+zodat je plugin niet afhankelijk is van een verouderde gecombineerde fase.
 
-`before_agent_start` en `agent_end` bevatten `event.runId` wanneer OpenClaw de
-actieve uitvoering kan identificeren. Dezelfde waarde is ook beschikbaar op `ctx.runId`.
-Door Cron aangestuurde uitvoeringen stellen ook `ctx.jobId` beschikbaar (de id van de oorspronkelijke cronjob), zodat
-plugin-hooks metrics, bijwerkingen of status kunnen afbakenen tot een specifieke geplande
+`before_agent_run` wordt uitgevoerd na promptconstructie en voor enige modelinvoer,
+inclusief prompt-lokaal laden van afbeeldingen en `llm_input`-observatie. Het ontvangt
+de huidige gebruikersinvoer als `prompt`, plus geladen sessiegeschiedenis in `messages`
+en de actieve systeemprompt. Retourneer `{ outcome: "block", reason, message? }`
+om de uitvoering te stoppen voordat het model de prompt kan lezen. `reason` is intern;
+`message` is de gebruikersgerichte vervanging. De enige ondersteunde uitkomsten zijn
+`pass` en `block`; niet-ondersteunde beslissingsvormen falen gesloten.
+
+Wanneer een uitvoering wordt geblokkeerd, slaat OpenClaw alleen de vervangende tekst op in
+`message.content` plus niet-gevoelige blokkeermetadata, zoals de id van de blokkerende plugin
+en tijdstempel. De oorspronkelijke gebruikerstekst wordt niet bewaard in transcript of toekomstige
+context. Interne blokkeerredenen worden als gevoelig behandeld en uitgesloten van
+transcript-, geschiedenis-, broadcast-, log- en diagnostische payloads. Observability
+moet opgeschoonde velden gebruiken, zoals blocker-id, uitkomst, tijdstempel of een veilige
+categorie.
+
+`before_agent_start` en `agent_end` bevatten `event.runId` wanneer OpenClaw
+de actieve uitvoering kan identificeren. Dezelfde waarde is ook beschikbaar op `ctx.runId`.
+Door Cron aangestuurde uitvoeringen geven ook `ctx.jobId` (de id van de oorspronkelijke Cron-job) vrij, zodat
+plugin-hooks statistieken, side effects of status kunnen beperken tot een specifieke geplande
 job.
 
-Voor kanaal-afkomstige uitvoeringen is `ctx.messageProvider` het provideroppervlak zoals
+Voor uit kanalen afkomstige uitvoeringen is `ctx.messageProvider` het provideroppervlak, zoals
 `discord` of `telegram`, terwijl `ctx.channelId` de doelidentifier van de conversatie is
-wanneer OpenClaw er een kan afleiden uit de sessiesleutel of leveringsmetadata.
+wanneer OpenClaw die uit de sessiesleutel of aflevermetadata kan afleiden.
 
 `agent_end` is een observatiehook en wordt fire-and-forget uitgevoerd na de beurt. De
 hook-runner past een time-out van 30 seconden toe, zodat een vastgelopen plugin of embedding-
 endpoint de hook-promise niet voor altijd pending kan laten. Een time-out wordt gelogd en
-OpenClaw gaat door; dit annuleert geen door de plugin beheerd netwerkwerk, tenzij de
-plugin ook zijn eigen abortsignaal gebruikt.
+OpenClaw gaat door; dit annuleert door plugins beheerd netwerkwerk niet, tenzij de
+plugin ook zijn eigen abort-signaal gebruikt.
 
 Gebruik `model_call_started` en `model_call_ended` voor provider-call-telemetrie
-die geen ruwe prompts, geschiedenis, responses, headers, request-
-bodies of provider-request-ID's mag ontvangen. Deze hooks bevatten stabiele metadata zoals
+die geen ruwe prompts, geschiedenis, antwoorden, headers, request bodies
+of provider-request-ID's mag ontvangen. Deze hooks bevatten stabiele metadata zoals
 `runId`, `callId`, `provider`, `model`, optioneel `api`/`transport`, terminale
-`durationMs`/`outcome`, en `upstreamRequestIdHash` wanneer OpenClaw een
+`durationMs`/`outcome` en `upstreamRequestIdHash` wanneer OpenClaw een
 begrensde provider-request-id-hash kan afleiden.
 
 `before_agent_finalize` wordt alleen uitgevoerd wanneer een harness op het punt staat een natuurlijk
-definitief assistentantwoord te accepteren. Dit is niet het `/stop`-annuleringspad en wordt niet
-uitgevoerd wanneer de gebruiker een beurt afbreekt. Geef `{ action: "revise", reason }` terug om
-de harness om nog één modelpass te vragen vóór finalisatie, `{ action:
+definitief assistentantwoord te accepteren. Het is niet het `/stop`-annuleringspad en wordt niet
+uitgevoerd wanneer de gebruiker een beurt afbreekt. Retourneer `{ action: "revise", reason }` om
+de harness om nog een modelpass te vragen voor finalisatie, `{ action:
 "finalize", reason? }` om finalisatie af te dwingen, of laat een resultaat weg om door te gaan.
-Native Codex-`Stop`-hooks worden doorgegeven aan deze hook als OpenClaw-
+Native Codex-`Stop`-hooks worden naar deze hook doorgestuurd als OpenClaw-
 `before_agent_finalize`-beslissingen.
 
-Bij het teruggeven van `action: "revise"` kunnen plugins `retry`-metadata opnemen om
+Bij het retourneren van `action: "revise"` kunnen plugins `retry`-metadata opnemen om
 de extra modelpass begrensd en replay-veilig te maken:
 
 ```typescript
@@ -281,13 +298,14 @@ type BeforeAgentFinalizeRetry = {
 };
 ```
 
-`instruction` wordt toegevoegd aan de revisiereden die naar de harness wordt gestuurd.
-`idempotencyKey` laat de host retries tellen voor hetzelfde pluginverzoek over
-equivalente finalisatiebeslissingen heen, en `maxAttempts` begrenst hoeveel extra passes de
+`instruction` wordt toegevoegd aan de revisiereden die naar het testharnas wordt gestuurd.
+Met `idempotencyKey` kan de host retries tellen voor hetzelfde plugin-verzoek over
+equivalente finalize-beslissingen heen, en `maxAttempts` begrenst hoeveel extra passes de
 host toestaat voordat wordt doorgegaan met het natuurlijke definitieve antwoord.
 
-Niet-gebundelde plugins die `llm_input`, `llm_output`,
-`before_agent_finalize` of `agent_end` nodig hebben, moeten instellen:
+Niet-gebundelde plugins die raw gesprekshooks nodig hebben (`before_model_resolve`,
+`before_agent_reply`, `llm_input`, `llm_output`, `before_agent_finalize`,
+`agent_end`, of `before_agent_run`) moeten instellen:
 
 ```json
 {
@@ -303,112 +321,109 @@ Niet-gebundelde plugins die `llm_input`, `llm_output`,
 }
 ```
 
-Prompt-muterende hooks en duurzame next-turn-injecties kunnen per plugin worden uitgeschakeld
-met `plugins.entries.<id>.hooks.allowPromptInjection=false`.
+Hooks die prompts wijzigen en duurzame injecties voor de volgende turn kunnen per plugin
+worden uitgeschakeld met `plugins.entries.<id>.hooks.allowPromptInjection=false`.
 
-### Sessie-extensies en next-turn-injecties
+### Sessie-uitbreidingen en injecties voor de volgende turn
 
-Workflow-plugins kunnen kleine JSON-compatibele sessiestatus persistent opslaan met
+Workflow-plugins kunnen kleine JSON-compatibele sessiestatus bewaren met
 `api.registerSessionExtension(...)` en deze bijwerken via de Gateway-methode
-`sessions.pluginPatch`. Sessierijen projecteren geregistreerde extensiestatus
-via `pluginExtensions`, zodat Control UI en andere clients plugin-eigen status
-kunnen renderen zonder plugin-internals te hoeven kennen.
+`sessions.pluginPatch`. Sessierijen projecteren geregistreerde uitbreidingsstatus
+via `pluginExtensions`, zodat Control UI en andere clients
+plugin-eigen status kunnen renderen zonder plugin-internals te leren kennen.
 
 Gebruik `api.enqueueNextTurnInjection(...)` wanneer een plugin duurzame context
-precies één keer naar de volgende modelbeurt moet brengen. OpenClaw verwerkt
-in de wachtrij geplaatste injecties vóór prompt-hooks, verwijdert verlopen
-injecties en dedupliceert per plugin op `idempotencyKey`. Dit is de juiste
-naad voor hervattingen na goedkeuring, beleidssamenvattingen, delta's van
-achtergrondmonitors en opdrachtvervolgen die bij de volgende beurt zichtbaar
-moeten zijn voor het model, maar geen permanente systeemprompttekst mogen
-worden.
+precies één keer naar de volgende model-turn moet laten gaan. OpenClaw verwerkt
+injecties in de wachtrij vóór prompt-hooks, verwijdert verlopen injecties en
+dedupliceert per plugin op `idempotencyKey`. Dit is het juiste aansluitpunt voor
+hervattingen van goedkeuringen, beleidssamenvattingen, delta's van achtergrondmonitors
+en opdrachtvervolgen die bij de volgende turn zichtbaar moeten zijn voor het
+model, maar geen permanente systeem-prompttekst mogen worden.
 
 Opschoningssemantiek maakt deel uit van het contract. Opschoning van
-sessie-extensies en runtime-lifecycle-opruimcallbacks ontvangen `reset`,
-`delete`, `disable` of `restart`. De host verwijdert de persistente
-sessie-extensiestatus en wachtende next-turn-injecties van de eigenaar-plugin
-voor reset/delete/disable; restart behoudt duurzame sessiestatus terwijl
-opruimcallbacks plugins scheduler-taken, run-context en andere out-of-band
-resources voor de oude runtime-generatie laten vrijgeven.
+sessie-uitbreidingen en callbacks voor runtime-levenscyclusopschoning ontvangen
+`reset`, `delete`, `disable` of `restart`. De host verwijdert de permanente
+sessie-uitbreidingsstatus van de eigenaar-plugin en wachtende injecties voor de
+volgende turn bij reset/delete/disable; restart behoudt duurzame sessiestatus,
+terwijl opschoningscallbacks plugins scheduler-taken, run-context en andere
+out-of-band resources voor de oude runtime-generatie laten vrijgeven.
 
 ## Berichthooks
 
-Gebruik berichthooks voor routering en bezorgbeleid op kanaalniveau:
+Gebruik berichthooks voor routering op kanaalniveau en afleveringsbeleid:
 
 - `message_received`: observeer inkomende content, afzender, `threadId`, `messageId`,
   `senderId`, optionele run-/sessiecorrelatie en metadata.
 - `message_sending`: herschrijf `content` of retourneer `{ cancel: true }`.
-- `message_sent`: observeer definitief succes of definitieve mislukking.
+- `message_sent`: observeer uiteindelijke successen of fouten.
 
-Voor audio-only TTS-antwoorden kan `content` het verborgen uitgesproken
-transcript bevatten, zelfs wanneer de kanaalpayload geen zichtbare tekst of
-caption heeft. Het herschrijven van die `content` werkt alleen het voor hooks
-zichtbare transcript bij; het wordt niet weergegeven als mediacaption.
+Voor audio-only TTS-antwoorden kan `content` het verborgen uitgesproken transcript
+bevatten, zelfs wanneer de kanaalpayload geen zichtbare tekst/bijschrift heeft. Het
+herschrijven van die `content` werkt alleen het voor hooks zichtbare transcript bij;
+het wordt niet gerenderd als mediabijschrift.
 
-Berichthookcontexten stellen stabiele correlatievelden beschikbaar wanneer
-beschikbaar: `ctx.sessionKey`, `ctx.runId`, `ctx.messageId`, `ctx.senderId`,
-`ctx.trace`, `ctx.traceId`, `ctx.spanId`, `ctx.parentSpanId` en `ctx.callDepth`.
-Geef de voorkeur aan deze eersteklas velden voordat je legacy-metadata leest.
+Berichthook-contexten tonen stabiele correlatievelden wanneer beschikbaar:
+`ctx.sessionKey`, `ctx.runId`, `ctx.messageId`, `ctx.senderId`, `ctx.trace`,
+`ctx.traceId`, `ctx.spanId`, `ctx.parentSpanId` en `ctx.callDepth`. Geef de voorkeur
+aan deze eersteklas velden voordat je legacy-metadata leest.
 
-Geef de voorkeur aan getypeerde velden `threadId` en `replyToId` voordat je
+Geef de voorkeur aan getypte `threadId`- en `replyToId`-velden voordat je
 kanaalspecifieke metadata gebruikt.
 
-Beslisregels:
+Beslissingsregels:
 
 - `message_sending` met `cancel: true` is terminaal.
 - `message_sending` met `cancel: false` wordt behandeld als geen beslissing.
 - Herschreven `content` gaat door naar hooks met lagere prioriteit, tenzij een
-  latere hook de bezorging annuleert.
+  latere hook aflevering annuleert.
 
 ## Installatiehooks
 
-`before_install` wordt uitgevoerd na de ingebouwde scan voor Skills- en
-plugininstallaties. Retourneer aanvullende bevindingen of `{ block: true, blockReason }`
-om de installatie te stoppen.
+`before_install` draait na de ingebouwde scan voor installatie van Skills en plugins.
+Retourneer aanvullende bevindingen of `{ block: true, blockReason }` om de
+installatie te stoppen.
 
 `block: true` is terminaal. `block: false` wordt behandeld als geen beslissing.
 
-## Gateway-lifecycle
+## Gateway-levenscyclus
 
-Gebruik `gateway_start` voor pluginservices die door Gateway beheerde status
-nodig hebben. De context stelt `ctx.config`, `ctx.workspaceDir` en
-`ctx.getCron?.()` beschikbaar voor inspectie en updates van cron. Gebruik
-`gateway_stop` om langlopende resources op te ruimen.
+Gebruik `gateway_start` voor plugin-services die Gateway-eigen status nodig hebben. De
+context toont `ctx.config`, `ctx.workspaceDir` en `ctx.getCron?.()` voor
+Cron-inspectie en -updates. Gebruik `gateway_stop` om langlopende resources op te
+schonen.
 
-Vertrouw niet op de interne hook `gateway:startup` voor plugin-eigen
-runtimeservices.
+Vertrouw niet op de interne `gateway:startup`-hook voor plugin-eigen runtime-services.
 
-`cron_changed` wordt geactiveerd voor door Gateway beheerde cron-lifecycle-events
-met een getypeerde eventpayload die de redenen `added`, `updated`, `removed`,
-`started`, `finished` en `scheduled` dekt. Het event bevat een
-`PluginHookGatewayCronJob`-snapshot (inclusief `state.nextRunAtMs`,
-`state.lastRunStatus` en `state.lastError` wanneer aanwezig) plus een
-`PluginHookGatewayCronDeliveryStatus` van `not-requested` | `delivered` |
-`not-delivered` | `unknown`. Verwijderde events bevatten nog steeds de
-snapshot van de verwijderde taak, zodat externe schedulers status kunnen
-reconciliëren. Gebruik `ctx.getCron?.()` en `ctx.config` uit de runtimecontext
-bij het synchroniseren van externe wake-schedulers, en houd OpenClaw als de
-bron van waarheid voor due-controles en uitvoering.
+`cron_changed` wordt geactiveerd voor Gateway-eigen Cron-levenscyclusgebeurtenissen met
+een getypte event-payload voor de redenen `added`, `updated`, `removed`, `started`,
+`finished` en `scheduled`. Het event bevat een `PluginHookGatewayCronJob`-snapshot
+(inclusief `state.nextRunAtMs`, `state.lastRunStatus` en `state.lastError` wanneer
+aanwezig) plus een `PluginHookGatewayCronDeliveryStatus` van `not-requested` |
+`delivered` | `not-delivered` | `unknown`. Verwijderde events bevatten nog steeds
+de verwijderde jobsnapshot zodat externe schedulers status kunnen reconciliëren.
+Gebruik `ctx.getCron?.()` en `ctx.config` uit de runtime-context bij het synchroniseren
+van externe wake-schedulers, en houd OpenClaw als bron van waarheid voor
+vervalcontroles en uitvoering.
 
 ## Aankomende deprecaties
 
-Enkele hook-aangrenzende oppervlakken zijn deprecated maar worden nog steeds
+Een paar hook-aangrenzende oppervlakken zijn deprecated maar worden nog steeds
 ondersteund. Migreer vóór de volgende major release:
 
-- **Plaintext-kanaalenveloppen** in handlers voor `inbound_claim` en `message_received`.
-  Lees `BodyForAgent` en de gestructureerde gebruikerscontextblokken
-  in plaats van platte enveloptekst te parsen. Zie
+- **Plaintext-kanaalenveloppen** in `inbound_claim`- en `message_received`-handlers.
+  Lees `BodyForAgent` en de gestructureerde gebruikerscontextblokken in plaats van
+  platte enveloptekst te parsen. Zie
   [Plaintext-kanaalenveloppen → BodyForAgent](/nl/plugins/sdk-migration#active-deprecations).
-- **`before_agent_start`** blijft bestaan voor compatibiliteit. Nieuwe plugins moeten
+- **`before_agent_start`** blijft voor compatibiliteit. Nieuwe plugins moeten
   `before_model_resolve` en `before_prompt_build` gebruiken in plaats van de
   gecombineerde fase.
-- **`onResolution` in `before_tool_call`** gebruikt nu de getypeerde
-  union `PluginApprovalResolution` (`allow-once` / `allow-always` / `deny` /
-  `timeout` / `cancelled`) in plaats van een vrij vormgegeven `string`.
+- **`onResolution` in `before_tool_call`** gebruikt nu de getypte
+  `PluginApprovalResolution`-union (`allow-once` / `allow-always` / `deny` /
+  `timeout` / `cancelled`) in plaats van een vrije-vorm `string`.
 
-Voor de volledige lijst - registratie van geheugencapabilities, thinking-profiel
-van providers, externe auth-providers, discovery-types voor providers, accessors
-voor taakruntime en de hernoeming van `command-auth` → `command-status` - zie
+Voor de volledige lijst - registratie van memory-capabilities, provider-thinkingprofiel,
+externe auth-providers, typen voor provider-discovery, toegangsmethoden voor task-runtime
+en de hernoeming `command-auth` → `command-status` - zie
 [Plugin SDK-migratie → Actieve deprecaties](/nl/plugins/sdk-migration#active-deprecations).
 
 ## Gerelateerd
@@ -418,4 +433,4 @@ voor taakruntime en de hernoeming van `command-auth` → `command-status` - zie
 - [Plugin SDK-overzicht](/nl/plugins/sdk-overview)
 - [Plugin-entrypoints](/nl/plugins/sdk-entrypoints)
 - [Interne hooks](/nl/automation/hooks)
-- [Interne pluginarchitectuur](/nl/plugins/architecture-internals)
+- [Interne plugin-architectuur](/nl/plugins/architecture-internals)

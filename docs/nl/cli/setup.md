@@ -1,14 +1,14 @@
 ---
 read_when:
-    - Je voert de eerste configuratie uit zonder volledige CLI-begeleiding
-    - Je wilt het standaardwerkruimtepad instellen
+    - Je voert de eerste installatie uit zonder volledige CLI-onboarding
+    - Je wilt het standaardpad voor de werkruimte instellen
 summary: CLI-referentie voor `openclaw setup` (configuratie + werkruimte initialiseren)
-title: Installatie
+title: Instellen
 x-i18n:
-    generated_at: "2026-05-02T20:42:35Z"
+    generated_at: "2026-05-06T17:54:41Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 805f60c81f5fc216fc446641efe0bcb60bb6c34b3a50a6fc9e767461206e5f90
+    source_hash: 9a47d41f8c6c59395eaa4bc6055fa09f863af819c7920e29969793904180c910
     source_path: cli/setup.md
     workflow: 16
 ---
@@ -17,10 +17,14 @@ x-i18n:
 
 Initialiseer `~/.openclaw/openclaw.json` en de agentwerkruimte.
 
+<Note>
+`openclaw setup` is bedoeld voor installaties met wijzigbare configuratie. In Nix-modus (`OPENCLAW_NIX_MODE=1`) weigert OpenClaw schrijfacties voor setup, omdat het configuratiebestand door Nix wordt beheerd. Agents moeten de eigen [nix-openclaw-snelstart](https://github.com/openclaw/nix-openclaw#quick-start) of de equivalente bronconfiguratie voor een ander Nix-pakket gebruiken.
+</Note>
+
 Gerelateerd:
 
 - Aan de slag: [Aan de slag](/nl/start/getting-started)
-- CLI-introductie: [Introductie (CLI)](/nl/start/wizard)
+- CLI-onboarding: [Onboarding (CLI)](/nl/start/wizard)
 
 ## Voorbeelden
 
@@ -35,16 +39,16 @@ openclaw setup --non-interactive --mode remote --remote-url wss://gateway-host:1
 ## Opties
 
 - `--workspace <dir>`: agentwerkruimtemap (opgeslagen als `agents.defaults.workspace`)
-- `--wizard`: introductie uitvoeren
-- `--non-interactive`: introductie zonder prompts uitvoeren
-- `--mode <local|remote>`: introductiemodus
-- `--import-from <provider>`: migratieprovider om tijdens de introductie uit te voeren
+- `--wizard`: onboarding uitvoeren
+- `--non-interactive`: onboarding uitvoeren zonder prompts
+- `--mode <local|remote>`: onboardingmodus
+- `--import-from <provider>`: migratieprovider om tijdens onboarding uit te voeren
 - `--import-source <path>`: bron-agent-home voor `--import-from`
-- `--import-secrets`: ondersteunde geheimen importeren tijdens introductiemigratie
-- `--remote-url <url>`: WebSocket-URL van externe Gateway
-- `--remote-token <token>`: token voor externe Gateway
+- `--import-secrets`: ondersteunde geheimen importeren tijdens onboardingmigratie
+- `--remote-url <url>`: externe Gateway WebSocket-URL
+- `--remote-token <token>`: extern Gateway-token
 
-Om introductie via setup uit te voeren:
+Onboarding uitvoeren via setup:
 
 ```bash
 openclaw setup --wizard
@@ -52,10 +56,10 @@ openclaw setup --wizard
 
 Opmerkingen:
 
-- Gewoon `openclaw setup` initialiseert de configuratie en werkruimte zonder de volledige introductiestroom.
-- Voer na gewone setup `openclaw configure` uit om modellen, kanalen, Gateway, plugins, Skills of gezondheidscontroles te kiezen.
-- Introductie wordt automatisch uitgevoerd wanneer er introductievlaggen aanwezig zijn (`--wizard`, `--non-interactive`, `--mode`, `--import-from`, `--import-source`, `--import-secrets`, `--remote-url`, `--remote-token`).
-- Als Hermes-status wordt gedetecteerd, kan interactieve introductie automatisch migratie aanbieden. Importintroductie vereist een nieuwe setup; gebruik [Migreren](/nl/cli/migrate) voor dry-runplannen, back-ups en overschrijfmodus buiten introductie.
+- Eenvoudige `openclaw setup` initialiseert configuratie + werkruimte zonder de volledige onboardingflow.
+- Voer na eenvoudige setup `openclaw configure` uit om modellen, kanalen, Gateway, plugins, Skills of statuscontroles te kiezen.
+- Onboarding wordt automatisch uitgevoerd wanneer er onboardingvlaggen aanwezig zijn (`--wizard`, `--non-interactive`, `--mode`, `--import-from`, `--import-source`, `--import-secrets`, `--remote-url`, `--remote-token`).
+- Als Hermes-status wordt gedetecteerd, kan interactieve onboarding automatisch migratie aanbieden. Import-onboarding vereist een nieuwe setup; gebruik [Migreren](/nl/cli/migrate) voor dry-run-plannen, back-ups en overschrijfmodus buiten onboarding.
 
 ## Gerelateerd
 

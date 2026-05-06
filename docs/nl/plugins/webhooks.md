@@ -1,33 +1,31 @@
 ---
 read_when:
     - Je wilt TaskFlows activeren of aansturen vanuit een extern systeem
-    - Je configureert de meegeleverde webhooks-Plugin
-summary: 'Webhooks-Plugin: geauthenticeerde TaskFlow-ingang voor vertrouwde externe automatisering'
+    - Je configureert de gebundelde webhooks-Plugin
+summary: 'Webhooks-Plugin: geauthenticeerde TaskFlow-ingress voor vertrouwde externe automatisering'
 title: Webhooks-Plugin
 x-i18n:
-    generated_at: "2026-04-29T23:07:23Z"
+    generated_at: "2026-05-06T17:59:44Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 70b195e330264af48a9e9c619bb5a0937bb15b2640edd3dd2b5517a13424e9fe
+    source_hash: 9d21d96f680fa24d4a53c1ed5759f800d3cfdc3336789c42c15266edd8ce9e80
     source_path: plugins/webhooks.md
     workflow: 16
 ---
 
-# Webhooks (Plugin)
-
-De Webhooks-Plugin voegt geauthenticeerde HTTP-routes toe die externe
+De Webhooks Plugin voegt geverifieerde HTTP-routes toe die externe
 automatisering aan OpenClaw TaskFlows koppelen.
 
-Gebruik deze wanneer je wilt dat een vertrouwd systeem zoals Zapier, n8n, een CI-taak of een
+Gebruik het wanneer je wilt dat een vertrouwd systeem zoals Zapier, n8n, een CI-taak of een
 interne service beheerde TaskFlows maakt en aanstuurt zonder eerst een aangepaste
 Plugin te schrijven.
 
 ## Waar het draait
 
-De Webhooks-Plugin draait binnen het Gateway-proces.
+De Webhooks Plugin draait binnen het Gateway-proces.
 
 Als je Gateway op een andere machine draait, installeer en configureer je de Plugin op
-die Gateway-host en herstart je daarna de Gateway.
+die Gateway-host en start je daarna de Gateway opnieuw.
 
 ## Routes configureren
 
@@ -67,14 +65,14 @@ Routevelden:
 - `sessionKey`: vereiste sessie die eigenaar is van de gekoppelde TaskFlows
 - `secret`: vereist gedeeld geheim of SecretRef
 - `controllerId`: optionele controller-id voor gemaakte beheerde flows
-- `description`: optionele opmerking voor operators
+- `description`: optionele operatornotitie
 
 Ondersteunde `secret`-invoer:
 
 - Platte tekenreeks
 - SecretRef met `source: "env" | "file" | "exec"`
 
-Als een route met een geheim het geheim niet kan oplossen bij het opstarten, slaat de Plugin
+Als een route met een geheim het geheim bij het opstarten niet kan ophalen, slaat de Plugin
 die route over en logt een waarschuwing in plaats van een kapot eindpunt bloot te stellen.
 
 ## Beveiligingsmodel
@@ -82,25 +80,25 @@ die route over en logt een waarschuwing in plaats van een kapot eindpunt bloot t
 Elke route wordt vertrouwd om te handelen met de TaskFlow-bevoegdheid van de geconfigureerde
 `sessionKey`.
 
-Dit betekent dat de route TaskFlows die eigendom zijn van die sessie kan inspecteren en wijzigen, dus
+Dit betekent dat de route TaskFlows van die sessie kan inspecteren en wijzigen, dus
 je moet:
 
 - Een sterk uniek geheim per route gebruiken
-- Geheime verwijzingen verkiezen boven inline geheimen in platte tekst
+- Geheimverwijzingen verkiezen boven inline plaintext-geheimen
 - Routes koppelen aan de smalste sessie die bij de workflow past
 - Alleen het specifieke Webhook-pad blootstellen dat je nodig hebt
 
 De Plugin past toe:
 
-- Authenticatie met gedeeld geheim
-- Beveiligingen voor aanvraagbodygrootte en time-outs
+- Verificatie met gedeeld geheim
+- Bewaking van grootte van requestbody en time-outs
 - Rate limiting met vast venster
-- Beperking van lopende aanvragen
-- Eigenaargebonden TaskFlow-toegang via `api.runtime.tasks.managedFlows.bindSession(...)`
+- Beperking van gelijktijdige actieve requests
+- Eigenaarsgebonden TaskFlow-toegang via `api.runtime.tasks.managedFlows.bindSession(...)`
 
-## Aanvraagindeling
+## Requestindeling
 
-Stuur `POST`-aanvragen met:
+Stuur `POST`-requests met:
 
 - `Content-Type: application/json`
 - `Authorization: Bearer <secret>` of `x-openclaw-webhook-secret: <secret>`
@@ -149,7 +147,7 @@ Voorbeeld:
 
 ### `run_task`
 
-Maakt een beheerde onderliggende taak binnen een bestaande beheerde TaskFlow.
+Maakt een beheerde child task binnen een bestaande beheerde TaskFlow.
 
 Toegestane runtimes zijn:
 
@@ -168,9 +166,9 @@ Voorbeeld:
 }
 ```
 
-## Antwoordvorm
+## Responsvorm
 
-Geslaagde antwoorden retourneren:
+Geslaagde responses retourneren:
 
 ```json
 {
@@ -180,7 +178,7 @@ Geslaagde antwoorden retourneren:
 }
 ```
 
-Afgewezen aanvragen retourneren:
+Geweigerde requests retourneren:
 
 ```json
 {
@@ -192,7 +190,7 @@ Afgewezen aanvragen retourneren:
 }
 ```
 
-De Plugin verwijdert bewust eigenaar-/sessiemetadata uit Webhook-antwoorden.
+De Plugin verwijdert bewust eigenaars-/sessiemetadata uit Webhook-responses.
 
 ## Gerelateerde documentatie
 
