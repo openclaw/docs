@@ -9,7 +9,7 @@ Source of truth lives in [`openclaw/openclaw`](https://github.com/openclaw/openc
 1. English docs are authored in `openclaw/openclaw`.
 2. `openclaw/openclaw/.github/workflows/docs-sync-publish.yml` mirrors the docs tree into this repo.
 3. This repo stores the published docs tree plus generated locale output.
-4. `openclaw/docs/.github/workflows/translate-*.yml` runs on push, schedule, release dispatch, and manual dispatch to refresh locale docs.
+4. `openclaw/docs/.github/workflows/translate-all.yml` debounces docs changes, runs locale translation in parallel, and commits one aggregate locale refresh.
 5. `.github/workflows/pages.yml` builds `dist/docs-site` from the mirrored docs and deploys it to GitHub Pages.
 
 ## Translation behavior
@@ -20,6 +20,8 @@ Source of truth lives in [`openclaw/openclaw`](https://github.com/openclaw/openc
 - If no English source hashes changed, the workflow skips the expensive translation step entirely.
 - If files changed, only the pending files are translated.
 - The workflow retries transient model-format failures.
+- Locale outputs are uploaded as artifacts first, then committed together by the finalizer.
+- The weekly scheduled run uses full reconciliation mode to repair missed or flaky locale updates.
 
 ## Editing rules
 

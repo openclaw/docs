@@ -13,6 +13,7 @@ Publish mirror for `docs.openclaw.ai`. Source repo: `openclaw/openclaw`.
 - `AGENTS.md`, `CLAUDE.md`, `README.md`.
 - `.github/workflows/translate-*.yml`.
 - `.github/workflows/translate-locale-reusable.yml`.
+- `docs/.i18n/translation-workflow.md` when documenting translation workflow internals.
 - `docs/.i18n/glossary.<locale>.json` when adding fixed glossary terms for the translation workflow.
 
 ## Do Not Edit Here
@@ -29,6 +30,7 @@ Publish mirror for `docs.openclaw.ai`. Source repo: `openclaw/openclaw`.
 
 - Source sync starts in `openclaw/openclaw/.github/workflows/docs-sync-publish.yml`.
 - Sync mirrors `openclaw/openclaw/docs/**` into this repo and updates `.openclaw-sync/source.json`.
-- Locale workflows run from this repo after push, schedule, release dispatch, or manual dispatch.
+- `translate-all.yml` runs from this repo after debounced docs changes, weekly schedule, release dispatch, or manual dispatch.
 - Translation pending logic compares source file SHA-256 with each page's `x-i18n.source_hash`.
+- Locale workers upload artifacts; the finalizer pushes one aggregate i18n commit.
 - If translated MDX fails, the repair step may touch only `docs/<locale>/**` and `docs/.i18n/<locale>.tm.jsonl`.

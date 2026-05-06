@@ -9,9 +9,18 @@ on:
       locale_slug:
         required: true
         type: string
+      publish_ref:
+        required: true
+        type: string
+      source_sha:
+        required: true
+        type: string
+      mode:
+        required: true
+        type: string
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   translate:
@@ -24,10 +33,13 @@ jobs:
       - name: Checkout publish repo
         uses: actions/checkout@v6
         with:
+          ref: ${{ inputs.publish_ref }}
           fetch-depth: 0
 
       - name: Read source metadata
         id: meta
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
         run: |
           node - <<'NODE'
           const fs = require("node:fs");
@@ -35,6 +47,9 @@ jobs:
           const data = JSON.parse(fs.readFileSync(path, "utf8"));
           if (!data.repository || !data.sha) {
             throw new Error(`invalid source metadata in ${path}`);
+          }
+          if (data.sha !== process.env.SOURCE_SHA) {
+            throw new Error(`publish ref source ${data.sha} does not match requested ${process.env.SOURCE_SHA}`);
           }
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `repository=${data.repository}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `sha=${data.sha}\n`);
@@ -117,6 +132,7 @@ jobs:
         env:
           LOCALE: ${{ inputs.locale }}
           LOCALE_SLUG: ${{ inputs.locale_slug }}
+          MODE: ${{ inputs.mode }}
         run: |
           python - <<'PY'
           import hashlib
@@ -140,6 +156,7 @@ jobs:
               if is_locale_dir(path)
           }
           locale = os.environ["LOCALE"]
+          mode = os.environ["MODE"]
           pending_path = Path(".openclaw-sync") / f"docs-i18n-{os.environ['LOCALE_SLUG']}.txt"
 
           def stored_source_hash(path: Path) -> str:
@@ -167,7 +184,7 @@ jobs:
             all_files.append(str(path.resolve()))
             locale_path = Path("docs") / locale / rel
             source_hash = hashlib.sha256(path.read_bytes()).hexdigest()
-            if stored_source_hash(locale_path) != source_hash:
+            if mode == "full" or stored_source_hash(locale_path) != source_hash:
               pending_files.append(str(path.resolve()))
 
           pending_path.parent.mkdir(exist_ok=True)
@@ -287,50 +304,60 @@ jobs:
           node .openclaw-sync/check-docs-mdx.mjs "docs/${LOCALE}" \
             --json-out ".openclaw-sync/mdx/${LOCALE}.json"
 
-      - name: Commit locale refresh
+      - name: Prepare locale artifact
         if: steps.stale.outputs.skip != 'true'
         env:
           LOCALE: ${{ inputs.locale }}
+          LOCALE_SLUG: ${{ inputs.locale_slug }}
           SOURCE_SHA: ${{ steps.meta.outputs.sha }}
+          MODE: ${{ inputs.mode }}
+          PENDING_COUNT: ${{ steps.pending.outputs.pending_count || '0' }}
+          ALL_COUNT: ${{ steps.pending.outputs.all_count || '0' }}
         run: |
           set -euo pipefail
 
-          remote_source_sha() {
-            git show refs/remotes/origin/main:.openclaw-sync/source.json 2>/dev/null \
-              | node -e 'const fs = require("node:fs"); try { const data = JSON.parse(fs.readFileSync(0, "utf8")); if (data.sha) process.stdout.write(data.sha); } catch {}' \
-              || true
+          artifact_dir=".openclaw-sync/artifacts/${LOCALE_SLUG}"
+          payload_dir="${artifact_dir}/payload"
+          mkdir -p "${payload_dir}"
+
+          git diff --name-only --diff-filter=ACMRT -- "docs/${LOCALE}" "docs/.i18n/${LOCALE}.tm.jsonl" > "${artifact_dir}/changed-files.txt"
+          git ls-files --others --exclude-standard -- "docs/${LOCALE}" "docs/.i18n/${LOCALE}.tm.jsonl" >> "${artifact_dir}/changed-files.txt"
+          sort -u "${artifact_dir}/changed-files.txt" -o "${artifact_dir}/changed-files.txt"
+          git diff --name-only --diff-filter=D -- "docs/${LOCALE}" "docs/.i18n/${LOCALE}.tm.jsonl" > "${artifact_dir}/deleted-files.txt"
+
+          while IFS= read -r file; do
+            [ -n "${file}" ] || continue
+            [ -f "${file}" ] || continue
+            mkdir -p "${payload_dir}/$(dirname "${file}")"
+            cp "${file}" "${payload_dir}/${file}"
+          done < "${artifact_dir}/changed-files.txt"
+
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          artifact_dir = Path(".openclaw-sync/artifacts") / os.environ["LOCALE_SLUG"]
+          changed = [line for line in (artifact_dir / "changed-files.txt").read_text().splitlines() if line.strip()]
+          deleted = [line for line in (artifact_dir / "deleted-files.txt").read_text().splitlines() if line.strip()]
+          metadata = {
+              "locale": os.environ["LOCALE"],
+              "locale_slug": os.environ["LOCALE_SLUG"],
+              "source_sha": os.environ["SOURCE_SHA"],
+              "mode": os.environ["MODE"],
+              "pending_count": int(os.environ["PENDING_COUNT"]),
+              "all_count": int(os.environ["ALL_COUNT"]),
+              "changed_count": len(changed),
+              "deleted_count": len(deleted),
           }
+          (artifact_dir / "metadata.json").write_text(json.dumps(metadata, indent=2, sort_keys=True) + "\n")
+          print(json.dumps(metadata, indent=2, sort_keys=True))
+          PY
 
-          warn_if_source_moved() {
-            current_source_sha="$(remote_source_sha)"
-            if [ -n "$current_source_sha" ] && [ "$current_source_sha" != "$SOURCE_SHA" ]; then
-              echo "Source moved from ${SOURCE_SHA} to ${current_source_sha} while translating ${LOCALE}; committing finished locale output and letting the next run refresh changed source hashes."
-            fi
-          }
-
-          if [ -z "$(git status --porcelain --untracked-files=all -- "docs/${LOCALE}" "docs/.i18n/${LOCALE}.tm.jsonl")" ]; then
-            echo "No ${LOCALE} translation changes."
-            exit 0
-          fi
-
-          if git fetch origin main:refs/remotes/origin/main; then
-            warn_if_source_moved
-          fi
-
-          git config user.name "openclaw-docs-i18n[bot]"
-          git config user.email "openclaw-docs-i18n[bot]@users.noreply.github.com"
-          git add "docs/${LOCALE}" "docs/.i18n/${LOCALE}.tm.jsonl"
-          git commit -m "chore(i18n): refresh ${LOCALE} translations"
-          for attempt in 1 2 3 4 5; do
-            if git fetch origin main:refs/remotes/origin/main; then
-              warn_if_source_moved
-              if git rebase origin/main && git push origin HEAD:main; then
-                exit 0
-              fi
-              git rebase --abort >/dev/null 2>&1 || true
-            fi
-            echo "Locale refresh attempt ${attempt} failed; retrying."
-            sleep $((attempt * 2))
-          done
-          echo "Failed to push ${LOCALE} translations after retries."
-          exit 1
+      - name: Upload locale artifact
+        if: steps.stale.outputs.skip != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: i18n-${{ inputs.locale_slug }}-${{ inputs.source_sha }}
+          path: .openclaw-sync/artifacts/${{ inputs.locale_slug }}
+          retention-days: 7

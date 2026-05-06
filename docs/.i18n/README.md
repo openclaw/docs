@@ -31,4 +31,5 @@ Fields:
 
 - Glossary entries are passed to the model as **prompt guidance** (no deterministic rewrites).
 - `scripts/docs-i18n` still owns translation generation.
-- The source repo syncs English docs into the publish repo; locale generation runs there per-locale on push, schedule, and release dispatch.
+- The source repo syncs English docs into the publish repo; `translate-all.yml` debounces locale generation and commits one aggregate refresh.
+- See `translation-workflow.md` for the intended debounced fan-in workflow.

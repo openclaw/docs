@@ -1,0 +1,453 @@
+name: Translate All
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".openclaw-sync/source.json"
+      - "docs/**"
+      - "!docs/ar/**"
+      - "!docs/de/**"
+      - "!docs/es/**"
+      - "!docs/fa/**"
+      - "!docs/fr/**"
+      - "!docs/id/**"
+      - "!docs/it/**"
+      - "!docs/ja-JP/**"
+      - "!docs/ko/**"
+      - "!docs/nl/**"
+      - "!docs/pl/**"
+      - "!docs/pt-BR/**"
+      - "!docs/th/**"
+      - "!docs/tr/**"
+      - "!docs/uk/**"
+      - "!docs/vi/**"
+      - "!docs/zh-CN/**"
+      - "!docs/zh-TW/**"
+      - "!docs/.i18n/**"
+      - "docs/.i18n/glossary.*.json"
+  repository_dispatch:
+    types:
+      - translate-all-release
+      # Compatibility with the old source-repo release dispatcher. These events
+      # are collapsed by concurrency, but the source workflow should dispatch
+      # translate-all-release directly.
+      - translate-ar-release
+      - translate-de-release
+      - translate-es-release
+      - translate-fa-release
+      - translate-fr-release
+      - translate-id-release
+      - translate-it-release
+      - translate-ja-jp-release
+      - translate-ko-release
+      - translate-nl-release
+      - translate-pl-release
+      - translate-pt-br-release
+      - translate-th-release
+      - translate-tr-release
+      - translate-uk-release
+      - translate-vi-release
+      - translate-zh-cn-release
+      - translate-zh-tw-release
+  schedule:
+    - cron: "17 3 * * 0"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Translation mode.
+        required: true
+        default: incremental
+        type: choice
+        options:
+          - incremental
+          - full
+      cooldown_seconds:
+        description: Seconds to wait for hot main to settle before translating.
+        required: true
+        default: "0"
+        type: string
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: translate-all
+  cancel-in-progress: true
+
+jobs:
+  prepare:
+    name: Debounce and pick source
+    runs-on: ubuntu-latest
+    outputs:
+      mode: ${{ steps.prepare.outputs.mode }}
+      publish_ref: ${{ steps.prepare.outputs.publish_ref }}
+      source_repository: ${{ steps.prepare.outputs.source_repository }}
+      source_sha: ${{ steps.prepare.outputs.source_sha }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Debounce main
+        id: prepare
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before || '' }}
+          AFTER_SHA: ${{ github.sha }}
+          REQUESTED_MODE: ${{ inputs.mode || github.event.client_payload.mode || '' }}
+          REQUESTED_COOLDOWN_SECONDS: ${{ inputs.cooldown_seconds || github.event.client_payload.cooldown_seconds || '' }}
+        run: |
+          set -euo pipefail
+
+          mode="${REQUESTED_MODE}"
+          if [ -z "${mode}" ]; then
+            if [ "${EVENT_NAME}" = "schedule" ]; then
+              mode="full"
+            else
+              mode="incremental"
+            fi
+          fi
+          case "${mode}" in
+            incremental|full) ;;
+            *)
+              echo "Invalid translation mode: ${mode}" >&2
+              exit 1
+              ;;
+          esac
+          if [ "${EVENT_NAME}" = "push" ] && [ "${mode}" = "incremental" ] && [ -n "${BEFORE_SHA}" ]; then
+            if git diff --name-only "${BEFORE_SHA}" "${AFTER_SHA}" | grep -Eq '^docs/\.i18n/glossary\..*\.json$'; then
+              echo "Glossary changed; using full reconciliation mode."
+              mode="full"
+            fi
+          fi
+
+          cooldown="${REQUESTED_COOLDOWN_SECONDS}"
+          if [ -z "${cooldown}" ]; then
+            case "${EVENT_NAME}" in
+              push|repository_dispatch) cooldown="300" ;;
+              *) cooldown="0" ;;
+            esac
+          fi
+          case "${cooldown}" in
+            ''|*[!0-9]*)
+              echo "Invalid cooldown_seconds: ${cooldown}" >&2
+              exit 1
+              ;;
+          esac
+
+          read_main_state() {
+            git fetch --quiet origin main:refs/remotes/origin/main
+            publish_ref="$(git rev-parse refs/remotes/origin/main)"
+            source_json="$(git show refs/remotes/origin/main:.openclaw-sync/source.json)"
+            source_repository="$(printf '%s' "${source_json}" | node -e 'const fs = require("node:fs"); const data = JSON.parse(fs.readFileSync(0, "utf8")); process.stdout.write(data.repository || "");')"
+            source_sha="$(printf '%s' "${source_json}" | node -e 'const fs = require("node:fs"); const data = JSON.parse(fs.readFileSync(0, "utf8")); process.stdout.write(data.sha || "");')"
+            if [ -z "${source_repository}" ] || [ -z "${source_sha}" ]; then
+              echo "Invalid .openclaw-sync/source.json on origin/main" >&2
+              exit 1
+            fi
+          }
+
+          max_wait=1200
+          elapsed=0
+          while :; do
+            read_main_state
+            before_ref="${publish_ref}"
+            before_source="${source_sha}"
+
+            if [ "${cooldown}" -eq 0 ]; then
+              break
+            fi
+
+            echo "Waiting ${cooldown}s for docs main to settle at ${before_ref} (${before_source})."
+            sleep "${cooldown}"
+            elapsed=$((elapsed + cooldown))
+
+            read_main_state
+            if [ "${publish_ref}" = "${before_ref}" ] && [ "${source_sha}" = "${before_source}" ]; then
+              break
+            fi
+
+            echo "Docs main moved to ${publish_ref} (${source_sha}) during cooldown."
+            if [ "${elapsed}" -ge "${max_wait}" ]; then
+              echo "Cooldown cap reached; translating newest observed state."
+              break
+            fi
+          done
+
+          {
+            echo "mode=${mode}"
+            echo "publish_ref=${publish_ref}"
+            echo "source_repository=${source_repository}"
+            echo "source_sha=${source_sha}"
+          } >> "${GITHUB_OUTPUT}"
+
+          {
+            echo "### Translate All"
+            echo
+            echo "- mode: \`${mode}\`"
+            echo "- publish ref: \`${publish_ref}\`"
+            echo "- source: \`${source_repository}@${source_sha}\`"
+            echo "- cooldown seconds: \`${cooldown}\`"
+          } >> "${GITHUB_STEP_SUMMARY}"
+
+  translate:
+    name: Translate ${{ matrix.locale }}
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - locale: zh-CN
+            locale_slug: zh-cn
+          - locale: zh-TW
+            locale_slug: zh-tw
+          - locale: ja-JP
+            locale_slug: ja-jp
+          - locale: es
+            locale_slug: es
+          - locale: pt-BR
+            locale_slug: pt-br
+          - locale: ko
+            locale_slug: ko
+          - locale: de
+            locale_slug: de
+          - locale: fr
+            locale_slug: fr
+          - locale: ar
+            locale_slug: ar
+          - locale: it
+            locale_slug: it
+          - locale: vi
+            locale_slug: vi
+          - locale: nl
+            locale_slug: nl
+          - locale: fa
+            locale_slug: fa
+          - locale: tr
+            locale_slug: tr
+          - locale: uk
+            locale_slug: uk
+          - locale: id
+            locale_slug: id
+          - locale: pl
+            locale_slug: pl
+          - locale: th
+            locale_slug: th
+    uses: ./.github/workflows/translate-locale-reusable.yml
+    with:
+      locale: ${{ matrix.locale }}
+      locale_slug: ${{ matrix.locale_slug }}
+      publish_ref: ${{ needs.prepare.outputs.publish_ref }}
+      source_sha: ${{ needs.prepare.outputs.source_sha }}
+      mode: ${{ needs.prepare.outputs.mode }}
+    secrets: inherit
+
+  finalize:
+    name: Commit successful locale artifacts
+    needs:
+      - prepare
+      - translate
+    if: always() && needs.prepare.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out latest main
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Download locale artifacts
+        id: download
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          pattern: i18n-*-${{ needs.prepare.outputs.source_sha }}
+          path: .openclaw-sync/i18n-artifacts
+
+      - name: Apply locale artifacts
+        id: apply
+        env:
+          SOURCE_SHA: ${{ needs.prepare.outputs.source_sha }}
+          MODE: ${{ needs.prepare.outputs.mode }}
+          EXPECTED_LOCALES: zh-cn=zh-CN zh-tw=zh-TW ja-jp=ja-JP es=es pt-br=pt-BR ko=ko de=de fr=fr ar=ar it=it vi=vi nl=nl fa=fa tr=tr uk=uk id=id pl=pl th=th
+        run: |
+          set -euo pipefail
+          git fetch --quiet origin main:refs/remotes/origin/main
+          git checkout -B main refs/remotes/origin/main
+
+          current_source_sha="$(
+            git show HEAD:.openclaw-sync/source.json \
+              | node -e 'const fs = require("node:fs"); const data = JSON.parse(fs.readFileSync(0, "utf8")); process.stdout.write(data.sha || "");'
+          )"
+          if [ "${current_source_sha}" != "${SOURCE_SHA}" ]; then
+            echo "stale=true" >> "${GITHUB_OUTPUT}"
+            echo "changed_count=0" >> "${GITHUB_OUTPUT}"
+            {
+              echo "### Translation finalizer skipped"
+              echo
+              echo "Current source moved to \`${current_source_sha}\`; artifacts were for \`${SOURCE_SHA}\`."
+            } >> "${GITHUB_STEP_SUMMARY}"
+            exit 0
+          fi
+
+          python - <<'PY'
+          import json
+          import os
+          import shutil
+          import subprocess
+          from pathlib import Path
+
+          source_sha = os.environ["SOURCE_SHA"]
+          expected_pairs = os.environ["EXPECTED_LOCALES"].split()
+          expected = dict(pair.split("=", 1) for pair in expected_pairs)
+          root = Path(".openclaw-sync/i18n-artifacts")
+
+          applied = []
+          no_changes = []
+          stale = []
+          invalid = []
+          seen = set()
+
+          if root.exists():
+            for artifact in sorted(path for path in root.iterdir() if path.is_dir()):
+              metadata_path = artifact / "metadata.json"
+              if not metadata_path.exists():
+                invalid.append(f"{artifact.name}: missing metadata.json")
+                continue
+              try:
+                metadata = json.loads(metadata_path.read_text())
+              except Exception as exc:
+                invalid.append(f"{artifact.name}: invalid metadata ({exc})")
+                continue
+
+              slug = metadata.get("locale_slug")
+              locale = metadata.get("locale")
+              if slug not in expected or expected[slug] != locale:
+                invalid.append(f"{artifact.name}: unexpected locale {locale!r}/{slug!r}")
+                continue
+              if metadata.get("source_sha") != source_sha:
+                stale.append(f"{locale}: {metadata.get('source_sha')}")
+                continue
+
+              seen.add(slug)
+              changed = [line.strip() for line in (artifact / "changed-files.txt").read_text().splitlines() if line.strip()]
+              deleted = [line.strip() for line in (artifact / "deleted-files.txt").read_text().splitlines() if line.strip()]
+
+              for rel in deleted:
+                path = Path(rel)
+                if path.exists():
+                  path.unlink()
+
+              payload = artifact / "payload"
+              for rel in changed:
+                source = payload / rel
+                if not source.exists():
+                  invalid.append(f"{artifact.name}: missing payload file {rel}")
+                  continue
+                target = Path(rel)
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(source, target)
+
+              if changed or deleted:
+                applied.append(locale)
+              else:
+                no_changes.append(locale)
+
+          missing = [expected[slug] for slug in expected if slug not in seen]
+          status = subprocess.run(
+              ["git", "status", "--porcelain", "--untracked-files=all", "--", "docs"],
+              check=True,
+              text=True,
+              stdout=subprocess.PIPE,
+          ).stdout.splitlines()
+
+          out = Path(os.environ["GITHUB_OUTPUT"])
+          with out.open("a", encoding="utf-8") as fh:
+            fh.write("stale=false\n")
+            fh.write(f"changed_count={len(status)}\n")
+
+          summary = Path(os.environ["GITHUB_STEP_SUMMARY"])
+          with summary.open("a", encoding="utf-8") as fh:
+            fh.write("### Translation finalizer\n\n")
+            fh.write(f"- mode: `{os.environ['MODE']}`\n")
+            fh.write(f"- source: `{source_sha}`\n")
+            fh.write(f"- changed paths: `{len(status)}`\n")
+            if applied:
+              fh.write(f"- applied locales: {', '.join(applied)}\n")
+            if no_changes:
+              fh.write(f"- locales with no changes: {', '.join(no_changes)}\n")
+            if missing:
+              fh.write(f"- missing or failed locales: {', '.join(missing)}\n")
+            if stale:
+              fh.write(f"- stale artifacts ignored: {', '.join(stale)}\n")
+            if invalid:
+              fh.write(f"- invalid artifacts ignored: {'; '.join(invalid)}\n")
+
+          print(f"changed paths: {len(status)}")
+          PY
+
+      - name: Set up Node
+        if: steps.apply.outputs.changed_count != '0'
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install
+        if: steps.apply.outputs.changed_count != '0'
+        run: npm ci
+
+      - name: Install librsvg2-bin
+        if: steps.apply.outputs.changed_count != '0'
+        run: sudo apt-get update && sudo apt-get install -y librsvg2-bin
+
+      - name: Check aggregate docs
+        if: steps.apply.outputs.changed_count != '0'
+        run: npm run docs:check
+
+      - name: Commit aggregate translation refresh
+        if: steps.apply.outputs.changed_count != '0'
+        env:
+          SOURCE_SHA: ${{ needs.prepare.outputs.source_sha }}
+        run: |
+          set -euo pipefail
+
+          remote_source_sha() {
+            git show refs/remotes/origin/main:.openclaw-sync/source.json 2>/dev/null \
+              | node -e 'const fs = require("node:fs"); try { const data = JSON.parse(fs.readFileSync(0, "utf8")); if (data.sha) process.stdout.write(data.sha); } catch {}' \
+              || true
+          }
+
+          ensure_source_current() {
+            current_source_sha="$(remote_source_sha)"
+            if [ -n "${current_source_sha}" ] && [ "${current_source_sha}" != "${SOURCE_SHA}" ]; then
+              echo "Source moved from ${SOURCE_SHA} to ${current_source_sha}; skipping stale aggregate translation commit."
+              exit 0
+            fi
+          }
+
+          git config user.name "openclaw-docs-i18n[bot]"
+          git config user.email "openclaw-docs-i18n[bot]@users.noreply.github.com"
+          git add docs
+          git commit -m "chore(i18n): refresh translations"
+
+          for attempt in 1 2 3 4 5; do
+            if git fetch origin main:refs/remotes/origin/main; then
+              ensure_source_current
+              if git rebase origin/main; then
+                ensure_source_current
+                if git push origin HEAD:main; then
+                  exit 0
+                fi
+              fi
+              git rebase --abort >/dev/null 2>&1 || true
+            fi
+            echo "Aggregate translation push attempt ${attempt} failed; retrying."
+            sleep $((attempt * 2))
+          done
+
+          echo "Failed to push aggregate translations after retries."
+          exit 1
