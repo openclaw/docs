@@ -1,33 +1,31 @@
 ---
 read_when:
-    - คุณต้องการเรียกใช้หรือควบคุมการทำงานของ TaskFlows จากระบบภายนอก
-    - คุณกำลังกำหนดค่า Plugin Webhook ที่รวมมาให้
-summary: 'Plugin Webhooks: ช่องทางขาเข้า TaskFlow ที่ผ่านการยืนยันตัวตนสำหรับระบบอัตโนมัติภายนอกที่เชื่อถือได้'
-title: Plugin Webhook
+    - คุณต้องการเรียกใช้หรือควบคุม TaskFlow จากระบบภายนอก
+    - คุณกำลังกำหนดค่า Plugin webhooks ที่รวมมาให้
+summary: 'Plugin Webhooks: ทางเข้า TaskFlow ที่ผ่านการยืนยันตัวตนสำหรับระบบอัตโนมัติภายนอกที่เชื่อถือได้'
+title: Plugin สำหรับ Webhook
 x-i18n:
-    generated_at: "2026-04-30T10:10:12Z"
+    generated_at: "2026-05-06T18:00:26Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 70b195e330264af48a9e9c619bb5a0937bb15b2640edd3dd2b5517a13424e9fe
+    source_hash: 9d21d96f680fa24d4a53c1ed5759f800d3cfdc3336789c42c15266edd8ce9e80
     source_path: plugins/webhooks.md
     workflow: 16
 ---
 
-# Webhook (Plugin)
-
 Plugin Webhooks เพิ่มเส้นทาง HTTP ที่ผ่านการยืนยันตัวตน ซึ่งผูกระบบอัตโนมัติภายนอกเข้ากับ OpenClaw TaskFlows
 
-ใช้เมื่อคุณต้องการให้ระบบที่เชื่อถือได้ เช่น Zapier, n8n, งาน CI หรือบริการภายใน สร้างและขับเคลื่อน TaskFlows ที่มีการจัดการโดยไม่ต้องเขียน Plugin แบบกำหนดเองก่อน
+ใช้เมื่อคุณต้องการให้ระบบที่เชื่อถือได้ เช่น Zapier, n8n, งาน CI หรือบริการภายใน สร้างและขับเคลื่อน TaskFlows ที่มีการจัดการ โดยไม่ต้องเขียน Plugin แบบกำหนดเองก่อน
 
-## ทำงานที่ไหน
+## ตำแหน่งที่รัน
 
-Plugin Webhooks ทำงานภายในกระบวนการ Gateway
+Plugin Webhooks รันอยู่ภายในโปรเซส Gateway
 
-หาก Gateway ของคุณทำงานบนเครื่องอื่น ให้ติดตั้งและกำหนดค่า Plugin บนโฮสต์ Gateway นั้น แล้วรีสตาร์ต Gateway
+หาก Gateway ของคุณรันบนเครื่องอื่น ให้ติดตั้งและกำหนดค่า Plugin บนโฮสต์ Gateway นั้น จากนั้นรีสตาร์ต Gateway
 
 ## กำหนดค่าเส้นทาง
 
-ตั้งค่าการกำหนดค่าภายใต้ `plugins.entries.webhooks.config`:
+ตั้งค่าคอนฟิกภายใต้ `plugins.entries.webhooks.config`:
 
 ```json5
 {
@@ -62,38 +60,38 @@ Plugin Webhooks ทำงานภายในกระบวนการ Gatewa
 - `path`: ไม่บังคับ ค่าเริ่มต้นคือ `/plugins/webhooks/<routeId>`
 - `sessionKey`: เซสชันที่จำเป็น ซึ่งเป็นเจ้าของ TaskFlows ที่ผูกไว้
 - `secret`: shared secret หรือ SecretRef ที่จำเป็น
-- `controllerId`: id ของคอนโทรลเลอร์ที่ไม่บังคับ สำหรับโฟลว์ที่มีการจัดการซึ่งสร้างขึ้น
-- `description`: บันทึกสำหรับผู้ปฏิบัติงานที่ไม่บังคับ
+- `controllerId`: id ของ controller สำหรับโฟลว์ที่มีการจัดการซึ่งสร้างขึ้น ไม่บังคับ
+- `description`: หมายเหตุสำหรับผู้ปฏิบัติงาน ไม่บังคับ
 
 อินพุต `secret` ที่รองรับ:
 
 - สตริงธรรมดา
 - SecretRef พร้อม `source: "env" | "file" | "exec"`
 
-หากเส้นทางที่ใช้ secret ไม่สามารถ resolve secret ได้ตอนเริ่มต้น Plugin จะข้ามเส้นทางนั้นและบันทึกคำเตือนแทนการเปิดเผย endpoint ที่เสีย
+หากเส้นทางที่ใช้ secret ไม่สามารถแก้ค่า secret ได้เมื่อเริ่มต้น Plugin จะข้ามเส้นทางนั้นและบันทึกคำเตือนแทนการเปิด endpoint ที่เสีย
 
 ## โมเดลความปลอดภัย
 
 แต่ละเส้นทางได้รับความไว้วางใจให้ดำเนินการด้วยสิทธิ์ TaskFlow ของ `sessionKey` ที่กำหนดค่าไว้
 
-ซึ่งหมายความว่าเส้นทางสามารถตรวจสอบและเปลี่ยนแปลง TaskFlows ที่เซสชันนั้นเป็นเจ้าของได้ ดังนั้นคุณควร:
+ซึ่งหมายความว่าเส้นทางสามารถตรวจสอบและแก้ไข TaskFlows ที่เซสชันนั้นเป็นเจ้าของได้ ดังนั้นคุณควร:
 
-- ใช้ secret ที่แข็งแรงและไม่ซ้ำกันสำหรับแต่ละเส้นทาง
-- เลือกใช้การอ้างอิง secret แทน secret แบบข้อความล้วนที่เขียนไว้โดยตรง
-- ผูกเส้นทางกับเซสชันที่แคบที่สุดซึ่งเหมาะกับเวิร์กโฟลว์
-- เปิดเผยเฉพาะเส้นทาง Webhook ที่คุณต้องใช้
+- ใช้ secret ที่รัดกุมและไม่ซ้ำกันต่อเส้นทาง
+- เลือกใช้การอ้างอิง secret แทน secret แบบข้อความธรรมดาในบรรทัด
+- ผูกเส้นทางเข้ากับเซสชันที่แคบที่สุดซึ่งเหมาะกับ workflow
+- เปิดเผยเฉพาะ path ของ Webhook ที่คุณต้องการ
 
 Plugin ใช้:
 
 - การยืนยันตัวตนด้วย shared-secret
-- การป้องกันขนาดเนื้อหาคำขอและ timeout
+- ตัวป้องกันขนาด request body และ timeout
 - การจำกัดอัตราแบบ fixed-window
-- การจำกัดคำขอที่กำลังดำเนินการ
+- การจำกัด request ที่กำลังดำเนินอยู่
 - การเข้าถึง TaskFlow ที่ผูกกับเจ้าของผ่าน `api.runtime.tasks.managedFlows.bindSession(...)`
 
-## รูปแบบคำขอ
+## รูปแบบ request
 
-ส่งคำขอ `POST` พร้อม:
+ส่ง request แบบ `POST` พร้อม:
 
 - `Content-Type: application/json`
 - `Authorization: Bearer <secret>` หรือ `x-openclaw-webhook-secret: <secret>`
@@ -107,9 +105,9 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
   -d '{"action":"create_flow","goal":"Review inbound queue"}'
 ```
 
-## แอ็กชันที่รองรับ
+## การดำเนินการที่รองรับ
 
-ปัจจุบัน Plugin ยอมรับค่า JSON `action` เหล่านี้:
+ขณะนี้ Plugin รับค่า JSON `action` ต่อไปนี้:
 
 - `create_flow`
 - `get_flow`
@@ -144,7 +142,7 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
 
 สร้างงานลูกที่มีการจัดการภายใน TaskFlow ที่มีการจัดการซึ่งมีอยู่แล้ว
 
-รันไทม์ที่อนุญาตคือ:
+runtime ที่อนุญาตคือ:
 
 - `subagent`
 - `acp`
@@ -161,9 +159,9 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
 }
 ```
 
-## รูปแบบการตอบกลับ
+## รูปทรงของ response
 
-การตอบกลับที่สำเร็จจะส่งคืน:
+response ที่สำเร็จจะส่งคืน:
 
 ```json
 {
@@ -173,7 +171,7 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
 }
 ```
 
-คำขอที่ถูกปฏิเสธจะส่งคืน:
+request ที่ถูกปฏิเสธจะส่งคืน:
 
 ```json
 {
@@ -185,10 +183,10 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
 }
 ```
 
-Plugin จงใจลบข้อมูลเมตาของเจ้าของ/เซสชันออกจากการตอบกลับ Webhook
+Plugin ตั้งใจล้าง metadata ของเจ้าของ/เซสชันออกจาก response ของ Webhook
 
 ## เอกสารที่เกี่ยวข้อง
 
-- [SDK รันไทม์ของ Plugin](/th/plugins/sdk-runtime)
-- [ภาพรวม hooks และ Webhook](/th/automation/hooks)
-- [Webhook ของ CLI](/th/cli/webhooks)
+- [SDK runtime ของ Plugin](/th/plugins/sdk-runtime)
+- [ภาพรวม hooks และ webhooks](/th/automation/hooks)
+- [Webhooks ของ CLI](/th/cli/webhooks)

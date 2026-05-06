@@ -1,22 +1,22 @@
 ---
 read_when:
-    - คุณต้องการตัวอย่างการติดตั้ง แสดงรายการ อัปเดต หรือถอนการติดตั้ง Plugin แบบรวดเร็ว
+    - คุณต้องการตัวอย่างแบบรวดเร็วสำหรับการติดตั้ง แสดงรายการ อัปเดต หรือถอนการติดตั้ง Plugin
     - คุณต้องการเลือกระหว่าง ClawHub กับการเผยแพร่ Plugin ผ่าน npm
     - คุณกำลังเผยแพร่แพ็กเกจ Plugin
 sidebarTitle: Manage plugins
-summary: ตัวอย่างแบบย่อสำหรับการติดตั้ง การแสดงรายการ การถอนการติดตั้ง การอัปเดต และการเผยแพร่ Plugin ของ OpenClaw
+summary: ตัวอย่างสั้น ๆ สำหรับการติดตั้ง การแสดงรายการ การถอนการติดตั้ง การอัปเดต และการเผยแพร่ Plugin ของ OpenClaw
 title: จัดการ Plugin
 x-i18n:
-    generated_at: "2026-05-05T01:49:37Z"
+    generated_at: "2026-05-06T17:59:53Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7fa7aa78c1ba9c83ba09bea073987ed5e037031f7c7f29307fe18934b0bd2a1c
+    source_hash: 265777b03434dd07caee6191765c34e17fda4c8347e0327c2f37d47f9dd7a054
     source_path: plugins/manage-plugins.md
     workflow: 16
 ---
 
-เวิร์กโฟลว์ของ Plugin ส่วนใหญ่มีเพียงไม่กี่คำสั่ง: ค้นหา ติดตั้ง รีสตาร์ท Gateway,
-ตรวจสอบ และถอนการติดตั้งเมื่อคุณไม่ต้องการใช้ Plugin นั้นแล้ว
+เวิร์กโฟลว์ Plugin ส่วนใหญ่ใช้เพียงไม่กี่คำสั่ง: ค้นหา ติดตั้ง รีสตาร์ท Gateway
+ตรวจสอบ และถอนการติดตั้งเมื่อคุณไม่ต้องการ Plugin แล้ว
 
 ## แสดงรายการ Plugin
 
@@ -27,7 +27,7 @@ openclaw plugins list --verbose
 openclaw plugins list --json
 ```
 
-ใช้ `--json` สำหรับสคริปต์ โดยจะรวมการวินิจฉัยรีจิสทรีและ
+ใช้ `--json` สำหรับสคริปต์ ซึ่งรวมข้อมูลวินิจฉัยรีจิสทรีและ
 `dependencyStatus` แบบคงที่ของแต่ละ Plugin เมื่อแพ็กเกจ Plugin ประกาศ `dependencies` หรือ
 `optionalDependencies`
 
@@ -36,7 +36,7 @@ openclaw plugins list --json \
   | jq '.plugins[] | {id, enabled, format, source, dependencyStatus}'
 ```
 
-`plugins list` เป็นการตรวจสอบรายการสินค้าคงคลังแบบ cold โดยจะแสดงสิ่งที่ OpenClaw ค้นพบได้
+`plugins list` เป็นการตรวจสอบคลังรายการแบบเย็น โดยแสดงสิ่งที่ OpenClaw ค้นพบได้
 จากการกำหนดค่า manifest และรีจิสทรี Plugin แต่ไม่ได้พิสูจน์ว่า
 โปรเซส Gateway ที่กำลังทำงานอยู่ได้นำเข้ารันไทม์ของ Plugin แล้ว
 
@@ -72,9 +72,8 @@ openclaw gateway restart
 openclaw plugins inspect <plugin-id> --runtime --json
 ```
 
-ใช้ `inspect --runtime` เมื่อคุณต้องการหลักฐานว่า Plugin ได้ลงทะเบียนพื้นผิวรันไทม์
-เช่น tools, hooks, services, เมธอด Gateway หรือคำสั่ง CLI
-ที่ Plugin เป็นเจ้าของ
+ใช้ `inspect --runtime` เมื่อคุณต้องการหลักฐานว่า Plugin ได้ลงทะเบียนพื้นผิวรันไทม์แล้ว
+เช่น เครื่องมือ hook บริการ เมธอด Gateway หรือคำสั่ง CLI ที่ Plugin เป็นเจ้าของ
 
 ## อัปเดต Plugin
 
@@ -85,7 +84,7 @@ openclaw plugins update --all
 ```
 
 หากติดตั้ง Plugin จาก npm dist-tag เช่น `@beta` การเรียก
-`update <plugin-id>` ในภายหลังจะใช้แท็กที่บันทึกไว้นั้นซ้ำ การส่ง npm spec อย่างชัดเจน
+`update <plugin-id>` ในภายหลังจะใช้แท็กที่บันทึกไว้นั้นซ้ำ การส่ง npm spec ที่ระบุอย่างชัดเจน
 จะเปลี่ยนการติดตั้งที่ติดตามอยู่ให้ใช้ spec นั้นสำหรับการอัปเดตในอนาคต
 
 ```bash
@@ -94,14 +93,14 @@ openclaw plugins update @scope/openclaw-plugin
 ```
 
 คำสั่งที่สองจะย้าย Plugin กลับไปยังสายรีลีสเริ่มต้นของรีจิสทรี
-เมื่อก่อนหน้านี้ถูกปักไว้กับเวอร์ชันหรือแท็กที่แน่นอน
+เมื่อก่อนหน้านี้ถูกตรึงไว้กับเวอร์ชันหรือแท็กที่ระบุชัดเจน
 
 เมื่อ `openclaw update` ทำงานบนช่องทาง beta ระเบียน Plugin ของ npm และ ClawHub
-ในสายเริ่มต้นจะลองใช้รีลีส `@beta` ของ Plugin ที่ตรงกันก่อน หากไม่มี
-รีลีส beta นั้น OpenClaw จะย้อนกลับไปใช้ spec default/latest ที่บันทึกไว้
-สำหรับ Plugin npm นั้น OpenClaw จะย้อนกลับเช่นกันเมื่อมีแพ็กเกจ beta อยู่แต่ไม่ผ่าน
-การตรวจสอบการติดตั้ง เวอร์ชันที่แน่นอนและแท็กที่ระบุชัดเจน เช่น `@rc` หรือ `@beta`
-จะถูกคงไว้
+ในสายเริ่มต้นจะลองใช้รีลีส `@beta` ของ Plugin ที่ตรงกันก่อน หากไม่มีรีลีส beta นั้น
+OpenClaw จะถอยกลับไปใช้ spec เริ่มต้น/ล่าสุดที่บันทึกไว้
+สำหรับ Plugin ของ npm นั้น OpenClaw จะถอยกลับเช่นกันเมื่อมีแพ็กเกจ beta อยู่แต่ไม่ผ่าน
+การตรวจสอบความถูกต้องของการติดตั้ง เวอร์ชันที่ระบุชัดเจนและแท็กที่ระบุชัดเจน เช่น `@rc` หรือ `@beta`
+จะยังคงถูกเก็บไว้
 
 ## ถอนการติดตั้ง Plugin
 
@@ -112,9 +111,14 @@ openclaw plugins uninstall <plugin-id> --keep-files
 openclaw gateway restart
 ```
 
-การถอนการติดตั้งจะลบรายการการกำหนดค่าของ Plugin, ระเบียนดัชนี Plugin, รายการ allow/deny
-และพาธการโหลดที่ลิงก์ไว้เมื่อเกี่ยวข้อง ไดเรกทอรีการติดตั้งที่จัดการอยู่จะ
-ถูกลบ เว้นแต่คุณจะส่ง `--keep-files`
+การถอนการติดตั้งจะลบรายการกำหนดค่าของ Plugin ระเบียนดัชนี Plugin รายการ allow/deny list
+และเส้นทางโหลดที่ลิงก์ไว้เมื่อเกี่ยวข้อง ไดเรกทอรีติดตั้งที่จัดการไว้จะถูกลบ
+เว้นแต่คุณจะส่ง `--keep-files`
+
+ในโหมด Nix (`OPENCLAW_NIX_MODE=1`) คำสั่งติดตั้ง อัปเดต ถอนการติดตั้ง เปิดใช้งาน
+และปิดใช้งาน Plugin จะถูกปิดใช้งาน ให้จัดการตัวเลือกเหล่านั้นในซอร์ส Nix สำหรับ
+การติดตั้งแทน สำหรับ nix-openclaw ให้ใช้
+[Quick Start](https://github.com/openclaw/nix-openclaw#quick-start) แบบเริ่มจากเอเจนต์
 
 ## เผยแพร่ Plugin
 
@@ -124,8 +128,8 @@ openclaw gateway restart
 ### เผยแพร่ไปยัง ClawHub
 
 ClawHub เป็นพื้นผิวการค้นพบสาธารณะหลักสำหรับ Plugin ของ OpenClaw โดยให้
-เมทาดาทาที่ค้นหาได้ ประวัติเวอร์ชัน และผลการสแกนรีจิสทรีแก่ผู้ใช้ก่อน
-การติดตั้ง
+ผู้ใช้ค้นหาข้อมูลเมตา ประวัติเวอร์ชัน และผลการสแกนรีจิสทรีได้ก่อน
+ติดตั้ง
 
 ```bash
 npm i -g clawhub
@@ -142,11 +146,11 @@ openclaw plugins install clawhub:<package>
 openclaw plugins install <package>
 ```
 
-รูปแบบ bare จะยังคงตรวจสอบ ClawHub ก่อน
+รูปแบบที่ไม่ระบุแหล่งที่มายังคงตรวจสอบ ClawHub ก่อน
 
 ### เผยแพร่ไปยัง npmjs.com
 
-Plugin npm แบบเนทีฟต้องมี manifest ของ Plugin และเมทาดาทา entrypoint ของ OpenClaw
+Plugin npm แบบเนทีฟต้องมี manifest ของ Plugin และข้อมูลเมตา entrypoint ของ OpenClaw
 ใน `package.json`
 
 ```json package.json
@@ -164,7 +168,7 @@ Plugin npm แบบเนทีฟต้องมี manifest ของ Plugin 
 npm publish --access public
 ```
 
-ผู้ใช้ติดตั้งแบบ npm-only ด้วย:
+ผู้ใช้ติดตั้งแบบ npm เท่านั้นด้วย:
 
 ```bash
 openclaw plugins install npm:@acme/openclaw-plugin
@@ -172,22 +176,22 @@ openclaw plugins install npm:@acme/openclaw-plugin@beta
 openclaw plugins install npm:@acme/openclaw-plugin@1.0.0
 ```
 
-หากแพ็กเกจเดียวกันมีอยู่บน ClawHub ด้วย `npm:` จะข้ามการค้นหา ClawHub และ
-บังคับใช้การ resolve ของ npm
+หากแพ็กเกจเดียวกันมีให้ใช้งานบน ClawHub ด้วย `npm:` จะข้ามการค้นหา ClawHub และ
+บังคับใช้การแก้ไขผ่าน npm
 
 ## การเลือกแหล่งที่มา
 
-- **ClawHub**: ใช้เมื่อคุณต้องการการค้นพบแบบเนทีฟของ OpenClaw, สรุปการสแกน,
+- **ClawHub**: ใช้เมื่อคุณต้องการการค้นพบแบบเนทีฟของ OpenClaw สรุปการสแกน
   เวอร์ชัน และคำแนะนำการติดตั้ง
-- **npmjs.com**: ใช้เมื่อคุณเผยแพร่แพ็กเกจ JavaScript อยู่แล้ว หรือต้องใช้เวิร์กโฟลว์
-  dist-tag/รีจิสทรีส่วนตัวของ npm
+- **npmjs.com**: ใช้เมื่อคุณจัดส่งแพ็กเกจ JavaScript อยู่แล้ว หรือต้องการเวิร์กโฟลว์
+  npm dist-tag/รีจิสทรีส่วนตัว
 - **Git**: ใช้เมื่อคุณต้องการติดตั้งโดยตรงจาก branch, tag หรือ commit
-- **พาธในเครื่อง**: ใช้เมื่อคุณกำลังพัฒนาหรือทดสอบ Plugin บนเครื่องเดียวกัน
+- **เส้นทางภายในเครื่อง**: ใช้เมื่อคุณกำลังพัฒนาหรือทดสอบ Plugin บนเครื่องเดียวกัน
 
 ## ที่เกี่ยวข้อง
 
-- [Plugins](/th/tools/plugin) - ภาพรวมและการแก้ไขปัญหา
+- [Plugin](/th/tools/plugin) - ภาพรวมและการแก้ไขปัญหา
 - [`openclaw plugins`](/th/cli/plugins) - เอกสารอ้างอิง CLI ฉบับเต็ม
 - [ClawHub](/th/tools/clawhub) - การเผยแพร่และการดำเนินการกับรีจิสทรี
 - [การสร้าง Plugin](/th/plugins/building-plugins) - สร้างแพ็กเกจ Plugin
-- [manifest ของ Plugin](/th/plugins/manifest) - manifest และเมทาดาทาแพ็กเกจ
+- [manifest ของ Plugin](/th/plugins/manifest) - manifest และข้อมูลเมตาของแพ็กเกจ

@@ -1,91 +1,99 @@
 ---
 read_when:
-    - การสร้างหรือดีบักไคลเอนต์ Node (โหมด Node บน iOS/Android/macOS)
-    - การตรวจสอบความล้มเหลวของ Pairing หรือการยืนยันตัวตนของ Bridge
-    - การตรวจสอบพื้นผิวของ Node ที่ Gateway เปิดเผยออกมา
-summary: 'โปรโตคอล bridge แบบเดิมในอดีต (Node แบบ legacy): TCP JSONL, Pairing, และ RPC แบบกำหนดขอบเขต'
-title: โปรโตคอล Bridge
+    - การสร้างหรือดีบักไคลเอนต์ Node (โหมด Node ของ iOS/Android/macOS)
+    - การตรวจสอบความล้มเหลวในการจับคู่หรือการตรวจสอบสิทธิ์ของบริดจ์
+    - การตรวจสอบส่วนติดต่อ Node ที่ Gateway เปิดเผย
+summary: 'โปรโตคอลบริดจ์ในอดีต (โหนดรุ่นเดิม): TCP JSONL, การจับคู่, RPC แบบจำกัดขอบเขต'
+title: โปรโตคอลบริดจ์
 x-i18n:
-    generated_at: "2026-04-25T13:46:25Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T17:55:56Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: cb07ec4dab4394dd03b4c0002d6a842a9d77d12a1fc2f141f01d5a306fab1615
+    source_hash: f84c4b5c344d880d4283eebd8596e8b5b0aad5cae747694784011deb1547db30
     source_path: gateway/bridge-protocol.md
-    workflow: 15
+    workflow: 16
 ---
 
 <Warning>
-TCP bridge ถูก**นำออกแล้ว** บิลด์ OpenClaw ปัจจุบันไม่ได้มาพร้อมตัวรับฟัง bridge อีกต่อไป และคีย์ config `bridge.*` ก็ไม่อยู่ใน schema แล้ว หน้านี้เก็บไว้เพื่อใช้อ้างอิงทางประวัติศาสตร์เท่านั้น สำหรับไคลเอนต์ node/operator ทั้งหมด ให้ใช้ [Gateway Protocol](/th/gateway/protocol)
+บริดจ์ TCP ถูก**ลบออกแล้ว** บิลด์ปัจจุบันของ OpenClaw ไม่ได้จัดส่งตัวรับฟังบริดจ์ และคีย์การตั้งค่า `bridge.*` ไม่อยู่ในสคีมาอีกต่อไป หน้านี้เก็บไว้เพื่อใช้อ้างอิงทางประวัติศาสตร์เท่านั้น ใช้ [โปรโตคอล Gateway](/th/gateway/protocol) สำหรับไคลเอนต์โหนด/ผู้ปฏิบัติการทั้งหมด
 </Warning>
 
-## เหตุผลที่เคยมีสิ่งนี้
+## เหตุผลที่เคยมีอยู่
 
-- **ขอบเขตความปลอดภัย**: bridge เปิดเผย allowlist ขนาดเล็กแทนที่จะเป็นพื้นผิว API ของ gateway ทั้งหมด
-- **Pairing + ตัวตนของ node**: การรับ node เข้าระบบเป็นหน้าที่ของ gateway และผูกกับ token ต่อ node
-- **ประสบการณ์การใช้งานด้าน discovery**: node สามารถค้นหา gateway ผ่าน Bonjour บน LAN หรือเชื่อมต่อโดยตรงผ่าน tailnet ได้
-- **Loopback WS**: control plane แบบ WS เต็มรูปแบบจะอยู่ใน local loopback เว้นแต่จะถูก tunnel ผ่าน SSH
+- **ขอบเขตความปลอดภัย**: บริดจ์เปิดเผย allowlist ขนาดเล็กแทนที่จะเปิดเผย
+  พื้นผิว API ของ Gateway ทั้งหมด
+- **การจับคู่ + อัตลักษณ์ของโหนด**: การรับโหนดเข้าใช้งานเป็นหน้าที่ของ Gateway และผูกกับ
+  โทเคนต่อโหนด
+- **UX การค้นหา**: โหนดสามารถค้นหา Gateway ผ่าน Bonjour บน LAN หรือเชื่อมต่อ
+  โดยตรงผ่าน tailnet
+- **WS แบบ Loopback**: control plane ของ WS แบบเต็มจะยังอยู่ในเครื่อง เว้นแต่จะถูกทำทันเนลผ่าน SSH
 
 ## การขนส่ง
 
-- TCP, หนึ่งออบเจ็กต์ JSON ต่อหนึ่งบรรทัด (JSONL)
-- TLS แบบเลือกได้ (เมื่อ `bridge.tls.enabled` เป็น true)
-- พอร์ตตัวรับฟังเริ่มต้นในอดีตคือ `18790` (บิลด์ปัจจุบันจะไม่เริ่ม TCP bridge)
+- TCP, อ็อบเจ็กต์ JSON หนึ่งรายการต่อบรรทัด (JSONL)
+- TLS แบบไม่บังคับ (เมื่อ `bridge.tls.enabled` เป็น true)
+- พอร์ตตัวรับฟังเริ่มต้นในอดีตคือ `18790` (บิลด์ปัจจุบันไม่เริ่มต้น
+  บริดจ์ TCP)
 
-เมื่อเปิดใช้ TLS, TXT record ของ discovery จะรวม `bridgeTls=1` พร้อม
-`bridgeTlsSha256` เป็น hint ที่ไม่ใช่ความลับ โปรดทราบว่า TXT record ของ Bonjour/mDNS ไม่ได้มีการยืนยันตัวตน; ไคลเอนต์ต้องไม่ถือว่า fingerprint ที่ประกาศไว้เป็น pin ที่เชื่อถือได้โดยสมบูรณ์ หากไม่มีเจตนาชัดเจนจากผู้ใช้หรือการยืนยันนอกแบนด์รูปแบบอื่น
+เมื่อเปิดใช้ TLS ระเบียน TXT สำหรับการค้นหาจะมี `bridgeTls=1` รวมถึง
+`bridgeTlsSha256` เป็นคำใบ้ที่ไม่ใช่ความลับ โปรดทราบว่าระเบียน TXT ของ Bonjour/mDNS
+ไม่ได้ผ่านการยืนยันตัวตน ไคลเอนต์ต้องไม่ถือว่า fingerprint ที่ประกาศเป็น pin
+ที่เชื่อถือได้ เว้นแต่ผู้ใช้ตั้งใจอย่างชัดเจนหรือมีการตรวจสอบนอกช่องทางอื่น
 
-## Handshake + Pairing
+## Handshake + การจับคู่
 
-1. ไคลเอนต์ส่ง `hello` พร้อม metadata ของ node + token (หากจับคู่แล้ว)
-2. หากยังไม่ได้จับคู่ gateway จะตอบกลับ `error` (`NOT_PAIRED`/`UNAUTHORIZED`)
+1. ไคลเอนต์ส่ง `hello` พร้อม metadata ของโหนด + โทเคน (ถ้าจับคู่แล้ว)
+2. หากยังไม่ได้จับคู่ Gateway จะตอบกลับ `error` (`NOT_PAIRED`/`UNAUTHORIZED`)
 3. ไคลเอนต์ส่ง `pair-request`
-4. gateway รอการอนุมัติ จากนั้นส่ง `pair-ok` และ `hello-ok`
+4. Gateway รอการอนุมัติ จากนั้นส่ง `pair-ok` และ `hello-ok`
 
-ในอดีต `hello-ok` จะส่งกลับ `serverName` และอาจรวม
+ในอดีต `hello-ok` จะส่งคืน `serverName` และอาจมี
 `canvasHostUrl`
 
 ## เฟรม
 
 ไคลเอนต์ → Gateway:
 
-- `req` / `res`: RPC ของ gateway แบบกำหนดขอบเขต (chat, sessions, config, health, voicewake, skills.bins)
-- `event`: สัญญาณจาก node (voice transcript, คำขอเอเจนต์, chat subscribe, lifecycle ของ exec)
+- `req` / `res`: RPC ของ Gateway แบบจำกัดขอบเขต (แชต, เซสชัน, การตั้งค่า, สุขภาพ, voicewake, skills.bins)
+- `event`: สัญญาณจากโหนด (ข้อความถอดเสียง, คำขอเอเจนต์, การสมัครรับแชต, วงจรชีวิต exec)
 
 Gateway → ไคลเอนต์:
 
-- `invoke` / `invoke-res`: คำสั่งของ node (`canvas.*`, `camera.*`, `screen.record`,
+- `invoke` / `invoke-res`: คำสั่งโหนด (`canvas.*`, `camera.*`, `screen.record`,
   `location.get`, `sms.send`)
-- `event`: การอัปเดตแชตสำหรับเซสชันที่สมัครรับไว้
+- `event`: อัปเดตแชตสำหรับเซสชันที่สมัครรับ
 - `ping` / `pong`: keepalive
 
-การบังคับใช้ allowlist แบบเดิมเคยอยู่ใน `src/gateway/server-bridge.ts` (ถูกนำออกแล้ว)
+การบังคับใช้ allowlist แบบเดิมอยู่ใน `src/gateway/server-bridge.ts` (ถูกลบแล้ว)
 
-## event ของ lifecycle ของ exec
+## เหตุการณ์วงจรชีวิต Exec
 
-Node สามารถส่ง event `exec.finished` หรือ `exec.denied` เพื่อแสดงกิจกรรม system.run
-สิ่งเหล่านี้จะถูกแมปเป็น system event ใน gateway (Node แบบเดิมอาจยังคงส่ง `exec.started`)
+โหนดสามารถส่งเหตุการณ์ `exec.finished` หรือ `exec.denied` เพื่อแสดงกิจกรรม system.run ได้
+เหตุการณ์เหล่านี้จะถูกแมปเป็นเหตุการณ์ระบบใน Gateway (โหนดรุ่นเก่าอาจยังส่ง `exec.started` อยู่)
 
-ฟิลด์ของ payload (ทั้งหมดเป็นทางเลือก เว้นแต่จะระบุไว้):
+ฟิลด์ payload (ทั้งหมดเป็นแบบไม่บังคับ เว้นแต่ระบุไว้):
 
-- `sessionKey` (จำเป็น): เซสชันเอเจนต์ที่จะรับ system event
-- `runId`: exec id ที่ไม่ซ้ำสำหรับการจัดกลุ่ม
-- `command`: สตริงคำสั่งแบบดิบหรือแบบจัดรูปแบบ
-- `exitCode`, `timedOut`, `success`, `output`: รายละเอียดเมื่อเสร็จสิ้น (เฉพาะ finished)
-- `reason`: เหตุผลที่ถูกปฏิเสธ (เฉพาะ denied)
+- `sessionKey` (ต้องมี): เซสชันเอเจนต์ที่จะรับเหตุการณ์ระบบ
+- `runId`: id ของ exec ที่ไม่ซ้ำสำหรับการจัดกลุ่ม
+- `command`: สตริงคำสั่งแบบดิบหรือแบบจัดรูปแบบแล้ว
+- `exitCode`, `timedOut`, `success`, `output`: รายละเอียดการเสร็จสิ้น (เฉพาะ finished)
+- `reason`: เหตุผลการปฏิเสธ (เฉพาะ denied)
 
 ## การใช้งาน tailnet ในอดีต
 
-- bind bridge เข้ากับ tailnet IP: `bridge.bind: "tailnet"` ใน
-  `~/.openclaw/openclaw.json` (ใช้เพื่ออ้างอิงทางประวัติศาสตร์เท่านั้น; `bridge.*` ใช้ไม่ได้อีกแล้ว)
-- ไคลเอนต์เชื่อมต่อผ่านชื่อ MagicDNS หรือ tailnet IP
-- Bonjour **ไม่** ข้ามเครือข่าย; ใช้ host/port แบบกำหนดเองหรือ DNS‑SD แบบ wide-area
+- ผูกบริดจ์กับ IP ของ tailnet: `bridge.bind: "tailnet"` ใน
+  `~/.openclaw/openclaw.json` (เฉพาะในอดีตเท่านั้น; `bridge.*` ไม่ถูกต้องอีกต่อไป)
+- ไคลเอนต์เชื่อมต่อผ่านชื่อ MagicDNS หรือ IP ของ tailnet
+- Bonjour **ไม่** ข้ามเครือข่าย ใช้โฮสต์/พอร์ตแบบกำหนดเอง หรือ DNS-SD แบบ wide-area
   เมื่อจำเป็น
 
 ## การกำหนดเวอร์ชัน
 
-bridge เป็น **v1 โดยปริยาย** (ไม่มีการเจรจา min/max) ส่วนนี้มีไว้เป็นข้อมูลอ้างอิงทางประวัติศาสตร์เท่านั้น; ไคลเอนต์ node/operator ปัจจุบันใช้ [Gateway Protocol](/th/gateway/protocol) แบบ WebSocket
+บริดจ์เป็น **v1 โดยนัย** (ไม่มีการเจรจา min/max) ส่วนนี้เป็น
+ข้อมูลอ้างอิงทางประวัติศาสตร์เท่านั้น ไคลเอนต์โหนด/ผู้ปฏิบัติการปัจจุบันใช้ WebSocket
+[โปรโตคอล Gateway](/th/gateway/protocol)
 
 ## ที่เกี่ยวข้อง
 
-- [Gateway protocol](/th/gateway/protocol)
-- [Nodes](/th/nodes)
+- [โปรโตคอล Gateway](/th/gateway/protocol)
+- [โหนด](/th/nodes)
