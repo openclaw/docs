@@ -1,36 +1,41 @@
 ---
 read_when:
-    - Włączanie zamiany tekstu na mowę w odpowiedziach
+    - Włączanie zamiany tekstu na mowę dla odpowiedzi
     - Konfigurowanie dostawcy TTS, łańcucha rezerwowego lub persony
-    - Używanie poleceń /tts lub dyrektyw
+    - Używanie poleceń lub dyrektyw /tts
 sidebarTitle: Text to speech (TTS)
-summary: Synteza mowy dla odpowiedzi wychodzących — dostawcy, persony, polecenia slash i dane wyjściowe dla poszczególnych kanałów
-title: Tekst na mowę
+summary: Zamiana tekstu na mowę dla odpowiedzi wychodzących — dostawcy, persony, polecenia z ukośnikiem i wyjście dla poszczególnych kanałów
+title: Zamiana tekstu na mowę
 x-i18n:
-    generated_at: "2026-05-02T22:23:48Z"
+    generated_at: "2026-05-06T09:34:53Z"
     model: gpt-5.5
     provider: openai
-    source_hash: daf4d7bc86afe14f7c181eee56e2bc77906ed78b4aaabb2fc855847f5a4366f9
+    source_hash: ac6fce14c5597938949d1e3bb8547106707b234e9b1c7a33fd49d23bae27da6e
     source_path: tools/tts.md
     workflow: 16
 ---
 
-OpenClaw może konwertować odpowiedzi wychodzące na audio u **14 dostawców mowy**
+OpenClaw może konwertować wychodzące odpowiedzi na audio za pomocą **14 dostawców mowy**
 i dostarczać natywne wiadomości głosowe w Feishu, Matrix, Telegram i WhatsApp,
 załączniki audio wszędzie indziej oraz strumienie PCM/Ulaw dla telefonii i Talk.
+
+TTS to połowa trybu Talk `stt-tts` odpowiadająca za wyjście mowy. Natywne dla dostawcy
+sesje Talk `realtime` syntetyzują mowę wewnątrz dostawcy czasu rzeczywistego zamiast
+wywoływać tę ścieżkę TTS, natomiast sesje `transcription` nie syntetyzują głosowej
+odpowiedzi asystenta.
 
 ## Szybki start
 
 <Steps>
-  <Step title="Wybierz dostawcę">
+  <Step title="Pick a provider">
     OpenAI i ElevenLabs to najbardziej niezawodne opcje hostowane. Microsoft i
     Local CLI działają bez klucza API. Pełną listę znajdziesz w [macierzy dostawców](#supported-providers).
   </Step>
-  <Step title="Ustaw klucz API">
+  <Step title="Set the API key">
     Wyeksportuj zmienną środowiskową dla swojego dostawcy (na przykład `OPENAI_API_KEY`,
     `ELEVENLABS_API_KEY`). Microsoft i Local CLI nie wymagają klucza.
   </Step>
-  <Step title="Włącz w konfiguracji">
+  <Step title="Enable in config">
     Ustaw `messages.tts.auto: "always"` i `messages.tts.provider`:
 
     ```json5
@@ -45,7 +50,7 @@ załączniki audio wszędzie indziej oraz strumienie PCM/Ulaw dla telefonii i Ta
     ```
 
   </Step>
-  <Step title="Wypróbuj na czacie">
+  <Step title="Try it in chat">
     `/tts status` pokazuje bieżący stan. `/tts audio Hello from OpenClaw`
     wysyła jednorazową odpowiedź audio.
   </Step>
@@ -53,48 +58,48 @@ załączniki audio wszędzie indziej oraz strumienie PCM/Ulaw dla telefonii i Ta
 
 <Note>
 Auto-TTS jest domyślnie **wyłączone**. Gdy `messages.tts.provider` nie jest ustawione,
-OpenClaw wybiera pierwszego skonfigurowanego dostawcę w kolejności automatycznego wyboru rejestru.
+OpenClaw wybiera pierwszego skonfigurowanego dostawcę zgodnie z kolejnością automatycznego wyboru w rejestrze.
 Wbudowane narzędzie agenta `tts` działa tylko przy wyraźnej intencji: zwykły czat pozostaje
-tekstowy, chyba że użytkownik poprosi o audio, użyje `/tts` albo włączy mowę Auto-TTS/dyrektywy.
+tekstowy, chyba że użytkownik poprosi o audio, użyje `/tts` albo włączy Auto-TTS/mowę dyrektywną.
 </Note>
 
 ## Obsługiwani dostawcy
 
 | Dostawca          | Uwierzytelnianie                                                                                                 | Uwagi                                                                   |
 | ----------------- | ---------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| **Azure Speech**  | `AZURE_SPEECH_KEY` + `AZURE_SPEECH_REGION` (także `AZURE_SPEECH_API_KEY`, `SPEECH_KEY`, `SPEECH_REGION`)         | Natywne wyjście notatek głosowych Ogg/Opus i telefonia.                 |
+| **Azure Speech**  | `AZURE_SPEECH_KEY` + `AZURE_SPEECH_REGION` (także `AZURE_SPEECH_API_KEY`, `SPEECH_KEY`, `SPEECH_REGION`)          | Natywne wyjście notatek głosowych Ogg/Opus i telefonia.                 |
 | **DeepInfra**     | `DEEPINFRA_API_KEY`                                                                                              | TTS zgodne z OpenAI. Domyślnie `hexgrad/Kokoro-82M`.                    |
 | **ElevenLabs**    | `ELEVENLABS_API_KEY` lub `XI_API_KEY`                                                                            | Klonowanie głosu, wielojęzyczność, deterministyczność przez `seed`.     |
-| **Google Gemini** | `GEMINI_API_KEY` lub `GOOGLE_API_KEY`                                                                            | TTS API Gemini; świadomość persony przez `promptTemplate: "audio-profile-v1"`. |
+| **Google Gemini** | `GEMINI_API_KEY` lub `GOOGLE_API_KEY`                                                                            | TTS API Gemini; świadome persony przez `promptTemplate: "audio-profile-v1"`. |
 | **Gradium**       | `GRADIUM_API_KEY`                                                                                                | Wyjście notatek głosowych i telefonii.                                  |
-| **Inworld**       | `INWORLD_API_KEY`                                                                                                | Streamingowe API TTS. Natywne notatki głosowe Opus i telefonia PCM.     |
+| **Inworld**       | `INWORLD_API_KEY`                                                                                                | Strumieniowe API TTS. Natywne notatki głosowe Opus i telefonia PCM.     |
 | **Local CLI**     | brak                                                                                                             | Uruchamia skonfigurowane lokalne polecenie TTS.                         |
-| **Microsoft**     | brak                                                                                                             | Publiczny neuronowy TTS Edge przez `node-edge-tts`. Najlepszy możliwy wysiłek, bez SLA. |
+| **Microsoft**     | brak                                                                                                             | Publiczny neuralny TTS Edge przez `node-edge-tts`. Najlepszy możliwy wysiłek, bez SLA. |
 | **MiniMax**       | `MINIMAX_API_KEY` (lub plan tokenowy: `MINIMAX_OAUTH_TOKEN`, `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY`)  | API T2A v2. Domyślnie `speech-2.8-hd`.                                  |
-| **OpenAI**        | `OPENAI_API_KEY`                                                                                                 | Używany także do automatycznych podsumowań; obsługuje personę `instructions`. |
-| **OpenRouter**    | `OPENROUTER_API_KEY` (może ponownie użyć `models.providers.openrouter.apiKey`)                                   | Domyślny model `hexgrad/kokoro-82m`.                                    |
-| **Volcengine**    | `VOLCENGINE_TTS_API_KEY` lub `BYTEPLUS_SEED_SPEECH_API_KEY` (starsze AppID/token: `VOLCENGINE_TTS_APPID`/`_TOKEN`) | HTTP API BytePlus Seed Speech.                                          |
+| **OpenAI**        | `OPENAI_API_KEY`                                                                                                 | Używane także do automatycznych podsumowań; obsługuje personę `instructions`. |
+| **OpenRouter**    | `OPENROUTER_API_KEY` (może ponownie użyć `models.providers.openrouter.apiKey`)                                    | Domyślny model `hexgrad/kokoro-82m`.                                    |
+| **Volcengine**    | `VOLCENGINE_TTS_API_KEY` lub `BYTEPLUS_SEED_SPEECH_API_KEY` (starszy AppID/token: `VOLCENGINE_TTS_APPID`/`_TOKEN`) | HTTP API BytePlus Seed Speech.                                          |
 | **Vydra**         | `VYDRA_API_KEY`                                                                                                  | Wspólny dostawca obrazów, wideo i mowy.                                 |
 | **xAI**           | `XAI_API_KEY`                                                                                                    | Wsadowy TTS xAI. Natywna notatka głosowa Opus **nie** jest obsługiwana. |
-| **Xiaomi MiMo**   | `XIAOMI_API_KEY`                                                                                                 | TTS MiMo przez uzupełnienia czatu Xiaomi.                               |
+| **Xiaomi MiMo**   | `XIAOMI_API_KEY`                                                                                                 | MiMo TTS przez uzupełnianie czatu Xiaomi.                               |
 
-Jeśli skonfigurowano wielu dostawców, najpierw używany jest wybrany dostawca, a
-pozostali służą jako opcje awaryjne. Automatyczne podsumowania używają `summaryModel` (lub
-`agents.defaults.model.primary`), więc ten dostawca także musi być uwierzytelniony,
-jeśli podsumowania pozostają włączone.
+Jeśli skonfigurowano wielu dostawców, wybrany dostawca jest używany jako pierwszy,
+a pozostali są opcjami awaryjnymi. Automatyczne podsumowanie używa `summaryModel` (lub
+`agents.defaults.model.primary`), więc ten dostawca również musi być uwierzytelniony,
+jeśli pozostawiasz podsumowania włączone.
 
 <Warning>
-Dołączony dostawca **Microsoft** używa internetowej usługi neuronowego TTS
-Microsoft Edge przez `node-edge-tts`. To publiczna usługa WWW bez opublikowanego
-SLA ani limitu — traktuj ją jako usługę dostarczaną na zasadzie najlepszego możliwego wysiłku. Starszy identyfikator dostawcy `edge` jest
+Dołączony dostawca **Microsoft** używa internetowej usługi neuralnego TTS Microsoft Edge
+przez `node-edge-tts`. To publiczna usługa internetowa bez opublikowanego
+SLA ani limitu — traktuj ją jako działającą na zasadzie najlepszego możliwego wysiłku. Starszy identyfikator dostawcy `edge` jest
 normalizowany do `microsoft`, a `openclaw doctor --fix` przepisuje utrwaloną
 konfigurację; nowe konfiguracje powinny zawsze używać `microsoft`.
 </Warning>
 
 ## Konfiguracja
 
-Konfiguracja TTS znajduje się w `messages.tts` w `~/.openclaw/openclaw.json`. Wybierz
-ustawienie wstępne i dostosuj blok dostawcy:
+Konfiguracja TTS znajduje się pod `messages.tts` w `~/.openclaw/openclaw.json`. Wybierz
+preset i dostosuj blok dostawcy:
 
 <Tabs>
   <Tab title="Azure Speech">
@@ -218,7 +223,7 @@ ustawienie wstępne i dostosuj blok dostawcy:
 }
 ```
   </Tab>
-  <Tab title="Microsoft (bez klucza)">
+  <Tab title="Microsoft (no key)">
 ```json5
 {
   messages: {
@@ -374,8 +379,8 @@ ustawienie wstępne i dostosuj blok dostawcy:
 
 ### Nadpisania głosu dla poszczególnych agentów
 
-Użyj `agents.list[].tts`, gdy jeden agent ma mówić z innym dostawcą,
-głosem, modelem, personą lub trybem Auto-TTS. Blok agenta jest głęboko scalany z
+Użyj `agents.list[].tts`, gdy jeden agent powinien mówić z użyciem innego dostawcy,
+głosu, modelu, persony lub trybu Auto-TTS. Blok agenta jest głęboko scalany z
 `messages.tts`, więc poświadczenia dostawcy mogą pozostać w globalnej konfiguracji dostawcy:
 
 ```json5
@@ -407,20 +412,16 @@ głosem, modelem, personą lub trybem Auto-TTS. Blok agenta jest głęboko scala
 Aby przypiąć personę dla konkretnego agenta, ustaw `agents.list[].tts.persona` obok konfiguracji
 dostawcy — nadpisuje ona globalne `messages.tts.persona` tylko dla tego agenta.
 
-Kolejność pierwszeństwa dla automatycznych odpowiedzi, `/tts audio`, `/tts status` i narzędzia agenta
-`tts`:
+Kolejność pierwszeństwa dla automatycznych odpowiedzi, `/tts audio`, `/tts status` i narzędzia agenta `tts`:
 
 1. `messages.tts`
 2. aktywne `agents.list[].tts`
 3. nadpisanie kanału, gdy kanał obsługuje `channels.<channel>.tts`
 4. nadpisanie konta, gdy kanał przekazuje `channels.<channel>.accounts.<id>.tts`
 5. lokalne preferencje `/tts` dla tego hosta
-6. wbudowane dyrektywy `[[tts:...]]`, gdy [nadpisania modelu](#model-driven-directives) są włączone
+6. dyrektywy inline `[[tts:...]]`, gdy włączone są [nadpisania modelu](#model-driven-directives)
 
-Nadpisania kanału i konta używają tego samego kształtu co `messages.tts` i
-są głęboko scalane z wcześniejszymi warstwami, więc współdzielone poświadczenia
-dostawcy mogą pozostać w `messages.tts`, podczas gdy kanał lub konto bota
-zmienia tylko głos, model, personę albo tryb automatyczny:
+Nadpisania kanału i konta używają tego samego kształtu co `messages.tts` i są głęboko scalane z wcześniejszymi warstwami, więc współdzielone dane uwierzytelniające dostawcy mogą pozostać w `messages.tts`, podczas gdy kanał lub konto bota zmienia tylko głos, model, personę albo tryb automatyczny:
 
 ```json5
 {
@@ -450,10 +451,7 @@ zmienia tylko głos, model, personę albo tryb automatyczny:
 
 ## Persony
 
-**Persona** to stabilna tożsamość mówiona, którą można deterministycznie
-stosować u różnych dostawców. Może preferować jednego dostawcę, definiować
-neutralną względem dostawcy intencję promptu oraz przenosić powiązania specyficzne
-dla dostawcy dotyczące głosów, modeli, szablonów promptów, ziaren i ustawień głosu.
+**Persona** to stabilna tożsamość mówiona, którą można deterministycznie stosować u różnych dostawców. Może preferować jednego dostawcę, definiować neutralny względem dostawcy zamiar promptu oraz przenosić powiązania specyficzne dla dostawcy dotyczące głosów, modeli, szablonów promptów, ziaren i ustawień głosu.
 
 ### Minimalna persona
 
@@ -527,15 +525,15 @@ dla dostawcy dotyczące głosów, modeli, szablonów promptów, ziaren i ustawie
 }
 ```
 
-### Rozwiązywanie persony
+### Rozpoznawanie persony
 
 Aktywna persona jest wybierana deterministycznie:
 
-1. lokalna preferencja `/tts persona <id>`, jeśli jest ustawiona.
-2. `messages.tts.persona`, jeśli jest ustawiona.
+1. lokalna preferencja `/tts persona <id>`, jeśli ustawiona.
+2. `messages.tts.persona`, jeśli ustawiona.
 3. Brak persony.
 
-Wybór dostawcy działa według zasady jawne najpierw:
+Wybór dostawcy działa według zasady najpierw jawne ustawienia:
 
 1. Bezpośrednie nadpisania (CLI, Gateway, Talk, dozwolone dyrektywy TTS).
 2. lokalna preferencja `/tts provider <id>`.
@@ -548,55 +546,41 @@ Dla każdej próby dostawcy OpenClaw scala konfiguracje w tej kolejności:
 1. `messages.tts.providers.<id>`
 2. `messages.tts.personas.<persona>.providers.<id>`
 3. Zaufane nadpisania żądania
-4. Dozwolone nadpisania dyrektyw TTS emitowanych przez model
+4. Dozwolone nadpisania z dyrektyw TTS emitowanych przez model
 
 ### Jak dostawcy używają promptów persony
 
-Pola promptu persony (`profile`, `scene`, `sampleContext`, `style`, `accent`,
-`pacing`, `constraints`) są **neutralne względem dostawcy**. Każdy dostawca decyduje,
-jak ich używać:
+Pola promptu persony (`profile`, `scene`, `sampleContext`, `style`, `accent`, `pacing`, `constraints`) są **neutralne względem dostawcy**. Każdy dostawca decyduje, jak ich użyć:
 
 <AccordionGroup>
   <Accordion title="Google Gemini">
-    Opakowuje pola promptu persony w strukturę promptu Gemini TTS **tylko wtedy**,
-    gdy efektywna konfiguracja dostawcy Google ustawia `promptTemplate: "audio-profile-v1"`
-    albo `personaPrompt`. Starsze pola `audioProfile` i `speakerName` nadal są
-    dodawane na początku jako tekst promptu specyficzny dla Google. Wbudowane tagi audio,
-    takie jak `[whispers]` albo `[laughs]`, wewnątrz bloku `[[tts:text]]` są zachowywane
-    w transkrypcie Gemini; OpenClaw nie generuje tych tagów.
+    Opakowuje pola promptu persony w strukturę promptu Gemini TTS **tylko wtedy**, gdy efektywna konfiguracja dostawcy Google ustawia `promptTemplate: "audio-profile-v1"` albo `personaPrompt`. Starsze pola `audioProfile` i `speakerName` nadal są poprzedzane jako tekst promptu specyficzny dla Google. Tagi audio inline, takie jak `[whispers]` lub `[laughs]`, wewnątrz bloku `[[tts:text]]` są zachowywane w transkrypcie Gemini; OpenClaw nie generuje tych tagów.
   </Accordion>
   <Accordion title="OpenAI">
-    Mapuje pola promptu persony na pole żądania `instructions` **tylko wtedy**,
-    gdy nie skonfigurowano jawnych `instructions` OpenAI. Jawne `instructions`
-    zawsze mają pierwszeństwo.
+    Mapuje pola promptu persony na pole żądania `instructions` **tylko wtedy**, gdy nie skonfigurowano jawnych OpenAI `instructions`. Jawne `instructions` zawsze wygrywa.
   </Accordion>
   <Accordion title="Inni dostawcy">
-    Używają tylko specyficznych dla dostawcy powiązań persony w
-    `personas.<id>.providers.<provider>`. Pola promptu persony są ignorowane,
-    chyba że dostawca implementuje własne mapowanie promptu persony.
+    Używają tylko powiązań persony specyficznych dla dostawcy pod `personas.<id>.providers.<provider>`. Pola promptu persony są ignorowane, chyba że dostawca implementuje własne mapowanie promptu persony.
   </Accordion>
 </AccordionGroup>
 
-### Zasady fallbacku
+### Zasady awaryjnego przełączenia
 
-`fallbackPolicy` kontroluje zachowanie, gdy persona **nie ma powiązania** dla
-próbowanego dostawcy:
+`fallbackPolicy` kontroluje zachowanie, gdy persona **nie ma powiązania** dla próbowanego dostawcy:
 
 | Zasada              | Zachowanie                                                                                                                                         |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `preserve-persona`  | **Domyślne.** Neutralne względem dostawcy pola promptu pozostają dostępne; dostawca może ich użyć albo je zignorować.                                            |
-| `provider-defaults` | Persona jest pomijana podczas przygotowania promptu dla tej próby; dostawca używa swoich neutralnych ustawień domyślnych, a fallback do innych dostawców trwa dalej. |
-| `fail`              | Pomiń tę próbę dostawcy z `reasonCode: "not_configured"` i `personaBinding: "missing"`. Dostawcy fallbacku nadal są próbowani.              |
+| `preserve-persona`  | **Domyślnie.** Pola promptu neutralne względem dostawcy pozostają dostępne; dostawca może ich użyć albo je zignorować.                                            |
+| `provider-defaults` | Persona jest pomijana podczas przygotowania promptu dla tej próby; dostawca używa swoich neutralnych wartości domyślnych, a przełączanie awaryjne na innych dostawców jest kontynuowane. |
+| `fail`              | Pomija tę próbę dostawcy z `reasonCode: "not_configured"` i `personaBinding: "missing"`. Dostawcy awaryjni nadal są próbowani.              |
 
-Całe żądanie TTS kończy się niepowodzeniem tylko wtedy, gdy **każdy** próbowany
-dostawca zostanie pominięty albo zakończy się niepowodzeniem.
+Całe żądanie TTS kończy się niepowodzeniem tylko wtedy, gdy **każdy** próbowany dostawca zostanie pominięty albo zakończy się błędem.
+
+Wybór dostawcy sesji Talk jest ograniczony do sesji. Klient Talk powinien wybierać identyfikatory dostawców, identyfikatory modeli, identyfikatory głosów i ustawienia regionalne z `talk.catalog` oraz przekazywać je przez sesję Talk lub żądanie przekazania. Otwarcie sesji głosowej nie powinno modyfikować `messages.tts` ani globalnych wartości domyślnych dostawcy Talk.
 
 ## Dyrektywy sterowane modelem
 
-Domyślnie asystent **może** emitować dyrektywy `[[tts:...]]`, aby nadpisać
-głos, model lub szybkość dla pojedynczej odpowiedzi, a także opcjonalny
-blok `[[tts:text]]...[[/tts:text]]` z ekspresyjnymi wskazówkami, które powinny
-pojawić się tylko w audio:
+Domyślnie asystent **może** emitować dyrektywy `[[tts:...]]`, aby nadpisać głos, model lub szybkość dla pojedynczej odpowiedzi, a także opcjonalny blok `[[tts:text]]...[[/tts:text]]` dla ekspresyjnych wskazówek, które powinny pojawić się tylko w audio:
 
 ```text
 Here you go.
@@ -605,14 +589,9 @@ Here you go.
 [[tts:text]](laughs) Read the song once more.[[/tts:text]]
 ```
 
-Gdy `messages.tts.auto` ma wartość `"tagged"`, **dyrektywy są wymagane**, aby uruchomić
-audio. Dostarczanie bloków strumieniowo usuwa dyrektywy z widocznego tekstu,
-zanim kanał je zobaczy, nawet gdy są podzielone między sąsiednie bloki.
+Gdy `messages.tts.auto` ma wartość `"tagged"`, **dyrektywy są wymagane**, aby wyzwolić audio. Strumieniowe dostarczanie bloków usuwa dyrektywy z widocznego tekstu, zanim kanał je zobaczy, nawet gdy są podzielone między sąsiadujące bloki.
 
-`provider=...` jest ignorowane, chyba że `modelOverrides.allowProvider: true`. Gdy
-odpowiedź deklaruje `provider=...`, pozostałe klucze w tej dyrektywie są analizowane
-tylko przez tego dostawcę; nieobsługiwane klucze są usuwane i zgłaszane jako ostrzeżenia
-dyrektyw TTS.
+`provider=...` jest ignorowane, chyba że `modelOverrides.allowProvider: true`. Gdy odpowiedź deklaruje `provider=...`, pozostałe klucze w tej dyrektywie są parsowane tylko przez tego dostawcę; nieobsługiwane klucze są usuwane i zgłaszane jako ostrzeżenia dyrektywy TTS.
 
 **Dostępne klucze dyrektyw:**
 
@@ -620,29 +599,28 @@ dyrektyw TTS.
 - `voice` / `voiceName` / `voice_name` / `google_voice` / `voiceId`
 - `model` / `google_model`
 - `stability`, `similarityBoost`, `style`, `speed`, `useSpeakerBoost`
-- `vol` / `volume` (głośność MiniMax, 0-10)
-- `pitch` (całkowitoliczbowa wysokość tonu MiniMax, od -12 do 12; wartości ułamkowe są obcinane)
-- `emotion` (znacznik emocji Volcengine)
+- `vol` / `volume` (głośność MiniMax, 0–10)
+- `pitch` (całkowita wysokość dźwięku MiniMax, od −12 do 12; wartości ułamkowe są obcinane)
+- `emotion` (tag emocji Volcengine)
 - `applyTextNormalization` (`auto|on|off`)
 - `languageCode` (ISO 639-1)
 - `seed`
 
-**Całkowite wyłączenie nadpisań modelu:**
+**Całkowicie wyłącz nadpisania modelu:**
 
 ```json5
 { messages: { tts: { modelOverrides: { enabled: false } } } }
 ```
 
-**Zezwolenie na przełączanie dostawcy przy zachowaniu konfigurowalności pozostałych ustawień:**
+**Zezwól na przełączanie dostawcy, pozostawiając inne pokrętła konfigurowalne:**
 
 ```json5
 { messages: { tts: { modelOverrides: { enabled: true, allowProvider: true, allowSeed: false } } } }
 ```
 
-## Polecenia slash
+## Polecenia ukośnikowe
 
-Pojedyncze polecenie `/tts`. W Discord OpenClaw rejestruje również `/voice`, ponieważ
-`/tts` jest wbudowanym poleceniem Discord — tekstowe `/tts ...` nadal działa.
+Pojedyncze polecenie `/tts`. Na Discord OpenClaw rejestruje też `/voice`, ponieważ `/tts` jest wbudowanym poleceniem Discord — tekstowe `/tts ...` nadal działa.
 
 ```text
 /tts off | on | status
@@ -656,91 +634,84 @@ Pojedyncze polecenie `/tts`. W Discord OpenClaw rejestruje również `/voice`, p
 ```
 
 <Note>
-Polecenia wymagają autoryzowanego nadawcy (obowiązują reguły listy dozwolonych/owner) oraz włączenia
-`commands.text` albo natywnej rejestracji poleceń.
+Polecenia wymagają autoryzowanego nadawcy (obowiązują reguły listy dozwolonych/ właściciela) oraz włączenia `commands.text` albo natywnej rejestracji poleceń.
 </Note>
 
-Uwagi dotyczące działania:
+Uwagi dotyczące zachowania:
 
 - `/tts on` zapisuje lokalną preferencję TTS jako `always`; `/tts off` zapisuje ją jako `off`.
-- `/tts chat on|off|default` zapisuje nadpisanie auto-TTS o zakresie sesji dla bieżącego czatu.
+- `/tts chat on|off|default` zapisuje ograniczone do sesji nadpisanie automatycznego TTS dla bieżącego czatu.
 - `/tts persona <id>` zapisuje lokalną preferencję persony; `/tts persona off` ją czyści.
-- `/tts latest` odczytuje najnowszą odpowiedź asystenta z transkryptu bieżącej sesji i wysyła ją raz jako audio. Przechowuje tylko hash tej odpowiedzi we wpisie sesji, aby powstrzymać zduplikowane wysyłki głosowe.
+- `/tts latest` odczytuje najnowszą odpowiedź asystenta z transkryptu bieżącej sesji i wysyła ją raz jako audio. Przechowuje tylko hash tej odpowiedzi we wpisie sesji, aby zapobiec duplikatom wysyłania głosu.
 - `/tts audio` generuje jednorazową odpowiedź audio (**nie** włącza TTS).
-- `limit` i `summary` są przechowywane w **lokalnych preferencjach**, a nie w głównej konfiguracji.
-- `/tts status` zawiera diagnostykę fallback dla najnowszej próby — `Fallback: <primary> -> <used>`, `Attempts: ...` oraz szczegóły każdej próby (`provider:outcome(reasonCode) latency`).
-- `/status` pokazuje aktywny tryb TTS oraz skonfigurowanego dostawcę, model, głos i oczyszczone metadane niestandardowego endpointu, gdy TTS jest włączone.
+- `limit` i `summary` są przechowywane w **lokalnych preferencjach**, nie w głównej konfiguracji.
+- `/tts status` zawiera diagnostykę awaryjnego przełączenia dla najnowszej próby — `Fallback: <primary> -> <used>`, `Attempts: ...` oraz szczegóły każdej próby (`provider:outcome(reasonCode) latency`).
+- `/status` pokazuje aktywny tryb TTS oraz skonfigurowanego dostawcę, model, głos i oczyszczone metadane niestandardowego punktu końcowego, gdy TTS jest włączone.
 
-## Preferencje dla poszczególnych użytkowników
+## Preferencje poszczególnych użytkowników
 
-Polecenia slash zapisują lokalne nadpisania w `prefsPath`. Domyślna ścieżka to
-`~/.openclaw/settings/tts.json`; można ją nadpisać zmienną środowiskową `OPENCLAW_TTS_PREFS`
-lub `messages.tts.prefsPath`.
+Polecenia ukośnikowe zapisują lokalne nadpisania do `prefsPath`. Wartość domyślna to `~/.openclaw/settings/tts.json`; nadpisz ją zmienną środowiskową `OPENCLAW_TTS_PREFS` albo `messages.tts.prefsPath`.
 
-| Przechowywane pole | Efekt                                        |
+| Przechowywane pole | Efekt                                       |
 | ------------ | -------------------------------------------- |
-| `auto`       | Lokalne nadpisanie auto-TTS (`always`, `off`, …) |
+| `auto`       | Lokalne nadpisanie automatycznego TTS (`always`, `off`, …) |
 | `provider`   | Lokalne nadpisanie głównego dostawcy              |
 | `persona`    | Lokalne nadpisanie persony                       |
-| `maxLength`  | Próg streszczenia (domyślnie `1500` znaków)     |
-| `summarize`  | Przełącznik streszczeń (domyślnie `true`)              |
+| `maxLength`  | Próg podsumowania (domyślnie `1500` znaków)     |
+| `summarize`  | Przełącznik podsumowania (domyślnie `true`)              |
 
-Nadpisują one efektywną konfigurację z `messages.tts` oraz aktywny
-blok `agents.list[].tts` dla tego hosta.
+Nadpisują one efektywną konfigurację z `messages.tts` oraz aktywny blok `agents.list[].tts` dla tego hosta.
 
 ## Formaty wyjściowe (stałe)
 
-Dostarczanie głosu TTS zależy od możliwości kanału. Plugin kanału deklaruje,
-czy TTS w stylu głosowym powinno prosić dostawców o natywny cel `voice-note`, czy
-zachować zwykłą syntezę `audio-file` i jedynie oznaczyć zgodne wyjście do dostarczenia
-głosowego.
+Dostarczanie głosu TTS jest sterowane możliwościami kanału. Pluginy kanałów ogłaszają, czy TTS w stylu głosowym powinno prosić dostawców o natywny cel `voice-note`, czy zachować normalną syntezę `audio-file` i tylko oznaczać zgodne wyjście do dostarczania głosowego.
 
-- **Kanały obsługujące wiadomości głosowe**: odpowiedzi w formie wiadomości głosowych preferują Opus (`opus_48000_64` z ElevenLabs, `opus` z OpenAI).
-  - 48 kHz / 64 kbps to dobry kompromis dla wiadomości głosowych.
-- **Feishu / WhatsApp**: gdy odpowiedź w formie wiadomości głosowej jest tworzona jako MP3/WebM/WAV/M4A
+- **Kanały obsługujące notatki głosowe**: odpowiedzi w formie notatek głosowych preferują Opus (`opus_48000_64` z ElevenLabs, `opus` z OpenAI).
+  - 48 kHz / 64 kb/s to dobry kompromis dla wiadomości głosowych.
+- **Feishu / WhatsApp**: gdy odpowiedź w formie notatki głosowej jest tworzona jako MP3/WebM/WAV/M4A
   lub inny prawdopodobny plik audio, Plugin kanału transkoduje ją do 48 kHz
   Ogg/Opus za pomocą `ffmpeg` przed wysłaniem natywnej wiadomości głosowej. WhatsApp wysyła
-  wynik przez ładunek Baileys `audio` z `ptt: true` i
+  wynik przez ładunek Baileys `audio` z `ptt: true` oraz
   `audio/ogg; codecs=opus`. Jeśli konwersja się nie powiedzie, Feishu otrzymuje oryginalny
-  plik jako załącznik; wysyłanie przez WhatsApp kończy się niepowodzeniem zamiast opublikowania niezgodnego
+  plik jako załącznik; wysyłka WhatsApp kończy się niepowodzeniem zamiast opublikowania niezgodnego
   ładunku PTT.
-- **BlueBubbles**: zachowuje syntezę dostawcy na zwykłej ścieżce pliku audio; wyniki MP3
+- **BlueBubbles**: utrzymuje syntezę po stronie dostawcy na zwykłej ścieżce pliku audio; wyjścia MP3
   i CAF są oznaczane do dostarczenia jako notatka głosowa iMessage.
 - **Inne kanały**: MP3 (`mp3_44100_128` z ElevenLabs, `mp3` z OpenAI).
-  - 44,1 kHz / 128 kbps to domyślna równowaga dla wyrazistości mowy.
-- **MiniMax**: MP3 (model `speech-2.8-hd`, częstotliwość próbkowania 32 kHz) dla zwykłych załączników audio. Dla celów wiadomości głosowych ogłaszanych przez kanał OpenClaw transkoduje MP3 MiniMax do 48 kHz Opus za pomocą `ffmpeg` przed dostarczeniem, gdy kanał ogłasza transkodowanie.
-- **Xiaomi MiMo**: domyślnie MP3 albo WAV, gdy tak skonfigurowano. Dla celów wiadomości głosowych ogłaszanych przez kanał OpenClaw transkoduje wyjście Xiaomi do 48 kHz Opus za pomocą `ffmpeg` przed dostarczeniem, gdy kanał ogłasza transkodowanie.
-- **Lokalny CLI**: używa skonfigurowanego `outputFormat`. Cele wiadomości głosowych są
+  - 44,1 kHz / 128 kb/s to domyślny balans dla wyrazistości mowy.
+- **MiniMax**: MP3 (model `speech-2.8-hd`, częstotliwość próbkowania 32 kHz) dla zwykłych załączników audio. Dla deklarowanych przez kanał docelowych notatek głosowych OpenClaw transkoduje MP3 z MiniMax do 48 kHz Opus za pomocą `ffmpeg` przed dostarczeniem, gdy kanał deklaruje transkodowanie.
+- **Xiaomi MiMo**: domyślnie MP3 albo WAV, gdy tak skonfigurowano. Dla deklarowanych przez kanał docelowych notatek głosowych OpenClaw transkoduje wyjście Xiaomi do 48 kHz Opus za pomocą `ffmpeg` przed dostarczeniem, gdy kanał deklaruje transkodowanie.
+- **Lokalne CLI**: używa skonfigurowanego `outputFormat`. Cele notatek głosowych są
   konwertowane do Ogg/Opus, a wyjście telefoniczne jest konwertowane do surowego mono PCM 16 kHz
   za pomocą `ffmpeg`.
-- **Google Gemini**: TTS Gemini API zwraca surowe PCM 24 kHz. OpenClaw opakowuje je jako WAV dla załączników audio, transkoduje do 48 kHz Opus dla celów wiadomości głosowych i zwraca PCM bezpośrednio dla Talk/telefonii.
-- **Gradium**: WAV dla załączników audio, Opus dla celów wiadomości głosowych oraz `ulaw_8000` przy 8 kHz dla telefonii.
-- **Inworld**: MP3 dla zwykłych załączników audio, natywne `OGG_OPUS` dla celów wiadomości głosowych oraz surowe `PCM` przy 22050 Hz dla Talk/telefonii.
-- **xAI**: domyślnie MP3; `responseFormat` może być `mp3`, `wav`, `pcm`, `mulaw` albo `alaw`. OpenClaw używa wsadowego punktu końcowego REST TTS xAI i zwraca kompletny załącznik audio; streamingowy WebSocket TTS xAI nie jest używany przez tę ścieżkę dostawcy. Natywny format Opus wiadomości głosowych nie jest obsługiwany przez tę ścieżkę.
+- **Google Gemini**: TTS Gemini API zwraca surowe PCM 24 kHz. OpenClaw opakowuje je jako WAV dla załączników audio, transkoduje do 48 kHz Opus dla docelowych notatek głosowych i zwraca PCM bezpośrednio dla Talk/telefonii.
+- **Gradium**: WAV dla załączników audio, Opus dla docelowych notatek głosowych oraz `ulaw_8000` przy 8 kHz dla telefonii.
+- **Inworld**: MP3 dla zwykłych załączników audio, natywne `OGG_OPUS` dla docelowych notatek głosowych oraz surowe `PCM` przy 22050 Hz dla Talk/telefonii.
+- **xAI**: domyślnie MP3; `responseFormat` może mieć wartość `mp3`, `wav`, `pcm`, `mulaw` lub `alaw`. OpenClaw używa wsadowego punktu końcowego REST TTS xAI i zwraca kompletny załącznik audio; strumieniowy WebSocket TTS xAI nie jest używany przez tę ścieżkę dostawcy. Natywny format Opus dla notatek głosowych nie jest obsługiwany przez tę ścieżkę.
 - **Microsoft**: używa `microsoft.outputFormat` (domyślnie `audio-24khz-48kbitrate-mono-mp3`).
-  - Dołączony transport akceptuje `outputFormat`, ale nie wszystkie formaty są dostępne z usługi.
+  - Dołączony transport akceptuje `outputFormat`, ale nie wszystkie formaty są dostępne w usłudze.
   - Wartości formatu wyjściowego są zgodne z formatami wyjściowymi Microsoft Speech (w tym Ogg/WebM Opus).
   - Telegram `sendVoice` akceptuje OGG/MP3/M4A; użyj OpenAI/ElevenLabs, jeśli potrzebujesz
     gwarantowanych wiadomości głosowych Opus.
-  - Jeśli skonfigurowany format wyjściowy Microsoft zawiedzie, OpenClaw ponowi próbę z MP3.
+  - Jeśli skonfigurowany format wyjściowy Microsoft zawiedzie, OpenClaw ponawia próbę z MP3.
 
 Formaty wyjściowe OpenAI/ElevenLabs są stałe dla każdego kanału (zobacz wyżej).
 
-## Zachowanie Auto-TTS
+## Automatyczne zachowanie TTS
 
 Gdy `messages.tts.auto` jest włączone, OpenClaw:
 
-- Pomija TTS, jeśli odpowiedź zawiera już media albo dyrektywę `MEDIA:`.
+- Pomija TTS, jeśli odpowiedź zawiera już multimedia lub dyrektywę `MEDIA:`.
 - Pomija bardzo krótkie odpowiedzi (poniżej 10 znaków).
-- Podsumowuje długie odpowiedzi, gdy podsumowania są włączone, używając
-  `summaryModel` (albo `agents.defaults.model.primary`).
-- Dołącza wygenerowane audio do odpowiedzi.
-- W `mode: "final"` nadal wysyła TTS tylko z audio dla strumieniowanych odpowiedzi końcowych
-  po zakończeniu strumienia tekstu; wygenerowane media przechodzą przez tę samą
-  normalizację mediów kanału co zwykłe załączniki odpowiedzi.
+- Streszcza długie odpowiedzi, gdy streszczenia są włączone, używając
+  `summaryModel` (lub `agents.defaults.model.primary`).
+- Dołącza wygenerowany dźwięk do odpowiedzi.
+- W `mode: "final"` nadal wysyła TTS tylko z dźwiękiem dla strumieniowanych odpowiedzi końcowych
+  po zakończeniu strumienia tekstu; wygenerowane multimedia przechodzą przez tę samą
+  normalizację multimediów kanału co zwykłe załączniki odpowiedzi.
 
-Jeśli odpowiedź przekracza `maxLength`, a podsumowanie jest wyłączone (albo brakuje klucza API dla
-modelu podsumowania), audio jest pomijane i wysyłana jest zwykła odpowiedź tekstowa.
+Jeśli odpowiedź przekracza `maxLength`, a streszczenie jest wyłączone (lub nie ma klucza API dla
+modelu streszczeń), dźwięk jest pomijany i wysyłana jest zwykła odpowiedź tekstowa.
 
 ```text
 Reply -> TTS enabled?
@@ -756,30 +727,30 @@ Reply -> TTS enabled?
 
 ## Formaty wyjściowe według kanału
 
-| Cel                                   | Format                                                                                                                                 |
-| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Feishu / Matrix / Telegram / WhatsApp | Odpowiedzi w formie wiadomości głosowych preferują **Opus** (`opus_48000_64` z ElevenLabs, `opus` z OpenAI). 48 kHz / 64 kbps równoważy wyrazistość i rozmiar. |
-| Inne kanały                           | **MP3** (`mp3_44100_128` z ElevenLabs, `mp3` z OpenAI). 44,1 kHz / 128 kbps domyślnie dla mowy.                                       |
-| Talk / telefonia                      | Natywne dla dostawcy **PCM** (Inworld 22050 Hz, Google 24 kHz) albo `ulaw_8000` z Gradium dla telefonii.                              |
+  | Cel                                   | Format                                                                                                                                |
+  | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+  | Feishu / Matrix / Telegram / WhatsApp | Odpowiedzi w formie notatek głosowych preferują **Opus** (`opus_48000_64` z ElevenLabs, `opus` z OpenAI). 48 kHz / 64 kbps równoważy klarowność i rozmiar. |
+  | Inne kanały                           | **MP3** (`mp3_44100_128` z ElevenLabs, `mp3` z OpenAI). 44,1 kHz / 128 kbps to domyślne ustawienie dla mowy.                                 |
+  | Talk / telefonia                      | Natywny dla dostawcy **PCM** (Inworld 22050 Hz, Google 24 kHz) albo `ulaw_8000` z Gradium dla telefonii.                                 |
 
-Uwagi dla poszczególnych dostawców:
+  Uwagi według dostawcy:
 
-- **Transkodowanie Feishu / WhatsApp:** Gdy odpowiedź w formie wiadomości głosowej trafia jako MP3/WebM/WAV/M4A, Plugin kanału transkoduje ją do 48 kHz Ogg/Opus za pomocą `ffmpeg`. WhatsApp wysyła przez Baileys z `ptt: true` i `audio/ogg; codecs=opus`. Jeśli konwersja się nie powiedzie: Feishu wraca do dołączenia oryginalnego pliku; wysyłka WhatsApp kończy się niepowodzeniem zamiast opublikowania niezgodnego ładunku PTT.
-- **MiniMax / Xiaomi MiMo:** Domyślnie MP3 (32 kHz dla MiniMax `speech-2.8-hd`); transkodowane do 48 kHz Opus dla celów wiadomości głosowych przez `ffmpeg`.
-- **Lokalny CLI:** Używa skonfigurowanego `outputFormat`. Cele wiadomości głosowych są konwertowane do Ogg/Opus, a wyjście telefoniczne do surowego mono PCM 16 kHz.
-- **Google Gemini:** Zwraca surowe PCM 24 kHz. OpenClaw opakowuje jako WAV dla załączników, transkoduje do 48 kHz Opus dla celów wiadomości głosowych, zwraca PCM bezpośrednio dla Talk/telefonii.
-- **Inworld:** Załączniki MP3, natywna wiadomość głosowa `OGG_OPUS`, surowe `PCM` 22050 Hz dla Talk/telefonii.
-- **xAI:** Domyślnie MP3; `responseFormat` może być `mp3|wav|pcm|mulaw|alaw`. Używa wsadowego punktu końcowego REST xAI — streamingowy WebSocket TTS **nie** jest używany. Natywny format Opus wiadomości głosowych **nie** jest obsługiwany.
-- **Microsoft:** Używa `microsoft.outputFormat` (domyślnie `audio-24khz-48kbitrate-mono-mp3`). Telegram `sendVoice` akceptuje OGG/MP3/M4A; użyj OpenAI/ElevenLabs, jeśli potrzebujesz gwarantowanych wiadomości głosowych Opus. Jeśli skonfigurowany format Microsoft zawiedzie, OpenClaw ponowi próbę z MP3.
+  - **Transkodowanie Feishu / WhatsApp:** Gdy odpowiedź w formie notatki głosowej trafia jako MP3/WebM/WAV/M4A, Plugin kanału transkoduje ją do Ogg/Opus 48 kHz za pomocą `ffmpeg`. WhatsApp wysyła przez Baileys z `ptt: true` i `audio/ogg; codecs=opus`. Jeśli konwersja się nie powiedzie: Feishu wraca do dołączenia oryginalnego pliku; wysyłka WhatsApp kończy się niepowodzeniem zamiast opublikowania niezgodnego ładunku PTT.
+  - **MiniMax / Xiaomi MiMo:** Domyślnie MP3 (32 kHz dla MiniMax `speech-2.8-hd`); transkodowane do Opus 48 kHz dla celów notatek głosowych przez `ffmpeg`.
+  - **Lokalne CLI:** Używa skonfigurowanego `outputFormat`. Cele notatek głosowych są konwertowane do Ogg/Opus, a wyjście telefoniczne do surowego, monofonicznego PCM 16 kHz.
+  - **Google Gemini:** Zwraca surowy PCM 24 kHz. OpenClaw opakowuje go jako WAV dla załączników, transkoduje do Opus 48 kHz dla celów notatek głosowych, a dla Talk/telefonii zwraca bezpośrednio PCM.
+  - **Inworld:** Załączniki MP3, natywny `OGG_OPUS` dla notatek głosowych, surowy `PCM` 22050 Hz dla Talk/telefonii.
+  - **xAI:** Domyślnie MP3; `responseFormat` może mieć wartość `mp3|wav|pcm|mulaw|alaw`. Używa wsadowego punktu końcowego REST xAI — strumieniowe WebSocket TTS **nie** jest używane. Natywny format notatek głosowych Opus **nie** jest obsługiwany.
+  - **Microsoft:** Używa `microsoft.outputFormat` (domyślnie `audio-24khz-48kbitrate-mono-mp3`). Telegram `sendVoice` akceptuje OGG/MP3/M4A; użyj OpenAI/ElevenLabs, jeśli potrzebujesz gwarantowanych wiadomości głosowych Opus. Jeśli skonfigurowany format Microsoft zawiedzie, OpenClaw ponawia próbę z MP3.
 
-Formaty wyjściowe OpenAI i ElevenLabs są stałe dla każdego kanału, jak wymieniono powyżej.
+  Formaty wyjściowe OpenAI i ElevenLabs są ustalone dla każdego kanału zgodnie z powyższą listą.
 
-## Dokumentacja pól
+  ## Opis pól
 
-<AccordionGroup>
-  <Accordion title="Najwyższy poziom messages.tts.*">
+  <AccordionGroup>
+  <Accordion title="Najwyższego poziomu messages.tts.*">
     <ParamField path="auto" type='"off" | "always" | "inbound" | "tagged"'>
-      Tryb Auto-TTS. `inbound` wysyła audio tylko po przychodzącej wiadomości głosowej; `tagged` wysyła audio tylko wtedy, gdy odpowiedź zawiera dyrektywy `[[tts:...]]` albo blok `[[tts:text]]`.
+      Tryb automatycznego TTS. `inbound` wysyła dźwięk tylko po przychodzącej wiadomości głosowej; `tagged` wysyła dźwięk tylko wtedy, gdy odpowiedź zawiera dyrektywy `[[tts:...]]` lub blok `[[tts:text]]`.
     </ParamField>
     <ParamField path="enabled" type="boolean" deprecated>
       Starszy przełącznik. `openclaw doctor --fix` migruje go do `auto`.
@@ -788,7 +759,7 @@ Formaty wyjściowe OpenAI i ElevenLabs są stałe dla każdego kanału, jak wymi
       `"all"` obejmuje odpowiedzi narzędzi/bloków oprócz odpowiedzi końcowych.
     </ParamField>
     <ParamField path="provider" type="string">
-      Identyfikator dostawcy mowy. Gdy nieustawiony, OpenClaw używa pierwszego skonfigurowanego dostawcy w kolejności automatycznego wyboru rejestru. Starsze `provider: "edge"` jest przepisywane na `"microsoft"` przez `openclaw doctor --fix`.
+      Identyfikator dostawcy mowy. Gdy nie jest ustawiony, OpenClaw używa pierwszego skonfigurowanego dostawcy w kolejności automatycznego wyboru z rejestru. Starsze `provider: "edge"` jest przepisywane na `"microsoft"` przez `openclaw doctor --fix`.
     </ParamField>
     <ParamField path="persona" type="string">
       Identyfikator aktywnej persony z `personas`. Normalizowany do małych liter.
@@ -797,7 +768,7 @@ Formaty wyjściowe OpenAI i ElevenLabs są stałe dla każdego kanału, jak wymi
       Stabilna tożsamość mówiona. Pola: `label`, `description`, `provider`, `fallbackPolicy`, `prompt`, `providers.<provider>`. Zobacz [Persony](#personas).
     </ParamField>
     <ParamField path="summaryModel" type="string">
-      Tani model do automatycznego podsumowania; domyślnie `agents.defaults.model.primary`. Akceptuje `provider/model` albo skonfigurowany alias modelu.
+      Tani model do automatycznego podsumowania; domyślnie `agents.defaults.model.primary`. Akceptuje `provider/model` lub skonfigurowany alias modelu.
     </ParamField>
     <ParamField path="modelOverrides" type="object">
       Zezwól modelowi na emitowanie dyrektyw TTS. `enabled` domyślnie ma wartość `true`; `allowProvider` domyślnie ma wartość `false`.
@@ -806,47 +777,47 @@ Formaty wyjściowe OpenAI i ElevenLabs są stałe dla każdego kanału, jak wymi
       Ustawienia należące do dostawcy, kluczowane identyfikatorem dostawcy mowy. Starsze bezpośrednie bloki (`messages.tts.openai`, `.elevenlabs`, `.microsoft`, `.edge`) są przepisywane przez `openclaw doctor --fix`; zatwierdzaj tylko `messages.tts.providers.<id>`.
     </ParamField>
     <ParamField path="maxTextLength" type="number">
-      Twardy limit znaków wejścia TTS. `/tts audio` kończy się niepowodzeniem po przekroczeniu.
+      Twardy limit znaków wejściowych TTS. `/tts audio` kończy się niepowodzeniem, jeśli zostanie przekroczony.
     </ParamField>
     <ParamField path="timeoutMs" type="number">
       Limit czasu żądania w milisekundach.
     </ParamField>
     <ParamField path="prefsPath" type="string">
-      Zastąp lokalną ścieżkę JSON preferencji (dostawca/limit/podsumowanie). Domyślnie `~/.openclaw/settings/tts.json`.
+      Nadpisz lokalną ścieżkę JSON preferencji (dostawca/limit/podsumowanie). Domyślnie `~/.openclaw/settings/tts.json`.
     </ParamField>
   </Accordion>
 
   <Accordion title="Azure Speech">
-    <ParamField path="apiKey" type="string">Env: `AZURE_SPEECH_KEY`, `AZURE_SPEECH_API_KEY` albo `SPEECH_KEY`.</ParamField>
-    <ParamField path="region" type="string">Region Azure Speech (np. `eastus`). Env: `AZURE_SPEECH_REGION` albo `SPEECH_REGION`.</ParamField>
-    <ParamField path="endpoint" type="string">Opcjonalne zastąpienie punktu końcowego Azure Speech (alias `baseUrl`).</ParamField>
+    <ParamField path="apiKey" type="string">Env: `AZURE_SPEECH_KEY`, `AZURE_SPEECH_API_KEY` lub `SPEECH_KEY`.</ParamField>
+    <ParamField path="region" type="string">Region Azure Speech (np. `eastus`). Env: `AZURE_SPEECH_REGION` lub `SPEECH_REGION`.</ParamField>
+    <ParamField path="endpoint" type="string">Opcjonalne nadpisanie punktu końcowego Azure Speech (alias `baseUrl`).</ParamField>
     <ParamField path="voice" type="string">ShortName głosu Azure. Domyślnie `en-US-JennyNeural`.</ParamField>
     <ParamField path="lang" type="string">Kod języka SSML. Domyślnie `en-US`.</ParamField>
-    <ParamField path="outputFormat" type="string">Azure `X-Microsoft-OutputFormat` dla standardowego audio. Domyślnie `audio-24khz-48kbitrate-mono-mp3`.</ParamField>
-    <ParamField path="voiceNoteOutputFormat" type="string">Azure `X-Microsoft-OutputFormat` dla wyjścia wiadomości głosowej. Domyślnie `ogg-24khz-16bit-mono-opus`.</ParamField>
+    <ParamField path="outputFormat" type="string">Azure `X-Microsoft-OutputFormat` dla standardowego dźwięku. Domyślnie `audio-24khz-48kbitrate-mono-mp3`.</ParamField>
+    <ParamField path="voiceNoteOutputFormat" type="string">Azure `X-Microsoft-OutputFormat` dla wyjścia notatki głosowej. Domyślnie `ogg-24khz-16bit-mono-opus`.</ParamField>
   </Accordion>
 
   <Accordion title="ElevenLabs">
-    <ParamField path="apiKey" type="string">Wraca do `ELEVENLABS_API_KEY` albo `XI_API_KEY`.</ParamField>
+    <ParamField path="apiKey" type="string">Wraca do `ELEVENLABS_API_KEY` lub `XI_API_KEY`.</ParamField>
     <ParamField path="model" type="string">Identyfikator modelu (np. `eleven_multilingual_v2`, `eleven_v3`).</ParamField>
     <ParamField path="voiceId" type="string">Identyfikator głosu ElevenLabs.</ParamField>
     <ParamField path="voiceSettings" type="object">
-      `stability`, `similarityBoost`, `style` (każde `0..1`), `useSpeakerBoost` (`true|false`), `speed` (`0.5..2.0`, `1.0` = normalne).
+      `stability`, `similarityBoost`, `style` (każde `0..1`), `useSpeakerBoost` (`true|false`), `speed` (`0.5..2.0`, `1.0` = normalnie).
     </ParamField>
     <ParamField path="applyTextNormalization" type='"auto" | "on" | "off"'>Tryb normalizacji tekstu.</ParamField>
     <ParamField path="languageCode" type="string">2-literowy ISO 639-1 (np. `en`, `de`).</ParamField>
-    <ParamField path="seed" type="number">Liczba całkowita `0..4294967295` dla deterministyczności w najlepszym możliwym zakresie.</ParamField>
-    <ParamField path="baseUrl" type="string">Zastąp bazowy URL API ElevenLabs.</ParamField>
+    <ParamField path="seed" type="number">Liczba całkowita `0..4294967295` dla deterministyczności na zasadzie najlepszej próby.</ParamField>
+    <ParamField path="baseUrl" type="string">Nadpisz bazowy URL API ElevenLabs.</ParamField>
   </Accordion>
 
   <Accordion title="Google Gemini">
-    <ParamField path="apiKey" type="string">Wraca do `GEMINI_API_KEY` / `GOOGLE_API_KEY`. Jeśli pominięty, TTS może ponownie użyć `models.providers.google.apiKey` przed awaryjnym użyciem env.</ParamField>
+    <ParamField path="apiKey" type="string">Wraca do `GEMINI_API_KEY` / `GOOGLE_API_KEY`. Jeśli pominięto, TTS może ponownie użyć `models.providers.google.apiKey` przed awaryjnym użyciem env.</ParamField>
     <ParamField path="model" type="string">Model TTS Gemini. Domyślnie `gemini-3.1-flash-tts-preview`.</ParamField>
-    <ParamField path="voiceName" type="string">Nazwa gotowego głosu Gemini. Domyślnie `Kore`. Alias: `voice`.</ParamField>
+    <ParamField path="voiceName" type="string">Nazwa wbudowanego głosu Gemini. Domyślnie `Kore`. Alias: `voice`.</ParamField>
     <ParamField path="audioProfile" type="string">Prompt stylu w języku naturalnym dodawany przed tekstem mówionym.</ParamField>
     <ParamField path="speakerName" type="string">Opcjonalna etykieta mówcy dodawana przed tekstem mówionym, gdy prompt używa nazwanego mówcy.</ParamField>
     <ParamField path="promptTemplate" type='"audio-profile-v1"'>Ustaw na `audio-profile-v1`, aby opakować pola promptu aktywnej persony w deterministyczną strukturę promptu TTS Gemini.</ParamField>
-    <ParamField path="personaPrompt" type="string">Dodatkowy tekst promptu persony specyficzny dla Google, dołączany do Notatek reżysera szablonu.</ParamField>
+    <ParamField path="personaPrompt" type="string">Dodatkowy tekst promptu persony specyficzny dla Google, dołączany do notatek reżysera szablonu.</ParamField>
     <ParamField path="baseUrl" type="string">Akceptowane jest tylko `https://generativelanguage.googleapis.com`.</ParamField>
   </Accordion>
 
@@ -857,7 +828,7 @@ Formaty wyjściowe OpenAI i ElevenLabs są stałe dla każdego kanału, jak wymi
   </Accordion>
 
   <Accordion title="Inworld">
-    ### Główny Inworld
+    ### Podstawowy Inworld
 
     <ParamField path="apiKey" type="string">Env: `INWORLD_API_KEY`.</ParamField>
     <ParamField path="baseUrl" type="string">Domyślnie `https://api.inworld.ai`.</ParamField>
@@ -870,26 +841,26 @@ Formaty wyjściowe OpenAI i ElevenLabs są stałe dla każdego kanału, jak wymi
   <Accordion title="Local CLI (tts-local-cli)">
     <ParamField path="command" type="string">Lokalny plik wykonywalny lub ciąg polecenia dla CLI TTS.</ParamField>
     <ParamField path="args" type="string[]">Argumenty polecenia. Obsługuje symbole zastępcze `{{Text}}`, `{{OutputPath}}`, `{{OutputDir}}`, `{{OutputBase}}`.</ParamField>
-    <ParamField path="outputFormat" type='"mp3" | "opus" | "wav"'>Oczekiwany format wyjściowy CLI. Domyślnie `mp3` dla załączników audio.</ParamField>
+    <ParamField path="outputFormat" type='"mp3" | "opus" | "wav"'>Oczekiwany format wyjścia CLI. Domyślnie `mp3` dla załączników audio.</ParamField>
     <ParamField path="timeoutMs" type="number">Limit czasu polecenia w milisekundach. Domyślnie `120000`.</ParamField>
     <ParamField path="cwd" type="string">Opcjonalny katalog roboczy polecenia.</ParamField>
     <ParamField path="env" type="Record<string, string>">Opcjonalne nadpisania środowiska dla polecenia.</ParamField>
   </Accordion>
 
   <Accordion title="Microsoft (no API key)">
-    <ParamField path="enabled" type="boolean" default="true">Zezwalaj na użycie mowy Microsoft.</ParamField>
+    <ParamField path="enabled" type="boolean" default="true">Zezwól na użycie mowy Microsoft.</ParamField>
     <ParamField path="voice" type="string">Nazwa głosu neuronowego Microsoft (np. `en-US-MichelleNeural`).</ParamField>
     <ParamField path="lang" type="string">Kod języka (np. `en-US`).</ParamField>
     <ParamField path="outputFormat" type="string">Format wyjściowy Microsoft. Domyślnie `audio-24khz-48kbitrate-mono-mp3`. Nie wszystkie formaty są obsługiwane przez dołączony transport oparty na Edge.</ParamField>
     <ParamField path="rate / pitch / volume" type="string">Ciągi procentowe (np. `+10%`, `-5%`).</ParamField>
-    <ParamField path="saveSubtitles" type="boolean">Zapisuj napisy JSON obok pliku audio.</ParamField>
-    <ParamField path="proxy" type="string">Adres URL proxy dla żądań mowy Microsoft.</ParamField>
+    <ParamField path="saveSubtitles" type="boolean">Zapisz napisy JSON obok pliku audio.</ParamField>
+    <ParamField path="proxy" type="string">URL proxy dla żądań mowy Microsoft.</ParamField>
     <ParamField path="timeoutMs" type="number">Nadpisanie limitu czasu żądania (ms).</ParamField>
-    <ParamField path="edge.*" type="object" deprecated>Starszy alias. Uruchom `openclaw doctor --fix`, aby przepisać utrwaloną konfigurację na `providers.microsoft`.</ParamField>
+    <ParamField path="edge.*" type="object" deprecated>Starszy alias. Uruchom `openclaw doctor --fix`, aby przepisać utrwaloną konfigurację do `providers.microsoft`.</ParamField>
   </Accordion>
 
   <Accordion title="MiniMax">
-    <ParamField path="apiKey" type="string">Przechodzi awaryjnie na `MINIMAX_API_KEY`. Uwierzytelnianie Token Plan przez `MINIMAX_OAUTH_TOKEN`, `MINIMAX_CODE_PLAN_KEY` lub `MINIMAX_CODING_API_KEY`.</ParamField>
+    <ParamField path="apiKey" type="string">Powraca do `MINIMAX_API_KEY`. Uwierzytelnianie Token Plan przez `MINIMAX_OAUTH_TOKEN`, `MINIMAX_CODE_PLAN_KEY` lub `MINIMAX_CODING_API_KEY`.</ParamField>
     <ParamField path="baseUrl" type="string">Domyślnie `https://api.minimax.io`. Env: `MINIMAX_API_HOST`.</ParamField>
     <ParamField path="model" type="string">Domyślnie `speech-2.8-hd`. Env: `MINIMAX_TTS_MODEL`.</ParamField>
     <ParamField path="voiceId" type="string">Domyślnie `English_expressive_narrator`. Env: `MINIMAX_TTS_VOICE_ID`.</ParamField>
@@ -899,13 +870,13 @@ Formaty wyjściowe OpenAI i ElevenLabs są stałe dla każdego kanału, jak wymi
   </Accordion>
 
   <Accordion title="OpenAI">
-    <ParamField path="apiKey" type="string">Przechodzi awaryjnie na `OPENAI_API_KEY`.</ParamField>
+    <ParamField path="apiKey" type="string">Powraca do `OPENAI_API_KEY`.</ParamField>
     <ParamField path="model" type="string">Identyfikator modelu TTS OpenAI (np. `gpt-4o-mini-tts`).</ParamField>
     <ParamField path="voice" type="string">Nazwa głosu (np. `alloy`, `cedar`).</ParamField>
-    <ParamField path="instructions" type="string">Jawne pole OpenAI `instructions`. Gdy jest ustawione, pola promptu persony **nie** są automatycznie mapowane.</ParamField>
-    <ParamField path="extraBody / extra_body" type="Record<string, unknown>">Dodatkowe pola JSON scalane z treścią żądań `/audio/speech` po wygenerowanych polach OpenAI TTS. Użyj tego dla punktów końcowych zgodnych z OpenAI, takich jak Kokoro, które wymagają kluczy specyficznych dla providera, np. `lang`; niebezpieczne klucze prototypu są ignorowane.</ParamField>
+    <ParamField path="instructions" type="string">Jawne pole OpenAI `instructions`. Gdy jest ustawione, pola promptu persony **nie** są mapowane automatycznie.</ParamField>
+    <ParamField path="extraBody / extra_body" type="Record<string, unknown>">Dodatkowe pola JSON scalane z treściami żądań `/audio/speech` po wygenerowanych polach TTS OpenAI. Użyj tego dla punktów końcowych zgodnych z OpenAI, takich jak Kokoro, które wymagają kluczy specyficznych dla dostawcy, takich jak `lang`; niebezpieczne klucze prototypu są ignorowane.</ParamField>
     <ParamField path="baseUrl" type="string">
-      Nadpisuje punkt końcowy OpenAI TTS. Kolejność rozstrzygania: konfiguracja → `OPENAI_TTS_BASE_URL` → `https://api.openai.com/v1`. Wartości inne niż domyślne są traktowane jako punkty końcowe TTS zgodne z OpenAI, więc niestandardowe nazwy modeli i głosów są akceptowane.
+      Nadpisz punkt końcowy TTS OpenAI. Kolejność rozstrzygania: konfiguracja → `OPENAI_TTS_BASE_URL` → `https://api.openai.com/v1`. Wartości inne niż domyślne są traktowane jako punkty końcowe TTS zgodne z OpenAI, więc niestandardowe nazwy modeli i głosów są akceptowane.
     </ParamField>
   </Accordion>
 
@@ -915,17 +886,17 @@ Formaty wyjściowe OpenAI i ElevenLabs są stałe dla każdego kanału, jak wymi
     <ParamField path="model" type="string">Domyślnie `hexgrad/kokoro-82m`. Alias: `modelId`.</ParamField>
     <ParamField path="voice" type="string">Domyślnie `af_alloy`. Alias: `voiceId`.</ParamField>
     <ParamField path="responseFormat" type='"mp3" | "pcm"'>Domyślnie `mp3`.</ParamField>
-    <ParamField path="speed" type="number">Nadpisanie szybkości natywne dla providera.</ParamField>
+    <ParamField path="speed" type="number">Nadpisanie szybkości natywne dla dostawcy.</ParamField>
   </Accordion>
 
   <Accordion title="Volcengine (BytePlus Seed Speech)">
     <ParamField path="apiKey" type="string">Env: `VOLCENGINE_TTS_API_KEY` lub `BYTEPLUS_SEED_SPEECH_API_KEY`.</ParamField>
-    <ParamField path="resourceId" type="string">Domyślnie `seed-tts-1.0`. Env: `VOLCENGINE_TTS_RESOURCE_ID`. Użyj `seed-tts-2.0`, gdy Twój projekt ma uprawnienie do TTS 2.0.</ParamField>
+    <ParamField path="resourceId" type="string">Domyślnie `seed-tts-1.0`. Env: `VOLCENGINE_TTS_RESOURCE_ID`. Użyj `seed-tts-2.0`, gdy projekt ma uprawnienie TTS 2.0.</ParamField>
     <ParamField path="appKey" type="string">Nagłówek klucza aplikacji. Domyślnie `aGjiRDfUWi`. Env: `VOLCENGINE_TTS_APP_KEY`.</ParamField>
-    <ParamField path="baseUrl" type="string">Nadpisuje punkt końcowy HTTP Seed Speech TTS. Env: `VOLCENGINE_TTS_BASE_URL`.</ParamField>
+    <ParamField path="baseUrl" type="string">Nadpisz punkt końcowy HTTP TTS Seed Speech. Env: `VOLCENGINE_TTS_BASE_URL`.</ParamField>
     <ParamField path="voice" type="string">Typ głosu. Domyślnie `en_female_anna_mars_bigtts`. Env: `VOLCENGINE_TTS_VOICE`.</ParamField>
-    <ParamField path="speedRatio" type="number">Współczynnik szybkości natywny dla providera.</ParamField>
-    <ParamField path="emotion" type="string">Tag emocji natywny dla providera.</ParamField>
+    <ParamField path="speedRatio" type="number">Współczynnik szybkości natywny dla dostawcy.</ParamField>
+    <ParamField path="emotion" type="string">Znacznik emocji natywny dla dostawcy.</ParamField>
     <ParamField path="appId / token / cluster" type="string" deprecated>Starsze pola Volcengine Speech Console. Env: `VOLCENGINE_TTS_APPID`, `VOLCENGINE_TTS_TOKEN`, `VOLCENGINE_TTS_CLUSTER` (domyślnie `volcano_tts`).</ParamField>
   </Accordion>
 
@@ -935,7 +906,7 @@ Formaty wyjściowe OpenAI i ElevenLabs są stałe dla każdego kanału, jak wymi
     <ParamField path="voiceId" type="string">Domyślnie `eve`. Głosy live: `ara`, `eve`, `leo`, `rex`, `sal`, `una`.</ParamField>
     <ParamField path="language" type="string">Kod języka BCP-47 lub `auto`. Domyślnie `en`.</ParamField>
     <ParamField path="responseFormat" type='"mp3" | "wav" | "pcm" | "mulaw" | "alaw"'>Domyślnie `mp3`.</ParamField>
-    <ParamField path="speed" type="number">Nadpisanie szybkości natywne dla providera.</ParamField>
+    <ParamField path="speed" type="number">Nadpisanie szybkości natywne dla dostawcy.</ParamField>
   </Accordion>
 
   <Accordion title="Xiaomi MiMo">
@@ -944,7 +915,7 @@ Formaty wyjściowe OpenAI i ElevenLabs są stałe dla każdego kanału, jak wymi
     <ParamField path="model" type="string">Domyślnie `mimo-v2.5-tts`. Env: `XIAOMI_TTS_MODEL`. Obsługuje także `mimo-v2-tts`.</ParamField>
     <ParamField path="voice" type="string">Domyślnie `mimo_default`. Env: `XIAOMI_TTS_VOICE`.</ParamField>
     <ParamField path="format" type='"mp3" | "wav"'>Domyślnie `mp3`. Env: `XIAOMI_TTS_FORMAT`.</ParamField>
-    <ParamField path="style" type="string">Opcjonalna instrukcja stylu w języku naturalnym wysyłana jako wiadomość użytkownika; nie jest wypowiadana.</ParamField>
+    <ParamField path="style" type="string">Opcjonalna instrukcja stylu w języku naturalnym wysyłana jako wiadomość użytkownika; nie jest odczytywana.</ParamField>
   </Accordion>
 </AccordionGroup>
 
@@ -952,35 +923,35 @@ Formaty wyjściowe OpenAI i ElevenLabs są stałe dla każdego kanału, jak wymi
 
 Narzędzie `tts` konwertuje tekst na mowę i zwraca załącznik audio do
 dostarczenia odpowiedzi. W Feishu, Matrix, Telegram i WhatsApp audio jest
-dostarczane jako wiadomość głosowa, a nie załącznik pliku. Feishu i
-WhatsApp mogą transkodować wyjście TTS inne niż Opus na tej ścieżce, gdy
-`ffmpeg` jest dostępny.
+dostarczane jako wiadomość głosowa, a nie jako załącznik pliku. Feishu i
+WhatsApp mogą transkodować wyjście TTS inne niż Opus na tej ścieżce, gdy `ffmpeg` jest
+dostępny.
 
 WhatsApp wysyła audio przez Baileys jako notatkę głosową PTT (`audio` z
-`ptt: true`) i wysyła widoczny tekst **oddzielnie** od audio PTT, ponieważ
-klienci nie renderują konsekwentnie podpisów przy notatkach głosowych.
+`ptt: true`) i wysyła widoczny tekst **osobno** od audio PTT, ponieważ
+klienty nie renderują konsekwentnie podpisów w notatkach głosowych.
 
 Narzędzie akceptuje opcjonalne pola `channel` i `timeoutMs`; `timeoutMs` to
-limit czasu żądania providera dla pojedynczego wywołania w milisekundach.
+limit czasu żądania dostawcy dla pojedynczego wywołania, w milisekundach.
 
-## Gateway RPC
+## RPC Gateway
 
-| Metoda            | Cel                                             |
-| ----------------- | ----------------------------------------------- |
-| `tts.status`      | Odczytaj bieżący stan TTS i ostatnią próbę.     |
+| Metoda            | Cel                                      |
+| ----------------- | ---------------------------------------- |
+| `tts.status`      | Odczytaj bieżący stan TTS i ostatnią próbę. |
 | `tts.enable`      | Ustaw lokalną preferencję automatyczną na `always`. |
 | `tts.disable`     | Ustaw lokalną preferencję automatyczną na `off`. |
-| `tts.convert`     | Jednorazowy tekst → audio.                      |
-| `tts.setProvider` | Ustaw lokalną preferencję providera.            |
-| `tts.setPersona`  | Ustaw lokalną preferencję persony.              |
-| `tts.providers`   | Wyświetl skonfigurowanych providerów i status.  |
+| `tts.convert`     | Jednorazowa konwersja tekst → audio.     |
+| `tts.setProvider` | Ustaw lokalną preferencję dostawcy.      |
+| `tts.setPersona`  | Ustaw lokalną preferencję persony.       |
+| `tts.providers`   | Wyświetl skonfigurowanych dostawców i status. |
 
-## Linki do usług
+## Linki usług
 
-- [Przewodnik OpenAI po zamianie tekstu na mowę](https://platform.openai.com/docs/guides/text-to-speech)
+- [Przewodnik OpenAI text-to-speech](https://platform.openai.com/docs/guides/text-to-speech)
 - [Dokumentacja referencyjna OpenAI Audio API](https://platform.openai.com/docs/api-reference/audio)
 - [Azure Speech REST text-to-speech](https://learn.microsoft.com/azure/ai-services/speech-service/rest-text-to-speech)
-- [Provider Azure Speech](/pl/providers/azure-speech)
+- [Dostawca Azure Speech](/pl/providers/azure-speech)
 - [ElevenLabs Text to Speech](https://elevenlabs.io/docs/api-reference/text-to-speech)
 - [Uwierzytelnianie ElevenLabs](https://elevenlabs.io/docs/api-reference/authentication)
 - [Gradium](/pl/providers/gradium)
@@ -994,8 +965,8 @@ limit czasu żądania providera dla pojedynczego wywołania w milisekundach.
 
 ## Powiązane
 
-- [Przegląd multimediów](/pl/tools/media-overview)
+- [Przegląd mediów](/pl/tools/media-overview)
 - [Generowanie muzyki](/pl/tools/music-generation)
 - [Generowanie wideo](/pl/tools/video-generation)
-- [Polecenia slash](/pl/tools/slash-commands)
+- [Polecenia ukośnikowe](/pl/tools/slash-commands)
 - [Plugin połączeń głosowych](/pl/plugins/voice-call)

@@ -1,77 +1,77 @@
 ---
 read_when:
-    - Praca nad ścieżkami wybudzania głosem lub PTT
-summary: Tryby wybudzania głosem i push-to-talk oraz szczegóły routingu w aplikacji Mac
-title: Wybudzanie głosem (macOS)
+    - Praca nad ścieżkami wybudzania głosowego lub PTT
+summary: Tryby budzenia głosowego i „naciśnij, aby mówić” oraz szczegóły routingu w aplikacji na Maca
+title: Aktywacja głosowa (macOS)
 x-i18n:
-    generated_at: "2026-04-24T09:21:35Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:22:03Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 0273c24764f0baf440a19f31435d6ee62ab040c1ec5a97d7733d3ec8b81b0641
+    source_hash: 312895b5767c447233bd77cbcd48ea81bb6c700080abc31974188b610a1b1ef0
     source_path: platforms/mac/voicewake.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Wybudzanie głosem i push-to-talk
+# Wybudzanie głosem i naciśnij, aby mówić
 
 ## Tryby
 
-- **Tryb słowa wybudzającego** (domyślny): zawsze aktywny rozpoznawacz mowy czeka na tokeny wyzwalające (`swabbleTriggerWords`). Po dopasowaniu rozpoczyna przechwytywanie, pokazuje nakładkę z częściowym tekstem i automatycznie wysyła po ciszy.
-- **Push-to-talk (przytrzymanie prawego Option)**: przytrzymaj prawy klawisz Option, aby natychmiast rozpocząć przechwytywanie — bez potrzeby użycia wyzwalacza. Nakładka pojawia się podczas przytrzymania; zwolnienie klawisza finalizuje i przekazuje dalej po krótkim opóźnieniu, aby można było jeszcze poprawić tekst.
+- **Tryb słowa wybudzającego** (domyślny): zawsze włączony rozpoznawacz mowy czeka na tokeny wyzwalające (`swabbleTriggerWords`). Po dopasowaniu rozpoczyna przechwytywanie, pokazuje nakładkę z częściowym tekstem i automatycznie wysyła po ciszy.
+- **Naciśnij, aby mówić (przytrzymanie prawego Option)**: przytrzymaj prawy klawisz Option, aby natychmiast rozpocząć przechwytywanie — bez potrzeby użycia wyzwalacza. Nakładka pojawia się podczas przytrzymania; zwolnienie finalizuje i przekazuje tekst po krótkim opóźnieniu, aby można było go dopracować.
 
-## Zachowanie runtime (słowo wybudzające)
+## Zachowanie w czasie działania (słowo wybudzające)
 
 - Rozpoznawacz mowy działa w `VoiceWakeRuntime`.
-- Wyzwalacz uruchamia się tylko wtedy, gdy między słowem wybudzającym a następnym słowem występuje **znacząca pauza** (przerwa około 0,55 s). Nakładka/dźwięk mogą rozpocząć się na tej pauzie, jeszcze zanim zacznie się polecenie.
-- Okna ciszy: 2,0 s, gdy mowa płynie, 5,0 s, jeśli usłyszano tylko wyzwalacz.
+- Wyzwalacz uruchamia się tylko wtedy, gdy między słowem wybudzającym a następnym słowem występuje **znacząca pauza** (przerwa ok. 0,55 s). Nakładka/dźwięk może rozpocząć się na pauzie, jeszcze zanim zacznie się polecenie.
+- Okna ciszy: 2,0 s, gdy mowa trwa, 5,0 s, jeśli usłyszano tylko wyzwalacz.
 - Twarde zatrzymanie: 120 s, aby zapobiec niekontrolowanym sesjom.
 - Debounce między sesjami: 350 ms.
-- Nakładka jest sterowana przez `VoiceWakeOverlayController` z kolorowaniem committed/volatile.
+- Nakładka jest sterowana przez `VoiceWakeOverlayController` z kolorowaniem zatwierdzonym/ulotnym.
 - Po wysłaniu rozpoznawacz uruchamia się ponownie w czysty sposób, aby nasłuchiwać następnego wyzwalacza.
 
 ## Niezmienniki cyklu życia
 
-- Jeśli Voice Wake jest włączone i przyznano uprawnienia, rozpoznawacz słowa wybudzającego powinien nasłuchiwać (z wyjątkiem jawnego przechwytywania push-to-talk).
-- Widoczność nakładki (w tym ręczne zamknięcie przyciskiem X) nigdy nie może uniemożliwiać wznowienia pracy rozpoznawacza.
+- Jeśli wybudzanie głosem jest włączone, a uprawnienia zostały przyznane, rozpoznawacz słowa wybudzającego powinien nasłuchiwać (z wyjątkiem jawnego przechwytywania w trybie naciśnij, aby mówić).
+- Widoczność nakładki (w tym ręczne zamknięcie przyciskiem X) nigdy nie może uniemożliwiać wznowienia działania rozpoznawacza.
 
-## Tryb awarii z zablokowaną nakładką (wcześniej)
+## Tryb awarii przyklejonej nakładki (wcześniej)
 
-Wcześniej, jeśli nakładka zacięła się w stanie widocznym i została ręcznie zamknięta, Voice Wake mogło sprawiać wrażenie „martwego”, ponieważ próba ponownego uruchomienia runtime mogła zostać zablokowana przez widoczność nakładki, a kolejne wznowienie nie było planowane.
+Wcześniej, jeśli nakładka utknęła jako widoczna i została ręcznie zamknięta, wybudzanie głosem mogło wyglądać na „martwe”, ponieważ próba ponownego uruchomienia środowiska działania mogła zostać zablokowana przez widoczność nakładki i nie planowano kolejnego ponownego uruchomienia.
 
 Utwardzenie:
 
-- Ponowne uruchomienie runtime wybudzania nie jest już blokowane przez widoczność nakładki.
-- Zakończenie zamknięcia nakładki wyzwala `VoiceWakeRuntime.refresh(...)` przez `VoiceSessionCoordinator`, więc ręczne zamknięcie przyciskiem X zawsze wznawia nasłuchiwanie.
+- Ponowne uruchomienie środowiska działania wybudzania nie jest już blokowane przez widoczność nakładki.
+- Zakończenie zamykania nakładki wyzwala `VoiceWakeRuntime.refresh(...)` przez `VoiceSessionCoordinator`, więc ręczne zamknięcie przyciskiem X zawsze wznawia nasłuchiwanie.
 
-## Szczegóły push-to-talk
+## Szczegóły trybu naciśnij, aby mówić
 
-- Wykrywanie skrótu używa globalnego monitora `.flagsChanged` dla **prawego Option** (`keyCode 61` + `.option`). Zdarzenia są tylko obserwowane (bez przechwytywania).
-- Potok przechwytywania działa w `VoicePushToTalk`: natychmiast uruchamia Speech, przesyła częściowe wyniki do nakładki i wywołuje `VoiceWakeForwarder` przy zwolnieniu.
-- Gdy push-to-talk się rozpoczyna, wstrzymujemy runtime słowa wybudzającego, aby uniknąć konkurujących przechwyceń audio; po zwolnieniu uruchamia się on ponownie automatycznie.
-- Uprawnienia: wymaga dostępu do mikrofonu + Speech; obserwowanie zdarzeń wymaga zatwierdzenia Accessibility/Input Monitoring.
-- Klawiatury zewnętrzne: niektóre mogą nie udostępniać prawego Option zgodnie z oczekiwaniami — zaoferuj skrót awaryjny, jeśli użytkownicy zgłaszają pominięcia.
+- Wykrywanie skrótu używa globalnego monitora `.flagsChanged` dla **prawego Option** (`keyCode 61` + `.option`). Tylko obserwujemy zdarzenia (bez ich przechwytywania).
+- Potok przechwytywania działa w `VoicePushToTalk`: natychmiast uruchamia mowę, strumieniuje częściowe wyniki do nakładki i wywołuje `VoiceWakeForwarder` po zwolnieniu.
+- Gdy tryb naciśnij, aby mówić się uruchamia, wstrzymujemy środowisko działania słowa wybudzającego, aby uniknąć rywalizujących zaczepów audio; uruchamia się ono ponownie automatycznie po zwolnieniu.
+- Uprawnienia: wymaga mikrofonu i mowy; odbieranie zdarzeń wymaga zgody na dostępność/monitorowanie wejścia.
+- Klawiatury zewnętrzne: niektóre mogą nie udostępniać prawego Option zgodnie z oczekiwaniami — zaoferuj zapasowy skrót, jeśli użytkownicy zgłaszają pominięcia.
 
 ## Ustawienia widoczne dla użytkownika
 
-- Przełącznik **Voice Wake**: włącza runtime słowa wybudzającego.
-- **Hold Cmd+Fn to talk**: włącza monitor push-to-talk. Wyłączone na macOS < 26.
-- Selektory języka i mikrofonu, wskaźnik poziomu na żywo, tabela słów wybudzających, tester (tylko lokalny; niczego nie przekazuje dalej).
-- Selektor mikrofonu zachowuje ostatni wybór, jeśli urządzenie zostanie odłączone, pokazuje wskazówkę o rozłączeniu i tymczasowo przełącza się na domyślne urządzenie systemowe, dopóki wybrane nie wróci.
-- **Dźwięki**: sygnały przy wykryciu wyzwalacza i przy wysyłaniu; domyślnie dźwięk systemowy macOS „Glass”. Dla każdego zdarzenia można wybrać dowolny plik ładowalny przez `NSSound` (np. MP3/WAV/AIFF) albo opcję **No Sound**.
+- Przełącznik **Wybudzanie głosem**: włącza środowisko działania słowa wybudzającego.
+- **Przytrzymaj Cmd+Fn, aby mówić**: włącza monitor trybu naciśnij, aby mówić. Wyłączone na macOS < 26.
+- Selektory języka i mikrofonu, aktywny miernik poziomu, tabela słów wyzwalających, tester (tylko lokalny; nie przekazuje dalej).
+- Selektor mikrofonu zachowuje ostatni wybór, jeśli urządzenie zostanie odłączone, pokazuje wskazówkę o odłączeniu i tymczasowo przełącza się na domyślne urządzenie systemowe, dopóki nie wróci.
+- **Dźwięki**: dzwonki przy wykryciu wyzwalacza i przy wysłaniu; domyślnie systemowy dźwięk macOS „Glass”. Dla każdego zdarzenia można wybrać dowolny plik możliwy do załadowania przez `NSSound` (np. MP3/WAV/AIFF) albo wybrać **Brak dźwięku**.
 
 ## Zachowanie przekazywania
 
-- Gdy Voice Wake jest włączone, transkrypcje są przekazywane do aktywnego gateway/agenta (ten sam tryb lokalny lub zdalny, którego używa reszta aplikacji Mac).
-- Odpowiedzi są dostarczane do **ostatnio używanego głównego dostawcy** (WhatsApp/Telegram/Discord/WebChat). Jeśli dostarczenie się nie powiedzie, błąd jest logowany, a wykonanie nadal jest widoczne przez WebChat/logi sesji.
+- Gdy wybudzanie głosem jest włączone, transkrypcje są przekazywane do aktywnego gatewaya/agenta (ten sam tryb lokalny lub zdalny, którego używa reszta aplikacji na Maca).
+- Odpowiedzi są dostarczane do **ostatnio używanego głównego dostawcy** (WhatsApp/Telegram/Discord/WebChat). Jeśli dostarczenie się nie powiedzie, błąd jest rejestrowany, a uruchomienie nadal jest widoczne przez WebChat/logi sesji.
 
-## Payload przekazywania
+## Ładunek przekazywania
 
-- `VoiceWakeForwarder.prefixedTranscript(_:)` dodaje podpowiedź maszyny przed wysłaniem. Współdzielone między ścieżkami słowa wybudzającego i push-to-talk.
+- `VoiceWakeForwarder.prefixedTranscript(_:)` dodaje podpowiedź maszyny przed wysłaniem. Współdzielone między ścieżkami słowa wybudzającego i naciśnij, aby mówić.
 
 ## Szybka weryfikacja
 
-- Włącz push-to-talk, przytrzymaj Cmd+Fn, mów, zwolnij: nakładka powinna pokazywać częściowe wyniki, a następnie wysłać wiadomość.
-- Podczas przytrzymania uszy na pasku menu powinny pozostać powiększone (używa `triggerVoiceEars(ttl:nil)`); po zwolnieniu wracają do normalnego rozmiaru.
+- Włącz tryb naciśnij, aby mówić, przytrzymaj Cmd+Fn, powiedz coś, zwolnij: nakładka powinna pokazać częściowe wyniki, a następnie wysłać.
+- Podczas przytrzymywania uszy na pasku menu powinny pozostać powiększone (używa `triggerVoiceEars(ttl:nil)`); wracają po zwolnieniu.
 
 ## Powiązane
 

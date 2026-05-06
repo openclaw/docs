@@ -1,39 +1,39 @@
 ---
 read_when:
-    - Przechwytywanie logów macOS lub analizowanie logowania danych prywatnych
-    - Debugowanie problemów z wybudzaniem głosowym / cyklem życia sesji
-summary: 'Logowanie OpenClaw: rotacyjny plik logów diagnostycznych + flagi prywatności unified log'
-title: Logowanie macOS
+    - Zbieranie logów macOS lub badanie rejestrowania danych prywatnych
+    - Debugowanie problemów z cyklem życia wybudzania głosowego i sesji
+summary: 'Rejestrowanie dzienników w OpenClaw: rotacyjny plik dziennika diagnostycznego + flagi prywatności ujednoliconego dziennika'
+title: Rejestrowanie w macOS
 x-i18n:
-    generated_at: "2026-04-24T09:21:08Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:21:50Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 84e8f56ef0f85ba9eae629d6a3cc1bcaf49cc70c82f67a10b9292f2f54b1ff6b
+    source_hash: 76c001008311d4e3f245add4cce32bdcc3eed9d897b30f6884c0649d2f0523df
     source_path: platforms/mac/logging.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Logowanie (macOS)
+# Rejestrowanie (macOS)
 
-## Rotacyjny plik logów diagnostycznych (panel Debug)
+## Rotujący plik dziennika diagnostycznego (panel debugowania)
 
-OpenClaw kieruje logi aplikacji macOS przez swift-log (domyślnie do unified logging) i może zapisywać lokalny, rotacyjny plik logów na dysku, gdy potrzebujesz trwałego przechwycenia.
+OpenClaw kieruje logi aplikacji macOS przez swift-log (domyślnie ujednolicone rejestrowanie) i może zapisywać lokalny, rotujący plik dziennika na dysku, gdy potrzebujesz trwałego zapisu.
 
-- Szczegółowość: **panel Debug → Logs → App logging → Verbosity**
-- Włączenie: **panel Debug → Logs → App logging → „Write rolling diagnostics log (JSONL)”**
-- Lokalizacja: `~/Library/Logs/OpenClaw/diagnostics.jsonl` (rotuje automatycznie; starsze pliki dostają sufiksy `.1`, `.2`, …)
-- Czyszczenie: **panel Debug → Logs → App logging → „Clear”**
+- Szczegółowość: **Panel debugowania → Logi → Rejestrowanie aplikacji → Szczegółowość**
+- Włącz: **Panel debugowania → Logi → Rejestrowanie aplikacji → „Zapisuj rotujący dziennik diagnostyczny (JSONL)”**
+- Lokalizacja: `~/Library/Logs/OpenClaw/diagnostics.jsonl` (rotuje automatycznie; stare pliki otrzymują sufiksy `.1`, `.2`, …)
+- Wyczyść: **Panel debugowania → Logi → Rejestrowanie aplikacji → „Wyczyść”**
 
 Uwagi:
 
-- To jest **domyślnie wyłączone**. Włączaj tylko podczas aktywnego debugowania.
-- Traktuj ten plik jako wrażliwy; nie udostępniaj go bez przeglądu.
+- Jest to **domyślnie wyłączone**. Włączaj tylko podczas aktywnego debugowania.
+- Traktuj plik jako poufny; nie udostępniaj go bez wcześniejszego sprawdzenia.
 
-## Prywatne dane unified logging na macOS
+## Prywatne dane w ujednoliconym rejestrowaniu na macOS
 
-Unified logging redaguje większość ładunków, chyba że podsystem włączy `privacy -off`. Zgodnie z opisem Petera na temat macOS [logging privacy shenanigans](https://steipete.me/posts/2025/logging-privacy-shenanigans) (2025) jest to kontrolowane przez plist w `/Library/Preferences/Logging/Subsystems/` kluczowany nazwą podsystemu. Flagę przejmują tylko nowe wpisy logów, więc włącz ją przed odtworzeniem problemu.
+Ujednolicone rejestrowanie redaguje większość danych, chyba że podsystem włączy `privacy -off`. Zgodnie z opisem Petera dotyczącym [zawiłości prywatności logowania](https://steipete.me/posts/2025/logging-privacy-shenanigans) na macOS (2025), steruje tym plik plist w `/Library/Preferences/Logging/Subsystems/`, którego kluczem jest nazwa podsystemu. Tylko nowe wpisy dziennika uwzględnią tę flagę, więc włącz ją przed odtworzeniem problemu.
 
-## Włączanie dla OpenClaw (`ai.openclaw`)
+## Włącz dla OpenClaw (`ai.openclaw`)
 
 - Najpierw zapisz plist do pliku tymczasowego, a następnie zainstaluj go atomowo jako root:
 
@@ -54,16 +54,16 @@ EOF
 sudo install -m 644 -o root -g wheel /tmp/ai.openclaw.plist /Library/Preferences/Logging/Subsystems/ai.openclaw.plist
 ```
 
-- Restart nie jest wymagany; `logd` szybko zauważa plik, ale tylko nowe linie logów będą zawierały prywatne ładunki.
-- Bogatsze wyjście wyświetlisz istniejącym helperem, np. `./scripts/clawlog.sh --category WebChat --last 5m`.
+- Ponowne uruchomienie nie jest wymagane; logd szybko zauważa plik, ale tylko nowe wiersze dziennika będą zawierać prywatne dane.
+- Wyświetl bogatsze dane wyjściowe za pomocą istniejącego pomocnika, np. `./scripts/clawlog.sh --category WebChat --last 5m`.
 
-## Wyłączanie po debugowaniu
+## Wyłącz po debugowaniu
 
 - Usuń nadpisanie: `sudo rm /Library/Preferences/Logging/Subsystems/ai.openclaw.plist`.
-- Opcjonalnie uruchom `sudo log config --reload`, aby wymusić natychmiastowe porzucenie nadpisania przez `logd`.
+- Opcjonalnie uruchom `sudo log config --reload`, aby wymusić natychmiastowe usunięcie nadpisania przez logd.
 - Pamiętaj, że ta powierzchnia może zawierać numery telefonów i treści wiadomości; pozostawiaj plist na miejscu tylko wtedy, gdy aktywnie potrzebujesz dodatkowych szczegółów.
 
 ## Powiązane
 
 - [Aplikacja macOS](/pl/platforms/macos)
-- [Logowanie Gateway](/pl/gateway/logging)
+- [Rejestrowanie Gateway](/pl/gateway/logging)

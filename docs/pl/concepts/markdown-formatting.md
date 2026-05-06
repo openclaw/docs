@@ -2,42 +2,42 @@
 read_when:
     - Zmieniasz formatowanie Markdown lub dzielenie na fragmenty dla kanałów wychodzących
     - Dodajesz nowy formater kanału lub mapowanie stylów
-    - Debugujesz regresje formatowania między kanałami
+    - Debugujesz regresje formatowania w różnych kanałach
 summary: Potok formatowania Markdown dla kanałów wychodzących
 title: Formatowanie Markdown
 x-i18n:
-    generated_at: "2026-04-24T09:05:46Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:08:03Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: cf052e11fe9fd075a4337ffa555391c7003a346240b57bb65054c3f08401dfd9
+    source_hash: e9dcc75cec0462d610f2b5bbd258a2686b15eeb4b9d369ee4d7727571da7edcc
     source_path: concepts/markdown-formatting.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw formatuje wychodzący Markdown, konwertując go najpierw do współdzielonej
-reprezentacji pośredniej (IR), zanim wyrenderuje wynik specyficzny dla kanału. IR zachowuje
-tekst źródłowy bez zmian, a jednocześnie przenosi zakresy stylów/linków, dzięki czemu dzielenie na fragmenty i renderowanie
-mogą pozostać spójne między kanałami.
+OpenClaw formatuje wychodzący Markdown, konwertując go na wspólną pośrednią
+reprezentację (IR) przed renderowaniem danych wyjściowych specyficznych dla kanału. IR zachowuje
+tekst źródłowy bez zmian, jednocześnie przenosząc zakresy stylów/linków, aby dzielenie na fragmenty i renderowanie mogły
+pozostać spójne między kanałami.
 
 ## Cele
 
-- **Spójność:** jeden krok parsowania, wiele rendererów.
-- **Bezpieczne dzielenie na fragmenty:** dzielenie tekstu przed renderowaniem, aby formatowanie inline
-  nigdy nie pękało między fragmentami.
-- **Dopasowanie do kanału:** mapowanie tego samego IR do Slack mrkdwn, Telegram HTML i zakresów stylów
-  Signal bez ponownego parsowania Markdown.
+- **Spójność:** jeden etap parsowania, wiele rendererów.
+- **Bezpieczne dzielenie na fragmenty:** dziel tekst przed renderowaniem, aby formatowanie liniowe nigdy
+  nie przerywało się między fragmentami.
+- **Dopasowanie do kanału:** mapuj to samo IR na Slack mrkdwn, HTML Telegram i zakresy
+  stylów Signal bez ponownego parsowania Markdown.
 
 ## Potok
 
-1. **Parsowanie Markdown -> IR**
-   - IR to zwykły tekst plus zakresy stylów (bold/italic/strike/code/spoiler) i zakresy linków.
-   - Przesunięcia są liczone w jednostkach UTF-16, aby zakresy stylów Signal były zgodne z jego API.
-   - Tabele są parsowane tylko wtedy, gdy kanał wybierze konwersję tabel.
-2. **Dzielenie IR na fragmenty (najpierw format)**
+1. **Parsuj Markdown -> IR**
+   - IR to zwykły tekst oraz zakresy stylów (pogrubienie/kursywa/przekreślenie/kod/spoiler) i zakresy linków.
+   - Przesunięcia są jednostkami kodu UTF-16, aby zakresy stylów Signal były zgodne z jego API.
+   - Tabele są parsowane tylko wtedy, gdy kanał włącza konwersję tabel.
+2. **Dziel IR na fragmenty (najpierw formatowanie)**
    - Dzielenie na fragmenty odbywa się na tekście IR przed renderowaniem.
-   - Formatowanie inline nie jest dzielone między fragmentami; zakresy są przycinane per fragment.
-3. **Renderowanie per channel**
-   - **Slack:** tokeny mrkdwn (bold/italic/strike/code), linki jako `<url|label>`.
+   - Formatowanie liniowe nie jest dzielone między fragmentami; zakresy są wycinane dla każdego fragmentu.
+3. **Renderuj dla kanału**
+   - **Slack:** tokeny mrkdwn (pogrubienie/kursywa/przekreślenie/kod), linki jako `<url|label>`.
    - **Telegram:** tagi HTML (`<b>`, `<i>`, `<s>`, `<code>`, `<pre><code>`, `<a href>`).
    - **Signal:** zwykły tekst + zakresy `text-style`; linki stają się `label (url)`, gdy etykieta się różni.
 
@@ -46,20 +46,20 @@ mogą pozostać spójne między kanałami.
 Wejściowy Markdown:
 
 ```markdown
-Hello **world** — see [docs](https://docs.openclaw.ai).
+Hello **world** - see [docs](https://docs.openclaw.ai).
 ```
 
 IR (schematycznie):
 
 ```json
 {
-  "text": "Hello world — see docs.",
+  "text": "Hello world - see docs.",
   "styles": [{ "start": 6, "end": 11, "style": "bold" }],
   "links": [{ "start": 19, "end": 23, "href": "https://docs.openclaw.ai" }]
 }
 ```
 
-## Gdzie jest używany
+## Gdzie jest używane
 
 - Adaptery wychodzące Slack, Telegram i Signal renderują z IR.
 - Inne kanały (WhatsApp, iMessage, Microsoft Teams, Discord) nadal używają zwykłego tekstu lub
@@ -69,11 +69,11 @@ IR (schematycznie):
 ## Obsługa tabel
 
 Tabele Markdown nie są spójnie obsługiwane przez klientów czatu. Użyj
-`markdown.tables`, aby sterować konwersją per channel (i per account).
+`markdown.tables`, aby kontrolować konwersję dla każdego kanału (i konta).
 
-- `code`: renderowanie tabel jako bloków kodu (domyślnie dla większości kanałów).
-- `bullets`: konwersja każdego wiersza do punktów listy (domyślnie dla Signal + WhatsApp).
-- `off`: wyłącza parsowanie i konwersję tabel; surowy tekst tabeli przechodzi bez zmian.
+- `code`: renderuj tabele jako bloki kodu (domyślnie dla większości kanałów).
+- `bullets`: konwertuj każdy wiersz na punkty listy (domyślnie dla Signal + WhatsApp).
+- `off`: wyłącz parsowanie i konwersję tabel; surowy tekst tabeli przechodzi dalej.
 
 Klucze konfiguracji:
 
@@ -90,37 +90,37 @@ channels:
 
 ## Reguły dzielenia na fragmenty
 
-- Limity fragmentów pochodzą z adapterów kanałów/konfiguracji i są stosowane do tekstu IR.
+- Limity fragmentów pochodzą z adapterów/konfiguracji kanałów i są stosowane do tekstu IR.
 - Ogrodzenia kodu są zachowywane jako pojedynczy blok z końcowym znakiem nowej linii, aby kanały
   renderowały je poprawnie.
-- Prefiksy list i prefiksy blockquote są częścią tekstu IR, więc dzielenie na fragmenty
-  nie rozcina ich w środku prefiksu.
-- Style inline (bold/italic/strike/inline-code/spoiler) nigdy nie są dzielone między
-  fragmentami; renderer otwiera style ponownie wewnątrz każdego fragmentu.
+- Prefiksy list i prefiksy cytatów blokowych są częścią tekstu IR, więc dzielenie na fragmenty
+  nie rozdziela ich w środku prefiksu.
+- Style liniowe (pogrubienie/kursywa/przekreślenie/kod liniowy/spoiler) nigdy nie są dzielone między
+  fragmentami; renderer ponownie otwiera style wewnątrz każdego fragmentu.
 
 Jeśli potrzebujesz więcej informacji o zachowaniu dzielenia na fragmenty między kanałami, zobacz
 [Strumieniowanie + dzielenie na fragmenty](/pl/concepts/streaming).
 
-## Polityka linków
+## Zasady linków
 
-- **Slack:** `[label](url)` -> `<url|label>`; gołe URL-e pozostają gołe. Autolink
+- **Slack:** `[label](url)` -> `<url|label>`; gołe adresy URL pozostają gołe. Autolink
   jest wyłączony podczas parsowania, aby uniknąć podwójnego linkowania.
 - **Telegram:** `[label](url)` -> `<a href="url">label</a>` (tryb parsowania HTML).
-- **Signal:** `[label](url)` -> `label (url)`, chyba że etykieta odpowiada URL-owi.
+- **Signal:** `[label](url)` -> `label (url)`, chyba że etykieta pasuje do adresu URL.
 
 ## Spoilery
 
-Znaczniki spoilerów (`||spoiler||`) są parsowane tylko dla Signal, gdzie mapują się na
+Znaczniki spoilerów (`||spoiler||`) są parsowane tylko dla Signal, gdzie są mapowane na
 zakresy stylu SPOILER. Inne kanały traktują je jako zwykły tekst.
 
-## Jak dodać lub zaktualizować formater kanału
+## Jak dodać lub zaktualizować formatter kanału
 
-1. **Parsuj raz:** użyj współdzielonej funkcji pomocniczej `markdownToIR(...)` z opcjami
-   odpowiednimi dla kanału (autolink, styl nagłówków, prefiks blockquote).
-2. **Renderuj:** zaimplementuj renderer z `renderMarkdownWithMarkers(...)` oraz mapą
+1. **Parsuj raz:** użyj wspólnego helpera `markdownToIR(...)` z opcjami odpowiednimi
+   dla kanału (autolink, styl nagłówków, prefiks cytatu blokowego).
+2. **Renderuj:** zaimplementuj renderer z `renderMarkdownWithMarkers(...)` i mapą
    znaczników stylów (lub zakresami stylów Signal).
-3. **Dziel na fragmenty:** wywołaj `chunkMarkdownIR(...)` przed renderowaniem; wyrenderuj każdy fragment.
-4. **Podłącz adapter:** zaktualizuj wychodzący adapter kanału, aby używał nowego chunkera
+3. **Dziel na fragmenty:** wywołaj `chunkMarkdownIR(...)` przed renderowaniem; renderuj każdy fragment.
+4. **Podłącz adapter:** zaktualizuj adapter wychodzący kanału, aby używał nowego mechanizmu dzielenia na fragmenty
    i renderera.
 5. **Testuj:** dodaj lub zaktualizuj testy formatowania oraz test dostarczania wychodzącego, jeśli
    kanał używa dzielenia na fragmenty.
@@ -129,12 +129,18 @@ zakresy stylu SPOILER. Inne kanały traktują je jako zwykły tekst.
 
 - Tokeny Slack w nawiasach ostrych (`<@U123>`, `<#C123>`, `<https://...>`) muszą być
   zachowane; bezpiecznie escapuj surowy HTML.
-- HTML Telegram wymaga escapowania tekstu poza tagami, aby uniknąć uszkodzonego znacznika.
-- Zakresy stylów Signal zależą od przesunięć UTF-16; nie używaj przesunięć według punktów kodowych.
-- Zachowuj końcowe znaki nowej linii dla ogrodzonych bloków kodu, aby znaczniki zamknięcia trafiały
-  do osobnej linii.
+- HTML Telegram wymaga escapowania tekstu poza tagami, aby uniknąć uszkodzonego znacznikowania.
+- Zakresy stylów Signal zależą od przesunięć UTF-16; nie używaj przesunięć punktów kodowych.
+- Zachowuj końcowe znaki nowej linii dla ogrodzonych bloków kodu, aby znaczniki zamykające trafiały do
+  własnej linii.
 
 ## Powiązane
 
-- [Strumieniowanie i dzielenie na fragmenty](/pl/concepts/streaming)
-- [System prompt](/pl/concepts/system-prompt)
+<CardGroup cols={2}>
+  <Card title="Streaming and chunking" href="/pl/concepts/streaming" icon="bars-staggered">
+    Zachowanie strumieniowania wychodzącego, granice fragmentów i dostarczanie specyficzne dla kanału.
+  </Card>
+  <Card title="System prompt" href="/pl/concepts/system-prompt" icon="message-lines">
+    Co model widzi przed rozmową, w tym wstrzyknięte pliki obszaru roboczego.
+  </Card>
+</CardGroup>

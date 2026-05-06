@@ -1,34 +1,34 @@
 ---
 read_when:
     - Implementujesz proponowany publiczny SDK aplikacji OpenClaw
-    - Potrzebujesz wersji roboczej kontraktu przestrzeni nazw, zdarzenia, wyniku, artefaktu, zatwierdzenia lub bezpieczeństwa dla SDK aplikacji
-    - Porównujesz zasoby protokołu Gateway z wysokopoziomowym opakowaniem SDK aplikacji OpenClaw
+    - Potrzebujesz roboczego kontraktu dotyczącego przestrzeni nazw, zdarzeń, wyników, artefaktów, zatwierdzeń lub zabezpieczeń dla SDK aplikacji
+    - Porównujesz zasoby protokołu Gateway z wysokopoziomową nakładką OpenClaw App SDK
 sidebarTitle: App SDK API design
-summary: Projekt referencyjny publicznego API OpenClaw App SDK, taksonomii zdarzeń, artefaktów, zatwierdzeń i struktury pakietów
+summary: Projekt referencyjny publicznego API OpenClaw App SDK, taksonomii zdarzeń, artefaktów, zatwierdzeń i struktury pakietu
 title: Projekt API SDK aplikacji OpenClaw
 x-i18n:
-    generated_at: "2026-04-30T10:17:15Z"
+    generated_at: "2026-05-06T09:29:08Z"
     model: gpt-5.5
     provider: openai
-    source_hash: cacc5329942798b6876dba6ab8d6a9193291ddda81db5cb2ed492cc42a810099
+    source_hash: 1c49afb4b3b23653e1c6512c22c7465dc1778fc9ea2b28864ca9eaa3ccc90f2f
     source_path: reference/openclaw-sdk-api-design.md
     workflow: 16
 ---
 
 Ta strona jest szczegółowym projektem referencji API dla publicznego
-[SDK aplikacji OpenClaw](/pl/concepts/openclaw-sdk). Jest celowo oddzielona od
-[SDK Plugin](/pl/plugins/sdk-overview).
+[OpenClaw App SDK](/pl/concepts/openclaw-sdk). Jest celowo oddzielona od
+[Plugin SDK](/pl/plugins/sdk-overview).
 
 <Note>
   `@openclaw/sdk` to zewnętrzny pakiet aplikacji/klienta do komunikacji z
-  Gateway. `openclaw/plugin-sdk/*` to kontrakt tworzenia Plugin działający w procesie.
-  Nie importuj podścieżek SDK Plugin z aplikacji, które muszą jedynie uruchamiać agentów.
+  Gateway. `openclaw/plugin-sdk/*` to kontrakt tworzenia pluginów działający w procesie.
+  Nie importuj podścieżek Plugin SDK z aplikacji, które muszą tylko uruchamiać agentów.
 </Note>
 
-Publiczny SDK aplikacji powinien być zbudowany w dwóch warstwach:
+Publiczny app SDK powinien być zbudowany w dwóch warstwach:
 
 1. Niskopoziomowy wygenerowany klient Gateway.
-2. Wysokopoziomowa ergonomiczna nakładka z obiektami `OpenClaw`, `Agent`, `Session`, `Run`,
+2. Wysokopoziomowa, ergonomiczna nakładka z obiektami `OpenClaw`, `Agent`, `Session`, `Run`,
    `Task`, `Artifact`, `Approval` i `Environment`.
 
 ## Projekt przestrzeni nazw
@@ -65,18 +65,18 @@ oc.models.list();
 oc.models.status(); // Gateway models.authStatus
 
 oc.tools.list();
-oc.tools.invoke(...); // future API: current SDK throws unsupported
+oc.tools.invoke("tool-name", { sessionKey, idempotencyKey });
 
-oc.artifacts.list({ runId }); // future API: current SDK throws unsupported
-oc.artifacts.get(artifactId); // future API: current SDK throws unsupported
-oc.artifacts.download(artifactId); // future API: current SDK throws unsupported
+oc.artifacts.list({ runId });
+oc.artifacts.get(artifactId, { runId });
+oc.artifacts.download(artifactId, { runId });
 
 oc.approvals.list();
 oc.approvals.respond(approvalId, ...);
 
-oc.environments.list(); // future API: current SDK throws unsupported
+oc.environments.list();
 oc.environments.create(...); // future API: current SDK throws unsupported
-oc.environments.status(environmentId); // future API: current SDK throws unsupported
+oc.environments.status(environmentId);
 oc.environments.delete(environmentId); // future API: current SDK throws unsupported
 ```
 
@@ -97,7 +97,7 @@ const session = await run.session();
 
 ## Kontrakt zdarzeń
 
-Publiczny SDK powinien udostępniać wersjonowane, odtwarzalne, znormalizowane zdarzenia.
+Publiczny SDK powinien udostępniać wersjonowane, możliwe do odtworzenia, znormalizowane zdarzenia.
 
 ```typescript
 type OpenClawEvent = {
@@ -116,42 +116,42 @@ type OpenClawEvent = {
 ```
 
 `id` jest kursorem odtwarzania. Konsumenci powinni móc ponownie połączyć się za pomocą
-`events({ after: id })` i otrzymać pominięte zdarzenia, jeśli pozwala na to retencja.
+`events({ after: id })` i otrzymać pominięte zdarzenia, gdy pozwala na to retencja.
 
 Zalecane rodziny znormalizowanych zdarzeń:
 
 | Zdarzenie             | Znaczenie                                                   |
 | --------------------- | ----------------------------------------------------------- |
 | `run.created`         | Uruchomienie zaakceptowane.                                 |
-| `run.queued`          | Uruchomienie czeka na pasmo sesji, runtime lub środowisko.  |
-| `run.started`         | Runtime rozpoczął wykonywanie.                              |
-| `run.completed`       | Uruchomienie zakończyło się pomyślnie.                      |
+| `run.queued`          | Uruchomienie czeka na ścieżkę sesji, środowisko wykonawcze lub środowisko. |
+| `run.started`         | Środowisko wykonawcze rozpoczęło wykonanie.                 |
+| `run.completed`       | Uruchomienie zakończyło się powodzeniem.                    |
 | `run.failed`          | Uruchomienie zakończyło się błędem.                         |
 | `run.cancelled`       | Uruchomienie zostało anulowane.                             |
-| `run.timed_out`       | Uruchomienie przekroczyło limit czasu.                      |
+| `run.timed_out`       | Uruchomienie przekroczyło swój limit czasu.                 |
 | `assistant.delta`     | Delta tekstu asystenta.                                     |
 | `assistant.message`   | Pełna wiadomość asystenta lub zamiennik.                    |
-| `thinking.delta`      | Delta rozumowania lub planu, gdy polityka pozwala na ujawnienie. |
-| `tool.call.started`   | Rozpoczęto wywołanie narzędzia.                             |
-| `tool.call.delta`     | Wywołanie narzędzia przesłało postęp lub częściowe wyjście. |
-| `tool.call.completed` | Wywołanie narzędzia zakończyło się pomyślnie.               |
+| `thinking.delta`      | Delta rozumowania lub planu, gdy zasady pozwalają na ujawnienie. |
+| `tool.call.started`   | Wywołanie narzędzia rozpoczęło się.                         |
+| `tool.call.delta`     | Wywołanie narzędzia przesłało strumieniowo postęp lub częściowe wyjście. |
+| `tool.call.completed` | Wywołanie narzędzia zwróciło wynik pomyślnie.               |
 | `tool.call.failed`    | Wywołanie narzędzia nie powiodło się.                       |
 | `approval.requested`  | Uruchomienie lub narzędzie wymaga zatwierdzenia.            |
-| `approval.resolved`   | Zatwierdzenie zostało udzielone, odrzucone, wygasło lub anulowane. |
-| `question.requested`  | Runtime prosi użytkownika lub aplikację hosta o dane wejściowe. |
+| `approval.resolved`   | Zatwierdzenie zostało przyznane, odrzucone, wygasło lub zostało anulowane. |
+| `question.requested`  | Środowisko wykonawcze prosi użytkownika lub aplikację hosta o dane wejściowe. |
 | `question.answered`   | Aplikacja hosta dostarczyła odpowiedź.                      |
 | `artifact.created`    | Dostępny jest nowy artefakt.                                |
-| `artifact.updated`    | Istniejący artefakt został zmieniony.                       |
+| `artifact.updated`    | Istniejący artefakt uległ zmianie.                          |
 | `session.created`     | Sesja została utworzona.                                    |
-| `session.updated`     | Metadane sesji zostały zmienione.                           |
-| `session.compacted`   | Nastąpiła Compaction sesji.                                 |
-| `task.updated`        | Stan zadania w tle został zmieniony.                        |
-| `git.branch`          | Runtime zaobserwował lub zmienił stan gałęzi.               |
-| `git.diff`            | Runtime utworzył lub zmienił diff.                          |
-| `git.pr`              | Runtime otworzył, zaktualizował lub powiązał pull request.  |
+| `session.updated`     | Metadane sesji uległy zmianie.                              |
+| `session.compacted`   | Nastąpiło compaction sesji.                                 |
+| `task.updated`        | Stan zadania w tle uległ zmianie.                           |
+| `git.branch`          | Środowisko wykonawcze zaobserwowało lub zmieniło stan gałęzi. |
+| `git.diff`            | Środowisko wykonawcze utworzyło lub zmieniło diff.          |
+| `git.pr`              | Środowisko wykonawcze otworzyło, zaktualizowało lub połączyło pull request. |
 
-Natywne ładunki runtime powinny być dostępne przez `raw`, ale aplikacje nie powinny
-musieć parsować `raw` na potrzeby zwykłego UI.
+Natywne ładunki środowiska wykonawczego powinny być dostępne przez `raw`, ale aplikacje nie powinny
+musieć parsować `raw` dla zwykłego UI.
 
 ## Kontrakt wyniku
 
@@ -182,18 +182,18 @@ type RunResult = {
 ```
 
 Wynik powinien być prosty i stabilny. Wartości znaczników czasu zachowują kształt Gateway,
-więc bieżące uruchomienia oparte na cyklu życia zwykle raportują liczby w milisekundach epoki,
-podczas gdy adaptery mogą nadal udostępniać ciągi ISO. Bogaty UI, ślady narzędzi i
-natywne szczegóły runtime należą do zdarzeń i artefaktów.
+więc bieżące uruchomienia oparte na cyklu życia zwykle raportują liczby milisekund epoki,
+podczas gdy adaptery mogą nadal ujawniać ciągi ISO. Bogaty UI, ślady narzędzi i
+natywne szczegóły środowiska wykonawczego należą do zdarzeń i artefaktów.
 
 `accepted` jest nieterminalnym wynikiem oczekiwania: oznacza, że termin oczekiwania Gateway
-wygasł, zanim uruchomienie wygenerowało koniec cyklu życia lub błąd. Nie wolno traktować go jako
+wygasł, zanim uruchomienie wygenerowało zakończenie/błąd cyklu życia. Nie wolno traktować go jako
 `timed_out`; `timed_out` jest zarezerwowane dla uruchomienia, które przekroczyło własny limit czasu
-runtime.
+środowiska wykonawczego.
 
 ## Zatwierdzenia i pytania
 
-Zatwierdzenia muszą być pierwszoklasowe, ponieważ agenci kodujący stale przekraczają granice bezpieczeństwa.
+Zatwierdzenia muszą być pierwszorzędne, ponieważ agenci kodujący stale przekraczają granice bezpieczeństwa.
 
 ```typescript
 run.onApproval(async (request) => {
@@ -215,13 +215,14 @@ Zdarzenia zatwierdzeń powinny zawierać:
 - poziom ryzyka
 - dostępne decyzje
 - wygaśnięcie
-- informację, czy decyzja może zostać ponownie użyta
+- informację, czy decyzja może zostać użyta ponownie
 
-Pytania są odrębne od zatwierdzeń. Pytanie prosi użytkownika lub aplikację hosta o informacje. Zatwierdzenie prosi o pozwolenie na wykonanie działania.
+Pytania są oddzielne od zatwierdzeń. Pytanie prosi użytkownika lub aplikację hosta o
+informacje. Zatwierdzenie prosi o pozwolenie na wykonanie akcji.
 
 ## Model ToolSpace
 
-Aplikacje muszą rozumieć powierzchnię narzędzi bez importowania wewnętrznych elementów Plugin.
+Aplikacje muszą rozumieć powierzchnię narzędzi bez importowania wewnętrznych elementów pluginów.
 
 ```typescript
 const tools = await run.toolSpace();
@@ -234,13 +235,13 @@ for (const tool of tools.list()) {
 SDK powinien udostępniać:
 
 - znormalizowane metadane narzędzi
-- źródło: OpenClaw, MCP, Plugin, kanał, runtime lub aplikacja
+- źródło: OpenClaw, MCP, plugin, kanał, środowisko wykonawcze lub aplikacja
 - podsumowanie schematu
-- politykę zatwierdzania
-- zgodność z runtime
-- informację, czy narzędzie jest ukryte, tylko do odczytu, zdolne do zapisu lub zdolne do działania po stronie hosta
+- zasady zatwierdzania
+- zgodność ze środowiskiem wykonawczym
+- informację, czy narzędzie jest ukryte, tylko do odczytu, zdolne do zapisu czy zdolne do działania na hoście
 
-Wywoływanie narzędzi przez SDK powinno być jawne i ograniczone zakresem. Większość aplikacji powinna
+Wywołanie narzędzia przez SDK powinno być jawne i ograniczone zakresem. Większość aplikacji powinna
 uruchamiać agentów, a nie bezpośrednio wywoływać dowolne narzędzia.
 
 ## Model artefaktów
@@ -276,43 +277,43 @@ Typowe przykłady:
 - pakiety poprawek
 - diffy VCS
 - zrzuty ekranu i wyjścia multimedialne
-- logi i pakiety śladów
+- dzienniki i pakiety śledzenia
 - linki do pull requestów
-- trajektorie runtime
-- migawki obszarów roboczych zarządzanego środowiska
+- trajektorie środowiska wykonawczego
+- migawki obszaru roboczego zarządzanego środowiska
 
 Dostęp do artefaktów powinien obsługiwać redakcję, retencję i adresy URL pobierania bez
 zakładania, że każdy artefakt jest zwykłym plikiem lokalnym.
 
 ## Model bezpieczeństwa
 
-SDK aplikacji musi jasno określać uprawnienia.
+App SDK musi jasno określać uprawnienia.
 
 Zalecane zakresy tokenów:
 
-| Zakres              | Zezwala                                             |
+| Zakres              | Pozwala                                             |
 | ------------------- | --------------------------------------------------- |
-| `agent.read`        | Wyświetlanie listy i inspekcję agentów.             |
-| `agent.run`         | Uruchamianie przebiegów.                            |
-| `session.read`      | Odczyt metadanych sesji i wiadomości.               |
-| `session.write`     | Tworzenie sesji, wysyłanie do nich, forkowanie, Compaction i przerywanie. |
-| `task.read`         | Odczyt stanu zadań w tle.                           |
-| `task.write`        | Anulowanie lub modyfikowanie polityki powiadomień zadań. |
-| `approval.respond`  | Zatwierdzanie lub odrzucanie żądań.                 |
-| `tools.invoke`      | Bezpośrednie wywoływanie udostępnionych narzędzi.   |
-| `artifacts.read`    | Wyświetlanie listy i pobieranie artefaktów.         |
-| `environment.write` | Tworzenie lub niszczenie zarządzanych środowisk.    |
-| `admin`             | Operacje administracyjne.                           |
+| `agent.read`        | Wyświetlać i sprawdzać agentów.                     |
+| `agent.run`         | Rozpoczynać uruchomienia.                           |
+| `session.read`      | Odczytywać metadane i wiadomości sesji.             |
+| `session.write`     | Tworzyć sesje, wysyłać do nich, rozwidlać je, kompaktować i przerywać. |
+| `task.read`         | Odczytywać stan zadania w tle.                      |
+| `task.write`        | Anulować lub modyfikować zasady powiadomień zadania. |
+| `approval.respond`  | Zatwierdzać lub odrzucać żądania.                   |
+| `tools.invoke`      | Bezpośrednio wywoływać udostępnione narzędzia.      |
+| `artifacts.read`    | Wyświetlać i pobierać artefakty.                    |
+| `environment.write` | Tworzyć lub niszczyć zarządzane środowiska.         |
+| `admin`             | Wykonywać operacje administracyjne.                 |
 
-Ustawienia domyślne:
+Domyślne ustawienia:
 
-- domyślnie bez przekazywania sekretów
-- bez nieograniczonego przekazywania zmiennych środowiskowych
+- brak przekazywania sekretów domyślnie
+- brak nieograniczonego przekazywania zmiennych środowiskowych
 - referencje do sekretów zamiast wartości sekretów
-- jawna polityka piaskownicy i sieci
-- jawna retencja środowiska zdalnego
-- zatwierdzenia dla wykonywania po stronie hosta, chyba że polityka dowodzi inaczej
-- surowe zdarzenia runtime zredagowane przed opuszczeniem Gateway, chyba że wywołujący ma
+- jawne zasady piaskownicy i sieci
+- jawna retencja zdalnego środowiska
+- zatwierdzenia dla wykonywania na hoście, chyba że zasady dowodzą inaczej
+- surowe zdarzenia środowiska wykonawczego redagowane przed opuszczeniem Gateway, chyba że wywołujący ma
   silniejszy zakres diagnostyczny
 
 ## Dostawca zarządzanego środowiska
@@ -335,18 +336,19 @@ type EnvironmentProvider = {
 };
 ```
 
-Pierwsza implementacja nie musi być hostowanym SaaS. Może celować w
-istniejące hosty Node, efemeryczne obszary robocze, runnery w stylu CI lub
-środowiska w stylu Testbox. Ważny kontrakt to:
+Pierwsza implementacja nie musi być hostowanym SaaS. Może kierować do
+istniejących hostów node, efemerycznych obszarów roboczych, runnerów w stylu CI lub środowisk
+w stylu Testbox. Ważny kontrakt to:
 
-1. przygotuj obszar roboczy
-2. powiąż bezpieczne środowisko i sekrety
-3. rozpocznij uruchomienie
-4. strumieniuj zdarzenia
-5. zbieraj artefakty
-6. posprzątaj lub zachowaj zgodnie z polityką
+1. przygotowanie obszaru roboczego
+2. powiązanie bezpiecznego środowiska i sekretów
+3. rozpoczęcie uruchomienia
+4. strumieniowanie zdarzeń
+5. zebranie artefaktów
+6. wyczyszczenie lub zachowanie zgodnie z zasadami
 
-Gdy to będzie stabilne, hostowana usługa chmurowa może zaimplementować ten sam kontrakt dostawcy.
+Gdy to będzie stabilne, hostowana usługa chmurowa może zaimplementować ten sam kontrakt
+dostawcy.
 
 ## Struktura pakietów
 
@@ -355,35 +357,36 @@ Zalecane pakiety:
 | Pakiet                  | Cel                                                           |
 | ----------------------- | ------------------------------------------------------------- |
 | `@openclaw/sdk`         | Publiczny wysokopoziomowy SDK i wygenerowany niskopoziomowy klient Gateway. |
-| `@openclaw/sdk-react`   | Opcjonalne hooki React dla pulpitów i twórców aplikacji.      |
-| `@openclaw/sdk-testing` | Pomocnicy testów i fałszywy serwer Gateway dla integracji aplikacji. |
+| `@openclaw/sdk-react`   | Opcjonalne hooki React dla dashboardów i twórców aplikacji.   |
+| `@openclaw/sdk-testing` | Pomocnicze narzędzia testowe i fałszywy serwer Gateway dla integracji aplikacji. |
 
-Repozytorium ma już `openclaw/plugin-sdk/*` dla Plugin. Zachowaj tę przestrzeń nazw
-oddzielnie, aby nie mylić autorów Plugin z deweloperami aplikacji.
+Repozytorium ma już `openclaw/plugin-sdk/*` dla pluginów. Zachowaj tę przestrzeń nazw
+oddzielnie, aby uniknąć mylenia autorów pluginów z deweloperami aplikacji.
 
 ## Strategia wygenerowanego klienta
 
-Klient niskiego poziomu powinien być generowany z wersjonowanych schematów protokołu Gateway, a następnie opakowany w ręcznie napisane ergonomiczne klasy.
+Niskopoziomowy klient powinien być generowany z wersjonowanych schematów protokołu Gateway,
+a następnie opakowany ręcznie pisanymi ergonomicznymi klasami.
 
-Warstwy:
+Warstwowanie:
 
-1. Schemat Gateway jako źródło prawdy.
-2. Wygenerowany klient TypeScript niskiego poziomu.
-3. Walidatory środowiska uruchomieniowego dla zewnętrznych danych wejściowych i ładunków zdarzeń.
+1. Jedno źródło prawdy dla schematu Gateway.
+2. Wygenerowany niskopoziomowy klient TypeScript.
+3. Walidatory w czasie działania dla danych wejściowych zewnętrznych i ładunków zdarzeń.
 4. Wysokopoziomowe opakowania `OpenClaw`, `Agent`, `Session`, `Run`, `Task` i `Artifact`.
-5. Przykłady z poradnika i testy integracyjne.
+5. Przykłady z cookbooka i testy integracyjne.
 
 Korzyści:
 
-- rozbieżność protokołu jest widoczna
+- rozbieżności protokołu są widoczne
 - testy mogą porównywać wygenerowane metody z eksportami Gateway
-- SDK aplikacji pozostaje niezależne od elementów wewnętrznych Plugin SDK
-- konsumenci niskiego poziomu nadal mają pełny dostęp do protokołu
-- konsumenci wysokiego poziomu otrzymują małe API produktu
+- App SDK pozostaje niezależne od wewnętrznych elementów Plugin SDK
+- konsumenci niskopoziomowi nadal mają pełny dostęp do protokołu
+- konsumenci wysokopoziomowi otrzymują małe API produktu
 
-## Powiązana dokumentacja
+## Powiązane
 
-- [SDK aplikacji OpenClaw](/pl/concepts/openclaw-sdk)
+- [OpenClaw App SDK](/pl/concepts/openclaw-sdk)
 - [Dokumentacja referencyjna RPC Gateway](/pl/reference/rpc)
 - [Pętla agenta](/pl/concepts/agent-loop)
 - [Środowiska uruchomieniowe agentów](/pl/concepts/agent-runtimes)

@@ -1,23 +1,21 @@
 ---
 read_when:
     - Chcesz używać Brave Search do web_search
-    - Potrzebujesz BRAVE_API_KEY lub szczegółów planu
+    - Potrzebujesz klucza BRAVE_API_KEY lub szczegółów planu
 summary: Konfiguracja Brave Search API dla web_search
-title: Wyszukiwanie Brave
+title: Wyszukiwarka Brave
 x-i18n:
-    generated_at: "2026-05-02T10:03:29Z"
+    generated_at: "2026-05-06T09:31:02Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b1ecb9e3e5475bb26f4058311429b558f49cdd1df907a622f93f297ac6569d65
+    source_hash: d2bff7589ddb54d002853898c6fc37e613fd32b0fa69cb0d712d5955973efb39
     source_path: tools/brave-search.md
     workflow: 16
 ---
 
-# Brave Search API
-
 OpenClaw obsługuje Brave Search API jako dostawcę `web_search`.
 
-## Uzyskanie klucza API
+## Uzyskaj klucz API
 
 1. Utwórz konto Brave Search API na [https://brave.com/search/api/](https://brave.com/search/api/)
 2. W panelu wybierz plan **Search** i wygeneruj klucz API.
@@ -52,18 +50,18 @@ OpenClaw obsługuje Brave Search API jako dostawcę `web_search`.
 }
 ```
 
-Ustawienia Brave Search właściwe dla dostawcy znajdują się teraz w `plugins.entries.brave.config.webSearch.*`.
-Starsze `tools.web.search.apiKey` nadal jest ładowane przez warstwę zgodności, ale nie jest już kanoniczną ścieżką konfiguracji.
+Ustawienia wyszukiwania Brave specyficzne dla dostawcy znajdują się teraz w `plugins.entries.brave.config.webSearch.*`.
+Starsze `tools.web.search.apiKey` nadal wczytuje się przez warstwę zgodności, ale nie jest już kanoniczną ścieżką konfiguracji.
 
 `webSearch.mode` steruje transportem Brave:
 
-- `web` (domyślnie): zwykłe wyszukiwanie w sieci Brave z tytułami, adresami URL i fragmentami
-- `llm-context`: Brave LLM Context API ze wstępnie wyodrębnionymi fragmentami tekstu i źródłami do ugruntowania odpowiedzi
+- `web` (domyślnie): normalne wyszukiwanie web Brave z tytułami, adresami URL i fragmentami
+- `llm-context`: Brave LLM Context API ze wstępnie wyodrębnionymi fragmentami tekstu i źródłami do ugruntowania
 
 `webSearch.baseUrl` może kierować żądania Brave do zaufanego proxy zgodnego z Brave
-lub gatewaya. OpenClaw dodaje `/res/v1/web/search` albo `/res/v1/llm/context` do
+lub Gateway. OpenClaw dodaje `/res/v1/web/search` albo `/res/v1/llm/context` do
 skonfigurowanego bazowego adresu URL i zachowuje bazowy adres URL w kluczu cache. Publiczne
-punkty końcowe muszą używać `https://`; `http://` jest akceptowane tylko dla zaufanych hostów local loopback
+endpointy muszą używać `https://`; `http://` jest akceptowane tylko dla zaufanego local loopback
 lub hostów proxy w sieci prywatnej.
 
 ## Parametry narzędzia
@@ -89,7 +87,7 @@ Kod języka wyszukiwania Brave (np. `en`, `en-gb`, `zh-hans`).
 </ParamField>
 
 <ParamField path="ui_lang" type="string">
-Kod języka ISO dla elementów UI.
+Kod języka ISO dla elementów interfejsu użytkownika.
 </ParamField>
 
 <ParamField path="freshness" type="'day' | 'week' | 'month' | 'year'">
@@ -130,19 +128,19 @@ await web_search({
 
 ## Uwagi
 
-- OpenClaw używa planu Brave **Search**. Jeśli masz starszą subskrypcję (np. pierwotny plan Free z limitem 2000 zapytań miesięcznie), pozostaje ona ważna, ale nie obejmuje nowszych funkcji, takich jak LLM Context ani wyższych limitów szybkości.
-- Każdy plan Brave obejmuje **\$5 miesięcznie bezpłatnego kredytu** (odnawianego). Plan Search kosztuje \$5 za 1000 żądań, więc kredyt pokrywa 1000 zapytań miesięcznie. Ustaw limit użycia w panelu Brave, aby uniknąć nieoczekiwanych opłat. Aktualne plany znajdziesz w [portalu Brave API](https://brave.com/search/api/).
-- Plan Search obejmuje punkt końcowy LLM Context i prawa do wnioskowania AI. Przechowywanie wyników w celu trenowania lub dostrajania modeli wymaga planu z wyraźnymi prawami do przechowywania. Zobacz [Warunki korzystania z usługi](https://api-dashboard.search.brave.com/terms-of-service) Brave.
-- Tryb `llm-context` zwraca ugruntowane wpisy źródłowe zamiast zwykłego kształtu fragmentów wyszukiwania w sieci.
-- Tryb `llm-context` obsługuje `freshness` oraz ograniczone zakresy `date_after` + `date_before`. Nie obsługuje `ui_lang`; `date_before` bez `date_after` jest odrzucane, ponieważ Brave wymaga, aby niestandardowe zakresy świeżości obejmowały zarówno datę początkową, jak i końcową.
+- OpenClaw używa planu **Search** Brave. Jeśli masz starszą subskrypcję (np. pierwotny plan Free z 2000 zapytań miesięcznie), pozostaje ona ważna, ale nie obejmuje nowszych funkcji, takich jak LLM Context, ani wyższych limitów szybkości.
+- Każdy plan Brave obejmuje **\$5 miesięcznie darmowego kredytu** (odnawianego). Plan Search kosztuje \$5 za 1000 żądań, więc kredyt pokrywa 1000 zapytań miesięcznie. Ustaw limit użycia w panelu Brave, aby uniknąć nieoczekiwanych opłat. Zobacz [portal Brave API](https://brave.com/search/api/), aby sprawdzić aktualne plany.
+- Plan Search obejmuje endpoint LLM Context oraz prawa do inferencji AI. Przechowywanie wyników w celu trenowania lub dostrajania modeli wymaga planu z wyraźnymi prawami do przechowywania. Zobacz Brave [Warunki korzystania z usługi](https://api-dashboard.search.brave.com/terms-of-service).
+- Tryb `llm-context` zwraca ugruntowane wpisy źródeł zamiast normalnego kształtu fragmentów wyszukiwania web.
+- Tryb `llm-context` obsługuje `freshness` oraz ograniczone zakresy `date_after` + `date_before`. Nie obsługuje `ui_lang`; `date_before` bez `date_after` jest odrzucane, ponieważ Brave wymaga, aby niestandardowe zakresy świeżości zawierały zarówno datę rozpoczęcia, jak i zakończenia.
 - `ui_lang` musi zawierać podtag regionu, taki jak `en-US`.
-- Wyniki są domyślnie cache’owane przez 15 minut (można to skonfigurować przez `cacheTtlMinutes`).
+- Wyniki są domyślnie buforowane przez 15 minut (konfigurowalne przez `cacheTtlMinutes`).
 - Niestandardowe wartości `webSearch.baseUrl` są uwzględniane w tożsamości cache Brave, więc
-  odpowiedzi właściwe dla proxy się nie nakładają.
-- Włącz flagę diagnostyczną `brave.http`, aby podczas rozwiązywania problemów rejestrować adresy URL/parametry zapytań Brave, status/czas odpowiedzi oraz zdarzenia trafienia/pominięcia/zapisu w cache wyszukiwania. Flaga nigdy nie rejestruje klucza API ani treści odpowiedzi, ale zapytania wyszukiwania mogą być wrażliwe.
+  odpowiedzi specyficzne dla proxy nie kolidują ze sobą.
+- Włącz flagę diagnostyczną `brave.http`, aby podczas rozwiązywania problemów rejestrować adresy URL/parametry zapytań żądań Brave, status/czas odpowiedzi oraz zdarzenia trafienia/chybienia/zapisu w cache wyszukiwania. Flaga nigdy nie rejestruje klucza API ani treści odpowiedzi, ale zapytania wyszukiwania mogą być wrażliwe.
 
 ## Powiązane
 
 - [Omówienie Web Search](/pl/tools/web) -- wszyscy dostawcy i automatyczne wykrywanie
-- [Perplexity Search](/pl/tools/perplexity-search) -- uporządkowane wyniki z filtrowaniem domen
+- [Perplexity Search](/pl/tools/perplexity-search) -- strukturyzowane wyniki z filtrowaniem domen
 - [Exa Search](/pl/tools/exa-search) -- wyszukiwanie neuronowe z wyodrębnianiem treści

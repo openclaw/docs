@@ -1,19 +1,19 @@
 ---
 read_when:
     - Chcesz połączyć OpenClaw z kanałami IRC lub wiadomościami prywatnymi
-    - Konfigurujesz listy dozwolonych dla IRC, zasady grupowe lub kontrolę wzmianek
+    - Konfigurujesz listy dozwolonych dla IRC, zasady grup albo ograniczanie wzmianek
 summary: Konfiguracja Plugin IRC, kontrola dostępu i rozwiązywanie problemów
 title: IRC
 x-i18n:
-    generated_at: "2026-05-04T02:21:45Z"
+    generated_at: "2026-05-06T09:03:12Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 43c3098fe49a5e7405443df73e1bf752a579460dc0b2070c3d07f43b512bb555
+    source_hash: 7de49784dec1b6a21a5a65b298552c66ce82543e3f0a7075abedb442b4ebff7e
     source_path: channels/irc.md
     workflow: 16
 ---
 
-Używaj IRC, gdy chcesz korzystać z OpenClaw w klasycznych kanałach (`#room`) i wiadomościach bezpośrednich.
+Użyj IRC, gdy chcesz mieć OpenClaw w klasycznych kanałach (`#room`) i wiadomościach bezpośrednich.
 IRC jest dostarczany jako dołączony Plugin, ale konfiguruje się go w głównej konfiguracji pod `channels.irc`.
 
 ## Szybki start
@@ -36,17 +36,17 @@ IRC jest dostarczany jako dołączony Plugin, ale konfiguruje się go w główne
 }
 ```
 
-Preferuj prywatny serwer IRC do koordynacji botów. Jeśli celowo używasz publicznej sieci IRC, typowe opcje to Libera.Chat, OFTC i Snoonet. Unikaj przewidywalnych publicznych kanałów dla ruchu zaplecza bota lub roju.
+Preferuj prywatny serwer IRC do koordynacji botów. Jeśli celowo używasz publicznej sieci IRC, popularne opcje to Libera.Chat, OFTC i Snoonet. Unikaj przewidywalnych kanałów publicznych dla ruchu zaplecza bota lub roju.
 
-3. Uruchom/uruchom ponownie Gateway:
+3. Uruchom/uruchom ponownie bramę:
 
 ```bash
 openclaw gateway run
 ```
 
-## Domyślne ustawienia zabezpieczeń
+## Domyślne ustawienia bezpieczeństwa
 
-- IRC używa surowych gniazd TCP/TLS poza trasowaniem przez zarządzany przez operatora OpenClaw forward proxy. We wdrożeniach, które wymagają całego ruchu wychodzącego przez ten forward proxy, ustaw `channels.irc.enabled=false`, chyba że bezpośredni ruch wychodzący IRC jest jawnie zatwierdzony.
+- IRC używa surowych gniazd TCP/TLS poza trasowaniem przez zarządzany przez operatora OpenClaw forward proxy. W wdrożeniach, które wymagają, aby cały ruch wychodzący przechodził przez ten forward proxy, ustaw `channels.irc.enabled=false`, chyba że bezpośredni ruch wychodzący IRC został jawnie zatwierdzony.
 - `channels.irc.dmPolicy` domyślnie ma wartość `"pairing"`.
 - `channels.irc.groupPolicy` domyślnie ma wartość `"allowlist"`.
 - Przy `groupPolicy="allowlist"` ustaw `channels.irc.groups`, aby zdefiniować dozwolone kanały.
@@ -54,20 +54,20 @@ openclaw gateway run
 
 ## Kontrola dostępu
 
-Dla kanałów IRC istnieją dwie oddzielne „bramki”:
+Istnieją dwie oddzielne „bramki” dla kanałów IRC:
 
 1. **Dostęp do kanału** (`groupPolicy` + `groups`): czy bot w ogóle akceptuje wiadomości z kanału.
-2. **Dostęp nadawcy** (`groupAllowFrom` / `groups["#channel"].allowFrom` dla kanału): kto może wyzwalać bota w tym kanale.
+2. **Dostęp nadawcy** (`groupAllowFrom` / `groups["#channel"].allowFrom` dla kanału): kto może uruchamiać bota w tym kanale.
 
 Klucze konfiguracji:
 
-- Lista dozwolonych dla DM (dostęp nadawcy DM): `channels.irc.allowFrom`
+- Lista dozwolonych DM (dostęp nadawcy DM): `channels.irc.allowFrom`
 - Lista dozwolonych nadawców grupowych (dostęp nadawcy w kanale): `channels.irc.groupAllowFrom`
-- Kontrole dla kanału (reguły kanału, nadawcy i wzmianek): `channels.irc.groups["#channel"]`
-- `channels.irc.groupPolicy="open"` zezwala na nieskonfigurowane kanały (**nadal domyślnie wymaga wzmianki**)
+- Kontrole dla kanału (kanał + nadawca + reguły wzmianek): `channels.irc.groups["#channel"]`
+- `channels.irc.groupPolicy="open"` zezwala na nieskonfigurowane kanały (**nadal domyślnie wymagające wzmianki**)
 
 Wpisy listy dozwolonych powinny używać stabilnych tożsamości nadawców (`nick!user@host`).
-Dopasowywanie samego nicka jest zmienne i włączone tylko przy `channels.irc.dangerouslyAllowNameMatching: true`.
+Dopasowanie samego nicka jest zmienne i włączone tylko wtedy, gdy `channels.irc.dangerouslyAllowNameMatching: true`.
 
 ### Częsta pułapka: `allowFrom` dotyczy DM, a nie kanałów
 
@@ -75,12 +75,12 @@ Jeśli widzisz logi takie jak:
 
 - `irc: drop group sender alice!ident@host (policy=allowlist)`
 
-…oznacza to, że nadawca nie był dozwolony dla wiadomości **grupowych/kanałowych**. Napraw to przez:
+...oznacza to, że nadawca nie był dozwolony dla wiadomości **grupowych/kanałowych**. Napraw to przez:
 
 - ustawienie `channels.irc.groupAllowFrom` (globalnie dla wszystkich kanałów), albo
-- ustawienie list dozwolonych nadawców dla kanałów: `channels.irc.groups["#channel"].allowFrom`
+- ustawienie list dozwolonych nadawców dla kanału: `channels.irc.groups["#channel"].allowFrom`
 
-Przykład (pozwól każdemu w `#tuirc-dev` rozmawiać z botem):
+Przykład (zezwól każdemu w `#tuirc-dev` na rozmowę z botem):
 
 ```json5
 {
@@ -99,9 +99,9 @@ Przykład (pozwól każdemu w `#tuirc-dev` rozmawiać z botem):
 
 Nawet jeśli kanał jest dozwolony (przez `groupPolicy` + `groups`) i nadawca jest dozwolony, OpenClaw domyślnie stosuje **bramkowanie wzmiankami** w kontekstach grupowych.
 
-Oznacza to, że możesz widzieć logi typu `drop channel … (missing-mention)`, chyba że wiadomość zawiera wzorzec wzmianki pasujący do bota.
+Oznacza to, że możesz zobaczyć logi takie jak `drop channel … (missing-mention)`, chyba że wiadomość zawiera wzorzec wzmianki pasujący do bota.
 
-Aby bot odpowiadał w kanale IRC **bez konieczności wzmianki**, wyłącz bramkowanie wzmiankami dla tego kanału:
+Aby bot odpowiadał w kanale IRC **bez potrzeby wzmianki**, wyłącz bramkowanie wzmiankami dla tego kanału:
 
 ```json5
 {
@@ -119,7 +119,7 @@ Aby bot odpowiadał w kanale IRC **bez konieczności wzmianki**, wyłącz bramko
 }
 ```
 
-Albo aby zezwolić na **wszystkie** kanały IRC (bez listy dozwolonych dla poszczególnych kanałów) i nadal odpowiadać bez wzmianek:
+Albo aby zezwolić na **wszystkie** kanały IRC (bez listy dozwolonych dla kanału) i nadal odpowiadać bez wzmianek:
 
 ```json5
 {
@@ -134,10 +134,10 @@ Albo aby zezwolić na **wszystkie** kanały IRC (bez listy dozwolonych dla poszc
 }
 ```
 
-## Uwaga dotycząca zabezpieczeń (zalecane dla kanałów publicznych)
+## Uwaga dotycząca bezpieczeństwa (zalecane dla kanałów publicznych)
 
 Jeśli zezwolisz na `allowFrom: ["*"]` w kanale publicznym, każdy może wysłać prompt do bota.
-Aby zmniejszyć ryzyko, ogranicz narzędzia dla tego kanału.
+Aby ograniczyć ryzyko, ogranicz narzędzia dla tego kanału.
 
 ### Te same narzędzia dla wszystkich w kanale
 
@@ -158,9 +158,9 @@ Aby zmniejszyć ryzyko, ogranicz narzędzia dla tego kanału.
 }
 ```
 
-### Różne narzędzia dla poszczególnych nadawców (właściciel dostaje większe uprawnienia)
+### Różne narzędzia dla poszczególnych nadawców (właściciel ma większe uprawnienia)
 
-Użyj `toolsBySender`, aby zastosować surowszą politykę do `"*"` i łagodniejszą do swojego nicka:
+Użyj `toolsBySender`, aby zastosować surowszą politykę do `"*"` i luźniejszą do swojego nicka:
 
 ```json5
 {
@@ -189,9 +189,9 @@ Uwagi:
 - Klucze `toolsBySender` powinny używać `id:` dla wartości tożsamości nadawcy IRC:
   `id:eigen` albo `id:eigen!~eigen@174.127.248.171` dla silniejszego dopasowania.
 - Starsze klucze bez prefiksu są nadal akceptowane i dopasowywane wyłącznie jako `id:`.
-- Wygrywa pierwsza pasująca polityka nadawcy; `"*"` jest zapasowym symbolem wieloznacznym.
+- Wygrywa pierwsza pasująca polityka nadawcy; `"*"` jest rezerwowym symbolem wieloznacznym.
 
-Więcej o dostępie grupowym i bramkowaniu wzmiankami (oraz ich współdziałaniu) znajdziesz tutaj: [/channels/groups](/pl/channels/groups).
+Więcej informacji o dostępie grupowym i bramkowaniu wzmiankami (oraz o tym, jak współdziałają) znajdziesz tutaj: [/channels/groups](/pl/channels/groups).
 
 ## NickServ
 
@@ -211,7 +211,7 @@ Aby zidentyfikować się w NickServ po połączeniu:
 }
 ```
 
-Opcjonalna jednorazowa rejestracja po połączeniu:
+Opcjonalna jednorazowa rejestracja przy połączeniu:
 
 ```json5
 {
@@ -226,11 +226,11 @@ Opcjonalna jednorazowa rejestracja po połączeniu:
 }
 ```
 
-Wyłącz `register` po zarejestrowaniu nicka, aby uniknąć powtarzanych prób REGISTER.
+Wyłącz `register` po zarejestrowaniu nicka, aby uniknąć powtarzających się prób REGISTER.
 
 ## Zmienne środowiskowe
 
-Domyślne konto obsługuje:
+Konto domyślne obsługuje:
 
 - `IRC_HOST`
 - `IRC_PORT`
@@ -239,11 +239,11 @@ Domyślne konto obsługuje:
 - `IRC_USERNAME`
 - `IRC_REALNAME`
 - `IRC_PASSWORD`
-- `IRC_CHANNELS` (oddzielone przecinkami)
+- `IRC_CHANNELS` (rozdzielone przecinkami)
 - `IRC_NICKSERV_PASSWORD`
 - `IRC_NICKSERV_REGISTER_EMAIL`
 
-`IRC_HOST` nie można ustawić z pliku `.env` obszaru roboczego; zobacz [Pliki `.env` obszaru roboczego](/pl/gateway/security).
+`IRC_HOST` nie może być ustawione z pliku `.env` obszaru roboczego; zobacz [pliki `.env` obszaru roboczego](/pl/gateway/security).
 
 ## Rozwiązywanie problemów
 
@@ -256,5 +256,5 @@ Domyślne konto obsługuje:
 - [Przegląd kanałów](/pl/channels) — wszystkie obsługiwane kanały
 - [Parowanie](/pl/channels/pairing) — uwierzytelnianie DM i przepływ parowania
 - [Grupy](/pl/channels/groups) — zachowanie czatu grupowego i bramkowanie wzmiankami
-- [Trasowanie kanałów](/pl/channels/channel-routing) — trasowanie sesji dla wiadomości
-- [Zabezpieczenia](/pl/gateway/security) — model dostępu i utwardzanie
+- [Routing kanałów](/pl/channels/channel-routing) — routing sesji dla wiadomości
+- [Bezpieczeństwo](/pl/gateway/security) — model dostępu i utwardzanie

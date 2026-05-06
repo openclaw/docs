@@ -1,36 +1,36 @@
 ---
 read_when:
     - Chcesz dostawcę wyszukiwania w sieci, który nie wymaga klucza API
-    - Chcesz używać DuckDuckGo do `web_search`
-    - Potrzebujesz zapasowego wyszukiwania bez konfiguracji
-summary: Wyszukiwanie w sieci DuckDuckGo — zapasowy dostawca bez klucza (eksperymentalny, oparty na HTML)
+    - Chcesz używać DuckDuckGo do web_search
+    - Potrzebujesz zapasowego mechanizmu wyszukiwania niewymagającego konfiguracji
+summary: Wyszukiwarka internetowa DuckDuckGo -- zapasowy dostawca niewymagający klucza (eksperymentalny, oparty na HTML)
 title: Wyszukiwanie DuckDuckGo
 x-i18n:
-    generated_at: "2026-04-24T09:35:49Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:32:04Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 6828830079b0bee1321f0971ec120ae98bc72ab040ad3a0fe30fe89217ed0722
+    source_hash: 89c23535730dc272b88e22d1dbeef61abd55a7968d9e57bdce20594df8a2c0f2
     source_path: tools/duckduckgo-search.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw obsługuje DuckDuckGo jako dostawcę `web_search` **bez klucza**. Klucz API ani konto nie są wymagane.
+OpenClaw obsługuje DuckDuckGo jako dostawcę `web_search` **bez klucza**. Nie jest wymagany klucz API ani konto.
 
 <Warning>
   DuckDuckGo to **eksperymentalna, nieoficjalna** integracja, która pobiera wyniki
-  ze stron wyszukiwania DuckDuckGo bez JavaScriptu — nie z oficjalnego API. Możliwe są
-  sporadyczne awarie z powodu stron z wyzwaniami antybotowymi lub zmian w HTML.
+  ze stron wyszukiwania DuckDuckGo bez JavaScriptu - nie z oficjalnego API. Należy
+  spodziewać się sporadycznych awarii z powodu stron z wyzwaniami dla botów lub zmian HTML.
 </Warning>
 
 ## Konfiguracja
 
-Klucz API nie jest potrzebny — wystarczy ustawić DuckDuckGo jako dostawcę:
+Nie potrzeba klucza API - wystarczy ustawić DuckDuckGo jako dostawcę:
 
 <Steps>
-  <Step title="Konfiguracja">
+  <Step title="Skonfiguruj">
     ```bash
     openclaw configure --section web
-    # Wybierz "duckduckgo" jako dostawcę
+    # Select "duckduckgo" as the provider
     ```
   </Step>
 </Steps>
@@ -49,7 +49,7 @@ Klucz API nie jest potrzebny — wystarczy ustawić DuckDuckGo jako dostawcę:
 }
 ```
 
-Opcjonalne ustawienia na poziomie Pluginu dla regionu i SafeSearch:
+Opcjonalne ustawienia na poziomie Plugin dla regionu i SafeSearch:
 
 ```json5
 {
@@ -58,8 +58,8 @@ Opcjonalne ustawienia na poziomie Pluginu dla regionu i SafeSearch:
       duckduckgo: {
         config: {
           webSearch: {
-            region: "us-en", // kod regionu DuckDuckGo
-            safeSearch: "moderate", // "strict", "moderate" lub "off"
+            region: "us-en", // DuckDuckGo region code
+            safeSearch: "moderate", // "strict", "moderate", or "off"
           },
         },
       },
@@ -75,7 +75,7 @@ Zapytanie wyszukiwania.
 </ParamField>
 
 <ParamField path="count" type="number" default="5">
-Liczba wyników do zwrócenia (1–10).
+Liczba wyników do zwrócenia (1-10).
 </ParamField>
 
 <ParamField path="region" type="string">
@@ -86,30 +86,30 @@ Kod regionu DuckDuckGo (np. `us-en`, `uk-en`, `de-de`).
 Poziom SafeSearch.
 </ParamField>
 
-Region i SafeSearch można również ustawić w konfiguracji Pluginu (patrz wyżej) — parametry
-narzędzia nadpisują wartości konfiguracyjne dla każdego zapytania.
+Region i SafeSearch można też ustawić w konfiguracji Plugin (patrz wyżej) - parametry
+narzędzia zastępują wartości konfiguracji dla pojedynczego zapytania.
 
 ## Uwagi
 
-- **Brak klucza API** — działa od razu, bez żadnej konfiguracji
-- **Eksperymentalne** — zbiera wyniki ze stron wyszukiwania HTML DuckDuckGo bez JavaScriptu,
-  a nie z oficjalnego API ani SDK
-- **Ryzyko wyzwań antybotowych** — DuckDuckGo może wyświetlać CAPTCHA lub blokować żądania
+- **Brak klucza API** - działa od razu, bez konfiguracji
+- **Eksperymentalne** - zbiera wyniki ze stron wyszukiwania DuckDuckGo w formacie HTML
+  bez JavaScriptu, a nie z oficjalnego API ani SDK
+- **Ryzyko wyzwań dla botów** - DuckDuckGo może wyświetlać CAPTCHA lub blokować żądania
   przy intensywnym albo zautomatyzowanym użyciu
-- **Parsowanie HTML** — wyniki zależą od struktury strony, która może zmienić się bez
-  uprzedzenia
-- **Kolejność automatycznego wykrywania** — DuckDuckGo jest pierwszym zapasowym rozwiązaniem bez klucza
-  (kolejność 100) w automatycznym wykrywaniu. Dostawcy opierający się na API ze skonfigurowanymi kluczami są uruchamiani
-  najpierw, potem Ollama Web Search (kolejność 110), a następnie SearXNG (kolejność 200)
-- **SafeSearch domyślnie ma wartość moderate**, gdy nie jest skonfigurowany
+- **Parsowanie HTML** - wyniki zależą od struktury strony, która może się zmienić bez
+  powiadomienia
+- **Kolejność automatycznego wykrywania** - DuckDuckGo jest pierwszą zapasową opcją bez klucza
+  (kolejność 100) w automatycznym wykrywaniu. Dostawcy oparci na API ze skonfigurowanymi kluczami są uruchamiani
+  jako pierwsi, potem Ollama Web Search (kolejność 110), następnie SearXNG (kolejność 200)
+- **SafeSearch domyślnie ma poziom moderate**, gdy nie jest skonfigurowany
 
 <Tip>
-  Do zastosowań produkcyjnych rozważ [Brave Search](/pl/tools/brave-search) (dostępny
-  darmowy plan) lub innego dostawcę opartego na API.
+  Do zastosowań produkcyjnych rozważ [Brave Search](/pl/tools/brave-search) (dostępny darmowy poziom)
+  albo innego dostawcę opartego na API.
 </Tip>
 
 ## Powiązane
 
-- [Przegląd Web Search](/pl/tools/web) -- wszyscy dostawcy i automatyczne wykrywanie
-- [Brave Search](/pl/tools/brave-search) -- uporządkowane wyniki z darmowym planem
-- [Exa Search](/pl/tools/exa-search) -- wyszukiwanie neuronowe z ekstrakcją treści
+- [Omówienie Web Search](/pl/tools/web) -- wszyscy dostawcy i automatyczne wykrywanie
+- [Brave Search](/pl/tools/brave-search) -- uporządkowane wyniki z darmowym poziomem
+- [Exa Search](/pl/tools/exa-search) -- wyszukiwanie neuronowe z wyodrębnianiem treści

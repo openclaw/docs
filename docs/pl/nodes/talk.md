@@ -1,36 +1,46 @@
 ---
 read_when:
-    - Implementacja trybu Talk na macOS/iOS/Android
+    - Implementacja trybu rozmowy na macOS/iOS/Android
     - Zmiana zachowania głosu/TTS/przerywania
-summary: 'Tryb Talk: ciągłe rozmowy głosowe ze skonfigurowanymi dostawcami TTS'
-title: Tryb Talk
+summary: 'Tryb rozmowy: ciągłe konwersacje mówione z użyciem lokalnego STT/TTS i głosu w czasie rzeczywistym'
+title: Tryb rozmowy
 x-i18n:
-    generated_at: "2026-04-26T11:35:24Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:20:25Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: afdddaa81c0a09076eaeeafd25295b0c02681f03b273ec4afe4ea2afa692dc2a
+    source_hash: a04304a1dd6c3feefa89c0c8c66f8026a7d28b573776fcf14237c3481fbc772a
     source_path: nodes/talk.md
-    workflow: 15
+    workflow: 16
 ---
 
-Tryb Talk to ciągła pętla rozmowy głosowej:
+Tryb Talk ma dwa kształty uruchomieniowe:
 
-1. Nasłuchuj mowy
-2. Wyślij transkrypcję do modelu (główna sesja, `chat.send`)
-3. Poczekaj na odpowiedź
-4. Odczytaj ją za pomocą skonfigurowanego dostawcy Talk (`talk.speak`)
+- Natywny Talk na macOS/iOS/Android używa lokalnego rozpoznawania mowy, czatu Gateway oraz TTS `talk.speak`. Instancje Node ogłaszają funkcję `talk` i deklarują obsługiwane polecenia `talk.*`.
+- Talk w przeglądarce używa `talk.client.create` dla należących do klienta sesji `webrtc` i `provider-websocket` albo `talk.session.create` dla należących do Gateway sesji `gateway-relay`. `managed-room` jest zarezerwowane dla przekazania przez Gateway i pokoi walkie-talkie.
+- Klienci tylko do transkrypcji używają `talk.session.create({ mode: "transcription", transport: "gateway-relay", brain: "none" })`, a następnie `talk.session.appendAudio`, `talk.session.cancelTurn` i `talk.session.close`, gdy potrzebują napisów lub dyktowania bez głosowej odpowiedzi asystenta.
+
+Natywny Talk to ciągła pętla rozmowy głosowej:
+
+1. Nasłuch mowy
+2. Wysłanie transkrypcji do modelu przez aktywną sesję
+3. Oczekiwanie na odpowiedź
+4. Odtworzenie jej przez skonfigurowanego dostawcę Talk (`talk.speak`)
+
+Talk w czasie rzeczywistym w przeglądarce przekazuje wywołania narzędzi dostawcy przez `talk.client.toolCall`; klienci przeglądarkowi nie wywołują `chat.send` bezpośrednio dla konsultacji w czasie rzeczywistym.
+
+Talk tylko do transkrypcji emituje tę samą wspólną kopertę zdarzeń Talk co sesje w czasie rzeczywistym i STT/TTS, ale używa `mode: "transcription"` i `brain: "none"`. Służy do napisów, dyktowania i przechwytywania mowy tylko w trybie obserwacji; jednorazowo przesyłane notatki głosowe nadal używają ścieżki mediów/audio.
 
 ## Zachowanie (macOS)
 
-- **Zawsze aktywna nakładka** gdy tryb Talk jest włączony.
+- **Zawsze widoczna nakładka**, gdy tryb Talk jest włączony.
 - Przejścia faz **Nasłuchiwanie → Myślenie → Mówienie**.
-- Przy **krótkiej pauzie** (okno ciszy) bieżąca transkrypcja jest wysyłana.
-- Odpowiedzi są **zapisywane w WebChat** (tak samo jak przy wpisywaniu).
-- **Przerywanie po wykryciu mowy** (domyślnie włączone): jeśli użytkownik zacznie mówić, gdy asystent mówi, zatrzymujemy odtwarzanie i zapisujemy znacznik czasu przerwania do następnego promptu.
+- Po **krótkiej pauzie** (okno ciszy) bieżąca transkrypcja jest wysyłana.
+- Odpowiedzi są **zapisywane w WebChat** (tak samo jak wpisywanie).
+- **Przerywanie mową** (domyślnie włączone): jeśli użytkownik zacznie mówić, gdy asystent mówi, zatrzymujemy odtwarzanie i zapisujemy znacznik czasu przerwania dla następnego promptu.
 
 ## Dyrektywy głosowe w odpowiedziach
 
-Asystent może poprzedzić swoją odpowiedź **pojedynczą linią JSON**, aby sterować głosem:
+Asystent może poprzedzić odpowiedź **pojedynczym wierszem JSON**, aby sterować głosem:
 
 ```json
 { "voice": "<voice-id>", "once": true }
@@ -38,11 +48,11 @@ Asystent może poprzedzić swoją odpowiedź **pojedynczą linią JSON**, aby st
 
 Zasady:
 
-- Tylko pierwsza niepusta linia.
+- Tylko pierwszy niepusty wiersz.
 - Nieznane klucze są ignorowane.
-- `once: true` ma zastosowanie tylko do bieżącej odpowiedzi.
-- Bez `once` głos staje się nowym domyślnym głosem dla trybu Talk.
-- Linia JSON jest usuwana przed odtwarzaniem TTS.
+- `once: true` dotyczy tylko bieżącej odpowiedzi.
+- Bez `once` głos staje się nową wartością domyślną dla trybu Talk.
+- Wiersz JSON jest usuwany przed odtwarzaniem TTS.
 
 Obsługiwane klucze:
 
@@ -73,52 +83,72 @@ Obsługiwane klucze:
     speechLocale: "ru-RU",
     silenceTimeoutMs: 1500,
     interruptOnSpeech: true,
+    realtime: {
+      provider: "openai",
+      providers: {
+        openai: {
+          apiKey: "openai_api_key",
+          model: "gpt-realtime",
+          voice: "alloy",
+        },
+      },
+      mode: "realtime",
+      transport: "webrtc",
+      brain: "agent-consult",
+    },
   },
 }
 ```
 
-Ustawienia domyślne:
+Wartości domyślne:
 
 - `interruptOnSpeech`: true
-- `silenceTimeoutMs`: jeśli nie jest ustawione, Talk zachowuje domyślne dla platformy okno pauzy przed wysłaniem transkrypcji (`700 ms na macOS i Androidzie, 900 ms na iOS`)
-- `provider`: wybiera aktywnego dostawcę Talk. Użyj `elevenlabs`, `mlx` lub `system` dla lokalnych ścieżek odtwarzania na macOS.
-- `providers.<provider>.voiceId`: używa wartości z `ELEVENLABS_VOICE_ID` / `SAG_VOICE_ID` dla ElevenLabs (lub pierwszego głosu ElevenLabs, gdy dostępny jest klucz API).
-- `providers.elevenlabs.modelId`: domyślnie `eleven_v3`, jeśli nie jest ustawione.
-- `providers.mlx.modelId`: domyślnie `mlx-community/Soprano-80M-bf16`, jeśli nie jest ustawione.
-- `providers.elevenlabs.apiKey`: używa wartości z `ELEVENLABS_API_KEY` (lub profilu powłoki Gateway, jeśli jest dostępny).
-- `speechLocale`: opcjonalny identyfikator ustawień regionalnych BCP 47 dla rozpoznawania mowy Talk na urządzeniu na iOS/macOS. Pozostaw nieustawione, aby użyć domyślnych ustawień urządzenia.
-- `outputFormat`: domyślnie `pcm_44100` na macOS/iOS oraz `pcm_24000` na Androidzie (ustaw `mp3_*`, aby wymusić strumieniowanie MP3)
+- `silenceTimeoutMs`: gdy nie jest ustawione, Talk zachowuje domyślne okno pauzy platformy przed wysłaniem transkrypcji (`700 ms on macOS and Android, 900 ms on iOS`)
+- `provider`: wybiera aktywnego dostawcę Talk. Użyj `elevenlabs`, `mlx` albo `system` dla ścieżek odtwarzania lokalnych dla macOS.
+- `providers.<provider>.voiceId`: korzysta awaryjnie z `ELEVENLABS_VOICE_ID` / `SAG_VOICE_ID` dla ElevenLabs (albo z pierwszego głosu ElevenLabs, gdy klucz API jest dostępny).
+- `providers.elevenlabs.modelId`: domyślnie `eleven_v3`, gdy nie jest ustawione.
+- `providers.mlx.modelId`: domyślnie `mlx-community/Soprano-80M-bf16`, gdy nie jest ustawione.
+- `providers.elevenlabs.apiKey`: korzysta awaryjnie z `ELEVENLABS_API_KEY` (albo z profilu powłoki Gateway, jeśli jest dostępny).
+- `realtime.provider`: wybiera aktywnego dostawcę głosu w czasie rzeczywistym dla przeglądarki/serwera. Użyj `openai` dla WebRTC, `google` dla WebSocket dostawcy albo dostawcy tylko-mostkowego przez przekaźnik Gateway.
+- `realtime.providers.<provider>` przechowuje należącą do dostawcy konfigurację czasu rzeczywistego. Przeglądarka otrzymuje tylko tymczasowe lub ograniczone dane uwierzytelniające sesji, nigdy standardowy klucz API.
+- `realtime.brain`: `agent-consult` kieruje wywołania narzędzi czasu rzeczywistego przez politykę Gateway; `direct-tools` to zachowanie zgodności tylko dla właściciela; `none` jest przeznaczone do transkrypcji lub zewnętrznej orkiestracji.
+- `talk.catalog` udostępnia prawidłowe tryby, transporty, strategie brain, formaty audio czasu rzeczywistego i flagi funkcji każdego dostawcy, aby własne klienty Talk mogły unikać nieobsługiwanych kombinacji.
+- Dostawcy transkrypcji strumieniowej są wykrywani przez `talk.catalog.transcription`. Bieżący przekaźnik Gateway używa konfiguracji dostawcy strumieniowego Voice Call, dopóki nie zostanie dodana dedykowana powierzchnia konfiguracji transkrypcji Talk.
+- `speechLocale`: opcjonalny identyfikator locale BCP 47 dla rozpoznawania mowy Talk na urządzeniu na iOS/macOS. Pozostaw nieustawione, aby użyć domyślnego ustawienia urządzenia.
+- `outputFormat`: domyślnie `pcm_44100` na macOS/iOS i `pcm_24000` na Androidzie (ustaw `mp3_*`, aby wymusić strumieniowanie MP3)
 
 ## Interfejs macOS
 
 - Przełącznik na pasku menu: **Talk**
-- Karta konfiguracji: grupa **Tryb Talk** (identyfikator głosu + przełącznik przerywania)
+- Karta konfiguracji: grupa **Talk Mode** (identyfikator głosu + przełącznik przerywania)
 - Nakładka:
-  - **Nasłuchiwanie**: chmura pulsuje zgodnie z poziomem mikrofonu
-  - **Myślenie**: animacja opadania
+  - **Nasłuchiwanie**: chmura pulsuje z poziomem mikrofonu
+  - **Myślenie**: animacja zapadania
   - **Mówienie**: rozchodzące się pierścienie
   - Kliknięcie chmury: zatrzymanie mówienia
   - Kliknięcie X: wyjście z trybu Talk
 
-## Interfejs Androida
+## Interfejs Android
 
 - Przełącznik na karcie głosu: **Talk**
 - Ręczne tryby **Mic** i **Talk** są wzajemnie wykluczającymi się trybami przechwytywania w czasie działania.
-- Ręczny tryb Mic zatrzymuje się, gdy aplikacja przestaje być na pierwszym planie lub użytkownik opuszcza kartę głosu.
-- Tryb Talk działa do momentu jego wyłączenia albo rozłączenia Node Androida i podczas aktywności używa typu usługi pierwszoplanowej mikrofonu Androida.
+- Ręczny Mic zatrzymuje się, gdy aplikacja opuszcza pierwszy plan albo użytkownik opuszcza kartę głosu.
+- Talk Mode działa, dopóki nie zostanie wyłączony lub Node Androida się nie rozłączy, i podczas aktywności używa typu usługi pierwszoplanowej mikrofonu Androida.
 
 ## Uwagi
 
 - Wymaga uprawnień do mowy i mikrofonu.
-- Używa `chat.send` względem klucza sesji `main`.
-- Gateway rozwiązuje odtwarzanie Talk przez `talk.speak` przy użyciu aktywnego dostawcy Talk. Android przechodzi na lokalny systemowy TTS tylko wtedy, gdy to RPC jest niedostępne.
-- Lokalne odtwarzanie MLX na macOS używa dołączonego pomocnika `openclaw-mlx-tts`, jeśli jest dostępny, lub pliku wykonywalnego z `PATH`. Ustaw `OPENCLAW_MLX_TTS_BIN`, aby wskazać własny binarny plik pomocniczy podczas developmentu.
-- `stability` dla `eleven_v3` jest walidowane do `0.0`, `0.5` lub `1.0`; inne modele akceptują `0..1`.
-- `latency_tier` jest walidowane do `0..4`, jeśli jest ustawione.
-- Android obsługuje formaty wyjściowe `pcm_16000`, `pcm_22050`, `pcm_24000` i `pcm_44100` dla strumieniowania AudioTrack o niskich opóźnieniach.
+- Natywny Talk używa aktywnej sesji Gateway i korzysta awaryjnie z odpytywania historii tylko wtedy, gdy zdarzenia odpowiedzi są niedostępne.
+- Talk w czasie rzeczywistym w przeglądarce używa `talk.client.toolCall` dla `openclaw_agent_consult` zamiast ujawniać `chat.send` sesjom przeglądarkowym należącym do dostawcy.
+- Talk tylko do transkrypcji używa `talk.session.create`, `talk.session.appendAudio`, `talk.session.cancelTurn` i `talk.session.close`; klienci subskrybują `talk.event`, aby otrzymywać częściowe/końcowe aktualizacje transkrypcji.
+- Gateway rozwiązuje odtwarzanie Talk przez `talk.speak` przy użyciu aktywnego dostawcy Talk. Android korzysta awaryjnie z lokalnego systemowego TTS tylko wtedy, gdy to RPC jest niedostępne.
+- Lokalne odtwarzanie MLX na macOS używa dołączonego pomocnika `openclaw-mlx-tts`, gdy jest obecny, albo pliku wykonywalnego w `PATH`. Ustaw `OPENCLAW_MLX_TTS_BIN`, aby wskazać niestandardowy binarny plik pomocniczy podczas programowania.
+- `stability` dla `eleven_v3` jest walidowane do `0.0`, `0.5` albo `1.0`; inne modele akceptują `0..1`.
+- `latency_tier` jest walidowane do `0..4`, gdy jest ustawione.
+- Android obsługuje formaty wyjściowe `pcm_16000`, `pcm_22050`, `pcm_24000` i `pcm_44100` dla strumieniowania AudioTrack o niskim opóźnieniu.
 
 ## Powiązane
 
 - [Wybudzanie głosem](/pl/nodes/voicewake)
 - [Audio i notatki głosowe](/pl/nodes/audio)
-- [Rozumienie multimediów](/pl/nodes/media-understanding)
+- [Rozumienie mediów](/pl/nodes/media-understanding)

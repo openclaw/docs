@@ -1,54 +1,62 @@
 ---
 read_when:
-    - Użytkownik zgłasza, że agenci utykają, powtarzając wywołania narzędzi
-    - Należy dostroić zabezpieczenie przed powtarzającymi się wywołaniami
-    - Edytujesz zasady narzędzi/środowiska uruchomieniowego agenta
+    - Użytkownik zgłasza, że agenci zapętlają się, powtarzając wywołania narzędzi
+    - Musisz dostroić ochronę przed powtarzającymi się wywołaniami
+    - Edytujesz zasady dotyczące narzędzi i środowiska wykonawczego agenta
+    - Napotykasz przerwania `compaction_loop_persisted` po ponowieniu próby po przepełnieniu kontekstu
 summary: Jak włączyć i dostroić zabezpieczenia wykrywające powtarzające się pętle wywołań narzędzi
-title: Wykrywanie pętli narzędzi
+title: Wykrywanie pętli narzędziowej
 x-i18n:
-    generated_at: "2026-05-05T01:50:08Z"
+    generated_at: "2026-05-06T09:34:02Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b9221e1716d3f4c2814a4705b160253839510cd6d11fe4ccd598c67958851afb
+    source_hash: 48773b2af3ba38db48f14c65e9f359c80b2503bd29c8e3edfaca2e4ced7e1713
     source_path: tools/loop-detection.md
     workflow: 16
 ---
 
-OpenClaw może zapobiegać utknięciu agentów w powtarzających się wzorcach wywołań narzędzi.
-Zabezpieczenie jest **domyślnie wyłączone**.
+OpenClaw ma dwa współpracujące zabezpieczenia dla powtarzalnych wzorców wywołań narzędzi:
 
-Włączaj je tylko tam, gdzie jest potrzebne, ponieważ przy rygorystycznych ustawieniach może blokować prawidłowe powtarzające się wywołania.
+1. **Wykrywanie pętli** (`tools.loopDetection.enabled`) — domyślnie wyłączone. Obserwuje przesuwaną historię wywołań narzędzi pod kątem powtarzających się wzorców i ponownych prób użycia nieznanych narzędzi.
+2. **Zabezpieczenie po Compaction** (`tools.loopDetection.postCompactionGuard`) — domyślnie włączone, chyba że `tools.loopDetection.enabled` ma jawnie wartość `false`. Uzbraja się po każdej ponownej próbie po Compaction i przerywa przebieg, gdy agent wyemituje tę samą trójkę `(tool, args, result)` w oknie.
+
+Oba są konfigurowane w tym samym bloku `tools.loopDetection`, ale zabezpieczenie po Compaction działa zawsze, gdy przełącznik główny nie jest jawnie wyłączony. Ustaw `tools.loopDetection.enabled: false`, aby wyciszyć oba obszary.
 
 ## Dlaczego to istnieje
 
-- Wykrywa powtarzalne sekwencje, które nie przynoszą postępu.
-- Wykrywa wysokoczęstotliwościowe pętle bez wyników (to samo narzędzie, te same dane wejściowe, powtarzające się błędy).
-- Wykrywa konkretne wzorce powtarzających się wywołań dla znanych narzędzi odpytujących.
+- Wykrywa powtarzalne sekwencje, które nie robią postępu.
+- Wykrywa pętle o wysokiej częstotliwości bez wyników (to samo narzędzie, te same dane wejściowe, powtarzające się błędy).
+- Wykrywa konkretne wzorce powtarzanych wywołań dla znanych narzędzi odpytujących.
+- Zapobiega nieograniczonemu działaniu cykli: przepełnienie kontekstu, potem Compaction, potem ta sama pętla.
 
 ## Blok konfiguracji
 
-Domyślne wartości globalne:
+Globalne wartości domyślne, z pokazanymi wszystkimi udokumentowanymi polami:
 
 ```json5
 {
   tools: {
     loopDetection: {
-      enabled: false,
+      enabled: false, // master switch for the rolling-history detectors
       historySize: 30,
       warningThreshold: 10,
       criticalThreshold: 20,
+      unknownToolThreshold: 10,
       globalCircuitBreakerThreshold: 30,
       detectors: {
         genericRepeat: true,
         knownPollNoProgress: true,
         pingPong: true,
       },
+      postCompactionGuard: {
+        windowSize: 3, // armed after compaction-retry; runs unless enabled is explicitly false
+      },
     },
   },
 }
 ```
 
-Nadpisanie dla agenta (opcjonalne):
+Nadpisanie dla pojedynczego agenta (opcjonalne):
 
 ```json5
 {
@@ -71,67 +79,83 @@ Nadpisanie dla agenta (opcjonalne):
 
 ### Zachowanie pól
 
-- `enabled`: przełącznik główny. `false` oznacza, że wykrywanie pętli nie jest wykonywane.
-- `historySize`: liczba ostatnich wywołań narzędzi przechowywanych do analizy.
-- `warningThreshold`: próg przed sklasyfikowaniem wzorca jako samego ostrzeżenia.
-- `criticalThreshold`: próg blokowania powtarzalnych wzorców pętli.
-- `globalCircuitBreakerThreshold`: globalny próg wyłącznika dla braku postępu.
-- `detectors.genericRepeat`: wykrywa powtarzające się wzorce tego samego narzędzia i tych samych parametrów.
-- `detectors.knownPollNoProgress`: wykrywa znane wzorce podobne do odpytywania bez zmiany stanu.
-- `detectors.pingPong`: wykrywa naprzemienne wzorce ping-pong.
+| Pole                             | Domyślnie | Efekt                                                                                                                           |
+| -------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `enabled`                        | `false`   | Przełącznik główny dla detektorów przesuwanej historii. Ustawienie `false` wyłącza również zabezpieczenie po Compaction.        |
+| `historySize`                    | `30`      | Liczba ostatnich wywołań narzędzi przechowywanych do analizy.                                                                   |
+| `warningThreshold`               | `10`      | Próg, po którym wzorzec jest klasyfikowany wyłącznie jako ostrzeżenie.                                                          |
+| `criticalThreshold`              | `20`      | Próg blokowania powtarzalnych wzorców pętli.                                                                                    |
+| `unknownToolThreshold`           | `10`      | Blokuje powtarzane wywołania tego samego niedostępnego narzędzia po tylu niepowodzeniach.                                      |
+| `globalCircuitBreakerThreshold`  | `30`      | Globalny próg wyłącznika dla braku postępu we wszystkich detektorach.                                                           |
+| `detectors.genericRepeat`        | `true`    | Wykrywa powtarzające się wzorce: to samo narzędzie + te same parametry.                                                         |
+| `detectors.knownPollNoProgress`  | `true`    | Wykrywa znane wzorce podobne do odpytywania bez zmiany stanu.                                                                   |
+| `detectors.pingPong`             | `true`    | Wykrywa naprzemienne wzorce ping-pong.                                                                                          |
+| `postCompactionGuard.windowSize` | `3`       | Liczba wywołań narzędzi po Compaction, podczas których zabezpieczenie pozostaje uzbrojone, oraz liczba identycznych trójek przerywająca przebieg. |
 
-W przypadku `exec` kontrole braku postępu porównują stabilne wyniki polecenia i ignorują zmienne metadane czasu wykonania, takie jak czas trwania, PID, identyfikator sesji i katalog roboczy.
-Gdy dostępny jest identyfikator uruchomienia, historia ostatnich wywołań narzędzi jest oceniana tylko w obrębie tego uruchomienia, więc zaplanowane cykle Heartbeat i nowe uruchomienia nie dziedziczą nieaktualnych liczników pętli z wcześniejszych uruchomień.
+Dla `exec` kontrole braku postępu porównują stabilne wyniki poleceń i ignorują zmienne metadane wykonania, takie jak czas trwania, PID, identyfikator sesji i katalog roboczy. Gdy dostępny jest identyfikator przebiegu, ostatnia historia wywołań narzędzi jest oceniana tylko w obrębie tego przebiegu, więc zaplanowane cykle Heartbeat i świeże przebiegi nie dziedziczą nieaktualnych liczników pętli z wcześniejszych przebiegów.
 
 ## Zalecana konfiguracja
 
-- W przypadku mniejszych modeli zacznij od `enabled: true`, bez zmieniania wartości domyślnych. Modele flagowe rzadko potrzebują wykrywania pętli i mogą pozostawić je wyłączone.
+- Dla mniejszych modeli ustaw `enabled: true` i pozostaw progi z wartościami domyślnymi. Modele flagowe rzadko potrzebują wykrywania przesuwanej historii i mogą pozostawić przełącznik główny jako `false`, nadal korzystając z zabezpieczenia po Compaction.
 - Zachowaj kolejność progów jako `warningThreshold < criticalThreshold < globalCircuitBreakerThreshold`.
-- Jeśli wystąpią fałszywe alarmy:
-  - podnieś `warningThreshold` i/lub `criticalThreshold`
-  - (opcjonalnie) podnieś `globalCircuitBreakerThreshold`
-  - wyłącz tylko detektor powodujący problemy
-  - zmniejsz `historySize`, aby uzyskać mniej rygorystyczny kontekst historyczny
+- Jeśli pojawią się wyniki fałszywie dodatnie:
+  - Zwiększ `warningThreshold` i/lub `criticalThreshold`.
+  - Opcjonalnie zwiększ `globalCircuitBreakerThreshold`.
+  - Wyłącz tylko konkretny detektor powodujący problemy (`detectors.<name>: false`).
+  - Zmniejsz `historySize`, aby kontekst historyczny był mniej rygorystyczny.
+- Aby wyłączyć wszystko (w tym zabezpieczenie po Compaction), ustaw jawnie `tools.loopDetection.enabled: false`.
 
 ## Zabezpieczenie po Compaction
 
-Gdy runner zakończy automatyczną próbę ponowienia po Compaction (po przepełnieniu kontekstu), uzbraja zabezpieczenie o krótkim oknie, które obserwuje kilka następnych wywołań narzędzi. Jeśli agent wyemituje ten _sam_ trójkę `(toolName, args, result)` wiele razy w tym oknie, zabezpieczenie uznaje, że Compaction nie przerwała pętli, i przerywa uruchomienie z błędem `compaction_loop_persisted`.
+Gdy runner ukończy ponowną próbę po Compaction po przepełnieniu kontekstu, uzbraja krótkookienne zabezpieczenie, które obserwuje kilka następnych wywołań narzędzi. Jeśli agent wyemituje tę samą trójkę `(toolName, argsHash, resultHash)` wielokrotnie w oknie, zabezpieczenie uznaje, że Compaction nie przerwało pętli, i przerywa przebieg z błędem `compaction_loop_persisted`.
 
-To osobna ścieżka kodu względem globalnych detektorów `tools.loopDetection`. Można ją konfigurować niezależnie:
+Zabezpieczenie jest bramkowane przez główną flagę `tools.loopDetection.enabled`, z jednym niuansem: pozostaje **włączone, gdy flaga nie jest ustawiona albo ma wartość `true`**, i dezaktywuje się tylko wtedy, gdy flaga ma jawnie wartość `false`. To celowe. Zabezpieczenie istnieje po to, aby wydostać się z pętli Compaction, które w przeciwnym razie zużywałyby nieograniczoną liczbę tokenów, więc użytkownik bez konfiguracji nadal otrzymuje ochronę.
 
 ```json5
 {
   tools: {
     loopDetection: {
-      enabled: true, // existing master switch; set false to disable loop guards
+      // master switch; set false to disable the guard along with the rolling detectors
+      enabled: true,
       postCompactionGuard: {
-        windowSize: 3, // default: 3
+        windowSize: 3, // default
       },
     },
   },
 }
 ```
 
-- `windowSize`: liczba wywołań narzędzi po Compaction, podczas których zabezpieczenie pozostaje uzbrojone, _oraz_ liczba identycznych trójek (narzędzie, argumenty, wynik), która wyzwala przerwanie.
+- Niższe `windowSize` jest bardziej rygorystyczne (mniej prób przed przerwaniem).
+- Wyższe `windowSize` daje agentowi więcej prób odzyskania działania.
+- Zabezpieczenie nigdy nie przerywa, gdy wyniki się zmieniają; robi to tylko wtedy, gdy wyniki są identyczne bajt po bajcie w całym oknie.
+- Jest celowo wąskie: uruchamia się tylko bezpośrednio po ponownej próbie po Compaction.
 
-Zabezpieczenie nigdy nie przerywa działania, gdy wyniki się zmieniają, a tylko wtedy, gdy wyniki są identyczne bajtowo w całym oknie. Jest celowo wąskie: uruchamia się wyłącznie bezpośrednio po próbie ponowienia po Compaction.
+<Note>
+  Zabezpieczenie po Compaction działa zawsze, gdy flaga główna nie ma jawnie wartości `false`, nawet jeśli nigdy nie zapisano bloku `tools.loopDetection`. Aby to zweryfikować, poszukaj `post-compaction guard armed for N attempts` w dzienniku Gateway bezpośrednio po zdarzeniu Compaction.
+</Note>
 
-## Logi i oczekiwane zachowanie
+## Dzienniki i oczekiwane zachowanie
 
-Gdy pętla zostanie wykryta, OpenClaw zgłasza zdarzenie pętli i blokuje albo tłumi następny cykl narzędzi w zależności od wagi problemu.
-Chroni to użytkowników przed niekontrolowanym zużyciem tokenów i blokadami, zachowując normalny dostęp do narzędzi.
+Gdy pętla zostanie wykryta, OpenClaw zgłasza zdarzenie pętli i w zależności od wagi albo tłumi, albo blokuje następny cykl narzędzia. Chroni to użytkowników przed niekontrolowanym zużyciem tokenów i blokadami, zachowując normalny dostęp do narzędzi.
 
-- Najpierw preferuj ostrzeżenie i tymczasowe tłumienie.
-- Eskaluj dopiero wtedy, gdy zgromadzą się powtarzające dowody.
-
-## Uwagi
-
-- `tools.loopDetection` jest scalane z nadpisaniami na poziomie agenta.
-- Konfiguracja per agent w pełni nadpisuje lub rozszerza wartości globalne.
-- Jeśli konfiguracja nie istnieje, zabezpieczenia pozostają wyłączone.
+- Najpierw pojawiają się ostrzeżenia.
+- Gdy wzorce utrzymują się po przekroczeniu progu ostrzeżenia, następuje tłumienie.
+- Progi krytyczne blokują następny cykl narzędzia i pokazują jasną przyczynę wykrycia pętli w rekordzie przebiegu.
+- Zabezpieczenie po Compaction emituje błędy `compaction_loop_persisted` z nazwą narzędzia powodującego problem i liczbą identycznych wywołań.
 
 ## Powiązane
 
-- [Zatwierdzenia exec](/pl/tools/exec-approvals)
-- [Poziomy myślenia](/pl/tools/thinking)
-- [Subagenci](/pl/tools/subagents)
+<CardGroup cols={2}>
+  <Card title="Zatwierdzenia exec" href="/pl/tools/exec-approvals" icon="shield">
+    Zasady zezwalania/odmawiania dla wykonywania powłoki.
+  </Card>
+  <Card title="Poziomy myślenia" href="/pl/tools/thinking" icon="brain">
+    Poziomy wysiłku rozumowania i interakcja z zasadami providera.
+  </Card>
+  <Card title="Subagenci" href="/pl/tools/subagents" icon="users">
+    Uruchamianie izolowanych agentów w celu ograniczenia niekontrolowanego zachowania.
+  </Card>
+  <Card title="Dokumentacja konfiguracji" href="/pl/gateway/configuration-reference" icon="gear">
+    Pełny schemat `tools.loopDetection` i semantyka scalania.
+  </Card>
+</CardGroup>

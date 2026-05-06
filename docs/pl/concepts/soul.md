@@ -1,27 +1,27 @@
 ---
 read_when:
-    - Chcesz, aby Twój agent brzmiał mniej generycznie
+    - Chcesz, aby Twój agent brzmiał mniej ogólnikowo
     - Edytujesz SOUL.md
-    - Chcesz mocniejszej osobowości bez psucia bezpieczeństwa ani zwięzłości
-summary: Użyj SOUL.md, aby nadać swojemu agentowi OpenClaw prawdziwy głos zamiast generycznej papki asystenta
-title: Przewodnik osobowości SOUL.md
+    - Chcesz wyrazistszej osobowości bez naruszania bezpieczeństwa ani zwięzłości
+summary: Użyj SOUL.md, aby nadać swojemu agentowi OpenClaw własny głos zamiast generycznej papki asystenta
+title: Przewodnik po osobowości SOUL.md
 x-i18n:
-    generated_at: "2026-04-24T09:07:38Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:10:13Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: c0268ef086f272257c83e2147ec1f4fa7772645cdd93cdf59dd4e661a311830a
+    source_hash: 2101c0c7a22ab1fe5acfd0d2d413a002326dca380fc6e020a7d77a242d13c3d7
     source_path: concepts/soul.md
-    workflow: 15
+    workflow: 16
 ---
 
-`SOUL.md` to miejsce, w którym żyje głos Twojego agenta.
+`SOUL.md` to miejsce, w którym mieszka głos Twojego agenta.
 
-OpenClaw wstrzykuje go w zwykłych sesjach, więc naprawdę ma znaczenie. Jeśli Twój agent
-brzmi nijako, asekuracyjnie albo dziwnie korporacyjnie, to zwykle ten plik trzeba poprawić.
+OpenClaw wstrzykuje go w zwykłych sesjach, więc ma rzeczywistą wagę. Jeśli Twój agent
+brzmi nijako, asekuracyjnie albo dziwnie korporacyjnie, zwykle to ten plik trzeba poprawić.
 
 ## Co należy umieścić w SOUL.md
 
-Umieść tam rzeczy, które zmieniają to, jak się rozmawia z agentem:
+Wpisz rzeczy, które zmieniają odczucie rozmowy z agentem:
 
 - ton
 - opinie
@@ -30,40 +30,40 @@ Umieść tam rzeczy, które zmieniają to, jak się rozmawia z agentem:
 - granice
 - domyślny poziom bezpośredniości
 
-**Nie** zamieniaj tego w:
+**Nie** zamieniaj go w:
 
 - historię życia
 - changelog
 - zrzut polityki bezpieczeństwa
-- wielką ścianę vibe’ów bez wpływu na zachowanie
+- ogromną ścianę klimatu bez wpływu na zachowanie
 
-Krócej znaczy lepiej. Wyraźnie znaczy lepiej niż mgliście.
+Krótkie wygrywa z długim. Konkret wygrywa z ogólnikiem.
 
 ## Dlaczego to działa
 
-To jest zgodne ze wskazówkami OpenAI dotyczącymi promptów:
+To jest zgodne z wytycznymi OpenAI dotyczącymi promptów:
 
-- Przewodnik po prompt engineering mówi, że zachowanie wysokiego poziomu, ton, cele i
-  przykłady powinny znajdować się w warstwie instrukcji o wysokim priorytecie, a nie być ukryte
-  w turze użytkownika.
-- Ten sam przewodnik zaleca traktowanie promptów jak coś, co się iteruje,
-  przypina i ocenia, a nie jak magiczną prozę pisaną raz i zapominaną.
+- Przewodnik po inżynierii promptów mówi, że zachowanie wysokiego poziomu, ton, cele i
+  przykłady należą do warstwy instrukcji o wysokim priorytecie, a nie powinny być zakopane w
+  turze użytkownika.
+- Ten sam przewodnik zaleca traktowanie promptów jak czegoś, nad czym iterujesz,
+  przypinasz i oceniasz, a nie jak magicznego tekstu pisanego raz i zapominanego.
 
 W OpenClaw `SOUL.md` jest właśnie tą warstwą.
 
-Jeśli chcesz lepszej osobowości, pisz mocniejsze instrukcje. Jeśli chcesz stabilnej
+Jeśli chcesz lepszej osobowości, napisz mocniejsze instrukcje. Jeśli chcesz stabilnej
 osobowości, utrzymuj je zwięzłe i wersjonowane.
 
-Źródła OpenAI:
+Odnośniki OpenAI:
 
-- [Prompt engineering](https://developers.openai.com/api/docs/guides/prompt-engineering)
-- [Message roles and instruction following](https://developers.openai.com/api/docs/guides/prompt-engineering#message-roles-and-instruction-following)
+- [Inżynieria promptów](https://developers.openai.com/api/docs/guides/prompt-engineering)
+- [Role wiadomości i stosowanie się do instrukcji](https://developers.openai.com/api/docs/guides/prompt-engineering#message-roles-and-instruction-following)
 
 ## Prompt Molty
 
 Wklej to do swojego agenta i pozwól mu przepisać `SOUL.md`.
 
-Ścieżka ustalona dla obszarów roboczych OpenClaw: używaj `SOUL.md`, a nie `http://SOUL.md`.
+Ścieżka ustalona dla obszarów roboczych OpenClaw: użyj `SOUL.md`, nie `http://SOUL.md`.
 
 ```md
 Read your `SOUL.md`. Now rewrite it with these changes:
@@ -80,15 +80,15 @@ Read your `SOUL.md`. Now rewrite it with these changes:
 Save the new `SOUL.md`. Welcome to having a personality.
 ```
 
-## Jak wygląda dobra wersja
+## Jak wygląda dobry rezultat
 
 Dobre reguły `SOUL.md` brzmią tak:
 
 - miej własne zdanie
 - pomijaj wypełniacze
-- bądź zabawny, kiedy pasuje
+- bądź zabawny, gdy to pasuje
 - wcześnie wskazuj złe pomysły
-- pozostań zwięzły, chyba że głębia naprawdę jest przydatna
+- zachowuj zwięzłość, chyba że głębia jest naprawdę przydatna
 
 Złe reguły `SOUL.md` brzmią tak:
 
@@ -96,20 +96,28 @@ Złe reguły `SOUL.md` brzmią tak:
 - zapewniaj kompleksową i przemyślaną pomoc
 - dbaj o pozytywne i wspierające doświadczenie
 
-Ta druga lista prowadzi do mdłej papki.
+Ta druga lista prowadzi do papki.
 
 ## Jedno ostrzeżenie
 
-Osobowość nie daje pozwolenia na bylejakość.
+Osobowość nie jest pozwoleniem na niedbałość.
 
-`AGENTS.md` zachowaj dla reguł operacyjnych. `SOUL.md` zachowaj dla głosu, postawy i
-stylu. Jeśli Twój agent działa we współdzielonych kanałach, publicznych odpowiedziach lub na
-powierzchniach kontaktu z klientem, upewnij się, że ton nadal pasuje do sytuacji.
+Zachowaj `AGENTS.md` na reguły operacyjne. Zachowaj `SOUL.md` na głos, stanowisko i
+styl. Jeśli Twój agent działa we współdzielonych kanałach, publicznych odpowiedziach albo powierzchniach
+dla klientów, upewnij się, że ton nadal pasuje do miejsca.
 
-Wyrazistość jest dobra. Irytowanie — nie.
+Wyrazistość jest dobra. Irytowanie nie.
 
-## Powiązane dokumenty
+## Powiązane
 
-- [Obszar roboczy agenta](/pl/concepts/agent-workspace)
-- [System prompt](/pl/concepts/system-prompt)
-- [Szablon SOUL.md](/pl/reference/templates/SOUL)
+<CardGroup cols={2}>
+  <Card title="Agent workspace" href="/pl/concepts/agent-workspace" icon="folder-open">
+    Pliki obszaru roboczego, które OpenClaw wstrzykuje do promptu systemowego.
+  </Card>
+  <Card title="System prompt" href="/pl/concepts/system-prompt" icon="message-lines">
+    Jak `SOUL.md` jest składany do promptu systemowego dla każdej tury.
+  </Card>
+  <Card title="SOUL.md template" href="/pl/reference/templates/SOUL" icon="file-lines">
+    Szablon startowy pliku osobowości.
+  </Card>
+</CardGroup>

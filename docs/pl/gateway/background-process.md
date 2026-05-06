@@ -1,19 +1,17 @@
 ---
 read_when:
-    - Dodawanie lub modyfikowanie zachowania wykonywania poleceń w tle
+    - Dodawanie lub modyfikowanie zachowania wykonywania w tle
     - Debugowanie długotrwałych zadań exec
 summary: Wykonywanie exec w tle i zarządzanie procesami
-title: Narzędzie do wykonywania poleceń w tle i zarządzania procesami
+title: Narzędzie do wykonywania w tle i obsługi procesów
 x-i18n:
-    generated_at: "2026-04-30T09:51:01Z"
+    generated_at: "2026-05-06T09:11:23Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 0df76d7a09184bf87f5568d800bcee683620a76c092f34451d987db4ef1a1eaf
+    source_hash: 7677dcb1cb28b4922a034855550696f839e64cdd349b39d09fbf2c00acf8cec1
     source_path: gateway/background-process.md
     workflow: 16
 ---
-
-# Wykonywanie w tle + narzędzie process
 
 OpenClaw uruchamia polecenia powłoki przez narzędzie `exec` i przechowuje długotrwałe zadania w pamięci. Narzędzie `process` zarządza tymi sesjami w tle.
 
@@ -21,39 +19,39 @@ OpenClaw uruchamia polecenia powłoki przez narzędzie `exec` i przechowuje dłu
 
 Kluczowe parametry:
 
-- `command` (wymagane)
-- `yieldMs` (domyślnie 10000): automatyczne przeniesienie w tło po tym opóźnieniu
-- `background` (bool): natychmiastowe przeniesienie w tło
-- `timeout` (sekundy, domyślnie `tools.exec.timeoutSec`): zabija proces po tym limicie czasu; ustaw `timeout: 0` tylko po to, aby wyłączyć limit czasu procesu exec dla tego wywołania
-- `elevated` (bool): uruchamia poza piaskownicą, jeśli tryb podwyższony jest włączony/dozwolony (domyślnie `gateway`, albo `node`, gdy celem exec jest `node`)
+- `command` (wymagany)
+- `yieldMs` (domyślnie 10000): automatyczne przeniesienie do tła po tym opóźnieniu
+- `background` (bool): natychmiast przenieś do tła
+- `timeout` (sekundy, domyślnie `tools.exec.timeoutSec`): zakończ proces po tym limicie czasu; ustaw `timeout: 0` tylko po to, aby wyłączyć limit czasu procesu exec dla tego wywołania
+- `elevated` (bool): uruchom poza piaskownicą, jeśli tryb podwyższony jest włączony/dozwolony (domyślnie `gateway`, albo `node`, gdy celem exec jest `node`)
 - Potrzebujesz prawdziwego TTY? Ustaw `pty: true`.
 - `workdir`, `env`
 
 Zachowanie:
 
-- Uruchomienia pierwszoplanowe zwracają wynik bezpośrednio.
-- Po przeniesieniu w tło (jawnie lub przez limit czasu) narzędzie zwraca `status: "running"` + `sessionId` oraz krótki ogon wyjścia.
-- Uruchomienia w tle i z `yieldMs` dziedziczą `tools.exec.timeoutSec`, chyba że wywołanie podaje jawny `timeout`.
-- Wyjście jest przechowywane w pamięci, dopóki sesja nie zostanie odpytywana albo wyczyszczona.
+- Uruchomienia na pierwszym planie zwracają wynik bezpośrednio.
+- Po przeniesieniu do tła (jawnie lub po przekroczeniu czasu) narzędzie zwraca `status: "running"` + `sessionId` oraz krótki końcowy fragment wyniku.
+- Uruchomienia w tle i z `yieldMs` dziedziczą `tools.exec.timeoutSec`, chyba że wywołanie poda jawny `timeout`.
+- Wynik jest przechowywany w pamięci do momentu odpytania lub wyczyszczenia sesji.
 - Jeśli narzędzie `process` jest niedozwolone, `exec` działa synchronicznie i ignoruje `yieldMs`/`background`.
-- Uruchomione polecenia exec otrzymują `OPENCLAW_SHELL=exec` na potrzeby reguł powłoki/profilu świadomych kontekstu.
-- Dla długotrwałej pracy, która zaczyna się teraz, uruchom ją raz i polegaj na automatycznym
-  wybudzeniu po zakończeniu, gdy jest włączone i polecenie emituje wyjście albo kończy się niepowodzeniem.
-- Jeśli automatyczne wybudzenie po zakończeniu jest niedostępne albo potrzebujesz potwierdzenia
-  cichego sukcesu dla polecenia, które zakończyło się poprawnie bez wyjścia, użyj `process`,
-  aby potwierdzić zakończenie.
-- Nie emuluj przypomnień ani opóźnionych kontynuacji za pomocą pętli `sleep` ani powtarzanego
-  odpytywania; używaj cron do przyszłej pracy.
+- Uruchomione polecenia exec otrzymują `OPENCLAW_SHELL=exec` dla reguł powłoki/profilu uwzględniających kontekst.
+- W przypadku długotrwałej pracy, która zaczyna się teraz, uruchom ją raz i polegaj na automatycznym
+  wybudzeniu po ukończeniu, gdy jest włączone i polecenie generuje wynik lub kończy się błędem.
+- Jeśli automatyczne wybudzenie po ukończeniu jest niedostępne albo potrzebujesz
+  potwierdzenia cichego sukcesu dla polecenia, które zakończyło się poprawnie bez wyniku, użyj `process`,
+  aby potwierdzić ukończenie.
+- Nie emuluj przypomnień ani opóźnionych działań następczych za pomocą pętli `sleep` lub powtarzanego
+  odpytywania; użyj cron do przyszłej pracy.
 
 ## Mostkowanie procesów potomnych
 
-Podczas uruchamiania długotrwałych procesów potomnych poza narzędziami exec/process (na przykład ponowne uruchomienia CLI albo pomocniki Gateway), dołącz pomocnik mostka procesów potomnych, aby sygnały zakończenia były przekazywane dalej, a listenery odłączane przy wyjściu/błędzie. Zapobiega to osieroconym procesom w systemd i utrzymuje spójne zachowanie zamykania na różnych platformach.
+Podczas uruchamiania długotrwałych procesów potomnych poza narzędziami exec/process (na przykład ponownych uruchomień CLI lub pomocników Gateway), dołącz pomocnik mostka procesu potomnego, aby sygnały zakończenia były przekazywane, a nasłuchiwacze odłączani przy wyjściu/błędzie. Zapobiega to osieroconym procesom w systemd i utrzymuje spójne zachowanie zamykania na różnych platformach.
 
 Nadpisania środowiska:
 
-- `PI_BASH_YIELD_MS`: domyślne opóźnienie yield (ms)
-- `PI_BASH_MAX_OUTPUT_CHARS`: limit wyjścia w pamięci (znaki)
-- `OPENCLAW_BASH_PENDING_MAX_OUTPUT_CHARS`: limit oczekującego stdout/stderr na strumień (znaki)
+- `PI_BASH_YIELD_MS`: domyślne oczekiwanie (ms)
+- `PI_BASH_MAX_OUTPUT_CHARS`: limit wyniku w pamięci (znaki)
+- `OPENCLAW_BASH_PENDING_MAX_OUTPUT_CHARS`: limit oczekujących stdout/stderr na strumień (znaki)
 - `PI_BASH_JOB_TTL_MS`: TTL dla zakończonych sesji (ms, ograniczone do 1m–3h)
 
 Konfiguracja (preferowana):
@@ -61,39 +59,39 @@ Konfiguracja (preferowana):
 - `tools.exec.backgroundMs` (domyślnie 10000)
 - `tools.exec.timeoutSec` (domyślnie 1800)
 - `tools.exec.cleanupMs` (domyślnie 1800000)
-- `tools.exec.notifyOnExit` (domyślnie true): kolejkowanie zdarzenia systemowego + żądanie Heartbeat, gdy exec przeniesiony w tło kończy działanie.
-- `tools.exec.notifyOnExitEmptySuccess` (domyślnie false): gdy true, kolejkuje także zdarzenia zakończenia dla pomyślnych uruchomień w tle, które nie wygenerowały wyjścia.
+- `tools.exec.notifyOnExit` (domyślnie true): dodaj zdarzenie systemowe do kolejki + zażądaj Heartbeat, gdy exec przeniesiony do tła zakończy działanie.
+- `tools.exec.notifyOnExitEmptySuccess` (domyślnie false): gdy true, dodawaj także zdarzenia ukończenia dla udanych uruchomień w tle, które nie wygenerowały wyniku.
 
 ## Narzędzie process
 
 Akcje:
 
 - `list`: uruchomione + zakończone sesje
-- `poll`: pobiera nowe wyjście dla sesji (raportuje też status zakończenia)
-- `log`: odczytuje zagregowane wyjście (obsługuje `offset` + `limit`)
-- `write`: wysyła stdin (`data`, opcjonalnie `eof`)
-- `send-keys`: wysyła jawne tokeny klawiszy albo bajty do sesji opartej na PTY
-- `submit`: wysyła Enter / powrót karetki do sesji opartej na PTY
-- `paste`: wysyła tekst literalny, opcjonalnie opakowany w tryb wklejania z nawiasami
-- `kill`: kończy sesję w tle
-- `clear`: usuwa zakończoną sesję z pamięci
-- `remove`: zabija, jeśli działa, w przeciwnym razie czyści, jeśli jest zakończona
+- `poll`: pobierz nowy wynik dla sesji (raportuje też status zakończenia)
+- `log`: odczytaj zagregowany wynik (obsługuje `offset` + `limit`)
+- `write`: wyślij stdin (`data`, opcjonalne `eof`)
+- `send-keys`: wyślij jawne tokeny klawiszy lub bajty do sesji opartej na PTY
+- `submit`: wyślij Enter / powrót karetki do sesji opartej na PTY
+- `paste`: wyślij dosłowny tekst, opcjonalnie opakowany w tryb bracketed paste
+- `kill`: zakończ sesję w tle
+- `clear`: usuń zakończoną sesję z pamięci
+- `remove`: zakończ, jeśli działa, w przeciwnym razie wyczyść, jeśli zakończona
 
 Uwagi:
 
-- Tylko sesje przeniesione w tło są listowane/utrwalane w pamięci.
+- Tylko sesje przeniesione do tła są wymieniane/utrwalane w pamięci.
 - Sesje są tracone po restarcie procesu (brak trwałości na dysku).
-- Logi sesji są zapisywane w historii czatu tylko wtedy, gdy uruchomisz `process poll/log`, a wynik narzędzia zostanie zapisany.
-- `process` jest zakresowane per agent; widzi tylko sesje uruchomione przez tego agenta.
-- Używaj `poll` / `log` do statusu, logów, potwierdzenia cichego sukcesu albo
-  potwierdzenia zakończenia, gdy automatyczne wybudzenie po zakończeniu jest niedostępne.
-- Używaj `write` / `send-keys` / `submit` / `paste` / `kill`, gdy potrzebujesz wejścia
-  albo interwencji.
-- `process list` zawiera wyprowadzoną wartość `name` (czasownik polecenia + cel) do szybkiego przeglądania.
-- `process log` używa opartego na liniach `offset`/`limit`.
-- Gdy pominięto zarówno `offset`, jak i `limit`, zwraca ostatnie 200 linii i dołącza wskazówkę stronicowania.
+- Logi sesji są zapisywane w historii czatu tylko wtedy, gdy uruchomisz `process poll/log`, a wynik narzędzia zostanie zarejestrowany.
+- `process` ma zakres na agenta; widzi tylko sesje uruchomione przez tego agenta.
+- Użyj `poll` / `log` do statusu, logów, potwierdzenia cichego sukcesu lub
+  potwierdzenia ukończenia, gdy automatyczne wybudzenie po ukończeniu jest niedostępne.
+- Użyj `write` / `send-keys` / `submit` / `paste` / `kill`, gdy potrzebujesz danych wejściowych
+  lub interwencji.
+- `process list` zawiera wyprowadzoną `name` (czasownik polecenia + cel) do szybkiego przeglądania.
+- `process log` używa `offset`/`limit` opartych na liniach.
+- Gdy pominięto zarówno `offset`, jak i `limit`, zwraca ostatnie 200 linii i zawiera wskazówkę stronicowania.
 - Gdy podano `offset`, a pominięto `limit`, zwraca od `offset` do końca (bez ograniczenia do 200).
-- Odpytywanie służy do statusu na żądanie, nie do planowania pętli oczekiwania. Jeśli praca ma
+- Odpytywanie służy do statusu na żądanie, a nie do planowania pętli oczekiwania. Jeśli praca ma
   wydarzyć się później, użyj zamiast tego cron.
 
 ## Przykłady
@@ -132,7 +130,7 @@ Prześlij bieżącą linię:
 { "tool": "process", "action": "submit", "sessionId": "<id>" }
 ```
 
-Wklej tekst literalny:
+Wklej dosłowny tekst:
 
 ```json
 { "tool": "process", "action": "paste", "sessionId": "<id>", "text": "line1\nline2\n" }
@@ -140,5 +138,5 @@ Wklej tekst literalny:
 
 ## Powiązane
 
-- [Narzędzie exec](/pl/tools/exec)
-- [Zatwierdzenia exec](/pl/tools/exec-approvals)
+- [Narzędzie Exec](/pl/tools/exec)
+- [Zatwierdzenia Exec](/pl/tools/exec-approvals)

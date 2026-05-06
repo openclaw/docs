@@ -1,58 +1,52 @@
 ---
 read_when:
     - Pakowanie OpenClaw.app
-    - Debugowanie usługi launchd gateway na macOS
-    - Instalowanie CLI gateway dla macOS
-summary: Runtime Gateway na macOS (zewnętrzna usługa launchd)
+    - Debugowanie usługi launchd dla Gateway w systemie macOS
+    - Instalowanie CLI Gateway dla macOS
+summary: Środowisko uruchomieniowe Gateway w systemie macOS (zewnętrzna usługa launchd)
 title: Gateway na macOS
 x-i18n:
-    generated_at: "2026-04-24T09:20:44Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:21:15Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: fb98905712504fdf5085ec1c00c9e3f911e4005cd14b1472efdb7a5ec7189b5c
+    source_hash: 3f5dcc73671140d7599ffefceeb98ac7ce34da1f944c1e7c70bc9e5810e6ca66
     source_path: platforms/mac/bundled-gateway.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw.app nie dołącza już Node/Bun ani runtime Gateway. Aplikacja macOS
-oczekuje **zewnętrznej** instalacji CLI `openclaw`, nie uruchamia Gateway jako
-procesu potomnego i zarządza usługą launchd per użytkownik, aby utrzymać Gateway
-w działaniu (albo dołącza do istniejącego lokalnego Gateway, jeśli taki już działa).
+OpenClaw.app nie zawiera już w pakiecie Node/Bun ani środowiska uruchomieniowego Gateway. Aplikacja na macOS oczekuje **zewnętrznej** instalacji CLI `openclaw`, nie uruchamia Gateway jako procesu potomnego i zarządza usługą launchd dla użytkownika, aby utrzymywać działanie Gateway (albo podłącza się do istniejącego lokalnego Gateway, jeśli taki już działa).
 
 ## Zainstaluj CLI (wymagane dla trybu lokalnego)
 
-Node 24 jest domyślnym runtime na Mac. Node 22 LTS, obecnie `22.14+`, nadal działa dla zgodności. Następnie zainstaluj `openclaw` globalnie:
+Node 24 jest domyślnym środowiskiem uruchomieniowym na Macu. Node 22 LTS, obecnie `22.14+`, nadal działa w celu zachowania kompatybilności. Następnie zainstaluj globalnie `openclaw`:
 
 ```bash
 npm install -g openclaw@<version>
 ```
 
-Przycisk **Install CLI** w aplikacji macOS uruchamia ten sam globalny przepływ instalacji, którego aplikacja
-używa wewnętrznie: najpierw preferuje npm, potem pnpm, a następnie bun, jeśli jest to jedyny
-wykryty menedżer pakietów. Node pozostaje zalecanym runtime Gateway.
+Przycisk **Zainstaluj CLI** w aplikacji na macOS uruchamia ten sam globalny przepływ instalacji, którego aplikacja używa wewnętrznie: najpierw preferuje npm, potem pnpm, a następnie bun, jeśli jest to jedyny wykryty menedżer pakietów. Node pozostaje zalecanym środowiskiem uruchomieniowym Gateway.
 
 ## Launchd (Gateway jako LaunchAgent)
 
 Etykieta:
 
-- `ai.openclaw.gateway` (albo `ai.openclaw.<profile>`; starsze `com.openclaw.*` mogą pozostać)
+- `ai.openclaw.gateway` (lub `ai.openclaw.<profile>`; starsze `com.openclaw.*` mogą pozostać)
 
-Lokalizacja pliku plist (per użytkownik):
+Lokalizacja pliku plist (dla użytkownika):
 
 - `~/Library/LaunchAgents/ai.openclaw.gateway.plist`
-  (albo `~/Library/LaunchAgents/ai.openclaw.<profile>.plist`)
+  (lub `~/Library/LaunchAgents/ai.openclaw.<profile>.plist`)
 
 Menedżer:
 
-- Aplikacja macOS zarządza instalacją/aktualizacją LaunchAgent w trybie lokalnym.
+- Aplikacja na macOS odpowiada za instalację/aktualizację LaunchAgent w trybie lokalnym.
 - CLI także może go zainstalować: `openclaw gateway install`.
 
 Zachowanie:
 
 - „OpenClaw Active” włącza/wyłącza LaunchAgent.
-- Zamknięcie aplikacji **nie** zatrzymuje gateway (launchd utrzymuje go przy życiu).
-- Jeśli Gateway już działa na skonfigurowanym porcie, aplikacja dołącza do
-  niego zamiast uruchamiać nowy.
+- Zamknięcie aplikacji **nie** zatrzymuje Gateway (launchd utrzymuje go przy życiu).
+- Jeśli Gateway już działa na skonfigurowanym porcie, aplikacja podłącza się do niego zamiast uruchamiać nowy.
 
 Logowanie:
 
@@ -60,10 +54,9 @@ Logowanie:
 
 ## Zgodność wersji
 
-Aplikacja macOS sprawdza wersję gateway względem własnej wersji. Jeśli są
-niezgodne, zaktualizuj globalne CLI tak, aby odpowiadało wersji aplikacji.
+Aplikacja na macOS sprawdza wersję Gateway względem swojej własnej wersji. Jeśli są niezgodne, zaktualizuj globalny CLI, aby odpowiadał wersji aplikacji.
 
-## Smoke check
+## Test smoke
 
 ```bash
 openclaw --version
@@ -81,5 +74,5 @@ openclaw gateway call health --url ws://127.0.0.1:18999 --timeout 3000
 
 ## Powiązane
 
-- [Aplikacja macOS](/pl/platforms/macos)
-- [Gateway runbook](/pl/gateway)
+- [Aplikacja na macOS](/pl/platforms/macos)
+- [Runbook Gateway](/pl/gateway)

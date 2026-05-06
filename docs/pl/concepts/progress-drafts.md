@@ -1,23 +1,27 @@
 ---
 read_when:
-    - Konfigurowanie widocznych aktualizacji postępu dla długo trwających tur czatu
+    - Konfigurowanie widocznych aktualizacji postępu dla długotrwałych tur czatu
     - Wybór między trybami strumieniowania częściowego, blokowego i postępu
-    - Wyjaśnienie, jak OpenClaw aktualizuje jedną wiadomość w kanale podczas trwania pracy
-    - Rozwiązywanie problemów z roboczymi wersjami postępu, samodzielnymi komunikatami o postępie lub awaryjną finalizacją
-summary: 'Wersje robocze postępu: jeden widoczny komunikat o trwającej pracy, aktualizowany podczas działania agenta'
-title: Szkice postępu
+    - Wyjaśnienie, jak OpenClaw aktualizuje jedną wiadomość w kanale podczas wykonywania pracy
+    - Rozwiązywanie problemów z wersjami roboczymi postępu, samodzielnymi komunikatami o postępie lub mechanizmem awaryjnym finalizacji
+summary: 'Szkice postępu: jeden widoczny komunikat o pracy w toku, aktualizowany podczas działania agenta'
+title: Szkice postępów
 x-i18n:
-    generated_at: "2026-05-04T07:03:57Z"
+    generated_at: "2026-05-06T09:09:36Z"
     model: gpt-5.5
     provider: openai
-    source_hash: f78c07866cd7f613012a80a40413e5866c1dd2edd477088f9fc141347f5f3788
+    source_hash: c4b55c016dd7c8f719237d0cf2481e8259c99ac6dc9320c637eaea23c097e910
     source_path: concepts/progress-drafts.md
     workflow: 16
 ---
 
-Wersje robocze postępu sprawiają, że długotrwałe tury agenta wydają się żywe na czacie, bez zamieniania rozmowy w stos tymczasowych odpowiedzi statusowych.
+Szkice postępu sprawiają, że długotrwałe tury agenta wydają się żywe na czacie, bez zamieniania
+rozmowy w stos tymczasowych odpowiedzi ze statusem.
 
-Gdy wersje robocze postępu są włączone, OpenClaw tworzy jedną widoczną wiadomość w toku dopiero wtedy, gdy tura udowodni, że wykonuje rzeczywistą pracę, aktualizuje ją, gdy agent czyta, planuje, wywołuje narzędzia lub czeka na zatwierdzenie, a następnie przekształca tę wersję roboczą w końcową odpowiedź, gdy kanał może zrobić to bezpiecznie.
+Gdy szkice postępu są włączone, OpenClaw tworzy jedną widoczną wiadomość roboczą
+dopiero wtedy, gdy tura wykaże, że wykonuje rzeczywistą pracę, aktualizuje ją, gdy
+agent czyta, planuje, wywołuje narzędzia lub czeka na zatwierdzenie, a następnie zamienia ten szkic
+w odpowiedź końcową, gdy kanał może zrobić to bezpiecznie.
 
 ```text
 Shelling...
@@ -26,11 +30,12 @@ Shelling...
 🛠️ Exec: run tests
 ```
 
-Używaj wersji roboczych postępu, gdy chcesz mieć jedną uporządkowaną wiadomość statusową podczas pracy intensywnie korzystającej z narzędzi oraz końcową odpowiedź po zakończeniu tury.
+Używaj szkiców postępu, gdy chcesz mieć jedną uporządkowaną wiadomość statusową podczas pracy intensywnie korzystającej z narzędzi
+oraz odpowiedź końcową po zakończeniu tury.
 
 ## Szybki start
 
-Włącz wersje robocze postępu dla każdego kanału za pomocą `streaming.mode: "progress"`:
+Włącz szkice postępu dla kanału za pomocą `streaming.mode: "progress"`:
 
 ```json5
 {
@@ -44,42 +49,58 @@ Włącz wersje robocze postępu dla każdego kanału za pomocą `streaming.mode:
 }
 ```
 
-To zwykle wystarcza. OpenClaw wybierze automatyczną jednoelementową etykietę, poczeka, aż praca potrwa co najmniej pięć sekund lub wyemituje drugie zdarzenie pracy, doda zwarte wiersze postępu, gdy trwa użyteczna praca, i wyciszy zduplikowane samodzielne komunikaty postępu dla tej tury.
+To zwykle wystarcza. OpenClaw wybierze automatyczną jednowyrazową etykietę, poczeka,
+aż praca potrwa co najmniej pięć sekund albo wyemituje drugie zdarzenie pracy, doda zwięzłe
+wiersze postępu, gdy będzie wykonywana użyteczna praca, i wyciszy zduplikowane samodzielne
+komunikaty postępu dla tej tury.
 
 ## Co widzą użytkownicy
 
-Wersja robocza postępu ma dwie części:
+Szkic postępu ma dwie części:
 
 | Część          | Cel                                                                         |
 | -------------- | --------------------------------------------------------------------------- |
 | Etykieta       | Krótki tytuł, taki jak `Thinking...` lub `Shelling...`.                     |
-| Wiersze postępu | Zwarte aktualizacje uruchomienia używające tych samych etykiet narzędzi i ikon co szczegółowe wyjście. |
+| Wiersze postępu | Zwięzłe aktualizacje przebiegu z tymi samymi etykietami narzędzi i ikonami co szczegółowe wyjście. |
 
-Etykieta pojawia się po rozpoczęciu przez agenta znaczącej pracy i gdy pozostaje zajęty przez pięć sekund albo wyemituje drugie zdarzenie pracy. Odpowiedzi składające się wyłącznie ze zwykłego tekstu nie pokazują wersji roboczej postępu. Wiersze postępu są dodawane tylko wtedy, gdy agent emituje użyteczne aktualizacje pracy, na przykład `🛠️ Exec`, `🔎 Web Search` lub `✍️ Write: to /tmp/file`. Domyślnie używają tego samego zwartego trybu objaśnień co `/verbose`; ustaw `agents.defaults.toolProgressDetail: "raw"` podczas debugowania, gdy chcesz również dołączać surowe polecenia/szczegóły.
-Końcowa odpowiedź zastępuje wersję roboczą, gdy jest to możliwe; w przeciwnym razie OpenClaw wysyła końcową odpowiedź normalnie i czyści albo przestaje aktualizować wersję roboczą zgodnie z transportem kanału.
+Etykieta pojawia się po rozpoczęciu przez agenta znaczącej pracy i gdy pozostaje on zajęty
+przez pięć sekund albo emituje drugie zdarzenie pracy. Odpowiedzi zawierające wyłącznie zwykły tekst nie
+pokazują szkicu postępu. Wiersze postępu są dodawane tylko wtedy, gdy agent emituje użyteczne
+aktualizacje pracy, na przykład `🛠️ Exec`, `🔎 Web Search` lub `✍️ Write: to /tmp/file`.
+Domyślnie używają tego samego zwięzłego trybu objaśnień co `/verbose`; ustaw
+`agents.defaults.toolProgressDetail: "raw"` podczas debugowania, gdy chcesz też dołączać surowe
+polecenia/szczegóły.
+Odpowiedź końcowa zastępuje szkic, gdy to możliwe; w przeciwnym razie
+OpenClaw wysyła odpowiedź końcową normalnie i czyści albo przestaje aktualizować
+szkic zgodnie z transportem kanału.
 
-## Wybierz tryb
+## Wybór trybu
 
-`channels.<channel>.streaming.mode` steruje widocznym zachowaniem w toku:
+`channels.<channel>.streaming.mode` kontroluje widoczne zachowanie w toku:
 
-| Tryb       | Najlepsze dla                    | Co pojawia się na czacie                         |
-| ---------- | -------------------------------- | ------------------------------------------------ |
-| `off`      | Ciche kanały                     | Tylko końcowa odpowiedź.                         |
-| `partial`  | Obserwowanie pojawiania się tekstu odpowiedzi | Jedna wersja robocza edytowana najnowszym tekstem odpowiedzi. |
-| `block`    | Większe fragmenty podglądu odpowiedzi | Jeden podgląd aktualizowany lub dołączany w większych fragmentach. |
-| `progress` | Tury intensywnie korzystające z narzędzi lub długotrwałe | Jedna wersja robocza statusu, a potem końcowa odpowiedź. |
+| Tryb       | Najlepszy do                       | Co pojawia się na czacie                          |
+| ---------- | ---------------------------------- | ------------------------------------------------- |
+| `off`      | Cichych kanałów                    | Tylko odpowiedź końcowa.                          |
+| `partial`  | Obserwowania pojawiania się tekstu odpowiedzi | Jeden szkic edytowany najnowszym tekstem odpowiedzi. |
+| `block`    | Większych fragmentów podglądu odpowiedzi | Jeden podgląd aktualizowany lub dołączany w większych fragmentach. |
+| `progress` | Tur intensywnie korzystających z narzędzi lub długotrwałych | Jeden szkic statusu, potem odpowiedź końcowa. |
 
-Wybierz `progress`, gdy użytkownikom bardziej zależy na tym, „co się dzieje”, niż na obserwowaniu strumieniowania tekstu odpowiedzi token po tokenie.
+Wybierz `progress`, gdy użytkownikom bardziej zależy na tym, „co się dzieje”, niż na oglądaniu
+strumieniowania tekstu odpowiedzi token po tokenie.
 
 Wybierz `partial`, gdy sama odpowiedź jest sygnałem postępu.
 
-Wybierz `block`, gdy chcesz aktualizacji podglądu wersji roboczej w większych fragmentach tekstu. W Discord i Telegram `streaming.mode: "block"` nadal oznacza strumieniowanie podglądu, a nie normalne dostarczanie blokowe. Użyj `streaming.block.enabled` lub starszego `blockStreaming`, gdy chcesz normalnych odpowiedzi blokowych.
+Wybierz `block`, gdy chcesz otrzymywać aktualizacje podglądu szkicu w większych fragmentach tekstu. W
+Discord i Telegram `streaming.mode: "block"` nadal oznacza strumieniowanie podglądu, a nie
+normalne dostarczanie bloków. Użyj `streaming.block.enabled` lub starszego
+`blockStreaming`, gdy chcesz normalnych odpowiedzi blokowych.
 
-## Skonfiguruj etykiety
+## Konfiguracja etykiet
 
-Etykiety postępu znajdują się w `channels.<channel>.streaming.progress`.
+Etykiety postępu znajdują się pod `channels.<channel>.streaming.progress`.
 
-Domyślna etykieta to `auto`, która wybiera z wbudowanej w OpenClaw puli jednoelementowych etykiet z wielokropkiem:
+Domyślna etykieta to `auto`, która wybiera z wbudowanej w OpenClaw
+puli jednowyrazowych etykiet z wielokropkiem:
 
 ```text
 Thinking...
@@ -139,7 +160,7 @@ Użyj własnej automatycznej puli etykiet:
 }
 ```
 
-Ukryj etykietę i pokaż tylko wiersze postępu:
+Ukryj etykietę i pokazuj tylko wiersze postępu:
 
 ```json5
 {
@@ -156,11 +177,13 @@ Ukryj etykietę i pokaż tylko wiersze postępu:
 }
 ```
 
-## Kontroluj wiersze postępu
+## Kontrolowanie wierszy postępu
 
-Wiersze postępu są domyślnie włączone w trybie postępu. Pochodzą z rzeczywistych zdarzeń uruchomienia: uruchomień narzędzi, aktualizacji elementów, planów zadań, zatwierdzeń, wyjścia poleceń, podsumowań poprawek i podobnej aktywności agenta.
+Wiersze postępu są domyślnie włączone w trybie postępu. Pochodzą z rzeczywistych zdarzeń przebiegu:
+uruchomień narzędzi, aktualizacji elementów, planów zadań, zatwierdzeń, wyjścia poleceń, podsumowań poprawek
+i podobnej aktywności agenta.
 
-OpenClaw używa tego samego formatera dla wersji roboczych postępu i `/verbose`:
+OpenClaw używa tego samego formatera dla szkiców postępu i `/verbose`:
 
 ```json5
 {
@@ -172,7 +195,10 @@ OpenClaw używa tego samego formatera dla wersji roboczych postępu i `/verbose`
 }
 ```
 
-`"explain"` jest wartością domyślną i utrzymuje stabilność wersji roboczych dzięki zwięzłym etykietom, takim jak `🛠️ Exec: check JS syntax for /tmp/app.js`. `"raw"` dołącza bazowe polecenie/szczegół, gdy jest dostępny, co jest przydatne podczas debugowania, ale bardziej hałaśliwe na czacie.
+`"explain"` jest wartością domyślną i utrzymuje stabilność szkiców za pomocą zwięzłych etykiet, takich jak
+`🛠️ Exec: check JS syntax for /tmp/app.js`. `"raw"` dołącza bazowe
+polecenie/szczegół, gdy jest dostępny, co jest przydatne podczas debugowania, ale powoduje więcej szumu na
+czacie.
 
 Na przykład to samo polecenie wygląda inaczej w zależności od trybu szczegółowości:
 
@@ -181,7 +207,7 @@ Na przykład to samo polecenie wygląda inaczej w zależności od trybu szczegó
 | `explain` | `🛠️ Exec: check JS syntax for /tmp/app.js`                           |
 | `raw`     | `🛠️ Exec: check JS syntax for /tmp/app.js, node --check /tmp/app.js` |
 
-Ogranicz liczbę wierszy pozostających widocznymi:
+Ogranicz liczbę widocznych wierszy:
 
 ```json5
 {
@@ -198,11 +224,14 @@ Ogranicz liczbę wierszy pozostających widocznymi:
 }
 ```
 
-Wiersze postępu są automatycznie kompaktowane, aby ograniczyć przełamywanie układu dymka czatu podczas edytowania wersji roboczej.
+Wiersze postępu są automatycznie kompaktowane, aby zmniejszyć przesuwanie dymku czatu podczas edytowania szkicu.
 
-OpenClaw domyślnie skraca długie wiersze postępu, aby powtarzane edycje wersji roboczej nie zawijały się inaczej przy każdej aktualizacji. Prefiks pozostaje czytelny, a długie szczegóły, takie jak ścieżki lub surowe polecenia, są skracane wielokropkiem.
+OpenClaw domyślnie obcina długie wiersze postępu, aby powtarzane edycje szkicu nie
+zawijały się inaczej przy każdej aktualizacji. Prefiks pozostaje czytelny, a długie szczegóły,
+takie jak ścieżki lub surowe polecenia, są skracane wielokropkiem.
 
-Slack może renderować wiersze postępu jako strukturalne pola Block Kit zamiast pojedynczej treści tekstowej:
+Slack może renderować wiersze postępu jako strukturalne pola Block Kit zamiast
+pojedynczej treści tekstowej:
 
 ```json5
 {
@@ -219,9 +248,10 @@ Slack może renderować wiersze postępu jako strukturalne pola Block Kit zamias
 }
 ```
 
-Renderowanie wzbogacone zachowuje ten sam zwykłotekstowy fallback, dzięki czemu kanały i klienci, którzy nie obsługują bogatszej formy, nadal mogą pokazać zwarty tekst postępu.
+Bogate renderowanie zachowuje ten sam zwykłotekstowy wariant awaryjny, dzięki czemu kanały i klienci, którzy
+nie obsługują bogatszego kształtu, nadal mogą pokazać zwięzły tekst postępu.
 
-Zachowaj pojedynczą wersję roboczą postępu, ale ukryj wiersze narzędzi i zadań:
+Zachowaj pojedynczy szkic postępu, ale ukryj wiersze narzędzi i zadań:
 
 ```json5
 {
@@ -238,54 +268,74 @@ Zachowaj pojedynczą wersję roboczą postępu, ale ukryj wiersze narzędzi i za
 }
 ```
 
-Przy `toolProgress: false` OpenClaw nadal wycisza starsze samodzielne wiadomości postępu narzędzi dla tej tury. Kanał pozostaje wizualnie cichy aż do końcowej odpowiedzi, z wyjątkiem etykiety, jeśli została skonfigurowana.
+Przy `toolProgress: false` OpenClaw nadal wycisza starsze samodzielne
+wiadomości postępu narzędzi dla tej tury. Kanał pozostaje wizualnie cichy do
+odpowiedzi końcowej, z wyjątkiem etykiety, jeśli została skonfigurowana.
 
 ## Zachowanie kanałów
 
-Każdy kanał używa najczystszego transportu, który obsługuje:
+Każdy kanał używa najczystszego obsługiwanego transportu:
 
-| Kanał           | Transport postępu                    | Uwagi                                                                 |
-| --------------- | ------------------------------------ | --------------------------------------------------------------------- |
-| Discord         | Wysyła jedną wiadomość, a następnie ją edytuje. | Końcowy tekst jest edytowany w miejscu, gdy mieści się w jednej bezpiecznej wiadomości podglądu. |
-| Matrix          | Wysyła jedno zdarzenie, a następnie je edytuje. | Konfiguracja strumieniowania na poziomie konta steruje wersjami roboczymi na poziomie konta. |
-| Microsoft Teams | Natywny strumień Teams w czatach osobistych. | `streaming.mode: "block"` mapuje się na dostarczanie blokowe Teams.   |
-| Slack           | Natywny strumień lub edytowalny post wersji roboczej. | Dostępność wątku wpływa na to, czy można użyć natywnego strumieniowania. |
-| Telegram        | Wysyła jedną wiadomość, a następnie ją edytuje. | Starsze widoczne wersje robocze mogą zostać zastąpione, aby końcowe znaczniki czasu pozostały użyteczne. |
-| Mattermost      | Edytowalny post wersji roboczej.     | Aktywność narzędzi jest składana do tego samego posta w stylu wersji roboczej. |
+| Kanał           | Transport postępu                    | Uwagi                                                                |
+| --------------- | ------------------------------------ | -------------------------------------------------------------------- |
+| Discord         | Wysyła jedną wiadomość, potem ją edytuje. | Tekst końcowy jest edytowany w miejscu, gdy mieści się w jednej bezpiecznej wiadomości podglądu. |
+| Matrix          | Wysyła jedno zdarzenie, potem je edytuje. | Konfiguracja strumieniowania na poziomie konta kontroluje szkice na poziomie konta. |
+| Microsoft Teams | Natywny strumień Teams w czatach osobistych. | `streaming.mode: "block"` mapuje się na dostarczanie bloków Teams. |
+| Slack           | Natywny strumień lub edytowalny wpis szkicu. | Dostępność wątku wpływa na to, czy można użyć natywnego strumieniowania. |
+| Telegram        | Wysyła jedną wiadomość, potem ją edytuje. | Starsze widoczne szkice mogą zostać zastąpione, aby znaczniki czasu odpowiedzi końcowych pozostały użyteczne. |
+| Mattermost      | Edytowalny wpis szkicu.              | Aktywność narzędzi jest składana do tego samego wpisu w stylu szkicu. |
 
-Kanały bez bezpiecznej obsługi edycji zwykle wracają do wskaźników pisania lub dostarczania tylko końcowej odpowiedzi.
+Kanały bez bezpiecznej obsługi edycji zwykle wracają do wskaźników pisania lub
+dostarczania tylko odpowiedzi końcowej.
 
 ## Finalizacja
 
-Gdy końcowa odpowiedź jest gotowa, OpenClaw próbuje utrzymać czat w czystości:
+Gdy odpowiedź końcowa jest gotowa, OpenClaw próbuje utrzymać porządek na czacie:
 
-- Jeśli wersja robocza może bezpiecznie stać się końcową odpowiedzią, OpenClaw edytuje ją w miejscu.
-- Jeśli kanał używa natywnego strumieniowania postępu, OpenClaw finalizuje ten strumień, gdy natywny transport zaakceptuje końcowy tekst.
-- Jeśli końcowa odpowiedź zawiera multimedia, monit zatwierdzenia, jawny cel odpowiedzi, zbyt wiele fragmentów albo nieudaną edycję/wysłanie, OpenClaw wysyła końcową odpowiedź przez normalną ścieżkę dostarczania kanału.
+- Jeśli szkic może bezpiecznie stać się odpowiedzią końcową, OpenClaw edytuje go w miejscu.
+- Jeśli kanał używa natywnego strumieniowania postępu, OpenClaw finalizuje ten strumień,
+  gdy natywny transport zaakceptuje tekst końcowy.
+- Jeśli odpowiedź końcowa zawiera multimedia, prośbę o zatwierdzenie, jawny cel odpowiedzi,
+  zbyt wiele fragmentów albo nieudaną edycję/wysyłkę, OpenClaw wysyła odpowiedź końcową przez
+  normalną ścieżkę dostarczania kanału.
 
-Ścieżka awaryjna jest celowa. Lepiej wysłać świeżą końcową odpowiedź, niż utracić tekst, błędnie przypisać odpowiedź do wątku albo nadpisać wersję roboczą ładunkiem, którego kanał nie potrafi bezpiecznie reprezentować.
+Ścieżka awaryjna jest celowa. Lepiej wysłać świeżą odpowiedź końcową niż
+stracić tekst, źle osadzić odpowiedź w wątku albo nadpisać szkic ładunkiem, którego kanał
+nie może bezpiecznie reprezentować.
 
 ## Rozwiązywanie problemów
 
-**Widzę tylko końcową odpowiedź.**
+**Widzę tylko odpowiedź końcową.**
 
-Sprawdź, czy `channels.<channel>.streaming.mode` jest ustawione na `progress` dla konta lub kanału, który obsłużył wiadomość. Niektóre ścieżki grupowe lub odpowiedzi z cytatem mogą wyłączać podglądy wersji roboczych dla tury, gdy kanał nie może bezpiecznie edytować właściwej wiadomości.
+Sprawdź, czy `channels.<channel>.streaming.mode` jest ustawione na `progress` dla
+konta lub kanału, który obsłużył wiadomość. Niektóre ścieżki grupowe lub odpowiedzi cytowanej mogą
+wyłączyć podglądy szkiców dla tury, gdy kanał nie może bezpiecznie edytować właściwej
+wiadomości.
 
 **Widzę etykietę, ale nie widzę wierszy narzędzi.**
 
-Sprawdź `streaming.progress.toolProgress`. Jeśli ma wartość `false`, OpenClaw zachowuje zachowanie pojedynczej wersji roboczej, ale ukrywa wiersze postępu narzędzi i zadań.
+Sprawdź `streaming.progress.toolProgress`. Jeśli ma wartość `false`, OpenClaw zachowuje
+zachowanie pojedynczego szkicu, ale ukrywa wiersze postępu narzędzi i zadań.
 
-**Widzę świeżą wiadomość końcową zamiast edytowanej wersji roboczej.**
+**Widzę nową wiadomość końcową zamiast edytowanego szkicu.**
 
-To awaryjne zachowanie bezpieczeństwa. Może wystąpić dla odpowiedzi z multimediami, długich odpowiedzi, jawnych celów odpowiedzi, starych wersji roboczych Telegram, brakujących celów wątków Slack, usuniętych wiadomości podglądu lub nieudanej finalizacji natywnego strumienia.
+To awaryjne zabezpieczenie. Może wystąpić przy odpowiedziach z multimediami, długich odpowiedziach,
+jawnych celach odpowiedzi, starych szkicach Telegram, brakujących celach wątków Slack,
+usuniętych wiadomościach podglądu lub nieudanej finalizacji natywnego strumienia.
 
 **Nadal widzę samodzielne wiadomości postępu.**
 
-Tryb postępu wycisza domyślne samodzielne wiadomości postępu narzędzi, gdy wersja robocza jest aktywna. Jeśli samodzielne wiadomości nadal się pojawiają, sprawdź, czy tura rzeczywiście używa trybu postępu, a nie `streaming.mode: "off"` ani ścieżki kanału, która nie może utworzyć wersji roboczej dla tej wiadomości.
+Tryb postępu wycisza domyślne samodzielne wiadomości postępu narzędzi, gdy szkic
+jest aktywny. Jeśli samodzielne wiadomości nadal się pojawiają, sprawdź, czy tura rzeczywiście
+używa trybu postępu, a nie `streaming.mode: "off"` albo ścieżki kanału, która
+nie może utworzyć szkicu dla tej wiadomości.
 
 **Teams zachowuje się inaczej niż Discord lub Telegram.**
 
-Microsoft Teams używa natywnego strumienia w czatach osobistych zamiast ogólnego transportu podglądu typu wyślij-i-edytuj. Teams traktuje też `streaming.mode: "block"` jako dostarczanie blokowe Teams, ponieważ nie ma tego samego trybu blokowego podglądu wersji roboczej, którego używają Discord i Telegram.
+Microsoft Teams używa natywnego strumienia w czatach osobistych zamiast ogólnego
+transportu podglądu typu wyślij-i-edytuj. Teams traktuje też `streaming.mode: "block"` jako
+dostarczanie bloków Teams, ponieważ nie ma tego samego trybu podglądu blokowego szkicu,
+którego używają Discord i Telegram.
 
 ## Powiązane
 

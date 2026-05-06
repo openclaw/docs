@@ -1,27 +1,25 @@
 ---
 read_when:
-    - Zrozumienie, co dzieje się podczas pierwszego uruchomienia agenta
+    - Zrozumienie, co dzieje się przy pierwszym uruchomieniu agenta
     - Wyjaśnienie, gdzie znajdują się pliki inicjalizacyjne
     - Debugowanie konfiguracji tożsamości podczas wdrażania
 sidebarTitle: Bootstrapping
-summary: Rytuał inicjowania agenta, który przygotowuje przestrzeń roboczą i pliki tożsamości
+summary: Rytuał inicjalizacji agenta, który zasila obszar roboczy i pliki tożsamości danymi początkowymi
 title: Inicjalizacja agenta
 x-i18n:
-    generated_at: "2026-04-30T10:19:13Z"
+    generated_at: "2026-05-06T09:30:20Z"
     model: gpt-5.5
     provider: openai
-    source_hash: de829f82016ae1e4dcd7714502ca8d11755556fed18b985a7e2bada4149a2d46
+    source_hash: e25f05ca47184068b87f0bf8b7dea1c427f4ed48edde170a74888d586b8a606d
     source_path: start/bootstrapping.md
     workflow: 16
 ---
 
-Inicjalizacja to procedura **pierwszego uruchomienia**, która przygotowuje obszar roboczy agenta i
-zbiera szczegóły tożsamości. Odbywa się po onboardingu, gdy agent uruchamia się
-po raz pierwszy.
+Inicjalizacja to procedura **pierwszego uruchomienia**, która przygotowuje obszar roboczy agenta i zbiera dane tożsamości. Dzieje się po wdrożeniu, gdy agent uruchamia się po raz pierwszy.
 
 ## Co robi inicjalizacja
 
-Przy pierwszym uruchomieniu agenta OpenClaw inicjalizuje obszar roboczy (domyślnie
+Podczas pierwszego uruchomienia agenta OpenClaw inicjalizuje obszar roboczy (domyślnie
 `~/.openclaw/workspace`):
 
 - Dodaje początkowe pliki `AGENTS.md`, `BOOTSTRAP.md`, `IDENTITY.md`, `USER.md`.
@@ -29,28 +27,21 @@ Przy pierwszym uruchomieniu agenta OpenClaw inicjalizuje obszar roboczy (domyśl
 - Zapisuje tożsamość i preferencje w `IDENTITY.md`, `USER.md`, `SOUL.md`.
 - Po zakończeniu usuwa `BOOTSTRAP.md`, aby procedura uruchomiła się tylko raz.
 
-W przypadku uruchomień z osadzonymi/lokalnymi modelami OpenClaw utrzymuje `BOOTSTRAP.md` poza
-uprzywilejowanym kontekstem systemowym. Przy głównym interaktywnym pierwszym uruchomieniu nadal przekazuje
-zawartość pliku w prompcie użytkownika, aby modele, które nie wywołują niezawodnie narzędzia
-`read`, mogły ukończyć procedurę. Jeśli bieżące uruchomienie nie może bezpiecznie uzyskać dostępu do
-obszaru roboczego, agent otrzymuje ograniczoną notatkę inicjalizacyjną zamiast ogólnego powitania.
+W przypadku uruchomień osadzonych/lokalnych modeli OpenClaw utrzymuje `BOOTSTRAP.md` poza uprzywilejowanym kontekstem systemowym. Podczas głównego interaktywnego pierwszego uruchomienia nadal przekazuje zawartość pliku w prompcie użytkownika, aby modele, które nie wywołują niezawodnie narzędzia `read`, mogły ukończyć procedurę. Jeśli bieżące uruchomienie nie może bezpiecznie uzyskać dostępu do obszaru roboczego, agent otrzymuje ograniczoną notatkę inicjalizacyjną zamiast ogólnego powitania.
 
 ## Pomijanie inicjalizacji
 
-Aby pominąć to dla wstępnie przygotowanego obszaru roboczego, uruchom `openclaw onboard --skip-bootstrap`.
+Aby pominąć to w przypadku wstępnie przygotowanego obszaru roboczego, uruchom `openclaw onboard --skip-bootstrap`.
 
-## Gdzie jest uruchamiana
+## Gdzie działa
 
-Inicjalizacja zawsze działa na **hoście Gateway**. Jeśli aplikacja macOS łączy się ze
-zdalnym Gateway, obszar roboczy i pliki inicjalizacji znajdują się na tej zdalnej
-maszynie.
+Inicjalizacja zawsze działa na **hoście Gateway**. Jeśli aplikacja macOS łączy się ze zdalnym Gateway, obszar roboczy i pliki inicjalizacji znajdują się na tej zdalnej maszynie.
 
 <Note>
-Gdy Gateway działa na innej maszynie, edytuj pliki obszaru roboczego na hoście
-Gateway (na przykład `user@gateway-host:~/.openclaw/workspace`).
+Gdy Gateway działa na innej maszynie, edytuj pliki obszaru roboczego na hoście gateway (na przykład `user@gateway-host:~/.openclaw/workspace`).
 </Note>
 
 ## Powiązana dokumentacja
 
-- Onboarding aplikacji macOS: [Onboarding](/pl/start/onboarding)
+- Wdrożenie aplikacji macOS: [Wdrożenie](/pl/start/onboarding)
 - Układ obszaru roboczego: [Obszar roboczy agenta](/pl/concepts/agent-workspace)

@@ -1,21 +1,20 @@
 ---
 read_when:
-    - Chcesz mieć jeden klucz API do najlepszych otwartoźródłowych modeli LLM
-    - Chcesz uruchamiać modele przez API DeepInfra w OpenClaw
-summary: Użyj ujednoliconego API DeepInfra, aby uzyskać dostęp do najpopularniejszych modeli otwartoźródłowych i najbardziej zaawansowanych modeli w OpenClaw
+    - Chcesz mieć jeden klucz API do czołowych otwartoźródłowych modeli LLM
+    - Chcesz uruchamiać modele za pośrednictwem API DeepInfra w OpenClaw
+summary: Użyj ujednoliconego API DeepInfra, aby uzyskać dostęp do najpopularniejszych modeli o otwartym kodzie źródłowym oraz najbardziej zaawansowanych modeli w OpenClaw.
+title: DeepInfra
 x-i18n:
-    generated_at: "2026-04-30T10:12:50Z"
+    generated_at: "2026-05-06T09:26:49Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 22a178e7ac582e094f82f5779a9a963e0bf77b1b19820f74725255b6be0b0593
+    source_hash: 5e68c3f764ac91548c2ced0b650e582f6d315ad7f154d19a00f299a3737494cd
     source_path: providers/deepinfra.md
     workflow: 16
 ---
 
-# DeepInfra
-
-DeepInfra udostępnia **ujednolicone API**, które kieruje żądania do najpopularniejszych modeli open source i modeli frontier za jednym
-endpointem i kluczem API. Jest zgodne z OpenAI, więc większość SDK OpenAI działa po zmianie bazowego URL.
+DeepInfra udostępnia **ujednolicony interfejs API**, który kieruje żądania do najpopularniejszych modeli open source i frontier za pojedynczym
+punktem końcowym i kluczem API. Jest zgodny z OpenAI, więc większość zestawów SDK OpenAI działa po zmianie bazowego adresu URL.
 
 ## Uzyskiwanie klucza API
 
@@ -29,7 +28,7 @@ endpointem i kluczem API. Jest zgodne z OpenAI, więc większość SDK OpenAI dz
 openclaw onboard --deepinfra-api-key <key>
 ```
 
-Lub ustaw zmienną środowiskową:
+Albo ustaw zmienną środowiskową:
 
 ```bash
 export DEEPINFRA_API_KEY="<your-deepinfra-api-key>" # pragma: allowlist secret
@@ -53,17 +52,17 @@ export DEEPINFRA_API_KEY="<your-deepinfra-api-key>" # pragma: allowlist secret
 Dołączony plugin rejestruje wszystkie powierzchnie DeepInfra zgodne z bieżącymi
 kontraktami dostawców OpenClaw:
 
-| Powierzchnia             | Model domyślny                     | Konfiguracja/narzędzie OpenClaw                         |
+| Powierzchnia             | Model domyślny                    | Konfiguracja/narzędzie OpenClaw                         |
 | ------------------------ | ---------------------------------- | -------------------------------------------------------- |
 | Czat / dostawca modelu   | `deepseek-ai/DeepSeek-V3.2`        | `agents.defaults.model`                                  |
 | Generowanie/edycja obrazów | `black-forest-labs/FLUX-1-schnell` | `image_generate`, `agents.defaults.imageGenerationModel` |
 | Rozumienie multimediów   | `moonshotai/Kimi-K2.5` dla obrazów | rozumienie obrazów przychodzących                        |
-| Mowa na tekst            | `openai/whisper-large-v3-turbo`    | transkrypcja audio przychodzącego                        |
+| Mowa na tekst            | `openai/whisper-large-v3-turbo`    | transkrypcja przychodzącego dźwięku                      |
 | Tekst na mowę            | `hexgrad/Kokoro-82M`               | `messages.tts.provider: "deepinfra"`                     |
 | Generowanie wideo        | `Pixverse/Pixverse-T2V`            | `video_generate`, `agents.defaults.videoGenerationModel` |
 | Osadzenia pamięci        | `BAAI/bge-m3`                      | `agents.defaults.memorySearch.provider: "deepinfra"`     |
 
-DeepInfra udostępnia także reranking, klasyfikację, wykrywanie obiektów i inne
+DeepInfra udostępnia także ponowne rankingowanie, klasyfikację, wykrywanie obiektów i inne
 natywne typy modeli. OpenClaw nie ma obecnie pełnoprawnych kontraktów dostawców
 dla tych kategorii, więc ten plugin jeszcze ich nie rejestruje.
 
@@ -72,7 +71,7 @@ dla tych kategorii, więc ten plugin jeszcze ich nie rejestruje.
 OpenClaw dynamicznie wykrywa dostępne modele DeepInfra podczas uruchamiania. Użyj
 `/models deepinfra`, aby zobaczyć pełną listę dostępnych modeli.
 
-Każdego modelu dostępnego na [DeepInfra.com](https://deepinfra.com/) można użyć z prefiksem `deepinfra/`:
+Dowolny model dostępny na [DeepInfra.com](https://deepinfra.com/) może być użyty z prefiksem `deepinfra/`:
 
 ```
 deepinfra/MiniMaxAI/MiniMax-M2.5
@@ -86,5 +85,10 @@ deepinfra/zai-org/GLM-5.1
 
 - Odwołania do modeli mają postać `deepinfra/<provider>/<model>` (np. `deepinfra/Qwen/Qwen3-Max`).
 - Model domyślny: `deepinfra/deepseek-ai/DeepSeek-V3.2`
-- Bazowy URL: `https://api.deepinfra.com/v1/openai`
+- Bazowy adres URL: `https://api.deepinfra.com/v1/openai`
 - Natywne generowanie wideo używa `https://api.deepinfra.com/v1/inference/<model>`.
+
+## Powiązane
+
+- [Dostawcy modeli](/pl/concepts/model-providers)
+- [Wszyscy dostawcy](/pl/providers/index)

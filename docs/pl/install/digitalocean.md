@@ -1,20 +1,24 @@
 ---
 read_when:
     - Konfigurowanie OpenClaw na DigitalOcean
-    - Szukasz prostego płatnego VPS dla OpenClaw
-summary: Hostuj OpenClaw na Droplet DigitalOcean
+    - Szukasz prostego płatnego VPS-a dla OpenClaw
+summary: Hostuj OpenClaw na DigitalOcean Droplet
 title: DigitalOcean
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T09:16:11Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: 0b3d06a38e257f4a8ab88d1f228c659a6cf1a276fe91c8ba7b89a0084658a314
-  source_path: install/digitalocean.md
-  workflow: 15
+    generated_at: "2026-05-06T09:17:55Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 7aa09915d845c9ede27db794cac464490ba038e8e5e0a2ef0f5bfc62ef7e59ff
+    source_path: install/digitalocean.md
+    workflow: 16
 ---
 
-Uruchom trwałe Gateway OpenClaw na Droplet DigitalOcean.
+Uruchom trwały OpenClaw Gateway na Droplecie DigitalOcean (~6 USD/mies. za plan Basic 1 GB).
+
+DigitalOcean to najprostsza płatna ścieżka VPS. Jeśli wolisz tańsze lub darmowe opcje:
+
+- [Hetzner](/pl/install/hetzner) — 3,79 €/mies., więcej rdzeni/RAM za dolara.
+- [Oracle Cloud](/pl/install/oracle) — Always Free ARM (do 4 OCPU, 24 GB RAM), ale rejestracja może być kapryśna i dostępna tylko dla ARM.
 
 ## Wymagania wstępne
 
@@ -27,16 +31,16 @@ Uruchom trwałe Gateway OpenClaw na Droplet DigitalOcean.
 <Steps>
   <Step title="Utwórz Droplet">
     <Warning>
-    Użyj czystego obrazu bazowego (Ubuntu 24.04 LTS). Unikaj zewnętrznych obrazów Marketplace typu 1-click, chyba że sprawdziłeś ich skrypty startowe i domyślne ustawienia zapory.
+    Użyj czystego obrazu bazowego (Ubuntu 24.04 LTS). Unikaj obrazów 1-click z zewnętrznego Marketplace, chyba że sprawdzono ich skrypty startowe i domyślne ustawienia zapory.
     </Warning>
 
     1. Zaloguj się do [DigitalOcean](https://cloud.digitalocean.com/).
     2. Kliknij **Create > Droplets**.
     3. Wybierz:
-       - **Region:** najbliższy tobie
-       - **Image:** Ubuntu 24.04 LTS
-       - **Size:** Basic, Regular, 1 vCPU / 1 GB RAM / 25 GB SSD
-       - **Authentication:** klucz SSH (zalecane) albo hasło
+       - **Region:** Najbliższy Tobie
+       - **Obraz:** Ubuntu 24.04 LTS
+       - **Rozmiar:** Basic, Regular, 1 vCPU / 1 GB RAM / 25 GB SSD
+       - **Uwierzytelnianie:** klucz SSH (zalecane) albo hasło
     4. Kliknij **Create Droplet** i zanotuj adres IP.
 
   </Step>
@@ -47,27 +51,27 @@ Uruchom trwałe Gateway OpenClaw na Droplet DigitalOcean.
 
     apt update && apt upgrade -y
 
-    # Zainstaluj Node.js 24
+    # Install Node.js 24
     curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
     apt install -y nodejs
 
-    # Zainstaluj OpenClaw
+    # Install OpenClaw
     curl -fsSL https://openclaw.ai/install.sh | bash
     openclaw --version
     ```
 
   </Step>
 
-  <Step title="Uruchom onboarding">
+  <Step title="Uruchom wdrażanie">
     ```bash
     openclaw onboard --install-daemon
     ```
 
-    Kreator przeprowadzi cię przez uwierzytelnianie modelu, konfigurację kanału, generowanie tokenu gateway i instalację daemona (systemd).
+    Kreator prowadzi przez uwierzytelnianie modelu, konfigurację kanału, generowanie tokenu gateway oraz instalację demona (systemd).
 
   </Step>
 
-  <Step title="Dodaj swap (zalecane dla Droplet 1 GB)">
+  <Step title="Dodaj swap (zalecane dla Dropletów 1 GB)">
     ```bash
     fallocate -l 2G /swapfile
     chmod 600 /swapfile
@@ -85,13 +89,13 @@ Uruchom trwałe Gateway OpenClaw na Droplet DigitalOcean.
     ```
   </Step>
 
-  <Step title="Uzyskaj dostęp do Control UI">
-    Gateway domyślnie wiąże się z loopback. Wybierz jedną z tych opcji.
+  <Step title="Uzyskaj dostęp do interfejsu sterowania">
+    Domyślnie gateway nasłuchuje na local loopback. Wybierz jedną z tych opcji.
 
-    **Opcja A: tunel SSH (najprostsza)**
+    **Opcja A: tunel SSH (najprostsze)**
 
     ```bash
-    # Z twojej lokalnej maszyny
+    # From your local machine
     ssh -L 18789:localhost:18789 root@YOUR_DROPLET_IP
     ```
 
@@ -106,9 +110,11 @@ Uruchom trwałe Gateway OpenClaw na Droplet DigitalOcean.
     openclaw gateway restart
     ```
 
-    Następnie otwórz `https://<magicdns>/` z dowolnego urządzenia w twoim tailnet.
+    Następnie otwórz `https://<magicdns>/` z dowolnego urządzenia w swoim tailnecie.
 
-    **Opcja C: bind tailnet (bez Serve)**
+    Tailscale Serve uwierzytelnia ruch interfejsu sterowania i WebSocket za pomocą nagłówków tożsamości tailnetu, co zakłada, że sam host gateway jest zaufany. Punkty końcowe HTTP API działają zgodnie ze zwykłym trybem uwierzytelniania gateway (token/hasło) niezależnie od tego. Aby wymagać jawnych poświadczeń wspólnego sekretu przez Serve, ustaw `gateway.auth.allowTailscale: false` i użyj `gateway.auth.mode: "token"` albo `"password"`.
+
+    **Opcja C: powiązanie z tailnetem (bez Serve)**
 
     ```bash
     openclaw config set gateway.bind tailnet
@@ -120,19 +126,43 @@ Uruchom trwałe Gateway OpenClaw na Droplet DigitalOcean.
   </Step>
 </Steps>
 
+## Trwałość i kopie zapasowe
+
+Stan OpenClaw znajduje się w:
+
+- `~/.openclaw/` — `openclaw.json`, `auth-profiles.json` dla każdego agenta, stan kanałów/providerów i dane sesji.
+- `~/.openclaw/workspace/` — przestrzeń robocza agenta (SOUL.md, pamięć, artefakty).
+
+Te dane przetrwają ponowne uruchomienia Dropletu. Aby utworzyć przenośną migawkę:
+
+```bash
+openclaw backup create
+```
+
+Migawki DigitalOcean tworzą kopię zapasową całego Dropletu; `openclaw backup create` jest przenośne między hostami.
+
+## Wskazówki dla 1 GB RAM
+
+Droplet za 6 USD ma tylko 1 GB RAM. Aby wszystko działało płynnie:
+
+- Upewnij się, że powyższy krok swap jest w `/etc/fstab`, aby przetrwał ponowne uruchomienia.
+- Preferuj modele oparte na API (Claude, GPT) zamiast lokalnych — lokalne wnioskowanie LLM nie mieści się w 1 GB.
+- Ustaw `agents.defaults.model.primary` na mniejszy model, jeśli przy dużych promptach występują błędy OOM.
+- Monitoruj za pomocą `free -h` i `htop`.
+
 ## Rozwiązywanie problemów
 
-**Gateway nie chce się uruchomić** -- uruchom `openclaw doctor --non-interactive` i sprawdź logi przez `journalctl --user -u openclaw-gateway.service -n 50`.
+**Gateway nie uruchamia się** -- Uruchom `openclaw doctor --non-interactive` i sprawdź logi za pomocą `journalctl --user -u openclaw-gateway.service -n 50`.
 
-**Port jest już używany** -- uruchom `lsof -i :18789`, aby znaleźć proces, a następnie go zatrzymaj.
+**Port jest już używany** -- Uruchom `lsof -i :18789`, aby znaleźć proces, a następnie go zatrzymaj.
 
-**Za mało pamięci** -- sprawdź, czy swap jest aktywny, używając `free -h`. Jeśli nadal występuje OOM, używaj modeli opartych na API (Claude, GPT) zamiast modeli lokalnych albo przejdź na Droplet 2 GB.
+**Brak pamięci** -- Sprawdź, czy swap jest aktywny, używając `free -h`. Jeśli nadal występuje OOM, użyj modeli opartych na API (Claude, GPT) zamiast modeli lokalnych albo przejdź na Droplet 2 GB.
 
 ## Następne kroki
 
-- [Kanały](/pl/channels) -- połącz Telegram, WhatsApp, Discord i inne
+- [Kanały](/pl/channels) -- połącz Telegram, WhatsApp, Discord i więcej
 - [Konfiguracja Gateway](/pl/gateway/configuration) -- wszystkie opcje konfiguracji
-- [Aktualizowanie](/pl/install/updating) -- utrzymuj OpenClaw na bieżąco
+- [Aktualizowanie](/pl/install/updating) -- utrzymuj OpenClaw w aktualnej wersji
 
 ## Powiązane
 

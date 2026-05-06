@@ -1,102 +1,54 @@
 ---
 read_when:
-    - Musisz zrozumieć, jak znaczniki czasu są normalizowane dla modelu
-    - Konfigurowanie strefy czasowej użytkownika dla promptów systemowych
-summary: Obsługa stref czasowych dla agentów, kopert i promptów
+    - Chcesz mieć szybki model mentalny obsługi stref czasowych
+    - Decydujesz, gdzie ustawić lub nadpisać strefę czasową
+summary: Gdzie strefy czasowe pojawiają się w OpenClaw — koperty, ładunki narzędzi, prompt systemowy
 title: Strefy czasowe
 x-i18n:
-    generated_at: "2026-04-24T09:07:50Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:10:39Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8318acb0269f446fb3d3198f47811d40490a9ee9593fed82f31353aef2bacb81
+    source_hash: 041b207a0fa2758a20e8f3c4eca852d3dd416560d045459cb4d86709b45449e3
     source_path: concepts/timezone.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw standaryzuje znaczniki czasu, aby model widział **jeden wspólny czas odniesienia**.
+OpenClaw standaryzuje znaczniki czasu, aby model widział **jeden czas odniesienia** zamiast mieszanki zegarów lokalnych dla dostawców. Strefy czasowe pojawiają się w trzech miejscach, z których każde ma własny cel:
 
-## Koperty wiadomości (domyślnie lokalne)
+## Trzy obszary stref czasowych
 
-Wiadomości przychodzące są opakowywane w kopertę taką jak:
+| Obszar             | Co pokazuje                                                                                            | Domyślnie                              | Konfigurowane przez                                     |
+| ------------------ | ------------------------------------------------------------------------------------------------------ | -------------------------------------- | ------------------------------------------------------- |
+| Koperty wiadomości | Opakowuje przychodzące wiadomości kanału: `[Signal +1555 2026-01-18 00:19 PST] hello`                 | Lokalna strefa hosta                   | `agents.defaults.envelopeTimezone`                      |
+| Ładunki narzędzi   | Narzędzia kanału w stylu `readMessages` zwracają surowy czas dostawcy + znormalizowane `timestampMs` / `timestampUtc` | Pola UTC zawsze obecne                 | Nie można skonfigurować — zachowuje natywne znaczniki czasu dostawcy |
+| Prompt systemowy   | Mały blok `Current Date & Time` zawierający **tylko strefę czasową** (bez wartości zegara, dla stabilności cache) | Strefa czasowa hosta, jeśli `userTimezone` nie jest ustawione | `agents.defaults.userTimezone`                          |
 
-```
-[Provider ... 2026-01-05 16:26 PST] message text
-```
+Prompt systemowy celowo pomija bieżący zegar, aby cache promptów pozostawał stabilny między turami. Gdy agent potrzebuje bieżącego czasu, wywołuje `session_status`.
 
-Znacznik czasu w kopercie jest **domyślnie lokalny dla hosta**, z precyzją do minut.
-
-Możesz to nadpisać za pomocą:
+## Ustawianie strefy czasowej użytkownika
 
 ```json5
 {
   agents: {
     defaults: {
-      envelopeTimezone: "local", // "utc" | "local" | "user" | strefa czasowa IANA
-      envelopeTimestamp: "on", // "on" | "off"
-      envelopeElapsed: "on", // "on" | "off"
+      userTimezone: "America/Chicago",
     },
   },
 }
 ```
 
-- `envelopeTimezone: "utc"` używa UTC.
-- `envelopeTimezone: "user"` używa `agents.defaults.userTimezone` (fallback do strefy czasowej hosta).
-- Użyj jawnej strefy czasowej IANA (np. `"Europe/Vienna"`), aby uzyskać stałe przesunięcie.
-- `envelopeTimestamp: "off"` usuwa bezwzględne znaczniki czasu z nagłówków kopert.
-- `envelopeElapsed: "off"` usuwa sufiksy czasu, który upłynął (styl `+2m`).
+Jeśli `userTimezone` nie jest ustawione, OpenClaw ustala strefę czasową hosta w czasie działania (bez zapisu konfiguracji). `agents.defaults.timeFormat` (`auto` | `12` | `24`) kontroluje renderowanie w formacie 12h/24h w kopertach i dalszych obszarach, ale nie w sekcji promptu systemowego.
 
-### Przykłady
+## Kiedy nadpisywać ustawienia
 
-**Lokalny (domyślnie):**
+- **Używaj kopert UTC** (`envelopeTimezone: "utc"`), gdy chcesz mieć stabilne znaczniki czasu na hostach w różnych regionach albo gdy chcesz, aby logi wyrównane do UTC pasowały do danych diagnostycznych.
+- **Używaj stałej strefy IANA** (np. `"Europe/Vienna"`), gdy host Gateway znajduje się w jednej strefie, ale użytkownik w innej, i chcesz, aby koperty były odczytywane w strefie użytkownika niezależnie od migracji hosta.
+- **Ustaw `envelopeTimestamp: "off"`** dla kopert o niskim zużyciu tokenów, gdy kontekst znacznika czasu nie jest przydatny w rozmowie.
 
-```
-[Signal Alice +1555 2026-01-18 00:19 PST] hello
-```
-
-**Stała strefa czasowa:**
-
-```
-[Signal Alice +1555 2026-01-18 06:19 GMT+1] hello
-```
-
-**Czas, który upłynął:**
-
-```
-[Signal Alice +1555 +2m 2026-01-18T05:19Z] follow-up
-```
-
-## Ładunki narzędzi (surowe dane providera + znormalizowane pola)
-
-Wywołania narzędzi (`channels.discord.readMessages`, `channels.slack.readMessages` itd.) zwracają **surowe znaczniki czasu providera**.
-Dla spójności dołączamy również znormalizowane pola:
-
-- `timestampMs` (milisekundy epoki UTC)
-- `timestampUtc` (ciąg ISO 8601 UTC)
-
-Surowe pola providera są zachowywane.
-
-## Strefa czasowa użytkownika dla promptu systemowego
-
-Ustaw `agents.defaults.userTimezone`, aby powiedzieć modelowi, jaka jest lokalna strefa czasowa użytkownika. Jeśli
-nie jest ustawiona, OpenClaw rozwiązuje **strefę czasową hosta w runtime** (bez zapisu konfiguracji).
-
-```json5
-{
-  agents: { defaults: { userTimezone: "America/Chicago" } },
-}
-```
-
-Prompt systemowy zawiera:
-
-- sekcję `Current Date & Time` z czasem lokalnym i strefą czasową
-- `Time format: 12-hour` lub `24-hour`
-
-Możesz kontrolować format promptu za pomocą `agents.defaults.timeFormat` (`auto` | `12` | `24`).
-
-Zobacz [Date & Time](/pl/date-time), aby poznać pełne zachowanie i przykłady.
+Pełne omówienie zachowania, przykłady dla poszczególnych dostawców oraz formatowanie czasu, który upłynął, znajdziesz w sekcji [Data i godzina](/pl/date-time).
 
 ## Powiązane
 
-- [Heartbeat](/pl/gateway/heartbeat) — aktywne godziny używają strefy czasowej do planowania
-- [Cron Jobs](/pl/automation/cron-jobs) — wyrażenia cron używają strefy czasowej do planowania
-- [Date & Time](/pl/date-time) — pełne zachowanie daty/czasu i przykłady
+- [Data i godzina](/pl/date-time) — pełne zachowanie kopert/narzędzi/promptu i przykłady.
+- [Heartbeat](/pl/gateway/heartbeat) — aktywne godziny używają strefy czasowej do planowania.
+- [Zadania Cron](/pl/automation/cron-jobs) — wyrażenia cron używają strefy czasowej do planowania.

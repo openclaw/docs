@@ -1,90 +1,90 @@
 ---
 read_when:
-    - Przegląd serii PR dotyczących zgodności GPT-5.5 / Codex
-    - Utrzymywanie sześciokontraktowej architektury agentycznej stojącej za programem zgodności
-summary: Jak przejrzeć program zgodności GPT-5.5 / Codex jako cztery jednostki scalania
-title: Uwagi maintainera dotyczące zgodności GPT-5.5 / Codex
+    - Przegląd serii PR-ów dotyczących parytetu GPT-5.5 / Codex
+    - Utrzymywanie sześciokontraktowej architektury agentowej stojącej za programem parytetu
+summary: Jak przejrzeć program parytetu GPT-5.5 / Codex jako cztery jednostki scalania
+title: Notatki dla opiekunów dotyczące parytetu GPT-5.5 / Codex
 x-i18n:
-    generated_at: "2026-04-26T11:32:49Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:15:32Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8de69081f5985954b88583880c36388dc47116c3351c15d135b8ab3a660058e3
+    source_hash: 5752b4610f8b0d70b80d880ea10df75478b5f85ca431cdb73d3b61d745b23356
     source_path: help/gpt55-codex-agentic-parity-maintainers.md
-    workflow: 15
+    workflow: 16
 ---
 
-Ta notatka wyjaśnia, jak przejrzeć program zgodności GPT-5.5 / Codex jako cztery jednostki scalania bez utraty oryginalnej sześciokontraktowej architektury.
+Ta notatka wyjaśnia, jak przeglądać program parytetu GPT-5.5 / Codex jako cztery jednostki scalania, nie tracąc pierwotnej architektury sześciu kontraktów.
 
 ## Jednostki scalania
 
-### PR A: ścisłe wykonanie agentyczne
+### PR A: ścisłe wykonanie agentowe
 
 Obejmuje:
 
 - `executionContract`
-- GPT-5-first same-turn follow-through
+- doprowadzanie działań GPT-5-first do końca w tej samej turze
 - `update_plan` jako nieterminalne śledzenie postępu
-- jawne stany blocked zamiast cichych zatrzymań opartych wyłącznie na planie
+- jawne stany zablokowania zamiast cichych zatrzymań wyłącznie na planie
 
 Nie obejmuje:
 
-- klasyfikacji błędów auth/runtime
-- prawdomówności uprawnień
-- przeprojektowania replay/continuation
-- benchmarkingu zgodności
+- klasyfikacji błędów uwierzytelniania/środowiska uruchomieniowego
+- prawdziwości uprawnień
+- przeprojektowania replay/kontynuacji
+- benchmarków parytetu
 
-### PR B: prawdomówność runtime
+### PR B: prawdziwość środowiska uruchomieniowego
 
 Obejmuje:
 
 - poprawność zakresów OAuth Codex
-- typowaną klasyfikację błędów providera/runtime
-- prawdziwą dostępność `/elevated full` i przyczyny blocked
+- typowaną klasyfikację błędów providera/środowiska uruchomieniowego
+- prawdziwą dostępność `/elevated full` i powody zablokowania
 
 Nie obejmuje:
 
-- normalizacji schematu narzędzi
-- stanu replay/liveness
-- bramkowania benchmarków
+- normalizacji schematów narzędzi
+- stanu replay/żywotności
+- bramek benchmarków
 
 ### PR C: poprawność wykonania
 
 Obejmuje:
 
-- kompatybilność narzędzi OpenAI/Codex należącą do providera
-- ścisłą obsługę schematów bez parametrów
-- ujawnianie replay-invalid
-- widoczność stanów paused, blocked i abandoned dla długich zadań
+- należącą do providera zgodność narzędzi OpenAI/Codex
+- obsługę ścisłego schematu bez parametrów
+- eksponowanie nieprawidłowego replay
+- widoczność stanów wstrzymanych, zablokowanych i porzuconych długich zadań
 
 Nie obejmuje:
 
-- continuation wybieranego samodzielnie
+- samodzielnie wybranej kontynuacji
 - ogólnego zachowania dialektu Codex poza hookami providera
-- bramkowania benchmarków
+- bramek benchmarków
 
-### PR D: harness zgodności
+### PR D: zestaw parytetu
 
 Obejmuje:
 
 - pierwszy pakiet scenariuszy GPT-5.5 vs Opus 4.6
-- dokumentację zgodności
-- mechanikę raportu zgodności i bramki wydania
+- dokumentację parytetu
+- raport parytetu i mechanikę bramki wydania
 
 Nie obejmuje:
 
-- zmian zachowania runtime poza QA-lab
-- symulacji auth/proxy/DNS wewnątrz harnessu
+- zmian zachowania środowiska uruchomieniowego poza QA-lab
+- symulacji auth/proxy/DNS wewnątrz zestawu
 
-## Mapowanie z powrotem do oryginalnych sześciu kontraktów
+## Mapowanie z powrotem na pierwotne sześć kontraktów
 
-| Oryginalny kontrakt                      | Jednostka scalania |
+| Pierwotny kontrakt                       | Jednostka scalania |
 | ---------------------------------------- | ------------------ |
-| Poprawność transportu/auth providera     | PR B               |
-| Kompatybilność kontraktu/schematu narzędzi | PR C             |
-| Wykonanie w tej samej turze              | PR A               |
-| Prawdomówność uprawnień                  | PR B               |
-| Poprawność replay/continuation/liveness  | PR C               |
-| Benchmark/bramka wydania                 | PR D               |
+| Poprawność transportu/uwierzytelniania providera | PR B       |
+| Zgodność kontraktu/schematu narzędzi     | PR C       |
+| Wykonanie w tej samej turze              | PR A       |
+| Prawdziwość uprawnień                    | PR B       |
+| Poprawność replay/kontynuacji/żywotności | PR C       |
+| Benchmark/bramka wydania                 | PR D       |
 
 ## Kolejność przeglądu
 
@@ -93,34 +93,34 @@ Nie obejmuje:
 3. PR C
 4. PR D
 
-PR D to warstwa dowodowa. Nie powinien być powodem opóźniania PR dotyczących poprawności runtime.
+PR D jest warstwą dowodową. Nie powinien być powodem opóźniania PR-ów dotyczących poprawności środowiska uruchomieniowego.
 
-## Na co zwracać uwagę
+## Na co patrzeć
 
 ### PR A
 
-- Uruchomienia GPT-5 wykonują działanie albo kończą się bezpiecznym błędem zamiast zatrzymywać się na komentarzu
-- `update_plan` nie wygląda już sam z siebie jak postęp
-- zachowanie pozostaje GPT-5-first i ma zakres embedded-Pi
+- Uruchomienia GPT-5 działają albo kończą się bezpieczną blokadą zamiast zatrzymywać się na komentarzu
+- `update_plan` nie wygląda już sam w sobie jak postęp
+- zachowanie pozostaje GPT-5-first i ograniczone do osadzonego Pi
 
 ### PR B
 
-- błędy auth/proxy/runtime przestają zapadać się do ogólnej obsługi „model failed”
-- `/elevated full` jest opisywane jako dostępne tylko wtedy, gdy rzeczywiście jest dostępne
-- przyczyny blocked są widoczne zarówno dla modelu, jak i dla runtime widocznego dla użytkownika
+- błędy auth/proxy/środowiska uruchomieniowego przestają zapadać się do ogólnej obsługi „model failed”
+- `/elevated full` jest opisywane jako dostępne tylko wtedy, gdy faktycznie jest dostępne
+- powody zablokowania są widoczne zarówno dla modelu, jak i dla środowiska uruchomieniowego widocznego dla użytkownika
 
 ### PR C
 
-- ścisła rejestracja narzędzi OpenAI/Codex należących do providera zachowuje się przewidywalnie
-- narzędzia bez parametrów nie kończą się błędem przy ścisłych kontrolach schematu
-- wyniki replay i Compaction zachowują prawdziwy stan liveness
+- ścisła rejestracja narzędzi OpenAI/Codex zachowuje się przewidywalnie
+- narzędzia bez parametrów nie oblewają ścisłych kontroli schematu
+- wyniki replay i Compaction zachowują prawdziwy stan żywotności
 
 ### PR D
 
 - pakiet scenariuszy jest zrozumiały i odtwarzalny
-- pakiet zawiera ścieżkę mutating replay-safety, a nie tylko przepływy tylko do odczytu
+- pakiet zawiera mutującą ścieżkę bezpieczeństwa replay, nie tylko przepływy tylko do odczytu
 - raporty są czytelne dla ludzi i automatyzacji
-- twierdzenia o zgodności są poparte dowodami, a nie anegdotami
+- twierdzenia o parytecie są poparte dowodami, a nie anegdotyczne
 
 Oczekiwane artefakty z PR D:
 
@@ -130,12 +130,12 @@ Oczekiwane artefakty z PR D:
 
 ## Bramka wydania
 
-Nie twierdź, że GPT-5.5 ma zgodność lub przewagę nad Opus 4.6, dopóki:
+Nie deklaruj parytetu ani przewagi GPT-5.5 nad Opus 4.6, dopóki:
 
 - PR A, PR B i PR C nie zostaną scalone
-- PR D nie uruchomi czysto pierwszej fali pakietu zgodności
-- zestawy regresji runtime-truthfulness pozostają zielone
-- raport zgodności nie pokazuje przypadków fake-success i braku regresji zachowania stop
+- PR D nie uruchomi czysto pierwszego pakietu parytetu
+- zestawy regresyjne prawdziwości środowiska uruchomieniowego pozostaną zielone
+- raport parytetu nie pokaże przypadków fałszywego sukcesu ani regresji zachowania zatrzymania
 
 ```mermaid
 flowchart LR
@@ -151,53 +151,53 @@ flowchart LR
     H -- "no" --> J["Keep runtime fixes / review loop open"]
 ```
 
-Harness zgodności nie jest jedynym źródłem dowodów. Zachowaj ten podział jako jawny w przeglądzie:
+Zestaw parytetu nie jest jedynym źródłem dowodów. Zachowaj ten podział jawnie w przeglądzie:
 
 - PR D obejmuje porównanie GPT-5.5 vs Opus 4.6 oparte na scenariuszach
-- deterministyczne zestawy PR B nadal obejmują dowody dotyczące auth/proxy/DNS i prawdomówności pełnego dostępu
+- deterministyczne zestawy PR B nadal odpowiadają za dowody dotyczące auth/proxy/DNS oraz prawdziwości pełnego dostępu
 
-## Szybki przepływ scalania dla maintainera
+## Szybki workflow scalania dla maintainerów
 
-Używaj tego, gdy jesteś gotów scalić PR zgodności i chcesz powtarzalnej sekwencji o niskim ryzyku.
+Użyj tego, gdy jesteś gotowy scalić PR parytetu i chcesz powtarzalnej sekwencji niskiego ryzyka.
 
-1. Potwierdź, że przed scaleniem spełniony jest próg dowodowy:
-   - odtwarzalny symptom lub nieprzechodzący test
-   - zweryfikowana główna przyczyna w zmienianym kodzie
-   - poprawka w ścieżce, której dotyczy problem
-   - test regresji lub jawna notatka o ręcznej weryfikacji
-2. Triaging/etykiety przed scaleniem:
-   - zastosuj wszelkie etykiety autozamknięcia `r:*`, gdy PR nie powinien zostać scalony
+1. Potwierdź przed scaleniem, że próg dowodowy jest spełniony:
+   - odtwarzalny objaw lub nieprzechodzący test
+   - zweryfikowana przyczyna źródłowa w dotkniętym kodzie
+   - poprawka w powiązanej ścieżce
+   - test regresyjny albo jawna notatka z ręcznej weryfikacji
+2. Przeprowadź triage/etykietowanie przed scaleniem:
+   - zastosuj etykiety automatycznego zamykania `r:*`, gdy PR nie powinien zostać scalony
    - utrzymuj kandydatów do scalenia bez nierozwiązanych wątków blokujących
-3. Zweryfikuj lokalnie na zmienianej powierzchni:
+3. Zweryfikuj lokalnie dotknięty obszar:
    - `pnpm check:changed`
-   - `pnpm test:changed`, gdy zmieniły się testy lub pewność poprawki błędu zależy od pokrycia testami
-4. Scal standardowym przepływem maintenera (proces `/landpr`), a następnie zweryfikuj:
-   - zachowanie autozamykania powiązanych zgłoszeń
+   - `pnpm test:changed`, gdy zmieniły się testy albo pewność poprawki błędu zależy od pokrycia testami
+4. Scal standardowym flow maintainera (proces `/landpr`), a następnie zweryfikuj:
+   - zachowanie automatycznego zamykania powiązanych issues
    - CI i status po scaleniu na `main`
-5. Po scaleniu uruchom wyszukiwanie duplikatów powiązanych otwartych PR/issues i zamykaj je tylko z kanonicznym odwołaniem.
+5. Po scaleniu uruchom wyszukiwanie duplikatów powiązanych otwartych PR-ów/issues i zamykaj je tylko z odniesieniem kanonicznym.
 
-Jeśli brakuje choć jednego elementu progu dowodowego, poproś o zmiany zamiast scalać.
+Jeśli brakuje któregokolwiek elementu progu dowodowego, poproś o zmiany zamiast scalać.
 
-## Mapa cel–dowód
+## Mapa celów do dowodów
 
-| Element bramki ukończenia                 | Główny właściciel | Artefakt przeglądu                                                   |
-| ----------------------------------------- | ----------------- | -------------------------------------------------------------------- |
-| Brak zacięć opartych wyłącznie na planie  | PR A              | testy runtime strict-agentic i `approval-turn-tool-followthrough`    |
-| Brak sztucznego postępu lub sztucznego ukończenia narzędzia | PR A + PR D | liczba fake-success zgodności plus szczegóły raportu na poziomie scenariuszy |
-| Brak fałszywych wskazówek `/elevated full` | PR B             | deterministyczne zestawy runtime-truthfulness                        |
-| Błędy replay/liveness pozostają jawne     | PR C + PR D       | zestawy lifecycle/replay plus `compaction-retry-mutating-tool`       |
-| GPT-5.5 dorównuje lub przewyższa Opus 4.6 | PR D              | `qa-agentic-parity-report.md` i `qa-agentic-parity-summary.json`     |
+| Element bramki ukończenia                 | Główny właściciel | Artefakt przeglądu                                                  |
+| ---------------------------------------- | ----------------- | ------------------------------------------------------------------- |
+| Brak zatrzymań wyłącznie na planie       | PR A              | testy środowiska strict-agentic i `approval-turn-tool-followthrough` |
+| Brak fałszywego postępu lub fałszywego ukończenia narzędzia | PR A + PR D   | liczba fałszywych sukcesów parytetu plus szczegóły raportu na poziomie scenariuszy |
+| Brak fałszywych wskazówek `/elevated full` | PR B            | deterministyczne zestawy prawdziwości środowiska uruchomieniowego   |
+| Błędy replay/żywotności pozostają jawne  | PR C + PR D       | zestawy lifecycle/replay plus `compaction-retry-mutating-tool`       |
+| GPT-5.5 dorównuje Opus 4.6 albo go przewyższa | PR D          | `qa-agentic-parity-report.md` i `qa-agentic-parity-summary.json`     |
 
-## Skrót dla reviewera: przed vs po
+## Skrót recenzenta: przed i po
 
-| Problem widoczny dla użytkownika przed zmianą              | Sygnał przeglądu po zmianie                                                            |
-| ---------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| GPT-5.5 zatrzymywał się po planowaniu                      | PR A pokazuje zachowanie act-or-block zamiast ukończenia opartego wyłącznie na komentarzu |
-| Użycie narzędzi wydawało się kruche przy ścisłych schematach OpenAI/Codex | PR C utrzymuje przewidywalność rejestracji narzędzi i wywołań bez parametrów |
-| Wskazówki `/elevated full` bywały mylące                   | PR B wiąże wskazówki z rzeczywistą zdolnością runtime i przyczynami blocked             |
-| Długie zadania mogły zniknąć w niejednoznaczności replay/Compaction | PR C emituje jawny stan paused, blocked, abandoned i replay-invalid                 |
-| Twierdzenia o zgodności były anegdotyczne                  | PR D tworzy raport plus werdykt JSON z tym samym pokryciem scenariuszy na obu modelach |
+| Problem widoczny dla użytkownika przed                    | Sygnał w przeglądzie po                                                             |
+| --------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| GPT-5.5 zatrzymywał się po planowaniu                     | PR A pokazuje zachowanie wykonaj-albo-zablokuj zamiast ukończenia tylko komentarzem |
+| Użycie narzędzi było kruche przy ścisłych schematach OpenAI/Codex | PR C utrzymuje przewidywalność rejestracji narzędzi i wywołań bez parametrów |
+| Podpowiedzi `/elevated full` bywały mylące                | PR B wiąże wskazówki z faktyczną możliwością środowiska uruchomieniowego i powodami zablokowania |
+| Długie zadania mogły znikać w niejednoznaczności replay/Compaction | PR C emituje jawne stany wstrzymania, zablokowania, porzucenia i nieprawidłowego replay |
+| Twierdzenia o parytecie były anegdotyczne                 | PR D tworzy raport oraz werdykt JSON z tym samym pokryciem scenariuszy na obu modelach |
 
 ## Powiązane
 
-- [Zgodność agentyczna GPT-5.5 / Codex](/pl/help/gpt55-codex-agentic-parity)
+- [Parytet agentowy GPT-5.5 / Codex](/pl/help/gpt55-codex-agentic-parity)

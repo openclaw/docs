@@ -1,39 +1,39 @@
 ---
 read_when:
-    - Dostosowywanie wartości domyślnych trybu elevated, allowlist lub zachowania poleceń slash
-    - Zrozumienie, jak sandboxowane agenty mogą uzyskiwać dostęp do hosta
-summary: 'Tryb elevated exec: uruchamianie poleceń poza sandboxem z poziomu sandboxowanego agenta'
-title: Tryb elevated
+    - Dostosowywanie domyślnych ustawień trybu podwyższonego, list dozwolonych lub zachowania poleceń ukośnikowych
+    - Zrozumienie, jak agenci działający w piaskownicy mogą uzyskiwać dostęp do hosta
+summary: 'Tryb wykonywania z podwyższonymi uprawnieniami: uruchamianie poleceń poza piaskownicą z agenta działającego w piaskownicy'
+title: Tryb podwyższonych uprawnień
 x-i18n:
-    generated_at: "2026-04-24T09:35:49Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:32:11Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 5b91b4af36f9485695f2afebe9bf8d7274d7aad6d0d88e762e581b0d091e04f7
+    source_hash: 91aab7c105643d8e5d07d89cd5ab176f0a40cd3d23e2b20b3986cbf76f575d64
     source_path: tools/elevated.md
-    workflow: 15
+    workflow: 16
 ---
 
-Gdy agent działa w sandboxie, jego polecenia `exec` są ograniczone do
-środowiska sandboxa. **Tryb elevated** pozwala agentowi wyjść poza sandbox i uruchamiać polecenia
-zamiast tego poza sandboxem, z konfigurowalnymi bramkami zatwierdzeń.
+Gdy agent działa w piaskownicy, jego polecenia `exec` są ograniczone do
+środowiska piaskownicy. **Tryb podwyższonych uprawnień** pozwala agentowi wyjść poza nią i zamiast tego uruchamiać polecenia
+poza piaskownicą, z konfigurowalnymi bramkami zatwierdzania.
 
 <Info>
-  Tryb elevated zmienia zachowanie tylko wtedy, gdy agent jest **sandboxowany**. Dla
-  agentów bez sandboxa exec już działa na hoście.
+  Tryb podwyższonych uprawnień zmienia zachowanie tylko wtedy, gdy agent jest **uruchomiony w piaskownicy**. W przypadku
+  agentów bez piaskownicy exec już działa na hoście.
 </Info>
 
 ## Dyrektywy
 
-Steruj trybem elevated per sesja za pomocą poleceń slash:
+Kontroluj tryb podwyższonych uprawnień dla sesji za pomocą poleceń slash:
 
-| Directive        | What it does                                                           |
+| Dyrektywa        | Co robi                                                           |
 | ---------------- | ---------------------------------------------------------------------- |
-| `/elevated on`   | Uruchamiaj poza sandboxem na skonfigurowanej ścieżce hosta, zachowaj zatwierdzenia    |
+| `/elevated on`   | Uruchamia poza piaskownicą na skonfigurowanej ścieżce hosta, zachowuje zatwierdzenia    |
 | `/elevated ask`  | To samo co `on` (alias)                                                   |
-| `/elevated full` | Uruchamiaj poza sandboxem na skonfigurowanej ścieżce hosta i pomijaj zatwierdzenia |
-| `/elevated off`  | Wróć do wykonywania ograniczonego do sandboxa                                   |
+| `/elevated full` | Uruchamia poza piaskownicą na skonfigurowanej ścieżce hosta i pomija zatwierdzenia |
+| `/elevated off`  | Wraca do wykonywania ograniczonego do piaskownicy                                   |
 
-Dostępne również jako `/elev on|off|ask|full`.
+Dostępne także jako `/elev on|off|ask|full`.
 
 Wyślij `/elevated` bez argumentu, aby zobaczyć bieżący poziom.
 
@@ -41,7 +41,7 @@ Wyślij `/elevated` bez argumentu, aby zobaczyć bieżący poziom.
 
 <Steps>
   <Step title="Sprawdź dostępność">
-    Elevated musi być włączony w konfiguracji, a nadawca musi znajdować się na allowlist:
+    Tryb podwyższonych uprawnień musi być włączony w konfiguracji, a nadawca musi znajdować się na liście dozwolonych:
 
     ```json5
     {
@@ -66,7 +66,7 @@ Wyślij `/elevated` bez argumentu, aby zobaczyć bieżący poziom.
     /elevated full
     ```
 
-    Albo użyj jej inline (dotyczy tylko tej wiadomości):
+    Albo użyj jej w treści wiadomości (dotyczy tylko tej wiadomości):
 
     ```
     /elevated on run the deployment script
@@ -74,48 +74,62 @@ Wyślij `/elevated` bez argumentu, aby zobaczyć bieżący poziom.
 
   </Step>
 
-  <Step title="Polecenia uruchamiają się poza sandboxem">
-    Gdy elevated jest aktywne, wywołania `exec` opuszczają sandbox. Efektywnym hostem jest
-    domyślnie `gateway`, albo `node`, gdy skonfigurowanym/per-sesja celem exec jest
+  <Step title="Polecenia działają poza piaskownicą">
+    Przy aktywnych podwyższonych uprawnieniach wywołania `exec` opuszczają piaskownicę. Efektywnym hostem jest
+    domyślnie `gateway` albo `node`, gdy skonfigurowanym/sesyjnym celem exec jest
     `node`. W trybie `full` zatwierdzenia exec są pomijane. W trybie `on`/`ask`
-    nadal obowiązują skonfigurowane reguły zatwierdzeń.
+    skonfigurowane reguły zatwierdzania nadal obowiązują.
   </Step>
 </Steps>
 
 ## Kolejność rozstrzygania
 
-1. **Dyrektywa inline** w wiadomości (dotyczy tylko tej wiadomości)
-2. **Nadpisanie sesji** (ustawiane przez wysłanie wiadomości zawierającej tylko dyrektywę)
+1. **Dyrektywa w treści wiadomości** (dotyczy tylko tej wiadomości)
+2. **Nadpisanie sesji** (ustawione przez wysłanie wiadomości zawierającej tylko dyrektywę)
 3. **Globalna wartość domyślna** (`agents.defaults.elevatedDefault` w konfiguracji)
 
-## Dostępność i allowlisty
+## Dostępność i listy dozwolonych
 
-- **Globalna bramka**: `tools.elevated.enabled` (musi mieć wartość `true`)
-- **Allowlist nadawcy**: `tools.elevated.allowFrom` z listami per kanał
-- **Bramka per agent**: `agents.list[].tools.elevated.enabled` (może tylko dodatkowo ograniczać)
-- **Allowlist per agent**: `agents.list[].tools.elevated.allowFrom` (nadawca musi pasować zarówno do globalnej, jak i per agent)
-- **Fallback Discord**: jeśli `tools.elevated.allowFrom.discord` jest pominięte, jako fallback używane jest `channels.discord.allowFrom`
-- **Wszystkie bramki muszą przejść**; w przeciwnym razie elevated jest traktowane jako niedostępne
+- **Globalna bramka**: `tools.elevated.enabled` (musi być `true`)
+- **Lista dozwolonych nadawców**: `tools.elevated.allowFrom` z listami dla poszczególnych kanałów
+- **Bramka dla agenta**: `agents.list[].tools.elevated.enabled` (może tylko dodatkowo ograniczać)
+- **Lista dozwolonych dla agenta**: `agents.list[].tools.elevated.allowFrom` (nadawca musi pasować zarówno do globalnej, jak i tej dla agenta)
+- **Awaryjne ustawienie Discord**: jeśli `tools.elevated.allowFrom.discord` jest pominięte, jako wartość awaryjna używane jest `channels.discord.allowFrom`
+- **Wszystkie bramki muszą przejść pomyślnie**; w przeciwnym razie tryb podwyższonych uprawnień jest traktowany jako niedostępny
 
-Formaty wpisów allowlist:
+Formaty wpisów listy dozwolonych:
 
-| Prefix                  | Matches                         |
+| Prefiks                  | Dopasowuje                         |
 | ----------------------- | ------------------------------- |
-| (brak)                  | ID nadawcy, E.164 lub pole From |
-| `name:`                 | Nazwa wyświetlana nadawcy             |
+| (brak)                  | Identyfikator nadawcy, E.164 lub pole From |
+| `name:`                 | Wyświetlana nazwa nadawcy             |
 | `username:`             | Nazwa użytkownika nadawcy                 |
 | `tag:`                  | Tag nadawcy                      |
-| `id:`, `from:`, `e164:` | Jawne kierowanie na tożsamość     |
+| `id:`, `from:`, `e164:` | Jawne wskazanie tożsamości     |
 
-## Czego elevated nie kontroluje
+## Czego nie kontroluje tryb podwyższonych uprawnień
 
-- **Polityka narzędzi**: jeśli `exec` jest zabronione przez politykę narzędzi, elevated nie może tego nadpisać
-- **Polityka wyboru hosta**: elevated nie zamienia `auto` w dowolne nadpisanie między hostami. Używa skonfigurowanych/per-sesja reguł celu exec, wybierając `node` tylko wtedy, gdy celem jest już `node`.
-- **Osobne od `/exec`**: dyrektywa `/exec` dostosowuje domyślne ustawienia exec per sesja dla autoryzowanych nadawców i nie wymaga trybu elevated
+- **Polityka narzędzi**: jeśli `exec` jest zabroniony przez politykę narzędzi, tryb podwyższonych uprawnień nie może tego nadpisać.
+- **Polityka wyboru hosta**: tryb podwyższonych uprawnień nie zmienia `auto` w swobodne nadpisanie między hostami. Używa skonfigurowanych/sesyjnych reguł celu exec, wybierając `node` tylko wtedy, gdy celem już jest `node`.
+- **Niezależne od `/exec`**: dyrektywa `/exec` dostosowuje domyślne ustawienia exec dla sesji dla autoryzowanych nadawców i nie wymaga trybu podwyższonych uprawnień.
+
+<Note>
+  Polecenie czatu bash (prefiks `!`; alias `/bash`) to osobna bramka, która wymaga włączenia `tools.elevated` oprócz własnej flagi `tools.bash.enabled`. Wyłączenie trybu podwyższonych uprawnień blokuje również polecenia powłoki `!`.
+</Note>
 
 ## Powiązane
 
-- [Narzędzie Exec](/pl/tools/exec) — wykonywanie poleceń shella
-- [Zatwierdzenia Exec](/pl/tools/exec-approvals) — system zatwierdzeń i allowlist
-- [Sandboxing](/pl/gateway/sandboxing) — konfiguracja sandboxa
-- [Sandbox vs Tool Policy vs Elevated](/pl/gateway/sandbox-vs-tool-policy-vs-elevated)
+<CardGroup cols={2}>
+  <Card title="Narzędzie exec" href="/pl/tools/exec" icon="terminal">
+    Wykonywanie poleceń powłoki przez agenta.
+  </Card>
+  <Card title="Zatwierdzenia exec" href="/pl/tools/exec-approvals" icon="shield">
+    System zatwierdzania i list dozwolonych dla `exec`.
+  </Card>
+  <Card title="Piaskownica" href="/pl/gateway/sandboxing" icon="box">
+    Konfiguracja piaskownicy na poziomie Gateway.
+  </Card>
+  <Card title="Piaskownica a polityka narzędzi a tryb podwyższonych uprawnień" href="/pl/gateway/sandbox-vs-tool-policy-vs-elevated" icon="scale-balanced">
+    Jak trzy bramki składają się podczas wywołania narzędzia.
+  </Card>
+</CardGroup>

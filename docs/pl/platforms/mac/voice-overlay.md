@@ -1,73 +1,73 @@
 ---
 read_when:
     - Dostosowywanie zachowania nakładki głosowej
-summary: Cykl życia nakładki głosowej, gdy nakładają się wybudzanie słowem kluczowym i push-to-talk
+summary: Cykl życia nakładki głosowej, gdy słowo wybudzające i funkcja „naciśnij, aby mówić” nakładają się
 title: Nakładka głosowa
 x-i18n:
-    generated_at: "2026-04-24T09:21:26Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:22:00Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 3ae98afad57dffe73e2c878eef4f3253e4464d68cadf531e9239b017cc160f28
+    source_hash: 5b30f50512e557bd5a50f0e4e8b7955a847b3b554694347d56638581fcda9514
     source_path: platforms/mac/voice-overlay.md
-    workflow: 15
+    workflow: 16
 ---
 
 # Cykl życia nakładki głosowej (macOS)
 
-Odbiorcy: współtwórcy aplikacji macOS. Cel: utrzymanie przewidywalności nakładki głosowej, gdy nakładają się wybudzanie słowem kluczowym i push-to-talk.
+Odbiorcy: kontrybutorzy aplikacji macOS. Cel: utrzymać przewidywalne działanie nakładki głosowej, gdy słowo wybudzające i tryb naciśnij, aby mówić nakładają się na siebie.
 
 ## Obecny zamiar
 
-- Jeśli nakładka jest już widoczna z powodu wybudzenia słowem kluczowym i użytkownik naciśnie skrót klawiszowy, sesja skrótu _przejmuje_ istniejący tekst zamiast go resetować. Nakładka pozostaje widoczna, dopóki skrót jest przytrzymany. Gdy użytkownik puści: wyślij, jeśli istnieje przycięty tekst, w przeciwnym razie zamknij.
-- Samo wybudzenie słowem kluczowym nadal wysyła automatycznie po ciszy; push-to-talk wysyła natychmiast po puszczeniu.
+- Jeśli nakładka jest już widoczna po słowie wybudzającym, a użytkownik naciśnie skrót klawiszowy, sesja skrótu klawiszowego _przejmuje_ istniejący tekst zamiast go resetować. Nakładka pozostaje widoczna, dopóki skrót klawiszowy jest przytrzymywany. Gdy użytkownik go zwolni: wyślij, jeśli istnieje przycięty tekst, w przeciwnym razie odrzuć.
+- Samo słowo wybudzające nadal wysyła automatycznie po ciszy; tryb naciśnij, aby mówić wysyła natychmiast po zwolnieniu.
 
-## Zaimplementowane (9 grudnia 2025)
+## Wdrożono (9 grudnia 2025)
 
-- Sesje nakładki mają teraz token per przechwycenie (wybudzenie słowem kluczowym lub push-to-talk). Aktualizacje partial/final/send/dismiss/level są odrzucane, gdy token się nie zgadza, co zapobiega przestarzałym callbackom.
-- Push-to-talk przejmuje dowolny widoczny tekst nakładki jako prefiks (więc naciśnięcie skrótu, gdy widoczna jest nakładka wybudzenia, zachowuje tekst i dopisuje nową mowę). Czeka do 1,5 s na końcową transkrypcję, po czym używa fallbacku do bieżącego tekstu.
-- Logowanie chime/nakładki jest emitowane na poziomie `info` w kategoriach `voicewake.overlay`, `voicewake.ptt` i `voicewake.chime` (start sesji, partial, final, send, dismiss, powód chime).
+- Sesje nakładki przenoszą teraz token dla każdego przechwytywania (słowo wybudzające lub tryb naciśnij, aby mówić). Aktualizacje częściowe/końcowe/wysyłania/odrzucania/poziomu są odrzucane, gdy token nie pasuje, co pozwala uniknąć nieaktualnych wywołań zwrotnych.
+- Tryb naciśnij, aby mówić przejmuje każdy widoczny tekst nakładki jako prefiks (więc naciśnięcie skrótu klawiszowego, gdy nakładka wybudzania jest widoczna, zachowuje tekst i dopisuje nową wypowiedź). Czeka do 1,5 s na końcową transkrypcję, zanim awaryjnie użyje bieżącego tekstu.
+- Logowanie dźwięku/nakładki jest emitowane na poziomie `info` w kategoriach `voicewake.overlay`, `voicewake.ptt` i `voicewake.chime` (start sesji, część, finał, wysłanie, odrzucenie, powód dźwięku).
 
 ## Następne kroki
 
 1. **VoiceSessionCoordinator (aktor)**
-   - Zarządza dokładnie jedną `VoiceSession` naraz.
+   - Posiada dokładnie jedną `VoiceSession` naraz.
    - API (oparte na tokenach): `beginWakeCapture`, `beginPushToTalk`, `updatePartial`, `endCapture`, `cancel`, `applyCooldown`.
-   - Odrzuca callbacki zawierające przestarzałe tokeny (zapobiega ponownemu otwieraniu nakładki przez stare rozpoznawanie).
+   - Odrzuca wywołania zwrotne przenoszące nieaktualne tokeny (zapobiega ponownemu otwieraniu nakładki przez stare rozpoznawacze).
 2. **VoiceSession (model)**
-   - Pola: `token`, `source` (wakeWord|pushToTalk), tekst committed/volatile, flagi chime, timery (auto-send, idle), `overlayMode` (display|editing|sending), deadline cooldown.
+   - Pola: `token`, `source` (wakeWord|pushToTalk), zatwierdzony/ulotny tekst, flagi dźwięku, timery (automatyczne wysyłanie, bezczynność), `overlayMode` (display|editing|sending), termin końca okresu blokady.
 3. **Powiązanie nakładki**
-   - `VoiceSessionPublisher` (`ObservableObject`) odzwierciedla aktywną sesję do SwiftUI.
-   - `VoiceWakeOverlayView` renderuje wyłącznie przez publisher; nigdy nie mutuje bezpośrednio globalnych singletonów.
-   - Akcje użytkownika nakładki (`sendNow`, `dismiss`, `edit`) wywołują coordinator z tokenem sesji.
+   - `VoiceSessionPublisher` (`ObservableObject`) odzwierciedla aktywną sesję w SwiftUI.
+   - `VoiceWakeOverlayView` renderuje tylko przez publisher; nigdy nie modyfikuje globalnych singletonów bezpośrednio.
+   - Akcje użytkownika nakładki (`sendNow`, `dismiss`, `edit`) wywołują koordynator z tokenem sesji.
 4. **Ujednolicona ścieżka wysyłania**
-   - Przy `endCapture`: jeśli przycięty tekst jest pusty → zamknij; w przeciwnym razie `performSend(session:)` (odtwarza send chime raz, przekazuje dalej, zamyka).
-   - Push-to-talk: bez opóźnienia; wybudzanie słowem kluczowym: opcjonalne opóźnienie dla auto-send.
-   - Zastosuj krótki cooldown do runtime wybudzania po zakończeniu push-to-talk, aby słowo kluczowe nie wyzwoliło się natychmiast ponownie.
+   - Przy `endCapture`: jeśli przycięty tekst jest pusty → odrzuć; w przeciwnym razie `performSend(session:)` (odtwarza dźwięk wysyłania raz, przekazuje dalej, odrzuca).
+   - Tryb naciśnij, aby mówić: bez opóźnienia; słowo wybudzające: opcjonalne opóźnienie dla automatycznego wysyłania.
+   - Zastosuj krótki okres blokady do środowiska uruchomieniowego wybudzania po zakończeniu trybu naciśnij, aby mówić, aby słowo wybudzające nie uruchomiło się ponownie natychmiast.
 5. **Logowanie**
-   - Coordinator emituje logi `.info` w subsystemie `ai.openclaw`, kategorie `voicewake.overlay` i `voicewake.chime`.
+   - Koordynator emituje logi `.info` w podsystemie `ai.openclaw`, w kategoriach `voicewake.overlay` i `voicewake.chime`.
    - Kluczowe zdarzenia: `session_started`, `adopted_by_push_to_talk`, `partial`, `finalized`, `send`, `dismiss`, `cancel`, `cooldown`.
 
 ## Lista kontrolna debugowania
 
-- Strumieniuj logi podczas odtwarzania „lepkiej” nakładki:
+- Strumieniuj logi podczas odtwarzania zacinającej się nakładki:
 
   ```bash
   sudo log stream --predicate 'subsystem == "ai.openclaw" AND category CONTAINS "voicewake"' --level info --style compact
   ```
 
-- Potwierdź, że aktywny jest tylko jeden token sesji; przestarzałe callbacki powinny być odrzucane przez coordinator.
-- Upewnij się, że puszczenie push-to-talk zawsze wywołuje `endCapture` z aktywnym tokenem; jeśli tekst jest pusty, oczekuj `dismiss` bez chime i bez wysyłania.
+- Zweryfikuj, że aktywny jest tylko jeden token sesji; nieaktualne wywołania zwrotne powinny być odrzucane przez koordynator.
+- Upewnij się, że zwolnienie w trybie naciśnij, aby mówić zawsze wywołuje `endCapture` z aktywnym tokenem; jeśli tekst jest pusty, oczekuj `dismiss` bez dźwięku ani wysyłania.
 
-## Kroki migracji (sugestia)
+## Kroki migracji (sugerowane)
 
 1. Dodaj `VoiceSessionCoordinator`, `VoiceSession` i `VoiceSessionPublisher`.
 2. Zrefaktoryzuj `VoiceWakeRuntime`, aby tworzył/aktualizował/kończył sesje zamiast bezpośrednio dotykać `VoiceWakeOverlayController`.
-3. Zrefaktoryzuj `VoicePushToTalk`, aby przejmował istniejące sesje i wywoływał `endCapture` przy puszczeniu; zastosuj cooldown runtime.
-4. Podłącz `VoiceWakeOverlayController` do publishera; usuń bezpośrednie wywołania z runtime/PTT.
-5. Dodaj testy integracyjne dla przejmowania sesji, cooldown i zamykania przy pustym tekście.
+3. Zrefaktoryzuj `VoicePushToTalk`, aby przejmował istniejące sesje i wywoływał `endCapture` po zwolnieniu; zastosuj okres blokady środowiska uruchomieniowego.
+4. Podłącz `VoiceWakeOverlayController` do publishera; usuń bezpośrednie wywołania ze środowiska uruchomieniowego/PTT.
+5. Dodaj testy integracyjne dla przejmowania sesji, okresu blokady i odrzucania pustego tekstu.
 
 ## Powiązane
 
 - [Aplikacja macOS](/pl/platforms/macos)
-- [Voice wake (macOS)](/pl/platforms/mac/voicewake)
-- [Talk mode](/pl/nodes/talk)
+- [Wybudzanie głosowe (macOS)](/pl/platforms/mac/voicewake)
+- [Tryb rozmowy](/pl/nodes/talk)
