@@ -113,6 +113,13 @@ The full CLI reference, profile/scenario catalog, env vars, and artifact layout 
 
 The scenarios cover transport behavior that unit tests cannot prove end to end: mention gating, allow-bot policies, allowlists, top-level and threaded replies, DM routing, reaction handling, inbound edit suppression, restart replay dedupe, homeserver interruption recovery, approval metadata delivery, media handling, and Matrix E2EE bootstrap/recovery/verification flows. The E2EE CLI profile also drives `openclaw matrix encryption setup` and verification commands through the same disposable homeserver before checking gateway replies.
 
+Discord also has Mantis-only opt-in scenarios for bug reproduction. Use
+`--scenario discord-status-reactions-tool-only` for the explicit status reaction
+timeline, or `--scenario discord-thread-reply-filepath-attachment` to create a
+real Discord thread and verify that `message.thread-reply` preserves a
+`filePath` attachment. These scenarios stay out of the default live Discord lane
+because they are before/after repro probes rather than broad smoke coverage.
+
 CI uses the same command surface in `.github/workflows/qa-live-transports-convex.yml`. Scheduled and default manual runs execute the fast Matrix profile with live frontier credentials, `--fast`, and `OPENCLAW_QA_MATRIX_NO_REPLY_WINDOW_MS=3000`. Manual `matrix_profile=all` fans out into the five profile shards so the exhaustive catalog can run in parallel while keeping one artifact directory per shard.
 
 For transport-real Telegram, Discord, and Slack smoke lanes:
