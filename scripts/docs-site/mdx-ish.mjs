@@ -40,7 +40,9 @@ function highlightCode(code, rawLang = "") {
   const lang = normalizeLang(rawLang);
   if (isShell(lang, code)) return highlightWith(code, shellToken, shellTokenClass);
   if (["json", "jsonc"].includes(lang)) return highlightWith(code, jsonToken, jsonTokenClass);
-  if (["js", "jsx", "mjs", "cjs", "ts", "tsx"].includes(lang)) return highlightWith(code, jsToken, jsTokenClass);
+  if (["js", "javascript", "jsx", "mjs", "cjs", "ts", "typescript", "tsx", "json5"].includes(lang)) {
+    return highlightWith(code, jsToken, jsTokenClass);
+  }
   if (["yaml", "yml"].includes(lang)) return highlightWith(code, yamlToken, yamlTokenClass);
   if (["toml", "ini", "env"].includes(lang)) return highlightWith(code, configToken, configTokenClass);
   return escapeHtml(code);
@@ -72,7 +74,7 @@ function highlightWith(code, tokenPattern, tokenClass) {
 
 const shellToken = /(?<!\S)#[^\n]*|"(?:\\.|[^"])*"|'(?:\\.|[^'])*'|\$[A-Za-z_][A-Za-z0-9_]*|--?[A-Za-z0-9][A-Za-z0-9_-]*(?:=[^\s]+)?|\b(?:bun|brew|cat|cd|cp|curl|docker|export|git|grep|mkdir|mv|node|npm|npx|openclaw|pnpm|rg|rm|sudo)\b/g;
 const jsonToken = /"(?:\\.|[^"])*"(?=\s*:)|"(?:\\.|[^"])*"|\b(?:true|false|null)\b|-?\b\d+(?:\.\d+)?\b|[{}[\],:]/g;
-const jsToken = /\/\/[^\n]*|\/\*[\s\S]*?\*\/|"(?:\\.|[^"])*"|'(?:\\.|[^'])*'|`(?:\\.|[^`])*`|\b(?:await|break|case|catch|class|const|continue|default|else|export|false|finally|for|from|function|if|import|let|new|null|return|throw|true|try|type|undefined|while)\b|-?\b\d+(?:\.\d+)?\b/g;
+const jsToken = /\/\/[^\n]*|\/\*[\s\S]*?\*\/|"(?:\\.|[^"])*"|'(?:\\.|[^'])*'|`(?:\\.|[^`])*`|\b[A-Za-z_$][\w$-]*(?=\s*:)|\b(?:await|break|case|catch|class|const|continue|default|else|export|false|finally|for|from|function|if|import|let|new|null|return|throw|true|try|type|undefined|while)\b|-?\b\d+(?:\.\d+)?\b|[{}[\],:]/g;
 const yamlToken = /#[^\n]*|^\s*[-\w".'/]+\s*:|"(?:\\.|[^"])*"|'(?:\\.|[^'])*'|\b(?:true|false|null)\b|-?\b\d+(?:\.\d+)?\b/gm;
 const configToken = /#[^\n]*|^\s*[-\w".'/]+\s*=|"(?:\\.|[^"])*"|'(?:\\.|[^'])*'|\b(?:true|false|null)\b|-?\b\d+(?:\.\d+)?\b/gm;
 
@@ -94,11 +96,13 @@ function jsonTokenClass(token) {
   return "tok-punct";
 }
 
-function jsTokenClass(token) {
+function jsTokenClass(token, match, code) {
   if (token.startsWith("//") || token.startsWith("/*")) return "tok-comment";
   if (/^["'`]/.test(token)) return "tok-string";
   if (/^(?:true|false|null|undefined)$/.test(token)) return "tok-literal";
+  if (/^[A-Za-z_$][\w$-]*$/.test(token) && /^\s*:/.test(code.slice(match.index + token.length))) return "tok-key";
   if (/^-?\d/.test(token)) return "tok-number";
+  if (/^[{}[\],:]$/.test(token)) return "tok-punct";
   return "tok-keyword";
 }
 

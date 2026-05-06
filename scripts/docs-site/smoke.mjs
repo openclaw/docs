@@ -60,6 +60,11 @@ if (!/Português \(BR\)/.test(index)) {
 if (!/data-docs-chat/.test(index) || !/OPENCLAW_DOCS_CHAT_API/.test(index)) {
   throw new Error("index: docs chat widget was not rendered");
 }
+if (!/class="tok-key">channels<\/span>/.test(index)
+  || !/class="tok-string">&quot;\+15555550123&quot;<\/span>/.test(index)
+  || !/class="tok-literal">true<\/span>/.test(index)) {
+  throw new Error("index: json5 config example was not syntax-highlighted");
+}
 const modelsMarkdown = fs.readFileSync(path.join(site, "concepts/models.md"), "utf8");
 if (!/^---\nsummary: /m.test(modelsMarkdown) || !/title: "Models CLI"/m.test(modelsMarkdown)) {
   throw new Error("concepts/models.md: source markdown was not emitted");
