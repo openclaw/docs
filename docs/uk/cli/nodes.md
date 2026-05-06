@@ -1,27 +1,27 @@
 ---
 read_when:
-    - Ви керуєте сполученими Node (camera, screen, canvas)
-    - Вам потрібно схвалити запити або викликати команди Node
-summary: Довідник CLI для `openclaw nodes` (status, pairing, invoke, camera/canvas/screen)
-title: Node
+    - Ви керуєте спареними вузлами (камери, екран, полотно)
+    - Потрібно схвалювати запити або виконувати команди node
+summary: Довідник CLI для `openclaw nodes` (статус, сполучення, виклик, камера/полотно/екран)
+title: Nodes
 x-i18n:
-    generated_at: "2026-04-27T12:48:56Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T16:00:16Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 3229db91d7e64b0d37bee29bd51895d90796f5fd33b67e3d900fd8bda2b6e7e9
+    source_hash: f3eb0d23037c939e4022115a2d65e0e9cb25a872daed715b8652979ce6707cf7
     source_path: cli/nodes.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw nodes`
 
-Керуйте сполученими Node (пристроями) та викликайте можливості Node.
+Керуйте спареними вузлами (пристроями) і викликайте можливості вузлів.
 
-Пов’язано:
+Пов’язане:
 
-- Огляд Node: [Nodes](/uk/nodes)
-- Камера: [Camera nodes](/uk/nodes/camera)
-- Зображення: [Image nodes](/uk/nodes/images)
+- Огляд вузлів: [Вузли](/uk/nodes)
+- Камера: [Вузли камери](/uk/nodes/camera)
+- Зображення: [Вузли зображень](/uk/nodes/images)
 
 Поширені параметри:
 
@@ -43,22 +43,22 @@ openclaw nodes status --connected
 openclaw nodes status --last-connected 24h
 ```
 
-`nodes list` виводить таблиці незавершених і сполучених записів. Рядки сполучених записів містять вік останнього підключення (Last Connect).
-Використовуйте `--connected`, щоб показувати лише Node, які зараз підключені. Використовуйте `--last-connected <duration>`, щоб
-відфільтрувати Node, які підключалися протягом заданого проміжку часу (наприклад, `24h`, `7d`).
-Використовуйте `nodes remove --node <id|name|ip>`, щоб видалити застарілий запис сполучення Node, яким володіє Gateway.
+`nodes list` виводить таблиці очікуваних/спарених вузлів. Рядки спарених вузлів містять найновіший час з моменту підключення (Останнє підключення).
+Використовуйте `--connected`, щоб показувати лише вузли, підключені зараз. Використовуйте `--last-connected <duration>`, щоб
+фільтрувати вузли, які підключалися протягом певної тривалості (наприклад, `24h`, `7d`).
+Використовуйте `nodes remove --node <id|name|ip>`, щоб видалити застарілий запис спарення вузла, яким володіє Gateway.
 
 Примітка щодо схвалення:
 
-- `openclaw nodes pending` потребує лише область дії pairing.
+- `openclaw nodes pending` потребує лише області спарення.
 - `gateway.nodes.pairing.autoApproveCidrs` може пропустити крок очікування лише для
-  явно довіреного початкового сполучення пристрою `role: node`. Цю можливість вимкнено за
-  замовчуванням, і вона не схвалює розширення доступу.
-- `openclaw nodes approve <requestId>` успадковує додаткові вимоги до областей дії з
-  незавершеного запиту:
-  - запит без команди: лише pairing
-  - команди Node без exec: pairing + write
-  - `system.run` / `system.run.prepare` / `system.which`: pairing + admin
+  явно довіреного первинного спарення пристрою `role: node`. Типово це вимкнено
+  і не схвалює оновлення.
+- `openclaw nodes approve <requestId>` успадковує додаткові вимоги до області від
+  запиту, що очікує:
+  - запит без команди: лише спарення
+  - команди вузла без exec: спарення + запис
+  - `system.run` / `system.run.prepare` / `system.which`: спарення + admin
 
 ## Виклик
 
@@ -68,16 +68,16 @@ openclaw nodes invoke --node <id|name|ip> --command <command> --params <json>
 
 Прапорці виклику:
 
-- `--params <json>`: рядок JSON-об’єкта (типово `{}`).
-- `--invoke-timeout <ms>`: тайм-аут виклику Node (типово `15000`).
+- `--params <json>`: рядок об’єкта JSON (типово `{}`).
+- `--invoke-timeout <ms>`: час очікування виклику вузла (типово `15000`).
 - `--idempotency-key <key>`: необов’язковий ключ ідемпотентності.
-- `system.run` і `system.run.prepare` тут заблоковані; для виконання shell-команд використовуйте інструмент `exec` з `host=node`.
+- `system.run` і `system.run.prepare` тут заблоковані; використовуйте інструмент `exec` з `host=node` для виконання shell.
 
-Для виконання shell-команд на Node використовуйте інструмент `exec` з `host=node` замість `openclaw nodes run`.
-CLI `nodes` тепер зосереджений на можливостях: прямий RPC через `nodes invoke`, а також pairing, camera,
-screen, location, canvas і notifications.
+Для виконання shell на вузлі використовуйте інструмент `exec` з `host=node` замість `openclaw nodes run`.
+CLI `nodes` тепер зосереджений на можливостях: прямий RPC через `nodes invoke`, а також спарення, камера,
+екран, місцезнаходження, canvas і сповіщення.
 
-## Пов’язано
+## Пов’язане
 
 - [Довідник CLI](/uk/cli)
-- [Nodes](/uk/nodes)
+- [Вузли](/uk/nodes)
