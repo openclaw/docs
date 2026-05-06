@@ -1,22 +1,22 @@
 ---
 read_when:
     - Triển khai bảng Canvas trên macOS
-    - Thêm các điều khiển tác tử cho không gian làm việc trực quan
+    - Thêm các điều khiển tác nhân cho không gian làm việc trực quan
     - Gỡ lỗi quá trình tải canvas trong WKWebView
 summary: Bảng Canvas do tác nhân điều khiển được nhúng qua WKWebView + lược đồ URL tùy chỉnh
 title: Khung vẽ
 x-i18n:
-    generated_at: "2026-04-29T22:56:54Z"
+    generated_at: "2026-05-06T09:21:17Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1a791f7841193a55b7f9cc5cc26168258d72d972279bba4c68fd1b15ef16f1c4
+    source_hash: d8e53f5d1c2e5b3b46e77cb74632e56123f3312dfcc395aa5ac8182c8d58b6cf
     source_path: platforms/mac/canvas.md
     workflow: 16
 ---
 
-Ứng dụng macOS nhúng một **bảng Canvas** do tác nhân điều khiển bằng `WKWebView`. Đây là một không gian làm việc trực quan nhẹ cho HTML/CSS/JS, A2UI và các bề mặt UI tương tác nhỏ.
+Ứng dụng macOS nhúng một **bảng Canvas** do agent điều khiển bằng `WKWebView`. Đây là một không gian làm việc trực quan nhẹ cho HTML/CSS/JS, A2UI và các bề mặt UI tương tác nhỏ.
 
-## Nơi Canvas tồn tại
+## Vị trí của Canvas
 
 Trạng thái Canvas được lưu trong Application Support:
 
@@ -32,20 +32,20 @@ Ví dụ:
 - `openclaw-canvas://main/assets/app.css` → `<canvasRoot>/main/assets/app.css`
 - `openclaw-canvas://main/widgets/todo/` → `<canvasRoot>/main/widgets/todo/index.html`
 
-Nếu không có `index.html` ở thư mục gốc, ứng dụng sẽ hiển thị một **trang khung dựng sẵn**.
+Nếu không có `index.html` ở gốc, ứng dụng sẽ hiển thị một **trang khung dựng sẵn**.
 
 ## Hành vi của bảng
 
-- Bảng không viền, có thể đổi kích thước, được neo gần thanh menu (hoặc con trỏ chuột).
+- Bảng không viền, có thể đổi kích thước, neo gần thanh menu (hoặc con trỏ chuột).
 - Ghi nhớ kích thước/vị trí theo từng phiên.
 - Tự động tải lại khi các tệp canvas cục bộ thay đổi.
-- Mỗi lần chỉ hiển thị một bảng Canvas (phiên được chuyển khi cần).
+- Mỗi lần chỉ hiển thị một bảng Canvas (phiên được chuyển đổi khi cần).
 
-Có thể tắt Canvas từ Cài đặt → **Cho phép Canvas**. Khi bị tắt, các lệnh node canvas trả về `CANVAS_DISABLED`.
+Có thể tắt Canvas từ Settings → **Allow Canvas**. Khi bị tắt, các lệnh node canvas trả về `CANVAS_DISABLED`.
 
-## Bề mặt API của tác nhân
+## Bề mặt API cho agent
 
-Canvas được cung cấp qua **Gateway WebSocket**, nên tác nhân có thể:
+Canvas được cung cấp qua **Gateway WebSocket**, vì vậy agent có thể:
 
 - hiển thị/ẩn bảng
 - điều hướng đến một đường dẫn hoặc URL
@@ -69,7 +69,7 @@ Ghi chú:
 ## A2UI trong Canvas
 
 A2UI được lưu trữ bởi máy chủ canvas của Gateway và được kết xuất bên trong bảng Canvas.
-Khi Gateway quảng bá một máy chủ Canvas, ứng dụng macOS tự động điều hướng đến trang máy chủ A2UI trong lần mở đầu tiên.
+Khi Gateway quảng bá một máy chủ Canvas, ứng dụng macOS sẽ tự động điều hướng đến trang máy chủ A2UI trong lần mở đầu tiên.
 
 URL máy chủ A2UI mặc định:
 
@@ -79,7 +79,7 @@ http://<gateway-host>:18789/__openclaw__/a2ui/
 
 ### Lệnh A2UI (v0.8)
 
-Canvas hiện chấp nhận các thông điệp máy chủ→máy khách **A2UI v0.8**:
+Canvas hiện chấp nhận thông điệp server→client **A2UI v0.8**:
 
 - `beginRendering`
 - `surfaceUpdate`
@@ -99,15 +99,15 @@ EOFA2
 openclaw nodes canvas a2ui push --jsonl /tmp/a2ui-v0.8.jsonl --node <id>
 ```
 
-Kiểm tra nhanh:
+Kiểm thử nhanh:
 
 ```bash
 openclaw nodes canvas a2ui push --node <id> --text "Hello from A2UI"
 ```
 
-## Kích hoạt lượt chạy tác nhân từ Canvas
+## Kích hoạt các lượt chạy agent từ Canvas
 
-Canvas có thể kích hoạt các lượt chạy tác nhân mới qua liên kết sâu:
+Canvas có thể kích hoạt các lượt chạy agent mới qua deep link:
 
 - `openclaw://agent?...`
 
@@ -121,9 +121,9 @@ window.location.href = "openclaw://agent?message=Review%20this%20design";
 
 ## Ghi chú bảo mật
 
-- Lược đồ Canvas chặn việc duyệt thư mục; các tệp phải nằm trong thư mục gốc của phiên.
-- Nội dung Canvas cục bộ dùng một lược đồ tùy chỉnh (không cần máy chủ local loopback).
-- URL `http(s)` bên ngoài chỉ được phép khi được điều hướng rõ ràng.
+- Lược đồ Canvas chặn việc duyệt thư mục ngược; các tệp phải nằm dưới gốc phiên.
+- Nội dung Canvas cục bộ dùng lược đồ tùy chỉnh (không cần máy chủ loopback).
+- URL `http(s)` bên ngoài chỉ được cho phép khi được điều hướng rõ ràng.
 
 ## Liên quan
 

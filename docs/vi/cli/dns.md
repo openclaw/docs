@@ -1,21 +1,21 @@
 ---
 read_when:
-    - Bạn muốn phát hiện diện rộng (DNS-SD) thông qua Tailscale + CoreDNS
-    - You’re setting up split DNS for a custom discovery domain (example: openclaw.internal)
-summary: Tài liệu tham chiếu CLI cho `openclaw dns` (trình trợ giúp khám phá diện rộng)
+    - Bạn muốn khám phá diện rộng (DNS-SD) thông qua Tailscale + CoreDNS
+    - You're setting up split DNS for a custom discovery domain (example: openclaw.internal)
+summary: Tài liệu tham chiếu CLI cho `openclaw dns` (các trình trợ giúp khám phá diện rộng)
 title: DNS
 x-i18n:
-    generated_at: "2026-04-29T22:31:36Z"
+    generated_at: "2026-05-06T09:04:53Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 99dcf7c8c76833784a2b712b02f9e40c6c0548c37c9743a89b9d650fe503d385
+    source_hash: 460bdcbaa2c0c0fc1a4f5bdd76b904d8ac35195a25324c66421abfdc2044bb07
     source_path: cli/dns.md
     workflow: 16
 ---
 
 # `openclaw dns`
 
-Các helper DNS cho khám phá diện rộng (Tailscale + CoreDNS). Hiện tập trung vào macOS + Homebrew CoreDNS.
+Các trình hỗ trợ DNS cho khám phá diện rộng (Tailscale + CoreDNS). Hiện tập trung vào macOS + Homebrew CoreDNS.
 
 Liên quan:
 
@@ -36,23 +36,23 @@ Lập kế hoạch hoặc áp dụng thiết lập CoreDNS cho khám phá DNS-SD
 
 Tùy chọn:
 
-- `--domain <domain>`: miền khám phá diện rộng (ví dụ `openclaw.internal`)
+- `--domain <domain>`: domain khám phá diện rộng (ví dụ `openclaw.internal`)
 - `--apply`: cài đặt hoặc cập nhật cấu hình CoreDNS và khởi động lại dịch vụ (yêu cầu sudo; chỉ macOS)
 
 Nội dung hiển thị:
 
-- miền khám phá đã phân giải
-- đường dẫn tệp zone
+- domain khám phá đã phân giải
+- đường dẫn tệp vùng
 - các IP tailnet hiện tại
 - cấu hình khám phá `openclaw.json` được khuyến nghị
-- các giá trị máy chủ định danh/miền Tailscale Split DNS cần đặt
+- các giá trị nameserver/domain Split DNS của Tailscale cần đặt
 
 Ghi chú:
 
-- Nếu không có `--apply`, lệnh chỉ là helper lập kế hoạch và in ra thiết lập được khuyến nghị.
+- Không có `--apply`, lệnh chỉ là trình hỗ trợ lập kế hoạch và in thiết lập được khuyến nghị.
 - Nếu bỏ qua `--domain`, OpenClaw dùng `discovery.wideArea.domain` từ cấu hình.
 - `--apply` hiện chỉ hỗ trợ macOS và yêu cầu Homebrew CoreDNS.
-- `--apply` khởi tạo tệp zone nếu cần, bảo đảm khối import CoreDNS tồn tại, và khởi động lại dịch vụ brew `coredns`.
+- `--apply` khởi tạo tệp vùng nếu cần, bảo đảm stanza import của CoreDNS tồn tại, và khởi động lại dịch vụ brew `coredns`.
 
 ## Liên quan
 

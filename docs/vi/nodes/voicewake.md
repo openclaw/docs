@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Thay đổi hành vi hoặc giá trị mặc định của các từ đánh thức bằng giọng nói
-    - Thêm nền tảng Node mới cần đồng bộ từ đánh thức
-summary: Từ đánh thức bằng giọng nói toàn cục (do Gateway sở hữu) và cách chúng đồng bộ hóa giữa các nút
+    - Thay đổi hành vi hoặc giá trị mặc định của từ đánh thức bằng giọng nói
+    - Thêm các nền tảng Node mới cần đồng bộ từ đánh thức
+summary: Các từ đánh thức bằng giọng nói toàn cục (thuộc quyền Gateway) và cách chúng đồng bộ giữa các Node
 title: Đánh thức bằng giọng nói
 x-i18n:
-    generated_at: "2026-04-29T22:55:19Z"
+    generated_at: "2026-05-06T09:20:28Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ac638cdf89f09404cdf293b416417f6cb3e31865b09f04ef87b9604e436dcbbe
+    source_hash: a284cbe3e12784a8d7a3eab6ba8ae230123557bca7593c956111199b94b91b73
     source_path: nodes/voicewake.md
     workflow: 16
 ---
 
-OpenClaw xem **từ đánh thức là một danh sách toàn cục duy nhất** do **Gateway** sở hữu.
+OpenClaw coi **các từ đánh thức là một danh sách toàn cục duy nhất** do **Gateway** sở hữu.
 
 - **Không có từ đánh thức tùy chỉnh theo từng Node**.
-- **Bất kỳ UI Node/ứng dụng nào cũng có thể chỉnh sửa** danh sách; các thay đổi được Gateway lưu giữ và phát tới mọi bên.
-- macOS và iOS giữ các công tắc **bật/tắt Đánh thức bằng giọng nói** cục bộ (UX cục bộ + quyền khác nhau).
-- Android hiện đang tắt Đánh thức bằng giọng nói và dùng luồng mic thủ công trong tab Giọng nói.
+- **Bất kỳ giao diện người dùng Node/ứng dụng nào cũng có thể chỉnh sửa** danh sách; các thay đổi được Gateway lưu lại và phát sóng đến mọi người.
+- macOS và iOS giữ các nút bật/tắt **Đánh thức bằng giọng nói** cục bộ (trải nghiệm người dùng cục bộ + quyền khác nhau).
+- Android hiện đang tắt Đánh thức bằng giọng nói và dùng luồng mic thủ công trong thẻ Giọng nói.
 
 ## Lưu trữ (máy chủ Gateway)
 
@@ -26,7 +26,7 @@ Từ đánh thức được lưu trên máy gateway tại:
 
 - `~/.openclaw/settings/voicewake.json`
 
-Dạng:
+Hình dạng:
 
 ```json
 { "triggers": ["openclaw", "claude", "computer"], "updatedAtMs": 1730000000000 }
@@ -41,15 +41,15 @@ Dạng:
 
 Ghi chú:
 
-- Các mục kích hoạt được chuẩn hóa (cắt khoảng trắng, loại bỏ mục rỗng). Danh sách rỗng sẽ quay về mặc định.
-- Các giới hạn được thực thi để bảo đảm an toàn (giới hạn số lượng/độ dài).
+- Trigger được chuẩn hóa (cắt khoảng trắng, bỏ mục rỗng). Danh sách rỗng sẽ quay về giá trị mặc định.
+- Các giới hạn được thực thi để đảm bảo an toàn (giới hạn số lượng/độ dài).
 
-### Phương thức định tuyến (mục kích hoạt → mục tiêu)
+### Phương thức định tuyến (trigger → đích)
 
 - `voicewake.routing.get` → `{ config: VoiceWakeRoutingConfig }`
 - `voicewake.routing.set` với tham số `{ config: VoiceWakeRoutingConfig }` → `{ config: VoiceWakeRoutingConfig }`
 
-Dạng `VoiceWakeRoutingConfig`:
+Hình dạng `VoiceWakeRoutingConfig`:
 
 ```json
 {
@@ -60,7 +60,7 @@ Dạng `VoiceWakeRoutingConfig`:
 }
 ```
 
-Mục tiêu định tuyến hỗ trợ đúng một trong các dạng sau:
+Đích định tuyến hỗ trợ đúng một trong các mục sau:
 
 - `{ "mode": "current" }`
 - `{ "agentId": "main" }`
@@ -68,33 +68,33 @@ Mục tiêu định tuyến hỗ trợ đúng một trong các dạng sau:
 
 ### Sự kiện
 
-- payload `voicewake.changed` `{ triggers: string[] }`
-- payload `voicewake.routing.changed` `{ config: VoiceWakeRoutingConfig }`
+- `voicewake.changed` payload `{ triggers: string[] }`
+- `voicewake.routing.changed` payload `{ config: VoiceWakeRoutingConfig }`
 
-Bên nhận:
+Ai nhận được:
 
-- Tất cả máy khách WebSocket (ứng dụng macOS, WebChat, v.v.)
-- Tất cả Node đã kết nối (iOS/Android), và cũng được đẩy “trạng thái hiện tại” ban đầu khi Node kết nối.
+- Tất cả client WebSocket (ứng dụng macOS, WebChat, v.v.)
+- Tất cả Node đã kết nối (iOS/Android), và cũng được đẩy "trạng thái hiện tại" ban đầu khi Node kết nối.
 
-## Hành vi máy khách
+## Hành vi của client
 
 ### Ứng dụng macOS
 
-- Dùng danh sách toàn cục để kiểm soát các mục kích hoạt `VoiceWakeRuntime`.
-- Việc chỉnh sửa “Từ kích hoạt” trong cài đặt Đánh thức bằng giọng nói sẽ gọi `voicewake.set`, rồi dựa vào bản phát để giữ các máy khách khác đồng bộ.
+- Dùng danh sách toàn cục để kiểm soát trigger của `VoiceWakeRuntime`.
+- Việc chỉnh sửa "Từ trigger" trong cài đặt Đánh thức bằng giọng nói gọi `voicewake.set`, rồi dựa vào phát sóng để giữ các client khác đồng bộ.
 
 ### Node iOS
 
-- Dùng danh sách toàn cục để phát hiện mục kích hoạt của `VoiceWakeManager`.
-- Việc chỉnh sửa Từ đánh thức trong Cài đặt sẽ gọi `voicewake.set` (qua Gateway WS) và cũng giữ cho tính năng phát hiện từ đánh thức cục bộ phản hồi nhanh.
+- Dùng danh sách toàn cục để phát hiện trigger của `VoiceWakeManager`.
+- Việc chỉnh sửa Từ đánh thức trong Cài đặt gọi `voicewake.set` (qua Gateway WS) và cũng giữ cho phát hiện từ đánh thức cục bộ phản hồi nhanh.
 
 ### Node Android
 
-- Đánh thức bằng giọng nói hiện bị tắt trong runtime/Cài đặt Android.
-- Giọng nói trên Android dùng thu mic thủ công trong tab Giọng nói thay vì các mục kích hoạt bằng từ đánh thức.
+- Đánh thức bằng giọng nói hiện đang bị vô hiệu hóa trong runtime/Cài đặt Android.
+- Giọng nói trên Android dùng thu âm mic thủ công trong thẻ Giọng nói thay vì trigger bằng từ đánh thức.
 
 ## Liên quan
 
 - [Chế độ trò chuyện](/vi/nodes/talk)
 - [Âm thanh và ghi chú thoại](/vi/nodes/audio)
-- [Hiểu nội dung phương tiện](/vi/nodes/media-understanding)
+- [Hiểu nội dung media](/vi/nodes/media-understanding)

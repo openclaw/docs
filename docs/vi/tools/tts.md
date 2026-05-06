@@ -1,16 +1,16 @@
 ---
 read_when:
-    - Bật tính năng chuyển văn bản thành giọng nói cho câu trả lời
-    - Cấu hình nhà cung cấp TTS, chuỗi dự phòng hoặc hồ sơ cá tính
+    - Bật tính năng chuyển văn bản thành giọng nói cho các câu trả lời
+    - Cấu hình nhà cung cấp TTS, chuỗi dự phòng hoặc nhân cách
     - Sử dụng các lệnh hoặc chỉ thị /tts
 sidebarTitle: Text to speech (TTS)
-summary: Chuyển văn bản thành giọng nói cho phản hồi gửi đi — nhà cung cấp, hồ sơ vai trò, lệnh dấu gạch chéo và đầu ra theo từng kênh
+summary: Văn bản thành giọng nói cho phản hồi gửi đi — nhà cung cấp, cá tính, lệnh gạch chéo và đầu ra theo từng kênh
 title: Chuyển văn bản thành giọng nói
 x-i18n:
-    generated_at: "2026-05-02T22:22:51Z"
+    generated_at: "2026-05-06T09:35:07Z"
     model: gpt-5.5
     provider: openai
-    source_hash: daf4d7bc86afe14f7c181eee56e2bc77906ed78b4aaabb2fc855847f5a4366f9
+    source_hash: ac6fce14c5597938949d1e3bb8547106707b234e9b1c7a33fd49d23bae27da6e
     source_path: tools/tts.md
     workflow: 16
 ---
@@ -19,11 +19,16 @@ OpenClaw có thể chuyển đổi các phản hồi gửi đi thành âm thanh 
 và gửi tin nhắn thoại gốc trên Feishu, Matrix, Telegram và WhatsApp,
 tệp đính kèm âm thanh ở mọi nơi khác, cũng như luồng PCM/Ulaw cho điện thoại và Talk.
 
+TTS là nửa đầu ra giọng nói của chế độ `stt-tts` của Talk. Các phiên Talk
+`realtime` gốc theo nhà cung cấp tổng hợp giọng nói bên trong nhà cung cấp realtime
+thay vì gọi đường dẫn TTS này, trong khi các phiên `transcription` không tổng hợp
+phản hồi giọng nói của trợ lý.
+
 ## Bắt đầu nhanh
 
 <Steps>
   <Step title="Pick a provider">
-    OpenAI và ElevenLabs là các tùy chọn được lưu trữ đáng tin cậy nhất. Microsoft và
+    OpenAI và ElevenLabs là các tùy chọn lưu trữ đáng tin cậy nhất. Microsoft và
     Local CLI hoạt động mà không cần khóa API. Xem [ma trận nhà cung cấp](#supported-providers)
     để biết danh sách đầy đủ.
   </Step>
@@ -56,7 +61,7 @@ tệp đính kèm âm thanh ở mọi nơi khác, cũng như luồng PCM/Ulaw ch
 Auto-TTS mặc định **tắt**. Khi chưa đặt `messages.tts.provider`,
 OpenClaw chọn nhà cung cấp đã cấu hình đầu tiên theo thứ tự tự động chọn của registry.
 Công cụ agent `tts` tích hợp sẵn chỉ dành cho ý định rõ ràng: trò chuyện thông thường vẫn là
-văn bản trừ khi người dùng yêu cầu âm thanh, dùng `/tts`, hoặc bật giọng nói Auto-TTS/directive.
+văn bản trừ khi người dùng yêu cầu âm thanh, dùng `/tts`, hoặc bật lời nói Auto-TTS/chỉ thị.
 </Note>
 
 ## Nhà cung cấp được hỗ trợ
@@ -66,30 +71,30 @@ văn bản trừ khi người dùng yêu cầu âm thanh, dùng `/tts`, hoặc b
 | **Azure Speech**  | `AZURE_SPEECH_KEY` + `AZURE_SPEECH_REGION` (cũng có `AZURE_SPEECH_API_KEY`, `SPEECH_KEY`, `SPEECH_REGION`)       | Đầu ra ghi chú thoại Ogg/Opus gốc và điện thoại.                        |
 | **DeepInfra**     | `DEEPINFRA_API_KEY`                                                                                              | TTS tương thích OpenAI. Mặc định là `hexgrad/Kokoro-82M`.               |
 | **ElevenLabs**    | `ELEVENLABS_API_KEY` hoặc `XI_API_KEY`                                                                           | Nhân bản giọng nói, đa ngôn ngữ, xác định được qua `seed`.              |
-| **Google Gemini** | `GEMINI_API_KEY` hoặc `GOOGLE_API_KEY`                                                                           | TTS API Gemini; nhận biết persona qua `promptTemplate: "audio-profile-v1"`. |
+| **Google Gemini** | `GEMINI_API_KEY` hoặc `GOOGLE_API_KEY`                                                                           | TTS Gemini API; nhận biết persona qua `promptTemplate: "audio-profile-v1"`. |
 | **Gradium**       | `GRADIUM_API_KEY`                                                                                                | Đầu ra ghi chú thoại và điện thoại.                                     |
-| **Inworld**       | `INWORLD_API_KEY`                                                                                                | TTS API phát trực tuyến. Ghi chú thoại Opus gốc và điện thoại PCM.      |
-| **Local CLI**     | không có                                                                                                         | Chạy lệnh TTS cục bộ đã cấu hình.                                      |
-| **Microsoft**     | không có                                                                                                         | TTS neural Edge công khai qua `node-edge-tts`. Nỗ lực tối đa, không có SLA. |
-| **MiniMax**       | `MINIMAX_API_KEY` (hoặc Gói token: `MINIMAX_OAUTH_TOKEN`, `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY`)     | T2A v2 API. Mặc định là `speech-2.8-hd`.                                |
-| **OpenAI**        | `OPENAI_API_KEY`                                                                                                 | Cũng dùng cho tóm tắt tự động; hỗ trợ persona `instructions`.           |
+| **Inworld**       | `INWORLD_API_KEY`                                                                                                | API TTS phát trực tuyến. Ghi chú thoại Opus gốc và điện thoại PCM.      |
+| **Local CLI**     | không có                                                                                                         | Chạy một lệnh TTS cục bộ đã cấu hình.                                  |
+| **Microsoft**     | không có                                                                                                         | TTS neural Edge công khai qua `node-edge-tts`. Nỗ lực tốt nhất, không SLA. |
+| **MiniMax**       | `MINIMAX_API_KEY` (hoặc Gói Token: `MINIMAX_OAUTH_TOKEN`, `MINIMAX_CODE_PLAN_KEY`, `MINIMAX_CODING_API_KEY`)    | API T2A v2. Mặc định là `speech-2.8-hd`.                                |
+| **OpenAI**        | `OPENAI_API_KEY`                                                                                                 | Cũng được dùng cho tự động tóm tắt; hỗ trợ persona `instructions`.      |
 | **OpenRouter**    | `OPENROUTER_API_KEY` (có thể dùng lại `models.providers.openrouter.apiKey`)                                      | Mô hình mặc định `hexgrad/kokoro-82m`.                                  |
-| **Volcengine**    | `VOLCENGINE_TTS_API_KEY` hoặc `BYTEPLUS_SEED_SPEECH_API_KEY` (AppID/token cũ: `VOLCENGINE_TTS_APPID`/`_TOKEN`)  | BytePlus Seed Speech HTTP API.                                          |
-| **Vydra**         | `VYDRA_API_KEY`                                                                                                  | Nhà cung cấp chung cho hình ảnh, video và giọng nói.                    |
-| **xAI**           | `XAI_API_KEY`                                                                                                    | TTS theo lô của xAI. Ghi chú thoại Opus gốc **không** được hỗ trợ.      |
-| **Xiaomi MiMo**   | `XIAOMI_API_KEY`                                                                                                 | MiMo TTS thông qua hoàn thành trò chuyện của Xiaomi.                    |
+| **Volcengine**    | `VOLCENGINE_TTS_API_KEY` hoặc `BYTEPLUS_SEED_SPEECH_API_KEY` (AppID/token cũ: `VOLCENGINE_TTS_APPID`/`_TOKEN`)  | API HTTP BytePlus Seed Speech.                                          |
+| **Vydra**         | `VYDRA_API_KEY`                                                                                                  | Nhà cung cấp hình ảnh, video và giọng nói dùng chung.                   |
+| **xAI**           | `XAI_API_KEY`                                                                                                    | TTS hàng loạt xAI. Ghi chú thoại Opus gốc **không** được hỗ trợ.        |
+| **Xiaomi MiMo**   | `XIAOMI_API_KEY`                                                                                                 | MiMo TTS thông qua hoàn tất trò chuyện Xiaomi.                          |
 
-Nếu nhiều nhà cung cấp được cấu hình, nhà cung cấp đã chọn sẽ được dùng trước và các nhà cung cấp
-khác là tùy chọn dự phòng. Tóm tắt tự động dùng `summaryModel` (hoặc
-`agents.defaults.model.primary`), vì vậy nhà cung cấp đó cũng phải được xác thực
-nếu bạn vẫn bật tóm tắt.
+Nếu cấu hình nhiều nhà cung cấp, nhà cung cấp đã chọn được dùng trước và các
+nhà cung cấp còn lại là tùy chọn dự phòng. Tự động tóm tắt dùng `summaryModel` (hoặc
+`agents.defaults.model.primary`), nên nhà cung cấp đó cũng phải được xác thực
+nếu bạn giữ bật tính năng tóm tắt.
 
 <Warning>
 Nhà cung cấp **Microsoft** đi kèm dùng dịch vụ TTS neural trực tuyến của Microsoft Edge
-thông qua `node-edge-tts`. Đây là dịch vụ web công khai không có
-SLA hoặc hạn mức đã công bố — hãy xem là nỗ lực tối đa. Id nhà cung cấp cũ `edge` được
-chuẩn hóa thành `microsoft` và `openclaw doctor --fix` ghi lại cấu hình đã lưu;
-các cấu hình mới luôn nên dùng `microsoft`.
+thông qua `node-edge-tts`. Đây là một dịch vụ web công khai không có
+SLA hoặc hạn mức được công bố — hãy xem đó là nỗ lực tốt nhất. Id nhà cung cấp cũ `edge` được
+chuẩn hóa thành `microsoft` và `openclaw doctor --fix` ghi lại cấu hình
+đã lưu; cấu hình mới luôn nên dùng `microsoft`.
 </Warning>
 
 ## Cấu hình
@@ -375,9 +380,9 @@ preset và điều chỉnh khối nhà cung cấp:
 
 ### Ghi đè giọng nói theo từng agent
 
-Dùng `agents.list[].tts` khi một agent cần nói bằng nhà cung cấp,
-giọng nói, mô hình, persona hoặc chế độ Auto-TTS khác. Khối agent được hợp nhất sâu lên trên
-`messages.tts`, vì vậy thông tin xác thực của nhà cung cấp có thể ở lại cấu hình nhà cung cấp toàn cục:
+Dùng `agents.list[].tts` khi một agent nên nói bằng nhà cung cấp,
+giọng nói, mô hình, persona hoặc chế độ Auto-TTS khác. Khối agent được hợp nhất sâu lên
+`messages.tts`, nên thông tin xác thực nhà cung cấp có thể vẫn ở cấu hình nhà cung cấp toàn cục:
 
 ```json5
 {
@@ -405,10 +410,10 @@ giọng nói, mô hình, persona hoặc chế độ Auto-TTS khác. Khối agent
 }
 ```
 
-Để ghim persona theo từng agent, đặt `agents.list[].tts.persona` cùng với cấu hình
+Để cố định persona theo từng agent, đặt `agents.list[].tts.persona` cùng với cấu hình
 nhà cung cấp — nó chỉ ghi đè `messages.tts.persona` toàn cục cho agent đó.
 
-Thứ tự ưu tiên cho phản hồi tự động, `/tts audio`, `/tts status` và công cụ agent
+Thứ tự ưu tiên cho trả lời tự động, `/tts audio`, `/tts status`, và công cụ tác tử
 `tts`:
 
 1. `messages.tts`
@@ -416,10 +421,10 @@ Thứ tự ưu tiên cho phản hồi tự động, `/tts audio`, `/tts status` 
 3. ghi đè kênh, khi kênh hỗ trợ `channels.<channel>.tts`
 4. ghi đè tài khoản, khi kênh truyền `channels.<channel>.accounts.<id>.tts`
 5. tùy chọn `/tts` cục bộ cho máy chủ này
-6. chỉ thị `[[tts:...]]` nội tuyến khi bật [ghi đè do mô hình quyết định](#model-driven-directives)
+6. chỉ thị nội tuyến `[[tts:...]]` khi bật [ghi đè theo mô hình](#model-driven-directives)
 
-Các ghi đè kênh và tài khoản dùng cùng cấu trúc với `messages.tts` và
-deep-merge lên các lớp trước đó, nên thông tin xác thực nhà cung cấp dùng chung có thể nằm trong
+Ghi đè kênh và tài khoản dùng cùng cấu trúc với `messages.tts` và
+hợp nhất sâu lên các lớp trước đó, nên thông tin xác thực nhà cung cấp dùng chung có thể ở trong
 `messages.tts` trong khi một kênh hoặc tài khoản bot chỉ thay đổi giọng nói, mô hình, persona,
 hoặc chế độ tự động:
 
@@ -451,10 +456,9 @@ hoặc chế độ tự động:
 
 ## Persona
 
-Một **persona** là một định danh lời nói ổn định có thể được áp dụng một cách xác định
+Một **persona** là một danh tính nói ổn định có thể được áp dụng một cách xác định
 trên nhiều nhà cung cấp. Nó có thể ưu tiên một nhà cung cấp, định nghĩa ý định prompt
-trung lập với nhà cung cấp, và mang các ràng buộc riêng theo nhà cung cấp cho giọng nói, mô hình, mẫu prompt,
-seed và cài đặt giọng nói.
+trung lập với nhà cung cấp, và mang các ràng buộc riêng cho từng nhà cung cấp về giọng nói, mô hình, mẫu prompt, seed và thiết lập giọng nói.
 
 ### Persona tối thiểu
 
@@ -528,74 +532,79 @@ seed và cài đặt giọng nói.
 }
 ```
 
-### Cách phân giải persona
+### Phân giải persona
 
 Persona đang hoạt động được chọn một cách xác định:
 
-1. tùy chọn cục bộ `/tts persona <id>`, nếu đã đặt.
-2. `messages.tts.persona`, nếu đã đặt.
+1. tùy chọn cục bộ `/tts persona <id>`, nếu được đặt.
+2. `messages.tts.persona`, nếu được đặt.
 3. Không có persona.
 
-Việc chọn nhà cung cấp chạy theo thứ tự ưu tiên giá trị tường minh trước:
+Việc chọn nhà cung cấp chạy theo thứ tự ưu tiên mục rõ ràng trước:
 
 1. Ghi đè trực tiếp (CLI, gateway, Talk, các chỉ thị TTS được cho phép).
 2. tùy chọn cục bộ `/tts provider <id>`.
 3. `provider` của persona đang hoạt động.
 4. `messages.tts.provider`.
-5. Tự động chọn từ registry.
+5. Tự động chọn từ sổ đăng ký.
 
 Với mỗi lần thử nhà cung cấp, OpenClaw hợp nhất cấu hình theo thứ tự này:
 
 1. `messages.tts.providers.<id>`
 2. `messages.tts.personas.<persona>.providers.<id>`
 3. Ghi đè yêu cầu đáng tin cậy
-4. Ghi đè từ chỉ thị TTS do mô hình phát ra được cho phép
+4. Ghi đè từ chỉ thị TTS do mô hình phát ra và được cho phép
 
 ### Cách nhà cung cấp dùng prompt persona
 
 Các trường prompt persona (`profile`, `scene`, `sampleContext`, `style`, `accent`,
-`pacing`, `constraints`) là **trung lập với nhà cung cấp**. Mỗi nhà cung cấp tự quyết định cách
+`pacing`, `constraints`) là **trung lập với nhà cung cấp**. Mỗi nhà cung cấp quyết định cách
 sử dụng chúng:
 
 <AccordionGroup>
   <Accordion title="Google Gemini">
-    Bọc các trường prompt persona trong cấu trúc prompt Gemini TTS **chỉ khi**
+    Bao bọc các trường prompt persona trong cấu trúc prompt TTS của Gemini **chỉ khi**
     cấu hình nhà cung cấp Google hiệu lực đặt `promptTemplate: "audio-profile-v1"`
-    hoặc `personaPrompt`. Các trường cũ hơn `audioProfile` và `speakerName` vẫn
-    được thêm vào trước dưới dạng văn bản prompt riêng cho Google. Các thẻ âm thanh nội tuyến như
+    hoặc `personaPrompt`. Các trường `audioProfile` và `speakerName` cũ
+    vẫn được thêm vào đầu dưới dạng văn bản prompt riêng cho Google. Các thẻ âm thanh nội tuyến như
     `[whispers]` hoặc `[laughs]` bên trong khối `[[tts:text]]` được giữ nguyên
-    trong transcript Gemini; OpenClaw không tạo các thẻ này.
+    trong bản chép lời Gemini; OpenClaw không tạo các thẻ này.
   </Accordion>
   <Accordion title="OpenAI">
-    Ánh xạ các trường prompt persona sang trường `instructions` của yêu cầu **chỉ khi**
-    không có `instructions` OpenAI tường minh nào được cấu hình. `instructions` tường minh
-    luôn thắng.
+    Ánh xạ các trường prompt persona sang trường yêu cầu `instructions` **chỉ khi**
+    không có `instructions` rõ ràng của OpenAI được cấu hình. `instructions` rõ ràng
+    luôn được ưu tiên.
   </Accordion>
-  <Accordion title="Nhà cung cấp khác">
-    Chỉ dùng các ràng buộc persona riêng theo nhà cung cấp bên dưới
+  <Accordion title="Other providers">
+    Chỉ dùng các ràng buộc persona riêng cho nhà cung cấp bên dưới
     `personas.<id>.providers.<provider>`. Các trường prompt persona bị bỏ qua
-    trừ khi nhà cung cấp triển khai ánh xạ persona-prompt riêng.
+    trừ khi nhà cung cấp triển khai ánh xạ prompt persona riêng.
   </Accordion>
 </AccordionGroup>
 
 ### Chính sách dự phòng
 
 `fallbackPolicy` kiểm soát hành vi khi một persona **không có ràng buộc** cho
-nhà cung cấp đang được thử:
+nhà cung cấp được thử:
 
-| Chính sách          | Hành vi                                                                                                                                         |
+| Chính sách          | Hành vi                                                                                                                                          |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `preserve-persona`  | **Mặc định.** Các trường prompt trung lập với nhà cung cấp vẫn khả dụng; nhà cung cấp có thể dùng hoặc bỏ qua chúng.                            |
-| `provider-defaults` | Persona bị bỏ qua trong quá trình chuẩn bị prompt cho lần thử đó; nhà cung cấp dùng mặc định trung lập của nó trong khi tiếp tục dự phòng sang nhà cung cấp khác. |
+| `preserve-persona`  | **Mặc định.** Các trường prompt trung lập với nhà cung cấp vẫn khả dụng; nhà cung cấp có thể dùng hoặc bỏ qua chúng.                             |
+| `provider-defaults` | Persona bị bỏ qua khỏi bước chuẩn bị prompt cho lần thử đó; nhà cung cấp dùng mặc định trung lập của mình trong khi việc dự phòng sang nhà cung cấp khác tiếp tục. |
 | `fail`              | Bỏ qua lần thử nhà cung cấp đó với `reasonCode: "not_configured"` và `personaBinding: "missing"`. Các nhà cung cấp dự phòng vẫn được thử.        |
 
-Toàn bộ yêu cầu TTS chỉ thất bại khi **mọi** nhà cung cấp đã thử đều bị bỏ qua
+Toàn bộ yêu cầu TTS chỉ thất bại khi **mọi** nhà cung cấp được thử đều bị bỏ qua
 hoặc thất bại.
 
-## Chỉ thị do mô hình điều khiển
+Việc chọn nhà cung cấp cho phiên Talk có phạm vi theo phiên. Một ứng dụng khách Talk nên chọn
+id nhà cung cấp, id mô hình, id giọng nói và locale từ `talk.catalog` rồi truyền
+chúng qua phiên Talk hoặc yêu cầu bàn giao. Việc mở phiên giọng nói không nên
+thay đổi `messages.tts` hoặc mặc định nhà cung cấp Talk toàn cục.
+
+## Chỉ thị theo mô hình
 
 Theo mặc định, trợ lý **có thể** phát ra chỉ thị `[[tts:...]]` để ghi đè
-giọng nói, mô hình hoặc tốc độ cho một trả lời duy nhất, kèm một khối
+giọng nói, mô hình hoặc tốc độ cho một câu trả lời duy nhất, cộng với một khối
 `[[tts:text]]...[[/tts:text]]` tùy chọn cho các gợi ý biểu cảm chỉ nên xuất hiện trong
 âm thanh:
 
@@ -607,43 +616,43 @@ Here you go.
 ```
 
 Khi `messages.tts.auto` là `"tagged"`, **bắt buộc phải có chỉ thị** để kích hoạt
-âm thanh. Cơ chế gửi khối streaming sẽ loại bỏ chỉ thị khỏi văn bản hiển thị trước khi
+âm thanh. Việc phân phối khối dạng streaming loại bỏ chỉ thị khỏi văn bản hiển thị trước khi
 kênh nhìn thấy chúng, ngay cả khi chúng bị tách qua các khối liền kề.
 
 `provider=...` bị bỏ qua trừ khi `modelOverrides.allowProvider: true`. Khi một
-trả lời khai báo `provider=...`, các khóa khác trong chỉ thị đó chỉ được phân tích
-bởi nhà cung cấp đó; các khóa không được hỗ trợ sẽ bị loại bỏ và được báo cáo dưới dạng cảnh báo
+câu trả lời khai báo `provider=...`, các khóa khác trong chỉ thị đó chỉ được phân tích
+bởi nhà cung cấp đó; các khóa không được hỗ trợ bị loại bỏ và được báo cáo dưới dạng cảnh báo
 chỉ thị TTS.
 
-**Các khóa chỉ thị khả dụng:**
+**Các khóa chỉ thị có sẵn:**
 
 - `provider` (id nhà cung cấp đã đăng ký; yêu cầu `allowProvider: true`)
 - `voice` / `voiceName` / `voice_name` / `google_voice` / `voiceId`
 - `model` / `google_model`
 - `stability`, `similarityBoost`, `style`, `speed`, `useSpeakerBoost`
 - `vol` / `volume` (âm lượng MiniMax, 0–10)
-- `pitch` (cao độ số nguyên MiniMax, −12 đến 12; giá trị thập phân bị cắt bỏ)
+- `pitch` (cao độ số nguyên MiniMax, −12 đến 12; giá trị phân số bị cắt cụt)
 - `emotion` (thẻ cảm xúc Volcengine)
 - `applyTextNormalization` (`auto|on|off`)
 - `languageCode` (ISO 639-1)
 - `seed`
 
-**Tắt hoàn toàn ghi đè do mô hình:**
+**Tắt hoàn toàn ghi đè mô hình:**
 
 ```json5
 { messages: { tts: { modelOverrides: { enabled: false } } } }
 ```
 
-**Cho phép chuyển đổi nhà cung cấp trong khi vẫn giữ các núm điều chỉnh khác có thể cấu hình:**
+**Cho phép chuyển đổi nhà cung cấp trong khi vẫn giữ các nút điều chỉnh khác có thể cấu hình:**
 
 ```json5
 { messages: { tts: { modelOverrides: { enabled: true, allowProvider: true, allowSeed: false } } } }
 ```
 
-## Lệnh slash
+## Lệnh gạch chéo
 
 Một lệnh duy nhất `/tts`. Trên Discord, OpenClaw cũng đăng ký `/voice` vì
-`/tts` là lệnh tích hợp sẵn của Discord — văn bản `/tts ...` vẫn hoạt động.
+`/tts` là một lệnh tích hợp sẵn của Discord — văn bản `/tts ...` vẫn hoạt động.
 
 ```text
 /tts off | on | status
@@ -657,69 +666,69 @@ Một lệnh duy nhất `/tts`. Trên Discord, OpenClaw cũng đăng ký `/voice
 ```
 
 <Note>
-Các lệnh yêu cầu người gửi được ủy quyền (áp dụng quy tắc allowlist/owner) và
-`commands.text` hoặc đăng ký lệnh native phải được bật.
+Lệnh yêu cầu người gửi được ủy quyền (áp dụng quy tắc danh sách cho phép/chủ sở hữu) và hoặc
+`commands.text` hoặc đăng ký lệnh gốc phải được bật.
 </Note>
 
 Ghi chú hành vi:
 
-- `/tts on` ghi tùy chọn TTS cục bộ thành `always`; `/tts off` ghi thành `off`.
-- `/tts chat on|off|default` ghi một ghi đè auto-TTS theo phạm vi phiên cho cuộc trò chuyện hiện tại.
-- `/tts persona <id>` ghi tùy chọn persona cục bộ; `/tts persona off` xóa tùy chọn đó.
-- `/tts latest` đọc trả lời mới nhất của trợ lý từ transcript phiên hiện tại và gửi một lần dưới dạng âm thanh. Nó chỉ lưu hash của trả lời đó trên mục phiên để ngăn gửi giọng nói trùng lặp.
-- `/tts audio` tạo một trả lời âm thanh dùng một lần (**không** bật TTS).
+- `/tts on` ghi tùy chọn TTS cục bộ thành `always`; `/tts off` ghi nó thành `off`.
+- `/tts chat on|off|default` ghi một ghi đè auto-TTS có phạm vi theo phiên cho cuộc trò chuyện hiện tại.
+- `/tts persona <id>` ghi tùy chọn persona cục bộ; `/tts persona off` xóa nó.
+- `/tts latest` đọc câu trả lời trợ lý mới nhất từ bản chép lời phiên hiện tại và gửi nó dưới dạng âm thanh một lần. Nó chỉ lưu một hash của câu trả lời đó trên mục phiên để tránh gửi giọng nói trùng lặp.
+- `/tts audio` tạo một câu trả lời âm thanh một lần (không bật TTS).
 - `limit` và `summary` được lưu trong **tùy chọn cục bộ**, không phải cấu hình chính.
 - `/tts status` bao gồm chẩn đoán dự phòng cho lần thử mới nhất — `Fallback: <primary> -> <used>`, `Attempts: ...`, và chi tiết theo từng lần thử (`provider:outcome(reasonCode) latency`).
-- `/status` hiển thị chế độ TTS đang hoạt động cùng nhà cung cấp, mô hình, giọng nói đã cấu hình, và metadata endpoint tùy chỉnh đã được làm sạch khi TTS được bật.
+- `/status` hiển thị chế độ TTS đang hoạt động cùng với nhà cung cấp, mô hình, giọng nói đã cấu hình và siêu dữ liệu endpoint tùy chỉnh đã được làm sạch khi TTS được bật.
 
 ## Tùy chọn theo người dùng
 
-Các lệnh slash ghi ghi đè cục bộ vào `prefsPath`. Mặc định là
+Lệnh gạch chéo ghi ghi đè cục bộ vào `prefsPath`. Mặc định là
 `~/.openclaw/settings/tts.json`; ghi đè bằng biến môi trường `OPENCLAW_TTS_PREFS`
 hoặc `messages.tts.prefsPath`.
 
 | Trường được lưu | Hiệu lực                                      |
-| ------------ | -------------------------------------------- |
-| `auto`       | Ghi đè auto-TTS cục bộ (`always`, `off`, …)  |
-| `provider`   | Ghi đè nhà cung cấp chính cục bộ             |
-| `persona`    | Ghi đè persona cục bộ                        |
-| `maxLength`  | Ngưỡng tóm tắt (mặc định `1500` ký tự)       |
-| `summarize`  | Công tắc tóm tắt (mặc định `true`)           |
+| --------------- | -------------------------------------------- |
+| `auto`          | Ghi đè auto-TTS cục bộ (`always`, `off`, …)  |
+| `provider`      | Ghi đè nhà cung cấp chính cục bộ             |
+| `persona`       | Ghi đè persona cục bộ                        |
+| `maxLength`     | Ngưỡng tóm tắt (mặc định `1500` ký tự)       |
+| `summarize`     | Công tắc tóm tắt (mặc định `true`)           |
 
-Các trường này ghi đè cấu hình hiệu lực từ `messages.tts` cộng với khối
+Các mục này ghi đè cấu hình hiệu lực từ `messages.tts` cộng với khối
 `agents.list[].tts` đang hoạt động cho máy chủ đó.
 
 ## Định dạng đầu ra (cố định)
 
-Việc gửi giọng nói TTS được điều khiển bởi năng lực của kênh. Channel Plugin quảng bá
-liệu TTS kiểu giọng nói có nên yêu cầu nhà cung cấp tạo đích `voice-note` native hay
-giữ tổng hợp `audio-file` thông thường và chỉ đánh dấu đầu ra tương thích để gửi
-dưới dạng giọng nói.
+Việc phân phối giọng nói TTS được điều khiển bởi năng lực kênh. Các Plugin kênh quảng cáo
+liệu TTS kiểu giọng nói nên yêu cầu nhà cung cấp tạo mục tiêu `voice-note` gốc hay
+giữ tổng hợp `audio-file` thông thường và chỉ đánh dấu đầu ra tương thích cho việc phân phối
+giọng nói.
 
-- **Kênh có khả năng gửi ghi âm giọng nói**: các trả lời bằng ghi âm giọng nói ưu tiên Opus (`opus_48000_64` từ ElevenLabs, `opus` từ OpenAI).
-  - 48kHz / 64kbps là mức cân bằng tốt cho tin nhắn thoại.
-- **Feishu / WhatsApp**: khi trả lời bằng ghi âm giọng nói được tạo dưới dạng MP3/WebM/WAV/M4A
-  hoặc một tệp có nhiều khả năng là âm thanh khác, Plugin kênh sẽ chuyển mã tệp đó sang Ogg/Opus
-  48kHz bằng `ffmpeg` trước khi gửi tin nhắn thoại gốc. WhatsApp gửi
+- **Các kênh hỗ trợ ghi chú thoại**: câu trả lời dạng ghi chú thoại ưu tiên Opus (`opus_48000_64` từ ElevenLabs, `opus` từ OpenAI).
+  - 48kHz / 64kbps là mức đánh đổi tốt cho tin nhắn thoại.
+- **Feishu / WhatsApp**: khi câu trả lời dạng ghi chú thoại được tạo dưới dạng MP3/WebM/WAV/M4A
+  hoặc một tệp có khả năng là âm thanh khác, Plugin kênh chuyển mã tệp đó sang Ogg/Opus 48kHz
+  bằng `ffmpeg` trước khi gửi tin nhắn thoại gốc. WhatsApp gửi
   kết quả qua payload `audio` của Baileys với `ptt: true` và
   `audio/ogg; codecs=opus`. Nếu chuyển đổi thất bại, Feishu nhận tệp gốc
-  dưới dạng tệp đính kèm; việc gửi WhatsApp sẽ thất bại thay vì đăng payload
-  PTT không tương thích.
-- **BlueBubbles**: giữ việc tổng hợp của nhà cung cấp trên đường dẫn tệp âm thanh thông thường; đầu ra MP3
-  và CAF được đánh dấu để gửi bản ghi âm iMessage.
+  dưới dạng tệp đính kèm; thao tác gửi WhatsApp thất bại thay vì đăng một payload PTT
+  không tương thích.
+- **BlueBubbles**: giữ việc tổng hợp của nhà cung cấp trên đường dẫn tệp âm thanh bình thường; các đầu ra MP3
+  và CAF được đánh dấu để gửi bản ghi nhớ thoại iMessage.
 - **Các kênh khác**: MP3 (`mp3_44100_128` từ ElevenLabs, `mp3` từ OpenAI).
   - 44.1kHz / 128kbps là mức cân bằng mặc định cho độ rõ của giọng nói.
-- **MiniMax**: MP3 (mô hình `speech-2.8-hd`, tần số lấy mẫu 32kHz) cho tệp đính kèm âm thanh thông thường. Với các đích ghi âm giọng nói do kênh công bố, OpenClaw chuyển mã MP3 của MiniMax sang Opus 48kHz bằng `ffmpeg` trước khi gửi khi kênh công bố khả năng chuyển mã.
-- **Xiaomi MiMo**: mặc định là MP3, hoặc WAV khi được cấu hình. Với các đích ghi âm giọng nói do kênh công bố, OpenClaw chuyển mã đầu ra Xiaomi sang Opus 48kHz bằng `ffmpeg` trước khi gửi khi kênh công bố khả năng chuyển mã.
-- **CLI cục bộ**: sử dụng `outputFormat` đã cấu hình. Các đích ghi âm giọng nói được
-  chuyển đổi sang Ogg/Opus và đầu ra điện thoại được chuyển đổi sang PCM đơn âm
-  16 kHz thô bằng `ffmpeg`.
-- **Google Gemini**: TTS của Gemini API trả về PCM thô 24kHz. OpenClaw bọc nó thành WAV cho tệp đính kèm âm thanh, chuyển mã sang Opus 48kHz cho các đích ghi âm giọng nói, và trả về PCM trực tiếp cho Talk/điện thoại.
-- **Gradium**: WAV cho tệp đính kèm âm thanh, Opus cho các đích ghi âm giọng nói, và `ulaw_8000` ở 8 kHz cho điện thoại.
-- **Inworld**: MP3 cho tệp đính kèm âm thanh thông thường, `OGG_OPUS` gốc cho các đích ghi âm giọng nói, và `PCM` thô ở 22050 Hz cho Talk/điện thoại.
-- **xAI**: mặc định là MP3; `responseFormat` có thể là `mp3`, `wav`, `pcm`, `mulaw`, hoặc `alaw`. OpenClaw sử dụng endpoint TTS REST theo lô của xAI và trả về một tệp đính kèm âm thanh hoàn chỉnh; WebSocket TTS phát trực tuyến của xAI không được dùng bởi đường dẫn nhà cung cấp này. Đường dẫn này không hỗ trợ định dạng ghi âm giọng nói Opus gốc.
+- **MiniMax**: MP3 (mô hình `speech-2.8-hd`, tần số lấy mẫu 32kHz) cho tệp đính kèm âm thanh thông thường. Với các mục tiêu ghi chú thoại do kênh quảng bá, OpenClaw chuyển mã MP3 MiniMax sang Opus 48kHz bằng `ffmpeg` trước khi phân phối khi kênh quảng bá khả năng chuyển mã.
+- **Xiaomi MiMo**: MP3 theo mặc định, hoặc WAV khi được cấu hình. Với các mục tiêu ghi chú thoại do kênh quảng bá, OpenClaw chuyển mã đầu ra Xiaomi sang Opus 48kHz bằng `ffmpeg` trước khi phân phối khi kênh quảng bá khả năng chuyển mã.
+- **CLI cục bộ**: sử dụng `outputFormat` đã cấu hình. Các mục tiêu ghi chú thoại được
+  chuyển đổi sang Ogg/Opus và đầu ra điện thoại được chuyển đổi sang PCM mono thô 16 kHz
+  bằng `ffmpeg`.
+- **Google Gemini**: TTS của Gemini API trả về PCM thô 24kHz. OpenClaw bọc nó dưới dạng WAV cho tệp đính kèm âm thanh, chuyển mã sang Opus 48kHz cho các mục tiêu ghi chú thoại, và trả về PCM trực tiếp cho Talk/điện thoại.
+- **Gradium**: WAV cho tệp đính kèm âm thanh, Opus cho mục tiêu ghi chú thoại, và `ulaw_8000` ở 8 kHz cho điện thoại.
+- **Inworld**: MP3 cho tệp đính kèm âm thanh thông thường, `OGG_OPUS` gốc cho mục tiêu ghi chú thoại, và `PCM` thô ở 22050 Hz cho Talk/điện thoại.
+- **xAI**: MP3 theo mặc định; `responseFormat` có thể là `mp3`, `wav`, `pcm`, `mulaw`, hoặc `alaw`. OpenClaw sử dụng endpoint TTS REST hàng loạt của xAI và trả về một tệp đính kèm âm thanh hoàn chỉnh; WebSocket TTS streaming của xAI không được dùng bởi đường dẫn nhà cung cấp này. Định dạng ghi chú thoại Opus gốc không được hỗ trợ bởi đường dẫn này.
 - **Microsoft**: sử dụng `microsoft.outputFormat` (mặc định `audio-24khz-48kbitrate-mono-mp3`).
-  - Phương thức truyền tải đi kèm chấp nhận `outputFormat`, nhưng không phải mọi định dạng đều có sẵn từ dịch vụ.
+  - Bộ truyền tải đi kèm chấp nhận `outputFormat`, nhưng không phải mọi định dạng đều có sẵn từ dịch vụ.
   - Giá trị định dạng đầu ra tuân theo các định dạng đầu ra Microsoft Speech (bao gồm Ogg/WebM Opus).
   - Telegram `sendVoice` chấp nhận OGG/MP3/M4A; hãy dùng OpenAI/ElevenLabs nếu bạn cần
     tin nhắn thoại Opus được bảo đảm.
@@ -731,17 +740,17 @@ dưới dạng giọng nói.
 
 Khi `messages.tts.auto` được bật, OpenClaw:
 
-- Bỏ qua TTS nếu trả lời đã chứa phương tiện hoặc chỉ thị `MEDIA:`.
-- Bỏ qua các trả lời rất ngắn (dưới 10 ký tự).
-- Tóm tắt các trả lời dài khi tính năng tóm tắt được bật, bằng
+- Bỏ qua TTS nếu câu trả lời đã chứa phương tiện hoặc chỉ thị `MEDIA:`.
+- Bỏ qua các câu trả lời rất ngắn (dưới 10 ký tự).
+- Tóm tắt các câu trả lời dài khi bật tóm tắt, sử dụng
   `summaryModel` (hoặc `agents.defaults.model.primary`).
-- Đính kèm âm thanh đã tạo vào trả lời.
-- Trong `mode: "final"`, vẫn gửi TTS chỉ có âm thanh cho các trả lời cuối cùng được phát trực tuyến
-  sau khi luồng văn bản hoàn tất; phương tiện đã tạo đi qua cùng quy trình
+- Đính kèm âm thanh đã tạo vào câu trả lời.
+- Trong `mode: "final"`, vẫn gửi TTS chỉ âm thanh cho các câu trả lời cuối cùng được streaming
+  sau khi luồng văn bản hoàn tất; phương tiện được tạo đi qua cùng quy trình
   chuẩn hóa phương tiện của kênh như các tệp đính kèm trả lời thông thường.
 
-Nếu trả lời vượt quá `maxLength` và tính năng tóm tắt tắt (hoặc không có khóa API cho
-mô hình tóm tắt), âm thanh sẽ bị bỏ qua và trả lời văn bản thông thường được gửi.
+Nếu câu trả lời vượt quá `maxLength` và tóm tắt đang tắt (hoặc không có khóa API cho
+mô hình tóm tắt), âm thanh sẽ bị bỏ qua và câu trả lời văn bản bình thường được gửi.
 
 ```text
 Reply -> TTS enabled?
@@ -757,54 +766,54 @@ Reply -> TTS enabled?
 
 ## Định dạng đầu ra theo kênh
 
-  | Mục tiêu                              | Định dạng                                                                                                                             |
-  | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-  | Feishu / Matrix / Telegram / WhatsApp | Trả lời bằng ghi chú thoại ưu tiên **Opus** (`opus_48000_64` từ ElevenLabs, `opus` từ OpenAI). 48 kHz / 64 kbps cân bằng độ rõ và kích thước. |
-  | Kênh khác                             | **MP3** (`mp3_44100_128` từ ElevenLabs, `mp3` từ OpenAI). Mặc định 44,1 kHz / 128 kbps cho giọng nói.                                 |
-  | Talk / điện thoại                     | **PCM** gốc của nhà cung cấp (Inworld 22050 Hz, Google 24 kHz), hoặc `ulaw_8000` từ Gradium cho điện thoại.                           |
+| Mục tiêu                              | Định dạng                                                                                                                             |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Feishu / Matrix / Telegram / WhatsApp | Câu trả lời dạng ghi chú thoại ưu tiên **Opus** (`opus_48000_64` từ ElevenLabs, `opus` từ OpenAI). 48 kHz / 64 kbps cân bằng giữa độ rõ và kích thước. |
+| Các kênh khác                         | **MP3** (`mp3_44100_128` từ ElevenLabs, `mp3` từ OpenAI). 44.1 kHz / 128 kbps là mặc định cho giọng nói.                              |
+| Talk / điện thoại                     | **PCM** gốc theo nhà cung cấp (Inworld 22050 Hz, Google 24 kHz), hoặc `ulaw_8000` từ Gradium cho điện thoại.                          |
 
-  Ghi chú theo từng nhà cung cấp:
+Ghi chú theo từng nhà cung cấp:
 
-  - **Chuyển mã Feishu / WhatsApp:** Khi một trả lời bằng ghi chú thoại đến dưới dạng MP3/WebM/WAV/M4A, plugin kênh sẽ chuyển mã sang Ogg/Opus 48 kHz bằng `ffmpeg`. WhatsApp gửi qua Baileys với `ptt: true` và `audio/ogg; codecs=opus`. Nếu chuyển đổi thất bại: Feishu quay về đính kèm tệp gốc; WhatsApp gửi thất bại thay vì đăng tải payload PTT không tương thích.
-  - **MiniMax / Xiaomi MiMo:** Mặc định MP3 (32 kHz cho MiniMax `speech-2.8-hd`); được chuyển mã sang Opus 48 kHz cho mục tiêu ghi chú thoại qua `ffmpeg`.
-  - **CLI cục bộ:** Sử dụng `outputFormat` đã cấu hình. Mục tiêu ghi chú thoại được chuyển đổi sang Ogg/Opus và đầu ra điện thoại sang PCM mono 16 kHz thô.
-  - **Google Gemini:** Trả về PCM 24 kHz thô. OpenClaw bọc thành WAV cho tệp đính kèm, chuyển mã sang Opus 48 kHz cho mục tiêu ghi chú thoại, trả PCM trực tiếp cho Talk/điện thoại.
-  - **Inworld:** Tệp đính kèm MP3, ghi chú thoại `OGG_OPUS` gốc, `PCM` 22050 Hz thô cho Talk/điện thoại.
-  - **xAI:** Mặc định là MP3; `responseFormat` có thể là `mp3|wav|pcm|mulaw|alaw`. Sử dụng endpoint REST theo lô của xAI — TTS WebSocket truyền phát **không** được sử dụng. Định dạng ghi chú thoại Opus gốc **không** được hỗ trợ.
-  - **Microsoft:** Sử dụng `microsoft.outputFormat` (mặc định `audio-24khz-48kbitrate-mono-mp3`). Telegram `sendVoice` chấp nhận OGG/MP3/M4A; dùng OpenAI/ElevenLabs nếu bạn cần tin nhắn thoại Opus được bảo đảm. Nếu định dạng Microsoft đã cấu hình thất bại, OpenClaw thử lại bằng MP3.
+- **Chuyển mã Feishu / WhatsApp:** Khi câu trả lời dạng ghi chú thoại nhận về là MP3/WebM/WAV/M4A, Plugin kênh chuyển mã sang Ogg/Opus 48 kHz bằng `ffmpeg`. WhatsApp gửi qua Baileys với `ptt: true` và `audio/ogg; codecs=opus`. Nếu chuyển đổi thất bại: Feishu quay lại đính kèm tệp gốc; thao tác gửi WhatsApp thất bại thay vì đăng một payload PTT không tương thích.
+- **MiniMax / Xiaomi MiMo:** MP3 mặc định (32 kHz cho MiniMax `speech-2.8-hd`); được chuyển mã sang Opus 48 kHz cho các mục tiêu ghi chú thoại qua `ffmpeg`.
+- **CLI cục bộ:** Sử dụng `outputFormat` đã cấu hình. Các mục tiêu ghi chú thoại được chuyển đổi sang Ogg/Opus và đầu ra điện thoại sang PCM mono thô 16 kHz.
+- **Google Gemini:** Trả về PCM thô 24 kHz. OpenClaw bọc dưới dạng WAV cho tệp đính kèm, chuyển mã sang Opus 48 kHz cho mục tiêu ghi chú thoại, trả về PCM trực tiếp cho Talk/điện thoại.
+- **Inworld:** Tệp đính kèm MP3, ghi chú thoại `OGG_OPUS` gốc, `PCM` thô 22050 Hz cho Talk/điện thoại.
+- **xAI:** MP3 theo mặc định; `responseFormat` có thể là `mp3|wav|pcm|mulaw|alaw`. Sử dụng endpoint REST hàng loạt của xAI — WebSocket TTS streaming **không** được dùng. Định dạng ghi chú thoại Opus gốc **không** được hỗ trợ.
+- **Microsoft:** Sử dụng `microsoft.outputFormat` (mặc định `audio-24khz-48kbitrate-mono-mp3`). Telegram `sendVoice` chấp nhận OGG/MP3/M4A; hãy dùng OpenAI/ElevenLabs nếu bạn cần tin nhắn thoại Opus được bảo đảm. Nếu định dạng Microsoft đã cấu hình thất bại, OpenClaw thử lại bằng MP3.
 
-  Định dạng đầu ra của OpenAI và ElevenLabs được cố định theo từng kênh như liệt kê ở trên.
+Định dạng đầu ra OpenAI và ElevenLabs được cố định theo từng kênh như liệt kê bên trên.
 
-  ## Tham chiếu trường
+## Tham chiếu trường
 
-  <AccordionGroup>
+<AccordionGroup>
   <Accordion title="Top-level messages.tts.*">
     <ParamField path="auto" type='"off" | "always" | "inbound" | "tagged"'>
-      Chế độ Auto-TTS. `inbound` chỉ gửi âm thanh sau một tin nhắn thoại đến; `tagged` chỉ gửi âm thanh khi trả lời có chỉ thị `[[tts:...]]` hoặc khối `[[tts:text]]`.
+      Chế độ Auto-TTS. `inbound` chỉ gửi âm thanh sau một tin nhắn thoại đến; `tagged` chỉ gửi âm thanh khi câu trả lời bao gồm các chỉ thị `[[tts:...]]` hoặc một khối `[[tts:text]]`.
     </ParamField>
     <ParamField path="enabled" type="boolean" deprecated>
-      Công tắc cũ. `openclaw doctor --fix` di chuyển giá trị này sang `auto`.
+      Công tắc cũ. `openclaw doctor --fix` di chuyển trường này sang `auto`.
     </ParamField>
     <ParamField path="mode" type='"final" | "all"' default="final">
-      `"all"` bao gồm trả lời công cụ/khối ngoài trả lời cuối cùng.
+      `"all"` bao gồm các câu trả lời công cụ/khối ngoài các câu trả lời cuối cùng.
     </ParamField>
     <ParamField path="provider" type="string">
-      Id nhà cung cấp giọng nói. Khi chưa đặt, OpenClaw dùng nhà cung cấp đã cấu hình đầu tiên theo thứ tự tự chọn của registry. `provider: "edge"` cũ được `openclaw doctor --fix` viết lại thành `"microsoft"`.
+      ID nhà cung cấp giọng nói. Khi chưa đặt, OpenClaw dùng nhà cung cấp được cấu hình đầu tiên theo thứ tự tự chọn của registry. `provider: "edge"` cũ được `openclaw doctor --fix` viết lại thành `"microsoft"`.
     </ParamField>
     <ParamField path="persona" type="string">
-      Id persona đang hoạt động từ `personas`. Được chuẩn hóa về chữ thường.
+      ID persona đang hoạt động từ `personas`. Được chuẩn hóa thành chữ thường.
     </ParamField>
     <ParamField path="personas.<id>" type="object">
-      Danh tính nói ổn định. Trường: `label`, `description`, `provider`, `fallbackPolicy`, `prompt`, `providers.<provider>`. Xem [Personas](#personas).
+      Danh tính lời nói ổn định. Các trường: `label`, `description`, `provider`, `fallbackPolicy`, `prompt`, `providers.<provider>`. Xem [Persona](#personas).
     </ParamField>
     <ParamField path="summaryModel" type="string">
-      Mô hình rẻ cho tự động tóm tắt; mặc định là `agents.defaults.model.primary`. Chấp nhận `provider/model` hoặc alias mô hình đã cấu hình.
+      Mô hình rẻ cho tự động tóm tắt; mặc định là `agents.defaults.model.primary`. Chấp nhận `provider/model` hoặc một bí danh mô hình đã cấu hình.
     </ParamField>
     <ParamField path="modelOverrides" type="object">
-      Cho phép mô hình phát chỉ thị TTS. `enabled` mặc định là `true`; `allowProvider` mặc định là `false`.
+      Cho phép mô hình phát ra chỉ thị TTS. `enabled` mặc định là `true`; `allowProvider` mặc định là `false`.
     </ParamField>
     <ParamField path="providers.<id>" type="object">
-      Cài đặt do nhà cung cấp sở hữu, được khóa theo id nhà cung cấp giọng nói. Các khối trực tiếp cũ (`messages.tts.openai`, `.elevenlabs`, `.microsoft`, `.edge`) được `openclaw doctor --fix` viết lại; chỉ commit `messages.tts.providers.<id>`.
+      Cài đặt thuộc sở hữu nhà cung cấp được khóa theo ID nhà cung cấp giọng nói. Các khối trực tiếp cũ (`messages.tts.openai`, `.elevenlabs`, `.microsoft`, `.edge`) được `openclaw doctor --fix` viết lại; chỉ commit `messages.tts.providers.<id>`.
     </ParamField>
     <ParamField path="maxTextLength" type="number">
       Giới hạn cứng cho số ký tự đầu vào TTS. `/tts audio` thất bại nếu vượt quá.
@@ -820,47 +829,47 @@ Reply -> TTS enabled?
   <Accordion title="Azure Speech">
     <ParamField path="apiKey" type="string">Env: `AZURE_SPEECH_KEY`, `AZURE_SPEECH_API_KEY`, hoặc `SPEECH_KEY`.</ParamField>
     <ParamField path="region" type="string">Vùng Azure Speech (ví dụ `eastus`). Env: `AZURE_SPEECH_REGION` hoặc `SPEECH_REGION`.</ParamField>
-    <ParamField path="endpoint" type="string">Ghi đè endpoint Azure Speech tùy chọn (alias `baseUrl`).</ParamField>
+    <ParamField path="endpoint" type="string">Ghi đè endpoint Azure Speech tùy chọn (bí danh `baseUrl`).</ParamField>
     <ParamField path="voice" type="string">ShortName giọng nói Azure. Mặc định `en-US-JennyNeural`.</ParamField>
     <ParamField path="lang" type="string">Mã ngôn ngữ SSML. Mặc định `en-US`.</ParamField>
-    <ParamField path="outputFormat" type="string">Azure `X-Microsoft-OutputFormat` cho âm thanh chuẩn. Mặc định `audio-24khz-48kbitrate-mono-mp3`.</ParamField>
+    <ParamField path="outputFormat" type="string">Azure `X-Microsoft-OutputFormat` cho âm thanh tiêu chuẩn. Mặc định `audio-24khz-48kbitrate-mono-mp3`.</ParamField>
     <ParamField path="voiceNoteOutputFormat" type="string">Azure `X-Microsoft-OutputFormat` cho đầu ra ghi chú thoại. Mặc định `ogg-24khz-16bit-mono-opus`.</ParamField>
   </Accordion>
 
   <Accordion title="ElevenLabs">
-    <ParamField path="apiKey" type="string">Quay về `ELEVENLABS_API_KEY` hoặc `XI_API_KEY`.</ParamField>
-    <ParamField path="model" type="string">Id mô hình (ví dụ `eleven_multilingual_v2`, `eleven_v3`).</ParamField>
-    <ParamField path="voiceId" type="string">Id giọng nói ElevenLabs.</ParamField>
+    <ParamField path="apiKey" type="string">Dự phòng về `ELEVENLABS_API_KEY` hoặc `XI_API_KEY`.</ParamField>
+    <ParamField path="model" type="string">ID mô hình (ví dụ `eleven_multilingual_v2`, `eleven_v3`).</ParamField>
+    <ParamField path="voiceId" type="string">ID giọng nói ElevenLabs.</ParamField>
     <ParamField path="voiceSettings" type="object">
-      `stability`, `similarityBoost`, `style` (mỗi giá trị `0..1`), `useSpeakerBoost` (`true|false`), `speed` (`0.5..2.0`, `1.0` = bình thường).
+      `stability`, `similarityBoost`, `style` (mỗi trường `0..1`), `useSpeakerBoost` (`true|false`), `speed` (`0.5..2.0`, `1.0` = bình thường).
     </ParamField>
     <ParamField path="applyTextNormalization" type='"auto" | "on" | "off"'>Chế độ chuẩn hóa văn bản.</ParamField>
     <ParamField path="languageCode" type="string">ISO 639-1 gồm 2 chữ cái (ví dụ `en`, `de`).</ParamField>
-    <ParamField path="seed" type="number">Số nguyên `0..4294967295` để đạt tính xác định tối đa có thể.</ParamField>
+    <ParamField path="seed" type="number">Số nguyên `0..4294967295` để cố gắng đạt tính xác định tốt nhất.</ParamField>
     <ParamField path="baseUrl" type="string">Ghi đè URL cơ sở API ElevenLabs.</ParamField>
   </Accordion>
 
   <Accordion title="Google Gemini">
-    <ParamField path="apiKey" type="string">Quay về `GEMINI_API_KEY` / `GOOGLE_API_KEY`. Nếu bỏ qua, TTS có thể dùng lại `models.providers.google.apiKey` trước khi quay về env.</ParamField>
-    <ParamField path="model" type="string">Mô hình TTS Gemini. Mặc định `gemini-3.1-flash-tts-preview`.</ParamField>
-    <ParamField path="voiceName" type="string">Tên giọng nói dựng sẵn của Gemini. Mặc định `Kore`. Alias: `voice`.</ParamField>
+    <ParamField path="apiKey" type="string">Dự phòng về `GEMINI_API_KEY` / `GOOGLE_API_KEY`. Nếu bỏ qua, TTS có thể tái sử dụng `models.providers.google.apiKey` trước khi dự phòng về env.</ParamField>
+    <ParamField path="model" type="string">Mô hình Gemini TTS. Mặc định `gemini-3.1-flash-tts-preview`.</ParamField>
+    <ParamField path="voiceName" type="string">Tên giọng nói dựng sẵn của Gemini. Mặc định `Kore`. Bí danh: `voice`.</ParamField>
     <ParamField path="audioProfile" type="string">Prompt phong cách bằng ngôn ngữ tự nhiên được thêm vào trước văn bản nói.</ParamField>
     <ParamField path="speakerName" type="string">Nhãn người nói tùy chọn được thêm vào trước văn bản nói khi prompt của bạn dùng người nói có tên.</ParamField>
-    <ParamField path="promptTemplate" type='"audio-profile-v1"'>Đặt thành `audio-profile-v1` để bọc các trường prompt của persona đang hoạt động trong cấu trúc prompt TTS Gemini xác định.</ParamField>
-    <ParamField path="personaPrompt" type="string">Văn bản prompt persona bổ sung riêng cho Google được nối vào Ghi chú của Đạo diễn trong template.</ParamField>
+    <ParamField path="promptTemplate" type='"audio-profile-v1"'>Đặt thành `audio-profile-v1` để bọc các trường prompt persona đang hoạt động trong một cấu trúc prompt Gemini TTS xác định.</ParamField>
+    <ParamField path="personaPrompt" type="string">Văn bản prompt persona bổ sung dành riêng cho Google được thêm vào Director's Notes của mẫu.</ParamField>
     <ParamField path="baseUrl" type="string">Chỉ chấp nhận `https://generativelanguage.googleapis.com`.</ParamField>
   </Accordion>
 
   <Accordion title="Gradium">
-    <ParamField path="apiKey" type="string">Môi trường: `GRADIUM_API_KEY`.</ParamField>
+    <ParamField path="apiKey" type="string">Env: `GRADIUM_API_KEY`.</ParamField>
     <ParamField path="baseUrl" type="string">Mặc định `https://api.gradium.ai`.</ParamField>
     <ParamField path="voiceId" type="string">Mặc định Emma (`YTpq7expH9539ERJ`).</ParamField>
   </Accordion>
 
   <Accordion title="Inworld">
-    ### Inworld chính
+    ### Chính Inworld
 
-    <ParamField path="apiKey" type="string">Môi trường: `INWORLD_API_KEY`.</ParamField>
+    <ParamField path="apiKey" type="string">Env: `INWORLD_API_KEY`.</ParamField>
     <ParamField path="baseUrl" type="string">Mặc định `https://api.inworld.ai`.</ParamField>
     <ParamField path="modelId" type="string">Mặc định `inworld-tts-1.5-max`. Ngoài ra: `inworld-tts-1.5-mini`, `inworld-tts-1-max`, `inworld-tts-1`.</ParamField>
     <ParamField path="voiceId" type="string">Mặc định `Sarah`.</ParamField>
@@ -877,89 +886,89 @@ Reply -> TTS enabled?
     <ParamField path="env" type="Record<string, string>">Ghi đè môi trường tùy chọn cho lệnh.</ParamField>
   </Accordion>
 
-  <Accordion title="Microsoft (no API key)">
+  <Accordion title="Microsoft (không cần khóa API)">
     <ParamField path="enabled" type="boolean" default="true">Cho phép sử dụng giọng nói Microsoft.</ParamField>
-    <ParamField path="voice" type="string">Tên giọng neural Microsoft (ví dụ: `en-US-MichelleNeural`).</ParamField>
-    <ParamField path="lang" type="string">Mã ngôn ngữ (ví dụ: `en-US`).</ParamField>
-    <ParamField path="outputFormat" type="string">Định dạng đầu ra Microsoft. Mặc định `audio-24khz-48kbitrate-mono-mp3`. Không phải mọi định dạng đều được hỗ trợ bởi transport dựa trên Edge đi kèm.</ParamField>
-    <ParamField path="rate / pitch / volume" type="string">Chuỗi phần trăm (ví dụ: `+10%`, `-5%`).</ParamField>
-    <ParamField path="saveSubtitles" type="boolean">Ghi phụ đề JSON bên cạnh tệp âm thanh.</ParamField>
+    <ParamField path="voice" type="string">Tên giọng neural của Microsoft (ví dụ `en-US-MichelleNeural`).</ParamField>
+    <ParamField path="lang" type="string">Mã ngôn ngữ (ví dụ `en-US`).</ParamField>
+    <ParamField path="outputFormat" type="string">Định dạng đầu ra Microsoft. Mặc định `audio-24khz-48kbitrate-mono-mp3`. Không phải tất cả định dạng đều được transport dựa trên Edge đi kèm hỗ trợ.</ParamField>
+    <ParamField path="rate / pitch / volume" type="string">Chuỗi phần trăm (ví dụ `+10%`, `-5%`).</ParamField>
+    <ParamField path="saveSubtitles" type="boolean">Ghi phụ đề JSON cạnh tệp âm thanh.</ParamField>
     <ParamField path="proxy" type="string">URL proxy cho yêu cầu giọng nói Microsoft.</ParamField>
     <ParamField path="timeoutMs" type="number">Ghi đè thời gian chờ yêu cầu (ms).</ParamField>
-    <ParamField path="edge.*" type="object" deprecated>Bí danh cũ. Chạy `openclaw doctor --fix` để viết lại cấu hình đã lưu thành `providers.microsoft`.</ParamField>
+    <ParamField path="edge.*" type="object" deprecated>Bí danh cũ. Chạy `openclaw doctor --fix` để ghi lại cấu hình đã lưu thành `providers.microsoft`.</ParamField>
   </Accordion>
 
   <Accordion title="MiniMax">
-    <ParamField path="apiKey" type="string">Dự phòng về `MINIMAX_API_KEY`. Xác thực Token Plan qua `MINIMAX_OAUTH_TOKEN`, `MINIMAX_CODE_PLAN_KEY`, hoặc `MINIMAX_CODING_API_KEY`.</ParamField>
-    <ParamField path="baseUrl" type="string">Mặc định `https://api.minimax.io`. Môi trường: `MINIMAX_API_HOST`.</ParamField>
-    <ParamField path="model" type="string">Mặc định `speech-2.8-hd`. Môi trường: `MINIMAX_TTS_MODEL`.</ParamField>
-    <ParamField path="voiceId" type="string">Mặc định `English_expressive_narrator`. Môi trường: `MINIMAX_TTS_VOICE_ID`.</ParamField>
+    <ParamField path="apiKey" type="string">Dự phòng sang `MINIMAX_API_KEY`. Xác thực Token Plan qua `MINIMAX_OAUTH_TOKEN`, `MINIMAX_CODE_PLAN_KEY`, hoặc `MINIMAX_CODING_API_KEY`.</ParamField>
+    <ParamField path="baseUrl" type="string">Mặc định `https://api.minimax.io`. Env: `MINIMAX_API_HOST`.</ParamField>
+    <ParamField path="model" type="string">Mặc định `speech-2.8-hd`. Env: `MINIMAX_TTS_MODEL`.</ParamField>
+    <ParamField path="voiceId" type="string">Mặc định `English_expressive_narrator`. Env: `MINIMAX_TTS_VOICE_ID`.</ParamField>
     <ParamField path="speed" type="number">`0.5..2.0`. Mặc định `1.0`.</ParamField>
     <ParamField path="vol" type="number">`(0, 10]`. Mặc định `1.0`.</ParamField>
-    <ParamField path="pitch" type="number">Số nguyên `-12..12`. Mặc định `0`. Giá trị phân số bị cắt bỏ phần thập phân trước yêu cầu.</ParamField>
+    <ParamField path="pitch" type="number">Số nguyên `-12..12`. Mặc định `0`. Giá trị thập phân bị cắt bỏ trước yêu cầu.</ParamField>
   </Accordion>
 
   <Accordion title="OpenAI">
-    <ParamField path="apiKey" type="string">Dự phòng về `OPENAI_API_KEY`.</ParamField>
-    <ParamField path="model" type="string">ID mô hình TTS của OpenAI (ví dụ: `gpt-4o-mini-tts`).</ParamField>
-    <ParamField path="voice" type="string">Tên giọng nói (ví dụ: `alloy`, `cedar`).</ParamField>
+    <ParamField path="apiKey" type="string">Dự phòng sang `OPENAI_API_KEY`.</ParamField>
+    <ParamField path="model" type="string">ID mô hình TTS OpenAI (ví dụ `gpt-4o-mini-tts`).</ParamField>
+    <ParamField path="voice" type="string">Tên giọng (ví dụ `alloy`, `cedar`).</ParamField>
     <ParamField path="instructions" type="string">Trường `instructions` tường minh của OpenAI. Khi được đặt, các trường lời nhắc persona **không** được tự động ánh xạ.</ParamField>
-    <ParamField path="extraBody / extra_body" type="Record<string, unknown>">Các trường JSON bổ sung được hợp nhất vào thân yêu cầu `/audio/speech` sau các trường TTS OpenAI đã tạo. Dùng mục này cho các endpoint tương thích OpenAI như Kokoro cần khóa riêng theo nhà cung cấp như `lang`; các khóa prototype không an toàn bị bỏ qua.</ParamField>
+    <ParamField path="extraBody / extra_body" type="Record<string, unknown>">Các trường JSON bổ sung được hợp nhất vào thân yêu cầu `/audio/speech` sau các trường OpenAI TTS đã tạo. Dùng trường này cho các endpoint tương thích OpenAI như Kokoro cần khóa riêng của nhà cung cấp như `lang`; các khóa prototype không an toàn bị bỏ qua.</ParamField>
     <ParamField path="baseUrl" type="string">
-      Ghi đè endpoint TTS OpenAI. Thứ tự phân giải: cấu hình → `OPENAI_TTS_BASE_URL` → `https://api.openai.com/v1`. Các giá trị không mặc định được xử lý như endpoint TTS tương thích OpenAI, nên tên mô hình và tên giọng nói tùy chỉnh được chấp nhận.
+      Ghi đè endpoint OpenAI TTS. Thứ tự phân giải: cấu hình → `OPENAI_TTS_BASE_URL` → `https://api.openai.com/v1`. Các giá trị không mặc định được xem là endpoint TTS tương thích OpenAI, nên tên mô hình và tên giọng tùy chỉnh được chấp nhận.
     </ParamField>
   </Accordion>
 
   <Accordion title="OpenRouter">
-    <ParamField path="apiKey" type="string">Môi trường: `OPENROUTER_API_KEY`. Có thể dùng lại `models.providers.openrouter.apiKey`.</ParamField>
-    <ParamField path="baseUrl" type="string">Mặc định `https://openrouter.ai/api/v1`. Giá trị cũ `https://openrouter.ai/v1` được chuẩn hóa.</ParamField>
+    <ParamField path="apiKey" type="string">Env: `OPENROUTER_API_KEY`. Có thể tái sử dụng `models.providers.openrouter.apiKey`.</ParamField>
+    <ParamField path="baseUrl" type="string">Mặc định `https://openrouter.ai/api/v1`. Legacy `https://openrouter.ai/v1` được chuẩn hóa.</ParamField>
     <ParamField path="model" type="string">Mặc định `hexgrad/kokoro-82m`. Bí danh: `modelId`.</ParamField>
     <ParamField path="voice" type="string">Mặc định `af_alloy`. Bí danh: `voiceId`.</ParamField>
     <ParamField path="responseFormat" type='"mp3" | "pcm"'>Mặc định `mp3`.</ParamField>
-    <ParamField path="speed" type="number">Ghi đè tốc độ native của nhà cung cấp.</ParamField>
+    <ParamField path="speed" type="number">Ghi đè tốc độ gốc của nhà cung cấp.</ParamField>
   </Accordion>
 
   <Accordion title="Volcengine (BytePlus Seed Speech)">
-    <ParamField path="apiKey" type="string">Môi trường: `VOLCENGINE_TTS_API_KEY` hoặc `BYTEPLUS_SEED_SPEECH_API_KEY`.</ParamField>
-    <ParamField path="resourceId" type="string">Mặc định `seed-tts-1.0`. Môi trường: `VOLCENGINE_TTS_RESOURCE_ID`. Dùng `seed-tts-2.0` khi dự án của bạn có quyền sử dụng TTS 2.0.</ParamField>
-    <ParamField path="appKey" type="string">Header khóa ứng dụng. Mặc định `aGjiRDfUWi`. Môi trường: `VOLCENGINE_TTS_APP_KEY`.</ParamField>
-    <ParamField path="baseUrl" type="string">Ghi đè endpoint HTTP Seed Speech TTS. Môi trường: `VOLCENGINE_TTS_BASE_URL`.</ParamField>
-    <ParamField path="voice" type="string">Loại giọng nói. Mặc định `en_female_anna_mars_bigtts`. Môi trường: `VOLCENGINE_TTS_VOICE`.</ParamField>
-    <ParamField path="speedRatio" type="number">Tỷ lệ tốc độ native của nhà cung cấp.</ParamField>
-    <ParamField path="emotion" type="string">Thẻ cảm xúc native của nhà cung cấp.</ParamField>
-    <ParamField path="appId / token / cluster" type="string" deprecated>Các trường Volcengine Speech Console cũ. Môi trường: `VOLCENGINE_TTS_APPID`, `VOLCENGINE_TTS_TOKEN`, `VOLCENGINE_TTS_CLUSTER` (mặc định `volcano_tts`).</ParamField>
+    <ParamField path="apiKey" type="string">Env: `VOLCENGINE_TTS_API_KEY` hoặc `BYTEPLUS_SEED_SPEECH_API_KEY`.</ParamField>
+    <ParamField path="resourceId" type="string">Mặc định `seed-tts-1.0`. Env: `VOLCENGINE_TTS_RESOURCE_ID`. Dùng `seed-tts-2.0` khi dự án của bạn có quyền sử dụng TTS 2.0.</ParamField>
+    <ParamField path="appKey" type="string">Header khóa ứng dụng. Mặc định `aGjiRDfUWi`. Env: `VOLCENGINE_TTS_APP_KEY`.</ParamField>
+    <ParamField path="baseUrl" type="string">Ghi đè endpoint HTTP Seed Speech TTS. Env: `VOLCENGINE_TTS_BASE_URL`.</ParamField>
+    <ParamField path="voice" type="string">Loại giọng. Mặc định `en_female_anna_mars_bigtts`. Env: `VOLCENGINE_TTS_VOICE`.</ParamField>
+    <ParamField path="speedRatio" type="number">Tỷ lệ tốc độ gốc của nhà cung cấp.</ParamField>
+    <ParamField path="emotion" type="string">Thẻ cảm xúc gốc của nhà cung cấp.</ParamField>
+    <ParamField path="appId / token / cluster" type="string" deprecated>Các trường Volcengine Speech Console cũ. Env: `VOLCENGINE_TTS_APPID`, `VOLCENGINE_TTS_TOKEN`, `VOLCENGINE_TTS_CLUSTER` (mặc định `volcano_tts`).</ParamField>
   </Accordion>
 
   <Accordion title="xAI">
-    <ParamField path="apiKey" type="string">Môi trường: `XAI_API_KEY`.</ParamField>
-    <ParamField path="baseUrl" type="string">Mặc định `https://api.x.ai/v1`. Môi trường: `XAI_BASE_URL`.</ParamField>
-    <ParamField path="voiceId" type="string">Mặc định `eve`. Giọng nói live: `ara`, `eve`, `leo`, `rex`, `sal`, `una`.</ParamField>
+    <ParamField path="apiKey" type="string">Env: `XAI_API_KEY`.</ParamField>
+    <ParamField path="baseUrl" type="string">Mặc định `https://api.x.ai/v1`. Env: `XAI_BASE_URL`.</ParamField>
+    <ParamField path="voiceId" type="string">Mặc định `eve`. Giọng trực tiếp: `ara`, `eve`, `leo`, `rex`, `sal`, `una`.</ParamField>
     <ParamField path="language" type="string">Mã ngôn ngữ BCP-47 hoặc `auto`. Mặc định `en`.</ParamField>
     <ParamField path="responseFormat" type='"mp3" | "wav" | "pcm" | "mulaw" | "alaw"'>Mặc định `mp3`.</ParamField>
-    <ParamField path="speed" type="number">Ghi đè tốc độ native của nhà cung cấp.</ParamField>
+    <ParamField path="speed" type="number">Ghi đè tốc độ gốc của nhà cung cấp.</ParamField>
   </Accordion>
 
   <Accordion title="Xiaomi MiMo">
-    <ParamField path="apiKey" type="string">Môi trường: `XIAOMI_API_KEY`.</ParamField>
-    <ParamField path="baseUrl" type="string">Mặc định `https://api.xiaomimimo.com/v1`. Môi trường: `XIAOMI_BASE_URL`.</ParamField>
-    <ParamField path="model" type="string">Mặc định `mimo-v2.5-tts`. Môi trường: `XIAOMI_TTS_MODEL`. Cũng hỗ trợ `mimo-v2-tts`.</ParamField>
-    <ParamField path="voice" type="string">Mặc định `mimo_default`. Môi trường: `XIAOMI_TTS_VOICE`.</ParamField>
-    <ParamField path="format" type='"mp3" | "wav"'>Mặc định `mp3`. Môi trường: `XIAOMI_TTS_FORMAT`.</ParamField>
-    <ParamField path="style" type="string">Chỉ dẫn phong cách bằng ngôn ngữ tự nhiên tùy chọn được gửi dưới dạng tin nhắn người dùng; không được đọc thành tiếng.</ParamField>
+    <ParamField path="apiKey" type="string">Env: `XIAOMI_API_KEY`.</ParamField>
+    <ParamField path="baseUrl" type="string">Mặc định `https://api.xiaomimimo.com/v1`. Env: `XIAOMI_BASE_URL`.</ParamField>
+    <ParamField path="model" type="string">Mặc định `mimo-v2.5-tts`. Env: `XIAOMI_TTS_MODEL`. Cũng hỗ trợ `mimo-v2-tts`.</ParamField>
+    <ParamField path="voice" type="string">Mặc định `mimo_default`. Env: `XIAOMI_TTS_VOICE`.</ParamField>
+    <ParamField path="format" type='"mp3" | "wav"'>Mặc định `mp3`. Env: `XIAOMI_TTS_FORMAT`.</ParamField>
+    <ParamField path="style" type="string">Chỉ dẫn phong cách bằng ngôn ngữ tự nhiên tùy chọn được gửi dưới dạng thông điệp người dùng; không được đọc thành tiếng.</ParamField>
   </Accordion>
 </AccordionGroup>
 
-## Công cụ tác tử
+## Công cụ agent
 
 Công cụ `tts` chuyển đổi văn bản thành giọng nói và trả về tệp đính kèm âm thanh để
 gửi trả lời. Trên Feishu, Matrix, Telegram và WhatsApp, âm thanh được
 gửi dưới dạng tin nhắn thoại thay vì tệp đính kèm. Feishu và
-WhatsApp có thể chuyển mã đầu ra TTS không phải Opus trên đường dẫn này khi có
-`ffmpeg`.
+WhatsApp có thể chuyển mã đầu ra TTS không phải Opus trên đường dẫn này khi `ffmpeg`
+có sẵn.
 
 WhatsApp gửi âm thanh qua Baileys dưới dạng ghi chú thoại PTT (`audio` với
 `ptt: true`) và gửi văn bản hiển thị **riêng biệt** với âm thanh PTT vì
-client không luôn hiển thị nhất quán chú thích trên ghi chú thoại.
+client không hiển thị chú thích trên ghi chú thoại một cách nhất quán.
 
 Công cụ chấp nhận các trường tùy chọn `channel` và `timeoutMs`; `timeoutMs` là
 thời gian chờ yêu cầu nhà cung cấp cho mỗi lần gọi, tính bằng mili giây.
@@ -971,7 +980,7 @@ thời gian chờ yêu cầu nhà cung cấp cho mỗi lần gọi, tính bằng
 | `tts.status`      | Đọc trạng thái TTS hiện tại và lần thử gần nhất. |
 | `tts.enable`      | Đặt tùy chọn tự động cục bộ thành `always`. |
 | `tts.disable`     | Đặt tùy chọn tự động cục bộ thành `off`. |
-| `tts.convert`     | Chuyển đổi văn bản → âm thanh một lần.   |
+| `tts.convert`     | Chuyển văn bản → âm thanh một lần.       |
 | `tts.setProvider` | Đặt tùy chọn nhà cung cấp cục bộ.        |
 | `tts.setPersona`  | Đặt tùy chọn persona cục bộ.             |
 | `tts.providers`   | Liệt kê các nhà cung cấp đã cấu hình và trạng thái. |
@@ -980,7 +989,7 @@ thời gian chờ yêu cầu nhà cung cấp cho mỗi lần gọi, tính bằng
 
 - [Hướng dẫn chuyển văn bản thành giọng nói của OpenAI](https://platform.openai.com/docs/guides/text-to-speech)
 - [Tham chiếu OpenAI Audio API](https://platform.openai.com/docs/api-reference/audio)
-- [Azure Speech REST chuyển văn bản thành giọng nói](https://learn.microsoft.com/azure/ai-services/speech-service/rest-text-to-speech)
+- [Chuyển văn bản thành giọng nói Azure Speech REST](https://learn.microsoft.com/azure/ai-services/speech-service/rest-text-to-speech)
 - [Nhà cung cấp Azure Speech](/vi/providers/azure-speech)
 - [ElevenLabs Text to Speech](https://elevenlabs.io/docs/api-reference/text-to-speech)
 - [Xác thực ElevenLabs](https://elevenlabs.io/docs/api-reference/authentication)
@@ -991,12 +1000,12 @@ thời gian chờ yêu cầu nhà cung cấp cho mỗi lần gọi, tính bằng
 - [Tổng hợp giọng nói Xiaomi MiMo](/vi/providers/xiaomi#text-to-speech)
 - [node-edge-tts](https://github.com/SchneeHertz/node-edge-tts)
 - [Định dạng đầu ra Microsoft Speech](https://learn.microsoft.com/azure/ai-services/speech-service/rest-text-to-speech#audio-outputs)
-- [xAI chuyển văn bản thành giọng nói](https://docs.x.ai/developers/rest-api-reference/inference/voice#text-to-speech-rest)
+- [Chuyển văn bản thành giọng nói xAI](https://docs.x.ai/developers/rest-api-reference/inference/voice#text-to-speech-rest)
 
 ## Liên quan
 
-- [Tổng quan media](/vi/tools/media-overview)
+- [Tổng quan về phương tiện](/vi/tools/media-overview)
 - [Tạo nhạc](/vi/tools/music-generation)
 - [Tạo video](/vi/tools/video-generation)
 - [Lệnh slash](/vi/tools/slash-commands)
-- [Plugin cuộc gọi thoại](/vi/plugins/voice-call)
+- [Plugin gọi thoại](/vi/plugins/voice-call)

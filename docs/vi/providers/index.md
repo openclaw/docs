@@ -1,19 +1,17 @@
 ---
 read_when:
     - Bạn muốn chọn một nhà cung cấp mô hình
-    - Bạn cần tổng quan nhanh về các phần phụ trợ LLM được hỗ trợ
-summary: Các nhà cung cấp mô hình (LLM) được OpenClaw hỗ trợ
-title: Danh mục nhà cung cấp
+    - Bạn cần tổng quan nhanh về các backend LLM được hỗ trợ
+summary: Nhà cung cấp mô hình (LLM) được OpenClaw hỗ trợ
+title: Thư mục nhà cung cấp
 x-i18n:
-    generated_at: "2026-04-29T23:07:01Z"
+    generated_at: "2026-05-06T09:27:10Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 61143200b2e7a74392cf8871bfcd210fe35dbd5118e2e8bc7b15265192fd2bde
+    source_hash: cfc3a15880a5e1881c1a58c60c9ad7e5624350a8db848d03c7cef6ee18c14b81
     source_path: providers/index.md
     workflow: 16
 ---
-
-# Nhà cung cấp mô hình
 
 OpenClaw có thể sử dụng nhiều nhà cung cấp LLM. Chọn một nhà cung cấp, xác thực, rồi đặt
 mô hình mặc định dưới dạng `provider/model`.
@@ -49,14 +47,14 @@ Bạn đang tìm tài liệu về kênh chat (WhatsApp/Telegram/Discord/Slack/Ma
 - [fal](/vi/providers/fal)
 - [Fireworks](/vi/providers/fireworks)
 - [GitHub Copilot](/vi/providers/github-copilot)
-- [mô hình GLM](/vi/providers/glm)
+- [Mô hình GLM](/vi/providers/glm)
 - [Google (Gemini)](/vi/providers/google)
 - [Gradium](/vi/providers/gradium)
 - [Groq (suy luận LPU)](/vi/providers/groq)
 - [Hugging Face (Inference)](/vi/providers/huggingface)
 - [inferrs (mô hình cục bộ)](/vi/providers/inferrs)
 - [Kilocode](/vi/providers/kilocode)
-- [LiteLLM (gateway hợp nhất)](/vi/providers/litellm)
+- [LiteLLM (Gateway hợp nhất)](/vi/providers/litellm)
 - [LM Studio (mô hình cục bộ)](/vi/providers/lmstudio)
 - [MiniMax](/vi/providers/minimax)
 - [Mistral](/vi/providers/mistral)
@@ -86,16 +84,16 @@ Bạn đang tìm tài liệu về kênh chat (WhatsApp/Telegram/Discord/Slack/Ma
 - [Xiaomi](/vi/providers/xiaomi)
 - [Z.AI](/vi/providers/zai)
 
-## Trang tổng quan chung
+## Các trang tổng quan dùng chung
 
-- [Các biến thể đi kèm bổ sung](/vi/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy và Gemini CLI OAuth
-- [Tạo hình ảnh](/vi/tools/image-generation) - Công cụ `image_generate` chung, lựa chọn nhà cung cấp và chuyển đổi dự phòng
-- [Tạo nhạc](/vi/tools/music-generation) - Công cụ `music_generate` chung, lựa chọn nhà cung cấp và chuyển đổi dự phòng
-- [Tạo video](/vi/tools/video-generation) - Công cụ `video_generate` chung, lựa chọn nhà cung cấp và chuyển đổi dự phòng
+- [Biến thể đi kèm bổ sung](/vi/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy và Gemini CLI OAuth
+- [Tạo hình ảnh](/vi/tools/image-generation) - Công cụ `image_generate` dùng chung, lựa chọn nhà cung cấp và chuyển dự phòng
+- [Tạo nhạc](/vi/tools/music-generation) - Công cụ `music_generate` dùng chung, lựa chọn nhà cung cấp và chuyển dự phòng
+- [Tạo video](/vi/tools/video-generation) - Công cụ `video_generate` dùng chung, lựa chọn nhà cung cấp và chuyển dự phòng
 
-## Nhà cung cấp chuyển lời nói thành văn bản
+## Nhà cung cấp phiên âm
 
-- [Deepgram (chuyển lời nói âm thanh thành văn bản)](/vi/providers/deepgram)
+- [Deepgram (phiên âm âm thanh)](/vi/providers/deepgram)
 - [ElevenLabs](/vi/providers/elevenlabs#speech-to-text)
 - [Mistral](/vi/providers/mistral#audio-transcription-voxtral)
 - [OpenAI](/vi/providers/openai#speech-to-text)
@@ -104,7 +102,7 @@ Bạn đang tìm tài liệu về kênh chat (WhatsApp/Telegram/Discord/Slack/Ma
 
 ## Công cụ cộng đồng
 
-- [Claude Max API Proxy](/vi/providers/claude-max-api-proxy) - Proxy cộng đồng cho thông tin đăng nhập gói thuê bao Claude (xác minh chính sách/điều khoản của Anthropic trước khi sử dụng)
+- [Claude Max API Proxy](/vi/providers/claude-max-api-proxy) - Proxy cộng đồng cho thông tin đăng nhập gói đăng ký Claude (xác minh chính sách/điều khoản của Anthropic trước khi sử dụng)
 
 Để xem danh mục nhà cung cấp đầy đủ (xAI, Groq, Mistral, v.v.) và cấu hình nâng cao,
 xem [Nhà cung cấp mô hình](/vi/concepts/model-providers).

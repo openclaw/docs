@@ -1,56 +1,54 @@
 ---
 read_when:
-    - Bạn đang xây dựng một ứng dụng bên ngoài, tập lệnh, bảng điều khiển, công việc CI hoặc tiện ích mở rộng IDE giao tiếp với OpenClaw
-    - Bạn đang lựa chọn giữa App SDK và Plugin SDK
-    - Bạn đang tích hợp với các lượt chạy tác tử Gateway, phiên, sự kiện, phê duyệt, mô hình hoặc công cụ
+    - Bạn đang xây dựng một ứng dụng bên ngoài, tập lệnh, bảng điều khiển, tác vụ CI hoặc tiện ích mở rộng IDE giao tiếp với OpenClaw
+    - Bạn đang chọn giữa App SDK và Plugin SDK
+    - Bạn đang tích hợp với các lần chạy tác tử Gateway, phiên, sự kiện, phê duyệt, mô hình hoặc công cụ
 sidebarTitle: App SDK
-summary: SDK ứng dụng OpenClaw công khai dành cho các ứng dụng bên ngoài, tập lệnh, bảng điều khiển, tác vụ CI và tiện ích mở rộng IDE
+summary: SDK Ứng dụng OpenClaw công khai dành cho các ứng dụng bên ngoài, tập lệnh, bảng điều khiển, tác vụ CI và tiện ích mở rộng IDE
 title: SDK Ứng dụng OpenClaw
 x-i18n:
-    generated_at: "2026-05-01T10:48:30Z"
+    generated_at: "2026-05-06T09:08:47Z"
     model: gpt-5.5
     provider: openai
-    source_hash: a6b22e9f4f809a572cfd19fd22f633a706dd23b8bee2f3c244003a0861a41073
+    source_hash: 23d161958e8b100bfc829319ef6bfd2ea2bf7c873ef29a0d4a849b064e5a3b66
     source_path: concepts/openclaw-sdk.md
     workflow: 16
 ---
 
-**OpenClaw App SDK** là API client công khai dành cho các ứng dụng bên ngoài tiến trình
-OpenClaw. Dùng `@openclaw/sdk` khi một script, dashboard, tác vụ CI, extension IDE
-hoặc ứng dụng bên ngoài khác muốn kết nối tới Gateway, khởi động các lượt chạy agent,
-stream sự kiện, chờ kết quả, hủy công việc hoặc kiểm tra tài nguyên Gateway.
+**OpenClaw App SDK** là API client công khai dành cho các ứng dụng bên ngoài tiến trình OpenClaw. Dùng `@openclaw/sdk` khi một script, dashboard, tác vụ CI, tiện ích mở rộng IDE hoặc ứng dụng bên ngoài khác muốn kết nối tới Gateway, bắt đầu các lần chạy tác tử, truyền trực tuyến sự kiện, chờ kết quả, hủy công việc hoặc kiểm tra tài nguyên Gateway.
 
 <Note>
   App SDK khác với [Plugin SDK](/vi/plugins/sdk-overview).
   `@openclaw/sdk` giao tiếp với Gateway từ bên ngoài OpenClaw.
-  `openclaw/plugin-sdk/*` chỉ dành cho các plugins chạy bên trong OpenClaw và
-  đăng ký provider, kênh, công cụ, hooks hoặc runtime tin cậy.
+  `openclaw/plugin-sdk/*` chỉ dành cho các plugin chạy bên trong OpenClaw và
+  đăng ký nhà cung cấp, kênh, công cụ, hook hoặc runtime tin cậy.
 </Note>
 
-## Những Gì Được Cung Cấp Hôm Nay
+## Hiện có hôm nay
 
-`@openclaw/sdk` được cung cấp với:
+`@openclaw/sdk` hiện có:
 
-| Bề mặt                   | Trạng thái | Chức năng                                                                  |
-| ------------------------- | ------ | -------------------------------------------------------------------------- |
-| `OpenClaw`                | Sẵn sàng  | Điểm vào client chính. Sở hữu transport, kết nối, yêu cầu và sự kiện. |
-| `GatewayClientTransport`  | Sẵn sàng  | Transport WebSocket dựa trên client Gateway.                          |
-| `oc.agents`               | Sẵn sàng  | Liệt kê, tạo, cập nhật, xóa và lấy handles agent.                  |
-| `Agent.run()`             | Sẵn sàng  | Khởi động một lượt chạy Gateway `agent` và trả về một `Run`.                          |
-| `oc.runs`                 | Sẵn sàng  | Tạo, lấy, chờ, hủy và stream các lượt chạy.                       |
-| `Run.events()`            | Sẵn sàng  | Stream các sự kiện đã chuẩn hóa theo từng lượt chạy, có phát lại cho lượt chạy nhanh.               |
-| `Run.wait()`              | Sẵn sàng  | Gọi `agent.wait` và trả về một `RunResult` ổn định.                       |
-| `Run.cancel()`            | Sẵn sàng  | Gọi `sessions.abort` theo id lượt chạy, kèm khóa phiên khi có.         |
-| `oc.sessions`             | Sẵn sàng  | Tạo, phân giải, gửi tới, vá, compact và lấy handles phiên.  |
-| `Session.send()`          | Sẵn sàng  | Gọi `sessions.send` và trả về một `Run`.                                 |
-| `oc.models`               | Sẵn sàng  | Gọi `models.list` và RPC trạng thái `models.authStatus` hiện tại.        |
-| `oc.tools`                | Sẵn sàng  | Liệt kê, định phạm vi và gọi công cụ Gateway qua pipeline chính sách.      |
-| `oc.artifacts`            | Sẵn sàng  | Liệt kê, lấy và tải xuống artifacts bản ghi Gateway.                   |
-| `oc.approvals`            | Sẵn sàng  | Liệt kê và xử lý phê duyệt exec qua các RPC phê duyệt Gateway.           |
-| `oc.rawEvents()`          | Sẵn sàng  | Cung cấp sự kiện Gateway thô cho người dùng nâng cao.                         |
-| `normalizeGatewayEvent()` | Sẵn sàng  | Chuyển đổi sự kiện Gateway thô sang dạng sự kiện SDK ổn định.               |
+| Giao diện                 | Trạng thái | Chức năng                                                                         |
+| ------------------------- | ---------- | --------------------------------------------------------------------------------- |
+| `OpenClaw`                | Sẵn sàng   | Điểm vào client chính. Quản lý transport, kết nối, yêu cầu và sự kiện.            |
+| `GatewayClientTransport`  | Sẵn sàng   | WebSocket transport được hỗ trợ bởi client Gateway.                               |
+| `oc.agents`               | Sẵn sàng   | Liệt kê, tạo, cập nhật, xóa và lấy handle tác tử.                                 |
+| `Agent.run()`             | Sẵn sàng   | Bắt đầu một lần chạy `agent` của Gateway và trả về một `Run`.                     |
+| `oc.runs`                 | Sẵn sàng   | Tạo, lấy, chờ, hủy và truyền trực tuyến các lần chạy.                             |
+| `Run.events()`            | Sẵn sàng   | Truyền trực tuyến các sự kiện theo lần chạy đã chuẩn hóa, có phát lại cho các lần chạy nhanh. |
+| `Run.wait()`              | Sẵn sàng   | Gọi `agent.wait` và trả về một `RunResult` ổn định.                               |
+| `Run.cancel()`            | Sẵn sàng   | Gọi `sessions.abort` theo id lần chạy, kèm khóa phiên khi có.                     |
+| `oc.sessions`             | Sẵn sàng   | Tạo, phân giải, gửi tới, vá, nén và lấy handle phiên.                             |
+| `Session.send()`          | Sẵn sàng   | Gọi `sessions.send` và trả về một `Run`.                                          |
+| `oc.models`               | Sẵn sàng   | Gọi `models.list` và RPC trạng thái `models.authStatus` hiện tại.                 |
+| `oc.tools`                | Sẵn sàng   | Liệt kê, giới hạn phạm vi và gọi các công cụ Gateway thông qua pipeline chính sách. |
+| `oc.artifacts`            | Sẵn sàng   | Liệt kê, lấy và tải xuống các artifact bản ghi Gateway.                           |
+| `oc.approvals`            | Sẵn sàng   | Liệt kê và xử lý phê duyệt exec thông qua các RPC phê duyệt của Gateway.          |
+| `oc.environments`         | Một phần   | Liệt kê các ứng viên môi trường cục bộ của Gateway và node; tạo/xóa chưa được nối. |
+| `oc.rawEvents()`          | Sẵn sàng   | Cung cấp các sự kiện Gateway thô cho người dùng nâng cao.                         |
+| `normalizeGatewayEvent()` | Sẵn sàng   | Chuyển đổi sự kiện Gateway thô sang dạng sự kiện SDK ổn định.                     |
 
-SDK cũng export các kiểu cốt lõi được dùng bởi những bề mặt đó:
+SDK cũng xuất các kiểu lõi được các giao diện đó sử dụng:
 `AgentRunParams`, `RunResult`, `RunStatus`, `OpenClawEvent`,
 `OpenClawEventType`, `GatewayEvent`, `OpenClawTransport`,
 `GatewayRequestOptions`, `SessionCreateParams`, `SessionSendParams`,
@@ -59,16 +57,16 @@ SDK cũng export các kiểu cốt lõi được dùng bởi những bề mặt 
 `EnvironmentSelection`, `WorkspaceSelection`, `ApprovalMode` và các kiểu
 kết quả liên quan.
 
-## Kết Nối Tới Gateway
+## Kết nối tới Gateway
 
-Tạo một client với URL Gateway tường minh, hoặc inject một transport tùy chỉnh cho
-kiểm thử và runtime ứng dụng nhúng.
+Tạo client với URL Gateway rõ ràng, hoặc tiêm transport tùy chỉnh cho kiểm thử
+và runtime ứng dụng nhúng.
 
 ```typescript
 import { OpenClaw } from "@openclaw/sdk";
 
 const oc = new OpenClaw({
-  url: "ws://127.0.0.1:14565",
+  url: "ws://127.0.0.1:18789",
   token: process.env.OPENCLAW_GATEWAY_TOKEN,
   requestTimeoutMs: 30_000,
 });
@@ -78,10 +76,10 @@ await oc.connect();
 
 `new OpenClaw({ gateway: "ws://..." })` tương đương với `url`. Tùy chọn
 `gateway: "auto"` được constructor chấp nhận, nhưng tự động khám phá Gateway
-chưa phải là một tính năng SDK riêng; hãy truyền `url` khi ứng dụng chưa biết sẵn
+chưa phải là một tính năng SDK riêng; hãy truyền `url` khi ứng dụng chưa biết
 cách khám phá Gateway.
 
-Đối với kiểm thử, hãy truyền một object triển khai `OpenClawTransport`:
+Với kiểm thử, hãy truyền một đối tượng triển khai `OpenClawTransport`:
 
 ```typescript
 const oc = new OpenClaw({
@@ -94,9 +92,9 @@ const oc = new OpenClaw({
 });
 ```
 
-## Chạy Một Agent
+## Chạy một tác tử
 
-Dùng `oc.agents.get(id)` khi ứng dụng muốn một handle agent, rồi gọi
+Dùng `oc.agents.get(id)` khi ứng dụng muốn có handle tác tử, rồi gọi
 `agent.run()`.
 
 ```typescript
@@ -120,16 +118,11 @@ const result = await run.wait({ timeoutMs: 120_000 });
 console.log(result.status);
 ```
 
-Các tham chiếu model có kèm provider như `openai/gpt-5.5` được tách thành các
-override Gateway `provider` và `model`. `timeoutMs` vẫn là mili giây trong SDK và
-được chuyển đổi thành số giây timeout của Gateway cho RPC `agent`.
+Các tham chiếu mô hình có định danh nhà cung cấp như `openai/gpt-5.5` được tách thành các ghi đè `provider` và `model` của Gateway. `timeoutMs` vẫn là mili giây trong SDK và được chuyển đổi thành số giây timeout của Gateway cho RPC `agent`.
 
-`run.wait()` dùng RPC Gateway `agent.wait`. Hạn chờ hết hạn trong khi lượt chạy
-vẫn đang hoạt động sẽ trả về `status: "accepted"` thay vì giả vờ rằng chính lượt
-chạy đã timeout. Timeout runtime, lượt chạy bị abort và lượt chạy bị hủy được
-chuẩn hóa thành `timed_out` hoặc `cancelled`.
+`run.wait()` dùng RPC `agent.wait` của Gateway. Một hạn chờ hết hạn trong khi lần chạy vẫn đang hoạt động sẽ trả về `status: "accepted"` thay vì giả vờ rằng chính lần chạy đã hết thời gian. Timeout runtime, lần chạy bị hủy bỏ và lần chạy bị hủy được chuẩn hóa thành `timed_out` hoặc `cancelled`.
 
-## Tạo Và Tái Sử Dụng Phiên
+## Tạo và tái sử dụng phiên
 
 Dùng phiên khi ứng dụng muốn trạng thái bản ghi bền vững.
 
@@ -152,9 +145,9 @@ await session.patch({ label: "renamed-session" });
 await session.compact({ maxLines: 200 });
 ```
 
-## Stream Sự Kiện
+## Truyền trực tuyến sự kiện
 
-SDK chuẩn hóa sự kiện Gateway thô thành một envelope `OpenClawEvent` ổn định:
+SDK chuẩn hóa các sự kiện Gateway thô thành một phong bì `OpenClawEvent` ổn định:
 
 ```typescript
 type OpenClawEvent = {
@@ -174,31 +167,31 @@ type OpenClawEvent = {
 
 Các loại sự kiện phổ biến gồm:
 
-| Loại sự kiện            | Sự kiện Gateway nguồn                        |
-| --------------------- | ------------------------------------------- |
-| `run.started`         | Bắt đầu vòng đời `agent`                     |
-| `run.completed`       | Kết thúc vòng đời `agent`                       |
-| `run.failed`          | Lỗi vòng đời `agent`                     |
-| `run.cancelled`       | Kết thúc vòng đời bị abort/bị hủy             |
-| `run.timed_out`       | Kết thúc vòng đời do timeout                       |
-| `assistant.delta`     | Delta stream của assistant                   |
-| `assistant.message`   | Tin nhắn assistant                           |
-| `thinking.delta`      | Luồng suy nghĩ hoặc kế hoạch                     |
-| `tool.call.started`   | Bắt đầu công cụ/mục/lệnh                     |
-| `tool.call.delta`     | Cập nhật công cụ/mục/lệnh                    |
-| `tool.call.completed` | Hoàn tất công cụ/mục/lệnh                |
-| `tool.call.failed`    | Lỗi hoặc trạng thái bị chặn của công cụ/mục/lệnh |
-| `approval.requested`  | Yêu cầu phê duyệt exec hoặc Plugin             |
-| `approval.resolved`   | Kết quả phê duyệt exec hoặc Plugin          |
-| `session.created`     | Tạo `sessions.changed`                   |
-| `session.updated`     | Cập nhật `sessions.changed`                   |
-| `session.compacted`   | Compaction `sessions.changed`               |
-| `task.updated`        | Sự kiện cập nhật tác vụ                          |
-| `artifact.updated`    | Sự kiện stream patch                         |
-| `raw`                 | Bất kỳ sự kiện nào chưa có ánh xạ SDK ổn định  |
+| Loại sự kiện          | Sự kiện Gateway nguồn                      |
+| --------------------- | ------------------------------------------ |
+| `run.started`         | Bắt đầu vòng đời `agent`                   |
+| `run.completed`       | Kết thúc vòng đời `agent`                  |
+| `run.failed`          | Lỗi vòng đời `agent`                       |
+| `run.cancelled`       | Kết thúc vòng đời bị hủy bỏ/bị hủy         |
+| `run.timed_out`       | Kết thúc vòng đời do timeout               |
+| `assistant.delta`     | Delta truyền trực tuyến của trợ lý         |
+| `assistant.message`   | Tin nhắn của trợ lý                        |
+| `thinking.delta`      | Luồng suy nghĩ hoặc kế hoạch               |
+| `tool.call.started`   | Bắt đầu công cụ/mục/lệnh                   |
+| `tool.call.delta`     | Cập nhật công cụ/mục/lệnh                  |
+| `tool.call.completed` | Hoàn tất công cụ/mục/lệnh                  |
+| `tool.call.failed`    | Công cụ/mục/lệnh thất bại hoặc trạng thái bị chặn |
+| `approval.requested`  | Yêu cầu phê duyệt exec hoặc plugin         |
+| `approval.resolved`   | Kết quả phê duyệt exec hoặc plugin         |
+| `session.created`     | Tạo `sessions.changed`                     |
+| `session.updated`     | Cập nhật `sessions.changed`                |
+| `session.compacted`   | Compaction `sessions.changed`              |
+| `task.updated`        | Sự kiện cập nhật tác vụ                    |
+| `artifact.updated`    | Sự kiện luồng bản vá                       |
+| `raw`                 | Bất kỳ sự kiện nào chưa có ánh xạ SDK ổn định |
 
-`Run.events()` lọc sự kiện theo một id lượt chạy và phát lại các sự kiện đã thấy
-cho những lượt chạy nhanh. Điều đó nghĩa là luồng được ghi tài liệu là an toàn:
+`Run.events()` lọc sự kiện theo một id lần chạy và phát lại các sự kiện đã thấy
+cho các lần chạy nhanh. Điều đó nghĩa là luồng đã được ghi tài liệu là an toàn:
 
 ```typescript
 const run = await agent.run("Summarize the latest session.");
@@ -210,21 +203,19 @@ for await (const event of run.events()) {
 }
 ```
 
-Đối với stream toàn ứng dụng, dùng `oc.events()`. Đối với frame Gateway thô, dùng
+Với luồng toàn ứng dụng, dùng `oc.events()`. Với frame Gateway thô, dùng
 `oc.rawEvents()`.
 
-## Models, Công Cụ, Artifacts Và Phê Duyệt
+## Mô hình, công cụ, artifact và phê duyệt
 
-Các helper model ánh xạ tới các phương thức Gateway hiện tại:
+Các helper mô hình ánh xạ tới những phương thức Gateway hiện tại:
 
 ```typescript
 await oc.models.list();
 await oc.models.status({ probe: false }); // calls models.authStatus
 ```
 
-Các helper công cụ cung cấp catalog Gateway, chế độ xem công cụ hiệu lực và lệnh gọi
-trực tiếp công cụ Gateway. `oc.tools.invoke()` trả về một envelope có kiểu thay vì
-throw đối với từ chối do chính sách hoặc phê duyệt.
+Các helper công cụ cung cấp catalog Gateway, chế độ xem công cụ hiệu lực và lời gọi trực tiếp công cụ Gateway. `oc.tools.invoke()` trả về một phong bì có kiểu thay vì ném lỗi khi chính sách hoặc phê duyệt từ chối.
 
 ```typescript
 await oc.tools.list();
@@ -237,9 +228,7 @@ await oc.tools.invoke("tool-name", {
 });
 ```
 
-Các helper artifact cung cấp phép chiếu artifact Gateway cho ngữ cảnh phiên, lượt chạy
-hoặc tác vụ. Mỗi lệnh gọi yêu cầu đúng một phạm vi `sessionKey`, `runId` hoặc
-`taskId` tường minh:
+Các helper artifact cung cấp phép chiếu artifact Gateway cho ngữ cảnh phiên, lần chạy hoặc tác vụ. Mỗi lời gọi yêu cầu đúng một phạm vi rõ ràng là `sessionKey`, `runId` hoặc `taskId`:
 
 ```typescript
 const { artifacts } = await oc.artifacts.list({ sessionKey: "main" });
@@ -259,58 +248,58 @@ const approvals = await oc.approvals.list();
 await oc.approvals.respond("approval-id", { decision: "approve" });
 ```
 
-## Hiện Chưa Được Hỗ Trợ Tường Minh
+Các helper môi trường cung cấp khả năng khám phá chỉ đọc cục bộ của Gateway và node:
+
+```typescript
+const { environments } = await oc.environments.list();
+await oc.environments.status(environments[0].id);
+```
+
+## Hiện chưa được hỗ trợ rõ ràng
 
 SDK bao gồm các tên cho mô hình sản phẩm mà chúng ta muốn, nhưng không âm thầm
-giả vờ rằng các RPC Gateway tồn tại. Những lệnh gọi này hiện throw lỗi không được
-hỗ trợ một cách tường minh:
+giả vờ rằng các RPC Gateway tồn tại. Những lời gọi này hiện ném lỗi không được
+hỗ trợ rõ ràng:
 
 ```typescript
 await oc.tasks.list();
 await oc.tasks.get("task-id");
 await oc.tasks.cancel("task-id");
 
-await oc.environments.list();
 await oc.environments.create({});
-await oc.environments.status("environment-id");
 await oc.environments.delete("environment-id");
 ```
 
-Các trường theo từng lượt chạy `workspace`, `runtime`, `environment` và `approvals`
-được định kiểu như dạng tương lai, nhưng Gateway hiện tại không hỗ trợ các override đó trên
-RPC `agent`. Nếu caller truyền chúng, SDK sẽ throw trước khi gửi lượt chạy
-để công việc không vô tình thực thi với hành vi workspace, runtime,
-environment hoặc phê duyệt mặc định.
+Các trường theo từng lần chạy `workspace`, `runtime`, `environment` và `approvals` được định kiểu như dạng trong tương lai, nhưng Gateway hiện tại không hỗ trợ các ghi đè đó trên RPC `agent`. Nếu bên gọi truyền chúng, SDK sẽ ném lỗi trước khi gửi lần chạy để công việc không vô tình thực thi với hành vi mặc định về workspace, runtime, môi trường hoặc phê duyệt.
 
-## App SDK So Với Plugin SDK
+## App SDK so với Plugin SDK
 
 Dùng App SDK khi mã nằm bên ngoài OpenClaw:
 
-- Script Node khởi động hoặc quan sát các lượt chạy agent
-- Tác vụ CI gọi một Gateway
+- Script Node bắt đầu hoặc quan sát các lần chạy tác tử
+- Tác vụ CI gọi Gateway
 - dashboard và bảng quản trị
-- extension IDE
-- cầu nối bên ngoài không cần trở thành Plugin kênh
+- tiện ích mở rộng IDE
+- cầu nối bên ngoài không cần trở thành plugin kênh
 - kiểm thử tích hợp với transport Gateway giả hoặc thật
 
 Dùng Plugin SDK khi mã chạy bên trong OpenClaw:
 
-- Plugin provider
-- Plugin kênh
+- plugin nhà cung cấp
+- plugin kênh
 - hook công cụ hoặc vòng đời
-- Plugin harness agent
+- plugin harness tác tử
 - helper runtime tin cậy
 
-Mã App SDK nên import từ `@openclaw/sdk`. Mã Plugin nên import từ các subpath
-`openclaw/plugin-sdk/*` đã được ghi tài liệu. Không trộn lẫn hai contract này.
+Mã App SDK nên import từ `@openclaw/sdk`. Mã plugin nên import từ các đường dẫn con `openclaw/plugin-sdk/*` đã được ghi tài liệu. Không trộn lẫn hai hợp đồng này.
 
-## Tài Liệu Liên Quan
+## Liên quan
 
 - [Thiết kế API OpenClaw App SDK](/vi/reference/openclaw-sdk-api-design)
 - [Tham chiếu RPC Gateway](/vi/reference/rpc)
-- [Vòng lặp agent](/vi/concepts/agent-loop)
-- [Runtime agent](/vi/concepts/agent-runtimes)
+- [Vòng lặp tác tử](/vi/concepts/agent-loop)
+- [Runtime tác tử](/vi/concepts/agent-runtimes)
 - [Phiên](/vi/concepts/session)
 - [Tác vụ nền](/vi/automation/tasks)
-- [Agent ACP](/vi/tools/acp-agents)
+- [Tác tử ACP](/vi/tools/acp-agents)
 - [Tổng quan Plugin SDK](/vi/plugins/sdk-overview)

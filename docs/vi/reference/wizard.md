@@ -1,16 +1,16 @@
 ---
 read_when:
-    - Tra cứu một bước hướng dẫn thiết lập ban đầu hoặc cờ cụ thể
-    - Tự động hóa quy trình thiết lập ban đầu bằng chế độ không tương tác
-    - Gỡ lỗi hành vi hướng dẫn thiết lập ban đầu
+    - Tra cứu một bước thiết lập ban đầu hoặc cờ cụ thể
+    - Tự động hóa thiết lập ban đầu bằng chế độ không tương tác
+    - Gỡ lỗi hành vi trong quy trình thiết lập ban đầu
 sidebarTitle: Onboarding Reference
 summary: 'Tài liệu tham chiếu đầy đủ cho quy trình thiết lập ban đầu bằng CLI: mọi bước, cờ và trường cấu hình'
-title: Tài liệu tham khảo về nhập môn
+title: Tài liệu tham khảo về thiết lập ban đầu
 x-i18n:
-    generated_at: "2026-04-29T23:13:52Z"
+    generated_at: "2026-05-06T09:30:00Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 412008af223cd14f744a0b553ab82f233eb482ca9991bd418f29b09b33d93de4
+    source_hash: ce0ddb07600ef4f84c44734176e42eb6beaa00fede0be156f3bdd2ec1c0111bb
     source_path: reference/wizard.md
     workflow: 16
 ---
@@ -22,44 +22,44 @@ x-i18n:
 
 <Steps>
   <Step title="Phát hiện cấu hình hiện có">
-    - Nếu `~/.openclaw/openclaw.json` tồn tại, chọn **Giữ / Sửa đổi / Đặt lại**.
-    - Chạy lại thiết lập ban đầu sẽ **không** xóa gì trừ khi bạn chọn rõ ràng **Đặt lại**
+    - Nếu `~/.openclaw/openclaw.json` tồn tại, hãy chọn **Giữ / Sửa đổi / Đặt lại**.
+    - Chạy lại quy trình thiết lập ban đầu sẽ **không** xóa gì trừ khi bạn chọn rõ ràng **Đặt lại**
       (hoặc truyền `--reset`).
     - CLI `--reset` mặc định là `config+creds+sessions`; dùng `--reset-scope full`
-      để xóa cả workspace.
-    - Nếu cấu hình không hợp lệ hoặc chứa khóa cũ, wizard sẽ dừng và yêu cầu
+      để cũng xóa workspace.
+    - Nếu cấu hình không hợp lệ hoặc chứa các khóa cũ, trình hướng dẫn sẽ dừng và yêu cầu
       bạn chạy `openclaw doctor` trước khi tiếp tục.
     - Đặt lại dùng `trash` (không bao giờ dùng `rm`) và cung cấp các phạm vi:
       - Chỉ cấu hình
       - Cấu hình + thông tin xác thực + phiên
-      - Đặt lại đầy đủ (cũng xóa workspace)
+      - Đặt lại toàn bộ (cũng xóa workspace)
 
   </Step>
   <Step title="Mô hình/Xác thực">
     - **Khóa API Anthropic**: dùng `ANTHROPIC_API_KEY` nếu có hoặc nhắc nhập khóa, rồi lưu khóa đó để daemon sử dụng.
-    - **Khóa API Anthropic**: lựa chọn trợ lý Anthropic ưu tiên trong thiết lập ban đầu/cấu hình.
-    - **Anthropic setup-token**: vẫn có trong thiết lập ban đầu/cấu hình, dù OpenClaw hiện ưu tiên tái sử dụng Claude CLI khi có thể.
+    - **Khóa API Anthropic**: lựa chọn trợ lý Anthropic được ưu tiên trong thiết lập ban đầu/cấu hình.
+    - **Anthropic setup-token**: vẫn có trong thiết lập ban đầu/cấu hình, dù OpenClaw hiện ưu tiên tái sử dụng Claude CLI khi có sẵn.
     - **Gói đăng ký OpenAI Code (Codex) (OAuth)**: luồng trình duyệt; dán `code#state`.
-      - Đặt `agents.defaults.model` thành `openai-codex/gpt-5.5` khi chưa đặt mô hình hoặc đã thuộc họ OpenAI.
-    - **Gói đăng ký OpenAI Code (Codex) (ghép nối thiết bị)**: luồng ghép nối trình duyệt với mã thiết bị tồn tại ngắn hạn.
-      - Đặt `agents.defaults.model` thành `openai-codex/gpt-5.5` khi chưa đặt mô hình hoặc đã thuộc họ OpenAI.
-    - **Khóa API OpenAI**: dùng `OPENAI_API_KEY` nếu có hoặc nhắc nhập khóa, rồi lưu khóa đó trong auth profiles.
+      - Đặt `agents.defaults.model` thành `openai-codex/gpt-5.5` khi chưa đặt mô hình hoặc mô hình đã thuộc họ OpenAI.
+    - **Gói đăng ký OpenAI Code (Codex) (ghép cặp thiết bị)**: luồng ghép cặp trình duyệt với mã thiết bị tồn tại ngắn hạn.
+      - Đặt `agents.defaults.model` thành `openai-codex/gpt-5.5` khi chưa đặt mô hình hoặc mô hình đã thuộc họ OpenAI.
+    - **Khóa API OpenAI**: dùng `OPENAI_API_KEY` nếu có hoặc nhắc nhập khóa, rồi lưu khóa đó trong các hồ sơ xác thực.
       - Đặt `agents.defaults.model` thành `openai/gpt-5.5` khi chưa đặt mô hình, `openai/*`, hoặc `openai-codex/*`.
     - **Khóa API xAI (Grok)**: nhắc nhập `XAI_API_KEY` và cấu hình xAI làm nhà cung cấp mô hình.
     - **OpenCode**: nhắc nhập `OPENCODE_API_KEY` (hoặc `OPENCODE_ZEN_API_KEY`, lấy tại https://opencode.ai/auth) và cho phép bạn chọn danh mục Zen hoặc Go.
-    - **Ollama**: trước tiên cung cấp **Cloud + Cục bộ**, **Chỉ Cloud**, hoặc **Chỉ cục bộ**. `Cloud only` nhắc nhập `OLLAMA_API_KEY` và dùng `https://ollama.com`; các chế độ dựa trên máy chủ sẽ nhắc nhập URL cơ sở Ollama, phát hiện các mô hình có sẵn, và tự động pull mô hình cục bộ đã chọn khi cần; `Cloud + Local` cũng kiểm tra xem máy chủ Ollama đó đã đăng nhập để truy cập cloud hay chưa.
+    - **Ollama**: trước tiên cung cấp **Cloud + Local**, **Chỉ Cloud**, hoặc **Chỉ Local**. `Cloud only` nhắc nhập `OLLAMA_API_KEY` và dùng `https://ollama.com`; các chế độ dựa trên máy chủ sẽ nhắc nhập URL cơ sở Ollama, phát hiện các mô hình có sẵn và tự động kéo mô hình cục bộ đã chọn khi cần; `Cloud + Local` cũng kiểm tra máy chủ Ollama đó đã đăng nhập để truy cập cloud hay chưa.
     - Chi tiết thêm: [Ollama](/vi/providers/ollama)
     - **Khóa API**: lưu khóa cho bạn.
     - **Vercel AI Gateway (proxy đa mô hình)**: nhắc nhập `AI_GATEWAY_API_KEY`.
     - Chi tiết thêm: [Vercel AI Gateway](/vi/providers/vercel-ai-gateway)
     - **Cloudflare AI Gateway**: nhắc nhập Account ID, Gateway ID, và `CLOUDFLARE_AI_GATEWAY_API_KEY`.
     - Chi tiết thêm: [Cloudflare AI Gateway](/vi/providers/cloudflare-ai-gateway)
-    - **MiniMax**: cấu hình được tự động ghi; mặc định hosted là `MiniMax-M2.7`.
-      Thiết lập bằng khóa API dùng `minimax/...`, và thiết lập OAuth dùng
+    - **MiniMax**: cấu hình được tự động ghi; mặc định được lưu trữ là `MiniMax-M2.7`.
+      Thiết lập khóa API dùng `minimax/...`, còn thiết lập OAuth dùng
       `minimax-portal/...`.
     - Chi tiết thêm: [MiniMax](/vi/providers/minimax)
-    - **StepFun**: cấu hình được tự động ghi cho StepFun chuẩn hoặc Step Plan trên endpoint Trung Quốc hoặc toàn cầu.
-    - Standard hiện bao gồm `step-3.5-flash`, và Step Plan cũng bao gồm `step-3.5-flash-2603`.
+    - **StepFun**: cấu hình được tự động ghi cho StepFun tiêu chuẩn hoặc Step Plan trên endpoint Trung Quốc hoặc toàn cầu.
+    - Tiêu chuẩn hiện bao gồm `step-3.5-flash`, và Step Plan cũng bao gồm `step-3.5-flash-2603`.
     - Chi tiết thêm: [StepFun](/vi/providers/stepfun)
     - **Synthetic (tương thích Anthropic)**: nhắc nhập `SYNTHETIC_API_KEY`.
     - Chi tiết thêm: [Synthetic](/vi/providers/synthetic)
@@ -67,14 +67,14 @@ x-i18n:
     - **Kimi Coding**: cấu hình được tự động ghi.
     - Chi tiết thêm: [Moonshot AI (Kimi + Kimi Coding)](/vi/providers/moonshot)
     - **Bỏ qua**: chưa cấu hình xác thực.
-    - Chọn mô hình mặc định từ các tùy chọn được phát hiện (hoặc nhập nhà cung cấp/mô hình theo cách thủ công). Để có chất lượng tốt nhất và giảm rủi ro prompt-injection, hãy chọn mô hình thế hệ mới nhất mạnh nhất có trong ngăn xếp nhà cung cấp của bạn.
+    - Chọn một mô hình mặc định từ các tùy chọn được phát hiện (hoặc nhập thủ công nhà cung cấp/mô hình). Để có chất lượng tốt nhất và giảm rủi ro chèn prompt, hãy chọn mô hình thế hệ mới nhất mạnh nhất có sẵn trong ngăn xếp nhà cung cấp của bạn.
     - Thiết lập ban đầu chạy kiểm tra mô hình và cảnh báo nếu mô hình đã cấu hình không xác định hoặc thiếu xác thực.
-    - Chế độ lưu trữ khóa API mặc định là giá trị auth-profile dạng văn bản thuần. Dùng `--secret-input-mode ref` để lưu các tham chiếu dựa trên env thay thế (ví dụ `keyRef: { source: "env", provider: "default", id: "OPENAI_API_KEY" }`).
-    - Auth profiles nằm trong `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` (khóa API + OAuth). `~/.openclaw/credentials/oauth.json` chỉ là nguồn nhập cũ.
+    - Chế độ lưu trữ khóa API mặc định là các giá trị hồ sơ xác thực dạng văn bản thuần. Dùng `--secret-input-mode ref` để thay vào đó lưu các tham chiếu dựa trên env (ví dụ `keyRef: { source: "env", provider: "default", id: "OPENAI_API_KEY" }`).
+    - Hồ sơ xác thực nằm trong `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` (khóa API + OAuth). `~/.openclaw/credentials/oauth.json` chỉ là nguồn nhập cũ.
     - Chi tiết thêm: [/concepts/oauth](/vi/concepts/oauth)
     <Note>
     Mẹo cho headless/máy chủ: hoàn tất OAuth trên máy có trình duyệt, rồi sao chép
-    `auth-profiles.json` của agent đó (ví dụ
+    `auth-profiles.json` của tác nhân đó (ví dụ
     `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`, hoặc đường dẫn
     `$OPENCLAW_STATE_DIR/...` tương ứng) sang máy chủ gateway. `credentials/oauth.json`
     chỉ là nguồn nhập cũ.
@@ -82,24 +82,24 @@ x-i18n:
   </Step>
   <Step title="Workspace">
     - Mặc định `~/.openclaw/workspace` (có thể cấu hình).
-    - Khởi tạo các tệp workspace cần thiết cho nghi thức bootstrap của agent.
-    - Bố cục workspace đầy đủ + hướng dẫn sao lưu: [Workspace của agent](/vi/concepts/agent-workspace)
+    - Gieo các tệp workspace cần thiết cho nghi thức khởi động tác nhân.
+    - Bố cục workspace đầy đủ + hướng dẫn sao lưu: [Workspace của tác nhân](/vi/concepts/agent-workspace)
 
   </Step>
   <Step title="Gateway">
-    - Cổng, bind, chế độ xác thực, phơi bày tailscale.
+    - Cổng, bind, chế độ xác thực, phơi bày qua tailscale.
     - Khuyến nghị xác thực: giữ **Token** ngay cả với loopback để các máy khách WS cục bộ phải xác thực.
     - Ở chế độ token, thiết lập tương tác cung cấp:
       - **Tạo/lưu token văn bản thuần** (mặc định)
-      - **Dùng SecretRef** (tùy chọn bật)
-      - Quickstart tái sử dụng các SecretRef `gateway.auth.token` hiện có trên các nhà cung cấp `env`, `file`, và `exec` cho probe thiết lập ban đầu/bootstrap dashboard.
-      - Nếu SecretRef đó đã được cấu hình nhưng không thể phân giải, thiết lập ban đầu sẽ lỗi sớm với thông báo cách sửa rõ ràng thay vì âm thầm hạ cấp xác thực runtime.
+      - **Dùng SecretRef** (chọn tham gia)
+      - Quickstart tái sử dụng các SecretRef `gateway.auth.token` hiện có trên các nhà cung cấp `env`, `file`, và `exec` để dò thiết lập ban đầu/khởi động dashboard.
+      - Nếu SecretRef đó đã được cấu hình nhưng không thể phân giải, thiết lập ban đầu sẽ thất bại sớm với thông báo sửa lỗi rõ ràng thay vì âm thầm hạ cấp xác thực runtime.
     - Ở chế độ mật khẩu, thiết lập tương tác cũng hỗ trợ lưu trữ văn bản thuần hoặc SecretRef.
-    - Đường dẫn token SecretRef không tương tác: `--gateway-token-ref-env <ENV_VAR>`.
-      - Yêu cầu một biến env không rỗng trong môi trường tiến trình thiết lập ban đầu.
+    - Đường dẫn SecretRef token không tương tác: `--gateway-token-ref-env <ENV_VAR>`.
+      - Yêu cầu một biến env không rỗng trong môi trường quy trình thiết lập ban đầu.
       - Không thể kết hợp với `--gateway-token`.
-    - Chỉ tắt xác thực nếu bạn hoàn toàn tin tưởng mọi tiến trình cục bộ.
-    - Bind không phải loopback vẫn yêu cầu xác thực.
+    - Chỉ tắt xác thực nếu bạn hoàn toàn tin tưởng mọi quy trình cục bộ.
+    - Các bind không phải loopback vẫn yêu cầu xác thực.
 
   </Step>
   <Step title="Kênh">
@@ -111,7 +111,7 @@ x-i18n:
     - [Signal](/vi/channels/signal): cài đặt `signal-cli` tùy chọn + cấu hình tài khoản.
     - [BlueBubbles](/vi/channels/bluebubbles): **được khuyến nghị cho iMessage**; URL máy chủ + mật khẩu + Webhook.
     - [iMessage](/vi/channels/imessage): đường dẫn CLI `imsg` cũ + quyền truy cập DB.
-    - Bảo mật DM: mặc định là ghép nối. DM đầu tiên gửi một mã; phê duyệt qua `openclaw pairing approve <channel> <code>` hoặc dùng allowlist.
+    - Bảo mật DM: mặc định là ghép cặp. DM đầu tiên gửi một mã; phê duyệt qua `openclaw pairing approve <channel> <code>` hoặc dùng allowlist.
 
   </Step>
   <Step title="Tìm kiếm web">
@@ -123,19 +123,19 @@ x-i18n:
   </Step>
   <Step title="Cài đặt daemon">
     - macOS: LaunchAgent
-      - Yêu cầu phiên người dùng đã đăng nhập; với headless, dùng LaunchDaemon tùy chỉnh (không được đóng gói).
+      - Yêu cầu phiên người dùng đã đăng nhập; với headless, dùng LaunchDaemon tùy chỉnh (không được cung cấp).
     - Linux (và Windows qua WSL2): systemd user unit
-      - Thiết lập ban đầu cố bật lingering qua `loginctl enable-linger <user>` để Gateway tiếp tục chạy sau khi đăng xuất.
-      - Có thể nhắc sudo (ghi `/var/lib/systemd/linger`); nó sẽ thử không dùng sudo trước.
-    - **Lựa chọn runtime:** Node (được khuyến nghị; bắt buộc cho WhatsApp/Telegram). Bun **không được khuyến nghị**.
-    - Nếu xác thực token yêu cầu token và `gateway.auth.token` do SecretRef quản lý, cài đặt daemon sẽ xác thực nó nhưng không lưu lâu dài các giá trị token văn bản thuần đã phân giải vào metadata môi trường dịch vụ giám sát.
-    - Nếu xác thực token yêu cầu token và SecretRef token đã cấu hình không phân giải được, cài đặt daemon sẽ bị chặn với hướng dẫn có thể hành động.
+      - Thiết lập ban đầu cố bật lingering qua `loginctl enable-linger <user>` để Gateway vẫn chạy sau khi đăng xuất.
+      - Có thể nhắc sudo (ghi `/var/lib/systemd/linger`); trước tiên sẽ thử không dùng sudo.
+    - **Chọn runtime:** Node (khuyến nghị; bắt buộc cho WhatsApp/Telegram). Bun **không được khuyến nghị**.
+    - Nếu xác thực token yêu cầu token và `gateway.auth.token` được quản lý bằng SecretRef, cài đặt daemon sẽ xác thực nó nhưng không duy trì giá trị token văn bản thuần đã phân giải vào metadata môi trường dịch vụ supervisor.
+    - Nếu xác thực token yêu cầu token và SecretRef token đã cấu hình không phân giải được, cài đặt daemon sẽ bị chặn với hướng dẫn có thể thực hiện.
     - Nếu cả `gateway.auth.token` và `gateway.auth.password` đều được cấu hình và `gateway.auth.mode` chưa được đặt, cài đặt daemon sẽ bị chặn cho đến khi chế độ được đặt rõ ràng.
 
   </Step>
   <Step title="Kiểm tra sức khỏe">
     - Khởi động Gateway (nếu cần) và chạy `openclaw health`.
-    - Mẹo: `openclaw status --deep` thêm probe sức khỏe gateway trực tiếp vào đầu ra trạng thái, bao gồm cả probe kênh khi được hỗ trợ (yêu cầu gateway có thể truy cập).
+    - Mẹo: `openclaw status --deep` thêm phép dò sức khỏe gateway trực tiếp vào đầu ra trạng thái, bao gồm cả phép dò kênh khi được hỗ trợ (yêu cầu gateway có thể truy cập).
 
   </Step>
   <Step title="Skills (được khuyến nghị)">
@@ -151,8 +151,8 @@ x-i18n:
 </Steps>
 
 <Note>
-Nếu không phát hiện GUI, thiết lập ban đầu sẽ in hướng dẫn SSH port-forward cho Control UI thay vì mở trình duyệt.
-Nếu thiếu tài nguyên Control UI, thiết lập ban đầu sẽ cố gắng build chúng; phương án dự phòng là `pnpm ui:build` (tự động cài đặt phụ thuộc UI).
+Nếu không phát hiện GUI, thiết lập ban đầu in hướng dẫn chuyển tiếp cổng SSH cho Control UI thay vì mở trình duyệt.
+Nếu thiếu tài nguyên Control UI, thiết lập ban đầu cố gắng build chúng; phương án dự phòng là `pnpm ui:build` (tự động cài đặt phụ thuộc UI).
 </Note>
 
 ## Chế độ không tương tác
@@ -173,7 +173,7 @@ openclaw onboard --non-interactive \
 
 Thêm `--json` để có bản tóm tắt máy có thể đọc.
 
-Gateway token SecretRef ở chế độ không tương tác:
+SecretRef token Gateway ở chế độ không tương tác:
 
 ```bash
 export OPENCLAW_GATEWAY_TOKEN="your-token"
@@ -190,10 +190,10 @@ openclaw onboard --non-interactive \
 `--json` **không** ngụ ý chế độ không tương tác. Dùng `--non-interactive` (và `--workspace`) cho script.
 </Note>
 
-Các ví dụ lệnh theo từng nhà cung cấp nằm trong [Tự động hóa CLI](/vi/start/wizard-cli-automation#provider-specific-examples).
-Dùng trang tham chiếu này cho ngữ nghĩa cờ và thứ tự bước.
+Các ví dụ lệnh dành riêng cho nhà cung cấp nằm trong [Tự động hóa CLI](/vi/start/wizard-cli-automation#provider-specific-examples).
+Dùng trang tham chiếu này cho ngữ nghĩa flag và thứ tự bước.
 
-### Thêm agent (không tương tác)
+### Thêm tác nhân (không tương tác)
 
 ```bash
 openclaw agents add work \
@@ -204,16 +204,16 @@ openclaw agents add work \
   --json
 ```
 
-## RPC wizard Gateway
+## RPC trình hướng dẫn Gateway
 
-Gateway cung cấp luồng thiết lập ban đầu qua RPC (`wizard.start`, `wizard.next`, `wizard.cancel`, `wizard.status`).
-Máy khách (ứng dụng macOS, Control UI) có thể kết xuất các bước mà không cần triển khai lại logic thiết lập ban đầu.
+Gateway phơi bày luồng thiết lập ban đầu qua RPC (`wizard.start`, `wizard.next`, `wizard.cancel`, `wizard.status`).
+Máy khách (ứng dụng macOS, Control UI) có thể render các bước mà không cần triển khai lại logic thiết lập ban đầu.
 
 ## Thiết lập Signal (signal-cli)
 
 Thiết lập ban đầu có thể cài đặt `signal-cli` từ GitHub releases:
 
-- Tải xuống release asset phù hợp.
+- Tải xuống tài nguyên release phù hợp.
 - Lưu dưới `~/.openclaw/tools/signal-cli/<version>/`.
 - Ghi `channels.signal.cliPath` vào cấu hình của bạn.
 
@@ -223,17 +223,17 @@ Ghi chú:
 - Bản build native được dùng khi có sẵn.
 - Windows dùng WSL2; cài đặt signal-cli theo luồng Linux bên trong WSL.
 
-## Nội dung wizard ghi
+## Những gì trình hướng dẫn ghi
 
 Các trường điển hình trong `~/.openclaw/openclaw.json`:
 
 - `agents.defaults.workspace`
 - `agents.defaults.model` / `models.providers` (nếu chọn Minimax)
-- `tools.profile` (quá trình thiết lập ban đầu cục bộ mặc định là `"coding"` khi chưa đặt; các giá trị tường minh hiện có được giữ nguyên)
-- `gateway.*` (mode, bind, auth, tailscale)
+- `tools.profile` (thiết lập ban đầu cục bộ mặc định là `"coding"` khi chưa đặt; các giá trị tường minh hiện có được giữ nguyên)
+- `gateway.*` (chế độ, bind, xác thực, tailscale)
 - `session.dmScope` (chi tiết hành vi: [Tham chiếu thiết lập CLI](/vi/start/wizard-cli-reference#outputs-and-internals))
 - `channels.telegram.botToken`, `channels.discord.token`, `channels.matrix.*`, `channels.signal.*`, `channels.imessage.*`
-- Danh sách cho phép của kênh (Slack/Discord/Matrix/Microsoft Teams) khi bạn chọn trong các lời nhắc (tên sẽ được phân giải thành ID khi có thể).
+- Danh sách cho phép của kênh (Slack/Discord/Matrix/Microsoft Teams) khi bạn chọn tham gia trong các lời nhắc (tên được phân giải thành ID khi có thể).
 - `skills.install.nodeManager`
   - `setup --node-manager` chấp nhận `npm`, `pnpm` hoặc `bun`.
   - Cấu hình thủ công vẫn có thể dùng `yarn` bằng cách đặt trực tiếp `skills.install.nodeManager`.
@@ -246,14 +246,13 @@ Các trường điển hình trong `~/.openclaw/openclaw.json`:
 `openclaw agents add` ghi `agents.list[]` và `bindings` tùy chọn.
 
 Thông tin xác thực WhatsApp nằm trong `~/.openclaw/credentials/whatsapp/<accountId>/`.
-Các phiên được lưu trong `~/.openclaw/agents/<agentId>/sessions/`.
+Phiên được lưu trong `~/.openclaw/agents/<agentId>/sessions/`.
 
-Một số kênh được phân phối dưới dạng Plugin. Khi bạn chọn một kênh trong quá trình thiết lập,
-quy trình thiết lập ban đầu sẽ nhắc cài đặt kênh đó (npm hoặc đường dẫn cục bộ) trước khi có thể cấu hình.
+Một số kênh được phân phối dưới dạng Plugin. Khi bạn chọn một kênh trong quá trình thiết lập, onboarding sẽ nhắc cài đặt kênh đó (npm hoặc đường dẫn cục bộ) trước khi có thể cấu hình.
 
 ## Tài liệu liên quan
 
-- Tổng quan về thiết lập ban đầu: [Thiết lập ban đầu (CLI)](/vi/start/wizard)
+- Tổng quan thiết lập ban đầu: [Thiết lập ban đầu (CLI)](/vi/start/wizard)
 - Thiết lập ban đầu cho ứng dụng macOS: [Thiết lập ban đầu](/vi/start/onboarding)
 - Tham chiếu cấu hình: [Cấu hình Gateway](/vi/gateway/configuration)
 - Nhà cung cấp: [WhatsApp](/vi/channels/whatsapp), [Telegram](/vi/channels/telegram), [Discord](/vi/channels/discord), [Google Chat](/vi/channels/googlechat), [Signal](/vi/channels/signal), [BlueBubbles](/vi/channels/bluebubbles) (iMessage), [iMessage](/vi/channels/imessage) (cũ)

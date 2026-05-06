@@ -1,102 +1,54 @@
 ---
 read_when:
-    - Bạn cần hiểu cách dấu thời gian được chuẩn hóa cho mô hình
-    - Cấu hình múi giờ của người dùng cho lời nhắc hệ thống
-summary: Xử lý múi giờ cho tác nhân, phong bì và lời nhắc
+    - Bạn muốn một cách hình dung nhanh về việc xử lý múi giờ
+    - Bạn đang quyết định nên thiết lập hoặc ghi đè múi giờ ở đâu
+summary: Nơi múi giờ xuất hiện trong OpenClaw — phong bì, phần tải của công cụ, lời nhắc hệ thống
 title: Múi giờ
 x-i18n:
-    generated_at: "2026-04-29T22:40:17Z"
+    generated_at: "2026-05-06T09:10:32Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8318acb0269f446fb3d3198f47811d40490a9ee9593fed82f31353aef2bacb81
+    source_hash: 041b207a0fa2758a20e8f3c4eca852d3dd416560d045459cb4d86709b45449e3
     source_path: concepts/timezone.md
     workflow: 16
 ---
 
-OpenClaw chuẩn hóa dấu thời gian để mô hình thấy một **thời điểm tham chiếu duy nhất**.
+OpenClaw chuẩn hóa dấu thời gian để mô hình thấy **một thời gian tham chiếu duy nhất** thay vì một tập hợp các đồng hồ cục bộ của nhà cung cấp. Có ba bề mặt nơi múi giờ xuất hiện, mỗi bề mặt có mục đích riêng:
 
-## Phong bì tin nhắn (cục bộ theo mặc định)
+## Ba bề mặt múi giờ
 
-Tin nhắn đến được bọc trong một phong bì như sau:
+| Bề mặt            | Nội dung hiển thị                                                                                       | Mặc định                              | Cấu hình qua                                           |
+| ----------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------- | ------------------------------------------------------- |
+| Bao thông điệp    | Bao bọc tin nhắn kênh đến: `[Signal +1555 2026-01-18 00:19 PST] hello`                                  | Cục bộ theo máy chủ                   | `agents.defaults.envelopeTimezone`                      |
+| Payload công cụ   | Các công cụ kiểu `readMessages` của kênh trả về thời gian thô của nhà cung cấp + `timestampMs` / `timestampUtc` đã chuẩn hóa | Các trường UTC luôn có mặt            | Không cấu hình được — giữ nguyên dấu thời gian gốc của nhà cung cấp |
+| Prompt hệ thống   | Một khối nhỏ `Current Date & Time` chỉ có **múi giờ** (không có giá trị đồng hồ, để ổn định bộ nhớ đệm) | Múi giờ máy chủ nếu chưa đặt `userTimezone` | `agents.defaults.userTimezone`                          |
 
-```
-[Provider ... 2026-01-05 16:26 PST] message text
-```
+Prompt hệ thống cố ý bỏ qua đồng hồ trực tiếp để giữ cho bộ nhớ đệm prompt ổn định giữa các lượt. Khi agent cần thời gian hiện tại, nó gọi `session_status`.
 
-Dấu thời gian trong phong bì **theo giờ cục bộ của máy chủ theo mặc định**, với độ chính xác đến phút.
-
-Bạn có thể ghi đè thiết lập này bằng:
+## Đặt múi giờ của người dùng
 
 ```json5
 {
   agents: {
     defaults: {
-      envelopeTimezone: "local", // "utc" | "local" | "user" | IANA timezone
-      envelopeTimestamp: "on", // "on" | "off"
-      envelopeElapsed: "on", // "on" | "off"
+      userTimezone: "America/Chicago",
     },
   },
 }
 ```
 
-- `envelopeTimezone: "utc"` dùng UTC.
-- `envelopeTimezone: "user"` dùng `agents.defaults.userTimezone` (dự phòng về múi giờ của máy chủ).
-- Dùng một múi giờ IANA rõ ràng (ví dụ: `"Europe/Vienna"`) để có độ lệch cố định.
-- `envelopeTimestamp: "off"` loại bỏ dấu thời gian tuyệt đối khỏi tiêu đề phong bì.
-- `envelopeElapsed: "off"` loại bỏ hậu tố thời gian đã trôi qua (kiểu `+2m`).
+Nếu chưa đặt `userTimezone`, OpenClaw sẽ phân giải múi giờ của máy chủ khi chạy (không ghi cấu hình). `agents.defaults.timeFormat` (`auto` | `12` | `24`) kiểm soát cách hiển thị 12 giờ/24 giờ trong bao thông điệp và các bề mặt hạ nguồn, không nằm trong phần prompt hệ thống.
 
-### Ví dụ
+## Khi nào cần ghi đè
 
-**Cục bộ (mặc định):**
+- **Dùng bao thông điệp UTC** (`envelopeTimezone: "utc"`) khi bạn muốn dấu thời gian ổn định trên các máy chủ ở những khu vực khác nhau, hoặc khi bạn muốn nhật ký căn theo UTC khớp với đầu ra chẩn đoán.
+- **Dùng một vùng IANA cố định** (ví dụ `"Europe/Vienna"`) khi máy chủ Gateway ở một vùng nhưng người dùng ở vùng khác và bạn muốn bao thông điệp đọc theo vùng của người dùng bất kể máy chủ di chuyển.
+- **Đặt `envelopeTimestamp: "off"`** cho bao thông điệp ít token khi ngữ cảnh dấu thời gian không hữu ích cho cuộc trò chuyện.
 
-```
-[Signal Alice +1555 2026-01-18 00:19 PST] hello
-```
-
-**Múi giờ cố định:**
-
-```
-[Signal Alice +1555 2026-01-18 06:19 GMT+1] hello
-```
-
-**Thời gian đã trôi qua:**
-
-```
-[Signal Alice +1555 +2m 2026-01-18T05:19Z] follow-up
-```
-
-## Phần dữ liệu công cụ (dữ liệu thô của nhà cung cấp + các trường đã chuẩn hóa)
-
-Các lệnh gọi công cụ (`channels.discord.readMessages`, `channels.slack.readMessages`, v.v.) trả về **dấu thời gian thô của nhà cung cấp**.
-Chúng tôi cũng đính kèm các trường đã chuẩn hóa để đảm bảo tính nhất quán:
-
-- `timestampMs` (mili giây epoch UTC)
-- `timestampUtc` (chuỗi UTC ISO 8601)
-
-Các trường thô của nhà cung cấp được giữ nguyên.
-
-## Múi giờ của người dùng cho lời nhắc hệ thống
-
-Đặt `agents.defaults.userTimezone` để cho mô hình biết múi giờ cục bộ của người dùng. Nếu chưa đặt,
-OpenClaw sẽ phân giải **múi giờ của máy chủ khi chạy** (không ghi cấu hình).
-
-```json5
-{
-  agents: { defaults: { userTimezone: "America/Chicago" } },
-}
-```
-
-Lời nhắc hệ thống bao gồm:
-
-- Phần `Current Date & Time` với giờ cục bộ và múi giờ
-- `Time format: 12-hour` hoặc `24-hour`
-
-Bạn có thể kiểm soát định dạng lời nhắc bằng `agents.defaults.timeFormat` (`auto` | `12` | `24`).
-
-Xem [Ngày & Giờ](/vi/date-time) để biết đầy đủ hành vi và ví dụ.
+Để xem tài liệu tham chiếu đầy đủ về hành vi, ví dụ theo từng nhà cung cấp và định dạng thời gian đã trôi qua, hãy xem [Ngày & Giờ](/vi/date-time).
 
 ## Liên quan
 
-- [Heartbeat](/vi/gateway/heartbeat) — giờ hoạt động dùng múi giờ để lập lịch
-- [Tác vụ Cron](/vi/automation/cron-jobs) — biểu thức cron dùng múi giờ để lập lịch
-- [Ngày & Giờ](/vi/date-time) — đầy đủ hành vi ngày/giờ và ví dụ
+- [Ngày & Giờ](/vi/date-time) — hành vi và ví dụ đầy đủ về bao thông điệp/công cụ/prompt.
+- [Heartbeat](/vi/gateway/heartbeat) — giờ hoạt động dùng múi giờ để lập lịch.
+- [Cron Jobs](/vi/automation/cron-jobs) — biểu thức cron dùng múi giờ để lập lịch.

@@ -1,90 +1,90 @@
 ---
 read_when:
-    - Bạn đang xây dựng một Plugin kênh và muốn có vòng đời lượt đến dùng chung
-    - Bạn đang chuyển trình giám sát kênh khỏi lớp mã kết nối ghi/điều phối tự viết thủ công
-    - Bạn cần hiểu các giai đoạn tiếp nhận, nạp vào, phân loại, kiểm tra trước, phân giải, ghi nhận, điều phối và hoàn tất.
+    - Bạn đang xây dựng một Plugin kênh và muốn sử dụng vòng đời lượt đến dùng chung
+    - Bạn đang chuyển một trình giám sát kênh ra khỏi lớp mã kết nối ghi/điều phối tự viết
+    - Bạn cần hiểu các giai đoạn tiếp nhận, thu nạp, phân loại, kiểm tra sơ bộ, phân giải, ghi nhận, điều phối và hoàn tất
 sidebarTitle: Channel turn
-summary: runtime.channel.turn -- nhân xử lý lượt đến dùng chung mà các Plugin kênh tích hợp sẵn và bên thứ ba sử dụng để ghi lại, điều phối và hoàn tất các lượt của tác tử
+summary: runtime.channel.turn -- nhân lõi lượt đến dùng chung mà các Plugin kênh được đóng gói và bên thứ ba dùng để ghi lại, điều phối và hoàn tất các lượt của tác nhân
 title: Nhân lượt kênh
 x-i18n:
-    generated_at: "2026-04-30T09:38:39Z"
+    generated_at: "2026-05-06T09:24:05Z"
     model: gpt-5.5
     provider: openai
-    source_hash: dc918da4c43f955f509aed18a93129db26efe21686c30f9328a5639f3e700984
+    source_hash: a2af51bcbf179d68221e800b4c7ec6fa7db5d02a0812dc303eb1438d111c2ea4
     source_path: plugins/sdk-channel-turn.md
     workflow: 16
 ---
 
-Nhân lượt kênh là máy trạng thái đầu vào dùng chung, biến một sự kiện nền tảng đã chuẩn hóa thành một lượt tác tử. Các Plugin kênh cung cấp các dữ kiện nền tảng và callback phân phối. Core sở hữu phần điều phối: nạp vào, phân loại, kiểm tra sơ bộ, phân giải, cấp quyền, lắp ráp, ghi lại, điều phối và hoàn tất.
+Hạt nhân lượt kênh là máy trạng thái đến dùng chung, biến một sự kiện nền tảng đã chuẩn hóa thành một lượt tác tử. Các plugin kênh cung cấp dữ kiện nền tảng và callback gửi. Phần lõi sở hữu việc điều phối: tiếp nhận, phân loại, kiểm tra sơ bộ, phân giải, ủy quyền, lắp ráp, ghi lại, điều phối và hoàn tất.
 
-Dùng phần này khi Plugin của bạn nằm trên đường nóng của thông điệp đầu vào. Với các sự kiện không phải thông điệp (lệnh slash, modal, tương tác nút, sự kiện vòng đời, reaction, trạng thái thoại), hãy giữ chúng cục bộ trong Plugin. Nhân chỉ sở hữu các sự kiện có thể trở thành một lượt văn bản của tác tử.
+Dùng phần này khi plugin của bạn nằm trên đường nóng của tin nhắn đến. Với các sự kiện không phải tin nhắn (lệnh gạch chéo, modal, tương tác nút, sự kiện vòng đời, reaction, trạng thái thoại), hãy giữ chúng cục bộ trong plugin. Hạt nhân chỉ sở hữu các sự kiện có thể trở thành một lượt văn bản của tác tử.
 
 <Info>
-  Có thể truy cập nhân thông qua runtime Plugin được tiêm dưới dạng `runtime.channel.turn.*`. Kiểu runtime Plugin được xuất từ `openclaw/plugin-sdk/core`, nên các Plugin native của bên thứ ba có thể dùng những điểm vào này giống như các Plugin kênh đi kèm.
+  Hạt nhân được truy cập thông qua runtime plugin được chèn vào dưới dạng `runtime.channel.turn.*`. Kiểu runtime plugin được xuất từ `openclaw/plugin-sdk/core`, nên plugin gốc của bên thứ ba có thể dùng các điểm vào này giống như các plugin kênh được đóng gói sẵn.
 </Info>
 
-## Vì sao cần nhân dùng chung
+## Vì sao cần hạt nhân dùng chung
 
-Các Plugin kênh lặp lại cùng một luồng đầu vào: chuẩn hóa, định tuyến, kiểm soát cổng, xây dựng ngữ cảnh, ghi siêu dữ liệu phiên, điều phối lượt tác tử, hoàn tất trạng thái phân phối. Nếu không có nhân dùng chung, một thay đổi đối với kiểm soát đề cập, phản hồi hiển thị chỉ dùng công cụ, siêu dữ liệu phiên, lịch sử đang chờ hoặc hoàn tất điều phối phải được áp dụng riêng cho từng kênh.
+Các plugin kênh lặp lại cùng một luồng đến: chuẩn hóa, định tuyến, kiểm soát cổng, xây dựng ngữ cảnh, ghi siêu dữ liệu phiên, điều phối lượt tác tử, hoàn tất trạng thái gửi. Không có hạt nhân dùng chung, một thay đổi về kiểm soát nhắc tên, trả lời hiển thị chỉ dành cho công cụ, siêu dữ liệu phiên, lịch sử đang chờ, hoặc hoàn tất điều phối sẽ phải được áp dụng riêng cho từng kênh.
 
-Nhân cố ý giữ bốn khái niệm tách biệt:
+Hạt nhân chủ ý giữ bốn khái niệm tách biệt:
 
-- `ConversationFacts`: thông điệp đến từ đâu
+- `ConversationFacts`: tin nhắn đến từ đâu
 - `RouteFacts`: tác tử và phiên nào nên xử lý nó
-- `ReplyPlanFacts`: phản hồi hiển thị nên được gửi tới đâu
-- `MessageFacts`: nội dung và ngữ cảnh bổ sung nào tác tử nên thấy
+- `ReplyPlanFacts`: các trả lời hiển thị nên đi tới đâu
+- `MessageFacts`: tác tử nên thấy nội dung và ngữ cảnh bổ sung nào
 
-DM Slack, chủ đề Telegram, luồng Matrix và phiên chủ đề Feishu đều phân biệt các khái niệm này trong thực tế. Xem chúng như một định danh duy nhất sẽ gây lệch dần theo thời gian.
+DM Slack, chủ đề Telegram, luồng Matrix, và phiên chủ đề Feishu đều phân biệt các phần này trong thực tế. Xem chúng như một định danh duy nhất sẽ gây lệch dần theo thời gian.
 
 ## Vòng đời giai đoạn
 
-Nhân chạy cùng một pipeline cố định bất kể kênh:
+Hạt nhân chạy cùng một pipeline cố định bất kể kênh:
 
-1. `ingest` -- adapter chuyển đổi sự kiện nền tảng thô thành `NormalizedTurnInput`
-2. `classify` -- adapter khai báo liệu sự kiện này có thể bắt đầu một lượt tác tử hay không
-3. `preflight` -- adapter thực hiện chống trùng lặp, tự vọng lại, hydrat hóa, debounce, giải mã, điền trước một phần dữ kiện
-4. `resolve` -- adapter trả về một lượt đã lắp ráp đầy đủ (định tuyến, kế hoạch phản hồi, thông điệp, phân phối)
-5. `authorize` -- chính sách DM, nhóm, đề cập và lệnh được áp dụng cho các dữ kiện đã lắp ráp
+1. `ingest` -- bộ chuyển đổi biến một sự kiện nền tảng thô thành `NormalizedTurnInput`
+2. `classify` -- bộ chuyển đổi khai báo sự kiện này có thể bắt đầu một lượt tác tử hay không
+3. `preflight` -- bộ chuyển đổi xử lý chống trùng lặp, tiếng vọng tự thân, hydrate, debounce, giải mã, điền trước một phần dữ kiện
+4. `resolve` -- bộ chuyển đổi trả về một lượt đã lắp ráp đầy đủ (định tuyến, kế hoạch trả lời, tin nhắn, gửi)
+5. `authorize` -- chính sách DM, nhóm, nhắc tên và lệnh được áp dụng cho các dữ kiện đã lắp ráp
 6. `assemble` -- `FinalizedMsgContext` được xây dựng từ các dữ kiện thông qua `buildContext`
-7. `record` -- siêu dữ liệu phiên đầu vào và tuyến cuối cùng được lưu bền vững
-8. `dispatch` -- lượt tác tử được thực thi thông qua bộ điều phối khối có đệm
-9. `finalize` -- `onFinalize` của adapter chạy ngay cả khi điều phối gặp lỗi
+7. `record` -- siêu dữ liệu phiên đến và tuyến cuối được lưu bền vững
+8. `dispatch` -- lượt tác tử được thực thi thông qua bộ điều phối khối có bộ đệm
+9. `finalize` -- `onFinalize` của bộ chuyển đổi chạy ngay cả khi điều phối lỗi
 
-Mỗi giai đoạn phát ra một sự kiện log có cấu trúc khi callback `log` được cung cấp. Xem [Khả năng quan sát](#observability).
+Mỗi giai đoạn phát một sự kiện nhật ký có cấu trúc khi callback `log` được cung cấp. Xem [Khả năng quan sát](#observability).
 
 ## Loại tiếp nhận
 
-Nhân không ném lỗi khi một lượt bị chặn. Nó trả về một `ChannelTurnAdmission`:
+Hạt nhân không ném lỗi khi một lượt bị chặn. Nó trả về một `ChannelTurnAdmission`:
 
 | Loại          | Khi nào                                                                                                                                         |
 | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `dispatch`    | Lượt được tiếp nhận. Lượt tác tử chạy và đường phản hồi hiển thị được thực thi.                                                                   |
-| `observeOnly` | Lượt chạy từ đầu đến cuối nhưng adapter phân phối không gửi gì hiển thị. Dùng cho các tác tử quan sát broadcast và các luồng đa tác tử thụ động khác. |
-| `handled`     | Một sự kiện nền tảng đã được xử lý cục bộ (vòng đời, reaction, nút, modal). Nhân bỏ qua điều phối.                                           |
-| `drop`        | Đường bỏ qua. Tùy chọn `recordHistory: true` giữ thông điệp trong lịch sử nhóm đang chờ để một đề cập trong tương lai có ngữ cảnh.                      |
+| `dispatch`    | Lượt được tiếp nhận. Lượt tác tử chạy và đường trả lời hiển thị được dùng.                                                                   |
+| `observeOnly` | Lượt chạy từ đầu đến cuối nhưng bộ chuyển đổi gửi không gửi gì hiển thị. Dùng cho các tác tử quan sát phát sóng và các luồng đa tác tử thụ động khác. |
+| `handled`     | Một sự kiện nền tảng đã được xử lý cục bộ (vòng đời, reaction, nút, modal). Hạt nhân bỏ qua điều phối.                                           |
+| `drop`        | Đường bỏ qua. Tùy chọn `recordHistory: true` giữ tin nhắn trong lịch sử nhóm đang chờ để một nhắc tên trong tương lai có ngữ cảnh.                      |
 
-Việc tiếp nhận có thể đến từ `classify` (lớp sự kiện nói rằng nó không thể bắt đầu một lượt), từ `preflight` (chống trùng lặp, tự vọng lại, thiếu đề cập kèm ghi lịch sử), hoặc từ chính `resolveTurn`.
+Việc tiếp nhận có thể đến từ `classify` (lớp sự kiện nói rằng nó không thể bắt đầu một lượt), từ `preflight` (chống trùng lặp, tiếng vọng tự thân, thiếu nhắc tên với ghi lịch sử), hoặc từ chính `resolveTurn`.
 
 ## Điểm vào
 
-Runtime cung cấp ba điểm vào được ưu tiên để adapter có thể chọn tham gia ở mức phù hợp với kênh.
+Runtime phơi bày ba điểm vào ưu tiên để bộ chuyển đổi có thể tham gia ở mức phù hợp với kênh.
 
 ```typescript
-runtime.channel.turn.run(...)             // pipeline đầy đủ do adapter điều khiển
-runtime.channel.turn.runPrepared(...)     // kênh sở hữu điều phối; nhân chạy ghi lại + hoàn tất
-runtime.channel.turn.buildContext(...)    // ánh xạ thuần dữ kiện sang FinalizedMsgContext
+runtime.channel.turn.run(...)             // adapter-driven full pipeline
+runtime.channel.turn.runPrepared(...)     // channel owns dispatch; kernel runs record + finalize
+runtime.channel.turn.buildContext(...)    // pure facts to FinalizedMsgContext mapping
 ```
 
-Hai helper runtime cũ hơn vẫn còn khả dụng để tương thích Plugin SDK:
+Hai helper runtime cũ hơn vẫn khả dụng để tương thích Plugin SDK:
 
 ```typescript
-runtime.channel.turn.runResolved(...)      // bí danh tương thích đã lỗi thời; ưu tiên run
-runtime.channel.turn.dispatchAssembled(...) // bí danh tương thích đã lỗi thời; ưu tiên run hoặc runPrepared
+runtime.channel.turn.runResolved(...)      // deprecated compatibility alias; prefer run
+runtime.channel.turn.dispatchAssembled(...) // deprecated compatibility alias; prefer run or runPrepared
 ```
 
 ### run
 
-Dùng khi kênh của bạn có thể biểu diễn luồng đầu vào dưới dạng `ChannelTurnAdapter<TRaw>`. Adapter có các callback cho `ingest`, `classify` tùy chọn, `preflight` tùy chọn, `resolveTurn` bắt buộc và `onFinalize` tùy chọn.
+Dùng khi kênh của bạn có thể biểu diễn luồng đến của nó dưới dạng một `ChannelTurnAdapter<TRaw>`. Bộ chuyển đổi có callback cho `ingest`, `classify` tùy chọn, `preflight` tùy chọn, `resolveTurn` bắt buộc, và `onFinalize` tùy chọn.
 
 ```typescript
 await runtime.channel.turn.run({
@@ -119,11 +119,11 @@ await runtime.channel.turn.run({
 });
 ```
 
-`run` là hình dạng phù hợp khi kênh có logic adapter nhỏ và hưởng lợi từ việc sở hữu vòng đời thông qua các hook.
+`run` là hình dạng phù hợp khi kênh có logic bộ chuyển đổi nhỏ và hưởng lợi từ việc sở hữu vòng đời thông qua hook.
 
 ### runPrepared
 
-Dùng khi kênh có một bộ điều phối cục bộ phức tạp với bản xem trước, thử lại, chỉnh sửa hoặc khởi tạo luồng phải tiếp tục thuộc quyền sở hữu của kênh. Nhân vẫn ghi phiên đầu vào trước khi điều phối và hiển thị một `DispatchedChannelTurnResult` thống nhất.
+Dùng khi kênh có bộ điều phối cục bộ phức tạp với bản xem trước, thử lại, chỉnh sửa, hoặc khởi tạo luồng phải tiếp tục do kênh sở hữu. Hạt nhân vẫn ghi phiên đến trước khi điều phối và bề mặt hóa một `DispatchedChannelTurnResult` thống nhất.
 
 ```typescript
 const { dispatchResult } = await runtime.channel.turn.runPrepared({
@@ -146,11 +146,11 @@ const { dispatchResult } = await runtime.channel.turn.runPrepared({
 });
 ```
 
-Các kênh giàu chức năng (Matrix, Mattermost, Microsoft Teams, Feishu, QQ Bot) dùng `runPrepared` vì bộ điều phối của chúng điều phối hành vi đặc thù nền tảng mà nhân không được cần biết.
+Các kênh giàu tính năng (Matrix, Mattermost, Microsoft Teams, Feishu, QQ Bot) dùng `runPrepared` vì bộ điều phối của chúng điều phối hành vi đặc thù nền tảng mà hạt nhân không được học biết.
 
 ### buildContext
 
-Một hàm thuần ánh xạ các gói dữ kiện thành `FinalizedMsgContext`. Dùng nó khi kênh của bạn tự viết một phần pipeline nhưng muốn hình dạng ngữ cảnh nhất quán.
+Một hàm thuần ánh xạ các bó dữ kiện thành `FinalizedMsgContext`. Dùng nó khi kênh của bạn tự viết tay một phần pipeline nhưng muốn hình dạng ngữ cảnh nhất quán.
 
 ```typescript
 const ctxPayload = runtime.channel.turn.buildContext({
@@ -173,43 +173,43 @@ const ctxPayload = runtime.channel.turn.buildContext({
 `buildContext` cũng hữu ích bên trong các callback `resolveTurn` khi lắp ráp một lượt cho `run`.
 
 <Note>
-  Các helper SDK đã lỗi thời như `dispatchInboundReplyWithBase` vẫn bắc cầu qua một helper lượt đã lắp ráp. Mã Plugin mới nên dùng `run` hoặc `runPrepared`.
+  Các helper SDK đã ngừng khuyến nghị như `dispatchInboundReplyWithBase` vẫn bắc cầu qua một helper lượt đã lắp ráp. Mã plugin mới nên dùng `run` hoặc `runPrepared`.
 </Note>
 
 ## Kiểu dữ kiện
 
-Các dữ kiện mà nhân tiêu thụ từ adapter của bạn là bất khả tri nền tảng. Chuyển đổi các đối tượng nền tảng thành những hình dạng này trước khi giao chúng cho nhân.
+Các dữ kiện mà hạt nhân tiêu thụ từ bộ chuyển đổi của bạn là bất khả tri nền tảng. Dịch các đối tượng nền tảng thành những hình dạng này trước khi giao chúng cho hạt nhân.
 
 ### NormalizedTurnInput
 
 | Trường             | Mục đích                                                                      |
 | ----------------- | ---------------------------------------------------------------------------- |
-| `id`              | ID thông điệp ổn định dùng cho chống trùng lặp và log                                   |
+| `id`              | ID tin nhắn ổn định dùng cho chống trùng lặp và nhật ký                                   |
 | `timestamp`       | Epoch ms tùy chọn                                                            |
-| `rawText`         | Nội dung như nhận từ nền tảng                                           |
-| `textForAgent`    | Nội dung đã làm sạch tùy chọn cho tác tử (loại đề cập, cắt ký tự nhập)             |
-| `textForCommands` | Nội dung tùy chọn dùng cho phân tích cú pháp `/command`                                    |
-| `raw`             | Tham chiếu chuyển tiếp tùy chọn cho các callback adapter cần bản gốc |
+| `rawText`         | Nội dung như nhận được từ nền tảng                                           |
+| `textForAgent`    | Nội dung đã làm sạch tùy chọn cho tác tử (bỏ nhắc tên, cắt phần đang gõ)             |
+| `textForCommands` | Nội dung tùy chọn dùng để phân tích cú pháp `/command`                                    |
+| `raw`             | Tham chiếu truyền xuyên tùy chọn cho các callback bộ chuyển đổi cần bản gốc |
 
 ### ChannelEventClass
 
 | Trường                  | Mục đích                                                                 |
 | ---------------------- | ----------------------------------------------------------------------- |
 | `kind`                 | `message`, `command`, `interaction`, `reaction`, `lifecycle`, `unknown` |
-| `canStartAgentTurn`    | Nếu false, nhân trả về `{ kind: "handled" }`                       |
-| `requiresImmediateAck` | Gợi ý cho adapter cần ACK trước khi điều phối                      |
+| `canStartAgentTurn`    | Nếu false, hạt nhân trả về `{ kind: "handled" }`                       |
+| `requiresImmediateAck` | Gợi ý cho bộ chuyển đổi cần ACK trước khi điều phối                      |
 
 ### SenderFacts
 
 | Trường          | Mục đích                                                        |
 | -------------- | -------------------------------------------------------------- |
-| `id`           | ID người gửi ổn định của nền tảng                                      |
+| `id`           | ID người gửi nền tảng ổn định                                      |
 | `name`         | Tên hiển thị                                                   |
 | `username`     | Handle nếu khác với `name`                                 |
 | `tag`          | Bộ phân biệt kiểu Discord hoặc thẻ nền tảng                    |
-| `roles`        | ID vai trò, dùng để khớp allowlist vai trò thành viên              |
-| `isBot`        | True khi người gửi là bot đã biết (nhân dùng để loại bỏ) |
-| `isSelf`       | True khi người gửi là chính tác tử đã cấu hình            |
+| `roles`        | ID vai trò, dùng để khớp danh sách cho phép theo vai trò thành viên              |
+| `isBot`        | Đúng khi người gửi là bot đã biết (hạt nhân dùng để loại bỏ) |
+| `isSelf`       | Đúng khi người gửi là chính tác tử đã cấu hình            |
 | `displayLabel` | Nhãn đã render sẵn cho văn bản phong bì                           |
 
 ### ConversationFacts
@@ -217,12 +217,12 @@ Các dữ kiện mà nhân tiêu thụ từ adapter của bạn là bất khả 
 | Trường             | Mục đích                                                              |
 | ----------------- | -------------------------------------------------------------------- |
 | `kind`            | `direct`, `group`, hoặc `channel`                                      |
-| `id`              | ID cuộc trò chuyện dùng cho định tuyến                                     |
-| `label`           | Nhãn người đọc được cho phong bì                                         |
-| `spaceId`         | Định danh không gian ngoài tùy chọn (workspace Slack, homeserver Matrix) |
-| `parentId`        | ID cuộc trò chuyện ngoài khi đây là một luồng                          |
-| `threadId`        | ID luồng khi thông điệp này nằm trong một luồng                       |
-| `nativeChannelId` | ID kênh native của nền tảng khi khác với ID định tuyến        |
+| `id`              | ID cuộc hội thoại dùng để định tuyến                                     |
+| `label`           | Nhãn con người cho phong bì                                         |
+| `spaceId`         | Định danh không gian ngoài tùy chọn (không gian làm việc Slack, homeserver Matrix) |
+| `parentId`        | ID cuộc hội thoại ngoài khi đây là một luồng                          |
+| `threadId`        | ID luồng khi tin nhắn này nằm trong một luồng                       |
+| `nativeChannelId` | ID kênh gốc nền tảng khi khác với ID định tuyến        |
 | `routePeer`       | Peer dùng cho tra cứu `resolveAgentRoute`                             |
 
 ### RouteFacts
@@ -231,64 +231,64 @@ Các dữ kiện mà nhân tiêu thụ từ adapter của bạn là bất khả 
 | ----------------------- | ---------------------------------------------------------- |
 | `agentId`               | Tác tử nên xử lý lượt này                         |
 | `accountId`             | Ghi đè tùy chọn (kênh nhiều tài khoản)                 |
-| `routeSessionKey`       | Khóa phiên dùng cho định tuyến                               |
+| `routeSessionKey`       | Khóa phiên dùng để định tuyến                               |
 | `dispatchSessionKey`    | Khóa phiên dùng khi điều phối nếu khác với khóa định tuyến |
 | `persistedSessionKey`   | Khóa phiên được ghi vào siêu dữ liệu phiên lưu bền vững          |
-| `parentSessionKey`      | Phiên cha cho các phiên phân nhánh/theo luồng                      |
-| `modelParentSessionKey` | Phiên cha phía mô hình cho các phiên phân nhánh                    |
-| `mainSessionKey`        | Ghim chủ sở hữu DM chính cho cuộc trò chuyện trực tiếp                 |
+| `parentSessionKey`      | Cha cho các phiên phân nhánh/theo luồng                      |
+| `modelParentSessionKey` | Cha phía mô hình cho các phiên phân nhánh                    |
+| `mainSessionKey`        | Ghim chủ sở hữu DM chính cho các cuộc hội thoại trực tiếp                 |
 | `createIfMissing`       | Cho phép bước ghi tạo một hàng phiên bị thiếu          |
 
 ### ReplyPlanFacts
 
-| Trường                    | Mục đích                                                     |
-| ------------------------- | ------------------------------------------------------------ |
-| `to`                      | Đích trả lời logic được ghi vào ngữ cảnh `To`                |
-| `originatingTo`           | Đích ngữ cảnh gốc (`OriginatingTo`)                          |
-| `nativeChannelId`         | Id kênh gốc của nền tảng để gửi                              |
-| `replyTarget`             | Đích trả lời hiển thị cuối cùng nếu khác với `to`            |
-| `deliveryTarget`          | Ghi đè gửi ở cấp thấp hơn                                    |
-| `replyToId`               | Id tin nhắn được trích dẫn/neo                               |
-| `replyToIdFull`           | Id trích dẫn dạng đầy đủ khi nền tảng có cả hai              |
-| `messageThreadId`         | Id luồng tại thời điểm gửi                                   |
-| `threadParentId`          | Id tin nhắn cha của luồng                                    |
-| `sourceReplyDeliveryMode` | `thread`, `reply`, `channel`, `direct`, hoặc `none`          |
+| Trường                    | Mục đích                                                 |
+| ------------------------- | ------------------------------------------------------- |
+| `to`                      | Mục tiêu phản hồi logic được ghi vào ngữ cảnh `To`      |
+| `originatingTo`           | Mục tiêu ngữ cảnh khởi nguồn (`OriginatingTo`)          |
+| `nativeChannelId`         | Id kênh gốc nền tảng để phân phối                       |
+| `replyTarget`             | Đích phản hồi hiển thị cuối cùng nếu khác với `to`      |
+| `deliveryTarget`          | Ghi đè phân phối cấp thấp hơn                           |
+| `replyToId`               | Id thông điệp được trích dẫn/neo                        |
+| `replyToIdFull`           | Id trích dẫn dạng đầy đủ khi nền tảng có cả hai         |
+| `messageThreadId`         | Id luồng tại thời điểm phân phối                        |
+| `threadParentId`          | Id thông điệp cha của luồng                             |
+| `sourceReplyDeliveryMode` | `thread`, `reply`, `channel`, `direct`, hoặc `none`     |
 
 ### AccessFacts
 
-`AccessFacts` mang các giá trị boolean mà giai đoạn authorize cần. Việc khớp danh tính nằm trong kênh: kernel chỉ tiêu thụ kết quả.
+`AccessFacts` mang các boolean mà giai đoạn cấp quyền cần. Việc khớp danh tính vẫn nằm trong kênh: kernel chỉ tiêu thụ kết quả.
 
-| Trường     | Mục đích                                                                     |
-| ---------- | --------------------------------------------------------------------------- |
-| `dm`       | Quyết định cho phép/ghép nối/từ chối DM và danh sách `allowFrom`            |
-| `group`    | Chính sách nhóm, cho phép định tuyến, cho phép người gửi, allowlist, yêu cầu nhắc đến |
-| `commands` | Ủy quyền lệnh trên các trình ủy quyền đã cấu hình                           |
-| `mentions` | Liệu có thể phát hiện nhắc đến hay không và liệu agent đã được nhắc đến hay chưa |
+| Trường     | Mục đích                                                                  |
+| ---------- | ------------------------------------------------------------------------- |
+| `dm`       | Quyết định cho phép/ghép nối/từ chối DM và danh sách `allowFrom`          |
+| `group`    | Chính sách nhóm, cho phép tuyến, cho phép người gửi, allowlist, yêu cầu nhắc đến |
+| `commands` | Cấp quyền lệnh trên các bộ cấp quyền đã cấu hình                          |
+| `mentions` | Việc phát hiện nhắc đến có khả thi hay không và tác tử có được nhắc đến hay không |
 
 ### MessageFacts
 
-| Trường           | Mục đích                                                         |
-| ---------------- | --------------------------------------------------------------- |
-| `body`           | Nội dung envelope cuối cùng (đã định dạng)                      |
-| `rawBody`        | Nội dung thô đi vào                                             |
-| `bodyForAgent`   | Nội dung agent nhìn thấy                                        |
-| `commandBody`    | Nội dung dùng để phân tích cú pháp lệnh                         |
-| `envelopeFrom`   | Nhãn người gửi đã render sẵn cho envelope                       |
-| `senderLabel`    | Ghi đè tùy chọn cho người gửi đã render                         |
-| `preview`        | Bản xem trước ngắn đã biên tập cho log                          |
-| `inboundHistory` | Các mục lịch sử đi vào gần đây khi kênh duy trì bộ đệm          |
+| Trường           | Mục đích                                                        |
+| ---------------- | -------------------------------------------------------------- |
+| `body`           | Nội dung envelope cuối cùng (đã định dạng)                     |
+| `rawBody`        | Nội dung thô nhận vào                                          |
+| `bodyForAgent`   | Nội dung tác tử nhìn thấy                                      |
+| `commandBody`    | Nội dung dùng để phân tích lệnh                                |
+| `envelopeFrom`   | Nhãn người gửi đã kết xuất sẵn cho envelope                    |
+| `senderLabel`    | Ghi đè tùy chọn cho người gửi đã kết xuất                      |
+| `preview`        | Bản xem trước ngắn đã biên tập cho nhật ký                     |
+| `inboundHistory` | Các mục lịch sử nhận vào gần đây khi kênh giữ bộ đệm           |
 
 ### SupplementalContextFacts
 
-Ngữ cảnh bổ sung bao gồm ngữ cảnh trích dẫn, chuyển tiếp và khởi tạo luồng. Kernel áp dụng chính sách `contextVisibility` đã cấu hình. Bộ chuyển đổi kênh chỉ cung cấp facts và cờ `senderAllowed` để chính sách liên kênh luôn nhất quán.
+Ngữ cảnh bổ sung bao gồm ngữ cảnh trích dẫn, chuyển tiếp và khởi tạo luồng. Kernel áp dụng chính sách `contextVisibility` đã cấu hình. Bộ chuyển đổi kênh chỉ cung cấp các fact và cờ `senderAllowed` để chính sách xuyên kênh luôn nhất quán.
 
 ### InboundMediaFacts
 
-Media có dạng fact. Việc tải xuống nền tảng, xác thực, chính sách SSRF, quy tắc CDN và giải mã vẫn nằm cục bộ trong kênh. Kernel ánh xạ facts vào `MediaPath`, `MediaUrl`, `MediaType`, `MediaPaths`, `MediaUrls`, `MediaTypes` và `MediaTranscribedIndexes`.
+Media có dạng fact. Tải xuống trên nền tảng, xác thực, chính sách SSRF, quy tắc CDN và giải mã vẫn nằm cục bộ trong kênh. Kernel ánh xạ các fact vào `MediaPath`, `MediaUrl`, `MediaType`, `MediaPaths`, `MediaUrls`, `MediaTypes` và `MediaTranscribedIndexes`.
 
 ## Hợp đồng bộ chuyển đổi
 
-Đối với `run` đầy đủ, dạng của bộ chuyển đổi là:
+Với `run` đầy đủ, hình dạng bộ chuyển đổi là:
 
 ```typescript
 type ChannelTurnAdapter<TRaw> = {
@@ -307,11 +307,11 @@ type ChannelTurnAdapter<TRaw> = {
 };
 ```
 
-`resolveTurn` trả về một `ChannelTurnResolved`, tức là một `AssembledChannelTurn` với loại admission tùy chọn. Trả về `{ admission: { kind: "observeOnly" } }` sẽ chạy lượt mà không tạo đầu ra hiển thị. Bộ chuyển đổi vẫn sở hữu callback gửi; nó chỉ trở thành no-op cho lượt đó.
+`resolveTurn` trả về một `ChannelTurnResolved`, tức là một `AssembledChannelTurn` có loại admission tùy chọn. Trả về `{ admission: { kind: "observeOnly" } }` chạy lượt mà không tạo đầu ra hiển thị. Bộ chuyển đổi vẫn sở hữu callback phân phối; nó chỉ trở thành thao tác không làm gì cho lượt đó.
 
-`onFinalize` chạy trên mọi kết quả, bao gồm cả lỗi dispatch. Dùng nó để xóa lịch sử nhóm đang chờ, gỡ phản ứng ack, dừng chỉ báo trạng thái và flush trạng thái cục bộ.
+`onFinalize` chạy trên mọi kết quả, bao gồm cả lỗi điều phối. Dùng nó để xóa lịch sử nhóm đang chờ, gỡ các phản ứng xác nhận, dừng chỉ báo trạng thái và flush trạng thái cục bộ.
 
-## Bộ chuyển đổi gửi
+## Bộ chuyển đổi phân phối
 
 Kernel không gọi trực tiếp nền tảng. Kênh trao cho kernel một `ChannelTurnDeliveryAdapter`:
 
@@ -319,21 +319,27 @@ Kernel không gọi trực tiếp nền tảng. Kênh trao cho kernel một `Cha
 type ChannelTurnDeliveryAdapter = {
   deliver(payload: ReplyPayload, info: ChannelDeliveryInfo): Promise<ChannelDeliveryResult | void>;
   onError?(err: unknown, info: { kind: string }): void;
+  durable?: false | DurableInboundReplyDeliveryOptions;
 };
 
 type ChannelDeliveryResult = {
   messageIds?: string[];
+  receipt?: MessageReceipt;
   threadId?: string;
   replyToId?: string;
   visibleReplySent?: boolean;
 };
 ```
 
-`deliver` được gọi một lần cho mỗi phần trả lời đã đệm. Trả về id tin nhắn của nền tảng khi kênh có chúng để dispatcher có thể giữ neo luồng và chỉnh sửa các phần sau. Đối với lượt chỉ quan sát, trả về `{ visibleReplySent: false }` hoặc dùng `createNoopChannelTurnDeliveryAdapter()`.
+`deliver` được gọi một lần cho mỗi đoạn phản hồi được đệm. Trong quá trình di trú vòng đời thông điệp, phân phối lượt kênh đã lắp ráp mặc định do kênh sở hữu: trường `durable` bị bỏ qua nghĩa là kernel phải gọi trực tiếp `deliver` và không được định tuyến qua phân phối gửi ra chung. Chỉ đặt `durable` sau khi kênh đã được kiểm tra để chứng minh đường gửi chung giữ nguyên hành vi phân phối cũ, bao gồm mục tiêu phản hồi/luồng, xử lý media, bộ nhớ đệm thông điệp đã gửi/self-echo, dọn dẹp trạng thái và các id thông điệp được trả về. `durable: false` vẫn là cách viết tương thích cho "dùng callback do kênh sở hữu", nhưng các kênh chưa di trú không cần thêm nó. Trả về id thông điệp nền tảng khi kênh có chúng để bộ điều phối có thể giữ các neo luồng và chỉnh sửa các đoạn sau; các đường phân phối mới hơn cũng nên trả về `receipt` để khôi phục, hoàn tất bản xem trước và khử trùng lặp có thể chuyển khỏi `messageIds`. Với các lượt chỉ quan sát, trả về `{ visibleReplySent: false }` hoặc dùng `createNoopChannelTurnDeliveryAdapter()`.
+
+Các kênh dùng `runPrepared` với một bộ điều phối hoàn toàn do kênh sở hữu không có `ChannelTurnDeliveryAdapter`. Các bộ điều phối đó mặc định không bền vững. Chúng nên giữ đường phân phối trực tiếp cho đến khi chủ động chọn dùng ngữ cảnh gửi mới với mục tiêu đầy đủ, bộ chuyển đổi an toàn khi phát lại, hợp đồng biên nhận và các hook hiệu ứng phụ phía kênh.
+
+Các helper tương thích công khai như `recordInboundSessionAndDispatchReply`, `dispatchInboundReplyWithBase` và helper direct-DM phải giữ nguyên hành vi trong quá trình di trú. Chúng không được gọi phân phối bền vững chung trước các callback `deliver` hoặc `reply` do bên gọi sở hữu.
 
 ## Tùy chọn ghi
 
-Giai đoạn ghi bọc `recordInboundSession`. Hầu hết các kênh có thể dùng mặc định. Ghi đè qua `record`:
+Giai đoạn ghi bọc `recordInboundSession`. Hầu hết kênh có thể dùng các mặc định. Ghi đè qua `record`:
 
 ```typescript
 record: {
@@ -345,11 +351,11 @@ record: {
 }
 ```
 
-Dispatcher chờ giai đoạn ghi. Nếu ghi ném lỗi, kernel chạy `onPreDispatchFailure` (khi được cung cấp cho `runPrepared`) rồi ném lại.
+Bộ điều phối chờ giai đoạn ghi. Nếu ghi ném lỗi, kernel chạy `onPreDispatchFailure` (khi được cung cấp cho `runPrepared`) rồi ném lại.
 
 ## Khả năng quan sát
 
-Mỗi giai đoạn phát một sự kiện có cấu trúc khi callback `log` được cung cấp:
+Mỗi giai đoạn phát ra một sự kiện có cấu trúc khi callback `log` được cung cấp:
 
 ```typescript
 await runtime.channel.turn.run({
@@ -370,31 +376,32 @@ await runtime.channel.turn.run({
 });
 ```
 
-Các giai đoạn được log: `ingest`, `classify`, `preflight`, `resolve`, `authorize`, `assemble`, `record`, `dispatch`, `finalize`. Tránh log nội dung thô; dùng `MessageFacts.preview` cho các bản xem trước ngắn đã biên tập.
+Các giai đoạn được ghi nhật ký: `ingest`, `classify`, `preflight`, `resolve`, `authorize`, `assemble`, `record`, `dispatch`, `finalize`. Tránh ghi nhật ký nội dung thô; dùng `MessageFacts.preview` cho bản xem trước ngắn đã biên tập.
 
 ## Những gì vẫn nằm cục bộ trong kênh
 
 Kernel sở hữu việc điều phối. Kênh vẫn sở hữu:
 
-- Transport nền tảng (Gateway, REST, websocket, polling, webhooks)
+- Truyền tải nền tảng (Gateway, REST, websocket, polling, Webhook)
 - Phân giải danh tính và khớp tên hiển thị
-- Lệnh gốc, lệnh slash, tự động hoàn thành, modal, nút, trạng thái thoại
-- Render thẻ, modal và adaptive-card
+- Lệnh gốc, lệnh slash, tự động hoàn thành, modal, nút, trạng thái giọng nói
+- Kết xuất thẻ, modal và adaptive-card
 - Xác thực media, quy tắc CDN, media mã hóa, phiên âm
 - API chỉnh sửa, phản ứng, biên tập và hiện diện
 - Backfill và lấy lịch sử phía nền tảng
-- Luồng ghép nối yêu cầu xác minh riêng theo nền tảng
+- Luồng ghép nối cần xác minh đặc thù nền tảng
 
 Nếu hai kênh bắt đầu cần cùng một helper cho một trong các việc này, hãy trích xuất helper SDK dùng chung thay vì đẩy nó vào kernel.
 
-## Độ ổn định
+## Tính ổn định
 
-`runtime.channel.turn.*` là một phần của bề mặt runtime Plugin công khai. Các kiểu fact (`SenderFacts`, `ConversationFacts`, `RouteFacts`, `ReplyPlanFacts`, `AccessFacts`, `MessageFacts`, `SupplementalContextFacts`, `InboundMediaFacts`) và các dạng admission (`ChannelTurnAdmission`, `ChannelEventClass`) có thể truy cập qua `PluginRuntime` từ `openclaw/plugin-sdk/core`.
+`runtime.channel.turn.*` là một phần của bề mặt runtime Plugin công khai. Các loại fact (`SenderFacts`, `ConversationFacts`, `RouteFacts`, `ReplyPlanFacts`, `AccessFacts`, `MessageFacts`, `SupplementalContextFacts`, `InboundMediaFacts`) và hình dạng admission (`ChannelTurnAdmission`, `ChannelEventClass`) có thể được truy cập qua `PluginRuntime` từ `openclaw/plugin-sdk/core`.
 
-Áp dụng các quy tắc tương thích ngược: trường fact mới là bổ sung, loại admission không được đổi tên, và tên entry point luôn ổn định. Nhu cầu kênh mới yêu cầu thay đổi không mang tính bổ sung phải đi qua quy trình di trú SDK Plugin.
+Áp dụng các quy tắc tương thích ngược: trường fact mới mang tính bổ sung, loại admission không bị đổi tên, và tên điểm vào luôn ổn định. Nhu cầu kênh mới cần thay đổi không mang tính bổ sung phải đi qua quy trình di trú SDK Plugin.
 
 ## Liên quan
 
-- [Xây dựng plugin kênh](/vi/plugins/sdk-channel-plugins) cho hợp đồng plugin kênh rộng hơn
+- [Tái cấu trúc vòng đời thông điệp](/vi/concepts/message-lifecycle-refactor) cho vòng đời gửi/nhận/live theo kế hoạch sẽ bọc kernel này
+- [Xây dựng Plugin kênh](/vi/plugins/sdk-channel-plugins) cho hợp đồng Plugin kênh rộng hơn
 - [Helper runtime Plugin](/vi/plugins/sdk-runtime) cho các bề mặt `runtime.*` khác
 - [Nội bộ Plugin](/vi/plugins/architecture-internals) cho pipeline tải và cơ chế registry

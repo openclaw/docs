@@ -5,26 +5,34 @@ read_when:
 summary: Sử dụng hình ảnh, video và giọng nói của Vydra trong OpenClaw
 title: Vydra
 x-i18n:
-    generated_at: "2026-04-29T23:10:11Z"
+    generated_at: "2026-05-06T09:28:19Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 85420c3f337c13313bf571d5ee92c1f1988ff8119d401e7ec0ea0db1e74d9b69
+    source_hash: 6e73121300fc3121124d15ecd285603032644c7d3886703776adc58c7115401a
     source_path: providers/vydra.md
     workflow: 16
 ---
 
-Plugin Vydra được đóng gói kèm thêm:
+Plugin Vydra được đóng gói kèm bổ sung:
 
 - Tạo hình ảnh qua `vydra/grok-imagine`
 - Tạo video qua `vydra/veo3` và `vydra/kling`
-- Tổng hợp giọng nói qua tuyến TTS của Vydra được hỗ trợ bởi ElevenLabs
+- Tổng hợp giọng nói qua tuyến TTS của Vydra dựa trên ElevenLabs
 
 OpenClaw dùng cùng một `VYDRA_API_KEY` cho cả ba khả năng.
 
-<Warning>
-Dùng `https://www.vydra.ai/api/v1` làm URL cơ sở.
+| Thuộc tính      | Giá trị                                                                   |
+| --------------- | ------------------------------------------------------------------------- |
+| ID nhà cung cấp | `vydra`                                                                   |
+| Plugin          | được đóng gói kèm, `enabledByDefault: true`                               |
+| Biến môi trường xác thực | `VYDRA_API_KEY`                                                   |
+| Cờ onboarding   | `--auth-choice vydra-api-key`                                             |
+| Cờ CLI trực tiếp | `--vydra-api-key <key>`                                                  |
+| Hợp đồng        | `imageGenerationProviders`, `videoGenerationProviders`, `speechProviders` |
+| URL cơ sở       | `https://www.vydra.ai/api/v1` (dùng máy chủ `www`)                        |
 
-Máy chủ apex của Vydra (`https://vydra.ai/api/v1`) hiện chuyển hướng đến `www`. Một số HTTP client bỏ `Authorization` trong lần chuyển hướng chéo máy chủ đó, khiến một khóa API hợp lệ trở thành lỗi xác thực gây hiểu nhầm. Plugin được đóng gói kèm dùng trực tiếp URL cơ sở `www` để tránh điều đó.
+<Warning>
+  Dùng `https://www.vydra.ai/api/v1` làm URL cơ sở. Máy chủ apex của Vydra (`https://vydra.ai/api/v1`) hiện chuyển hướng sang `www`. Một số HTTP client loại bỏ `Authorization` trong lần chuyển hướng sang máy chủ khác đó, khiến một khóa API hợp lệ trở thành lỗi xác thực gây hiểu nhầm. Plugin được đóng gói kèm dùng trực tiếp URL cơ sở `www` để tránh điều đó.
 </Warning>
 
 ## Thiết lập
@@ -43,7 +51,7 @@ Máy chủ apex của Vydra (`https://vydra.ai/api/v1`) hiện chuyển hướng
 
   </Step>
   <Step title="Chọn một khả năng mặc định">
-    Chọn một hoặc nhiều khả năng bên dưới (hình ảnh, video hoặc giọng nói) và áp dụng cấu hình tương ứng.
+    Chọn một hoặc nhiều khả năng bên dưới (hình ảnh, video, hoặc giọng nói) và áp dụng cấu hình tương ứng.
   </Step>
 </Steps>
 
@@ -55,7 +63,7 @@ Máy chủ apex của Vydra (`https://vydra.ai/api/v1`) hiện chuyển hướng
 
     - `vydra/grok-imagine`
 
-    Đặt nó làm nhà cung cấp hình ảnh mặc định:
+    Đặt mô hình đó làm nhà cung cấp hình ảnh mặc định:
 
     ```json5
     {
@@ -69,10 +77,10 @@ Máy chủ apex của Vydra (`https://vydra.ai/api/v1`) hiện chuyển hướng
     }
     ```
 
-    Hỗ trợ được đóng gói kèm hiện tại chỉ là văn bản sang hình ảnh. Các tuyến chỉnh sửa được lưu trữ của Vydra yêu cầu URL hình ảnh từ xa, và OpenClaw chưa thêm cầu nối tải lên riêng cho Vydra trong Plugin được đóng gói kèm.
+    Hỗ trợ được đóng gói kèm hiện tại chỉ là text-to-image. Các tuyến chỉnh sửa được Vydra lưu trữ yêu cầu URL hình ảnh từ xa, và OpenClaw chưa thêm cầu nối tải lên dành riêng cho Vydra trong Plugin được đóng gói kèm.
 
     <Note>
-    Xem [Tạo hình ảnh](/vi/tools/image-generation) để biết các tham số công cụ dùng chung, lựa chọn nhà cung cấp và hành vi chuyển đổi dự phòng.
+    Xem [Tạo hình ảnh](/vi/tools/image-generation) để biết các tham số công cụ dùng chung, lựa chọn nhà cung cấp và hành vi chuyển dự phòng.
     </Note>
 
   </Accordion>
@@ -80,8 +88,8 @@ Máy chủ apex của Vydra (`https://vydra.ai/api/v1`) hiện chuyển hướng
   <Accordion title="Tạo video">
     Các mô hình video đã đăng ký:
 
-    - `vydra/veo3` cho văn bản sang video
-    - `vydra/kling` cho hình ảnh sang video
+    - `vydra/veo3` cho text-to-video
+    - `vydra/kling` cho image-to-video
 
     Đặt Vydra làm nhà cung cấp video mặc định:
 
@@ -99,19 +107,19 @@ Máy chủ apex của Vydra (`https://vydra.ai/api/v1`) hiện chuyển hướng
 
     Ghi chú:
 
-    - `vydra/veo3` được đóng gói kèm chỉ dưới dạng văn bản sang video.
-    - `vydra/kling` hiện yêu cầu một tham chiếu URL hình ảnh từ xa. Các lượt tải lên tệp cục bộ bị từ chối ngay từ đầu.
+    - `vydra/veo3` được đóng gói kèm chỉ dưới dạng text-to-video.
+    - `vydra/kling` hiện yêu cầu một tham chiếu URL hình ảnh từ xa. Tải lên tệp cục bộ bị từ chối ngay từ đầu.
     - Tuyến HTTP `kling` hiện tại của Vydra chưa nhất quán về việc nó yêu cầu `image_url` hay `video_url`; nhà cung cấp được đóng gói kèm ánh xạ cùng một URL hình ảnh từ xa vào cả hai trường.
-    - Plugin được đóng gói kèm giữ cách tiếp cận thận trọng và không chuyển tiếp các nút chỉnh kiểu chưa được tài liệu hóa như tỷ lệ khung hình, độ phân giải, watermark hoặc âm thanh được tạo.
+    - Plugin được đóng gói kèm giữ cách tiếp cận thận trọng và không chuyển tiếp các nút điều chỉnh kiểu chưa được tài liệu hóa như tỷ lệ khung hình, độ phân giải, watermark, hoặc âm thanh được tạo.
 
     <Note>
-    Xem [Tạo video](/vi/tools/video-generation) để biết các tham số công cụ dùng chung, lựa chọn nhà cung cấp và hành vi chuyển đổi dự phòng.
+    Xem [Tạo video](/vi/tools/video-generation) để biết các tham số công cụ dùng chung, lựa chọn nhà cung cấp và hành vi chuyển dự phòng.
     </Note>
 
   </Accordion>
 
   <Accordion title="Kiểm thử trực tiếp video">
-    Phạm vi kiểm thử trực tiếp riêng cho nhà cung cấp:
+    Phạm vi kiểm thử trực tiếp dành riêng cho nhà cung cấp:
 
     ```bash
     OPENCLAW_LIVE_TEST=1 \
@@ -119,10 +127,10 @@ Máy chủ apex của Vydra (`https://vydra.ai/api/v1`) hiện chuyển hướng
     pnpm test:live -- extensions/vydra/vydra.live.test.ts
     ```
 
-    Tệp kiểm thử trực tiếp Vydra được đóng gói kèm hiện bao gồm:
+    Tệp trực tiếp Vydra được đóng gói kèm hiện bao gồm:
 
-    - `vydra/veo3` văn bản sang video
-    - `vydra/kling` hình ảnh sang video sử dụng một URL hình ảnh từ xa
+    - `vydra/veo3` text-to-video
+    - `vydra/kling` image-to-video dùng một URL hình ảnh từ xa
 
     Ghi đè fixture hình ảnh từ xa khi cần:
 
@@ -156,7 +164,7 @@ Máy chủ apex của Vydra (`https://vydra.ai/api/v1`) hiện chuyển hướng
     - Mô hình: `elevenlabs/tts`
     - ID giọng nói: `21m00Tcm4TlvDq8ikWAM`
 
-    Plugin được đóng gói kèm hiện hiển thị một giọng nói mặc định đã biết là hoạt động tốt và trả về các tệp âm thanh MP3.
+    Plugin được đóng gói kèm hiện cung cấp một giọng nói mặc định đã được xác nhận hoạt động tốt và trả về tệp âm thanh MP3.
 
   </Accordion>
 </AccordionGroup>

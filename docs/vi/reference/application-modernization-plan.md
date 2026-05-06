@@ -1,216 +1,213 @@
 ---
 read_when:
     - Lập kế hoạch cho một đợt hiện đại hóa ứng dụng OpenClaw trên diện rộng
-    - Cập nhật các tiêu chuẩn triển khai giao diện người dùng cho công việc về ứng dụng hoặc Control UI
-    - Chuyển một đợt đánh giá chất lượng sản phẩm phạm vi rộng thành công việc kỹ thuật theo từng giai đoạn
+    - Cập nhật tiêu chuẩn triển khai giao diện người dùng cho công việc về ứng dụng hoặc Control UI
+    - Biến một đánh giá chất lượng sản phẩm phạm vi rộng thành công việc kỹ thuật theo từng giai đoạn
 summary: Kế hoạch hiện đại hóa ứng dụng toàn diện với các cập nhật kỹ năng triển khai giao diện người dùng
 title: Kế hoạch hiện đại hóa ứng dụng
 x-i18n:
-    generated_at: "2026-04-29T23:11:03Z"
+    generated_at: "2026-05-06T09:29:01Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 667a133cb867bb1d4d09e097925704c8b77d20ca6117a62a4c60d29ab1097283
+    source_hash: 8c97bd9c76492b9e7beb0a2623f583a54b5461bebb848fa3ac7e4495322f6456
     source_path: reference/application-modernization-plan.md
     workflow: 16
 ---
 
-# Kế hoạch hiện đại hóa ứng dụng
-
 ## Mục tiêu
 
-Đưa ứng dụng hướng tới một sản phẩm gọn gàng hơn, nhanh hơn, dễ bảo trì hơn mà không
-làm hỏng các quy trình làm việc hiện tại hoặc che giấu rủi ro trong các đợt tái cấu trúc rộng. Công việc nên
-được đưa vào dưới dạng các phần nhỏ, dễ rà soát, kèm bằng chứng cho từng bề mặt được chạm tới.
+Đưa ứng dụng tới một sản phẩm sạch hơn, nhanh hơn, dễ bảo trì hơn mà không
+phá vỡ các quy trình hiện tại hoặc che giấu rủi ro trong các lần tái cấu trúc
+rộng. Công việc nên được đưa vào dưới dạng các lát cắt nhỏ, dễ review, kèm bằng
+chứng cho từng bề mặt được chạm tới.
 
 ## Nguyên tắc
 
-- Giữ nguyên kiến trúc hiện tại trừ khi một ranh giới được chứng minh là đang gây biến động,
-  chi phí hiệu năng, hoặc lỗi nhìn thấy được với người dùng.
+- Giữ nguyên kiến trúc hiện tại trừ khi một ranh giới được chứng minh rõ ràng
+  là đang gây nhiễu, tốn chi phí hiệu năng, hoặc tạo lỗi người dùng thấy được.
 - Ưu tiên bản vá đúng nhỏ nhất cho từng vấn đề, rồi lặp lại.
-- Tách các bản sửa bắt buộc khỏi phần tinh chỉnh tùy chọn để người bảo trì có thể đưa vào
-  công việc có giá trị cao mà không phải chờ các quyết định mang tính chủ quan.
-- Giữ hành vi hướng tới plugin được ghi lại trong tài liệu và tương thích ngược.
-- Xác minh hành vi đã phát hành, hợp đồng phụ thuộc, và kiểm thử trước khi tuyên bố một
-  hồi quy đã được sửa.
-- Cải thiện đường đi chính của người dùng trước: nhập môn, xác thực, trò chuyện, thiết lập nhà cung cấp,
-  quản lý plugin, và chẩn đoán.
+- Tách các bản sửa bắt buộc khỏi phần tinh chỉnh tùy chọn để maintainer có thể
+  đưa phần việc giá trị cao vào mà không phải chờ các quyết định mang tính chủ quan.
+- Giữ hành vi hướng tới Plugin được ghi tài liệu và tương thích ngược.
+- Xác minh hành vi đã phát hành, hợp đồng phụ thuộc, và kiểm thử trước khi tuyên bố
+  một hồi quy đã được sửa.
+- Cải thiện đường dẫn người dùng chính trước: onboarding, xác thực, trò chuyện,
+  thiết lập nhà cung cấp, quản lý Plugin, và chẩn đoán.
 
-## Giai đoạn 1: Kiểm tra đường cơ sở
+## Giai đoạn 1: Kiểm toán baseline
 
 Kiểm kê ứng dụng hiện tại trước khi thay đổi.
 
-- Xác định các quy trình làm việc hàng đầu của người dùng và các bề mặt mã sở hữu chúng.
-- Liệt kê các điểm thao tác không còn hiệu lực, thiết lập trùng lặp, trạng thái lỗi không rõ ràng, và các
-  đường kết xuất tốn kém.
+- Xác định các quy trình người dùng hàng đầu và các bề mặt mã sở hữu chúng.
+- Liệt kê các affordance chết, thiết lập trùng lặp, trạng thái lỗi không rõ ràng,
+  và các đường render tốn kém.
 - Ghi lại các lệnh xác thực hiện tại cho từng bề mặt.
 - Đánh dấu vấn đề là bắt buộc, khuyến nghị, hoặc tùy chọn.
-- Ghi lại các điểm chặn đã biết cần chủ sở hữu rà soát, đặc biệt là thay đổi về API, bảo mật,
-  phát hành, và hợp đồng plugin.
+- Ghi tài liệu các điểm chặn đã biết cần owner review, đặc biệt là thay đổi API,
+  bảo mật, phát hành, và hợp đồng Plugin.
 
 Định nghĩa hoàn tất:
 
-- Một danh sách vấn đề có tham chiếu tệp từ gốc repo.
-- Mỗi vấn đề có mức độ nghiêm trọng, bề mặt chủ sở hữu, tác động dự kiến đến người dùng, và một đường dẫn
-  xác thực được đề xuất.
-- Không trộn các mục dọn dẹp mang tính suy đoán vào các bản sửa bắt buộc.
+- Một danh sách vấn đề với tham chiếu tệp từ gốc repo.
+- Mỗi vấn đề có mức độ nghiêm trọng, bề mặt owner, tác động người dùng dự kiến,
+  và đường dẫn xác thực được đề xuất.
+- Không trộn các mục dọn dẹp suy đoán vào các bản sửa bắt buộc.
 
 ## Giai đoạn 2: Dọn dẹp sản phẩm và UX
 
-Ưu tiên các quy trình hiển thị và loại bỏ sự khó hiểu.
+Ưu tiên các quy trình thấy được và loại bỏ sự khó hiểu.
 
-- Siết chặt nội dung nhập môn và trạng thái trống quanh xác thực mô hình, trạng thái gateway,
-  và thiết lập plugin.
-- Xóa hoặc vô hiệu hóa các điểm thao tác không còn hiệu lực khi không có hành động nào khả dụng.
-- Giữ các hành động quan trọng hiển thị trên các độ rộng đáp ứng thay vì ẩn chúng
-  sau các giả định bố cục mong manh.
+- Siết chặt nội dung onboarding và trạng thái trống quanh xác thực mô hình,
+  trạng thái Gateway, và thiết lập Plugin.
+- Xóa hoặc vô hiệu hóa các affordance chết khi không có hành động nào khả dụng.
+- Giữ các hành động quan trọng hiển thị trên nhiều chiều rộng responsive thay vì
+  ẩn chúng sau các giả định bố cục mong manh.
 - Hợp nhất ngôn ngữ trạng thái lặp lại để lỗi có một nguồn sự thật duy nhất.
-- Thêm tiết lộ lũy tiến cho thiết lập nâng cao trong khi vẫn giữ thiết lập cốt lõi nhanh.
+- Thêm tiết lộ lũy tiến cho thiết lập nâng cao trong khi vẫn giữ phần thiết lập cốt lõi nhanh.
 
 Xác thực khuyến nghị:
 
-- Đường đi thủ công thành công cho thiết lập lần đầu và khởi động của người dùng hiện có.
+- Đường dẫn thành công thủ công cho thiết lập lần chạy đầu và khởi động của người dùng hiện có.
 - Kiểm thử tập trung cho mọi logic định tuyến, lưu cấu hình, hoặc suy dẫn trạng thái.
-- Ảnh chụp trình duyệt cho các bề mặt đáp ứng đã thay đổi.
+- Ảnh chụp trình duyệt cho các bề mặt responsive đã thay đổi.
 
 ## Giai đoạn 3: Siết chặt kiến trúc frontend
 
-Cải thiện khả năng bảo trì mà không viết lại diện rộng.
+Cải thiện khả năng bảo trì mà không viết lại rộng.
 
-- Di chuyển các biến đổi trạng thái UI lặp lại vào các helper được định kiểu hẹp.
-- Giữ tách biệt trách nhiệm tìm nạp dữ liệu, lưu trữ, và trình bày.
-- Ưu tiên các hook, store, và mẫu component hiện có thay vì các abstraction mới.
-- Chỉ tách các component quá lớn khi điều đó giảm ghép nối hoặc làm rõ kiểm thử.
-- Tránh đưa vào trạng thái toàn cục rộng cho các tương tác panel cục bộ.
+- Chuyển các phép biến đổi trạng thái UI lặp lại vào các helper có kiểu hẹp.
+- Giữ riêng trách nhiệm fetch dữ liệu, lưu trữ, và trình bày.
+- Ưu tiên các hook, store, và mẫu component hiện có hơn các abstraction mới.
+- Chỉ tách component quá lớn khi việc đó giảm coupling hoặc làm rõ kiểm thử.
+- Tránh đưa trạng thái global rộng vào cho các tương tác panel cục bộ.
 
 Rào chắn bắt buộc:
 
-- Không thay đổi hành vi công khai như tác dụng phụ của việc tách tệp.
-- Giữ nguyên hành vi hỗ trợ tiếp cận cho menu, hộp thoại, tab, và điều hướng
-  bàn phím.
-- Xác minh rằng các trạng thái đang tải, trống, lỗi, và lạc quan vẫn kết xuất.
+- Không thay đổi hành vi công khai như một tác dụng phụ của việc tách tệp.
+- Giữ nguyên hành vi accessibility cho menu, dialog, tab, và điều hướng bàn phím.
+- Xác minh rằng các trạng thái tải, trống, lỗi, và optimistic vẫn render.
 
 ## Giai đoạn 4: Hiệu năng và độ tin cậy
 
-Nhắm vào điểm đau đã đo được thay vì tối ưu hóa lý thuyết diện rộng.
+Nhắm tới điểm đau đã đo được thay vì tối ưu hóa lý thuyết rộng.
 
-- Đo chi phí khởi động, chuyển tuyến, danh sách lớn, và bản ghi trò chuyện.
-- Thay thế dữ liệu suy dẫn tốn kém lặp lại bằng selector được memo hóa hoặc helper được cache
-  khi profiling chứng minh có giá trị.
-- Giảm các lần quét mạng hoặc hệ thống tệp có thể tránh trên đường nóng.
-- Giữ thứ tự xác định cho prompt, registry, tệp, plugin, và đầu vào mạng
-  trước khi xây dựng payload mô hình.
-- Thêm kiểm thử hồi quy nhẹ cho các helper nóng và ranh giới hợp đồng.
+- Đo chi phí khởi động, chuyển tuyến, danh sách lớn, và transcript trò chuyện.
+- Thay dữ liệu dẫn xuất tốn kém lặp lại bằng selector được memoize hoặc helper
+  được cache khi profiling chứng minh có giá trị.
+- Giảm các lần quét mạng hoặc hệ thống tệp có thể tránh trên hot path.
+- Giữ thứ tự xác định cho prompt, registry, tệp, Plugin, và đầu vào mạng trước
+  khi xây dựng payload mô hình.
+- Thêm kiểm thử hồi quy nhẹ cho helper nóng và ranh giới hợp đồng.
 
 Định nghĩa hoàn tất:
 
-- Mỗi thay đổi hiệu năng ghi lại đường cơ sở, tác động dự kiến, tác động thực tế, và
-  khoảng cách còn lại.
-- Không bản vá hiệu năng nào được đưa vào chỉ dựa trên trực giác khi có thể đo lường rẻ.
+- Mỗi thay đổi hiệu năng ghi lại baseline, tác động dự kiến, tác động thực tế,
+  và khoảng trống còn lại.
+- Không đưa bản vá hiệu năng vào chỉ dựa trên trực giác khi có thể đo lường rẻ.
 
-## Giai đoạn 5: Củng cố kiểu, hợp đồng, và kiểm thử
+## Giai đoạn 5: Làm cứng kiểu, hợp đồng, và kiểm thử
 
-Nâng độ đúng đắn tại các điểm ranh giới mà người dùng và tác giả plugin phụ thuộc.
+Nâng độ đúng tại các điểm ranh giới mà người dùng và tác giả Plugin phụ thuộc.
 
 - Thay chuỗi runtime lỏng bằng union phân biệt hoặc danh sách mã đóng.
 - Xác thực đầu vào bên ngoài bằng helper schema hiện có hoặc zod.
-- Thêm kiểm thử hợp đồng quanh manifest plugin, catalog nhà cung cấp, thông điệp giao thức gateway,
-  và hành vi di trú cấu hình.
-- Giữ các đường dẫn tương thích trong luồng doctor hoặc repair thay vì các di trú ẩn
-  lúc khởi động.
-- Tránh ghép nối chỉ dành cho kiểm thử với nội bộ plugin; dùng facade SDK và barrel
-  được ghi trong tài liệu.
+- Thêm kiểm thử hợp đồng quanh manifest Plugin, catalog nhà cung cấp, thông điệp
+  giao thức Gateway, và hành vi di trú cấu hình.
+- Giữ đường dẫn tương thích trong luồng doctor hoặc sửa chữa thay vì các di trú
+  ẩn trong thời gian khởi động.
+- Tránh coupling chỉ để kiểm thử vào phần nội bộ Plugin; dùng facade SDK và barrel
+  đã ghi tài liệu.
 
 Xác thực khuyến nghị:
 
 - `pnpm check:changed`
 - Kiểm thử nhắm mục tiêu cho mọi ranh giới đã thay đổi.
-- `pnpm build` khi ranh giới lazy, đóng gói, hoặc bề mặt đã xuất bản thay đổi.
+- `pnpm build` khi ranh giới lazy, đóng gói, hoặc bề mặt đã phát hành thay đổi.
 
-## Giai đoạn 6: Tài liệu và sẵn sàng phát hành
+## Giai đoạn 6: Tài liệu và mức sẵn sàng phát hành
 
-Giữ tài liệu hướng tới người dùng khớp với hành vi.
+Giữ tài liệu hướng người dùng khớp với hành vi.
 
-- Cập nhật tài liệu khi có thay đổi về hành vi, API, cấu hình, nhập môn, hoặc plugin.
-- Chỉ thêm mục changelog cho các thay đổi nhìn thấy được với người dùng.
-- Giữ thuật ngữ plugin hướng tới người dùng; chỉ dùng tên gói nội bộ khi
-  cần cho người đóng góp.
+- Cập nhật tài liệu cùng với thay đổi hành vi, API, cấu hình, onboarding, hoặc Plugin.
+- Chỉ thêm mục changelog cho các thay đổi người dùng thấy được.
+- Giữ thuật ngữ Plugin hướng người dùng; chỉ dùng tên package nội bộ khi cần cho contributor.
 - Xác nhận hướng dẫn phát hành và cài đặt vẫn khớp với bề mặt lệnh hiện tại.
 
 Định nghĩa hoàn tất:
 
 - Tài liệu liên quan được cập nhật trong cùng nhánh với thay đổi hành vi.
-- Kiểm tra tài liệu được tạo hoặc drift API đạt khi được chạm tới.
-- Phần bàn giao nêu rõ mọi xác thực đã bỏ qua và lý do bỏ qua.
+- Kiểm tra tài liệu sinh ra hoặc drift API đạt khi bị chạm tới.
+- Bàn giao nêu rõ mọi xác thực đã bỏ qua và lý do bỏ qua.
 
-## Phần đầu tiên được khuyến nghị
+## Lát cắt đầu tiên được khuyến nghị
 
-Bắt đầu bằng một lượt có phạm vi cho Control UI và nhập môn:
+Bắt đầu bằng một lượt có phạm vi cho Control UI và onboarding:
 
-- Kiểm tra thiết lập lần đầu, mức sẵn sàng xác thực nhà cung cấp, trạng thái gateway, và các bề mặt
-  thiết lập plugin.
-- Xóa hành động không còn hiệu lực và làm rõ trạng thái lỗi.
+- Kiểm toán thiết lập lần chạy đầu, mức sẵn sàng xác thực nhà cung cấp, trạng thái Gateway,
+  và các bề mặt thiết lập Plugin.
+- Xóa hành động chết và làm rõ trạng thái thất bại.
 - Thêm hoặc cập nhật kiểm thử tập trung cho suy dẫn trạng thái và lưu cấu hình.
 - Chạy `pnpm check:changed`.
 
-Điều này mang lại giá trị cao cho người dùng với rủi ro kiến trúc hạn chế.
+Việc này mang lại giá trị người dùng cao với rủi ro kiến trúc hạn chế.
 
-## Cập nhật kỹ năng frontend
+## Cập nhật skill frontend
 
 Dùng phần này để cập nhật `SKILL.md` tập trung vào frontend được cung cấp cùng
-tác vụ hiện đại hóa. Nếu áp dụng hướng dẫn này làm một skill OpenClaw cục bộ trong repo,
-trước tiên hãy tạo `.agents/skills/openclaw-frontend/SKILL.md`, giữ frontmatter
-thuộc về skill đích đó, rồi thêm hoặc thay thế hướng dẫn phần thân bằng
+tác vụ hiện đại hóa. Nếu áp dụng hướng dẫn này làm một skill OpenClaw cục bộ
+trong repo, hãy tạo `.agents/skills/openclaw-frontend/SKILL.md` trước, giữ
+frontmatter thuộc về skill đích đó, rồi thêm hoặc thay phần hướng dẫn thân bằng
 nội dung sau.
 
 ```markdown
-# Tiêu chuẩn bàn giao frontend
+# Frontend Delivery Standards
 
-Dùng skill này khi triển khai hoặc rà soát công việc UI hướng tới người dùng trong React, Next.js,
-desktop webview, hoặc app.
+Use this skill when implementing or reviewing user-facing React, Next.js,
+desktop webview, or app UI work.
 
-## Quy tắc vận hành
+## Operating rules
 
-- Bắt đầu từ quy trình sản phẩm và quy ước mã hiện có.
-- Ưu tiên bản vá đúng nhỏ nhất cải thiện đường đi hiện tại của người dùng.
-- Tách bản sửa bắt buộc khỏi phần tinh chỉnh tùy chọn trong phần bàn giao.
-- Không xây dựng trang marketing khi yêu cầu là một bề mặt ứng dụng.
-- Giữ hành động hiển thị và dùng được trên các kích thước viewport được hỗ trợ.
-- Xóa các điểm thao tác không còn hiệu lực thay vì để lại điều khiển không thể hành động.
-- Giữ nguyên trạng thái đang tải, trống, lỗi, thành công, và quyền.
-- Dùng component hệ thống thiết kế, hook, store, và icon hiện có trước khi thêm
-  primitive mới.
+- Start from the existing product workflow and code conventions.
+- Prefer the smallest correct patch that improves the current user path.
+- Separate required fixes from optional polish in the handoff.
+- Do not build marketing pages when the request is for an application surface.
+- Keep actions visible and usable across supported viewport sizes.
+- Remove dead affordances instead of leaving controls that cannot act.
+- Preserve loading, empty, error, success, and permission states.
+- Use existing design-system components, hooks, stores, and icons before adding
+  new primitives.
 
-## Danh sách kiểm triển khai
+## Implementation checklist
 
-1. Xác định tác vụ chính của người dùng và component hoặc route sở hữu nó.
-2. Đọc các mẫu component cục bộ trước khi chỉnh sửa.
-3. Vá bề mặt hẹp nhất giải quyết được vấn đề.
-4. Thêm ràng buộc đáp ứng cho điều khiển, thanh công cụ, lưới, và
-   bộ đếm có định dạng cố định để văn bản và trạng thái hover không thể đổi kích thước bố cục ngoài dự kiến.
-5. Giữ rõ trách nhiệm tải dữ liệu, suy dẫn trạng thái, và kết xuất.
-6. Thêm kiểm thử khi logic, lưu trữ, định tuyến, quyền, hoặc helper dùng chung
-   thay đổi.
-7. Xác minh đường đi thành công chính và trường hợp biên liên quan nhất.
+1. Identify the primary user task and the component or route that owns it.
+2. Read the local component patterns before editing.
+3. Patch the narrowest surface that solves the issue.
+4. Add responsive constraints for fixed-format controls, toolbars, grids, and
+   counters so text and hover states cannot resize the layout unexpectedly.
+5. Keep data loading, state derivation, and rendering responsibilities clear.
+6. Add tests when logic, persistence, routing, permissions, or shared helpers
+   change.
+7. Verify the main happy path and the most relevant edge case.
 
-## Cổng chất lượng hình ảnh
+## Visual quality gates
 
-- Văn bản phải vừa trong vùng chứa trên di động và desktop.
-- Thanh công cụ có thể xuống dòng, nhưng điều khiển phải vẫn truy cập được.
-- Nút nên dùng icon quen thuộc khi icon rõ hơn văn bản.
-- Card nên được dùng cho các mục lặp lại, modal, và công cụ có khung, không phải cho
-  mọi phần của trang.
-- Tránh bảng màu một nốt và nền trang trí cạnh tranh với
-  nội dung vận hành.
-- Các bề mặt sản phẩm dày đặc nên tối ưu cho việc quét nhanh, so sánh, và sử dụng
-  lặp lại.
+- Text must fit inside its container on mobile and desktop.
+- Toolbars may wrap, but controls must remain reachable.
+- Buttons should use familiar icons when the icon is clearer than text.
+- Cards should be used for repeated items, modals, and framed tools, not for
+  every page section.
+- Avoid one-note color palettes and decorative backgrounds that compete with
+  operational content.
+- Dense product surfaces should optimize for scanning, comparison, and repeated
+  use.
 
-## Định dạng bàn giao
+## Handoff format
 
-Báo cáo:
+Report:
 
-- Những gì đã thay đổi.
-- Hành vi người dùng nào đã thay đổi.
-- Xác thực bắt buộc đã đạt.
-- Mọi xác thực đã bỏ qua và lý do cụ thể.
-- Công việc tiếp theo tùy chọn, được tách rõ khỏi bản sửa bắt buộc.
+- What changed.
+- What user behavior changed.
+- Required validation that passed.
+- Any validation skipped and the concrete reason.
+- Optional follow-up work, clearly separated from required fixes.
 ```

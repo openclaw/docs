@@ -1,23 +1,23 @@
 ---
 read_when:
-    - Bạn muốn hiểu cách OpenClaw tập hợp ngữ cảnh cho mô hình
-    - Bạn đang chuyển đổi giữa công cụ kế thừa và công cụ Plugin
-    - Bạn đang xây dựng một Plugin công cụ ngữ cảnh
+    - Bạn muốn hiểu cách OpenClaw tập hợp ngữ cảnh mô hình
+    - Bạn đang chuyển đổi giữa công cụ cũ và công cụ Plugin
+    - Bạn đang xây dựng một Plugin bộ máy ngữ cảnh
 sidebarTitle: Context engine
-summary: 'Công cụ ngữ cảnh: lắp ráp ngữ cảnh có thể cắm ghép, Compaction và vòng đời tác nhân phụ'
+summary: 'Bộ máy ngữ cảnh: tổng hợp ngữ cảnh có thể cắm mở rộng, Compaction và vòng đời subagent'
 title: Công cụ ngữ cảnh
 x-i18n:
-    generated_at: "2026-05-02T10:39:06Z"
+    generated_at: "2026-05-06T09:07:08Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e7477dd1d48f9633586dce67204912a810e0931d7bc9f2d6719ba465fe19681b
+    source_hash: 0c33c94971751d92a2ce695db545a0c0abb7adcbe1820383b83f4201fa7e628d
     source_path: concepts/context-engine.md
     workflow: 16
 ---
 
-Một **công cụ ngữ cảnh** kiểm soát cách OpenClaw xây dựng ngữ cảnh mô hình cho mỗi lần chạy: bao gồm những thông điệp nào, cách tóm tắt lịch sử cũ hơn, và cách quản lý ngữ cảnh qua ranh giới subagent.
+Một **công cụ ngữ cảnh** kiểm soát cách OpenClaw xây dựng ngữ cảnh mô hình cho mỗi lần chạy: những thông điệp nào cần đưa vào, cách tóm tắt lịch sử cũ hơn, và cách quản lý ngữ cảnh qua ranh giới tác tử phụ.
 
-OpenClaw đi kèm công cụ `legacy` tích hợp sẵn và dùng mặc định — hầu hết người dùng không bao giờ cần thay đổi điều này. Chỉ cài đặt và chọn công cụ Plugin khi bạn muốn hành vi lắp ráp, Compaction, hoặc nhớ lại giữa các phiên khác đi.
+OpenClaw đi kèm công cụ `legacy` tích hợp sẵn và dùng công cụ này theo mặc định - hầu hết người dùng không bao giờ cần thay đổi điều này. Chỉ cài đặt và chọn một công cụ Plugin khi bạn muốn hành vi lắp ráp, Compaction, hoặc nhớ lại xuyên phiên khác.
 
 ## Bắt đầu nhanh
 
@@ -29,8 +29,8 @@ OpenClaw đi kèm công cụ `legacy` tích hợp sẵn và dùng mặc định 
     cat ~/.openclaw/openclaw.json | jq '.plugins.slots.contextEngine'
     ```
   </Step>
-  <Step title="Cài đặt công cụ Plugin">
-    Các Plugin công cụ ngữ cảnh được cài đặt như mọi Plugin OpenClaw khác.
+  <Step title="Cài đặt một công cụ Plugin">
+    Các Plugin công cụ ngữ cảnh được cài đặt giống như bất kỳ Plugin OpenClaw nào khác.
 
     <Tabs>
       <Tab title="Từ npm">
@@ -38,7 +38,7 @@ OpenClaw đi kèm công cụ `legacy` tích hợp sẵn và dùng mặc định 
         openclaw plugins install @martian-engineering/lossless-claw
         ```
       </Tab>
-      <Tab title="Từ đường dẫn cục bộ">
+      <Tab title="Từ một đường dẫn cục bộ">
         ```bash
         openclaw plugins install -l ./my-context-engine
         ```
@@ -64,60 +64,60 @@ OpenClaw đi kèm công cụ `legacy` tích hợp sẵn và dùng mặc định 
     }
     ```
 
-    Khởi động lại gateway sau khi cài đặt và cấu hình.
+    Khởi động lại Gateway sau khi cài đặt và cấu hình.
 
   </Step>
   <Step title="Chuyển lại về legacy (tùy chọn)">
-    Đặt `contextEngine` thành `"legacy"` (hoặc xóa hẳn khóa này — `"legacy"` là mặc định).
+    Đặt `contextEngine` thành `"legacy"` (hoặc xóa hoàn toàn khóa này - `"legacy"` là mặc định).
   </Step>
 </Steps>
 
 ## Cách hoạt động
 
-Mỗi khi OpenClaw chạy prompt mô hình, công cụ ngữ cảnh tham gia tại bốn điểm trong vòng đời:
+Mỗi khi OpenClaw chạy một lời nhắc mô hình, công cụ ngữ cảnh tham gia tại bốn điểm vòng đời:
 
 <AccordionGroup>
-  <Accordion title="1. Nạp">
+  <Accordion title="1. Nạp vào">
     Được gọi khi một thông điệp mới được thêm vào phiên. Công cụ có thể lưu trữ hoặc lập chỉ mục thông điệp trong kho dữ liệu riêng của nó.
   </Accordion>
   <Accordion title="2. Lắp ráp">
-    Được gọi trước mỗi lần chạy mô hình. Công cụ trả về một tập thông điệp có thứ tự (và một `systemPromptAddition` tùy chọn) vừa với ngân sách token.
+    Được gọi trước mỗi lần chạy mô hình. Công cụ trả về một tập thông điệp có thứ tự (và một `systemPromptAddition` tùy chọn) phù hợp trong ngân sách token.
   </Accordion>
   <Accordion title="3. Compact">
-    Được gọi khi cửa sổ ngữ cảnh đã đầy, hoặc khi người dùng chạy `/compact`. Công cụ tóm tắt lịch sử cũ hơn để giải phóng không gian.
+    Được gọi khi cửa sổ ngữ cảnh đầy, hoặc khi người dùng chạy `/compact`. Công cụ tóm tắt lịch sử cũ hơn để giải phóng không gian.
   </Accordion>
   <Accordion title="4. Sau lượt">
-    Được gọi sau khi một lần chạy hoàn tất. Công cụ có thể duy trì trạng thái, kích hoạt Compaction nền, hoặc cập nhật chỉ mục.
+    Được gọi sau khi một lần chạy hoàn tất. Công cụ có thể lưu giữ trạng thái, kích hoạt Compaction nền, hoặc cập nhật chỉ mục.
   </Accordion>
 </AccordionGroup>
 
-Đối với harness Codex không phải ACP đi kèm, OpenClaw áp dụng cùng vòng đời bằng cách chiếu ngữ cảnh đã lắp ráp vào chỉ dẫn developer của Codex và prompt lượt hiện tại. Codex vẫn sở hữu lịch sử luồng gốc và bộ compact gốc của nó.
+Đối với bộ khai thác Codex không phải ACP được đóng gói, OpenClaw áp dụng cùng vòng đời bằng cách chiếu ngữ cảnh đã lắp ráp vào chỉ dẫn dành cho nhà phát triển Codex và lời nhắc lượt hiện tại. Codex vẫn sở hữu lịch sử luồng gốc và bộ Compaction gốc của nó.
 
-### Vòng đời subagent (tùy chọn)
+### Vòng đời tác tử phụ (tùy chọn)
 
-OpenClaw gọi hai hook vòng đời subagent tùy chọn:
+OpenClaw gọi hai hook vòng đời tác tử phụ tùy chọn:
 
 <ParamField path="prepareSubagentSpawn" type="method">
-  Chuẩn bị trạng thái ngữ cảnh dùng chung trước khi một lần chạy con bắt đầu. Hook nhận khóa phiên cha/con, `contextMode` (`isolated` hoặc `fork`), các id/tệp transcript sẵn có, và TTL tùy chọn. Nếu nó trả về một rollback handle, OpenClaw gọi handle đó khi spawn thất bại sau khi chuẩn bị thành công.
+  Chuẩn bị trạng thái ngữ cảnh dùng chung trước khi một lần chạy con bắt đầu. Hook nhận các khóa phiên cha/con, `contextMode` (`isolated` hoặc `fork`), các id/tệp bản ghi có sẵn, và TTL tùy chọn. Nếu nó trả về một tay cầm rollback, OpenClaw sẽ gọi tay cầm đó khi spawn thất bại sau khi chuẩn bị thành công.
 </ParamField>
 <ParamField path="onSubagentEnded" type="method">
-  Dọn dẹp khi một phiên subagent hoàn tất hoặc bị quét.
+  Dọn dẹp khi một phiên tác tử phụ hoàn tất hoặc bị quét.
 </ParamField>
 
-### Phần bổ sung prompt hệ thống
+### Phần bổ sung lời nhắc hệ thống
 
-Phương thức `assemble` có thể trả về chuỗi `systemPromptAddition`. OpenClaw thêm chuỗi này vào đầu prompt hệ thống cho lần chạy. Điều này cho phép các công cụ chèn hướng dẫn nhớ lại động, chỉ dẫn truy xuất, hoặc gợi ý nhận biết ngữ cảnh mà không cần tệp workspace tĩnh.
+Phương thức `assemble` có thể trả về chuỗi `systemPromptAddition`. OpenClaw thêm chuỗi này vào trước lời nhắc hệ thống cho lần chạy. Điều này cho phép các công cụ chèn hướng dẫn nhớ lại động, chỉ dẫn truy xuất, hoặc gợi ý nhận biết ngữ cảnh mà không cần các tệp không gian làm việc tĩnh.
 
 ## Công cụ legacy
 
 Công cụ `legacy` tích hợp sẵn giữ nguyên hành vi ban đầu của OpenClaw:
 
-- **Nạp**: không làm gì (trình quản lý phiên xử lý trực tiếp việc duy trì thông điệp).
-- **Lắp ráp**: chuyển tiếp (pipeline sanitize → validate → limit hiện có trong runtime xử lý việc lắp ráp ngữ cảnh).
+- **Nạp vào**: không làm gì (trình quản lý phiên trực tiếp xử lý việc lưu giữ thông điệp).
+- **Lắp ráp**: truyền qua (đường ống sanitize → validate → limit hiện có trong runtime xử lý việc lắp ráp ngữ cảnh).
 - **Compact**: ủy quyền cho Compaction tóm tắt tích hợp sẵn, tạo một bản tóm tắt duy nhất của các thông điệp cũ hơn và giữ nguyên các thông điệp gần đây.
 - **Sau lượt**: không làm gì.
 
-Công cụ legacy không đăng ký công cụ hoặc cung cấp `systemPromptAddition`.
+Công cụ legacy không đăng ký công cụ hay cung cấp `systemPromptAddition`.
 
 Khi không đặt `plugins.slots.contextEngine` (hoặc đặt thành `"legacy"`), công cụ này được dùng tự động.
 
@@ -161,11 +161,11 @@ export default function register(api) {
 }
 ```
 
-Factory `ctx` bao gồm các giá trị tùy chọn `config`, `agentDir`, và `workspaceDir`
-để Plugin có thể khởi tạo trạng thái theo từng agent hoặc từng workspace trước khi
-hook vòng đời đầu tiên chạy.
+Factory `ctx` bao gồm các giá trị `config`, `agentDir`, và `workspaceDir`
+tùy chọn để Plugin có thể khởi tạo trạng thái theo từng tác tử hoặc theo từng
+không gian làm việc trước khi hook vòng đời đầu tiên chạy.
 
-Sau đó bật nó trong cấu hình:
+Sau đó bật trong cấu hình:
 
 ```json5
 {
@@ -188,37 +188,37 @@ Các thành viên bắt buộc:
 
 | Thành viên         | Loại       | Mục đích                                                 |
 | ------------------ | ---------- | -------------------------------------------------------- |
-| `info`             | Thuộc tính | id công cụ, tên, phiên bản, và liệu nó có sở hữu Compaction hay không |
-| `ingest(params)`   | Phương thức | Lưu trữ một thông điệp đơn lẻ                            |
+| `info`             | Thuộc tính | Id công cụ, tên, phiên bản, và liệu nó sở hữu Compaction |
+| `ingest(params)`   | Phương thức | Lưu trữ một thông điệp duy nhất                          |
 | `assemble(params)` | Phương thức | Xây dựng ngữ cảnh cho một lần chạy mô hình (trả về `AssembleResult`) |
 | `compact(params)`  | Phương thức | Tóm tắt/giảm ngữ cảnh                                    |
 
 `assemble` trả về một `AssembleResult` với:
 
 <ParamField path="messages" type="Message[]" required>
-  Các thông điệp có thứ tự để gửi đến mô hình.
+  Các thông điệp có thứ tự để gửi tới mô hình.
 </ParamField>
 <ParamField path="estimatedTokens" type="number" required>
   Ước tính của công cụ về tổng số token trong ngữ cảnh đã lắp ráp. OpenClaw dùng giá trị này cho các quyết định ngưỡng Compaction và báo cáo chẩn đoán.
 </ParamField>
 <ParamField path="systemPromptAddition" type="string">
-  Được thêm vào đầu prompt hệ thống.
+  Được thêm vào trước lời nhắc hệ thống.
 </ParamField>
 <ParamField path="promptAuthority" type='"assembled" | "preassembly_may_overflow"'>
   Kiểm soát ước tính token nào mà runner dùng cho các kiểm tra trước tràn
   chủ động. Mặc định là `"assembled"`, nghĩa là chỉ kiểm tra ước tính của
-  prompt đã lắp ráp — phù hợp với các công cụ trả về ngữ cảnh dạng cửa sổ,
-  độc lập. Chỉ đặt thành `"preassembly_may_overflow"` khi chế độ xem đã lắp ráp
-  của bạn có thể che giấu rủi ro tràn trong transcript bên dưới; khi đó runner
-  lấy giá trị lớn nhất giữa ước tính đã lắp ráp và ước tính lịch sử phiên trước
-  khi lắp ráp (không theo cửa sổ) khi quyết định có chủ động compact hay không.
-  Dù bằng cách nào, các thông điệp bạn trả về vẫn là những gì mô hình thấy —
-  `promptAuthority` chỉ ảnh hưởng đến kiểm tra trước.
+  lời nhắc đã lắp ráp - phù hợp với các công cụ trả về một ngữ cảnh
+  dạng cửa sổ, tự chứa. Chỉ đặt thành `"preassembly_may_overflow"` khi
+  khung nhìn đã lắp ráp của bạn có thể che giấu rủi ro tràn trong
+  bản ghi nền bên dưới; khi đó runner lấy giá trị lớn nhất giữa ước tính
+  đã lắp ráp và ước tính lịch sử phiên trước lắp ráp (không tạo cửa sổ)
+  khi quyết định có Compaction chủ động hay không. Dù theo cách nào, các
+  thông điệp bạn trả về vẫn là những gì mô hình thấy - `promptAuthority` chỉ ảnh hưởng đến kiểm tra trước.
 </ParamField>
 
-`compact` trả về một `CompactResult`. Khi Compaction xoay vòng transcript đang hoạt động,
-`result.sessionId` và `result.sessionFile` xác định phiên kế nhiệm mà lần thử lại
-hoặc lượt tiếp theo phải dùng.
+`compact` trả về một `CompactResult`. Khi Compaction xoay vòng bản ghi đang hoạt động,
+`result.sessionId` và `result.sessionFile` xác định phiên kế nhiệm
+mà lần thử lại hoặc lượt tiếp theo phải dùng.
 
 Các thành viên tùy chọn:
 
@@ -226,21 +226,21 @@ Các thành viên tùy chọn:
 | ------------------------------ | ---------- | --------------------------------------------------------------------------------------------------------------- |
 | `bootstrap(params)`            | Phương thức | Khởi tạo trạng thái công cụ cho một phiên. Được gọi một lần khi công cụ lần đầu thấy một phiên (ví dụ: nhập lịch sử). |
 | `ingestBatch(params)`          | Phương thức | Nạp một lượt đã hoàn tất dưới dạng lô. Được gọi sau khi một lần chạy hoàn tất, với tất cả thông điệp từ lượt đó cùng lúc. |
-| `afterTurn(params)`            | Phương thức | Công việc vòng đời sau lần chạy (duy trì trạng thái, kích hoạt Compaction nền).                                 |
-| `prepareSubagentSpawn(params)` | Phương thức | Thiết lập trạng thái dùng chung cho một phiên con trước khi phiên bắt đầu.                                      |
-| `onSubagentEnded(params)`      | Phương thức | Dọn dẹp sau khi một subagent kết thúc.                                                                          |
-| `dispose()`                    | Phương thức | Giải phóng tài nguyên. Được gọi trong quá trình tắt gateway hoặc tải lại Plugin — không phải theo từng phiên.  |
+| `afterTurn(params)`            | Phương thức | Công việc vòng đời sau lần chạy (lưu giữ trạng thái, kích hoạt Compaction nền).                                 |
+| `prepareSubagentSpawn(params)` | Phương thức | Thiết lập trạng thái dùng chung cho phiên con trước khi nó bắt đầu.                                             |
+| `onSubagentEnded(params)`      | Phương thức | Dọn dẹp sau khi một tác tử phụ kết thúc.                                                                        |
+| `dispose()`                    | Phương thức | Giải phóng tài nguyên. Được gọi trong quá trình tắt Gateway hoặc tải lại Plugin - không phải theo từng phiên.   |
 
 ### ownsCompaction
 
-`ownsCompaction` kiểm soát việc Compaction tự động trong lần thử tích hợp sẵn của Pi có tiếp tục được bật cho lần chạy hay không:
+`ownsCompaction` kiểm soát liệu Compaction tự động trong lần thử tích hợp sẵn của Pi có tiếp tục được bật cho lần chạy hay không:
 
 <AccordionGroup>
   <Accordion title="ownsCompaction: true">
-    Công cụ sở hữu hành vi Compaction. OpenClaw tắt Compaction tự động tích hợp sẵn của Pi cho lần chạy đó, và triển khai `compact()` của công cụ chịu trách nhiệm cho `/compact`, Compaction khôi phục tràn, và mọi Compaction chủ động mà nó muốn thực hiện trong `afterTurn()`. OpenClaw vẫn có thể chạy biện pháp bảo vệ tràn trước prompt; khi dự đoán transcript đầy đủ sẽ tràn, đường dẫn khôi phục gọi `compact()` của công cụ đang hoạt động trước khi gửi một prompt khác.
+    Công cụ sở hữu hành vi Compaction. OpenClaw tắt Compaction tự động tích hợp sẵn của Pi cho lần chạy đó, và phần triển khai `compact()` của công cụ chịu trách nhiệm cho `/compact`, Compaction khôi phục tràn, và bất kỳ Compaction chủ động nào mà nó muốn thực hiện trong `afterTurn()`. OpenClaw vẫn có thể chạy biện pháp bảo vệ tràn trước lời nhắc; khi dự đoán toàn bộ bản ghi sẽ tràn, đường dẫn khôi phục gọi `compact()` của công cụ đang hoạt động trước khi gửi một lời nhắc khác.
   </Accordion>
   <Accordion title="ownsCompaction: false hoặc chưa đặt">
-    Compaction tự động tích hợp sẵn của Pi vẫn có thể chạy trong quá trình thực thi prompt, nhưng phương thức `compact()` của công cụ đang hoạt động vẫn được gọi cho `/compact` và khôi phục tràn.
+    Compaction tự động tích hợp sẵn của Pi vẫn có thể chạy trong quá trình thực thi lời nhắc, nhưng phương thức `compact()` của công cụ đang hoạt động vẫn được gọi cho `/compact` và khôi phục tràn.
   </Accordion>
 </AccordionGroup>
 
@@ -259,7 +259,7 @@ Các thành viên tùy chọn:
   </Tab>
 </Tabs>
 
-Một `compact()` không làm gì là không an toàn đối với một công cụ không sở hữu đang hoạt động vì nó vô hiệu hóa đường dẫn Compaction `/compact` và khôi phục tràn bình thường cho slot công cụ đó.
+Một `compact()` không làm gì là không an toàn cho một công cụ không sở hữu đang hoạt động vì nó vô hiệu hóa đường dẫn Compaction thông thường của `/compact` và khôi phục tràn cho slot công cụ đó.
 
 ## Tham chiếu cấu hình
 
@@ -276,38 +276,38 @@ Một `compact()` không làm gì là không an toàn đối với một công c
 ```
 
 <Note>
-Slot này là độc quyền tại thời điểm chạy — chỉ một công cụ ngữ cảnh đã đăng ký được phân giải cho một lần chạy hoặc thao tác Compaction cụ thể. Các Plugin `kind: "context-engine"` đã bật khác vẫn có thể tải và chạy mã đăng ký của chúng; `plugins.slots.contextEngine` chỉ chọn id công cụ đã đăng ký mà OpenClaw phân giải khi cần một công cụ ngữ cảnh.
+Slot này là độc quyền tại thời điểm chạy - chỉ một công cụ ngữ cảnh đã đăng ký được phân giải cho một lần chạy hoặc thao tác Compaction nhất định. Các Plugin `kind: "context-engine"` đã bật khác vẫn có thể tải và chạy mã đăng ký của chúng; `plugins.slots.contextEngine` chỉ chọn id công cụ đã đăng ký mà OpenClaw phân giải khi cần một công cụ ngữ cảnh.
 </Note>
 
 <Note>
 **Gỡ cài đặt Plugin:** khi bạn gỡ cài đặt Plugin hiện đang được chọn làm `plugins.slots.contextEngine`, OpenClaw đặt lại slot về mặc định (`legacy`). Hành vi đặt lại tương tự áp dụng cho `plugins.slots.memory`. Không cần chỉnh sửa cấu hình thủ công.
 </Note>
 
-## Mối quan hệ với Compaction và bộ nhớ
+## Quan hệ với Compaction và bộ nhớ
 
 <AccordionGroup>
   <Accordion title="Compaction">
-    Compaction là một trách nhiệm của công cụ ngữ cảnh. Công cụ cũ ủy quyền cho tính năng tóm tắt tích hợp sẵn của OpenClaw. Các công cụ Plugin có thể triển khai bất kỳ chiến lược Compaction nào (tóm tắt DAG, truy xuất vector, v.v.).
+    Compaction là một trách nhiệm của bộ máy ngữ cảnh. Bộ máy cũ ủy quyền cho tính năng tóm tắt tích hợp của OpenClaw. Các bộ máy Plugin có thể triển khai bất kỳ chiến lược Compaction nào (tóm tắt DAG, truy xuất vector, v.v.).
   </Accordion>
   <Accordion title="Plugin bộ nhớ">
-    Plugin bộ nhớ (`plugins.slots.memory`) tách biệt với công cụ ngữ cảnh. Plugin bộ nhớ cung cấp tìm kiếm/truy xuất; công cụ ngữ cảnh kiểm soát những gì mô hình nhìn thấy. Chúng có thể hoạt động cùng nhau — một công cụ ngữ cảnh có thể dùng dữ liệu từ Plugin bộ nhớ trong quá trình lắp ráp. Các công cụ Plugin muốn dùng đường dẫn lời nhắc Active Memory nên ưu tiên `buildMemorySystemPromptAddition(...)` từ `openclaw/plugin-sdk/core`, hàm này chuyển các phần lời nhắc Active Memory thành một `systemPromptAddition` sẵn sàng để thêm vào đầu. Nếu một công cụ cần quyền kiểm soát cấp thấp hơn, nó vẫn có thể lấy các dòng thô từ `openclaw/plugin-sdk/memory-host-core` thông qua `buildActiveMemoryPromptSection(...)`.
+    Plugin bộ nhớ (`plugins.slots.memory`) tách biệt với bộ máy ngữ cảnh. Plugin bộ nhớ cung cấp tìm kiếm/truy xuất; bộ máy ngữ cảnh kiểm soát những gì mô hình nhìn thấy. Chúng có thể hoạt động cùng nhau - một bộ máy ngữ cảnh có thể dùng dữ liệu Plugin bộ nhớ trong quá trình lắp ráp. Các bộ máy Plugin muốn dùng đường dẫn prompt bộ nhớ hoạt động nên ưu tiên `buildMemorySystemPromptAddition(...)` từ `openclaw/plugin-sdk/core`, hàm này chuyển đổi các phần prompt bộ nhớ hoạt động thành một `systemPromptAddition` sẵn sàng thêm vào đầu. Nếu một bộ máy cần quyền kiểm soát cấp thấp hơn, nó vẫn có thể lấy các dòng thô từ `openclaw/plugin-sdk/memory-host-core` thông qua `buildActiveMemoryPromptSection(...)`.
   </Accordion>
   <Accordion title="Cắt tỉa phiên">
-    Việc cắt bớt các kết quả công cụ cũ trong bộ nhớ vẫn chạy bất kể công cụ ngữ cảnh nào đang hoạt động.
+    Việc cắt bớt kết quả công cụ cũ trong bộ nhớ vẫn chạy bất kể bộ máy ngữ cảnh nào đang hoạt động.
   </Accordion>
 </AccordionGroup>
 
 ## Mẹo
 
-- Dùng `openclaw doctor` để xác minh công cụ của bạn đang tải đúng cách.
-- Nếu chuyển đổi công cụ, các phiên hiện có tiếp tục với lịch sử hiện tại của chúng. Công cụ mới sẽ tiếp quản cho các lần chạy trong tương lai.
-- Lỗi công cụ được ghi nhật ký và hiển thị trong chẩn đoán. Nếu một công cụ Plugin không đăng ký được hoặc không thể phân giải id công cụ đã chọn, OpenClaw không tự động quay lại; các lần chạy sẽ thất bại cho đến khi bạn sửa Plugin hoặc chuyển `plugins.slots.contextEngine` về `"legacy"`.
+- Dùng `openclaw doctor` để xác minh bộ máy của bạn đang tải đúng cách.
+- Nếu chuyển đổi bộ máy, các phiên hiện có tiếp tục dùng lịch sử hiện tại của chúng. Bộ máy mới sẽ tiếp quản cho các lần chạy trong tương lai.
+- Lỗi bộ máy được ghi nhật ký và hiển thị trong chẩn đoán. Nếu một bộ máy Plugin không đăng ký được hoặc không thể phân giải id bộ máy đã chọn, OpenClaw không tự động quay về dự phòng; các lần chạy sẽ thất bại cho đến khi bạn sửa Plugin hoặc chuyển `plugins.slots.contextEngine` về `"legacy"`.
 - Để phát triển, dùng `openclaw plugins install -l ./my-engine` để liên kết một thư mục Plugin cục bộ mà không cần sao chép.
 
 ## Liên quan
 
-- [Compaction](/vi/concepts/compaction) — tóm tắt các cuộc trò chuyện dài
-- [Ngữ cảnh](/vi/concepts/context) — cách xây dựng ngữ cảnh cho các lượt agent
-- [Kiến trúc Plugin](/vi/plugins/architecture) — đăng ký Plugin công cụ ngữ cảnh
-- [Tệp kê khai Plugin](/vi/plugins/manifest) — các trường tệp kê khai Plugin
-- [Plugin](/vi/tools/plugin) — tổng quan về Plugin
+- [Compaction](/vi/concepts/compaction) - tóm tắt các cuộc trò chuyện dài
+- [Ngữ cảnh](/vi/concepts/context) - cách ngữ cảnh được xây dựng cho lượt tác nhân
+- [Kiến trúc Plugin](/vi/plugins/architecture) - đăng ký Plugin bộ máy ngữ cảnh
+- [Bản kê khai Plugin](/vi/plugins/manifest) - các trường bản kê khai Plugin
+- [Plugins](/vi/tools/plugin) - tổng quan về Plugin

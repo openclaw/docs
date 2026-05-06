@@ -2,18 +2,23 @@
 read_when:
     - Thiết lập OpenClaw trên DigitalOcean
     - Tìm một VPS trả phí đơn giản cho OpenClaw
-summary: Lưu trữ OpenClaw trên DigitalOcean Droplet
+summary: Triển khai OpenClaw trên DigitalOcean Droplet
 title: DigitalOcean
 x-i18n:
-    generated_at: "2026-04-29T22:50:49Z"
+    generated_at: "2026-05-06T09:17:41Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 0b3d06a38e257f4a8ab88d1f228c659a6cf1a276fe91c8ba7b89a0084658a314
+    source_hash: 7aa09915d845c9ede27db794cac464490ba038e8e5e0a2ef0f5bfc62ef7e59ff
     source_path: install/digitalocean.md
     workflow: 16
 ---
 
-Chạy một OpenClaw Gateway bền bỉ trên DigitalOcean Droplet.
+Chạy OpenClaw Gateway bền bỉ trên DigitalOcean Droplet (~$6/tháng cho gói Basic 1 GB).
+
+DigitalOcean là cách dùng VPS trả phí đơn giản nhất. Nếu bạn muốn các tùy chọn rẻ hơn hoặc miễn phí:
+
+- [Hetzner](/vi/install/hetzner) — €3.79/tháng, nhiều lõi/RAM hơn trên mỗi đô la.
+- [Oracle Cloud](/vi/install/oracle) — ARM Always Free (tối đa 4 OCPU, RAM 24 GB), nhưng đăng ký có thể hơi khó và chỉ dành cho ARM.
 
 ## Điều kiện tiên quyết
 
@@ -26,7 +31,7 @@ Chạy một OpenClaw Gateway bền bỉ trên DigitalOcean Droplet.
 <Steps>
   <Step title="Tạo Droplet">
     <Warning>
-    Dùng ảnh nền sạch (Ubuntu 24.04 LTS). Tránh các ảnh Marketplace 1-click của bên thứ ba trừ khi bạn đã xem xét các script khởi động và mặc định tường lửa của chúng.
+    Dùng ảnh cơ sở sạch (Ubuntu 24.04 LTS). Tránh ảnh 1-click từ Marketplace của bên thứ ba trừ khi bạn đã xem xét các script khởi động và mặc định tường lửa của chúng.
     </Warning>
 
     1. Đăng nhập vào [DigitalOcean](https://cloud.digitalocean.com/).
@@ -34,7 +39,7 @@ Chạy một OpenClaw Gateway bền bỉ trên DigitalOcean Droplet.
     3. Chọn:
        - **Khu vực:** Gần bạn nhất
        - **Ảnh:** Ubuntu 24.04 LTS
-       - **Kích cỡ:** Basic, Regular, 1 vCPU / 1 GB RAM / 25 GB SSD
+       - **Kích cỡ:** Basic, Regular, 1 vCPU / RAM 1 GB / SSD 25 GB
        - **Xác thực:** Khóa SSH (khuyến nghị) hoặc mật khẩu
     4. Nhấp **Create Droplet** và ghi lại địa chỉ IP.
 
@@ -57,12 +62,12 @@ Chạy một OpenClaw Gateway bền bỉ trên DigitalOcean Droplet.
 
   </Step>
 
-  <Step title="Chạy quy trình nhập môn">
+  <Step title="Chạy onboarding">
     ```bash
     openclaw onboard --install-daemon
     ```
 
-    Trình hướng dẫn sẽ dẫn bạn qua xác thực mô hình, thiết lập kênh, tạo token Gateway và cài đặt daemon (systemd).
+    Trình hướng dẫn sẽ đưa bạn qua xác thực mô hình, thiết lập kênh, tạo token Gateway và cài đặt daemon (systemd).
 
   </Step>
 
@@ -76,7 +81,7 @@ Chạy một OpenClaw Gateway bền bỉ trên DigitalOcean Droplet.
     ```
   </Step>
 
-  <Step title="Xác minh Gateway">
+  <Step title="Xác minh gateway">
     ```bash
     openclaw status
     systemctl --user status openclaw-gateway.service
@@ -84,8 +89,8 @@ Chạy một OpenClaw Gateway bền bỉ trên DigitalOcean Droplet.
     ```
   </Step>
 
-  <Step title="Truy cập Giao diện điều khiển">
-    Gateway liên kết với loopback theo mặc định. Chọn một trong các tùy chọn sau.
+  <Step title="Truy cập Control UI">
+    Theo mặc định, gateway liên kết với loopback. Chọn một trong các tùy chọn sau.
 
     **Tùy chọn A: Đường hầm SSH (đơn giản nhất)**
 
@@ -105,7 +110,9 @@ Chạy một OpenClaw Gateway bền bỉ trên DigitalOcean Droplet.
     openclaw gateway restart
     ```
 
-    Sau đó mở `https://<magicdns>/` từ bất kỳ thiết bị nào trên tailnet của bạn.
+    Sau đó mở `https://<magicdns>/` từ bất kỳ thiết bị nào trong tailnet của bạn.
+
+    Tailscale Serve xác thực lưu lượng Control UI và WebSocket thông qua header danh tính tailnet, giả định rằng máy chủ gateway tự thân là đáng tin cậy. Các endpoint HTTP API vẫn tuân theo chế độ xác thực bình thường của gateway (token/mật khẩu). Để yêu cầu thông tin xác thực shared-secret rõ ràng qua Serve, đặt `gateway.auth.allowTailscale: false` và dùng `gateway.auth.mode: "token"` hoặc `"password"`.
 
     **Tùy chọn C: Liên kết tailnet (không dùng Serve)**
 
@@ -114,22 +121,46 @@ Chạy một OpenClaw Gateway bền bỉ trên DigitalOcean Droplet.
     openclaw gateway restart
     ```
 
-    Sau đó mở `http://<tailscale-ip>:18789` (cần token).
+    Sau đó mở `http://<tailscale-ip>:18789` (yêu cầu token).
 
   </Step>
 </Steps>
 
+## Duy trì trạng thái và sao lưu
+
+Trạng thái OpenClaw nằm trong:
+
+- `~/.openclaw/` — `openclaw.json`, `auth-profiles.json` theo từng agent, trạng thái kênh/nhà cung cấp và dữ liệu phiên.
+- `~/.openclaw/workspace/` — workspace của agent (SOUL.md, bộ nhớ, artifact).
+
+Các dữ liệu này vẫn còn sau khi Droplet khởi động lại. Để tạo snapshot có thể di chuyển:
+
+```bash
+openclaw backup create
+```
+
+Snapshot của DigitalOcean sao lưu toàn bộ Droplet; `openclaw backup create` có thể di chuyển giữa các máy chủ.
+
+## Mẹo cho RAM 1 GB
+
+Droplet $6 chỉ có RAM 1 GB. Để mọi thứ chạy mượt:
+
+- Đảm bảo bước swap ở trên nằm trong `/etc/fstab` để vẫn tồn tại sau khi khởi động lại.
+- Ưu tiên mô hình dựa trên API (Claude, GPT) thay vì mô hình cục bộ — suy luận LLM cục bộ không phù hợp với 1 GB.
+- Đặt `agents.defaults.model.primary` thành mô hình nhỏ hơn nếu bạn gặp OOM với prompt lớn.
+- Giám sát bằng `free -h` và `htop`.
+
 ## Khắc phục sự cố
 
-**Gateway không khởi động** -- Chạy `openclaw doctor --non-interactive` và kiểm tra nhật ký bằng `journalctl --user -u openclaw-gateway.service -n 50`.
+**Gateway không khởi động** -- Chạy `openclaw doctor --non-interactive` và kiểm tra log bằng `journalctl --user -u openclaw-gateway.service -n 50`.
 
 **Cổng đã được sử dụng** -- Chạy `lsof -i :18789` để tìm tiến trình, rồi dừng tiến trình đó.
 
-**Hết bộ nhớ** -- Xác minh swap đang hoạt động bằng `free -h`. Nếu vẫn gặp OOM, hãy dùng các mô hình dựa trên API (Claude, GPT) thay vì mô hình cục bộ, hoặc nâng cấp lên Droplet 2 GB.
+**Hết bộ nhớ** -- Xác minh swap đang hoạt động bằng `free -h`. Nếu vẫn gặp OOM, hãy dùng mô hình dựa trên API (Claude, GPT) thay vì mô hình cục bộ, hoặc nâng cấp lên Droplet 2 GB.
 
 ## Bước tiếp theo
 
-- [Kênh](/vi/channels) -- kết nối Telegram, WhatsApp, Discord và các kênh khác
+- [Kênh](/vi/channels) -- kết nối Telegram, WhatsApp, Discord và nhiều dịch vụ khác
 - [Cấu hình Gateway](/vi/gateway/configuration) -- tất cả tùy chọn cấu hình
 - [Cập nhật](/vi/install/updating) -- giữ OpenClaw luôn cập nhật
 

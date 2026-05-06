@@ -2,39 +2,52 @@
 read_when:
     - Bạn muốn sử dụng Groq với OpenClaw
     - Bạn cần biến môi trường khóa API hoặc lựa chọn xác thực CLI
-summary: Thiết lập Groq (xác thực + chọn mô hình)
+    - Bạn đang cấu hình phiên âm âm thanh Whisper trên Groq
+summary: Thiết lập Groq (xác thực + chọn mô hình + phiên âm bằng Whisper)
 title: Groq
 x-i18n:
-    generated_at: "2026-05-02T10:50:36Z"
+    generated_at: "2026-05-06T09:27:15Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 2cf6678047581a438906420894b250bafb68d71254fbaf30ea5dfcfc4799eac7
+    source_hash: 53ce6d702eb1e0abba0cf1efd3e86c766444f5e7cbf26c312b94a74fa410b700
     source_path: providers/groq.md
     workflow: 16
 ---
 
-[Groq](https://groq.com) cung cấp suy luận siêu nhanh trên các mô hình mã nguồn mở
-(Llama, Gemma, Mistral và nhiều mô hình khác) bằng phần cứng LPU tùy chỉnh. OpenClaw kết nối
-với Groq thông qua API tương thích với OpenAI của Groq.
+[Groq](https://groq.com) cung cấp suy luận siêu nhanh trên các mô hình open-weight (Llama, Gemma, Kimi, Qwen, GPT OSS và nhiều mô hình khác) bằng phần cứng LPU tùy chỉnh. OpenClaw bao gồm một Plugin Groq được đóng gói kèm, đăng ký cả nhà cung cấp trò chuyện tương thích OpenAI và nhà cung cấp hiểu phương tiện âm thanh.
 
-| Thuộc tính | Giá trị             |
-| -------- | ----------------- |
-| Nhà cung cấp | `groq`            |
-| Xác thực     | `GROQ_API_KEY`    |
-| API      | Tương thích với OpenAI |
+| Thuộc tính             | Giá trị                                  |
+| ---------------------- | ---------------------------------------- |
+| ID nhà cung cấp        | `groq`                                   |
+| Plugin                 | được đóng gói kèm, `enabledByDefault: true` |
+| Biến môi trường xác thực | `GROQ_API_KEY`                         |
+| Cờ thiết lập ban đầu   | `--auth-choice groq-api-key`             |
+| API                    | tương thích OpenAI (`openai-completions`) |
+| URL cơ sở              | `https://api.groq.com/openai/v1`         |
+| Phiên âm âm thanh      | `whisper-large-v3-turbo` (mặc định)      |
+| Mặc định trò chuyện được đề xuất | `groq/llama-3.3-70b-versatile` |
 
 ## Bắt đầu
 
 <Steps>
-  <Step title="Nhận khóa API">
+  <Step title="Lấy khóa API">
     Tạo khóa API tại [console.groq.com/keys](https://console.groq.com/keys).
   </Step>
-  <Step title="Đặt khóa API">
-    ```bash
-    export GROQ_API_KEY="gsk_..."
-    ```
+  <Step title="Thiết lập khóa API">
+    <CodeGroup>
+
+```bash Onboarding
+openclaw onboard --auth-choice groq-api-key
+```
+
+```bash Env only
+export GROQ_API_KEY=gsk_...
+```
+
+    </CodeGroup>
+
   </Step>
-  <Step title="Đặt mô hình mặc định">
+  <Step title="Thiết lập mô hình mặc định">
     ```json5
     {
       agents: {
@@ -43,6 +56,11 @@ với Groq thông qua API tương thích với OpenAI của Groq.
         },
       },
     }
+    ```
+  </Step>
+  <Step title="Xác minh catalog có thể truy cập">
+    ```bash
+    openclaw models list --provider groq
     ```
   </Step>
 </Steps>
@@ -60,39 +78,58 @@ với Groq thông qua API tương thích với OpenAI của Groq.
 }
 ```
 
-## Danh mục tích hợp sẵn
+## Catalog tích hợp sẵn
 
-OpenClaw đi kèm một danh mục Groq dựa trên manifest để liệt kê mô hình nhanh
-được lọc theo nhà cung cấp. Chạy `openclaw models list --all --provider groq` để xem các
-hàng được đóng gói sẵn, hoặc xem
-[console.groq.com/docs/models](https://console.groq.com/docs/models).
+OpenClaw phát hành kèm catalog Groq dựa trên manifest với cả các mục có suy luận và không suy luận. Chạy `openclaw models list --provider groq` để xem các hàng được đóng gói kèm cho phiên bản bạn đã cài đặt, hoặc kiểm tra [console.groq.com/docs/models](https://console.groq.com/docs/models) để xem danh sách có thẩm quyền của Groq.
 
-| Mô hình                       | Ghi chú                              |
-| --------------------------- | ---------------------------------- |
-| **Llama 3.3 70B Versatile** | Mục đích chung, ngữ cảnh lớn     |
-| **Llama 3.1 8B Instant**    | Nhanh, nhẹ                  |
-| **Gemma 2 9B**              | Nhỏ gọn, hiệu quả                 |
-| **Mixtral 8x7B**            | Kiến trúc MoE, suy luận mạnh |
+| Tham chiếu mô hình                                  | Tên                           | Suy luận | Đầu vào      | Ngữ cảnh |
+| ---------------------------------------------------- | ----------------------------- | -------- | ------------ | ------- |
+| `groq/llama-3.3-70b-versatile`                       | Llama 3.3 70B Versatile       | không    | văn bản      | 131,072 |
+| `groq/llama-3.1-8b-instant`                          | Llama 3.1 8B Instant          | không    | văn bản      | 131,072 |
+| `groq/meta-llama/llama-4-maverick-17b-128e-instruct` | Llama 4 Maverick 17B          | không    | văn bản + hình ảnh | 131,072 |
+| `groq/meta-llama/llama-4-scout-17b-16e-instruct`     | Llama 4 Scout 17B             | không    | văn bản + hình ảnh | 131,072 |
+| `groq/llama3-70b-8192`                               | Llama 3 70B                   | không    | văn bản      | 8,192   |
+| `groq/llama3-8b-8192`                                | Llama 3 8B                    | không    | văn bản      | 8,192   |
+| `groq/gemma2-9b-it`                                  | Gemma 2 9B                    | không    | văn bản      | 8,192   |
+| `groq/mistral-saba-24b`                              | Mistral Saba 24B              | không    | văn bản      | 32,768  |
+| `groq/moonshotai/kimi-k2-instruct`                   | Kimi K2 Instruct              | không    | văn bản      | 131,072 |
+| `groq/moonshotai/kimi-k2-instruct-0905`              | Kimi K2 Instruct 0905         | không    | văn bản      | 262,144 |
+| `groq/openai/gpt-oss-120b`                           | GPT OSS 120B                  | có       | văn bản      | 131,072 |
+| `groq/openai/gpt-oss-20b`                            | GPT OSS 20B                   | có       | văn bản      | 131,072 |
+| `groq/openai/gpt-oss-safeguard-20b`                  | Safety GPT OSS 20B            | có       | văn bản      | 131,072 |
+| `groq/qwen-qwq-32b`                                  | Qwen QwQ 32B                  | có       | văn bản      | 131,072 |
+| `groq/qwen/qwen3-32b`                                | Qwen3 32B                     | có       | văn bản      | 131,072 |
+| `groq/deepseek-r1-distill-llama-70b`                 | DeepSeek R1 Distill Llama 70B | có       | văn bản      | 131,072 |
+| `groq/groq/compound`                                 | Compound                      | có       | văn bản      | 131,072 |
+| `groq/groq/compound-mini`                            | Compound Mini                 | có       | văn bản      | 131,072 |
 
 <Tip>
-Dùng `openclaw models list --all --provider groq` để xem các hàng Groq dựa trên manifest
-mà phiên bản OpenClaw này biết đến.
+  Catalog phát triển theo từng bản phát hành OpenClaw. `openclaw models list --provider groq` hiển thị các hàng mà phiên bản đã cài đặt của bạn biết; đối chiếu với [console.groq.com/docs/models](https://console.groq.com/docs/models) để xem các mô hình mới được thêm hoặc đã ngừng dùng.
 </Tip>
 
 ## Mô hình suy luận
 
-OpenClaw ánh xạ các mức `/think` dùng chung của mình sang các giá trị
-`reasoning_effort` riêng theo mô hình của Groq. Với `qwen/qwen3-32b`, tắt suy nghĩ sẽ gửi
-`none` và bật suy nghĩ sẽ gửi `default`. Với các mô hình suy luận GPT-OSS của Groq,
-OpenClaw gửi `low`, `medium`, hoặc `high`; tắt suy nghĩ sẽ bỏ qua
-`reasoning_effort` vì các mô hình đó không hỗ trợ giá trị tắt.
+OpenClaw ánh xạ các mức `/think` dùng chung của mình sang các giá trị `reasoning_effort` riêng theo mô hình của Groq:
+
+- Với `qwen/qwen3-32b`, suy nghĩ bị tắt sẽ gửi `none` và suy nghĩ được bật sẽ gửi `default`.
+- Với các mô hình suy luận Groq GPT OSS (`openai/gpt-oss-*`), OpenClaw gửi `low`, `medium` hoặc `high` dựa trên mức `/think`. Khi suy nghĩ bị tắt, `reasoning_effort` sẽ bị bỏ qua vì các mô hình đó không hỗ trợ giá trị tắt.
+- DeepSeek R1 Distill, Qwen QwQ và Compound dùng bề mặt suy luận gốc của Groq; `/think` kiểm soát khả năng hiển thị nhưng mô hình luôn suy luận.
+
+Xem [Chế độ suy nghĩ](/vi/tools/thinking) để biết các mức `/think` dùng chung và cách OpenClaw chuyển đổi chúng theo từng nhà cung cấp.
 
 ## Phiên âm âm thanh
 
-Groq cũng cung cấp phiên âm âm thanh nhanh dựa trên Whisper. Khi được cấu hình làm
-nhà cung cấp hiểu nội dung media, OpenClaw dùng mô hình `whisper-large-v3-turbo`
-của Groq để phiên âm tin nhắn thoại thông qua bề mặt `tools.media.audio`
-dùng chung.
+Plugin được đóng gói kèm của Groq cũng đăng ký một **nhà cung cấp hiểu phương tiện âm thanh** để tin nhắn thoại có thể được phiên âm thông qua bề mặt `tools.media.audio` dùng chung.
+
+| Thuộc tính             | Giá trị                                   |
+| ------------------ | ----------------------------------------- |
+| Đường dẫn cấu hình dùng chung | `tools.media.audio`              |
+| URL cơ sở mặc định | `https://api.groq.com/openai/v1`          |
+| Mô hình mặc định   | `whisper-large-v3-turbo`                  |
+| Độ ưu tiên tự động | 20                                        |
+| Điểm cuối API      | tương thích OpenAI `/audio/transcriptions` |
+
+Để đặt Groq làm backend âm thanh mặc định:
 
 ```json5
 {
@@ -107,25 +144,27 @@ dùng chung.
 ```
 
 <AccordionGroup>
-  <Accordion title="Chi tiết phiên âm âm thanh">
-    | Thuộc tính | Giá trị |
-    |----------|-------|
-    | Đường dẫn cấu hình dùng chung | `tools.media.audio` |
-    | URL cơ sở mặc định   | `https://api.groq.com/openai/v1` |
-    | Mô hình mặc định      | `whisper-large-v3-turbo` |
-    | Điểm cuối API       | `/audio/transcriptions` tương thích với OpenAI |
-  </Accordion>
-
-  <Accordion title="Ghi chú về môi trường">
-    Nếu Gateway chạy dưới dạng daemon (launchd/systemd), hãy đảm bảo `GROQ_API_KEY` có
-    sẵn cho tiến trình đó (ví dụ: trong `~/.openclaw/.env` hoặc thông qua
-    `env.shellEnv`).
+  <Accordion title="Khả dụng môi trường cho daemon">
+    Nếu Gateway chạy như một dịch vụ được quản lý (launchd, systemd, Docker), `GROQ_API_KEY` phải hiển thị với tiến trình đó — không chỉ với shell tương tác của bạn.
 
     <Warning>
-    Các khóa chỉ được đặt trong shell tương tác của bạn sẽ không hiển thị với các
-    tiến trình gateway do daemon quản lý. Dùng cấu hình `~/.openclaw/.env` hoặc `env.shellEnv` để
-    khả dụng bền vững.
+      Một khóa chỉ nằm trong `~/.profile` sẽ không giúp daemon launchd hoặc systemd trừ khi môi trường đó cũng được nhập vào đó. Đặt khóa trong `~/.openclaw/.env` hoặc qua `env.shellEnv` để tiến trình Gateway có thể đọc được.
     </Warning>
+
+  </Accordion>
+
+  <Accordion title="ID mô hình Groq tùy chỉnh">
+    OpenClaw chấp nhận mọi ID mô hình Groq khi chạy. Dùng đúng ID do Groq hiển thị và thêm tiền tố `groq/`. Catalog được đóng gói kèm bao phủ các trường hợp phổ biến; các ID không có trong catalog sẽ rơi về mẫu tương thích OpenAI mặc định.
+
+    ```json5
+    {
+      agents: {
+        defaults: {
+          model: { primary: "groq/<your-model-id>" },
+        },
+      },
+    }
+    ```
 
   </Accordion>
 </AccordionGroup>
@@ -133,16 +172,16 @@ dùng chung.
 ## Liên quan
 
 <CardGroup cols={2}>
-  <Card title="Chọn mô hình" href="/vi/concepts/model-providers" icon="layers">
-    Chọn nhà cung cấp, tham chiếu mô hình và hành vi chuyển đổi dự phòng.
+  <Card title="Nhà cung cấp mô hình" href="/vi/concepts/model-providers" icon="layers">
+    Chọn nhà cung cấp, tham chiếu mô hình và hành vi chuyển dự phòng.
+  </Card>
+  <Card title="Chế độ suy nghĩ" href="/vi/tools/thinking" icon="brain">
+    Các mức nỗ lực suy luận và tương tác với chính sách nhà cung cấp.
   </Card>
   <Card title="Tham chiếu cấu hình" href="/vi/gateway/configuration-reference" icon="gear">
-    Lược đồ cấu hình đầy đủ, bao gồm cài đặt nhà cung cấp và âm thanh.
+    Schema cấu hình đầy đủ, bao gồm thiết lập nhà cung cấp và âm thanh.
   </Card>
   <Card title="Groq Console" href="https://console.groq.com" icon="arrow-up-right-from-square">
     Bảng điều khiển Groq, tài liệu API và giá.
-  </Card>
-  <Card title="Danh sách mô hình Groq" href="https://console.groq.com/docs/models" icon="list">
-    Danh mục mô hình Groq chính thức.
   </Card>
 </CardGroup>

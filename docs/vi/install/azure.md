@@ -1,36 +1,34 @@
 ---
 read_when:
-    - Bạn muốn OpenClaw chạy 24/7 trên Azure với Network Security Group được tăng cường bảo mật
-    - Bạn muốn một OpenClaw Gateway cấp độ sản xuất, luôn hoạt động trên máy ảo Azure chạy Linux của riêng mình
+    - Bạn muốn OpenClaw chạy 24/7 trên Azure với việc gia cố bảo mật Nhóm bảo mật mạng
+    - Bạn muốn một OpenClaw Gateway đạt chuẩn môi trường sản xuất, luôn hoạt động trên máy ảo Linux Azure của riêng bạn
     - Bạn muốn quản trị an toàn bằng Azure Bastion SSH
-summary: Chạy OpenClaw Gateway 24/7 trên máy ảo Linux của Azure với trạng thái bền vững
+summary: Chạy OpenClaw Gateway 24/7 trên máy ảo Linux Azure với trạng thái được lưu bền vững
 title: Azure
 x-i18n:
-    generated_at: "2026-04-29T22:50:27Z"
+    generated_at: "2026-05-06T09:17:03Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e42e1a35e0340b959b73c548bc1efd6366bee38cf4c8cd23d986c5f14e5da0e0
+    source_hash: 7ab1b7d09dd66c495983aebd4766ce760d659cc6f362bbcd999d1c1345ae38f7
     source_path: install/azure.md
     workflow: 16
 ---
 
-# OpenClaw trên máy ảo Azure Linux
+Hướng dẫn này thiết lập một máy ảo Azure Linux bằng Azure CLI, áp dụng gia cố Network Security Group (NSG), cấu hình Azure Bastion để truy cập SSH, và cài đặt OpenClaw.
 
-Hướng dẫn này thiết lập một máy ảo Azure Linux bằng Azure CLI, áp dụng gia cố Network Security Group (NSG), cấu hình Azure Bastion để truy cập SSH và cài đặt OpenClaw.
+## Bạn sẽ thực hiện
 
-## Những việc bạn sẽ làm
-
-- Tạo tài nguyên mạng Azure (VNet, mạng con, NSG) và tài nguyên điện toán bằng Azure CLI
+- Tạo tài nguyên mạng Azure (VNet, subnet, NSG) và tài nguyên điện toán bằng Azure CLI
 - Áp dụng quy tắc Network Security Group để SSH vào máy ảo chỉ được phép từ Azure Bastion
-- Dùng Azure Bastion để truy cập SSH (không có IP công khai trên máy ảo)
-- Cài đặt OpenClaw bằng script trình cài đặt
+- Sử dụng Azure Bastion để truy cập SSH (không có IP công khai trên máy ảo)
+- Cài đặt OpenClaw bằng script cài đặt
 - Xác minh Gateway
 
-## Những thứ bạn cần
+## Bạn cần có
 
 - Một gói đăng ký Azure có quyền tạo tài nguyên điện toán và mạng
 - Đã cài đặt Azure CLI (xem [các bước cài đặt Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli) nếu cần)
-- Một cặp khóa SSH (hướng dẫn có bao gồm cách tạo nếu cần)
+- Một cặp khóa SSH (hướng dẫn này có bao gồm cách tạo nếu cần)
 - ~20-30 phút
 
 ## Cấu hình triển khai
@@ -52,7 +50,7 @@ Hướng dẫn này thiết lập một máy ảo Azure Linux bằng Azure CLI, 
     az provider register --namespace Microsoft.Network
     ```
 
-    Xác minh đăng ký. Chờ đến khi cả hai hiển thị `Registered`.
+    Xác minh đăng ký. Chờ cho đến khi cả hai đều hiển thị `Registered`.
 
     ```bash
     az provider show --namespace Microsoft.Compute --query registrationState -o tsv
@@ -61,7 +59,7 @@ Hướng dẫn này thiết lập một máy ảo Azure Linux bằng Azure CLI, 
 
   </Step>
 
-  <Step title="Đặt biến triển khai">
+  <Step title="Thiết lập biến triển khai">
     ```bash
     RG="rg-openclaw"
     LOCATION="westus2"
@@ -77,12 +75,12 @@ Hướng dẫn này thiết lập một máy ảo Azure Linux bằng Azure CLI, 
     BASTION_PIP_NAME="pip-openclaw-bastion"
     ```
 
-    Điều chỉnh tên và dải CIDR cho phù hợp với môi trường của bạn. Mạng con Bastion phải có kích thước tối thiểu là `/26`.
+    Điều chỉnh tên và dải CIDR cho phù hợp với môi trường của bạn. Subnet Bastion phải có kích thước ít nhất là `/26`.
 
   </Step>
 
   <Step title="Chọn khóa SSH">
-    Dùng khóa công khai hiện có nếu bạn đã có:
+    Sử dụng khóa công khai hiện có nếu bạn đã có:
 
     ```bash
     SSH_PUB_KEY="$(cat ~/.ssh/id_ed25519.pub)"
@@ -97,25 +95,25 @@ Hướng dẫn này thiết lập một máy ảo Azure Linux bằng Azure CLI, 
 
   </Step>
 
-  <Step title="Chọn kích thước máy ảo và kích thước ổ đĩa hệ điều hành">
+  <Step title="Chọn kích thước máy ảo và kích thước đĩa hệ điều hành">
     ```bash
     VM_SIZE="Standard_B2as_v2"
     OS_DISK_SIZE_GB=64
     ```
 
-    Chọn kích thước máy ảo và kích thước ổ đĩa hệ điều hành có sẵn trong gói đăng ký và khu vực của bạn:
+    Chọn kích thước máy ảo và kích thước đĩa hệ điều hành có sẵn trong gói đăng ký và khu vực của bạn:
 
-    - Bắt đầu nhỏ hơn cho nhu cầu nhẹ và tăng quy mô sau
-    - Dùng nhiều vCPU/RAM/ổ đĩa hơn cho tự động hóa nặng hơn, nhiều kênh hơn hoặc khối lượng công việc mô hình/công cụ lớn hơn
+    - Bắt đầu nhỏ hơn cho nhu cầu sử dụng nhẹ và mở rộng sau
+    - Dùng thêm vCPU/RAM/đĩa cho tự động hóa nặng hơn, nhiều kênh hơn, hoặc khối lượng công việc mô hình/công cụ lớn hơn
     - Nếu một kích thước máy ảo không có sẵn trong khu vực hoặc hạn ngạch gói đăng ký của bạn, hãy chọn SKU gần nhất có sẵn
 
-    Liệt kê các kích thước máy ảo có sẵn trong khu vực mục tiêu của bạn:
+    Liệt kê các kích thước máy ảo có sẵn trong khu vực đích của bạn:
 
     ```bash
     az vm list-skus --location "${LOCATION}" --resource-type virtualMachines -o table
     ```
 
-    Kiểm tra mức sử dụng/hạn ngạch vCPU và ổ đĩa hiện tại của bạn:
+    Kiểm tra mức sử dụng/hạn ngạch vCPU và đĩa hiện tại của bạn:
 
     ```bash
     az vm list-usage --location "${LOCATION}" -o table
@@ -133,8 +131,8 @@ Hướng dẫn này thiết lập một máy ảo Azure Linux bằng Azure CLI, 
     ```
   </Step>
 
-  <Step title="Tạo network security group">
-    Tạo NSG và thêm quy tắc để chỉ mạng con Bastion có thể SSH vào máy ảo.
+  <Step title="Tạo nhóm bảo mật mạng">
+    Tạo NSG và thêm quy tắc để chỉ subnet Bastion có thể SSH vào máy ảo.
 
     ```bash
     az network nsg create \
@@ -165,12 +163,12 @@ Hướng dẫn này thiết lập một máy ảo Azure Linux bằng Azure CLI, 
       --destination-port-ranges 22
     ```
 
-    Các quy tắc được đánh giá theo độ ưu tiên (số thấp nhất trước): lưu lượng Bastion được cho phép ở 100, sau đó toàn bộ SSH khác bị chặn ở 110 và 120.
+    Các quy tắc được đánh giá theo mức ưu tiên (số nhỏ nhất trước): lưu lượng Bastion được cho phép ở 100, sau đó mọi SSH khác bị chặn ở 110 và 120.
 
   </Step>
 
-  <Step title="Tạo mạng ảo và mạng con">
-    Tạo VNet với mạng con máy ảo (đã gắn NSG), sau đó thêm mạng con Bastion.
+  <Step title="Tạo mạng ảo và các subnet">
+    Tạo VNet với subnet máy ảo (đã gắn NSG), rồi thêm subnet Bastion.
 
     ```bash
     az network vnet create \
@@ -211,9 +209,9 @@ Hướng dẫn này thiết lập một máy ảo Azure Linux bằng Azure CLI, 
       --nsg ""
     ```
 
-    `--public-ip-address ""` ngăn việc gán IP công khai. `--nsg ""` bỏ qua việc tạo NSG theo từng NIC (NSG cấp mạng con xử lý bảo mật).
+    `--public-ip-address ""` ngăn việc gán IP công khai. `--nsg ""` bỏ qua việc tạo NSG riêng cho từng NIC (NSG cấp subnet xử lý bảo mật).
 
-    **Khả năng tái lập:** Lệnh ở trên dùng `latest` cho ảnh Ubuntu. Để ghim một phiên bản cụ thể, hãy liệt kê các phiên bản có sẵn và thay thế `latest`:
+    **Khả năng tái lập:** Lệnh ở trên dùng `latest` cho image Ubuntu. Để ghim một phiên bản cụ thể, hãy liệt kê các phiên bản có sẵn và thay thế `latest`:
 
     ```bash
     az vm image list \
@@ -224,7 +222,7 @@ Hướng dẫn này thiết lập một máy ảo Azure Linux bằng Azure CLI, 
   </Step>
 
   <Step title="Tạo Azure Bastion">
-    Azure Bastion cung cấp quyền truy cập SSH được quản lý vào máy ảo mà không để lộ IP công khai. Cần SKU Standard có bật tạo đường hầm cho `az network bastion ssh` dựa trên CLI.
+    Azure Bastion cung cấp quyền truy cập SSH được quản lý vào máy ảo mà không để lộ IP công khai. Cần SKU Standard có hỗ trợ tạo đường hầm để dùng `az network bastion ssh` dựa trên CLI.
 
     ```bash
     az network public-ip create \
@@ -268,7 +266,7 @@ Hướng dẫn này thiết lập một máy ảo Azure Linux bằng Azure CLI, 
     rm -f /tmp/install.sh
     ```
 
-    Trình cài đặt sẽ cài Node LTS và các phụ thuộc nếu chưa có, cài OpenClaw và khởi chạy trình hướng dẫn onboarding. Xem [Cài đặt](/vi/install) để biết chi tiết.
+    Trình cài đặt sẽ cài Node LTS và các phụ thuộc nếu chưa có, cài OpenClaw, và khởi chạy trình hướng dẫn onboarding. Xem [Cài đặt](/vi/install) để biết chi tiết.
 
   </Step>
 
@@ -279,18 +277,18 @@ Hướng dẫn này thiết lập một máy ảo Azure Linux bằng Azure CLI, 
     openclaw gateway status
     ```
 
-    Hầu hết các nhóm Azure doanh nghiệp đã có giấy phép GitHub Copilot. Nếu đây là trường hợp của bạn, chúng tôi khuyên bạn nên chọn nhà cung cấp GitHub Copilot trong trình hướng dẫn onboarding của OpenClaw. Xem [nhà cung cấp GitHub Copilot](/vi/providers/github-copilot).
+    Hầu hết các nhóm Azure doanh nghiệp đã có giấy phép GitHub Copilot. Nếu đây là trường hợp của bạn, chúng tôi khuyến nghị chọn nhà cung cấp GitHub Copilot trong trình hướng dẫn onboarding của OpenClaw. Xem [Nhà cung cấp GitHub Copilot](/vi/providers/github-copilot).
 
   </Step>
 </Steps>
 
 ## Cân nhắc chi phí
 
-Azure Bastion Standard SKU chạy khoảng **\$140/tháng** và máy ảo (Standard_B2as_v2) chạy khoảng **\$55/tháng**.
+Azure Bastion SKU Standard chạy khoảng **\$140/tháng** và máy ảo (Standard_B2as_v2) chạy khoảng **\$55/tháng**.
 
 Để giảm chi phí:
 
-- **Hủy phân bổ máy ảo** khi không sử dụng (dừng tính phí điện toán; phí ổ đĩa vẫn còn). OpenClaw Gateway sẽ không thể truy cập được khi máy ảo bị hủy phân bổ — hãy khởi động lại khi bạn cần nó hoạt động trở lại:
+- **Giải cấp phát máy ảo** khi không sử dụng (dừng tính phí điện toán; phí đĩa vẫn còn). OpenClaw Gateway sẽ không thể truy cập được trong khi máy ảo bị giải cấp phát — hãy khởi động lại khi bạn cần nó hoạt động trực tuyến trở lại:
 
   ```bash
   az vm deallocate -g "${RG}" -n "${VM_NAME}"
@@ -298,7 +296,7 @@ Azure Bastion Standard SKU chạy khoảng **\$140/tháng** và máy ảo (Stand
   ```
 
 - **Xóa Bastion khi không cần** và tạo lại khi bạn cần truy cập SSH. Bastion là thành phần chi phí lớn nhất và chỉ mất vài phút để cấp phát.
-- **Dùng Basic Bastion SKU** (~\$38/tháng) nếu bạn chỉ cần SSH dựa trên Portal và không cần tạo đường hầm CLI (`az network bastion ssh`).
+- **Dùng SKU Basic Bastion** (~\$38/tháng) nếu bạn chỉ cần SSH dựa trên Portal và không cần tạo đường hầm CLI (`az network bastion ssh`).
 
 ## Dọn dẹp
 
@@ -308,11 +306,11 @@ Azure Bastion Standard SKU chạy khoảng **\$140/tháng** và máy ảo (Stand
 az group delete -n "${RG}" --yes --no-wait
 ```
 
-Thao tác này xóa nhóm tài nguyên và mọi thứ bên trong (máy ảo, VNet, NSG, Bastion, IP công khai).
+Lệnh này xóa nhóm tài nguyên và mọi thứ bên trong nó (máy ảo, VNet, NSG, Bastion, IP công khai).
 
 ## Các bước tiếp theo
 
-- Thiết lập kênh nhắn tin: [Kênh](/vi/channels)
+- Thiết lập các kênh nhắn tin: [Kênh](/vi/channels)
 - Ghép nối thiết bị cục bộ làm nút: [Nút](/vi/nodes)
 - Cấu hình Gateway: [Cấu hình Gateway](/vi/gateway/configuration)
 - Để biết thêm chi tiết về triển khai OpenClaw trên Azure với nhà cung cấp mô hình GitHub Copilot: [OpenClaw trên Azure với GitHub Copilot](https://github.com/johnsonshi/openclaw-azure-github-copilot)

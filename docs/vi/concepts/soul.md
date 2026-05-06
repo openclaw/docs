@@ -1,27 +1,27 @@
 ---
 read_when:
-    - Bạn muốn tác nhân của mình nghe bớt chung chung
+    - Bạn muốn tác nhân của mình có giọng điệu bớt chung chung hơn
     - Bạn đang chỉnh sửa SOUL.md
-    - Bạn muốn một cá tính rõ nét hơn mà không ảnh hưởng đến độ an toàn hay sự súc tích
-summary: Sử dụng SOUL.md để mang lại cho tác nhân OpenClaw của bạn một giọng điệu thực sự thay vì mớ nội dung trợ lý chung chung
+    - Bạn muốn một cá tính mạnh hơn mà không ảnh hưởng đến tính an toàn hoặc sự ngắn gọn
+summary: Dùng SOUL.md để tạo cho tác nhân OpenClaw của bạn một giọng riêng thực sự thay vì những phản hồi trợ lý chung chung nhạt nhẽo
 title: Hướng dẫn về tính cách SOUL.md
 x-i18n:
-    generated_at: "2026-04-29T22:40:10Z"
+    generated_at: "2026-05-06T09:09:59Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c0268ef086f272257c83e2147ec1f4fa7772645cdd93cdf59dd4e661a311830a
+    source_hash: 2101c0c7a22ab1fe5acfd0d2d413a002326dca380fc6e020a7d77a242d13c3d7
     source_path: concepts/soul.md
     workflow: 16
 ---
 
-`SOUL.md` là nơi giọng nói của tác nhân của bạn sống.
+`SOUL.md` là nơi giọng nói của tác tử của bạn tồn tại.
 
-OpenClaw chèn nó vào các phiên bình thường, nên nó có trọng lượng thực sự. Nếu tác nhân của bạn
-nghe nhạt nhẽo, lưỡng lự, hoặc kỳ lạ theo kiểu công sở, đây thường là tệp cần sửa.
+OpenClaw chèn nó vào các phiên thông thường, nên nó có trọng lượng thực sự. Nếu tác tử của bạn
+nghe nhạt nhẽo, nước đôi, hoặc kỳ lạ như văn phong doanh nghiệp, đây thường là tệp cần sửa.
 
-## Những gì thuộc về SOUL.md
+## Nội dung nên có trong SOUL.md
 
-Đặt những thứ thay đổi cảm giác khi nói chuyện với tác nhân:
+Đặt những thứ làm thay đổi cảm giác khi nói chuyện với tác tử:
 
 - giọng điệu
 - quan điểm
@@ -33,37 +33,37 @@ nghe nhạt nhẽo, lưỡng lự, hoặc kỳ lạ theo kiểu công sở, đâ
 **Đừng** biến nó thành:
 
 - một câu chuyện đời
-- một nhật ký thay đổi
+- một changelog
 - một đống chính sách bảo mật
 - một bức tường cảm xúc khổng lồ không có tác động hành vi
 
-Ngắn tốt hơn dài. Sắc sảo tốt hơn mơ hồ.
+Ngắn thắng dài. Sắc thắng mơ hồ.
 
 ## Vì sao cách này hiệu quả
 
-Điều này khớp với hướng dẫn về lời nhắc của OpenAI:
+Điều này phù hợp với hướng dẫn prompt của OpenAI:
 
-- Hướng dẫn kỹ thuật lời nhắc nói rằng hành vi cấp cao, giọng điệu, mục tiêu và
-  ví dụ thuộc về lớp chỉ dẫn ưu tiên cao, không phải bị chôn trong
-  lượt người dùng.
-- Cùng hướng dẫn đó khuyến nghị xem lời nhắc như thứ bạn lặp lại,
-  ghim và đánh giá, không phải văn xuôi ma thuật viết một lần rồi quên.
+- Hướng dẫn prompt engineering nói rằng hành vi cấp cao, giọng điệu, mục tiêu và
+  ví dụ thuộc về lớp chỉ dẫn ưu tiên cao, không phải bị chôn trong lượt
+  người dùng.
+- Cùng hướng dẫn đó khuyên nên xem prompt như thứ bạn lặp lại,
+  ghim và đánh giá, không phải câu chữ ma thuật viết một lần rồi quên.
 
 Với OpenClaw, `SOUL.md` chính là lớp đó.
 
 Nếu bạn muốn cá tính tốt hơn, hãy viết chỉ dẫn mạnh hơn. Nếu bạn muốn cá tính ổn định,
-hãy giữ chúng súc tích và có quản lý phiên bản.
+hãy giữ chúng súc tích và có phiên bản.
 
-Tài liệu tham khảo OpenAI:
+Tham chiếu OpenAI:
 
-- [Kỹ thuật lời nhắc](https://developers.openai.com/api/docs/guides/prompt-engineering)
-- [Vai trò tin nhắn và tuân thủ chỉ dẫn](https://developers.openai.com/api/docs/guides/prompt-engineering#message-roles-and-instruction-following)
+- [Prompt engineering](https://developers.openai.com/api/docs/guides/prompt-engineering)
+- [Vai trò tin nhắn và việc tuân theo chỉ dẫn](https://developers.openai.com/api/docs/guides/prompt-engineering#message-roles-and-instruction-following)
 
-## Lời nhắc Molty
+## Prompt Molty
 
-Dán đoạn này vào tác nhân của bạn và để nó viết lại `SOUL.md`.
+Dán nội dung này vào tác tử của bạn và để nó viết lại `SOUL.md`.
 
-Đường dẫn cố định cho không gian làm việc OpenClaw: dùng `SOUL.md`, không dùng `http://SOUL.md`.
+Đường dẫn cố định cho workspace OpenClaw: dùng `SOUL.md`, không dùng `http://SOUL.md`.
 
 ```md
 Read your `SOUL.md`. Now rewrite it with these changes:
@@ -80,7 +80,7 @@ Read your `SOUL.md`. Now rewrite it with these changes:
 Save the new `SOUL.md`. Welcome to having a personality.
 ```
 
-## Thế nào là tốt
+## Trông tốt là như thế nào
 
 Các quy tắc `SOUL.md` tốt nghe như thế này:
 
@@ -88,7 +88,7 @@ Các quy tắc `SOUL.md` tốt nghe như thế này:
 - bỏ phần thừa
 - hài hước khi phù hợp
 - chỉ ra ý tưởng tệ từ sớm
-- giữ súc tích trừ khi chiều sâu thực sự hữu ích
+- giữ súc tích trừ khi chiều sâu thật sự hữu ích
 
 Các quy tắc `SOUL.md` tệ nghe như thế này:
 
@@ -96,20 +96,28 @@ Các quy tắc `SOUL.md` tệ nghe như thế này:
 - cung cấp hỗ trợ toàn diện và chu đáo
 - bảo đảm trải nghiệm tích cực và hỗ trợ
 
-Danh sách thứ hai đó là cách bạn tạo ra một mớ nhão.
+Danh sách thứ hai là cách bạn tạo ra một mớ nhão.
 
 ## Một cảnh báo
 
 Cá tính không phải là giấy phép để cẩu thả.
 
 Giữ `AGENTS.md` cho các quy tắc vận hành. Giữ `SOUL.md` cho giọng nói, lập trường và
-phong cách. Nếu tác nhân của bạn làm việc trong kênh dùng chung, phản hồi công khai hoặc bề mặt
-khách hàng, hãy bảo đảm giọng điệu vẫn phù hợp với hoàn cảnh.
+phong cách. Nếu tác tử của bạn hoạt động trong kênh dùng chung, phản hồi công khai hoặc bề mặt
+khách hàng, hãy bảo đảm giọng điệu vẫn phù hợp với bối cảnh.
 
-Sắc sảo là tốt. Gây khó chịu thì không.
+Sắc là tốt. Phiền thì không.
 
-## Tài liệu liên quan
+## Liên quan
 
-- [Không gian làm việc của tác nhân](/vi/concepts/agent-workspace)
-- [Lời nhắc hệ thống](/vi/concepts/system-prompt)
-- [Mẫu SOUL.md](/vi/reference/templates/SOUL)
+<CardGroup cols={2}>
+  <Card title="Agent workspace" href="/vi/concepts/agent-workspace" icon="folder-open">
+    Các tệp workspace mà OpenClaw chèn vào system prompt.
+  </Card>
+  <Card title="System prompt" href="/vi/concepts/system-prompt" icon="message-lines">
+    Cách `SOUL.md` được ghép vào system prompt theo từng lượt.
+  </Card>
+  <Card title="SOUL.md template" href="/vi/reference/templates/SOUL" icon="file-lines">
+    Mẫu khởi đầu cho tệp cá tính.
+  </Card>
+</CardGroup>
