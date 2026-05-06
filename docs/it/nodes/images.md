@@ -1,44 +1,42 @@
 ---
 read_when:
     - Modifica della pipeline multimediale o degli allegati
-summary: Regole per la gestione di immagini e contenuti multimediali per l'invio, il Gateway e le risposte degli agenti
-title: Supporto per immagini e media
+summary: Regole di gestione di immagini e media per invio, Gateway e risposte degli agenti
+title: Supporto per immagini e contenuti multimediali
 x-i18n:
-    generated_at: "2026-05-06T08:58:11Z"
+    generated_at: "2026-05-06T17:58:55Z"
     model: gpt-5.5
     provider: openai
-    source_hash: a38224fdf42f32fe206ad8cf3fcc3b06a078b1978d447adeb671fdb3ff4e4b32
+    source_hash: 069140a3ad3bade166d4576ead604b4675006a01e546672872379ce83291471c
     source_path: nodes/images.md
     workflow: 16
 ---
 
-# Supporto per immagini e contenuti multimediali (2025-12-05)
-
-Il canale WhatsApp viene eseguito tramite **Baileys Web**. Questo documento descrive le regole attuali di gestione dei contenuti multimediali per invii, Gateway e risposte degli agenti.
+Il canale WhatsApp funziona tramite **Baileys Web**. Questo documento descrive le regole attuali di gestione dei contenuti multimediali per invii, Gateway e risposte degli agenti.
 
 ## Obiettivi
 
 - Inviare contenuti multimediali con didascalie opzionali tramite `openclaw message send --media`.
-- Consentire alle risposte automatiche dalla casella di posta web di includere contenuti multimediali insieme al testo.
-- Mantenere limiti per tipo ragionevoli e prevedibili.
+- Consentire alle risposte automatiche dalla casella in arrivo web di includere contenuti multimediali insieme al testo.
+- Mantenere limiti per tipo sensati e prevedibili.
 
-## Interfaccia CLI
+## Superficie CLI
 
 - `openclaw message send --media <path-or-url> [--message <caption>]`
-  - `--media` opzionale; la didascalia può essere vuota per invii solo multimediali.
+  - `--media` è opzionale; la didascalia può essere vuota per invii di soli contenuti multimediali.
   - `--dry-run` stampa il payload risolto; `--json` emette `{ channel, to, messageId, mediaUrl, caption }`.
 
 ## Comportamento del canale WhatsApp Web
 
 - Input: percorso di file locale **oppure** URL HTTP(S).
-- Flusso: carica in un Buffer, rileva il tipo di contenuto multimediale e crea il payload corretto:
-  - **Immagini:** ridimensiona e ricomprime in JPEG (lato massimo 2048px) mirando a `channels.whatsapp.mediaMaxMb` (predefinito: 50 MB).
-  - **Audio/voce/video:** inoltro senza modifiche fino a 16 MB; l'audio viene inviato come nota vocale (`ptt: true`).
-  - **Documenti:** tutto il resto, fino a 100 MB, con nome file preservato quando disponibile.
-- Riproduzione in stile GIF su WhatsApp: invia un MP4 con `gifPlayback: true` (CLI: `--gif-playback`) affinché i client mobili lo riproducano in loop in linea.
-- Il rilevamento MIME preferisce i byte magici, poi le intestazioni, poi l'estensione del file.
-- La didascalia proviene da `--message` o `reply.text`; è consentita una didascalia vuota.
-- Logging: non verboso mostra `↩️`/`✅`; verboso include dimensioni e percorso/URL di origine.
+- Flusso: carica in un Buffer, rileva il tipo di contenuto multimediale e costruisce il payload corretto:
+  - **Immagini:** ridimensionamento e ricompressione in JPEG (lato massimo 2048 px) puntando a `channels.whatsapp.mediaMaxMb` (predefinito: 50 MB).
+  - **Audio/voce/video:** pass-through fino a 16 MB; l'audio viene inviato come nota vocale (`ptt: true`).
+  - **Documenti:** qualsiasi altra cosa, fino a 100 MB, con nome file preservato quando disponibile.
+- Riproduzione in stile GIF su WhatsApp: invia un MP4 con `gifPlayback: true` (CLI: `--gif-playback`) così i client mobili lo riproducono in loop inline.
+- Il rilevamento MIME preferisce i magic byte, poi gli header, poi l'estensione del file.
+- La didascalia viene da `--message` o `reply.text`; è consentita una didascalia vuota.
+- Logging: la modalità non dettagliata mostra `↩️`/`✅`; quella dettagliata include dimensione e percorso/URL di origine.
 
 ## Pipeline di risposta automatica
 
@@ -49,13 +47,13 @@ Il canale WhatsApp viene eseguito tramite **Baileys Web**. Questo documento desc
 ## Contenuti multimediali in ingresso verso i comandi (Pi)
 
 - Quando i messaggi web in ingresso includono contenuti multimediali, OpenClaw li scarica in un file temporaneo ed espone variabili di templating:
-  - `{{MediaUrl}}` pseudo-URL per il contenuto multimediale in ingresso.
-  - `{{MediaPath}}` percorso temporaneo locale scritto prima di eseguire il comando.
+  - pseudo-URL `{{MediaUrl}}` per il contenuto multimediale in ingresso.
+  - percorso temporaneo locale `{{MediaPath}}` scritto prima di eseguire il comando.
 - Quando è abilitata una sandbox Docker per sessione, i contenuti multimediali in ingresso vengono copiati nello spazio di lavoro della sandbox e `MediaPath`/`MediaUrl` vengono riscritti in un percorso relativo come `media/inbound/<filename>`.
 - La comprensione dei contenuti multimediali (se configurata tramite `tools.media.*` o `tools.media.models` condivisi) viene eseguita prima del templating e può inserire blocchi `[Image]`, `[Audio]` e `[Video]` in `Body`.
-  - L'audio imposta `{{Transcript}}` e usa la trascrizione per l'analisi del comando, così i comandi slash continuano a funzionare.
-  - Le descrizioni di video e immagini preservano eventuale testo della didascalia per l'analisi del comando.
-  - Se il modello primario di immagini attivo supporta già la visione in modo nativo, OpenClaw salta il blocco di riepilogo `[Image]` e passa invece l'immagine originale al modello.
+  - L'audio imposta `{{Transcript}}` e usa la trascrizione per il parsing dei comandi, così i comandi slash continuano a funzionare.
+  - Le descrizioni di video e immagini preservano eventuale testo della didascalia per il parsing dei comandi.
+  - Se il modello di immagine primario attivo supporta già nativamente la visione, OpenClaw salta il blocco di riepilogo `[Image]` e passa invece l'immagine originale al modello.
 - Per impostazione predefinita viene elaborato solo il primo allegato immagine/audio/video corrispondente; imposta `tools.media.<cap>.attachments` per elaborare più allegati.
 
 ## Limiti ed errori
@@ -71,16 +69,16 @@ Il canale WhatsApp viene eseguito tramite **Baileys Web**. Questo documento desc
 - Immagine predefinita: 10 MB (`tools.media.image.maxBytes`).
 - Audio predefinito: 20 MB (`tools.media.audio.maxBytes`).
 - Video predefinito: 50 MB (`tools.media.video.maxBytes`).
-- I contenuti multimediali troppo grandi saltano la comprensione, ma le risposte procedono comunque con il corpo originale.
+- I contenuti multimediali troppo grandi saltano la comprensione, ma le risposte vengono comunque inviate con il corpo originale.
 
 ## Note per i test
 
 - Coprire i flussi di invio e risposta per i casi immagine/audio/documento.
 - Convalidare la ricompressione per le immagini (limite di dimensione) e il flag di nota vocale per l'audio.
-- Assicurarsi che le risposte con più contenuti multimediali vengano distribuite come invii sequenziali.
+- Assicurare che le risposte con più contenuti multimediali si espandano in invii sequenziali.
 
 ## Correlati
 
-- [Acquisizione dalla fotocamera](/it/nodes/camera)
+- [Acquisizione fotocamera](/it/nodes/camera)
 - [Comprensione dei contenuti multimediali](/it/nodes/media-understanding)
 - [Audio e note vocali](/it/nodes/audio)

@@ -1,16 +1,16 @@
 ---
 read_when:
-    - Vuoi recuperare un URL ed estrarne il contenuto leggibile
+    - Vuoi recuperare un URL ed estrarre contenuti leggibili
     - È necessario configurare web_fetch o il relativo fallback Firecrawl
-    - Vuoi comprendere i limiti di web_fetch e la memorizzazione nella cache
+    - Vuoi comprendere i limiti e la memorizzazione nella cache di web_fetch
 sidebarTitle: Web Fetch
 summary: strumento web_fetch -- recupero HTTP con estrazione di contenuti leggibili
-title: Recupero web
+title: Recupero dal web
 x-i18n:
-    generated_at: "2026-05-04T07:10:05Z"
+    generated_at: "2026-05-06T18:02:24Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c8c3efbf4a640b2fd69cc9532dcb06a873a6830a2e8a85ab7510ab38207c8670
+    source_hash: 337174898861db217bf0db052d8e8749989c295e89c73d9d5a6911f6335ba03d
     source_path: tools/web-fetch.md
     workflow: 16
 ---
@@ -18,13 +18,13 @@ x-i18n:
 Lo strumento `web_fetch` esegue un semplice HTTP GET ed estrae contenuto leggibile
 (da HTML a markdown o testo). **Non** esegue JavaScript.
 
-Per siti con molto JS o pagine protette da login, usa invece il
-[Browser Web](/it/tools/browser).
+Per siti con uso intensivo di JS o pagine protette da login, usa invece il
+[Web Browser](/it/tools/browser).
 
 ## Avvio rapido
 
-`web_fetch` è **abilitato per impostazione predefinita**: non serve alcuna configurazione. L’agente può
-chiamarlo immediatamente:
+`web_fetch` è **abilitato per impostazione predefinita**: non serve alcuna configurazione. L'agente può
+chiamarlo subito:
 
 ```javascript
 await web_fetch({ url: "https://example.com/article" });
@@ -37,25 +37,25 @@ URL da recuperare. Solo `http(s)`.
 </ParamField>
 
 <ParamField path="extractMode" type="'markdown' | 'text'" default="markdown">
-Formato di output dopo l’estrazione del contenuto principale.
+Formato di output dopo l'estrazione del contenuto principale.
 </ParamField>
 
 <ParamField path="maxChars" type="number">
-Tronca l’output a questo numero di caratteri.
+Tronca l'output a questo numero di caratteri.
 </ParamField>
 
 ## Come funziona
 
 <Steps>
-  <Step title="Recupero">
-    Invia un HTTP GET con uno User-Agent simile a Chrome e intestazione
-    `Accept-Language`. Blocca nomi host privati/interni e ricontrolla i reindirizzamenti.
+  <Step title="Fetch">
+    Invia un HTTP GET con uno User-Agent simile a Chrome e un'intestazione
+    `Accept-Language`. Blocca hostname privati/interni e ricontrolla i reindirizzamenti.
   </Step>
-  <Step title="Estrazione">
+  <Step title="Extract">
     Esegue Readability (estrazione del contenuto principale) sulla risposta HTML.
   </Step>
-  <Step title="Fallback (facoltativo)">
-    Se Readability non riesce e Firecrawl è configurato, riprova tramite l’API
+  <Step title="Fallback (optional)">
+    Se Readability non riesce e Firecrawl è configurato, riprova tramite l'API
     Firecrawl con modalità di aggiramento dei bot.
   </Step>
   <Step title="Cache">
@@ -94,8 +94,8 @@ Tronca l’output a questo numero di caratteri.
 
 ## Fallback Firecrawl
 
-Se l’estrazione Readability non riesce, `web_fetch` può passare a
-[Firecrawl](/it/tools/firecrawl) per l’aggiramento dei bot e un’estrazione migliore:
+Se l'estrazione Readability non riesce, `web_fetch` può passare in fallback a
+[Firecrawl](/it/tools/firecrawl) per l'aggiramento dei bot e una migliore estrazione:
 
 ```json5
 {
@@ -129,57 +129,58 @@ Se l’estrazione Readability non riesce, `web_fetch` può passare a
 La configurazione legacy `tools.web.fetch.firecrawl.*` viene migrata automaticamente da `openclaw doctor --fix`.
 
 <Note>
-  Se Firecrawl è abilitato e il suo SecretRef non è risolto senza fallback env
-  `FIRECRAWL_API_KEY`, l’avvio del gateway fallisce immediatamente.
+  Se Firecrawl è abilitato e il relativo SecretRef non viene risolto senza un fallback env
+  `FIRECRAWL_API_KEY`, l'avvio del gateway fallisce rapidamente.
 </Note>
 
 <Note>
-  Le sovrascritture di `baseUrl` di Firecrawl sono bloccate: il traffico ospitato usa
-  `https://api.firecrawl.dev`; le sovrascritture self-hosted devono puntare a endpoint privati o
-  interni, e `http://` è accettato solo per quei target privati.
+  Gli override di `baseUrl` di Firecrawl sono vincolati: il traffico hosted usa
+  `https://api.firecrawl.dev`; gli override self-hosted devono puntare a endpoint privati o
+  interni, e `http://` è accettato solo per questi target privati.
 </Note>
 
-Comportamento di runtime corrente:
+Comportamento runtime attuale:
 
-- `tools.web.fetch.provider` seleziona esplicitamente il provider di fallback per il recupero.
+- `tools.web.fetch.provider` seleziona esplicitamente il provider di fallback del recupero.
 - Se `provider` viene omesso, OpenClaw rileva automaticamente il primo provider web-fetch pronto
   dalle credenziali disponibili. `web_fetch` non in sandbox può usare
-  plugin installati che dichiarano `contracts.webFetchProviders` e registrano un
-  provider corrispondente a runtime. Oggi il provider in bundle è Firecrawl.
-- Le chiamate `web_fetch` in sandbox restano limitate ai provider in bundle.
-- Se Readability è disabilitato, `web_fetch` passa direttamente al fallback
-  del provider selezionato. Se nessun provider è disponibile, fallisce in modo chiuso.
+  Plugin installati che dichiarano `contracts.webFetchProviders` e registrano un
+  provider corrispondente a runtime. Oggi il provider incluso è Firecrawl.
+- Le chiamate `web_fetch` in sandbox restano limitate ai provider inclusi.
+- Se Readability è disabilitato, `web_fetch` passa direttamente al fallback del
+  provider selezionato. Se non è disponibile alcun provider, fallisce in modo chiuso.
 
-## Proxy Env attendibile
+## Proxy env attendibile
 
-Se la tua distribuzione richiede che `web_fetch` passi attraverso un proxy
-HTTP(S) in uscita attendibile, imposta `tools.web.fetch.useTrustedEnvProxy: true`.
+Se il tuo deployment richiede che `web_fetch` passi attraverso un proxy outbound
+HTTP(S) attendibile, imposta `tools.web.fetch.useTrustedEnvProxy: true`.
 
-In questa modalità, OpenClaw applica comunque i controlli SSRF basati sul nome host prima di inviare
-la richiesta, ma lascia che sia il proxy a risolvere il DNS invece di eseguire il pinning DNS locale.
-Abilitalo solo quando il proxy è controllato dall’operatore e applica una policy
-in uscita dopo la risoluzione DNS.
+In questa modalità, OpenClaw applica comunque i controlli SSRF basati su hostname prima di inviare
+la richiesta, ma lascia che sia il proxy a risolvere il DNS invece di effettuare il pinning DNS
+locale. Abilitalo solo quando il proxy è controllato dall'operatore e applica
+la policy outbound dopo la risoluzione DNS.
 
 <Note>
-  Se non è configurata alcuna variabile env proxy HTTP(S), oppure l’host di destinazione è escluso da
-  `NO_PROXY`, `web_fetch` ricade sul normale percorso rigoroso con pinning DNS
+  Se non è configurata alcuna variabile env proxy HTTP(S), o l'host target è escluso da
+  `NO_PROXY`, `web_fetch` torna al normale percorso rigoroso con pinning DNS
   locale.
 </Note>
 
 ## Limiti e sicurezza
 
-- `maxChars` è limitato a `tools.web.fetch.maxCharsCap`
+- `maxChars` viene limitato a `tools.web.fetch.maxCharsCap`
 - Il corpo della risposta è limitato a `maxResponseBytes` prima del parsing; le risposte
   troppo grandi vengono troncate con un avviso
-- I nomi host privati/interni vengono bloccati
+- Gli hostname privati/interni vengono bloccati
 - `tools.web.fetch.ssrfPolicy.allowRfc2544BenchmarkRange` e
   `tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange` sono opt-in limitati
-  per stack proxy fake-IP attendibili; lasciali non impostati salvo che il tuo proxy possieda
-  quegli intervalli sintetici e applichi una propria policy di destinazione
+  per stack di proxy fake-IP attendibili; lasciali non impostati a meno che il tuo proxy possieda
+  quegli intervalli sintetici e applichi la propria policy di destinazione
 - I reindirizzamenti vengono controllati e limitati da `maxRedirects`
-- `useTrustedEnvProxy` è un opt-in esplicito e dovrebbe essere abilitato solo per
-  proxy controllati dall’operatore che applicano comunque una policy in uscita dopo la risoluzione DNS
-- `web_fetch` funziona al meglio: alcuni siti richiedono il [Browser Web](/it/tools/browser)
+- `useTrustedEnvProxy` è un opt-in esplicito e deve essere abilitato solo per
+  proxy controllati dall'operatore che applicano comunque la policy outbound dopo la risoluzione
+  DNS
+- `web_fetch` è best-effort: alcuni siti richiedono il [Web Browser](/it/tools/browser)
 
 ## Profili degli strumenti
 
@@ -196,6 +197,6 @@ Se usi profili degli strumenti o allowlist, aggiungi `web_fetch` o `group:web`:
 
 ## Correlati
 
-- [Ricerca Web](/it/tools/web): cerca nel web con più provider
-- [Browser Web](/it/tools/browser): automazione completa del browser per siti con molto JS
-- [Firecrawl](/it/tools/firecrawl): strumenti di ricerca e scrape Firecrawl
+- [Web Search](/it/tools/web): cerca nel web con più provider
+- [Web Browser](/it/tools/browser): automazione completa del browser per siti con uso intensivo di JS
+- [Firecrawl](/it/tools/firecrawl): strumenti di ricerca e scraping Firecrawl

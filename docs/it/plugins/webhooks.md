@@ -1,22 +1,20 @@
 ---
 read_when:
-    - Vuoi attivare o pilotare TaskFlows da un sistema esterno
+    - Vuoi attivare o pilotare i TaskFlow da un sistema esterno
     - Stai configurando il Plugin Webhook incluso
-summary: 'Plugin Webhook: punto di ingresso TaskFlow autenticato per automazioni esterne attendibili'
+summary: 'Plugin Webhook: ingresso TaskFlow autenticato per automazioni esterne fidate'
 title: Plugin Webhook
 x-i18n:
-    generated_at: "2026-04-30T09:07:03Z"
+    generated_at: "2026-05-06T17:59:47Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 70b195e330264af48a9e9c619bb5a0937bb15b2640edd3dd2b5517a13424e9fe
+    source_hash: 9d21d96f680fa24d4a53c1ed5759f800d3cfdc3336789c42c15266edd8ce9e80
     source_path: plugins/webhooks.md
     workflow: 16
 ---
 
-# Webhook (Plugin)
-
 Il Plugin Webhooks aggiunge route HTTP autenticate che collegano l'automazione
-esterna agli OpenClaw TaskFlow.
+esterna ai TaskFlow OpenClaw.
 
 Usalo quando vuoi che un sistema attendibile come Zapier, n8n, un job CI o un
 servizio interno crei e guidi TaskFlow gestiti senza dover prima scrivere un
@@ -26,12 +24,12 @@ plugin personalizzato.
 
 Il Plugin Webhooks viene eseguito all'interno del processo Gateway.
 
-Se il tuo Gateway è in esecuzione su un'altra macchina, installa e configura il plugin
-su quell'host Gateway, quindi riavvia il Gateway.
+Se il tuo Gateway viene eseguito su un'altra macchina, installa e configura il plugin
+sull'host di quel Gateway, quindi riavvia il Gateway.
 
 ## Configurare le route
 
-Imposta la configurazione sotto `plugins.entries.webhooks.config`:
+Imposta la configurazione in `plugins.entries.webhooks.config`:
 
 ```json5
 {
@@ -62,11 +60,11 @@ Imposta la configurazione sotto `plugins.entries.webhooks.config`:
 
 Campi della route:
 
-- `enabled`: facoltativo, il valore predefinito è `true`
-- `path`: facoltativo, il valore predefinito è `/plugins/webhooks/<routeId>`
-- `sessionKey`: sessione obbligatoria proprietaria dei TaskFlow associati
+- `enabled`: facoltativo, valore predefinito `true`
+- `path`: facoltativo, valore predefinito `/plugins/webhooks/<routeId>`
+- `sessionKey`: sessione obbligatoria che possiede i TaskFlow collegati
 - `secret`: segreto condiviso o SecretRef obbligatorio
-- `controllerId`: id controller facoltativo per i flussi gestiti creati
+- `controllerId`: ID controller facoltativo per i flussi gestiti creati
 - `description`: nota operatore facoltativa
 
 Input `secret` supportati:
@@ -74,36 +72,37 @@ Input `secret` supportati:
 - Stringa semplice
 - SecretRef con `source: "env" | "file" | "exec"`
 
-Se una route basata su segreto non riesce a risolvere il proprio segreto all'avvio, il plugin salta
-quella route e registra un avviso invece di esporre un endpoint non funzionante.
+Se una route basata su un segreto non riesce a risolvere il proprio segreto
+all'avvio, il plugin salta quella route e registra un avviso invece di esporre un
+endpoint non funzionante.
 
 ## Modello di sicurezza
 
-Ogni route è considerata attendibile per agire con l'autorità TaskFlow del
-`sessionKey` configurato.
+Ogni route è considerata attendibile per agire con l'autorità TaskFlow della
+`sessionKey` configurata.
 
-Questo significa che la route può ispezionare e modificare i TaskFlow di proprietà di quella sessione, quindi
-dovresti:
+Questo significa che la route può ispezionare e modificare i TaskFlow posseduti da
+quella sessione, quindi dovresti:
 
-- Usare un segreto univoco forte per ogni route
-- Preferire riferimenti a segreti rispetto a segreti in testo normale inline
-- Associare le route alla sessione più ristretta adatta al workflow
+- Usare un segreto forte e univoco per ogni route
+- Preferire i riferimenti ai segreti rispetto ai segreti in testo normale inline
+- Collegare le route alla sessione più ristretta adatta al workflow
 - Esporre solo il percorso Webhook specifico di cui hai bisogno
 
 Il plugin applica:
 
 - Autenticazione tramite segreto condiviso
-- Protezioni su dimensione del corpo della richiesta e timeout
+- Protezioni per dimensione del corpo della richiesta e timeout
 - Limitazione della frequenza a finestra fissa
 - Limitazione delle richieste in corso
-- Accesso ai TaskFlow vincolato al proprietario tramite `api.runtime.tasks.managedFlows.bindSession(...)`
+- Accesso TaskFlow vincolato al proprietario tramite `api.runtime.tasks.managedFlows.bindSession(...)`
 
 ## Formato della richiesta
 
 Invia richieste `POST` con:
 
 - `Content-Type: application/json`
-- `Authorization: Bearer <secret>` o `x-openclaw-webhook-secret: <secret>`
+- `Authorization: Bearer <secret>` oppure `x-openclaw-webhook-secret: <secret>`
 
 Esempio:
 
@@ -134,7 +133,7 @@ Il plugin attualmente accetta questi valori JSON `action`:
 
 ### `create_flow`
 
-Crea un TaskFlow gestito per la sessione associata alla route.
+Crea un TaskFlow gestito per la sessione collegata alla route.
 
 Esempio:
 
@@ -192,9 +191,10 @@ Le richieste rifiutate restituiscono:
 }
 ```
 
-Il plugin rimuove intenzionalmente i metadati proprietario/sessione dalle risposte Webhook.
+Il plugin rimuove intenzionalmente i metadati di proprietario/sessione dalle
+risposte Webhook.
 
-## Documenti correlati
+## Documentazione correlata
 
 - [SDK runtime Plugin](/it/plugins/sdk-runtime)
 - [Panoramica di hook e Webhook](/it/automation/hooks)
