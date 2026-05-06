@@ -1,70 +1,70 @@
 ---
 read_when:
     - GCP에서 OpenClaw를 24/7 실행하려는 경우
-    - 자체 VM에서 프로덕션급 상시 가동 Gateway를 원합니다
+    - 자체 VM에서 프로덕션급 상시 실행 Gateway가 필요한 경우
     - 지속성, 바이너리, 재시작 동작을 완전히 제어하려는 경우
-summary: 지속성 있는 상태로 GCP Compute Engine VM(Docker)에서 OpenClaw Gateway를 24/7 실행하기
+summary: 내구성 있는 상태로 GCP Compute Engine VM(Docker)에서 OpenClaw Gateway를 24/7 실행하기
 title: GCP
 x-i18n:
-    generated_at: "2026-05-06T06:30:12Z"
+    generated_at: "2026-05-06T17:57:41Z"
     model: gpt-5.5
     provider: openai
-    source_hash: eefd3a324ababdaa3072cda5354c1d59ddfe80c2f88f24a4ad21208f54636e89
+    source_hash: 678253bd90f0694668400ffddba957e442f8aaed3f5308af3c2481940e104733
     source_path: install/gcp.md
     workflow: 16
 ---
 
-Docker를 사용해 GCP Compute Engine VM에서 지속 실행되는 OpenClaw Gateway를 실행합니다. 영구 상태, 내장된 바이너리, 안전한 재시작 동작을 포함합니다.
+GCP Compute Engine VM에서 Docker를 사용해 영구 실행되는 OpenClaw Gateway를 실행합니다. 내구성 있는 상태, 내장 바이너리, 안전한 재시작 동작을 제공합니다.
 
-"월 약 $5-12로 OpenClaw를 24/7 실행"하고 싶다면, Google Cloud에서 신뢰할 수 있는 설정입니다.
+"월 약 $5-12로 OpenClaw 24/7"을 원한다면, Google Cloud에서 신뢰할 수 있는 설정입니다.
 가격은 머신 유형과 리전에 따라 달라집니다. 워크로드에 맞는 가장 작은 VM을 선택하고, OOM이 발생하면 확장하세요.
 
 ## 무엇을 하나요(간단히)?
 
-- GCP 프로젝트를 만들고 결제를 사용 설정합니다
+- GCP 프로젝트를 만들고 결제를 활성화합니다
 - Compute Engine VM을 만듭니다
-- Docker를 설치합니다(격리된 앱 런타임)
+- Docker(격리된 앱 런타임)를 설치합니다
 - Docker에서 OpenClaw Gateway를 시작합니다
-- 호스트에 `~/.openclaw` + `~/.openclaw/workspace`를 영구 저장합니다(재시작/재빌드 후에도 유지)
-- SSH 터널을 통해 노트북에서 Control UI에 액세스합니다
+- 호스트에 `~/.openclaw` + `~/.openclaw/workspace`를 유지합니다(재시작/재빌드 후에도 유지)
+- 노트북에서 SSH 터널을 통해 Control UI에 접속합니다
 
 마운트된 `~/.openclaw` 상태에는 `openclaw.json`, 에이전트별
-`agents/<agentId>/agent/auth-profiles.json`, `.env`가 포함됩니다.
+`agents/<agentId>/agent/auth-profiles.json`, 그리고 `.env`가 포함됩니다.
 
-Gateway에는 다음 방식으로 액세스할 수 있습니다.
+Gateway에는 다음 방식으로 접근할 수 있습니다.
 
 - 노트북에서 SSH 포트 포워딩
-- 방화벽과 토큰을 직접 관리하는 경우 포트를 직접 노출
+- 방화벽과 토큰을 직접 관리하는 경우 직접 포트 노출
 
 이 가이드는 GCP Compute Engine의 Debian을 사용합니다.
-Ubuntu도 작동합니다. 패키지를 그에 맞게 매핑하세요.
+Ubuntu도 작동합니다. 패키지는 그에 맞게 매핑하세요.
 일반 Docker 흐름은 [Docker](/ko/install/docker)를 참조하세요.
 
 ---
 
 ## 빠른 경로(숙련된 운영자)
 
-1. GCP 프로젝트 생성 + Compute Engine API 사용 설정
+1. GCP 프로젝트 생성 + Compute Engine API 활성화
 2. Compute Engine VM 생성(e2-small, Debian 12, 20GB)
-3. VM에 SSH로 접속
+3. VM에 SSH 접속
 4. Docker 설치
 5. OpenClaw 저장소 클론
 6. 영구 호스트 디렉터리 생성
-7. `.env` 및 `docker-compose.yml` 구성
-8. 필요한 바이너리를 내장하고 빌드한 뒤 실행
+7. `.env`와 `docker-compose.yml` 구성
+8. 필요한 바이너리를 이미지에 포함하고, 빌드한 뒤 실행
 
 ---
 
 ## 필요한 것
 
-- GCP 계정(e2-micro 무료 등급 사용 가능)
+- GCP 계정(e2-micro 무료 등급 가능)
 - gcloud CLI 설치됨(또는 Cloud Console 사용)
-- 노트북에서 SSH 액세스
-- SSH + 복사/붙여넣기에 대한 기본적인 익숙함
+- 노트북에서 SSH 접근
+- SSH + 복사/붙여넣기에 대한 기본 이해
 - 약 20-30분
 - Docker 및 Docker Compose
 - 모델 인증 자격 증명
-- 선택적 제공자 자격 증명
+- 선택적 provider 자격 증명
   - WhatsApp QR
   - Telegram 봇 토큰
   - Gmail OAuth
@@ -86,11 +86,11 @@ Ubuntu도 작동합니다. 패키지를 그에 맞게 매핑하세요.
 
     **옵션 B: Cloud Console**
 
-    모든 단계는 [https://console.cloud.google.com](https://console.cloud.google.com)의 웹 UI를 통해 수행할 수 있습니다.
+    모든 단계는 [https://console.cloud.google.com](https://console.cloud.google.com)의 웹 UI에서 수행할 수 있습니다.
 
   </Step>
 
-  <Step title="GCP 프로젝트 만들기">
+  <Step title="GCP 프로젝트 생성">
     **CLI:**
 
     ```bash
@@ -98,9 +98,9 @@ Ubuntu도 작동합니다. 패키지를 그에 맞게 매핑하세요.
     gcloud config set project my-openclaw-project
     ```
 
-    [https://console.cloud.google.com/billing](https://console.cloud.google.com/billing)에서 결제를 사용 설정하세요(Compute Engine에 필요).
+    [https://console.cloud.google.com/billing](https://console.cloud.google.com/billing)에서 결제를 활성화하세요(Compute Engine에 필요).
 
-    Compute Engine API를 사용 설정합니다.
+    Compute Engine API를 활성화합니다.
 
     ```bash
     gcloud services enable compute.googleapis.com
@@ -110,19 +110,19 @@ Ubuntu도 작동합니다. 패키지를 그에 맞게 매핑하세요.
 
     1. IAM & Admin > Create Project로 이동합니다
     2. 이름을 지정하고 생성합니다
-    3. 프로젝트의 결제를 사용 설정합니다
-    4. APIs & Services > Enable APIs로 이동 > "Compute Engine API" 검색 > 사용 설정
+    3. 프로젝트의 결제를 활성화합니다
+    4. APIs & Services > Enable APIs로 이동 > "Compute Engine API" 검색 > 활성화
 
   </Step>
 
-  <Step title="VM 만들기">
+  <Step title="VM 생성">
     **머신 유형:**
 
     | 유형      | 사양                    | 비용               | 참고                                        |
     | --------- | ------------------------ | ------------------ | -------------------------------------------- |
-    | e2-medium | 2 vCPU, 4GB RAM          | 월 약 $25          | 로컬 Docker 빌드에 가장 안정적        |
-    | e2-small  | 2 vCPU, 2GB RAM          | 월 약 $12          | Docker 빌드에 권장되는 최소 사양         |
-    | e2-micro  | 2 vCPU(공유), 1GB RAM | 무료 등급 사용 가능 | Docker 빌드 OOM으로 실패하는 경우가 많음(exit 137) |
+    | e2-medium | 2 vCPU, 4GB RAM          | 월 약 $25            | 로컬 Docker 빌드에 가장 안정적        |
+    | e2-small  | 2 vCPU, 2GB RAM          | 월 약 $12            | Docker 빌드에 권장되는 최소 사양         |
+    | e2-micro  | 2 vCPU(공유), 1GB RAM | 무료 등급 가능 | Docker 빌드 OOM으로 자주 실패(exit 137) |
 
     **CLI:**
 
@@ -146,7 +146,7 @@ Ubuntu도 작동합니다. 패키지를 그에 맞게 매핑하세요.
 
   </Step>
 
-  <Step title="VM에 SSH로 접속">
+  <Step title="VM에 SSH 접속">
     **CLI:**
 
     ```bash
@@ -157,7 +157,7 @@ Ubuntu도 작동합니다. 패키지를 그에 맞게 매핑하세요.
 
     Compute Engine 대시보드에서 VM 옆의 "SSH" 버튼을 클릭합니다.
 
-    참고: VM 생성 후 SSH 키 전파에는 1-2분이 걸릴 수 있습니다. 연결이 거부되면 기다렸다가 다시 시도하세요.
+    참고: VM 생성 후 SSH 키 전파에 1-2분이 걸릴 수 있습니다. 연결이 거부되면 기다린 뒤 다시 시도하세요.
 
   </Step>
 
@@ -169,7 +169,7 @@ Ubuntu도 작동합니다. 패키지를 그에 맞게 매핑하세요.
     sudo usermod -aG docker $USER
     ```
 
-    그룹 변경 사항을 적용하려면 로그아웃했다가 다시 로그인합니다.
+    그룹 변경이 적용되도록 로그아웃한 뒤 다시 로그인합니다.
 
     ```bash
     exit
@@ -200,9 +200,9 @@ Ubuntu도 작동합니다. 패키지를 그에 맞게 매핑하세요.
 
   </Step>
 
-  <Step title="영구 호스트 디렉터리 만들기">
+  <Step title="영구 호스트 디렉터리 생성">
     Docker 컨테이너는 일시적입니다.
-    오래 유지되어야 하는 모든 상태는 호스트에 있어야 합니다.
+    장기 상태는 모두 호스트에 있어야 합니다.
 
     ```bash
     mkdir -p ~/.openclaw
@@ -227,8 +227,7 @@ Ubuntu도 작동합니다. 패키지를 그에 맞게 매핑하세요.
     XDG_CONFIG_HOME=/home/node/.openclaw
     ```
 
-    `.env`를 통해 명시적으로 관리하려는 경우가 아니라면 `OPENCLAW_GATEWAY_TOKEN`은 비워 두세요. OpenClaw는 첫 시작 시 무작위 Gateway 토큰을 구성에 기록합니다. 키링 비밀번호를 생성하고
-    `GOG_KEYRING_PASSWORD`에 붙여넣으세요.
+    안정적인 gateway 토큰을 `.env`를 통해 관리하려면 `OPENCLAW_GATEWAY_TOKEN`을 설정하세요. 그렇지 않으면 재시작 후에도 클라이언트에 의존하기 전에 `gateway.auth.token`을 구성하세요. 어느 소스도 없으면 OpenClaw는 해당 시작에만 유효한 런타임 전용 토큰을 사용합니다. 키링 비밀번호를 생성하고 `GOG_KEYRING_PASSWORD`에 붙여넣습니다.
 
     ```bash
     openssl rand -hex 32
@@ -236,8 +235,8 @@ Ubuntu도 작동합니다. 패키지를 그에 맞게 매핑하세요.
 
     **이 파일을 커밋하지 마세요.**
 
-    이 `.env` 파일은 `OPENCLAW_GATEWAY_TOKEN` 같은 컨테이너/런타임 환경을 위한 것입니다.
-    저장된 제공자 OAuth/API 키 인증은 마운트된
+    이 `.env` 파일은 `OPENCLAW_GATEWAY_TOKEN` 같은 컨테이너/런타임 env용입니다.
+    저장된 provider OAuth/API-key 인증은 마운트된
     `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`에 있습니다.
 
   </Step>
@@ -283,14 +282,14 @@ Ubuntu도 작동합니다. 패키지를 그에 맞게 매핑하세요.
           ]
     ```
 
-    `--allow-unconfigured`는 부트스트랩 편의를 위한 것일 뿐이며, 적절한 Gateway 구성을 대체하지 않습니다. 배포에 맞게 인증(`gateway.auth.token` 또는 비밀번호)을 설정하고 안전한 바인드 설정을 사용하세요.
+    `--allow-unconfigured`는 부트스트랩 편의를 위한 것일 뿐이며, 적절한 gateway 구성을 대체하지 않습니다. 배포 환경에 맞게 인증(`gateway.auth.token` 또는 비밀번호)을 설정하고 안전한 bind 설정을 사용하세요.
 
   </Step>
 
   <Step title="공유 Docker VM 런타임 단계">
-    일반적인 Docker 호스트 흐름에는 공유 런타임 가이드를 사용하세요.
+    일반적인 Docker 호스트 흐름은 공유 런타임 가이드를 사용하세요.
 
-    - [필요한 바이너리를 이미지에 내장](/ko/install/docker-vm-runtime#bake-required-binaries-into-the-image)
+    - [필요한 바이너리를 이미지에 포함](/ko/install/docker-vm-runtime#bake-required-binaries-into-the-image)
     - [빌드 및 실행](/ko/install/docker-vm-runtime#build-and-launch)
     - [무엇이 어디에 유지되는지](/ko/install/docker-vm-runtime#what-persists-where)
     - [업데이트](/ko/install/docker-vm-runtime#updates)
@@ -298,20 +297,20 @@ Ubuntu도 작동합니다. 패키지를 그에 맞게 매핑하세요.
   </Step>
 
   <Step title="GCP별 실행 참고 사항">
-    GCP에서 `pnpm install --frozen-lockfile` 중 빌드가 `Killed` 또는 `exit code 137`로 실패하면 VM의 메모리가 부족한 것입니다. 최소 `e2-small`을 사용하거나, 더 안정적인 첫 빌드를 위해 `e2-medium`을 사용하세요.
+    GCP에서 `pnpm install --frozen-lockfile` 중 `Killed` 또는 `exit code 137`로 빌드가 실패하면 VM의 메모리가 부족한 것입니다. 최소 `e2-small`을 사용하거나, 더 안정적인 첫 빌드를 위해 `e2-medium`을 사용하세요.
 
-    LAN에 바인딩할 때(`OPENCLAW_GATEWAY_BIND=lan`) 계속하기 전에 신뢰할 수 있는 브라우저 출처를 구성하세요.
+    LAN에 바인딩할 때(`OPENCLAW_GATEWAY_BIND=lan`) 계속하기 전에 신뢰할 수 있는 브라우저 origin을 구성하세요.
 
     ```bash
     docker compose run --rm openclaw-cli config set gateway.controlUi.allowedOrigins '["http://127.0.0.1:18789"]' --strict-json
     ```
 
-    Gateway 포트를 변경했다면 `18789`를 구성한 포트로 바꾸세요.
+    gateway 포트를 변경했다면 `18789`를 구성한 포트로 바꾸세요.
 
   </Step>
 
-  <Step title="노트북에서 액세스">
-    Gateway 포트를 전달하도록 SSH 터널을 만듭니다.
+  <Step title="노트북에서 접근">
+    Gateway 포트를 포워딩하는 SSH 터널을 만듭니다.
 
     ```bash
     gcloud compute ssh openclaw-gateway --zone=us-central1-a -- -L 18789:127.0.0.1:18789
@@ -327,16 +326,16 @@ Ubuntu도 작동합니다. 패키지를 그에 맞게 매핑하세요.
     docker compose run --rm openclaw-cli dashboard --no-open
     ```
 
-    UI에서 공유 시크릿 인증을 요구하면 구성된 토큰 또는 비밀번호를 Control UI 설정에 붙여넣으세요. 이 Docker 흐름은 기본적으로 토큰을 기록합니다. 컨테이너 구성을 비밀번호 인증으로 전환했다면 대신 해당 비밀번호를 사용하세요.
+    UI에서 shared-secret 인증을 요청하면 구성한 토큰 또는 비밀번호를 Control UI 설정에 붙여넣으세요. 이 Docker 흐름은 기본적으로 토큰을 씁니다. 컨테이너 구성을 비밀번호 인증으로 전환한 경우에는 대신 해당 비밀번호를 사용하세요.
 
-    Control UI에 `unauthorized` 또는 `disconnected (1008): pairing required`가 표시되면 브라우저 기기를 승인하세요.
+    Control UI에 `unauthorized` 또는 `disconnected (1008): pairing required`가 표시되면 브라우저 디바이스를 승인하세요.
 
     ```bash
     docker compose run --rm openclaw-cli devices list
     docker compose run --rm openclaw-cli devices approve <requestId>
     ```
 
-    공유 지속성과 업데이트 참조가 다시 필요한가요?
+    공유 지속성과 업데이트 참고 자료가 다시 필요하신가요?
     [Docker VM Runtime](/ko/install/docker-vm-runtime#what-persists-where) 및 [Docker VM Runtime 업데이트](/ko/install/docker-vm-runtime#updates)를 참조하세요.
 
   </Step>
@@ -346,9 +345,9 @@ Ubuntu도 작동합니다. 패키지를 그에 맞게 매핑하세요.
 
 ## 문제 해결
 
-**SSH 연결이 거부됨**
+**SSH 연결 거부됨**
 
-VM 생성 후 SSH 키 전파에는 1-2분이 걸릴 수 있습니다. 기다렸다가 다시 시도하세요.
+VM 생성 후 SSH 키 전파에 1-2분이 걸릴 수 있습니다. 기다린 뒤 다시 시도하세요.
 
 **OS Login 문제**
 
@@ -409,10 +408,10 @@ IAM 역할 세부 정보는 [https://cloud.google.com/iam/docs/understanding-rol
 ## 다음 단계
 
 - 메시징 채널 설정: [채널](/ko/channels)
-- 로컬 디바이스를 노드로 페어링: [노드](/ko/nodes)
+- 로컬 기기를 노드로 페어링: [노드](/ko/nodes)
 - Gateway 구성: [Gateway 구성](/ko/gateway/configuration)
 
-## 관련 항목
+## 관련
 
 - [설치 개요](/ko/install)
 - [Azure](/ko/install/azure)

@@ -1,23 +1,23 @@
 ---
 read_when:
-    - 에이전트 훅을 관리하려는 경우
-    - 훅 사용 가능 여부를 검사하거나 워크스페이스 훅을 활성화하려는 경우
-summary: '`openclaw hooks`(에이전트 훅)에 대한 CLI 참조'
+    - 에이전트 후크를 관리하려고 합니다
+    - 훅 사용 가능 여부를 확인하거나 워크스페이스 훅을 활성화하려는 경우
+summary: '`openclaw hooks`의 CLI 참조(에이전트 훅)'
 title: 후크
 x-i18n:
-    generated_at: "2026-05-05T08:25:34Z"
+    generated_at: "2026-05-06T17:53:16Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8e860d4a20a09526e804fa1aff8c983a75396fcd1e6e24f742252fdf1812f6b7
+    source_hash: 56dd1ef82458dde3280e2cdfb4f3835211726517416e90625d3272d128eb9e0e
     source_path: cli/hooks.md
     workflow: 16
 ---
 
 # `openclaw hooks`
 
-에이전트 훅(`/new`, `/reset`, Gateway 시작 같은 명령에 대한 이벤트 기반 자동화)을 관리합니다.
+에이전트 훅(`/new`, `/reset`, Gateway 시작 같은 명령용 이벤트 기반 자동화)을 관리합니다.
 
-하위 명령 없이 `openclaw hooks`를 실행하는 것은 `openclaw hooks list`와 동일합니다.
+하위 명령 없이 `openclaw hooks`를 실행하는 것은 `openclaw hooks list`와 같습니다.
 
 관련 항목:
 
@@ -30,14 +30,14 @@ x-i18n:
 openclaw hooks list
 ```
 
-워크스페이스, 관리형, 추가, 번들 디렉터리에서 발견된 모든 훅을 나열합니다.
-Gateway 시작 시에는 내부 훅이 하나 이상 구성될 때까지 내부 훅 핸들러를 로드하지 않습니다.
+워크스페이스, 관리형, 추가 및 번들 디렉터리에서 발견된 모든 훅을 나열합니다.
+Gateway 시작은 내부 훅이 하나 이상 구성될 때까지 내부 훅 핸들러를 로드하지 않습니다.
 
 **옵션:**
 
-- `--eligible`: 요구사항을 충족한 적격 훅만 표시
+- `--eligible`: 적격한 훅만 표시(요구 사항 충족)
 - `--json`: JSON으로 출력
-- `-v, --verbose`: 누락된 요구사항을 포함한 자세한 정보 표시
+- `-v, --verbose`: 누락된 요구 사항을 포함한 자세한 정보 표시
 
 **예시 출력:**
 
@@ -57,7 +57,7 @@ Ready:
 openclaw hooks list --verbose
 ```
 
-부적격 훅의 누락된 요구사항을 표시합니다.
+적격하지 않은 훅의 누락된 요구 사항을 표시합니다.
 
 **예시(JSON):**
 
@@ -113,7 +113,7 @@ Requirements:
 openclaw hooks check
 ```
 
-훅 적격성 상태 요약(준비됨과 준비되지 않음의 개수)을 표시합니다.
+훅 적격성 상태 요약(준비됨과 준비되지 않음의 수)을 표시합니다.
 
 **옵션:**
 
@@ -135,9 +135,9 @@ Not ready: 0
 openclaw hooks enable <name>
 ```
 
-구성(기본값은 `~/.openclaw/openclaw.json`)에 추가하여 특정 훅을 활성화합니다.
+구성(기본값: `~/.openclaw/openclaw.json`)에 특정 훅을 추가하여 활성화합니다.
 
-**참고:** 워크스페이스 훅은 여기 또는 구성에서 활성화하기 전까지 기본적으로 비활성화됩니다. Plugin이 관리하는 훅은 `openclaw hooks list`에 `plugin:<id>`로 표시되며 여기서는 활성화/비활성화할 수 없습니다. 대신 Plugin을 활성화/비활성화하세요.
+**참고:** 워크스페이스 훅은 여기 또는 구성에서 활성화할 때까지 기본적으로 비활성화되어 있습니다. Plugin이 관리하는 훅은 `openclaw hooks list`에 `plugin:<id>`로 표시되며 여기서 활성화/비활성화할 수 없습니다. 대신 해당 Plugin을 활성화/비활성화하세요.
 
 **인수:**
 
@@ -157,15 +157,16 @@ openclaw hooks enable session-memory
 
 **수행 작업:**
 
-- 훅이 존재하고 적격인지 확인
-- 구성에서 `hooks.internal.entries.<name>.enabled = true`로 업데이트
+- 훅이 존재하고 적격한지 확인
+- 구성에서 `hooks.internal.entries.<name>.enabled = true` 업데이트
 - 구성을 디스크에 저장
 
-훅이 `<workspace>/hooks/`에서 온 경우, Gateway가 이를 로드하려면 이 옵트인 단계가 필요합니다.
+훅이 `<workspace>/hooks/`에서 온 경우, Gateway가 이를 로드하기 전에
+이 옵트인 단계가 필요합니다.
 
 **활성화 후:**
 
-- 훅이 다시 로드되도록 Gateway를 다시 시작합니다(macOS에서는 메뉴 막대 앱 재시작, 또는 개발 환경에서는 Gateway 프로세스 재시작).
+- 훅이 다시 로드되도록 Gateway를 재시작합니다(macOS에서는 메뉴 막대 앱 재시작, 또는 개발 환경에서는 Gateway 프로세스 재시작).
 
 ## 훅 비활성화
 
@@ -193,7 +194,7 @@ openclaw hooks disable command-logger
 
 **비활성화 후:**
 
-- 훅이 다시 로드되도록 Gateway를 다시 시작합니다.
+- 훅이 다시 로드되도록 Gateway를 재시작합니다
 
 ## 참고
 
@@ -211,24 +212,28 @@ openclaw plugins install <path>           # local path
 
 통합 Plugin 설치 관리자를 통해 훅 팩을 설치합니다.
 
-`openclaw hooks install`은 호환성 별칭으로 계속 동작하지만, 사용 중단 경고를 출력하고 `openclaw plugins install`로 전달합니다.
+`openclaw hooks install`은 호환성 별칭으로 계속 작동하지만, 지원 중단 경고를 출력하고 `openclaw plugins install`로 전달합니다.
 
-Npm 명세는 **레지스트리 전용**입니다(패키지 이름 + 선택적 **정확한 버전** 또는 **dist-tag**). Git/URL/file 명세와 semver 범위는 거부됩니다. 종속성 설치는 셸에 전역 npm 설치 설정이 있더라도 안전을 위해 `--ignore-scripts`와 함께 프로젝트 로컬로 실행됩니다.
+Npm 사양은 **레지스트리 전용**입니다(패키지 이름 + 선택적 **정확한 버전** 또는
+**dist-tag**). Git/URL/file 사양과 semver 범위는 거부됩니다. 종속성
+설치는 안전을 위해 프로젝트 로컬에서 `--ignore-scripts`로 실행되며, 셸에 전역 npm 설치 설정이 있어도 동일합니다.
 
-Bare 명세와 `@latest`는 안정 트랙에 유지됩니다. npm이 이 둘 중 하나를 프리릴리스로 해석하면 OpenClaw는 중단하고 `@beta`/`@rc` 같은 프리릴리스 태그 또는 정확한 프리릴리스 버전으로 명시적으로 옵트인하라고 요청합니다.
+기본 사양과 `@latest`는 안정 트랙에 유지됩니다. npm이 이 둘 중 하나를
+프리릴리스로 해석하면 OpenClaw는 중단하고 `@beta`/`@rc` 같은
+프리릴리스 태그 또는 정확한 프리릴리스 버전으로 명시적으로 옵트인하라고 요청합니다.
 
 **수행 작업:**
 
 - 훅 팩을 `~/.openclaw/hooks/<id>`로 복사
 - 설치된 훅을 `hooks.internal.entries.*`에서 활성화
-- 설치를 `hooks.internal.installs` 아래에 기록
+- 설치 내역을 `hooks.internal.installs` 아래에 기록
 
 **옵션:**
 
-- `-l, --link`: 복사하는 대신 로컬 디렉터리를 링크합니다(`hooks.internal.load.extraDirs`에 추가)
-- `--pin`: npm 설치를 `hooks.internal.installs`에 정확히 해석된 `name@version`으로 기록
+- `-l, --link`: 로컬 디렉터리를 복사하는 대신 연결합니다(`hooks.internal.load.extraDirs`에 추가)
+- `--pin`: npm 설치를 정확히 해석된 `name@version`으로 `hooks.internal.installs`에 기록
 
-**지원 아카이브:** `.zip`, `.tgz`, `.tar.gz`, `.tar`
+**지원되는 아카이브:** `.zip`, `.tgz`, `.tar.gz`, `.tar`
 
 **예시:**
 
@@ -246,7 +251,7 @@ openclaw plugins install @openclaw/my-hook-pack
 openclaw plugins install -l ./my-hook-pack
 ```
 
-링크된 훅 팩은 워크스페이스 훅이 아니라 운영자가 구성한 디렉터리의 관리형 훅으로 처리됩니다.
+연결된 훅 팩은 워크스페이스 훅이 아니라, 운영자가 구성한 디렉터리의 관리형 훅으로 취급됩니다.
 
 ## 훅 팩 업데이트
 
@@ -255,16 +260,17 @@ openclaw plugins update <id>
 openclaw plugins update --all
 ```
 
-통합 Plugin 업데이트 도구를 통해 추적 중인 npm 기반 훅 팩을 업데이트합니다.
+통합 Plugin 업데이트 관리자를 통해 추적 중인 npm 기반 훅 팩을 업데이트합니다.
 
-`openclaw hooks update`는 호환성 별칭으로 계속 동작하지만, 사용 중단 경고를 출력하고 `openclaw plugins update`로 전달합니다.
+`openclaw hooks update`는 호환성 별칭으로 계속 작동하지만, 지원 중단 경고를 출력하고 `openclaw plugins update`로 전달합니다.
 
 **옵션:**
 
 - `--all`: 추적 중인 모든 훅 팩 업데이트
-- `--dry-run`: 쓰기 없이 변경될 내용을 표시
+- `--dry-run`: 쓰지 않고 변경될 내용을 표시
 
-저장된 무결성 해시가 있고 가져온 아티팩트 해시가 변경되면 OpenClaw는 경고를 출력하고 계속 진행하기 전에 확인을 요청합니다. CI/비대화형 실행에서 프롬프트를 건너뛰려면 전역 `--yes`를 사용하세요.
+저장된 무결성 해시가 있고 가져온 아티팩트 해시가 변경되면,
+OpenClaw는 경고를 출력하고 계속하기 전에 확인을 요청합니다. CI/비대화형 실행에서 프롬프트를 우회하려면 전역 `--yes`를 사용하세요.
 
 ## 번들 훅
 
@@ -284,7 +290,7 @@ openclaw hooks enable session-memory
 
 ### bootstrap-extra-files
 
-`agent:bootstrap` 중에 추가 부트스트랩 파일(예: 모노레포 로컬 `AGENTS.md` / `TOOLS.md`)을 주입합니다.
+`agent:bootstrap` 중 추가 부트스트랩 파일(예: 모노레포 로컬 `AGENTS.md` / `TOOLS.md`)을 주입합니다.
 
 **활성화:**
 
@@ -296,7 +302,7 @@ openclaw hooks enable bootstrap-extra-files
 
 ### command-logger
 
-모든 명령 이벤트를 중앙 감사 파일에 기록합니다.
+모든 명령 이벤트를 중앙 집중식 감사 파일에 기록합니다.
 
 **활성화:**
 
@@ -323,7 +329,7 @@ grep '"action":"new"' ~/.openclaw/logs/commands.log | jq .
 
 ### boot-md
 
-Gateway가 시작될 때(채널이 시작된 후) `BOOT.md`를 실행합니다.
+Gateway가 시작될 때(채널 시작 후) `BOOT.md`를 실행합니다.
 
 **이벤트**: `gateway:startup`
 

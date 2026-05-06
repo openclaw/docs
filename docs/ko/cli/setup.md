@@ -1,28 +1,32 @@
 ---
 read_when:
-    - 전체 CLI 온보딩 없이 첫 실행 설정을 진행하고 있습니다
-    - 기본 작업 영역 경로를 설정하려고 합니다
-summary: '`openclaw setup`용 CLI 참조(구성 + 작업 영역 초기화)'
+    - 전체 CLI 온보딩 없이 최초 실행 설정을 진행하고 있습니다
+    - 기본 작업공간 경로를 설정하려는 경우
+summary: '`openclaw setup`용 CLI 참조(구성 + 작업 공간 초기화)'
 title: 설정
 x-i18n:
-    generated_at: "2026-05-02T20:46:41Z"
+    generated_at: "2026-05-06T17:54:35Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 805f60c81f5fc216fc446641efe0bcb60bb6c34b3a50a6fc9e767461206e5f90
+    source_hash: 9a47d41f8c6c59395eaa4bc6055fa09f863af819c7920e29969793904180c910
     source_path: cli/setup.md
     workflow: 16
 ---
 
 # `openclaw setup`
 
-`~/.openclaw/openclaw.json` 및 에이전트 작업 영역을 초기화합니다.
+`~/.openclaw/openclaw.json`과 에이전트 작업 공간을 초기화합니다.
+
+<Note>
+`openclaw setup`은 변경 가능한 구성 설치용입니다. Nix 모드(`OPENCLAW_NIX_MODE=1`)에서는 구성 파일이 Nix에서 관리되므로 OpenClaw가 설정 쓰기를 거부합니다. 에이전트는 공식 [nix-openclaw 빠른 시작](https://github.com/openclaw/nix-openclaw#quick-start) 또는 다른 Nix 패키지에 해당하는 소스 구성을 사용해야 합니다.
+</Note>
 
 관련 항목:
 
 - 시작하기: [시작하기](/ko/start/getting-started)
 - CLI 온보딩: [온보딩(CLI)](/ko/start/wizard)
 
-## 예시
+## 예제
 
 ```bash
 openclaw setup
@@ -34,7 +38,7 @@ openclaw setup --non-interactive --mode remote --remote-url wss://gateway-host:1
 
 ## 옵션
 
-- `--workspace <dir>`: 에이전트 작업 영역 디렉터리(`agents.defaults.workspace`로 저장됨)
+- `--workspace <dir>`: 에이전트 작업 공간 디렉터리(`agents.defaults.workspace`로 저장됨)
 - `--wizard`: 온보딩 실행
 - `--non-interactive`: 프롬프트 없이 온보딩 실행
 - `--mode <local|remote>`: 온보딩 모드
@@ -52,9 +56,9 @@ openclaw setup --wizard
 
 참고:
 
-- 일반 `openclaw setup`은 전체 온보딩 흐름 없이 구성 + 작업 영역을 초기화합니다.
-- 일반 설정 후에는 `openclaw configure`를 실행하여 모델, 채널, Gateway, Plugin, Skills 또는 상태 검사를 선택합니다.
-- 온보딩 플래그가 있으면 온보딩이 자동 실행됩니다(`--wizard`, `--non-interactive`, `--mode`, `--import-from`, `--import-source`, `--import-secrets`, `--remote-url`, `--remote-token`).
+- 단순 `openclaw setup`은 전체 온보딩 흐름 없이 구성과 작업 공간을 초기화합니다.
+- 단순 설정 후 `openclaw configure`를 실행하여 모델, 채널, Gateway, Plugin, Skills 또는 상태 검사를 선택합니다.
+- 온보딩 플래그가 하나라도 있으면 온보딩이 자동 실행됩니다(`--wizard`, `--non-interactive`, `--mode`, `--import-from`, `--import-source`, `--import-secrets`, `--remote-url`, `--remote-token`).
 - Hermes 상태가 감지되면 대화형 온보딩에서 마이그레이션을 자동으로 제안할 수 있습니다. 가져오기 온보딩에는 새 설정이 필요합니다. 온보딩 외부에서 드라이런 계획, 백업, 덮어쓰기 모드를 사용하려면 [마이그레이션](/ko/cli/migrate)을 사용하세요.
 
 ## 관련 항목

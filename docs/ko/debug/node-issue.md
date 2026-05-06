@@ -1,23 +1,23 @@
 ---
 read_when:
-    - Node 전용 개발 스크립트 또는 watch 모드 실패를 디버깅하는 중입니다.
-    - OpenClaw에서 tsx/esbuild 로더 충돌을 조사하는 중입니다.
-summary: Node + tsx `"__name is not a function"` 충돌 참고 및 해결 방법
+    - Node 전용 개발 스크립트 또는 감시 모드 실패 디버깅
+    - OpenClaw에서 tsx/esbuild 로더 충돌 조사
+summary: Node + tsx "__name is not a function" 크래시 참고 사항 및 우회 방법
 title: Node + tsx 충돌
 x-i18n:
-    generated_at: "2026-04-24T06:12:46Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T17:54:49Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 7d043466f71eae223fa568a3db82e424580ce3269ca11d0e84368beefc25bd25
+    source_hash: 808f04959c70c96c983fb2517234d4c06712049d7afebb9b1b4b340df75d7d70
     source_path: debug/node-issue.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Node + tsx `__name is not a function` 충돌
+# Node + tsx "\_\_name is not a function" 크래시
 
 ## 요약
 
-`tsx`와 함께 Node로 OpenClaw를 실행하면 시작 시 다음 오류와 함께 실패합니다.
+`tsx`와 함께 Node를 통해 OpenClaw를 실행하면 시작 시 다음 오류로 실패합니다.
 
 ```
 [openclaw] Failed to start CLI: TypeError: __name is not a function
@@ -25,24 +25,24 @@ x-i18n:
     at .../src/agents/auth-profiles/constants.ts:25:20
 ```
 
-이 문제는 개발 스크립트를 Bun에서 `tsx`로 전환한 뒤(커밋 `2871657e`, 2026-01-06) 시작되었습니다. 동일한 런타임 경로는 Bun에서는 정상 동작했습니다.
+이 문제는 개발 스크립트를 Bun에서 `tsx`로 전환한 뒤 시작되었습니다(커밋 `2871657e`, 2026-01-06). 동일한 런타임 경로는 Bun에서는 작동했습니다.
 
 ## 환경
 
-- Node: v25.x (v25.3.0에서 관찰됨)
+- Node: v25.x(v25.3.0에서 관찰됨)
 - tsx: 4.21.0
-- OS: macOS (Node 25를 실행하는 다른 플랫폼에서도 재현될 가능성 높음)
+- OS: macOS(Node 25를 실행하는 다른 플랫폼에서도 재현될 가능성이 있음)
 
-## 재현(Node 전용)
+## 재현 방법(Node 전용)
 
 ```bash
-# repo 루트에서
+# in repo root
 node --version
 pnpm install
 node --import tsx src/entry.ts status
 ```
 
-## repo 내 최소 재현
+## 저장소의 최소 재현
 
 ```bash
 node --import tsx scripts/repro/tsx-name-repro.ts
@@ -51,33 +51,33 @@ node --import tsx scripts/repro/tsx-name-repro.ts
 ## Node 버전 확인
 
 - Node 25.3.0: 실패
-- Node 22.22.0 (Homebrew `node@22`): 실패
-- Node 24: 아직 여기에 설치되지 않음, 확인 필요
+- Node 22.22.0(Homebrew `node@22`): 실패
+- Node 24: 아직 여기에 설치되어 있지 않음; 확인 필요
 
 ## 참고 / 가설
 
-- `tsx`는 TS/ESM을 변환하기 위해 esbuild를 사용합니다. esbuild의 `keepNames`는 `__name` 헬퍼를 생성하고 함수 정의를 `__name(...)`으로 감쌉니다.
-- 이 충돌은 런타임에 `__name`이 존재하지만 함수가 아님을 뜻하므로, Node 25 로더 경로에서 이 모듈에 대해 해당 헬퍼가 누락되었거나 덮어써졌음을 시사합니다.
-- 비슷한 `__name` 헬퍼 문제는 헬퍼가 누락되거나 다시 작성되는 경우 다른 esbuild 사용 사례에서도 보고된 바 있습니다.
+- `tsx`는 esbuild를 사용해 TS/ESM을 변환합니다. esbuild의 `keepNames`는 `__name` 헬퍼를 내보내고 함수 정의를 `__name(...)`로 감쌉니다.
+- 이 크래시는 런타임에 `__name`이 존재하지만 함수가 아님을 나타내며, 이는 Node 25 로더 경로에서 이 모듈의 헬퍼가 누락되었거나 덮어써졌음을 의미합니다.
+- 유사한 `__name` 헬퍼 문제는 헬퍼가 누락되거나 다시 작성될 때 다른 esbuild 소비자에서도 보고된 바 있습니다.
 
 ## 회귀 이력
 
-- `2871657e` (2026-01-06): Bun을 선택 사항으로 만들기 위해 스크립트를 Bun에서 tsx로 변경
-- 그 이전(Bun 경로): `openclaw status`와 `gateway:watch`가 동작했음
+- `2871657e`(2026-01-06): Bun을 선택 사항으로 만들기 위해 스크립트가 Bun에서 tsx로 변경되었습니다.
+- 그 전에는(Bun 경로) `openclaw status`와 `gateway:watch`가 작동했습니다.
 
-## 해결 방법
+## 우회 방법
 
-- 개발 스크립트에는 Bun 사용(현재 임시 되돌림)
-- repo 타입 검사는 `tsgo`를 사용한 뒤 빌드된 출력을 실행
+- 개발 스크립트에 Bun을 사용합니다(현재 임시 되돌림).
+- 저장소 타입 검사는 `tsgo`를 사용한 다음 빌드된 출력을 실행합니다.
 
   ```bash
   pnpm tsgo
   node openclaw.mjs status
   ```
 
-- 기록 참고: 이 Node/tsx 문제를 디버깅하는 동안 여기서는 `tsc`를 사용했지만, 현재 repo 타입 검사 레인은 `tsgo`를 사용합니다.
-- 가능하다면 TS 로더에서 esbuild `keepNames`를 비활성화(`__name` 헬퍼 삽입 방지). 현재 tsx는 이를 노출하지 않습니다.
-- Node LTS(22/24)에서 `tsx`를 테스트해 이 문제가 Node 25 전용인지 확인
+- 과거 참고: 이 Node/tsx 문제를 디버깅하는 동안 여기서 `tsc`가 사용되었지만, 저장소 타입 검사 레인은 이제 `tsgo`를 사용합니다.
+- 가능하다면 TS 로더에서 esbuild keepNames를 비활성화합니다(`__name` 헬퍼 삽입 방지). tsx는 현재 이를 노출하지 않습니다.
+- Node LTS(22/24)를 `tsx`와 함께 테스트해 이 문제가 Node 25에만 해당하는지 확인합니다.
 
 ## 참고 자료
 
@@ -87,11 +87,11 @@ node --import tsx scripts/repro/tsx-name-repro.ts
 
 ## 다음 단계
 
-- Node 22/24에서 재현해 Node 25 회귀인지 확인
-- 알려진 회귀가 있다면 `tsx` nightly를 테스트하거나 이전 버전으로 고정
-- Node LTS에서도 재현되면 `__name` 스택 트레이스와 함께 최소 재현 사례를 업스트림에 제출
+- Node 22/24에서 재현해 Node 25 회귀인지 확인합니다.
+- 알려진 회귀가 있는 경우 `tsx` nightly를 테스트하거나 이전 버전으로 고정합니다.
+- Node LTS에서 재현되면 `__name` 스택 추적과 함께 최소 재현을 upstream에 제출합니다.
 
-## 관련 항목
+## 관련 문서
 
 - [Node.js 설치](/ko/install/node)
 - [Gateway 문제 해결](/ko/gateway/troubleshooting)

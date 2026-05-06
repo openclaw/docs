@@ -1,21 +1,21 @@
 ---
 read_when:
-    - 채널의 연락처/그룹/자기 ID를 조회하려고 합니다
-    - 채널 디렉터리 어댑터를 개발하고 있습니다
-summary: '`openclaw directory`에 대한 CLI 참조(자신, 피어, 그룹)'
+    - 채널의 연락처/그룹/본인 ID를 조회하려는 경우
+    - 채널 디렉터리 어댑터를 개발 중입니다
+summary: '`openclaw directory`용 CLI 참조 (자신, 피어, 그룹)'
 title: 디렉터리
 x-i18n:
-    generated_at: "2026-05-02T20:44:49Z"
+    generated_at: "2026-05-06T17:52:29Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 011f762d6f53605a37bd12b31c767594c0efa5681da4b2aabe7fb358751b1542
+    source_hash: 855f9312790134f2d1da53ffbb106167c190155510a7bdef212b5d38c2fba0b3
     source_path: cli/directory.md
     workflow: 16
 ---
 
 # `openclaw directory`
 
-이를 지원하는 채널에 대한 디렉터리 조회(연락처/피어, 그룹, “나”).
+이를 지원하는 채널의 디렉터리 조회(연락처/피어, 그룹 및 "나").
 
 ## 공통 플래그
 
@@ -25,12 +25,12 @@ x-i18n:
 
 ## 참고
 
-- `directory`는 다른 명령어(특히 `openclaw message send --target ...`)에 붙여 넣을 수 있는 ID를 찾는 데 도움을 주기 위한 것입니다.
-- 많은 채널에서 결과는 실시간 제공자 디렉터리가 아니라 설정 기반(허용 목록/구성된 그룹)입니다.
-- 설치된 채널 Plugin은 디렉터리 지원을 생략할 수도 있습니다. 이 경우 명령어는 Plugin을 다시 설치하지 않고 지원되지 않는 디렉터리 작업을 보고합니다.
-- 기본 출력은 탭으로 구분된 `id`(때로는 `name`)입니다. 스크립트 작성에는 `--json`을 사용하세요.
+- `directory`는 다른 명령(특히 `openclaw message send --target ...`)에 붙여넣을 수 있는 ID를 찾는 데 도움을 주기 위한 것입니다.
+- 많은 채널에서 결과는 라이브 제공자 디렉터리가 아니라 구성 기반(허용 목록 / 구성된 그룹)입니다.
+- 설치된 채널 Plugin은 디렉터리 지원을 생략할 수도 있습니다. 이 경우 명령은 Plugin을 다시 설치하는 대신 지원되지 않는 디렉터리 작업을 보고합니다.
+- 기본 출력은 탭으로 구분된 `id`(그리고 때로는 `name`)입니다. 스크립팅에는 `--json`을 사용하세요.
 
-## `message send`에서 결과 사용하기
+## `message send`와 함께 결과 사용
 
 ```bash
 openclaw directory peers list --channel slack --query "U0"
@@ -39,8 +39,8 @@ openclaw message send --channel slack --target user:U012ABCDEF --message "hello"
 
 ## ID 형식(채널별)
 
-- WhatsApp: `+15551234567`(DM), `1234567890-1234567890@g.us`(그룹), `120363123456789@newsletter`(Channel/Newsletter 발신 대상)
-- Telegram: `@username` 또는 숫자 채팅 id. 그룹은 숫자 id입니다.
+- WhatsApp: `+15551234567`(DM), `1234567890-1234567890@g.us`(그룹), `120363123456789@newsletter`(Channel/Newsletter 아웃바운드 대상)
+- Telegram: `@username` 또는 숫자 채팅 id; 그룹은 숫자 id입니다
 - Slack: `user:U…` 및 `channel:C…`
 - Discord: `user:<id>` 및 `channel:<id>`
 - Matrix(Plugin): `user:@user:server`, `room:!roomId:server` 또는 `#alias:server`
@@ -48,7 +48,7 @@ openclaw message send --channel slack --target user:U012ABCDEF --message "hello"
 - Zalo(Plugin): 사용자 id(Bot API)
 - Zalo Personal / `zalouser`(Plugin): `zca`의 스레드 id(DM/그룹)(`me`, `friend list`, `group list`)
 
-## 자신("me")
+## 자신("나")
 
 ```bash
 openclaw directory self --channel zalouser
