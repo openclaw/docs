@@ -14,7 +14,7 @@ const config = JSON.parse(fs.readFileSync(path.join(docsDir, "docs.json"), "utf8
 const md = createMarkdownRenderer();
 const basePath = normalizeBasePath(process.env.DOCS_SITE_BASE_PATH ?? "");
 const legacyBasePath = normalizeBasePath(process.env.DOCS_SITE_LEGACY_BASE_PATH ?? "/docs");
-const chatApiUrl = process.env.DOCS_SITE_CHAT_API_URL ?? "https://openclaw-chat-api.vercel.app/api/chat";
+const chatApiUrl = process.env.DOCS_SITE_CHAT_API_URL ?? "https://docs-chat.openclaw.ai/api/chat";
 
 fs.rmSync(outDir, { recursive: true, force: true });
 fs.mkdirSync(outDir, { recursive: true });
