@@ -1,48 +1,48 @@
 ---
 read_when:
     - 理解 OpenClaw 中的 Pi SDK 集成设计
-    - 修改 Pi 的智能体会话生命周期、工具链或提供商接入配置
-summary: OpenClaw 的嵌入式 Pi 智能体集成与会话生命周期架构
+    - 修改 Pi 的智能体会话生命周期、工具链或提供商接入
+summary: OpenClaw 的嵌入式 Pi 智能体集成和会话生命周期架构
 title: Pi 集成架构
 x-i18n:
-    generated_at: "2026-05-05T23:38:15Z"
+    generated_at: "2026-05-06T04:19:33Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 82d5207307244e983e8e8e293f9a2db3be21d637aefe63030295a55055b99d7a
+    source_hash: abd9e828b0a72ac4e796f33c247bb2b5d7143ddf5e897ad9d7380cfbfce1eb64
     source_path: pi.md
     workflow: 16
 ---
 
-OpenClaw 集成了 [pi-coding-agent](https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent) 及其同级包（`pi-ai`、`pi-agent-core`、`pi-tui`），用于支撑其 AI 智能体能力。
+OpenClaw 集成了 [pi-coding-agent](https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent) 及其同级包（`pi-ai`、`pi-agent-core`、`pi-tui`），为其 AI 智能体能力提供支持。
 
 ## 概览
 
-OpenClaw 使用 pi SDK 将 AI 编码智能体嵌入到其消息 Gateway 网关架构中。OpenClaw 不会将 pi 作为子进程启动，也不会使用 RPC 模式，而是通过 `createAgentSession()` 直接导入并实例化 pi 的 `AgentSession`。这种嵌入式方式提供了：
+OpenClaw 使用 pi SDK 将 AI 编码智能体嵌入到其消息 Gateway 网关架构中。OpenClaw 不会将 pi 作为子进程启动，也不使用 RPC 模式，而是通过 `createAgentSession()` 直接导入并实例化 pi 的 `AgentSession`。这种嵌入式方式提供：
 
 - 对会话生命周期和事件处理的完整控制
 - 自定义工具注入（消息、沙箱、渠道特定操作）
 - 按渠道/上下文自定义系统提示词
 - 支持分支/压缩的会话持久化
-- 具备故障转移的多账户凭证配置轮换
+- 支持故障切换的多账户凭证配置轮换
 - 与提供商无关的模型切换
 
 ## 包依赖
 
 ```json
 {
-  "@mariozechner/pi-agent-core": "0.70.2",
-  "@mariozechner/pi-ai": "0.70.2",
-  "@mariozechner/pi-coding-agent": "0.70.2",
-  "@mariozechner/pi-tui": "0.70.2"
+  "@mariozechner/pi-agent-core": "0.73.0",
+  "@mariozechner/pi-ai": "0.73.0",
+  "@mariozechner/pi-coding-agent": "0.73.0",
+  "@mariozechner/pi-tui": "0.73.0"
 }
 ```
 
 | 包                | 用途                                                                                                   |
 | ----------------- | ------------------------------------------------------------------------------------------------------ |
 | `pi-ai`           | 核心 LLM 抽象：`Model`、`streamSimple`、消息类型、提供商 API                                           |
-| `pi-agent-core`   | Agent loop、工具执行、`AgentMessage` 类型                                                             |
+| `pi-agent-core`   | Agent loop、工具执行、`AgentMessage` 类型                                                              |
 | `pi-coding-agent` | 高层 SDK：`createAgentSession`、`SessionManager`、`AuthStorage`、`ModelRegistry`、内置工具             |
-| `pi-tui`          | 终端 UI 组件（用于 OpenClaw 的本地 TUI 模式）                                                         |
+| `pi-tui`          | 终端 UI 组件（用于 OpenClaw 的本地 TUI 模式）                                                          |
 
 ## 文件结构
 
@@ -146,7 +146,7 @@ src/agents/
 
 ### 1. 运行嵌入式智能体
 
-主入口点是 `pi-embedded-runner/run.ts` 中的 `runEmbeddedPiAgent()`：
+主要入口点是 `pi-embedded-runner/run.ts` 中的 `runEmbeddedPiAgent()`：
 
 ```typescript
 import { runEmbeddedPiAgent } from "./agents/pi-embedded-runner.js";
@@ -170,7 +170,7 @@ const result = await runEmbeddedPiAgent({
 
 ### 2. 创建会话
 
-在 `runEmbeddedAttempt()`（由 `runEmbeddedPiAgent()` 调用）内部使用 pi SDK：
+在 `runEmbeddedAttempt()` 内部（由 `runEmbeddedPiAgent()` 调用），会使用 pi SDK：
 
 ```typescript
 import {
@@ -232,33 +232,35 @@ const subscription = subscribeEmbeddedPiSession({
 - `agent_start` / `agent_end`
 - `compaction_start` / `compaction_end`
 
-### 4. 提示
+### 4. 提示词
 
-设置完成后，向会话发送提示：
+设置完成后，向会话发送提示词：
 
 ```typescript
 await session.prompt(effectivePrompt, { images: imageResult.images });
 ```
 
-SDK 会处理完整 Agent loop：发送到 LLM、执行工具调用、流式传输响应。
+SDK 处理完整的 Agent loop：发送给 LLM、执行工具调用、流式传输响应。
 
-图像注入是提示局部的：OpenClaw 从当前提示加载图像引用，并且只在该轮通过 `images` 传递它们。它不会重新扫描更早的历史轮次来重新注入图像载荷。
+图像注入仅限当前提示词：OpenClaw 从当前提示词加载图像引用，并
+仅针对该轮次通过 `images` 传递它们。它不会重新扫描较早的历史轮次
+来重新注入图像载荷。
 
 ## 工具架构
 
 ### 工具流水线
 
 1. **基础工具**：pi 的 `codingTools`（read、bash、edit、write）
-2. **自定义替换**：OpenClaw 用 `exec`/`process` 替换 bash，并针对沙箱自定义 read/edit/write
+2. **自定义替换**：OpenClaw 用 `exec`/`process` 替换 bash，并为沙箱自定义 read/edit/write
 3. **OpenClaw 工具**：消息、浏览器、画布、会话、cron、Gateway 网关等
 4. **渠道工具**：Discord/Telegram/Slack/WhatsApp 特定操作工具
 5. **策略过滤**：按配置、提供商、智能体、群组、沙箱策略过滤工具
 6. **Schema 规范化**：为 Gemini/OpenAI 的特殊行为清理 schema
-7. **AbortSignal 包装**：包装工具以遵循中止信号
+7. **AbortSignal 包装**：包装工具以遵守中止信号
 
 ### 工具定义适配器
 
-pi-agent-core 的 `AgentTool` 与 pi-coding-agent 的 `ToolDefinition` 具有不同的 `execute` 签名。`pi-tool-definition-adapter.ts` 中的适配器会桥接两者：
+pi-agent-core 的 `AgentTool` 与 pi-coding-agent 的 `ToolDefinition` 具有不同的 `execute` 签名。`pi-tool-definition-adapter.ts` 中的适配器用于衔接两者：
 
 ```typescript
 export function toToolDefinitions(tools: AnyAgentTool[]): ToolDefinition[] {
@@ -288,13 +290,13 @@ export function splitSdkTools(options: { tools: AnyAgentTool[]; sandboxEnabled: 
 }
 ```
 
-这确保 OpenClaw 的策略过滤、沙箱集成和扩展工具集在不同提供商之间保持一致。
+这确保 OpenClaw 的策略过滤、沙箱集成和扩展工具集在各提供商之间保持一致。
 
-## 系统提示词构造
+## 系统提示构建
 
-系统提示词在 `buildAgentSystemPrompt()`（`system-prompt.ts`）中构建。它会组装完整提示词，包含 Tooling、Tool Call Style、Safety guardrails、OpenClaw CLI reference、Skills、Docs、Workspace、Sandbox、Messaging、Reply Tags、Voice、Silent Replies、Heartbeats、Runtime metadata 等部分，并在启用时包含 Memory 和 Reactions，以及可选的上下文文件和额外系统提示词内容。用于子智能体的最小提示词模式会裁剪这些部分。
+系统提示在 `buildAgentSystemPrompt()`（`system-prompt.ts`）中构建。它会组装完整提示，包含 Tooling、Tool Call Style、Safety guardrails、OpenClaw CLI 参考、Skills、Docs、工作区、沙箱、消息、回复标签、语音、静默回复、Heartbeats、运行时元数据等部分，并在启用时包含记忆和反应，以及可选的上下文文件和额外系统提示内容。用于子智能体的最小提示模式会裁剪这些部分。
 
-提示词会在会话创建后通过 `applySystemPromptOverrideToSession()` 应用：
+提示会在创建会话后通过 `applySystemPromptOverrideToSession()` 应用：
 
 ```typescript
 const systemPromptOverride = createSystemPromptOverride(appendPrompt);
@@ -305,13 +307,13 @@ applySystemPromptOverrideToSession(session, systemPromptOverride);
 
 ### 会话文件
 
-会话是带有树状结构（通过 id/parentId 链接）的 JSONL 文件。Pi 的 `SessionManager` 负责持久化：
+会话是带有树结构（id/parentId 链接）的 JSONL 文件。Pi 的 `SessionManager` 负责持久化：
 
 ```typescript
 const sessionManager = SessionManager.open(params.sessionFile);
 ```
 
-OpenClaw 会用 `guardSessionManager()` 包装它，以保障工具结果安全。
+OpenClaw 使用 `guardSessionManager()` 对其进行包装，以确保工具结果安全。
 
 ### 会话缓存
 
@@ -323,13 +325,13 @@ sessionManager = SessionManager.open(params.sessionFile);
 trackSessionManagerAccess(params.sessionFile);
 ```
 
-### 历史限制
+### 历史记录限制
 
 `limitHistoryTurns()` 会根据渠道类型（私信与群组）裁剪对话历史。
 
 ### 压缩
 
-上下文溢出时会触发自动压缩。常见的溢出特征包括 `request_too_large`、`context length exceeded`、`input exceeds the maximum number of tokens`、`input token count exceeds the maximum number of input tokens`、`input is too long for the model` 和 `ollama error: context length exceeded`。`compactEmbeddedPiSessionDirect()` 负责手动压缩：
+上下文溢出时会触发自动压缩。常见溢出特征包括 `request_too_large`、`context length exceeded`、`input exceeds the maximum number of tokens`、`input token count exceeds the maximum number of input tokens`、`input is too long for the model` 和 `ollama error: context length exceeded`。`compactEmbeddedPiSessionDirect()` 负责手动压缩：
 
 ```typescript
 const compactResult = await compactEmbeddedPiSessionDirect({
@@ -339,16 +341,16 @@ const compactResult = await compactEmbeddedPiSessionDirect({
 
 ## 身份验证和模型解析
 
-### 身份验证配置文件
+### 身份验证配置
 
-OpenClaw 维护一个身份验证配置文件存储，每个提供商可拥有多个 API key：
+OpenClaw 维护一个身份验证配置存储，每个提供商可有多个 API key：
 
 ```typescript
 const authStore = ensureAuthProfileStore(agentDir, { allowKeychainPrompt: false });
 const profileOrder = resolveAuthProfileOrder({ cfg, store: authStore, provider, preferredProfile });
 ```
 
-配置文件会在失败时轮换，并跟踪冷却时间：
+配置会在失败时轮换，并跟踪冷却时间：
 
 ```typescript
 await markAuthProfileFailure({ store, profileId, reason, cfg, agentDir });
@@ -393,7 +395,7 @@ OpenClaw 会加载自定义 Pi 扩展来支持专门行为：
 
 ### 压缩保护
 
-`src/agents/pi-hooks/compaction-safeguard.ts` 为压缩添加保护机制，包括自适应 token 预算以及工具失败和文件操作摘要：
+`src/agents/pi-hooks/compaction-safeguard.ts` 会为压缩添加保护机制，包括自适应令牌预算，以及工具失败和文件操作摘要：
 
 ```typescript
 if (resolveCompactionMode(params.cfg) === "safeguard") {
@@ -402,9 +404,9 @@ if (resolveCompactionMode(params.cfg) === "safeguard") {
 }
 ```
 
-### 上下文裁剪
+### 上下文剪枝
 
-`src/agents/pi-hooks/context-pruning.ts` 实现基于缓存 TTL 的上下文裁剪：
+`src/agents/pi-hooks/context-pruning.ts` 实现基于缓存 TTL 的上下文剪枝：
 
 ```typescript
 if (cfg?.agents?.defaults?.contextPruning?.mode === "cache-ttl") {
@@ -422,13 +424,13 @@ if (cfg?.agents?.defaults?.contextPruning?.mode === "cache-ttl") {
 
 ### 分块切分
 
-`EmbeddedBlockChunker` 负责将流式文本管理为离散的回复块：
+`EmbeddedBlockChunker` 会将流式文本管理为离散的回复块：
 
 ```typescript
 const blockChunker = blockChunking ? new EmbeddedBlockChunker(blockChunking) : null;
 ```
 
-### 思考/最终标签剥离
+### Thinking/Final 标签剥离
 
 流式输出会经过处理，以剥离 `<think>`/`<thinking>` 块并提取 `<final>` 内容：
 
@@ -451,7 +453,7 @@ const { text: cleanedText, mediaUrls, audioAsVoice, replyToId } = consumeReplyDi
 
 ### 错误分类
 
-`pi-embedded-helpers.ts` 会对错误进行分类，以便进行适当处理：
+`pi-embedded-helpers.ts` 会对错误进行分类，以便适当处理：
 
 ```typescript
 isContextOverflowError(errorText)     // Context too large
@@ -462,9 +464,9 @@ isFailoverAssistantError(...)         // Should failover
 classifyFailoverReason(errorText)     // "auth" | "rate_limit" | "quota" | "timeout" | ...
 ```
 
-### 思考等级回退
+### 思考级别回退
 
-如果某个思考等级不受支持，会回退到其他等级：
+如果不支持某个思考级别，则会回退：
 
 ```typescript
 const fallbackThinking = pickFallbackThinkingLevel({
@@ -479,7 +481,7 @@ if (fallbackThinking) {
 
 ## 沙箱集成
 
-启用沙箱模式后，工具和路径会受到约束：
+启用沙箱模式时，工具和路径会受到限制：
 
 ```typescript
 const sandbox = await resolveSandboxContext({
@@ -495,12 +497,12 @@ if (sandboxRoot) {
 }
 ```
 
-## 提供商特定处理
+## 特定提供商处理
 
 ### Anthropic
 
 - 拒绝魔法字符串清理
-- 连续角色的回合验证
+- 连续角色的轮次验证
 - 严格的上游 Pi 工具参数验证
 
 ### Google/Gemini
@@ -509,12 +511,12 @@ if (sandboxRoot) {
 
 ### OpenAI
 
-- 用于 Codex 模型的 `apply_patch` 工具
-- 思考等级降级处理
+- 面向 Codex 模型的 `apply_patch` 工具
+- 思考级别降级处理
 
 ## TUI 集成
 
-OpenClaw 还有一个本地 TUI 模式，会直接使用 pi-tui 组件：
+OpenClaw 也有一个本地 TUI 模式，会直接使用 pi-tui 组件：
 
 ```typescript
 // src/tui/tui.ts
@@ -523,31 +525,31 @@ import { ... } from "@mariozechner/pi-tui";
 
 这会提供类似于 Pi 原生模式的交互式终端体验。
 
-## 与 Pi CLI 的主要差异
+## 与 Pi CLI 的主要区别
 
-| 方面          | Pi CLI                  | OpenClaw 嵌入式                                                                              |
+| 方面 | Pi CLI | OpenClaw 嵌入式 |
 | --------------- | ----------------------- | ---------------------------------------------------------------------------------------------- |
-| 调用      | `pi` 命令 / RPC      | 通过 `createAgentSession()` 使用 SDK                                                                 |
-| 工具           | 默认编码工具    | 自定义 OpenClaw 工具套件                                                                     |
-| 系统提示词   | AGENTS.md + 提示词     | 按渠道/上下文动态生成                                                                    |
+| 调用方式 | `pi` 命令 / RPC | 通过 `createAgentSession()` 使用 SDK |
+| 工具 | 默认编码工具 | 自定义 OpenClaw 工具套件 |
+| 系统提示 | AGENTS.md + 提示 | 按渠道/上下文动态生成 |
 | 会话存储 | `~/.pi/agent/sessions/` | `~/.openclaw/agents/<agentId>/sessions/`（或 `$OPENCLAW_STATE_DIR/agents/<agentId>/sessions/`） |
-| 身份验证            | 单一凭据       | 多配置文件并支持轮换                                                                    |
-| 扩展      | 从磁盘加载        | 程序化 + 磁盘路径                                                                      |
-| 事件处理  | TUI 渲染           | 基于回调（onBlockReply 等）                                                            |
+| 身份验证 | 单一凭据 | 多配置并支持轮换 |
+| 扩展 | 从磁盘加载 | 程序化 + 磁盘路径 |
+| 事件处理 | TUI 渲染 | 基于回调（onBlockReply 等） |
 
 ## 未来考虑事项
 
-可能需要重做的领域：
+潜在返工领域：
 
-1. **工具签名对齐**：当前在 pi-agent-core 和 pi-coding-agent 的签名之间做适配
+1. **工具签名对齐**：目前在 pi-agent-core 和 pi-coding-agent 签名之间进行适配
 2. **会话管理器包装**：`guardSessionManager` 增加了安全性，但也提高了复杂度
 3. **扩展加载**：可以更直接地使用 Pi 的 `ResourceLoader`
 4. **流式处理器复杂度**：`subscribeEmbeddedPiSession` 已经变得很大
-5. **提供商差异**：存在许多提供商特定代码路径，Pi 将来可能可以处理这些路径
+5. **提供商差异**：存在许多特定提供商代码路径，Pi 将来可能可以处理
 
 ## 测试
 
-Pi 集成覆盖范围跨越这些测试套件：
+Pi 集成覆盖范围横跨这些套件：
 
 - `src/agents/pi-*.test.ts`
 - `src/agents/pi-auth-json.test.ts`
@@ -561,13 +563,13 @@ Pi 集成覆盖范围跨越这些测试套件：
 - `src/agents/pi-settings.test.ts`
 - `src/agents/pi-hooks/**/*.test.ts`
 
-实时/可选启用：
+实时/选择加入：
 
 - `src/agents/pi-embedded-runner-extraparams.live.test.ts`（启用 `OPENCLAW_LIVE_TEST=1`）
 
-当前运行命令请参见 [Pi 开发工作流](/zh-CN/pi-dev)。
+当前运行命令见 [Pi 开发工作流](/zh-CN/pi-dev)。
 
-## 相关
+## 相关内容
 
 - [Pi 开发工作流](/zh-CN/pi-dev)
 - [安装概览](/zh-CN/install)
