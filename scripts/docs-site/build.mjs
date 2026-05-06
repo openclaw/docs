@@ -24,7 +24,7 @@ const canonicalOrigin = (process.env.DOCS_SITE_CANONICAL_ORIGIN ?? (process.env.
 const ogImagePath = "/og-card.png";
 const renderedPageOgCards = new Set();
 const rsvgAvailable = checkRsvg();
-const chatApiUrl = process.env.DOCS_SITE_CHAT_API_URL ?? "https://docs-chat.openclaw.ai/api/chat";
+const chatApiUrl = process.env.DOCS_SITE_CHAT_API_URL ?? "/ask-molty/api/chat";
 
 fs.rmSync(outDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
 fs.mkdirSync(outDir, { recursive: true });
