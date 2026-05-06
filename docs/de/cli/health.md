@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Sie möchten schnell die Integrität des laufenden Gateway prüfen
-summary: CLI-Referenz für `openclaw health` (Gateway-Integritäts-Snapshot über RPC)
-title: Integrität
+    - Sie möchten schnell den Zustand des laufenden Gateway prüfen
+summary: CLI-Referenz für `openclaw health` (Gateway-Zustandssnapshot über RPC)
+title: Systemzustand
 x-i18n:
-    generated_at: "2026-04-24T06:31:27Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:02:56Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: bf5f5b9c3ec5c08090134764966d2657241ed0ebbd28a9dc7fafde0b8c7216d6
+    source_hash: 443684af04efce2c54a6679e13b0bff0a5c1869f85d60fae0e853aed0a362226
     source_path: cli/health.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw health`
 
-Rufen Sie die Integrität des laufenden Gateway ab.
+Ruft den Integritätsstatus vom laufenden Gateway ab.
 
 Optionen:
 
 - `--json`: maschinenlesbare Ausgabe
-- `--timeout <ms>`: Verbindungs-Timeout in Millisekunden (Standard `10000`)
+- `--timeout <ms>`: Verbindungszeitlimit in Millisekunden (Standard `10000`)
 - `--verbose`: ausführliche Protokollierung
 - `--debug`: Alias für `--verbose`
 
@@ -37,12 +37,12 @@ Hinweise:
 
 - Standardmäßig fragt `openclaw health` das laufende Gateway nach seinem Integritäts-Snapshot. Wenn das
   Gateway bereits einen aktuellen zwischengespeicherten Snapshot hat, kann es diese zwischengespeicherte Payload zurückgeben und
-  die Aktualisierung im Hintergrund durchführen.
-- `--verbose` erzwingt eine Live-Prüfung, gibt Gateway-Verbindungsdetails aus und erweitert die
-  menschenlesbare Ausgabe auf alle konfigurierten Konten und Agenten.
+  im Hintergrund aktualisieren.
+- `--verbose` erzwingt eine Live-Prüfung, gibt Details zur Gateway-Verbindung aus und erweitert die
+  menschenlesbare Ausgabe über alle konfigurierten Konten und Agenten hinweg.
 - Die Ausgabe enthält Session Stores pro Agent, wenn mehrere Agenten konfiguriert sind.
 
-## Verwandt
+## Verwandte Themen
 
 - [CLI-Referenz](/de/cli)
-- [Gateway-Integrität](/de/gateway/health)
+- [Gateway-Integritätsstatus](/de/gateway/health)
