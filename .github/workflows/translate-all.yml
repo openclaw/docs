@@ -466,4 +466,3 @@ jobs:
         run: |
           set -euo pipefail
           gh workflow run pages.yml --ref main
-          gh workflow run docs-live-smoke.yml --ref main

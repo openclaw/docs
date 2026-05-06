@@ -14,6 +14,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: write
   contents: read
   pages: write
   id-token: write
@@ -87,3 +88,8 @@ jobs:
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v5
+
+      - name: Dispatch live smoke
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run docs-live-smoke.yml --ref main

@@ -1,9 +1,6 @@
 name: Docs Live Smoke
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 permissions:
