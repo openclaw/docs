@@ -5,17 +5,15 @@ read_when:
 summary: 'Plugin Zalo Personal : connexion par QR code + messagerie via zca-js natif (installation du Plugin + configuration du canal + outil)'
 title: Plugin personnel Zalo
 x-i18n:
-    generated_at: "2026-05-02T22:21:45Z"
+    generated_at: "2026-05-06T17:59:36Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b8bcead1a6425587a2cae40e4e817c45b9adf8afbfce6dc673065cc98353f844
+    source_hash: 423325f99ddb5b39bba4c5f3aa71215edfdc092c872f92b5d2f00b6ea691246f
     source_path: plugins/zalouser.md
     workflow: 16
 ---
 
-# Zalo Personal (Plugin)
-
-Prise en charge de Zalo Personal pour OpenClaw via un Plugin, en utilisant `zca-js` natif pour automatiser un compte utilisateur Zalo normal.
+Prise en charge de Zalo Personal pour OpenClaw via un plugin, avec `zca-js` natif pour automatiser un compte utilisateur Zalo normal.
 
 <Warning>
 L’automatisation non officielle peut entraîner la suspension ou le bannissement du compte. À utiliser à vos propres risques.
@@ -27,13 +25,13 @@ L’identifiant du canal est `zalouser` afin d’indiquer explicitement que cela
 
 ## Où il s’exécute
 
-Ce Plugin s’exécute **à l’intérieur du processus Gateway**.
+Ce plugin s’exécute **dans le processus Gateway**.
 
-Si vous utilisez un Gateway distant, installez-le/configurez-le sur la **machine qui exécute le Gateway**, puis redémarrez le Gateway.
+Si vous utilisez un Gateway distant, installez-le/configurez-le sur la **machine exécutant le Gateway**, puis redémarrez le Gateway.
 
 Aucun binaire CLI externe `zca`/`openzca` n’est requis.
 
-## Installer
+## Installation
 
 ### Option A : installer depuis npm
 
@@ -41,7 +39,7 @@ Aucun binaire CLI externe `zca`/`openzca` n’est requis.
 openclaw plugins install @openclaw/zalouser
 ```
 
-Utilisez le paquet nu pour suivre le tag de version officielle actuel. Épinglez une
+Utilisez le package nu pour suivre le tag de version officielle actuel. Épinglez une
 version exacte uniquement lorsque vous avez besoin d’une installation reproductible.
 
 Redémarrez ensuite le Gateway.
@@ -58,7 +56,7 @@ Redémarrez ensuite le Gateway.
 
 ## Configuration
 
-La configuration du canal se trouve sous `channels.zalouser` (et non sous `plugins.entries.*`) :
+La configuration du canal se trouve sous `channels.zalouser` (et non `plugins.entries.*`) :
 
 ```json5
 {
@@ -89,7 +87,7 @@ Actions : `send`, `image`, `link`, `friends`, `groups`, `me`, `status`
 
 Les actions de message de canal prennent également en charge `react` pour les réactions aux messages.
 
-## Connexe
+## Associé
 
-- [Créer des Plugins](/fr/plugins/building-plugins)
-- [Plugins de la communauté](/fr/plugins/community)
+- [Créer des plugins](/fr/plugins/building-plugins)
+- [Plugins communautaires](/fr/plugins/community)

@@ -1,21 +1,19 @@
 ---
 read_when:
-    - Vous souhaitez choisir un fournisseur de modèles
-    - Vous voulez des exemples de configuration rapide pour l’authentification LLM + la sélection du modèle
+    - Vous souhaitez choisir un fournisseur de modèle
+    - Vous voulez des exemples de configuration rapide pour l’authentification LLM et la sélection de modèles
 summary: Fournisseurs de modèles (LLM) pris en charge par OpenClaw
 title: Démarrage rapide du fournisseur de modèles
 x-i18n:
-    generated_at: "2026-04-30T07:44:42Z"
+    generated_at: "2026-05-06T18:00:05Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3f71f9ab34df2b545128bfeed3cab82f31b741d4a66263113068568ce6b77cd6
+    source_hash: 7e95d37f3e332a9b2eb58a15dc356ad02b4cbf409926adb3faf1923825219887
     source_path: providers/models.md
     workflow: 16
 ---
 
-# Fournisseurs de modèles
-
-OpenClaw peut utiliser de nombreux fournisseurs de LLM. Choisissez-en un, authentifiez-vous, puis définissez le modèle par défaut au format `provider/model`.
+OpenClaw peut utiliser de nombreux fournisseurs de LLM. Choisissez-en un, authentifiez-vous, puis définissez le modèle par défaut sous la forme `provider/model`.
 
 ## Démarrage rapide (deux étapes)
 
@@ -57,16 +55,16 @@ OpenClaw peut utiliser de nombreux fournisseurs de LLM. Choisissez-en un, authen
 - [xAI](/fr/providers/xai)
 - [Z.AI](/fr/providers/zai)
 
-## Variantes de fournisseurs intégrées supplémentaires
+## Variantes supplémentaires de fournisseurs groupées
 
-- `anthropic-vertex` - prise en charge implicite d’Anthropic sur Google Vertex lorsque des identifiants Vertex sont disponibles ; aucun choix d’authentification d’onboarding distinct
-- `copilot-proxy` - pont local VS Code Copilot Proxy ; utilisez `openclaw onboard --auth-choice copilot-proxy`
-- `google-gemini-cli` - flux OAuth non officiel de Gemini CLI ; nécessite une installation locale de `gemini` (`brew install gemini-cli` ou `npm install -g @google/gemini-cli`) ; modèle par défaut `google-gemini-cli/gemini-3-flash-preview` ; utilisez `openclaw onboard --auth-choice google-gemini-cli` ou `openclaw models auth login --provider google-gemini-cli --set-default`
+- `anthropic-vertex` - prise en charge implicite d’Anthropic sur Google Vertex lorsque les identifiants Vertex sont disponibles ; aucun choix d’authentification d’intégration distinct
+- `copilot-proxy` - passerelle locale VS Code Copilot Proxy ; utilisez `openclaw onboard --auth-choice copilot-proxy`
+- `google-gemini-cli` - flux OAuth non officiel Gemini CLI ; nécessite une installation locale de `gemini` (`brew install gemini-cli` ou `npm install -g @google/gemini-cli`) ; modèle par défaut `google-gemini-cli/gemini-3-flash-preview` ; utilisez `openclaw onboard --auth-choice google-gemini-cli` ou `openclaw models auth login --provider google-gemini-cli --set-default`
 
 Pour le catalogue complet des fournisseurs (xAI, Groq, Mistral, etc.) et la configuration avancée, consultez [Fournisseurs de modèles](/fr/concepts/model-providers).
 
-## Associés
+## Connexe
 
-- [Sélection du modèle](/fr/concepts/model-providers)
+- [Sélection de modèle](/fr/concepts/model-providers)
 - [Basculement de modèle](/fr/concepts/model-failover)
 - [CLI des modèles](/fr/cli/models)

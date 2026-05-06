@@ -3,18 +3,18 @@ read_when:
     - Apprendre à configurer OpenClaw
     - Recherche d’exemples de configuration
     - Configurer OpenClaw pour la première fois
-summary: Exemples de configuration conformes au schéma pour les configurations OpenClaw courantes
+summary: Exemples de configuration conformes au schéma pour les installations OpenClaw courantes
 title: Exemples de configuration
 x-i18n:
-    generated_at: "2026-05-04T02:24:37Z"
+    generated_at: "2026-05-06T17:55:35Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 60c8c2d731f8dce93c4d14657041d72043bc36e3d71ab6cb13c02993ba90dbe3
+    source_hash: 01dd16c73f1156c4012fd3956083062141825b502722b6aa34f1f90462a6823a
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Les exemples ci-dessous sont alignés avec le schéma de configuration actuel. Pour la référence exhaustive et les notes champ par champ, consultez [Configuration](/fr/gateway/configuration).
+Les exemples ci-dessous sont alignés sur le schéma de configuration actuel. Pour la référence exhaustive et les notes champ par champ, consultez [Configuration](/fr/gateway/configuration).
 
 ## Démarrage rapide
 
@@ -27,7 +27,7 @@ Les exemples ci-dessous sont alignés avec le schéma de configuration actuel. P
 }
 ```
 
-Enregistrez dans `~/.openclaw/openclaw.json` et vous pouvez envoyer un message privé au bot depuis ce numéro.
+Enregistrez dans `~/.openclaw/openclaw.json` et vous pourrez envoyer un message privé au bot depuis ce numéro.
 
 ### Configuration de départ recommandée
 
@@ -59,7 +59,7 @@ Enregistrez dans `~/.openclaw/openclaw.json` et vous pouvez envoyer un message p
 
 ## Exemple étendu (options principales)
 
-> JSON5 permet d’utiliser des commentaires et des virgules finales. Le JSON classique fonctionne aussi.
+> JSON5 vous permet d’utiliser des commentaires et des virgules finales. Le JSON standard fonctionne aussi.
 
 ```json5
 {
@@ -473,7 +473,7 @@ Enregistrez dans `~/.openclaw/openclaw.json` et vous pouvez envoyer un message p
 
 ## Modèles courants
 
-### Base de Skills partagée avec une surcharge
+### Référence Skills partagée avec une seule substitution
 
 ```json5
 {
@@ -492,7 +492,7 @@ Enregistrez dans `~/.openclaw/openclaw.json` et vous pouvez envoyer un message p
 
 - `agents.defaults.skills` est la base partagée.
 - `agents.list[].skills` remplace cette base pour un agent.
-- Utilisez `skills: []` lorsqu’un agent ne doit voir aucune compétence.
+- Utilisez `skills: []` lorsqu’un agent ne doit voir aucune Skills.
 
 ### Configuration multiplateforme
 
@@ -517,8 +517,8 @@ Enregistrez dans `~/.openclaw/openclaw.json` et vous pouvez envoyer un message p
 
 ### Approbation automatique du réseau de nœuds de confiance
 
-Gardez l’appairage des appareils manuel sauf si vous contrôlez le chemin réseau. Pour un laboratoire dédié
-ou un sous-réseau tailnet, vous pouvez activer l’approbation automatique des appareils de nœud lors de leur première connexion
+Gardez l’appairage des appareils manuel, sauf si vous contrôlez le chemin réseau. Pour un laboratoire dédié
+ou un sous-réseau tailnet, vous pouvez activer l’approbation automatique des appareils nœuds à la première connexion
 avec des CIDR ou des IP exacts :
 
 ```json5
@@ -533,13 +533,13 @@ avec des CIDR ou des IP exacts :
 }
 ```
 
-Ce réglage reste désactivé lorsqu’il n’est pas défini. Il s’applique uniquement au nouvel appairage `role: node`
-sans portées demandées. Les clients opérateur/navigateur ainsi que les mises à niveau de rôle, de portée, de métadonnées ou
+Cela reste désactivé si ce paramètre n’est pas défini. Cela s’applique uniquement à un nouvel appairage `role: node` sans
+portées demandées. Les clients opérateur/navigateur ainsi que les mises à niveau de rôle, de portée, de métadonnées ou
 de clé publique nécessitent toujours une approbation manuelle.
 
 ### Mode DM sécurisé (boîte de réception partagée / DM multi-utilisateurs)
 
-Si plusieurs personnes peuvent envoyer un DM à votre bot (plusieurs entrées dans `allowFrom`, approbations d’appairage pour plusieurs personnes, ou `dmPolicy: "open"`), activez le **mode DM sécurisé** afin que les DM de différents expéditeurs ne partagent pas un même contexte par défaut :
+Si plusieurs personnes peuvent envoyer un DM à votre bot (plusieurs entrées dans `allowFrom`, approbations d’appairage pour plusieurs personnes, ou `dmPolicy: "open"`), activez le **mode DM sécurisé** afin que les DM provenant de différents expéditeurs ne partagent pas un même contexte par défaut :
 
 ```json5
 {
@@ -563,10 +563,10 @@ Si plusieurs personnes peuvent envoyer un DM à votre bot (plusieurs entrées da
 }
 ```
 
-Pour Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, l’autorisation de l’expéditeur se fait d’abord par ID par défaut.
-N’activez la correspondance directe mutable par nom/e-mail/pseudo avec `dangerouslyAllowNameMatching: true` de chaque canal que si vous acceptez explicitement ce risque.
+Pour Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, l’autorisation de l’expéditeur est basée d’abord sur l’ID par défaut.
+N’activez la correspondance directe mutable par nom/e-mail/pseudonyme avec `dangerouslyAllowNameMatching: true` de chaque canal que si vous acceptez explicitement ce risque.
 
-### Clé API Anthropic + repli MiniMax
+### Clé API Anthropic + solution de secours MiniMax
 
 ```json5
 {
@@ -660,11 +660,11 @@ N’activez la correspondance directe mutable par nom/e-mail/pseudo avec `danger
 ## Conseils
 
 - Si vous définissez `dmPolicy: "open"`, la liste `allowFrom` correspondante doit inclure `"*"`.
-- Les ID de fournisseurs diffèrent (numéros de téléphone, ID d’utilisateurs, ID de canaux). Utilisez la documentation du fournisseur pour confirmer le format.
+- Les ID de fournisseurs diffèrent (numéros de téléphone, ID utilisateur, ID de canal). Consultez la documentation du fournisseur pour confirmer le format.
 - Sections facultatives à ajouter plus tard : `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
 - Consultez [Fournisseurs](/fr/providers) et [Dépannage](/fr/gateway/troubleshooting) pour des notes de configuration plus détaillées.
 
-## Associé
+## Connexe
 
 - [Référence de configuration](/fr/gateway/configuration-reference)
 - [Configuration](/fr/gateway/configuration)
