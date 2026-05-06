@@ -4,40 +4,40 @@ read_when:
 summary: Estados e animações do ícone da barra de menus do OpenClaw no macOS
 title: Ícone da barra de menus
 x-i18n:
-    generated_at: "2026-04-24T06:01:23Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T06:03:23Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 6900d702358afcf0481f713ea334236e1abf973d0eeff60eaf0afcf88f9327b2
+    source_hash: 5497927721ff7486e9585a8a3edc2d5140408b2b0707acdcef2388e87bca20ec
     source_path: platforms/mac/icon.md
-    workflow: 15
+    workflow: 16
 ---
 
 # Estados do ícone da barra de menus
 
-Autor: steipete · Atualizado: 2025-12-06 · Escopo: app macOS (`apps/macos`)
+Autor: steipete · Atualizado: 2025-12-06 · Escopo: app para macOS (`apps/macos`)
 
-- **Idle:** animação normal do ícone (piscar, leve balançar ocasional).
-- **Paused:** o item de status usa `appearsDisabled`; sem movimento.
-- **Voice trigger (orelhas grandes):** o detector de voice wake chama `AppState.triggerVoiceEars(ttl: nil)` quando a palavra de ativação é ouvida, mantendo `earBoostActive=true` enquanto a fala é capturada. As orelhas aumentam (1.9x), ganham furos circulares para legibilidade e depois voltam ao normal via `stopVoiceEars()` após 1s de silêncio. Disparado apenas pelo pipeline de voz no app.
-- **Working (agente em execução):** `AppState.isWorking=true` aciona um micromovimento de “correria de cauda/perna”: movimento mais rápido das pernas e leve deslocamento enquanto o trabalho está em andamento. Atualmente é alternado em torno das execuções de agente do WebChat; adicione o mesmo controle em outras tarefas longas quando você conectá-las.
+- **Ocioso:** Animação normal do ícone (piscar, balanço ocasional).
+- **Pausado:** O item de status usa `appearsDisabled`; sem movimento.
+- **Acionador de voz (orelhas grandes):** O detector de ativação por voz chama `AppState.triggerVoiceEars(ttl: nil)` quando a palavra de ativação é ouvida, mantendo `earBoostActive=true` enquanto a fala é capturada. As orelhas aumentam de escala (1,9x), recebem furos circulares para facilitar a leitura e depois retornam via `stopVoiceEars()` após 1s de silêncio. Acionado somente pelo pipeline de voz dentro do app.
+- **Trabalhando (agente em execução):** `AppState.isWorking=true` aciona uma micromovimentação de "corrida da cauda/perna": balanço mais rápido da perna e leve deslocamento enquanto o trabalho está em andamento. Atualmente alternado em torno das execuções do agente do WebChat; adicione a mesma alternância em torno de outras tarefas longas quando conectá-las.
 
-Pontos de ligação
+Pontos de conexão
 
-- Voice wake: runtime/tester chama `AppState.triggerVoiceEars(ttl: nil)` no disparo e `stopVoiceEars()` após 1s de silêncio para corresponder à janela de captura.
-- Atividade do agente: defina `AppStateStore.shared.setWorking(true/false)` em torno de intervalos de trabalho (já feito na chamada do agente WebChat). Mantenha os intervalos curtos e redefina em blocos `defer` para evitar animações travadas.
+- Ativação por voz: a chamada de runtime/testador usa `AppState.triggerVoiceEars(ttl: nil)` no acionamento e `stopVoiceEars()` após 1s de silêncio para corresponder à janela de captura.
+- Atividade do agente: defina `AppStateStore.shared.setWorking(true/false)` em torno dos intervalos de trabalho (já feito na chamada do agente do WebChat). Mantenha os intervalos curtos e redefina em blocos `defer` para evitar animações travadas.
 
 Formas e tamanhos
 
 - Ícone base desenhado em `CritterIconRenderer.makeIcon(blink:legWiggle:earWiggle:earScale:earHoles:)`.
-- A escala das orelhas usa `1.0` por padrão; o boost de voz define `earScale=1.9` e ativa `earHoles=true` sem alterar o quadro geral (imagem template de 18×18 pt renderizada em um backing store Retina de 36×36 px).
-- Scurry usa movimento de pernas até ~1.0 com uma pequena oscilação horizontal; é aditivo a qualquer balançar idle existente.
+- A escala das orelhas é `1.0` por padrão; o reforço de voz define `earScale=1.9` e alterna `earHoles=true` sem alterar o quadro geral (imagem de modelo de 18×18 pt renderizada em um armazenamento de apoio Retina de 36×36 px).
+- A corrida usa balanço da perna até ~1,0 com uma pequena oscilação horizontal; é aditiva a qualquer balanço ocioso existente.
 
-Observações de comportamento
+Observações comportamentais
 
-- Não há alternância externa por CLI/broker para ears/working; mantenha isso interno aos sinais do próprio app para evitar oscilações acidentais.
-- Mantenha TTLs curtos (&lt;10s) para que o ícone volte rapidamente à linha de base se uma tarefa travar.
+- Sem alternância externa de CLI/broker para orelhas/trabalho; mantenha isso interno aos próprios sinais do app para evitar oscilação acidental.
+- Mantenha os TTLs curtos (&lt;10s) para que o ícone retorne rapidamente ao estado inicial se uma tarefa travar.
 
 ## Relacionados
 
-- [Menu bar](/pt-BR/platforms/mac/menu-bar)
-- [macOS app](/pt-BR/platforms/macos)
+- [Barra de menus](/pt-BR/platforms/mac/menu-bar)
+- [App para macOS](/pt-BR/platforms/macos)

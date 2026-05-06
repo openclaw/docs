@@ -3,26 +3,26 @@ read_when:
     - Você precisa de um método de instalação diferente do início rápido de Primeiros passos
     - Você quer implantar em uma plataforma de nuvem
     - Você precisa atualizar, migrar ou desinstalar
-summary: Instalar o OpenClaw — script de instalação, npm/pnpm/bun, do código-fonte, Docker e mais
+summary: Instale o OpenClaw - script de instalação, npm/pnpm/bun, a partir do código-fonte, Docker e muito mais
 title: Instalar
 x-i18n:
-    generated_at: "2026-04-26T11:32:02Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T06:00:41Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b8dc6b9511be6bf9060cc150a7c51daf3b6d556dab4a85910094b4b892145cd7
+    source_hash: 2d5b38787ad80f91c82aa1fd4020a11c99f440ccbf2e9b9309da336dd5883462
     source_path: install/index.md
-    workflow: 15
+    workflow: 16
 ---
 
 ## Requisitos do sistema
 
-- **Node 24** (recomendado) ou Node 22.14+ — o script do instalador cuida disso automaticamente
-- **macOS, Linux ou Windows** — tanto Windows nativo quanto WSL2 são compatíveis; WSL2 é mais estável. Consulte [Windows](/pt-BR/platforms/windows).
+- **Node 24** (recomendado) ou Node 22.14+ - o script instalador cuida disso automaticamente
+- **macOS, Linux ou Windows** - tanto o Windows nativo quanto o WSL2 têm suporte; o WSL2 é mais estável. Consulte [Windows](/pt-BR/platforms/windows).
 - `pnpm` só é necessário se você compilar a partir do código-fonte
 
-## Recomendado: script do instalador
+## Recomendado: script instalador
 
-A forma mais rápida de instalar. Ele detecta seu SO, instala o Node se necessário, instala o OpenClaw e inicia o onboarding.
+A forma mais rápida de instalar. Ele detecta seu sistema operacional, instala o Node se necessário, instala o OpenClaw e inicia a integração inicial.
 
 <Tabs>
   <Tab title="macOS / Linux / WSL2">
@@ -37,7 +37,7 @@ A forma mais rápida de instalar. Ele detecta seu SO, instala o Node se necessá
   </Tab>
 </Tabs>
 
-Para instalar sem executar o onboarding:
+Para instalar sem executar a integração inicial:
 
 <Tabs>
   <Tab title="macOS / Linux / WSL2">
@@ -52,25 +52,25 @@ Para instalar sem executar o onboarding:
   </Tab>
 </Tabs>
 
-Para todos os flags e opções de CI/automação, consulte [Detalhes internos do instalador](/pt-BR/install/installer).
+Para todas as flags e opções de CI/automação, consulte [Detalhes internos do instalador](/pt-BR/install/installer).
 
 ## Métodos alternativos de instalação
 
-### Instalador com prefixo local (`install-cli.sh`)
+### Instalador de prefixo local (`install-cli.sh`)
 
-Use isto quando quiser manter o OpenClaw e o Node sob um prefixo local como
-`~/.openclaw`, sem depender de uma instalação do Node em todo o sistema:
+Use isso quando quiser manter o OpenClaw e o Node em um prefixo local, como
+`~/.openclaw`, sem depender de uma instalação de Node em todo o sistema:
 
 ```bash
 curl -fsSL https://openclaw.ai/install-cli.sh | bash
 ```
 
-Ele oferece suporte a instalações npm por padrão, além de instalações por checkout git dentro do mesmo
+Ele oferece suporte a instalações via npm por padrão, além de instalações por checkout do git no mesmo
 fluxo de prefixo. Referência completa: [Detalhes internos do instalador](/pt-BR/install/installer#install-clish).
 
-Já instalou? Alterne entre instalações por pacote e por git com
+Já instalado? Alterne entre instalações de pacote e git com
 `openclaw update --channel dev` e `openclaw update --channel stable`. Consulte
-[Atualizando](/pt-BR/install/updating#switch-between-npm-and-git-installs).
+[Atualização](/pt-BR/install/updating#switch-between-npm-and-git-installs).
 
 ### npm, pnpm ou bun
 
@@ -91,7 +91,7 @@ Se você já gerencia o Node por conta própria:
     ```
 
     <Note>
-    pnpm exige aprovação explícita para pacotes com scripts de build. Execute `pnpm approve-builds -g` após a primeira instalação.
+    O pnpm exige aprovação explícita para pacotes com scripts de build. Execute `pnpm approve-builds -g` após a primeira instalação.
     </Note>
 
   </Tab>
@@ -102,14 +102,14 @@ Se você já gerencia o Node por conta própria:
     ```
 
     <Note>
-    Bun é compatível com o caminho de instalação global da CLI. Para o runtime do Gateway, Node continua sendo o runtime de daemon recomendado.
+    O Bun tem suporte para o caminho de instalação global da CLI. Para o runtime do Gateway, o Node continua sendo o runtime de daemon recomendado.
     </Note>
 
   </Tab>
 </Tabs>
 
-<Accordion title="Solução de problemas: erros de build do sharp (npm)">
-  Se `sharp` falhar devido a um libvips instalado globalmente:
+<Accordion title="Troubleshooting: sharp build errors (npm)">
+  Se `sharp` falhar por causa de uma libvips instalada globalmente:
 
 ```bash
 SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install -g openclaw@latest
@@ -129,9 +129,9 @@ pnpm link --global
 openclaw onboard --install-daemon
 ```
 
-Ou ignore o link e use `pnpm openclaw ...` de dentro do repositório. Consulte [Setup](/pt-BR/start/setup) para os fluxos completos de desenvolvimento.
+Ou ignore o link e use `pnpm openclaw ...` de dentro do repositório. Consulte [Configuração](/pt-BR/start/setup) para fluxos de trabalho completos de desenvolvimento.
 
-### Instalar a partir do main do GitHub
+### Instalar a partir da main do GitHub
 
 ```bash
 npm install -g github:openclaw/openclaw#main
@@ -141,10 +141,10 @@ npm install -g github:openclaw/openclaw#main
 
 <CardGroup cols={2}>
   <Card title="Docker" href="/pt-BR/install/docker" icon="container">
-    Implantações em contêiner ou headless.
+    Implantações em contêiner ou sem interface gráfica.
   </Card>
   <Card title="Podman" href="/pt-BR/install/podman" icon="container">
-    Alternativa rootless ao Docker para contêineres.
+    Alternativa de contêiner sem root ao Docker.
   </Card>
   <Card title="Nix" href="/pt-BR/install/nix" icon="snowflake">
     Instalação declarativa via flake do Nix.
@@ -153,23 +153,23 @@ npm install -g github:openclaw/openclaw#main
     Provisionamento automatizado de frota.
   </Card>
   <Card title="Bun" href="/pt-BR/install/bun" icon="zap">
-    Uso apenas da CLI via runtime Bun.
+    Uso somente da CLI pelo runtime Bun.
   </Card>
 </CardGroup>
 
-## Verifique a instalação
+## Verificar a instalação
 
 ```bash
-openclaw --version      # confirme que a CLI está disponível
-openclaw doctor         # verifique problemas de configuração
-openclaw gateway status # verifique se o Gateway está em execução
+openclaw --version      # confirm the CLI is available
+openclaw doctor         # check for config issues
+openclaw gateway status # verify the Gateway is running
 ```
 
 Se você quiser inicialização gerenciada após a instalação:
 
 - macOS: LaunchAgent via `openclaw onboard --install-daemon` ou `openclaw gateway install`
-- Linux/WSL2: serviço systemd de usuário pelos mesmos comandos
-- Windows nativo: Scheduled Task primeiro, com fallback para um item de login na pasta Startup por usuário se a criação da tarefa for negada
+- Linux/WSL2: serviço de usuário systemd pelos mesmos comandos
+- Windows nativo: Scheduled Task primeiro, com fallback para um item de login por usuário na pasta Startup se a criação da tarefa for negada
 
 ## Hospedagem e implantação
 
@@ -191,31 +191,31 @@ Implante o OpenClaw em um servidor em nuvem ou VPS:
 ## Atualizar, migrar ou desinstalar
 
 <CardGroup cols={3}>
-  <Card title="Atualizando" href="/pt-BR/install/updating" icon="refresh-cw">
+  <Card title="Updating" href="/pt-BR/install/updating" icon="refresh-cw">
     Mantenha o OpenClaw atualizado.
   </Card>
-  <Card title="Migrando" href="/pt-BR/install/migrating" icon="arrow-right">
-    Mude para uma nova máquina.
+  <Card title="Migrating" href="/pt-BR/install/migrating" icon="arrow-right">
+    Migre para uma nova máquina.
   </Card>
-  <Card title="Desinstalar" href="/pt-BR/install/uninstall" icon="trash-2">
+  <Card title="Uninstall" href="/pt-BR/install/uninstall" icon="trash-2">
     Remova o OpenClaw completamente.
   </Card>
 </CardGroup>
 
 ## Solução de problemas: `openclaw` não encontrado
 
-Se a instalação foi bem-sucedida, mas `openclaw` não for encontrado no terminal:
+Se a instalação foi concluída com sucesso, mas `openclaw` não é encontrado no seu terminal:
 
 ```bash
-node -v           # Node instalado?
-npm prefix -g     # Onde estão os pacotes globais?
-echo "$PATH"      # O diretório global bin está no PATH?
+node -v           # Node installed?
+npm prefix -g     # Where are global packages?
+echo "$PATH"      # Is the global bin dir in PATH?
 ```
 
-Se `$(npm prefix -g)/bin` não estiver no seu `$PATH`, adicione-o ao arquivo de inicialização do shell (`~/.zshrc` ou `~/.bashrc`):
+Se `$(npm prefix -g)/bin` não estiver no seu `$PATH`, adicione-o ao arquivo de inicialização do seu shell (`~/.zshrc` ou `~/.bashrc`):
 
 ```bash
 export PATH="$(npm prefix -g)/bin:$PATH"
 ```
 
-Depois abra um novo terminal. Consulte [Configuração do Node](/pt-BR/install/node) para mais detalhes.
+Então abra um novo terminal. Consulte [Configuração do Node](/pt-BR/install/node) para mais detalhes.

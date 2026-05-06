@@ -1,102 +1,54 @@
 ---
 read_when:
-    - Você precisa entender como timestamps são normalizados para o modelo
-    - Configurando o fuso horário do usuário para prompts de sistema
-summary: Tratamento de fuso horário para agentes, envelopes e prompts
+    - Você quer um modelo mental rápido para lidar com fusos horários
+    - Você está decidindo onde definir ou substituir um fuso horário
+summary: Onde os fusos horários aparecem no OpenClaw — envelopes, payloads de ferramentas, prompt do sistema
 title: Fusos horários
 x-i18n:
-    generated_at: "2026-04-24T05:49:42Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T05:53:07Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8318acb0269f446fb3d3198f47811d40490a9ee9593fed82f31353aef2bacb81
+    source_hash: 041b207a0fa2758a20e8f3c4eca852d3dd416560d045459cb4d86709b45449e3
     source_path: concepts/timezone.md
-    workflow: 15
+    workflow: 16
 ---
 
-O OpenClaw padroniza timestamps para que o modelo veja uma **única referência de tempo**.
+O OpenClaw padroniza timestamps para que o modelo veja um **único horário de referência** em vez de uma mistura de relógios locais de provedores. Há três superfícies onde fusos horários aparecem, cada uma com sua própria finalidade:
 
-## Envelopes de mensagem (local por padrão)
+## Três superfícies de fuso horário
 
-Mensagens de entrada são encapsuladas em um envelope como:
+| Superfície        | O que ela mostra                                                                                         | Padrão                                | Configurado via                                         |
+| ----------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------- | ------------------------------------------------------- |
+| Envelopes de mensagem | Encapsula mensagens de canal recebidas: `[Signal +1555 2026-01-18 00:19 PST] hello`                      | Local do host                         | `agents.defaults.envelopeTimezone`                      |
+| Payloads de ferramentas | Ferramentas de canal no estilo `readMessages` retornam o horário bruto do provedor + `timestampMs` / `timestampUtc` normalizados | Campos UTC sempre presentes           | Não configurável — preserva timestamps nativos do provedor |
+| Prompt do sistema | Um pequeno bloco `Current Date & Time` com **apenas o fuso horário** (sem valor de relógio, para estabilidade do cache) | Fuso horário do host se `userTimezone` não estiver definido | `agents.defaults.userTimezone`                          |
 
-```
-[Provider ... 2026-01-05 16:26 PST] message text
-```
+O prompt do sistema omite deliberadamente o relógio em tempo real para manter o cache de prompts estável entre turnos. Quando o agente precisa do horário atual, ele chama `session_status`.
 
-O timestamp no envelope é **local ao host por padrão**, com precisão de minutos.
-
-Você pode substituir isso com:
+## Definindo o fuso horário do usuário
 
 ```json5
 {
   agents: {
     defaults: {
-      envelopeTimezone: "local", // "utc" | "local" | "user" | fuso horário IANA
-      envelopeTimestamp: "on", // "on" | "off"
-      envelopeElapsed: "on", // "on" | "off"
+      userTimezone: "America/Chicago",
     },
   },
 }
 ```
 
-- `envelopeTimezone: "utc"` usa UTC.
-- `envelopeTimezone: "user"` usa `agents.defaults.userTimezone` (recorre ao fuso horário do host).
-- Use um fuso horário IANA explícito (por exemplo, `"Europe/Vienna"`) para um deslocamento fixo.
-- `envelopeTimestamp: "off"` remove timestamps absolutos dos cabeçalhos do envelope.
-- `envelopeElapsed: "off"` remove sufixos de tempo decorrido (o estilo `+2m`).
+Se `userTimezone` não estiver definido, o OpenClaw resolve o fuso horário do host em tempo de execução (sem gravar configuração). `agents.defaults.timeFormat` (`auto` | `12` | `24`) controla a renderização em 12h/24h nos envelopes e em superfícies downstream, não na seção do prompt do sistema.
 
-### Exemplos
+## Quando substituir
 
-**Local (padrão):**
+- **Use envelopes em UTC** (`envelopeTimezone: "utc"`) quando quiser timestamps estáveis entre hosts em regiões diferentes, ou quando quiser que logs alinhados a UTC correspondam à saída de diagnóstico.
+- **Use uma zona IANA fixa** (por exemplo, `"Europe/Vienna"`) quando o host do Gateway estiver em uma zona, mas o usuário estiver em outra, e você quiser que os envelopes sejam lidos na zona do usuário independentemente da migração do host.
+- **Defina `envelopeTimestamp: "off"`** para envelopes com poucos tokens quando o contexto de timestamp não for útil para a conversa.
 
-```
-[Signal Alice +1555 2026-01-18 00:19 PST] hello
-```
+Para a referência completa de comportamento, exemplos por provedor e formatação de tempo decorrido, consulte [Data e Hora](/pt-BR/date-time).
 
-**Fuso horário fixo:**
+## Relacionados
 
-```
-[Signal Alice +1555 2026-01-18 06:19 GMT+1] hello
-```
-
-**Tempo decorrido:**
-
-```
-[Signal Alice +1555 +2m 2026-01-18T05:19Z] follow-up
-```
-
-## Payloads de ferramentas (dados brutos do provedor + campos normalizados)
-
-Chamadas de ferramenta (`channels.discord.readMessages`, `channels.slack.readMessages` etc.) retornam **timestamps brutos do provedor**.
-Também anexamos campos normalizados para consistência:
-
-- `timestampMs` (milissegundos de época UTC)
-- `timestampUtc` (string UTC ISO 8601)
-
-Os campos brutos do provedor são preservados.
-
-## Fuso horário do usuário para o prompt de sistema
-
-Defina `agents.defaults.userTimezone` para informar ao modelo o fuso horário local do usuário. Se ele
-não estiver definido, o OpenClaw resolve o **fuso horário do host em tempo de execução** (sem gravar na configuração).
-
-```json5
-{
-  agents: { defaults: { userTimezone: "America/Chicago" } },
-}
-```
-
-O prompt de sistema inclui:
-
-- Seção `Current Date & Time` com hora local e fuso horário
-- `Time format: 12-hour` ou `24-hour`
-
-Você pode controlar o formato do prompt com `agents.defaults.timeFormat` (`auto` | `12` | `24`).
-
-Consulte [Data e hora](/pt-BR/date-time) para o comportamento completo e exemplos.
-
-## Relacionado
-
-- [Heartbeat](/pt-BR/gateway/heartbeat) — horas ativas usam fuso horário para agendamento
-- [Tarefas Cron](/pt-BR/automation/cron-jobs) — expressões Cron usam fuso horário para agendamento
-- [Data e hora](/pt-BR/date-time) — comportamento completo de data/hora e exemplos
+- [Data e Hora](/pt-BR/date-time) — comportamento e exemplos completos de envelope/ferramenta/prompt.
+- [Heartbeat](/pt-BR/gateway/heartbeat) — horários ativos usam fuso horário para agendamento.
+- [Trabalhos Cron](/pt-BR/automation/cron-jobs) — expressões cron usam fuso horário para agendamento.

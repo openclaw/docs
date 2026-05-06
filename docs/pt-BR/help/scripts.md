@@ -1,44 +1,44 @@
 ---
 read_when:
-    - Executando scripts do repositório
+    - Executando scripts a partir do repositório
     - Adicionando ou alterando scripts em ./scripts
 summary: 'Scripts do repositório: finalidade, escopo e observações de segurança'
 title: Scripts
 x-i18n:
-    generated_at: "2026-04-24T05:55:40Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T05:58:17Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8d76777402670abe355b9ad2a0337f96211af1323e36f2ab1ced9f04f87083f5
+    source_hash: 01f2e064891940959acf23c003d7e842386f67ac6c869d0677b802738ac04bdf
     source_path: help/scripts.md
-    workflow: 15
+    workflow: 16
 ---
 
-O diretório `scripts/` contém scripts auxiliares para workflows locais e tarefas operacionais.
-Use-os quando uma tarefa estiver claramente ligada a um script; caso contrário, prefira a CLI.
+O diretório `scripts/` contém scripts auxiliares para fluxos de trabalho locais e tarefas de operações.
+Use-os quando uma tarefa estiver claramente vinculada a um script; caso contrário, prefira a CLI.
 
 ## Convenções
 
 - Scripts são **opcionais**, a menos que sejam referenciados na documentação ou em checklists de release.
-- Prefira superfícies da CLI quando elas existirem (exemplo: monitoramento de autenticação usa `openclaw models status --check`).
-- Presuma que scripts sejam específicos do host; leia-os antes de executá-los em uma nova máquina.
+- Prefira superfícies da CLI quando existirem (exemplo: o monitoramento de autenticação usa `openclaw models status --check`).
+- Presuma que scripts são específicos do host; leia-os antes de executá-los em uma nova máquina.
 
 ## Scripts de monitoramento de autenticação
 
-O monitoramento de autenticação é coberto em [Autenticação](/pt-BR/gateway/authentication). Os scripts em `scripts/` são extras opcionais para workflows com systemd/Termux em telefone.
+O monitoramento de autenticação é abordado em [Autenticação](/pt-BR/gateway/authentication). Os scripts em `scripts/` são extras opcionais para fluxos de trabalho de telefones com systemd/Termux.
 
-## Helper de leitura do GitHub
+## Auxiliar de leitura do GitHub
 
-Use `scripts/gh-read` quando quiser que `gh` use um token de instalação do GitHub App para chamadas de leitura com escopo de repositório, enquanto mantém o `gh` normal com seu login pessoal para ações de escrita.
+Use `scripts/gh-read` quando quiser que `gh` use um token de instalação de GitHub App para chamadas de leitura com escopo de repositório, deixando o `gh` normal no seu login pessoal para ações de escrita.
 
-Variáveis de ambiente obrigatórias:
+Env obrigatório:
 
 - `OPENCLAW_GH_READ_APP_ID`
 - `OPENCLAW_GH_READ_PRIVATE_KEY_FILE`
 
-Variáveis de ambiente opcionais:
+Env opcional:
 
-- `OPENCLAW_GH_READ_INSTALLATION_ID` quando você quiser pular a busca de instalação baseada em repositório
-- `OPENCLAW_GH_READ_PERMISSIONS` como substituição separada por vírgulas para o subconjunto de permissões de leitura a solicitar
+- `OPENCLAW_GH_READ_INSTALLATION_ID` quando quiser pular a busca de instalação baseada em repositório
+- `OPENCLAW_GH_READ_PERMISSIONS` como uma substituição separada por vírgulas para o subconjunto de permissões de leitura a solicitar
 
 Ordem de resolução do repositório:
 
@@ -55,9 +55,9 @@ Exemplos:
 ## Ao adicionar scripts
 
 - Mantenha os scripts focados e documentados.
-- Adicione uma entrada curta na documentação relevante (ou crie uma se estiver faltando).
+- Adicione uma entrada curta na documentação relevante (ou crie uma se estiver ausente).
 
 ## Relacionado
 
 - [Testes](/pt-BR/help/testing)
-- [Testes live](/pt-BR/help/testing-live)
+- [Testes ao vivo](/pt-BR/help/testing-live)

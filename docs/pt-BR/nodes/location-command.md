@@ -1,51 +1,50 @@
 ---
 read_when:
-    - Adicionar suporte de Node de localização ou interface de permissões
-    - Projetar permissões de localização no Android ou comportamento em foreground
-summary: Comando de localização para Nodes (`location.get`), modos de permissão e comportamento de foreground no Android
+    - Adição de suporte a nó de localização ou interface de permissões
+    - Projetando permissões de localização do Android ou comportamento em primeiro plano
+summary: Comando de localização para nós (location.get), modos de permissão e comportamento em primeiro plano no Android
 title: Comando de localização
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T05:59:40Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: fcd7ae3bf411be4331d62494a5d5263e8cda345475c5f849913122c029377f06
-  source_path: nodes/location-command.md
-  workflow: 15
+    generated_at: "2026-05-06T06:02:21Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 63ed754bfdda1cf379dcb7ac40817c0b93cc1efe4526512d70258072da4bc8a7
+    source_path: nodes/location-command.md
+    workflow: 16
 ---
 
 ## Resumo
 
-- `location.get` é um comando de Node (via `node.invoke`).
+- `location.get` é um comando de nó (via `node.invoke`).
 - Desativado por padrão.
 - As configurações do app Android usam um seletor: Desativado / Durante o uso.
 - Alternância separada: Localização precisa.
 
 ## Por que um seletor (e não apenas um interruptor)
 
-Permissões do SO são multinível. Podemos expor um seletor no app, mas o SO ainda decide a concessão real.
+As permissões do SO têm vários níveis. Podemos expor um seletor no app, mas o SO ainda decide a concessão real.
 
-- iOS/macOS podem expor **Durante o uso** ou **Sempre** nos prompts/configurações do sistema.
-- O app Android atualmente oferece suporte apenas a localização em foreground.
-- Localização precisa é uma concessão separada (iOS 14+ “Precisa”, Android “fine” vs “coarse”).
+- iOS/macOS podem expor **Durante o uso** ou **Sempre** em prompts/configurações do sistema.
+- O app Android atualmente dá suporte apenas à localização em primeiro plano.
+- A localização precisa é uma concessão separada (iOS 14+ "Precisa", Android "precisa" vs "aproximada").
 
-O seletor na interface define nosso modo solicitado; a concessão real fica nas configurações do SO.
+O seletor na interface direciona o modo solicitado; a concessão real fica nas configurações do SO.
 
-## Modelo de configuração
+## Modelo de configurações
 
-Por dispositivo Node:
+Por dispositivo de nó:
 
 - `location.enabledMode`: `off | whileUsing`
 - `location.preciseEnabled`: bool
 
 Comportamento da interface:
 
-- Selecionar `whileUsing` solicita permissão em foreground.
-- Se o SO negar o nível solicitado, reverte para o nível mais alto concedido e mostra o status.
+- Selecionar `whileUsing` solicita permissão em primeiro plano.
+- Se o SO negar o nível solicitado, reverter para o nível mais alto concedido e mostrar o status.
 
-## Mapeamento de permissões (`node.permissions`)
+## Mapeamento de permissões (node.permissions)
 
-Opcional. O node macOS reporta `location` via mapa de permissões; iOS/Android podem omiti-lo.
+Opcional. O nó macOS relata `location` pelo mapa de permissões; iOS/Android podem omiti-lo.
 
 ## Comando: `location.get`
 
@@ -61,7 +60,7 @@ Parâmetros (sugeridos):
 }
 ```
 
-Payload de resposta:
+Carga útil da resposta:
 
 ```json
 {
@@ -80,31 +79,31 @@ Payload de resposta:
 Erros (códigos estáveis):
 
 - `LOCATION_DISABLED`: o seletor está desativado.
-- `LOCATION_PERMISSION_REQUIRED`: permissão ausente para o modo solicitado.
-- `LOCATION_BACKGROUND_UNAVAILABLE`: o app está em segundo plano, mas só é permitido Durante o uso.
+- `LOCATION_PERMISSION_REQUIRED`: falta permissão para o modo solicitado.
+- `LOCATION_BACKGROUND_UNAVAILABLE`: o app está em segundo plano, mas apenas Durante o uso é permitido.
 - `LOCATION_TIMEOUT`: nenhuma posição obtida a tempo.
-- `LOCATION_UNAVAILABLE`: falha do sistema / nenhum provider.
+- `LOCATION_UNAVAILABLE`: falha do sistema / nenhum provedor.
 
 ## Comportamento em segundo plano
 
 - O app Android nega `location.get` quando está em segundo plano.
 - Mantenha o OpenClaw aberto ao solicitar localização no Android.
-- Outras plataformas de Node podem se comportar de forma diferente.
+- Outras plataformas de nó podem ser diferentes.
 
-## Integração com modelo/ferramentas
+## Integração de modelo/ferramentas
 
-- Superfície de ferramenta: a ferramenta `nodes` adiciona a ação `location_get` (Node obrigatório).
+- Superfície de ferramenta: a ferramenta `nodes` adiciona a ação `location_get` (nó obrigatório).
 - CLI: `openclaw nodes location get --node <id>`.
-- Diretrizes do agente: chame apenas quando o usuário tiver ativado a localização e entendido o escopo.
+- Diretrizes para agente: chamar apenas quando o usuário tiver ativado a localização e entender o escopo.
 
 ## Texto de UX (sugerido)
 
-- Desativado: “O compartilhamento de localização está desativado.”
-- Durante o uso: “Somente quando o OpenClaw estiver aberto.”
-- Precisa: “Use localização GPS precisa. Desative para compartilhar localização aproximada.”
+- Desativado: "O compartilhamento de localização está desativado."
+- Durante o uso: "Somente quando o OpenClaw está aberto."
+- Precisa: "Use localização GPS precisa. Desative para compartilhar localização aproximada."
 
 ## Relacionado
 
-- [Análise de localização de canal](/pt-BR/channels/location)
+- [Análise de localização do canal](/pt-BR/channels/location)
 - [Captura de câmera](/pt-BR/nodes/camera)
-- [Modo Talk](/pt-BR/nodes/talk)
+- [Modo de conversa](/pt-BR/nodes/talk)

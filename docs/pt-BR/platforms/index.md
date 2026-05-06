@@ -1,27 +1,27 @@
 ---
 read_when:
-    - Procurando suporte a SO ou caminhos de instalação
+    - Procurando suporte a sistemas operacionais ou caminhos de instalação
     - Decidindo onde executar o Gateway
-summary: Visão geral do suporte a plataformas (Gateway + apps complementares)
+summary: Visão geral do suporte a plataformas (Gateway + aplicativos complementares)
 title: Plataformas
 x-i18n:
-    generated_at: "2026-04-24T06:00:38Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T06:02:48Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 3ebed9f219f3072ef760006eef47ca78f87169c40a6098c3585dfaf6169fc594
+    source_hash: dd1fbd1af8b03a12014d91b2f300fb8ec65b9c42c38ada2b9ca089181140a75c
     source_path: platforms/index.md
-    workflow: 15
+    workflow: 16
 ---
 
-O núcleo do OpenClaw é escrito em TypeScript. **Node é o runtime recomendado**.
-Bun não é recomendado para o Gateway — há problemas conhecidos com os canais WhatsApp e
-Telegram; consulte [Bun (experimental)](/pt-BR/install/bun) para detalhes.
+OpenClaw core é escrito em TypeScript. **Node é o runtime recomendado**.
+Bun não é recomendado para o Gateway — há problemas conhecidos com os canais
+WhatsApp e Telegram; consulte [Bun (experimental)](/pt-BR/install/bun) para detalhes.
 
-Existem apps complementares para macOS (app de barra de menu) e nodes móveis (iOS/Android). Apps complementares para Windows e
-Linux estão planejados, mas o Gateway já tem suporte completo hoje.
+Existem apps complementares para macOS (app de barra de menus) e nodes móveis (iOS/Android). Apps complementares para Windows e
+Linux estão planejados, mas o Gateway tem suporte completo hoje.
 Apps complementares nativos para Windows também estão planejados; o Gateway é recomendado via WSL2.
 
-## Escolha seu SO
+## Escolha seu sistema operacional
 
 - macOS: [macOS](/pt-BR/platforms/macos)
 - iOS: [iOS](/pt-BR/platforms/ios)
@@ -35,7 +35,7 @@ Apps complementares nativos para Windows também estão planejados; o Gateway é
 - Fly.io: [Fly.io](/pt-BR/install/fly)
 - Hetzner (Docker): [Hetzner](/pt-BR/install/hetzner)
 - GCP (Compute Engine): [GCP](/pt-BR/install/gcp)
-- Azure (Linux VM): [Azure](/pt-BR/install/azure)
+- Azure (VM Linux): [Azure](/pt-BR/install/azure)
 - exe.dev (VM + proxy HTTPS): [exe.dev](/pt-BR/install/exe-dev)
 
 ## Links comuns
@@ -47,21 +47,21 @@ Apps complementares nativos para Windows também estão planejados; o Gateway é
 
 ## Instalação do serviço do Gateway (CLI)
 
-Use uma destas opções (todas compatíveis):
+Use uma destas opções (todas com suporte):
 
 - Assistente (recomendado): `openclaw onboard --install-daemon`
 - Direto: `openclaw gateway install`
-- Fluxo de configuração: `openclaw configure` → selecione **Gateway service**
-- Reparo/migração: `openclaw doctor` (oferece instalar ou corrigir o serviço)
+- Fluxo de configuração: `openclaw configure` → selecione **Serviço do Gateway**
+- Reparar/migrar: `openclaw doctor` (oferece instalar ou corrigir o serviço)
 
-O destino do serviço depende do SO:
+O destino do serviço depende do sistema operacional:
 
 - macOS: LaunchAgent (`ai.openclaw.gateway` ou `ai.openclaw.<profile>`; legado `com.openclaw.*`)
-- Linux/WSL2: serviço de usuário systemd (`openclaw-gateway[-<profile>].service`)
-- Windows nativo: Tarefa Agendada (`OpenClaw Gateway` ou `OpenClaw Gateway (<profile>)`), com fallback para um item de login na pasta Startup por usuário se a criação da tarefa for negada
+- Linux/WSL2: serviço systemd de usuário (`openclaw-gateway[-<profile>].service`)
+- Windows nativo: Tarefa Agendada (`OpenClaw Gateway` ou `OpenClaw Gateway (<profile>)`), com fallback para um item de login na pasta Inicializar por usuário se a criação da tarefa for negada
 
 ## Relacionado
 
 - [Visão geral da instalação](/pt-BR/install)
-- [App do macOS](/pt-BR/platforms/macos)
-- [App do iOS](/pt-BR/platforms/ios)
+- [App para macOS](/pt-BR/platforms/macos)
+- [App para iOS](/pt-BR/platforms/ios)

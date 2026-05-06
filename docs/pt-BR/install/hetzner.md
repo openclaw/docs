@@ -1,16 +1,16 @@
 ---
 read_when:
-    - Você quer executar o OpenClaw 24 horas por dia, 7 dias por semana, em um VPS na nuvem (não no seu laptop)
-    - Você quer um Gateway sempre ativo, de nível de produção, em seu próprio VPS
-    - Você quer controle total sobre persistência, binários e comportamento de reinicialização
+    - Você quer o OpenClaw rodando 24/7 em um VPS na nuvem (não no seu notebook)
+    - Você quer um Gateway sempre ativo e pronto para produção no seu próprio VPS
+    - Você quer ter controle total sobre a persistência, os binários e o comportamento de reinício
     - Você está executando o OpenClaw no Docker na Hetzner ou em um provedor semelhante
-summary: Execute o OpenClaw Gateway 24/7 em uma VPS barata da Hetzner (Docker), com estado durável e binários incorporados
+summary: Execute o OpenClaw Gateway 24/7 em uma VPS barata da Hetzner (Docker) com estado durável e binários incorporados
 title: Hetzner
 x-i18n:
-    generated_at: "2026-04-30T09:55:07Z"
+    generated_at: "2026-05-06T06:00:37Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 96b5b54bfd8d976c575ecffcd229106fc322b9a53828a9d7358f583434b7bbc2
+    source_hash: 2625a028b6242f653d29b8f45035bf2d796c5c60453582cf269fd1c3776eca52
     source_path: install/hetzner.md
     workflow: 16
 ---
@@ -19,38 +19,37 @@ x-i18n:
 
 ## Objetivo
 
-Executar um OpenClaw Gateway persistente em uma VPS da Hetzner usando Docker, com estado durável, binários incorporados e comportamento seguro de reinicialização.
+Executar um Gateway OpenClaw persistente em uma VPS da Hetzner usando Docker, com estado durável, binários incorporados e comportamento seguro de reinicialização.
 
-Se você quer “OpenClaw 24/7 por ~$5”, esta é a configuração confiável mais simples.
+Se você quer "OpenClaw 24/7 por ~$5", esta é a configuração confiável mais simples.
 Os preços da Hetzner mudam; escolha a menor VPS Debian/Ubuntu e aumente a escala se encontrar OOMs.
 
 Lembrete do modelo de segurança:
 
-- Agentes compartilhados pela empresa são adequados quando todos estão no mesmo limite de confiança e o runtime é apenas para uso comercial.
-- Mantenha separação rigorosa: VPS/runtime dedicado + contas dedicadas; sem perfis pessoais da Apple/Google/navegador/gerenciador de senhas nesse host.
-- Se os usuários forem adversários entre si, separe por gateway/host/usuário do SO.
+- Agentes compartilhados pela empresa são aceitáveis quando todos estão dentro do mesmo limite de confiança e o runtime é apenas comercial.
+- Mantenha separação rigorosa: VPS/runtime dedicados + contas dedicadas; nenhum perfil pessoal da Apple/Google/navegador/gerenciador de senhas nesse host.
+- Se os usuários forem adversariais entre si, separe por gateway/host/usuário do SO.
 
-Consulte [Segurança](/pt-BR/gateway/security) e [hospedagem em VPS](/pt-BR/vps).
+Consulte [Segurança](/pt-BR/gateway/security) e [Hospedagem VPS](/pt-BR/vps).
 
 ## O que estamos fazendo (em termos simples)?
 
 - Alugar um pequeno servidor Linux (VPS da Hetzner)
-- Instalar o Docker (runtime de app isolado)
-- Iniciar o OpenClaw Gateway no Docker
+- Instalar o Docker (runtime de aplicativo isolado)
+- Iniciar o Gateway OpenClaw no Docker
 - Persistir `~/.openclaw` + `~/.openclaw/workspace` no host (sobrevive a reinicializações/rebuilds)
-- Acessar a UI de Controle do seu laptop via um túnel SSH
+- Acessar a Interface de Controle do seu laptop por meio de um túnel SSH
 
-Esse estado montado em `~/.openclaw` inclui `openclaw.json`, arquivos por agente
-`agents/<agentId>/agent/auth-profiles.json` e `.env`.
+Esse estado montado em `~/.openclaw` inclui `openclaw.json`, `agents/<agentId>/agent/auth-profiles.json` por agente e `.env`.
 
 O Gateway pode ser acessado via:
 
-- Encaminhamento de porta SSH a partir do seu laptop
+- Encaminhamento de porta SSH do seu laptop
 - Exposição direta de porta se você gerenciar firewall e tokens por conta própria
 
 Este guia pressupõe Ubuntu ou Debian na Hetzner.  
-Se você estiver em outra VPS Linux, mapeie os pacotes de acordo.
-Para o fluxo genérico com Docker, consulte [Docker](/pt-BR/install/docker).
+Se você estiver em outra VPS Linux, mapeie os pacotes conforme necessário.
+Para o fluxo Docker genérico, consulte [Docker](/pt-BR/install/docker).
 
 ---
 
@@ -58,7 +57,7 @@ Para o fluxo genérico com Docker, consulte [Docker](/pt-BR/install/docker).
 
 1. Provisionar a VPS da Hetzner
 2. Instalar o Docker
-3. Clonar o repositório do OpenClaw
+3. Clonar o repositório OpenClaw
 4. Criar diretórios persistentes no host
 5. Configurar `.env` e `docker-compose.yml`
 6. Incorporar os binários necessários na imagem
@@ -70,14 +69,14 @@ Para o fluxo genérico com Docker, consulte [Docker](/pt-BR/install/docker).
 ## O que você precisa
 
 - VPS da Hetzner com acesso root
-- Acesso SSH a partir do seu laptop
-- Familiaridade básica com SSH + copiar/colar
+- Acesso SSH do seu laptop
+- Conforto básico com SSH + copiar/colar
 - ~20 minutos
 - Docker e Docker Compose
 - Credenciais de autenticação do modelo
 - Credenciais opcionais de provedor
   - QR do WhatsApp
-  - token de bot do Telegram
+  - Token de bot do Telegram
   - OAuth do Gmail
 
 ---
@@ -92,7 +91,7 @@ Para o fluxo genérico com Docker, consulte [Docker](/pt-BR/install/docker).
     ssh root@YOUR_VPS_IP
     ```
 
-    Este guia pressupõe que a VPS mantém estado.
+    Este guia pressupõe que a VPS é stateful.
     Não a trate como infraestrutura descartável.
 
   </Step>
@@ -113,13 +112,13 @@ Para o fluxo genérico com Docker, consulte [Docker](/pt-BR/install/docker).
 
   </Step>
 
-  <Step title="Clonar o repositório do OpenClaw">
+  <Step title="Clonar o repositório OpenClaw">
     ```bash
     git clone https://github.com/openclaw/openclaw.git
     cd openclaw
     ```
 
-    Este guia pressupõe que você criará uma imagem personalizada para garantir persistência binária.
+    Este guia pressupõe que você criará uma imagem personalizada para garantir a persistência dos binários.
 
   </Step>
 
@@ -154,7 +153,7 @@ Para o fluxo genérico com Docker, consulte [Docker](/pt-BR/install/docker).
 
     Deixe `OPENCLAW_GATEWAY_TOKEN` em branco, a menos que você queira explicitamente
     gerenciá-lo por meio de `.env`; o OpenClaw grava um token de gateway aleatório na
-    configuração na primeira inicialização. Gere uma senha de chaveiro e cole-a em
+    configuração na primeira inicialização. Gere uma senha para o keyring e cole-a em
     `GOG_KEYRING_PASSWORD`:
 
     ```bash
@@ -163,9 +162,9 @@ Para o fluxo genérico com Docker, consulte [Docker](/pt-BR/install/docker).
 
     **Não faça commit deste arquivo.**
 
-    Este arquivo `.env` é para env de contêiner/runtime, como `OPENCLAW_GATEWAY_TOKEN`.
-    A autenticação OAuth/chave de API de provedores armazenada fica no arquivo montado
-    `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`.
+    Este arquivo `.env` é para variáveis de ambiente de contêiner/runtime, como `OPENCLAW_GATEWAY_TOKEN`.
+    Autenticação OAuth/chave de API de provedores armazenada fica no
+    `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` montado.
 
   </Step>
 
@@ -210,11 +209,11 @@ Para o fluxo genérico com Docker, consulte [Docker](/pt-BR/install/docker).
           ]
     ```
 
-    `--allow-unconfigured` é apenas para conveniência de bootstrap, não substitui uma configuração adequada de gateway. Ainda assim, defina autenticação (`gateway.auth.token` ou senha) e use configurações de bind seguras para sua implantação.
+    `--allow-unconfigured` serve apenas para conveniência de bootstrap; não é um substituto para uma configuração de gateway adequada. Ainda assim, configure autenticação (`gateway.auth.token` ou senha) e use configurações de bind seguras para sua implantação.
 
   </Step>
 
-  <Step title="Etapas compartilhadas de runtime de VM Docker">
+  <Step title="Etapas de runtime de VM Docker compartilhada">
     Use o guia de runtime compartilhado para o fluxo comum de host Docker:
 
     - [Incorporar os binários necessários na imagem](/pt-BR/install/docker-vm-runtime#bake-required-binaries-into-the-image)
@@ -227,20 +226,20 @@ Para o fluxo genérico com Docker, consulte [Docker](/pt-BR/install/docker).
   <Step title="Acesso específico da Hetzner">
     Após as etapas compartilhadas de build e inicialização, conclua a configuração a seguir para abrir o túnel:
 
-    **Pré-requisito:** Certifique-se de que a configuração sshd da sua VPS permita encaminhamento TCP. Se você
-    reforçou sua configuração de SSH, verifique `/etc/ssh/sshd_config` e defina:
+    **Pré-requisito:** Certifique-se de que a configuração sshd da sua VPS permite encaminhamento TCP. Se você
+    reforçou sua configuração SSH, verifique `/etc/ssh/sshd_config` e defina:
 
     ```
     AllowTcpForwarding local
     ```
 
-    `local` permite encaminhamentos locais `ssh -L` a partir do seu laptop enquanto bloqueia
-    encaminhamentos remotos do servidor. Definir como `no` fará o túnel falhar
+    `local` permite encaminhamentos locais `ssh -L` do seu laptop, enquanto bloqueia
+    encaminhamentos remotos do servidor. Defini-lo como `no` fará o túnel falhar
     com:
     `channel 3: open failed: administratively prohibited: open failed`
 
     Depois de confirmar que o encaminhamento TCP está habilitado, reinicie o serviço SSH
-    (`systemctl restart ssh`) e execute o túnel a partir do seu laptop:
+    (`systemctl restart ssh`) e execute o túnel do seu laptop:
 
     ```bash
     ssh -N -L 18789:127.0.0.1:18789 root@YOUR_VPS_IP
@@ -256,9 +255,9 @@ Para o fluxo genérico com Docker, consulte [Docker](/pt-BR/install/docker).
   </Step>
 </Steps>
 
-O mapa de persistência compartilhado fica em [Runtime de VM Docker](/pt-BR/install/docker-vm-runtime#what-persists-where).
+O mapa de persistência compartilhada fica em [Runtime de VM Docker](/pt-BR/install/docker-vm-runtime#what-persists-where).
 
-## Infraestrutura como código (Terraform)
+## Infraestrutura como Código (Terraform)
 
 Para equipes que preferem fluxos de trabalho de infraestrutura como código, uma configuração Terraform mantida pela comunidade fornece:
 
@@ -276,18 +275,18 @@ Para equipes que preferem fluxos de trabalho de infraestrutura como código, uma
 Essa abordagem complementa a configuração Docker acima com implantações reproduzíveis, infraestrutura versionada e recuperação de desastre automatizada.
 
 <Note>
-Mantido pela comunidade. Para problemas ou contribuições, consulte os links dos repositórios acima.
+Mantido pela comunidade. Para problemas ou contribuições, consulte os links de repositório acima.
 </Note>
 
 ## Próximas etapas
 
-- Configure canais de mensagens: [Canais](/pt-BR/channels)
-- Configure o Gateway: [Configuração do Gateway](/pt-BR/gateway/configuration)
-- Mantenha o OpenClaw atualizado: [Atualização](/pt-BR/install/updating)
+- Configurar canais de mensagens: [Canais](/pt-BR/channels)
+- Configurar o Gateway: [Configuração do Gateway](/pt-BR/gateway/configuration)
+- Manter o OpenClaw atualizado: [Atualização](/pt-BR/install/updating)
 
 ## Relacionado
 
 - [Visão geral da instalação](/pt-BR/install)
 - [Fly.io](/pt-BR/install/fly)
 - [Docker](/pt-BR/install/docker)
-- [Hospedagem em VPS](/pt-BR/vps)
+- [Hospedagem VPS](/pt-BR/vps)

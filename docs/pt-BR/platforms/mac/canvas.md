@@ -1,22 +1,22 @@
 ---
 read_when:
-    - Implementar o painel Canvas no macOS
-    - Adicionar controles do agente para o workspace visual
-    - Depurar carregamentos de canvas do WKWebView
-summary: Painel Canvas controlado pelo agente incorporado via WKWebView + esquema de URL personalizado
-title: Canvas
+    - Implementando o painel Canvas do macOS
+    - Adicionando controles de agente ao espaço de trabalho visual
+    - Depuração de carregamentos de canvas no WKWebView
+summary: Painel Canvas controlado por agente incorporado via WKWebView + esquema de URL personalizado
+title: Tela
 x-i18n:
-    generated_at: "2026-04-24T06:01:11Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T06:03:07Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 1a791f7841193a55b7f9cc5cc26168258d72d972279bba4c68fd1b15ef16f1c4
+    source_hash: d8e53f5d1c2e5b3b46e77cb74632e56123f3312dfcc395aa5ac8182c8d58b6cf
     source_path: platforms/mac/canvas.md
-    workflow: 15
+    workflow: 16
 ---
 
-O app macOS incorpora um **painel Canvas** controlado pelo agente usando `WKWebView`. Ele
+O app macOS incorpora um **painel Canvas** controlado por agente usando `WKWebView`. Ele
 é um workspace visual leve para HTML/CSS/JS, A2UI e pequenas superfícies de
-interface interativa.
+UI interativas.
 
 ## Onde o Canvas fica
 
@@ -34,7 +34,7 @@ Exemplos:
 - `openclaw-canvas://main/assets/app.css` → `<canvasRoot>/main/assets/app.css`
 - `openclaw-canvas://main/widgets/todo/` → `<canvasRoot>/main/widgets/todo/index.html`
 
-Se não existir `index.html` na raiz, o app mostra uma **página scaffold integrada**.
+Se não houver `index.html` na raiz, o app mostra uma **página scaffold integrada**.
 
 ## Comportamento do painel
 
@@ -43,10 +43,10 @@ Se não existir `index.html` na raiz, o app mostra uma **página scaffold integr
 - Recarrega automaticamente quando arquivos locais do canvas mudam.
 - Apenas um painel Canvas fica visível por vez (a sessão é alternada conforme necessário).
 
-O Canvas pode ser desativado em Configurações → **Allow Canvas**. Quando desativado,
-comandos de node do canvas retornam `CANVAS_DISABLED`.
+O Canvas pode ser desativado em Configurações → **Permitir Canvas**. Quando desativado, os
+comandos Node de canvas retornam `CANVAS_DISABLED`.
 
-## Superfície de API do agente
+## Superfície da API do agente
 
 O Canvas é exposto via **Gateway WebSocket**, para que o agente possa:
 
@@ -71,8 +71,8 @@ Observações:
 
 ## A2UI no Canvas
 
-O A2UI é hospedado pelo canvas host do Gateway e renderizado dentro do painel Canvas.
-Quando o Gateway anuncia um Canvas host, o app macOS navega automaticamente para a
+A2UI é hospedado pelo host de canvas do Gateway e renderizado dentro do painel Canvas.
+Quando o Gateway anuncia um host de Canvas, o app macOS navega automaticamente para a
 página host do A2UI na primeira abertura.
 
 URL padrão do host A2UI:
@@ -83,7 +83,7 @@ http://<gateway-host>:18789/__openclaw__/a2ui/
 
 ### Comandos A2UI (v0.8)
 
-Atualmente, o Canvas aceita mensagens A2UI **v0.8** de servidor para cliente:
+Atualmente, o Canvas aceita mensagens servidor→cliente **A2UI v0.8**:
 
 - `beginRendering`
 - `surfaceUpdate`
@@ -103,15 +103,15 @@ EOFA2
 openclaw nodes canvas a2ui push --jsonl /tmp/a2ui-v0.8.jsonl --node <id>
 ```
 
-Teste rápido:
+Smoke rápido:
 
 ```bash
 openclaw nodes canvas a2ui push --node <id> --text "Hello from A2UI"
 ```
 
-## Disparar execuções do agente a partir do Canvas
+## Acionando execuções do agente pelo Canvas
 
-O Canvas pode disparar novas execuções do agente por meio de links profundos:
+O Canvas pode acionar novas execuções do agente por meio de links profundos:
 
 - `openclaw://agent?...`
 
@@ -121,15 +121,15 @@ Exemplo (em JS):
 window.location.href = "openclaw://agent?message=Review%20this%20design";
 ```
 
-O app pede confirmação, a menos que uma chave válida seja fornecida.
+O app solicita confirmação, a menos que uma chave válida seja fornecida.
 
 ## Observações de segurança
 
-- O esquema do Canvas bloqueia travessia de diretório; os arquivos devem ficar sob a raiz da sessão.
-- O conteúdo local do Canvas usa um esquema personalizado (sem necessidade de servidor loopback).
+- O esquema do Canvas bloqueia travessia de diretórios; os arquivos devem ficar sob a raiz da sessão.
+- O conteúdo local do Canvas usa um esquema personalizado (nenhum servidor de loopback necessário).
 - URLs externas `http(s)` são permitidas apenas quando navegadas explicitamente.
 
-## Relacionado
+## Relacionados
 
-- [App macOS](/pt-BR/platforms/macos)
+- [app macOS](/pt-BR/platforms/macos)
 - [WebChat](/pt-BR/web/webchat)
