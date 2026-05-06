@@ -1,41 +1,41 @@
 ---
 read_when:
-    - 采集 macOS 日志或排查私有数据日志记录
+    - 采集 macOS 日志或调查私密数据记录
     - 调试语音唤醒/会话生命周期问题
-summary: OpenClaw 日志记录：滚动诊断文件日志 + 统一日志隐私标志
+summary: OpenClaw 日志：滚动诊断文件日志 + 统一日志隐私标志
 title: macOS 日志记录
 x-i18n:
-    generated_at: "2026-04-24T04:05:36Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T05:30:02Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 84e8f56ef0f85ba9eae629d6a3cc1bcaf49cc70c82f67a10b9292f2f54b1ff6b
+    source_hash: 76c001008311d4e3f245add4cce32bdcc3eed9d897b30f6884c0649d2f0523df
     source_path: platforms/mac/logging.md
-    workflow: 15
+    workflow: 16
 ---
 
 # 日志记录（macOS）
 
-## 滚动诊断文件日志（Debug pane）
+## 滚动诊断文件日志（调试面板）
 
-OpenClaw 通过 swift-log 路由 macOS 应用日志（默认使用 unified logging），并且在你需要持久化捕获时，可以将本地滚动文件日志写入磁盘。
+OpenClaw 通过 swift-log 路由 macOS 应用日志（默认使用统一日志记录），并且在你需要持久捕获时，可以将本地滚动文件日志写入磁盘。
 
-- 详细级别：**Debug pane → Logs → App logging → Verbosity**
-- 启用：**Debug pane → Logs → App logging → “Write rolling diagnostics log (JSONL)”**
-- 位置：`~/Library/Logs/OpenClaw/diagnostics.jsonl`（自动轮转；旧文件会附加 `.1`、`.2` 等后缀）
-- 清除：**Debug pane → Logs → App logging → “Clear”**
+- 详细程度：**调试面板 → 日志 → 应用日志记录 → 详细程度**
+- 启用：**调试面板 → 日志 → 应用日志记录 → “写入滚动诊断日志（JSONL）”**
+- 位置：`~/Library/Logs/OpenClaw/diagnostics.jsonl`（自动轮转；旧文件会添加 `.1`、`.2`、… 后缀）
+- 清除：**调试面板 → 日志 → 应用日志记录 → “清除”**
 
-说明：
+注意：
 
-- 此功能**默认关闭**。仅在主动调试期间启用。
-- 请将该文件视为敏感信息；未经审查不要分享。
+- 这项功能**默认关闭**。仅在主动调试时启用。
+- 请将该文件视为敏感内容；未经审阅不要分享。
 
-## macOS 上 unified logging 的私有数据
+## macOS 上的统一日志记录私有数据
 
-unified logging 默认会对大多数负载进行脱敏，除非某个 subsystem 选择启用 `privacy -off`。根据 Peter 关于 macOS [logging privacy shenanigans](https://steipete.me/posts/2025/logging-privacy-shenanigans)（2025）的文章，这由 `/Library/Preferences/Logging/Subsystems/` 中以 subsystem 名称为键的 plist 控制。只有新的日志条目才会应用该标志，因此请在复现问题前启用它。
+统一日志记录会编辑隐藏大多数载荷，除非某个子系统选择启用 `privacy -off`。根据 Peter 关于 macOS [日志隐私混乱现象](https://steipete.me/posts/2025/logging-privacy-shenanigans)（2025）的文章，这是由 `/Library/Preferences/Logging/Subsystems/` 中按子系统名称作为键名的 plist 控制的。只有新的日志条目会应用该标志，因此请在复现问题前启用它。
 
-## 为 OpenClaw 启用（`ai.openclaw`）
+## 为 OpenClaw (`ai.openclaw`) 启用
 
-- 先将 plist 写入临时文件，然后以 root 身份原子性安装：
+- 先将 plist 写入临时文件，然后以 root 身份原子安装：
 
 ```bash
 cat <<'EOF' >/tmp/ai.openclaw.plist
@@ -54,16 +54,16 @@ EOF
 sudo install -m 644 -o root -g wheel /tmp/ai.openclaw.plist /Library/Preferences/Logging/Subsystems/ai.openclaw.plist
 ```
 
-- 无需重启；`logd` 会很快注意到该文件，但只有新的日志行才会包含私有负载。
-- 使用现有辅助命令查看更丰富的输出，例如 `./scripts/clawlog.sh --category WebChat --last 5m`。
+- 不需要重启；logd 会很快发现该文件，但只有新的日志行会包含私有载荷。
+- 使用现有辅助脚本查看更丰富的输出，例如 `./scripts/clawlog.sh --category WebChat --last 5m`。
 
 ## 调试后禁用
 
-- 删除覆盖项：`sudo rm /Library/Preferences/Logging/Subsystems/ai.openclaw.plist`。
-- 你也可以运行 `sudo log config --reload`，强制 `logd` 立即移除该覆盖项。
-- 请记住，此表面可能包含电话号码和消息正文；仅在你主动需要额外细节时才保留该 plist。
+- 移除覆盖项：`sudo rm /Library/Preferences/Logging/Subsystems/ai.openclaw.plist`。
+- 也可以运行 `sudo log config --reload`，强制 logd 立即丢弃覆盖项。
+- 请记住，该表面可能包含电话号码和消息正文；仅在你确实需要额外细节时保留该 plist。
 
-## 相关内容
+## 相关
 
-- [macOS app](/zh-CN/platforms/macos)
-- [Gateway logging](/zh-CN/gateway/logging)
+- [macOS 应用](/zh-CN/platforms/macos)
+- [Gateway 网关日志记录](/zh-CN/gateway/logging)
