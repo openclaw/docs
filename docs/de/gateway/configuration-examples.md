@@ -1,20 +1,20 @@
 ---
 read_when:
     - Erfahren Sie, wie Sie OpenClaw konfigurieren
-    - Nach Konfigurationsbeispielen suchen
+    - Suche nach Konfigurationsbeispielen
     - OpenClaw zum ersten Mal einrichten
-summary: Schema-konforme Konfigurationsbeispiele für gängige OpenClaw-Setups
+summary: Schemakonforme Konfigurationsbeispiele für gängige OpenClaw-Setups
 title: Konfigurationsbeispiele
 x-i18n:
-    generated_at: "2026-05-04T02:24:19Z"
+    generated_at: "2026-05-06T17:55:44Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 60c8c2d731f8dce93c4d14657041d72043bc36e3d71ab6cb13c02993ba90dbe3
+    source_hash: 01dd16c73f1156c4012fd3956083062141825b502722b6aa34f1f90462a6823a
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Die folgenden Beispiele entsprechen dem aktuellen Konfigurationsschema. Die vollständige Referenz und Hinweise zu einzelnen Feldern finden Sie unter [Konfiguration](/de/gateway/configuration).
+Die folgenden Beispiele sind auf das aktuelle Konfigurationsschema abgestimmt. Die vollständige Referenz und Hinweise zu einzelnen Feldern finden Sie unter [Konfiguration](/de/gateway/configuration).
 
 ## Schnellstart
 
@@ -27,7 +27,7 @@ Die folgenden Beispiele entsprechen dem aktuellen Konfigurationsschema. Die voll
 }
 ```
 
-Speichern Sie dies unter `~/.openclaw/openclaw.json`, dann können Sie dem Bot von dieser Nummer eine Direktnachricht senden.
+Speichern Sie dies unter `~/.openclaw/openclaw.json`, und Sie können dem Bot von dieser Nummer aus eine Direktnachricht senden.
 
 ### Empfohlener Einstieg
 
@@ -471,9 +471,9 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`, dann können Sie dem Bot v
 }
 ```
 
-## Häufige Muster
+## Gängige Muster
 
-### Gemeinsame Skills-Basis mit einer Überschreibung
+### Gemeinsame Skills-Baseline mit einer Überschreibung
 
 ```json5
 {
@@ -515,11 +515,11 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`, dann können Sie dem Bot v
 }
 ```
 
-### Automatische Genehmigung in vertrauenswürdigen Node-Netzwerken
+### Automatische Genehmigung für vertrauenswürdige Node-Netzwerke
 
-Lassen Sie die Gerätekopplung manuell, es sei denn, Sie kontrollieren den Netzwerkpfad. Für ein dediziertes
-Labor oder Tailnet-Subnetz können Sie sich für die automatische Erstgenehmigung von Node-Geräten
-mit exakten CIDRs oder IPs entscheiden:
+Belassen Sie die Gerätekopplung manuell, sofern Sie den Netzwerkpfad nicht kontrollieren. Für ein dediziertes
+Labor oder ein Tailnet-Subnetz können Sie die automatische Genehmigung von Node-Geräten bei der ersten Kopplung
+mit exakten CIDRs oder IPs aktivieren:
 
 ```json5
 {
@@ -533,13 +533,13 @@ mit exakten CIDRs oder IPs entscheiden:
 }
 ```
 
-Dies bleibt deaktiviert, wenn es nicht festgelegt ist. Es gilt nur für neue Kopplungen mit `role: node`
-ohne angeforderte Scopes. Operator-/Browser-Clients sowie Rollen-, Scope-, Metadaten- oder
-Public-Key-Upgrades erfordern weiterhin manuelle Genehmigung.
+Dies bleibt deaktiviert, wenn es nicht gesetzt ist. Es gilt nur für neue Kopplungen mit `role: node`
+ohne angeforderte Scopes. Operator-/Browser-Clients sowie Upgrades von Rolle, Scope, Metadaten oder
+öffentlichem Schlüssel erfordern weiterhin manuelle Genehmigung.
 
-### Sicherer DM-Modus (gemeinsamer Posteingang / DMs mit mehreren Benutzern)
+### Sicherer DM-Modus (gemeinsamer Posteingang / Mehrbenutzer-DMs)
 
-Wenn mehr als eine Person Ihrem Bot eine DM senden kann (mehrere Einträge in `allowFrom`, Kopplungsgenehmigungen für mehrere Personen oder `dmPolicy: "open"`), aktivieren Sie den **sicheren DM-Modus**, damit DMs von verschiedenen Absendern standardmäßig nicht einen gemeinsamen Kontext verwenden:
+Wenn mehr als eine Person Ihrem Bot eine DM senden kann (mehrere Einträge in `allowFrom`, Kopplungsgenehmigungen für mehrere Personen oder `dmPolicy: "open"`), aktivieren Sie den **sicheren DM-Modus**, damit DMs von verschiedenen Absendern standardmäßig keinen gemeinsamen Kontext teilen:
 
 ```json5
 {
@@ -563,8 +563,8 @@ Wenn mehr als eine Person Ihrem Bot eine DM senden kann (mehrere Einträge in `a
 }
 ```
 
-Für Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC erfolgt die Absenderautorisierung standardmäßig ID-zuerst.
-Aktivieren Sie direkte, veränderbare Namens-/E-Mail-/Nick-Abgleiche mit `dangerouslyAllowNameMatching: true` des jeweiligen Kanals nur, wenn Sie dieses Risiko ausdrücklich akzeptieren.
+Für Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC erfolgt die Absenderautorisierung standardmäßig zuerst per ID.
+Aktivieren Sie direkte veränderliche Namens-/E-Mail-/Nick-Abgleiche mit dem jeweiligen `dangerouslyAllowNameMatching: true` des Kanals nur, wenn Sie dieses Risiko ausdrücklich akzeptieren.
 
 ### Anthropic-API-Schlüssel + MiniMax-Fallback
 
@@ -659,12 +659,12 @@ Aktivieren Sie direkte, veränderbare Namens-/E-Mail-/Nick-Abgleiche mit `danger
 
 ## Tipps
 
-- Wenn Sie `dmPolicy: "open"` festlegen, muss die passende `allowFrom`-Liste `"*"` enthalten.
-- Provider-IDs unterscheiden sich (Telefonnummern, Benutzer-IDs, Kanal-IDs). Verwenden Sie die Provider-Dokumentation, um das Format zu bestätigen.
-- Optionale Abschnitte, die später hinzugefügt werden können: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
-- Weitere Hinweise zur Einrichtung finden Sie unter [Provider](/de/providers) und [Fehlerbehebung](/de/gateway/troubleshooting).
+- Wenn Sie `dmPolicy: "open"` setzen, muss die passende `allowFrom`-Liste `"*"` enthalten.
+- Provider-IDs unterscheiden sich (Telefonnummern, Benutzer-IDs, Kanal-IDs). Prüfen Sie das Format in der Provider-Dokumentation.
+- Optionale Abschnitte, die Sie später hinzufügen können: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
+- Siehe [Provider](/de/providers) und [Fehlerbehebung](/de/gateway/troubleshooting) für ausführlichere Hinweise zur Einrichtung.
 
-## Verwandte Themen
+## Verwandt
 
 - [Konfigurationsreferenz](/de/gateway/configuration-reference)
 - [Konfiguration](/de/gateway/configuration)

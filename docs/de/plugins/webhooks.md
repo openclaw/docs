@@ -1,32 +1,30 @@
 ---
 read_when:
-    - Sie möchten TaskFlows von einem externen System aus auslösen oder steuern
-    - Sie konfigurieren das mitgelieferte Webhook-Plugin
-summary: 'Webhooks-Plugin: authentifizierter TaskFlow-Ingress für vertrauenswürdige externe Automatisierung'
+    - Sie möchten TaskFlows aus einem externen System auslösen oder steuern
+    - Sie konfigurieren das mitgelieferte Webhooks-Plugin
+summary: 'Webhooks-Plugin: authentifizierter TaskFlow-Eingang für vertrauenswürdige externe Automatisierung'
 title: Webhooks-Plugin
 x-i18n:
-    generated_at: "2026-04-30T07:09:11Z"
+    generated_at: "2026-05-06T17:59:22Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 70b195e330264af48a9e9c619bb5a0937bb15b2640edd3dd2b5517a13424e9fe
+    source_hash: 9d21d96f680fa24d4a53c1ed5759f800d3cfdc3336789c42c15266edd8ce9e80
     source_path: plugins/webhooks.md
     workflow: 16
 ---
 
-# Webhooks (Plugin)
-
 Das Webhooks-Plugin fügt authentifizierte HTTP-Routen hinzu, die externe
-Automatisierung an OpenClaw TaskFlows anbinden.
+Automatisierung an OpenClaw TaskFlows binden.
 
 Verwenden Sie es, wenn ein vertrauenswürdiges System wie Zapier, n8n, ein CI-Job oder ein
 interner Dienst verwaltete TaskFlows erstellen und steuern soll, ohne zuerst ein eigenes
-Plugin zu schreiben.
+Plugin schreiben zu müssen.
 
 ## Wo es ausgeführt wird
 
-Das Webhooks-Plugin läuft im Gateway-Prozess.
+Das Webhooks-Plugin wird im Gateway-Prozess ausgeführt.
 
-Wenn Ihr Gateway auf einem anderen Rechner läuft, installieren und konfigurieren Sie das Plugin auf
+Wenn Ihr Gateway auf einem anderen Computer läuft, installieren und konfigurieren Sie das Plugin auf
 diesem Gateway-Host und starten Sie anschließend das Gateway neu.
 
 ## Routen konfigurieren
@@ -65,42 +63,42 @@ Routenfelder:
 - `enabled`: optional, Standardwert ist `true`
 - `path`: optional, Standardwert ist `/plugins/webhooks/<routeId>`
 - `sessionKey`: erforderliche Sitzung, der die gebundenen TaskFlows gehören
-- `secret`: erforderliches gemeinsames Geheimnis oder SecretRef
+- `secret`: erforderliches gemeinsames Secret oder SecretRef
 - `controllerId`: optionale Controller-ID für erstellte verwaltete Flows
-- `description`: optionaler Hinweis für Betreiber
+- `description`: optionale Betreibernotiz
 
 Unterstützte `secret`-Eingaben:
 
 - Klartextzeichenfolge
 - SecretRef mit `source: "env" | "file" | "exec"`
 
-Wenn eine Route mit geheimnisgestützter Konfiguration ihr Geheimnis beim Start nicht auflösen kann, überspringt das Plugin
-diese Route und protokolliert eine Warnung, anstatt einen fehlerhaften Endpunkt offenzulegen.
+Wenn eine Secret-gestützte Route ihr Secret beim Start nicht auflösen kann, überspringt das Plugin
+diese Route und protokolliert eine Warnung, statt einen fehlerhaften Endpunkt offenzulegen.
 
 ## Sicherheitsmodell
 
-Jede Route gilt als vertrauenswürdig, mit der TaskFlow-Berechtigung ihres konfigurierten
+Jede Route gilt als vertrauenswürdig, mit der TaskFlow-Autorität ihres konfigurierten
 `sessionKey` zu handeln.
 
-Das bedeutet, dass die Route TaskFlows einsehen und ändern kann, die dieser Sitzung gehören. Daher
+Das bedeutet, dass die Route TaskFlows prüfen und ändern kann, die dieser Sitzung gehören. Daher
 sollten Sie:
 
-- Ein starkes, eindeutiges Geheimnis pro Route verwenden
-- Geheimnisreferenzen gegenüber inline hinterlegten Klartextgeheimnissen bevorzugen
+- Pro Route ein starkes eindeutiges Secret verwenden
+- Secret-Referenzen gegenüber Inline-Klartext-Secrets bevorzugen
 - Routen an die engste Sitzung binden, die zum Workflow passt
-- Nur den spezifischen Webhook-Pfad verfügbar machen, den Sie benötigen
+- Nur den spezifischen Webhook-Pfad freigeben, den Sie benötigen
 
 Das Plugin wendet Folgendes an:
 
-- Authentifizierung über gemeinsames Geheimnis
-- Schutzmechanismen für Größe und Timeout des Request-Bodys
-- Rate Limiting mit festem Zeitfenster
-- Begrenzung laufender Requests
+- Authentifizierung über gemeinsames Secret
+- Schutzmechanismen für Größe und Timeout des Anfragebodys
+- Ratenbegrenzung mit festem Zeitfenster
+- Begrenzung paralleler laufender Anfragen
 - Eigentümergebundener TaskFlow-Zugriff über `api.runtime.tasks.managedFlows.bindSession(...)`
 
-## Request-Format
+## Anfrageformat
 
-Senden Sie `POST`-Requests mit:
+Senden Sie `POST`-Anfragen mit:
 
 - `Content-Type: application/json`
 - `Authorization: Bearer <secret>` oder `x-openclaw-webhook-secret: <secret>`
@@ -149,9 +147,9 @@ Beispiel:
 
 ### `run_task`
 
-Erstellt eine verwaltete untergeordnete Aufgabe in einem vorhandenen verwalteten TaskFlow.
+Erstellt eine verwaltete untergeordnete Aufgabe innerhalb eines vorhandenen verwalteten TaskFlow.
 
-Zulässige Laufzeiten sind:
+Zulässige Laufzeitumgebungen sind:
 
 - `subagent`
 - `acp`
@@ -168,9 +166,9 @@ Beispiel:
 }
 ```
 
-## Response-Form
+## Antwortform
 
-Erfolgreiche Responses geben Folgendes zurück:
+Erfolgreiche Antworten geben zurück:
 
 ```json
 {
@@ -180,7 +178,7 @@ Erfolgreiche Responses geben Folgendes zurück:
 }
 ```
 
-Abgelehnte Requests geben Folgendes zurück:
+Abgelehnte Anfragen geben zurück:
 
 ```json
 {
@@ -192,7 +190,7 @@ Abgelehnte Requests geben Folgendes zurück:
 }
 ```
 
-Das Plugin entfernt bewusst Eigentümer- und Sitzungsmetadaten aus Webhook-Responses.
+Das Plugin entfernt absichtlich Eigentümer- und Sitzungsmetadaten aus Webhook-Antworten.
 
 ## Verwandte Dokumentation
 

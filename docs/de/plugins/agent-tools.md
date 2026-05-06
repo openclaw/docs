@@ -1,22 +1,20 @@
 ---
 read_when:
     - Legacy-Link zu agent-tools
-summary: Weiterleitungen zu „Building Plugins“ (Abschnitt zum Registrieren von Tools)
+summary: Leitet zu Plugins erstellen weiter (Abschnitt zum Registrieren von Tools)
 title: Tools registrieren
 x-i18n:
-    generated_at: "2026-04-24T06:48:44Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T17:58:35Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: c84450ddc31f8f6a605bd553a1a9d7d295f5b575504a134b5c50a2c7d77e3e63
+    source_hash: e73137487a9394454dd037d449bc2a0896725cddc7d0f174eda41f5fdc451982
     source_path: plugins/agent-tools.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Tools in Plugins registrieren
+Diese Seite wurde verschoben. Siehe [Plugins erstellen: Agent-Tools registrieren](/de/plugins/building-plugins#registering-agent-tools).
 
-Diese Seite wurde verschoben. Siehe [Building Plugins: Registering agent tools](/de/plugins/building-plugins#registering-agent-tools).
+## Verwandte Themen
 
-## Verwandt
-
-- [Building plugins](/de/plugins/building-plugins)
-- [Plugin SDK setup](/de/plugins/sdk-setup)
+- [Plugins erstellen](/de/plugins/building-plugins)
+- [Plugin-SDK einrichten](/de/plugins/sdk-setup)

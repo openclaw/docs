@@ -1,21 +1,25 @@
 ---
 read_when:
-    - Sie führen die Ersteinrichtung ohne vollständige CLI-Einführung durch
+    - Sie führen die Ersteinrichtung ohne vollständiges CLI-Onboarding durch
     - Sie möchten den standardmäßigen Workspace-Pfad festlegen
-summary: CLI-Referenz für `openclaw setup` (Konfiguration + Arbeitsbereich initialisieren)
+summary: CLI-Referenz für `openclaw setup` (Konfiguration + Workspace initialisieren)
 title: Einrichtung
 x-i18n:
-    generated_at: "2026-05-02T20:44:34Z"
+    generated_at: "2026-05-06T17:54:41Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 805f60c81f5fc216fc446641efe0bcb60bb6c34b3a50a6fc9e767461206e5f90
+    source_hash: 9a47d41f8c6c59395eaa4bc6055fa09f863af819c7920e29969793904180c910
     source_path: cli/setup.md
     workflow: 16
 ---
 
 # `openclaw setup`
 
-Initialisiert `~/.openclaw/openclaw.json` und den Agent-Workspace.
+Initialisieren Sie `~/.openclaw/openclaw.json` und den Agent-Arbeitsbereich.
+
+<Note>
+`openclaw setup` ist für Installationen mit veränderbarer Konfiguration vorgesehen. Im Nix-Modus (`OPENCLAW_NIX_MODE=1`) verweigert OpenClaw Setup-Schreibvorgänge, weil die Konfigurationsdatei von Nix verwaltet wird. Agenten sollten den offiziellen [nix-openclaw-Schnellstart](https://github.com/openclaw/nix-openclaw#quick-start) oder die entsprechende Quellkonfiguration für ein anderes Nix-Paket verwenden.
+</Note>
 
 Verwandt:
 
@@ -34,15 +38,15 @@ openclaw setup --non-interactive --mode remote --remote-url wss://gateway-host:1
 
 ## Optionen
 
-- `--workspace <dir>`: Agent-Workspace-Verzeichnis (gespeichert als `agents.defaults.workspace`)
+- `--workspace <dir>`: Agent-Arbeitsbereichsverzeichnis (gespeichert als `agents.defaults.workspace`)
 - `--wizard`: Onboarding ausführen
 - `--non-interactive`: Onboarding ohne Eingabeaufforderungen ausführen
 - `--mode <local|remote>`: Onboarding-Modus
-- `--import-from <provider>`: Migrations-Provider, der während des Onboardings ausgeführt werden soll
+- `--import-from <provider>`: Migrations-Provider, der während des Onboardings ausgeführt wird
 - `--import-source <path>`: Quell-Agent-Home für `--import-from`
 - `--import-secrets`: unterstützte Secrets während der Onboarding-Migration importieren
-- `--remote-url <url>`: WebSocket-URL des Remote-Gateway
-- `--remote-token <token>`: Token des Remote-Gateway
+- `--remote-url <url>`: Remote-Gateway-WebSocket-URL
+- `--remote-token <token>`: Remote-Gateway-Token
 
 So führen Sie Onboarding über Setup aus:
 
@@ -52,10 +56,10 @@ openclaw setup --wizard
 
 Hinweise:
 
-- Ein einfaches `openclaw setup` initialisiert Konfiguration und Workspace ohne den vollständigen Onboarding-Ablauf.
-- Führen Sie nach einem einfachen Setup `openclaw configure` aus, um Modelle, Kanäle, Gateway, Plugins, Skills oder Health Checks auszuwählen.
+- Einfaches `openclaw setup` initialisiert Konfiguration und Arbeitsbereich ohne den vollständigen Onboarding-Ablauf.
+- Führen Sie nach einem einfachen Setup `openclaw configure` aus, um Modelle, Kanäle, Gateway, Plugins, Skills oder Integritätsprüfungen auszuwählen.
 - Onboarding wird automatisch ausgeführt, wenn Onboarding-Flags vorhanden sind (`--wizard`, `--non-interactive`, `--mode`, `--import-from`, `--import-source`, `--import-secrets`, `--remote-url`, `--remote-token`).
-- Wenn ein Hermes-Status erkannt wird, kann interaktives Onboarding automatisch eine Migration anbieten. Import-Onboarding erfordert ein frisches Setup; verwenden Sie [Migrieren](/de/cli/migrate) für Dry-Run-Pläne, Backups und den Überschreibmodus außerhalb des Onboardings.
+- Wenn ein Hermes-Zustand erkannt wird, kann interaktives Onboarding automatisch eine Migration anbieten. Import-Onboarding erfordert ein frisches Setup; verwenden Sie [Migrieren](/de/cli/migrate) für Probelaufpläne, Backups und den Überschreibmodus außerhalb des Onboardings.
 
 ## Verwandt
 
