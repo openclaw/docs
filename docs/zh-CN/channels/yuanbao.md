@@ -5,32 +5,32 @@ read_when:
 summary: 腾讯元宝机器人概览、功能和配置
 title: 腾讯元宝
 x-i18n:
-    generated_at: "2026-04-28T02:06:42Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T02:51:00Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: d82b6d275ae8aa4cc5e62321772c5ba2b5044c6058be0d2e5215cdb1488118e9
+    source_hash: 3830af0206854e500132edfc9340724fe97f90ca60fa23ce05202d96d9cacf04
     source_path: channels/yuanbao.md
-    workflow: 15
+    workflow: 16
 ---
 
-# 腾讯元宝
+腾讯元宝是腾讯的 AI 助手平台。OpenClaw 渠道插件
+通过 WebSocket 将腾讯元宝 bot 连接到 OpenClaw，使它们可以
+通过私信和群聊与用户互动。
 
-腾讯元宝是腾讯的 AI 助手平台。OpenClaw 渠道插件通过 WebSocket 将腾讯元宝机器人连接到 OpenClaw，使其能够通过私信和群聊与用户互动。
-
-**Status：** 已可用于生产环境，支持机器人私信 + 群聊。WebSocket 是唯一受支持的连接模式。
+**Status：** 可用于生产环境的 bot 私信和群聊。WebSocket 是唯一支持的连接模式。
 
 ---
 
 ## 快速开始
 
-> **需要 OpenClaw 2026.4.10 或更高版本。** 运行 `openclaw --version` 进行检查。使用 `openclaw update` 升级。
+> **需要 OpenClaw 2026.4.10 或更高版本。** 运行 `openclaw --version` 检查版本。使用 `openclaw update` 升级。
 
 <Steps>
   <Step title="使用你的凭证添加腾讯元宝渠道">
   ```bash
   openclaw channels add --channel yuanbao --token "appKey:appSecret"
   ```
-  `--token` 的值使用以冒号分隔的 `appKey:appSecret` 格式。你可以在腾讯元宝应用中通过在应用设置里创建机器人来获取这些值。
+  `--token` 值使用以冒号分隔的 `appKey:appSecret` 格式。你可以在腾讯元宝应用的应用设置中创建机器人来获取这些凭证。
   </Step>
 
   <Step title="设置完成后，重启 Gateway 网关以应用更改">
@@ -40,7 +40,7 @@ x-i18n:
   </Step>
 </Steps>
 
-### 交互式设置（可选方式）
+### 交互式设置（替代方式）
 
 你也可以使用交互式向导：
 
@@ -56,12 +56,12 @@ openclaw channels login --channel yuanbao
 
 ### 私信
 
-配置 `dmPolicy` 来控制谁可以给机器人发送私信：
+配置 `dmPolicy` 来控制谁可以私信 bot：
 
-- `"pairing"` — 未知用户会收到配对码；通过 CLI 批准
-- `"allowlist"` — 只有列在 `allowFrom` 中的用户可以聊天
-- `"open"` — 允许所有用户（默认）
-- `"disabled"` — 禁用所有私信
+- `"pairing"` - 未知用户会收到配对码；通过 CLI 批准
+- `"allowlist"` - 只有列在 `allowFrom` 中的用户可以聊天
+- `"open"` - 允许所有用户（默认）
+- `"disabled"` - 禁用所有私信
 
 **批准配对请求：**
 
@@ -74,10 +74,10 @@ openclaw pairing approve yuanbao <CODE>
 
 **提及要求**（`channels.yuanbao.requireMention`）：
 
-- `true` — 必须 @提及（默认）
-- `false` — 无需 @提及也会回复
+- `true` - 需要 @mention（默认）
+- `false` - 无需 @mention 即可响应
 
-在群聊中回复机器人的消息会被视为隐式提及。
+在群聊中回复 bot 的消息会被视为隐式提及。
 
 ---
 
@@ -116,7 +116,7 @@ openclaw pairing approve yuanbao <CODE>
 }
 ```
 
-### 在群组中禁用 @提及要求
+### 在群组中禁用 @mention 要求
 
 ```json5
 {
@@ -134,23 +134,23 @@ openclaw pairing approve yuanbao <CODE>
 {
   channels: {
     yuanbao: {
-      // 立即发送每个分块，不进行缓冲
+      // Send each chunk immediately without buffering
       outboundQueueStrategy: "immediate",
     },
   },
 }
 ```
 
-### 调整 merge-text 策略
+### 调整合并文本策略
 
 ```json5
 {
   channels: {
     yuanbao: {
       outboundQueueStrategy: "merge-text",
-      minChars: 2800, // 缓冲直到达到这么多字符
-      maxChars: 3000, // 超过此限制时强制拆分
-      idleMs: 5000, // 空闲超时后自动刷新（毫秒）
+      minChars: 2800, // buffer until this many chars
+      maxChars: 3000, // force split above this limit
+      idleMs: 5000, // auto-flush after idle timeout (ms)
     },
   },
 }
@@ -160,44 +160,44 @@ openclaw pairing approve yuanbao <CODE>
 
 ## 常用命令
 
-| 命令       | 说明             |
+| 命令       | 描述             |
 | ---------- | ---------------- |
 | `/help`    | 显示可用命令     |
-| `/status`  | 显示机器人状态   |
-| `/new`     | 开始一个新会话   |
+| `/status`  | 显示 bot 状态    |
+| `/new`     | 启动新会话       |
 | `/stop`    | 停止当前运行     |
 | `/restart` | 重启 OpenClaw    |
 | `/compact` | 压缩会话上下文   |
 
-> 腾讯元宝支持原生斜杠命令菜单。Gateway 网关启动时会自动将命令同步到平台。
+> 腾讯元宝支持原生斜杠菜单命令。Gateway 网关启动时，命令会自动同步到平台。
 
 ---
 
 ## 故障排除
 
-### 机器人在群聊中没有响应
+### bot 在群聊中没有响应
 
-1. 确保机器人已被添加到群组
-2. 确保你 @提及了机器人（默认必需）
+1. 确保 bot 已添加到群组
+2. 确保你 @mention 了 bot（默认需要）
 3. 检查日志：`openclaw logs --follow`
 
-### 机器人没有收到消息
+### bot 没有收到消息
 
-1. 确保机器人已在腾讯元宝应用中创建并通过审核
-2. 确保 `appKey` 和 `appSecret` 配置正确
+1. 确保 bot 已在腾讯元宝应用中创建并获批准
+2. 确保 `appKey` 和 `appSecret` 已正确配置
 3. 确保 Gateway 网关正在运行：`openclaw gateway status`
 4. 检查日志：`openclaw logs --follow`
 
-### 机器人发送空回复或回退回复
+### bot 发送空回复或兜底回复
 
 1. 检查 AI 模型是否返回了有效内容
-2. 默认回退回复为：“暂时无法解答，你可以换个问题问问我哦”
-3. 可通过 `channels.yuanbao.fallbackReply` 自定义
+2. 默认兜底回复是：“暂时无法解答，你可以换个问题问问我哦”
+3. 通过 `channels.yuanbao.fallbackReply` 自定义它
 
 ### App Secret 泄露
 
-1. 在 YuanBao APP 中重置 App Secret
-2. 更新你配置中的值
+1. 在腾讯元宝应用中重置 App Secret
+2. 更新你的配置中的值
 3. 重启 Gateway 网关：`openclaw gateway restart`
 
 ---
@@ -215,12 +215,12 @@ openclaw pairing approve yuanbao <CODE>
         main: {
           appKey: "key_xxx",
           appSecret: "secret_xxx",
-          name: "主机器人",
+          name: "Primary bot",
         },
         backup: {
           appKey: "key_yyy",
           appSecret: "secret_yyy",
-          name: "备用机器人",
+          name: "Backup bot",
           enabled: false,
         },
       },
@@ -229,73 +229,73 @@ openclaw pairing approve yuanbao <CODE>
 }
 ```
 
-`defaultAccount` 用于控制当出站 API 未指定 `accountId` 时使用哪个账号。
+`defaultAccount` 控制在出站 API 未指定 `accountId` 时使用哪个账号。
 
 ### 消息限制
 
-- `maxChars` — 单条消息最大字符数（默认：`3000` 个字符）
-- `mediaMaxMb` — 媒体上传/下载限制（默认：`20` MB）
-- `overflowPolicy` — 消息超过限制时的行为：`"split"`（默认）或 `"stop"`
+- `maxChars` - 单条消息的最大字符数（默认：`3000` 个字符）
+- `mediaMaxMb` - 媒体上传/下载限制（默认：`20` MB）
+- `overflowPolicy` - 消息超过限制时的行为：`"split"`（默认）或 `"stop"`
 
 ### 流式传输
 
-腾讯元宝支持块级分块流式传输出。启用后，机器人会在生成文本时分块发送。
+腾讯元宝支持块级流式输出。启用后，bot 会在生成文本时按块发送。
 
 ```json5
 {
   channels: {
     yuanbao: {
-      disableBlockStreaming: false, // 启用分块流式传输（默认）
+      disableBlockStreaming: false, // block streaming enabled (default)
     },
   },
 }
 ```
 
-设置 `disableBlockStreaming: true` 可将完整回复作为一条消息发送。
+设置 `disableBlockStreaming: true` 可用一条消息发送完整回复。
 
 ### 群聊历史上下文
 
-控制在群聊中有多少条历史消息会包含在 AI 上下文中：
+控制在群聊的 AI 上下文中包含多少条历史消息：
 
 ```json5
 {
   channels: {
     yuanbao: {
-      historyLimit: 100, // 默认：100，设置为 0 可禁用
+      historyLimit: 100, // default: 100, set 0 to disable
     },
   },
 }
 ```
 
-### Reply-to 模式
+### 回复引用模式
 
-控制机器人在群聊中回复时如何引用消息：
+控制 bot 在群聊回复时如何引用消息：
 
 ```json5
 {
   channels: {
     yuanbao: {
-      replyToMode: "first", // "off" | "first" | "all"（默认："first"）
+      replyToMode: "first", // "off" | "first" | "all" (default: "first")
     },
   },
 }
 ```
 
-| 值          | 行为                                         |
-| ----------- | -------------------------------------------- |
-| `"off"`     | 不使用引用回复                               |
-| `"first"`   | 每条入站消息仅第一条回复使用引用（默认）     |
-| `"all"`     | 每条回复都使用引用                           |
+| 值        | 行为                                       |
+| --------- | ------------------------------------------ |
+| `"off"`   | 不引用回复                                 |
+| `"first"` | 每条入站消息仅引用第一次回复（默认）       |
+| `"all"`   | 引用每一次回复                             |
 
 ### Markdown 提示注入
 
-默认情况下，机器人会在系统提示词中注入说明，以防止 AI 模型将整个回复包裹在 markdown 代码块中。
+默认情况下，bot 会在系统提示词中注入指令，防止 AI 模型将整个回复包裹在 markdown 代码块中。
 
 ```json5
 {
   channels: {
     yuanbao: {
-      markdownHintEnabled: true, // 默认：true
+      markdownHintEnabled: true, // default: true
     },
   },
 }
@@ -303,7 +303,7 @@ openclaw pairing approve yuanbao <CODE>
 
 ### 调试模式
 
-为特定机器人 ID 启用未经脱敏的日志输出：
+为特定 bot ID 启用未清理的日志输出：
 
 ```json5
 {
@@ -359,30 +359,30 @@ openclaw pairing approve yuanbao <CODE>
 
 完整配置：[Gateway 网关配置](/zh-CN/gateway/configuration)
 
-| 设置                                       | 说明                                              | 默认值                                 |
-| ------------------------------------------ | ------------------------------------------------- | -------------------------------------- |
-| `channels.yuanbao.enabled`                 | 启用/禁用该渠道                                   | `true`                                 |
-| `channels.yuanbao.defaultAccount`          | 出站路由使用的默认账号                            | `default`                              |
-| `channels.yuanbao.accounts.<id>.appKey`    | App Key（用于签名和票据生成）                     | —                                      |
-| `channels.yuanbao.accounts.<id>.appSecret` | App Secret（用于签名）                            | —                                      |
-| `channels.yuanbao.accounts.<id>.token`     | 预签名 token（跳过自动票据签名）                  | —                                      |
-| `channels.yuanbao.accounts.<id>.name`      | 账号显示名称                                      | —                                      |
-| `channels.yuanbao.accounts.<id>.enabled`   | 启用/禁用特定账号                                 | `true`                                 |
-| `channels.yuanbao.dm.policy`               | 私信策略                                          | `open`                                 |
-| `channels.yuanbao.dm.allowFrom`            | 私信白名单（用户 ID 列表）                        | —                                      |
-| `channels.yuanbao.requireMention`          | 在群组中要求 @提及                                | `true`                                 |
-| `channels.yuanbao.overflowPolicy`          | 长消息处理方式（`split` 或 `stop`）               | `split`                                |
-| `channels.yuanbao.replyToMode`             | 群组 reply-to 策略（`off`、`first`、`all`）       | `first`                                |
-| `channels.yuanbao.outboundQueueStrategy`   | 出站策略（`merge-text` 或 `immediate`）           | `merge-text`                           |
-| `channels.yuanbao.minChars`                | merge-text：触发发送的最小字符数                  | `2800`                                 |
-| `channels.yuanbao.maxChars`                | merge-text：每条消息的最大字符数                  | `3000`                                 |
-| `channels.yuanbao.idleMs`                  | merge-text：自动刷新前的空闲超时（毫秒）          | `5000`                                 |
-| `channels.yuanbao.mediaMaxMb`              | 媒体大小限制（MB）                                | `20`                                   |
-| `channels.yuanbao.historyLimit`            | 群聊历史上下文条目数                              | `100`                                  |
-| `channels.yuanbao.disableBlockStreaming`   | 禁用块级分块流式传输出                            | `false`                                |
-| `channels.yuanbao.fallbackReply`           | 当 AI 未返回内容时的回退回复                      | `暂时无法解答，你可以换个问题问问我哦` |
-| `channels.yuanbao.markdownHintEnabled`     | 注入防止 markdown 包裹的提示说明                  | `true`                                 |
-| `channels.yuanbao.debugBotIds`             | 调试白名单机器人 ID（未经脱敏的日志）             | `[]`                                   |
+| 设置                                       | 描述                                           | 默认值                                 |
+| ------------------------------------------ | ---------------------------------------------- | -------------------------------------- |
+| `channels.yuanbao.enabled`                 | 启用/禁用该渠道                                | `true`                                 |
+| `channels.yuanbao.defaultAccount`          | 出站路由的默认账号                             | `default`                              |
+| `channels.yuanbao.accounts.<id>.appKey`    | App Key（用于签名和票据生成）                  | -                                      |
+| `channels.yuanbao.accounts.<id>.appSecret` | App Secret（用于签名）                         | -                                      |
+| `channels.yuanbao.accounts.<id>.token`     | 预签名 token（跳过自动票据签名）               | -                                      |
+| `channels.yuanbao.accounts.<id>.name`      | 账号显示名称                                   | -                                      |
+| `channels.yuanbao.accounts.<id>.enabled`   | 启用/禁用特定账号                              | `true`                                 |
+| `channels.yuanbao.dm.policy`               | 私信策略                                       | `open`                                 |
+| `channels.yuanbao.dm.allowFrom`            | 私信 allowlist（用户 ID 列表）                 | -                                      |
+| `channels.yuanbao.requireMention`          | 在群组中需要 @mention                          | `true`                                 |
+| `channels.yuanbao.overflowPolicy`          | 长消息处理（`split` 或 `stop`）                | `split`                                |
+| `channels.yuanbao.replyToMode`             | 群组 reply-to 策略（`off`、`first`、`all`）    | `first`                                |
+| `channels.yuanbao.outboundQueueStrategy`   | 出站策略（`merge-text` 或 `immediate`）        | `merge-text`                           |
+| `channels.yuanbao.minChars`                | 合并文本：触发发送的最小字符数                 | `2800`                                 |
+| `channels.yuanbao.maxChars`                | 合并文本：每条消息的最大字符数                 | `3000`                                 |
+| `channels.yuanbao.idleMs`                  | 合并文本：自动刷出前的空闲超时（毫秒）         | `5000`                                 |
+| `channels.yuanbao.mediaMaxMb`              | 媒体大小限制（MB）                             | `20`                                   |
+| `channels.yuanbao.historyLimit`            | 群聊历史上下文条目                             | `100`                                  |
+| `channels.yuanbao.disableBlockStreaming`   | 禁用块级流式输出                               | `false`                                |
+| `channels.yuanbao.fallbackReply`           | AI 未返回内容时的兜底回复                      | `暂时无法解答，你可以换个问题问问我哦` |
+| `channels.yuanbao.markdownHintEnabled`     | 注入 markdown 防包裹指令                       | `true`                                 |
+| `channels.yuanbao.debugBotIds`             | 调试白名单 bot ID（未清理日志）                | `[]`                                   |
 
 ---
 
@@ -416,8 +416,8 @@ openclaw pairing approve yuanbao <CODE>
 
 ## 相关内容
 
-- [渠道概览](/zh-CN/channels) — 所有受支持的渠道
-- [配对](/zh-CN/channels/pairing) — 私信认证与配对流程
-- [群组](/zh-CN/channels/groups) — 群聊行为与提及门控
-- [渠道路由](/zh-CN/channels/channel-routing) — 消息的会话路由
-- [安全](/zh-CN/gateway/security) — 访问模型与加固措施
+- [渠道概览](/zh-CN/channels) - 所有支持的渠道
+- [配对](/zh-CN/channels/pairing) - 私信身份验证和配对流程
+- [群组](/zh-CN/channels/groups) - 群聊行为和提及门控
+- [渠道路由](/zh-CN/channels/channel-routing) - 消息的会话路由
+- [安全](/zh-CN/gateway/security) - 访问模型和加固
