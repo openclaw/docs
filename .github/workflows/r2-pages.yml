@@ -1,0 +1,73 @@
+name: R2 Pages
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: r2-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build and upload R2 site
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    environment:
+      name: cloudflare
+      url: https://documentation.openclaw.ai
+    steps:
+      - name: Check out
+        uses: actions/checkout@v6
+
+      - name: Read source metadata
+        id: source-meta
+        run: |
+          node - <<'NODE'
+          const fs = require("node:fs");
+          const data = JSON.parse(fs.readFileSync(".openclaw-sync/source.json", "utf8"));
+          if (!data.repository || !data.sha) throw new Error("invalid .openclaw-sync/source.json");
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `repository=${data.repository}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `sha=${data.sha}\n`);
+          NODE
+
+      - name: Check out OpenClaw source
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ steps.source-meta.outputs.repository }}
+          ref: ${{ steps.source-meta.outputs.sha }}
+          path: source
+          fetch-depth: 1
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Install librsvg2-bin
+        run: sudo apt-get update && sudo apt-get install -y librsvg2-bin
+
+      - name: Build R2 artifact
+        env:
+          DOCS_SITE_CNAME: documentation.openclaw.ai
+          DOCS_SOURCE_REPO_DIR: source
+          DOCS_SOURCE_REPO_URL: https://github.com/${{ steps.source-meta.outputs.repository }}
+          DOCS_SOURCE_SHA: ${{ steps.source-meta.outputs.sha }}
+        run: npm run docs:build:r2
+
+      - name: Smoke generated site
+        run: npm run docs:smoke
+
+      - name: Upload changed R2 objects
+        env:
+          CLOUDFLARE_ACCOUNT_ID: 91b59577e757131d68d55a471fe32aca
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_R2_BUCKET: openclaw-docs
+          R2_UPLOAD_CONCURRENCY: 8
+        run: npm run docs:r2:upload

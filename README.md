@@ -10,7 +10,8 @@ Source of truth lives in [`openclaw/openclaw`](https://github.com/openclaw/openc
 2. `openclaw/openclaw/.github/workflows/docs-sync-publish.yml` mirrors the docs tree into this repo.
 3. This repo stores the published docs tree plus generated locale output.
 4. `openclaw/docs/.github/workflows/translate-all.yml` debounces docs changes, runs locale translation in parallel, and commits one aggregate locale refresh.
-5. `.github/workflows/pages.yml` builds `dist/docs-site` from the mirrored docs and deploys it to Cloudflare Workers Static Assets.
+5. `.github/workflows/pages.yml` builds `dist/docs-site` from the mirrored docs and deploys the current production fallback to Cloudflare Workers Static Assets.
+6. `.github/workflows/r2-pages.yml` builds the full unpruned R2 artifact for the target Cloudflare CDN design.
 
 ## Translation behavior
 
@@ -34,6 +35,8 @@ Source of truth lives in [`openclaw/openclaw`](https://github.com/openclaw/openc
 
 - `npm run docs:build` renders the mirrored Mintlify-flavored docs into `dist/docs-site`.
 - `npm run docs:build:cloudflare` prunes deploy-only duplicates so the Worker asset manifest stays below Cloudflare Free's 20,000-file limit.
+- `npm run docs:build:r2` renders the full unpruned site and prepares `dist/docs-r2-manifest.json` for R2 upload.
+- `npm run docs:r2:upload` uploads only changed R2 objects by comparing against the remote manifest.
 - `npm run docs:smoke` checks representative English and locale pages plus the Pagefind search bundle.
 - `npm run docs:check` runs both steps.
 - The generated site includes the language picker and static full-text search via Pagefind.
@@ -45,3 +48,4 @@ Source of truth lives in [`openclaw/openclaw`](https://github.com/openclaw/openc
 - `OPENCLAW_DOCS_SYNC_TOKEN` lives in `openclaw/openclaw` and lets the source repo push into this repo.
 - `OPENCLAW_DOCS_I18N_OPENAI_API_KEY` lives in this repo and powers locale translation refreshes.
 - `CLOUDFLARE_API_TOKEN` lives in this repo and deploys `documentation.openclaw.ai`.
+- The R2 deploy path needs the same GitHub secret to include `Account: R2 Storage: Edit` for the Services@openclaw.org account before it can become production.
