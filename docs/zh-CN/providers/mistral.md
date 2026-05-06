@@ -1,45 +1,54 @@
 ---
 read_when:
     - 你想在 OpenClaw 中使用 Mistral 模型
-    - 你希望为语音通话使用 Voxtral 实时转录
+    - 你想为语音通话使用 Voxtral 实时转录
     - 你需要 Mistral API 密钥新手引导和模型引用
 summary: 在 OpenClaw 中使用 Mistral 模型和 Voxtral 转录
 title: Mistral
 x-i18n:
-    generated_at: "2026-04-28T12:02:06Z"
+    generated_at: "2026-05-06T00:32:22Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7fdba72a5a526bed78ef3a6ea633839634efca3f9d2e96b305315d534d115122
+    source_hash: fb55915526e292210df61b646e1bbcdb2da86a0e46ea4bd5afd63d244f8da71a
     source_path: providers/mistral.md
     workflow: 16
 ---
 
-OpenClaw 支持 Mistral，可用于文本/图像模型路由（`mistral/...`），也可在媒体理解中通过 Voxtral 进行音频转录。
-Mistral 还可用于记忆嵌入（`memorySearch.provider = "mistral"`）。
+OpenClaw 包含一个内置的 Mistral 插件，注册了四个契约：聊天补全、媒体理解（Voxtral 批量转录）、Voice Call 实时 STT（Voxtral Realtime）和记忆嵌入（`mistral-embed`）。
 
-- 提供商：`mistral`
-- 凭证：`MISTRAL_API_KEY`
-- API：Mistral Chat Completions（`https://api.mistral.ai/v1`）
+| 属性             | 值                                          |
+| ---------------- | ------------------------------------------- |
+| 提供商 ID        | `mistral`                                   |
+| 插件             | 内置，`enabledByDefault: true`              |
+| 认证环境变量     | `MISTRAL_API_KEY`                           |
+| 新手引导标志     | `--auth-choice mistral-api-key`             |
+| 直接 CLI 标志    | `--mistral-api-key <key>`                   |
+| API              | OpenAI 兼容（`openai-completions`）         |
+| 基础 URL         | `https://api.mistral.ai/v1`                 |
+| 默认模型         | `mistral/mistral-large-latest`              |
+| 嵌入模型         | `mistral-embed`                             |
+| Voxtral 批量     | `voxtral-mini-latest`（音频转录）           |
+| Voxtral 实时     | `voxtral-mini-transcribe-realtime-2602`     |
 
 ## 入门指南
 
 <Steps>
-  <Step title="获取你的 API key">
+  <Step title="Get your API key">
     在 [Mistral Console](https://console.mistral.ai/) 中创建 API key。
   </Step>
-  <Step title="运行新手引导">
+  <Step title="Run onboarding">
     ```bash
     openclaw onboard --auth-choice mistral-api-key
     ```
 
-    或直接传入密钥：
+    或直接传入 key：
 
     ```bash
     openclaw onboard --mistral-api-key "$MISTRAL_API_KEY"
     ```
 
   </Step>
-  <Step title="设置默认模型">
+  <Step title="Set a default model">
     ```json5
     {
       env: { MISTRAL_API_KEY: "sk-..." },
@@ -47,7 +56,7 @@ Mistral 还可用于记忆嵌入（`memorySearch.provider = "mistral"`）。
     }
     ```
   </Step>
-  <Step title="验证模型可用">
+  <Step title="Verify the model is available">
     ```bash
     openclaw models list --provider mistral
     ```
@@ -56,21 +65,21 @@ Mistral 还可用于记忆嵌入（`memorySearch.provider = "mistral"`）。
 
 ## 内置 LLM 目录
 
-OpenClaw 当前随附以下 Mistral 目录：
+OpenClaw 当前随附以下内置 Mistral 目录：
 
-| 模型引用                         | 输入        | 上下文  | 最大输出   | 备注                                                             |
+| 模型引用                         | 输入        | 上下文  | 最大输出   | 说明                                                            |
 | -------------------------------- | ----------- | ------- | ---------- | ---------------------------------------------------------------- |
-| `mistral/mistral-large-latest`   | 文本、图像  | 262,144 | 16,384     | 默认模型                                                         |
-| `mistral/mistral-medium-2508`    | 文本、图像  | 262,144 | 8,192      | Mistral Medium 3.1                                               |
-| `mistral/mistral-small-latest`   | 文本、图像  | 128,000 | 16,384     | Mistral Small 4；可通过 API `reasoning_effort` 调整推理           |
-| `mistral/pixtral-large-latest`   | 文本、图像  | 128,000 | 32,768     | Pixtral                                                          |
+| `mistral/mistral-large-latest`   | 文本，图像  | 262,144 | 16,384     | 默认模型                                                        |
+| `mistral/mistral-medium-2508`    | 文本，图像  | 262,144 | 8,192      | Mistral Medium 3.1                                               |
+| `mistral/mistral-small-latest`   | 文本，图像  | 128,000 | 16,384     | Mistral Small 4；可通过 API `reasoning_effort` 调整推理          |
+| `mistral/pixtral-large-latest`   | 文本，图像  | 128,000 | 32,768     | Pixtral                                                          |
 | `mistral/codestral-latest`       | 文本        | 256,000 | 4,096      | 编码                                                             |
 | `mistral/devstral-medium-latest` | 文本        | 262,144 | 32,768     | Devstral 2                                                       |
-| `mistral/magistral-small`        | 文本        | 128,000 | 40,000     | 已启用推理                                                       |
+| `mistral/magistral-small`        | 文本        | 128,000 | 40,000     | 启用推理                                                        |
 
 ## 音频转录（Voxtral）
 
-通过媒体理解流水线，使用 Voxtral 进行批量音频转录。
+通过媒体理解流水线使用 Voxtral 进行批量音频转录。
 
 ```json5
 {
@@ -91,15 +100,15 @@ OpenClaw 当前随附以下 Mistral 目录：
 
 ## Voice Call 流式 STT
 
-内置 `mistral` 插件会将 Voxtral Realtime 注册为 Voice Call 流式 STT 提供商。
+内置的 `mistral` 插件将 Voxtral Realtime 注册为 Voice Call 流式 STT 提供商。
 
-| 设置         | 配置路径                                                               | 默认值                                  |
-| ------------ | ---------------------------------------------------------------------- | --------------------------------------- |
-| API key      | `plugins.entries.voice-call.config.streaming.providers.mistral.apiKey` | 回退到 `MISTRAL_API_KEY`                |
-| 模型         | `...mistral.model`                                                     | `voxtral-mini-transcribe-realtime-2602` |
-| 编码         | `...mistral.encoding`                                                  | `pcm_mulaw`                             |
-| 采样率       | `...mistral.sampleRate`                                                | `8000`                                  |
-| 目标延迟     | `...mistral.targetStreamingDelayMs`                                    | `800`                                   |
+| 设置       | 配置路径                                                               | 默认值                                  |
+| ---------- | ---------------------------------------------------------------------- | --------------------------------------- |
+| API key    | `plugins.entries.voice-call.config.streaming.providers.mistral.apiKey` | 回退到 `MISTRAL_API_KEY`                |
+| 模型       | `...mistral.model`                                                     | `voxtral-mini-transcribe-realtime-2602` |
+| 编码       | `...mistral.encoding`                                                  | `pcm_mulaw`                             |
+| 采样率     | `...mistral.sampleRate`                                                | `8000`                                  |
+| 目标延迟   | `...mistral.targetStreamingDelayMs`                                    | `800`                                   |
 
 ```json5
 {
@@ -125,16 +134,16 @@ OpenClaw 当前随附以下 Mistral 目录：
 ```
 
 <Note>
-OpenClaw 默认将 Mistral 实时 STT 设为 8 kHz 的 `pcm_mulaw`，这样 Voice Call 可以直接转发 Twilio 媒体帧。仅当你的上游流已经是原始 PCM 时，才使用 `encoding: "pcm_s16le"` 和匹配的 `sampleRate`。
+OpenClaw 将 Mistral 实时 STT 默认设置为 8 kHz 的 `pcm_mulaw`，因此 Voice Call 可以直接转发 Twilio 媒体帧。仅当你的上游流已经是原始 PCM 时，才使用 `encoding: "pcm_s16le"` 和匹配的 `sampleRate`。
 </Note>
 
 ## 高级配置
 
 <AccordionGroup>
-  <Accordion title="可调推理（mistral-small-latest）">
-    `mistral/mistral-small-latest` 映射到 Mistral Small 4，并支持在 Chat Completions API 上通过 `reasoning_effort` 使用[可调推理](https://docs.mistral.ai/capabilities/reasoning/adjustable)（`none` 会尽量减少输出中的额外思考；`high` 会在最终答案前显示完整思考轨迹）。
+  <Accordion title="Adjustable reasoning (mistral-small-latest)">
+    `mistral/mistral-small-latest` 映射到 Mistral Small 4，并支持在 Chat Completions API 上通过 `reasoning_effort` 使用[可调整推理](https://docs.mistral.ai/capabilities/reasoning/adjustable)（`none` 会最大程度减少输出中的额外思考；`high` 会在最终答案前显示完整思考轨迹）。
 
-    OpenClaw 会将会话 **thinking** 级别映射到 Mistral 的 API：
+    OpenClaw 将会话的 **thinking** 级别映射到 Mistral 的 API：
 
     | OpenClaw thinking 级别                         | Mistral `reasoning_effort` |
     | ------------------------------------------------ | -------------------------- |
@@ -147,8 +156,8 @@ OpenClaw 默认将 Mistral 实时 STT 设为 8 kHz 的 `pcm_mulaw`，这样 Voic
 
   </Accordion>
 
-  <Accordion title="记忆嵌入">
-    Mistral 可通过 `/v1/embeddings` 提供记忆嵌入（默认模型：`mistral-embed`）。
+  <Accordion title="Memory embeddings">
+    Mistral 可以通过 `/v1/embeddings` 提供记忆嵌入（默认模型：`mistral-embed`）。
 
     ```json5
     {
@@ -158,11 +167,11 @@ OpenClaw 默认将 Mistral 实时 STT 设为 8 kHz 的 `pcm_mulaw`，这样 Voic
 
   </Accordion>
 
-  <Accordion title="凭证和基础 URL">
-    - Mistral 凭证使用 `MISTRAL_API_KEY`。
-    - 提供商基础 URL 默认为 `https://api.mistral.ai/v1`。
+  <Accordion title="Auth and base URL">
+    - Mistral 认证使用 `MISTRAL_API_KEY`（Bearer header）。
+    - 提供商基础 URL 默认为 `https://api.mistral.ai/v1`，并接受标准的 OpenAI 兼容 chat-completions 请求形状。
     - 新手引导默认模型是 `mistral/mistral-large-latest`。
-    - Z.AI 使用你的 API key 进行 Bearer 凭证认证。
+    - 仅当 Mistral 明确发布你需要的区域端点时，才在 `models.providers.mistral.baseUrl` 下覆盖基础 URL。
 
   </Accordion>
 </AccordionGroup>
@@ -170,10 +179,10 @@ OpenClaw 默认将 Mistral 实时 STT 设为 8 kHz 的 `pcm_mulaw`，这样 Voic
 ## 相关内容
 
 <CardGroup cols={2}>
-  <Card title="模型选择" href="/zh-CN/concepts/model-providers" icon="layers">
+  <Card title="Model selection" href="/zh-CN/concepts/model-providers" icon="layers">
     选择提供商、模型引用和故障转移行为。
   </Card>
-  <Card title="媒体理解" href="/zh-CN/nodes/media-understanding" icon="microphone">
+  <Card title="Media understanding" href="/zh-CN/nodes/media-understanding" icon="microphone">
     音频转录设置和提供商选择。
   </Card>
 </CardGroup>
