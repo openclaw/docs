@@ -1,24 +1,24 @@
 ---
 read_when:
-    - 了解如何設定 OpenClaw
+    - 學習如何設定 OpenClaw
     - 正在尋找設定範例
     - 首次設定 OpenClaw
-summary: 常見 OpenClaw 設定的符合結構描述的設定範例
+summary: 常見 OpenClaw 部署的符合結構描述設定範例
 title: 設定範例
 x-i18n:
-    generated_at: "2026-05-04T02:44:16Z"
+    generated_at: "2026-05-06T17:55:38Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 60c8c2d731f8dce93c4d14657041d72043bc36e3d71ab6cb13c02993ba90dbe3
+    source_hash: 01dd16c73f1156c4012fd3956083062141825b502722b6aa34f1f90462a6823a
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-範例如下，與目前的設定結構描述一致。如需完整參考與各欄位註記，請參閱[設定](/zh-TW/gateway/configuration)。
+以下範例與目前的設定結構描述一致。如需完整參考資料與各欄位說明，請參閱[設定](/zh-TW/gateway/configuration)。
 
 ## 快速開始
 
-### 絕對最小設定
+### 最小必要設定
 
 ```json5
 {
@@ -27,9 +27,9 @@ x-i18n:
 }
 ```
 
-儲存到 `~/.openclaw/openclaw.json` 後，你就可以從該號碼私訊機器人。
+儲存到 `~/.openclaw/openclaw.json` 後，你就可以從該號碼傳私訊給機器人。
 
-### 建議的起始設定
+### 建議入門設定
 
 ```json5
 {
@@ -57,9 +57,9 @@ x-i18n:
 }
 ```
 
-## 展開範例（主要選項）
+## 擴充範例（主要選項）
 
-> JSON5 可讓你使用註解和尾隨逗號。一般 JSON 也可以使用。
+> JSON5 允許使用註解和尾端逗號。一般 JSON 也可以使用。
 
 ```json5
 {
@@ -473,7 +473,7 @@ x-i18n:
 
 ## 常見模式
 
-### 共用技能基準搭配一個覆寫
+### 共用 Skills 基準與一項覆寫
 
 ```json5
 {
@@ -515,9 +515,9 @@ x-i18n:
 }
 ```
 
-### 受信任的 Node 網路自動核准
+### 受信任節點網路自動核准
 
-除非你控制網路路徑，否則請保持裝置配對為手動。對於專用實驗室或 tailnet 子網路，你可以選擇使用精確的 CIDR 或 IP 啟用首次 Node 裝置自動核准：
+除非你能控制網路路徑，否則請保持裝置配對為手動。對於專用實驗室或 tailnet 子網，你可以選擇使用精確的 CIDR 或 IP 啟用首次節點裝置自動核准：
 
 ```json5
 {
@@ -531,11 +531,11 @@ x-i18n:
 }
 ```
 
-未設定時，此功能會保持關閉。它只適用於沒有要求任何範圍的全新 `role: node` 配對。操作者/瀏覽器用戶端，以及角色、範圍、中繼資料或公開金鑰升級，仍需要手動核准。
+未設定時，此功能會保持關閉。它只適用於沒有要求任何範圍的新 `role: node` 配對。操作員/瀏覽器用戶端，以及角色、範圍、中繼資料或公鑰升級，仍然需要手動核准。
 
 ### 安全 DM 模式（共用收件匣 / 多使用者 DM）
 
-如果有超過一個人可以 DM 你的 bot（`allowFrom` 中有多個項目、核准多人的配對，或 `dmPolicy: "open"`），請啟用 **安全 DM 模式**，讓不同寄件者的 DM 預設不會共用同一個上下文：
+如果有超過一個人可以傳送 DM 給你的機器人（`allowFrom` 中有多個項目、多人的配對核准，或 `dmPolicy: "open"`），請啟用**安全 DM 模式**，讓不同寄件者的 DM 預設不會共用同一個情境：
 
 ```json5
 {
@@ -559,10 +559,9 @@ x-i18n:
 }
 ```
 
-對於 Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC，寄件者授權預設以 ID 優先。
-只有在你明確接受該風險時，才為各頻道啟用透過 `dangerouslyAllowNameMatching: true` 進行直接可變的名稱/email/nick 比對。
+對於 Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC，寄件者授權預設會優先使用 ID。只有在你明確接受該風險時，才可透過各頻道的 `dangerouslyAllowNameMatching: true` 啟用直接可變的名稱/電子郵件/nick 比對。
 
-### Anthropic API 金鑰 + MiniMax 後備
+### Anthropic API 金鑰 + MiniMax 備援
 
 ```json5
 {
@@ -596,7 +595,7 @@ x-i18n:
 }
 ```
 
-### 工作 bot（受限制存取）
+### 工作機器人（受限存取）
 
 ```json5
 {
@@ -655,10 +654,10 @@ x-i18n:
 
 ## 提示
 
-- 如果你設定 `dmPolicy: "open"`，對應的 `allowFrom` 清單必須包含 `"*"`。
-- 提供者 ID 會有所不同（電話號碼、使用者 ID、頻道 ID）。請使用提供者文件確認格式。
-- 稍後可新增的選用區段：`web`、`browser`、`ui`、`discovery`、`canvasHost`、`talk`、`signal`、`imessage`。
-- 請參閱[提供者](/zh-TW/providers)與[疑難排解](/zh-TW/gateway/troubleshooting)，了解更深入的設定說明。
+- 如果你設定 `dmPolicy: "open"`，相符的 `allowFrom` 清單必須包含 `"*"`。
+- 提供者 ID 各不相同（電話號碼、使用者 ID、頻道 ID）。請使用提供者文件確認格式。
+- 可稍後新增的選用區段：`web`、`browser`、`ui`、`discovery`、`canvasHost`、`talk`、`signal`、`imessage`。
+- 如需更深入的設定說明，請參閱[提供者](/zh-TW/providers)和[疑難排解](/zh-TW/gateway/troubleshooting)。
 
 ## 相關
 

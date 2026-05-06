@@ -1,23 +1,21 @@
 ---
 read_when:
-    - 你想要從外部系統觸發或驅動 TaskFlow
+    - 您想從外部系統觸發或驅動 TaskFlow
     - 你正在設定隨附的 Webhook Plugin
-summary: Webhook Plugin：用於受信任外部自動化的已驗證 TaskFlow 入口
-title: Webhook Plugin
+summary: 'Webhook Plugin: 經身分驗證的 TaskFlow 入口，用於受信任的外部自動化'
+title: Webhooks Plugin
 x-i18n:
-    generated_at: "2026-04-30T03:28:15Z"
+    generated_at: "2026-05-06T17:59:49Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 70b195e330264af48a9e9c619bb5a0937bb15b2640edd3dd2b5517a13424e9fe
+    source_hash: 9d21d96f680fa24d4a53c1ed5759f800d3cfdc3336789c42c15266edd8ce9e80
     source_path: plugins/webhooks.md
     workflow: 16
 ---
 
-# Webhook（Plugin）
+Webhooks Plugin 會新增已驗證的 HTTP 路由，將外部自動化綁定到 OpenClaw TaskFlow。
 
-Webhooks Plugin 會新增經過驗證的 HTTP 路由，將外部自動化綁定到 OpenClaw TaskFlows。
-
-當你想讓受信任的系統（例如 Zapier、n8n、CI 工作，或內部服務）建立並驅動受管理的 TaskFlows，而不必先撰寫自訂 Plugin 時，請使用它。
+當你想讓 Zapier、n8n、CI 作業或內部服務等受信任系統建立並驅動受管理的 TaskFlow，而不想先撰寫自訂 Plugin 時，請使用它。
 
 ## 執行位置
 
@@ -60,25 +58,25 @@ Webhooks Plugin 會在 Gateway 程序內執行。
 
 - `enabled`：選用，預設為 `true`
 - `path`：選用，預設為 `/plugins/webhooks/<routeId>`
-- `sessionKey`：必要，擁有綁定 TaskFlows 的 session
+- `sessionKey`：必要，擁有已綁定 TaskFlow 的 session
 - `secret`：必要，共用密鑰或 SecretRef
-- `controllerId`：選用，為建立的受管理流程指定 controller id
-- `description`：選用，操作者備註
+- `controllerId`：選用，供已建立受管理流程使用的 controller id
+- `description`：選用，操作員註記
 
 支援的 `secret` 輸入：
 
-- 純字串
+- 純文字字串
 - SecretRef，搭配 `source: "env" | "file" | "exec"`
 
-如果由密鑰支援的路由在啟動時無法解析其密鑰，Plugin 會略過該路由並記錄警告，而不是暴露損壞的端點。
+如果由密鑰支援的路由在啟動時無法解析其密鑰，Plugin 會略過該路由並記錄警告，而不是暴露損壞的 endpoint。
 
 ## 安全模型
 
-每個路由都被信任，可使用其設定的 `sessionKey` 的 TaskFlow 權限執行操作。
+每個路由都會被信任，可使用其設定的 `sessionKey` 的 TaskFlow 權限執行操作。
 
-這表示該路由可以檢查並變更該 session 擁有的 TaskFlows，因此你應該：
+這表示該路由可以檢查並變更該 session 擁有的 TaskFlow，因此你應該：
 
-- 為每個路由使用強而唯一的密鑰
+- 為每個路由使用強式且唯一的密鑰
 - 優先使用密鑰參照，而不是內嵌純文字密鑰
 - 將路由綁定到符合工作流程的最小範圍 session
 - 只暴露你需要的特定 Webhook 路徑
@@ -86,14 +84,14 @@ Webhooks Plugin 會在 Gateway 程序內執行。
 Plugin 會套用：
 
 - 共用密鑰驗證
-- 請求主體大小與逾時防護
-- 固定時間窗速率限制
+- 請求 body 大小與逾時防護
+- 固定視窗速率限制
 - 進行中請求限制
-- 透過 `api.runtime.tasks.managedFlows.bindSession(...)` 進行受擁有者限制的 TaskFlow 存取
+- 透過 `api.runtime.tasks.managedFlows.bindSession(...)` 進行的 owner 綁定 TaskFlow 存取
 
 ## 請求格式
 
-傳送 `POST` 請求，並包含：
+傳送 `POST` 請求並包含：
 
 - `Content-Type: application/json`
 - `Authorization: Bearer <secret>` 或 `x-openclaw-webhook-secret: <secret>`
@@ -109,7 +107,7 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
 
 ## 支援的動作
 
-Plugin 目前接受這些 JSON `action` 值：
+Plugin 目前接受下列 JSON `action` 值：
 
 - `create_flow`
 - `get_flow`
@@ -142,9 +140,9 @@ Plugin 目前接受這些 JSON `action` 值：
 
 ### `run_task`
 
-在現有受管理的 TaskFlow 內建立受管理的子任務。
+在既有受管理 TaskFlow 內建立受管理的子任務。
 
-允許的執行階段為：
+允許的 runtime 為：
 
 - `subagent`
 - `acp`
@@ -163,7 +161,7 @@ Plugin 目前接受這些 JSON `action` 值：
 
 ## 回應形狀
 
-成功回應會傳回：
+成功的回應會傳回：
 
 ```json
 {
@@ -173,7 +171,7 @@ Plugin 目前接受這些 JSON `action` 值：
 }
 ```
 
-遭拒的請求會傳回：
+遭拒絕的請求會傳回：
 
 ```json
 {
@@ -185,10 +183,10 @@ Plugin 目前接受這些 JSON `action` 值：
 }
 ```
 
-Plugin 會刻意從 Webhook 回應中清除擁有者/session 中繼資料。
+Plugin 會刻意從 Webhook 回應中清除 owner/session metadata。
 
 ## 相關文件
 
 - [Plugin runtime SDK](/zh-TW/plugins/sdk-runtime)
-- [Hooks 與 Webhook 概覽](/zh-TW/automation/hooks)
+- [Hooks 與 Webhook 概觀](/zh-TW/automation/hooks)
 - [CLI Webhook](/zh-TW/cli/webhooks)
