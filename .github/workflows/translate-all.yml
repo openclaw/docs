@@ -70,7 +70,7 @@ on:
         type: string
 
 permissions:
-  actions: read
+  actions: write
   contents: write
 
 concurrency:
@@ -458,3 +458,12 @@ jobs:
 
           echo "Failed to push aggregate translations after retries."
           exit 1
+
+      - name: Dispatch aggregate docs deploy
+        if: steps.apply.outputs.changed_count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh workflow run pages.yml --ref main
+          gh workflow run docs-live-smoke.yml --ref main
