@@ -1,21 +1,22 @@
 ---
 read_when:
-    - Necesitas ediciones estructuradas de archivos en varios archivos
-    - Quieres documentar o depurar ediciones basadas en parches
-summary: Aplicar parches de varios archivos con la herramienta `apply_patch`
-title: Herramienta `apply_patch`
+    - Necesitas ediciones estructuradas en varios archivos
+    - Desea documentar o depurar ediciones basadas en parches
+summary: Aplica parches de varios archivos con la herramienta apply_patch
+title: herramienta apply_patch
 x-i18n:
-    generated_at: "2026-04-24T05:51:49Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T05:49:31Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 9ed6d8282166de3cacf5be7f253498a230bceb2ad6c82a08846aed5bc613da53
+    source_hash: 9ff2f8e6ecd55ff1bdc553619ab3d590d0967efe7a9a90a31946ad15fd89a1dc
     source_path: tools/apply-patch.md
-    workflow: 15
+    workflow: 16
 ---
 
-Aplica cambios de archivos usando un formato de parche estructurado. Esto es ideal para ediciones de varios archivos o varios bloques donde una sola llamada a `edit` sería frágil.
+Aplica cambios en archivos usando un formato de parche estructurado. Esto es ideal para ediciones de varios archivos
+o varios bloques donde una sola llamada a `edit` sería frágil.
 
-La herramienta acepta una única cadena `input` que envuelve una o más operaciones sobre archivos:
+La herramienta acepta una única cadena `input` que envuelve una o más operaciones de archivo:
 
 ```
 *** Begin Patch
@@ -32,19 +33,19 @@ La herramienta acepta una única cadena `input` que envuelve una o más operacio
 
 ## Parámetros
 
-- `input` (obligatorio): contenido completo del parche, incluyendo `*** Begin Patch` y `*** End Patch`.
+- `input` (obligatorio): Contenido completo del parche, incluidos `*** Begin Patch` y `*** End Patch`.
 
 ## Notas
 
-- Las rutas del parche admiten rutas relativas (desde el directorio del espacio de trabajo) y rutas absolutas.
-- `tools.exec.applyPatch.workspaceOnly` usa `true` de forma predeterminada (contenido dentro del espacio de trabajo). Configúralo en `false` solo si quieres intencionadamente que `apply_patch` escriba o elimine fuera del directorio del espacio de trabajo.
-- Usa `*** Move to:` dentro de un bloque `*** Update File:` para renombrar archivos.
-- `*** End of File` marca una inserción solo al final del archivo cuando sea necesario.
-- Disponible de forma predeterminada para modelos OpenAI y OpenAI Codex. Configura
-  `tools.exec.applyPatch.enabled: false` para deshabilitarla.
-- Puedes restringirla opcionalmente por modelo mediante
+- Las rutas de parche admiten rutas relativas (desde el directorio del espacio de trabajo) y rutas absolutas.
+- `tools.exec.applyPatch.workspaceOnly` tiene el valor predeterminado `true` (contenido dentro del espacio de trabajo). Establécelo en `false` solo si quieres intencionalmente que `apply_patch` escriba o elimine fuera del directorio del espacio de trabajo.
+- Usa `*** Move to:` dentro de un bloque `*** Update File:` para cambiar el nombre de archivos.
+- `*** End of File` marca una inserción solo de EOF cuando sea necesario.
+- Disponible de forma predeterminada para los modelos OpenAI y OpenAI Codex. Establece
+  `tools.exec.applyPatch.enabled: false` para deshabilitarlo.
+- Opcionalmente, limita por modelo mediante
   `tools.exec.applyPatch.allowModels`.
-- La configuración vive solo bajo `tools.exec`.
+- La configuración solo está bajo `tools.exec`.
 
 ## Ejemplo
 
@@ -57,6 +58,14 @@ La herramienta acepta una única cadena `input` que envuelve una o más operacio
 
 ## Relacionado
 
-- [Diffs](/es/tools/diffs)
-- [Herramienta exec](/es/tools/exec)
-- [Ejecución de código](/es/tools/code-execution)
+<CardGroup cols={2}>
+  <Card title="Diffs" href="/es/tools/diffs" icon="code-compare">
+    Visor de diffs de solo lectura para presentar cambios.
+  </Card>
+  <Card title="Exec tool" href="/es/tools/exec" icon="terminal">
+    Ejecución de comandos de shell desde el agente.
+  </Card>
+  <Card title="Code execution" href="/es/tools/code-execution" icon="square-code">
+    Análisis remoto de Python en sandbox con xAI.
+  </Card>
+</CardGroup>

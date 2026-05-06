@@ -1,102 +1,54 @@
 ---
 read_when:
-    - Necesitas comprender cómo se normalizan las marcas de tiempo para el modelo
-    - Configurando la zona horaria del usuario para system prompts
-summary: Manejo de zona horaria para agentes, sobres y prompts
+    - Quieres un modelo mental rápido para gestionar zonas horarias
+    - Está decidiendo dónde definir o sobrescribir una zona horaria
+summary: Dónde aparecen las zonas horarias en OpenClaw — sobres, cargas útiles de herramientas, prompt del sistema
 title: Zonas horarias
 x-i18n:
-    generated_at: "2026-04-24T05:27:11Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T05:33:04Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8318acb0269f446fb3d3198f47811d40490a9ee9593fed82f31353aef2bacb81
+    source_hash: 041b207a0fa2758a20e8f3c4eca852d3dd416560d045459cb4d86709b45449e3
     source_path: concepts/timezone.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw estandariza las marcas de tiempo para que el modelo vea una **única hora de referencia**.
+OpenClaw estandariza las marcas de tiempo para que el modelo vea una **única hora de referencia** en lugar de una mezcla de relojes locales del proveedor. Hay tres superficies donde aparecen las zonas horarias, cada una con su propio propósito:
 
-## Sobres de mensajes (local por defecto)
+## Tres superficies de zona horaria
 
-Los mensajes entrantes se envuelven en un sobre como:
+| Superficie        | Qué muestra                                                                                             | Predeterminado                        | Configurado mediante                                    |
+| ----------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------- | ------------------------------------------------------- |
+| Envoltorios de mensajes | Envuelven los mensajes entrantes del canal: `[Signal +1555 2026-01-18 00:19 PST] hello`                 | Local del host                        | `agents.defaults.envelopeTimezone`                      |
+| Cargas útiles de herramientas | Las herramientas de estilo `readMessages` del canal devuelven la hora sin procesar del proveedor + `timestampMs` / `timestampUtc` normalizados | Los campos UTC siempre están presentes | No configurable — conserva las marcas de tiempo nativas del proveedor |
+| Prompt del sistema | Un pequeño bloque `Current Date & Time` con **solo la zona horaria** (sin valor de reloj, para estabilidad de caché) | Zona horaria del host si `userTimezone` no está definido | `agents.defaults.userTimezone`                          |
 
-```
-[Provider ... 2026-01-05 16:26 PST] message text
-```
+El prompt del sistema omite deliberadamente el reloj en vivo para mantener estable el almacenamiento en caché del prompt entre turnos. Cuando el agente necesita la hora actual, llama a `session_status`.
 
-La marca de tiempo en el sobre es **local del host por defecto**, con precisión de minutos.
-
-Puedes anular esto con:
+## Configurar la zona horaria del usuario
 
 ```json5
 {
   agents: {
     defaults: {
-      envelopeTimezone: "local", // "utc" | "local" | "user" | IANA timezone
-      envelopeTimestamp: "on", // "on" | "off"
-      envelopeElapsed: "on", // "on" | "off"
+      userTimezone: "America/Chicago",
     },
   },
 }
 ```
 
-- `envelopeTimezone: "utc"` usa UTC.
-- `envelopeTimezone: "user"` usa `agents.defaults.userTimezone` (recurre a la zona horaria del host).
-- Usa una zona horaria IANA explícita (por ejemplo, `"Europe/Vienna"`) para un desplazamiento fijo.
-- `envelopeTimestamp: "off"` elimina marcas de tiempo absolutas de los encabezados del sobre.
-- `envelopeElapsed: "off"` elimina sufijos de tiempo transcurrido (del estilo `+2m`).
+Si `userTimezone` no está definido, OpenClaw resuelve la zona horaria del host en tiempo de ejecución (sin escribir configuración). `agents.defaults.timeFormat` (`auto` | `12` | `24`) controla la representación en formato de 12 h/24 h en envoltorios y superficies posteriores, no en la sección del prompt del sistema.
 
-### Ejemplos
+## Cuándo sobrescribir
 
-**Local (predeterminado):**
+- **Usa envoltorios UTC** (`envelopeTimezone: "utc"`) cuando quieras marcas de tiempo estables entre hosts de distintas regiones, o cuando quieras que los registros alineados con UTC coincidan con la salida de diagnóstico.
+- **Usa una zona IANA fija** (por ejemplo, `"Europe/Vienna"`) cuando el host del Gateway esté en una zona pero el usuario esté en otra y quieras que los envoltorios se lean en la zona del usuario independientemente de la migración del host.
+- **Configura `envelopeTimestamp: "off"`** para envoltorios de bajo consumo de tokens cuando el contexto de marca de tiempo no sea útil para la conversación.
 
-```
-[Signal Alice +1555 2026-01-18 00:19 PST] hello
-```
-
-**Zona horaria fija:**
-
-```
-[Signal Alice +1555 2026-01-18 06:19 GMT+1] hello
-```
-
-**Tiempo transcurrido:**
-
-```
-[Signal Alice +1555 +2m 2026-01-18T05:19Z] follow-up
-```
-
-## Cargas útiles de herramientas (datos sin procesar del proveedor + campos normalizados)
-
-Las llamadas a herramientas (`channels.discord.readMessages`, `channels.slack.readMessages`, etc.) devuelven **marcas de tiempo sin procesar del proveedor**.
-También adjuntamos campos normalizados para mantener la consistencia:
-
-- `timestampMs` (milisegundos de época UTC)
-- `timestampUtc` (cadena UTC ISO 8601)
-
-Los campos sin procesar del proveedor se conservan.
-
-## Zona horaria del usuario para el system prompt
-
-Establece `agents.defaults.userTimezone` para indicar al modelo la zona horaria local del usuario. Si no está
-establecida, OpenClaw resuelve la **zona horaria del host en tiempo de ejecución** (sin escribir configuración).
-
-```json5
-{
-  agents: { defaults: { userTimezone: "America/Chicago" } },
-}
-```
-
-El system prompt incluye:
-
-- Sección `Current Date & Time` con hora local y zona horaria
-- `Time format: 12-hour` o `24-hour`
-
-Puedes controlar el formato del prompt con `agents.defaults.timeFormat` (`auto` | `12` | `24`).
-
-Consulta [Fecha y hora](/es/date-time) para ver el comportamiento completo y ejemplos.
+Para ver la referencia completa del comportamiento, ejemplos por proveedor y formato de tiempo transcurrido, consulta [Fecha y hora](/es/date-time).
 
 ## Relacionado
 
-- [Heartbeat](/es/gateway/heartbeat) — las horas activas usan la zona horaria para la programación
-- [Trabajos Cron](/es/automation/cron-jobs) — las expresiones Cron usan la zona horaria para la programación
-- [Fecha y hora](/es/date-time) — comportamiento completo de fecha/hora y ejemplos
+- [Fecha y hora](/es/date-time) — comportamiento y ejemplos completos de envoltorios/herramientas/prompts.
+- [Heartbeat](/es/gateway/heartbeat) — las horas activas usan la zona horaria para la programación.
+- [Trabajos Cron](/es/automation/cron-jobs) — las expresiones Cron usan la zona horaria para la programación.

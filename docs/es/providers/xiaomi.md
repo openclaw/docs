@@ -1,35 +1,40 @@
 ---
 read_when:
     - Quieres modelos Xiaomi MiMo en OpenClaw
-    - Necesitas configurar `XIAOMI_API_KEY`
+    - Debe configurar XIAOMI_API_KEY
 summary: Usa modelos Xiaomi MiMo con OpenClaw
 title: Xiaomi MiMo
 x-i18n:
-    generated_at: "2026-04-25T13:56:11Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T05:47:15Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 7781973c3a1d14101cdb0a8d1affe3fd076a968552ed2a8630a91a8947daeb3a
+    source_hash: a7bb33bf107cb44414b0f3a6140d60fdfecb3b7154c3197e7cbed982d9a6450b
     source_path: providers/xiaomi.md
-    workflow: 15
+    workflow: 16
 ---
 
-Xiaomi MiMo es la plataforma de API para los modelos **MiMo**. OpenClaw usa el endpoint compatible con OpenAI de Xiaomi
-con autenticación por clave de API.
+Xiaomi MiMo es la plataforma de API para los modelos **MiMo**. OpenClaw incluye un Plugin `xiaomi` incluido que registra tanto un proveedor de chat compatible con OpenAI como un proveedor de voz (TTS) con la misma `XIAOMI_API_KEY`.
 
-| Property | Value                           |
-| -------- | ------------------------------- |
-| Provider | `xiaomi`                        |
-| Auth     | `XIAOMI_API_KEY`                |
-| API      | Compatible con OpenAI           |
-| Base URL | `https://api.xiaomimimo.com/v1` |
+| Propiedad       | Valor                                    |
+| --------------- | ---------------------------------------- |
+| Id. de proveedor | `xiaomi`                                 |
+| Plugin          | incluido, `enabledByDefault: true`       |
+| Variable de entorno de autenticación | `XIAOMI_API_KEY`                         |
+| Indicador de incorporación | `--auth-choice xiaomi-api-key`           |
+| Indicador directo de CLI | `--xiaomi-api-key <key>`                 |
+| Contratos       | finalizaciones de chat + `speechProviders` |
+| API             | compatible con OpenAI (`openai-completions`) |
+| URL base        | `https://api.xiaomimimo.com/v1`          |
+| Modelo predeterminado | `xiaomi/mimo-v2-flash`                   |
+| TTS predeterminado | `mimo-v2.5-tts`, voz `mimo_default`    |
 
 ## Primeros pasos
 
 <Steps>
-  <Step title="Obtén una clave de API">
+  <Step title="Get an API key">
     Crea una clave de API en la [consola de Xiaomi MiMo](https://platform.xiaomimimo.com/#/console/api-keys).
   </Step>
-  <Step title="Ejecuta la incorporación">
+  <Step title="Run onboarding">
     ```bash
     openclaw onboard --auth-choice xiaomi-api-key
     ```
@@ -41,7 +46,7 @@ con autenticación por clave de API.
     ```
 
   </Step>
-  <Step title="Verifica que el modelo esté disponible">
+  <Step title="Verify the model is available">
     ```bash
     openclaw models list --provider xiaomi
     ```
@@ -50,29 +55,29 @@ con autenticación por clave de API.
 
 ## Catálogo integrado
 
-| Model ref              | Input       | Context   | Max output | Reasoning | Notes         |
-| ---------------------- | ----------- | --------- | ---------- | --------- | ------------- |
-| `xiaomi/mimo-v2-flash` | text        | 262,144   | 8,192      | No        | Modelo predeterminado |
-| `xiaomi/mimo-v2-pro`   | text        | 1,048,576 | 32,000     | Sí        | Contexto amplio |
-| `xiaomi/mimo-v2-omni`  | text, image | 262,144   | 32,000     | Sí        | Multimodal    |
+| Referencia de modelo   | Entrada     | Contexto  | Salida máxima | Razonamiento | Notas                  |
+| ---------------------- | ----------- | --------- | ------------- | ------------ | ---------------------- |
+| `xiaomi/mimo-v2-flash` | texto       | 262,144   | 8,192         | No           | Modelo predeterminado  |
+| `xiaomi/mimo-v2-pro`   | texto       | 1,048,576 | 32,000        | Sí           | Contexto grande        |
+| `xiaomi/mimo-v2-omni`  | texto, imagen | 262,144 | 32,000        | Sí           | Multimodal             |
 
 <Tip>
 La referencia de modelo predeterminada es `xiaomi/mimo-v2-flash`. El proveedor se inyecta automáticamente cuando `XIAOMI_API_KEY` está configurada o existe un perfil de autenticación.
 </Tip>
 
-## Conversión de texto a voz
+## Texto a voz
 
 El Plugin `xiaomi` incluido también registra Xiaomi MiMo como proveedor de voz para
-`messages.tts`. Llama al contrato TTS de chat completions de Xiaomi con el texto como
-mensaje `assistant` y una guía de estilo opcional como mensaje `user`.
+`messages.tts`. Llama al contrato de TTS de finalizaciones de chat de Xiaomi con el texto como
+un mensaje `assistant` y una guía de estilo opcional como mensaje `user`.
 
-| Property | Value                                    |
-| -------- | ---------------------------------------- |
-| TTS id   | `xiaomi` (alias `mimo`)                  |
-| Auth     | `XIAOMI_API_KEY`                         |
-| API      | `POST /v1/chat/completions` con `audio` |
-| Default  | `mimo-v2.5-tts`, voz `mimo_default`    |
-| Output   | MP3 de forma predeterminada; WAV cuando se configura |
+| Propiedad | Valor                                    |
+| --------- | ---------------------------------------- |
+| Id. de TTS | `xiaomi` (alias `mimo`)                  |
+| Autenticación | `XIAOMI_API_KEY`                         |
+| API       | `POST /v1/chat/completions` con `audio` |
+| Predeterminado | `mimo-v2.5-tts`, voz `mimo_default`    |
+| Salida    | MP3 de forma predeterminada; WAV cuando se configura |
 
 ```json5
 {
@@ -95,8 +100,8 @@ mensaje `assistant` y una guía de estilo opcional como mensaje `user`.
 ```
 
 Las voces integradas compatibles incluyen `mimo_default`, `default_zh`, `default_en`,
-`Mia`, `Chloe`, `Milo` y `Dean`. `mimo-v2-tts` es compatible con cuentas TTS
-MiMo antiguas; la configuración predeterminada usa el modelo TTS actual MiMo-V2.5. Para destinos de notas de voz
+`Mia`, `Chloe`, `Milo` y `Dean`. `mimo-v2-tts` es compatible con cuentas TTS de MiMo
+anteriores; el valor predeterminado usa el modelo TTS actual MiMo-V2.5. Para destinos de notas de voz
 como Feishu y Telegram, OpenClaw transcodifica la salida de Xiaomi a Opus de 48 kHz
 con `ffmpeg` antes de la entrega.
 
@@ -149,14 +154,14 @@ con `ffmpeg` antes de la entrega.
 ```
 
 <AccordionGroup>
-  <Accordion title="Comportamiento de inyección automática">
-    El proveedor `xiaomi` se inyecta automáticamente cuando `XIAOMI_API_KEY` está configurada en tu entorno o existe un perfil de autenticación. No necesitas configurar manualmente el proveedor a menos que quieras sobrescribir los metadatos del modelo o la URL base.
+  <Accordion title="Auto-injection behavior">
+    El proveedor `xiaomi` se inyecta automáticamente cuando `XIAOMI_API_KEY` está configurada en tu entorno o existe un perfil de autenticación. No necesitas configurar manualmente el proveedor salvo que quieras sobrescribir los metadatos del modelo o la URL base.
   </Accordion>
 
-  <Accordion title="Detalles del modelo">
-    - **mimo-v2-flash** — ligero y rápido, ideal para tareas de texto de propósito general. No admite reasoning.
-    - **mimo-v2-pro** — admite reasoning con una ventana de contexto de 1M tokens para cargas de trabajo con documentos largos.
-    - **mimo-v2-omni** — modelo multimodal con reasoning habilitado que acepta entradas de texto e imagen.
+  <Accordion title="Model details">
+    - **mimo-v2-flash** — ligero y rápido, ideal para tareas de texto de propósito general. Sin compatibilidad con razonamiento.
+    - **mimo-v2-pro** — admite razonamiento con una ventana de contexto de 1M de tokens para cargas de trabajo con documentos largos.
+    - **mimo-v2-omni** — modelo multimodal con razonamiento habilitado que acepta entradas tanto de texto como de imagen.
 
     <Note>
     Todos los modelos usan el prefijo `xiaomi/` (por ejemplo `xiaomi/mimo-v2-pro`).
@@ -164,12 +169,12 @@ con `ffmpeg` antes de la entrega.
 
   </Accordion>
 
-  <Accordion title="Solución de problemas">
+  <Accordion title="Troubleshooting">
     - Si los modelos no aparecen, confirma que `XIAOMI_API_KEY` esté configurada y sea válida.
-    - Cuando Gateway se ejecuta como daemon, asegúrate de que la clave esté disponible para ese proceso (por ejemplo en `~/.openclaw/.env` o mediante la configuración `env.shellEnv`).
+    - Cuando el Gateway se ejecuta como demonio, asegúrate de que la clave esté disponible para ese proceso (por ejemplo en `~/.openclaw/.env` o mediante `env.shellEnv`).
 
     <Warning>
-    Las claves configuradas solo en tu shell interactivo no son visibles para los procesos de Gateway administrados como daemon. Usa `~/.openclaw/.env` o la configuración `env.shellEnv` para una disponibilidad persistente.
+    Las claves configuradas solo en tu shell interactivo no son visibles para los procesos del Gateway administrados como demonio. Usa `~/.openclaw/.env` o la configuración `env.shellEnv` para disponibilidad persistente.
     </Warning>
 
   </Accordion>
@@ -178,13 +183,13 @@ con `ffmpeg` antes de la entrega.
 ## Relacionado
 
 <CardGroup cols={2}>
-  <Card title="Selección de modelos" href="/es/concepts/model-providers" icon="layers">
-    Elegir proveedores, referencias de modelos y comportamiento de conmutación por error.
+  <Card title="Model selection" href="/es/concepts/model-providers" icon="layers">
+    Elegir proveedores, referencias de modelo y comportamiento de conmutación por error.
   </Card>
-  <Card title="Referencia de configuración" href="/es/gateway/configuration-reference" icon="gear">
+  <Card title="Configuration reference" href="/es/gateway/configuration-reference" icon="gear">
     Referencia completa de configuración de OpenClaw.
   </Card>
-  <Card title="Consola de Xiaomi MiMo" href="https://platform.xiaomimimo.com" icon="arrow-up-right-from-square">
+  <Card title="Xiaomi MiMo console" href="https://platform.xiaomimimo.com" icon="arrow-up-right-from-square">
     Panel de Xiaomi MiMo y gestión de claves de API.
   </Card>
 </CardGroup>

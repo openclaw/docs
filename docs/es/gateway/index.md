@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Ejecutar o depurar el proceso del Gateway
-summary: Guía operativa del servicio Gateway, su ciclo de vida y sus operaciones
-title: Guía operativa de Gateway
+    - Ejecutar o depurar el proceso de Gateway
+summary: Manual de operaciones para el servicio Gateway, el ciclo de vida y las operaciones
+title: Manual operativo de Gateway
 x-i18n:
-    generated_at: "2026-04-30T05:42:12Z"
+    generated_at: "2026-05-06T05:34:28Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 14f3d288c426848bc176291ff084a2b63b00e81739cd02f31fdf517d230d8111
+    source_hash: 592eb379cc75402246676cbb23b1dca39b98f559c214c92983b5a3685cff7ab7
     source_path: gateway/index.md
     workflow: 16
 ---
@@ -15,24 +15,24 @@ x-i18n:
 Usa esta página para el arranque del día 1 y las operaciones del día 2 del servicio Gateway.
 
 <CardGroup cols={2}>
-  <Card title="Solución de problemas profunda" icon="siren" href="/es/gateway/troubleshooting">
-    Diagnósticos orientados por síntomas con secuencias exactas de comandos y firmas de registro.
+  <Card title="Deep troubleshooting" icon="siren" href="/es/gateway/troubleshooting">
+    Diagnósticos centrados en síntomas con escaleras de comandos exactas y firmas de registro.
   </Card>
-  <Card title="Configuración" icon="sliders" href="/es/gateway/configuration">
-    Guía de configuración orientada a tareas + referencia completa de configuración.
+  <Card title="Configuration" icon="sliders" href="/es/gateway/configuration">
+    Guía de configuración orientada a tareas + referencia de configuración completa.
   </Card>
-  <Card title="Gestión de secretos" icon="key-round" href="/es/gateway/secrets">
+  <Card title="Secrets management" icon="key-round" href="/es/gateway/secrets">
     Contrato SecretRef, comportamiento de instantánea en tiempo de ejecución y operaciones de migración/recarga.
   </Card>
-  <Card title="Contrato del plan de secretos" icon="shield-check" href="/es/gateway/secrets-plan-contract">
-    Reglas exactas de destino/ruta de `secrets apply` y comportamiento de perfiles de autenticación solo por referencia.
+  <Card title="Secrets plan contract" icon="shield-check" href="/es/gateway/secrets-plan-contract">
+    Reglas exactas de destino/ruta de `secrets apply` y comportamiento de perfil de autenticación solo por referencia.
   </Card>
 </CardGroup>
 
 ## Arranque local en 5 minutos
 
 <Steps>
-  <Step title="Inicia el Gateway">
+  <Step title="Start the Gateway">
 
 ```bash
 openclaw gateway --port 18789
@@ -44,7 +44,7 @@ openclaw gateway --force
 
   </Step>
 
-  <Step title="Verifica la salud del servicio">
+  <Step title="Verify service health">
 
 ```bash
 openclaw gateway status
@@ -52,41 +52,41 @@ openclaw status
 openclaw logs --follow
 ```
 
-Referencia saludable: `Runtime: running`, `Connectivity probe: ok` y `Capability: ...` que coincida con lo que esperas. Usa `openclaw gateway status --require-rpc` cuando necesites prueba de RPC con alcance de lectura, no solo accesibilidad.
+Línea base saludable: `Runtime: running`, `Connectivity probe: ok` y `Capability: ...` que coincida con lo que esperas. Usa `openclaw gateway status --require-rpc` cuando necesites prueba RPC de alcance de lectura, no solo accesibilidad.
 
   </Step>
 
-  <Step title="Valida la preparación del canal">
+  <Step title="Validate channel readiness">
 
 ```bash
 openclaw channels status --probe
 ```
 
-Con un gateway accesible, esto ejecuta sondeos de canales por cuenta en vivo y auditorías opcionales.
-Si no se puede acceder al gateway, la CLI vuelve a resúmenes de canales solo de configuración en lugar
-de la salida del sondeo en vivo.
+Con un gateway accesible, esto ejecuta pruebas de canal en vivo por cuenta y auditorías opcionales.
+Si no se puede acceder al gateway, la CLI recurre a resúmenes de canales solo de configuración en lugar
+de la salida de prueba en vivo.
 
   </Step>
 </Steps>
 
 <Note>
-La recarga de configuración del Gateway observa la ruta del archivo de configuración activo (resuelta desde los valores predeterminados de perfil/estado, o `OPENCLAW_CONFIG_PATH` cuando está definido).
+La recarga de configuración del Gateway observa la ruta activa del archivo de configuración (resuelta a partir de los valores predeterminados de perfil/estado, o `OPENCLAW_CONFIG_PATH` cuando está establecida).
 El modo predeterminado es `gateway.reload.mode="hybrid"`.
-Después de la primera carga correcta, el proceso en ejecución sirve la instantánea de configuración activa en memoria; una recarga correcta sustituye esa instantánea de forma atómica.
+Después de la primera carga correcta, el proceso en ejecución sirve la instantánea activa de configuración en memoria; una recarga correcta intercambia esa instantánea de forma atómica.
 </Note>
 
-## Modelo de tiempo de ejecución
+## Modelo en tiempo de ejecución
 
-- Un proceso siempre activo para enrutamiento, plano de control y conexiones de canales.
-- Un único puerto multiplexado para:
+- Un proceso siempre activo para enrutamiento, plano de control y conexiones de canal.
+- Puerto multiplexado único para:
   - Control/RPC de WebSocket
   - API HTTP, compatibles con OpenAI (`/v1/models`, `/v1/embeddings`, `/v1/chat/completions`, `/v1/responses`, `/tools/invoke`)
   - Control UI y hooks
 - Modo de enlace predeterminado: `loopback`.
-- La autenticación es obligatoria por defecto. Las configuraciones con secreto compartido usan
+- La autenticación es obligatoria de forma predeterminada. Las configuraciones con secreto compartido usan
   `gateway.auth.token` / `gateway.auth.password` (o
-  `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`), y las configuraciones de proxy inverso no local loopback
-  pueden usar `gateway.auth.mode: "trusted-proxy"`.
+  `OPENCLAW_GATEWAY_TOKEN` / `OPENCLAW_GATEWAY_PASSWORD`), y las configuraciones de proxy inverso
+  sin loopback pueden usar `gateway.auth.mode: "trusted-proxy"`.
 
 ## Endpoints compatibles con OpenAI
 
@@ -100,7 +100,7 @@ La superficie de compatibilidad de mayor impacto de OpenClaw ahora es:
 
 Por qué importa este conjunto:
 
-- La mayoría de las integraciones con Open WebUI, LobeChat y LibreChat sondean primero `/v1/models`.
+- La mayoría de las integraciones con Open WebUI, LobeChat y LibreChat prueban primero `/v1/models`.
 - Muchas canalizaciones de RAG y memoria esperan `/v1/embeddings`.
 - Los clientes nativos para agentes prefieren cada vez más `/v1/responses`.
 
@@ -108,23 +108,23 @@ Nota de planificación:
 
 - `/v1/models` prioriza agentes: devuelve `openclaw`, `openclaw/default` y `openclaw/<agentId>`.
 - `openclaw/default` es el alias estable que siempre se asigna al agente predeterminado configurado.
-- Usa `x-openclaw-model` cuando quieras una anulación del proveedor/modelo backend; de lo contrario, la configuración normal de modelo e incrustaciones del agente seleccionado mantiene el control.
+- Usa `x-openclaw-model` cuando quieras anular el proveedor/modelo de backend; de lo contrario, la configuración normal de modelo e incrustaciones del agente seleccionado mantiene el control.
 
 Todos estos se ejecutan en el puerto principal del Gateway y usan el mismo límite de autenticación de operador de confianza que el resto de la API HTTP del Gateway.
 
 ### Precedencia de puerto y enlace
 
 | Configuración | Orden de resolución                                           |
-| ------------ | ------------------------------------------------------------- |
-| Puerto Gateway | `--port` → `OPENCLAW_GATEWAY_PORT` → `gateway.port` → `18789` |
+| ------------- | ------------------------------------------------------------- |
+| Puerto del Gateway | `--port` → `OPENCLAW_GATEWAY_PORT` → `gateway.port` → `18789` |
 | Modo de enlace | CLI/anulación → `gateway.bind` → `loopback`                    |
 
-Los servicios gateway instalados registran el `--port` resuelto en los metadatos del supervisor. Después de cambiar `gateway.port`, ejecuta `openclaw doctor --fix` o `openclaw gateway install --force` para que launchd/systemd/schtasks inicie el proceso en el nuevo puerto.
+Los servicios de gateway instalados registran el `--port` resuelto en los metadatos del supervisor. Después de cambiar `gateway.port`, ejecuta `openclaw doctor --fix` o `openclaw gateway install --force` para que launchd/systemd/schtasks inicie el proceso en el puerto nuevo.
 
-El arranque del Gateway usa el mismo puerto y enlace efectivos cuando inicializa los orígenes locales de
-Control UI para enlaces no local loopback. Por ejemplo, `--bind lan --port 3000`
+El arranque del Gateway usa el mismo puerto y enlace efectivos cuando inicializa orígenes locales de
+Control UI para enlaces sin loopback. Por ejemplo, `--bind lan --port 3000`
 inicializa `http://localhost:3000` y `http://127.0.0.1:3000` antes de que se ejecute la
-validación en tiempo de ejecución. Agrega explícitamente cualquier origen de navegador remoto, como URLs de proxy HTTPS, a
+validación en tiempo de ejecución. Añade explícitamente cualquier origen de navegador remoto, como URL de proxy HTTPS, a
 `gateway.controlUi.allowedOrigins`.
 
 ### Modos de recarga en caliente
@@ -134,9 +134,9 @@ validación en tiempo de ejecución. Agrega explícitamente cualquier origen de 
 | `off`                 | Sin recarga de configuración               |
 | `hot`                 | Aplica solo cambios seguros en caliente    |
 | `restart`             | Reinicia ante cambios que requieren recarga |
-| `hybrid` (predeterminado) | Aplica en caliente cuando es seguro, reinicia cuando se requiere |
+| `hybrid` (predeterminado) | Aplica en caliente cuando es seguro, reinicia cuando es necesario |
 
-## Conjunto de comandos de operador
+## Conjunto de comandos del operador
 
 ```bash
 openclaw gateway status
@@ -150,14 +150,14 @@ openclaw logs --follow
 openclaw doctor
 ```
 
-`gateway status --deep` sirve para descubrimiento adicional de servicios (LaunchDaemons/unidades systemd del sistema/schtasks), no para un sondeo más profundo de salud RPC.
+`gateway status --deep` es para descubrimiento adicional de servicios (LaunchDaemons/unidades de sistema systemd/schtasks), no una prueba de estado RPC más profunda.
 
 ## Varios gateways (mismo host)
 
-La mayoría de las instalaciones deberían ejecutar un gateway por máquina. Un solo gateway puede alojar varios
+La mayoría de las instalaciones deberían ejecutar un gateway por máquina. Un solo gateway puede alojar múltiples
 agentes y canales.
 
-Solo necesitas varios gateways cuando deseas aislamiento intencionalmente o un bot de rescate.
+Solo necesitas varios gateways cuando quieres aislamiento intencionalmente o un bot de rescate.
 
 Comprobaciones útiles:
 
@@ -169,9 +169,9 @@ openclaw gateway probe
 Qué esperar:
 
 - `gateway status --deep` puede informar `Other gateway-like services detected (best effort)`
-  e imprimir sugerencias de limpieza cuando aún queden instalaciones launchd/systemd/schtasks obsoletas.
+  e imprimir sugerencias de limpieza cuando todavía quedan instalaciones antiguas de launchd/systemd/schtasks.
 - `gateway probe` puede advertir sobre `multiple reachable gateways` cuando responde más de un destino.
-- Si eso es intencional, aísla puertos, configuración/estado y raíces de espacio de trabajo por gateway.
+- Si eso es intencional, aísla los puertos, la configuración/estado y las raíces de espacio de trabajo por gateway.
 
 Lista de comprobación por instancia:
 
@@ -189,42 +189,6 @@ OPENCLAW_CONFIG_PATH=~/.openclaw/b.json OPENCLAW_STATE_DIR=~/.openclaw-b opencla
 
 Configuración detallada: [/gateway/multiple-gateways](/es/gateway/multiple-gateways).
 
-## Endpoint de cerebro en tiempo real de VoiceClaw
-
-OpenClaw expone un endpoint WebSocket en tiempo real compatible con VoiceClaw en
-`/voiceclaw/realtime`. Úsalo cuando un cliente de escritorio VoiceClaw deba comunicarse
-directamente con un cerebro OpenClaw en tiempo real en lugar de pasar por un proceso
-de retransmisión separado.
-
-El endpoint usa Gemini Live para audio en tiempo real y llama a OpenClaw como
-cerebro exponiendo herramientas de OpenClaw directamente a Gemini Live. Las llamadas a herramientas devuelven un
-resultado `working` inmediato para mantener ágil el turno de voz; luego OpenClaw
-ejecuta la herramienta real de forma asíncrona e inyecta el resultado de vuelta en la
-sesión en vivo. Define `GEMINI_API_KEY` en el entorno del proceso gateway. Si
-la autenticación del gateway está habilitada, el cliente de escritorio envía el token o la contraseña del gateway
-en su primer mensaje `session.config`.
-
-El acceso al cerebro en tiempo real ejecuta comandos de agente OpenClaw autorizados por el propietario. Mantén
-`gateway.auth.mode: "none"` limitado a instancias de prueba solo local loopback. Las conexiones de cerebro en tiempo real
-no locales requieren autenticación del gateway.
-
-Para un gateway de prueba aislado, ejecuta una instancia separada con su propio puerto, configuración
-y estado:
-
-```bash
-OPENCLAW_CONFIG_PATH=/path/to/openclaw-realtime/openclaw.json \
-OPENCLAW_STATE_DIR=/path/to/openclaw-realtime/state \
-OPENCLAW_SKIP_CHANNELS=1 \
-GEMINI_API_KEY=... \
-openclaw gateway --port 19789
-```
-
-Luego configura VoiceClaw para usar:
-
-```text
-ws://127.0.0.1:19789/voiceclaw/realtime
-```
-
 ## Acceso remoto
 
 Preferido: Tailscale/VPN.
@@ -237,12 +201,12 @@ ssh -N -L 18789:127.0.0.1:18789 user@host
 Luego conecta los clientes localmente a `ws://127.0.0.1:18789`.
 
 <Warning>
-Los túneles SSH no omiten la autenticación del gateway. Para autenticación con secreto compartido, los clientes todavía
+Los túneles SSH no omiten la autenticación del gateway. Para autenticación con secreto compartido, los clientes aún
 deben enviar `token`/`password` incluso a través del túnel. Para modos con identidad,
 la solicitud aún debe satisfacer esa ruta de autenticación.
 </Warning>
 
-Consulta: [Gateway remoto](/es/gateway/remote), [Autenticación](/es/gateway/authentication), [Tailscale](/es/gateway/tailscale).
+Consulta: [Remote Gateway](/es/gateway/remote), [Authentication](/es/gateway/authentication), [Tailscale](/es/gateway/tailscale).
 
 ## Supervisión y ciclo de vida del servicio
 
@@ -260,11 +224,11 @@ openclaw gateway stop
 
 Usa `openclaw gateway restart` para reinicios. No encadenes `openclaw gateway stop` y `openclaw gateway start`; en macOS, `gateway stop` deshabilita intencionalmente el LaunchAgent antes de detenerlo.
 
-Las etiquetas de LaunchAgent son `ai.openclaw.gateway` (predeterminada) o `ai.openclaw.<profile>` (perfil con nombre). `openclaw doctor` audita y repara desviaciones de configuración del servicio.
+Las etiquetas de LaunchAgent son `ai.openclaw.gateway` (predeterminado) o `ai.openclaw.<profile>` (perfil con nombre). `openclaw doctor` audita y repara desviaciones de configuración del servicio.
 
   </Tab>
 
-  <Tab title="Linux (usuario systemd)">
+  <Tab title="Linux (systemd user)">
 
 ```bash
 openclaw gateway install
@@ -301,7 +265,7 @@ WantedBy=default.target
 
   </Tab>
 
-  <Tab title="Windows (nativo)">
+  <Tab title="Windows (native)">
 
 ```powershell
 openclaw gateway install
@@ -310,14 +274,14 @@ openclaw gateway restart
 openclaw gateway stop
 ```
 
-El arranque gestionado nativo de Windows usa una tarea programada llamada `OpenClaw Gateway`
+El inicio administrado nativo de Windows usa una tarea programada llamada `OpenClaw Gateway`
 (o `OpenClaw Gateway (<profile>)` para perfiles con nombre). Si se deniega la creación de la tarea programada,
-OpenClaw recurre a un iniciador por usuario en la carpeta de inicio
+OpenClaw recurre a un lanzador por usuario en la carpeta de inicio
 que apunta a `gateway.cmd` dentro del directorio de estado.
 
   </Tab>
 
-  <Tab title="Linux (servicio del sistema)">
+  <Tab title="Linux (system service)">
 
 Usa una unidad del sistema para hosts multiusuario/siempre activos.
 
@@ -326,16 +290,16 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now openclaw-gateway[-<profile>].service
 ```
 
-Usa el mismo cuerpo de servicio que la unidad de usuario, pero instálalo en
+Usa el mismo cuerpo de servicio que la unidad de usuario, pero instálalo bajo
 `/etc/systemd/system/openclaw-gateway[-<profile>].service` y ajusta
-`ExecStart=` si tu binario `openclaw` vive en otro lugar.
+`ExecStart=` si tu binario `openclaw` se encuentra en otro lugar.
 
-No permitas también que `openclaw doctor --fix` instale un servicio gateway a nivel de usuario para el mismo perfil/puerto. Doctor rechaza esa instalación automática cuando encuentra un servicio gateway OpenClaw a nivel de sistema; usa `OPENCLAW_SERVICE_REPAIR_POLICY=external` cuando la unidad del sistema es dueña del ciclo de vida.
+No permitas también que `openclaw doctor --fix` instale un servicio de gateway de nivel de usuario para el mismo perfil/puerto. Doctor rechaza esa instalación automática cuando encuentra un servicio de gateway OpenClaw de nivel de sistema; usa `OPENCLAW_SERVICE_REPAIR_POLICY=external` cuando la unidad del sistema es propietaria del ciclo de vida.
 
   </Tab>
 </Tabs>
 
-## Ruta rápida de perfil de desarrollo
+## Ruta rápida del perfil de desarrollo
 
 ```bash
 openclaw --dev setup
@@ -343,32 +307,32 @@ openclaw --dev gateway --allow-unconfigured
 openclaw --dev status
 ```
 
-Los valores predeterminados incluyen estado/configuración aislados y el puerto gateway base `19001`.
+Los valores predeterminados incluyen estado/configuración aislados y puerto base de gateway `19001`.
 
-## Referencia rápida del protocolo (vista de operador)
+## Referencia rápida del protocolo (vista del operador)
 
 - La primera trama del cliente debe ser `connect`.
-- Gateway devuelve una instantánea `hello-ok` (`presence`, `health`, `stateVersion`, `uptimeMs`, límites/política).
+- Gateway devuelve la instantánea `hello-ok` (`presence`, `health`, `stateVersion`, `uptimeMs`, límites/política).
 - `hello-ok.features.methods` / `events` son una lista de descubrimiento conservadora, no
-  un volcado generado de cada ruta auxiliar invocable.
+  un volcado generado de todas las rutas auxiliares invocables.
 - Solicitudes: `req(method, params)` → `res(ok/payload|error)`.
 - Los eventos comunes incluyen `connect.challenge`, `agent`, `chat`,
   `session.message`, `session.tool`, `sessions.changed`, `presence`, `tick`,
-  `health`, `heartbeat`, eventos de ciclo de vida de emparejamiento/aprobación y `shutdown`.
+  `health`, `heartbeat`, eventos del ciclo de vida de emparejamiento/aprobación y `shutdown`.
 
-Las ejecuciones de agente tienen dos etapas:
+Las ejecuciones de agentes tienen dos etapas:
 
 1. Confirmación aceptada inmediata (`status:"accepted"`)
-2. Respuesta final de finalización (`status:"ok"|"error"`), con eventos `agent` transmitidos entre ambas.
+2. Respuesta final de finalización (`status:"ok"|"error"`), con eventos `agent` transmitidos entre medias.
 
-Consulta la documentación completa del protocolo: [Protocolo de Gateway](/es/gateway/protocol).
+Consulta la documentación completa del protocolo: [Gateway Protocol](/es/gateway/protocol).
 
 ## Comprobaciones operativas
 
-### Actividad
+### Vivacidad
 
-- Abra WS y envíe `connect`.
-- Espere una respuesta `hello-ok` con instantánea.
+- Abre WS y envía `connect`.
+- Espera una respuesta `hello-ok` con instantánea.
 
 ### Preparación
 
@@ -380,24 +344,24 @@ openclaw health
 
 ### Recuperación de brechas
 
-Los eventos no se reproducen. Ante brechas de secuencia, actualice el estado (`health`, `system-presence`) antes de continuar.
+Los eventos no se reproducen. Ante brechas de secuencia, actualiza el estado (`health`, `system-presence`) antes de continuar.
 
-## Firmas de fallo comunes
+## Firmas de fallos comunes
 
-| Firma                                                          | Problema probable                                                              |
-| -------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| `refusing to bind gateway ... without auth`                    | Enlace no loopback sin una ruta de autenticación de Gateway válida             |
+| Firma                                                         | Problema probable                                                              |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `refusing to bind gateway ... without auth`                   | Enlace sin loopback sin una ruta válida de autenticación del gateway           |
 | `another gateway instance is already listening` / `EADDRINUSE` | Conflicto de puerto                                                            |
-| `Gateway start blocked: set gateway.mode=local`                | Configuración establecida en modo remoto, o falta la marca de modo local en una configuración dañada |
-| `unauthorized` during connect                                  | Discrepancia de autenticación entre el cliente y el Gateway                    |
+| `Gateway start blocked: set gateway.mode=local`               | Configuración establecida en modo remoto, o falta el sello de modo local en una configuración dañada |
+| `unauthorized` during connect                                 | Desajuste de autenticación entre cliente y gateway                             |
 
-Para ver las cadenas completas de diagnóstico, use [Solución de problemas de Gateway](/es/gateway/troubleshooting).
+Para escaleras completas de diagnóstico, usa [Gateway Troubleshooting](/es/gateway/troubleshooting).
 
 ## Garantías de seguridad
 
-- Los clientes del protocolo de Gateway fallan rápidamente cuando Gateway no está disponible (sin alternativa implícita al canal directo).
-- Las primeras tramas no válidas/no connect se rechazan y se cierran.
-- El apagado ordenado emite el evento `shutdown` antes de cerrar el socket.
+- Los clientes del protocolo Gateway fallan de inmediato cuando Gateway no está disponible (sin alternativa implícita de canal directo).
+- Las primeras tramas no válidas o que no son de conexión se rechazan y se cierran.
+- El cierre ordenado emite el evento `shutdown` antes del cierre del socket.
 
 ---
 

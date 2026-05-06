@@ -1,44 +1,44 @@
 ---
 read_when:
-    - Ejecutar scripts del repositorio
-    - Añadir o cambiar scripts en `./scripts`
+    - Ejecutar scripts desde el repositorio
+    - Añadir o cambiar scripts en ./scripts
 summary: 'Scripts del repositorio: propósito, alcance y notas de seguridad'
-title: Scripts
+title: Secuencias de comandos
 x-i18n:
-    generated_at: "2026-04-24T05:32:55Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T05:37:30Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8d76777402670abe355b9ad2a0337f96211af1323e36f2ab1ced9f04f87083f5
+    source_hash: 01f2e064891940959acf23c003d7e842386f67ac6c869d0677b802738ac04bdf
     source_path: help/scripts.md
-    workflow: 15
+    workflow: 16
 ---
 
-El directorio `scripts/` contiene scripts auxiliares para flujos de trabajo locales y tareas operativas.
-Úsalos cuando una tarea esté claramente vinculada a un script; en caso contrario, prefiere la CLI.
+El directorio `scripts/` contiene scripts auxiliares para flujos de trabajo locales y tareas de operaciones.
+Úsalos cuando una tarea esté claramente vinculada a un script; de lo contrario, prefiere la CLI.
 
 ## Convenciones
 
-- Los scripts son **opcionales** a menos que se mencionen en la documentación o en listas de comprobación de versiones.
-- Prefiere las superficies de CLI cuando existan (ejemplo: la supervisión de autenticación usa `openclaw models status --check`).
-- Supón que los scripts son específicos del host; léelos antes de ejecutarlos en una máquina nueva.
+- Los scripts son **opcionales** salvo que se mencionen en la documentación o en listas de verificación de lanzamientos.
+- Prefiere las superficies de CLI cuando existan (ejemplo: el monitoreo de autenticación usa `openclaw models status --check`).
+- Asume que los scripts son específicos del host; léelos antes de ejecutarlos en una máquina nueva.
 
-## Scripts de supervisión de autenticación
+## Scripts de monitoreo de autenticación
 
-La supervisión de autenticación se cubre en [Autenticación](/es/gateway/authentication). Los scripts de `scripts/` son complementos opcionales para flujos de systemd/Termux en teléfonos.
+El monitoreo de autenticación se cubre en [Autenticación](/es/gateway/authentication). Los scripts en `scripts/` son extras opcionales para flujos de trabajo de teléfonos con systemd/Termux.
 
 ## Ayudante de lectura de GitHub
 
-Usa `scripts/gh-read` cuando quieras que `gh` use un token de instalación de GitHub App para llamadas de lectura con alcance de repositorio, mientras mantienes el `gh` normal con tu inicio de sesión personal para acciones de escritura.
+Usa `scripts/gh-read` cuando quieras que `gh` use un token de instalación de una GitHub App para llamadas de lectura con alcance de repositorio, dejando el `gh` normal en tu inicio de sesión personal para acciones de escritura.
 
-Variables de entorno requeridas:
+Variables de entorno obligatorias:
 
 - `OPENCLAW_GH_READ_APP_ID`
 - `OPENCLAW_GH_READ_PRIVATE_KEY_FILE`
 
 Variables de entorno opcionales:
 
-- `OPENCLAW_GH_READ_INSTALLATION_ID` cuando quieras omitir la búsqueda de instalación basada en repositorio
-- `OPENCLAW_GH_READ_PERMISSIONS` como anulación separada por comas para el subconjunto de permisos de lectura que se debe solicitar
+- `OPENCLAW_GH_READ_INSTALLATION_ID` cuando quieras omitir la búsqueda de instalación basada en el repositorio
+- `OPENCLAW_GH_READ_PERMISSIONS` como anulación separada por comas para el subconjunto de permisos de lectura que se solicitará
 
 Orden de resolución del repositorio:
 
@@ -54,8 +54,8 @@ Ejemplos:
 
 ## Al añadir scripts
 
-- Mantén los scripts centrados y documentados.
-- Añade una entrada breve en la documentación correspondiente (o créala si falta).
+- Mantén los scripts enfocados y documentados.
+- Añade una entrada breve en el documento relevante (o crea una si falta).
 
 ## Relacionado
 

@@ -1,19 +1,19 @@
 ---
 read_when:
-    - Quieres generación multimedia de Vydra en OpenClaw
-    - Necesitas una guía de configuración de claves API de Vydra
-summary: Usar imagen, video y voz de Vydra en OpenClaw
+    - Quieres la generación de contenido multimedia con Vydra en OpenClaw
+    - Necesitas orientación para configurar la clave de API de Vydra
+summary: Usa imagen, video y voz de Vydra en OpenClaw
 title: Vydra
 x-i18n:
-    generated_at: "2026-04-24T05:47:04Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T05:47:09Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 85420c3f337c13313bf571d5ee92c1f1988ff8119d401e7ec0ea0db1e74d9b69
+    source_hash: 6e73121300fc3121124d15ecd285603032644c7d3886703776adc58c7115401a
     source_path: providers/vydra.md
-    workflow: 15
+    workflow: 16
 ---
 
-El Plugin incluido de Vydra agrega:
+El Plugin Vydra incluido añade:
 
 - Generación de imágenes mediante `vydra/grok-imagine`
 - Generación de video mediante `vydra/veo3` y `vydra/kling`
@@ -21,10 +21,18 @@ El Plugin incluido de Vydra agrega:
 
 OpenClaw usa la misma `VYDRA_API_KEY` para las tres capacidades.
 
-<Warning>
-Usa `https://www.vydra.ai/api/v1` como URL base.
+| Propiedad       | Valor                                                                     |
+| --------------- | ------------------------------------------------------------------------- |
+| Id de proveedor | `vydra`                                                                   |
+| Plugin          | incluido, `enabledByDefault: true`                                        |
+| Variable de entorno de autenticación | `VYDRA_API_KEY`                                        |
+| Indicador de incorporación | `--auth-choice vydra-api-key`                                      |
+| Indicador directo de CLI | `--vydra-api-key <key>`                                             |
+| Contratos       | `imageGenerationProviders`, `videoGenerationProviders`, `speechProviders` |
+| URL base        | `https://www.vydra.ai/api/v1` (usa el host `www`)                         |
 
-El host ápice de Vydra (`https://vydra.ai/api/v1`) actualmente redirige a `www`. Algunos clientes HTTP eliminan `Authorization` en esa redirección entre hosts, lo que convierte una clave API válida en un fallo de autenticación engañoso. El Plugin incluido usa directamente la URL base con `www` para evitarlo.
+<Warning>
+  Usa `https://www.vydra.ai/api/v1` como URL base. El host raíz de Vydra (`https://vydra.ai/api/v1`) actualmente redirige a `www`. Algunos clientes HTTP descartan `Authorization` en esa redirección entre hosts, lo que convierte una clave de API válida en un fallo de autenticación engañoso. El Plugin incluido usa directamente la URL base con `www` para evitarlo.
 </Warning>
 
 ## Configuración
@@ -35,7 +43,7 @@ El host ápice de Vydra (`https://vydra.ai/api/v1`) actualmente redirige a `www`
     openclaw onboard --auth-choice vydra-api-key
     ```
 
-    O establece directamente la variable de entorno:
+    O define la variable de entorno directamente:
 
     ```bash
     export VYDRA_API_KEY="vydra_live_..."
@@ -55,7 +63,7 @@ El host ápice de Vydra (`https://vydra.ai/api/v1`) actualmente redirige a `www`
 
     - `vydra/grok-imagine`
 
-    Establécelo como proveedor predeterminado de imágenes:
+    Defínelo como el proveedor de imágenes predeterminado:
 
     ```json5
     {
@@ -69,10 +77,10 @@ El host ápice de Vydra (`https://vydra.ai/api/v1`) actualmente redirige a `www`
     }
     ```
 
-    La compatibilidad incluida actual es solo de texto a imagen. Las rutas de edición alojadas por Vydra esperan URLs remotas de imágenes, y OpenClaw aún no añade un bridge de subida específico de Vydra en el Plugin incluido.
+    El soporte incluido actual solo es de texto a imagen. Las rutas de edición alojadas de Vydra esperan URLs de imágenes remotas, y OpenClaw todavía no añade un puente de carga específico de Vydra en el Plugin incluido.
 
     <Note>
-    Consulta [Generación de imágenes](/es/tools/image-generation) para parámetros compartidos de herramientas, selección de proveedor y comportamiento de failover.
+    Consulta [Generación de imágenes](/es/tools/image-generation) para ver los parámetros compartidos de la herramienta, la selección de proveedor y el comportamiento de conmutación por error.
     </Note>
 
   </Accordion>
@@ -83,7 +91,7 @@ El host ápice de Vydra (`https://vydra.ai/api/v1`) actualmente redirige a `www`
     - `vydra/veo3` para texto a video
     - `vydra/kling` para imagen a video
 
-    Establece Vydra como proveedor predeterminado de video:
+    Define Vydra como el proveedor de video predeterminado:
 
     ```json5
     {
@@ -99,13 +107,13 @@ El host ápice de Vydra (`https://vydra.ai/api/v1`) actualmente redirige a `www`
 
     Notas:
 
-    - `vydra/veo3` está incluido solo como texto a video.
-    - `vydra/kling` actualmente requiere una referencia remota de URL de imagen. Las subidas de archivos locales se rechazan de inmediato.
-    - La ruta HTTP actual `kling` de Vydra ha sido inconsistente respecto a si requiere `image_url` o `video_url`; el proveedor incluido asigna la misma URL remota de imagen a ambos campos.
-    - El Plugin incluido se mantiene conservador y no reenvía opciones de estilo no documentadas como relación de aspecto, resolución, marca de agua o audio generado.
+    - `vydra/veo3` se incluye solo como texto a video.
+    - `vydra/kling` actualmente requiere una referencia de URL de imagen remota. Las cargas de archivos locales se rechazan desde el inicio.
+    - La ruta HTTP `kling` actual de Vydra ha sido inconsistente sobre si requiere `image_url` o `video_url`; el proveedor incluido asigna la misma URL de imagen remota a ambos campos.
+    - El Plugin incluido se mantiene conservador y no reenvía controles de estilo no documentados como relación de aspecto, resolución, marca de agua o audio generado.
 
     <Note>
-    Consulta [Generación de video](/es/tools/video-generation) para parámetros compartidos de herramientas, selección de proveedor y comportamiento de failover.
+    Consulta [Generación de video](/es/tools/video-generation) para ver los parámetros compartidos de la herramienta, la selección de proveedor y el comportamiento de conmutación por error.
     </Note>
 
   </Accordion>
@@ -119,12 +127,12 @@ El host ápice de Vydra (`https://vydra.ai/api/v1`) actualmente redirige a `www`
     pnpm test:live -- extensions/vydra/vydra.live.test.ts
     ```
 
-    El archivo incluido de pruebas en vivo de Vydra ahora cubre:
+    El archivo en vivo de Vydra incluido ahora cubre:
 
-    - `vydra/veo3` texto a video
-    - `vydra/kling` imagen a video usando una URL remota de imagen
+    - `vydra/veo3` de texto a video
+    - `vydra/kling` de imagen a video usando una URL de imagen remota
 
-    Anula la imagen remota de prueba cuando sea necesario:
+    Sustituye el fixture de imagen remota cuando sea necesario:
 
     ```bash
     export OPENCLAW_LIVE_VYDRA_KLING_IMAGE_URL="https://example.com/reference.png"
@@ -133,7 +141,7 @@ El host ápice de Vydra (`https://vydra.ai/api/v1`) actualmente redirige a `www`
   </Accordion>
 
   <Accordion title="Síntesis de voz">
-    Establece Vydra como proveedor de voz:
+    Define Vydra como proveedor de voz:
 
     ```json5
     {
@@ -156,7 +164,7 @@ El host ápice de Vydra (`https://vydra.ai/api/v1`) actualmente redirige a `www`
     - Modelo: `elevenlabs/tts`
     - Id de voz: `21m00Tcm4TlvDq8ikWAM`
 
-    El Plugin incluido actualmente expone una única voz predeterminada conocida como funcional y devuelve archivos de audio MP3.
+    El Plugin incluido actualmente expone una voz predeterminada conocida y fiable, y devuelve archivos de audio MP3.
 
   </Accordion>
 </AccordionGroup>
@@ -174,6 +182,6 @@ El host ápice de Vydra (`https://vydra.ai/api/v1`) actualmente redirige a `www`
     Parámetros compartidos de la herramienta de video y selección de proveedor.
   </Card>
   <Card title="Referencia de configuración" href="/es/gateway/config-agents#agent-defaults" icon="gear">
-    Valores predeterminados del agente y configuración de modelos.
+    Valores predeterminados del agente y configuración de modelo.
   </Card>
 </CardGroup>

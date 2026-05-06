@@ -1,45 +1,45 @@
 ---
 read_when:
-    - Quieres analizar PDFs desde agentes
-    - Necesitas los parámetros exactos y los límites de la herramienta PDF
-    - Estás depurando el modo PDF nativo frente al respaldo de extracción
-summary: Analiza uno o más documentos PDF con compatibilidad nativa del proveedor y respaldo de extracción
-title: Herramienta PDF
+    - Quieres analizar archivos PDF desde agentes
+    - Necesitas los parámetros y límites exactos de la herramienta PDF
+    - Estás depurando el modo PDF nativo frente a la alternativa de extracción
+summary: Analiza uno o más documentos PDF con soporte nativo del proveedor y mecanismo de reserva para la extracción
+title: Herramienta de PDF
 x-i18n:
-    generated_at: "2026-04-25T13:58:53Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T05:52:17Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 89bbc675f2b87729e283659f9604724be7a827b50b11edc853a42c448bbaaf6e
+    source_hash: ac1cbbc363975d5571fe5b46b39e2d897e1b80b5859a1f44ef81050f55554444
     source_path: tools/pdf.md
-    workflow: 15
+    workflow: 16
 ---
 
 `pdf` analiza uno o más documentos PDF y devuelve texto.
 
-Comportamiento rápido:
+Comportamiento resumido:
 
-- Modo nativo del proveedor para los proveedores de modelos Anthropic y Google.
-- Modo de respaldo de extracción para otros proveedores (primero extrae texto y luego imágenes de páginas cuando es necesario).
-- Admite entrada única (`pdf`) o múltiple (`pdfs`), con un máximo de 10 PDF por llamada.
+- Modo de proveedor nativo para proveedores de modelos Anthropic y Google.
+- Modo de reserva de extracción para otros proveedores (extrae texto primero y, después, imágenes de página cuando es necesario).
+- Admite entrada única (`pdf`) o múltiple (`pdfs`), máximo 10 PDF por llamada.
 
 ## Disponibilidad
 
 La herramienta solo se registra cuando OpenClaw puede resolver una configuración de modelo compatible con PDF para el agente:
 
 1. `agents.defaults.pdfModel`
-2. respaldo a `agents.defaults.imageModel`
-3. respaldo al modelo de sesión/predeterminado resuelto del agente
-4. si los proveedores PDF nativos están respaldados por autenticación, se prefieren antes que los candidatos genéricos de respaldo de imagen
+2. reserva en `agents.defaults.imageModel`
+3. reserva en el modelo resuelto de sesión/predeterminado del agente
+4. si los proveedores de PDF nativos están respaldados por autenticación, se prefieren antes que los candidatos de reserva genéricos de imagen
 
-Si no se puede resolver un modelo utilizable, la herramienta `pdf` no se expone.
+Si no se puede resolver ningún modelo utilizable, la herramienta `pdf` no se expone.
 
 Notas de disponibilidad:
 
-- La cadena de respaldo tiene en cuenta la autenticación. Un `provider/model` configurado solo cuenta si
+- La cadena de reserva tiene en cuenta la autenticación. Un `provider/model` configurado solo cuenta si
   OpenClaw realmente puede autenticar ese proveedor para el agente.
-- Actualmente, los proveedores PDF nativos son **Anthropic** y **Google**.
-- Si el proveedor de sesión/predeterminado resuelto ya tiene un modelo de visión/PDF
-  configurado, la herramienta PDF lo reutiliza antes de recurrir a otros
+- Los proveedores de PDF nativos son actualmente **Anthropic** y **Google**.
+- Si el proveedor de sesión/predeterminado resuelto ya tiene configurado un modelo
+  de visión/PDF, la herramienta PDF lo reutiliza antes de recurrir a otros
   proveedores respaldados por autenticación.
 
 ## Referencia de entrada
@@ -49,7 +49,7 @@ Una ruta o URL de PDF.
 </ParamField>
 
 <ParamField path="pdfs" type="string[]">
-Múltiples rutas o URL de PDF, hasta un total de 10.
+Varias rutas o URL de PDF, hasta 10 en total.
 </ParamField>
 
 <ParamField path="prompt" type="string" default="Analyze this PDF document.">
@@ -61,40 +61,40 @@ Filtro de páginas como `1-5` o `1,3,7-9`.
 </ParamField>
 
 <ParamField path="model" type="string">
-Anulación opcional del modelo con formato `provider/model`.
+Anulación opcional de modelo en formato `provider/model`.
 </ParamField>
 
 <ParamField path="maxBytesMb" type="number">
-Límite de tamaño por PDF en MB. Usa por defecto `agents.defaults.pdfMaxBytesMb` o `10`.
+Límite de tamaño por PDF en MB. El valor predeterminado es `agents.defaults.pdfMaxBytesMb` o `10`.
 </ParamField>
 
 Notas de entrada:
 
-- `pdf` y `pdfs` se combinan y deduplican antes de cargarse.
-- Si no se proporciona ninguna entrada PDF, la herramienta devuelve un error.
-- `pages` se analiza como números de página con índice 1, se deduplica, se ordena y se limita al máximo de páginas configurado.
-- `maxBytesMb` usa por defecto `agents.defaults.pdfMaxBytesMb` o `10`.
+- `pdf` y `pdfs` se fusionan y deduplican antes de la carga.
+- Si no se proporciona ninguna entrada de PDF, la herramienta devuelve un error.
+- `pages` se interpreta como números de página basados en 1, se deduplica, se ordena y se limita al máximo de páginas configurado.
+- `maxBytesMb` usa como valor predeterminado `agents.defaults.pdfMaxBytesMb` o `10`.
 
 ## Referencias PDF compatibles
 
 - ruta de archivo local (incluida la expansión de `~`)
 - URL `file://`
 - URL `http://` y `https://`
-- referencias entrantes administradas por OpenClaw como `media://inbound/<id>`
+- referencias entrantes gestionadas por OpenClaw, como `media://inbound/<id>`
 
-Notas sobre referencias:
+Notas de referencia:
 
-- Otros esquemas URI (por ejemplo `ftp://`) se rechazan con `unsupported_pdf_reference`.
+- Otros esquemas URI (por ejemplo, `ftp://`) se rechazan con `unsupported_pdf_reference`.
 - En modo sandbox, las URL remotas `http(s)` se rechazan.
-- Con la política de archivos solo del espacio de trabajo habilitada, se rechazan las rutas de archivos locales fuera de las raíces permitidas.
-- Las referencias entrantes administradas y las rutas reproducidas bajo el almacén de medios entrantes de OpenClaw se permiten con la política de archivos solo del espacio de trabajo.
+- Con la política de archivos solo de espacio de trabajo habilitada, las rutas de archivos locales fuera de las raíces permitidas se rechazan.
+- Las referencias entrantes gestionadas y las rutas reproducidas bajo el almacén de medios entrantes de OpenClaw se permiten con la política de archivos solo de espacio de trabajo.
 
 ## Modos de ejecución
 
-### Modo nativo del proveedor
+### Modo de proveedor nativo
 
 El modo nativo se usa para los proveedores `anthropic` y `google`.
-La herramienta envía bytes PDF sin procesar directamente a las API de los proveedores.
+La herramienta envía bytes PDF sin procesar directamente a las API del proveedor.
 
 Límites del modo nativo:
 
@@ -102,25 +102,25 @@ Límites del modo nativo:
 - La entrada de varios PDF es compatible; cada PDF se envía como un bloque de documento nativo /
   parte PDF en línea antes del prompt.
 
-### Modo de respaldo de extracción
+### Modo de reserva de extracción
 
-El modo de respaldo se usa para proveedores no nativos.
+El modo de reserva se usa para proveedores no nativos.
 
 Flujo:
 
-1. Extraer texto de las páginas seleccionadas (hasta `agents.defaults.pdfMaxPages`, valor predeterminado `20`).
-2. Si la longitud del texto extraído es inferior a `200` caracteres, renderizar las páginas seleccionadas a imágenes PNG e incluirlas.
-3. Enviar el contenido extraído junto con el prompt al modelo seleccionado.
+1. Extrae texto de las páginas seleccionadas (hasta `agents.defaults.pdfMaxPages`, valor predeterminado `20`).
+2. Si la longitud del texto extraído es inferior a `200` caracteres, renderiza las páginas seleccionadas como imágenes PNG y las incluye.
+3. Envía el contenido extraído más el prompt al modelo seleccionado.
 
-Detalles del respaldo:
+Detalles de reserva:
 
-- La extracción de imágenes de páginas usa un presupuesto de píxeles de `4,000,000`.
+- La extracción de imágenes de página usa un presupuesto de píxeles de `4,000,000`.
 - Si el modelo de destino no admite entrada de imagen y no hay texto extraíble, la herramienta devuelve un error.
 - Si la extracción de texto se realiza correctamente pero la extracción de imágenes requeriría visión en un
-  modelo solo de texto, OpenClaw descarta las imágenes renderizadas y continúa con el
+  modelo de solo texto, OpenClaw descarta las imágenes renderizadas y continúa con el
   texto extraído.
-- El respaldo de extracción usa el plugin integrado `document-extract`. El plugin controla
-  `pdfjs-dist`; `@napi-rs/canvas` solo se usa cuando el respaldo de renderizado de imágenes está
+- La reserva de extracción usa el Plugin `document-extract` incluido. El Plugin es propietario de
+  `pdfjs-dist`; `@napi-rs/canvas` se usa solo cuando la reserva de renderizado de imágenes está
   disponible.
 
 ## Configuración
@@ -140,7 +140,7 @@ Detalles del respaldo:
 }
 ```
 
-Consulta [Referencia de configuración](/es/gateway/configuration-reference) para ver todos los detalles de los campos.
+Consulta la [Referencia de configuración](/es/gateway/configuration-reference) para obtener todos los detalles de los campos.
 
 ## Detalles de salida
 
@@ -148,31 +148,31 @@ La herramienta devuelve texto en `content[0].text` y metadatos estructurados en 
 
 Campos comunes de `details`:
 
-- `model`: referencia del modelo resuelto (`provider/model`)
-- `native`: `true` para el modo nativo del proveedor, `false` para el respaldo
-- `attempts`: intentos de respaldo que fallaron antes del éxito
+- `model`: referencia de modelo resuelta (`provider/model`)
+- `native`: `true` para modo de proveedor nativo, `false` para reserva
+- `attempts`: intentos de reserva que fallaron antes del éxito
 
 Campos de ruta:
 
 - entrada de un solo PDF: `details.pdf`
-- entrada de varios PDF: `details.pdfs[]` con entradas `pdf`
+- entradas de varios PDF: `details.pdfs[]` con entradas `pdf`
 - metadatos de reescritura de ruta de sandbox (cuando corresponda): `rewrittenFrom`
 
-## Comportamiento ante errores
+## Comportamiento de errores
 
-- Falta la entrada PDF: lanza `pdf required: provide a path or URL to a PDF document`
+- Entrada PDF faltante: lanza `pdf required: provide a path or URL to a PDF document`
 - Demasiados PDF: devuelve un error estructurado en `details.error = "too_many_pdfs"`
 - Esquema de referencia no compatible: devuelve `details.error = "unsupported_pdf_reference"`
 - Modo nativo con `pages`: lanza un error claro `pages is not supported with native PDF providers`
 
 ## Ejemplos
 
-Un solo PDF:
+PDF único:
 
 ```json
 {
   "pdf": "/tmp/report.pdf",
-  "prompt": "Resume este informe en 5 viñetas"
+  "prompt": "Summarize this report in 5 bullets"
 }
 ```
 
@@ -181,22 +181,22 @@ Varios PDF:
 ```json
 {
   "pdfs": ["/tmp/q1.pdf", "/tmp/q2.pdf"],
-  "prompt": "Compara los riesgos y los cambios de cronograma en ambos documentos"
+  "prompt": "Compare risks and timeline changes across both documents"
 }
 ```
 
-Modelo de respaldo con filtro de páginas:
+Modelo de reserva con filtro de páginas:
 
 ```json
 {
   "pdf": "https://example.com/report.pdf",
   "pages": "1-3,7",
   "model": "openai/gpt-5.4-mini",
-  "prompt": "Extrae solo los incidentes que afecten a los clientes"
+  "prompt": "Extract only customer-impacting incidents"
 }
 ```
 
 ## Relacionado
 
-- [Descripción general de herramientas](/es/tools) — todas las herramientas de agentes disponibles
-- [Referencia de configuración](/es/gateway/config-agents#agent-defaults) — configuración de pdfMaxBytesMb y pdfMaxPages
+- [Resumen de herramientas](/es/tools) - todas las herramientas de agente disponibles
+- [Referencia de configuración](/es/gateway/config-agents#agent-defaults) - configuración de pdfMaxBytesMb y pdfMaxPages

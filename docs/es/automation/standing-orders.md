@@ -1,28 +1,28 @@
 ---
 read_when:
-    - Configurar flujos de trabajo de agentes autónomos que se ejecutan sin indicaciones por tarea
-    - Definir qué puede hacer el agente de forma independiente frente a qué requiere aprobación humana
+    - Configurar flujos de trabajo de agentes autónomos que se ejecutan sin solicitar instrucciones para cada tarea
+    - Definición de lo que el agente puede hacer de forma independiente y lo que requiere aprobación humana
     - Estructuración de agentes multiprograma con límites claros y reglas de escalamiento
-summary: Definir la autoridad operativa permanente para programas de agentes autónomos
-title: Órdenes permanentes
+summary: Define la autoridad operativa permanente para programas de agentes autónomos
+title: Instrucciones permanentes
 x-i18n:
-    generated_at: "2026-04-30T05:27:06Z"
+    generated_at: "2026-05-06T05:26:55Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ff895378cbd53f7e8058137389037ab40201ce2cdfb34c135f480dfef775919b
+    source_hash: a04e871bbd3f51b50ce162576936d4b37acbdc5a94edcd73e390adc784465aa4
     source_path: automation/standing-orders.md
     workflow: 16
 ---
 
-Las órdenes permanentes conceden a tu agente **autoridad operativa permanente** para programas definidos. En lugar de dar instrucciones de tareas individuales cada vez, defines programas con alcance, disparadores y reglas de escalamiento claros, y el agente ejecuta de forma autónoma dentro de esos límites.
+Las órdenes permanentes otorgan a tu agente **autoridad operativa permanente** para programas definidos. En lugar de dar instrucciones de tareas individuales cada vez, defines programas con alcance, activadores y reglas de escalamiento claros, y el agente ejecuta de forma autónoma dentro de esos límites.
 
-Esta es la diferencia entre decirle a tu asistente "envía el informe semanal" cada viernes y conceder autoridad permanente: "Tú eres responsable del informe semanal. Compílalo cada viernes, envíalo y escala solo si algo parece incorrecto."
+Esta es la diferencia entre decirle a tu asistente "envía el informe semanal" cada viernes y concederle autoridad permanente: "Tú eres responsable del informe semanal. Compílalo cada viernes, envíalo y escala solo si algo parece estar mal."
 
 ## Por qué usar órdenes permanentes
 
 **Sin órdenes permanentes:**
 
-- Debes indicar al agente cada tarea
+- Debes pedirle al agente cada tarea
 - El agente permanece inactivo entre solicitudes
 - El trabajo rutinario se olvida o se retrasa
 - Tú te conviertes en el cuello de botella
@@ -30,9 +30,9 @@ Esta es la diferencia entre decirle a tu asistente "envía el informe semanal" c
 **Con órdenes permanentes:**
 
 - El agente ejecuta de forma autónoma dentro de límites definidos
-- El trabajo rutinario ocurre según lo programado sin indicaciones
-- Solo intervienes para excepciones y aprobaciones
-- El agente aprovecha productivamente el tiempo inactivo
+- El trabajo rutinario ocurre según el calendario sin necesidad de pedirlo
+- Solo participas ante excepciones y aprobaciones
+- El agente aprovecha el tiempo inactivo de forma productiva
 
 ## Cómo funcionan
 
@@ -40,12 +40,12 @@ Las órdenes permanentes se definen en los archivos de tu [espacio de trabajo de
 
 Cada programa especifica:
 
-1. **Alcance** — lo que el agente está autorizado a hacer
-2. **Disparadores** — cuándo ejecutar (programación, evento o condición)
-3. **Controles de aprobación** — qué requiere aprobación humana antes de actuar
-4. **Reglas de escalamiento** — cuándo detenerse y pedir ayuda
+1. **Alcance** - lo que el agente está autorizado a hacer
+2. **Activadores** - cuándo ejecutar (calendario, evento o condición)
+3. **Controles de aprobación** - qué requiere aprobación humana antes de actuar
+4. **Reglas de escalamiento** - cuándo detenerse y pedir ayuda
 
-El agente carga estas instrucciones en cada sesión mediante los archivos de arranque del espacio de trabajo (consulta [Espacio de trabajo del agente](/es/concepts/agent-workspace) para ver la lista completa de archivos inyectados automáticamente) y ejecuta conforme a ellas, combinadas con [trabajos Cron](/es/automation/cron-jobs) para la ejecución basada en tiempo.
+El agente carga estas instrucciones en cada sesión mediante los archivos de arranque del espacio de trabajo (consulta [Espacio de trabajo del agente](/es/concepts/agent-workspace) para ver la lista completa de archivos inyectados automáticamente) y ejecuta según ellas, combinadas con [trabajos Cron](/es/automation/cron-jobs) para la aplicación basada en tiempo.
 
 <Tip>
 Coloca las órdenes permanentes en `AGENTS.md` para garantizar que se carguen en cada sesión. El arranque del espacio de trabajo inyecta automáticamente `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` y `MEMORY.md`, pero no archivos arbitrarios en subdirectorios.
@@ -73,7 +73,7 @@ Coloca las órdenes permanentes en `AGENTS.md` para garantizar que se carguen en
 
 - Do not send reports to external parties
 - Do not modify source data
-- Do not skip delivery if metrics look bad — report accurately
+- Do not skip delivery if metrics look bad - report accurately
 ```
 
 ## Órdenes permanentes más trabajos Cron
@@ -88,7 +88,7 @@ Cron Job (8 AM daily): "Execute inbox triage per standing orders"
 Agent: Reads standing orders → executes steps → reports results
 ```
 
-La indicación del trabajo Cron debe referenciar la orden permanente en lugar de duplicarla:
+El mensaje del trabajo Cron debe hacer referencia a la orden permanente en lugar de duplicarla:
 
 ```bash
 openclaw cron add \
@@ -116,7 +116,7 @@ openclaw cron add \
 ### Weekly cycle
 
 - **Monday:** Review platform metrics and audience engagement
-- **Tuesday–Thursday:** Draft social posts, create blog content
+- **Tuesday-Thursday:** Draft social posts, create blog content
 - **Friday:** Compile weekly marketing brief → deliver to owner
 
 ### Content rules
@@ -127,7 +127,7 @@ openclaw cron add \
 - Focus on value to audience, not self-promotion
 ```
 
-### Ejemplo 2: operaciones financieras (disparadas por eventos)
+### Ejemplo 2: operaciones financieras (activadas por evento)
 
 ```markdown
 ## Program: Financial Processing
@@ -183,9 +183,9 @@ openclaw cron add \
 
 Las órdenes permanentes funcionan mejor cuando se combinan con una disciplina estricta de ejecución. Cada tarea en una orden permanente debe seguir este ciclo:
 
-1. **Ejecutar** — Haz el trabajo real (no solo reconozcas la instrucción)
-2. **Verificar** — Confirma que el resultado sea correcto (el archivo existe, el mensaje se entregó, los datos se analizaron)
-3. **Informar** — Dile al propietario qué se hizo y qué se verificó
+1. **Ejecutar** - Hacer el trabajo real (no solo confirmar la instrucción)
+2. **Verificar** - Confirmar que el resultado es correcto (el archivo existe, el mensaje se entregó, los datos se analizaron)
+3. **Informar** - Decirle al propietario qué se hizo y qué se verificó
 
 ```markdown
 ### Execution rules
@@ -195,14 +195,14 @@ Las órdenes permanentes funcionan mejor cuando se combinan con una disciplina e
 - "Done" without verification is not acceptable. Prove it.
 - If execution fails: retry once with adjusted approach.
 - If still fails: report failure with diagnosis. Never silently fail.
-- Never retry indefinitely — 3 attempts max, then escalate.
+- Never retry indefinitely - 3 attempts max, then escalate.
 ```
 
-Este patrón evita el modo de fallo más común del agente: reconocer una tarea sin completarla.
+Este patrón evita el modo de falla más común del agente: confirmar una tarea sin completarla.
 
 ## Arquitectura multiprograma
 
-Para agentes que gestionan varias áreas, organiza las órdenes permanentes como programas separados con límites claros:
+Para agentes que gestionan varios ámbitos, organiza las órdenes permanentes como programas separados con límites claros:
 
 ```markdown
 ## Program 1: [Domain A] (Weekly)
@@ -225,33 +225,33 @@ Para agentes que gestionan varias áreas, organiza las órdenes permanentes como
 
 Cada programa debe tener:
 
-- Su propia **cadencia de disparo** (semanal, mensual, basada en eventos, continua)
+- Su propia **cadencia de activación** (semanal, mensual, basada en eventos, continua)
 - Sus propios **controles de aprobación** (algunos programas necesitan más supervisión que otros)
 - **Límites** claros (el agente debe saber dónde termina un programa y empieza otro)
 
-## Mejores prácticas
+## Buenas prácticas
 
-### Hazlo
+### Haz
 
-- Empieza con autoridad limitada y amplíala a medida que crece la confianza
+- Comienza con autoridad limitada y amplíala a medida que crece la confianza
 - Define controles de aprobación explícitos para acciones de alto riesgo
 - Incluye secciones de "Qué NO hacer"; los límites importan tanto como los permisos
-- Combínalas con trabajos Cron para una ejecución fiable basada en tiempo
+- Combina con trabajos Cron para una ejecución fiable basada en tiempo
 - Revisa los registros del agente semanalmente para verificar que se estén siguiendo las órdenes permanentes
 - Actualiza las órdenes permanentes a medida que evolucionen tus necesidades; son documentos vivos
 
 ### Evita
 
-- Conceder autoridad amplia el primer día ("haz lo que creas que es mejor")
+- Conceder autoridad amplia desde el primer día ("haz lo que creas mejor")
 - Omitir reglas de escalamiento; cada programa necesita una cláusula de "cuándo detenerse y preguntar"
-- Suponer que el agente recordará instrucciones verbales; ponlo todo en el archivo
-- Mezclar áreas en un solo programa; usa programas separados para dominios separados
-- Olvidar aplicarlas con trabajos Cron; las órdenes permanentes sin disparadores se convierten en sugerencias
+- Suponer que el agente recordará instrucciones verbales; pon todo en el archivo
+- Mezclar ámbitos en un solo programa; usa programas separados para dominios separados
+- Olvidar aplicar con trabajos Cron; las órdenes permanentes sin activadores se convierten en sugerencias
 
 ## Relacionado
 
 - [Automatización y tareas](/es/automation): todos los mecanismos de automatización de un vistazo.
-- [Trabajos Cron](/es/automation/cron-jobs): ejecución programada para órdenes permanentes.
+- [Trabajos Cron](/es/automation/cron-jobs): aplicación de calendarios para órdenes permanentes.
 - [Hooks](/es/automation/hooks): scripts basados en eventos para eventos del ciclo de vida del agente.
-- [Webhooks](/es/automation/cron-jobs#webhooks): disparadores de eventos HTTP entrantes.
-- [Espacio de trabajo del agente](/es/concepts/agent-workspace): dónde viven las órdenes permanentes, incluida la lista completa de archivos de arranque inyectados automáticamente (`AGENTS.md`, `SOUL.md`, etc.).
+- [Webhooks](/es/automation/cron-jobs#webhooks): activadores de eventos HTTP entrantes.
+- [Espacio de trabajo del agente](/es/concepts/agent-workspace): donde viven las órdenes permanentes, incluida la lista completa de archivos de arranque inyectados automáticamente (`AGENTS.md`, `SOUL.md`, etc.).
