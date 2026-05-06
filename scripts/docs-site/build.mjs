@@ -25,6 +25,7 @@ const ogImagePath = "/og-card.png";
 const renderedPageOgCards = new Set();
 const rsvgAvailable = checkRsvg();
 const chatApiUrl = process.env.DOCS_SITE_CHAT_API_URL ?? "/ask-molty/api/chat";
+const assetVersion = buildAssetVersion();
 
 fs.rmSync(outDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
 fs.mkdirSync(outDir, { recursive: true });
@@ -205,7 +206,7 @@ ${canonicalUrl ? `<meta property="og:url" content="${escapeAttr(canonicalUrl)}">
 <meta name="twitter:image:alt" content="${escapeAttr(`${config.name} — ${description}`)}">
 <meta name="theme-color" content="#FF5A36">
 <link rel="icon" href="${publicPath("/assets/pixel-lobster.svg")}">
-<link rel="stylesheet" href="${publicPath("/assets/docs-site.css")}">
+<link rel="stylesheet" href="${assetUrl("/assets/docs-site.css")}">
 <script>window.OPENCLAW_DOCS_BASE=${JSON.stringify(basePath)};window.OPENCLAW_DOCS_CHAT_API=${JSON.stringify(chatApiUrl)};document.documentElement.dataset.theme=localStorage.getItem("theme")||"dark"</script>
 </head>
 <body>
@@ -226,9 +227,13 @@ ${tocHtml(toc)}
 </div>
 ${searchModal()}
 ${chatWidget()}
-<script type="module" src="${publicPath("/assets/docs-site.js")}"></script>
+<script type="module" src="${assetUrl("/assets/docs-site.js")}"></script>
 </body>
 </html>`;
+}
+
+function assetUrl(file) {
+  return `${publicPath(file)}?v=${encodeURIComponent(assetVersion)}`;
 }
 
 function siteHeader(page, nav, activeTab) {
@@ -444,6 +449,16 @@ function checkRsvg() {
     return true;
   } catch {
     return false;
+  }
+}
+
+function buildAssetVersion() {
+  const fromEnv = process.env.GITHUB_SHA || process.env.DOCS_SITE_ASSET_VERSION;
+  if (fromEnv) return fromEnv.slice(0, 12);
+  try {
+    return execFileSync("git", ["rev-parse", "--short=12", "HEAD"], { encoding: "utf8" }).trim();
+  } catch {
+    return "dev";
   }
 }
 
