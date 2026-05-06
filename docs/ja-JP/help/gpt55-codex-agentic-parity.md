@@ -1,70 +1,68 @@
 ---
 read_when:
-    - GPT-5.5 または Codex のエージェント動作のデバッグ
-    - フロンティアモデル間で OpenClaw のエージェント実行動作を比較する
-    - strict-agentic、tool-schema、elevation、replay 修正のレビュー
-summary: OpenClaw が GPT-5.5 と Codex スタイルのモデルにおけるエージェント実行ギャップをどのように埋めるか
-title: GPT-5.5 / Codex のエージェント実行パリティ
+    - GPT-5.5 または Codex エージェントの動作のデバッグ
+    - フロンティアモデル間で OpenClaw のエージェント的挙動を比較する
+    - 厳格エージェント型、ツールスキーマ、昇格、リプレイの修正をレビュー中
+summary: OpenClaw が GPT-5.5 と Codex スタイルのモデルにおけるエージェント実行ギャップを埋める仕組み
+title: GPT-5.5 / Codex のエージェント機能の同等性
 x-i18n:
-    generated_at: "2026-04-25T18:18:54Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T05:08:01Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8a3b9375cd9e9d95855c4a1135953e00fd7a939e52fb7b75342da3bde2d83fe1
+    source_hash: bbc32f418dfffe2786093fa6b42b19f92a2d382c9408dfc55dd0154d67959390
     source_path: help/gpt55-codex-agentic-parity.md
-    workflow: 15
+    workflow: 16
 ---
 
-# OpenClaw における GPT-5.5 / Codex のエージェント実行パリティ
+OpenClaw は、ツールを使う frontier model ではすでに十分に機能していましたが、GPT-5.5 と Codex スタイルのモデルには、まだいくつかの実用面で不足がありました。
 
-OpenClaw はすでにツールを使うフロンティアモデルで良好に動作していましたが、GPT-5.5 と Codex スタイルのモデルには、実運用上まだいくつか不十分な点がありました。
+- 作業を実行せず、計画の後で停止することがあった
+- 厳密な OpenAI/Codex ツールスキーマを誤って使うことがあった
+- フルアクセスが不可能な場合でも `/elevated full` を求めることがあった
+- replay や compaction の間に、長時間実行タスクの状態を失うことがあった
+- Claude Opus 4.6 に対する parity 主張が、再現可能なシナリオではなく逸話に基づいていた
 
-- 作業を実行せず、計画だけで止まってしまうことがある
-- 厳格な OpenAI/Codex のツールスキーマを誤って扱うことがある
-- フルアクセスが不可能な場合でも `/elevated full` を要求してしまうことがある
-- replay や Compaction 中に長時間実行タスクの状態を失うことがある
-- Claude Opus 4.6 とのパリティ主張が、再現可能なシナリオではなく逸話に基づいていた
-
-このパリティプログラムは、これらのギャップをレビュー可能な 4 つのスライスで修正します。
+この parity プログラムは、これらの不足をレビュー可能な 4 つの slice で修正します。
 
 ## 変更点
 
 ### PR A: strict-agentic 実行
 
-このスライスでは、埋め込み Pi の GPT-5 実行向けに、オプトインの `strict-agentic` 実行契約を追加します。
+この slice は、埋め込み Pi GPT-5 実行向けに、オプトインの `strict-agentic` 実行契約を追加します。
 
-有効にすると、OpenClaw は計画だけのターンを「十分な」完了として受け入れなくなります。モデルが何をするつもりかだけを述べ、実際にはツールを使わず進捗も出さない場合、OpenClaw は「今すぐ行動する」よう促して再試行し、それでもだめならタスクを黙って終了する代わりに、明示的な blocked 状態で fail closed します。
+有効にすると、OpenClaw は計画だけの turn を「十分な」完了として受け入れなくなります。モデルが実行意図だけを述べ、実際にツールを使ったり進捗を作ったりしない場合、OpenClaw は即時実行を促す steer で再試行し、タスクを黙って終了する代わりに、明示的な blocked 状態で fail closed します。
 
-これにより、特に次のような場面で GPT-5.5 の体験が向上します。
+これにより、GPT-5.5 体験は特に次の場面で改善されます。
 
-- 短い「ok do it」の追従ターン
-- 最初の一手が明白なコードタスク
-- `update_plan` が埋め草テキストではなく進捗追跡であるべきフロー
+- 短い「ok do it」フォローアップ
+- 最初の手順が明らかなコードタスク
+- `update_plan` が埋め草のテキストではなく進捗トラッキングであるべき flow
 
-### PR B: ランタイムの真実性
+### PR B: runtime の正直性
 
-このスライスでは、OpenClaw が次の 2 点について正確に伝えるようになります。
+この slice は、OpenClaw が次の 2 点について正確に伝えるようにします。
 
-- プロバイダー/ランタイム呼び出しがなぜ失敗したか
+- provider/runtime 呼び出しが失敗した理由
 - `/elevated full` が実際に利用可能かどうか
 
-これにより、GPT-5.5 は不足しているスコープ、認証リフレッシュ失敗、HTML 403 認証失敗、プロキシ問題、DNS またはタイムアウト障害、そしてブロックされたフルアクセスモードについて、より良いランタイムシグナルを得られます。モデルが誤った対処法を幻覚したり、ランタイムが提供できない権限モードを要求し続けたりする可能性が低くなります。
+つまり、GPT-5.5 は、scope 不足、auth refresh 失敗、HTML 403 auth 失敗、proxy 問題、DNS または timeout 失敗、ブロックされた full-access mode について、より良い runtime signal を得られます。モデルが誤った remediation を hallucinate したり、runtime が提供できない permission mode を求め続けたりする可能性が低くなります。
 
-### PR C: 実行の正しさ
+### PR C: 実行の正確性
 
-このスライスでは、2 種類の正しさを改善します。
+この slice は、2 種類の正確性を改善します。
 
-- プロバイダーが所有する OpenAI/Codex ツールスキーマ互換性
-- replay と長時間タスクの liveness 可視化
+- provider 所有の OpenAI/Codex ツールスキーマ互換性
+- replay と長時間タスクの liveness 表面化
 
-ツール互換性の改善により、厳格な OpenAI/Codex ツール登録におけるスキーマ摩擦が減ります。特に、パラメーター不要ツールと、厳格なオブジェクトルート期待値の周辺が改善されます。replay/liveness の改善により、長時間実行タスクの状態が観測しやすくなり、paused、blocked、abandoned 状態が、汎用的な失敗メッセージに埋もれず可視化されます。
+ツール互換性の作業により、厳密な OpenAI/Codex ツール登録における schema friction が減ります。特に、パラメーターなしのツールや、厳密な object-root 期待値の周辺で効果があります。replay/liveness の作業により、長時間実行タスクがより観測しやすくなり、paused、blocked、abandoned の状態が、汎用的な失敗テキストに消えるのではなく可視化されます。
 
-### PR D: パリティ harness
+### PR D: parity harness
 
-このスライスでは、GPT-5.5 と Opus 4.6 を同じシナリオで実行し、共通の証拠で比較できるようにする、第一波の QA-lab パリティパックを追加します。
+この slice は、GPT-5.5 と Opus 4.6 を同じシナリオで実行し、共有 evidence を使って比較できるように、最初の QA-lab parity pack を追加します。
 
-このパリティパックは証明レイヤーです。これ自体ではランタイム動作を変更しません。
+parity pack は proof layer です。それ自体は runtime の挙動を変更しません。
 
-2 つの `qa-suite-summary.json` アーティファクトが揃ったら、次のコマンドでリリースゲート比較を生成します。
+2 つの `qa-suite-summary.json` artifact が揃ったら、次で release-gate 比較を生成します。
 
 ```bash
 pnpm openclaw qa parity-report \
@@ -74,42 +72,40 @@ pnpm openclaw qa parity-report \
   --output-dir .artifacts/qa-e2e/parity
 ```
 
-このコマンドは次を出力します。
+このコマンドは次を書き出します。
 
 - 人間が読める Markdown レポート
-- 機械可読な JSON 判定
-- 明示的な `pass` / `fail` ゲート結果
+- 機械可読の JSON verdict
+- 明示的な `pass` / `fail` gate 結果
 
-## これが実運用で GPT-5.5 を改善する理由
+## これが実践上 GPT-5.5 を改善する理由
 
-この作業以前の OpenClaw 上の GPT-5.5 は、実際のコーディングセッションで Opus よりエージェント実行性が低く感じられることがありました。理由は、ランタイムが GPT-5 系モデルに特に有害な挙動を許容していたためです。
+この作業以前、OpenClaw 上の GPT-5.5 は、実際のコーディングセッションで Opus より agentic さが低く感じられることがありました。runtime が、GPT-5 スタイルのモデルに特に有害な挙動を許容していたためです。
 
-- コメントだけのターン
-- ツールまわりのスキーマ摩擦
-- あいまいな権限フィードバック
-- 黙って起きる replay または Compaction の破綻
+- commentary のみの turn
+- ツール周辺の schema friction
+- 曖昧な permission feedback
+- silent な replay または compaction 破損
 
-目標は、GPT-5.5 を Opus の模倣にすることではありません。目標は、実際の進捗を報いるランタイム契約、よりクリーンなツールおよび権限セマンティクス、そして失敗モードを機械可読かつ人間可読な明示状態へ変える仕組みを GPT-5.5 に与えることです。
+目標は、GPT-5.5 に Opus を模倣させることではありません。目標は、GPT-5.5 に、実際の進捗を促進し、より明確なツールと permission semantics を提供し、failure mode を明示的で機械と人間が読める状態に変換する runtime 契約を与えることです。
 
-これにより、ユーザー体験は次のように変わります。
+これにより、ユーザー体験は次から変わります。
 
-- 「モデルは良い計画を立てたが止まった」
+- 「モデルは良い計画を持っていたが停止した」
 
-から、
+次のようになります。
 
-- 「モデルは実行した、または OpenClaw が実行できなかった正確な理由を表示した」
+- 「モデルは実行したか、OpenClaw が実行できなかった正確な理由を表面化した」
 
-へ。
+## GPT-5.5 ユーザーにとっての before と after
 
-## GPT-5.5 ユーザーにとっての Before / After
-
-| このプログラム以前 | PR A-D 後 |
+| このプログラム以前                                                                            | PR A-D 後                                                                             |
 | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| GPT-5.5 は妥当な計画のあと、次のツール操作を行わずに止まることがあった | PR A により「計画のみ」は「今すぐ実行、または blocked 状態を表示」に変わる |
-| 厳格なツールスキーマにより、パラメーター不要ツールや OpenAI/Codex 形状のツールがわかりにくい形で拒否されることがあった | PR C により、プロバイダー所有のツール登録と呼び出しがより予測可能になる |
-| `/elevated full` の案内が、ブロックされたランタイムであいまいまたは誤っていることがあった | PR B により、GPT-5.5 とユーザーに正確なランタイムおよび権限ヒントが与えられる |
-| replay または Compaction の失敗により、タスクが静かに消えたように感じられることがあった | PR C により、paused、blocked、abandoned、replay-invalid の結果が明示的に表示される |
-| 「GPT-5.5 は Opus より悪い気がする」はほぼ逸話ベースだった | PR D により、同じシナリオパック、同じメトリクス、明確な pass/fail ゲートへ変わる |
+| GPT-5.5 は妥当な計画の後、次のツール手順を実行せずに停止することがあった                   | PR A は「計画のみ」を「今すぐ実行するか、blocked 状態を表面化する」に変える                         |
+| 厳密なツールスキーマが、パラメーターなし、または OpenAI/Codex 形状のツールを分かりにくい形で拒否することがあった | PR C は provider 所有のツール登録と invocation をより予測可能にする              |
+| ブロックされた runtime で、`/elevated full` guidance が曖昧または誤っていることがあった                          | PR B は GPT-5.5 とユーザーに、runtime と permission の正確な hint を与える                    |
+| replay または compaction 失敗により、タスクが黙って消えたように感じられることがあった                    | PR C は paused、blocked、abandoned、replay-invalid の結果を明示的に表面化する         |
+| 「GPT-5.5 は Opus より悪く感じる」は、ほとんど逸話に基づいていた                                           | PR D はそれを、同じ scenario pack、同じ metrics、hard pass/fail gate に変える |
 
 ## アーキテクチャ
 
@@ -128,7 +124,7 @@ flowchart TD
     H --> I["Scenario report and parity gate"]
 ```
 
-## リリースフロー
+## リリース flow
 
 ```mermaid
 flowchart LR
@@ -145,97 +141,97 @@ flowchart LR
     I -- "no" --> K["Keep runtime/review loop open"]
 ```
 
-## シナリオパック
+## シナリオ pack
 
-現在の第一波パリティパックは、5 つのシナリオを対象としています。
+first-wave parity pack は現在 5 つのシナリオを対象にしています。
 
 ### `approval-turn-tool-followthrough`
 
-短い承認のあとに、モデルが「やります」と言ったところで止まらないことを確認します。同じターン内で最初の具体的アクションを取るべきです。
+短い approval の後、モデルが「I'll do that」で停止しないことを確認します。同じ turn で最初の具体的な action を取るべきです。
 
 ### `model-switch-tool-continuity`
 
-モデル/ランタイム切り替え境界をまたいでも、ツールを使う作業の一貫性が保たれ、コメントモードに戻ったり実行コンテキストを失ったりしないことを確認します。
+ツールを使う作業が、model/runtime の切り替え境界をまたいでも coherent なままであり、commentary に戻ったり execution context を失ったりしないことを確認します。
 
 ### `source-docs-discovery-report`
 
-モデルがソースとドキュメントを読み、所見を統合し、薄い要約を出して早期停止するのではなく、エージェント的にタスクを継続できることを確認します。
+モデルが source と docs を読み、findings を統合し、薄い summary を出して早期停止するのではなく、agentic にタスクを継続できることを確認します。
 
 ### `image-understanding-attachment`
 
-添付を含む混合モードのタスクが、あいまいな説明に崩れず、実行可能性を維持することを確認します。
+attachment を含む mixed-mode タスクが actionable なままであり、曖昧な narration に崩れないことを確認します。
 
 ### `compaction-retry-mutating-tool`
 
-実際に変更を書き込むタスクが、Compaction、再試行、あるいは高負荷時の返信状態喪失が起きても、replay-safe に見えてしまうことなく、replay 非安全性を明示し続けることを確認します。
+実際の mutating write を伴うタスクが、run が compaction、retry、または圧力下で reply state を失った場合でも、静かに replay-safe に見えるのではなく、replay-unsafety を明示したままにすることを確認します。
 
-## シナリオマトリクス
+## シナリオ matrix
 
-| シナリオ | テストするもの | 良い GPT-5.5 の挙動 | 失敗シグナル |
+| シナリオ                           | テスト内容                           | 良い GPT-5.5 の挙動                                                          | failure signal                                                                 |
 | ---------------------------------- | --------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ |
-| `approval-turn-tool-followthrough` | 計画後の短い承認ターン | 意図を言い直すのではなく、最初の具体的ツールアクションを即座に開始する | 計画だけの追従、ツール活動なし、または実際のブロッカーがない blocked ターン |
-| `model-switch-tool-continuity` | ツール使用中のランタイム/モデル切り替え | タスクコンテキストを保持し、一貫して実行を継続する | コメントモードへリセット、ツールコンテキスト喪失、または切り替え後停止 |
-| `source-docs-discovery-report` | ソース読み取り + 統合 + 実行 | ソースを見つけ、ツールを使い、停止せず有用なレポートを生成する | 薄い要約、ツール作業の欠落、または不完全ターン停止 |
-| `image-understanding-attachment` | 添付主導のエージェント実行作業 | 添付を解釈し、ツールへ結びつけ、タスクを継続する | あいまいな説明、添付無視、または具体的な次アクションなし |
-| `compaction-retry-mutating-tool` | Compaction 圧力下の変更作業 | 実際の書き込みを行い、副作用後も replay 非安全性を明示し続ける | 変更書き込みは起きたのに replay 安全性が示唆される、欠落する、または矛盾する |
+| `approval-turn-tool-followthrough` | 計画後の短い approval turn       | intent を言い直す代わりに、最初の具体的なツール action をすぐに開始する  | plan-only follow-up、ツール activity なし、または実際の blocker なしの blocked turn  |
+| `model-switch-tool-continuity`     | ツール使用中の runtime/model 切り替え  | タスク context を保持し、coherent に実行を続ける                         | commentary にリセットする、ツール context を失う、または切り替え後に停止する              |
+| `source-docs-discovery-report`     | source 読み取り + synthesis + action     | source を見つけ、ツールを使い、stall せず有用な report を生成する       | 薄い summary、ツール作業の欠落、または incomplete-turn stop                       |
+| `image-understanding-attachment`   | attachment 駆動の agentic work          | attachment を解釈し、それをツールに接続し、タスクを継続する        | 曖昧な narration、attachment 無視、または具体的な next action なし                |
+| `compaction-retry-mutating-tool`   | compaction 圧力下の mutating work | 実際の write を実行し、副作用後も replay-unsafety を明示したままにする | mutating write は発生するが、replay safety が implied、missing、または contradictory |
 
-## リリースゲート
+## リリース gate
 
-GPT-5.5 は、マージされたランタイムがパリティパックとランタイム真実性の回帰を同時にパスした場合にのみ、パリティ以上と見なせます。
+GPT-5.5 は、統合済み runtime が parity pack と runtime-truthfulness regression を同時に pass した場合にのみ、parity 以上と見なせます。
 
-必要な結果:
+必須の outcome:
 
-- 次のツール操作が明らかなときに、計画だけで停止しない
-- 実行なしの偽の完了がない
-- 誤った `/elevated full` 案内がない
-- 黙った replay または Compaction による abandonment がない
-- 合意済みの Opus 4.6 ベースライン以上のパリティパックメトリクス
+- 次のツール action が明確なときに plan-only stall がない
+- 実際の実行なしの fake completion がない
+- 誤った `/elevated full` guidance がない
+- silent な replay または compaction abandonment がない
+- 合意済みの Opus 4.6 baseline と少なくとも同等に強い parity-pack metrics
 
-第一波 harness では、次を比較します。
+first-wave harness では、gate は次を比較します。
 
-- 完了率
-- 意図しない停止率
-- 有効ツール呼び出し率
-- 偽成功数
+- completion rate
+- unintended-stop rate
+- valid-tool-call rate
+- fake-success count
 
-パリティ証拠は意図的に 2 層に分割されています。
+parity evidence は意図的に 2 つの layer に分割されています。
 
-- PR D は、QA-lab による同一シナリオでの GPT-5.5 対 Opus 4.6 の挙動を証明します
-- PR B の決定的スイートは、harness 外で auth、proxy、DNS、`/elevated full` の真実性を証明します
+- PR D は QA-lab により、同一シナリオでの GPT-5.5 vs Opus 4.6 の挙動を証明する
+- PR B の deterministic suite は、harness の外側で auth、proxy、DNS、`/elevated full` の正直性を証明する
 
-## 目標から証拠へのマトリクス
+## 目標から evidence への matrix
 
-| 完了ゲート項目 | 所有 PR | 証拠ソース | パスシグナル |
+| completion gate item                                     | 所有 PR   | evidence source                                                    | pass signal                                                                              |
 | -------------------------------------------------------- | ----------- | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| GPT-5.5 が計画後に停止しなくなった | PR A | `approval-turn-tool-followthrough` と PR A ランタイムスイート | 承認ターンが実作業または明示的 blocked 状態を引き起こす |
-| GPT-5.5 が偽の進捗や偽のツール完了を出さなくなった | PR A + PR D | パリティレポートのシナリオ結果と偽成功数 | 疑わしい pass 結果がなく、コメントのみの完了もない |
-| GPT-5.5 が誤った `/elevated full` 案内をしなくなった | PR B | 決定的な真実性スイート | blocked 理由とフルアクセスヒントがランタイムに対して正確なまま維持される |
-| replay/liveness 失敗が明示的なまま維持される | PR C + PR D | PR C のライフサイクル/replay スイートと `compaction-retry-mutating-tool` | 変更作業が replay 非安全性を静かに消さず、明示したまま維持する |
-| GPT-5.5 が合意済みメトリクスで Opus 4.6 と同等以上になる | PR D | `qa-agentic-parity-report.md` と `qa-agentic-parity-summary.json` | 同一シナリオカバレッジがあり、完了、停止挙動、有効ツール使用で回帰がない |
+| GPT-5.5 が計画後に stall しなくなる                  | PR A        | `approval-turn-tool-followthrough` と PR A runtime suite        | approval turn が実際の作業、または明示的な blocked state を trigger する                            |
+| GPT-5.5 が progress または tool completion を fake しなくなる | PR A + PR D | parity report scenario outcome と fake-success count             | suspicious な pass result がなく、commentary-only completion もない                             |
+| GPT-5.5 が誤った `/elevated full` guidance を出さなくなる  | PR B        | deterministic truthfulness suite                                  | blocked reason と full-access hint が runtime-accurate なままである                              |
+| Replay/liveness failure が明示されたままになる                   | PR C + PR D | PR C lifecycle/replay suite と `compaction-retry-mutating-tool` | mutating work が silent に消えるのではなく、replay-unsafety を明示したままにする            |
+| GPT-5.5 が合意済み metrics で Opus 4.6 と同等以上になる  | PR D        | `qa-agentic-parity-report.md` と `qa-agentic-parity-summary.json` | 同じ scenario coverage があり、completion、stop behavior、valid tool use で regression がない |
 
-## パリティ判定の読み方
+## parity verdict の読み方
 
-第一波パリティパックにおける最終的な機械可読の判定として、`qa-agentic-parity-summary.json` 内の verdict を使用してください。
+first-wave parity pack の最終的な機械可読 decision として、`qa-agentic-parity-summary.json` の verdict を使用してください。
 
-- `pass` は、GPT-5.5 が Opus 4.6 と同じシナリオをカバーし、合意済みの集計メトリクスで回帰しなかったことを意味します。
-- `fail` は、少なくとも 1 つのハードゲートに引っかかったことを意味します。完了率の低下、意図しない停止の悪化、有効ツール使用の低下、偽成功ケースの発生、またはシナリオカバレッジの不一致が該当します。
-- 「shared/base CI issue」自体はパリティ結果ではありません。PR D の外側にある CI ノイズが実行を妨げた場合、判定はブランチ時代のログから推測するのではなく、マージ済みランタイムでのクリーンな実行を待つべきです。
-- auth、proxy、DNS、`/elevated full` の真実性は引き続き PR B の決定的スイートから得られるため、最終的なリリース主張には両方が必要です。すなわち、PR D のパリティ判定が pass し、PR B の真実性カバレッジが green であることです。
+- `pass` は、GPT-5.5 が Opus 4.6 と同じシナリオをカバーし、合意済みの集計メトリクスで退行しなかったことを意味します。
+- `fail` は、少なくとも 1 つのハードゲートが発火したことを意味します。完了性能の低下、意図しない停止の悪化、有効なツール使用の低下、偽の成功ケース、またはシナリオカバレッジの不一致です。
+- 「共有/ベース CI の問題」は、それ自体では同等性の結果ではありません。PR D 外の CI ノイズが実行を妨げる場合、判定はブランチ期間のログから推測するのではなく、クリーンなマージ済みランタイム実行を待つべきです。
+- 認証、プロキシ、DNS、および `/elevated full` の真実性は引き続き PR B の決定的スイートに由来するため、最終リリースの主張には両方が必要です。PR D の同等性判定が合格していることと、PR B の真実性カバレッジがグリーンであることです。
 
-## `strict-agentic` を有効化すべき人
+## `strict-agentic` を有効にすべき人
 
-次の場合は `strict-agentic` を使用してください。
+次の場合は `strict-agentic` を使用します。
 
-- 次の一手が明白なときに、エージェントが即座に実行することが期待される
-- GPT-5.5 または Codex ファミリーのモデルが主要ランタイムである
-- 「役に立つ」要約だけの応答よりも、明示的な blocked 状態を好む
+- 次のステップが明らかなときに、エージェントが即座に行動することが期待される
+- GPT-5.5 または Codex 系モデルが主要なランタイムである
+- 「親切な」要約だけの返信よりも、明示的なブロック状態を好む
 
-次の場合はデフォルト契約のままにしてください。
+次の場合はデフォルトのコントラクトを維持します。
 
-- 既存の、より緩い挙動を使いたい
-- GPT-5 ファミリーのモデルを使っていない
+- 既存のより緩い挙動を望む
+- GPT-5 系モデルを使用していない
 - ランタイム強制ではなくプロンプトをテストしている
 
 ## 関連
 
-- [GPT-5.5 / Codex parity maintainer notes](/ja-JP/help/gpt55-codex-agentic-parity-maintainers)
+- [GPT-5.5 / Codex 同等性メンテナー向けメモ](/ja-JP/help/gpt55-codex-agentic-parity-maintainers)

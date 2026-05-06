@@ -1,58 +1,54 @@
 ---
 read_when:
-    - 送信チャンネル向けの Markdown フォーマットまたはチャンク化を変更しています
-    - 新しいチャンネルフォーマッターまたはスタイルマッピングを追加しています
-    - チャンネル間のフォーマット回帰をデバッグしています
-summary: 送信チャンネル向け Markdown フォーマットパイプライン
-title: Markdown フォーマット
+    - アウトバウンドチャネル向けの Markdown 書式設定またはチャンク化を変更する場合
+    - 新しいチャネルフォーマッターまたはスタイルマッピングを追加する場合
+    - 複数のチャネルにわたる書式設定のリグレッションをデバッグしています
+summary: 送信チャネル向けの Markdown 整形パイプライン
+title: Markdown の書式設定
 x-i18n:
-    generated_at: "2026-04-24T04:53:26Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T05:01:12Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: cf052e11fe9fd075a4337ffa555391c7003a346240b57bb65054c3f08401dfd9
+    source_hash: e9dcc75cec0462d610f2b5bbd258a2686b15eeb4b9d369ee4d7727571da7edcc
     source_path: concepts/markdown-formatting.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw は、送信 Markdown をチャンネル固有の出力としてレンダリングする前に、共有の中間
-表現（IR）へ変換してフォーマットします。IR は、ソーステキストをそのまま保ちながら、スタイル/リンク span を保持するため、
-チャンキングとレンダリングをチャンネル間で一貫させられます。
+OpenClaw は、送信 Markdown をチャンネル固有の出力としてレンダリングする前に、共有の中間表現 (IR) に変換して整形します。IR はソーステキストをそのまま保ちながら、スタイル/リンクのスパンを保持するため、チャンク化とレンダリングをチャンネル間で一貫させられます。
 
 ## 目標
 
-- **一貫性:** 1 回の parse ステップで複数の renderer を使う。
-- **安全なチャンキング:** レンダリング前にテキストを分割し、インラインフォーマットが
-  チャンクをまたいで壊れないようにする。
-- **チャンネル適合:** 同じ IR を再度 Markdown 解析せずに、Slack mrkdwn、Telegram HTML、Signal
-  の style range にマップする。
+- **一貫性:** 1 回の解析ステップで、複数のレンダラーに対応します。
+- **安全なチャンク化:** レンダリング前にテキストを分割するため、インライン書式がチャンクをまたいで壊れることはありません。
+- **チャンネル適合:** Markdown を再解析せずに、同じ IR を Slack mrkdwn、Telegram HTML、Signal のスタイル範囲にマッピングします。
 
 ## パイプライン
 
-1. **Markdown を IR に parse**
-   - IR はプレーンテキストに加えて、style span（bold/italic/strike/code/spoiler）と link span を持ちます。
-   - オフセットは UTF-16 code unit なので、Signal の style range はその API と整合します。
-   - テーブルは、チャンネルがテーブル変換にオプトインした場合にのみ parse されます。
-2. **IR をチャンキング（format-first）**
-   - チャンキングはレンダリング前に IR テキスト上で行われます。
-   - インラインフォーマットはチャンクをまたいで分割されず、span はチャンクごとにスライスされます。
+1. **Markdown を解析 -> IR**
+   - IR はプレーンテキストに、スタイルスパン (bold/italic/strike/code/spoiler) とリンクスパンを加えたものです。
+   - オフセットは UTF-16 コード単位なので、Signal のスタイル範囲が API と一致します。
+   - テーブルは、チャンネルがテーブル変換を有効にした場合にのみ解析されます。
+2. **IR をチャンク化 (format-first)**
+   - チャンク化は、レンダリング前の IR テキスト上で行われます。
+   - インライン書式はチャンクをまたいで分割されません。スパンはチャンクごとに切り出されます。
 3. **チャンネルごとにレンダリング**
-   - **Slack:** mrkdwn トークン（bold/italic/strike/code）、リンクは `<url|label>`。
-   - **Telegram:** HTML タグ（`<b>`, `<i>`, `<s>`, `<code>`, `<pre><code>`, `<a href>`）。
-   - **Signal:** プレーンテキスト + `text-style` range。label が異なる場合、リンクは `label (url)` になります。
+   - **Slack:** mrkdwn トークン (bold/italic/strike/code)、リンクは `<url|label>`。
+   - **Telegram:** HTML タグ (`<b>`、`<i>`、`<s>`、`<code>`、`<pre><code>`、`<a href>`)。
+   - **Signal:** プレーンテキスト + `text-style` 範囲。リンクは、ラベルが異なる場合 `label (url)` になります。
 
 ## IR の例
 
 入力 Markdown:
 
 ```markdown
-Hello **world** — see [docs](https://docs.openclaw.ai).
+Hello **world** - see [docs](https://docs.openclaw.ai).
 ```
 
-IR（概略）:
+IR (概略):
 
 ```json
 {
-  "text": "Hello world — see docs.",
+  "text": "Hello world - see docs.",
   "styles": [{ "start": 6, "end": 11, "style": "bold" }],
   "links": [{ "start": 19, "end": 23, "href": "https://docs.openclaw.ai" }]
 }
@@ -61,18 +57,15 @@ IR（概略）:
 ## 使用箇所
 
 - Slack、Telegram、Signal の送信アダプターは IR からレンダリングします。
-- その他のチャンネル（WhatsApp、iMessage、Microsoft Teams、Discord）は、引き続きプレーンテキストまたは
-  独自のフォーマットルールを使用し、Markdown テーブル変換は、有効な場合に
-  チャンキング前に適用されます。
+- その他のチャンネル (WhatsApp、iMessage、Microsoft Teams、Discord) は引き続きプレーンテキストまたは独自の書式ルールを使用し、有効な場合はチャンク化の前に Markdown テーブル変換が適用されます。
 
 ## テーブル処理
 
-Markdown テーブルは、チャットクライアント間で一貫してサポートされていません。チャンネルごと（およびアカウントごと）に変換を制御するには
-`markdown.tables` を使用します。
+Markdown テーブルは、チャットクライアント間で一貫してサポートされているわけではありません。チャンネルごと (およびアカウントごと) の変換を制御するには `markdown.tables` を使用します。
 
-- `code`: テーブルをコードブロックとしてレンダリングします（ほとんどのチャンネルのデフォルト）。
-- `bullets`: 各行を箇条書きに変換します（Signal + WhatsApp のデフォルト）。
-- `off`: テーブルの parse と変換を無効にします。生のテーブルテキストがそのまま通過します。
+- `code`: テーブルをコードブロックとしてレンダリングします (ほとんどのチャンネルのデフォルト)。
+- `bullets`: 各行を箇条書きに変換します (Signal + WhatsApp のデフォルト)。
+- `off`: テーブルの解析と変換を無効にします。未加工のテーブルテキストがそのまま渡されます。
 
 設定キー:
 
@@ -87,53 +80,47 @@ channels:
           tables: off
 ```
 
-## チャンキング規則
+## チャンク化ルール
 
 - チャンク制限はチャンネルアダプター/設定から取得され、IR テキストに適用されます。
-- コードフェンスは末尾の改行を含む 1 つのブロックとして保持されるため、チャンネルで
-  正しくレンダリングされます。
-- リストプレフィックスと blockquote プレフィックスは IR テキストの一部なので、チャンキングで
-  プレフィックス途中で分割されません。
-- インラインスタイル（bold/italic/strike/inline-code/spoiler）はチャンクをまたいで決して分割されず、
-  renderer は各チャンク内でスタイルを再オープンします。
+- コードフェンスは末尾の改行付きの単一ブロックとして保持されるため、チャンネルは正しくレンダリングできます。
+- リスト接頭辞と blockquote 接頭辞は IR テキストの一部であるため、チャンク化で接頭辞の途中が分割されることはありません。
+- インラインスタイル (bold/italic/strike/inline-code/spoiler) はチャンクをまたいで分割されません。レンダラーは各チャンク内でスタイルを再度開きます。
 
-チャンネル間のチャンキング挙動についてさらに知りたい場合は、
-[ストリーミング + チャンキング](/ja-JP/concepts/streaming) を参照してください。
+チャンネル間のチャンク化動作について詳しくは、[ストリーミング + チャンク化](/ja-JP/concepts/streaming) を参照してください。
 
 ## リンクポリシー
 
-- **Slack:** `[label](url)` -> `<url|label>`。ベア URL はそのまま維持されます。二重リンクを避けるため、
-  parse 中の autolink は無効化されます。
-- **Telegram:** `[label](url)` -> `<a href="url">label</a>`（HTML parse mode）。
-- **Signal:** `[label](url)` -> label が URL と一致しない限り `label (url)`。
+- **Slack:** `[label](url)` -> `<url|label>`。ベア URL はベアのままです。二重リンク化を避けるため、解析中の Autolink は無効です。
+- **Telegram:** `[label](url)` -> `<a href="url">label</a>` (HTML 解析モード)。
+- **Signal:** `[label](url)` -> ラベルが URL と一致しない限り `label (url)`。
 
 ## スポイラー
 
-スポイラーマーカー（`||spoiler||`）は Signal でのみ parse され、そこで
-SPOILER style range にマップされます。その他のチャンネルではプレーンテキストとして扱われます。
+スポイラーマーカー (`||spoiler||`) は Signal の場合にのみ解析され、SPOILER スタイル範囲にマッピングされます。他のチャンネルではプレーンテキストとして扱われます。
 
 ## チャンネルフォーマッターを追加または更新する方法
 
-1. **1 回だけ parse:** チャンネルに適した
-   オプション（autolink、heading style、blockquote prefix）で共有の `markdownToIR(...)` ヘルパーを使用します。
-2. **レンダリング:** `renderMarkdownWithMarkers(...)` と
-   style marker map（または Signal style range）で renderer を実装します。
-3. **チャンキング:** レンダリング前に `chunkMarkdownIR(...)` を呼び出し、各チャンクをレンダリングします。
-4. **アダプター接続:** 新しい chunker と
-   renderer を使うようにチャンネル送信アダプターを更新します。
-5. **テスト:** フォーマットテストを追加または更新し、その
-   チャンネルがチャンキングを使用する場合は送信配信テストも追加します。
+1. **一度だけ解析:** チャンネルに適したオプション (autolink、見出しスタイル、blockquote 接頭辞) を指定して、共有の `markdownToIR(...)` ヘルパーを使用します。
+2. **レンダリング:** `renderMarkdownWithMarkers(...)` とスタイルマーカーマップ (または Signal のスタイル範囲) を使用してレンダラーを実装します。
+3. **チャンク化:** レンダリング前に `chunkMarkdownIR(...)` を呼び出し、各チャンクをレンダリングします。
+4. **アダプターの接続:** 新しいチャンク処理とレンダラーを使用するように、チャンネル送信アダプターを更新します。
+5. **テスト:** 書式テストを追加または更新し、チャンネルがチャンク化を使用する場合は送信配信テストも追加します。
 
 ## よくある落とし穴
 
-- Slack の山括弧トークン（`<@U123>`, `<#C123>`, `<https://...>`）は
-  保持しなければなりません。生の HTML は安全にエスケープしてください。
-- Telegram HTML では、壊れたマークアップを避けるためにタグ外テキストをエスケープする必要があります。
-- Signal の style range は UTF-16 オフセットに依存します。code point オフセットは使用しないでください。
-- フェンス付きコードブロックでは、閉じマーカーが
-  独立した行に来るよう、末尾改行を保持してください。
+- Slack の山括弧トークン (`<@U123>`、`<#C123>`、`<https://...>`) は保持する必要があります。生の HTML は安全にエスケープしてください。
+- Telegram HTML では、壊れたマークアップを避けるため、タグ外のテキストをエスケープする必要があります。
+- Signal のスタイル範囲は UTF-16 オフセットに依存します。コードポイントオフセットを使用しないでください。
+- フェンス付きコードブロックでは末尾の改行を保持し、終了マーカーが独立した行に置かれるようにします。
 
 ## 関連
 
-- [ストリーミングとチャンキング](/ja-JP/concepts/streaming)
-- [System prompt](/ja-JP/concepts/system-prompt)
+<CardGroup cols={2}>
+  <Card title="ストリーミングとチャンク化" href="/ja-JP/concepts/streaming" icon="bars-staggered">
+    送信ストリーミングの動作、チャンク境界、チャンネル固有の配信。
+  </Card>
+  <Card title="システムプロンプト" href="/ja-JP/concepts/system-prompt" icon="message-lines">
+    注入されたワークスペースファイルを含め、会話の前にモデルが見る内容。
+  </Card>
+</CardGroup>

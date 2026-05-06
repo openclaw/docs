@@ -1,71 +1,71 @@
 ---
 read_when:
-    - 再現可能でロールバック可能なインストールが必要な場合
-    - すでにNix/NixOS/Home Managerを使っている場合
-    - すべてをピン留めして宣言的に管理したい場合
-summary: NixでOpenClawを宣言的にインストールする
+    - 再現可能でロールバック可能なインストールを求める場合
+    - すでに Nix/NixOS/Home Manager を使用している
+    - すべてを固定し、宣言的に管理したい
+summary: Nix で OpenClaw を宣言的にインストールする
 title: Nix
 x-i18n:
-    generated_at: "2026-04-25T13:50:45Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T05:10:33Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 7980e48d9fac49396d9dd06cf8516d572c97def1764db94cf66879d81d63694c
+    source_hash: f0c25b97fb46a906bb726a13de095ead1e6c3642d28f66173b488acfbc5e0001
     source_path: install/nix.md
-    workflow: 15
+    workflow: 16
 ---
 
-**[nix-openclaw](https://github.com/openclaw/nix-openclaw)** を使って、OpenClawを宣言的にインストールします。これは、必要なものが一式そろったHome Managerモジュールです。
+OpenClawを宣言的にインストールするには、**[nix-openclaw](https://github.com/openclaw/nix-openclaw)**を使います。バッテリー同梱の Home Manager モジュールです。
 
 <Info>
-Nixインストールの信頼できる情報源は [nix-openclaw](https://github.com/openclaw/nix-openclaw) リポジトリです。このページは簡単な概要です。
+[Nixのインストール](https://github.com/openclaw/nix-openclaw)については、[nix-openclaw](https://github.com/openclaw/nix-openclaw)リポジトリが信頼できる情報源です。このページは簡単な概要です。
 </Info>
 
-## できること
+## 得られるもの
 
-- Gateway + macOS app + ツール（whisper、spotify、cameras）-- すべてピン留め済み
-- 再起動後も維持されるlaunchdサービス
-- 宣言的な設定を持つPluginシステム
+- Gateway + macOS アプリ + ツール（whisper、spotify、カメラ）-- すべて固定
+- 再起動後も動作し続ける launchd サービス
+- 宣言的な設定に対応した Plugin システム
 - 即時ロールバック: `home-manager switch --rollback`
 
 ## クイックスタート
 
 <Steps>
-  <Step title="Determinate Nixをインストール">
-    Nixがまだインストールされていない場合は、[Determinate Nix installer](https://github.com/DeterminateSystems/nix-installer) の手順に従ってください。
+  <Step title="Determinate Nixをインストールする">
+    Nix がまだインストールされていない場合は、[Determinate Nix installer](https://github.com/DeterminateSystems/nix-installer)の手順に従います。
   </Step>
-  <Step title="ローカルflakeを作成">
-    nix-openclawリポジトリのagent-firstテンプレートを使います:
+  <Step title="ローカル flake を作成する">
+    nix-openclaw リポジトリの agent-first テンプレートを使用します。
     ```bash
     mkdir -p ~/code/openclaw-local
-    # nix-openclawリポジトリから templates/agent-first/flake.nix をコピー
+    # nix-openclaw リポジトリから templates/agent-first/flake.nix をコピーする
     ```
   </Step>
-  <Step title="シークレットを設定">
-    メッセージングbotトークンとモデルプロバイダーAPIキーを設定します。`~/.secrets/` にあるプレーンファイルで問題ありません。
+  <Step title="シークレットを設定する">
+    メッセージング bot トークンとモデルプロバイダーの API キーを設定します。`~/.secrets/` に置いたプレーンファイルで問題ありません。
   </Step>
-  <Step title="テンプレートのプレースホルダーを埋めて切り替え">
+  <Step title="テンプレートのプレースホルダーを埋めて切り替える">
     ```bash
     home-manager switch
     ```
   </Step>
-  <Step title="確認">
-    launchdサービスが実行中であり、botがメッセージに応答することを確認します。
+  <Step title="検証する">
+    launchd サービスが実行中で、bot がメッセージに応答することを確認します。
   </Step>
 </Steps>
 
-完全なモジュールオプションと例については、[nix-openclaw README](https://github.com/openclaw/nix-openclaw) を参照してください。
+完全なモジュールオプションと例については、[nix-openclaw README](https://github.com/openclaw/nix-openclaw)を参照してください。
 
-## Nixモードのランタイム挙動
+## Nixモードのランタイム動作
 
-`OPENCLAW_NIX_MODE=1`が設定されていると（nix-openclawでは自動）、OpenClawは自動インストールフローを無効にする決定論的モードに入ります。
+`OPENCLAW_NIX_MODE=1` が設定されている場合（nix-openclaw では自動）、OpenClaw は自動インストールフローを無効化する決定的モードに入ります。
 
-手動で設定することもできます:
+手動で設定することもできます。
 
 ```bash
 export OPENCLAW_NIX_MODE=1
 ```
 
-macOSでは、GUI appはシェルの環境変数を自動では継承しません。代わりにdefaults経由でNixモードを有効にしてください:
+macOS では、GUI アプリは shell 環境変数を自動的には継承しません。代わりに defaults で Nix モードを有効にします。
 
 ```bash
 defaults write ai.openclaw.mac openclaw.nixMode -bool true
@@ -73,32 +73,45 @@ defaults write ai.openclaw.mac openclaw.nixMode -bool true
 
 ### Nixモードで変わること
 
-- 自動インストールおよび自己変更フローが無効になります
-- 依存関係不足時に、Nix固有の対処メッセージが表示されます
-- UIに読み取り専用のNixモードバナーが表示されます
+- 自動インストールと自己変更フローが無効化されます
+- 欠落している依存関係には、Nix 固有の修復メッセージが表示されます
+- UI に読み取り専用の Nix モードバナーが表示されます
 
 ### 設定と状態のパス
 
-OpenClawはJSON5設定を`OPENCLAW_CONFIG_PATH`から読み取り、可変データを`OPENCLAW_STATE_DIR`に保存します。Nix配下で実行する場合は、ランタイム状態と設定が不変ストア外に保たれるよう、これらをNix管理の場所に明示的に設定してください。
+OpenClaw は `OPENCLAW_CONFIG_PATH` から JSON5 設定を読み取り、変更可能なデータを `OPENCLAW_STATE_DIR` に保存します。Nix 配下で実行する場合は、ランタイム状態と設定が不変ストアの外に置かれるように、これらを Nix 管理の場所へ明示的に設定します。
 
-| 変数 | デフォルト |
+| 変数                   | デフォルト                              |
 | ---------------------- | --------------------------------------- |
 | `OPENCLAW_HOME`        | `HOME` / `USERPROFILE` / `os.homedir()` |
 | `OPENCLAW_STATE_DIR`   | `~/.openclaw`                           |
 | `OPENCLAW_CONFIG_PATH` | `$OPENCLAW_STATE_DIR/openclaw.json`     |
 
-### サービスPATH検出
+### サービス PATH の検出
 
-launchd/systemdのgatewayサービスは、Nixプロファイルのバイナリを自動検出するため、
-`nix`でインストールされた実行ファイルをシェル実行するPluginやツールが、手動のPATH設定なしで動作します。
+launchd/systemd Gateway サービスは Nix プロファイルのバイナリを自動検出するため、
+`nix` でインストールされた実行ファイルを shell から呼び出す Plugin やツールは、
+手動で PATH を設定しなくても動作します。
 
-- `NIX_PROFILES`が設定されている場合、各エントリが右から左への優先順位でサービスPATHに追加されます（Nixシェルの優先順位と一致し、いちばん右が優先されます）。
-- `NIX_PROFILES`が未設定の場合は、フォールバックとして`~/.nix-profile/bin`が追加されます。
+- `NIX_PROFILES` が設定されている場合、各エントリが右から左の優先順位でサービス PATH に追加されます
+  （Nix shell の優先順位と一致し、右端が優先されます）。
+- `NIX_PROFILES` が未設定の場合、フォールバックとして `~/.nix-profile/bin` が追加されます。
 
-これはmacOSのlaunchdとLinuxのsystemdサービス環境の両方に適用されます。
+これは macOS launchd と Linux systemd の両方のサービス環境に適用されます。
 
 ## 関連
 
-- [nix-openclaw](https://github.com/openclaw/nix-openclaw) -- 完全なセットアップガイド
-- [ウィザード](/ja-JP/start/wizard) -- 非NixのCLIセットアップ
-- [Docker](/ja-JP/install/docker) -- コンテナ化セットアップ
+<CardGroup cols={2}>
+  <Card title="nix-openclaw" href="https://github.com/openclaw/nix-openclaw" icon="arrow-up-right-from-square">
+    信頼できる情報源である Home Manager モジュールと完全なセットアップガイド。
+  </Card>
+  <Card title="セットアップウィザード" href="/ja-JP/start/wizard" icon="wand-magic-sparkles">
+    Nix ではない CLI セットアップの手順。
+  </Card>
+  <Card title="Docker" href="/ja-JP/install/docker" icon="docker">
+    Nix 以外の代替手段としてのコンテナ化セットアップ。
+  </Card>
+  <Card title="更新" href="/ja-JP/install/updating" icon="arrow-up-right-from-square">
+    Home Manager 管理のインストールをパッケージと合わせて更新する方法。
+  </Card>
+</CardGroup>

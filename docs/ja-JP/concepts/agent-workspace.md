@@ -1,27 +1,27 @@
 ---
 read_when:
-    - エージェントのワークスペースまたはそのファイル構成を説明する必要がある
+    - エージェントのワークスペースまたはそのファイルレイアウトを説明する必要がある
     - エージェントワークスペースをバックアップまたは移行したい場合
 sidebarTitle: Agent workspace
-summary: 'エージェントのワークスペース: 場所、レイアウト、バックアップ戦略'
-title: エージェントのワークスペース
+summary: 'エージェントワークスペース: 場所、レイアウト、バックアップ戦略'
+title: エージェントワークスペース
 x-i18n:
-    generated_at: "2026-04-30T20:05:31Z"
+    generated_at: "2026-05-06T04:59:56Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b1ccf74cbec3ff20f4c1c1ce52f099a7ca3365b2536b0aad6ff1d3a5fafcca0a
+    source_hash: be5c4c55f3cda5dcf6b763f8e59fa926283cee18270a58dbd62593947a55e67c
     source_path: concepts/agent-workspace.md
     workflow: 16
 ---
 
-ワークスペースはエージェントのホームです。ファイルツールとワークスペースコンテキストで使用される唯一の作業ディレクトリです。非公開に保ち、メモリとして扱ってください。
+ワークスペースはエージェントのホームです。これはファイルツールとワークスペースコンテキストに使われる唯一の作業ディレクトリです。非公開に保ち、メモリとして扱ってください。
 
-これは、設定、認証情報、セッションを保存する `~/.openclaw/` とは別です。
+これは設定、認証情報、セッションを保存する `~/.openclaw/` とは別です。
 
 <Warning>
-ワークスペースは**デフォルトの cwd**であり、厳密なサンドボックスではありません。ツールは相対パスをワークスペースを基準に解決しますが、サンドボックスが有効でない限り、絶対パスはホスト上の別の場所にも到達できます。分離が必要な場合は、[`agents.defaults.sandbox`](/ja-JP/gateway/sandboxing)（および/またはエージェントごとのサンドボックス設定）を使用してください。
+ワークスペースは**デフォルトのcwd**であり、強制的なサンドボックスではありません。ツールは相対パスをワークスペース基準で解決しますが、サンドボックス化が有効でない限り、絶対パスではホスト上の別の場所にも到達できます。分離が必要な場合は、[`agents.defaults.sandbox`](/ja-JP/gateway/sandboxing)（および必要に応じてエージェントごとのサンドボックス設定）を使用してください。
 
-サンドボックスが有効で、`workspaceAccess` が `"rw"` でない場合、ツールはホストのワークスペースではなく、`~/.openclaw/sandboxes` 配下のサンドボックスワークスペース内で動作します。
+サンドボックス化が有効で、`workspaceAccess` が `"rw"` でない場合、ツールはホストのワークスペースではなく、`~/.openclaw/sandboxes` 配下のサンドボックスワークスペース内で動作します。
 </Warning>
 
 ## デフォルトの場所
@@ -40,97 +40,97 @@ x-i18n:
 }
 ```
 
-`openclaw onboard`、`openclaw configure`、または `openclaw setup` は、ワークスペースを作成し、ブートストラップファイルが存在しない場合はそれらを初期配置します。
+`openclaw onboard`、`openclaw configure`、または `openclaw setup` は、ワークスペースを作成し、不足している場合はブートストラップファイルを配置します。
 
 <Note>
-サンドボックスの初期コピーは、ワークスペース内の通常ファイルのみを受け入れます。ソースワークスペースの外部に解決されるシンボリックリンク/ハードリンクのエイリアスは無視されます。
+サンドボックスのシードコピーは、ワークスペース内の通常ファイルのみを受け付けます。ソースワークスペース外へ解決されるシンボリックリンクやハードリンクのエイリアスは無視されます。
 </Note>
 
-ワークスペースファイルをすでに自分で管理している場合は、ブートストラップファイルの作成を無効にできます:
+ワークスペースファイルを自分で管理している場合は、ブートストラップファイルの作成を無効にできます:
 
 ```json5
 { agents: { defaults: { skipBootstrap: true } } }
 ```
 
-## 追加のワークスペースフォルダー
+## 追加のワークスペースフォルダ
 
-古いインストールでは `~/openclaw` が作成されている場合があります。複数のワークスペースディレクトリを残しておくと、一度に有効なのは1つのワークスペースだけであるため、認証や状態のずれで混乱が生じる可能性があります。
+古いインストールでは `~/openclaw` が作成されている場合があります。複数のワークスペースディレクトリを残しておくと、一度に有効なのは1つのワークスペースだけであるため、認証や状態のずれが分かりにくくなることがあります。
 
 <Note>
-**推奨:** 有効なワークスペースは1つだけにしてください。追加のフォルダーをもう使用していない場合は、アーカイブするかゴミ箱に移動してください（例: `trash ~/openclaw`）。意図的に複数のワークスペースを維持する場合は、`agents.defaults.workspace` が有効なものを指していることを確認してください。
+**推奨:** 有効なワークスペースは1つだけにしてください。追加フォルダをもう使っていない場合は、アーカイブするかゴミ箱へ移動してください（例: `trash ~/openclaw`）。意図的に複数のワークスペースを保持する場合は、`agents.defaults.workspace` が有効なものを指していることを確認してください。
 
 `openclaw doctor` は、追加のワークスペースディレクトリを検出すると警告します。
 </Note>
 
 ## ワークスペースファイルマップ
 
-これらは OpenClaw がワークスペース内にあることを想定する標準ファイルです:
+これらは OpenClaw がワークスペース内に期待する標準ファイルです:
 
 <AccordionGroup>
-  <Accordion title="AGENTS.md — 操作指示">
-    エージェントの操作指示と、メモリの使い方です。すべてのセッション開始時に読み込まれます。ルール、優先順位、「どのように振る舞うか」の詳細を書くのに適しています。
+  <Accordion title="AGENTS.md - 操作指示">
+    エージェントの操作指示と、メモリの使い方です。各セッションの開始時に読み込まれます。ルール、優先事項、「どう振る舞うか」の詳細を書くのに適した場所です。
   </Accordion>
-  <Accordion title="SOUL.md — ペルソナとトーン">
-    ペルソナ、トーン、境界です。すべてのセッションで読み込まれます。ガイド: [SOUL.md パーソナリティガイド](/ja-JP/concepts/soul)。
+  <Accordion title="SOUL.md - ペルソナとトーン">
+    ペルソナ、トーン、境界です。各セッションで読み込まれます。ガイド: [SOUL.md パーソナリティガイド](/ja-JP/concepts/soul)。
   </Accordion>
-  <Accordion title="USER.md — ユーザーについて">
-    ユーザーが誰で、どのように呼びかけるかです。すべてのセッションで読み込まれます。
+  <Accordion title="USER.md - ユーザーについて">
+    ユーザーが誰で、どのように呼びかけるかです。各セッションで読み込まれます。
   </Accordion>
-  <Accordion title="IDENTITY.md — 名前、雰囲気、絵文字">
-    エージェントの名前、雰囲気、絵文字です。ブートストラップ儀式中に作成/更新されます。
+  <Accordion title="IDENTITY.md - 名前、雰囲気、絵文字">
+    エージェントの名前、雰囲気、絵文字です。ブートストラップ儀式中に作成または更新されます。
   </Accordion>
-  <Accordion title="TOOLS.md — ローカルツールの慣例">
-    ローカルツールと慣例に関するメモです。ツールの利用可否を制御するものではなく、ガイダンスにすぎません。
+  <Accordion title="TOOLS.md - ローカルツールの規約">
+    ローカルツールと規約に関するメモです。ツールの利用可否は制御せず、ガイダンスのみです。
   </Accordion>
-  <Accordion title="HEARTBEAT.md — Heartbeat チェックリスト">
-    Heartbeat 実行用の任意の小さなチェックリストです。トークン消費を避けるため短くしてください。
+  <Accordion title="HEARTBEAT.md - Heartbeatチェックリスト">
+    Heartbeat実行用の任意の小さなチェックリストです。トークン消費を避けるため短くしてください。
   </Accordion>
-  <Accordion title="BOOT.md — 起動チェックリスト">
-    Gateway 再起動時に自動実行される任意の起動チェックリストです（[内部フック](/ja-JP/automation/hooks)が有効な場合）。短く保ち、外部送信にはメッセージツールを使用してください。
+  <Accordion title="BOOT.md - 起動チェックリスト">
+    Gateway再起動時に自動実行される任意の起動チェックリストです（[内部フック](/ja-JP/automation/hooks)が有効な場合）。短くしてください。外部送信にはメッセージツールを使用してください。
   </Accordion>
-  <Accordion title="BOOTSTRAP.md — 初回実行の儀式">
-    1回限りの初回実行の儀式です。完全に新しいワークスペースにのみ作成されます。儀式が完了したら削除してください。
+  <Accordion title="BOOTSTRAP.md - 初回実行儀式">
+    1回限りの初回実行儀式です。新しいワークスペースの場合のみ作成されます。儀式が完了したら削除してください。
   </Accordion>
-  <Accordion title="memory/YYYY-MM-DD.md — 日次メモリログ">
+  <Accordion title="memory/YYYY-MM-DD.md - 日次メモリログ">
     日次メモリログ（1日につき1ファイル）です。セッション開始時に今日と昨日を読むことを推奨します。
   </Accordion>
-  <Accordion title="MEMORY.md — キュレーション済み長期メモリ（任意）">
-    キュレーション済みの長期メモリです。メインの非公開セッションでのみ読み込んでください（共有/グループコンテキストでは使用しません）。ワークフローと自動メモリフラッシュについては [Memory](/ja-JP/concepts/memory) を参照してください。
+  <Accordion title="MEMORY.md - キュレーション済み長期メモリ（任意）">
+    キュレーション済み長期メモリです。メインの非公開セッションでのみ読み込んでください（共有またはグループコンテキストでは読み込まないでください）。ワークフローと自動メモリフラッシュについては、[Memory](/ja-JP/concepts/memory)を参照してください。
   </Accordion>
-  <Accordion title="skills/ — ワークスペース Skills（任意）">
-    ワークスペース固有の Skills です。そのワークスペースで最も優先度の高い Skills の場所です。名前が衝突した場合、プロジェクトエージェント Skills、個人エージェント Skills、管理対象 Skills、バンドル済み Skills、および `skills.load.extraDirs` を上書きします。
+  <Accordion title="skills/ - ワークスペースSkills（任意）">
+    ワークスペース固有のSkillsです。そのワークスペースで最も優先されるスキル場所です。名前が衝突した場合は、プロジェクトエージェントSkills、個人エージェントSkills、管理対象Skills、バンドルSkills、`skills.load.extraDirs` を上書きします。
   </Accordion>
-  <Accordion title="canvas/ — Canvas UI ファイル（任意）">
-    ノード表示用の Canvas UI ファイルです（例: `canvas/index.html`）。
+  <Accordion title="canvas/ - Canvas UIファイル（任意）">
+    ノード表示用の Canvas UIファイルです（例: `canvas/index.html`）。
   </Accordion>
 </AccordionGroup>
 
 <Note>
-ブートストラップファイルが欠けている場合、OpenClaw は「missing file」マーカーをセッションに挿入して続行します。大きなブートストラップファイルは挿入時に切り詰められます。制限は `agents.defaults.bootstrapMaxChars`（デフォルト: 12000）と `agents.defaults.bootstrapTotalMaxChars`（デフォルト: 60000）で調整してください。`openclaw setup` は、既存ファイルを上書きせずに欠けているデフォルトを再作成できます。
+ブートストラップファイルが不足している場合、OpenClaw は「missing file」マーカーをセッションに注入して続行します。大きなブートストラップファイルは注入時に切り詰められます。制限は `agents.defaults.bootstrapMaxChars`（デフォルト: 12000）と `agents.defaults.bootstrapTotalMaxChars`（デフォルト: 60000）で調整してください。`openclaw setup` は、既存ファイルを上書きせずに不足しているデフォルトを再作成できます。
 </Note>
 
 ## ワークスペースに含まれないもの
 
-これらは `~/.openclaw/` 配下にあり、ワークスペースリポジトリにコミットすべきではありません:
+これらは `~/.openclaw/` 配下にあり、ワークスペースリポジトリへコミットしてはいけません:
 
 - `~/.openclaw/openclaw.json`（設定）
-- `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`（モデル認証プロファイル: OAuth + API キー）
+- `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`（モデル認証プロファイル: OAuth + APIキー）
 - `~/.openclaw/agents/<agentId>/agent/codex-home/`（エージェントごとの Codex ランタイムアカウント、設定、Skills、plugins、ネイティブスレッド状態）
-- `~/.openclaw/credentials/`（チャンネル/プロバイダー状態とレガシー OAuth インポートデータ）
-- `~/.openclaw/agents/<agentId>/sessions/`（セッションのトランスクリプト + メタデータ）
-- `~/.openclaw/skills/`（管理対象 Skills）
+- `~/.openclaw/credentials/`（チャンネルまたはプロバイダー状態とレガシーOAuthインポートデータ）
+- `~/.openclaw/agents/<agentId>/sessions/`（セッショントランスクリプトとメタデータ）
+- `~/.openclaw/skills/`（管理対象Skills）
 
-セッションや設定を移行する必要がある場合は、別途コピーし、バージョン管理に含めないでください。
+セッションや設定を移行する必要がある場合は、別途コピーし、バージョン管理には含めないでください。
 
-## Git バックアップ（推奨、非公開）
+## Gitバックアップ（推奨、非公開）
 
-ワークスペースは非公開メモリとして扱ってください。バックアップと復旧ができるよう、**private** git リポジトリに置いてください。
+ワークスペースは非公開メモリとして扱ってください。バックアップと復元ができるように、**非公開** gitリポジトリに入れてください。
 
-これらの手順は Gateway が動作するマシン上で実行してください（そこにワークスペースがあります）。
+これらの手順は、Gateway が実行されているマシン（ワークスペースが存在する場所）で実行します。
 
 <Steps>
   <Step title="リポジトリを初期化する">
-    git がインストールされている場合、完全に新しいワークスペースは自動的に初期化されます。このワークスペースがまだリポジトリでない場合は、次を実行します:
+    git がインストールされている場合、新しいワークスペースは自動的に初期化されます。このワークスペースがまだリポジトリでない場合は、次を実行します:
 
     ```bash
     cd ~/.openclaw/workspace
@@ -142,11 +142,11 @@ x-i18n:
   </Step>
   <Step title="非公開リモートを追加する">
     <Tabs>
-      <Tab title="GitHub Web UI">
-        1. GitHub で新しい **private** リポジトリを作成します。
-        2. README で初期化しないでください（マージコンフリクトを避けるため）。
-        3. HTTPS リモート URL をコピーします。
-        4. リモートを追加して push します:
+      <Tab title="GitHubのウェブUI">
+        1. GitHubで新しい**非公開**リポジトリを作成します。
+        2. READMEで初期化しないでください（マージコンフリクトを避けるため）。
+        3. HTTPSリモートURLをコピーします。
+        4. リモートを追加してプッシュします:
 
         ```bash
         git branch -M main
@@ -154,17 +154,17 @@ x-i18n:
         git push -u origin main
         ```
       </Tab>
-      <Tab title="GitHub CLI (gh)">
+      <Tab title="GitHub CLI（gh）">
         ```bash
         gh auth login
         gh repo create openclaw-workspace --private --source . --remote origin --push
         ```
       </Tab>
-      <Tab title="GitLab Web UI">
-        1. GitLab で新しい **private** リポジトリを作成します。
-        2. README で初期化しないでください（マージコンフリクトを避けるため）。
-        3. HTTPS リモート URL をコピーします。
-        4. リモートを追加して push します:
+      <Tab title="GitLabのウェブUI">
+        1. GitLabで新しい**非公開**リポジトリを作成します。
+        2. READMEで初期化しないでください（マージコンフリクトを避けるため）。
+        3. HTTPSリモートURLをコピーします。
+        4. リモートを追加してプッシュします:
 
         ```bash
         git branch -M main
@@ -188,16 +188,16 @@ x-i18n:
 ## シークレットをコミットしない
 
 <Warning>
-private リポジトリであっても、ワークスペースにシークレットを保存することは避けてください:
+非公開リポジトリでも、ワークスペースにシークレットを保存することは避けてください:
 
-- API キー、OAuth トークン、パスワード、または非公開認証情報。
-- `~/.openclaw/` 配下のあらゆるもの。
-- チャットや機密添付ファイルの生ダンプ。
+- APIキー、OAuthトークン、パスワード、または非公開の認証情報。
+- `~/.openclaw/` 配下のもの。
+- チャットや機密性の高い添付ファイルの生データダンプ。
 
-機密参照を保存する必要がある場合は、プレースホルダーを使用し、実際のシークレットは別の場所（パスワードマネージャー、環境変数、または `~/.openclaw/`）に保管してください。
+機密性の高い参照を保存する必要がある場合は、プレースホルダーを使用し、本物のシークレットは別の場所（パスワードマネージャー、環境変数、または `~/.openclaw/`）に保持してください。
 </Warning>
 
-推奨 `.gitignore` スターター:
+推奨される `.gitignore` のスターター:
 
 ```gitignore
 .DS_Store
@@ -211,27 +211,27 @@ private リポジトリであっても、ワークスペースにシークレッ
 
 <Steps>
   <Step title="リポジトリをクローンする">
-    目的のパス（デフォルトは `~/.openclaw/workspace`）にリポジトリをクローンします。
+    リポジトリを希望のパス（デフォルトは `~/.openclaw/workspace`）へクローンします。
   </Step>
   <Step title="設定を更新する">
     `~/.openclaw/openclaw.json` で `agents.defaults.workspace` をそのパスに設定します。
   </Step>
-  <Step title="欠けているファイルを初期配置する">
-    `openclaw setup --workspace <path>` を実行して、欠けているファイルを初期配置します。
+  <Step title="不足ファイルをシードする">
+    `openclaw setup --workspace <path>` を実行して、不足しているファイルをシードします。
   </Step>
   <Step title="セッションをコピーする（任意）">
     セッションが必要な場合は、古いマシンから `~/.openclaw/agents/<agentId>/sessions/` を別途コピーします。
   </Step>
 </Steps>
 
-## 詳細メモ
+## 高度なメモ
 
-- マルチエージェントルーティングでは、エージェントごとに異なるワークスペースを使用できます。ルーティング設定については [Channel routing](/ja-JP/channels/channel-routing) を参照してください。
+- マルチエージェントルーティングでは、エージェントごとに異なるワークスペースを使用できます。ルーティング設定については、[チャンネルルーティング](/ja-JP/channels/channel-routing)を参照してください。
 - `agents.defaults.sandbox` が有効な場合、メイン以外のセッションは `agents.defaults.sandbox.workspaceRoot` 配下のセッションごとのサンドボックスワークスペースを使用できます。
 
 ## 関連
 
-- [Heartbeat](/ja-JP/gateway/heartbeat) — HEARTBEAT.md ワークスペースファイル
-- [サンドボックス化](/ja-JP/gateway/sandboxing) — サンドボックス環境でのワークスペースアクセス
-- [セッション](/ja-JP/concepts/session) — セッション保存パス
-- [常設指示](/ja-JP/automation/standing-orders) — ワークスペースファイル内の永続的な指示
+- [Heartbeat](/ja-JP/gateway/heartbeat) - HEARTBEAT.md ワークスペースファイル
+- [サンドボックス化](/ja-JP/gateway/sandboxing) - サンドボックス環境でのワークスペースアクセス
+- [セッション](/ja-JP/concepts/session) - セッション保存パス
+- [常設指示](/ja-JP/automation/standing-orders) - ワークスペースファイル内の永続的な指示

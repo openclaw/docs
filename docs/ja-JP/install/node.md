@@ -1,31 +1,30 @@
 ---
 read_when:
-    - OpenClaw をインストールする前に Node.js をインストールする必要がある場合
-    - OpenClaw はインストールしたが、`openclaw` が command not found になる場合
-    - '`npm install -g` が権限または PATH の問題で失敗する場合'
-summary: OpenClaw 向けに Node.js をインストールして設定する — バージョン要件、インストール方法、PATH のトラブルシューティング
+    - OpenClawをインストールする前にNode.jsをインストールする必要があります
+    - OpenClaw をインストールしたが、`openclaw` が「コマンドが見つかりません」と表示される
+    - npm install -g が権限または PATH の問題で失敗する
+summary: OpenClaw 用に Node.js をインストールして設定する - バージョン要件、インストールオプション、PATH のトラブルシューティング
 title: Node.js
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T05:05:12Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: 99c72b917fa8beba136ee6010799c0183cff8b2420b5a1bd256d9155e50f065a
-  source_path: install/node.md
-  workflow: 15
+    generated_at: "2026-05-06T05:10:45Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: fa445f3b9e6472af755c2fc4c3f08b6134e308f290ab750549411f12d8d247db
+    source_path: install/node.md
+    workflow: 16
 ---
 
-OpenClaw には **Node 22.14 以上** が必要です。インストール、CI、リリースワークフローの **デフォルトかつ推奨ランタイムは Node 24** です。Node 22 もアクティブ LTS ラインとして引き続きサポートされています。[installer script](/ja-JP/install#alternative-install-methods) は Node を自動検出してインストールします。このページは、Node を自分でセットアップし、すべてが正しくつながっていること（バージョン、PATH、グローバルインストール）を確認したい場合のためのものです。
+OpenClaw には **Node 22.14 以降**が必要です。**Node 24 は、インストール、CI、リリースワークフローのデフォルトかつ推奨ランタイム**です。Node 22 はアクティブな LTS ラインを通じて引き続きサポートされます。[インストーラースクリプト](/ja-JP/install#alternative-install-methods)は Node を自動的に検出してインストールします。このページは、Node を自分でセットアップし、すべてが正しく接続されていること（バージョン、PATH、グローバルインストール）を確認したい場合のものです。
 
-## バージョン確認
+## バージョンを確認する
 
 ```bash
 node -v
 ```
 
-これが `v24.x.x` 以上なら、推奨デフォルトを使っています。`v22.14.x` 以上なら、サポートされる Node 22 LTS 経路です。ただし、都合がつき次第 Node 24 への更新を推奨します。Node がインストールされていない、または古すぎる場合は、下のインストール方法から選んでください。
+これが `v24.x.x` 以上を出力する場合は、推奨デフォルトを使用しています。`v22.14.x` 以上を出力する場合は、サポート対象の Node 22 LTS パスを使用していますが、都合のよいときに Node 24 へアップグレードすることを引き続き推奨します。Node がインストールされていない、またはバージョンが古すぎる場合は、以下からインストール方法を選んでください。
 
-## Node のインストール
+## Node をインストールする
 
 <Tabs>
   <Tab title="macOS">
@@ -35,7 +34,7 @@ node -v
     brew install node
     ```
 
-    または [nodejs.org](https://nodejs.org/) から macOS インストーラーをダウンロードしてください。
+    または [nodejs.org](https://nodejs.org/) から macOS インストーラーをダウンロードします。
 
   </Tab>
   <Tab title="Linux">
@@ -52,7 +51,7 @@ node -v
     sudo dnf install nodejs
     ```
 
-    またはバージョンマネージャを使ってください（下記参照）。
+    またはバージョンマネージャーを使用します（下記参照）。
 
   </Tab>
   <Tab title="Windows">
@@ -68,17 +67,17 @@ node -v
     choco install nodejs-lts
     ```
 
-    または [nodejs.org](https://nodejs.org/) から Windows インストーラーをダウンロードしてください。
+    または [nodejs.org](https://nodejs.org/) から Windows インストーラーをダウンロードします。
 
   </Tab>
 </Tabs>
 
-<Accordion title="バージョンマネージャを使う（nvm, fnm, mise, asdf）">
-  バージョンマネージャを使うと、Node のバージョンを簡単に切り替えられます。代表的な選択肢:
+<Accordion title="バージョンマネージャー（nvm、fnm、mise、asdf）を使用する">
+  バージョンマネージャーを使うと、Node バージョンを簡単に切り替えられます。よく使われる選択肢:
 
-- [**fnm**](https://github.com/Schniz/fnm) — 高速、クロスプラットフォーム
-- [**nvm**](https://github.com/nvm-sh/nvm) — macOS/Linux で広く使われている
-- [**mise**](https://mise.jdx.dev/) — polyglot（Node、Python、Ruby など）
+- [**fnm**](https://github.com/Schniz/fnm) - 高速、クロスプラットフォーム
+- [**nvm**](https://github.com/nvm-sh/nvm) - macOS/Linux で広く使用
+- [**mise**](https://mise.jdx.dev/) - ポリグロット（Node、Python、Ruby など）
 
 fnm の例:
 
@@ -88,7 +87,7 @@ fnm use 24
 ```
 
   <Warning>
-  バージョンマネージャがシェル起動ファイル（`~/.zshrc` または `~/.bashrc`）で初期化されていることを確認してください。そうでないと、新しいターミナルセッションで PATH に Node の bin ディレクトリが含まれず、`openclaw` が見つからないことがあります。
+  バージョンマネージャーがシェルの起動ファイル（`~/.zshrc` または `~/.bashrc`）で初期化されていることを確認してください。初期化されていない場合、PATH に Node の bin ディレクトリが含まれないため、新しいターミナルセッションで `openclaw` が見つからないことがあります。
   </Warning>
 </Accordion>
 
@@ -96,44 +95,44 @@ fnm use 24
 
 ### `openclaw: command not found`
 
-ほとんどの場合、npm のグローバル bin ディレクトリが PATH に入っていないことが原因です。
+これはほとんどの場合、npm のグローバル bin ディレクトリが PATH に含まれていないことを意味します。
 
 <Steps>
-  <Step title="グローバル npm prefix を確認">
+  <Step title="グローバル npm prefix を見つける">
     ```bash
     npm prefix -g
     ```
   </Step>
-  <Step title="PATH に入っているか確認">
+  <Step title="PATH に含まれているか確認する">
     ```bash
     echo "$PATH"
     ```
 
-    出力内に `<npm-prefix>/bin`（macOS/Linux）または `<npm-prefix>`（Windows）があるか確認してください。
+    出力に `<npm-prefix>/bin`（macOS/Linux）または `<npm-prefix>`（Windows）があるか探します。
 
   </Step>
-  <Step title="シェル起動ファイルに追加">
+  <Step title="シェルの起動ファイルに追加する">
     <Tabs>
       <Tab title="macOS / Linux">
-        `~/.zshrc` または `~/.bashrc` に追加:
+        `~/.zshrc` または `~/.bashrc` に追加します:
 
         ```bash
         export PATH="$(npm prefix -g)/bin:$PATH"
         ```
 
-        その後、新しいターミナルを開いてください（または zsh では `rehash`、bash では `hash -r` を実行）。
+        その後、新しいターミナルを開きます（または zsh では `rehash`、bash では `hash -r` を実行します）。
       </Tab>
       <Tab title="Windows">
-        `npm prefix -g` の出力を、Settings → System → Environment Variables からシステム PATH に追加してください。
+        Settings → System → Environment Variables から、`npm prefix -g` の出力をシステム PATH に追加します。
       </Tab>
     </Tabs>
 
   </Step>
 </Steps>
 
-### `npm install -g` で権限エラー（Linux）
+### `npm install -g` での権限エラー（Linux）
 
-`EACCES` エラーが出る場合は、npm のグローバル prefix をユーザー書き込み可能なディレクトリに切り替えてください:
+`EACCES` エラーが表示される場合は、npm のグローバル prefix をユーザーが書き込めるディレクトリに切り替えます:
 
 ```bash
 mkdir -p "$HOME/.npm-global"
@@ -141,10 +140,10 @@ npm config set prefix "$HOME/.npm-global"
 export PATH="$HOME/.npm-global/bin:$PATH"
 ```
 
-永続化するには、`export PATH=...` の行を `~/.bashrc` または `~/.zshrc` に追加してください。
+永続化するには、`export PATH=...` 行を `~/.bashrc` または `~/.zshrc` に追加します。
 
 ## 関連
 
-- [Install Overview](/ja-JP/install) — すべてのインストール方法
-- [Updating](/ja-JP/install/updating) — OpenClaw を最新に保つ
-- [はじめに](/ja-JP/start/getting-started) — インストール後の最初の手順
+- [インストール概要](/ja-JP/install) - すべてのインストール方法
+- [更新](/ja-JP/install/updating) - OpenClaw を最新に保つ
+- [はじめに](/ja-JP/start/getting-started) - インストール後の最初の手順

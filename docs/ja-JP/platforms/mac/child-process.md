@@ -1,50 +1,45 @@
 ---
 read_when:
-    - mac アプリを gateway ライフサイクルに統合すること
-summary: macOS での Gateway ライフサイクル（launchd）
-title: Gateway ライフサイクル
+    - mac アプリを Gateway のライフサイクルと統合する
+summary: Gateway の macOS ライフサイクル (launchd)
+title: macOS における Gateway ライフサイクル
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T05:08:20Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: a110d8f4384301987f7748cb9591f8899aa845fcf635035407a7aa401b132fc4
-  source_path: platforms/mac/child-process.md
-  workflow: 15
+    generated_at: "2026-05-06T05:12:15Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 543327024f8c635d74ac656923e8e745dc47ca9df0aba5ec51215bd186db2b35
+    source_path: platforms/mac/child-process.md
+    workflow: 16
 ---
 
-# macOS での Gateway ライフサイクル
+macOS アプリはデフォルトで **launchd 経由で Gateway を管理**し、Gateway を子プロセスとして生成しません。まず、設定済みポートで既に実行中の Gateway への接続を試みます。到達可能なものがない場合は、外部の `openclaw` CLI（埋め込みランタイムなし）を介して launchd サービスを有効にします。これにより、ログイン時の信頼性の高い自動起動と、クラッシュ時の再起動が得られます。
 
-macOS アプリは、デフォルトで **launchd 経由で Gateway を管理** し、Gateway を子プロセスとして起動しません。まず、設定されたポートで既に動作中の Gateway へのアタッチを試みます。到達可能なものがなければ、外部の `openclaw` CLI を使って launchd service を有効化します（埋め込みランタイムは使いません）。これにより、ログイン時の確実な自動起動と、クラッシュ時の再起動が得られます。
+子プロセスモード（アプリが Gateway を直接生成する方式）は、現在 **使用されていません**。UI とより密に連携する必要がある場合は、ターミナルで Gateway を手動実行してください。
 
-子プロセスモード（アプリが Gateway を直接起動する）は、現在**使われていません**。
-UI とより密接に結合したい場合は、ターミナルで Gateway を手動実行してください。
+## デフォルトの動作（launchd）
 
-## デフォルト動作（launchd）
+- アプリは、`ai.openclaw.gateway` というラベルのユーザー単位 LaunchAgent をインストールします
+  （`--profile`/`OPENCLAW_PROFILE` を使用する場合は `ai.openclaw.<profile>`。従来の `com.openclaw.*` もサポートされます）。
+- ローカルモードが有効な場合、アプリは LaunchAgent が読み込まれていることを確認し、
+  必要に応じて Gateway を起動します。
+- ログは launchd の Gateway ログパスに書き込まれます（デバッグ設定で確認できます）。
 
-- アプリは、ユーザーごとの LaunchAgent `ai.openclaw.gateway`
-  をインストールします（`--profile`/`OPENCLAW_PROFILE` 使用時は `ai.openclaw.<profile>`、旧式の `com.openclaw.*` もサポートされます）。
-- Local mode が有効なとき、アプリは LaunchAgent がロードされていることを確認し、
-  必要なら Gateway を起動します。
-- ログは launchd の gateway ログパスに書き込まれます（Debug Settings で確認できます）。
-
-よく使うコマンド:
+一般的なコマンド:
 
 ```bash
 launchctl kickstart -k gui/$UID/ai.openclaw.gateway
 launchctl bootout gui/$UID/ai.openclaw.gateway
 ```
 
-名前付き profile を使っている場合は、ラベルを `ai.openclaw.<profile>` に置き換えてください。
+名前付きプロファイルを実行する場合は、ラベルを `ai.openclaw.<profile>` に置き換えてください。
 
-## 署名なし開発ビルド
+## 署名なしの開発ビルド
 
-`scripts/restart-mac.sh --no-sign` は、署名キーがない場合の高速ローカルビルド向けです。launchd が署名なし relay バイナリを指さないようにするため、これにより:
+`scripts/restart-mac.sh --no-sign` は、署名キーがない場合の高速なローカルビルド用です。launchd が署名なしのリレーバイナリを指さないようにするため、これは次を実行します。
 
-- `~/.openclaw/disable-launchagent` が書き込まれます。
+- `~/.openclaw/disable-launchagent` を書き込みます。
 
-署名付きで `scripts/restart-mac.sh` を実行すると、そのマーカーが
-存在する場合はこの上書きが解除されます。手動でリセットするには:
+`scripts/restart-mac.sh` の署名済み実行では、このマーカーが存在する場合、この上書き設定をクリアします。手動でリセットするには:
 
 ```bash
 rm ~/.openclaw/disable-launchagent
@@ -52,26 +47,21 @@ rm ~/.openclaw/disable-launchagent
 
 ## アタッチ専用モード
 
-macOS アプリが launchd を**決してインストールも管理もしない**ようにするには、
-`--attach-only`（または `--no-launchd`）付きで起動してください。これにより `~/.openclaw/disable-launchagent`
-が設定され、アプリは既に動作中の Gateway にのみアタッチします。同じ
-動作は Debug Settings でも切り替えられます。
+macOS アプリが **launchd を一切インストールまたは管理しない**ように強制するには、`--attach-only`（または `--no-launchd`）付きで起動します。これにより `~/.openclaw/disable-launchagent` が設定されるため、アプリは既に実行中の Gateway にのみ接続します。同じ動作はデバッグ設定でも切り替えられます。
 
-## Remote mode
+## リモートモード
 
-Remote mode はローカル Gateway を起動しません。アプリはリモートホストへの SSH トンネルを使い、
-そのトンネル越しに接続します。
+リモートモードでは、ローカル Gateway は一切起動されません。アプリはリモートホストへの SSH トンネルを使用し、そのトンネル経由で接続します。
 
-## なぜ launchd を好むのか
+## launchd を推奨する理由
 
 - ログイン時の自動起動。
 - 組み込みの再起動/KeepAlive セマンティクス。
-- 予測可能なログと supervision。
+- 予測可能なログと監視。
 
-もし真の子プロセスモードが再び必要になったとしても、それは別の、
-明示的な開発専用モードとして文書化されるべきです。
+真の子プロセスモードが再び必要になった場合は、独立した明示的な開発専用モードとして文書化するべきです。
 
 ## 関連
 
-- [macOS app](/ja-JP/platforms/macos)
-- [Gateway runbook](/ja-JP/gateway)
+- [macOS アプリ](/ja-JP/platforms/macos)
+- [Gateway ランブック](/ja-JP/gateway)

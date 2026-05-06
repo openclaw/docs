@@ -1,61 +1,58 @@
 ---
 read_when:
-    - ブラウザー自動化のためにサイトへログインする必要がある場合
-    - X/Twitterへ更新を投稿したい場合
-summary: ブラウザー自動化 + X/Twitter投稿の手動ログイン
-title: ブラウザーログイン
+    - ブラウザー自動化のためにサイトへログインする必要があります
+    - X/Twitter に更新情報を投稿したい
+summary: ブラウザー自動化 + X/Twitter投稿のための手動ログイン
+title: ブラウザでログイン
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T05:24:17Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: 3e70ae373fed861ffde0e03dfe6252b0589f7cc1946585e9b055cbed70de14b1
-  source_path: tools/browser-login.md
-  workflow: 15
+    generated_at: "2026-05-06T05:19:47Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 235194fd3a49724247f98e6d7c848c4cc3317f749ff4a8918c2172b73baf21e3
+    source_path: tools/browser-login.md
+    workflow: 16
 ---
-
-# ブラウザーログイン + X/Twitter投稿
 
 ## 手動ログイン（推奨）
 
-サイトでログインが必要な場合は、**ホスト**のブラウザープロファイル（openclaw browser）で**手動でサインイン**してください。
+サイトでログインが必要な場合は、**ホスト**ブラウザプロファイル（openclaw ブラウザ）で**手動でサインイン**します。
 
-認証情報をモデルに渡さないでください。自動ログインはしばしばアンチボット防御を発動させ、アカウントをロックすることがあります。
+モデルに認証情報を渡さないでください。自動ログインは多くの場合、ボット対策を発動させ、アカウントがロックされる可能性があります。
 
-メインのブラウザードキュメントに戻る: [Browser](/ja-JP/tools/browser)。
+メインのブラウザドキュメントに戻る: [ブラウザ](/ja-JP/tools/browser)。
 
-## どのChromeプロファイルが使われますか？
+## どの Chrome プロファイルが使用されますか?
 
-OpenClawは、**専用のChromeプロファイル**（`openclaw`という名前、オレンジ系UI）を制御します。これは日常的に使うブラウザープロファイルとは別です。
+OpenClaw は**専用の Chrome プロファイル**（名前は `openclaw`、オレンジ色がかった UI）を制御します。これは日常的に使うブラウザプロファイルとは別です。
 
-エージェントのbrowser tool呼び出しでは:
+エージェントのブラウザツール呼び出しの場合:
 
-- デフォルト選択: エージェントは隔離された`openclaw` browserを使うべきです。
-- 既存のログイン済みセッションが重要で、かつユーザーがPCの前にいてattachプロンプトをクリック/承認できる場合にのみ、`profile="user"`を使ってください。
-- 複数のuser-browserプロファイルがある場合は、推測せず明示的に指定してください。
+- 既定の選択: エージェントは分離された `openclaw` ブラウザを使用する必要があります。
+- 既存のログイン済みセッションが重要で、ユーザーがコンピューターの前にいて、接続プロンプトをクリックまたは承認できる場合にのみ `profile="user"` を使用します。
+- ユーザーブラウザプロファイルが複数ある場合は、推測せずにプロファイルを明示的に指定します。
 
-アクセスする簡単な方法は2つあります。
+アクセスする簡単な方法は 2 つあります:
 
-1. **エージェントにブラウザーを開かせる**。その後、自分でログインします。
-2. **CLI経由で開く**:
+1. **エージェントにブラウザを開くよう依頼**し、その後自分でログインします。
+2. **CLI 経由で開きます**:
 
 ```bash
 openclaw browser start
 openclaw browser open https://x.com
 ```
 
-複数プロファイルがある場合は、`--browser-profile <name>`を渡してください（デフォルトは`openclaw`）。
+複数のプロファイルがある場合は、`--browser-profile <name>` を渡します（既定は `openclaw`）。
 
 ## X/Twitter: 推奨フロー
 
-- **閲覧/検索/スレッド:** **ホスト**ブラウザーを使う（手動ログイン）。
-- **更新投稿:** **ホスト**ブラウザーを使う（手動ログイン）。
+- **読み取り/検索/スレッド:** **ホスト**ブラウザを使用します（手動ログイン）。
+- **更新の投稿:** **ホスト**ブラウザを使用します（手動ログイン）。
 
-## サンドボックス + ホストブラウザーアクセス
+## サンドボックス化 + ホストブラウザアクセス
 
-サンドボックス化されたブラウザーセッションは、bot検出を発動しやすくなります。X/Twitter（および他の厳格なサイト）では、**ホスト**ブラウザーを優先してください。
+サンドボックス化されたブラウザセッションは、ボット検出を発動する**可能性が高くなります**。X/Twitter（およびその他の厳格なサイト）では、**ホスト**ブラウザを優先してください。
 
-エージェントがサンドボックス化されている場合、browser toolはデフォルトでサンドボックスを使います。ホスト制御を許可するには:
+エージェントがサンドボックス化されている場合、ブラウザツールは既定でサンドボックスを使用します。ホスト制御を許可するには:
 
 ```json5
 {
@@ -72,16 +69,16 @@ openclaw browser open https://x.com
 }
 ```
 
-その後、ホストブラウザーを対象にします。
+次に、ホストブラウザを対象にします:
 
 ```bash
 openclaw browser open https://x.com --browser-profile openclaw --target host
 ```
 
-または、更新を投稿するエージェントではサンドボックスを無効にしてください。
+または、更新を投稿するエージェントのサンドボックス化を無効にします。
 
 ## 関連
 
-- [Browser](/ja-JP/tools/browser)
-- [Browser Linux troubleshooting](/ja-JP/tools/browser-linux-troubleshooting)
-- [Browser WSL2 troubleshooting](/ja-JP/tools/browser-wsl2-windows-remote-cdp-troubleshooting)
+- [ブラウザ](/ja-JP/tools/browser)
+- [ブラウザ Linux トラブルシューティング](/ja-JP/tools/browser-linux-troubleshooting)
+- [ブラウザ WSL2 トラブルシューティング](/ja-JP/tools/browser-wsl2-windows-remote-cdp-troubleshooting)

@@ -1,27 +1,27 @@
 ---
 read_when:
-    - Docker で OpenClaw をよく実行していて、日常的なコマンドをもっと短くしたい場合
-    - dashboard、ログ、token 設定、ペアリングフロー向けのヘルパーレイヤーが欲しい場合
-summary: Docker ベースの OpenClaw インストール向け ClawDock シェルヘルパー
+    - OpenClaw を Docker で頻繁に実行しており、日常的に使うコマンドを短くしたい場合
+    - ダッシュボード、ログ、トークン設定、ペアリングフロー向けのヘルパーレイヤーが必要な場合
+summary: Docker ベースの OpenClaw インストール用 ClawDock シェルヘルパー
 title: ClawDock
 x-i18n:
-    generated_at: "2026-04-24T05:03:19Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T05:09:06Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 308ac338cb8a94d7996489ef9d751a9359b22ddd3c44d64774c6a2275b29aa22
+    source_hash: 82d31ba74694cda9e195534ce33f7b61343546f174ceacd2607aeb1d5487229e
     source_path: install/clawdock.md
-    workflow: 15
+    workflow: 16
 ---
 
 ClawDock は、Docker ベースの OpenClaw インストール向けの小さなシェルヘルパーレイヤーです。
 
-これにより、長い `docker compose ...` 呼び出しの代わりに、`clawdock-start`、`clawdock-dashboard`、`clawdock-fix-token` のような短いコマンドを使えます。
+長い `docker compose ...` 呼び出しの代わりに、`clawdock-start`、`clawdock-dashboard`、`clawdock-fix-token` のような短いコマンドを使えます。
 
-まだ Docker をセットアップしていない場合は、まず [Docker](/ja-JP/install/docker) から始めてください。
+まだ Docker をセットアップしていない場合は、[Docker](/ja-JP/install/docker) から始めてください。
 
 ## インストール
 
-正規のヘルパーパスを使ってください。
+正規のヘルパーパスを使用します。
 
 ```bash
 mkdir -p ~/.clawdock && curl -sL https://raw.githubusercontent.com/openclaw/openclaw/main/scripts/clawdock/clawdock-helpers.sh -o ~/.clawdock/clawdock-helpers.sh
@@ -30,53 +30,53 @@ echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
 
 以前に `scripts/shell-helpers/clawdock-helpers.sh` から ClawDock をインストールしていた場合は、新しい `scripts/clawdock/clawdock-helpers.sh` パスから再インストールしてください。古い raw GitHub パスは削除されました。
 
-## 使えるもの
+## 利用できるもの
 
 ### 基本操作
 
-| Command | 説明 |
+| コマンド           | 説明                   |
 | ------------------ | ---------------------- |
-| `clawdock-start` | gateway を起動 |
-| `clawdock-stop` | gateway を停止 |
-| `clawdock-restart` | gateway を再起動 |
-| `clawdock-status` | コンテナー状態を確認 |
-| `clawdock-logs` | gateway ログを追跡 |
+| `clawdock-start`   | Gateway を起動する     |
+| `clawdock-stop`    | Gateway を停止する     |
+| `clawdock-restart` | Gateway を再起動する   |
+| `clawdock-status`  | コンテナの状態を確認する |
+| `clawdock-logs`    | Gateway ログを追跡する |
 
-### コンテナーアクセス
+### コンテナアクセス
 
-| Command | 説明 |
-| ------------------------- | --------------------------------------------- |
-| `clawdock-shell` | gateway コンテナー内でシェルを開く |
-| `clawdock-cli <command>` | Docker 内で OpenClaw CLI コマンドを実行 |
-| `clawdock-exec <command>` | コンテナー内で任意のコマンドを実行 |
+| コマンド                  | 説明                                      |
+| ------------------------- | ----------------------------------------- |
+| `clawdock-shell`          | Gateway コンテナ内でシェルを開く         |
+| `clawdock-cli <command>`  | Docker 内で OpenClaw CLI コマンドを実行する |
+| `clawdock-exec <command>` | コンテナ内で任意のコマンドを実行する     |
 
 ### Web UI とペアリング
 
-| Command | 説明 |
+| コマンド                | 説明                         |
 | ----------------------- | ---------------------------- |
-| `clawdock-dashboard` | Control UI の URL を開く |
-| `clawdock-devices` | 保留中のデバイスペアリングを一覧表示 |
-| `clawdock-approve <id>` | ペアリングリクエストを承認 |
+| `clawdock-dashboard`    | Control UI の URL を開く     |
+| `clawdock-devices`      | 保留中のデバイスペアリングを一覧表示する |
+| `clawdock-approve <id>` | ペアリング要求を承認する     |
 
 ### セットアップとメンテナンス
 
-| Command | 説明 |
-| -------------------- | ------------------------------------------------ |
-| `clawdock-fix-token` | コンテナー内で gateway token を設定 |
-| `clawdock-update` | pull、rebuild、restart を実行 |
-| `clawdock-rebuild` | Docker イメージのみ rebuild |
-| `clawdock-clean` | コンテナーと volume を削除 |
+| コマンド             | 説明                                      |
+| -------------------- | ----------------------------------------- |
+| `clawdock-fix-token` | コンテナ内の Gateway トークンを設定する  |
+| `clawdock-update`    | 取得、再ビルド、再起動を行う             |
+| `clawdock-rebuild`   | Docker イメージのみを再ビルドする        |
+| `clawdock-clean`     | コンテナとボリュームを削除する           |
 
 ### ユーティリティ
 
-| Command | 説明 |
-| ---------------------- | --------------------------------------- |
-| `clawdock-health` | gateway ヘルスチェックを実行 |
-| `clawdock-token` | gateway token を表示 |
-| `clawdock-cd` | OpenClaw プロジェクトディレクトリへ移動 |
-| `clawdock-config` | `~/.openclaw` を開く |
-| `clawdock-show-config` | マスク済みの値で config ファイルを表示 |
-| `clawdock-workspace` | workspace ディレクトリを開く |
+| コマンド               | 説明                                      |
+| ---------------------- | ----------------------------------------- |
+| `clawdock-health`      | Gateway のヘルスチェックを実行する       |
+| `clawdock-token`       | Gateway トークンを出力する               |
+| `clawdock-cd`          | OpenClaw プロジェクトディレクトリへ移動する |
+| `clawdock-config`      | `~/.openclaw` を開く                      |
+| `clawdock-show-config` | 値を秘匿した設定ファイルを出力する       |
+| `clawdock-workspace`   | ワークスペースディレクトリを開く         |
 
 ## 初回フロー
 
@@ -86,26 +86,34 @@ clawdock-fix-token
 clawdock-dashboard
 ```
 
-ブラウザにペアリングが必要と表示された場合:
+ブラウザーにペアリングが必要と表示された場合:
 
 ```bash
 clawdock-devices
 clawdock-approve <request-id>
 ```
 
-## Config とシークレット
+## 設定とシークレット
 
-ClawDock は、[Docker](/ja-JP/install/docker) で説明されているのと同じ Docker config 分割で動作します。
+ClawDock は、[Docker](/ja-JP/install/docker) で説明されているものと同じ Docker 設定分割で動作します。
 
-- Docker 固有の値（イメージ名、port、gateway token など）には `<project>/.env`
-- env ベースの provider key や bot token には `~/.openclaw/.env`
-- 保存済み provider OAuth/API-key auth には `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
-- 振る舞い config には `~/.openclaw/openclaw.json`
+- イメージ名、ポート、Gateway トークンなどの Docker 固有の値用の `<project>/.env`
+- env ベースのプロバイダーキーとボットトークン用の `~/.openclaw/.env`
+- 保存されたプロバイダー OAuth/API-key 認証用の `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
+- 動作設定用の `~/.openclaw/openclaw.json`
 
-`.env` ファイルと `openclaw.json` をすばやく確認したい場合は `clawdock-show-config` を使ってください。表示出力では `.env` の値をマスクします。
+`.env` ファイルと `openclaw.json` をすばやく確認したい場合は、`clawdock-show-config` を使用してください。出力される内容では `.env` の値が秘匿されます。
 
-## 関連ページ
+## 関連
 
-- [Docker](/ja-JP/install/docker)
-- [Docker VM Runtime](/ja-JP/install/docker-vm-runtime)
-- [Updating](/ja-JP/install/updating)
+<CardGroup cols={2}>
+  <Card title="Docker" href="/ja-JP/install/docker" icon="docker">
+    OpenClaw の正規 Docker インストール。
+  </Card>
+  <Card title="Docker VM runtime" href="/ja-JP/install/docker-vm-runtime" icon="cube">
+    強化された分離のための Docker 管理 VM ランタイム。
+  </Card>
+  <Card title="Updating" href="/ja-JP/install/updating" icon="arrow-up-right-from-square">
+    OpenClaw パッケージと管理対象サービスの更新。
+  </Card>
+</CardGroup>

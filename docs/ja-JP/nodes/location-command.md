@@ -1,57 +1,56 @@
 ---
 read_when:
-    - 位置情報 Node サポートまたは権限 UI を追加する場合
-    - Android の位置情報権限やフォアグラウンド動作を設計する場合
-summary: Node 向けの位置情報コマンド（location.get）、権限モード、Android のフォアグラウンド動作
+    - location ノードのサポートまたは権限 UI の追加
+    - Android の位置情報権限またはフォアグラウンド動作を設計する
+summary: ノードの位置情報コマンド（location.get）、権限モード、Android のフォアグラウンド動作
 title: 位置情報コマンド
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T05:06:18Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: fcd7ae3bf411be4331d62494a5d5263e8cda345475c5f849913122c029377f06
-  source_path: nodes/location-command.md
-  workflow: 15
+    generated_at: "2026-05-06T05:11:37Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 63ed754bfdda1cf379dcb7ac40817c0b93cc1efe4526512d70258072da4bc8a7
+    source_path: nodes/location-command.md
+    workflow: 16
 ---
 
-## TL;DR
+## 要約
 
-- `location.get` は Node コマンドです（`node.invoke` 経由）。
+- `location.get` はノードコマンドです（`node.invoke` 経由）。
 - デフォルトではオフです。
-- Android アプリ設定ではセレクターを使います: Off / While Using。
-- 別トグル: Precise Location。
+- Android アプリ設定ではセレクターを使います: オフ / 使用中のみ。
+- 別のトグル: 正確な位置情報。
 
-## なぜスイッチではなくセレクターなのか
+## セレクターを使う理由（単なるスイッチではない理由）
 
-OS 権限は複数レベルあります。アプリ内ではセレクターを公開できますが、実際の許可は引き続き OS が決定します。
+OS の権限は複数レベルです。アプリ内でセレクターを表示できますが、実際の許可は引き続き OS が決定します。
 
-- iOS/macOS では、システムプロンプト/設定で **While Using** または **Always** が表示されることがあります。
-- Android アプリは現在フォアグラウンド位置情報のみをサポートします。
-- Precise location は別個の許可です（iOS 14+ の「Precise」、Android の「fine」vs「coarse」）。
+- iOS/macOS では、システムプロンプト/設定に **使用中のみ** または **常に許可** が表示される場合があります。
+- Android アプリは現在、フォアグラウンドの位置情報のみをサポートしています。
+- 正確な位置情報は別の許可です（iOS 14+ の「正確」、Android の「fine」と「coarse」）。
 
-UI 上のセレクターは、こちらが要求するモードを決めます。実際の許可は OS 設定側にあります。
+UI のセレクターは要求モードを制御します。実際の許可は OS 設定にあります。
 
 ## 設定モデル
 
-Node デバイスごと:
+ノードデバイスごと:
 
 - `location.enabledMode`: `off | whileUsing`
 - `location.preciseEnabled`: bool
 
-UI 動作:
+UI の動作:
 
-- `whileUsing` を選ぶと、フォアグラウンド権限を要求します。
-- OS が要求レベルを拒否した場合、実際に付与された最高レベルに戻し、状態を表示します。
+- `whileUsing` を選択すると、フォアグラウンド権限を要求します。
+- OS が要求レベルを拒否した場合は、許可済みの最上位レベルに戻し、ステータスを表示します。
 
 ## 権限マッピング（node.permissions）
 
-任意です。macOS Node は permissions map 経由で `location` を報告します。iOS/Android は省略する場合があります。
+任意です。macOS ノードは権限マップ経由で `location` を報告します。iOS/Android では省略される場合があります。
 
 ## コマンド: `location.get`
 
 `node.invoke` 経由で呼び出します。
 
-パラメータ（推奨）:
+パラメーター（推奨）:
 
 ```json
 {
@@ -81,30 +80,30 @@ UI 動作:
 
 - `LOCATION_DISABLED`: セレクターがオフです。
 - `LOCATION_PERMISSION_REQUIRED`: 要求モードに必要な権限がありません。
-- `LOCATION_BACKGROUND_UNAVAILABLE`: アプリがバックグラウンドにありますが、While Using のみ許可されています。
-- `LOCATION_TIMEOUT`: 時間内に位置が取得できませんでした。
-- `LOCATION_UNAVAILABLE`: システム障害 / 利用可能なプロバイダーなし。
+- `LOCATION_BACKGROUND_UNAVAILABLE`: アプリがバックグラウンドにありますが、使用中のみが許可されています。
+- `LOCATION_TIMEOUT`: 時間内に位置を取得できませんでした。
+- `LOCATION_UNAVAILABLE`: システム障害 / プロバイダーがありません。
 
 ## バックグラウンド動作
 
-- Android アプリは、バックグラウンド時に `location.get` を拒否します。
-- Android で位置情報を要求するときは OpenClaw を開いたままにしてください。
-- 他の Node プラットフォームでは異なる場合があります。
+- Android アプリは、バックグラウンド中の `location.get` を拒否します。
+- Android で位置情報を要求するときは、OpenClaw を開いたままにしてください。
+- 他のノードプラットフォームでは異なる場合があります。
 
 ## モデル/ツール統合
 
-- ツールサーフェス: `nodes` ツールに `location_get` アクションを追加します（Node 必須）。
+- ツールサーフェス: `nodes` ツールは `location_get` アクションを追加します（ノードが必須）。
 - CLI: `openclaw nodes location get --node <id>`。
-- エージェントガイドライン: ユーザーが位置情報を有効にし、スコープを理解している場合にのみ呼び出します。
+- エージェントガイドライン: ユーザーが位置情報を有効にしており、そのスコープを理解している場合にのみ呼び出します。
 
-## UX 文言（推奨）
+## UX コピー（推奨）
 
-- Off: 「位置情報共有は無効です。」
-- While Using: 「OpenClaw を開いているときのみ。」
-- Precise: 「正確な GPS 位置情報を使用します。おおよその位置情報を共有するにはオフにしてください。」
+- オフ: 「位置情報共有は無効です。」
+- 使用中のみ: 「OpenClaw が開いているときのみ。」
+- 正確: 「正確な GPS 位置情報を使用します。おおよその位置情報を共有するにはトグルをオフにします。」
 
 ## 関連
 
-- [チャンネル位置情報解析](/ja-JP/channels/location)
+- [チャンネル位置情報の解析](/ja-JP/channels/location)
 - [カメラキャプチャ](/ja-JP/nodes/camera)
-- [Talk mode](/ja-JP/nodes/talk)
+- [トークモード](/ja-JP/nodes/talk)

@@ -1,21 +1,21 @@
 ---
 read_when:
-    - 複数ファイルにまたがる構造化されたファイル編集が必要な場合
-    - パッチベースの編集をドキュメント化またはデバッグしたい場合
-summary: apply_patchツールで複数ファイルのパッチを適用する
-title: apply_patchツール
+    - 複数のファイルにわたる構造化されたファイル編集が必要です
+    - パッチベースの編集を文書化またはデバッグしたい場合
+summary: apply_patch ツールで複数ファイルにまたがるパッチを適用する
+title: apply_patch ツール
 x-i18n:
-    generated_at: "2026-04-24T05:22:49Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T05:19:26Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 9ed6d8282166de3cacf5be7f253498a230bceb2ad6c82a08846aed5bc613da53
+    source_hash: 9ff2f8e6ecd55ff1bdc553619ab3d590d0967efe7a9a90a31946ad15fd89a1dc
     source_path: tools/apply-patch.md
-    workflow: 15
+    workflow: 16
 ---
 
-構造化されたパッチ形式を使ってファイル変更を適用します。これは、単一の`edit`呼び出しでは壊れやすい、複数ファイルまたは複数hunkの編集に最適です。
+構造化されたパッチ形式を使用してファイル変更を適用します。これは、単一の `edit` 呼び出しでは壊れやすくなる複数ファイルまたは複数ハンクの編集に最適です。
 
-このツールは、1つ以上のファイル操作を包んだ単一の`input`文字列を受け付けます。
+このツールは、1 つ以上のファイル操作をラップする単一の `input` 文字列を受け取ります。
 
 ```
 *** Begin Patch
@@ -32,19 +32,19 @@ x-i18n:
 
 ## パラメーター
 
-- `input`（必須）: `*** Begin Patch`と`*** End Patch`を含む完全なパッチ内容。
+- `input`（必須）: `*** Begin Patch` と `*** End Patch` を含む完全なパッチ内容。
 
-## 注意
+## 注意事項
 
-- パッチパスは、相対パス（ワークスペースディレクトリ基準）と絶対パスをサポートします。
-- `tools.exec.applyPatch.workspaceOnly`のデフォルトは`true`です（ワークスペース内限定）。`apply_patch`でワークスペースディレクトリ外へ書き込み/削除したい意図がある場合にのみ、これを`false`へ設定してください。
-- ファイル名変更には、`*** Update File:` hunk内で`*** Move to:`を使用します。
-- 必要に応じて、EOFのみの挿入には`*** End of File`を使います。
-- デフォルトでOpenAIおよびOpenAI Codexモデルで利用可能です。
-  無効化するには`tools.exec.applyPatch.enabled: false`を設定してください。
-- モデルごとの制御も可能です:
-  `tools.exec.applyPatch.allowModels`。
-- 設定は`tools.exec`配下にのみあります。
+- パッチパスは相対パス（ワークスペースディレクトリから）と絶対パスに対応しています。
+- `tools.exec.applyPatch.workspaceOnly` のデフォルトは `true`（ワークスペース内に限定）です。意図的に `apply_patch` でワークスペースディレクトリ外へ書き込みまたは削除したい場合にのみ、`false` に設定してください。
+- ファイル名を変更するには、`*** Update File:` ハンク内で `*** Move to:` を使用します。
+- `*** End of File` は、必要な場合に EOF のみの挿入を示します。
+- OpenAI および OpenAI Codex モデルではデフォルトで利用できます。無効にするには、
+  `tools.exec.applyPatch.enabled: false` を設定します。
+- 必要に応じて、モデル別に
+  `tools.exec.applyPatch.allowModels` で制限できます。
+- 設定は `tools.exec` の下にのみあります。
 
 ## 例
 
@@ -57,6 +57,14 @@ x-i18n:
 
 ## 関連
 
-- [Diffs](/ja-JP/tools/diffs)
-- [Exec tool](/ja-JP/tools/exec)
-- [Code execution](/ja-JP/tools/code-execution)
+<CardGroup cols={2}>
+  <Card title="差分" href="/ja-JP/tools/diffs" icon="code-compare">
+    変更内容の表示用の読み取り専用差分ビューアー。
+  </Card>
+  <Card title="Exec ツール" href="/ja-JP/tools/exec" icon="terminal">
+    エージェントからのシェルコマンド実行。
+  </Card>
+  <Card title="コード実行" href="/ja-JP/tools/code-execution" icon="square-code">
+    xAI によるサンドボックス化されたリモート Python 解析。
+  </Card>
+</CardGroup>

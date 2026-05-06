@@ -1,57 +1,54 @@
 ---
 read_when:
-    - ネットワークアーキテクチャ + セキュリティ概要が必要です
-    - local と tailnet アクセス、またはペアリングをデバッグしています
-    - ネットワーキング関連ドキュメントの正規一覧が必要です
-summary: 'ネットワークハブ: Gateway サーフェス、ペアリング、検出、セキュリティ'
+    - ネットワークアーキテクチャとセキュリティ概要が必要です
+    - ローカルアクセスと tailnet アクセス、またはペアリングをデバッグしている場合
+    - ネットワーク関連ドキュメントの正式な一覧が必要な場合
+summary: 'ネットワークハブ: Gateway のサーフェス、ペアリング、検出、セキュリティ'
 title: ネットワーク
 x-i18n:
-    generated_at: "2026-04-24T05:06:08Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T05:11:34Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 663f372555f044146a5d381566371e9a38185e7f295243bfd61314f12e3a4f06
+    source_hash: 7b0ff6c4ee46005aeac1612ea40f1ce3d5824aa507d0842788dbf4bffbaccfcc
     source_path: network.md
-    workflow: 15
+    workflow: 16
 ---
 
-# ネットワークハブ
+このハブは、OpenClaw が localhost、LAN、tailnet 全体でデバイスを接続、ペアリング、保護する方法についての中核ドキュメントへのリンク集です。
 
-このハブは、OpenClaw が localhost、LAN、tailnet をまたいで
-デバイスをどのように接続し、ペアリングし、保護するかに関する中核ドキュメントへリンクします。
+## 中核モデル
 
-## コアモデル
+ほとんどの操作は Gateway (`openclaw gateway`) を通じて流れます。これはチャネル接続と WebSocket 制御プレーンを所有する、単一の長時間実行プロセスです。
 
-ほとんどの操作は Gateway（`openclaw gateway`）を経由します。これは、チャンネル接続と WebSocket control plane を所有する単一の長時間稼働プロセスです。
+- **まずループバック**: Gateway WS のデフォルトは `ws://127.0.0.1:18789` です。
+  非ループバックのバインドには、有効な gateway 認証パスが必要です。共有シークレットの
+  トークン/パスワード認証、または正しく構成された非ループバックの
+  `trusted-proxy` デプロイです。
+- **ホストごとに 1 つの Gateway** を推奨します。分離する場合は、分離されたプロファイルとポートで複数の gateway を実行してください（[複数の Gateway](/ja-JP/gateway/multiple-gateways)）。
+- **Canvas ホスト** は Gateway と同じポートで提供されます（`/__openclaw__/canvas/`、`/__openclaw__/a2ui/`）。ループバックを超えてバインドされる場合は Gateway 認証で保護されます。
+- **リモートアクセス** は通常、SSH トンネルまたは Tailscale VPN です（[リモートアクセス](/ja-JP/gateway/remote)）。
 
-- **Loopback first**: Gateway WS のデフォルトは `ws://127.0.0.1:18789` です。
-  non-loopback bind には有効な Gateway 認証経路が必要です。共有シークレットの
-  token/password 認証、または正しく設定された non-loopback
-  `trusted-proxy` デプロイのいずれかです。
-- **ホストごとに 1 Gateway** を推奨します。分離が必要な場合は、分離されたプロファイルとポートで複数の Gateway を実行してください（[Multiple Gateways](/ja-JP/gateway/multiple-gateways)）。
-- **Canvas host** は Gateway と同じポート（`/__openclaw__/canvas/`, `/__openclaw__/a2ui/`）で提供され、loopback を超えて bind される場合は Gateway 認証で保護されます。
-- **リモートアクセス** は通常 SSH トンネルまたは Tailscale VPN です（[Remote Access](/ja-JP/gateway/remote)）。
-
-主要な参照先:
+主な参照先:
 
 - [Gateway アーキテクチャ](/ja-JP/concepts/architecture)
 - [Gateway プロトコル](/ja-JP/gateway/protocol)
-- [Gateway runbook](/ja-JP/gateway)
-- [Web サーフェス + bind モード](/ja-JP/web)
+- [Gateway ランブック](/ja-JP/gateway)
+- [Web サーフェス + バインドモード](/ja-JP/web)
 
-## ペアリング + ID
+## ペアリング + アイデンティティ
 
-- [ペアリング概要（DM + nodes）](/ja-JP/channels/pairing)
-- [Gateway 所有の node ペアリング](/ja-JP/gateway/pairing)
-- [Devices CLI（ペアリング + token ローテーション）](/ja-JP/cli/devices)
-- [Pairing CLI（DM 承認）](/ja-JP/cli/pairing)
+- [ペアリング概要（DM + ノード）](/ja-JP/channels/pairing)
+- [Gateway 所有のノードペアリング](/ja-JP/gateway/pairing)
+- [デバイス CLI（ペアリング + トークンローテーション）](/ja-JP/cli/devices)
+- [ペアリング CLI（DM 承認）](/ja-JP/cli/pairing)
 
 ローカル信頼:
 
-- 直接のローカル loopback 接続は、同一ホスト UX を滑らかに保つため、
+- 直接の local loopback 接続は、同一ホストでの UX を滑らかに保つため、
   ペアリングを自動承認できます。
-- OpenClaw には、信頼済み共有シークレット helper フロー向けの狭い backend/container-local self-connect パスもあります。
-- same-host tailnet bind を含む tailnet と LAN クライアントには、引き続き
-  明示的なペアリング承認が必要です。
+- OpenClaw には、信頼された共有シークレットのヘルパーフロー向けに、狭い backend/container-local の自己接続パスもあります。
+- 同一ホストの tailnet バインドを含む tailnet および LAN クライアントには、
+  それでも明示的なペアリング承認が必要です。
 
 ## 検出 + トランスポート
 
@@ -60,21 +57,21 @@ x-i18n:
 - [リモートアクセス（SSH）](/ja-JP/gateway/remote)
 - [Tailscale](/ja-JP/gateway/tailscale)
 
-## Nodes + トランスポート
+## ノード + トランスポート
 
-- [Nodes 概要](/ja-JP/nodes)
-- [Bridge protocol（レガシー nodes、歴史的）](/ja-JP/gateway/bridge-protocol)
-- [Node runbook: iOS](/ja-JP/platforms/ios)
-- [Node runbook: Android](/ja-JP/platforms/android)
+- [ノード概要](/ja-JP/nodes)
+- [Bridge プロトコル（レガシーノード、履歴）](/ja-JP/gateway/bridge-protocol)
+- [ノードランブック: iOS](/ja-JP/platforms/ios)
+- [ノードランブック: Android](/ja-JP/platforms/android)
 
 ## セキュリティ
 
 - [セキュリティ概要](/ja-JP/gateway/security)
-- [Gateway config リファレンス](/ja-JP/gateway/configuration)
+- [Gateway 構成リファレンス](/ja-JP/gateway/configuration)
 - [トラブルシューティング](/ja-JP/gateway/troubleshooting)
 - [Doctor](/ja-JP/gateway/doctor)
 
 ## 関連
 
-- [Gateway ネットワークモデル](/ja-JP/gateway/network-model)
+- [Gateway ランブック](/ja-JP/gateway)
 - [リモートアクセス](/ja-JP/gateway/remote)

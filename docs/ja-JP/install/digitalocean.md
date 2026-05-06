@@ -1,42 +1,47 @@
 ---
 read_when:
-    - DigitalOcean上でOpenClawをセットアップする შემთხვევაში
-    - OpenClaw向けのシンプルな有料VPSを探している場合
-summary: DigitalOcean Droplet上でOpenClawをホストする
+    - DigitalOcean で OpenClaw をセットアップする
+    - OpenClaw 向けのシンプルな有料 VPS を探す
+summary: DigitalOcean Droplet で OpenClaw をホストする
 title: DigitalOcean
 x-i18n:
-    generated_at: "2026-04-24T05:03:28Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T05:09:39Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 0b3d06a38e257f4a8ab88d1f228c659a6cf1a276fe91c8ba7b89a0084658a314
+    source_hash: 7aa09915d845c9ede27db794cac464490ba038e8e5e0a2ef0f5bfc62ef7e59ff
     source_path: install/digitalocean.md
-    workflow: 15
+    workflow: 16
 ---
 
-DigitalOcean Droplet上で永続的なOpenClaw Gatewayを実行します。
+DigitalOcean Droplet（1 GB Basic プランで約 $6/月）で永続的な OpenClaw Gateway を実行します。
+
+DigitalOcean は最もシンプルな有料 VPS ルートです。より安い、または無料の選択肢を好む場合:
+
+- [Hetzner](/ja-JP/install/hetzner) — €3.79/月、1ドルあたりのコア数/RAM が多い。
+- [Oracle Cloud](/ja-JP/install/oracle) — Always Free ARM（最大 4 OCPU、24 GB RAM）ですが、サインアップが不安定な場合があり、ARM 専用です。
 
 ## 前提条件
 
-- DigitalOceanアカウント（[signup](https://cloud.digitalocean.com/registrations/new)）
-- SSH鍵ペア（またはパスワード認証を使う意思）
-- 約20分
+- DigitalOcean アカウント（[登録](https://cloud.digitalocean.com/registrations/new)）
+- SSH キーペア（またはパスワード認証を使う意思）
+- 約 20 分
 
 ## セットアップ
 
 <Steps>
-  <Step title="Dropletを作成する">
+  <Step title="Droplet を作成する">
     <Warning>
-    クリーンなベースイメージ（Ubuntu 24.04 LTS）を使用してください。起動スクリプトとファイアウォールのデフォルトを確認していない限り、サードパーティのMarketplace 1-clickイメージは避けてください。
+    クリーンなベースイメージ（Ubuntu 24.04 LTS）を使用してください。起動スクリプトとファイアウォールのデフォルトを確認していない限り、サードパーティの Marketplace 1-click イメージは避けてください。
     </Warning>
 
-    1. [DigitalOcean](https://cloud.digitalocean.com/)にログインします。
-    2. **Create > Droplets**をクリックします。
+    1. [DigitalOcean](https://cloud.digitalocean.com/) にログインします。
+    2. **Create > Droplets** をクリックします。
     3. 次を選択します:
-       - **Region:** 自分に最も近いリージョン
-       - **Image:** Ubuntu 24.04 LTS
-       - **Size:** Basic、Regular、1 vCPU / 1 GB RAM / 25 GB SSD
-       - **Authentication:** SSH key（推奨）またはpassword
-    4. **Create Droplet**をクリックし、IPアドレスを控えます。
+       - **リージョン:** 自分に最も近い場所
+       - **イメージ:** Ubuntu 24.04 LTS
+       - **サイズ:** Basic、Regular、1 vCPU / 1 GB RAM / 25 GB SSD
+       - **認証:** SSH キー（推奨）またはパスワード
+    4. **Create Droplet** をクリックし、IP アドレスを控えます。
 
   </Step>
 
@@ -46,11 +51,11 @@ DigitalOcean Droplet上で永続的なOpenClaw Gatewayを実行します。
 
     apt update && apt upgrade -y
 
-    # Node.js 24をインストール
+    # Install Node.js 24
     curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
     apt install -y nodejs
 
-    # OpenClawをインストール
+    # Install OpenClaw
     curl -fsSL https://openclaw.ai/install.sh | bash
     openclaw --version
     ```
@@ -62,11 +67,11 @@ DigitalOcean Droplet上で永続的なOpenClaw Gatewayを実行します。
     openclaw onboard --install-daemon
     ```
 
-    このウィザードでは、モデル認証、チャネル設定、gatewayトークン生成、およびdaemonインストール（systemd）を案内します。
+    ウィザードが、モデル認証、チャネル設定、Gateway トークン生成、デーモンインストール（systemd）を順に案内します。
 
   </Step>
 
-  <Step title="swapを追加する（1 GB Dropletでは推奨）">
+  <Step title="swap を追加する（1 GB Droplet では推奨）">
     ```bash
     fallocate -l 2G /swapfile
     chmod 600 /swapfile
@@ -76,7 +81,7 @@ DigitalOcean Droplet上で永続的なOpenClaw Gatewayを実行します。
     ```
   </Step>
 
-  <Step title="gatewayを確認する">
+  <Step title="Gateway を確認する">
     ```bash
     openclaw status
     systemctl --user status openclaw-gateway.service
@@ -84,19 +89,19 @@ DigitalOcean Droplet上で永続的なOpenClaw Gatewayを実行します。
     ```
   </Step>
 
-  <Step title="Control UIにアクセスする">
-    gatewayはデフォルトでloopbackにbindします。次のいずれかのオプションを選んでください。
+  <Step title="コントロール UI にアクセスする">
+    Gateway はデフォルトでループバックにバインドします。次のいずれかのオプションを選びます。
 
-    **オプションA: SSHトンネル（最も簡単）**
+    **オプション A: SSH トンネル（最もシンプル）**
 
     ```bash
-    # ローカルマシンから
+    # From your local machine
     ssh -L 18789:localhost:18789 root@YOUR_DROPLET_IP
     ```
 
-    その後、`http://localhost:18789`を開きます。
+    その後、`http://localhost:18789` を開きます。
 
-    **オプションB: Tailscale Serve**
+    **オプション B: Tailscale Serve**
 
     ```bash
     curl -fsSL https://tailscale.com/install.sh | sh
@@ -105,37 +110,63 @@ DigitalOcean Droplet上で永続的なOpenClaw Gatewayを実行します。
     openclaw gateway restart
     ```
 
-    その後、tailnet上の任意のデバイスから`https://<magicdns>/`を開きます。
+    その後、tailnet 上の任意のデバイスから `https://<magicdns>/` を開きます。
 
-    **オプションC: Tailnet bind（Serveなし）**
+    Tailscale Serve は tailnet ID ヘッダーを通じてコントロール UI と WebSocket トラフィックを認証します。これは Gateway ホスト自体が信頼されていることを前提にします。HTTP API エンドポイントは、それにかかわらず Gateway の通常の認証モード（トークン/パスワード）に従います。Serve 経由で明示的な共有シークレット認証情報を要求するには、`gateway.auth.allowTailscale: false` を設定し、`gateway.auth.mode: "token"` または `"password"` を使用します。
+
+    **オプション C: Tailnet バインド（Serve なし）**
 
     ```bash
     openclaw config set gateway.bind tailnet
     openclaw gateway restart
     ```
 
-    その後、`http://<tailscale-ip>:18789`を開きます（トークンが必要です）。
+    その後、`http://<tailscale-ip>:18789` を開きます（トークンが必要）。
 
   </Step>
 </Steps>
 
+## 永続化とバックアップ
+
+OpenClaw の状態は次の場所にあります:
+
+- `~/.openclaw/` — `openclaw.json`、エージェントごとの `auth-profiles.json`、チャネル/プロバイダーの状態、セッションデータ。
+- `~/.openclaw/workspace/` — エージェントのワークスペース（SOUL.md、メモリ、アーティファクト）。
+
+これらは Droplet の再起動後も保持されます。ポータブルなスナップショットを取得するには:
+
+```bash
+openclaw backup create
+```
+
+DigitalOcean スナップショットは Droplet 全体をバックアップします。`openclaw backup create` はホストをまたいで移植できます。
+
+## 1 GB RAM のヒント
+
+$6 の Droplet には 1 GB RAM しかありません。スムーズに保つには:
+
+- 上記の swap 手順が `/etc/fstab` に入っていることを確認し、再起動後も維持されるようにします。
+- ローカルモデルより API ベースのモデル（Claude、GPT）を優先します — ローカル LLM 推論は 1 GB には収まりません。
+- 大きなプロンプトで OOM が発生する場合は、`agents.defaults.model.primary` をより小さいモデルに設定します。
+- `free -h` と `htop` で監視します。
+
 ## トラブルシューティング
 
-**gatewayが起動しない** -- `openclaw doctor --non-interactive`を実行し、`journalctl --user -u openclaw-gateway.service -n 50`でログを確認してください。
+**Gateway が起動しない** -- `openclaw doctor --non-interactive` を実行し、`journalctl --user -u openclaw-gateway.service -n 50` でログを確認します。
 
-**ポートがすでに使用中** -- `lsof -i :18789`を実行してプロセスを特定し、それを停止してください。
+**ポートがすでに使用中** -- `lsof -i :18789` を実行してプロセスを見つけ、その後停止します。
 
-**メモリ不足** -- `free -h`でswapが有効か確認してください。それでもOOMが発生する場合は、ローカルモデルではなくAPIベースのモデル（Claude、GPT）を使用するか、2 GB Dropletへアップグレードしてください。
+**メモリ不足** -- `free -h` で swap が有効であることを確認します。それでも OOM が発生する場合は、ローカルモデルではなく API ベースのモデル（Claude、GPT）を使用するか、2 GB Droplet にアップグレードします。
 
 ## 次のステップ
 
-- [Channels](/ja-JP/channels) -- Telegram、WhatsApp、Discordなどを接続する
-- [Gateway configuration](/ja-JP/gateway/configuration) -- すべての設定オプション
-- [Updating](/ja-JP/install/updating) -- OpenClawを最新の状態に保つ
+- [チャネル](/ja-JP/channels) -- Telegram、WhatsApp、Discord などを接続する
+- [Gateway 設定](/ja-JP/gateway/configuration) -- すべての設定オプション
+- [更新](/ja-JP/install/updating) -- OpenClaw を最新の状態に保つ
 
 ## 関連
 
-- [Install overview](/ja-JP/install)
+- [インストール概要](/ja-JP/install)
 - [Fly.io](/ja-JP/install/fly)
 - [Hetzner](/ja-JP/install/hetzner)
-- [VPS hosting](/ja-JP/vps)
+- [VPS ホスティング](/ja-JP/vps)
