@@ -59,6 +59,13 @@ if (!/Português \(BR\)/.test(index)) {
 if (/src="\/assets\//.test(index) || /href="\/assets\//.test(index)) {
   throw new Error("index: absolute asset paths were not base-path rewritten");
 }
+const siteJs = fs.readFileSync(path.join(site, "assets/docs-site.js"), "utf8");
+if (!/function syncSidebar/.test(siteJs) || !/async function navigateTo/.test(siteJs)) {
+  throw new Error("assets: docs PJAX navigation is missing");
+}
+if (/data-locale/.test(siteJs)) {
+  throw new Error("assets: stale native language select handler is still present");
+}
 const platformsIndex = fs.readFileSync(path.join(site, "platforms/index.html"), "utf8");
 if (/VPS &amp;amp; hosting/.test(platformsIndex)) {
   throw new Error("platforms index: TOC double-escaped ampersand");
