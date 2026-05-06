@@ -1,43 +1,43 @@
 ---
 read_when:
     - Ajan kancalarını yönetmek istiyorsunuz
-    - Hook kullanılabilirliğini incelemek veya çalışma alanı hook'larını etkinleştirmek istiyorsunuz
+    - Kanca kullanılabilirliğini incelemek veya çalışma alanı kancalarını etkinleştirmek istiyorsunuz
 summary: '`openclaw hooks` için CLI referansı (ajan kancaları)'
 title: Kancalar
 x-i18n:
-    generated_at: "2026-05-05T08:25:31Z"
+    generated_at: "2026-05-06T17:53:22Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8e860d4a20a09526e804fa1aff8c983a75396fcd1e6e24f742252fdf1812f6b7
+    source_hash: 56dd1ef82458dde3280e2cdfb4f3835211726517416e90625d3272d128eb9e0e
     source_path: cli/hooks.md
     workflow: 16
 ---
 
 # `openclaw hooks`
 
-Ajan kancalarını yönetin (`/new`, `/reset` ve Gateway başlatma gibi komutlar için olay güdümlü otomasyonlar).
+Ajan kancalarını yönetin (`/new`, `/reset` ve Gateway başlangıcı gibi komutlar için olay güdümlü otomasyonlar).
 
-Alt komut olmadan `openclaw hooks` çalıştırmak, `openclaw hooks list` ile eşdeğerdir.
+`openclaw hooks` komutunu alt komut olmadan çalıştırmak, `openclaw hooks list` ile eşdeğerdir.
 
 İlgili:
 
 - Kancalar: [Kancalar](/tr/automation/hooks)
 - Plugin kancaları: [Plugin kancaları](/tr/plugins/hooks)
 
-## Tüm kancaları listele
+## Tüm kancaları listeleme
 
 ```bash
 openclaw hooks list
 ```
 
-Çalışma alanı, yönetilen, ek ve birlikte gelen dizinlerden keşfedilen tüm kancaları listeleyin.
-Gateway başlatma, en az bir dahili kanca yapılandırılana kadar dahili kanca işleyicilerini yüklemez.
+Çalışma alanı, yönetilen, ek ve paketle gelen dizinlerden keşfedilen tüm kancaları listeler.
+Gateway başlangıcı, en az bir dahili kanca yapılandırılana kadar dahili kanca işleyicilerini yüklemez.
 
 **Seçenekler:**
 
-- `--eligible`: Yalnızca uygun kancaları göster (gereksinimler karşılandı)
-- `--json`: JSON olarak çıktı ver
-- `-v, --verbose`: Eksik gereksinimler dahil ayrıntılı bilgileri göster
+- `--eligible`: Yalnızca uygun kancaları gösterir (gereksinimler karşılanmış)
+- `--json`: JSON olarak çıktı verir
+- `-v, --verbose`: Eksik gereksinimler dahil ayrıntılı bilgileri gösterir
 
 **Örnek çıktı:**
 
@@ -65,15 +65,15 @@ Uygun olmayan kancalar için eksik gereksinimleri gösterir.
 openclaw hooks list --json
 ```
 
-Programatik kullanım için yapılandırılmış JSON döndürür.
+Programlı kullanım için yapılandırılmış JSON döndürür.
 
-## Kanca bilgilerini al
+## Kanca bilgilerini alma
 
 ```bash
 openclaw hooks info <name>
 ```
 
-Belirli bir kanca hakkında ayrıntılı bilgi gösterin.
+Belirli bir kanca hakkında ayrıntılı bilgi gösterir.
 
 **Argümanlar:**
 
@@ -81,7 +81,7 @@ Belirli bir kanca hakkında ayrıntılı bilgi gösterin.
 
 **Seçenekler:**
 
-- `--json`: JSON olarak çıktı ver
+- `--json`: JSON olarak çıktı verir
 
 **Örnek:**
 
@@ -107,17 +107,17 @@ Requirements:
   Config: ✓ workspace.dir
 ```
 
-## Kanca uygunluğunu denetle
+## Kancaların uygunluğunu denetleme
 
 ```bash
 openclaw hooks check
 ```
 
-Kanca uygunluk durumunun özetini gösterin (kaçının hazır, kaçının hazır olmadığı).
+Kanca uygunluk durumunun özetini gösterir (kaç tanesi hazır, kaç tanesi hazır değil).
 
 **Seçenekler:**
 
-- `--json`: JSON olarak çıktı ver
+- `--json`: JSON olarak çıktı verir
 
 **Örnek çıktı:**
 
@@ -129,15 +129,15 @@ Ready: 4
 Not ready: 0
 ```
 
-## Bir kancayı etkinleştir
+## Bir kancayı etkinleştirme
 
 ```bash
 openclaw hooks enable <name>
 ```
 
-Belirli bir kancayı config dosyanıza ekleyerek etkinleştirin (varsayılan olarak `~/.openclaw/openclaw.json`).
+Yapılandırmanıza ekleyerek belirli bir kancayı etkinleştirir (varsayılan olarak `~/.openclaw/openclaw.json`).
 
-**Not:** Çalışma alanı kancaları, burada veya config içinde etkinleştirilene kadar varsayılan olarak devre dışıdır. Plugin'ler tarafından yönetilen kancalar `openclaw hooks list` içinde `plugin:<id>` gösterir ve burada etkinleştirilemez/devre dışı bırakılamaz. Bunun yerine Plugin'i etkinleştirin/devre dışı bırakın.
+**Not:** Çalışma alanı kancaları, burada veya yapılandırmada etkinleştirilene kadar varsayılan olarak devre dışıdır. Plugin tarafından yönetilen kancalar `openclaw hooks list` içinde `plugin:<id>` gösterir ve buradan etkinleştirilemez/devre dışı bırakılamaz. Bunun yerine Plugin'i etkinleştirin/devre dışı bırakın.
 
 **Argümanlar:**
 
@@ -158,23 +158,23 @@ openclaw hooks enable session-memory
 **Ne yapar:**
 
 - Kancanın var olup olmadığını ve uygun olup olmadığını denetler
-- Config dosyanızda `hooks.internal.entries.<name>.enabled = true` değerini günceller
-- Config dosyasını diske kaydeder
+- Yapılandırmanızda `hooks.internal.entries.<name>.enabled = true` değerini günceller
+- Yapılandırmayı diske kaydeder
 
-Kanca `<workspace>/hooks/` kaynağından geldiyse, Gateway bunu yüklemeden önce
-bu katılım adımı gereklidir.
+Kanca `<workspace>/hooks/` içinden geldiyse, Gateway'in bunu yüklemesinden önce
+bu katılım adımı gerekir.
 
 **Etkinleştirdikten sonra:**
 
-- Kancaların yeniden yüklenmesi için Gateway'i yeniden başlatın (macOS'ta menü çubuğu uygulamasını yeniden başlatın veya geliştirme ortamında Gateway sürecinizi yeniden başlatın).
+- Kancaların yeniden yüklenmesi için gateway'i yeniden başlatın (macOS'ta menü çubuğu uygulamasını yeniden başlatın veya geliştirmede gateway sürecinizi yeniden başlatın).
 
-## Bir kancayı devre dışı bırak
+## Bir kancayı devre dışı bırakma
 
 ```bash
 openclaw hooks disable <name>
 ```
 
-Config dosyanızı güncelleyerek belirli bir kancayı devre dışı bırakın.
+Yapılandırmanızı güncelleyerek belirli bir kancayı devre dışı bırakır.
 
 **Argümanlar:**
 
@@ -194,14 +194,14 @@ openclaw hooks disable command-logger
 
 **Devre dışı bıraktıktan sonra:**
 
-- Kancaların yeniden yüklenmesi için Gateway'i yeniden başlatın
+- Kancaların yeniden yüklenmesi için gateway'i yeniden başlatın
 
 ## Notlar
 
 - `openclaw hooks list --json`, `info --json` ve `check --json`, yapılandırılmış JSON'u doğrudan stdout'a yazar.
 - Plugin tarafından yönetilen kancalar burada etkinleştirilemez veya devre dışı bırakılamaz; bunun yerine sahibi olan Plugin'i etkinleştirin veya devre dışı bırakın.
 
-## Kanca paketlerini yükle
+## Kanca paketlerini yükleme
 
 ```bash
 openclaw plugins install <package>        # npm by default
@@ -210,29 +210,30 @@ openclaw plugins install <package> --pin  # pin version
 openclaw plugins install <path>           # local path
 ```
 
-Birleşik plugins yükleyicisi üzerinden kanca paketleri yükleyin.
+Kanca paketlerini birleşik plugins yükleyicisi üzerinden yükleyin.
 
 `openclaw hooks install` uyumluluk takma adı olarak çalışmaya devam eder, ancak bir
-kullanımdan kaldırma uyarısı yazdırır ve `openclaw plugins install` komutuna iletir.
+kullanımdan kaldırma uyarısı yazdırır ve `openclaw plugins install` komutuna yönlendirir.
 
-Npm belirtimleri **yalnızca registry** içindir (paket adı + isteğe bağlı **tam sürüm** veya
-**dist-tag**). Git/URL/dosya belirtimleri ve semver aralıkları reddedilir. Bağımlılık
-yüklemeleri, kabuğunuzda global npm yükleme ayarları olsa bile güvenlik için `--ignore-scripts` ile proje yerelinde çalışır.
+Npm tanımları **yalnızca registry** kapsamındadır (paket adı + isteğe bağlı **tam sürüm** veya
+**dist-tag**). Git/URL/file tanımları ve semver aralıkları reddedilir. Bağımlılık
+yüklemeleri, kabuğunuzda global npm yükleme ayarları olsa bile güvenlik için
+`--ignore-scripts` ile proje yerelinde çalışır.
 
-Yalın belirtimler ve `@latest` kararlı kanalda kalır. npm bunlardan birini
-ön sürüme çözümlerse OpenClaw durur ve `@beta`/`@rc` gibi bir ön sürüm etiketi
-veya tam bir ön sürümle açıkça katılmanızı ister.
+Çıplak tanımlar ve `@latest` kararlı kanalda kalır. npm bunlardan herhangi birini
+ön sürüme çözümlerse OpenClaw durur ve `@beta`/`@rc` gibi bir ön sürüm etiketiyle
+veya tam bir ön sürüm numarasıyla açıkça katılmanızı ister.
 
 **Ne yapar:**
 
 - Kanca paketini `~/.openclaw/hooks/<id>` içine kopyalar
-- Yüklenen kancaları `hooks.internal.entries.*` içinde etkinleştirir
+- Yüklü kancaları `hooks.internal.entries.*` içinde etkinleştirir
 - Yüklemeyi `hooks.internal.installs` altında kaydeder
 
 **Seçenekler:**
 
-- `-l, --link`: Kopyalamak yerine yerel bir dizini bağla (`hooks.internal.load.extraDirs` içine ekler)
-- `--pin`: npm yüklemelerini `hooks.internal.installs` içinde tam çözümlenmiş `name@version` olarak kaydet
+- `-l, --link`: Yerel bir dizini kopyalamak yerine bağlar (`hooks.internal.load.extraDirs` içine ekler)
+- `--pin`: npm yüklemelerini `hooks.internal.installs` içinde tam çözümlenmiş `name@version` olarak kaydeder
 
 **Desteklenen arşivler:** `.zip`, `.tgz`, `.tar.gz`, `.tar`
 
@@ -252,10 +253,10 @@ openclaw plugins install @openclaw/my-hook-pack
 openclaw plugins install -l ./my-hook-pack
 ```
 
-Bağlı kanca paketleri, çalışma alanı kancaları olarak değil, operatör tarafından yapılandırılmış
-bir dizinden gelen yönetilen kancalar olarak ele alınır.
+Bağlanan kanca paketleri, çalışma alanı kancaları olarak değil, operatör tarafından yapılandırılmış
+bir dizinden gelen yönetilen kancalar olarak değerlendirilir.
 
-## Kanca paketlerini güncelle
+## Kanca paketlerini güncelleme
 
 ```bash
 openclaw plugins update <id>
@@ -265,18 +266,18 @@ openclaw plugins update --all
 İzlenen npm tabanlı kanca paketlerini birleşik plugins güncelleyicisi üzerinden güncelleyin.
 
 `openclaw hooks update` uyumluluk takma adı olarak çalışmaya devam eder, ancak bir
-kullanımdan kaldırma uyarısı yazdırır ve `openclaw plugins update` komutuna iletir.
+kullanımdan kaldırma uyarısı yazdırır ve `openclaw plugins update` komutuna yönlendirir.
 
 **Seçenekler:**
 
-- `--all`: İzlenen tüm kanca paketlerini güncelle
-- `--dry-run`: Yazmadan neyin değişeceğini göster
+- `--all`: İzlenen tüm kanca paketlerini günceller
+- `--dry-run`: Yazmadan neyin değişeceğini gösterir
 
-Saklanan bir bütünlük hash'i varsa ve getirilen artifact hash'i değişirse,
+Saklanan bir bütünlük hash'i varsa ve getirilen yapıt hash'i değişirse,
 OpenClaw bir uyarı yazdırır ve devam etmeden önce onay ister. CI/etkileşimsiz çalıştırmalarda istemleri atlamak için
 global `--yes` kullanın.
 
-## Birlikte gelen kancalar
+## Paketle gelen kancalar
 
 ### session-memory
 
@@ -290,11 +291,11 @@ openclaw hooks enable session-memory
 
 **Çıktı:** Varsayılan olarak `~/.openclaw/workspace/memory/YYYY-MM-DD-HHMM.md`. Model tarafından oluşturulan dosya adı slug'ları için `hooks.internal.entries.session-memory.llmSlug: true` ayarlayın.
 
-**Bkz.:** [session-memory belgeleri](/tr/automation/hooks#session-memory)
+**Ayrıca bakın:** [session-memory belgeleri](/tr/automation/hooks#session-memory)
 
 ### bootstrap-extra-files
 
-`agent:bootstrap` sırasında ek bootstrap dosyaları (örneğin monorepo-yerel `AGENTS.md` / `TOOLS.md`) enjekte eder.
+`agent:bootstrap` sırasında ek bootstrap dosyaları (örneğin monorepo yerelinde `AGENTS.md` / `TOOLS.md`) enjekte eder.
 
 **Etkinleştir:**
 
@@ -302,7 +303,7 @@ openclaw hooks enable session-memory
 openclaw hooks enable bootstrap-extra-files
 ```
 
-**Bkz.:** [bootstrap-extra-files belgeleri](/tr/automation/hooks#bootstrap-extra-files)
+**Ayrıca bakın:** [bootstrap-extra-files belgeleri](/tr/automation/hooks#bootstrap-extra-files)
 
 ### command-logger
 
@@ -329,11 +330,11 @@ cat ~/.openclaw/logs/commands.log | jq .
 grep '"action":"new"' ~/.openclaw/logs/commands.log | jq .
 ```
 
-**Bkz.:** [command-logger belgeleri](/tr/automation/hooks#command-logger)
+**Ayrıca bakın:** [command-logger belgeleri](/tr/automation/hooks#command-logger)
 
 ### boot-md
 
-Gateway başladığında (`channels` başladıktan sonra) `BOOT.md` çalıştırır.
+Gateway başladığında (kanallar başladıktan sonra) `BOOT.md` çalıştırır.
 
 **Olaylar**: `gateway:startup`
 
@@ -343,7 +344,7 @@ Gateway başladığında (`channels` başladıktan sonra) `BOOT.md` çalıştır
 openclaw hooks enable boot-md
 ```
 
-**Bkz.:** [boot-md belgeleri](/tr/automation/hooks#boot-md)
+**Ayrıca bakın:** [boot-md belgeleri](/tr/automation/hooks#boot-md)
 
 ## İlgili
 

@@ -1,20 +1,18 @@
 ---
 read_when:
-    - agent-tools’a eski bağlantı
-summary: Building Plugins bölümüne yönlendirir (araç kaydetme bölümü)
-title: Araç kaydetme
+    - agent-tools için eski bağlantı
+summary: Plugin Oluşturma (araçları kaydetme bölümü) sayfasına yönlendirir
+title: Araçları kaydetme
 x-i18n:
-    generated_at: "2026-04-24T09:20:36Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T17:58:28Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: c84450ddc31f8f6a605bd553a1a9d7d295f5b575504a134b5c50a2c7d77e3e63
+    source_hash: e73137487a9394454dd037d449bc2a0896725cddc7d0f174eda41f5fdc451982
     source_path: plugins/agent-tools.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Plugin'lerde Araç Kaydetme
-
-Bu sayfa taşındı. Bkz. [Plugin Oluşturma: Aracı araçlarını kaydetme](/tr/plugins/building-plugins#registering-agent-tools).
+Bu sayfa taşındı. [Plugin Oluşturma: ajan araçlarını kaydetme](/tr/plugins/building-plugins#registering-agent-tools) bölümüne bakın.
 
 ## İlgili
 

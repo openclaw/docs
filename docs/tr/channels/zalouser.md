@@ -1,42 +1,44 @@
 ---
 read_when:
-    - OpenClaw için Zalo Personal kurulumu
+    - OpenClaw için Zalo Personal Kurulumu
     - Zalo Personal oturum açma veya mesaj akışında hata ayıklama
-summary: Yerel zca-js (QR ile oturum açma) üzerinden Zalo kişisel hesabı desteği, yetenekleri ve yapılandırması
-title: Zalo kişisel
+summary: Yerel zca-js aracılığıyla Zalo kişisel hesabı desteği (QR ile oturum açma), yetenekler ve yapılandırma
+title: Kişisel Zalo
 x-i18n:
-    generated_at: "2026-05-04T18:23:37Z"
+    generated_at: "2026-05-06T17:52:27Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 0f6d27f0ca502e6426abe21d609efd0a168a0b6b0fafe8d52d59f1a717da1ed5
+    source_hash: d56cbf0a6300709e9fe23421cd134acc68852d0025f305c73413308f412349e8
     source_path: channels/zalouser.md
     workflow: 16
 ---
 
-Status: deneysel. Bu entegrasyon, OpenClaw içinde yerel `zca-js` aracılığıyla bir **kişisel Zalo hesabını** otomatikleştirir.
+Durum: deneysel. Bu entegrasyon, OpenClaw içinde yerel `zca-js` aracılığıyla **kişisel Zalo hesabını** otomatikleştirir.
 
 <Warning>
 Bu resmi olmayan bir entegrasyondur ve hesabın askıya alınmasına veya yasaklanmasına neden olabilir. Kullanım riski size aittir.
 </Warning>
 
-## Birlikte gelen Plugin
+## Paketle gelen Plugin
 
-Zalo Personal, mevcut OpenClaw sürümlerinde birlikte gelen bir Plugin olarak sunulur, bu nedenle normal paketlenmiş derlemeler ayrı bir kurulum gerektirmez.
+Zalo Personal, güncel OpenClaw sürümlerinde paketle gelen bir Plugin olarak sunulur; bu nedenle normal
+paketlenmiş derlemeler ayrı bir kurulum gerektirmez.
 
-Daha eski bir derlemedeyseniz veya Zalo Personal'ı hariç tutan özel bir kurulum kullanıyorsanız, npm paketini doğrudan kurun:
+Daha eski bir derleme kullanıyorsanız veya Zalo Personal'ı hariç tutan özel bir kurulumunuz varsa,
+npm paketini doğrudan kurun:
 
 - CLI ile kurulum: `openclaw plugins install @openclaw/zalouser`
 - Sabitlenmiş sürüm: `openclaw plugins install @openclaw/zalouser@2026.5.2`
-- Veya kaynak checkout'tan: `openclaw plugins install ./path/to/local/zalouser-plugin`
+- Ya da kaynak checkout üzerinden: `openclaw plugins install ./path/to/local/zalouser-plugin`
 - Ayrıntılar: [Plugins](/tr/tools/plugin)
 
-Harici bir `zca`/`openzca` CLI ikili dosyası gerekmez.
+Harici `zca`/`openzca` CLI ikilisine gerek yoktur.
 
 ## Hızlı kurulum (başlangıç)
 
-1. Zalo Personal Plugin'inin kullanılabilir olduğundan emin olun.
-   - Mevcut paketlenmiş OpenClaw sürümleri bunu zaten birlikte sunar.
-   - Daha eski/özel kurulumlar, yukarıdaki komutlarla bunu elle ekleyebilir.
+1. Zalo Personal Plugin'in kullanılabilir olduğundan emin olun.
+   - Güncel paketlenmiş OpenClaw sürümleri bunu zaten içerir.
+   - Eski/özel kurulumlar, yukarıdaki komutlarla bunu elle ekleyebilir.
 2. Oturum açın (QR, Gateway makinesinde):
    - `openclaw channels login --channel zalouser`
    - QR kodunu Zalo mobil uygulamasıyla tarayın.
@@ -54,22 +56,22 @@ Harici bir `zca`/`openzca` CLI ikili dosyası gerekmez.
 ```
 
 4. Gateway'i yeniden başlatın (veya kurulumu tamamlayın).
-5. DM erişimi varsayılan olarak eşleştirmeye ayarlıdır; ilk iletişimde eşleştirme kodunu onaylayın.
+5. DM erişimi varsayılan olarak eşleştirme kullanır; ilk temasta eşleştirme kodunu onaylayın.
 
-## Nedir
+## Nedir?
 
-- Tamamen süreç içinde `zca-js` üzerinden çalışır.
+- Tamamen işlem içinde `zca-js` aracılığıyla çalışır.
 - Gelen mesajları almak için yerel olay dinleyicilerini kullanır.
 - Yanıtları doğrudan JS API üzerinden gönderir (metin/medya/bağlantı).
-- Zalo Bot API'nin kullanılamadığı “kişisel hesap” kullanım senaryoları için tasarlanmıştır.
+- Zalo Bot API'nin kullanılamadığı "kişisel hesap" kullanım durumları için tasarlanmıştır.
 
 ## Adlandırma
 
-Kanal kimliği, bunun bir **kişisel Zalo kullanıcı hesabını** otomatikleştirdiğini açıkça belirtmek için `zalouser` şeklindedir (resmi olmayan). `zalo` adını gelecekteki olası resmi bir Zalo API entegrasyonu için ayrılmış tutuyoruz.
+Kanal kimliği `zalouser` olarak belirlenmiştir; bu, bunun **kişisel Zalo kullanıcı hesabını** otomatikleştirdiğini açıkça gösterir (resmi değildir). `zalo` adını olası gelecekteki resmi Zalo API entegrasyonu için ayırıyoruz.
 
 ## Kimlikleri bulma (dizin)
 
-Eşleri/grupları ve kimliklerini keşfetmek için dizin CLI'ını kullanın:
+Eşleri/grupları ve kimliklerini keşfetmek için dizin CLI'sini kullanın:
 
 ```bash
 openclaw directory self --channel zalouser
@@ -80,15 +82,15 @@ openclaw directory groups list --channel zalouser --query "work"
 ## Sınırlar
 
 - Giden metin ~2000 karakterlik parçalara bölünür (Zalo istemci sınırları).
-- Streaming varsayılan olarak engellenir.
+- Akış varsayılan olarak engellenir.
 
-## Erişim denetimi (DM'ler)
+## Erişim kontrolü (DM'ler)
 
 `channels.zalouser.dmPolicy` şunları destekler: `pairing | allowlist | open | disabled` (varsayılan: `pairing`).
 
-`channels.zalouser.allowFrom` kararlı Zalo kullanıcı kimliklerini kullanmalıdır. Etkileşimli kurulum sırasında girilen adlar, Plugin'in süreç içi kişi araması kullanılarak kimliklere çözümlenebilir.
+`channels.zalouser.allowFrom` kararlı Zalo kullanıcı kimlikleri kullanmalıdır. Etkileşimli kurulum sırasında girilen adlar, Plugin'in işlem içi kişi araması kullanılarak kimliklere çözümlenebilir.
 
-Yapılandırmada ham bir ad kalırsa, başlangıç bunu yalnızca `channels.zalouser.dangerouslyAllowNameMatching: true` etkinleştirildiğinde çözümler. Bu açık onay olmadan, çalışma zamanı gönderici denetimleri yalnızca kimlik tabanlıdır ve ham adlar yetkilendirme için yok sayılır.
+Ham bir ad yapılandırmada kalırsa, başlangıç bunu yalnızca `channels.zalouser.dangerouslyAllowNameMatching: true` etkinleştirildiğinde çözümler. Bu tercih olmadan, çalışma zamanı gönderen denetimleri yalnızca kimliğe dayalıdır ve ham adlar yetkilendirme için yok sayılır.
 
 Şununla onaylayın:
 
@@ -97,18 +99,18 @@ Yapılandırmada ham bir ad kalırsa, başlangıç bunu yalnızca `channels.zalo
 
 ## Grup erişimi (isteğe bağlı)
 
-- Varsayılan: `channels.zalouser.groupPolicy = "open"` (gruplara izin verilir). Ayarlanmadığında varsayılanı geçersiz kılmak için `channels.defaults.groupPolicy` kullanın.
-- Bir izin listesiyle sınırlandırın:
+- Varsayılan: `channels.zalouser.groupPolicy = "open"` (gruplara izin verilir). Ayarlanmamış olduğunda varsayılanı geçersiz kılmak için `channels.defaults.groupPolicy` kullanın.
+- Şunlarla bir izin listesiyle sınırlayın:
   - `channels.zalouser.groupPolicy = "allowlist"`
-  - `channels.zalouser.groups` (anahtarlar kararlı grup kimlikleri olmalıdır; adlar yalnızca `channels.zalouser.dangerouslyAllowNameMatching: true` etkinleştirildiğinde başlangıçta kimliklere çözümlenir)
-  - `channels.zalouser.groupAllowFrom` (izin verilen gruplarda hangi göndericilerin botu tetikleyebileceğini denetler)
+  - `channels.zalouser.groups` (anahtarlar kararlı grup kimlikleri olmalıdır; adlar başlangıçta yalnızca `channels.zalouser.dangerouslyAllowNameMatching: true` etkinleştirildiğinde kimliklere çözümlenir)
+  - `channels.zalouser.groupAllowFrom` (izin verilen gruplarda hangi gönderenlerin botu tetikleyebileceğini denetler)
 - Tüm grupları engelle: `channels.zalouser.groupPolicy = "disabled"`.
-- Yapılandırma sihirbazı grup izin listelerini sorabilir.
+- Yapılandırma sihirbazı grup izin listeleri için istem gösterebilir.
 - Başlangıçta OpenClaw, izin listelerindeki grup/kullanıcı adlarını kimliklere çözümler ve eşlemeyi yalnızca `channels.zalouser.dangerouslyAllowNameMatching: true` etkinleştirildiğinde günlüğe yazar.
-- Grup izin listesi eşleştirmesi varsayılan olarak yalnızca kimlik tabanlıdır. Çözümlenmemiş adlar, `channels.zalouser.dangerouslyAllowNameMatching: true` etkinleştirilmedikçe kimlik doğrulama için yok sayılır.
-- `channels.zalouser.dangerouslyAllowNameMatching: true`, değiştirilebilir başlangıç ad çözümlemesini ve çalışma zamanı grup adı eşleştirmesini yeniden etkinleştiren acil durum uyumluluk modudur.
-- `groupAllowFrom` ayarlanmamışsa, çalışma zamanı grup gönderici denetimleri için `allowFrom` değerine geri döner.
-- Gönderici denetimleri hem normal grup mesajlarına hem de denetim komutlarına uygulanır (örneğin `/new`, `/reset`).
+- Grup izin listesi eşleştirmesi varsayılan olarak yalnızca kimliğe dayalıdır. `channels.zalouser.dangerouslyAllowNameMatching: true` etkinleştirilmediği sürece çözümlenmemiş adlar kimlik doğrulama için yok sayılır.
+- `channels.zalouser.dangerouslyAllowNameMatching: true`, değişebilir başlangıç adı çözümlemesini ve çalışma zamanı grup adı eşleştirmesini yeniden etkinleştiren bir acil durum uyumluluk modudur.
+- `groupAllowFrom` ayarlanmamışsa, çalışma zamanı grup gönderen denetimleri için `allowFrom` değerine geri döner.
+- Gönderen denetimleri hem normal grup mesajlarına hem de kontrol komutlarına uygulanır (örneğin `/new`, `/reset`).
 
 Örnek:
 
@@ -127,15 +129,15 @@ Yapılandırmada ham bir ad kalırsa, başlangıç bunu yalnızca `channels.zalo
 }
 ```
 
-### Grup bahsi kapısı
+### Grup bahsi geçidi
 
-- `channels.zalouser.groups.<group>.requireMention`, grup yanıtlarının bir bahsetme gerektirip gerektirmediğini denetler.
+- `channels.zalouser.groups.<group>.requireMention`, grup yanıtlarının bir bahsi gerektirip gerektirmediğini denetler.
 - Çözümleme sırası: tam grup kimliği/adı -> normalleştirilmiş grup slug'ı -> `*` -> varsayılan (`true`).
-- Bu hem izin listesindeki gruplar hem de açık grup modu için geçerlidir.
-- Bir bot mesajını alıntılamak, grup etkinleştirmesi için örtük bir bahsetme sayılır.
-- Yetkili denetim komutları (örneğin `/new`) bahsetme kapısını atlayabilir.
-- Bahsetme gerektiği için bir grup mesajı atlandığında, OpenClaw bunu bekleyen grup geçmişi olarak saklar ve bir sonraki işlenen grup mesajına dahil eder.
-- Grup geçmişi sınırı varsayılan olarak `messages.groupChat.historyLimit` değeridir (geri dönüş `50`). Hesap başına `channels.zalouser.historyLimit` ile geçersiz kılabilirsiniz.
+- Bu, hem izin verilen gruplara hem de açık grup moduna uygulanır.
+- Bir bot mesajını alıntılamak, grup etkinleştirmesi için örtük bir bahis sayılır.
+- Yetkili kontrol komutları (örneğin `/new`) bahis geçidini atlayabilir.
+- Bir grup mesajı bahis gerektiği için atlandığında, OpenClaw bunu bekleyen grup geçmişi olarak saklar ve bir sonraki işlenen grup mesajına dahil eder.
+- Grup geçmişi sınırı varsayılan olarak `messages.groupChat.historyLimit` değerini kullanır (geri dönüş `50`). Hesap başına `channels.zalouser.historyLimit` ile geçersiz kılabilirsiniz.
 
 Örnek:
 
@@ -155,7 +157,7 @@ Yapılandırmada ham bir ad kalırsa, başlangıç bunu yalnızca `channels.zalo
 
 ## Çoklu hesap
 
-Hesaplar OpenClaw durumunda `zalouser` profillerine eşlenir. Örnek:
+Hesaplar OpenClaw durumundaki `zalouser` profillerine eşlenir. Örnek:
 
 ```json5
 {
@@ -171,34 +173,34 @@ Hesaplar OpenClaw durumunda `zalouser` profillerine eşlenir. Örnek:
 }
 ```
 
-## Yazıyor göstergesi, tepkiler ve teslim alındıları
+## Yazıyor göstergesi, tepkiler ve teslim onayları
 
-- OpenClaw, bir yanıt göndermeden önce yazıyor olayı gönderir (en iyi çabayla).
-- Mesaj tepki eylemi `react`, kanal eylemlerinde `zalouser` için desteklenir.
+- OpenClaw, bir yanıt göndermeden önce yazıyor olayı gönderir (en iyi çaba).
+- `react` mesaj tepki eylemi, kanal eylemlerinde `zalouser` için desteklenir.
   - Bir mesajdan belirli bir tepki emojisini kaldırmak için `remove: true` kullanın.
   - Tepki semantiği: [Tepkiler](/tr/tools/reactions)
-- Olay meta verileri içeren gelen mesajlar için OpenClaw teslim edildi + görüldü alındıları gönderir (en iyi çabayla).
+- Olay meta verisi içeren gelen mesajlar için OpenClaw teslim edildi + görüldü onayları gönderir (en iyi çaba).
 
 ## Sorun giderme
 
 **Oturum açma kalıcı olmuyor:**
 
 - `openclaw channels status --probe`
-- Yeniden oturum açın: `openclaw channels logout --channel zalouser && openclaw channels login --channel zalouser`
+- Yeniden oturum açma: `openclaw channels logout --channel zalouser && openclaw channels login --channel zalouser`
 
 **İzin listesi/grup adı çözümlenmedi:**
 
-- `allowFrom`/`groupAllowFrom` içinde sayısal kimlikleri ve `groups` içinde kararlı grup kimliklerini kullanın. Özellikle tam arkadaş/grup adlarına ihtiyacınız varsa `channels.zalouser.dangerouslyAllowNameMatching: true` etkinleştirin.
+- `allowFrom`/`groupAllowFrom` içinde sayısal kimlikleri ve `groups` içinde kararlı grup kimliklerini kullanın. Bilinçli olarak tam arkadaş/grup adlarına ihtiyacınız varsa `channels.zalouser.dangerouslyAllowNameMatching: true` değerini etkinleştirin.
 
 **Eski CLI tabanlı kurulumdan yükseltildi:**
 
-- Eski harici `zca` süreç varsayımlarını kaldırın.
-- Kanal artık harici CLI ikili dosyaları olmadan tamamen OpenClaw içinde çalışır.
+- Eski harici `zca` süreci varsayımlarını kaldırın.
+- Kanal artık harici CLI ikilileri olmadan tamamen OpenClaw içinde çalışır.
 
 ## İlgili
 
 - [Kanallara Genel Bakış](/tr/channels) — desteklenen tüm kanallar
 - [Eşleştirme](/tr/channels/pairing) — DM kimlik doğrulaması ve eşleştirme akışı
-- [Gruplar](/tr/channels/groups) — grup sohbeti davranışı ve bahsetme kapısı
+- [Gruplar](/tr/channels/groups) — grup sohbeti davranışı ve bahis geçidi
 - [Kanal Yönlendirme](/tr/channels/channel-routing) — mesajlar için oturum yönlendirmesi
 - [Güvenlik](/tr/gateway/security) — erişim modeli ve güçlendirme

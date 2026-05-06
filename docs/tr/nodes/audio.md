@@ -1,48 +1,46 @@
 ---
 read_when:
     - Ses transkripsiyonunu veya medya işlemeyi değiştirme
-summary: Gelen seslerin/sesli notların nasıl indirildiği, yazıya döküldüğü ve yanıtlara dahil edildiği
+summary: Gelen ses/sesli notların nasıl indirildiği, yazıya döküldüğü ve yanıtlara yerleştirildiği
 title: Ses ve sesli notlar
 x-i18n:
-    generated_at: "2026-05-06T09:20:07Z"
+    generated_at: "2026-05-06T17:58:13Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 520620da5a643bb8e17318d7304ae4be3bd2586b0866614ad741685de5b8ef05
+    source_hash: baa96453ce279d05933281eafe930e3573c5cbe694cec8704b1d064f4b0de242
     source_path: nodes/audio.md
     workflow: 16
 ---
 
-# Ses / Sesli Notlar (2026-01-17)
-
 ## Çalışanlar
 
-- **Medya anlama (ses)**: Ses anlama etkinse (veya otomatik algılanırsa), OpenClaw:
+- **Medya anlama (ses)**: Ses anlama etkinleştirilmişse (veya otomatik algılanmışsa), OpenClaw:
   1. İlk ses ekini (yerel yol veya URL) bulur ve gerekirse indirir.
   2. Her model girdisine göndermeden önce `maxBytes` sınırını uygular.
   3. Sıradaki ilk uygun model girdisini çalıştırır (sağlayıcı veya CLI).
-  4. Başarısız olursa ya da atlanırsa (boyut/zaman aşımı), sonraki girdiyi dener.
-  5. Başarılı olduğunda, `Body` değerini bir `[Audio]` bloğuyla değiştirir ve `{{Transcript}}` değerini ayarlar.
-- **Komut ayrıştırma**: Transkripsiyon başarılı olduğunda, eğik çizgi komutlarının çalışmaya devam etmesi için `CommandBody`/`RawBody` transkripte ayarlanır.
-- **Ayrıntılı günlükleme**: `--verbose` içinde, transkripsiyon çalıştığında ve gövdeyi değiştirdiğinde günlükleriz.
+  4. Başarısız olursa veya atlanırsa (boyut/zaman aşımı), sonraki girdiyi dener.
+  5. Başarılı olduğunda, `Body` değerini bir `[Audio]` bloğuyla değiştirir ve `{{Transcript}}` ayarlar.
+- **Komut ayrıştırma**: Deşifre başarılı olduğunda, eğik çizgi komutlarının çalışmaya devam etmesi için `CommandBody`/`RawBody` deşifreye ayarlanır.
+- **Ayrıntılı günlükleme**: `--verbose` modunda, deşifre çalıştığında ve gövdeyi değiştirdiğinde günlük kaydı tutarız.
 
 ## Otomatik algılama (varsayılan)
 
-**Modelleri yapılandırmazsanız** ve `tools.media.audio.enabled` değeri `false` olarak ayarlanmamışsa,
-OpenClaw bu sırayla otomatik algılar ve ilk çalışan seçenekte durur:
+**Model yapılandırmazsanız** ve `tools.media.audio.enabled` **`false` olarak ayarlanmamışsa**,
+OpenClaw bu sırayla otomatik algılama yapar ve çalışan ilk seçenekte durur:
 
-1. **Etkin yanıt modeli**, sağlayıcısı ses anlamayı desteklediğinde.
+1. Sağlayıcısı ses anlamayı desteklediğinde **etkin yanıt modeli**.
 2. **Yerel CLI'lar** (kuruluysa)
-   - `sherpa-onnx-offline` (encoder/decoder/joiner/tokens ile `SHERPA_ONNX_MODEL_DIR` gerektirir)
-   - `whisper-cli` (`whisper-cpp` içinden; `WHISPER_CPP_MODEL` veya paketlenen tiny modeli kullanır)
+   - `sherpa-onnx-offline` (encoder/decoder/joiner/tokens içeren `SHERPA_ONNX_MODEL_DIR` gerektirir)
+   - `whisper-cli` (`whisper-cpp` üzerinden; `WHISPER_CPP_MODEL` veya paketle gelen tiny modeli kullanır)
    - `whisper` (Python CLI; modelleri otomatik indirir)
 3. `read_many_files` kullanan **Gemini CLI** (`gemini`)
 4. **Sağlayıcı kimlik doğrulaması**
-   - Sesi destekleyen yapılandırılmış `models.providers.*` girdileri önce denenir
-   - Paketlenen yedek sıra: OpenAI → Groq → xAI → Deepgram → Google → SenseAudio → ElevenLabs → Mistral
+   - Ses destekleyen yapılandırılmış `models.providers.*` girdileri önce denenir
+   - Paketle gelen yedek sıra: OpenAI → Groq → xAI → Deepgram → Google → SenseAudio → ElevenLabs → Mistral
 
 Otomatik algılamayı devre dışı bırakmak için `tools.media.audio.enabled: false` ayarlayın.
 Özelleştirmek için `tools.media.audio.models` ayarlayın.
-Not: İkili dosya algılama macOS/Linux/Windows genelinde en iyi çaba esasına göredir; CLI'ın `PATH` üzerinde olduğundan emin olun (`~` genişletilir) veya tam komut yoluyla açık bir CLI modeli ayarlayın.
+Not: İkili dosya algılama macOS/Linux/Windows genelinde en iyi çaba esasına dayanır; CLI'ın `PATH` üzerinde olduğundan emin olun (`~` genişletilir) veya tam komut yoluyla açık bir CLI modeli ayarlayın.
 
 ## Yapılandırma örnekleri
 
@@ -134,7 +132,7 @@ Not: İkili dosya algılama macOS/Linux/Windows genelinde en iyi çaba esasına 
 }
 ```
 
-### Transkripti sohbete yansıt (isteğe bağlı)
+### Deşifreyi sohbete yankıla (isteğe bağlı)
 
 ```json5
 {
@@ -155,26 +153,26 @@ Not: İkili dosya algılama macOS/Linux/Windows genelinde en iyi çaba esasına 
 
 - Sağlayıcı kimlik doğrulaması standart model kimlik doğrulama sırasını izler (kimlik doğrulama profilleri, ortam değişkenleri, `models.providers.*.apiKey`).
 - Groq kurulum ayrıntıları: [Groq](/tr/providers/groq).
-- `provider: "deepgram"` kullanıldığında Deepgram, `DEEPGRAM_API_KEY` değerini alır.
-- Deepgram kurulum ayrıntıları: [Deepgram (ses transkripsiyonu)](/tr/providers/deepgram).
+- `provider: "deepgram"` kullanıldığında Deepgram `DEEPGRAM_API_KEY` değerini alır.
+- Deepgram kurulum ayrıntıları: [Deepgram (ses deşifresi)](/tr/providers/deepgram).
 - Mistral kurulum ayrıntıları: [Mistral](/tr/providers/mistral).
-- `provider: "senseaudio"` kullanıldığında SenseAudio, `SENSEAUDIO_API_KEY` değerini alır.
+- `provider: "senseaudio"` kullanıldığında SenseAudio `SENSEAUDIO_API_KEY` değerini alır.
 - SenseAudio kurulum ayrıntıları: [SenseAudio](/tr/providers/senseaudio).
 - Ses sağlayıcıları `tools.media.audio` üzerinden `baseUrl`, `headers` ve `providerOptions` değerlerini geçersiz kılabilir.
-- Varsayılan boyut sınırı 20MB'dir (`tools.media.audio.maxBytes`). Aşırı büyük ses o model için atlanır ve sonraki girdi denenir.
-- 1024 baytın altındaki çok küçük/boş ses dosyaları sağlayıcı/CLI transkripsiyonundan önce atlanır.
-- Ses için varsayılan `maxChars` **ayarlanmamıştır** (tam transkript). Çıkışı kırpmak için `tools.media.audio.maxChars` veya girdi başına `maxChars` ayarlayın.
-- OpenAI otomatik varsayılanı `gpt-4o-mini-transcribe` değeridir; daha yüksek doğruluk için `model: "gpt-4o-transcribe"` ayarlayın.
+- Varsayılan boyut sınırı 20MB'dir (`tools.media.audio.maxBytes`). Büyük boyutlu ses ilgili model için atlanır ve sonraki girdi denenir.
+- 1024 baytın altındaki küçük/boş ses dosyaları sağlayıcı/CLI deşifresinden önce atlanır.
+- Ses için varsayılan `maxChars` **ayarlanmamıştır** (tam deşifre). Çıktıyı kırpmak için `tools.media.audio.maxChars` veya girdi başına `maxChars` ayarlayın.
+- OpenAI otomatik varsayılanı `gpt-4o-mini-transcribe`; daha yüksek doğruluk için `model: "gpt-4o-transcribe"` ayarlayın.
 - Birden fazla sesli notu işlemek için `tools.media.audio.attachments` kullanın (`mode: "all"` + `maxAttachments`).
-- Transkript şablonlarda `{{Transcript}}` olarak kullanılabilir.
-- `tools.media.audio.echoTranscript` varsayılan olarak kapalıdır; ajan işlemeden önce transkript onayını kaynak sohbete geri göndermek için etkinleştirin.
-- `tools.media.audio.echoFormat` yansıtma metnini özelleştirir (yer tutucu: `{transcript}`).
-- CLI stdout sınırlandırılır (5MB); CLI çıktısını öz tutun.
+- Deşifre şablonlarda `{{Transcript}}` olarak kullanılabilir.
+- `tools.media.audio.echoTranscript` varsayılan olarak kapalıdır; agent işlemesinden önce deşifre onayını kaynak sohbete geri göndermek için etkinleştirin.
+- `tools.media.audio.echoFormat` yankı metnini özelleştirir (yer tutucu: `{transcript}`).
+- CLI stdout sınırlandırılmıştır (5MB); CLI çıktısını kısa tutun.
 - CLI `args`, yerel ses dosyası yolu için `{{MediaPath}}` kullanmalıdır. Eski `audio.transcription.command` yapılandırmalarındaki kullanımdan kaldırılmış `{input}` yer tutucularını taşımak için `openclaw doctor --fix` çalıştırın.
 
 ### Proxy ortam desteği
 
-Sağlayıcı tabanlı ses transkripsiyonu standart dışa giden proxy ortam değişkenlerini dikkate alır:
+Sağlayıcı tabanlı ses deşifresi standart giden proxy ortam değişkenlerini dikkate alır:
 
 - `HTTPS_PROXY`
 - `HTTP_PROXY`
@@ -183,39 +181,39 @@ Sağlayıcı tabanlı ses transkripsiyonu standart dışa giden proxy ortam değ
 - `http_proxy`
 - `all_proxy`
 
-Proxy ortam değişkeni ayarlanmamışsa doğrudan çıkış kullanılır. Proxy yapılandırması hatalı biçimlendirilmişse OpenClaw bir uyarı günlüğe yazar ve doğrudan getirmeye geri döner.
+Hiç proxy ortam değişkeni ayarlanmamışsa doğrudan çıkış kullanılır. Proxy yapılandırması hatalıysa, OpenClaw bir uyarı günlüğe yazar ve doğrudan getirmeye geri döner.
 
 ## Gruplarda bahsetme algılama
 
-Bir grup sohbeti için `requireMention: true` ayarlandığında, OpenClaw artık bahsetmeleri kontrol etmeden **önce** sesi transkribe eder. Bu, bahsetme içerdiklerinde sesli notların işlenebilmesini sağlar.
+Bir grup sohbeti için `requireMention: true` ayarlandığında, OpenClaw artık bahsetmeleri kontrol etmeden **önce** sesi deşifre eder. Bu, sesli notlar bahsetme içerdiğinde bile işlenmelerini sağlar.
 
 **Nasıl çalışır:**
 
-1. Bir sesli mesajın metin gövdesi yoksa ve grup bahsetme gerektiriyorsa, OpenClaw bir "preflight" transkripsiyonu yapar.
-2. Transkript bahsetme kalıpları için kontrol edilir (ör. `@BotName`, emoji tetikleyicileri).
-3. Bir bahsetme bulunursa mesaj tam yanıt işlem hattından geçer.
-4. Transkript bahsetme algılama için kullanılır, böylece sesli notlar bahsetme geçidinden geçebilir.
+1. Bir sesli mesajın metin gövdesi yoksa ve grup bahsetme gerektiriyorsa, OpenClaw bir "ön kontrol" deşifresi gerçekleştirir.
+2. Deşifre bahsetme kalıpları için kontrol edilir (ör. `@BotName`, emoji tetikleyicileri).
+3. Bir bahsetme bulunursa, mesaj tam yanıt işlem hattından geçer.
+4. Sesli notların bahsetme geçidinden geçebilmesi için deşifre bahsetme algılamasında kullanılır.
 
 **Yedek davranış:**
 
-- Preflight sırasında transkripsiyon başarısız olursa (zaman aşımı, API hatası vb.), mesaj yalnızca metin tabanlı bahsetme algılamasına göre işlenir.
+- Ön kontrol sırasında deşifre başarısız olursa (zaman aşımı, API hatası vb.), mesaj yalnızca metin tabanlı bahsetme algılamasına göre işlenir.
 - Bu, karma mesajların (metin + ses) hiçbir zaman yanlışlıkla düşürülmemesini sağlar.
 
-**Telegram grubu/konusu başına kapsam dışı bırakma:**
+**Telegram grubu/konusu başına vazgeçme:**
 
-- O grup için preflight transkript bahsetme kontrollerini atlamak üzere `channels.telegram.groups.<chatId>.disableAudioPreflight: true` ayarlayın.
+- Bu grup için ön kontrol deşifre bahsetme kontrollerini atlamak üzere `channels.telegram.groups.<chatId>.disableAudioPreflight: true` ayarlayın.
 - Konu başına geçersiz kılmak için `channels.telegram.groups.<chatId>.topics.<threadId>.disableAudioPreflight` ayarlayın (atlamak için `true`, zorla etkinleştirmek için `false`).
-- Varsayılan `false` değeridir (bahsetme geçitli koşullar eşleştiğinde preflight etkindir).
+- Varsayılan `false` değeridir (bahsetme geçitli koşullar eşleştiğinde ön kontrol etkindir).
 
-**Örnek:** Bir kullanıcı, `requireMention: true` olan bir Telegram grubunda "Hey @Claude, what's the weather?" diyen bir sesli not gönderir. Sesli not transkribe edilir, bahsetme algılanır ve ajan yanıt verir.
+**Örnek:** Bir kullanıcı `requireMention: true` olan bir Telegram grubunda "Hey @Claude, what's the weather?" diyen bir sesli not gönderir. Sesli not deşifre edilir, bahsetme algılanır ve agent yanıt verir.
 
 ## Dikkat edilmesi gerekenler
 
-- Kapsam kuralları ilk eşleşen kazanır ilkesini kullanır. `chatType`, `direct`, `group` veya `room` olarak normalleştirilir.
-- CLI'ınızın 0 ile çıktığından ve düz metin yazdırdığından emin olun; JSON'un `jq -r .text` üzerinden işlenmesi gerekir.
-- `parakeet-mlx` için, `--output-dir` geçirirseniz, `--output-format` `txt` olduğunda (veya atlandığında) OpenClaw `<output-dir>/<media-basename>.txt` dosyasını okur; `txt` olmayan çıktı biçimleri stdout ayrıştırmasına geri döner.
-- Yanıt kuyruğunu engellememek için zaman aşımlarını makul tutun (`timeoutSeconds`, varsayılan 60s).
-- Preflight transkripsiyonu, bahsetme algılama için yalnızca **ilk** ses ekini işler. Ek sesler ana medya anlama aşamasında işlenir.
+- Kapsam kurallarında ilk eşleşme kazanır. `chatType`, `direct`, `group` veya `room` olarak normalize edilir.
+- CLI'ınızın 0 ile çıktığından ve düz metin yazdırdığından emin olun; JSON'un `jq -r .text` ile düzenlenmesi gerekir.
+- `parakeet-mlx` için, `--output-dir` geçirirseniz `--output-format` `txt` olduğunda (veya belirtilmediğinde) OpenClaw `<output-dir>/<media-basename>.txt` dosyasını okur; `txt` olmayan çıktı biçimleri stdout ayrıştırmasına geri döner.
+- Yanıt kuyruğunu engellememek için zaman aşımlarını makul tutun (`timeoutSeconds`, varsayılan 60 sn).
+- Ön kontrol deşifresi, bahsetme algılaması için yalnızca **ilk** ses ekini işler. Ek sesler ana medya anlama aşamasında işlenir.
 
 ## İlgili
 

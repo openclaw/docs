@@ -1,26 +1,24 @@
 ---
 read_when:
     - Bir model sağlayıcısı seçmek istiyorsunuz
-    - LLM kimlik doğrulaması + model seçimi için hızlı kurulum örnekleri istiyorsunuz
+    - LLM kimlik doğrulaması ve model seçimi için hızlı kurulum örnekleri istiyorsunuz
 summary: OpenClaw tarafından desteklenen model sağlayıcıları (LLM'ler)
 title: Model sağlayıcısı hızlı başlangıcı
 x-i18n:
-    generated_at: "2026-04-30T09:41:07Z"
+    generated_at: "2026-05-06T18:00:00Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3f71f9ab34df2b545128bfeed3cab82f31b741d4a66263113068568ce6b77cd6
+    source_hash: 7e95d37f3e332a9b2eb58a15dc356ad02b4cbf409926adb3faf1923825219887
     source_path: providers/models.md
     workflow: 16
 ---
 
-# Model Sağlayıcıları
-
-OpenClaw birçok LLM sağlayıcısını kullanabilir. Birini seçin, kimlik doğrulaması yapın, ardından varsayılan
+OpenClaw birçok LLM sağlayıcısı kullanabilir. Birini seçin, kimlik doğrulaması yapın, ardından varsayılan
 modeli `provider/model` olarak ayarlayın.
 
 ## Hızlı başlangıç (iki adım)
 
-1. Sağlayıcıyla kimlik doğrulaması yapın (genellikle `openclaw onboard` aracılığıyla).
+1. Sağlayıcıyla kimlik doğrulaması yapın (genellikle `openclaw onboard` ile).
 2. Varsayılan modeli ayarlayın:
 
 ```json5
@@ -29,7 +27,7 @@ modeli `provider/model` olarak ayarlayın.
 }
 ```
 
-## Desteklenen sağlayıcılar (başlangıç kümesi)
+## Desteklenen sağlayıcılar (başlangıç seti)
 
 - [Alibaba Model Studio](/tr/providers/alibaba)
 - [Amazon Bedrock](/tr/providers/bedrock)
@@ -58,17 +56,17 @@ modeli `provider/model` olarak ayarlayın.
 - [xAI](/tr/providers/xai)
 - [Z.AI](/tr/providers/zai)
 
-## Birlikte gelen ek sağlayıcı varyantları
+## Ek paketli sağlayıcı varyantları
 
-- `anthropic-vertex` - Vertex kimlik bilgileri mevcut olduğunda Google Vertex üzerinde örtük Anthropic desteği; ayrı bir başlangıç kimlik doğrulama seçeneği yoktur
+- `anthropic-vertex` - Vertex kimlik bilgileri kullanılabilir olduğunda Google Vertex üzerinde örtük Anthropic desteği; ayrı bir katılım kimlik doğrulaması seçeneği yoktur
 - `copilot-proxy` - yerel VS Code Copilot Proxy köprüsü; `openclaw onboard --auth-choice copilot-proxy` kullanın
 - `google-gemini-cli` - resmi olmayan Gemini CLI OAuth akışı; yerel bir `gemini` kurulumu gerektirir (`brew install gemini-cli` veya `npm install -g @google/gemini-cli`); varsayılan model `google-gemini-cli/gemini-3-flash-preview`; `openclaw onboard --auth-choice google-gemini-cli` veya `openclaw models auth login --provider google-gemini-cli --set-default` kullanın
 
 Tam sağlayıcı kataloğu (xAI, Groq, Mistral vb.) ve gelişmiş yapılandırma için
-[Model sağlayıcıları](/tr/concepts/model-providers) sayfasına bakın.
+bkz. [Model sağlayıcıları](/tr/concepts/model-providers).
 
 ## İlgili
 
 - [Model seçimi](/tr/concepts/model-providers)
-- [Model yük devretme](/tr/concepts/model-failover)
-- [Modeller CLI](/tr/cli/models)
+- [Model yük devri](/tr/concepts/model-failover)
+- [Models CLI](/tr/cli/models)

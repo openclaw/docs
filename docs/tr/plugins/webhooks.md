@@ -1,23 +1,21 @@
 ---
 read_when:
-    - Harici bir sistemden TaskFlow'ları tetiklemek veya yürütmek istiyorsunuz
-    - Birlikte gelen webhooks Plugin'ini yapılandırıyorsunuz
+    - TaskFlows'u harici bir sistemden tetiklemek veya yönetmek istiyorsunuz
+    - Birlikte gelen Webhook Plugin'ını yapılandırıyorsunuz
 summary: 'Webhooks Plugin''i: güvenilir harici otomasyon için kimliği doğrulanmış TaskFlow girişi'
 title: Webhook Plugin
 x-i18n:
-    generated_at: "2026-04-30T09:39:06Z"
+    generated_at: "2026-05-06T17:59:29Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 70b195e330264af48a9e9c619bb5a0937bb15b2640edd3dd2b5517a13424e9fe
+    source_hash: 9d21d96f680fa24d4a53c1ed5759f800d3cfdc3336789c42c15266edd8ce9e80
     source_path: plugins/webhooks.md
     workflow: 16
 ---
 
-# Webhook'lar (Plugin)
+Webhooks Plugin'i, dış otomasyonu OpenClaw TaskFlow'larına bağlayan kimliği doğrulanmış HTTP rotaları ekler.
 
-Webhooks Plugin'i, harici otomasyonu OpenClaw TaskFlow'larına bağlayan kimliği doğrulanmış HTTP rotaları ekler.
-
-Önce özel bir Plugin yazmadan, Zapier, n8n, bir CI işi veya dahili bir hizmet gibi güvenilir bir sistemin yönetilen TaskFlow'lar oluşturmasını ve yürütmesini istediğinizde kullanın.
+Önce özel bir Plugin yazmadan Zapier, n8n, bir CI işi veya dahili bir servis gibi güvenilir bir sistemin yönetilen TaskFlow'lar oluşturmasını ve yürütmesini istediğinizde kullanın.
 
 ## Nerede çalışır
 
@@ -46,7 +44,7 @@ Yapılandırmayı `plugins.entries.webhooks.config` altında ayarlayın:
                 id: "OPENCLAW_WEBHOOK_SECRET",
               },
               controllerId: "webhooks/zapier",
-              description: "Zapier TaskFlow bridge",
+              description: "Zapier TaskFlow köprüsü",
             },
           },
         },
@@ -60,36 +58,36 @@ Rota alanları:
 
 - `enabled`: isteğe bağlıdır, varsayılanı `true`
 - `path`: isteğe bağlıdır, varsayılanı `/plugins/webhooks/<routeId>`
-- `sessionKey`: bağlı TaskFlow'ların sahibi olan zorunlu oturum
-- `secret`: zorunlu paylaşılan gizli değer veya SecretRef
+- `sessionKey`: bağlı TaskFlow'ların sahibi olan gerekli oturum
+- `secret`: gerekli paylaşılan gizli anahtar veya SecretRef
 - `controllerId`: oluşturulan yönetilen akışlar için isteğe bağlı denetleyici kimliği
 - `description`: isteğe bağlı operatör notu
 
 Desteklenen `secret` girdileri:
 
-- Düz dize
+- Düz metin dizesi
 - `source: "env" | "file" | "exec"` ile SecretRef
 
-Gizli değer destekli bir rota başlangıçta gizli değerini çözümleyemezse Plugin bozuk bir uç nokta açığa çıkarmak yerine o rotayı atlar ve bir uyarı kaydeder.
+Gizli anahtar destekli bir rota başlangıçta gizli anahtarını çözemezse Plugin, bozuk bir uç noktayı açığa çıkarmak yerine o rotayı atlar ve bir uyarı günlüğe kaydeder.
 
 ## Güvenlik modeli
 
-Her rota, yapılandırılmış `sessionKey` değerinin TaskFlow yetkisiyle hareket etmek üzere güvenilir kabul edilir.
+Her rotaya, yapılandırılmış `sessionKey` değerinin TaskFlow yetkisiyle hareket etmesi için güvenilir.
 
-Bu, rotanın ilgili oturuma ait TaskFlow'ları inceleyip değiştirebileceği anlamına gelir; bu nedenle şunları yapmalısınız:
+Bu, rotanın söz konusu oturumun sahibi olduğu TaskFlow'ları inceleyip değiştirebileceği anlamına gelir; bu nedenle şunları yapmalısınız:
 
-- Her rota için güçlü ve benzersiz bir gizli değer kullanın
-- Satır içi düz metin gizli değerler yerine gizli değer referanslarını tercih edin
+- Her rota için güçlü ve benzersiz bir gizli anahtar kullanın
+- Satır içi düz metin gizli anahtarlar yerine gizli anahtar başvurularını tercih edin
 - Rotaları iş akışına uyan en dar oturuma bağlayın
-- Yalnızca ihtiyaç duyduğunuz belirli Webhook yolunu açığa çıkarın
+- Yalnızca ihtiyacınız olan belirli Webhook yolunu açığa çıkarın
 
 Plugin şunları uygular:
 
-- Paylaşılan gizli değerle kimlik doğrulama
+- Paylaşılan gizli anahtar kimlik doğrulaması
 - İstek gövdesi boyutu ve zaman aşımı korumaları
 - Sabit pencereli hız sınırlama
 - Devam eden istek sınırlama
-- `api.runtime.tasks.managedFlows.bindSession(...)` üzerinden sahibe bağlı TaskFlow erişimi
+- `api.runtime.tasks.managedFlows.bindSession(...)` üzerinden sahip bağlı TaskFlow erişimi
 
 ## İstek biçimi
 
@@ -109,7 +107,7 @@ curl -X POST https://gateway.example.com/plugins/webhooks/zapier \
 
 ## Desteklenen eylemler
 
-Plugin şu anda şu JSON `action` değerlerini kabul eder:
+Plugin şu anda bu JSON `action` değerlerini kabul eder:
 
 - `create_flow`
 - `get_flow`
@@ -161,7 +159,7 @@ Mevcut bir yönetilen TaskFlow içinde yönetilen bir alt görev oluşturur.
 }
 ```
 
-## Yanıt şekli
+## Yanıt biçimi
 
 Başarılı yanıtlar şunu döndürür:
 
@@ -185,7 +183,7 @@ Reddedilen istekler şunu döndürür:
 }
 ```
 
-Plugin, Webhook yanıtlarından sahip/oturum üst verilerini bilinçli olarak temizler.
+Plugin, Webhook yanıtlarından sahip/oturum meta verilerini bilinçli olarak temizler.
 
 ## İlgili belgeler
 
