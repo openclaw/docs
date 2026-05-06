@@ -26,7 +26,7 @@ const renderedPageOgCards = new Set();
 const rsvgAvailable = checkRsvg();
 const chatApiUrl = process.env.DOCS_SITE_CHAT_API_URL ?? "https://docs-chat.openclaw.ai/api/chat";
 
-fs.rmSync(outDir, { recursive: true, force: true });
+fs.rmSync(outDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
 fs.mkdirSync(outDir, { recursive: true });
 
 const locales = buildLocales(config);
@@ -279,7 +279,7 @@ function topLink(label, href, iconName) {
 }
 
 function icon(name) {
-  const attrs = `class="icon icon-${escapeAttr(name)}" viewBox="0 0 24 24" aria-hidden="true" focusable="false"`;
+  const attrs = `class="icon icon-${escapeAttr(name)}" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false"`;
   if (name === "github") return `<svg ${attrs} fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.42-4.04-1.42-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.08 1.84 2.82 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.66-.3-5.46-1.33-5.46-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.8 5.62-5.47 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.69.83.57A12 12 0 0 0 12 .5Z"/></svg>`;
   if (name === "discord") return `<svg ${attrs} fill="currentColor"><path d="M20.32 4.37A19.8 19.8 0 0 0 15.37 2.84a13.77 13.77 0 0 0-.63 1.31 18.4 18.4 0 0 0-5.48 0 13.7 13.7 0 0 0-.64-1.31 19.72 19.72 0 0 0-4.95 1.54C.55 9.07-.32 13.64.1 18.15a19.9 19.9 0 0 0 6.07 3.07 14.6 14.6 0 0 0 1.3-2.11 12.9 12.9 0 0 1-2.05-.98c.17-.13.34-.26.5-.39a14.2 14.2 0 0 0 12.16 0c.17.14.33.27.5.39-.65.38-1.33.7-2.05.98.38.74.82 1.45 1.3 2.11a19.86 19.86 0 0 0 6.08-3.07c.5-5.23-.84-9.76-3.59-13.78ZM8.02 15.38c-1.18 0-2.15-1.08-2.15-2.41 0-1.33.95-2.42 2.15-2.42 1.2 0 2.18 1.1 2.15 2.42 0 1.33-.95 2.41-2.15 2.41Zm7.96 0c-1.18 0-2.15-1.08-2.15-2.41 0-1.33.95-2.42 2.15-2.42 1.2 0 2.17 1.1 2.15 2.42 0 1.33-.95 2.41-2.15 2.41Z"/></svg>`;
   const paths = {
