@@ -1,58 +1,56 @@
 ---
 read_when:
-    - Ви хочете, щоб OpenClaw працював 24/7 в Azure із посиленням безпеки через Network Security Group
-    - Ви хочете production-grade, постійно ввімкнений Gateway OpenClaw на власній Linux VM в Azure
-    - Ви хочете безпечне адміністрування через Azure Bastion SSH
-summary: Запускайте OpenClaw Gateway 24/7 на Linux VM в Azure зі стійким станом
+    - Ви хочете, щоб OpenClaw працював 24/7 в Azure із посиленням захисту групи безпеки мережі
+    - Вам потрібен OpenClaw Gateway промислового рівня, що постійно працює, на власній віртуальній машині Linux в Azure
+    - Вам потрібне безпечне адміністрування за допомогою Azure Bastion SSH
+summary: Запускайте OpenClaw Gateway 24/7 на віртуальній машині Linux в Azure зі збережуваним станом
 title: Azure
 x-i18n:
-    generated_at: "2026-04-24T03:17:55Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T01:09:37Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: e42e1a35e0340b959b73c548bc1efd6366bee38cf4c8cd23d986c5f14e5da0e0
+    source_hash: 7ab1b7d09dd66c495983aebd4766ce760d659cc6f362bbcd999d1c1345ae38f7
     source_path: install/azure.md
-    workflow: 15
+    workflow: 16
 ---
 
-# OpenClaw на Azure Linux VM
-
-У цьому посібнику налаштовується Azure Linux VM за допомогою Azure CLI, застосовується посилення безпеки через Network Security Group (NSG), налаштовується Azure Bastion для доступу через SSH та встановлюється OpenClaw.
+Цей посібник налаштовує Linux VM Azure за допомогою Azure CLI, застосовує посилення Network Security Group (NSG), налаштовує Azure Bastion для доступу SSH і встановлює OpenClaw.
 
 ## Що ви зробите
 
-- Створите мережеві ресурси Azure (VNet, підмережі, NSG) і обчислювальні ресурси за допомогою Azure CLI
-- Застосуєте правила Network Security Group так, щоб SSH до VM був дозволений лише через Azure Bastion
-- Використовуватимете Azure Bastion для доступу через SSH (без публічної IP-адреси на VM)
+- Створите мережеві ресурси Azure (VNet, підмережі, NSG) та обчислювальні ресурси за допомогою Azure CLI
+- Застосуєте правила Network Security Group, щоб SSH до VM був дозволений лише з Azure Bastion
+- Використаєте Azure Bastion для доступу SSH (без публічної IP-адреси на VM)
 - Встановите OpenClaw за допомогою інсталяційного скрипта
 - Перевірите Gateway
 
 ## Що вам потрібно
 
-- Підписка Azure з правами на створення обчислювальних і мережевих ресурсів
-- Встановлений Azure CLI (за потреби див. [кроки встановлення Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli))
-- Пара SSH-ключів (у посібнику також описано, як згенерувати її за потреби)
-- ~20–30 хвилин
+- Підписка Azure з дозволом створювати обчислювальні та мережеві ресурси
+- Установлений Azure CLI (за потреби див. [кроки встановлення Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli))
+- Пара ключів SSH (посібник описує, як згенерувати її за потреби)
+- ~20-30 хвилин
 
 ## Налаштування розгортання
 
 <Steps>
-  <Step title="Увійдіть в Azure CLI">
+  <Step title="Sign in to Azure CLI">
     ```bash
     az login
     az extension add -n ssh
     ```
 
-    Розширення `ssh` потрібне для нативного SSH-тунелювання через Azure Bastion.
+    Розширення `ssh` потрібне для нативного тунелювання SSH через Azure Bastion.
 
   </Step>
 
-  <Step title="Зареєструйте потрібних постачальників ресурсів (одноразово)">
+  <Step title="Register required resource providers (one-time)">
     ```bash
     az provider register --namespace Microsoft.Compute
     az provider register --namespace Microsoft.Network
     ```
 
-    Перевірте реєстрацію. Дочекайтеся, поки обидва покажуть `Registered`.
+    Перевірте реєстрацію. Зачекайте, доки обидва покажуть `Registered`.
 
     ```bash
     az provider show --namespace Microsoft.Compute --query registrationState -o tsv
@@ -61,7 +59,7 @@ x-i18n:
 
   </Step>
 
-  <Step title="Задайте змінні розгортання">
+  <Step title="Set deployment variables">
     ```bash
     RG="rg-openclaw"
     LOCATION="westus2"
@@ -77,18 +75,18 @@ x-i18n:
     BASTION_PIP_NAME="pip-openclaw-bastion"
     ```
 
-    Скоригуйте назви й діапазони CIDR відповідно до вашого середовища. Підмережа Bastion має бути щонайменше `/26`.
+    Налаштуйте імена та діапазони CIDR відповідно до вашого середовища. Підмережа Bastion має бути щонайменше `/26`.
 
   </Step>
 
-  <Step title="Виберіть SSH-ключ">
-    Якщо у вас уже є відкритий ключ, використайте його:
+  <Step title="Select SSH key">
+    Використайте наявний публічний ключ, якщо він у вас є:
 
     ```bash
     SSH_PUB_KEY="$(cat ~/.ssh/id_ed25519.pub)"
     ```
 
-    Якщо SSH-ключа ще немає, згенеруйте його:
+    Якщо у вас ще немає ключа SSH, згенеруйте його:
 
     ```bash
     ssh-keygen -t ed25519 -a 100 -f ~/.ssh/id_ed25519 -C "you@example.com"
@@ -97,25 +95,25 @@ x-i18n:
 
   </Step>
 
-  <Step title="Виберіть розмір VM і розмір OS-диска">
+  <Step title="Select VM size and OS disk size">
     ```bash
     VM_SIZE="Standard_B2as_v2"
     OS_DISK_SIZE_GB=64
     ```
 
-    Виберіть розмір VM і розмір OS-диска, доступні у вашій підписці та регіоні:
+    Виберіть розмір VM і розмір диска ОС, доступні у вашій підписці та регіоні:
 
-    - Для невеликого навантаження почніть із меншого розміру й масштабуйтеся пізніше
-    - Для важчої автоматизації, більшої кількості каналів або більших навантажень моделі/інструментів використовуйте більше vCPU/RAM/диска
-    - Якщо певний розмір VM недоступний у вашому регіоні або в межах квоти підписки, виберіть найближчий доступний SKU
+    - Почніть з меншого розміру для легкого використання й масштабуйте пізніше
+    - Використовуйте більше vCPU/RAM/диска для інтенсивнішої автоматизації, більшої кількості каналів або більших навантажень моделей/інструментів
+    - Якщо розмір VM недоступний у вашому регіоні або квоті підписки, виберіть найближчий доступний SKU
 
-    Перелічіть розміри VM, доступні у цільовому регіоні:
+    Перелічіть розміри VM, доступні у вашому цільовому регіоні:
 
     ```bash
     az vm list-skus --location "${LOCATION}" --resource-type virtualMachines -o table
     ```
 
-    Перевірте поточне використання/квоту vCPU і дисків:
+    Перевірте поточне використання та квоту vCPU і дисків:
 
     ```bash
     az vm list-usage --location "${LOCATION}" -o table
@@ -127,14 +125,14 @@ x-i18n:
 ## Розгортання ресурсів Azure
 
 <Steps>
-  <Step title="Створіть групу ресурсів">
+  <Step title="Create the resource group">
     ```bash
     az group create -n "${RG}" -l "${LOCATION}"
     ```
   </Step>
 
-  <Step title="Створіть network security group">
-    Створіть NSG і додайте правила так, щоб лише підмережа Bastion могла підключатися до VM через SSH.
+  <Step title="Create the network security group">
+    Створіть NSG і додайте правила, щоб лише підмережа Bastion могла підключатися до VM через SSH.
 
     ```bash
     az network nsg create \
@@ -165,12 +163,12 @@ x-i18n:
       --destination-port-ranges 22
     ```
 
-    Правила обробляються за пріоритетом (спочатку менше число): трафік Bastion дозволяється з пріоритетом 100, після чого весь інший SSH блокується з пріоритетами 110 і 120.
+    Правила оцінюються за пріоритетом (спочатку найменше число): трафік Bastion дозволено з пріоритетом 100, а потім увесь інший SSH блокується з пріоритетами 110 і 120.
 
   </Step>
 
-  <Step title="Створіть віртуальну мережу та підмережі">
-    Створіть VNet із підмережею VM (із прикріпленим NSG), потім додайте підмережу Bastion.
+  <Step title="Create the virtual network and subnets">
+    Створіть VNet з підмережею VM (із підключеним NSG), а потім додайте підмережу Bastion.
 
     ```bash
     az network vnet create \
@@ -194,7 +192,7 @@ x-i18n:
   </Step>
 
   <Step title="Створіть VM">
-    VM не має публічної IP-адреси. Доступ через SSH здійснюється виключно через Azure Bastion.
+    VM не має публічної IP-адреси. Доступ SSH здійснюється виключно через Azure Bastion.
 
     ```bash
     az vm create \
@@ -211,9 +209,9 @@ x-i18n:
       --nsg ""
     ```
 
-    `--public-ip-address ""` запобігає призначенню публічної IP-адреси. `--nsg ""` пропускає створення NSG на рівні окремого NIC (безпеку забезпечує NSG на рівні підмережі).
+    `--public-ip-address ""` запобігає призначенню публічної IP-адреси. `--nsg ""` пропускає створення NSG для окремого NIC (безпеку забезпечує NSG на рівні підмережі).
 
-    **Відтворюваність:** Команда вище використовує `latest` для образу Ubuntu. Щоб зафіксувати конкретну версію, перелічіть доступні версії й замініть `latest`:
+    **Відтворюваність:** Наведена вище команда використовує `latest` для образу Ubuntu. Щоб закріпити конкретну версію, виведіть список доступних версій і замініть `latest`:
 
     ```bash
     az vm image list \
@@ -224,7 +222,7 @@ x-i18n:
   </Step>
 
   <Step title="Створіть Azure Bastion">
-    Azure Bastion надає керований SSH-доступ до VM без відкриття публічної IP-адреси. Для SSH через CLI на основі `az network bastion ssh` потрібен SKU Standard із підтримкою tunneling.
+    Azure Bastion забезпечує керований SSH-доступ до VM без відкриття публічної IP-адреси. Для CLI-команди `az network bastion ssh` потрібен SKU Standard із тунелюванням.
 
     ```bash
     az network public-ip create \
@@ -238,15 +236,15 @@ x-i18n:
       --sku Standard --enable-tunneling true
     ```
 
-    Розгортання Bastion зазвичай триває 5–10 хвилин, але в деяких регіонах може займати до 15–30 хвилин.
+    Підготовка Bastion зазвичай займає 5-10 хвилин, але в деяких регіонах може тривати до 15-30 хвилин.
 
   </Step>
 </Steps>
 
-## Встановлення OpenClaw
+## Установіть OpenClaw
 
 <Steps>
-  <Step title="Підключіться до VM через SSH через Azure Bastion">
+  <Step title="Увійдіть до VM через Azure Bastion за допомогою SSH">
     ```bash
     VM_ID="$(az vm show -g "${RG}" -n "${VM_NAME}" --query id -o tsv)"
 
@@ -261,44 +259,44 @@ x-i18n:
 
   </Step>
 
-  <Step title="Встановіть OpenClaw (у shell VM)">
+  <Step title="Установіть OpenClaw (в оболонці VM)">
     ```bash
     curl -fsSL https://openclaw.ai/install.sh -o /tmp/install.sh
     bash /tmp/install.sh
     rm -f /tmp/install.sh
     ```
 
-    Інсталятор установлює Node LTS і залежності, якщо вони ще не встановлені, установлює OpenClaw і запускає майстер початкового налаштування. Докладніше див. у [Встановлення](/uk/install).
+    Інсталятор установлює Node LTS і залежності, якщо їх ще немає, установлює OpenClaw і запускає майстер початкового налаштування. Докладніше див. [Установлення](/uk/install).
 
   </Step>
 
   <Step title="Перевірте Gateway">
-    Після завершення початкового налаштування виконайте:
+    Після завершення початкового налаштування:
 
     ```bash
     openclaw gateway status
     ```
 
-    Більшість корпоративних команд Azure уже мають ліцензії GitHub Copilot. Якщо це ваш випадок, рекомендуємо вибрати провайдера GitHub Copilot у майстрі початкового налаштування OpenClaw. Див. [провайдер GitHub Copilot](/uk/providers/github-copilot).
+    Більшість корпоративних команд Azure вже мають ліцензії GitHub Copilot. Якщо це ваш випадок, рекомендуємо вибрати провайдера GitHub Copilot у майстрі початкового налаштування OpenClaw. Див. [провайдер GitHub Copilot](/uk/providers/github-copilot).
 
   </Step>
 </Steps>
 
 ## Міркування щодо вартості
 
-Azure Bastion SKU Standard коштує приблизно **\$140/місяць**, а VM (Standard_B2as_v2) — приблизно **\$55/місяць**.
+Azure Bastion Standard SKU коштує приблизно **\$140/місяць**, а VM (Standard_B2as_v2) коштує приблизно **\$55/місяць**.
 
 Щоб зменшити витрати:
 
-- **Деалокуйте VM**, коли вона не використовується (це зупиняє нарахування за обчислення; плата за диск зберігається). Поки VM деалокована, Gateway OpenClaw буде недоступний — запустіть її знову, коли він вам знадобиться:
+- **Звільняйте VM** коли вона не використовується (це зупиняє оплату обчислень; плата за диск залишається). OpenClaw Gateway буде недоступний, доки VM звільнено — перезапустіть її, коли вона знову потрібна в роботі:
 
   ```bash
   az vm deallocate -g "${RG}" -n "${VM_NAME}"
   az vm start -g "${RG}" -n "${VM_NAME}"   # restart later
   ```
 
-- **Видаляйте Bastion, коли він не потрібен**, і створюйте його знову, коли знадобиться доступ через SSH. Bastion є найбільшою складовою вартості й розгортається лише за кілька хвилин.
-- **Використовуйте SKU Basic для Bastion** (~\$38/місяць), якщо вам потрібен лише SSH через Portal і не потрібне тунелювання CLI (`az network bastion ssh`).
+- **Видаляйте Bastion, коли він не потрібен**, і створюйте його знову, коли потрібен SSH-доступ. Bastion є найбільшою складовою витрат, і його розгортання займає лише кілька хвилин.
+- **Використовуйте Basic Bastion SKU** (~\$38/місяць), якщо вам потрібен лише SSH через Portal і не потрібне тунелювання CLI (`az network bastion ssh`).
 
 ## Очищення
 
@@ -308,16 +306,16 @@ Azure Bastion SKU Standard коштує приблизно **\$140/місяць*
 az group delete -n "${RG}" --yes --no-wait
 ```
 
-Це видалить групу ресурсів і все, що в ній міститься (VM, VNet, NSG, Bastion, публічну IP-адресу).
+Це видаляє групу ресурсів і все в ній (VM, VNet, NSG, Bastion, публічну IP-адресу).
 
 ## Наступні кроки
 
 - Налаштуйте канали обміну повідомленнями: [Канали](/uk/channels)
-- Спарте локальні пристрої як Node: [Node](/uk/nodes)
+- Спарюйте локальні пристрої як вузли: [Вузли](/uk/nodes)
 - Налаштуйте Gateway: [Конфігурація Gateway](/uk/gateway/configuration)
-- Докладнішу інформацію про розгортання OpenClaw в Azure з провайдером моделей GitHub Copilot див. тут: [OpenClaw on Azure with GitHub Copilot](https://github.com/johnsonshi/openclaw-azure-github-copilot)
+- Докладніше про розгортання OpenClaw в Azure з провайдером моделі GitHub Copilot: [OpenClaw в Azure з GitHub Copilot](https://github.com/johnsonshi/openclaw-azure-github-copilot)
 
-## Пов’язано
+## Пов’язане
 
 - [Огляд встановлення](/uk/install)
 - [GCP](/uk/install/gcp)
