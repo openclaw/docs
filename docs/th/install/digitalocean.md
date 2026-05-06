@@ -1,24 +1,29 @@
 ---
 read_when:
     - การตั้งค่า OpenClaw บน DigitalOcean
-    - กำลังมองหา VPS แบบเสียเงินที่เรียบง่ายสำหรับ OpenClaw
+    - มองหา VPS แบบชำระเงินที่ใช้งานง่ายสำหรับ OpenClaw
 summary: โฮสต์ OpenClaw บน DigitalOcean Droplet
 title: DigitalOcean
 x-i18n:
-    generated_at: "2026-04-24T09:16:46Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:18:42Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 0b3d06a38e257f4a8ab88d1f228c659a6cf1a276fe91c8ba7b89a0084658a314
+    source_hash: 7aa09915d845c9ede27db794cac464490ba038e8e5e0a2ef0f5bfc62ef7e59ff
     source_path: install/digitalocean.md
-    workflow: 15
+    workflow: 16
 ---
 
-รัน OpenClaw Gateway แบบคงอยู่ถาวรบน DigitalOcean Droplet
+เรียกใช้ OpenClaw Gateway แบบถาวรบน DigitalOcean Droplet (ประมาณ $6/เดือนสำหรับแผน Basic ขนาด 1 GB)
+
+DigitalOcean เป็นเส้นทาง VPS แบบจ่ายเงินที่ง่ายที่สุด หากคุณต้องการตัวเลือกที่ถูกกว่าหรือฟรี:
+
+- [Hetzner](/th/install/hetzner) — €3.79/เดือน ได้คอร์/RAM ต่อดอลลาร์มากกว่า
+- [Oracle Cloud](/th/install/oracle) — ARM แบบ Always Free (สูงสุด 4 OCPU, RAM 24 GB) แต่การสมัครอาจยุ่งยากและรองรับเฉพาะ ARM
 
 ## ข้อกำหนดเบื้องต้น
 
-- บัญชี DigitalOcean ([สมัคร](https://cloud.digitalocean.com/registrations/new))
-- คู่คีย์ SSH (หรือพร้อมใช้การยืนยันตัวตนด้วยรหัสผ่าน)
+- บัญชี DigitalOcean ([สมัครใช้งาน](https://cloud.digitalocean.com/registrations/new))
+- คู่คีย์ SSH (หรือยินดีใช้การยืนยันตัวตนด้วยรหัสผ่าน)
 - เวลาประมาณ 20 นาที
 
 ## การตั้งค่า
@@ -26,17 +31,17 @@ x-i18n:
 <Steps>
   <Step title="สร้าง Droplet">
     <Warning>
-    ใช้อิมเมจฐานที่สะอาด (Ubuntu 24.04 LTS) หลีกเลี่ยงอิมเมจ Marketplace แบบ 1-click ของบุคคลที่สาม เว้นแต่คุณจะได้ตรวจสอบสคริปต์เริ่มต้นและค่าไฟร์วอลล์เริ่มต้นของมันแล้ว
+    ใช้อิมเมจพื้นฐานที่สะอาด (Ubuntu 24.04 LTS) หลีกเลี่ยงอิมเมจ Marketplace แบบ 1-click จากบุคคลที่สาม เว้นแต่คุณจะตรวจสอบสคริปต์เริ่มต้นและค่าเริ่มต้นของไฟร์วอลล์แล้ว
     </Warning>
 
-    1. ลงชื่อเข้าใช้ [DigitalOcean](https://cloud.digitalocean.com/)
+    1. เข้าสู่ระบบ [DigitalOcean](https://cloud.digitalocean.com/)
     2. คลิก **Create > Droplets**
     3. เลือก:
-       - **Region:** ใกล้คุณที่สุด
-       - **Image:** Ubuntu 24.04 LTS
-       - **Size:** Basic, Regular, 1 vCPU / 1 GB RAM / 25 GB SSD
-       - **Authentication:** SSH key (แนะนำ) หรือ password
-    4. คลิก **Create Droplet** และจด IP address ไว้
+       - **ภูมิภาค:** ใกล้คุณที่สุด
+       - **อิมเมจ:** Ubuntu 24.04 LTS
+       - **ขนาด:** Basic, Regular, 1 vCPU / RAM 1 GB / SSD 25 GB
+       - **การยืนยันตัวตน:** คีย์ SSH (แนะนำ) หรือรหัสผ่าน
+    4. คลิก **Create Droplet** และจดที่อยู่ IP ไว้
 
   </Step>
 
@@ -57,16 +62,16 @@ x-i18n:
 
   </Step>
 
-  <Step title="รัน onboarding">
+  <Step title="เรียกใช้การเริ่มต้นใช้งาน">
     ```bash
     openclaw onboard --install-daemon
     ```
 
-    wizard จะพาคุณตั้งค่า model auth, ช่องทาง, การสร้าง gateway token และการติดตั้ง daemon (systemd)
+    วิซาร์ดจะพาคุณผ่านการยืนยันตัวตนของโมเดล การตั้งค่าช่องทาง การสร้างโทเค็น Gateway และการติดตั้ง daemon (systemd)
 
   </Step>
 
-  <Step title="เพิ่ม swap (แนะนำสำหรับ Droplet 1 GB)">
+  <Step title="เพิ่ม swap (แนะนำสำหรับ Droplet ขนาด 1 GB)">
     ```bash
     fallocate -l 2G /swapfile
     chmod 600 /swapfile
@@ -76,7 +81,7 @@ x-i18n:
     ```
   </Step>
 
-  <Step title="ตรวจสอบ gateway">
+  <Step title="ตรวจสอบ Gateway">
     ```bash
     openclaw status
     systemctl --user status openclaw-gateway.service
@@ -84,10 +89,10 @@ x-i18n:
     ```
   </Step>
 
-  <Step title="เข้าถึง Control UI">
-    โดยค่าเริ่มต้น gateway จะ bind กับ loopback ให้เลือกหนึ่งในตัวเลือกต่อไปนี้
+  <Step title="เข้าถึง UI ควบคุม">
+    Gateway จะผูกกับ loopback เป็นค่าเริ่มต้น เลือกหนึ่งในตัวเลือกเหล่านี้
 
-    **ตัวเลือก A: SSH tunnel (ง่ายที่สุด)**
+    **ตัวเลือก A: ทันเนล SSH (ง่ายที่สุด)**
 
     ```bash
     # From your local machine
@@ -105,37 +110,63 @@ x-i18n:
     openclaw gateway restart
     ```
 
-    จากนั้นเปิด `https://<magicdns>/` จากอุปกรณ์ใดก็ได้บน tailnet ของคุณ
+    จากนั้นเปิด `https://<magicdns>/` จากอุปกรณ์ใดก็ได้ใน tailnet ของคุณ
 
-    **ตัวเลือก C: bind กับ tailnet (ไม่ใช้ Serve)**
+    Tailscale Serve ยืนยันตัวตนทราฟฟิก UI ควบคุมและ WebSocket ผ่านส่วนหัวตัวตนของ tailnet ซึ่งถือว่าโฮสต์ Gateway เองเป็นที่เชื่อถือได้ ปลายทาง HTTP API จะใช้โหมดการยืนยันตัวตนปกติของ Gateway (โทเค็น/รหัสผ่าน) ไม่ว่าจะอย่างไรก็ตาม หากต้องการบังคับใช้ข้อมูลประจำตัวแบบ shared-secret อย่างชัดเจนผ่าน Serve ให้ตั้งค่า `gateway.auth.allowTailscale: false` และใช้ `gateway.auth.mode: "token"` หรือ `"password"`
+
+    **ตัวเลือก C: ผูกกับ Tailnet (ไม่ใช้ Serve)**
 
     ```bash
     openclaw config set gateway.bind tailnet
     openclaw gateway restart
     ```
 
-    จากนั้นเปิด `http://<tailscale-ip>:18789` (ต้องใช้ token)
+    จากนั้นเปิด `http://<tailscale-ip>:18789` (ต้องใช้โทเค็น)
 
   </Step>
 </Steps>
 
+## ความคงอยู่และการสำรองข้อมูล
+
+สถานะของ OpenClaw อยู่ภายใต้:
+
+- `~/.openclaw/` — `openclaw.json`, `auth-profiles.json` ต่อ agent, สถานะของช่องทาง/ผู้ให้บริการ และข้อมูลเซสชัน
+- `~/.openclaw/workspace/` — พื้นที่ทำงานของ agent (SOUL.md, หน่วยความจำ, อาร์ติแฟกต์)
+
+ข้อมูลเหล่านี้ยังคงอยู่หลังจาก Droplet รีบูต หากต้องการสร้างสแนปช็อตที่พกพาได้:
+
+```bash
+openclaw backup create
+```
+
+สแนปช็อตของ DigitalOcean จะสำรองทั้ง Droplet ส่วน `openclaw backup create` สามารถพกพาข้ามโฮสต์ได้
+
+## เคล็ดลับสำหรับ RAM 1 GB
+
+Droplet ราคา $6 มี RAM เพียง 1 GB เพื่อให้การใช้งานลื่นไหล:
+
+- ตรวจสอบให้แน่ใจว่าขั้นตอน swap ด้านบนอยู่ใน `/etc/fstab` เพื่อให้ยังคงอยู่หลังรีบูต
+- เลือกใช้โมเดลแบบ API (Claude, GPT) แทนโมเดลภายในเครื่อง — การอนุมาน LLM ภายในเครื่องไม่เหมาะกับ 1 GB
+- ตั้งค่า `agents.defaults.model.primary` เป็นโมเดลที่เล็กลงหากคุณเจอ OOM กับพรอมป์ต์ขนาดใหญ่
+- ตรวจสอบด้วย `free -h` และ `htop`
+
 ## การแก้ไขปัญหา
 
-**Gateway ไม่ยอมเริ่มทำงาน** -- รัน `openclaw doctor --non-interactive` และตรวจสอบ log ด้วย `journalctl --user -u openclaw-gateway.service -n 50`
+**Gateway ไม่เริ่มทำงาน** -- เรียกใช้ `openclaw doctor --non-interactive` และตรวจสอบล็อกด้วย `journalctl --user -u openclaw-gateway.service -n 50`
 
-**พอร์ตถูกใช้งานอยู่แล้ว** -- รัน `lsof -i :18789` เพื่อหาโปรเซส จากนั้นหยุดมัน
+**พอร์ตถูกใช้งานอยู่แล้ว** -- เรียกใช้ `lsof -i :18789` เพื่อหากระบวนการ แล้วหยุดกระบวนการนั้น
 
-**หน่วยความจำไม่พอ** -- ตรวจสอบว่า swap ทำงานอยู่ด้วย `free -h` หากยังเจอ OOM อยู่ ให้ใช้โมเดลแบบอิง API (Claude, GPT) แทนโมเดลในเครื่อง หรืออัปเกรดเป็น Droplet 2 GB
+**หน่วยความจำไม่พอ** -- ตรวจสอบว่า swap ทำงานอยู่ด้วย `free -h` หากยังเจอ OOM ให้ใช้โมเดลแบบ API (Claude, GPT) แทนโมเดลภายในเครื่อง หรืออัปเกรดเป็น Droplet ขนาด 2 GB
 
 ## ขั้นตอนถัดไป
 
-- [Channels](/th/channels) -- เชื่อมต่อ Telegram, WhatsApp, Discord และอื่น ๆ
-- [การกำหนดค่า Gateway](/th/gateway/configuration) -- ตัวเลือก config ทั้งหมด
-- [การอัปเดต](/th/install/updating) -- ทำให้ OpenClaw ทันสมัยอยู่เสมอ
+- [ช่องทาง](/th/channels) -- เชื่อมต่อ Telegram, WhatsApp, Discord และอื่นๆ
+- [การกำหนดค่า Gateway](/th/gateway/configuration) -- ตัวเลือกการกำหนดค่าทั้งหมด
+- [การอัปเดต](/th/install/updating) -- ทำให้ OpenClaw เป็นเวอร์ชันล่าสุดอยู่เสมอ
 
 ## ที่เกี่ยวข้อง
 
 - [ภาพรวมการติดตั้ง](/th/install)
 - [Fly.io](/th/install/fly)
 - [Hetzner](/th/install/hetzner)
-- [VPS hosting](/th/vps)
+- [โฮสติ้ง VPS](/th/vps)

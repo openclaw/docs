@@ -1,44 +1,42 @@
 ---
 read_when:
-    - คุณต้องการใช้ Perplexity Search สำหรับการค้นหาเว็บ
-    - คุณต้องตั้งค่า `PERPLEXITY_API_KEY` หรือ `OPENROUTER_API_KEY` ไว้
-summary: API การค้นหา Perplexity และความเข้ากันได้ของ Sonar/OpenRouter สำหรับ `web_search`
+    - คุณต้องการใช้ Perplexity Search สำหรับค้นหาเว็บ
+    - คุณต้องตั้งค่า PERPLEXITY_API_KEY หรือ OPENROUTER_API_KEY
+summary: ความเข้ากันได้ของ Perplexity Search API และ Sonar/OpenRouter สำหรับ web_search
 title: การค้นหา Perplexity
 x-i18n:
-    generated_at: "2026-04-24T09:37:58Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:35:21Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 6f85aa953ff406237013fdc9a06b86756a26e62d41e5a3e3aa732563960e4ba9
+    source_hash: 113abafae66acd8aaa0302b687ba13347eb44a81a4217b61bb68f07d8a119cb0
     source_path: tools/perplexity-search.md
-    workflow: 15
+    workflow: 16
 ---
 
-# API การค้นหา Perplexity
-
-OpenClaw รองรับ API การค้นหา Perplexity เป็น provider สำหรับ `web_search`
+OpenClaw รองรับ Perplexity Search API เป็นผู้ให้บริการ `web_search`
 โดยจะส่งคืนผลลัพธ์แบบมีโครงสร้างพร้อมฟิลด์ `title`, `url` และ `snippet`
 
 เพื่อความเข้ากันได้ OpenClaw ยังรองรับการตั้งค่า Perplexity Sonar/OpenRouter แบบเดิมด้วย
-หากคุณใช้ `OPENROUTER_API_KEY`, คีย์ `sk-or-...` ใน `plugins.entries.perplexity.config.webSearch.apiKey` หรือกำหนด `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` provider จะสลับไปใช้เส้นทาง chat-completions และส่งคืนคำตอบที่สังเคราะห์โดย AI พร้อมการอ้างอิง แทนผลลัพธ์แบบมีโครงสร้างของ Search API
+หากคุณใช้ `OPENROUTER_API_KEY`, คีย์ `sk-or-...` ใน `plugins.entries.perplexity.config.webSearch.apiKey` หรือตั้งค่า `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` ผู้ให้บริการจะสลับไปใช้เส้นทาง chat-completions และส่งคืนคำตอบที่ AI สังเคราะห์พร้อมการอ้างอิงแทนผลลัพธ์ Search API แบบมีโครงสร้าง
 
-## การขอรับ Perplexity API key
+## การรับคีย์ Perplexity API
 
 1. สร้างบัญชี Perplexity ที่ [perplexity.ai/settings/api](https://www.perplexity.ai/settings/api)
-2. สร้าง API key ในแดชบอร์ด
-3. เก็บคีย์ไว้ใน config หรือตั้งค่า `PERPLEXITY_API_KEY` ใน environment ของ Gateway
+2. สร้างคีย์ API ในแดชบอร์ด
+3. จัดเก็บคีย์ไว้ในการกำหนดค่า หรือตั้งค่า `PERPLEXITY_API_KEY` ในสภาพแวดล้อมของ Gateway
 
 ## ความเข้ากันได้กับ OpenRouter
 
-หากคุณเคยใช้ OpenRouter สำหรับ Perplexity Sonar อยู่แล้ว ให้คง `provider: "perplexity"` ไว้และตั้งค่า `OPENROUTER_API_KEY` ใน environment ของ Gateway หรือเก็บคีย์ `sk-or-...` ไว้ใน `plugins.entries.perplexity.config.webSearch.apiKey`
+หากคุณใช้ OpenRouter สำหรับ Perplexity Sonar อยู่แล้ว ให้คง `provider: "perplexity"` ไว้และตั้งค่า `OPENROUTER_API_KEY` ในสภาพแวดล้อมของ Gateway หรือจัดเก็บคีย์ `sk-or-...` ใน `plugins.entries.perplexity.config.webSearch.apiKey`
 
-ตัวควบคุมความเข้ากันได้แบบเลือกได้:
+การควบคุมความเข้ากันได้แบบไม่บังคับ:
 
 - `plugins.entries.perplexity.config.webSearch.baseUrl`
 - `plugins.entries.perplexity.config.webSearch.model`
 
-## ตัวอย่าง config
+## ตัวอย่างการกำหนดค่า
 
-### Perplexity Search API แบบ native
+### Perplexity Search API แบบเนทีฟ
 
 ```json5
 {
@@ -92,30 +90,30 @@ OpenClaw รองรับ API การค้นหา Perplexity เป็น
 
 ## ตำแหน่งที่ตั้งค่าคีย์
 
-**ผ่าน config:** รัน `openclaw configure --section web` โดยจะเก็บคีย์ไว้ใน
-`~/.openclaw/openclaw.json` ภายใต้ `plugins.entries.perplexity.config.webSearch.apiKey`
-ฟิลด์นี้ยังรองรับอ็อบเจ็กต์ SecretRef ด้วย
+**ผ่านการกำหนดค่า:** เรียกใช้ `openclaw configure --section web` ซึ่งจะจัดเก็บคีย์ใน
+`~/.openclaw/openclaw.json` ใต้ `plugins.entries.perplexity.config.webSearch.apiKey`
+ฟิลด์นั้นยังยอมรับออบเจ็กต์ SecretRef ด้วย
 
-**ผ่าน environment:** ตั้งค่า `PERPLEXITY_API_KEY` หรือ `OPENROUTER_API_KEY`
-ใน environment ของโปรเซส Gateway สำหรับการติดตั้ง gateway ให้ใส่ไว้ใน
-`~/.openclaw/.env` (หรือ environment ของ service ของคุณ) ดู [Env vars](/th/help/faq#env-vars-and-env-loading)
+**ผ่านสภาพแวดล้อม:** ตั้งค่า `PERPLEXITY_API_KEY` หรือ `OPENROUTER_API_KEY`
+ในสภาพแวดล้อมของกระบวนการ Gateway สำหรับการติดตั้ง gateway ให้ใส่ไว้ใน
+`~/.openclaw/.env` (หรือสภาพแวดล้อมของบริการของคุณ) ดู [ตัวแปรสภาพแวดล้อม](/th/help/faq#env-vars-and-env-loading)
 
-หากตั้งค่า `provider: "perplexity"` ไว้ และ SecretRef ของคีย์ Perplexity ไม่สามารถ resolve ได้โดยไม่มี env fallback การเริ่มต้น/โหลดใหม่จะล้มเหลวทันที
+หากกำหนดค่า `provider: "perplexity"` ไว้ และ SecretRef ของคีย์ Perplexity ไม่สามารถแก้ค่าได้โดยไม่มีตัวสำรองจากสภาพแวดล้อม การเริ่มต้น/โหลดซ้ำจะล้มเหลวทันที
 
 ## พารามิเตอร์ของเครื่องมือ
 
-พารามิเตอร์เหล่านี้ใช้กับเส้นทาง API การค้นหา Perplexity แบบ native
+พารามิเตอร์เหล่านี้ใช้กับเส้นทาง Perplexity Search API แบบเนทีฟ
 
 <ParamField path="query" type="string" required>
 คำค้นหา
 </ParamField>
 
 <ParamField path="count" type="number" default="5">
-จำนวนผลลัพธ์ที่จะส่งคืน (1–10)
+จำนวนผลลัพธ์ที่จะส่งคืน (1-10)
 </ParamField>
 
 <ParamField path="country" type="string">
-รหัสประเทศ ISO แบบ 2 ตัวอักษร (เช่น `US`, `DE`)
+รหัสประเทศ ISO 2 ตัวอักษร (เช่น `US`, `DE`)
 </ParamField>
 
 <ParamField path="language" type="string">
@@ -123,7 +121,7 @@ OpenClaw รองรับ API การค้นหา Perplexity เป็น
 </ParamField>
 
 <ParamField path="freshness" type="'day' | 'week' | 'month' | 'year'">
-ตัวกรองเวลา — `day` คือ 24 ชั่วโมง
+ตัวกรองเวลา - `day` คือ 24 ชั่วโมง
 </ParamField>
 
 <ParamField path="date_after" type="string">
@@ -135,7 +133,7 @@ OpenClaw รองรับ API การค้นหา Perplexity เป็น
 </ParamField>
 
 <ParamField path="domain_filter" type="string[]">
-อาร์เรย์ allowlist/denylist ของโดเมน (สูงสุด 20)
+อาร์เรย์รายการโดเมนที่อนุญาต/ปฏิเสธ (สูงสุด 20)
 </ParamField>
 
 <ParamField path="max_tokens" type="number" default="25000">
@@ -146,51 +144,51 @@ OpenClaw รองรับ API การค้นหา Perplexity เป็น
 ขีดจำกัดโทเค็นต่อหน้า
 </ParamField>
 
-สำหรับเส้นทางความเข้ากันได้แบบเดิมของ Sonar/OpenRouter:
+สำหรับเส้นทางความเข้ากันได้กับ Sonar/OpenRouter แบบเดิม:
 
-- รองรับ `query`, `count` และ `freshness`
-- `count` ใช้เพื่อความเข้ากันได้เท่านั้นในเส้นทางนั้น; การตอบกลับยังคงเป็นคำตอบที่สังเคราะห์ขึ้นหนึ่งรายการ
+- ยอมรับ `query`, `count` และ `freshness`
+- `count` มีไว้เพื่อความเข้ากันได้เท่านั้นในเส้นทางนั้น การตอบกลับยังคงเป็นคำตอบที่สังเคราะห์ขึ้นหนึ่งรายการ
   พร้อมการอ้างอิง ไม่ใช่รายการผลลัพธ์ N รายการ
-- ตัวกรองที่มีเฉพาะใน Search API เช่น `country`, `language`, `date_after`,
+- ตัวกรองที่ใช้ได้เฉพาะ Search API เช่น `country`, `language`, `date_after`,
   `date_before`, `domain_filter`, `max_tokens` และ `max_tokens_per_page`
-  จะส่งคืนข้อผิดพลาดแบบชัดเจน
+  จะส่งคืนข้อผิดพลาดอย่างชัดเจน
 
 **ตัวอย่าง:**
 
 ```javascript
-// การค้นหาแบบระบุประเทศและภาษา
+// Country and language-specific search
 await web_search({
   query: "renewable energy",
   country: "DE",
   language: "de",
 });
 
-// ผลลัพธ์ล่าสุด (สัปดาห์ที่ผ่านมา)
+// Recent results (past week)
 await web_search({
   query: "AI news",
   freshness: "week",
 });
 
-// การค้นหาตามช่วงวันที่
+// Date range search
 await web_search({
   query: "AI developments",
   date_after: "2024-01-01",
   date_before: "2024-06-30",
 });
 
-// การกรองโดเมน (allowlist)
+// Domain filtering (allowlist)
 await web_search({
   query: "climate research",
   domain_filter: ["nature.com", "science.org", ".edu"],
 });
 
-// การกรองโดเมน (denylist - ใส่คำนำหน้าเป็น -)
+// Domain filtering (denylist - prefix with -)
 await web_search({
   query: "product reviews",
   domain_filter: ["-reddit.com", "-pinterest.com"],
 });
 
-// การดึงเนื้อหาเพิ่มขึ้น
+// More content extraction
 await web_search({
   query: "detailed AI research",
   max_tokens: 50000,
@@ -198,22 +196,32 @@ await web_search({
 });
 ```
 
-### กฎของ domain filter
+### กฎตัวกรองโดเมน
 
 - สูงสุด 20 โดเมนต่อหนึ่งตัวกรอง
-- ไม่สามารถผสม allowlist และ denylist ในคำขอเดียวกันได้
-- ใช้คำนำหน้า `-` สำหรับรายการ denylist (เช่น `["-reddit.com"]`)
+- ไม่สามารถผสมรายการอนุญาตและรายการปฏิเสธในคำขอเดียวกันได้
+- ใช้คำนำหน้า `-` สำหรับรายการปฏิเสธ (เช่น `["-reddit.com"]`)
 
 ## หมายเหตุ
 
-- API การค้นหา Perplexity ส่งคืนผลลัพธ์การค้นหาเว็บแบบมีโครงสร้าง (`title`, `url`, `snippet`)
-- OpenRouter หรือการกำหนด `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` อย่างชัดเจน จะสลับ Perplexity กลับไปใช้ Sonar chat completions เพื่อความเข้ากันได้
-- ความเข้ากันได้แบบ Sonar/OpenRouter จะส่งคืนคำตอบที่สังเคราะห์ขึ้นหนึ่งรายการพร้อมการอ้างอิง ไม่ใช่แถวผลลัพธ์แบบมีโครงสร้าง
-- ผลลัพธ์จะถูกแคชเป็นเวลา 15 นาทีโดยค่าเริ่มต้น (กำหนดค่าได้ผ่าน `cacheTtlMinutes`)
+- Perplexity Search API ส่งคืนผลลัพธ์การค้นหาเว็บแบบมีโครงสร้าง (`title`, `url`, `snippet`)
+- OpenRouter หรือ `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` ที่ระบุอย่างชัดเจน จะสลับ Perplexity กลับไปใช้ Sonar chat completions เพื่อความเข้ากันได้
+- ความเข้ากันได้กับ Sonar/OpenRouter ส่งคืนคำตอบที่สังเคราะห์ขึ้นหนึ่งรายการพร้อมการอ้างอิง ไม่ใช่แถวผลลัพธ์แบบมีโครงสร้าง
+- ผลลัพธ์ถูกแคชเป็นค่าเริ่มต้น 15 นาที (กำหนดค่าได้ผ่าน `cacheTtlMinutes`)
 
 ## ที่เกี่ยวข้อง
 
-- [Web Search overview](/th/tools/web) -- provider ทั้งหมดและการตรวจจับอัตโนมัติ
-- [Perplexity Search API docs](https://docs.perplexity.ai/docs/search/quickstart) -- เอกสารอย่างเป็นทางการของ Perplexity
-- [Brave Search](/th/tools/brave-search) -- ผลลัพธ์แบบมีโครงสร้างพร้อมตัวกรองประเทศ/ภาษา
-- [Exa Search](/th/tools/exa-search) -- การค้นหาแบบ neural พร้อมการดึงเนื้อหา
+<CardGroup cols={2}>
+  <Card title="ภาพรวมการค้นหาเว็บ" href="/th/tools/web" icon="globe">
+    ผู้ให้บริการทั้งหมดและกฎการตรวจจับอัตโนมัติ
+  </Card>
+  <Card title="การค้นหา Brave" href="/th/tools/brave-search" icon="shield">
+    ผลลัพธ์แบบมีโครงสร้างพร้อมตัวกรองประเทศและภาษา
+  </Card>
+  <Card title="การค้นหา Exa" href="/th/tools/exa-search" icon="magnifying-glass">
+    การค้นหาแบบนิวรัลพร้อมการดึงเนื้อหา
+  </Card>
+  <Card title="เอกสาร Perplexity Search API" href="https://docs.perplexity.ai/docs/search/quickstart" icon="arrow-up-right-from-square">
+    คู่มือเริ่มต้นอย่างรวดเร็วและเอกสารอ้างอิงอย่างเป็นทางการของ Perplexity Search API
+  </Card>
+</CardGroup>

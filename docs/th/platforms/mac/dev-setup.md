@@ -1,79 +1,79 @@
 ---
 read_when:
-    - การตั้งค่าสภาพแวดล้อมสำหรับการพัฒนาบน macOS
-summary: คู่มือการตั้งค่าสำหรับนักพัฒนาที่ทำงานกับแอป OpenClaw สำหรับ macOS
-title: การตั้งค่าสำหรับการพัฒนาบน macOS
+    - การตั้งค่าสภาพแวดล้อมการพัฒนาบน macOS
+summary: คู่มือการตั้งค่าสำหรับนักพัฒนาที่ทำงานกับแอป macOS ของ OpenClaw
+title: การตั้งค่าสภาพแวดล้อมการพัฒนาบน macOS
 x-i18n:
-    generated_at: "2026-04-30T10:03:27Z"
+    generated_at: "2026-05-06T09:22:29Z"
     model: gpt-5.5
     provider: openai
-    source_hash: d0c494b7a214b6db2880ba02c512653c35dbcdf80805bee9777ec946412668e1
+    source_hash: c3ecf014bff10e8416f1586f731e30c9de4a0f09eb82046d06ead7511c47d660
     source_path: platforms/mac/dev-setup.md
     workflow: 16
 ---
 
-# การตั้งค่าสำหรับนักพัฒนา macOS
+# การตั้งค่านักพัฒนา macOS
 
-บิลด์และเรียกใช้แอปพลิเคชัน macOS ของ OpenClaw จากซอร์ส
+สร้างและรันแอปพลิเคชัน OpenClaw สำหรับ macOS จากซอร์ส
 
 ## ข้อกำหนดเบื้องต้น
 
-ก่อนบิลด์แอป ตรวจสอบให้แน่ใจว่าคุณได้ติดตั้งสิ่งต่อไปนี้แล้ว:
+ก่อนสร้างแอป ตรวจสอบให้แน่ใจว่าคุณได้ติดตั้งสิ่งต่อไปนี้แล้ว:
 
 1. **Xcode 26.2+**: จำเป็นสำหรับการพัฒนา Swift
-2. **Node.js 24 & pnpm**: แนะนำสำหรับ Gateway, CLI และสคริปต์การทำแพ็กเกจ Node 22 LTS ซึ่งปัจจุบันคือ `22.14+` ยังคงรองรับเพื่อความเข้ากันได้
+2. **Node.js 24 และ pnpm**: แนะนำสำหรับ Gateway, CLI และสคริปต์การแพ็กเกจ Node 22 LTS ซึ่งปัจจุบันคือ `22.14+` ยังคงรองรับเพื่อความเข้ากันได้
 
 ## 1. ติดตั้ง Dependencies
 
-ติดตั้ง dependencies สำหรับทั้งโปรเจกต์:
+ติดตั้ง dependencies ทั้งโปรเจกต์:
 
 ```bash
 pnpm install
 ```
 
-## 2. บิลด์และทำแพ็กเกจแอป
+## 2. สร้างและแพ็กเกจแอป
 
-หากต้องการบิลด์แอป macOS และทำแพ็กเกจเป็น `dist/OpenClaw.app` ให้รัน:
+หากต้องการสร้างแอป macOS และแพ็กเกจเป็น `dist/OpenClaw.app` ให้รัน:
 
 ```bash
 ./scripts/package-mac-app.sh
 ```
 
-หากคุณไม่มีใบรับรอง Apple Developer ID สคริปต์จะใช้ **ad-hoc signing** (`-`) โดยอัตโนมัติ
+หากคุณไม่มีใบรับรอง Apple Developer ID สคริปต์จะใช้ **การลงนามแบบ ad-hoc** (`-`) โดยอัตโนมัติ
 
-สำหรับโหมดการรันเพื่อพัฒนา แฟล็กการเซ็นชื่อ และการแก้ปัญหา Team ID โปรดดู README ของแอป macOS:
+สำหรับโหมดการรันสำหรับพัฒนา แฟล็กการลงนาม และการแก้ปัญหา Team ID โปรดดู README ของแอป macOS:
 [https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md](https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md)
 
-> **หมายเหตุ**: แอปที่เซ็นแบบ ad-hoc อาจแสดงพรอมป์ด้านความปลอดภัย หากแอปแครชทันทีพร้อมข้อความ "Abort trap 6" โปรดดูส่วน [การแก้ปัญหา](#troubleshooting)
+> **หมายเหตุ**: แอปที่ลงนามแบบ ad-hoc อาจทำให้มีพรอมป์ด้านความปลอดภัย หากแอปขัดข้องทันทีพร้อมข้อความ "Abort trap 6" โปรดดูส่วน [การแก้ปัญหา](#troubleshooting)
 
 ## 3. ติดตั้ง CLI
 
-แอป macOS คาดหวังให้มีการติดตั้ง CLI `openclaw` แบบ global เพื่อจัดการงานเบื้องหลัง
+แอป macOS คาดว่าจะมีการติดตั้ง CLI `openclaw` แบบ global เพื่อจัดการงานเบื้องหลัง
 
 **วิธีติดตั้ง (แนะนำ):**
 
 1. เปิดแอป OpenClaw
-2. ไปที่แท็บการตั้งค่า **General**
-3. คลิก **"Install CLI"**
+2. ไปที่แท็บการตั้งค่า **ทั่วไป**
+3. คลิก **"ติดตั้ง CLI"**
 
-อีกทางหนึ่ง ติดตั้งด้วยตนเอง:
+หรือจะติดตั้งด้วยตนเองก็ได้:
 
 ```bash
 npm install -g openclaw@<version>
 ```
 
-`pnpm add -g openclaw@<version>` และ `bun add -g openclaw@<version>` ก็ใช้ได้เช่นกัน
-สำหรับรันไทม์ Gateway นั้น Node ยังคงเป็นแนวทางที่แนะนำ
+`pnpm add -g openclaw@<version>` และ `bun add -g openclaw@<version>` ก็ใช้งานได้เช่นกัน
+สำหรับรันไทม์ Gateway ยังคงแนะนำให้ใช้เส้นทาง Node
 
 ## การแก้ปัญหา
 
-### บิลด์ล้มเหลว: toolchain หรือ SDK ไม่ตรงกัน
+### การสร้างล้มเหลว: toolchain หรือ SDK ไม่ตรงกัน
 
-การบิลด์แอป macOS คาดหวัง macOS SDK ล่าสุดและ toolchain Swift 6.2
+การสร้างแอป macOS คาดว่าจะใช้ macOS SDK ล่าสุดและ toolchain Swift 6.2
 
 **Dependencies ของระบบ (จำเป็น):**
 
-- **macOS เวอร์ชันล่าสุดที่มีให้ใน Software Update** (จำเป็นสำหรับ Xcode 26.2 SDKs)
+- **macOS เวอร์ชันล่าสุดที่มีใน Software Update** (จำเป็นสำหรับ SDK ของ Xcode 26.2)
 - **Xcode 26.2** (toolchain Swift 6.2)
 
 **การตรวจสอบ:**
@@ -83,13 +83,13 @@ xcodebuild -version
 xcrun swift --version
 ```
 
-หากเวอร์ชันไม่ตรงกัน ให้อัปเดต macOS/Xcode แล้วรันการบิลด์อีกครั้ง
+หากเวอร์ชันไม่ตรงกัน ให้อัปเดต macOS/Xcode แล้วรันการสร้างอีกครั้ง
 
-### แอปแครชเมื่อให้สิทธิ์
+### แอปขัดข้องเมื่อให้สิทธิ์
 
-หากแอปแครชเมื่อคุณพยายามอนุญาตการเข้าถึง **Speech Recognition** หรือ **Microphone** อาจเกิดจากแคช TCC เสียหายหรือ signature ไม่ตรงกัน
+หากแอปขัดข้องเมื่อคุณพยายามอนุญาตการเข้าถึง **การรู้จำเสียงพูด** หรือ **ไมโครโฟน** อาจเกิดจากแคช TCC เสียหายหรือลายเซ็นไม่ตรงกัน
 
-**วิธีแก้:**
+**วิธีแก้ไข:**
 
 1. รีเซ็ตสิทธิ์ TCC:
 
@@ -97,11 +97,11 @@ xcrun swift --version
    tccutil reset All ai.openclaw.mac.debug
    ```
 
-2. หากยังล้มเหลว ให้เปลี่ยน `BUNDLE_ID` ชั่วคราวใน [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) เพื่อบังคับให้ macOS เริ่มจาก "clean slate"
+2. หากยังล้มเหลว ให้เปลี่ยน `BUNDLE_ID` ชั่วคราวใน [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) เพื่อบังคับให้ macOS เริ่มจากสถานะ "สะอาด"
 
 ### Gateway "Starting..." ค้างไม่สิ้นสุด
 
-หากสถานะ Gateway ค้างอยู่ที่ "Starting..." ให้ตรวจสอบว่ามี process แบบ zombie ยึดพอร์ตอยู่หรือไม่:
+หากสถานะ Gateway ค้างอยู่ที่ "Starting..." ให้ตรวจสอบว่ามี zombie process กำลังยึดพอร์ตอยู่หรือไม่:
 
 ```bash
 openclaw gateway status

@@ -1,73 +1,73 @@
 ---
 read_when:
-    - คุณกำลังสร้าง Plugin ช่องทางและต้องการวงจรชีวิตของรอบขาเข้าที่ใช้ร่วมกัน
-    - คุณกำลังย้ายตัวตรวจสอบช่องทางออกจากโค้ดเชื่อมการบันทึก/การส่งต่อที่เขียนเอง
-    - คุณต้องเข้าใจขั้นตอนการรับเข้า การนำเข้า การจัดประเภท การตรวจสอบล่วงหน้า การแก้ไข การบันทึก การส่งต่อ และการสรุปขั้นสุดท้าย
+    - คุณกำลังสร้าง Plugin ช่องทางและต้องการวงจรชีวิตของเทิร์นขาเข้าที่ใช้ร่วมกัน
+    - คุณกำลังย้ายตัวเฝ้าตรวจช่องทางออกจากโค้ดเชื่อมสำหรับการบันทึก/การส่งต่อที่เขียนขึ้นเอง
+    - คุณต้องเข้าใจขั้นตอนการรับเข้า การนำเข้า การจัดประเภท การตรวจสอบก่อนดำเนินการ การแก้ไข การบันทึก การจัดส่ง และการสรุปขั้นสุดท้าย
 sidebarTitle: Channel turn
-summary: runtime.channel.turn -- เคอร์เนลรอบขาเข้าที่ใช้ร่วมกัน ซึ่ง Plugin ช่องทางที่รวมมาให้และของบุคคลที่สามใช้เพื่อบันทึก ส่งต่อ และสรุปปิดรอบของเอเจนต์
+summary: runtime.channel.turn -- เคอร์เนลเทิร์นขาเข้าที่ใช้ร่วมกัน ซึ่ง Plugin ช่องทางที่มาพร้อมชุดและของบุคคลที่สามใช้เพื่อบันทึก ส่งต่อ และสรุปเทิร์นของเอเจนต์
 title: เคอร์เนลเทิร์นของช่องทาง
 x-i18n:
-    generated_at: "2026-04-30T10:07:55Z"
+    generated_at: "2026-05-06T09:25:08Z"
     model: gpt-5.5
     provider: openai
-    source_hash: dc918da4c43f955f509aed18a93129db26efe21686c30f9328a5639f3e700984
+    source_hash: a2af51bcbf179d68221e800b4c7ec6fa7db5d02a0812dc303eb1438d111c2ea4
     source_path: plugins/sdk-channel-turn.md
     workflow: 16
 ---
 
-เคอร์เนลเทิร์นของช่องทางคือสเตตแมชชีนขาเข้าที่ใช้ร่วมกัน ซึ่งแปลงเหตุการณ์แพลตฟอร์มที่ผ่านการทำให้เป็นมาตรฐานแล้วให้เป็นเทิร์นของเอเจนต์ Plugin ช่องทางจะให้ข้อเท็จจริงของแพลตฟอร์มและคอลแบ็กสำหรับการส่งมอบ Core เป็นเจ้าของการประสานงาน: รับเข้า, จัดประเภท, ตรวจล่วงหน้า, แก้ไขข้อมูล, อนุญาต, ประกอบ, บันทึก, ส่งต่อ และสรุปขั้นสุดท้าย
+The channel turn kernel คือ state machine ขาเข้าที่ใช้ร่วมกัน ซึ่งแปลงเหตุการณ์ของแพลตฟอร์มที่ผ่านการทำให้เป็นมาตรฐานแล้วให้เป็น turn ของเอเจนต์ Channel plugins จะให้ข้อเท็จจริงของแพลตฟอร์มและ callback สำหรับการส่งมอบ ส่วน core เป็นเจ้าของการประสานงาน: ingest, classify, preflight, resolve, authorize, assemble, record, dispatch และ finalize
 
-ใช้สิ่งนี้เมื่อ Plugin ของคุณอยู่ในเส้นทางร้อนของข้อความขาเข้า สำหรับเหตุการณ์ที่ไม่ใช่ข้อความ (คำสั่ง slash, โมดัล, การโต้ตอบของปุ่ม, เหตุการณ์วงจรชีวิต, รีแอ็กชัน, สถานะเสียง) ให้เก็บไว้ภายใน Plugin เคอร์เนลเป็นเจ้าของเฉพาะเหตุการณ์ที่อาจกลายเป็นเทิร์นข้อความของเอเจนต์เท่านั้น
+ใช้สิ่งนี้เมื่อ plugin ของคุณอยู่บน hot path ของข้อความขาเข้า สำหรับเหตุการณ์ที่ไม่ใช่ข้อความ (slash commands, modals, button interactions, lifecycle events, reactions, voice state) ให้เก็บไว้ภายใน plugin เท่านั้น kernel เป็นเจ้าของเฉพาะเหตุการณ์ที่อาจกลายเป็น turn ข้อความของเอเจนต์
 
 <Info>
-  เข้าถึงเคอร์เนลผ่านรันไทม์ Plugin ที่ถูกฉีดเข้ามาเป็น `runtime.channel.turn.*` ประเภทรันไทม์ Plugin ถูกส่งออกจาก `openclaw/plugin-sdk/core` ดังนั้น Plugin เนทีฟของบุคคลที่สามจึงใช้จุดเข้าเหล่านี้ได้แบบเดียวกับ Plugin ช่องทางที่บันเดิลมาด้วย
+  เข้าถึง kernel ผ่าน plugin runtime ที่ถูกฉีดเข้ามาในรูป `runtime.channel.turn.*` ชนิดของ plugin runtime ถูกส่งออกจาก `openclaw/plugin-sdk/core` ดังนั้น third-party native plugins จึงใช้ entry points เหล่านี้ได้แบบเดียวกับ bundled channel plugins
 </Info>
 
-## เหตุผลที่ต้องมีเคอร์เนลร่วม
+## เหตุผลที่มี kernel ที่ใช้ร่วมกัน
 
-Plugin ช่องทางทำโฟลว์ขาเข้าแบบเดียวกันซ้ำ: ทำให้เป็นมาตรฐาน, กำหนดเส้นทาง, กั้นตามนโยบาย, สร้างคอนเท็กซ์, บันทึกเมทาดาทาของเซสชัน, ส่งต่อเทิร์นของเอเจนต์, สรุปสถานะการส่งมอบขั้นสุดท้าย หากไม่มีเคอร์เนลร่วม การเปลี่ยนแปลงเรื่องการกั้นจาก mention, การตอบกลับที่มองเห็นได้เฉพาะเครื่องมือ, เมทาดาทาของเซสชัน, ประวัติที่รอดำเนินการ หรือการสรุปการส่งต่อขั้นสุดท้าย ต้องถูกนำไปใช้แยกตามแต่ละช่องทาง
+Channel plugins ทำ flow ขาเข้าแบบเดียวกันซ้ำ ๆ: normalize, route, gate, build context, record session metadata, dispatch agent turn, finalize delivery state หากไม่มี kernel ที่ใช้ร่วมกัน การเปลี่ยนแปลง mention gating, tool-only visible replies, session metadata, pending history หรือ dispatch finalization จะต้องนำไปใช้แยกตามแต่ละ channel
 
-เคอร์เนลตั้งใจแยกแนวคิดสี่อย่างนี้ออกจากกัน:
+kernel จงใจแยกแนวคิดสี่อย่างออกจากกัน:
 
 - `ConversationFacts`: ข้อความมาจากที่ใด
-- `RouteFacts`: เอเจนต์และเซสชันใดควรประมวลผลข้อความนี้
-- `ReplyPlanFacts`: ควรส่งการตอบกลับที่มองเห็นได้ไปที่ใด
-- `MessageFacts`: เอเจนต์ควรเห็นเนื้อหาและคอนเท็กซ์เสริมใด
+- `RouteFacts`: เอเจนต์และ session ใดควรประมวลผล
+- `ReplyPlanFacts`: visible replies ควรถูกส่งไปที่ใด
+- `MessageFacts`: body และ supplemental context ใดที่เอเจนต์ควรเห็น
 
-Slack DM, หัวข้อ Telegram, เธรด Matrix และเซสชันหัวข้อ Feishu ล้วนแยกสิ่งเหล่านี้ในทางปฏิบัติ การถือว่าสิ่งเหล่านี้เป็นตัวระบุเดียวกันจะทำให้เกิดความคลาดเคลื่อนเมื่อเวลาผ่านไป
+Slack DMs, หัวข้อ Telegram, Matrix threads และ Feishu topic sessions ล้วนแยกสิ่งเหล่านี้ออกจากกันในทางปฏิบัติ การถือว่าสิ่งเหล่านี้เป็น identifier เดียวกันจะทำให้เกิด drift เมื่อเวลาผ่านไป
 
-## วงจรชีวิตของสเตจ
+## วงจรชีวิตของ stage
 
-เคอร์เนลรันไปป์ไลน์คงที่เดียวกันไม่ว่าช่องทางใด:
+kernel รัน pipeline คงที่ชุดเดียวกันไม่ว่าจะเป็น channel ใด:
 
-1. `ingest` -- อะแดปเตอร์แปลงเหตุการณ์แพลตฟอร์มดิบเป็น `NormalizedTurnInput`
-2. `classify` -- อะแดปเตอร์ประกาศว่าเหตุการณ์นี้เริ่มเทิร์นของเอเจนต์ได้หรือไม่
-3. `preflight` -- อะแดปเตอร์ทำการขจัดข้อมูลซ้ำ, self-echo, hydration, debounce, ถอดรหัส, เติมข้อเท็จจริงบางส่วนล่วงหน้า
-4. `resolve` -- อะแดปเตอร์ส่งคืนเทิร์นที่ประกอบครบแล้ว (เส้นทาง, แผนการตอบกลับ, ข้อความ, การส่งมอบ)
-5. `authorize` -- นำนโยบาย DM, กลุ่ม, mention และคำสั่งมาใช้กับข้อเท็จจริงที่ประกอบแล้ว
-6. `assemble` -- สร้าง `FinalizedMsgContext` จากข้อเท็จจริงผ่าน `buildContext`
-7. `record` -- บันทึกเมทาดาทาเซสชันขาเข้าและเส้นทางล่าสุด
-8. `dispatch` -- ดำเนินการเทิร์นของเอเจนต์ผ่านตัวส่งต่อบล็อกแบบบัฟเฟอร์
-9. `finalize` -- รัน `onFinalize` ของอะแดปเตอร์แม้เกิดข้อผิดพลาดในการส่งต่อ
+1. `ingest` -- adapter แปลงเหตุการณ์แพลตฟอร์มดิบให้เป็น `NormalizedTurnInput`
+2. `classify` -- adapter ระบุว่าเหตุการณ์นี้เริ่ม turn ของเอเจนต์ได้หรือไม่
+3. `preflight` -- adapter ทำ dedupe, self-echo, hydration, debounce, decryption, partial fact prefill
+4. `resolve` -- adapter ส่งคืน turn ที่ประกอบครบถ้วนแล้ว (route, reply plan, message, delivery)
+5. `authorize` -- ใช้นโยบาย DM, group, mention และ command กับ facts ที่ประกอบแล้ว
+6. `assemble` -- สร้าง `FinalizedMsgContext` จาก facts ผ่าน `buildContext`
+7. `record` -- บันทึก inbound session metadata และ last route
+8. `dispatch` -- ดำเนินการ turn ของเอเจนต์ผ่าน buffered block dispatcher
+9. `finalize` -- `onFinalize` ของ adapter รันแม้เกิด dispatch error
 
-แต่ละสเตจจะปล่อยเหตุการณ์ล็อกแบบมีโครงสร้างเมื่อมีการระบุคอลแบ็ก `log` ดู [การสังเกตการณ์](#observability)
+แต่ละ stage จะปล่อย structured log event เมื่อมีการส่ง callback `log` มาให้ ดู [Observability](#observability)
 
-## ชนิดการรับเข้า
+## ชนิดของ admission
 
-เคอร์เนลจะไม่ throw เมื่อเทิร์นถูกกั้นไว้ แต่จะส่งคืน `ChannelTurnAdmission`:
+kernel จะไม่ throw เมื่อ turn ถูก gate แต่จะส่งคืน `ChannelTurnAdmission`:
 
-| ชนิด          | เมื่อใด                                                                                                                                         |
+| Kind          | เมื่อใด                                                                                                                                         |
 | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `dispatch`    | เทิร์นถูกรับเข้า เทิร์นของเอเจนต์จะรันและใช้เส้นทางการตอบกลับที่มองเห็นได้                                                                   |
-| `observeOnly` | เทิร์นรันจนจบ แต่ตัวปรับการส่งมอบไม่ส่งสิ่งใดที่มองเห็นได้ ใช้สำหรับเอเจนต์ผู้สังเกตการณ์แบบบรอดแคสต์และโฟลว์หลายเอเจนต์แบบพาสซีฟอื่น ๆ |
-| `handled`     | เหตุการณ์แพลตฟอร์มถูกจัดการภายในเครื่องแล้ว (วงจรชีวิต, รีแอ็กชัน, ปุ่ม, โมดัล) เคอร์เนลข้ามการส่งต่อ                                           |
-| `drop`        | เส้นทางข้าม เลือกตั้งค่า `recordHistory: true` เพื่อเก็บข้อความไว้ในประวัติกลุ่มที่รอดำเนินการ เพื่อให้ mention ในอนาคตมีคอนเท็กซ์ได้                      |
+| `dispatch`    | turn ได้รับอนุญาต Agent turn รัน และมีการใช้ visible reply path                                                                   |
+| `observeOnly` | turn รันตั้งแต่ต้นจนจบ แต่ delivery adapter ไม่ส่งสิ่งใดที่มองเห็นได้ ใช้สำหรับ broadcast observer agents และ passive multi-agent flows อื่น ๆ |
+| `handled`     | เหตุการณ์แพลตฟอร์มถูกจัดการภายในเครื่องแล้ว (lifecycle, reaction, button, modal) kernel ข้าม dispatch                                           |
+| `drop`        | เส้นทางที่ข้าม อาจตั้ง `recordHistory: true` เพื่อเก็บข้อความไว้ใน pending group history เพื่อให้ mention ในอนาคตมี context                      |
 
-การรับเข้าอาจมาจาก `classify` (คลาสเหตุการณ์บอกว่าเริ่มเทิร์นไม่ได้), จาก `preflight` (ขจัดข้อมูลซ้ำ, self-echo, ไม่มี mention พร้อมการบันทึกประวัติ) หรือจาก `resolveTurn` เอง
+admission อาจมาจาก `classify` (event class ระบุว่าเริ่ม turn ไม่ได้), จาก `preflight` (dedupe, self-echo, mention ที่หายไปพร้อมบันทึก history) หรือจาก `resolveTurn` เอง
 
-## จุดเข้า
+## Entry points
 
-รันไทม์เปิดเผยจุดเข้าที่แนะนำสามจุด เพื่อให้อะแดปเตอร์เลือกใช้ในระดับที่ตรงกับช่องทางได้
+runtime เปิดเผย entry points ที่แนะนำสามรายการ เพื่อให้ adapters เลือกระดับที่ตรงกับ channel ได้
 
 ```typescript
 runtime.channel.turn.run(...)             // adapter-driven full pipeline
@@ -75,7 +75,7 @@ runtime.channel.turn.runPrepared(...)     // channel owns dispatch; kernel runs 
 runtime.channel.turn.buildContext(...)    // pure facts to FinalizedMsgContext mapping
 ```
 
-ตัวช่วยรันไทม์รุ่นเก่าสองตัวยังคงพร้อมใช้งานเพื่อความเข้ากันได้กับ Plugin SDK:
+runtime helpers รุ่นเก่าสองรายการยังคงมีให้ใช้เพื่อความเข้ากันได้กับ Plugin SDK:
 
 ```typescript
 runtime.channel.turn.runResolved(...)      // deprecated compatibility alias; prefer run
@@ -84,7 +84,7 @@ runtime.channel.turn.dispatchAssembled(...) // deprecated compatibility alias; p
 
 ### run
 
-ใช้เมื่อช่องทางของคุณสามารถแสดงโฟลว์ขาเข้าเป็น `ChannelTurnAdapter<TRaw>` ได้ อะแดปเตอร์มีคอลแบ็กสำหรับ `ingest`, `classify` แบบไม่บังคับ, `preflight` แบบไม่บังคับ, `resolveTurn` แบบบังคับ และ `onFinalize` แบบไม่บังคับ
+ใช้เมื่อ channel ของคุณสามารถแสดง flow ขาเข้าเป็น `ChannelTurnAdapter<TRaw>` ได้ adapter มี callbacks สำหรับ `ingest`, `classify` แบบ optional, `preflight` แบบ optional, `resolveTurn` ที่บังคับใช้ และ `onFinalize` แบบ optional
 
 ```typescript
 await runtime.channel.turn.run({
@@ -119,11 +119,11 @@ await runtime.channel.turn.run({
 });
 ```
 
-`run` เป็นรูปแบบที่เหมาะเมื่อช่องทางมีตรรกะอะแดปเตอร์ขนาดเล็กและได้ประโยชน์จากการเป็นเจ้าของวงจรชีวิตผ่าน hooks
+`run` เป็นรูปแบบที่เหมาะเมื่อ channel มี logic ของ adapter เล็กน้อย และได้ประโยชน์จากการเป็นเจ้าของ lifecycle ผ่าน hooks
 
 ### runPrepared
 
-ใช้เมื่อช่องทางมีตัวส่งต่อภายในที่ซับซ้อนพร้อม previews, retries, edits หรือ thread bootstrap ที่ต้องอยู่ในความเป็นเจ้าของของช่องทาง เคอร์เนลยังคงบันทึกเซสชันขาเข้าก่อนการส่งต่อ และเปิดเผย `DispatchedChannelTurnResult` ที่สม่ำเสมอ
+ใช้เมื่อ channel มี dispatcher ภายในที่ซับซ้อน พร้อม previews, retries, edits หรือ thread bootstrap ที่ต้องคงความเป็นเจ้าของโดย channel ไว้ kernel ยังคงบันทึก inbound session ก่อน dispatch และแสดง `DispatchedChannelTurnResult` ที่เป็นรูปแบบเดียวกัน
 
 ```typescript
 const { dispatchResult } = await runtime.channel.turn.runPrepared({
@@ -146,11 +146,11 @@ const { dispatchResult } = await runtime.channel.turn.runPrepared({
 });
 ```
 
-ช่องทางที่มีความสามารถสูง (Matrix, Mattermost, Microsoft Teams, Feishu, QQ Bot) ใช้ `runPrepared` เพราะตัวส่งต่อของช่องทางเหล่านี้ประสานพฤติกรรมเฉพาะแพลตฟอร์มที่เคอร์เนลไม่ควรต้องรู้
+channels ที่มีรายละเอียดมาก (Matrix, Mattermost, Microsoft Teams, Feishu, QQ Bot) ใช้ `runPrepared` เพราะ dispatcher ของพวกมันประสานงานพฤติกรรมเฉพาะแพลตฟอร์มที่ kernel ไม่ควรต้องรู้
 
 ### buildContext
 
-ฟังก์ชันบริสุทธิ์ที่แมปชุดข้อเท็จจริงเป็น `FinalizedMsgContext` ใช้เมื่อช่องทางของคุณเขียนบางส่วนของไปป์ไลน์เอง แต่ต้องการรูปทรงคอนเท็กซ์ที่สอดคล้องกัน
+ฟังก์ชันบริสุทธิ์ที่ map ชุด facts ให้เป็น `FinalizedMsgContext` ใช้เมื่อ channel ของคุณเขียน pipeline บางส่วนเอง แต่ต้องการ shape ของ context ที่สอดคล้องกัน
 
 ```typescript
 const ctxPayload = runtime.channel.turn.buildContext({
@@ -170,74 +170,74 @@ const ctxPayload = runtime.channel.turn.buildContext({
 });
 ```
 
-`buildContext` ยังมีประโยชน์ภายในคอลแบ็ก `resolveTurn` เมื่อประกอบเทิร์นสำหรับ `run`
+`buildContext` ยังมีประโยชน์ภายใน callbacks ของ `resolveTurn` เมื่อประกอบ turn สำหรับ `run`
 
 <Note>
-  ตัวช่วย SDK ที่เลิกแนะนำแล้ว เช่น `dispatchInboundReplyWithBase` ยังคงเชื่อมผ่านตัวช่วยเทิร์นที่ประกอบแล้ว โค้ด Plugin ใหม่ควรใช้ `run` หรือ `runPrepared`
+  SDK helpers ที่เลิกแนะนำแล้ว เช่น `dispatchInboundReplyWithBase` ยังคง bridge ผ่าน assembled-turn helper โค้ด plugin ใหม่ควรใช้ `run` หรือ `runPrepared`
 </Note>
 
-## ประเภทข้อเท็จจริง
+## ชนิดของ facts
 
-ข้อเท็จจริงที่เคอร์เนลรับจากอะแดปเตอร์ของคุณเป็นแบบไม่ผูกกับแพลตฟอร์ม ให้แปลออบเจ็กต์ของแพลตฟอร์มเป็นรูปทรงเหล่านี้ก่อนส่งให้เคอร์เนล
+facts ที่ kernel ใช้จาก adapter ของคุณเป็นแบบไม่ขึ้นกับแพลตฟอร์ม แปลง objects ของแพลตฟอร์มให้เป็น shapes เหล่านี้ก่อนส่งให้ kernel
 
 ### NormalizedTurnInput
 
-| ฟิลด์             | วัตถุประสงค์                                                                      |
+| Field             | Purpose                                                                      |
 | ----------------- | ---------------------------------------------------------------------------- |
-| `id`              | id ข้อความที่เสถียร ใช้สำหรับการขจัดข้อมูลซ้ำและล็อก                                   |
-| `timestamp`       | epoch ms แบบไม่บังคับ                                                            |
-| `rawText`         | เนื้อหาตามที่ได้รับจากแพลตฟอร์ม                                           |
-| `textForAgent`    | เนื้อหาที่ล้างแล้วแบบไม่บังคับสำหรับเอเจนต์ (ตัด mention, ตัดข้อความ typing)             |
-| `textForCommands` | เนื้อหาแบบไม่บังคับที่ใช้สำหรับการแยกวิเคราะห์ `/command`                                    |
-| `raw`             | การอ้างอิงแบบส่งผ่านแบบไม่บังคับสำหรับคอลแบ็กอะแดปเตอร์ที่ต้องใช้ออบเจ็กต์ต้นฉบับ |
+| `id`              | message id ที่เสถียร ใช้สำหรับ dedupe และ logs                                   |
+| `timestamp`       | epoch ms แบบ optional                                                            |
+| `rawText`         | body ตามที่ได้รับจากแพลตฟอร์ม                                           |
+| `textForAgent`    | body ที่ล้างแล้วแบบ optional สำหรับเอเจนต์ (mention strip, typing trim)             |
+| `textForCommands` | body แบบ optional ที่ใช้สำหรับการ parse `/command`                                    |
+| `raw`             | pass-through reference แบบ optional สำหรับ adapter callbacks ที่ต้องการต้นฉบับ |
 
 ### ChannelEventClass
 
-| ฟิลด์                  | วัตถุประสงค์                                                                 |
+| Field                  | Purpose                                                                 |
 | ---------------------- | ----------------------------------------------------------------------- |
 | `kind`                 | `message`, `command`, `interaction`, `reaction`, `lifecycle`, `unknown` |
-| `canStartAgentTurn`    | หากเป็น false เคอร์เนลจะส่งคืน `{ kind: "handled" }`                       |
-| `requiresImmediateAck` | คำใบ้สำหรับอะแดปเตอร์ที่ต้อง ACK ก่อนการส่งต่อ                      |
+| `canStartAgentTurn`    | หากเป็น false kernel จะส่งคืน `{ kind: "handled" }`                       |
+| `requiresImmediateAck` | hint สำหรับ adapters ที่ต้อง ACK ก่อน dispatch                      |
 
 ### SenderFacts
 
-| ฟิลด์          | วัตถุประสงค์                                                        |
+| Field          | Purpose                                                        |
 | -------------- | -------------------------------------------------------------- |
-| `id`           | id ผู้ส่งของแพลตฟอร์มที่เสถียร                                      |
+| `id`           | platform sender id ที่เสถียร                                      |
 | `name`         | ชื่อที่แสดง                                                   |
-| `username`     | แฮนเดิลหากแตกต่างจาก `name`                                 |
-| `tag`          | ตัวแบ่งแยกแบบ Discord หรือแท็กของแพลตฟอร์ม                    |
-| `roles`        | id บทบาท ใช้สำหรับการจับคู่ allowlist ของบทบาทสมาชิก              |
-| `isBot`        | จริงเมื่อผู้ส่งเป็นบอตที่รู้จัก (เคอร์เนลใช้สำหรับการทิ้ง) |
-| `isSelf`       | จริงเมื่อผู้ส่งเป็นเอเจนต์ที่กำหนดค่าไว้เอง            |
-| `displayLabel` | ป้ายกำกับที่เรนเดอร์ไว้ล่วงหน้าสำหรับข้อความซอง                           |
+| `username`     | handle หากแตกต่างจาก `name`                                 |
+| `tag`          | discriminator แบบ Discord หรือ tag ของแพลตฟอร์ม                    |
+| `roles`        | role ids ใช้สำหรับการจับคู่ member-role allowlist              |
+| `isBot`        | เป็น true เมื่อ sender เป็น bot ที่รู้จัก (kernel ใช้สำหรับ drop) |
+| `isSelf`       | เป็น true เมื่อ sender คือเอเจนต์ที่ตั้งค่าไว้เอง            |
+| `displayLabel` | label ที่ render ไว้ล่วงหน้าสำหรับ envelope text                           |
 
 ### ConversationFacts
 
-| ฟิลด์             | วัตถุประสงค์                                                              |
+| Field             | Purpose                                                              |
 | ----------------- | -------------------------------------------------------------------- |
 | `kind`            | `direct`, `group`, หรือ `channel`                                      |
-| `id`              | id การสนทนาที่ใช้สำหรับการกำหนดเส้นทาง                                     |
-| `label`           | ป้ายกำกับสำหรับมนุษย์สำหรับซอง                                         |
-| `spaceId`         | ตัวระบุพื้นที่ภายนอกแบบไม่บังคับ (Slack workspace, Matrix homeserver) |
-| `parentId`        | id การสนทนาภายนอกเมื่อสิ่งนี้เป็นเธรด                          |
-| `threadId`        | id เธรดเมื่อข้อความนี้อยู่ภายในเธรด                       |
-| `nativeChannelId` | id ช่องทางเนทีฟของแพลตฟอร์มเมื่อแตกต่างจาก id การกำหนดเส้นทาง        |
-| `routePeer`       | peer ที่ใช้สำหรับการค้นหา `resolveAgentRoute`                             |
+| `id`              | conversation id ที่ใช้สำหรับ routing                                     |
+| `label`           | label สำหรับมนุษย์สำหรับ envelope                                         |
+| `spaceId`         | outer space identifier แบบ optional (Slack workspace, Matrix homeserver) |
+| `parentId`        | outer conversation id เมื่อสิ่งนี้เป็น thread                          |
+| `threadId`        | thread id เมื่อข้อความนี้อยู่ใน thread                       |
+| `nativeChannelId` | channel id แบบ native ของแพลตฟอร์มเมื่อแตกต่างจาก routing id        |
+| `routePeer`       | peer ที่ใช้สำหรับ lookup `resolveAgentRoute`                             |
 
 ### RouteFacts
 
-| ฟิลด์                   | วัตถุประสงค์                                                    |
+| Field                   | Purpose                                                    |
 | ----------------------- | ---------------------------------------------------------- |
-| `agentId`               | เอเจนต์ที่ควรจัดการเทิร์นนี้                         |
-| `accountId`             | การแทนที่แบบไม่บังคับ (ช่องทางหลายบัญชี)                 |
-| `routeSessionKey`       | คีย์เซสชันที่ใช้สำหรับการกำหนดเส้นทาง                               |
-| `dispatchSessionKey`    | คีย์เซสชันที่ใช้เมื่อส่งต่อเมื่อแตกต่างจากคีย์เส้นทาง |
-| `persistedSessionKey`   | คีย์เซสชันที่เขียนลงในเมทาดาทาเซสชันที่คงอยู่          |
-| `parentSessionKey`      | พาเรนต์สำหรับเซสชันแบบแตกแขนง/มีเธรด                      |
-| `modelParentSessionKey` | พาเรนต์ฝั่งโมเดลสำหรับเซสชันแบบแตกแขนง                    |
-| `mainSessionKey`        | พินเจ้าของ DM หลักสำหรับการสนทนาโดยตรง                 |
-| `createIfMissing`       | อนุญาตให้ขั้นตอนบันทึกสร้างแถวเซสชันที่ขาดหาย          |
+| `agentId`               | เอเจนต์ที่ควรจัดการ turn นี้                         |
+| `accountId`             | override แบบ optional (channels หลายบัญชี)                 |
+| `routeSessionKey`       | session key ที่ใช้สำหรับ routing                               |
+| `dispatchSessionKey`    | session key ที่ใช้ตอน dispatch เมื่อแตกต่างจาก route key |
+| `persistedSessionKey`   | session key ที่เขียนลงใน persisted session metadata          |
+| `parentSessionKey`      | parent สำหรับ branched/threaded sessions                      |
+| `modelParentSessionKey` | parent ฝั่ง model สำหรับ branched sessions                    |
+| `mainSessionKey`        | pin เจ้าของ DM หลักสำหรับ direct conversations                 |
+| `createIfMissing`       | อนุญาตให้ขั้นตอน record สร้าง session row ที่หายไป          |
 
 ### ReplyPlanFacts
 
@@ -245,25 +245,25 @@ const ctxPayload = runtime.channel.turn.buildContext({
 | ------------------------- | ------------------------------------------------------- |
 | `to`                      | เป้าหมายการตอบกลับเชิงตรรกะที่เขียนลงในบริบท `To`          |
 | `originatingTo`           | เป้าหมายบริบทต้นทาง (`OriginatingTo`)            |
-| `nativeChannelId`         | ID ช่องทางแบบเนทีฟของแพลตฟอร์มสำหรับการส่งมอบ                 |
-| `replyTarget`             | ปลายทางการตอบกลับที่มองเห็นสุดท้าย หากต่างจาก `to` |
+| `nativeChannelId`         | รหัสช่องทางเนทีฟของแพลตฟอร์มสำหรับการส่งมอบ                 |
+| `replyTarget`             | ปลายทางการตอบกลับที่มองเห็นสุดท้าย หากแตกต่างจาก `to` |
 | `deliveryTarget`          | การแทนที่การส่งมอบระดับล่าง                           |
-| `replyToId`               | ID ข้อความที่ถูกอ้างอิง/ยึดโยง                              |
-| `replyToIdFull`           | ID แบบเต็มที่ถูกอ้างอิงเมื่อแพลตฟอร์มมีทั้งสองแบบ          |
-| `messageThreadId`         | ID เธรด ณ เวลาส่งมอบ                              |
-| `threadParentId`          | ID ข้อความแม่ของเธรด                         |
-| `sourceReplyDeliveryMode` | `thread`, `reply`, `channel`, `direct` หรือ `none`       |
+| `replyToId`               | รหัสข้อความที่ถูกอ้างอิง/ยึดโยง                              |
+| `replyToIdFull`           | รหัสอ้างอิงรูปแบบเต็มเมื่อแพลตฟอร์มมีทั้งสองแบบ          |
+| `messageThreadId`         | รหัสเธรด ณ เวลาส่งมอบ                              |
+| `threadParentId`          | รหัสข้อความแม่ของเธรด                         |
+| `sourceReplyDeliveryMode` | `thread`, `reply`, `channel`, `direct`, หรือ `none`       |
 
 ### AccessFacts
 
-`AccessFacts` บรรจุบูลีนที่ขั้นตอนอนุญาตต้องใช้ การจับคู่ตัวตนยังอยู่ในช่องทาง: เคอร์เนลใช้เฉพาะผลลัพธ์เท่านั้น
+`AccessFacts` เก็บค่าบูลีนที่ขั้นตอน authorize ต้องใช้ การจับคู่ตัวตนยังคงอยู่ในช่องทาง: เคอร์เนลใช้เฉพาะผลลัพธ์เท่านั้น
 
 | ฟิลด์      | วัตถุประสงค์                                                                   |
 | ---------- | ------------------------------------------------------------------------- |
 | `dm`       | การตัดสินใจอนุญาต/จับคู่/ปฏิเสธ DM และรายการ `allowFrom`                       |
-| `group`    | นโยบายกลุ่ม, การอนุญาตเส้นทาง, การอนุญาตผู้ส่ง, allowlist, ข้อกำหนดการกล่าวถึง   |
+| `group`    | นโยบายกลุ่ม, การอนุญาตเส้นทาง, การอนุญาตผู้ส่ง, allowlist, ข้อกำหนดการ mention   |
 | `commands` | การอนุญาตคำสั่งข้ามตัวอนุญาตที่กำหนดค่าไว้                       |
-| `mentions` | ตรวจจับการกล่าวถึงได้หรือไม่ และ agent ถูกกล่าวถึงหรือไม่ |
+| `mentions` | ตรวจจับ mention ได้หรือไม่ และ agent ถูก mention หรือไม่ |
 
 ### MessageFacts
 
@@ -275,20 +275,20 @@ const ctxPayload = runtime.channel.turn.buildContext({
 | `commandBody`    | เนื้อหาที่ใช้สำหรับแยกวิเคราะห์คำสั่ง                                  |
 | `envelopeFrom`   | ป้ายชื่อผู้ส่งที่เรนเดอร์ไว้ล่วงหน้าสำหรับ envelope                     |
 | `senderLabel`    | การแทนที่แบบไม่บังคับสำหรับผู้ส่งที่เรนเดอร์                      |
-| `preview`        | ตัวอย่างแบบสั้นที่ปกปิดข้อมูลแล้วสำหรับบันทึก                                |
+| `preview`        | ตัวอย่างสั้นที่ปกปิดข้อมูลแล้วสำหรับ log                                |
 | `inboundHistory` | รายการประวัติขาเข้าล่าสุดเมื่อช่องทางเก็บบัฟเฟอร์ไว้ |
 
 ### SupplementalContextFacts
 
-บริบทเสริมครอบคลุมบริบทของข้อความอ้างอิง ข้อความที่ส่งต่อ และการเริ่มต้นเธรด เคอร์เนลใช้นโยบาย `contextVisibility` ที่กำหนดค่าไว้ อะแดปเตอร์ช่องทางให้เฉพาะข้อเท็จจริงและแฟล็ก `senderAllowed` เพื่อให้นโยบายข้ามช่องทางสอดคล้องกัน
+บริบทเพิ่มเติมครอบคลุมบริบทการอ้างอิง, การส่งต่อ, และการเริ่มต้นเธรด เคอร์เนลใช้นโยบาย `contextVisibility` ที่กำหนดค่าไว้ channel adapter ให้เฉพาะ facts และแฟล็ก `senderAllowed` เพื่อให้นโยบายข้ามช่องทางสอดคล้องกัน
 
 ### InboundMediaFacts
 
-สื่ออยู่ในรูปข้อเท็จจริง การดาวน์โหลดของแพลตฟอร์ม การยืนยันตัวตน นโยบาย SSRF กฎ CDN และการถอดรหัสยังอยู่เฉพาะช่องทาง เคอร์เนลแมปข้อเท็จจริงไปเป็น `MediaPath`, `MediaUrl`, `MediaType`, `MediaPaths`, `MediaUrls`, `MediaTypes` และ `MediaTranscribedIndexes`
+สื่อมีรูปแบบเป็น facts การดาวน์โหลดของแพลตฟอร์ม, auth, นโยบาย SSRF, กฎ CDN, และการถอดรหัสยังคงอยู่เฉพาะในช่องทาง เคอร์เนลแมป facts ไปเป็น `MediaPath`, `MediaUrl`, `MediaType`, `MediaPaths`, `MediaUrls`, `MediaTypes`, และ `MediaTranscribedIndexes`
 
-## สัญญาของอะแดปเตอร์
+## สัญญา adapter
 
-สำหรับ `run` แบบเต็ม รูปแบบอะแดปเตอร์คือ:
+สำหรับ `run` แบบเต็ม รูปทรงของ adapter คือ:
 
 ```typescript
 type ChannelTurnAdapter<TRaw> = {
@@ -307,11 +307,11 @@ type ChannelTurnAdapter<TRaw> = {
 };
 ```
 
-`resolveTurn` คืนค่า `ChannelTurnResolved` ซึ่งเป็น `AssembledChannelTurn` พร้อมชนิดการยอมรับแบบไม่บังคับ การคืนค่า `{ admission: { kind: "observeOnly" } }` จะรันเทิร์นโดยไม่สร้างเอาต์พุตที่มองเห็น อะแดปเตอร์ยังคงเป็นเจ้าของคอลแบ็กการส่งมอบ เพียงแต่คอลแบ็กนั้นจะไม่ทำงานสำหรับเทิร์นนั้น
+`resolveTurn` ส่งคืน `ChannelTurnResolved` ซึ่งเป็น `AssembledChannelTurn` พร้อมชนิด admission แบบไม่บังคับ การส่งคืน `{ admission: { kind: "observeOnly" } }` จะรัน turn โดยไม่สร้างเอาต์พุตที่มองเห็น adapter ยังคงเป็นเจ้าของ delivery callback เพียงแต่จะกลายเป็น no-op สำหรับ turn นั้น
 
-`onFinalize` รันกับทุกผลลัพธ์ รวมถึงข้อผิดพลาดในการ dispatch ใช้เพื่อล้างประวัติกลุ่มที่ค้างอยู่ ลบรีแอ็กชันรับทราบ หยุดตัวบ่งชี้สถานะ และ flush สถานะภายในเครื่อง
+`onFinalize` รันกับทุกผลลัพธ์ รวมถึง dispatch errors ใช้เพื่อล้างประวัติกลุ่มที่ค้างอยู่, ลบ ack reactions, หยุด status indicators, และ flush สถานะ local
 
-## อะแดปเตอร์การส่งมอบ
+## Delivery adapter
 
 เคอร์เนลไม่เรียกแพลตฟอร์มโดยตรง ช่องทางส่ง `ChannelTurnDeliveryAdapter` ให้เคอร์เนล:
 
@@ -319,21 +319,27 @@ type ChannelTurnAdapter<TRaw> = {
 type ChannelTurnDeliveryAdapter = {
   deliver(payload: ReplyPayload, info: ChannelDeliveryInfo): Promise<ChannelDeliveryResult | void>;
   onError?(err: unknown, info: { kind: string }): void;
+  durable?: false | DurableInboundReplyDeliveryOptions;
 };
 
 type ChannelDeliveryResult = {
   messageIds?: string[];
+  receipt?: MessageReceipt;
   threadId?: string;
   replyToId?: string;
   visibleReplySent?: boolean;
 };
 ```
 
-`deliver` ถูกเรียกหนึ่งครั้งต่อชิ้นส่วนการตอบกลับที่บัฟเฟอร์ไว้ คืนค่า ID ข้อความของแพลตฟอร์มเมื่อช่องทางมี เพื่อให้ dispatcher รักษาจุดยึดเธรดและแก้ไขชิ้นส่วนถัดไปได้ สำหรับเทิร์นแบบสังเกตเท่านั้น ให้คืนค่า `{ visibleReplySent: false }` หรือใช้ `createNoopChannelTurnDeliveryAdapter()`
+`deliver` ถูกเรียกหนึ่งครั้งต่อชิ้นส่วนการตอบกลับที่บัฟเฟอร์ไว้ ระหว่างการย้าย message-lifecycle การส่งมอบ channel-turn ที่ประกอบแล้วเป็นของช่องทางโดยค่าเริ่มต้น: ฟิลด์ `durable` ที่ละไว้หมายความว่าเคอร์เนลต้องเรียก `deliver` โดยตรง และต้องไม่กำหนดเส้นทางผ่าน generic outbound delivery ตั้งค่า `durable` เฉพาะหลังจากตรวจสอบช่องทางแล้วเพื่อพิสูจน์ว่าเส้นทางส่งทั่วไปคงพฤติกรรมการส่งมอบเดิมไว้ รวมถึงเป้าหมาย reply/thread, การจัดการสื่อ, แคช sent-message/self-echo, การล้างสถานะ, และรหัสข้อความที่ส่งคืน `durable: false` ยังคงเป็นการสะกดเพื่อความเข้ากันได้สำหรับ "ใช้ callback ที่ช่องทางเป็นเจ้าของ" แต่ช่องทางที่ยังไม่ได้ย้ายไม่ควรจำเป็นต้องเพิ่มค่าไว้ ส่งคืนรหัสข้อความของแพลตฟอร์มเมื่อช่องทางมี เพื่อให้ dispatcher รักษา thread anchors และแก้ไขชิ้นส่วนภายหลังได้ เส้นทางการส่งมอบที่ใหม่กว่าควรส่งคืน `receipt` ด้วย เพื่อให้การกู้คืน, การสรุป preview, และการระงับรายการซ้ำย้ายออกจาก `messageIds` ได้ สำหรับ observe-only turns ให้ส่งคืน `{ visibleReplySent: false }` หรือใช้ `createNoopChannelTurnDeliveryAdapter()`
 
-## ตัวเลือกการบันทึก
+ช่องทางที่ใช้ `runPrepared` กับ dispatcher ที่ช่องทางเป็นเจ้าของทั้งหมดจะไม่มี `ChannelTurnDeliveryAdapter` dispatcher เหล่านั้นไม่ durable โดยค่าเริ่มต้น ควรรักษาเส้นทางการส่งมอบโดยตรงไว้จนกว่าจะ opt in อย่างชัดเจนสู่ send context ใหม่พร้อม target ที่สมบูรณ์, adapter ที่ replay-safe, สัญญา receipt, และ hooks ผลข้างเคียงของช่องทาง
 
-ขั้นตอนบันทึกห่อ `recordInboundSession` ไว้ ช่องทางส่วนใหญ่ใช้ค่าเริ่มต้นได้ แทนที่ผ่าน `record`:
+ตัวช่วยความเข้ากันได้สาธารณะ เช่น `recordInboundSessionAndDispatchReply`, `dispatchInboundReplyWithBase`, และตัวช่วย direct-DM ต้องคงพฤติกรรมไว้ระหว่างการย้าย ไม่ควรเรียก generic durable delivery ก่อน callback `deliver` หรือ `reply` ที่ caller เป็นเจ้าของ
+
+## ตัวเลือก record
+
+ขั้นตอน record ห่อ `recordInboundSession` ช่องทางส่วนใหญ่ใช้ค่าเริ่มต้นได้ แทนที่ผ่าน `record`:
 
 ```typescript
 record: {
@@ -345,11 +351,11 @@ record: {
 }
 ```
 
-dispatcher รอขั้นตอนบันทึก หาก record โยนข้อผิดพลาด เคอร์เนลจะรัน `onPreDispatchFailure` (เมื่อส่งให้ `runPrepared`) แล้วโยนข้อผิดพลาดต่อ
+dispatcher รอขั้นตอน record หาก record throw เคอร์เนลจะรัน `onPreDispatchFailure` (เมื่อส่งให้ `runPrepared`) แล้ว throw ต่อ
 
 ## การสังเกตการณ์
 
-แต่ละขั้นตอนปล่อยเหตุการณ์แบบมีโครงสร้างเมื่อมีการระบุคอลแบ็ก `log`:
+แต่ละขั้นตอนปล่อยเหตุการณ์แบบมีโครงสร้างเมื่อมี callback `log`:
 
 ```typescript
 await runtime.channel.turn.run({
@@ -370,31 +376,32 @@ await runtime.channel.turn.run({
 });
 ```
 
-ขั้นตอนที่บันทึก: `ingest`, `classify`, `preflight`, `resolve`, `authorize`, `assemble`, `record`, `dispatch`, `finalize` หลีกเลี่ยงการบันทึกเนื้อหาดิบ ใช้ `MessageFacts.preview` สำหรับตัวอย่างสั้นที่ปกปิดข้อมูลแล้ว
+ขั้นตอนที่ log: `ingest`, `classify`, `preflight`, `resolve`, `authorize`, `assemble`, `record`, `dispatch`, `finalize` หลีกเลี่ยงการ log เนื้อหาดิบ; ใช้ `MessageFacts.preview` สำหรับตัวอย่างสั้นที่ปกปิดข้อมูลแล้ว
 
-## สิ่งที่ยังอยู่เฉพาะช่องทาง
+## สิ่งที่ยังคงอยู่เฉพาะในช่องทาง
 
 เคอร์เนลเป็นเจ้าของการจัดลำดับงาน ช่องทางยังคงเป็นเจ้าของ:
 
-- ทรานสปอร์ตของแพลตฟอร์ม (gateway, REST, websocket, polling, webhooks)
+- การขนส่งของแพลตฟอร์ม (gateway, REST, websocket, polling, webhooks)
 - การแก้ไขตัวตนและการจับคู่ชื่อที่แสดง
-- คำสั่งเนทีฟ, slash commands, autocomplete, modals, buttons, สถานะเสียง
-- การเรนเดอร์การ์ด, modal และ adaptive-card
-- การยืนยันตัวตนสื่อ, กฎ CDN, สื่อที่เข้ารหัส, การถอดเสียง
-- API สำหรับแก้ไข, reaction, การปกปิดข้อมูล และ presence
-- การ backfill และการดึงประวัติฝั่งแพลตฟอร์ม
-- โฟลว์การจับคู่ที่ต้องใช้การตรวจสอบเฉพาะแพลตฟอร์ม
+- คำสั่งเนทีฟ, slash commands, autocomplete, modals, buttons, voice state
+- การเรนเดอร์ card, modal, และ adaptive-card
+- Media auth, กฎ CDN, สื่อเข้ารหัส, การถอดเสียง
+- API สำหรับ edit, reaction, redaction, และ presence
+- Backfill และการดึงประวัติฝั่งแพลตฟอร์ม
+- โฟลว์การจับคู่ที่ต้องการการตรวจสอบเฉพาะแพลตฟอร์ม
 
-หากสองช่องทางเริ่มต้องใช้ helper เดียวกันสำหรับเรื่องเหล่านี้ ให้แยกเป็น helper ของ SDK ที่ใช้ร่วมกันแทนการผลักเข้าไปในเคอร์เนล
+หากสองช่องทางเริ่มต้องใช้ตัวช่วยเดียวกันสำหรับรายการใดรายการหนึ่งเหล่านี้ ให้แยกเป็น SDK helper ที่ใช้ร่วมกันแทนการดันเข้าไปในเคอร์เนล
 
 ## เสถียรภาพ
 
-`runtime.channel.turn.*` เป็นส่วนหนึ่งของพื้นผิว runtime สาธารณะของ plugin ชนิดข้อเท็จจริง (`SenderFacts`, `ConversationFacts`, `RouteFacts`, `ReplyPlanFacts`, `AccessFacts`, `MessageFacts`, `SupplementalContextFacts`, `InboundMediaFacts`) และรูปแบบการยอมรับ (`ChannelTurnAdmission`, `ChannelEventClass`) เข้าถึงได้ผ่าน `PluginRuntime` จาก `openclaw/plugin-sdk/core`
+`runtime.channel.turn.*` เป็นส่วนหนึ่งของพื้นผิว runtime สาธารณะของ Plugin ชนิด fact (`SenderFacts`, `ConversationFacts`, `RouteFacts`, `ReplyPlanFacts`, `AccessFacts`, `MessageFacts`, `SupplementalContextFacts`, `InboundMediaFacts`) และรูปทรง admission (`ChannelTurnAdmission`, `ChannelEventClass`) เข้าถึงได้ผ่าน `PluginRuntime` จาก `openclaw/plugin-sdk/core`
 
-ใช้กฎความเข้ากันได้ย้อนหลัง: ฟิลด์ข้อเท็จจริงใหม่เป็นแบบเพิ่มได้ ชนิดการยอมรับไม่ถูกเปลี่ยนชื่อ และชื่อจุดเข้าใช้งานยังคงเสถียร ความต้องการช่องทางใหม่ที่ต้องมีการเปลี่ยนแปลงแบบไม่ใช่การเพิ่ม ต้องผ่านกระบวนการย้ายของ plugin SDK
+ใช้กฎความเข้ากันได้ย้อนหลัง: ฟิลด์ fact ใหม่เป็นแบบเพิ่มเติม, ชนิด admission จะไม่ถูกเปลี่ยนชื่อ, และชื่อ entry point คงที่ ความต้องการช่องทางใหม่ที่จำเป็นต้องมีการเปลี่ยนแปลงแบบไม่เพิ่มเติมต้องผ่านกระบวนการย้าย Plugin SDK
 
 ## ที่เกี่ยวข้อง
 
-- [การสร้าง channel plugins](/th/plugins/sdk-channel-plugins) สำหรับสัญญา channel plugin ที่กว้างกว่า
-- [Helper runtime ของ plugin](/th/plugins/sdk-runtime) สำหรับพื้นผิว `runtime.*` อื่นๆ
-- [รายละเอียดภายในของ plugin](/th/plugins/architecture-internals) สำหรับ load pipeline และกลไก registry
+- [การรีแฟกเตอร์วงจรชีวิตข้อความ](/th/concepts/message-lifecycle-refactor) สำหรับวงจรชีวิต send/receive/live ที่วางแผนไว้ซึ่งจะห่อเคอร์เนลนี้
+- [การสร้าง channel plugins](/th/plugins/sdk-channel-plugins) สำหรับสัญญา channel Plugin ที่กว้างขึ้น
+- [ตัวช่วย Plugin runtime](/th/plugins/sdk-runtime) สำหรับพื้นผิว `runtime.*` อื่น ๆ
+- [ภายในของ Plugin](/th/plugins/architecture-internals) สำหรับ load pipeline และกลไก registry

@@ -1,40 +1,38 @@
 ---
 read_when:
-    - คุณต้องการเรื่องราวความเป็นมาของโครงการหรือเครดิตของผู้มีส่วนร่วม
-summary: ที่มาของโครงการ ผู้มีส่วนร่วม และใบอนุญาตใช้งาน
+    - คุณต้องการเรื่องราวเบื้องหลังของโครงการหรือเครดิตผู้มีส่วนร่วม
+summary: ที่มาของโครงการ ผู้ร่วมพัฒนา และใบอนุญาต.
 title: เครดิต
 x-i18n:
-    generated_at: "2026-04-24T09:31:05Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:29:42Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 914041bdfa43c8668149c83b28c3466787342620d047cc95e487bcf6ee21e388
+    source_hash: 4cda0d96a66d4a6fcf81553d39315ebe01e7ebb4a21bb2994e9a503825bc7fb6
     source_path: reference/credits.md
-    workflow: 15
+    workflow: 16
 ---
-
-# เครดิตและคำขอบคุณ
 
 ## ชื่อ
 
-OpenClaw = CLAW + TARDIS เพราะกุ้งก้ามกรามอวกาศทุกตัวต้องมีเครื่องเดินทางข้ามเวลาและอวกาศ
+OpenClaw = CLAW + TARDIS เพราะกุ้งล็อบสเตอร์อวกาศทุกตัวต้องมีเครื่องจักรข้ามเวลาและอวกาศ
 
 ## เครดิต
 
-- **Peter Steinberger** ([@steipete](https://x.com/steipete)) - ผู้สร้าง ผู้กระซิบบอกใจกุ้งก้ามกราม
-- **Mario Zechner** ([@badlogicc](https://x.com/badlogicgames)) - ผู้สร้าง Pi, ผู้ทดสอบเจาะระบบด้านความปลอดภัย
-- **Clawd** - กุ้งก้ามกรามอวกาศผู้เรียกร้องชื่อที่ดีกว่า
+- **Peter Steinberger** ([@steipete](https://x.com/steipete)) - ผู้สร้าง, ผู้กระซิบกับกุ้งล็อบสเตอร์
+- **Mario Zechner** ([@badlogicc](https://x.com/badlogicgames)) - ผู้สร้าง Pi, ผู้ทดสอบเจาะระบบความปลอดภัย
+- **Clawd** - กุ้งล็อบสเตอร์อวกาศที่เรียกร้องชื่อที่ดีกว่า
 
 ## ผู้มีส่วนร่วมหลัก
 
-- **Maxim Vovshin** (@Hyaxia, [36747317+Hyaxia@users.noreply.github.com](mailto:36747317+Hyaxia@users.noreply.github.com)) - skill Blogwatcher
+- **Maxim Vovshin** (@Hyaxia, [36747317+Hyaxia@users.noreply.github.com](mailto:36747317+Hyaxia@users.noreply.github.com)) - ทักษะ Blogwatcher
 - **Nacho Iacovino** (@nachoiacovino, [nacho.iacovino@gmail.com](mailto:nacho.iacovino@gmail.com)) - การแยกวิเคราะห์ตำแหน่งที่ตั้ง (Telegram และ WhatsApp)
-- **Vincent Koc** ([@vincentkoc](https://github.com/vincentkoc), [@vincent_koc](https://x.com/vincent_koc)) - Agents, Telemetry, Hooks, ความปลอดภัย
+- **Vincent Koc** ([@vincentkoc](https://github.com/vincentkoc), [@vincent_koc](https://x.com/vincent_koc)) - เอเจนต์, เทเลเมทรี, Hooks, ความปลอดภัย
 
-## ใบอนุญาต
+## สัญญาอนุญาต
 
-MIT - อิสระเหมือนกุ้งก้ามกรามในมหาสมุทร
+MIT - อิสระเหมือนกุ้งล็อบสเตอร์ในมหาสมุทร
 
-> "พวกเราทุกคนก็แค่กำลังเล่นกับพรอมป์ของตัวเอง" (น่าจะเป็น AI ที่อาจใช้โทเค็นหนักไปหน่อย)
+> "เราทุกคนก็แค่กำลังเล่นกับพรอมป์ของตัวเอง" (AI สักตัวที่คงใช้โทเค็นจนล้น)
 
 ## ที่เกี่ยวข้อง
 

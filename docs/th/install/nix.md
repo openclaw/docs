@@ -1,31 +1,31 @@
 ---
 read_when:
-    - คุณต้องการการติดตั้งที่ทำซ้ำได้และย้อนกลับได้
-    - คุณใช้งาน Nix/NixOS/Home Manager อยู่แล้ว
-    - คุณต้องการให้ทุกอย่างถูก pin และจัดการแบบ declarative
-summary: ติดตั้ง OpenClaw แบบ declarative ด้วย Nix
+    - คุณต้องการการติดตั้งที่ทำซ้ำได้และสามารถย้อนกลับได้
+    - คุณกำลังใช้ Nix/NixOS/Home Manager อยู่แล้ว
+    - คุณต้องการตรึงทุกอย่างไว้และจัดการแบบประกาศ
+summary: ติดตั้ง OpenClaw ด้วย Nix ในรูปแบบเชิงประกาศ
 title: Nix
 x-i18n:
-    generated_at: "2026-04-25T13:50:38Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:20:01Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 7980e48d9fac49396d9dd06cf8516d572c97def1764db94cf66879d81d63694c
+    source_hash: f0c25b97fb46a906bb726a13de095ead1e6c3642d28f66173b488acfbc5e0001
     source_path: install/nix.md
-    workflow: 15
+    workflow: 16
 ---
 
-ติดตั้ง OpenClaw แบบ declarative ด้วย **[nix-openclaw](https://github.com/openclaw/nix-openclaw)** — โมดูล Home Manager แบบ batteries-included
+ติดตั้ง OpenClaw แบบ declarative ด้วย **[nix-openclaw](https://github.com/openclaw/nix-openclaw)** - โมดูล Home Manager แบบครบเครื่อง
 
 <Info>
-repo [nix-openclaw](https://github.com/openclaw/nix-openclaw) คือแหล่งข้อมูลจริงสำหรับการติดตั้งด้วย Nix หน้านี้เป็นภาพรวมแบบย่อ
+Repo [nix-openclaw](https://github.com/openclaw/nix-openclaw) คือแหล่งข้อมูลหลักสำหรับการติดตั้ง Nix หน้านี้เป็นภาพรวมแบบย่อ
 </Info>
 
 ## สิ่งที่คุณจะได้รับ
 
-- Gateway + แอป macOS + tools (whisper, spotify, cameras) -- ทั้งหมดถูก pin ไว้
-- บริการ Launchd ที่ยังคงทำงานหลังรีบูต
-- ระบบ Plugin พร้อมคอนฟิกแบบ declarative
-- rollback ได้ทันที: `home-manager switch --rollback`
+- Gateway + แอป macOS + เครื่องมือ (whisper, spotify, cameras) -- ทั้งหมดถูกตรึงเวอร์ชัน
+- บริการ launchd ที่ยังทำงานต่อหลังรีบูต
+- ระบบ Plugin พร้อมการกำหนดค่าแบบ declarative
+- ย้อนกลับได้ทันที: `home-manager switch --rollback`
 
 ## เริ่มต้นอย่างรวดเร็ว
 
@@ -33,73 +33,85 @@ repo [nix-openclaw](https://github.com/openclaw/nix-openclaw) คือแหล
   <Step title="ติดตั้ง Determinate Nix">
     หากยังไม่ได้ติดตั้ง Nix ให้ทำตามคำแนะนำของ [ตัวติดตั้ง Determinate Nix](https://github.com/DeterminateSystems/nix-installer)
   </Step>
-  <Step title="สร้าง local flake">
+  <Step title="สร้าง flake ภายในเครื่อง">
     ใช้เทมเพลตแบบ agent-first จาก repo nix-openclaw:
     ```bash
     mkdir -p ~/code/openclaw-local
-    # คัดลอก templates/agent-first/flake.nix จาก repo nix-openclaw
+    # Copy templates/agent-first/flake.nix from the nix-openclaw repo
     ```
   </Step>
   <Step title="กำหนดค่า secrets">
-    ตั้งค่า token ของ messaging bot และ API key ของ model provider ใช้ไฟล์ธรรมดาที่ `~/.secrets/` ได้เลย
+    ตั้งค่าโทเค็นบอตรับส่งข้อความและคีย์ API ของผู้ให้บริการโมเดล ไฟล์ธรรมดาที่ `~/.secrets/` ใช้งานได้ดี
   </Step>
-  <Step title="กรอก template placeholders และสลับไปใช้">
+  <Step title="เติม placeholders ในเทมเพลตและสลับไปใช้">
     ```bash
     home-manager switch
     ```
   </Step>
   <Step title="ตรวจสอบ">
-    ยืนยันว่าบริการ launchd กำลังทำงานอยู่ และบอตของคุณตอบข้อความได้
+    ยืนยันว่าบริการ launchd กำลังทำงานอยู่และบอตของคุณตอบกลับข้อความ
   </Step>
 </Steps>
 
-ดู [README ของ nix-openclaw](https://github.com/openclaw/nix-openclaw) สำหรับตัวเลือกของโมดูลและตัวอย่างแบบเต็ม
+ดู [README ของ nix-openclaw](https://github.com/openclaw/nix-openclaw) สำหรับตัวเลือกโมดูลและตัวอย่างทั้งหมด
 
 ## พฤติกรรมรันไทม์ในโหมด Nix
 
-เมื่อมีการตั้ง `OPENCLAW_NIX_MODE=1` (อัตโนมัติเมื่อใช้ nix-openclaw) OpenClaw จะเข้าสู่โหมด deterministic ที่ปิดโฟลว์การติดตั้งอัตโนมัติ
+เมื่อมีการตั้งค่า `OPENCLAW_NIX_MODE=1` (อัตโนมัติเมื่อใช้ nix-openclaw) OpenClaw จะเข้าสู่โหมด deterministic ที่ปิดใช้งานโฟลว์การติดตั้งอัตโนมัติ
 
-คุณสามารถตั้งค่าเองได้เช่นกัน:
+คุณยังสามารถตั้งค่าด้วยตนเองได้เช่นกัน:
 
 ```bash
 export OPENCLAW_NIX_MODE=1
 ```
 
-บน macOS แอป GUI จะไม่รับช่วงตัวแปรสภาพแวดล้อมของ shell โดยอัตโนมัติ ให้เปิด Nix mode ผ่าน defaults แทน:
+บน macOS แอป GUI จะไม่สืบทอดตัวแปรสภาพแวดล้อมของ shell โดยอัตโนมัติ ให้เปิดใช้งานโหมด Nix ผ่าน defaults แทน:
 
 ```bash
 defaults write ai.openclaw.mac openclaw.nixMode -bool true
 ```
 
-### สิ่งที่เปลี่ยนในโหมด Nix
+### สิ่งที่เปลี่ยนแปลงในโหมด Nix
 
-- ปิดโฟลว์การติดตั้งอัตโนมัติและการเปลี่ยนแปลงตัวเอง
-- เมื่อขาด dependencies จะแสดงข้อความแนะนำการแก้ไขที่เฉพาะกับ Nix
-- UI จะแสดงแบนเนอร์ Nix mode แบบอ่านอย่างเดียว
+- โฟลว์การติดตั้งอัตโนมัติและการแก้ไขตัวเองถูกปิดใช้งาน
+- dependency ที่ขาดหายจะแสดงข้อความแก้ไขปัญหาเฉพาะสำหรับ Nix
+- UI แสดงแบนเนอร์โหมด Nix แบบอ่านอย่างเดียว
 
-### พาธของคอนฟิกและสถานะ
+### พาธ config และ state
 
-OpenClaw อ่านคอนฟิก JSON5 จาก `OPENCLAW_CONFIG_PATH` และเก็บข้อมูลที่เปลี่ยนแปลงได้ไว้ใน `OPENCLAW_STATE_DIR` เมื่อรันภายใต้ Nix ให้ตั้งค่าสิ่งเหล่านี้อย่างชัดเจนเป็นตำแหน่งที่ Nix จัดการ เพื่อให้สถานะและคอนฟิกระหว่างรันไทม์ไม่ไปอยู่ใน immutable store
+OpenClaw อ่าน config JSON5 จาก `OPENCLAW_CONFIG_PATH` และเก็บข้อมูลที่เปลี่ยนแปลงได้ใน `OPENCLAW_STATE_DIR` เมื่อรันภายใต้ Nix ให้ตั้งค่าเหล่านี้อย่างชัดเจนไปยังตำแหน่งที่ Nix จัดการ เพื่อให้ state และ config ของรันไทม์อยู่นอก store ที่เปลี่ยนแปลงไม่ได้
 
-| ตัวแปร                | ค่าเริ่มต้น                            |
-| --------------------- | -------------------------------------- |
+| ตัวแปร                 | ค่าเริ่มต้น                              |
+| ---------------------- | --------------------------------------- |
 | `OPENCLAW_HOME`        | `HOME` / `USERPROFILE` / `os.homedir()` |
-| `OPENCLAW_STATE_DIR`   | `~/.openclaw`                          |
-| `OPENCLAW_CONFIG_PATH` | `$OPENCLAW_STATE_DIR/openclaw.json`    |
+| `OPENCLAW_STATE_DIR`   | `~/.openclaw`                           |
+| `OPENCLAW_CONFIG_PATH` | `$OPENCLAW_STATE_DIR/openclaw.json`     |
 
-### การค้นหา PATH ของบริการ
+### การค้นพบ PATH ของบริการ
 
-บริการ gateway ของ launchd/systemd จะค้นหาไบนารีจาก Nix profile อัตโนมัติ ดังนั้น
-plugins และ tools ที่ shell ออกไปเรียก executable ที่ติดตั้งด้วย `nix` จะทำงานได้โดยไม่ต้องตั้งค่า PATH เอง
+บริการ Gateway แบบ launchd/systemd จะค้นหาไบนารีใน Nix-profile โดยอัตโนมัติ เพื่อให้
+plugins และเครื่องมือที่ shell out ไปยัง executable ที่ติดตั้งด้วย `nix` ทำงานได้โดยไม่ต้อง
+ตั้งค่า PATH ด้วยตนเอง:
 
-- เมื่อมีการตั้ง `NIX_PROFILES` ทุก entry จะถูกเพิ่มเข้าไปใน service PATH
-  ด้วยลำดับความสำคัญจากขวาไปซ้าย (ตรงกับลำดับความสำคัญของ Nix shell — ตัวขวาสุดชนะ)
-- เมื่อไม่มีการตั้ง `NIX_PROFILES` จะเพิ่ม `~/.nix-profile/bin` เป็น fallback
+- เมื่อตั้งค่า `NIX_PROFILES` แล้ว แต่ละรายการจะถูกเพิ่มเข้าไปใน PATH ของบริการโดยมีลำดับความสำคัญ
+  จากขวาไปซ้าย (ตรงกับลำดับความสำคัญของ Nix shell - ค่าขวาสุดชนะ)
+- เมื่อไม่ได้ตั้งค่า `NIX_PROFILES` ระบบจะเพิ่ม `~/.nix-profile/bin` เป็น fallback
 
-สิ่งนี้ใช้ได้กับทั้งสภาพแวดล้อมบริการของ macOS launchd และ Linux systemd
+สิ่งนี้ใช้กับสภาพแวดล้อมบริการทั้ง macOS launchd และ Linux systemd
 
 ## ที่เกี่ยวข้อง
 
-- [nix-openclaw](https://github.com/openclaw/nix-openclaw) -- คู่มือการตั้งค่าแบบเต็ม
-- [Wizard](/th/start/wizard) -- การตั้งค่า CLI แบบไม่ใช้ Nix
-- [Docker](/th/install/docker) -- การตั้งค่าแบบ containerized
+<CardGroup cols={2}>
+  <Card title="nix-openclaw" href="https://github.com/openclaw/nix-openclaw" icon="arrow-up-right-from-square">
+    โมดูล Home Manager ที่เป็นแหล่งข้อมูลหลักและคู่มือตั้งค่าฉบับเต็ม
+  </Card>
+  <Card title="วิซาร์ดตั้งค่า" href="/th/start/wizard" icon="wand-magic-sparkles">
+    คำแนะนำทีละขั้นตอนสำหรับการตั้งค่า CLI แบบไม่ใช้ Nix
+  </Card>
+  <Card title="Docker" href="/th/install/docker" icon="docker">
+    การตั้งค่าแบบ containerized เป็นทางเลือกที่ไม่ใช้ Nix
+  </Card>
+  <Card title="การอัปเดต" href="/th/install/updating" icon="arrow-up-right-from-square">
+    การอัปเดตการติดตั้งที่ Home Manager จัดการควบคู่ไปกับ package
+  </Card>
+</CardGroup>

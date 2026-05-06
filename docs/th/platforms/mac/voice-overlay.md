@@ -1,77 +1,73 @@
 ---
 read_when:
-    - การปรับลักษณะการทำงานของ voice overlay
-summary: วงจรชีวิตของ voice overlay เมื่อคำปลุกและ push-to-talk ซ้อนทับกัน
-title: voice overlay
+    - การปรับลักษณะการทำงานของโอเวอร์เลย์เสียง
+summary: วงจรชีวิตของโอเวอร์เลย์เสียงเมื่อคำปลุกและการกดเพื่อพูดทับซ้อนกัน
+title: โอเวอร์เลย์เสียง
 x-i18n:
-    generated_at: "2026-04-24T09:22:17Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:23:02Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 3ae98afad57dffe73e2c878eef4f3253e4464d68cadf531e9239b017cc160f28
+    source_hash: 5b30f50512e557bd5a50f0e4e8b7955a847b3b554694347d56638581fcda9514
     source_path: platforms/mac/voice-overlay.md
-    workflow: 15
+    workflow: 16
 ---
 
-# วงจรชีวิตของ voice overlay (macOS)
+# วงจรชีวิตของโอเวอร์เลย์เสียง (macOS)
 
-ผู้อ่านเป้าหมาย: ผู้ร่วมพัฒนาแอป macOS เป้าหมายคือทำให้ voice overlay มีพฤติกรรมที่คาดเดาได้เมื่อคำปลุกและ push-to-talk ซ้อนทับกัน
+กลุ่มเป้าหมาย: ผู้มีส่วนร่วมของแอป macOS เป้าหมาย: ทำให้โอเวอร์เลย์เสียงคาดการณ์ได้เมื่อคำปลุกและกดเพื่อพูดทำงานทับซ้อนกัน
 
 ## เจตนาปัจจุบัน
 
-- หาก overlay แสดงอยู่แล้วจากคำปลุก และผู้ใช้กด hotkey เซสชัน hotkey จะ _รับข้อความเดิมมาใช้ต่อ_ แทนการรีเซ็ต Overlay จะยังคงแสดงอยู่ตราบเท่าที่กด hotkey ค้างไว้ เมื่อผู้ใช้ปล่อย: หากมีข้อความที่ตัดช่องว่างแล้วก็ให้ส่ง มิฉะนั้นให้ปิด
-- คำปลุกเพียงอย่างเดียวยังคงส่งอัตโนมัติเมื่อเงียบ; push-to-talk จะส่งทันทีเมื่อปล่อย
+- หากโอเวอร์เลย์แสดงอยู่แล้วจากคำปลุกและผู้ใช้กดปุ่มลัด เซสชันจากปุ่มลัดจะ _รับช่วง_ ข้อความที่มีอยู่แทนการรีเซ็ต โอเวอร์เลย์จะยังคงแสดงอยู่ขณะกดปุ่มลัดค้างไว้ เมื่อผู้ใช้ปล่อยปุ่ม: ส่งหากมีข้อความหลังตัดช่องว่างแล้ว มิฉะนั้นให้ปิด
+- คำปลุกเพียงอย่างเดียวยังคงส่งอัตโนมัติเมื่อเงียบ ส่วนกดเพื่อพูดจะส่งทันทีเมื่อปล่อยปุ่ม
 
-## ติดตั้งใช้งานแล้ว (9 ธ.ค. 2025)
+## ดำเนินการแล้ว (9 ธ.ค. 2025)
 
-- ตอนนี้เซสชัน overlay มี token ต่อหนึ่งการจับเสียง (wake-word หรือ push-to-talk) การอัปเดต partial/final/send/dismiss/level จะถูกทิ้งเมื่อ token ไม่ตรงกัน เพื่อหลีกเลี่ยง stale callbacks
-- Push-to-talk จะรับข้อความบน overlay ที่มองเห็นอยู่มาใช้เป็น prefix (ดังนั้นการกด hotkey ขณะ wake overlay แสดงอยู่จะคงข้อความเดิมไว้และต่อท้ายด้วยคำพูดใหม่) มันจะรอ final transcript ได้นานถึง 1.5 วินาที ก่อน fallback ไปใช้ข้อความปัจจุบัน
-- logging สำหรับ chime/overlay จะถูกส่งที่ระดับ `info` ในหมวด `voicewake.overlay`, `voicewake.ptt` และ `voicewake.chime` (เริ่มเซสชัน, partial, final, send, dismiss, เหตุผลของ chime)
+- ตอนนี้เซสชันโอเวอร์เลย์มีโทเค็นต่อการจับเสียงแต่ละครั้ง (คำปลุกหรือกดเพื่อพูด) การอัปเดตข้อความบางส่วน/สุดท้าย/ส่ง/ปิด/ระดับจะถูกทิ้งเมื่อโทเค็นไม่ตรงกัน เพื่อหลีกเลี่ยงคอลแบ็กเก่า
+- กดเพื่อพูดจะรับช่วงข้อความโอเวอร์เลย์ที่มองเห็นอยู่เป็นคำนำหน้า (ดังนั้นการกดปุ่มลัดขณะโอเวอร์เลย์คำปลุกแสดงอยู่จะคงข้อความไว้และต่อท้ายคำพูดใหม่) ระบบจะรอทรานสคริปต์สุดท้ายนานสูงสุด 1.5 วินาทีก่อนถอยกลับไปใช้ข้อความปัจจุบัน
+- บันทึก chime/overlay ถูกปล่อยที่ระดับ `info` ในหมวดหมู่ `voicewake.overlay`, `voicewake.ptt` และ `voicewake.chime` (เริ่มเซสชัน, บางส่วน, สุดท้าย, ส่ง, ปิด, เหตุผล chime)
 
 ## ขั้นตอนถัดไป
 
-1. **VoiceSessionCoordinator (actor)**
-   - เป็นเจ้าของ `VoiceSession` ได้ครั้งละหนึ่งรายการเท่านั้น
-   - API (อิง token): `beginWakeCapture`, `beginPushToTalk`, `updatePartial`, `endCapture`, `cancel`, `applyCooldown`
-   - ทิ้ง callbacks ที่มี stale tokens (ป้องกันไม่ให้ recognizers เก่าเปิด overlay ขึ้นมาใหม่)
-
-2. **VoiceSession (model)**
-   - ฟิลด์: `token`, `source` (wakeWord|pushToTalk), committed/volatile text, flags ของ chime, timers (auto-send, idle), `overlayMode` (display|editing|sending), cooldown deadline
-
-3. **Overlay binding**
-   - `VoiceSessionPublisher` (`ObservableObject`) จะสะท้อนเซสชันที่ active ไปยัง SwiftUI
-   - `VoiceWakeOverlayView` จะแสดงผลผ่าน publisher เท่านั้น; มันจะไม่ mutate global singletons โดยตรง
-   - การกระทำของผู้ใช้ใน overlay (`sendNow`, `dismiss`, `edit`) จะเรียกกลับไปยัง coordinator พร้อม session token
-
-4. **เส้นทางการส่งแบบรวมศูนย์**
-   - เมื่อ `endCapture`: ถ้าข้อความที่ตัดช่องว่างแล้วว่างเปล่า → ปิด; มิฉะนั้น `performSend(session:)` (เล่น send chime ครั้งเดียว, ส่งต่อ, ปิด)
-   - Push-to-talk: ไม่หน่วงเวลา; wake-word: อาจมีการหน่วงเวลาแบบไม่บังคับสำหรับ auto-send
-   - ใช้ cooldown สั้น ๆ กับ wake runtime หลัง push-to-talk จบ เพื่อไม่ให้คำปลุกทริกเกอร์ซ้ำทันที
-
-5. **Logging**
-   - Coordinator จะส่ง `.info` logs ใน subsystem `ai.openclaw`, หมวด `voicewake.overlay` และ `voicewake.chime`
+1. **VoiceSessionCoordinator (แอกเตอร์)**
+   - ถือครอง `VoiceSession` เพียงหนึ่งรายการในแต่ละครั้ง
+   - API (อิงโทเค็น): `beginWakeCapture`, `beginPushToTalk`, `updatePartial`, `endCapture`, `cancel`, `applyCooldown`
+   - ทิ้งคอลแบ็กที่มีโทเค็นเก่า (ป้องกันไม่ให้ตัวรู้จำเก่าเปิดโอเวอร์เลย์อีกครั้ง)
+2. **VoiceSession (โมเดล)**
+   - ฟิลด์: `token`, `source` (wakeWord|pushToTalk), ข้อความที่ยืนยันแล้ว/ชั่วคราว, แฟล็ก chime, ตัวจับเวลา (ส่งอัตโนมัติ, ว่าง), `overlayMode` (display|editing|sending), เส้นตาย cooldown
+3. **การผูกโอเวอร์เลย์**
+   - `VoiceSessionPublisher` (`ObservableObject`) สะท้อนเซสชันที่ทำงานอยู่เข้าไปยัง SwiftUI
+   - `VoiceWakeOverlayView` เรนเดอร์ผ่าน publisher เท่านั้น และไม่แก้ไข singleton ส่วนกลางโดยตรง
+   - การกระทำของผู้ใช้บนโอเวอร์เลย์ (`sendNow`, `dismiss`, `edit`) เรียกกลับเข้า coordinator พร้อมโทเค็นเซสชัน
+4. **เส้นทางการส่งแบบรวม**
+   - เมื่อ `endCapture`: หากข้อความหลังตัดช่องว่างว่างเปล่า → ปิด; มิฉะนั้น `performSend(session:)` (เล่น chime สำหรับการส่งหนึ่งครั้ง, ส่งต่อ, ปิด)
+   - กดเพื่อพูด: ไม่มีการหน่วงเวลา; คำปลุก: หน่วงเวลาได้สำหรับการส่งอัตโนมัติ
+   - ใช้ cooldown สั้น ๆ กับรันไทม์คำปลุกหลังจากกดเพื่อพูดเสร็จ เพื่อไม่ให้คำปลุกถูกทริกเกอร์ซ้ำทันที
+5. **การบันทึก**
+   - Coordinator ปล่อยบันทึก `.info` ในซับซิสเต็ม `ai.openclaw` หมวดหมู่ `voicewake.overlay` และ `voicewake.chime`
    - เหตุการณ์สำคัญ: `session_started`, `adopted_by_push_to_talk`, `partial`, `finalized`, `send`, `dismiss`, `cancel`, `cooldown`
 
-## เช็กลิสต์สำหรับการดีบัก
+## เช็กลิสต์การดีบัก
 
-- สตรีม logs ระหว่างทำให้ overlay ค้างซ้ำ:
+- สตรีมบันทึกขณะทำซ้ำโอเวอร์เลย์ที่ค้างอยู่:
 
   ```bash
   sudo log stream --predicate 'subsystem == "ai.openclaw" AND category CONTAINS "voicewake"' --level info --style compact
   ```
 
-- ตรวจสอบว่ามี active session token เพียงหนึ่งรายการ; stale callbacks ควรถูกทิ้งโดย coordinator
-- ตรวจสอบให้แน่ใจว่าการปล่อย push-to-talk เรียก `endCapture` ด้วย active token เสมอ; หากข้อความว่าง ควรเห็น `dismiss` โดยไม่มี chime หรือ send
+- ตรวจสอบว่ามีโทเค็นเซสชันที่ทำงานอยู่เพียงหนึ่งรายการ คอลแบ็กเก่าควรถูกทิ้งโดย coordinator
+- ตรวจให้แน่ใจว่าการปล่อยปุ่มกดเพื่อพูดเรียก `endCapture` พร้อมโทเค็นที่ทำงานอยู่เสมอ หากข้อความว่างเปล่า ควรเห็น `dismiss` โดยไม่มี chime หรือการส่ง
 
-## ขั้นตอนการย้ายระบบ (แนะนำ)
+## ขั้นตอนการย้าย (แนะนำ)
 
 1. เพิ่ม `VoiceSessionCoordinator`, `VoiceSession` และ `VoiceSessionPublisher`
-2. รีแฟกเตอร์ `VoiceWakeRuntime` ให้สร้าง/อัปเดต/จบเซสชันแทนการแตะ `VoiceWakeOverlayController` โดยตรง
-3. รีแฟกเตอร์ `VoicePushToTalk` ให้รับเซสชันที่มีอยู่มาใช้ต่อและเรียก `endCapture` เมื่อปล่อย; ใช้ runtime cooldown
-4. เชื่อม `VoiceWakeOverlayController` เข้ากับ publisher; เอาการเรียกตรงจาก runtime/PTT ออก
-5. เพิ่ม integration tests สำหรับการรับช่วงเซสชัน, cooldown และการปิดเมื่อข้อความว่าง
+2. รีแฟกเตอร์ `VoiceWakeRuntime` ให้สร้าง/อัปเดต/สิ้นสุดเซสชันแทนการแตะ `VoiceWakeOverlayController` โดยตรง
+3. รีแฟกเตอร์ `VoicePushToTalk` ให้รับช่วงเซสชันที่มีอยู่และเรียก `endCapture` เมื่อปล่อยปุ่ม; ใช้ runtime cooldown
+4. เชื่อม `VoiceWakeOverlayController` เข้ากับ publisher; ลบการเรียกโดยตรงจาก runtime/PTT
+5. เพิ่มการทดสอบอินทิเกรชันสำหรับการรับช่วงเซสชัน, cooldown และการปิดเมื่อข้อความว่างเปล่า
 
 ## ที่เกี่ยวข้อง
 
 - [แอป macOS](/th/platforms/macos)
-- [Voice wake (macOS)](/th/platforms/mac/voicewake)
-- [Talk mode](/th/nodes/talk)
+- [คำปลุกด้วยเสียง (macOS)](/th/platforms/mac/voicewake)
+- [โหมดพูดคุย](/th/nodes/talk)

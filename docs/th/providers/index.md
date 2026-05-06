@@ -1,28 +1,26 @@
 ---
 read_when:
     - คุณต้องการเลือกผู้ให้บริการโมเดล
-    - คุณต้องการภาพรวมโดยย่อของแบ็กเอนด์ LLM ที่รองรับ
-summary: ผู้ให้บริการโมเดล (โมเดลภาษาขนาดใหญ่) ที่ OpenClaw รองรับ
+    - คุณต้องการภาพรวมอย่างรวดเร็วของแบ็กเอนด์ LLM ที่รองรับ
+summary: ผู้ให้บริการโมเดล (LLMs) ที่ OpenClaw รองรับ
 title: ไดเรกทอรีผู้ให้บริการ
 x-i18n:
-    generated_at: "2026-04-30T10:11:53Z"
+    generated_at: "2026-05-06T09:28:10Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 61143200b2e7a74392cf8871bfcd210fe35dbd5118e2e8bc7b15265192fd2bde
+    source_hash: cfc3a15880a5e1881c1a58c60c9ad7e5624350a8db848d03c7cef6ee18c14b81
     source_path: providers/index.md
     workflow: 16
 ---
 
-# ผู้ให้บริการโมเดล
-
 OpenClaw สามารถใช้ผู้ให้บริการ LLM ได้หลายราย เลือกผู้ให้บริการ ยืนยันตัวตน แล้วตั้งค่า
 โมเดลเริ่มต้นเป็น `provider/model`
 
-กำลังหาเอกสารช่องทางแชท (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/ฯลฯ) อยู่ใช่ไหม? ดู [ช่องทาง](/th/channels)
+กำลังมองหาเอกสารช่องทางแชท (WhatsApp/Telegram/Discord/Slack/Mattermost (Plugin)/ฯลฯ) อยู่หรือไม่? ดู [ช่องทาง](/th/channels)
 
 ## เริ่มต้นอย่างรวดเร็ว
 
-1. ยืนยันตัวตนกับผู้ให้บริการ (โดยปกติผ่าน `openclaw onboard`)
+1. ยืนยันตัวตนกับผู้ให้บริการ (โดยทั่วไปผ่าน `openclaw onboard`)
 2. ตั้งค่าโมเดลเริ่มต้น:
 
 ```json5
@@ -56,7 +54,7 @@ OpenClaw สามารถใช้ผู้ให้บริการ LLM ไ
 - [Hugging Face (Inference)](/th/providers/huggingface)
 - [inferrs (โมเดลในเครื่อง)](/th/providers/inferrs)
 - [Kilocode](/th/providers/kilocode)
-- [LiteLLM (gateway แบบรวมศูนย์)](/th/providers/litellm)
+- [LiteLLM (Gateway แบบรวมศูนย์)](/th/providers/litellm)
 - [LM Studio (โมเดลในเครื่อง)](/th/providers/lmstudio)
 - [MiniMax](/th/providers/minimax)
 - [Mistral](/th/providers/mistral)
@@ -67,7 +65,7 @@ OpenClaw สามารถใช้ผู้ให้บริการ LLM ไ
 - [OpenCode](/th/providers/opencode)
 - [OpenCode Go](/th/providers/opencode-go)
 - [OpenRouter](/th/providers/openrouter)
-- [Perplexity (การค้นเว็บ)](/th/providers/perplexity-provider)
+- [Perplexity (การค้นหาเว็บ)](/th/providers/perplexity-provider)
 - [Qianfan](/th/providers/qianfan)
 - [Qwen Cloud](/th/providers/qwen)
 - [Runway](/th/providers/runway)
@@ -88,10 +86,10 @@ OpenClaw สามารถใช้ผู้ให้บริการ LLM ไ
 
 ## หน้าภาพรวมที่ใช้ร่วมกัน
 
-- [ตัวแปรที่บันเดิลเพิ่มเติม](/th/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy และ Gemini CLI OAuth
-- [การสร้างภาพ](/th/tools/image-generation) - เครื่องมือ `image_generate` ที่ใช้ร่วมกัน การเลือกผู้ให้บริการ และ failover
-- [การสร้างเพลง](/th/tools/music-generation) - เครื่องมือ `music_generate` ที่ใช้ร่วมกัน การเลือกผู้ให้บริการ และ failover
-- [การสร้างวิดีโอ](/th/tools/video-generation) - เครื่องมือ `video_generate` ที่ใช้ร่วมกัน การเลือกผู้ให้บริการ และ failover
+- [ตัวแปรที่รวมมาเพิ่มเติม](/th/providers/models#additional-bundled-provider-variants) - Anthropic Vertex, Copilot Proxy และ Gemini CLI OAuth
+- [การสร้างภาพ](/th/tools/image-generation) - เครื่องมือ `image_generate` ที่ใช้ร่วมกัน การเลือกผู้ให้บริการ และการสลับเมื่อเกิดข้อผิดพลาด
+- [การสร้างเพลง](/th/tools/music-generation) - เครื่องมือ `music_generate` ที่ใช้ร่วมกัน การเลือกผู้ให้บริการ และการสลับเมื่อเกิดข้อผิดพลาด
+- [การสร้างวิดีโอ](/th/tools/video-generation) - เครื่องมือ `video_generate` ที่ใช้ร่วมกัน การเลือกผู้ให้บริการ และการสลับเมื่อเกิดข้อผิดพลาด
 
 ## ผู้ให้บริการถอดเสียง
 
@@ -102,9 +100,9 @@ OpenClaw สามารถใช้ผู้ให้บริการ LLM ไ
 - [SenseAudio](/th/providers/senseaudio)
 - [xAI](/th/providers/xai#speech-to-text)
 
-## เครื่องมือชุมชน
+## เครื่องมือจากชุมชน
 
-- [Claude Max API Proxy](/th/providers/claude-max-api-proxy) - พร็อกซีชุมชนสำหรับข้อมูลประจำตัวการสมัครใช้งาน Claude (ตรวจสอบนโยบาย/ข้อกำหนดของ Anthropic ก่อนใช้)
+- [Claude Max API Proxy](/th/providers/claude-max-api-proxy) - พร็อกซีจากชุมชนสำหรับข้อมูลรับรองการสมัครสมาชิก Claude (ตรวจสอบนโยบาย/เงื่อนไขของ Anthropic ก่อนใช้งาน)
 
 สำหรับแค็ตตาล็อกผู้ให้บริการฉบับเต็ม (xAI, Groq, Mistral ฯลฯ) และการกำหนดค่าขั้นสูง
 ดู [ผู้ให้บริการโมเดล](/th/concepts/model-providers)

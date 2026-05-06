@@ -1,43 +1,57 @@
 ---
 read_when:
-    - คุณต้องการใช้ Tencent Hy3 preview กับ OpenClaw
-    - คุณต้องการการตั้งค่า API key ของ TokenHub
-summary: การตั้งค่า Tencent Cloud TokenHub สำหรับ Hy3 preview
+    - คุณต้องการใช้รุ่นพรีวิวของ Tencent Hy3 กับ OpenClaw
+    - คุณต้องตั้งค่าคีย์ API ของ TokenHub
+summary: การตั้งค่า Tencent Cloud TokenHub สำหรับ Hy3 รุ่นพรีวิว
 title: Tencent Cloud (TokenHub)
 x-i18n:
-    generated_at: "2026-04-24T09:30:01Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:29:03Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: c64afffc66dccca256ec658235ae1fbc18e46608b594bc07875118f54b2a494d
+    source_hash: a194e10b0e77e2567e6835f08d1cc0fa2a32fa8d37b1851fb83024b172a03fe3
     source_path: providers/tencent.md
-    workflow: 15
+    workflow: 16
 ---
 
-# Tencent Cloud TokenHub
+Tencent Cloud จัดส่งมาเป็น Plugin ผู้ให้บริการที่บันเดิลมากับ OpenClaw โดยให้เข้าถึง Tencent Hy3 preview ผ่านเอ็นด์พอยต์ TokenHub (`tencent-tokenhub`) ด้วย API ที่เข้ากันได้กับ OpenAI
 
-Tencent Cloud มาพร้อมกับ **ปลั๊กอินผู้ให้บริการแบบ bundled** ใน OpenClaw โดยให้การเข้าถึง Tencent Hy3 preview ผ่าน endpoint ของ TokenHub (`tencent-tokenhub`)
-
-ผู้ให้บริการนี้ใช้ API ที่เข้ากันได้กับ OpenAI
-
-| คุณสมบัติ | ค่า |
-| ------------- | ------------------------------------------ |
-| ผู้ให้บริการ | `tencent-tokenhub` |
-| โมเดลเริ่มต้น | `tencent-tokenhub/hy3-preview` |
-| การยืนยันตัวตน | `TOKENHUB_API_KEY` |
-| API | chat completions ที่เข้ากันได้กับ OpenAI |
-| Base URL | `https://tokenhub.tencentmaas.com/v1` |
-| Global URL | `https://tokenhub-intl.tencentmaas.com/v1` |
+| คุณสมบัติ         | ค่า                                                 |
+| ---------------- | ----------------------------------------------------- |
+| รหัสผู้ให้บริการ      | `tencent-tokenhub`                                    |
+| Plugin           | บันเดิลมา, `enabledByDefault: true`                     |
+| ตัวแปร env สำหรับการยืนยันตัวตน     | `TOKENHUB_API_KEY`                                    |
+| แฟล็กการเริ่มต้นใช้งาน  | `--auth-choice tokenhub-api-key`                      |
+| แฟล็ก CLI โดยตรง  | `--tokenhub-api-key <key>`                            |
+| API              | เข้ากันได้กับ OpenAI (`openai-completions`)              |
+| URL ฐานเริ่มต้น | `https://tokenhub.tencentmaas.com/v1`                 |
+| URL ฐานส่วนกลาง  | `https://tokenhub-intl.tencentmaas.com/v1` (เขียนทับค่าได้) |
+| โมเดลเริ่มต้น    | `tencent-tokenhub/hy3-preview`                        |
 
 ## เริ่มต้นอย่างรวดเร็ว
 
 <Steps>
-  <Step title="สร้าง API key ของ TokenHub">
-    สร้าง API key ใน Tencent Cloud TokenHub หากคุณเลือกขอบเขตการเข้าถึงแบบจำกัดสำหรับคีย์ ให้รวม **Hy3 preview** ไว้ในรายการโมเดลที่อนุญาตด้วย
+  <Step title="สร้างคีย์ TokenHub API">
+    สร้างคีย์ API ใน Tencent Cloud TokenHub หากคุณเลือกขอบเขตการเข้าถึงแบบจำกัดสำหรับคีย์ ให้รวม **Hy3 preview** ไว้ในโมเดลที่อนุญาตด้วย
   </Step>
-  <Step title="รันการตั้งค่าเริ่มต้น">
-    ```bash
-    openclaw onboard --auth-choice tokenhub-api-key
-    ```
+  <Step title="เรียกใช้การเริ่มต้นใช้งาน">
+    <CodeGroup>
+
+```bash Onboarding
+openclaw onboard --auth-choice tokenhub-api-key
+```
+
+```bash Direct flag
+openclaw onboard --non-interactive \
+  --auth-choice tokenhub-api-key \
+  --tokenhub-api-key "$TOKENHUB_API_KEY"
+```
+
+```bash Env only
+export TOKENHUB_API_KEY=...
+```
+
+    </CodeGroup>
+
   </Step>
   <Step title="ตรวจสอบโมเดล">
     ```bash
@@ -59,45 +73,65 @@ openclaw onboard --non-interactive \
 
 ## แค็ตตาล็อกในตัว
 
-| Model ref | ชื่อ | อินพุต | Context | เอาต์พุตสูงสุด | หมายเหตุ |
+| อ้างอิงโมเดล                      | ชื่อ                   | อินพุต | บริบท | เอาต์พุตสูงสุด | หมายเหตุ                      |
 | ------------------------------ | ---------------------- | ----- | ------- | ---------- | -------------------------- |
-| `tencent-tokenhub/hy3-preview` | Hy3 preview (TokenHub) | text | 256,000 | 64,000 | ค่าเริ่มต้น; เปิดใช้ reasoning |
+| `tencent-tokenhub/hy3-preview` | Hy3 preview (TokenHub) | text  | 256,000 | 64,000     | ค่าเริ่มต้น; รองรับการใช้เหตุผล |
 
-Hy3 preview คือโมเดลภาษาขนาดใหญ่แบบ MoE ของ Tencent Hunyuan สำหรับการให้เหตุผล การทำตามคำสั่งในบริบทยาว โค้ด และเวิร์กโฟลว์ของเอเจนต์ ตัวอย่างแบบเข้ากันได้กับ OpenAI ของ Tencent ใช้ `hy3-preview` เป็น model id และรองรับการเรียกใช้เครื่องมือแบบ chat-completions มาตรฐาน พร้อมทั้ง `reasoning_effort`
+Hy3 preview คือโมเดลภาษา MoE ขนาดใหญ่ของ Tencent Hunyuan สำหรับการใช้เหตุผล การทำตามคำสั่งในบริบทยาว โค้ด และเวิร์กโฟลว์ของเอเจนต์ ตัวอย่างที่เข้ากันได้กับ OpenAI ของ Tencent ใช้ `hy3-preview` เป็นรหัสโมเดล และรองรับการเรียกใช้เครื่องมือแบบ chat-completions มาตรฐาน รวมถึง `reasoning_effort`
 
 <Tip>
-model id คือ `hy3-preview` อย่าสับสนกับโมเดล `HY-3D-*` ของ Tencent ซึ่งเป็น API สำหรับการสร้าง 3D และไม่ใช่โมเดลแชตของ OpenClaw ที่กำหนดค่าโดยผู้ให้บริการนี้
+  รหัสโมเดลคือ `hy3-preview` อย่าสับสนกับโมเดล `HY-3D-*` ของ Tencent ซึ่งเป็น API สำหรับการสร้าง 3D และไม่ใช่โมเดลแชตของ OpenClaw ที่ผู้ให้บริการนี้กำหนดค่าไว้
 </Tip>
 
-## การ override endpoint
+## การกำหนดราคาแบบแบ่งระดับ
 
-โดยค่าเริ่มต้น OpenClaw ใช้ endpoint `https://tokenhub.tencentmaas.com/v1` ของ Tencent Cloud ทั้งนี้ Tencent ยังมีเอกสารสำหรับ endpoint TokenHub ระดับสากลด้วย:
+แค็ตตาล็อกที่บันเดิลมาจัดส่งมาพร้อมเมทาดาทาต้นทุนแบบแบ่งระดับ ซึ่งปรับตามความยาวของหน้าต่างอินพุต ดังนั้นการประมาณต้นทุนจึงถูกเติมให้โดยไม่ต้องเขียนทับค่าด้วยตนเอง
 
-```bash
-openclaw config set models.providers.tencent-tokenhub.baseUrl "https://tokenhub-intl.tencentmaas.com/v1"
-```
+| ช่วงโทเค็นอินพุต | อัตราอินพุต | อัตราเอาต์พุต | การอ่านแคช |
+| ------------------ | ---------- | ----------- | ---------- |
+| 0 - 16,000         | 0.176      | 0.587       | 0.059      |
+| 16,000 - 32,000    | 0.235      | 0.939       | 0.088      |
+| 32,000+            | 0.293      | 1.173       | 0.117      |
 
-ให้ override endpoint เฉพาะเมื่อบัญชี TokenHub หรือภูมิภาคของคุณจำเป็นต้องใช้เท่านั้น
+อัตราคิดเป็นต่อหนึ่งล้านโทเค็นในสกุล USD ตามที่ Tencent ประกาศไว้ เขียนทับการกำหนดราคาใต้ `models.providers.tencent-tokenhub` เฉพาะเมื่อคุณต้องการพื้นผิวที่แตกต่าง
 
-## หมายเหตุ
+## การกำหนดค่าขั้นสูง
 
-- Model ref ของ TokenHub ใช้ `tencent-tokenhub/<modelId>`
-- ปัจจุบันแค็ตตาล็อกแบบ bundled รวม `hy3-preview`
-- ปลั๊กอินทำเครื่องหมาย Hy3 preview ว่ารองรับ reasoning และรองรับ streaming-usage
-- ปลั๊กอินมาพร้อมข้อมูลเมตาราคาของ Hy3 แบบแบ่งระดับ ดังนั้นจึงมีการเติมค่าประมาณต้นทุนให้โดยไม่ต้อง override ราคาเอง
-- ให้ override ราคา, context หรือข้อมูลเมตา endpoint ใน `models.providers` เฉพาะเมื่อจำเป็น
+<AccordionGroup>
+  <Accordion title="เขียนทับเอ็นด์พอยต์">
+    OpenClaw ใช้เอ็นด์พอยต์ `https://tokenhub.tencentmaas.com/v1` ของ Tencent Cloud เป็นค่าเริ่มต้น Tencent ยังมีเอกสารเอ็นด์พอยต์ TokenHub ระหว่างประเทศด้วย:
 
-## หมายเหตุด้านสภาพแวดล้อม
+    ```bash
+    openclaw config set models.providers.tencent-tokenhub.baseUrl "https://tokenhub-intl.tencentmaas.com/v1"
+    ```
 
-หาก Gateway ทำงานเป็นเดมอน (launchd/systemd) โปรดตรวจสอบว่า `TOKENHUB_API_KEY`
-พร้อมใช้งานสำหรับโปรเซสนั้น (ตัวอย่างเช่น ใน `~/.openclaw/.env` หรือผ่าน
-`env.shellEnv`)
+    เขียนทับเอ็นด์พอยต์เฉพาะเมื่อบัญชีหรือภูมิภาค TokenHub ของคุณกำหนดให้ต้องใช้เท่านั้น
 
-## เอกสารที่เกี่ยวข้อง
+  </Accordion>
 
-- [การกำหนดค่า OpenClaw](/th/gateway/configuration)
-- [ผู้ให้บริการโมเดล](/th/concepts/model-providers)
-- [หน้าผลิตภัณฑ์ Tencent TokenHub](https://cloud.tencent.com/product/tokenhub)
-- [การสร้างข้อความด้วย Tencent TokenHub](https://cloud.tencent.com/document/product/1823/130079)
-- [การตั้งค่า Tencent TokenHub Cline สำหรับ Hy3 preview](https://cloud.tencent.com/document/product/1823/130932)
-- [การ์ดโมเดล Tencent Hy3 preview](https://huggingface.co/tencent/Hy3-preview)
+  <Accordion title="ความพร้อมใช้งานของสภาพแวดล้อมสำหรับดีมอน">
+    หาก Gateway ทำงานเป็นบริการที่มีการจัดการ (launchd, systemd, Docker), `TOKENHUB_API_KEY` ต้องมองเห็นได้สำหรับโปรเซสนั้น ตั้งค่าไว้ใน `~/.openclaw/.env` หรือผ่าน `env.shellEnv` เพื่อให้สภาพแวดล้อมของ launchd, systemd หรือ Docker exec อ่านได้
+
+    <Warning>
+      คีย์ที่ตั้งไว้เฉพาะใน `~/.profile` จะไม่มองเห็นได้สำหรับโปรเซส Gateway ที่มีการจัดการ ใช้ไฟล์ env หรือ seam การกำหนดค่าเพื่อความพร้อมใช้งานแบบถาวร
+    </Warning>
+
+  </Accordion>
+</AccordionGroup>
+
+## ที่เกี่ยวข้อง
+
+<CardGroup cols={2}>
+  <Card title="ผู้ให้บริการโมเดล" href="/th/concepts/model-providers" icon="layers">
+    การเลือกผู้ให้บริการ อ้างอิงโมเดล และพฤติกรรมการเฟลโอเวอร์
+  </Card>
+  <Card title="ข้อมูลอ้างอิงการกำหนดค่า" href="/th/gateway/configuration" icon="gear">
+    สคีมาการกำหนดค่าฉบับเต็ม รวมถึงการตั้งค่าผู้ให้บริการ
+  </Card>
+  <Card title="Tencent TokenHub" href="https://cloud.tencent.com/product/tokenhub" icon="arrow-up-right-from-square">
+    หน้าผลิตภัณฑ์ TokenHub ของ Tencent Cloud
+  </Card>
+  <Card title="การ์ดโมเดล Hy3 preview" href="https://huggingface.co/tencent/Hy3-preview" icon="square-poll-horizontal">
+    รายละเอียดและเบนช์มาร์กของ Tencent Hunyuan Hy3 preview
+  </Card>
+</CardGroup>

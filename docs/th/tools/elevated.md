@@ -1,39 +1,39 @@
 ---
 read_when:
-    - การปรับค่าเริ่มต้นของโหมดยกระดับสิทธิ์ allowlists หรือพฤติกรรมของคำสั่ง slash
-    - การทำความเข้าใจว่าเอเจนต์ที่อยู่ใน sandbox สามารถเข้าถึงโฮสต์ได้อย่างไร
-summary: 'โหมดยกระดับสิทธิ์ของ exec: รันคำสั่งนอก sandbox จากเอเจนต์ที่อยู่ใน sandbox'
+    - การปรับค่าเริ่มต้นของโหมดสิทธิ์ยกระดับ รายการอนุญาต หรือพฤติกรรมของคำสั่งสแลช
+    - ทำความเข้าใจวิธีที่เอเจนต์ในแซนด์บ็อกซ์สามารถเข้าถึงโฮสต์
+summary: 'โหมดการรันคำสั่งแบบยกระดับสิทธิ์: รันคำสั่งนอกแซนด์บ็อกซ์จากเอเจนต์ที่อยู่ในแซนด์บ็อกซ์'
 title: โหมดยกระดับสิทธิ์
 x-i18n:
-    generated_at: "2026-04-24T09:35:58Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:33:21Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 5b91b4af36f9485695f2afebe9bf8d7274d7aad6d0d88e762e581b0d091e04f7
+    source_hash: 91aab7c105643d8e5d07d89cd5ab176f0a40cd3d23e2b20b3986cbf76f575d64
     source_path: tools/elevated.md
-    workflow: 15
+    workflow: 16
 ---
 
-เมื่อเอเจนต์ทำงานอยู่ภายใน sandbox คำสั่ง `exec` ของมันจะถูกจำกัดให้อยู่ภายใน
-สภาพแวดล้อมของ sandbox **โหมดยกระดับสิทธิ์** ช่วยให้เอเจนต์หลุดออกมาและรันคำสั่ง
-นอก sandbox แทนได้ พร้อมด่านอนุมัติที่กำหนดค่าได้
+เมื่อ agent ทำงานภายใน sandbox คำสั่ง `exec` ของมันจะถูกจำกัดให้อยู่ใน
+สภาพแวดล้อม sandbox **โหมด elevated** ช่วยให้ agent ออกจากข้อจำกัดนั้นและเรียกใช้คำสั่ง
+ภายนอก sandbox แทน พร้อมเกตการอนุมัติที่กำหนดค่าได้
 
 <Info>
-  โหมดยกระดับสิทธิ์จะเปลี่ยนพฤติกรรมเฉพาะเมื่อเอเจนต์อยู่ในสถานะ **sandboxed** เท่านั้น สำหรับ
-  เอเจนต์ที่ไม่อยู่ใน sandbox นั้น exec จะทำงานบนโฮสต์อยู่แล้ว
+  โหมด elevated จะเปลี่ยนพฤติกรรมก็ต่อเมื่อ agent อยู่ใน **sandbox** เท่านั้น สำหรับ
+  agent ที่ไม่ได้อยู่ใน sandbox นั้น exec ทำงานบน host อยู่แล้ว
 </Info>
 
 ## คำสั่งกำกับ
 
-ควบคุมโหมดยกระดับสิทธิ์ต่อเซสชันด้วยคำสั่ง slash:
+ควบคุมโหมด elevated ต่อเซสชันด้วยคำสั่ง slash:
 
-| คำสั่งกำกับ | สิ่งที่ทำ |
+| คำสั่งกำกับ       | สิ่งที่ทำ                                                           |
 | ---------------- | ---------------------------------------------------------------------- |
-| `/elevated on` | รันนอก sandbox บนพาธโฮสต์ที่กำหนดค่าไว้ โดยยังคงการอนุมัติ |
-| `/elevated ask` | เหมือนกับ `on` (ชื่อแฝง) |
-| `/elevated full` | รันนอก sandbox บนพาธโฮสต์ที่กำหนดค่าไว้และข้ามการอนุมัติ |
-| `/elevated off` | กลับไปใช้การรันแบบจำกัดอยู่ใน sandbox |
+| `/elevated on`   | ทำงานภายนอก sandbox บนเส้นทาง host ที่กำหนดค่าไว้ โดยยังคงการอนุมัติไว้    |
+| `/elevated ask`  | เหมือนกับ `on` (alias)                                                   |
+| `/elevated full` | ทำงานภายนอก sandbox บนเส้นทาง host ที่กำหนดค่าไว้และข้ามการอนุมัติ |
+| `/elevated off`  | กลับไปใช้การดำเนินการที่ถูกจำกัดอยู่ใน sandbox                                   |
 
-สามารถใช้เป็น `/elev on|off|ask|full` ได้เช่นกัน
+ยังใช้งานได้ในรูปแบบ `/elev on|off|ask|full` ด้วย
 
 ส่ง `/elevated` โดยไม่มีอาร์กิวเมนต์เพื่อดูระดับปัจจุบัน
 
@@ -41,7 +41,7 @@ x-i18n:
 
 <Steps>
   <Step title="ตรวจสอบความพร้อมใช้งาน">
-    ต้องเปิดใช้ Elevated ใน config และผู้ส่งต้องอยู่ใน allowlist:
+    ต้องเปิดใช้งาน Elevated ใน config และผู้ส่งต้องอยู่ใน allowlist:
 
     ```json5
     {
@@ -60,7 +60,7 @@ x-i18n:
   </Step>
 
   <Step title="ตั้งค่าระดับ">
-    ส่งข้อความที่มีเฉพาะคำสั่งกำกับเพื่อกำหนดค่าเริ่มต้นของเซสชัน:
+    ส่งข้อความที่มีเฉพาะคำสั่งกำกับเพื่อตั้งค่าเริ่มต้นของเซสชัน:
 
     ```
     /elevated full
@@ -74,48 +74,62 @@ x-i18n:
 
   </Step>
 
-  <Step title="คำสั่งทำงานนอก sandbox">
-    เมื่อเปิดใช้ elevated แล้ว การเรียก `exec` จะออกจาก sandbox โฮสต์ที่มีผลจริง
-    จะเป็น `gateway` โดยค่าเริ่มต้น หรือ `node` เมื่อ exec target ที่กำหนดค่าไว้/ของเซสชันเป็น
-    `node` ในโหมด `full` การอนุมัติ exec จะถูกข้าม ส่วนในโหมด `on`/`ask`
-    กฎการอนุมัติที่กำหนดค่าไว้จะยังคงมีผล
+  <Step title="คำสั่งทำงานภายนอก sandbox">
+    เมื่อ elevated เปิดใช้งานอยู่ การเรียก `exec` จะออกจาก sandbox โดย host ที่มีผลจริงคือ
+    `gateway` ตามค่าเริ่มต้น หรือ `node` เมื่อเป้าหมาย exec ที่กำหนดค่าไว้/ของเซสชันคือ
+    `node` ในโหมด `full` การอนุมัติ exec จะถูกข้าม ในโหมด `on`/`ask`
+    กฎการอนุมัติที่กำหนดค่าไว้ยังคงมีผล
   </Step>
 </Steps>
 
-## ลำดับการ resolve
+## ลำดับการพิจารณา
 
-1. **คำสั่งกำกับแบบ inline** ในข้อความ (มีผลเฉพาะข้อความนั้น)
-2. **override ระดับเซสชัน** (ตั้งค่าโดยการส่งข้อความที่มีเฉพาะคำสั่งกำกับ)
-3. **ค่าเริ่มต้นระดับ global** (`agents.defaults.elevatedDefault` ใน config)
+1. **คำสั่งกำกับแบบ inline** ในข้อความ (มีผลกับข้อความนั้นเท่านั้น)
+2. **การ override ของเซสชัน** (ตั้งค่าโดยส่งข้อความที่มีเฉพาะคำสั่งกำกับ)
+3. **ค่าเริ่มต้นส่วนกลาง** (`agents.defaults.elevatedDefault` ใน config)
 
-## ความพร้อมใช้งานและ allowlists
+## ความพร้อมใช้งานและ allowlist
 
-- **ด่าน global**: `tools.elevated.enabled` (ต้องเป็น `true`)
-- **allowlist ของผู้ส่ง**: `tools.elevated.allowFrom` พร้อมรายการแยกตามช่องทางส่งข้อความ
-- **ด่านต่อเอเจนต์**: `agents.list[].tools.elevated.enabled` (ใช้จำกัดเพิ่มเติมได้เท่านั้น)
-- **allowlist ต่อเอเจนต์**: `agents.list[].tools.elevated.allowFrom` (ผู้ส่งต้องตรงทั้ง global + ต่อเอเจนต์)
-- **fallback ของ Discord**: หากไม่ได้ระบุ `tools.elevated.allowFrom.discord` จะใช้ `channels.discord.allowFrom` เป็น fallback
-- **ทุกด่านต้องผ่านทั้งหมด**; มิฉะนั้น elevated จะถือว่าไม่พร้อมใช้งาน
+- **เกตส่วนกลาง**: `tools.elevated.enabled` (ต้องเป็น `true`)
+- **allowlist ของผู้ส่ง**: `tools.elevated.allowFrom` พร้อมรายการแยกตามช่องทาง
+- **เกตต่อ agent**: `agents.list[].tools.elevated.enabled` (ทำได้เพียงจำกัดเพิ่มเติม)
+- **allowlist ต่อ agent**: `agents.list[].tools.elevated.allowFrom` (ผู้ส่งต้องตรงกับทั้งส่วนกลาง + ต่อ agent)
+- **fallback ของ Discord**: หากละ `tools.elevated.allowFrom.discord` ไว้ จะใช้ `channels.discord.allowFrom` เป็น fallback
+- **ทุกเกตต้องผ่าน** มิฉะนั้น elevated จะถือว่าไม่พร้อมใช้งาน
 
-รูปแบบรายการใน allowlist:
+รูปแบบรายการ allowlist:
 
-| Prefix | จับคู่กับ |
+| คำนำหน้า                 | ตรงกับ                         |
 | ----------------------- | ------------------------------- |
-| (ไม่มี) | Sender ID, E.164 หรือฟิลด์ From |
-| `name:` | ชื่อที่ใช้แสดงผลของผู้ส่ง |
-| `username:` | ชื่อผู้ใช้ของผู้ส่ง |
-| `tag:` | tag ของผู้ส่ง |
-| `id:`, `from:`, `e164:` | การระบุเป้าหมายตัวตนแบบ explicit |
+| (ไม่มี)                  | ID ผู้ส่ง, E.164 หรือฟิลด์ From |
+| `name:`                 | ชื่อที่แสดงของผู้ส่ง             |
+| `username:`             | username ของผู้ส่ง                 |
+| `tag:`                  | tag ของผู้ส่ง                      |
+| `id:`, `from:`, `e164:` | การระบุตัวตนเป้าหมายอย่างชัดเจน     |
 
 ## สิ่งที่ elevated ไม่ได้ควบคุม
 
 - **นโยบายเครื่องมือ**: หาก `exec` ถูกปฏิเสธโดยนโยบายเครื่องมือ elevated จะ override ไม่ได้
-- **นโยบายการเลือกโฮสต์**: elevated ไม่ได้เปลี่ยน `auto` ให้กลายเป็นการ override ข้ามโฮสต์แบบอิสระ มันจะใช้กฎ exec target ของการตั้งค่า/ของเซสชัน โดยเลือก `node` เฉพาะเมื่อ target เป็น `node` อยู่แล้ว
-- **แยกจาก `/exec`**: คำสั่งกำกับ `/exec` ใช้ปรับค่าเริ่มต้นของ exec ต่อเซสชันสำหรับผู้ส่งที่ได้รับอนุญาต และไม่ต้องใช้โหมดยกระดับสิทธิ์
+- **นโยบายการเลือก host**: elevated ไม่ได้เปลี่ยน `auto` ให้เป็นการ override ข้าม host ได้อย่างอิสระ แต่จะใช้กฎเป้าหมาย exec ที่กำหนดค่าไว้/ของเซสชัน โดยเลือก `node` เฉพาะเมื่อเป้าหมายเป็น `node` อยู่แล้ว
+- **แยกจาก `/exec`**: คำสั่งกำกับ `/exec` ปรับค่าเริ่มต้น exec ต่อเซสชันสำหรับผู้ส่งที่ได้รับอนุญาต และไม่จำเป็นต้องใช้โหมด elevated
+
+<Note>
+  คำสั่งแชต bash (คำนำหน้า `!`; alias `/bash`) เป็นเกตแยกต่างหากที่ต้องเปิดใช้งาน `tools.elevated` นอกเหนือจากแฟล็ก `tools.bash.enabled` ของตัวเอง การปิดใช้งาน elevated จะล็อกคำสั่ง shell แบบ `!` ออกไปด้วย
+</Note>
 
 ## ที่เกี่ยวข้อง
 
-- [Exec tool](/th/tools/exec) — การรันคำสั่ง shell
-- [Exec approvals](/th/tools/exec-approvals) — ระบบการอนุมัติและ allowlist
-- [Sandboxing](/th/gateway/sandboxing) — การกำหนดค่า sandbox
-- [Sandbox เทียบกับ Tool Policy เทียบกับ Elevated](/th/gateway/sandbox-vs-tool-policy-vs-elevated)
+<CardGroup cols={2}>
+  <Card title="เครื่องมือ Exec" href="/th/tools/exec" icon="terminal">
+    การเรียกใช้คำสั่ง shell จาก agent
+  </Card>
+  <Card title="การอนุมัติ Exec" href="/th/tools/exec-approvals" icon="shield">
+    ระบบการอนุมัติและ allowlist สำหรับ `exec`
+  </Card>
+  <Card title="Sandboxing" href="/th/gateway/sandboxing" icon="box">
+    การกำหนดค่า sandbox ระดับ Gateway
+  </Card>
+  <Card title="Sandbox เทียบกับนโยบายเครื่องมือเทียบกับ Elevated" href="/th/gateway/sandbox-vs-tool-policy-vs-elevated" icon="scale-balanced">
+    วิธีที่เกตทั้งสามประกอบกันระหว่างการเรียกเครื่องมือ
+  </Card>
+</CardGroup>

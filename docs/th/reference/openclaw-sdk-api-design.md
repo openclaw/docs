@@ -1,39 +1,39 @@
 ---
 read_when:
-    - คุณกำลังนำ SDK สำหรับแอป OpenClaw แบบสาธารณะที่เสนอไว้ไปใช้งาน
-    - คุณต้องใช้สัญญาแบบร่างสำหรับเนมสเปซ เหตุการณ์ ผลลัพธ์ อาร์ติแฟกต์ การอนุมัติ หรือความปลอดภัยของ SDK ของแอป
-    - คุณกำลังเปรียบเทียบทรัพยากรของโปรโตคอล Gateway กับตัวห่อหุ้มระดับสูงของ OpenClaw App SDK
+    - คุณกำลังพัฒนา SDK สำหรับแอป OpenClaw สาธารณะที่เสนอไว้
+    - คุณต้องใช้สัญญาแบบร่างสำหรับ namespace, event, result, artifact, approval หรือ security สำหรับ SDK ของแอป
+    - คุณกำลังเปรียบเทียบทรัพยากรโปรโตคอล Gateway กับตัวครอบ OpenClaw App SDK ระดับสูง
 sidebarTitle: App SDK API design
-summary: การออกแบบอ้างอิงสำหรับ OpenClaw App SDK API สาธารณะ การจัดหมวดหมู่เหตุการณ์ อาร์ติแฟกต์ การอนุมัติ และโครงสร้างแพ็กเกจ
+summary: การออกแบบอ้างอิงสำหรับ API สาธารณะของ OpenClaw App SDK, อนุกรมวิธานเหตุการณ์, อาร์ติแฟกต์, การอนุมัติ และโครงสร้างแพ็กเกจ
 title: การออกแบบ API ของ SDK แอป OpenClaw
 x-i18n:
-    generated_at: "2026-04-30T10:15:10Z"
+    generated_at: "2026-05-06T09:30:17Z"
     model: gpt-5.5
     provider: openai
-    source_hash: cacc5329942798b6876dba6ab8d6a9193291ddda81db5cb2ed492cc42a810099
+    source_hash: 1c49afb4b3b23653e1c6512c22c7465dc1778fc9ea2b28864ca9eaa3ccc90f2f
     source_path: reference/openclaw-sdk-api-design.md
     workflow: 16
 ---
 
 หน้านี้คือการออกแบบเอกสารอ้างอิง API แบบละเอียดสำหรับ
-[SDK สำหรับแอปของ OpenClaw](/th/concepts/openclaw-sdk) สาธารณะ โดยตั้งใจแยกออกจาก
+[OpenClaw App SDK](/th/concepts/openclaw-sdk) สาธารณะ โดยตั้งใจแยกออกจาก
 [Plugin SDK](/th/plugins/sdk-overview)
 
 <Note>
   `@openclaw/sdk` คือแพ็กเกจแอป/ไคลเอนต์ภายนอกสำหรับสื่อสารกับ
-  Gateway ส่วน `openclaw/plugin-sdk/*` คือสัญญาการสร้าง Plugin ภายในโปรเซส
-  อย่านำเข้าเส้นทางย่อยของ Plugin SDK จากแอปที่ต้องการเพียงเรียกใช้เอเจนต์
+  Gateway ส่วน `openclaw/plugin-sdk/*` คือสัญญาการเขียน Plugin แบบทำงานในโปรเซส
+  อย่านำเข้าเส้นทางย่อยของ Plugin SDK จากแอปที่ต้องการเพียงรันเอเจนต์
 </Note>
 
-SDK สำหรับแอปสาธารณะควรสร้างเป็นสองชั้น:
+SDK แอปสาธารณะควรสร้างเป็นสองชั้น:
 
-1. ไคลเอนต์ Gateway ระดับล่างที่สร้างขึ้นโดยอัตโนมัติ
-2. แรปเปอร์ระดับสูงที่ใช้งานสะดวก พร้อมออบเจ็กต์ `OpenClaw`, `Agent`, `Session`, `Run`,
+1. ไคลเอนต์ Gateway ระดับต่ำที่สร้างขึ้นอัตโนมัติ
+2. ตัวครอบระดับสูงที่ใช้งานสะดวก พร้อมออบเจ็กต์ `OpenClaw`, `Agent`, `Session`, `Run`,
    `Task`, `Artifact`, `Approval` และ `Environment`
 
-## การออกแบบ Namespace
+## การออกแบบ namespace
 
-Namespace ระดับล่างควรตามทรัพยากรของ Gateway อย่างใกล้ชิด:
+namespace ระดับต่ำควรตามทรัพยากรของ Gateway อย่างใกล้ชิด:
 
 ```typescript
 oc.agents.list();
@@ -65,22 +65,22 @@ oc.models.list();
 oc.models.status(); // Gateway models.authStatus
 
 oc.tools.list();
-oc.tools.invoke(...); // future API: current SDK throws unsupported
+oc.tools.invoke("tool-name", { sessionKey, idempotencyKey });
 
-oc.artifacts.list({ runId }); // future API: current SDK throws unsupported
-oc.artifacts.get(artifactId); // future API: current SDK throws unsupported
-oc.artifacts.download(artifactId); // future API: current SDK throws unsupported
+oc.artifacts.list({ runId });
+oc.artifacts.get(artifactId, { runId });
+oc.artifacts.download(artifactId, { runId });
 
 oc.approvals.list();
 oc.approvals.respond(approvalId, ...);
 
-oc.environments.list(); // future API: current SDK throws unsupported
+oc.environments.list();
 oc.environments.create(...); // future API: current SDK throws unsupported
-oc.environments.status(environmentId); // future API: current SDK throws unsupported
+oc.environments.status(environmentId);
 oc.environments.delete(environmentId); // future API: current SDK throws unsupported
 ```
 
-แรปเปอร์ระดับสูงควรคืนค่าออบเจ็กต์ที่ทำให้โฟลว์ทั่วไปใช้งานได้ราบรื่น:
+ตัวครอบระดับสูงควรคืนออบเจ็กต์ที่ทำให้โฟลว์ทั่วไปใช้งานได้ราบรื่น:
 
 ```typescript
 const run = await agent.run(inputOrParams);
@@ -95,9 +95,9 @@ const artifacts = await run.artifacts.list();
 const session = await run.session();
 ```
 
-## สัญญาเหตุการณ์
+## สัญญา event
 
-SDK สาธารณะควรเปิดเผยเหตุการณ์ที่มีเวอร์ชัน เล่นซ้ำได้ และผ่านการทำให้เป็นมาตรฐานแล้ว
+SDK สาธารณะควรเปิดเผย event ที่มีเวอร์ชัน เล่นซ้ำได้ และถูกทำให้เป็นรูปแบบมาตรฐาน
 
 ```typescript
 type OpenClawEvent = {
@@ -115,47 +115,47 @@ type OpenClawEvent = {
 };
 ```
 
-`id` คือเคอร์เซอร์สำหรับเล่นซ้ำ ผู้ใช้ควรเชื่อมต่อใหม่ได้ด้วย
-`events({ after: id })` และได้รับเหตุการณ์ที่พลาดไปเมื่อการเก็บรักษาอนุญาต
+`id` คือเคอร์เซอร์สำหรับเล่นซ้ำ ผู้บริโภคควรสามารถเชื่อมต่อใหม่ด้วย
+`events({ after: id })` และรับ event ที่พลาดไปเมื่อการเก็บรักษาอนุญาต
 
-กลุ่มเหตุการณ์ที่ทำให้เป็นมาตรฐานที่แนะนำ:
+กลุ่ม event มาตรฐานที่แนะนำ:
 
-| เหตุการณ์             | ความหมาย                                                   |
+| Event                 | ความหมาย                                                     |
 | --------------------- | ----------------------------------------------------------- |
-| `run.created`         | ยอมรับ Run แล้ว                                            |
-| `run.queued`          | Run กำลังรอเลนของเซสชัน รันไทม์ หรือสภาพแวดล้อม          |
-| `run.started`         | รันไทม์เริ่มการดำเนินการแล้ว                               |
-| `run.completed`       | Run เสร็จสิ้นสำเร็จ                                        |
-| `run.failed`          | Run จบลงพร้อมข้อผิดพลาด                                    |
-| `run.cancelled`       | Run ถูกยกเลิก                                               |
-| `run.timed_out`       | Run เกินเวลาที่กำหนด                                       |
-| `assistant.delta`     | ส่วนต่างข้อความของผู้ช่วย                                  |
-| `assistant.message`   | ข้อความผู้ช่วยที่สมบูรณ์หรือข้อความแทนที่                 |
-| `thinking.delta`      | ส่วนต่างการให้เหตุผลหรือแผน เมื่อ policy อนุญาตให้เปิดเผย |
-| `tool.call.started`   | การเรียกเครื่องมือเริ่มต้นแล้ว                             |
-| `tool.call.delta`     | การเรียกเครื่องมือสตรีมความคืบหน้าหรือเอาต์พุตบางส่วน     |
-| `tool.call.completed` | การเรียกเครื่องมือคืนค่าสำเร็จ                             |
-| `tool.call.failed`    | การเรียกเครื่องมือล้มเหลว                                  |
-| `approval.requested`  | Run หรือเครื่องมือต้องการการอนุมัติ                        |
-| `approval.resolved`   | การอนุมัติได้รับการอนุญาต ปฏิเสธ หมดอายุ หรือถูกยกเลิก    |
-| `question.requested`  | รันไทม์ถามผู้ใช้หรือแอปโฮสต์เพื่อขอข้อมูล                 |
-| `question.answered`   | แอปโฮสต์ให้คำตอบแล้ว                                       |
-| `artifact.created`    | มี artifact ใหม่พร้อมใช้งาน                                |
-| `artifact.updated`    | artifact ที่มีอยู่เปลี่ยนแปลง                              |
+| `run.created`         | รับการรันแล้ว                                               |
+| `run.queued`          | การรันกำลังรอ lane ของเซสชัน, runtime หรือ environment |
+| `run.started`         | Runtime เริ่มดำเนินการแล้ว                                  |
+| `run.completed`       | การรันเสร็จสมบูรณ์สำเร็จ                                  |
+| `run.failed`          | การรันจบลงพร้อมข้อผิดพลาด                                    |
+| `run.cancelled`       | การรันถูกยกเลิก                                          |
+| `run.timed_out`       | การรันเกินเวลาที่กำหนด                                   |
+| `assistant.delta`     | เดลตาข้อความของผู้ช่วย                                       |
+| `assistant.message`   | ข้อความผู้ช่วยที่สมบูรณ์หรือข้อความแทนที่                  |
+| `thinking.delta`      | เดลตาการให้เหตุผลหรือแผน เมื่อ policy อนุญาตให้เปิดเผย       |
+| `tool.call.started`   | การเรียก tool เริ่มขึ้น                                            |
+| `tool.call.delta`     | การเรียก tool สตรีมความคืบหน้าหรือผลลัพธ์บางส่วน              |
+| `tool.call.completed` | การเรียก tool คืนค่าสำเร็จ                            |
+| `tool.call.failed`    | การเรียก tool ล้มเหลว                                           |
+| `approval.requested`  | การรันหรือ tool ต้องการการอนุมัติ                               |
+| `approval.resolved`   | การอนุมัติได้รับอนุญาต ถูกปฏิเสธ หมดอายุ หรือถูกยกเลิก        |
+| `question.requested`  | Runtime ขอข้อมูลจากผู้ใช้หรือแอปโฮสต์                |
+| `question.answered`   | แอปโฮสต์ให้คำตอบแล้ว                                |
+| `artifact.created`    | มี artifact ใหม่พร้อมใช้งาน                                     |
+| `artifact.updated`    | artifact ที่มีอยู่เปลี่ยนแปลง                                  |
 | `session.created`     | สร้างเซสชันแล้ว                                            |
-| `session.updated`     | metadata ของเซสชันเปลี่ยนแปลง                              |
-| `session.compacted`   | เกิด Compaction ของเซสชัน                                  |
-| `task.updated`        | สถานะของงานเบื้องหลังเปลี่ยนแปลง                           |
-| `git.branch`          | รันไทม์สังเกตเห็นหรือเปลี่ยนสถานะ branch                   |
-| `git.diff`            | รันไทม์สร้างหรือเปลี่ยน diff                               |
-| `git.pr`              | รันไทม์เปิด อัปเดต หรือเชื่อมโยง pull request              |
+| `session.updated`     | metadata ของเซสชันเปลี่ยนแปลง                                   |
+| `session.compacted`   | เกิด Compaction ของเซสชัน                                |
+| `task.updated`        | สถานะงานพื้นหลังเปลี่ยนแปลง                              |
+| `git.branch`          | Runtime ตรวจพบหรือเปลี่ยนสถานะ branch                   |
+| `git.diff`            | Runtime สร้างหรือเปลี่ยน diff                         |
+| `git.pr`              | Runtime เปิด อัปเดต หรือลิงก์ pull request          |
 
-เพย์โหลดแบบเนทีฟของรันไทม์ควรพร้อมใช้งานผ่าน `raw` แต่แอปไม่ควรต้อง
+payload แบบ runtime-native ควรเข้าถึงได้ผ่าน `raw` แต่แอปไม่ควรต้อง
 แยกวิเคราะห์ `raw` สำหรับ UI ปกติ
 
-## สัญญาผลลัพธ์
+## สัญญา result
 
-`Run.wait()` ควรคืนค่า envelope ผลลัพธ์ที่เสถียร:
+`Run.wait()` ควรคืน envelope ของผลลัพธ์ที่เสถียร:
 
 ```typescript
 type RunResult = {
@@ -181,18 +181,18 @@ type RunResult = {
 };
 ```
 
-ผลลัพธ์ควรเรียบง่ายและเสถียร ค่า timestamp คงรูปแบบของ Gateway ไว้
-ดังนั้น Run ปัจจุบันที่รองรับด้วย lifecycle มักรายงานเป็นตัวเลขมิลลิวินาทีแบบ epoch
-ขณะที่ adapter อาจยังแสดงเป็นสตริง ISO อยู่ UI ที่มีรายละเอียด, trace ของเครื่องมือ และ
-รายละเอียดแบบเนทีฟของรันไทม์ควรอยู่ในเหตุการณ์และ artifact
+ผลลัพธ์ควรเรียบง่ายและเสถียร ค่า timestamp รักษารูปทรงของ Gateway
+ดังนั้นการรันปัจจุบันที่อิง lifecycle มักรายงานเป็นตัวเลข epoch มิลลิวินาที
+ขณะที่ adapter อาจยังแสดงสตริง ISO ได้ UI ที่ซับซ้อน, trace ของ tool และ
+รายละเอียดแบบ runtime-native ควรอยู่ใน event และ artifact
 
-`accepted` คือผลลัพธ์การรอที่ยังไม่สิ้นสุด: หมายความว่าเส้นตายการรอของ Gateway
-หมดลงก่อนที่ Run จะสร้างจุดสิ้นสุด/ข้อผิดพลาดของ lifecycle ห้ามถือว่าเป็น
-`timed_out`; `timed_out` สงวนไว้สำหรับ Run ที่เกิน timeout ของรันไทม์ของตัวเอง
+`accepted` คือผลลัพธ์การรอที่ยังไม่สิ้นสุด: หมายความว่า deadline การรอของ Gateway
+หมดลงก่อนที่การรันจะสร้างจุดจบ/error ของ lifecycle ห้ามปฏิบัติต่อค่านี้เป็น
+`timed_out`; `timed_out` สงวนไว้สำหรับการรันที่เกิน timeout ของ runtime เอง
 
 ## การอนุมัติและคำถาม
 
-การอนุมัติต้องเป็นองค์ประกอบชั้นหนึ่ง เพราะเอเจนต์เขียนโค้ดข้ามขอบเขตความปลอดภัยอยู่ตลอด
+การอนุมัติต้องเป็นองค์ประกอบชั้นหนึ่ง เพราะเอเจนต์เขียนโค้ดข้ามขอบเขตความปลอดภัยอยู่เสมอ
 
 ```typescript
 run.onApproval(async (request) => {
@@ -204,24 +204,24 @@ run.onApproval(async (request) => {
 });
 ```
 
-เหตุการณ์การอนุมัติควรมี:
+event การอนุมัติควรมี:
 
 - id การอนุมัติ
-- id ของ Run และ id ของเซสชัน
+- id การรันและ id เซสชัน
 - ชนิดคำขอ
-- สรุปการดำเนินการที่ร้องขอ
-- ชื่อเครื่องมือหรือการดำเนินการกับสภาพแวดล้อม
+- สรุปการกระทำที่ขอ
+- ชื่อ tool หรือการกระทำของ environment
 - ระดับความเสี่ยง
-- การตัดสินใจที่มีให้เลือก
+- การตัดสินใจที่ใช้ได้
 - วันหมดอายุ
-- ระบุว่าการตัดสินใจนำกลับมาใช้ซ้ำได้หรือไม่
+- การตัดสินใจสามารถนำกลับมาใช้ซ้ำได้หรือไม่
 
 คำถามแยกจากการอนุมัติ คำถามขอข้อมูลจากผู้ใช้หรือแอปโฮสต์
-การอนุมัติขอสิทธิ์เพื่อดำเนินการ
+ส่วนการอนุมัติขอสิทธิ์ในการดำเนินการ
 
 ## โมเดล ToolSpace
 
-แอปต้องเข้าใจพื้นผิวของเครื่องมือโดยไม่ต้องนำเข้าภายในของ Plugin
+แอปต้องเข้าใจพื้นผิว tool โดยไม่ต้องนำเข้า internals ของ Plugin
 
 ```typescript
 const tools = await run.toolSpace();
@@ -233,15 +233,15 @@ for (const tool of tools.list()) {
 
 SDK ควรเปิดเผย:
 
-- metadata ของเครื่องมือที่ทำให้เป็นมาตรฐาน
-- แหล่งที่มา: OpenClaw, MCP, plugin, channel, runtime หรือ app
+- metadata ของ tool ที่ถูกทำให้เป็นรูปแบบมาตรฐาน
+- แหล่งที่มา: OpenClaw, MCP, Plugin, channel, runtime หรือ app
 - สรุป schema
 - policy การอนุมัติ
-- ความเข้ากันได้กับรันไทม์
-- เครื่องมือถูกซ่อน เป็น readonly เขียนได้ หรือทำงานในฐานะโฮสต์ได้หรือไม่
+- ความเข้ากันได้กับ runtime
+- tool ถูกซ่อน เป็น readonly สามารถเขียนได้ หรือสามารถทำงานฝั่งโฮสต์ได้หรือไม่
 
-การเรียกเครื่องมือผ่าน SDK ควรชัดเจนและจำกัดขอบเขต แอปส่วนใหญ่ควร
-เรียกใช้เอเจนต์ ไม่ใช่เรียกเครื่องมือใดก็ได้โดยตรง
+การเรียก tool ผ่าน SDK ควรชัดเจนและมีขอบเขต แอปส่วนใหญ่ควรรันเอเจนต์
+ไม่ใช่เรียก tool ใดๆ โดยตรงตามใจ
 
 ## โมเดล Artifact
 
@@ -275,49 +275,49 @@ type ArtifactSummary = {
 - การแก้ไขไฟล์และไฟล์ที่สร้างขึ้น
 - ชุด patch
 - diff ของ VCS
-- screenshot และเอาต์พุตสื่อ
+- screenshot และผลลัพธ์สื่อ
 - log และชุด trace
 - ลิงก์ pull request
-- trajectory ของรันไทม์
-- snapshot พื้นที่ทำงานของสภาพแวดล้อมที่จัดการ
+- trajectory ของ runtime
+- snapshot ของ workspace ใน environment ที่จัดการ
 
 การเข้าถึง artifact ควรรองรับการปกปิดข้อมูล การเก็บรักษา และ URL ดาวน์โหลด โดยไม่
-สมมติว่า artifact ทุกอย่างเป็นไฟล์ local ปกติ
+ถือว่า artifact ทุกชิ้นเป็นไฟล์ local ปกติ
 
 ## โมเดลความปลอดภัย
 
-SDK แอปต้องชัดเจนเรื่องอำนาจ
+SDK แอปต้องระบุอำนาจอย่างชัดเจน
 
-ขอบเขต token ที่แนะนำ:
+scope token ที่แนะนำ:
 
-| ขอบเขต             | อนุญาตให้ทำอะไร                                      |
+| Scope               | อนุญาตให้                                             |
 | ------------------- | --------------------------------------------------- |
-| `agent.read`        | แสดงรายการและตรวจสอบเอเจนต์                         |
-| `agent.run`         | เริ่ม Run                                            |
-| `session.read`      | อ่าน metadata และข้อความของเซสชัน                   |
-| `session.write`     | สร้าง ส่งไปยัง fork, compact และ abort เซสชัน        |
-| `task.read`         | อ่านสถานะงานเบื้องหลัง                              |
-| `task.write`        | ยกเลิกหรือแก้ไข policy การแจ้งเตือนของงาน           |
-| `approval.respond`  | อนุมัติหรือปฏิเสธคำขอ                               |
-| `tools.invoke`      | เรียกเครื่องมือที่เปิดเผยโดยตรง                     |
-| `artifacts.read`    | แสดงรายการและดาวน์โหลด artifact                     |
-| `environment.write` | สร้างหรือทำลายสภาพแวดล้อมที่จัดการ                  |
-| `admin`             | การดำเนินการด้านผู้ดูแลระบบ                         |
+| `agent.read`        | แสดงรายการและตรวจสอบเอเจนต์                            |
+| `agent.run`         | เริ่มการรัน                                         |
+| `session.read`      | อ่าน metadata และข้อความของเซสชัน                 |
+| `session.write`     | สร้าง ส่งไปยัง fork compact และ abort เซสชัน |
+| `task.read`         | อ่านสถานะงานพื้นหลัง                         |
+| `task.write`        | ยกเลิกหรือแก้ไข policy การแจ้งเตือนของงาน          |
+| `approval.respond`  | อนุมัติหรือปฏิเสธคำขอ                           |
+| `tools.invoke`      | เรียก tool ที่เปิดเผยโดยตรง                      |
+| `artifacts.read`    | แสดงรายการและดาวน์โหลด artifact                        |
+| `environment.write` | สร้างหรือทำลาย environment ที่จัดการ             |
+| `admin`             | การดำเนินการด้านผู้ดูแลระบบ                          |
 
 ค่าเริ่มต้น:
 
 - ไม่มีการส่งต่อ secret โดยค่าเริ่มต้น
-- ไม่มีการส่งผ่านตัวแปรสภาพแวดล้อมแบบไม่จำกัด
+- ไม่มีการส่งผ่านตัวแปร environment แบบไม่จำกัด
 - ใช้การอ้างอิง secret แทนค่า secret
-- policy ของ sandbox และเครือข่ายที่ชัดเจน
-- การเก็บรักษาสภาพแวดล้อมระยะไกลที่ชัดเจน
-- การอนุมัติสำหรับการดำเนินการบนโฮสต์ เว้นแต่ policy จะพิสูจน์เป็นอย่างอื่น
-- เหตุการณ์รันไทม์ดิบถูกปกปิดข้อมูลก่อนออกจาก Gateway เว้นแต่ผู้เรียกจะมี
-  ขอบเขตการวินิจฉัยที่เข้มกว่า
+- policy sandbox และ network ที่ชัดเจน
+- การเก็บรักษา remote environment ที่ชัดเจน
+- ต้องมีการอนุมัติสำหรับการทำงานบนโฮสต์ เว้นแต่ policy จะพิสูจน์เป็นอย่างอื่น
+- event ดิบของ runtime ถูกปกปิดข้อมูลก่อนออกจาก Gateway เว้นแต่ผู้เรียกจะมี
+  scope การวินิจฉัยที่เข้มกว่า
 
-## ผู้ให้บริการสภาพแวดล้อมที่จัดการ
+## ผู้ให้บริการ managed environment
 
-เอเจนต์ที่จัดการควรนำไปใช้งานเป็นผู้ให้บริการสภาพแวดล้อม
+เอเจนต์ที่จัดการควรใช้เป็นผู้ให้บริการ environment
 
 ```typescript
 type EnvironmentProvider = {
@@ -336,13 +336,13 @@ type EnvironmentProvider = {
 ```
 
 การใช้งานครั้งแรกไม่จำเป็นต้องเป็น SaaS แบบโฮสต์ สามารถกำหนดเป้าหมายไปยัง
-โฮสต์ Node ที่มีอยู่ พื้นที่ทำงานชั่วคราว รันเนอร์สไตล์ CI หรือ
-สภาพแวดล้อมสไตล์ Testbox ได้ สัญญาสำคัญคือ:
+โฮสต์ node ที่มีอยู่, workspace ชั่วคราว, runner แบบ CI หรือ environment
+แบบ Testbox ได้ สัญญาที่สำคัญคือ:
 
-1. เตรียมพื้นที่ทำงาน
-2. ผูกสภาพแวดล้อมและ secret ที่ปลอดภัย
-3. เริ่ม Run
-4. สตรีมเหตุการณ์
+1. เตรียม workspace
+2. ผูก environment และ secret อย่างปลอดภัย
+3. เริ่มการรัน
+4. สตรีม event
 5. รวบรวม artifact
 6. ล้างข้อมูลหรือเก็บรักษาตาม policy
 
@@ -352,41 +352,42 @@ type EnvironmentProvider = {
 
 แพ็กเกจที่แนะนำ:
 
-| แพ็กเกจ                | วัตถุประสงค์                                                   |
+| Package                 | วัตถุประสงค์                                                       |
 | ----------------------- | ------------------------------------------------------------- |
-| `@openclaw/sdk`         | SDK ระดับสูงสาธารณะและไคลเอนต์ Gateway ระดับล่างที่สร้างขึ้น |
-| `@openclaw/sdk-react`   | hook ของ React แบบเลือกใช้สำหรับแดชบอร์ดและผู้สร้างแอป        |
-| `@openclaw/sdk-testing` | ตัวช่วยทดสอบและเซิร์ฟเวอร์ Gateway ปลอมสำหรับการผสานรวมแอป   |
+| `@openclaw/sdk`         | SDK ระดับสูงสาธารณะและไคลเอนต์ Gateway ระดับต่ำที่สร้างขึ้นอัตโนมัติ |
+| `@openclaw/sdk-react`   | React hooks เสริมสำหรับแดชบอร์ดและผู้สร้างแอป         |
+| `@openclaw/sdk-testing` | ตัวช่วยทดสอบและเซิร์ฟเวอร์ Gateway ปลอมสำหรับการเชื่อมต่อแอป    |
 
-repo มี `openclaw/plugin-sdk/*` สำหรับ plugins อยู่แล้ว ให้แยก namespace นั้นไว้
-เพื่อหลีกเลี่ยงความสับสนระหว่างผู้เขียน plugin กับนักพัฒนาแอป
+repo มี `openclaw/plugin-sdk/*` สำหรับ Plugin อยู่แล้ว รักษา namespace นั้น
+ให้แยกจากกันเพื่อหลีกเลี่ยงการทำให้ผู้เขียน Plugin สับสนกับนักพัฒนาแอป
 
-## กลยุทธ์ไคลเอนต์ที่สร้างขึ้น
+## กลยุทธ์ไคลเอนต์ที่สร้างขึ้นอัตโนมัติ
 
-ไคลเอนต์ระดับล่างควรถูกสร้างจากสคีมาโปรโตคอล Gateway ที่มีการกำหนดเวอร์ชัน แล้วจึงห่อหุ้มด้วยคลาสที่เขียนเองเพื่อให้ใช้งานได้สะดวก
+ไคลเอนต์ระดับต่ำควรสร้างจาก schema โปรโตคอล Gateway ที่มีเวอร์ชัน
+แล้วครอบด้วยคลาสที่เขียนด้วยมือและใช้งานสะดวก
 
-การแบ่งชั้น:
+การจัดชั้น:
 
-1. สคีมา Gateway เป็นแหล่งความจริง
-2. ไคลเอนต์ TypeScript ระดับล่างที่สร้างขึ้น
-3. ตัวตรวจสอบความถูกต้องขณะรันไทม์สำหรับอินพุตภายนอกและเพย์โหลดเหตุการณ์
-4. ตัวห่อหุ้มระดับสูง `OpenClaw`, `Agent`, `Session`, `Run`, `Task` และ `Artifact`
-5. ตัวอย่าง cookbook และการทดสอบการผสานรวม
+1. แหล่งความจริงของสคีมา Gateway.
+2. ไคลเอนต์ TypeScript ระดับต่ำที่สร้างขึ้น.
+3. ตัวตรวจสอบความถูกต้องขณะรันไทม์สำหรับอินพุตภายนอกและเพย์โหลดของเหตุการณ์.
+4. wrapper ระดับสูง `OpenClaw`, `Agent`, `Session`, `Run`, `Task`, และ `Artifact`.
+5. ตัวอย่าง Cookbook และการทดสอบการผสานรวม.
 
 ประโยชน์:
 
-- เห็นความคลาดเคลื่อนของโปรโตคอลได้ชัดเจน
+- มองเห็นการเบี่ยงเบนของโปรโตคอลได้
 - การทดสอบสามารถเปรียบเทียบเมธอดที่สร้างขึ้นกับ export ของ Gateway ได้
-- App SDK ยังคงเป็นอิสระจากส่วนภายในของ Plugin SDK
-- ผู้ใช้ระดับล่างยังคงเข้าถึงโปรโตคอลได้ครบถ้วน
+- App SDK เป็นอิสระจากส่วนภายในของ Plugin SDK
+- ผู้ใช้ระดับต่ำยังคงเข้าถึงโปรโตคอลได้ครบถ้วน
 - ผู้ใช้ระดับสูงได้รับ API ผลิตภัณฑ์ขนาดเล็ก
 
-## เอกสารที่เกี่ยวข้อง
+## ที่เกี่ยวข้อง
 
 - [OpenClaw App SDK](/th/concepts/openclaw-sdk)
-- [เอกสารอ้างอิง Gateway RPC](/th/reference/rpc)
-- [ลูปของ Agent](/th/concepts/agent-loop)
-- [รันไทม์ของ Agent](/th/concepts/agent-runtimes)
+- [ข้อมูลอ้างอิง Gateway RPC](/th/reference/rpc)
+- [ลูปของเอเจนต์](/th/concepts/agent-loop)
+- [รันไทม์ของเอเจนต์](/th/concepts/agent-runtimes)
 - [งานเบื้องหลัง](/th/automation/tasks)
-- [Agent ของ ACP](/th/tools/acp-agents)
+- [เอเจนต์ ACP](/th/tools/acp-agents)
 - [ภาพรวม Plugin SDK](/th/plugins/sdk-overview)

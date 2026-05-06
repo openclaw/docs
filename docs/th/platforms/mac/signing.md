@@ -1,29 +1,29 @@
 ---
 read_when:
-    - การ build หรือเซ็นบิลด์ดีบักบน macOS
-summary: ขั้นตอนการเซ็นสำหรับบิลด์ดีบักบน macOS ที่สร้างโดยสคริปต์การแพ็กเกจ
-title: การเซ็นบน macOS
+    - การสร้างหรือการเซ็นชื่อบิลด์ดีบักสำหรับ Mac
+summary: ขั้นตอนการลงนามสำหรับบิลด์ดีบักของ macOS ที่สร้างโดยสคริปต์การทำแพ็กเกจ
+title: การเซ็นชื่อสำหรับ macOS
 x-i18n:
-    generated_at: "2026-04-24T09:22:12Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:23:00Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: cdd432c1f87ea14f4e19b1e5db967a62b42e2e4118fbd2a44d358b4eedea799f
+    source_hash: 08a2f18f0f813c0bb7352b393531ad69d24da55de2e6ec6446febe0661eb4598
     source_path: platforms/mac/signing.md
-    workflow: 15
+    workflow: 16
 ---
 
-# การเซ็นบน macOS (บิลด์ดีบัก)
+# การเซ็นชื่อสำหรับ mac (บิลด์ดีบัก)
 
-โดยทั่วไปแอปนี้จะถูก build จาก [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) ซึ่งตอนนี้:
+แอปนี้มักสร้างจาก [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) ซึ่งตอนนี้:
 
-- ตั้งค่า bundle identifier แบบคงที่สำหรับดีบัก: `ai.openclaw.mac.debug`
-- เขียน Info.plist ด้วย bundle id ดังกล่าว (override ได้ผ่าน `BUNDLE_ID=...`)
-- เรียก [`scripts/codesign-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/codesign-mac-app.sh) เพื่อเซ็นไบนารีหลักและ app bundle เพื่อให้ macOS มองการ rebuild แต่ละครั้งเป็น signed bundle เดิม และคงสิทธิ์ TCC ไว้ (การแจ้งเตือน, accessibility, screen recording, mic, speech) หากต้องการให้สิทธิ์คงที่ ควรใช้ signing identity จริง; ad-hoc เป็นแบบ opt-in และเปราะบาง (ดู [สิทธิ์บน macOS](/th/platforms/mac/permissions))
-- ใช้ `CODESIGN_TIMESTAMP=auto` เป็นค่าปริยาย; มันจะเปิด trusted timestamp สำหรับลายเซ็น Developer ID ตั้ง `CODESIGN_TIMESTAMP=off` เพื่อข้ามการประทับเวลา (สำหรับบิลด์ดีบักแบบออฟไลน์)
-- inject metadata ของบิลด์ลงใน Info.plist: `OpenClawBuildTimestamp` (UTC) และ `OpenClawGitCommit` (short hash) เพื่อให้หน้า About แสดงข้อมูล build, git และช่องทาง debug/release ได้
-- **การแพ็กเกจใช้ Node 24 เป็นค่าปริยาย**: สคริปต์จะรันการ build ของ TS และการ build ของ Control UI โดย Node 22 LTS ซึ่งปัจจุบันคือ `22.14+` ยังคงรองรับเพื่อความเข้ากันได้
-- อ่าน `SIGN_IDENTITY` จาก environment เพิ่ม `export SIGN_IDENTITY="Apple Development: Your Name (TEAMID)"` (หรือใบรับรอง Developer ID Application ของคุณ) ลงใน shell rc เพื่อให้เซ็นด้วยใบรับรองของคุณเสมอ การเซ็นแบบ ad-hoc ต้อง opt-in อย่างชัดเจนผ่าน `ALLOW_ADHOC_SIGNING=1` หรือ `SIGN_IDENTITY="-"` (ไม่แนะนำสำหรับการทดสอบสิทธิ์)
-- รันการตรวจสอบ Team ID หลังการเซ็น และจะล้มเหลวหากมี Mach-O ภายใน app bundle ที่ถูกเซ็นด้วย Team ID คนละตัว ตั้ง `SKIP_TEAM_ID_CHECK=1` เพื่อข้าม
+- ตั้งค่าตัวระบุบันเดิลดีบักที่เสถียร: `ai.openclaw.mac.debug`
+- เขียน Info.plist ด้วยรหัสบันเดิลนั้น (แทนที่ได้ผ่าน `BUNDLE_ID=...`)
+- เรียก [`scripts/codesign-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/codesign-mac-app.sh) เพื่อลงนามไบนารีหลักและบันเดิลแอป เพื่อให้ macOS ถือว่าแต่ละการรีบิลด์เป็นบันเดิลที่ลงนามชุดเดิม และคงสิทธิ์ TCC ไว้ (การแจ้งเตือน การช่วยการเข้าถึง การบันทึกหน้าจอ ไมโครโฟน คำพูด) สำหรับสิทธิ์ที่เสถียร ให้ใช้อัตลักษณ์การลงนามจริง; แบบ ad-hoc ต้องเลือกใช้เองและเปราะบาง (ดู [สิทธิ์ macOS](/th/platforms/mac/permissions))
+- ใช้ `CODESIGN_TIMESTAMP=auto` เป็นค่าเริ่มต้น; ซึ่งเปิดใช้ timestamp ที่เชื่อถือได้สำหรับลายเซ็น Developer ID ตั้งค่า `CODESIGN_TIMESTAMP=off` เพื่อข้ามการ timestamp (บิลด์ดีบักแบบออฟไลน์)
+- ใส่เมตาดาต้าบิลด์ลงใน Info.plist: `OpenClawBuildTimestamp` (UTC) และ `OpenClawGitCommit` (แฮชแบบสั้น) เพื่อให้แผง About แสดงบิลด์, git และช่องทางดีบัก/รีลีสได้
+- **การแพ็กเกจใช้ Node 24 เป็นค่าเริ่มต้น**: สคริปต์รันบิลด์ TS และบิลด์ Control UI Node 22 LTS ซึ่งปัจจุบันคือ `22.14+` ยังคงรองรับเพื่อความเข้ากันได้
+- อ่าน `SIGN_IDENTITY` จากสภาพแวดล้อม เพิ่ม `export SIGN_IDENTITY="Apple Development: Your Name (TEAMID)"` (หรือใบรับรอง Developer ID Application ของคุณ) ลงใน shell rc เพื่อเซ็นด้วยใบรับรองของคุณเสมอ การเซ็นแบบ ad-hoc ต้องเลือกใช้โดยชัดเจนผ่าน `ALLOW_ADHOC_SIGNING=1` หรือ `SIGN_IDENTITY="-"` (ไม่แนะนำสำหรับการทดสอบสิทธิ์)
+- รันการตรวจสอบ Team ID หลังการเซ็น และล้มเหลวหาก Mach-O ใดๆ ภายในบันเดิลแอปถูกเซ็นโดย Team ID อื่น ตั้งค่า `SKIP_TEAM_ID_CHECK=1` เพื่อข้าม
 
 ## การใช้งาน
 
@@ -36,24 +36,24 @@ SIGN_IDENTITY="-" scripts/package-mac-app.sh        # explicit ad-hoc (same cave
 DISABLE_LIBRARY_VALIDATION=1 scripts/package-mac-app.sh   # dev-only Sparkle Team ID mismatch workaround
 ```
 
-### หมายเหตุเกี่ยวกับการเซ็นแบบ ad-hoc
+### หมายเหตุการเซ็นแบบ Ad-hoc
 
-เมื่อเซ็นด้วย `SIGN_IDENTITY="-"` (ad-hoc) สคริปต์จะปิด **Hardened Runtime** (`--options runtime`) โดยอัตโนมัติ ซึ่งจำเป็นเพื่อป้องกันการ crash เมื่อแอปพยายามโหลด embedded framework (เช่น Sparkle) ที่ไม่ได้ใช้ Team ID เดียวกัน ลายเซ็นแบบ ad-hoc ยังทำให้การคงอยู่ของสิทธิ์ TCC ใช้งานไม่ได้ด้วย; ดู [สิทธิ์บน macOS](/th/platforms/mac/permissions) สำหรับขั้นตอนการกู้คืน
+เมื่อเซ็นด้วย `SIGN_IDENTITY="-"` (ad-hoc) สคริปต์จะปิดใช้งาน **Hardened Runtime** (`--options runtime`) โดยอัตโนมัติ สิ่งนี้จำเป็นเพื่อป้องกันการแครชเมื่อแอปพยายามโหลดเฟรมเวิร์กที่ฝังอยู่ (เช่น Sparkle) ซึ่งไม่ได้ใช้ Team ID เดียวกัน ลายเซ็นแบบ ad-hoc ยังทำให้การคงอยู่ของสิทธิ์ TCC ใช้ไม่ได้ด้วย; ดูขั้นตอนการกู้คืนได้ที่ [สิทธิ์ macOS](/th/platforms/mac/permissions)
 
-## metadata ของบิลด์สำหรับ About
+## เมตาดาต้าบิลด์สำหรับ About
 
-`package-mac-app.sh` จะประทับข้อมูลต่อไปนี้ลงใน bundle:
+`package-mac-app.sh` ประทับข้อมูลบันเดิลด้วย:
 
-- `OpenClawBuildTimestamp`: ISO8601 UTC ณ เวลาที่แพ็กเกจ
-- `OpenClawGitCommit`: git hash แบบสั้น (หรือ `unknown` หากไม่สามารถระบุได้)
+- `OpenClawBuildTimestamp`: ISO8601 UTC ณ เวลาแพ็กเกจ
+- `OpenClawGitCommit`: แฮช git แบบสั้น (หรือ `unknown` หากไม่พร้อมใช้งาน)
 
-แท็บ About จะอ่านคีย์เหล่านี้เพื่อแสดงเวอร์ชัน วันที่ build git commit และว่าเป็นบิลด์ดีบักหรือไม่ (ผ่าน `#if DEBUG`) ให้รันตัวแพ็กเกจใหม่เพื่อรีเฟรชค่าเหล่านี้หลังจากโค้ดมีการเปลี่ยนแปลง
+แท็บ About อ่านคีย์เหล่านี้เพื่อแสดงเวอร์ชัน วันที่บิลด์ คอมมิต git และบอกว่าเป็นบิลด์ดีบักหรือไม่ (ผ่าน `#if DEBUG`) รันตัวแพ็กเกจเพื่อรีเฟรชค่าเหล่านี้หลังจากเปลี่ยนโค้ด
 
 ## เหตุผล
 
-สิทธิ์ TCC จะผูกกับ bundle identifier _และ_ code signature บิลด์ดีบักแบบไม่ได้เซ็นซึ่งมี UUID เปลี่ยนไปเรื่อย ๆ ทำให้ macOS ลืมสิทธิ์ที่ให้ไว้หลังการ rebuild ทุกครั้ง การเซ็นไบนารี (ใช้ ad‑hoc เป็นค่าปริยาย) และคง bundle id/path ให้คงที่ (`dist/OpenClaw.app`) จะช่วยคงสิทธิ์เหล่านั้นไว้ระหว่างการ build แต่ละครั้ง ซึ่งสอดคล้องกับแนวทางของ VibeTunnel
+สิทธิ์ TCC ผูกกับตัวระบุบันเดิล _และ_ ลายเซ็นโค้ด บิลด์ดีบักที่ไม่ได้เซ็นและมี UUID เปลี่ยนไปทำให้ macOS ลืมสิทธิ์ที่อนุญาตหลังการรีบิลด์แต่ละครั้ง การเซ็นไบนารี (ค่าเริ่มต้นเป็น ad-hoc) และการคงรหัส/พาธบันเดิลที่ตายตัว (`dist/OpenClaw.app`) จะรักษาสิทธิ์ระหว่างบิลด์ไว้ ซึ่งตรงกับแนวทางของ VibeTunnel
 
 ## ที่เกี่ยวข้อง
 
 - [แอป macOS](/th/platforms/macos)
-- [สิทธิ์บน macOS](/th/platforms/mac/permissions)
+- [สิทธิ์ macOS](/th/platforms/mac/permissions)

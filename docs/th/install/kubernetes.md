@@ -1,30 +1,28 @@
 ---
 read_when:
-    - คุณต้องการรัน OpenClaw บนคลัสเตอร์ Kubernetes
+    - คุณต้องการเรียกใช้ OpenClaw บนคลัสเตอร์ Kubernetes
     - คุณต้องการทดสอบ OpenClaw ในสภาพแวดล้อม Kubernetes
-summary: Deploy OpenClaw Gateway ไปยังคลัสเตอร์ Kubernetes ด้วย Kustomize
+summary: ปรับใช้ OpenClaw Gateway ไปยังคลัสเตอร์ Kubernetes ด้วย Kustomize
 title: Kubernetes
 x-i18n:
-    generated_at: "2026-04-24T09:18:29Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:19:36Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 2f45e165569332277d1108cd34a4357f03f5a1cbfa93bbbcf478717945627bad
+    source_hash: c38e42ae9121864333574b668d95f4d1112cada30cd525613d2371f176de4505
     source_path: install/kubernetes.md
-    workflow: 15
+    workflow: 16
 ---
 
-# OpenClaw บน Kubernetes
-
-จุดเริ่มต้นแบบขั้นต่ำสำหรับการรัน OpenClaw บน Kubernetes — ยังไม่ใช่ deployment ที่พร้อมสำหรับ production โดยครอบคลุม resource หลัก ๆ และตั้งใจให้คุณนำไปปรับให้เข้ากับสภาพแวดล้อมของตัวเอง
+จุดเริ่มต้นขั้นต่ำสำหรับการรัน OpenClaw บน Kubernetes — ไม่ใช่การปรับใช้ที่พร้อมสำหรับงานโปรดักชัน เนื้อหานี้ครอบคลุมทรัพยากรหลักและตั้งใจให้คุณปรับให้เข้ากับสภาพแวดล้อมของคุณ
 
 ## ทำไมไม่ใช้ Helm?
 
-OpenClaw เป็นคอนเทนเนอร์เดี่ยวที่มีไฟล์ config บางส่วน จุดที่น่าสนใจในการปรับแต่งคือเนื้อหาของเอเจนต์ (ไฟล์ markdown, Skills, config overrides) ไม่ใช่การทำ infrastructure templating Kustomize จัดการ overlays ได้โดยไม่ต้องมีความซับซ้อนของ Helm chart หาก deployment ของคุณซับซ้อนขึ้นภายหลัง ก็สามารถวาง Helm chart ทับบน manifests เหล่านี้ได้
+OpenClaw เป็นคอนเทนเนอร์เดียวพร้อมไฟล์คอนฟิกบางส่วน ส่วนที่น่าสนใจในการปรับแต่งอยู่ในเนื้อหาของเอเจนต์ (ไฟล์ markdown, skills, การ override คอนฟิก) ไม่ใช่การทำเทมเพลตโครงสร้างพื้นฐาน Kustomize จัดการ overlay ได้โดยไม่มีภาระของ Helm chart หากการปรับใช้ของคุณซับซ้อนขึ้น ก็สามารถวาง Helm chart ทับบน manifest เหล่านี้ได้
 
 ## สิ่งที่คุณต้องมี
 
 - คลัสเตอร์ Kubernetes ที่กำลังทำงานอยู่ (AKS, EKS, GKE, k3s, kind, OpenShift ฯลฯ)
-- `kubectl` ที่เชื่อมต่อกับคลัสเตอร์ของคุณแล้ว
+- `kubectl` ที่เชื่อมต่อกับคลัสเตอร์ของคุณ
 - API key สำหรับผู้ให้บริการโมเดลอย่างน้อยหนึ่งราย
 
 ## เริ่มต้นอย่างรวดเร็ว
@@ -38,31 +36,31 @@ kubectl port-forward svc/openclaw 18789:18789 -n openclaw
 open http://localhost:18789
 ```
 
-ดึง shared secret ที่กำหนดค่าไว้สำหรับ Control UI สคริปต์ deploy นี้
-จะสร้าง token auth เป็นค่าเริ่มต้น:
+ดึง shared secret ที่กำหนดค่าไว้สำหรับ Control UI สคริปต์ปรับใช้นี้
+สร้างการยืนยันตัวตนด้วยโทเค็นตามค่าเริ่มต้น:
 
 ```bash
 kubectl get secret openclaw-secrets -n openclaw -o jsonpath='{.data.OPENCLAW_GATEWAY_TOKEN}' | base64 -d
 ```
 
-สำหรับการดีบักแบบโลคัล `./scripts/k8s/deploy.sh --show-token` จะพิมพ์ token หลัง deploy
+สำหรับการดีบักในเครื่อง `./scripts/k8s/deploy.sh --show-token` จะพิมพ์โทเค็นหลังจากปรับใช้
 
-## การทดสอบแบบโลคัลด้วย Kind
+## การทดสอบในเครื่องด้วย Kind
 
-หากคุณยังไม่มีคลัสเตอร์ ให้สร้างคลัสเตอร์แบบโลคัลด้วย [Kind](https://kind.sigs.k8s.io/):
+หากคุณไม่มีคลัสเตอร์ ให้สร้างในเครื่องด้วย [Kind](https://kind.sigs.k8s.io/):
 
 ```bash
 ./scripts/k8s/create-kind.sh           # auto-detects docker or podman
 ./scripts/k8s/create-kind.sh --delete  # tear down
 ```
 
-จากนั้น deploy ตามปกติด้วย `./scripts/k8s/deploy.sh`
+จากนั้นปรับใช้ตามปกติด้วย `./scripts/k8s/deploy.sh`
 
 ## ทีละขั้นตอน
 
-### 1) Deploy
+### 1) ปรับใช้
 
-**ตัวเลือก A** — ใช้ API key ใน environment (ขั้นตอนเดียว):
+**ตัวเลือก A** — API key ในสภาพแวดล้อม (ขั้นตอนเดียว):
 
 ```bash
 # Replace with your provider: ANTHROPIC, GEMINI, OPENAI, or OPENROUTER
@@ -70,9 +68,9 @@ export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-สคริปต์จะสร้าง Kubernetes Secret ที่มี API key และ gateway token ที่สร้างอัตโนมัติ จากนั้นทำการ deploy หากมี Secret นี้อยู่แล้ว ระบบจะเก็บ gateway token ปัจจุบันและ provider keys ที่ไม่ได้เปลี่ยนค่าไว้
+สคริปต์จะสร้าง Kubernetes Secret พร้อม API key และ gateway token ที่สร้างอัตโนมัติ จากนั้นจึงปรับใช้ หาก Secret มีอยู่แล้ว สคริปต์จะคง gateway token ปัจจุบันและคีย์ของผู้ให้บริการใดๆ ที่ไม่ได้เปลี่ยนไว้
 
-**ตัวเลือก B** — สร้าง secret แยกก่อน:
+**ตัวเลือก B** — สร้าง secret แยกต่างหาก:
 
 ```bash
 export <PROVIDER>_API_KEY="..."
@@ -80,7 +78,7 @@ export <PROVIDER>_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-ใช้ `--show-token` ร่วมกับคำสั่งใดก็ได้หากคุณต้องการให้พิมพ์ token ออกทาง stdout เพื่อใช้ในการทดสอบแบบโลคัล
+ใช้ `--show-token` กับคำสั่งใดก็ได้หากคุณต้องการให้พิมพ์โทเค็นไปยัง stdout สำหรับการทดสอบในเครื่อง
 
 ### 2) เข้าถึง gateway
 
@@ -89,9 +87,9 @@ kubectl port-forward svc/openclaw 18789:18789 -n openclaw
 open http://localhost:18789
 ```
 
-## สิ่งที่จะถูก deploy
+## สิ่งที่จะถูกปรับใช้
 
-```text
+```
 Namespace: openclaw (configurable via OPENCLAW_NAMESPACE)
 ├── Deployment/openclaw        # Single pod, init container + gateway
 ├── Service/openclaw           # ClusterIP on port 18789
@@ -102,21 +100,21 @@ Namespace: openclaw (configurable via OPENCLAW_NAMESPACE)
 
 ## การปรับแต่ง
 
-### คำสั่งของเอเจนต์
+### คำสั่งสำหรับเอเจนต์
 
-แก้ไข `AGENTS.md` ใน `scripts/k8s/manifests/configmap.yaml` แล้ว deploy ใหม่:
+แก้ไข `AGENTS.md` ใน `scripts/k8s/manifests/configmap.yaml` แล้วปรับใช้อีกครั้ง:
 
 ```bash
 ./scripts/k8s/deploy.sh
 ```
 
-### การกำหนดค่า Gateway
+### คอนฟิก Gateway
 
-แก้ไข `openclaw.json` ใน `scripts/k8s/manifests/configmap.yaml` ดู [การกำหนดค่า Gateway](/th/gateway/configuration) สำหรับข้อมูลอ้างอิงแบบเต็ม
+แก้ไข `openclaw.json` ใน `scripts/k8s/manifests/configmap.yaml` ดูข้อมูลอ้างอิงทั้งหมดที่ [การกำหนดค่า Gateway](/th/gateway/configuration)
 
-### เพิ่ม providers
+### เพิ่มผู้ให้บริการ
 
-รันใหม่โดย export คีย์เพิ่มเติม:
+รันอีกครั้งโดย export คีย์เพิ่มเติม:
 
 ```bash
 export ANTHROPIC_API_KEY="..."
@@ -125,7 +123,7 @@ export OPENAI_API_KEY="..."
 ./scripts/k8s/deploy.sh
 ```
 
-provider keys เดิมจะยังอยู่ใน Secret เว้นแต่คุณจะเขียนทับ
+คีย์ของผู้ให้บริการที่มีอยู่จะยังคงอยู่ใน Secret เว้นแต่คุณจะเขียนทับ
 
 หรือ patch Secret โดยตรง:
 
@@ -135,13 +133,13 @@ kubectl patch secret openclaw-secrets -n openclaw \
 kubectl rollout restart deployment/openclaw -n openclaw
 ```
 
-### Namespace แบบกำหนดเอง
+### namespace แบบกำหนดเอง
 
 ```bash
 OPENCLAW_NAMESPACE=my-namespace ./scripts/k8s/deploy.sh
 ```
 
-### Image แบบกำหนดเอง
+### อิมเมจแบบกำหนดเอง
 
 แก้ไขฟิลด์ `image` ใน `scripts/k8s/manifests/deployment.yaml`:
 
@@ -149,44 +147,44 @@ OPENCLAW_NAMESPACE=my-namespace ./scripts/k8s/deploy.sh
 image: ghcr.io/openclaw/openclaw:latest # or pin to a specific version from https://github.com/openclaw/openclaw/releases
 ```
 
-### เปิดให้เข้าถึงมากกว่า port-forward
+### เปิดให้เข้าถึงนอกเหนือจาก port-forward
 
-manifests เริ่มต้นจะ bind gateway ไว้กับ loopback ภายใน pod วิธีนี้ใช้ได้กับ `kubectl port-forward` แต่ใช้ไม่ได้กับ `Service` หรือเส้นทาง Ingress ของ Kubernetes ที่ต้องเข้าถึง pod IP
+manifest เริ่มต้นจะ bind gateway เข้ากับ loopback ภายใน pod ซึ่งทำงานได้กับ `kubectl port-forward` แต่ใช้ไม่ได้กับ Kubernetes `Service` หรือเส้นทาง Ingress ที่ต้องเข้าถึง IP ของ pod
 
-หากคุณต้องการเปิดเผย gateway ผ่าน Ingress หรือ load balancer:
+หากคุณต้องการเปิด gateway ผ่าน Ingress หรือ load balancer:
 
-- เปลี่ยนการ bind ของ gateway ใน `scripts/k8s/manifests/configmap.yaml` จาก `loopback` เป็นการ bind แบบ non-loopback ที่ตรงกับรูปแบบ deployment ของคุณ
-- คง gateway auth ไว้และใช้ entrypoint ที่มี TLS termination อย่างถูกต้อง
-- กำหนดค่า Control UI สำหรับการเข้าถึงระยะไกลโดยใช้โมเดลความปลอดภัยเว็บที่รองรับ (เช่น HTTPS/Tailscale Serve และ allowed origins แบบระบุชัดเมื่อจำเป็น)
+- เปลี่ยน gateway bind ใน `scripts/k8s/manifests/configmap.yaml` จาก `loopback` เป็น bind ที่ไม่ใช่ loopback ซึ่งตรงกับโมเดลการปรับใช้ของคุณ
+- เปิดใช้งาน gateway auth ไว้ และใช้ entrypoint ที่ยุติ TLS อย่างเหมาะสม
+- กำหนดค่า Control UI สำหรับการเข้าถึงระยะไกลโดยใช้โมเดลความปลอดภัยเว็บที่รองรับ (เช่น HTTPS/Tailscale Serve และ allowed origins แบบระบุชัดเจนเมื่อจำเป็น)
 
-## Deploy ใหม่
+## ปรับใช้อีกครั้ง
 
 ```bash
 ./scripts/k8s/deploy.sh
 ```
 
-คำสั่งนี้จะ apply manifests ทั้งหมดและรีสตาร์ต pod เพื่อให้รับการเปลี่ยนแปลงของ config หรือ secret
+คำสั่งนี้จะ apply manifest ทั้งหมดและรีสตาร์ต pod เพื่อรับการเปลี่ยนแปลงคอนฟิกหรือ secret ใดๆ
 
-## การรื้อถอน
+## ลบทิ้ง
 
 ```bash
 ./scripts/k8s/deploy.sh --delete
 ```
 
-คำสั่งนี้จะลบ namespace และ resources ทั้งหมดในนั้น รวมถึง PVC
+คำสั่งนี้จะลบ namespace และทรัพยากรทั้งหมดในนั้น รวมถึง PVC
 
 ## หมายเหตุด้านสถาปัตยกรรม
 
-- gateway จะ bind กับ loopback ภายใน pod ตามค่าเริ่มต้น ดังนั้นการตั้งค่าที่ให้มานี้เหมาะกับ `kubectl port-forward`
-- ไม่มี cluster-scoped resources — ทุกอย่างอยู่ใน namespace เดียว
+- gateway bind เข้ากับ loopback ภายใน pod ตามค่าเริ่มต้น ดังนั้นชุดติดตั้งที่รวมมานี้จึงมีไว้สำหรับ `kubectl port-forward`
+- ไม่มีทรัพยากรระดับคลัสเตอร์ — ทุกอย่างอยู่ใน namespace เดียว
 - ความปลอดภัย: `readOnlyRootFilesystem`, ความสามารถ `drop: ALL`, ผู้ใช้ที่ไม่ใช่ root (UID 1000)
-- config เริ่มต้นจะคง Control UI ไว้บนเส้นทางการเข้าถึงแบบโลคัลที่ปลอดภัยกว่า: bind แบบ loopback บวก `kubectl port-forward` ไปยัง `http://127.0.0.1:18789`
-- หากคุณจะขยับออกจากการเข้าถึงผ่าน localhost ให้ใช้โมเดลการเข้าถึงระยะไกลที่รองรับ: HTTPS/Tailscale พร้อม gateway bind และการตั้งค่า origin ของ Control UI ที่เหมาะสม
-- Secrets ถูกสร้างในไดเรกทอรีชั่วคราวและ apply ตรงเข้าคลัสเตอร์ — ไม่มีการเขียนข้อมูลลับลงใน working tree ของรีโป
+- คอนฟิกเริ่มต้นจะทำให้ Control UI อยู่บนเส้นทางการเข้าถึงในเครื่องที่ปลอดภัยกว่า: loopback bind พร้อม `kubectl port-forward` ไปยัง `http://127.0.0.1:18789`
+- หากคุณขยายออกไปนอกการเข้าถึง localhost ให้ใช้โมเดลระยะไกลที่รองรับ: HTTPS/Tailscale พร้อม gateway bind ที่เหมาะสมและการตั้งค่า origin ของ Control UI
+- Secrets ถูกสร้างในไดเรกทอรีชั่วคราวและนำไปใช้กับคลัสเตอร์โดยตรง — ไม่มีการเขียนข้อมูล secret ลงใน repo checkout
 
 ## โครงสร้างไฟล์
 
-```text
+```
 scripts/k8s/
 ├── deploy.sh                   # Creates namespace + secret, deploys via kustomize
 ├── create-kind.sh              # Local Kind cluster (auto-detects docker/podman)
@@ -201,5 +199,5 @@ scripts/k8s/
 ## ที่เกี่ยวข้อง
 
 - [Docker](/th/install/docker)
-- [Docker VM runtime](/th/install/docker-vm-runtime)
+- [รันไทม์ Docker VM](/th/install/docker-vm-runtime)
 - [ภาพรวมการติดตั้ง](/th/install)

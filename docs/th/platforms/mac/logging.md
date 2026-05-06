@@ -1,41 +1,41 @@
 ---
 read_when:
-    - การเก็บ macOS logs หรือการตรวจสอบการบันทึกข้อมูลส่วนตัว
-    - การดีบักปัญหา voice wake/วงจรชีวิตของเซสชัน
-summary: 'การบันทึกของ OpenClaw: rolling diagnostics file log + unified log privacy flags'
-title: การบันทึกบน macOS
+    - การเก็บล็อก macOS หรือการตรวจสอบการบันทึกข้อมูลส่วนตัว
+    - การดีบักปัญหาวงจรชีวิตของการปลุกด้วยเสียง/เซสชัน
+summary: 'การบันทึกของ OpenClaw: ไฟล์บันทึกการวินิจฉัยแบบหมุนเวียน + ตัวเลือกความเป็นส่วนตัวของบันทึกแบบรวม'
+title: การบันทึกล็อกของ macOS
 x-i18n:
-    generated_at: "2026-04-24T09:21:59Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T09:22:42Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 84e8f56ef0f85ba9eae629d6a3cc1bcaf49cc70c82f67a10b9292f2f54b1ff6b
+    source_hash: 76c001008311d4e3f245add4cce32bdcc3eed9d897b30f6884c0649d2f0523df
     source_path: platforms/mac/logging.md
-    workflow: 15
+    workflow: 16
 ---
 
 # การบันทึก (macOS)
 
-## ไฟล์บันทึกวินิจฉัยแบบหมุนเวียน (Debug pane)
+## บันทึกไฟล์วินิจฉัยแบบหมุนเวียน (แผง Debug)
 
-OpenClaw ส่งเส้นทาง logs ของแอป macOS ผ่าน swift-log (ใช้ unified logging เป็นค่าเริ่มต้น) และสามารถเขียน file log แบบหมุนเวียนในเครื่องลงดิสก์ได้ เมื่อคุณต้องการการเก็บบันทึกแบบคงอยู่
+OpenClaw ส่งบันทึกของแอป macOS ผ่าน swift-log (ค่าเริ่มต้นคือการบันทึกแบบรวมศูนย์) และสามารถเขียนบันทึกไฟล์ภายในเครื่องแบบหมุนเวียนลงดิสก์ได้เมื่อคุณต้องการการจับข้อมูลที่คงอยู่
 
-- ระดับความละเอียด: **Debug pane → Logs → App logging → Verbosity**
-- เปิดใช้: **Debug pane → Logs → App logging → “Write rolling diagnostics log (JSONL)”**
-- ตำแหน่ง: `~/Library/Logs/OpenClaw/diagnostics.jsonl` (หมุนเวียนอัตโนมัติ; ไฟล์เก่าจะมี suffix เป็น `.1`, `.2`, …)
-- ล้าง: **Debug pane → Logs → App logging → “Clear”**
+- ระดับรายละเอียด: **แผง Debug → บันทึก → การบันทึกของแอป → ระดับรายละเอียด**
+- เปิดใช้: **แผง Debug → บันทึก → การบันทึกของแอป → "เขียนบันทึกวินิจฉัยแบบหมุนเวียน (JSONL)"**
+- ตำแหน่ง: `~/Library/Logs/OpenClaw/diagnostics.jsonl` (หมุนเวียนโดยอัตโนมัติ; ไฟล์เก่าจะมีส่วนต่อท้ายเป็น `.1`, `.2`, …)
+- ล้าง: **แผง Debug → บันทึก → การบันทึกของแอป → "ล้าง"**
 
 หมายเหตุ:
 
-- ค่านี้ **ปิดอยู่เป็นค่าเริ่มต้น** เปิดใช้เฉพาะขณะกำลังดีบักเท่านั้น
-- ให้ถือว่าไฟล์นี้เป็นข้อมูลอ่อนไหว; อย่าแชร์โดยไม่ตรวจทานก่อน
+- สิ่งนี้**ปิดอยู่โดยค่าเริ่มต้น** เปิดใช้เฉพาะขณะกำลังดีบักเท่านั้น
+- ถือว่าไฟล์นี้มีข้อมูลละเอียดอ่อน อย่าแชร์โดยไม่ได้ตรวจสอบก่อน
 
 ## ข้อมูลส่วนตัวใน unified logging บน macOS
 
-Unified logging จะ redacted payloads ส่วนใหญ่ออก เว้นแต่ subsystem จะเลือกใช้ `privacy -off` ตามบทความของ Peter เรื่อง macOS [logging privacy shenanigans](https://steipete.me/posts/2025/logging-privacy-shenanigans) (2025) สิ่งนี้ควบคุมด้วย plist ใน `/Library/Preferences/Logging/Subsystems/` ซึ่งอิงตามชื่อ subsystem มีเพียง log entries ใหม่เท่านั้นที่จะรับ flag นี้ ดังนั้นให้เปิดใช้ก่อนทำซ้ำปัญหา
+Unified logging จะปกปิด payload ส่วนใหญ่ เว้นแต่ subsystem จะเลือกใช้ `privacy -off` ตามบทความของ Peter เกี่ยวกับ [ประเด็นความเป็นส่วนตัวของการบันทึกบน macOS](https://steipete.me/posts/2025/logging-privacy-shenanigans) (2025) สิ่งนี้ควบคุมด้วย plist ใน `/Library/Preferences/Logging/Subsystems/` ที่ใช้ชื่อ subsystem เป็นคีย์ มีเพียงรายการบันทึกใหม่เท่านั้นที่จะรับค่าแฟล็กนี้ ดังนั้นให้เปิดใช้ก่อนทำให้ปัญหาเกิดซ้ำ
 
 ## เปิดใช้สำหรับ OpenClaw (`ai.openclaw`)
 
-- เขียน plist ลงไฟล์ชั่วคราวก่อน แล้วจึงติดตั้งแบบ atomic ด้วยสิทธิ์ root:
+- เขียน plist ไปยังไฟล์ชั่วคราวก่อน แล้วติดตั้งแบบ atomic ในฐานะ root:
 
 ```bash
 cat <<'EOF' >/tmp/ai.openclaw.plist
@@ -54,16 +54,16 @@ EOF
 sudo install -m 644 -o root -g wheel /tmp/ai.openclaw.plist /Library/Preferences/Logging/Subsystems/ai.openclaw.plist
 ```
 
-- ไม่จำเป็นต้องรีบูต; `logd` จะสังเกตเห็นไฟล์อย่างรวดเร็ว แต่จะมีเพียงบรรทัด log ใหม่เท่านั้นที่รวม private payloads
-- ดูเอาต์พุตที่ละเอียดขึ้นด้วย helper ที่มีอยู่แล้ว เช่น `./scripts/clawlog.sh --category WebChat --last 5m`
+- ไม่จำเป็นต้องรีบูต; logd จะตรวจพบไฟล์อย่างรวดเร็ว แต่เฉพาะบรรทัดบันทึกใหม่เท่านั้นที่จะรวม payload ส่วนตัว
+- ดูเอาต์พุตที่มีรายละเอียดมากขึ้นด้วยตัวช่วยที่มีอยู่ เช่น `./scripts/clawlog.sh --category WebChat --last 5m`
 
-## ปิดหลังดีบักเสร็จ
+## ปิดใช้หลังจากดีบัก
 
 - ลบ override: `sudo rm /Library/Preferences/Logging/Subsystems/ai.openclaw.plist`
-- ตามตัวเลือกสามารถรัน `sudo log config --reload` เพื่อบังคับให้ `logd` เลิกใช้ override ทันที
-- โปรดจำไว้ว่าพื้นผิวนี้อาจมีหมายเลขโทรศัพท์และเนื้อหาข้อความ; ควรเก็บ plist นี้ไว้เฉพาะขณะที่คุณยังต้องการรายละเอียดเพิ่มเติมจริง ๆ เท่านั้น
+- เลือกเรียกใช้ `sudo log config --reload` เพื่อบังคับให้ logd ยกเลิก override ทันที
+- จำไว้ว่าพื้นที่นี้อาจรวมหมายเลขโทรศัพท์และเนื้อหาข้อความไว้ด้วย ให้เก็บ plist ไว้เฉพาะขณะที่คุณต้องการรายละเอียดเพิ่มเติมนี้จริง ๆ เท่านั้น
 
 ## ที่เกี่ยวข้อง
 
-- [macOS app](/th/platforms/macos)
-- [Gateway logging](/th/gateway/logging)
+- [แอป macOS](/th/platforms/macos)
+- [การบันทึกของ Gateway](/th/gateway/logging)
