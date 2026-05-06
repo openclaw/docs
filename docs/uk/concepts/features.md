@@ -4,34 +4,34 @@ read_when:
 summary: Можливості OpenClaw у каналах, маршрутизації, медіа та UX.
 title: Можливості
 x-i18n:
-    generated_at: "2026-04-23T22:58:21Z"
-    model: gpt-5.4
+    generated_at: "2026-05-06T02:05:26Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: b188d786b06e1a51d42130242e8bef6290a728783f24b2fbce513bf4d6c9ec23
+    source_hash: d46085b326dd1e5f0d5531bdf8d7d84ac8c22b7fb4637b7183be2bd9d556c500
     source_path: concepts/features.md
-    workflow: 15
+    workflow: 16
 ---
 
-## Основні можливості
+## Основне
 
 <Columns>
   <Card title="Канали" icon="message-square" href="/uk/channels">
-    Discord, iMessage, Signal, Slack, Telegram, WhatsApp, WebChat та інші через єдиний Gateway.
+    Discord, iMessage, Signal, Slack, Telegram, WhatsApp, WebChat та інші через один Gateway.
   </Card>
-  <Card title="Plugin-и" icon="plug" href="/uk/tools/plugin">
-    Вбудовані Plugin-и додають Matrix, Nextcloud Talk, Nostr, Twitch, Zalo та інші без окремих установлень у звичайних поточних релізах.
+  <Card title="Plugins" icon="plug" href="/uk/tools/plugin">
+    Вбудовані plugins додають Matrix, Nextcloud Talk, Nostr, Twitch, Zalo та інші без окремого встановлення у звичайних поточних випусках.
   </Card>
   <Card title="Маршрутизація" icon="route" href="/uk/concepts/multi-agent">
-    Маршрутизація з кількома агентами з ізольованими сесіями.
+    Багатоагентна маршрутизація з ізольованими сеансами.
   </Card>
   <Card title="Медіа" icon="image" href="/uk/nodes/images">
     Зображення, аудіо, відео, документи та генерація зображень/відео.
   </Card>
   <Card title="Застосунки та UI" icon="monitor" href="/uk/web/control-ui">
-    Web Control UI та супутній застосунок для macOS.
+    Веб Control UI та супровідний застосунок для macOS.
   </Card>
-  <Card title="Мобільні Node" icon="smartphone" href="/uk/nodes">
-    Node для iOS та Android зі сполученням, голосом/чатом і розширеними командами пристрою.
+  <Card title="Мобільні вузли" icon="smartphone" href="/uk/nodes">
+    Вузли iOS і Android зі сполученням, голосом/чатом і розширеними командами пристрою.
   </Card>
 </Columns>
 
@@ -39,48 +39,60 @@ x-i18n:
 
 **Канали:**
 
-- Вбудовані канали включають Discord, Google Chat, iMessage (legacy), IRC, Signal, Slack, Telegram, WebChat і WhatsApp
-- Канали вбудованих Plugin-ів включають BlueBubbles для iMessage, Feishu, LINE, Matrix, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Synology Chat, Tlon, Twitch, Zalo і Zalo Personal
-- Необов’язкові окремо встановлювані Plugin-и каналів включають Voice Call і сторонні пакети, такі як WeChat
-- Сторонні Plugin-и каналів можуть іще більше розширювати Gateway, наприклад WeChat
-- Підтримка групових чатів з активацією через згадки
-- Безпека приватних повідомлень зі списками дозволених і сполученням
+- Вбудовані канали охоплюють Discord, Google Chat, iMessage (застарілий), IRC, Signal, Slack, Telegram, WebChat і WhatsApp
+- Вбудовані канали plugin охоплюють BlueBubbles для iMessage, Feishu, LINE, Matrix, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Synology Chat, Tlon, Twitch, Zalo і Zalo Personal
+- Необов’язкові окремо встановлювані канальні plugins охоплюють Voice Call і сторонні пакети, як-от WeChat
+- Сторонні канальні plugins можуть додатково розширювати Gateway, наприклад WeChat
+- Підтримка групових чатів з активацією на основі згадок
+- Безпека DM з allowlists і сполученням
 
 **Агент:**
 
-- Вбудоване runtime-середовище агента з потоковою передачею інструментів
-- Маршрутизація з кількома агентами з ізольованими сесіями для кожного робочого простору або відправника
-- Сесії: прямі чати згортаються в спільну `main`; групи ізольовані
-- Потокова передача та поділ на частини для довгих відповідей
+- Вбудоване середовище виконання агента зі streaming інструментів
+- Багатоагентна маршрутизація з ізольованими сеансами для кожного робочого простору або відправника
+- Сеанси: прямі чати згортаються у спільний `main`; групи ізольовані
+- Streaming і chunking для довгих відповідей
 
 **Автентифікація та провайдери:**
 
 - 35+ провайдерів моделей (Anthropic, OpenAI, Google та інші)
-- Підпискова автентифікація через OAuth (наприклад, OpenAI Codex)
-- Підтримка користувацьких і self-hosted провайдерів (vLLM, SGLang, Ollama та будь-який endpoint, сумісний з OpenAI або Anthropic)
+- Автентифікація за підпискою через OAuth (наприклад, OpenAI Codex)
+- Підтримка власних і самостійно розгорнутих провайдерів (vLLM, SGLang, Ollama і будь-який OpenAI-сумісний або Anthropic-сумісний endpoint)
 
 **Медіа:**
 
-- Зображення, аудіо, відео та документи на вхід і вихід
-- Спільні поверхні можливостей для генерації зображень і відео
-- Транскрибування голосових повідомлень
+- Вхідні та вихідні зображення, аудіо, відео й документи
+- Спільні поверхні можливостей генерації зображень і відео
+- Транскрибування голосових нотаток
 - Перетворення тексту на мовлення з кількома провайдерами
 
 **Застосунки та інтерфейси:**
 
 - WebChat і браузерний Control UI
-- Супутній застосунок для macOS у рядку меню
-- Node для iOS зі сполученням, Canvas, камерою, записом екрана, геолокацією та голосом
-- Node для Android зі сполученням, чатом, голосом, Canvas, камерою та командами пристрою
+- Супровідний застосунок у рядку меню macOS
+- Вузол iOS зі сполученням, Canvas, камерою, записом екрана, геолокацією та голосом
+- Вузол Android зі сполученням, чатом, голосом, Canvas, камерою та командами пристрою
 
-**Інструменти та автоматизація:**
+**Інструменти й автоматизація:**
 
 - Автоматизація браузера, exec, sandboxing
 - Вебпошук (Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG, Tavily)
 - Завдання Cron і планування Heartbeat
-- Skills, Plugin-и та конвеєри робочих процесів (Lobster)
+- Skills, plugins і конвеєри робочих процесів (Lobster)
 
 ## Пов’язане
 
-- [Експериментальні можливості](/uk/concepts/experimental-features)
-- [Runtime-середовище агента](/uk/concepts/agent)
+<CardGroup cols={2}>
+  <Card title="Експериментальні функції" href="/uk/concepts/experimental-features" icon="flask">
+    Функції з добровільним увімкненням, які ще не вийшли на стандартну поверхню.
+  </Card>
+  <Card title="Середовище виконання агента" href="/uk/concepts/agent" icon="robot">
+    Модель середовища виконання агента та спосіб диспетчеризації запусків.
+  </Card>
+  <Card title="Канали" href="/uk/channels" icon="message-square">
+    Підключайте Telegram, WhatsApp, Discord, Slack та інші з одного Gateway.
+  </Card>
+  <Card title="Plugins" href="/uk/tools/plugin" icon="plug">
+    Вбудовані та сторонні plugins, які розширюють OpenClaw.
+  </Card>
+</CardGroup>
