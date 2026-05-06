@@ -1,27 +1,25 @@
 ---
 read_when:
     - می‌خواهید از Perplexity Search برای جست‌وجوی وب استفاده کنید
-    - باید PERPLEXITY_API_KEY یا OPENROUTER_API_KEY را تنظیم کرده باشید
-summary: سازگاری API جست‌وجوی Perplexity و Sonar/OpenRouter برای web_search
+    - باید PERPLEXITY_API_KEY یا OPENROUTER_API_KEY تنظیم شده باشد
+summary: API جست‌وجوی Perplexity و سازگاری Sonar/OpenRouter برای web_search
 title: جست‌وجوی Perplexity
 x-i18n:
-    generated_at: "2026-04-29T23:45:17Z"
+    generated_at: "2026-05-06T09:48:38Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 6f85aa953ff406237013fdc9a06b86756a26e62d41e5a3e3aa732563960e4ba9
+    source_hash: 113abafae66acd8aaa0302b687ba13347eb44a81a4217b61bb68f07d8a119cb0
     source_path: tools/perplexity-search.md
     workflow: 16
 ---
 
-# API جست‌وجوی Perplexity
+OpenClaw از Perplexity Search API به‌عنوان ارائه‌دهنده‌ی `web_search` پشتیبانی می‌کند.
+این API نتایج ساختاریافته‌ای با فیلدهای `title`، `url` و `snippet` برمی‌گرداند.
 
-OpenClaw از API جست‌وجوی Perplexity به‌عنوان ارائه‌دهنده‌ی `web_search` پشتیبانی می‌کند.
-این API نتایج ساختاریافته را با فیلدهای `title`، `url` و `snippet` برمی‌گرداند.
+برای سازگاری، OpenClaw از تنظیمات قدیمی Perplexity Sonar/OpenRouter نیز پشتیبانی می‌کند.
+اگر از `OPENROUTER_API_KEY`، یک کلید `sk-or-...` در `plugins.entries.perplexity.config.webSearch.apiKey` استفاده کنید، یا `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` را تنظیم کنید، ارائه‌دهنده به مسیر chat-completions تغییر می‌کند و به‌جای نتایج ساختاریافته‌ی Search API، پاسخ‌های تولیدشده با هوش مصنوعی همراه با ارجاع‌ها برمی‌گرداند.
 
-برای سازگاری، OpenClaw از راه‌اندازی‌های قدیمی Perplexity Sonar/OpenRouter نیز پشتیبانی می‌کند.
-اگر از `OPENROUTER_API_KEY`، یک کلید `sk-or-...` در `plugins.entries.perplexity.config.webSearch.apiKey` استفاده کنید، یا `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` را تنظیم کنید، ارائه‌دهنده به مسیر chat-completions تغییر می‌کند و به‌جای نتایج ساختاریافته‌ی Search API، پاسخ‌های تولیدشده توسط هوش مصنوعی را همراه با ارجاع‌ها برمی‌گرداند.
-
-## دریافت کلید API پرپلکسیتی
+## دریافت کلید API برای Perplexity
 
 1. در [perplexity.ai/settings/api](https://www.perplexity.ai/settings/api) یک حساب Perplexity بسازید
 2. در داشبورد یک کلید API تولید کنید
@@ -38,7 +36,7 @@ OpenClaw از API جست‌وجوی Perplexity به‌عنوان ارائه‌د
 
 ## نمونه‌های پیکربندی
 
-### API جست‌وجوی بومی Perplexity
+### Perplexity Search API بومی
 
 ```json5
 {
@@ -94,36 +92,36 @@ OpenClaw از API جست‌وجوی Perplexity به‌عنوان ارائه‌د
 
 **از طریق پیکربندی:** دستور `openclaw configure --section web` را اجرا کنید. این دستور کلید را در
 `~/.openclaw/openclaw.json` زیر `plugins.entries.perplexity.config.webSearch.apiKey` ذخیره می‌کند.
-این فیلد همچنین آبجکت‌های SecretRef را می‌پذیرد.
+این فیلد اشیای SecretRef را نیز می‌پذیرد.
 
 **از طریق محیط:** `PERPLEXITY_API_KEY` یا `OPENROUTER_API_KEY` را
-در محیط پردازش Gateway تنظیم کنید. برای نصب Gateway، آن را در
-`~/.openclaw/.env` (یا محیط سرویس خود) قرار دهید. [متغیرهای محیطی](/fa/help/faq#env-vars-and-env-loading) را ببینید.
+در محیط فرایند Gateway تنظیم کنید. برای نصب gateway، آن را در
+`~/.openclaw/.env` (یا محیط سرویس خودتان) قرار دهید. [متغیرهای محیطی](/fa/help/faq#env-vars-and-env-loading) را ببینید.
 
-اگر `provider: "perplexity"` پیکربندی شده باشد و SecretRef کلید Perplexity بدون جایگزین محیطی حل‌نشده بماند، راه‌اندازی/بارگذاری مجدد سریعاً با شکست مواجه می‌شود.
+اگر `provider: "perplexity"` پیکربندی شده باشد و SecretRef کلید Perplexity بدون جایگزین محیطی resolve نشده باشد، راه‌اندازی/بارگذاری مجدد سریعاً شکست می‌خورد.
 
 ## پارامترهای ابزار
 
-این پارامترها برای مسیر API جست‌وجوی بومی Perplexity اعمال می‌شوند.
+این پارامترها برای مسیر بومی Perplexity Search API اعمال می‌شوند.
 
 <ParamField path="query" type="string" required>
-عبارت جست‌وجو.
+پرس‌وجوی جست‌وجو.
 </ParamField>
 
 <ParamField path="count" type="number" default="5">
-تعداد نتایجی که باید برگردانده شود (1–10).
+تعداد نتایجی که باید برگردانده شود (1-10).
 </ParamField>
 
 <ParamField path="country" type="string">
-کد کشور ISO دوحرفی (مثلاً `US`، `DE`).
+کد کشور ISO دوحرفی (برای مثال `US`، `DE`).
 </ParamField>
 
 <ParamField path="language" type="string">
-کد زبان ISO 639-1 (مثلاً `en`، `de`، `fr`).
+کد زبان ISO 639-1 (برای مثال `en`، `de`، `fr`).
 </ParamField>
 
 <ParamField path="freshness" type="'day' | 'week' | 'month' | 'year'">
-فیلتر زمانی — `day` برابر با ۲۴ ساعت است.
+فیلتر زمانی - `day` برابر با ۲۴ ساعت است.
 </ParamField>
 
 <ParamField path="date_after" type="string">
@@ -135,7 +133,7 @@ OpenClaw از API جست‌وجوی Perplexity به‌عنوان ارائه‌د
 </ParamField>
 
 <ParamField path="domain_filter" type="string[]">
-آرایه‌ی فهرست مجاز/فهرست ممنوع دامنه‌ها (حداکثر ۲۰).
+آرایه‌ی allowlist/denylist دامنه‌ها (حداکثر 20).
 </ParamField>
 
 <ParamField path="max_tokens" type="number" default="25000">
@@ -149,8 +147,8 @@ OpenClaw از API جست‌وجوی Perplexity به‌عنوان ارائه‌د
 برای مسیر سازگاری قدیمی Sonar/OpenRouter:
 
 - `query`، `count` و `freshness` پذیرفته می‌شوند
-- `count` در آنجا فقط برای سازگاری است؛ پاسخ همچنان یک پاسخ تولیدشده
-  همراه با ارجاع‌هاست، نه فهرستی با N نتیجه
+- `count` در آنجا فقط برای سازگاری است؛ پاسخ همچنان یک پاسخ تولیدشده‌ی
+  واحد همراه با ارجاع‌ها است، نه یک فهرست N-نتیجه‌ای
 - فیلترهای مخصوص Search API مانند `country`، `language`، `date_after`،
   `date_before`، `domain_filter`، `max_tokens` و `max_tokens_per_page`
   خطاهای صریح برمی‌گردانند
@@ -200,20 +198,30 @@ await web_search({
 
 ### قواعد فیلتر دامنه
 
-- حداکثر ۲۰ دامنه در هر فیلتر
-- نمی‌توان فهرست مجاز و فهرست ممنوع را در یک درخواست ترکیب کرد
-- برای ورودی‌های فهرست ممنوع از پیشوند `-` استفاده کنید (مثلاً `["-reddit.com"]`)
+- حداکثر 20 دامنه در هر فیلتر
+- امکان ترکیب allowlist و denylist در یک درخواست وجود ندارد
+- برای ورودی‌های denylist از پیشوند `-` استفاده کنید (برای مثال `["-reddit.com"]`)
 
 ## نکات
 
-- API جست‌وجوی Perplexity نتایج جست‌وجوی وب ساختاریافته را برمی‌گرداند (`title`، `url`، `snippet`)
-- OpenRouter یا `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` صریح، Perplexity را برای سازگاری دوباره به تکمیل‌های گفت‌وگوی Sonar تغییر می‌دهد
-- سازگاری Sonar/OpenRouter یک پاسخ تولیدشده همراه با ارجاع‌ها برمی‌گرداند، نه ردیف‌های نتیجه‌ی ساختاریافته
-- نتایج به‌طور پیش‌فرض برای ۱۵ دقیقه کش می‌شوند (از طریق `cacheTtlMinutes` قابل پیکربندی است)
+- Perplexity Search API نتایج ساختاریافته‌ی جست‌وجوی وب را برمی‌گرداند (`title`، `url`، `snippet`)
+- OpenRouter یا `plugins.entries.perplexity.config.webSearch.baseUrl` / `model` صریح، Perplexity را برای سازگاری دوباره به chat completions مربوط به Sonar تغییر می‌دهد
+- سازگاری Sonar/OpenRouter یک پاسخ تولیدشده‌ی واحد همراه با ارجاع‌ها برمی‌گرداند، نه ردیف‌های نتیجه‌ی ساختاریافته
+- نتایج به‌طور پیش‌فرض برای ۱۵ دقیقه کش می‌شوند (قابل پیکربندی از طریق `cacheTtlMinutes`)
 
 ## مرتبط
 
-- [نمای کلی Web Search](/fa/tools/web) -- همه‌ی ارائه‌دهنده‌ها و تشخیص خودکار
-- [مستندات API جست‌وجوی Perplexity](https://docs.perplexity.ai/docs/search/quickstart) -- مستندات رسمی Perplexity
-- [Brave Search](/fa/tools/brave-search) -- نتایج ساختاریافته با فیلترهای کشور/زبان
-- [Exa Search](/fa/tools/exa-search) -- جست‌وجوی عصبی همراه با استخراج محتوا
+<CardGroup cols={2}>
+  <Card title="نمای کلی جست‌وجوی وب" href="/fa/tools/web" icon="globe">
+    همه‌ی ارائه‌دهنده‌ها و قواعد تشخیص خودکار.
+  </Card>
+  <Card title="جست‌وجوی Brave" href="/fa/tools/brave-search" icon="shield">
+    نتایج ساختاریافته با فیلترهای کشور و زبان.
+  </Card>
+  <Card title="جست‌وجوی Exa" href="/fa/tools/exa-search" icon="magnifying-glass">
+    جست‌وجوی عصبی همراه با استخراج محتوا.
+  </Card>
+  <Card title="مستندات Perplexity Search API" href="https://docs.perplexity.ai/docs/search/quickstart" icon="arrow-up-right-from-square">
+    راه‌اندازی سریع و مرجع رسمی Perplexity Search API.
+  </Card>
+</CardGroup>

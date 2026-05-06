@@ -1,163 +1,163 @@
 ---
 read_when:
-    - جست‌وجوی یک گام یا پرچم مشخص در فرایند راه‌اندازی اولیه
+    - جست‌وجوی یک مرحلهٔ مشخص از راه‌اندازی اولیه یا پرچم
     - خودکارسازی راه‌اندازی اولیه با حالت غیرتعاملی
     - اشکال‌زدایی رفتار راه‌اندازی اولیه
 sidebarTitle: Onboarding Reference
-summary: 'مرجع کامل برای راه‌اندازی اولیهٔ CLI: هر گام، فلگ و فیلد پیکربندی'
+summary: 'مرجع کامل برای راه‌اندازی اولیهٔ CLI: هر مرحله، پرچم و فیلد پیکربندی'
 title: مرجع راه‌اندازی اولیه
 x-i18n:
-    generated_at: "2026-04-29T23:35:36Z"
+    generated_at: "2026-05-06T09:42:08Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 412008af223cd14f744a0b553ab82f233eb482ca9991bd418f29b09b33d93de4
+    source_hash: ce0ddb07600ef4f84c44734176e42eb6beaa00fede0be156f3bdd2ec1c0111bb
     source_path: reference/wizard.md
     workflow: 16
 ---
 
-این مرجع کامل برای `openclaw onboard` است.
-برای نمای کلی سطح بالا، [راه‌اندازی اولیه (CLI)](/fa/start/wizard) را ببینید.
+این مرجع کامل `openclaw onboard` است.
+برای نمای کلی سطح بالا، [Onboarding (CLI)](/fa/start/wizard) را ببینید.
 
 ## جزئیات جریان (حالت محلی)
 
 <Steps>
-  <Step title="تشخیص پیکربندی موجود">
-    - اگر `~/.openclaw/openclaw.json` وجود داشته باشد، **نگه‌داری / تغییر / بازنشانی** را انتخاب کنید.
-    - اجرای دوباره راه‌اندازی اولیه هیچ چیزی را پاک **نمی‌کند** مگر اینکه صراحتا **بازنشانی** را انتخاب کنید
-      (یا `--reset` را پاس دهید).
-    - `--reset` در CLI به‌طور پیش‌فرض روی `config+creds+sessions` است؛ از `--reset-scope full`
-      استفاده کنید تا workspace نیز حذف شود.
-    - اگر پیکربندی نامعتبر باشد یا کلیدهای قدیمی داشته باشد، wizard متوقف می‌شود و از شما می‌خواهد
-      پیش از ادامه `openclaw doctor` را اجرا کنید.
-    - بازنشانی از `trash` استفاده می‌کند (هرگز `rm`) و این دامنه‌ها را ارائه می‌دهد:
+  <Step title="Existing config detection">
+    - اگر `~/.openclaw/openclaw.json` وجود داشته باشد، **Keep / Modify / Reset** را انتخاب کنید.
+    - اجرای دوبارهٔ راه‌اندازی اولیه هیچ چیزی را پاک **نمی‌کند**، مگر اینکه صراحتاً **Reset**
+      را انتخاب کنید (یا `--reset` را پاس بدهید).
+    - مقدار پیش‌فرض CLI `--reset` برابر `config+creds+sessions` است؛ برای حذف workspace نیز از `--reset-scope full`
+      استفاده کنید.
+    - اگر پیکربندی نامعتبر باشد یا کلیدهای قدیمی داشته باشد، ویزارد متوقف می‌شود و پیش از ادامه
+      از شما می‌خواهد `openclaw doctor` را اجرا کنید.
+    - Reset از `trash` استفاده می‌کند (هرگز `rm`) و این دامنه‌ها را ارائه می‌دهد:
       - فقط پیکربندی
-      - پیکربندی + اعتبارنامه‌ها + نشست‌ها
-      - بازنشانی کامل (workspace را نیز حذف می‌کند)
+      - پیکربندی + credentials + sessions
+      - بازنشانی کامل (workspace را هم حذف می‌کند)
 
   </Step>
-  <Step title="مدل/احراز هویت">
-    - **کلید API Anthropic**: اگر `ANTHROPIC_API_KEY` موجود باشد از آن استفاده می‌کند، یا کلید را درخواست می‌کند، سپس آن را برای استفاده daemon ذخیره می‌کند.
-    - **کلید API Anthropic**: گزینه دستیار Anthropic ترجیحی در راه‌اندازی اولیه/پیکربندی.
-    - **setup-token Anthropic**: همچنان در راه‌اندازی اولیه/پیکربندی در دسترس است، هرچند OpenClaw اکنون در صورت وجود، استفاده دوباره از Claude CLI را ترجیح می‌دهد.
+  <Step title="Model/Auth">
+    - **کلید Anthropic API**: اگر `ANTHROPIC_API_KEY` موجود باشد از آن استفاده می‌کند، یا کلید را درخواست می‌کند، سپس آن را برای استفادهٔ daemon ذخیره می‌کند.
+    - **کلید Anthropic API**: انتخاب ترجیحی دستیار Anthropic در onboarding/configure.
+    - **Anthropic setup-token**: همچنان در onboarding/configure در دسترس است، هرچند OpenClaw اکنون هنگام در دسترس بودن، استفادهٔ مجدد از Claude CLI را ترجیح می‌دهد.
     - **اشتراک OpenAI Code (Codex) (OAuth)**: جریان مرورگر؛ `code#state` را جای‌گذاری کنید.
-      - وقتی مدل تنظیم نشده باشد یا از قبل از خانواده OpenAI باشد، `agents.defaults.model` را روی `openai-codex/gpt-5.5` تنظیم می‌کند.
-    - **اشتراک OpenAI Code (Codex) (جفت‌سازی دستگاه)**: جریان جفت‌سازی مرورگر با کد دستگاه کوتاه‌عمر.
-      - وقتی مدل تنظیم نشده باشد یا از قبل از خانواده OpenAI باشد، `agents.defaults.model` را روی `openai-codex/gpt-5.5` تنظیم می‌کند.
-    - **کلید API OpenAI**: اگر `OPENAI_API_KEY` موجود باشد از آن استفاده می‌کند، یا کلید را درخواست می‌کند، سپس آن را در پروفایل‌های احراز هویت ذخیره می‌کند.
+      - وقتی مدل تنظیم نشده باشد یا از قبل متعلق به خانوادهٔ OpenAI باشد، `agents.defaults.model` را روی `openai-codex/gpt-5.5` تنظیم می‌کند.
+    - **اشتراک OpenAI Code (Codex) (device pairing)**: جریان جفت‌سازی مرورگر با یک کد دستگاه کوتاه‌عمر.
+      - وقتی مدل تنظیم نشده باشد یا از قبل متعلق به خانوادهٔ OpenAI باشد، `agents.defaults.model` را روی `openai-codex/gpt-5.5` تنظیم می‌کند.
+    - **کلید OpenAI API**: اگر `OPENAI_API_KEY` موجود باشد از آن استفاده می‌کند، یا کلید را درخواست می‌کند، سپس آن را در پروفایل‌های احراز هویت ذخیره می‌کند.
       - وقتی مدل تنظیم نشده باشد، `openai/*` باشد، یا `openai-codex/*` باشد، `agents.defaults.model` را روی `openai/gpt-5.5` تنظیم می‌کند.
-    - **کلید API xAI (Grok)**: `XAI_API_KEY` را درخواست می‌کند و xAI را به‌عنوان ارائه‌دهنده مدل پیکربندی می‌کند.
-    - **OpenCode**: `OPENCODE_API_KEY` (یا `OPENCODE_ZEN_API_KEY`، آن را از https://opencode.ai/auth بگیرید) را درخواست می‌کند و اجازه می‌دهد کاتالوگ Zen یا Go را انتخاب کنید.
-    - **Ollama**: ابتدا **Cloud + Local**، **Cloud only**، یا **Local only** را ارائه می‌دهد. `Cloud only` مقدار `OLLAMA_API_KEY` را درخواست می‌کند و از `https://ollama.com` استفاده می‌کند؛ حالت‌های متکی به میزبان، URL پایه Ollama را درخواست می‌کنند، مدل‌های موجود را کشف می‌کنند، و در صورت نیاز مدل محلی انتخاب‌شده را به‌صورت خودکار pull می‌کنند؛ `Cloud + Local` همچنین بررسی می‌کند که آن میزبان Ollama برای دسترسی ابری وارد شده باشد.
+    - **کلید xAI (Grok) API**: `XAI_API_KEY` را درخواست می‌کند و xAI را به‌عنوان ارائه‌دهندهٔ مدل پیکربندی می‌کند.
+    - **OpenCode**: `OPENCODE_API_KEY` را درخواست می‌کند (یا `OPENCODE_ZEN_API_KEY`، آن را از https://opencode.ai/auth بگیرید) و اجازه می‌دهد کاتالوگ Zen یا Go را انتخاب کنید.
+    - **Ollama**: ابتدا **Cloud + Local**، **Cloud only**، یا **Local only** را ارائه می‌دهد. `Cloud only`، `OLLAMA_API_KEY` را درخواست می‌کند و از `https://ollama.com` استفاده می‌کند؛ حالت‌های متکی به میزبان، URL پایهٔ Ollama را درخواست می‌کنند، مدل‌های موجود را کشف می‌کنند، و در صورت نیاز مدل محلی انتخاب‌شده را به‌طور خودکار pull می‌کنند؛ `Cloud + Local` همچنین بررسی می‌کند که آیا آن میزبان Ollama برای دسترسی cloud وارد شده است یا نه.
     - جزئیات بیشتر: [Ollama](/fa/providers/ollama)
     - **کلید API**: کلید را برای شما ذخیره می‌کند.
-    - **Vercel AI Gateway (پراکسی چندمدلی)**: `AI_GATEWAY_API_KEY` را درخواست می‌کند.
+    - **Vercel AI Gateway (پروکسی چندمدلی)**: `AI_GATEWAY_API_KEY` را درخواست می‌کند.
     - جزئیات بیشتر: [Vercel AI Gateway](/fa/providers/vercel-ai-gateway)
-    - **Cloudflare AI Gateway**: شناسه حساب، شناسه Gateway، و `CLOUDFLARE_AI_GATEWAY_API_KEY` را درخواست می‌کند.
+    - **Cloudflare AI Gateway**: Account ID، Gateway ID، و `CLOUDFLARE_AI_GATEWAY_API_KEY` را درخواست می‌کند.
     - جزئیات بیشتر: [Cloudflare AI Gateway](/fa/providers/cloudflare-ai-gateway)
-    - **MiniMax**: پیکربندی به‌صورت خودکار نوشته می‌شود؛ پیش‌فرض میزبانی‌شده `MiniMax-M2.7` است.
+    - **MiniMax**: پیکربندی به‌طور خودکار نوشته می‌شود؛ پیش‌فرض میزبانی‌شده `MiniMax-M2.7` است.
       راه‌اندازی با کلید API از `minimax/...` استفاده می‌کند، و راه‌اندازی OAuth از
-      `minimax-portal/...` استفاده می‌کند.
+      `minimax-portal/...`.
     - جزئیات بیشتر: [MiniMax](/fa/providers/minimax)
-    - **StepFun**: پیکربندی برای StepFun standard یا Step Plan روی endpointهای چین یا جهانی به‌صورت خودکار نوشته می‌شود.
-    - Standard در حال حاضر شامل `step-3.5-flash` است، و Step Plan همچنین شامل `step-3.5-flash-2603` است.
+    - **StepFun**: پیکربندی برای StepFun استاندارد یا Step Plan روی endpointهای چین یا جهانی به‌طور خودکار نوشته می‌شود.
+    - استاندارد در حال حاضر شامل `step-3.5-flash` است، و Step Plan نیز شامل `step-3.5-flash-2603` است.
     - جزئیات بیشتر: [StepFun](/fa/providers/stepfun)
     - **Synthetic (سازگار با Anthropic)**: `SYNTHETIC_API_KEY` را درخواست می‌کند.
     - جزئیات بیشتر: [Synthetic](/fa/providers/synthetic)
-    - **Moonshot (Kimi K2)**: پیکربندی به‌صورت خودکار نوشته می‌شود.
-    - **Kimi Coding**: پیکربندی به‌صورت خودکار نوشته می‌شود.
+    - **Moonshot (Kimi K2)**: پیکربندی به‌طور خودکار نوشته می‌شود.
+    - **Kimi Coding**: پیکربندی به‌طور خودکار نوشته می‌شود.
     - جزئیات بیشتر: [Moonshot AI (Kimi + Kimi Coding)](/fa/providers/moonshot)
-    - **رد کردن**: هنوز احراز هویتی پیکربندی نشده است.
-    - یک مدل پیش‌فرض را از گزینه‌های شناسایی‌شده انتخاب کنید (یا provider/model را به‌صورت دستی وارد کنید). برای بهترین کیفیت و ریسک کمتر prompt-injection، قوی‌ترین مدل نسل جدیدِ موجود در مجموعه ارائه‌دهنده خود را انتخاب کنید.
-    - راه‌اندازی اولیه یک بررسی مدل اجرا می‌کند و اگر مدل پیکربندی‌شده ناشناخته باشد یا احراز هویت نداشته باشد هشدار می‌دهد.
-    - حالت ذخیره‌سازی کلید API به‌طور پیش‌فرض مقادیر auth-profile متن ساده است. از `--secret-input-mode ref` استفاده کنید تا به‌جای آن refهای متکی به env ذخیره شوند (برای مثال `keyRef: { source: "env", provider: "default", id: "OPENAI_API_KEY" }`).
+    - **Skip**: هنوز احراز هویتی پیکربندی نشده است.
+    - یک مدل پیش‌فرض از گزینه‌های شناسایی‌شده انتخاب کنید (یا provider/model را دستی وارد کنید). برای بهترین کیفیت و ریسک کمتر prompt-injection، قوی‌ترین مدل نسل جدید موجود در پشتهٔ ارائه‌دهندهٔ خود را انتخاب کنید.
+    - Onboarding یک بررسی مدل اجرا می‌کند و اگر مدل پیکربندی‌شده ناشناخته باشد یا احراز هویت نداشته باشد، هشدار می‌دهد.
+    - حالت ذخیره‌سازی کلید API به‌طور پیش‌فرض مقادیر plaintext auth-profile است. برای ذخیرهٔ refs متکی به env به‌جای آن، از `--secret-input-mode ref` استفاده کنید (برای مثال `keyRef: { source: "env", provider: "default", id: "OPENAI_API_KEY" }`).
     - پروفایل‌های احراز هویت در `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` قرار دارند (کلیدهای API + OAuth). `~/.openclaw/credentials/oauth.json` فقط برای import قدیمی است.
     - جزئیات بیشتر: [/concepts/oauth](/fa/concepts/oauth)
     <Note>
-    نکته headless/server: OAuth را روی ماشینی با مرورگر کامل کنید، سپس
+    نکتهٔ headless/server: OAuth را روی ماشینی که مرورگر دارد کامل کنید، سپس
     `auth-profiles.json` آن agent را (برای مثال
     `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`، یا مسیر متناظر
-    `$OPENCLAW_STATE_DIR/...`) به میزبان gateway کپی کنید. `credentials/oauth.json`
+    `$OPENCLAW_STATE_DIR/...`) به میزبان Gateway کپی کنید. `credentials/oauth.json`
     فقط یک منبع import قدیمی است.
     </Note>
   </Step>
   <Step title="Workspace">
     - پیش‌فرض `~/.openclaw/workspace` (قابل پیکربندی).
-    - فایل‌های workspace موردنیاز برای آیین bootstrap عامل را seed می‌کند.
-    - چیدمان کامل workspace + راهنمای پشتیبان‌گیری: [Workspace عامل](/fa/concepts/agent-workspace)
+    - فایل‌های workspace لازم برای آیین bootstrap عامل را آماده می‌کند.
+    - چیدمان کامل workspace + راهنمای backup: [workspace عامل](/fa/concepts/agent-workspace)
 
   </Step>
   <Step title="Gateway">
-    - پورت، bind، حالت احراز هویت، نمایش Tailscale.
-    - توصیه احراز هویت: حتی برای loopback نیز **Token** را نگه دارید تا کلاینت‌های محلی WS مجبور به احراز هویت باشند.
-    - در حالت token، راه‌اندازی تعاملی این موارد را ارائه می‌دهد:
-      - **تولید/ذخیره token متن ساده** (پیش‌فرض)
-      - **استفاده از SecretRef** (اختیاری)
-      - Quickstart از SecretRefهای موجود `gateway.auth.token` در ارائه‌دهندگان `env`، `file`، و `exec` برای probe راه‌اندازی اولیه/dashboard bootstrap دوباره استفاده می‌کند.
-      - اگر آن SecretRef پیکربندی شده باشد اما قابل resolve نباشد، راه‌اندازی اولیه به‌جای کاهش بی‌صدای سطح احراز هویت runtime، زودتر با پیام اصلاح روشن fail می‌شود.
-    - در حالت password، راه‌اندازی تعاملی از ذخیره‌سازی متن ساده یا SecretRef نیز پشتیبانی می‌کند.
-    - مسیر SecretRef توکن غیرتعاملی: `--gateway-token-ref-env <ENV_VAR>`.
-      - به یک env var غیرخالی در محیط فرایند راه‌اندازی اولیه نیاز دارد.
+    - Port، bind، حالت احراز هویت، نمایش از طریق Tailscale.
+    - توصیهٔ احراز هویت: حتی برای loopback هم **Token** را نگه دارید تا کلاینت‌های WS محلی مجبور به احراز هویت باشند.
+    - در حالت token، راه‌اندازی تعاملی این گزینه‌ها را ارائه می‌دهد:
+      - **تولید/ذخیرهٔ token به‌صورت plaintext** (پیش‌فرض)
+      - **استفاده از SecretRef** (opt-in)
+      - Quickstart از SecretRefهای موجود `gateway.auth.token` در providerهای `env`، `file`، و `exec` برای probe/dashboard bootstrap در onboarding دوباره استفاده می‌کند.
+      - اگر آن SecretRef پیکربندی شده باشد اما قابل resolve نباشد، onboarding به‌جای کاهش بی‌صدای auth زمان اجرا، زودتر با یک پیام اصلاح روشن شکست می‌خورد.
+    - در حالت password، راه‌اندازی تعاملی از ذخیره‌سازی plaintext یا SecretRef نیز پشتیبانی می‌کند.
+    - مسیر SecretRef غیرتعاملی token: `--gateway-token-ref-env <ENV_VAR>`.
+      - به یک متغیر env غیرخالی در محیط فرایند onboarding نیاز دارد.
       - نمی‌تواند با `--gateway-token` ترکیب شود.
-    - فقط اگر به همه فرایندهای محلی کاملا اعتماد دارید، احراز هویت را غیرفعال کنید.
-    - bindهای غیر local loopback همچنان به احراز هویت نیاز دارند.
+    - auth را فقط زمانی غیرفعال کنید که به همهٔ فرایندهای محلی کاملاً اعتماد دارید.
+    - bindهای غیر loopback همچنان به auth نیاز دارند.
 
   </Step>
-  <Step title="کانال‌ها">
-    - [WhatsApp](/fa/channels/whatsapp): ورود QR اختیاری.
-    - [Telegram](/fa/channels/telegram): توکن ربات.
-    - [Discord](/fa/channels/discord): توکن ربات.
-    - [Google Chat](/fa/channels/googlechat): JSON حساب سرویس + مخاطب Webhook.
-    - [Mattermost](/fa/channels/mattermost) (Plugin): توکن ربات + URL پایه.
+  <Step title="Channels">
+    - [WhatsApp](/fa/channels/whatsapp): ورود اختیاری با QR.
+    - [Telegram](/fa/channels/telegram): bot token.
+    - [Discord](/fa/channels/discord): bot token.
+    - [Google Chat](/fa/channels/googlechat): service account JSON + webhook audience.
+    - [Mattermost](/fa/channels/mattermost) (Plugin): bot token + base URL.
     - [Signal](/fa/channels/signal): نصب اختیاری `signal-cli` + پیکربندی حساب.
-    - [BlueBubbles](/fa/channels/bluebubbles): **برای iMessage توصیه می‌شود**؛ URL سرور + گذرواژه + Webhook.
-    - [iMessage](/fa/channels/imessage): مسیر قدیمی CLI `imsg` + دسترسی DB.
-    - امنیت DM: پیش‌فرض جفت‌سازی است. نخستین DM یک کد ارسال می‌کند؛ از طریق `openclaw pairing approve <channel> <code>` تأیید کنید یا از allowlistها استفاده کنید.
+    - [BlueBubbles](/fa/channels/bluebubbles): **برای iMessage توصیه می‌شود**؛ server URL + password + webhook.
+    - [iMessage](/fa/channels/imessage): مسیر legacy `imsg` CLI + دسترسی DB.
+    - امنیت DM: پیش‌فرض pairing است. نخستین DM یک کد می‌فرستد؛ با `openclaw pairing approve <channel> <code>` تأیید کنید یا از allowlistها استفاده کنید.
 
   </Step>
-  <Step title="جست‌وجوی وب">
-    - یک ارائه‌دهنده پشتیبانی‌شده مانند Brave، DuckDuckGo، Exa، Firecrawl، Gemini، Grok، Kimi، MiniMax Search، Ollama Web Search، Perplexity، SearXNG، یا Tavily را انتخاب کنید (یا رد کنید).
-    - ارائه‌دهندگان متکی به API می‌توانند برای راه‌اندازی سریع از env varها یا پیکربندی موجود استفاده کنند؛ ارائه‌دهندگان بدون کلید به‌جای آن از پیش‌نیازهای اختصاصی ارائه‌دهنده خود استفاده می‌کنند.
+  <Step title="Web search">
+    - یک ارائه‌دهندهٔ پشتیبانی‌شده مانند Brave، DuckDuckGo، Exa، Firecrawl، Gemini، Grok، Kimi، MiniMax Search، Ollama Web Search، Perplexity، SearXNG، یا Tavily را انتخاب کنید (یا رد کنید).
+    - ارائه‌دهندگان متکی به API می‌توانند برای راه‌اندازی سریع از متغیرهای env یا پیکربندی موجود استفاده کنند؛ ارائه‌دهندگان بدون کلید به پیش‌نیازهای اختصاصی provider خودشان متکی هستند.
     - با `--skip-search` رد کنید.
-    - بعدا پیکربندی کنید: `openclaw configure --section web`.
+    - بعداً پیکربندی کنید: `openclaw configure --section web`.
 
   </Step>
-  <Step title="نصب daemon">
+  <Step title="Daemon install">
     - macOS: LaunchAgent
-      - به نشست کاربری واردشده نیاز دارد؛ برای headless، از یک LaunchDaemon سفارشی استفاده کنید (همراه محصول ارائه نمی‌شود).
-    - Linux (و Windows از طریق WSL2): واحد کاربری systemd
-      - راه‌اندازی اولیه تلاش می‌کند lingering را از طریق `loginctl enable-linger <user>` فعال کند تا Gateway پس از خروج نیز بالا بماند.
+      - به یک session کاربر واردشده نیاز دارد؛ برای headless، از LaunchDaemon سفارشی استفاده کنید (ارائه نشده است).
+    - Linux (و Windows از طریق WSL2): systemd user unit
+      - Onboarding تلاش می‌کند lingering را از طریق `loginctl enable-linger <user>` فعال کند تا Gateway پس از logout هم بالا بماند.
       - ممکن است sudo درخواست کند (`/var/lib/systemd/linger` را می‌نویسد)؛ ابتدا بدون sudo تلاش می‌کند.
     - **انتخاب runtime:** Node (توصیه‌شده؛ برای WhatsApp/Telegram لازم است). Bun **توصیه نمی‌شود**.
-    - اگر احراز هویت token به token نیاز داشته باشد و `gateway.auth.token` با SecretRef مدیریت شود، نصب daemon آن را اعتبارسنجی می‌کند اما مقادیر token متن ساده resolveشده را در فراداده محیط سرویس supervisor پایدار نمی‌کند.
-    - اگر احراز هویت token به token نیاز داشته باشد و SecretRef توکن پیکربندی‌شده resolve نشده باشد، نصب daemon با راهنمایی قابل اقدام مسدود می‌شود.
-    - اگر هر دو `gateway.auth.token` و `gateway.auth.password` پیکربندی شده باشند و `gateway.auth.mode` تنظیم نشده باشد، نصب daemon تا زمانی که mode صراحتا تنظیم شود مسدود می‌شود.
+    - اگر auth با token به token نیاز داشته باشد و `gateway.auth.token` توسط SecretRef مدیریت شود، نصب daemon آن را اعتبارسنجی می‌کند اما مقادیر token plaintext resolve‌شده را در metadata محیط سرویس supervisor پایدار نمی‌کند.
+    - اگر auth با token به token نیاز داشته باشد و SecretRef توکن پیکربندی‌شده resolve نشده باشد، نصب daemon با راهنمایی قابل اقدام مسدود می‌شود.
+    - اگر هر دو `gateway.auth.token` و `gateway.auth.password` پیکربندی شده باشند و `gateway.auth.mode` تنظیم نشده باشد، نصب daemon تا زمانی که mode صراحتاً تنظیم شود مسدود می‌شود.
 
   </Step>
-  <Step title="بررسی سلامت">
+  <Step title="Health check">
     - Gateway را (در صورت نیاز) شروع می‌کند و `openclaw health` را اجرا می‌کند.
-    - نکته: `openclaw status --deep` probe سلامت gateway زنده را به خروجی status اضافه می‌کند، از جمله probeهای کانال در صورت پشتیبانی (به gateway قابل دسترس نیاز دارد).
+    - نکته: `openclaw status --deep` probe سلامت زندهٔ gateway را به خروجی status اضافه می‌کند، شامل probeهای channel در صورت پشتیبانی (به gateway قابل دسترسی نیاز دارد).
 
   </Step>
-  <Step title="Skills (توصیه‌شده)">
-    - Skills موجود را می‌خواند و الزامات را بررسی می‌کند.
-    - اجازه می‌دهد یک مدیر node انتخاب کنید: **npm / pnpm** (bun توصیه نمی‌شود).
-    - وابستگی‌های اختیاری را نصب می‌کند (برخی از Homebrew روی macOS استفاده می‌کنند).
+  <Step title="Skills (recommended)">
+    - Skills موجود را می‌خواند و requirements را بررسی می‌کند.
+    - اجازه می‌دهد یک node manager انتخاب کنید: **npm / pnpm** (bun توصیه نمی‌شود).
+    - وابستگی‌های اختیاری را نصب می‌کند (بعضی از Homebrew روی macOS استفاده می‌کنند).
 
   </Step>
-  <Step title="پایان">
-    - خلاصه + گام‌های بعدی، شامل برنامه‌های iOS/Android/macOS برای قابلیت‌های بیشتر.
+  <Step title="Finish">
+    - خلاصه + مراحل بعدی، شامل برنامه‌های iOS/Android/macOS برای قابلیت‌های بیشتر.
 
   </Step>
 </Steps>
 
 <Note>
-اگر هیچ GUI شناسایی نشود، راه‌اندازی اولیه به‌جای باز کردن مرورگر، دستورالعمل‌های SSH port-forward را برای Control UI چاپ می‌کند.
-اگر assetهای Control UI موجود نباشند، راه‌اندازی اولیه تلاش می‌کند آن‌ها را build کند؛ fallback برابر `pnpm ui:build` است (وابستگی‌های UI را به‌صورت خودکار نصب می‌کند).
+اگر هیچ GUI شناسایی نشود، onboarding به‌جای باز کردن مرورگر، دستورالعمل‌های SSH port-forward را برای Control UI چاپ می‌کند.
+اگر assetهای Control UI موجود نباشند، onboarding تلاش می‌کند آنها را بسازد؛ fallback برابر `pnpm ui:build` است (وابستگی‌های UI را خودکار نصب می‌کند).
 </Note>
 
 ## حالت غیرتعاملی
 
-برای خودکارسازی یا اسکریپت کردن راه‌اندازی اولیه از `--non-interactive` استفاده کنید:
+برای خودکارسازی یا اسکریپت‌کردن onboarding از `--non-interactive` استفاده کنید:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -171,9 +171,9 @@ openclaw onboard --non-interactive \
   --skip-skills
 ```
 
-برای خلاصه قابل خواندن توسط ماشین، `--json` را اضافه کنید.
+برای خلاصهٔ machine-readable، `--json` را اضافه کنید.
 
-SecretRef توکن Gateway در حالت غیرتعاملی:
+Gateway token SecretRef در حالت غیرتعاملی:
 
 ```bash
 export OPENCLAW_GATEWAY_TOKEN="your-token"
@@ -184,14 +184,14 @@ openclaw onboard --non-interactive \
   --gateway-token-ref-env OPENCLAW_GATEWAY_TOKEN
 ```
 
-`--gateway-token` و `--gateway-token-ref-env` ناسازگارند.
+`--gateway-token` و `--gateway-token-ref-env` با هم ناسازگارند.
 
 <Note>
-`--json` به‌معنای حالت غیرتعاملی **نیست**. برای اسکریپت‌ها از `--non-interactive` (و `--workspace`) استفاده کنید.
+`--json` حالت غیرتعاملی را القا **نمی‌کند**. برای اسکریپت‌ها از `--non-interactive` (و `--workspace`) استفاده کنید.
 </Note>
 
-نمونه‌های فرمان اختصاصی ارائه‌دهنده در [خودکارسازی CLI](/fa/start/wizard-cli-automation#provider-specific-examples) قرار دارند.
-از این صفحه مرجع برای معنای flagها و ترتیب گام‌ها استفاده کنید.
+نمونه‌های دستور مخصوص provider در [CLI Automation](/fa/start/wizard-cli-automation#provider-specific-examples) قرار دارند.
+از این صفحهٔ مرجع برای معنای flagها و ترتیب مراحل استفاده کنید.
 
 ### افزودن agent (غیرتعاملی)
 
@@ -204,38 +204,38 @@ openclaw agents add work \
   --json
 ```
 
-## RPC ویزارد Gateway
+## Gateway wizard RPC
 
-Gateway جریان راه‌اندازی اولیه را از طریق RPC (`wizard.start`, `wizard.next`, `wizard.cancel`, `wizard.status`) ارائه می‌دهد.
-کلاینت‌ها (برنامه macOS، Control UI) می‌توانند گام‌ها را بدون پیاده‌سازی دوباره منطق راه‌اندازی اولیه render کنند.
+Gateway جریان onboarding را از طریق RPC (`wizard.start`, `wizard.next`, `wizard.cancel`, `wizard.status`) ارائه می‌کند.
+کلاینت‌ها (برنامهٔ macOS، Control UI) می‌توانند مراحل را بدون پیاده‌سازی دوبارهٔ منطق onboarding رندر کنند.
 
 ## راه‌اندازی Signal (signal-cli)
 
-راه‌اندازی اولیه می‌تواند `signal-cli` را از releaseهای GitHub نصب کند:
+Onboarding می‌تواند `signal-cli` را از GitHub releases نصب کند:
 
-- asset نسخه مناسب را دانلود می‌کند.
+- asset مناسب release را دانلود می‌کند.
 - آن را زیر `~/.openclaw/tools/signal-cli/<version>/` ذخیره می‌کند.
 - `channels.signal.cliPath` را در پیکربندی شما می‌نویسد.
 
-نکات:
+نکته‌ها:
 
 - buildهای JVM به **Java 21** نیاز دارند.
-- وقتی buildهای native موجود باشند، از آن‌ها استفاده می‌شود.
-- Windows از WSL2 استفاده می‌کند؛ نصب signal-cli جریان Linux را داخل WSL دنبال می‌کند.
+- هرگاه موجود باشند از buildهای Native استفاده می‌شود.
+- Windows از WSL2 استفاده می‌کند؛ نصب signal-cli جریان Linux را درون WSL دنبال می‌کند.
 
-## آنچه wizard می‌نویسد
+## آنچه ویزارد می‌نویسد
 
 فیلدهای معمول در `~/.openclaw/openclaw.json`:
 
 - `agents.defaults.workspace`
 - `agents.defaults.model` / `models.providers` (اگر Minimax انتخاب شده باشد)
-- `tools.profile` (راه‌اندازی اولیه محلی، وقتی تنظیم نشده باشد، به `"coding"` پیش‌فرض می‌شود؛ مقادیر صریح موجود حفظ می‌شوند)
-- `gateway.*` (mode، bind، auth، tailscale)
+- `tools.profile` (آماده‌سازی اولیه محلی، وقتی تنظیم نشده باشد، به‌طور پیش‌فرض از `"coding"` استفاده می‌کند؛ مقادیر صریح موجود حفظ می‌شوند)
+- `gateway.*` (حالت، bind، احراز هویت، tailscale)
 - `session.dmScope` (جزئیات رفتار: [مرجع راه‌اندازی CLI](/fa/start/wizard-cli-reference#outputs-and-internals))
-- `channels.telegram.botToken`، `channels.discord.token`، `channels.matrix.*`، `channels.signal.*`، `channels.imessage.*`
-- فهرست‌های مجاز کانال‌ها (Slack/Discord/Matrix/Microsoft Teams) وقتی در طول اعلان‌ها فعال‌سازی را انتخاب می‌کنید (نام‌ها در صورت امکان به ID تبدیل می‌شوند).
+- `channels.telegram.botToken`, `channels.discord.token`, `channels.matrix.*`, `channels.signal.*`, `channels.imessage.*`
+- فهرست‌های مجاز کانال‌ها (Slack/Discord/Matrix/Microsoft Teams) وقتی در پرسش‌ها آن‌ها را فعال می‌کنید (نام‌ها در صورت امکان به IDها تبدیل می‌شوند).
 - `skills.install.nodeManager`
-  - `setup --node-manager` مقدارهای `npm`، `pnpm`، یا `bun` را می‌پذیرد.
+  - `setup --node-manager` مقادیر `npm`، `pnpm` یا `bun` را می‌پذیرد.
   - پیکربندی دستی همچنان می‌تواند با تنظیم مستقیم `skills.install.nodeManager` از `yarn` استفاده کند.
 - `wizard.lastRunAt`
 - `wizard.lastRunVersion`
@@ -248,13 +248,13 @@ Gateway جریان راه‌اندازی اولیه را از طریق RPC (`wiz
 اعتبارنامه‌های WhatsApp زیر `~/.openclaw/credentials/whatsapp/<accountId>/` قرار می‌گیرند.
 نشست‌ها زیر `~/.openclaw/agents/<agentId>/sessions/` ذخیره می‌شوند.
 
-برخی کانال‌ها به‌صورت Plugin ارائه می‌شوند. وقتی در طول راه‌اندازی یکی را انتخاب می‌کنید، فرایند راه‌اندازی اولیه
-پیش از پیکربندی آن، از شما می‌خواهد آن را نصب کنید (npm یا یک مسیر محلی).
+برخی کانال‌ها به‌صورت Plugin ارائه می‌شوند. وقتی هنگام راه‌اندازی یکی را انتخاب می‌کنید، آماده‌سازی اولیه
+قبل از اینکه بتواند پیکربندی شود، از شما می‌خواهد آن را نصب کنید (npm یا یک مسیر محلی).
 
 ## مستندات مرتبط
 
-- نمای کلی راه‌اندازی اولیه: [راه‌اندازی اولیه (CLI)](/fa/start/wizard)
-- راه‌اندازی اولیه اپ macOS: [راه‌اندازی اولیه](/fa/start/onboarding)
+- نمای کلی آماده‌سازی اولیه: [آماده‌سازی اولیه (CLI)](/fa/start/wizard)
+- آماده‌سازی اولیه برنامه macOS: [آماده‌سازی اولیه](/fa/start/onboarding)
 - مرجع پیکربندی: [پیکربندی Gateway](/fa/gateway/configuration)
-- ارائه‌دهندگان: [WhatsApp](/fa/channels/whatsapp)، [Telegram](/fa/channels/telegram)، [Discord](/fa/channels/discord)، [Google Chat](/fa/channels/googlechat)، [Signal](/fa/channels/signal)، [BlueBubbles](/fa/channels/bluebubbles) (iMessage)، [iMessage](/fa/channels/imessage) (قدیمی)
-- Skills: [Skills](/fa/tools/skills)، [پیکربندی Skills](/fa/tools/skills-config)
+- ارائه‌دهندگان: [WhatsApp](/fa/channels/whatsapp), [Telegram](/fa/channels/telegram), [Discord](/fa/channels/discord), [Google Chat](/fa/channels/googlechat), [Signal](/fa/channels/signal), [BlueBubbles](/fa/channels/bluebubbles) (iMessage), [iMessage](/fa/channels/imessage) (قدیمی)
+- Skills: [Skills](/fa/tools/skills), [پیکربندی Skills](/fa/tools/skills-config)

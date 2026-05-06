@@ -1,29 +1,37 @@
 ---
 read_when:
-    - می‌خواهید OpenClaw را با یک سرور محلی inferrs اجرا کنید
+    - می‌خواهید OpenClaw را در برابر یک سرور محلی inferrs اجرا کنید
     - شما Gemma یا مدل دیگری را از طریق inferrs سرو می‌کنید
-    - برای inferrs به پرچم‌های سازگاری دقیق OpenClaw نیاز دارید
+    - به پرچم‌های سازگاری دقیق OpenClaw برای inferrs نیاز دارید
 summary: اجرای OpenClaw از طریق inferrs (سرور محلی سازگار با OpenAI)
-title: استنتاج می‌کند
+title: استنباط می‌کند
 x-i18n:
-    generated_at: "2026-04-29T23:26:08Z"
+    generated_at: "2026-05-06T09:38:59Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 53547c48febe584cf818507b0bf879db0471c575fa8a3ebfec64c658a7090675
+    source_hash: 216783689527229835acf4f0fb6d2981d1915bd5df28e631b5384c4cbb9ee158
     source_path: providers/inferrs.md
     workflow: 16
 ---
 
-[inferrs](https://github.com/ericcurtin/inferrs) می‌تواند مدل‌های محلی را پشت یک API سازگار با OpenAI با مسیر
-`/v1` ارائه کند. OpenClaw از طریق مسیر عمومی
-`openai-completions` با `inferrs` کار می‌کند.
+[inferrs](https://github.com/ericcurtin/inferrs) می‌تواند مدل‌های محلی را پشت یک API سازگار با OpenAI در مسیر `/v1` ارائه کند. OpenClaw از طریق مسیر عمومی `openai-completions` با `inferrs` کار می‌کند.
 
-در حال حاضر بهتر است `inferrs` را به‌عنوان یک backend سازگار با OpenAI و خودمیزبان سفارشی در نظر بگیرید، نه یک Plugin ارائه‌دهنده اختصاصی OpenClaw.
+| ویژگی | مقدار |
+| ------------------ | ------------------------------------------------------------------ |
+| شناسهٔ ارائه‌دهنده | `inferrs` (سفارشی؛ زیر `models.providers.inferrs` پیکربندی کنید) |
+| Plugin | هیچ‌کدام — `inferrs` یک Plugin ارائه‌دهندهٔ همراه OpenClaw نیست |
+| متغیر محیطی احراز هویت | اختیاری. اگر سرور inferrs شما احراز هویت ندارد، هر مقداری کار می‌کند |
+| API | سازگار با OpenAI (`openai-completions`) |
+| URL پایهٔ پیشنهادی | `http://127.0.0.1:8080/v1` (یا هرجایی که سرور inferrs شما اجرا می‌شود) |
+
+<Note>
+  در حال حاضر بهتر است `inferrs` را به‌عنوان یک بک‌اند سازگار با OpenAI، سفارشی و خودمیزبان در نظر بگیرید، نه یک Plugin اختصاصی ارائه‌دهندهٔ OpenClaw. آن را از طریق `models.providers.inferrs` پیکربندی می‌کنید، نه با یک پرچم انتخاب هنگام راه‌اندازی. اگر به یک Plugin همراه واقعی با کشف خودکار نیاز دارید، [SGLang](/fa/providers/sglang) یا [vLLM](/fa/providers/vllm) را ببینید.
+</Note>
 
 ## شروع به کار
 
 <Steps>
-  <Step title="شروع inferrs با یک مدل">
+  <Step title="Start inferrs with a model">
     ```bash
     inferrs serve google/gemma-4-E2B-it \
       --host 127.0.0.1 \
@@ -31,18 +39,18 @@ x-i18n:
       --device metal
     ```
   </Step>
-  <Step title="بررسی اینکه سرور در دسترس است">
+  <Step title="Verify the server is reachable">
     ```bash
     curl http://127.0.0.1:8080/health
     curl http://127.0.0.1:8080/v1/models
     ```
   </Step>
-  <Step title="افزودن یک ورودی ارائه‌دهنده OpenClaw">
-    یک ورودی ارائه‌دهنده صریح اضافه کنید و مدل پیش‌فرض خود را به آن اشاره دهید. نمونه کامل پیکربندی را در پایین ببینید.
+  <Step title="Add an OpenClaw provider entry">
+    یک ورودی صریح برای ارائه‌دهنده اضافه کنید و مدل پیش‌فرض خود را به آن اشاره دهید. نمونهٔ کامل پیکربندی را در پایین ببینید.
   </Step>
 </Steps>
 
-## نمونه کامل پیکربندی
+## نمونهٔ کامل پیکربندی
 
 این نمونه از Gemma 4 روی یک سرور محلی `inferrs` استفاده می‌کند.
 
@@ -88,12 +96,12 @@ x-i18n:
 ## پیکربندی پیشرفته
 
 <AccordionGroup>
-  <Accordion title="چرا requiresStringContent مهم است">
-    بعضی از مسیرهای Chat Completions در `inferrs` فقط
-    `messages[].content` رشته‌ای را می‌پذیرند، نه آرایه‌های ساختاریافته بخش‌های محتوا.
+  <Accordion title="Why requiresStringContent matters">
+    برخی مسیرهای Chat Completions در `inferrs` فقط
+    `messages[].content` رشته‌ای را می‌پذیرند، نه آرایه‌های ساختاریافتهٔ بخش‌های محتوا.
 
     <Warning>
-    اگر اجراهای OpenClaw با خطایی مانند این شکست خوردند:
+    اگر اجرای OpenClaw با خطایی مانند این ناموفق شد:
 
     ```text
     messages[1].content: invalid type: sequence, expected a string
@@ -108,13 +116,13 @@ x-i18n:
     }
     ```
 
-    OpenClaw پیش از ارسال درخواست، بخش‌های محتوای فقط‌متنی را به رشته‌های ساده تبدیل می‌کند.
+    OpenClaw قبل از ارسال درخواست، بخش‌های محتوای کاملاً متنی را به رشته‌های ساده تبدیل می‌کند.
 
   </Accordion>
 
-  <Accordion title="نکته احتیاطی درباره Gemma و طرح‌واره ابزار">
-    بعضی از ترکیب‌های فعلی `inferrs` + Gemma درخواست‌های مستقیم و کوچک
-    `/v1/chat/completions` را می‌پذیرند، اما همچنان در نوبت‌های کامل زمان اجرای عامل OpenClaw شکست می‌خورند.
+  <Accordion title="Gemma and tool-schema caveat">
+    برخی ترکیب‌های فعلی `inferrs` + Gemma درخواست‌های کوچک مستقیم
+    `/v1/chat/completions` را می‌پذیرند، اما همچنان در نوبت‌های کامل زمان اجرای عامل OpenClaw ناموفق می‌شوند.
 
     اگر این اتفاق افتاد، ابتدا این را امتحان کنید:
 
@@ -125,13 +133,13 @@ x-i18n:
     }
     ```
 
-    این کار سطح طرح‌واره ابزار OpenClaw را برای مدل غیرفعال می‌کند و می‌تواند فشار prompt را روی backendهای محلی سخت‌گیرتر کاهش دهد.
+    این کار سطح طرح‌وارهٔ ابزار OpenClaw را برای مدل غیرفعال می‌کند و می‌تواند فشار پرامپت را روی بک‌اندهای محلی سخت‌گیرتر کاهش دهد.
 
-    اگر درخواست‌های مستقیم بسیار کوچک همچنان کار می‌کنند اما نوبت‌های عادی عامل OpenClaw همچنان داخل `inferrs` خراب می‌شوند، مشکل باقی‌مانده معمولا به رفتار upstream مدل/سرور مربوط است، نه لایه انتقال OpenClaw.
+    اگر درخواست‌های مستقیم کوچک همچنان کار می‌کنند اما نوبت‌های عادی عامل OpenClaw همچنان داخل `inferrs` خراب می‌شوند، مشکل باقی‌مانده معمولاً به رفتار مدل/سرور بالادستی مربوط است، نه لایهٔ انتقال OpenClaw.
 
   </Accordion>
 
-  <Accordion title="آزمون smoke دستی">
+  <Accordion title="Manual smoke test">
     پس از پیکربندی، هر دو لایه را آزمایش کنید:
 
     ```bash
@@ -147,17 +155,16 @@ x-i18n:
       --json
     ```
 
-    اگر فرمان اول کار می‌کند اما دومی شکست می‌خورد، بخش عیب‌یابی زیر را بررسی کنید.
+    اگر فرمان اول کار می‌کند اما فرمان دوم ناموفق است، بخش عیب‌یابی زیر را بررسی کنید.
 
   </Accordion>
 
-  <Accordion title="رفتار به سبک پروکسی">
-    `inferrs` به‌عنوان یک backend سازگار با OpenAI با مسیر `/v1` و به سبک پروکسی در نظر گرفته می‌شود، نه یک endpoint بومی OpenAI.
+  <Accordion title="Proxy-style behavior">
+    `inferrs` به‌عنوان یک بک‌اند `/v1` سازگار با OpenAI و به سبک پراکسی در نظر گرفته می‌شود، نه یک نقطهٔ پایانی بومی OpenAI.
 
-    - شکل‌دهی درخواست‌های مخصوص OpenAI بومی در اینجا اعمال نمی‌شود
-    - نه `service_tier`، نه Responses `store`، نه راهنماهای prompt-cache، و نه شکل‌دهی payload سازگار با استدلال OpenAI وجود دارد
-    - headerهای انتساب پنهان OpenClaw (`originator`, `version`, `User-Agent`)
-      روی URLهای پایه سفارشی `inferrs` تزریق نمی‌شوند
+    - شکل‌دهی درخواست‌های فقط مخصوص OpenAI بومی اینجا اعمال نمی‌شود
+    - نه `service_tier`، نه Responses `store`، نه راهنمایی‌های کش پرامپت، و نه شکل‌دهی بارسنج سازگاری استدلال OpenAI وجود دارد
+    - سرآیندهای انتساب پنهان OpenClaw (`originator`، `version`، `User-Agent`) روی URLهای پایهٔ سفارشی `inferrs` تزریق نمی‌شوند
 
   </Accordion>
 </AccordionGroup>
@@ -165,22 +172,20 @@ x-i18n:
 ## عیب‌یابی
 
 <AccordionGroup>
-  <Accordion title="curl /v1/models شکست می‌خورد">
-    `inferrs` اجرا نشده، در دسترس نیست، یا به میزبان/پورت مورد انتظار bind نشده است. مطمئن شوید سرور شروع شده و روی آدرسی که پیکربندی کرده‌اید در حال گوش‌دادن است.
+  <Accordion title="curl /v1/models fails">
+    `inferrs` اجرا نیست، در دسترس نیست، یا به میزبان/درگاه مورد انتظار متصل نشده است. مطمئن شوید سرور شروع شده و روی نشانی‌ای که پیکربندی کرده‌اید در حال گوش دادن است.
   </Accordion>
 
-  <Accordion title="messages[].content انتظار یک رشته را دارد">
-    در ورودی مدل، `compat.requiresStringContent: true` را تنظیم کنید. برای جزئیات، بخش
-    `requiresStringContent` بالا را ببینید.
+  <Accordion title="messages[].content expected a string">
+    در ورودی مدل `compat.requiresStringContent: true` را تنظیم کنید. برای جزئیات، بخش `requiresStringContent` بالا را ببینید.
   </Accordion>
 
-  <Accordion title="فراخوانی‌های مستقیم /v1/chat/completions موفق می‌شوند اما openclaw infer model run شکست می‌خورد">
-    برای غیرفعال کردن سطح طرح‌واره ابزار، `compat.supportsTools: false` را تنظیم کنید.
-    نکته احتیاطی طرح‌واره ابزار Gemma را در بالا ببینید.
+  <Accordion title="Direct /v1/chat/completions calls pass but openclaw infer model run fails">
+    برای غیرفعال کردن سطح طرح‌وارهٔ ابزار، تنظیم `compat.supportsTools: false` را امتحان کنید. نکتهٔ احتیاطی طرح‌وارهٔ ابزار Gemma در بالا را ببینید.
   </Accordion>
 
-  <Accordion title="inferrs همچنان در نوبت‌های بزرگ‌تر عامل خراب می‌شود">
-    اگر OpenClaw دیگر خطاهای طرح‌واره دریافت نمی‌کند اما `inferrs` همچنان در نوبت‌های بزرگ‌تر عامل خراب می‌شود، آن را به‌عنوان محدودیت upstream مربوط به `inferrs` یا مدل در نظر بگیرید. فشار prompt را کاهش دهید یا به یک backend یا مدل محلی دیگر تغییر دهید.
+  <Accordion title="inferrs still crashes on larger agent turns">
+    اگر OpenClaw دیگر خطاهای طرح‌واره دریافت نمی‌کند اما `inferrs` همچنان در نوبت‌های بزرگ‌تر عامل خراب می‌شود، آن را به‌عنوان محدودیت بالادستی `inferrs` یا مدل در نظر بگیرید. فشار پرامپت را کاهش دهید یا به بک‌اند یا مدل محلی دیگری تغییر دهید.
   </Accordion>
 </AccordionGroup>
 
@@ -191,13 +196,13 @@ x-i18n:
 ## مرتبط
 
 <CardGroup cols={2}>
-  <Card title="مدل‌های محلی" href="/fa/gateway/local-models" icon="server">
+  <Card title="Local models" href="/fa/gateway/local-models" icon="server">
     اجرای OpenClaw در برابر سرورهای مدل محلی.
   </Card>
-  <Card title="عیب‌یابی Gateway" href="/fa/gateway/troubleshooting#local-openai-compatible-backend-passes-direct-probes-but-agent-runs-fail" icon="wrench">
-    اشکال‌زدایی backendهای محلی سازگار با OpenAI که probeها را با موفقیت می‌گذرانند اما اجراهای عامل در آن‌ها شکست می‌خورد.
+  <Card title="Gateway troubleshooting" href="/fa/gateway/troubleshooting#local-openai-compatible-backend-passes-direct-probes-but-agent-runs-fail" icon="wrench">
+    اشکال‌زدایی بک‌اندهای محلی سازگار با OpenAI که بررسی‌های اولیه را پاس می‌کنند اما در اجرای عامل ناموفق می‌شوند.
   </Card>
-  <Card title="انتخاب مدل" href="/fa/concepts/model-providers" icon="layers">
-    نمای کلی همه ارائه‌دهندگان، ارجاع‌های مدل و رفتار failover.
+  <Card title="Model selection" href="/fa/concepts/model-providers" icon="layers">
+    نمای کلی همهٔ ارائه‌دهنده‌ها، ارجاع‌های مدل، و رفتار failover.
   </Card>
 </CardGroup>

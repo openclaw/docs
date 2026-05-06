@@ -1,45 +1,45 @@
 ---
 read_when:
     - راه‌اندازی یک دستگاه جدید
-    - می‌خواهید «جدیدترین و بهترین» را داشته باشید، بدون اینکه پیکربندی شخصی‌تان به‌هم بخورد
+    - می‌خواهید «جدیدترین + بهترین» را بدون خراب‌کردن پیکربندی شخصی‌تان داشته باشید
 summary: راه‌اندازی پیشرفته و گردش‌کارهای توسعه برای OpenClaw
 title: راه‌اندازی
 x-i18n:
-    generated_at: "2026-05-03T21:41:03Z"
+    generated_at: "2026-05-06T09:43:49Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 5d12f319ab4c60be7ff6538ffd28626f425f7df1a10bbe08cceb59eef3662c75
+    source_hash: 99b65443deac92ed74d2fb0d8db9a00bf81b37d60ce25c0c38c1f8d9a7c0cfd3
     source_path: start/setup.md
     workflow: 16
 ---
 
 <Note>
-اگر برای نخستین بار راه‌اندازی می‌کنید، با [شروع به کار](/fa/start/getting-started) آغاز کنید.
-برای جزئیات آماده‌سازی اولیه، [آماده‌سازی اولیه (CLI)](/fa/start/wizard) را ببینید.
+اگر برای اولین بار راه‌اندازی می‌کنید، با [شروع به کار](/fa/start/getting-started) آغاز کنید.
+برای جزئیات آنبوردینگ، [آنبوردینگ (CLI)](/fa/start/wizard) را ببینید.
 </Note>
 
 ## خلاصه
 
-بر اساس اینکه چند وقت یک‌بار به‌روزرسانی می‌خواهید و اینکه آیا می‌خواهید Gateway را خودتان اجرا کنید یا نه، یک جریان کار راه‌اندازی انتخاب کنید:
+بر اساس اینکه هر چند وقت یک‌بار به‌روزرسانی می‌خواهید و آیا می‌خواهید Gateway را خودتان اجرا کنید، یک جریان کاری راه‌اندازی انتخاب کنید:
 
-- **شخصی‌سازی بیرون از مخزن قرار می‌گیرد:** پیکربندی و فضای کاری خود را در `~/.openclaw/openclaw.json` و `~/.openclaw/workspace/` نگه دارید تا به‌روزرسانی‌های مخزن به آن‌ها دست نزنند.
-- **جریان کار پایدار (پیشنهادی برای بیشتر کاربران):** برنامه macOS را نصب کنید و اجازه دهید Gateway همراه آن را اجرا کند.
-- **جریان کار لبه توسعه (dev):** Gateway را خودتان با `pnpm gateway:watch` اجرا کنید، سپس اجازه دهید برنامه macOS در حالت محلی وصل شود.
+- **سفارشی‌سازی بیرون از مخزن می‌ماند:** پیکربندی و فضای کاری خود را در `~/.openclaw/openclaw.json` و `~/.openclaw/workspace/` نگه دارید تا به‌روزرسانی‌های مخزن به آن‌ها دست نزنند.
+- **جریان کاری پایدار (پیشنهادی برای بیشتر افراد):** برنامهٔ macOS را نصب کنید و بگذارید Gateway همراه آن را اجرا کند.
+- **جریان کاری لبهٔ توسعه (dev):** Gateway را خودتان از طریق `pnpm gateway:watch` اجرا کنید، سپس بگذارید برنامهٔ macOS در حالت Local متصل شود.
 
-## پیش‌نیازها (از کد منبع)
+## پیش‌نیازها (از سورس)
 
 - Node 24 توصیه می‌شود (Node 22 LTS، در حال حاضر `22.14+`، همچنان پشتیبانی می‌شود)
-- برای checkoutهای کد منبع، `pnpm` لازم است. OpenClaw در حالت dev، Pluginهای همراه را از بسته‌های workspace مربوط به `extensions/*` در pnpm بارگذاری می‌کند، بنابراین اجرای `npm install` در ریشه، کل درخت کد منبع را آماده نمی‌کند.
-- Docker (اختیاری؛ فقط برای راه‌اندازی/e2e کانتینری‌شده — [Docker](/fa/install/docker) را ببینید)
+- برای checkoutهای سورس، `pnpm` لازم است. OpenClaw در حالت dev، Pluginهای همراه را از بسته‌های workspace مربوط به `extensions/*` در pnpm بارگذاری می‌کند، بنابراین اجرای `npm install` در ریشه، کل درخت سورس را آماده نمی‌کند.
+- Docker (اختیاری؛ فقط برای راه‌اندازی کانتینری/e2e - [Docker](/fa/install/docker) را ببینید)
 
-## راهبرد شخصی‌سازی (تا به‌روزرسانی‌ها آسیب نزنند)
+## راهبرد سفارشی‌سازی (تا به‌روزرسانی‌ها دردسرساز نشوند)
 
-اگر می‌خواهید «۱۰۰٪ مطابق نیاز من» _و_ به‌روزرسانی آسان داشته باشید، سفارشی‌سازی خود را اینجا نگه دارید:
+اگر «۱۰۰٪ سفارشی برای من» _و_ به‌روزرسانی آسان می‌خواهید، سفارشی‌سازی خود را اینجا نگه دارید:
 
 - **پیکربندی:** `~/.openclaw/openclaw.json` (شبیه JSON/JSON5)
-- **فضای کاری:** `~/.openclaw/workspace` (Skills، پرامپت‌ها، حافظه‌ها؛ آن را به یک مخزن git خصوصی تبدیل کنید)
+- **فضای کاری:** `~/.openclaw/workspace` (مهارت‌ها، پرامپت‌ها، حافظه‌ها؛ آن را یک مخزن git خصوصی کنید)
 
-یک‌بار bootstrap کنید:
+یک‌بار بوت‌استرپ کنید:
 
 ```bash
 openclaw setup
@@ -61,11 +61,11 @@ openclaw setup
 node openclaw.mjs gateway --port 18789 --verbose
 ```
 
-## جریان کار پایدار (ابتدا برنامه macOS)
+## جریان کاری پایدار (اول برنامهٔ macOS)
 
 1. **OpenClaw.app** را نصب و اجرا کنید (نوار منو).
-2. چک‌لیست آماده‌سازی اولیه/مجوزها را کامل کنید (درخواست‌های TCC).
-3. مطمئن شوید Gateway روی **محلی** است و در حال اجراست (برنامه آن را مدیریت می‌کند).
+2. چک‌لیست آنبوردینگ/مجوزها را کامل کنید (پرامپت‌های TCC).
+3. مطمئن شوید Gateway روی **Local** است و در حال اجراست (برنامه آن را مدیریت می‌کند).
 4. سطح‌ها را متصل کنید (مثال: WhatsApp):
 
 ```bash
@@ -78,23 +78,23 @@ openclaw channels login
 openclaw health
 ```
 
-اگر آماده‌سازی اولیه در build شما در دسترس نیست:
+اگر آنبوردینگ در build شما در دسترس نیست:
 
-- `openclaw setup` را اجرا کنید، سپس `openclaw channels login`، سپس Gateway را دستی شروع کنید (`openclaw gateway`).
+- `openclaw setup` را اجرا کنید، سپس `openclaw channels login`، و بعد Gateway را دستی شروع کنید (`openclaw gateway`).
 
-## جریان کار لبه توسعه (Gateway در ترمینال)
+## جریان کاری لبهٔ توسعه (Gateway در ترمینال)
 
-هدف: کار روی Gateway مبتنی بر TypeScript، دریافت hot reload، و متصل نگه داشتن رابط کاربری برنامه macOS.
+هدف: کار روی Gateway تایپ‌اسکریپتی، دریافت hot reload، و متصل نگه‌داشتن UI برنامهٔ macOS.
 
-### 0) (اختیاری) برنامه macOS را هم از کد منبع اجرا کنید
+### ۰) (اختیاری) برنامهٔ macOS را هم از سورس اجرا کنید
 
-اگر می‌خواهید برنامه macOS هم روی لبه توسعه باشد:
+اگر برنامهٔ macOS را هم روی لبهٔ توسعه می‌خواهید:
 
 ```bash
 ./scripts/restart-mac.sh
 ```
 
-### 1) Gateway توسعه را شروع کنید
+### ۱) Gateway توسعه را شروع کنید
 
 ```bash
 pnpm install
@@ -103,20 +103,20 @@ pnpm openclaw setup
 pnpm gateway:watch
 ```
 
-`gateway:watch` فرایند watch مربوط به Gateway را در یک نشست tmux نام‌گذاری‌شده شروع یا بازشروع می‌کند و از ترمینال‌های تعاملی به‌صورت خودکار attach می‌شود. shellهای غیرتعاملی detached می‌مانند و `tmux attach -t openclaw-gateway-watch-main` را چاپ می‌کنند؛ برای detached نگه داشتن یک اجرای تعاملی از `OPENCLAW_GATEWAY_WATCH_ATTACH=0 pnpm gateway:watch` استفاده کنید، یا برای حالت watch در foreground از `pnpm gateway:watch:raw` استفاده کنید. watcher هنگام تغییرات مرتبط در کد منبع، پیکربندی، و فراداده Pluginهای همراه reload می‌کند. اگر Gateway تحت watch هنگام راه‌اندازی خارج شود، `gateway:watch` یک‌بار `openclaw doctor --fix --non-interactive` را اجرا می‌کند و دوباره تلاش می‌کند؛ برای غیرفعال کردن این گذر تعمیر فقط مخصوص dev، `OPENCLAW_GATEWAY_WATCH_AUTO_DOCTOR=0` را تنظیم کنید.
-`pnpm openclaw setup` مرحله یک‌باره مقداردهی اولیه پیکربندی/فضای کاری محلی برای یک checkout تازه است.
-`pnpm gateway:watch`، `dist/control-ui` را دوباره build نمی‌کند، بنابراین پس از تغییرات `ui/` دوباره `pnpm ui:build` را اجرا کنید یا هنگام توسعه Control UI از `pnpm ui:dev` استفاده کنید.
+`gateway:watch` فرایند watch مربوط به Gateway را در یک نشست tmux نام‌دار شروع یا بازشروع می‌کند و از ترمینال‌های تعاملی به‌طور خودکار attach می‌شود. shellهای غیرتعاملی detached می‌مانند و `tmux attach -t openclaw-gateway-watch-main` را چاپ می‌کنند؛ برای detached نگه‌داشتن یک اجرای تعاملی از `OPENCLAW_GATEWAY_WATCH_ATTACH=0 pnpm gateway:watch` استفاده کنید، یا برای حالت watch پیش‌زمینه از `pnpm gateway:watch:raw` استفاده کنید. watcher با تغییرات مرتبط در سورس، پیکربندی، و فرادادهٔ Pluginهای همراه دوباره بارگذاری می‌شود. اگر Gateway تحت watch هنگام startup خارج شود، `gateway:watch` یک‌بار `openclaw doctor --fix --non-interactive` را اجرا می‌کند و دوباره تلاش می‌کند؛ برای غیرفعال کردن این گذر تعمیر مخصوص dev، `OPENCLAW_GATEWAY_WATCH_AUTO_DOCTOR=0` را تنظیم کنید.
+`pnpm openclaw setup` مرحلهٔ یک‌بارهٔ مقداردهی اولیهٔ پیکربندی/فضای کاری محلی برای یک checkout تازه است.
+`pnpm gateway:watch`، `dist/control-ui` را rebuild نمی‌کند، بنابراین پس از تغییرات `ui/` دوباره `pnpm ui:build` را اجرا کنید یا هنگام توسعهٔ Control UI از `pnpm ui:dev` استفاده کنید.
 
-### 2) برنامه macOS را به Gateway در حال اجرای خود متصل کنید
+### ۲) برنامهٔ macOS را به Gateway در حال اجرای خودتان اشاره دهید
 
 در **OpenClaw.app**:
 
-- حالت اتصال: **محلی**
-  برنامه به gateway در حال اجرا روی پورت پیکربندی‌شده وصل می‌شود.
+- حالت اتصال: **Local**
+  برنامه به gateway در حال اجرا روی پورت پیکربندی‌شده متصل می‌شود.
 
-### 3) تأیید
+### ۳) تأیید
 
-- وضعیت درون‌برنامه‌ای Gateway باید **«در حال استفاده از gateway موجود …»** را نشان دهد
+- وضعیت Gateway درون برنامه باید **"Using existing gateway …"** را نشان دهد
 - یا از طریق CLI:
 
 ```bash
@@ -125,16 +125,16 @@ openclaw health
 
 ### خطاهای رایج
 
-- **پورت اشتباه:** مقدار پیش‌فرض Gateway WS برابر `ws://127.0.0.1:18789` است؛ برنامه و CLI را روی همان پورت نگه دارید.
-- **محل نگهداری وضعیت:**
-  - وضعیت کانال/ارائه‌دهنده: `~/.openclaw/credentials/`
+- **پورت اشتباه:** مقدار پیش‌فرض Gateway WS برابر `ws://127.0.0.1:18789` است؛ برنامه و CLI را روی یک پورت نگه دارید.
+- **محل نگهداری state:**
+  - state کانال/ارائه‌دهنده: `~/.openclaw/credentials/`
   - پروفایل‌های احراز هویت مدل: `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
   - نشست‌ها: `~/.openclaw/agents/<agentId>/sessions/`
   - لاگ‌ها: `/tmp/openclaw/`
 
-## نقشه ذخیره‌سازی اعتبارنامه‌ها
+## نقشهٔ ذخیره‌سازی اعتبارنامه‌ها
 
-هنگام اشکال‌زدایی auth یا تصمیم‌گیری درباره اینکه چه چیزی را پشتیبان بگیرید، از این استفاده کنید:
+هنگام اشکال‌زدایی auth یا تصمیم‌گیری برای مواردی که باید backup بگیرید، از این استفاده کنید:
 
 - **WhatsApp**: `~/.openclaw/credentials/whatsapp/<accountId>/creds.json`
 - **توکن ربات Telegram**: پیکربندی/env یا `channels.telegram.tokenFile` (فقط فایل معمولی؛ symlinkها رد می‌شوند)
@@ -145,28 +145,28 @@ openclaw health
   - `~/.openclaw/credentials/<channel>-<accountId>-allowFrom.json` (حساب‌های غیرپیش‌فرض)
 - **پروفایل‌های احراز هویت مدل**: `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
 - **payload اسرار مبتنی بر فایل (اختیاری)**: `~/.openclaw/secrets.json`
-- **درون‌ریزی OAuth قدیمی**: `~/.openclaw/credentials/oauth.json`
+- **واردسازی OAuth قدیمی**: `~/.openclaw/credentials/oauth.json`
   جزئیات بیشتر: [امنیت](/fa/gateway/security#credential-storage-map).
 
 ## به‌روزرسانی (بدون خراب کردن راه‌اندازی شما)
 
 - `~/.openclaw/workspace` و `~/.openclaw/` را به‌عنوان «چیزهای خودتان» نگه دارید؛ پرامپت‌ها/پیکربندی شخصی را داخل مخزن `openclaw` نگذارید.
-- به‌روزرسانی کد منبع: `git pull` + `pnpm install` + ادامه استفاده از `pnpm gateway:watch`.
+- به‌روزرسانی سورس: `git pull` + `pnpm install` + ادامهٔ استفاده از `pnpm gateway:watch`.
 
-## Linux (سرویس کاربری systemd)
+## Linux (سرویس user در systemd)
 
-نصب‌های Linux از سرویس systemd **کاربری** استفاده می‌کنند. به‌صورت پیش‌فرض، systemd سرویس‌های کاربری را هنگام logout/idle متوقف می‌کند، که باعث توقف Gateway می‌شود. آماده‌سازی اولیه تلاش می‌کند lingering را برای شما فعال کند (ممکن است sudo بخواهد). اگر هنوز خاموش است، اجرا کنید:
+نصب‌های Linux از سرویس **user** در systemd استفاده می‌کنند. به‌طور پیش‌فرض، systemd سرویس‌های user را هنگام logout/idle متوقف می‌کند، که Gateway را می‌کشد. آنبوردینگ تلاش می‌کند lingering را برای شما فعال کند (ممکن است sudo بخواهد). اگر هنوز خاموش است، اجرا کنید:
 
 ```bash
 sudo loginctl enable-linger $USER
 ```
 
-برای سرورهای همیشه‌روشن یا چندکاربره، به‌جای سرویس کاربری، یک سرویس **سیستمی** را در نظر بگیرید (نیازی به lingering ندارد). برای نکات systemd، [runbook مربوط به Gateway](/fa/gateway) را ببینید.
+برای سرورهای always-on یا چندکاربره، به‌جای سرویس user، سرویس **system** را در نظر بگیرید (بدون نیاز به lingering). برای یادداشت‌های systemd، [راهنمای عملیاتی Gateway](/fa/gateway) را ببینید.
 
 ## مستندات مرتبط
 
-- [runbook مربوط به Gateway](/fa/gateway) (flagها، supervision، پورت‌ها)
+- [راهنمای عملیاتی Gateway](/fa/gateway) (فلگ‌ها، نظارت، پورت‌ها)
 - [پیکربندی Gateway](/fa/gateway/configuration) (schema پیکربندی + مثال‌ها)
-- [Discord](/fa/channels/discord) و [Telegram](/fa/channels/telegram) (تنظیمات reply tags + replyToMode)
+- [Discord](/fa/channels/discord) و [Telegram](/fa/channels/telegram) (برچسب‌های پاسخ + تنظیمات replyToMode)
 - [راه‌اندازی دستیار OpenClaw](/fa/start/openclaw)
-- [برنامه macOS](/fa/platforms/macos) (چرخه عمر gateway)
+- [برنامهٔ macOS](/fa/platforms/macos) (چرخهٔ عمر gateway)

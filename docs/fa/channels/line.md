@@ -2,21 +2,23 @@
 read_when:
     - می‌خواهید OpenClaw را به LINE متصل کنید
     - به راه‌اندازی Webhook و اعتبارنامه‌های LINE نیاز دارید
-    - می‌خواهید گزینه‌های پیام اختصاصی LINE را داشته باشید
-summary: راه‌اندازی، پیکربندی و استفاده از Plugin ‏LINE Messaging API
+    - می‌خواهید گزینه‌های پیام مخصوص LINE را داشته باشید
+summary: راه‌اندازی، پیکربندی و استفاده از Plugin LINE Messaging API
 title: خط
 x-i18n:
-    generated_at: "2026-05-02T11:35:47Z"
+    generated_at: "2026-05-06T09:03:38Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 7a42afc437140185415347f66a8c0b8eaf7d623a6cc08aedf274121e89cdc3b7
+    source_hash: d9d2880bd27e11b72b51ad8a1e8c9e9d41adb51622edf890554594b90d24cd8d
     source_path: channels/line.md
     workflow: 16
 ---
 
-LINE از طریق LINE Messaging API به OpenClaw متصل می‌شود. این Plugin به‌عنوان گیرنده Webhook روی Gateway اجرا می‌شود و برای احراز هویت از channel access token + channel secret شما استفاده می‌کند.
+LINE از طریق API پیام‌رسانی LINE به OpenClaw متصل می‌شود. این Plugin به‌عنوان گیرنده Webhook
+روی Gateway اجرا می‌شود و برای احراز هویت از توکن دسترسی کانال + رمز کانال شما استفاده می‌کند.
 
-وضعیت: Plugin قابل دانلود. پیام‌های مستقیم، گفتگوهای گروهی، رسانه، مکان‌ها، پیام‌های Flex، پیام‌های قالبی و پاسخ‌های سریع پشتیبانی می‌شوند. واکنش‌ها و رشته‌ها پشتیبانی نمی‌شوند.
+وضعیت: Plugin قابل دانلود. پیام‌های مستقیم، گفت‌وگوهای گروهی، رسانه، مکان‌ها، پیام‌های Flex،
+پیام‌های قالبی و پاسخ‌های سریع پشتیبانی می‌شوند. واکنش‌ها و رشته‌ها پشتیبانی نمی‌شوند.
 
 ## نصب
 
@@ -26,7 +28,7 @@ LINE از طریق LINE Messaging API به OpenClaw متصل می‌شود. ای
 openclaw plugins install @openclaw/line
 ```
 
-نسخه محلی checkout (هنگام اجرا از یک مخزن git):
+نسخه محلی (هنگام اجرا از یک مخزن git):
 
 ```bash
 openclaw plugins install ./path/to/local/line-plugin
@@ -36,23 +38,23 @@ openclaw plugins install ./path/to/local/line-plugin
 
 1. یک حساب LINE Developers بسازید و Console را باز کنید:
    [https://developers.line.biz/console/](https://developers.line.biz/console/)
-2. یک Provider بسازید (یا انتخاب کنید) و یک کانال **Messaging API** اضافه کنید.
-3. **Channel access token** و **Channel secret** را از تنظیمات کانال کپی کنید.
-4. در تنظیمات Messaging API گزینه **Use webhook** را فعال کنید.
-5. نشانی Webhook را روی endpoint مربوط به Gateway خود تنظیم کنید (HTTPS الزامی است):
+2. یک Provider بسازید (یا انتخاب کنید) و یک کانال **API پیام‌رسانی** اضافه کنید.
+3. **توکن دسترسی کانال** و **رمز کانال** را از تنظیمات کانال کپی کنید.
+4. در تنظیمات API پیام‌رسانی، **استفاده از webhook** را فعال کنید.
+5. URL webhook را روی نقطه پایانی Gateway خود تنظیم کنید (HTTPS لازم است):
 
 ```
 https://gateway-host/line/webhook
 ```
 
-Gateway به تأیید Webhook مربوط به LINE (GET) و رویدادهای ورودی (POST) پاسخ می‌دهد.
+Gateway به تأیید webhook در LINE (GET) و رویدادهای ورودی (POST) پاسخ می‌دهد.
 اگر به مسیر سفارشی نیاز دارید، `channels.line.webhookPath` یا
-`channels.line.accounts.<id>.webhookPath` را تنظیم کنید و URL را مطابق آن به‌روزرسانی کنید.
+`channels.line.accounts.<id>.webhookPath` را تنظیم کنید و URL را متناسب با آن به‌روزرسانی کنید.
 
 نکته امنیتی:
 
-- تأیید امضای LINE به body وابسته است (HMAC روی body خام)، بنابراین OpenClaw پیش از تأیید، محدودیت‌های سخت‌گیرانه body و timeout را اعمال می‌کند.
-- OpenClaw رویدادهای Webhook را از بایت‌های خام درخواست تأییدشده پردازش می‌کند. مقدارهای `req.body` که توسط middleware بالادستی تغییر شکل داده شده‌اند، برای ایمنی یکپارچگی امضا نادیده گرفته می‌شوند.
+- تأیید امضای LINE به بدنه وابسته است (HMAC روی بدنه خام)، بنابراین OpenClaw پیش از تأیید، محدودیت‌های سخت‌گیرانه بدنه و timeout اعمال می‌کند.
+- OpenClaw رویدادهای webhook را از بایت‌های خام درخواستِ تأییدشده پردازش می‌کند. مقدارهای `req.body` که توسط middleware بالادستی تغییر یافته‌اند، برای ایمنی یکپارچگی امضا نادیده گرفته می‌شوند.
 
 ## پیکربندی
 
@@ -71,12 +73,28 @@ Gateway به تأیید Webhook مربوط به LINE (GET) و رویدادهای
 }
 ```
 
+پیکربندی DM عمومی:
+
+```json5
+{
+  channels: {
+    line: {
+      enabled: true,
+      channelAccessToken: "LINE_CHANNEL_ACCESS_TOKEN",
+      channelSecret: "LINE_CHANNEL_SECRET",
+      dmPolicy: "open",
+      allowFrom: ["*"],
+    },
+  },
+}
+```
+
 متغیرهای محیطی (فقط حساب پیش‌فرض):
 
 - `LINE_CHANNEL_ACCESS_TOKEN`
 - `LINE_CHANNEL_SECRET`
 
-فایل‌های token/secret:
+فایل‌های توکن/رمز:
 
 ```json5
 {
@@ -89,7 +107,7 @@ Gateway به تأیید Webhook مربوط به LINE (GET) و رویدادهای
 }
 ```
 
-`tokenFile` و `secretFile` باید به فایل‌های معمولی اشاره کنند. Symlinkها رد می‌شوند.
+`tokenFile` و `secretFile` باید به فایل‌های عادی اشاره کنند. Symlinkها رد می‌شوند.
 
 چند حساب:
 
@@ -111,42 +129,40 @@ Gateway به تأیید Webhook مربوط به LINE (GET) و رویدادهای
 
 ## کنترل دسترسی
 
-پیام‌های مستقیم به‌صورت پیش‌فرض روی pairing هستند. فرستندگان ناشناس یک کد pairing دریافت می‌کنند و
-پیام‌هایشان تا زمان تأیید نادیده گرفته می‌شود.
+پیام‌های مستقیم به‌صورت پیش‌فرض روی جفت‌سازی هستند. فرستنده‌های ناشناس یک کد جفت‌سازی دریافت می‌کنند و
+پیام‌های آن‌ها تا زمان تأیید نادیده گرفته می‌شود.
 
 ```bash
 openclaw pairing list line
 openclaw pairing approve line <CODE>
 ```
 
-Allowlistها و سیاست‌ها:
+فهرست‌های مجاز و سیاست‌ها:
 
 - `channels.line.dmPolicy`: `pairing | allowlist | open | disabled`
-- `channels.line.allowFrom`: شناسه‌های کاربری LINE قرارگرفته در allowlist برای DMها
+- `channels.line.allowFrom`: شناسه‌های کاربری مجاز LINE برای DMها؛ `dmPolicy: "open"` به `["*"]` نیاز دارد
 - `channels.line.groupPolicy`: `allowlist | open | disabled`
-- `channels.line.groupAllowFrom`: شناسه‌های کاربری LINE قرارگرفته در allowlist برای گروه‌ها
+- `channels.line.groupAllowFrom`: شناسه‌های کاربری مجاز LINE برای گروه‌ها
 - بازنویسی‌های هر گروه: `channels.line.groups.<groupId>.allowFrom`
-- نکته زمان اجرا: اگر `channels.line` کاملاً وجود نداشته باشد، runtime برای بررسی‌های گروه به `groupPolicy="allowlist"` برمی‌گردد (حتی اگر `channels.defaults.groupPolicy` تنظیم شده باشد).
+- نکته زمان اجرا: اگر `channels.line` کاملاً وجود نداشته باشد، runtime برای بررسی گروه‌ها به `groupPolicy="allowlist"` برمی‌گردد (حتی اگر `channels.defaults.groupPolicy` تنظیم شده باشد).
 
-شناسه‌های LINE به بزرگی و کوچکی حروف حساس هستند. شناسه‌های معتبر به این شکل هستند:
+شناسه‌های LINE به بزرگی و کوچکی حروف حساس هستند. شناسه‌های معتبر شبیه این هستند:
 
-- کاربر: `U` + 32 hex chars
-- گروه: `C` + 32 hex chars
-- اتاق: `R` + 32 hex chars
+- کاربر: `U` + 32 نویسه hex
+- گروه: `C` + 32 نویسه hex
+- اتاق: `R` + 32 نویسه hex
 
 ## رفتار پیام
 
-- متن در 5000 نویسه بخش‌بندی می‌شود.
-- قالب‌بندی Markdown حذف می‌شود؛ code blockها و جدول‌ها در صورت امکان به کارت‌های Flex
-  تبدیل می‌شوند.
-- پاسخ‌های streaming بافر می‌شوند؛ LINE در حین کار agent، بخش‌های کامل را همراه با انیمیشن بارگذاری دریافت می‌کند.
+- متن در قطعه‌های 5000 نویسه‌ای تقسیم می‌شود.
+- قالب‌بندی Markdown حذف می‌شود؛ بلوک‌های کد و جدول‌ها، در صورت امکان، به کارت‌های Flex تبدیل می‌شوند.
+- پاسخ‌های جریانی بافر می‌شوند؛ LINE تا زمانی که agent کار می‌کند، قطعه‌های کامل را همراه با انیمیشن بارگذاری دریافت می‌کند.
 - دانلود رسانه با `channels.line.mediaMaxMb` محدود می‌شود (پیش‌فرض 10).
-- رسانه ورودی پیش از ارسال به agent در `~/.openclaw/media/inbound/` ذخیره می‌شود،
-  مطابق با media store مشترکی که توسط دیگر Pluginهای کانال bundled استفاده می‌شود.
+- رسانه ورودی پیش از تحویل به agent زیر `~/.openclaw/media/inbound/` ذخیره می‌شود، مطابق با محل ذخیره رسانه مشترکی که Pluginهای کانال بسته‌بندی‌شده دیگر استفاده می‌کنند.
 
 ## داده کانال (پیام‌های غنی)
 
-از `channelData.line` برای ارسال پاسخ‌های سریع، مکان‌ها، کارت‌های Flex یا پیام‌های قالبی استفاده کنید.
+برای ارسال پاسخ‌های سریع، مکان‌ها، کارت‌های Flex یا پیام‌های قالبی از `channelData.line` استفاده کنید.
 
 ```json5
 {
@@ -187,37 +203,37 @@ Plugin مربوط به LINE همچنین یک دستور `/card` برای preset
 
 ## پشتیبانی ACP
 
-LINE از bindingهای مکالمه ACP (Agent Communication Protocol) پشتیبانی می‌کند:
+LINE از اتصال‌های گفت‌وگوی ACP (پروتکل ارتباط agent) پشتیبانی می‌کند:
 
-- `/acp spawn <agent> --bind here` گفتگوی LINE فعلی را بدون ایجاد child thread به یک session ACP متصل می‌کند.
-- bindingهای ACP پیکربندی‌شده و sessionهای ACP فعالِ وابسته به مکالمه روی LINE مانند دیگر کانال‌های مکالمه کار می‌کنند.
+- `/acp spawn <agent> --bind here` گفت‌وگوی فعلی LINE را بدون ایجاد رشته فرزند به یک نشست ACP متصل می‌کند.
+- اتصال‌های ACP پیکربندی‌شده و نشست‌های ACP فعالِ متصل به گفت‌وگو، در LINE مانند کانال‌های گفت‌وگوی دیگر کار می‌کنند.
 
-برای جزئیات، [عامل‌های ACP](/fa/tools/acp-agents) را ببینید.
+برای جزئیات، [agentهای ACP](/fa/tools/acp-agents) را ببینید.
 
 ## رسانه خروجی
 
-Plugin مربوط به LINE از ارسال تصویر، ویدیو و فایل‌های صوتی از طریق ابزار پیام agent پشتیبانی می‌کند. رسانه از مسیر تحویل اختصاصی LINE با مدیریت مناسب preview و tracking ارسال می‌شود:
+Plugin مربوط به LINE از ارسال تصویر، ویدیو و فایل صوتی از طریق ابزار پیام agent پشتیبانی می‌کند. رسانه از طریق مسیر تحویل اختصاصی LINE با مدیریت مناسب پیش‌نمایش و رهگیری ارسال می‌شود:
 
-- **تصاویر**: به‌عنوان پیام‌های تصویری LINE با تولید خودکار preview ارسال می‌شوند.
-- **ویدیوها**: با مدیریت صریح preview و content-type ارسال می‌شوند.
+- **تصاویر**: به‌عنوان پیام‌های تصویری LINE با تولید خودکار پیش‌نمایش ارسال می‌شوند.
+- **ویدیوها**: با مدیریت صریح پیش‌نمایش و content-type ارسال می‌شوند.
 - **صدا**: به‌عنوان پیام‌های صوتی LINE ارسال می‌شود.
 
-URLهای رسانه خروجی باید URLهای عمومی HTTPS باشند. OpenClaw پیش از سپردن URL به LINE، نام میزبان مقصد را اعتبارسنجی می‌کند و اهداف loopback، link-local و شبکه خصوصی را رد می‌کند.
+URLهای رسانه خروجی باید URLهای HTTPS عمومی باشند. OpenClaw پیش از تحویل URL به LINE، hostname مقصد را اعتبارسنجی می‌کند و هدف‌های loopback، link-local و شبکه خصوصی را رد می‌کند.
 
 ارسال‌های رسانه عمومی، وقتی مسیر اختصاصی LINE در دسترس نباشد، به مسیر موجودِ فقط تصویر برمی‌گردند.
 
 ## عیب‌یابی
 
-- **تأیید Webhook ناموفق است:** مطمئن شوید URL مربوط به Webhook از HTTPS استفاده می‌کند و
-  `channelSecret` با کنسول LINE مطابق است.
-- **هیچ رویداد ورودی وجود ندارد:** تأیید کنید مسیر Webhook با `channels.line.webhookPath`
-  مطابق است و Gateway از طرف LINE قابل دسترسی است.
+- **تأیید webhook ناموفق است:** مطمئن شوید URL webhook از HTTPS استفاده می‌کند و
+  `channelSecret` با LINE console مطابقت دارد.
+- **رویداد ورودی وجود ندارد:** تأیید کنید مسیر webhook با `channels.line.webhookPath`
+  مطابقت دارد و Gateway از LINE قابل دسترسی است.
 - **خطاهای دانلود رسانه:** اگر رسانه از محدودیت پیش‌فرض بیشتر است، `channels.line.mediaMaxMb` را افزایش دهید.
 
 ## مرتبط
 
 - [نمای کلی کانال‌ها](/fa/channels) — همه کانال‌های پشتیبانی‌شده
-- [Pairing](/fa/channels/pairing) — احراز هویت DM و جریان pairing
-- [گروه‌ها](/fa/channels/groups) — رفتار گفتگوی گروهی و gating بر اساس mention
-- [مسیریابی کانال](/fa/channels/channel-routing) — مسیریابی session برای پیام‌ها
-- [امنیت](/fa/gateway/security) — مدل دسترسی و hardening
+- [جفت‌سازی](/fa/channels/pairing) — احراز هویت DM و جریان جفت‌سازی
+- [گروه‌ها](/fa/channels/groups) — رفتار گفت‌وگوی گروهی و gate کردن mention
+- [مسیریابی کانال](/fa/channels/channel-routing) — مسیریابی نشست برای پیام‌ها
+- [امنیت](/fa/gateway/security) — مدل دسترسی و سخت‌سازی

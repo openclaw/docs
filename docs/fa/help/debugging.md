@@ -1,26 +1,26 @@
 ---
 read_when:
     - باید خروجی خام مدل را برای نشت استدلال بررسی کنید
-    - می‌خواهید هنگام تکرار و اصلاح، Gateway را در حالت watch اجرا کنید
-    - به یک گردش‌کار تکرارپذیر برای اشکال‌زدایی نیاز دارید
-summary: 'ابزارهای اشکال‌زدایی: حالت پایش، جریان‌های خام مدل، و ردیابی نشت استدلال'
+    - می‌خواهید هنگام تکرار تغییرات، Gateway را در حالت watch اجرا کنید
+    - به یک گردش‌کار اشکال‌زدایی تکرارپذیر نیاز دارید
+summary: 'ابزارهای اشکال‌زدایی: حالت پایش، جریان‌های خام مدل و ردیابی نشت استدلال'
 title: اشکال‌زدایی
 x-i18n:
-    generated_at: "2026-05-05T01:48:31Z"
+    generated_at: "2026-05-06T09:21:50Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9d86bd9b5dd08615d3c283f3fcb2a885f5134fa7e1cdece86b6a796d08a659ec
+    source_hash: 6b59845244a1e2920ca15b9b85ce5b29424e3a1528eece8c18ddeab69feaf86f
     source_path: help/debugging.md
     workflow: 16
 ---
 
-راهنماهای اشکال‌زدایی برای خروجی جریانی، به‌ویژه وقتی یک ارائه‌دهنده استدلال را با متن عادی مخلوط می‌کند.
+کمک‌کننده‌های اشکال‌زدایی برای خروجی جریانی، به‌ویژه زمانی که یک ارائه‌دهنده استدلال را با متن عادی مخلوط می‌کند.
 
-## بازنویسی‌های اشکال‌زدایی در زمان اجرا
+## بازنویسی‌های اشکال‌زدایی زمان اجرا
 
-از `/debug` در چت برای تنظیم بازنویسی‌های پیکربندی **فقط در زمان اجرا** استفاده کنید (در حافظه، نه روی دیسک).
-`/debug` به‌طور پیش‌فرض غیرفعال است؛ با `commands.debug: true` فعالش کنید.
-این زمانی مفید است که لازم دارید تنظیمات مبهم را بدون ویرایش `openclaw.json` تغییر دهید.
+از `/debug` در گفتگو استفاده کنید تا بازنویسی‌های پیکربندی **فقط در زمان اجرا** را تنظیم کنید (در حافظه، نه روی دیسک).
+`/debug` به‌صورت پیش‌فرض غیرفعال است؛ با `commands.debug: true` فعالش کنید.
+این زمانی مفید است که لازم دارید تنظیمات کمترشناخته‌شده را بدون ویرایش `openclaw.json` روشن یا خاموش کنید.
 
 نمونه‌ها:
 
@@ -33,10 +33,10 @@ x-i18n:
 
 `/debug reset` همه بازنویسی‌ها را پاک می‌کند و به پیکربندی روی دیسک برمی‌گردد.
 
-## خروجی ردیابی نشست
+## خروجی ردگیری نشست
 
-وقتی می‌خواهید خطوط ردیابی/اشکال‌زدایی متعلق به Plugin را در یک نشست ببینید،
-بدون اینکه حالت کامل پرجزئیات را روشن کنید، از `/trace` استفاده کنید.
+وقتی می‌خواهید خطوط ردگیری/اشکال‌زدایی متعلق به Plugin را در یک نشست ببینید
+بدون اینکه حالت verbose کامل را روشن کنید، از `/trace` استفاده کنید.
 
 نمونه‌ها:
 
@@ -47,14 +47,13 @@ x-i18n:
 ```
 
 از `/trace` برای عیب‌یابی‌های Plugin مانند خلاصه‌های اشکال‌زدایی Active Memory استفاده کنید.
-برای خروجی عادی وضعیت/ابزار پرجزئیات همچنان از `/verbose` استفاده کنید، و برای
-بازنویسی‌های پیکربندی فقط در زمان اجرا همچنان از `/debug` استفاده کنید.
+برای خروجی عادی وضعیت/ابزار در حالت verbose همچنان از `/verbose` استفاده کنید، و برای بازنویسی‌های پیکربندی فقط در زمان اجرا همچنان از
+`/debug` استفاده کنید.
 
-## ردیابی چرخه عمر Plugin
+## ردگیری چرخه عمر Plugin
 
-وقتی فرمان‌های چرخه عمر Plugin کند به نظر می‌رسند و به یک تفکیک مرحله‌ای داخلی برای
-فراداده Plugin، کشف، رجیستری، آینه زمان اجرا، جهش پیکربندی، و کارهای تازه‌سازی نیاز دارید، از `OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1` استفاده کنید. ردیابی اختیاری است و
-روی stderr می‌نویسد، بنابراین خروجی فرمان JSON همچنان قابل تجزیه می‌ماند.
+وقتی فرمان‌های چرخه عمر Plugin کند به نظر می‌رسند و به یک تفکیک مرحله‌ای داخلی برای فراداده Plugin، کشف، رجیستری،
+آینه زمان اجرا، تغییر پیکربندی، و کارهای تازه‌سازی نیاز دارید، از `OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1` استفاده کنید. ردگیری opt-in است و در stderr نوشته می‌شود، بنابراین خروجی فرمان JSON همچنان قابل parse می‌ماند.
 
 نمونه:
 
@@ -70,14 +69,13 @@ OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1 openclaw plugins install tokenjuice --force
 [plugins:lifecycle] phase="registry refresh" ms=51.56 status=ok command="install" reason="source-changed"
 ```
 
-قبل از رفتن سراغ پروفایلر CPU، از این برای بررسی چرخه عمر Plugin استفاده کنید.
-اگر فرمان از یک checkout منبع اجرا می‌شود، ترجیح دهید زمان اجرای ساخته‌شده را
-با `node dist/entry.js ...` پس از `pnpm build` اندازه‌گیری کنید؛ `pnpm openclaw ...`
-هم سربار اجراکننده منبع را اندازه‌گیری می‌کند.
+پیش از رفتن سراغ profiler پردازنده، از این برای بررسی چرخه عمر Plugin استفاده کنید.
+اگر فرمان از یک checkout منبع اجرا می‌شود، بهتر است پس از `pnpm build` زمان اجرای ساخته‌شده را با `node dist/entry.js ...` اندازه‌گیری کنید؛ `pnpm openclaw ...`
+سربار source-runner را هم اندازه می‌گیرد.
 
-## پروفایلینگ راه‌اندازی CLI و فرمان‌ها
+## پروفایل‌گیری شروع CLI و فرمان‌ها
 
-وقتی یک فرمان کند به نظر می‌رسد، از بنچمارک راه‌اندازی ثبت‌شده در مخزن استفاده کنید:
+وقتی یک فرمان کند به نظر می‌رسد، از بنچمارک شروع ثبت‌شده در مخزن استفاده کنید:
 
 ```bash
 pnpm test:startup:bench:smoke
@@ -85,24 +83,24 @@ pnpm tsx scripts/bench-cli-startup.ts --preset real --case status --runs 3
 pnpm tsx scripts/bench-cli-startup.ts --preset real --cpu-prof-dir .artifacts/cli-cpu
 ```
 
-برای پروفایلینگ موردی از مسیر اجراکننده عادی منبع، `OPENCLAW_RUN_NODE_CPU_PROF_DIR` را تنظیم کنید:
+برای پروفایل‌گیری موردی از مسیر source runner عادی،
+`OPENCLAW_RUN_NODE_CPU_PROF_DIR` را تنظیم کنید:
 
 ```bash
 OPENCLAW_RUN_NODE_CPU_PROF_DIR=.artifacts/cli-cpu pnpm openclaw status
 ```
 
-اجراکننده منبع پرچم‌های پروفایل CPU مربوط به Node را اضافه می‌کند و برای فرمان
-یک `.cpuprofile` می‌نویسد. پیش از افزودن ابزارگذاری موقت به کد فرمان، از این استفاده کنید.
+source runner پرچم‌های پروفایل CPU مربوط به Node را اضافه می‌کند و برای فرمان یک `.cpuprofile` می‌نویسد. پیش از افزودن instrument موقت به کد فرمان، از این استفاده کنید.
 
-برای توقف‌های راه‌اندازی که شبیه کار همزمان فایل‌سیستم یا بارگذار ماژول هستند،
-پرچم ردیابی I/O همزمان Node را از طریق اجراکننده منبع اضافه کنید:
+برای توقف‌های شروع که شبیه کار همگام filesystem یا module-loader هستند،
+پرچم ردگیری I/O همگام Node را از طریق source runner اضافه کنید:
 
 ```bash
 OPENCLAW_TRACE_SYNC_IO=1 pnpm openclaw gateway --force
 ```
 
-`pnpm gateway:watch` این پرچم را به‌طور پیش‌فرض برای فرزند Gateway تحت مشاهده فعال می‌کند.
-برای سرکوب خروجی ردیابی I/O همزمان Node در حالت watch،
+`pnpm gateway:watch` این پرچم را به‌صورت پیش‌فرض برای فرزند Gateway تحت watch فعال می‌کند.
+برای خاموش کردن خروجی ردگیری I/O همگام Node در حالت watch،
 `OPENCLAW_TRACE_SYNC_IO=0` را تنظیم کنید.
 
 ## حالت watch برای Gateway
@@ -113,11 +111,10 @@ OPENCLAW_TRACE_SYNC_IO=1 pnpm openclaw gateway --force
 pnpm gateway:watch
 ```
 
-به‌طور پیش‌فرض، این کار یک نشست tmux با نام
-`openclaw-gateway-watch-main` (یا یک گونه ویژه پروفایل/پورت مانند
-`openclaw-gateway-watch-dev-19001`) را شروع یا بازراه‌اندازی می‌کند و از ترمینال‌های تعاملی به‌طور خودکار متصل می‌شود.
-پوسته‌های غیرتعاملی، CI، و فراخوانی‌های exec عامل جدا می‌مانند و به‌جای آن
-دستورالعمل اتصال را چاپ می‌کنند. هر وقت لازم بود دستی متصل شوید:
+به‌صورت پیش‌فرض، این کار یک نشست tmux به نام
+`openclaw-gateway-watch-main` (یا یک گونه وابسته به profile/port مثل
+`openclaw-gateway-watch-dev-19001`) را شروع یا بازشروع می‌کند و از ترمینال‌های تعاملی به‌طور خودکار attach می‌شود.
+shellهای غیرتعاملی، CI، و فراخوانی‌های exec عامل detached می‌مانند و به‌جایش دستورهای attach را چاپ می‌کنند. هر وقت لازم بود دستی attach کنید:
 
 ```bash
 tmux attach -t openclaw-gateway-watch-main
@@ -137,65 +134,54 @@ pnpm gateway:watch:raw
 OPENCLAW_GATEWAY_WATCH_TMUX=0 pnpm gateway:watch
 ```
 
-اتصال خودکار را با حفظ مدیریت tmux غیرفعال کنید:
+برای غیرفعال کردن auto-attach در حالی که مدیریت tmux حفظ می‌شود:
 
 ```bash
 OPENCLAW_GATEWAY_WATCH_ATTACH=0 pnpm gateway:watch
 ```
 
-هنگام اشکال‌زدایی نقاط داغ راه‌اندازی/زمان اجرا، زمان CPU Gateway تحت مشاهده را پروفایل کنید:
+هنگام اشکال‌زدایی نقاط داغ شروع/زمان اجرا، زمان CPU مربوط به Gateway تحت watch را profile کنید:
 
 ```bash
 pnpm gateway:watch --benchmark
 ```
 
-پوشش watch پیش از فراخوانی Gateway، `--benchmark` را مصرف می‌کند و
-به‌ازای هر خروج فرزند Gateway، یک `.cpuprofile` مربوط به V8 زیر
-`.artifacts/gateway-watch-profiles/` می‌نویسد. برای flush کردن پروفایل فعلی،
-Gateway تحت مشاهده را متوقف یا بازراه‌اندازی کنید، سپس آن را با Chrome DevTools یا Speedscope باز کنید:
+wrapper مربوط به watch پیش از فراخوانی Gateway، `--benchmark` را مصرف می‌کند و زیر
+`.artifacts/gateway-watch-profiles/` برای هر خروج فرزند Gateway یک `.cpuprofile` مربوط به V8 می‌نویسد. Gateway تحت watch را متوقف یا بازشروع کنید تا profile فعلی flush شود، سپس آن را با Chrome DevTools یا Speedscope باز کنید:
 
 ```bash
 npx speedscope .artifacts/gateway-watch-profiles/*.cpuprofile
 ```
 
-وقتی پروفایل‌ها را در جای دیگری می‌خواهید، از `--benchmark-dir <path>` استفاده کنید.
-وقتی می‌خواهید فرزند بنچمارک‌شده از پاک‌سازی پورت پیش‌فرض `--force` بگذرد و اگر پورت Gateway از قبل در حال استفاده است سریع شکست بخورد، از `--benchmark-no-force` استفاده کنید.
-حالت بنچمارک به‌طور پیش‌فرض هرزخروجی ردیابی sync-I/O را سرکوب می‌کند. وقتی صراحتا هم پروفایل‌های CPU و هم stack traceهای sync-I/O مربوط به Node را می‌خواهید، `OPENCLAW_TRACE_SYNC_IO=1` را همراه `--benchmark` تنظیم کنید. در حالت بنچمارک این بلوک‌های ردیابی
-در `gateway-watch-output.log` زیر دایرکتوری بنچمارک نوشته می‌شوند و
-از پنجره ترمینال فیلتر می‌شوند؛ لاگ‌های عادی Gateway همچنان قابل مشاهده می‌مانند.
+وقتی می‌خواهید profileها جای دیگری باشند، از `--benchmark-dir <path>` استفاده کنید.
+وقتی می‌خواهید فرزند benchmark شده پاک‌سازی پیش‌فرض پورت با `--force` را انجام ندهد و اگر پورت Gateway از قبل در حال استفاده است سریع fail شود، از `--benchmark-no-force` استفاده کنید.
+حالت benchmark به‌صورت پیش‌فرض spam ردگیری sync-I/O را سرکوب می‌کند. وقتی صراحتا هم profileهای CPU و هم stack traceهای sync-I/O مربوط به Node را می‌خواهید، همراه `--benchmark` مقدار
+`OPENCLAW_TRACE_SYNC_IO=1` را تنظیم کنید. در حالت benchmark، آن بلوک‌های ردگیری در `gateway-watch-output.log` زیر دایرکتوری benchmark نوشته می‌شوند و از پنجره ترمینال فیلتر می‌شوند؛ logهای عادی Gateway همچنان قابل مشاهده می‌مانند.
 
-پوشش tmux انتخابگرهای رایج و غیرمحرمانه زمان اجرا مانند
+wrapper مربوط به tmux انتخابگرهای رایج و غیرمحرمانه زمان اجرا مانند
 `OPENCLAW_PROFILE`، `OPENCLAW_CONFIG_PATH`، `OPENCLAW_STATE_DIR`،
-`OPENCLAW_GATEWAY_PORT`، و `OPENCLAW_SKIP_CHANNELS` را به داخل پنجره منتقل می‌کند. اعتبارنامه‌های ارائه‌دهنده را در پروفایل/پیکربندی عادی خود قرار دهید، یا برای
-رازهای موقتی موردی از حالت foreground خام استفاده کنید.
-اگر Gateway تحت مشاهده هنگام راه‌اندازی خارج شود، watcher یک‌بار
-`openclaw doctor --fix --non-interactive` را اجرا می‌کند و فرزند Gateway را بازراه‌اندازی می‌کند.
-وقتی شکست راه‌اندازی اصلی را بدون گذر تعمیر فقط مخصوص توسعه می‌خواهید،
-از `OPENCLAW_GATEWAY_WATCH_AUTO_DOCTOR=0` استفاده کنید.
-پنجره tmux مدیریت‌شده همچنین برای خوانایی، به‌طور پیش‌فرض لاگ‌های رنگی Gateway دارد؛
-برای غیرفعال کردن خروجی ANSI هنگام شروع `pnpm gateway:watch`، `FORCE_COLOR=0` را تنظیم کنید.
+`OPENCLAW_GATEWAY_PORT`، و `OPENCLAW_SKIP_CHANNELS` را به پنجره منتقل می‌کند. اعتبارنامه‌های ارائه‌دهنده را در profile/config عادی خود قرار دهید، یا برای رازهای موقتی یک‌باره از حالت foreground خام استفاده کنید.
+اگر Gateway تحت watch هنگام شروع خارج شود، watcher یک بار
+`openclaw doctor --fix --non-interactive` را اجرا می‌کند و فرزند Gateway را بازشروع می‌کند.
+وقتی خطای شروع اصلی را بدون مرحله تعمیر مخصوص توسعه می‌خواهید، از `OPENCLAW_GATEWAY_WATCH_AUTO_DOCTOR=0` استفاده کنید.
+پنجره tmux مدیریت‌شده همچنین برای خوانایی، logهای رنگی Gateway را به‌صورت پیش‌فرض فعال می‌کند؛
+برای غیرفعال کردن خروجی ANSI، هنگام شروع `pnpm gateway:watch` مقدار `FORCE_COLOR=0` را تنظیم کنید.
 
-watcher روی فایل‌های مرتبط با build زیر `src/`، فایل‌های منبع افزونه‌ها،
-فراداده `package.json` و `openclaw.plugin.json` افزونه‌ها، `tsconfig.json`،
-`package.json`، و `tsdown.config.ts` بازراه‌اندازی می‌شود. تغییرات فراداده افزونه
-Gateway را بدون اجبار به بازسازی `tsdown` بازراه‌اندازی می‌کند؛ تغییرات منبع و پیکربندی همچنان
-ابتدا `dist` را بازسازی می‌کنند.
+watcher با تغییر فایل‌های مرتبط با build زیر `src/`، فایل‌های منبع extension،
+فراداده‌های `package.json` و `openclaw.plugin.json` مربوط به extension، `tsconfig.json`،
+`package.json`، و `tsdown.config.ts` بازشروع می‌شود. تغییرات فراداده extension بدون اجبار به rebuild با `tsdown` باعث بازشروع gateway می‌شوند؛ تغییرات منبع و پیکربندی همچنان ابتدا `dist` را rebuild می‌کنند.
 
-هر پرچم CLI مربوط به gateway را پس از `gateway:watch` اضافه کنید تا در هر
-بازراه‌اندازی عبور داده شود. اجرای دوباره همان فرمان watch پنجره tmux نام‌گذاری‌شده را دوباره spawn می‌کند، و
-watcher خام همچنان قفل تک-watcher خود را نگه می‌دارد تا والدهای watcher تکراری
-به‌جای انباشته شدن جایگزین شوند.
+هر پرچم CLI مربوط به gateway را پس از `gateway:watch` اضافه کنید تا در هر بازشروع عبور داده شود.
+اجرای دوباره همان فرمان watch پنجره tmux نام‌گذاری‌شده را respawn می‌کند، و watcher خام همچنان قفل single-watcher خود را نگه می‌دارد تا parentهای watcher تکراری به‌جای انباشته شدن جایگزین شوند.
 
-## پروفایل dev + Gateway توسعه (`--dev`)
+## profile توسعه + gateway توسعه (`--dev`)
 
-از پروفایل dev برای جداسازی state و بالا آوردن یک چیدمان امن و دورریختنی برای
-اشکال‌زدایی استفاده کنید. **دو** پرچم `--dev` وجود دارد:
+از profile توسعه استفاده کنید تا state را جدا کنید و برای اشکال‌زدایی یک setup امن و دورریختنی بالا بیاورید. **دو** پرچم `--dev` وجود دارد:
 
-- **`--dev` سراسری (پروفایل):** state را زیر `~/.openclaw-dev` جدا می‌کند و
-  پورت پیش‌فرض Gateway را روی `19001` می‌گذارد (پورت‌های مشتق‌شده همراه آن جابه‌جا می‌شوند).
-- **`gateway --dev`: به Gateway می‌گوید هنگام نبودن، یک پیکربندی + workspace پیش‌فرض را خودکار بسازد** (و از BOOTSTRAP.md بگذرد).
+- **`--dev` سراسری (profile):** state را زیر `~/.openclaw-dev` جدا می‌کند و پورت gateway را به‌صورت پیش‌فرض `19001` قرار می‌دهد (پورت‌های مشتق‌شده همراه آن جابه‌جا می‌شوند).
+- **`gateway --dev`: به Gateway می‌گوید در صورت نبودن، یک پیکربندی پیش‌فرض + workspace را خودکار بسازد** (و BOOTSTRAP.md را رد کند).
 
-روند پیشنهادی (پروفایل dev + راه‌اندازی dev):
+جریان پیشنهادی (profile توسعه + bootstrap توسعه):
 
 ```bash
 pnpm gateway:dev
@@ -206,29 +192,29 @@ OPENCLAW_PROFILE=dev openclaw tui
 
 این کار چه می‌کند:
 
-1. **جداسازی پروفایل** (`--dev` سراسری)
+1. **جداسازی profile** (`--dev` سراسری)
    - `OPENCLAW_PROFILE=dev`
    - `OPENCLAW_STATE_DIR=~/.openclaw-dev`
    - `OPENCLAW_CONFIG_PATH=~/.openclaw-dev/openclaw.json`
-   - `OPENCLAW_GATEWAY_PORT=19001` (مرورگر/canvas نیز متناسب با آن جابه‌جا می‌شوند)
+   - `OPENCLAW_GATEWAY_PORT=19001` (browser/canvas متناسب با آن جابه‌جا می‌شوند)
 
-2. **راه‌اندازی dev** (`gateway --dev`)
-   - اگر پیکربندی وجود نداشته باشد، یک پیکربندی حداقلی می‌نویسد (`gateway.mode=local`، bind loopback).
+2. **Bootstrap توسعه** (`gateway --dev`)
+   - اگر پیکربندی وجود نداشته باشد، یک پیکربندی حداقلی می‌نویسد (`gateway.mode=local`، bind به loopback).
    - `agent.workspace` را روی workspace توسعه تنظیم می‌کند.
    - `agent.skipBootstrap=true` را تنظیم می‌کند (بدون BOOTSTRAP.md).
    - اگر فایل‌های workspace وجود نداشته باشند، آن‌ها را seed می‌کند:
-     `AGENTS.md`، `SOUL.md`، `TOOLS.md`، `IDENTITY.md`، `USER.md`، `HEARTBEAT.md`.
-   - هویت پیش‌فرض: **C3‑PO** (دروید پروتکل).
-   - ارائه‌دهنده‌های کانال را در حالت dev رد می‌کند (`OPENCLAW_SKIP_CHANNELS=1`).
+     `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`.
+   - هویت پیش‌فرض: **C3-PO** (protocol droid).
+   - ارائه‌دهنده‌های کانال را در حالت توسعه رد می‌کند (`OPENCLAW_SKIP_CHANNELS=1`).
 
-روند بازنشانی (شروع تازه):
+جریان reset (شروع تازه):
 
 ```bash
 pnpm gateway:dev:reset
 ```
 
 <Note>
-`--dev` یک پرچم پروفایل **سراسری** است و بعضی اجراکننده‌ها آن را مصرف می‌کنند. اگر لازم دارید صریح بنویسیدش، از شکل env var استفاده کنید:
+`--dev` یک پرچم profile **سراسری** است و برخی runnerها آن را مصرف می‌کنند. اگر لازم است آن را صریح بنویسید، از فرم متغیر محیطی استفاده کنید:
 
 ```bash
 OPENCLAW_PROFILE=dev openclaw gateway --dev --reset
@@ -237,10 +223,10 @@ OPENCLAW_PROFILE=dev openclaw gateway --dev --reset
 </Note>
 
 `--reset` پیکربندی، اعتبارنامه‌ها، نشست‌ها، و workspace توسعه را پاک می‌کند (با
-`trash`، نه `rm`)، سپس چیدمان پیش‌فرض dev را دوباره می‌سازد.
+`trash`، نه `rm`)، سپس setup پیش‌فرض توسعه را دوباره می‌سازد.
 
 <Tip>
-اگر یک gateway غیر-dev از قبل در حال اجراست (launchd یا systemd)، ابتدا آن را متوقف کنید:
+اگر یک gateway غیرتوسعه از قبل در حال اجراست (launchd یا systemd)، ابتدا آن را متوقف کنید:
 
 ```bash
 openclaw gateway stop
@@ -248,9 +234,9 @@ openclaw gateway stop
 
 </Tip>
 
-## لاگ‌گیری جریان خام (OpenClaw)
+## ثبت stream خام (OpenClaw)
 
-OpenClaw می‌تواند **جریان خام assistant** را پیش از هرگونه فیلتر/قالب‌بندی لاگ کند.
+OpenClaw می‌تواند **stream خام دستیار** را پیش از هرگونه فیلتر/قالب‌بندی log کند.
 این بهترین راه برای دیدن این است که آیا استدلال به‌صورت deltaهای متن ساده می‌رسد
 (یا به‌صورت بلوک‌های thinking جداگانه).
 
@@ -266,7 +252,7 @@ pnpm gateway:watch --raw-stream
 pnpm gateway:watch --raw-stream --raw-stream-path ~/.openclaw/logs/raw-stream.jsonl
 ```
 
-env varهای معادل:
+متغیرهای محیطی معادل:
 
 ```bash
 OPENCLAW_RAW_STREAM=1
@@ -277,10 +263,10 @@ OPENCLAW_RAW_STREAM_PATH=~/.openclaw/logs/raw-stream.jsonl
 
 `~/.openclaw/logs/raw-stream.jsonl`
 
-## لاگ‌گیری chunk خام (pi-mono)
+## ثبت chunk خام (pi-mono)
 
-برای گرفتن **chunkهای خام سازگار با OpenAI** پیش از اینکه به بلوک‌ها تجزیه شوند،
-pi-mono یک لاگر جداگانه ارائه می‌کند:
+برای capture کردن **chunkهای خام سازگار با OpenAI** پیش از آنکه به بلوک‌ها parse شوند،
+pi-mono یک logger جداگانه ارائه می‌کند:
 
 ```bash
 PI_RAW_STREAM=1
@@ -297,13 +283,45 @@ PI_RAW_STREAM_PATH=~/.pi-mono/logs/raw-openai-completions.jsonl
 `~/.pi-mono/logs/raw-openai-completions.jsonl`
 
 > نکته: این فقط توسط فرایندهایی منتشر می‌شود که از ارائه‌دهنده
-> `openai-completions` مربوط به pi-mono استفاده می‌کنند.
+> `openai-completions` متعلق به pi-mono استفاده می‌کنند.
 
-## نکات ایمنی
+## نکته‌های ایمنی
 
-- لاگ‌های جریان خام می‌توانند شامل promptهای کامل، خروجی ابزار، و داده‌های کاربر باشند.
-- لاگ‌ها را محلی نگه دارید و پس از اشکال‌زدایی حذفشان کنید.
-- اگر لاگ‌ها را به اشتراک می‌گذارید، ابتدا رازها و PII را پاک‌سازی کنید.
+- logهای stream خام می‌توانند شامل promptهای کامل، خروجی ابزار، و داده‌های کاربر باشند.
+- logها را محلی نگه دارید و پس از اشکال‌زدایی حذفشان کنید.
+- اگر logها را به اشتراک می‌گذارید، ابتدا secrets و PII را پاک‌سازی کنید.
+
+## اشکال‌زدایی در VSCode
+
+Source mapها برای فعال کردن اشکال‌زدایی در IDEهای مبتنی بر VSCode لازم هستند، چون بسیاری از فایل‌های تولیدشده در فرایند build با نام‌های hash شده ساخته می‌شوند. پیکربندی‌های `launch.json` موجود سرویس Gateway را هدف می‌گیرند، اما می‌توانند به‌سرعت برای هدف‌های دیگر سازگار شوند:
+
+1. **Rebuild and Debug Gateway** - سرویس Gateway را پس از ایجاد یک build جدید اشکال‌زدایی می‌کند
+2. **Debug Gateway** - سرویس Gateway مربوط به یک build از پیش موجود را اشکال‌زدایی می‌کند
+
+### راه‌اندازی
+
+پیکربندی پیش‌فرض **Rebuild and Debug Gateway** همه‌چیز را همراه دارد؛ به‌طور خودکار پوشه `/dist` را حذف می‌کند و پروژه را با اشکال‌زدایی فعال rebuild می‌کند:
+
+1. پنل **Run and Debug** را از Activity Bar باز کنید یا `Ctrl`+`Shift`+`D` را فشار دهید
+2. در IDE، مطمئن شوید **Rebuild and Debug Gateway** در منوی کشویی پیکربندی انتخاب شده است و سپس دکمه **Start Debugging** را فشار دهید
+
+روش جایگزین - اگر ترجیح می‌دهید فرایندهای build و debug را دستی مدیریت کنید:
+
+1. یک ترمینال باز کنید و source mapها را فعال کنید:
+   - **Linux/macOS**: `export OUTPUT_SOURCE_MAPS=1`
+   - **Windows (PowerShell)**: `$env:OUTPUT_SOURCE_MAPS="1"`
+   - **Windows (CMD)**: `set OUTPUT_SOURCE_MAPS=1`
+2. در همان ترمینال، پروژه را rebuild کنید: `pnpm clean:dist && pnpm build`
+3. در IDE، گزینه **Debug Gateway** را در منوی کشویی پیکربندی **Run and Debug** انتخاب کنید و سپس دکمه **Start Debugging** را فشار دهید
+
+اکنون می‌توانید در فایل‌های منبع TypeScript خود (دایرکتوری `src/`) breakpoint تنظیم کنید و debugger از طریق source mapها breakpointها را به‌درستی به JavaScript کامپایل‌شده map می‌کند. می‌توانید متغیرها را بررسی کنید، گام‌به‌گام در کد حرکت کنید، و call stackها را طبق انتظار بررسی کنید.
+
+### نکته‌ها
+
+- اگر از گزینه **"Rebuild and Debug Gateway"** استفاده می‌کنید - هر بار که debugger اجرا می‌شود، پوشه `/dist` را کامل حذف می‌کند و پیش از شروع Gateway یک `pnpm build` کامل با source mapهای فعال اجرا می‌کند
+- اگر از گزینه **"Debug Gateway"** استفاده می‌کنید - نشست‌های debug می‌توانند هر زمان شروع و متوقف شوند بدون اینکه روی پوشه `/dist` اثر بگذارند، اما باید از یک فرایند ترمینال جداگانه هم برای فعال کردن اشکال‌زدایی و هم برای مدیریت چرخه build استفاده کنید
+- تنظیمات `launch.json` مربوط به `args` را برای اشکال‌زدایی بخش‌های دیگر پروژه تغییر دهید
+- اگر لازم است از CLI ساخته‌شده OpenClaw برای کارهای دیگر استفاده کنید (مثلا `dashboard --no-open` اگر نشست debug شما یک auth token جدید ایجاد می‌کند)، می‌توانید آن را در ترمینالی دیگر به‌صورت `node ./openclaw.mjs` اجرا کنید یا یک alias shell مانند `alias openclaw-build="node $(pwd)/openclaw.mjs"` بسازید
 
 ## مرتبط
 

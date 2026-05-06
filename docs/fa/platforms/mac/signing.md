@@ -1,29 +1,29 @@
 ---
 read_when:
-    - ساخت یا امضای بیلدهای دیباگ مک
-summary: مراحل امضا برای بیلدهای اشکال‌زدایی macOS که توسط اسکریپت‌های بسته‌بندی تولید می‌شوند
+    - ساخت یا امضای نسخه‌های اشکال‌زدایی مک
+summary: مراحل امضا برای ساخت‌های دیباگ macOS که توسط اسکریپت‌های بسته‌بندی تولید شده‌اند
 title: امضای macOS
 x-i18n:
-    generated_at: "2026-04-29T23:11:58Z"
+    generated_at: "2026-05-06T09:31:04Z"
     model: gpt-5.5
     provider: openai
-    source_hash: cdd432c1f87ea14f4e19b1e5db967a62b42e2e4118fbd2a44d358b4eedea799f
+    source_hash: 08a2f18f0f813c0bb7352b393531ad69d24da55de2e6ec6446febe0661eb4598
     source_path: platforms/mac/signing.md
     workflow: 16
 ---
 
-# امضای mac (بیلدهای اشکال‌زدایی)
+# امضای mac (ساخت‌های دیباگ)
 
 این برنامه معمولاً از طریق [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) ساخته می‌شود، که اکنون:
 
-- یک شناسهٔ پایدار بستهٔ اشکال‌زدایی تنظیم می‌کند: `ai.openclaw.mac.debug`
-- فایل Info.plist را با همان شناسهٔ بسته می‌نویسد (قابل بازنویسی با `BUNDLE_ID=...`)
-- برای امضای باینری اصلی و بستهٔ برنامه، [`scripts/codesign-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/codesign-mac-app.sh) را فراخوانی می‌کند تا macOS هر بازسازی را به‌عنوان همان بستهٔ امضاشده در نظر بگیرد و مجوزهای TCC (اعلان‌ها، دسترسی‌پذیری، ضبط صفحه، میکروفون، گفتار) را حفظ کند. برای مجوزهای پایدار، از یک هویت امضای واقعی استفاده کنید؛ امضای ad-hoc نیازمند فعال‌سازی صریح است و شکننده محسوب می‌شود (ببینید: [مجوزهای macOS](/fa/platforms/mac/permissions)).
-- به‌طور پیش‌فرض از `CODESIGN_TIMESTAMP=auto` استفاده می‌کند؛ این گزینه timestampهای معتمد را برای امضاهای Developer ID فعال می‌کند. برای رد شدن از timestampگذاری (بیلدهای اشکال‌زدایی آفلاین)، `CODESIGN_TIMESTAMP=off` را تنظیم کنید.
-- فرادادهٔ بیلد را به Info.plist تزریق می‌کند: `OpenClawBuildTimestamp` (UTC) و `OpenClawGitCommit` (هش کوتاه) تا پنل About بتواند بیلد، git، و کانال اشکال‌زدایی/انتشار را نشان دهد.
-- **بسته‌بندی به‌طور پیش‌فرض از Node 24 استفاده می‌کند**: اسکریپت بیلدهای TS و بیلد Control UI را اجرا می‌کند. Node 22 LTS، که در حال حاضر `22.14+` است، همچنان برای سازگاری پشتیبانی می‌شود.
-- `SIGN_IDENTITY` را از محیط می‌خواند. `export SIGN_IDENTITY="Apple Development: Your Name (TEAMID)"` (یا گواهی Developer ID Application خودتان) را به rc شل خود اضافه کنید تا همیشه با گواهی خودتان امضا شود. امضای ad-hoc نیازمند فعال‌سازی صریح از طریق `ALLOW_ADHOC_SIGNING=1` یا `SIGN_IDENTITY="-"` است (برای آزمایش مجوزها توصیه نمی‌شود).
-- پس از امضا، یک ممیزی Team ID اجرا می‌کند و اگر هر Mach-O داخل بستهٔ برنامه با Team ID متفاوتی امضا شده باشد، شکست می‌خورد. برای دور زدن، `SKIP_TEAM_ID_CHECK=1` را تنظیم کنید.
+- یک شناسه پایدار برای بسته دیباگ تنظیم می‌کند: `ai.openclaw.mac.debug`
+- فایل Info.plist را با همان شناسه بسته می‌نویسد (قابل بازنویسی با `BUNDLE_ID=...`)
+- [`scripts/codesign-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/codesign-mac-app.sh) را فراخوانی می‌کند تا باینری اصلی و بسته برنامه را امضا کند، تا macOS هر بازسازی را همان بسته امضاشده در نظر بگیرد و مجوزهای TCC را نگه دارد (اعلان‌ها، دسترس‌پذیری، ضبط صفحه، میکروفون، گفتار). برای مجوزهای پایدار، از یک هویت امضای واقعی استفاده کنید؛ امضای ad-hoc اختیاری و شکننده است (نگاه کنید به [مجوزهای macOS](/fa/platforms/mac/permissions)).
+- به‌طور پیش‌فرض از `CODESIGN_TIMESTAMP=auto` استفاده می‌کند؛ این گزینه timestampهای مورد اعتماد را برای امضاهای Developer ID فعال می‌کند. برای رد کردن timestamp (ساخت‌های دیباگ آفلاین)، `CODESIGN_TIMESTAMP=off` را تنظیم کنید.
+- فراداده ساخت را به Info.plist تزریق می‌کند: `OpenClawBuildTimestamp` (UTC) و `OpenClawGitCommit` (هش کوتاه)، تا پنل About بتواند ساخت، git، و کانال دیباگ/انتشار را نشان دهد.
+- **بسته‌بندی به‌طور پیش‌فرض از Node 24 استفاده می‌کند**: اسکریپت ساخت‌های TS و ساخت Control UI را اجرا می‌کند. Node 22 LTS، در حال حاضر `22.14+`، همچنان برای سازگاری پشتیبانی می‌شود.
+- `SIGN_IDENTITY` را از محیط می‌خواند. `export SIGN_IDENTITY="Apple Development: Your Name (TEAMID)"` (یا گواهی Developer ID Application خودتان) را به rc شل خود اضافه کنید تا همیشه با گواهی خودتان امضا شود. امضای ad-hoc نیازمند فعال‌سازی صریح از طریق `ALLOW_ADHOC_SIGNING=1` یا `SIGN_IDENTITY="-"` است (برای آزمون مجوزها توصیه نمی‌شود).
+- پس از امضا یک ممیزی Team ID اجرا می‌کند و اگر هر Mach-O داخل بسته برنامه با Team ID متفاوتی امضا شده باشد، شکست می‌خورد. برای دور زدن، `SKIP_TEAM_ID_CHECK=1` را تنظیم کنید.
 
 ## استفاده
 
@@ -36,24 +36,24 @@ SIGN_IDENTITY="-" scripts/package-mac-app.sh        # explicit ad-hoc (same cave
 DISABLE_LIBRARY_VALIDATION=1 scripts/package-mac-app.sh   # dev-only Sparkle Team ID mismatch workaround
 ```
 
-### نکتهٔ امضای ad-hoc
+### نکته امضای ad-hoc
 
-هنگام امضا با `SIGN_IDENTITY="-"` (ad-hoc)، اسکریپت به‌طور خودکار **Hardened Runtime** (`--options runtime`) را غیرفعال می‌کند. این کار برای جلوگیری از کرش‌ها لازم است، زمانی که برنامه تلاش می‌کند frameworkهای جاسازی‌شده‌ای (مثل Sparkle) را بارگذاری کند که Team ID یکسانی ندارند. امضاهای ad-hoc همچنین پایداری مجوزهای TCC را مختل می‌کنند؛ برای مراحل بازیابی، [مجوزهای macOS](/fa/platforms/mac/permissions) را ببینید.
+هنگام امضا با `SIGN_IDENTITY="-"` (ad-hoc)، اسکریپت به‌طور خودکار **زمان اجرای سخت‌سازی‌شده** (`--options runtime`) را غیرفعال می‌کند. این کار برای جلوگیری از کرش هنگام تلاش برنامه برای بارگذاری فریم‌ورک‌های تعبیه‌شده (مانند Sparkle) که Team ID یکسانی ندارند، لازم است. امضاهای ad-hoc همچنین پایداری مجوزهای TCC را از بین می‌برند؛ برای مراحل بازیابی، [مجوزهای macOS](/fa/platforms/mac/permissions) را ببینید.
 
-## فرادادهٔ بیلد برای About
+## فراداده ساخت برای About
 
-`package-mac-app.sh` بسته را با این موارد مهر می‌کند:
+`package-mac-app.sh` بسته را با این موارد نشان‌گذاری می‌کند:
 
-- `OpenClawBuildTimestamp`: زمان UTC در قالب ISO8601 هنگام بسته‌بندی
+- `OpenClawBuildTimestamp`: زمان UTC با قالب ISO8601 در زمان بسته‌بندی
 - `OpenClawGitCommit`: هش کوتاه git (یا `unknown` اگر در دسترس نباشد)
 
-زبانهٔ About این کلیدها را می‌خواند تا نسخه، تاریخ بیلد، کامیت git، و اینکه آیا یک بیلد اشکال‌زدایی است یا نه (از طریق `#if DEBUG`) را نشان دهد. پس از تغییرات کد، بسته‌ساز را اجرا کنید تا این مقدارها به‌روزرسانی شوند.
+زبانه About این کلیدها را می‌خواند تا نسخه، تاریخ ساخت، commit گیت، و اینکه آیا ساخت دیباگ است یا نه (از طریق `#if DEBUG`) را نشان دهد. پس از تغییرات کد، بسته‌ساز را اجرا کنید تا این مقادیر تازه شوند.
 
-## دلیل
+## چرا
 
-مجوزهای TCC به شناسهٔ بسته _و_ امضای کد وابسته‌اند. بیلدهای اشکال‌زدایی امضانشده با UUIDهای متغیر باعث می‌شدند macOS پس از هر بازسازی، اعطاهای مجوز را فراموش کند. امضای باینری‌ها (به‌طور پیش‌فرض ad-hoc) و حفظ شناسه/مسیر ثابت بسته (`dist/OpenClaw.app`) اعطاها را بین بیلدها حفظ می‌کند و با رویکرد VibeTunnel هم‌خوان است.
+مجوزهای TCC به شناسه بسته _و_ امضای کد وابسته‌اند. ساخت‌های دیباگ امضانشده با UUIDهای متغیر باعث می‌شدند macOS پس از هر بازسازی، مجوزهای اعطاشده را فراموش کند. امضای باینری‌ها (به‌طور پیش‌فرض ad-hoc) و نگه داشتن یک شناسه/مسیر ثابت برای بسته (`dist/OpenClaw.app`) مجوزها را بین ساخت‌ها حفظ می‌کند، همسو با رویکرد VibeTunnel.
 
 ## مرتبط
 
-- [برنامهٔ macOS](/fa/platforms/macos)
+- [برنامه macOS](/fa/platforms/macos)
 - [مجوزهای macOS](/fa/platforms/mac/permissions)

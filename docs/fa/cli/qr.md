@@ -1,23 +1,23 @@
 ---
 read_when:
-    - می‌خواهید یک برنامهٔ Node موبایل را به‌سرعت با یک Gateway جفت کنید
-    - برای اشتراک‌گذاری از راه دور/دستی به خروجی setup-code نیاز دارید
-summary: مرجع CLI برای `openclaw qr` (ایجاد کد QR جفت‌سازی موبایل + کد راه‌اندازی)
+    - می‌خواهید یک برنامه Node موبایل را سریع با یک Gateway جفت کنید
+    - برای اشتراک‌گذاری از راه دور/دستی، به خروجی setup-code نیاز دارید
+summary: مرجع CLI برای `openclaw qr` (تولید QR جفت‌سازی موبایل + کد راه‌اندازی)
 title: QR
 x-i18n:
-    generated_at: "2026-04-29T22:38:38Z"
+    generated_at: "2026-05-06T09:08:04Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 05e25f5cf4116adcd0630b148b6799e90304058c51c998293ebbed995f0a0533
+    source_hash: e2e8f86b860701dcd625b6573070e30ed26a2f3fda9e5e7998723c8058de498b
     source_path: cli/qr.md
     workflow: 16
 ---
 
 # `openclaw qr`
 
-یک QR جفت‌سازی موبایل و کد راه‌اندازی را از پیکربندی فعلی Gateway شما تولید می‌کند.
+یک QR جفت‌سازی موبایل و کد راه‌اندازی را از پیکربندی فعلی Gateway شما ایجاد می‌کند.
 
-## نحوه استفاده
+## نحوهٔ استفاده
 
 ```bash
 openclaw qr
@@ -29,32 +29,32 @@ openclaw qr --url wss://gateway.example/ws
 
 ## گزینه‌ها
 
-- `--remote`: `gateway.remote.url` را ترجیح بده؛ اگر تنظیم نشده باشد، `gateway.tailscale.mode=serve|funnel` همچنان می‌تواند نشانی عمومی راه دور را فراهم کند
-- `--url <url>`: نشانی Gateway استفاده‌شده در payload را بازنویسی کن
-- `--public-url <url>`: نشانی عمومی استفاده‌شده در payload را بازنویسی کن
-- `--token <token>`: مشخص کن جریان راه‌اندازی اولیه در برابر کدام توکن Gateway احراز هویت شود
-- `--password <password>`: مشخص کن جریان راه‌اندازی اولیه در برابر کدام گذرواژه Gateway احراز هویت شود
-- `--setup-code-only`: فقط کد راه‌اندازی را چاپ کن
-- `--no-ascii`: رندر کردن QR به صورت ASCII را رد کن
-- `--json`: JSON تولید کن (`setupCode`, `gatewayUrl`, `auth`, `urlSource`)
+- `--remote`: `gateway.remote.url` را ترجیح می‌دهد؛ اگر تنظیم نشده باشد، `gateway.tailscale.mode=serve|funnel` همچنان می‌تواند URL عمومی راه دور را فراهم کند
+- `--url <url>`: URL Gateway استفاده‌شده در payload را بازنویسی می‌کند
+- `--public-url <url>`: URL عمومی استفاده‌شده در payload را بازنویسی می‌کند
+- `--token <token>`: توکن Gateway را که جریان bootstrap با آن احراز هویت می‌کند بازنویسی می‌کند
+- `--password <password>`: گذرواژهٔ Gateway را که جریان bootstrap با آن احراز هویت می‌کند بازنویسی می‌کند
+- `--setup-code-only`: فقط کد راه‌اندازی را چاپ می‌کند
+- `--no-ascii`: رندر QR به‌صورت ASCII را نادیده می‌گیرد
+- `--json`: JSON تولید می‌کند (`setupCode`, `gatewayUrl`, `auth`, `urlSource`)
 
-## نکات
+## نکته‌ها
 
 - `--token` و `--password` ناسازگارند و نمی‌توانند هم‌زمان استفاده شوند.
-- خود کد راه‌اندازی اکنون یک `bootstrapToken` مبهم و کوتاه‌عمر را حمل می‌کند، نه توکن/گذرواژه مشترک Gateway را.
-- در جریان راه‌اندازی اولیه داخلی Node/operator، توکن اصلی Node همچنان با `scopes: []` ثبت می‌شود.
-- اگر تحویل راه‌اندازی اولیه یک توکن operator هم صادر کند، همچنان به فهرست مجاز راه‌اندازی اولیه محدود می‌ماند: `operator.approvals`, `operator.read`, `operator.talk.secrets`, `operator.write`.
-- بررسی‌های scope راه‌اندازی اولیه با پیشوند نقش انجام می‌شوند. آن فهرست مجاز operator فقط درخواست‌های operator را برآورده می‌کند؛ نقش‌های غیر operator همچنان به scopeها زیر پیشوند نقش خودشان نیاز دارند.
-- جفت‌سازی موبایل برای نشانی‌های Gateway از نوع Tailscale/عمومی `ws://` به‌صورت بسته شکست می‌خورد. `ws://` شبکه LAN خصوصی همچنان پشتیبانی می‌شود، اما مسیرهای موبایل Tailscale/عمومی باید از Tailscale Serve/Funnel یا یک نشانی Gateway از نوع `wss://` استفاده کنند.
-- با `--remote`، OpenClaw به یکی از `gateway.remote.url` یا
-  `gateway.tailscale.mode=serve|funnel` نیاز دارد.
-- با `--remote`، اگر اعتبارنامه‌های راه دورِ عملاً فعال به صورت SecretRefs پیکربندی شده باشند و شما `--token` یا `--password` را پاس ندهید، فرمان آن‌ها را از snapshot فعال Gateway resolve می‌کند. اگر Gateway در دسترس نباشد، فرمان سریعاً شکست می‌خورد.
-- بدون `--remote`، وقتی هیچ بازنویسی احراز هویت CLI پاس داده نشده باشد، SecretRefs احراز هویت Gateway محلی resolve می‌شوند:
-  - `gateway.auth.token` وقتی resolve می‌شود که احراز هویت توکنی بتواند برنده شود (یا `gateway.auth.mode="token"` صریح، یا حالت استنباط‌شده‌ای که در آن هیچ منبع گذرواژه‌ای برنده نمی‌شود).
-  - `gateway.auth.password` وقتی resolve می‌شود که احراز هویت گذرواژه‌ای بتواند برنده شود (یا `gateway.auth.mode="password"` صریح، یا حالت استنباط‌شده‌ای که در آن هیچ توکن برنده‌ای از auth/env وجود ندارد).
-- اگر هم `gateway.auth.token` و هم `gateway.auth.password` پیکربندی شده باشند (از جمله SecretRefs) و `gateway.auth.mode` تنظیم نشده باشد، resolve کردن کد راه‌اندازی تا زمانی که mode صریحاً تنظیم شود شکست می‌خورد.
-- نکته ناهمخوانی نسخه Gateway: این مسیر فرمان به Gatewayای نیاز دارد که از `secrets.resolve` پشتیبانی کند؛ Gatewayهای قدیمی‌تر خطای unknown-method برمی‌گردانند.
-- پس از اسکن، جفت‌سازی دستگاه را با این فرمان‌ها تأیید کنید:
+- خود کد راه‌اندازی اکنون یک `bootstrapToken` مبهم و کوتاه‌مدت را حمل می‌کند، نه توکن/گذرواژهٔ مشترک Gateway.
+- در جریان داخلی bootstrap گره/اپراتور، توکن اصلی گره همچنان با `scopes: []` قرار می‌گیرد.
+- اگر handoff مربوط به bootstrap یک توکن اپراتور هم صادر کند، به allowlist مربوط به bootstrap محدود می‌ماند: `operator.approvals`, `operator.read`, `operator.talk.secrets`, `operator.write`.
+- بررسی‌های scope مربوط به bootstrap دارای پیشوند نقش هستند. آن allowlist اپراتور فقط درخواست‌های اپراتور را برآورده می‌کند؛ نقش‌های غیر اپراتور همچنان به scopeهایی زیر پیشوند نقش خودشان نیاز دارند.
+- جفت‌سازی موبایل برای URLهای Gateway با `ws://` در مسیرهای Tailscale/عمومی به‌صورت fail-closed شکست می‌خورد. نشانی‌های LAN خصوصی و میزبان‌های Bonjour با `.local` همچنان از طریق `ws://` پشتیبانی می‌شوند، اما مسیرهای موبایل Tailscale/عمومی باید از Tailscale Serve/Funnel یا یک URL Gateway با `wss://` استفاده کنند.
+- با `--remote`، OpenClaw به یکی از این‌ها نیاز دارد: `gateway.remote.url` یا
+  `gateway.tailscale.mode=serve|funnel`.
+- با `--remote`، اگر اعتبارنامه‌های راه دوری که عملاً فعال هستند به‌صورت SecretRef پیکربندی شده باشند و شما `--token` یا `--password` را ارسال نکنید، فرمان آن‌ها را از snapshot فعال Gateway resolve می‌کند. اگر Gateway در دسترس نباشد، فرمان سریعاً شکست می‌خورد.
+- بدون `--remote`، زمانی که هیچ بازنویسی احراز هویت CLI ارسال نشده باشد، SecretRefهای احراز هویت Gateway محلی resolve می‌شوند:
+  - `gateway.auth.token` زمانی resolve می‌شود که احراز هویت با توکن بتواند برنده شود (`gateway.auth.mode="token"` به‌صورت صریح یا حالت استنباط‌شده‌ای که در آن هیچ منبع گذرواژه‌ای برنده نمی‌شود).
+  - `gateway.auth.password` زمانی resolve می‌شود که احراز هویت با گذرواژه بتواند برنده شود (`gateway.auth.mode="password"` به‌صورت صریح یا حالت استنباط‌شده با نبود توکن برنده از auth/env).
+- اگر هم `gateway.auth.token` و هم `gateway.auth.password` پیکربندی شده باشند (از جمله SecretRefها) و `gateway.auth.mode` تنظیم نشده باشد، resolve شدن کد راه‌اندازی تا زمانی که mode به‌صورت صریح تنظیم شود شکست می‌خورد.
+- نکتهٔ ناسازگاری نسخهٔ Gateway: این مسیر فرمان به Gatewayای نیاز دارد که از `secrets.resolve` پشتیبانی کند؛ Gatewayهای قدیمی‌تر خطای unknown-method برمی‌گردانند.
+- پس از اسکن، جفت‌سازی دستگاه را با این موارد تأیید کنید:
   - `openclaw devices list`
   - `openclaw devices approve <requestId>`
 

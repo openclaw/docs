@@ -2,43 +2,57 @@
 read_when:
     - راه‌اندازی OpenClaw روی Raspberry Pi
     - اجرای OpenClaw روی دستگاه‌های ARM
-    - ساخت یک هوش مصنوعی شخصی ارزان و همیشه روشن
-summary: میزبانی OpenClaw روی Raspberry Pi برای خودمیزبانی همیشه‌روشن
-title: رزبری Pi
+    - ساخت یک هوش مصنوعی شخصی ارزان و همیشه فعال
+summary: OpenClaw را برای خودمیزبانی همیشه‌فعال روی Raspberry Pi میزبانی کنید
+title: Raspberry Pi
 x-i18n:
-    generated_at: "2026-04-29T23:07:27Z"
+    generated_at: "2026-05-06T09:27:27Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 5fa11bf65f6db50b0864dabcf417f08c06e82a5ce067304f1cbfc189a4991a40
+    source_hash: 96df076c2707b0b27751d452f15fad774356a86e96d10bce998581235776c4bc
     source_path: install/raspberry-pi.md
     workflow: 16
 ---
 
-OpenClaw Gateway پایدار و همیشه‌روشن را روی Raspberry Pi اجرا کنید. از آنجا که Pi فقط Gateway است (مدل‌ها از طریق API در ابر اجرا می‌شوند)، حتی یک Pi متوسط هم به‌خوبی از پس حجم کار برمی‌آید.
+OpenClaw Gateway پایدار و همیشه‌روشن را روی Raspberry Pi اجرا کنید. از آنجا که Pi فقط Gateway است (مدل‌ها از طریق API در فضای ابری اجرا می‌شوند)، حتی یک Pi معمولی هم به‌خوبی از پس بار کاری برمی‌آید — هزینهٔ معمول سخت‌افزار **۳۵ تا ۸۰ دلار، یک‌باره** است و هزینهٔ ماهانه ندارد.
+
+## سازگاری سخت‌افزاری
+
+| مدل Pi       | RAM    | کار می‌کند؟ | نکات                               |
+| ------------ | ------ | ------------ | ---------------------------------- |
+| Pi 5         | 4/8 GB | بهترین       | سریع‌ترین گزینه، توصیه‌شده.       |
+| Pi 4         | 4 GB   | خوب          | نقطهٔ بهینه برای بیشتر کاربران.   |
+| Pi 4         | 2 GB   | قابل قبول    | swap اضافه کنید.                   |
+| Pi 4         | 1 GB   | محدود        | با swap و پیکربندی حداقلی ممکن است. |
+| Pi 3B+       | 1 GB   | کند          | کار می‌کند اما کند است.            |
+| Pi Zero 2 W  | 512 MB | خیر          | توصیه نمی‌شود.                     |
+
+**حداقل:** ۱ GB RAM، ۱ هسته، ۵۰۰ MB فضای دیسک آزاد، سیستم‌عامل ۶۴ بیتی.
+**توصیه‌شده:** ۲ GB+ RAM، کارت SD با ظرفیت ۱۶ GB+ (یا USB SSD)، اترنت.
 
 ## پیش‌نیازها
 
-- Raspberry Pi 4 یا 5 با بیش از 2 GB رم (4 GB توصیه می‌شود)
-- کارت MicroSD (حداقل 16 GB) یا USB SSD (عملکرد بهتر)
-- منبع تغذیه رسمی Pi
-- اتصال شبکه (Ethernet یا WiFi)
-- Raspberry Pi OS ‏64 بیتی (الزامی -- از نسخه 32 بیتی استفاده نکنید)
-- حدود 30 دقیقه
+- Raspberry Pi 4 یا 5 با ۲ GB+ RAM (۴ GB توصیه می‌شود)
+- کارت MicroSD (۱۶ GB+) یا USB SSD (عملکرد بهتر)
+- منبع تغذیهٔ رسمی Pi
+- اتصال شبکه (اترنت یا WiFi)
+- Raspberry Pi OS ۶۴ بیتی (ضروری -- از نسخهٔ ۳۲ بیتی استفاده نکنید)
+- حدود ۳۰ دقیقه
 
 ## راه‌اندازی
 
 <Steps>
   <Step title="فلش کردن سیستم‌عامل">
-    از **Raspberry Pi OS Lite (64-bit)** استفاده کنید -- برای سرور بدون نمایشگر به دسکتاپ نیازی نیست.
+    از **Raspberry Pi OS Lite (64-bit)** استفاده کنید -- برای یک سرور headless نیازی به محیط دسکتاپ نیست.
 
     1. [Raspberry Pi Imager](https://www.raspberrypi.com/software/) را دانلود کنید.
     2. سیستم‌عامل را انتخاب کنید: **Raspberry Pi OS Lite (64-bit)**.
-    3. در پنجره تنظیمات، از قبل پیکربندی کنید:
-       - نام میزبان: `gateway-host`
-       - فعال کردن SSH
-       - تنظیم نام کاربری و گذرواژه
-       - پیکربندی WiFi (اگر از Ethernet استفاده نمی‌کنید)
-    4. روی کارت SD یا درایو USB خود فلش کنید، آن را وارد کنید، و Pi را بوت کنید.
+    3. در پنجرهٔ تنظیمات، از پیش پیکربندی کنید:
+       - Hostname: `gateway-host`
+       - SSH را فعال کنید
+       - نام کاربری و گذرواژه را تنظیم کنید
+       - WiFi را پیکربندی کنید (اگر از اترنت استفاده نمی‌کنید)
+    4. روی کارت SD یا درایو USB فلش کنید، آن را وارد کنید و Pi را بوت کنید.
 
   </Step>
 
@@ -67,7 +81,7 @@ OpenClaw Gateway پایدار و همیشه‌روشن را روی Raspberry Pi 
     ```
   </Step>
 
-  <Step title="افزودن swap (برای 2 GB یا کمتر مهم است)">
+  <Step title="افزودن swap (مهم برای ۲ GB یا کمتر)">
     ```bash
     sudo fallocate -l 2G /swapfile
     sudo chmod 600 /swapfile
@@ -93,11 +107,11 @@ OpenClaw Gateway پایدار و همیشه‌روشن را روی Raspberry Pi 
     openclaw onboard --install-daemon
     ```
 
-    راهنمای مرحله‌ای را دنبال کنید. برای دستگاه‌های بدون نمایشگر، کلیدهای API نسبت به OAuth توصیه می‌شوند. Telegram ساده‌ترین کانال برای شروع است.
+    جادوگر را دنبال کنید. برای دستگاه‌های headless، کلیدهای API به OAuth ترجیح داده می‌شوند. Telegram ساده‌ترین کانال برای شروع است.
 
   </Step>
 
-  <Step title="راستی‌آزمایی">
+  <Step title="اعتبارسنجی">
     ```bash
     openclaw status
     systemctl --user status openclaw-gateway.service
@@ -106,28 +120,28 @@ OpenClaw Gateway پایدار و همیشه‌روشن را روی Raspberry Pi 
   </Step>
 
   <Step title="دسترسی به Control UI">
-    در رایانه خود، یک نشانی داشبورد از Pi بگیرید:
+    در رایانهٔ خود، یک URL داشبورد از Pi بگیرید:
 
     ```bash
     ssh user@gateway-host 'openclaw dashboard --no-open'
     ```
 
-    سپس در یک ترمینال دیگر یک تونل SSH ایجاد کنید:
+    سپس در یک ترمینال دیگر یک تونل SSH بسازید:
 
     ```bash
     ssh -N -L 18789:127.0.0.1:18789 user@gateway-host
     ```
 
-    نشانی چاپ‌شده را در مرورگر محلی خود باز کنید. برای دسترسی راه دور همیشه‌روشن، [یکپارچه‌سازی Tailscale](/fa/gateway/tailscale) را ببینید.
+    URL چاپ‌شده را در مرورگر محلی خود باز کنید. برای دسترسی راه دور همیشه‌روشن، [یکپارچه‌سازی Tailscale](/fa/gateway/tailscale) را ببینید.
 
   </Step>
 </Steps>
 
-## نکات عملکرد
+## نکات عملکردی
 
-**از USB SSD استفاده کنید** -- کارت‌های SD کند هستند و فرسوده می‌شوند. USB SSD عملکرد را به‌طور چشمگیری بهبود می‌دهد. [راهنمای بوت USB روی Pi](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#usb-mass-storage-boot) را ببینید.
+**از USB SSD استفاده کنید** -- کارت‌های SD کند هستند و فرسوده می‌شوند. USB SSD عملکرد را به‌شکل چشمگیری بهتر می‌کند. [راهنمای بوت USB در Pi](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#usb-mass-storage-boot) را ببینید.
 
-**کش کامپایل ماژول را فعال کنید** -- اجرای مکرر CLI را روی میزبان‌های Pi کم‌مصرف‌تر سریع‌تر می‌کند:
+**کش کامپایل ماژول را فعال کنید** -- فراخوانی‌های تکراری CLI را روی میزبان‌های Pi کم‌مصرف سریع‌تر می‌کند:
 
 ```bash
 grep -q 'NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache' ~/.bashrc || cat >> ~/.bashrc <<'EOF' # pragma: allowlist secret
@@ -138,29 +152,84 @@ EOF
 source ~/.bashrc
 ```
 
-**مصرف حافظه را کاهش دهید** -- برای راه‌اندازی‌های بدون نمایشگر، حافظه GPU را آزاد کنید و سرویس‌های استفاده‌نشده را غیرفعال کنید:
+**مصرف حافظه را کاهش دهید** -- برای راه‌اندازی‌های headless، حافظهٔ GPU را آزاد کنید و سرویس‌های استفاده‌نشده را غیرفعال کنید:
 
 ```bash
 echo 'gpu_mem=16' | sudo tee -a /boot/config.txt
 sudo systemctl disable bluetooth
 ```
 
+**drop-in مربوط به systemd برای راه‌اندازی مجدد پایدار** -- اگر این Pi عمدتاً OpenClaw را اجرا می‌کند، یک drop-in برای سرویس اضافه کنید:
+
+```bash
+systemctl --user edit openclaw-gateway.service
+```
+
+```ini
+[Service]
+Environment=OPENCLAW_NO_RESPAWN=1
+Environment=NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache
+Restart=always
+RestartSec=2
+TimeoutStartSec=90
+```
+
+سپس `systemctl --user daemon-reload && systemctl --user restart openclaw-gateway.service` را اجرا کنید. روی یک Pi headless، همچنین lingering را یک‌بار فعال کنید تا سرویس کاربر پس از خروج از سیستم هم باقی بماند: `sudo loginctl enable-linger "$(whoami)"`.
+
+## راه‌اندازی مدل توصیه‌شده
+
+از آنجا که Pi فقط Gateway را اجرا می‌کند، از مدل‌های API میزبانی‌شده در فضای ابری استفاده کنید:
+
+```json
+{
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "anthropic/claude-sonnet-4-6",
+        "fallbacks": ["openai/gpt-5.4-mini"]
+      }
+    }
+  }
+}
+```
+
+LLMهای محلی را روی Pi اجرا نکنید — حتی مدل‌های کوچک هم بیش از حد کند هستند که مفید باشند. بگذارید Claude یا GPT کار مدل را انجام دهد.
+
+## نکات باینری ARM
+
+بیشتر قابلیت‌های OpenClaw روی ARM64 بدون تغییر کار می‌کنند (Node.js، Telegram، WhatsApp/Baileys، Chromium). باینری‌هایی که گاهی بیلد ARM ندارند معمولاً ابزارهای CLI اختیاری Go/Rust هستند که توسط Skills ارائه می‌شوند. پیش از بازگشت به ساخت از سورس، صفحهٔ انتشار باینریِ گم‌شده را برای آرتیفکت‌های `linux-arm64` / `aarch64` بررسی کنید.
+
+## پایداری و پشتیبان‌گیری
+
+وضعیت OpenClaw زیر این مسیرها قرار دارد:
+
+- `~/.openclaw/` — `openclaw.json`، `auth-profiles.json` برای هر عامل، وضعیت کانال/ارائه‌دهنده، نشست‌ها.
+- `~/.openclaw/workspace/` — فضای کاری عامل (SOUL.md، حافظه، آرتیفکت‌ها).
+
+این‌ها پس از راه‌اندازی مجدد باقی می‌مانند. با دستور زیر یک snapshot قابل‌حمل بگیرید:
+
+```bash
+openclaw backup create
+```
+
+اگر این موارد را روی SSD نگه دارید، هم عملکرد و هم دوام نسبت به کارت SD بهتر می‌شود.
+
 ## عیب‌یابی
 
-**کمبود حافظه** -- با `free -h` بررسی کنید که swap فعال باشد. سرویس‌های استفاده‌نشده را غیرفعال کنید (`sudo systemctl disable cups bluetooth avahi-daemon`). فقط از مدل‌های مبتنی بر API استفاده کنید.
+**کمبود حافظه** -- با `free -h` بررسی کنید که swap فعال است. سرویس‌های استفاده‌نشده را غیرفعال کنید (`sudo systemctl disable cups bluetooth avahi-daemon`). فقط از مدل‌های مبتنی بر API استفاده کنید.
 
-**عملکرد کند** -- به‌جای کارت SD از USB SSD استفاده کنید. با `vcgencmd get_throttled` محدودسازی CPU را بررسی کنید (باید `0x0` برگرداند).
+**عملکرد کند** -- به‌جای کارت SD از USB SSD استفاده کنید. با `vcgencmd get_throttled` throttling پردازنده را بررسی کنید (باید `0x0` برگرداند).
 
-**سرویس شروع نمی‌شود** -- لاگ‌ها را با `journalctl --user -u openclaw-gateway.service --no-pager -n 100` بررسی کنید و `openclaw doctor --non-interactive` را اجرا کنید. اگر این یک Pi بدون نمایشگر است، همچنین بررسی کنید lingering فعال باشد: `sudo loginctl enable-linger "$(whoami)"`.
+**سرویس شروع نمی‌شود** -- لاگ‌ها را با `journalctl --user -u openclaw-gateway.service --no-pager -n 100` بررسی کنید و `openclaw doctor --non-interactive` را اجرا کنید. اگر این یک Pi headless است، همچنین بررسی کنید lingering فعال باشد: `sudo loginctl enable-linger "$(whoami)"`.
 
-**مشکلات باینری ARM** -- اگر یک skill با خطای "exec format error" شکست خورد، بررسی کنید آیا باینری build مخصوص ARM64 دارد. معماری را با `uname -m` بررسی کنید (باید `aarch64` نشان دهد).
+**مشکلات باینری ARM** -- اگر یک skill با خطای "exec format error" شکست خورد، بررسی کنید آیا باینری بیلد ARM64 دارد یا نه. معماری را با `uname -m` بررسی کنید (باید `aarch64` نشان دهد).
 
-**قطع شدن WiFi** -- مدیریت توان WiFi را غیرفعال کنید: `sudo iwconfig wlan0 power off`.
+**قطع شدن WiFi** -- مدیریت مصرف برق WiFi را غیرفعال کنید: `sudo iwconfig wlan0 power off`.
 
-## مراحل بعدی
+## گام‌های بعدی
 
-- [کانال‌ها](/fa/channels) -- Telegram، WhatsApp، Discord و موارد دیگر را متصل کنید
-- [پیکربندی Gateway](/fa/gateway/configuration) -- همه گزینه‌های پیکربندی
+- [کانال‌ها](/fa/channels) -- Telegram، WhatsApp، Discord و موارد بیشتر را متصل کنید
+- [پیکربندی Gateway](/fa/gateway/configuration) -- همهٔ گزینه‌های پیکربندی
 - [به‌روزرسانی](/fa/install/updating) -- OpenClaw را به‌روز نگه دارید
 
 ## مرتبط

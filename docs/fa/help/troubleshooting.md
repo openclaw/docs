@@ -1,14 +1,14 @@
 ---
 read_when:
-    - OpenClaw کار نمی‌کند و به سریع‌ترین مسیر برای رفع مشکل نیاز دارید
-    - پیش از ورود به راهنماهای عملیاتی مفصل، به یک روند تریاژ نیاز دارید
-summary: مرکز عیب‌یابی نشانه‌محور برای OpenClaw
+    - OpenClaw کار نمی‌کند و شما به سریع‌ترین راه برای رفع مشکل نیاز دارید
+    - پیش از ورود به راهنماهای عملیاتی عمیق، به یک روند تریاژ نیاز دارید
+summary: مرکز عیب‌یابی علائم‌محور برای OpenClaw
 title: عیب‌یابی عمومی
 x-i18n:
-    generated_at: "2026-04-29T23:00:53Z"
+    generated_at: "2026-05-06T09:23:26Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c832c3f7609c56a5461515ed0f693d2255310bf2d3958f69f57c482bcbef97f0
+    source_hash: 624fa34cda3b440fa9cc636beb3fe6e3608a77a332933fa593097ebc556ac745
     source_path: help/troubleshooting.md
     workflow: 16
 ---
@@ -31,43 +31,43 @@ openclaw logs --follow
 
 خروجی خوب در یک خط:
 
-- `openclaw status` → کانال‌های پیکربندی‌شده را نشان می‌دهد و خطاهای احراز هویت واضحی ندارد.
+- `openclaw status` → کانال‌های پیکربندی‌شده را نشان می‌دهد و خطای احراز هویت آشکاری ندارد.
 - `openclaw status --all` → گزارش کامل موجود و قابل اشتراک‌گذاری است.
-- `openclaw gateway probe` → هدف مورد انتظار Gateway در دسترس است (`Reachable: yes`). `Capability: ...` به شما می‌گوید پروب چه سطح احراز هویتی را توانسته ثابت کند، و `Read probe: limited - missing scope: operator.read` به‌معنای تشخیص محدودشده است، نه شکست اتصال.
-- `openclaw gateway status` → `Runtime: running`، `Connectivity probe: ok`، و یک خط قابل‌قبول `Capability: ...`. اگر به اثبات RPC با محدودهٔ خواندن هم نیاز دارید از `--require-rpc` استفاده کنید.
-- `openclaw doctor` → خطای مسدودکنندهٔ پیکربندی/سرویس ندارد.
-- `openclaw channels status --probe` → Gateway در دسترس، وضعیت زندهٔ انتقال به‌ازای هر حساب
-  به‌همراه نتایج پروب/ممیزی مانند `works` یا `audit ok` را برمی‌گرداند؛ اگر
-  Gateway در دسترس نباشد، فرمان به خلاصه‌های فقط-پیکربندی برمی‌گردد.
-- `openclaw logs --follow` → فعالیت پایدار، بدون خطاهای مرگبار تکرارشونده.
+- `openclaw gateway probe` → هدف gateway مورد انتظار قابل دسترسی است (`Reachable: yes`). `Capability: ...` نشان می‌دهد probe چه سطح احراز هویتی را توانسته اثبات کند، و `Read probe: limited - missing scope: operator.read` تشخیص تنزل‌یافته است، نه شکست اتصال.
+- `openclaw gateway status` → `Runtime: running`، `Connectivity probe: ok`، و یک خط قابل قبول `Capability: ...`. اگر به اثبات RPC با دامنهٔ read هم نیاز دارید از `--require-rpc` استفاده کنید.
+- `openclaw doctor` → خطای مسدودکنندهٔ config/service ندارد.
+- `openclaw channels status --probe` → Gateway قابل دسترسی، وضعیت زندهٔ transport را برای هر حساب
+  همراه با نتایج probe/audit مانند `works` یا `audit ok` برمی‌گرداند؛ اگر
+  Gateway در دسترس نباشد، دستور به خلاصه‌های فقط config برمی‌گردد.
+- `openclaw logs --follow` → فعالیت پایدار، بدون خطاهای fatal تکرارشونده.
 
-## ۴۲۹ زمینهٔ بلند Anthropic
+## Anthropic long context 429
 
-اگر این را می‌بینید:
-`HTTP 429: rate_limit_error: Extra usage is required for long context requests`,
+اگر این را دیدید:
+`HTTP 429: rate_limit_error: Extra usage is required for long context requests`،
 به [/gateway/troubleshooting#anthropic-429-extra-usage-required-for-long-context](/fa/gateway/troubleshooting#anthropic-429-extra-usage-required-for-long-context) بروید.
 
-## بک‌اند محلی سازگار با OpenAI مستقیم کار می‌کند اما در OpenClaw شکست می‌خورد
+## backend محلی سازگار با OpenAI مستقیم کار می‌کند اما در OpenClaw شکست می‌خورد
 
-اگر بک‌اند محلی یا خودمیزبانِ `/v1` شما به پروب‌های مستقیم کوچک
-`/v1/chat/completions` پاسخ می‌دهد اما در `openclaw infer model run` یا نوبت‌های عادی
-عامل شکست می‌خورد:
+اگر backend محلی یا خودمیزبان شما برای `/v1` به probeهای مستقیم کوچک
+`/v1/chat/completions` پاسخ می‌دهد اما در `openclaw infer model run` یا نوبت‌های معمول
+agent شکست می‌خورد:
 
-1. اگر خطا می‌گوید `messages[].content` انتظار رشته دارد، مقدار
+1. اگر خطا اشاره می‌کند که `messages[].content` انتظار string دارد،
    `models.providers.<provider>.models[].compat.requiresStringContent: true` را تنظیم کنید.
-2. اگر بک‌اند هنوز فقط در نوبت‌های عامل OpenClaw شکست می‌خورد، مقدار
-   `models.providers.<provider>.models[].compat.supportsTools: false` را تنظیم کنید و دوباره امتحان کنید.
-3. اگر فراخوانی‌های مستقیم بسیار کوچک هنوز کار می‌کنند اما پرامپت‌های بزرگ‌تر OpenClaw باعث خرابی
-   بک‌اند می‌شوند، مسئلهٔ باقی‌مانده را به‌عنوان محدودیت مدل/سرور بالادستی در نظر بگیرید و
-   در دفترچهٔ اجرایی عمیق ادامه دهید:
+2. اگر backend هنوز فقط در نوبت‌های agent OpenClaw شکست می‌خورد،
+   `models.providers.<provider>.models[].compat.supportsTools: false` را تنظیم کنید و دوباره تلاش کنید.
+3. اگر فراخوانی‌های مستقیم بسیار کوچک هنوز کار می‌کنند اما promptهای بزرگ‌تر OpenClaw باعث crash شدن
+   backend می‌شوند، مشکل باقی‌مانده را به‌عنوان محدودیت model/server بالادستی در نظر بگیرید و
+   در runbook عمیق ادامه دهید:
    [/gateway/troubleshooting#local-openai-compatible-backend-passes-direct-probes-but-agent-runs-fail](/fa/gateway/troubleshooting#local-openai-compatible-backend-passes-direct-probes-but-agent-runs-fail)
 
-## نصب Plugin با خطای نبود افزونه‌های openclaw شکست می‌خورد
+## نصب Plugin با خطای نبود openclaw extensions شکست می‌خورد
 
-اگر نصب با `package.json missing openclaw.extensions` شکست بخورد، بستهٔ plugin
-از شکل قدیمی‌ای استفاده می‌کند که OpenClaw دیگر نمی‌پذیرد.
+اگر نصب با `package.json missing openclaw.extensions` شکست بخورد، بستهٔ Plugin
+از ساختار قدیمی‌ای استفاده می‌کند که OpenClaw دیگر نمی‌پذیرد.
 
-رفع در بستهٔ plugin:
+در بستهٔ Plugin اصلاح کنید:
 
 1. `openclaw.extensions` را به `package.json` اضافه کنید.
 2. ورودی‌ها را به فایل‌های runtime ساخته‌شده اشاره دهید (معمولاً `./dist/index.js`).
@@ -87,26 +87,58 @@ openclaw logs --follow
 
 مرجع: [معماری Plugin](/fa/plugins/architecture)
 
+## Plugin حاضر است اما به‌دلیل مالکیت مشکوک مسدود شده است
+
+اگر `openclaw doctor`، راه‌اندازی، یا هشدارهای startup نشان دهند:
+
+```text
+blocked plugin candidate: suspicious ownership (... uid=1000, expected uid=0 or root)
+plugin present but blocked
+```
+
+فایل‌های Plugin متعلق به کاربر Unix متفاوتی نسبت به پردازشی هستند که آن‌ها را load می‌کند. config مربوط به Plugin را حذف نکنید. مالکیت فایل را اصلاح کنید یا OpenClaw را با همان کاربری اجرا کنید که مالک دایرکتوری state است.
+
+نصب‌های Docker معمولاً با کاربر `node` (uid `1000`) اجرا می‌شوند. برای setup پیش‌فرض Docker،
+bind mountهای میزبان را تعمیر کنید:
+
+```bash
+sudo chown -R 1000:1000 /path/to/openclaw-config /path/to/openclaw-workspace
+openclaw doctor --fix
+```
+
+اگر عمداً OpenClaw را به‌صورت root اجرا می‌کنید، ریشهٔ Plugin مدیریت‌شده را در عوض به
+مالکیت root تعمیر کنید:
+
+```bash
+sudo chown -R root:root /path/to/openclaw-config/npm
+openclaw doctor --fix
+```
+
+مستندات عمیق‌تر:
+
+- [مالکیت مسیر Plugin](/fa/tools/plugin#blocked-plugin-path-ownership)
+- [مجوزهای Docker](/fa/install/docker#permissions-and-eacces)
+
 ## درخت تصمیم
 
 ```mermaid
 flowchart TD
-  A[OpenClaw کار نمی‌کند] --> B{اول چه چیزی خراب می‌شود}
-  B --> C[بدون پاسخ]
-  B --> D[داشبورد یا Control UI متصل نمی‌شود]
-  B --> E[Gateway شروع نمی‌شود یا سرویس اجرا نیست]
-  B --> F[کانال متصل می‌شود اما پیام‌ها جریان ندارند]
-  B --> G[Cron یا heartbeat اجرا نشد یا تحویل داده نشد]
-  B --> H[Node جفت شده اما اجرای camera canvas screen exec شکست می‌خورد]
-  B --> I[ابزار مرورگر شکست می‌خورد]
+  A[OpenClaw is not working] --> B{What breaks first}
+  B --> C[No replies]
+  B --> D[Dashboard or Control UI will not connect]
+  B --> E[Gateway will not start or service not running]
+  B --> F[Channel connects but messages do not flow]
+  B --> G[Cron or heartbeat did not fire or did not deliver]
+  B --> H[Node is paired but camera canvas screen exec fails]
+  B --> I[Browser tool fails]
 
-  C --> C1[/بخش بدون پاسخ/]
-  D --> D1[/بخش Control UI/]
-  E --> E1[/بخش Gateway/]
-  F --> F1[/بخش جریان کانال/]
-  G --> G1[/بخش خودکارسازی/]
-  H --> H1[/بخش ابزارهای Node/]
-  I --> I1[/بخش مرورگر/]
+  C --> C1[/No replies section/]
+  D --> D1[/Control UI section/]
+  E --> E1[/Gateway section/]
+  F --> F1[/Channel flow section/]
+  G --> G1[/Automation section/]
+  H --> H1[/Node tools section/]
+  I --> I1[/Browser section/]
 ```
 
 <AccordionGroup>
@@ -124,14 +156,14 @@ flowchart TD
     - `Runtime: running`
     - `Connectivity probe: ok`
     - `Capability: read-only`، `write-capable`، یا `admin-capable`
-    - کانال شما انتقال را متصل نشان می‌دهد و، در موارد پشتیبانی‌شده، `works` یا `audit ok` در `channels status --probe`
-    - فرستنده تأییدشده به‌نظر می‌رسد (یا سیاست پیام مستقیم باز/فهرست مجاز است)
+    - کانال شما transport را متصل نشان می‌دهد و، در جاهایی که پشتیبانی می‌شود، `works` یا `audit ok` را در `channels status --probe` نشان می‌دهد
+    - فرستنده approved به نظر می‌رسد (یا سیاست DM باز/allowlist است)
 
-    امضاهای رایج لاگ:
+    امضاهای رایج log:
 
-    - `drop guild message (mention required` → گیت mention پیام را در Discord مسدود کرده است.
-    - `pairing request` → فرستنده تأیید نشده و منتظر تأیید جفت‌سازی پیام مستقیم است.
-    - `blocked` / `allowlist` در لاگ‌های کانال → فرستنده، اتاق، یا گروه فیلتر شده است.
+    - `drop guild message (mention required` → mention gating پیام را در Discord مسدود کرده است.
+    - `pairing request` → فرستنده تایید نشده و منتظر تایید pairing در DM است.
+    - `blocked` / `allowlist` در logهای کانال → فرستنده، room، یا group فیلتر شده است.
 
     صفحه‌های عمیق:
 
@@ -141,7 +173,7 @@ flowchart TD
 
   </Accordion>
 
-  <Accordion title="داشبورد یا Control UI متصل نمی‌شود">
+  <Accordion title="Dashboard یا Control UI وصل نمی‌شود">
     ```bash
     openclaw status
     openclaw gateway status
@@ -152,24 +184,25 @@ flowchart TD
 
     خروجی خوب شبیه این است:
 
-    - `Dashboard: http://...` در `openclaw gateway status` نشان داده می‌شود
+    - `Dashboard: http://...` در `openclaw gateway status` نمایش داده می‌شود
     - `Connectivity probe: ok`
     - `Capability: read-only`، `write-capable`، یا `admin-capable`
-    - چرخهٔ احراز هویت در لاگ‌ها وجود ندارد
+    - حلقهٔ auth در logها وجود ندارد
 
-    امضاهای رایج لاگ:
+    امضاهای رایج log:
 
-    - `device identity required` → زمینهٔ HTTP/غیرامن نمی‌تواند احراز هویت دستگاه را کامل کند.
+    - `device identity required` → کانتکست HTTP/غیرامن نمی‌تواند device auth را کامل کند.
     - `origin not allowed` → `Origin` مرورگر برای هدف Gateway مربوط به Control UI مجاز نیست.
-    - `AUTH_TOKEN_MISMATCH` با راهنماهای تلاش دوباره (`canRetryWithDeviceToken=true`) → ممکن است یک تلاش دوبارهٔ مورد اعتماد با توکن دستگاه به‌صورت خودکار انجام شود.
-    - آن تلاش دوباره با توکن کش‌شده، مجموعهٔ scope کش‌شده‌ای را که همراه توکن دستگاه جفت‌شده ذخیره شده دوباره استفاده می‌کند. فراخوان‌های دارای `deviceToken` صریح / `scopes` صریح، مجموعهٔ scope درخواستی خود را نگه می‌دارند.
-    - در مسیر ناهمگام Tailscale Serve Control UI، تلاش‌های ناموفق برای همان
-      `{scope, ip}` پیش از ثبت شکست توسط محدودکننده به‌ترتیب پردازش می‌شوند، بنابراین یک
-      تلاش دوبارهٔ بد همزمان دوم می‌تواند از قبل `retry later` نشان دهد.
+    - `AUTH_TOKEN_MISMATCH` با راهنمایی‌های retry (`canRetryWithDeviceToken=true`) → ممکن است یک retry قابل اعتماد با device-token به‌صورت خودکار رخ دهد.
+    - آن retry با cached-token همان مجموعهٔ scope ذخیره‌شده با device token جفت‌شده را دوباره استفاده می‌کند. فراخوان‌های دارای `deviceToken` صریح / `scopes` صریح
+      مجموعهٔ scope درخواستی خود را نگه می‌دارند.
+    - در مسیر async Tailscale Serve Control UI، تلاش‌های ناموفق برای همان
+      `{scope, ip}` پیش از ثبت failure توسط limiter سریالی می‌شوند، بنابراین
+      retry بد هم‌زمان دوم می‌تواند از قبل `retry later` نشان دهد.
     - `too many failed authentication attempts (retry later)` از یک origin مرورگر localhost
-      → شکست‌های تکراری از همان `Origin` به‌طور موقت قفل می‌شوند؛ یک origin دیگر localhost از سبد جداگانه‌ای استفاده می‌کند.
-    - `unauthorized` تکراری پس از آن تلاش دوباره → توکن/گذرواژه اشتباه، ناسازگاری حالت احراز هویت، یا توکن دستگاه جفت‌شدهٔ کهنه.
-    - `gateway connect failed:` → UI نشانی/درگاه اشتباه را هدف گرفته یا Gateway در دسترس نیست.
+      → شکست‌های تکراری از همان `Origin` به‌طور موقت lock out می‌شوند؛ یک origin localhost دیگر از bucket جداگانه استفاده می‌کند.
+    - `unauthorized` تکراری پس از آن retry → token/password اشتباه، ناهماهنگی auth mode، یا device token جفت‌شدهٔ stale.
+    - `gateway connect failed:` → UI به URL/port اشتباه اشاره می‌کند یا Gateway در دسترس نیست.
 
     صفحه‌های عمیق:
 
@@ -179,7 +212,7 @@ flowchart TD
 
   </Accordion>
 
-  <Accordion title="Gateway شروع نمی‌شود یا سرویس نصب شده اما اجرا نیست">
+  <Accordion title="Gateway شروع نمی‌شود یا service نصب شده اما اجرا نمی‌شود">
     ```bash
     openclaw status
     openclaw gateway status
@@ -195,11 +228,11 @@ flowchart TD
     - `Connectivity probe: ok`
     - `Capability: read-only`، `write-capable`، یا `admin-capable`
 
-    امضاهای رایج لاگ:
+    امضاهای رایج log:
 
-    - `Gateway start blocked: set gateway.mode=local` یا `existing config is missing gateway.mode` → حالت gateway راه‌دور است، یا فایل پیکربندی مُهر حالت محلی را ندارد و باید تعمیر شود.
-    - `refusing to bind gateway ... without auth` → bind غیر از local loopback بدون مسیر معتبر احراز هویت gateway (توکن/گذرواژه، یا trusted-proxy در صورت پیکربندی).
-    - `another gateway instance is already listening` یا `EADDRINUSE` → درگاه از قبل اشغال است.
+    - `Gateway start blocked: set gateway.mode=local` یا `existing config is missing gateway.mode` → حالت Gateway برابر remote است، یا فایل config مهر local-mode را ندارد و باید تعمیر شود.
+    - `refusing to bind gateway ... without auth` → bind غیر local loopback بدون مسیر معتبر auth برای Gateway (token/password، یا trusted-proxy در جایی که پیکربندی شده باشد).
+    - `another gateway instance is already listening` یا `EADDRINUSE` → port از قبل اشغال است.
 
     صفحه‌های عمیق:
 
@@ -209,7 +242,7 @@ flowchart TD
 
   </Accordion>
 
-  <Accordion title="کانال متصل می‌شود اما پیام‌ها جریان ندارند">
+  <Accordion title="کانال وصل می‌شود اما پیام‌ها جریان پیدا نمی‌کنند">
     ```bash
     openclaw status
     openclaw gateway status
@@ -220,15 +253,15 @@ flowchart TD
 
     خروجی خوب شبیه این است:
 
-    - انتقال کانال متصل است.
-    - بررسی‌های جفت‌سازی/فهرست مجاز عبور می‌کنند.
-    - mentionها در جاهایی که لازم است شناسایی می‌شوند.
+    - transport کانال متصل است.
+    - بررسی‌های pairing/allowlist عبور می‌کنند.
+    - mentionها در جاهایی که لازم است تشخیص داده می‌شوند.
 
-    امضاهای رایج لاگ:
+    امضاهای رایج log:
 
-    - `mention required` → گیت mention گروهی پردازش را مسدود کرد.
-    - `pairing` / `pending` → فرستندهٔ پیام مستقیم هنوز تأیید نشده است.
-    - `not_in_channel`، `missing_scope`، `Forbidden`، `401/403` → مشکل توکن مجوز کانال.
+    - `mention required` → group mention gating پردازش را مسدود کرده است.
+    - `pairing` / `pending` → فرستندهٔ DM هنوز تایید نشده است.
+    - `not_in_channel`، `missing_scope`، `Forbidden`، `401/403` → مشکل permission token کانال.
 
     صفحه‌های عمیق:
 
@@ -237,7 +270,7 @@ flowchart TD
 
   </Accordion>
 
-  <Accordion title="Cron یا heartbeat اجرا نشد یا تحویل داده نشد">
+  <Accordion title="Cron یا Heartbeat اجرا نشد یا تحویل نداد">
     ```bash
     openclaw status
     openclaw gateway status
@@ -249,19 +282,19 @@ flowchart TD
 
     خروجی خوب شبیه این است:
 
-    - `cron.status` فعال بودن را با بیدارباش بعدی نشان می‌دهد.
+    - `cron.status` فعال بودن را همراه با wake بعدی نشان می‌دهد.
     - `cron runs` ورودی‌های اخیر `ok` را نشان می‌دهد.
-    - Heartbeat فعال است و خارج از ساعت‌های فعال نیست.
+    - Heartbeat فعال است و خارج از active hours نیست.
 
-    امضاهای رایج لاگ:
+    امضاهای رایج log:
 
-    - `cron: scheduler disabled; jobs will not run automatically` → cron غیرفعال است.
-    - `heartbeat skipped` با `reason=quiet-hours` → خارج از ساعت‌های فعال پیکربندی‌شده.
-    - `heartbeat skipped` با `reason=empty-heartbeat-file` → `HEARTBEAT.md` وجود دارد اما فقط داربست خالی/فقط-سربرگ دارد.
-    - `heartbeat skipped` با `reason=no-tasks-due` → حالت وظیفهٔ `HEARTBEAT.md` فعال است اما هنوز موعد هیچ‌یک از بازه‌های وظیفه نرسیده است.
-    - `heartbeat skipped` با `reason=alerts-disabled` → همهٔ نمایش‌پذیری heartbeat غیرفعال است (`showOk`، `showAlerts`، و `useIndicator` همگی خاموش‌اند).
-    - `requests-in-flight` → مسیر اصلی مشغول است؛ بیدارباش heartbeat به تعویق افتاد.
-    - `unknown accountId` → حساب هدف تحویل heartbeat وجود ندارد.
+    - `cron: scheduler disabled; jobs will not run automatically` → Cron غیرفعال است.
+    - `heartbeat skipped` با `reason=quiet-hours` → خارج از active hours پیکربندی‌شده.
+    - `heartbeat skipped` با `reason=empty-heartbeat-file` → `HEARTBEAT.md` وجود دارد اما فقط شامل scaffolding خالی/فقط header است.
+    - `heartbeat skipped` با `reason=no-tasks-due` → حالت task در `HEARTBEAT.md` فعال است اما هنوز موعد هیچ‌یک از intervalهای task نرسیده است.
+    - `heartbeat skipped` با `reason=alerts-disabled` → همهٔ visibility مربوط به Heartbeat غیرفعال است (`showOk`، `showAlerts`، و `useIndicator` همگی خاموش هستند).
+    - `requests-in-flight` → lane اصلی مشغول است؛ wake مربوط به Heartbeat به تعویق افتاده است.
+    - `unknown accountId` → حساب هدف تحویل Heartbeat وجود ندارد.
 
     صفحه‌های عمیق:
 
@@ -271,7 +304,7 @@ flowchart TD
 
   </Accordion>
 
-  <Accordion title="Node جفت شده اما ابزار camera canvas screen exec شکست می‌خورد">
+  <Accordion title="Node جفت شده اما tool برای camera canvas screen exec شکست می‌خورد">
     ```bash
     openclaw status
     openclaw gateway status
@@ -282,16 +315,16 @@ flowchart TD
 
     خروجی خوب شبیه این است:
 
-    - Node به‌عنوان متصل و جفت‌شده برای نقش `node` فهرست شده است.
-    - Capability برای فرمانی که فراخوانی می‌کنید وجود دارد.
-    - وضعیت مجوز برای ابزار اعطا شده است.
+    - Node به‌عنوان متصل و جفت‌شده برای role `node` فهرست شده است.
+    - Capability برای دستوری که فراخوانی می‌کنید وجود دارد.
+    - وضعیت permission برای tool اعطا شده است.
 
-    امضاهای رایج لاگ:
+    امضاهای رایج log:
 
-    - `NODE_BACKGROUND_UNAVAILABLE` → برنامهٔ node را به پیش‌زمینه بیاورید.
-    - `*_PERMISSION_REQUIRED` → مجوز سیستم‌عامل رد شده/موجود نیست.
+    - `NODE_BACKGROUND_UNAVAILABLE` → برنامه Node را به پیش‌زمینه بیاورید.
+    - `*_PERMISSION_REQUIRED` → مجوز سیستم‌عامل رد شده یا موجود نیست.
     - `SYSTEM_RUN_DENIED: approval required` → تأیید exec در انتظار است.
-    - `SYSTEM_RUN_DENIED: allowlist miss` → فرمان در فهرست مجاز exec نیست.
+    - `SYSTEM_RUN_DENIED: allowlist miss` → دستور در فهرست مجاز exec نیست.
 
     صفحه‌های عمیق:
 
@@ -301,7 +334,7 @@ flowchart TD
 
   </Accordion>
 
-  <Accordion title="Exec ناگهان درخواست تأیید می‌کند">
+  <Accordion title="Exec ناگهان تأیید می‌خواهد">
     ```bash
     openclaw config get tools.exec.host
     openclaw config get tools.exec.security
@@ -311,14 +344,14 @@ flowchart TD
 
     چه چیزی تغییر کرده است:
 
-    - اگر `tools.exec.host` تنظیم نشده باشد، پیش‌فرض `auto` است.
-    - `host=auto` وقتی یک runtime سندباکس فعال باشد به `sandbox`، و در غیر این صورت به `gateway` تبدیل می‌شود.
-    - `host=auto` فقط مسیریابی است؛ رفتار بدون اعلان "YOLO" از `security=full` به‌همراه `ask=off` روی gateway/node می‌آید.
+    - اگر `tools.exec.host` تنظیم نشده باشد، مقدار پیش‌فرض `auto` است.
+    - وقتی runtime سندباکس فعال باشد، `host=auto` به `sandbox` تبدیل می‌شود؛ در غیر این صورت به `gateway`.
+    - `host=auto` فقط مسیریابی است؛ رفتار بدون درخواست «YOLO» از `security=full` به‌همراه `ask=off` روی gateway/node می‌آید.
     - روی `gateway` و `node`، مقدار تنظیم‌نشده `tools.exec.security` به‌صورت پیش‌فرض `full` است.
     - مقدار تنظیم‌نشده `tools.exec.ask` به‌صورت پیش‌فرض `off` است.
-    - نتیجه: اگر تأییدیه‌ها را می‌بینید، یک سیاست محلی میزبان یا مخصوص نشست، exec را نسبت به پیش‌فرض‌های فعلی سخت‌گیرانه‌تر کرده است.
+    - نتیجه: اگر تأییدها را می‌بینید، یک سیاست محلی میزبان یا مخصوص نشست، exec را از پیش‌فرض‌های فعلی سخت‌گیرانه‌تر کرده است.
 
-    بازیابی رفتار پیش‌فرض فعلی بدون نیاز به تأیید:
+    بازیابی رفتار پیش‌فرض فعلی بدون تأیید:
 
     ```bash
     openclaw config set tools.exec.host gateway
@@ -330,16 +363,16 @@ flowchart TD
     جایگزین‌های امن‌تر:
 
     - اگر فقط مسیریابی پایدار میزبان می‌خواهید، فقط `tools.exec.host=gateway` را تنظیم کنید.
-    - اگر exec میزبان می‌خواهید اما همچنان می‌خواهید موارد خارج از allowlist بررسی شوند، از `security=allowlist` با `ask=on-miss` استفاده کنید.
+    - اگر exec میزبان می‌خواهید اما همچنان می‌خواهید نبودن در فهرست مجاز بازبینی شود، از `security=allowlist` با `ask=on-miss` استفاده کنید.
     - اگر می‌خواهید `host=auto` دوباره به `sandbox` تبدیل شود، حالت سندباکس را فعال کنید.
 
-    امضاهای رایج لاگ:
+    امضاهای رایج گزارش:
 
-    - `Approval required.` → فرمان در انتظار `/approve ...` است.
-    - `SYSTEM_RUN_DENIED: approval required` → تأیید exec روی node-host در انتظار است.
-    - `exec host=sandbox requires a sandbox runtime for this session` → انتخاب ضمنی/صریح سندباکس انجام شده اما حالت سندباکس خاموش است.
+    - `Approval required.` → دستور منتظر `/approve ...` است.
+    - `SYSTEM_RUN_DENIED: approval required` → تأیید exec میزبان Node در انتظار است.
+    - `exec host=sandbox requires a sandbox runtime for this session` → انتخاب ضمنی/صریح سندباکس انجام شده، اما حالت سندباکس خاموش است.
 
-    صفحات تفصیلی:
+    صفحه‌های عمیق:
 
     - [/tools/exec](/fa/tools/exec)
     - [/tools/exec-approvals](/fa/tools/exec-approvals)
@@ -356,24 +389,24 @@ flowchart TD
     openclaw doctor
     ```
 
-    خروجی خوب این‌گونه است:
+    خروجی خوب شبیه این است:
 
-    - وضعیت مرورگر `running: true` و یک مرورگر/پروفایل انتخاب‌شده را نشان می‌دهد.
-    - `openclaw` شروع می‌شود، یا `user` می‌تواند برگه‌های محلی Chrome را ببیند.
+    - وضعیت مرورگر `running: true` و یک مرورگر/نمایه انتخاب‌شده را نشان می‌دهد.
+    - `openclaw` شروع می‌شود، یا `user` می‌تواند زبانه‌های محلی Chrome را ببیند.
 
-    امضاهای رایج لاگ:
+    امضاهای رایج گزارش:
 
     - `unknown command "browser"` یا `unknown command 'browser'` → `plugins.allow` تنظیم شده و شامل `browser` نیست.
-    - `Failed to start Chrome CDP on port` → اجرای مرورگر محلی ناموفق بود.
+    - `Failed to start Chrome CDP on port` → راه‌اندازی مرورگر محلی ناموفق بود.
     - `browser.executablePath not found` → مسیر باینری پیکربندی‌شده اشتباه است.
-    - `browser.cdpUrl must be http(s) or ws(s)` → URL پیکربندی‌شده CDP از scheme پشتیبانی‌نشده استفاده می‌کند.
-    - `browser.cdpUrl has invalid port` → URL پیکربندی‌شده CDP یک پورت نامعتبر یا خارج از محدوده دارد.
-    - `No Chrome tabs found for profile="user"` → پروفایل اتصال Chrome MCP هیچ برگه محلی باز Chrome ندارد.
-    - `Remote CDP for profile "<name>" is not reachable` → نقطه پایانی CDP راه‌دور پیکربندی‌شده از این میزبان قابل دسترسی نیست.
-    - `Browser attachOnly is enabled ... not reachable` یا `Browser attachOnly is enabled and CDP websocket ... is not reachable` → پروفایل فقط-اتصال هیچ هدف CDP زنده‌ای ندارد.
-    - نادیده‌گیری‌های viewport / حالت تیره / locale / آفلاین که روی پروفایل‌های فقط-اتصال یا CDP راه‌دور باقی مانده‌اند → برای بستن نشست کنترل فعال و آزاد کردن وضعیت شبیه‌سازی بدون راه‌اندازی مجدد Gateway، `openclaw browser stop --browser-profile <name>` را اجرا کنید.
+    - `browser.cdpUrl must be http(s) or ws(s)` → نشانی CDP پیکربندی‌شده از scheme پشتیبانی‌نشده استفاده می‌کند.
+    - `browser.cdpUrl has invalid port` → نشانی CDP پیکربندی‌شده پورت نامعتبر یا خارج از محدوده دارد.
+    - `No Chrome tabs found for profile="user"` → نمایه اتصال Chrome MCP هیچ زبانه باز محلی Chrome ندارد.
+    - `Remote CDP for profile "<name>" is not reachable` → نقطه پایانی CDP راه‌دور پیکربندی‌شده از این میزبان در دسترس نیست.
+    - `Browser attachOnly is enabled ... not reachable` یا `Browser attachOnly is enabled and CDP websocket ... is not reachable` → نمایه فقط-اتصال هیچ هدف CDP زنده‌ای ندارد.
+    - overrideهای کهنه viewport / حالت تاریک / locale / آفلاین روی نمایه‌های فقط-اتصال یا CDP راه‌دور → برای بستن نشست کنترل فعال و آزاد کردن وضعیت شبیه‌سازی بدون راه‌اندازی دوباره gateway، `openclaw browser stop --browser-profile <name>` را اجرا کنید.
 
-    صفحات تفصیلی:
+    صفحه‌های عمیق:
 
     - [/gateway/troubleshooting#browser-tool-fails](/fa/gateway/troubleshooting#browser-tool-fails)
     - [/tools/browser#missing-browser-command-or-tool](/fa/tools/browser#missing-browser-command-or-tool)
@@ -387,7 +420,7 @@ flowchart TD
 ## مرتبط
 
 - [پرسش‌های متداول](/fa/help/faq) — پرسش‌های پرتکرار
-- [عیب‌یابی Gateway](/fa/gateway/troubleshooting) — مشکلات ویژه Gateway
-- [Doctor](/fa/gateway/doctor) — بررسی‌ها و تعمیرات خودکار سلامت
+- [عیب‌یابی Gateway](/fa/gateway/troubleshooting) — مشکلات مخصوص Gateway
+- [Doctor](/fa/gateway/doctor) — بررسی‌ها و تعمیرهای خودکار سلامت
 - [عیب‌یابی کانال](/fa/channels/troubleshooting) — مشکلات اتصال کانال
 - [عیب‌یابی خودکارسازی](/fa/automation/cron-jobs#troubleshooting) — مشکلات Cron و Heartbeat

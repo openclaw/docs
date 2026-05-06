@@ -1,26 +1,24 @@
 ---
 read_when:
-    - پیاده‌سازی پنل بوم در macOS
+    - پیاده‌سازی پنل بوم macOS
     - افزودن کنترل‌های عامل برای فضای کاری بصری
-    - اشکال‌زدایی بارگذاری‌های بوم WKWebView
-summary: پنل بومِ کنترل‌شده توسط عامل، جاسازی‌شده از طریق WKWebView + طرح URL سفارشی
+    - اشکال‌زدایی بارگذاری‌های canvas در WKWebView
+summary: پنل Canvas کنترل‌شده توسط عامل، تعبیه‌شده از طریق WKWebView + طرح URL سفارشی
 title: بوم
 x-i18n:
-    generated_at: "2026-04-29T23:11:04Z"
+    generated_at: "2026-05-06T09:30:18Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1a791f7841193a55b7f9cc5cc26168258d72d972279bba4c68fd1b15ef16f1c4
+    source_hash: d8e53f5d1c2e5b3b46e77cb74632e56123f3312dfcc395aa5ac8182c8d58b6cf
     source_path: platforms/mac/canvas.md
     workflow: 16
 ---
 
-برنامه macOS با استفاده از `WKWebView` یک **پنل Canvas** تحت کنترل عامل را در خود جای می‌دهد. این
-یک فضای کاری بصری سبک برای HTML/CSS/JS، A2UI و سطح‌های کوچک و تعاملی
-UI است.
+برنامه macOS یک **پنل Canvas** کنترل‌شده توسط عامل را با استفاده از `WKWebView` در خود جای می‌دهد. این پنل یک فضای کاری بصری سبک برای HTML/CSS/JS، A2UI و سطح‌های کوچک UI تعاملی است.
 
-## Canvas کجا قرار دارد
+## محل قرارگیری Canvas
 
-وضعیت Canvas زیر Application Support ذخیره می‌شود:
+وضعیت Canvas در Application Support ذخیره می‌شود:
 
 - `~/Library/Application Support/OpenClaw/canvas/<session>/...`
 
@@ -28,34 +26,33 @@ UI است.
 
 - `openclaw-canvas://<session>/<path>`
 
-نمونه‌ها:
+مثال‌ها:
 
 - `openclaw-canvas://main/` → `<canvasRoot>/main/index.html`
 - `openclaw-canvas://main/assets/app.css` → `<canvasRoot>/main/assets/app.css`
 - `openclaw-canvas://main/widgets/todo/` → `<canvasRoot>/main/widgets/todo/index.html`
 
-اگر هیچ `index.html` در ریشه وجود نداشته باشد، برنامه یک **صفحه داربست داخلی** نشان می‌دهد.
+اگر در ریشه هیچ `index.html` وجود نداشته باشد، برنامه یک **صفحه داربست داخلی** را نشان می‌دهد.
 
 ## رفتار پنل
 
-- پنل بدون کادر و قابل تغییر اندازه که نزدیک نوار منو (یا نشانگر ماوس) لنگر می‌شود.
+- پنلی بدون حاشیه و قابل تغییر اندازه که نزدیک نوار منو (یا نشانگر ماوس) لنگر می‌شود.
 - اندازه/موقعیت را برای هر نشست به خاطر می‌سپارد.
-- وقتی فایل‌های محلی canvas تغییر کنند، به‌صورت خودکار بازبارگذاری می‌شود.
-- هر بار فقط یک پنل Canvas قابل مشاهده است (نشست در صورت نیاز تغییر داده می‌شود).
+- هنگام تغییر فایل‌های Canvas محلی، به‌طور خودکار بازبارگذاری می‌شود.
+- در هر زمان فقط یک پنل Canvas قابل مشاهده است (نشست در صورت نیاز عوض می‌شود).
 
-Canvas را می‌توان از Settings → **Allow Canvas** غیرفعال کرد. وقتی غیرفعال باشد، فرمان‌های
-گره canvas مقدار `CANVAS_DISABLED` برمی‌گردانند.
+Canvas را می‌توان از Settings → **Allow Canvas** غیرفعال کرد. هنگام غیرفعال بودن، فرمان‌های Node مربوط به canvas مقدار `CANVAS_DISABLED` را برمی‌گردانند.
 
 ## سطح API عامل
 
-Canvas از طریق **WebSocket Gateway** در دسترس است، بنابراین عامل می‌تواند:
+Canvas از طریق **Gateway WebSocket** در دسترس قرار می‌گیرد، بنابراین عامل می‌تواند:
 
-- پنل را نشان دهد/پنهان کند
+- پنل را نمایش/مخفی کند
 - به یک مسیر یا URL ناوبری کند
 - JavaScript را ارزیابی کند
 - یک تصویر snapshot بگیرد
 
-نمونه‌های CLI:
+مثال‌های CLI:
 
 ```bash
 openclaw nodes canvas present --node <id>
@@ -64,16 +61,14 @@ openclaw nodes canvas eval --node <id> --js "document.title"
 openclaw nodes canvas snapshot --node <id>
 ```
 
-نکته‌ها:
+نکات:
 
-- `canvas.navigate` **مسیرهای محلی canvas**، URLهای `http(s)` و URLهای `file://` را می‌پذیرد.
+- `canvas.navigate` **مسیرهای Canvas محلی**، URLهای `http(s)` و URLهای `file://` را می‌پذیرد.
 - اگر `"/"` را ارسال کنید، Canvas داربست محلی یا `index.html` را نشان می‌دهد.
 
 ## A2UI در Canvas
 
-A2UI توسط میزبان canvas در Gateway میزبانی می‌شود و داخل پنل Canvas رندر می‌شود.
-وقتی Gateway یک میزبان Canvas را اعلام کند، برنامه macOS در اولین باز شدن به‌صورت خودکار به
-صفحه میزبان A2UI ناوبری می‌کند.
+A2UI توسط میزبان Canvas در Gateway میزبانی می‌شود و داخل پنل Canvas رندر می‌شود. هنگامی که Gateway یک میزبان Canvas را اعلام می‌کند، برنامه macOS در اولین باز شدن به‌طور خودکار به صفحه میزبان A2UI ناوبری می‌کند.
 
 URL پیش‌فرض میزبان A2UI:
 
@@ -83,7 +78,7 @@ http://<gateway-host>:18789/__openclaw__/a2ui/
 
 ### فرمان‌های A2UI (v0.8)
 
-Canvas در حال حاضر پیام‌های سرور→کلاینت **A2UI v0.8** را می‌پذیرد:
+Canvas در حال حاضر پیام‌های **A2UI v0.8** سرور→کلاینت را می‌پذیرد:
 
 - `beginRendering`
 - `surfaceUpdate`
@@ -92,7 +87,7 @@ Canvas در حال حاضر پیام‌های سرور→کلاینت **A2UI v0.
 
 `createSurface` (v0.9) پشتیبانی نمی‌شود.
 
-نمونه CLI:
+مثال CLI:
 
 ```bash
 cat > /tmp/a2ui-v0.8.jsonl <<'EOFA2'
@@ -103,7 +98,7 @@ EOFA2
 openclaw nodes canvas a2ui push --jsonl /tmp/a2ui-v0.8.jsonl --node <id>
 ```
 
-آزمون smoke سریع:
+smoke سریع:
 
 ```bash
 openclaw nodes canvas a2ui push --node <id> --text "Hello from A2UI"
@@ -111,23 +106,23 @@ openclaw nodes canvas a2ui push --node <id> --text "Hello from A2UI"
 
 ## راه‌اندازی اجرای عامل از Canvas
 
-Canvas می‌تواند از طریق deep linkها اجرای عامل جدید را راه‌اندازی کند:
+Canvas می‌تواند اجرای جدید عامل را از طریق deep linkها راه‌اندازی کند:
 
 - `openclaw://agent?...`
 
-نمونه (در JS):
+مثال (در JS):
 
 ```js
 window.location.href = "openclaw://agent?message=Review%20this%20design";
 ```
 
-برنامه درخواست تأیید می‌کند مگر اینکه یک کلید معتبر ارائه شده باشد.
+برنامه درخواست تأیید می‌کند، مگر اینکه یک کلید معتبر ارائه شده باشد.
 
-## نکته‌های امنیتی
+## نکات امنیتی
 
-- شِمای Canvas پیمایش دایرکتوری را مسدود می‌کند؛ فایل‌ها باید زیر ریشه نشست باشند.
-- محتوای محلی Canvas از یک شِمای سفارشی استفاده می‌کند (به سرور local loopback نیازی نیست).
-- URLهای خارجی `http(s)` فقط وقتی مجازند که صراحتاً به آن‌ها ناوبری شده باشد.
+- شِمای Canvas پیمایش دایرکتوری را مسدود می‌کند؛ فایل‌ها باید زیر ریشه نشست قرار داشته باشند.
+- محتوای Canvas محلی از یک شِمای سفارشی استفاده می‌کند (به سرور local loopback نیازی نیست).
+- URLهای خارجی `http(s)` فقط زمانی مجاز هستند که صراحتاً به آن‌ها ناوبری شده باشد.
 
 ## مرتبط
 

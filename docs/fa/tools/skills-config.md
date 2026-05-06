@@ -1,20 +1,20 @@
 ---
 read_when:
     - افزودن یا تغییر پیکربندی Skills
-    - تنظیم فهرست مجاز همراه یا رفتار نصب
-summary: طرحوارهٔ پیکربندی Skills و نمونه‌ها
+    - تنظیم فهرست مجاز بسته‌بندی‌شده یا رفتار نصب
+summary: طرح‌واره و نمونه‌های پیکربندی Skills
 title: پیکربندی Skills
 x-i18n:
-    generated_at: "2026-04-29T23:45:42Z"
+    generated_at: "2026-05-06T09:48:34Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 4d5e156adb9b88d7ade1976005c11faffe5107661e4f3da5d878cc0ac648bcbb
+    source_hash: 8996b3df73a9f0176b541c5d3f9670615f9a879a41838cf5d35d0a455e9f5088
     source_path: tools/skills-config.md
     workflow: 16
 ---
 
-بیشتر پیکربندی بارگذاری/نصب Skills زیر `skills` در
-`~/.openclaw/openclaw.json` قرار دارد. نمایانی Skills مختص agent زیر
+بیشتر پیکربندی بارگذار/نصب Skills زیر `skills` در
+`~/.openclaw/openclaw.json` قرار دارد. قابلیت مشاهده Skills مخصوص عامل زیر
 `agents.defaults.skills` و `agents.list[].skills` قرار دارد.
 
 ```json5
@@ -46,11 +46,10 @@ x-i18n:
 ```
 
 برای تولید/ویرایش تصویر داخلی، `agents.defaults.imageGenerationModel`
-به‌همراه ابزار هسته‌ای `image_generate` را ترجیح دهید. `skills.entries.*` فقط برای workflowهای سفارشی یا
+به‌همراه ابزار اصلی `image_generate` را ترجیح دهید. `skills.entries.*` فقط برای گردش‌کارهای سفارشی یا
 Skills شخص ثالث است.
 
-اگر provider/model تصویر مشخصی را انتخاب می‌کنید، کلید auth/API همان provider را نیز پیکربندی کنید.
-نمونه‌های رایج: `GEMINI_API_KEY` یا `GOOGLE_API_KEY` برای
+اگر یک ارائه‌دهنده/مدل تصویر مشخص انتخاب می‌کنید، کلید احراز هویت/API همان ارائه‌دهنده را نیز پیکربندی کنید. نمونه‌های رایج: `GEMINI_API_KEY` یا `GOOGLE_API_KEY` برای
 `google/*`، `OPENAI_API_KEY` برای `openai/*`، و `FAL_KEY` برای `fal/*`.
 
 نمونه‌ها:
@@ -58,9 +57,10 @@ Skills شخص ثالث است.
 - راه‌اندازی بومی به سبک Nano Banana Pro: `agents.defaults.imageGenerationModel.primary: "google/gemini-3-pro-image-preview"`
 - راه‌اندازی بومی fal: `agents.defaults.imageGenerationModel.primary: "fal/fal-ai/flux/dev"`
 
-## فهرست‌های مجاز Skills برای agent
+## فهرست‌های مجاز Skills عامل
 
-وقتی می‌خواهید ریشه‌های Skills یکسانی برای ماشین/workspace داشته باشید، اما مجموعه Skills قابل مشاهده برای هر agent متفاوت باشد، از پیکربندی agent استفاده کنید.
+زمانی از پیکربندی عامل استفاده کنید که ریشه‌های Skills یکسانی در همان ماشین/فضای کاری می‌خواهید، اما
+مجموعه Skills قابل مشاهده برای هر عامل متفاوت باشد.
 
 ```json5
 {
@@ -79,65 +79,77 @@ Skills شخص ثالث است.
 
 قواعد:
 
-- `agents.defaults.skills`: فهرست مجاز پایه مشترک برای agentهایی که
+- `agents.defaults.skills`: فهرست مجاز پایه مشترک برای عامل‌هایی که
   `agents.list[].skills` را حذف می‌کنند.
-- برای اینکه Skills به‌طور پیش‌فرض محدود نباشند، `agents.defaults.skills` را حذف کنید.
-- `agents.list[].skills`: مجموعه نهایی و صریح Skills برای آن agent؛ با defaults
+- برای اینکه Skills به‌صورت پیش‌فرض محدود نباشد، `agents.defaults.skills` را حذف کنید.
+- `agents.list[].skills`: مجموعه نهایی و صریح Skills برای آن عامل؛ با پیش‌فرض‌ها
   ادغام نمی‌شود.
-- `agents.list[].skills: []`: هیچ Skillsی را برای آن agent نمایش ندهید.
+- `agents.list[].skills: []`: هیچ Skills برای آن عامل در معرض دسترس قرار ندهید.
 
 ## فیلدها
 
-- ریشه‌های Skills داخلی همیشه شامل `~/.openclaw/skills`، `~/.agents/skills`،
+- ریشه‌های داخلی Skills همیشه شامل `~/.openclaw/skills`، `~/.agents/skills`،
   `<workspace>/.agents/skills`، و `<workspace>/skills` هستند.
-- `allowBundled`: فهرست مجاز اختیاری فقط برای Skills **bundled**. وقتی تنظیم شود، فقط
-  Skills bundled موجود در فهرست واجد شرایط هستند (Skills مدیریت‌شده، agent، و workspace بی‌تأثیر می‌مانند).
-- `load.extraDirs`: دایرکتوری‌های اضافی Skills برای اسکن (کمترین اولویت).
-- `load.watch`: پوشه‌های Skills را زیر نظر بگیرد و snapshot مربوط به Skills را تازه‌سازی کند (پیش‌فرض: true).
-- `load.watchDebounceMs`: debounce رویدادهای watcher مربوط به Skills بر حسب میلی‌ثانیه (پیش‌فرض: 250).
-- `install.preferBrew`: نصب‌کننده‌های brew را، وقتی در دسترس باشند، ترجیح دهد (پیش‌فرض: true).
+- `allowBundled`: فهرست مجاز اختیاری فقط برای Skills **بسته‌بندی‌شده**. وقتی تنظیم شود، فقط
+  Skills بسته‌بندی‌شده موجود در فهرست واجد شرایط هستند (Skills مدیریت‌شده، عامل، و فضای کاری تحت تأثیر قرار نمی‌گیرند).
+- `load.extraDirs`: پوشه‌های اضافی Skills برای اسکن (کمترین اولویت).
+- `load.watch`: پوشه‌های Skills را پایش می‌کند و عکس‌برداشت Skills را تازه‌سازی می‌کند (پیش‌فرض: true).
+- `load.watchDebounceMs`: زمان debounce رویدادهای پایشگر Skills بر حسب میلی‌ثانیه (پیش‌فرض: 250).
+- `install.preferBrew`: در صورت موجود بودن، نصب‌کننده‌های brew را ترجیح می‌دهد (پیش‌فرض: true).
 - `install.nodeManager`: ترجیح نصب‌کننده node (`npm` | `pnpm` | `yarn` | `bun`، پیش‌فرض: npm).
-  این فقط بر **نصب‌های Skills** اثر می‌گذارد؛ runtime مربوط به Gateway همچنان باید Node باشد
+  این فقط روی **نصب‌های Skills** اثر می‌گذارد؛ زمان اجرای Gateway همچنان باید Node باشد
   (Bun برای WhatsApp/Telegram توصیه نمی‌شود).
-  - `openclaw setup --node-manager` محدودتر است و فعلاً `npm`،
-    `pnpm`، یا `bun` را می‌پذیرد. اگر نصب‌های Skills با پشتوانه Yarn می‌خواهید،
-    `skills.install.nodeManager: "yarn"` را دستی تنظیم کنید.
-- `entries.<skillKey>`: overrideهای هر Skill.
-- `agents.defaults.skills`: فهرست مجاز پیش‌فرض اختیاری Skills که توسط agentهایی که
-  `agents.list[].skills` را حذف می‌کنند به ارث برده می‌شود.
-- `agents.list[].skills`: فهرست مجاز نهایی اختیاری Skills برای هر agent؛
-  فهرست‌های صریح، به‌جای ادغام، defaults موروثی را جایگزین می‌کنند.
+  - `openclaw setup --node-manager` محدودتر است و در حال حاضر `npm`،
+    `pnpm`، یا `bun` را می‌پذیرد. اگر نصب‌های Skills مبتنی بر Yarn می‌خواهید،
+    `skills.install.nodeManager: "yarn"` را به‌صورت دستی تنظیم کنید.
+- `entries.<skillKey>`: بازنویسی‌های مخصوص هر Skill.
+- `agents.defaults.skills`: فهرست مجاز پیش‌فرض اختیاری Skills که توسط عامل‌هایی به ارث می‌رسد
+  که `agents.list[].skills` را حذف می‌کنند.
+- `agents.list[].skills`: فهرست مجاز نهایی اختیاری Skills برای هر عامل؛ فهرست‌های صریح
+  به‌جای ادغام، پیش‌فرض‌های به‌ارث‌رسیده را جایگزین می‌کنند.
 
-فیلدهای هر Skill:
+فیلدهای مخصوص هر Skill:
 
-- `enabled`: برای غیرفعال کردن یک Skill، حتی اگر bundled/installed باشد، `false` تنظیم کنید.
-- `env`: متغیرهای محیطی تزریق‌شده برای اجرای agent (فقط اگر از قبل تنظیم نشده باشند).
-- `apiKey`: میانبر اختیاری برای Skillsی که یک env var اصلی اعلام می‌کنند.
-  از رشته plaintext یا شیء SecretRef (`{ source, provider, id }`) پشتیبانی می‌کند.
+- `enabled`: برای غیرفعال کردن یک Skill، حتی اگر بسته‌بندی/نصب شده باشد، مقدار `false` را تنظیم کنید.
+- `env`: متغیرهای محیطی تزریق‌شده برای اجرای عامل (فقط اگر از قبل تنظیم نشده باشند).
+- `apiKey`: میانبر اختیاری برای Skills که یک متغیر محیطی اصلی اعلام می‌کنند.
+  از رشته متن ساده یا شیء SecretRef (`{ source, provider, id }`) پشتیبانی می‌کند.
 
-## نکته‌ها
+## نکات
 
-- کلیدهای زیر `entries` به‌طور پیش‌فرض به نام Skill نگاشت می‌شوند. اگر یک Skill
+- کلیدهای زیر `entries` به‌صورت پیش‌فرض به نام Skill نگاشت می‌شوند. اگر یک Skill
   `metadata.openclaw.skillKey` را تعریف می‌کند، به‌جای آن از همان کلید استفاده کنید.
-- اولویت بارگذاری به‌ترتیب `<workspace>/skills` ← `<workspace>/.agents/skills` ←
-  `~/.agents/skills` ← `~/.openclaw/skills` ← Skills bundled ←
-  `skills.load.extraDirs` است.
-- وقتی watcher فعال باشد، تغییرات Skills در نوبت بعدی agent دریافت می‌شوند.
+- اولویت بارگذاری این است: `<workspace>/skills` → `<workspace>/.agents/skills` →
+  `~/.agents/skills` → `~/.openclaw/skills` → Skills بسته‌بندی‌شده →
+  `skills.load.extraDirs`.
+- وقتی پایشگر فعال باشد، تغییرات Skills در نوبت بعدی عامل اعمال می‌شوند.
 
-### Skills سندباکس‌شده + env vars
+### Skills سندباکس‌شده و متغیرهای env
 
-وقتی یک session **sandboxed** باشد، فرایندهای Skills داخل backend سندباکس پیکربندی‌شده اجرا می‌شوند.
-سندباکس `process.env` میزبان را به ارث **نمی‌برد**.
+وقتی یک نشست **سندباکس‌شده** است، فرایندهای Skill داخل backend سندباکس پیکربندی‌شده اجرا می‌شوند. سندباکس `process.env` میزبان را به ارث **نمی‌برد**.
+
+<Warning>
+  `env` سراسری و `skills.entries.<skill>.env`/`apiKey` فقط روی اجراهای **میزبان** اعمال می‌شوند. داخل سندباکس اثری ندارند، بنابراین Skill وابسته به `GEMINI_API_KEY` با `apiKey not configured` شکست می‌خورد، مگر اینکه متغیر جداگانه به سندباکس داده شود.
+</Warning>
 
 از یکی از این‌ها استفاده کنید:
 
-- `agents.defaults.sandbox.docker.env` برای backend Docker (یا `agents.list[].sandbox.docker.env` برای هر agent)
-- env را داخل تصویر سندباکس سفارشی یا محیط سندباکس remote خود bake کنید
-
-`env` سراسری و `skills.entries.<skill>.env/apiKey` فقط برای اجراهای **host** اعمال می‌شوند.
+- `agents.defaults.sandbox.docker.env` برای backend Docker (یا `agents.list[].sandbox.docker.env` مخصوص هر عامل).
+- env را داخل تصویر سندباکس سفارشی یا محیط سندباکس راه‌دور خود بگنجانید.
 
 ## مرتبط
 
-- [Skills](/fa/tools/skills)
-- [ایجاد Skills](/fa/tools/creating-skills)
-- [دستورات Slash](/fa/tools/slash-commands)
+<CardGroup cols={2}>
+  <Card title="Skills" href="/fa/tools/skills" icon="puzzle-piece">
+    اینکه Skills چیستند و چگونه بارگذاری می‌شوند.
+  </Card>
+  <Card title="ایجاد Skills" href="/fa/tools/creating-skills" icon="hammer">
+    نوشتن بسته‌های Skill سفارشی.
+  </Card>
+  <Card title="دستورهای اسلش" href="/fa/tools/slash-commands" icon="terminal">
+    کاتالوگ دستورهای بومی و دستورالعمل‌های گپ.
+  </Card>
+  <Card title="مرجع پیکربندی" href="/fa/gateway/configuration-reference" icon="gear">
+    طرح‌واره کامل `skills` و `agents.skills`.
+  </Card>
+</CardGroup>
