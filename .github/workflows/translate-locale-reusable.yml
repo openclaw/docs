@@ -196,7 +196,9 @@ jobs:
           PY
 
       - name: Translate changed docs into locale
+        id: translate_docs
         if: steps.stale.outputs.skip != 'true' && steps.pending.outputs.pending_count != '0'
+        continue-on-error: true
         env:
           LOCALE: ${{ inputs.locale }}
           LOCALE_SLUG: ${{ inputs.locale_slug }}
@@ -241,12 +243,12 @@ jobs:
           done
 
       - name: Install docs MDX checker dependency
-        if: steps.stale.outputs.skip != 'true' && steps.pending.outputs.pending_count != '0'
+        if: steps.stale.outputs.skip != 'true' && steps.pending.outputs.pending_count != '0' && steps.translate_docs.outcome == 'success'
         run: npm install --no-save --package-lock=false @mdx-js/mdx@3.1.1
 
       - name: Check translated MDX
         id: mdx_check
-        if: steps.stale.outputs.skip != 'true' && steps.pending.outputs.pending_count != '0'
+        if: steps.stale.outputs.skip != 'true' && steps.pending.outputs.pending_count != '0' && steps.translate_docs.outcome == 'success'
         continue-on-error: true
         env:
           LOCALE: ${{ inputs.locale }}
@@ -256,7 +258,9 @@ jobs:
             --json-out ".openclaw-sync/mdx/${LOCALE}.json"
 
       - name: Repair translated MDX
-        if: steps.stale.outputs.skip != 'true' && steps.mdx_check.outcome == 'failure'
+        id: mdx_repair
+        if: steps.stale.outputs.skip != 'true' && steps.translate_docs.outcome == 'success' && steps.mdx_check.outcome == 'failure'
+        continue-on-error: true
         uses: openai/codex-action@v1
         env:
           LOCALE: ${{ inputs.locale }}
@@ -270,7 +274,9 @@ jobs:
           codex-args: '["--full-auto"]'
 
       - name: Enforce translated MDX repair scope
-        if: steps.stale.outputs.skip != 'true' && steps.mdx_check.outcome == 'failure'
+        id: mdx_scope
+        if: steps.stale.outputs.skip != 'true' && steps.translate_docs.outcome == 'success' && steps.mdx_check.outcome == 'failure'
+        continue-on-error: true
         env:
           LOCALE: ${{ inputs.locale }}
         run: |
@@ -297,7 +303,9 @@ jobs:
           fi
 
       - name: Recheck translated MDX
-        if: steps.stale.outputs.skip != 'true' && steps.mdx_check.outcome == 'failure'
+        id: mdx_recheck
+        if: steps.stale.outputs.skip != 'true' && steps.translate_docs.outcome == 'success' && steps.mdx_check.outcome == 'failure' && steps.mdx_repair.outcome == 'success' && steps.mdx_scope.outcome == 'success'
+        continue-on-error: true
         env:
           LOCALE: ${{ inputs.locale }}
         run: |
@@ -313,6 +321,11 @@ jobs:
           MODE: ${{ inputs.mode }}
           PENDING_COUNT: ${{ steps.pending.outputs.pending_count || '0' }}
           ALL_COUNT: ${{ steps.pending.outputs.all_count || '0' }}
+          TRANSLATE_OUTCOME: ${{ steps.translate_docs.outcome || 'skipped' }}
+          MDX_CHECK_OUTCOME: ${{ steps.mdx_check.outcome || 'skipped' }}
+          MDX_REPAIR_OUTCOME: ${{ steps.mdx_repair.outcome || 'skipped' }}
+          MDX_SCOPE_OUTCOME: ${{ steps.mdx_scope.outcome || 'skipped' }}
+          MDX_RECHECK_OUTCOME: ${{ steps.mdx_recheck.outcome || 'skipped' }}
         run: |
           set -euo pipefail
 
@@ -320,10 +333,29 @@ jobs:
           payload_dir="${artifact_dir}/payload"
           mkdir -p "${payload_dir}"
 
-          git diff --name-only --diff-filter=ACMRT -- "docs/${LOCALE}" "docs/.i18n/${LOCALE}.tm.jsonl" > "${artifact_dir}/changed-files.txt"
-          git ls-files --others --exclude-standard -- "docs/${LOCALE}" "docs/.i18n/${LOCALE}.tm.jsonl" >> "${artifact_dir}/changed-files.txt"
-          sort -u "${artifact_dir}/changed-files.txt" -o "${artifact_dir}/changed-files.txt"
-          git diff --name-only --diff-filter=D -- "docs/${LOCALE}" "docs/.i18n/${LOCALE}.tm.jsonl" > "${artifact_dir}/deleted-files.txt"
+          failed_reason=""
+          if [ "${TRANSLATE_OUTCOME}" = "failure" ]; then
+            failed_reason="translation failed"
+          elif [ "${MDX_CHECK_OUTCOME}" = "failure" ]; then
+            if [ "${MDX_REPAIR_OUTCOME}" = "failure" ]; then
+              failed_reason="mdx repair failed"
+            elif [ "${MDX_SCOPE_OUTCOME}" = "failure" ]; then
+              failed_reason="mdx repair scope failed"
+            elif [ "${MDX_RECHECK_OUTCOME}" != "success" ]; then
+              failed_reason="mdx repair failed"
+            fi
+          fi
+          export FAILED_REASON="${failed_reason}"
+
+          if [ -n "${failed_reason}" ]; then
+            : > "${artifact_dir}/changed-files.txt"
+            : > "${artifact_dir}/deleted-files.txt"
+          else
+            git diff --name-only --diff-filter=ACMRT -- "docs/${LOCALE}" "docs/.i18n/${LOCALE}.tm.jsonl" > "${artifact_dir}/changed-files.txt"
+            git ls-files --others --exclude-standard -- "docs/${LOCALE}" "docs/.i18n/${LOCALE}.tm.jsonl" >> "${artifact_dir}/changed-files.txt"
+            sort -u "${artifact_dir}/changed-files.txt" -o "${artifact_dir}/changed-files.txt"
+            git diff --name-only --diff-filter=D -- "docs/${LOCALE}" "docs/.i18n/${LOCALE}.tm.jsonl" > "${artifact_dir}/deleted-files.txt"
+          fi
 
           while IFS= read -r file; do
             [ -n "${file}" ] || continue
@@ -349,6 +381,12 @@ jobs:
               "all_count": int(os.environ["ALL_COUNT"]),
               "changed_count": len(changed),
               "deleted_count": len(deleted),
+              "translate_outcome": os.environ["TRANSLATE_OUTCOME"],
+              "mdx_check_outcome": os.environ["MDX_CHECK_OUTCOME"],
+              "mdx_repair_outcome": os.environ["MDX_REPAIR_OUTCOME"],
+              "mdx_scope_outcome": os.environ["MDX_SCOPE_OUTCOME"],
+              "mdx_recheck_outcome": os.environ["MDX_RECHECK_OUTCOME"],
+              "failed_reason": os.environ["FAILED_REASON"],
           }
           (artifact_dir / "metadata.json").write_text(json.dumps(metadata, indent=2, sort_keys=True) + "\n")
           print(json.dumps(metadata, indent=2, sort_keys=True))
