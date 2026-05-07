@@ -16,6 +16,7 @@ const region = process.env.OPENCLAW_R2_REGION || "auto";
 const service = "s3";
 const retryAttempts = Number.parseInt(process.env.R2_UPLOAD_RETRIES || "5", 10);
 const deleteOrphans = process.env.R2_DELETE_ORPHANS !== "0";
+const forceUpload = process.env.R2_UPLOAD_FORCE === "1";
 
 if (!Number.isFinite(concurrency) || concurrency < 1) throw new Error("R2_UPLOAD_CONCURRENCY must be a positive integer");
 if (!fs.existsSync(manifestPath)) throw new Error("dist/docs-r2-manifest.json does not exist; run docs:build:r2 first");
@@ -28,19 +29,21 @@ const remoteManifest = await getRemoteManifest();
 const remoteEntries = new Map((remoteManifest?.entries || []).map((entry) => [entry.key, entry]));
 const localKeys = new Set(manifest.entries.map((entry) => entry.key));
 localKeys.add(remoteManifestKey);
-const changed = manifest.entries.filter((entry) => {
-  const remote = remoteEntries.get(entry.key);
-  return !remote
-    || remote.sha256 !== entry.sha256
-    || remote.contentType !== entry.contentType
-    || remote.cacheControl !== entry.cacheControl;
-});
+const changed = forceUpload
+  ? manifest.entries
+  : manifest.entries.filter((entry) => {
+    const remote = remoteEntries.get(entry.key);
+    return !remote
+      || remote.sha256 !== entry.sha256
+      || remote.contentType !== entry.contentType
+      || remote.cacheControl !== entry.cacheControl;
+  });
 const manifestDeletedKeys = Array.from(remoteEntries.keys()).filter((key) => !localKeys.has(key));
 const orphanedKeys = deleteOrphans ? (await listBucketKeys()).filter((key) => !localKeys.has(key)) : [];
 const deleted = Array.from(new Set([...manifestDeletedKeys, ...orphanedKeys])).sort().map((key) => ({ key }));
 
 console.log(
-  `r2 upload plan: ${changed.length}/${manifest.entries.length} changed objects, ${deleted.length} deleted objects (${manifestDeletedKeys.length} from manifest, ${orphanedKeys.length} orphaned) for ${bucket}`,
+  `r2 upload plan: ${changed.length}/${manifest.entries.length} changed objects, ${deleted.length} deleted objects (${manifestDeletedKeys.length} from manifest, ${orphanedKeys.length} orphaned, force=${forceUpload}) for ${bucket}`,
 );
 await uploadEntries(changed);
 await deleteEntries(deleted);
