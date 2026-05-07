@@ -33,6 +33,7 @@ Production is still on the safe Worker Static Assets fallback until the Cloudfla
 - Route: `documentation.openclaw.ai/*`
 - Static assets binding: `env.ASSETS`
 - Header: `X-OpenClaw-Docs-Origin: cloudflare-static-assets`
+- Cache-Control follows the same policy as the R2 manifest.
 
 The fallback exists because the Services@openclaw.org Cloudflare token currently cannot access R2. Local verification against account `91b59577e757131d68d55a471fe32aca` fails before bucket operations with Cloudflare API auth error `10000`.
 
@@ -170,6 +171,7 @@ Expected before R2 cutover:
 
 - the same URLs work through the Worker Static Assets fallback.
 - docs responses include `X-OpenClaw-Docs-Origin: cloudflare-static-assets`.
+- repeated requests should show Cloudflare `cf-cache-status: HIT`.
 
 ## Rollback
 

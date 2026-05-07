@@ -87,11 +87,22 @@ async function assetResponse(env: Env, request: Request, pathname: string): Prom
   }));
   const responseHeaders = new Headers(response.headers);
   responseHeaders.set("X-OpenClaw-Docs-Origin", "cloudflare-static-assets");
+  if (response.ok) responseHeaders.set("Cache-Control", cacheControlFor(pathname));
   return new Response(request.method === "HEAD" ? null : response.body, {
     status: response.status,
     statusText: response.statusText,
     headers: responseHeaders,
   });
+}
+
+function cacheControlFor(pathname: string): string {
+  if (pathname.endsWith(".html")) {
+    return "public, max-age=60, s-maxage=86400, stale-while-revalidate=604800";
+  }
+  if (pathname.endsWith(".md") || pathname.endsWith(".txt") || pathname.endsWith(".json") || pathname.endsWith(".jsonl")) {
+    return "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400";
+  }
+  return "public, max-age=31536000, immutable";
 }
 
 function appendVary(current: string | null, value: string): string {

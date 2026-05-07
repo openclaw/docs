@@ -7,10 +7,13 @@ on:
     paths:
       - "docs/**"
       - "scripts/docs-site/**"
+      - "workers/**"
       - "package.json"
       - "package-lock.json"
       - ".github/workflows/pages.yml"
+      - "wrangler.toml"
       - "README.md"
+      - "CLOUDFLARE.md"
   workflow_dispatch:
 
 permissions:
