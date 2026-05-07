@@ -25,6 +25,7 @@ if (!secretAccessKey) throw new Error("OPENCLAW_R2_SECRET_ACCESS_KEY or AWS_SECR
 const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
 const remoteManifest = await getRemoteManifest();
 const remoteEntries = new Map((remoteManifest?.entries || []).map((entry) => [entry.key, entry]));
+const localKeys = new Set(manifest.entries.map((entry) => entry.key));
 const changed = manifest.entries.filter((entry) => {
   const remote = remoteEntries.get(entry.key);
   return !remote
@@ -32,9 +33,13 @@ const changed = manifest.entries.filter((entry) => {
     || remote.contentType !== entry.contentType
     || remote.cacheControl !== entry.cacheControl;
 });
+const deleted = Array.from(remoteEntries.values()).filter((entry) => !localKeys.has(entry.key));
 
-console.log(`r2 upload plan: ${changed.length}/${manifest.entries.length} changed objects for ${bucket}`);
+console.log(
+  `r2 upload plan: ${changed.length}/${manifest.entries.length} changed objects, ${deleted.length} deleted objects for ${bucket}`,
+);
 await uploadEntries(changed);
+await deleteEntries(deleted);
 const manifestSha256 = sha256Hex(fs.readFileSync(manifestPath));
 await putObject({
   key: remoteManifestKey,
@@ -43,7 +48,7 @@ await putObject({
   contentType: "application/json; charset=utf-8",
   cacheControl: "private, max-age=0, no-store",
 });
-console.log(`r2 upload ok: ${changed.length} changed objects plus ${remoteManifestKey}`);
+console.log(`r2 upload ok: ${changed.length} changed objects, ${deleted.length} deleted objects plus ${remoteManifestKey}`);
 
 async function getRemoteManifest() {
   try {
@@ -70,6 +75,20 @@ async function uploadEntries(entries) {
   await Promise.all(workers);
 }
 
+async function deleteEntries(entries) {
+  let next = 0;
+  let done = 0;
+  const workers = Array.from({ length: Math.min(concurrency, entries.length) }, async () => {
+    while (next < entries.length) {
+      const entry = entries[next++];
+      await deleteObject(entry);
+      done++;
+      if (done % 500 === 0 || done === entries.length) console.log(`r2 delete progress: ${done}/${entries.length}`);
+    }
+  });
+  await Promise.all(workers);
+}
+
 async function putObject(entry) {
   const file = path.isAbsolute(entry.file) ? entry.file : path.join(root, entry.file);
   const body = fs.readFileSync(file);
@@ -80,6 +99,12 @@ async function putObject(entry) {
     "x-amz-content-sha256": entry.sha256 || sha256Hex(body),
   });
   if (!response.ok) throw new Error(`R2 upload failed for ${entry.key}: ${response.status} ${await response.text()}`);
+}
+
+async function deleteObject(entry) {
+  const response = await signedFetchWithRetry("DELETE", entry.key);
+  if (response.status === 404) return;
+  if (!response.ok) throw new Error(`R2 delete failed for ${entry.key}: ${response.status} ${await response.text()}`);
 }
 
 async function signedFetchWithRetry(method, key, body, headers = {}) {
