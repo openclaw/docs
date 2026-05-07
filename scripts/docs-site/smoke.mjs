@@ -91,6 +91,9 @@ if (/data-locale/.test(siteJs)) {
 if (!/function initChat/.test(siteJs) || !/data-chat-form/.test(siteJs)) {
   throw new Error("assets: docs chat behavior is missing");
 }
+if (!/function runSearch/.test(siteJs) || !/setTimeout\(\(\)=>runSearch\(q,id\),140\)/.test(siteJs)) {
+  throw new Error("assets: search input is not debounced");
+}
 const platformsIndex = fs.readFileSync(path.join(site, "platforms/index.html"), "utf8");
 if (/VPS &amp;amp; hosting/.test(platformsIndex)) {
   throw new Error("platforms index: TOC double-escaped ampersand");
