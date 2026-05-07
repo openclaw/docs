@@ -1,43 +1,43 @@
 ---
 read_when:
     - Je wilt Arcee AI gebruiken met OpenClaw
-    - Je hebt de omgevingsvariabele voor de API-sleutel of de CLI-authenticatiekeuze nodig
-summary: Arcee AI configureren (authenticatie + modelselectie)
+    - Je hebt de API-sleutelomgevingsvariabele of de CLI-authenticatiekeuze nodig
+summary: Arcee AI-configuratie (authenticatie + modelselectie)
 title: Arcee AI
 x-i18n:
-    generated_at: "2026-05-03T11:16:44Z"
+    generated_at: "2026-05-07T15:08:37Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 54989e1706901fedc8a0c816ca7ee7f877fa4b973697540dd90cb9182420043f
+    source_hash: 8c3775ac2783da0833988c68621bd81c73a3b3e8240c26b4c1b590c1e9df2a8f
     source_path: providers/arcee.md
     workflow: 16
 ---
 
 [Arcee AI](https://arcee.ai) biedt toegang tot de Trinity-familie van mixture-of-experts-modellen via een OpenAI-compatibele API. Alle Trinity-modellen hebben een Apache 2.0-licentie.
 
-Arcee AI-modellen zijn direct toegankelijk via het Arcee-platform of via [OpenRouter](/nl/providers/openrouter).
+Arcee AI-modellen zijn rechtstreeks toegankelijk via het Arcee-platform of via [OpenRouter](/nl/providers/openrouter).
 
 | Eigenschap | Waarde                                                                                |
 | ---------- | ------------------------------------------------------------------------------------- |
 | Provider   | `arcee`                                                                               |
-| Authenticatie | `ARCEEAI_API_KEY` (direct) of `OPENROUTER_API_KEY` (via OpenRouter)                |
+| Auth       | `ARCEEAI_API_KEY` (direct) or `OPENROUTER_API_KEY` (via OpenRouter)                   |
 | API        | OpenAI-compatibel                                                                     |
-| Basis-URL  | `https://api.arcee.ai/api/v1` (direct) of `https://openrouter.ai/api/v1` (OpenRouter) |
+| Base-URL   | `https://api.arcee.ai/api/v1` (direct) or `https://openrouter.ai/api/v1` (OpenRouter) |
 
 ## Aan de slag
 
 <Tabs>
-  <Tab title="Direct (Arcee-platform)">
+  <Tab title="Direct (Arcee platform)">
     <Steps>
-      <Step title="Een API-sleutel ophalen">
+      <Step title="Get an API key">
         Maak een API-sleutel aan bij [Arcee AI](https://chat.arcee.ai/).
       </Step>
-      <Step title="Onboarding uitvoeren">
+      <Step title="Run onboarding">
         ```bash
         openclaw onboard --auth-choice arceeai-api-key
         ```
       </Step>
-      <Step title="Een standaardmodel instellen">
+      <Step title="Set a default model">
         ```json5
         {
           agents: {
@@ -53,15 +53,15 @@ Arcee AI-modellen zijn direct toegankelijk via het Arcee-platform of via [OpenRo
 
   <Tab title="Via OpenRouter">
     <Steps>
-      <Step title="Een API-sleutel ophalen">
+      <Step title="Get an API key">
         Maak een API-sleutel aan bij [OpenRouter](https://openrouter.ai/keys).
       </Step>
-      <Step title="Onboarding uitvoeren">
+      <Step title="Run onboarding">
         ```bash
         openclaw onboard --auth-choice arceeai-openrouter
         ```
       </Step>
-      <Step title="Een standaardmodel instellen">
+      <Step title="Set a default model">
         ```json5
         {
           agents: {
@@ -82,7 +82,7 @@ Arcee AI-modellen zijn direct toegankelijk via het Arcee-platform of via [OpenRo
 ## Niet-interactieve configuratie
 
 <Tabs>
-  <Tab title="Direct (Arcee-platform)">
+  <Tab title="Direct (Arcee platform)">
     ```bash
     openclaw onboard --non-interactive \
       --mode local \
@@ -103,37 +103,37 @@ Arcee AI-modellen zijn direct toegankelijk via het Arcee-platform of via [OpenRo
 
 ## Ingebouwde catalogus
 
-OpenClaw levert momenteel deze gebundelde Arcee-catalogus mee:
+OpenClaw wordt momenteel geleverd met deze gebundelde Arcee-catalogus:
 
-| Modelverwijzing                | Naam                   | Invoer | Context | Kosten (in/uit per 1 mln.) | Opmerkingen                              |
-| ------------------------------ | ---------------------- | ------ | ------- | --------------------------- | ---------------------------------------- |
-| `arcee/trinity-large-thinking` | Trinity Large Thinking | tekst  | 256K    | $0.25 / $0.90               | Standaardmodel; redeneren ingeschakeld   |
-| `arcee/trinity-large-preview`  | Trinity Large Preview  | tekst  | 128K    | $0.25 / $1.00               | Algemeen gebruik; 400B parameters, 13B actief |
-| `arcee/trinity-mini`           | Trinity Mini 26B       | tekst  | 128K    | $0.045 / $0.15              | Snel en kostenefficient; functieaanroepen |
+| Modelverwijzing                | Naam                   | Invoer | Context | Kosten (in/uit per 1M) | Opmerkingen                               |
+| ------------------------------ | ---------------------- | ------ | ------- | ---------------------- | ----------------------------------------- |
+| `arcee/trinity-large-thinking` | Trinity Large Thinking | tekst  | 256K    | $0.25 / $0.90          | Standaardmodel; redeneren ingeschakeld    |
+| `arcee/trinity-large-preview`  | Trinity Large Preview  | tekst  | 128K    | $0.25 / $1.00          | Algemeen gebruik; 400B params, 13B actief |
+| `arcee/trinity-mini`           | Trinity Mini 26B       | tekst  | 128K    | $0.045 / $0.15         | Snel en kostenefficient; function calling |
 
 <Tip>
-De onboarding-preset stelt `arcee/trinity-large-thinking` in als standaardmodel.
+De onboardingpreset stelt `arcee/trinity-large-thinking` in als standaardmodel.
 </Tip>
 
 ## Ondersteunde functies
 
-| Functie                                        | Ondersteund                  |
-| ---------------------------------------------- | ---------------------------- |
-| Streaming                                      | Ja                           |
-| Toolgebruik / functieaanroepen                 | Ja                           |
-| Gestructureerde uitvoer (JSON-modus en JSON-schema) | Ja                    |
-| Uitgebreid denken                              | Ja (Trinity Large Thinking)  |
+| Functie                                           | Ondersteund                                  |
+| ------------------------------------------------- | -------------------------------------------- |
+| Streaming                                         | Ja                                           |
+| Toolgebruik / function calling                    | Ja (Trinity Mini, Trinity Large Preview)     |
+| Gestructureerde uitvoer (JSON-modus en JSON-schema) | Ja                                        |
+| Uitgebreid denken                                 | Ja (Trinity Large Thinking; tools uitgeschakeld) |
 
 <AccordionGroup>
-  <Accordion title="Omgevingsopmerking">
+  <Accordion title="Environment note">
     Als de Gateway als daemon draait (launchd/systemd), zorg er dan voor dat `ARCEEAI_API_KEY`
     (of `OPENROUTER_API_KEY`) beschikbaar is voor dat proces (bijvoorbeeld in
     `~/.openclaw/.env` of via `env.shellEnv`).
   </Accordion>
 
-  <Accordion title="OpenRouter-routering">
-    Wanneer u Arcee-modellen via OpenRouter gebruikt, gelden dezelfde `arcee/*`-modelverwijzingen.
-    OpenClaw verwerkt de routering transparant op basis van uw authenticatiekeuze. Zie de
+  <Accordion title="OpenRouter routing">
+    Wanneer je Arcee-modellen via OpenRouter gebruikt, gelden dezelfde `arcee/*`-modelverwijzingen.
+    OpenClaw handelt routering transparant af op basis van je auth-keuze. Zie de
     [OpenRouter-providerdocumentatie](/nl/providers/openrouter) voor OpenRouter-specifieke
     configuratiedetails.
   </Accordion>
@@ -145,7 +145,7 @@ De onboarding-preset stelt `arcee/trinity-large-thinking` in als standaardmodel.
   <Card title="OpenRouter" href="/nl/providers/openrouter" icon="shuffle">
     Krijg toegang tot Arcee-modellen en vele andere via een enkele API-sleutel.
   </Card>
-  <Card title="Modelselectie" href="/nl/concepts/model-providers" icon="layers">
+  <Card title="Model selection" href="/nl/concepts/model-providers" icon="layers">
     Providers, modelverwijzingen en failovergedrag kiezen.
   </Card>
 </CardGroup>
