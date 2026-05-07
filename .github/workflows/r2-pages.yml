@@ -19,7 +19,7 @@ permissions:
 
 concurrency:
   group: r2-pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   deploy:
@@ -75,7 +75,21 @@ jobs:
       - name: Smoke generated site
         run: npm run docs:smoke
 
+      - name: Check current docs main
+        id: current-main
+        run: |
+          set -euo pipefail
+          git fetch --quiet origin main
+          latest="$(git rev-parse refs/remotes/origin/main)"
+          if [ "${GITHUB_SHA}" != "${latest}" ]; then
+            echo "stale=true" >> "${GITHUB_OUTPUT}"
+            echo "::notice::Docs main moved to ${latest}; skipping stale R2 upload for ${GITHUB_SHA}."
+          else
+            echo "stale=false" >> "${GITHUB_OUTPUT}"
+          fi
+
       - name: Upload changed R2 objects
+        if: steps.current-main.outputs.stale != 'true'
         env:
           CLOUDFLARE_ACCOUNT_ID: 91b59577e757131d68d55a471fe32aca
           CLOUDFLARE_R2_BUCKET: openclaw-docs
