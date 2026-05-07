@@ -1,20 +1,20 @@
 ---
 read_when:
     - OpenClaw'u yapılandırmayı öğrenme
-    - Yapılandırma örnekleri arıyorsanız
+    - Yapılandırma örnekleri mi arıyorsunuz?
     - OpenClaw'u ilk kez kurma
 summary: Yaygın OpenClaw kurulumları için şemaya uygun yapılandırma örnekleri
 title: Yapılandırma örnekleri
 x-i18n:
-    generated_at: "2026-05-06T17:55:22Z"
+    generated_at: "2026-05-07T13:17:06Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 01dd16c73f1156c4012fd3956083062141825b502722b6aa34f1f90462a6823a
+    source_hash: 87c7e75841ee36121c764f1ed51b6547d0fccf7ed6c1f05895d916dbf93f061a
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Aşağıdaki örnekler mevcut config şemasıyla uyumludur. Eksiksiz başvuru ve alan bazlı notlar için [Yapılandırma](/tr/gateway/configuration) bölümüne bakın.
+Aşağıdaki örnekler geçerli yapılandırma şemasıyla uyumludur. Eksiksiz referans ve alan bazlı notlar için bkz. [Yapılandırma](/tr/gateway/configuration).
 
 ## Hızlı başlangıç
 
@@ -27,7 +27,7 @@ Aşağıdaki örnekler mevcut config şemasıyla uyumludur. Eksiksiz başvuru ve
 }
 ```
 
-`~/.openclaw/openclaw.json` dosyasına kaydedin; botla bu numaradan DM üzerinden iletişim kurabilirsiniz.
+`~/.openclaw/openclaw.json` dosyasına kaydedin; ardından bu numaradan bota doğrudan mesaj gönderebilirsiniz.
 
 ### Önerilen başlangıç
 
@@ -59,7 +59,7 @@ Aşağıdaki örnekler mevcut config şemasıyla uyumludur. Eksiksiz başvuru ve
 
 ## Genişletilmiş örnek (başlıca seçenekler)
 
-> JSON5, yorumlar ve sondaki virgülleri kullanmanıza olanak tanır. Normal JSON da çalışır.
+> JSON5 yorumlar ve sonda virgüller kullanmanıza olanak tanır. Normal JSON da çalışır.
 
 ```json5
 {
@@ -473,7 +473,7 @@ Aşağıdaki örnekler mevcut config şemasıyla uyumludur. Eksiksiz başvuru ve
 
 ## Yaygın kalıplar
 
-### Tek geçersiz kılmayla paylaşılan Skills temel çizgisi
+### Tek geçersiz kılma ile paylaşılan skill temeli
 
 ```json5
 {
@@ -491,8 +491,8 @@ Aşağıdaki örnekler mevcut config şemasıyla uyumludur. Eksiksiz başvuru ve
 ```
 
 - `agents.defaults.skills` paylaşılan temeldir.
-- `agents.list[].skills`, bu temeli tek bir ajan için değiştirir.
-- Bir ajanın hiçbir Skills görmemesi gerekiyorsa `skills: []` kullanın.
+- `agents.list[].skills`, bir agent için bu temelin yerini alır.
+- Bir agent'ın hiçbir Skills görmemesi gerekiyorsa `skills: []` kullanın.
 
 ### Çok platformlu kurulum
 
@@ -515,11 +515,11 @@ Aşağıdaki örnekler mevcut config şemasıyla uyumludur. Eksiksiz başvuru ve
 }
 ```
 
-### Güvenilen Node ağı otomatik onayı
+### Güvenilir Node ağı otomatik onayı
 
 Ağ yolunu kontrol etmiyorsanız cihaz eşleştirmeyi manuel tutun. Ayrılmış bir
-laboratuvar veya tailnet alt ağı için, tam CIDR'ler ya da IP'lerle ilk kez
-kullanılan Node cihaz otomatik onayını etkinleştirebilirsiniz:
+laboratuvar veya tailnet alt ağı için, tam CIDR'ler veya IP'lerle ilk kez kullanılan
+Node cihazı otomatik onayına katılabilirsiniz:
 
 ```json5
 {
@@ -533,13 +533,13 @@ kullanılan Node cihaz otomatik onayını etkinleştirebilirsiniz:
 }
 ```
 
-Bu, ayarlanmadığında kapalı kalır. Yalnızca istenen kapsamlar olmayan yeni
-`role: node` eşleştirmesi için geçerlidir. Operatör/tarayıcı istemcileri ve rol,
-kapsam, meta veri veya açık anahtar yükseltmeleri yine manuel onay gerektirir.
+Ayarlanmadığında bu kapalı kalır. Yalnızca istenen kapsam bulunmayan yeni `role: node` eşleştirmeleri için geçerlidir.
+Operatör/tarayıcı istemcileri ile rol, kapsam, metadata veya
+public-key yükseltmeleri yine manuel onay gerektirir.
 
 ### Güvenli DM modu (paylaşılan gelen kutusu / çok kullanıcılı DM'ler)
 
-Botunuza birden fazla kişi DM gönderebiliyorsa (`allowFrom` içinde birden fazla giriş, birden fazla kişi için eşleştirme onayları veya `dmPolicy: "open"`), farklı gönderenlerden gelen DM'lerin varsayılan olarak tek bir bağlamı paylaşmaması için **güvenli DM modunu** etkinleştirin:
+Birden fazla kişi botunuza DM gönderebiliyorsa (`allowFrom` içinde birden fazla giriş, birden fazla kişi için eşleştirme onayları veya `dmPolicy: "open"`), farklı gönderenlerden gelen DM'lerin varsayılan olarak tek bir bağlamı paylaşmaması için **güvenli DM modunu** etkinleştirin:
 
 ```json5
 {
@@ -563,8 +563,8 @@ Botunuza birden fazla kişi DM gönderebiliyorsa (`allowFrom` içinde birden faz
 }
 ```
 
-Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC için, gönderen yetkilendirmesi varsayılan olarak önce ID'ye dayanır.
-Her kanalın `dangerouslyAllowNameMatching: true` ayarıyla doğrudan değiştirilebilir ad/e-posta/takma ad eşleştirmesini yalnızca bu riski açıkça kabul ediyorsanız etkinleştirin.
+Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC için gönderen yetkilendirmesi varsayılan olarak önce ID'ye dayanır.
+Doğrudan değiştirilebilir ad/e-posta/takma ad eşleştirmesini her kanalın `dangerouslyAllowNameMatching: true` ayarıyla yalnızca bu riski açıkça kabul ediyorsanız etkinleştirin.
 
 ### Anthropic API anahtarı + MiniMax yedeklemesi
 
@@ -660,8 +660,8 @@ Her kanalın `dangerouslyAllowNameMatching: true` ayarıyla doğrudan değiştir
 ## İpuçları
 
 - `dmPolicy: "open"` ayarlarsanız, eşleşen `allowFrom` listesi `"*"` içermelidir.
-- Sağlayıcı ID'leri farklılık gösterir (telefon numaraları, kullanıcı ID'leri, kanal ID'leri). Biçimi doğrulamak için sağlayıcı belgelerini kullanın.
-- Daha sonra eklenecek isteğe bağlı bölümler: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
+- Sağlayıcı ID'leri farklıdır (telefon numaraları, kullanıcı ID'leri, kanal ID'leri). Biçimi doğrulamak için sağlayıcı belgelerini kullanın.
+- Daha sonra eklenecek isteğe bağlı bölümler: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
 - Daha ayrıntılı kurulum notları için [Sağlayıcılar](/tr/providers) ve [Sorun giderme](/tr/gateway/troubleshooting) bölümlerine bakın.
 
 ## İlgili

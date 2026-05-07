@@ -1,19 +1,19 @@
 ---
 read_when:
     - OpenClaw'ı Güncelleme
-    - Güncellemeden sonra bir şey bozuluyor
-summary: OpenClaw'u güvenli şekilde güncelleme (global kurulum veya kaynak), ayrıca geri alma stratejisi
+    - Bir güncellemeden sonra bir şey bozuluyor
+summary: OpenClaw’ı güvenli şekilde güncelleme (global kurulum veya kaynak) ve geri alma stratejisi
 title: Güncelleme
 x-i18n:
-    generated_at: "2026-05-07T01:53:02Z"
+    generated_at: "2026-05-07T13:21:27Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 520f30980c56b9bcfc78bb2e916df812b2770a88c663140eeee3e9697bf58ee6
+    source_hash: 3c9ff1d70d74f45efea3c148718e5cbc74001ce3d924b760edc4d68622d23714
     source_path: install/updating.md
     workflow: 16
 ---
 
-OpenClaw'u güncel tutun.
+OpenClaw'ı güncel tutun.
 
 ## Önerilen: `openclaw update`
 
@@ -29,24 +29,25 @@ Kanalları değiştirmek veya belirli bir sürümü hedeflemek için:
 openclaw update --channel beta
 openclaw update --channel dev
 openclaw update --tag main
-openclaw update --dry-run   # uygulamadan önce önizle
+openclaw update --dry-run   # preview without applying
 ```
 
-`openclaw update`, `--verbose` kabul etmez. Güncelleme tanılaması için, planlanan eylemleri önizlemek üzere
+`openclaw update`, `--verbose` kabul etmez. Güncelleme tanılaması için planlanan eylemleri önizlemek üzere
 `--dry-run`, yapılandırılmış sonuçlar için `--json` veya kanal ve kullanılabilirlik durumunu incelemek için
 `openclaw update status --json` kullanın. Yükleyicinin kendi `--verbose` bayrağı vardır, ancak bu bayrak
 `openclaw update` parçası değildir.
 
-`--channel beta` beta'yı tercih eder, ancak beta etiketi eksikse veya en son kararlı sürümden daha eskiyse çalışma zamanı stable/latest'e geri döner. Tek seferlik bir paket güncellemesi için ham npm beta dist-tag istiyorsanız `--tag beta` kullanın.
-
-OpenClaw henüz bir LTS veya aylık destek güncelleme kanalı sunmuyor. SemVer uyumlu aylık destek hatlarına doğru çalışıyoruz, ancak bugün desteklenen kanallar hâlâ `stable`, `beta` ve `dev`.
+`--channel beta` beta'yı tercih eder, ancak beta etiketi eksikse veya en son kararlı sürümden eskiyse
+çalışma zamanı kararlı/en son sürüme geri döner. Tek seferlik paket güncellemesi için ham npm beta dist-tag'ini istiyorsanız `--tag beta`
+kullanın.
 
 Kanal semantiği için [Geliştirme kanalları](/tr/install/development-channels) bölümüne bakın.
 
 ## npm ve git kurulumları arasında geçiş yapın
 
 Kurulum türünü değiştirmek istediğinizde kanalları kullanın. Güncelleyici
-`~/.openclaw` içindeki durumunuzu, yapılandırmanızı, kimlik bilgilerinizi ve çalışma alanınızı korur; yalnızca CLI ve gateway'in hangi OpenClaw kod kurulumunu kullandığını değiştirir.
+durumunuzu, yapılandırmanızı, kimlik bilgilerinizi ve çalışma alanınızı `~/.openclaw` içinde tutar; yalnızca
+CLI ve gateway'in hangi OpenClaw kod kurulumunu kullandığını değiştirir.
 
 ```bash
 # npm package install -> editable git checkout
@@ -56,14 +57,17 @@ openclaw update --channel dev
 openclaw update --channel stable
 ```
 
-Tam kurulum modu geçişini önizlemek için önce `--dry-run` ile çalıştırın:
+Kesin kurulum modu geçişini önizlemek için önce `--dry-run` ile çalıştırın:
 
 ```bash
 openclaw update --channel dev --dry-run
 openclaw update --channel stable --dry-run
 ```
 
-`dev` kanalı bir git checkout olmasını sağlar, onu derler ve global CLI'yi bu checkout'tan yükler. `stable` ve `beta` kanalları paket kurulumlarını kullanır. Gateway zaten kuruluysa, `openclaw update` servis metadatasını yeniler ve `--no-restart` vermediğiniz sürece onu yeniden başlatır.
+`dev` kanalı bir git checkout'u sağlar, onu derler ve global CLI'yi
+bu checkout'tan kurar. `stable` ve `beta` kanalları paket kurulumlarını kullanır. Gateway
+zaten kuruluysa, `openclaw update` servis meta verilerini yeniler
+ve `--no-restart` geçmediğiniz sürece yeniden başlatır.
 
 ## Alternatif: yükleyiciyi yeniden çalıştırın
 
@@ -71,11 +75,13 @@ openclaw update --channel stable --dry-run
 curl -fsSL https://openclaw.ai/install.sh | bash
 ```
 
-Onboarding'i atlamak için `--no-onboard` ekleyin. Yükleyici üzerinden belirli bir kurulum türünü zorlamak için
+İlk kurulumu atlamak için `--no-onboard` ekleyin. Yükleyici üzerinden belirli bir kurulum türünü zorlamak için
 `--install-method git --no-onboard` veya
 `--install-method npm --no-onboard` geçin.
 
-`openclaw update`, npm paket kurulum aşamasından sonra başarısız olursa yükleyiciyi yeniden çalıştırın. Yükleyici eski güncelleyiciyi çağırmaz; global paket kurulumunu doğrudan çalıştırır ve kısmen güncellenmiş bir npm kurulumunu kurtarabilir.
+`openclaw update`, npm paket kurulum aşamasından sonra başarısız olursa
+yükleyiciyi yeniden çalıştırın. Yükleyici eski güncelleyiciyi çağırmaz; global
+paket kurulumunu doğrudan çalıştırır ve kısmen güncellenmiş bir npm kurulumunu kurtarabilir.
 
 ```bash
 curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method npm
@@ -93,9 +99,18 @@ curl -fsSL https://openclaw.ai/install.sh | bash -s -- --install-method npm --ve
 npm i -g openclaw@latest
 ```
 
-Denetimli kurulumlar için `openclaw update` tercih edin, çünkü paket değişimini çalışan Gateway servisiyle koordine edebilir. Yönetilen bir Gateway çalışırken manuel güncelleme yaparsanız, paket yöneticisi tamamlanır tamamlanmaz Gateway'i yeniden başlatın; böylece eski işlem, değiştirilmiş paket dosyalarından hizmet vermeye devam etmez.
+Denetimli kurulumlar için `openclaw update` tercih edin, çünkü paket değişimini
+çalışan Gateway servisiyle koordine edebilir. Yönetilen bir Gateway çalışırken
+manuel güncelleme yaparsanız, paket yöneticisi tamamlandıktan hemen sonra Gateway'i yeniden başlatın;
+böylece eski süreç, değiştirilmiş paket dosyalarından sunmaya devam etmez.
 
-`openclaw update` global bir npm kurulumunu yönettiğinde, hedefi önce geçici bir npm prefix'ine yükler, paketlenmiş `dist` envanterini doğrular, ardından temiz paket ağacını gerçek global prefix'e geçirir. Bu, npm'in yeni paketi eski paketten kalan bayat dosyaların üzerine bindirmesini önler. Kurulum komutu başarısız olursa OpenClaw `--omit=optional` ile bir kez yeniden dener. Bu yeniden deneme, yerel isteğe bağlı bağımlılıkların derlenemediği ana makinelerde yardımcı olurken, yedek yol da başarısız olursa özgün hatanın görünür kalmasını sağlar.
+`openclaw update` global bir npm kurulumunu yönettiğinde, hedefi önce
+geçici bir npm prefix'ine kurar, paketlenmiş `dist` envanterini doğrular, sonra temiz
+paket ağacını gerçek global prefix'e taşır. Bu, npm'in yeni paketi eski paketten kalan bayat dosyaların üzerine
+bindirmesini önler. Kurulum komutu başarısız olursa,
+OpenClaw `--omit=optional` ile bir kez daha dener. Bu yeniden deneme, yerel
+isteğe bağlı bağımlılıkların derlenemediği makinelerde yardımcı olurken, yedek de başarısız olursa
+asıl hatayı görünür tutar.
 
 ```bash
 pnpm add -g openclaw@latest
@@ -109,21 +124,21 @@ bun add -g openclaw@latest
 
 <AccordionGroup>
   <Accordion title="Salt okunur paket ağacı">
-    OpenClaw, global paket dizini geçerli kullanıcı tarafından yazılabilir olsa bile, paketlenmiş global kurulumları çalışma zamanında salt okunur kabul eder. Plugin paket kurulumları, kullanıcı yapılandırma dizini altındaki OpenClaw'a ait npm/git köklerinde bulunur ve Gateway başlangıcı OpenClaw paket ağacını değiştirmez.
+    OpenClaw, global paket dizini mevcut kullanıcı tarafından yazılabilir olsa bile paketlenmiş global kurulumları çalışma zamanında salt okunur kabul eder. Plugin paket kurulumları, kullanıcı yapılandırma dizini altındaki OpenClaw sahipli npm/git köklerinde bulunur ve Gateway başlangıcı OpenClaw paket ağacını değiştirmez.
 
-    Bazı Linux npm kurulumları global paketleri `/usr/lib/node_modules/openclaw` gibi root'a ait dizinlerin altına yükler. OpenClaw bu düzeni destekler, çünkü plugin install/update komutları bu global paket dizininin dışına yazar.
+    Bazı Linux npm kurulumları global paketleri `/usr/lib/node_modules/openclaw` gibi root sahipli dizinler altına kurar. OpenClaw bu düzeni destekler, çünkü Plugin kurulum/güncelleme komutları bu global paket dizininin dışına yazar.
 
   </Accordion>
-  <Accordion title="Sıkılaştırılmış systemd birimleri">
-    Açık plugin kurulumlarının, plugin güncellemelerinin ve doctor temizliğinin değişikliklerini kalıcı kılabilmesi için OpenClaw'a yapılandırma/durum köklerine yazma erişimi verin:
+  <Accordion title="Güçlendirilmiş systemd birimleri">
+    OpenClaw'a yapılandırma/durum köklerine yazma erişimi verin; böylece açık Plugin kurulumları, Plugin güncellemeleri ve doctor temizliği değişikliklerini kalıcı hale getirebilir:
 
     ```ini
     ReadWritePaths=/var/lib/openclaw /home/openclaw/.openclaw /tmp
     ```
 
   </Accordion>
-  <Accordion title="Disk alanı ön denetimi">
-    Paket güncellemelerinden ve açık plugin kurulumlarından önce OpenClaw, hedef birim için en iyi çabayla bir disk alanı denetimi yapmaya çalışır. Düşük alan, denetlenen yolla birlikte bir uyarı üretir, ancak güncellemeyi engellemez; çünkü dosya sistemi kotaları, anlık görüntüler ve ağ birimleri denetimden sonra değişebilir. Asıl paket yöneticisi kurulumu ve kurulum sonrası doğrulama yetkili olmaya devam eder.
+  <Accordion title="Disk alanı ön kontrolü">
+    Paket güncellemeleri ve açık Plugin kurulumlarından önce OpenClaw, hedef birim için en iyi çaba düzeyinde bir disk alanı kontrolü dener. Düşük alan, kontrol edilen yolla birlikte bir uyarı üretir, ancak dosya sistemi kotaları, anlık görüntüler ve ağ birimleri kontrolden sonra değişebileceği için güncellemeyi engellemez. Asıl paket yöneticisi kurulumu ve kurulum sonrası doğrulama belirleyici olmaya devam eder.
   </Accordion>
 </AccordionGroup>
 
@@ -147,14 +162,18 @@ Otomatik güncelleyici varsayılan olarak kapalıdır. `~/.openclaw/openclaw.jso
 
 | Kanal    | Davranış                                                                                                      |
 | -------- | ------------------------------------------------------------------------------------------------------------- |
-| `stable` | `stableDelayHours` kadar bekler, ardından `stableJitterHours` boyunca deterministik jitter ile uygular (yayılmış dağıtım). |
-| `beta`   | Her `betaCheckIntervalHours` süresinde denetler (varsayılan: saatlik) ve hemen uygular.                              |
-| `dev`    | Otomatik uygulama yoktur. `openclaw update` komutunu manuel kullanın.                                                           |
+| `stable` | `stableDelayHours` kadar bekler, sonra `stableJitterHours` boyunca deterministik jitter ile uygular (yayılmış dağıtım). |
+| `beta`   | Her `betaCheckIntervalHours` aralığında kontrol eder (varsayılan: saatlik) ve hemen uygular.                  |
+| `dev`    | Otomatik uygulama yoktur. `openclaw update` komutunu manuel kullanın.                                         |
 
-Gateway başlangıçta ayrıca bir güncelleme ipucu günlüğe yazar (`update.checkOnStart: false` ile devre dışı bırakın).
-Sürüm düşürme veya olay kurtarması için, `update.auto.enabled` yapılandırılmış olsa bile otomatik uygulamaları engellemek üzere gateway ortamında `OPENCLAW_NO_AUTO_UPDATE=1` ayarlayın. `update.checkOnStart` da devre dışı bırakılmadıkça başlangıç güncelleme ipuçları yine de çalışabilir.
+Gateway ayrıca başlangıçta bir güncelleme ipucu günlüğe yazar (`update.checkOnStart: false` ile devre dışı bırakın).
+Sürüm düşürme veya olay kurtarma için, `update.auto.enabled` yapılandırılmış olsa bile otomatik uygulamaları engellemek üzere gateway ortamında `OPENCLAW_NO_AUTO_UPDATE=1` ayarlayın. Başlangıç güncelleme ipuçları, `update.checkOnStart` da devre dışı bırakılmadıkça çalışmaya devam edebilir.
 
-Canlı Gateway kontrol düzlemi handler'ı üzerinden istenen paket yöneticisi güncellemeleri, paket değişiminden sonra ertelenmeyen, cooldown'sız bir güncelleme yeniden başlatmasını zorlar. Bu, eski bellek içi bir işlemin, zaten değiştirilmiş bir paket ağacından parçaları lazy-load edecek kadar uzun süre ortada kalmasını önler. Kabuk `openclaw update`, servisi güncelleme etrafında durdurup yeniden başlatabildiği için denetimli kurulumlarda tercih edilen yol olmaya devam eder.
+Canlı Gateway kontrol düzlemi işleyicisi üzerinden istenen paket yöneticisi güncellemeleri,
+paket değişiminden sonra ertelenmeyen, soğuma süresi olmayan bir güncelleme yeniden başlatmasını zorlar. Bu,
+eski bellek içi sürecin, zaten değiştirilmiş bir paket ağacından parçaları tembel yükleyecek kadar uzun süre
+ortada kalmasını önler. Shell `openclaw update`, servisi güncelleme etrafında durdurup
+yeniden başlatabildiği için denetimli kurulumlarda tercih edilen yol olmaya devam eder.
 
 ## Güncellemeden sonra
 
@@ -193,7 +212,7 @@ openclaw gateway restart
 ```
 
 <Tip>
-`npm view openclaw version` geçerli yayımlanmış sürümü gösterir.
+`npm view openclaw version` mevcut yayımlanmış sürümü gösterir.
 </Tip>
 
 ### Bir commit'e sabitleyin (kaynak)
@@ -207,10 +226,10 @@ openclaw gateway restart
 
 En son sürüme dönmek için: `git checkout main && git pull`.
 
-## Takılı kaldıysanız
+## Takılırsanız
 
 - `openclaw doctor` komutunu yeniden çalıştırın ve çıktıyı dikkatle okuyun.
-- Kaynak checkout'larında `openclaw update --channel dev` için güncelleyici gerektiğinde `pnpm`'i otomatik bootstraps eder. Bir pnpm/corepack bootstrap hatası görürseniz, `pnpm`'i manuel kurun (veya `corepack`'i yeniden etkinleştirin) ve güncellemeyi yeniden çalıştırın.
+- Kaynak checkout'larında `openclaw update --channel dev` için güncelleyici gerektiğinde `pnpm`'i otomatik olarak önyükler. Bir pnpm/corepack önyükleme hatası görürseniz, `pnpm`'i manuel kurun (veya `corepack`'i yeniden etkinleştirin) ve güncellemeyi tekrar çalıştırın.
 - Kontrol edin: [Sorun giderme](/tr/gateway/troubleshooting)
 - Discord'da sorun: [https://discord.gg/clawd](https://discord.gg/clawd)
 
@@ -218,4 +237,4 @@ En son sürüme dönmek için: `git checkout main && git pull`.
 
 - [Kurulum özeti](/tr/install): tüm kurulum yöntemleri.
 - [Doctor](/tr/gateway/doctor): güncellemelerden sonra sağlık kontrolleri.
-- [Geçiş](/tr/install/migrating): ana sürüm geçiş kılavuzları.
+- [Geçiş](/tr/install/migrating): büyük sürüm geçiş kılavuzları.

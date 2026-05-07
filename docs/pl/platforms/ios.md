@@ -1,15 +1,15 @@
 ---
 read_when:
-    - Parowanie lub ponowne łączenie Node iOS
+    - Parowanie lub ponowne łączenie węzła iOS
     - Uruchamianie aplikacji iOS z kodu źródłowego
-    - Debugowanie wykrywania Gateway lub poleceń kanwy
+    - Debugowanie wykrywania Gateway lub poleceń canvas
 summary: 'Aplikacja węzła iOS: łączenie z Gateway, parowanie, kanwa i rozwiązywanie problemów'
-title: Aplikacja na iOS
+title: Aplikacja iOS
 x-i18n:
-    generated_at: "2026-05-06T09:21:12Z"
+    generated_at: "2026-05-07T13:21:29Z"
     model: gpt-5.5
     provider: openai
-    source_hash: aaa8c11d9fda32c743d2ff0d1c6fd5574bcd396aef43aa2e4e9b0cc7b55e5d21
+    source_hash: 707f8b97156e800f89bc00265c1889c9cbade347fde35f037a302065956346f4
     source_path: platforms/ios.md
     workflow: 16
 ---
@@ -19,8 +19,8 @@ Dostępność: wewnętrzny podgląd. Aplikacja iOS nie jest jeszcze publicznie d
 ## Co robi
 
 - Łączy się z Gateway przez WebSocket (LAN lub tailnet).
-- Udostępnia możliwości węzła: Canvas, zrzut ekranu, przechwytywanie obrazu z kamery, lokalizacja, tryb rozmowy, wybudzanie głosem.
-- Odbiera polecenia `node.invoke` i zgłasza zdarzenia statusu węzła.
+- Udostępnia funkcje Node: Canvas, zrzut ekranu, przechwytywanie obrazu z kamery, lokalizację, tryb rozmowy, wybudzanie głosem.
+- Odbiera polecenia `node.invoke` i raportuje zdarzenia statusu Node.
 
 ## Wymagania
 
@@ -28,9 +28,9 @@ Dostępność: wewnętrzny podgląd. Aplikacja iOS nie jest jeszcze publicznie d
 - Ścieżka sieciowa:
   - Ta sama sieć LAN przez Bonjour, **albo**
   - Tailnet przez unicast DNS-SD (przykładowa domena: `openclaw.internal.`), **albo**
-  - Ręczny host/port (wariant awaryjny).
+  - Ręczny host/port (awaryjnie).
 
-## Szybki start (sparuj i połącz)
+## Szybki start (parowanie + połączenie)
 
 1. Uruchom Gateway:
 
@@ -38,9 +38,9 @@ Dostępność: wewnętrzny podgląd. Aplikacja iOS nie jest jeszcze publicznie d
 openclaw gateway --port 18789
 ```
 
-2. W aplikacji iOS otwórz Ustawienia i wybierz wykryty Gateway (albo włącz Manual Host i wpisz host/port).
+2. W aplikacji iOS otwórz Ustawienia i wybierz wykryty gateway (albo włącz Manual Host i wprowadź host/port).
 
-3. Zatwierdź żądanie parowania na hoście Gateway:
+3. Zatwierdź żądanie parowania na hoście gateway:
 
 ```bash
 openclaw devices list
@@ -49,10 +49,10 @@ openclaw devices approve <requestId>
 
 Jeśli aplikacja ponawia parowanie ze zmienionymi szczegółami uwierzytelniania (rola/zakresy/klucz publiczny),
 poprzednie oczekujące żądanie zostaje zastąpione i tworzony jest nowy `requestId`.
-Przed zatwierdzeniem uruchom ponownie `openclaw devices list`.
+Uruchom `openclaw devices list` ponownie przed zatwierdzeniem.
 
-Opcjonalnie: jeśli węzeł iOS zawsze łączy się ze ściśle kontrolowanej podsieci, możesz
-włączyć automatyczne zatwierdzanie węzła przy pierwszym parowaniu za pomocą jawnych CIDR-ów lub dokładnych adresów IP:
+Opcjonalnie: jeśli Node iOS zawsze łączy się ze ściśle kontrolowanej podsieci, możesz
+włączyć automatyczne zatwierdzanie Node przy pierwszym użyciu, podając jawne CIDR-y lub dokładne adresy IP:
 
 ```json5
 {
@@ -77,10 +77,10 @@ openclaw nodes status
 openclaw gateway call node.list --params "{}"
 ```
 
-## Push oparty na przekaźniku dla oficjalnych kompilacji
+## Push oparty na relay dla oficjalnych kompilacji
 
-Oficjalnie dystrybuowane kompilacje iOS używają zewnętrznego przekaźnika push zamiast publikować surowy token APNs
-do Gateway.
+Oficjalnie dystrybuowane kompilacje iOS używają zewnętrznego relay push zamiast publikowania surowego tokenu APNs
+do gateway.
 
 Wymaganie po stronie Gateway:
 
@@ -98,97 +98,97 @@ Wymaganie po stronie Gateway:
 }
 ```
 
-Jak działa ten przepływ:
+Jak działa przepływ:
 
-- Aplikacja iOS rejestruje się w przekaźniku przy użyciu App Attest i JWS transakcji aplikacji StoreKit.
-- Przekaźnik zwraca nieprzezroczysty uchwyt przekaźnika oraz przyznanie wysyłania o zakresie rejestracji.
-- Aplikacja iOS pobiera tożsamość sparowanego Gateway i dołącza ją do rejestracji w przekaźniku, więc rejestracja oparta na przekaźniku jest delegowana do tego konkretnego Gateway.
-- Aplikacja przekazuje tę rejestrację opartą na przekaźniku do sparowanego Gateway za pomocą `push.apns.register`.
-- Gateway używa zapisanego uchwytu przekaźnika do `push.test`, wybudzeń w tle i ponagleń wybudzania.
-- Bazowy URL przekaźnika Gateway musi pasować do URL-a przekaźnika wbudowanego w oficjalną/TestFlight kompilację iOS.
-- Jeśli aplikacja później połączy się z innym Gateway lub kompilacją z innym bazowym URL-em przekaźnika, odświeża rejestrację przekaźnika zamiast ponownie używać starego powiązania.
+- Aplikacja iOS rejestruje się w relay przy użyciu App Attest oraz JWS transakcji aplikacji StoreKit.
+- Relay zwraca nieprzezroczysty uchwyt relay oraz grant wysyłania ograniczony do rejestracji.
+- Aplikacja iOS pobiera tożsamość sparowanego gateway i dołącza ją do rejestracji relay, dzięki czemu rejestracja oparta na relay jest delegowana do tego konkretnego gateway.
+- Aplikacja przekazuje tę rejestrację opartą na relay do sparowanego gateway za pomocą `push.apns.register`.
+- Gateway używa zapisanego uchwytu relay dla `push.test`, wybudzeń w tle i impulsów wybudzających.
+- Bazowy URL relay w gateway musi odpowiadać URL relay wbudowanemu w oficjalną/TestFlight kompilację iOS.
+- Jeśli aplikacja później połączy się z innym gateway albo z kompilacją z innym bazowym URL relay, odświeży rejestrację relay zamiast ponownie używać starego powiązania.
 
-Czego Gateway **nie** potrzebuje dla tej ścieżki:
+Czego gateway **nie** potrzebuje dla tej ścieżki:
 
-- Brak tokenu przekaźnika obejmującego całe wdrożenie.
-- Brak bezpośredniego klucza APNs dla oficjalnych/TestFlight wysyłek opartych na przekaźniku.
+- Brak tokenu relay obejmującego całe wdrożenie.
+- Brak bezpośredniego klucza APNs dla oficjalnych/TestFlight wysyłek opartych na relay.
 
 Oczekiwany przepływ operatora:
 
 1. Zainstaluj oficjalną/TestFlight kompilację iOS.
-2. Ustaw `gateway.push.apns.relay.baseUrl` na Gateway.
-3. Sparuj aplikację z Gateway i pozwól jej zakończyć łączenie.
-4. Aplikacja publikuje `push.apns.register` automatycznie po uzyskaniu tokenu APNs, połączeniu sesji operatora i powodzeniu rejestracji przekaźnika.
-5. Następnie `push.test`, wybudzenia ponownego połączenia i ponaglenia wybudzania mogą używać zapisanej rejestracji opartej na przekaźniku.
+2. Ustaw `gateway.push.apns.relay.baseUrl` w gateway.
+3. Sparuj aplikację z gateway i pozwól jej zakończyć łączenie.
+4. Aplikacja publikuje `push.apns.register` automatycznie po uzyskaniu tokenu APNs, połączeniu sesji operatora i powodzeniu rejestracji relay.
+5. Następnie `push.test`, wybudzenia ponownego połączenia i impulsy wybudzające mogą używać zapisanej rejestracji opartej na relay.
 
-## Beacony aktywności w tle
+## Sygnały aktywności w tle
 
-Gdy iOS wybudza aplikację przez cichy push, odświeżanie w tle albo zdarzenie znaczącej zmiany lokalizacji, aplikacja
-próbuje wykonać krótkie ponowne połączenie węzła, a następnie wywołuje `node.event` z `event: "node.presence.alive"`.
-Gateway zapisuje to jako `lastSeenAtMs`/`lastSeenReason` w metadanych sparowanego węzła/urządzenia dopiero
-po poznaniu uwierzytelnionej tożsamości urządzenia węzła.
+Gdy iOS wybudza aplikację dla cichego push, odświeżenia w tle albo zdarzenia znaczącej zmiany lokalizacji, aplikacja
+próbuje wykonać krótkie ponowne połączenie Node, a następnie wywołuje `node.event` z `event: "node.presence.alive"`.
+Gateway zapisuje to jako `lastSeenAtMs`/`lastSeenReason` w metadanych sparowanego Node/urządzenia dopiero
+po ustaleniu uwierzytelnionej tożsamości urządzenia Node.
 
-Aplikacja traktuje wybudzenie w tle jako skutecznie zapisane tylko wtedy, gdy odpowiedź Gateway zawiera
-`handled: true`. Starsze Gateway mogą potwierdzać `node.event` odpowiedzią `{ "ok": true }`; ta odpowiedź jest
-zgodna, ale nie liczy się jako trwała aktualizacja ostatniego widzenia.
+Aplikacja traktuje wybudzenie w tle jako pomyślnie zapisane tylko wtedy, gdy odpowiedź gateway zawiera
+`handled: true`. Starsze gateway mogą potwierdzać `node.event` przez `{ "ok": true }`; ta odpowiedź jest
+zgodna, ale nie liczy się jako trwała aktualizacja ostatniej obecności.
 
 Uwaga dotycząca zgodności:
 
-- `OPENCLAW_APNS_RELAY_BASE_URL` nadal działa jako tymczasowe nadpisanie env dla Gateway.
+- `OPENCLAW_APNS_RELAY_BASE_URL` nadal działa jako tymczasowe nadpisanie env dla gateway.
 
-## Uwierzytelnianie i przepływ zaufania
+## Przepływ uwierzytelniania i zaufania
 
-Przekaźnik istnieje po to, aby wymusić dwa ograniczenia, których bezpośredni APNs na Gateway nie może zapewnić dla
+Relay istnieje po to, aby wymusić dwa ograniczenia, których bezpośrednie APNs na gateway nie może zapewnić dla
 oficjalnych kompilacji iOS:
 
-- Tylko autentyczne kompilacje iOS OpenClaw dystrybuowane przez Apple mogą używać hostowanego przekaźnika.
-- Gateway może wysyłać pushe oparte na przekaźniku tylko do urządzeń iOS sparowanych z tym konkretnym
-  Gateway.
+- Tylko prawdziwe kompilacje OpenClaw iOS dystrybuowane przez Apple mogą używać hostowanego relay.
+- Gateway może wysyłać push oparty na relay tylko dla urządzeń iOS sparowanych z tym konkretnym
+  gateway.
 
 Krok po kroku:
 
 1. `iOS app -> gateway`
-   - Aplikacja najpierw paruje się z Gateway przez normalny przepływ uwierzytelniania Gateway.
-   - Daje to aplikacji uwierzytelnioną sesję węzła oraz uwierzytelnioną sesję operatora.
+   - Aplikacja najpierw paruje się z gateway przez normalny przepływ uwierzytelniania Gateway.
+   - Daje to aplikacji uwierzytelnioną sesję Node oraz uwierzytelnioną sesję operatora.
    - Sesja operatora służy do wywołania `gateway.identity.get`.
 
 2. `iOS app -> relay`
-   - Aplikacja wywołuje punkty końcowe rejestracji przekaźnika przez HTTPS.
-   - Rejestracja obejmuje dowód App Attest oraz JWS transakcji aplikacji StoreKit.
-   - Przekaźnik weryfikuje identyfikator pakietu, dowód App Attest i dowód dystrybucji Apple oraz wymaga
+   - Aplikacja wywołuje punkty końcowe rejestracji relay przez HTTPS.
+   - Rejestracja zawiera dowód App Attest oraz JWS transakcji aplikacji StoreKit.
+   - Relay weryfikuje identyfikator pakietu, dowód App Attest i dowód dystrybucji Apple oraz wymaga
      oficjalnej/produkcyjnej ścieżki dystrybucji.
-   - To właśnie blokuje lokalnym kompilacjom Xcode/deweloperskim korzystanie z hostowanego przekaźnika. Lokalna kompilacja może być
-     podpisana, ale nie spełnia oficjalnego dowodu dystrybucji Apple oczekiwanego przez przekaźnik.
+   - To właśnie blokuje lokalnym kompilacjom Xcode/deweloperskim używanie hostowanego relay. Lokalna kompilacja może być
+     podpisana, ale nie spełnia oficjalnego dowodu dystrybucji Apple oczekiwanego przez relay.
 
 3. `gateway identity delegation`
-   - Przed rejestracją przekaźnika aplikacja pobiera tożsamość sparowanego Gateway z
+   - Przed rejestracją relay aplikacja pobiera tożsamość sparowanego gateway z
      `gateway.identity.get`.
-   - Aplikacja dołącza tę tożsamość Gateway do ładunku rejestracji przekaźnika.
-   - Przekaźnik zwraca uchwyt przekaźnika oraz przyznanie wysyłania o zakresie rejestracji, które są delegowane do
-     tej tożsamości Gateway.
+   - Aplikacja dołącza tę tożsamość gateway do ładunku rejestracji relay.
+   - Relay zwraca uchwyt relay i grant wysyłania ograniczony do rejestracji, delegowane do
+     tej tożsamości gateway.
 
 4. `gateway -> relay`
-   - Gateway przechowuje uchwyt przekaźnika i przyznanie wysyłania z `push.apns.register`.
-   - Przy `push.test`, wybudzeniach ponownego połączenia i ponagleniach wybudzania Gateway podpisuje żądanie wysłania swoją
+   - Gateway zapisuje uchwyt relay i grant wysyłania z `push.apns.register`.
+   - Przy `push.test`, wybudzeniach ponownego połączenia i impulsach wybudzających gateway podpisuje żądanie wysyłki swoją
      własną tożsamością urządzenia.
-   - Przekaźnik weryfikuje zarówno zapisane przyznanie wysyłania, jak i podpis Gateway względem delegowanej
-     tożsamości Gateway z rejestracji.
-   - Inny Gateway nie może ponownie użyć tej zapisanej rejestracji, nawet jeśli jakimś sposobem pozyska uchwyt.
+   - Relay weryfikuje zarówno zapisany grant wysyłania, jak i podpis gateway względem delegowanej
+     tożsamości gateway z rejestracji.
+   - Inny gateway nie może ponownie użyć tej zapisanej rejestracji, nawet jeśli w jakiś sposób uzyska uchwyt.
 
 5. `relay -> APNs`
-   - Przekaźnik posiada produkcyjne poświadczenia APNs i surowy token APNs dla oficjalnej kompilacji.
-   - Gateway nigdy nie przechowuje surowego tokenu APNs dla oficjalnych kompilacji opartych na przekaźniku.
-   - Przekaźnik wysyła końcowy push do APNs w imieniu sparowanego Gateway.
+   - Relay posiada produkcyjne poświadczenia APNs i surowy token APNs dla oficjalnej kompilacji.
+   - Gateway nigdy nie przechowuje surowego tokenu APNs dla oficjalnych kompilacji opartych na relay.
+   - Relay wysyła końcowy push do APNs w imieniu sparowanego gateway.
 
 Dlaczego powstał ten projekt:
 
-- Aby trzymać produkcyjne poświadczenia APNs poza Gateway użytkowników.
-- Aby uniknąć przechowywania surowych tokenów APNs oficjalnych kompilacji na Gateway.
-- Aby zezwalać na użycie hostowanego przekaźnika tylko oficjalnym/TestFlight kompilacjom OpenClaw.
-- Aby uniemożliwić jednemu Gateway wysyłanie pushy wybudzających do urządzeń iOS należących do innego Gateway.
+- Aby utrzymać produkcyjne poświadczenia APNs poza gateway użytkowników.
+- Aby uniknąć przechowywania surowych tokenów APNs oficjalnych kompilacji na gateway.
+- Aby umożliwić użycie hostowanego relay tylko dla oficjalnych/TestFlight kompilacji OpenClaw.
+- Aby zapobiec wysyłaniu przez jeden gateway push wybudzających do urządzeń iOS należących do innego gateway.
 
-Lokalne/ręczne kompilacje pozostają przy bezpośrednim APNs. Jeśli testujesz te kompilacje bez przekaźnika,
-Gateway nadal potrzebuje bezpośrednich poświadczeń APNs:
+Lokalne/ręczne kompilacje pozostają przy bezpośrednim APNs. Jeśli testujesz takie kompilacje bez relay,
+gateway nadal potrzebuje bezpośrednich poświadczeń APNs:
 
 ```bash
 export OPENCLAW_APNS_TEAM_ID="TEAMID"
@@ -196,11 +196,11 @@ export OPENCLAW_APNS_KEY_ID="KEYID"
 export OPENCLAW_APNS_PRIVATE_KEY_P8="$(cat /path/to/AuthKey_KEYID.p8)"
 ```
 
-Są to zmienne env czasu działania hosta Gateway, a nie ustawienia Fastlane. `apps/ios/fastlane/.env` przechowuje tylko
+To są runtime env vars hosta gateway, a nie ustawienia Fastlane. `apps/ios/fastlane/.env` przechowuje tylko
 uwierzytelnianie App Store Connect / TestFlight, takie jak `ASC_KEY_ID` i `ASC_ISSUER_ID`; nie konfiguruje
 bezpośredniego dostarczania APNs dla lokalnych kompilacji iOS.
 
-Zalecane przechowywanie na hoście Gateway:
+Zalecane miejsce przechowywania na hoście gateway:
 
 ```bash
 mkdir -p ~/.openclaw/credentials/apns
@@ -210,7 +210,7 @@ chmod 600 ~/.openclaw/credentials/apns/AuthKey_KEYID.p8
 export OPENCLAW_APNS_PRIVATE_KEY_PATH="$HOME/.openclaw/credentials/apns/AuthKey_KEYID.p8"
 ```
 
-Nie commituj pliku `.p8` ani nie umieszczaj go w checkoutcie repo.
+Nie commituj pliku `.p8` ani nie umieszczaj go w katalogu checkout repo.
 
 ## Ścieżki wykrywania
 
@@ -218,21 +218,21 @@ Nie commituj pliku `.p8` ani nie umieszczaj go w checkoutcie repo.
 
 Aplikacja iOS przegląda `_openclaw-gw._tcp` w `local.` oraz, gdy jest skonfigurowana, tę samą
 domenę wykrywania szerokoobszarowego DNS-SD. Gateway w tej samej sieci LAN pojawiają się automatycznie z `local.`;
-wykrywanie między sieciami może używać skonfigurowanej domeny szerokoobszarowej bez zmiany typu beacona.
+wykrywanie między sieciami może używać skonfigurowanej domeny szerokoobszarowej bez zmiany typu sygnału.
 
 ### Tailnet (między sieciami)
 
-Jeśli mDNS jest blokowany, użyj strefy unicast DNS-SD (wybierz domenę; przykład:
-`openclaw.internal.`) oraz split DNS Tailscale.
-Zobacz [Bonjour](/pl/gateway/bonjour), aby poznać przykład CoreDNS.
+Jeśli mDNS jest zablokowany, użyj strefy unicast DNS-SD (wybierz domenę; przykład:
+`openclaw.internal.`) i Tailscale split DNS.
+Zobacz [Bonjour](/pl/gateway/bonjour), aby znaleźć przykład CoreDNS.
 
 ### Ręczny host/port
 
-W Ustawieniach włącz **Manual Host** i wpisz host Gateway + port (domyślnie `18789`).
+W Ustawieniach włącz **Manual Host** i wprowadź host gateway + port (domyślnie `18789`).
 
 ## Canvas + A2UI
 
-Węzeł iOS renderuje canvas WKWebView. Użyj `node.invoke`, aby nim sterować:
+Node iOS renderuje canvas WKWebView. Użyj `node.invoke`, aby nim sterować:
 
 ```bash
 openclaw nodes invoke --node "iOS Node" --command canvas.navigate --params '{"url":"http://<gateway-host>:18789/__openclaw__/canvas/"}'
@@ -240,24 +240,24 @@ openclaw nodes invoke --node "iOS Node" --command canvas.navigate --params '{"ur
 
 Uwagi:
 
-- Host canvas Gateway udostępnia `/__openclaw__/canvas/` i `/__openclaw__/a2ui/`.
-- Jest udostępniany z serwera HTTP Gateway (ten sam port co `gateway.port`, domyślnie `18789`).
-- Węzeł iOS automatycznie przechodzi do A2UI po połączeniu, gdy reklamowany jest URL hosta canvas.
-- Wróć do wbudowanego szkieletu za pomocą `canvas.navigate` i `{"url":""}`.
+- Host Canvas Gateway udostępnia `/__openclaw__/canvas/` i `/__openclaw__/a2ui/`.
+- Jest serwowany z serwera HTTP Gateway (ten sam port co `gateway.port`, domyślnie `18789`).
+- Node iOS automatycznie przechodzi do A2UI po połączeniu, gdy reklamowany jest URL hosta canvas.
+- Wróć do wbudowanego szkieletu przez `canvas.navigate` i `{"url":""}`.
 
 ## Relacja z Computer Use
 
-Aplikacja iOS jest mobilną powierzchnią węzła, a nie backendem Codex Computer Use. Codex
+Aplikacja iOS jest mobilną powierzchnią Node, a nie backendem Codex Computer Use. Codex
 Computer Use i `cua-driver mcp` sterują lokalnym pulpitem macOS przez narzędzia MCP;
-aplikacja iOS udostępnia możliwości iPhone'a przez polecenia węzła OpenClaw,
+aplikacja iOS udostępnia funkcje iPhone przez polecenia Node OpenClaw
 takie jak `canvas.*`, `camera.*`, `screen.*`, `location.*` i `talk.*`.
 
-Agenci nadal mogą obsługiwać aplikację iOS przez OpenClaw, wywołując polecenia
-węzła, ale te wywołania przechodzą przez protokół węzła Gateway i podlegają limitom
-pierwszego planu/tła iOS. Użyj [Codex Computer Use](/pl/plugins/codex-computer-use)
-do sterowania lokalnym pulpitem, a tej strony do możliwości węzła iOS.
+Agenci nadal mogą obsługiwać aplikację iOS przez OpenClaw, wywołując polecenia Node,
+ale te wywołania przechodzą przez protokół gateway Node i podlegają ograniczeniom iOS
+dla pierwszego planu/tła. Użyj [Codex Computer Use](/pl/plugins/codex-computer-use)
+do sterowania lokalnym pulpitem, a tej strony do funkcji Node iOS.
 
-### Eval / snapshot canvas
+### Canvas eval / snapshot
 
 ```bash
 openclaw nodes invoke --node "iOS Node" --command canvas.eval --params '{"javaScript":"(() => { const {ctx} = window.__openclaw; ctx.clearRect(0,0,innerWidth,innerHeight); ctx.lineWidth=6; ctx.strokeStyle=\"#ff2d55\"; ctx.beginPath(); ctx.moveTo(40,40); ctx.lineTo(innerWidth-40, innerHeight-40); ctx.stroke(); return \"ok\"; })()"}'
@@ -270,18 +270,18 @@ openclaw nodes invoke --node "iOS Node" --command canvas.snapshot --params '{"ma
 ## Wybudzanie głosem + tryb rozmowy
 
 - Wybudzanie głosem i tryb rozmowy są dostępne w Ustawieniach.
-- Węzły iOS obsługujące rozmowę reklamują możliwość `talk` i mogą deklarować
+- Node iOS obsługujące rozmowę reklamują funkcję `talk` i mogą deklarować
   `talk.ptt.start`, `talk.ptt.stop`, `talk.ptt.cancel` oraz `talk.ptt.once`;
   Gateway domyślnie zezwala na te polecenia push-to-talk dla zaufanych
-  węzłów obsługujących rozmowę.
-- iOS może wstrzymywać dźwięk w tle; traktuj funkcje głosowe jako best-effort, gdy aplikacja nie jest aktywna.
+  Node obsługujących rozmowę.
+- iOS może zawieszać dźwięk w tle; traktuj funkcje głosowe jako działające według najlepszych możliwości, gdy aplikacja nie jest aktywna.
 
 ## Typowe błędy
 
 - `NODE_BACKGROUND_UNAVAILABLE`: przenieś aplikację iOS na pierwszy plan (polecenia canvas/kamery/ekranu tego wymagają).
-- `A2UI_HOST_NOT_CONFIGURED`: Gateway nie zareklamował URL-a hosta canvas; sprawdź `canvasHost` w [konfiguracji Gateway](/pl/gateway/configuration).
+- `A2UI_HOST_NOT_CONFIGURED`: Gateway nie zareklamował URL powierzchni Plugin Canvas; sprawdź `plugins.entries.canvas.config.host` w [konfiguracji Gateway](/pl/gateway/configuration).
 - Monit parowania nigdy się nie pojawia: uruchom `openclaw devices list` i zatwierdź ręcznie.
-- Ponowne połączenie po reinstalacji nie działa: token parowania Keychain został wyczyszczony; sparuj węzeł ponownie.
+- Ponowne połączenie kończy się niepowodzeniem po ponownej instalacji: token parowania Keychain został wyczyszczony; sparuj Node ponownie.
 
 ## Powiązana dokumentacja
 

@@ -1,20 +1,20 @@
 ---
 read_when:
-    - Bạn muốn một bước LLM chỉ xuất JSON trong các quy trình công việc
-    - Bạn cần đầu ra LLM được xác thực theo lược đồ để tự động hóa
-summary: Tác vụ LLM chỉ dùng JSON cho quy trình làm việc (công cụ Plugin tùy chọn)
-title: tác vụ LLM
+    - Bạn muốn một bước LLM chỉ JSON bên trong các quy trình làm việc
+    - Bạn cần đầu ra LLM được xác thực bằng lược đồ cho tự động hóa
+summary: Các tác vụ LLM chỉ dùng JSON cho quy trình làm việc (công cụ Plugin tùy chọn)
+title: Tác vụ LLM
 x-i18n:
-    generated_at: "2026-05-04T02:25:44Z"
+    generated_at: "2026-05-07T13:25:49Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9cdc5d4feef17fb6d6d90d819d4c92d26a4ec43e4f5364c6acbaad1934a89269
+    source_hash: 4f5efe399165e31a7f5966b93c2f83bced4fd96b7f04f5156412fd321bf5f403
     source_path: tools/llm-task.md
     workflow: 16
 ---
 
-`llm-task` là một **công cụ Plugin tùy chọn** chạy một tác vụ LLM chỉ dùng JSON và
-trả về đầu ra có cấu trúc (tùy chọn xác thực theo JSON Schema).
+`llm-task` là một **công cụ Plugin tùy chọn** chạy một tác vụ LLM chỉ JSON và
+trả về đầu ra có cấu trúc (tùy chọn xác thực theo Lược đồ JSON).
 
 Điều này lý tưởng cho các công cụ workflow như Lobster: bạn có thể thêm một bước LLM duy nhất
 mà không cần viết mã OpenClaw tùy chỉnh cho từng workflow.
@@ -72,16 +72,16 @@ nằm ngoài danh sách sẽ bị từ chối.
 
 ## Tham số công cụ
 
-- `prompt` (string, bắt buộc)
-- `input` (any, tùy chọn)
-- `schema` (object, JSON Schema tùy chọn)
-- `provider` (string, tùy chọn)
-- `model` (string, tùy chọn)
-- `thinking` (string, tùy chọn)
-- `authProfileId` (string, tùy chọn)
-- `temperature` (number, tùy chọn)
-- `maxTokens` (number, tùy chọn)
-- `timeoutMs` (number, tùy chọn)
+- `prompt` (chuỗi, bắt buộc)
+- `input` (bất kỳ, tùy chọn)
+- `schema` (đối tượng, Lược đồ JSON tùy chọn)
+- `provider` (chuỗi, tùy chọn)
+- `model` (chuỗi, tùy chọn)
+- `thinking` (chuỗi, tùy chọn)
+- `authProfileId` (chuỗi, tùy chọn)
+- `temperature` (số, tùy chọn)
+- `maxTokens` (số, tùy chọn)
+- `timeoutMs` (số, tùy chọn)
 
 `thinking` chấp nhận các preset suy luận tiêu chuẩn của OpenClaw, chẳng hạn như `low` hoặc `medium`.
 
@@ -91,6 +91,23 @@ Trả về `details.json` chứa JSON đã phân tích cú pháp (và xác thự
 `schema` khi được cung cấp).
 
 ## Ví dụ: bước workflow Lobster
+
+### Giới hạn quan trọng
+
+Ví dụ bên dưới giả định **CLI Lobster độc lập** đang chạy trong một môi trường mà `openclaw.invoke` đã có đúng URL Gateway/ngữ cảnh xác thực.
+
+Đối với trình chạy Lobster **nhúng** được đóng gói bên trong OpenClaw, mẫu CLI lồng nhau này **hiện chưa đáng tin cậy**:
+
+```lobster
+openclaw.invoke --tool llm-task --action json --args-json '{ ... }'
+```
+
+Cho đến khi Lobster nhúng có cầu nối được hỗ trợ cho luồng này, hãy ưu tiên một trong hai cách:
+
+- gọi trực tiếp công cụ `llm-task` bên ngoài Lobster, hoặc
+- các bước Lobster không phụ thuộc vào lệnh gọi `openclaw.invoke` lồng nhau.
+
+Ví dụ CLI Lobster độc lập:
 
 ```lobster
 openclaw.invoke --tool llm-task --action json --args-json '{
@@ -114,14 +131,14 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 
 ## Ghi chú an toàn
 
-- Công cụ này **chỉ dùng JSON** và hướng dẫn mô hình chỉ xuất JSON (không có
-  code fence, không có bình luận).
-- Không công cụ nào được cung cấp cho mô hình trong lần chạy này.
-- Xem đầu ra là không đáng tin cậy trừ khi bạn xác thực bằng `schema`.
-- Đặt phê duyệt trước bất kỳ bước nào có tác động phụ (gửi, đăng, thực thi).
+- Công cụ này **chỉ JSON** và chỉ dẫn mô hình chỉ xuất JSON (không có
+  khối mã, không có bình luận).
+- Không có công cụ nào được hiển thị cho mô hình trong lần chạy này.
+- Hãy coi đầu ra là không đáng tin cậy trừ khi bạn xác thực bằng `schema`.
+- Đặt phê duyệt trước mọi bước có tác dụng phụ (gửi, đăng, thực thi).
 
 ## Liên quan
 
-- [Mức thinking](/vi/tools/thinking)
-- [Sub-agents](/vi/tools/subagents)
+- [Mức độ suy luận](/vi/tools/thinking)
+- [Tác nhân phụ](/vi/tools/subagents)
 - [Lệnh slash](/vi/tools/slash-commands)

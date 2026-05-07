@@ -4,26 +4,26 @@ read_when:
 summary: Gunakan Anthropic Claude melalui kunci API atau Claude CLI di OpenClaw
 title: Anthropic
 x-i18n:
-    generated_at: "2026-04-30T10:05:39Z"
+    generated_at: "2026-05-07T13:24:05Z"
     model: gpt-5.5
     provider: openai
-    source_hash: dfaba2eea6a2d263d76036d1e6859fc3b487e886ec460ef2ced83e5e8e834327
+    source_hash: 15ae1d2751d0127a45ece3d0a25bead21fd6bacc2ffc80636188fc2cb5f3d7ce
     source_path: providers/anthropic.md
     workflow: 16
 ---
 
 Anthropic membangun keluarga model **Claude**. OpenClaw mendukung dua rute autentikasi:
 
-- **Kunci API** — akses langsung Anthropic API dengan penagihan berbasis penggunaan (model `anthropic/*`)
+- **Kunci API** — akses API Anthropic langsung dengan penagihan berbasis penggunaan (model `anthropic/*`)
 - **Claude CLI** — gunakan ulang login Claude CLI yang sudah ada di host yang sama
 
 <Warning>
-Staf Anthropic memberi tahu kami bahwa penggunaan Claude CLI bergaya OpenClaw diizinkan kembali, jadi
+Staf Anthropic memberi tahu kami bahwa penggunaan Claude CLI bergaya OpenClaw diizinkan lagi, jadi
 OpenClaw memperlakukan penggunaan ulang Claude CLI dan penggunaan `claude -p` sebagai disetujui kecuali
 Anthropic menerbitkan kebijakan baru.
 
 Untuk host gateway yang berjalan lama, kunci API Anthropic tetap menjadi jalur produksi yang paling jelas dan
-paling dapat diprediksi.
+paling mudah diprediksi.
 
 Dokumentasi publik Anthropic saat ini:
 
@@ -37,26 +37,26 @@ Dokumentasi publik Anthropic saat ini:
 ## Memulai
 
 <Tabs>
-  <Tab title="API key">
-    **Terbaik untuk:** akses API standar dan penagihan berbasis penggunaan.
+  <Tab title="Kunci API">
+    **Paling cocok untuk:** akses API standar dan penagihan berbasis penggunaan.
 
     <Steps>
-      <Step title="Get your API key">
+      <Step title="Dapatkan kunci API Anda">
         Buat kunci API di [Anthropic Console](https://console.anthropic.com/).
       </Step>
-      <Step title="Run onboarding">
+      <Step title="Jalankan onboarding">
         ```bash
         openclaw onboard
         # choose: Anthropic API key
         ```
 
-        Atau berikan kunci secara langsung:
+        Atau teruskan kunci secara langsung:
 
         ```bash
         openclaw onboard --anthropic-api-key "$ANTHROPIC_API_KEY"
         ```
       </Step>
-      <Step title="Verify the model is available">
+      <Step title="Verifikasi bahwa model tersedia">
         ```bash
         openclaw models list --provider anthropic
         ```
@@ -75,17 +75,17 @@ Dokumentasi publik Anthropic saat ini:
   </Tab>
 
   <Tab title="Claude CLI">
-    **Terbaik untuk:** menggunakan ulang login Claude CLI yang sudah ada tanpa kunci API terpisah.
+    **Paling cocok untuk:** menggunakan ulang login Claude CLI yang sudah ada tanpa kunci API terpisah.
 
     <Steps>
-      <Step title="Ensure Claude CLI is installed and logged in">
+      <Step title="Pastikan Claude CLI sudah terpasang dan sudah login">
         Verifikasi dengan:
 
         ```bash
         claude --version
         ```
       </Step>
-      <Step title="Run onboarding">
+      <Step title="Jalankan onboarding">
         ```bash
         openclaw onboard
         # choose: Claude CLI
@@ -93,7 +93,7 @@ Dokumentasi publik Anthropic saat ini:
 
         OpenClaw mendeteksi dan menggunakan ulang kredensial Claude CLI yang sudah ada.
       </Step>
-      <Step title="Verify the model is available">
+      <Step title="Verifikasi bahwa model tersedia">
         ```bash
         openclaw models list --provider anthropic
         ```
@@ -106,7 +106,7 @@ Dokumentasi publik Anthropic saat ini:
 
     ### Contoh konfigurasi
 
-    Utamakan ref model Anthropic kanonis plus override runtime CLI:
+    Utamakan ref model Anthropic kanonis ditambah override runtime CLI:
 
     ```json5
     {
@@ -120,11 +120,11 @@ Dokumentasi publik Anthropic saat ini:
     ```
 
     Ref model lama `claude-cli/claude-opus-4-7` masih berfungsi untuk
-    kompatibilitas, tetapi konfigurasi baru sebaiknya mempertahankan pemilihan penyedia/model sebagai
+    kompatibilitas, tetapi konfigurasi baru sebaiknya mempertahankan pilihan provider/model sebagai
     `anthropic/*` dan menaruh backend eksekusi di `agentRuntime.id`.
 
     <Tip>
-    Jika Anda menginginkan jalur penagihan yang paling jelas, gunakan kunci API Anthropic sebagai gantinya. OpenClaw juga mendukung opsi bergaya langganan dari [OpenAI Codex](/id/providers/openai), [Qwen Cloud](/id/providers/qwen), [MiniMax](/id/providers/minimax), dan [Z.AI / GLM](/id/providers/glm).
+    Jika Anda menginginkan jalur penagihan paling jelas, gunakan kunci API Anthropic. OpenClaw juga mendukung opsi bergaya langganan dari [OpenAI Codex](/id/providers/openai), [Qwen Cloud](/id/providers/qwen), [MiniMax](/id/providers/minimax), dan [Z.AI / GLM](/id/providers/glm).
     </Tip>
 
   </Tab>
@@ -132,7 +132,7 @@ Dokumentasi publik Anthropic saat ini:
 
 ## Default thinking (Claude 4.6)
 
-Model Claude 4.6 default ke thinking `adaptive` di OpenClaw ketika tidak ada tingkat thinking eksplisit yang ditetapkan.
+Model Claude 4.6 secara default menggunakan thinking `adaptive` di OpenClaw ketika tidak ada level thinking eksplisit yang ditetapkan.
 
 Override per pesan dengan `/think:<level>` atau di parameter model:
 
@@ -157,15 +157,15 @@ Dokumentasi Anthropic terkait:
 
 </Note>
 
-## Caching prompt
+## Prompt caching
 
-OpenClaw mendukung fitur caching prompt Anthropic untuk autentikasi kunci API.
+OpenClaw mendukung fitur prompt caching Anthropic untuk autentikasi kunci API.
 
-| Nilai               | Durasi cache | Deskripsi                            |
-| ------------------- | -------------- | -------------------------------------- |
+| Nilai               | Durasi cache | Deskripsi                                      |
+| ------------------- | ------------ | ---------------------------------------------- |
 | `"short"` (default) | 5 menit      | Diterapkan otomatis untuk autentikasi kunci API |
-| `"long"`            | 1 jam         | Cache yang diperluas                         |
-| `"none"`            | Tanpa caching     | Nonaktifkan caching prompt                 |
+| `"long"`            | 1 jam        | Cache diperpanjang                             |
+| `"none"`            | Tanpa caching | Nonaktifkan prompt caching                     |
 
 ```json5
 {
@@ -182,8 +182,8 @@ OpenClaw mendukung fitur caching prompt Anthropic untuk autentikasi kunci API.
 ```
 
 <AccordionGroup>
-  <Accordion title="Per-agent cache overrides">
-    Gunakan parameter tingkat model sebagai baseline, lalu override agen tertentu melalui `agents.list[].params`:
+  <Accordion title="Override cache per agen">
+    Gunakan parameter tingkat model sebagai baseline Anda, lalu override agen tertentu melalui `agents.list[].params`:
 
     ```json5
     {
@@ -209,14 +209,14 @@ OpenClaw mendukung fitur caching prompt Anthropic untuk autentikasi kunci API.
     1. `agents.defaults.models["provider/model"].params`
     2. `agents.list[].params` (`id` yang cocok, override berdasarkan kunci)
 
-    Ini memungkinkan satu agen mempertahankan cache berumur panjang sementara agen lain pada model yang sama menonaktifkan caching untuk traffic bursty/penggunaan ulang rendah.
+    Ini memungkinkan satu agen mempertahankan cache berumur panjang sementara agen lain pada model yang sama menonaktifkan caching untuk lalu lintas bursty/berpenggunaan ulang rendah.
 
   </Accordion>
 
-  <Accordion title="Bedrock Claude notes">
-    - Model Anthropic Claude di Bedrock (`amazon-bedrock/*anthropic.claude*`) menerima pass-through `cacheRetention` ketika dikonfigurasi.
+  <Accordion title="Catatan Bedrock Claude">
+    - Model Anthropic Claude di Bedrock (`amazon-bedrock/*anthropic.claude*`) menerima pass-through `cacheRetention` saat dikonfigurasi.
     - Model Bedrock non-Anthropic dipaksa ke `cacheRetention: "none"` saat runtime.
-    - Default cerdas kunci API juga mengisi `cacheRetention: "short"` untuk ref Claude-on-Bedrock ketika tidak ada nilai eksplisit yang ditetapkan.
+    - Default cerdas kunci API juga mengisi `cacheRetention: "short"` untuk ref Claude-on-Bedrock saat tidak ada nilai eksplisit yang ditetapkan.
 
   </Accordion>
 </AccordionGroup>
@@ -224,8 +224,8 @@ OpenClaw mendukung fitur caching prompt Anthropic untuk autentikasi kunci API.
 ## Konfigurasi lanjutan
 
 <AccordionGroup>
-  <Accordion title="Fast mode">
-    Toggle bersama `/fast` OpenClaw mendukung traffic Anthropic langsung (kunci API dan OAuth ke `api.anthropic.com`).
+  <Accordion title="Mode cepat">
+    Toggle `/fast` bersama OpenClaw mendukung lalu lintas Anthropic langsung (kunci API dan OAuth ke `api.anthropic.com`).
 
     | Perintah | Dipetakan ke |
     |---------|---------|
@@ -247,31 +247,31 @@ OpenClaw mendukung fitur caching prompt Anthropic untuk autentikasi kunci API.
     ```
 
     <Note>
-    - Hanya disuntikkan untuk permintaan langsung `api.anthropic.com`. Rute proxy membiarkan `service_tier` tidak berubah.
-    - Parameter `serviceTier` atau `service_tier` eksplisit mengoverride `/fast` ketika keduanya ditetapkan.
+    - Hanya diinjeksi untuk permintaan langsung `api.anthropic.com`. Rute proxy membiarkan `service_tier` tidak tersentuh.
+    - Parameter eksplisit `serviceTier` atau `service_tier` meng-override `/fast` saat keduanya ditetapkan.
     - Pada akun tanpa kapasitas Priority Tier, `service_tier: "auto"` dapat diselesaikan menjadi `standard`.
 
     </Note>
 
   </Accordion>
 
-  <Accordion title="Media understanding (image and PDF)">
+  <Accordion title="Pemahaman media (gambar dan PDF)">
     Plugin Anthropic bawaan mendaftarkan pemahaman gambar dan PDF. OpenClaw
-    secara otomatis menyelesaikan kapabilitas media dari autentikasi Anthropic yang dikonfigurasi — tidak
+    otomatis menyelesaikan kapabilitas media dari autentikasi Anthropic yang dikonfigurasi — tidak
     diperlukan konfigurasi tambahan.
 
-    | Properti       | Nilai                |
-    | -------------- | -------------------- |
-    | Model default  | `claude-opus-4-6`    |
-    | Input yang didukung | Gambar, dokumen PDF |
+    | Properti        | Nilai                 |
+    | --------------- | --------------------- |
+    | Model default   | `claude-opus-4-7`     |
+    | Input didukung | Gambar, dokumen PDF |
 
-    Ketika gambar atau PDF dilampirkan ke percakapan, OpenClaw secara otomatis
-    merutekannya melalui penyedia pemahaman media Anthropic.
+    Saat gambar atau PDF dilampirkan ke percakapan, OpenClaw secara otomatis
+    merutekannya melalui provider pemahaman media Anthropic.
 
   </Accordion>
 
-  <Accordion title="1M context window (beta)">
-    Jendela konteks 1M Anthropic berada di balik beta. Aktifkan per model:
+  <Accordion title="Jendela konteks 1M (beta)">
+    Jendela konteks 1M Anthropic dibatasi beta. Aktifkan per model:
 
     ```json5
     {
@@ -290,16 +290,16 @@ OpenClaw mendukung fitur caching prompt Anthropic untuk autentikasi kunci API.
     OpenClaw memetakan ini ke `anthropic-beta: context-1m-2025-08-07` pada permintaan.
 
     `params.context1m: true` juga berlaku untuk backend Claude CLI
-    (`claude-cli/*`) untuk model Opus dan Sonnet yang memenuhi syarat, memperluas jendela
+    (`claude-cli/*`) bagi model Opus dan Sonnet yang memenuhi syarat, memperluas jendela
     konteks runtime untuk sesi CLI tersebut agar cocok dengan perilaku API langsung.
 
     <Warning>
-    Memerlukan akses konteks panjang pada kredensial Anthropic Anda. Auth token lama (`sk-ant-oat-*`) ditolak untuk permintaan konteks 1M — OpenClaw mencatat peringatan dan kembali ke jendela konteks standar.
+    Memerlukan akses konteks panjang pada kredensial Anthropic Anda. Autentikasi token lama (`sk-ant-oat-*`) ditolak untuk permintaan konteks 1M — OpenClaw mencatat peringatan dan kembali ke jendela konteks standar.
     </Warning>
 
   </Accordion>
 
-  <Accordion title="Claude Opus 4.7 1M context">
+  <Accordion title="Konteks 1M Claude Opus 4.7">
     `anthropic/claude-opus-4.7` dan varian `claude-cli`-nya memiliki jendela konteks 1M
     secara default — tidak perlu `params.context1m: true`.
   </Accordion>
@@ -308,40 +308,40 @@ OpenClaw mendukung fitur caching prompt Anthropic untuk autentikasi kunci API.
 ## Pemecahan masalah
 
 <AccordionGroup>
-  <Accordion title="401 errors / token suddenly invalid">
-    Auth token Anthropic kedaluwarsa dan dapat dicabut. Untuk penyiapan baru, gunakan kunci API Anthropic sebagai gantinya.
+  <Accordion title="Error 401 / token tiba-tiba tidak valid">
+    Autentikasi token Anthropic kedaluwarsa dan dapat dicabut. Untuk penyiapan baru, gunakan kunci API Anthropic sebagai gantinya.
   </Accordion>
 
-  <Accordion title='No API key found for provider "anthropic"'>
-    Auth Anthropic bersifat **per agen** — agen baru tidak mewarisi kunci agen utama. Jalankan ulang onboarding untuk agen tersebut (atau konfigurasikan kunci API pada host gateway), lalu verifikasi dengan `openclaw models status`.
+  <Accordion title='Tidak ditemukan kunci API untuk provider "anthropic"'>
+    Autentikasi Anthropic bersifat **per agen** — agen baru tidak mewarisi kunci agen utama. Jalankan ulang onboarding untuk agen tersebut (atau konfigurasikan kunci API pada host Gateway), lalu verifikasi dengan `openclaw models status`.
   </Accordion>
 
-  <Accordion title='No credentials found for profile "anthropic:default"'>
-    Jalankan `openclaw models status` untuk melihat profil auth mana yang aktif. Jalankan ulang onboarding, atau konfigurasikan kunci API untuk jalur profil tersebut.
+  <Accordion title='Tidak ditemukan kredensial untuk profil "anthropic:default"'>
+    Jalankan `openclaw models status` untuk melihat profil autentikasi mana yang aktif. Jalankan ulang onboarding, atau konfigurasikan kunci API untuk jalur profil tersebut.
   </Accordion>
 
-  <Accordion title="No available auth profile (all in cooldown)">
+  <Accordion title="Tidak ada profil autentikasi yang tersedia (semua dalam cooldown)">
     Periksa `openclaw models status --json` untuk `auth.unusableProfiles`. Cooldown rate-limit Anthropic dapat bersifat per model, sehingga model Anthropic saudara mungkin masih dapat digunakan. Tambahkan profil Anthropic lain atau tunggu cooldown.
   </Accordion>
 </AccordionGroup>
 
 <Note>
-Bantuan lainnya: [Pemecahan masalah](/id/help/troubleshooting) dan [FAQ](/id/help/faq).
+Bantuan lainnya: [Pemecahan Masalah](/id/help/troubleshooting) dan [FAQ](/id/help/faq).
 </Note>
 
 ## Terkait
 
 <CardGroup cols={2}>
-  <Card title="Model selection" href="/id/concepts/model-providers" icon="layers">
-    Memilih penyedia, ref model, dan perilaku failover.
+  <Card title="Pemilihan model" href="/id/concepts/model-providers" icon="layers">
+    Memilih provider, ref model, dan perilaku failover.
   </Card>
-  <Card title="CLI backends" href="/id/gateway/cli-backends" icon="terminal">
-    Detail penyiapan dan runtime backend Claude CLI.
+  <Card title="Backend CLI" href="/id/gateway/cli-backends" icon="terminal">
+    Penyiapan backend Claude CLI dan detail runtime.
   </Card>
   <Card title="Prompt caching" href="/id/reference/prompt-caching" icon="database">
-    Cara kerja caching prompt di berbagai penyedia.
+    Cara kerja prompt caching di berbagai provider.
   </Card>
-  <Card title="OAuth and auth" href="/id/gateway/authentication" icon="key">
-    Detail auth dan aturan penggunaan ulang kredensial.
+  <Card title="OAuth dan autentikasi" href="/id/gateway/authentication" icon="key">
+    Detail autentikasi dan aturan penggunaan ulang kredensial.
   </Card>
 </CardGroup>

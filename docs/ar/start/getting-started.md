@@ -1,32 +1,31 @@
 ---
 read_when:
-    - الإعداد الأولي لأول مرة من الصفر
-    - تريد أسرع طريق إلى دردشة تعمل بالفعل
-summary: ثبّت OpenClaw وشغّل أول دردشة لك خلال دقائق.
-title: البدء
+    - الإعداد لأول مرة من الصفر
+    - تريد أسرع مسار للوصول إلى دردشة تعمل
+summary: ثبّت OpenClaw وابدأ أول محادثة لك خلال دقائق.
+title: بدء الاستخدام
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T08:05:13Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: fe3f92b1464ebf0a5b631c293fa4a3e4b686fdb35c1152663428025dd3c01259
-  source_path: start/getting-started.md
-  workflow: 15
+    generated_at: "2026-05-07T13:29:17Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 295ce8fd03320027a77a3aef494f785f0fe58e0f57c72ee63f6f9aca68626c20
+    source_path: start/getting-started.md
+    workflow: 16
 ---
 
-ثبّت OpenClaw، وشغّل الإعداد الأولي، وابدأ الدردشة مع مساعدك الذكي — كل ذلك
-في نحو 5 دقائق. وبحلول النهاية سيكون لديك Gateway قيد التشغيل، ومصادقة
-مهيأة، وجلسة دردشة تعمل.
+ثبّت OpenClaw، وشغّل الإعداد الأولي، وتحدث مع مساعد الذكاء الاصطناعي الخاص بك — كل ذلك في
+نحو 5 دقائق. في النهاية سيكون لديك Gateway قيد التشغيل، ومصادقة مهيّأة،
+وجلسة دردشة عاملة.
 
-## ما الذي تحتاج إليه
+## ما تحتاجه
 
-- **Node.js** — يوصى باستخدام Node 24 ‏(ويدعم أيضًا Node 22.14+)
-- **مفتاح API** من أحد موفّري النماذج (Anthropic أو OpenAI أو Google وغيرها) — سيطلبه الإعداد الأولي
+- **Node.js** — يُوصى باستخدام Node 24 (Node 22.16+ مدعوم أيضًا)
+- **مفتاح API** من مزوّد نماذج (Anthropic أو OpenAI أو Google أو غيرها) — سيطلبه منك الإعداد الأولي
 
 <Tip>
 تحقق من إصدار Node لديك باستخدام `node --version`.
-**لمستخدمي Windows:** كل من Windows الأصلي وWSL2 مدعومان. ويعد WSL2 أكثر
-استقرارًا ويوصى به للحصول على التجربة الكاملة. راجع [Windows](/ar/platforms/windows).
+**مستخدمو Windows:** كل من Windows الأصلي وWSL2 مدعومان. WSL2 أكثر
+استقرارًا ويُوصى به للتجربة الكاملة. راجع [Windows](/ar/platforms/windows).
 هل تحتاج إلى تثبيت Node؟ راجع [إعداد Node](/ar/install/node).
 </Tip>
 
@@ -41,7 +40,7 @@ x-i18n:
         ```
         <img
   src="/assets/install-script.svg"
-  alt="Install Script Process"
+  alt="عملية سكربت التثبيت"
   className="rounded-lg"
 />
       </Tab>
@@ -53,7 +52,7 @@ x-i18n:
     </Tabs>
 
     <Note>
-    طرق التثبيت الأخرى (Docker وNix وnpm): ‏[التثبيت](/ar/install).
+    طرق تثبيت أخرى (Docker وNix وnpm): [التثبيت](/ar/install).
     </Note>
 
   </Step>
@@ -62,49 +61,49 @@ x-i18n:
     openclaw onboard --install-daemon
     ```
 
-    يرشدك المعالج خلال اختيار موفّر نموذج، وتعيين مفتاح API،
-    وتهيئة Gateway. ويستغرق ذلك نحو دقيقتين.
+    يرشدك المعالج خلال اختيار مزوّد نماذج، وتعيين مفتاح API،
+    وتهيئة Gateway. يستغرق ذلك نحو دقيقتين.
 
-    راجع [الإعداد الأولي (CLI)](/ar/start/wizard) للحصول على المرجع الكامل.
+    راجع [الإعداد الأولي (CLI)](/ar/start/wizard) للاطلاع على المرجع الكامل.
 
   </Step>
-  <Step title="تحقق من أن Gateway يعمل">
+  <Step title="تحقق من أن Gateway قيد التشغيل">
     ```bash
     openclaw gateway status
     ```
 
-    يجب أن ترى أن Gateway يستمع على المنفذ 18789.
+    ينبغي أن ترى Gateway يستمع على المنفذ 18789.
 
   </Step>
-  <Step title="افتح لوحة المعلومات">
+  <Step title="افتح لوحة التحكم">
     ```bash
     openclaw dashboard
     ```
 
-    سيؤدي هذا إلى فتح Control UI في المتصفح لديك. وإذا تم تحميلها، فكل شيء يعمل.
+    يفتح هذا واجهة التحكم في متصفحك. إذا تم تحميلها، فكل شيء يعمل.
 
   </Step>
   <Step title="أرسل رسالتك الأولى">
-    اكتب رسالة في دردشة Control UI ويجب أن تتلقى ردًا من الذكاء الاصطناعي.
+    اكتب رسالة في دردشة واجهة التحكم، وينبغي أن تتلقى ردًا من الذكاء الاصطناعي.
 
     هل تريد الدردشة من هاتفك بدلًا من ذلك؟ أسرع قناة يمكن إعدادها هي
-    [Telegram](/ar/channels/telegram) (فقط رمز bot مميز). راجع [القنوات](/ar/channels)
-    للاطلاع على جميع الخيارات.
+    [Telegram](/ar/channels/telegram) (مجرد رمز بوت). راجع [القنوات](/ar/channels)
+    للاطلاع على كل الخيارات.
 
   </Step>
 </Steps>
 
-<Accordion title="متقدم: ربط نسخة مخصصة من Control UI">
-  إذا كنت تدير نسخة مترجمة أو مخصصة من لوحة المعلومات، فاجعل
-  `gateway.controlUi.root` يشير إلى دليل يحتوي على الأصول الثابتة المبنية
-  و`index.html`.
+<Accordion title="متقدم: تثبيت إصدار مخصص من واجهة التحكم">
+  إذا كنت تدير إصدارًا مترجمًا أو مخصصًا من لوحة التحكم، فاجعل
+  `gateway.controlUi.root` يشير إلى دليل يحتوي على الأصول الثابتة
+  المبنية لديك و`index.html`.
 
 ```bash
 mkdir -p "$HOME/.openclaw/control-ui-custom"
 # Copy your built static files into that directory.
 ```
 
-ثم اضبط:
+ثم عيّن:
 
 ```json
 {
@@ -117,7 +116,7 @@ mkdir -p "$HOME/.openclaw/control-ui-custom"
 }
 ```
 
-أعد تشغيل gateway ثم أعد فتح لوحة المعلومات:
+أعد تشغيل Gateway وافتح لوحة التحكم من جديد:
 
 ```bash
 openclaw gateway restart
@@ -126,34 +125,34 @@ openclaw dashboard
 
 </Accordion>
 
-## ما الذي ينبغي فعله بعد ذلك
+## ما الخطوة التالية
 
 <Columns>
-  <Card title="اربط قناة" href="/ar/channels" icon="message-square">
-    Discord وFeishu وiMessage وMatrix وMicrosoft Teams وSignal وSlack وTelegram وWhatsApp وZalo وغير ذلك.
+  <Card title="وصّل قناة" href="/ar/channels" icon="message-square">
+    Discord وFeishu وiMessage وMatrix وMicrosoft Teams وSignal وSlack وTelegram وWhatsApp وZalo والمزيد.
   </Card>
-  <Card title="الإقران والأمان" href="/ar/channels/pairing" icon="shield">
-    تحكم في من يمكنه مراسلة الوكيل الخاص بك.
+  <Card title="الاقتران والسلامة" href="/ar/channels/pairing" icon="shield">
+    تحكّم في من يمكنه مراسلة وكيلك.
   </Card>
-  <Card title="هيئ Gateway" href="/ar/gateway/configuration" icon="settings">
-    النماذج، والأدوات، وsandbox، والإعدادات المتقدمة.
+  <Card title="هيّئ Gateway" href="/ar/gateway/configuration" icon="settings">
+    النماذج والأدوات وبيئة العزل والإعدادات المتقدمة.
   </Card>
-  <Card title="تصفح الأدوات" href="/ar/tools" icon="wrench">
-    المتصفح، وexec، والبحث على الويب، وSkills، وPlugins.
+  <Card title="تصفّح الأدوات" href="/ar/tools" icon="wrench">
+    المتصفح وexec وبحث الويب وSkills وPlugins.
   </Card>
 </Columns>
 
 <Accordion title="متقدم: متغيرات البيئة">
   إذا كنت تشغّل OpenClaw كحساب خدمة أو تريد مسارات مخصصة:
 
-- `OPENCLAW_HOME` — الدليل الرئيسي لحل المسارات الداخلية
+- `OPENCLAW_HOME` — الدليل الرئيسي لحلّ المسارات الداخلية
 - `OPENCLAW_STATE_DIR` — تجاوز دليل الحالة
-- `OPENCLAW_CONFIG_PATH` — تجاوز مسار ملف التهيئة
+- `OPENCLAW_CONFIG_PATH` — تجاوز مسار ملف الإعدادات
 
 المرجع الكامل: [متغيرات البيئة](/ar/help/environment).
 </Accordion>
 
-## ذو صلة
+## ذات صلة
 
 - [نظرة عامة على التثبيت](/ar/install)
 - [نظرة عامة على القنوات](/ar/channels)

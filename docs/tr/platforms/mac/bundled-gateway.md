@@ -1,36 +1,36 @@
 ---
 read_when:
-    - OpenClaw.app’i Paketleme
+    - OpenClaw.app’i paketleme
     - macOS Gateway launchd hizmetinde hata ayıklama
-    - macOS için Gateway CLI'ını yükleme
-summary: macOS üzerinde Gateway çalışma zamanı (harici launchd hizmeti)
-title: macOS'ta Gateway
+    - macOS için Gateway CLI'yi yükleme
+summary: macOS’ta Gateway çalışma zamanı (harici launchd hizmeti)
+title: macOS'te Gateway
 x-i18n:
-    generated_at: "2026-05-06T09:21:54Z"
+    generated_at: "2026-05-07T13:22:18Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3f5dcc73671140d7599ffefceeb98ac7ce34da1f944c1e7c70bc9e5810e6ca66
+    source_hash: caf129918c46f8f54026e9db04e8ad5a033148899d3029fe1a362bb14c7f25f8
     source_path: platforms/mac/bundled-gateway.md
     workflow: 16
 ---
 
-OpenClaw.app artık Node/Bun veya Gateway çalışma zamanını paketlemez. macOS uygulaması
-**harici** bir `openclaw` CLI kurulumu bekler, Gateway'i alt süreç olarak
-başlatmaz ve Gateway'i çalışır durumda tutmak için kullanıcı başına bir launchd
+OpenClaw.app artık Node/Bun veya Gateway runtime'ını paketlemez. macOS uygulaması
+**harici** bir `openclaw` CLI kurulumu bekler, Gateway'i bir alt süreç olarak
+başlatmaz ve Gateway'in çalışır durumda kalması için kullanıcı başına bir launchd
 hizmeti yönetir (veya zaten çalışan mevcut bir yerel Gateway varsa ona bağlanır).
 
 ## CLI'yi kurun (yerel mod için gerekli)
 
-Mac'te varsayılan çalışma zamanı Node 24'tür. Şu anda `22.14+` olan Node 22 LTS, uyumluluk için hâlâ çalışır. Ardından `openclaw` paketini genel olarak kurun:
+Mac'te varsayılan runtime Node 24'tür. Şu anda `22.16+` olan Node 22 LTS, uyumluluk için hâlâ çalışır. Ardından `openclaw` paketini global olarak kurun:
 
 ```bash
 npm install -g openclaw@<version>
 ```
 
 macOS uygulamasının **CLI'yi Kur** düğmesi, uygulamanın dahili olarak kullandığı
-aynı genel kurulum akışını çalıştırır: önce npm'yi, sonra pnpm'yi, yalnızca
-algılanan paket yöneticisi buysa bun'ı tercih eder. Node, önerilen Gateway
-çalışma zamanı olmaya devam eder.
+aynı global kurulum akışını çalıştırır: önce npm'yi, sonra pnpm'yi, yalnızca
+tespit edilen paket yöneticisi buysa bun'ı tercih eder. Node, önerilen Gateway
+runtime'ı olmaya devam eder.
 
 ## Launchd (LaunchAgent olarak Gateway)
 
@@ -50,21 +50,21 @@ Yönetici:
 
 Davranış:
 
-- "OpenClaw Etkin", LaunchAgent'ı etkinleştirir/devre dışı bırakır.
+- "OpenClaw Etkin" LaunchAgent'ı etkinleştirir/devre dışı bırakır.
 - Uygulamadan çıkmak gateway'i durdurmaz (launchd onu canlı tutar).
-- Yapılandırılan bağlantı noktasında zaten bir Gateway çalışıyorsa uygulama,
+- Yapılandırılmış bağlantı noktasında zaten bir Gateway çalışıyorsa uygulama,
   yeni bir tane başlatmak yerine ona bağlanır.
 
-Günlük kaydı:
+Günlükleme:
 
 - launchd stdout/err: `/tmp/openclaw/openclaw-gateway.log`
 
 ## Sürüm uyumluluğu
 
 macOS uygulaması, gateway sürümünü kendi sürümüyle karşılaştırır. Uyumsuzlarsa
-genel CLI'yi uygulama sürümüyle eşleşecek şekilde güncelleyin.
+global CLI'yi uygulama sürümüyle eşleşecek şekilde güncelleyin.
 
-## Duman testi
+## Temel doğrulama
 
 ```bash
 openclaw --version
@@ -83,4 +83,4 @@ openclaw gateway call health --url ws://127.0.0.1:18999 --timeout 3000
 ## İlgili
 
 - [macOS uygulaması](/tr/platforms/macos)
-- [Gateway çalışma kılavuzu](/tr/gateway)
+- [Gateway runbook](/tr/gateway)

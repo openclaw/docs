@@ -1,35 +1,37 @@
 ---
 read_when:
-    - پیاده‌سازی یا به‌روزرسانی کلاینت‌های WS مربوط به Gateway
+    - پیاده‌سازی یا به‌روزرسانی کلاینت‌های WS Gateway
     - اشکال‌زدایی ناسازگاری‌های پروتکل یا خطاهای اتصال
-    - تولید مجدد طرحواره/مدل‌های پروتکل
+    - بازسازی طرح‌واره/مدل‌های پروتکل
 summary: 'پروتکل WebSocket Gateway: دست‌دهی، فریم‌ها، نسخه‌بندی'
 title: پروتکل Gateway
 x-i18n:
-    generated_at: "2026-05-06T09:20:09Z"
+    generated_at: "2026-05-07T13:20:21Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8a5eb7a84dbe0664fd78271408686a643dbc0579de5b5402fd1a8d33fd59221d
+    source_hash: 75580b3ad8b2a511cf53975b8d734d18db88bcbfe33bd62c360c24333d65d1c6
     source_path: gateway/protocol.md
     workflow: 16
 ---
 
-پروتکل WS در Gateway، **صفحهٔ کنترل واحد + ترابرد نود** برای
-OpenClaw است. همهٔ کلاینت‌ها (CLI، رابط کاربری وب، برنامهٔ macOS، نودهای iOS/Android، نودهای بدون رابط)
-از طریق WebSocket وصل می‌شوند و در زمان دست‌دهی، **نقش** + **دامنهٔ دسترسی** خود را اعلام می‌کنند.
+پروتکل WS مربوط به Gateway، **صفحه کنترل واحد + انتقال Node** برای
+OpenClaw است. همه کلاینت‌ها (CLI، رابط وب، برنامه macOS، Nodeهای iOS/Android، Nodeهای
+بدون رابط) از طریق وب‌سوکت متصل می‌شوند و **نقش** + **دامنه** خود را در زمان
+دست‌دهی اعلام می‌کنند.
 
-## ترابرد
+## انتقال
 
-- WebSocket، فریم‌های متنی با payloadهای JSON.
-- نخستین فریم **باید** یک درخواست `connect` باشد.
-- فریم‌های پیش از اتصال به 64 KiB محدود می‌شوند. پس از یک دست‌دهی موفق، کلاینت‌ها
-  باید از محدودیت‌های `hello-ok.policy.maxPayload` و
-  `hello-ok.policy.maxBufferedBytes` پیروی کنند. با فعال بودن عیب‌یابی،
-  فریم‌های ورودی بیش‌ازحد بزرگ و بافرهای خروجی کند، پیش از آنکه gateway فریم اثرپذیرفته را ببندد یا حذف کند، رویدادهای `payload.large` منتشر می‌کنند. این رویدادها
-  اندازه‌ها، محدودیت‌ها، سطح‌ها، و کدهای دلیل امن را نگه می‌دارند. آن‌ها بدنهٔ پیام،
-  محتوای پیوست، بدنهٔ خام فریم، توکن‌ها، کوکی‌ها، یا مقادیر محرمانه را نگه نمی‌دارند.
+- وب‌سوکت، فریم‌های متنی با payloadهای JSON.
+- اولین فریم **باید** یک درخواست `connect` باشد.
+- فریم‌های پیش از اتصال به 64 KiB محدود شده‌اند. پس از یک دست‌دهی موفق، کلاینت‌ها
+  باید محدودیت‌های `hello-ok.policy.maxPayload` و
+  `hello-ok.policy.maxBufferedBytes` را رعایت کنند. وقتی عیب‌یابی فعال باشد،
+  فریم‌های ورودی بیش‌ازحد بزرگ و بافرهای خروجی کند، پیش از آنکه Gateway فریم
+  متأثر را ببندد یا کنار بگذارد، رویدادهای `payload.large` منتشر می‌کنند. این رویدادها
+  اندازه‌ها، محدودیت‌ها، سطح‌ها، و کدهای دلیل ایمن را نگه می‌دارند. آن‌ها بدنه پیام،
+  محتوای پیوست، بدنه خام فریم، توکن‌ها، کوکی‌ها، یا مقادیر محرمانه را نگه نمی‌دارند.
 
-## دست‌دهی (connect)
+## دست‌دهی (اتصال)
 
 Gateway → کلاینت (چالش پیش از اتصال):
 
@@ -49,8 +51,8 @@ Gateway → کلاینت (چالش پیش از اتصال):
   "id": "…",
   "method": "connect",
   "params": {
-    "minProtocol": 3,
-    "maxProtocol": 3,
+    "minProtocol": 4,
+    "maxProtocol": 4,
     "client": {
       "id": "cli",
       "version": "1.2.3",
@@ -85,7 +87,7 @@ Gateway → کلاینت:
   "ok": true,
   "payload": {
     "type": "hello-ok",
-    "protocol": 3,
+    "protocol": 4,
     "server": { "version": "…", "connId": "…" },
     "features": { "methods": ["…"], "events": ["…"] },
     "snapshot": { "…": "…" },
@@ -102,17 +104,26 @@ Gateway → کلاینت:
 }
 ```
 
-وقتی Gateway هنوز در حال تکمیل sidecarهای راه‌اندازی است، درخواست `connect` می‌تواند
-یک خطای قابل‌تلاش‌دوبارهٔ `UNAVAILABLE` برگرداند که `details.reason` روی
-`"startup-sidecars"` و `retryAfterMs` تنظیم شده است. کلاینت‌ها باید به‌جای نمایش آن به‌عنوان
-شکست نهایی دست‌دهی، آن پاسخ را در محدودهٔ بودجهٔ کلی اتصال خود دوباره امتحان کنند.
+در حالی که Gateway هنوز در حال تکمیل sidecarهای راه‌اندازی است، درخواست `connect` می‌تواند
+یک خطای قابل‌تکرار `UNAVAILABLE` برگرداند که `details.reason` روی
+`"startup-sidecars"` و `retryAfterMs` تنظیم شده است. کلاینت‌ها باید این پاسخ را
+در چارچوب بودجه کلی اتصال خود دوباره امتحان کنند، نه اینکه آن را به‌عنوان شکست
+نهایی دست‌دهی نمایش دهند.
 
 `server`، `features`، `snapshot`، و `policy` همگی طبق schema
 (`src/gateway/protocol/schema/frames.ts`) الزامی هستند. `auth` نیز الزامی است و
-نقش/دامنه‌های دسترسی مذاکره‌شده را گزارش می‌کند. `canvasHostUrl` اختیاری است.
+نقش/دامنه‌های مذاکره‌شده را گزارش می‌کند. `pluginSurfaceUrls` اختیاری است و نام‌های
+سطح Plugin، مانند `canvas`، را به URLهای میزبانی‌شده دارای دامنه نگاشت می‌کند.
 
-وقتی هیچ توکن دستگاهی صادر نمی‌شود، `hello-ok.auth` مجوزهای مذاکره‌شده را بدون
-فیلدهای توکن گزارش می‌کند:
+URLهای سطح Plugin دارای دامنه ممکن است منقضی شوند. Nodeها می‌توانند
+`node.pluginSurface.refresh` را با `{ "surface": "canvas" }` فراخوانی کنند تا یک
+ورودی تازه در `pluginSurfaceUrls` دریافت کنند. بازآرایی آزمایشی Plugin مربوط به Canvas
+از مسیر سازگاری منسوخ `canvasHostUrl`، `canvasCapability`، یا
+`node.canvas.capability.refresh` پشتیبانی نمی‌کند؛ کلاینت‌های بومی و Gatewayهای فعلی
+باید از سطح‌های Plugin استفاده کنند.
+
+وقتی هیچ توکن دستگاهی صادر نشود، `hello-ok.auth` مجوزهای مذاکره‌شده را بدون فیلدهای
+توکن گزارش می‌کند:
 
 ```json
 {
@@ -123,12 +134,15 @@ Gateway → کلاینت:
 }
 ```
 
-کلاینت‌های backend قابل‌اعتماد در همان فرایند (`client.id: "gateway-client"`،
-`client.mode: "backend"`) ممکن است در اتصال‌های loopback مستقیم، وقتی با توکن/رمز عبور مشترک gateway احراز هویت می‌کنند، `device` را حذف کنند. این مسیر برای RPCهای داخلی صفحهٔ کنترل رزرو شده است و از مسدود شدن کار محلی backend، مانند به‌روزرسانی‌های نشست subagent، به‌دلیل baselineهای قدیمی جفت‌سازی CLI/دستگاه جلوگیری می‌کند. کلاینت‌های ریموت،
-کلاینت‌های با مبدأ مرورگر، کلاینت‌های نود، و کلاینت‌های صریح device-token/device-identity
-همچنان از بررسی‌های عادی جفت‌سازی و ارتقای دامنهٔ دسترسی استفاده می‌کنند.
+کلاینت‌های backend قابل‌اعتماد هم‌فرآیند (`client.id: "gateway-client"`،
+`client.mode: "backend"`) می‌توانند در اتصال‌های loopback مستقیم، وقتی با توکن/رمز عبور
+مشترک Gateway احراز هویت می‌کنند، `device` را حذف کنند. این مسیر برای RPCهای داخلی
+صفحه کنترل رزرو شده است و مانع از آن می‌شود که مبناهای قدیمی جفت‌سازی CLI/دستگاه،
+کار backend محلی مانند به‌روزرسانی‌های نشست subagent را مسدود کنند. کلاینت‌های راه‌دور،
+کلاینت‌های دارای مبدأ مرورگر، کلاینت‌های Node، و کلاینت‌های صریح دارای توکن دستگاه/هویت
+دستگاه همچنان از بررسی‌های معمول جفت‌سازی و ارتقای دامنه استفاده می‌کنند.
 
-وقتی یک توکن دستگاه صادر می‌شود، `hello-ok` همچنین شامل این مورد است:
+وقتی یک توکن دستگاه صادر شود، `hello-ok` همچنین شامل این مورد است:
 
 ```json
 {
@@ -140,8 +154,8 @@ Gateway → کلاینت:
 }
 ```
 
-در طول تحویل bootstrap قابل‌اعتماد، `hello-ok.auth` همچنین ممکن است ورودی‌های نقش محدود اضافی
-در `deviceTokens` داشته باشد:
+در طول واگذاری bootstrap قابل‌اعتماد، `hello-ok.auth` ممکن است ورودی‌های نقش محدود
+اضافی را نیز در `deviceTokens` شامل شود:
 
 ```json
 {
@@ -160,14 +174,14 @@ Gateway → کلاینت:
 }
 ```
 
-برای جریان bootstrap داخلی نود/operator، توکن اصلی نود روی
-`scopes: []` باقی می‌ماند و هر توکن operator واگذارشده به allowlist
-operator bootstrap محدود می‌ماند (`operator.approvals`، `operator.read`،
-`operator.talk.secrets`، `operator.write`). بررسی‌های دامنهٔ دسترسی bootstrap
-همچنان با پیشوند نقش باقی می‌مانند: ورودی‌های operator فقط درخواست‌های operator را برآورده می‌کنند، و نقش‌های غیر-operator
-همچنان به دامنه‌های دسترسی زیر پیشوند نقش خودشان نیاز دارند.
+برای جریان bootstrap داخلی Node/operator، توکن اصلی Node به‌صورت
+`scopes: []` باقی می‌ماند و هر توکن operator واگذارشده به فهرست مجاز operator مربوط به bootstrap
+(`operator.approvals`، `operator.read`،
+`operator.talk.secrets`، `operator.write`) محدود می‌ماند. بررسی‌های دامنه bootstrap همچنان
+دارای پیشوند نقش می‌مانند: ورودی‌های operator فقط درخواست‌های operator را برآورده می‌کنند،
+و نقش‌های غیر operator همچنان به دامنه‌هایی زیر پیشوند نقش خودشان نیاز دارند.
 
-### نمونهٔ نود
+### نمونه Node
 
 ```json
 {
@@ -175,8 +189,8 @@ operator bootstrap محدود می‌ماند (`operator.approvals`، `operator.
   "id": "…",
   "method": "connect",
   "params": {
-    "minProtocol": 3,
-    "maxProtocol": 3,
+    "minProtocol": 4,
+    "maxProtocol": 4,
     "client": {
       "id": "ios-node",
       "version": "1.2.3",
@@ -202,7 +216,7 @@ operator bootstrap محدود می‌ماند (`operator.approvals`، `operator.
 }
 ```
 
-## قاب‌بندی
+## فریم‌بندی
 
 - **درخواست**: `{type:"req", id, method, params}`
 - **پاسخ**: `{type:"res", id, ok, payload|error}`
@@ -210,19 +224,19 @@ operator bootstrap محدود می‌ماند (`operator.approvals`، `operator.
 
 متدهای دارای اثر جانبی به **کلیدهای idempotency** نیاز دارند (schema را ببینید).
 
-## نقش‌ها + دامنه‌های دسترسی
+## نقش‌ها + دامنه‌ها
 
-برای مدل کامل دامنهٔ دسترسی operator، بررسی‌های زمان تأیید، و معنای secret مشترک،
-[دامنه‌های دسترسی operator](/fa/gateway/operator-scopes) را ببینید.
+برای مدل کامل دامنه operator، بررسی‌های زمان تأیید، و معنای secret مشترک،
+[دامنه‌های operator](/fa/gateway/operator-scopes) را ببینید.
 
 ### نقش‌ها
 
-- `operator` = کلاینت صفحهٔ کنترل (CLI/UI/اتوماسیون).
+- `operator` = کلاینت صفحه کنترل (CLI/UI/خودکارسازی).
 - `node` = میزبان قابلیت (camera/screen/canvas/system.run).
 
-### دامنه‌های دسترسی (operator)
+### دامنه‌ها (operator)
 
-دامنه‌های دسترسی رایج:
+دامنه‌های رایج:
 
 - `operator.read`
 - `operator.write`
@@ -234,45 +248,46 @@ operator bootstrap محدود می‌ماند (`operator.approvals`، `operator.
 `talk.config` با `includeSecrets: true` به `operator.talk.secrets`
 (یا `operator.admin`) نیاز دارد.
 
-متدهای RPC در gateway که توسط Plugin ثبت شده‌اند می‌توانند دامنهٔ دسترسی operator خود را درخواست کنند، اما
-پیشوندهای ادمین هستهٔ رزروشده (`config.*`، `exec.approvals.*`، `wizard.*`،
+متدهای RPC مربوط به Gateway که توسط Plugin ثبت شده‌اند ممکن است دامنه operator خودشان را
+درخواست کنند، اما پیشوندهای admin هسته رزروشده (`config.*`، `exec.approvals.*`، `wizard.*`،
 `update.*`) همیشه به `operator.admin` resolve می‌شوند.
 
-دامنهٔ دسترسی متد فقط دروازهٔ اول است. برخی slash commandها که از طریق
-`chat.send` می‌رسند، علاوه بر آن بررسی‌های سخت‌گیرانه‌تر در سطح command اعمال می‌کنند. برای مثال، نوشتن‌های پایدار
-`/config set` و `/config unset` به `operator.admin` نیاز دارند.
+دامنه متد فقط اولین دروازه است. برخی فرمان‌های slash که از طریق
+`chat.send` قابل‌دسترسی هستند، بررسی‌های سخت‌گیرانه‌تر در سطح فرمان را روی آن اعمال می‌کنند.
+برای مثال، نوشتن‌های پایدار ` /config set` و ` /config unset` به `operator.admin` نیاز دارند.
 
-`node.pair.approve` نیز علاوه بر دامنهٔ دسترسی پایهٔ متد، یک بررسی دامنهٔ دسترسی اضافی در زمان تأیید دارد:
+`node.pair.approve` همچنین افزون بر دامنه پایه متد، یک بررسی دامنه اضافی در زمان تأیید دارد:
 
-- درخواست‌های بدون command: `operator.pairing`
-- درخواست‌های دارای commandهای نود غیر-exec: `operator.pairing` + `operator.write`
+- درخواست‌های بدون فرمان: `operator.pairing`
+- درخواست‌های دارای فرمان‌های Node غیر exec: `operator.pairing` + `operator.write`
 - درخواست‌هایی که شامل `system.run`، `system.run.prepare`، یا `system.which` هستند:
   `operator.pairing` + `operator.admin`
 
-### قابلیت‌ها/commandها/مجوزها (نود)
+### قابلیت‌ها/فرمان‌ها/مجوزها (Node)
 
-نودها در زمان اتصال ادعاهای قابلیت را اعلام می‌کنند:
+Nodeها ادعاهای قابلیت را در زمان اتصال اعلام می‌کنند:
 
-- `caps`: دسته‌های قابلیت سطح‌بالا مانند `camera`، `canvas`، `screen`،
+- `caps`: دسته‌های سطح بالای قابلیت مانند `camera`، `canvas`، `screen`،
   `location`، `voice`، و `talk`.
-- `commands`: allowlist command برای invoke.
-- `permissions`: toggles دانه‌ریز (برای مثال `screen.record`، `camera.capture`).
+- `commands`: فهرست مجاز فرمان‌ها برای invoke.
+- `permissions`: toggleهای ریزدانه (مثلاً `screen.record`، `camera.capture`).
 
-Gateway با این‌ها به‌عنوان **ادعا** رفتار می‌کند و allowlistهای سمت سرور را اعمال می‌کند.
+Gateway با این‌ها به‌عنوان **ادعا** برخورد می‌کند و فهرست‌های مجاز سمت سرور را اعمال می‌کند.
 
 ## حضور
 
-- `system-presence` ورودی‌هایی را برمی‌گرداند که بر اساس هویت دستگاه کلیدگذاری شده‌اند.
-- ورودی‌های حضور شامل `deviceId`، `roles`، و `scopes` هستند تا رابط‌های کاربری بتوانند برای هر دستگاه یک ردیف نشان دهند
-  حتی وقتی هم به‌عنوان **operator** و هم به‌عنوان **node** وصل می‌شود.
-- `node.list` شامل فیلدهای اختیاری `lastSeenAtMs` و `lastSeenReason` است. نودهای متصل
-  زمان اتصال فعلی خود را با دلیل `connect` به‌عنوان `lastSeenAtMs` گزارش می‌کنند؛ نودهای جفت‌شده همچنین می‌توانند
-  وقتی یک رویداد نود قابل‌اعتماد metadata جفت‌سازی آن‌ها را به‌روزرسانی می‌کند، حضور پس‌زمینهٔ پایدار گزارش کنند.
+- `system-presence` ورودی‌هایی را برمی‌گرداند که با هویت دستگاه کلیدگذاری شده‌اند.
+- ورودی‌های حضور شامل `deviceId`، `roles`، و `scopes` هستند تا رابط‌های کاربری بتوانند برای هر دستگاه
+  حتی وقتی هم به‌عنوان **operator** و هم به‌عنوان **node** متصل می‌شود، یک ردیف واحد نشان دهند.
+- `node.list` شامل فیلدهای اختیاری `lastSeenAtMs` و `lastSeenReason` است. Nodeهای متصل
+  زمان اتصال فعلی خود را با دلیل `connect` به‌عنوان `lastSeenAtMs` گزارش می‌کنند؛ Nodeهای جفت‌شده
+  همچنین وقتی یک رویداد Node قابل‌اعتماد metadata جفت‌سازی آن‌ها را به‌روزرسانی می‌کند، می‌توانند
+  حضور پس‌زمینه پایدار گزارش کنند.
 
-### رویداد زنده بودن نود در پس‌زمینه
+### رویداد زنده‌بودن Node در پس‌زمینه
 
-نودها ممکن است `node.event` را با `event: "node.presence.alive"` فراخوانی کنند تا ثبت کنند که یک نود جفت‌شده
-در طول بیدار شدن پس‌زمینه زنده بوده است، بدون آنکه آن را متصل علامت‌گذاری کنند.
+Nodeها ممکن است `node.event` را با `event: "node.presence.alive"` فراخوانی کنند تا ثبت شود که یک Node جفت‌شده
+در طول بیدارشدن پس‌زمینه زنده بوده است، بدون اینکه به‌عنوان متصل علامت‌گذاری شود.
 
 ```json
 {
@@ -282,11 +297,11 @@ Gateway با این‌ها به‌عنوان **ادعا** رفتار می‌کن
 ```
 
 `trigger` یک enum بسته است: `background`، `silent_push`، `bg_app_refresh`،
-`significant_location`، `manual`، یا `connect`. رشته‌های trigger ناشناخته پیش از ماندگار شدن توسط gateway به
-`background` نرمال‌سازی می‌شوند. این رویداد فقط برای نشست‌های دستگاه نود احراز هویت‌شده
+`significant_location`، `manual`، یا `connect`. رشته‌های trigger ناشناخته پیش از پایداری، توسط Gateway به
+`background` نرمال‌سازی می‌شوند. این رویداد فقط برای نشست‌های احرازشده دستگاه Node
 پایدار است؛ نشست‌های بدون دستگاه یا جفت‌نشده `handled: false` برمی‌گردانند.
 
-gatewayهای موفق یک نتیجهٔ ساخت‌یافته برمی‌گردانند:
+Gatewayهای موفق یک نتیجه ساختاریافته برمی‌گردانند:
 
 ```json
 {
@@ -297,169 +312,168 @@ gatewayهای موفق یک نتیجهٔ ساخت‌یافته برمی‌گرد
 }
 ```
 
-gatewayهای قدیمی‌تر ممکن است همچنان برای `node.event` مقدار `{ "ok": true }` برگردانند؛ کلاینت‌ها باید آن را به‌عنوان
-یک RPC تأییدشده در نظر بگیرند، نه به‌عنوان ماندگار شدن حضور پایدار.
+Gatewayهای قدیمی‌تر ممکن است همچنان برای `node.event` مقدار `{ "ok": true }` برگردانند؛ کلاینت‌ها باید آن را
+به‌عنوان یک RPC تأییدشده در نظر بگیرند، نه به‌عنوان پایداری حضور پایدار.
 
 ## دامنه‌بندی رویدادهای broadcast
 
-رویدادهای broadcast در WebSocket که توسط سرور push می‌شوند با دامنهٔ دسترسی محدود می‌شوند تا نشست‌های محدود به جفت‌سازی یا فقط نود، محتوای نشست را به‌صورت منفعل دریافت نکنند.
+رویدادهای broadcast وب‌سوکت که از سمت سرور push می‌شوند، با دامنه gate می‌شوند تا نشست‌های دارای دامنه pairing یا فقط Node، محتوای نشست را به‌صورت غیرفعال دریافت نکنند.
 
-- **فریم‌های چت، agent، و نتیجهٔ ابزار** (از جمله رویدادهای streamed `agent` و نتایج tool call) دست‌کم به `operator.read` نیاز دارند. نشست‌های بدون `operator.read` این فریم‌ها را به‌طور کامل رد می‌کنند.
-- **broadcastهای `plugin.*` تعریف‌شده توسط Plugin** بسته به اینکه Plugin چگونه آن‌ها را ثبت کرده باشد، با `operator.write` یا `operator.admin` محدود می‌شوند.
-- **رویدادهای وضعیت و ترابرد** (`heartbeat`، `presence`، `tick`، چرخهٔ عمر connect/disconnect و غیره) بدون محدودیت می‌مانند تا سلامت ترابرد برای هر نشست احراز هویت‌شده قابل مشاهده باشد.
-- **خانواده‌های ناشناختهٔ رویداد broadcast** به‌صورت پیش‌فرض با دامنهٔ دسترسی محدود می‌شوند (fail-closed)، مگر آنکه یک handler ثبت‌شده صراحتاً آن‌ها را آزادتر کند.
+- **فریم‌های chat، agent، و tool-result** (از جمله رویدادهای streamed `agent` و نتایج tool call) حداقل به `operator.read` نیاز دارند. نشست‌های بدون `operator.read` این فریم‌ها را کاملاً رد می‌کنند.
+- **broadcastهای `plugin.*` تعریف‌شده توسط Plugin** بسته به نحوه ثبت آن‌ها توسط Plugin، با `operator.write` یا `operator.admin` gate می‌شوند.
+- **رویدادهای وضعیت و انتقال** (`heartbeat`، `presence`، `tick`، چرخه عمر اتصال/قطع اتصال، و غیره) بدون محدودیت باقی می‌مانند تا سلامت انتقال برای هر نشست احرازشده قابل مشاهده باشد.
+- **خانواده‌های ناشناخته رویدادهای broadcast** به‌صورت پیش‌فرض با دامنه gate می‌شوند (fail-closed)، مگر اینکه یک handler ثبت‌شده صریحاً آن‌ها را آزادتر کند.
 
-هر اتصال کلاینت شمارهٔ توالی مخصوص همان کلاینت را نگه می‌دارد تا broadcastها ترتیب یکنواخت را روی آن socket حفظ کنند، حتی وقتی کلاینت‌های مختلف زیرمجموعه‌های متفاوتی از جریان رویداد را پس از فیلتر دامنهٔ دسترسی می‌بینند.
+هر اتصال کلاینت شماره توالی per-client خودش را نگه می‌دارد تا broadcastها روی آن socket ترتیب یکنواخت را حفظ کنند، حتی وقتی کلاینت‌های مختلف زیرمجموعه‌های متفاوتی از جریان رویداد را پس از فیلتر دامنه می‌بینند.
 
-## خانواده‌های رایج متد RPC
+## خانواده‌های رایج متدهای RPC
 
-سطح عمومی WS گسترده‌تر از نمونه‌های دست‌دهی/auth بالا است. این
-یک dump تولیدشده نیست — `hello-ok.features.methods` یک فهرست کشف محافظه‌کارانه است
-که از `src/gateway/server-methods-list.ts` به‌علاوهٔ exportهای متد Plugin/channel بارگذاری‌شده ساخته شده است.
-با آن به‌عنوان کشف قابلیت رفتار کنید، نه enumeration کامل
+سطح عمومی WS گسترده‌تر از مثال‌های دست‌دهی/auth بالا است. این
+یک dump تولیدشده نیست — `hello-ok.features.methods` یک فهرست discovery محافظه‌کارانه است
+که از `src/gateway/server-methods-list.ts` به‌علاوه exportهای متد Plugin/channel بارگذاری‌شده
+ساخته شده است. با آن به‌عنوان feature discovery برخورد کنید، نه enumeration کامل
 `src/gateway/server-methods/*.ts`.
 
 <AccordionGroup>
-  <Accordion title="سیستم و هویت">
-    - `health` snapshot سلامت gateway را که cached یا تازه probe شده است برمی‌گرداند.
-    - `diagnostics.stability` recorder پایداری عیب‌یابی محدود اخیر را برمی‌گرداند. این metadata عملیاتی مانند نام رویدادها، شمارش‌ها، اندازه‌های byte، خوانش‌های حافظه، وضعیت queue/session، نام‌های channel/plugin، و شناسه‌های session را نگه می‌دارد. متن چت، بدنه‌های webhook، خروجی‌های ابزار، بدنه‌های خام request یا response، توکن‌ها، کوکی‌ها، یا مقادیر secret را نگه نمی‌دارد. دامنهٔ دسترسی خواندن operator لازم است.
-    - `status` خلاصهٔ gateway به سبک `/status` را برمی‌گرداند؛ فیلدهای حساس فقط برای کلاینت‌های operator دارای دامنهٔ admin درج می‌شوند.
-    - `gateway.identity.get` هویت دستگاه gateway را که توسط جریان‌های relay و جفت‌سازی استفاده می‌شود برمی‌گرداند.
-    - `system-presence` snapshot حضور فعلی دستگاه‌های operator/node متصل را برمی‌گرداند.
-    - `system-event` یک رویداد سیستم را append می‌کند و می‌تواند context حضور را به‌روزرسانی/broadcast کند.
-    - `last-heartbeat` آخرین رویداد heartbeat ماندگارشده را برمی‌گرداند.
-    - `set-heartbeats` پردازش heartbeat را روی gateway toggle می‌کند.
+  <Accordion title="System and identity">
+    - `health` snapshot سلامت Gateway کش‌شده یا تازه probe‌شده را برمی‌گرداند.
+    - `diagnostics.stability` ضبط‌کننده پایداری تشخیصی محدود اخیر را برمی‌گرداند. این مورد metadata عملیاتی مانند نام رویدادها، شمارش‌ها، اندازه‌های byte، خوانش‌های memory، وضعیت queue/session، نام‌های channel/plugin، و شناسه‌های session را نگه می‌دارد. متن chat، بدنه‌های Webhook، خروجی‌های tool، بدنه‌های خام request یا response، توکن‌ها، کوکی‌ها، یا مقادیر محرمانه را نگه نمی‌دارد. دامنه خواندن operator لازم است.
+    - `status` خلاصه Gateway به سبک `/status` را برمی‌گرداند؛ فیلدهای حساس فقط برای کلاینت‌های operator دارای دامنه admin گنجانده می‌شوند.
+    - `gateway.identity.get` هویت دستگاه Gateway را که توسط جریان‌های relay و pairing استفاده می‌شود برمی‌گرداند.
+    - `system-presence` snapshot حضور فعلی دستگاه‌های operator/Node متصل را برمی‌گرداند.
+    - `system-event` یک رویداد سیستم را اضافه می‌کند و می‌تواند context حضور را به‌روزرسانی/broadcast کند.
+    - `last-heartbeat` آخرین رویداد Heartbeat پایدارشده را برمی‌گرداند.
+    - `set-heartbeats` پردازش Heartbeat را روی Gateway toggle می‌کند.
 
   </Accordion>
 
-  <Accordion title="مدل‌ها و مصرف">
-    - `models.list` کاتالوگ مدل‌های مجاز در زمان اجرا را برمی‌گرداند. برای مدل‌های پیکربندی‌شده در اندازه انتخاب‌گر (`agents.defaults.models` ابتدا، سپس `models.providers.*.models`) مقدار `{ "view": "configured" }` را ارسال کنید، یا برای کاتالوگ کامل مقدار `{ "view": "all" }` را ارسال کنید.
-    - `usage.status` خلاصه‌های پنجره‌های مصرف/سهمیه باقی‌مانده ارائه‌دهنده را برمی‌گرداند.
-    - `usage.cost` خلاصه‌های تجمیع‌شده هزینه مصرف را برای یک بازه تاریخ برمی‌گرداند.
-    - `doctor.memory.status` آمادگی حافظه برداری / embedding کش‌شده را برای فضای کاری عامل پیش‌فرض فعال برمی‌گرداند. فقط وقتی فراخواننده صریحا یک ping زنده به ارائه‌دهنده embedding می‌خواهد، مقدار `{ "probe": true }` یا `{ "deep": true }` را ارسال کنید.
-    - `doctor.memory.remHarness` یک پیش‌نمایش محدود و فقط‌خواندنی از harness مربوط به REM را برای کلاینت‌های control-plane راه دور برمی‌گرداند. این می‌تواند شامل مسیرهای فضای کاری، قطعه‌های حافظه، markdown زمینه‌مند رندرشده، و نامزدهای ارتقای عمیق باشد، بنابراین فراخواننده‌ها به `operator.read` نیاز دارند.
-    - `sessions.usage` خلاصه‌های مصرف هر جلسه را برمی‌گرداند.
-    - `sessions.usage.timeseries` مصرف سری زمانی را برای یک جلسه برمی‌گرداند.
-    - `sessions.usage.logs` مدخل‌های لاگ مصرف را برای یک جلسه برمی‌گرداند.
+  <Accordion title="مدل‌ها و استفاده">
+    - `models.list` کاتالوگ مدل‌های مجاز در زمان اجرا را برمی‌گرداند. برای مدل‌های پیکربندی‌شده در اندازهٔ انتخاب‌گر (`agents.defaults.models` ابتدا، سپس `models.providers.*.models`) مقدار `{ "view": "configured" }` را بفرستید، یا برای کاتالوگ کامل مقدار `{ "view": "all" }` را بفرستید.
+    - `usage.status` خلاصه‌های بازه‌های استفادهٔ ارائه‌دهنده/سهمیهٔ باقی‌مانده را برمی‌گرداند.
+    - `usage.cost` خلاصه‌های تجمیعی استفادهٔ هزینه را برای یک بازهٔ تاریخی برمی‌گرداند.
+    - `doctor.memory.status` آمادگی حافظهٔ برداری / embedding ذخیره‌شده در cache را برای workspace عامل پیش‌فرض فعال برمی‌گرداند. فقط وقتی فراخوان به‌صراحت یک ping زنده به ارائه‌دهندهٔ embedding می‌خواهد، مقدار `{ "probe": true }` یا `{ "deep": true }` را بفرستید.
+    - `doctor.memory.remHarness` یک پیش‌نمایش محدود و فقط‌خواندنی از harness REM را برای کلاینت‌های control-plane راه‌دور برمی‌گرداند. این می‌تواند شامل مسیرهای workspace، قطعه‌های حافظه، Markdown زمینه‌دار رندرشده، و نامزدهای deep promotion باشد، بنابراین فراخوان‌ها به `operator.read` نیاز دارند.
+    - `sessions.usage` خلاصه‌های استفادهٔ هر نشست را برمی‌گرداند.
+    - `sessions.usage.timeseries` استفادهٔ سری زمانی را برای یک نشست برمی‌گرداند.
+    - `sessions.usage.logs` ورودی‌های log استفاده را برای یک نشست برمی‌گرداند.
 
   </Accordion>
 
   <Accordion title="کانال‌ها و کمک‌کننده‌های ورود">
     - `channels.status` خلاصه‌های وضعیت کانال/Plugin داخلی + همراه را برمی‌گرداند.
-    - `channels.logout` از یک کانال/حساب مشخص، در جایی که کانال از خروج پشتیبانی می‌کند، خارج می‌شود.
-    - `web.login.start` یک جریان ورود QR/وب را برای ارائه‌دهنده کانال وب فعلی که قابلیت QR دارد آغاز می‌کند.
-    - `web.login.wait` منتظر تکمیل آن جریان ورود QR/وب می‌ماند و در صورت موفقیت کانال را راه‌اندازی می‌کند.
-    - `push.test` یک push آزمایشی APNs را به یک Node ثبت‌شده iOS می‌فرستد.
-    - `voicewake.get` محرک‌های wake-word ذخیره‌شده را برمی‌گرداند.
-    - `voicewake.set` محرک‌های wake-word را به‌روزرسانی می‌کند و تغییر را منتشر می‌کند.
+    - `channels.logout` از یک کانال/حساب مشخص، در جایی که کانال از خروج پشتیبانی کند، خارج می‌شود.
+    - `web.login.start` یک جریان ورود QR/web را برای ارائه‌دهندهٔ کانال web فعلی که قابلیت QR دارد شروع می‌کند.
+    - `web.login.wait` منتظر تکمیل آن جریان ورود QR/web می‌ماند و در صورت موفقیت کانال را شروع می‌کند.
+    - `push.test` یک push آزمایشی APNs را به یک node ثبت‌شدهٔ iOS می‌فرستد.
+    - `voicewake.get` triggerهای wake-word ذخیره‌شده را برمی‌گرداند.
+    - `voicewake.set` triggerهای wake-word را به‌روزرسانی می‌کند و تغییر را پخش می‌کند.
 
   </Accordion>
 
-  <Accordion title="پیام‌رسانی و لاگ‌ها">
-    - `send` RPC مستقیم تحویل خروجی برای ارسال‌های هدف‌گذاری‌شده به کانال/حساب/رشته در خارج از اجراکننده چت است.
-    - `logs.tail` انتهای لاگ فایل پیکربندی‌شده Gateway را با کنترل‌های مکان‌نما/حد و حداکثر بایت برمی‌گرداند.
+  <Accordion title="پیام‌رسانی و logها">
+    - `send` RPC مستقیم تحویل خروجی برای ارسال‌های هدف‌گذاری‌شده بر اساس کانال/حساب/thread در بیرون از runner چت است.
+    - `logs.tail` انتهای log فایل پیکربندی‌شدهٔ gateway را با کنترل‌های cursor/limit و حداکثر byte برمی‌گرداند.
 
   </Accordion>
 
-  <Accordion title="Talk و TTS">
-    - `talk.catalog` کاتالوگ فقط‌خواندنی ارائه‌دهنده Talk را برای گفتار، رونویسی جریانی، و صدای بلادرنگ برمی‌گرداند. این شامل شناسه‌های ارائه‌دهنده، برچسب‌ها، وضعیت پیکربندی‌شده، شناسه‌های مدل/صداهای در معرض استفاده، حالت‌های canonical، انتقال‌ها، راهبردهای مغز، و پرچم‌های صدای بلادرنگ/قابلیت است، بدون اینکه اسرار ارائه‌دهنده را برگرداند یا پیکربندی سراسری را تغییر دهد.
-    - `talk.config` payload پیکربندی موثر Talk را برمی‌گرداند؛ `includeSecrets` به `operator.talk.secrets` (یا `operator.admin`) نیاز دارد.
-    - `talk.session.create` یک جلسه Talk متعلق به Gateway را برای `realtime/gateway-relay`، `transcription/gateway-relay`، یا `stt-tts/managed-room` ایجاد می‌کند. `brain: "direct-tools"` به `operator.admin` نیاز دارد.
-    - `talk.session.join` توکن جلسه managed-room را اعتبارسنجی می‌کند، در صورت نیاز رویدادهای `session.ready` یا `session.replaced` را منتشر می‌کند، و metadata اتاق/جلسه به‌علاوه رویدادهای اخیر Talk را بدون توکن متن ساده یا hash توکن ذخیره‌شده برمی‌گرداند.
-    - `talk.session.appendAudio` صدای ورودی PCM با base64 را به جلسات relay بلادرنگ و رونویسی متعلق به Gateway اضافه می‌کند.
-    - `talk.session.startTurn`، `talk.session.endTurn`، و `talk.session.cancelTurn` چرخه عمر نوبت managed-room را با رد نوبت‌های کهنه پیش از پاک شدن وضعیت هدایت می‌کنند.
-    - `talk.session.cancelOutput` خروجی صدای دستیار را متوقف می‌کند، عمدتا برای مداخله VAD-gated در جلسات relay مربوط به Gateway.
-    - `talk.session.submitToolResult` فراخوانی ابزار ارائه‌دهنده را که توسط یک جلسه relay بلادرنگ متعلق به Gateway منتشر شده کامل می‌کند.
-    - `talk.session.close` یک جلسه relay، رونویسی، یا managed-room متعلق به Gateway را می‌بندد و رویدادهای پایانی Talk را منتشر می‌کند.
-    - `talk.mode` وضعیت حالت فعلی Talk را برای کلاینت‌های WebChat/Control UI تنظیم/منتشر می‌کند.
-    - `talk.client.create` یک جلسه ارائه‌دهنده بلادرنگ متعلق به کلاینت را با استفاده از `webrtc` یا `provider-websocket` ایجاد می‌کند، در حالی که Gateway مالک پیکربندی، اعتبارنامه‌ها، دستورالعمل‌ها، و سیاست ابزار است.
-    - `talk.client.toolCall` به انتقال‌های بلادرنگ متعلق به کلاینت اجازه می‌دهد فراخوانی‌های ابزار ارائه‌دهنده را به سیاست Gateway ارسال کنند. نخستین ابزار پشتیبانی‌شده `openclaw_agent_consult` است؛ کلاینت‌ها یک شناسه اجرا دریافت می‌کنند و پیش از ارسال نتیجه ابزار ویژه ارائه‌دهنده، منتظر رویدادهای معمول چرخه عمر چت می‌مانند.
-    - `talk.event` تنها کانال رویداد Talk برای آداپتورهای بلادرنگ، رونویسی، STT/TTS، managed-room، تلفنی، و جلسه است.
-    - `talk.speak` گفتار را از طریق ارائه‌دهنده گفتار فعال Talk سنتز می‌کند.
-    - `tts.status` وضعیت فعال بودن TTS، ارائه‌دهنده فعال، ارائه‌دهندگان fallback، و وضعیت پیکربندی ارائه‌دهنده را برمی‌گرداند.
-    - `tts.providers` فهرست ارائه‌دهندگان قابل مشاهده TTS را برمی‌گرداند.
+  <Accordion title="گفتار و TTS">
+    - `talk.catalog` کاتالوگ فقط‌خواندنی ارائه‌دهندگان Talk را برای گفتار، رونویسی streaming، و صدای realtime برمی‌گرداند. این شامل شناسه‌های ارائه‌دهنده، برچسب‌ها، وضعیت پیکربندی‌شده، شناسه‌های مدل/صدا که expose شده‌اند، حالت‌های canonical، transportها، راهبردهای brain، و پرچم‌های audio/capability realtime است، بدون اینکه secretهای ارائه‌دهنده را برگرداند یا پیکربندی سراسری را تغییر دهد.
+    - `talk.config` payload مؤثر پیکربندی Talk را برمی‌گرداند؛ `includeSecrets` به `operator.talk.secrets` (یا `operator.admin`) نیاز دارد.
+    - `talk.session.create` یک نشست Talk تحت مالکیت Gateway برای `realtime/gateway-relay`، `transcription/gateway-relay`، یا `stt-tts/managed-room` ایجاد می‌کند. `brain: "direct-tools"` به `operator.admin` نیاز دارد.
+    - `talk.session.join` token نشست managed-room را اعتبارسنجی می‌کند، در صورت نیاز eventهای `session.ready` یا `session.replaced` را منتشر می‌کند، و metadata اتاق/نشست را همراه با eventهای Talk اخیر، بدون token متن ساده یا hash token ذخیره‌شده، برمی‌گرداند.
+    - `talk.session.appendAudio` صدای ورودی PCM با base64 را به نشست‌های relay realtime و رونویسی تحت مالکیت Gateway اضافه می‌کند.
+    - `talk.session.startTurn`، `talk.session.endTurn`، و `talk.session.cancelTurn` چرخهٔ عمر نوبت managed-room را با رد نوبت stale پیش از پاک شدن state هدایت می‌کنند.
+    - `talk.session.cancelOutput` خروجی صوتی assistant را متوقف می‌کند، عمدتاً برای barge-in کنترل‌شده با VAD در نشست‌های relay Gateway.
+    - `talk.session.submitToolResult` یک فراخوانی ابزار ارائه‌دهنده را که توسط نشست relay realtime تحت مالکیت Gateway منتشر شده تکمیل می‌کند.
+    - `talk.session.close` یک نشست relay، رونویسی، یا managed-room تحت مالکیت Gateway را می‌بندد و eventهای پایانی Talk را منتشر می‌کند.
+    - `talk.mode` وضعیت حالت Talk فعلی را برای کلاینت‌های WebChat/Control UI تنظیم/پخش می‌کند.
+    - `talk.client.create` یک نشست ارائه‌دهندهٔ realtime تحت مالکیت کلاینت را با استفاده از `webrtc` یا `provider-websocket` ایجاد می‌کند، در حالی که Gateway مالک پیکربندی، credentialها، دستورالعمل‌ها، و سیاست ابزار است.
+    - `talk.client.toolCall` به transportهای realtime تحت مالکیت کلاینت اجازه می‌دهد فراخوانی‌های ابزار ارائه‌دهنده را به سیاست Gateway ارسال کنند. نخستین ابزار پشتیبانی‌شده `openclaw_agent_consult` است؛ کلاینت‌ها یک run id دریافت می‌کنند و پیش از ارسال نتیجهٔ ابزار مختص ارائه‌دهنده، منتظر eventهای عادی چرخهٔ عمر چت می‌مانند.
+    - `talk.event` تنها کانال eventهای Talk برای realtime، رونویسی، STT/TTS، managed-room، تلفنی، و آداپتورهای جلسه است.
+    - `talk.speak` گفتار را از طریق ارائه‌دهندهٔ گفتار Talk فعال تولید می‌کند.
+    - `tts.status` وضعیت فعال بودن TTS، ارائه‌دهندهٔ فعال، ارائه‌دهندگان fallback، و وضعیت پیکربندی ارائه‌دهنده را برمی‌گرداند.
+    - `tts.providers` inventory قابل‌مشاهدهٔ ارائه‌دهندگان TTS را برمی‌گرداند.
     - `tts.enable` و `tts.disable` وضعیت ترجیحات TTS را تغییر می‌دهند.
-    - `tts.setProvider` ارائه‌دهنده ترجیحی TTS را به‌روزرسانی می‌کند.
-    - `tts.convert` تبدیل یک‌باره متن به گفتار را اجرا می‌کند.
+    - `tts.setProvider` ارائه‌دهندهٔ ترجیحی TTS را به‌روزرسانی می‌کند.
+    - `tts.convert` تبدیل یک‌بارهٔ متن به گفتار را اجرا می‌کند.
 
   </Accordion>
 
-  <Accordion title="اسرار، پیکربندی، به‌روزرسانی، و ویزارد">
-    - `secrets.reload` SecretRefهای فعال را دوباره resolve می‌کند و وضعیت اسرار زمان اجرا را فقط در صورت موفقیت کامل جایگزین می‌کند.
-    - `secrets.resolve` انتساب‌های secret هدف‌گذاری‌شده به فرمان را برای یک مجموعه فرمان/هدف مشخص resolve می‌کند.
+  <Accordion title="Secretها، پیکربندی، به‌روزرسانی، و wizard">
+    - `secrets.reload` SecretRefهای فعال را دوباره resolve می‌کند و فقط در صورت موفقیت کامل، state secret زمان اجرا را جایگزین می‌کند.
+    - `secrets.resolve` assignmentهای secret هدف‌گیری‌شده به command را برای یک مجموعهٔ command/target مشخص resolve می‌کند.
     - `config.get` snapshot و hash پیکربندی فعلی را برمی‌گرداند.
     - `config.set` یک payload پیکربندی اعتبارسنجی‌شده را می‌نویسد.
-    - `config.patch` یک به‌روزرسانی جزئی پیکربندی را ادغام می‌کند.
-    - `config.apply` کل payload پیکربندی را اعتبارسنجی + جایگزین می‌کند.
-    - `config.schema` payload زنده schema پیکربندی را که توسط ابزارهای Control UI و CLI استفاده می‌شود برمی‌گرداند: schema، `uiHints`، نسخه، و metadata تولید، شامل metadata مربوط به schemaهای Plugin + کانال وقتی runtime بتواند آن را بارگذاری کند. این schema شامل metadata فیلد `title` / `description` مشتق‌شده از همان برچسب‌ها و متن راهنمای استفاده‌شده توسط UI است، شامل شاخه‌های شیء تو در تو، wildcard، آیتم آرایه، و ترکیب `anyOf` / `oneOf` / `allOf` وقتی مستندات فیلد مطابق وجود داشته باشد.
-    - `config.schema.lookup` یک payload lookup محدود به مسیر را برای یک مسیر پیکربندی برمی‌گرداند: مسیر نرمال‌شده، یک گره schema کم‌عمق، hint مطابق + `hintPath`، و خلاصه‌های فرزند مستقیم برای drill-down در UI/CLI. گره‌های lookup schema مستندات کاربرمحور و فیلدهای اعتبارسنجی رایج (`title`، `description`، `type`، `enum`، `const`، `format`، `pattern`، کران‌های عددی/رشته‌ای/آرایه‌ای/شیء، و پرچم‌هایی مانند `additionalProperties`، `deprecated`، `readOnly`، `writeOnly`) را نگه می‌دارند. خلاصه‌های فرزند `key`، `path` نرمال‌شده، `type`، `required`، `hasChildren`، به‌علاوه `hint` / `hintPath` مطابق را در معرض استفاده قرار می‌دهند.
-    - `update.run` جریان به‌روزرسانی gateway را اجرا می‌کند و فقط وقتی خود به‌روزرسانی موفق شده باشد یک راه‌اندازی مجدد زمان‌بندی می‌کند؛ فراخواننده‌های دارای جلسه می‌توانند `continuationMessage` را درج کنند تا راه‌اندازی، یک نوبت پیگیری عامل را از طریق صف ادامه پس از راه‌اندازی مجدد از سر بگیرد. به‌روزرسانی‌های مدیر بسته، پس از جایگزینی بسته، یک راه‌اندازی مجدد به‌روزرسانی بدون تاخیر و بدون cooldown را اجباری می‌کنند تا فرایند قدیمی Gateway از درخت `dist` جایگزین‌شده به lazy-loading ادامه ندهد.
-    - `update.status` آخرین sentinel کش‌شده راه‌اندازی مجدد به‌روزرسانی را برمی‌گرداند، شامل نسخه در حال اجرای پس از راه‌اندازی مجدد وقتی در دسترس باشد.
-    - `wizard.start`، `wizard.next`، `wizard.status`، و `wizard.cancel` ویزارد onboarding را از طریق WS RPC در معرض استفاده قرار می‌دهند.
+    - `config.patch` یک به‌روزرسانی جزئی پیکربندی را merge می‌کند.
+    - `config.apply` payload کامل پیکربندی را اعتبارسنجی + جایگزین می‌کند.
+    - `config.schema` payload schema زندهٔ پیکربندی را که توسط ابزارهای Control UI و CLI استفاده می‌شود برمی‌گرداند: schema، `uiHints`، نسخه، و metadata تولید، شامل metadata schema مربوط به Plugin + کانال وقتی runtime بتواند آن را load کند. schema شامل metadata فیلد `title` / `description` است که از همان برچسب‌ها و متن راهنمای استفاده‌شده توسط UI مشتق شده، از جمله شاخه‌های composition برای object تودرتو، wildcard، array-item، و `anyOf` / `oneOf` / `allOf` وقتی مستندات فیلد مطابق وجود داشته باشد.
+    - `config.schema.lookup` یک payload lookup محدود به path را برای یک path پیکربندی برمی‌گرداند: path نرمال‌شده، یک node کم‌عمق schema، hint مطابق + `hintPath`، و خلاصه‌های child فوری برای drill-down در UI/CLI. nodeهای lookup schema مستندات کاربرپسند و فیلدهای رایج validation (`title`، `description`، `type`، `enum`، `const`، `format`، `pattern`، کران‌های numeric/string/array/object، و flagهایی مانند `additionalProperties`، `deprecated`، `readOnly`، `writeOnly`) را نگه می‌دارند. خلاصه‌های child، `key`، `path` نرمال‌شده، `type`، `required`، `hasChildren`، به‌علاوهٔ `hint` / `hintPath` مطابق را expose می‌کنند.
+    - `update.run` جریان به‌روزرسانی gateway را اجرا می‌کند و فقط وقتی خود به‌روزرسانی موفق شده باشد restart زمان‌بندی می‌کند؛ فراخوان‌هایی که نشست دارند می‌توانند `continuationMessage` را وارد کنند تا startup یک نوبت پیگیری agent را از طریق صف ادامهٔ restart از سر بگیرد. به‌روزرسانی‌های package-manager پس از تعویض package، یک restart به‌روزرسانی بدون تعویق و بدون cooldown را اجبار می‌کنند تا فرایند قدیمی Gateway از tree جایگزین‌شدهٔ `dist` به lazy-loading ادامه ندهد.
+    - `update.status` آخرین sentinel ذخیره‌شده در cache برای restart به‌روزرسانی را، شامل نسخهٔ در حال اجرای پس از restart وقتی موجود باشد، برمی‌گرداند.
+    - `wizard.start`، `wizard.next`، `wizard.status`، و `wizard.cancel` wizard راه‌اندازی اولیه را از طریق WS RPC expose می‌کنند.
 
   </Accordion>
 
-  <Accordion title="کمک‌کننده‌های عامل و فضای کاری">
-    - `agents.list` مدخل‌های عامل پیکربندی‌شده، شامل مدل موثر و metadata زمان اجرا را برمی‌گرداند.
-    - `agents.create`، `agents.update`، و `agents.delete` رکوردهای عامل و اتصال فضای کاری را مدیریت می‌کنند.
-    - `agents.files.list`، `agents.files.get`، و `agents.files.set` فایل‌های فضای کاری bootstrap را که برای یک عامل در معرض استفاده قرار گرفته‌اند مدیریت می‌کنند.
-    - `artifacts.list`، `artifacts.get`، و `artifacts.download` خلاصه‌ها و دانلودهای artifact مشتق‌شده از transcript را برای یک محدوده صریح `sessionKey`، `runId`، یا `taskId` در معرض استفاده قرار می‌دهند. کوئری‌های اجرا و وظیفه، جلسه مالک را در سمت سرور resolve می‌کنند و فقط رسانه transcript با provenance مطابق را برمی‌گردانند؛ منابع URL ناامن یا محلی، به‌جای fetch سمت سرور، دانلودهای پشتیبانی‌نشده برمی‌گردانند.
-    - `environments.list` و `environments.status` کشف فقط‌خواندنی محیط‌های محلی Gateway و Node را برای کلاینت‌های SDK در معرض استفاده قرار می‌دهند.
-    - `agent.identity.get` هویت موثر دستیار را برای یک عامل یا جلسه برمی‌گرداند.
-    - `agent.wait` منتظر پایان یک اجرا می‌ماند و وقتی در دسترس باشد snapshot پایانی را برمی‌گرداند.
+  <Accordion title="کمک‌کننده‌های agent و workspace">
+    - `agents.list` entryهای پیکربندی‌شدهٔ agent را، شامل مدل مؤثر و metadata زمان اجرا، برمی‌گرداند.
+    - `agents.create`، `agents.update`، و `agents.delete` رکوردهای agent و سیم‌کشی workspace را مدیریت می‌کنند.
+    - `agents.files.list`، `agents.files.get`، و `agents.files.set` فایل‌های bootstrap workspace را که برای یک agent expose شده‌اند مدیریت می‌کنند.
+    - `artifacts.list`، `artifacts.get`، و `artifacts.download` خلاصه‌های artifact مشتق‌شده از transcript و downloadها را برای scope صریح `sessionKey`، `runId`، یا `taskId` expose می‌کنند. queryهای run و task، نشست مالک را سمت سرور resolve می‌کنند و فقط transcript media با provenance مطابق را برمی‌گردانند؛ sourceهای URL ناامن یا محلی به‌جای fetch سمت سرور، downloadهای پشتیبانی‌نشده برمی‌گردانند.
+    - `environments.list` و `environments.status` کشف محیط فقط‌خواندنی Gateway-local و node را برای کلاینت‌های SDK expose می‌کنند.
+    - `agent.identity.get` هویت مؤثر assistant را برای یک agent یا نشست برمی‌گرداند.
+    - `agent.wait` منتظر پایان یک run می‌ماند و در صورت موجود بودن، snapshot پایانی را برمی‌گرداند.
 
   </Accordion>
 
-  <Accordion title="کنترل جلسه">
-    - `sessions.list` نمایه جلسه فعلی را برمی‌گرداند، شامل metadata مربوط به `agentRuntime` برای هر ردیف وقتی backend زمان اجرای عامل پیکربندی شده باشد.
-    - `sessions.subscribe` و `sessions.unsubscribe` اشتراک‌های رویداد تغییر جلسه را برای کلاینت WS فعلی تغییر می‌دهند.
-    - `sessions.messages.subscribe` و `sessions.messages.unsubscribe` اشتراک‌های رویداد transcript/پیام را برای یک جلسه تغییر می‌دهند.
-    - `sessions.preview` پیش‌نمایش‌های محدود transcript را برای کلیدهای جلسه مشخص برمی‌گرداند.
-    - `sessions.describe` یک ردیف جلسه Gateway را برای یک کلید جلسه دقیق برمی‌گرداند.
-    - `sessions.resolve` یک هدف جلسه را resolve یا canonicalize می‌کند.
-    - `sessions.create` یک مدخل جلسه جدید ایجاد می‌کند.
-    - `sessions.send` یک پیام را به یک جلسه موجود می‌فرستد.
-    - `sessions.steer` گونه interrupt-and-steer برای یک جلسه فعال است.
-    - `sessions.abort` کار فعال را برای یک جلسه abort می‌کند. فراخواننده می‌تواند `key` به‌علاوه `runId` اختیاری را ارسال کند، یا فقط `runId` را برای اجراهای فعالی ارسال کند که Gateway بتواند به یک جلسه resolve کند.
-    - `sessions.patch` metadata/overrideهای جلسه را به‌روزرسانی می‌کند و مدل canonical resolve‌شده به‌علاوه `agentRuntime` موثر را گزارش می‌دهد.
-    - `sessions.reset`، `sessions.delete`، و `sessions.compact` نگهداشت جلسه را انجام می‌دهند.
-    - `sessions.get` ردیف کامل ذخیره‌شده جلسه را برمی‌گرداند.
-    - اجرای چت همچنان از `chat.history`، `chat.send`، `chat.abort`، و `chat.inject` استفاده می‌کند. `chat.history` برای کلاینت‌های UI به‌شکل نمایش‌نرمال‌شده است: تگ‌های directive درون‌خطی از متن قابل مشاهده حذف می‌شوند، payloadهای XML فراخوانی ابزار به‌صورت متن ساده (شامل `<tool_call>...</tool_call>`، `<function_call>...</function_call>`، `<tool_calls>...</tool_calls>`، `<function_calls>...</function_calls>`، و بلوک‌های کوتاه‌شده فراخوانی ابزار) و توکن‌های کنترل مدل ASCII/تمام‌عرض نشت‌کرده حذف می‌شوند، ردیف‌های دستیار که صرفا توکن سکوت هستند مانند `NO_REPLY` / `no_reply` دقیق حذف می‌شوند، و ردیف‌های بسیار بزرگ می‌توانند با placeholderها جایگزین شوند.
+  <Accordion title="کنترل نشست">
+    - `sessions.list` index نشست فعلی را، شامل metadata هر ردیف `agentRuntime` وقتی backend زمان اجرای agent پیکربندی شده باشد، برمی‌گرداند.
+    - `sessions.subscribe` و `sessions.unsubscribe` subscriptionهای event تغییر نشست را برای کلاینت WS فعلی toggle می‌کنند.
+    - `sessions.messages.subscribe` و `sessions.messages.unsubscribe` subscriptionهای event مربوط به transcript/message را برای یک نشست toggle می‌کنند.
+    - `sessions.preview` پیش‌نمایش‌های محدود transcript را برای کلیدهای نشست مشخص برمی‌گرداند.
+    - `sessions.describe` یک ردیف نشست Gateway را برای یک کلید نشست دقیق برمی‌گرداند.
+    - `sessions.resolve` یک هدف نشست را resolve یا canonicalize می‌کند.
+    - `sessions.create` یک entry نشست جدید ایجاد می‌کند.
+    - `sessions.send` یک پیام را به یک نشست موجود می‌فرستد.
+    - `sessions.steer` گونهٔ interrupt-and-steer برای یک نشست فعال است.
+    - `sessions.abort` کار فعال برای یک نشست را abort می‌کند. فراخوان می‌تواند `key` به‌علاوهٔ `runId` اختیاری را بفرستد، یا برای runهای فعالی که Gateway می‌تواند به نشست resolve کند، فقط `runId` را بفرستد.
+    - `sessions.patch` metadata/overrideهای نشست را به‌روزرسانی می‌کند و مدل canonical resolve‌شده به‌علاوهٔ `agentRuntime` مؤثر را گزارش می‌دهد.
+    - `sessions.reset`، `sessions.delete`، و `sessions.compact` نگهداری نشست را انجام می‌دهند.
+    - `sessions.get` ردیف کامل نشست ذخیره‌شده را برمی‌گرداند.
+    - اجرای چت همچنان از `chat.history`، `chat.send`، `chat.abort`، و `chat.inject` استفاده می‌کند. `chat.history` برای کلاینت‌های UI به‌صورت display-normalized است: tagهای directive inline از متن قابل‌مشاهده حذف می‌شوند، payloadهای XML متن سادهٔ tool-call (شامل `<tool_call>...</tool_call>`، `<function_call>...</function_call>`، `<tool_calls>...</tool_calls>`، `<function_calls>...</function_calls>`، و blockهای tool-call کوتاه‌شده) و tokenهای کنترل مدل ASCII/full-width نشت‌کرده حذف می‌شوند، ردیف‌های assistant با silent-token خالص مانند exact `NO_REPLY` / `no_reply` حذف می‌شوند، و ردیف‌های بیش‌ازحد بزرگ می‌توانند با placeholderها جایگزین شوند.
 
   </Accordion>
 
-  <Accordion title="جفت‌سازی دستگاه و توکن‌های دستگاه">
-    - `device.pair.list` دستگاه‌های جفت‌شده در انتظار و تاییدشده را برمی‌گرداند.
-    - `device.pair.approve`، `device.pair.reject`، و `device.pair.remove` رکوردهای جفت‌سازی دستگاه را مدیریت می‌کنند.
-    - `device.token.rotate` یک توکن دستگاه جفت‌شده را در محدوده‌های نقش تاییدشده و scope فراخواننده خودش rotate می‌کند.
-    - `device.token.revoke` یک توکن دستگاه جفت‌شده را در محدوده‌های نقش تاییدشده و scope فراخواننده خودش revoke می‌کند.
+  <Accordion title="Pairing دستگاه و tokenهای دستگاه">
+    - `device.pair.list` دستگاه‌های paired در انتظار و تأییدشده را برمی‌گرداند.
+    - `device.pair.approve`، `device.pair.reject`، و `device.pair.remove` رکوردهای device-pairing را مدیریت می‌کنند.
+    - `device.token.rotate` یک token دستگاه paired را در محدوده‌های role تأییدشده و scope فراخوان rotate می‌کند.
+    - `device.token.revoke` یک token دستگاه paired را در محدوده‌های role تأییدشده و scope فراخوان revoke می‌کند.
 
   </Accordion>
 
-  <Accordion title="جفت‌سازی Node، invoke، و کار در انتظار">
-    - `node.pair.request`، `node.pair.list`، `node.pair.approve`، `node.pair.reject`، `node.pair.remove`، و `node.pair.verify` جفت‌سازی Node و اعتبارسنجی bootstrap را پوشش می‌دهند.
-    - `node.list` و `node.describe` وضعیت Nodeهای شناخته‌شده/متصل را برمی‌گردانند.
-    - `node.rename` برچسب یک Node جفت‌شده را به‌روزرسانی می‌کند.
-    - `node.invoke` یک فرمان را به یک Node متصل forward می‌کند.
+  <Accordion title="Pairing، invoke، و کارهای pending مربوط به Node">
+    - `node.pair.request`، `node.pair.list`، `node.pair.approve`، `node.pair.reject`، `node.pair.remove`، و `node.pair.verify` pairing node و verification bootstrap را پوشش می‌دهند.
+    - `node.list` و `node.describe` state مربوط به nodeهای شناخته‌شده/متصل را برمی‌گردانند.
+    - `node.rename` برچسب node paired را به‌روزرسانی می‌کند.
+    - `node.invoke` یک command را به یک node متصل forward می‌کند.
     - `node.invoke.result` نتیجه را برای یک درخواست invoke برمی‌گرداند.
-    - `node.event` رویدادهای منشأگرفته از Node را به gateway برمی‌گرداند.
-    - `node.canvas.capability.refresh` توکن‌های canvas-capability محدود به scope را refresh می‌کند.
-    - `node.pending.pull` و `node.pending.ack` APIهای صف Node متصل هستند.
-    - `node.pending.enqueue` و `node.pending.drain` کار پایدار در انتظار را برای Nodeهای آفلاین/قطع‌شده مدیریت می‌کنند.
+    - `node.event` eventهای منشأگرفته از node را به gateway برمی‌گرداند.
+    - `node.pending.pull` و `node.pending.ack` APIهای صف node متصل هستند.
+    - `node.pending.enqueue` و `node.pending.drain` کار pending بادوام را برای nodeهای offline/disconnected مدیریت می‌کنند.
 
   </Accordion>
 
   <Accordion title="خانواده‌های تأیید">
-    - `exec.approval.request`، `exec.approval.get`، `exec.approval.list` و `exec.approval.resolve` درخواست‌های تأیید یک‌باره‌ی exec به‌علاوه‌ی جست‌وجو/بازپخش تأییدهای در انتظار را پوشش می‌دهند.
-    - `exec.approval.waitDecision` منتظر یک تأیید exec در انتظار می‌ماند و تصمیم نهایی را برمی‌گرداند (یا در صورت پایان مهلت، `null`).
-    - `exec.approvals.get` و `exec.approvals.set` اسنپ‌شات‌های سیاست تأیید exec در Gateway را مدیریت می‌کنند.
-    - `exec.approvals.node.get` و `exec.approvals.node.set` سیاست تأیید exec محلی Node را از طریق فرمان‌های رله‌ی Node مدیریت می‌کنند.
-    - `plugin.approval.request`، `plugin.approval.list`، `plugin.approval.waitDecision` و `plugin.approval.resolve` جریان‌های تأیید تعریف‌شده توسط Plugin را پوشش می‌دهند.
+    - `exec.approval.request`، `exec.approval.get`، `exec.approval.list`، و `exec.approval.resolve` درخواست‌های تأیید اجرای یک‌باره را به‌همراه جست‌وجو/بازپخش تأییدهای در انتظار پوشش می‌دهند.
+    - `exec.approval.waitDecision` منتظر یک تأیید اجرای در انتظار می‌ماند و تصمیم نهایی را برمی‌گرداند (یا در صورت زمان‌بر شدن، `null`).
+    - `exec.approvals.get` و `exec.approvals.set` snapshotهای سیاست تأیید اجرای gateway را مدیریت می‌کنند.
+    - `exec.approvals.node.get` و `exec.approvals.node.set` سیاست تأیید اجرای محلی node را از طریق فرمان‌های relay مربوط به node مدیریت می‌کنند.
+    - `plugin.approval.request`، `plugin.approval.list`، `plugin.approval.waitDecision`، و `plugin.approval.resolve` جریان‌های تأیید تعریف‌شده توسط plugin را پوشش می‌دهند.
 
   </Accordion>
 
-  <Accordion title="اتوماسیون، Skills و ابزارها">
-    - اتوماسیون: `wake` یک تزریق متن بیدارباش فوری یا در Heartbeat بعدی زمان‌بندی می‌کند؛ `cron.list`، `cron.status`، `cron.add`، `cron.update`، `cron.remove`، `cron.run`، `cron.runs` کار زمان‌بندی‌شده را مدیریت می‌کنند.
+  <Accordion title="اتوماسیون، Skills، و ابزارها">
+    - اتوماسیون: `wake` تزریق متن بیدارباش فوری یا heartbeat بعدی را زمان‌بندی می‌کند؛ `cron.list`، `cron.status`، `cron.add`، `cron.update`، `cron.remove`، `cron.run`، `cron.runs` کارهای زمان‌بندی‌شده را مدیریت می‌کنند.
     - Skills و ابزارها: `commands.list`، `skills.*`، `tools.catalog`، `tools.effective`، `tools.invoke`.
 
   </Accordion>
@@ -467,229 +481,254 @@ gatewayهای قدیمی‌تر ممکن است همچنان برای `node.even
 
 ### خانواده‌های رویداد رایج
 
-- `chat`: به‌روزرسانی‌های چت UI مانند `chat.inject` و دیگر رویدادهای چت فقط مخصوص رونوشت.
-- `session.message` و `session.tool`: به‌روزرسانی‌های رونوشت/جریان رویداد برای یک نشست مشترک‌شده.
-- `sessions.changed`: نمایه‌ی نشست یا فراداده تغییر کرده است.
-- `presence`: به‌روزرسانی‌های اسنپ‌شات حضور سیستم.
-- `tick`: رویداد keepalive / liveness دوره‌ای.
-- `health`: به‌روزرسانی اسنپ‌شات سلامت Gateway.
-- `heartbeat`: به‌روزرسانی جریان رویداد Heartbeat.
-- `cron`: رویداد تغییر اجرای cron/کار.
-- `shutdown`: اعلان خاموشی Gateway.
-- `node.pair.requested` / `node.pair.resolved`: چرخه‌ی عمر جفت‌سازی Node.
-- `node.invoke.request`: پخش درخواست فراخوانی Node.
-- `device.pair.requested` / `device.pair.resolved`: چرخه‌ی عمر دستگاه جفت‌شده.
-- `voicewake.changed`: پیکربندی محرک واژه‌ی بیدارباش تغییر کرده است.
-- `exec.approval.requested` / `exec.approval.resolved`: چرخه‌ی عمر تأیید exec.
-- `plugin.approval.requested` / `plugin.approval.resolved`: چرخه‌ی عمر تأیید Plugin.
+- `chat`: به‌روزرسانی‌های چت UI مانند `chat.inject` و سایر رویدادهای چت
+  مخصوص transcript.
+- `session.message` و `session.tool`: به‌روزرسانی‌های transcript/event-stream برای یک
+  جلسه مشترک‌شده.
+- `sessions.changed`: نمایه جلسه یا metadata تغییر کرده است.
+- `presence`: به‌روزرسانی‌های snapshot حضور سیستم.
+- `tick`: رویداد دوره‌ای keepalive / زنده‌بودن.
+- `health`: به‌روزرسانی snapshot سلامت gateway.
+- `heartbeat`: به‌روزرسانی جریان رویداد heartbeat.
+- `cron`: رویداد تغییر اجرای/job مربوط به cron.
+- `shutdown`: اعلان خاموش‌شدن gateway.
+- `node.pair.requested` / `node.pair.resolved`: چرخه عمر جفت‌سازی node.
+- `node.invoke.request`: پخش درخواست invoke مربوط به node.
+- `device.pair.requested` / `device.pair.resolved`: چرخه عمر دستگاه جفت‌شده.
+- `voicewake.changed`: پیکربندی trigger واژه بیدارباش تغییر کرده است.
+- `exec.approval.requested` / `exec.approval.resolved`: چرخه عمر تأیید اجرا.
+- `plugin.approval.requested` / `plugin.approval.resolved`: چرخه عمر تأیید plugin.
 
-### متدهای کمکی Node
+### روش‌های کمکی Node
 
-- Nodeها می‌توانند برای دریافت فهرست فعلی اجراپذیرهای skill جهت بررسی‌های اجازه‌ی خودکار، `skills.bins` را فراخوانی کنند.
+- Nodeها می‌توانند `skills.bins` را فراخوانی کنند تا فهرست فعلی فایل‌های اجرایی skill را
+  برای بررسی‌های auto-allow دریافت کنند.
 
-### متدهای کمکی اپراتور
+### روش‌های کمکی اپراتور
 
-- اپراتورها می‌توانند برای دریافت موجودی فرمان زمان اجرا برای یک agent، `commands.list` (`operator.read`) را فراخوانی کنند.
-  - `agentId` اختیاری است؛ برای خواندن فضای کاری agent پیش‌فرض، آن را حذف کنید.
+- اپراتورها می‌توانند `commands.list` (`operator.read`) را فراخوانی کنند تا موجودی فرمان runtime
+  برای یک agent را دریافت کنند.
+  - `agentId` اختیاری است؛ برای خواندن workspace پیش‌فرض agent آن را حذف کنید.
   - `scope` کنترل می‌کند که `name` اصلی کدام سطح را هدف بگیرد:
     - `text` توکن فرمان متنی اصلی را بدون `/` ابتدایی برمی‌گرداند
-    - `native` و مسیر پیش‌فرض `both` در صورت موجود بودن، نام‌های native آگاه از provider را برمی‌گردانند
-  - `textAliases` نام‌های مستعار دقیق slash مانند `/model` و `/m` را حمل می‌کند.
-  - `nativeName` در صورت وجود، نام فرمان native آگاه از provider را حمل می‌کند.
-  - `provider` اختیاری است و فقط بر نام‌گذاری native به‌علاوه‌ی در دسترس بودن فرمان native Plugin اثر می‌گذارد.
-  - `includeArgs=false` فراداده‌ی آرگومان سریال‌شده را از پاسخ حذف می‌کند.
-- اپراتورها می‌توانند برای دریافت کاتالوگ ابزار زمان اجرا برای یک agent، `tools.catalog` (`operator.read`) را فراخوانی کنند. پاسخ شامل ابزارهای گروه‌بندی‌شده و فراداده‌ی منشأ است:
+    - `native` و مسیر پیش‌فرض `both`، در صورت وجود، نام‌های native آگاه از provider را برمی‌گردانند
+  - `textAliases` نام‌های مستعار slash دقیق مانند `/model` و `/m` را حمل می‌کند.
+  - `nativeName` وقتی وجود داشته باشد، نام فرمان native آگاه از provider را حمل می‌کند.
+  - `provider` اختیاری است و فقط بر نام‌گذاری native به‌علاوه دسترس‌پذیری فرمان native مربوط به plugin اثر می‌گذارد.
+  - `includeArgs=false` metadata سریال‌سازی‌شده آرگومان را از پاسخ حذف می‌کند.
+- اپراتورها می‌توانند `tools.catalog` (`operator.read`) را فراخوانی کنند تا کاتالوگ ابزار runtime برای یک
+  agent را دریافت کنند. پاسخ شامل ابزارهای گروه‌بندی‌شده و metadata منشأ است:
   - `source`: `core` یا `plugin`
-  - `pluginId`: مالک Plugin وقتی `source="plugin"` باشد
-  - `optional`: اینکه آیا ابزار Plugin اختیاری است
-- اپراتورها می‌توانند برای دریافت موجودی ابزار مؤثر در زمان اجرا برای یک نشست، `tools.effective` (`operator.read`) را فراخوانی کنند.
+  - `pluginId`: مالک plugin وقتی `source="plugin"` باشد
+  - `optional`: آیا ابزار plugin اختیاری است یا نه
+- اپراتورها می‌توانند `tools.effective` (`operator.read`) را فراخوانی کنند تا موجودی ابزار runtime-effective
+  برای یک جلسه را دریافت کنند.
   - `sessionKey` الزامی است.
-  - Gateway به‌جای پذیرش زمینه‌ی احراز هویت یا تحویل ارائه‌شده توسط فراخواننده، زمینه‌ی زمان اجرای معتمد را از نشست در سمت سرور استخراج می‌کند.
-  - پاسخ محدود به نشست است و نشان می‌دهد گفت‌وگوی فعال اکنون چه چیزهایی می‌تواند استفاده کند، از جمله ابزارهای core، Plugin و channel.
-- اپراتورها می‌توانند برای فراخوانی یک ابزار در دسترس از همان مسیر سیاست Gateway که `/tools/invoke` استفاده می‌کند، `tools.invoke` (`operator.write`) را فراخوانی کنند.
-  - `name` الزامی است. `args`، `sessionKey`، `agentId`، `confirm` و `idempotencyKey` اختیاری هستند.
-  - اگر هر دو `sessionKey` و `agentId` وجود داشته باشند، agent نشست حل‌شده باید با `agentId` مطابقت داشته باشد.
-  - پاسخ یک پوشش رو به SDK با فیلدهای `ok`، `toolName`، `output` اختیاری و `error` تایپ‌شده است. رد شدن به‌دلیل تأیید یا سیاست، به‌جای دور زدن خط لوله‌ی سیاست ابزار Gateway، در payload مقدار `ok:false` برمی‌گرداند.
-- اپراتورها می‌توانند برای دریافت موجودی skill قابل مشاهده برای یک agent، `skills.status` (`operator.read`) را فراخوانی کنند.
-  - `agentId` اختیاری است؛ برای خواندن فضای کاری agent پیش‌فرض، آن را حذف کنید.
-  - پاسخ شامل واجد شرایط بودن، نیازمندی‌های مفقود، بررسی‌های پیکربندی و گزینه‌های نصب پاک‌سازی‌شده است، بدون افشای مقادیر خام secret.
-- اپراتورها می‌توانند برای فراداده‌ی کشف ClawHub، `skills.search` و `skills.detail` (`operator.read`) را فراخوانی کنند.
+  - gateway به‌جای پذیرش auth یا context تحویلِ ارائه‌شده توسط caller،
+    context runtime مورد اعتماد را از جلسه در سمت server استخراج می‌کند.
+  - پاسخ در محدوده جلسه است و آنچه گفت‌وگوی فعال همین حالا می‌تواند استفاده کند را بازتاب می‌دهد،
+    شامل ابزارهای core، plugin، و channel.
+- اپراتورها می‌توانند `tools.invoke` (`operator.write`) را فراخوانی کنند تا یک ابزار در دسترس را از طریق
+  همان مسیر سیاست gateway مانند `/tools/invoke` فراخوانی کنند.
+  - `name` الزامی است. `args`، `sessionKey`، `agentId`، `confirm`، و
+    `idempotencyKey` اختیاری هستند.
+  - اگر هم `sessionKey` و هم `agentId` وجود داشته باشند، agent جلسه resolve‌شده باید با
+    `agentId` مطابقت داشته باشد.
+  - پاسخ یک envelope رو به SDK با فیلدهای `ok`، `toolName`، `output` اختیاری، و
+    `error` تایپ‌شده است. رد شدن به‌دلیل تأیید یا سیاست، به‌جای دور زدن pipeline سیاست ابزار gateway،
+    مقدار `ok:false` را در payload برمی‌گرداند.
+- اپراتورها می‌توانند `skills.status` (`operator.read`) را فراخوانی کنند تا موجودی skill قابل مشاهده
+  برای یک agent را دریافت کنند.
+  - `agentId` اختیاری است؛ برای خواندن workspace پیش‌فرض agent آن را حذف کنید.
+  - پاسخ شامل eligibility، نیازمندی‌های مفقود، بررسی‌های config، و
+    گزینه‌های نصب پاک‌سازی‌شده بدون افشای مقدارهای خام secret است.
+- اپراتورها می‌توانند `skills.search` و `skills.detail` (`operator.read`) را برای
+  metadata کشف ClawHub فراخوانی کنند.
 - اپراتورها می‌توانند `skills.install` (`operator.admin`) را در دو حالت فراخوانی کنند:
-  - حالت ClawHub: `{ source: "clawhub", slug, version?, force? }` یک پوشه‌ی skill را در دایرکتوری `skills/` فضای کاری agent پیش‌فرض نصب می‌کند.
-  - حالت نصب‌کننده‌ی Gateway: `{ name, installId, dangerouslyForceUnsafeInstall?, timeoutMs? }` یک اقدام اعلام‌شده‌ی `metadata.openclaw.install` را روی میزبان Gateway اجرا می‌کند.
+  - حالت ClawHub: `{ source: "clawhub", slug, version?, force? }` یک
+    پوشه skill را در دایرکتوری `skills/` workspace پیش‌فرض agent نصب می‌کند.
+  - حالت installer مربوط به Gateway: `{ name, installId, dangerouslyForceUnsafeInstall?, timeoutMs? }`
+    یک action اعلام‌شده `metadata.openclaw.install` را روی host مربوط به gateway اجرا می‌کند.
 - اپراتورها می‌توانند `skills.update` (`operator.admin`) را در دو حالت فراخوانی کنند:
-  - حالت ClawHub یک slug رهگیری‌شده یا همه‌ی نصب‌های رهگیری‌شده‌ی ClawHub را در فضای کاری agent پیش‌فرض به‌روزرسانی می‌کند.
-  - حالت پیکربندی مقادیر `skills.entries.<skillKey>` مانند `enabled`، `apiKey` و `env` را patch می‌کند.
+  - حالت ClawHub یک slug ردیابی‌شده یا همه نصب‌های ردیابی‌شده ClawHub را در
+    workspace پیش‌فرض agent به‌روزرسانی می‌کند.
+  - حالت Config مقدارهای `skills.entries.<skillKey>` مانند `enabled`،
+    `apiKey`، و `env` را patch می‌کند.
 
 ### نماهای `models.list`
 
-`models.list` یک پارامتر اختیاری `view` می‌پذیرد:
+`models.list` یک پارامتر اختیاری `view` را می‌پذیرد:
 
-- حذف‌شده یا `"default"`: رفتار فعلی زمان اجرا. اگر `agents.defaults.models` پیکربندی شده باشد، پاسخ همان کاتالوگ مجاز است؛ در غیر این صورت پاسخ، کاتالوگ کامل Gateway است.
-- `"configured"`: رفتار در اندازه‌ی انتخاب‌گر. اگر `agents.defaults.models` پیکربندی شده باشد، همچنان اولویت دارد. در غیر این صورت پاسخ از ورودی‌های صریح `models.providers.*.models` استفاده می‌کند و فقط وقتی هیچ ردیف مدل پیکربندی‌شده‌ای وجود نداشته باشد، به کاتالوگ کامل برمی‌گردد.
-- `"all"`: کاتالوگ کامل Gateway، با دور زدن `agents.defaults.models`. از این برای عیب‌یابی و UIهای کشف استفاده کنید، نه انتخاب‌گرهای عادی مدل.
+- حذف‌شده یا `"default"`: رفتار runtime فعلی. اگر `agents.defaults.models` پیکربندی شده باشد، پاسخ همان کاتالوگ مجاز است؛ در غیر این صورت پاسخ، کاتالوگ کامل Gateway است.
+- `"configured"`: رفتار به‌اندازه picker. اگر `agents.defaults.models` پیکربندی شده باشد، همچنان اولویت دارد. در غیر این صورت پاسخ از مدخل‌های صریح `models.providers.*.models` استفاده می‌کند، و فقط وقتی هیچ ردیف model پیکربندی‌شده‌ای وجود نداشته باشد به کاتالوگ کامل fallback می‌کند.
+- `"all"`: کاتالوگ کامل Gateway، با دور زدن `agents.defaults.models`. از این برای diagnostics و UIهای کشف استفاده کنید، نه pickerهای عادی model.
 
-## تأییدهای exec
+## تأییدهای اجرا
 
-- وقتی یک درخواست exec به تأیید نیاز داشته باشد، Gateway رویداد `exec.approval.requested` را پخش می‌کند.
-- کلاینت‌های اپراتور با فراخوانی `exec.approval.resolve` آن را حل می‌کنند (به scope `operator.approvals` نیاز دارد).
-- برای `host=node`، `exec.approval.request` باید شامل `systemRunPlan` باشد (`argv`/`cwd`/`rawCommand`/فراداده‌ی نشست canonical). درخواست‌های فاقد `systemRunPlan` رد می‌شوند.
-- پس از تأیید، فراخوانی‌های `node.invoke system.run` ارسال‌شده، همان `systemRunPlan` canonical را به‌عنوان زمینه‌ی معتبر فرمان/cwd/نشست دوباره استفاده می‌کنند.
-- اگر فراخواننده‌ای بین آماده‌سازی و ارسال نهایی `system.run` تأییدشده، `command`، `rawCommand`، `cwd`، `agentId` یا `sessionKey` را تغییر دهد، Gateway به‌جای اعتماد به payload تغییریافته، اجرا را رد می‌کند.
+- وقتی یک درخواست exec به تأیید نیاز داشته باشد، gateway رویداد `exec.approval.requested` را پخش می‌کند.
+- clientهای اپراتور با فراخوانی `exec.approval.resolve` resolve می‌کنند (به scope `operator.approvals` نیاز دارد).
+- برای `host=node`، `exec.approval.request` باید شامل `systemRunPlan` باشد (`argv`/`cwd`/`rawCommand`/metadata جلسه canonical). درخواست‌های فاقد `systemRunPlan` رد می‌شوند.
+- پس از تأیید، فراخوانی‌های forward‌شده `node.invoke system.run` همان
+  `systemRunPlan` canonical را به‌عنوان context معتبر command/cwd/session دوباره استفاده می‌کنند.
+- اگر یک caller بین prepare و forward نهایی `system.run` تأییدشده، `command`، `rawCommand`، `cwd`، `agentId`، یا
+  `sessionKey` را تغییر دهد،
+  gateway به‌جای اعتماد به payload تغییریافته، اجرا را رد می‌کند.
 
 ## fallback تحویل agent
 
-- درخواست‌های `agent` می‌توانند برای درخواست تحویل خروجی، `deliver=true` را شامل شوند.
-- `bestEffortDeliver=false` رفتار سخت‌گیرانه را حفظ می‌کند: هدف‌های تحویل حل‌نشده یا فقط داخلی، `INVALID_REQUEST` برمی‌گردانند.
-- `bestEffortDeliver=true` وقتی هیچ مسیر قابل تحویل خارجی قابل حل نباشد (برای مثال نشست‌های داخلی/webchat یا پیکربندی‌های چندکاناله‌ی مبهم)، fallback به اجرای فقط نشست را مجاز می‌کند.
+- درخواست‌های `agent` می‌توانند `deliver=true` را شامل شوند تا تحویل outbound درخواست شود.
+- `bestEffortDeliver=false` رفتار سخت‌گیرانه را حفظ می‌کند: هدف‌های تحویل resolveنشده یا فقط داخلی `INVALID_REQUEST` برمی‌گردانند.
+- `bestEffortDeliver=true` وقتی هیچ مسیر قابل تحویل خارجی قابل resolve نباشد، fallback به اجرای فقط-جلسه را مجاز می‌کند (برای مثال جلسه‌های internal/webchat یا configهای چند-channel مبهم).
 
 ## نسخه‌بندی
 
-- `PROTOCOL_VERSION` در `src/gateway/protocol/schema/protocol-schemas.ts` قرار دارد.
-- کلاینت‌ها `minProtocol` + `maxProtocol` را می‌فرستند؛ سرور عدم تطابق را رد می‌کند.
-- schemaها + مدل‌ها از تعریف‌های TypeBox تولید می‌شوند:
+- `PROTOCOL_VERSION` در `src/gateway/protocol/version.ts` قرار دارد.
+- clientها `minProtocol` + `maxProtocol` را می‌فرستند؛ server ناسازگاری‌ها را رد می‌کند.
+- Schemaها + modelها از تعریف‌های TypeBox تولید می‌شوند:
   - `pnpm protocol:gen`
   - `pnpm protocol:gen:swift`
   - `pnpm protocol:check`
 
-### ثابت‌های کلاینت
+### ثابت‌های client
 
-کلاینت مرجع در `src/gateway/client.ts` از این پیش‌فرض‌ها استفاده می‌کند. مقادیر در سراسر protocol v3 پایدار هستند و خط مبنای مورد انتظار برای کلاینت‌های شخص ثالث‌اند.
+client مرجع در `src/gateway/client.ts` از این defaultها استفاده می‌کند. مقدارها در
+protocol v4 پایدار هستند و baseline مورد انتظار برای clientهای شخص ثالث‌اند.
 
-| ثابت                                      | پیش‌فرض                                              | منبع                                                                                       |
+| ثابت                                      | پیش‌فرض                                             | منبع                                                                                      |
 | ----------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| `PROTOCOL_VERSION`                        | `3`                                                   | `src/gateway/protocol/schema/protocol-schemas.ts`                                          |
-| پایان مهلت درخواست (برای هر RPC)          | `30_000` ms                                           | `src/gateway/client.ts` (`requestTimeoutMs`)                                               |
-| پایان مهلت Preauth / connect-challenge    | `15_000` ms                                           | `src/gateway/handshake-timeouts.ts` (config/env می‌تواند بودجه‌ی server/client جفت‌شده را افزایش دهد) |
-| backoff اولیه‌ی اتصال مجدد                | `1_000` ms                                            | `src/gateway/client.ts` (`backoffMs`)                                                      |
-| بیشینه‌ی backoff اتصال مجدد               | `30_000` ms                                           | `src/gateway/client.ts` (`scheduleReconnect`)                                              |
-| محدودسازی تلاش سریع پس از بسته‌شدن device-token | `250` ms                                              | `src/gateway/client.ts`                                                                    |
-| مهلت Force-stop پیش از `terminate()`       | `250` ms                                              | `FORCE_STOP_TERMINATE_GRACE_MS`                                                            |
-| پایان مهلت پیش‌فرض `stopAndWait()`        | `1_000` ms                                            | `STOP_AND_WAIT_TIMEOUT_MS`                                                                 |
-| فاصله‌ی پیش‌فرض tick (پیش از `hello-ok`)  | `30_000` ms                                           | `src/gateway/client.ts`                                                                    |
-| بستن در پایان مهلت tick                   | code `4000` وقتی سکوت از `tickIntervalMs * 2` بیشتر شود | `src/gateway/client.ts`                                                                    |
+| `PROTOCOL_VERSION`                        | `4`                                                   | `src/gateway/protocol/version.ts`                                                          |
+| زمان‌بر شدن درخواست (برای هر RPC)          | `30_000` ms                                           | `src/gateway/client.ts` (`requestTimeoutMs`)                                               |
+| زمان‌بر شدن Preauth / connect-challenge   | `15_000` ms                                           | `src/gateway/handshake-timeouts.ts` (config/env می‌تواند بودجه server/client جفت‌شده را افزایش دهد) |
+| backoff اولیه reconnect                   | `1_000` ms                                            | `src/gateway/client.ts` (`backoffMs`)                                                      |
+| بیشینه backoff مربوط به reconnect         | `30_000` ms                                           | `src/gateway/client.ts` (`scheduleReconnect`)                                              |
+| clamp تلاش دوباره سریع پس از بستن device-token | `250` ms                                              | `src/gateway/client.ts`                                                                    |
+| مهلت force-stop پیش از `terminate()`       | `250` ms                                              | `FORCE_STOP_TERMINATE_GRACE_MS`                                                            |
+| زمان‌بر شدن پیش‌فرض `stopAndWait()`        | `1_000` ms                                            | `STOP_AND_WAIT_TIMEOUT_MS`                                                                 |
+| فاصله پیش‌فرض tick (پیش از `hello-ok`)     | `30_000` ms                                           | `src/gateway/client.ts`                                                                    |
+| بسته‌شدن در tick-timeout                  | code `4000` وقتی سکوت از `tickIntervalMs * 2` بیشتر شود | `src/gateway/client.ts`                                                                    |
 | `MAX_PAYLOAD_BYTES`                       | `25 * 1024 * 1024` (25 MB)                            | `src/gateway/server-constants.ts`                                                          |
 
-سرور مقادیر مؤثر `policy.tickIntervalMs`، `policy.maxPayload` و `policy.maxBufferedBytes` را در `hello-ok` اعلام می‌کند؛ کلاینت‌ها باید به‌جای پیش‌فرض‌های پیش از handshake، به آن مقادیر عمل کنند.
+server مقدارهای مؤثر `policy.tickIntervalMs`، `policy.maxPayload`،
+و `policy.maxBufferedBytes` را در `hello-ok` اعلام می‌کند؛ clientها باید به‌جای defaultهای پیش از handshake،
+به آن مقدارها پایبند باشند.
 
-## احراز هویت
+## Auth
 
 - احراز هویت Gateway با راز مشترک، بسته به حالت احراز هویت پیکربندی‌شده، از `connect.params.auth.token` یا
   `connect.params.auth.password` استفاده می‌کند.
-- حالت‌های حامل هویت مانند Tailscale Serve
-  (`gateway.auth.allowTailscale: true`) یا `gateway.auth.mode: "trusted-proxy"`
-  غیر local loopback، بررسی احراز هویت connect را به‌جای `connect.params.auth.*` از
-  هدرهای درخواست برآورده می‌کنند.
-- `gateway.auth.mode: "none"` برای ورودی خصوصی، احراز هویت connect با راز مشترک را
-  به‌طور کامل رد می‌کند؛ این حالت را روی ورودی عمومی/غیرقابل‌اعتماد در معرض دسترس قرار ندهید.
-- پس از pair شدن، Gateway یک **توکن دستگاه** با دامنهٔ نقش اتصال
-  + scopeها صادر می‌کند. این توکن در `hello-ok.auth.deviceToken` برگردانده می‌شود و باید
-  توسط client برای اتصال‌های آینده پایدارسازی شود.
-- clientها باید پس از هر connect موفق، `hello-ok.auth.deviceToken` اصلی را پایدارسازی کنند.
-- اتصال دوباره با آن توکن دستگاه **ذخیره‌شده** باید مجموعه scope تأییدشدهٔ ذخیره‌شده
-  برای همان توکن را نیز دوباره استفاده کند. این کار دسترسی خواندن/کاوش/وضعیت را که
-  قبلاً اعطا شده حفظ می‌کند و از کاهش بی‌سروصدای اتصال‌های مجدد به scope ضمنی محدودتر
-  فقط admin جلوگیری می‌کند.
-- ساخت احراز هویت connect در سمت client (`selectConnectAuth` در
+- حالت‌های دارای هویت، مانند Tailscale Serve
+  (`gateway.auth.allowTailscale: true`) یا
+  `gateway.auth.mode: "trusted-proxy"` غیر local loopback، بررسی احراز هویت اتصال را به‌جای
+  `connect.params.auth.*` از سرآیندهای درخواست برآورده می‌کنند.
+- `gateway.auth.mode: "none"` برای ورودی خصوصی، احراز هویت اتصال با راز مشترک را
+  کاملاً رد می‌کند؛ این حالت را روی ورودی عمومی/نامطمئن در معرض دسترس قرار ندهید.
+- پس از جفت‌سازی، Gateway یک **توکن دستگاه** محدود به نقش اتصال
+  + دامنه‌ها صادر می‌کند. این مقدار در `hello-ok.auth.deviceToken` برگردانده می‌شود و باید
+  برای اتصال‌های آینده توسط کلاینت پایدار شود.
+- کلاینت‌ها باید پس از هر اتصال موفق، `hello-ok.auth.deviceToken` اصلی را پایدار کنند.
+- اتصال دوباره با آن توکن دستگاه **ذخیره‌شده** باید مجموعه دامنه تأییدشده ذخیره‌شده
+  برای همان توکن را نیز دوباره استفاده کند. این کار دسترسی خواندن/کاوش/وضعیت
+  را که قبلاً اعطا شده حفظ می‌کند و از فروکاهش بی‌صدای اتصال‌های مجدد به یک
+  دامنه ضمنی محدودتر فقط-مدیر جلوگیری می‌کند.
+- مونتاژ احراز هویت اتصال در سمت کلاینت (`selectConnectAuth` در
   `src/gateway/client.ts`):
-  - `auth.password` مستقل است و همیشه در صورت تنظیم ارسال می‌شود.
-  - `auth.token` به ترتیب اولویت پر می‌شود: ابتدا توکن مشترک صریح،
-    سپس یک `deviceToken` صریح، سپس یک توکن ذخیره‌شدهٔ مختص هر دستگاه (کلیدشده با
+  - `auth.password` مستقل است و همیشه هنگام تنظیم‌شدن ارسال می‌شود.
+  - `auth.token` به‌ترتیب اولویت پر می‌شود: ابتدا توکن مشترک صریح،
+    سپس یک `deviceToken` صریح، و بعد یک توکن ذخیره‌شده به‌ازای دستگاه (کلیدشده با
     `deviceId` + `role`).
-  - `auth.bootstrapToken` فقط زمانی ارسال می‌شود که هیچ‌یک از موارد بالا یک
-    `auth.token` را resolve نکرده باشد. یک توکن مشترک یا هر توکن دستگاه resolve‌شده آن را سرکوب می‌کند.
-  - ارتقای خودکار یک توکن دستگاه ذخیره‌شده در retry تک‌مرحله‌ای
-    `AUTH_TOKEN_MISMATCH` فقط برای **endpointهای قابل‌اعتماد** مجاز است —
+  - `auth.bootstrapToken` فقط زمانی فرستاده می‌شود که هیچ‌کدام از موارد بالا یک
+    `auth.token` را تعیین نکرده باشند. توکن مشترک یا هر توکن دستگاه تعیین‌شده آن را سرکوب می‌کند.
+  - ارتقای خودکار یک توکن دستگاه ذخیره‌شده در تلاش دوباره یک‌باره
+    `AUTH_TOKEN_MISMATCH` فقط به **نقطه‌های پایانی مورد اعتماد** محدود است —
     loopback، یا `wss://` با `tlsFingerprint` پین‌شده. `wss://` عمومی
-    بدون pinning واجد شرایط نیست.
-- ورودی‌های اضافی `hello-ok.auth.deviceTokens` توکن‌های handoff بوت‌استرپ هستند.
-  آن‌ها را فقط زمانی پایدارسازی کنید که connect از احراز هویت بوت‌استرپ روی یک transport قابل‌اعتماد
-  مانند `wss://` یا loopback/pairing محلی استفاده کرده باشد.
-- اگر یک client یک `deviceToken` **صریح** یا `scopes` صریح ارائه کند، همان
-  مجموعه scope درخواست‌شده توسط فراخواننده مرجع باقی می‌ماند؛ scopeهای cache‌شده فقط
-  زمانی دوباره استفاده می‌شوند که client در حال استفادهٔ دوباره از توکن ذخیره‌شدهٔ مختص هر دستگاه باشد.
+    بدون پین‌کردن واجد شرایط نیست.
+- ورودی‌های اضافی `hello-ok.auth.deviceTokens` توکن‌های تحویل بوت‌استرپ هستند.
+  آن‌ها را فقط وقتی پایدار کنید که اتصال از احراز هویت بوت‌استرپ روی یک انتقال مورد اعتماد
+  مانند `wss://` یا جفت‌سازی loopback/محلی استفاده کرده باشد.
+- اگر یک کلاینت یک `deviceToken` **صریح** یا `scopes` صریح ارائه کند، آن
+  مجموعه دامنه درخواست‌شده توسط فراخواننده مرجع باقی می‌ماند؛ دامنه‌های کش‌شده فقط
+  وقتی دوباره استفاده می‌شوند که کلاینت در حال استفاده دوباره از توکن ذخیره‌شده به‌ازای دستگاه باشد.
 - توکن‌های دستگاه را می‌توان از طریق `device.token.rotate` و
-  `device.token.revoke` چرخاند/باطل کرد (نیازمند scope `operator.pairing`).
-- `device.token.rotate` فرادادهٔ چرخش را برمی‌گرداند. این دستور توکن bearer جایگزین را
-  فقط برای فراخوانی‌های همان دستگاه که از قبل با همان توکن دستگاه احراز هویت شده‌اند بازتاب می‌دهد،
-  تا clientهای فقط توکنی بتوانند جایگزین خود را پیش از اتصال دوباره پایدارسازی کنند.
-  چرخش‌های مشترک/admin توکن bearer را بازتاب نمی‌دهند.
-- صدور، چرخش، و ابطال توکن محدود به مجموعه نقش‌های تأییدشده‌ای می‌ماند
-  که در ورودی pairing آن دستگاه ثبت شده است؛ تغییر توکن نمی‌تواند یک نقش دستگاه را گسترش دهد
-  یا نقشی را هدف بگیرد که تأیید pairing هرگز اعطا نکرده است.
-- برای sessionهای توکن دستگاه pair‌شده، مدیریت دستگاه self-scoped است مگر اینکه
-  فراخواننده `operator.admin` را نیز داشته باشد: فراخواننده‌های غیر admin فقط می‌توانند ورودی دستگاه
-  **خودشان** را حذف/باطل/rotate کنند.
-- `device.token.rotate` و `device.token.revoke` همچنین مجموعه scope توکن operator هدف را
-  در برابر scopeهای session فعلی فراخواننده بررسی می‌کنند. فراخواننده‌های غیر admin
-  نمی‌توانند توکن operator گسترده‌تری از آنچه خودشان دارند rotate یا revoke کنند.
-- شکست‌های احراز هویت شامل `error.details.code` به‌همراه راهنمای بازیابی هستند:
-  - `error.details.canRetryWithDeviceToken` (boolean)
+  `device.token.revoke` چرخاند/باطل کرد (به دامنه `operator.pairing` نیاز دارد).
+- `device.token.rotate` فراداده چرخش را برمی‌گرداند. این دستور توکن حامل جایگزین را
+  فقط برای فراخوانی‌های همان دستگاه که از قبل با همان توکن دستگاه احراز هویت شده‌اند
+  بازتاب می‌دهد، تا کلاینت‌های فقط-توکن بتوانند جایگزین خود را پیش از
+  اتصال دوباره پایدار کنند. چرخش‌های مشترک/مدیر توکن حامل را بازتاب نمی‌دهند.
+- صدور، چرخش، و ابطال توکن به مجموعه نقش تأییدشده‌ای محدود می‌ماند که
+  در ورودی جفت‌سازی همان دستگاه ثبت شده است؛ جهش توکن نمی‌تواند نقش دستگاهی را
+  گسترش دهد یا هدف بگیرد که تأیید جفت‌سازی هرگز اعطا نکرده است.
+- برای نشست‌های توکن دستگاه جفت‌شده، مدیریت دستگاه خود-محدود است مگر اینکه
+  فراخواننده `operator.admin` را نیز داشته باشد: فراخواننده‌های غیرمدیر فقط می‌توانند ورودی دستگاه **خودشان** را حذف/باطل/چرخش کنند.
+- `device.token.rotate` و `device.token.revoke` همچنین مجموعه دامنه توکن عملگر هدف را
+  در برابر دامنه‌های نشست فعلی فراخواننده بررسی می‌کنند. فراخواننده‌های غیرمدیر
+  نمی‌توانند توکن عملگر گسترده‌تری از آنچه اکنون دارند را بچرخانند یا باطل کنند.
+- شکست‌های احراز هویت شامل `error.details.code` به‌همراه راهنمایی‌های بازیابی هستند:
+  - `error.details.canRetryWithDeviceToken` (بولی)
   - `error.details.recommendedNextStep` (`retry_with_device_token`, `update_auth_configuration`, `update_auth_credentials`, `wait_then_retry`, `review_auth_configuration`)
-- رفتار client برای `AUTH_TOKEN_MISMATCH`:
-  - clientهای قابل‌اعتماد می‌توانند یک retry محدود با توکن cache‌شدهٔ مختص هر دستگاه انجام دهند.
-  - اگر آن retry شکست خورد، clientها باید حلقه‌های اتصال مجدد خودکار را متوقف کنند و راهنمای اقدام operator را نمایش دهند.
+- رفتار کلاینت برای `AUTH_TOKEN_MISMATCH`:
+  - کلاینت‌های مورد اعتماد می‌توانند یک تلاش دوباره محدود با توکن کش‌شده به‌ازای دستگاه انجام دهند.
+  - اگر آن تلاش دوباره شکست بخورد، کلاینت‌ها باید حلقه‌های اتصال مجدد خودکار را متوقف کنند و راهنمایی اقدام عملگر را نمایش دهند.
 
-## هویت دستگاه + pairing
+## هویت دستگاه + جفت‌سازی
 
-- Nodeها باید یک هویت پایدار دستگاه (`device.id`) داشته باشند که از
-  fingerprint یک keypair مشتق شده است.
-- Gatewayها توکن‌ها را به‌ازای هر دستگاه + نقش صادر می‌کنند.
-- تأییدهای pairing برای شناسه‌های دستگاه جدید لازم هستند، مگر اینکه auto-approval محلی
-  فعال باشد.
-- auto-approval مربوط به pairing حول اتصال‌های مستقیم local loopback متمرکز است.
-- OpenClaw همچنین یک مسیر self-connect محدود backend/container-local برای
-  جریان‌های helper راز مشترک قابل‌اعتماد دارد.
-- اتصال‌های tailnet یا LAN همان میزبان همچنان برای pairing به‌عنوان remote تلقی می‌شوند و
-  نیازمند تأیید هستند.
-- clientهای WS معمولاً هنگام `connect` هویت `device` را شامل می‌کنند (operator +
-  node). تنها استثناهای operator بدون دستگاه، مسیرهای اعتماد صریح هستند:
-  - `gateway.controlUi.allowInsecureAuth=true` برای سازگاری HTTP ناامن فقط localhost.
-  - احراز هویت operator Control UI موفق با `gateway.auth.mode: "trusted-proxy"`.
-  - `gateway.controlUi.dangerouslyDisableDeviceAuth=true` (break-glass، کاهش امنیتی شدید).
-  - RPCهای backend مستقیم loopback در `gateway-client` که با توکن/رمز عبور مشترک
+- Nodeها باید یک هویت دستگاه پایدار (`device.id`) مشتق‌شده از
+  اثرانگشت جفت‌کلید داشته باشند.
+- Gatewayها توکن‌ها را به‌ازای دستگاه + نقش صادر می‌کنند.
+- تأییدهای جفت‌سازی برای شناسه‌های دستگاه جدید لازم هستند، مگر اینکه تأیید خودکار محلی
+  فعال شده باشد.
+- تأیید خودکار جفت‌سازی حول اتصال‌های مستقیم local loopback متمرکز است.
+- OpenClaw همچنین یک مسیر خوداتصالی محدود محلیِ بک‌اند/کانتینر برای
+  جریان‌های کمکی راز مشترک مورد اعتماد دارد.
+- اتصال‌های tailnet یا LAN روی همان میزبان همچنان برای جفت‌سازی دوردست تلقی می‌شوند و
+  به تأیید نیاز دارند.
+- کلاینت‌های WS معمولاً هنگام `connect` هویت `device` را شامل می‌کنند (عملگر +
+  Node). تنها استثناهای عملگر بدون دستگاه، مسیرهای اعتماد صریح هستند:
+  - `gateway.controlUi.allowInsecureAuth=true` برای سازگاری HTTP ناامن فقط-میزبان‌محلی.
+  - احراز هویت موفق واسط کاربری کنترل عملگر با `gateway.auth.mode: "trusted-proxy"`.
+  - `gateway.controlUi.dangerouslyDisableDeviceAuth=true` (شکستن اضطراری، کاهش امنیت شدید).
+  - RPCهای بک‌اند `gateway-client` از مسیر direct-loopback که با توکن/رمز عبور مشترک
     Gateway احراز هویت شده‌اند.
-- همهٔ اتصال‌ها باید nonce `connect.challenge` ارائه‌شده توسط server را امضا کنند.
+- همه اتصال‌ها باید nonce مربوط به `connect.challenge` ارائه‌شده توسط سرور را امضا کنند.
 
-### تشخیص‌های مهاجرت احراز هویت دستگاه
+### عیب‌یابی مهاجرت احراز هویت دستگاه
 
-برای clientهای legacy که هنوز از رفتار امضای پیش از challenge استفاده می‌کنند، `connect` اکنون
+برای کلاینت‌های قدیمی که هنوز از رفتار امضای پیش از چالش استفاده می‌کنند، `connect` اکنون
 کدهای جزئیات `DEVICE_AUTH_*` را زیر `error.details.code` با یک `error.details.reason` پایدار برمی‌گرداند.
 
 شکست‌های رایج مهاجرت:
 
-| پیام                        | details.code                     | details.reason           | معنی                                                |
+| پیام                        | details.code                     | details.reason           | معنا                                               |
 | --------------------------- | -------------------------------- | ------------------------ | -------------------------------------------------- |
-| `device nonce required`     | `DEVICE_AUTH_NONCE_REQUIRED`     | `device-nonce-missing`   | client مقدار `device.nonce` را حذف کرده (یا خالی فرستاده است). |
-| `device nonce mismatch`     | `DEVICE_AUTH_NONCE_MISMATCH`     | `device-nonce-mismatch`  | client با nonce قدیمی/نادرست امضا کرده است.        |
-| `device signature invalid`  | `DEVICE_AUTH_SIGNATURE_INVALID`  | `device-signature`       | payload امضا با payload v2 مطابقت ندارد.           |
-| `device signature expired`  | `DEVICE_AUTH_SIGNATURE_EXPIRED`  | `device-signature-stale` | timestamp امضاشده خارج از skew مجاز است.           |
-| `device identity mismatch`  | `DEVICE_AUTH_DEVICE_ID_MISMATCH` | `device-id-mismatch`     | `device.id` با fingerprint کلید عمومی مطابقت ندارد. |
-| `device public key invalid` | `DEVICE_AUTH_PUBLIC_KEY_INVALID` | `device-public-key`      | قالب/canonicalization کلید عمومی شکست خورد.        |
+| `device nonce required`     | `DEVICE_AUTH_NONCE_REQUIRED`     | `device-nonce-missing`   | کلاینت `device.nonce` را حذف کرده (یا خالی فرستاده) است. |
+| `device nonce mismatch`     | `DEVICE_AUTH_NONCE_MISMATCH`     | `device-nonce-mismatch`  | کلاینت با nonce کهنه/اشتباه امضا کرده است.        |
+| `device signature invalid`  | `DEVICE_AUTH_SIGNATURE_INVALID`  | `device-signature`       | محموله امضا با محموله v2 مطابقت ندارد.           |
+| `device signature expired`  | `DEVICE_AUTH_SIGNATURE_EXPIRED`  | `device-signature-stale` | زمان‌مهر امضاشده خارج از انحراف مجاز است.        |
+| `device identity mismatch`  | `DEVICE_AUTH_DEVICE_ID_MISMATCH` | `device-id-mismatch`     | `device.id` با اثرانگشت کلید عمومی مطابقت ندارد. |
+| `device public key invalid` | `DEVICE_AUTH_PUBLIC_KEY_INVALID` | `device-public-key`      | قالب/متعارف‌سازی کلید عمومی شکست خورده است.      |
 
 هدف مهاجرت:
 
 - همیشه منتظر `connect.challenge` بمانید.
-- payload v2 را که شامل nonce server است امضا کنید.
+- محموله v2 را که شامل nonce سرور است امضا کنید.
 - همان nonce را در `connect.params.device.nonce` بفرستید.
-- payload امضای ترجیحی `v3` است، که علاوه بر فیلدهای device/client/role/scopes/token/nonce،
-  `platform` و `deviceFamily` را نیز bind می‌کند.
-- امضاهای legacy `v2` برای سازگاری همچنان پذیرفته می‌شوند، اما pinning فرادادهٔ دستگاه pair‌شده
-  هنوز سیاست command را هنگام اتصال مجدد کنترل می‌کند.
+- محموله امضای ترجیحی `v3` است، که علاوه بر فیلدهای دستگاه/کلاینت/نقش/دامنه‌ها/توکن/nonce،
+  `platform` و `deviceFamily` را نیز مقید می‌کند.
+- امضاهای قدیمی `v2` همچنان برای سازگاری پذیرفته می‌شوند، اما پین‌کردن
+  فراداده دستگاه جفت‌شده همچنان سیاست فرمان را هنگام اتصال دوباره کنترل می‌کند.
 
-## TLS + pinning
+## TLS + پین‌کردن
 
 - TLS برای اتصال‌های WS پشتیبانی می‌شود.
-- clientها می‌توانند به‌صورت اختیاری fingerprint گواهی Gateway را pin کنند (پیکربندی `gateway.tls`
-  به‌همراه `gateway.remote.tlsFingerprint` یا CLI `--tls-fingerprint` را ببینید).
+- کلاینت‌ها می‌توانند به‌صورت اختیاری اثرانگشت گواهی Gateway را پین کنند (به پیکربندی `gateway.tls`
+  به‌همراه `gateway.remote.tlsFingerprint` یا CLI `--tls-fingerprint` مراجعه کنید).
 
-## Scope
+## دامنه
 
-این پروتکل **API کامل Gateway** را در معرض دسترس قرار می‌دهد (وضعیت، channelها، مدل‌ها، chat،
-agent، sessionها، nodeها، تأییدها، و غیره). سطح دقیق توسط
-schemaهای TypeBox در `src/gateway/protocol/schema.ts` تعریف می‌شود.
+این پروتکل **API کامل Gateway** را در معرض دسترس قرار می‌دهد (وضعیت، کانال‌ها، مدل‌ها، گفت‌وگو،
+عامل، نشست‌ها، Nodeها، تأییدها، و غیره). سطح دقیق توسط
+طرح‌واره‌های TypeBox در `src/gateway/protocol/schema.ts` تعریف می‌شود.
 
 ## مرتبط
 
-- [پروتکل Bridge](/fa/gateway/bridge-protocol)
-- [runbook Gateway](/fa/gateway)
+- [پروتکل پل](/fa/gateway/bridge-protocol)
+- [راهنمای عملیاتی Gateway](/fa/gateway)

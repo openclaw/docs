@@ -1,25 +1,23 @@
 ---
 read_when:
     - definePluginEntry または defineChannelPluginEntry の正確な型シグネチャが必要です
-    - 登録モード（full、setup、CLI メタデータ）を理解したい場合
-    - エントリーポイントのオプションを確認しています
+    - 登録モード（full と setup と CLI メタデータの違い）を理解したい
+    - エントリーポイントのオプションを調べています
 sidebarTitle: Entry Points
-summary: definePluginEntry、defineChannelPluginEntry、および defineSetupPluginEntry のリファレンス
+summary: definePluginEntry、defineChannelPluginEntry、defineSetupPluginEntry のリファレンス
 title: Plugin のエントリーポイント
 x-i18n:
-    generated_at: "2026-05-06T05:14:12Z"
+    generated_at: "2026-05-07T13:23:37Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 296fded1572c4f95cc6c2eb8a7069a310ec05cce673003f81e86a916708cc85c
+    source_hash: 2fecc65b8f196f3b40daee2e6087759b8786b033e1cd0c3d3b5695c9f8a3f66a
     source_path: plugins/sdk-entrypoints.md
     workflow: 16
 ---
 
-すべてのPluginは既定のエントリーオブジェクトをエクスポートします。SDKは、それらを
-作成するための3つのヘルパーを提供します。
+すべてのPluginはデフォルトのエントリオブジェクトをエクスポートします。SDKはそれらを作成するための3つのヘルパーを提供します。
 
-インストール済みPluginでは、利用可能な場合に `package.json` がランタイム読み込みをビルド済み
-JavaScriptに向けるようにします。
+インストール済みPluginでは、利用可能な場合、`package.json` はランタイム読み込み先としてビルド済みJavaScriptを指す必要があります。
 
 ```json
 {
@@ -32,30 +30,19 @@ JavaScriptに向けるようにします。
 }
 ```
 
-`extensions` と `setupEntry` は、ワークスペースおよびgit
-チェックアウトでの開発向けのソースエントリーとして引き続き有効です。`runtimeExtensions` と `runtimeSetupEntry` は、
-OpenClawがインストール済みパッケージを読み込む場合に推奨され、npmパッケージがランタイムでの
-TypeScriptコンパイルを回避できるようにします。明示的なランタイムエントリーは必須です。`runtimeSetupEntry` には
-`setupEntry` が必要であり、`runtimeExtensions` または `runtimeSetupEntry` の
-成果物がない場合は、ソースへ黙ってフォールバックするのではなく、インストール/検出が失敗します。インストール済みパッケージが
-TypeScriptソースエントリーだけを宣言している場合、OpenClawは対応するビルド済みの `dist/*.js` ピアが存在すればそれを使用し、その後TypeScript
-ソースへフォールバックします。
+`extensions` と `setupEntry` は、ワークスペースおよびgitチェックアウト開発用のソースエントリとして引き続き有効です。`runtimeExtensions` と `runtimeSetupEntry` は、OpenClawがインストール済みパッケージを読み込む場合に推奨され、npmパッケージがランタイムのTypeScriptコンパイルを避けられるようにします。明示的なランタイムエントリは必須です。`runtimeSetupEntry` には `setupEntry` が必要で、`runtimeExtensions` または `runtimeSetupEntry` のアーティファクトがない場合は、暗黙にソースへフォールバックするのではなく、インストール/検出に失敗します。インストール済みパッケージがTypeScriptソースエントリのみを宣言している場合、OpenClawは一致するビルド済み `dist/*.js` ピアが存在すればそれを使用し、その後TypeScriptソースへフォールバックします。
 
-すべてのエントリーパスはPluginパッケージディレクトリ内に収まっている必要があります。ランタイムエントリー
-および推論されたビルド済みJavaScriptピアによって、外へ抜ける `extensions` または
-`setupEntry` のソースパスが有効になることはありません。
+すべてのエントリパスはPluginパッケージディレクトリ内に収まっている必要があります。ランタイムエントリおよび推定されたビルド済みJavaScriptピアによって、外へ抜ける `extensions` または `setupEntry` のソースパスが有効になることはありません。
 
 <Tip>
-  **ウォークスルーを探していますか？** 手順付きガイドについては、[チャンネルPlugin](/ja-JP/plugins/sdk-channel-plugins)
-  または[プロバイダーPlugin](/ja-JP/plugins/sdk-provider-plugins)を参照してください。
+  **ウォークスルーを探していますか？** 手順付きのガイドについては、[Channel Plugins](/ja-JP/plugins/sdk-channel-plugins) または [Provider Plugins](/ja-JP/plugins/sdk-provider-plugins) を参照してください。
 </Tip>
 
 ## `definePluginEntry`
 
 **インポート:** `openclaw/plugin-sdk/plugin-entry`
 
-プロバイダーPlugin、ツールPlugin、フックPlugin、およびメッセージングチャンネル**ではない**
-すべてのもの向けです。
+プロバイダーPlugin、ツールPlugin、フックPlugin、およびメッセージングチャネルでは**ない**もの向けです。
 
 ```typescript
 import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
@@ -75,28 +62,25 @@ export default definePluginEntry({
 });
 ```
 
-| フィールド       | 型                                                               | 必須     | 既定値                  |
-| -------------- | ---------------------------------------------------------------- | -------- | ------------------- |
-| `id`           | `string`                                                         | はい     | -                   |
-| `name`         | `string`                                                         | はい     | -                   |
-| `description`  | `string`                                                         | はい     | -                   |
-| `kind`         | `string`                                                         | いいえ   | -                   |
-| `configSchema` | `OpenClawPluginConfigSchema \| () => OpenClawPluginConfigSchema` | いいえ   | 空のオブジェクトスキーマ |
-| `register`     | `(api: OpenClawPluginApi) => void`                               | はい     | -                   |
+| フィールド     | 型                                                               | 必須 | デフォルト              |
+| -------------- | ---------------------------------------------------------------- | ---- | ----------------------- |
+| `id`           | `string`                                                         | はい | -                       |
+| `name`         | `string`                                                         | はい | -                       |
+| `description`  | `string`                                                         | はい | -                       |
+| `kind`         | `string`                                                         | いいえ | -                     |
+| `configSchema` | `OpenClawPluginConfigSchema \| () => OpenClawPluginConfigSchema` | いいえ | 空のオブジェクトスキーマ |
+| `register`     | `(api: OpenClawPluginApi) => void`                               | はい | -                       |
 
 - `id` は `openclaw.plugin.json` マニフェストと一致する必要があります。
 - `kind` は排他的スロット用です: `"memory"` または `"context-engine"`。
-- `configSchema` は遅延評価のための関数にできます。
-- OpenClawは初回アクセス時にそのスキーマを解決してメモ化するため、コストの高いスキーマ
-  ビルダーは一度だけ実行されます。
+- `configSchema` は遅延評価用の関数にできます。
+- OpenClawは初回アクセス時にそのスキーマを解決してメモ化するため、コストの高いスキーマビルダーは一度だけ実行されます。
 
 ## `defineChannelPluginEntry`
 
 **インポート:** `openclaw/plugin-sdk/channel-core`
 
-`definePluginEntry` をチャンネル固有の配線でラップします。自動的に
-`api.registerChannel({ plugin })` を呼び出し、任意のルートヘルプCLIメタデータの
-継ぎ目を公開し、登録モードに応じて `registerFull` を制御します。
+チャネル固有の配線で `definePluginEntry` をラップします。`api.registerChannel({ plugin })` を自動的に呼び出し、任意のルートヘルプCLIメタデータの境界面を公開し、登録モードに基づいて `registerFull` を制御します。
 
 ```typescript
 import { defineChannelPluginEntry } from "openclaw/plugin-sdk/channel-core";
@@ -116,48 +100,31 @@ export default defineChannelPluginEntry({
 });
 ```
 
-| フィールド              | 型                                                               | 必須     | 既定値                  |
-| --------------------- | ---------------------------------------------------------------- | -------- | ------------------- |
-| `id`                  | `string`                                                         | はい     | -                   |
-| `name`                | `string`                                                         | はい     | -                   |
-| `description`         | `string`                                                         | はい     | -                   |
-| `plugin`              | `ChannelPlugin`                                                  | はい     | -                   |
-| `configSchema`        | `OpenClawPluginConfigSchema \| () => OpenClawPluginConfigSchema` | いいえ   | 空のオブジェクトスキーマ |
-| `setRuntime`          | `(runtime: PluginRuntime) => void`                               | いいえ   | -                   |
-| `registerCliMetadata` | `(api: OpenClawPluginApi) => void`                               | いいえ   | -                   |
-| `registerFull`        | `(api: OpenClawPluginApi) => void`                               | いいえ   | -                   |
+| フィールド            | 型                                                               | 必須 | デフォルト              |
+| --------------------- | ---------------------------------------------------------------- | ---- | ----------------------- |
+| `id`                  | `string`                                                         | はい | -                       |
+| `name`                | `string`                                                         | はい | -                       |
+| `description`         | `string`                                                         | はい | -                       |
+| `plugin`              | `ChannelPlugin`                                                  | はい | -                       |
+| `configSchema`        | `OpenClawPluginConfigSchema \| () => OpenClawPluginConfigSchema` | いいえ | 空のオブジェクトスキーマ |
+| `setRuntime`          | `(runtime: PluginRuntime) => void`                               | いいえ | -                     |
+| `registerCliMetadata` | `(api: OpenClawPluginApi) => void`                               | いいえ | -                     |
+| `registerFull`        | `(api: OpenClawPluginApi) => void`                               | いいえ | -                     |
 
-- `setRuntime` は登録中に呼び出されるため、ランタイム参照を保存できます
-  （通常は `createPluginRuntimeStore` 経由）。CLIメタデータ
-  取得中はスキップされます。
-- `registerCliMetadata` は `api.registrationMode === "cli-metadata"`、
-  `api.registrationMode === "discovery"`、および
-  `api.registrationMode === "full"` の間に実行されます。
-  これをチャンネル所有のCLI記述子の標準的な場所として使用すると、ルートヘルプは
-  非アクティブ化のままになり、検出スナップショットには静的コマンドメタデータが含まれ、
-  通常のCLIコマンド登録は完全なPlugin読み込みと互換性を維持できます。
-- 検出登録は非アクティブ化ですが、インポート不要ではありません。OpenClawは
-  スナップショットを構築するために、信頼済みPluginエントリーとチャンネルPluginモジュールを
-  評価する場合があるため、トップレベルのインポートは副作用なしに保ち、ソケット、
-  クライアント、ワーカー、サービスは `"full"` 専用パスの背後に置いてください。
-- `registerFull` は `api.registrationMode === "full"` の場合にのみ実行されます。setup専用読み込み
-  中はスキップされます。
-- `definePluginEntry` と同様に、`configSchema` は遅延ファクトリーにでき、OpenClawは
-  初回アクセス時に解決済みスキーマをメモ化します。
-- Plugin所有のルートCLIコマンドでは、コマンドをルートCLI解析ツリーから消さずに
-  遅延読み込みのままにしたい場合、`api.registerCli(..., { descriptors: [...] })` を優先してください。
-  チャンネルPluginでは、それらの記述子を `registerCliMetadata(...)` から登録することを優先し、
-  `registerFull(...)` はランタイム専用の作業に集中させてください。
-- `registerFull(...)` がGateway RPCメソッドも登録する場合は、それらを
-  Plugin固有のプレフィックスに置いてください。予約済みのコア管理名前空間（`config.*`、
-  `exec.approvals.*`、`wizard.*`、`update.*`）は常に
-  `operator.admin` に強制変換されます。
+- `setRuntime` は登録中に呼び出されるため、ランタイム参照を保存できます（通常は `createPluginRuntimeStore` 経由）。CLIメタデータのキャプチャ中はスキップされます。
+- `registerCliMetadata` は `api.registrationMode === "cli-metadata"`、`api.registrationMode === "discovery"`、および `api.registrationMode === "full"` の間に実行されます。
+  チャネル所有のCLIディスクリプターの標準的な場所として使用してください。これにより、ルートヘルプは非アクティブ化のままになり、検出スナップショットには静的コマンドメタデータが含まれ、通常のCLIコマンド登録は完全なPlugin読み込みと互換性を保ちます。
+- 検出登録は非アクティブ化ですが、インポートなしではありません。OpenClawはスナップショットを構築するために、信頼済みPluginエントリとチャネルPluginモジュールを評価する場合があります。そのため、トップレベルのインポートには副作用がないようにし、ソケット、クライアント、ワーカー、サービスは `"full"` のみのパスの背後に置いてください。
+- `registerFull` は `api.registrationMode === "full"` の場合にのみ実行されます。セットアップ専用読み込み中はスキップされます。
+- `definePluginEntry` と同様に、`configSchema` は遅延ファクトリにでき、OpenClawは初回アクセス時に解決済みスキーマをメモ化します。
+- Plugin所有のルートCLIコマンドでは、ルートCLI解析ツリーから消えずにコマンドを遅延読み込みのままにしたい場合、`api.registerCli(..., { descriptors: [...] })` を優先してください。ペアノード機能コマンドでは、コマンドが `openclaw nodes` の下に配置されるように `api.registerNodeCliFeature(...)` を優先してください。その他のネストされたPluginコマンドでは、`parentPath` を追加し、レジストラーに渡された `program` オブジェクトにコマンドを登録してください。OpenClawはPluginを呼び出す前にそれを親コマンドへ解決します。チャネルPluginでは、それらのディスクリプターを `registerCliMetadata(...)` から登録し、`registerFull(...)` はランタイム専用の作業に集中させることを優先してください。
+- `registerFull(...)` がGateway RPCメソッドも登録する場合、それらはPlugin固有のプレフィックス上に置いてください。予約済みのコア管理名前空間（`config.*`、`exec.approvals.*`、`wizard.*`、`update.*`）は常に `operator.admin` に強制されます。
 
 ## `defineSetupPluginEntry`
 
 **インポート:** `openclaw/plugin-sdk/channel-core`
 
-軽量な `setup-entry.ts` ファイル用です。ランタイムやCLI配線なしで、単に `{ plugin }` を返します。
+軽量な `setup-entry.ts` ファイル向けです。ランタイムやCLI配線を含まない `{ plugin }` だけを返します。
 
 ```typescript
 import { defineSetupPluginEntry } from "openclaw/plugin-sdk/channel-core";
@@ -165,26 +132,17 @@ import { defineSetupPluginEntry } from "openclaw/plugin-sdk/channel-core";
 export default defineSetupPluginEntry(myChannelPlugin);
 ```
 
-OpenClawは、チャンネルが無効、未設定、または遅延読み込みが有効な場合に、完全なエントリーの代わりにこれを読み込みます。
-これが重要になる場面については、
-[セットアップと設定](/ja-JP/plugins/sdk-setup#setup-entry)を参照してください。
+チャネルが無効、未構成、または遅延読み込みが有効な場合、OpenClawは完全なエントリの代わりにこれを読み込みます。これが重要になる場合については、[Setup and Config](/ja-JP/plugins/sdk-setup#setup-entry) を参照してください。
 
-実際には、`defineSetupPluginEntry(...)` を狭いsetupヘルパー
-ファミリーと組み合わせてください。
+実際には、`defineSetupPluginEntry(...)` を狭いセットアップヘルパーファミリーと組み合わせます。
 
-- インポート安全なsetupパッチアダプター、lookup-note出力、
-  `promptResolvedAllowFrom`、`splitSetupEntries`、委譲setupプロキシなどの
-  ランタイム安全なsetupヘルパーには `openclaw/plugin-sdk/setup-runtime`
-- 任意インストールのsetupサーフェスには `openclaw/plugin-sdk/channel-setup`
-- setup/インストールCLI/アーカイブ/ドキュメントヘルパーには `openclaw/plugin-sdk/setup-tools`
+- インポート安全なセットアップパッチアダプター、lookup-note出力、`promptResolvedAllowFrom`、`splitSetupEntries`、委譲セットアッププロキシなどのランタイム安全なセットアップヘルパーには `openclaw/plugin-sdk/setup-runtime`
+- 任意インストールのセットアップサーフェスには `openclaw/plugin-sdk/channel-setup`
+- セットアップ/インストールCLI/アーカイブ/docsヘルパーには `openclaw/plugin-sdk/setup-tools`
 
-重いSDK、CLI登録、長寿命のランタイムサービスは完全な
-エントリーに置いてください。
+重いSDK、CLI登録、長寿命のランタイムサービスは完全なエントリに保持してください。
 
-setupとランタイムサーフェスを分割するバンドル済みワークスペースチャンネルは、
-代わりに `openclaw/plugin-sdk/channel-entry-contract` の
-`defineBundledChannelSetupEntry(...)` を使用できます。このコントラクトにより、
-setupエントリーはランタイムセッターを公開したまま、setup安全なPlugin/secretsエクスポートを維持できます。
+セットアップサーフェスとランタイムサーフェスを分割するバンドル済みワークスペースチャネルは、代わりに `openclaw/plugin-sdk/channel-entry-contract` の `defineBundledChannelSetupEntry(...)` を使用できます。この契約により、セットアップエントリはセットアップ安全なPlugin/シークレットのエクスポートを保持しながら、ランタイムセッターも公開できます。
 
 ```typescript
 import { defineBundledChannelSetupEntry } from "openclaw/plugin-sdk/channel-entry-contract";
@@ -202,23 +160,21 @@ export default defineBundledChannelSetupEntry({
 });
 ```
 
-完全なチャンネルエントリーが読み込まれる前に、setupフローが本当に軽量なランタイム
-セッターを必要とする場合にのみ、そのバンドル済みコントラクトを使用してください。
+完全なチャネルエントリが読み込まれる前に、セットアップフローが本当に軽量なランタイムセッターを必要とする場合にのみ、そのバンドル済み契約を使用してください。
 
 ## 登録モード
 
 `api.registrationMode` は、Pluginがどのように読み込まれたかを示します。
 
-| モード            | タイミング                        | 登録するもの                                                                                                            |
-| ----------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `"full"`          | 通常のGateway起動                 | すべて                                                                                                                  |
-| `"discovery"`     | 読み取り専用の機能検出            | チャンネル登録と静的CLI記述子。エントリーコードは読み込まれる場合がありますが、ソケット、ワーカー、クライアント、サービスはスキップします |
-| `"setup-only"`    | 無効/未設定のチャンネル           | チャンネル登録のみ                                                                                                      |
-| `"setup-runtime"` | ランタイムが利用可能なsetupフロー | チャンネル登録に加えて、完全なエントリーが読み込まれる前に必要な軽量ランタイムのみ                                      |
-| `"cli-metadata"`  | ルートヘルプ / CLIメタデータ取得  | CLI記述子のみ                                                                                                           |
+| モード            | タイミング                         | 登録するもの                                                                                                            |
+| ----------------- | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `"full"`          | 通常のGateway起動                  | すべて                                                                                                                  |
+| `"discovery"`     | 読み取り専用の機能検出             | チャネル登録と静的CLIディスクリプター。エントリコードは読み込まれる可能性がありますが、ソケット、ワーカー、クライアント、サービスはスキップします |
+| `"setup-only"`    | 無効/未構成のチャネル              | チャネル登録のみ                                                                                                        |
+| `"setup-runtime"` | ランタイムが利用可能なセットアップフロー | 完全なエントリが読み込まれる前に必要な軽量ランタイムだけをチャネル登録に加えて登録します                               |
+| `"cli-metadata"`  | ルートヘルプ / CLIメタデータのキャプチャ | CLIディスクリプターのみ                                                                                                 |
 
-`defineChannelPluginEntry` はこの分割を自動的に処理します。チャンネルに対して
-`definePluginEntry` を直接使用する場合は、自分でモードを確認してください。
+`defineChannelPluginEntry` はこの分割を自動的に処理します。チャネルに `definePluginEntry` を直接使用する場合は、自分でモードを確認してください。
 
 ```typescript
 register(api) {
@@ -239,46 +195,34 @@ register(api) {
 }
 ```
 
-検出モードは、非アクティブ化のレジストリスナップショットを構築します。それでも、
-OpenClawがチャンネル機能と静的CLI記述子を登録できるように、Pluginエントリーと
-チャンネルPluginオブジェクトを評価する場合があります。検出時のモジュール評価は
-信頼済みだが軽量なものとして扱ってください。トップレベルでは、ネットワーククライアント、サブプロセス、
-リスナー、データベース接続、バックグラウンドワーカー、資格情報の読み取り、その他のライブランタイムの
-副作用を発生させないでください。
+検出モードは、非アクティブ化のレジストリスナップショットを構築します。OpenClawがチャネル機能と静的CLIディスクリプターを登録できるように、PluginエントリとチャネルPluginオブジェクトを評価する場合があります。検出でのモジュール評価は、信頼済みだが軽量なものとして扱ってください。トップレベルでは、ネットワーククライアント、サブプロセス、リスナー、データベース接続、バックグラウンドワーカー、認証情報の読み取り、その他のライブランタイム副作用を使用しないでください。
 
-`"setup-runtime"` は、完全なバンドル済みチャンネルランタイムに再入することなく、
-setup専用の起動サーフェスが存在する必要がある期間として扱ってください。適しているのは
-チャンネル登録、setup安全なHTTPルート、setup安全なGatewayメソッド、および
-委譲setupヘルパーです。重いバックグラウンドサービス、CLI登録機能、および
-プロバイダー/クライアントSDKのブートストラップは、引き続き `"full"` に属します。
+`"setup-runtime"` は、完全なバンドル済みチャネルランタイムに再入することなく、セットアップ専用の起動サーフェスが存在する必要がある時間枠として扱ってください。適しているのは、チャネル登録、セットアップ安全なHTTPルート、セットアップ安全なGatewayメソッド、委譲セットアップヘルパーです。重いバックグラウンドサービス、CLIレジストラー、プロバイダー/クライアントSDKのブートストラップは、引き続き `"full"` に属します。
 
-CLI登録機能については特に次のとおりです。
+CLIレジストラーについて具体的には:
 
-- 登録機能が1つ以上のルートコマンドを所有していて、OpenClawに初回呼び出し時に実際のCLIモジュールを遅延読み込みさせたい場合は
-  `descriptors` を使用します
-- それらの記述子が、登録機能によって公開されるすべてのトップレベルコマンドルートを網羅していることを確認してください
-- 記述子のコマンド名は、文字、数字、ハイフン、アンダースコアに限定し、
-  文字または数字で始まるようにしてください。OpenClawはその形に合わない記述子名を拒否し、
-  ヘルプをレンダリングする前に説明から端末制御シーケンスを取り除きます
-- 積極的な互換性パスの場合のみ `commands` だけを使用します
+- registrar が 1 つ以上のルートコマンドを所有していて、最初の呼び出し時に OpenClaw に実際の CLI モジュールを遅延読み込みさせたい場合は、`descriptors` を使用する
+- それらの descriptor が、registrar によって公開されるすべてのトップレベルコマンドルートをカバーしていることを確認する
+- descriptor のコマンド名は、英字、数字、ハイフン、アンダースコアのみにし、英字または数字で始める。OpenClaw はこの形から外れる descriptor 名を拒否し、ヘルプをレンダリングする前に説明から端末制御シーケンスを取り除く
+- 即時読み込みの互換性パスにのみ `commands` 単体を使用する
 
-## Pluginの形状
+## Plugin の形態
 
-OpenClaw は、読み込まれたPluginを登録時の動作によって分類します。
+OpenClaw は、読み込まれた Plugin を登録動作によって分類します。
 
-| 形状                  | 説明                                               |
+| 形態                  | 説明                                                |
 | --------------------- | -------------------------------------------------- |
-| **plain-capability**  | 1つのケイパビリティ種別（例: プロバイダー専用）   |
-| **hybrid-capability** | 複数のケイパビリティ種別（例: プロバイダー + 音声） |
-| **hook-only**         | フックのみ、ケイパビリティなし                    |
-| **non-capability**    | ツール/コマンド/サービスはあるが、ケイパビリティなし |
+| **plain-capability**  | 1 つの capability 種別（例: provider のみ）         |
+| **hybrid-capability** | 複数の capability 種別（例: provider + speech）     |
+| **hook-only**         | hook のみで、capability はない                      |
+| **non-capability**    | ツール、コマンド、サービスはあるが capability はない |
 
-Plugin の形状を確認するには `openclaw plugins inspect <id>` を使用します。
+Plugin の形態を確認するには、`openclaw plugins inspect <id>` を使用します。
 
 ## 関連
 
-- [SDK の概要](/ja-JP/plugins/sdk-overview) - 登録 API とサブパスのリファレンス
+- [SDK の概要](/ja-JP/plugins/sdk-overview) - 登録 API とサブパスリファレンス
 - [ランタイムヘルパー](/ja-JP/plugins/sdk-runtime) - `api.runtime` と `createPluginRuntimeStore`
-- [セットアップと設定](/ja-JP/plugins/sdk-setup) - マニフェスト、セットアップエントリ、遅延読み込み
-- [Channel Plugin](/ja-JP/plugins/sdk-channel-plugins) - `ChannelPlugin` オブジェクトの構築
-- [Provider Plugin](/ja-JP/plugins/sdk-provider-plugins) - プロバイダー登録とフック
+- [セットアップと設定](/ja-JP/plugins/sdk-setup) - manifest、セットアップエントリ、遅延読み込み
+- [Channel Plugins](/ja-JP/plugins/sdk-channel-plugins) - `ChannelPlugin` オブジェクトの構築
+- [Provider Plugins](/ja-JP/plugins/sdk-provider-plugins) - provider 登録と hook

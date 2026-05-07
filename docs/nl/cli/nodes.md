@@ -1,14 +1,14 @@
 ---
 read_when:
     - Je beheert gekoppelde nodes (camera's, scherm, canvas)
-    - U moet aanvragen goedkeuren of Node-opdrachten uitvoeren
+    - Je moet verzoeken goedkeuren of node-commando's aanroepen
 summary: CLI-referentie voor `openclaw nodes` (status, koppelen, aanroepen, camera/canvas/scherm)
 title: Nodes
 x-i18n:
-    generated_at: "2026-05-06T17:54:09Z"
+    generated_at: "2026-05-07T13:14:49Z"
     model: gpt-5.5
     provider: openai
-    source_hash: f3eb0d23037c939e4022115a2d65e0e9cb25a872daed715b8652979ce6707cf7
+    source_hash: 681c199462d5f58c3e4346713263a78e7513335f087c713877e3050e21c8e15f
     source_path: cli/nodes.md
     workflow: 16
 ---
@@ -19,15 +19,15 @@ Beheer gekoppelde nodes (apparaten) en roep node-mogelijkheden aan.
 
 Gerelateerd:
 
-- Nodes-overzicht: [Nodes](/nl/nodes)
+- Node-overzicht: [Nodes](/nl/nodes)
 - Camera: [Camera-nodes](/nl/nodes/camera)
 - Afbeeldingen: [Afbeeldingsnodes](/nl/nodes/images)
 
-Veelgebruikte opties:
+Algemene opties:
 
 - `--url`, `--token`, `--timeout`, `--json`
 
-## Veelgebruikte opdrachten
+## Algemene opdrachten
 
 ```bash
 openclaw nodes list
@@ -43,22 +43,22 @@ openclaw nodes status --connected
 openclaw nodes status --last-connected 24h
 ```
 
-`nodes list` drukt tabellen af met wachtende/gekoppelde nodes. Gekoppelde rijen bevatten de leeftijd van de meest recente verbinding (Laatste verbinding).
-Gebruik `--connected` om alleen momenteel verbonden nodes te tonen. Gebruik `--last-connected <duration>` om
+`nodes list` drukt tabellen af voor in behandeling zijnde/gekoppelde items. Gekoppelde rijen bevatten de leeftijd van de meest recente verbinding (Laatste verbinding).
+Gebruik `--connected` om alleen momenteel verbonden nodes weer te geven. Gebruik `--last-connected <duration>` om
 te filteren op nodes die binnen een duur verbinding hebben gemaakt (bijv. `24h`, `7d`).
-Gebruik `nodes remove --node <id|name|ip>` om een verouderd, door de gateway beheerd koppelingsrecord voor een node te verwijderen.
+Gebruik `nodes remove --node <id|name|ip>` om een verouderd, door de Gateway beheerd node-koppelingsrecord te verwijderen.
 
-Opmerking over goedkeuring:
+Goedkeuringsopmerking:
 
-- `openclaw nodes pending` heeft alleen het koppelingsbereik nodig.
-- `gateway.nodes.pairing.autoApproveCidrs` kan de wachtende stap alleen overslaan voor
-  expliciet vertrouwde, eerste koppeling van apparaten met `role: node`. Dit staat standaard
-  uit en keurt geen upgrades goed.
-- `openclaw nodes approve <requestId>` erft extra bereikvereisten van de
-  wachtende aanvraag:
-  - aanvraag zonder opdracht: alleen koppeling
-  - node-opdrachten zonder exec: koppeling + schrijven
-  - `system.run` / `system.run.prepare` / `system.which`: koppeling + admin
+- `openclaw nodes pending` heeft alleen koppelingsscope nodig.
+- `gateway.nodes.pairing.autoApproveCidrs` kan de stap voor in behandeling zijnde aanvragen alleen overslaan voor
+  expliciet vertrouwde, eerste `role: node`-apparaatkoppeling. Dit staat standaard uit
+  en keurt upgrades niet goed.
+- `openclaw nodes approve <requestId>` erft extra scopevereisten van de
+  in behandeling zijnde aanvraag:
+  - opdrachtloze aanvraag: alleen koppeling
+  - niet-exec node-opdrachten: koppeling + schrijven
+  - `system.run` / `system.run.prepare` / `system.which`: koppeling + beheerder
 
 ## Aanroepen
 
@@ -71,11 +71,11 @@ Aanroepvlaggen:
 - `--params <json>`: JSON-objecttekenreeks (standaard `{}`).
 - `--invoke-timeout <ms>`: time-out voor node-aanroep (standaard `15000`).
 - `--idempotency-key <key>`: optionele idempotentiesleutel.
-- `system.run` en `system.run.prepare` worden hier geblokkeerd; gebruik de `exec`-tool met `host=node` voor shelluitvoering.
+- `system.run` en `system.run.prepare` worden hier geblokkeerd; gebruik de `exec`-tool met `host=node` voor shell-uitvoering.
 
-Gebruik voor shelluitvoering op een node de `exec`-tool met `host=node` in plaats van `openclaw nodes run`.
+Gebruik voor shell-uitvoering op een node de `exec`-tool met `host=node` in plaats van `openclaw nodes run`.
 De `nodes`-CLI is nu gericht op mogelijkheden: directe RPC via `nodes invoke`, plus koppeling, camera,
-scherm, locatie, canvas en meldingen.
+scherm, locatie, Canvas en meldingen. Canvas-opdrachten worden geïmplementeerd door de gebundelde experimentele Canvas-Plugin; de core behoudt een compatibiliteitshaak zodat ze onder `openclaw nodes canvas` blijven.
 
 ## Gerelateerd
 

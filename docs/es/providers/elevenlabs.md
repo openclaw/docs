@@ -1,27 +1,26 @@
 ---
 read_when:
     - Quieres usar la conversión de texto a voz de ElevenLabs en OpenClaw
-    - Quieres la conversión de voz a texto de ElevenLabs Scribe para los archivos adjuntos de audio
-    - Quieres la transcripción en tiempo real de ElevenLabs para Llamada de voz o Google Meet
-summary: Usa la voz de ElevenLabs, Scribe STT y la transcripción en tiempo real con OpenClaw
+    - Quieres usar la transcripción de voz a texto de ElevenLabs Scribe para archivos adjuntos de audio
+    - Quieres transcripción en tiempo real de ElevenLabs para llamada de voz o Google Meet
+summary: Usa voz de ElevenLabs, Scribe STT y transcripción en tiempo real con OpenClaw
 title: ElevenLabs
 x-i18n:
-    generated_at: "2026-05-04T07:03:51Z"
+    generated_at: "2026-05-07T13:23:37Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 4c880bf9dcab01ef70779c74576c70ea5d0203b96b5f739291842fafcb4bdb4b
+    source_hash: 72e655dc2260a353bb5e84e6df32cc39bf6329836cb29ab569c3f93833df144a
     source_path: providers/elevenlabs.md
     workflow: 16
 ---
 
-OpenClaw usa ElevenLabs para texto a voz, voz a texto por lotes con Scribe
-v2 y STT en streaming con Scribe v2 Realtime.
+OpenClaw usa ElevenLabs para conversión de texto a voz, conversión de voz a texto por lotes con Scribe v2 y STT en streaming con Scribe v2 Realtime.
 
-| Capacidad                | Superficie de OpenClaw                                                | Predeterminado          |
-| ------------------------ | -------------------------------------------------------------------- | ------------------------ |
-| Texto a voz              | `messages.tts` / `talk`                                              | `eleven_multilingual_v2` |
-| Voz a texto por lotes    | `tools.media.audio`                                                  | `scribe_v2`              |
-| Voz a texto en streaming | Streaming de Voice Call o `realtime.transcriptionProvider` de Google Meet | `scribe_v2_realtime`     |
+| Capacidad                         | Superficie de OpenClaw                                                | Predeterminado           |
+| --------------------------------- | --------------------------------------------------------------------- | ------------------------ |
+| Conversión de texto a voz         | `messages.tts` / `talk`                                               | `eleven_multilingual_v2` |
+| Conversión de voz a texto por lotes | `tools.media.audio`                                                 | `scribe_v2`              |
+| Conversión de voz a texto en streaming | Streaming de Voice Call o `realtime.transcriptionProvider` de Google Meet | `scribe_v2_realtime`     |
 
 ## Autenticación
 
@@ -32,7 +31,7 @@ compatibilidad con las herramientas existentes de ElevenLabs.
 export ELEVENLABS_API_KEY="..."
 ```
 
-## Texto a voz
+## Conversión de texto a voz
 
 ```json5
 {
@@ -51,11 +50,18 @@ export ELEVENLABS_API_KEY="..."
 ```
 
 Define `modelId` como `eleven_v3` para usar TTS v3 de ElevenLabs. OpenClaw mantiene
-`eleven_multilingual_v2` como predeterminado para las instalaciones existentes.
+`eleven_multilingual_v2` como valor predeterminado para las instalaciones existentes.
 
-## Voz a texto
+Los canales de voz de Discord usan el endpoint de TTS en streaming de ElevenLabs cuando ElevenLabs es
+el proveedor `voice.tts`/`messages.tts` seleccionado. La reproducción comienza desde el
+flujo de audio devuelto en lugar de esperar a que OpenClaw descargue y escriba primero
+todo el archivo de audio. `latencyTier` se asigna al parámetro de consulta
+`optimize_streaming_latency` de ElevenLabs para los modelos que lo aceptan; OpenClaw
+omite ese parámetro para `eleven_v3`, que lo rechaza.
 
-Usa Scribe v2 para archivos adjuntos de audio entrante y segmentos cortos de voz grabada:
+## Conversión de voz a texto
+
+Usa Scribe v2 para adjuntos de audio entrantes y segmentos cortos de voz grabada:
 
 ```json5
 {
@@ -75,17 +81,17 @@ OpenClaw envía audio multipart a `/v1/speech-to-text` de ElevenLabs con
 
 ## STT en streaming
 
-El Plugin `elevenlabs` incluido registra Scribe v2 Realtime para la transcripción
-en streaming de Voice Call y Google Meet en modo agente.
+El Plugin `elevenlabs` incluido registra Scribe v2 Realtime para Voice Call y
+transcripción en streaming en modo agente de Google Meet.
 
-| Ajuste              | Ruta de configuración                                                     | Predeterminado                                  |
-| --------------- | ------------------------------------------------------------------------- | ------------------------------------------------- |
-| Clave de API    | `plugins.entries.voice-call.config.streaming.providers.elevenlabs.apiKey` | Recurre a `ELEVENLABS_API_KEY` / `XI_API_KEY`   |
-| Modelo          | `...elevenlabs.modelId`                                                   | `scribe_v2_realtime`                              |
-| Formato de audio | `...elevenlabs.audioFormat`                                               | `ulaw_8000`                                       |
-| Frecuencia de muestreo | `...elevenlabs.sampleRate`                                                | `8000`                                            |
-| Estrategia de confirmación | `...elevenlabs.commitStrategy`                                            | `vad`                                             |
-| Idioma          | `...elevenlabs.languageCode`                                              | (sin definir)                                     |
+| Ajuste              | Ruta de configuración                                                    | Predeterminado                                    |
+| ------------------- | ------------------------------------------------------------------------ | ------------------------------------------------- |
+| Clave de API        | `plugins.entries.voice-call.config.streaming.providers.elevenlabs.apiKey` | Recurre a `ELEVENLABS_API_KEY` / `XI_API_KEY`     |
+| Modelo              | `...elevenlabs.modelId`                                                   | `scribe_v2_realtime`                              |
+| Formato de audio    | `...elevenlabs.audioFormat`                                               | `ulaw_8000`                                       |
+| Frecuencia de muestreo | `...elevenlabs.sampleRate`                                             | `8000`                                            |
+| Estrategia de confirmación | `...elevenlabs.commitStrategy`                                     | `vad`                                             |
+| Idioma              | `...elevenlabs.languageCode`                                              | (sin definir)                                     |
 
 ```json5
 {
@@ -114,7 +120,7 @@ en streaming de Voice Call y Google Meet en modo agente.
 
 <Note>
 Voice Call recibe medios de Twilio como G.711 u-law a 8 kHz. El proveedor en tiempo real
-de ElevenLabs usa `ulaw_8000` de forma predeterminada, por lo que los marcos de telefonía se pueden reenviar sin
+de ElevenLabs usa `ulaw_8000` de forma predeterminada, por lo que los fotogramas de telefonía se pueden reenviar sin
 transcodificación.
 </Note>
 
@@ -125,6 +131,6 @@ Para el modo agente de Google Meet, define
 
 ## Relacionado
 
-- [Texto a voz](/es/tools/tts)
+- [Conversión de texto a voz](/es/tools/tts)
 - [Google Meet](/es/plugins/google-meet)
-- [Selección de modelos](/es/concepts/model-providers)
+- [Selección de modelo](/es/concepts/model-providers)

@@ -1,20 +1,20 @@
 ---
 read_when:
-    - 了解如何配置 OpenClaw
-    - 查找配置示例
+    - 学习如何配置 OpenClaw
+    - 正在查找配置示例
     - 首次设置 OpenClaw
-summary: 适用于常见 OpenClaw 设置且符合模式定义的配置示例
+summary: 适用于常见 OpenClaw 设置、且与模式一致的配置示例
 title: 配置示例
 x-i18n:
-    generated_at: "2026-05-06T15:54:36Z"
+    generated_at: "2026-05-07T13:16:12Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 01dd16c73f1156c4012fd3956083062141825b502722b6aa34f1f90462a6823a
+    source_hash: 87c7e75841ee36121c764f1ed51b6547d0fccf7ed6c1f05895d916dbf93f061a
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-以下示例与当前配置 schema 保持一致。完整参考和各字段说明见[配置](/zh-CN/gateway/configuration)。
+下面的示例与当前配置模式保持一致。完整参考和逐字段说明见[配置](/zh-CN/gateway/configuration)。
 
 ## 快速开始
 
@@ -27,7 +27,7 @@ x-i18n:
 }
 ```
 
-保存到 `~/.openclaw/openclaw.json` 后，你就可以用该号码向机器人发送私信。
+保存到 `~/.openclaw/openclaw.json`，然后你就可以从该号码向机器人发私信。
 
 ### 推荐起始配置
 
@@ -59,7 +59,7 @@ x-i18n:
 
 ## 扩展示例（主要选项）
 
-> JSON5 允许使用注释和尾随逗号。普通 JSON 也可以使用。
+> JSON5 允许使用注释和尾随逗号。常规 JSON 也可以使用。
 
 ```json5
 {
@@ -473,7 +473,7 @@ x-i18n:
 
 ## 常见模式
 
-### 共享技能基线并带一个覆盖项
+### 带有一个覆盖项的共享技能基线
 
 ```json5
 {
@@ -491,8 +491,8 @@ x-i18n:
 ```
 
 - `agents.defaults.skills` 是共享基线。
-- `agents.list[].skills` 会为一个智能体替换该基线。
-- 当智能体不应看到任何 Skills 时，使用 `skills: []`。
+- `agents.list[].skills` 会为单个智能体替换该基线。
+- 当智能体不应看到任何技能时，使用 `skills: []`。
 
 ### 多平台设置
 
@@ -517,7 +517,7 @@ x-i18n:
 
 ### 可信节点网络自动批准
 
-除非你控制网络路径，否则请保持设备配对为手动。对于专用实验室或 tailnet 子网，你可以选择使用精确的 CIDR 或 IP，启用首次节点设备自动批准：
+除非你控制网络路径，否则请保持设备配对为手动。对于专用实验室或 tailnet 子网，你可以选择使用精确的 CIDR 或 IP 启用首次节点设备自动批准：
 
 ```json5
 {
@@ -531,11 +531,11 @@ x-i18n:
 }
 ```
 
-未设置时，此功能保持关闭。它只适用于没有请求作用域的新 `role: node` 配对。操作员/浏览器客户端，以及角色、作用域、元数据或公钥升级仍需要手动批准。
+未设置时，此功能保持关闭。它仅适用于没有请求范围的全新 `role: node` 配对。操作员/浏览器客户端，以及角色、范围、元数据或公钥升级仍然需要手动批准。
 
-### 安全私信模式（共享收件箱/多用户私信）
+### 安全私信模式（共享收件箱 / 多用户私信）
 
-如果不止一个人可以向你的机器人发送私信（`allowFrom` 中有多个条目、为多人批准了配对，或设置了 `dmPolicy: "open"`），请启用**安全私信模式**，这样来自不同发送者的私信默认不会共享同一个上下文：
+如果不止一个人可以私信你的 bot（`allowFrom` 中有多个条目、为多个人批准了配对，或设置了 `dmPolicy: "open"`），请启用**安全私信模式**，这样来自不同发送者的私信默认不会共享同一个上下文：
 
 ```json5
 {
@@ -559,10 +559,9 @@ x-i18n:
 }
 ```
 
-对于 Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC，发送者授权默认优先使用 ID。
-只有在你明确接受风险时，才为各渠道启用直接可变名称/邮箱/nick 匹配：`dangerouslyAllowNameMatching: true`。
+对于 Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC，发送者授权默认优先使用 ID。只有在你明确接受该风险时，才通过每个渠道的 `dangerouslyAllowNameMatching: true` 启用直接可变的姓名/电子邮件/昵称匹配。
 
-### Anthropic API key + MiniMax 备用模型
+### Anthropic API key + MiniMax 回退
 
 ```json5
 {
@@ -596,7 +595,7 @@ x-i18n:
 }
 ```
 
-### 工作机器人（受限访问）
+### 工作 bot（受限访问）
 
 ```json5
 {
@@ -655,12 +654,12 @@ x-i18n:
 
 ## 提示
 
-- 如果你设置 `dmPolicy: "open"`，匹配的 `allowFrom` 列表必须包含 `"*"`。
+- 如果你设置 `dmPolicy: "open"`，对应的 `allowFrom` 列表必须包含 `"*"`。
 - 提供商 ID 各不相同（电话号码、用户 ID、渠道 ID）。请使用提供商文档确认格式。
-- 稍后可添加的可选部分：`web`、`browser`、`ui`、`discovery`、`canvasHost`、`talk`、`signal`、`imessage`。
-- 查看[提供商](/zh-CN/providers)和[故障排除](/zh-CN/gateway/troubleshooting)，了解更深入的设置说明。
+- 后续可添加的可选部分：`web`、`browser`、`ui`、`discovery`、`plugins`、`talk`、`signal`、`imessage`。
+- 如需更深入的设置说明，请参阅[提供商](/zh-CN/providers)和[故障排除](/zh-CN/gateway/troubleshooting)。
 
-## 相关内容
+## 相关
 
 - [配置参考](/zh-CN/gateway/configuration-reference)
 - [配置](/zh-CN/gateway/configuration)

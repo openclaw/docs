@@ -1,20 +1,20 @@
 ---
 read_when:
     - Je wilt geautomatiseerde serveruitrol met beveiligingsverharding
-    - Je hebt een door een firewall geïsoleerde installatie met VPN-toegang nodig
+    - Je hebt een firewall-geïsoleerde configuratie met VPN-toegang nodig
     - Je implementeert op externe Debian/Ubuntu-servers
-summary: Geautomatiseerde, geharde OpenClaw-installatie met Ansible, Tailscale VPN en firewallisolatie
+summary: Geautomatiseerde, geharde OpenClaw-installatie met Ansible, Tailscale-VPN en firewallisolatie
 title: Ansible
 x-i18n:
-    generated_at: "2026-05-06T09:18:14Z"
+    generated_at: "2026-05-07T13:21:10Z"
     model: gpt-5.5
     provider: openai
-    source_hash: a7424e766619096f50fa0c83aa4e85e46adba11515b1871e58cf2406b7c8f815
+    source_hash: 1f7a2a0c575529fd45804e160299239339100ec37979a17162cee9537ddb4653
     source_path: install/ansible.md
     workflow: 16
 ---
 
-Implementeer OpenClaw op productieservers met **[openclaw-ansible](https://github.com/openclaw/openclaw-ansible)** -- een geautomatiseerd installatieprogramma met een security-first architectuur.
+Implementeer OpenClaw op productieservers met **[openclaw-ansible](https://github.com/openclaw/openclaw-ansible)** -- een geautomatiseerd installatieprogramma met een security-first-architectuur.
 
 <Info>
 De [openclaw-ansible](https://github.com/openclaw/openclaw-ansible)-repo is de bron van waarheid voor Ansible-implementatie. Deze pagina is een kort overzicht.
@@ -27,18 +27,18 @@ De [openclaw-ansible](https://github.com/openclaw/openclaw-ansible)-repo is de b
 | **OS**      | Debian 11+ of Ubuntu 20.04+                               |
 | **Toegang** | Root- of sudo-rechten                                     |
 | **Netwerk** | Internetverbinding voor pakketinstallatie                 |
-| **Ansible** | 2.14+ (automatisch geïnstalleerd door het snelstartscript) |
+| **Ansible** | 2.14+ (automatisch geïnstalleerd door het quickstartscript) |
 
 ## Wat je krijgt
 
-- **Firewall-first beveiliging** -- UFW + Docker-isolatie (alleen SSH + Tailscale toegankelijk)
+- **Firewall-first-beveiliging** -- UFW + Docker-isolatie (alleen SSH + Tailscale toegankelijk)
 - **Tailscale VPN** -- veilige externe toegang zonder services openbaar bloot te stellen
-- **Docker** -- geïsoleerde sandbox-containers, bindingen alleen voor localhost
+- **Docker** -- geïsoleerde sandboxcontainers, alleen localhost-bindingen
 - **Defense in depth** -- beveiligingsarchitectuur met 4 lagen
-- **Systemd-integratie** -- automatisch starten bij het opstarten met hardening
-- **Setup met één opdracht** -- volledige implementatie binnen enkele minuten
+- **Systemd-integratie** -- automatisch starten bij boot met hardening
+- **Installatie met één opdracht** -- volledige implementatie in enkele minuten
 
-## Snelstart
+## Quickstart
 
 Installatie met één opdracht:
 
@@ -51,14 +51,14 @@ curl -fsSL https://raw.githubusercontent.com/openclaw/openclaw-ansible/main/inst
 Het Ansible-playbook installeert en configureert:
 
 1. **Tailscale** -- mesh-VPN voor veilige externe toegang
-2. **UFW-firewall** -- alleen SSH + Tailscale-poorten
-3. **Docker CE + Compose V2** -- voor de standaard backend voor agent-sandboxen
-4. **Node.js 24 + pnpm** -- runtime-afhankelijkheden (Node 22 LTS, momenteel `22.14+`, blijft ondersteund)
+2. **UFW-firewall** -- alleen SSH- + Tailscale-poorten
+3. **Docker CE + Compose V2** -- voor de standaard agentsandbox-backend
+4. **Node.js 24 + pnpm** -- runtime-afhankelijkheden (Node 22 LTS, momenteel `22.16+`, blijft ondersteund)
 5. **OpenClaw** -- hostgebaseerd, niet gecontaineriseerd
-6. **Systemd-service** -- automatisch starten met beveiligingshardening
+6. **Systemd-service** -- automatisch starten met security hardening
 
 <Note>
-De Gateway draait rechtstreeks op de host (niet in Docker). Agent-sandboxing is
+De Gateway draait rechtstreeks op de host (niet in Docker). Agentsandboxing is
 optioneel; dit playbook installeert Docker omdat dit de standaard sandbox-
 backend is. Zie [Sandboxing](/nl/gateway/sandboxing) voor details en andere backends.
 </Note>
@@ -72,9 +72,9 @@ backend is. Zie [Sandboxing](/nl/gateway/sandboxing) voor details en andere back
     ```
   </Step>
   <Step title="Voer de onboardingwizard uit">
-    Het script na installatie begeleidt je bij het configureren van OpenClaw-instellingen.
+    Het post-installatiescript begeleidt je bij het configureren van OpenClaw-instellingen.
   </Step>
-  <Step title="Verbind berichtenproviders">
+  <Step title="Verbind messagingproviders">
     Log in bij WhatsApp, Telegram, Discord of Signal:
     ```bash
     openclaw channels login
@@ -115,17 +115,17 @@ De implementatie gebruikt een verdedigingsmodel met 4 lagen:
 1. **Firewall (UFW)** -- alleen SSH (22) + Tailscale (41641/udp) openbaar blootgesteld
 2. **VPN (Tailscale)** -- Gateway alleen toegankelijk via VPN-mesh
 3. **Docker-isolatie** -- DOCKER-USER iptables-chain voorkomt externe poortblootstelling
-4. **Systemd-hardening** -- NoNewPrivileges, PrivateTmp, niet-geprivilegieerde gebruiker
+4. **Systemd-hardening** -- NoNewPrivileges, PrivateTmp, gebruiker zonder privileges
 
-Om je externe aanvalsoppervlak te controleren:
+Om je externe aanvalsvlak te controleren:
 
 ```bash
 nmap -p- YOUR_SERVER_IP
 ```
 
-Alleen poort 22 (SSH) hoort open te zijn. Alle andere services (Gateway, Docker) zijn afgeschermd.
+Alleen poort 22 (SSH) zou open moeten zijn. Alle andere services (Gateway, Docker) zijn vergrendeld.
 
-Docker wordt geïnstalleerd voor agent-sandboxen (geïsoleerde tooluitvoering), niet om de Gateway zelf te draaien. Zie [Multi-Agent-sandbox en tools](/nl/tools/multi-agent-sandbox-tools) voor sandboxconfiguratie.
+Docker wordt geïnstalleerd voor agentsandboxes (geïsoleerde tooluitvoering), niet om de Gateway zelf te draaien. Zie [Multi-Agent Sandbox and Tools](/nl/tools/multi-agent-sandbox-tools) voor sandboxconfiguratie.
 
 ## Handmatige installatie
 
@@ -153,7 +153,7 @@ Als je liever handmatige controle hebt over de automatisering:
     ./run-playbook.sh
     ```
 
-    Je kunt het ook rechtstreeks uitvoeren en daarna handmatig het setupscript starten:
+    Of voer het rechtstreeks uit en voer daarna handmatig het setupscript uit:
     ```bash
     ansible-playbook playbook.yml --ask-become-pass
     # Then run: /tmp/openclaw-setup.sh
@@ -164,7 +164,7 @@ Als je liever handmatige controle hebt over de automatisering:
 
 ## Bijwerken
 
-Het Ansible-installatieprogramma configureert OpenClaw voor handmatige updates. Zie [Bijwerken](/nl/install/updating) voor de standaard updateflow.
+Het Ansible-installatieprogramma stelt OpenClaw in voor handmatige updates. Zie [Bijwerken](/nl/install/updating) voor de standaard updateflow.
 
 Om het Ansible-playbook opnieuw uit te voeren (bijvoorbeeld voor configuratiewijzigingen):
 
@@ -173,7 +173,7 @@ cd openclaw-ansible
 ./run-playbook.sh
 ```
 
-Dit is idempotent en kan veilig meerdere keren worden uitgevoerd.
+Dit is idempotent en veilig om meerdere keren uit te voeren.
 
 ## Probleemoplossing
 
@@ -216,7 +216,7 @@ Dit is idempotent en kan veilig meerdere keren worden uitgevoerd.
 
   </Accordion>
   <Accordion title="Providerlogin mislukt">
-    Controleer of je als de `openclaw`-gebruiker werkt:
+    Zorg ervoor dat je draait als de `openclaw`-gebruiker:
     ```bash
     sudo -i -u openclaw
     openclaw channels login
@@ -235,6 +235,6 @@ Zie de openclaw-ansible-repo voor gedetailleerde beveiligingsarchitectuur en pro
 ## Gerelateerd
 
 - [openclaw-ansible](https://github.com/openclaw/openclaw-ansible) -- volledige implementatiegids
-- [Docker](/nl/install/docker) -- gecontaineriseerde Gateway-setup
-- [Sandboxing](/nl/gateway/sandboxing) -- agent-sandboxconfiguratie
-- [Multi-Agent-sandbox en tools](/nl/tools/multi-agent-sandbox-tools) -- isolatie per agent
+- [Docker](/nl/install/docker) -- setup voor gecontaineriseerde Gateway
+- [Sandboxing](/nl/gateway/sandboxing) -- agentsandboxconfiguratie
+- [Multi-Agent Sandbox and Tools](/nl/tools/multi-agent-sandbox-tools) -- isolatie per agent

@@ -6,15 +6,15 @@ read_when:
 summary: Exemples de configuration conformes au schéma pour les installations OpenClaw courantes
 title: Exemples de configuration
 x-i18n:
-    generated_at: "2026-05-06T17:55:35Z"
+    generated_at: "2026-05-07T13:16:57Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 01dd16c73f1156c4012fd3956083062141825b502722b6aa34f1f90462a6823a
+    source_hash: 87c7e75841ee36121c764f1ed51b6547d0fccf7ed6c1f05895d916dbf93f061a
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Les exemples ci-dessous sont alignés sur le schéma de configuration actuel. Pour la référence exhaustive et les notes champ par champ, consultez [Configuration](/fr/gateway/configuration).
+Les exemples ci-dessous sont alignés sur le schéma de configuration actuel. Pour la référence exhaustive et les notes par champ, consultez [Configuration](/fr/gateway/configuration).
 
 ## Démarrage rapide
 
@@ -59,7 +59,7 @@ Enregistrez dans `~/.openclaw/openclaw.json` et vous pourrez envoyer un message 
 
 ## Exemple étendu (options principales)
 
-> JSON5 vous permet d’utiliser des commentaires et des virgules finales. Le JSON standard fonctionne aussi.
+> JSON5 vous permet d’utiliser des commentaires et des virgules finales. Le JSON classique fonctionne aussi.
 
 ```json5
 {
@@ -473,7 +473,7 @@ Enregistrez dans `~/.openclaw/openclaw.json` et vous pourrez envoyer un message 
 
 ## Modèles courants
 
-### Référence Skills partagée avec une seule substitution
+### Référence de skill partagée avec une seule substitution
 
 ```json5
 {
@@ -492,7 +492,7 @@ Enregistrez dans `~/.openclaw/openclaw.json` et vous pourrez envoyer un message 
 
 - `agents.defaults.skills` est la base partagée.
 - `agents.list[].skills` remplace cette base pour un agent.
-- Utilisez `skills: []` lorsqu’un agent ne doit voir aucune Skills.
+- Utilisez `skills: []` quand un agent ne doit voir aucune Skills.
 
 ### Configuration multiplateforme
 
@@ -517,9 +517,9 @@ Enregistrez dans `~/.openclaw/openclaw.json` et vous pourrez envoyer un message 
 
 ### Approbation automatique du réseau de nœuds de confiance
 
-Gardez l’appairage des appareils manuel, sauf si vous contrôlez le chemin réseau. Pour un laboratoire dédié
-ou un sous-réseau tailnet, vous pouvez activer l’approbation automatique des appareils nœuds à la première connexion
-avec des CIDR ou des IP exacts :
+Gardez l’association des appareils manuelle, sauf si vous contrôlez le chemin réseau. Pour un laboratoire dédié
+ou un sous-réseau tailnet, vous pouvez activer l’approbation automatique des appareils de nœud à la première utilisation
+avec des CIDR ou des adresses IP exacts :
 
 ```json5
 {
@@ -533,13 +533,13 @@ avec des CIDR ou des IP exacts :
 }
 ```
 
-Cela reste désactivé si ce paramètre n’est pas défini. Cela s’applique uniquement à un nouvel appairage `role: node` sans
+Cela reste désactivé quand ce n’est pas défini. Cela s’applique uniquement aux nouvelles associations `role: node` sans
 portées demandées. Les clients opérateur/navigateur ainsi que les mises à niveau de rôle, de portée, de métadonnées ou
 de clé publique nécessitent toujours une approbation manuelle.
 
-### Mode DM sécurisé (boîte de réception partagée / DM multi-utilisateurs)
+### Mode DM sécurisé (boîte de réception partagée / DM multi-utilisateur)
 
-Si plusieurs personnes peuvent envoyer un DM à votre bot (plusieurs entrées dans `allowFrom`, approbations d’appairage pour plusieurs personnes, ou `dmPolicy: "open"`), activez le **mode DM sécurisé** afin que les DM provenant de différents expéditeurs ne partagent pas un même contexte par défaut :
+Si plusieurs personnes peuvent envoyer des DM à votre bot (plusieurs entrées dans `allowFrom`, approbations d’association pour plusieurs personnes ou `dmPolicy: "open"`), activez le **mode DM sécurisé** afin que les DM de différents expéditeurs ne partagent pas un même contexte par défaut :
 
 ```json5
 {
@@ -563,10 +563,10 @@ Si plusieurs personnes peuvent envoyer un DM à votre bot (plusieurs entrées da
 }
 ```
 
-Pour Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, l’autorisation de l’expéditeur est basée d’abord sur l’ID par défaut.
-N’activez la correspondance directe mutable par nom/e-mail/pseudonyme avec `dangerouslyAllowNameMatching: true` de chaque canal que si vous acceptez explicitement ce risque.
+Pour Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, l’autorisation des expéditeurs est d’abord basée sur l’ID par défaut.
+N’activez la correspondance directe et mutable par nom/e-mail/pseudo avec le `dangerouslyAllowNameMatching: true` de chaque canal que si vous acceptez explicitement ce risque.
 
-### Clé API Anthropic + solution de secours MiniMax
+### Clé API Anthropic + repli MiniMax
 
 ```json5
 {
@@ -660,9 +660,9 @@ N’activez la correspondance directe mutable par nom/e-mail/pseudonyme avec `da
 ## Conseils
 
 - Si vous définissez `dmPolicy: "open"`, la liste `allowFrom` correspondante doit inclure `"*"`.
-- Les ID de fournisseurs diffèrent (numéros de téléphone, ID utilisateur, ID de canal). Consultez la documentation du fournisseur pour confirmer le format.
-- Sections facultatives à ajouter plus tard : `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
-- Consultez [Fournisseurs](/fr/providers) et [Dépannage](/fr/gateway/troubleshooting) pour des notes de configuration plus détaillées.
+- Les ID de fournisseur diffèrent (numéros de téléphone, ID utilisateur, ID de canal). Utilisez la documentation du fournisseur pour confirmer le format.
+- Sections facultatives à ajouter plus tard : `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
+- Consultez [Fournisseurs](/fr/providers) et [Dépannage](/fr/gateway/troubleshooting) pour des notes de configuration plus approfondies.
 
 ## Connexe
 

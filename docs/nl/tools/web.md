@@ -1,51 +1,51 @@
 ---
 read_when:
     - Je wilt web_search inschakelen of configureren
-    - Je wilt x_search inschakelen of configureren
+    - U wilt x_search inschakelen of configureren
     - Je moet een zoekprovider kiezen
-    - Je wilt automatische detectie en terugval op aanbieders begrijpen
+    - Je wilt automatische detectie en terugval naar providers begrijpen
 sidebarTitle: Web Search
-summary: web_search, x_search en web_fetch -- zoek op het web, zoek X-berichten of haal pagina-inhoud op
+summary: web_search, x_search en web_fetch -- doorzoek het web, doorzoek X-berichten of haal pagina-inhoud op
 title: Zoeken op het web
 x-i18n:
-    generated_at: "2026-05-07T01:55:02Z"
+    generated_at: "2026-05-07T13:28:44Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 806b614fe3103439ea0a1acaaaa9f4071e22440cc2091ff814834e75b2079529
+    source_hash: 84de67b51f02e3b901bfa55017ae8e88de49295dfe6ed1103a45f034e073c087
     source_path: tools/web.md
     workflow: 16
 ---
 
 De tool `web_search` doorzoekt het web met je geconfigureerde provider en
-retourneert resultaten. Resultaten worden per query 15 minuten gecachet
+retourneert resultaten. Resultaten worden per zoekopdracht 15 minuten gecachet
 (configureerbaar).
 
 OpenClaw bevat ook `x_search` voor X-posts (voorheen Twitter) en
-`web_fetch` voor lichte URL-fetching. In deze fase blijft `web_fetch`
-lokaal, terwijl `web_search` en `x_search` onder de motorkap xAI Responses
-kunnen gebruiken.
+`web_fetch` voor lichtgewicht URL-ophalen. In deze fase blijft `web_fetch`
+lokaal, terwijl `web_search` en `x_search` onder de motorkap xAI Responses kunnen
+gebruiken.
 
 <Info>
-  `web_search` is een lichte HTTP-tool, geen browserautomatisering. Gebruik voor
-  sites met veel JS of aanmeldingen de [Webbrowser](/nl/tools/browser). Gebruik
-  [Web Fetch](/nl/tools/web-fetch) om een specifieke URL op te halen.
+  `web_search` is een lichtgewicht HTTP-tool, geen browserautomatisering. Gebruik
+  voor sites met veel JS of aanmeldingen de [Webbrowser](/nl/tools/browser). Gebruik
+  voor het ophalen van een specifieke URL [Web Fetch](/nl/tools/web-fetch).
 </Info>
 
-## Snelstart
+## Snel aan de slag
 
 <Steps>
   <Step title="Kies een provider">
-    Kies een provider en voltooi eventuele vereiste configuratie. Sommige providers zijn
-    sleutelvrij, terwijl andere API-sleutels gebruiken. Zie de providerpagina's hieronder voor
-    details.
+    Kies een provider en rond eventuele vereiste installatie af. Sommige providers
+    hebben geen sleutel nodig, terwijl andere API-sleutels gebruiken. Zie de
+    providerpagina's hieronder voor details.
   </Step>
   <Step title="Configureer">
     ```bash
     openclaw configure --section web
     ```
-    Hiermee worden de provider en eventuele benodigde inloggegevens opgeslagen. Je kunt ook een env
-    var instellen (bijvoorbeeld `BRAVE_API_KEY`) en deze stap overslaan voor providers
-    met API-ondersteuning.
+    Hiermee worden de provider en eventuele benodigde referenties opgeslagen. Je
+    kunt ook een omgevingsvariabele instellen (bijvoorbeeld `BRAVE_API_KEY`) en
+    deze stap overslaan voor providers met API-ondersteuning.
   </Step>
   <Step title="Gebruik het">
     De agent kan nu `web_search` aanroepen:
@@ -67,37 +67,37 @@ kunnen gebruiken.
 
 <CardGroup cols={2}>
   <Card title="Brave Search" icon="shield" href="/nl/tools/brave-search">
-    Gestructureerde resultaten met snippets. Ondersteunt `llm-context`-modus en land-/taalfilters. Gratis laag beschikbaar.
+    Gestructureerde resultaten met fragmenten. Ondersteunt `llm-context`-modus en land-/taalfilters. Gratis laag beschikbaar.
   </Card>
   <Card title="DuckDuckGo" icon="bird" href="/nl/tools/duckduckgo-search">
-    Sleutelvrije fallback. Geen API-sleutel nodig. Onofficiële HTML-gebaseerde integratie.
+    Fallback zonder sleutel. Geen API-sleutel nodig. Onofficiële HTML-gebaseerde integratie.
   </Card>
   <Card title="Exa" icon="brain" href="/nl/tools/exa-search">
-    Neuraal + zoeken op trefwoorden met contentextractie (markeringen, tekst, samenvattingen).
+    Neurale + trefwoordzoekfunctie met inhoudsextractie (highlights, tekst, samenvattingen).
   </Card>
   <Card title="Firecrawl" icon="flame" href="/nl/tools/firecrawl">
-    Gestructureerde resultaten. Werkt het best in combinatie met `firecrawl_search` en `firecrawl_scrape` voor diepe extractie.
+    Gestructureerde resultaten. Het best gecombineerd met `firecrawl_search` en `firecrawl_scrape` voor diepe extractie.
   </Card>
   <Card title="Gemini" icon="sparkles" href="/nl/tools/gemini-search">
-    AI-gesynthetiseerde antwoorden met citaties via Google Search-grounding.
+    Door AI samengestelde antwoorden met citaties via Google Search-grounding.
   </Card>
   <Card title="Grok" icon="zap" href="/nl/tools/grok-search">
-    AI-gesynthetiseerde antwoorden met citaties via xAI-webgrounding.
+    Door AI samengestelde antwoorden met citaties via xAI-webgrounding.
   </Card>
   <Card title="Kimi" icon="moon" href="/nl/tools/kimi-search">
-    AI-gesynthetiseerde antwoorden met citaties via Moonshot-webzoekopdrachten; ongegronde chatfallbacks mislukken expliciet.
+    Door AI samengestelde antwoorden met citaties via Moonshot-webzoekfunctie; ongegronde chatfallbacks mislukken expliciet.
   </Card>
   <Card title="MiniMax Search" icon="globe" href="/nl/tools/minimax-search">
-    Gestructureerde resultaten via de zoek-API van het MiniMax Token Plan.
+    Gestructureerde resultaten via de MiniMax Token Plan-zoek-API.
   </Card>
   <Card title="Ollama Web Search" icon="globe" href="/nl/tools/ollama-search">
     Zoeken via een aangemelde lokale Ollama-host of de gehoste Ollama-API.
   </Card>
   <Card title="Perplexity" icon="search" href="/nl/tools/perplexity-search">
-    Gestructureerde resultaten met besturing voor contentextractie en domeinfiltering.
+    Gestructureerde resultaten met besturing voor inhoudsextractie en domeinfiltering.
   </Card>
   <Card title="SearXNG" icon="server" href="/nl/tools/searxng-search">
-    Zelfgehoste meta-search. Geen API-sleutel nodig. Aggregeert Google, Bing, DuckDuckGo en meer.
+    Zelfgehoste metazoekfunctie. Geen API-sleutel nodig. Aggregeert Google, Bing, DuckDuckGo en meer.
   </Card>
   <Card title="Tavily" icon="globe" href="/nl/tools/tavily">
     Gestructureerde resultaten met zoekdiepte, onderwerpfiltering en `tavily_extract` voor URL-extractie.
@@ -108,33 +108,33 @@ kunnen gebruiken.
 
 | Provider                                  | Resultaatstijl                                                | Filters                                          | API-sleutel                                                                             |
 | ----------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------- |
-| [Brave](/nl/tools/brave-search)              | Gestructureerde snippets                                      | Land, taal, tijd, `llm-context`-modus            | `BRAVE_API_KEY`                                                                         |
-| [DuckDuckGo](/nl/tools/duckduckgo-search)    | Gestructureerde snippets                                      | --                                               | Geen (sleutelvrij)                                                                      |
-| [Exa](/nl/tools/exa-search)                  | Gestructureerd + geëxtraheerd                                 | Neurale/trefwoordmodus, datum, contentextractie  | `EXA_API_KEY`                                                                           |
-| [Firecrawl](/nl/tools/firecrawl)             | Gestructureerde snippets                                      | Via de tool `firecrawl_search`                   | `FIRECRAWL_API_KEY`                                                                     |
-| [Gemini](/nl/tools/gemini-search)            | AI-gesynthetiseerd + citaties                                 | --                                               | `GEMINI_API_KEY`                                                                        |
-| [Grok](/nl/tools/grok-search)                | AI-gesynthetiseerd + citaties                                 | --                                               | `XAI_API_KEY`                                                                           |
-| [Kimi](/nl/tools/kimi-search)                | AI-gesynthetiseerd + citaties; mislukt bij ongegronde chatfallbacks | --                                               | `KIMI_API_KEY` / `MOONSHOT_API_KEY`                                                     |
-| [MiniMax Search](/nl/tools/minimax-search)   | Gestructureerde snippets                                      | Regio (`global` / `cn`)                          | `MINIMAX_CODE_PLAN_KEY` / `MINIMAX_CODING_API_KEY` / `MINIMAX_OAUTH_TOKEN`              |
-| [Ollama Web Search](/nl/tools/ollama-search) | Gestructureerde snippets                                      | --                                               | Geen voor aangemelde lokale hosts; `OLLAMA_API_KEY` voor directe `https://ollama.com`-zoekopdrachten |
-| [Perplexity](/nl/tools/perplexity-search)    | Gestructureerde snippets                                      | Land, taal, tijd, domeinen, contentlimieten      | `PERPLEXITY_API_KEY` / `OPENROUTER_API_KEY`                                             |
-| [SearXNG](/nl/tools/searxng-search)          | Gestructureerde snippets                                      | Categorieën, taal                                | Geen (zelfgehost)                                                                       |
-| [Tavily](/nl/tools/tavily)                   | Gestructureerde snippets                                      | Via de tool `tavily_search`                      | `TAVILY_API_KEY`                                                                        |
+| [Brave](/nl/tools/brave-search)              | Gestructureerde fragmenten                                    | Land, taal, tijd, `llm-context`-modus            | `BRAVE_API_KEY`                                                                         |
+| [DuckDuckGo](/nl/tools/duckduckgo-search)    | Gestructureerde fragmenten                                    | --                                               | Geen (zonder sleutel)                                                                   |
+| [Exa](/nl/tools/exa-search)                  | Gestructureerd + geëxtraheerd                                 | Neurale/trefwoordmodus, datum, inhoudsextractie  | `EXA_API_KEY`                                                                           |
+| [Firecrawl](/nl/tools/firecrawl)             | Gestructureerde fragmenten                                    | Via de tool `firecrawl_search`                   | `FIRECRAWL_API_KEY`                                                                     |
+| [Gemini](/nl/tools/gemini-search)            | Door AI samengesteld + citaties                               | --                                               | `GEMINI_API_KEY`                                                                        |
+| [Grok](/nl/tools/grok-search)                | Door AI samengesteld + citaties                               | --                                               | `XAI_API_KEY`                                                                           |
+| [Kimi](/nl/tools/kimi-search)                | Door AI samengesteld + citaties; mislukt bij ongegronde chatfallbacks | --                                               | `KIMI_API_KEY` / `MOONSHOT_API_KEY`                                                     |
+| [MiniMax Search](/nl/tools/minimax-search)   | Gestructureerde fragmenten                                    | Regio (`global` / `cn`)                          | `MINIMAX_CODE_PLAN_KEY` / `MINIMAX_CODING_API_KEY` / `MINIMAX_OAUTH_TOKEN`              |
+| [Ollama Web Search](/nl/tools/ollama-search) | Gestructureerde fragmenten                                    | --                                               | Geen voor aangemelde lokale hosts; `OLLAMA_API_KEY` voor directe `https://ollama.com`-zoekopdrachten |
+| [Perplexity](/nl/tools/perplexity-search)    | Gestructureerde fragmenten                                    | Land, taal, tijd, domeinen, inhoudslimieten      | `PERPLEXITY_API_KEY` / `OPENROUTER_API_KEY`                                             |
+| [SearXNG](/nl/tools/searxng-search)          | Gestructureerde fragmenten                                    | Categorieën, taal                                | Geen (zelfgehost)                                                                       |
+| [Tavily](/nl/tools/tavily)                   | Gestructureerde fragmenten                                    | Via de tool `tavily_search`                      | `TAVILY_API_KEY`                                                                        |
 
 ## Automatische detectie
 
 ## Native OpenAI-webzoekfunctie
 
-Directe OpenAI Responses-modellen gebruiken automatisch de gehoste OpenAI-tool `web_search` wanneer OpenClaw-webzoekfunctie is ingeschakeld en er geen beheerde provider is vastgezet. Dit is provider-eigen gedrag in de gebundelde OpenAI-plugin en is alleen van toepassing op native OpenAI API-verkeer, niet op OpenAI-compatibele proxybasis-URL's of Azure-routes. Stel `tools.web.search.provider` in op een andere provider, zoals `brave`, om de beheerde tool `web_search` voor OpenAI-modellen te behouden, of stel `tools.web.search.enabled: false` in om zowel beheerde zoekfunctie als native OpenAI-zoekfunctie uit te schakelen.
+Directe OpenAI Responses-modellen gebruiken automatisch OpenAI's gehoste tool `web_search` wanneer OpenClaw-webzoekfunctie is ingeschakeld en er geen beheerde provider is vastgezet. Dit is provider-eigen gedrag in de gebundelde OpenAI-Plugin en geldt alleen voor native OpenAI API-verkeer, niet voor OpenAI-compatibele proxybasis-URL's of Azure-routes. Stel `tools.web.search.provider` in op een andere provider zoals `brave` om de beheerde tool `web_search` voor OpenAI-modellen te behouden, of stel `tools.web.search.enabled: false` in om zowel beheerde zoekfunctie als native OpenAI-zoekfunctie uit te schakelen.
 
 ## Native Codex-webzoekfunctie
 
-Codex-compatibele modellen kunnen optioneel de provider-native Responses-tool `web_search` gebruiken in plaats van OpenClaws beheerde functie `web_search`.
+Codex-capabele modellen kunnen optioneel de provider-native Responses-tool `web_search` gebruiken in plaats van OpenClaw's beheerde functie `web_search`.
 
 - Configureer dit onder `tools.web.search.openaiCodex`
-- Het wordt alleen geactiveerd voor Codex-compatibele modellen (`openai-codex/*` of providers die `api: "openai-codex-responses"` gebruiken)
+- Dit wordt alleen geactiveerd voor Codex-capabele modellen (`openai-codex/*` of providers die `api: "openai-codex-responses"` gebruiken)
 - Beheerde `web_search` blijft van toepassing op niet-Codex-modellen
-- `mode: "cached"` is de standaardinstelling en aanbevolen instelling
+- `mode: "cached"` is de standaard en aanbevolen instelling
 - `tools.web.search.enabled: false` schakelt zowel beheerde als native zoekfunctie uit
 
 ```json5
@@ -160,27 +160,27 @@ Codex-compatibele modellen kunnen optioneel de provider-native Responses-tool `w
 }
 ```
 
-Als native Codex-zoekfunctie is ingeschakeld maar het huidige model niet Codex-compatibel is, behoudt OpenClaw het normale beheerde `web_search`-gedrag.
+Als native Codex-zoekfunctie is ingeschakeld maar het huidige model niet Codex-capabel is, behoudt OpenClaw het normale beheerde `web_search`-gedrag.
 
 ## Netwerkveiligheid
 
-Beheerde `web_search`-provideraanroepen gebruiken OpenClaws beveiligde fetch-pad. Voor
-vertrouwde provider-API-hosts staat OpenClaw Surge-, Clash- en sing-box-fake-IP
+Beheerde provider-aanroepen voor `web_search` gebruiken OpenClaw's afgeschermde fetch-pad. Voor
+vertrouwde API-hosts van providers staat OpenClaw Surge-, Clash- en sing-box-fake-IP
 DNS-antwoorden in `198.18.0.0/15` en `fc00::/7` alleen toe voor die providerhostnaam.
 Andere private, loopback-, link-local- en metadatabestemmingen blijven geblokkeerd.
 
-Deze automatische toestaan-regel is niet van toepassing op willekeurige `web_fetch`-URL's. Schakel voor
+Deze automatische toelating geldt niet voor willekeurige `web_fetch`-URL's. Schakel voor
 `web_fetch` `tools.web.fetch.ssrfPolicy.allowRfc2544BenchmarkRange` en
-`tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange` expliciet alleen in wanneer je
+`tools.web.fetch.ssrfPolicy.allowIpv6UniqueLocalRange` alleen expliciet in wanneer je
 vertrouwde proxy eigenaar is van die synthetische bereiken.
 
 ## Webzoekfunctie instellen
 
-Providerlijsten in docs en configuratiestromen zijn alfabetisch. Automatische detectie hanteert een
+Providerlijsten in documentatie en installatiestromen zijn alfabetisch. Automatische detectie behoudt een
 aparte prioriteitsvolgorde.
 
-Als er geen `provider` is ingesteld, controleert OpenClaw providers in deze volgorde en gebruikt het de
-eerste die gereed is:
+Als er geen `provider` is ingesteld, controleert OpenClaw providers in deze volgorde en gebruikt het
+de eerste die gereed is:
 
 Eerst providers met API-ondersteuning:
 
@@ -194,28 +194,28 @@ Eerst providers met API-ondersteuning:
 8. **Exa** -- `EXA_API_KEY` of `plugins.entries.exa.config.webSearch.apiKey`; optioneel overschrijft `plugins.entries.exa.config.webSearch.baseUrl` het Exa-eindpunt (volgorde 65)
 9. **Tavily** -- `TAVILY_API_KEY` of `plugins.entries.tavily.config.webSearch.apiKey` (volgorde 70)
 
-Daarna sleutelvrije fallbacks:
+Daarna fallbacks zonder sleutel:
 
-10. **DuckDuckGo** -- sleutelvrije HTML-fallback zonder account of API-sleutel (volgorde 100)
-11. **Ollama Web Search** -- sleutelvrije fallback via je geconfigureerde lokale Ollama-host wanneer die bereikbaar en aangemeld is met `ollama signin`; kan Ollama-providerbearer-auth hergebruiken wanneer de host die nodig heeft, en kan directe `https://ollama.com`-zoekopdrachten uitvoeren wanneer geconfigureerd met `OLLAMA_API_KEY` (volgorde 110)
+10. **DuckDuckGo** -- HTML-fallback zonder sleutel, zonder account of API-sleutel (volgorde 100)
+11. **Ollama Web Search** -- fallback zonder sleutel via je geconfigureerde lokale Ollama-host wanneer die bereikbaar en aangemeld is met `ollama signin`; kan Ollama-provider-bearer-authenticatie hergebruiken wanneer de host die nodig heeft, en kan directe `https://ollama.com`-zoekopdrachten uitvoeren wanneer geconfigureerd met `OLLAMA_API_KEY` (volgorde 110)
 12. **SearXNG** -- `SEARXNG_BASE_URL` of `plugins.entries.searxng.config.webSearch.baseUrl` (volgorde 200)
 
-Als er geen provider wordt gedetecteerd, valt het terug op Brave (je krijgt dan een fout over een ontbrekende sleutel
-die je vraagt er een te configureren).
+Als er geen provider wordt gedetecteerd, valt dit terug op Brave (je krijgt een fout over een ontbrekende sleutel
+met de vraag om er een te configureren).
 
 <Note>
-  Alle providersleutelvelden ondersteunen SecretRef-objecten. Plugin-scoped SecretRefs
+  Alle sleutelvelden van providers ondersteunen SecretRef-objecten. Plugin-gescopete SecretRefs
   onder `plugins.entries.<plugin>.config.webSearch.apiKey` worden opgelost voor de
   gebundelde webzoekproviders met API-ondersteuning, waaronder Brave, Exa, Firecrawl,
   Gemini, Grok, Kimi, MiniMax, Perplexity en Tavily,
-  ongeacht of de provider expliciet wordt gekozen via `tools.web.search.provider` of
+  of de provider nu expliciet via `tools.web.search.provider` wordt gekozen of
   via automatische detectie wordt geselecteerd. In automatische-detectiemodus lost OpenClaw alleen de
-  geselecteerde providersleutel op -- niet-geselecteerde SecretRefs blijven inactief, zodat je
+  sleutel van de geselecteerde provider op -- niet-geselecteerde SecretRefs blijven inactief, zodat je
   meerdere providers geconfigureerd kunt houden zonder resolutiekosten te betalen voor de
   providers die je niet gebruikt.
 </Note>
 
-## Config
+## Configuratie
 
 ```json5
 {
@@ -235,43 +235,41 @@ die je vraagt er een te configureren).
 
 Providerspecifieke configuratie (API-sleutels, basis-URL's, modi) staat onder
 `plugins.entries.<plugin>.config.webSearch.*`. Gemini kan ook
-`models.providers.google.apiKey` en `models.providers.google.baseUrl` hergebruiken als fallbacks met lagere prioriteit
-na de eigen webzoekconfiguratie en `GEMINI_API_KEY`. Zie de
+`models.providers.google.apiKey` en `models.providers.google.baseUrl` opnieuw gebruiken als fallbacks met lagere prioriteit
+na de specifieke webzoekconfiguratie en `GEMINI_API_KEY`. Zie de
 providerpagina's voor voorbeelden.
 
-`tools.web.search.provider` wordt gevalideerd tegen de ids van webzoekproviders
-die zijn gedeclareerd door meegeleverde en geïnstalleerde Plugin-manifesten, plus bekende installeerbare
-providerplugins. Een typefout zoals `"brvae"` zorgt ervoor dat de configuratievalidatie mislukt in plaats van
-stil terug te vallen op automatische detectie. Als de geconfigureerde provider bekend is maar
-de bijbehorende Plugin niet beschikbaar is, houdt OpenClaw het opstarten robuust en meldt het een
-waarschuwing zodat je `openclaw doctor --fix` kunt uitvoeren om de Plugin te installeren of in te schakelen.
-Hetzelfde waarschuwingsgedrag geldt voor verouderd Plugin-bewijs, zoals een achtergebleven
-`plugins.entries.<plugin>`-blok na het verwijderen van een externe Plugin.
+`tools.web.search.provider` wordt gevalideerd tegen de webzoekprovider-id's
+die door gebundelde en geinstalleerde Plugin-manifesten worden gedeclareerd. Een typfout zoals `"brvae"`
+laat configuratievalidatie mislukken in plaats van stil terug te vallen op automatische detectie. Als een
+geconfigureerde provider alleen verouderd Plugin-bewijs heeft, zoals een achtergebleven
+`plugins.entries.<plugin>`-blok na het verwijderen van een Plugin van derden,
+houdt OpenClaw het opstarten veerkrachtig en rapporteert het een waarschuwing zodat je de
+Plugin opnieuw kunt installeren of `openclaw doctor --fix` kunt uitvoeren om de verouderde configuratie op te schonen.
 
-Selectie van fallbackprovider voor `web_fetch` staat los hiervan:
+De fallback-providerselectie voor `web_fetch` is apart:
 
 - kies deze met `tools.web.fetch.provider`
-- of laat dat veld weg en laat OpenClaw automatisch de eerste gereedstaande web-fetch-provider
-  detecteren op basis van beschikbare referenties
-- `web_fetch` zonder sandbox kan geïnstalleerde Plugin-providers gebruiken die
-  `contracts.webFetchProviders` declareren; fetches met sandbox blijven uitsluitend meegeleverd
-- momenteel is de meegeleverde web-fetch-provider Firecrawl, geconfigureerd onder
+- of laat dat veld weg en laat OpenClaw automatisch de eerste gereedstaande web-fetch
+  provider detecteren op basis van beschikbare referenties
+- niet-gesandboxte `web_fetch` kan geinstalleerde Plugin-providers gebruiken die
+  `contracts.webFetchProviders` declareren; gesandboxte fetches blijven alleen gebundeld
+- vandaag is de gebundelde web-fetch-provider Firecrawl, geconfigureerd onder
   `plugins.entries.firecrawl.config.webFetch.*`
 
 Wanneer je **Kimi** kiest tijdens `openclaw onboard` of
 `openclaw configure --section web`, kan OpenClaw ook vragen om:
 
 - de Moonshot API-regio (`https://api.moonshot.ai/v1` of `https://api.moonshot.cn/v1`)
-- het standaardmodel voor Kimi-webzoeken (standaard `kimi-k2.6`)
+- het standaard Kimi-webzoekmodel (standaard `kimi-k2.6`)
 
-Configureer voor `x_search` `plugins.entries.xai.config.xSearch.*`. Het gebruikt dezelfde
+Voor `x_search` configureer je `plugins.entries.xai.config.xSearch.*`. Het gebruikt dezelfde
 `XAI_API_KEY`-fallback als Grok-webzoekopdrachten.
 Verouderde `tools.web.x_search.*`-configuratie wordt automatisch gemigreerd door `openclaw doctor --fix`.
 Wanneer je Grok kiest tijdens `openclaw onboard` of `openclaw configure --section web`,
-kan OpenClaw ook optionele `x_search`-configuratie aanbieden met dezelfde sleutel.
-Dit is een aparte vervolgstap binnen het Grok-pad, niet een aparte providerkeuze op topniveau
-voor webzoeken. Als je een andere provider kiest, toont OpenClaw de
-`x_search`-prompt niet.
+kan OpenClaw ook optionele `x_search`-setup aanbieden met dezelfde sleutel.
+Dit is een aparte vervolgstap binnen het Grok-pad, geen aparte keuze voor een webzoekprovider op topniveau.
+Als je een andere provider kiest, toont OpenClaw de `x_search`-prompt niet.
 
 ### API-sleutels opslaan
 
@@ -303,7 +301,7 @@ voor webzoeken. Als je een andere provider kiest, toont OpenClaw de
     export BRAVE_API_KEY="YOUR_KEY"
     ```
 
-    Voor een Gateway-installatie plaats je deze in `~/.openclaw/.env`.
+    Plaats deze voor een Gateway-installatie in `~/.openclaw/.env`.
     Zie [Env-vars](/nl/help/faq#env-vars-and-env-loading).
 
   </Tab>
@@ -311,52 +309,52 @@ voor webzoeken. Als je een andere provider kiest, toont OpenClaw de
 
 ## Toolparameters
 
-| Parameter             | Beschrijving                                          |
+| Parameter             | Beschrijving                                           |
 | --------------------- | ----------------------------------------------------- |
-| `query`               | Zoekquery (vereist)                                  |
-| `count`               | Te retourneren resultaten (1-10, standaard: 5)        |
-| `country`             | 2-letterige ISO-landcode (bijv. "US", "DE")          |
-| `language`            | ISO 639-1-taalcode (bijv. "en", "de")                |
-| `search_lang`         | Zoektaalcode (alleen Brave)                          |
-| `freshness`           | Tijdfilter: `day`, `week`, `month` of `year`          |
-| `date_after`          | Resultaten na deze datum (YYYY-MM-DD)                |
-| `date_before`         | Resultaten vóór deze datum (YYYY-MM-DD)              |
-| `ui_lang`             | UI-taalcode (alleen Brave)                           |
-| `domain_filter`       | Domein-allowlist/denylist-array (alleen Perplexity)   |
-| `max_tokens`          | Totaal inhoudsbudget, standaard 25000 (alleen Perplexity) |
-| `max_tokens_per_page` | Tokenlimiet per pagina, standaard 2048 (alleen Perplexity) |
+| `query`               | Zoekquery (vereist)                               |
+| `count`               | Te retourneren resultaten (1-10, standaard: 5)                  |
+| `country`             | 2-letterige ISO-landcode (bijv. "US", "DE")           |
+| `language`            | ISO 639-1-taalcode (bijv. "en", "de")             |
+| `search_lang`         | Zoektaalcode (alleen Brave)                     |
+| `freshness`           | Tijdfilter: `day`, `week`, `month` of `year`        |
+| `date_after`          | Resultaten na deze datum (JJJJ-MM-DD)                  |
+| `date_before`         | Resultaten voor deze datum (JJJJ-MM-DD)                 |
+| `ui_lang`             | UI-taalcode (alleen Brave)                         |
+| `domain_filter`       | Domein-allowlist/denylist-array (alleen Perplexity)     |
+| `max_tokens`          | Totale contentbudget, standaard 25000 (alleen Perplexity) |
+| `max_tokens_per_page` | Tokenlimiet per pagina, standaard 2048 (alleen Perplexity)  |
 
 <Warning>
-  Niet alle parameters werken met alle providers. De Brave-modus `llm-context`
-  weigert `ui_lang`; `date_before` vereist ook `date_after` omdat aangepaste
-  versheidsbereiken in Brave zowel een start- als einddatum vereisen.
-  Gemini, Grok en Kimi retourneren één gesynthetiseerd antwoord met citaties. Ze
+  Niet alle parameters werken met alle providers. Brave `llm-context`-modus
+  weigert `ui_lang`; `date_before` heeft ook `date_after` nodig omdat aangepaste
+  freshness-bereiken van Brave zowel begin- als einddatums vereisen.
+  Gemini, Grok en Kimi retourneren een gesynthetiseerd antwoord met citaties. Ze
   accepteren `count` voor compatibiliteit met gedeelde tools, maar dit verandert de
-  vorm van het gefundeerde antwoord niet. Gemini ondersteunt `freshness`, `date_after` en
-  `date_before` door deze om te zetten naar tijdsbereiken voor Google Search-grounding.
+  vorm van het onderbouwde antwoord niet. Gemini ondersteunt `freshness`, `date_after` en
+  `date_before` door ze om te zetten naar Google Search-grounding-tijdbereiken.
   Perplexity gedraagt zich op dezelfde manier wanneer je het Sonar/OpenRouter-
   compatibiliteitspad gebruikt (`plugins.entries.perplexity.config.webSearch.baseUrl` /
   `model` of `OPENROUTER_API_KEY`).
-  SearXNG accepteert `http://` alleen voor vertrouwde privénetwerk- of loopbackhosts;
+  SearXNG accepteert `http://` alleen voor vertrouwde private-network- of local loopback-hosts;
   openbare SearXNG-eindpunten moeten `https://` gebruiken.
   Firecrawl en Tavily ondersteunen alleen `query` en `count` via `web_search`
-  -- gebruik hun eigen tools voor geavanceerde opties.
+  -- gebruik hun speciale tools voor geavanceerde opties.
 </Warning>
 
 ## x_search
 
 `x_search` doorzoekt X-berichten (voorheen Twitter) met xAI en retourneert
-door AI gesynthetiseerde antwoorden met citaties. Het accepteert query's in natuurlijke taal en
-optionele gestructureerde filters. OpenClaw schakelt de ingebouwde xAI-`x_search`-
-tool alleen in voor de aanvraag die deze toolaanroep bedient.
+door AI gesynthetiseerde antwoorden met citaties. Het accepteert queries in natuurlijke taal en
+optionele gestructureerde filters. OpenClaw schakelt de ingebouwde xAI-`x_search`
+tool alleen in op de request die deze toolaanroep bedient.
 
 <Note>
-  xAI documenteert `x_search` met ondersteuning voor zoekwoorden zoeken, semantisch zoeken, gebruikers
-  zoeken en threads ophalen. Voor betrokkenheidsstatistieken per bericht, zoals reposts,
-  reacties, bladwijzers of weergaven, gebruik je bij voorkeur een gerichte lookup voor de exacte post-URL
-  of status-ID. Brede zoekwoordzoekopdrachten kunnen het juiste bericht vinden, maar retourneren mogelijk minder
-  volledige metadata per bericht. Een goed patroon is: lokaliseer eerst het bericht en voer daarna
-  een tweede `x_search`-query uit die op dat exacte bericht is gericht.
+  xAI documenteert `x_search` als ondersteuning voor keyword search, semantic search, user
+  search en thread fetch. Voor engagementstatistieken per bericht zoals reposts,
+  antwoorden, bookmarks of weergaven geef je de voorkeur aan een gerichte lookup voor de exacte bericht-URL
+  of status-ID. Brede keyword searches kunnen het juiste bericht vinden, maar retourneren mogelijk minder
+  volledige metadata per bericht. Een goed patroon is: lokaliseer eerst het bericht en
+  voer daarna een tweede `x_search`-query uit die op dat exacte bericht is gericht.
 </Note>
 
 ### x_search-configuratie
@@ -388,21 +386,21 @@ tool alleen in voor de aanvraag die deze toolaanroep bedient.
 ```
 
 `x_search` post naar `<baseUrl>/responses` wanneer
-`plugins.entries.xai.config.xSearch.baseUrl` is ingesteld. Als dat veld is weggelaten,
-valt het terug op `plugins.entries.xai.config.webSearch.baseUrl`, vervolgens op de
-verouderde `tools.web.search.grok.baseUrl` en ten slotte op het openbare xAI-eindpunt.
+`plugins.entries.xai.config.xSearch.baseUrl` is ingesteld. Als dat veld wordt weggelaten,
+valt het terug op `plugins.entries.xai.config.webSearch.baseUrl`, daarna op de
+verouderde `tools.web.search.grok.baseUrl` en uiteindelijk op het openbare xAI-eindpunt.
 
 ### x_search-parameters
 
-| Parameter                    | Beschrijving                                           |
+| Parameter                    | Beschrijving                                            |
 | ---------------------------- | ------------------------------------------------------ |
-| `query`                      | Zoekquery (vereist)                                   |
-| `allowed_x_handles`          | Beperk resultaten tot specifieke X-handles             |
-| `excluded_x_handles`         | Sluit specifieke X-handles uit                         |
-| `from_date`                  | Neem alleen berichten op van of na deze datum (YYYY-MM-DD) |
-| `to_date`                    | Neem alleen berichten op van of vóór deze datum (YYYY-MM-DD) |
-| `enable_image_understanding` | Laat xAI afbeeldingen inspecteren die aan overeenkomende berichten zijn gekoppeld |
-| `enable_video_understanding` | Laat xAI video's inspecteren die aan overeenkomende berichten zijn gekoppeld |
+| `query`                      | Zoekquery (vereist)                                |
+| `allowed_x_handles`          | Beperk resultaten tot specifieke X-handles                 |
+| `excluded_x_handles`         | Sluit specifieke X-handles uit                             |
+| `from_date`                  | Neem alleen berichten op vanaf of na deze datum (JJJJ-MM-DD)  |
+| `to_date`                    | Neem alleen berichten op vanaf of voor deze datum (JJJJ-MM-DD) |
+| `enable_image_understanding` | Laat xAI afbeeldingen inspecteren die aan overeenkomende berichten zijn gekoppeld      |
+| `enable_video_understanding` | Laat xAI video's inspecteren die aan overeenkomende berichten zijn gekoppeld      |
 
 ### x_search-voorbeeld
 
@@ -462,7 +460,7 @@ Als je toolprofielen of allowlists gebruikt, voeg dan `web_search`, `x_search` o
 
 ## Gerelateerd
 
-- [Web Fetch](/nl/tools/web-fetch) -- haal een URL op en extraheer leesbare inhoud
-- [Webbrowser](/nl/tools/browser) -- volledige browserautomatisering voor sites met veel JS
-- [Grok zoeken](/nl/tools/grok-search) -- Grok als de `web_search`-provider
-- [Ollama-webzoekopdracht](/nl/tools/ollama-search) -- webzoekopdrachten zonder sleutel via je Ollama-host
+- [Web Fetch](/nl/tools/web-fetch) -- haal een URL op en extraheer leesbare content
+- [Webbrowser](/nl/tools/browser) -- volledige browserautomatisering voor JS-zware sites
+- [Grok Search](/nl/tools/grok-search) -- Grok als de `web_search`-provider
+- [Ollama Web Search](/nl/tools/ollama-search) -- webzoekopdrachten zonder sleutel via je Ollama-host

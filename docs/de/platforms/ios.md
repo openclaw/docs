@@ -2,32 +2,32 @@
 read_when:
     - iOS-Node koppeln oder erneut verbinden
     - iOS-App aus dem Quellcode ausführen
-    - Debuggen der Gateway-Erkennung oder von Canvas-Befehlen
-summary: 'iOS-Node-App: Verbindung mit dem Gateway, Pairing, Canvas und Fehlerbehebung'
+    - Debugging der Gateway-Erkennung oder von Canvas-Befehlen
+summary: 'iOS-Node-App: Verbindung zum Gateway, Pairing, Canvas und Fehlerbehebung'
 title: iOS-App
 x-i18n:
-    generated_at: "2026-05-06T06:55:53Z"
+    generated_at: "2026-05-07T13:21:01Z"
     model: gpt-5.5
     provider: openai
-    source_hash: aaa8c11d9fda32c743d2ff0d1c6fd5574bcd396aef43aa2e4e9b0cc7b55e5d21
+    source_hash: 707f8b97156e800f89bc00265c1889c9cbade347fde35f037a302065956346f4
     source_path: platforms/ios.md
     workflow: 16
 ---
 
 Verfügbarkeit: interne Vorschau. Die iOS-App wird noch nicht öffentlich verteilt.
 
-## Was sie tut
+## Was sie leistet
 
 - Stellt über WebSocket eine Verbindung zu einem Gateway her (LAN oder Tailnet).
-- Stellt Node-Fähigkeiten bereit: Canvas, Screen-Snapshot, Kameraaufnahme, Standort, Talk-Modus, Voice Wake.
+- Stellt Node-Fähigkeiten bereit: Canvas, Bildschirm-Snapshot, Kameraaufnahme, Standort, Sprechmodus, Voice Wake.
 - Empfängt `node.invoke`-Befehle und meldet Node-Statusereignisse.
 
 ## Anforderungen
 
-- Gateway, das auf einem anderen Gerät ausgeführt wird (macOS, Linux oder Windows über WSL2).
+- Gateway, das auf einem anderen Gerät läuft (macOS, Linux oder Windows über WSL2).
 - Netzwerkpfad:
   - Gleiches LAN über Bonjour, **oder**
-  - Tailnet über Unicast-DNS-SD (Beispieldomäne: `openclaw.internal.`), **oder**
+  - Tailnet über Unicast-DNS-SD (Beispieldomain: `openclaw.internal.`), **oder**
   - Manueller Host/Port (Fallback).
 
 ## Schnellstart (koppeln + verbinden)
@@ -38,7 +38,7 @@ Verfügbarkeit: interne Vorschau. Die iOS-App wird noch nicht öffentlich vertei
 openclaw gateway --port 18789
 ```
 
-2. Öffnen Sie in der iOS-App die Einstellungen und wählen Sie ein gefundenes Gateway aus (oder aktivieren Sie Manual Host und geben Sie Host/Port ein).
+2. Öffnen Sie in der iOS-App die Einstellungen und wählen Sie ein gefundenes Gateway aus (oder aktivieren Sie Manueller Host und geben Sie Host/Port ein).
 
 3. Genehmigen Sie die Kopplungsanfrage auf dem Gateway-Host:
 
@@ -51,7 +51,7 @@ Wenn die App die Kopplung mit geänderten Authentifizierungsdetails (Rolle/Scope
 erneut versucht, wird die vorherige ausstehende Anfrage ersetzt und eine neue `requestId` erstellt.
 Führen Sie vor der Genehmigung erneut `openclaw devices list` aus.
 
-Optional: Wenn der iOS-Node immer aus einem eng kontrollierten Subnetz verbindet, können Sie
+Optional: Wenn sich der iOS-Node immer aus einem streng kontrollierten Subnetz verbindet, können Sie
 die automatische Erstgenehmigung von Nodes mit expliziten CIDRs oder exakten IPs aktivieren:
 
 ```json5
@@ -66,23 +66,23 @@ die automatische Erstgenehmigung von Nodes mit expliziten CIDRs oder exakten IPs
 }
 ```
 
-Dies ist standardmäßig deaktiviert. Es gilt nur für neue `role: node`-Kopplungen ohne
-angeforderte Scopes. Operator-/Browser-Kopplung sowie jede Änderung an Rolle, Scope, Metadaten oder
+Dies ist standardmäßig deaktiviert. Es gilt nur für frische `role: node`-Kopplungen ohne
+angeforderte Scopes. Operator-/Browser-Kopplungen sowie Änderungen an Rolle, Scope, Metadaten oder
 öffentlichem Schlüssel erfordern weiterhin eine manuelle Genehmigung.
 
-4. Überprüfen Sie die Verbindung:
+4. Prüfen Sie die Verbindung:
 
 ```bash
 openclaw nodes status
 openclaw gateway call node.list --params "{}"
 ```
 
-## Relay-gestützter Push für offizielle Builds
+## Relay-gestützte Push-Benachrichtigungen für offizielle Builds
 
-Offiziell verteilte iOS-Builds verwenden das externe Push-Relay, anstatt das rohe APNs-Token
-im Gateway zu veröffentlichen.
+Offiziell verteilte iOS-Builds verwenden das externe Push-Relay, statt das rohe APNs-Token
+beim Gateway zu veröffentlichen.
 
-Gateway-seitige Anforderung:
+Anforderung auf Gateway-Seite:
 
 ```json5
 {
@@ -100,36 +100,36 @@ Gateway-seitige Anforderung:
 
 So funktioniert der Ablauf:
 
-- Die iOS-App registriert sich beim Relay mit App Attest und einer StoreKit-App-Transaktions-JWS.
-- Das Relay gibt einen opaken Relay-Handle plus eine registrierungsgebundene Sendeberechtigung zurück.
-- Die iOS-App ruft die gekoppelte Gateway-Identität ab und schließt sie in die Relay-Registrierung ein, sodass die Relay-gestützte Registrierung an dieses spezifische Gateway delegiert wird.
-- Die App leitet diese Relay-gestützte Registrierung mit `push.apns.register` an das gekoppelte Gateway weiter.
-- Das Gateway verwendet diesen gespeicherten Relay-Handle für `push.test`, Hintergrund-Wakes und Wake-Anstöße.
-- Die Gateway-Relay-Basis-URL muss mit der Relay-URL übereinstimmen, die in den offiziellen/TestFlight-iOS-Build eingebettet ist.
-- Wenn sich die App später mit einem anderen Gateway oder einem Build mit einer anderen Relay-Basis-URL verbindet, aktualisiert sie die Relay-Registrierung, anstatt die alte Bindung wiederzuverwenden.
+- Die iOS-App registriert sich beim Relay mit App Attest und einem StoreKit-App-Transaction-JWS.
+- Das Relay gibt ein undurchsichtiges Relay-Handle plus eine registrierungsbezogene Sendeberechtigung zurück.
+- Die iOS-App ruft die Identität des gekoppelten Gateways ab und nimmt sie in die Relay-Registrierung auf, sodass die relay-gestützte Registrierung an dieses konkrete Gateway delegiert wird.
+- Die App leitet diese relay-gestützte Registrierung mit `push.apns.register` an das gekoppelte Gateway weiter.
+- Das Gateway verwendet dieses gespeicherte Relay-Handle für `push.test`, Hintergrund-Wakes und Wake-Anstöße.
+- Die Relay-Basis-URL des Gateways muss mit der Relay-URL übereinstimmen, die in den offiziellen/TestFlight-iOS-Build eingebettet ist.
+- Wenn sich die App später mit einem anderen Gateway oder einem Build mit einer anderen Relay-Basis-URL verbindet, aktualisiert sie die Relay-Registrierung, statt die alte Bindung wiederzuverwenden.
 
 Was das Gateway für diesen Pfad **nicht** benötigt:
 
-- Kein bereitstellungsweites Relay-Token.
-- Kein direkter APNs-Schlüssel für offizielle/TestFlight-Relay-gestützte Sends.
+- Kein deploymentweites Relay-Token.
+- Kein direkter APNs-Schlüssel für offizielle/TestFlight-relay-gestützte Sendungen.
 
 Erwarteter Operator-Ablauf:
 
 1. Installieren Sie den offiziellen/TestFlight-iOS-Build.
 2. Setzen Sie `gateway.push.apns.relay.baseUrl` auf dem Gateway.
-3. Koppeln Sie die App mit dem Gateway und lassen Sie sie die Verbindung abschließen.
+3. Koppeln Sie die App mit dem Gateway und warten Sie, bis die Verbindung abgeschlossen ist.
 4. Die App veröffentlicht `push.apns.register` automatisch, nachdem sie ein APNs-Token hat, die Operator-Sitzung verbunden ist und die Relay-Registrierung erfolgreich war.
-5. Danach können `push.test`, Reconnect-Wakes und Wake-Anstöße die gespeicherte Relay-gestützte Registrierung verwenden.
+5. Danach können `push.test`, Wiederverbindungs-Wakes und Wake-Anstöße die gespeicherte relay-gestützte Registrierung verwenden.
 
-## Hintergrund-Alive-Beacons
+## Alive-Beacons im Hintergrund
 
-Wenn iOS die App für einen stillen Push, eine Hintergrundaktualisierung oder ein Significant-Location-Ereignis aufweckt, versucht die App
+Wenn iOS die App wegen eines Silent Push, einer Hintergrundaktualisierung oder eines bedeutenden Standortereignisses weckt, versucht die App
 eine kurze Node-Wiederverbindung und ruft dann `node.event` mit `event: "node.presence.alive"` auf.
 Das Gateway zeichnet dies nur dann als `lastSeenAtMs`/`lastSeenReason` in den Metadaten des gekoppelten Nodes/Geräts auf,
 nachdem die authentifizierte Node-Geräteidentität bekannt ist.
 
-Die App behandelt einen Hintergrund-Wake nur dann als erfolgreich aufgezeichnet, wenn die Gateway-Antwort
-`handled: true` enthält. Ältere Gateways bestätigen `node.event` möglicherweise mit `{ "ok": true }`; diese Antwort ist
+Die App behandelt ein Hintergrund-Wake nur dann als erfolgreich aufgezeichnet, wenn die Gateway-Antwort
+`handled: true` enthält. Ältere Gateways können `node.event` mit `{ "ok": true }` bestätigen; diese Antwort ist
 kompatibel, zählt aber nicht als dauerhafte Last-Seen-Aktualisierung.
 
 Kompatibilitätshinweis:
@@ -138,14 +138,14 @@ Kompatibilitätshinweis:
 
 ## Authentifizierungs- und Vertrauensablauf
 
-Das Relay dient dazu, zwei Einschränkungen durchzusetzen, die direktes APNs-auf-dem-Gateway für
-offizielle iOS-Builds nicht bieten kann:
+Das Relay existiert, um zwei Einschränkungen durchzusetzen, die direktes APNs auf dem Gateway für
+offizielle iOS-Builds nicht bereitstellen kann:
 
 - Nur echte OpenClaw-iOS-Builds, die über Apple verteilt werden, können das gehostete Relay verwenden.
-- Ein Gateway kann Relay-gestützte Pushes nur für iOS-Geräte senden, die mit genau diesem
+- Ein Gateway kann relay-gestützte Push-Benachrichtigungen nur für iOS-Geräte senden, die mit diesem konkreten
   Gateway gekoppelt wurden.
 
-Hop für Hop:
+Schritt für Schritt:
 
 1. `iOS app -> gateway`
    - Die App koppelt sich zuerst über den normalen Gateway-Authentifizierungsablauf mit dem Gateway.
@@ -154,38 +154,38 @@ Hop für Hop:
 
 2. `iOS app -> relay`
    - Die App ruft die Relay-Registrierungsendpunkte über HTTPS auf.
-   - Die Registrierung enthält einen App-Attest-Nachweis plus eine StoreKit-App-Transaktions-JWS.
+   - Die Registrierung enthält einen App-Attest-Nachweis plus ein StoreKit-App-Transaction-JWS.
    - Das Relay validiert die Bundle-ID, den App-Attest-Nachweis und den Apple-Verteilungsnachweis und verlangt den
-     offiziellen/Produktions-Verteilungspfad.
-   - Dadurch werden lokale Xcode-/Dev-Builds von der Nutzung des gehosteten Relays ausgeschlossen. Ein lokaler Build kann
+     offiziellen/produktiven Verteilungspfad.
+   - Dadurch werden lokale Xcode-/Dev-Builds daran gehindert, das gehostete Relay zu verwenden. Ein lokaler Build kann
      signiert sein, erfüllt aber nicht den offiziellen Apple-Verteilungsnachweis, den das Relay erwartet.
 
 3. `gateway identity delegation`
-   - Vor der Relay-Registrierung ruft die App die gekoppelte Gateway-Identität über
+   - Vor der Relay-Registrierung ruft die App die Identität des gekoppelten Gateways von
      `gateway.identity.get` ab.
-   - Die App schließt diese Gateway-Identität in die Relay-Registrierungsnutzlast ein.
-   - Das Relay gibt einen Relay-Handle und eine registrierungsgebundene Sendeberechtigung zurück, die an
+   - Die App nimmt diese Gateway-Identität in die Relay-Registrierungs-Payload auf.
+   - Das Relay gibt ein Relay-Handle und eine registrierungsbezogene Sendeberechtigung zurück, die an
      diese Gateway-Identität delegiert sind.
 
 4. `gateway -> relay`
-   - Das Gateway speichert den Relay-Handle und die Sendeberechtigung aus `push.apns.register`.
-   - Bei `push.test`, Reconnect-Wakes und Wake-Anstößen signiert das Gateway die Sendeanfrage mit seiner
+   - Das Gateway speichert das Relay-Handle und die Sendeberechtigung aus `push.apns.register`.
+   - Bei `push.test`, Wiederverbindungs-Wakes und Wake-Anstößen signiert das Gateway die Sendeanfrage mit seiner
      eigenen Geräteidentität.
-   - Das Relay verifiziert sowohl die gespeicherte Sendeberechtigung als auch die Gateway-Signatur gegen die delegierte
+   - Das Relay prüft sowohl die gespeicherte Sendeberechtigung als auch die Gateway-Signatur gegen die delegierte
      Gateway-Identität aus der Registrierung.
-   - Ein anderes Gateway kann diese gespeicherte Registrierung nicht wiederverwenden, selbst wenn es den Handle irgendwie erhält.
+   - Ein anderes Gateway kann diese gespeicherte Registrierung nicht wiederverwenden, selbst wenn es irgendwie an das Handle gelangt.
 
 5. `relay -> APNs`
    - Das Relay besitzt die Produktions-APNs-Anmeldedaten und das rohe APNs-Token für den offiziellen Build.
-   - Das Gateway speichert für Relay-gestützte offizielle Builds niemals das rohe APNs-Token.
-   - Das Relay sendet den finalen Push im Namen des gekoppelten Gateways an APNs.
+   - Das Gateway speichert das rohe APNs-Token für relay-gestützte offizielle Builds niemals.
+   - Das Relay sendet die finale Push-Benachrichtigung im Auftrag des gekoppelten Gateways an APNs.
 
 Warum dieses Design erstellt wurde:
 
 - Um Produktions-APNs-Anmeldedaten aus Benutzer-Gateways herauszuhalten.
 - Um zu vermeiden, rohe APNs-Token offizieller Builds auf dem Gateway zu speichern.
 - Um die Nutzung des gehosteten Relays nur für offizielle/TestFlight-OpenClaw-Builds zu erlauben.
-- Um zu verhindern, dass ein Gateway Wake-Pushes an iOS-Geräte sendet, die einem anderen Gateway gehören.
+- Um zu verhindern, dass ein Gateway Wake-Push-Benachrichtigungen an iOS-Geräte sendet, die zu einem anderen Gateway gehören.
 
 Lokale/manuelle Builds bleiben bei direktem APNs. Wenn Sie diese Builds ohne das Relay testen, benötigt das
 Gateway weiterhin direkte APNs-Anmeldedaten:
@@ -216,19 +216,19 @@ Committen Sie die `.p8`-Datei nicht und legen Sie sie nicht im Repo-Checkout ab.
 
 ### Bonjour (LAN)
 
-Die iOS-App sucht nach `_openclaw-gw._tcp` auf `local.` und, wenn konfiguriert, in derselben
-Wide-Area-DNS-SD-Discovery-Domäne. Gateways im selben LAN erscheinen automatisch aus `local.`;
-netzwerkübergreifende Discovery kann die konfigurierte Wide-Area-Domäne verwenden, ohne den Beacon-Typ zu ändern.
+Die iOS-App durchsucht `_openclaw-gw._tcp` auf `local.` und, wenn konfiguriert, dieselbe
+Wide-Area-DNS-SD-Discovery-Domain. Gateways im selben LAN erscheinen automatisch von `local.`;
+netzwerkübergreifende Discovery kann die konfigurierte Wide-Area-Domain verwenden, ohne den Beacon-Typ zu ändern.
 
 ### Tailnet (netzwerkübergreifend)
 
-Wenn mDNS blockiert ist, verwenden Sie eine Unicast-DNS-SD-Zone (wählen Sie eine Domäne; Beispiel:
-`openclaw.internal.`) und Tailscale-Split-DNS.
+Wenn mDNS blockiert ist, verwenden Sie eine Unicast-DNS-SD-Zone (wählen Sie eine Domain; Beispiel:
+`openclaw.internal.`) und Tailscale Split-DNS.
 Siehe [Bonjour](/de/gateway/bonjour) für das CoreDNS-Beispiel.
 
 ### Manueller Host/Port
 
-Aktivieren Sie in den Einstellungen **Manual Host** und geben Sie den Gateway-Host + Port ein (Standard `18789`).
+Aktivieren Sie in den Einstellungen **Manueller Host** und geben Sie den Gateway-Host plus Port ein (Standard `18789`).
 
 ## Canvas + A2UI
 
@@ -245,19 +245,19 @@ Hinweise:
 - Der iOS-Node navigiert beim Verbinden automatisch zu A2UI, wenn eine Canvas-Host-URL angekündigt wird.
 - Kehren Sie mit `canvas.navigate` und `{"url":""}` zum integrierten Scaffold zurück.
 
-## Beziehung zu Computer Use
+## Verhältnis zu Computer Use
 
 Die iOS-App ist eine mobile Node-Oberfläche, kein Codex-Computer-Use-Backend. Codex
 Computer Use und `cua-driver mcp` steuern einen lokalen macOS-Desktop über MCP-
 Tools; die iOS-App stellt iPhone-Fähigkeiten über OpenClaw-Node-Befehle
 wie `canvas.*`, `camera.*`, `screen.*`, `location.*` und `talk.*` bereit.
 
-Agenten können die iOS-App weiterhin über OpenClaw bedienen, indem sie Node-
-Befehle ausführen, aber diese Aufrufe laufen über das Gateway-Node-Protokoll und folgen den iOS-
-Vordergrund-/Hintergrundbeschränkungen. Verwenden Sie [Codex Computer Use](/de/plugins/codex-computer-use)
-für lokale Desktopsteuerung und diese Seite für iOS-Node-Fähigkeiten.
+Agents können die iOS-App weiterhin über OpenClaw bedienen, indem sie Node-
+Befehle aufrufen, aber diese Aufrufe laufen über das Gateway-Node-Protokoll und folgen den iOS-
+Vordergrund-/Hintergrundgrenzen. Verwenden Sie [Codex Computer Use](/de/plugins/codex-computer-use)
+für lokale Desktop-Steuerung und diese Seite für iOS-Node-Fähigkeiten.
 
-### Canvas-Eval / Snapshot
+### Canvas-Evaluierung / Snapshot
 
 ```bash
 openclaw nodes invoke --node "iOS Node" --command canvas.eval --params '{"javaScript":"(() => { const {ctx} = window.__openclaw; ctx.clearRect(0,0,innerWidth,innerHeight); ctx.lineWidth=6; ctx.strokeStyle=\"#ff2d55\"; ctx.beginPath(); ctx.moveTo(40,40); ctx.lineTo(innerWidth-40, innerHeight-40); ctx.stroke(); return \"ok\"; })()"}'
@@ -267,23 +267,23 @@ openclaw nodes invoke --node "iOS Node" --command canvas.eval --params '{"javaSc
 openclaw nodes invoke --node "iOS Node" --command canvas.snapshot --params '{"maxWidth":900,"format":"jpeg"}'
 ```
 
-## Voice Wake + Talk-Modus
+## Voice Wake + Sprechmodus
 
-- Voice Wake und Talk-Modus sind in den Einstellungen verfügbar.
-- Talk-fähige iOS-Nodes kündigen die `talk`-Fähigkeit an und können
+- Voice Wake und Sprechmodus sind in den Einstellungen verfügbar.
+- Sprechfähige iOS-Nodes kündigen die `talk`-Fähigkeit an und können
   `talk.ptt.start`, `talk.ptt.stop`, `talk.ptt.cancel` und `talk.ptt.once` deklarieren;
   das Gateway erlaubt diese Push-to-Talk-Befehle standardmäßig für vertrauenswürdige
-  Talk-fähige Nodes.
-- iOS kann Hintergrundaudio aussetzen; behandeln Sie Voice-Funktionen als Best-Effort, wenn die App nicht aktiv ist.
+  sprechfähige Nodes.
+- iOS kann Hintergrundaudio aussetzen; behandeln Sie Sprachfunktionen als Best-Effort, wenn die App nicht aktiv ist.
 
 ## Häufige Fehler
 
-- `NODE_BACKGROUND_UNAVAILABLE`: Bringen Sie die iOS-App in den Vordergrund (Canvas-/Kamera-/Screen-Befehle erfordern dies).
-- `A2UI_HOST_NOT_CONFIGURED`: Das Gateway hat keine Canvas-Host-URL angekündigt; prüfen Sie `canvasHost` in der [Gateway-Konfiguration](/de/gateway/configuration).
+- `NODE_BACKGROUND_UNAVAILABLE`: Bringen Sie die iOS-App in den Vordergrund (Canvas-/Kamera-/Bildschirmbefehle erfordern dies).
+- `A2UI_HOST_NOT_CONFIGURED`: Das Gateway hat die Oberflächen-URL des Canvas-Plugins nicht angekündigt; prüfen Sie `plugins.entries.canvas.config.host` in der [Gateway-Konfiguration](/de/gateway/configuration).
 - Kopplungsaufforderung erscheint nie: Führen Sie `openclaw devices list` aus und genehmigen Sie manuell.
-- Reconnect schlägt nach Neuinstallation fehl: Das Keychain-Kopplungstoken wurde gelöscht; koppeln Sie den Node erneut.
+- Wiederverbindung schlägt nach Neuinstallation fehl: Das Keychain-Kopplungstoken wurde gelöscht; koppeln Sie den Node erneut.
 
-## Zugehörige Dokumentation
+## Verwandte Dokumentation
 
 - [Kopplung](/de/channels/pairing)
 - [Discovery](/de/gateway/discovery)

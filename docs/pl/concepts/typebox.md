@@ -1,20 +1,22 @@
 ---
 read_when:
-    - Aktualizowanie schematów protokołu lub generatora kodu
+    - Aktualizowanie schematów protokołu lub mechanizmu generowania kodu
 summary: Schematy TypeBox jako jedyne źródło prawdy dla protokołu Gateway
 title: TypeBox
 x-i18n:
-    generated_at: "2026-05-06T09:10:34Z"
+    generated_at: "2026-05-07T13:15:40Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3e188ec0fefcbaf01c8b575a1898eafbbcf309d3032930aa0c09c2d9a63b93e5
+    source_hash: 95baccfdfa6f77ba57f6ac8502d502084289a84cfd03a450dd1e9422931706dd
     source_path: concepts/typebox.md
     workflow: 16
 ---
 
-TypeBox to biblioteka schematów zorientowana na TypeScript. Używamy jej do definiowania **protokołu WebSocket Gateway** (uzgadnianie połączenia, żądanie/odpowiedź, zdarzenia serwera). Te schematy napędzają **walidację w czasie wykonywania**, **eksport JSON Schema** oraz **generowanie kodu Swift** dla aplikacji macOS. Jedno źródło prawdy; cała reszta jest generowana.
+TypeBox to biblioteka schematów zorientowana na TypeScript. Używamy jej do definiowania **protokołu WebSocket Gateway** (uzgadnianie połączenia, żądanie/odpowiedź, zdarzenia serwera). Te schematy
+napędzają **walidację w czasie wykonywania**, **eksport JSON Schema** oraz **generowanie kodu Swift** dla
+aplikacji macOS. Jedno źródło prawdy; wszystko inne jest generowane.
 
-Jeśli chcesz poznać szerszy kontekst protokołu, zacznij od
+Jeśli chcesz poznać kontekst protokołu wyższego poziomu, zacznij od
 [architektury Gateway](/pl/concepts/architecture).
 
 ## Model mentalny (30 sekund)
@@ -25,7 +27,7 @@ Każda wiadomość Gateway WS jest jedną z trzech ramek:
 - **Odpowiedź**: `{ type: "res", id, ok, payload | error }`
 - **Zdarzenie**: `{ type: "event", event, payload, seq?, stateVersion? }`
 
-Pierwszą ramką **musi** być żądanie `connect`. Następnie klienci mogą wywoływać
+Pierwsza ramka **musi** być żądaniem `connect`. Następnie klienci mogą wywoływać
 metody (np. `health`, `send`, `chat.send`) i subskrybować zdarzenia (np.
 `presence`, `tick`, `agent`).
 
@@ -40,51 +42,53 @@ Client                    Gateway
   |<---- res:health ----------|
 ```
 
-Typowe metody + zdarzenia:
+Typowe metody i zdarzenia:
 
 | Kategoria  | Przykłady                                                  | Uwagi                              |
 | ---------- | ---------------------------------------------------------- | ---------------------------------- |
 | Rdzeń      | `connect`, `health`, `status`                              | `connect` musi być pierwsze        |
-| Komunikacja | `send`, `agent`, `agent.wait`, `system-event`, `logs.tail` | efekty uboczne wymagają `idempotencyKey` |
+| Wiadomości | `send`, `agent`, `agent.wait`, `system-event`, `logs.tail` | efekty uboczne wymagają `idempotencyKey` |
 | Czat       | `chat.history`, `chat.send`, `chat.abort`                  | WebChat używa tych metod           |
 | Sesje      | `sessions.list`, `sessions.patch`, `sessions.delete`       | administracja sesjami              |
-| Automatyzacja | `wake`, `cron.list`, `cron.run`, `cron.runs`            | kontrola wake + cron               |
-| Węzły      | `node.list`, `node.invoke`, `node.pair.*`                  | Gateway WS + akcje węzłów          |
-| Zdarzenia  | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown`  | push z serwera                     |
+| Automatyzacja | `wake`, `cron.list`, `cron.run`, `cron.runs`            | sterowanie wybudzaniem i cronem    |
+| Węzły      | `node.list`, `node.invoke`, `node.pair.*`                  | Gateway WS i akcje węzłów          |
+| Zdarzenia  | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown`  | wypychanie z serwera               |
 
-Autorytatywny reklamowany spis **discovery** znajduje się w
+Autorytatywny anonsowany spis **discovery** znajduje się w
 `src/gateway/server-methods-list.ts` (`listGatewayMethods`, `GATEWAY_EVENTS`).
 
 ## Gdzie znajdują się schematy
 
 - Źródło: `src/gateway/protocol/schema.ts`
-- Walidatory czasu wykonywania (AJV): `src/gateway/protocol/index.ts`
-- Reklamowany rejestr funkcji/discovery: `src/gateway/server-methods-list.ts`
-- Uzgadnianie połączenia serwera + dyspozycja metod: `src/gateway/server.impl.ts`
+- Walidatory runtime (AJV): `src/gateway/protocol/index.ts`
+- Rejestr anonsowanych funkcji/discovery: `src/gateway/server-methods-list.ts`
+- Uzgadnianie po stronie serwera i wysyłanie metod: `src/gateway/server.impl.ts`
 - Klient Node: `src/gateway/client.ts`
 - Wygenerowany JSON Schema: `dist/protocol.schema.json`
 - Wygenerowane modele Swift: `apps/macos/Sources/OpenClawProtocol/GatewayModels.swift`
 
-## Obecny pipeline
+## Bieżący potok
 
 - `pnpm protocol:gen`
   - zapisuje JSON Schema (draft-07) do `dist/protocol.schema.json`
 - `pnpm protocol:gen:swift`
-  - generuje modele gateway dla Swift
+  - generuje modele Gateway dla Swift
 - `pnpm protocol:check`
-  - uruchamia oba generatory i sprawdza, czy wynik został skomitowany
+  - uruchamia oba generatory i weryfikuje, czy wynik jest zapisany w repozytorium
 
 ## Jak schematy są używane w czasie wykonywania
 
-- **Po stronie serwera**: każda ramka przychodząca jest walidowana przez AJV. Uzgadnianie połączenia akceptuje tylko żądanie `connect`, którego parametry pasują do `ConnectParams`.
-- **Po stronie klienta**: klient JS waliduje ramki zdarzeń i odpowiedzi przed ich użyciem.
-- **Discovery funkcji**: Gateway wysyła zachowawczą listę `features.methods`
-  i `features.events` w `hello-ok` z `listGatewayMethods()` i
+- **Po stronie serwera**: każda ramka przychodząca jest walidowana za pomocą AJV. Uzgadnianie
+  akceptuje tylko żądanie `connect`, którego parametry pasują do `ConnectParams`.
+- **Po stronie klienta**: klient JS waliduje ramki zdarzeń i odpowiedzi przed
+  ich użyciem.
+- **Discovery funkcji**: Gateway wysyła konserwatywną listę `features.methods`
+  i `features.events` w `hello-ok` z `listGatewayMethods()` oraz
   `GATEWAY_EVENTS`.
 - Ta lista discovery nie jest wygenerowanym zrzutem każdego wywoływalnego helpera w
   `coreGatewayHandlers`; część pomocniczych RPC jest zaimplementowana w
-  `src/gateway/server-methods/*.ts` bez wyliczania ich w reklamowanej liście
-  funkcji.
+  `src/gateway/server-methods/*.ts` bez wyliczania ich na anonsowanej
+  liście funkcji.
 
 ## Przykładowe ramki
 
@@ -96,8 +100,8 @@ Connect (pierwsza wiadomość):
   "id": "c1",
   "method": "connect",
   "params": {
-    "minProtocol": 3,
-    "maxProtocol": 3,
+    "minProtocol": 4,
+    "maxProtocol": 4,
     "client": {
       "id": "openclaw-macos",
       "displayName": "macos",
@@ -119,7 +123,7 @@ Odpowiedź hello-ok:
   "ok": true,
   "payload": {
     "type": "hello-ok",
-    "protocol": 3,
+    "protocol": 4,
     "server": { "version": "dev", "connId": "ws-1" },
     "features": { "methods": ["health"], "events": ["tick"] },
     "snapshot": {
@@ -133,7 +137,7 @@ Odpowiedź hello-ok:
 }
 ```
 
-Żądanie + odpowiedź:
+Żądanie i odpowiedź:
 
 ```json
 { "type": "req", "id": "r1", "method": "health" }
@@ -165,8 +169,8 @@ ws.on("open", () => {
       id: "c1",
       method: "connect",
       params: {
-        minProtocol: 3,
-        maxProtocol: 3,
+        minProtocol: 4,
+        maxProtocol: 4,
         client: {
           id: "cli",
           displayName: "example",
@@ -191,9 +195,9 @@ ws.on("message", (data) => {
 });
 ```
 
-## Przykład krok po kroku: dodanie metody end-to-end
+## Przykład krok po kroku: dodanie metody od początku do końca
 
-Przykład: dodanie nowego żądania `system.echo`, które zwraca `{ ok: true, text }`.
+Przykład: dodaj nowe żądanie `system.echo`, które zwraca `{ ok: true, text }`.
 
 1. **Schemat (źródło prawdy)**
 
@@ -248,21 +252,21 @@ Zarejestruj go w `src/gateway/server-methods.ts` (już scala `systemHandlers`),
 a następnie dodaj `"system.echo"` do wejścia `listGatewayMethods` w
 `src/gateway/server-methods-list.ts`.
 
-Jeśli metoda może być wywoływana przez operatora lub klientów node, sklasyfikuj ją też w
-`src/gateway/method-scopes.ts`, aby egzekwowanie zakresów i reklamowanie funkcji
-`hello-ok` pozostały spójne.
+Jeśli metoda może być wywoływana przez klientów operatora lub węzła, sklasyfikuj ją również w
+`src/gateway/method-scopes.ts`, aby egzekwowanie zakresu i anonsowanie funkcji w `hello-ok`
+pozostały spójne.
 
-4. **Regeneracja**
+4. **Wygeneruj ponownie**
 
 ```bash
 pnpm protocol:check
 ```
 
-5. **Testy + dokumentacja**
+5. **Testy i dokumentacja**
 
 Dodaj test serwera w `src/gateway/server.*.test.ts` i odnotuj metodę w dokumentacji.
 
-## Zachowanie generowania kodu Swift
+## Zachowanie generatora kodu Swift
 
 Generator Swift emituje:
 
@@ -272,10 +276,10 @@ Generator Swift emituje:
 
 Nieznane typy ramek są zachowywane jako surowe payloady dla zgodności w przód.
 
-## Wersjonowanie + zgodność
+## Wersjonowanie i zgodność
 
-- `PROTOCOL_VERSION` znajduje się w `src/gateway/protocol/schema.ts`.
-- Klienci wysyłają `minProtocol` + `maxProtocol`; serwer odrzuca niezgodności.
+- `PROTOCOL_VERSION` znajduje się w `src/gateway/protocol/version.ts`.
+- Klienci wysyłają `minProtocol` i `maxProtocol`; serwer odrzuca niezgodności.
 - Modele Swift zachowują nieznane typy ramek, aby nie psuć starszych klientów.
 
 ## Wzorce i konwencje schematów
@@ -286,11 +290,12 @@ Nieznane typy ramek są zachowywane jako surowe payloady dla zgodności w przód
 - Metody z efektami ubocznymi zwykle wymagają `idempotencyKey` w parametrach
   (przykład: `send`, `poll`, `agent`, `chat.send`).
 - `agent` akceptuje opcjonalne `internalEvents` dla generowanego w czasie wykonywania kontekstu orkiestracji
-  (na przykład przekazania po ukończeniu zadania subagenta/cron); traktuj to jako wewnętrzną powierzchnię API.
+  (na przykład przekazanie po ukończeniu zadania subagenta/cron); traktuj to jako wewnętrzną powierzchnię API.
 
-## JSON schematu na żywo
+## JSON schematu live
 
-Wygenerowany JSON Schema znajduje się w repozytorium pod `dist/protocol.schema.json`. Opublikowany surowy plik jest zwykle dostępny pod adresem:
+Wygenerowany JSON Schema znajduje się w repozytorium w `dist/protocol.schema.json`. Opublikowany
+surowy plik jest zwykle dostępny pod adresem:
 
 - [https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json](https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json)
 
@@ -299,9 +304,9 @@ Wygenerowany JSON Schema znajduje się w repozytorium pod `dist/protocol.schema.
 1. Zaktualizuj schematy TypeBox.
 2. Zarejestruj metodę/zdarzenie w `src/gateway/server-methods-list.ts`.
 3. Zaktualizuj `src/gateway/method-scopes.ts`, gdy nowe RPC wymaga klasyfikacji zakresu operatora lub
-   node.
+   węzła.
 4. Uruchom `pnpm protocol:check`.
-5. Skomituj zregenerowany schemat + modele Swift.
+5. Zacommituj wygenerowany ponownie schemat i modele Swift.
 
 ## Powiązane
 

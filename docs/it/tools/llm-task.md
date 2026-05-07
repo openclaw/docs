@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Vuoi un passaggio LLM esclusivamente JSON nei flussi di lavoro
-    - È necessario un risultato dell'LLM validato da schema per l'automazione
-summary: Attività LLM solo JSON per flussi di lavoro (strumento Plugin facoltativo)
+    - Vuoi un passaggio LLM solo JSON all'interno dei flussi di lavoro
+    - Hai bisogno di output di LLM convalidato tramite schema per l'automazione
+summary: Attività LLM solo JSON per flussi di lavoro (strumento plugin opzionale)
 title: Attività LLM
 x-i18n:
-    generated_at: "2026-05-04T07:09:00Z"
+    generated_at: "2026-05-07T13:26:37Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9cdc5d4feef17fb6d6d90d819d4c92d26a4ec43e4f5364c6acbaad1934a89269
+    source_hash: 4f5efe399165e31a7f5966b93c2f83bced4fd96b7f04f5156412fd321bf5f403
     source_path: tools/llm-task.md
     workflow: 16
 ---
 
-`llm-task` è un **tool Plugin facoltativo** che esegue un task LLM solo JSON e
-restituisce output strutturato (facoltativamente validato rispetto a JSON Schema).
+`llm-task` è uno **strumento Plugin opzionale** che esegue un'attività LLM solo JSON e
+restituisce un output strutturato (facoltativamente validato rispetto a JSON Schema).
 
 È ideale per motori di workflow come Lobster: puoi aggiungere un singolo passaggio LLM
 senza scrivere codice OpenClaw personalizzato per ogni workflow.
 
-## Abilitare il Plugin
+## Abilita il Plugin
 
 1. Abilita il Plugin:
 
@@ -33,7 +33,7 @@ senza scrivere codice OpenClaw personalizzato per ogni workflow.
 }
 ```
 
-2. Consenti il tool facoltativo:
+2. Consenti lo strumento opzionale:
 
 ```json
 {
@@ -45,7 +45,7 @@ senza scrivere codice OpenClaw personalizzato per ogni workflow.
 
 Usa `tools.allow` solo quando vuoi la modalità allowlist restrittiva.
 
-## Configurazione (facoltativa)
+## Configurazione (opzionale)
 
 ```json
 {
@@ -67,30 +67,47 @@ Usa `tools.allow` solo quando vuoi la modalità allowlist restrittiva.
 }
 ```
 
-`allowedModels` è un'allowlist di stringhe `provider/model`. Se impostata, qualsiasi richiesta
+`allowedModels` è una allowlist di stringhe `provider/model`. Se impostata, qualsiasi richiesta
 fuori dall'elenco viene rifiutata.
 
-## Parametri del tool
+## Parametri dello strumento
 
-- `prompt` (string, obbligatorio)
-- `input` (any, facoltativo)
-- `schema` (object, JSON Schema facoltativo)
-- `provider` (string, facoltativo)
-- `model` (string, facoltativo)
-- `thinking` (string, facoltativo)
-- `authProfileId` (string, facoltativo)
-- `temperature` (number, facoltativo)
-- `maxTokens` (number, facoltativo)
-- `timeoutMs` (number, facoltativo)
+- `prompt` (stringa, obbligatorio)
+- `input` (qualsiasi, opzionale)
+- `schema` (oggetto, JSON Schema opzionale)
+- `provider` (stringa, opzionale)
+- `model` (stringa, opzionale)
+- `thinking` (stringa, opzionale)
+- `authProfileId` (stringa, opzionale)
+- `temperature` (numero, opzionale)
+- `maxTokens` (numero, opzionale)
+- `timeoutMs` (numero, opzionale)
 
 `thinking` accetta i preset di ragionamento standard di OpenClaw, come `low` o `medium`.
 
-## Output
+## Risultato
 
 Restituisce `details.json` contenente il JSON analizzato (e lo valida rispetto a
 `schema` quando fornito).
 
 ## Esempio: passaggio di workflow Lobster
+
+### Limitazione importante
+
+L'esempio seguente presume che la **CLI Lobster standalone** sia in esecuzione in un ambiente in cui `openclaw.invoke` ha già l'URL del Gateway e il contesto di autenticazione corretti.
+
+Per il runner Lobster **incorporato** incluso in OpenClaw, questo pattern di CLI annidata **non è attualmente affidabile**:
+
+```lobster
+openclaw.invoke --tool llm-task --action json --args-json '{ ... }'
+```
+
+Finché Lobster incorporato non avrà un bridge supportato per questo flusso, preferisci una delle seguenti opzioni:
+
+- chiamate dirette allo strumento `llm-task` fuori da Lobster, oppure
+- passaggi Lobster che non dipendono da chiamate `openclaw.invoke` annidate.
+
+Esempio di CLI Lobster standalone:
 
 ```lobster
 openclaw.invoke --tool llm-task --action json --args-json '{
@@ -114,14 +131,14 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 
 ## Note sulla sicurezza
 
-- Il tool è **solo JSON** e indica al modello di produrre solo JSON (senza
-  code fence, senza commenti).
-- Nessun tool viene esposto al modello per questa esecuzione.
-- Tratta l'output come non attendibile a meno che tu non lo validi con `schema`.
+- Lo strumento è **solo JSON** e istruisce il modello a produrre solo JSON (nessun
+  blocco di codice, nessun commento).
+- Nessuno strumento viene esposto al modello per questa esecuzione.
+- Tratta l'output come non attendibile, a meno che tu non lo validi con `schema`.
 - Inserisci le approvazioni prima di qualsiasi passaggio con effetti collaterali (send, post, exec).
 
 ## Correlati
 
-- [Livelli di thinking](/it/tools/thinking)
-- [Sub-agents](/it/tools/subagents)
+- [Livelli di ragionamento](/it/tools/thinking)
+- [Sub-agenti](/it/tools/subagents)
 - [Comandi slash](/it/tools/slash-commands)

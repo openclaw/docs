@@ -1,13 +1,13 @@
 ---
 read_when:
     - Werken aan Discord-kanaalfuncties
-summary: Ondersteuningsstatus, mogelijkheden en configuratie van de Discord-bot
+summary: Ondersteuningsstatus, mogelijkheden en configuratie voor Discord-bots
 title: Discord
 x-i18n:
-    generated_at: "2026-05-07T01:50:32Z"
+    generated_at: "2026-05-07T13:13:20Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 0422fe8a25a7c40d49c4a8c6ec5683c729c09b79d5d03daefc0fcf032f6d75c2
+    source_hash: 805a093452b7af1c844919cdf776d898c6fd39f63f1bf363967dd471842eebd5
     source_path: channels/discord.md
     workflow: 16
 ---
@@ -16,92 +16,92 @@ Klaar voor DM's en guild-kanalen via de officiële Discord Gateway.
 
 <CardGroup cols={3}>
   <Card title="Koppelen" icon="link" href="/nl/channels/pairing">
-    Discord-DM's staan standaard in koppelingsmodus.
+    Discord-DM's gebruiken standaard de koppelmodus.
   </Card>
   <Card title="Slash-opdrachten" icon="terminal" href="/nl/tools/slash-commands">
     Native opdrachtgedrag en opdrachtencatalogus.
   </Card>
-  <Card title="Kanaalproblemen oplossen" icon="wrench" href="/nl/channels/troubleshooting">
-    Diagnose voor meerdere kanalen en herstelproces.
+  <Card title="Probleemoplossing voor kanalen" icon="wrench" href="/nl/channels/troubleshooting">
+    Diagnostiek en herstelstroom voor meerdere kanalen.
   </Card>
 </CardGroup>
 
 ## Snelle installatie
 
-Je moet een nieuwe applicatie met een bot maken, de bot aan je server toevoegen en deze aan OpenClaw koppelen. We raden aan je bot toe te voegen aan je eigen privéserver. Als je er nog geen hebt, [maak er dan eerst een](https://support.discord.com/hc/en-us/articles/204849977-How-do-I-create-a-server) (kies **Create My Own > For me and my friends**).
+Je moet een nieuwe applicatie met een bot maken, de bot aan je server toevoegen en deze aan OpenClaw koppelen. We raden aan je bot aan je eigen privéserver toe te voegen. Als je er nog geen hebt, [maak er dan eerst een](https://support.discord.com/hc/en-us/articles/204849977-How-do-I-create-a-server) (kies **Create My Own > For me and my friends**).
 
 <Steps>
   <Step title="Maak een Discord-applicatie en bot">
-    Ga naar de [Discord Developer Portal](https://discord.com/developers/applications) en klik op **New Application**. Geef deze een naam zoals "OpenClaw".
+    Ga naar de [Discord Developer Portal](https://discord.com/developers/applications) en klik op **New Application**. Geef de applicatie een naam zoals "OpenClaw".
 
     Klik op **Bot** in de zijbalk. Stel de **Username** in op hoe je je OpenClaw-agent noemt.
 
   </Step>
 
-  <Step title="Schakel privileged intents in">
+  <Step title="Schakel geprivilegieerde intents in">
     Blijf op de pagina **Bot**, scrol omlaag naar **Privileged Gateway Intents** en schakel het volgende in:
 
     - **Message Content Intent** (vereist)
-    - **Server Members Intent** (aanbevolen; vereist voor rol-allowlists en naam-naar-ID-matching)
-    - **Presence Intent** (optioneel; alleen nodig voor presence-updates)
+    - **Server Members Intent** (aanbevolen; vereist voor rol-allowlists en naam-naar-ID-koppeling)
+    - **Presence Intent** (optioneel; alleen nodig voor aanwezigheidsupdates)
 
   </Step>
 
-  <Step title="Kopieer je bottoken">
-    Scrol terug omhoog op de pagina **Bot** en klik op **Reset Token**.
+  <Step title="Kopieer je bot-token">
+    Scrol weer omhoog op de pagina **Bot** en klik op **Reset Token**.
 
     <Note>
     Ondanks de naam genereert dit je eerste token — er wordt niets "gereset".
     </Note>
 
-    Kopieer het token en bewaar het ergens. Dit is je **Bot Token** en je hebt het zo meteen nodig.
+    Kopieer het token en sla het ergens op. Dit is je **Bot Token** en je hebt het zo meteen nodig.
 
   </Step>
 
-  <Step title="Genereer een uitnodigings-URL en voeg de bot aan je server toe">
-    Klik op **OAuth2** in de zijbalk. Je genereert een uitnodigings-URL met de juiste machtigingen om de bot aan je server toe te voegen.
+  <Step title="Genereer een uitnodigings-URL en voeg de bot toe aan je server">
+    Klik op **OAuth2** in de zijbalk. Je genereert een uitnodigings-URL met de juiste rechten om de bot aan je server toe te voegen.
 
-    Scrol omlaag naar **OAuth2 URL Generator** en schakel in:
+    Scrol omlaag naar **OAuth2 URL Generator** en schakel het volgende in:
 
     - `bot`
     - `applications.commands`
 
-    Daaronder verschijnt een sectie **Bot Permissions**. Schakel minimaal in:
+    Daaronder verschijnt een sectie **Bot Permissions**. Schakel ten minste het volgende in:
 
     **General Permissions**
-      - View Channels
+      - Kanalen bekijken
     **Text Permissions**
-      - Send Messages
-      - Read Message History
-      - Embed Links
-      - Attach Files
-      - Add Reactions (optioneel)
+      - Berichten verzenden
+      - Berichtgeschiedenis lezen
+      - Links insluiten
+      - Bestanden bijvoegen
+      - Reacties toevoegen (optioneel)
 
     Dit is de basisset voor normale tekstkanalen. Als je van plan bent in Discord-threads te posten, inclusief workflows voor forum- of mediakanalen die een thread maken of voortzetten, schakel dan ook **Send Messages in Threads** in.
-    Kopieer de gegenereerde URL onderaan, plak deze in je browser, selecteer je server en klik op **Continue** om te verbinden. Je zou je bot nu in de Discord-server moeten zien.
+    Kopieer de gegenereerde URL onderaan, plak deze in je browser, selecteer je server en klik op **Continue** om verbinding te maken. Je zou je bot nu in de Discord-server moeten zien.
 
   </Step>
 
-  <Step title="Schakel Developer Mode in en verzamel je ID's">
-    Terug in de Discord-app moet je Developer Mode inschakelen zodat je interne ID's kunt kopiëren.
+  <Step title="Schakel Ontwikkelaarsmodus in en verzamel je ID's">
+    Terug in de Discord-app moet je Ontwikkelaarsmodus inschakelen zodat je interne ID's kunt kopiëren.
 
     1. Klik op **User Settings** (tandwielpictogram naast je avatar) → **Advanced** → schakel **Developer Mode** in
     2. Klik met de rechtermuisknop op je **serverpictogram** in de zijbalk → **Copy Server ID**
     3. Klik met de rechtermuisknop op je **eigen avatar** → **Copy User ID**
 
-    Bewaar je **Server ID** en **User ID** samen met je Bot Token — je stuurt ze alle drie in de volgende stap naar OpenClaw.
+    Sla je **Server ID** en **User ID** op naast je Bot Token — je stuurt ze alle drie in de volgende stap naar OpenClaw.
 
   </Step>
 
   <Step title="Sta DM's van serverleden toe">
-    Om koppelen te laten werken, moet Discord je bot toestaan je een DM te sturen. Klik met de rechtermuisknop op je **serverpictogram** → **Privacy Settings** → schakel **Direct Messages** in.
+    Om koppelen te laten werken, moet Discord toestaan dat je bot je een DM stuurt. Klik met de rechtermuisknop op je **serverpictogram** → **Privacy Settings** → schakel **Direct Messages** in.
 
-    Hiermee kunnen serverleden (inclusief bots) je DM's sturen. Laat dit ingeschakeld als je Discord-DM's met OpenClaw wilt gebruiken. Als je alleen guild-kanalen wilt gebruiken, kun je DM's na het koppelen uitschakelen.
+    Hierdoor kunnen serverleden (inclusief bots) je DM's sturen. Laat dit ingeschakeld als je Discord-DM's met OpenClaw wilt gebruiken. Als je alleen guild-kanalen wilt gebruiken, kun je DM's na het koppelen uitschakelen.
 
   </Step>
 
-  <Step title="Stel je bottoken veilig in (stuur het niet in chat)">
-    Je Discord-bottoken is geheim (zoals een wachtwoord). Stel het in op de machine waarop OpenClaw draait voordat je je agent een bericht stuurt.
+  <Step title="Stel je bot-token veilig in (stuur het niet in chat)">
+    Je Discord-bot-token is een geheim (zoals een wachtwoord). Stel het in op de machine waarop OpenClaw draait voordat je je agent een bericht stuurt.
 
 ```bash
 export DISCORD_BOT_TOKEN="YOUR_BOT_TOKEN"
@@ -120,9 +120,9 @@ openclaw config patch --file ./discord.patch.json5
 openclaw gateway
 ```
 
-    Als OpenClaw al als achtergrondservice draait, herstart het dan via de OpenClaw Mac-app of door het `openclaw gateway run`-proces te stoppen en opnieuw te starten.
-    Voor beheerde service-installaties voer je `openclaw gateway install` uit vanuit een shell waarin `DISCORD_BOT_TOKEN` aanwezig is, of sla je de variabele op in `~/.openclaw/.env`, zodat de service de env SecretRef na herstart kan oplossen.
-    Als je host wordt geblokkeerd of rate-limited door Discord's applicatie-opzoekactie bij het opstarten, stel dan de Discord-applicatie-/client-ID in vanuit de Developer Portal, zodat het opstarten die REST-aanroep kan overslaan. Gebruik `channels.discord.applicationId` voor het standaardaccount, of `channels.discord.accounts.<accountId>.applicationId` wanneer je meerdere Discord-bots gebruikt.
+    Als OpenClaw al als achtergrondservice draait, herstart je het via de OpenClaw Mac-app of door het `openclaw gateway run`-proces te stoppen en opnieuw te starten.
+    Voor installaties als beheerde service voer je `openclaw gateway install` uit vanuit een shell waarin `DISCORD_BOT_TOKEN` aanwezig is, of sla je de variabele op in `~/.openclaw/.env`, zodat de service de env SecretRef na herstart kan oplossen.
+    Als je host wordt geblokkeerd of geratelimiteerd door Discord's applicatie-opzoekactie bij het opstarten, stel dan de Discord-applicatie-/client-ID uit de Developer Portal in zodat het opstarten die REST-call kan overslaan. Gebruik `channels.discord.applicationId` voor het standaardaccount, of `channels.discord.accounts.<accountId>.applicationId` wanneer je meerdere Discord-bots gebruikt.
 
   </Step>
 
@@ -130,12 +130,12 @@ openclaw gateway
 
     <Tabs>
       <Tab title="Vraag het je agent">
-        Chat met je OpenClaw-agent op een bestaand kanaal (bijv. Telegram) en vertel het hem. Als Discord je eerste kanaal is, gebruik dan in plaats daarvan het CLI-/configuratietabblad.
+        Chat met je OpenClaw-agent op een bestaand kanaal (bijv. Telegram) en vertel het hem. Als Discord je eerste kanaal is, gebruik dan in plaats daarvan de CLI / configuratie-tab.
 
-        > "Ik heb mijn Discord-bottoken al in de configuratie ingesteld. Rond de Discord-installatie af met User ID `<user_id>` en Server ID `<server_id>`."
+        > "Ik heb mijn Discord-bot-token al in de configuratie ingesteld. Rond de Discord-installatie af met User ID `<user_id>` en Server ID `<server_id>`."
       </Tab>
       <Tab title="CLI / configuratie">
-        Als je bestandsgebaseerde configuratie verkiest, stel dan in:
+        Als je bestandsgebaseerde configuratie verkiest, stel dan het volgende in:
 
 ```json5
 {
@@ -158,9 +158,9 @@ openclaw gateway
 DISCORD_BOT_TOKEN=...
 ```
 
-        Voor gescripte of externe installatie schrijf je hetzelfde JSON5-blok met `openclaw config patch --file ./discord.patch.json5 --dry-run` en voer je het daarna opnieuw uit zonder `--dry-run`. Platte-tekstwaarden voor `token` worden ondersteund. SecretRef-waarden worden ook ondersteund voor `channels.discord.token` via env/file/exec-providers. Zie [Geheimenbeheer](/nl/gateway/secrets).
+        Voor scripted of externe installatie schrijf je hetzelfde JSON5-blok met `openclaw config patch --file ./discord.patch.json5 --dry-run` en voer je het daarna opnieuw uit zonder `--dry-run`. Platte-tekstwaarden voor `token` worden ondersteund. SecretRef-waarden worden ook ondersteund voor `channels.discord.token` via env/file/exec-providers. Zie [Geheimenbeheer](/nl/gateway/secrets).
 
-        Voor meerdere Discord-bots houd je elk bottoken en elke applicatie-ID onder het eigen account. Een top-level `channels.discord.applicationId` wordt door accounts overgenomen, dus stel die daar alleen in wanneer elk account dezelfde applicatie-ID moet gebruiken.
+        Houd voor meerdere Discord-bots elk bot-token en elke applicatie-ID onder het eigen account. Een top-level `channels.discord.applicationId` wordt door accounts geërfd, dus stel dit daar alleen in wanneer elk account dezelfde applicatie-ID moet gebruiken.
 
 ```json5
 {
@@ -188,13 +188,13 @@ DISCORD_BOT_TOKEN=...
   </Step>
 
   <Step title="Keur de eerste DM-koppeling goed">
-    Wacht tot de Gateway draait en stuur je bot daarna een DM in Discord. Deze reageert met een koppelingscode.
+    Wacht tot de Gateway draait en stuur je bot daarna een DM in Discord. Deze reageert met een koppelcode.
 
     <Tabs>
       <Tab title="Vraag het je agent">
-        Stuur de koppelingscode naar je agent op je bestaande kanaal:
+        Stuur de koppelcode naar je agent op je bestaande kanaal:
 
-        > "Keur deze Discord-koppelingscode goed: `<CODE>`"
+        > "Keur deze Discord-koppelcode goed: `<CODE>`"
       </Tab>
       <Tab title="CLI">
 
@@ -206,7 +206,7 @@ openclaw pairing approve discord <CODE>
       </Tab>
     </Tabs>
 
-    Koppelingscodes verlopen na 1 uur.
+    Koppelcodes verlopen na 1 uur.
 
     Je zou nu via DM met je agent in Discord moeten kunnen chatten.
 
@@ -214,14 +214,14 @@ openclaw pairing approve discord <CODE>
 </Steps>
 
 <Note>
-Tokenresolutie is accountbewust. Configuratietokenwaarden winnen van env-fallback. `DISCORD_BOT_TOKEN` wordt alleen gebruikt voor het standaardaccount.
-Als twee ingeschakelde Discord-accounts naar hetzelfde bottoken worden opgelost, start OpenClaw slechts één Gateway-monitor voor dat token. Een uit configuratie afkomstige token wint van de standaard env-fallback; anders wint het eerste ingeschakelde account en wordt het dubbele account als uitgeschakeld gemeld.
-Voor geavanceerde uitgaande aanroepen (berichttool/kanaalacties) wordt een expliciet per-aanroep-`token` gebruikt voor die aanroep. Dit geldt voor verzend- en lees-/probe-achtige acties (bijvoorbeeld read/search/fetch/thread/pins/permissions). Accountbeleid en retry-instellingen komen nog steeds uit het geselecteerde account in de actieve runtime-snapshot.
+Tokenoplossing is accountbewust. Configuratietokenwaarden winnen van env-fallback. `DISCORD_BOT_TOKEN` wordt alleen gebruikt voor het standaardaccount.
+Als twee ingeschakelde Discord-accounts naar hetzelfde bot-token oplossen, start OpenClaw slechts één Gateway-monitor voor dat token. Een uit configuratie afkomstig token wint van de standaard env-fallback; anders wint het eerste ingeschakelde account en wordt het dubbele account als uitgeschakeld gemeld.
+Voor geavanceerde uitgaande calls (berichttool/kanaalacties) wordt een expliciete per-call `token` gebruikt voor die call. Dit geldt voor acties in de stijl verzenden en lezen/proberen (bijvoorbeeld read/search/fetch/thread/pins/permissions). Accountbeleid en instellingen voor opnieuw proberen komen nog steeds uit het geselecteerde account in de actieve runtime-snapshot.
 </Note>
 
 ## Aanbevolen: stel een guild-werkruimte in
 
-Zodra DM's werken, kun je je Discord-server instellen als een volledige werkruimte waarin elk kanaal zijn eigen agentsessie met eigen context krijgt. Dit wordt aanbevolen voor privéservers waar alleen jij en je bot aanwezig zijn.
+Zodra DM's werken, kun je je Discord-server instellen als een volledige werkruimte waarin elk kanaal een eigen agentsessie met eigen context krijgt. Dit wordt aanbevolen voor privéservers waar alleen jij en je bot aanwezig zijn.
 
 <Steps>
   <Step title="Voeg je server toe aan de guild-allowlist">
@@ -255,15 +255,15 @@ Zodra DM's werken, kun je je Discord-server instellen als een volledige werkruim
   </Step>
 
   <Step title="Sta reacties zonder @mention toe">
-    Standaard reageert je agent alleen in guild-kanalen wanneer hij wordt @mentioned. Voor een privéserver wil je waarschijnlijk dat hij op elk bericht reageert.
+    Standaard reageert je agent in guild-kanalen alleen wanneer hij @mentioned wordt. Voor een privéserver wil je waarschijnlijk dat hij op elk bericht reageert.
 
-    In guild-kanalen blijven normale definitieve antwoorden van de assistant standaard privé. Zichtbare Discord-uitvoer moet expliciet met de `message`-tool worden verzonden, zodat de agent standaard kan meekijken en alleen post wanneer hij besluit dat een kanaalantwoord nuttig is.
+    In guild-kanalen blijven normale definitieve assistentantwoorden standaard privé. Zichtbare Discord-uitvoer moet expliciet met de `message`-tool worden verzonden, zodat de agent standaard kan meelezen en alleen post wanneer hij besluit dat een kanaalantwoord nuttig is.
 
-    Dit betekent dat het geselecteerde model betrouwbaar tools moet aanroepen. Als Discord typen toont en de logs tokengebruik tonen maar er geen bericht wordt geplaatst, controleer dan het sessielog op assistanttekst met `didSendViaMessagingTool: false`. Dat betekent dat het model een privé definitief antwoord produceerde in plaats van `message(action=send)` aan te roepen. Schakel over naar een sterker model voor toolaanroepen, of gebruik de onderstaande configuratie om legacy automatische definitieve antwoorden te herstellen.
+    Dit betekent dat het geselecteerde model betrouwbaar tools moet aanroepen. Als Discord typen toont en de logs tokengebruik tonen maar er geen bericht is geplaatst, controleer dan de sessielog op assistenttekst met `didSendViaMessagingTool: false`. Dat betekent dat het model een privé definitief antwoord heeft geproduceerd in plaats van `message(action=send)` aan te roepen. Schakel over naar een sterker tool-aanroepend model, of gebruik de configuratie hieronder om verouderde automatische definitieve antwoorden te herstellen.
 
     <Tabs>
       <Tab title="Vraag het je agent">
-        > "Sta mijn agent toe op deze server te reageren zonder @mentioned te hoeven worden"
+        > "Sta toe dat mijn agent op deze server reageert zonder @mentioned te hoeven worden"
       </Tab>
       <Tab title="Configuratie">
         Stel `requireMention: false` in je guild-configuratie in:
@@ -282,7 +282,7 @@ Zodra DM's werken, kun je je Discord-server instellen als een volledige werkruim
 }
 ```
 
-        Om legacy automatische definitieve antwoorden voor groeps-/kanaalruimtes te herstellen, stel je `messages.groupChat.visibleReplies: "automatic"` in.
+        Stel `messages.groupChat.visibleReplies: "automatic"` in om verouderde automatische definitieve antwoorden voor groeps-/kanaalruimten te herstellen.
 
       </Tab>
     </Tabs>
@@ -294,7 +294,7 @@ Zodra DM's werken, kun je je Discord-server instellen als een volledige werkruim
 
     <Tabs>
       <Tab title="Vraag het je agent">
-        > "Wanneer ik vragen stel in Discord-kanalen, gebruik dan memory_search of memory_get als je langetermijncontext uit MEMORY.md nodig hebt."
+        > "Wanneer ik vragen stel in Discord-kanalen, gebruik memory_search of memory_get als je langetermijncontext uit MEMORY.md nodig hebt."
       </Tab>
       <Tab title="Handmatig">
         Als je gedeelde context in elk kanaal nodig hebt, zet dan de stabiele instructies in `AGENTS.md` of `USER.md` (ze worden voor elke sessie geïnjecteerd). Bewaar langetermijnnotities in `MEMORY.md` en open ze op aanvraag met geheugentools.
@@ -306,30 +306,30 @@ Zodra DM's werken, kun je je Discord-server instellen als een volledige werkruim
 
 Maak nu enkele kanalen op je Discord-server en begin met chatten. Je agent kan de kanaalnaam zien, en elk kanaal krijgt zijn eigen geïsoleerde sessie — zodat je `#coding`, `#home`, `#research` of wat dan ook bij je workflow past kunt instellen.
 
-## Runtime-model
+## Runtimemodel
 
 - Gateway beheert de Discord-verbinding.
-- Antwoordroutering is deterministisch: inkomende antwoorden van Discord gaan terug naar Discord.
-- Discord-guild-/kanaalmetadata wordt aan de modelprompt toegevoegd als onvertrouwde
-  context, niet als een voor de gebruiker zichtbaar antwoordvoorvoegsel. Als een model die envelop
-  terug kopieert, verwijdert OpenClaw de gekopieerde metadata uit uitgaande antwoorden en uit
+- Antwoordroutering is deterministisch: inkomende Discord-antwoorden gaan terug naar Discord.
+- Discord-guild-/kanaalmetadata wordt aan de modelprompt toegevoegd als niet-vertrouwde
+  context, niet als een voor gebruikers zichtbaar antwoordvoorvoegsel. Als een model die envelop
+  terugkopieert, verwijdert OpenClaw de gekopieerde metadata uit uitgaande antwoorden en uit
   toekomstige replay-context.
 - Standaard (`session.dmScope=main`) delen directe chats de hoofdsessie van de agent (`agent:main:main`).
-- Guild-kanalen zijn geïsoleerde sessiesleutels (`agent:<agentId>:discord:channel:<channelId>`).
+- Guild-kanalen zijn geisoleerde sessiesleutels (`agent:<agentId>:discord:channel:<channelId>`).
 - Groeps-DM's worden standaard genegeerd (`channels.discord.dm.groupEnabled=false`).
-- Native slash-commando's draaien in geïsoleerde commandosessies (`agent:<agentId>:discord:slash:<userId>`), terwijl ze nog steeds `CommandTargetSessionKey` meenemen naar de gerouteerde gesprekssessie.
-- Tekstuele cron-/heartbeat-aankondigingen naar Discord gebruiken het uiteindelijke
-  voor de assistant zichtbare antwoord één keer. Media en gestructureerde componentpayloads blijven
-  uit meerdere berichten bestaan wanneer de agent meerdere afleverbare payloads uitzendt.
+- Native slash-commando's worden uitgevoerd in geisoleerde commandosessies (`agent:<agentId>:discord:slash:<userId>`), terwijl ze nog steeds `CommandTargetSessionKey` meenemen naar de gerouteerde gesprekssessie.
+- Tekst-only Cron-/Heartbeat-aankondigingen naar Discord gebruiken het uiteindelijke
+  voor de assistent zichtbare antwoord eenmaal. Media en gestructureerde component-payloads blijven
+  multi-message wanneer de agent meerdere bezorgbare payloads uitzendt.
 
 ## Forumkanalen
 
 Discord-forum- en mediakanalen accepteren alleen threadberichten. OpenClaw ondersteunt twee manieren om ze te maken:
 
-- Stuur een bericht naar de forumparent (`channel:<forumId>`) om automatisch een thread te maken. De threadtitel gebruikt de eerste niet-lege regel van je bericht.
+- Stuur een bericht naar de forumouder (`channel:<forumId>`) om automatisch een thread te maken. De threadtitel gebruikt de eerste niet-lege regel van je bericht.
 - Gebruik `openclaw message thread create` om direct een thread te maken. Geef geen `--message-id` door voor forumkanalen.
 
-Voorbeeld: stuur naar de forumparent om een thread te maken
+Voorbeeld: stuur naar de forumouder om een thread te maken
 
 ```bash
 openclaw message send --channel discord --target channel:<forumId> \
@@ -343,28 +343,28 @@ openclaw message thread create --channel discord --target channel:<forumId> \
   --thread-name "Topic title" --message "Body of the post"
 ```
 
-Forumparents accepteren geen Discord-componenten. Als je componenten nodig hebt, stuur dan naar de thread zelf (`channel:<threadId>`).
+Forumouders accepteren geen Discord-componenten. Als je componenten nodig hebt, stuur dan naar de thread zelf (`channel:<threadId>`).
 
 ## Interactieve componenten
 
-OpenClaw ondersteunt Discord components v2-containers voor agentberichten. Gebruik de berichttool met een `components`-payload. Interactieresultaten worden als normale inkomende berichten terug naar de agent gerouteerd en volgen de bestaande Discord-`replyToMode`-instellingen.
+OpenClaw ondersteunt Discord components v2-containers voor agentberichten. Gebruik de berichttool met een `components`-payload. Interactieresultaten worden teruggerouteerd naar de agent als normale inkomende berichten en volgen de bestaande Discord-`replyToMode`-instellingen.
 
 Ondersteunde blokken:
 
 - `text`, `section`, `separator`, `actions`, `media-gallery`, `file`
-- Actierijen staan maximaal 5 knoppen of één selectiemenu toe
+- Actierijen staan maximaal 5 knoppen of een enkel selectiemenu toe
 - Selectietypen: `string`, `user`, `role`, `mentionable`, `channel`
 
-Standaard zijn componenten eenmalig te gebruiken. Stel `components.reusable=true` in om knoppen, selecties en formulieren meerdere keren te kunnen gebruiken totdat ze verlopen.
+Standaard zijn componenten eenmalig te gebruiken. Stel `components.reusable=true` in om knoppen, selecties en formulieren meerdere keren te laten gebruiken totdat ze verlopen.
 
-Om te beperken wie op een knop kan klikken, stel je `allowedUsers` in op die knop (Discord-gebruikers-ID's, tags of `*`). Wanneer dit is geconfigureerd, ontvangen niet-overeenkomende gebruikers een ephemeral weigering.
+Om te beperken wie op een knop kan klikken, stel je `allowedUsers` in op die knop (Discord-gebruikers-ID's, tags of `*`). Wanneer dit is geconfigureerd, ontvangen niet-overeenkomende gebruikers een tijdelijke weigering.
 
-De slash-commando's `/model` en `/models` openen een interactieve modelkiezer met provider-, model- en compatibele runtime-dropdowns plus een verzendstap. `/models add` is verouderd en geeft nu een verouderingsbericht terug in plaats van modellen vanuit chat te registreren. Het antwoord van de kiezer is ephemeral en alleen de aanroepende gebruiker kan het gebruiken.
+De slash-commando's `/model` en `/models` openen een interactieve modelkiezer met provider-, model- en compatibele runtime-dropdowns plus een Submit-stap. `/models add` is verouderd en retourneert nu een verouderingsbericht in plaats van modellen vanuit chat te registreren. Het kiezerantwoord is tijdelijk en alleen de aanroepende gebruiker kan het gebruiken.
 
 Bestandsbijlagen:
 
-- `file`-blokken moeten verwijzen naar een bijlagereferentie (`attachment://<filename>`)
-- Geef de bijlage op via `media`/`path`/`filePath` (één bestand); gebruik `media-gallery` voor meerdere bestanden
+- `file`-blokken moeten naar een bijlagereferentie wijzen (`attachment://<filename>`)
+- Lever de bijlage via `media`/`path`/`filePath` (enkel bestand); gebruik `media-gallery` voor meerdere bestanden
 - Gebruik `filename` om de uploadnaam te overschrijven wanneer die moet overeenkomen met de bijlagereferentie
 
 Modale formulieren:
@@ -430,7 +430,7 @@ Voorbeeld:
 ## Toegangscontrole en routering
 
 <Tabs>
-  <Tab title="DM policy">
+  <Tab title="DM-beleid">
     `channels.discord.dmPolicy` beheert DM-toegang. `channels.discord.allowFrom` is de canonieke DM-allowlist.
 
     - `pairing` (standaard)
@@ -438,30 +438,30 @@ Voorbeeld:
     - `open` (vereist dat `channels.discord.allowFrom` `"*"` bevat)
     - `disabled`
 
-    Als het DM-beleid niet open is, worden onbekende gebruikers geblokkeerd (of gevraagd om pairing in `pairing`-modus).
+    Als het DM-beleid niet open is, worden onbekende gebruikers geblokkeerd (of gevraagd om te koppelen in `pairing`-modus).
 
     Prioriteit bij meerdere accounts:
 
     - `channels.discord.accounts.default.allowFrom` geldt alleen voor het `default`-account.
-    - Voor één account heeft `allowFrom` voorrang op het verouderde `dm.allowFrom`.
-    - Benoemde accounts erven `channels.discord.allowFrom` wanneer hun eigen `allowFrom` en verouderde `dm.allowFrom` niet zijn ingesteld.
+    - Voor een account heeft `allowFrom` prioriteit boven verouderd `dm.allowFrom`.
+    - Benoemde accounts erven `channels.discord.allowFrom` wanneer hun eigen `allowFrom` en verouderd `dm.allowFrom` niet zijn ingesteld.
     - Benoemde accounts erven `channels.discord.accounts.default.allowFrom` niet.
 
     Verouderde `channels.discord.dm.policy` en `channels.discord.dm.allowFrom` worden nog steeds gelezen voor compatibiliteit. `openclaw doctor --fix` migreert ze naar `dmPolicy` en `allowFrom` wanneer dat kan zonder de toegang te wijzigen.
 
-    DM-doelformaat voor aflevering:
+    DM-doelindeling voor bezorging:
 
     - `user:<id>`
     - `<@id>`-vermelding
 
-    Kale numerieke ID's worden normaal als kanaal-ID's opgelost wanneer een kanaalstandaard actief is, maar ID's die in de effectieve DM-`allowFrom` van het account staan, worden voor compatibiliteit behandeld als gebruikers-DM-doelen.
+    Kale numerieke ID's worden normaal gesproken als kanaal-ID's opgelost wanneer een kanaalstandaard actief is, maar ID's die in de effectieve DM-`allowFrom` van het account staan, worden voor compatibiliteit behandeld als gebruikers-DM-doelen.
 
   </Tab>
 
-  <Tab title="DM access groups">
+  <Tab title="DM-toegangsgroepen">
     Discord-DM's kunnen dynamische `accessGroup:<name>`-items gebruiken in `channels.discord.allowFrom`.
 
-    Namen van toegangsgroepen worden gedeeld tussen berichtkanalen. Gebruik `type: "message.senders"` voor een statische groep waarvan de leden worden uitgedrukt in de normale `allowFrom`-syntaxis van elk kanaal, of `type: "discord.channelAudience"` wanneer de huidige `ViewChannel`-doelgroep van een Discord-kanaal het lidmaatschap dynamisch moet bepalen. Gedeeld gedrag van toegangsgroepen is hier gedocumenteerd: [Toegangsgroepen](/nl/channels/access-groups).
+    Namen van toegangsgroepen worden gedeeld tussen berichtkanalen. Gebruik `type: "message.senders"` voor een statische groep waarvan de leden worden uitgedrukt in de normale `allowFrom`-syntaxis van elk kanaal, of `type: "discord.channelAudience"` wanneer het huidige `ViewChannel`-publiek van een Discord-kanaal het lidmaatschap dynamisch moet definieren. Gedeeld gedrag voor toegangsgroepen is hier gedocumenteerd: [Toegangsgroepen](/nl/channels/access-groups).
 
 ```json5
 {
@@ -484,9 +484,9 @@ Voorbeeld:
 }
 ```
 
-    Een Discord-tekstkanaal heeft geen afzonderlijke ledenlijst. `type: "discord.channelAudience"` modelleert lidmaatschap als volgt: de DM-afzender is lid van de geconfigureerde guild en heeft momenteel effectieve `ViewChannel`-machtiging op het geconfigureerde kanaal nadat rol- en kanaaloverschrijvingen zijn toegepast.
+    Een Discord-tekstkanaal heeft geen afzonderlijke ledenlijst. `type: "discord.channelAudience"` modelleert lidmaatschap als volgt: de DM-afzender is lid van de geconfigureerde guild en heeft momenteel effectieve `ViewChannel`-toestemming op het geconfigureerde kanaal nadat rol- en kanaaloverschrijvingen zijn toegepast.
 
-    Voorbeeld: sta iedereen die `#maintainers` kan zien toe de bot een DM te sturen, terwijl DM's voor alle anderen gesloten blijven.
+    Voorbeeld: sta iedereen die `#maintainers` kan zien toe om de bot een DM te sturen, terwijl DM's voor alle anderen gesloten blijven.
 
 ```json5
 {
@@ -507,7 +507,7 @@ Voorbeeld:
 }
 ```
 
-    Je kunt dynamische en statische items combineren:
+    Je kunt dynamische en statische items mengen:
 
 ```json5
 {
@@ -527,25 +527,25 @@ Voorbeeld:
 }
 ```
 
-    Lookups falen gesloten. Als Discord `Missing Access` retourneert, de ledenlookup mislukt of het kanaal bij een andere guild hoort, wordt de DM-afzender als onbevoegd behandeld.
+    Lookups falen gesloten. Als Discord `Missing Access` retourneert, de ledenlookup mislukt, of het kanaal bij een andere guild hoort, wordt de DM-afzender als ongeautoriseerd behandeld.
 
-    Schakel de Discord Developer Portal **Server Members Intent** in voor de bot wanneer je toegangsgroepen op basis van kanaaldoelgroep gebruikt. DM's bevatten geen guild-lidstatus, dus OpenClaw lost het lid op via Discord REST op het moment van autorisatie.
+    Schakel in het Discord Developer Portal **Server Members Intent** in voor de bot wanneer je toegangsgroepen op basis van kanaalpubliek gebruikt. DM's bevatten geen guild-lidstatus, dus OpenClaw lost het lid op via Discord REST tijdens autorisatie.
 
   </Tab>
 
-  <Tab title="Guild policy">
-    Guild-afhandeling wordt beheerd door `channels.discord.groupPolicy`:
+  <Tab title="Guildbeleid">
+    Guildafhandeling wordt beheerd door `channels.discord.groupPolicy`:
 
     - `open`
     - `allowlist`
     - `disabled`
 
-    De veilige baseline wanneer `channels.discord` bestaat is `allowlist`.
+    Veilige basisinstelling wanneer `channels.discord` bestaat, is `allowlist`.
 
     `allowlist`-gedrag:
 
     - guild moet overeenkomen met `channels.discord.guilds` (`id` aanbevolen, slug geaccepteerd)
-    - optionele afzender-allowlists: `users` (stabiele ID's aanbevolen) en `roles` (alleen rol-ID's); als een van beide is geconfigureerd, zijn afzenders toegestaan wanneer ze overeenkomen met `users` OF `roles`
+    - optionele allowlists voor afzenders: `users` (stabiele ID's aanbevolen) en `roles` (alleen rol-ID's); als een van beide is geconfigureerd, zijn afzenders toegestaan wanneer ze overeenkomen met `users` OF `roles`
     - directe naam-/tagmatching is standaard uitgeschakeld; schakel `channels.discord.dangerouslyAllowNameMatching: true` alleen in als break-glass-compatibiliteitsmodus
     - namen/tags worden ondersteund voor `users`, maar ID's zijn veiliger; `openclaw security audit` waarschuwt wanneer naam-/tagitems worden gebruikt
     - als een guild `channels` heeft geconfigureerd, worden niet-vermelde kanalen geweigerd
@@ -579,19 +579,19 @@ Voorbeeld:
 
   </Tab>
 
-  <Tab title="Mentions and group DMs">
-    Guild-berichten vereisen standaard een vermelding.
+  <Tab title="Vermeldingen en groeps-DM's">
+    Guildberichten vereisen standaard een vermelding.
 
     Vermeldingsdetectie omvat:
 
     - expliciete botvermelding
     - geconfigureerde vermeldingspatronen (`agents.list[].groupChat.mentionPatterns`, fallback `messages.groupChat.mentionPatterns`)
-    - impliciet antwoord-op-bot-gedrag in ondersteunde gevallen
+    - impliciet antwoord-op-botgedrag in ondersteunde gevallen
 
-    Gebruik bij het schrijven van uitgaande Discord-berichten de canonieke vermeldingssyntaxis: `<@USER_ID>` voor gebruikers, `<#CHANNEL_ID>` voor kanalen en `<@&ROLE_ID>` voor rollen. Gebruik niet de verouderde bijnaamvermeldingsvorm `<@!USER_ID>`.
+    Gebruik bij het schrijven van uitgaande Discord-berichten canonieke vermeldingssyntaxis: `<@USER_ID>` voor gebruikers, `<#CHANNEL_ID>` voor kanalen en `<@&ROLE_ID>` voor rollen. Gebruik niet het verouderde bijnaamvermeldingsformulier `<@!USER_ID>`.
 
     `requireMention` wordt per guild/kanaal geconfigureerd (`channels.discord.guilds...`).
-    `ignoreOtherMentions` laat optioneel berichten vallen die een andere gebruiker/rol noemen maar niet de bot (met uitzondering van @everyone/@here).
+    `ignoreOtherMentions` laat optioneel berichten vallen die een andere gebruiker/rol vermelden maar niet de bot (met uitzondering van @everyone/@here).
 
     Groeps-DM's:
 
@@ -603,7 +603,7 @@ Voorbeeld:
 
 ### Rolgebaseerde agentroutering
 
-Gebruik `bindings[].match.roles` om Discord-guildleden op basis van rol-ID naar verschillende agents te routeren. Rolgebaseerde bindings accepteren alleen rol-ID's en worden geëvalueerd na peer- of parent-peer-bindings en vóór guild-only-bindings. Als een binding ook andere matchvelden instelt (bijvoorbeeld `peer` + `guildId` + `roles`), moeten alle geconfigureerde velden overeenkomen.
+Gebruik `bindings[].match.roles` om Discord-guildleden per rol-ID naar verschillende agents te routeren. Rolgebaseerde bindings accepteren alleen rol-ID's en worden geevalueerd na peer- of parent-peer-bindings en voor guild-only-bindings. Als een binding ook andere matchvelden instelt (bijvoorbeeld `peer` + `guildId` + `roles`), moeten alle geconfigureerde velden overeenkomen.
 
 ```json5
 {
@@ -631,11 +631,11 @@ Gebruik `bindings[].match.roles` om Discord-guildleden op basis van rol-ID naar 
 
 - `commands.native` staat standaard op `"auto"` en is ingeschakeld voor Discord.
 - Override per kanaal: `channels.discord.commands.native`.
-- `commands.native=false` slaat registratie en opschoning van Discord-slash-commands over tijdens het opstarten. Eerder geregistreerde opdrachten kunnen zichtbaar blijven in Discord totdat je ze uit de Discord-app verwijdert.
-- Auth voor native opdrachten gebruikt dezelfde Discord-allowlists/beleidsregels als normale berichtverwerking.
-- Opdrachten kunnen nog steeds zichtbaar zijn in de Discord-UI voor gebruikers die niet geautoriseerd zijn; uitvoering handhaaft nog steeds OpenClaw-auth en retourneert "niet geautoriseerd".
+- `commands.native=false` slaat registratie en opschoning van Discord-slash-commands tijdens het opstarten over. Eerder geregistreerde opdrachten kunnen zichtbaar blijven in Discord totdat je ze uit de Discord-app verwijdert.
+- Authenticatie voor native opdrachten gebruikt dezelfde Discord-allowlists/beleidsregels als normale berichtverwerking.
+- Opdrachten kunnen nog steeds zichtbaar zijn in de Discord-UI voor gebruikers die niet geautoriseerd zijn; uitvoering handhaaft nog steeds OpenClaw-authenticatie en retourneert "not authorized".
 
-Zie [Slash-commands](/nl/tools/slash-commands) voor de opdrachtencatalogus en het gedrag.
+Zie [Slash-commands](/nl/tools/slash-commands) voor de opdrachtcatalogus en het gedrag.
 
 Standaardinstellingen voor slash-commands:
 
@@ -644,7 +644,7 @@ Standaardinstellingen voor slash-commands:
 ## Functiedetails
 
 <AccordionGroup>
-  <Accordion title="Antwoordtags en native antwoorden">
+  <Accordion title="Reply tags and native replies">
     Discord ondersteunt antwoordtags in agentuitvoer:
 
     - `[[reply_to_current]]`
@@ -657,21 +657,21 @@ Standaardinstellingen voor slash-commands:
     - `all`
     - `batched`
 
-    Opmerking: `off` schakelt impliciete antwoordthreads uit. Expliciete `[[reply_to_*]]`-tags worden nog steeds gehonoreerd.
+    Opmerking: `off` schakelt impliciete antwoordthreads uit. Expliciete `[[reply_to_*]]`-tags worden nog steeds gerespecteerd.
     `first` koppelt de impliciete native antwoordreferentie altijd aan het eerste uitgaande Discord-bericht voor de beurt.
     `batched` koppelt de impliciete native antwoordreferentie van Discord alleen wanneer de
-    inkomende beurt een gedebouncete batch van meerdere berichten was. Dit is handig
-    wanneer je native antwoorden vooral wilt gebruiken voor dubbelzinnige, drukke chats, niet voor elke
+    inkomende beurt een gedebouncete batch van meerdere berichten was. Dit is nuttig
+    wanneer je native antwoorden vooral wilt voor dubbelzinnige chats met veel korte berichten, niet voor elke
     beurt met één bericht.
 
-    Bericht-ID's worden beschikbaar gemaakt in context/geschiedenis, zodat agents specifieke berichten kunnen targeten.
+    Bericht-ID's worden zichtbaar gemaakt in context/geschiedenis zodat agents specifieke berichten kunnen targeten.
 
   </Accordion>
 
-  <Accordion title="Live stream-preview">
-    OpenClaw kan conceptantwoorden streamen door een tijdelijk bericht te sturen en dit te bewerken terwijl tekst binnenkomt. `channels.discord.streaming` accepteert `off` | `partial` | `block` | `progress` (standaard). `progress` bewaart één bewerkbaar statusconcept en werkt dit bij met toolvoortgang tot de definitieve aflevering; `streamMode` is een verouderde runtime-alias. Voer `openclaw doctor --fix` uit om opgeslagen configuratie naar de canonieke sleutel te herschrijven.
+  <Accordion title="Live stream preview">
+    OpenClaw kan conceptantwoorden streamen door een tijdelijk bericht te verzenden en dit te bewerken terwijl tekst binnenkomt. `channels.discord.streaming` accepteert `off` | `partial` | `block` | `progress` (standaard). `progress` behoudt één bewerkbaar statusconcept en werkt dit bij met toolvoortgang tot de uiteindelijke levering; `streamMode` is een verouderde runtime-alias. Voer `openclaw doctor --fix` uit om persistente configuratie naar de canonieke sleutel te herschrijven.
 
-    Stel `channels.discord.streaming.mode` in op `off` om Discord-previewbewerkingen uit te schakelen. Als Discord-blokstreaming expliciet is ingeschakeld, slaat OpenClaw de previewstream over om dubbel streamen te voorkomen.
+    Stel `channels.discord.streaming.mode` in op `off` om Discord-previewbewerkingen uit te schakelen. Als Discord-blockstreaming expliciet is ingeschakeld, slaat OpenClaw de previewstream over om dubbel streamen te voorkomen.
 
 ```json5
 {
@@ -691,8 +691,8 @@ Standaardinstellingen voor slash-commands:
 ```
 
     - `partial` bewerkt één previewbericht terwijl tokens binnenkomen.
-    - `block` verzendt conceptgrote chunks (gebruik `draftChunk` om grootte en breekpunten af te stemmen, begrensd door `textChunkLimit`).
-    - Media, fouten en expliciete definitieve antwoorden annuleren openstaande previewbewerkingen.
+    - `block` verzendt conceptgrote chunks (gebruik `draftChunk` om grootte en breekpunten af te stemmen, begrensd op `textChunkLimit`).
+    - Media, fouten en expliciete antwoordfinales annuleren wachtende previewbewerkingen.
     - `streaming.preview.toolProgress` (standaard `true`) bepaalt of tool-/voortgangsupdates het previewbericht hergebruiken.
     - `streaming.preview.commandText` / `streaming.progress.commandText` bepaalt opdracht-/exec-details in compacte voortgangsregels: `raw` (standaard) of `status` (alleen toollabel).
 
@@ -714,44 +714,44 @@ Standaardinstellingen voor slash-commands:
     }
     ```
 
-    Previewstreaming is alleen tekst; media-antwoorden vallen terug op normale aflevering. Wanneer `block`-streaming expliciet is ingeschakeld, slaat OpenClaw de previewstream over om dubbel streamen te voorkomen.
+    Previewstreaming is alleen tekst; media-antwoorden vallen terug op normale levering. Wanneer `block`-streaming expliciet is ingeschakeld, slaat OpenClaw de previewstream over om dubbel streamen te voorkomen.
 
   </Accordion>
 
-  <Accordion title="Geschiedenis, context en threadgedrag">
-    Guild-geschiedeniscontext:
+  <Accordion title="History, context, and thread behavior">
+    Guildgeschiedeniscontext:
 
     - `channels.discord.historyLimit` standaard `20`
     - fallback: `messages.groupChat.historyLimit`
     - `0` schakelt uit
 
-    DM-geschiedenisinstellingen:
+    Besturing voor DM-geschiedenis:
 
     - `channels.discord.dmHistoryLimit`
     - `channels.discord.dms["<user_id>"].historyLimit`
 
     Threadgedrag:
 
-    - Discord-threads routeren als kanaalsessies en erven configuratie van het bovenliggende kanaal, tenzij overschreven.
-    - Threadsessies erven de sessieniveau-`/model`-selectie van het bovenliggende kanaal als alleen-model-fallback; thread-lokale `/model`-selecties krijgen nog steeds voorrang en transcriptgeschiedenis van het bovenliggende kanaal wordt niet gekopieerd tenzij transcriptovererving is ingeschakeld.
-    - `channels.discord.thread.inheritParent` (standaard `false`) laat nieuwe auto-threads seeden vanuit het bovenliggende transcript. Overrides per account staan onder `channels.discord.accounts.<id>.thread.inheritParent`.
-    - Message-toolreacties kunnen `user:<id>`-DM-targets oplossen.
-    - `guilds.<guild>.channels.<channel>.requireMention: false` blijft behouden tijdens fallback voor activering in de antwoordfase.
+    - Discord-threads worden gerouteerd als kanaalsessies en erven bovenliggende kanaalconfiguratie tenzij overschreven.
+    - Threadsessies erven de sessieniveau-`/model`-selectie van het bovenliggende kanaal als fallback alleen voor het model; threadlokale `/model`-selecties krijgen nog steeds voorrang en transcriptgeschiedenis van de parent wordt niet gekopieerd tenzij transcriptovererving is ingeschakeld.
+    - `channels.discord.thread.inheritParent` (standaard `false`) laat nieuwe auto-threads seeden vanuit het parenttranscript. Overrides per account staan onder `channels.discord.accounts.<id>.thread.inheritParent`.
+    - Berichttoolreacties kunnen `user:<id>`-DM-targets oplossen.
+    - `guilds.<guild>.channels.<channel>.requireMention: false` blijft behouden tijdens fallback voor activatie in de antwoordfase.
 
-    Kanaalonderwerpen worden geïnjecteerd als **niet-vertrouwde** context. Allowlists bepalen wie de agent kan activeren, maar vormen geen volledige redactiegrens voor aanvullende context.
+    Kanaalonderwerpen worden geïnjecteerd als **niet-vertrouwde** context. Allowlists bepalen wie de agent kan triggeren, niet een volledige redactiegrens voor aanvullende context.
 
   </Accordion>
 
-  <Accordion title="Threadgebonden sessies voor subagents">
-    Discord kan een thread aan een sessietarget binden, zodat vervolgberichten in die thread naar dezelfde sessie blijven routeren (inclusief subagentsessies).
+  <Accordion title="Thread-bound sessions for subagents">
+    Discord kan een thread aan een sessietarget binden zodat vervolgberichten in die thread naar dezelfde sessie blijven routeren (inclusief subagentsessies).
 
     Opdrachten:
 
     - `/focus <target>` bind huidige/nieuwe thread aan een subagent-/sessietarget
-    - `/unfocus` verwijder huidige threadbinding
+    - `/unfocus` verwijder de huidige threadbinding
     - `/agents` toon actieve runs en bindingsstatus
-    - `/session idle <duration|off>` inspecteer/update automatische ontfocus bij inactiviteit voor gefocuste bindingen
-    - `/session max-age <duration|off>` inspecteer/update harde maximale leeftijd voor gefocuste bindingen
+    - `/session idle <duration|off>` inspecteer/werk automatische inactiviteitsontfocus bij voor gefocuste bindingen
+    - `/session max-age <duration|off>` inspecteer/werk harde maximale leeftijd bij voor gefocuste bindingen
 
     Configuratie:
 
@@ -780,19 +780,19 @@ Standaardinstellingen voor slash-commands:
 
     Opmerkingen:
 
-    - `session.threadBindings.*` stelt globale standaardwaarden in.
+    - `session.threadBindings.*` stelt globale standaarden in.
     - `channels.discord.threadBindings.*` overschrijft Discord-gedrag.
-    - `spawnSessions` beheert het automatisch aanmaken/binden van threads voor `sessions_spawn({ thread: true })` en ACP-threadspawns. Standaard: `true`.
+    - `spawnSessions` beheert automatisch aanmaken/binden van threads voor `sessions_spawn({ thread: true })` en ACP-threadspawns. Standaard: `true`.
     - `defaultSpawnContext` beheert native subagentcontext voor threadgebonden spawns. Standaard: `"fork"`.
     - Verouderde sleutels `spawnSubagentSessions`/`spawnAcpSessions` worden gemigreerd door `openclaw doctor --fix`.
-    - Als threadbindingen zijn uitgeschakeld voor een account, zijn `/focus` en gerelateerde threadbindingsbewerkingen niet beschikbaar.
+    - Als threadbindingen voor een account zijn uitgeschakeld, zijn `/focus` en gerelateerde threadbindingsbewerkingen niet beschikbaar.
 
-    Zie [Subagents](/nl/tools/subagents), [ACP-agents](/nl/tools/acp-agents) en [Configuratiereferentie](/nl/gateway/configuration-reference).
+    Zie [Subagents](/nl/tools/subagents), [ACP Agents](/nl/tools/acp-agents) en [Configuratiereferentie](/nl/gateway/configuration-reference).
 
   </Accordion>
 
-  <Accordion title="Persistente ACP-kanaalbindingen">
-    Configureer voor stabiele, "altijd actieve" ACP-werkruimten top-level getypeerde ACP-bindingen die op Discord-gesprekken targeten.
+  <Accordion title="Persistent ACP channel bindings">
+    Configureer voor stabiele "altijd-aan" ACP-workspaces topniveau getypeerde ACP-bindingen die op Discord-gesprekken targeten.
 
     Configuratiepad:
 
@@ -848,15 +848,15 @@ Standaardinstellingen voor slash-commands:
 
     Opmerkingen:
 
-    - `/acp spawn codex --bind here` bindt het huidige kanaal of de huidige thread op zijn plek en houdt toekomstige berichten op dezelfde ACP-sessie. Threadberichten erven de binding van het bovenliggende kanaal.
-    - In een gebonden kanaal of gebonden thread resetten `/new` en `/reset` dezelfde ACP-sessie op zijn plek. Tijdelijke threadbindingen kunnen targetresolutie overschrijven zolang ze actief zijn.
-    - `spawnSessions` beheert het aanmaken/binden van child-threads via `--thread auto|here`.
+    - `/acp spawn codex --bind here` bindt het huidige kanaal of de huidige thread op de plek zelf en houdt toekomstige berichten op dezelfde ACP-sessie. Threadberichten erven de bovenliggende kanaalbinding.
+    - In een gebonden kanaal of gebonden thread resetten `/new` en `/reset` dezelfde ACP-sessie op de plek zelf. Tijdelijke threadbindingen kunnen targetresolutie overschrijven zolang ze actief zijn.
+    - `spawnSessions` beheert aanmaken/binden van childthreads via `--thread auto|here`.
 
-    Zie [ACP-agents](/nl/tools/acp-agents) voor details over bindingsgedrag.
+    Zie [ACP Agents](/nl/tools/acp-agents) voor details over bindingsgedrag.
 
   </Accordion>
 
-  <Accordion title="Reactiemeldingen">
+  <Accordion title="Reaction notifications">
     Reactiemeldingsmodus per guild:
 
     - `off`
@@ -868,8 +868,8 @@ Standaardinstellingen voor slash-commands:
 
   </Accordion>
 
-  <Accordion title="Ack-reacties">
-    `ackReaction` stuurt een bevestigings-emoji terwijl OpenClaw een inkomend bericht verwerkt.
+  <Accordion title="Ack reactions">
+    `ackReaction` verzendt een bevestigings-emoji terwijl OpenClaw een inkomend bericht verwerkt.
 
     Resolutievolgorde:
 
@@ -885,8 +885,8 @@ Standaardinstellingen voor slash-commands:
 
   </Accordion>
 
-  <Accordion title="Config-writes">
-    Door het kanaal geïnitieerde configuratiewrites zijn standaard ingeschakeld.
+  <Accordion title="Config writes">
+    Door kanalen geïnitieerde config-writes zijn standaard ingeschakeld.
 
     Dit beïnvloedt `/config set|unset`-flows (wanneer opdrachtfuncties zijn ingeschakeld).
 
@@ -904,8 +904,8 @@ Standaardinstellingen voor slash-commands:
 
   </Accordion>
 
-  <Accordion title="Gateway-proxy">
-    Routeer Discord Gateway-WebSocketverkeer en REST-lookups bij opstarten (applicatie-ID + allowlistresolutie) via een HTTP(S)-proxy met `channels.discord.proxy`.
+  <Accordion title="Gateway proxy">
+    Routeer Discord Gateway-WebSocketverkeer en REST-lookups bij het opstarten (application ID + allowlistresolutie) via een HTTP(S)-proxy met `channels.discord.proxy`.
 
 ```json5
 {
@@ -935,8 +935,8 @@ Standaardinstellingen voor slash-commands:
 
   </Accordion>
 
-  <Accordion title="PluralKit-ondersteuning">
-    Schakel PluralKit-resolutie in om geproxiede berichten te mappen naar de identiteit van een systeemlid:
+  <Accordion title="PluralKit support">
+    Schakel PluralKit-resolutie in om geproxiede berichten te mappen naar identiteit van systeemleden:
 
 ```json5
 {
@@ -955,13 +955,13 @@ Standaardinstellingen voor slash-commands:
 
     - allowlists kunnen `pk:<memberId>` gebruiken
     - weergavenamen van leden worden alleen op naam/slug gematcht wanneer `channels.discord.dangerouslyAllowNameMatching: true`
-    - lookups gebruiken de oorspronkelijke bericht-ID en zijn beperkt tot een tijdvenster
-    - als lookup mislukt, worden geproxiede berichten behandeld als botberichten en verwijderd, tenzij `allowBots=true`
+    - lookups gebruiken de originele bericht-ID en zijn beperkt tot een tijdvenster
+    - als lookup mislukt, worden geproxiede berichten behandeld als botberichten en verwijderd tenzij `allowBots=true`
 
   </Accordion>
 
-  <Accordion title="Aliases voor uitgaande vermeldingen">
-    Gebruik `mentionAliases` wanneer agents deterministische uitgaande vermeldingen voor bekende Discord-gebruikers nodig hebben. Sleutels zijn handles zonder de voorafgaande `@`; waarden zijn Discord-gebruikers-ID's. Onbekende handles, `@everyone`, `@here` en vermeldingen binnen Markdown-codespans blijven ongewijzigd.
+  <Accordion title="Outbound mention aliases">
+    Gebruik `mentionAliases` wanneer agents deterministische uitgaande vermeldingen nodig hebben voor bekende Discord-gebruikers. Sleutels zijn handles zonder de leidende `@`; waarden zijn Discord-gebruikers-ID's. Onbekende handles, `@everyone`, `@here` en vermeldingen binnen Markdown-codespans blijven ongewijzigd.
 
 ```json5
 {
@@ -984,10 +984,10 @@ Standaardinstellingen voor slash-commands:
 
   </Accordion>
 
-  <Accordion title="Aanwezigheidsconfiguratie">
-    Aanwezigheidsupdates worden toegepast wanneer je een status- of activiteitsveld instelt, of wanneer je automatische aanwezigheid inschakelt.
+  <Accordion title="Presence configuration">
+    Presence-updates worden toegepast wanneer je een status- of activiteitsveld instelt, of wanneer je automatische presence inschakelt.
 
-    Voorbeeld met alleen status:
+    Voorbeeld alleen status:
 
 ```json5
 {
@@ -1029,13 +1029,13 @@ Standaardinstellingen voor slash-commands:
     Activiteitstypemap:
 
     - 0: Spelen
-    - 1: Streamen (vereist `activityUrl`)
+    - 1: Streaming (vereist `activityUrl`)
     - 2: Luisteren
     - 3: Kijken
-    - 4: Aangepast (gebruikt de activiteitstekst als statusstatus; emoji is optioneel)
+    - 4: Aangepast (gebruikt de activiteitstekst als de statusstatus; emoji is optioneel)
     - 5: Deelnemen aan competitie
 
-    Voorbeeld van automatische aanwezigheid (runtime-gezondheidssignaal):
+    Voorbeeld van automatische presence (runtimegezondheidssignaal):
 
 ```json5
 {
@@ -1045,14 +1045,14 @@ Standaardinstellingen voor slash-commands:
         enabled: true,
         intervalMs: 30000,
         minUpdateIntervalMs: 15000,
-        exhaustedText: "token exhausted",
+        exhaustedText: "token uitgeput",
       },
     },
   },
 }
 ```
 
-    Automatische aanwezigheid koppelt runtimebeschikbaarheid aan Discord-status: gezond => online, verslechterd of onbekend => inactief, uitgeput of niet beschikbaar => niet storen. Optionele tekstoverschrijvingen:
+    Automatische aanwezigheid koppelt runtimebeschikbaarheid aan Discord-status: gezond => online, verminderd of onbekend => inactief, uitgeput of niet beschikbaar => niet storen. Optionele tekstoverschrijvingen:
 
     - `autoPresence.healthyText`
     - `autoPresence.degradedText`
@@ -1061,7 +1061,7 @@ Standaardinstellingen voor slash-commands:
   </Accordion>
 
   <Accordion title="Goedkeuringen in Discord">
-    Discord ondersteunt goedkeuringsafhandeling via knoppen in privéberichten en kan optioneel goedkeuringsprompts plaatsen in het oorspronkelijke kanaal.
+    Discord ondersteunt goedkeuringsafhandeling met knoppen in DM's en kan optioneel goedkeuringsprompts plaatsen in het oorspronkelijke kanaal.
 
     Configuratiepad:
 
@@ -1070,32 +1070,32 @@ Standaardinstellingen voor slash-commands:
     - `channels.discord.execApprovals.target` (`dm` | `channel` | `both`, standaard: `dm`)
     - `agentFilter`, `sessionFilter`, `cleanupAfterResolve`
 
-    Discord schakelt native exec-goedkeuringen automatisch in wanneer `enabled` niet is ingesteld of `"auto"` is en ten minste een goedkeurder kan worden opgelost, uit `execApprovals.approvers` of uit `commands.ownerAllowFrom`. Discord leidt exec-goedkeurders niet af uit kanaal-`allowFrom`, verouderde `dm.allowFrom` of direct-message `defaultTo`. Stel `enabled: false` in om Discord expliciet uit te schakelen als native goedkeuringsclient.
+    Discord schakelt native uitvoeringsgoedkeuringen automatisch in wanneer `enabled` niet is ingesteld of `"auto"` is en ten minste één goedkeurder kan worden herleid, via `execApprovals.approvers` of via `commands.ownerAllowFrom`. Discord leidt geen uitvoeringsgoedkeurders af uit kanaal-`allowFrom`, legacy `dm.allowFrom` of direct-message `defaultTo`. Stel `enabled: false` in om Discord expliciet uit te schakelen als native goedkeuringsclient.
 
-    Voor gevoelige groepsopdrachten die alleen voor eigenaren zijn, zoals `/diagnostics` en `/export-trajectory`, stuurt OpenClaw goedkeuringsprompts en eindresultaten privé. Het probeert eerst een Discord-privébericht wanneer de aanroepende eigenaar een Discord-eigenaarroute heeft; als die niet beschikbaar is, valt het terug op de eerste beschikbare eigenaarroute uit `commands.ownerAllowFrom`, zoals Telegram.
+    Voor gevoelige groepopdrachten die alleen voor eigenaren zijn, zoals `/diagnostics` en `/export-trajectory`, stuurt OpenClaw goedkeuringsprompts en eindresultaten privé. Het probeert eerst een Discord-DM wanneer de aanroepende eigenaar een Discord-eigenaarroute heeft; als die niet beschikbaar is, valt het terug op de eerste beschikbare eigenaarroute uit `commands.ownerAllowFrom`, zoals Telegram.
 
-    Wanneer `target` `channel` of `both` is, is de goedkeuringsprompt zichtbaar in het kanaal. Alleen opgeloste goedkeurders kunnen de knoppen gebruiken; andere gebruikers ontvangen een kortstondige weigering. Goedkeuringsprompts bevatten de opdrachttekst, dus schakel kanaalbezorging alleen in vertrouwde kanalen in. Als de kanaal-ID niet uit de sessiesleutel kan worden afgeleid, valt OpenClaw terug op bezorging via privébericht.
+    Wanneer `target` `channel` of `both` is, is de goedkeuringsprompt zichtbaar in het kanaal. Alleen herleide goedkeurders kunnen de knoppen gebruiken; andere gebruikers ontvangen een tijdelijke weigering. Goedkeuringsprompts bevatten de opdrachttekst, dus schakel kanaallevering alleen in vertrouwde kanalen in. Als de kanaal-ID niet uit de sessiesleutel kan worden afgeleid, valt OpenClaw terug op levering via DM.
 
-    Discord rendert ook de gedeelde goedkeuringsknoppen die door andere chatkanalen worden gebruikt. De native Discord-adapter voegt vooral routering naar privéberichten voor goedkeurders en kanaal-fan-out toe.
+    Discord rendert ook de gedeelde goedkeuringsknoppen die door andere chatkanalen worden gebruikt. De native Discord-adapter voegt vooral DM-routering voor goedkeurders en kanaalfan-out toe.
     Wanneer die knoppen aanwezig zijn, vormen ze de primaire goedkeurings-UX; OpenClaw
-    moet alleen een handmatige `/approve`-opdracht opnemen wanneer het toolresultaat zegt
-    dat chatgoedkeuringen niet beschikbaar zijn of handmatige goedkeuring de enige route is.
-    Als de native goedkeuringsruntime van Discord niet actief is, houdt OpenClaw de
+    mag alleen een handmatige `/approve`-opdracht opnemen wanneer het toolresultaat zegt
+    dat chatgoedkeuringen niet beschikbaar zijn of handmatige goedkeuring het enige pad is.
+    Als de native Discord-goedkeuringsruntime niet actief is, houdt OpenClaw de
     lokale deterministische `/approve <id> <decision>`-prompt zichtbaar. Als de
-    runtime actief is maar een native kaart niet bij een doel kan worden afgeleverd,
+    runtime actief is maar een native kaart niet aan een doel kan worden geleverd,
     stuurt OpenClaw een fallbackmelding in dezelfde chat met de exacte `/approve`-
-    opdracht uit de openstaande goedkeuring.
+    opdracht uit de wachtende goedkeuring.
 
     Gateway-authenticatie en goedkeuringsresolutie volgen het gedeelde Gateway-clientcontract (`plugin:`-ID's worden opgelost via `plugin.approval.resolve`; andere ID's via `exec.approval.resolve`). Goedkeuringen verlopen standaard na 30 minuten.
 
-    Zie [Exec-goedkeuringen](/nl/tools/exec-approvals).
+    Zie [Uitvoeringsgoedkeuringen](/nl/tools/exec-approvals).
 
   </Accordion>
 </AccordionGroup>
 
-## Hulpmiddelen en actiegates
+## Tools en actiepoorten
 
-Discord-berichtacties omvatten acties voor berichten, kanaalbeheer, moderatie, aanwezigheid en metadata.
+Discord-berichtacties omvatten berichten, kanaalbeheer, moderatie, aanwezigheid en metadata-acties.
 
 Kernvoorbeelden:
 
@@ -1106,23 +1106,23 @@ Kernvoorbeelden:
 
 De actie `event-create` accepteert een optionele parameter `image` (URL of lokaal bestandspad) om de omslagafbeelding van de geplande gebeurtenis in te stellen.
 
-Actiegates staan onder `channels.discord.actions.*`.
+Actiepoorten staan onder `channels.discord.actions.*`.
 
-Standaardgedrag van gates:
+Standaard poortgedrag:
 
-| Actiegroep                                                                                                                                                              | Standaard      |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------- |
-| reacties, berichten, threads, pins, peilingen, zoeken, memberInfo, roleInfo, channelInfo, kanalen, voiceStatus, gebeurtenissen, stickers, emojiUploads, stickerUploads, machtigingen | ingeschakeld   |
-| rollen                                                                                                                                                                  | uitgeschakeld  |
-| moderatie                                                                                                                                                               | uitgeschakeld  |
-| aanwezigheid                                                                                                                                                            | uitgeschakeld  |
+| Actiegroep                                                                                                                                                              | Standaard     |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
+| reactions, messages, threads, pins, polls, search, memberInfo, roleInfo, channelInfo, channels, voiceStatus, events, stickers, emojiUploads, stickerUploads, permissions | ingeschakeld  |
+| roles                                                                                                                                                                   | uitgeschakeld |
+| moderation                                                                                                                                                              | uitgeschakeld |
+| presence                                                                                                                                                                | uitgeschakeld |
 
-## Componenten v2-UI
+## UI voor componenten v2
 
-OpenClaw gebruikt Discord-componenten v2 voor exec-goedkeuringen en markers tussen contexten. Discord-berichtacties kunnen ook `components` accepteren voor aangepaste UI (geavanceerd; vereist het construeren van een componentpayload via de discord-tool), terwijl verouderde `embeds` beschikbaar blijven maar niet worden aanbevolen.
+OpenClaw gebruikt Discord-componenten v2 voor uitvoeringsgoedkeuringen en cross-contextmarkeringen. Discord-berichtacties kunnen ook `components` accepteren voor aangepaste UI (geavanceerd; vereist het construeren van een componentpayload via de Discord-tool), terwijl legacy `embeds` beschikbaar blijven maar niet worden aanbevolen.
 
-- `channels.discord.ui.components.accentColor` stelt de accentkleur in die wordt gebruikt door Discord-componentcontainers (hex).
-- Stel dit per account in met `channels.discord.accounts.<id>.ui.components.accentColor`.
+- `channels.discord.ui.components.accentColor` stelt de accentkleur in die door Discord-componentcontainers wordt gebruikt (hex).
+- Stel per account in met `channels.discord.accounts.<id>.ui.components.accentColor`.
 - `embeds` worden genegeerd wanneer componenten v2 aanwezig zijn.
 
 Voorbeeld:
@@ -1143,16 +1143,16 @@ Voorbeeld:
 
 ## Spraak
 
-Discord heeft twee afzonderlijke spraakoppervlakken: realtime **spraakkanalen** (doorlopende gesprekken) en **spraakberichtbijlagen** (de indeling met golfvormvoorbeeld). De gateway ondersteunt beide.
+Discord heeft twee afzonderlijke spraakoppervlakken: realtime **spraakkanalen** (doorlopende gesprekken) en **spraakberichtbijlagen** (de golfvormpreview-indeling). De Gateway ondersteunt beide.
 
 ### Spraakkanalen
 
-Instelchecklist:
+Installatiechecklist:
 
 1. Schakel Message Content Intent in de Discord Developer Portal in.
-2. Schakel Server Members Intent in wanneer rol-/gebruikers-allowlists worden gebruikt.
+2. Schakel Server Members Intent in wanneer rol-/gebruikersallowlists worden gebruikt.
 3. Nodig de bot uit met de scopes `bot` en `applications.commands`.
-4. Verleen Connect, Speak, Send Messages en Read Message History in het doelspraakkanal.
+4. Verleen Connect, Speak, Send Messages en Read Message History in het doel-spraakkanaal.
 5. Schakel native opdrachten in (`commands.native` of `channels.discord.commands.native`).
 6. Configureer `channels.discord.voice`.
 
@@ -1164,7 +1164,13 @@ Gebruik `/vc join|leave|status` om sessies te beheren. De opdracht gebruikt de s
 /vc leave
 ```
 
-Voorbeeld van automatisch deelnemen:
+Voer uit om de effectieve machtigingen van de bot te inspecteren voordat je deelneemt:
+
+```bash
+openclaw channels capabilities --channel discord --target channel:<voice-channel-id>
+```
+
+Voorbeeld voor automatisch deelnemen:
 
 ```json5
 {
@@ -1196,45 +1202,49 @@ Voorbeeld van automatisch deelnemen:
 Opmerkingen:
 
 - `voice.tts` overschrijft `messages.tts` alleen voor spraakweergave.
-- `voice.model` overschrijft alleen de LLM die wordt gebruikt voor reacties in Discord-spraakkanalen. Laat dit niet ingesteld om het model van de gerouteerde agent te erven.
+- `voice.model` overschrijft alleen de LLM die wordt gebruikt voor antwoorden in Discord-spraakkanalen. Laat dit niet ingesteld om het gerouteerde agentmodel te erven.
 - STT gebruikt `tools.media.audio`; `voice.model` heeft geen invloed op transcriptie.
-- Per-kanaals Discord-overschrijvingen van `systemPrompt` zijn van toepassing op spraaktranscriptiebeurten voor dat spraakkanaal.
-- Spraaktranscriptiebeurten leiden eigenaarstatus af uit Discord `allowFrom` (of `dm.allowFrom`); sprekers die geen eigenaar zijn, hebben geen toegang tot tools die alleen voor eigenaren zijn (bijvoorbeeld `gateway` en `cron`).
-- Discord-spraak is opt-in voor configuraties met alleen tekst; stel `channels.discord.voice.enabled=true` in (of behoud een bestaand blok `channels.discord.voice`) om `/vc`-opdrachten, de spraakruntime en de `GuildVoiceStates` Gateway-intent in te schakelen.
-- `channels.discord.intents.voiceStates` kan het abonnement op voice-state-intents expliciet overschrijven. Laat dit niet ingesteld zodat de intent de effectieve spraakinschakeling volgt.
+- Per-kanaal Discord-`systemPrompt`-overschrijvingen zijn van toepassing op spraaktranscriptiebeurten voor dat spraakkanaal.
+- Spraaktranscriptiebeurten leiden eigenaarstatus af uit Discord-`allowFrom` (of `dm.allowFrom`); sprekers die geen eigenaar zijn, hebben geen toegang tot tools die alleen voor eigenaren zijn (bijvoorbeeld `gateway` en `cron`).
+- Discord-spraak is opt-in voor configuraties met alleen tekst; stel `channels.discord.voice.enabled=true` in (of behoud een bestaand `channels.discord.voice`-blok) om `/vc`-opdrachten, de spraakruntime en de `GuildVoiceStates` Gateway-intent in te schakelen.
+- `channels.discord.intents.voiceStates` kan het abonnement op voice-state-intent expliciet overschrijven. Laat dit niet ingesteld zodat de intent de effectieve spraakinschakeling volgt.
 - `voice.daveEncryption` en `voice.decryptionFailureTolerance` worden doorgegeven aan de join-opties van `@discordjs/voice`.
-- De standaardwaarden van `@discordjs/voice` zijn `daveEncryption=true` en `decryptionFailureTolerance=24` als ze niet zijn ingesteld.
-- `voice.connectTimeoutMs` bepaalt de initiële `@discordjs/voice`-Ready-wachttijd voor `/vc join` en pogingen om automatisch deel te nemen. Standaard: `30000`.
-- `voice.reconnectGraceMs` bepaalt hoelang OpenClaw wacht tot een verbroken spraaksessie begint met opnieuw verbinden voordat deze wordt vernietigd. Standaard: `15000`.
-- OpenClaw bewaakt ook fouten bij ontvangen decryptie en herstelt automatisch door het spraakkanaal te verlaten en opnieuw deel te nemen na herhaalde fouten binnen een kort tijdsvenster.
-- Als ontvangstlogs na bijwerken herhaaldelijk `DecryptionFailed(UnencryptedWhenPassthroughDisabled)` tonen, verzamel dan een afhankelijkheidsrapport en logs. De gebundelde `@discordjs/voice`-lijn bevat de upstream padding-fix uit discord.js PR #11449, die discord.js issue #11419 sloot.
+- Standaarden van `@discordjs/voice` zijn `daveEncryption=true` en `decryptionFailureTolerance=24` als ze niet zijn ingesteld.
+- `voice.connectTimeoutMs` bepaalt de initiële wachttijd op `@discordjs/voice` Ready voor `/vc join` en pogingen tot automatisch deelnemen. Standaard: `30000`.
+- `voice.reconnectGraceMs` bepaalt hoelang OpenClaw wacht tot een verbroken spraaksessie opnieuw verbinding begint te maken voordat deze wordt vernietigd. Standaard: `15000`.
+- Spraakweergave stopt niet alleen omdat een andere gebruiker begint te spreken. Om feedbacklussen te voorkomen, negeert OpenClaw nieuwe spraakopname terwijl TTS wordt afgespeeld; spreek nadat de weergave is voltooid voor de volgende beurt.
+- `voice.captureSilenceGraceMs` bepaalt hoelang OpenClaw wacht nadat Discord meldt dat een spreker is gestopt voordat dat audiosegment voor STT wordt afgerond. Standaard: `2500`; verhoog dit als Discord normale pauzes opsplitst in haperige gedeeltelijke transcripties.
+- Wanneer ElevenLabs de geselecteerde TTS-provider is, gebruikt Discord-spraakweergave streaming-TTS en start deze vanuit de responsstream van de provider. Providers zonder streamingondersteuning vallen terug op het pad met een gesynthetiseerd tijdelijk bestand.
+- OpenClaw bewaakt ook decryptiefouten bij ontvangst en herstelt automatisch door het spraakkanaal te verlaten en opnieuw deel te nemen na herhaalde fouten binnen een kort venster.
+- Als ontvangstlogs herhaaldelijk `DecryptionFailed(UnencryptedWhenPassthroughDisabled)` tonen na een update, verzamel dan een afhankelijkheidsrapport en logs. De gebundelde `@discordjs/voice`-lijn bevat de upstream paddingfix uit discord.js PR #11449, die discord.js-issue #11419 sloot.
+- Ontvangstgebeurtenissen `The operation was aborted` worden verwacht wanneer OpenClaw een vastgelegd sprekersegment afrondt; het zijn uitgebreide diagnostische meldingen, geen waarschuwingen.
 
-Spraakkanaalpijplijn:
+Pijplijn voor spraakkanalen:
 
 - Discord PCM-opname wordt geconverteerd naar een tijdelijk WAV-bestand.
 - `tools.media.audio` verwerkt STT, bijvoorbeeld `openai/gpt-4o-mini-transcribe`.
-- Het transcript wordt via Discord-ingress en routering verzonden terwijl de reactie-LLM draait met een spraakuitvoerbeleid dat de agenttool `tts` verbergt en om geretourneerde tekst vraagt, omdat Discord-spraak de uiteindelijke TTS-weergave bezit.
-- `voice.model`, wanneer ingesteld, overschrijft alleen de reactie-LLM voor deze spraakkanaalbeurt.
-- `voice.tts` wordt samengevoegd over `messages.tts`; de resulterende audio wordt afgespeeld in het kanaal waaraan is deelgenomen.
+- Het transcript wordt via Discord-ingress en routering verzonden terwijl de respons-LLM draait met een spraakuitvoerbeleid dat de agent-`tts`-tool verbergt en om geretourneerde tekst vraagt, omdat Discord-spraak de uiteindelijke TTS-weergave beheert.
+- `voice.model`, indien ingesteld, overschrijft alleen de respons-LLM voor deze spraakkanaalbeurt.
+- `voice.tts` wordt over `messages.tts` samengevoegd; providers met streamingmogelijkheden voeden de speler rechtstreeks, anders wordt het resulterende audiobestand afgespeeld in het kanaal waarin is deelgenomen.
 
-Referenties worden per component opgelost: LLM-routeauthenticatie voor `voice.model`, STT-authenticatie voor `tools.media.audio` en TTS-authenticatie voor `messages.tts`/`voice.tts`.
+Credentials worden per component opgelost: LLM-routeauthenticatie voor `voice.model`, STT-authenticatie voor `tools.media.audio` en TTS-authenticatie voor `messages.tts`/`voice.tts`.
 
 ### Spraakberichten
 
-Discord-spraakberichten tonen een golfvormvoorbeeld en vereisen OGG/Opus-audio. OpenClaw genereert de golfvorm automatisch, maar heeft `ffmpeg` en `ffprobe` op de gatewayhost nodig om te inspecteren en converteren.
+Discord-spraakberichten tonen een golfvormpreview en vereisen OGG/Opus-audio. OpenClaw genereert de golfvorm automatisch, maar heeft `ffmpeg` en `ffprobe` op de Gateway-host nodig om te inspecteren en te converteren.
 
 - Geef een **lokaal bestandspad** op (URL's worden geweigerd).
 - Laat tekstinhoud weg (Discord weigert tekst + spraakbericht in dezelfde payload).
-- Elk audioformaat wordt geaccepteerd; OpenClaw converteert zo nodig naar OGG/Opus.
+- Elk audioformaat wordt geaccepteerd; OpenClaw converteert indien nodig naar OGG/Opus.
 
 ```bash
 message(action="send", channel="discord", target="channel:123", path="/path/to/audio.mp3", asVoice=true)
 ```
 
-## Problemen oplossen
+## Probleemoplossing
 
 <AccordionGroup>
-  <Accordion title="Niet-toegestane intents gebruikt of bot ziet geen guildberichten">
+  <Accordion title="Niet-toegestane intents gebruikt of bot ziet geen guild-berichten">
 
     - schakel Message Content Intent in
     - schakel Server Members Intent in wanneer je afhankelijk bent van gebruikers-/ledenresolutie
@@ -1242,7 +1252,7 @@ message(action="send", channel="discord", target="channel:123", path="/path/to/a
 
   </Accordion>
 
-  <Accordion title="Guildberichten onverwacht geblokkeerd">
+  <Accordion title="Guild-berichten onverwacht geblokkeerd">
 
     - verifieer `groupPolicy`
     - verifieer de guild-allowlist onder `channels.discord.guilds`
@@ -1259,11 +1269,11 @@ openclaw logs --follow
 
   </Accordion>
 
-  <Accordion title="Vermelding vereist is false maar nog steeds geblokkeerd">
+  <Accordion title="Require mention false maar nog steeds geblokkeerd">
     Veelvoorkomende oorzaken:
 
     - `groupPolicy="allowlist"` zonder overeenkomende guild-/kanaal-allowlist
-    - `requireMention` geconfigureerd op de verkeerde plaats (moet onder `channels.discord.guilds` of kanaalinvoer staan)
+    - `requireMention` op de verkeerde plaats geconfigureerd (moet onder `channels.discord.guilds` of kanaalvermelding staan)
     - afzender geblokkeerd door guild-/kanaal-`users`-allowlist
 
   </Accordion>
@@ -1275,13 +1285,13 @@ openclaw logs --follow
     - `Slow listener detected ...`
     - `stuck session: sessionKey=agent:...:discord:... state=processing ...`
 
-    Discord Gateway-wachtrijknoppen:
+    Discord Gateway-wachtrij-instellingen:
 
     - enkel account: `channels.discord.eventQueue.listenerTimeout`
     - meerdere accounts: `channels.discord.accounts.<accountId>.eventQueue.listenerTimeout`
-    - dit beheert alleen listenerwerk van de Discord Gateway, niet de levensduur van agentbeurten
+    - dit regelt alleen Discord Gateway-listenerwerk, niet de levensduur van een agentbeurt
 
-    Discord past geen kanaaleigen timeout toe op agentbeurten in de wachtrij. Berichtlisteners dragen onmiddellijk over, en Discord-runs in de wachtrij behouden volgorde per sessie totdat de levenscyclus van sessie/tool/runtime is voltooid of het werk wordt afgebroken.
+    Discord past geen kanaaleigen time-out toe op agentbeurten in de wachtrij. Berichtlisteners dragen direct over, en Discord-runs in de wachtrij behouden de volgorde per sessie totdat de sessie-/tool-/runtimelevenscyclus is voltooid of het werk wordt afgebroken.
 
 ```json5
 {
@@ -1301,54 +1311,54 @@ openclaw logs --follow
 
   </Accordion>
 
-  <Accordion title="Waarschuwingen voor time-outs bij het opzoeken van Gateway-metadata">
-    OpenClaw haalt Discord-`/gateway/bot`-metadata op voordat er verbinding wordt gemaakt. Bij tijdelijke fouten wordt teruggevallen op de standaard-Gateway-URL van Discord en deze worden beperkt gelogd.
+  <Accordion title="Waarschuwingen voor time-outs bij Gateway-metagegevensopzoeking">
+    OpenClaw haalt Discord `/gateway/bot`-metagegevens op voordat er verbinding wordt gemaakt. Tijdelijke fouten vallen terug op de standaard-Gateway-URL van Discord en worden in logs aan rate limiting onderworpen.
 
-    Knoppen voor metadata-time-outs:
+    Time-outinstellingen voor metagegevens:
 
     - enkel account: `channels.discord.gatewayInfoTimeoutMs`
     - meerdere accounts: `channels.discord.accounts.<accountId>.gatewayInfoTimeoutMs`
-    - env-terugval wanneer config niet is ingesteld: `OPENCLAW_DISCORD_GATEWAY_INFO_TIMEOUT_MS`
+    - env-fallback wanneer configuratie niet is ingesteld: `OPENCLAW_DISCORD_GATEWAY_INFO_TIMEOUT_MS`
     - standaard: `30000` (30 seconden), max: `120000`
 
   </Accordion>
 
-  <Accordion title="Gateway READY-time-outs herstarten">
-    OpenClaw wacht tijdens het opstarten en na runtime-herverbindingen op Discords Gateway-`READY`-event. Setups met meerdere accounts en gespreid opstarten kunnen een langer READY-venster bij het opstarten nodig hebben dan de standaardwaarde.
+  <Accordion title="Gateway READY-time-out-herstarts">
+    OpenClaw wacht tijdens het opstarten en na runtime-herverbindingen op het Discord Gateway-`READY`-event. Set-ups met meerdere accounts en gespreid opstarten kunnen een langer READY-venster bij opstarten nodig hebben dan de standaardwaarde.
 
-    Knoppen voor READY-time-outs:
+    READY-time-outinstellingen:
 
-    - opstarten, enkel account: `channels.discord.gatewayReadyTimeoutMs`
-    - opstarten, meerdere accounts: `channels.discord.accounts.<accountId>.gatewayReadyTimeoutMs`
-    - opstarten, env-terugval wanneer config niet is ingesteld: `OPENCLAW_DISCORD_READY_TIMEOUT_MS`
-    - opstarten, standaard: `15000` (15 seconden), max: `120000`
-    - runtime, enkel account: `channels.discord.gatewayRuntimeReadyTimeoutMs`
-    - runtime, meerdere accounts: `channels.discord.accounts.<accountId>.gatewayRuntimeReadyTimeoutMs`
-    - runtime, env-terugval wanneer config niet is ingesteld: `OPENCLAW_DISCORD_RUNTIME_READY_TIMEOUT_MS`
-    - runtime, standaard: `30000` (30 seconden), max: `120000`
+    - opstarten met enkel account: `channels.discord.gatewayReadyTimeoutMs`
+    - opstarten met meerdere accounts: `channels.discord.accounts.<accountId>.gatewayReadyTimeoutMs`
+    - env-fallback bij opstarten wanneer configuratie niet is ingesteld: `OPENCLAW_DISCORD_READY_TIMEOUT_MS`
+    - standaard bij opstarten: `15000` (15 seconden), max: `120000`
+    - runtime met enkel account: `channels.discord.gatewayRuntimeReadyTimeoutMs`
+    - runtime met meerdere accounts: `channels.discord.accounts.<accountId>.gatewayRuntimeReadyTimeoutMs`
+    - env-fallback bij runtime wanneer configuratie niet is ingesteld: `OPENCLAW_DISCORD_RUNTIME_READY_TIMEOUT_MS`
+    - standaard bij runtime: `30000` (30 seconden), max: `120000`
 
   </Accordion>
 
-  <Accordion title="Mismatches in machtigingenaudit">
-    Machtigingscontroles van `channels status --probe` werken alleen voor numerieke kanaal-ID's.
+  <Accordion title="Afwijkingen in permissie-audit">
+    Permissiecontroles met `channels status --probe` werken alleen voor numerieke kanaal-ID's.
 
-    Als je slug-sleutels gebruikt, kan runtime-matching nog steeds werken, maar de probe kan machtigingen niet volledig verifiëren.
+    Als je slug-sleutels gebruikt, kan runtime-matching nog steeds werken, maar kan de probe permissies niet volledig verifiëren.
 
   </Accordion>
 
   <Accordion title="Problemen met DM en koppelen">
 
     - DM uitgeschakeld: `channels.discord.dm.enabled=false`
-    - DM-beleid uitgeschakeld: `channels.discord.dmPolicy="disabled"` (verouderd: `channels.discord.dm.policy`)
-    - wacht op goedkeuring voor koppeling in `pairing`-modus
+    - DM-beleid uitgeschakeld: `channels.discord.dmPolicy="disabled"` (legacy: `channels.discord.dm.policy`)
+    - wachten op koppelingsgoedkeuring in `pairing`-modus
 
   </Accordion>
 
-  <Accordion title="Bot-naar-bot-loops">
-    Standaard worden berichten van bots genegeerd.
+  <Accordion title="Bot-naar-bot-lussen">
+    Standaard worden berichten die door bots zijn geschreven genegeerd.
 
-    Als je `channels.discord.allowBots=true` instelt, gebruik dan strikte vermeldings- en allowlist-regels om loopgedrag te vermijden.
-    Geef de voorkeur aan `channels.discord.allowBots="mentions"` om alleen botberichten te accepteren die de bot vermelden.
+    Als je `channels.discord.allowBots=true` instelt, gebruik dan strikte vermeldings- en allowlistregels om lusgedrag te voorkomen.
+    Gebruik bij voorkeur `channels.discord.allowBots="mentions"` om alleen botberichten te accepteren die de bot vermelden.
 
 ```json5
 {
@@ -1375,15 +1385,15 @@ openclaw logs --follow
 
   </Accordion>
 
-  <Accordion title="Voice STT valt weg met DecryptionFailed(...)">
+  <Accordion title="Voice STT-uitval met DecryptionFailed(...)">
 
-    - houd OpenClaw actueel (`openclaw update`) zodat de herstel-logica voor Discord-spraakontvangst aanwezig is
+    - houd OpenClaw actueel (`openclaw update`) zodat de herstellogica voor Discord-spraakontvangst aanwezig is
     - bevestig `channels.discord.voice.daveEncryption=true` (standaard)
-    - begin met `channels.discord.voice.decryptionFailureTolerance=24` (upstream-standaard) en stem alleen af als dat nodig is
+    - begin met `channels.discord.voice.decryptionFailureTolerance=24` (upstream-standaard) en pas alleen aan indien nodig
     - let in logs op:
       - `discord voice: DAVE decrypt failures detected`
       - `discord voice: repeated decrypt failures; attempting rejoin`
-    - als fouten na automatisch opnieuw deelnemen blijven optreden, verzamel dan logs en vergelijk die met de upstream DAVE-ontvangstgeschiedenis in [discord.js #11419](https://github.com/discordjs/discord.js/issues/11419) en [discord.js #11449](https://github.com/discordjs/discord.js/pull/11449)
+    - als fouten na automatische herjoin blijven optreden, verzamel logs en vergelijk met de upstream DAVE-ontvangstgeschiedenis in [discord.js #11419](https://github.com/discordjs/discord.js/issues/11419) en [discord.js #11449](https://github.com/discordjs/discord.js/pull/11449)
 
   </Accordion>
 </AccordionGroup>
@@ -1400,21 +1410,21 @@ Primaire referentie: [Configuratiereferentie - Discord](/nl/gateway/config-chann
 - eventwachtrij: `eventQueue.listenerTimeout` (listenerbudget), `eventQueue.maxQueueSize`, `eventQueue.maxConcurrency`
 - Gateway: `gatewayInfoTimeoutMs`, `gatewayReadyTimeoutMs`, `gatewayRuntimeReadyTimeoutMs`
 - antwoord/geschiedenis: `replyToMode`, `historyLimit`, `dmHistoryLimit`, `dms.*.historyLimit`
-- levering: `textChunkLimit`, `chunkMode`, `maxLinesPerMessage`
-- streaming: `streaming` (verouderde alias: `streamMode`), `streaming.preview.toolProgress`, `draftChunk`, `blockStreaming`, `blockStreamingCoalesce`
+- aflevering: `textChunkLimit`, `chunkMode`, `maxLinesPerMessage`
+- streaming: `streaming` (legacy alias: `streamMode`), `streaming.preview.toolProgress`, `draftChunk`, `blockStreaming`, `blockStreamingCoalesce`
 - media/opnieuw proberen: `mediaMaxMb` (beperkt uitgaande Discord-uploads, standaard `100MB`), `retry`
 - acties: `actions.*`
 - aanwezigheid: `activity`, `status`, `activityType`, `activityUrl`
 - UI: `ui.components.accentColor`
-- functies: `threadBindings`, top-level `bindings[]` (`type: "acp"`), `pluralkit`, `execApprovals`, `intents`, `agentComponents`, `heartbeat`, `responsePrefix`
+- functies: `threadBindings`, topniveau `bindings[]` (`type: "acp"`), `pluralkit`, `execApprovals`, `intents`, `agentComponents`, `heartbeat`, `responsePrefix`
 
 </Accordion>
 
 ## Veiligheid en beheer
 
 - Behandel bottokens als geheimen (`DISCORD_BOT_TOKEN` heeft de voorkeur in beheerde omgevingen).
-- Verleen Discord-machtigingen met minimale privileges.
-- Als opdracht-deployment/status verouderd is, herstart dan Gateway en controleer opnieuw met `openclaw channels status --probe`.
+- Ken Discord-permissies toe volgens het principe van minimale rechten.
+- Als commandodeployment/-status verouderd is, herstart dan de Gateway en controleer opnieuw met `openclaw channels status --probe`.
 
 ## Gerelateerd
 
@@ -1423,7 +1433,7 @@ Primaire referentie: [Configuratiereferentie - Discord](/nl/gateway/config-chann
     Koppel een Discord-gebruiker aan de Gateway.
   </Card>
   <Card title="Groepen" icon="users" href="/nl/channels/groups">
-    Groepschat- en allowlist-gedrag.
+    Groepschat en allowlistgedrag.
   </Card>
   <Card title="Kanaalroutering" icon="route" href="/nl/channels/channel-routing">
     Routeer inkomende berichten naar agents.
@@ -1431,10 +1441,10 @@ Primaire referentie: [Configuratiereferentie - Discord](/nl/gateway/config-chann
   <Card title="Beveiliging" icon="shield" href="/nl/gateway/security">
     Dreigingsmodel en hardening.
   </Card>
-  <Card title="Routering voor meerdere agents" icon="sitemap" href="/nl/concepts/multi-agent">
-    Koppel guilds en kanalen aan agents.
+  <Card title="Multi-agentroutering" icon="sitemap" href="/nl/concepts/multi-agent">
+    Wijs guilds en kanalen toe aan agents.
   </Card>
-  <Card title="Slash-opdrachten" icon="terminal" href="/nl/tools/slash-commands">
-    Native opdrachtgedrag.
+  <Card title="Slash commands" icon="terminal" href="/nl/tools/slash-commands">
+    Gedrag van native opdrachten.
   </Card>
 </CardGroup>

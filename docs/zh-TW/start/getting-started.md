@@ -1,28 +1,28 @@
 ---
 read_when:
     - 從零開始的首次設定
-    - 您想要最快讓聊天功能運作起來的方式
-summary: 安裝 OpenClaw，並在幾分鐘內開始您的第一次聊天。
+    - 你想要最快讓聊天功能運作起來的途徑
+summary: 在幾分鐘內安裝 OpenClaw，並開始你的第一次聊天。
 title: 開始使用
 x-i18n:
-    generated_at: "2026-04-30T03:40:22Z"
+    generated_at: "2026-05-07T13:25:31Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fe3f92b1464ebf0a5b631c293fa4a3e4b686fdb35c1152663428025dd3c01259
+    source_hash: 295ce8fd03320027a77a3aef494f785f0fe58e0f57c72ee63f6f9aca68626c20
     source_path: start/getting-started.md
     workflow: 16
 ---
 
-安裝 OpenClaw、執行入門設定，並與你的 AI 助理聊天，全部約 5 分鐘內完成。完成後，你將擁有正在執行的 Gateway、已設定的驗證，以及可用的聊天工作階段。
+安裝 OpenClaw、執行入門設定，並與你的 AI 助理聊天，全程約 5 分鐘。完成後，你將擁有執行中的 Gateway、已設定的驗證，以及可用的聊天工作階段。
 
-## 你需要什麼
+## 你需要準備
 
-- **Node.js** — 建議使用 Node 24（也支援 Node 22.14+）
+- **Node.js** — 建議使用 Node 24（也支援 Node 22.16+）
 - **模型供應商的 API 金鑰**（Anthropic、OpenAI、Google 等）— 入門設定會提示你輸入
 
 <Tip>
 使用 `node --version` 檢查你的 Node 版本。
-**Windows 使用者：**支援原生 Windows 與 WSL2。WSL2 更穩定，建議用於完整體驗。請參閱 [Windows](/zh-TW/platforms/windows)。
+**Windows 使用者：**支援原生 Windows 與 WSL2。WSL2 較穩定，建議用於完整體驗。請參閱 [Windows](/zh-TW/platforms/windows)。
 需要安裝 Node？請參閱 [Node 設定](/zh-TW/install/node)。
 </Tip>
 
@@ -37,7 +37,7 @@ x-i18n:
         ```
         <img
   src="/assets/install-script.svg"
-  alt="Install Script Process"
+  alt="安裝腳本流程"
   className="rounded-lg"
 />
       </Tab>
@@ -49,7 +49,7 @@ x-i18n:
     </Tabs>
 
     <Note>
-    其他安裝方式（Docker、Nix、npm）：[安裝](/zh-TW/install)。
+    其他安裝方法（Docker、Nix、npm）：[安裝](/zh-TW/install)。
     </Note>
 
   </Step>
@@ -76,28 +76,29 @@ x-i18n:
     openclaw dashboard
     ```
 
-    這會在你的瀏覽器中開啟 Control UI。如果成功載入，就表示一切正常。
+    這會在瀏覽器中開啟 Control UI。如果能載入，就表示一切正常。
 
   </Step>
   <Step title="傳送你的第一則訊息">
     在 Control UI 聊天中輸入訊息，你應該會收到 AI 回覆。
 
-    想改用手機聊天？最快設定的頻道是
-    [Telegram](/zh-TW/channels/telegram)（只需要機器人權杖）。所有選項請參閱[頻道](/zh-TW/channels)。
+    想改用手機聊天嗎？最快設定的頻道是
+    [Telegram](/zh-TW/channels/telegram)（只需要一個機器人權杖）。所有選項請參閱[頻道](/zh-TW/channels)。
 
   </Step>
 </Steps>
 
 <Accordion title="進階：掛載自訂 Control UI 建置">
-  如果你維護的是在地化或自訂的儀表板建置，請將
-  `gateway.controlUi.root` 指向包含已建置靜態資產與 `index.html` 的目錄。
+  如果你維護在地化或自訂的儀表板建置，請將
+  `gateway.controlUi.root` 指向包含已建置靜態
+  資產與 `index.html` 的目錄。
 
 ```bash
 mkdir -p "$HOME/.openclaw/control-ui-custom"
 # Copy your built static files into that directory.
 ```
 
-然後設定：
+接著設定：
 
 ```json
 {
@@ -110,7 +111,7 @@ mkdir -p "$HOME/.openclaw/control-ui-custom"
 }
 ```
 
-重新啟動 gateway 並重新開啟儀表板：
+重新啟動 Gateway 並重新開啟儀表板：
 
 ```bash
 openclaw gateway restart
@@ -119,35 +120,35 @@ openclaw dashboard
 
 </Accordion>
 
-## 接下來要做什麼
+## 接下來做什麼
 
 <Columns>
   <Card title="連接頻道" href="/zh-TW/channels" icon="message-square">
-    Discord、飛書、iMessage、Matrix、Microsoft Teams、Signal、Slack、Telegram、WhatsApp、Zalo，以及更多。
+    Discord、Feishu、iMessage、Matrix、Microsoft Teams、Signal、Slack、Telegram、WhatsApp、Zalo，以及更多。
   </Card>
-  <Card title="配對與安全" href="/zh-TW/channels/pairing" icon="shield">
+  <Card title="配對與安全性" href="/zh-TW/channels/pairing" icon="shield">
     控制誰可以傳訊息給你的代理。
   </Card>
   <Card title="設定 Gateway" href="/zh-TW/gateway/configuration" icon="settings">
-    模型、工具、沙盒，以及進階設定。
+    模型、工具、沙盒與進階設定。
   </Card>
   <Card title="瀏覽工具" href="/zh-TW/tools" icon="wrench">
-    瀏覽器、exec、網頁搜尋、Skills，以及 plugins。
+    瀏覽器、exec、網頁搜尋、Skills 與 Plugins。
   </Card>
 </Columns>
 
 <Accordion title="進階：環境變數">
   如果你以服務帳號執行 OpenClaw，或想使用自訂路徑：
 
-- `OPENCLAW_HOME` — 內部路徑解析使用的主目錄
+- `OPENCLAW_HOME` — 內部路徑解析的主目錄
 - `OPENCLAW_STATE_DIR` — 覆寫狀態目錄
 - `OPENCLAW_CONFIG_PATH` — 覆寫設定檔路徑
 
 完整參考：[環境變數](/zh-TW/help/environment)。
 </Accordion>
 
-## 相關
+## 相關內容
 
-- [安裝總覽](/zh-TW/install)
-- [頻道總覽](/zh-TW/channels)
+- [安裝概覽](/zh-TW/install)
+- [頻道概覽](/zh-TW/channels)
 - [設定](/zh-TW/start/setup)

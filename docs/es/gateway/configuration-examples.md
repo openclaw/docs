@@ -3,18 +3,18 @@ read_when:
     - Aprender a configurar OpenClaw
     - Buscando ejemplos de configuración
     - Configurar OpenClaw por primera vez
-summary: Ejemplos de configuración precisos según el esquema para configuraciones comunes de OpenClaw
+summary: Ejemplos de configuración precisos conforme al esquema para configuraciones comunes de OpenClaw
 title: Ejemplos de configuración
 x-i18n:
-    generated_at: "2026-05-06T17:55:33Z"
+    generated_at: "2026-05-07T13:16:42Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 01dd16c73f1156c4012fd3956083062141825b502722b6aa34f1f90462a6823a
+    source_hash: 87c7e75841ee36121c764f1ed51b6547d0fccf7ed6c1f05895d916dbf93f061a
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Los ejemplos siguientes están alineados con el esquema de configuración actual. Para la referencia exhaustiva y las notas por campo, consulta [Configuración](/es/gateway/configuration).
+Ejemplos siguientes están alineados con el esquema de configuración actual. Para la referencia exhaustiva y las notas por campo, consulta [Configuración](/es/gateway/configuration).
 
 ## Inicio rápido
 
@@ -27,9 +27,9 @@ Los ejemplos siguientes están alineados con el esquema de configuración actual
 }
 ```
 
-Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar un DM al bot desde ese número.
+Guárdalo en `~/.openclaw/openclaw.json` y puedes enviar un mensaje directo al bot desde ese número.
 
-### Inicio recomendado
+### Configuración inicial recomendada
 
 ```json5
 {
@@ -473,7 +473,7 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar un DM al bot desde ese
 
 ## Patrones comunes
 
-### Base compartida de Skills con una anulación
+### Línea base compartida de Skills con una anulación
 
 ```json5
 {
@@ -492,7 +492,7 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar un DM al bot desde ese
 
 - `agents.defaults.skills` es la base compartida.
 - `agents.list[].skills` reemplaza esa base para un agente.
-- Usa `skills: []` cuando un agente no deba ver Skills.
+- Usa `skills: []` cuando un agente no deba ver ninguna skill.
 
 ### Configuración multiplataforma
 
@@ -515,9 +515,11 @@ Guárdalo en `~/.openclaw/openclaw.json` y podrás enviar un DM al bot desde ese
 }
 ```
 
-### Aprobación automática de red Node de confianza
+### Aprobación automática de red de Node de confianza
 
-Mantén el emparejamiento de dispositivos manual a menos que controles la ruta de red. Para un laboratorio dedicado o una subred de tailnet, puedes habilitar la aprobación automática de dispositivos Node la primera vez con CIDR o IP exactos:
+Mantén el emparejamiento de dispositivos manual salvo que controles la ruta de red. Para un laboratorio dedicado
+o una subred tailnet, puedes optar por la aprobación automática de dispositivos Node en el primer uso
+con CIDR o IP exactos:
 
 ```json5
 {
@@ -531,9 +533,11 @@ Mantén el emparejamiento de dispositivos manual a menos que controles la ruta d
 }
 ```
 
-Esto permanece desactivado cuando no se configura. Solo se aplica al emparejamiento nuevo con `role: node` sin ámbitos solicitados. Los clientes de operador/navegador y las actualizaciones de rol, ámbito, metadatos o clave pública todavía requieren aprobación manual.
+Esto permanece desactivado si no se configura. Solo se aplica al emparejamiento nuevo de `role: node` sin
+alcances solicitados. Los clientes de operador/navegador y las actualizaciones de rol, alcance, metadatos o
+clave pública aún requieren aprobación manual.
 
-### Modo de DM seguro (bandeja de entrada compartida / DMs multiusuario)
+### Modo de DM seguro (bandeja compartida / DM multiusuario)
 
 Si más de una persona puede enviar DM a tu bot (varias entradas en `allowFrom`, aprobaciones de emparejamiento para varias personas o `dmPolicy: "open"`), habilita el **modo de DM seguro** para que los DM de distintos remitentes no compartan un único contexto de forma predeterminada:
 
@@ -559,10 +563,10 @@ Si más de una persona puede enviar DM a tu bot (varias entradas en `allowFrom`,
 }
 ```
 
-Para Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, la autorización de remitentes prioriza el ID de forma predeterminada.
-Habilita la coincidencia directa por nombre/correo electrónico/apodo mutable con `dangerouslyAllowNameMatching: true` de cada canal solo si aceptas explícitamente ese riesgo.
+Para Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, la autorización del remitente se basa primero en ID de forma predeterminada.
+Habilita la coincidencia directa mutable por nombre/correo electrónico/nick con `dangerouslyAllowNameMatching: true` de cada canal solo si aceptas explícitamente ese riesgo.
 
-### Clave de API de Anthropic + respaldo de MiniMax
+### Clave de API de Anthropic + alternativa de MiniMax
 
 ```json5
 {
@@ -656,9 +660,9 @@ Habilita la coincidencia directa por nombre/correo electrónico/apodo mutable co
 ## Consejos
 
 - Si configuras `dmPolicy: "open"`, la lista `allowFrom` correspondiente debe incluir `"*"`.
-- Los ID de proveedor varían (números de teléfono, ID de usuario, ID de canal). Usa la documentación del proveedor para confirmar el formato.
-- Secciones opcionales para agregar más adelante: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
-- Consulta [Proveedores](/es/providers) y [Solución de problemas](/es/gateway/troubleshooting) para ver notas de configuración más detalladas.
+- Los ID de proveedor difieren (números de teléfono, ID de usuario, ID de canal). Usa la documentación del proveedor para confirmar el formato.
+- Secciones opcionales para agregar más adelante: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
+- Consulta [Proveedores](/es/providers) y [Solución de problemas](/es/gateway/troubleshooting) para obtener notas de configuración más detalladas.
 
 ## Relacionado
 

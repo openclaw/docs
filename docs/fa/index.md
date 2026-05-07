@@ -1,13 +1,13 @@
 ---
 read_when:
     - معرفی OpenClaw به تازه‌واردان
-summary: OpenClaw یک Gateway چندکاناله برای عامل‌های هوش مصنوعی است که روی هر سیستم‌عاملی اجرا می‌شود.
+summary: OpenClaw یک Gateway چندکانالی برای عامل‌های هوش مصنوعی است که روی هر سیستم‌عاملی اجرا می‌شود.
 title: OpenClaw
 x-i18n:
-    generated_at: "2026-04-29T23:00:54Z"
+    generated_at: "2026-05-07T13:23:37Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 923d34fa604051d502e4bc902802d6921a4b89a9447f76123aa8d2ff085f0b99
+    source_hash: 7bf82c8551703257e55289d2b82f6436c9900a8afae7ab9b6a655332716ff37b
     source_path: index.md
     workflow: 16
 ---
@@ -29,41 +29,41 @@ x-i18n:
     />
 </p>
 
-> _"لایه‌برداری کن! لایه‌برداری کن!"_ — احتمالاً یک خرچنگ فضایی
+> _"EXFOLIATE! EXFOLIATE!"_ — احتمالاً یک خرچنگ فضایی
 
 <p align="center">
-  <strong>Gateway برای هر سیستم‌عامل، برای عامل‌های هوش مصنوعی در Discord، Google Chat، iMessage، Matrix، Microsoft Teams، Signal، Slack، Telegram، WhatsApp، Zalo و موارد بیشتر.</strong><br />
-  پیام بفرستید و پاسخ عامل را از جیب خود دریافت کنید. یک Gateway را در کانال‌های داخلی، Plugin‌های کانال همراه، WebChat و Node‌های موبایل اجرا کنید.
+  <strong>Gateway برای هر سیستم‌عاملی، مخصوص عامل‌های هوش مصنوعی در Discord، Google Chat، iMessage، Matrix، Microsoft Teams، Signal، Slack، Telegram، WhatsApp، Zalo و موارد بیشتر.</strong><br />
+  یک پیام بفرستید و از داخل جیب خود پاسخ عامل را دریافت کنید. یک Gateway را در میان کانال‌های داخلی، Pluginهای کانال همراه، WebChat و گره‌های موبایل اجرا کنید.
 </p>
 
 <Columns>
   <Card title="شروع کنید" href="/fa/start/getting-started" icon="rocket">
-    OpenClaw را نصب کنید و Gateway را در چند دقیقه راه‌اندازی کنید.
+    OpenClaw را نصب کنید و Gateway را در چند دقیقه بالا بیاورید.
   </Card>
   <Card title="اجرای راه‌اندازی اولیه" href="/fa/start/wizard" icon="sparkles">
     راه‌اندازی هدایت‌شده با `openclaw onboard` و جریان‌های جفت‌سازی.
   </Card>
   <Card title="باز کردن رابط کنترل" href="/fa/web/control-ui" icon="layout-dashboard">
-    داشبورد مرورگر را برای گفت‌وگو، پیکربندی و نشست‌ها اجرا کنید.
+    داشبورد مرورگر را برای چت، پیکربندی و نشست‌ها اجرا کنید.
   </Card>
 </Columns>
 
 ## OpenClaw چیست؟
 
-OpenClaw یک **Gateway خودمیزبان** است که برنامه‌های گفت‌وگو و سطوح کانالی محبوب شما را — کانال‌های داخلی به‌همراه Plugin‌های کانال همراه یا خارجی مانند Discord، Google Chat، iMessage، Matrix، Microsoft Teams، Signal، Slack، Telegram، WhatsApp، Zalo و موارد بیشتر — به عامل‌های کدنویسی هوش مصنوعی مانند Pi متصل می‌کند. شما یک فرایند Gateway واحد را روی دستگاه خودتان (یا یک سرور) اجرا می‌کنید و این فرایند به پل میان برنامه‌های پیام‌رسان شما و یک دستیار هوش مصنوعی همیشه دردسترس تبدیل می‌شود.
+OpenClaw یک **Gateway خودمیزبان** است که برنامه‌های چت و سطح‌های کانالی محبوب شما را — کانال‌های داخلی به‌همراه Pluginهای کانال همراه یا خارجی مانند Discord، Google Chat، iMessage، Matrix، Microsoft Teams، Signal، Slack، Telegram، WhatsApp، Zalo و موارد بیشتر — به عامل‌های کدنویسی هوش مصنوعی مانند Pi وصل می‌کند. شما یک فرایند Gateway واحد را روی دستگاه خودتان (یا یک سرور) اجرا می‌کنید، و این فرایند به پل میان برنامه‌های پیام‌رسان شما و یک دستیار هوش مصنوعی همیشه در دسترس تبدیل می‌شود.
 
-**برای چه کسانی است؟** توسعه‌دهندگان و کاربران حرفه‌ای که یک دستیار هوش مصنوعی شخصی می‌خواهند که بتوانند از هر جا به آن پیام بدهند، بدون اینکه کنترل داده‌هایشان را واگذار کنند یا به یک سرویس میزبانی‌شده وابسته باشند.
+**برای چه کسانی است؟** توسعه‌دهندگان و کاربران حرفه‌ای که یک دستیار هوش مصنوعی شخصی می‌خواهند که بتوانند از هرجا به آن پیام بدهند — بدون این‌که کنترل داده‌هایشان را از دست بدهند یا به یک سرویس میزبانی‌شده وابسته باشند.
 
 **چه چیزی آن را متفاوت می‌کند؟**
 
 - **خودمیزبان**: روی سخت‌افزار شما و طبق قواعد شما اجرا می‌شود
-- **چندکاناله**: یک Gateway به‌طور هم‌زمان کانال‌های داخلی و Plugin‌های کانال همراه یا خارجی را سرویس می‌دهد
-- **عامل‌محور**: برای عامل‌های کدنویسی با استفاده از ابزار، نشست‌ها، حافظه و مسیریابی چندعاملی ساخته شده است
-- **متن‌باز**: با مجوز MIT و جامعه‌محور
+- **چندکاناله**: یک Gateway هم‌زمان کانال‌های داخلی و Pluginهای کانال همراه یا خارجی را سرویس می‌دهد
+- **بومی عامل**: برای عامل‌های کدنویسی با استفاده از ابزار، نشست‌ها، حافظه و مسیریابی چندعاملی ساخته شده است
+- **متن‌باز**: دارای مجوز MIT و جامعه‌محور
 
-**به چه چیزهایی نیاز دارید؟** Node 24 (توصیه‌شده)، یا Node 22 LTS (`22.14+`) برای سازگاری، یک کلید API از ارائه‌دهنده انتخابی شما، و ۵ دقیقه زمان. برای بهترین کیفیت و امنیت، از قوی‌ترین مدل نسل جدید موجود استفاده کنید.
+**به چه چیزی نیاز دارید؟** Node 24 (پیشنهادی)، یا Node 22 LTS (`22.16+`) برای سازگاری، یک کلید API از ارائه‌دهنده انتخابی‌تان، و ۵ دقیقه زمان. برای بهترین کیفیت و امنیت، از قوی‌ترین مدل نسل جدید موجود استفاده کنید.
 
-## چگونه کار می‌کند
+## سازوکار
 
 ```mermaid
 flowchart LR
@@ -75,7 +75,7 @@ flowchart LR
   B --> G["iOS and Android nodes"]
 ```
 
-Gateway منبع واحد حقیقت برای نشست‌ها، مسیریابی و اتصال‌های کانالی است.
+Gateway منبع واحد حقیقت برای نشست‌ها، مسیریابی و اتصال‌های کانال است.
 
 ## قابلیت‌های کلیدی
 
@@ -84,19 +84,19 @@ Gateway منبع واحد حقیقت برای نشست‌ها، مسیریابی
     Discord، iMessage، Signal، Slack، Telegram، WhatsApp، WebChat و موارد بیشتر با یک فرایند Gateway واحد.
   </Card>
   <Card title="کانال‌های Plugin" icon="plug" href="/fa/tools/plugin">
-    Plugin‌های همراه، Matrix، Nostr، Twitch، Zalo و موارد بیشتر را در نسخه‌های عادی فعلی اضافه می‌کنند.
+    Pluginهای همراه، Matrix، Nostr، Twitch، Zalo و موارد بیشتر را در انتشارهای عادی و فعلی اضافه می‌کنند.
   </Card>
   <Card title="مسیریابی چندعاملی" icon="route" href="/fa/concepts/multi-agent">
     نشست‌های ایزوله برای هر عامل، فضای کاری یا فرستنده.
   </Card>
-  <Card title="پشتیبانی از رسانه" icon="image" href="/fa/nodes/images">
+  <Card title="پشتیبانی رسانه" icon="image" href="/fa/nodes/images">
     تصویر، صدا و سند ارسال و دریافت کنید.
   </Card>
   <Card title="رابط کنترل وب" icon="monitor" href="/fa/web/control-ui">
-    داشبورد مرورگر برای گفت‌وگو، پیکربندی، نشست‌ها و Node‌ها.
+    داشبورد مرورگر برای چت، پیکربندی، نشست‌ها و گره‌ها.
   </Card>
-  <Card title="Node‌های موبایل" icon="smartphone" href="/fa/nodes">
-    Node‌های iOS و Android را برای جریان‌های کاری مجهز به Canvas، دوربین و صدا جفت کنید.
+  <Card title="گره‌های موبایل" icon="smartphone" href="/fa/nodes">
+    گره‌های iOS و Android را برای جریان‌های کاری دارای Canvas، دوربین و صدا جفت کنید.
   </Card>
 </Columns>
 
@@ -113,14 +113,14 @@ Gateway منبع واحد حقیقت برای نشست‌ها، مسیریابی
     openclaw onboard --install-daemon
     ```
   </Step>
-  <Step title="گفت‌وگو">
-    رابط کنترل را در مرورگر خود باز کنید و پیام بفرستید:
+  <Step title="چت">
+    رابط کنترل را در مرورگر خود باز کنید و یک پیام بفرستید:
 
     ```bash
     openclaw dashboard
     ```
 
-    یا یک کانال را متصل کنید ([Telegram](/fa/channels/telegram) سریع‌ترین است) و از تلفن خود گفت‌وگو کنید.
+    یا یک کانال وصل کنید ([Telegram](/fa/channels/telegram) سریع‌ترین است) و از گوشی خود چت کنید.
 
   </Step>
 </Steps>
@@ -132,7 +132,7 @@ Gateway منبع واحد حقیقت برای نشست‌ها، مسیریابی
 پس از شروع Gateway، رابط کنترل مرورگر را باز کنید.
 
 - پیش‌فرض محلی: [http://127.0.0.1:18789/](http://127.0.0.1:18789/)
-- دسترسی راه‌دور: [سطوح وب](/fa/web) و [Tailscale](/fa/gateway/tailscale)
+- دسترسی از راه دور: [سطح‌های وب](/fa/web) و [Tailscale](/fa/gateway/tailscale)
 
 <p align="center">
   <img src="/whatsapp-openclaw.jpg" alt="OpenClaw" width="420" />
@@ -142,10 +142,10 @@ Gateway منبع واحد حقیقت برای نشست‌ها، مسیریابی
 
 پیکربندی در `~/.openclaw/openclaw.json` قرار دارد.
 
-- اگر **کاری انجام ندهید**، OpenClaw از باینری همراه Pi در حالت RPC با نشست‌های جداگانه برای هر فرستنده استفاده می‌کند.
+- اگر **هیچ کاری نکنید**، OpenClaw از باینری Pi همراه در حالت RPC با نشست‌های جداگانه برای هر فرستنده استفاده می‌کند.
 - اگر می‌خواهید آن را محدود کنید، با `channels.whatsapp.allowFrom` و (برای گروه‌ها) قواعد اشاره شروع کنید.
 
-نمونه:
+مثال:
 
 ```json5
 {
@@ -162,30 +162,30 @@ Gateway منبع واحد حقیقت برای نشست‌ها، مسیریابی
 ## از اینجا شروع کنید
 
 <Columns>
-  <Card title="هاب‌های مستندات" href="/fa/start/hubs" icon="book-open">
+  <Card title="مرکزهای مستندات" href="/fa/start/hubs" icon="book-open">
     همه مستندات و راهنماها، سازمان‌دهی‌شده بر اساس مورد استفاده.
   </Card>
   <Card title="پیکربندی" href="/fa/gateway/configuration" icon="settings">
     تنظیمات اصلی Gateway، توکن‌ها و پیکربندی ارائه‌دهنده.
   </Card>
-  <Card title="دسترسی راه‌دور" href="/fa/gateway/remote" icon="globe">
+  <Card title="دسترسی از راه دور" href="/fa/gateway/remote" icon="globe">
     الگوهای دسترسی SSH و tailnet.
   </Card>
   <Card title="کانال‌ها" href="/fa/channels/telegram" icon="message-square">
-    راه‌اندازی ویژه هر کانال برای Feishu، Microsoft Teams، WhatsApp، Telegram، Discord و موارد بیشتر.
+    راه‌اندازی مخصوص کانال برای Feishu، Microsoft Teams، WhatsApp، Telegram، Discord و موارد بیشتر.
   </Card>
-  <Card title="Node‌ها" href="/fa/nodes" icon="smartphone">
-    Node‌های iOS و Android با جفت‌سازی، Canvas، دوربین و کنش‌های دستگاه.
+  <Card title="گره‌ها" href="/fa/nodes" icon="smartphone">
+    گره‌های iOS و Android با جفت‌سازی، Canvas، دوربین و کنش‌های دستگاه.
   </Card>
   <Card title="راهنما" href="/fa/help" icon="life-buoy">
-    اصلاحات رایج و نقطه ورود عیب‌یابی.
+    نقطه ورود برای رفع مشکلات رایج و عیب‌یابی.
   </Card>
 </Columns>
 
 ## بیشتر بیاموزید
 
 <Columns>
-  <Card title="فهرست کامل ویژگی‌ها" href="/fa/concepts/features" icon="list">
+  <Card title="فهرست کامل قابلیت‌ها" href="/fa/concepts/features" icon="list">
     قابلیت‌های کامل کانال، مسیریابی و رسانه.
   </Card>
   <Card title="مسیریابی چندعاملی" href="/fa/concepts/multi-agent" icon="route">
@@ -195,7 +195,7 @@ Gateway منبع واحد حقیقت برای نشست‌ها، مسیریابی
     توکن‌ها، فهرست‌های مجاز و کنترل‌های ایمنی.
   </Card>
   <Card title="عیب‌یابی" href="/fa/gateway/troubleshooting" icon="wrench">
-    عیب‌یابی Gateway و خطاهای رایج.
+    تشخیص‌های Gateway و خطاهای رایج.
   </Card>
   <Card title="درباره و قدردانی‌ها" href="/fa/reference/credits" icon="info">
     خاستگاه پروژه، مشارکت‌کنندگان و مجوز.

@@ -1,14 +1,14 @@
 ---
 read_when:
     - تريد إضافة/إزالة حسابات القنوات (WhatsApp/Telegram/Discord/Google Chat/Slack/Mattermost (Plugin)/Signal/iMessage/Matrix)
-    - تريد التحقق من حالة القناة أو متابعة سجلات القناة
+    - تريد التحقق من حالة القناة أو تتبّع سجلات القناة
 summary: مرجع CLI لـ `openclaw channels` (الحسابات، الحالة، تسجيل الدخول/تسجيل الخروج، السجلات)
 title: القنوات
 x-i18n:
-    generated_at: "2026-05-02T07:20:25Z"
+    generated_at: "2026-05-07T13:13:21Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3aff374e81e0845805b9baf09d6b63dfe8270cb48606f74f3f1f2dcd56b552c4
+    source_hash: a78d7a5306c822314052151e0a9aa8bed347481f59d9a19f92240dfa562e4b23
     source_path: cli/channels.md
     workflow: 16
 ---
@@ -26,26 +26,29 @@ x-i18n:
 
 ```bash
 openclaw channels list
+openclaw channels list --all
 openclaw channels status
 openclaw channels capabilities
 openclaw channels capabilities --channel discord --target channel:123
+openclaw channels capabilities --channel discord --target channel:<voice-channel-id>
 openclaw channels resolve --channel slack "#general" "@jane"
 openclaw channels logs --channel all
 ```
 
-## الحالة / القدرات / حلّ الأسماء / السجلات
+يعرض `channels list` قنوات الدردشة فقط: الحسابات المضبوطة افتراضيا، مع وسوم حالة `installed` و`configured` و`enabled` لكل حساب. مرر `--all` لإظهار القنوات المضمّنة التي لا تملك حسابا مضبوطا بعد، وقنوات الكتالوج القابلة للتثبيت غير الموجودة على القرص بعد. لم تعد موفّرات المصادقة (OAuth + مفاتيح API) ولقطات استخدام/حصة موفّر النماذج تُطبع هنا؛ استخدم `openclaw models auth list` لملفات مصادقة الموفّر، و`openclaw status` أو `openclaw models list` للاستخدام.
 
-- `channels status`: `--probe`, `--timeout <ms>`, `--json`
-- `channels capabilities`: `--channel <name>`, `--account <id>` (فقط مع `--channel`)، `--target <dest>`, `--timeout <ms>`, `--json`
-- `channels resolve`: `<entries...>`, `--channel <name>`, `--account <id>`, `--kind <auto|user|group>`, `--json`
-- `channels logs`: `--channel <name|all>`, `--lines <n>`, `--json`
+## الحالة / الإمكانات / الحل / السجلات
 
-`channels status --probe` هو المسار الحي: على Gateway قابل للوصول، يشغّل فحوصات `probeAccount` لكل حساب وفحوصات `auditAccount` الاختيارية، لذلك يمكن أن يتضمن الإخراج حالة النقل بالإضافة إلى نتائج الفحص مثل `works` أو `probe failed` أو `audit ok` أو `audit failed`.
-إذا تعذر الوصول إلى Gateway، يعود `channels status` إلى ملخصات مبنية على الإعدادات فقط بدلًا من إخراج الفحص الحي.
+- `channels status`: `--probe`، `--timeout <ms>`، `--json`
+- `channels capabilities`: `--channel <name>`، `--account <id>` (فقط مع `--channel`)، `--target <dest>`، `--timeout <ms>`، `--json`
+- `channels resolve`: `<entries...>`، `--channel <name>`، `--account <id>`، `--kind <auto|user|group>`، `--json`
+- `channels logs`: `--channel <name|all>`، `--lines <n>`، `--json`
 
-لا تستخدم `openclaw sessions` أو `sessions.list` في Gateway أو أداة الوكيل `sessions_list` كإشارة لصحة مقبس القناة. هذه الأسطح تعرض صفوف المحادثات المخزنة، وليس حالة تشغيل المزوّد. بعد إعادة تشغيل مزوّد Discord، قد يكون الحساب المتصل والهادئ سليمًا حتى لو لم يظهر صف جلسة Discord إلى أن يقع حدث المحادثة الوارد أو الصادر التالي.
+يمثّل `channels status --probe` المسار الحي: على Gateway قابل للوصول، يشغّل فحوص `probeAccount` و`auditAccount` الاختيارية لكل حساب، لذلك يمكن أن تتضمن المخرجات حالة النقل إضافة إلى نتائج الفحص مثل `works` أو `probe failed` أو `audit ok` أو `audit failed`. إذا تعذر الوصول إلى Gateway، يعود `channels status` إلى ملخصات تعتمد على الإعدادات فقط بدلا من مخرجات الفحص الحي.
 
-## إضافة الحسابات / إزالتها
+لا تستخدم `openclaw sessions` أو `sessions.list` في Gateway أو أداة الوكيل `sessions_list` كإشارة لصحة مقبس القناة. هذه الأسطح تعرض صفوف المحادثات المخزنة، لا حالة تشغيل الموفّر. بعد إعادة تشغيل موفّر Discord، قد يكون الحساب المتصل لكنه هادئ سليما مع عدم ظهور أي صف جلسة Discord حتى حدث المحادثة الوارد أو الصادر التالي.
+
+## إضافة / إزالة الحسابات
 
 ```bash
 openclaw channels add --channel telegram --token <bot-token>
@@ -54,43 +57,42 @@ openclaw channels remove --channel telegram --delete
 ```
 
 <Tip>
-يعرض `openclaw channels add --help` أعلامًا خاصة بكل قناة (الرمز، المفتاح الخاص، رمز التطبيق، مسارات signal-cli، وما إلى ذلك).
+يعرض `openclaw channels add --help` أعلام كل قناة (الرمز، المفتاح الخاص، رمز التطبيق، مسارات signal-cli، وغير ذلك).
 </Tip>
 
-يعمل `channels remove` فقط على Plugins القنوات المثبتة/المكوّنة. استخدم `channels add` أولًا لقنوات الكتالوج القابلة للتثبيت.
-بالنسبة إلى Plugins القنوات المدعومة بوقت التشغيل، يطلب `channels remove` أيضًا من Gateway العامل إيقاف الحساب المحدد قبل تحديث الإعدادات، بحيث لا يترك تعطيل الحساب أو حذفه المستمع القديم نشطًا حتى إعادة التشغيل.
+يعمل `channels remove` فقط على Plugins القنوات المثبتة/المضبوطة. استخدم `channels add` أولا لقنوات الكتالوج القابلة للتثبيت. بالنسبة إلى Plugins القنوات المدعومة بوقت التشغيل، يطلب `channels remove` أيضا من Gateway الجاري إيقاف الحساب المحدد قبل تحديث الإعدادات، لذلك لا يترك تعطيل حساب أو حذفه المستمع القديم نشطا حتى إعادة التشغيل.
 
 تشمل أسطح الإضافة غير التفاعلية الشائعة:
 
-- قنوات رمز البوت: `--token`, `--bot-token`, `--app-token`, `--token-file`
-- حقول نقل Signal/iMessage: `--signal-number`, `--cli-path`, `--http-url`, `--http-host`, `--http-port`, `--db-path`, `--service`, `--region`
-- حقول Google Chat: `--webhook-path`, `--webhook-url`, `--audience-type`, `--audience`
-- حقول Matrix: `--homeserver`, `--user-id`, `--access-token`, `--password`, `--device-name`, `--initial-sync-limit`
-- حقول Nostr: `--private-key`, `--relay-urls`
-- حقول Tlon: `--ship`, `--url`, `--code`, `--group-channels`, `--dm-allowlist`, `--auto-discover-channels`
-- `--use-env` للمصادقة المدعومة بمتغيرات البيئة لحساب افتراضي حيثما كان ذلك مدعومًا
+- قنوات bot-token: `--token`، `--bot-token`، `--app-token`، `--token-file`
+- حقول نقل Signal/iMessage: `--signal-number`، `--cli-path`، `--http-url`، `--http-host`، `--http-port`، `--db-path`، `--service`، `--region`
+- حقول Google Chat: `--webhook-path`، `--webhook-url`، `--audience-type`، `--audience`
+- حقول Matrix: `--homeserver`، `--user-id`، `--access-token`، `--password`، `--device-name`، `--initial-sync-limit`
+- حقول Nostr: `--private-key`، `--relay-urls`
+- حقول Tlon: `--ship`، `--url`، `--code`، `--group-channels`، `--dm-allowlist`، `--auto-discover-channels`
+- `--use-env` للمصادقة المدعومة بالبيئة للحساب الافتراضي حيث تكون مدعومة
 
-إذا كان يجب تثبيت Plugin قناة أثناء أمر إضافة موجّه بالأعلام، يستخدم OpenClaw مصدر التثبيت الافتراضي للقناة من دون فتح مطالبة تثبيت Plugin التفاعلية.
+إذا احتاج Plugin قناة إلى التثبيت أثناء أمر إضافة مدفوع بالأعلام، يستخدم OpenClaw مصدر التثبيت الافتراضي للقناة بدون فتح مطالبة تثبيت Plugin التفاعلية.
 
-عند تشغيل `openclaw channels add` من دون أعلام، يمكن للمعالج التفاعلي أن يطالبك بما يلي:
+عند تشغيل `openclaw channels add` بدون أعلام، يمكن للمعالج التفاعلي أن يطلب:
 
 - معرّفات الحسابات لكل قناة محددة
 - أسماء عرض اختيارية لتلك الحسابات
 - `Bind configured channel accounts to agents now?`
 
-إذا أكدت الربط الآن، يسألك المعالج أي وكيل يجب أن يملك كل حساب قناة مكوّنًا ويكتب ارتباطات توجيه محددة النطاق بالحساب.
+إذا أكدت الربط الآن، يسأل المعالج أي وكيل يجب أن يملك كل حساب قناة مضبوط، ويكتب ربطات التوجيه المحددة بنطاق الحساب.
 
-يمكنك أيضًا إدارة قواعد التوجيه نفسها لاحقًا باستخدام `openclaw agents bindings` و`openclaw agents bind` و`openclaw agents unbind` (راجع [الوكلاء](/ar/cli/agents)).
+يمكنك أيضا إدارة قواعد التوجيه نفسها لاحقا باستخدام `openclaw agents bindings` و`openclaw agents bind` و`openclaw agents unbind` (راجع [الوكلاء](/ar/cli/agents)).
 
-عند إضافة حساب غير افتراضي إلى قناة لا تزال تستخدم إعدادات ذات حساب واحد في المستوى الأعلى، يرقّي OpenClaw القيم ذات الحساب في المستوى الأعلى إلى خريطة حسابات القناة قبل كتابة الحساب الجديد. تصل معظم القنوات بهذه القيم إلى `channels.<channel>.accounts.default`، لكن القنوات المضمّنة يمكنها بدلًا من ذلك الاحتفاظ بحساب موجود مطابق ومُرقّى. Matrix هو المثال الحالي: إذا كان هناك حساب واحد مسمى موجود بالفعل، أو كان `defaultAccount` يشير إلى حساب مسمى موجود، فإن الترقية تحتفظ بذلك الحساب بدلًا من إنشاء `accounts.default` جديد.
+عند إضافة حساب غير افتراضي إلى قناة ما زالت تستخدم إعدادات علوية لحساب واحد، يرقّي OpenClaw القيم العلوية المحددة بنطاق الحساب إلى خريطة حسابات القناة قبل كتابة الحساب الجديد. تهبط معظم القنوات بهذه القيم في `channels.<channel>.accounts.default`، لكن يمكن للقنوات المضمّنة الحفاظ على حساب مرقّى مطابق موجود بدلا من ذلك. Matrix هو المثال الحالي: إذا كان حساب واحد مسمى موجودا بالفعل، أو كان `defaultAccount` يشير إلى حساب مسمى موجود، فإن الترقية تحفظ ذلك الحساب بدلا من إنشاء `accounts.default` جديد.
 
-يبقى سلوك التوجيه متسقًا:
+يبقى سلوك التوجيه متسقا:
 
-- تستمر ارتباطات القناة فقط الموجودة (دون `accountId`) في مطابقة الحساب الافتراضي.
-- لا ينشئ `channels add` الارتباطات تلقائيًا ولا يعيد كتابتها في الوضع غير التفاعلي.
-- يمكن للإعداد التفاعلي أن يضيف اختياريًا ارتباطات محددة النطاق بالحساب.
+- تستمر ربطات القناة فقط الموجودة (بدون `accountId`) في مطابقة الحساب الافتراضي.
+- لا ينشئ `channels add` الربطات تلقائيا ولا يعيد كتابتها في الوضع غير التفاعلي.
+- يمكن للإعداد التفاعلي أن يضيف اختياريا ربطات محددة بنطاق الحساب.
 
-إذا كانت إعداداتك موجودة بالفعل في حالة مختلطة (حسابات مسماة موجودة وقيم حساب واحد في المستوى الأعلى لا تزال مضبوطة)، فشغّل `openclaw doctor --fix` لنقل القيم محددة النطاق بالحساب إلى الحساب المُرقّى المختار لتلك القناة. تروّج معظم القنوات إلى `accounts.default`؛ يمكن لـ Matrix الاحتفاظ بهدف مسمى/افتراضي موجود بدلًا من ذلك.
+إذا كانت إعداداتك في حالة مختلطة مسبقا (حسابات مسماة موجودة وقيم علوية لحساب واحد ما زالت مضبوطة)، شغّل `openclaw doctor --fix` لنقل القيم المحددة بنطاق الحساب إلى الحساب المرقّى المختار لتلك القناة. ترقّي معظم القنوات إلى `accounts.default`؛ ويمكن لـ Matrix الحفاظ على هدف مسمى/افتراضي موجود بدلا من ذلك.
 
 ## تسجيل الدخول وتسجيل الخروج (تفاعلي)
 
@@ -100,20 +102,20 @@ openclaw channels logout --channel whatsapp
 ```
 
 - يدعم `channels login` الخيار `--verbose`.
-- يمكن لـ `channels login` و`logout` استنتاج القناة عندما يكون هناك هدف تسجيل دخول مدعوم واحد فقط مكوّن.
-- يفضّل `channels logout` مسار Gateway الحي عندما يكون قابلًا للوصول، بحيث يوقف تسجيل الخروج أي مستمع نشط قبل مسح حالة مصادقة القناة. إذا لم يكن Gateway المحلي قابلًا للوصول، فإنه يعود إلى تنظيف المصادقة المحلي.
-- شغّل `channels login` من طرفية على مضيف Gateway. يحظر `exec` الخاص بالوكيل تدفق تسجيل الدخول التفاعلي هذا؛ يجب استخدام أدوات تسجيل دخول الوكيل الأصلية للقناة، مثل `whatsapp_login`، من الدردشة عند توفرها.
+- يستطيع `channels login` و`logout` استنتاج القناة عندما يكون هدف تسجيل دخول واحد مدعوم فقط مضبوطا.
+- يفضّل `channels logout` مسار Gateway الحي عندما يكون قابلا للوصول، بحيث يوقف تسجيل الخروج أي مستمع نشط قبل مسح حالة مصادقة القناة. إذا لم يكن Gateway المحلي قابلا للوصول، فإنه يعود إلى تنظيف المصادقة محليا.
+- شغّل `channels login` من طرفية على مضيف Gateway. يحجب `exec` الخاص بالوكيل تدفق تسجيل الدخول التفاعلي هذا؛ يجب استخدام أدوات تسجيل الدخول الأصلية للقناة الخاصة بالوكيل، مثل `whatsapp_login`، من الدردشة عندما تكون متاحة.
 
 ## استكشاف الأخطاء وإصلاحها
 
-- شغّل `openclaw status --deep` لإجراء فحص واسع.
-- استخدم `openclaw doctor` للإصلاحات الموجّهة.
-- يطبع `openclaw channels list` العبارة `Claude: HTTP 403 ... user:profile` ← تحتاج لقطة الاستخدام إلى نطاق `user:profile`. استخدم `--no-usage`، أو وفّر مفتاح جلسة claude.ai (`CLAUDE_WEB_SESSION_KEY` / `CLAUDE_WEB_COOKIE`)، أو أعد المصادقة عبر Claude CLI.
-- يعود `openclaw channels status` إلى ملخصات مبنية على الإعدادات فقط عندما لا يمكن الوصول إلى Gateway. إذا كانت بيانات اعتماد قناة مدعومة مكوّنة عبر SecretRef لكنها غير متاحة في مسار الأمر الحالي، فإنه يبلّغ عن ذلك الحساب باعتباره مكوّنًا مع ملاحظات تدهور بدلًا من إظهاره كغير مكوّن.
+- شغّل `openclaw status --deep` لفحص واسع.
+- استخدم `openclaw doctor` لإصلاحات موجهة.
+- لم يعد `openclaw channels list` يطبع لقطات استخدام/حصة موفّر النماذج. لهذه، استخدم `openclaw status` (نظرة عامة) أو `openclaw models list` (لكل موفّر).
+- يعود `openclaw channels status` إلى ملخصات تعتمد على الإعدادات فقط عندما يتعذر الوصول إلى Gateway. إذا كانت بيانات اعتماد قناة مدعومة مضبوطة عبر SecretRef لكنها غير متاحة في مسار الأمر الحالي، فإنه يبلّغ عن ذلك الحساب كحساب مضبوط مع ملاحظات تدهور بدلا من إظهاره كغير مضبوط.
 
-## فحص القدرات
+## فحص الإمكانات
 
-اجلب تلميحات قدرات المزوّد (النوايا/النطاقات حيثما توفرت) بالإضافة إلى دعم الميزات الثابت:
+اجلب تلميحات إمكانات الموفّر (النوايا/النطاقات حيثما تكون متاحة) إضافة إلى دعم الميزات الثابت:
 
 ```bash
 openclaw channels capabilities
@@ -122,14 +124,14 @@ openclaw channels capabilities --channel discord --target channel:123
 
 ملاحظات:
 
-- `--channel` اختياري؛ احذفه لسرد كل قناة (بما في ذلك الامتدادات).
+- `--channel` اختياري؛ احذفه لسرد كل قناة (بما في ذلك الإضافات).
 - `--account` صالح فقط مع `--channel`.
-- يقبل `--target` القيمة `channel:<id>` أو معرّف قناة رقميًا خامًا، وينطبق فقط على Discord.
-- الفحوصات خاصة بالمزوّد: نوايا Discord + أذونات القناة الاختيارية؛ نطاقات بوت Slack والمستخدم؛ أعلام بوت Telegram + Webhook؛ إصدار عفريت Signal؛ رمز تطبيق Microsoft Teams + أدوار/نطاقات Graph (مشروحة حيثما عُرفت). القنوات التي لا تحتوي على فحوصات تعرض `Probe: unavailable`.
+- يقبل `--target` الصيغة `channel:<id>` أو معرّف قناة رقمي خام، ولا ينطبق إلا على Discord. بالنسبة إلى قنوات الصوت في Discord، يعلّم فحص الأذونات النواقص في `ViewChannel` و`Connect` و`Speak` و`SendMessages` و`ReadMessageHistory`.
+- الفحوص خاصة بالموفّر: نوايا Discord + أذونات قناة اختيارية؛ نطاقات بوت Slack + المستخدم؛ أعلام بوت Telegram + Webhook؛ إصدار عفريت Signal؛ رمز تطبيق Microsoft Teams + أدوار/نطاقات Graph (معلّمة حيثما تكون معروفة). القنوات التي لا تملك فحوصا تبلّغ `Probe: unavailable`.
 
-## حلّ الأسماء إلى معرّفات
+## حل الأسماء إلى معرّفات
 
-حوّل أسماء القنوات/المستخدمين إلى معرّفات باستخدام دليل المزوّد:
+حل أسماء القنوات/المستخدمين إلى معرّفات باستخدام دليل الموفّر:
 
 ```bash
 openclaw channels resolve --channel slack "#general" "@jane"
@@ -140,9 +142,9 @@ openclaw channels resolve --channel matrix "Project Room"
 ملاحظات:
 
 - استخدم `--kind user|group|auto` لفرض نوع الهدف.
-- يفضّل الحل المطابقات النشطة عندما تشترك عدة إدخالات في الاسم نفسه.
-- `channels resolve` للقراءة فقط. إذا كان حساب محدد مكوّنًا عبر SecretRef لكن بيانات الاعتماد تلك غير متاحة في مسار الأمر الحالي، يعيد الأمر نتائج غير محلولة ومتدهورة مع ملاحظات بدلًا من إيقاف التشغيل بالكامل.
-- لا يثبت `channels resolve` Plugins القنوات. استخدم `channels add --channel <name>` قبل حل الأسماء لقناة كتالوج قابلة للتثبيت.
+- يفضّل الحل المطابقات النشطة عندما تتشارك عدة إدخالات الاسم نفسه.
+- `channels resolve` للقراءة فقط. إذا كان حساب محدد مضبوطا عبر SecretRef لكن بيانات الاعتماد تلك غير متاحة في مسار الأمر الحالي، يرجع الأمر نتائج غير محلولة متدهورة مع ملاحظات بدلا من إجهاض التشغيل بأكمله.
+- لا يثبّت `channels resolve` Plugins القنوات. استخدم `channels add --channel <name>` قبل حل الأسماء لقناة كتالوج قابلة للتثبيت.
 
 ## ذات صلة
 

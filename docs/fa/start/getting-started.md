@@ -1,32 +1,32 @@
 ---
 read_when:
     - راه‌اندازی اولیه از صفر
-    - شما سریع‌ترین راه برای راه‌اندازی یک چتِ کارا را می‌خواهید
-summary: OpenClaw را نصب کنید و نخستین گفت‌وگوی خود را در چند دقیقه اجرا کنید.
+    - سریع‌ترین مسیر برای راه‌اندازی یک گفت‌وگوی فعال را می‌خواهید
+summary: OpenClaw را نصب کنید و نخستین گفت‌وگوی خود را در چند دقیقه راه‌اندازی کنید.
 title: شروع به کار
 x-i18n:
-    generated_at: "2026-04-29T23:36:43Z"
+    generated_at: "2026-05-07T13:32:00Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fe3f92b1464ebf0a5b631c293fa4a3e4b686fdb35c1152663428025dd3c01259
+    source_hash: 295ce8fd03320027a77a3aef494f785f0fe58e0f57c72ee63f6f9aca68626c20
     source_path: start/getting-started.md
     workflow: 16
 ---
 
-OpenClaw را نصب کنید، onboarding را اجرا کنید و با دستیار هوش مصنوعی خود گپ بزنید — همه در
+OpenClaw را نصب کنید، راه‌اندازی اولیه را اجرا کنید و با دستیار هوش مصنوعی خود گفت‌وگو کنید؛ همه در
 حدود ۵ دقیقه. در پایان، یک Gateway در حال اجرا، احراز هویت پیکربندی‌شده
 و یک نشست گفت‌وگوی فعال خواهید داشت.
 
 ## آنچه نیاز دارید
 
-- **Node.js** — Node 24 توصیه می‌شود (Node 22.14+ نیز پشتیبانی می‌شود)
-- **یک کلید API** از یک ارائه‌دهنده مدل (Anthropic، OpenAI، Google و غیره) — onboarding از شما درخواست می‌کند
+- **Node.js** — Node 24 توصیه می‌شود (Node 22.16+ نیز پشتیبانی می‌شود)
+- **یک کلید API** از یک ارائه‌دهنده مدل (Anthropic، OpenAI، Google و غیره) — راه‌اندازی اولیه از شما آن را می‌خواهد
 
 <Tip>
 نسخه Node خود را با `node --version` بررسی کنید.
 **کاربران Windows:** هم Windows بومی و هم WSL2 پشتیبانی می‌شوند. WSL2 پایدارتر است
 و برای تجربه کامل توصیه می‌شود. [Windows](/fa/platforms/windows) را ببینید.
-نیاز به نصب Node دارید؟ [راه‌اندازی Node](/fa/install/node) را ببینید.
+نیاز دارید Node را نصب کنید؟ [راه‌اندازی Node](/fa/install/node) را ببینید.
 </Tip>
 
 ## راه‌اندازی سریع
@@ -40,7 +40,7 @@ OpenClaw را نصب کنید، onboarding را اجرا کنید و با دست
         ```
         <img
   src="/assets/install-script.svg"
-  alt="فرآیند اسکریپت نصب"
+  alt="فرایند اسکریپت نصب"
   className="rounded-lg"
 />
       </Tab>
@@ -56,23 +56,23 @@ OpenClaw را نصب کنید، onboarding را اجرا کنید و با دست
     </Note>
 
   </Step>
-  <Step title="اجرای onboarding">
+  <Step title="اجرای راه‌اندازی اولیه">
     ```bash
     openclaw onboard --install-daemon
     ```
 
-    راهنما شما را در انتخاب ارائه‌دهنده مدل، تنظیم کلید API
-    و پیکربندی Gateway هدایت می‌کند. حدود ۲ دقیقه طول می‌کشد.
+    این راهنما شما را در انتخاب یک ارائه‌دهنده مدل، تنظیم کلید API،
+    و پیکربندی Gateway همراهی می‌کند. حدود ۲ دقیقه طول می‌کشد.
 
-    برای مرجع کامل، [Onboarding (CLI)](/fa/start/wizard) را ببینید.
+    برای مرجع کامل، [راه‌اندازی اولیه (CLI)](/fa/start/wizard) را ببینید.
 
   </Step>
-  <Step title="بررسی اجرای Gateway">
+  <Step title="بررسی کنید Gateway در حال اجرا است">
     ```bash
     openclaw gateway status
     ```
 
-    باید ببینید که Gateway روی پورت 18789 گوش می‌دهد.
+    باید ببینید که Gateway روی درگاه 18789 گوش می‌دهد.
 
   </Step>
   <Step title="باز کردن داشبورد">
@@ -80,23 +80,23 @@ OpenClaw را نصب کنید، onboarding را اجرا کنید و با دست
     openclaw dashboard
     ```
 
-    این کار Control UI را در مرورگر شما باز می‌کند. اگر بارگذاری شد، همه چیز کار می‌کند.
+    این کار Control UI را در مرورگر شما باز می‌کند. اگر بارگذاری شود، همه چیز کار می‌کند.
 
   </Step>
-  <Step title="ارسال نخستین پیام">
-    پیامی را در گفت‌وگوی Control UI تایپ کنید و باید پاسخی از هوش مصنوعی دریافت کنید.
+  <Step title="ارسال اولین پیام">
+    در گفت‌وگوی Control UI یک پیام بنویسید و باید یک پاسخ هوش مصنوعی دریافت کنید.
 
-    می‌خواهید به‌جای آن از تلفن خود گپ بزنید؟ سریع‌ترین کانال برای راه‌اندازی
-    [Telegram](/fa/channels/telegram) است (فقط یک توکن ربات). برای همه گزینه‌ها، [کانال‌ها](/fa/channels)
+    می‌خواهید به‌جای آن از گوشی خود گفت‌وگو کنید؟ سریع‌ترین کانال برای راه‌اندازی
+    [Telegram](/fa/channels/telegram) است (فقط یک توکن بات). برای همه گزینه‌ها، [کانال‌ها](/fa/channels)
     را ببینید.
 
   </Step>
 </Steps>
 
-<Accordion title="پیشرفته: mount کردن یک ساخت Control UI سفارشی">
-  اگر یک ساخت داشبورد بومی‌سازی‌شده یا سفارشی را نگهداری می‌کنید،
-  `gateway.controlUi.root` را به دایرکتوری‌ای اشاره دهید که شامل دارایی‌های استاتیک
-  ساخته‌شده و `index.html` شما باشد.
+<Accordion title="پیشرفته: اتصال یک ساخت سفارشی Control UI">
+  اگر یک ساخت داشبورد بومی‌سازی‌شده یا سفارشی نگه‌داری می‌کنید،
+  `gateway.controlUi.root` را به پوشه‌ای اشاره دهید که دارایی‌های ایستای ساخته‌شده
+  و `index.html` شما را در خود دارد.
 
 ```bash
 mkdir -p "$HOME/.openclaw/control-ui-custom"
@@ -116,7 +116,7 @@ mkdir -p "$HOME/.openclaw/control-ui-custom"
 }
 ```
 
-Gateway را بازراه‌اندازی کنید و داشبورد را دوباره باز کنید:
+Gateway را دوباره راه‌اندازی کنید و داشبورد را دوباره باز کنید:
 
 ```bash
 openclaw gateway restart
@@ -125,28 +125,28 @@ openclaw dashboard
 
 </Accordion>
 
-## کارهای بعدی
+## گام بعدی
 
 <Columns>
   <Card title="اتصال یک کانال" href="/fa/channels" icon="message-square">
     Discord، Feishu، iMessage، Matrix، Microsoft Teams، Signal، Slack، Telegram، WhatsApp، Zalo و موارد بیشتر.
   </Card>
   <Card title="جفت‌سازی و ایمنی" href="/fa/channels/pairing" icon="shield">
-    کنترل کنید چه کسی می‌تواند به agent شما پیام بدهد.
+    کنترل کنید چه کسی می‌تواند به عامل شما پیام بدهد.
   </Card>
   <Card title="پیکربندی Gateway" href="/fa/gateway/configuration" icon="settings">
-    مدل‌ها، ابزارها، sandbox و تنظیمات پیشرفته.
+    مدل‌ها، ابزارها، sandbox، و تنظیمات پیشرفته.
   </Card>
   <Card title="مرور ابزارها" href="/fa/tools" icon="wrench">
-    مرورگر، exec، جست‌وجوی وب، Skills و Pluginها.
+    مرورگر، exec، جست‌وجوی وب، Skills، و pluginها.
   </Card>
 </Columns>
 
 <Accordion title="پیشرفته: متغیرهای محیطی">
-  اگر OpenClaw را به‌عنوان حساب سرویس اجرا می‌کنید یا مسیرهای سفارشی می‌خواهید:
+  اگر OpenClaw را به‌عنوان یک حساب سرویس اجرا می‌کنید یا مسیرهای سفارشی می‌خواهید:
 
-- `OPENCLAW_HOME` — دایرکتوری خانه برای حل مسیر داخلی
-- `OPENCLAW_STATE_DIR` — بازنویسی دایرکتوری وضعیت
+- `OPENCLAW_HOME` — پوشه خانگی برای رفع مسیرهای داخلی
+- `OPENCLAW_STATE_DIR` — بازنویسی پوشه وضعیت
 - `OPENCLAW_CONFIG_PATH` — بازنویسی مسیر فایل پیکربندی
 
 مرجع کامل: [متغیرهای محیطی](/fa/help/environment).

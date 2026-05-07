@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Kanal Plugin yapılandırması (kimlik doğrulama, erişim denetimi, çoklu hesap)
-    - Kanal başına yapılandırma anahtarlarında sorun giderme
-    - DM ilkesini, grup ilkesini veya bahsetme denetimini denetleme
-summary: 'Kanal yapılandırması: Slack, Discord, Telegram, WhatsApp, Matrix, iMessage ve daha fazlası genelinde erişim denetimi, eşleştirme, kanal bazlı anahtarlar'
+    - Kanal Plugin'ini yapılandırma (kimlik doğrulama, erişim denetimi, çoklu hesap)
+    - Kanal bazında yapılandırma anahtarlarında sorun giderme
+    - DM politikasını, grup politikasını veya bahsetme geçitlemesini denetleme
+summary: 'Kanal yapılandırması: Slack, Discord, Telegram, WhatsApp, Matrix, iMessage ve daha fazlasında erişim denetimi, eşleştirme ve kanal başına anahtarlar'
 title: Yapılandırma — kanallar
 x-i18n:
-    generated_at: "2026-05-07T01:52:12Z"
+    generated_at: "2026-05-07T13:17:09Z"
     model: gpt-5.5
     provider: openai
-    source_hash: f94d41a347ade8b9447e9f31e48d46830b2faac2202823480a68b7986107176e
+    source_hash: 10ff37f804fe3a2443372c4b195c00a4ee427ebd4c602bfb13e5040bddfaab93
     source_path: gateway/config-channels.md
     workflow: 16
 ---
 
-`channels.*` altındaki kanal başına yapılandırma anahtarları. DM ve grup erişimini,
-çok hesaplı kurulumları, bahsetme geçitlemesini ve Slack, Discord,
-Telegram, WhatsApp, Matrix, iMessage ve diğer birlikte gelen kanal Plugin'leri için kanal başına anahtarları kapsar.
+Kanal başına yapılandırma anahtarları `channels.*` altında yer alır. DM ve grup erişimini,
+çok hesaplı kurulumları, bahsetme denetimini ve Slack, Discord,
+Telegram, WhatsApp, Matrix, iMessage ve birlikte gelen diğer kanal Plugin'leri için kanal başına anahtarları kapsar.
 
-Ajanlar, araçlar, Gateway çalışma zamanı ve diğer üst düzey anahtarlar için
-[Yapılandırma başvurusu](/tr/gateway/configuration-reference) bölümüne bakın.
+Ajanlar, araçlar, gateway çalışma zamanı ve diğer üst düzey anahtarlar için bkz.
+[Yapılandırma başvurusu](/tr/gateway/configuration-reference).
 
 ## Kanallar
 
-Her kanal, yapılandırma bölümü mevcut olduğunda otomatik olarak başlar (`enabled: false` olmadığı sürece).
+Her kanal, yapılandırma bölümü mevcut olduğunda otomatik olarak başlar (`enabled: false` olmadıkça).
 
 ### DM ve grup erişimi
 
@@ -39,18 +39,18 @@ Tüm kanallar DM ilkelerini ve grup ilkelerini destekler:
 | Grup ilkesi          | Davranış                                               |
 | --------------------- | ------------------------------------------------------ |
 | `allowlist` (varsayılan) | Yalnızca yapılandırılmış izin listesiyle eşleşen gruplar          |
-| `open`                | Grup izin listelerini atla (bahsetme geçitlemesi yine uygulanır) |
-| `disabled`            | Tüm grup/oda iletilerini engelle                          |
+| `open`                | Grup izin listelerini atla (bahsetme denetimi yine de uygulanır) |
+| `disabled`            | Tüm grup/oda mesajlarını engelle                          |
 
 <Note>
-`channels.defaults.groupPolicy`, bir sağlayıcının `groupPolicy` değeri ayarlanmamışsa varsayılanı belirler.
-Eşleştirme kodlarının süresi 1 saat sonra dolar. Bekleyen DM eşleştirme istekleri **kanal başına 3** ile sınırlıdır.
-Bir sağlayıcı bloğu tamamen eksikse (`channels.<provider>` yoksa), çalışma zamanı grup ilkesi başlangıç uyarısıyla `allowlist` değerine (kapalı hata) geri döner.
+`channels.defaults.groupPolicy`, bir sağlayıcının `groupPolicy` değeri ayarlanmadığında varsayılanı belirler.
+Eşleştirme kodları 1 saat sonra sona erer. Bekleyen DM eşleştirme istekleri **kanal başına 3** ile sınırlıdır.
+Bir sağlayıcı bloğu tamamen eksikse (`channels.<provider>` yoksa), çalışma zamanı grup ilkesi başlangıç uyarısıyla `allowlist` değerine (güvenli kapalı) geri döner.
 </Note>
 
-### Kanal modeli geçersiz kılmaları
+### Kanal model geçersiz kılmaları
 
-Belirli kanal kimliklerini bir modele sabitlemek için `channels.modelByChannel` kullanın. Değerler `provider/model` veya yapılandırılmış model takma adlarını kabul eder. Kanal eşlemesi, bir oturumda zaten bir model geçersiz kılması yoksa uygulanır (örneğin, `/model` ile ayarlanmışsa uygulanmaz).
+Belirli kanal kimliklerini bir modele sabitlemek için `channels.modelByChannel` kullanın. Değerler `provider/model` veya yapılandırılmış model diğer adlarını kabul eder. Kanal eşlemesi, bir oturumda zaten bir model geçersiz kılması yoksa uygulanır (örneğin, `/model` aracılığıyla ayarlanmışsa uygulanmaz).
 
 ```json5
 {
@@ -91,11 +91,11 @@ Sağlayıcılar genelinde paylaşılan grup ilkesi ve Heartbeat davranışı iç
 }
 ```
 
-- `channels.defaults.groupPolicy`: sağlayıcı düzeyinde `groupPolicy` ayarlanmamışsa yedek grup ilkesi.
-- `channels.defaults.contextVisibility`: tüm kanallar için varsayılan ek bağlam görünürlük modu. Değerler: `all` (varsayılan, alıntılanan/iş parçacığı/geçmiş bağlamının tümünü dahil et), `allowlist` (yalnızca izin verilen gönderenlerden gelen bağlamı dahil et), `allowlist_quote` (izin listesiyle aynıdır ancak açık alıntı/yanıt bağlamını korur). Kanal başına geçersiz kılma: `channels.<channel>.contextVisibility`.
-- `channels.defaults.heartbeat.showOk`: Heartbeat çıktısına sağlıklı kanal durumlarını dahil et.
-- `channels.defaults.heartbeat.showAlerts`: Heartbeat çıktısına bozulmuş/hata durumlarını dahil et.
-- `channels.defaults.heartbeat.useIndicator`: kompakt gösterge tarzı Heartbeat çıktısı işle.
+- `channels.defaults.groupPolicy`: sağlayıcı düzeyinde `groupPolicy` ayarlanmadığında geri dönüş grup ilkesi.
+- `channels.defaults.contextVisibility`: tüm kanallar için varsayılan ek bağlam görünürlük modu. Değerler: `all` (varsayılan, alıntılanan/konu/geçmiş bağlamının tamamını dahil et), `allowlist` (yalnızca izin listesindeki gönderenlerden gelen bağlamı dahil et), `allowlist_quote` (izin listesiyle aynı, ancak açık alıntı/yanıt bağlamını koru). Kanal başına geçersiz kılma: `channels.<channel>.contextVisibility`.
+- `channels.defaults.heartbeat.showOk`: sağlıklı kanal durumlarını Heartbeat çıktısına dahil et.
+- `channels.defaults.heartbeat.showAlerts`: bozulmuş/hata durumlarını Heartbeat çıktısına dahil et.
+- `channels.defaults.heartbeat.useIndicator`: kompakt gösterge tarzı Heartbeat çıktısı oluştur.
 
 ### WhatsApp
 
@@ -126,7 +126,7 @@ WhatsApp, Gateway'in web kanalı (Baileys Web) üzerinden çalışır. Bağlı b
       textChunkLimit: 4000,
       chunkMode: "length", // length | newline
       mediaMaxMb: 50,
-      sendReadReceipts: true, // blue ticks (false in self-chat mode)
+      sendReadReceipts: true, // mavi tikler (kendiyle sohbet modunda false)
       groups: {
         "*": { requireMention: true },
       },
@@ -137,7 +137,7 @@ WhatsApp, Gateway'in web kanalı (Baileys Web) üzerinden çalışır. Bağlı b
 }
 ```
 
-<Accordion title="Multi-account WhatsApp">
+<Accordion title="Çok hesaplı WhatsApp">
 
 ```json5
 {
@@ -155,9 +155,9 @@ WhatsApp, Gateway'in web kanalı (Baileys Web) üzerinden çalışır. Bağlı b
 }
 ```
 
-- Giden komutlar, mevcutsa varsayılan olarak `default` hesabını kullanır; yoksa ilk yapılandırılmış hesap kimliğini (sıralanmış) kullanır.
-- İsteğe bağlı `channels.whatsapp.defaultAccount`, yapılandırılmış bir hesap kimliğiyle eşleştiğinde bu yedek varsayılan hesap seçimini geçersiz kılar.
-- Eski tek hesaplı Baileys kimlik doğrulama dizini, `openclaw doctor` tarafından `whatsapp/default` içine taşınır.
+- Giden komutlar, varsa varsayılan olarak `default` hesabını kullanır; aksi takdirde ilk yapılandırılmış hesap kimliğini kullanır (sıralanmış).
+- İsteğe bağlı `channels.whatsapp.defaultAccount`, yapılandırılmış bir hesap kimliğiyle eşleştiğinde bu geri dönüş varsayılan hesap seçimini geçersiz kılar.
+- Eski tek hesaplı Baileys kimlik doğrulama dizini, `openclaw doctor` tarafından `whatsapp/default` içine geçirilir.
 - Hesap başına geçersiz kılmalar: `channels.whatsapp.accounts.<id>.sendReadReceipts`, `channels.whatsapp.accounts.<id>.dmPolicy`, `channels.whatsapp.accounts.<id>.allowFrom`.
 
 </Accordion>
@@ -193,7 +193,7 @@ WhatsApp, Gateway'in web kanalı (Baileys Web) üzerinden çalışır. Bağlı b
       historyLimit: 50,
       replyToMode: "first", // off | first | all | batched
       linkPreview: true,
-      streaming: "partial", // off | partial | block | progress (default: off; opt in explicitly to avoid preview-edit rate limits)
+      streaming: "partial", // off | partial | block | progress (varsayılan: off; önizleme düzenleme hız sınırlarından kaçınmak için açıkça etkinleştirin)
       actions: { reactions: true, sendMessage: true },
       reactionNotifications: "own", // off | own | all
       mediaMaxMb: 100,
@@ -217,12 +217,12 @@ WhatsApp, Gateway'in web kanalı (Baileys Web) üzerinden çalışır. Bağlı b
 }
 ```
 
-- Bot belirteci: `channels.telegram.botToken` veya `channels.telegram.tokenFile` (yalnızca normal dosya; sembolik bağlantılar reddedilir), varsayılan hesap için yedek olarak `TELEGRAM_BOT_TOKEN`.
+- Bot token: `channels.telegram.botToken` veya `channels.telegram.tokenFile` (yalnızca normal dosya; sembolik bağlantılar reddedilir), varsayılan hesap için geri dönüş olarak `TELEGRAM_BOT_TOKEN`.
 - `apiRoot` yalnızca Telegram Bot API köküdür. `https://api.telegram.org/bot<TOKEN>` değil, `https://api.telegram.org` veya kendi barındırdığınız/proxy kökünüzü kullanın; `openclaw doctor --fix` yanlışlıkla eklenmiş sondaki `/bot<TOKEN>` sonekini kaldırır.
 - İsteğe bağlı `channels.telegram.defaultAccount`, yapılandırılmış bir hesap kimliğiyle eşleştiğinde varsayılan hesap seçimini geçersiz kılar.
-- Çok hesaplı kurulumlarda (2+ hesap kimliği), yedek yönlendirmeyi önlemek için açık bir varsayılan (`channels.telegram.defaultAccount` veya `channels.telegram.accounts.default`) ayarlayın; bu eksik veya geçersiz olduğunda `openclaw doctor` uyarır.
+- Çok hesaplı kurulumlarda (2+ hesap kimliği), geri dönüş yönlendirmesinden kaçınmak için açık bir varsayılan (`channels.telegram.defaultAccount` veya `channels.telegram.accounts.default`) ayarlayın; bu eksik veya geçersiz olduğunda `openclaw doctor` uyarır.
 - `configWrites: false`, Telegram tarafından başlatılan yapılandırma yazmalarını engeller (süper grup kimliği geçişleri, `/config set|unset`).
-- `type: "acp"` içeren üst düzey `bindings[]` girişleri, forum konuları için kalıcı ACP bağlarını yapılandırır (`match.peer.id` içinde kurallı `chatId:topic:topicId` kullanın). Alan anlamları [ACP Ajanları](/tr/tools/acp-agents#persistent-channel-bindings) bölümünde paylaşılır.
+- `type: "acp"` içeren üst düzey `bindings[]` girişleri, forum konuları için kalıcı ACP bağlamalarını yapılandırır (`match.peer.id` içinde kanonik `chatId:topic:topicId` kullanın). Alan semantiği [ACP Ajanları](/tr/tools/acp-agents#persistent-channel-bindings) içinde paylaşılır.
 - Telegram akış önizlemeleri `sendMessage` + `editMessageText` kullanır (doğrudan ve grup sohbetlerinde çalışır).
 - Yeniden deneme ilkesi: bkz. [Yeniden deneme ilkesi](/tr/concepts/retry).
 
@@ -280,7 +280,7 @@ WhatsApp, Gateway'in web kanalı (Baileys Web) üzerinden çalışır. Bağlı b
       textChunkLimit: 2000,
       chunkMode: "length", // length | newline
       streaming: {
-        mode: "progress", // off | partial | block | progress (Discord default: progress)
+        mode: "progress", // off | partial | block | progress (Discord varsayılanı: progress)
         progress: {
           label: "auto",
           maxLines: 8,
@@ -336,41 +336,42 @@ WhatsApp, Gateway'in web kanalı (Baileys Web) üzerinden çalışır. Bağlı b
 }
 ```
 
-- Belirteç: varsayılan hesap için yedek olarak `DISCORD_BOT_TOKEN` ile `channels.discord.token`.
-- Açık bir Discord `token` sağlayan doğrudan giden çağrılar, çağrı için o belirteci kullanır; hesap yeniden deneme/ilke ayarları yine etkin çalışma zamanı anlık görüntüsünde seçili hesaptan gelir.
+- Token: `channels.discord.token`; varsayılan hesap için yedek olarak `DISCORD_BOT_TOKEN` kullanılır.
+- Açık bir Discord `token` sağlayan doğrudan giden çağrılar, çağrı için o token'ı kullanır; hesap yeniden deneme/politika ayarları yine etkin çalışma zamanı anlık görüntüsündeki seçili hesaptan gelir.
 - İsteğe bağlı `channels.discord.defaultAccount`, yapılandırılmış bir hesap kimliğiyle eşleştiğinde varsayılan hesap seçimini geçersiz kılar.
-- Teslimat hedefleri için `user:<id>` (DM) veya `channel:<id>` (sunucu kanalı) kullanın; yalın sayısal kimlikler reddedilir.
-- Sunucu slug'ları küçük harflidir ve boşluklar `-` ile değiştirilir; kanal anahtarları slug'a dönüştürülmüş adı kullanır (`#` yok). Sunucu kimliklerini tercih edin.
-- Bot tarafından yazılmış iletiler varsayılan olarak yok sayılır. `allowBots: true` bunları etkinleştirir; yalnızca bottan bahseden bot iletilerini kabul etmek için `allowBots: "mentions"` kullanın (kendi iletileri yine filtrelenir).
-- `channels.discord.guilds.<id>.ignoreOtherMentions` (ve kanal geçersiz kılmaları), başka bir kullanıcıdan veya rolden bahseden ama bottan bahsetmeyen iletileri bırakır (@everyone/@here hariç).
-- `channels.discord.mentionAliases`, gönderimden önce kararlı giden `@handle` metnini Discord kullanıcı kimlikleriyle eşler; böylece geçici dizin önbelleği boş olsa bile bilinen ekip arkadaşlarından deterministik olarak bahsedilebilir. Hesap başına geçersiz kılmalar `channels.discord.accounts.<accountId>.mentionAliases` altında bulunur.
-- `maxLinesPerMessage` (varsayılan 17), 2000 karakterin altında olsa bile uzun iletileri böler.
+- Teslimat hedefleri için `user:<id>` (DM) veya `channel:<id>` (sunucu kanalı) kullanın; çıplak sayısal kimlikler reddedilir.
+- Sunucu slug'ları küçük harflidir ve boşluklar `-` ile değiştirilir; kanal anahtarları slug yapılmış adı kullanır (`#` olmadan). Sunucu kimliklerini tercih edin.
+- Bot tarafından yazılmış mesajlar varsayılan olarak yok sayılır. `allowBots: true` bunları etkinleştirir; yalnızca bottan bahseden bot mesajlarını kabul etmek için `allowBots: "mentions"` kullanın (kendi mesajları yine filtrelenir).
+- `channels.discord.guilds.<id>.ignoreOtherMentions` (ve kanal geçersiz kılmaları), başka bir kullanıcıdan veya rolden bahsedip bottan bahsetmeyen mesajları düşürür (@everyone/@here hariç).
+- `channels.discord.mentionAliases`, geçici dizin önbelleği boş olsa bile bilinen ekip arkadaşlarından deterministik olarak bahsedilebilmesi için kararlı giden `@handle` metnini göndermeden önce Discord kullanıcı kimliklerine eşler. Hesap başına geçersiz kılmalar `channels.discord.accounts.<accountId>.mentionAliases` altında bulunur.
+- `maxLinesPerMessage` (varsayılan 17), 2000 karakterin altında olsa bile uzun mesajları böler.
 - `channels.discord.threadBindings`, Discord iş parçacığına bağlı yönlendirmeyi denetler:
   - `enabled`: iş parçacığına bağlı oturum özellikleri için Discord geçersiz kılması (`/focus`, `/unfocus`, `/agents`, `/session idle`, `/session max-age` ve bağlı teslimat/yönlendirme)
-  - `idleHours`: saat cinsinden etkin olmama durumunda otomatik odaktan çıkarma için Discord geçersiz kılması (`0` devre dışı bırakır)
-  - `maxAgeHours`: saat cinsinden katı en fazla yaş için Discord geçersiz kılması (`0` devre dışı bırakır)
+  - `idleHours`: saat cinsinden hareketsizlikte otomatik odak kaldırma için Discord geçersiz kılması (`0` devre dışı bırakır)
+  - `maxAgeHours`: saat cinsinden katı azami yaş için Discord geçersiz kılması (`0` devre dışı bırakır)
   - `spawnSessions`: `sessions_spawn({ thread: true })` ve ACP iş parçacığı oluşturma otomatik iş parçacığı oluşturma/bağlama için anahtar (varsayılan: `true`)
-  - `defaultSpawnContext`: iş parçacığına bağlı oluşturma işlemleri için yerel alt ajan bağlamı (varsayılan olarak `"fork"`)
-- `type: "acp"` içeren üst düzey `bindings[]` girdileri, kanallar ve iş parçacıkları için kalıcı ACP bağlamalarını yapılandırır (`match.peer.id` içinde kanal/iş parçacığı kimliğini kullanın). Alan semantiği [ACP Ajanları](/tr/tools/acp-agents#persistent-channel-bindings) içinde ortaktır.
+  - `defaultSpawnContext`: iş parçacığına bağlı oluşturmalarda yerel alt ajan bağlamı (varsayılan olarak `"fork"`)
+- `type: "acp"` içeren üst düzey `bindings[]` girişleri, kanallar ve iş parçacıkları için kalıcı ACP bağlamaları yapılandırır (`match.peer.id` içinde kanal/iş parçacığı kimliğini kullanın). Alan semantiği [ACP Ajanları](/tr/tools/acp-agents#persistent-channel-bindings) içinde paylaşılır.
 - `channels.discord.ui.components.accentColor`, Discord bileşenleri v2 kapsayıcıları için vurgu rengini ayarlar.
-- `channels.discord.voice`, Discord ses kanalı konuşmalarını ve isteğe bağlı otomatik katılma + LLM + TTS geçersiz kılmalarını etkinleştirir. Yalnızca metin Discord yapılandırmaları varsayılan olarak sesi kapalı bırakır; katılmak için `channels.discord.voice.enabled=true` ayarlayın.
+- `channels.discord.voice`, Discord ses kanalı konuşmalarını ve isteğe bağlı otomatik katılma + LLM + TTS geçersiz kılmalarını etkinleştirir. Yalnızca metinli Discord yapılandırmaları sesi varsayılan olarak kapalı bırakır; katılmak için `channels.discord.voice.enabled=true` ayarlayın.
 - `channels.discord.voice.model`, Discord ses kanalı yanıtları için kullanılan LLM modelini isteğe bağlı olarak geçersiz kılar.
 - `channels.discord.voice.daveEncryption` ve `channels.discord.voice.decryptionFailureTolerance`, `@discordjs/voice` DAVE seçeneklerine aktarılır (varsayılan olarak `true` ve `24`).
-- `channels.discord.voice.connectTimeoutMs`, `/vc join` ve otomatik katılma denemeleri için ilk `@discordjs/voice` Ready beklemesini denetler (varsayılan olarak `30000`).
-- `channels.discord.voice.reconnectGraceMs`, bağlantısı kesilmiş bir ses oturumunun OpenClaw onu yok etmeden önce yeniden bağlanma sinyallemesine girmek için ne kadar süre alabileceğini denetler (varsayılan olarak `15000`).
-- OpenClaw ayrıca tekrarlanan şifre çözme hatalarından sonra bir ses oturumundan ayrılıp yeniden katılarak ses alma kurtarması dener.
-- `channels.discord.streaming`, kanonik akış modu anahtarıdır. Discord varsayılan olarak `streaming.mode: "progress"` kullanır; böylece araç/iş ilerlemesi tek bir düzenlenmiş önizleme iletisinde görünür. Devre dışı bırakmak için `streaming.mode: "off"` ayarlayın. Eski `streamMode` ve boole `streaming` değerleri çalışma zamanı takma adları olarak kalır; kalıcı yapılandırmayı yeniden yazmak için `openclaw doctor --fix` çalıştırın.
-- `channels.discord.autoPresence`, çalışma zamanı kullanılabilirliğini bot varlığına eşler (sağlıklı => çevrimiçi, düşürülmüş => boşta, tükenmiş => dnd) ve isteğe bağlı durum metni geçersiz kılmalarına izin verir.
-- `channels.discord.dangerouslyAllowNameMatching`, değiştirilebilir ad/etiket eşleştirmesini yeniden etkinleştirir (acil uyumluluk modu).
-- `channels.discord.execApprovals`: Discord'a özgü exec onayı teslimi ve onaylayıcı yetkilendirmesi.
-  - `enabled`: `true`, `false` veya `"auto"` (varsayılan). Otomatik modda, onaylayıcılar `approvers` veya `commands.ownerAllowFrom` üzerinden çözümlenebildiğinde exec onayları etkinleşir.
+- `channels.discord.voice.connectTimeoutMs`, `/vc join` ve otomatik katılma denemeleri için başlangıç `@discordjs/voice` Ready beklemesini denetler (varsayılan olarak `30000`).
+- `channels.discord.voice.reconnectGraceMs`, bağlantısı kesilmiş bir ses oturumunun OpenClaw onu yok etmeden önce yeniden bağlanma sinyaline girmesinin ne kadar sürebileceğini denetler (varsayılan olarak `15000`).
+- Discord ses oynatımı, başka bir kullanıcının konuşmaya başlama olayıyla kesintiye uğratılmaz. Geri besleme döngülerinden kaçınmak için OpenClaw, TTS oynatılırken yeni ses yakalamayı yok sayar.
+- OpenClaw ayrıca yinelenen şifre çözme hatalarından sonra bir ses oturumundan ayrılıp yeniden katılarak ses alma kurtarması denemesi yapar.
+- `channels.discord.streaming`, kanonik akış modu anahtarıdır. Discord varsayılan olarak `streaming.mode: "progress"` kullanır; böylece araç/iş ilerlemesi düzenlenen tek bir önizleme mesajında görünür; devre dışı bırakmak için `streaming.mode: "off"` ayarlayın. Eski `streamMode` ve boolean `streaming` değerleri çalışma zamanı takma adları olarak kalır; kalıcı yapılandırmayı yeniden yazmak için `openclaw doctor --fix` çalıştırın.
+- `channels.discord.autoPresence`, çalışma zamanı kullanılabilirliğini bot varlığına eşler (healthy => online, degraded => idle, exhausted => dnd) ve isteğe bağlı durum metni geçersiz kılmalarına izin verir.
+- `channels.discord.dangerouslyAllowNameMatching`, değişebilir ad/etiket eşleştirmesini yeniden etkinleştirir (acil durum uyumluluk modu).
+- `channels.discord.execApprovals`: Discord yerel exec onayı teslimatı ve onaylayan yetkilendirmesi.
+  - `enabled`: `true`, `false` veya `"auto"` (varsayılan). Otomatik modda exec onayları, onaylayanlar `approvers` veya `commands.ownerAllowFrom` üzerinden çözümlenebildiğinde etkinleşir.
   - `approvers`: exec isteklerini onaylamasına izin verilen Discord kullanıcı kimlikleri. Atlandığında `commands.ownerAllowFrom` değerine geri döner.
   - `agentFilter`: isteğe bağlı ajan kimliği izin listesi. Tüm ajanlar için onayları iletmek üzere atlayın.
   - `sessionFilter`: isteğe bağlı oturum anahtarı desenleri (alt dize veya regex).
-  - `target`: onay istemlerinin nereye gönderileceği. `"dm"` (varsayılan) onaylayıcı DM'lerine gönderir, `"channel"` kaynak kanala gönderir, `"both"` ikisine de gönderir. Hedef `"channel"` içerdiğinde, düğmeler yalnızca çözümlenmiş onaylayıcılar tarafından kullanılabilir.
+  - `target`: onay istemlerinin nereye gönderileceği. `"dm"` (varsayılan) onaylayan DM'lerine gönderir, `"channel"` kaynak kanala gönderir, `"both"` ikisine de gönderir. Hedef `"channel"` içerdiğinde düğmeler yalnızca çözümlenmiş onaylayanlar tarafından kullanılabilir.
   - `cleanupAfterResolve`: `true` olduğunda onay, ret veya zaman aşımından sonra onay DM'lerini siler.
 
-**Tepki bildirim modları:** `off` (yok), `own` (botun iletileri, varsayılan), `all` (tüm iletiler), `allowlist` (tüm iletilerde `guilds.<id>.users` içinden).
+**Tepki bildirim modları:** `off` (yok), `own` (botun mesajları, varsayılan), `all` (tüm mesajlar), `allowlist` (tüm mesajlarda `guilds.<id>.users` içinden).
 
 ### Google Chat
 
@@ -403,9 +404,9 @@ WhatsApp, Gateway'in web kanalı (Baileys Web) üzerinden çalışır. Bağlı b
 
 - Hizmet hesabı JSON'u: satır içi (`serviceAccount`) veya dosya tabanlı (`serviceAccountFile`).
 - Hizmet hesabı SecretRef de desteklenir (`serviceAccountRef`).
-- Env yedekleri: `GOOGLE_CHAT_SERVICE_ACCOUNT` veya `GOOGLE_CHAT_SERVICE_ACCOUNT_FILE`.
+- Ortam yedekleri: `GOOGLE_CHAT_SERVICE_ACCOUNT` veya `GOOGLE_CHAT_SERVICE_ACCOUNT_FILE`.
 - Teslimat hedefleri için `spaces/<spaceId>` veya `users/<userId>` kullanın.
-- `channels.googlechat.dangerouslyAllowNameMatching`, değiştirilebilir e-posta asıl kimliği eşleştirmesini yeniden etkinleştirir (acil uyumluluk modu).
+- `channels.googlechat.dangerouslyAllowNameMatching`, değişebilir e-posta principal eşleştirmesini yeniden etkinleştirir (acil durum uyumluluk modu).
 
 ### Slack
 
@@ -477,30 +478,30 @@ WhatsApp, Gateway'in web kanalı (Baileys Web) üzerinden çalışır. Bağlı b
 }
 ```
 
-- **Soket modu** hem `botToken` hem de `appToken` gerektirir (varsayılan hesap env yedeği için `SLACK_BOT_TOKEN` + `SLACK_APP_TOKEN`).
-- **HTTP modu** `botToken` artı `signingSecret` gerektirir (kök düzeyde veya hesap başına).
-- `socketMode`, Slack SDK Socket Mode taşıma ayarlamasını genel Bolt alıcı API'sine geçirir. Yalnızca ping/pong zaman aşımı veya eski websocket davranışını araştırırken kullanın.
+- **Socket modu** hem `botToken` hem de `appToken` gerektirir (varsayılan hesap ortam yedeği için `SLACK_BOT_TOKEN` + `SLACK_APP_TOKEN`).
+- **HTTP modu**, `botToken` ile birlikte `signingSecret` gerektirir (kök düzeyde veya hesap başına).
+- `socketMode`, Slack SDK Socket Mode taşıma ayarlarını genel Bolt receiver API'ye aktarır. Bunu yalnızca ping/pong zaman aşımı veya bayat websocket davranışını araştırırken kullanın.
 - `botToken`, `appToken`, `signingSecret` ve `userToken`, düz metin
-  dizeleri veya SecretRef nesnelerini kabul eder.
-- Slack hesap anlık görüntüleri, `botTokenSource`, `botTokenStatus`,
-  `appTokenStatus` ve HTTP modunda `signingSecretStatus` gibi kimlik bilgisi
-  başına kaynak/durum alanlarını açığa çıkarır. `configured_unavailable`,
-  hesabın SecretRef üzerinden yapılandırıldığı ancak geçerli komut/çalışma zamanı
-  yolunun gizli değeri çözemediği anlamına gelir.
+  dizelerini veya SecretRef nesnelerini kabul eder.
+- Slack hesap anlık görüntüleri, her kimlik bilgisi için
+  `botTokenSource`, `botTokenStatus`, `appTokenStatus` ve HTTP modunda
+  `signingSecretStatus` gibi kaynak/durum alanlarını açığa çıkarır. `configured_unavailable`, hesabın
+  SecretRef üzerinden yapılandırıldığı ancak geçerli komut/çalışma zamanı yolunun
+  gizli değeri çözemediği anlamına gelir.
 - `configWrites: false`, Slack tarafından başlatılan yapılandırma yazmalarını engeller.
 - İsteğe bağlı `channels.slack.defaultAccount`, yapılandırılmış bir hesap kimliğiyle eşleştiğinde varsayılan hesap seçimini geçersiz kılar.
-- `channels.slack.streaming.mode`, kanonik Slack akış modu anahtarıdır. `channels.slack.streaming.nativeTransport`, Slack'in yerel akış taşımasını denetler. Eski `streamMode`, boole `streaming` ve `nativeStreaming` değerleri çalışma zamanı takma adları olarak kalır; kalıcı yapılandırmayı yeniden yazmak için `openclaw doctor --fix` çalıştırın.
+- `channels.slack.streaming.mode`, kanonik Slack akış modu anahtarıdır. `channels.slack.streaming.nativeTransport`, Slack'in yerel akış taşımasını denetler. Eski `streamMode`, boolean `streaming` ve `nativeStreaming` değerleri çalışma zamanı takma adları olarak kalır; kalıcı yapılandırmayı yeniden yazmak için `openclaw doctor --fix` çalıştırın.
 - Teslimat hedefleri için `user:<id>` (DM) veya `channel:<id>` kullanın.
 
 **Tepki bildirim modları:** `off`, `own` (varsayılan), `all`, `allowlist` (`reactionAllowlist` içinden).
 
-**İş parçacığı oturum yalıtımı:** `thread.historyScope`, iş parçacığı başına (varsayılan) veya kanal genelinde paylaşımlıdır. `thread.inheritParent`, üst kanal dökümünü yeni iş parçacıklarına kopyalar.
+**İş parçacığı oturumu yalıtımı:** `thread.historyScope`, iş parçacığı başına (varsayılan) veya kanal genelinde paylaşımlıdır. `thread.inheritParent`, üst kanal transkriptini yeni iş parçacıklarına kopyalar.
 
-- Slack yerel akışı ve Slack asistan tarzı "yazıyor..." iş parçacığı durumu bir yanıt iş parçacığı hedefi gerektirir. Üst düzey DM'ler varsayılan olarak iş parçacığı dışında kalır; bu nedenle iş parçacığı tarzı yerel akış/durum önizlemesini göstermek yerine Slack taslak gönder-ve-düzenle önizlemeleri üzerinden yine akış yapabilirler.
-- `typingReaction`, bir yanıt çalışırken gelen Slack iletisine geçici bir tepki ekler ve tamamlandığında bunu kaldırır. `"hourglass_flowing_sand"` gibi bir Slack emoji kısa kodu kullanın.
-- `channels.slack.execApprovals`: Slack'e özgü exec onayı teslimi ve onaylayıcı yetkilendirmesi. Discord ile aynı şema: `enabled` (`true`/`false`/`"auto"`), `approvers` (Slack kullanıcı kimlikleri), `agentFilter`, `sessionFilter` ve `target` (`"dm"`, `"channel"` veya `"both"`).
+- Slack yerel akışı ile Slack asistan tarzı "is typing..." iş parçacığı durumu bir yanıt iş parçacığı hedefi gerektirir. Üst düzey DM'ler varsayılan olarak iş parçacığı dışında kalır; bu nedenle iş parçacığı tarzı yerel akış/durum önizlemesini göstermek yerine Slack taslak gönder-ve-düzenle önizlemeleri üzerinden akış yapmaya devam edebilirler.
+- `typingReaction`, bir yanıt çalışırken gelen Slack mesajına geçici bir tepki ekler, ardından tamamlandığında kaldırır. `"hourglass_flowing_sand"` gibi bir Slack emoji kısa kodu kullanın.
+- `channels.slack.execApprovals`: Slack yerel exec onayı teslimatı ve onaylayan yetkilendirmesi. Discord ile aynı şema: `enabled` (`true`/`false`/`"auto"`), `approvers` (Slack kullanıcı kimlikleri), `agentFilter`, `sessionFilter` ve `target` (`"dm"`, `"channel"` veya `"both"`).
 
-| Eylem grubu | Varsayılan | Notlar                  |
+| Eylem grubu | Varsayılan | Notlar                      |
 | ------------ | ------- | ---------------------- |
 | reactions    | etkin | Tepki ekle + tepkileri listele |
 | messages     | etkin | Oku/gönder/düzenle/sil  |
@@ -510,12 +511,11 @@ WhatsApp, Gateway'in web kanalı (Baileys Web) üzerinden çalışır. Bağlı b
 
 ### Mattermost
 
-Mattermost, güncel OpenClaw sürümlerinde birlikte gelen bir Plugin olarak sunulur. Daha eski veya
-özel derlemeler, güncel bir npm paketini
-`openclaw plugins install @openclaw/mattermost` ile yükleyebilir. Bir sürümü sabitlemeden önce
-geçerli dist-tag'ler için
+Mattermost, geçerli OpenClaw sürümlerinde birlikte gelen bir Plugin olarak sunulur. Daha eski veya
+özel derlemeler geçerli bir npm paketini
+`openclaw plugins install @openclaw/mattermost` ile kurabilir. Bir sürüm sabitlemeden önce geçerli dist-tag'ler için
 [npmjs.com/package/@openclaw/mattermost](https://www.npmjs.com/package/@openclaw/mattermost)
-adresini kontrol edin.
+sayfasını kontrol edin.
 
 ```json5
 {
@@ -545,17 +545,17 @@ adresini kontrol edin.
 }
 ```
 
-Sohbet modları: `oncall` (`@` bahsi üzerine yanıt verir, varsayılan), `onmessage` (her mesaj), `onchar` (tetikleyici önekle başlayan mesajlar).
+Sohbet modları: `oncall` (@bahsetme olduğunda yanıt ver, varsayılan), `onmessage` (her mesaj), `onchar` (tetikleyici önekle başlayan mesajlar).
 
 Mattermost yerel komutları etkinleştirildiğinde:
 
 - `commands.callbackPath` tam URL değil, bir yol olmalıdır (örneğin `/api/channels/mattermost/command`).
-- `commands.callbackUrl` OpenClaw Gateway uç noktasına çözümlenmeli ve Mattermost sunucusundan erişilebilir olmalıdır.
-- Yerel eğik çizgi geri çağrıları, eğik çizgi komutu kaydı sırasında Mattermost tarafından döndürülen komut başına token’larla kimlik doğrulamasından geçirilir. Kayıt başarısız olursa veya hiçbir komut etkinleştirilmezse OpenClaw geri çağrıları `Unauthorized: invalid command token.` ile reddeder.
-- Özel/tailnet/dahili geri çağrı hostları için Mattermost, `ServiceSettings.AllowedUntrustedInternalConnections` değerinin geri çağrı hostunu/alan adını içermesini gerektirebilir. Tam URL’ler değil, host/alan adı değerleri kullanın.
-- `channels.mattermost.configWrites`: Mattermost tarafından başlatılan yapılandırma yazımlarına izin verin veya bunları reddedin.
-- `channels.mattermost.requireMention`: kanallarda yanıt vermeden önce `@mention` gerektirir.
-- `channels.mattermost.groups.<channelId>.requireMention`: kanal başına bahsetme kapısı geçersiz kılması (varsayılan için `"*"`).
+- `commands.callbackUrl`, OpenClaw Gateway uç noktasına çözümlenmeli ve Mattermost sunucusundan erişilebilir olmalıdır.
+- Yerel eğik çizgi geri çağrıları, eğik çizgi komutu kaydı sırasında Mattermost tarafından döndürülen komut başına token’larla kimlik doğrulaması yapar. Kayıt başarısız olursa veya hiçbir komut etkinleştirilmezse OpenClaw geri çağrıları `Unauthorized: invalid command token.` ile reddeder.
+- Özel/tailnet/dahili geri çağrı konakları için Mattermost, `ServiceSettings.AllowedUntrustedInternalConnections` değerinin geri çağrı konağını/alan adını içermesini gerektirebilir. Tam URL’ler değil, konak/alan adı değerleri kullanın.
+- `channels.mattermost.configWrites`: Mattermost tarafından başlatılan yapılandırma yazmalarına izin ver veya bunları reddet.
+- `channels.mattermost.requireMention`: kanallarda yanıt vermeden önce `@mention` gerektir.
+- `channels.mattermost.groups.<channelId>.requireMention`: kanal başına bahsetme geçidi geçersiz kılma (`"*"` varsayılan için).
 - İsteğe bağlı `channels.mattermost.defaultAccount`, yapılandırılmış bir hesap kimliğiyle eşleştiğinde varsayılan hesap seçimini geçersiz kılar.
 
 ### Signal
@@ -577,15 +577,15 @@ Mattermost yerel komutları etkinleştirildiğinde:
 }
 ```
 
-**Tepki bildirimi modları:** `off`, `own` (varsayılan), `all`, `allowlist` (`reactionAllowlist` içinden).
+**Tepki bildirimi modları:** `off`, `own` (varsayılan), `all`, `allowlist` (`reactionAllowlist` üzerinden).
 
-- `channels.signal.account`: kanal başlangıcını belirli bir Signal hesap kimliğine sabitleyin.
-- `channels.signal.configWrites`: Signal tarafından başlatılan yapılandırma yazımlarına izin verin veya bunları reddedin.
+- `channels.signal.account`: kanal başlangıcını belirli bir Signal hesap kimliğine sabitle.
+- `channels.signal.configWrites`: Signal tarafından başlatılan yapılandırma yazmalarına izin ver veya bunları reddet.
 - İsteğe bağlı `channels.signal.defaultAccount`, yapılandırılmış bir hesap kimliğiyle eşleştiğinde varsayılan hesap seçimini geçersiz kılar.
 
 ### BlueBubbles
 
-BlueBubbles eski iMessage köprüsüdür (Plugin destekli, `channels.bluebubbles` altında yapılandırılır). Mevcut kurulumlar desteklenmeye devam eder, ancak yeni OpenClaw iMessage dağıtımları, `imsg` Messages hostunda çalışabiliyorsa `channels.imessage` kullanmayı tercih etmelidir.
+BlueBubbles, eski iMessage köprüsüdür (Plugin destekli, `channels.bluebubbles` altında yapılandırılır). Mevcut kurulumlar desteklenmeye devam eder, ancak yeni OpenClaw iMessage dağıtımları, `imsg` Mesajlar konağında çalışabiliyorsa `channels.imessage` seçeneğini tercih etmelidir.
 
 ```json5
 {
@@ -600,14 +600,14 @@ BlueBubbles eski iMessage köprüsüdür (Plugin destekli, `channels.bluebubbles
 }
 ```
 
-- Burada kapsanan temel anahtar yolları: `channels.bluebubbles`, `channels.bluebubbles.dmPolicy`.
+- Burada kapsanan çekirdek anahtar yolları: `channels.bluebubbles`, `channels.bluebubbles.dmPolicy`.
 - İsteğe bağlı `channels.bluebubbles.defaultAccount`, yapılandırılmış bir hesap kimliğiyle eşleştiğinde varsayılan hesap seçimini geçersiz kılar.
-- `type: "acp"` içeren üst düzey `bindings[]` girdileri, BlueBubbles konuşmalarını kalıcı ACP oturumlarına bağlayabilir. `match.peer.id` içinde bir BlueBubbles tanıtıcısı veya hedef dizesi (`chat_id:*`, `chat_guid:*`, `chat_identifier:*`) kullanın. Paylaşılan alan semantiği: [ACP Aracıları](/tr/tools/acp-agents#persistent-channel-bindings).
+- `type: "acp"` içeren üst düzey `bindings[]` girdileri, BlueBubbles konuşmalarını kalıcı ACP oturumlarına bağlayabilir. `match.peer.id` içinde bir BlueBubbles tanıtıcısı veya hedef dizesi (`chat_id:*`, `chat_guid:*`, `chat_identifier:*`) kullanın. Paylaşılan alan semantiği: [ACP Agents](/tr/tools/acp-agents#persistent-channel-bindings).
 - Tam BlueBubbles kanal yapılandırması ve kullanımdan kaldırma gerekçesi [BlueBubbles](/tr/channels/bluebubbles) içinde belgelenmiştir.
 
 ### iMessage
 
-OpenClaw `imsg rpc` sürecini başlatır (stdio üzerinden JSON-RPC). Daemon veya port gerekmez. Host, Messages veritabanı ve Automation izinlerini verebildiğinde yeni OpenClaw iMessage kurulumları için tercih edilen yol budur.
+OpenClaw, `imsg rpc` çalıştırır (stdio üzerinden JSON-RPC). Daemon veya bağlantı noktası gerekmez. Bu, konak Mesajlar veritabanı ve Otomasyon izinlerini verebildiğinde yeni OpenClaw iMessage kurulumları için tercih edilen yoldur.
 
 ```json5
 {
@@ -633,13 +633,13 @@ OpenClaw `imsg rpc` sürecini başlatır (stdio üzerinden JSON-RPC). Daemon vey
 
 - İsteğe bağlı `channels.imessage.defaultAccount`, yapılandırılmış bir hesap kimliğiyle eşleştiğinde varsayılan hesap seçimini geçersiz kılar.
 
-- Messages DB için Full Disk Access gerektirir.
+- Mesajlar DB’sine Tam Disk Erişimi gerektirir.
 - `chat_id:<id>` hedeflerini tercih edin. Sohbetleri listelemek için `imsg chats --limit 20` kullanın.
 - `cliPath` bir SSH sarmalayıcısına işaret edebilir; SCP ek getirme için `remoteHost` (`host` veya `user@host`) ayarlayın.
-- `attachmentRoots` ve `remoteAttachmentRoots` gelen ek yollarını kısıtlar (varsayılan: `/Users/*/Library/Messages/Attachments`).
-- SCP katı host anahtarı denetimi kullanır, bu nedenle aktarma host anahtarının `~/.ssh/known_hosts` içinde zaten bulunduğundan emin olun.
-- `channels.imessage.configWrites`: iMessage tarafından başlatılan yapılandırma yazımlarına izin verin veya bunları reddedin.
-- `type: "acp"` içeren üst düzey `bindings[]` girdileri, iMessage konuşmalarını kalıcı ACP oturumlarına bağlayabilir. `match.peer.id` içinde normalleştirilmiş bir tanıtıcı veya açık sohbet hedefi (`chat_id:*`, `chat_guid:*`, `chat_identifier:*`) kullanın. Paylaşılan alan semantiği: [ACP Aracıları](/tr/tools/acp-agents#persistent-channel-bindings).
+- `attachmentRoots` ve `remoteAttachmentRoots`, gelen ek yollarını sınırlar (varsayılan: `/Users/*/Library/Messages/Attachments`).
+- SCP sıkı konak anahtarı denetimi kullanır, bu nedenle aktarma konağı anahtarının `~/.ssh/known_hosts` içinde zaten bulunduğundan emin olun.
+- `channels.imessage.configWrites`: iMessage tarafından başlatılan yapılandırma yazmalarına izin ver veya bunları reddet.
+- `type: "acp"` içeren üst düzey `bindings[]` girdileri, iMessage konuşmalarını kalıcı ACP oturumlarına bağlayabilir. `match.peer.id` içinde normalleştirilmiş bir tanıtıcı veya açık sohbet hedefi (`chat_id:*`, `chat_guid:*`, `chat_identifier:*`) kullanın. Paylaşılan alan semantiği: [ACP Agents](/tr/tools/acp-agents#persistent-channel-bindings).
 
 <Accordion title="iMessage SSH sarmalayıcı örneği">
 
@@ -652,7 +652,7 @@ exec ssh -T gateway-host imsg "$@"
 
 ### Matrix
 
-Matrix Plugin desteklidir ve `channels.matrix` altında yapılandırılır.
+Matrix, Plugin desteklidir ve `channels.matrix` altında yapılandırılır.
 
 ```json5
 {
@@ -684,23 +684,23 @@ Matrix Plugin desteklidir ve `channels.matrix` altında yapılandırılır.
 
 - Token kimlik doğrulaması `accessToken` kullanır; parola kimlik doğrulaması `userId` + `password` kullanır.
 - `channels.matrix.proxy`, Matrix HTTP trafiğini açık bir HTTP(S) proxy üzerinden yönlendirir. Adlandırılmış hesaplar bunu `channels.matrix.accounts.<id>.proxy` ile geçersiz kılabilir.
-- `channels.matrix.network.dangerouslyAllowPrivateNetwork` özel/dahili homeserver’lara izin verir. `proxy` ve bu ağ katılımı bağımsız denetimlerdir.
+- `channels.matrix.network.dangerouslyAllowPrivateNetwork`, özel/dahili homeserver’lara izin verir. `proxy` ve bu ağ katılım tercihi bağımsız denetimlerdir.
 - `channels.matrix.defaultAccount`, çok hesaplı kurulumlarda tercih edilen hesabı seçer.
-- `channels.matrix.autoJoin` varsayılan olarak `off` olur; bu nedenle davet edilen odalar ve yeni DM tarzı davetler, `autoJoinAllowlist` ile `autoJoin: "allowlist"` veya `autoJoin: "always"` ayarlanana kadar yok sayılır.
-- `channels.matrix.execApprovals`: Matrix yerel exec onay teslimi ve onaylayıcı yetkilendirmesi.
-  - `enabled`: `true`, `false` veya `"auto"` (varsayılan). Otomatik modda, onaylayıcılar `approvers` veya `commands.ownerAllowFrom` içinden çözümlenebildiğinde exec onayları etkinleşir.
+- `channels.matrix.autoJoin` varsayılan olarak `off` değerindedir; bu nedenle davet edilen odalar ve yeni DM tarzı davetler, `autoJoinAllowlist` ile `autoJoin: "allowlist"` ya da `autoJoin: "always"` ayarlanana kadar yok sayılır.
+- `channels.matrix.execApprovals`: Matrix’e özgü exec onayı teslimi ve onaylayıcı yetkilendirmesi.
+  - `enabled`: `true`, `false` veya `"auto"` (varsayılan). Otomatik modda exec onayları, onaylayıcılar `approvers` veya `commands.ownerAllowFrom` üzerinden çözümlenebildiğinde etkinleşir.
   - `approvers`: exec isteklerini onaylamasına izin verilen Matrix kullanıcı kimlikleri (örn. `@owner:example.org`).
-  - `agentFilter`: isteğe bağlı aracı kimliği izin listesi. Tüm aracılar için onayları iletmek üzere çıkarın.
+  - `agentFilter`: isteğe bağlı agent kimliği izin listesi. Tüm agent’lar için onayları iletmek üzere atlayın.
   - `sessionFilter`: isteğe bağlı oturum anahtarı desenleri (alt dize veya regex).
   - `target`: onay istemlerinin nereye gönderileceği. `"dm"` (varsayılan), `"channel"` (kaynak oda) veya `"both"`.
   - Hesap başına geçersiz kılmalar: `channels.matrix.accounts.<id>.execApprovals`.
-- `channels.matrix.dm.sessionScope`, Matrix DM’lerinin oturumlar halinde nasıl gruplanacağını denetler: `per-user` (varsayılan) yönlendirilen eşe göre paylaşır, `per-room` ise her DM odasını yalıtır.
-- Matrix durum yoklamaları ve canlı dizin aramaları, çalışma zamanı trafiğiyle aynı proxy politikasını kullanır.
+- `channels.matrix.dm.sessionScope`, Matrix DM’lerinin oturumlar halinde nasıl gruplandığını denetler: `per-user` (varsayılan) yönlendirilen eşe göre paylaşırken, `per-room` her DM odasını yalıtır.
+- Matrix durum sondaları ve canlı dizin aramaları, çalışma zamanı trafiğiyle aynı proxy politikasını kullanır.
 - Tam Matrix yapılandırması, hedefleme kuralları ve kurulum örnekleri [Matrix](/tr/channels/matrix) içinde belgelenmiştir.
 
 ### Microsoft Teams
 
-Microsoft Teams Plugin desteklidir ve `channels.msteams` altında yapılandırılır.
+Microsoft Teams, Plugin desteklidir ve `channels.msteams` altında yapılandırılır.
 
 ```json5
 {
@@ -716,11 +716,11 @@ Microsoft Teams Plugin desteklidir ve `channels.msteams` altında yapılandırı
 ```
 
 - Burada kapsanan temel anahtar yolları: `channels.msteams`, `channels.msteams.configWrites`.
-- Tam Teams yapılandırması (kimlik bilgileri, Webhook, DM/grup politikası, takım başına/kanal başına geçersiz kılmalar) [Microsoft Teams](/tr/channels/msteams) içinde belgelenmiştir.
+- Tam Teams yapılandırması (kimlik bilgileri, webhook, DM/grup politikası, ekip/kanal başına geçersiz kılmalar) [Microsoft Teams](/tr/channels/msteams) içinde belgelenmiştir.
 
 ### IRC
 
-IRC Plugin desteklidir ve `channels.irc` altında yapılandırılır.
+IRC, Plugin desteklidir ve `channels.irc` altında yapılandırılır.
 
 ```json5
 {
@@ -743,11 +743,11 @@ IRC Plugin desteklidir ve `channels.irc` altında yapılandırılır.
 
 - Burada kapsanan temel anahtar yolları: `channels.irc`, `channels.irc.dmPolicy`, `channels.irc.configWrites`, `channels.irc.nickserv.*`.
 - İsteğe bağlı `channels.irc.defaultAccount`, yapılandırılmış bir hesap kimliğiyle eşleştiğinde varsayılan hesap seçimini geçersiz kılar.
-- Tam IRC kanal yapılandırması (host/port/TLS/kanallar/izin listeleri/bahsetme kapısı) [IRC](/tr/channels/irc) içinde belgelenmiştir.
+- Tam IRC kanal yapılandırması (host/port/TLS/kanallar/izin listeleri/bahsetme denetimi) [IRC](/tr/channels/irc) içinde belgelenmiştir.
 
 ### Çok hesaplı (tüm kanallar)
 
-Kanal başına birden fazla hesabı çalıştırın (her birinin kendi `accountId` değeriyle):
+Kanal başına birden çok hesabı çalıştırın (her birinin kendi `accountId` değeriyle):
 
 ```json5
 {
@@ -769,43 +769,43 @@ Kanal başına birden fazla hesabı çalıştırın (her birinin kendi `accountI
 ```
 
 - `accountId` atlandığında `default` kullanılır (CLI + yönlendirme).
-- Ortam token’ları yalnızca **varsayılan** hesaba uygulanır.
-- Temel kanal ayarları, hesap başına geçersiz kılınmadıkça tüm hesaplara uygulanır.
-- Her hesabı farklı bir aracıya yönlendirmek için `bindings[].match.accountId` kullanın.
-- Hâlâ tek hesaplı üst düzey kanal yapılandırmasındayken `openclaw channels add` (veya kanal onboarding’i) yoluyla varsayılan olmayan bir hesap eklerseniz OpenClaw, özgün hesabın çalışmaya devam etmesi için hesap kapsamlı üst düzey tek hesap değerlerini önce kanal hesap eşlemine yükseltir. Çoğu kanal bunları `channels.<channel>.accounts.default` içine taşır; Matrix bunun yerine mevcut eşleşen adlandırılmış/varsayılan hedefi koruyabilir.
+- Env token’ları yalnızca **varsayılan** hesaba uygulanır.
+- Temel kanal ayarları, hesap başına geçersiz kılınmadığı sürece tüm hesaplara uygulanır.
+- Her hesabı farklı bir agent’a yönlendirmek için `bindings[].match.accountId` kullanın.
+- Tek hesaplı üst düzey kanal yapılandırmasındayken `openclaw channels add` (veya kanal onboarding’i) üzerinden varsayılan olmayan bir hesap eklerseniz, OpenClaw önce hesap kapsamlı üst düzey tek hesap değerlerini kanal hesabı haritasına yükseltir; böylece özgün hesap çalışmaya devam eder. Çoğu kanal bunları `channels.<channel>.accounts.default` içine taşır; Matrix bunun yerine mevcut eşleşen adlandırılmış/varsayılan hedefi koruyabilir.
 - Mevcut yalnızca kanal bağlamaları (`accountId` yok) varsayılan hesapla eşleşmeye devam eder; hesap kapsamlı bağlamalar isteğe bağlı kalır.
-- `openclaw doctor --fix`, hesap kapsamlı üst düzey tek hesap değerlerini ilgili kanal için seçilen yükseltilmiş hesaba taşıyarak karışık şekilleri de onarır. Çoğu kanal `accounts.default` kullanır; Matrix bunun yerine mevcut eşleşen adlandırılmış/varsayılan hedefi koruyabilir.
+- `openclaw doctor --fix`, hesap kapsamlı üst düzey tek hesap değerlerini o kanal için seçilen yükseltilmiş hesaba taşıyarak karışık şekilleri de onarır. Çoğu kanal `accounts.default` kullanır; Matrix bunun yerine mevcut eşleşen adlandırılmış/varsayılan hedefi koruyabilir.
 
 ### Diğer Plugin kanalları
 
-Birçok Plugin kanalı `channels.<id>` olarak yapılandırılır ve kendi özel kanal sayfalarında belgelenir (örneğin Feishu, Matrix, LINE, Nostr, Zalo, Nextcloud Talk, Synology Chat ve Twitch).
+Birçok Plugin kanalı `channels.<id>` olarak yapılandırılır ve kendilerine ayrılmış kanal sayfalarında belgelenir (örneğin Feishu, Matrix, LINE, Nostr, Zalo, Nextcloud Talk, Synology Chat ve Twitch).
 Tam kanal dizinine bakın: [Kanallar](/tr/channels).
 
-### Grup sohbetinde bahsetme kapısı
+### Grup sohbeti bahsetme denetimi
 
-Grup mesajları varsayılan olarak **bahsetme gerektirir** (metadata bahsi veya güvenli regex desenleri). WhatsApp, Telegram, Discord, Google Chat ve iMessage grup sohbetleri için geçerlidir.
+Grup iletileri varsayılan olarak **bahsetme gerektirir** (metadata bahsetmesi veya güvenli regex desenleri). WhatsApp, Telegram, Discord, Google Chat ve iMessage grup sohbetleri için geçerlidir.
 
-Görünür yanıtlar ayrı olarak denetlenir. Grup/kanal odaları varsayılan olarak `messages.groupChat.visibleReplies: "message_tool"` kullanır: OpenClaw yine de dönüşü işler, ancak normal son yanıtlar özel kalır ve görünür oda çıktısı `message(action=send)` gerektirir. Normal yanıtların odaya geri gönderildiği eski davranışı istediğinizde yalnızca `"automatic"` ayarlayın. Aynı yalnızca araçla görünür yanıt davranışını doğrudan sohbetlere de uygulamak için `messages.visibleReplies: "message_tool"` ayarlayın; Codex harness da ayarlanmamış doğrudan sohbet varsayılanı olarak bu yalnızca araç davranışını kullanır.
+Görünür yanıtlar ayrı olarak denetlenir. Grup/kanal odaları varsayılan olarak `messages.groupChat.visibleReplies: "message_tool"` kullanır: OpenClaw yine de turu işler, ancak normal final yanıtları özel kalır ve görünür oda çıktısı için `message(action=send)` gerekir. Normal yanıtların odaya geri gönderildiği eski davranışı istediğinizde yalnızca `"automatic"` olarak ayarlayın. Aynı yalnızca araçla görünür-yanıt davranışını doğrudan sohbetlere de uygulamak için `messages.visibleReplies: "message_tool"` olarak ayarlayın; Codex harness da bu yalnızca araç davranışını ayarlanmamış doğrudan sohbet varsayılanı olarak kullanır.
 
-Yalnızca araçla görünür yanıtlar, araçları güvenilir şekilde çağıran bir model/çalışma zamanı gerektirir. Oturum günlüğü `didSendViaMessagingTool: false` ile asistan metni gösteriyorsa model, mesaj aracını çağırmak yerine özel bir son yanıt üretmiştir. Bu kanal için daha güçlü bir araç çağırma modeline geçin veya eski görünür son yanıtları geri yüklemek için `messages.groupChat.visibleReplies: "automatic"` ayarlayın.
+Yalnızca araçla görünür yanıtlar, araçları güvenilir biçimde çağıran bir model/runtime gerektirir. Oturum günlüğü `didSendViaMessagingTool: false` ile asistan metni gösteriyorsa, model mesaj aracını çağırmak yerine özel bir final yanıtı üretmiştir. O kanal için daha güçlü bir araç çağırma modeline geçin veya eski görünür final yanıtlarını geri getirmek için `messages.groupChat.visibleReplies: "automatic"` olarak ayarlayın.
 
-Mesaj aracı etkin araç ilkesi altında kullanılamıyorsa OpenClaw, yanıtı sessizce bastırmak yerine otomatik görünür yanıtlara geri döner. `openclaw doctor` bu uyumsuzluk hakkında uyarır.
+Mesaj aracı etkin araç ilkesi altında kullanılamıyorsa, OpenClaw yanıtı sessizce bastırmak yerine otomatik görünür yanıtlara geri döner. `openclaw doctor` bu uyumsuzluk konusunda uyarır.
 
-Dosya kaydedildikten sonra Gateway, `messages` yapılandırmasını hot-reload eder. Yalnızca dağıtımda dosya izleme veya yapılandırma yeniden yükleme devre dışıysa yeniden başlatın.
+Gateway, dosya kaydedildikten sonra `messages` yapılandırmasını hot-reload ile yeniden yükler. Yalnızca dağıtımda dosya izleme veya yapılandırma yeniden yükleme devre dışıysa yeniden başlatın.
 
 **Bahsetme türleri:**
 
-- **Metadata bahsetmeleri**: Yerel platform @-bahsetmeleri. WhatsApp self-chat modunda yok sayılır.
-- **Metin kalıpları**: `agents.list[].groupChat.mentionPatterns` içinde güvenli regex kalıpları. Geçersiz kalıplar ve güvenli olmayan iç içe yinelemeler yok sayılır.
-- Bahsetme geçitlemesi yalnızca algılama mümkün olduğunda uygulanır (yerel bahsetmeler veya en az bir kalıp).
+- **Metadata bahsetmeleri**: Yerel platform @-bahsetmeleri. WhatsApp kendiyle sohbet modunda yok sayılır.
+- **Metin desenleri**: `agents.list[].groupChat.mentionPatterns` içinde güvenli regex desenleri. Geçersiz desenler ve güvenli olmayan iç içe yinelemeler yok sayılır.
+- Bahsetme kapısı yalnızca algılama mümkün olduğunda uygulanır (yerel bahsetmeler veya en az bir desen).
 
 ```json5
 {
   messages: {
-    visibleReplies: "automatic", // global default for direct/source chats; Codex harness defaults unset direct chats to message_tool
+    visibleReplies: "automatic", // direct/source sohbetler için küresel varsayılan; Codex harness, ayarlanmamış doğrudan sohbetleri varsayılan olarak message_tool yapar
     groupChat: {
       historyLimit: 50,
-      visibleReplies: "message_tool", // default; use "automatic" for legacy final replies
+      visibleReplies: "message_tool", // varsayılan; eski final yanıtları için "automatic" kullanın
     },
   },
   agents: {
@@ -814,9 +814,9 @@ Dosya kaydedildikten sonra Gateway, `messages` yapılandırmasını hot-reload e
 }
 ```
 
-`messages.groupChat.historyLimit` genel varsayılanı ayarlar. Kanallar `channels.<channel>.historyLimit` (veya hesap başına) ile geçersiz kılabilir. Devre dışı bırakmak için `0` olarak ayarlayın.
+`messages.groupChat.historyLimit` küresel varsayılanı ayarlar. Kanallar `channels.<channel>.historyLimit` (veya hesap başına) ile geçersiz kılabilir. Devre dışı bırakmak için `0` olarak ayarlayın.
 
-`messages.visibleReplies` genel kaynak turu varsayılanıdır; `messages.groupChat.visibleReplies` grup/kanal kaynak turları için bunu geçersiz kılar. `messages.visibleReplies` ayarlanmamışsa bir harness kendi doğrudan/kaynak varsayılanını sağlayabilir; Codex harness varsayılan olarak `message_tool` kullanır. Kanal izin listeleri ve bahsetme geçitlemesi yine de bir turun işlenip işlenmeyeceğine karar verir.
+`messages.visibleReplies` küresel source-turn varsayılanıdır; `messages.groupChat.visibleReplies` grup/kanal source turn'leri için bunu geçersiz kılar. `messages.visibleReplies` ayarlanmamışsa, bir harness kendi direct/source varsayılanını sağlayabilir; Codex harness varsayılan olarak `message_tool` kullanır. Kanal izin listeleri ve bahsetme kapısı yine de bir turun işlenip işlenmeyeceğine karar verir.
 
 #### DM geçmiş sınırları
 
@@ -837,9 +837,9 @@ Dosya kaydedildikten sonra Gateway, `messages` yapılandırmasını hot-reload e
 
 Desteklenenler: `telegram`, `whatsapp`, `discord`, `slack`, `signal`, `imessage`, `msteams`.
 
-#### Self-chat modu
+#### Kendiyle sohbet modu
 
-Self-chat modunu etkinleştirmek için kendi numaranızı `allowFrom` içine ekleyin (yerel @-bahsetmeleri yok sayar, yalnızca metin kalıplarına yanıt verir):
+Kendiyle sohbet modunu etkinleştirmek için kendi numaranızı `allowFrom` içine ekleyin (yerel @-bahsetmeleri yok sayar, yalnızca metin desenlerine yanıt verir):
 
 ```json5
 {
@@ -865,16 +865,16 @@ Self-chat modunu etkinleştirmek için kendi numaranızı `allowFrom` içine ekl
 ```json5
 {
   commands: {
-    native: "auto", // register native commands when supported
-    nativeSkills: "auto", // register native skill commands when supported
-    text: true, // parse /commands in chat messages
-    bash: false, // allow ! (alias: /bash)
+    native: "auto", // desteklendiğinde yerel komutları kaydet
+    nativeSkills: "auto", // desteklendiğinde yerel skill komutlarını kaydet
+    text: true, // sohbet mesajlarında /commands ayrıştır
+    bash: false, // ! kullanımına izin ver (takma ad: /bash)
     bashForegroundMs: 2000,
-    config: false, // allow /config
-    mcp: false, // allow /mcp
-    plugins: false, // allow /plugins
-    debug: false, // allow /debug
-    restart: true, // allow /restart + gateway restart tool
+    config: false, // /config kullanımına izin ver
+    mcp: false, // /mcp kullanımına izin ver
+    plugins: false, // /plugins kullanımına izin ver
+    debug: false, // /debug kullanımına izin ver
+    restart: true, // /restart + gateway restart aracına izin ver
     ownerAllowFrom: ["discord:123456789012345678"],
     ownerDisplay: "raw", // raw | hash
     ownerDisplaySecret: "${OWNER_ID_HASH_SECRET}",
@@ -889,32 +889,32 @@ Self-chat modunu etkinleştirmek için kendi numaranızı `allowFrom` içine ekl
 
 <Accordion title="Komut ayrıntıları">
 
-- Bu blok komut yüzeylerini yapılandırır. Geçerli yerleşik + paketlenmiş komut kataloğu için bkz. [Eğik Çizgi Komutları](/tr/tools/slash-commands).
-- Bu sayfa tam komut kataloğu değil, bir **yapılandırma anahtarı referansıdır**. QQ Bot `/bot-ping` `/bot-help` `/bot-logs`, LINE `/card`, cihaz eşleme `/pair`, bellek `/dreaming`, telefon denetimi `/phone` ve Talk `/voice` gibi kanal/Plugin sahipli komutlar, kendi kanal/Plugin sayfalarında ve [Eğik Çizgi Komutları](/tr/tools/slash-commands) içinde belgelenmiştir.
-- Metin komutları başında `/` olan **bağımsız** mesajlar olmalıdır.
-- `native: "auto"` Discord/Telegram için yerel komutları açar, Slack'i kapalı bırakır.
-- `nativeSkills: "auto"` Discord/Telegram için yerel Skills komutlarını açar, Slack'i kapalı bırakır.
-- Kanal başına geçersiz kılın: `channels.discord.commands.native` (bool veya `"auto"`). Discord için `false`, başlatma sırasında yerel komut kaydını ve temizlemeyi atlar.
-- Kanal başına yerel Skills kaydını `channels.<provider>.commands.nativeSkills` ile geçersiz kılın.
+- Bu blok komut yüzeylerini yapılandırır. Geçerli yerleşik + paketlenmiş komut kataloğu için bkz. [Slash Commands](/tr/tools/slash-commands).
+- Bu sayfa tam komut kataloğu değil, bir **config-key referansıdır**. QQ Bot `/bot-ping` `/bot-help` `/bot-logs`, LINE `/card`, cihaz eşleme `/pair`, bellek `/dreaming`, telefon denetimi `/phone` ve Talk `/voice` gibi kanal/Plugin sahipli komutlar kendi kanal/Plugin sayfalarında ve ayrıca [Slash Commands](/tr/tools/slash-commands) içinde belgelenmiştir.
+- Metin komutları başında `/` bulunan **bağımsız** mesajlar olmalıdır.
+- `native: "auto"` Discord/Telegram için yerel komutları açar, Slack kapalı kalır.
+- `nativeSkills: "auto"` Discord/Telegram için yerel skill komutlarını açar, Slack kapalı kalır.
+- Kanal başına geçersiz kılma: `channels.discord.commands.native` (bool veya `"auto"`). Discord için `false`, başlangıç sırasında yerel komut kaydını ve temizliği atlar.
+- Yerel skill kaydını kanal başına `channels.<provider>.commands.nativeSkills` ile geçersiz kılın.
 - `channels.telegram.customCommands` ek Telegram bot menüsü girdileri ekler.
-- `bash: true`, ana makine kabuğu için `! <cmd>` etkinleştirir. `tools.elevated.enabled` ve gönderenin `tools.elevated.allowFrom.<channel>` içinde olmasını gerektirir.
-- `config: true`, `/config` komutunu etkinleştirir (`openclaw.json` okur/yazar). Gateway `chat.send` istemcileri için kalıcı `/config set|unset` yazmaları ayrıca `operator.admin` gerektirir; salt okunur `/config show` normal yazma kapsamlı operatör istemcileri için kullanılabilir kalır.
-- `mcp: true`, `mcp.servers` altındaki OpenClaw yönetimli MCP sunucu yapılandırması için `/mcp` etkinleştirir.
+- `bash: true`, host shell için `! <cmd>` etkinleştirir. `tools.elevated.enabled` ve gönderenin `tools.elevated.allowFrom.<channel>` içinde olmasını gerektirir.
+- `config: true`, `/config` etkinleştirir (`openclaw.json` okur/yazar). Gateway `chat.send` istemcileri için kalıcı `/config set|unset` yazmaları ayrıca `operator.admin` gerektirir; salt okunur `/config show`, normal yazma kapsamlı operator istemcileri için kullanılabilir kalır.
+- `mcp: true`, `mcp.servers` altında OpenClaw tarafından yönetilen MCP sunucu yapılandırması için `/mcp` etkinleştirir.
 - `plugins: true`, Plugin keşfi, kurulum ve etkinleştirme/devre dışı bırakma denetimleri için `/plugins` etkinleştirir.
-- `channels.<provider>.configWrites`, kanal başına yapılandırma mutasyonlarını geçitler (varsayılan: true).
-- Çok hesaplı kanallar için `channels.<provider>.accounts.<id>.configWrites`, o hesabı hedefleyen yazmaları da geçitler (örneğin `/allowlist --config --account <id>` veya `/config set channels.<provider>.accounts.<id>...`).
+- `channels.<provider>.configWrites`, kanal başına yapılandırma değişikliklerini kapılar (varsayılan: true).
+- Çok hesaplı kanallar için `channels.<provider>.accounts.<id>.configWrites`, o hesabı hedefleyen yazmaları da kapılar (örneğin `/allowlist --config --account <id>` veya `/config set channels.<provider>.accounts.<id>...`).
 - `restart: false`, `/restart` ve Gateway yeniden başlatma aracı eylemlerini devre dışı bırakır. Varsayılan: `true`.
-- `ownerAllowFrom`, yalnızca sahip komutları/araçları için açık sahip izin listesidir. `allowFrom` değerinden ayrıdır.
+- `ownerAllowFrom`, yalnızca sahibin kullanabildiği komutlar/araçlar için açık sahip izin listesidir. `allowFrom` öğesinden ayrıdır.
 - `ownerDisplay: "hash"`, sistem isteminde sahip kimliklerini hash'ler. Hashlemeyi denetlemek için `ownerDisplaySecret` ayarlayın.
 - `allowFrom`, sağlayıcı başınadır. Ayarlandığında **tek** yetkilendirme kaynağıdır (kanal izin listeleri/eşleme ve `useAccessGroups` yok sayılır).
-- `useAccessGroups: false`, `allowFrom` ayarlanmamışsa komutların erişim grubu ilkelerini baypas etmesine izin verir.
+- `useAccessGroups: false`, `allowFrom` ayarlanmamışken komutların erişim grubu ilkelerini atlamasına izin verir.
 - Komut dokümanları haritası:
-  - yerleşik + paketlenmiş katalog: [Eğik Çizgi Komutları](/tr/tools/slash-commands)
+  - yerleşik + paketlenmiş katalog: [Slash Commands](/tr/tools/slash-commands)
   - kanala özgü komut yüzeyleri: [Kanallar](/tr/channels)
   - QQ Bot komutları: [QQ Bot](/tr/channels/qqbot)
   - eşleme komutları: [Eşleme](/tr/channels/pairing)
   - LINE kart komutu: [LINE](/tr/channels/line)
-  - bellek Dreaming: [Dreaming](/tr/concepts/dreaming)
+  - bellek dreaming: [Dreaming](/tr/concepts/dreaming)
 
 </Accordion>
 
@@ -923,5 +923,5 @@ Self-chat modunu etkinleştirmek için kendi numaranızı `allowFrom` içine ekl
 ## İlgili
 
 - [Yapılandırma referansı](/tr/gateway/configuration-reference) — üst düzey anahtarlar
-- [Yapılandırma — aracılar](/tr/gateway/config-agents)
+- [Yapılandırma — agents](/tr/gateway/config-agents)
 - [Kanallara genel bakış](/tr/channels)

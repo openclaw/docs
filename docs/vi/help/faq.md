@@ -1,19 +1,19 @@
 ---
 read_when:
-    - Trả lời các câu hỏi hỗ trợ thường gặp về thiết lập, cài đặt, hướng dẫn làm quen ban đầu hoặc thời gian chạy
-    - Phân loại các sự cố do người dùng báo cáo trước khi gỡ lỗi chuyên sâu hơn
-summary: Câu hỏi thường gặp về cách thiết lập, cấu hình và sử dụng OpenClaw
+    - Trả lời các câu hỏi hỗ trợ phổ biến về thiết lập, cài đặt, hướng dẫn làm quen hoặc thời gian chạy
+    - Phân loại các sự cố do người dùng báo cáo trước khi gỡ lỗi sâu hơn
+summary: Các câu hỏi thường gặp về thiết lập, cấu hình và sử dụng OpenClaw
 title: Câu hỏi thường gặp
 x-i18n:
-    generated_at: "2026-05-06T17:55:59Z"
+    generated_at: "2026-05-07T13:19:04Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8d5724af921ab660da3d4453779f269bda440fb27518638541312e489f203318
+    source_hash: b208e28def6b9a1165130bc02f9e2646c3b16d203dfc8c0d59dc664f388c2ef8
     source_path: help/faq.md
     workflow: 16
 ---
 
-Câu trả lời nhanh cùng phần khắc phục sự cố chuyên sâu hơn cho các thiết lập thực tế (phát triển cục bộ, VPS, đa tác nhân, OAuth/API keys, chuyển dự phòng mô hình). Để chẩn đoán runtime, xem [Khắc phục sự cố](/vi/gateway/troubleshooting). Để xem tham chiếu cấu hình đầy đủ, xem [Cấu hình](/vi/gateway/configuration).
+Câu trả lời nhanh kèm hướng dẫn khắc phục sự cố sâu hơn cho các thiết lập thực tế (phát triển cục bộ, VPS, đa tác nhân, OAuth/API keys, chuyển đổi dự phòng mô hình). Để chẩn đoán runtime, xem [Khắc phục sự cố](/vi/gateway/troubleshooting). Để xem tham chiếu cấu hình đầy đủ, xem [Cấu hình](/vi/gateway/configuration).
 
 ## 60 giây đầu tiên nếu có gì đó bị hỏng
 
@@ -23,7 +23,7 @@ Câu trả lời nhanh cùng phần khắc phục sự cố chuyên sâu hơn ch
    openclaw status
    ```
 
-   Tóm tắt cục bộ nhanh: OS + cập nhật, khả năng truy cập gateway/dịch vụ, tác nhân/phiên, cấu hình provider + sự cố runtime (khi gateway có thể truy cập).
+   Tóm tắt cục bộ nhanh: OS + bản cập nhật, khả năng truy cập gateway/dịch vụ, tác nhân/phiên, cấu hình provider + vấn đề runtime (khi gateway có thể truy cập).
 
 2. **Báo cáo có thể dán (an toàn để chia sẻ)**
 
@@ -31,7 +31,7 @@ Câu trả lời nhanh cùng phần khắc phục sự cố chuyên sâu hơn ch
    openclaw status --all
    ```
 
-   Chẩn đoán chỉ đọc kèm phần đuôi log (token đã được biên tập).
+   Chẩn đoán chỉ đọc kèm phần cuối log (token đã được che).
 
 3. **Trạng thái daemon + cổng**
 
@@ -39,7 +39,7 @@ Câu trả lời nhanh cùng phần khắc phục sự cố chuyên sâu hơn ch
    openclaw gateway status
    ```
 
-   Hiển thị runtime của supervisor so với khả năng truy cập RPC, URL mục tiêu thăm dò, và cấu hình mà dịch vụ có khả năng đã dùng.
+   Hiển thị runtime của supervisor so với khả năng truy cập RPC, URL mục tiêu thăm dò, và cấu hình mà dịch vụ nhiều khả năng đã dùng.
 
 4. **Thăm dò sâu**
 
@@ -47,8 +47,8 @@ Câu trả lời nhanh cùng phần khắc phục sự cố chuyên sâu hơn ch
    openclaw status --deep
    ```
 
-   Chạy thăm dò tình trạng Gateway trực tiếp, bao gồm thăm dò kênh khi được hỗ trợ
-   (yêu cầu Gateway có thể truy cập). Xem [Tình trạng](/vi/gateway/health).
+   Chạy thăm dò sức khỏe gateway trực tiếp, bao gồm thăm dò kênh khi được hỗ trợ
+   (yêu cầu gateway có thể truy cập). Xem [Sức khỏe](/vi/gateway/health).
 
 5. **Theo dõi log mới nhất**
 
@@ -56,7 +56,7 @@ Câu trả lời nhanh cùng phần khắc phục sự cố chuyên sâu hơn ch
    openclaw logs --follow
    ```
 
-   Nếu RPC bị tắt, dùng phương án dự phòng:
+   Nếu RPC bị tắt, chuyển sang:
 
    ```bash
    tail -f "$(ls -t /tmp/openclaw/openclaw-*.log | head -1)"
@@ -70,7 +70,7 @@ Câu trả lời nhanh cùng phần khắc phục sự cố chuyên sâu hơn ch
    openclaw doctor
    ```
 
-   Sửa chữa/di chuyển cấu hình/trạng thái + chạy kiểm tra tình trạng. Xem [Doctor](/vi/gateway/doctor).
+   Sửa chữa/di chuyển cấu hình/trạng thái + chạy kiểm tra sức khỏe. Xem [Doctor](/vi/gateway/doctor).
 
 7. **Ảnh chụp Gateway**
 
@@ -79,38 +79,38 @@ Câu trả lời nhanh cùng phần khắc phục sự cố chuyên sâu hơn ch
    openclaw health --verbose   # shows the target URL + config path on errors
    ```
 
-   Yêu cầu Gateway đang chạy cung cấp ảnh chụp đầy đủ (chỉ WS). Xem [Tình trạng](/vi/gateway/health).
+   Yêu cầu gateway đang chạy cung cấp ảnh chụp đầy đủ (chỉ WS). Xem [Sức khỏe](/vi/gateway/health).
 
 ## Bắt đầu nhanh và thiết lập lần chạy đầu tiên
 
-Hỏi đáp lần chạy đầu tiên — cài đặt, onboard, tuyến xác thực, đăng ký, lỗi ban đầu —
-nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help/faq-first-run).
+Hỏi đáp lần chạy đầu tiên — cài đặt, onboarding, tuyến xác thực, gói đăng ký, lỗi ban đầu —
+nằm trong [FAQ lần chạy đầu tiên](/vi/help/faq-first-run).
 
 ## OpenClaw là gì?
 
 <AccordionGroup>
   <Accordion title="OpenClaw là gì, trong một đoạn văn?">
-    OpenClaw là trợ lý AI cá nhân bạn chạy trên thiết bị của riêng mình. Nó trả lời trên các bề mặt nhắn tin bạn đã dùng (WhatsApp, Telegram, Slack, Mattermost, Discord, Google Chat, Signal, iMessage, WebChat, và các plugin kênh được đóng gói như QQ Bot) và cũng có thể hỗ trợ giọng nói + Canvas trực tiếp trên các nền tảng được hỗ trợ. **Gateway** là mặt phẳng điều khiển luôn bật; trợ lý là sản phẩm.
+    OpenClaw là trợ lý AI cá nhân mà bạn chạy trên thiết bị của chính mình. Nó trả lời trên các bề mặt nhắn tin bạn đã dùng (WhatsApp, Telegram, Slack, Mattermost, Discord, Google Chat, Signal, iMessage, WebChat, và các Plugin kênh đi kèm như QQ Bot) và cũng có thể dùng giọng nói + Canvas trực tiếp trên các nền tảng được hỗ trợ. **Gateway** là mặt phẳng điều khiển luôn bật; trợ lý là sản phẩm.
   </Accordion>
 
-  <Accordion title="Đề xuất giá trị">
-    OpenClaw không phải "chỉ là một lớp bọc Claude." Nó là một **mặt phẳng điều khiển ưu tiên cục bộ** cho phép bạn chạy một
-    trợ lý đủ năng lực trên **phần cứng của chính bạn**, có thể truy cập từ các ứng dụng chat bạn đã dùng, với
-    phiên có trạng thái, bộ nhớ, và công cụ - mà không giao quyền kiểm soát quy trình làm việc của bạn cho một
+  <Accordion title="Giá trị cốt lõi">
+    OpenClaw không phải là "chỉ một lớp bọc Claude." Đây là **mặt phẳng điều khiển ưu tiên cục bộ** cho phép bạn chạy một
+    trợ lý có năng lực trên **phần cứng của chính bạn**, truy cập được từ các ứng dụng trò chuyện bạn đã dùng, với
+    phiên có trạng thái, bộ nhớ và công cụ - mà không giao quyền kiểm soát quy trình làm việc của bạn cho một
     SaaS được lưu trữ.
 
     Điểm nổi bật:
 
     - **Thiết bị của bạn, dữ liệu của bạn:** chạy Gateway ở bất cứ đâu bạn muốn (Mac, Linux, VPS) và giữ
       workspace + lịch sử phiên ở cục bộ.
-    - **Kênh thật, không phải sandbox web:** WhatsApp/Telegram/Slack/Discord/Signal/iMessage/etc,
+    - **Kênh thật, không phải sandbox web:** WhatsApp/Telegram/Slack/Discord/Signal/iMessage/v.v.,
       cộng với giọng nói di động và Canvas trên các nền tảng được hỗ trợ.
     - **Không phụ thuộc mô hình:** dùng Anthropic, OpenAI, MiniMax, OpenRouter, v.v., với định tuyến
-      và chuyển dự phòng theo từng tác nhân.
+      và chuyển đổi dự phòng theo từng tác nhân.
     - **Tùy chọn chỉ cục bộ:** chạy mô hình cục bộ để **toàn bộ dữ liệu có thể ở lại trên thiết bị của bạn** nếu bạn muốn.
-    - **Định tuyến đa tác nhân:** tách tác nhân theo kênh, tài khoản, hoặc tác vụ, mỗi tác nhân có
+    - **Định tuyến đa tác nhân:** tác nhân riêng cho từng kênh, tài khoản hoặc tác vụ, mỗi tác nhân có
       workspace và mặc định riêng.
-    - **Mã nguồn mở và dễ tùy biến:** kiểm tra, mở rộng, và tự lưu trữ mà không bị khóa vào nhà cung cấp.
+    - **Mã nguồn mở và dễ tùy biến:** kiểm tra, mở rộng và tự lưu trữ mà không bị khóa vào nhà cung cấp.
 
     Tài liệu: [Gateway](/vi/gateway), [Kênh](/vi/channels), [Đa tác nhân](/vi/concepts/multi-agent),
     [Bộ nhớ](/vi/concepts/memory).
@@ -122,47 +122,47 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
 
     - Xây dựng một website (WordPress, Shopify, hoặc một trang tĩnh đơn giản).
     - Tạo nguyên mẫu ứng dụng di động (phác thảo, màn hình, kế hoạch API).
-    - Sắp xếp tệp và thư mục (dọn dẹp, đặt tên, gắn thẻ).
-    - Kết nối Gmail và tự động hóa tóm tắt hoặc theo dõi tiếp.
+    - Tổ chức tệp và thư mục (dọn dẹp, đặt tên, gắn thẻ).
+    - Kết nối Gmail và tự động hóa tóm tắt hoặc theo dõi.
 
-    Nó có thể xử lý tác vụ lớn, nhưng hoạt động tốt nhất khi bạn chia chúng thành các giai đoạn và
+    Nó có thể xử lý các tác vụ lớn, nhưng hoạt động tốt nhất khi bạn chia chúng thành các giai đoạn và
     dùng tác nhân phụ cho công việc song song.
 
   </Accordion>
 
   <Accordion title="Năm trường hợp sử dụng hằng ngày hàng đầu cho OpenClaw là gì?">
-    Những lợi ích hằng ngày thường trông như sau:
+    Các lợi ích hằng ngày thường trông như sau:
 
-    - **Bản tóm lược cá nhân:** tóm tắt hộp thư đến, lịch, và tin tức bạn quan tâm.
-    - **Nghiên cứu và soạn thảo:** nghiên cứu nhanh, tóm tắt, và bản nháp đầu tiên cho email hoặc tài liệu.
-    - **Nhắc nhở và theo dõi tiếp:** lời nhắc và danh sách kiểm tra do Cron hoặc Heartbeat điều khiển.
-    - **Tự động hóa trình duyệt:** điền biểu mẫu, thu thập dữ liệu, và lặp lại tác vụ web.
-    - **Phối hợp đa thiết bị:** gửi tác vụ từ điện thoại, để Gateway chạy trên máy chủ, rồi nhận kết quả lại trong chat.
+    - **Bản tin cá nhân:** tóm tắt hộp thư, lịch và tin tức bạn quan tâm.
+    - **Nghiên cứu và soạn thảo:** nghiên cứu nhanh, tóm tắt và bản nháp đầu tiên cho email hoặc tài liệu.
+    - **Nhắc nhở và theo dõi:** gợi nhắc và danh sách kiểm tra do cron hoặc heartbeat điều khiển.
+    - **Tự động hóa trình duyệt:** điền biểu mẫu, thu thập dữ liệu và lặp lại tác vụ web.
+    - **Phối hợp nhiều thiết bị:** gửi tác vụ từ điện thoại, để Gateway chạy nó trên máy chủ, rồi nhận kết quả trong chat.
 
   </Accordion>
 
-  <Accordion title="OpenClaw có thể giúp tạo lead, tiếp cận, quảng cáo, và blog cho SaaS không?">
-    Có, cho **nghiên cứu, đánh giá điều kiện, và soạn thảo**. Nó có thể quét site, xây dựng danh sách rút gọn,
-    tóm tắt khách hàng tiềm năng, và viết bản nháp nội dung tiếp cận hoặc quảng cáo.
+  <Accordion title="OpenClaw có thể giúp tạo khách hàng tiềm năng, tiếp cận, quảng cáo và blog cho một SaaS không?">
+    Có, cho **nghiên cứu, đánh giá chất lượng và soạn thảo**. Nó có thể quét trang web, tạo danh sách rút gọn,
+    tóm tắt khách hàng tiềm năng và viết bản nháp nội dung tiếp cận hoặc quảng cáo.
 
-    Với **chiến dịch tiếp cận hoặc chạy quảng cáo**, hãy giữ con người trong vòng lặp. Tránh spam, tuân thủ luật địa phương và
-    chính sách nền tảng, và xem lại mọi thứ trước khi gửi. Mẫu an toàn nhất là để
-    OpenClaw soạn thảo và bạn phê duyệt.
+    Với **chiến dịch tiếp cận hoặc quảng cáo**, hãy giữ con người trong vòng lặp. Tránh spam, tuân thủ luật địa phương và
+    chính sách nền tảng, và rà soát mọi thứ trước khi gửi. Mẫu an toàn nhất là để
+    OpenClaw soạn nháp và bạn phê duyệt.
 
     Tài liệu: [Bảo mật](/vi/gateway/security).
 
   </Accordion>
 
-  <Accordion title="Ưu điểm so với Claude Code cho phát triển web là gì?">
-    OpenClaw là **trợ lý cá nhân** và lớp điều phối, không phải công cụ thay thế IDE. Dùng
-    Claude Code hoặc Codex để có vòng lặp lập trình trực tiếp nhanh nhất bên trong repo. Dùng OpenClaw khi bạn
-    muốn bộ nhớ bền vững, truy cập đa thiết bị, và điều phối công cụ.
+  <Accordion title="Ưu điểm so với Claude Code trong phát triển web là gì?">
+    OpenClaw là **trợ lý cá nhân** và lớp phối hợp, không phải công cụ thay thế IDE. Dùng
+    Claude Code hoặc Codex cho vòng lặp lập trình trực tiếp nhanh nhất bên trong repo. Dùng OpenClaw khi bạn
+    muốn bộ nhớ bền vững, truy cập đa thiết bị và điều phối công cụ.
 
     Ưu điểm:
 
-    - **Bộ nhớ + workspace bền vững** xuyên suốt các phiên
+    - **Bộ nhớ + workspace liên tục** qua các phiên
     - **Truy cập đa nền tảng** (WhatsApp, Telegram, TUI, WebChat)
-    - **Điều phối công cụ** (trình duyệt, tệp, lập lịch, hook)
+    - **Điều phối công cụ** (trình duyệt, tệp, lên lịch, hook)
     - **Gateway luôn bật** (chạy trên VPS, tương tác từ mọi nơi)
     - **Nodes** cho trình duyệt/màn hình/camera/exec cục bộ
 
@@ -174,45 +174,45 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
 ## Skills và tự động hóa
 
 <AccordionGroup>
-  <Accordion title="Làm thế nào để tùy chỉnh Skills mà không làm repo bị bẩn?">
-    Dùng override được quản lý thay vì chỉnh sửa bản sao trong repo. Đặt thay đổi của bạn vào `~/.openclaw/skills/<name>/SKILL.md` (hoặc thêm một thư mục qua `skills.load.extraDirs` trong `~/.openclaw/openclaw.json`). Thứ tự ưu tiên là `<workspace>/skills` → `<workspace>/.agents/skills` → `~/.agents/skills` → `~/.openclaw/skills` → bản đóng gói → `skills.load.extraDirs`, nên override được quản lý vẫn thắng Skills đóng gói mà không chạm vào git. Nếu bạn cần cài Skill ở phạm vi toàn cục nhưng chỉ hiển thị với một số tác nhân, giữ bản sao dùng chung trong `~/.openclaw/skills` và kiểm soát khả năng hiển thị bằng `agents.defaults.skills` và `agents.list[].skills`. Chỉ các chỉnh sửa đáng đưa lên upstream mới nên nằm trong repo và được gửi dưới dạng PR.
+  <Accordion title="Làm thế nào để tùy chỉnh skills mà không làm repo bị bẩn?">
+    Dùng override được quản lý thay vì chỉnh sửa bản sao trong repo. Đặt thay đổi của bạn trong `~/.openclaw/skills/<name>/SKILL.md` (hoặc thêm thư mục qua `skills.load.extraDirs` trong `~/.openclaw/openclaw.json`). Thứ tự ưu tiên là `<workspace>/skills` → `<workspace>/.agents/skills` → `~/.agents/skills` → `~/.openclaw/skills` → bundled → `skills.load.extraDirs`, nên override được quản lý vẫn thắng skills đi kèm mà không chạm vào git. Nếu bạn cần skill được cài đặt toàn cục nhưng chỉ hiển thị với một số tác nhân, giữ bản sao dùng chung trong `~/.openclaw/skills` và kiểm soát khả năng hiển thị bằng `agents.defaults.skills` và `agents.list[].skills`. Chỉ các chỉnh sửa đáng đưa upstream mới nên nằm trong repo và đi ra dưới dạng PR.
   </Accordion>
 
-  <Accordion title="Tôi có thể tải Skills từ thư mục tùy chỉnh không?">
-    Có. Thêm thư mục bổ sung qua `skills.load.extraDirs` trong `~/.openclaw/openclaw.json` (ưu tiên thấp nhất). Thứ tự ưu tiên mặc định là `<workspace>/skills` → `<workspace>/.agents/skills` → `~/.agents/skills` → `~/.openclaw/skills` → bản đóng gói → `skills.load.extraDirs`. `clawhub` cài vào `./skills` theo mặc định, mà OpenClaw xem là `<workspace>/skills` trong phiên tiếp theo. Nếu Skill chỉ nên hiển thị với một số tác nhân nhất định, kết hợp điều đó với `agents.defaults.skills` hoặc `agents.list[].skills`.
+  <Accordion title="Tôi có thể tải skills từ một thư mục tùy chỉnh không?">
+    Có. Thêm thư mục bổ sung qua `skills.load.extraDirs` trong `~/.openclaw/openclaw.json` (mức ưu tiên thấp nhất). Thứ tự ưu tiên mặc định là `<workspace>/skills` → `<workspace>/.agents/skills` → `~/.agents/skills` → `~/.openclaw/skills` → bundled → `skills.load.extraDirs`. `clawhub` cài vào `./skills` theo mặc định, OpenClaw xem đó là `<workspace>/skills` ở phiên tiếp theo. Nếu skill chỉ nên hiển thị với một số tác nhân nhất định, kết hợp điều đó với `agents.defaults.skills` hoặc `agents.list[].skills`.
   </Accordion>
 
   <Accordion title="Làm thế nào để dùng các mô hình khác nhau cho các tác vụ khác nhau?">
     Hiện nay các mẫu được hỗ trợ là:
 
-    - **Cron jobs**: tác vụ cô lập có thể đặt override `model` theo từng tác vụ.
-    - **Tác nhân phụ**: định tuyến tác vụ đến các tác nhân riêng với mô hình mặc định khác nhau.
+    - **Cron jobs**: các job cô lập có thể đặt override `model` cho từng job.
+    - **Tác nhân phụ**: định tuyến tác vụ tới các tác nhân riêng với mô hình mặc định khác nhau.
     - **Chuyển đổi theo yêu cầu**: dùng `/model` để đổi mô hình của phiên hiện tại bất cứ lúc nào.
 
     Xem [Cron jobs](/vi/automation/cron-jobs), [Định tuyến đa tác nhân](/vi/concepts/multi-agent), và [Lệnh slash](/vi/tools/slash-commands).
 
   </Accordion>
 
-  <Accordion title="Bot bị treo khi làm việc nặng. Làm thế nào để offload việc đó?">
+  <Accordion title="Bot bị đơ khi làm việc nặng. Làm thế nào để chuyển tải việc đó?">
     Dùng **tác nhân phụ** cho tác vụ dài hoặc song song. Tác nhân phụ chạy trong phiên riêng,
-    trả về bản tóm tắt, và giữ chat chính của bạn phản hồi nhanh.
+    trả về bản tóm tắt và giữ chat chính của bạn phản hồi nhanh.
 
     Yêu cầu bot của bạn "spawn a sub-agent for this task" hoặc dùng `/subagents`.
-    Dùng `/status` trong chat để xem Gateway đang làm gì ngay lúc này (và liệu nó có đang bận không).
+    Dùng `/status` trong chat để xem Gateway hiện đang làm gì (và có bận không).
 
-    Mẹo token: tác vụ dài và tác nhân phụ đều tiêu thụ token. Nếu chi phí là mối quan tâm, đặt
+    Mẹo token: tác vụ dài và tác nhân phụ đều tiêu thụ token. Nếu lo ngại chi phí, đặt
     mô hình rẻ hơn cho tác nhân phụ qua `agents.defaults.subagents.model`.
 
     Tài liệu: [Tác nhân phụ](/vi/tools/subagents), [Tác vụ nền](/vi/automation/tasks).
 
   </Accordion>
 
-  <Accordion title="Các phiên tác nhân phụ gắn với luồng hoạt động như thế nào trên Discord?">
-    Dùng liên kết luồng. Bạn có thể liên kết một luồng Discord với một tác nhân phụ hoặc mục tiêu phiên để các tin nhắn tiếp theo trong luồng đó vẫn ở trên phiên đã liên kết.
+  <Accordion title="Các phiên subagent gắn với luồng hoạt động như thế nào trên Discord?">
+    Dùng liên kết luồng. Bạn có thể liên kết một luồng Discord với một subagent hoặc mục tiêu phiên để các tin nhắn tiếp theo trong luồng đó vẫn ở trên phiên đã liên kết.
 
     Luồng cơ bản:
 
-    - Tạo bằng `sessions_spawn` với `thread: true` (và tùy chọn `mode: "session"` cho theo dõi tiếp bền vững).
+    - Spawn bằng `sessions_spawn` với `thread: true` (và tùy chọn `mode: "session"` để theo dõi liên tục).
     - Hoặc liên kết thủ công bằng `/focus <target>`.
     - Dùng `/agents` để kiểm tra trạng thái liên kết.
     - Dùng `/session idle <duration|off>` và `/session max-age <duration|off>` để kiểm soát tự động bỏ focus.
@@ -222,21 +222,21 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
 
     - Mặc định toàn cục: `session.threadBindings.enabled`, `session.threadBindings.idleHours`, `session.threadBindings.maxAgeHours`.
     - Override Discord: `channels.discord.threadBindings.enabled`, `channels.discord.threadBindings.idleHours`, `channels.discord.threadBindings.maxAgeHours`.
-    - Tự động liên kết khi tạo: `channels.discord.threadBindings.spawnSessions` mặc định là `true`; đặt thành `false` để tắt tạo phiên gắn với luồng.
+    - Tự động liên kết khi spawn: `channels.discord.threadBindings.spawnSessions` mặc định là `true`; đặt thành `false` để tắt spawn phiên gắn với luồng.
 
     Tài liệu: [Tác nhân phụ](/vi/tools/subagents), [Discord](/vi/channels/discord), [Tham chiếu cấu hình](/vi/gateway/configuration-reference), [Lệnh slash](/vi/tools/slash-commands).
 
   </Accordion>
 
-  <Accordion title="Một tác nhân phụ đã hoàn tất, nhưng cập nhật hoàn tất đi sai chỗ hoặc không bao giờ được đăng. Tôi nên kiểm tra gì?">
-    Trước tiên kiểm tra tuyến requester đã được phân giải:
+  <Accordion title="Một subagent đã hoàn tất, nhưng cập nhật hoàn tất đi sai chỗ hoặc không bao giờ được đăng. Tôi nên kiểm tra gì?">
+    Trước tiên hãy kiểm tra tuyến requester đã phân giải:
 
-    - Việc gửi tác nhân phụ ở chế độ hoàn tất ưu tiên mọi luồng đã liên kết hoặc tuyến hội thoại khi có.
-    - Nếu nguồn hoàn tất chỉ mang một kênh, OpenClaw dùng dự phòng là tuyến đã lưu của phiên requester (`lastChannel` / `lastTo` / `lastAccountId`) để gửi trực tiếp vẫn có thể thành công.
-    - Nếu không có tuyến đã liên kết lẫn tuyến đã lưu có thể dùng, gửi trực tiếp có thể thất bại và kết quả quay về cơ chế gửi phiên đã xếp hàng thay vì đăng ngay vào chat.
-    - Mục tiêu không hợp lệ hoặc đã cũ vẫn có thể buộc dùng dự phòng hàng đợi hoặc khiến lần gửi cuối cùng thất bại.
-    - Nếu trả lời trợ lý hiển thị cuối cùng của tiến trình con đúng chính xác là token im lặng `NO_REPLY` / `no_reply`, hoặc đúng chính xác là `ANNOUNCE_SKIP`, OpenClaw cố ý chặn thông báo thay vì đăng tiến độ cũ trước đó.
-    - Nếu tiến trình con hết thời gian sau khi chỉ có các lệnh gọi công cụ, thông báo có thể gom điều đó thành một bản tóm tắt tiến độ một phần ngắn thay vì phát lại output công cụ thô.
+    - Việc gửi subagent ở chế độ hoàn tất ưu tiên mọi luồng đã liên kết hoặc tuyến hội thoại khi có.
+    - Nếu nguồn hoàn tất chỉ mang một kênh, OpenClaw chuyển sang tuyến đã lưu của phiên requester (`lastChannel` / `lastTo` / `lastAccountId`) để việc gửi trực tiếp vẫn có thể thành công.
+    - Nếu không có tuyến đã liên kết hoặc tuyến đã lưu có thể dùng, việc gửi trực tiếp có thể thất bại và kết quả chuyển sang hàng đợi gửi của phiên thay vì đăng ngay vào chat.
+    - Mục tiêu không hợp lệ hoặc đã cũ vẫn có thể buộc chuyển sang hàng đợi hoặc làm lần gửi cuối thất bại.
+    - Nếu phản hồi trợ lý hiển thị cuối cùng của child là đúng token im lặng `NO_REPLY` / `no_reply`, hoặc đúng `ANNOUNCE_SKIP`, OpenClaw cố ý chặn thông báo thay vì đăng tiến trình cũ trước đó.
+    - Nếu child hết thời gian sau khi chỉ gọi công cụ, thông báo có thể thu gọn thành bản tóm tắt tiến trình một phần ngắn thay vì phát lại đầu ra công cụ thô.
 
     Gỡ lỗi:
 
@@ -250,13 +250,13 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
 
   <Accordion title="Cron hoặc lời nhắc không chạy. Tôi nên kiểm tra gì?">
     Cron chạy bên trong tiến trình Gateway. Nếu Gateway không chạy liên tục,
-    các tác vụ đã lập lịch sẽ không chạy.
+    các job đã lên lịch sẽ không chạy.
 
     Danh sách kiểm tra:
 
-    - Xác nhận cron đã bật (`cron.enabled`) và `OPENCLAW_SKIP_CRON` chưa được đặt.
-    - Kiểm tra Gateway đang chạy 24/7 (không sleep/khởi động lại).
-    - Xác minh thiết lập múi giờ cho tác vụ (`--tz` so với múi giờ host).
+    - Xác nhận cron đã được bật (`cron.enabled`) và `OPENCLAW_SKIP_CRON` chưa được đặt.
+    - Kiểm tra Gateway đang chạy 24/7 (không ngủ/khởi động lại).
+    - Xác minh cài đặt múi giờ cho job (`--tz` so với múi giờ host).
 
     Gỡ lỗi:
 
@@ -265,21 +265,21 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
     openclaw cron runs --id <jobId> --limit 50
     ```
 
-    Tài liệu: [Cron jobs](/vi/automation/cron-jobs), [Tự động hóa & Tác vụ](/vi/automation).
+    Tài liệu: [Cron jobs](/vi/automation/cron-jobs), [Tự động hóa & tác vụ](/vi/automation).
 
   </Accordion>
 
-  <Accordion title="Cron đã chạy, nhưng không có gì được gửi tới kênh. Vì sao?">
+  <Accordion title="Cron đã chạy, nhưng không có gì được gửi đến kênh. Vì sao?">
     Trước tiên hãy kiểm tra chế độ gửi:
 
-    - `--no-deliver` / `delivery.mode: "none"` nghĩa là không kỳ vọng trình chạy gửi dự phòng.
-    - Thiếu hoặc không hợp lệ mục tiêu thông báo (`channel` / `to`) nghĩa là trình chạy đã bỏ qua việc gửi ra ngoài.
-    - Lỗi xác thực kênh (`unauthorized`, `Forbidden`) nghĩa là trình chạy đã cố gửi nhưng thông tin xác thực đã chặn.
-    - Kết quả tách biệt im lặng (chỉ `NO_REPLY` / `no_reply`) được xem là cố ý không thể gửi, nên trình chạy cũng chặn việc gửi dự phòng đã xếp hàng.
+    - `--no-deliver` / `delivery.mode: "none"` nghĩa là không kỳ vọng runner gửi dự phòng.
+    - Thiếu hoặc mục tiêu thông báo không hợp lệ (`channel` / `to`) nghĩa là runner đã bỏ qua việc gửi ra ngoài.
+    - Lỗi xác thực kênh (`unauthorized`, `Forbidden`) nghĩa là runner đã cố gửi nhưng thông tin xác thực đã chặn việc đó.
+    - Kết quả cô lập im lặng (chỉ `NO_REPLY` / `no_reply`) được xem là cố ý không thể gửi, nên runner cũng chặn việc gửi dự phòng đã xếp hàng.
 
-    Với các tác vụ cron tách biệt, agent vẫn có thể gửi trực tiếp bằng công cụ `message`
-    khi có tuyến trò chuyện. `--announce` chỉ kiểm soát đường dẫn dự phòng của trình chạy
-    cho văn bản cuối cùng mà agent chưa tự gửi.
+    Với các tác vụ cron cô lập, agent vẫn có thể gửi trực tiếp bằng công cụ `message`
+    khi có tuyến chat khả dụng. `--announce` chỉ kiểm soát đường dẫn dự phòng của runner
+    cho văn bản cuối cùng mà agent chưa gửi sẵn.
 
     Gỡ lỗi:
 
@@ -292,23 +292,23 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
 
   </Accordion>
 
-  <Accordion title="Vì sao một lần chạy cron tách biệt lại đổi mô hình hoặc thử lại một lần?">
+  <Accordion title="Vì sao một lần chạy cron cô lập lại đổi mô hình hoặc thử lại một lần?">
     Đó thường là đường dẫn đổi mô hình trực tiếp, không phải lập lịch trùng lặp.
 
-    Cron tách biệt có thể lưu một lần chuyển giao mô hình lúc chạy và thử lại khi lượt
-    chạy đang hoạt động ném ra `LiveSessionModelSwitchError`. Lần thử lại giữ nguyên
-    provider/mô hình đã đổi, và nếu lần đổi đó mang theo một ghi đè hồ sơ xác thực mới, cron
+    Cron cô lập có thể lưu một lần chuyển giao mô hình khi chạy và thử lại khi lượt chạy
+    đang hoạt động ném ra `LiveSessionModelSwitchError`. Lần thử lại giữ nguyên
+    provider/mô hình đã chuyển, và nếu lần chuyển đó mang theo ghi đè hồ sơ xác thực mới, cron
     cũng lưu nó trước khi thử lại.
 
-    Quy tắc lựa chọn liên quan:
+    Quy tắc chọn liên quan:
 
-    - Ghi đè mô hình của hook Gmail được ưu tiên trước khi áp dụng.
+    - Ghi đè mô hình của hook Gmail thắng trước khi áp dụng được.
     - Sau đó là `model` theo từng tác vụ.
     - Sau đó là mọi ghi đè mô hình phiên cron đã lưu.
-    - Sau đó là lựa chọn mô hình agent/mặc định thông thường.
+    - Sau đó là lựa chọn mô hình mặc định/agent bình thường.
 
-    Vòng lặp thử lại có giới hạn. Sau lần thử đầu tiên cộng với 2 lần thử lại do đổi mô hình,
-    cron sẽ hủy thay vì lặp mãi.
+    Vòng lặp thử lại có giới hạn. Sau lần thử ban đầu cộng thêm 2 lần thử lại do chuyển đổi,
+    cron sẽ hủy thay vì lặp mãi mãi.
 
     Gỡ lỗi:
 
@@ -322,8 +322,8 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
   </Accordion>
 
   <Accordion title="Làm cách nào để cài đặt Skills trên Linux?">
-    Dùng các lệnh `openclaw skills` gốc hoặc thả skills vào workspace của bạn. Giao diện Skills trên macOS không có trên Linux.
-    Duyệt skills tại [https://clawhub.ai](https://clawhub.ai).
+    Dùng các lệnh `openclaw skills` gốc hoặc thả Skills vào workspace của bạn. Giao diện Skills trên macOS không có trên Linux.
+    Duyệt Skills tại [https://clawhub.ai](https://clawhub.ai).
 
     ```bash
     openclaw skills search "calendar"
@@ -336,11 +336,11 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
     openclaw skills check
     ```
 
-    `openclaw skills install` gốc ghi vào thư mục `skills/` của workspace đang hoạt động.
-    Chỉ cài đặt CLI `clawhub` riêng nếu bạn muốn phát hành hoặc
-    đồng bộ skills của riêng mình. Với cài đặt dùng chung giữa các agent, đặt skill trong
+    `openclaw skills install` gốc ghi vào thư mục `skills/`
+    của workspace đang hoạt động. Chỉ cài CLI `clawhub` riêng nếu bạn muốn xuất bản hoặc
+    đồng bộ Skills của riêng mình. Với các cài đặt dùng chung giữa các agent, đặt Skills dưới
     `~/.openclaw/skills` và dùng `agents.defaults.skills` hoặc
-    `agents.list[].skills` nếu bạn muốn giới hạn agent nào có thể thấy nó.
+    `agents.list[].skills` nếu bạn muốn thu hẹp agent nào có thể thấy nó.
 
   </Accordion>
 
@@ -348,29 +348,29 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
     Có. Dùng bộ lập lịch Gateway:
 
     - **Tác vụ Cron** cho các tác vụ theo lịch hoặc lặp lại (tồn tại qua các lần khởi động lại).
-    - **Heartbeat** cho kiểm tra định kỳ "phiên chính".
-    - **Tác vụ tách biệt** cho các agent tự trị đăng tóm tắt hoặc gửi tới trò chuyện.
+    - **Heartbeat** cho các kiểm tra định kỳ của "phiên chính".
+    - **Tác vụ cô lập** cho các agent tự trị đăng bản tóm tắt hoặc gửi đến chat.
 
-    Tài liệu: [Tác vụ Cron](/vi/automation/cron-jobs), [Tự động hóa & tác vụ](/vi/automation),
+    Tài liệu: [Tác vụ Cron](/vi/automation/cron-jobs), [Tự động hóa & Tác vụ](/vi/automation),
     [Heartbeat](/vi/gateway/heartbeat).
 
   </Accordion>
 
-  <Accordion title="Tôi có thể chạy skills chỉ dành cho Apple macOS từ Linux không?">
-    Không trực tiếp. Skills macOS được kiểm soát bởi `metadata.openclaw.os` cùng các tệp nhị phân bắt buộc, và skills chỉ xuất hiện trong prompt hệ thống khi đủ điều kiện trên **máy chủ Gateway**. Trên Linux, skills chỉ dành cho `darwin` (như `apple-notes`, `apple-reminders`, `things-mac`) sẽ không tải trừ khi bạn ghi đè việc kiểm soát điều kiện.
+  <Accordion title="Tôi có thể chạy Skills chỉ dành cho Apple macOS từ Linux không?">
+    Không trực tiếp. Skills macOS được chặn bởi `metadata.openclaw.os` cộng với các binary bắt buộc, và Skills chỉ xuất hiện trong prompt hệ thống khi chúng đủ điều kiện trên **máy chủ Gateway**. Trên Linux, Skills chỉ dành cho `darwin` (như `apple-notes`, `apple-reminders`, `things-mac`) sẽ không tải trừ khi bạn ghi đè cơ chế chặn.
 
     Bạn có ba mẫu được hỗ trợ:
 
     **Tùy chọn A - chạy Gateway trên máy Mac (đơn giản nhất).**
-    Chạy Gateway nơi có các tệp nhị phân macOS, rồi kết nối từ Linux ở [chế độ từ xa](#gateway-ports-already-running-and-remote-mode) hoặc qua Tailscale. Skills tải bình thường vì máy chủ Gateway là macOS.
+    Chạy Gateway ở nơi có các binary macOS, rồi kết nối từ Linux trong [chế độ từ xa](#gateway-ports-already-running-and-remote-mode) hoặc qua Tailscale. Skills tải bình thường vì máy chủ Gateway là macOS.
 
-    **Tùy chọn B - dùng Node macOS (không SSH).**
-    Chạy Gateway trên Linux, ghép nối một Node macOS (ứng dụng thanh menu), và đặt **Lệnh chạy Node** thành "Luôn hỏi" hoặc "Luôn cho phép" trên máy Mac. OpenClaw có thể xem skills chỉ dành cho macOS là đủ điều kiện khi các tệp nhị phân bắt buộc tồn tại trên Node. Agent chạy các skills đó qua công cụ `nodes`. Nếu bạn chọn "Luôn hỏi", việc phê duyệt "Luôn cho phép" trong prompt sẽ thêm lệnh đó vào danh sách cho phép.
+    **Tùy chọn B - dùng một Node macOS (không SSH).**
+    Chạy Gateway trên Linux, ghép nối một Node macOS (ứng dụng thanh menu), và đặt **Lệnh Chạy Node** thành "Luôn hỏi" hoặc "Luôn cho phép" trên máy Mac. OpenClaw có thể xem Skills chỉ dành cho macOS là đủ điều kiện khi các binary bắt buộc tồn tại trên Node. Agent chạy các Skills đó qua công cụ `nodes`. Nếu bạn chọn "Luôn hỏi", việc phê duyệt "Luôn cho phép" trong prompt sẽ thêm lệnh đó vào danh sách cho phép.
 
-    **Tùy chọn C - proxy tệp nhị phân macOS qua SSH (nâng cao).**
-    Giữ Gateway trên Linux, nhưng làm cho các tệp nhị phân CLI bắt buộc phân giải tới các wrapper SSH chạy trên máy Mac. Sau đó ghi đè skill để cho phép Linux, nhờ vậy skill vẫn đủ điều kiện.
+    **Tùy chọn C - proxy binary macOS qua SSH (nâng cao).**
+    Giữ Gateway trên Linux, nhưng làm cho các binary CLI bắt buộc phân giải thành wrapper SSH chạy trên máy Mac. Sau đó ghi đè Skills để cho phép Linux nhằm giữ nó đủ điều kiện.
 
-    1. Tạo một wrapper SSH cho tệp nhị phân (ví dụ: `memo` cho Apple Notes):
+    1. Tạo wrapper SSH cho binary (ví dụ: `memo` cho Apple Notes):
 
        ```bash
        #!/usr/bin/env bash
@@ -379,7 +379,7 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
        ```
 
     2. Đặt wrapper vào `PATH` trên máy chủ Linux (ví dụ `~/bin/memo`).
-    3. Ghi đè siêu dữ liệu skill (workspace hoặc `~/.openclaw/skills`) để cho phép Linux:
+    3. Ghi đè metadata của Skills (workspace hoặc `~/.openclaw/skills`) để cho phép Linux:
 
        ```markdown
        ---
@@ -389,39 +389,39 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
        ---
        ```
 
-    4. Bắt đầu một phiên mới để ảnh chụp nhanh skills được làm mới.
+    4. Bắt đầu một phiên mới để snapshot Skills được làm mới.
 
   </Accordion>
 
   <Accordion title="Bạn có tích hợp Notion hoặc HeyGen không?">
-    Hiện chưa tích hợp sẵn.
+    Hiện chưa được tích hợp sẵn.
 
     Các tùy chọn:
 
-    - **Skill / Plugin tùy chỉnh:** tốt nhất cho truy cập API đáng tin cậy (Notion/HeyGen đều có API).
-    - **Tự động hóa trình duyệt:** hoạt động không cần mã nhưng chậm hơn và dễ hỏng hơn.
+    - **Skills / Plugin tùy chỉnh:** tốt nhất để truy cập API đáng tin cậy (Notion/HeyGen đều có API).
+    - **Tự động hóa trình duyệt:** hoạt động không cần mã nhưng chậm hơn và dễ lỗi hơn.
 
     Nếu bạn muốn giữ ngữ cảnh theo từng khách hàng (quy trình agency), một mẫu đơn giản là:
 
     - Một trang Notion cho mỗi khách hàng (ngữ cảnh + tùy chọn + công việc đang hoạt động).
-    - Yêu cầu agent tìm nạp trang đó khi bắt đầu một phiên.
+    - Yêu cầu agent lấy trang đó khi bắt đầu phiên.
 
-    Nếu bạn muốn tích hợp gốc, hãy mở yêu cầu tính năng hoặc xây dựng một skill
-    nhắm tới các API đó.
+    Nếu bạn muốn tích hợp gốc, hãy mở yêu cầu tính năng hoặc xây dựng một Skills
+    nhắm đến các API đó.
 
-    Cài đặt skills:
+    Cài đặt Skills:
 
     ```bash
     openclaw skills install <skill-slug>
     openclaw skills update --all
     ```
 
-    Cài đặt gốc nằm trong thư mục `skills/` của workspace đang hoạt động. Với skills dùng chung giữa các agent, đặt chúng trong `~/.openclaw/skills/<name>/SKILL.md`. Nếu chỉ một số agent nên thấy bản cài đặt dùng chung, hãy cấu hình `agents.defaults.skills` hoặc `agents.list[].skills`. Một số skills yêu cầu tệp nhị phân được cài qua Homebrew; trên Linux, điều đó nghĩa là Linuxbrew (xem mục FAQ Homebrew Linux ở trên). Xem [Skills](/vi/tools/skills), [Cấu hình Skills](/vi/tools/skills-config), và [ClawHub](/vi/tools/clawhub).
+    Cài đặt gốc nằm trong thư mục `skills/` của workspace đang hoạt động. Với Skills dùng chung giữa các agent, đặt chúng trong `~/.openclaw/skills/<name>/SKILL.md`. Nếu chỉ một số agent được thấy một cài đặt dùng chung, hãy cấu hình `agents.defaults.skills` hoặc `agents.list[].skills`. Một số Skills kỳ vọng các binary được cài qua Homebrew; trên Linux nghĩa là Linuxbrew (xem mục Câu hỏi thường gặp Homebrew Linux ở trên). Xem [Skills](/vi/tools/skills), [Cấu hình Skills](/vi/tools/skills-config), và [ClawHub](/vi/tools/clawhub).
 
   </Accordion>
 
   <Accordion title="Làm cách nào để dùng Chrome hiện có đã đăng nhập của tôi với OpenClaw?">
-    Dùng hồ sơ trình duyệt `user` tích hợp sẵn, hồ sơ này gắn vào qua Chrome DevTools MCP:
+    Dùng hồ sơ trình duyệt `user` tích hợp sẵn, gắn qua Chrome DevTools MCP:
 
     ```bash
     openclaw browser --browser-profile user tabs
@@ -435,13 +435,13 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
     openclaw browser --browser-profile chrome-live tabs
     ```
 
-    Đường dẫn này có thể dùng trình duyệt máy chủ cục bộ hoặc một Node trình duyệt đã kết nối. Nếu Gateway chạy ở nơi khác, hãy chạy máy chủ Node trên máy trình duyệt hoặc dùng CDP từ xa thay thế.
+    Đường dẫn này có thể dùng trình duyệt máy chủ cục bộ hoặc một Node trình duyệt đã kết nối. Nếu Gateway chạy ở nơi khác, hãy chạy một máy chủ Node trên máy có trình duyệt hoặc dùng CDP từ xa.
 
     Giới hạn hiện tại của `existing-session` / `user`:
 
-    - hành động dựa trên ref, không dựa trên CSS-selector
-    - tải lên yêu cầu `ref` / `inputRef` và hiện chỉ hỗ trợ một tệp mỗi lần
-    - `responsebody`, xuất PDF, chặn tải xuống và hành động theo lô vẫn cần trình duyệt được quản lý hoặc hồ sơ CDP thô
+    - thao tác dựa trên ref, không dựa trên CSS selector
+    - tải lên yêu cầu `ref` / `inputRef` và hiện hỗ trợ từng tệp một
+    - `responsebody`, xuất PDF, chặn tải xuống, và thao tác hàng loạt vẫn cần trình duyệt được quản lý hoặc hồ sơ CDP thô
 
   </Accordion>
 </AccordionGroup>
@@ -449,28 +449,28 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
 ## Sandboxing và bộ nhớ
 
 <AccordionGroup>
-  <Accordion title="Có tài liệu sandboxing chuyên dụng không?">
-    Có. Xem [Sandboxing](/vi/gateway/sandboxing). Với thiết lập dành riêng cho Docker (toàn bộ gateway trong Docker hoặc hình ảnh sandbox), xem [Docker](/vi/install/docker).
+  <Accordion title="Có tài liệu sandboxing riêng không?">
+    Có. Xem [Sandboxing](/vi/gateway/sandboxing). Với thiết lập riêng cho Docker (Gateway đầy đủ trong Docker hoặc image sandbox), xem [Docker](/vi/install/docker).
   </Accordion>
 
   <Accordion title="Docker có vẻ bị giới hạn - làm cách nào để bật đầy đủ tính năng?">
-    Hình ảnh mặc định ưu tiên bảo mật và chạy với tư cách người dùng `node`, nên nó không
-    bao gồm các gói hệ thống, Homebrew, hoặc trình duyệt đóng gói sẵn. Để thiết lập đầy đủ hơn:
+    Image mặc định ưu tiên bảo mật và chạy dưới người dùng `node`, nên nó không
+    bao gồm các gói hệ thống, Homebrew, hoặc trình duyệt đi kèm. Để thiết lập đầy đủ hơn:
 
-    - Lưu bền `/home/node` bằng `OPENCLAW_HOME_VOLUME` để cache tồn tại.
-    - Đóng gói phụ thuộc hệ thống vào hình ảnh bằng `OPENCLAW_DOCKER_APT_PACKAGES`.
-    - Cài đặt trình duyệt Playwright qua CLI đi kèm:
+    - Duy trì `/home/node` bằng `OPENCLAW_HOME_VOLUME` để cache tồn tại.
+    - Đưa dependency hệ thống vào image bằng `OPENCLAW_DOCKER_APT_PACKAGES`.
+    - Cài trình duyệt Playwright qua CLI đi kèm:
       `node /app/node_modules/playwright-core/cli.js install chromium`
-    - Đặt `PLAYWRIGHT_BROWSERS_PATH` và bảo đảm đường dẫn được lưu bền.
+    - Đặt `PLAYWRIGHT_BROWSERS_PATH` và đảm bảo đường dẫn được duy trì.
 
     Tài liệu: [Docker](/vi/install/docker), [Trình duyệt](/vi/tools/browser).
 
   </Accordion>
 
-  <Accordion title="Tôi có thể giữ DM riêng tư nhưng làm nhóm công khai/sandboxed với một agent không?">
+  <Accordion title="Tôi có thể giữ DM cá nhân nhưng làm cho nhóm công khai/sandboxed với một agent không?">
     Có - nếu lưu lượng riêng tư của bạn là **DM** và lưu lượng công khai là **nhóm**.
 
-    Dùng `agents.defaults.sandbox.mode: "non-main"` để các phiên nhóm/kênh (khóa không phải chính) chạy trong backend sandbox đã cấu hình, trong khi phiên DM chính vẫn ở trên máy chủ. Docker là backend mặc định nếu bạn không chọn backend. Sau đó giới hạn các công cụ có sẵn trong phiên sandboxed qua `tools.sandbox.tools`.
+    Dùng `agents.defaults.sandbox.mode: "non-main"` để các phiên nhóm/kênh (khóa không chính) chạy trong backend sandbox đã cấu hình, trong khi phiên DM chính vẫn ở trên máy chủ. Docker là backend mặc định nếu bạn không chọn backend nào. Sau đó giới hạn các công cụ khả dụng trong phiên sandboxed qua `tools.sandbox.tools`.
 
     Hướng dẫn thiết lập + cấu hình ví dụ: [Nhóm: DM cá nhân + nhóm công khai](/vi/channels/groups#pattern-personal-dms-public-groups-single-agent)
 
@@ -479,11 +479,11 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
   </Accordion>
 
   <Accordion title="Làm cách nào để bind một thư mục máy chủ vào sandbox?">
-    Đặt `agents.defaults.sandbox.docker.binds` thành `["host:path:mode"]` (ví dụ, `"/home/user/src:/src:ro"`). Bind toàn cục + theo từng agent được gộp lại; bind theo từng agent bị bỏ qua khi `scope: "shared"`. Dùng `:ro` cho mọi thứ nhạy cảm và nhớ rằng bind vượt qua các bức tường hệ thống tệp của sandbox.
+    Đặt `agents.defaults.sandbox.docker.binds` thành `["host:path:mode"]` (ví dụ, `"/home/user/src:/src:ro"`). Bind toàn cục + theo agent được hợp nhất; bind theo agent bị bỏ qua khi `scope: "shared"`. Dùng `:ro` cho mọi thứ nhạy cảm và nhớ rằng bind bỏ qua các rào chắn hệ thống tệp sandbox.
 
-    OpenClaw xác thực nguồn bind dựa trên cả đường dẫn đã chuẩn hóa và đường dẫn chính tắc được phân giải qua tổ tiên sâu nhất đang tồn tại. Điều đó nghĩa là các escape qua cha là symlink vẫn bị đóng an toàn ngay cả khi đoạn đường dẫn cuối cùng chưa tồn tại, và kiểm tra gốc được cho phép vẫn áp dụng sau khi phân giải symlink.
+    OpenClaw xác thực nguồn bind dựa trên cả đường dẫn đã chuẩn hóa và đường dẫn chuẩn tắc được phân giải qua tổ tiên sâu nhất còn tồn tại. Điều đó nghĩa là các lần thoát qua thư mục cha symlink vẫn bị đóng thất bại ngay cả khi phân đoạn đường dẫn cuối chưa tồn tại, và kiểm tra gốc được phép vẫn áp dụng sau khi phân giải symlink.
 
-    Xem [Sandboxing](/vi/gateway/sandboxing#custom-bind-mounts) và [Sandbox so với chính sách công cụ so với nâng quyền](/vi/gateway/sandbox-vs-tool-policy-vs-elevated#bind-mounts-security-quick-check) để biết ví dụ và ghi chú an toàn.
+    Xem [Sandboxing](/vi/gateway/sandboxing#custom-bind-mounts) và [Sandbox so với Chính sách công cụ so với Nâng quyền](/vi/gateway/sandbox-vs-tool-policy-vs-elevated#bind-mounts-security-quick-check) để xem ví dụ và ghi chú an toàn.
 
   </Accordion>
 
@@ -493,51 +493,51 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
     - Ghi chú hằng ngày trong `memory/YYYY-MM-DD.md`
     - Ghi chú dài hạn được tuyển chọn trong `MEMORY.md` (chỉ phiên chính/riêng tư)
 
-    OpenClaw cũng chạy một **lần flush bộ nhớ im lặng trước Compaction** để nhắc mô hình
-    ghi các ghi chú bền vững trước auto-compaction. Việc này chỉ chạy khi workspace
+    OpenClaw cũng chạy một **lần xả bộ nhớ tiền Compaction im lặng** để nhắc mô hình
+    ghi các ghi chú bền vững trước khi tự động Compaction. Việc này chỉ chạy khi workspace
     có thể ghi (sandbox chỉ đọc sẽ bỏ qua). Xem [Bộ nhớ](/vi/concepts/memory).
 
   </Accordion>
 
-  <Accordion title="Bộ nhớ cứ quên mọi thứ. Làm cách nào để lưu lại bền vững?">
+  <Accordion title="Bộ nhớ cứ quên mọi thứ. Làm cách nào để nó ghi nhớ?">
     Hãy yêu cầu bot **ghi sự kiện đó vào bộ nhớ**. Ghi chú dài hạn thuộc về `MEMORY.md`,
     ngữ cảnh ngắn hạn đi vào `memory/YYYY-MM-DD.md`.
 
-    Đây vẫn là một mảng chúng tôi đang cải thiện. Việc nhắc mô hình lưu ký ức sẽ hữu ích;
-    nó sẽ biết phải làm gì. Nếu nó vẫn tiếp tục quên, hãy xác minh Gateway đang dùng cùng
-    một workspace trong mọi lần chạy.
+    Đây vẫn là một lĩnh vực chúng tôi đang cải thiện. Việc nhắc mô hình lưu bộ nhớ sẽ hữu ích;
+    nó sẽ biết cần làm gì. Nếu nó vẫn quên, hãy xác minh Gateway đang dùng cùng một
+    workspace trong mọi lần chạy.
 
     Tài liệu: [Bộ nhớ](/vi/concepts/memory), [Workspace của agent](/vi/concepts/agent-workspace).
 
   </Accordion>
 
-  <Accordion title="Bộ nhớ có tồn tại mãi không? Giới hạn là gì?">
+  <Accordion title="Bộ nhớ có tồn tại mãi mãi không? Giới hạn là gì?">
     Các tệp bộ nhớ nằm trên đĩa và tồn tại cho đến khi bạn xóa chúng. Giới hạn là
-    dung lượng lưu trữ của bạn, không phải mô hình. **Ngữ cảnh phiên** vẫn bị giới hạn bởi
-    cửa sổ ngữ cảnh của mô hình, nên các cuộc hội thoại dài có thể compact hoặc bị cắt bớt. Đó là lý do
-    tồn tại tìm kiếm bộ nhớ - nó chỉ kéo những phần liên quan trở lại ngữ cảnh.
+    dung lượng lưu trữ của bạn, không phải mô hình. **Ngữ cảnh phiên** vẫn bị giới hạn bởi cửa sổ
+    ngữ cảnh của mô hình, nên các cuộc trò chuyện dài có thể được compact hoặc cắt bớt. Đó là lý do
+    tìm kiếm bộ nhớ tồn tại - nó chỉ kéo các phần liên quan trở lại ngữ cảnh.
 
     Tài liệu: [Bộ nhớ](/vi/concepts/memory), [Ngữ cảnh](/vi/concepts/context).
 
   </Accordion>
 
   <Accordion title="Tìm kiếm bộ nhớ ngữ nghĩa có yêu cầu khóa API OpenAI không?">
-    Chỉ khi bạn dùng **OpenAI embeddings**. Codex OAuth chỉ bao gồm chat/completions và
-    **không** cấp quyền truy cập embeddings, vì vậy **đăng nhập bằng Codex (OAuth hoặc
+    Chỉ khi bạn dùng **OpenAI embeddings**. Codex OAuth bao gồm chat/completions và
+    **không** cấp quyền truy cập embeddings, nên **đăng nhập bằng Codex (OAuth hoặc
     đăng nhập Codex CLI)** không giúp ích cho tìm kiếm bộ nhớ ngữ nghĩa. OpenAI embeddings
-    vẫn cần khóa API thật (`OPENAI_API_KEY` hoặc `models.providers.openai.apiKey`).
+    vẫn cần một khóa API thật (`OPENAI_API_KEY` hoặc `models.providers.openai.apiKey`).
 
-    Nếu bạn không đặt rõ nhà cung cấp, OpenClaw tự động chọn nhà cung cấp khi nó
-    có thể phân giải khóa API (hồ sơ xác thực, `models.providers.*.apiKey`, hoặc biến môi trường).
-    Nó ưu tiên OpenAI nếu phân giải được khóa OpenAI, nếu không thì Gemini nếu phân giải được khóa Gemini,
-    rồi Voyage, rồi Mistral. Nếu không có khóa từ xa nào, tìm kiếm bộ nhớ
-    vẫn bị tắt cho đến khi bạn cấu hình. Nếu bạn đã cấu hình và có sẵn đường dẫn mô hình cục bộ,
-    OpenClaw
+    Nếu bạn không đặt rõ provider, OpenClaw sẽ tự động chọn provider khi có thể
+    phân giải được khóa API (auth profiles, `models.providers.*.apiKey`, hoặc env vars).
+    Nó ưu tiên OpenAI nếu phân giải được khóa OpenAI, nếu không thì Gemini nếu phân giải được
+    khóa Gemini, rồi Voyage, rồi Mistral. Nếu không có khóa từ xa, tính năng tìm kiếm
+    bộ nhớ vẫn bị tắt cho đến khi bạn cấu hình nó. Nếu bạn đã cấu hình và có sẵn
+    đường dẫn mô hình cục bộ, OpenClaw
     ưu tiên `local`. Ollama được hỗ trợ khi bạn đặt rõ
     `memorySearch.provider = "ollama"`.
 
-    Nếu bạn muốn giữ cục bộ, hãy đặt `memorySearch.provider = "local"` (và tùy chọn
-    `memorySearch.fallback = "none"`). Nếu bạn muốn Gemini embeddings, hãy đặt
+    Nếu bạn muốn giữ mọi thứ cục bộ, hãy đặt `memorySearch.provider = "local"` (và tùy chọn
+    `memorySearch.fallback = "none"`). Nếu bạn muốn dùng Gemini embeddings, hãy đặt
     `memorySearch.provider = "gemini"` và cung cấp `GEMINI_API_KEY` (hoặc
     `memorySearch.remote.apiKey`). Chúng tôi hỗ trợ các mô hình embedding **OpenAI, Gemini, Voyage, Mistral, Ollama, hoặc local**
     - xem [Bộ nhớ](/vi/concepts/memory) để biết chi tiết thiết lập.
@@ -545,42 +545,42 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
   </Accordion>
 </AccordionGroup>
 
-## Vị trí lưu trữ trên đĩa
+## Mọi thứ nằm ở đâu trên ổ đĩa
 
 <AccordionGroup>
   <Accordion title="Tất cả dữ liệu dùng với OpenClaw có được lưu cục bộ không?">
-    Không - **trạng thái của OpenClaw là cục bộ**, nhưng **các dịch vụ bên ngoài vẫn thấy những gì bạn gửi cho họ**.
+    Không - **trạng thái của OpenClaw là cục bộ**, nhưng **các dịch vụ bên ngoài vẫn thấy nội dung bạn gửi cho họ**.
 
-    - **Cục bộ theo mặc định:** phiên, tệp bộ nhớ, cấu hình và workspace nằm trên máy chủ Gateway
+    - **Cục bộ theo mặc định:** phiên, tệp bộ nhớ, cấu hình, và workspace nằm trên máy chủ Gateway
       (`~/.openclaw` + thư mục workspace của bạn).
-    - **Từ xa do cần thiết:** tin nhắn bạn gửi đến các nhà cung cấp mô hình (Anthropic/OpenAI/v.v.) đi tới
+    - **Từ xa do bắt buộc:** tin nhắn bạn gửi tới model providers (Anthropic/OpenAI/v.v.) đi tới
       API của họ, và các nền tảng chat (WhatsApp/Telegram/Slack/v.v.) lưu dữ liệu tin nhắn trên
       máy chủ của họ.
-    - **Bạn kiểm soát phạm vi dữ liệu:** dùng mô hình cục bộ giữ prompt trên máy của bạn, nhưng lưu lượng kênh
-      vẫn đi qua máy chủ của kênh.
+    - **Bạn kiểm soát phạm vi dữ liệu:** dùng mô hình cục bộ sẽ giữ prompt trên máy của bạn, nhưng lưu lượng
+      channel vẫn đi qua máy chủ của channel đó.
 
     Liên quan: [Workspace của agent](/vi/concepts/agent-workspace), [Bộ nhớ](/vi/concepts/memory).
 
   </Accordion>
 
   <Accordion title="OpenClaw lưu dữ liệu ở đâu?">
-    Mọi thứ nằm trong `$OPENCLAW_STATE_DIR` (mặc định: `~/.openclaw`):
+    Mọi thứ nằm dưới `$OPENCLAW_STATE_DIR` (mặc định: `~/.openclaw`):
 
     | Đường dẫn                                                       | Mục đích                                                           |
     | --------------------------------------------------------------- | ------------------------------------------------------------------ |
     | `$OPENCLAW_STATE_DIR/openclaw.json`                             | Cấu hình chính (JSON5)                                             |
-    | `$OPENCLAW_STATE_DIR/credentials/oauth.json`                    | Nhập OAuth cũ (được sao chép vào hồ sơ xác thực khi dùng lần đầu)  |
-    | `$OPENCLAW_STATE_DIR/agents/<agentId>/agent/auth-profiles.json` | Hồ sơ xác thực (OAuth, khóa API và `keyRef`/`tokenRef` tùy chọn)   |
-    | `$OPENCLAW_STATE_DIR/secrets.json`                              | Payload bí mật tùy chọn dựa trên tệp cho nhà cung cấp SecretRef `file` |
-    | `$OPENCLAW_STATE_DIR/agents/<agentId>/agent/auth.json`          | Tệp tương thích cũ (các mục `api_key` tĩnh đã được xóa sạch)       |
-    | `$OPENCLAW_STATE_DIR/credentials/`                              | Trạng thái nhà cung cấp (ví dụ `whatsapp/<accountId>/creds.json`)  |
+    | `$OPENCLAW_STATE_DIR/credentials/oauth.json`                    | Nhập OAuth cũ (được sao chép vào auth profiles khi dùng lần đầu)   |
+    | `$OPENCLAW_STATE_DIR/agents/<agentId>/agent/auth-profiles.json` | Auth profiles (OAuth, khóa API, và `keyRef`/`tokenRef` tùy chọn)   |
+    | `$OPENCLAW_STATE_DIR/secrets.json`                              | Payload secret dựa trên tệp tùy chọn cho provider SecretRef `file` |
+    | `$OPENCLAW_STATE_DIR/agents/<agentId>/agent/auth.json`          | Tệp tương thích cũ (các mục `api_key` tĩnh đã được làm sạch)       |
+    | `$OPENCLAW_STATE_DIR/credentials/`                              | Trạng thái provider (ví dụ `whatsapp/<accountId>/creds.json`)      |
     | `$OPENCLAW_STATE_DIR/agents/`                                   | Trạng thái theo từng agent (agentDir + phiên)                      |
     | `$OPENCLAW_STATE_DIR/agents/<agentId>/sessions/`                | Lịch sử hội thoại & trạng thái (theo từng agent)                   |
     | `$OPENCLAW_STATE_DIR/agents/<agentId>/sessions/sessions.json`   | Siêu dữ liệu phiên (theo từng agent)                               |
 
-    Đường dẫn cũ cho một agent: `~/.openclaw/agent/*` (được di chuyển bởi `openclaw doctor`).
+    Đường dẫn một agent cũ: `~/.openclaw/agent/*` (được di chuyển bởi `openclaw doctor`).
 
-    **Workspace** của bạn (AGENTS.md, tệp bộ nhớ, Skills, v.v.) tách riêng và được cấu hình qua `agents.defaults.workspace` (mặc định: `~/.openclaw/workspace`).
+    **Workspace** của bạn (AGENTS.md, tệp bộ nhớ, skills, v.v.) là riêng biệt và được cấu hình qua `agents.defaults.workspace` (mặc định: `~/.openclaw/workspace`).
 
   </Accordion>
 
@@ -589,9 +589,9 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
 
     - **Workspace (theo từng agent)**: `AGENTS.md`, `SOUL.md`, `IDENTITY.md`, `USER.md`,
       `MEMORY.md`, `memory/YYYY-MM-DD.md`, `HEARTBEAT.md` tùy chọn.
-      `memory.md` viết thường ở gốc chỉ là đầu vào sửa chữa cũ; `openclaw doctor --fix`
-      có thể hợp nhất nó vào `MEMORY.md` khi cả hai tệp cùng tồn tại.
-    - **Thư mục trạng thái (`~/.openclaw`)**: cấu hình, trạng thái kênh/nhà cung cấp, hồ sơ xác thực, phiên, nhật ký,
+      `memory.md` viết thường ở gốc chỉ là dữ liệu đầu vào sửa chữa cũ; `openclaw doctor --fix`
+      có thể hợp nhất nó vào `MEMORY.md` khi cả hai tệp đều tồn tại.
+    - **State dir (`~/.openclaw`)**: cấu hình, trạng thái channel/provider, auth profiles, phiên, log,
       và Skills dùng chung (`~/.openclaw/skills`).
 
     Workspace mặc định là `~/.openclaw/workspace`, có thể cấu hình qua:
@@ -603,8 +603,8 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
     ```
 
     Nếu bot "quên" sau khi khởi động lại, hãy xác nhận Gateway đang dùng cùng một
-    workspace ở mọi lần khởi chạy (và nhớ rằng: chế độ từ xa dùng workspace của **máy chủ gateway**,
-    không phải laptop cục bộ của bạn).
+    workspace trong mọi lần khởi chạy (và nhớ rằng: chế độ từ xa dùng workspace của
+    **máy chủ gateway**, không phải laptop cục bộ của bạn).
 
     Mẹo: nếu bạn muốn một hành vi hoặc tùy chọn bền vững, hãy yêu cầu bot **ghi nó vào
     AGENTS.md hoặc MEMORY.md** thay vì dựa vào lịch sử chat.
@@ -614,30 +614,29 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
   </Accordion>
 
   <Accordion title="Chiến lược sao lưu được khuyến nghị">
-    Đặt **workspace của agent** trong một repo git **riêng tư** và sao lưu nó ở một nơi
-    riêng tư (ví dụ GitHub private). Việc này ghi lại bộ nhớ + các tệp AGENTS/SOUL/USER,
+    Đặt **workspace của agent** trong một repo git **riêng tư** và sao lưu nó ở nơi
+    riêng tư (ví dụ GitHub private). Việc này lưu lại bộ nhớ + các tệp AGENTS/SOUL/USER,
     và cho phép bạn khôi phục "tâm trí" của trợ lý sau này.
 
-    **Đừng** commit bất cứ thứ gì trong `~/.openclaw` (thông tin đăng nhập, phiên, token, hoặc payload bí mật đã mã hóa).
-    Nếu cần khôi phục đầy đủ, hãy sao lưu riêng cả workspace và thư mục trạng thái
+    **Không** commit bất cứ thứ gì dưới `~/.openclaw` (thông tin đăng nhập, phiên, token, hoặc payload secret đã mã hóa).
+    Nếu bạn cần khôi phục đầy đủ, hãy sao lưu riêng cả workspace và thư mục trạng thái
     (xem câu hỏi về di chuyển ở trên).
 
     Tài liệu: [Workspace của agent](/vi/concepts/agent-workspace).
 
   </Accordion>
 
-  <Accordion title="Làm thế nào để gỡ cài đặt hoàn toàn OpenClaw?">
+  <Accordion title="Làm thế nào để gỡ cài đặt OpenClaw hoàn toàn?">
     Xem hướng dẫn riêng: [Gỡ cài đặt](/vi/install/uninstall).
   </Accordion>
 
   <Accordion title="Agent có thể làm việc bên ngoài workspace không?">
-    Có. Workspace là **cwd mặc định** và điểm neo bộ nhớ, không phải sandbox cứng.
-    Đường dẫn tương đối phân giải bên trong workspace, nhưng đường dẫn tuyệt đối có thể truy cập các vị trí khác
-    trên máy chủ trừ khi sandboxing được bật. Nếu bạn cần cô lập, hãy dùng
+    Có. Workspace là **cwd mặc định** và neo bộ nhớ, không phải sandbox cứng.
+    Đường dẫn tương đối phân giải bên trong workspace, nhưng đường dẫn tuyệt đối có thể truy cập các
+    vị trí khác trên máy chủ trừ khi sandboxing được bật. Nếu bạn cần cô lập, hãy dùng
     [`agents.defaults.sandbox`](/vi/gateway/sandboxing) hoặc thiết lập sandbox theo từng agent. Nếu bạn
     muốn một repo là thư mục làm việc mặc định, hãy trỏ `workspace` của agent đó
-    tới gốc repo. Repo OpenClaw chỉ là mã nguồn; hãy giữ
-    workspace tách riêng trừ khi bạn cố ý muốn agent làm việc bên trong đó.
+    tới gốc repo. Repo OpenClaw chỉ là mã nguồn; hãy giữ workspace tách biệt trừ khi bạn chủ ý muốn agent làm việc bên trong nó.
 
     Ví dụ (repo làm cwd mặc định):
 
@@ -653,8 +652,8 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
 
   </Accordion>
 
-  <Accordion title="Chế độ từ xa: kho phiên nằm ở đâu?">
-    Trạng thái phiên thuộc về **máy chủ gateway**. Nếu bạn đang ở chế độ từ xa, kho phiên bạn quan tâm nằm trên máy từ xa, không phải laptop cục bộ của bạn. Xem [Quản lý phiên](/vi/concepts/session).
+  <Accordion title="Chế độ từ xa: kho lưu phiên nằm ở đâu?">
+    Trạng thái phiên thuộc về **máy chủ gateway**. Nếu bạn đang ở chế độ từ xa, kho lưu phiên bạn quan tâm nằm trên máy từ xa, không phải laptop cục bộ của bạn. Xem [Quản lý phiên](/vi/concepts/session).
   </Accordion>
 </AccordionGroup>
 
@@ -672,10 +671,10 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
 
   </Accordion>
 
-  <Accordion title='Tôi đặt gateway.bind: "lan" (hoặc "tailnet") và giờ không có gì lắng nghe / UI báo chưa được ủy quyền'>
-    Bind không phải loopback **yêu cầu một đường dẫn xác thực gateway hợp lệ**. Trong thực tế điều đó có nghĩa là:
+  <Accordion title='Tôi đặt gateway.bind: "lan" (hoặc "tailnet") và bây giờ không có gì lắng nghe / UI báo unauthorized'>
+    Bind không phải loopback **yêu cầu một đường dẫn xác thực gateway hợp lệ**. Trong thực tế, điều đó nghĩa là:
 
-    - xác thực shared-secret: token hoặc mật khẩu
+    - xác thực shared-secret: token hoặc password
     - `gateway.auth.mode: "trusted-proxy"` phía sau reverse proxy nhận biết danh tính được cấu hình đúng
 
     ```json5
@@ -693,30 +692,30 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
     Ghi chú:
 
     - `gateway.remote.token` / `.password` **không** tự bật xác thực gateway cục bộ.
-    - Đường dẫn gọi cục bộ chỉ có thể dùng `gateway.remote.*` làm dự phòng khi `gateway.auth.*` chưa được đặt.
-    - Với xác thực mật khẩu, hãy đặt `gateway.auth.mode: "password"` cùng với `gateway.auth.password` (hoặc `OPENCLAW_GATEWAY_PASSWORD`) thay vào đó.
-    - Nếu `gateway.auth.token` / `gateway.auth.password` được cấu hình rõ qua SecretRef và không phân giải được, quá trình phân giải sẽ đóng an toàn (không bị che bởi dự phòng từ xa).
-    - Các thiết lập Control UI dùng shared-secret xác thực qua `connect.params.auth.token` hoặc `connect.params.auth.password` (được lưu trong thiết lập ứng dụng/UI). Các chế độ mang danh tính như Tailscale Serve hoặc `trusted-proxy` dùng header yêu cầu thay vào đó. Tránh đặt shared secret trong URL.
-    - Với `gateway.auth.mode: "trusted-proxy"`, reverse proxy loopback cùng máy chủ yêu cầu đặt rõ `gateway.auth.trustedProxy.allowLoopback = true` và có một mục loopback trong `gateway.trustedProxies`.
+    - Các đường gọi cục bộ chỉ có thể dùng `gateway.remote.*` làm fallback khi `gateway.auth.*` chưa được đặt.
+    - Với xác thực password, thay vào đó hãy đặt `gateway.auth.mode: "password"` cùng `gateway.auth.password` (hoặc `OPENCLAW_GATEWAY_PASSWORD`).
+    - Nếu `gateway.auth.token` / `gateway.auth.password` được cấu hình rõ qua SecretRef nhưng không phân giải được, việc phân giải sẽ đóng an toàn (không có remote fallback che lấp).
+    - Các thiết lập Control UI dùng shared-secret xác thực qua `connect.params.auth.token` hoặc `connect.params.auth.password` (được lưu trong thiết lập app/UI). Các chế độ mang danh tính như Tailscale Serve hoặc `trusted-proxy` dùng header yêu cầu thay thế. Tránh đặt shared secret trong URL.
+    - Với `gateway.auth.mode: "trusted-proxy"`, reverse proxy loopback cùng máy yêu cầu `gateway.auth.trustedProxy.allowLoopback = true` rõ ràng và một mục loopback trong `gateway.trustedProxies`.
 
   </Accordion>
 
-  <Accordion title="Tại sao giờ tôi cần token trên localhost?">
-    OpenClaw thực thi xác thực gateway theo mặc định, bao gồm cả loopback. Trong đường dẫn mặc định thông thường, điều đó có nghĩa là xác thực token: nếu không có đường dẫn xác thực rõ ràng nào được cấu hình, khởi động gateway sẽ phân giải sang chế độ token và tạo token chỉ dùng trong runtime cho lần khởi động đó, vì vậy **client WS cục bộ phải xác thực**. Hãy cấu hình rõ `gateway.auth.token`, `gateway.auth.password`, `OPENCLAW_GATEWAY_TOKEN`, hoặc `OPENCLAW_GATEWAY_PASSWORD` khi client cần một bí mật ổn định qua các lần khởi động lại. Điều này chặn các tiến trình cục bộ khác gọi Gateway.
+  <Accordion title="Tại sao bây giờ tôi cần token trên localhost?">
+    OpenClaw thực thi xác thực gateway theo mặc định, bao gồm cả loopback. Trong đường dẫn mặc định bình thường, điều đó nghĩa là xác thực token: nếu không có đường dẫn xác thực rõ ràng nào được cấu hình, khi khởi động gateway sẽ phân giải sang chế độ token và tạo token chỉ dùng trong runtime cho lần khởi động đó, nên **client WS cục bộ phải xác thực**. Cấu hình rõ `gateway.auth.token`, `gateway.auth.password`, `OPENCLAW_GATEWAY_TOKEN`, hoặc `OPENCLAW_GATEWAY_PASSWORD` khi client cần secret ổn định qua các lần khởi động lại. Điều này chặn các tiến trình cục bộ khác gọi Gateway.
 
-    Nếu bạn thích một đường dẫn xác thực khác, bạn có thể chọn rõ chế độ mật khẩu (hoặc, với reverse proxy nhận biết danh tính, `trusted-proxy`). Nếu bạn **thật sự** muốn mở loopback, hãy đặt rõ `gateway.auth.mode: "none"` trong cấu hình. Doctor có thể tạo token cho bạn bất cứ lúc nào: `openclaw doctor --generate-gateway-token`.
+    Nếu bạn muốn đường dẫn xác thực khác, bạn có thể chọn rõ chế độ password (hoặc, với reverse proxy nhận biết danh tính, `trusted-proxy`). Nếu bạn **thực sự** muốn mở loopback, hãy đặt rõ `gateway.auth.mode: "none"` trong cấu hình. Doctor có thể tạo token cho bạn bất cứ lúc nào: `openclaw doctor --generate-gateway-token`.
 
   </Accordion>
 
-  <Accordion title="Tôi có phải khởi động lại sau khi đổi cấu hình không?">
+  <Accordion title="Tôi có phải khởi động lại sau khi thay đổi cấu hình không?">
     Gateway theo dõi cấu hình và hỗ trợ hot-reload:
 
-    - `gateway.reload.mode: "hybrid"` (mặc định): áp dụng nóng các thay đổi an toàn, khởi động lại với các thay đổi quan trọng
+    - `gateway.reload.mode: "hybrid"` (mặc định): áp dụng nóng các thay đổi an toàn, khởi động lại với các thay đổi trọng yếu
     - `hot`, `restart`, `off` cũng được hỗ trợ
 
   </Accordion>
 
-  <Accordion title="Làm thế nào để tắt các tagline CLI vui nhộn?">
+  <Accordion title="Làm thế nào để tắt các câu tagline vui trong CLI?">
     Đặt `cli.banner.taglineMode` trong cấu hình:
 
     ```json5
@@ -731,21 +730,21 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
 
     - `off`: ẩn văn bản tagline nhưng giữ dòng tiêu đề/phiên bản của banner.
     - `default`: luôn dùng `All your chats, one OpenClaw.`.
-    - `random`: xoay vòng các tagline vui nhộn/theo mùa (hành vi mặc định).
-    - Nếu bạn không muốn banner nào cả, hãy đặt biến môi trường `OPENCLAW_HIDE_BANNER=1`.
+    - `random`: các tagline vui/theo mùa luân phiên (hành vi mặc định).
+    - Nếu bạn không muốn có banner nào, hãy đặt env `OPENCLAW_HIDE_BANNER=1`.
 
   </Accordion>
 
-  <Accordion title="Làm thế nào để bật tìm kiếm web (và fetch web)?">
-    `web_fetch` hoạt động mà không cần khóa API. `web_search` phụ thuộc vào nhà cung cấp
-    bạn chọn:
+  <Accordion title="Làm thế nào để bật web search (và web fetch)?">
+    `web_fetch` hoạt động mà không cần khóa API. `web_search` phụ thuộc vào
+    provider bạn chọn:
 
-    - Các nhà cung cấp dựa trên API như Brave, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Perplexity và Tavily yêu cầu thiết lập khóa API thông thường của họ.
+    - Các provider dựa trên API như Brave, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Perplexity, và Tavily yêu cầu thiết lập khóa API bình thường của họ.
     - Ollama Web Search không cần khóa, nhưng nó dùng máy chủ Ollama đã cấu hình của bạn và yêu cầu `ollama signin`.
     - DuckDuckGo không cần khóa, nhưng đây là tích hợp không chính thức dựa trên HTML.
     - SearXNG không cần khóa/tự lưu trữ; cấu hình `SEARXNG_BASE_URL` hoặc `plugins.entries.searxng.config.webSearch.baseUrl`.
 
-    **Khuyến nghị:** chạy `openclaw configure --section web` và chọn một nhà cung cấp.
+    **Khuyến nghị:** chạy `openclaw configure --section web` và chọn một provider.
     Các lựa chọn thay thế bằng môi trường:
 
     - Brave: `BRAVE_API_KEY`
@@ -788,7 +787,7 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
     }
     ```
 
-    Cấu hình tìm kiếm web dành riêng cho từng nhà cung cấp hiện nằm trong `plugins.entries.<plugin>.config.webSearch.*`.
+    Cấu hình tìm kiếm web theo từng nhà cung cấp hiện nằm trong `plugins.entries.<plugin>.config.webSearch.*`.
     Các đường dẫn nhà cung cấp `tools.web.search.*` cũ vẫn tạm thời được tải để tương thích, nhưng không nên dùng cho cấu hình mới.
     Cấu hình dự phòng tìm nạp web Firecrawl nằm trong `plugins.entries.firecrawl.config.webFetch.*`.
 
@@ -796,23 +795,23 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
 
     - Nếu bạn dùng danh sách cho phép, hãy thêm `web_search`/`web_fetch`/`x_search` hoặc `group:web`.
     - `web_fetch` được bật theo mặc định (trừ khi bị tắt rõ ràng).
-    - Nếu bỏ qua `tools.web.fetch.provider`, OpenClaw tự động phát hiện nhà cung cấp dự phòng tìm nạp sẵn sàng đầu tiên từ thông tin xác thực có sẵn. Hiện tại nhà cung cấp đi kèm là Firecrawl.
+    - Nếu bỏ qua `tools.web.fetch.provider`, OpenClaw tự động phát hiện nhà cung cấp dự phòng tìm nạp đầu tiên sẵn sàng từ thông tin xác thực hiện có. Hiện nay nhà cung cấp đi kèm là Firecrawl.
     - Daemon đọc biến môi trường từ `~/.openclaw/.env` (hoặc môi trường dịch vụ).
 
     Tài liệu: [Công cụ web](/vi/tools/web).
 
   </Accordion>
 
-  <Accordion title="config.apply đã xóa cấu hình của tôi. Làm sao để khôi phục và tránh việc này?">
+  <Accordion title="config.apply đã xóa sạch cấu hình của tôi. Làm sao khôi phục và tránh việc này?">
     `config.apply` thay thế **toàn bộ cấu hình**. Nếu bạn gửi một đối tượng một phần, mọi thứ
     khác sẽ bị xóa.
 
-    OpenClaw hiện tại bảo vệ khỏi nhiều trường hợp ghi đè ngoài ý muốn:
+    OpenClaw hiện tại bảo vệ nhiều trường hợp ghi đè vô ý:
 
-    - Các thao tác ghi cấu hình do OpenClaw sở hữu xác thực toàn bộ cấu hình sau thay đổi trước khi ghi.
-    - Các thao tác ghi do OpenClaw sở hữu không hợp lệ hoặc mang tính phá hủy sẽ bị từ chối và lưu dưới dạng `openclaw.json.rejected.*`.
-    - Nếu chỉnh sửa trực tiếp làm hỏng quá trình khởi động hoặc tải lại nóng, Gateway sẽ đóng an toàn hoặc bỏ qua lần tải lại; nó không ghi lại `openclaw.json`.
-    - `openclaw doctor --fix` chịu trách nhiệm sửa chữa và có thể khôi phục trạng thái hoạt động tốt gần nhất trong khi lưu tệp bị từ chối dưới dạng `openclaw.json.clobbered.*`.
+    - Các lần ghi cấu hình do OpenClaw sở hữu sẽ xác thực toàn bộ cấu hình sau thay đổi trước khi ghi.
+    - Các lần ghi không hợp lệ hoặc có tính phá hủy do OpenClaw sở hữu sẽ bị từ chối và lưu thành `openclaw.json.rejected.*`.
+    - Nếu chỉnh sửa trực tiếp làm hỏng quá trình khởi động hoặc tải lại nóng, Gateway sẽ fail-closed hoặc bỏ qua lần tải lại; nó không ghi lại `openclaw.json`.
+    - `openclaw doctor --fix` sở hữu quy trình sửa chữa và có thể khôi phục bản tốt gần nhất đồng thời lưu tệp bị từ chối thành `openclaw.json.clobbered.*`.
 
     Khôi phục:
 
@@ -820,32 +819,32 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
     - Kiểm tra `openclaw.json.clobbered.*` hoặc `openclaw.json.rejected.*` mới nhất nằm cạnh cấu hình đang hoạt động.
     - Chạy `openclaw config validate` và `openclaw doctor --fix`.
     - Chỉ sao chép lại các khóa dự định bằng `openclaw config set` hoặc `config.patch`.
-    - Nếu bạn không có trạng thái hoạt động tốt gần nhất hoặc payload bị từ chối, hãy khôi phục từ bản sao lưu, hoặc chạy lại `openclaw doctor` và cấu hình lại kênh/mô hình.
-    - Nếu việc này không mong đợi, hãy báo lỗi và đính kèm cấu hình gần nhất bạn biết hoặc bất kỳ bản sao lưu nào.
-    - Một tác nhân lập trình cục bộ thường có thể dựng lại một cấu hình hoạt động từ nhật ký hoặc lịch sử.
+    - Nếu bạn không có bản tốt gần nhất hoặc payload bị từ chối, hãy khôi phục từ bản sao lưu, hoặc chạy lại `openclaw doctor` rồi cấu hình lại kênh/mô hình.
+    - Nếu việc này ngoài dự kiến, hãy báo lỗi và kèm theo cấu hình gần nhất bạn biết hoặc bất kỳ bản sao lưu nào.
+    - Một tác tử lập trình cục bộ thường có thể dựng lại cấu hình hoạt động được từ nhật ký hoặc lịch sử.
 
     Tránh việc này:
 
     - Dùng `openclaw config set` cho các thay đổi nhỏ.
     - Dùng `openclaw configure` để chỉnh sửa tương tác.
-    - Dùng `config.schema.lookup` trước khi bạn không chắc về đường dẫn chính xác hoặc hình dạng trường; nó trả về một nút schema nông cùng với tóm tắt các con trực tiếp để đi sâu.
+    - Dùng `config.schema.lookup` trước khi bạn không chắc về đường dẫn chính xác hoặc hình dạng trường; nó trả về một nút lược đồ nông cùng phần tóm tắt các con trực tiếp để đi sâu.
     - Dùng `config.patch` cho các chỉnh sửa RPC một phần; chỉ dùng `config.apply` để thay thế toàn bộ cấu hình.
-    - Nếu bạn đang dùng công cụ `gateway` chỉ dành cho chủ sở hữu từ một lượt chạy tác nhân, nó vẫn sẽ từ chối ghi vào `tools.exec.ask` / `tools.exec.security` (bao gồm các bí danh cũ `tools.bash.*` được chuẩn hóa về cùng các đường dẫn exec được bảo vệ).
+    - Nếu bạn đang dùng công cụ `gateway` chỉ dành cho chủ sở hữu từ một lần chạy tác tử, nó vẫn sẽ từ chối ghi vào `tools.exec.ask` / `tools.exec.security` (bao gồm các bí danh cũ `tools.bash.*` được chuẩn hóa về cùng các đường dẫn thực thi được bảo vệ).
 
     Tài liệu: [Cấu hình](/vi/cli/config), [Cấu hình tương tác](/vi/cli/configure), [Khắc phục sự cố Gateway](/vi/gateway/troubleshooting#gateway-rejected-invalid-config), [Doctor](/vi/gateway/doctor).
 
   </Accordion>
 
-  <Accordion title="Làm sao để chạy một Gateway trung tâm với các worker chuyên biệt trên nhiều thiết bị?">
-    Mẫu phổ biến là **một Gateway** (ví dụ Raspberry Pi) cộng với **Node** và **tác nhân**:
+  <Accordion title="Làm sao chạy một Gateway trung tâm với các worker chuyên biệt trên nhiều thiết bị?">
+    Mẫu phổ biến là **một Gateway** (ví dụ Raspberry Pi) cộng với **node** và **tác tử**:
 
     - **Gateway (trung tâm):** sở hữu các kênh (Signal/WhatsApp), định tuyến và phiên.
     - **Node (thiết bị):** Mac/iOS/Android kết nối như thiết bị ngoại vi và cung cấp công cụ cục bộ (`system.run`, `canvas`, `camera`).
-    - **Tác nhân (worker):** các bộ não/không gian làm việc riêng cho vai trò đặc biệt (ví dụ "vận hành Hetzner", "Dữ liệu cá nhân").
-    - **Tác nhân phụ:** sinh công việc nền từ tác nhân chính khi bạn muốn chạy song song.
-    - **TUI:** kết nối tới Gateway và chuyển đổi tác nhân/phiên.
+    - **Tác tử (worker):** các bộ não/không gian làm việc riêng cho vai trò đặc biệt (ví dụ "vận hành Hetzner", "Dữ liệu cá nhân").
+    - **Tác tử con:** tạo công việc nền từ tác tử chính khi bạn muốn xử lý song song.
+    - **TUI:** kết nối tới Gateway và chuyển đổi tác tử/phiên.
 
-    Tài liệu: [Node](/vi/nodes), [Truy cập từ xa](/vi/gateway/remote), [Định tuyến đa tác nhân](/vi/concepts/multi-agent), [Tác nhân phụ](/vi/tools/subagents), [TUI](/vi/web/tui).
+    Tài liệu: [Node](/vi/nodes), [Truy cập từ xa](/vi/gateway/remote), [Định tuyến đa tác tử](/vi/concepts/multi-agent), [Tác tử con](/vi/tools/subagents), [TUI](/vi/web/tui).
 
   </Accordion>
 
@@ -863,9 +862,9 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
     }
     ```
 
-    Mặc định là `false` (có giao diện). Headless có khả năng kích hoạt kiểm tra chống bot trên một số trang hơn. Xem [Trình duyệt](/vi/tools/browser).
+    Mặc định là `false` (có giao diện). Headless có khả năng kích hoạt kiểm tra chống bot trên một số trang cao hơn. Xem [Trình duyệt](/vi/tools/browser).
 
-    Headless dùng **cùng engine Chromium** và hoạt động cho hầu hết tự động hóa (biểu mẫu, nhấp chuột, scraping, đăng nhập). Các khác biệt chính:
+    Headless dùng **cùng engine Chromium** và hoạt động cho hầu hết tác vụ tự động hóa (biểu mẫu, nhấp chuột, thu thập dữ liệu, đăng nhập). Các khác biệt chính:
 
     - Không có cửa sổ trình duyệt hiển thị (dùng ảnh chụp màn hình nếu bạn cần hình ảnh).
     - Một số trang nghiêm ngặt hơn với tự động hóa ở chế độ headless (CAPTCHA, chống bot).
@@ -873,47 +872,47 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
 
   </Accordion>
 
-  <Accordion title="Làm sao để dùng Brave để điều khiển trình duyệt?">
-    Đặt `browser.executablePath` thành binary Brave của bạn (hoặc bất kỳ trình duyệt dựa trên Chromium nào) rồi khởi động lại Gateway.
+  <Accordion title="Làm sao dùng Brave để điều khiển trình duyệt?">
+    Đặt `browser.executablePath` thành tệp nhị phân Brave của bạn (hoặc bất kỳ trình duyệt dựa trên Chromium nào) rồi khởi động lại Gateway.
     Xem các ví dụ cấu hình đầy đủ trong [Trình duyệt](/vi/tools/browser#use-brave-or-another-chromium-based-browser).
   </Accordion>
 </AccordionGroup>
 
-## Gateway và Node từ xa
+## Gateway và node từ xa
 
 <AccordionGroup>
-  <Accordion title="Lệnh lan truyền giữa Telegram, gateway và Node như thế nào?">
-    Tin nhắn Telegram được xử lý bởi **gateway**. Gateway chạy tác nhân và
-    chỉ sau đó gọi Node qua **Gateway WebSocket** khi cần công cụ Node:
+  <Accordion title="Lệnh truyền giữa Telegram, gateway và node như thế nào?">
+    Tin nhắn Telegram được xử lý bởi **gateway**. Gateway chạy tác tử và
+    chỉ sau đó gọi node qua **Gateway WebSocket** khi cần công cụ node:
 
-    Telegram → Gateway → Tác nhân → `node.*` → Node → Gateway → Telegram
+    Telegram → Gateway → Tác tử → `node.*` → Node → Gateway → Telegram
 
-    Node không thấy lưu lượng nhà cung cấp gửi vào; chúng chỉ nhận các lệnh gọi RPC Node.
+    Node không thấy lưu lượng nhà cung cấp đi vào; chúng chỉ nhận các lời gọi RPC node.
 
   </Accordion>
 
-  <Accordion title="Tác nhân của tôi có thể truy cập máy tính của tôi như thế nào nếu Gateway được lưu trữ từ xa?">
-    Câu trả lời ngắn: **ghép nối máy tính của bạn làm Node**. Gateway chạy ở nơi khác, nhưng nó có thể
+  <Accordion title="Tác tử của tôi có thể truy cập máy tính của tôi thế nào nếu Gateway được lưu trữ từ xa?">
+    Câu trả lời ngắn: **ghép nối máy tính của bạn làm node**. Gateway chạy ở nơi khác, nhưng nó có thể
     gọi các công cụ `node.*` (màn hình, camera, hệ thống) trên máy cục bộ của bạn qua Gateway WebSocket.
 
     Thiết lập điển hình:
 
-    1. Chạy Gateway trên máy chủ luôn bật (VPS/máy chủ tại nhà).
-    2. Đưa máy chủ Gateway + máy tính của bạn vào cùng tailnet.
+    1. Chạy Gateway trên máy chủ luôn bật (VPS/máy chủ gia đình).
+    2. Đặt máy chủ Gateway + máy tính của bạn trên cùng tailnet.
     3. Đảm bảo Gateway WS có thể truy cập được (bind tailnet hoặc đường hầm SSH).
-    4. Mở ứng dụng macOS cục bộ và kết nối ở chế độ **Remote over SSH** (hoặc tailnet trực tiếp)
-       để nó có thể đăng ký làm Node.
-    5. Phê duyệt Node trên Gateway:
+    4. Mở ứng dụng macOS cục bộ và kết nối ở chế độ **Từ xa qua SSH** (hoặc tailnet trực tiếp)
+       để nó có thể đăng ký làm node.
+    5. Phê duyệt node trên Gateway:
 
        ```bash
        openclaw devices list
        openclaw devices approve <requestId>
        ```
 
-    Không cần cầu nối TCP riêng; Node kết nối qua Gateway WebSocket.
+    Không cần cầu nối TCP riêng; node kết nối qua Gateway WebSocket.
 
-    Nhắc nhở bảo mật: ghép nối một Node macOS cho phép `system.run` trên máy đó. Chỉ
-    ghép nối thiết bị bạn tin tưởng, và xem lại [Bảo mật](/vi/gateway/security).
+    Nhắc nhở bảo mật: ghép nối một node macOS cho phép `system.run` trên máy đó. Chỉ
+    ghép nối các thiết bị bạn tin tưởng và xem [Bảo mật](/vi/gateway/security).
 
     Tài liệu: [Node](/vi/nodes), [Giao thức Gateway](/vi/gateway/protocol), [Chế độ từ xa macOS](/vi/platforms/mac/remote), [Bảo mật](/vi/gateway/security).
 
@@ -928,62 +927,62 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
 
     Sau đó xác minh xác thực và định tuyến:
 
-    - Nếu bạn dùng Tailscale Serve, hãy đảm bảo `gateway.auth.allowTailscale` được đặt đúng.
+    - Nếu bạn dùng Tailscale Serve, hãy chắc chắn `gateway.auth.allowTailscale` được đặt đúng.
     - Nếu bạn kết nối qua đường hầm SSH, xác nhận đường hầm cục bộ đang hoạt động và trỏ tới đúng cổng.
-    - Xác nhận danh sách cho phép của bạn (DM hoặc nhóm) bao gồm tài khoản của bạn.
+    - Xác nhận danh sách cho phép của bạn (DM hoặc nhóm) có bao gồm tài khoản của bạn.
 
     Tài liệu: [Tailscale](/vi/gateway/tailscale), [Truy cập từ xa](/vi/gateway/remote), [Kênh](/vi/channels).
 
   </Accordion>
 
   <Accordion title="Hai phiên bản OpenClaw có thể nói chuyện với nhau không (cục bộ + VPS)?">
-    Có. Không có cầu nối "bot-to-bot" tích hợp sẵn, nhưng bạn có thể nối chúng theo một vài
+    Có. Không có cầu nối "bot-với-bot" tích hợp sẵn, nhưng bạn có thể nối chúng theo một vài
     cách đáng tin cậy:
 
-    **Đơn giản nhất:** dùng một kênh chat bình thường mà cả hai bot đều có thể truy cập (Telegram/Slack/WhatsApp).
+    **Đơn giản nhất:** dùng một kênh trò chuyện bình thường mà cả hai bot đều có thể truy cập (Telegram/Slack/WhatsApp).
     Cho Bot A gửi tin nhắn tới Bot B, rồi để Bot B trả lời như thường lệ.
 
-    **Cầu nối CLI (chung):** chạy một script gọi Gateway kia bằng
-    `openclaw agent --message ... --deliver`, nhắm tới một cuộc chat nơi bot kia
-    lắng nghe. Nếu một bot ở trên VPS từ xa, hãy trỏ CLI của bạn tới Gateway từ xa đó
+    **Cầu nối CLI (chung):** chạy một tập lệnh gọi Gateway kia bằng
+    `openclaw agent --message ... --deliver`, nhắm tới một cuộc trò chuyện nơi bot kia
+    lắng nghe. Nếu một bot nằm trên VPS từ xa, hãy trỏ CLI của bạn tới Gateway từ xa đó
     qua SSH/Tailscale (xem [Truy cập từ xa](/vi/gateway/remote)).
 
-    Mẫu ví dụ (chạy từ một máy có thể truy cập Gateway đích):
+    Mẫu ví dụ (chạy từ một máy có thể tiếp cận Gateway đích):
 
     ```bash
     openclaw agent --message "Hello from local bot" --deliver --channel telegram --reply-to <chat-id>
     ```
 
-    Mẹo: thêm rào chắn để hai bot không lặp vô tận (chỉ khi được nhắc đến, danh sách cho phép
-    kênh, hoặc quy tắc "không trả lời tin nhắn của bot").
+    Mẹo: thêm biện pháp bảo vệ để hai bot không lặp vô hạn (chỉ trả lời khi được nhắc tên, danh sách
+    cho phép theo kênh, hoặc quy tắc "không trả lời tin nhắn của bot").
 
-    Tài liệu: [Truy cập từ xa](/vi/gateway/remote), [CLI tác nhân](/vi/cli/agent), [Gửi tác nhân](/vi/tools/agent-send).
+    Tài liệu: [Truy cập từ xa](/vi/gateway/remote), [CLI tác tử](/vi/cli/agent), [Gửi bằng tác tử](/vi/tools/agent-send).
 
   </Accordion>
 
-  <Accordion title="Tôi có cần VPS riêng cho nhiều tác nhân không?">
-    Không. Một Gateway có thể lưu trữ nhiều tác nhân, mỗi tác nhân có không gian làm việc, mặc định mô hình,
-    và định tuyến riêng. Đó là thiết lập bình thường và rẻ hơn, đơn giản hơn nhiều so với chạy
-    một VPS cho mỗi tác nhân.
+  <Accordion title="Tôi có cần VPS riêng cho nhiều tác tử không?">
+    Không. Một Gateway có thể lưu trữ nhiều tác tử, mỗi tác tử có không gian làm việc, mặc định mô hình,
+    và định tuyến riêng. Đây là thiết lập bình thường và rẻ hơn, đơn giản hơn nhiều so với chạy
+    một VPS cho mỗi tác tử.
 
-    Chỉ dùng VPS riêng khi bạn cần cách ly cứng (ranh giới bảo mật) hoặc các cấu hình rất
+    Chỉ dùng VPS riêng khi bạn cần cô lập cứng (ranh giới bảo mật) hoặc các cấu hình rất
     khác nhau mà bạn không muốn chia sẻ. Nếu không, hãy giữ một Gateway và
-    dùng nhiều tác nhân hoặc tác nhân phụ.
+    dùng nhiều tác tử hoặc tác tử con.
 
   </Accordion>
 
-  <Accordion title="Có lợi ích gì khi dùng Node trên laptop cá nhân thay vì SSH từ VPS không?">
-    Có - Node là cách chính thức để truy cập laptop của bạn từ Gateway từ xa, và chúng
-    mở khóa nhiều thứ hơn quyền truy cập shell. Gateway chạy trên macOS/Linux (Windows qua WSL2) và
-    nhẹ (một VPS nhỏ hoặc máy cỡ Raspberry Pi là đủ; 4 GB RAM là dư), nên thiết lập phổ biến
-    là một máy chủ luôn bật cộng với laptop của bạn làm Node.
+  <Accordion title="Có lợi ích gì khi dùng node trên laptop cá nhân thay vì SSH từ VPS không?">
+    Có - node là cách chính thức để tiếp cận laptop của bạn từ Gateway từ xa, và chúng
+    mở khóa nhiều thứ hơn truy cập shell. Gateway chạy trên macOS/Linux (Windows qua WSL2) và
+    nhẹ (một VPS nhỏ hoặc máy hạng Raspberry Pi là đủ; 4 GB RAM là dư), nên một thiết lập phổ biến
+    là một máy chủ luôn bật cộng với laptop của bạn làm node.
 
-    - **Không cần SSH gửi vào.** Node kết nối ra Gateway WebSocket và dùng ghép nối thiết bị.
-    - **Kiểm soát thực thi an toàn hơn.** `system.run` được kiểm soát bởi danh sách cho phép/phê duyệt Node trên laptop đó.
+    - **Không cần SSH đi vào.** Node kết nối ra Gateway WebSocket và dùng ghép nối thiết bị.
+    - **Kiểm soát thực thi an toàn hơn.** `system.run` được bảo vệ bằng danh sách cho phép/phê duyệt node trên laptop đó.
     - **Nhiều công cụ thiết bị hơn.** Node cung cấp `canvas`, `camera`, và `screen` ngoài `system.run`.
-    - **Tự động hóa trình duyệt cục bộ.** Giữ Gateway trên VPS, nhưng chạy Chrome cục bộ qua một máy chủ Node trên laptop, hoặc gắn vào Chrome cục bộ trên máy chủ qua Chrome MCP.
+    - **Tự động hóa trình duyệt cục bộ.** Giữ Gateway trên VPS, nhưng chạy Chrome cục bộ thông qua máy chủ node trên laptop, hoặc gắn vào Chrome cục bộ trên máy chủ qua Chrome MCP.
 
-    SSH vẫn ổn cho truy cập shell tùy lúc, nhưng Node đơn giản hơn cho quy trình tác nhân liên tục và
+    SSH ổn cho truy cập shell tùy lúc, nhưng node đơn giản hơn cho các workflow tác tử liên tục và
     tự động hóa thiết bị.
 
     Tài liệu: [Node](/vi/nodes), [CLI Node](/vi/cli/nodes), [Trình duyệt](/vi/tools/browser).
@@ -991,22 +990,22 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
   </Accordion>
 
   <Accordion title="Node có chạy dịch vụ gateway không?">
-    Không. Chỉ nên chạy **một gateway** trên mỗi máy chủ trừ khi bạn cố ý chạy các hồ sơ cách ly (xem [Nhiều gateway](/vi/gateway/multiple-gateways)). Node là thiết bị ngoại vi kết nối
-    tới gateway (Node iOS/Android, hoặc "chế độ node" macOS trong ứng dụng thanh menu). Với máy chủ Node
+    Không. Chỉ nên chạy **một gateway** trên mỗi máy chủ trừ khi bạn cố ý chạy các hồ sơ cô lập (xem [Nhiều gateway](/vi/gateway/multiple-gateways)). Node là thiết bị ngoại vi kết nối
+    tới gateway (node iOS/Android, hoặc "chế độ node" macOS trong ứng dụng thanh menu). Với máy chủ node
     headless và điều khiển CLI, xem [CLI máy chủ Node](/vi/cli/node).
 
-    Cần khởi động lại toàn bộ cho các thay đổi `gateway`, `discovery`, và `canvasHost`.
+    Cần khởi động lại đầy đủ cho các thay đổi bề mặt `gateway`, `discovery`, và Plugin được lưu trữ.
 
   </Accordion>
 
   <Accordion title="Có cách API / RPC để áp dụng cấu hình không?">
     Có.
 
-    - `config.schema.lookup`: kiểm tra một cây con cấu hình cùng nút schema nông, gợi ý UI khớp, và tóm tắt các mục con trực tiếp trước khi ghi
-    - `config.get`: lấy snapshot hiện tại + hash
-    - `config.patch`: cập nhật một phần an toàn (ưu tiên cho hầu hết chỉnh sửa RPC); hot-reload khi có thể và khởi động lại khi bắt buộc
-    - `config.apply`: xác thực + thay thế toàn bộ cấu hình; hot-reload khi có thể và khởi động lại khi bắt buộc
-    - Công cụ runtime `gateway` chỉ dành cho owner vẫn từ chối ghi lại `tools.exec.ask` / `tools.exec.security`; các bí danh cũ `tools.bash.*` được chuẩn hóa về cùng các đường dẫn exec được bảo vệ
+    - `config.schema.lookup`: kiểm tra một cây con cấu hình cùng node schema nông, gợi ý UI khớp, và tóm tắt các mục con trực tiếp trước khi ghi
+    - `config.get`: lấy snapshot + hash hiện tại
+    - `config.patch`: cập nhật một phần an toàn (ưu tiên cho hầu hết chỉnh sửa RPC); tải lại nóng khi có thể và khởi động lại khi cần
+    - `config.apply`: xác thực + thay thế toàn bộ cấu hình; tải lại nóng khi có thể và khởi động lại khi cần
+    - Công cụ runtime `gateway` chỉ dành cho chủ sở hữu vẫn từ chối ghi lại `tools.exec.ask` / `tools.exec.security`; các bí danh cũ `tools.bash.*` được chuẩn hóa về cùng các đường dẫn exec được bảo vệ
 
   </Accordion>
 
@@ -1018,7 +1017,7 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
     }
     ```
 
-    Thiết lập này đặt workspace của bạn và giới hạn ai có thể kích hoạt bot.
+    Phần này đặt workspace của bạn và giới hạn những ai có thể kích hoạt bot.
 
   </Accordion>
 
@@ -1036,63 +1035,63 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
        - Dùng ứng dụng Tailscale và đăng nhập vào cùng tailnet.
     3. **Bật MagicDNS (khuyến nghị)**
        - Trong bảng điều khiển quản trị Tailscale, bật MagicDNS để VPS có tên ổn định.
-    4. **Dùng hostname tailnet**
+    4. **Dùng hostname của tailnet**
        - SSH: `ssh user@your-vps.tailnet-xxxx.ts.net`
        - Gateway WS: `ws://your-vps.tailnet-xxxx.ts.net:18789`
 
-    Nếu bạn muốn dùng Control UI mà không cần SSH, hãy dùng Tailscale Serve trên VPS:
+    Nếu bạn muốn Control UI mà không cần SSH, hãy dùng Tailscale Serve trên VPS:
 
     ```bash
     openclaw gateway --tailscale serve
     ```
 
-    Cách này giữ gateway bound vào loopback và phơi bày HTTPS qua Tailscale. Xem [Tailscale](/vi/gateway/tailscale).
+    Cách này giữ Gateway bind vào loopback và cung cấp HTTPS qua Tailscale. Xem [Tailscale](/vi/gateway/tailscale).
 
   </Accordion>
 
-  <Accordion title="Làm thế nào để kết nối một Node Mac với Gateway từ xa (Tailscale Serve)?">
-    Serve phơi bày **Gateway Control UI + WS**. Các Node kết nối qua cùng endpoint Gateway WS.
+  <Accordion title="Làm thế nào để kết nối một node Mac với Gateway từ xa (Tailscale Serve)?">
+    Serve cung cấp **Gateway Control UI + WS**. Các node kết nối qua cùng endpoint Gateway WS.
 
-    Thiết lập được khuyến nghị:
+    Thiết lập khuyến nghị:
 
-    1. **Đảm bảo VPS + Mac nằm trên cùng tailnet**.
-    2. **Dùng ứng dụng macOS ở chế độ Remote** (đích SSH có thể là hostname tailnet).
-       Ứng dụng sẽ tunnel cổng Gateway và kết nối dưới dạng Node.
-    3. **Phê duyệt Node** trên gateway:
+    1. **Đảm bảo VPS + Mac ở trên cùng tailnet**.
+    2. **Dùng ứng dụng macOS ở chế độ Remote** (đích SSH có thể là hostname của tailnet).
+       Ứng dụng sẽ tạo tunnel cho cổng Gateway và kết nối như một node.
+    3. **Phê duyệt node** trên Gateway:
 
        ```bash
        openclaw devices list
        openclaw devices approve <requestId>
        ```
 
-    Tài liệu: [Giao thức Gateway](/vi/gateway/protocol), [Khám phá](/vi/gateway/discovery), [Chế độ remote macOS](/vi/platforms/mac/remote).
+    Tài liệu: [Giao thức Gateway](/vi/gateway/protocol), [Khám phá](/vi/gateway/discovery), [chế độ từ xa trên macOS](/vi/platforms/mac/remote).
 
   </Accordion>
 
-  <Accordion title="Tôi nên cài đặt trên laptop thứ hai hay chỉ thêm một Node?">
-    Nếu bạn chỉ cần **công cụ cục bộ** (screen/camera/exec) trên laptop thứ hai, hãy thêm nó dưới dạng
-    **Node**. Cách này giữ một Gateway duy nhất và tránh cấu hình bị trùng lặp. Các công cụ Node cục bộ
-    hiện chỉ hỗ trợ macOS, nhưng chúng tôi dự định mở rộng chúng sang các OS khác.
+  <Accordion title="Tôi nên cài trên laptop thứ hai hay chỉ thêm một node?">
+    Nếu bạn chỉ cần **công cụ cục bộ** (màn hình/camera/exec) trên laptop thứ hai, hãy thêm nó dưới dạng
+    **node**. Cách này giữ một Gateway duy nhất và tránh trùng lặp cấu hình. Các công cụ node cục bộ
+    hiện chỉ hỗ trợ macOS, nhưng chúng tôi dự định mở rộng sang các hệ điều hành khác.
 
-    Chỉ cài đặt Gateway thứ hai khi bạn cần **cách ly cứng** hoặc hai bot hoàn toàn riêng biệt.
+    Chỉ cài Gateway thứ hai khi bạn cần **cô lập cứng** hoặc hai bot hoàn toàn tách biệt.
 
-    Tài liệu: [Node](/vi/nodes), [CLI Node](/vi/cli/nodes), [Nhiều gateway](/vi/gateway/multiple-gateways).
+    Tài liệu: [Node](/vi/nodes), [CLI node](/vi/cli/nodes), [Nhiều Gateway](/vi/gateway/multiple-gateways).
 
   </Accordion>
 </AccordionGroup>
 
-## Biến env và tải .env
+## Biến môi trường và tải .env
 
 <AccordionGroup>
   <Accordion title="OpenClaw tải biến môi trường như thế nào?">
-    OpenClaw đọc biến env từ tiến trình cha (shell, launchd/systemd, CI, v.v.) và tải thêm:
+    OpenClaw đọc biến môi trường từ tiến trình cha (shell, launchd/systemd, CI, v.v.) và cũng tải thêm:
 
     - `.env` từ thư mục làm việc hiện tại
     - `.env` dự phòng toàn cục từ `~/.openclaw/.env` (còn gọi là `$OPENCLAW_STATE_DIR/.env`)
 
-    Không tệp `.env` nào ghi đè các biến env hiện có.
+    Không tệp `.env` nào ghi đè các biến môi trường hiện có.
 
-    Bạn cũng có thể định nghĩa biến env inline trong cấu hình (chỉ áp dụng nếu thiếu trong process env):
+    Bạn cũng có thể định nghĩa biến môi trường inline trong cấu hình (chỉ áp dụng nếu thiếu trong env của tiến trình):
 
     ```json5
     {
@@ -1107,11 +1106,11 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
 
   </Accordion>
 
-  <Accordion title="Tôi khởi động Gateway qua service và các biến env của tôi biến mất. Giờ phải làm gì?">
+  <Accordion title="Tôi khởi động Gateway qua service và biến môi trường của tôi biến mất. Giờ phải làm gì?">
     Hai cách sửa phổ biến:
 
-    1. Đặt các khóa bị thiếu vào `~/.openclaw/.env` để chúng được nhận ngay cả khi service không kế thừa shell env của bạn.
-    2. Bật nhập shell (tiện ích opt-in):
+    1. Đặt các khóa bị thiếu vào `~/.openclaw/.env` để chúng vẫn được lấy ngay cả khi service không kế thừa env của shell.
+    2. Bật nhập shell (tiện ích chọn bật):
 
     ```json5
     {
@@ -1124,14 +1123,14 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
     }
     ```
 
-    Cách này chạy login shell của bạn và chỉ nhập các khóa dự kiến còn thiếu (không bao giờ ghi đè). Các biến env tương đương:
+    Cách này chạy login shell của bạn và chỉ nhập các khóa dự kiến còn thiếu (không bao giờ ghi đè). Các biến môi trường tương đương:
     `OPENCLAW_LOAD_SHELL_ENV=1`, `OPENCLAW_SHELL_ENV_TIMEOUT_MS=15000`.
 
   </Accordion>
 
-  <Accordion title='Tôi đã đặt COPILOT_GITHUB_TOKEN, nhưng trạng thái models hiển thị "Shell env: off." Tại sao?'>
-    `openclaw models status` báo cáo liệu **nhập shell env** có được bật hay không. "Shell env: off"
-    **không** có nghĩa là các biến env của bạn bị thiếu - nó chỉ có nghĩa là OpenClaw sẽ không tự động tải
+  <Accordion title='Tôi đã đặt COPILOT_GITHUB_TOKEN, nhưng trạng thái model hiển thị "Shell env: off." Tại sao?'>
+    `openclaw models status` báo cáo liệu **nhập env từ shell** có được bật hay không. "Shell env: off"
+    **không** có nghĩa là biến môi trường của bạn bị thiếu - nó chỉ có nghĩa là OpenClaw sẽ không tự động tải
     login shell của bạn.
 
     Nếu Gateway chạy dưới dạng service (launchd/systemd), nó sẽ không kế thừa môi trường
@@ -1144,15 +1143,15 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
        ```
 
     2. Hoặc bật nhập shell (`env.shellEnv.enabled: true`).
-    3. Hoặc thêm nó vào khối `env` trong cấu hình của bạn (chỉ áp dụng nếu thiếu).
+    3. Hoặc thêm nó vào block `env` trong cấu hình của bạn (chỉ áp dụng nếu thiếu).
 
-    Sau đó khởi động lại gateway và kiểm tra lại:
+    Sau đó khởi động lại Gateway và kiểm tra lại:
 
     ```bash
     openclaw models status
     ```
 
-    Token Copilot được đọc từ `COPILOT_GITHUB_TOKEN` (cả `GH_TOKEN` / `GITHUB_TOKEN`).
+    Token Copilot được đọc từ `COPILOT_GITHUB_TOKEN` (cũng như `GH_TOKEN` / `GITHUB_TOKEN`).
     Xem [/concepts/model-providers](/vi/concepts/model-providers) và [/environment](/vi/help/environment).
 
   </Accordion>
@@ -1165,11 +1164,11 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
     Gửi `/new` hoặc `/reset` dưới dạng một tin nhắn độc lập. Xem [Quản lý phiên](/vi/concepts/session).
   </Accordion>
 
-  <Accordion title="Phiên có tự động reset nếu tôi không bao giờ gửi /new không?">
+  <Accordion title="Phiên có tự động đặt lại nếu tôi không bao giờ gửi /new không?">
     Phiên có thể hết hạn sau `session.idleMinutes`, nhưng tính năng này **bị tắt theo mặc định** (mặc định **0**).
-    Đặt nó thành một giá trị dương để bật hết hạn do không hoạt động. Khi được bật, tin nhắn **tiếp theo**
-    sau khoảng thời gian không hoạt động sẽ bắt đầu một session id mới cho chat key đó.
-    Việc này không xóa transcript - nó chỉ bắt đầu một phiên mới.
+    Đặt nó thành một giá trị dương để bật hết hạn khi nhàn rỗi. Khi được bật, tin nhắn **tiếp theo**
+    sau khoảng thời gian nhàn rỗi sẽ bắt đầu một id phiên mới cho khóa chat đó.
+    Điều này không xóa transcript - nó chỉ bắt đầu một phiên mới.
 
     ```json5
     {
@@ -1181,21 +1180,21 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
 
   </Accordion>
 
-  <Accordion title="Có cách nào tạo một đội các instance OpenClaw (một CEO và nhiều agent) không?">
-    Có, thông qua **multi-agent routing** và **sub-agents**. Bạn có thể tạo một agent điều phối
-    và nhiều agent worker với workspace và model riêng.
+  <Accordion title="Có cách nào tạo một đội các phiên bản OpenClaw (một CEO và nhiều agent) không?">
+    Có, thông qua **định tuyến đa agent** và **sub-agent**. Bạn có thể tạo một agent điều phối
+    và vài agent worker với workspace và model riêng.
 
-    Dù vậy, tốt nhất nên xem đây là một **thử nghiệm thú vị**. Nó tốn token và thường
+    Tuy vậy, tốt nhất nên xem đây là một **thử nghiệm thú vị**. Nó tốn nhiều token và thường
     kém hiệu quả hơn việc dùng một bot với các phiên riêng biệt. Mô hình điển hình mà chúng tôi
-    hình dung là một bot mà bạn trò chuyện, với các phiên khác nhau cho công việc song song. Bot đó
-    cũng có thể spawn sub-agents khi cần.
+    hình dung là một bot để bạn trò chuyện, với các phiên khác nhau cho công việc song song. Bot đó
+    cũng có thể sinh sub-agent khi cần.
 
-    Tài liệu: [Định tuyến multi-agent](/vi/concepts/multi-agent), [Sub-agents](/vi/tools/subagents), [CLI Agents](/vi/cli/agents).
+    Tài liệu: [Định tuyến đa agent](/vi/concepts/multi-agent), [Sub-agent](/vi/tools/subagents), [CLI agent](/vi/cli/agents).
 
   </Accordion>
 
-  <Accordion title="Tại sao context bị cắt giữa chừng khi đang làm tác vụ? Làm thế nào để ngăn điều đó?">
-    Context phiên bị giới hạn bởi cửa sổ model. Các cuộc trò chuyện dài, output công cụ lớn, hoặc nhiều
+  <Accordion title="Tại sao context bị cắt ngắn giữa tác vụ? Làm thế nào để ngăn việc đó?">
+    Context phiên bị giới hạn bởi cửa sổ model. Các cuộc trò chuyện dài, đầu ra công cụ lớn, hoặc nhiều
     tệp có thể kích hoạt Compaction hoặc cắt ngắn.
 
     Những điều hữu ích:
@@ -1203,19 +1202,19 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
     - Yêu cầu bot tóm tắt trạng thái hiện tại và ghi vào một tệp.
     - Dùng `/compact` trước các tác vụ dài, và `/new` khi chuyển chủ đề.
     - Giữ context quan trọng trong workspace và yêu cầu bot đọc lại.
-    - Dùng sub-agents cho công việc dài hoặc song song để cuộc trò chuyện chính nhỏ hơn.
-    - Chọn model có cửa sổ context lớn hơn nếu điều này xảy ra thường xuyên.
+    - Dùng sub-agent cho công việc dài hoặc song song để chat chính nhỏ hơn.
+    - Chọn model có cửa sổ context lớn hơn nếu điều này thường xuyên xảy ra.
 
   </Accordion>
 
-  <Accordion title="Làm thế nào để reset hoàn toàn OpenClaw nhưng vẫn giữ cài đặt?">
-    Dùng lệnh reset:
+  <Accordion title="Làm thế nào để đặt lại hoàn toàn OpenClaw nhưng vẫn giữ cài đặt?">
+    Dùng lệnh đặt lại:
 
     ```bash
     openclaw reset
     ```
 
-    Reset đầy đủ không tương tác:
+    Đặt lại toàn bộ không tương tác:
 
     ```bash
     openclaw reset --scope full --yes --non-interactive
@@ -1229,13 +1228,13 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
 
     Ghi chú:
 
-    - Onboarding cũng cung cấp **Reset** nếu phát hiện cấu hình hiện có. Xem [Onboarding (CLI)](/vi/start/wizard).
-    - Nếu bạn đã dùng profile (`--profile` / `OPENCLAW_PROFILE`), reset từng state dir (mặc định là `~/.openclaw-<profile>`).
-    - Reset dev: `openclaw gateway --dev --reset` (chỉ dành cho dev; xóa cấu hình dev + credentials + phiên + workspace).
+    - Onboarding cũng cung cấp **Đặt lại** nếu thấy cấu hình hiện có. Xem [Onboarding (CLI)](/vi/start/wizard).
+    - Nếu bạn dùng profile (`--profile` / `OPENCLAW_PROFILE`), hãy đặt lại từng state dir (mặc định là `~/.openclaw-<profile>`).
+    - Đặt lại dev: `openclaw gateway --dev --reset` (chỉ dành cho dev; xóa cấu hình dev + thông tin xác thực + phiên + workspace).
 
   </Accordion>
 
-  <Accordion title='Tôi đang gặp lỗi "context too large" - làm thế nào để reset hoặc compact?'>
+  <Accordion title='Tôi gặp lỗi "context too large" - làm thế nào để đặt lại hoặc compact?'>
     Dùng một trong các cách sau:
 
     - **Compact** (giữ cuộc trò chuyện nhưng tóm tắt các lượt cũ hơn):
@@ -1244,9 +1243,9 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
       /compact
       ```
 
-      hoặc `/compact <instructions>` để định hướng bản tóm tắt.
+      hoặc `/compact <instructions>` để hướng dẫn phần tóm tắt.
 
-    - **Reset** (session ID mới cho cùng chat key):
+    - **Đặt lại** (id phiên mới cho cùng khóa chat):
 
       ```
       /new
@@ -1255,19 +1254,19 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
 
     Nếu việc này tiếp tục xảy ra:
 
-    - Bật hoặc tinh chỉnh **session pruning** (`agents.defaults.contextPruning`) để cắt bớt output công cụ cũ.
+    - Bật hoặc tinh chỉnh **cắt tỉa phiên** (`agents.defaults.contextPruning`) để cắt bớt đầu ra công cụ cũ.
     - Dùng model có cửa sổ context lớn hơn.
 
-    Tài liệu: [Compaction](/vi/concepts/compaction), [Session pruning](/vi/concepts/session-pruning), [Quản lý phiên](/vi/concepts/session).
+    Tài liệu: [Compaction](/vi/concepts/compaction), [Cắt tỉa phiên](/vi/concepts/session-pruning), [Quản lý phiên](/vi/concepts/session).
 
   </Accordion>
 
-  <Accordion title='Tại sao tôi thấy lỗi "LLM request rejected: messages.content.tool_use.input field required"?'>
-    Đây là lỗi xác thực của provider: model đã phát ra một khối `tool_use` không có `input`
-    bắt buộc. Điều này thường có nghĩa là lịch sử phiên đã cũ hoặc bị hỏng (thường sau các luồng dài
+  <Accordion title='Tại sao tôi thấy "LLM request rejected: messages.content.tool_use.input field required"?'>
+    Đây là lỗi xác thực của provider: model đã phát ra một block `tool_use` nhưng thiếu
+    `input` bắt buộc. Điều này thường có nghĩa là lịch sử phiên đã cũ hoặc bị hỏng (thường sau các thread dài
     hoặc thay đổi công cụ/schema).
 
-    Cách sửa: bắt đầu phiên mới bằng `/new` (tin nhắn độc lập).
+    Cách sửa: bắt đầu một phiên mới bằng `/new` (tin nhắn độc lập).
 
   </Accordion>
 
@@ -1286,19 +1285,19 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
     }
     ```
 
-    Nếu `HEARTBEAT.md` tồn tại nhưng về cơ bản trống (chỉ có dòng trống và header markdown
-    như `# Heading`), OpenClaw sẽ bỏ qua lần chạy heartbeat để tiết kiệm API call.
-    Nếu tệp bị thiếu, heartbeat vẫn chạy và model quyết định cần làm gì.
+    Nếu `HEARTBEAT.md` tồn tại nhưng thực chất trống (chỉ có dòng trống và header markdown
+    như `# Heading`), OpenClaw bỏ qua lần chạy Heartbeat để tiết kiệm lệnh gọi API.
+    Nếu tệp bị thiếu, Heartbeat vẫn chạy và model quyết định cần làm gì.
 
     Ghi đè theo từng agent dùng `agents.list[].heartbeat`. Tài liệu: [Heartbeat](/vi/gateway/heartbeat).
 
   </Accordion>
 
-  <Accordion title='Tôi có cần thêm một "bot account" vào nhóm WhatsApp không?'>
-    Không. OpenClaw chạy trên **tài khoản của chính bạn**, nên nếu bạn ở trong nhóm, OpenClaw có thể thấy nhóm đó.
-    Theo mặc định, phản hồi trong nhóm bị chặn cho đến khi bạn cho phép người gửi (`groupPolicy: "allowlist"`).
+  <Accordion title='Tôi có cần thêm một "tài khoản bot" vào nhóm WhatsApp không?'>
+    Không. OpenClaw chạy trên **chính tài khoản của bạn**, nên nếu bạn ở trong nhóm, OpenClaw có thể thấy nhóm đó.
+    Theo mặc định, trả lời trong nhóm bị chặn cho đến khi bạn cho phép người gửi (`groupPolicy: "allowlist"`).
 
-    Nếu bạn chỉ muốn **bạn** có thể kích hoạt phản hồi trong nhóm:
+    Nếu bạn muốn chỉ **bạn** mới có thể kích hoạt trả lời trong nhóm:
 
     ```json5
     {
@@ -1314,7 +1313,7 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
   </Accordion>
 
   <Accordion title="Làm thế nào để lấy JID của một nhóm WhatsApp?">
-    Tùy chọn 1 (nhanh nhất): tail logs và gửi một tin nhắn thử trong nhóm:
+    Tùy chọn 1 (nhanh nhất): theo dõi log và gửi một tin nhắn thử trong nhóm:
 
     ```bash
     openclaw logs --follow --json
@@ -1323,48 +1322,48 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
     Tìm `chatId` (hoặc `from`) kết thúc bằng `@g.us`, ví dụ:
     `1234567890-1234567890@g.us`.
 
-    Tùy chọn 2 (nếu đã được cấu hình/allowlist): liệt kê nhóm từ cấu hình:
+    Tùy chọn 2 (nếu đã cấu hình/allowlist): liệt kê nhóm từ cấu hình:
 
     ```bash
     openclaw directory groups list --channel whatsapp
     ```
 
-    Tài liệu: [WhatsApp](/vi/channels/whatsapp), [Directory](/vi/cli/directory), [Logs](/vi/cli/logs).
+    Tài liệu: [WhatsApp](/vi/channels/whatsapp), [Thư mục](/vi/cli/directory), [Log](/vi/cli/logs).
 
   </Accordion>
 
   <Accordion title="Tại sao OpenClaw không trả lời trong nhóm?">
     Hai nguyên nhân phổ biến:
 
-    - Mention gating đang bật (mặc định). Bạn phải @mention bot (hoặc khớp `mentionPatterns`).
-    - Bạn đã cấu hình `channels.whatsapp.groups` mà không có `"*"` và nhóm không nằm trong allowlist.
+    - Cổng kiểm soát mention đang bật (mặc định). Bạn phải @mention bot (hoặc khớp `mentionPatterns`).
+    - Bạn đã cấu hình `channels.whatsapp.groups` mà không có `"*"` và nhóm chưa được đưa vào allowlist.
 
     Xem [Nhóm](/vi/channels/groups) và [Tin nhắn nhóm](/vi/channels/group-messages).
 
   </Accordion>
 
-  <Accordion title="Nhóm/luồng có chia sẻ context với DM không?">
-    Theo mặc định, chat trực tiếp được gộp vào phiên chính. Nhóm/kênh có session key riêng, và các chủ đề Telegram / luồng Discord là các phiên riêng. Xem [Nhóm](/vi/channels/groups) và [Tin nhắn nhóm](/vi/channels/group-messages).
+  <Accordion title="Nhóm/thread có chia sẻ context với DM không?">
+    Theo mặc định, chat trực tiếp được gộp vào phiên chính. Nhóm/kênh có khóa phiên riêng, và topic Telegram / thread Discord là các phiên riêng. Xem [Nhóm](/vi/channels/groups) và [Tin nhắn nhóm](/vi/channels/group-messages).
   </Accordion>
 
   <Accordion title="Tôi có thể tạo bao nhiêu không gian làm việc và tác nhân?">
     Không có giới hạn cứng. Vài chục (thậm chí vài trăm) vẫn ổn, nhưng hãy chú ý:
 
-    - **Dung lượng đĩa tăng:** phiên + bản ghi nằm trong `~/.openclaw/agents/<agentId>/sessions/`.
+    - **Tăng dung lượng đĩa:** phiên + bản ghi hội thoại nằm dưới `~/.openclaw/agents/<agentId>/sessions/`.
     - **Chi phí token:** nhiều tác nhân hơn nghĩa là nhiều lượt dùng mô hình đồng thời hơn.
     - **Chi phí vận hành:** hồ sơ xác thực, không gian làm việc và định tuyến kênh theo từng tác nhân.
 
     Mẹo:
 
     - Giữ một không gian làm việc **đang hoạt động** cho mỗi tác nhân (`agents.defaults.workspace`).
-    - Dọn các phiên cũ (xóa JSONL hoặc mục lưu trữ) nếu dung lượng đĩa tăng.
-    - Dùng `openclaw doctor` để phát hiện không gian làm việc sót lại và hồ sơ không khớp.
+    - Dọn bớt phiên cũ (xóa JSONL hoặc mục lưu trữ) nếu dung lượng đĩa tăng.
+    - Dùng `openclaw doctor` để phát hiện không gian làm việc lạc và hồ sơ không khớp.
 
   </Accordion>
 
   <Accordion title="Tôi có thể chạy nhiều bot hoặc cuộc trò chuyện cùng lúc (Slack) không, và nên thiết lập thế nào?">
-    Có. Dùng **Định tuyến đa tác nhân** để chạy nhiều tác nhân cô lập và định tuyến tin nhắn đến theo
-    kênh/tài khoản/đối tượng ngang hàng. Slack được hỗ trợ như một kênh và có thể được gắn với các tác nhân cụ thể.
+    Có. Dùng **Định tuyến đa tác nhân** để chạy nhiều tác nhân tách biệt và định tuyến tin nhắn đến theo
+    kênh/tài khoản/đối tác. Slack được hỗ trợ như một kênh và có thể được gắn với các tác nhân cụ thể.
 
     Quyền truy cập trình duyệt rất mạnh nhưng không phải là "làm được mọi thứ con người có thể làm" - chống bot, CAPTCHA và MFA
     vẫn có thể chặn tự động hóa. Để điều khiển trình duyệt đáng tin cậy nhất, hãy dùng Chrome MCP cục bộ trên máy chủ,
@@ -1373,12 +1372,12 @@ nằm trong [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help
     Thiết lập khuyến nghị:
 
     - Máy chủ Gateway luôn bật (VPS/Mac mini).
-    - Mỗi vai trò một tác nhân (liên kết).
+    - Một tác nhân cho mỗi vai trò (liên kết).
     - Các kênh Slack được gắn với các tác nhân đó.
     - Trình duyệt cục bộ qua Chrome MCP hoặc một node khi cần.
 
     Tài liệu: [Định tuyến đa tác nhân](/vi/concepts/multi-agent), [Slack](/vi/channels/slack),
-    [Trình duyệt](/vi/tools/browser), [Nodes](/vi/nodes).
+    [Trình duyệt](/vi/tools/browser), [Node](/vi/nodes).
 
   </Accordion>
 </AccordionGroup>
@@ -1392,7 +1391,7 @@ nằm trong [Câu hỏi thường gặp về mô hình](/vi/help/faq-models).
 
 <AccordionGroup>
   <Accordion title="Gateway dùng cổng nào?">
-    `gateway.port` điều khiển cổng ghép kênh duy nhất cho WebSocket + HTTP (Control UI, hook, v.v.).
+    `gateway.port` điều khiển cổng ghép kênh duy nhất cho WebSocket + HTTP (Giao diện điều khiển, hook, v.v.).
 
     Thứ tự ưu tiên:
 
@@ -1403,18 +1402,18 @@ nằm trong [Câu hỏi thường gặp về mô hình](/vi/help/faq-models).
   </Accordion>
 
   <Accordion title='Vì sao openclaw gateway status báo "Runtime: running" nhưng "Connectivity probe: failed"?'>
-    Vì "running" là góc nhìn của **supervisor** (launchd/systemd/schtasks). Kiểm tra kết nối là CLI thực sự kết nối đến gateway WebSocket.
+    Vì "running" là góc nhìn của **supervisor** (launchd/systemd/schtasks). Kiểm tra kết nối là CLI thực sự kết nối đến WebSocket của gateway.
 
     Dùng `openclaw gateway status` và tin các dòng này:
 
-    - `Probe target:` (URL mà kiểm tra thực sự dùng)
-    - `Listening:` (thứ thực sự được bind trên cổng)
-    - `Last gateway error:` (nguyên nhân gốc thường gặp khi tiến trình còn sống nhưng cổng không lắng nghe)
+    - `Probe target:` (URL mà kiểm tra thực sự đã dùng)
+    - `Listening:` (thứ thực sự đang được bind trên cổng)
+    - `Last gateway error:` (nguyên nhân gốc phổ biến khi tiến trình còn sống nhưng cổng không lắng nghe)
 
   </Accordion>
 
   <Accordion title='Vì sao openclaw gateway status hiển thị "Config (cli)" và "Config (service)" khác nhau?'>
-    Bạn đang sửa một tệp cấu hình trong khi dịch vụ đang chạy một tệp khác (thường là không khớp `--profile` / `OPENCLAW_STATE_DIR`).
+    Bạn đang chỉnh một tệp cấu hình trong khi dịch vụ đang chạy một tệp khác (thường là không khớp `--profile` / `OPENCLAW_STATE_DIR`).
 
     Cách sửa:
 
@@ -1427,14 +1426,14 @@ nằm trong [Câu hỏi thường gặp về mô hình](/vi/help/faq-models).
   </Accordion>
 
   <Accordion title='"another gateway instance is already listening" nghĩa là gì?'>
-    OpenClaw áp đặt khóa runtime bằng cách bind trình lắng nghe WebSocket ngay khi khởi động (mặc định `ws://127.0.0.1:18789`). Nếu bind thất bại với `EADDRINUSE`, nó ném `GatewayLockError` cho biết một phiên bản khác đang lắng nghe.
+    OpenClaw áp đặt khóa runtime bằng cách bind trình lắng nghe WebSocket ngay khi khởi động (mặc định `ws://127.0.0.1:18789`). Nếu bind thất bại với `EADDRINUSE`, nó ném `GatewayLockError` cho biết một phiên bản khác đã đang lắng nghe.
 
     Cách sửa: dừng phiên bản kia, giải phóng cổng, hoặc chạy với `openclaw gateway --port <port>`.
 
   </Accordion>
 
   <Accordion title="Làm thế nào để chạy OpenClaw ở chế độ từ xa (máy khách kết nối đến Gateway ở nơi khác)?">
-    Đặt `gateway.mode: "remote"` và trỏ đến một URL WebSocket từ xa, tùy chọn kèm thông tin xác thực từ xa bằng shared-secret:
+    Đặt `gateway.mode: "remote"` và trỏ đến URL WebSocket từ xa, tùy chọn kèm thông tin đăng nhập từ xa bằng bí mật dùng chung:
 
     ```json5
     {
@@ -1453,40 +1452,40 @@ nằm trong [Câu hỏi thường gặp về mô hình](/vi/help/faq-models).
 
     - `openclaw gateway` chỉ khởi động khi `gateway.mode` là `local` (hoặc bạn truyền cờ ghi đè).
     - Ứng dụng macOS theo dõi tệp cấu hình và chuyển chế độ trực tiếp khi các giá trị này thay đổi.
-    - `gateway.remote.token` / `.password` chỉ là thông tin xác thực từ xa phía máy khách; tự chúng không bật xác thực gateway cục bộ.
+    - `gateway.remote.token` / `.password` chỉ là thông tin đăng nhập từ xa phía máy khách; chúng không tự bật xác thực gateway cục bộ.
 
   </Accordion>
 
-  <Accordion title='Control UI báo "unauthorized" (hoặc liên tục kết nối lại). Giờ làm gì?'>
-    Đường dẫn xác thực gateway của bạn và phương thức xác thực của UI không khớp.
+  <Accordion title='Giao diện điều khiển báo "unauthorized" (hoặc liên tục kết nối lại). Giờ làm gì?'>
+    Đường dẫn xác thực gateway của bạn và phương thức xác thực của giao diện không khớp.
 
     Sự thật (từ mã):
 
-    - Control UI giữ token trong `sessionStorage` cho phiên tab trình duyệt hiện tại và URL gateway đã chọn, vì vậy làm mới cùng tab vẫn hoạt động mà không khôi phục cơ chế lưu token lâu dài trong localStorage.
-    - Khi gặp `AUTH_TOKEN_MISMATCH`, máy khách tin cậy có thể thử lại một lần có giới hạn bằng token thiết bị đã lưu đệm khi gateway trả về gợi ý thử lại (`canRetryWithDeviceToken=true`, `recommendedNextStep=retry_with_device_token`).
-    - Lượt thử lại bằng token đã lưu đệm đó hiện tái sử dụng các phạm vi đã phê duyệt được lưu cùng token thiết bị. Bên gọi có `deviceToken` rõ ràng / `scopes` rõ ràng vẫn giữ tập phạm vi đã yêu cầu thay vì kế thừa phạm vi đã lưu đệm.
-    - Ngoài đường thử lại đó, thứ tự ưu tiên xác thực khi kết nối là shared token/password rõ ràng trước, rồi `deviceToken` rõ ràng, rồi token thiết bị đã lưu, rồi token bootstrap.
-    - Kiểm tra phạm vi token bootstrap có tiền tố vai trò. Danh sách cho phép operator bootstrap tích hợp sẵn chỉ thỏa mãn yêu cầu operator; node hoặc các vai trò không phải operator khác vẫn cần phạm vi dưới tiền tố vai trò riêng của chúng.
+    - Giao diện điều khiển giữ token trong `sessionStorage` cho phiên tab trình duyệt hiện tại và URL gateway đã chọn, nên làm mới cùng tab vẫn tiếp tục hoạt động mà không khôi phục khả năng lưu token lâu dài trong localStorage.
+    - Khi có `AUTH_TOKEN_MISMATCH`, máy khách đáng tin cậy có thể thử lại một lần có giới hạn bằng token thiết bị đã lưu đệm khi gateway trả về gợi ý thử lại (`canRetryWithDeviceToken=true`, `recommendedNextStep=retry_with_device_token`).
+    - Lần thử lại bằng token đã lưu đệm đó giờ tái sử dụng các phạm vi đã phê duyệt được lưu cùng token thiết bị. Bên gọi `deviceToken` tường minh / `scopes` tường minh vẫn giữ tập phạm vi đã yêu cầu thay vì kế thừa phạm vi đã lưu đệm.
+    - Ngoài đường dẫn thử lại đó, thứ tự ưu tiên xác thực khi kết nối là token/mật khẩu dùng chung tường minh trước, rồi `deviceToken` tường minh, rồi token thiết bị đã lưu, rồi token bootstrap.
+    - Kiểm tra phạm vi của token bootstrap dùng tiền tố theo vai trò. Danh sách cho phép toán tử bootstrap tích hợp sẵn chỉ đáp ứng yêu cầu toán tử; node hoặc các vai trò không phải toán tử khác vẫn cần phạm vi dưới tiền tố vai trò riêng của chúng.
 
     Cách sửa:
 
-    - Nhanh nhất: `openclaw dashboard` (in + sao chép URL dashboard, cố mở; hiển thị gợi ý SSH nếu không có giao diện).
+    - Nhanh nhất: `openclaw dashboard` (in + sao chép URL bảng điều khiển, cố mở; hiển thị gợi ý SSH nếu không có màn hình).
     - Nếu bạn chưa có token: `openclaw doctor --generate-gateway-token`.
-    - Nếu từ xa, tạo tunnel trước: `ssh -N -L 18789:127.0.0.1:18789 user@host` rồi mở `http://127.0.0.1:18789/`.
-    - Chế độ shared-secret: đặt `gateway.auth.token` / `OPENCLAW_GATEWAY_TOKEN` hoặc `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`, rồi dán secret khớp vào phần cài đặt Control UI.
-    - Chế độ Tailscale Serve: bảo đảm `gateway.auth.allowTailscale` được bật và bạn đang mở URL Serve, không phải URL loopback/tailnet thô bỏ qua tiêu đề định danh Tailscale.
-    - Chế độ trusted-proxy: bảo đảm bạn đi qua proxy nhận biết định danh đã cấu hình, không phải URL gateway thô. Proxy local loopback cùng máy cũng cần `gateway.auth.trustedProxy.allowLoopback = true`.
-    - Nếu vẫn không khớp sau một lần thử lại, xoay/phê duyệt lại token thiết bị đã ghép đôi:
+    - Nếu từ xa, tạo đường hầm trước: `ssh -N -L 18789:127.0.0.1:18789 user@host` rồi mở `http://127.0.0.1:18789/`.
+    - Chế độ bí mật dùng chung: đặt `gateway.auth.token` / `OPENCLAW_GATEWAY_TOKEN` hoặc `gateway.auth.password` / `OPENCLAW_GATEWAY_PASSWORD`, rồi dán bí mật tương ứng vào cài đặt Giao diện điều khiển.
+    - Chế độ Tailscale Serve: đảm bảo `gateway.auth.allowTailscale` được bật và bạn đang mở URL Serve, không phải URL loopback/tailnet thô bỏ qua header danh tính Tailscale.
+    - Chế độ proxy đáng tin cậy: đảm bảo bạn đi qua proxy nhận biết danh tính đã cấu hình, không phải URL gateway thô. Proxy local loopback cùng máy chủ cũng cần `gateway.auth.trustedProxy.allowLoopback = true`.
+    - Nếu vẫn không khớp sau một lần thử lại, xoay/phê duyệt lại token thiết bị đã ghép cặp:
       - `openclaw devices list`
       - `openclaw devices rotate --device <id> --role operator`
-    - Nếu lệnh xoay đó báo bị từ chối, hãy kiểm tra hai điều:
-      - phiên thiết bị đã ghép đôi chỉ có thể xoay thiết bị **của chính nó** trừ khi cũng có `operator.admin`
-      - giá trị `--scope` rõ ràng không được vượt quá các phạm vi operator hiện tại của bên gọi
-    - Vẫn kẹt? Chạy `openclaw status --all` và làm theo [Khắc phục sự cố](/vi/gateway/troubleshooting). Xem [Dashboard](/vi/web/dashboard) để biết chi tiết xác thực.
+    - Nếu lệnh xoay đó nói bị từ chối, kiểm tra hai điều:
+      - các phiên thiết bị đã ghép cặp chỉ có thể xoay thiết bị **của chính chúng** trừ khi chúng cũng có `operator.admin`
+      - các giá trị `--scope` tường minh không được vượt quá phạm vi toán tử hiện tại của bên gọi
+    - Vẫn kẹt? Chạy `openclaw status --all` và làm theo [Khắc phục sự cố](/vi/gateway/troubleshooting). Xem [Bảng điều khiển](/vi/web/dashboard) để biết chi tiết xác thực.
 
   </Accordion>
 
-  <Accordion title="Tôi đặt gateway.bind là tailnet nhưng không thể bind và không có gì lắng nghe">
+  <Accordion title="Tôi đặt gateway.bind tailnet nhưng không bind được và không có gì lắng nghe">
     Bind `tailnet` chọn một IP Tailscale từ các giao diện mạng của bạn (100.64.0.0/10). Nếu máy không ở trên Tailscale (hoặc giao diện bị tắt), sẽ không có gì để bind.
 
     Cách sửa:
@@ -1494,49 +1493,49 @@ nằm trong [Câu hỏi thường gặp về mô hình](/vi/help/faq-models).
     - Khởi động Tailscale trên máy chủ đó (để nó có địa chỉ 100.x), hoặc
     - Chuyển sang `gateway.bind: "loopback"` / `"lan"`.
 
-    Ghi chú: `tailnet` là rõ ràng. `auto` ưu tiên loopback; dùng `gateway.bind: "tailnet"` khi bạn muốn bind chỉ dành cho tailnet.
+    Lưu ý: `tailnet` là tường minh. `auto` ưu tiên loopback; dùng `gateway.bind: "tailnet"` khi bạn muốn bind chỉ dành cho tailnet.
 
   </Accordion>
 
   <Accordion title="Tôi có thể chạy nhiều Gateway trên cùng một máy chủ không?">
-    Thường là không - một Gateway có thể chạy nhiều kênh nhắn tin và tác nhân. Chỉ dùng nhiều Gateway khi bạn cần dự phòng (ví dụ: bot cứu hộ) hoặc cô lập cứng.
+    Thường là không - một Gateway có thể chạy nhiều kênh nhắn tin và tác nhân. Chỉ dùng nhiều Gateway khi bạn cần dự phòng (ví dụ: bot cứu hộ) hoặc cách ly cứng.
 
-    Có, nhưng bạn phải cô lập:
+    Có, nhưng bạn phải cách ly:
 
     - `OPENCLAW_CONFIG_PATH` (cấu hình theo từng phiên bản)
     - `OPENCLAW_STATE_DIR` (trạng thái theo từng phiên bản)
-    - `agents.defaults.workspace` (cô lập không gian làm việc)
+    - `agents.defaults.workspace` (cách ly không gian làm việc)
     - `gateway.port` (cổng duy nhất)
 
     Thiết lập nhanh (khuyến nghị):
 
-    - Dùng `openclaw --profile <name> ...` cho từng phiên bản (tự tạo `~/.openclaw-<name>`).
-    - Đặt một `gateway.port` duy nhất trong cấu hình từng hồ sơ (hoặc truyền `--port` cho các lần chạy thủ công).
+    - Dùng `openclaw --profile <name> ...` cho từng phiên bản (tự động tạo `~/.openclaw-<name>`).
+    - Đặt `gateway.port` duy nhất trong cấu hình từng hồ sơ (hoặc truyền `--port` khi chạy thủ công).
     - Cài dịch vụ theo từng hồ sơ: `openclaw --profile <name> gateway install`.
 
-    Hồ sơ cũng thêm hậu tố cho tên dịch vụ (`ai.openclaw.<profile>`; cũ: `com.openclaw.*`, `openclaw-gateway-<profile>.service`, `OpenClaw Gateway (<profile>)`).
+    Hồ sơ cũng thêm hậu tố vào tên dịch vụ (`ai.openclaw.<profile>`; legacy `com.openclaw.*`, `openclaw-gateway-<profile>.service`, `OpenClaw Gateway (<profile>)`).
     Hướng dẫn đầy đủ: [Nhiều gateway](/vi/gateway/multiple-gateways).
 
   </Accordion>
 
   <Accordion title='"invalid handshake" / mã 1008 nghĩa là gì?'>
-    Gateway là một **máy chủ WebSocket**, và nó kỳ vọng tin nhắn đầu tiên
-    là một khung `connect`. Nếu nhận bất cứ thứ gì khác, nó đóng kết nối
+    Gateway là một **máy chủ WebSocket**, và nó kỳ vọng thông điệp đầu tiên
+    là một frame `connect`. Nếu nhận bất kỳ thứ gì khác, nó đóng kết nối
     với **mã 1008** (vi phạm chính sách).
 
-    Nguyên nhân thường gặp:
+    Nguyên nhân phổ biến:
 
     - Bạn mở URL **HTTP** trong trình duyệt (`http://...`) thay vì máy khách WS.
     - Bạn dùng sai cổng hoặc đường dẫn.
-    - Proxy hoặc tunnel đã loại bỏ tiêu đề xác thực hoặc gửi yêu cầu không phải Gateway.
+    - Proxy hoặc đường hầm đã loại bỏ header xác thực hoặc gửi yêu cầu không phải Gateway.
 
     Cách sửa nhanh:
 
-    1. Dùng URL WS: `ws://<host>:18789` (hoặc `wss://...` nếu dùng HTTPS).
-    2. Đừng mở cổng WS trong tab trình duyệt thông thường.
-    3. Nếu xác thực đang bật, hãy đưa token/password vào khung `connect`.
+    1. Dùng URL WS: `ws://<host>:18789` (hoặc `wss://...` nếu HTTPS).
+    2. Đừng mở cổng WS trong tab trình duyệt bình thường.
+    3. Nếu bật xác thực, đưa token/mật khẩu vào frame `connect`.
 
-    Nếu bạn đang dùng CLI hoặc TUI, URL sẽ trông như sau:
+    Nếu bạn dùng CLI hoặc TUI, URL nên trông như sau:
 
     ```
     openclaw tui --url ws://<host>:18789 --token <token>
@@ -1557,9 +1556,9 @@ nằm trong [Câu hỏi thường gặp về mô hình](/vi/help/faq-models).
     /tmp/openclaw/openclaw-YYYY-MM-DD.log
     ```
 
-    Bạn có thể đặt đường dẫn ổn định qua `logging.file`. Mức log tệp được điều khiển bởi `logging.level`. Độ chi tiết trên console được điều khiển bởi `--verbose` và `logging.consoleLevel`.
+    Bạn có thể đặt đường dẫn ổn định qua `logging.file`. Mức log tệp được điều khiển bởi `logging.level`. Độ chi tiết console được điều khiển bởi `--verbose` và `logging.consoleLevel`.
 
-    Theo dõi log nhanh nhất:
+    Cách tail log nhanh nhất:
 
     ```bash
     openclaw logs --follow
@@ -1576,14 +1575,14 @@ nằm trong [Câu hỏi thường gặp về mô hình](/vi/help/faq-models).
   </Accordion>
 
   <Accordion title="Làm thế nào để khởi động/dừng/khởi động lại dịch vụ Gateway?">
-    Dùng các helper gateway:
+    Dùng các trình trợ giúp gateway:
 
     ```bash
     openclaw gateway status
     openclaw gateway restart
     ```
 
-    Nếu bạn chạy gateway thủ công, `openclaw gateway --force` có thể lấy lại cổng. Xem [Gateway](/vi/gateway).
+    Nếu bạn chạy gateway thủ công, `openclaw gateway --force` có thể giành lại cổng. Xem [Gateway](/vi/gateway).
 
   </Accordion>
 
@@ -1600,7 +1599,7 @@ nằm trong [Câu hỏi thường gặp về mô hình](/vi/help/faq-models).
     openclaw gateway restart
     ```
 
-    Nếu bạn chưa từng cài dịch vụ, hãy khởi động ở foreground:
+    Nếu bạn chưa từng cài dịch vụ, khởi động nó ở foreground:
 
     ```bash
     openclaw gateway run
@@ -1625,7 +1624,7 @@ nằm trong [Câu hỏi thường gặp về mô hình](/vi/help/faq-models).
 
   </Accordion>
 
-  <Accordion title="Gateway đã bật nhưng phản hồi không bao giờ đến. Tôi nên kiểm tra gì?">
+  <Accordion title="Gateway đã chạy nhưng phản hồi không bao giờ đến. Tôi nên kiểm tra gì?">
     Bắt đầu bằng một lượt kiểm tra sức khỏe nhanh:
 
     ```bash
@@ -1635,11 +1634,11 @@ nằm trong [Câu hỏi thường gặp về mô hình](/vi/help/faq-models).
     openclaw logs --follow
     ```
 
-    Nguyên nhân thường gặp:
+    Nguyên nhân phổ biến:
 
-    - Xác thực mô hình chưa được tải trên **máy chủ gateway** (kiểm tra `models status`).
+    - Xác thực mô hình chưa được tải trên **máy chủ Gateway** (kiểm tra `models status`).
     - Ghép nối kênh/danh sách cho phép đang chặn phản hồi (kiểm tra cấu hình kênh + nhật ký).
-    - WebChat/Dashboard đang mở mà không có đúng token.
+    - WebChat/Bảng điều khiển đang mở mà không có token đúng.
 
     Nếu bạn đang truy cập từ xa, hãy xác nhận kết nối đường hầm/Tailscale đang hoạt động và
     Gateway WebSocket có thể truy cập được.
@@ -1648,13 +1647,13 @@ nằm trong [Câu hỏi thường gặp về mô hình](/vi/help/faq-models).
 
   </Accordion>
 
-  <Accordion title='"Đã ngắt kết nối khỏi gateway: không có lý do" - giờ phải làm gì?'>
-    Điều này thường có nghĩa là giao diện người dùng đã mất kết nối WebSocket. Kiểm tra:
+  <Accordion title='"Đã ngắt kết nối khỏi Gateway: không có lý do" - giờ làm gì?'>
+    Điều này thường có nghĩa là UI đã mất kết nối WebSocket. Kiểm tra:
 
     1. Gateway có đang chạy không? `openclaw gateway status`
     2. Gateway có khỏe mạnh không? `openclaw status`
-    3. Giao diện người dùng có đúng token không? `openclaw dashboard`
-    4. Nếu truy cập từ xa, liên kết đường hầm/Tailscale có hoạt động không?
+    3. UI có token đúng không? `openclaw dashboard`
+    4. Nếu truy cập từ xa, liên kết đường hầm/Tailscale có đang hoạt động không?
 
     Sau đó theo dõi nhật ký:
 
@@ -1662,7 +1661,7 @@ nằm trong [Câu hỏi thường gặp về mô hình](/vi/help/faq-models).
     openclaw logs --follow
     ```
 
-    Tài liệu: [Dashboard](/vi/web/dashboard), [Truy cập từ xa](/vi/gateway/remote), [Khắc phục sự cố](/vi/gateway/troubleshooting).
+    Tài liệu: [Bảng điều khiển](/vi/web/dashboard), [Truy cập từ xa](/vi/gateway/remote), [Khắc phục sự cố](/vi/gateway/troubleshooting).
 
   </Accordion>
 
@@ -1676,17 +1675,17 @@ nằm trong [Câu hỏi thường gặp về mô hình](/vi/help/faq-models).
 
     Sau đó đối chiếu lỗi:
 
-    - `BOT_COMMANDS_TOO_MUCH`: menu Telegram có quá nhiều mục. OpenClaw đã cắt bớt theo giới hạn của Telegram và thử lại với ít lệnh hơn, nhưng vẫn cần bỏ bớt một số mục menu. Giảm bớt lệnh plugin/skill/tùy chỉnh, hoặc tắt `channels.telegram.commands.native` nếu bạn không cần menu.
-    - `TypeError: fetch failed`, `Network request for 'setMyCommands' failed!`, hoặc các lỗi mạng tương tự: nếu bạn đang dùng VPS hoặc đứng sau proxy, hãy xác nhận HTTPS đi ra được cho phép và DNS hoạt động với `api.telegram.org`.
+    - `BOT_COMMANDS_TOO_MUCH`: menu Telegram có quá nhiều mục. OpenClaw đã cắt bớt theo giới hạn của Telegram và thử lại với ít lệnh hơn, nhưng một số mục menu vẫn cần bị bỏ. Giảm số lệnh plugin/skill/tùy chỉnh, hoặc tắt `channels.telegram.commands.native` nếu bạn không cần menu.
+    - `TypeError: fetch failed`, `Network request for 'setMyCommands' failed!`, hoặc các lỗi mạng tương tự: nếu bạn đang ở trên VPS hoặc sau proxy, hãy xác nhận HTTPS đi ra được cho phép và DNS hoạt động với `api.telegram.org`.
 
-    Nếu Gateway ở xa, hãy chắc chắn bạn đang xem nhật ký trên máy chủ Gateway.
+    Nếu Gateway ở xa, hãy chắc chắn rằng bạn đang xem nhật ký trên máy chủ Gateway.
 
     Tài liệu: [Telegram](/vi/channels/telegram), [Khắc phục sự cố kênh](/vi/channels/troubleshooting).
 
   </Accordion>
 
   <Accordion title="TUI không hiển thị đầu ra. Tôi nên kiểm tra gì?">
-    Trước tiên hãy xác nhận Gateway có thể truy cập được và agent có thể chạy:
+    Trước tiên xác nhận Gateway có thể truy cập được và agent có thể chạy:
 
     ```bash
     openclaw status
@@ -1694,10 +1693,10 @@ nằm trong [Câu hỏi thường gặp về mô hình](/vi/help/faq-models).
     openclaw logs --follow
     ```
 
-    Trong TUI, dùng `/status` để xem trạng thái hiện tại. Nếu bạn mong đợi phản hồi trong một kênh chat,
-    hãy chắc chắn đã bật gửi phản hồi (`/deliver on`).
+    Trong TUI, dùng `/status` để xem trạng thái hiện tại. Nếu bạn mong đợi phản hồi trong một kênh
+    chat, hãy chắc chắn rằng việc gửi phản hồi đã được bật (`/deliver on`).
 
-    Tài liệu: [TUI](/vi/web/tui), [Lệnh slash](/vi/tools/slash-commands).
+    Tài liệu: [TUI](/vi/web/tui), [Lệnh gạch chéo](/vi/tools/slash-commands).
 
   </Accordion>
 
@@ -1712,19 +1711,19 @@ nằm trong [Câu hỏi thường gặp về mô hình](/vi/help/faq-models).
     Thao tác này dừng/khởi động **dịch vụ được giám sát** (launchd trên macOS, systemd trên Linux).
     Dùng cách này khi Gateway chạy nền như một daemon.
 
-    Nếu bạn đang chạy ở foreground, dừng bằng Ctrl-C, rồi:
+    Nếu bạn đang chạy ở chế độ foreground, dừng bằng Ctrl-C, sau đó:
 
     ```bash
     openclaw gateway run
     ```
 
-    Tài liệu: [Sổ tay vận hành dịch vụ Gateway](/vi/gateway).
+    Tài liệu: [Runbook dịch vụ Gateway](/vi/gateway).
 
   </Accordion>
 
   <Accordion title="Giải thích đơn giản: openclaw gateway restart so với openclaw gateway">
     - `openclaw gateway restart`: khởi động lại **dịch vụ nền** (launchd/systemd).
-    - `openclaw gateway`: chạy gateway **ở foreground** cho phiên terminal này.
+    - `openclaw gateway`: chạy Gateway **ở foreground** cho phiên terminal này.
 
     Nếu bạn đã cài đặt dịch vụ, hãy dùng các lệnh gateway. Dùng `openclaw gateway` khi
     bạn muốn chạy một lần ở foreground.
@@ -1732,7 +1731,7 @@ nằm trong [Câu hỏi thường gặp về mô hình](/vi/help/faq-models).
   </Accordion>
 
   <Accordion title="Cách nhanh nhất để lấy thêm chi tiết khi có lỗi">
-    Khởi động Gateway với `--verbose` để có thêm chi tiết trên console. Sau đó kiểm tra tệp nhật ký để xem lỗi xác thực kênh, định tuyến mô hình và RPC.
+    Khởi động Gateway với `--verbose` để có thêm chi tiết trên console. Sau đó kiểm tra tệp nhật ký để tìm lỗi xác thực kênh, định tuyến mô hình và RPC.
   </Accordion>
 </AccordionGroup>
 
@@ -1740,7 +1739,7 @@ nằm trong [Câu hỏi thường gặp về mô hình](/vi/help/faq-models).
 
 <AccordionGroup>
   <Accordion title="Skill của tôi đã tạo ảnh/PDF, nhưng không có gì được gửi">
-    Tệp đính kèm gửi ra từ agent phải bao gồm một dòng `MEDIA:<path-or-url>` (trên dòng riêng). Xem [Thiết lập trợ lý OpenClaw](/vi/start/openclaw) và [Agent gửi](/vi/tools/agent-send).
+    Tệp đính kèm đi ra từ agent phải bao gồm một dòng `MEDIA:<path-or-url>` (trên dòng riêng). Xem [Thiết lập trợ lý OpenClaw](/vi/start/openclaw) và [Agent gửi](/vi/tools/agent-send).
 
     Gửi bằng CLI:
 
@@ -1748,14 +1747,14 @@ nằm trong [Câu hỏi thường gặp về mô hình](/vi/help/faq-models).
     openclaw message send --target +15555550123 --message "Here you go" --media /path/to/file.png
     ```
 
-    Cũng hãy kiểm tra:
+    Đồng thời kiểm tra:
 
-    - Kênh đích hỗ trợ phương tiện gửi ra và không bị chặn bởi danh sách cho phép.
-    - Tệp nằm trong giới hạn kích thước của nhà cung cấp (ảnh được đổi kích thước tối đa 2048px).
+    - Kênh đích hỗ trợ phương tiện đi ra và không bị chặn bởi danh sách cho phép.
+    - Tệp nằm trong giới hạn kích thước của provider (ảnh được đổi kích thước tối đa 2048px).
     - `tools.fs.workspaceOnly=true` giới hạn việc gửi đường dẫn cục bộ trong workspace, temp/media-store và các tệp đã được sandbox xác thực.
-    - `tools.fs.workspaceOnly=false` cho phép `MEDIA:` gửi các tệp cục bộ trên máy chủ mà agent đã có thể đọc, nhưng chỉ cho phương tiện và các loại tài liệu an toàn (ảnh, âm thanh, video, PDF và tài liệu Office). Tệp văn bản thuần và tệp giống bí mật vẫn bị chặn.
+    - `tools.fs.workspaceOnly=false` cho phép `MEDIA:` gửi các tệp cục bộ trên máy chủ mà agent đã có thể đọc, nhưng chỉ cho phương tiện và các loại tài liệu an toàn (ảnh, âm thanh, video, PDF và tài liệu Office). Văn bản thuần và các tệp có vẻ như chứa bí mật vẫn bị chặn.
 
-    Xem [Hình ảnh](/vi/nodes/images).
+    Xem [Ảnh](/vi/nodes/images).
 
   </Accordion>
 </AccordionGroup>
@@ -1763,87 +1762,87 @@ nằm trong [Câu hỏi thường gặp về mô hình](/vi/help/faq-models).
 ## Bảo mật và kiểm soát truy cập
 
 <AccordionGroup>
-  <Accordion title="Có an toàn khi cho OpenClaw nhận DM đến không?">
-    Hãy coi DM đến là đầu vào không đáng tin cậy. Mặc định được thiết kế để giảm rủi ro:
+  <Accordion title="Có an toàn khi cho phép OpenClaw nhận DM đến không?">
+    Hãy coi DM đến là dữ liệu đầu vào không đáng tin cậy. Mặc định được thiết kế để giảm rủi ro:
 
     - Hành vi mặc định trên các kênh hỗ trợ DM là **ghép nối**:
-      - Người gửi chưa biết sẽ nhận mã ghép nối; bot không xử lý tin nhắn của họ.
+      - Người gửi không xác định nhận mã ghép nối; bot không xử lý tin nhắn của họ.
       - Phê duyệt bằng: `openclaw pairing approve --channel <channel> [--account <id>] <code>`
       - Yêu cầu đang chờ được giới hạn ở **3 mỗi kênh**; kiểm tra `openclaw pairing list --channel <channel> [--account <id>]` nếu mã không đến.
-    - Mở DM công khai yêu cầu bật rõ ràng (`dmPolicy: "open"` và danh sách cho phép `"*"`).
+    - Mở DM công khai yêu cầu chọn tham gia rõ ràng (`dmPolicy: "open"` và danh sách cho phép `"*"`).
 
-    Chạy `openclaw doctor` để phát hiện các chính sách DM rủi ro.
+    Chạy `openclaw doctor` để hiển thị các chính sách DM rủi ro.
 
   </Accordion>
 
-  <Accordion title="Prompt injection chỉ là vấn đề với bot công khai phải không?">
+  <Accordion title="Prompt injection chỉ là mối lo cho bot công khai thôi sao?">
     Không. Prompt injection liên quan đến **nội dung không đáng tin cậy**, không chỉ là ai có thể DM bot.
     Nếu trợ lý của bạn đọc nội dung bên ngoài (tìm kiếm/tải web, trang trình duyệt, email,
-    tài liệu, tệp đính kèm, nhật ký được dán), nội dung đó có thể chứa chỉ dẫn cố
-    chiếm quyền điều khiển mô hình. Điều này có thể xảy ra ngay cả khi **bạn là người gửi duy nhất**.
+    tài liệu, tệp đính kèm, nhật ký được dán), nội dung đó có thể bao gồm chỉ dẫn cố gắng
+    chiếm quyền mô hình. Điều này có thể xảy ra ngay cả khi **bạn là người gửi duy nhất**.
 
-    Rủi ro lớn nhất là khi công cụ được bật: mô hình có thể bị lừa
-    rò rỉ ngữ cảnh hoặc gọi công cụ thay bạn. Giảm phạm vi ảnh hưởng bằng cách:
+    Rủi ro lớn nhất là khi công cụ được bật: mô hình có thể bị lừa để
+    rò rỉ ngữ cảnh hoặc gọi công cụ thay mặt bạn. Giảm phạm vi ảnh hưởng bằng cách:
 
-    - dùng agent "reader" chỉ đọc hoặc tắt công cụ để tóm tắt nội dung không đáng tin cậy
-    - tắt `web_search` / `web_fetch` / `browser` cho các agent được bật công cụ
-    - coi văn bản được giải mã từ tệp/tài liệu cũng là không đáng tin cậy: OpenResponses
-      `input_file` và trích xuất tệp đính kèm phương tiện đều bọc văn bản trích xuất trong
+    - dùng một agent "đọc" chỉ đọc hoặc tắt công cụ để tóm tắt nội dung không đáng tin cậy
+    - tắt `web_search` / `web_fetch` / `browser` cho các agent có bật công cụ
+    - cũng coi văn bản tệp/tài liệu đã giải mã là không đáng tin cậy: OpenResponses
+      `input_file` và trích xuất tệp đính kèm phương tiện đều bọc văn bản được trích xuất trong
       các dấu mốc ranh giới nội dung bên ngoài rõ ràng thay vì truyền văn bản tệp thô
-    - dùng sandbox và danh sách cho phép công cụ nghiêm ngặt
+    - sandboxing và danh sách cho phép công cụ nghiêm ngặt
 
     Chi tiết: [Bảo mật](/vi/gateway/security).
 
   </Accordion>
 
   <Accordion title="Bot của tôi có nên có email, tài khoản GitHub hoặc số điện thoại riêng không?">
-    Có, với hầu hết thiết lập. Cô lập bot bằng tài khoản và số điện thoại riêng
-    giúp giảm phạm vi ảnh hưởng nếu có sự cố. Việc này cũng giúp xoay vòng
-    thông tin xác thực hoặc thu hồi quyền truy cập dễ hơn mà không ảnh hưởng đến tài khoản cá nhân của bạn.
+    Có, với hầu hết thiết lập. Tách bot bằng tài khoản và số điện thoại riêng
+    giúp giảm phạm vi ảnh hưởng nếu có sự cố. Điều này cũng giúp dễ xoay vòng
+    thông tin xác thực hoặc thu hồi quyền truy cập mà không ảnh hưởng đến tài khoản cá nhân của bạn.
 
-    Bắt đầu nhỏ. Chỉ cấp quyền truy cập vào các công cụ và tài khoản bạn thật sự cần, rồi mở rộng
+    Bắt đầu nhỏ. Chỉ cấp quyền truy cập vào các công cụ và tài khoản bạn thực sự cần, rồi mở rộng
     sau nếu cần.
 
     Tài liệu: [Bảo mật](/vi/gateway/security), [Ghép nối](/vi/channels/pairing).
 
   </Accordion>
 
-  <Accordion title="Tôi có thể cho nó quyền tự chủ với tin nhắn văn bản của mình không và điều đó có an toàn không?">
-    Chúng tôi **không** khuyến nghị toàn quyền tự chủ với tin nhắn cá nhân của bạn. Mẫu an toàn nhất là:
+  <Accordion title="Tôi có thể trao quyền tự chủ cho nó với tin nhắn văn bản của mình không và điều đó có an toàn không?">
+    Chúng tôi **không** khuyến nghị trao toàn quyền tự chủ với tin nhắn cá nhân của bạn. Mẫu an toàn nhất là:
 
-    - Giữ DM ở **chế độ ghép nối** hoặc dùng danh sách cho phép chặt chẽ.
-    - Dùng **số hoặc tài khoản riêng** nếu bạn muốn nó nhắn tin thay bạn.
+    - Giữ DM ở **chế độ ghép nối** hoặc danh sách cho phép chặt chẽ.
+    - Dùng **số hoặc tài khoản riêng** nếu bạn muốn nó nhắn tin thay mặt bạn.
     - Để nó soạn nháp, rồi **phê duyệt trước khi gửi**.
 
-    Nếu bạn muốn thử nghiệm, hãy dùng một tài khoản chuyên dụng và giữ nó cô lập. Xem
+    Nếu bạn muốn thử nghiệm, hãy làm trên tài khoản chuyên dụng và giữ nó tách biệt. Xem
     [Bảo mật](/vi/gateway/security).
 
   </Accordion>
 
   <Accordion title="Tôi có thể dùng mô hình rẻ hơn cho các tác vụ trợ lý cá nhân không?">
-    Có, **nếu** agent chỉ dùng để chat và đầu vào đáng tin cậy. Các tầng nhỏ hơn
-    dễ bị chiếm quyền chỉ dẫn hơn, nên tránh dùng chúng cho agent được bật công cụ
+    Có, **nếu** agent chỉ chat và đầu vào đáng tin cậy. Các tầng nhỏ hơn
+    dễ bị chiếm quyền chỉ dẫn hơn, vì vậy hãy tránh dùng chúng cho agent có bật công cụ
     hoặc khi đọc nội dung không đáng tin cậy. Nếu bạn phải dùng mô hình nhỏ hơn, hãy khóa chặt
     công cụ và chạy trong sandbox. Xem [Bảo mật](/vi/gateway/security).
   </Accordion>
 
   <Accordion title="Tôi đã chạy /start trong Telegram nhưng không nhận được mã ghép nối">
-    Mã ghép nối được gửi **chỉ** khi người gửi chưa biết nhắn tin cho bot và
-    `dmPolicy: "pairing"` được bật. Chỉ riêng `/start` không tạo mã.
+    Mã ghép nối được gửi **chỉ** khi người gửi không xác định nhắn tin cho bot và
+    `dmPolicy: "pairing"` được bật. `/start` tự nó không tạo mã.
 
-    Kiểm tra yêu cầu đang chờ:
+    Kiểm tra các yêu cầu đang chờ:
 
     ```bash
     openclaw pairing list telegram
     ```
 
-    Nếu bạn muốn truy cập ngay, hãy thêm sender id của bạn vào danh sách cho phép hoặc đặt `dmPolicy: "open"`
+    Nếu bạn muốn truy cập ngay, hãy đưa id người gửi của bạn vào danh sách cho phép hoặc đặt `dmPolicy: "open"`
     cho tài khoản đó.
 
   </Accordion>
 
-  <Accordion title="WhatsApp: nó có nhắn tin cho liên hệ của tôi không? Ghép nối hoạt động thế nào?">
-    Không. Chính sách DM mặc định của WhatsApp là **ghép nối**. Người gửi chưa biết chỉ nhận mã ghép nối và tin nhắn của họ **không được xử lý**. OpenClaw chỉ trả lời các cuộc chat mà nó nhận được hoặc các lệnh gửi rõ ràng do bạn kích hoạt.
+  <Accordion title="WhatsApp: nó có nhắn tin cho danh bạ của tôi không? Ghép nối hoạt động như thế nào?">
+    Không. Chính sách DM mặc định của WhatsApp là **ghép nối**. Người gửi không xác định chỉ nhận mã ghép nối và tin nhắn của họ **không được xử lý**. OpenClaw chỉ trả lời các cuộc chat mà nó nhận được hoặc các lần gửi rõ ràng do bạn kích hoạt.
 
     Phê duyệt ghép nối bằng:
 
@@ -1851,13 +1850,13 @@ nằm trong [Câu hỏi thường gặp về mô hình](/vi/help/faq-models).
     openclaw pairing approve whatsapp <code>
     ```
 
-    Liệt kê yêu cầu đang chờ:
+    Liệt kê các yêu cầu đang chờ:
 
     ```bash
     openclaw pairing list whatsapp
     ```
 
-    Lời nhắc số điện thoại trong trình hướng dẫn: nó được dùng để đặt **danh sách cho phép/chủ sở hữu** của bạn để DM của chính bạn được cho phép. Nó không được dùng để tự động gửi. Nếu bạn chạy trên số WhatsApp cá nhân, hãy dùng số đó và bật `channels.whatsapp.selfChatMode`.
+    Lời nhắc số điện thoại trong wizard: nó được dùng để đặt **danh sách cho phép/chủ sở hữu** của bạn để DM của chính bạn được cho phép. Nó không được dùng để tự động gửi. Nếu bạn chạy trên số WhatsApp cá nhân của mình, hãy dùng số đó và bật `channels.whatsapp.selfChatMode`.
 
   </Accordion>
 </AccordionGroup>
@@ -1878,7 +1877,7 @@ nằm trong [Câu hỏi thường gặp về mô hình](/vi/help/faq-models).
     ```
 
     Nếu vẫn còn ồn, hãy kiểm tra cài đặt phiên trong Control UI và đặt verbose
-    thành **inherit**. Cũng hãy xác nhận bạn không dùng hồ sơ bot có `verboseDefault` đặt
+    thành **inherit**. Đồng thời xác nhận bạn không dùng hồ sơ bot có `verboseDefault` được đặt
     thành `on` trong cấu hình.
 
     Tài liệu: [Suy nghĩ và verbose](/vi/tools/thinking), [Bảo mật](/vi/gateway/security/index#reasoning-and-verbose-output-in-groups).
@@ -1886,7 +1885,7 @@ nằm trong [Câu hỏi thường gặp về mô hình](/vi/help/faq-models).
   </Accordion>
 
   <Accordion title="Làm thế nào để dừng/hủy một tác vụ đang chạy?">
-    Gửi bất kỳ nội dung nào sau đây **dưới dạng tin nhắn độc lập** (không có slash):
+    Gửi bất kỳ nội dung nào sau đây **dưới dạng một tin nhắn độc lập** (không có dấu gạch chéo):
 
     ```
     stop
@@ -1910,25 +1909,25 @@ nằm trong [Câu hỏi thường gặp về mô hình](/vi/help/faq-models).
     interrupt
     ```
 
-    Đây là các trigger hủy (không phải lệnh slash).
+    Đây là các tác nhân kích hoạt hủy (không phải lệnh gạch chéo).
 
-    Với tiến trình nền (từ công cụ exec), bạn có thể yêu cầu agent chạy:
+    Với các tiến trình nền (từ công cụ exec), bạn có thể yêu cầu agent chạy:
 
     ```
     process action:kill sessionId:XXX
     ```
 
-    Tổng quan lệnh slash: xem [Lệnh slash](/vi/tools/slash-commands).
+    Tổng quan lệnh gạch chéo: xem [Lệnh gạch chéo](/vi/tools/slash-commands).
 
-    Hầu hết lệnh phải được gửi dưới dạng tin nhắn **độc lập** bắt đầu bằng `/`, nhưng một vài phím tắt (như `/status`) cũng hoạt động inline cho người gửi nằm trong danh sách cho phép.
+    Hầu hết lệnh phải được gửi dưới dạng một tin nhắn **độc lập** bắt đầu bằng `/`, nhưng một vài lối tắt (như `/status`) cũng hoạt động inline cho người gửi trong danh sách cho phép.
 
   </Accordion>
 
-  <Accordion title='Làm thế nào để gửi tin nhắn Discord từ Telegram? ("Nhắn tin liên ngữ cảnh bị từ chối")'>
-    OpenClaw mặc định chặn nhắn tin **chéo nhà cung cấp**. Nếu một lệnh gọi công cụ được ràng buộc
+  <Accordion title='Làm thế nào để gửi tin nhắn Discord từ Telegram? ("Nhắn tin xuyên ngữ cảnh bị từ chối")'>
+    OpenClaw chặn nhắn tin **xuyên provider** theo mặc định. Nếu một lệnh gọi công cụ được ràng buộc
     với Telegram, nó sẽ không gửi tới Discord trừ khi bạn cho phép rõ ràng.
 
-    Bật nhắn tin chéo nhà cung cấp cho agent:
+    Bật nhắn tin xuyên provider cho agent:
 
     ```json5
     {
@@ -1943,21 +1942,21 @@ nằm trong [Câu hỏi thường gặp về mô hình](/vi/help/faq-models).
     }
     ```
 
-    Khởi động lại gateway sau khi chỉnh sửa cấu hình.
+    Khởi động lại Gateway sau khi chỉnh sửa cấu hình.
 
   </Accordion>
 
-  <Accordion title='Tại sao có cảm giác bot "phớt lờ" các tin nhắn gửi dồn dập?'>
+  <Accordion title='Tại sao có cảm giác bot "bỏ qua" các tin nhắn gửi dồn dập?'>
     Chế độ hàng đợi kiểm soát cách tin nhắn mới tương tác với một lần chạy đang diễn ra. Dùng `/queue` để đổi chế độ:
 
-    - `steer` - xếp hàng toàn bộ điều hướng đang chờ cho ranh giới mô hình tiếp theo trong lần chạy hiện tại
-    - `queue` - điều hướng kiểu cũ, từng cái một
-    - `followup` - chạy tin nhắn từng cái một
+    - `steer` - xếp hàng toàn bộ chỉ dẫn đang chờ cho ranh giới mô hình tiếp theo trong lần chạy hiện tại
+    - `queue` - chỉ dẫn lần lượt kiểu cũ
+    - `followup` - chạy từng tin nhắn một
     - `collect` - gom nhóm tin nhắn và trả lời một lần
-    - `steer-backlog` - điều hướng ngay, rồi xử lý backlog
+    - `steer-backlog` - steer ngay, rồi xử lý backlog
     - `interrupt` - hủy lần chạy hiện tại và bắt đầu mới
 
-    Chế độ mặc định là `steer`. Bạn có thể thêm các tùy chọn như `debounce:0.5s cap:25 drop:summarize` cho các chế độ theo dõi tiếp theo. Xem [Hàng đợi lệnh](/vi/concepts/queue) và [Hàng đợi điều hướng](/vi/concepts/queue-steering).
+    Default mode là `steer`. Bạn có thể thêm các tùy chọn như `debounce:0.5s cap:25 drop:summarize` cho các chế độ followup. Xem [Hàng đợi lệnh](/vi/concepts/queue) và [Hàng đợi điều hướng](/vi/concepts/queue-steering).
 
   </Accordion>
 </AccordionGroup>
@@ -1965,17 +1964,17 @@ nằm trong [Câu hỏi thường gặp về mô hình](/vi/help/faq-models).
 ## Khác
 
 <AccordionGroup>
-  <Accordion title='Mô hình mặc định cho Anthropic khi dùng khóa API là gì?'>
-    Trong OpenClaw, thông tin xác thực và lựa chọn mô hình là hai phần riêng biệt. Việc đặt `ANTHROPIC_API_KEY` (hoặc lưu khóa API Anthropic trong hồ sơ xác thực) sẽ bật xác thực, nhưng mô hình mặc định thực tế là mô hình bạn cấu hình trong `agents.defaults.model.primary` (ví dụ: `anthropic/claude-sonnet-4-6` hoặc `anthropic/claude-opus-4-6`). Nếu bạn thấy `No credentials found for profile "anthropic:default"`, điều đó nghĩa là Gateway không tìm thấy thông tin xác thực Anthropic trong `auth-profiles.json` dự kiến cho tác nhân đang chạy.
+  <Accordion title='Mô hình mặc định cho Anthropic với khóa API là gì?'>
+    Trong OpenClaw, thông tin xác thực và lựa chọn mô hình là riêng biệt. Việc đặt `ANTHROPIC_API_KEY` (hoặc lưu khóa API Anthropic trong hồ sơ xác thực) sẽ bật xác thực, nhưng mô hình mặc định thực tế là bất kỳ mô hình nào bạn cấu hình trong `agents.defaults.model.primary` (ví dụ: `anthropic/claude-sonnet-4-6` hoặc `anthropic/claude-opus-4-6`). Nếu bạn thấy `No credentials found for profile "anthropic:default"`, điều đó có nghĩa là Gateway không tìm thấy thông tin xác thực Anthropic trong `auth-profiles.json` dự kiến cho tác nhân đang chạy.
   </Accordion>
 </AccordionGroup>
 
 ---
 
-Vẫn gặp khó khăn? Hãy hỏi trong [Discord](https://discord.com/invite/clawd) hoặc mở một [thảo luận trên GitHub](https://github.com/openclaw/openclaw/discussions).
+Vẫn gặp vướng mắc? Hãy hỏi trong [Discord](https://discord.com/invite/clawd) hoặc mở một [thảo luận trên GitHub](https://github.com/openclaw/openclaw/discussions).
 
 ## Liên quan
 
-- [Câu hỏi thường gặp về lần chạy đầu tiên](/vi/help/faq-first-run) — cài đặt, nhập môn, xác thực, gói đăng ký, lỗi ban đầu
+- [Câu hỏi thường gặp khi chạy lần đầu](/vi/help/faq-first-run) — cài đặt, hướng dẫn ban đầu, xác thực, gói đăng ký, lỗi ban đầu
 - [Câu hỏi thường gặp về mô hình](/vi/help/faq-models) — lựa chọn mô hình, chuyển đổi dự phòng, hồ sơ xác thực
-- [Khắc phục sự cố](/vi/help/troubleshooting) — phân loại theo triệu chứng
+- [Khắc phục sự cố](/vi/help/troubleshooting) — phân loại sự cố theo triệu chứng

@@ -1,43 +1,38 @@
 ---
 read_when:
-    - Aracı üzerinden arka plan veya paralel çalışma istiyorsunuz
+    - Ajan aracılığıyla arka planda veya paralel çalışma istiyorsunuz
     - sessions_spawn veya alt ajan araç politikasını değiştiriyorsunuz
-    - İş parçacığına bağlı alt aracı oturumlarını uyguluyor veya bu oturumlarda sorun gideriyorsunuz
+    - İş parçacığına bağlı alt ajan oturumlarını uyguluyor veya sorunlarını gideriyorsunuz
 sidebarTitle: Sub-agents
-summary: Sonuçları istekte bulunan sohbetine geri duyuran yalıtılmış arka plan ajan çalıştırmaları başlatın
-title: Alt aracılar
+summary: Sonuçları istekte bulunan sohbete geri bildiren yalıtılmış arka plan ajan çalıştırmaları başlatın
+title: Alt ajanlar
 x-i18n:
-    generated_at: "2026-05-07T01:54:56Z"
+    generated_at: "2026-05-07T13:27:26Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 901311ae7766640ff6991f66a63070fddef47d79ef5385d2c1af84be34a5140e
+    source_hash: 5b112f9c45bcb9cdc5d3b856f2fe2a36617606ad278b0ccc3db8830f0e847ba9
     source_path: tools/subagents.md
     workflow: 16
 ---
 
 Alt ajanlar, mevcut bir ajan çalıştırmasından başlatılan arka plan ajan çalıştırmalarıdır.
 Kendi oturumlarında (`agent:<agentId>:subagent:<uuid>`) çalışırlar ve,
-tamamlandıklarında, sonuçlarını istekte bulunan sohbet
-kanalına **duyururlar**. Her alt ajan çalıştırması bir
+bittiklerinde sonuçlarını istekte bulunan sohbet kanalına geri **duyururlar**.
+Her alt ajan çalıştırması bir
 [arka plan görevi](/tr/automation/tasks) olarak izlenir.
-
-Yetkilendirmenin arkasındaki güvenlik modeli için bkz.
-[Çok ajanlı ve alt ajan sınırları](/tr/gateway/security#multi-agent-and-sub-agent-boundaries).
-Alt ajanlar kullanışlı yalıtım ve iş akışı birimleridir, ancak tek bir paylaşılan Gateway içinde düşmanca
-çok kiracılı bir yetkilendirme sınırı değildir.
 
 Birincil hedefler:
 
 - Ana çalıştırmayı engellemeden "araştırma / uzun görev / yavaş araç" işlerini paralelleştirmek.
-- Alt ajanları varsayılan olarak yalıtılmış tutmak (oturum ayrımı + isteğe bağlı korumalı alan).
-- Araç yüzeyinin yanlış kullanılmasını zorlaştırmak: alt ajanlar varsayılan olarak oturum araçlarını almaz.
+- Alt ajanları varsayılan olarak yalıtılmış tutmak (oturum ayrımı + isteğe bağlı sandbox).
+- Araç yüzeyinin kötüye kullanımını zorlaştırmak: alt ajanlara varsayılan olarak oturum araçları verilmez.
 - Orkestratör desenleri için yapılandırılabilir iç içe geçme derinliğini desteklemek.
 
 <Note>
-**Maliyet notu:** her alt ajanın varsayılan olarak kendi bağlamı ve token kullanımı vardır. Ağır veya yinelenen görevler için alt ajanlara daha ucuz bir model ayarlayın ve ana ajanınızı daha yüksek kaliteli bir modelde tutun. `agents.defaults.subagents.model` veya ajan başına geçersiz kılmalarla yapılandırın. Bir alt öğenin gerçekten istekte bulunanın mevcut dökümüne ihtiyacı olduğunda, ajan o tek başlatma için `context: "fork"` isteyebilir. İş parçacığına bağlı alt ajan oturumları varsayılan olarak `context: "fork"` kullanır çünkü mevcut konuşmayı bir takip iş parçacığına dallandırırlar.
+**Maliyet notu:** her alt ajanın varsayılan olarak kendi bağlamı ve token kullanımı vardır. Ağır veya tekrarlı görevler için alt ajanlara daha ucuz bir model ayarlayın ve ana ajanınızı daha yüksek kaliteli bir modelde tutun. `agents.defaults.subagents.model` veya ajan başına geçersiz kılmalar üzerinden yapılandırın. Bir alt ajan gerçekten istekte bulunanın geçerli transkriptine ihtiyaç duyduğunda, ajan o tek başlatmada `context: "fork"` isteyebilir. Konuya bağlı alt ajan oturumları varsayılan olarak `context: "fork"` kullanır çünkü geçerli konuşmayı bir takip konusuna dallandırırlar.
 </Note>
 
-## Eğik çizgi komutu
+## Slash komutu
 
 **Geçerli oturum** için alt ajan çalıştırmalarını incelemek veya denetlemek üzere `/subagents` kullanın:
 
@@ -51,15 +46,15 @@ Birincil hedefler:
 /subagents spawn <agentId> <task> [--model <model>] [--thinking <level>]
 ```
 
-Geçerli istekte bulunan oturumun etkin çalıştırmasını yönlendirmek için üst düzey [`/steer <message>`](/tr/tools/steer) kullanın. Hedef bir alt çalıştırma olduğunda `/subagents steer <id|#> <message>` kullanın.
+Geçerli istekte bulunan oturumun aktif çalıştırmasını yönlendirmek için üst düzey [`/steer <message>`](/tr/tools/steer) kullanın. Hedef bir alt çalıştırmaysa `/subagents steer <id|#> <message>` kullanın.
 
-`/subagents info` çalıştırma üst verilerini gösterir (durum, zaman damgaları, oturum kimliği,
-döküm yolu, temizlik). Sınırlı ve güvenlik filtreli bir geri çağırma görünümü için `sessions_history` kullanın; ham tam döküme ihtiyacınız olduğunda diskteki döküm yolunu inceleyin.
+`/subagents info` çalıştırma meta verilerini gösterir (durum, zaman damgaları, oturum kimliği,
+transkript yolu, temizlik). Sınırlı ve güvenlik filtresinden geçmiş geri çağırma görünümü için `sessions_history` kullanın; ham tam transkripte ihtiyaç duyduğunuzda diskteki transkript yolunu inceleyin.
 
-### İş parçacığı bağlama denetimleri
+### Konu bağlama kontrolleri
 
-Bu komutlar kalıcı iş parçacığı bağlamalarını destekleyen kanallarda çalışır.
-Aşağıdaki [İş parçacığını destekleyen kanallar](#thread-supporting-channels) bölümüne bakın.
+Bu komutlar kalıcı konu bağlamalarını destekleyen kanallarda çalışır.
+Aşağıdaki [Konu destekleyen kanallar](#thread-supporting-channels) bölümüne bakın.
 
 ```text
 /focus <subagent-label|session-key|session-id|session-label>
@@ -71,75 +66,71 @@ Aşağıdaki [İş parçacığını destekleyen kanallar](#thread-supporting-cha
 
 ### Başlatma davranışı
 
-`/subagents spawn`, bir arka plan alt ajanını kullanıcı komutu olarak başlatır (iç
-aktarım olarak değil) ve çalıştırma tamamlandığında istekte bulunan sohbete tek bir son tamamlanma güncellemesi gönderir.
+`/subagents spawn`, bir arka plan alt ajanını kullanıcı komutu olarak başlatır (iç röle olarak değil) ve çalıştırma bittiğinde istekte bulunan sohbete son bir tamamlama güncellemesi gönderir.
 
 <AccordionGroup>
-  <Accordion title="Engelleyici olmayan, anlık tamamlanma">
+  <Accordion title="Engellemeyen, anlık iletime dayalı tamamlama">
     - Başlatma komutu engelleyici değildir; hemen bir çalıştırma kimliği döndürür.
-    - Tamamlandığında alt ajan, istekte bulunan sohbet kanalına bir özet/sonuç iletisi duyurur.
-    - Tamamlanma anlıktır. Başlatıldıktan sonra, yalnızca bitmesini beklemek için `/subagents list`, `sessions_list` veya `sessions_history` komutlarını bir döngüde yoklamayın; durumu yalnızca hata ayıklama veya müdahale için gerektiğinde inceleyin.
-    - Tamamlandığında OpenClaw, duyuru temizlik akışı devam etmeden önce o alt ajan oturumu tarafından açılan izlenen tarayıcı sekmelerini/süreçlerini en iyi çabayla kapatır.
+    - Tamamlandığında alt ajan, istekte bulunan sohbet kanalına bir özet/sonuç mesajı duyurur.
+    - Tamamlama anlık iletime dayalıdır. Başlatıldıktan sonra, yalnızca bitmesini beklemek için `/subagents list`, `sessions_list` veya `sessions_history` komutlarını döngü içinde yoklamayın; durumu yalnızca hata ayıklama veya müdahale için gerektiğinde inceleyin.
+    - Tamamlandığında OpenClaw, duyuru temizleme akışı devam etmeden önce bu alt ajan oturumu tarafından açılan izlenen tarayıcı sekmelerini/süreçlerini en iyi çabayla kapatır.
 
   </Accordion>
   <Accordion title="Elle başlatma teslim dayanıklılığı">
-    - OpenClaw önce kararlı bir idempotency anahtarıyla doğrudan `agent` teslimini dener.
-    - İstekte bulunan ajanın tamamlanma dönüşü başarısız olursa, görünür çıktı üretmezse veya yakalanan alt sonuçtan açıkça eksik bir önek döndürürse OpenClaw, yakalanan alt sonuçtan doğrudan tamamlanma teslimine geri döner.
-    - Doğrudan teslim kullanılamazsa kuyruk yönlendirmesine geri döner.
-    - Kuyruk yönlendirmesi hâlâ kullanılabilir değilse duyuru, son vazgeçmeden önce kısa üstel geri çekilmeyle yeniden denenir.
-    - Tamamlanma teslimi çözümlenmiş istekte bulunan rotasını korur: kullanılabilir olduğunda iş parçacığına bağlı veya konuşmaya bağlı tamamlanma rotaları kazanır; tamamlanma kaynağı yalnızca bir kanal sağlıyorsa OpenClaw eksik hedefi/hesabı istekte bulunan oturumun çözümlenmiş rotasından (`lastChannel` / `lastTo` / `lastAccountId`) doldurur, böylece doğrudan teslim yine çalışır.
+    - OpenClaw, tamamlamaları kararlı bir idempotency anahtarıyla bir `agent` turu üzerinden istekte bulunan oturuma geri verir.
+    - İstekte bulunan çalıştırma hâlâ aktifse OpenClaw, ikinci bir görünür yanıt yolu başlatmak yerine önce bu çalıştırmayı uyandırmayı/yönlendirmeyi dener.
+    - İstekte bulunan ajan tamamlama devri başarısız olursa veya görünür çıktı üretmezse OpenClaw teslimi başarısız sayar ve kuyruk yönlendirme/yeniden deneme yoluna düşer. Alt sonucu doğrudan harici sohbete ham olarak göndermez.
+    - Doğrudan devir kullanılamazsa kuyruk yönlendirmeye geri döner.
+    - Kuyruk yönlendirme hâlâ kullanılamıyorsa duyuru, son vazgeçmeden önce kısa üstel geri çekilmeyle yeniden denenir.
+    - Tamamlama teslimi çözümlenmiş istekte bulunan rotasını korur: konuya bağlı veya konuşmaya bağlı tamamlama rotaları kullanılabilir olduğunda önceliklidir; tamamlama kaynağı yalnızca bir kanal sağlıyorsa OpenClaw, doğrudan teslimin yine çalışması için eksik hedefi/hesabı istekte bulunan oturumun çözümlenmiş rotasından (`lastChannel` / `lastTo` / `lastAccountId`) doldurur.
 
   </Accordion>
-  <Accordion title="Tamamlanma devri üst verileri">
-    İstekte bulunan oturuma tamamlanma devri, çalışma zamanı tarafından üretilen
-    iç bağlamdır (kullanıcı tarafından yazılmış metin değildir) ve şunları içerir:
+  <Accordion title="Tamamlama devri meta verileri">
+    İstekte bulunan oturuma tamamlama devri, çalışma zamanında oluşturulan
+    dahili bağlamdır (kullanıcı tarafından yazılmış metin değildir) ve şunları içerir:
 
-    - `Result` — en son görünür `assistant` yanıt metni, yoksa temizlenmiş en son araç/toolResult metni. Terminalde başarısız olan çalıştırmalar yakalanan yanıt metnini yeniden kullanmaz.
+    - `Result` — en son görünür `assistant` yanıt metni; yoksa temizlenmiş en son araç/toolResult metni. Terminalde başarısız olan çalıştırmalar yakalanmış yanıt metnini yeniden kullanmaz.
     - `Status` — `completed successfully` / `failed` / `timed out` / `unknown`.
     - Kompakt çalışma zamanı/token istatistikleri.
-    - İstekte bulunan ajana normal asistan sesiyle yeniden yazmasını söyleyen bir teslim talimatı (ham iç üst verileri iletmemesini).
+    - İstekte bulunan ajana normal asistan sesiyle yeniden yazmasını söyleyen bir teslim talimatı (ham dahili meta verileri iletmemesi için).
 
   </Accordion>
-  <Accordion title="Kipler ve ACP çalışma zamanı">
-    - `--model` ve `--thinking`, o belirli çalıştırma için varsayılanları geçersiz kılar.
+  <Accordion title="Modlar ve ACP çalışma zamanı">
+    - `--model` ve `--thinking`, bu belirli çalıştırma için varsayılanları geçersiz kılar.
     - Tamamlandıktan sonra ayrıntıları ve çıktıyı incelemek için `info`/`log` kullanın.
-    - `/subagents spawn` tek seferlik kiptir (`mode: "run"`). Kalıcı iş parçacığına bağlı oturumlar için `thread: true` ve `mode: "session"` ile `sessions_spawn` kullanın.
-    - ACP koşum oturumları (Claude Code, Gemini CLI, OpenCode veya açıkça Codex ACP/acpx) için, araç bu çalışma zamanını bildiriyorsa `runtime: "acp"` ile `sessions_spawn` kullanın. Tamamlanmaları veya ajandan ajana döngüleri hata ayıklarken [ACP teslim modeli](/tr/tools/acp-agents#delivery-model) bölümüne bakın. `codex` plugin etkin olduğunda, kullanıcı açıkça ACP/acpx istemedikçe Codex sohbet/iş parçacığı denetimi ACP yerine `/codex ...` tercih etmelidir.
-    - OpenClaw, ACP etkinleştirilene, istekte bulunan korumalı alanda olmayana ve `acpx` gibi bir arka uç plugin yüklenene kadar `runtime: "acp"` değerini gizler. `runtime: "acp"` harici bir ACP koşum kimliği veya `runtime.type="acp"` olan bir `agents.list[]` girdisi bekler; `agents_list` içindeki normal OpenClaw yapılandırma ajanları için varsayılan alt ajan çalışma zamanını kullanın.
+    - `/subagents spawn` tek seferlik moddur (`mode: "run"`). Kalıcı konuya bağlı oturumlar için `thread: true` ve `mode: "session"` ile `sessions_spawn` kullanın.
+    - ACP harness oturumları (Claude Code, Gemini CLI, OpenCode veya açıkça Codex ACP/acpx) için, araç bu çalışma zamanını ilan ettiğinde `runtime: "acp"` ile `sessions_spawn` kullanın. Tamamlamalarda veya ajanlar arası döngülerde hata ayıklarken [ACP teslim modeli](/tr/tools/acp-agents#delivery-model) bölümüne bakın. `codex` Plugin etkinleştirildiğinde, kullanıcı açıkça ACP/acpx istemedikçe Codex sohbet/konu denetimi ACP yerine `/codex ...` tercih etmelidir.
+    - OpenClaw, ACP etkinleşene, istekte bulunan sandbox içinde olmayana ve `acpx` gibi bir arka uç Plugin yüklenene kadar `runtime: "acp"` değerini gizler. `runtime: "acp"` harici bir ACP harness kimliği veya `runtime.type="acp"` olan bir `agents.list[]` girdisi bekler; `agents_list` içinden normal OpenClaw yapılandırma ajanları için varsayılan alt ajan çalışma zamanını kullanın.
 
   </Accordion>
 </AccordionGroup>
 
-## Bağlam kipleri
+## Bağlam modları
 
-Yerel alt ajanlar, çağıran açıkça geçerli dökümü çatallamayı istemedikçe yalıtılmış başlar.
+Yerel alt ajanlar, çağıran açıkça geçerli transkripti fork etmeyi istemedikçe yalıtılmış başlar.
 
-| Kip        | Ne zaman kullanılır                                                                                                                    | Davranış                                                                          |
-| ---------- | -------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `isolated` | Yeni araştırma, bağımsız uygulama, yavaş araç çalışması veya görev metninde özetlenebilen herhangi bir şey                              | Temiz bir alt döküm oluşturur. Varsayılan budur ve token kullanımını daha düşük tutar. |
-| `fork`     | Geçerli konuşmaya, önceki araç sonuçlarına veya istekte bulunan dökümde zaten bulunan nüanslı talimatlara bağlı çalışma                 | Alt öğe başlamadan önce istekte bulunan dökümü alt oturuma dallandırır. |
+| Mod        | Ne zaman kullanılır                                                                                                                    | Davranış                                                                         |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `isolated` | Yeni araştırma, bağımsız uygulama, yavaş araç işi veya görev metninde özetlenebilecek herhangi bir şey                                 | Temiz bir alt transkript oluşturur. Bu varsayılandır ve token kullanımını düşük tutar. |
+| `fork`     | Geçerli konuşmaya, önceki araç sonuçlarına veya istekte bulunan transkriptinde zaten bulunan incelikli talimatlara bağlı işler         | Alt ajan başlamadan önce istekte bulunan transkriptini alt oturuma dallandırır. |
 
-`fork` değerini sınırlı kullanın. Bu, bağlama duyarlı yetkilendirme içindir; açık bir görev istemi yazmanın yerine geçmez.
+`fork` değerini ölçülü kullanın. Bağlama duyarlı delege etme içindir, net bir görev istemi yazmanın yerine geçmez.
 
 ## Araç: `sessions_spawn`
 
-Genel `subagent` hattında `deliver: false` ile bir alt ajan çalıştırması başlatır,
-ardından bir duyuru adımı çalıştırır ve duyuru yanıtını istekte bulunan
-sohbet kanalına gönderir.
+Global `subagent` hattında `deliver: false` ile bir alt ajan çalıştırması başlatır,
+ardından bir duyuru adımı çalıştırır ve duyuru yanıtını istekte bulunan sohbet kanalına gönderir.
 
-Kullanılabilirlik, çağıranın etkin araç ilkesine bağlıdır. `coding` ve
+Kullanılabilirlik, çağıranın etkin araç politikasına bağlıdır. `coding` ve
 `full` profilleri varsayılan olarak `sessions_spawn` sunar. `messaging` profili
-sunmaz; iş yetkilendirmesi yapması gereken ajanlar için `tools.alsoAllow: ["sessions_spawn", "sessions_yield",
-"subagents"]` ekleyin veya `tools.profile: "coding"` kullanın.
-Kanal/grup, sağlayıcı, korumalı alan ve ajan başına izin verme/reddetme ilkeleri
-profil aşamasından sonra aracı yine kaldırabilir. Etkin araç listesini doğrulamak için aynı
-oturumdan `/tools` kullanın.
+sunmaz; iş delege etmesi gereken ajanlar için `tools.alsoAllow: ["sessions_spawn", "sessions_yield",
+"subagents"]` ekleyin veya `tools.profile: "coding"` kullanın. Kanal/grup, sağlayıcı, sandbox ve ajan başına izin/verme politikaları, profil aşamasından sonra aracı yine kaldırabilir. Etkin araç listesini doğrulamak için aynı oturumdan `/tools` kullanın.
 
 **Varsayılanlar:**
 
 - **Model:** `agents.defaults.subagents.model` (veya ajan başına `agents.list[].subagents.model`) ayarlamadığınız sürece çağırandan devralır; açık bir `sessions_spawn.model` yine önceliklidir.
-- **Düşünme:** `agents.defaults.subagents.thinking` (veya ajan başına `agents.list[].subagents.thinking`) ayarlamadığınız sürece çağırandan devralır; açık bir `sessions_spawn.thinking` yine önceliklidir.
-- **Çalıştırma zaman aşımı:** `sessions_spawn.runTimeoutSeconds` atlanırsa OpenClaw, ayarlandığında `agents.defaults.subagents.runTimeoutSeconds` kullanır; aksi halde `0` (zaman aşımı yok) değerine geri döner.
+- **Thinking:** `agents.defaults.subagents.thinking` (veya ajan başına `agents.list[].subagents.thinking`) ayarlamadığınız sürece çağırandan devralır; açık bir `sessions_spawn.thinking` yine önceliklidir.
+- **Çalıştırma zaman aşımı:** `sessions_spawn.runTimeoutSeconds` atlanırsa OpenClaw, ayarlı olduğunda `agents.defaults.subagents.runTimeoutSeconds` kullanır; aksi halde `0` değerine geri döner (zaman aşımı yok).
 
 ### Araç parametreleri
 
@@ -147,16 +138,16 @@ oturumdan `/tools` kullanın.
   Alt ajan için görev açıklaması.
 </ParamField>
 <ParamField path="label" type="string">
-  İsteğe bağlı, insan tarafından okunabilir etiket.
+  İsteğe bağlı insan tarafından okunabilir etiket.
 </ParamField>
 <ParamField path="agentId" type="string">
   `subagents.allowAgents` tarafından izin verildiğinde başka bir ajan kimliği altında başlatın.
 </ParamField>
 <ParamField path="runtime" type='"subagent" | "acp"' default="subagent">
-  `acp` yalnızca harici ACP koşumları (`claude`, `droid`, `gemini`, `opencode` veya açıkça istenen Codex ACP/acpx) ve `runtime.type` değeri `acp` olan `agents.list[]` girdileri içindir.
+  `acp` yalnızca harici ACP harness'leri (`claude`, `droid`, `gemini`, `opencode` veya açıkça istenen Codex ACP/acpx) ve `runtime.type` değeri `acp` olan `agents.list[]` girdileri içindir.
 </ParamField>
 <ParamField path="resumeSessionId" type="string">
-  Yalnızca ACP. `runtime: "acp"` olduğunda mevcut bir ACP koşum oturumunu sürdürür; yerel alt ajan başlatmaları için yok sayılır.
+  Yalnızca ACP. `runtime: "acp"` olduğunda mevcut bir ACP harness oturumunu sürdürür; yerel alt ajan başlatmaları için yok sayılır.
 </ParamField>
 <ParamField path="streamTo" type='"parent"'>
   Yalnızca ACP. `runtime: "acp"` olduğunda ACP çalıştırma çıktısını üst oturuma aktarır; yerel alt ajan başlatmaları için atlayın.
@@ -165,128 +156,132 @@ oturumdan `/tools` kullanın.
   Alt ajan modelini geçersiz kılın. Geçersiz değerler atlanır ve alt ajan, araç sonucunda bir uyarıyla varsayılan modelde çalışır.
 </ParamField>
 <ParamField path="thinking" type="string">
-  Alt ajan çalıştırması için düşünme düzeyini geçersiz kılın.
+  Alt ajan çalıştırması için thinking düzeyini geçersiz kılın.
 </ParamField>
 <ParamField path="runTimeoutSeconds" type="number">
-  Ayarlandığında varsayılan olarak `agents.defaults.subagents.runTimeoutSeconds`, aksi halde `0`. Ayarlandığında alt ajan çalıştırması N saniye sonra durdurulur.
+  Ayarlandığında varsayılan olarak `agents.defaults.subagents.runTimeoutSeconds`; aksi halde `0`. Ayarlandığında alt ajan çalıştırması N saniye sonra iptal edilir.
 </ParamField>
 <ParamField path="thread" type="boolean" default="false">
-  `true` olduğunda bu alt ajan oturumu için kanal iş parçacığı bağlaması ister.
+  `true` olduğunda bu alt ajan oturumu için kanal konu bağlaması ister.
 </ParamField>
 <ParamField path="mode" type='"run" | "session"' default="run">
   `thread: true` ve `mode` atlanmışsa varsayılan `session` olur. `mode: "session"` için `thread: true` gerekir.
 </ParamField>
 <ParamField path="cleanup" type='"delete" | "keep"' default="keep">
-  `"delete"` duyurudan hemen sonra arşivler (dökümü yine yeniden adlandırma yoluyla korur).
+  `"delete"` duyurudan hemen sonra arşivler (transkripti yeniden adlandırma yoluyla yine korur).
 </ParamField>
 <ParamField path="sandbox" type='"inherit" | "require"' default="inherit">
-  `require`, hedef alt çalışma zamanı korumalı alanda değilse başlatmayı reddeder.
+  `require`, hedef alt çalışma zamanı sandbox içinde değilse başlatmayı reddeder.
 </ParamField>
 <ParamField path="context" type='"isolated" | "fork"' default="isolated">
-  `fork`, istekte bulunanın geçerli dökümünü alt oturuma dallandırır. Yalnızca yerel alt ajanlar. İş parçacığına bağlı başlatmalar varsayılan olarak `fork`; iş parçacığı olmayan başlatmalar varsayılan olarak `isolated` kullanır.
+  `fork`, istekte bulunanın geçerli transkriptini alt oturuma dallandırır. Yalnızca yerel alt ajanlar. Konuya bağlı başlatmalar varsayılan olarak `fork`; konu dışı başlatmalar varsayılan olarak `isolated` kullanır.
 </ParamField>
 
 <Warning>
-`sessions_spawn` kanal teslim parametrelerini kabul etmez (`target`,
-`channel`, `to`, `threadId`, `replyTo`, `transport`). Teslim için, başlatılan çalıştırmadan
-`message`/`sessions_send` kullanın.
+`sessions_spawn`, kanal teslim parametrelerini (`target`,
+`channel`, `to`, `threadId`, `replyTo`, `transport`) kabul **etmez**. Teslim için başlatılan çalıştırmadan `message`/`sessions_send` kullanın.
 </Warning>
 
-## İş parçacığına bağlı oturumlar
+## Konuya bağlı oturumlar
 
-Bir kanal için iş parçacığı bağlamaları etkinleştirildiğinde, bir alt ajan
-bir iş parçacığına bağlı kalabilir; böylece o iş parçacığındaki takip kullanıcı iletileri
-aynı alt ajan oturumuna yönlendirilmeye devam eder.
+Bir kanal için konu bağlamaları etkinleştirildiğinde, bir alt ajan bir konuya bağlı kalabilir; böylece bu konudaki takip kullanıcı mesajları aynı alt ajan oturumuna yönlendirilmeye devam eder.
 
-### İş parçacığını destekleyen kanallar
+### Konu destekleyen kanallar
 
-**Discord** şu anda desteklenen tek kanaldır. Kalıcı iş parçacığına bağlı alt ajan oturumlarını (`thread: true` ile `sessions_spawn`), elle iş parçacığı denetimlerini (`/focus`, `/unfocus`, `/agents`,
-`/session idle`, `/session max-age`) ve
+**Discord** şu anda desteklenen tek kanaldır. Kalıcı konuya bağlı alt ajan oturumlarını (`thread: true` ile `sessions_spawn`), elle konu kontrollerini (`/focus`, `/unfocus`, `/agents`,
+`/session idle`, `/session max-age`) ve adapter anahtarlarını destekler:
 `channels.discord.threadBindings.enabled`,
 `channels.discord.threadBindings.idleHours`,
 `channels.discord.threadBindings.maxAgeHours` ve
-`channels.discord.threadBindings.spawnSessions` adaptör anahtarlarını destekler.
+`channels.discord.threadBindings.spawnSessions`.
 
 ### Hızlı akış
 
 <Steps>
-  <Step title="Oluştur">
+  <Step title="Başlat">
     `thread: true` (ve isteğe bağlı olarak `mode: "session"`) ile `sessions_spawn`.
   </Step>
   <Step title="Bağla">
-    OpenClaw, etkin kanalda bu oturum hedefine bir konu oluşturur veya bağlar.
+    OpenClaw, etkin kanalda bu oturum hedefine bir iş parçacığı oluşturur veya bağlar.
   </Step>
   <Step title="Takipleri yönlendir">
-    Bu konudaki yanıtlar ve takip mesajları bağlı oturuma yönlendirilir.
+    Bu iş parçacığındaki yanıtlar ve takip mesajları bağlı oturuma yönlendirilir.
   </Step>
   <Step title="Zaman aşımlarını incele">
-    Etkinsizlikte otomatik odaktan çıkarma ayarını incelemek/güncellemek için `/session idle` ve
+    Etkinlik dışı kalındığında otomatik odaktan çıkarmayı incelemek/güncellemek için `/session idle` ve
     sabit üst sınırı denetlemek için `/session max-age` kullanın.
   </Step>
   <Step title="Ayır">
-    Elle ayırmak için `/unfocus` kullanın.
+    El ile ayırmak için `/unfocus` kullanın.
   </Step>
 </Steps>
 
-### Elle denetimler
+### El ile denetimler
 
-| Komut              | Etki                                                                           |
-| ------------------ | ------------------------------------------------------------------------------ |
-| `/focus <target>`  | Geçerli konuyu bir alt ajan/oturum hedefine bağla (veya bir tane oluştur)      |
-| `/unfocus`         | Geçerli bağlı konu için bağlamayı kaldır                                       |
-| `/agents`          | Etkin çalıştırmaları ve bağlama durumunu listele (`thread:<id>` veya `unbound`) |
-| `/session idle`    | Boşta otomatik odaktan çıkarmayı incele/güncelle (yalnızca odaktaki bağlı konular) |
-| `/session max-age` | Sabit üst sınırı incele/güncelle (yalnızca odaktaki bağlı konular)             |
+| Komut              | Etki                                                                            |
+| ------------------ | -------------------------------------------------------------------------------- |
+| `/focus <target>`  | Geçerli iş parçacığını (veya yeni bir tane oluşturup) bir alt aracı/oturum hedefine bağlar |
+| `/unfocus`         | Geçerli bağlı iş parçacığının bağını kaldırır                                   |
+| `/agents`          | Etkin çalıştırmaları ve bağ durumunu listeler (`thread:<id>` veya `unbound`)    |
+| `/session idle`    | Boşta otomatik odaktan çıkarmayı incele/güncelle (yalnızca odaklanmış bağlı iş parçacıkları) |
+| `/session max-age` | Sabit üst sınırı incele/güncelle (yalnızca odaklanmış bağlı iş parçacıkları)    |
 
 ### Yapılandırma anahtarları
 
-- **Küresel varsayılan:** `session.threadBindings.enabled`, `session.threadBindings.idleHours`, `session.threadBindings.maxAgeHours`.
-- **Kanal geçersiz kılma ve oluşturma sırasında otomatik bağlama anahtarları** bağdaştırıcıya özeldir. Yukarıdaki [Konu destekleyen kanallar](#thread-supporting-channels) bölümüne bakın.
+- **Genel varsayılan:** `session.threadBindings.enabled`, `session.threadBindings.idleHours`, `session.threadBindings.maxAgeHours`.
+- **Kanal geçersiz kılma ve başlatmada otomatik bağlama anahtarları** bağdaştırıcıya özeldir. Yukarıdaki [İş parçacığını destekleyen kanallar](#thread-supporting-channels) bölümüne bakın.
 
-Güncel bağdaştırıcı ayrıntıları için [Yapılandırma başvurusu](/tr/gateway/configuration-reference) ve
-[Slash komutları](/tr/tools/slash-commands) bölümlerine bakın.
+Geçerli bağdaştırıcı ayrıntıları için [Yapılandırma başvurusu](/tr/gateway/configuration-reference) ve
+[Eğik çizgi komutları](/tr/tools/slash-commands) bölümlerine bakın.
 
-### İzin verilenler listesi
+### İzin listesi
 
 <ParamField path="agents.list[].subagents.allowAgents" type="string[]">
-  Açık `agentId` üzerinden hedeflenebilecek ajan kimliklerinin listesi (`["*"]` herhangi birine izin verir). Varsayılan: yalnızca istekte bulunan ajan. Bir liste ayarlar ve istekte bulunanın yine `agentId` ile kendisini oluşturmasını istiyorsanız, istekte bulunan kimliğini listeye ekleyin.
+  Açık `agentId` üzerinden hedeflenebilecek aracı kimliklerinin listesi (`["*"]` herhangi birine izin verir). Varsayılan: yalnızca istekte bulunan aracı. Bir liste ayarlar ve yine de istekte bulunanın `agentId` ile kendisini başlatmasını istiyorsanız, istekte bulunanın kimliğini listeye ekleyin.
 </ParamField>
 <ParamField path="agents.defaults.subagents.allowAgents" type="string[]">
-  İstekte bulunan ajan kendi `subagents.allowAgents` değerini ayarlamadığında kullanılan varsayılan hedef ajan izin listesi.
+  İstekte bulunan aracı kendi `subagents.allowAgents` değerini ayarlamadığında kullanılan varsayılan hedef aracı izin listesi.
 </ParamField>
 <ParamField path="agents.defaults.subagents.requireAgentId" type="boolean" default="false">
-  `agentId` değerini atlayan `sessions_spawn` çağrılarını engelle (açık profil seçimini zorunlu kılar). Ajan başına geçersiz kılma: `agents.list[].subagents.requireAgentId`.
+  `agentId` değerini atlayan `sessions_spawn` çağrılarını engeller (açık profil seçimini zorunlu kılar). Aracı başına geçersiz kılma: `agents.list[].subagents.requireAgentId`.
 </ParamField>
 
-İstekte bulunan oturum sandbox içindeyse, `sessions_spawn` sandbox dışında çalışacak hedefleri reddeder.
+İstekte bulunan oturum korumalı alandaysa, `sessions_spawn` korumasız
+çalışacak hedefleri reddeder.
 
 ### Keşif
 
-`sessions_spawn` için şu anda hangi ajan kimliklerine izin verildiğini görmek için `agents_list` kullanın. Yanıt, çağıranların Pi, Codex uygulama sunucusu ve diğer yapılandırılmış yerel çalışma zamanlarını ayırt edebilmesi için listelenen her ajanın etkin modelini ve gömülü çalışma zamanı meta verilerini içerir.
+Şu anda `sessions_spawn` için hangi aracı kimliklerine izin verildiğini görmek üzere
+`agents_list` kullanın. Yanıt, çağıranların PI, Codex
+uygulama sunucusu ve yapılandırılmış diğer yerel çalışma zamanlarını ayırt edebilmesi için listelenen her aracının etkin
+modelini ve gömülü çalışma zamanı meta verilerini içerir.
 
-### Otomatik arşiv
+### Otomatik arşivleme
 
-- Alt ajan oturumları `agents.defaults.subagents.archiveAfterMinutes` sonrasında otomatik olarak arşivlenir (varsayılan `60`).
-- Arşiv, `sessions.delete` kullanır ve transkripti `*.deleted.<timestamp>` olarak yeniden adlandırır (aynı klasörde).
-- `cleanup: "delete"` duyurudan hemen sonra arşivler (transkripti yine yeniden adlandırma yoluyla tutar).
-- Otomatik arşiv en iyi çabayla çalışır; Gateway yeniden başlatılırsa bekleyen zamanlayıcılar kaybolur.
-- `runTimeoutSeconds` otomatik arşivlemez; yalnızca çalıştırmayı durdurur. Oturum otomatik arşive kadar kalır.
-- Otomatik arşiv, derinlik 1 ve derinlik 2 oturumlarına aynı şekilde uygulanır.
-- Tarayıcı temizliği arşiv temizliğinden ayrıdır: izlenen tarayıcı sekmeleri/süreçleri, transkript/oturum kaydı tutulsa bile çalıştırma bittiğinde en iyi çabayla kapatılır.
+- Alt aracı oturumları `agents.defaults.subagents.archiveAfterMinutes` sonrasında otomatik olarak arşivlenir (varsayılan `60`).
+- Arşiv, `sessions.delete` kullanır ve transkripti `*.deleted.<timestamp>` olarak yeniden adlandırır (aynı klasör).
+- `cleanup: "delete"` duyurudan hemen sonra arşivler (transkripti yine de yeniden adlandırarak tutar).
+- Otomatik arşivleme en iyi çaba esasına dayanır; Gateway yeniden başlatılırsa bekleyen zamanlayıcılar kaybolur.
+- `runTimeoutSeconds` otomatik arşivleme yapmaz; yalnızca çalıştırmayı durdurur. Oturum otomatik arşivlemeye kadar kalır.
+- Otomatik arşivleme, derinlik 1 ve derinlik 2 oturumlarına eşit şekilde uygulanır.
+- Tarayıcı temizliği arşiv temizliğinden ayrıdır: izlenen tarayıcı sekmeleri/süreçleri, transkript/oturum kaydı tutulsa bile çalıştırma bittiğinde en iyi çaba ile kapatılır.
 
-## İç içe alt ajanlar
+## İç içe alt aracılar
 
-Varsayılan olarak, alt ajanlar kendi alt ajanlarını oluşturamaz (`maxSpawnDepth: 1`). Bir iç içe geçme düzeyini etkinleştirmek için `maxSpawnDepth: 2` ayarlayın — **orkestratör kalıbı**: ana → orkestratör alt ajan → çalışan alt-alt ajanlar.
+Varsayılan olarak alt aracılar kendi alt aracılarını başlatamaz
+(`maxSpawnDepth: 1`). Bir düzey iç içe yerleşimi etkinleştirmek için `maxSpawnDepth: 2` ayarlayın:
+**orkestratör deseni**: ana → orkestratör alt aracı →
+çalışan alt-alt aracılar.
 
 ```json5
 {
   agents: {
     defaults: {
       subagents: {
-        maxSpawnDepth: 2, // allow sub-agents to spawn children (default: 1)
-        maxChildrenPerAgent: 5, // max active children per agent session (default: 5)
-        maxConcurrent: 8, // global concurrency lane cap (default: 8)
-        runTimeoutSeconds: 900, // default timeout for sessions_spawn when omitted (0 = no timeout)
+        maxSpawnDepth: 2, // alt aracıların çocuk başlatmasına izin ver (varsayılan: 1)
+        maxChildrenPerAgent: 5, // aracı oturumu başına en fazla etkin çocuk (varsayılan: 5)
+        maxConcurrent: 8, // genel eşzamanlılık şeridi üst sınırı (varsayılan: 8)
+        runTimeoutSeconds: 900, // atlandığında sessions_spawn için varsayılan zaman aşımı (0 = zaman aşımı yok)
       },
     },
   },
@@ -295,128 +290,151 @@ Varsayılan olarak, alt ajanlar kendi alt ajanlarını oluşturamaz (`maxSpawnDe
 
 ### Derinlik düzeyleri
 
-| Derinlik | Oturum anahtarı biçimi                         | Rol                                               | Oluşturabilir mi?            |
-| -------- | ---------------------------------------------- | ------------------------------------------------- | ---------------------------- |
-| 0        | `agent:<id>:main`                              | Ana ajan                                          | Her zaman                    |
-| 1        | `agent:<id>:subagent:<uuid>`                   | Alt ajan (derinlik 2 izinliyse orkestratör)       | Yalnızca `maxSpawnDepth >= 2` |
-| 2        | `agent:<id>:subagent:<uuid>:subagent:<uuid>`   | Alt-alt ajan (uç çalışan)                         | Asla                         |
+| Derinlik | Oturum anahtarı biçimi                       | Rol                                           | Başlatabilir mi?             |
+| -------- | -------------------------------------------- | --------------------------------------------- | ---------------------------- |
+| 0        | `agent:<id>:main`                            | Ana aracı                                     | Her zaman                    |
+| 1        | `agent:<id>:subagent:<uuid>`                 | Alt aracı (derinlik 2 izinliyse orkestratör)  | Yalnızca `maxSpawnDepth >= 2` ise |
+| 2        | `agent:<id>:subagent:<uuid>:subagent:<uuid>` | Alt-alt aracı (yaprak çalışan)                | Asla                         |
 
 ### Duyuru zinciri
 
-Sonuçlar zincirde yukarı doğru akar:
+Sonuçlar zincir boyunca yukarı akar:
 
-1. Derinlik 2 çalışanı biter → üst öğesine (derinlik 1 orkestratör) duyurur.
-2. Derinlik 1 orkestratör duyuruyu alır, sonuçları sentezler, biter → ana ajana duyurur.
-3. Ana ajan duyuruyu alır ve kullanıcıya iletir.
+1. Derinlik 2 çalışanı biter → üstüne duyurur (derinlik 1 orkestratör).
+2. Derinlik 1 orkestratör duyuruyu alır, sonuçları sentezler, biter → ana aracıya duyurur.
+3. Ana aracı duyuruyu alır ve kullanıcıya iletir.
 
 Her düzey yalnızca doğrudan çocuklarından gelen duyuruları görür.
 
 <Note>
-**Operasyonel rehberlik:** `sessions_list`,
-`sessions_history`, `/subagents list` veya `exec` uyku komutları etrafında yoklama döngüleri kurmak yerine çocuk işi bir kez başlatın ve tamamlama olaylarını bekleyin.
-`sessions_list` ve `/subagents list`, çocuk oturum ilişkilerini canlı işe odaklı tutar — canlı çocuklar bağlı kalır, biten çocuklar kısa bir yakın zaman penceresinde görünür kalır ve yalnızca depoda bulunan eski çocuk bağlantıları tazelik penceresinden sonra yok sayılır. Bu, eski `spawnedBy` /
-`parentSessionKey` meta verilerinin yeniden başlatma sonrasında hayalet çocukları yeniden diriltmesini önler. Bir çocuk tamamlama olayı, siz nihai yanıtı zaten gönderdikten sonra gelirse doğru takip, tam sessiz belirteç olan
-`NO_REPLY` / `no_reply` değeridir.
+**Operasyonel kılavuz:** `sessions_list`,
+`sessions_history`, `/subagents list` veya `exec` uyku komutları etrafında yoklama döngüleri oluşturmak yerine çocuk işi bir kez başlatın ve tamamlanma
+olaylarını bekleyin.
+`sessions_list` ve `/subagents list`, çocuk oturumu ilişkilerini
+canlı işe odaklı tutar: canlı çocuklar bağlı kalır, bitmiş çocuklar kısa bir yakın zaman penceresinde
+görünür kalır ve yalnızca depoda kalan eski çocuk bağlantıları
+tazelik pencerelerinden sonra yok sayılır. Bu, eski `spawnedBy` /
+`parentSessionKey` meta verilerinin yeniden başlatmadan sonra hayalet çocukları yeniden ortaya çıkarmasını
+önler. Bir çocuk tamamlanma olayı siz son yanıtı zaten gönderdikten sonra gelirse,
+doğru takip tam sessiz belirteçtir:
+`NO_REPLY` / `no_reply`.
 </Note>
 
 ### Derinliğe göre araç ilkesi
 
-- Rol ve denetim kapsamı, oluşturma sırasında oturum meta verilerine yazılır. Bu, düz veya geri yüklenmiş oturum anahtarlarının yanlışlıkla orkestratör ayrıcalıklarını yeniden kazanmasını önler.
+- Rol ve denetim kapsamı başlatma sırasında oturum meta verilerine yazılır. Bu, düz veya geri yüklenmiş oturum anahtarlarının yanlışlıkla orkestratör ayrıcalıklarını yeniden kazanmasını önler.
 - **Derinlik 1 (orkestratör, `maxSpawnDepth >= 2` olduğunda):** çocuklarını yönetebilmesi için `sessions_spawn`, `subagents`, `sessions_list`, `sessions_history` alır. Diğer oturum/sistem araçları reddedilmiş kalır.
-- **Derinlik 1 (uç, `maxSpawnDepth == 1` olduğunda):** oturum aracı yoktur (geçerli varsayılan davranış).
-- **Derinlik 2 (uç çalışan):** oturum aracı yoktur — `sessions_spawn` derinlik 2'de her zaman reddedilir. Daha fazla çocuk oluşturamaz.
+- **Derinlik 1 (yaprak, `maxSpawnDepth == 1` olduğunda):** oturum aracı yoktur (geçerli varsayılan davranış).
+- **Derinlik 2 (yaprak çalışan):** oturum aracı yoktur; `sessions_spawn` derinlik 2'de her zaman reddedilir. Daha fazla çocuk başlatamaz.
 
-### Ajan başına oluşturma sınırı
+### Aracı başına başlatma sınırı
 
-Her ajan oturumunun (herhangi bir derinlikte) aynı anda en fazla `maxChildrenPerAgent`
-(varsayılan `5`) etkin çocuğu olabilir. Bu, tek bir orkestratörden denetimsiz yayılmayı önler.
+Her aracı oturumunun (herhangi bir derinlikte) aynı anda en fazla `maxChildrenPerAgent`
+(varsayılan `5`) etkin çocuğu olabilir. Bu, tek bir orkestratörden
+denetimsiz yayılmayı önler.
 
-### Kademeli durdurma
+### Zincirleme durdurma
 
-Bir derinlik 1 orkestratörü durdurmak, tüm derinlik 2 çocuklarını otomatik olarak durdurur:
+Derinlik 1 orkestratörünü durdurmak tüm derinlik 2
+çocuklarını otomatik olarak durdurur:
 
-- Ana sohbette `/stop`, tüm derinlik 1 ajanlarını durdurur ve onların derinlik 2 çocuklarına kademeli olarak uygular.
-- `/subagents kill <id>` belirli bir alt ajanı durdurur ve çocuklarına kademeli olarak uygular.
-- `/subagents kill all` istekte bulunan için tüm alt ajanları durdurur ve kademeli uygular.
+- Ana sohbette `/stop`, tüm derinlik 1 aracılarını durdurur ve onların derinlik 2 çocuklarına zincirleme uygular.
+- `/subagents kill <id>` belirli bir alt aracı durdurur ve çocuklarına zincirleme uygular.
+- `/subagents kill all` istekte bulunan için tüm alt aracıları durdurur ve zincirleme uygular.
 
 ## Kimlik doğrulama
 
-Alt ajan kimlik doğrulaması oturum türüne göre değil, **ajan kimliğine** göre çözümlenir:
+Alt aracı kimlik doğrulaması oturum türüne göre değil, **aracı kimliğine** göre çözümlenir:
 
-- Alt ajan oturum anahtarı `agent:<agentId>:subagent:<uuid>` şeklindedir.
-- Kimlik doğrulama deposu bu ajanın `agentDir` dizininden yüklenir.
-- Ana ajanın kimlik doğrulama profilleri **yedek** olarak birleştirilir; çakışmalarda ajan profilleri ana profillerin üzerine yazar.
+- Alt aracı oturum anahtarı `agent:<agentId>:subagent:<uuid>` biçimindedir.
+- Kimlik doğrulama deposu bu aracının `agentDir` dizininden yüklenir.
+- Ana aracının kimlik doğrulama profilleri **yedek** olarak birleştirilir; çakışmalarda aracı profilleri ana profilleri geçersiz kılar.
 
-Birleştirme eklemelidir, bu yüzden ana profiller her zaman yedek olarak kullanılabilir. Ajan başına tamamen yalıtılmış kimlik doğrulama henüz desteklenmez.
+Birleştirme eklemelidir, bu nedenle ana profiller her zaman yedek olarak
+kullanılabilir. Aracı başına tamamen yalıtılmış kimlik doğrulama henüz desteklenmiyor.
 
 ## Duyuru
 
-Alt ajanlar bir duyuru adımıyla geri bildirim yapar:
+Alt aracılar bir duyuru adımıyla geri bildirim yapar:
 
-- Duyuru adımı, istekte bulunan oturumda değil, alt ajan oturumunun içinde çalışır.
-- Alt ajan tam olarak `ANNOUNCE_SKIP` yanıtını verirse hiçbir şey gönderilmez.
+- Duyuru adımı alt aracı oturumu içinde çalışır (istekte bulunan oturumunda değil).
+- Alt aracı tam olarak `ANNOUNCE_SKIP` yanıtını verirse hiçbir şey gönderilmez.
 - En son asistan metni tam sessiz belirteç olan `NO_REPLY` / `no_reply` ise, daha önce görünür ilerleme olsa bile duyuru çıktısı bastırılır.
 
-Teslim, istekte bulunanın derinliğine bağlıdır:
+Teslimat, istekte bulunan derinliğine bağlıdır:
 
-- Üst düzey istekte bulunan oturumlar, harici teslimatla (`deliver=true`) bir takip `agent` çağrısı kullanır.
-- İç içe istekte bulunan alt ajan oturumları, orkestratörün çocuk sonuçlarını oturum içinde sentezleyebilmesi için dahili bir takip eklemesi (`deliver=false`) alır.
-- İç içe istekte bulunan bir alt ajan oturumu yoksa, OpenClaw mümkün olduğunda o oturumun istekte bulunanına geri döner.
+- Üst düzey istekte bulunan oturumlar, harici teslimat (`deliver=true`) ile takip `agent` çağrısı kullanır.
+- İç içe istekte bulunan alt aracı oturumları, orkestratörün çocuk sonuçlarını oturum içinde sentezleyebilmesi için dahili takip enjeksiyonu (`deliver=false`) alır.
+- İç içe istekte bulunan alt aracı oturumu yoksa, OpenClaw mümkün olduğunda o oturumun istekte bulunanına geri döner.
 
-Üst düzey istekte bulunan oturumlar için, tamamlama modu doğrudan teslim önce bağlı konuşma/konu rotasını ve hook geçersiz kılmasını çözer, ardından eksik kanal hedefi alanlarını istekte bulunan oturumun saklanan rotasından doldurur. Bu, tamamlama kaynağı yalnızca kanalı tanımlasa bile tamamlamaları doğru sohbet/konuda tutar.
+Üst düzey istekte bulunan oturumlar için, tamamlama modu doğrudan teslimat önce
+bağlı konuşma/iş parçacığı yolunu ve hook geçersiz kılmasını çözer, ardından
+eksik kanal hedef alanlarını istekte bulunan oturumun depolanmış yolundan doldurur.
+Bu, tamamlama kaynağı yalnızca kanalı tanımladığında bile tamamlamaları doğru sohbet/konu üzerinde tutar.
 
-Çocuk tamamlama toplaması, iç içe tamamlama bulguları oluşturulurken geçerli istekte bulunan çalıştırmayla sınırlanır ve eski önceki çalıştırma çocuk çıktılarının geçerli duyuruya sızmasını önler. Duyuru yanıtları, kanal bağdaştırıcılarında mevcut olduğunda konu/başlık yönlendirmesini korur.
+Çocuk tamamlama birleştirmesi, iç içe tamamlama bulguları oluşturulurken
+geçerli istekte bulunan çalıştırmasına kapsamlanır; bu, önceki çalıştırmalardan kalan eski çocuk
+çıktılarının geçerli duyuruya sızmasını önler. Duyuru yanıtları, kanal bağdaştırıcılarında mevcut olduğunda
+iş parçacığı/konu yönlendirmesini korur.
 
 ### Duyuru bağlamı
 
 Duyuru bağlamı kararlı bir dahili olay bloğuna normalleştirilir:
 
-| Alan           | Kaynak                                                                                                                    |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| Kaynak         | `subagent` veya `cron`                                                                                                    |
-| Oturum kimlikleri | Çocuk oturum anahtarı/kimliği                                                                                         |
-| Tür            | Duyuru türü + görev etiketi                                                                                               |
-| Durum          | Çalışma zamanı sonucundan türetilir (`success`, `error`, `timeout` veya `unknown`) — model metninden **çıkarılmaz**       |
-| Sonuç içeriği  | En son görünür asistan metni, yoksa temizlenmiş en son araç/toolResult metni                                              |
-| Takip          | Ne zaman yanıt verileceğini ve ne zaman sessiz kalınacağını açıklayan talimat                                             |
+| Alan           | Kaynak                                                                                                        |
+| -------------- | ------------------------------------------------------------------------------------------------------------- |
+| Kaynak         | `subagent` veya `cron`                                                                                        |
+| Oturum kimlikleri | Çocuk oturum anahtarı/kimliği                                                                             |
+| Tür            | Duyuru türü + görev etiketi                                                                                   |
+| Durum          | Çalışma zamanı sonucundan türetilir (`success`, `error`, `timeout` veya `unknown`); model metninden **çıkarılmaz** |
+| Sonuç içeriği  | En son görünür asistan metni, aksi halde temizlenmiş en son araç/toolResult metni                             |
+| Takip          | Ne zaman yanıt verileceğini ve ne zaman sessiz kalınacağını açıklayan talimat                                  |
 
-Terminal başarısız çalıştırmalar, yakalanan yanıt metnini yeniden oynatmadan hata durumunu bildirir. Zaman aşımında, çocuk yalnızca araç çağrılarına kadar ilerlediyse duyuru, ham araç çıktısını yeniden oynatmak yerine bu geçmişi kısa bir kısmi ilerleme özetine daraltabilir.
+Terminalde başarısız olan çalıştırmalar, yakalanmış yanıt metnini yeniden oynatmadan
+başarısızlık durumunu bildirir. Zaman aşımında, çocuk yalnızca araç çağrılarına kadar ilerlediyse, duyuru
+ham araç çıktısını yeniden oynatmak yerine bu geçmişi kısa bir kısmi ilerleme özetine
+indirger.
 
 ### İstatistik satırı
 
-Duyuru yükleri en sonda bir istatistik satırı içerir (sarılmış olsa bile):
+Duyuru yükleri sonunda (sarmalanmış olsa bile) bir istatistik satırı içerir:
 
 - Çalışma zamanı (örn. `runtime 5m12s`).
-- Token kullanımı (girdi/çıktı/toplam).
+- Belirteç kullanımı (girdi/çıktı/toplam).
 - Model fiyatlandırması yapılandırıldığında tahmini maliyet (`models.providers.*.models[].cost`).
-- Ana ajanın `sessions_history` üzerinden geçmişi getirebilmesi veya diskteki dosyayı inceleyebilmesi için `sessionKey`, `sessionId` ve transkript yolu.
+- Ana aracının `sessions_history` üzerinden geçmişi getirebilmesi veya diskteki dosyayı inceleyebilmesi için `sessionKey`, `sessionId` ve transkript yolu.
 
-Dahili meta veriler yalnızca orkestrasyon içindir; kullanıcıya yönelik yanıtlar normal asistan sesiyle yeniden yazılmalıdır.
+Dahili meta veriler yalnızca orkestrasyon içindir; kullanıcıya dönük yanıtlar
+normal asistan sesiyle yeniden yazılmalıdır.
 
 ### Neden `sessions_history` tercih edilmeli
 
 `sessions_history` daha güvenli orkestrasyon yoludur:
 
-- Asistan hatırlaması önce normalleştirilir: düşünme etiketleri çıkarılır; `<relevant-memories>` / `<relevant_memories>` iskeleti çıkarılır; düz metin araç çağrısı XML yük blokları (`<tool_call>`, `<function_call>`, `<tool_calls>`, `<function_calls>`) çıkarılır; temiz kapanmayan kesilmiş yükler dahil; düşürülmüş araç çağrısı/sonuç iskeleti ve geçmiş bağlam işaretçileri çıkarılır; sızmış model denetim tokenları (`<|assistant|>`, diğer ASCII `<|...|>`, tam genişlikli `<｜...｜>`) çıkarılır; hatalı biçimli MiniMax araç çağrısı XML'i çıkarılır.
-- Kimlik bilgisi/token benzeri metin redakte edilir.
-- Uzun bloklar kısaltılabilir.
-- Çok büyük geçmişler eski satırları düşürebilir veya aşırı büyük bir satırı `[sessions_history omitted: message too large]` ile değiştirebilir.
-- Tam bayt bayt transkripte ihtiyacınız olduğunda diskteki ham transkript incelemesi yedek yoldur.
+- Asistan hatırlaması önce normalleştirilir: düşünme etiketleri çıkarılır; `<relevant-memories>` / `<relevant_memories>` iskeleti çıkarılır; düz metin araç çağrısı XML yük blokları (`<tool_call>`, `<function_call>`, `<tool_calls>`, `<function_calls>`) çıkarılır; buna temiz kapanmayan kesilmiş yükler de dahildir; düzeyi düşürülmüş araç çağrısı/sonuç iskeleti ve geçmiş bağlam işaretçileri çıkarılır; sızmış model denetim belirteçleri (`<|assistant|>`, diğer ASCII `<|...|>`, tam genişlik `<｜...｜>`) çıkarılır; hatalı biçimli MiniMax araç çağrısı XML'i çıkarılır.
+- Kimlik bilgisi/belirteç benzeri metinler redakte edilir.
+- Uzun bloklar kesilebilir.
+- Çok büyük geçmişler eski satırları bırakabilir veya aşırı büyük bir satırı `[sessions_history omitted: message too large]` ile değiştirebilir.
+- Tam bayt bayt transkripte ihtiyaç duyduğunuzda ham disk üstü transkript incelemesi yedektir.
 
 ## Araç ilkesi
 
-Alt ajanlar, önce üst veya hedef ajanla aynı profil ve araç ilkesi hattını kullanır. Bundan sonra OpenClaw, alt ajan kısıtlama katmanını uygular.
+Alt ajanlar önce üst veya hedef ajanla aynı profil ve araç ilkesi işlem hattını kullanır.
+Bundan sonra OpenClaw, alt ajan kısıtlama katmanını uygular.
 
-Kısıtlayıcı bir `tools.profile` olmadığında alt ajanlar, **oturum araçları dışında tüm araçları** ve sistem araçlarını alır:
+Kısıtlayıcı bir `tools.profile` olmadığında alt ajanlar, **oturum araçları
+ve sistem araçları hariç tüm araçları** alır:
 
 - `sessions_list`
 - `sessions_history`
 - `sessions_send`
 - `sessions_spawn`
 
-`sessions_history` burada da sınırlı, temizlenmiş bir geri çağırma görünümü olarak kalır — ham bir transkript dökümü değildir.
+`sessions_history` burada da sınırlı, temizlenmiş bir hatırlama görünümü olarak kalır; ham transkript dökümü değildir.
 
-`maxSpawnDepth >= 2` olduğunda, derinlik-1 orkestratör alt ajanları ayrıca `sessions_spawn`, `subagents`, `sessions_list` ve `sessions_history` alır; böylece kendi çocuklarını yönetebilirler.
+`maxSpawnDepth >= 2` olduğunda, derinlik-1 düzenleyici alt ajanlar ayrıca
+`sessions_spawn`, `subagents`, `sessions_list` ve
+`sessions_history` alır; böylece kendi alt öğelerini yönetebilirler.
 
 ### Yapılandırma ile geçersiz kılma
 
@@ -442,7 +460,7 @@ Kısıtlayıcı bir `tools.profile` olmadığında alt ajanlar, **oturum araçla
 }
 ```
 
-`tools.subagents.tools.allow` son bir yalnızca izin filtresidir. Zaten çözümlenmiş araç kümesini daraltabilir, ancak `tools.profile` tarafından kaldırılmış bir aracı **geri ekleyemez**. Örneğin, `tools.profile: "coding"` `web_search`/`web_fetch` içerir ancak `browser` aracını içermez. Kodlama profilli alt ajanların tarayıcı otomasyonu kullanmasına izin vermek için profil aşamasında browser ekleyin:
+`tools.subagents.tools.allow` son bir yalnızca-izin filtresidir. Zaten çözümlenmiş araç kümesini daraltabilir, ancak `tools.profile` tarafından kaldırılmış bir aracı **geri ekleyemez**. Örneğin, `tools.profile: "coding"` `web_search`/`web_fetch` içerir, ancak `browser` aracını içermez. Kodlama profilli alt ajanların tarayıcı otomasyonu kullanmasına izin vermek için tarayıcıyı profil aşamasında ekleyin:
 
 ```json5
 {
@@ -453,44 +471,47 @@ Kısıtlayıcı bir `tools.profile` olmadığında alt ajanlar, **oturum araçla
 }
 ```
 
-Yalnızca tek bir ajanın tarayıcı otomasyonu alması gerekiyorsa ajan başına `agents.list[].tools.alsoAllow: ["browser"]` kullanın.
+Yalnızca bir ajanın tarayıcı otomasyonu alması gerekiyorsa ajan başına `agents.list[].tools.alsoAllow: ["browser"]` kullanın.
 
 ## Eşzamanlılık
 
-Alt ajanlar ayrılmış bir süreç içi kuyruk hattı kullanır:
+Alt ajanlar, işleme özel ayrılmış bir kuyruk hattı kullanır:
 
 - **Hat adı:** `subagent`
 - **Eşzamanlılık:** `agents.defaults.subagents.maxConcurrent` (varsayılan `8`)
 
 ## Canlılık ve kurtarma
 
-OpenClaw, `endedAt` yokluğunu bir alt ajanın hâlâ canlı olduğuna dair kalıcı kanıt olarak değerlendirmez. Bayat çalıştırma penceresinden daha eski, sonlandırılmamış çalıştırmalar `/subagents list`, durum özetleri, alt nesil tamamlama kapıları ve oturum başına eşzamanlılık kontrollerinde etkin/beklemede sayılmayı bırakır.
+OpenClaw, `endedAt` değerinin olmamasını bir alt ajanın hâlâ çalıştığına dair kalıcı kanıt olarak görmez. Eski çalıştırma penceresinden daha eski, sonlandırılmamış çalıştırmalar `/subagents list`, durum özetleri, alt öğe tamamlama kapıları ve oturum başına eşzamanlılık denetimlerinde aktif/bekliyor olarak sayılmayı bırakır.
 
-Gateway yeniden başlatıldıktan sonra, çocuk oturumları `abortedLastRun: true` olarak işaretli değilse bayat, sonlandırılmamış geri yüklenen çalıştırmalar budanır. Bu yeniden başlatma nedeniyle iptal edilmiş çocuk oturumları, alt ajan sahipsiz kurtarma akışı üzerinden kurtarılabilir kalır; bu akış, iptal işaretini temizlemeden önce sentetik bir sürdürme iletisi gönderir.
+Gateway yeniden başlatıldıktan sonra, alt oturumları `abortedLastRun: true` olarak işaretlenmemiş olan eski sonlandırılmamış geri yüklenmiş çalıştırmalar temizlenir. Yeniden başlatmayla iptal edilmiş bu alt oturumlar, iptal işaretini temizlemeden önce sentetik bir sürdürme mesajı gönderen alt ajan yetim kurtarma akışı üzerinden kurtarılabilir durumda kalır.
 
-Otomatik yeniden başlatma kurtarması çocuk oturumu başına sınırlıdır. Aynı alt ajan çocuğu hızlı yeniden takılma penceresi içinde tekrar tekrar sahipsiz kurtarma için kabul edilirse OpenClaw, o oturumda bir kurtarma mezar taşı kalıcılaştırır ve sonraki yeniden başlatmalarda onu otomatik olarak sürdürmeyi durdurur. Görev kaydını uzlaştırmak için `openclaw tasks maintenance --apply` çalıştırın veya mezar taşlı oturumlardaki bayat iptal edilmiş kurtarma bayraklarını temizlemek için `openclaw doctor --fix` çalıştırın.
+Otomatik yeniden başlatma kurtarması alt oturum başına sınırlıdır. Aynı alt ajan alt öğesi hızlı yeniden takılma penceresi içinde tekrar tekrar yetim kurtarma için kabul edilirse, OpenClaw bu oturumda bir kurtarma mezar taşı kalıcı hale getirir ve sonraki yeniden başlatmalarda onu otomatik sürdürmeyi durdurur. Görev kaydını uzlaştırmak için `openclaw tasks maintenance --apply` çalıştırın veya mezar taşlı oturumlardaki eski iptal edilmiş kurtarma bayraklarını temizlemek için `openclaw doctor --fix` çalıştırın.
 
 <Note>
-Bir alt ajan oluşturma işlemi Gateway `PAIRING_REQUIRED` / `scope-upgrade` ile başarısız olursa, eşleştirme durumunu düzenlemeden önce RPC çağırıcısını kontrol edin. Dahili `sessions_spawn` koordinasyonu, doğrudan local loopback paylaşılan belirteç/parola kimlik doğrulaması üzerinden `client.id: "gateway-client"` ve `client.mode: "backend"` ile bağlanmalıdır; bu yol, CLI'nin eşleştirilmiş cihaz kapsamı taban çizgisine bağlı değildir. Uzak çağırıcılar, açık `deviceIdentity`, açık cihaz belirteci yolları ve tarayıcı/node istemcileri kapsam yükseltmeleri için yine normal cihaz onayına ihtiyaç duyar.
+Bir alt ajan oluşturma işlemi Gateway `PAIRING_REQUIRED` /
+`scope-upgrade` ile başarısız olursa, eşleştirme durumunu düzenlemeden önce RPC çağıranını kontrol edin. Dahili `sessions_spawn` koordinasyonu, doğrudan
+local loopback paylaşımlı belirteç/parola kimlik doğrulaması üzerinden
+`client.id: "gateway-client"` ve `client.mode: "backend"` olarak bağlanmalıdır; bu yol CLI'ın eşleştirilmiş cihaz kapsamı taban çizgisine bağlı değildir. Uzak çağıranlar, açık `deviceIdentity`, açık cihaz belirteci yolları ve tarayıcı/Node istemcileri kapsam yükseltmeleri için hâlâ normal cihaz onayına ihtiyaç duyar.
 </Note>
 
 ## Durdurma
 
-- İstekte bulunan sohbette `/stop` göndermek, istekte bulunan oturumu iptal eder ve ondan oluşturulmuş etkin alt ajan çalıştırmalarını durdurarak iç içe çocuklara kadar kademeli olarak uygular.
-- `/subagents kill <id>` belirli bir alt ajanı durdurur ve çocuklarına kademeli olarak uygular.
+- İsteyen sohbetinde `/stop` göndermek, isteyen oturumunu iptal eder ve buradan oluşturulan etkin alt ajan çalıştırmalarını durdurur; bu işlem iç içe alt öğelere de yayılır.
+- `/subagents kill <id>` belirli bir alt ajanı durdurur ve alt öğelerine yayılır.
 
 ## Sınırlamalar
 
-- Alt ajan duyurusu **en iyi çaba** esaslıdır. Gateway yeniden başlatılırsa bekleyen "geri duyur" işi kaybolur.
-- Alt ajanlar yine aynı Gateway süreç kaynaklarını paylaşır; `maxConcurrent` değerini bir güvenlik vanası olarak değerlendirin.
+- Alt ajan duyurusu **en iyi çaba** esasına göredir. Gateway yeniden başlatılırsa, bekleyen "geri duyur" işi kaybolur.
+- Alt ajanlar hâlâ aynı Gateway işlem kaynaklarını paylaşır; `maxConcurrent` değerini bir güvenlik vanası olarak değerlendirin.
 - `sessions_spawn` her zaman engellemesizdir: hemen `{ status: "accepted", runId, childSessionKey }` döndürür.
 - Alt ajan bağlamı yalnızca `AGENTS.md` + `TOOLS.md` enjekte eder (`SOUL.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md` veya `BOOTSTRAP.md` yoktur).
-- Maksimum iç içe geçme derinliği 5'tir (`maxSpawnDepth` aralığı: 1–5). Çoğu kullanım durumu için derinlik 2 önerilir.
-- `maxChildrenPerAgent`, oturum başına etkin çocukları sınırlar (varsayılan `5`, aralık `1–20`).
+- En yüksek iç içe geçme derinliği 5'tir (`maxSpawnDepth` aralığı: 1–5). Çoğu kullanım durumu için derinlik 2 önerilir.
+- `maxChildrenPerAgent`, oturum başına etkin alt öğeleri sınırlar (varsayılan `5`, aralık `1–20`).
 
 ## İlgili
 
 - [ACP ajanları](/tr/tools/acp-agents)
-- [Ajan gönderimi](/tr/tools/agent-send)
+- [Ajan gönderme](/tr/tools/agent-send)
 - [Arka plan görevleri](/tr/automation/tasks)
-- [Çok ajanlı korumalı alan araçları](/tr/tools/multi-agent-sandbox-tools)
+- [Çok ajanlı kum havuzu araçları](/tr/tools/multi-agent-sandbox-tools)

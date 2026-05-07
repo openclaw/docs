@@ -2,17 +2,17 @@
 read_when:
     - Configurazione dell'ambiente di sviluppo macOS
 summary: Guida alla configurazione per sviluppatori che lavorano sull'app macOS di OpenClaw
-title: Configurazione di sviluppo per macOS
+title: Configurazione dell'ambiente di sviluppo su macOS
 x-i18n:
-    generated_at: "2026-05-06T08:59:43Z"
+    generated_at: "2026-05-07T13:21:44Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c3ecf014bff10e8416f1586f731e30c9de4a0f09eb82046d06ead7511c47d660
+    source_hash: b39b449570176f44305c98ec4f00482a8b75ad20174b80c93abc45df37ffa0bc
     source_path: platforms/mac/dev-setup.md
     workflow: 16
 ---
 
-# Configurazione per sviluppatori macOS
+# Configurazione sviluppatore macOS
 
 Compila ed esegui l'applicazione macOS di OpenClaw dal sorgente.
 
@@ -21,7 +21,7 @@ Compila ed esegui l'applicazione macOS di OpenClaw dal sorgente.
 Prima di compilare l'app, assicurati di avere installato quanto segue:
 
 1. **Xcode 26.2+**: richiesto per lo sviluppo Swift.
-2. **Node.js 24 e pnpm**: consigliati per Gateway, CLI e script di pacchettizzazione. Node 22 LTS, attualmente `22.14+`, resta supportato per compatibilità.
+2. **Node.js 24 e pnpm**: consigliati per Gateway, CLI e script di pacchettizzazione. Node 22 LTS, attualmente `22.16+`, resta supportato per compatibilità.
 
 ## 1. Installa le dipendenze
 
@@ -41,19 +41,19 @@ Per compilare l'app macOS e pacchettizzarla in `dist/OpenClaw.app`, esegui:
 
 Se non hai un certificato Apple Developer ID, lo script userà automaticamente la **firma ad-hoc** (`-`).
 
-Per modalità di esecuzione dev, flag di firma e risoluzione dei problemi relativi al Team ID, consulta il README dell'app macOS:
+Per le modalità di esecuzione di sviluppo, i flag di firma e la risoluzione dei problemi relativi al Team ID, consulta il README dell'app macOS:
 [https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md](https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md)
 
-> **Nota**: le app firmate ad-hoc possono attivare prompt di sicurezza. Se l'app si arresta immediatamente con "Abort trap 6", consulta la sezione [Risoluzione dei problemi](#troubleshooting).
+> **Nota**: le app firmate ad-hoc possono attivare avvisi di sicurezza. Se l'app va in crash immediatamente con "Abort trap 6", consulta la sezione [Risoluzione dei problemi](#troubleshooting).
 
 ## 3. Installa la CLI
 
-L'app macOS si aspetta un'installazione globale della CLI `openclaw` per gestire le attività in background.
+L'app macOS richiede un'installazione globale della CLI `openclaw` per gestire le attività in background.
 
 **Per installarla (consigliato):**
 
 1. Apri l'app OpenClaw.
-2. Vai alla scheda delle impostazioni **Generali**.
+2. Vai alla scheda delle impostazioni **Generale**.
 3. Fai clic su **"Installa CLI"**.
 
 In alternativa, installala manualmente:
@@ -63,7 +63,7 @@ npm install -g openclaw@<version>
 ```
 
 Anche `pnpm add -g openclaw@<version>` e `bun add -g openclaw@<version>` funzionano.
-Per il runtime del Gateway, Node resta il percorso consigliato.
+Per il runtime Gateway, Node resta il percorso consigliato.
 
 ## Risoluzione dei problemi
 
@@ -85,9 +85,9 @@ xcrun swift --version
 
 Se le versioni non corrispondono, aggiorna macOS/Xcode ed esegui di nuovo la compilazione.
 
-### L'app si arresta durante la concessione dei permessi
+### L'app va in crash durante la concessione dei permessi
 
-Se l'app si arresta quando provi a consentire l'accesso a **Riconoscimento vocale** o **Microfono**, la causa potrebbe essere una cache TCC corrotta o una mancata corrispondenza della firma.
+Se l'app va in crash quando provi a consentire l'accesso a **Riconoscimento vocale** o **Microfono**, la causa potrebbe essere una cache TCC danneggiata o una mancata corrispondenza della firma.
 
 **Correzione:**
 
@@ -97,7 +97,7 @@ Se l'app si arresta quando provi a consentire l'accesso a **Riconoscimento vocal
    tccutil reset All ai.openclaw.mac.debug
    ```
 
-2. Se non funziona, modifica temporaneamente `BUNDLE_ID` in [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) per forzare una "tabula rasa" da macOS.
+2. Se non funziona, modifica temporaneamente il `BUNDLE_ID` in [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) per forzare macOS a ripartire da una "situazione pulita".
 
 ### Gateway "Avvio..." indefinitamente
 

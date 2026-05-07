@@ -1,31 +1,31 @@
 ---
 read_when:
-    - إعداد بيئة التطوير على macOS
+    - إعداد بيئة تطوير macOS
 summary: دليل الإعداد للمطورين العاملين على تطبيق OpenClaw لنظام macOS
-title: إعداد بيئة التطوير على macOS
+title: إعداد بيئة تطوير macOS
 x-i18n:
-    generated_at: "2026-05-06T08:04:19Z"
+    generated_at: "2026-05-07T13:24:49Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c3ecf014bff10e8416f1586f731e30c9de4a0f09eb82046d06ead7511c47d660
+    source_hash: b39b449570176f44305c98ec4f00482a8b75ad20174b80c93abc45df37ffa0bc
     source_path: platforms/mac/dev-setup.md
     workflow: 16
 ---
 
-# إعداد مطوّر macOS
+# إعداد المطور على macOS
 
-ابنِ تطبيق OpenClaw لنظام macOS وشغّله من المصدر.
+ابنِ تطبيق OpenClaw على macOS وشغّله من المصدر.
 
 ## المتطلبات الأساسية
 
 قبل بناء التطبيق، تأكد من تثبيت ما يلي:
 
 1. **Xcode 26.2+**: مطلوب لتطوير Swift.
-2. **Node.js 24 وpnpm**: موصى بهما لـ Gateway وCLI وسكربتات التغليف. يظل Node 22 LTS، وحاليًا `22.14+`، مدعومًا للتوافق.
+2. **Node.js 24 و pnpm**: موصى بهما لـ Gateway وCLI وسكربتات التغليف. لا يزال Node 22 LTS، حاليًا `22.16+`، مدعومًا للتوافق.
 
 ## 1. تثبيت التبعيات
 
-ثبّت التبعيات على مستوى المشروع:
+ثبّت تبعيات المشروع بالكامل:
 
 ```bash
 pnpm install
@@ -39,16 +39,16 @@ pnpm install
 ./scripts/package-mac-app.sh
 ```
 
-إذا لم يكن لديك شهادة Apple Developer ID، فسيستخدم السكربت تلقائيًا **التوقيع المخصص** (`-`).
+إذا لم تكن لديك شهادة Apple Developer ID، فسيستخدم السكربت تلقائيًا **التوقيع المخصص** (`-`).
 
-لأوضاع التشغيل التطويرية، وأعلام التوقيع، واستكشاف أخطاء Team ID وإصلاحها، راجع ملف README لتطبيق macOS:
+لأوضاع التشغيل التطويرية، وأعلام التوقيع، واستكشاف مشكلات Team ID وإصلاحها، راجع README الخاص بتطبيق macOS:
 [https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md](https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md)
 
-> **ملاحظة**: قد تؤدي التطبيقات الموقّعة توقيعًا مخصصًا إلى ظهور مطالبات أمان. إذا تعطل التطبيق فورًا مع "Abort trap 6"، فراجع قسم [استكشاف الأخطاء وإصلاحها](#troubleshooting).
+> **ملاحظة**: قد تؤدي التطبيقات الموقّعة توقيعًا مخصصًا إلى ظهور مطالبات أمنية. إذا تعطل التطبيق فورًا برسالة "Abort trap 6"، فراجع قسم [استكشاف الأخطاء وإصلاحها](#troubleshooting).
 
 ## 3. تثبيت CLI
 
-يتوقع تطبيق macOS تثبيت CLI عام باسم `openclaw` لإدارة المهام الخلفية.
+يتوقع تطبيق macOS تثبيت `openclaw` CLI عالميًا لإدارة المهام الخلفية.
 
 **لتثبيته (موصى به):**
 
@@ -62,7 +62,7 @@ pnpm install
 npm install -g openclaw@<version>
 ```
 
-يعمل أيضًا `pnpm add -g openclaw@<version>` و`bun add -g openclaw@<version>`.
+يعمل أيضًا `pnpm add -g openclaw@<version>` و `bun add -g openclaw@<version>`.
 بالنسبة إلى وقت تشغيل Gateway، يظل Node هو المسار الموصى به.
 
 ## استكشاف الأخطاء وإصلاحها
@@ -73,7 +73,7 @@ npm install -g openclaw@<version>
 
 **تبعيات النظام (مطلوبة):**
 
-- **أحدث إصدار من macOS متاح في Software Update** (مطلوب بواسطة SDKs الخاصة بـ Xcode 26.2)
+- **أحدث إصدار من macOS متاح في Software Update** (مطلوب بواسطة حزم Xcode 26.2 SDK)
 - **Xcode 26.2** (سلسلة أدوات Swift 6.2)
 
 **الفحوصات:**
@@ -83,25 +83,25 @@ xcodebuild -version
 xcrun swift --version
 ```
 
-إذا لم تتطابق الإصدارات، فحدّث macOS/Xcode ثم أعد تشغيل البناء.
+إذا لم تتطابق الإصدارات، فحدّث macOS/Xcode وأعد تشغيل البناء.
 
-### يتعطل التطبيق عند منح الإذن
+### تعطل التطبيق عند منح الإذن
 
-إذا تعطل التطبيق عند محاولة السماح بالوصول إلى **التعرّف على الكلام** أو **الميكروفون**، فقد يكون السبب ذاكرة تخزين TCC تالفة أو عدم تطابق في التوقيع.
+إذا تعطل التطبيق عند محاولة السماح بالوصول إلى **التعرف على الكلام** أو **الميكروفون**، فقد يكون ذلك بسبب تلف ذاكرة TCC المؤقتة أو عدم تطابق التوقيع.
 
 **الإصلاح:**
 
-1. أعِد ضبط أذونات TCC:
+1. أعد ضبط أذونات TCC:
 
    ```bash
    tccutil reset All ai.openclaw.mac.debug
    ```
 
-2. إذا فشل ذلك، فغيّر `BUNDLE_ID` مؤقتًا في [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) لفرض "بداية نظيفة" من macOS.
+2. إذا فشل ذلك، فغيّر `BUNDLE_ID` مؤقتًا في [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) لإجبار macOS على البدء "من صفحة نظيفة".
 
-### Gateway عالق على "جارٍ البدء..." إلى أجل غير مسمى
+### بقاء Gateway على "Starting..." إلى أجل غير مسمى
 
-إذا ظلت حالة Gateway على "جارٍ البدء..."، فتحقق مما إذا كانت عملية زومبي تحتجز المنفذ:
+إذا بقيت حالة Gateway على "Starting..."، فتحقق مما إذا كانت عملية خاملة تمسك بالمنفذ:
 
 ```bash
 openclaw gateway status
@@ -111,9 +111,9 @@ openclaw gateway stop
 lsof -nP -iTCP:18789 -sTCP:LISTEN
 ```
 
-إذا كان تشغيل يدوي يحتجز المنفذ، فأوقف تلك العملية (Ctrl+C). كحل أخير، اقتل PID الذي وجدته أعلاه.
+إذا كان تشغيل يدوي يمسك بالمنفذ، فأوقف تلك العملية (Ctrl+C). كملاذ أخير، أنهِ PID الذي وجدته أعلاه.
 
-## ذو صلة
+## ذات صلة
 
 - [تطبيق macOS](/ar/platforms/macos)
 - [نظرة عامة على التثبيت](/ar/install)

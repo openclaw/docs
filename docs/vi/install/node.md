@@ -1,20 +1,20 @@
 ---
 read_when:
     - Bạn cần cài đặt Node.js trước khi cài đặt OpenClaw
-    - Bạn đã cài đặt OpenClaw nhưng `openclaw` báo lỗi không tìm thấy lệnh
-    - npm install -g gặp lỗi do vấn đề về quyền hoặc PATH
-summary: Cài đặt và cấu hình Node.js cho OpenClaw - yêu cầu về phiên bản, tùy chọn cài đặt và khắc phục sự cố PATH
+    - Bạn đã cài đặt OpenClaw nhưng không tìm thấy lệnh `openclaw`
+    - npm install -g thất bại do vấn đề về quyền hoặc PATH
+summary: Cài đặt và cấu hình Node.js cho OpenClaw - yêu cầu phiên bản, tùy chọn cài đặt và khắc phục sự cố PATH
 title: Node.js
 x-i18n:
-    generated_at: "2026-05-06T09:19:11Z"
+    generated_at: "2026-05-07T13:20:39Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fa445f3b9e6472af755c2fc4c3f08b6134e308f290ab750549411f12d8d247db
+    source_hash: de8ef8d00c8996741187000f55d07d15a2d09e89b6deb99cf687b6b9128ad266
     source_path: install/node.md
     workflow: 16
 ---
 
-OpenClaw yêu cầu **Node 22.14 trở lên**. **Node 24 là runtime mặc định và được khuyến nghị** cho cài đặt, CI và quy trình phát hành. Node 22 vẫn được hỗ trợ thông qua nhánh LTS đang hoạt động. [tập lệnh cài đặt](/vi/install#alternative-install-methods) sẽ tự động phát hiện và cài đặt Node - trang này dành cho trường hợp bạn muốn tự thiết lập Node và đảm bảo mọi thứ được nối đúng cách (phiên bản, PATH, cài đặt toàn cục).
+OpenClaw yêu cầu **Node 22.16 trở lên**. **Node 24 là runtime mặc định và được khuyến nghị** cho các lượt cài đặt, CI và quy trình phát hành. Node 22 vẫn được hỗ trợ qua nhánh LTS đang hoạt động. [script cài đặt](/vi/install#alternative-install-methods) sẽ tự động phát hiện và cài đặt Node - trang này dành cho khi bạn muốn tự thiết lập Node và đảm bảo mọi thứ được nối đúng cách (phiên bản, PATH, cài đặt toàn cục).
 
 ## Kiểm tra phiên bản của bạn
 
@@ -22,7 +22,7 @@ OpenClaw yêu cầu **Node 22.14 trở lên**. **Node 24 là runtime mặc đị
 node -v
 ```
 
-Nếu lệnh này in ra `v24.x.x` hoặc cao hơn, bạn đang dùng mặc định được khuyến nghị. Nếu lệnh này in ra `v22.14.x` hoặc cao hơn, bạn đang dùng đường dẫn Node 22 LTS được hỗ trợ, nhưng chúng tôi vẫn khuyến nghị nâng cấp lên Node 24 khi thuận tiện. Nếu Node chưa được cài đặt hoặc phiên bản quá cũ, hãy chọn một phương thức cài đặt bên dưới.
+Nếu lệnh này in ra `v24.x.x` trở lên, bạn đang dùng mặc định được khuyến nghị. Nếu lệnh này in ra `v22.16.x` trở lên, bạn đang dùng đường dẫn Node 22 LTS được hỗ trợ, nhưng chúng tôi vẫn khuyến nghị nâng cấp lên Node 24 khi thuận tiện. Nếu Node chưa được cài đặt hoặc phiên bản quá cũ, hãy chọn một phương thức cài đặt bên dưới.
 
 ## Cài đặt Node
 
@@ -73,7 +73,7 @@ Nếu lệnh này in ra `v24.x.x` hoặc cao hơn, bạn đang dùng mặc đị
 </Tabs>
 
 <Accordion title="Sử dụng trình quản lý phiên bản (nvm, fnm, mise, asdf)">
-  Trình quản lý phiên bản giúp bạn dễ dàng chuyển đổi giữa các phiên bản Node. Các lựa chọn phổ biến:
+  Trình quản lý phiên bản cho phép bạn dễ dàng chuyển đổi giữa các phiên bản Node. Các tùy chọn phổ biến:
 
 - [**fnm**](https://github.com/Schniz/fnm) - nhanh, đa nền tảng
 - [**nvm**](https://github.com/nvm-sh/nvm) - được sử dụng rộng rãi trên macOS/Linux
@@ -87,7 +87,7 @@ fnm use 24
 ```
 
   <Warning>
-  Đảm bảo trình quản lý phiên bản của bạn được khởi tạo trong tệp khởi động shell (`~/.zshrc` hoặc `~/.bashrc`). Nếu không, `openclaw` có thể không được tìm thấy trong các phiên terminal mới vì PATH sẽ không bao gồm thư mục bin của Node.
+  Hãy đảm bảo trình quản lý phiên bản của bạn được khởi tạo trong tệp khởi động shell (`~/.zshrc` hoặc `~/.bashrc`). Nếu không, `openclaw` có thể không được tìm thấy trong các phiên terminal mới vì PATH sẽ không bao gồm thư mục bin của Node.
   </Warning>
 </Accordion>
 
@@ -140,7 +140,7 @@ npm config set prefix "$HOME/.npm-global"
 export PATH="$HOME/.npm-global/bin:$PATH"
 ```
 
-Thêm dòng `export PATH=...` vào `~/.bashrc` hoặc `~/.zshrc` của bạn để đặt vĩnh viễn.
+Thêm dòng `export PATH=...` vào `~/.bashrc` hoặc `~/.zshrc` của bạn để đặt nó vĩnh viễn.
 
 ## Liên quan
 

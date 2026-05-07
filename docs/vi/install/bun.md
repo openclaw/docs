@@ -1,33 +1,33 @@
 ---
 read_when:
     - Bạn muốn vòng lặp phát triển cục bộ nhanh nhất (bun + watch)
-    - Bạn gặp sự cố với script cài đặt/bản vá/vòng đời của Bun
-summary: 'Quy trình làm việc với Bun (thử nghiệm): cài đặt và những điểm cần lưu ý so với pnpm'
+    - Bạn gặp sự cố với các script cài đặt, vá hoặc vòng đời của Bun
+summary: 'Quy trình làm việc với Bun (thử nghiệm): cài đặt và các điểm cần lưu ý so với pnpm'
 title: Bun (thử nghiệm)
 x-i18n:
-    generated_at: "2026-04-29T22:50:33Z"
+    generated_at: "2026-05-07T13:20:20Z"
     model: gpt-5.5
     provider: openai
-    source_hash: d596c8fa9cc585e23184e7b983ec3842361eac807a1f3c12a0529631876db486
+    source_hash: 1637cb81310422b718934f9c2d1f506dec46f1624dd9ac850bed04321b863041
     source_path: install/bun.md
     workflow: 16
 ---
 
 <Warning>
-Bun **không được khuyến nghị cho runtime Gateway** (các sự cố đã biết với WhatsApp và Telegram). Hãy dùng Node cho môi trường production.
+Bun **không được khuyến nghị cho môi trường chạy Gateway** (các sự cố đã biết với WhatsApp và Telegram). Sử dụng Node cho môi trường sản xuất.
 </Warning>
 
-Bun là một runtime cục bộ tùy chọn để chạy trực tiếp TypeScript (`bun run ...`, `bun --watch ...`). Trình quản lý gói mặc định vẫn là `pnpm`, được hỗ trợ đầy đủ và được công cụ tài liệu sử dụng. Bun không thể dùng `pnpm-lock.yaml` và sẽ bỏ qua tệp này.
+Bun là một môi trường chạy cục bộ tùy chọn để chạy TypeScript trực tiếp (`bun run ...`, `bun --watch ...`). Trình quản lý gói mặc định vẫn là `pnpm`, được hỗ trợ đầy đủ và được công cụ tài liệu sử dụng. Bun không thể sử dụng `pnpm-lock.yaml` và sẽ bỏ qua tệp này.
 
 ## Cài đặt
 
 <Steps>
-  <Step title="Cài đặt các phụ thuộc">
+  <Step title="Cài đặt phụ thuộc">
     ```sh
     bun install
     ```
 
-    `bun.lock` / `bun.lockb` bị git bỏ qua, nên không gây thay đổi trong repo. Để bỏ qua hoàn toàn việc ghi lockfile:
+    `bun.lock` / `bun.lockb` được gitignore, nên sẽ không gây thay đổi trong repo. Để bỏ qua hoàn toàn việc ghi lockfile:
 
     ```sh
     bun install --no-save
@@ -42,14 +42,14 @@ Bun là một runtime cục bộ tùy chọn để chạy trực tiếp TypeScri
   </Step>
 </Steps>
 
-## Script vòng đời
+## Tập lệnh vòng đời
 
-Bun chặn các script vòng đời của phụ thuộc trừ khi chúng được tin cậy một cách rõ ràng. Với repo này, các script thường bị chặn không bắt buộc:
+Bun chặn các tập lệnh vòng đời của phụ thuộc trừ khi được tin cậy rõ ràng. Với repo này, các tập lệnh thường bị chặn là không bắt buộc:
 
-- `@whiskeysockets/baileys` `preinstall` -- kiểm tra phiên bản chính của Node >= 20 (OpenClaw mặc định dùng Node 24 và vẫn hỗ trợ Node 22 LTS, hiện là `22.14+`)
-- `protobufjs` `postinstall` -- phát cảnh báo về các quy ước phiên bản không tương thích (không có artifact build)
+- `@whiskeysockets/baileys` `preinstall` -- kiểm tra phiên bản chính của Node >= 20 (OpenClaw mặc định dùng Node 24 và vẫn hỗ trợ Node 22 LTS, hiện là `22.16+`)
+- `protobufjs` `postinstall` -- phát ra cảnh báo về lược đồ phiên bản không tương thích (không có tạo tác build)
 
-Nếu gặp sự cố runtime yêu cầu các script này, hãy tin cậy chúng một cách rõ ràng:
+Nếu gặp sự cố thời gian chạy cần các tập lệnh này, hãy tin cậy chúng rõ ràng:
 
 ```sh
 bun pm trust @whiskeysockets/baileys protobufjs
@@ -57,7 +57,7 @@ bun pm trust @whiskeysockets/baileys protobufjs
 
 ## Lưu ý
 
-Một số script vẫn hardcode pnpm (ví dụ `docs:build`, `ui:*`, `protocol:check`). Hiện tại hãy chạy các script đó qua pnpm.
+Một số tập lệnh vẫn hardcode pnpm (ví dụ `docs:build`, `ui:*`, `protocol:check`). Hiện tại hãy chạy các tập lệnh đó qua pnpm.
 
 ## Liên quan
 

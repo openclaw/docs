@@ -2,13 +2,13 @@
 read_when:
     - تريد استخدام النماذج المفتوحة في OpenClaw مجانًا
     - تحتاج إلى إعداد NVIDIA_API_KEY
-summary: استخدم واجهة برمجة تطبيقات NVIDIA المتوافقة مع OpenAI في OpenClaw
+summary: استخدم واجهة برمجة التطبيقات المتوافقة مع OpenAI الخاصة بـ NVIDIA في OpenClaw
 title: NVIDIA
 x-i18n:
-    generated_at: "2026-04-30T08:21:54Z"
+    generated_at: "2026-05-07T13:28:30Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 297cc25cf5235bb51f3962c2a1b8799ca6544d57e701c42e9b1e1c7d881ad32b
+    source_hash: 8846c51b056e05f8552b3804d4dac73ff34aa874ec3d5d6fb13fad5a4112bc7f
     source_path: providers/nvidia.md
     workflow: 16
 ---
@@ -18,16 +18,16 @@ x-i18n:
 ## البدء
 
 <Steps>
-  <Step title="احصل على مفتاح API الخاص بك">
+  <Step title="Get your API key">
     أنشئ مفتاح API في [build.nvidia.com](https://build.nvidia.com/settings/api-keys).
   </Step>
-  <Step title="صدّر المفتاح وشغّل الإعداد الأولي">
+  <Step title="Export the key and run onboarding">
     ```bash
     export NVIDIA_API_KEY="nvapi-..."
     openclaw onboard --auth-choice nvidia-api-key
     ```
   </Step>
-  <Step title="عيّن نموذج NVIDIA">
+  <Step title="Set an NVIDIA model">
     ```bash
     openclaw models set nvidia/nvidia/nemotron-3-super-120b-a12b
     ```
@@ -35,7 +35,7 @@ x-i18n:
 </Steps>
 
 <Warning>
-إذا مررت `--nvidia-api-key` بدلًا من متغير البيئة، فستظهر القيمة في سجل الصدفة ومخرجات `ps`. يُفضّل استخدام متغير البيئة `NVIDIA_API_KEY` عند الإمكان.
+إذا مررت `--nvidia-api-key` بدلًا من متغير البيئة، فستظهر القيمة في سجل الصدفة ومخرجات `ps`. فضّل متغير البيئة `NVIDIA_API_KEY` عندما يكون ذلك ممكنًا.
 </Warning>
 
 للإعداد غير التفاعلي، يمكنك أيضًا تمرير المفتاح مباشرةً:
@@ -44,7 +44,7 @@ x-i18n:
 openclaw onboard --auth-choice nvidia-api-key --nvidia-api-key "nvapi-..."
 ```
 
-## مثال إعداد
+## مثال على التكوين
 
 ```json5
 {
@@ -65,46 +65,77 @@ openclaw onboard --auth-choice nvidia-api-key --nvidia-api-key "nvapi-..."
 }
 ```
 
-## الكتالوج المدمج
+## الكتالوج المضمّن
 
-| مرجع النموذج                               | الاسم                        | السياق | الحد الأقصى للمخرجات |
+| مرجع النموذج                               | الاسم                        | السياق | أقصى مخرجات |
 | ------------------------------------------ | ---------------------------- | ------- | ---------- |
 | `nvidia/nvidia/nemotron-3-super-120b-a12b` | NVIDIA Nemotron 3 Super 120B | 262,144 | 8,192      |
 | `nvidia/moonshotai/kimi-k2.5`              | Kimi K2.5                    | 262,144 | 8,192      |
 | `nvidia/minimaxai/minimax-m2.5`            | Minimax M2.5                 | 196,608 | 8,192      |
 | `nvidia/z-ai/glm5`                         | GLM 5                        | 202,752 | 8,192      |
 
-## الإعداد المتقدم
+## التكوين المتقدم
 
 <AccordionGroup>
-  <Accordion title="سلوك التفعيل التلقائي">
-    يتفعّل المزوّد تلقائيًا عند تعيين متغير البيئة `NVIDIA_API_KEY`.
-    لا يلزم إعداد صريح للمزوّد غير المفتاح.
+  <Accordion title="Auto-enable behavior">
+    يتم تفعيل المزوّد تلقائيًا عند ضبط متغير البيئة `NVIDIA_API_KEY`.
+    لا يلزم أي تكوين صريح للمزوّد سوى المفتاح.
   </Accordion>
 
-  <Accordion title="الكتالوج والتسعير">
-    الكتالوج المضمّن ثابت. تُعيّن التكاليف افتراضيًا إلى `0` في المصدر لأن NVIDIA
-    توفر حاليًا وصول API مجانيًا للنماذج المدرجة.
+  <Accordion title="Catalog and pricing">
+    الكتالوج المجمّع ثابت. تُضبط التكاليف افتراضيًا على `0` في المصدر لأن NVIDIA
+    توفر حاليًا وصولًا مجانيًا إلى API للنماذج المدرجة.
   </Accordion>
 
-  <Accordion title="نقطة نهاية متوافقة مع OpenAI">
-    تستخدم NVIDIA نقطة نهاية الإكمالات القياسية `/v1`. ينبغي أن تعمل أي أدوات متوافقة مع OpenAI
-    مباشرةً باستخدام عنوان URL الأساسي الخاص بـ NVIDIA.
+  <Accordion title="OpenAI-compatible endpoint">
+    تستخدم NVIDIA نقطة نهاية الإكمال القياسية `/v1`. يجب أن تعمل أي أدوات متوافقة مع OpenAI
+    مباشرةً مع عنوان URL الأساسي من NVIDIA.
+  </Accordion>
+
+  <Accordion title="Slow custom provider responses">
+    قد تستغرق بعض النماذج المخصصة المستضافة لدى NVIDIA وقتًا أطول من مراقب خمول النموذج الافتراضي
+    قبل أن تصدر أول جزء من الاستجابة. بالنسبة إلى إدخالات مزوّد NVIDIA المخصصة،
+    ارفع مهلة المزوّد بدلًا من رفع مهلة تشغيل الوكيل بالكامل:
+
+    ```json5
+    {
+      models: {
+        providers: {
+          "custom-integrate-api-nvidia-com": {
+            baseUrl: "https://integrate.api.nvidia.com/v1",
+            api: "openai-completions",
+            apiKey: "NVIDIA_API_KEY",
+            timeoutSeconds: 300,
+          },
+        },
+      },
+      agents: {
+        defaults: {
+          models: {
+            "custom-integrate-api-nvidia-com/meta/llama-3.1-70b-instruct": {
+              params: { thinking: "off" },
+            },
+          },
+        },
+      },
+    }
+    ```
+
   </Accordion>
 </AccordionGroup>
 
 <Tip>
 نماذج NVIDIA مجانية الاستخدام حاليًا. راجع
-[build.nvidia.com](https://build.nvidia.com/) لمعرفة أحدث تفاصيل التوفر وحدود المعدل.
+[build.nvidia.com](https://build.nvidia.com/) للحصول على أحدث تفاصيل التوفر وحدود المعدّل.
 </Tip>
 
 ## ذات صلة
 
 <CardGroup cols={2}>
-  <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
-    اختيار المزوّدين ومراجع النماذج وسلوك تجاوز الفشل.
+  <Card title="Model selection" href="/ar/concepts/model-providers" icon="layers">
+    اختيار المزوّدين، ومراجع النماذج، وسلوك تجاوز الفشل.
   </Card>
-  <Card title="مرجع الإعداد" href="/ar/gateway/configuration-reference" icon="gear">
-    مرجع الإعداد الكامل للوكلاء والنماذج والمزوّدين.
+  <Card title="Configuration reference" href="/ar/gateway/configuration-reference" icon="gear">
+    مرجع التكوين الكامل للوكلاء، والنماذج، والمزوّدين.
   </Card>
 </CardGroup>

@@ -1,20 +1,20 @@
 ---
 read_when:
     - Przed zainstalowaniem OpenClaw musisz zainstalować Node.js
-    - Zainstalowano OpenClaw, ale `openclaw` zgłasza błąd „nie znaleziono polecenia”
+    - Zainstalowano OpenClaw, ale polecenie `openclaw` nie zostało znalezione
     - npm install -g kończy się niepowodzeniem z powodu problemów z uprawnieniami lub PATH
-summary: Instalacja i konfiguracja Node.js dla OpenClaw - wymagania dotyczące wersji, opcje instalacji i rozwiązywanie problemów z PATH
+summary: Zainstaluj i skonfiguruj Node.js dla OpenClaw - wymagania dotyczące wersji, opcje instalacji i rozwiązywanie problemów z PATH
 title: Node.js
 x-i18n:
-    generated_at: "2026-05-06T09:19:24Z"
+    generated_at: "2026-05-07T13:21:01Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fa445f3b9e6472af755c2fc4c3f08b6134e308f290ab750549411f12d8d247db
+    source_hash: de8ef8d00c8996741187000f55d07d15a2d09e89b6deb99cf687b6b9128ad266
     source_path: install/node.md
     workflow: 16
 ---
 
-OpenClaw wymaga **Node 22.14 lub nowszego**. **Node 24 jest domyślnym i zalecanym środowiskiem uruchomieniowym** dla instalacji, CI i przepływów wydań. Node 22 pozostaje obsługiwany przez aktywną linię LTS. [Skrypt instalacyjny](/pl/install#alternative-install-methods) automatycznie wykryje i zainstaluje Node - ta strona jest przeznaczona na sytuacje, gdy chcesz samodzielnie skonfigurować Node i upewnić się, że wszystko jest poprawnie połączone (wersje, PATH, instalacje globalne).
+OpenClaw wymaga **Node 22.16 lub nowszego**. **Node 24 jest domyślnym i zalecanym środowiskiem uruchomieniowym** dla instalacji, CI i przepływów wydań. Node 22 pozostaje wspierany w ramach aktywnej linii LTS. [Skrypt instalacyjny](/pl/install#alternative-install-methods) automatycznie wykryje i zainstaluje Node - ta strona jest przeznaczona dla sytuacji, gdy chcesz samodzielnie skonfigurować Node i upewnić się, że wszystko jest poprawnie połączone (wersje, PATH, instalacje globalne).
 
 ## Sprawdź swoją wersję
 
@@ -22,7 +22,7 @@ OpenClaw wymaga **Node 22.14 lub nowszego**. **Node 24 jest domyślnym i zalecan
 node -v
 ```
 
-Jeśli polecenie wypisze `v24.x.x` lub wyższą wersję, używasz zalecanej domyślnej wersji. Jeśli wypisze `v22.14.x` lub wyższą wersję, używasz obsługiwanej ścieżki Node 22 LTS, ale nadal zalecamy przejście na Node 24, gdy będzie to wygodne. Jeśli Node nie jest zainstalowany albo wersja jest zbyt stara, wybierz jedną z metod instalacji poniżej.
+Jeśli polecenie wypisze `v24.x.x` lub nowszą wersję, używasz zalecanej wartości domyślnej. Jeśli wypisze `v22.16.x` lub nowszą wersję, używasz obsługiwanej ścieżki Node 22 LTS, ale nadal zalecamy przejście na Node 24, gdy będzie to wygodne. Jeśli Node nie jest zainstalowany albo wersja jest zbyt stara, wybierz jedną z metod instalacji poniżej.
 
 ## Zainstaluj Node
 
@@ -72,12 +72,12 @@ Jeśli polecenie wypisze `v24.x.x` lub wyższą wersję, używasz zalecanej domy
   </Tab>
 </Tabs>
 
-<Accordion title="Używanie menedżera wersji (nvm, fnm, mise, asdf)">
+<Accordion title="Using a version manager (nvm, fnm, mise, asdf)">
   Menedżery wersji pozwalają łatwo przełączać się między wersjami Node. Popularne opcje:
 
 - [**fnm**](https://github.com/Schniz/fnm) - szybki, wieloplatformowy
-- [**nvm**](https://github.com/nvm-sh/nvm) - powszechnie używany w macOS/Linux
-- [**mise**](https://mise.jdx.dev/) - wielojęzyczny (Node, Python, Ruby itd.)
+- [**nvm**](https://github.com/nvm-sh/nvm) - powszechnie używany na macOS/Linux
+- [**mise**](https://mise.jdx.dev/) - wielojęzykowy (Node, Python, Ruby itd.)
 
 Przykład z fnm:
 
@@ -87,7 +87,7 @@ fnm use 24
 ```
 
   <Warning>
-  Upewnij się, że menedżer wersji jest inicjowany w pliku startowym powłoki (`~/.zshrc` lub `~/.bashrc`). Jeśli tak nie jest, `openclaw` może nie być znajdowany w nowych sesjach terminala, ponieważ PATH nie będzie obejmować katalogu bin Node.
+  Upewnij się, że menedżer wersji jest inicjalizowany w pliku startowym powłoki (`~/.zshrc` lub `~/.bashrc`). Jeśli nie jest, `openclaw` może nie być znajdowany w nowych sesjach terminala, ponieważ PATH nie będzie zawierać katalogu bin Node.
   </Warning>
 </Accordion>
 
@@ -95,23 +95,23 @@ fnm use 24
 
 ### `openclaw: command not found`
 
-To niemal zawsze oznacza, że globalny katalog bin npm nie znajduje się w PATH.
+To prawie zawsze oznacza, że globalny katalog bin npm nie znajduje się w PATH.
 
 <Steps>
-  <Step title="Znajdź globalny prefiks npm">
+  <Step title="Find your global npm prefix">
     ```bash
     npm prefix -g
     ```
   </Step>
-  <Step title="Sprawdź, czy znajduje się w PATH">
+  <Step title="Check if it's on your PATH">
     ```bash
     echo "$PATH"
     ```
 
-    Poszukaj `<npm-prefix>/bin` (macOS/Linux) albo `<npm-prefix>` (Windows) w wyniku polecenia.
+    Poszukaj `<npm-prefix>/bin` (macOS/Linux) lub `<npm-prefix>` (Windows) w wyniku.
 
   </Step>
-  <Step title="Dodaj go do pliku startowego powłoki">
+  <Step title="Add it to your shell startup file">
     <Tabs>
       <Tab title="macOS / Linux">
         Dodaj do `~/.zshrc` lub `~/.bashrc`:
@@ -145,5 +145,5 @@ Dodaj wiersz `export PATH=...` do `~/.bashrc` lub `~/.zshrc`, aby zmiana była t
 ## Powiązane
 
 - [Przegląd instalacji](/pl/install) - wszystkie metody instalacji
-- [Aktualizowanie](/pl/install/updating) - utrzymywanie OpenClaw w aktualnej wersji
+- [Aktualizowanie](/pl/install/updating) - utrzymywanie OpenClaw na bieżąco
 - [Pierwsze kroki](/pl/start/getting-started) - pierwsze kroki po instalacji

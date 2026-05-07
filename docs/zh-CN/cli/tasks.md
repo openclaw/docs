@@ -1,21 +1,22 @@
 ---
 read_when:
-    - 你想要检查、审计或取消后台任务记录
-    - 你正在记录 `openclaw tasks flow` 下的 Task Flow 命令
-summary: '`openclaw tasks` 的 CLI 参考（后台任务账本和 Task Flow 状态）'
+    - 你想检查、审计或取消后台任务记录
+    - 你正在为 `openclaw tasks flow` 下的 Task Flow 命令编写文档
+summary: '`openclaw tasks` 的 CLI 参考（后台任务台账和任务流状态）'
 title: '`openclaw tasks`'
 x-i18n:
-    generated_at: "2026-04-26T06:29:03Z"
-    model: gpt-5.4
+    generated_at: "2026-05-07T13:14:41Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 6e61fb0b67a2bdd932b29543199fb219890f256260a66881c8e7ffeb9fadee33
+    source_hash: ca3f05d7c2a3fa7790ad6059ce15721ebffb548ac4a2c627188ac17986442dc6
     source_path: cli/tasks.md
-    workflow: 15
+    workflow: 16
 ---
 
-检查持久化后台任务和 Task Flow 状态。没有子命令时，`openclaw tasks` 等同于 `openclaw tasks list`。
+检查持久后台任务和任务流状态。不带子命令时，
+`openclaw tasks` 等同于 `openclaw tasks list`。
 
-有关生命周期和投递模型，请参阅 [后台任务](/zh-CN/automation/tasks)。
+生命周期和交付模型请参阅[后台任务](/zh-CN/automation/tasks)。
 
 ## 用法
 
@@ -49,7 +50,7 @@ openclaw tasks flow cancel <lookup>
 openclaw tasks list [--runtime <name>] [--status <name>] [--json]
 ```
 
-按从新到旧列出已跟踪的后台任务。
+按最新优先列出被跟踪的后台任务。
 
 ### `show`
 
@@ -65,7 +66,7 @@ openclaw tasks show <lookup> [--json]
 openclaw tasks notify <lookup> <done_only|state_changes|silent>
 ```
 
-更改运行中任务的通知策略。
+更改正在运行的任务的通知策略。
 
 ### `cancel`
 
@@ -81,7 +82,7 @@ openclaw tasks cancel <lookup>
 openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--json]
 ```
 
-显示陈旧、丢失、投递失败或其他不一致的任务和 Task Flow 记录。保留到 `cleanupAfter` 的丢失任务属于警告；已过期或未打标记的丢失任务属于错误。
+暴露过期、丢失、交付失败或其他不一致的任务和任务流记录。保留到 `cleanupAfter` 的丢失任务为警告；已过期或未盖戳的丢失任务为错误。
 
 ### `maintenance`
 
@@ -89,9 +90,8 @@ openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--
 openclaw tasks maintenance [--apply] [--json]
 ```
 
-预览或应用任务和 Task Flow 对账、清理标记以及修剪。
-对于 cron 任务，对账会在将旧的活动任务标记为 `lost` 之前，先使用持久化的运行日志/作业状态，因此已完成的 cron 运行不会仅因为内存中的 Gateway 网关运行时状态消失而变成错误的审计错误。
-离线 CLI 审计并不能作为 Gateway 网关进程本地 cron 活动作业集合的权威依据。
+预览或应用任务和任务流的对账、清理盖戳和剪除。
+对于 cron 任务，对账会先使用持久化的运行日志/作业状态，再将旧的活跃任务标记为 `lost`，因此已完成的 cron 运行不会仅因为内存中的 Gateway 网关运行时状态消失而变成误报审计错误。离线 CLI 审计对于 Gateway 网关进程本地的 cron 活跃作业集合不具权威性。带有运行 ID/来源 ID 的 CLI 任务会在其实时 Gateway 网关运行上下文消失时标记为 `lost`，即使仍存在旧的子会话行。
 
 ### `flow`
 
@@ -101,9 +101,9 @@ openclaw tasks flow show <lookup> [--json]
 openclaw tasks flow cancel <lookup>
 ```
 
-检查或取消任务账本下持久化的 Task Flow 状态。
+检查或取消任务账本下的持久任务流状态。
 
-## 相关内容
+## 相关
 
 - [CLI 参考](/zh-CN/cli)
 - [后台任务](/zh-CN/automation/tasks)

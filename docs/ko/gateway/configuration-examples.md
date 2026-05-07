@@ -2,23 +2,23 @@
 read_when:
     - OpenClaw 구성 방법 알아보기
     - 구성 예제를 찾는 중
-    - OpenClaw를 처음 설정하기
-summary: 일반적인 OpenClaw 설정을 위한 스키마에 정확히 맞는 구성 예시
+    - 처음으로 OpenClaw 설정하기
+summary: 일반적인 OpenClaw 설정을 위한 스키마에 맞는 구성 예시
 title: 구성 예시
 x-i18n:
-    generated_at: "2026-05-06T17:55:28Z"
+    generated_at: "2026-05-07T13:16:59Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 01dd16c73f1156c4012fd3956083062141825b502722b6aa34f1f90462a6823a
+    source_hash: 87c7e75841ee36121c764f1ed51b6547d0fccf7ed6c1f05895d916dbf93f061a
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-아래 예시는 현재 구성 스키마에 맞춰져 있습니다. 전체 참조와 필드별 참고 사항은 [구성](/ko/gateway/configuration)을 참조하세요.
+아래 예시는 현재 구성 스키마와 일치합니다. 전체 참조와 필드별 참고 사항은 [구성](/ko/gateway/configuration)을 참조하세요.
 
 ## 빠른 시작
 
-### 최소 구성
+### 절대 최소 구성
 
 ```json5
 {
@@ -27,7 +27,7 @@ x-i18n:
 }
 ```
 
-`~/.openclaw/openclaw.json`에 저장하면 해당 번호에서 봇에게 DM을 보낼 수 있습니다.
+`~/.openclaw/openclaw.json`에 저장하면 해당 번호에서 봇에게 직접 메시지를 보낼 수 있습니다.
 
 ### 권장 시작 구성
 
@@ -59,7 +59,7 @@ x-i18n:
 
 ## 확장 예시(주요 옵션)
 
-> JSON5에서는 주석과 후행 쉼표를 사용할 수 있습니다. 일반 JSON도 사용할 수 있습니다.
+> JSON5에서는 주석과 후행 쉼표를 사용할 수 있습니다. 일반 JSON도 작동합니다.
 
 ```json5
 {
@@ -473,7 +473,7 @@ x-i18n:
 
 ## 일반적인 패턴
 
-### 하나의 재정의가 있는 공유 스킬 기준선
+### 하나의 재정의가 있는 공유 skill 기준선
 
 ```json5
 {
@@ -490,9 +490,9 @@ x-i18n:
 }
 ```
 
-- `agents.defaults.skills`는 공유 기준값입니다.
-- `agents.list[].skills`는 한 에이전트에 대해 해당 기준값을 대체합니다.
-- 에이전트가 Skills를 보지 않아야 하면 `skills: []`를 사용하세요.
+- `agents.defaults.skills`는 공유 기준입니다.
+- `agents.list[].skills`는 한 에이전트에 대해 해당 기준을 대체합니다.
+- 에이전트가 Skills를 보지 않아야 할 때는 `skills: []`를 사용하세요.
 
 ### 멀티 플랫폼 설정
 
@@ -517,8 +517,8 @@ x-i18n:
 
 ### 신뢰할 수 있는 Node 네트워크 자동 승인
 
-네트워크 경로를 제어하지 않는 한 기기 페어링은 수동으로 유지하세요. 전용
-실험실 또는 tailnet 서브넷의 경우, 정확한 CIDR 또는 IP로 최초 Node 기기 자동 승인을
+네트워크 경로를 제어하지 않는 한 디바이스 페어링은 수동으로 유지하세요. 전용
+실습 환경 또는 tailnet 서브넷의 경우, 정확한 CIDR 또는 IP를 사용해 최초 Node 디바이스 자동 승인을
 선택적으로 활성화할 수 있습니다.
 
 ```json5
@@ -533,13 +533,13 @@ x-i18n:
 }
 ```
 
-설정하지 않으면 이 기능은 꺼진 상태로 유지됩니다. 요청된 범위가 없는 새로운 `role: node`
-페어링에만 적용됩니다. 운영자/브라우저 클라이언트와 역할, 범위, 메타데이터 또는
+설정하지 않으면 이 기능은 비활성화된 상태로 유지됩니다. 요청된 범위가 없는
+새 `role: node` 페어링에만 적용됩니다. 운영자/브라우저 클라이언트와 역할, 범위, 메타데이터 또는
 공개 키 업그레이드는 여전히 수동 승인이 필요합니다.
 
-### 보안 DM 모드(공유 받은 편지함 / 다중 사용자 DM)
+### 보안 DM 모드(공유 수신함 / 다중 사용자 DM)
 
-둘 이상의 사람이 봇에 DM을 보낼 수 있는 경우(`allowFrom`에 여러 항목이 있거나, 여러 사람에 대한 페어링 승인이 있거나, `dmPolicy: "open"`인 경우) **보안 DM 모드**를 활성화하여 서로 다른 발신자의 DM이 기본적으로 하나의 컨텍스트를 공유하지 않도록 하세요.
+두 명 이상이 봇에 DM을 보낼 수 있는 경우(`allowFrom`에 여러 항목이 있거나, 여러 사람에 대한 페어링 승인이 있거나, `dmPolicy: "open"`인 경우), **보안 DM 모드**를 활성화하여 서로 다른 발신자의 DM이 기본적으로 하나의 컨텍스트를 공유하지 않도록 하세요.
 
 ```json5
 {
@@ -563,10 +563,10 @@ x-i18n:
 }
 ```
 
-Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC의 경우 발신자 권한 부여는 기본적으로 ID 우선입니다.
-해당 위험을 명시적으로 수락하는 경우에만 각 채널의 `dangerouslyAllowNameMatching: true`로 직접 변경 가능한 이름/이메일/닉네임 매칭을 활성화하세요.
+Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC의 경우, 발신자 권한 부여는 기본적으로 ID 우선입니다.
+해당 위험을 명시적으로 수용하는 경우에만 각 채널의 `dangerouslyAllowNameMatching: true`로 직접 변경 가능한 이름/이메일/닉네임 매칭을 활성화하세요.
 
-### Anthropic API 키 + MiniMax 대체
+### Anthropic API 키 + MiniMax 대체 모델
 
 ```json5
 {
@@ -659,9 +659,9 @@ Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC의 경우 발신자 권
 
 ## 팁
 
-- `dmPolicy: "open"`을 설정하면 대응하는 `allowFrom` 목록에 `"*"`가 포함되어야 합니다.
+- `dmPolicy: "open"`을 설정한 경우, 해당 `allowFrom` 목록에는 `"*"`가 포함되어야 합니다.
 - 제공자 ID는 서로 다릅니다(전화번호, 사용자 ID, 채널 ID). 형식을 확인하려면 제공자 문서를 사용하세요.
-- 나중에 추가할 수 있는 선택 섹션: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
+- 나중에 추가할 선택적 섹션: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
 - 더 자세한 설정 참고 사항은 [제공자](/ko/providers) 및 [문제 해결](/ko/gateway/troubleshooting)을 참조하세요.
 
 ## 관련 항목

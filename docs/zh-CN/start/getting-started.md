@@ -1,31 +1,32 @@
 ---
 read_when:
-    - 从零开始的首次设置
-    - 你想用最快的方式开始一次可用的聊天
-summary: 在几分钟内安装 OpenClaw 并开始你的第一次聊天。
+    - 从零开始首次设置
+    - 你想要以最快方式让聊天可用
+summary: 安装 OpenClaw，并在几分钟内开始你的第一次聊天。
 title: 入门指南
 x-i18n:
-    generated_at: "2026-04-24T04:07:39Z"
-    model: gpt-5.4
+    generated_at: "2026-05-07T13:23:28Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: fe3f92b1464ebf0a5b631c293fa4a3e4b686fdb35c1152663428025dd3c01259
+    source_hash: 295ce8fd03320027a77a3aef494f785f0fe58e0f57c72ee63f6f9aca68626c20
     source_path: start/getting-started.md
-    workflow: 15
+    workflow: 16
 ---
 
-安装 OpenClaw，运行新手引导，并与你的 AI 助手聊天 —— 整个过程大约只需
-5 分钟。完成后，你将拥有一个正在运行的 Gateway 网关、已配置好的认证，
+安装 OpenClaw，运行新手引导，并与你的 AI 助手聊天，全程大约
+5 分钟。完成后，你将拥有一个正在运行的 Gateway 网关、已配置的凭证，
 以及一个可用的聊天会话。
 
-## 你需要准备什么
+## 你需要准备
 
-- **Node.js** —— 推荐 Node 24（也支持 Node 22.14+）
-- **模型提供商的 API key**（Anthropic、OpenAI、Google 等）—— 新手引导会提示你输入
+- **Node.js** — 推荐 Node 24（也支持 Node 22.16+）
+- 来自模型提供商的 **API key**（Anthropic、OpenAI、Google 等）— 新手引导会提示你输入
 
 <Tip>
 使用 `node --version` 检查你的 Node 版本。
-**Windows 用户：** 原生 Windows 和 WSL2 都受支持。WSL2 更稳定，且更推荐用于完整体验。请参阅 [Windows](/zh-CN/platforms/windows)。
-需要安装 Node？请参阅 [Node 设置](/zh-CN/install/node)。
+**Windows 用户：** 支持原生 Windows 和 WSL2。WSL2 更稳定，
+推荐用于完整体验。参见 [Windows](/zh-CN/platforms/windows)。
+需要安装 Node？参见 [Node 设置](/zh-CN/install/node)。
 </Tip>
 
 ## 快速设置
@@ -39,11 +40,11 @@ x-i18n:
         ```
         <img
   src="/assets/install-script.svg"
-  alt="Install Script Process"
+  alt="安装脚本流程"
   className="rounded-lg"
 />
       </Tab>
-      <Tab title="Windows（PowerShell）">
+      <Tab title="Windows (PowerShell)">
         ```powershell
         iwr -useb https://openclaw.ai/install.ps1 | iex
         ```
@@ -61,9 +62,9 @@ x-i18n:
     ```
 
     向导会引导你选择模型提供商、设置 API key，
-    并配置 Gateway 网关。整个过程大约需要 2 分钟。
+    并配置 Gateway 网关。大约需要 2 分钟。
 
-    完整参考请参阅 [新手引导（CLI）](/zh-CN/start/wizard)。
+    完整参考见 [新手引导（CLI）](/zh-CN/start/wizard)。
 
   </Step>
   <Step title="验证 Gateway 网关正在运行">
@@ -79,25 +80,26 @@ x-i18n:
     openclaw dashboard
     ```
 
-    这会在你的浏览器中打开控制 UI。如果能够加载，说明一切正常。
+    这会在你的浏览器中打开 Control UI。如果它能加载，说明一切正常。
 
   </Step>
   <Step title="发送你的第一条消息">
-    在控制 UI 聊天中输入一条消息，你应该会收到 AI 回复。
+    在 Control UI 聊天中输入一条消息，你应该会收到 AI 回复。
 
     想改用手机聊天？最快可设置的渠道是
-    [Telegram](/zh-CN/channels/telegram)（只需要一个 bot token）。所有选项请参阅 [渠道](/zh-CN/channels)。
+    [Telegram](/zh-CN/channels/telegram)（只需要一个 bot token）。所有选项见 [渠道](/zh-CN/channels)。
 
   </Step>
 </Steps>
 
-<Accordion title="高级：挂载自定义控制 UI 构建">
-  如果你维护的是本地化或自定义的仪表板构建，请将
-  `gateway.controlUi.root` 指向一个包含已构建静态资源和 `index.html` 的目录。
+<Accordion title="高级：挂载自定义 Control UI 构建">
+  如果你维护本地化或自定义的仪表板构建，请将
+  `gateway.controlUi.root` 指向一个包含已构建静态
+  资源和 `index.html` 的目录。
 
 ```bash
 mkdir -p "$HOME/.openclaw/control-ui-custom"
-# 将你构建好的静态文件复制到该目录中。
+# Copy your built static files into that directory.
 ```
 
 然后设置：
@@ -122,29 +124,29 @@ openclaw dashboard
 
 </Accordion>
 
-## 接下来做什么
+## 下一步
 
 <Columns>
-  <Card title="连接一个渠道" href="/zh-CN/channels" icon="message-square">
-    Discord、Feishu、iMessage、Matrix、Microsoft Teams、Signal、Slack、Telegram、WhatsApp、Zalo 等等。
+  <Card title="连接渠道" href="/zh-CN/channels" icon="message-square">
+    Discord、Feishu、iMessage、Matrix、Microsoft Teams、Signal、Slack、Telegram、WhatsApp、Zalo 等。
   </Card>
-  <Card title="配对与安全" href="/zh-CN/channels/pairing" icon="shield">
-    控制谁可以向你的智能体发消息。
+  <Card title="配对和安全" href="/zh-CN/channels/pairing" icon="shield">
+    控制谁可以给你的智能体发消息。
   </Card>
   <Card title="配置 Gateway 网关" href="/zh-CN/gateway/configuration" icon="settings">
     模型、工具、沙箱和高级设置。
   </Card>
   <Card title="浏览工具" href="/zh-CN/tools" icon="wrench">
-    浏览器、exec、网页搜索、Skills 和插件。
+    浏览器、exec、Web 搜索、skills 和插件。
   </Card>
 </Columns>
 
 <Accordion title="高级：环境变量">
-  如果你将 OpenClaw 作为服务账户运行，或希望使用自定义路径：
+  如果你将 OpenClaw 作为服务账号运行，或想使用自定义路径：
 
-- `OPENCLAW_HOME` —— 用于内部路径解析的主目录
-- `OPENCLAW_STATE_DIR` —— 覆盖状态目录
-- `OPENCLAW_CONFIG_PATH` —— 覆盖配置文件路径
+- `OPENCLAW_HOME` — 用于内部路径解析的主目录
+- `OPENCLAW_STATE_DIR` — 覆盖状态目录
+- `OPENCLAW_CONFIG_PATH` — 覆盖配置文件路径
 
 完整参考：[环境变量](/zh-CN/help/environment)。
 </Accordion>

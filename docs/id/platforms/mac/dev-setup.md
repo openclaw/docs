@@ -1,13 +1,13 @@
 ---
 read_when:
     - Menyiapkan lingkungan pengembangan macOS
-summary: Panduan penyiapan untuk pengembang yang mengerjakan aplikasi macOS OpenClaw
+summary: Panduan penyiapan untuk pengembang yang bekerja pada aplikasi macOS OpenClaw
 title: Penyiapan pengembangan macOS
 x-i18n:
-    generated_at: "2026-05-06T09:20:00Z"
+    generated_at: "2026-05-07T13:21:41Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c3ecf014bff10e8416f1586f731e30c9de4a0f09eb82046d06ead7511c47d660
+    source_hash: b39b449570176f44305c98ec4f00482a8b75ad20174b80c93abc45df37ffa0bc
     source_path: platforms/mac/dev-setup.md
     workflow: 16
 ---
@@ -18,10 +18,10 @@ Bangun dan jalankan aplikasi macOS OpenClaw dari sumber.
 
 ## Prasyarat
 
-Sebelum membangun aplikasi, pastikan Anda telah memasang hal berikut:
+Sebelum membangun aplikasi, pastikan Anda telah menginstal yang berikut:
 
 1. **Xcode 26.2+**: Diperlukan untuk pengembangan Swift.
-2. **Node.js 24 & pnpm**: Direkomendasikan untuk gateway, CLI, dan skrip pengemasan. Node 22 LTS, saat ini `22.14+`, tetap didukung untuk kompatibilitas.
+2. **Node.js 24 & pnpm**: Direkomendasikan untuk Gateway, CLI, dan skrip pengemasan. Node 22 LTS, saat ini `22.16+`, tetap didukung untuk kompatibilitas.
 
 ## 1. Instal Dependensi
 
@@ -41,10 +41,10 @@ Untuk membangun aplikasi macOS dan mengemasnya ke dalam `dist/OpenClaw.app`, jal
 
 Jika Anda tidak memiliki sertifikat Apple Developer ID, skrip akan otomatis menggunakan **penandatanganan ad-hoc** (`-`).
 
-Untuk mode menjalankan pengembangan, flag penandatanganan, dan pemecahan masalah Team ID, lihat README aplikasi macOS:
+Untuk mode jalankan dev, flag penandatanganan, dan pemecahan masalah Team ID, lihat README aplikasi macOS:
 [https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md](https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md)
 
-> **Catatan**: Aplikasi yang ditandatangani secara ad-hoc dapat memicu prompt keamanan. Jika aplikasi langsung crash dengan "Abort trap 6", lihat bagian [Pemecahan Masalah](#troubleshooting).
+> **Catatan**: Aplikasi yang ditandatangani ad-hoc dapat memicu prompt keamanan. Jika aplikasi langsung crash dengan "Abort trap 6", lihat bagian [Pemecahan Masalah](#troubleshooting).
 
 ## 3. Instal CLI
 
@@ -56,7 +56,7 @@ Aplikasi macOS mengharapkan instalasi CLI `openclaw` global untuk mengelola tuga
 2. Buka tab pengaturan **General**.
 3. Klik **"Install CLI"**.
 
-Atau, instal secara manual:
+Sebagai alternatif, instal secara manual:
 
 ```bash
 npm install -g openclaw@<version>
@@ -83,11 +83,11 @@ xcodebuild -version
 xcrun swift --version
 ```
 
-Jika versi tidak cocok, perbarui macOS/Xcode dan jalankan kembali build.
+Jika versi tidak cocok, perbarui macOS/Xcode dan jalankan ulang build.
 
 ### Aplikasi crash saat pemberian izin
 
-Jika aplikasi crash saat Anda mencoba mengizinkan akses **Speech Recognition** atau **Microphone**, penyebabnya mungkin cache TCC yang rusak atau ketidakcocokan tanda tangan.
+Jika aplikasi crash ketika Anda mencoba mengizinkan akses **Speech Recognition** atau **Microphone**, ini mungkin disebabkan oleh cache TCC yang rusak atau ketidakcocokan tanda tangan.
 
 **Perbaikan:**
 
@@ -97,11 +97,11 @@ Jika aplikasi crash saat Anda mencoba mengizinkan akses **Speech Recognition** a
    tccutil reset All ai.openclaw.mac.debug
    ```
 
-2. Jika itu gagal, ubah `BUNDLE_ID` untuk sementara di [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) untuk memaksa "awal bersih" dari macOS.
+2. Jika gagal, ubah `BUNDLE_ID` sementara di [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh) untuk memaksa "clean slate" dari macOS.
 
 ### Gateway "Starting..." tanpa henti
 
-Jika status gateway tetap pada "Starting...", periksa apakah proses zombie menahan port:
+Jika status Gateway tetap di "Starting...", periksa apakah ada proses zombie yang menahan port:
 
 ```bash
 openclaw gateway status
@@ -111,7 +111,7 @@ openclaw gateway stop
 lsof -nP -iTCP:18789 -sTCP:LISTEN
 ```
 
-Jika eksekusi manual menahan port, hentikan proses tersebut (Ctrl+C). Sebagai upaya terakhir, hentikan paksa PID yang Anda temukan di atas.
+Jika proses manual menahan port, hentikan proses tersebut (Ctrl+C). Sebagai upaya terakhir, hentikan paksa PID yang Anda temukan di atas.
 
 ## Terkait
 

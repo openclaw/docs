@@ -1,24 +1,24 @@
 ---
 read_when:
-    - می‌خواهید سوابق وظایف پس‌زمینه را بررسی، ممیزی یا لغو کنید
-    - شما در حال مستندسازی دستورهای Task Flow زیر `openclaw tasks flow` هستید
-summary: مرجع CLI برای `openclaw tasks` (دفترکل وظایف پس‌زمینه و وضعیت Task Flow)
+    - می‌خواهید رکوردهای وظایف پس‌زمینه را بررسی، ممیزی یا لغو کنید
+    - شما در حال مستندسازی فرمان‌های TaskFlow در زیر `openclaw tasks flow` هستید
+summary: مرجع CLI برای `openclaw tasks` (دفتر ثبت وظایف پس‌زمینه و وضعیت جریان وظیفه)
 title: '`openclaw tasks`'
 x-i18n:
-    generated_at: "2026-04-29T22:39:55Z"
+    generated_at: "2026-05-07T13:15:48Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 6e61fb0b67a2bdd932b29543199fb219890f256260a66881c8e7ffeb9fadee33
+    source_hash: ca3f05d7c2a3fa7790ad6059ce15721ebffb548ac4a2c627188ac17986442dc6
     source_path: cli/tasks.md
     workflow: 16
 ---
 
-کارهای پس‌زمینه‌ی ماندگار و وضعیت Task Flow را بررسی کنید. بدون زیرفرمان،
+وظایف پس‌زمینهٔ بادوام و وضعیت جریان وظیفه را بررسی کنید. بدون زیر‌فرمان،
 `openclaw tasks` معادل `openclaw tasks list` است.
 
-برای چرخه‌ی عمر و مدل تحویل، [کارهای پس‌زمینه](/fa/automation/tasks) را ببینید.
+برای چرخهٔ عمر و مدل تحویل، [وظایف پس‌زمینه](/fa/automation/tasks) را ببینید.
 
-## نحوه‌ی استفاده
+## کاربرد
 
 ```bash
 openclaw tasks
@@ -39,10 +39,10 @@ openclaw tasks flow cancel <lookup>
 ## گزینه‌های ریشه
 
 - `--json`: خروجی JSON.
-- `--runtime <name>`: فیلتر بر اساس نوع: `subagent`، `acp`، `cron` یا `cli`.
-- `--status <name>`: فیلتر بر اساس وضعیت: `queued`، `running`، `succeeded`، `failed`، `timed_out`، `cancelled` یا `lost`.
+- `--runtime <name>`: فیلتر بر اساس نوع: `subagent`، `acp`، `cron`، یا `cli`.
+- `--status <name>`: فیلتر بر اساس وضعیت: `queued`، `running`، `succeeded`، `failed`، `timed_out`، `cancelled`، یا `lost`.
 
-## زیرفرمان‌ها
+## زیر‌فرمان‌ها
 
 ### `list`
 
@@ -50,7 +50,7 @@ openclaw tasks flow cancel <lookup>
 openclaw tasks list [--runtime <name>] [--status <name>] [--json]
 ```
 
-کارهای پس‌زمینه‌ی ردیابی‌شده را از جدیدترین به قدیمی‌ترین فهرست می‌کند.
+وظایف پس‌زمینهٔ ردیابی‌شده را از جدیدترین به قدیمی‌ترین فهرست می‌کند.
 
 ### `show`
 
@@ -58,7 +58,7 @@ openclaw tasks list [--runtime <name>] [--status <name>] [--json]
 openclaw tasks show <lookup> [--json]
 ```
 
-یک کار را بر اساس شناسه‌ی کار، شناسه‌ی اجرا، یا کلید نشست نشان می‌دهد.
+یک وظیفه را بر اساس شناسهٔ وظیفه، شناسهٔ اجرا، یا کلید نشست نشان می‌دهد.
 
 ### `notify`
 
@@ -66,7 +66,7 @@ openclaw tasks show <lookup> [--json]
 openclaw tasks notify <lookup> <done_only|state_changes|silent>
 ```
 
-سیاست اعلان را برای یک کار در حال اجرا تغییر می‌دهد.
+سیاست اعلان را برای یک وظیفهٔ در حال اجرا تغییر می‌دهد.
 
 ### `cancel`
 
@@ -74,7 +74,7 @@ openclaw tasks notify <lookup> <done_only|state_changes|silent>
 openclaw tasks cancel <lookup>
 ```
 
-یک کار پس‌زمینه‌ی در حال اجرا را لغو می‌کند.
+یک وظیفهٔ پس‌زمینهٔ در حال اجرا را لغو می‌کند.
 
 ### `audit`
 
@@ -82,7 +82,7 @@ openclaw tasks cancel <lookup>
 openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--json]
 ```
 
-رکوردهای کهنه، گم‌شده، دارای تحویل ناموفق، یا ناسازگار دیگر مربوط به کار و Task Flow را نمایان می‌کند. کارهای گم‌شده‌ای که تا `cleanupAfter` نگه داشته شده‌اند هشدار هستند؛ کارهای گم‌شده‌ی منقضی‌شده یا بدون مهر زمانی خطا هستند.
+رکوردهای کهنه، گم‌شده، ناموفق در تحویل، یا به‌شکل دیگری ناسازگارِ وظیفه و جریان وظیفه را آشکار می‌کند. وظایف گم‌شده‌ای که تا `cleanupAfter` نگه داشته شده‌اند هشدار هستند؛ وظایف گم‌شدهٔ منقضی‌شده یا بدون مهر زمانی خطا هستند.
 
 ### `maintenance`
 
@@ -90,8 +90,8 @@ openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--
 openclaw tasks maintenance [--apply] [--json]
 ```
 
-همگام‌سازی کار و Task Flow، ثبت مهر پاک‌سازی، و هرس را پیش‌نمایش یا اعمال می‌کند.
-برای کارهای cron، همگام‌سازی پیش از نشانه‌گذاری یک کار فعال قدیمی به‌عنوان `lost` از گزارش‌های اجرای ماندگار/وضعیت کار استفاده می‌کند، بنابراین اجراهای کامل‌شده‌ی cron فقط به این دلیل که وضعیت زمان اجرای درون‌حافظه‌ای Gateway از بین رفته است به خطاهای ممیزی کاذب تبدیل نمی‌شوند. ممیزی آفلاین CLI برای مجموعه‌ی کارهای فعال cron محلیِ فرایند Gateway مرجع قطعی نیست.
+همگام‌سازی وظیفه و جریان وظیفه، مهرگذاری پاک‌سازی، و هرس را پیش‌نمایش یا اعمال می‌کند.
+برای وظایف cron، همگام‌سازی پیش از علامت‌گذاری یک وظیفهٔ فعال قدیمی به‌عنوان `lost`، از لاگ‌های اجرای پایدارشده/وضعیت کار استفاده می‌کند؛ بنابراین اجراهای cron تکمیل‌شده فقط به این دلیل که وضعیت زمان اجرای درون‌حافظه‌ای Gateway از بین رفته است، به خطاهای حسابرسی کاذب تبدیل نمی‌شوند. حسابرسی آفلاین CLI برای مجموعهٔ کارهای فعال cron محلیِ فرایند Gateway مرجع قطعی نیست. وظایف CLI که شناسهٔ اجرا/شناسهٔ منبع دارند، وقتی زمینهٔ اجرای زندهٔ Gateway آن‌ها از بین رفته باشد، حتی اگر یک ردیف نشست فرزند قدیمی باقی مانده باشد، به‌عنوان `lost` علامت‌گذاری می‌شوند.
 
 ### `flow`
 
@@ -101,9 +101,9 @@ openclaw tasks flow show <lookup> [--json]
 openclaw tasks flow cancel <lookup>
 ```
 
-وضعیت ماندگار Task Flow را زیر دفتر کل کار بررسی یا لغو می‌کند.
+وضعیت بادوام جریان وظیفه را زیر دفترکل وظیفه بررسی یا لغو می‌کند.
 
 ## مرتبط
 
 - [مرجع CLI](/fa/cli)
-- [کارهای پس‌زمینه](/fa/automation/tasks)
+- [وظایف پس‌زمینه](/fa/automation/tasks)

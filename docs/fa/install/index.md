@@ -1,28 +1,28 @@
 ---
 read_when:
-    - به روشی برای نصب غیر از شروع سریع «شروع به کار» نیاز دارید
-    - می‌خواهید روی یک پلتفرم ابری استقرار دهید
-    - باید به‌روزرسانی کنید، مهاجرت دهید یا حذف نصب کنید
-summary: نصب OpenClaw - اسکریپت نصب‌کننده، npm/pnpm/bun، از منبع، Docker و موارد دیگر
+    - به روش نصبی غیر از راهنمای شروع سریع «شروع به کار» نیاز دارید
+    - می‌خواهید روی یک پلتفرم ابری مستقر کنید
+    - باید به‌روزرسانی کنید، مهاجرت دهید، یا حذف نصب کنید
+summary: نصب OpenClaw - اسکریپت نصب‌کننده، npm/pnpm/bun، از کد منبع، Docker و موارد دیگر
 title: نصب
 x-i18n:
-    generated_at: "2026-05-06T09:26:17Z"
+    generated_at: "2026-05-07T13:24:53Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 2d5b38787ad80f91c82aa1fd4020a11c99f440ccbf2e9b9309da336dd5883462
+    source_hash: 8a5dc92d262710cc96a160b7cac2b93ee1e25f994ddcd45e274ad96c026b7d72
     source_path: install/index.md
     workflow: 16
 ---
 
 ## الزامات سیستم
 
-- **Node 24** (توصیه‌شده) یا Node 22.14+ - اسکریپت نصب‌کننده این مورد را به‌صورت خودکار مدیریت می‌کند
-- **macOS، Linux، یا Windows** - هم Windows بومی و هم WSL2 پشتیبانی می‌شوند؛ WSL2 پایدارتر است. [Windows](/fa/platforms/windows) را ببینید.
+- **Node 24** (توصیه‌شده) یا Node 22.16+ - اسکریپت نصب این مورد را به‌صورت خودکار مدیریت می‌کند
+- **macOS، Linux یا Windows** - هم Windows بومی و هم WSL2 پشتیبانی می‌شوند؛ WSL2 پایدارتر است. [Windows](/fa/platforms/windows) را ببینید.
 - `pnpm` فقط زمانی لازم است که از سورس بسازید
 
-## توصیه‌شده: اسکریپت نصب‌کننده
+## توصیه‌شده: اسکریپت نصب
 
-سریع‌ترین راه نصب. سیستم‌عامل شما را تشخیص می‌دهد، در صورت نیاز Node را نصب می‌کند، OpenClaw را نصب می‌کند، و راه‌اندازی اولیه را اجرا می‌کند.
+سریع‌ترین راه نصب. سیستم‌عامل شما را تشخیص می‌دهد، در صورت نیاز Node را نصب می‌کند، OpenClaw را نصب می‌کند و فرایند راه‌اندازی اولیه را اجرا می‌کند.
 
 <Tabs>
   <Tab title="macOS / Linux / WSL2">
@@ -58,17 +58,18 @@ x-i18n:
 
 ### نصب‌کننده پیشوند محلی (`install-cli.sh`)
 
-وقتی از این استفاده کنید که می‌خواهید OpenClaw و Node زیر یک پیشوند محلی مانند
-`~/.openclaw` نگه داشته شوند، بدون وابستگی به نصب سراسری Node در سیستم:
+وقتی می‌خواهید OpenClaw و Node زیر یک پیشوند محلی مانند
+`~/.openclaw` نگه داشته شوند، بدون وابستگی به نصب سراسری Node، از این روش استفاده کنید:
 
 ```bash
 curl -fsSL https://openclaw.ai/install-cli.sh | bash
 ```
 
-این به‌صورت پیش‌فرض از نصب‌های npm پشتیبانی می‌کند، به‌علاوه نصب‌های git-checkout زیر همان
-جریان پیشوند. مرجع کامل: [جزئیات داخلی نصب‌کننده](/fa/install/installer#install-clish).
+به‌صورت پیش‌فرض از نصب‌های npm پشتیبانی می‌کند، به‌علاوه نصب‌های git-checkout را نیز در همان
+جریان پیشوند پشتیبانی می‌کند. مرجع کامل: [جزئیات داخلی نصب‌کننده](/fa/install/installer#install-clish).
 
-قبلا نصب کرده‌اید؟ با `openclaw update --channel dev` و `openclaw update --channel stable` بین نصب‌های پکیجی و git جابه‌جا شوید. [به‌روزرسانی](/fa/install/updating#switch-between-npm-and-git-installs) را ببینید.
+قبلا نصب کرده‌اید؟ با
+`openclaw update --channel dev` و `openclaw update --channel stable` بین نصب‌های بسته‌ای و git جابه‌جا شوید. [به‌روزرسانی](/fa/install/updating#switch-between-npm-and-git-installs) را ببینید.
 
 ### npm، pnpm، یا bun
 
@@ -89,7 +90,7 @@ curl -fsSL https://openclaw.ai/install-cli.sh | bash
     ```
 
     <Note>
-    pnpm برای پکیج‌هایی که اسکریپت ساخت دارند به تایید صریح نیاز دارد. پس از اولین نصب، `pnpm approve-builds -g` را اجرا کنید.
+    pnpm برای بسته‌هایی که اسکریپت ساخت دارند به تأیید صریح نیاز دارد. پس از اولین نصب، `pnpm approve-builds -g` را اجرا کنید.
     </Note>
 
   </Tab>
@@ -100,14 +101,14 @@ curl -fsSL https://openclaw.ai/install-cli.sh | bash
     ```
 
     <Note>
-    Bun برای مسیر نصب CLI سراسری پشتیبانی می‌شود. برای runtime مربوط به Gateway، Node همچنان runtime پیشنهادی daemon است.
+    Bun برای مسیر نصب CLI سراسری پشتیبانی می‌شود. برای زمان اجرای Gateway، Node همچنان زمان اجرای توصیه‌شده daemon است.
     </Note>
 
   </Tab>
 </Tabs>
 
-<Accordion title="عیب‌یابی: خطاهای ساخت sharp (npm)">
-  اگر `sharp` به‌دلیل libvips نصب‌شده به‌صورت سراسری شکست خورد:
+<Accordion title="Troubleshooting: sharp build errors (npm)">
+  اگر `sharp` به‌دلیل یک libvips نصب‌شده به‌صورت سراسری شکست خورد:
 
 ```bash
 SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install -g openclaw@latest
@@ -117,7 +118,7 @@ SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install -g openclaw@latest
 
 ### از سورس
 
-برای مشارکت‌کنندگان یا هر کسی که می‌خواهد از یک checkout محلی اجرا کند:
+برای مشارکت‌کنندگان یا هر کسی که می‌خواهد از checkout محلی اجرا کند:
 
 ```bash
 git clone https://github.com/openclaw/openclaw.git
@@ -127,7 +128,7 @@ pnpm link --global
 openclaw onboard --install-daemon
 ```
 
-یا لینک را رد کنید و از داخل repo از `pnpm openclaw ...` استفاده کنید. برای جریان‌های کامل توسعه، [راه‌اندازی](/fa/start/setup) را ببینید.
+یا لینک را نادیده بگیرید و از داخل مخزن از `pnpm openclaw ...` استفاده کنید. برای جریان‌های کاری کامل توسعه، [راه‌اندازی](/fa/start/setup) را ببینید.
 
 ### نصب از GitHub main
 
@@ -135,7 +136,7 @@ openclaw onboard --install-daemon
 npm install -g github:openclaw/openclaw#main
 ```
 
-### کانتینرها و مدیران پکیج
+### کانتینرها و مدیران بسته
 
 <CardGroup cols={2}>
   <Card title="Docker" href="/fa/install/docker" icon="container">
@@ -148,14 +149,14 @@ npm install -g github:openclaw/openclaw#main
     نصب اعلانی از طریق Nix flake.
   </Card>
   <Card title="Ansible" href="/fa/install/ansible" icon="server">
-    تامین خودکار ناوگان.
+    آماده‌سازی خودکار ناوگان.
   </Card>
   <Card title="Bun" href="/fa/install/bun" icon="zap">
-    استفاده فقط از CLI از طریق runtime مربوط به Bun.
+    استفاده فقط از CLI از طریق زمان اجرای Bun.
   </Card>
 </CardGroup>
 
-## تایید نصب
+## بررسی نصب
 
 ```bash
 openclaw --version      # confirm the CLI is available
@@ -166,12 +167,12 @@ openclaw gateway status # verify the Gateway is running
 اگر پس از نصب راه‌اندازی مدیریت‌شده می‌خواهید:
 
 - macOS: ‏LaunchAgent از طریق `openclaw onboard --install-daemon` یا `openclaw gateway install`
-- Linux/WSL2: سرویس کاربری systemd از طریق همان دستورها
-- Windows بومی: ابتدا Scheduled Task، با fallback آیتم ورود پوشه Startup برای هر کاربر اگر ایجاد task رد شود
+- Linux/WSL2: سرویس کاربری systemd از طریق همان فرمان‌ها
+- Windows بومی: ابتدا Scheduled Task، همراه با گزینه جایگزین آیتم ورود پوشه Startup برای هر کاربر اگر ساخت task رد شود
 
 ## میزبانی و استقرار
 
-OpenClaw را روی یک سرور ابری یا VPS مستقر کنید:
+OpenClaw را روی سرور ابری یا VPS مستقر کنید:
 
 <CardGroup cols={3}>
   <Card title="VPS" href="/fa/vps">هر VPS لینوکسی</Card>
@@ -189,14 +190,14 @@ OpenClaw را روی یک سرور ابری یا VPS مستقر کنید:
 ## به‌روزرسانی، مهاجرت، یا حذف نصب
 
 <CardGroup cols={3}>
-  <Card title="به‌روزرسانی" href="/fa/install/updating" icon="refresh-cw">
+  <Card title="Updating" href="/fa/install/updating" icon="refresh-cw">
     OpenClaw را به‌روز نگه دارید.
   </Card>
-  <Card title="مهاجرت" href="/fa/install/migrating" icon="arrow-right">
+  <Card title="Migrating" href="/fa/install/migrating" icon="arrow-right">
     به یک ماشین جدید منتقل شوید.
   </Card>
-  <Card title="حذف نصب" href="/fa/install/uninstall" icon="trash-2">
-    OpenClaw را کاملا حذف کنید.
+  <Card title="Uninstall" href="/fa/install/uninstall" icon="trash-2">
+    OpenClaw را به‌طور کامل حذف کنید.
   </Card>
 </CardGroup>
 

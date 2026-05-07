@@ -1,31 +1,31 @@
 ---
 read_when:
-    - Linux yardımcı uygulama durumunu arıyorsunuz
+    - Linux yardımcı uygulama durumu aranıyor
     - Platform kapsamını veya katkıları planlama
-    - Bir VPS veya kapsayıcıda Linux OOM kill'lerini veya exit 137 hatalarını ayıklama
-summary: Linux desteği + yardımcı uygulama durumu
+    - Bir VPS veya kapsayıcıda Linux OOM sonlandırmalarını ya da çıkış 137'yi ayıklama
+summary: Linux desteği + eşlikçi uygulama durumu
 title: Linux uygulaması
 x-i18n:
-    generated_at: "2026-04-24T09:19:15Z"
-    model: gpt-5.4
+    generated_at: "2026-05-07T13:22:18Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 376721d4b4376c3093c50def9130e3405adc409484c17c19d8d312c4a9a86fc5
+    source_hash: 920fa0d3fccac52dfb640ddf7e398fc1f17ca1b46e20b9aaf9525590629ec346
     source_path: platforms/linux.md
-    workflow: 15
+    workflow: 16
 ---
 
-Gateway, Linux üzerinde tam olarak desteklenir. **Önerilen çalışma zamanı Node'dur**.
+Gateway, Linux üzerinde tamamen desteklenir. **Node önerilen çalışma zamanıdır**.
 Bun, Gateway için önerilmez (WhatsApp/Telegram hataları).
 
 Yerel Linux yardımcı uygulamaları planlanmaktadır. Bir tane oluşturmaya yardımcı olmak istiyorsanız katkılar memnuniyetle karşılanır.
 
-## Başlangıç için hızlı yol (VPS)
+## Yeni başlayanlar için hızlı yol (VPS)
 
-1. Node 24'ü kurun (önerilir; Node 22 LTS, şu anda `22.14+`, uyumluluk için hâlâ çalışır)
+1. Node 24 yükleyin (önerilir; şu anda `22.16+` olan Node 22 LTS uyumluluk için hâlâ çalışır)
 2. `npm i -g openclaw@latest`
 3. `openclaw onboard --install-daemon`
 4. Dizüstü bilgisayarınızdan: `ssh -N -L 18789:127.0.0.1:18789 <user>@<host>`
-5. `http://127.0.0.1:18789/` adresini açın ve yapılandırılmış paylaşılan gizli bilgiyle kimlik doğrulaması yapın (varsayılan olarak token; `gateway.auth.mode: "password"` ayarladıysanız parola)
+5. `http://127.0.0.1:18789/` adresini açın ve yapılandırılmış paylaşılan gizli anahtarla kimlik doğrulaması yapın (varsayılan olarak token; `gateway.auth.mode: "password"` ayarladıysanız parola)
 
 Tam Linux sunucu kılavuzu: [Linux Sunucusu](/tr/vps). Adım adım VPS örneği: [exe.dev](/tr/install/exe-dev)
 
@@ -37,7 +37,7 @@ Tam Linux sunucu kılavuzu: [Linux Sunucusu](/tr/vps). Adım adım VPS örneği:
 
 ## Gateway
 
-- [Gateway runbook](/tr/gateway)
+- [Gateway çalışma kitabı](/tr/gateway)
 - [Yapılandırma](/tr/gateway/configuration)
 
 ## Gateway hizmet kurulumu (CLI)
@@ -60,9 +60,9 @@ Veya:
 openclaw configure
 ```
 
-İstendiğinde **Gateway service** seçin.
+İstendiğinde **Gateway hizmeti** seçin.
 
-Onarma/geçiş:
+Onar/taşı:
 
 ```
 openclaw doctor
@@ -70,13 +70,12 @@ openclaw doctor
 
 ## Sistem denetimi (systemd kullanıcı birimi)
 
-OpenClaw varsayılan olarak bir systemd **kullanıcı** servisi kurar. Paylaşımlı veya her zaman açık sunucular için bir **sistem**
-servisi kullanın. `openclaw gateway install` ve
-`openclaw onboard --install-daemon`, sizin için geçerli standart birimi zaten
-oluşturur; yalnızca özel bir sistem/hizmet yöneticisi
-kurulumuna ihtiyacınız olduğunda elle yazın. Tam hizmet rehberi [Gateway runbook](/tr/gateway) içindedir.
+OpenClaw varsayılan olarak bir systemd **kullanıcı** hizmeti kurar. Paylaşılan veya her zaman açık sunucular için bir **sistem**
+hizmeti kullanın. `openclaw gateway install` ve
+`openclaw onboard --install-daemon` sizin için zaten geçerli kanonik birimi oluşturur;
+yalnızca özel bir sistem/hizmet yöneticisi kurulumu gerektiğinde elle yazın. Tam hizmet rehberi [Gateway çalışma kitabı](/tr/gateway) içindedir.
 
-Minimal kurulum:
+En küçük kurulum:
 
 `~/.config/systemd/user/openclaw-gateway[-<profile>].service` oluşturun:
 
@@ -105,27 +104,22 @@ Etkinleştirin:
 systemctl --user enable --now openclaw-gateway[-<profile>].service
 ```
 
-## Bellek baskısı ve OOM kill'leri
+## Bellek baskısı ve OOM sonlandırmaları
 
-Linux'ta çekirdek, bir host, VM veya kapsayıcı cgroup'u
-belleği bitirdiğinde bir OOM kurbanı seçer. Gateway, uzun ömürlü
-oturumlara ve kanal bağlantılarına sahip olduğu için kötü bir kurban olabilir. Bu nedenle OpenClaw, mümkün olduğunda geçici alt
-süreçlerin Gateway'den önce öldürülmesini tercih eder.
+Linux üzerinde, bir ana makine, VM veya container cgroup belleği tükendiğinde kernel bir OOM kurbanı seçer. Gateway, uzun ömürlü oturumlara ve kanal bağlantılarına sahip olduğu için kötü bir kurban olabilir. Bu nedenle OpenClaw, mümkün olduğunda geçici alt süreçlerin Gateway’den önce sonlandırılmasına öncelik verir.
 
-Uygun Linux alt süreç başlatmaları için OpenClaw, çocuğun kendi
-`oom_score_adj` değerini `1000`'e yükselten kısa bir `/bin/sh` sarmalayıcısı üzerinden
-çocuğu başlatır, sonra gerçek komutu `exec` ile çalıştırır. Bu ayrıcalıksız bir işlemdir çünkü çocuk
-yalnızca kendi OOM öldürülme olasılığını artırmaktadır.
+Uygun Linux alt süreç oluşturma işlemleri için OpenClaw, alt süreci, alt sürecin kendi `oom_score_adj` değerini `1000` seviyesine yükselten ve ardından gerçek komutu `exec` eden kısa bir
+`/bin/sh` sarmalayıcısı üzerinden başlatır. Bu ayrıcalıksız bir işlemdir çünkü alt süreç yalnızca kendi OOM sonlandırılma olasılığını artırır.
 
-Kapsanan alt süreç yüzeyleri şunlardır:
+Kapsanan alt süreç yüzeyleri şunları içerir:
 
 - supervisor tarafından yönetilen komut alt süreçleri,
-- PTY kabuk alt süreçleri,
+- PTY shell alt süreçleri,
 - MCP stdio sunucu alt süreçleri,
 - OpenClaw tarafından başlatılan tarayıcı/Chrome süreçleri.
 
-Bu sarmalayıcı yalnızca Linux'a özgüdür ve `/bin/sh` mevcut değilse atlanır. Alt süreç env içinde `OPENCLAW_CHILD_OOM_SCORE_ADJ=0`, `false`,
-`no` veya `off` ayarlanmışsa da atlanır.
+Sarmalayıcı yalnızca Linux içindir ve `/bin/sh` kullanılamadığında atlanır. Alt süreç env değeri `OPENCLAW_CHILD_OOM_SCORE_ADJ=0`, `false`,
+`no` veya `off` olarak ayarlanmışsa da atlanır.
 
 Bir alt süreci doğrulamak için:
 
@@ -133,14 +127,12 @@ Bir alt süreci doğrulamak için:
 cat /proc/<child-pid>/oom_score_adj
 ```
 
-Kapsanan alt süreçler için beklenen değer `1000`'dir. Gateway süreci normal
-puanını, genellikle `0`'ı korumalıdır.
+Kapsanan alt süreçler için beklenen değer `1000` olur. Gateway süreci normal skorunu korumalıdır; bu genellikle `0` olur.
 
-Bu, normal bellek ayarlarının yerini almaz. Bir VPS veya kapsayıcı
-alt süreçleri tekrar tekrar öldürüyorsa bellek sınırını artırın, eşzamanlılığı azaltın veya systemd `MemoryMax=` ya da kapsayıcı düzeyi bellek sınırları gibi daha güçlü kaynak denetimleri ekleyin.
+Bu, normal bellek ayarlamanın yerini almaz. Bir VPS veya container çocuk süreçleri tekrar tekrar sonlandırıyorsa bellek limitini artırın, eşzamanlılığı azaltın veya systemd `MemoryMax=` ya da container düzeyinde bellek limitleri gibi daha güçlü kaynak denetimleri ekleyin.
 
 ## İlgili
 
-- [Kurulum genel bakışı](/tr/install)
+- [Kurulum özeti](/tr/install)
 - [Linux sunucusu](/tr/vps)
 - [Raspberry Pi](/tr/install/raspberry-pi)

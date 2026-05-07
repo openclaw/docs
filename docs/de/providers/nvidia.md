@@ -2,13 +2,13 @@
 read_when:
     - Sie möchten offene Modelle in OpenClaw kostenlos nutzen
     - Sie müssen NVIDIA_API_KEY einrichten
-summary: Die OpenAI-kompatible API von NVIDIA in OpenClaw verwenden
+summary: NVIDIAs OpenAI-kompatible API in OpenClaw verwenden
 title: NVIDIA
 x-i18n:
-    generated_at: "2026-04-30T07:11:20Z"
+    generated_at: "2026-05-07T13:24:36Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 297cc25cf5235bb51f3962c2a1b8799ca6544d57e701c42e9b1e1c7d881ad32b
+    source_hash: 8846c51b056e05f8552b3804d4dac73ff34aa874ec3d5d6fb13fad5a4112bc7f
     source_path: providers/nvidia.md
     workflow: 16
 ---
@@ -29,7 +29,7 @@ offene Modelle kostenlos bereit. Authentifizieren Sie sich mit einem API-Schlüs
     openclaw onboard --auth-choice nvidia-api-key
     ```
   </Step>
-  <Step title="NVIDIA-Modell festlegen">
+  <Step title="Ein NVIDIA-Modell festlegen">
     ```bash
     openclaw models set nvidia/nvidia/nemotron-3-super-120b-a12b
     ```
@@ -38,7 +38,7 @@ offene Modelle kostenlos bereit. Authentifizieren Sie sich mit einem API-Schlüs
 
 <Warning>
 Wenn Sie `--nvidia-api-key` statt der Umgebungsvariable übergeben, landet der Wert im Shell-
-Verlauf und in der `ps`-Ausgabe. Verwenden Sie nach Möglichkeit die Umgebungsvariable
+Verlauf und in der Ausgabe von `ps`. Verwenden Sie nach Möglichkeit die Umgebungsvariable
 `NVIDIA_API_KEY`.
 </Warning>
 
@@ -71,12 +71,12 @@ openclaw onboard --auth-choice nvidia-api-key --nvidia-api-key "nvapi-..."
 
 ## Integrierter Katalog
 
-| Modellreferenz                            | Name                         | Kontext | Maximale Ausgabe |
-| ------------------------------------------ | ---------------------------- | ------- | ---------- |
-| `nvidia/nvidia/nemotron-3-super-120b-a12b` | NVIDIA Nemotron 3 Super 120B | 262,144 | 8,192      |
-| `nvidia/moonshotai/kimi-k2.5`              | Kimi K2.5                    | 262,144 | 8,192      |
-| `nvidia/minimaxai/minimax-m2.5`            | Minimax M2.5                 | 196,608 | 8,192      |
-| `nvidia/z-ai/glm5`                         | GLM 5                        | 202,752 | 8,192      |
+| Modellreferenz                             | Name                         | Kontext | Max. Ausgabe |
+| ------------------------------------------ | ---------------------------- | ------- | ------------ |
+| `nvidia/nvidia/nemotron-3-super-120b-a12b` | NVIDIA Nemotron 3 Super 120B | 262,144 | 8,192        |
+| `nvidia/moonshotai/kimi-k2.5`              | Kimi K2.5                    | 262,144 | 8,192        |
+| `nvidia/minimaxai/minimax-m2.5`            | Minimax M2.5                 | 196,608 | 8,192        |
+| `nvidia/z-ai/glm5`                         | GLM 5                        | 202,752 | 8,192        |
 
 ## Erweiterte Konfiguration
 
@@ -87,20 +87,51 @@ openclaw onboard --auth-choice nvidia-api-key --nvidia-api-key "nvapi-..."
   </Accordion>
 
   <Accordion title="Katalog und Preise">
-    Der gebündelte Katalog ist statisch. Kosten sind im Quellcode standardmäßig auf `0` gesetzt, da NVIDIA
-    derzeit kostenlosen API-Zugriff für die aufgeführten Modelle anbietet.
+    Der gebündelte Katalog ist statisch. Die Kosten sind im Quellcode standardmäßig auf `0`
+    gesetzt, da NVIDIA derzeit kostenlosen API-Zugriff für die aufgeführten Modelle anbietet.
   </Accordion>
 
-  <Accordion title="OpenAI-kompatibler Endpoint">
-    NVIDIA verwendet den standardmäßigen `/v1`-Completions-Endpoint. Jede OpenAI-kompatible
-    Tooling sollte mit der NVIDIA-Basis-URL sofort funktionieren.
+  <Accordion title="OpenAI-kompatibler Endpunkt">
+    NVIDIA verwendet den standardmäßigen `/v1`-Completions-Endpunkt. Alle OpenAI-kompatiblen
+    Tools sollten mit der NVIDIA-Basis-URL sofort funktionieren.
+  </Accordion>
+
+  <Accordion title="Langsame Antworten benutzerdefinierter Provider">
+    Einige von NVIDIA gehostete benutzerdefinierte Modelle können länger brauchen als der standardmäßige Leerlauf-
+    Watchdog des Modells, bevor sie den ersten Antwort-Chunk ausgeben. Erhöhen Sie bei benutzerdefinierten NVIDIA-Provider-
+    Einträgen das Provider-Timeout, statt das Laufzeit-Timeout des gesamten Agenten zu erhöhen:
+
+    ```json5
+    {
+      models: {
+        providers: {
+          "custom-integrate-api-nvidia-com": {
+            baseUrl: "https://integrate.api.nvidia.com/v1",
+            api: "openai-completions",
+            apiKey: "NVIDIA_API_KEY",
+            timeoutSeconds: 300,
+          },
+        },
+      },
+      agents: {
+        defaults: {
+          models: {
+            "custom-integrate-api-nvidia-com/meta/llama-3.1-70b-instruct": {
+              params: { thinking: "off" },
+            },
+          },
+        },
+      },
+    }
+    ```
+
   </Accordion>
 </AccordionGroup>
 
 <Tip>
 NVIDIA-Modelle können derzeit kostenlos genutzt werden. Prüfen Sie
-[build.nvidia.com](https://build.nvidia.com/) auf die aktuelle Verfügbarkeit und
-Details zu Rate Limits.
+[build.nvidia.com](https://build.nvidia.com/) auf aktuelle Verfügbarkeit und
+Details zu Ratenlimits.
 </Tip>
 
 ## Verwandte Themen
@@ -110,6 +141,6 @@ Details zu Rate Limits.
     Provider, Modellreferenzen und Failover-Verhalten auswählen.
   </Card>
   <Card title="Konfigurationsreferenz" href="/de/gateway/configuration-reference" icon="gear">
-    Vollständige Konfigurationsreferenz für Agents, Modelle und Provider.
+    Vollständige Konfigurationsreferenz für Agenten, Modelle und Provider.
   </Card>
 </CardGroup>

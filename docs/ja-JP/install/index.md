@@ -1,28 +1,28 @@
 ---
 read_when:
-    - 「はじめに」のクイックスタート以外のインストール方法が必要です
-    - クラウドプラットフォームにデプロイしたい
-    - 更新、移行、またはアンインストールが必要です
-summary: OpenClaw をインストールする - インストーラースクリプト、npm/pnpm/bun、ソースから、Docker など
+    - はじめにのクイックスタート以外のインストール方法が必要です
+    - クラウドプラットフォームにデプロイしたい場合
+    - 更新、移行、またはアンインストールする必要があります
+summary: OpenClaw のインストール - インストーラースクリプト、npm/pnpm/bun、ソースから、Docker など
 title: インストール
 x-i18n:
-    generated_at: "2026-05-06T05:09:57Z"
+    generated_at: "2026-05-07T13:21:06Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 2d5b38787ad80f91c82aa1fd4020a11c99f440ccbf2e9b9309da336dd5883462
+    source_hash: 8a5dc92d262710cc96a160b7cac2b93ee1e25f994ddcd45e274ad96c026b7d72
     source_path: install/index.md
     workflow: 16
 ---
 
 ## システム要件
 
-- **Node 24**（推奨）または Node 22.14+ - インストーラスクリプトがこれを自動的に処理します
-- **macOS、Linux、または Windows** - ネイティブ Windows と WSL2 の両方がサポートされています。WSL2 のほうが安定しています。[Windows](/ja-JP/platforms/windows) を参照してください。
-- `pnpm` はソースからビルドする場合にのみ必要です
+- **Node 24**（推奨）または Node 22.16+ - インストーラースクリプトがこれを自動的に処理します
+- **macOS、Linux、または Windows** - ネイティブ Windows と WSL2 の両方に対応しています。WSL2 のほうが安定しています。[Windows](/ja-JP/platforms/windows) を参照してください。
+- ソースからビルドする場合のみ `pnpm` が必要です
 
-## 推奨: インストーラスクリプト
+## 推奨: インストーラースクリプト
 
-最も速いインストール方法です。OS を検出し、必要に応じて Node をインストールし、OpenClaw をインストールして、オンボーディングを起動します。
+最速のインストール方法です。OS を検出し、必要に応じて Node をインストールし、OpenClaw をインストールして、オンボーディングを起動します。
 
 <Tabs>
   <Tab title="macOS / Linux / WSL2">
@@ -52,25 +52,28 @@ x-i18n:
   </Tab>
 </Tabs>
 
-すべてのフラグと CI/自動化オプションについては、[インストーラ内部](/ja-JP/install/installer) を参照してください。
+すべてのフラグと CI/自動化オプションについては、[インストーラー内部](/ja-JP/install/installer) を参照してください。
 
 ## 代替インストール方法
 
-### ローカルプレフィックスインストーラ (`install-cli.sh`)
+### ローカルプレフィックスインストーラー (`install-cli.sh`)
 
-システム全体の Node インストールに依存せず、OpenClaw と Node を `~/.openclaw` などのローカルプレフィックス配下に保持したい場合に使用します。
+システム全体の Node インストールに依存せず、OpenClaw と Node を
+`~/.openclaw` のようなローカルプレフィックスの下に保持したい場合に使用します:
 
 ```bash
 curl -fsSL https://openclaw.ai/install-cli.sh | bash
 ```
 
-デフォルトで npm インストールをサポートし、同じプレフィックスフロー内で git チェックアウトインストールもサポートします。完全なリファレンス: [インストーラ内部](/ja-JP/install/installer#install-clish)。
+デフォルトで npm インストールに対応し、同じプレフィックスフローの下での
+git チェックアウトインストールにも対応しています。完全なリファレンス: [インストーラー内部](/ja-JP/install/installer#install-clish)。
 
-すでにインストール済みですか？`openclaw update --channel dev` と `openclaw update --channel stable` で、パッケージインストールと git インストールを切り替えられます。[更新](/ja-JP/install/updating#switch-between-npm-and-git-installs) を参照してください。
+すでにインストール済みですか? `openclaw update --channel dev` と `openclaw update --channel stable` でパッケージインストールと git インストールを切り替えられます。
+[更新](/ja-JP/install/updating#switch-between-npm-and-git-installs) を参照してください。
 
 ### npm、pnpm、または bun
 
-すでに自分で Node を管理している場合:
+Node を自分で管理している場合:
 
 <Tabs>
   <Tab title="npm">
@@ -98,13 +101,13 @@ curl -fsSL https://openclaw.ai/install-cli.sh | bash
     ```
 
     <Note>
-    Bun はグローバル CLI インストールパスでサポートされています。Gateway ランタイムでは、引き続き Node が推奨デーモンランタイムです。
+    Bun はグローバル CLI インストールパスでサポートされています。Gateway ランタイムでは、Node が引き続き推奨されるデーモンランタイムです。
     </Note>
 
   </Tab>
 </Tabs>
 
-<Accordion title="トラブルシューティング: sharp ビルドエラー (npm)">
+<Accordion title="Troubleshooting: sharp build errors (npm)">
   グローバルにインストールされた libvips が原因で `sharp` が失敗する場合:
 
 ```bash
@@ -125,7 +128,7 @@ pnpm link --global
 openclaw onboard --install-daemon
 ```
 
-または、リンクを省略し、リポジトリ内から `pnpm openclaw ...` を使用します。完全な開発ワークフローについては、[セットアップ](/ja-JP/start/setup) を参照してください。
+またはリンクを省略し、リポジトリ内から `pnpm openclaw ...` を使用します。完全な開発ワークフローについては [セットアップ](/ja-JP/start/setup) を参照してください。
 
 ### GitHub main からインストール
 
@@ -137,7 +140,7 @@ npm install -g github:openclaw/openclaw#main
 
 <CardGroup cols={2}>
   <Card title="Docker" href="/ja-JP/install/docker" icon="container">
-    コンテナ化された、またはヘッドレスのデプロイ。
+    コンテナ化された、またはヘッドレスなデプロイ。
   </Card>
   <Card title="Podman" href="/ja-JP/install/podman" icon="container">
     Docker に代わるルートレスコンテナ。
@@ -146,30 +149,30 @@ npm install -g github:openclaw/openclaw#main
     Nix flake による宣言的インストール。
   </Card>
   <Card title="Ansible" href="/ja-JP/install/ansible" icon="server">
-    フリートの自動プロビジョニング。
+    自動化されたフリートプロビジョニング。
   </Card>
   <Card title="Bun" href="/ja-JP/install/bun" icon="zap">
-    Bun ランタイムによる CLI 専用の使用。
+    Bun ランタイムによる CLI のみの使用。
   </Card>
 </CardGroup>
 
-## インストールを検証する
+## インストールを確認する
 
 ```bash
-openclaw --version      # CLI が利用可能であることを確認
-openclaw doctor         # 設定の問題を確認
-openclaw gateway status # Gateway が実行中であることを検証
+openclaw --version      # confirm the CLI is available
+openclaw doctor         # check for config issues
+openclaw gateway status # verify the Gateway is running
 ```
 
-インストール後にマネージド起動を使用したい場合:
+インストール後に管理された起動を使いたい場合:
 
 - macOS: `openclaw onboard --install-daemon` または `openclaw gateway install` による LaunchAgent
 - Linux/WSL2: 同じコマンドによる systemd ユーザーサービス
-- ネイティブ Windows: まず Scheduled Task を使用し、タスク作成が拒否された場合はユーザーごとの Startup フォルダーログイン項目にフォールバック
+- ネイティブ Windows: まず Scheduled Task を使用し、タスク作成が拒否された場合はユーザーごとの Startup フォルダーのログイン項目にフォールバック
 
 ## ホスティングとデプロイ
 
-クラウドサーバーまたは VPS に OpenClaw をデプロイします:
+OpenClaw をクラウドサーバーまたは VPS にデプロイします:
 
 <CardGroup cols={3}>
   <Card title="VPS" href="/ja-JP/vps">任意の Linux VPS</Card>
@@ -187,13 +190,13 @@ openclaw gateway status # Gateway が実行中であることを検証
 ## 更新、移行、またはアンインストール
 
 <CardGroup cols={3}>
-  <Card title="更新" href="/ja-JP/install/updating" icon="refresh-cw">
+  <Card title="Updating" href="/ja-JP/install/updating" icon="refresh-cw">
     OpenClaw を最新の状態に保ちます。
   </Card>
-  <Card title="移行" href="/ja-JP/install/migrating" icon="arrow-right">
-    新しいマシンに移行します。
+  <Card title="Migrating" href="/ja-JP/install/migrating" icon="arrow-right">
+    新しいマシンへ移動します。
   </Card>
-  <Card title="アンインストール" href="/ja-JP/install/uninstall" icon="trash-2">
+  <Card title="Uninstall" href="/ja-JP/install/uninstall" icon="trash-2">
     OpenClaw を完全に削除します。
   </Card>
 </CardGroup>
@@ -208,10 +211,10 @@ npm prefix -g     # Where are global packages?
 echo "$PATH"      # Is the global bin dir in PATH?
 ```
 
-`$(npm prefix -g)/bin` が `$PATH` に含まれていない場合は、シェルの起動ファイル（`~/.zshrc` または `~/.bashrc`）に追加します:
+`$(npm prefix -g)/bin` が `$PATH` に含まれていない場合は、シェル起動ファイル（`~/.zshrc` または `~/.bashrc`）に追加してください:
 
 ```bash
 export PATH="$(npm prefix -g)/bin:$PATH"
 ```
 
-その後、新しいターミナルを開きます。詳細については、[Node セットアップ](/ja-JP/install/node) を参照してください。
+その後、新しいターミナルを開きます。詳細については [Node セットアップ](/ja-JP/install/node) を参照してください。

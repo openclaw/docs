@@ -1,41 +1,41 @@
 ---
 read_when:
     - حزم OpenClaw.app
-    - استكشاف أخطاء خدمة Gateway launchd على macOS وإصلاحها
-    - تثبيت CLI الخاص بـ Gateway لنظام macOS
-summary: بيئة تشغيل Gateway على macOS (خدمة launchd خارجية)
+    - تصحيح أخطاء خدمة launchd الخاصة بـ Gateway على macOS
+    - تثبيت Gateway CLI لنظام macOS
+summary: وقت تشغيل Gateway على macOS (خدمة launchd خارجية)
 title: Gateway على macOS
 x-i18n:
-    generated_at: "2026-05-06T08:04:08Z"
+    generated_at: "2026-05-07T13:24:29Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3f5dcc73671140d7599ffefceeb98ac7ce34da1f944c1e7c70bc9e5810e6ca66
+    source_hash: caf129918c46f8f54026e9db04e8ad5a033148899d3029fe1a362bb14c7f25f8
     source_path: platforms/mac/bundled-gateway.md
     workflow: 16
 ---
 
-لم يعد OpenClaw.app يضم Node/Bun أو بيئة تشغيل Gateway. يتوقع تطبيق macOS
-تثبيت CLI `openclaw` **خارجيًا**، ولا يشغّل Gateway كعملية فرعية،
-ويدير خدمة launchd لكل مستخدم لإبقاء Gateway
-قيد التشغيل (أو يتصل بـ Gateway محلي موجود إذا كان يعمل بالفعل).
+لم يعد OpenClaw.app يضم Node/Bun أو وقت تشغيل Gateway. يتوقع تطبيق macOS
+تثبيت CLI `openclaw` **خارجي**، ولا يشغّل Gateway كعملية
+فرعية، ويدير خدمة launchd خاصة بكل مستخدم لإبقاء Gateway
+قيد التشغيل (أو يتصل بـ Gateway محلي موجود إذا كان أحدها قيد التشغيل بالفعل).
 
-## ثبّت CLI (مطلوب للوضع المحلي)
+## تثبيت CLI (مطلوب للوضع المحلي)
 
-Node 24 هو بيئة التشغيل الافتراضية على Mac. ما زال Node 22 LTS، حاليًا `22.14+`، يعمل للتوافق. ثم ثبّت `openclaw` عالميًا:
+Node 24 هو وقت التشغيل الافتراضي على Mac. لا يزال Node 22 LTS، حاليًا `22.16+`، يعمل للتوافق. ثم ثبّت `openclaw` عالميًا:
 
 ```bash
 npm install -g openclaw@<version>
 ```
 
 يشغّل زر **تثبيت CLI** في تطبيق macOS مسار التثبيت العالمي نفسه الذي يستخدمه التطبيق
-داخليًا: يفضّل npm أولًا، ثم pnpm، ثم bun إذا كان هذا هو مدير الحزم الوحيد
-المكتشف. يظل Node بيئة تشغيل Gateway الموصى بها.
+داخليًا: يفضل npm أولًا، ثم pnpm، ثم bun إذا كان ذلك هو مدير الحزم الوحيد
+المكتشف. يبقى Node وقت التشغيل الموصى به لـ Gateway.
 
 ## Launchd (Gateway بوصفه LaunchAgent)
 
 التسمية:
 
-- `ai.openclaw.gateway` (أو `ai.openclaw.<profile>`؛ قد تبقى `com.openclaw.*` القديمة)
+- `ai.openclaw.gateway` (أو `ai.openclaw.<profile>`؛ قد يبقى القديم `com.openclaw.*`)
 
 موقع Plist (لكل مستخدم):
 
@@ -51,19 +51,19 @@ npm install -g openclaw@<version>
 
 - يفعّل/يعطّل "OpenClaw نشط" LaunchAgent.
 - لا يؤدي إنهاء التطبيق إلى إيقاف Gateway (يبقيه launchd قيد التشغيل).
-- إذا كان Gateway يعمل بالفعل على المنفذ المكوّن، يتصل التطبيق
-  به بدلًا من بدء واحد جديد.
+- إذا كان Gateway قيد التشغيل بالفعل على المنفذ المكوّن، يتصل التطبيق به
+  بدلًا من بدء واحد جديد.
 
 التسجيل:
 
-- خرج/خطأ launchd: `/tmp/openclaw/openclaw-gateway.log`
+- stdout/err الخاص بـ launchd: `/tmp/openclaw/openclaw-gateway.log`
 
 ## توافق الإصدارات
 
-يتحقق تطبيق macOS من إصدار Gateway مقابل إصداره الخاص. إذا كانا
+يتحقق تطبيق macOS من إصدار Gateway مقابل إصداره هو. إذا كانا
 غير متوافقين، فحدّث CLI العالمي ليطابق إصدار التطبيق.
 
-## فحص سريع
+## فحص Smoke
 
 ```bash
 openclaw --version
@@ -79,7 +79,7 @@ openclaw gateway --port 18999 --bind loopback
 openclaw gateway call health --url ws://127.0.0.1:18999 --timeout 3000
 ```
 
-## ذو صلة
+## ذات صلة
 
 - [تطبيق macOS](/ar/platforms/macos)
 - [دليل تشغيل Gateway](/ar/gateway)

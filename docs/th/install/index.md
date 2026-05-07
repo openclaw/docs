@@ -1,28 +1,28 @@
 ---
 read_when:
-    - คุณต้องใช้วิธีติดตั้งอื่นที่ไม่ใช่คู่มือเริ่มต้นใช้งานแบบรวดเร็ว
-    - คุณต้องการนำไปปรับใช้บนแพลตฟอร์มคลาวด์
+    - คุณต้องการวิธีติดตั้งอื่นนอกเหนือจากคู่มือเริ่มต้นใช้งานแบบรวดเร็ว
+    - คุณต้องการปรับใช้บนแพลตฟอร์มคลาวด์
     - คุณจำเป็นต้องอัปเดต ย้ายข้อมูล หรือถอนการติดตั้ง
-summary: ติดตั้ง OpenClaw - สคริปต์ตัวติดตั้ง, npm/pnpm/bun, จากซอร์ส, Docker และอื่น ๆ
+summary: ติดตั้ง OpenClaw - สคริปต์ติดตั้ง, npm/pnpm/bun, จากซอร์สโค้ด, Docker และอื่นๆ
 title: ติดตั้ง
 x-i18n:
-    generated_at: "2026-05-06T09:19:34Z"
+    generated_at: "2026-05-07T13:21:33Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 2d5b38787ad80f91c82aa1fd4020a11c99f440ccbf2e9b9309da336dd5883462
+    source_hash: 8a5dc92d262710cc96a160b7cac2b93ee1e25f994ddcd45e274ad96c026b7d72
     source_path: install/index.md
     workflow: 16
 ---
 
 ## ข้อกำหนดของระบบ
 
-- **Node 24** (แนะนำ) หรือ Node 22.14+ - สคริปต์ตัวติดตั้งจะจัดการเรื่องนี้ให้อัตโนมัติ
-- **macOS, Linux หรือ Windows** - รองรับทั้ง Windows แบบเนทีฟและ WSL2; WSL2 เสถียรกว่า ดู [Windows](/th/platforms/windows)
-- ต้องใช้ `pnpm` เฉพาะเมื่อคุณสร้างจากซอร์ส
+- **Node 24** (แนะนำ) หรือ Node 22.16+ - สคริปต์ติดตั้งจัดการเรื่องนี้ให้อัตโนมัติ
+- **macOS, Linux หรือ Windows** - รองรับทั้ง Windows แบบเนทีฟและ WSL2; WSL2 มีความเสถียรมากกว่า ดู [Windows](/th/platforms/windows)
+- จำเป็นต้องใช้ `pnpm` เฉพาะเมื่อคุณ build จากซอร์ส
 
-## แนะนำ: สคริปต์ตัวติดตั้ง
+## แนะนำ: สคริปต์ติดตั้ง
 
-วิธีติดตั้งที่เร็วที่สุด ระบบจะตรวจหา OS ของคุณ ติดตั้ง Node หากจำเป็น ติดตั้ง OpenClaw และเริ่มขั้นตอนเริ่มต้นใช้งาน
+วิธีติดตั้งที่เร็วที่สุด โดยจะตรวจหา OS ของคุณ ติดตั้ง Node หากจำเป็น ติดตั้ง OpenClaw และเริ่ม onboarding
 
 <Tabs>
   <Tab title="macOS / Linux / WSL2">
@@ -37,7 +37,7 @@ x-i18n:
   </Tab>
 </Tabs>
 
-หากต้องการติดตั้งโดยไม่เรียกใช้ขั้นตอนเริ่มต้นใช้งาน:
+หากต้องการติดตั้งโดยไม่รัน onboarding:
 
 <Tabs>
   <Tab title="macOS / Linux / WSL2">
@@ -52,23 +52,23 @@ x-i18n:
   </Tab>
 </Tabs>
 
-สำหรับ flag ทั้งหมดและตัวเลือก CI/ระบบอัตโนมัติ ดู [รายละเอียดภายในของตัวติดตั้ง](/th/install/installer)
+สำหรับ flags ทั้งหมดและตัวเลือก CI/automation ดู [รายละเอียดภายในของตัวติดตั้ง](/th/install/installer)
 
 ## วิธีติดตั้งทางเลือก
 
-### ตัวติดตั้ง prefix ภายในเครื่อง (`install-cli.sh`)
+### ตัวติดตั้งแบบ local prefix (`install-cli.sh`)
 
-ใช้วิธีนี้เมื่อคุณต้องการเก็บ OpenClaw และ Node ไว้ใต้ prefix ภายในเครื่อง เช่น
-`~/.openclaw` โดยไม่ต้องพึ่งพาการติดตั้ง Node แบบทั้งระบบ:
+ใช้วิธีนี้เมื่อคุณต้องการเก็บ OpenClaw และ Node ไว้ใต้ local prefix เช่น
+`~/.openclaw` โดยไม่ต้องพึ่งการติดตั้ง Node ระดับทั้งระบบ:
 
 ```bash
 curl -fsSL https://openclaw.ai/install-cli.sh | bash
 ```
 
-โดยค่าเริ่มต้น วิธีนี้รองรับการติดตั้งผ่าน npm รวมถึงการติดตั้งแบบ git-checkout ภายใต้ flow
+โดยค่าเริ่มต้นรองรับการติดตั้งผ่าน npm รวมถึงการติดตั้งแบบ git-checkout ภายใต้ flow
 prefix เดียวกัน อ้างอิงฉบับเต็ม: [รายละเอียดภายในของตัวติดตั้ง](/th/install/installer#install-clish)
 
-ติดตั้งไว้แล้วใช่ไหม? สลับระหว่างการติดตั้งแบบแพ็กเกจและแบบ git ด้วย
+ติดตั้งไว้แล้วใช่ไหม สลับระหว่างการติดตั้งแบบ package และ git ด้วย
 `openclaw update --channel dev` และ `openclaw update --channel stable` ดู
 [การอัปเดต](/th/install/updating#switch-between-npm-and-git-installs)
 
@@ -91,7 +91,7 @@ prefix เดียวกัน อ้างอิงฉบับเต็ม: [
     ```
 
     <Note>
-    pnpm ต้องได้รับการอนุมัติอย่างชัดเจนสำหรับแพ็กเกจที่มีสคริปต์ build ให้เรียกใช้ `pnpm approve-builds -g` หลังการติดตั้งครั้งแรก
+    pnpm ต้องได้รับการอนุมัติอย่างชัดเจนสำหรับ packages ที่มี build scripts รัน `pnpm approve-builds -g` หลังการติดตั้งครั้งแรก
     </Note>
 
   </Tab>
@@ -102,13 +102,13 @@ prefix เดียวกัน อ้างอิงฉบับเต็ม: [
     ```
 
     <Note>
-    รองรับ Bun สำหรับเส้นทางติดตั้ง CLI แบบ global สำหรับ runtime ของ Gateway ยังคงแนะนำให้ใช้ Node เป็น daemon runtime
+    รองรับ Bun สำหรับเส้นทางการติดตั้ง CLI แบบ global สำหรับรันไทม์ของ Gateway ยังแนะนำให้ใช้ Node เป็นรันไทม์ daemon
     </Note>
 
   </Tab>
 </Tabs>
 
-<Accordion title="การแก้ปัญหา: ข้อผิดพลาด build ของ sharp (npm)">
+<Accordion title="การแก้ไขปัญหา: ข้อผิดพลาดการ build ของ sharp (npm)">
   หาก `sharp` ล้มเหลวเนื่องจาก libvips ที่ติดตั้งแบบ global:
 
 ```bash
@@ -119,7 +119,7 @@ SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install -g openclaw@latest
 
 ### จากซอร์ส
 
-สำหรับผู้ร่วมพัฒนาหรือผู้ที่ต้องการเรียกใช้จาก checkout ภายในเครื่อง:
+สำหรับผู้ร่วมพัฒนาหรือใครก็ตามที่ต้องการรันจาก checkout ภายในเครื่อง:
 
 ```bash
 git clone https://github.com/openclaw/openclaw.git
@@ -137,47 +137,47 @@ openclaw onboard --install-daemon
 npm install -g github:openclaw/openclaw#main
 ```
 
-### คอนเทนเนอร์และตัวจัดการแพ็กเกจ
+### Containers และ package managers
 
 <CardGroup cols={2}>
   <Card title="Docker" href="/th/install/docker" icon="container">
-    การปรับใช้แบบคอนเทนเนอร์หรือแบบไม่มีหน้าจอ
+    การ deploy แบบ containerized หรือ headless
   </Card>
   <Card title="Podman" href="/th/install/podman" icon="container">
-    ทางเลือกคอนเทนเนอร์แบบ rootless แทน Docker
+    ทางเลือก container แบบ rootless แทน Docker
   </Card>
   <Card title="Nix" href="/th/install/nix" icon="snowflake">
-    การติดตั้งแบบประกาศผ่าน Nix flake
+    การติดตั้งแบบ declarative ผ่าน Nix flake
   </Card>
   <Card title="Ansible" href="/th/install/ansible" icon="server">
-    การจัดเตรียมเครื่องจำนวนมากแบบอัตโนมัติ
+    การ provision fleet แบบอัตโนมัติ
   </Card>
   <Card title="Bun" href="/th/install/bun" icon="zap">
-    การใช้งานเฉพาะ CLI ผ่าน Bun runtime
+    การใช้งานเฉพาะ CLI ผ่านรันไทม์ Bun
   </Card>
 </CardGroup>
 
 ## ตรวจสอบการติดตั้ง
 
 ```bash
-openclaw --version      # ยืนยันว่า CLI พร้อมใช้งาน
-openclaw doctor         # ตรวจหาปัญหาการกำหนดค่า
-openclaw gateway status # ตรวจสอบว่า Gateway กำลังทำงาน
+openclaw --version      # confirm the CLI is available
+openclaw doctor         # check for config issues
+openclaw gateway status # verify the Gateway is running
 ```
 
-หากคุณต้องการให้เริ่มทำงานแบบมีการจัดการหลังติดตั้ง:
+หากคุณต้องการ managed startup หลังติดตั้ง:
 
 - macOS: LaunchAgent ผ่าน `openclaw onboard --install-daemon` หรือ `openclaw gateway install`
 - Linux/WSL2: systemd user service ผ่านคำสั่งเดียวกัน
-- Windows แบบเนทีฟ: ใช้ Scheduled Task ก่อน พร้อม fallback เป็นรายการ login ในโฟลเดอร์ Startup ต่อผู้ใช้ หากการสร้าง task ถูกปฏิเสธ
+- Windows แบบเนทีฟ: ใช้ Scheduled Task ก่อน โดยมีรายการ login ใน Startup-folder ต่อผู้ใช้เป็น fallback หากการสร้าง task ถูกปฏิเสธ
 
-## การโฮสต์และการปรับใช้
+## Hosting และ deployment
 
-ปรับใช้ OpenClaw บนเซิร์ฟเวอร์คลาวด์หรือ VPS:
+Deploy OpenClaw บน cloud server หรือ VPS:
 
 <CardGroup cols={3}>
   <Card title="VPS" href="/th/vps">VPS Linux ใดก็ได้</Card>
-  <Card title="Docker VM" href="/th/install/docker-vm-runtime">ขั้นตอน Docker ที่ใช้ร่วมกัน</Card>
+  <Card title="Docker VM" href="/th/install/docker-vm-runtime">ขั้นตอน Docker ร่วมกัน</Card>
   <Card title="Kubernetes" href="/th/install/kubernetes">K8s</Card>
   <Card title="Fly.io" href="/th/install/fly">Fly.io</Card>
   <Card title="Hetzner" href="/th/install/hetzner">Hetzner</Card>
@@ -192,7 +192,7 @@ openclaw gateway status # ตรวจสอบว่า Gateway กำลัง
 
 <CardGroup cols={3}>
   <Card title="การอัปเดต" href="/th/install/updating" icon="refresh-cw">
-    รักษา OpenClaw ให้เป็นเวอร์ชันล่าสุด
+    ทำให้ OpenClaw เป็นปัจจุบันอยู่เสมอ
   </Card>
   <Card title="การย้าย" href="/th/install/migrating" icon="arrow-right">
     ย้ายไปยังเครื่องใหม่
@@ -202,20 +202,20 @@ openclaw gateway status # ตรวจสอบว่า Gateway กำลัง
   </Card>
 </CardGroup>
 
-## การแก้ปัญหา: ไม่พบ `openclaw`
+## การแก้ไขปัญหา: ไม่พบ `openclaw`
 
-หากการติดตั้งสำเร็จแล้วแต่ไม่พบ `openclaw` ในเทอร์มินัลของคุณ:
+หากติดตั้งสำเร็จแล้วแต่ไม่พบ `openclaw` ใน terminal ของคุณ:
 
 ```bash
-node -v           # ติดตั้ง Node แล้วหรือไม่?
-npm prefix -g     # แพ็กเกจ global อยู่ที่ใด?
-echo "$PATH"      # ไดเรกทอรี bin แบบ global อยู่ใน PATH หรือไม่?
+node -v           # Node installed?
+npm prefix -g     # Where are global packages?
+echo "$PATH"      # Is the global bin dir in PATH?
 ```
 
-หาก `$(npm prefix -g)/bin` ไม่อยู่ใน `$PATH` ให้เพิ่มลงในไฟล์เริ่มต้นของ shell (`~/.zshrc` หรือ `~/.bashrc`):
+หาก `$(npm prefix -g)/bin` ไม่อยู่ใน `$PATH` ของคุณ ให้เพิ่มลงในไฟล์ startup ของ shell (`~/.zshrc` หรือ `~/.bashrc`):
 
 ```bash
 export PATH="$(npm prefix -g)/bin:$PATH"
 ```
 
-จากนั้นเปิดเทอร์มินัลใหม่ ดู [การตั้งค่า Node](/th/install/node) สำหรับรายละเอียดเพิ่มเติม
+จากนั้นเปิด terminal ใหม่ ดู [การตั้งค่า Node](/th/install/node) สำหรับรายละเอียดเพิ่มเติม

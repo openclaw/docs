@@ -1,26 +1,26 @@
 ---
 read_when:
     - می‌خواهید `openclaw.ai/install.sh` را درک کنید
-    - می‌خواهید نصب‌ها را خودکار کنید (CI / بدون رابط گرافیکی)
-    - می‌خواهید از یک نسخهٔ دریافت‌شده از GitHub نصب کنید
-summary: نحوهٔ کار اسکریپت‌های نصب (install.sh, install-cli.sh, install.ps1)، پرچم‌ها، و خودکارسازی
-title: سازوکارهای داخلی نصب‌کننده
+    - می‌خواهید نصب‌ها را خودکار کنید (CI / بدون رابط کاربری)
+    - می‌خواهید از یک نسخهٔ کاری GitHub نصب کنید
+summary: نحوهٔ کار اسکریپت‌های نصب‌کننده (install.sh، install-cli.sh، install.ps1)، پرچم‌ها و خودکارسازی
+title: جزئیات داخلی نصب‌کننده
 x-i18n:
-    generated_at: "2026-05-02T11:51:54Z"
+    generated_at: "2026-05-07T13:25:05Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 119d94edae8cae2460e1bce9fe6bb31dc3c91d23443090cd34bf10adde9e10f1
+    source_hash: a62720526e2a5ffc94555f77e7e806d63768b849a9491b60f6fdc9cf070eed2f
     source_path: install/installer.md
     workflow: 16
 ---
 
-OpenClaw سه اسکریپت نصب ارائه می‌کند که از `openclaw.ai` سرو می‌شوند.
+OpenClaw سه اسکریپت نصب را ارائه می‌کند که از `openclaw.ai` سرو می‌شوند.
 
-| اسکریپت                            | پلتفرم             | کاری که انجام می‌دهد                                                                                                   |
+| اسکریپت                            | پلتفرم              | کاری که انجام می‌دهد                                                                                                  |
 | ---------------------------------- | -------------------- | -------------------------------------------------------------------------------------------------------------- |
-| [`install.sh`](#installsh)         | macOS / Linux / WSL  | در صورت نیاز Node را نصب می‌کند، OpenClaw را از طریق npm (پیش‌فرض) یا git نصب می‌کند، و می‌تواند راه‌اندازی اولیه را اجرا کند.                   |
-| [`install-cli.sh`](#install-clish) | macOS / Linux / WSL  | Node + OpenClaw را در یک پیشوند محلی (`~/.openclaw`) با حالت‌های npm یا git checkout نصب می‌کند. نیازی به دسترسی ریشه نیست. |
-| [`install.ps1`](#installps1)       | Windows (PowerShell) | در صورت نیاز Node را نصب می‌کند، OpenClaw را از طریق npm (پیش‌فرض) یا git نصب می‌کند، و می‌تواند راه‌اندازی اولیه را اجرا کند.                   |
+| [`install.sh`](#installsh)         | macOS / Linux / WSL  | در صورت نیاز Node را نصب می‌کند، OpenClaw را از طریق npm (پیش‌فرض) یا git نصب می‌کند، و می‌تواند onboarding را اجرا کند.                   |
+| [`install-cli.sh`](#install-clish) | macOS / Linux / WSL  | Node + OpenClaw را با حالت‌های npm یا git checkout در یک پیشوند محلی (`~/.openclaw`) نصب می‌کند. به دسترسی root نیاز ندارد. |
+| [`install.ps1`](#installps1)       | Windows (PowerShell) | در صورت نیاز Node را نصب می‌کند، OpenClaw را از طریق npm (پیش‌فرض) یا git نصب می‌کند، و می‌تواند onboarding را اجرا کند.                   |
 
 ## فرمان‌های سریع
 
@@ -74,64 +74,64 @@ OpenClaw سه اسکریپت نصب ارائه می‌کند که از `openclaw
 ### جریان (install.sh)
 
 <Steps>
-  <Step title="تشخیص سیستم‌عامل">
-    از macOS و Linux (از جمله WSL) پشتیبانی می‌کند. اگر macOS تشخیص داده شود، در صورت نبود Homebrew آن را نصب می‌کند.
+  <Step title="Detect OS">
+    از macOS و Linux (از جمله WSL) پشتیبانی می‌کند. اگر macOS شناسایی شود، در صورت نبود Homebrew آن را نصب می‌کند.
   </Step>
-  <Step title="اطمینان از Node.js 24 به‌صورت پیش‌فرض">
-    نسخه Node را بررسی می‌کند و در صورت نیاز Node 24 را نصب می‌کند (Homebrew روی macOS، اسکریپت‌های راه‌اندازی NodeSource روی Linux apt/dnf/yum). OpenClaw همچنان برای سازگاری از Node 22 LTS، در حال حاضر `22.14+`، پشتیبانی می‌کند.
+  <Step title="Ensure Node.js 24 by default">
+    نسخه Node را بررسی می‌کند و در صورت نیاز Node 24 را نصب می‌کند (Homebrew روی macOS، اسکریپت‌های راه‌اندازی NodeSource روی Linux apt/dnf/yum). OpenClaw همچنان برای سازگاری از Node 22 LTS، در حال حاضر `22.16+`، پشتیبانی می‌کند.
   </Step>
-  <Step title="اطمینان از وجود Git">
+  <Step title="Ensure Git">
     در صورت نبود Git آن را نصب می‌کند.
   </Step>
-  <Step title="نصب OpenClaw">
+  <Step title="Install OpenClaw">
     - روش `npm` (پیش‌فرض): نصب سراسری npm
-    - روش `git`: شبیه‌سازی/به‌روزرسانی مخزن، نصب وابستگی‌ها با pnpm، ساخت، سپس نصب wrapper در `~/.local/bin/openclaw`
+    - روش `git`: clone/update مخزن، نصب وابستگی‌ها با pnpm، build، سپس نصب wrapper در `~/.local/bin/openclaw`
 
   </Step>
-  <Step title="کارهای پس از نصب">
-    - یک سرویس gateway بارگذاری‌شده را به بهترین شکل ممکن تازه‌سازی می‌کند (`openclaw gateway install --force`، سپس راه‌اندازی مجدد)
-    - در ارتقاها و نصب‌های git، `openclaw doctor --non-interactive` را اجرا می‌کند (بهترین تلاش)
-    - در صورت مناسب بودن، راه‌اندازی اولیه را تلاش می‌کند (TTY در دسترس باشد، راه‌اندازی اولیه غیرفعال نشده باشد، و بررسی‌های bootstrap/config موفق باشند)
+  <Step title="Post-install tasks">
+    - یک سرویس gateway بارگذاری‌شده را به‌صورت best-effort تازه‌سازی می‌کند (`openclaw gateway install --force`، سپس restart)
+    - در upgradeها و نصب‌های git، `openclaw doctor --non-interactive` را اجرا می‌کند (best effort)
+    - وقتی مناسب باشد onboarding را تلاش می‌کند (TTY در دسترس باشد، onboarding غیرفعال نشده باشد، و بررسی‌های bootstrap/config موفق باشند)
     - مقدار پیش‌فرض `SHARP_IGNORE_GLOBAL_LIBVIPS=1` را تنظیم می‌کند
 
   </Step>
 </Steps>
 
-### تشخیص checkout منبع
+### شناسایی checkout منبع
 
-اگر داخل یک checkout از OpenClaw اجرا شود (`package.json` + `pnpm-workspace.yaml`)، اسکریپت این گزینه‌ها را پیشنهاد می‌کند:
+اگر داخل یک checkout از OpenClaw اجرا شود (`package.json` + `pnpm-workspace.yaml`)، اسکریپت این گزینه‌ها را پیشنهاد می‌دهد:
 
 - استفاده از checkout (`git`)، یا
 - استفاده از نصب سراسری (`npm`)
 
-اگر TTY در دسترس نباشد و هیچ روش نصبی تنظیم نشده باشد، به‌صورت پیش‌فرض از `npm` استفاده می‌کند و هشدار می‌دهد.
+اگر TTY در دسترس نباشد و هیچ روش نصبی تنظیم نشده باشد، به‌طور پیش‌فرض از `npm` استفاده می‌کند و هشدار می‌دهد.
 
-اسکریپت برای انتخاب روش نامعتبر یا مقدارهای نامعتبر `--install-method` با کد `2` خارج می‌شود.
+اسکریپت برای انتخاب روش نامعتبر یا مقادیر نامعتبر `--install-method` با کد `2` خارج می‌شود.
 
-### نمونه‌ها (install.sh)
+### مثال‌ها (install.sh)
 
 <Tabs>
-  <Tab title="پیش‌فرض">
+  <Tab title="Default">
     ```bash
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash
     ```
   </Tab>
-  <Tab title="رد کردن راه‌اندازی اولیه">
+  <Tab title="Skip onboarding">
     ```bash
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --no-onboard
     ```
   </Tab>
-  <Tab title="نصب Git">
+  <Tab title="Git install">
     ```bash
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --install-method git
     ```
   </Tab>
-  <Tab title="GitHub main از طریق npm">
+  <Tab title="GitHub main via npm">
     ```bash
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --version main
     ```
   </Tab>
-  <Tab title="اجرای آزمایشی">
+  <Tab title="Dry run">
     ```bash
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --dry-run
     ```
@@ -139,41 +139,41 @@ OpenClaw سه اسکریپت نصب ارائه می‌کند که از `openclaw
 </Tabs>
 
 <AccordionGroup>
-  <Accordion title="مرجع پرچم‌ها">
+  <Accordion title="Flags reference">
 
 | پرچم                                  | توضیح                                                |
 | ------------------------------------- | ---------------------------------------------------------- |
 | `--install-method npm\|git`           | انتخاب روش نصب (پیش‌فرض: `npm`). نام مستعار: `--method`  |
 | `--npm`                               | میان‌بر برای روش npm                                    |
 | `--git`                               | میان‌بر برای روش git. نام مستعار: `--github`                 |
-| `--version <version\|dist-tag\|spec>` | نسخه npm، dist-tag، یا مشخصات بسته (پیش‌فرض: `latest`) |
-| `--beta`                              | در صورت وجود از beta dist-tag استفاده می‌کند، وگرنه به `latest` برمی‌گردد  |
+| `--version <version\|dist-tag\|spec>` | نسخه npm، dist-tag، یا package spec (پیش‌فرض: `latest`) |
+| `--beta`                              | اگر beta dist-tag در دسترس باشد از آن استفاده می‌کند، در غیر این صورت به `latest` برمی‌گردد  |
 | `--git-dir <path>`                    | دایرکتوری checkout (پیش‌فرض: `~/openclaw`). نام مستعار: `--dir` |
-| `--no-git-update`                     | برای checkout موجود، `git pull` را رد می‌کند                      |
-| `--no-prompt`                         | اعلان‌ها را غیرفعال می‌کند                                            |
-| `--no-onboard`                        | راه‌اندازی اولیه را رد می‌کند                                            |
-| `--onboard`                           | راه‌اندازی اولیه را فعال می‌کند                                          |
-| `--dry-run`                           | کنش‌ها را بدون اعمال تغییرات چاپ می‌کند                     |
-| `--verbose`                           | خروجی اشکال‌زدایی را فعال می‌کند (`set -x`، لاگ‌های سطح notice در npm)      |
-| `--help`                              | راهنمای استفاده را نشان می‌دهد (`-h`)                                          |
+| `--no-git-update`                     | از `git pull` برای checkout موجود صرف‌نظر می‌کند                      |
+| `--no-prompt`                         | promptها را غیرفعال می‌کند                                            |
+| `--no-onboard`                        | از onboarding صرف‌نظر می‌کند                                            |
+| `--onboard`                           | onboarding را فعال می‌کند                                          |
+| `--dry-run`                           | اقدام‌ها را بدون اعمال تغییرات چاپ می‌کند                     |
+| `--verbose`                           | خروجی debug را فعال می‌کند (`set -x`، لاگ‌های سطح notice در npm)      |
+| `--help`                              | نحوه استفاده را نشان می‌دهد (`-h`)                                          |
 
   </Accordion>
 
-  <Accordion title="مرجع متغیرهای محیطی">
+  <Accordion title="Environment variables reference">
 
 | متغیر                                                | توضیح                                   |
 | ------------------------------------------------------- | --------------------------------------------- |
 | `OPENCLAW_INSTALL_METHOD=git\|npm`                      | روش نصب                                |
-| `OPENCLAW_VERSION=latest\|next\|main\|<semver>\|<spec>` | نسخه npm، dist-tag، یا مشخصات بسته        |
-| `OPENCLAW_BETA=0\|1`                                    | استفاده از beta در صورت وجود                         |
+| `OPENCLAW_VERSION=latest\|next\|main\|<semver>\|<spec>` | نسخه npm، dist-tag، یا package spec        |
+| `OPENCLAW_BETA=0\|1`                                    | در صورت در دسترس بودن از beta استفاده می‌کند                         |
 | `OPENCLAW_GIT_DIR=<path>`                               | دایرکتوری checkout                            |
-| `OPENCLAW_GIT_UPDATE=0\|1`                              | تغییر وضعیت به‌روزرسانی‌های git                            |
-| `OPENCLAW_NO_PROMPT=1`                                  | غیرفعال کردن اعلان‌ها                               |
-| `OPENCLAW_NO_ONBOARD=1`                                 | رد کردن راه‌اندازی اولیه                               |
-| `OPENCLAW_DRY_RUN=1`                                    | حالت اجرای آزمایشی                                  |
-| `OPENCLAW_VERBOSE=1`                                    | حالت اشکال‌زدایی                                    |
+| `OPENCLAW_GIT_UPDATE=0\|1`                              | به‌روزرسانی‌های git را تغییر وضعیت می‌دهد                            |
+| `OPENCLAW_NO_PROMPT=1`                                  | promptها را غیرفعال می‌کند                               |
+| `OPENCLAW_NO_ONBOARD=1`                                 | از onboarding صرف‌نظر می‌کند                               |
+| `OPENCLAW_DRY_RUN=1`                                    | حالت dry run                                  |
+| `OPENCLAW_VERBOSE=1`                                    | حالت debug                                    |
 | `OPENCLAW_NPM_LOGLEVEL=error\|warn\|notice`             | سطح لاگ npm                                 |
-| `SHARP_IGNORE_GLOBAL_LIBVIPS=0\|1`                      | کنترل رفتار sharp/libvips (پیش‌فرض: `1`) |
+| `SHARP_IGNORE_GLOBAL_LIBVIPS=0\|1`                      | رفتار sharp/libvips را کنترل می‌کند (پیش‌فرض: `1`) |
 
   </Accordion>
 </AccordionGroup>
@@ -185,56 +185,56 @@ OpenClaw سه اسکریپت نصب ارائه می‌کند که از `openclaw
 ## install-cli.sh
 
 <Info>
-برای محیط‌هایی طراحی شده که می‌خواهید همه‌چیز زیر یک پیشوند محلی
-(پیش‌فرض `~/.openclaw`) باشد و وابستگی سیستمی به Node وجود نداشته باشد. به‌صورت پیش‌فرض از نصب‌های npm
-پشتیبانی می‌کند، به‌همراه نصب‌های git-checkout در همان جریان پیشوند.
+برای محیط‌هایی طراحی شده است که می‌خواهید همه‌چیز زیر یک پیشوند محلی
+(پیش‌فرض `~/.openclaw`) باشد و به وابستگی Node سیستمی نیاز نداشته باشید. به‌طور پیش‌فرض از نصب‌های npm پشتیبانی می‌کند،
+به‌علاوه نصب‌های git-checkout را نیز زیر همان جریان پیشوند پشتیبانی می‌کند.
 </Info>
 
 ### جریان (install-cli.sh)
 
 <Steps>
-  <Step title="نصب runtime محلی Node">
-    یک آرشیو tarball پین‌شده و پشتیبانی‌شده Node LTS را (نسخه در اسکریپت جاسازی شده و مستقل به‌روزرسانی می‌شود) در `<prefix>/tools/node-v<version>` دانلود می‌کند و SHA-256 را تأیید می‌کند.
+  <Step title="Install local Node runtime">
+    یک tarball پین‌شده و پشتیبانی‌شده Node LTS را (نسخه در اسکریپت جاسازی شده و مستقل به‌روزرسانی می‌شود) در `<prefix>/tools/node-v<version>` دانلود می‌کند و SHA-256 را تأیید می‌کند.
   </Step>
-  <Step title="اطمینان از وجود Git">
-    اگر Git وجود نداشته باشد، تلاش می‌کند آن را از طریق apt/dnf/yum روی Linux یا Homebrew روی macOS نصب کند.
+  <Step title="Ensure Git">
+    اگر Git موجود نباشد، تلاش می‌کند آن را از طریق apt/dnf/yum روی Linux یا Homebrew روی macOS نصب کند.
   </Step>
-  <Step title="نصب OpenClaw زیر پیشوند">
+  <Step title="Install OpenClaw under prefix">
     - روش `npm` (پیش‌فرض): زیر پیشوند با npm نصب می‌کند، سپس wrapper را در `<prefix>/bin/openclaw` می‌نویسد
-    - روش `git`: یک checkout را شبیه‌سازی/به‌روزرسانی می‌کند (پیش‌فرض `~/openclaw`) و همچنان wrapper را در `<prefix>/bin/openclaw` می‌نویسد
+    - روش `git`: یک checkout را clone/update می‌کند (پیش‌فرض `~/openclaw`) و همچنان wrapper را در `<prefix>/bin/openclaw` می‌نویسد
 
   </Step>
-  <Step title="تازه‌سازی سرویس gateway بارگذاری‌شده">
-    اگر یک سرویس gateway از همان پیشوند از قبل بارگذاری شده باشد، اسکریپت
+  <Step title="Refresh loaded gateway service">
+    اگر یک سرویس gateway از همان پیشوند قبلاً بارگذاری شده باشد، اسکریپت
     `openclaw gateway install --force`، سپس `openclaw gateway restart` را اجرا می‌کند، و
-    سلامت gateway را به بهترین شکل ممکن بررسی می‌کند.
+    سلامت gateway را به‌صورت best-effort بررسی می‌کند.
   </Step>
 </Steps>
 
-### نمونه‌ها (install-cli.sh)
+### مثال‌ها (install-cli.sh)
 
 <Tabs>
-  <Tab title="پیش‌فرض">
+  <Tab title="Default">
     ```bash
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash
     ```
   </Tab>
-  <Tab title="پیشوند سفارشی + نسخه">
+  <Tab title="Custom prefix + version">
     ```bash
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash -s -- --prefix /opt/openclaw --version latest
     ```
   </Tab>
-  <Tab title="نصب Git">
+  <Tab title="Git install">
     ```bash
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash -s -- --install-method git --git-dir ~/openclaw
     ```
   </Tab>
-  <Tab title="خروجی JSON برای خودکارسازی">
+  <Tab title="Automation JSON output">
     ```bash
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash -s -- --json --prefix /opt/openclaw
     ```
   </Tab>
-  <Tab title="اجرای راه‌اندازی اولیه">
+  <Tab title="Run onboarding">
     ```bash
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash -s -- --onboard
     ```
@@ -242,7 +242,7 @@ OpenClaw سه اسکریپت نصب ارائه می‌کند که از `openclaw
 </Tabs>
 
 <AccordionGroup>
-  <Accordion title="مرجع پرچم‌ها">
+  <Accordion title="Flags reference">
 
 | پرچم                        | توضیح                                                                     |
 | --------------------------- | ------------------------------------------------------------------------------- |
@@ -253,26 +253,26 @@ OpenClaw سه اسکریپت نصب ارائه می‌کند که از `openclaw
 | `--git-dir <path>`          | دایرکتوری git checkout (پیش‌فرض: `~/openclaw`). نام مستعار: `--dir`                  |
 | `--version <ver>`           | نسخه OpenClaw یا dist-tag (پیش‌فرض: `latest`)                                |
 | `--node-version <ver>`      | نسخه Node (پیش‌فرض: `22.22.0`)                                               |
-| `--json`                    | رویدادهای NDJSON را منتشر می‌کند                                                              |
+| `--json`                    | رویدادهای NDJSON منتشر می‌کند                                                              |
 | `--onboard`                 | پس از نصب `openclaw onboard` را اجرا می‌کند                                            |
-| `--no-onboard`              | راه‌اندازی اولیه را رد می‌کند (پیش‌فرض)                                                       |
-| `--set-npm-prefix`          | روی Linux، اگر پیشوند فعلی قابل نوشتن نیست، پیشوند npm را به `~/.npm-global` اجبار می‌کند |
-| `--help`                    | راهنمای استفاده را نشان می‌دهد (`-h`)                                                               |
+| `--no-onboard`              | از onboarding صرف‌نظر می‌کند (پیش‌فرض)                                                       |
+| `--set-npm-prefix`          | روی Linux، اگر پیشوند فعلی قابل نوشتن نباشد، پیشوند npm را به `~/.npm-global` اجبار می‌کند |
+| `--help`                    | نحوه استفاده را نشان می‌دهد (`-h`)                                                               |
 
   </Accordion>
 
-  <Accordion title="مرجع متغیرهای محیطی">
+  <Accordion title="Environment variables reference">
 
 | متغیر                                    | توضیح                                   |
 | ------------------------------------------- | --------------------------------------------- |
 | `OPENCLAW_PREFIX=<path>`                    | پیشوند نصب                                |
 | `OPENCLAW_INSTALL_METHOD=git\|npm`          | روش نصب                                |
-| `OPENCLAW_VERSION=<ver>`                    | نسخه OpenClaw یا dist-tag                  |
+| `OPENCLAW_VERSION=<ver>`                    | نسخه OpenClaw یا برچسب توزیع                  |
 | `OPENCLAW_NODE_VERSION=<ver>`               | نسخه Node                                  |
-| `OPENCLAW_GIT_DIR=<path>`                   | دایرکتوری checkout Git برای نصب‌های git       |
-| `OPENCLAW_GIT_UPDATE=0\|1`                  | روشن/خاموش کردن به‌روزرسانی‌های git برای checkoutهای موجود     |
+| `OPENCLAW_GIT_DIR=<path>`                   | دایرکتوری checkout مربوط به Git برای نصب‌های git       |
+| `OPENCLAW_GIT_UPDATE=0\|1`                  | تغییر وضعیت به‌روزرسانی‌های git برای checkoutهای موجود     |
 | `OPENCLAW_NO_ONBOARD=1`                     | رد کردن راه‌اندازی اولیه                               |
-| `OPENCLAW_NPM_LOGLEVEL=error\|warn\|notice` | سطح گزارش npm                                 |
+| `OPENCLAW_NPM_LOGLEVEL=error\|warn\|notice` | سطح لاگ npm                                 |
 | `SHARP_IGNORE_GLOBAL_LIBVIPS=0\|1`          | کنترل رفتار sharp/libvips (پیش‌فرض: `1`) |
 
   </Accordion>
@@ -287,57 +287,57 @@ OpenClaw سه اسکریپت نصب ارائه می‌کند که از `openclaw
 ### جریان (install.ps1)
 
 <Steps>
-  <Step title="اطمینان از محیط PowerShell + Windows">
+  <Step title="Ensure PowerShell + Windows environment">
     به PowerShell 5+ نیاز دارد.
   </Step>
-  <Step title="اطمینان از Node.js 24 به‌صورت پیش‌فرض">
-    اگر موجود نباشد، نصب از طریق winget، سپس Chocolatey، و سپس Scoop را امتحان می‌کند. Node 22 LTS، در حال حاضر `22.14+`، برای سازگاری همچنان پشتیبانی می‌شود.
+  <Step title="Ensure Node.js 24 by default">
+    اگر موجود نباشد، تلاش می‌کند آن را ابتدا از طریق winget، سپس Chocolatey و بعد Scoop نصب کند. Node 22 LTS که در حال حاضر `22.16+` است، همچنان برای سازگاری پشتیبانی می‌شود.
   </Step>
-  <Step title="نصب OpenClaw">
-    - روش `npm` (پیش‌فرض): نصب سراسری npm با استفاده از `-Tag` انتخاب‌شده، اجراشده از یک دایرکتوری موقت نصب‌کننده که قابل نوشتن است تا پوسته‌هایی که در پوشه‌های محافظت‌شده مانند `C:\` باز شده‌اند همچنان کار کنند
-    - روش `git`: clone/update مخزن، نصب/ساخت با pnpm، و نصب wrapper در `%USERPROFILE%\.local\bin\openclaw.cmd`
+  <Step title="Install OpenClaw">
+    - روش `npm` (پیش‌فرض): نصب سراسری npm با استفاده از `-Tag` انتخاب‌شده، از یک دایرکتوری موقت قابل‌نوشتن نصب‌کننده اجرا می‌شود تا shellهایی که در پوشه‌های محافظت‌شده مانند `C:\` باز شده‌اند همچنان کار کنند
+    - روش `git`: clone/update کردن repo، نصب/ساخت با pnpm، و نصب wrapper در `%USERPROFILE%\.local\bin\openclaw.cmd`
 
   </Step>
-  <Step title="کارهای پس از نصب">
+  <Step title="Post-install tasks">
     - در صورت امکان، دایرکتوری bin لازم را به PATH کاربر اضافه می‌کند
-    - یک سرویس Gateway بارگذاری‌شده را به‌صورت best-effort تازه‌سازی می‌کند (`openclaw gateway install --force`، سپس راه‌اندازی مجدد)
-    - هنگام ارتقاها و نصب‌های git، `openclaw doctor --non-interactive` را اجرا می‌کند (best effort)
+    - سرویس Gateway بارگذاری‌شده را به‌صورت best-effort تازه‌سازی می‌کند (`openclaw gateway install --force`، سپس restart)
+    - در upgradeها و نصب‌های git، `openclaw doctor --non-interactive` را اجرا می‌کند (best effort)
 
   </Step>
-  <Step title="مدیریت شکست‌ها">
-    نصب‌های `iwr ... | iex` و scriptblock یک خطای terminating گزارش می‌کنند بدون اینکه جلسه PowerShell فعلی بسته شود. نصب‌های مستقیم `powershell -File` / `pwsh -File` همچنان برای automation با کد غیرصفر خارج می‌شوند.
+  <Step title="Handle failures">
+    نصب‌های `iwr ... | iex` و scriptblock یک خطای خاتمه‌دهنده گزارش می‌کنند، بدون اینکه نشست فعلی PowerShell را ببندند. نصب‌های مستقیم `powershell -File` / `pwsh -File` همچنان برای خودکارسازی با کد غیرصفر خارج می‌شوند.
   </Step>
 </Steps>
 
 ### نمونه‌ها (install.ps1)
 
 <Tabs>
-  <Tab title="پیش‌فرض">
+  <Tab title="Default">
     ```powershell
     iwr -useb https://openclaw.ai/install.ps1 | iex
     ```
   </Tab>
-  <Tab title="نصب Git">
+  <Tab title="Git install">
     ```powershell
     & ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -InstallMethod git
     ```
   </Tab>
-  <Tab title="شاخه main در GitHub از طریق npm">
+  <Tab title="GitHub main via npm">
     ```powershell
     & ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -Tag main
     ```
   </Tab>
-  <Tab title="دایرکتوری git سفارشی">
+  <Tab title="Custom git directory">
     ```powershell
     & ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -InstallMethod git -GitDir "C:\openclaw"
     ```
   </Tab>
-  <Tab title="اجرای آزمایشی">
+  <Tab title="Dry run">
     ```powershell
     & ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -DryRun
     ```
   </Tab>
-  <Tab title="ردیابی اشکال‌زدایی">
+  <Tab title="Debug trace">
     ```powershell
     # install.ps1 has no dedicated -Verbose flag yet.
     Set-PSDebug -Trace 1
@@ -348,20 +348,20 @@ OpenClaw سه اسکریپت نصب ارائه می‌کند که از `openclaw
 </Tabs>
 
 <AccordionGroup>
-  <Accordion title="مرجع flagها">
+  <Accordion title="Flags reference">
 
-| Flag                        | توضیح                                                |
+| پرچم                        | توضیح                                                |
 | --------------------------- | ---------------------------------------------------------- |
 | `-InstallMethod npm\|git`   | روش نصب (پیش‌فرض: `npm`)                            |
-| `-Tag <tag\|version\|spec>` | dist-tag، نسخه، یا package spec برای npm (پیش‌فرض: `latest`) |
+| `-Tag <tag\|version\|spec>` | برچسب توزیع npm، نسخه، یا مشخصات بسته (پیش‌فرض: `latest`) |
 | `-GitDir <path>`            | دایرکتوری checkout (پیش‌فرض: `%USERPROFILE%\openclaw`)     |
 | `-NoOnboard`                | رد کردن راه‌اندازی اولیه                                            |
 | `-NoGitUpdate`              | رد کردن `git pull`                                            |
-| `-DryRun`                   | فقط چاپ کارها                                         |
+| `-DryRun`                   | فقط چاپ کنش‌ها                                         |
 
   </Accordion>
 
-  <Accordion title="مرجع متغیرهای محیطی">
+  <Accordion title="Environment variables reference">
 
 | متغیر                           | توضیح        |
 | ---------------------------------- | ------------------ |
@@ -380,17 +380,17 @@ OpenClaw سه اسکریپت نصب ارائه می‌کند که از `openclaw
 
 ---
 
-## CI و automation
+## CI و خودکارسازی
 
-برای اجراهای قابل پیش‌بینی از flagها/env vars غیرتعاملی استفاده کنید.
+برای اجراهای قابل‌پیش‌بینی از پرچم‌ها/متغیرهای محیطی غیرتعاملی استفاده کنید.
 
 <Tabs>
-  <Tab title="install.sh (npm غیرتعاملی)">
+  <Tab title="install.sh (non-interactive npm)">
     ```bash
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash -s -- --no-prompt --no-onboard
     ```
   </Tab>
-  <Tab title="install.sh (git غیرتعاملی)">
+  <Tab title="install.sh (non-interactive git)">
     ```bash
     OPENCLAW_INSTALL_METHOD=git OPENCLAW_NO_PROMPT=1 \
       curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash
@@ -401,7 +401,7 @@ OpenClaw سه اسکریپت نصب ارائه می‌کند که از `openclaw
     curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install-cli.sh | bash -s -- --json --prefix /opt/openclaw
     ```
   </Tab>
-  <Tab title="install.ps1 (رد کردن راه‌اندازی اولیه)">
+  <Tab title="install.ps1 (skip onboarding)">
     ```powershell
     & ([scriptblock]::Create((iwr -useb https://openclaw.ai/install.ps1))) -NoOnboard
     ```
@@ -413,16 +413,16 @@ OpenClaw سه اسکریپت نصب ارائه می‌کند که از `openclaw
 ## عیب‌یابی
 
 <AccordionGroup>
-  <Accordion title="چرا Git لازم است؟">
-    Git برای روش نصب `git` لازم است. برای نصب‌های `npm` نیز Git همچنان بررسی/نصب می‌شود تا وقتی وابستگی‌ها از URLهای git استفاده می‌کنند، از شکست‌های `spawn git ENOENT` جلوگیری شود.
+  <Accordion title="Why is Git required?">
+    Git برای روش نصب `git` لازم است. برای نصب‌های `npm` نیز Git همچنان بررسی/نصب می‌شود تا وقتی وابستگی‌ها از URLهای git استفاده می‌کنند، از خطاهای `spawn git ENOENT` جلوگیری شود.
   </Accordion>
 
-  <Accordion title="چرا npm در Linux با EACCES روبه‌رو می‌شود؟">
-    بعضی تنظیمات Linux پیشوند سراسری npm را به مسیرهای متعلق به root اشاره می‌دهند. `install.sh` می‌تواند پیشوند را به `~/.npm-global` تغییر دهد و exportهای PATH را به فایل‌های rc پوسته اضافه کند (وقتی آن فایل‌ها وجود داشته باشند).
+  <Accordion title="Why does npm hit EACCES on Linux?">
+    برخی تنظیمات Linux پیشوند سراسری npm را به مسیرهای متعلق به root اشاره می‌دهند. `install.sh` می‌تواند پیشوند را به `~/.npm-global` تغییر دهد و exportهای PATH را به فایل‌های rc مربوط به shell اضافه کند (وقتی آن فایل‌ها وجود داشته باشند).
   </Accordion>
 
-  <Accordion title="مشکلات sharp/libvips">
-    اسکریپت‌ها به‌صورت پیش‌فرض `SHARP_IGNORE_GLOBAL_LIBVIPS=1` را تنظیم می‌کنند تا sharp در برابر libvips سیستمی ساخته نشود. برای override کردن:
+  <Accordion title="sharp/libvips issues">
+    اسکریپت‌ها به‌صورت پیش‌فرض `SHARP_IGNORE_GLOBAL_LIBVIPS=1` را تنظیم می‌کنند تا از build شدن sharp در برابر libvips سیستم جلوگیری شود. برای override کردن:
 
     ```bash
     SHARP_IGNORE_GLOBAL_LIBVIPS=0 curl -fsSL --proto '=https' --tlsv1.2 https://openclaw.ai/install.sh | bash
@@ -431,16 +431,16 @@ OpenClaw سه اسکریپت نصب ارائه می‌کند که از `openclaw
   </Accordion>
 
   <Accordion title='Windows: "npm error spawn git / ENOENT"'>
-    Git for Windows را نصب کنید، PowerShell را دوباره باز کنید، و نصب‌کننده را دوباره اجرا کنید.
+    Git for Windows را نصب کنید، PowerShell را دوباره باز کنید، نصب‌کننده را دوباره اجرا کنید.
   </Accordion>
 
   <Accordion title='Windows: "openclaw is not recognized"'>
     `npm config get prefix` را اجرا کنید و آن دایرکتوری را به PATH کاربر خود اضافه کنید (در Windows پسوند `\bin` لازم نیست)، سپس PowerShell را دوباره باز کنید.
   </Accordion>
 
-  <Accordion title="Windows: چگونه خروجی پرجزئیات نصب‌کننده را بگیرید">
-    `install.ps1` در حال حاضر switch به نام `-Verbose` ارائه نمی‌کند.
-    برای diagnostics در سطح اسکریپت از ردیابی PowerShell استفاده کنید:
+  <Accordion title="Windows: how to get verbose installer output">
+    `install.ps1` در حال حاضر switch مربوط به `-Verbose` را ارائه نمی‌کند.
+    برای تشخیص‌های سطح اسکریپت از tracing در PowerShell استفاده کنید:
 
     ```powershell
     Set-PSDebug -Trace 1
@@ -450,7 +450,7 @@ OpenClaw سه اسکریپت نصب ارائه می‌کند که از `openclaw
 
   </Accordion>
 
-  <Accordion title="openclaw پس از نصب پیدا نشد">
+  <Accordion title="openclaw not found after install">
     معمولاً مشکل PATH است. [عیب‌یابی Node.js](/fa/install/node#troubleshooting) را ببینید.
   </Accordion>
 </AccordionGroup>

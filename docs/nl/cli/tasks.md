@@ -1,22 +1,22 @@
 ---
 read_when:
-    - U wilt records van achtergrondtaken inspecteren, auditen of annuleren
-    - Je documenteert TaskFlow-opdrachten onder `openclaw tasks flow`
-summary: CLI-referentie voor `openclaw tasks` (achtergrondtaakregister en TaskFlow-status)
+    - Je wilt records van achtergrondtaken inspecteren, auditen of annuleren
+    - Je documenteert Task Flow-opdrachten onder `openclaw tasks flow`
+summary: CLI-referentie voor `openclaw tasks` (register voor achtergrondtaken en taakstroomstatus)
 title: '`openclaw tasks`'
 x-i18n:
-    generated_at: "2026-04-29T22:35:44Z"
+    generated_at: "2026-05-07T13:15:28Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 6e61fb0b67a2bdd932b29543199fb219890f256260a66881c8e7ffeb9fadee33
+    source_hash: ca3f05d7c2a3fa7790ad6059ce15721ebffb548ac4a2c627188ac17986442dc6
     source_path: cli/tasks.md
     workflow: 16
 ---
 
-Inspecteer duurzame achtergrondtaken en de Task Flow-status. Zonder subopdracht is
-`openclaw tasks` gelijk aan `openclaw tasks list`.
+Inspecteer persistente achtergrondtaken en de Task Flow-status. Zonder subopdracht is
+`openclaw tasks` equivalent aan `openclaw tasks list`.
 
-Zie [Achtergrondtaken](/nl/automation/tasks) voor de levenscyclus en het aflevermodel.
+Zie [Achtergrondtaken](/nl/automation/tasks) voor de levenscyclus en het leveringsmodel.
 
 ## Gebruik
 
@@ -50,7 +50,7 @@ openclaw tasks flow cancel <lookup>
 openclaw tasks list [--runtime <name>] [--status <name>] [--json]
 ```
 
-Geeft bijgehouden achtergrondtaken weer, nieuwste eerst.
+Toont bijgehouden achtergrondtaken, nieuwste eerst.
 
 ### `show`
 
@@ -58,7 +58,7 @@ Geeft bijgehouden achtergrondtaken weer, nieuwste eerst.
 openclaw tasks show <lookup> [--json]
 ```
 
-Toont één taak op taak-ID, uitvoerings-ID of sessiesleutel.
+Toont één taak op taak-ID, run-ID of sessiesleutel.
 
 ### `notify`
 
@@ -82,7 +82,7 @@ Annuleert een actieve achtergrondtaak.
 openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--json]
 ```
 
-Brengt verouderde, verloren, met mislukte aflevering of anderszins inconsistente taak- en Task Flow-records aan het licht. Verloren taken die tot `cleanupAfter` worden bewaard, zijn waarschuwingen; verlopen of niet-gestempelde verloren taken zijn fouten.
+Brengt verouderde, verloren, mislukte levering of anderszins inconsistente taak- en Task Flow-records aan het licht. Verloren taken die tot `cleanupAfter` worden bewaard, zijn waarschuwingen; verlopen of niet-gestempelde verloren taken zijn fouten.
 
 ### `maintenance`
 
@@ -90,11 +90,13 @@ Brengt verouderde, verloren, met mislukte aflevering of anderszins inconsistente
 openclaw tasks maintenance [--apply] [--json]
 ```
 
-Toont een voorbeeld van of past taak- en Task Flow-reconciliatie, opschoonstempeling en verwijdering toe.
-Voor cron-taken gebruikt reconciliatie vastgelegde uitvoeringslogboeken/taakstatus voordat een
-oude actieve taak als `lost` wordt gemarkeerd, zodat voltooide cron-uitvoeringen geen foutieve auditfouten worden
+Geeft een voorbeeldweergave van, of past afstemming, cleanup-stempeling en opschoning van taken en Task Flow toe.
+Voor cron-taken gebruikt afstemming gepersistente run-logboeken/taakstatus voordat een
+oude actieve taak als `lost` wordt gemarkeerd, zodat voltooide cron-runs geen valse auditfouten worden
 alleen omdat de in-memory Gateway-runtime-status verdwenen is. Offline CLI-audit is
-niet gezaghebbend voor de proceslokale actieve-taakset van de Gateway voor cron.
+niet gezaghebbend voor de proceslokale actieve-taakset van de Gateway voor cron. CLI-taken
+met een run-ID/bron-ID worden als `lost` gemarkeerd wanneer hun live Gateway-runcontext
+verdwenen is, zelfs als er nog een oude child-session-rij bestaat.
 
 ### `flow`
 
@@ -104,7 +106,7 @@ openclaw tasks flow show <lookup> [--json]
 openclaw tasks flow cancel <lookup>
 ```
 
-Inspecteert of annuleert duurzame Task Flow-status onder het taaklogboek.
+Inspecteert of annuleert persistente Task Flow-status onder het taakgrootboek.
 
 ## Gerelateerd
 

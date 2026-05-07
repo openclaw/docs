@@ -1,40 +1,40 @@
 ---
 read_when:
     - تريد أسرع دورة تطوير محلية (bun + watch)
-    - واجهت مشكلات في تثبيت Bun أو التصحيحات أو نصوص دورة الحياة
+    - واجهت مشكلات في تثبيت Bun/تصحيحه/نصوص دورة الحياة الخاصة به
 summary: 'سير عمل Bun (تجريبي): عمليات التثبيت والمحاذير مقارنةً بـ pnpm'
 title: Bun (تجريبي)
 x-i18n:
-    generated_at: "2026-04-30T08:05:39Z"
+    generated_at: "2026-05-07T13:22:55Z"
     model: gpt-5.5
     provider: openai
-    source_hash: d596c8fa9cc585e23184e7b983ec3842361eac807a1f3c12a0529631876db486
+    source_hash: 1637cb81310422b718934f9c2d1f506dec46f1624dd9ac850bed04321b863041
     source_path: install/bun.md
     workflow: 16
 ---
 
 <Warning>
-Bun **غير موصى به لتشغيل Gateway** (مشكلات معروفة مع WhatsApp وTelegram). استخدم Node للإنتاج.
+لا يُوصى باستخدام Bun **لوقت تشغيل Gateway** (بسبب مشكلات معروفة مع WhatsApp و Telegram). استخدم Node في الإنتاج.
 </Warning>
 
-Bun هو بيئة تشغيل محلية اختيارية لتشغيل TypeScript مباشرة (`bun run ...`، `bun --watch ...`). يبقى مدير الحزم الافتراضي هو `pnpm`، وهو مدعوم بالكامل وتستخدمه أدوات التوثيق. لا يمكن لـ Bun استخدام `pnpm-lock.yaml` وسيتجاهله.
+Bun هو وقت تشغيل محلي اختياري لتشغيل TypeScript مباشرةً (`bun run ...`، `bun --watch ...`). يظل مدير الحزم الافتراضي هو `pnpm`، وهو مدعوم بالكامل وتستخدمه أدوات الوثائق. لا يستطيع Bun استخدام `pnpm-lock.yaml` وسيتجاهله.
 
 ## التثبيت
 
 <Steps>
-  <Step title="تثبيت التبعيات">
+  <Step title="Install dependencies">
     ```sh
     bun install
     ```
 
-    يتم تجاهل `bun.lock` / `bun.lockb` في git، لذلك لا يحدث اضطراب في المستودع. لتجاوز كتابة ملف القفل بالكامل:
+    يتم تجاهل `bun.lock` / `bun.lockb` في git، لذلك لا يحدث أي تغيير زائد في المستودع. لتخطي كتابة ملف القفل بالكامل:
 
     ```sh
     bun install --no-save
     ```
 
   </Step>
-  <Step title="البناء والاختبار">
+  <Step title="Build and test">
     ```sh
     bun run build
     bun run vitest run
@@ -42,22 +42,22 @@ Bun هو بيئة تشغيل محلية اختيارية لتشغيل TypeScript
   </Step>
 </Steps>
 
-## نصوص دورة الحياة
+## سكربتات دورة الحياة
 
-يحظر Bun نصوص دورة حياة التبعيات ما لم تكن موثوقة صراحة. في هذا المستودع، لا تكون النصوص المحظورة عادة مطلوبة:
+يحظر Bun سكربتات دورة حياة الاعتماديات ما لم تُوثق صراحةً. في هذا المستودع، السكربتات التي تُحظر عادةً غير مطلوبة:
 
-- `@whiskeysockets/baileys` `preinstall` -- يتحقق من أن الإصدار الرئيسي لـ Node هو >= 20 (يعتمد OpenClaw افتراضيا على Node 24 وما يزال يدعم Node 22 LTS، حاليا `22.14+`)
-- `protobufjs` `postinstall` -- يصدر تحذيرات حول مخططات إصدارات غير متوافقة (لا توجد مخرجات بناء)
+- `@whiskeysockets/baileys` `preinstall` -- يتحقق من أن إصدار Node الرئيسي >= 20 (يستخدم OpenClaw افتراضيًا Node 24 ولا يزال يدعم Node 22 LTS، حاليًا `22.16+`)
+- `protobufjs` `postinstall` -- يُصدر تحذيرات حول مخططات الإصدارات غير المتوافقة (لا توجد مخرجات بناء)
 
-إذا واجهت مشكلة وقت تشغيل تتطلب هذه النصوص، فثق بها صراحة:
+إذا واجهت مشكلة وقت تشغيل تتطلب هذه السكربتات، فوثّقها صراحةً:
 
 ```sh
 bun pm trust @whiskeysockets/baileys protobufjs
 ```
 
-## تنبيهات
+## محاذير
 
-ما تزال بعض النصوص تضع pnpm بشكل ثابت (على سبيل المثال `docs:build` و`ui:*` و`protocol:check`). شغلها عبر pnpm في الوقت الحالي.
+لا تزال بعض السكربتات تضع pnpm بشكل ثابت (مثلًا `docs:build` و`ui:*` و`protocol:check`). شغّلها عبر pnpm في الوقت الحالي.
 
 ## ذات صلة
 

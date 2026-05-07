@@ -1,20 +1,20 @@
 ---
 read_when:
-    - U moet Node.js installeren voordat u OpenClaw installeert
+    - Je moet Node.js installeren voordat je OpenClaw installeert
     - Je hebt OpenClaw geïnstalleerd, maar `openclaw` wordt niet gevonden als opdracht
-    - npm install -g mislukt met machtigings- of PATH-problemen
-summary: Installeer en configureer Node.js voor OpenClaw - versievereisten, installatieopties en probleemoplossing voor PATH
+    - npm install -g mislukt door machtigings- of PATH-problemen
+summary: Node.js voor OpenClaw installeren en configureren - versievereisten, installatieopties en probleemoplossing voor PATH
 title: Node.js
 x-i18n:
-    generated_at: "2026-05-06T09:20:40Z"
+    generated_at: "2026-05-07T13:22:04Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fa445f3b9e6472af755c2fc4c3f08b6134e308f290ab750549411f12d8d247db
+    source_hash: de8ef8d00c8996741187000f55d07d15a2d09e89b6deb99cf687b6b9128ad266
     source_path: install/node.md
     workflow: 16
 ---
 
-OpenClaw vereist **Node 22.14 of nieuwer**. **Node 24 is de standaard en aanbevolen runtime** voor installaties, CI en releaseworkflows. Node 22 blijft ondersteund via de actieve LTS-lijn. Het [installatiescript](/nl/install#alternative-install-methods) detecteert en installeert Node automatisch - deze pagina is bedoeld voor wanneer je Node zelf wilt instellen en zeker wilt weten dat alles correct is gekoppeld (versies, PATH, globale installaties).
+OpenClaw vereist **Node 22.16 of nieuwer**. **Node 24 is de standaard en aanbevolen runtime** voor installaties, CI en releaseworkflows. Node 22 blijft ondersteund via de actieve LTS-lijn. Het [installatiescript](/nl/install#alternative-install-methods) detecteert en installeert Node automatisch - deze pagina is bedoeld voor wanneer je Node zelf wilt instellen en zeker wilt weten dat alles correct is gekoppeld (versies, PATH, globale installaties).
 
 ## Controleer je versie
 
@@ -22,7 +22,7 @@ OpenClaw vereist **Node 22.14 of nieuwer**. **Node 24 is de standaard en aanbevo
 node -v
 ```
 
-Als dit `v24.x.x` of hoger afdrukt, gebruik je de aanbevolen standaard. Als dit `v22.14.x` of hoger afdrukt, gebruik je het ondersteunde Node 22 LTS-pad, maar we raden nog steeds aan om naar Node 24 te upgraden wanneer dat uitkomt. Als Node niet is geïnstalleerd of de versie te oud is, kies dan hieronder een installatiemethode.
+Als dit `v24.x.x` of hoger afdrukt, gebruik je de aanbevolen standaardversie. Als dit `v22.16.x` of hoger afdrukt, gebruik je het ondersteunde Node 22 LTS-pad, maar we raden nog steeds aan om naar Node 24 te upgraden wanneer dat uitkomt. Als Node niet is geïnstalleerd of de versie te oud is, kies dan hieronder een installatiemethode.
 
 ## Node installeren
 
@@ -51,7 +51,7 @@ Als dit `v24.x.x` of hoger afdrukt, gebruik je de aanbevolen standaard. Als dit 
     sudo dnf install nodejs
     ```
 
-    Of gebruik een versiebeheerder (zie hieronder).
+    Of gebruik een versiemanager (zie hieronder).
 
   </Tab>
   <Tab title="Windows">
@@ -73,9 +73,9 @@ Als dit `v24.x.x` of hoger afdrukt, gebruik je de aanbevolen standaard. Als dit 
 </Tabs>
 
 <Accordion title="Using a version manager (nvm, fnm, mise, asdf)">
-  Versiebeheerders laten je eenvoudig tussen Node-versies wisselen. Populaire opties:
+  Versiemanagers laten je eenvoudig wisselen tussen Node-versies. Populaire opties:
 
-- [**fnm**](https://github.com/Schniz/fnm) - snel, cross-platform
+- [**fnm**](https://github.com/Schniz/fnm) - snel, platformonafhankelijk
 - [**nvm**](https://github.com/nvm-sh/nvm) - veelgebruikt op macOS/Linux
 - [**mise**](https://mise.jdx.dev/) - polyglot (Node, Python, Ruby, enz.)
 
@@ -87,15 +87,15 @@ fnm use 24
 ```
 
   <Warning>
-  Zorg ervoor dat je versiebeheerder is geïnitialiseerd in het opstartbestand van je shell (`~/.zshrc` of `~/.bashrc`). Als dat niet zo is, wordt `openclaw` mogelijk niet gevonden in nieuwe terminalsessies omdat PATH de bin-map van Node niet bevat.
+  Zorg ervoor dat je versiemanager is geïnitialiseerd in het opstartbestand van je shell (`~/.zshrc` of `~/.bashrc`). Als dat niet zo is, wordt `openclaw` mogelijk niet gevonden in nieuwe terminalsessies omdat de PATH de bin-map van Node niet bevat.
   </Warning>
 </Accordion>
 
-## Probleemoplossing
+## Problemen oplossen
 
 ### `openclaw: command not found`
 
-Dit betekent bijna altijd dat de globale bin-map van npm niet in je PATH staat.
+Dit betekent bijna altijd dat de globale bin-map van npm niet op je PATH staat.
 
 <Steps>
   <Step title="Find your global npm prefix">
@@ -132,7 +132,7 @@ Dit betekent bijna altijd dat de globale bin-map van npm niet in je PATH staat.
 
 ### Machtigingsfouten bij `npm install -g` (Linux)
 
-Als je `EACCES`-fouten ziet, schakel dan de globale prefix van npm over naar een map waarin de gebruiker kan schrijven:
+Als je `EACCES`-fouten ziet, verplaats dan de globale prefix van npm naar een map waarin de gebruiker kan schrijven:
 
 ```bash
 mkdir -p "$HOME/.npm-global"
@@ -144,6 +144,6 @@ Voeg de regel `export PATH=...` toe aan je `~/.bashrc` of `~/.zshrc` om dit perm
 
 ## Gerelateerd
 
-- [Installatieoverzicht](/nl/install) - alle installatiemethoden
+- [Installatie-overzicht](/nl/install) - alle installatiemethoden
 - [Bijwerken](/nl/install/updating) - OpenClaw up-to-date houden
 - [Aan de slag](/nl/start/getting-started) - eerste stappen na installatie

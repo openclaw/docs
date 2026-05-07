@@ -1,161 +1,162 @@
 ---
 read_when:
-    - Bạn đang chọn giữa PI, Codex, ACP hoặc một runtime tác tử gốc khác
-    - Bạn bị nhầm lẫn bởi các nhãn nhà cung cấp/mô hình/môi trường chạy trong trạng thái hoặc cấu hình
-    - Bạn đang ghi tài liệu về mức độ tương đương hỗ trợ cho một bộ khung gốc
-summary: Cách OpenClaw tách biệt nhà cung cấp mô hình, mô hình, kênh và môi trường chạy tác nhân
-title: Môi trường chạy của tác nhân
+    - Bạn đang chọn giữa PI, Codex, ACP hoặc một môi trường thực thi tác tử gốc khác
+    - Bạn đang bối rối về các nhãn nhà cung cấp/mô hình/môi trường chạy trong trạng thái hoặc cấu hình
+    - Bạn đang ghi tài liệu về tính tương đương hỗ trợ cho một bộ khung gốc
+summary: Cách OpenClaw tách biệt nhà cung cấp mô hình, mô hình, kênh và môi trường thực thi tác tử
+title: Môi trường chạy tác nhân
 x-i18n:
-    generated_at: "2026-05-03T10:35:53Z"
+    generated_at: "2026-05-07T13:15:20Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 6cd0e0e8508f88c04db63ebcbbca61d9a023ee661f59ea1ed7a1341b357088c7
+    source_hash: 417a3a7e12a881bc33023cc87553dd3536a63ad955d1e93d26f1014032303469
     source_path: concepts/agent-runtimes.md
     workflow: 16
 ---
 
-**môi trường chạy tác tử** là thành phần sở hữu một vòng lặp mô hình đã được chuẩn bị: nó
+Một **runtime agent** là thành phần sở hữu một vòng lặp mô hình đã chuẩn bị: nó
 nhận prompt, điều khiển đầu ra của mô hình, xử lý các lệnh gọi công cụ gốc và trả
-lượt đã hoàn tất về OpenClaw.
+lượt hoàn tất về OpenClaw.
 
-Dễ nhầm lẫn môi trường chạy với nhà cung cấp vì cả hai đều xuất hiện gần phần
-cấu hình mô hình. Chúng là các lớp khác nhau:
+Runtime dễ bị nhầm với nhà cung cấp vì cả hai đều xuất hiện gần cấu hình mô
+hình. Chúng là các lớp khác nhau:
 
-| Lớp           | Ví dụ                                 | Ý nghĩa                                                             |
-| ------------- | ------------------------------------- | ------------------------------------------------------------------- |
-| Nhà cung cấp  | `openai`, `anthropic`, `openai-codex` | Cách OpenClaw xác thực, phát hiện mô hình và đặt tên model refs.    |
-| Mô hình       | `gpt-5.5`, `claude-opus-4-6`          | Mô hình được chọn cho lượt tác tử.                                  |
-| Môi trường chạy tác tử | `pi`, `codex`, `claude-cli`           | Vòng lặp hoặc backend cấp thấp thực thi lượt đã chuẩn bị.           |
-| Kênh          | Telegram, Discord, Slack, WhatsApp    | Nơi tin nhắn đi vào và rời OpenClaw.                                |
+| Lớp           | Ví dụ                                 | Ý nghĩa                                                           |
+| ------------- | ------------------------------------- | ----------------------------------------------------------------- |
+| Nhà cung cấp  | `openai`, `anthropic`, `openai-codex` | Cách OpenClaw xác thực, phát hiện mô hình và đặt tên tham chiếu mô hình. |
+| Mô hình       | `gpt-5.5`, `claude-opus-4-6`          | Mô hình được chọn cho lượt agent.                                 |
+| Runtime agent | `pi`, `codex`, `claude-cli`           | Vòng lặp hoặc backend cấp thấp thực thi lượt đã chuẩn bị.         |
+| Kênh          | Telegram, Discord, Slack, WhatsApp    | Nơi tin nhắn đi vào và rời khỏi OpenClaw.                         |
 
-Bạn cũng sẽ thấy từ **harness** trong mã. Harness là phần triển khai
-cung cấp một môi trường chạy tác tử. Ví dụ, harness Codex đi kèm
-triển khai môi trường chạy `codex`. Cấu hình công khai dùng `agentRuntime.id`; `openclaw
-doctor --fix` viết lại các khóa runtime-policy cũ hơn sang dạng đó.
+Bạn cũng sẽ thấy từ **harness** trong mã. Harness là phần triển khai cung cấp
+một runtime agent. Ví dụ, harness Codex đi kèm triển khai runtime `codex`. Cấu
+hình công khai dùng `agentRuntime.id`; `openclaw doctor --fix` viết lại các khóa
+runtime-policy cũ sang dạng đó.
 
-Có hai họ môi trường chạy:
+Có hai họ runtime:
 
-- **Harness nhúng** chạy bên trong vòng lặp tác tử đã chuẩn bị của OpenClaw. Hiện nay đây
-  là môi trường chạy `pi` tích hợp sẵn cộng với các harness Plugin đã đăng ký như
+- **Harness nhúng** chạy bên trong vòng lặp agent đã chuẩn bị của OpenClaw. Hiện
+  tại đây là runtime `pi` tích hợp sẵn cùng các harness Plugin đã đăng ký như
   `codex`.
-- **Backend CLI** chạy một tiến trình CLI cục bộ trong khi vẫn giữ model ref
-  chính tắc. Ví dụ, `anthropic/claude-opus-4-7` với
-  `agentRuntime.id: "claude-cli"` nghĩa là "chọn mô hình Anthropic, thực thi
+- **Backend CLI** chạy một tiến trình CLI cục bộ trong khi vẫn giữ tham chiếu mô
+  hình ở dạng chuẩn. Ví dụ, `anthropic/claude-opus-4-7` với
+  `agentRuntime.id: "claude-cli"` có nghĩa là "chọn mô hình Anthropic, thực thi
   qua Claude CLI." `claude-cli` không phải là id harness nhúng và không được
-  truyền vào phần chọn AgentHarness.
+  truyền vào lựa chọn AgentHarness.
 
-## Bề mặt Codex
+## Các bề mặt Codex
 
 Phần lớn nhầm lẫn đến từ nhiều bề mặt khác nhau cùng dùng tên Codex:
 
-| Bề mặt                                               | Tên/cấu hình OpenClaw                    | Chức năng                                                                                                  |
-| ---------------------------------------------------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
-| Môi trường chạy app-server Codex gốc                 | `openai/*` cộng `agentRuntime.id: "codex"` | Chạy lượt tác tử nhúng qua app-server Codex. Đây là thiết lập đăng ký ChatGPT/Codex thông thường.          |
-| Tuyến nhà cung cấp OAuth Codex                       | `openai-codex/*` model refs                | Dùng OAuth đăng ký ChatGPT/Codex qua trình chạy PI OpenClaw thông thường.                                  |
-| Bộ chuyển đổi ACP Codex                              | `runtime: "acp"`, `agentId: "codex"`       | Chạy Codex qua mặt phẳng điều khiển ACP/acpx bên ngoài. Chỉ dùng khi ACP/acpx được yêu cầu rõ ràng.        |
-| Bộ lệnh điều khiển chat Codex gốc                    | `/codex ...`                               | Liên kết, tiếp tục, điều hướng, dừng và kiểm tra các luồng app-server Codex từ chat.                       |
-| Tuyến OpenAI Platform API cho mô hình kiểu GPT/Codex | `openai/*` model refs                      | Dùng xác thực khóa API OpenAI trừ khi một ghi đè môi trường chạy, như `agentRuntime.id: "codex"`, chạy lượt. |
+| Bề mặt                                           | Tên/cấu hình OpenClaw                | Chức năng                                                                                                      |
+| ------------------------------------------------ | ------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| Runtime máy chủ ứng dụng Codex gốc               | Tham chiếu mô hình `openai/*`        | Chạy các lượt agent nhúng OpenAI qua máy chủ ứng dụng Codex. Đây là thiết lập đăng ký ChatGPT/Codex thông thường. |
+| Hồ sơ xác thực OAuth Codex                       | Nhà cung cấp xác thực `openai-codex` | Lưu xác thực đăng ký ChatGPT/Codex mà harness máy chủ ứng dụng Codex sử dụng.                                  |
+| Bộ điều hợp ACP Codex                            | `runtime: "acp"`, `agentId: "codex"` | Chạy Codex qua mặt phẳng điều khiển ACP/acpx bên ngoài. Chỉ dùng khi ACP/acpx được yêu cầu rõ ràng.            |
+| Bộ lệnh điều khiển chat Codex gốc                | `/codex ...`                         | Liên kết, tiếp tục, điều hướng, dừng và kiểm tra các luồng máy chủ ứng dụng Codex từ chat.                    |
+| Tuyến OpenAI Platform API cho các bề mặt không phải agent | `openai/*` cộng xác thực khóa API    | Dùng cho các API OpenAI trực tiếp như hình ảnh, embeddings, giọng nói và thời gian thực.                       |
 
-Các bề mặt đó độc lập có chủ ý. Bật Plugin `codex` làm cho
-các tính năng app-server gốc khả dụng; nó không viết lại
-`openai-codex/*` thành `openai/*`, không thay đổi các phiên hiện có và không
-biến ACP thành mặc định Codex. Chọn `openai-codex/*` nghĩa là "dùng tuyến nhà cung cấp
-OAuth Codex" trừ khi bạn ép riêng một môi trường chạy.
+Các bề mặt đó được chủ ý tách độc lập. Bật Plugin `codex` làm cho các tính năng
+máy chủ ứng dụng gốc khả dụng; `openclaw doctor --fix` sở hữu việc sửa tuyến
+`openai-codex/*` cũ và dọn dẹp ghim phiên lỗi thời. Việc chọn `openai/*` cho mô
+hình agent hiện có nghĩa là "chạy phần này qua Codex" trừ khi đang dùng một bề
+mặt OpenAI API không phải agent.
 
 Thiết lập đăng ký ChatGPT/Codex phổ biến dùng OAuth Codex để xác thực, nhưng giữ
-model ref là `openai/*` và chọn môi trường chạy `codex`:
+tham chiếu mô hình là `openai/*` và chọn runtime `codex`:
 
 ```json5
 {
   agents: {
     defaults: {
       model: "openai/gpt-5.5",
-      agentRuntime: {
-        id: "codex",
-      },
     },
   },
 }
 ```
 
-Điều đó nghĩa là OpenClaw chọn một model ref OpenAI, rồi yêu cầu môi trường chạy app-server
-Codex chạy lượt tác tử nhúng. Nó không có nghĩa là "dùng thanh toán API", và
-không có nghĩa là kênh, danh mục nhà cung cấp mô hình hoặc kho phiên OpenClaw
-trở thành Codex.
+Điều đó có nghĩa OpenClaw chọn một tham chiếu mô hình OpenAI, rồi yêu cầu runtime
+máy chủ ứng dụng Codex chạy lượt agent nhúng. Nó không có nghĩa là "dùng thanh
+toán API," và cũng không có nghĩa là kênh, danh mục nhà cung cấp mô hình, hoặc
+kho phiên OpenClaw trở thành Codex.
 
-Khi Plugin `codex` đi kèm được bật, việc điều khiển Codex bằng ngôn ngữ tự nhiên
-nên dùng bề mặt lệnh `/codex` gốc (`/codex bind`, `/codex threads`,
+Khi Plugin `codex` đi kèm được bật, điều khiển Codex bằng ngôn ngữ tự nhiên nên
+dùng bề mặt lệnh `/codex` gốc (`/codex bind`, `/codex threads`,
 `/codex resume`, `/codex steer`, `/codex stop`) thay vì ACP. Chỉ dùng ACP cho
-Codex khi người dùng yêu cầu rõ ràng ACP/acpx hoặc đang kiểm thử đường dẫn bộ chuyển đổi ACP.
-Claude Code, Gemini CLI, OpenCode, Cursor và các harness bên ngoài tương tự
-vẫn dùng ACP.
+Codex khi người dùng yêu cầu rõ ràng ACP/acpx hoặc đang kiểm thử đường dẫn bộ
+điều hợp ACP. Claude Code, Gemini CLI, OpenCode, Cursor và các harness bên ngoài
+tương tự vẫn dùng ACP.
 
-Đây là cây quyết định hướng đến tác tử:
+Đây là cây quyết định dành cho agent:
 
-1. Nếu người dùng yêu cầu **Codex bind/control/thread/resume/steer/stop**, hãy dùng
-   bề mặt lệnh `/codex` gốc khi Plugin `codex` đi kèm được bật.
-2. Nếu người dùng yêu cầu **Codex làm môi trường chạy nhúng** hoặc muốn trải nghiệm tác tử
-   Codex thông thường được hỗ trợ bằng đăng ký, hãy dùng
-   `openai/<model>` với `agentRuntime.id: "codex"`.
-3. Nếu người dùng yêu cầu **xác thực OAuth/đăng ký Codex trên trình chạy OpenClaw
-   thông thường**, hãy dùng `openai-codex/<model>` và để môi trường chạy là PI.
-4. Nếu người dùng nói rõ **ACP**, **acpx** hoặc **bộ chuyển đổi ACP Codex**, hãy dùng
-   ACP với `runtime: "acp"` và `agentId: "codex"`.
-5. Nếu yêu cầu dành cho **Claude Code, Gemini CLI, OpenCode, Cursor, Droid hoặc
-   một harness bên ngoài khác**, hãy dùng ACP/acpx, không dùng môi trường chạy tác tử phụ gốc.
+1. Nếu người dùng yêu cầu **Codex bind/control/thread/resume/steer/stop**, hãy
+   dùng bề mặt lệnh `/codex` gốc khi Plugin `codex` đi kèm được bật.
+2. Nếu người dùng yêu cầu **Codex làm runtime nhúng** hoặc muốn trải nghiệm agent
+   Codex thông thường được hỗ trợ bởi đăng ký, hãy dùng `openai/<model>`.
+3. Nếu người dùng chọn rõ ràng **PI cho một mô hình OpenAI**, hãy giữ tham chiếu
+   mô hình là `openai/<model>` và đặt `agentRuntime.id: "pi"`. Hồ sơ xác thực
+   `openai-codex` đã chọn được định tuyến nội bộ qua cơ chế vận chuyển xác thực
+   Codex cũ của PI.
+4. Nếu cấu hình cũ vẫn chứa **tham chiếu mô hình `openai-codex/*`**, hãy sửa nó
+   thành `openai/<model>` bằng `openclaw doctor --fix`.
+5. Nếu người dùng nói rõ **ACP**, **acpx**, hoặc **bộ điều hợp ACP Codex**, hãy
+   dùng ACP với `runtime: "acp"` và `agentId: "codex"`.
+6. Nếu yêu cầu là cho **Claude Code, Gemini CLI, OpenCode, Cursor, Droid, hoặc
+   một harness bên ngoài khác**, hãy dùng ACP/acpx, không dùng runtime sub-agent
+   gốc.
 
 | Ý bạn là...                            | Dùng...                                      |
-| --------------------------------------- | -------------------------------------------- |
-| Điều khiển chat/luồng app-server Codex  | `/codex ...` từ Plugin `codex` đi kèm        |
-| Môi trường chạy tác tử nhúng app-server Codex | `agentRuntime.id: "codex"`                   |
-| OAuth OpenAI Codex trên trình chạy PI   | `openai-codex/*` model refs                  |
-| Claude Code hoặc harness bên ngoài khác | ACP/acpx                                     |
+| -------------------------------------- | ------------------------------------------- |
+| Điều khiển chat/luồng máy chủ ứng dụng Codex | `/codex ...` từ Plugin `codex` đi kèm       |
+| Runtime agent nhúng máy chủ ứng dụng Codex | Tham chiếu mô hình agent `openai/*`         |
+| OpenAI Codex OAuth                     | Hồ sơ xác thực `openai-codex`               |
+| Claude Code hoặc harness bên ngoài khác | ACP/acpx                                    |
 
-Về phần tách tiền tố họ OpenAI, xem [OpenAI](/vi/providers/openai) và
-[Nhà cung cấp mô hình](/vi/concepts/model-providers). Về hợp đồng hỗ trợ môi trường chạy Codex,
-xem [Codex harness](/vi/plugins/codex-harness#v1-support-contract).
+Để biết phần tách tiền tố họ OpenAI, hãy xem [OpenAI](/vi/providers/openai) và
+[Nhà cung cấp mô hình](/vi/concepts/model-providers). Để biết hợp đồng hỗ trợ
+runtime Codex, hãy xem [Harness Codex](/vi/plugins/codex-harness#v1-support-contract).
 
-## Quyền sở hữu môi trường chạy
+## Quyền sở hữu runtime
 
-Các môi trường chạy khác nhau sở hữu các phần khác nhau của vòng lặp.
+Các runtime khác nhau sở hữu các phần khác nhau của vòng lặp.
 
-| Bề mặt                      | OpenClaw PI nhúng                         | App-server Codex                                                            |
-| --------------------------- | ----------------------------------------- | --------------------------------------------------------------------------- |
-| Chủ sở hữu vòng lặp mô hình | OpenClaw thông qua trình chạy PI nhúng    | App-server Codex                                                            |
-| Trạng thái luồng chính tắc  | Bản ghi hội thoại OpenClaw                | Luồng Codex, cộng với bản sao phản chiếu bản ghi hội thoại OpenClaw         |
-| Công cụ động OpenClaw       | Vòng lặp công cụ OpenClaw gốc             | Được bắc cầu qua bộ chuyển đổi Codex                                        |
-| Công cụ shell và tệp gốc    | Đường dẫn PI/OpenClaw                     | Công cụ gốc của Codex, được bắc cầu qua hook gốc khi được hỗ trợ            |
-| Công cụ ngữ cảnh            | Tập hợp ngữ cảnh OpenClaw gốc             | OpenClaw chiếu ngữ cảnh đã tập hợp vào lượt Codex                           |
-| Compaction                  | OpenClaw hoặc công cụ ngữ cảnh đã chọn    | Compaction gốc của Codex, với thông báo OpenClaw và bảo trì bản sao phản chiếu |
-| Phân phối kênh              | OpenClaw                                  | OpenClaw                                                                    |
+| Bề mặt                      | PI nhúng của OpenClaw                  | Máy chủ ứng dụng Codex                                                    |
+| --------------------------- | -------------------------------------- | ------------------------------------------------------------------------- |
+| Chủ sở hữu vòng lặp mô hình | OpenClaw thông qua trình chạy PI nhúng | Máy chủ ứng dụng Codex                                                    |
+| Trạng thái luồng chuẩn      | Bản ghi OpenClaw                       | Luồng Codex, cộng bản sao bản ghi OpenClaw                                |
+| Công cụ động OpenClaw       | Vòng lặp công cụ OpenClaw gốc          | Được bắc cầu qua bộ điều hợp Codex                                        |
+| Công cụ shell và tệp gốc    | Đường dẫn PI/OpenClaw                  | Công cụ gốc của Codex, được bắc cầu qua hook gốc khi được hỗ trợ          |
+| Công cụ ngữ cảnh            | Lắp ráp ngữ cảnh OpenClaw gốc          | OpenClaw chiếu ngữ cảnh đã lắp ráp vào lượt Codex                         |
+| Compaction                  | OpenClaw hoặc công cụ ngữ cảnh đã chọn | Compaction gốc của Codex, với thông báo OpenClaw và bảo trì bản sao       |
+| Chuyển phát kênh            | OpenClaw                               | OpenClaw                                                                  |
 
-Phần chia quyền sở hữu này là quy tắc thiết kế chính:
+Phần tách quyền sở hữu này là quy tắc thiết kế chính:
 
 - Nếu OpenClaw sở hữu bề mặt, OpenClaw có thể cung cấp hành vi hook Plugin thông thường.
-- Nếu môi trường chạy gốc sở hữu bề mặt, OpenClaw cần sự kiện môi trường chạy hoặc hook gốc.
-- Nếu môi trường chạy gốc sở hữu trạng thái luồng chính tắc, OpenClaw nên phản chiếu và chiếu ngữ cảnh, không viết lại các phần nội bộ không được hỗ trợ.
+- Nếu runtime gốc sở hữu bề mặt, OpenClaw cần sự kiện runtime hoặc hook gốc.
+- Nếu runtime gốc sở hữu trạng thái luồng chuẩn, OpenClaw nên sao chép và chiếu ngữ cảnh, không viết lại các phần nội bộ không được hỗ trợ.
 
-## Chọn môi trường chạy
+## Lựa chọn runtime
 
-OpenClaw chọn một môi trường chạy nhúng sau khi phân giải nhà cung cấp và mô hình:
+OpenClaw chọn một runtime nhúng sau khi phân giải nhà cung cấp và mô hình:
 
-1. Môi trường chạy đã ghi của phiên được ưu tiên. Thay đổi cấu hình không chuyển nóng
-   một bản ghi hội thoại hiện có sang hệ thống luồng gốc khác.
-2. `OPENCLAW_AGENT_RUNTIME=<id>` ép môi trường chạy đó cho các phiên mới hoặc đã đặt lại.
-3. `agents.defaults.agentRuntime.id` hoặc `agents.list[].agentRuntime.id` có thể đặt
-   `auto`, `pi`, id harness nhúng đã đăng ký như `codex` hoặc một
-   alias backend CLI được hỗ trợ như `claude-cli`.
-4. Ở chế độ `auto`, các môi trường chạy Plugin đã đăng ký có thể nhận các cặp nhà cung cấp/mô hình
-   được hỗ trợ.
-5. Nếu không môi trường chạy nào nhận một lượt ở chế độ `auto`, OpenClaw dùng PI làm
-   môi trường chạy tương thích. Hãy dùng id môi trường chạy tường minh khi lần chạy phải
-   nghiêm ngặt.
+1. Runtime đã ghi của một phiên được ưu tiên. Thay đổi cấu hình không chuyển nóng
+   một bản ghi hiện có sang hệ thống luồng gốc khác.
+2. `OPENCLAW_AGENT_RUNTIME=<id>` buộc runtime đó cho các phiên mới hoặc đã đặt lại.
+3. `agents.defaults.agentRuntime.id` hoặc `agents.list[].agentRuntime.id` có thể
+   đặt `auto`, `pi`, một id harness nhúng đã đăng ký như `codex`, hoặc một bí
+   danh backend CLI được hỗ trợ như `claude-cli`.
+4. Trong chế độ `auto`, các runtime Plugin đã đăng ký có thể nhận các cặp nhà
+   cung cấp/mô hình được hỗ trợ.
+5. Nếu không có runtime nào nhận một lượt trong chế độ `auto`, OpenClaw dùng PI
+   làm runtime tương thích. Hãy dùng id runtime rõ ràng khi lần chạy phải nghiêm
+   ngặt.
 
-Các môi trường chạy Plugin tường minh sẽ đóng khi lỗi. Ví dụ, `agentRuntime.id: "codex"`
-nghĩa là Codex hoặc một lỗi chọn/môi trường chạy rõ ràng; nó không bao giờ được định tuyến âm thầm
-trở lại PI.
+Runtime Plugin rõ ràng sẽ thất bại đóng. Ví dụ, `agentRuntime.id: "codex"` có
+nghĩa là Codex hoặc một lỗi lựa chọn/runtime rõ ràng; nó không bao giờ được âm
+thầm định tuyến ngược về PI.
 
-Alias backend CLI khác với id harness nhúng. Dạng Claude CLI được ưu tiên là:
+Bí danh backend CLI khác với id harness nhúng. Dạng Claude CLI được ưu tiên là:
 
 ```json5
 {
@@ -168,56 +169,60 @@ Alias backend CLI khác với id harness nhúng. Dạng Claude CLI được ưu 
 }
 ```
 
-Các ref cũ như `claude-cli/claude-opus-4-7` vẫn được hỗ trợ để
-tương thích, nhưng cấu hình mới nên giữ nhà cung cấp/mô hình ở dạng chính tắc và đặt
+Các tham chiếu cũ như `claude-cli/claude-opus-4-7` vẫn được hỗ trợ để tương
+thích, nhưng cấu hình mới nên giữ nhà cung cấp/mô hình ở dạng chuẩn và đặt
 backend thực thi trong `agentRuntime.id`.
 
-Chế độ `auto` có chủ ý thận trọng. Các môi trường chạy Plugin có thể nhận
-các cặp nhà cung cấp/mô hình mà chúng hiểu, nhưng Plugin Codex không nhận
-nhà cung cấp `openai-codex` ở chế độ `auto`. Điều đó giữ
-`openai-codex/*` là tuyến OAuth Codex PI tường minh và tránh âm thầm
-chuyển cấu hình xác thực bằng đăng ký sang harness app-server gốc.
+Chế độ `auto` được chủ ý giữ thận trọng với hầu hết nhà cung cấp. Mô hình agent
+OpenAI là ngoại lệ: runtime chưa đặt và `auto` đều phân giải sang harness Codex.
+Cấu hình runtime PI rõ ràng vẫn là tuyến tương thích chọn tham gia cho các lượt
+agent `openai/*`; khi ghép với một hồ sơ xác thực `openai-codex` đã chọn,
+OpenClaw định tuyến PI nội bộ qua cơ chế vận chuyển xác thực Codex cũ trong khi
+giữ tham chiếu mô hình công khai là `openai/*`. Các ghim phiên OpenAI PI lỗi
+thời không có cấu hình rõ ràng sẽ được sửa trở lại Codex.
 
 Nếu `openclaw doctor` cảnh báo rằng Plugin `codex` được bật trong khi
-`openai-codex/*` vẫn định tuyến qua PI, hãy xem đó là chẩn đoán, không phải
-di chuyển. Giữ nguyên cấu hình khi OAuth Codex PI là điều bạn muốn.
-Chỉ chuyển sang `openai/<model>` cộng `agentRuntime.id: "codex"` khi bạn muốn thực thi
-bằng app-server Codex gốc.
+`openai-codex/*` vẫn còn trong cấu hình, hãy xem đó là trạng thái tuyến cũ. Chạy
+`openclaw doctor --fix` để viết lại thành `openai/*` với runtime Codex.
 
 ## Hợp đồng tương thích
 
-Khi một môi trường chạy không phải là PI, nó nên ghi tài liệu các bề mặt OpenClaw mà nó hỗ trợ.
-Dùng dạng này cho tài liệu môi trường chạy:
+Khi runtime không phải là PI, nó nên ghi tài liệu các bề mặt OpenClaw mà nó hỗ
+trợ. Dùng dạng này cho tài liệu runtime:
 
-| Câu hỏi                                | Vì sao quan trọng                                                                               |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| Ai sở hữu vòng lặp mô hình?            | Xác định nơi xảy ra thử lại, tiếp tục công cụ và quyết định câu trả lời cuối cùng.                |
-| Ai sở hữu lịch sử luồng chính tắc?     | Xác định OpenClaw có thể chỉnh sửa lịch sử hay chỉ phản chiếu nó.                                |
-| Công cụ động OpenClaw có hoạt động không? | Nhắn tin, phiên, cron và công cụ do OpenClaw sở hữu phụ thuộc vào điều này.                     |
-| Hook công cụ động có hoạt động không?  | Plugin kỳ vọng `before_tool_call`, `after_tool_call` và middleware quanh công cụ do OpenClaw sở hữu. |
-| Hook công cụ gốc có hoạt động không?   | Shell, patch và công cụ do môi trường chạy sở hữu cần hỗ trợ hook gốc cho chính sách và quan sát. |
-| Vòng đời công cụ ngữ cảnh có chạy không? | Plugin bộ nhớ và ngữ cảnh phụ thuộc vào vòng đời assemble, ingest, after-turn và compaction.    |
-| Dữ liệu compaction nào được phơi bày?  | Một số Plugin chỉ cần thông báo, trong khi số khác cần siêu dữ liệu được giữ/bị loại bỏ.          |
-| Điều gì cố ý không được hỗ trợ?        | Người dùng không nên giả định tương đương PI khi môi trường chạy gốc sở hữu nhiều trạng thái hơn. |
+| Câu hỏi                                | Vì sao quan trọng                                                                              |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Ai sở hữu vòng lặp mô hình?            | Xác định nơi diễn ra quyết định thử lại, tiếp tục công cụ và câu trả lời cuối cùng.            |
+| Ai sở hữu lịch sử luồng chuẩn?         | Xác định liệu OpenClaw có thể chỉnh sửa lịch sử hay chỉ sao chép nó.                           |
+| Công cụ động OpenClaw có hoạt động không? | Nhắn tin, phiên, cron và các công cụ do OpenClaw sở hữu phụ thuộc vào điều này.             |
+| Hook công cụ động có hoạt động không?  | Plugin kỳ vọng `before_tool_call`, `after_tool_call` và middleware quanh các công cụ do OpenClaw sở hữu. |
+| Hook công cụ gốc có hoạt động không?   | Shell, patch và các công cụ do runtime sở hữu cần hỗ trợ hook gốc cho chính sách và quan sát. |
+| Vòng đời công cụ ngữ cảnh có chạy không? | Plugin bộ nhớ và ngữ cảnh phụ thuộc vào vòng đời lắp ráp, thu nạp, sau lượt và Compaction.  |
+| Dữ liệu Compaction nào được phơi bày?  | Một số Plugin chỉ cần thông báo, trong khi các Plugin khác cần metadata đã giữ/đã bỏ.          |
+| Điều gì cố ý không được hỗ trợ?        | Người dùng không nên giả định tương đương PI ở nơi runtime gốc sở hữu nhiều trạng thái hơn.   |
 
-Hợp đồng hỗ trợ môi trường chạy Codex được ghi tài liệu trong
+Hợp đồng hỗ trợ runtime Codex được ghi lại trong
 [Codex harness](/vi/plugins/codex-harness#v1-support-contract).
 
 ## Nhãn trạng thái
 
-Đầu ra trạng thái có thể hiển thị cả hai nhãn `Execution` và `Runtime`. Hãy xem chúng là thông tin chẩn đoán, không phải tên nhà cung cấp.
+Đầu ra trạng thái có thể hiển thị cả nhãn `Execution` và `Runtime`. Hãy đọc chúng như
+thông tin chẩn đoán, không phải tên nhà cung cấp.
 
-- Tham chiếu mô hình như `openai/gpt-5.5` cho bạn biết nhà cung cấp/mô hình đã chọn.
-- ID runtime như `codex` cho bạn biết vòng lặp nào đang thực thi lượt.
-- Nhãn kênh như Telegram hoặc Discord cho bạn biết cuộc trò chuyện đang diễn ra ở đâu.
+- Một tham chiếu mô hình như `openai/gpt-5.5` cho biết nhà cung cấp/mô hình đã chọn.
+- Một id runtime như `codex` cho biết loop nào đang thực thi lượt này.
+- Một nhãn kênh như Telegram hoặc Discord cho biết cuộc trò chuyện đang diễn ra ở đâu.
 
-Nếu một phiên vẫn hiển thị PI sau khi thay đổi cấu hình runtime, hãy bắt đầu phiên mới bằng `/new` hoặc xóa phiên hiện tại bằng `/reset`. Các phiên hiện có giữ runtime đã ghi lại của chúng để transcript không bị phát lại qua hai hệ thống phiên native không tương thích.
+Nếu một phiên vẫn hiển thị PI sau khi thay đổi cấu hình runtime, hãy bắt đầu phiên mới
+bằng `/new` hoặc xóa phiên hiện tại bằng `/reset`. Các phiên hiện có giữ nguyên
+runtime đã ghi nhận để transcript không bị phát lại qua hai hệ thống phiên native
+không tương thích.
 
 ## Liên quan
 
-- [Bộ điều phối Codex](/vi/plugins/codex-harness)
+- [Codex harness](/vi/plugins/codex-harness)
 - [OpenAI](/vi/providers/openai)
-- [Plugin bộ điều phối agent](/vi/plugins/sdk-agent-harness)
-- [Vòng lặp agent](/vi/concepts/agent-loop)
+- [Plugin harness tác tử](/vi/plugins/sdk-agent-harness)
+- [Loop tác tử](/vi/concepts/agent-loop)
 - [Mô hình](/vi/concepts/models)
 - [Trạng thái](/vi/cli/status)

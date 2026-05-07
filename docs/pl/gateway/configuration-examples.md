@@ -1,20 +1,20 @@
 ---
 read_when:
-    - Nauka konfigurowania OpenClaw
-    - Szukanie przykładów konfiguracji
-    - Konfigurowanie OpenClaw po raz pierwszy
-summary: Przykłady konfiguracji zgodne ze schematem dla typowych wdrożeń OpenClaw
+    - Dowiedz się, jak skonfigurować OpenClaw
+    - Wyszukiwanie przykładów konfiguracji
+    - Pierwsza konfiguracja OpenClaw
+summary: Przykłady konfiguracji zgodne ze schematem dla typowych instalacji OpenClaw
 title: Przykłady konfiguracji
 x-i18n:
-    generated_at: "2026-05-06T17:55:45Z"
+    generated_at: "2026-05-07T13:16:45Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 01dd16c73f1156c4012fd3956083062141825b502722b6aa34f1f90462a6823a
+    source_hash: 87c7e75841ee36121c764f1ed51b6547d0fccf7ed6c1f05895d916dbf93f061a
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Poniższe przykłady są zgodne z bieżącym schematem konfiguracji. Pełną dokumentację referencyjną i uwagi dla poszczególnych pól znajdziesz w [Konfiguracji](/pl/gateway/configuration).
+Przykłady poniżej są zgodne z bieżącym schematem konfiguracji. Pełną dokumentację referencyjną i uwagi dla poszczególnych pól znajdziesz w sekcji [Konfiguracja](/pl/gateway/configuration).
 
 ## Szybki start
 
@@ -27,9 +27,9 @@ Poniższe przykłady są zgodne z bieżącym schematem konfiguracji. Pełną dok
 }
 ```
 
-Zapisz w `~/.openclaw/openclaw.json`, a botowi będzie można wysłać wiadomość prywatną z tego numeru.
+Zapisz w `~/.openclaw/openclaw.json`, a będziesz mógł wysłać wiadomość prywatną do bota z tego numeru.
 
-### Zalecany punkt startowy
+### Zalecana konfiguracja startowa
 
 ```json5
 {
@@ -473,7 +473,7 @@ Zapisz w `~/.openclaw/openclaw.json`, a botowi będzie można wysłać wiadomoś
 
 ## Typowe wzorce
 
-### Wspólna baza umiejętności z jednym nadpisaniem
+### Wspólna bazowa konfiguracja Skills z jednym nadpisaniem
 
 ```json5
 {
@@ -490,8 +490,8 @@ Zapisz w `~/.openclaw/openclaw.json`, a botowi będzie można wysłać wiadomoś
 }
 ```
 
-- `agents.defaults.skills` to współdzielona podstawa.
-- `agents.list[].skills` zastępuje tę podstawę dla jednego agenta.
+- `agents.defaults.skills` to wspólna wartość bazowa.
+- `agents.list[].skills` zastępuje tę wartość bazową dla jednego agenta.
 - Użyj `skills: []`, gdy agent nie powinien widzieć żadnych Skills.
 
 ### Konfiguracja wieloplatformowa
@@ -517,9 +517,9 @@ Zapisz w `~/.openclaw/openclaw.json`, a botowi będzie można wysłać wiadomoś
 
 ### Automatyczne zatwierdzanie zaufanej sieci Node
 
-Pozostaw ręczne parowanie urządzeń, chyba że kontrolujesz ścieżkę sieciową. Dla dedykowanego
-laboratorium lub podsieci tailnet możesz włączyć automatyczne zatwierdzanie urządzeń Node
-przy pierwszym użyciu za pomocą dokładnych CIDR lub adresów IP:
+Pozostaw parowanie urządzeń jako ręczne, chyba że kontrolujesz ścieżkę sieciową. W dedykowanym
+laboratorium lub podsieci tailnet możesz włączyć automatyczne zatwierdzanie urządzeń Node przy pierwszym użyciu
+za pomocą dokładnych CIDR-ów lub adresów IP:
 
 ```json5
 {
@@ -533,13 +533,13 @@ przy pierwszym użyciu za pomocą dokładnych CIDR lub adresów IP:
 }
 ```
 
-Pozostaje to wyłączone, gdy nie jest ustawione. Dotyczy tylko świeżego parowania `role: node`
-bez żądanych zakresów. Klienci operatora/przeglądarki oraz zmiany roli, zakresu, metadanych lub
+Gdy nie jest ustawione, pozostaje wyłączone. Dotyczy tylko świeżego parowania `role: node`
+bez żądanych zakresów. Klienci operatora/przeglądarki oraz ulepszenia roli, zakresu, metadanych lub
 klucza publicznego nadal wymagają ręcznego zatwierdzenia.
 
-### Bezpieczny tryb DM (współdzielona skrzynka odbiorcza / DM wielu użytkowników)
+### Bezpieczny tryb DM (wspólna skrzynka odbiorcza / DM wielu użytkowników)
 
-Jeśli więcej niż jedna osoba może wysyłać DM do Twojego bota (wiele wpisów w `allowFrom`, zatwierdzenia parowania dla wielu osób lub `dmPolicy: "open"`), włącz **bezpieczny tryb DM**, aby DM od różnych nadawców domyślnie nie współdzieliły jednego kontekstu:
+Jeśli więcej niż jedna osoba może wysłać DM do Twojego bota (wiele wpisów w `allowFrom`, zatwierdzenia parowania dla wielu osób albo `dmPolicy: "open"`), włącz **bezpieczny tryb DM**, aby DM od różnych nadawców domyślnie nie współdzieliły jednego kontekstu:
 
 ```json5
 {
@@ -563,10 +563,10 @@ Jeśli więcej niż jedna osoba może wysyłać DM do Twojego bota (wiele wpisó
 }
 ```
 
-W przypadku Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC autoryzacja nadawcy domyślnie najpierw używa identyfikatora.
-Włącz bezpośrednie, zmienne dopasowywanie nazwy/adresu e-mail/pseudonimu za pomocą `dangerouslyAllowNameMatching: true` danego kanału tylko wtedy, gdy wyraźnie akceptujesz to ryzyko.
+W przypadku Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC autoryzacja nadawcy domyślnie zaczyna się od identyfikatora.
+Włącz bezpośrednie, modyfikowalne dopasowywanie nazwy/adresu e-mail/pseudonimu za pomocą `dangerouslyAllowNameMatching: true` danego kanału tylko wtedy, gdy jawnie akceptujesz to ryzyko.
 
-### Klucz API Anthropic + zapasowy MiniMax
+### Klucz API Anthropic + rozwiązanie awaryjne MiniMax
 
 ```json5
 {
@@ -600,7 +600,7 @@ Włącz bezpośrednie, zmienne dopasowywanie nazwy/adresu e-mail/pseudonimu za p
 }
 ```
 
-### Bot do pracy (ograniczony dostęp)
+### Bot roboczy (ograniczony dostęp)
 
 ```json5
 {
@@ -659,12 +659,12 @@ Włącz bezpośrednie, zmienne dopasowywanie nazwy/adresu e-mail/pseudonimu za p
 
 ## Wskazówki
 
-- Jeśli ustawisz `dmPolicy: "open"`, odpowiadająca lista `allowFrom` musi zawierać `"*"`.
+- Jeśli ustawisz `dmPolicy: "open"`, pasująca lista `allowFrom` musi zawierać `"*"`.
 - Identyfikatory dostawców różnią się (numery telefonów, identyfikatory użytkowników, identyfikatory kanałów). Użyj dokumentacji dostawcy, aby potwierdzić format.
-- Sekcje opcjonalne do dodania później: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
+- Opcjonalne sekcje do dodania później: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
 - Zobacz [Dostawcy](/pl/providers) i [Rozwiązywanie problemów](/pl/gateway/troubleshooting), aby uzyskać bardziej szczegółowe uwagi dotyczące konfiguracji.
 
 ## Powiązane
 
-- [Informacje o konfiguracji](/pl/gateway/configuration-reference)
+- [Dokumentacja konfiguracji](/pl/gateway/configuration-reference)
 - [Konfiguracja](/pl/gateway/configuration)

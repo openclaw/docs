@@ -1,36 +1,31 @@
 ---
 read_when:
-    - การอัปเดตสคีมาของโปรโตคอลหรือการสร้างโค้ด
-summary: สคีมา TypeBox เป็นแหล่งความจริงหนึ่งเดียวสำหรับโปรโตคอล Gateway
+    - การอัปเดตสคีมาโปรโตคอลหรือการสร้างโค้ด
+summary: สคีมา TypeBox ในฐานะแหล่งข้อมูลจริงเพียงแหล่งเดียวสำหรับโปรโตคอล Gateway
 title: TypeBox
 x-i18n:
-    generated_at: "2026-05-06T09:11:13Z"
+    generated_at: "2026-05-07T13:15:41Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3e188ec0fefcbaf01c8b575a1898eafbbcf309d3032930aa0c09c2d9a63b93e5
+    source_hash: 95baccfdfa6f77ba57f6ac8502d502084289a84cfd03a450dd1e9422931706dd
     source_path: concepts/typebox.md
     workflow: 16
 ---
 
-TypeBox เป็นไลบรารีสคีมาที่ออกแบบโดยให้ TypeScript มาก่อน เราใช้ไลบรารีนี้เพื่อกำหนด **โปรโตคอล Gateway
-WebSocket** (handshake, request/response, server events) สคีมาเหล่านั้น
-ขับเคลื่อน **การตรวจสอบความถูกต้องขณะรันไทม์**, **การส่งออก JSON Schema** และ **Swift codegen** สำหรับ
-แอป macOS แหล่งความจริงหนึ่งเดียว; ส่วนอื่นทั้งหมดสร้างขึ้นจากแหล่งนี้
+TypeBox เป็นไลบรารี schema ที่ให้ความสำคัญกับ TypeScript เป็นหลัก เราใช้เพื่อกำหนด **โปรโตคอล Gateway WebSocket** (handshake, request/response, server events) schema เหล่านี้ขับเคลื่อน **การตรวจสอบความถูกต้องขณะรันไทม์**, **การส่งออก JSON Schema** และ **การสร้างโค้ด Swift** สำหรับแอป macOS แหล่งความจริงหนึ่งเดียว ส่วนอื่นทั้งหมดถูกสร้างขึ้น
 
-หากคุณต้องการบริบทโปรโตคอลในระดับสูงขึ้น ให้เริ่มที่
+หากคุณต้องการบริบทโปรโตคอลระดับสูงกว่า ให้เริ่มที่
 [สถาปัตยกรรม Gateway](/th/concepts/architecture)
 
-## โมเดลทางความคิด (30 วินาที)
+## โมเดลความคิด (30 วินาที)
 
-ข้อความ Gateway WS ทุกข้อความเป็นเฟรมหนึ่งในสามแบบ:
+ทุกข้อความ Gateway WS เป็นหนึ่งในสาม frame:
 
-- **คำขอ**: `{ type: "req", id, method, params }`
-- **การตอบกลับ**: `{ type: "res", id, ok, payload | error }`
-- **เหตุการณ์**: `{ type: "event", event, payload, seq?, stateVersion? }`
+- **Request**: `{ type: "req", id, method, params }`
+- **Response**: `{ type: "res", id, ok, payload | error }`
+- **Event**: `{ type: "event", event, payload, seq?, stateVersion? }`
 
-เฟรมแรก **ต้อง** เป็นคำขอ `connect` หลังจากนั้น ไคลเอ็นต์สามารถเรียก
-เมธอด (เช่น `health`, `send`, `chat.send`) และสมัครรับเหตุการณ์ (เช่น
-`presence`, `tick`, `agent`)
+frame แรก **ต้อง** เป็นคำขอ `connect` หลังจากนั้น client สามารถเรียก method (เช่น `health`, `send`, `chat.send`) และสมัครรับ event (เช่น `presence`, `tick`, `agent`)
 
 ลำดับการเชื่อมต่อ (ขั้นต่ำ):
 
@@ -43,55 +38,48 @@ Client                    Gateway
   |<---- res:health ----------|
 ```
 
-เมธอดและเหตุการณ์ทั่วไป:
+method และ event ทั่วไป:
 
-| หมวดหมู่   | ตัวอย่าง                                                   | หมายเหตุ                              |
+| หมวดหมู่ | ตัวอย่าง | หมายเหตุ |
 | ---------- | ---------------------------------------------------------- | ---------------------------------- |
-| แกนหลัก       | `connect`, `health`, `status`                              | `connect` ต้องมาก่อน            |
-| การส่งข้อความ  | `send`, `agent`, `agent.wait`, `system-event`, `logs.tail` | side-effect ต้องใช้ `idempotencyKey` |
-| แชต       | `chat.history`, `chat.send`, `chat.abort`                  | WebChat ใช้รายการเหล่านี้                 |
-| เซสชัน   | `sessions.list`, `sessions.patch`, `sessions.delete`       | การดูแลเซสชัน                      |
-| ระบบอัตโนมัติ | `wake`, `cron.list`, `cron.run`, `cron.runs`               | การควบคุม wake + cron                |
-| Node      | `node.list`, `node.invoke`, `node.pair.*`                  | Gateway WS + การทำงานของ node          |
-| เหตุการณ์     | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown`  | server push                        |
+| Core | `connect`, `health`, `status` | `connect` ต้องมาก่อน |
+| Messaging | `send`, `agent`, `agent.wait`, `system-event`, `logs.tail` | side effect ต้องใช้ `idempotencyKey` |
+| Chat | `chat.history`, `chat.send`, `chat.abort` | WebChat ใช้รายการเหล่านี้ |
+| Sessions | `sessions.list`, `sessions.patch`, `sessions.delete` | การดูแล session |
+| Automation | `wake`, `cron.list`, `cron.run`, `cron.runs` | การควบคุม wake + cron |
+| Nodes | `node.list`, `node.invoke`, `node.pair.*` | Gateway WS + การกระทำของ node |
+| Events | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown` | การ push จาก server |
 
-รายการ **discovery** ที่ประกาศอย่างเป็นทางการอยู่ใน
+คลังรายการ **discovery** ที่ประกาศอย่างเป็นทางการอยู่ใน
 `src/gateway/server-methods-list.ts` (`listGatewayMethods`, `GATEWAY_EVENTS`)
 
-## ตำแหน่งของสคีมา
+## schema อยู่ที่ไหน
 
-- ซอร์ส: `src/gateway/protocol/schema.ts`
-- ตัวตรวจสอบรันไทม์ (AJV): `src/gateway/protocol/index.ts`
-- รีจิสทรี feature/discovery ที่ประกาศ: `src/gateway/server-methods-list.ts`
-- Server handshake + method dispatch: `src/gateway/server.impl.ts`
-- ไคลเอ็นต์ Node: `src/gateway/client.ts`
+- แหล่งที่มา: `src/gateway/protocol/schema.ts`
+- ตัวตรวจสอบความถูกต้องขณะรันไทม์ (AJV): `src/gateway/protocol/index.ts`
+- registry ของ feature/discovery ที่ประกาศ: `src/gateway/server-methods-list.ts`
+- handshake ของ server + การ dispatch method: `src/gateway/server.impl.ts`
+- client ของ Node: `src/gateway/client.ts`
 - JSON Schema ที่สร้างแล้ว: `dist/protocol.schema.json`
 - โมเดล Swift ที่สร้างแล้ว: `apps/macos/Sources/OpenClawProtocol/GatewayModels.swift`
 
-## ไปป์ไลน์ปัจจุบัน
+## pipeline ปัจจุบัน
 
 - `pnpm protocol:gen`
   - เขียน JSON Schema (draft-07) ไปที่ `dist/protocol.schema.json`
 - `pnpm protocol:gen:swift`
-  - สร้างโมเดล Swift สำหรับ gateway
+  - สร้างโมเดล gateway ของ Swift
 - `pnpm protocol:check`
-  - รันตัวสร้างทั้งสองตัวและตรวจสอบว่าเอาต์พุตถูก commit แล้ว
+  - รัน generator ทั้งสองตัวและตรวจสอบว่า output ถูก commit แล้ว
 
-## วิธีใช้สคีมาขณะรันไทม์
+## schema ถูกใช้ขณะรันไทม์อย่างไร
 
-- **ฝั่งเซิร์ฟเวอร์**: เฟรมขาเข้าทุกเฟรมถูกตรวจสอบด้วย AJV handshake จะยอมรับเฉพาะ
-  คำขอ `connect` ที่ params ตรงกับ `ConnectParams`
-- **ฝั่งไคลเอ็นต์**: ไคลเอ็นต์ JS ตรวจสอบเฟรมเหตุการณ์และเฟรมการตอบกลับก่อน
-  ใช้งาน
-- **Feature discovery**: Gateway ส่งรายการ `features.methods`
-  และ `features.events` แบบระมัดระวังใน `hello-ok` จาก `listGatewayMethods()` และ
-  `GATEWAY_EVENTS`
-- รายการ discovery นั้นไม่ใช่ dump ที่สร้างจาก helper ที่เรียกได้ทุกตัวใน
-  `coreGatewayHandlers`; helper RPC บางรายการถูกใช้งานใน
-  `src/gateway/server-methods/*.ts` โดยไม่ได้ถูกแจกแจงในรายการ feature
-  ที่ประกาศ
+- **ฝั่ง server**: frame ขาเข้าทุกตัวถูกตรวจสอบด้วย AJV handshake รับเฉพาะคำขอ `connect` ที่ params ตรงกับ `ConnectParams`
+- **ฝั่ง client**: client ของ JS ตรวจสอบ frame event และ response ก่อนใช้งาน
+- **feature discovery**: Gateway ส่งรายการ `features.methods` และ `features.events` แบบอนุรักษนิยมใน `hello-ok` จาก `listGatewayMethods()` และ `GATEWAY_EVENTS`
+- รายการ discovery นั้นไม่ใช่ dump ที่สร้างจาก helper ที่เรียกได้ทุกตัวใน `coreGatewayHandlers`; helper RPC บางตัวถูก implement ใน `src/gateway/server-methods/*.ts` โดยไม่ได้ถูกแจกแจงในรายการ feature ที่ประกาศ
 
-## ตัวอย่างเฟรม
+## ตัวอย่าง frame
 
 Connect (ข้อความแรก):
 
@@ -101,8 +89,8 @@ Connect (ข้อความแรก):
   "id": "c1",
   "method": "connect",
   "params": {
-    "minProtocol": 3,
-    "maxProtocol": 3,
+    "minProtocol": 4,
+    "maxProtocol": 4,
     "client": {
       "id": "openclaw-macos",
       "displayName": "macos",
@@ -115,7 +103,7 @@ Connect (ข้อความแรก):
 }
 ```
 
-การตอบกลับ Hello-ok:
+response Hello-ok:
 
 ```json
 {
@@ -124,7 +112,7 @@ Connect (ข้อความแรก):
   "ok": true,
   "payload": {
     "type": "hello-ok",
-    "protocol": 3,
+    "protocol": 4,
     "server": { "version": "dev", "connId": "ws-1" },
     "features": { "methods": ["health"], "events": ["tick"] },
     "snapshot": {
@@ -138,7 +126,7 @@ Connect (ข้อความแรก):
 }
 ```
 
-คำขอ + การตอบกลับ:
+Request + response:
 
 ```json
 { "type": "req", "id": "r1", "method": "health" }
@@ -148,15 +136,15 @@ Connect (ข้อความแรก):
 { "type": "res", "id": "r1", "ok": true, "payload": { "ok": true } }
 ```
 
-เหตุการณ์:
+Event:
 
 ```json
 { "type": "event", "event": "tick", "payload": { "ts": 1730000000 }, "seq": 12 }
 ```
 
-## ไคลเอ็นต์ขั้นต่ำ (Node.js)
+## client ขั้นต่ำ (Node.js)
 
-ลำดับการทำงานที่เล็กที่สุดแต่มีประโยชน์: connect + health
+ลำดับที่เล็กที่สุดที่ยังมีประโยชน์: connect + health
 
 ```ts
 import { WebSocket } from "ws";
@@ -170,8 +158,8 @@ ws.on("open", () => {
       id: "c1",
       method: "connect",
       params: {
-        minProtocol: 3,
-        maxProtocol: 3,
+        minProtocol: 4,
+        maxProtocol: 4,
         client: {
           id: "cli",
           displayName: "example",
@@ -196,13 +184,13 @@ ws.on("message", (data) => {
 });
 ```
 
-## ตัวอย่างแบบลงมือทำ: เพิ่มเมธอดแบบครบวงจร
+## ตัวอย่างแบบลงมือทำ: เพิ่ม method ตั้งแต่ต้นจนจบ
 
 ตัวอย่าง: เพิ่มคำขอ `system.echo` ใหม่ที่คืนค่า `{ ok: true, text }`
 
-1. **สคีมา (แหล่งความจริง)**
+1. **Schema (แหล่งความจริง)**
 
-เพิ่มใน `src/gateway/protocol/schema.ts`:
+เพิ่มลงใน `src/gateway/protocol/schema.ts`:
 
 ```ts
 export const SystemEchoParamsSchema = Type.Object(
@@ -216,7 +204,7 @@ export const SystemEchoResultSchema = Type.Object(
 );
 ```
 
-เพิ่มทั้งสองรายการใน `ProtocolSchemas` และส่งออกชนิดข้อมูล:
+เพิ่มทั้งสองรายการลงใน `ProtocolSchemas` และ export type:
 
 ```ts
   SystemEchoParams: SystemEchoParamsSchema,
@@ -230,13 +218,13 @@ export type SystemEchoResult = Static<typeof SystemEchoResultSchema>;
 
 2. **การตรวจสอบความถูกต้อง**
 
-ใน `src/gateway/protocol/index.ts` ให้ส่งออกตัวตรวจสอบ AJV:
+ใน `src/gateway/protocol/index.ts` ให้ export validator ของ AJV:
 
 ```ts
 export const validateSystemEchoParams = ajv.compile<SystemEchoParams>(SystemEchoParamsSchema);
 ```
 
-3. **พฤติกรรมฝั่งเซิร์ฟเวอร์**
+3. **พฤติกรรมของ server**
 
 เพิ่ม handler ใน `src/gateway/server-methods/system.ts`:
 
@@ -249,13 +237,11 @@ export const systemHandlers: GatewayRequestHandlers = {
 };
 ```
 
-ลงทะเบียนใน `src/gateway/server-methods.ts` (ซึ่งรวม `systemHandlers` อยู่แล้ว),
-จากนั้นเพิ่ม `"system.echo"` ลงในอินพุตของ `listGatewayMethods` ใน
+ลงทะเบียนใน `src/gateway/server-methods.ts` (รวม `systemHandlers` อยู่แล้ว) จากนั้นเพิ่ม `"system.echo"` ลงใน input ของ `listGatewayMethods` ใน
 `src/gateway/server-methods-list.ts`
 
-หากเมธอดนี้เรียกได้โดย operator หรือไคลเอ็นต์ node ให้จัดหมวดหมู่ใน
-`src/gateway/method-scopes.ts` ด้วย เพื่อให้การบังคับใช้ scope และการประกาศ feature
-ใน `hello-ok` สอดคล้องกัน
+หาก method นี้เรียกได้โดย operator หรือ node client ให้จัดประเภทใน
+`src/gateway/method-scopes.ts` ด้วย เพื่อให้การบังคับใช้ scope และการประกาศ feature ใน `hello-ok` สอดคล้องกัน
 
 4. **สร้างใหม่**
 
@@ -263,53 +249,51 @@ export const systemHandlers: GatewayRequestHandlers = {
 pnpm protocol:check
 ```
 
-5. **การทดสอบ + เอกสาร**
+5. **test + docs**
 
-เพิ่มการทดสอบเซิร์ฟเวอร์ใน `src/gateway/server.*.test.ts` และระบุเมธอดนี้ในเอกสาร
+เพิ่ม test ของ server ใน `src/gateway/server.*.test.ts` และบันทึก method นี้ใน docs
 
-## พฤติกรรมของ Swift codegen
+## พฤติกรรมการสร้างโค้ด Swift
 
-ตัวสร้าง Swift จะปล่อยเอาต์พุต:
+generator ของ Swift สร้าง:
 
-- enum `GatewayFrame` ที่มีเคส `req`, `res`, `event` และ `unknown`
-- structs/enums สำหรับ payload ที่มีชนิดข้อมูลชัดเจน
+- enum `GatewayFrame` ที่มี case `req`, `res`, `event` และ `unknown`
+- struct/enum payload ที่มี type ชัดเจน
 - ค่า `ErrorCode` และ `GATEWAY_PROTOCOL_VERSION`
 
-ชนิดเฟรมที่ไม่รู้จักจะถูกเก็บเป็น raw payload เพื่อความเข้ากันได้ในอนาคต
+frame type ที่ไม่รู้จักจะถูกเก็บเป็น payload ดิบเพื่อความเข้ากันได้ในอนาคต
 
 ## การกำหนดเวอร์ชัน + ความเข้ากันได้
 
-- `PROTOCOL_VERSION` อยู่ใน `src/gateway/protocol/schema.ts`
-- ไคลเอ็นต์ส่ง `minProtocol` + `maxProtocol`; เซิร์ฟเวอร์จะปฏิเสธเมื่อไม่ตรงกัน
-- โมเดล Swift เก็บชนิดเฟรมที่ไม่รู้จักไว้เพื่อหลีกเลี่ยงการทำให้ไคลเอ็นต์รุ่นเก่าพัง
+- `PROTOCOL_VERSION` อยู่ใน `src/gateway/protocol/version.ts`
+- client ส่ง `minProtocol` + `maxProtocol`; server ปฏิเสธรายการที่ไม่ตรงกัน
+- โมเดล Swift เก็บ frame type ที่ไม่รู้จักไว้เพื่อหลีกเลี่ยงการทำให้ client รุ่นเก่าเสียหาย
 
-## รูปแบบและแนวทางปฏิบัติของสคีมา
+## รูปแบบและ convention ของ schema
 
-- ออบเจ็กต์ส่วนใหญ่ใช้ `additionalProperties: false` สำหรับ payload ที่เข้มงวด
-- `NonEmptyString` เป็นค่าเริ่มต้นสำหรับ ID และชื่อเมธอด/เหตุการณ์
+- object ส่วนใหญ่ใช้ `additionalProperties: false` สำหรับ payload แบบเข้มงวด
+- `NonEmptyString` เป็นค่าเริ่มต้นสำหรับ ID และชื่อ method/event
 - `GatewayFrame` ระดับบนสุดใช้ **discriminator** บน `type`
-- เมธอดที่มี side effect มักต้องมี `idempotencyKey` ใน params
+- method ที่มี side effect มักต้องใช้ `idempotencyKey` ใน params
   (ตัวอย่าง: `send`, `poll`, `agent`, `chat.send`)
-- `agent` รับ `internalEvents` แบบไม่บังคับสำหรับบริบท orchestration ที่สร้างขึ้นขณะรันไทม์
-  (เช่น การส่งมอบงานหลัง subagent/cron task เสร็จสิ้น); ให้ถือว่านี่เป็นพื้นผิว API ภายใน
+- `agent` รับ `internalEvents` แบบไม่บังคับสำหรับบริบท orchestration ที่สร้างขณะรันไทม์
+  (เช่น การส่งต่องานเมื่อ subagent/cron task เสร็จสิ้น); ให้ถือว่านี่เป็นพื้นผิว API ภายใน
 
-## JSON สคีมาแบบสด
+## JSON schema สด
 
-JSON Schema ที่สร้างแล้วอยู่ใน repo ที่ `dist/protocol.schema.json` โดยปกติ
-ไฟล์ raw ที่เผยแพร่จะอยู่ที่:
+JSON Schema ที่สร้างแล้วอยู่ใน repo ที่ `dist/protocol.schema.json` โดยปกติไฟล์ raw ที่เผยแพร่จะพร้อมใช้งานที่:
 
 - [https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json](https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json)
 
-## เมื่อคุณเปลี่ยนสคีมา
+## เมื่อคุณเปลี่ยน schema
 
-1. อัปเดตสคีมา TypeBox
-2. ลงทะเบียนเมธอด/เหตุการณ์ใน `src/gateway/server-methods-list.ts`
-3. อัปเดต `src/gateway/method-scopes.ts` เมื่อ RPC ใหม่ต้องจัดหมวดหมู่ scope ของ operator หรือ
-   node
+1. อัปเดต schema ของ TypeBox
+2. ลงทะเบียน method/event ใน `src/gateway/server-methods-list.ts`
+3. อัปเดต `src/gateway/method-scopes.ts` เมื่อ RPC ใหม่ต้องการการจัดประเภท scope ของ operator หรือ node
 4. รัน `pnpm protocol:check`
-5. Commit สคีมาที่สร้างใหม่ + โมเดล Swift
+5. commit schema ที่สร้างใหม่ + โมเดล Swift
 
 ## ที่เกี่ยวข้อง
 
 - [โปรโตคอล rich output](/th/reference/rich-output-protocol)
-- [RPC adapters](/th/reference/rpc)
+- [adapter ของ RPC](/th/reference/rpc)

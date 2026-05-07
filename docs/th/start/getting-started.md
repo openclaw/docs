@@ -1,32 +1,32 @@
 ---
 read_when:
-    - การตั้งค่าครั้งแรกจากศูนย์
-    - คุณต้องการเส้นทางที่เร็วที่สุดไปสู่การแชตที่ใช้งานได้จริง
-summary: ติดตั้ง OpenClaw และเริ่มแชตครั้งแรกของคุณได้ในไม่กี่นาที
+    - การตั้งค่าครั้งแรกตั้งแต่เริ่มต้น
+    - คุณต้องการวิธีที่เร็วที่สุดเพื่อให้แชตใช้งานได้
+summary: ติดตั้ง OpenClaw และเริ่มแชตครั้งแรกได้ภายในไม่กี่นาที
 title: เริ่มต้นใช้งาน
 x-i18n:
-    generated_at: "2026-04-24T09:33:41Z"
-    model: gpt-5.4
+    generated_at: "2026-05-07T13:26:19Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: fe3f92b1464ebf0a5b631c293fa4a3e4b686fdb35c1152663428025dd3c01259
+    source_hash: 295ce8fd03320027a77a3aef494f785f0fe58e0f57c72ee63f6f9aca68626c20
     source_path: start/getting-started.md
-    workflow: 15
+    workflow: 16
 ---
 
-ติดตั้ง OpenClaw รัน onboarding และแชตกับผู้ช่วย AI ของคุณ — ทั้งหมดนี้ใช้เวลา
-ประมาณ 5 นาที เมื่อจบแล้วคุณจะมี Gateway ที่กำลังทำงาน การยืนยันตัวตนที่ตั้งค่าแล้ว
-และเซสชันแชตที่ใช้งานได้จริง
+ติดตั้ง OpenClaw, รันการตั้งค่าเริ่มต้น และแชตกับผู้ช่วย AI ของคุณ — ทั้งหมดนี้ใช้เวลา
+ประมาณ 5 นาที เมื่อจบแล้วคุณจะมี Gateway ที่ทำงานอยู่, auth ที่กำหนดค่าแล้ว,
+และเซสชันแชตที่ใช้งานได้
 
 ## สิ่งที่คุณต้องมี
 
-- **Node.js** — แนะนำ Node 24 (รองรับ Node 22.14+ เช่นกัน)
-- **API key** จากผู้ให้บริการโมเดล (Anthropic, OpenAI, Google ฯลฯ) — onboarding จะถามคุณ
+- **Node.js** — แนะนำ Node 24 (รองรับ Node 22.16+ ด้วย)
+- **คีย์ API** จากผู้ให้บริการโมเดล (Anthropic, OpenAI, Google ฯลฯ) — การตั้งค่าเริ่มต้นจะถามคุณ
 
 <Tip>
 ตรวจสอบเวอร์ชัน Node ของคุณด้วย `node --version`
 **ผู้ใช้ Windows:** รองรับทั้ง Windows แบบเนทีฟและ WSL2 โดย WSL2 มีความเสถียรมากกว่า
-และแนะนำสำหรับประสบการณ์เต็มรูปแบบ ดู [Windows](/th/platforms/windows)
-ต้องการติดตั้ง Node หรือไม่? ดู [Node setup](/th/install/node)
+และแนะนำสำหรับประสบการณ์แบบเต็ม ดู [Windows](/th/platforms/windows)
+ต้องติดตั้ง Node หรือไม่ ดู [การตั้งค่า Node](/th/install/node)
 </Tip>
 
 ## การตั้งค่าอย่างรวดเร็ว
@@ -40,7 +40,7 @@ x-i18n:
         ```
         <img
   src="/assets/install-script.svg"
-  alt="Install Script Process"
+  alt="กระบวนการสคริปต์ติดตั้ง"
   className="rounded-lg"
 />
       </Tab>
@@ -52,19 +52,19 @@ x-i18n:
     </Tabs>
 
     <Note>
-    วิธีติดตั้งอื่น ๆ (Docker, Nix, npm): [Install](/th/install)
+    วิธีติดตั้งอื่น ๆ (Docker, Nix, npm): [ติดตั้ง](/th/install)
     </Note>
 
   </Step>
-  <Step title="รัน onboarding">
+  <Step title="รันการตั้งค่าเริ่มต้น">
     ```bash
     openclaw onboard --install-daemon
     ```
 
-    วิซาร์ดจะพาคุณเลือกผู้ให้บริการโมเดล ตั้งค่า API key
-    และกำหนดค่า Gateway ซึ่งใช้เวลาประมาณ 2 นาที
+    วิซาร์ดจะแนะนำคุณตลอดการเลือกผู้ให้บริการโมเดล, การตั้งค่าคีย์ API,
+    และการกำหนดค่า Gateway ใช้เวลาประมาณ 2 นาที
 
-    ดู [Onboarding (CLI)](/th/start/wizard) สำหรับข้อมูลอ้างอิงแบบเต็ม
+    ดูข้อมูลอ้างอิงฉบับเต็มได้ที่ [การตั้งค่าเริ่มต้น (CLI)](/th/start/wizard)
 
   </Step>
   <Step title="ตรวจสอบว่า Gateway กำลังทำงาน">
@@ -72,7 +72,7 @@ x-i18n:
     openclaw gateway status
     ```
 
-    คุณควรเห็นว่า Gateway กำลังฟังอยู่ที่พอร์ต 18789
+    คุณควรเห็นว่า Gateway กำลังรับฟังที่พอร์ต 18789
 
   </Step>
   <Step title="เปิดแดชบอร์ด">
@@ -80,23 +80,22 @@ x-i18n:
     openclaw dashboard
     ```
 
-    คำสั่งนี้จะเปิด Control UI ในเบราว์เซอร์ของคุณ หากโหลดขึ้นมาได้ แปลว่าทุกอย่างทำงานปกติ
+    คำสั่งนี้จะเปิด Control UI ในเบราว์เซอร์ของคุณ หากโหลดได้ แสดงว่าทุกอย่างทำงานแล้ว
 
   </Step>
   <Step title="ส่งข้อความแรกของคุณ">
     พิมพ์ข้อความในแชตของ Control UI แล้วคุณควรได้รับคำตอบจาก AI
 
-    อยากแชตจากโทรศัพท์ของคุณแทนหรือไม่? channel ที่ตั้งค่าได้เร็วที่สุดคือ
-    [Telegram](/th/channels/telegram) (ใช้เพียง bot token) ดู [Channels](/th/channels)
-    สำหรับตัวเลือกทั้งหมด
+    อยากแชตจากโทรศัพท์แทนหรือไม่ ช่องทางที่ตั้งค่าได้เร็วที่สุดคือ
+    [Telegram](/th/channels/telegram) (ใช้แค่โทเค็นบอต) ดูตัวเลือกทั้งหมดที่ [ช่องทาง](/th/channels)
 
   </Step>
 </Steps>
 
-<Accordion title="ขั้นสูง: เมานต์ build ของ Control UI แบบกำหนดเอง">
-  หากคุณดูแล build ของแดชบอร์ดที่แปลภาษาไว้หรือปรับแต่งเอง ให้ชี้
-  `gateway.controlUi.root` ไปยังไดเรกทอรีที่มี static asset
-  และ `index.html` ที่ build แล้ว
+<Accordion title="ขั้นสูง: เมาต์บิลด์ Control UI แบบกำหนดเอง">
+  หากคุณดูแลบิลด์แดชบอร์ดที่แปลภาษาหรือปรับแต่งเอง ให้ชี้
+  `gateway.controlUi.root` ไปยังไดเรกทอรีที่มี static assets ที่บิลด์แล้ว
+  และ `index.html` ของคุณ
 
 ```bash
 mkdir -p "$HOME/.openclaw/control-ui-custom"
@@ -125,35 +124,35 @@ openclaw dashboard
 
 </Accordion>
 
-## สิ่งที่ควรทำต่อไป
+## ทำอะไรต่อไป
 
 <Columns>
-  <Card title="Connect a channel" href="/th/channels" icon="message-square">
-    Discord, Feishu, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo และอีกมากมาย
+  <Card title="เชื่อมต่อช่องทาง" href="/th/channels" icon="message-square">
+    Discord, Feishu, iMessage, Matrix, Microsoft Teams, Signal, Slack, Telegram, WhatsApp, Zalo และอื่น ๆ
   </Card>
-  <Card title="Pairing and safety" href="/th/channels/pairing" icon="shield">
+  <Card title="การจับคู่และความปลอดภัย" href="/th/channels/pairing" icon="shield">
     ควบคุมว่าใครสามารถส่งข้อความถึงเอเจนต์ของคุณได้
   </Card>
-  <Card title="Configure the Gateway" href="/th/gateway/configuration" icon="settings">
-    โมเดล เครื่องมือ sandbox และการตั้งค่าขั้นสูง
+  <Card title="กำหนดค่า Gateway" href="/th/gateway/configuration" icon="settings">
+    โมเดล, เครื่องมือ, แซนด์บ็อกซ์ และการตั้งค่าขั้นสูง
   </Card>
-  <Card title="Browse tools" href="/th/tools" icon="wrench">
-    เบราว์เซอร์ exec การค้นหาเว็บ Skills และ Plugin
+  <Card title="เรียกดูเครื่องมือ" href="/th/tools" icon="wrench">
+    เบราว์เซอร์, exec, การค้นหาเว็บ, Skills และ Plugin
   </Card>
 </Columns>
 
 <Accordion title="ขั้นสูง: ตัวแปรสภาพแวดล้อม">
-  หากคุณรัน OpenClaw เป็น service account หรือต้องการพาธแบบกำหนดเอง:
+  หากคุณรัน OpenClaw เป็นบัญชีบริการหรือต้องการพาธแบบกำหนดเอง:
 
-- `OPENCLAW_HOME` — ไดเรกทอรีหลักสำหรับการ resolve พาธภายใน
-- `OPENCLAW_STATE_DIR` — override ไดเรกทอรี state
-- `OPENCLAW_CONFIG_PATH` — override พาธไฟล์คอนฟิก
+- `OPENCLAW_HOME` — ไดเรกทอรีหลักสำหรับการแก้ไขพาธภายใน
+- `OPENCLAW_STATE_DIR` — แทนที่ไดเรกทอรีสถานะ
+- `OPENCLAW_CONFIG_PATH` — แทนที่พาธไฟล์ config
 
-ข้อมูลอ้างอิงแบบเต็ม: [Environment variables](/th/help/environment)
+ข้อมูลอ้างอิงฉบับเต็ม: [ตัวแปรสภาพแวดล้อม](/th/help/environment)
 </Accordion>
 
 ## ที่เกี่ยวข้อง
 
-- [Install overview](/th/install)
-- [Channels overview](/th/channels)
-- [Setup](/th/start/setup)
+- [ภาพรวมการติดตั้ง](/th/install)
+- [ภาพรวมช่องทาง](/th/channels)
+- [การตั้งค่า](/th/start/setup)

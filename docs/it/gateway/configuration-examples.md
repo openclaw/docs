@@ -1,20 +1,20 @@
 ---
 read_when:
     - Imparare a configurare OpenClaw
-    - Ricerca di esempi di configurazione
-    - Configurazione di OpenClaw per la prima volta
+    - Cerchi esempi di configurazione
+    - Configurare OpenClaw per la prima volta
 summary: Esempi di configurazione conformi allo schema per configurazioni OpenClaw comuni
 title: Esempi di configurazione
 x-i18n:
-    generated_at: "2026-05-06T17:55:52Z"
+    generated_at: "2026-05-07T13:16:58Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 01dd16c73f1156c4012fd3956083062141825b502722b6aa34f1f90462a6823a
+    source_hash: 87c7e75841ee36121c764f1ed51b6547d0fccf7ed6c1f05895d916dbf93f061a
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Gli esempi seguenti sono allineati con lo schema di configurazione attuale. Per il riferimento completo e le note campo per campo, consulta [Configurazione](/it/gateway/configuration).
+Gli esempi seguenti sono allineati allo schema di configurazione attuale. Per il riferimento completo e le note per ogni campo, consulta [Configurazione](/it/gateway/configuration).
 
 ## Avvio rapido
 
@@ -27,7 +27,7 @@ Gli esempi seguenti sono allineati con lo schema di configurazione attuale. Per 
 }
 ```
 
-Salva in `~/.openclaw/openclaw.json` e puoi inviare un messaggio diretto al bot da quel numero.
+Salva in `~/.openclaw/openclaw.json` e potrai inviare un messaggio diretto al bot da quel numero.
 
 ### Configurazione iniziale consigliata
 
@@ -57,9 +57,9 @@ Salva in `~/.openclaw/openclaw.json` e puoi inviare un messaggio diretto al bot 
 }
 ```
 
-## Esempio esteso (opzioni principali)
+## Esempio ampliato (opzioni principali)
 
-> JSON5 consente di usare commenti e virgole finali. Funziona anche il JSON normale.
+> JSON5 ti consente di usare commenti e virgole finali. Anche il JSON normale funziona.
 
 ```json5
 {
@@ -473,7 +473,7 @@ Salva in `~/.openclaw/openclaw.json` e puoi inviare un messaggio diretto al bot 
 
 ## Schemi comuni
 
-### Baseline di skill condivisa con una sostituzione
+### Baseline Skills condivisa con un override
 
 ```json5
 {
@@ -491,8 +491,8 @@ Salva in `~/.openclaw/openclaw.json` e puoi inviare un messaggio diretto al bot 
 ```
 
 - `agents.defaults.skills` è la baseline condivisa.
-- `agents.list[].skills` sostituisce quella baseline per un agente.
-- Usa `skills: []` quando un agente non dovrebbe vedere alcuna Skills.
+- `agents.list[].skills` sostituisce quella baseline per un singolo agente.
+- Usa `skills: []` quando un agente non deve vedere alcuna skill.
 
 ### Configurazione multipiattaforma
 
@@ -515,10 +515,10 @@ Salva in `~/.openclaw/openclaw.json` e puoi inviare un messaggio diretto al bot 
 }
 ```
 
-### Approvazione automatica della rete di Node attendibili
+### Approvazione automatica della rete di nodi attendibili
 
 Mantieni manuale l'associazione dei dispositivi, a meno che tu non controlli il percorso di rete. Per un laboratorio dedicato
-o una sottorete tailnet, puoi abilitare l'approvazione automatica dei dispositivi Node al primo utilizzo
+o una subnet tailnet, puoi attivare l'approvazione automatica dei dispositivi nodo alla prima connessione
 con CIDR o IP esatti:
 
 ```json5
@@ -533,9 +533,9 @@ con CIDR o IP esatti:
 }
 ```
 
-Resta disattivata se non è impostata. Si applica solo all'associazione nuova di `role: node` senza
-ambiti richiesti. Client operatore/browser e aggiornamenti di ruolo, ambito, metadati o
-chiave pubblica richiedono ancora l'approvazione manuale.
+Rimane disattivata quando non è impostata. Si applica solo alla nuova associazione `role: node` senza
+scope richiesti. I client operatore/browser e gli aggiornamenti di ruolo, scope, metadati o
+chiave pubblica richiedono comunque l'approvazione manuale.
 
 ### Modalità DM sicura (posta in arrivo condivisa / DM multiutente)
 
@@ -563,8 +563,8 @@ Se più di una persona può inviare DM al tuo bot (più voci in `allowFrom`, app
 }
 ```
 
-Per Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, l'autorizzazione del mittente è basata prima sull'ID per impostazione predefinita.
-Abilita la corrispondenza diretta modificabile di nome/email/nick con `dangerouslyAllowNameMatching: true` di ciascun canale solo se accetti esplicitamente tale rischio.
+Per Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, l'autorizzazione del mittente è basata sugli ID per impostazione predefinita.
+Abilita la corrispondenza diretta mutabile di nome/email/nick con `dangerouslyAllowNameMatching: true` di ciascun canale solo se accetti esplicitamente quel rischio.
 
 ### Chiave API Anthropic + fallback MiniMax
 
@@ -660,8 +660,8 @@ Abilita la corrispondenza diretta modificabile di nome/email/nick con `dangerous
 ## Suggerimenti
 
 - Se imposti `dmPolicy: "open"`, l'elenco `allowFrom` corrispondente deve includere `"*"`.
-- Gli ID provider differiscono (numeri di telefono, ID utente, ID canale). Usa la documentazione del provider per confermare il formato.
-- Sezioni facoltative da aggiungere in seguito: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
+- Gli ID dei provider differiscono (numeri di telefono, ID utente, ID canale). Usa la documentazione del provider per confermare il formato.
+- Sezioni opzionali da aggiungere in seguito: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
 - Consulta [Provider](/it/providers) e [Risoluzione dei problemi](/it/gateway/troubleshooting) per note di configurazione più approfondite.
 
 ## Correlati

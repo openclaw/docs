@@ -1,35 +1,35 @@
 ---
 read_when:
     - به‌روزرسانی طرح‌واره‌های پروتکل یا تولید کد
-summary: طرحواره‌های TypeBox به‌عنوان منبع حقیقت واحد برای پروتکل Gateway
+summary: طرح‌واره‌های TypeBox به‌عنوان تنها منبع حقیقت برای پروتکل Gateway
 title: TypeBox
 x-i18n:
-    generated_at: "2026-05-06T09:14:32Z"
+    generated_at: "2026-05-07T13:16:58Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3e188ec0fefcbaf01c8b575a1898eafbbcf309d3032930aa0c09c2d9a63b93e5
+    source_hash: 95baccfdfa6f77ba57f6ac8502d502084289a84cfd03a450dd1e9422931706dd
     source_path: concepts/typebox.md
     workflow: 16
 ---
 
-TypeBox یک کتابخانهٔ طرح‌واره با رویکرد TypeScript-first است. ما از آن برای تعریف **پروتکل Gateway
-WebSocket** (دست‌دهی، درخواست/پاسخ، رویدادهای سرور) استفاده می‌کنیم. این طرح‌واره‌ها
-**اعتبارسنجی زمان اجرا**، **خروجی JSON Schema** و **تولید کد Swift** را برای
-برنامهٔ macOS هدایت می‌کنند. یک منبع حقیقت؛ بقیهٔ موارد تولید می‌شوند.
+TypeBox یک کتابخانهٔ schema با رویکرد TypeScript-first است. ما از آن برای تعریف **پروتکل WebSocket
+Gateway** استفاده می‌کنیم (handshake، request/response، رویدادهای سرور). این schemaها
+**اعتبارسنجی runtime**، **خروجی JSON Schema** و **تولید کد Swift** برای
+اپ macOS را هدایت می‌کنند. یک منبع حقیقت؛ هر چیز دیگری تولید می‌شود.
 
-اگر زمینهٔ سطح‌بالاتر پروتکل را می‌خواهید، از
+اگر زمینهٔ سطح‌بالای پروتکل را می‌خواهید، از
 [معماری Gateway](/fa/concepts/architecture) شروع کنید.
 
 ## مدل ذهنی (۳۰ ثانیه)
 
-هر پیام Gateway WS یکی از سه فریم است:
+هر پیام WS مربوط به Gateway یکی از سه frame است:
 
 - **درخواست**: `{ type: "req", id, method, params }`
 - **پاسخ**: `{ type: "res", id, ok, payload | error }`
 - **رویداد**: `{ type: "event", event, payload, seq?, stateVersion? }`
 
-اولین فریم **باید** یک درخواست `connect` باشد. پس از آن، کلاینت‌ها می‌توانند
-متدها را فراخوانی کنند (مثلاً `health`، `send`، `chat.send`) و در رویدادها مشترک شوند (مثلاً
+اولین frame **باید** یک درخواست `connect` باشد. پس از آن، کلاینت‌ها می‌توانند
+methodها را فراخوانی کنند (برای مثال `health`، `send`، `chat.send`) و در رویدادها مشترک شوند (برای مثال
 `presence`، `tick`، `agent`).
 
 جریان اتصال (حداقلی):
@@ -43,7 +43,7 @@ Client                    Gateway
   |<---- res:health ----------|
 ```
 
-متدها + رویدادهای رایج:
+methodها + رویدادهای رایج:
 
 | دسته‌بندی | نمونه‌ها                                                   | یادداشت‌ها                              |
 | ---------- | ---------------------------------------------------------- | ---------------------------------- |
@@ -51,49 +51,48 @@ Client                    Gateway
 | پیام‌رسانی  | `send`, `agent`, `agent.wait`, `system-event`, `logs.tail` | اثرات جانبی به `idempotencyKey` نیاز دارند |
 | چت       | `chat.history`, `chat.send`, `chat.abort`                  | WebChat از این‌ها استفاده می‌کند                 |
 | نشست‌ها   | `sessions.list`, `sessions.patch`, `sessions.delete`       | مدیریت نشست                      |
-| خودکارسازی | `wake`, `cron.list`, `cron.run`, `cron.runs`               | بیدارسازی + کنترل cron                |
-| Nodeها      | `node.list`, `node.invoke`, `node.pair.*`                  | Gateway WS + کنش‌های node          |
-| رویدادها     | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown`  | پوش سرور                        |
+| خودکارسازی | `wake`, `cron.list`, `cron.run`, `cron.runs`               | کنترل wake + cron                |
+| Nodeها      | `node.list`, `node.invoke`, `node.pair.*`                  | WS مربوط به Gateway + کنش‌های node          |
+| رویدادها     | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown`  | push سرور                        |
 
-موجودی معتبر **کشف** تبلیغ‌شده در
+فهرست معتبر **discovery** اعلام‌شده در
 `src/gateway/server-methods-list.ts` (`listGatewayMethods`, `GATEWAY_EVENTS`) قرار دارد.
 
-## محل قرارگیری طرح‌واره‌ها
+## محل schemaها
 
 - منبع: `src/gateway/protocol/schema.ts`
-- اعتبارسنج‌های زمان اجرا (AJV): `src/gateway/protocol/index.ts`
-- رجیستری قابلیت/کشف تبلیغ‌شده: `src/gateway/server-methods-list.ts`
-- دست‌دهی سرور + توزیع متد: `src/gateway/server.impl.ts`
+- اعتبارسنج‌های runtime (AJV): `src/gateway/protocol/index.ts`
+- رجیستری feature/discovery اعلام‌شده: `src/gateway/server-methods-list.ts`
+- handshake سرور + dispatch کردن method: `src/gateway/server.impl.ts`
 - کلاینت Node: `src/gateway/client.ts`
 - JSON Schema تولیدشده: `dist/protocol.schema.json`
 - مدل‌های Swift تولیدشده: `apps/macos/Sources/OpenClawProtocol/GatewayModels.swift`
 
-## پایپ‌لاین فعلی
+## pipeline فعلی
 
 - `pnpm protocol:gen`
   - JSON Schema (draft-07) را در `dist/protocol.schema.json` می‌نویسد
 - `pnpm protocol:gen:swift`
-  - مدل‌های Gateway برای Swift را تولید می‌کند
+  - مدل‌های Gateway مربوط به Swift را تولید می‌کند
 - `pnpm protocol:check`
-  - هر دو تولیدکننده را اجرا می‌کند و بررسی می‌کند خروجی commit شده باشد
+  - هر دو generator را اجرا می‌کند و تأیید می‌کند خروجی commit شده است
 
-## نحوهٔ استفاده از طرح‌واره‌ها در زمان اجرا
+## نحوهٔ استفاده از schemaها در runtime
 
-- **سمت سرور**: هر فریم ورودی با AJV اعتبارسنجی می‌شود. دست‌دهی فقط
-  درخواست `connect`ای را می‌پذیرد که params آن با `ConnectParams` مطابقت داشته باشد.
-- **سمت کلاینت**: کلاینت JS فریم‌های رویداد و پاسخ را پیش از
-  استفاده اعتبارسنجی می‌کند.
-- **کشف قابلیت**: Gateway فهرست محافظه‌کارانهٔ `features.methods`
+- **سمت سرور**: هر frame ورودی با AJV اعتبارسنجی می‌شود. handshake فقط
+  درخواست `connect` را می‌پذیرد که params آن با `ConnectParams` منطبق باشد.
+- **سمت کلاینت**: کلاینت JS پیش از استفاده از frameهای رویداد و پاسخ، آن‌ها را اعتبارسنجی می‌کند.
+- **feature discovery**: Gateway یک فهرست محافظه‌کارانهٔ `features.methods`
   و `features.events` را در `hello-ok` از `listGatewayMethods()` و
   `GATEWAY_EVENTS` می‌فرستد.
-- آن فهرست کشف، dump تولیدشده از هر helper قابل فراخوانی در
-  `coreGatewayHandlers` نیست؛ برخی helper RPCها در
-  `src/gateway/server-methods/*.ts` پیاده‌سازی شده‌اند بی‌آنکه در فهرست قابلیت
-  تبلیغ‌شده شمارش شوند.
+- آن فهرست discovery یک dump تولیدشده از همهٔ helperهای قابل فراخوانی در
+  `coreGatewayHandlers` نیست؛ برخی RPCهای helper در
+  `src/gateway/server-methods/*.ts` پیاده‌سازی شده‌اند بدون اینکه در فهرست feature
+  اعلام‌شده شمارش شوند.
 
-## نمونه فریم‌ها
+## frameهای نمونه
 
-Connect (اولین پیام):
+اتصال (اولین پیام):
 
 ```json
 {
@@ -101,8 +100,8 @@ Connect (اولین پیام):
   "id": "c1",
   "method": "connect",
   "params": {
-    "minProtocol": 3,
-    "maxProtocol": 3,
+    "minProtocol": 4,
+    "maxProtocol": 4,
     "client": {
       "id": "openclaw-macos",
       "displayName": "macos",
@@ -124,7 +123,7 @@ Connect (اولین پیام):
   "ok": true,
   "payload": {
     "type": "hello-ok",
-    "protocol": 3,
+    "protocol": 4,
     "server": { "version": "dev", "connId": "ws-1" },
     "features": { "methods": ["health"], "events": ["tick"] },
     "snapshot": {
@@ -170,8 +169,8 @@ ws.on("open", () => {
       id: "c1",
       method: "connect",
       params: {
-        minProtocol: 3,
-        maxProtocol: 3,
+        minProtocol: 4,
+        maxProtocol: 4,
         client: {
           id: "cli",
           displayName: "example",
@@ -196,11 +195,11 @@ ws.on("message", (data) => {
 });
 ```
 
-## مثال کامل: افزودن یک متد از ابتدا تا انتها
+## مثال عملی: افزودن یک method از ابتدا تا انتها
 
-مثال: افزودن درخواست جدید `system.echo` که `{ ok: true, text }` را برمی‌گرداند.
+مثال: یک درخواست جدید `system.echo` اضافه کنید که `{ ok: true, text }` برمی‌گرداند.
 
-1. **طرح‌واره (منبع حقیقت)**
+1. **Schema (منبع حقیقت)**
 
 به `src/gateway/protocol/schema.ts` اضافه کنید:
 
@@ -230,7 +229,7 @@ export type SystemEchoResult = Static<typeof SystemEchoResultSchema>;
 
 2. **اعتبارسنجی**
 
-در `src/gateway/protocol/index.ts`، یک اعتبارسنج AJV export کنید:
+در `src/gateway/protocol/index.ts`، یک اعتبارسنج AJV را export کنید:
 
 ```ts
 export const validateSystemEchoParams = ajv.compile<SystemEchoParams>(SystemEchoParamsSchema);
@@ -249,13 +248,13 @@ export const systemHandlers: GatewayRequestHandlers = {
 };
 ```
 
-آن را در `src/gateway/server-methods.ts` ثبت کنید (از قبل `systemHandlers` را merge می‌کند)،
+آن را در `src/gateway/server-methods.ts` ثبت کنید (هم‌اکنون `systemHandlers` را merge می‌کند)،
 سپس `"system.echo"` را به ورودی `listGatewayMethods` در
 `src/gateway/server-methods-list.ts` اضافه کنید.
 
-اگر متد توسط کلاینت‌های operator یا node قابل فراخوانی است، آن را در
-`src/gateway/method-scopes.ts` نیز طبقه‌بندی کنید تا اعمال scope و تبلیغ قابلیت
-`hello-ok` هم‌راستا بمانند.
+اگر method توسط کلاینت‌های operator یا node قابل فراخوانی است، آن را در
+`src/gateway/method-scopes.ts` نیز طبقه‌بندی کنید تا scope enforcement و اعلام feature در `hello-ok`
+هماهنگ بمانند.
 
 4. **تولید دوباره**
 
@@ -265,51 +264,50 @@ pnpm protocol:check
 
 5. **تست‌ها + مستندات**
 
-یک تست سرور در `src/gateway/server.*.test.ts` اضافه کنید و متد را در مستندات ذکر کنید.
+یک تست سرور در `src/gateway/server.*.test.ts` اضافه کنید و method را در مستندات ذکر کنید.
 
 ## رفتار تولید کد Swift
 
-تولیدکنندهٔ Swift این موارد را منتشر می‌کند:
+generator مربوط به Swift این موارد را emit می‌کند:
 
-- enum به نام `GatewayFrame` با caseهای `req`، `res`، `event` و `unknown`
+- enum مربوط به `GatewayFrame` با caseهای `req`، `res`، `event` و `unknown`
 - structها/enumهای payload با type قوی
 - مقادیر `ErrorCode` و `GATEWAY_PROTOCOL_VERSION`
 
-نوع‌های ناشناختهٔ فریم برای سازگاری رو به جلو به‌صورت payload خام حفظ می‌شوند.
+typeهای ناشناختهٔ frame برای سازگاری رو به جلو به صورت payload خام حفظ می‌شوند.
 
 ## نسخه‌بندی + سازگاری
 
-- `PROTOCOL_VERSION` در `src/gateway/protocol/schema.ts` قرار دارد.
-- کلاینت‌ها `minProtocol` + `maxProtocol` را می‌فرستند؛ سرور ناسازگاری‌ها را رد می‌کند.
-- مدل‌های Swift نوع‌های ناشناختهٔ فریم را نگه می‌دارند تا کلاینت‌های قدیمی‌تر نشکنند.
+- `PROTOCOL_VERSION` در `src/gateway/protocol/version.ts` قرار دارد.
+- کلاینت‌ها `minProtocol` + `maxProtocol` را می‌فرستند؛ سرور mismatchها را رد می‌کند.
+- مدل‌های Swift برای جلوگیری از شکستن کلاینت‌های قدیمی‌تر، typeهای ناشناختهٔ frame را نگه می‌دارند.
 
-## الگوها و قراردادهای طرح‌واره
+## الگوها و قراردادهای schema
 
-- بیشتر objectها برای payloadهای سخت‌گیرانه از `additionalProperties: false` استفاده می‌کنند.
-- `NonEmptyString` مقدار پیش‌فرض برای IDها و نام‌های متد/رویداد است.
+- بیشتر objectها برای payloadهای strict از `additionalProperties: false` استفاده می‌کنند.
+- `NonEmptyString` پیش‌فرض برای IDها و نام‌های method/event است.
 - `GatewayFrame` سطح بالا از یک **discriminator** روی `type` استفاده می‌کند.
-- متدهایی با اثرات جانبی معمولاً به یک `idempotencyKey` در params نیاز دارند
+- methodهایی که اثر جانبی دارند معمولاً به یک `idempotencyKey` در params نیاز دارند
   (مثال: `send`، `poll`، `agent`، `chat.send`).
-- `agent` مقدار اختیاری `internalEvents` را برای زمینهٔ ارکستراسیون تولیدشده در زمان اجرا می‌پذیرد
-  (برای مثال تحویل تکمیل وظیفهٔ subagent/cron)؛ این را به‌عنوان سطح API داخلی در نظر بگیرید.
+- `agent` مقدار اختیاری `internalEvents` را برای زمینهٔ orchestration تولیدشده در runtime می‌پذیرد
+  (برای مثال تحویل تکمیل subagent/cron task)؛ با این مورد به عنوان سطح API داخلی رفتار کنید.
 
-## JSON زندهٔ طرح‌واره
+## JSON زندهٔ schema
 
-JSON Schema تولیدشده در repo در `dist/protocol.schema.json` قرار دارد. فایل خام
-منتشرشده معمولاً در این آدرس در دسترس است:
+JSON Schema تولیدشده در repo و در `dist/protocol.schema.json` قرار دارد. فایل raw منتشرشده معمولاً در اینجا در دسترس است:
 
 - [https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json](https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json)
 
-## وقتی طرح‌واره‌ها را تغییر می‌دهید
+## وقتی schemaها را تغییر می‌دهید
 
-1. طرح‌واره‌های TypeBox را به‌روزرسانی کنید.
-2. متد/رویداد را در `src/gateway/server-methods-list.ts` ثبت کنید.
+1. schemaهای TypeBox را به‌روزرسانی کنید.
+2. method/event را در `src/gateway/server-methods-list.ts` ثبت کنید.
 3. وقتی RPC جدید به طبقه‌بندی scope مربوط به operator یا
    node نیاز دارد، `src/gateway/method-scopes.ts` را به‌روزرسانی کنید.
 4. `pnpm protocol:check` را اجرا کنید.
-5. طرح‌وارهٔ تولیدشده + مدل‌های Swift را commit کنید.
+5. schema تولیدشدهٔ دوباره + مدل‌های Swift را commit کنید.
 
 ## مرتبط
 
 - [پروتکل خروجی غنی](/fa/reference/rich-output-protocol)
-- [آداپتورهای RPC](/fa/reference/rpc)
+- [adapterهای RPC](/fa/reference/rpc)

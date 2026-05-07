@@ -4,10 +4,10 @@ read_when:
 summary: Skema TypeBox sebagai sumber kebenaran tunggal untuk protokol Gateway
 title: TypeBox
 x-i18n:
-    generated_at: "2026-05-06T09:09:50Z"
+    generated_at: "2026-05-07T13:15:45Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3e188ec0fefcbaf01c8b575a1898eafbbcf309d3032930aa0c09c2d9a63b93e5
+    source_hash: 95baccfdfa6f77ba57f6ac8502d502084289a84cfd03a450dd1e9422931706dd
     source_path: concepts/typebox.md
     workflow: 16
 ---
@@ -15,18 +15,18 @@ x-i18n:
 TypeBox adalah pustaka skema yang mengutamakan TypeScript. Kami menggunakannya untuk mendefinisikan **protokol WebSocket Gateway** (handshake, permintaan/respons, peristiwa server). Skema tersebut menggerakkan **validasi runtime**, **ekspor JSON Schema**, dan **pembuatan kode Swift** untuk aplikasi macOS. Satu sumber kebenaran; semua yang lain dihasilkan.
 
 Jika Anda menginginkan konteks protokol tingkat lebih tinggi, mulai dari
-[arsitektur Gateway](/id/concepts/architecture).
+[Arsitektur Gateway](/id/concepts/architecture).
 
 ## Model mental (30 detik)
 
-Setiap pesan Gateway WS adalah salah satu dari tiga frame:
+Setiap pesan WS Gateway adalah salah satu dari tiga frame:
 
 - **Permintaan**: `{ type: "req", id, method, params }`
 - **Respons**: `{ type: "res", id, ok, payload | error }`
 - **Peristiwa**: `{ type: "event", event, payload, seq?, stateVersion? }`
 
 Frame pertama **harus** berupa permintaan `connect`. Setelah itu, klien dapat memanggil
-metode (mis. `health`, `send`, `chat.send`) dan berlangganan peristiwa (mis.
+metode (misalnya `health`, `send`, `chat.send`) dan berlangganan peristiwa (misalnya
 `presence`, `tick`, `agent`).
 
 Alur koneksi (minimal):
@@ -42,17 +42,17 @@ Client                    Gateway
 
 Metode + peristiwa umum:
 
-| Kategori   | Contoh                                                     | Catatan                              |
-| ---------- | ---------------------------------------------------------- | ------------------------------------ |
-| Inti       | `connect`, `health`, `status`                              | `connect` harus pertama              |
-| Pesan      | `send`, `agent`, `agent.wait`, `system-event`, `logs.tail` | efek samping memerlukan `idempotencyKey` |
-| Chat       | `chat.history`, `chat.send`, `chat.abort`                  | WebChat menggunakan ini              |
-| Sesi       | `sessions.list`, `sessions.patch`, `sessions.delete`       | admin sesi                           |
-| Otomasi    | `wake`, `cron.list`, `cron.run`, `cron.runs`               | kontrol wake + cron                  |
-| Node       | `node.list`, `node.invoke`, `node.pair.*`                  | Gateway WS + tindakan node           |
-| Peristiwa  | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown`  | push server                          |
+| Kategori   | Contoh                                                     | Catatan                            |
+| ---------- | ---------------------------------------------------------- | ---------------------------------- |
+| Inti       | `connect`, `health`, `status`                              | `connect` harus menjadi yang pertama |
+| Perpesanan | `send`, `agent`, `agent.wait`, `system-event`, `logs.tail` | efek samping memerlukan `idempotencyKey` |
+| Chat       | `chat.history`, `chat.send`, `chat.abort`                  | WebChat menggunakan ini            |
+| Sesi       | `sessions.list`, `sessions.patch`, `sessions.delete`       | admin sesi                         |
+| Otomasi    | `wake`, `cron.list`, `cron.run`, `cron.runs`               | kontrol wake + cron                |
+| Node       | `node.list`, `node.invoke`, `node.pair.*`                  | WS Gateway + tindakan node         |
+| Peristiwa  | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown`  | push server                        |
 
-Inventaris **discovery** otoritatif yang diiklankan berada di
+Inventaris **discovery** yang diiklankan secara otoritatif berada di
 `src/gateway/server-methods-list.ts` (`listGatewayMethods`, `GATEWAY_EVENTS`).
 
 ## Lokasi skema
@@ -81,12 +81,11 @@ Inventaris **discovery** otoritatif yang diiklankan berada di
 - **Sisi klien**: klien JS memvalidasi frame peristiwa dan respons sebelum
   menggunakannya.
 - **Discovery fitur**: Gateway mengirim daftar `features.methods`
-  dan `features.events` yang konservatif dalam `hello-ok` dari `listGatewayMethods()` dan
+  dan `features.events` konservatif dalam `hello-ok` dari `listGatewayMethods()` dan
   `GATEWAY_EVENTS`.
-- Daftar discovery itu bukan dump yang dihasilkan dari setiap helper yang dapat dipanggil di
+- Daftar discovery tersebut bukan dump yang dihasilkan dari setiap helper yang dapat dipanggil di
   `coreGatewayHandlers`; beberapa RPC helper diimplementasikan di
-  `src/gateway/server-methods/*.ts` tanpa dicantumkan dalam daftar fitur
-  yang diiklankan.
+  `src/gateway/server-methods/*.ts` tanpa dicantumkan dalam daftar fitur yang diiklankan.
 
 ## Contoh frame
 
@@ -98,8 +97,8 @@ Connect (pesan pertama):
   "id": "c1",
   "method": "connect",
   "params": {
-    "minProtocol": 3,
-    "maxProtocol": 3,
+    "minProtocol": 4,
+    "maxProtocol": 4,
     "client": {
       "id": "openclaw-macos",
       "displayName": "macos",
@@ -121,7 +120,7 @@ Respons hello-ok:
   "ok": true,
   "payload": {
     "type": "hello-ok",
-    "protocol": 3,
+    "protocol": 4,
     "server": { "version": "dev", "connId": "ws-1" },
     "features": { "methods": ["health"], "events": ["tick"] },
     "snapshot": {
@@ -167,8 +166,8 @@ ws.on("open", () => {
       id: "c1",
       method: "connect",
       params: {
-        minProtocol: 3,
-        maxProtocol: 3,
+        minProtocol: 4,
+        maxProtocol: 4,
         client: {
           id: "cli",
           displayName: "example",
@@ -193,7 +192,7 @@ ws.on("message", (data) => {
 });
 ```
 
-## Contoh lengkap: menambahkan metode end-to-end
+## Contoh lengkap: menambahkan metode dari awal hingga akhir
 
 Contoh: tambahkan permintaan `system.echo` baru yang mengembalikan `{ ok: true, text }`.
 
@@ -251,38 +250,38 @@ lalu tambahkan `"system.echo"` ke input `listGatewayMethods` di
 `src/gateway/server-methods-list.ts`.
 
 Jika metode dapat dipanggil oleh klien operator atau node, klasifikasikan juga di
-`src/gateway/method-scopes.ts` agar penegakan cakupan dan iklan fitur
+`src/gateway/method-scopes.ts` agar penegakan scope dan pengiklanan fitur
 `hello-ok` tetap selaras.
 
-4. **Hasilkan ulang**
+4. **Buat ulang**
 
 ```bash
 pnpm protocol:check
 ```
 
-5. **Pengujian + docs**
+5. **Pengujian + dokumentasi**
 
-Tambahkan pengujian server di `src/gateway/server.*.test.ts` dan catat metode tersebut di docs.
+Tambahkan pengujian server di `src/gateway/server.*.test.ts` dan catat metode tersebut di dokumentasi.
 
 ## Perilaku pembuatan kode Swift
 
 Generator Swift menghasilkan:
 
-- enum `GatewayFrame` dengan case `req`, `res`, `event`, dan `unknown`
+- enum `GatewayFrame` dengan kasus `req`, `res`, `event`, dan `unknown`
 - struct/enum payload bertipe kuat
 - nilai `ErrorCode` dan `GATEWAY_PROTOCOL_VERSION`
 
 Tipe frame yang tidak dikenal dipertahankan sebagai payload mentah untuk kompatibilitas ke depan.
 
-## Versioning + kompatibilitas
+## Versi + kompatibilitas
 
-- `PROTOCOL_VERSION` berada di `src/gateway/protocol/schema.ts`.
+- `PROTOCOL_VERSION` berada di `src/gateway/protocol/version.ts`.
 - Klien mengirim `minProtocol` + `maxProtocol`; server menolak ketidakcocokan.
-- Model Swift mempertahankan tipe frame yang tidak dikenal untuk menghindari kerusakan pada klien lama.
+- Model Swift mempertahankan tipe frame yang tidak dikenal agar tidak merusak klien lama.
 
 ## Pola dan konvensi skema
 
-- Sebagian besar objek menggunakan `additionalProperties: false` untuk payload yang ketat.
+- Sebagian besar objek menggunakan `additionalProperties: false` untuk payload ketat.
 - `NonEmptyString` adalah default untuk ID dan nama metode/peristiwa.
 - `GatewayFrame` tingkat atas menggunakan **discriminator** pada `type`.
 - Metode dengan efek samping biasanya memerlukan `idempotencyKey` dalam params
@@ -301,12 +300,12 @@ yang dipublikasikan biasanya tersedia di:
 
 1. Perbarui skema TypeBox.
 2. Daftarkan metode/peristiwa di `src/gateway/server-methods-list.ts`.
-3. Perbarui `src/gateway/method-scopes.ts` saat RPC baru memerlukan klasifikasi cakupan operator atau
+3. Perbarui `src/gateway/method-scopes.ts` saat RPC baru memerlukan klasifikasi scope operator atau
    node.
 4. Jalankan `pnpm protocol:check`.
-5. Commit skema yang dihasilkan ulang + model Swift.
+5. Commit skema yang dibuat ulang + model Swift.
 
 ## Terkait
 
-- [Protokol rich output](/id/reference/rich-output-protocol)
+- [Protokol output kaya](/id/reference/rich-output-protocol)
 - [Adaptor RPC](/id/reference/rpc)

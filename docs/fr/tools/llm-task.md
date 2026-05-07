@@ -1,20 +1,20 @@
 ---
 read_when:
-    - Vous voulez une étape LLM uniquement en JSON dans les flux de travail
-    - Vous avez besoin d’une sortie LLM validée par schéma pour l’automatisation
-summary: Tâches LLM en JSON uniquement pour les flux de travail (outil de plugin facultatif)
+    - Vous voulez une étape LLM qui ne produit que du JSON dans les flux de travail
+    - Vous avez besoin d’une sortie de LLM validée par schéma pour l’automatisation
+summary: Tâches LLM au format JSON uniquement pour les flux de travail (outil de Plugin facultatif)
 title: Tâche LLM
 x-i18n:
-    generated_at: "2026-05-04T02:26:16Z"
+    generated_at: "2026-05-07T13:26:53Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9cdc5d4feef17fb6d6d90d819d4c92d26a4ec43e4f5364c6acbaad1934a89269
+    source_hash: 4f5efe399165e31a7f5966b93c2f83bced4fd96b7f04f5156412fd321bf5f403
     source_path: tools/llm-task.md
     workflow: 16
 ---
 
-`llm-task` est un **outil de Plugin facultatif** qui exécute une tâche LLM en JSON uniquement et
-renvoie une sortie structurée (éventuellement validée avec JSON Schema).
+`llm-task` est un **outil Plugin facultatif** qui exécute une tâche LLM exclusivement JSON et
+renvoie une sortie structurée (facultativement validée avec JSON Schema).
 
 C’est idéal pour les moteurs de workflow comme Lobster : vous pouvez ajouter une seule étape LLM
 sans écrire de code OpenClaw personnalisé pour chaque workflow.
@@ -72,7 +72,7 @@ hors de la liste est rejetée.
 
 ## Paramètres de l’outil
 
-- `prompt` (chaîne, obligatoire)
+- `prompt` (chaîne, requis)
 - `input` (tout type, facultatif)
 - `schema` (objet, JSON Schema facultatif)
 - `provider` (chaîne, facultatif)
@@ -87,10 +87,27 @@ hors de la liste est rejetée.
 
 ## Sortie
 
-Renvoie `details.json` contenant le JSON analysé (et le valide avec
+Renvoie `details.json` contenant le JSON analysé (et valide avec
 `schema` lorsqu’il est fourni).
 
 ## Exemple : étape de workflow Lobster
+
+### Limitation importante
+
+L’exemple ci-dessous suppose que la **CLI Lobster autonome** s’exécute dans un environnement où `openclaw.invoke` dispose déjà du bon contexte d’URL/authentification du Gateway.
+
+Pour le lanceur Lobster **intégré** fourni dans OpenClaw, ce modèle de CLI imbriquée n’est **pas fiable actuellement** :
+
+```lobster
+openclaw.invoke --tool llm-task --action json --args-json '{ ... }'
+```
+
+Tant que Lobster intégré ne dispose pas d’un pont pris en charge pour ce flux, privilégiez l’une des options suivantes :
+
+- appels directs à l’outil `llm-task` en dehors de Lobster, ou
+- étapes Lobster qui ne reposent pas sur des appels `openclaw.invoke` imbriqués.
+
+Exemple avec la CLI Lobster autonome :
 
 ```lobster
 openclaw.invoke --tool llm-task --action json --args-json '{
@@ -114,14 +131,14 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 
 ## Notes de sécurité
 
-- L’outil est **en JSON uniquement** et indique au modèle de produire uniquement du JSON (pas de
-  blocs de code, pas de commentaire).
+- L’outil est **exclusivement JSON** et demande au modèle de produire uniquement du JSON (sans
+  clôtures de code, sans commentaire).
 - Aucun outil n’est exposé au modèle pour cette exécution.
 - Traitez la sortie comme non fiable sauf si vous la validez avec `schema`.
-- Placez les approbations avant toute étape ayant des effets de bord (envoi, publication, exécution).
+- Placez les approbations avant toute étape ayant des effets de bord (envoyer, publier, exécuter).
 
 ## Associé
 
-- [Niveaux de réflexion](/fr/tools/thinking)
+- [Niveaux de raisonnement](/fr/tools/thinking)
 - [Sous-agents](/fr/tools/subagents)
 - [Commandes slash](/fr/tools/slash-commands)

@@ -1,145 +1,146 @@
 ---
 read_when:
-    - Menjalankan harness pengodean melalui ACP
+    - Menjalankan perangkat pengodean melalui ACP
     - Menyiapkan sesi ACP yang terikat percakapan di saluran perpesanan
     - Mengikat percakapan saluran pesan ke sesi ACP persisten
-    - Memecahkan masalah backend ACP, pengkabelan Plugin, atau pengiriman penyelesaian
-    - Mengoperasikan perintah /acp dari obrolan
+    - Pemecahan masalah backend ACP, penghubungan Plugin, atau pengiriman penyelesaian
+    - Menjalankan perintah /acp dari obrolan
 sidebarTitle: ACP agents
-summary: Jalankan harness pengodean eksternal (Claude Code, Cursor, Gemini CLI, Codex ACP eksplisit, OpenClaw ACP, OpenCode) melalui backend ACP
-title: Agen ACP
+summary: Jalankan kerangka pengodean eksternal (Claude Code, Cursor, Gemini CLI, Codex ACP eksplisit, OpenClaw ACP, OpenCode) melalui backend ACP
+title: agen ACP
 x-i18n:
-    generated_at: "2026-05-06T09:29:10Z"
+    generated_at: "2026-05-07T13:26:08Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 75744690ee307bc86d9a3de268c84e52d8a281ca8a0e7d2d39c9a0cb7fbe2b39
+    source_hash: e5cdb853d2cec2c7466fff5f1e046b38bf9bac8b2b62f208ad3465a666272631
     source_path: tools/acp-agents.md
     workflow: 16
 ---
 
-[Sesi Agent Client Protocol (ACP)](https://agentclientprotocol.com/)
+Sesi [Agent Client Protocol (ACP)](https://agentclientprotocol.com/)
 memungkinkan OpenClaw menjalankan harness pengodean eksternal (misalnya Pi, Claude Code,
-Cursor, Copilot, Droid, OpenClaw ACP, OpenCode, Gemini CLI, dan harness ACPX
-lain yang didukung) melalui Plugin backend ACP.
+Cursor, Copilot, Droid, OpenClaw ACP, OpenCode, Gemini CLI, dan harness ACPX lain
+yang didukung) melalui plugin backend ACP.
 
 Setiap pemunculan sesi ACP dilacak sebagai [tugas latar belakang](/id/automation/tasks).
 
 <Note>
 **ACP adalah jalur harness eksternal, bukan jalur Codex default.** Plugin
-app-server Codex native memiliki kontrol `/codex ...` dan runtime tertanam
+server aplikasi Codex native memiliki kontrol `/codex ...` dan runtime tertanam
 `agentRuntime.id: "codex"`; ACP memiliki kontrol
 `/acp ...` dan sesi `sessions_spawn({ runtime: "acp" })`.
 
 Jika Anda ingin Codex atau Claude Code terhubung sebagai klien MCP eksternal
-langsung ke percakapan channel OpenClaw yang sudah ada, gunakan
+langsung ke percakapan kanal OpenClaw yang sudah ada, gunakan
 [`openclaw mcp serve`](/id/cli/mcp), bukan ACP.
 </Note>
 
-## Halaman Mana yang Saya Perlukan?
+## Halaman mana yang saya perlukan?
 
-| Anda ingin…                                                                                    | Gunakan ini                           | Catatan                                                                                                                                                                                        |
-| ----------------------------------------------------------------------------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Mengikat atau mengontrol Codex di percakapan saat ini                                           | `/codex bind`, `/codex threads`       | Jalur app-server Codex native saat Plugin `codex` diaktifkan; mencakup balasan chat terikat, penerusan gambar, model/cepat/izin, hentikan, dan kontrol pengarahan. ACP adalah fallback eksplisit |
-| Menjalankan Claude Code, Gemini CLI, Codex ACP eksplisit, atau harness eksternal lain _melalui_ OpenClaw | Halaman ini                           | Sesi terikat chat, `/acp spawn`, `sessions_spawn({ runtime: "acp" })`, tugas latar belakang, kontrol runtime                                                                                   |
-| Mengekspos sesi OpenClaw Gateway _sebagai_ server ACP untuk editor atau klien                   | [`openclaw acp`](/id/cli/acp)            | Mode bridge. IDE/klien berbicara ACP ke OpenClaw melalui stdio/WebSocket                                                                                                                       |
-| Menggunakan ulang CLI AI lokal sebagai model fallback hanya-teks                                | [Backend CLI](/id/gateway/cli-backends) | Bukan ACP. Tidak ada alat OpenClaw, tidak ada kontrol ACP, tidak ada runtime harness                                                                                                           |
+| Anda ingin…                                                                                    | Gunakan ini                           | Catatan                                                                                                                                                                                                  |
+| ----------------------------------------------------------------------------------------------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Mengikat atau mengontrol Codex dalam percakapan saat ini                                       | `/codex bind`, `/codex threads`       | Jalur server aplikasi Codex native saat plugin `codex` diaktifkan; mencakup balasan chat terikat, penerusan gambar, model/cepat/izin, berhenti, dan kontrol pengarah. ACP adalah fallback eksplisit |
+| Menjalankan Claude Code, Gemini CLI, Codex ACP eksplisit, atau harness eksternal lain _melalui_ OpenClaw | Halaman ini                           | Sesi yang terikat chat, `/acp spawn`, `sessions_spawn({ runtime: "acp" })`, tugas latar belakang, kontrol runtime                                                                                       |
+| Mengekspos sesi OpenClaw Gateway _sebagai_ server ACP untuk editor atau klien                  | [`openclaw acp`](/id/cli/acp)            | Mode jembatan. IDE/klien berbicara ACP ke OpenClaw melalui stdio/WebSocket                                                                                                                              |
+| Menggunakan ulang CLI AI lokal sebagai model fallback khusus teks                              | [Backend CLI](/id/gateway/cli-backends) | Bukan ACP. Tidak ada alat OpenClaw, tidak ada kontrol ACP, tidak ada runtime harness                                                                                                                     |
 
 ## Apakah ini langsung berfungsi?
 
-Ya, setelah memasang Plugin runtime ACP resmi:
+Ya, setelah memasang plugin runtime ACP resmi:
 
 ```bash
 openclaw plugins install @openclaw/acpx
 openclaw config set plugins.entries.acpx.enabled true
 ```
 
-Checkout sumber dapat menggunakan Plugin workspace lokal `extensions/acpx` setelah
+Checkout sumber dapat menggunakan plugin workspace lokal `extensions/acpx` setelah
 `pnpm install`. Jalankan `/acp doctor` untuk pemeriksaan kesiapan.
 
-OpenClaw hanya mengajarkan agent tentang pemunculan ACP saat ACP **benar-benar
+OpenClaw hanya mengajari agent tentang pemunculan ACP ketika ACP **benar-benar
 dapat digunakan**: ACP harus diaktifkan, dispatch tidak boleh dinonaktifkan, sesi
-saat ini tidak boleh diblokir sandbox, dan backend runtime harus
-dimuat. Jika kondisi tersebut tidak terpenuhi, Skills Plugin ACP dan
-panduan ACP `sessions_spawn` tetap disembunyikan agar agent tidak menyarankan
-backend yang tidak tersedia.
+saat ini tidak boleh diblokir sandbox, dan backend runtime harus dimuat. Jika
+kondisi tersebut tidak terpenuhi, Skills plugin ACP dan panduan ACP
+`sessions_spawn` tetap disembunyikan agar agent tidak menyarankan backend yang
+tidak tersedia.
 
 <AccordionGroup>
-  <Accordion title="Hal yang perlu diperhatikan saat pertama kali berjalan">
-    - Jika `plugins.allow` diatur, itu adalah inventaris Plugin yang membatasi dan **harus** mencakup `acpx`; jika tidak, backend ACP yang dipasang sengaja diblokir dan `/acp doctor` melaporkan entri allowlist yang hilang.
-    - Adapter ACP Codex dipersiapkan dengan Plugin `acpx` dan diluncurkan secara lokal bila memungkinkan.
-    - Adapter harness target lain mungkin masih diambil sesuai permintaan dengan `npx` saat pertama kali Anda menggunakannya.
-    - Autentikasi vendor tetap harus ada di host untuk harness tersebut.
-    - Jika host tidak memiliki npm atau akses jaringan, pengambilan adapter pertama kali akan gagal sampai cache dipanaskan lebih dulu atau adapter dipasang dengan cara lain.
+  <Accordion title="Kendala saat pertama kali dijalankan">
+    - Jika `plugins.allow` disetel, itu adalah inventaris plugin yang membatasi dan **harus** menyertakan `acpx`; jika tidak, backend ACP yang dipasang sengaja diblokir dan `/acp doctor` melaporkan entri allowlist yang hilang.
+    - Adapter Codex ACP disiapkan bersama plugin `acpx` dan diluncurkan secara lokal bila memungkinkan.
+    - Codex ACP berjalan dengan `CODEX_HOME` yang terisolasi; OpenClaw hanya menyalin entri proyek tepercaya dari konfigurasi Codex host dan memercayai workspace aktif, sambil membiarkan auth, notifikasi, dan hook pada konfigurasi host.
+    - Adapter harness target lain mungkin masih diambil sesuai kebutuhan dengan `npx` saat pertama kali Anda menggunakannya.
+    - Auth vendor tetap harus ada di host untuk harness tersebut.
+    - Jika host tidak memiliki npm atau akses jaringan, pengambilan adapter pertama kali akan gagal hingga cache diprahangatkan atau adapter dipasang dengan cara lain.
 
   </Accordion>
   <Accordion title="Prasyarat runtime">
     ACP meluncurkan proses harness eksternal nyata. OpenClaw memiliki perutean,
     status tugas latar belakang, pengiriman, pengikatan, dan kebijakan; harness
-    memiliki login penyedia, katalog model, perilaku sistem berkas, dan
-    alat native-nya sendiri.
+    memiliki login provider, katalog model, perilaku filesystem, dan alat
+    native miliknya.
 
     Sebelum menyalahkan OpenClaw, verifikasi:
 
     - `/acp doctor` melaporkan backend yang aktif dan sehat.
-    - ID target diizinkan oleh `acp.allowedAgents` saat allowlist tersebut diatur.
-    - Perintah harness dapat dimulai di host Gateway.
-    - Autentikasi penyedia tersedia untuk harness tersebut (`claude`, `codex`, `gemini`, `opencode`, `droid`, dll.).
+    - ID target diizinkan oleh `acp.allowedAgents` saat allowlist tersebut disetel.
+    - Perintah harness dapat dimulai pada host Gateway.
+    - Auth provider tersedia untuk harness tersebut (`claude`, `codex`, `gemini`, `opencode`, `droid`, dll.).
     - Model yang dipilih ada untuk harness tersebut - ID model tidak portabel antar-harness.
     - `cwd` yang diminta ada dan dapat diakses, atau hilangkan `cwd` dan biarkan backend menggunakan default-nya.
-    - Mode izin cocok dengan pekerjaan. Sesi noninteraktif tidak dapat mengeklik prompt izin native, jadi proses pengodean yang banyak menulis/mengeksekusi biasanya memerlukan profil izin ACPX yang dapat berjalan tanpa pengawasan.
+    - Mode izin sesuai dengan pekerjaan. Sesi noninteraktif tidak dapat mengeklik prompt izin native, sehingga proses pengodean yang berat tulis/eksekusi biasanya memerlukan profil izin ACPX yang dapat berjalan secara headless.
 
   </Accordion>
 </AccordionGroup>
 
-Alat Plugin OpenClaw dan alat bawaan OpenClaw **tidak** diekspos ke
-harness ACP secara default. Aktifkan bridge MCP eksplisit di
+Alat plugin OpenClaw dan alat bawaan OpenClaw **tidak** diekspos ke
+harness ACP secara default. Aktifkan jembatan MCP eksplisit di
 [Agent ACP - penyiapan](/id/tools/acp-agents-setup) hanya saat harness
 harus memanggil alat tersebut secara langsung.
 
-## Target Harness yang Didukung
+## Target harness yang didukung
 
 Dengan backend `acpx`, gunakan ID harness ini sebagai target `/acp spawn <id>`
 atau `sessions_spawn({ runtime: "acp", agentId: "<id>" })`:
 
-| ID harness | Backend umum                                    | Catatan                                                                             |
-| ---------- | ---------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `claude`   | Adapter ACP Claude Code                        | Memerlukan autentikasi Claude Code di host.                                         |
-| `codex`    | Adapter ACP Codex                              | Fallback ACP eksplisit hanya saat `/codex` native tidak tersedia atau ACP diminta. |
-| `copilot`  | Adapter ACP GitHub Copilot                     | Memerlukan autentikasi CLI/runtime Copilot.                                         |
-| `cursor`   | ACP Cursor CLI (`cursor-agent acp`)            | Timpa perintah acpx jika pemasangan lokal mengekspos entrypoint ACP yang berbeda.  |
-| `droid`    | Factory Droid CLI                              | Memerlukan autentikasi Factory/Droid atau `FACTORY_API_KEY` di lingkungan harness. |
-| `gemini`   | Adapter ACP Gemini CLI                         | Memerlukan autentikasi Gemini CLI atau penyiapan kunci API.                         |
-| `iflow`    | iFlow CLI                                      | Ketersediaan adapter dan kontrol model bergantung pada CLI yang dipasang.          |
-| `kilocode` | Kilo Code CLI                                  | Ketersediaan adapter dan kontrol model bergantung pada CLI yang dipasang.          |
-| `kimi`     | Kimi/Moonshot CLI                              | Memerlukan autentikasi Kimi/Moonshot di host.                                       |
-| `kiro`     | Kiro CLI                                       | Ketersediaan adapter dan kontrol model bergantung pada CLI yang dipasang.          |
-| `opencode` | Adapter ACP OpenCode                           | Memerlukan autentikasi OpenCode CLI/penyedia.                                       |
-| `openclaw` | Bridge OpenClaw Gateway melalui `openclaw acp` | Memungkinkan harness sadar-ACP berbicara kembali ke sesi OpenClaw Gateway.         |
-| `pi`       | Runtime OpenClaw Pi/tertanam                   | Digunakan untuk eksperimen harness native OpenClaw.                                 |
-| `qwen`     | Qwen Code / Qwen CLI                           | Memerlukan autentikasi yang kompatibel dengan Qwen di host.                         |
+| ID harness | Backend umum                                   | Catatan                                                                              |
+| ---------- | ---------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `claude`   | Adapter Claude Code ACP                        | Memerlukan auth Claude Code pada host.                                               |
+| `codex`    | Adapter Codex ACP                              | Fallback ACP eksplisit hanya saat `/codex` native tidak tersedia atau ACP diminta.   |
+| `copilot`  | Adapter GitHub Copilot ACP                     | Memerlukan auth CLI/runtime Copilot.                                                 |
+| `cursor`   | Cursor CLI ACP (`cursor-agent acp`)            | Timpa perintah acpx jika instalasi lokal mengekspos entrypoint ACP yang berbeda.     |
+| `droid`    | Factory Droid CLI                              | Memerlukan auth Factory/Droid atau `FACTORY_API_KEY` di lingkungan harness.          |
+| `gemini`   | Adapter Gemini CLI ACP                         | Memerlukan auth Gemini CLI atau penyiapan API key.                                   |
+| `iflow`    | iFlow CLI                                      | Ketersediaan adapter dan kontrol model bergantung pada CLI yang terpasang.           |
+| `kilocode` | Kilo Code CLI                                  | Ketersediaan adapter dan kontrol model bergantung pada CLI yang terpasang.           |
+| `kimi`     | Kimi/Moonshot CLI                              | Memerlukan auth Kimi/Moonshot pada host.                                             |
+| `kiro`     | Kiro CLI                                       | Ketersediaan adapter dan kontrol model bergantung pada CLI yang terpasang.           |
+| `opencode` | Adapter OpenCode ACP                           | Memerlukan auth CLI/provider OpenCode.                                               |
+| `openclaw` | Jembatan OpenClaw Gateway melalui `openclaw acp` | Memungkinkan harness yang memahami ACP berbicara kembali ke sesi OpenClaw Gateway.   |
+| `pi`       | Runtime Pi/OpenClaw tertanam                   | Digunakan untuk eksperimen harness native OpenClaw.                                  |
+| `qwen`     | Qwen Code / Qwen CLI                           | Memerlukan auth yang kompatibel dengan Qwen pada host.                               |
 
-Alias agent acpx kustom dapat dikonfigurasi di acpx itu sendiri, tetapi kebijakan
+Alias agent acpx kustom dapat dikonfigurasi di acpx sendiri, tetapi kebijakan
 OpenClaw tetap memeriksa `acp.allowedAgents` dan pemetaan
 `agents.list[].runtime.acp.agent` apa pun sebelum dispatch.
 
-## Runbook Operator
+## Runbook operator
 
 Alur cepat `/acp` dari chat:
 
 <Steps>
   <Step title="Munculkan">
     `/acp spawn claude --bind here`,
-    `/acp spawn gemini --mode persistent --thread auto`, atau eksplisit
-    `/acp spawn codex --bind here`.
+    `/acp spawn gemini --mode persistent --thread auto`, atau
+    `/acp spawn codex --bind here` eksplisit.
   </Step>
   <Step title="Bekerja">
-    Lanjutkan di percakapan atau thread terikat (atau targetkan kunci sesi
-    secara eksplisit).
+    Lanjutkan dalam percakapan atau thread terikat (atau targetkan kunci
+    sesi secara eksplisit).
   </Step>
   <Step title="Periksa status">
     `/acp status`
   </Step>
-  <Step title="Setel">
+  <Step title="Sesuaikan">
     `/acp model <provider/model>`,
     `/acp permissions <profile>`,
     `/acp timeout <seconds>`.
@@ -154,96 +155,97 @@ Alur cepat `/acp` dari chat:
 
 <AccordionGroup>
   <Accordion title="Detail siklus hidup">
-    - Spawn membuat atau melanjutkan sesi runtime ACP, mencatat metadata ACP di penyimpanan sesi OpenClaw, dan dapat membuat tugas latar belakang saat run dimiliki induk.
-    - Sesi ACP yang dimiliki induk diperlakukan sebagai pekerjaan latar belakang bahkan saat sesi runtime bersifat persisten; penyelesaian dan pengiriman lintas permukaan melewati notifier tugas induk, bukan bertindak seperti sesi chat normal yang menghadap pengguna.
-    - Pemeliharaan tugas menutup sesi ACP one-shot yang terminal atau yatim dan dimiliki induk. Sesi ACP persisten dipertahankan selama pengikatan percakapan aktif masih ada; sesi persisten kedaluwarsa tanpa pengikatan aktif ditutup agar tidak dapat dilanjutkan diam-diam setelah tugas pemilik selesai atau catatan tugasnya hilang.
-    - Pesan tindak lanjut terikat langsung menuju sesi ACP sampai pengikatan ditutup, tidak difokuskan, direset, atau kedaluwarsa.
+    - Spawn membuat atau melanjutkan sesi runtime ACP, merekam metadata ACP di penyimpanan sesi OpenClaw, dan dapat membuat tugas latar belakang saat proses dimiliki induk.
+    - Sesi ACP yang dimiliki induk diperlakukan sebagai pekerjaan latar belakang meskipun sesi runtime bersifat persisten; penyelesaian dan pengiriman lintas permukaan berjalan melalui notifier tugas induk, bukan bertindak seperti sesi chat normal yang menghadap pengguna.
+    - Pemeliharaan tugas menutup sesi ACP one-shot yang terminal atau yatim dan dimiliki induk. Sesi ACP persisten dipertahankan selama pengikatan percakapan aktif masih ada; sesi persisten usang tanpa pengikatan aktif ditutup agar tidak dapat dilanjutkan diam-diam setelah tugas pemilik selesai atau catatan tugasnya hilang.
+    - Pesan tindak lanjut terikat langsung menuju sesi ACP hingga pengikatan ditutup, tidak difokuskan, direset, atau kedaluwarsa.
     - Perintah Gateway tetap lokal. `/acp ...`, `/status`, dan `/unfocus` tidak pernah dikirim sebagai teks prompt normal ke harness ACP terikat.
-    - `cancel` membatalkan giliran aktif saat backend mendukung pembatalan; itu tidak menghapus metadata pengikatan atau sesi.
-    - `close` mengakhiri sesi ACP dari sudut pandang OpenClaw dan menghapus pengikatan. Harness mungkin masih mempertahankan riwayat upstream-nya sendiri jika mendukung resume.
-    - Worker runtime idle dapat dibersihkan setelah `acp.runtime.ttlMinutes`; metadata sesi yang disimpan tetap tersedia untuk `/acp sessions`.
+    - `cancel` membatalkan giliran aktif saat backend mendukung pembatalan; ini tidak menghapus metadata pengikatan atau sesi.
+    - `close` mengakhiri sesi ACP dari sudut pandang OpenClaw dan menghapus pengikatan. Harness mungkin tetap menyimpan riwayat upstream-nya sendiri jika mendukung resume.
+    - Plugin acpx membersihkan pohon proses wrapper dan adapter milik OpenClaw setelah `close`, dan memanen yatim ACPX milik OpenClaw yang usang selama startup Gateway.
+    - Worker runtime idle memenuhi syarat untuk dibersihkan setelah `acp.runtime.ttlMinutes`; metadata sesi tersimpan tetap tersedia untuk `/acp sessions`.
 
   </Accordion>
   <Accordion title="Aturan perutean Codex native">
-    Pemicu bahasa alami yang harus dirutekan ke **Plugin Codex native**
+    Pemicu bahasa alami yang harus diarahkan ke **plugin Codex native**
     saat diaktifkan:
 
-    - "Ikat channel Discord ini ke Codex."
+    - "Ikat kanal Discord ini ke Codex."
     - "Lampirkan chat ini ke thread Codex `<id>`."
     - "Tampilkan thread Codex, lalu ikat yang ini."
 
-    Pengikatan percakapan Codex native adalah jalur kontrol chat default.
-    Alat dinamis OpenClaw tetap dieksekusi melalui OpenClaw, sedangkan
+    Pengikatan percakapan Codex native adalah jalur kontrol obrolan default.
+    Alat dinamis OpenClaw tetap dieksekusi melalui OpenClaw, sementara
     alat native Codex seperti shell/apply-patch dieksekusi di dalam Codex.
-    Untuk peristiwa alat native Codex, OpenClaw menyuntikkan relay hook native
-    per giliran sehingga hook Plugin dapat memblokir `before_tool_call`, mengamati
-    `after_tool_call`, dan merutekan peristiwa Codex `PermissionRequest`
-    melalui persetujuan OpenClaw. Hook Codex `Stop` diteruskan ke
-    OpenClaw `before_agent_finalize`, tempat Plugin dapat meminta satu lintasan
-    model lagi sebelum Codex memfinalisasi jawabannya. Relay tetap
-    sengaja konservatif: ia tidak memutasi argumen alat native Codex
+    Untuk peristiwa alat native Codex, OpenClaw menyisipkan relay hook native
+    per giliran sehingga hook plugin dapat memblokir `before_tool_call`, mengamati
+    `after_tool_call`, dan merutekan peristiwa `PermissionRequest` Codex
+    melalui persetujuan OpenClaw. Hook `Stop` Codex direlay ke
+    `before_agent_finalize` OpenClaw, tempat plugin dapat meminta satu
+    model pass lagi sebelum Codex memfinalisasi jawabannya. Relay ini tetap
+    sengaja konservatif: ia tidak mengubah argumen alat native Codex
     atau menulis ulang catatan thread Codex. Gunakan ACP eksplisit hanya
     saat Anda menginginkan model runtime/sesi ACP. Batas dukungan Codex
     tertanam didokumentasikan dalam
-    [Kontrak dukungan harness Codex v1](/id/plugins/codex-harness#v1-support-contract).
+    [kontrak dukungan Codex harness v1](/id/plugins/codex-harness#v1-support-contract).
 
   </Accordion>
-  <Accordion title="Model / provider / runtime selection cheat sheet">
-    - `openai-codex/*` - rute OAuth/langganan PI Codex.
-    - `openai/*` plus `agentRuntime.id: "codex"` - runtime tersemat app-server Codex native.
+  <Accordion title="Lembar ringkas pemilihan model / provider / runtime">
+    - `openai-codex/*` - rute model Codex OAuth/langganan lama yang diperbaiki oleh doctor.
+    - `openai/*` - runtime tertanam app-server Codex native untuk giliran agen OpenAI.
     - `/codex ...` - kontrol percakapan Codex native.
-    - `/acp ...` or `runtime: "acp"` - kontrol ACP/acpx eksplisit.
+    - `/acp ...` atau `runtime: "acp"` - kontrol ACP/acpx eksplisit.
 
   </Accordion>
-  <Accordion title="ACP-routing natural-language triggers">
-    Pemicu yang harus diarahkan ke runtime ACP:
+  <Accordion title="Pemicu bahasa alami untuk perutean ACP">
+    Pemicu yang harus dirutekan ke runtime ACP:
 
-    - "Jalankan ini sebagai sesi Claude Code ACP sekali jalan dan rangkum hasilnya."
+    - "Jalankan ini sebagai sesi ACP Claude Code sekali jalan dan ringkas hasilnya."
     - "Gunakan Gemini CLI untuk tugas ini dalam sebuah thread, lalu pertahankan tindak lanjut di thread yang sama."
-    - "Jalankan Codex melalui ACP di thread latar belakang."
+    - "Jalankan Codex melalui ACP dalam thread latar belakang."
 
     OpenClaw memilih `runtime: "acp"`, menyelesaikan harness `agentId`,
     mengikat ke percakapan atau thread saat ini jika didukung, dan
-    mengarahkan tindak lanjut ke sesi itu hingga ditutup/kedaluwarsa. Codex hanya
-    mengikuti jalur ini saat ACP/acpx eksplisit atau Plugin Codex native
+    merutekan tindak lanjut ke sesi tersebut hingga ditutup/kedaluwarsa. Codex hanya
+    mengikuti jalur ini saat ACP/acpx eksplisit atau plugin Codex native
     tidak tersedia untuk operasi yang diminta.
 
     Untuk `sessions_spawn`, `runtime: "acp"` diiklankan hanya saat ACP
     diaktifkan, peminta tidak berada dalam sandbox, dan backend runtime
-    ACP dimuat. `acp.dispatch.enabled=false` menjeda dispatch otomatis
-    thread ACP tetapi tidak menyembunyikan atau memblokir panggilan
-    `sessions_spawn({ runtime: "acp" })` eksplisit. Ini menargetkan id harness ACP seperti `codex`,
-    `claude`, `droid`, `gemini`, atau `opencode`. Jangan meneruskan id agent
-    konfigurasi OpenClaw normal dari `agents_list` kecuali entri itu
+    ACP dimuat. `acp.dispatch.enabled=false` menjeda dispatch thread
+    ACP otomatis tetapi tidak menyembunyikan atau memblokir panggilan
+    `sessions_spawn({ runtime: "acp" })` eksplisit. Ini menargetkan id ACP harness seperti `codex`,
+    `claude`, `droid`, `gemini`, atau `opencode`. Jangan meneruskan id agen
+    konfigurasi OpenClaw biasa dari `agents_list` kecuali entri tersebut
     dikonfigurasi secara eksplisit dengan `agents.list[].runtime.type="acp"`;
-    jika tidak, gunakan runtime sub-agent default. Saat agent OpenClaw
+    jika tidak, gunakan runtime sub-agen default. Saat sebuah agen OpenClaw
     dikonfigurasi dengan `runtime.type="acp"`, OpenClaw menggunakan
     `runtime.acp.agent` sebagai id harness yang mendasarinya.
 
   </Accordion>
 </AccordionGroup>
 
-## ACP versus sub-agent
+## ACP versus sub-agen
 
-Gunakan ACP saat Anda menginginkan runtime harness eksternal. Gunakan **app-server
-Codex native** untuk pengikatan/kontrol percakapan Codex saat Plugin `codex`
-diaktifkan. Gunakan **sub-agent** saat Anda menginginkan
-run terdelegasi native OpenClaw.
+Gunakan ACP saat Anda menginginkan runtime harness eksternal. Gunakan **app-server Codex
+native** untuk pengikatan/kontrol percakapan Codex saat plugin `codex`
+diaktifkan. Gunakan **sub-agen** saat Anda menginginkan
+run delegasi native OpenClaw.
 
-| Area          | Sesi ACP                              | Run sub-agent                      |
+| Area          | Sesi ACP                              | Run sub-agen                       |
 | ------------- | ------------------------------------- | ---------------------------------- |
-| Runtime       | Plugin backend ACP (misalnya acpx)    | Runtime sub-agent native OpenClaw  |
+| Runtime       | Plugin backend ACP (misalnya acpx)    | Runtime sub-agen native OpenClaw   |
 | Kunci sesi    | `agent:<agentId>:acp:<uuid>`          | `agent:<agentId>:subagent:<uuid>`  |
 | Perintah utama | `/acp ...`                           | `/subagents ...`                   |
 | Alat spawn    | `sessions_spawn` dengan `runtime:"acp"` | `sessions_spawn` (runtime default) |
 
-Lihat juga [Sub-agent](/id/tools/subagents).
+Lihat juga [Sub-agen](/id/tools/subagents).
 
 ## Cara ACP menjalankan Claude Code
 
 Untuk Claude Code melalui ACP, stack-nya adalah:
 
-1. Control plane sesi ACP OpenClaw.
+1. Bidang kontrol sesi ACP OpenClaw.
 2. Plugin runtime resmi `@openclaw/acpx`.
 3. Adapter ACP Claude.
 4. Mekanisme runtime/sesi sisi Claude.
@@ -256,51 +258,51 @@ Backend CLI adalah runtime fallback lokal khusus teks yang terpisah - lihat
 
 Untuk operator, aturan praktisnya adalah:
 
-- **Butuh `/acp spawn`, sesi yang dapat diikat, kontrol runtime, atau pekerjaan harness persisten?** Gunakan ACP.
-- **Butuh fallback teks lokal sederhana melalui CLI mentah?** Gunakan backend CLI.
+- **Ingin `/acp spawn`, sesi yang dapat diikat, kontrol runtime, atau pekerjaan harness persisten?** Gunakan ACP.
+- **Ingin fallback teks lokal sederhana melalui CLI mentah?** Gunakan backend CLI.
 
 ## Sesi terikat
 
 ### Model mental
 
-- **Permukaan chat** - tempat orang terus berbicara (channel Discord, topik Telegram, chat iMessage).
-- **Sesi ACP** - status runtime Codex/Claude/Gemini tahan lama yang diarahkan OpenClaw.
+- **Permukaan obrolan** - tempat orang terus berbicara (channel Discord, topik Telegram, obrolan iMessage).
+- **Sesi ACP** - state runtime Codex/Claude/Gemini tahan lama yang dirutekan oleh OpenClaw.
 - **Thread/topik anak** - permukaan pesan tambahan opsional yang dibuat hanya oleh `--thread ...`.
-- **Workspace runtime** - lokasi filesystem (`cwd`, checkout repo, workspace backend) tempat harness berjalan. Independen dari permukaan chat.
+- **Workspace runtime** - lokasi filesystem (`cwd`, checkout repo, workspace backend) tempat harness berjalan. Independen dari permukaan obrolan.
 
-### Pengikatan percakapan saat ini
+### Ikatan percakapan saat ini
 
-`/acp spawn <harness> --bind here` memasang percakapan saat ini ke
-sesi ACP yang di-spawn - tanpa thread anak, permukaan chat yang sama. OpenClaw tetap
-mengelola transport, auth, keamanan, dan pengiriman. Pesan tindak lanjut dalam
-percakapan itu diarahkan ke sesi yang sama; `/new` dan `/reset` mereset
+`/acp spawn <harness> --bind here` menyematkan percakapan saat ini ke
+sesi ACP yang di-spawn - tanpa thread anak, permukaan obrolan yang sama. OpenClaw tetap
+memiliki transport, auth, keselamatan, dan pengiriman. Pesan tindak lanjut dalam
+percakapan tersebut dirutekan ke sesi yang sama; `/new` dan `/reset` mereset
 sesi di tempat; `/acp close` menghapus pengikatan.
 
 Contoh:
 
 ```text
-/codex bind                                              # native Codex bind, route future messages here
-/codex model gpt-5.4                                     # tune the bound native Codex thread
-/codex stop                                              # control the active native Codex turn
-/acp spawn codex --bind here                             # explicit ACP fallback for Codex
-/acp spawn codex --thread auto                           # may create a child thread/topic and bind there
-/acp spawn codex --bind here --cwd /workspace/repo       # same chat binding, Codex runs in /workspace/repo
+/codex bind                                              # pengikatan Codex native, rutekan pesan berikutnya ke sini
+/codex model gpt-5.4                                     # sesuaikan thread Codex native terikat
+/codex stop                                              # kontrol giliran Codex native aktif
+/acp spawn codex --bind here                             # fallback ACP eksplisit untuk Codex
+/acp spawn codex --thread auto                           # dapat membuat thread/topik anak dan mengikat di sana
+/acp spawn codex --bind here --cwd /workspace/repo       # pengikatan obrolan yang sama, Codex berjalan di /workspace/repo
 ```
 
 <AccordionGroup>
-  <Accordion title="Binding rules and exclusivity">
+  <Accordion title="Aturan pengikatan dan eksklusivitas">
     - `--bind here` dan `--thread ...` saling eksklusif.
     - `--bind here` hanya berfungsi pada channel yang mengiklankan pengikatan percakapan saat ini; OpenClaw mengembalikan pesan tidak didukung yang jelas jika tidak. Pengikatan bertahan melewati restart gateway.
-    - Di Discord, `spawnSessions` membatasi pembuatan thread anak untuk `--thread auto|here` - bukan `--bind here`.
-    - Jika Anda melakukan spawn ke agent ACP berbeda tanpa `--cwd`, OpenClaw mewarisi workspace **agent target** secara default. Jalur warisan yang hilang (`ENOENT`/`ENOTDIR`) fallback ke default backend; error akses lain (mis. `EACCES`) muncul sebagai error spawn.
-    - Perintah manajemen Gateway tetap lokal dalam percakapan terikat - perintah `/acp ...` ditangani oleh OpenClaw bahkan saat teks tindak lanjut normal diarahkan ke sesi ACP terikat; `/status` dan `/unfocus` juga tetap lokal kapan pun penanganan perintah diaktifkan untuk permukaan tersebut.
+    - Di Discord, `spawnSessions` mengatur pembuatan thread anak untuk `--thread auto|here` - bukan `--bind here`.
+    - Jika Anda melakukan spawn ke agen ACP berbeda tanpa `--cwd`, OpenClaw mewarisi workspace **agen target** secara default. Path warisan yang hilang (`ENOENT`/`ENOTDIR`) fallback ke default backend; kesalahan akses lain (misalnya `EACCES`) muncul sebagai kesalahan spawn.
+    - Perintah manajemen Gateway tetap lokal dalam percakapan terikat - perintah `/acp ...` ditangani oleh OpenClaw bahkan saat teks tindak lanjut normal dirutekan ke sesi ACP terikat; `/status` dan `/unfocus` juga tetap lokal kapan pun penanganan perintah diaktifkan untuk permukaan tersebut.
 
   </Accordion>
-  <Accordion title="Thread-bound sessions">
+  <Accordion title="Sesi terikat thread">
     Saat pengikatan thread diaktifkan untuk adapter channel:
 
     - OpenClaw mengikat thread ke sesi ACP target.
-    - Pesan tindak lanjut dalam thread itu diarahkan ke sesi ACP terikat.
+    - Pesan tindak lanjut dalam thread tersebut dirutekan ke sesi ACP terikat.
     - Output ACP dikirim kembali ke thread yang sama.
     - Unfocus/close/archive/idle-timeout atau kedaluwarsa max-age menghapus pengikatan.
     - `/acp close`, `/acp cancel`, `/acp status`, `/status`, dan `/unfocus` adalah perintah Gateway, bukan prompt ke harness ACP.
@@ -308,20 +310,20 @@ Contoh:
     Feature flag yang diperlukan untuk ACP terikat thread:
 
     - `acp.enabled=true`
-    - `acp.dispatch.enabled` aktif secara default (atur `false` untuk menjeda dispatch otomatis thread ACP; panggilan `sessions_spawn({ runtime: "acp" })` eksplisit tetap berfungsi).
+    - `acp.dispatch.enabled` aktif secara default (atur `false` untuk menjeda dispatch thread ACP otomatis; panggilan `sessions_spawn({ runtime: "acp" })` eksplisit tetap berfungsi).
     - Spawn sesi thread adapter channel diaktifkan (default: `true`):
       - Discord: `channels.discord.threadBindings.spawnSessions=true`
       - Telegram: `channels.telegram.threadBindings.spawnSessions=true`
 
-    Dukungan pengikatan thread bersifat spesifik adapter. Jika adapter channel
+    Dukungan pengikatan thread spesifik per adapter. Jika adapter channel
     aktif tidak mendukung pengikatan thread, OpenClaw mengembalikan pesan
     tidak didukung/tidak tersedia yang jelas.
 
   </Accordion>
-  <Accordion title="Thread-supporting channels">
+  <Accordion title="Channel yang mendukung thread">
     - Adapter channel apa pun yang mengekspos kapabilitas pengikatan sesi/thread.
-    - Dukungan bawaan saat ini: thread/channel **Discord**, topik **Telegram** (topik forum di grup/supergrup dan topik DM).
-    - Channel Plugin dapat menambahkan dukungan melalui antarmuka pengikatan yang sama.
+    - Dukungan bawaan saat ini: thread/channel **Discord**, topik **Telegram** (topik forum dalam grup/supergrup dan topik DM).
+    - Channel plugin dapat menambahkan dukungan melalui antarmuka pengikatan yang sama.
 
   </Accordion>
 </AccordionGroup>
@@ -346,7 +348,7 @@ entri `bindings[]` tingkat atas.
 
 </ParamField>
 <ParamField path="bindings[].agentId" type="string">
-  Id agent OpenClaw pemilik.
+  Id agen OpenClaw pemilik.
 </ParamField>
 <ParamField path="bindings[].acp.mode" type='"persistent" | "oneshot"'>
   Override ACP opsional.
@@ -361,21 +363,21 @@ entri `bindings[]` tingkat atas.
   Override backend opsional.
 </ParamField>
 
-### Default runtime per agent
+### Default runtime per agen
 
-Gunakan `agents.list[].runtime` untuk menetapkan default ACP sekali per agent:
+Gunakan `agents.list[].runtime` untuk menentukan default ACP sekali per agen:
 
 - `agents.list[].runtime.type="acp"`
-- `agents.list[].runtime.acp.agent` (id harness, mis. `codex` atau `claude`)
+- `agents.list[].runtime.acp.agent` (id harness, misalnya `codex` atau `claude`)
 - `agents.list[].runtime.acp.backend`
 - `agents.list[].runtime.acp.mode`
 - `agents.list[].runtime.acp.cwd`
 
-**Presedensi override untuk sesi terikat ACP:**
+**Prioritas override untuk sesi terikat ACP:**
 
 1. `bindings[].acp.*`
 2. `agents.list[].runtime.acp.*`
-3. Default ACP global (mis. `acp.backend`)
+3. Default ACP global (misalnya `acp.backend`)
 
 ### Contoh
 
@@ -460,19 +462,19 @@ Gunakan `agents.list[].runtime` untuk menetapkan default ACP sekali per agent:
 ### Perilaku
 
 - OpenClaw memastikan sesi ACP yang dikonfigurasi ada sebelum digunakan.
-- Pesan dalam channel atau topik tersebut diarahkan ke sesi ACP yang dikonfigurasi.
+- Pesan di channel atau topik tersebut dirutekan ke sesi ACP yang dikonfigurasi.
 - Dalam percakapan terikat, `/new` dan `/reset` mereset kunci sesi ACP yang sama di tempat.
-- Pengikatan runtime sementara (misalnya dibuat oleh alur fokus-thread) tetap berlaku jika ada.
-- Untuk spawn ACP lintas-agent tanpa `cwd` eksplisit, OpenClaw mewarisi workspace agent target dari konfigurasi agent.
-- Jalur workspace warisan yang hilang fallback ke cwd default backend; kegagalan akses yang tidak hilang muncul sebagai error spawn.
+- Binding runtime sementara (misalnya yang dibuat oleh alur fokus thread) tetap berlaku jika ada.
+- Untuk spawn ACP lintas agen tanpa `cwd` eksplisit, OpenClaw mewarisi workspace agen target dari konfigurasi agen.
+- Jalur workspace turunan yang hilang fallback ke cwd default backend; kegagalan akses yang tidak hilang muncul sebagai error spawn.
 
-## Memulai sesi ACP
+## Mulai sesi ACP
 
 Dua cara untuk memulai sesi ACP:
 
 <Tabs>
   <Tab title="From sessions_spawn">
-    Gunakan `runtime: "acp"` untuk memulai sesi ACP dari giliran agent atau
+    Gunakan `runtime: "acp"` untuk memulai sesi ACP dari giliran agen atau
     panggilan alat.
 
     ```json
@@ -486,7 +488,7 @@ Dua cara untuk memulai sesi ACP:
     ```
 
     <Note>
-    `runtime` secara default adalah `subagent`, jadi tetapkan `runtime: "acp"` secara eksplisit
+    `runtime` default ke `subagent`, jadi tetapkan `runtime: "acp"` secara eksplisit
     untuk sesi ACP. Jika `agentId` dihilangkan, OpenClaw menggunakan
     `acp.defaultAgent` saat dikonfigurasi. `mode: "session"` memerlukan
     `thread: true` untuk mempertahankan percakapan terikat yang persisten.
@@ -511,12 +513,12 @@ Dua cara untuk memulai sesi ACP:
     - `--cwd <absolute-path>`
     - `--label <name>`
 
-    Lihat [perintah slash](/id/tools/slash-commands).
+    Lihat [Perintah slash](/id/tools/slash-commands).
 
   </Tab>
 </Tabs>
 
-### parameter `sessions_spawn`
+### Parameter `sessions_spawn`
 
 <ParamField path="task" type="string" required>
   Prompt awal yang dikirim ke sesi ACP.
@@ -525,88 +527,88 @@ Dua cara untuk memulai sesi ACP:
   Harus berupa `"acp"` untuk sesi ACP.
 </ParamField>
 <ParamField path="agentId" type="string">
-  id harness target ACP. Beralih ke `acp.defaultAgent` jika ditetapkan.
+  Id harness target ACP. Fallback ke `acp.defaultAgent` jika ditetapkan.
 </ParamField>
 <ParamField path="thread" type="boolean" default="false">
-  Meminta alur pengikatan thread jika didukung.
+  Meminta alur binding thread jika didukung.
 </ParamField>
 <ParamField path="mode" type='"run" | "session"' default="run">
   `"run"` bersifat sekali jalan; `"session"` bersifat persisten. Jika `thread: true` dan
-  `mode` dihilangkan, OpenClaw dapat secara default menggunakan perilaku persisten sesuai
+  `mode` dihilangkan, OpenClaw dapat default ke perilaku persisten per
   jalur runtime. `mode: "session"` memerlukan `thread: true`.
 </ParamField>
 <ParamField path="cwd" type="string">
   Direktori kerja runtime yang diminta (divalidasi oleh kebijakan backend/runtime).
-  Jika dihilangkan, spawn ACP mewarisi workspace agent target saat
-  dikonfigurasi; path turunan yang hilang beralih ke default backend, sementara
-  kesalahan akses nyata dikembalikan.
+  Jika dihilangkan, spawn ACP mewarisi workspace agen target saat
+  dikonfigurasi; jalur turunan yang hilang fallback ke default backend,
+  sementara error akses nyata dikembalikan.
 </ParamField>
 <ParamField path="label" type="string">
-  Label yang terlihat oleh operator yang digunakan dalam teks sesi/banner.
+  Label yang terlihat operator yang digunakan dalam teks sesi/banner.
 </ParamField>
 <ParamField path="resumeSessionId" type="string">
-  Lanjutkan sesi ACP yang ada alih-alih membuat yang baru. Agent
+  Melanjutkan sesi ACP yang ada alih-alih membuat yang baru. Agen
   memutar ulang riwayat percakapannya melalui `session/load`. Memerlukan
   `runtime: "acp"`.
 </ParamField>
 <ParamField path="streamTo" type='"parent"'>
-  `"parent"` mengalirkan ringkasan progres run ACP awal kembali ke sesi
-  peminta sebagai peristiwa sistem. Respons yang diterima mencakup
-  `streamLogPath` yang menunjuk ke log JSONL berskala sesi
-  (`<sessionId>.acp-stream.jsonl`) yang dapat Anda tail untuk riwayat relay lengkap.
+  `"parent"` mengalirkan ringkasan progres run ACP awal kembali ke
+  sesi peminta sebagai peristiwa sistem. Respons yang diterima mencakup
+  `streamLogPath` yang menunjuk ke log JSONL tercakup sesi
+  (`<sessionId>.acp-stream.jsonl`) yang dapat Anda tail untuk riwayat relay penuh.
 </ParamField>
 <ParamField path="runTimeoutSeconds" type="number">
-  Membatalkan giliran child ACP setelah N detik. `0` mempertahankan giliran pada
-  jalur tanpa timeout milik gateway. Nilai yang sama diterapkan pada run Gateway
+  Membatalkan giliran anak ACP setelah N detik. `0` mempertahankan giliran pada
+  jalur tanpa timeout milik Gateway. Nilai yang sama diterapkan ke run Gateway
   dan runtime ACP agar harness yang macet/kehabisan kuota tidak
-  menempati lane agent parent tanpa batas waktu.
+  menempati lane agen induk tanpa batas.
 </ParamField>
 <ParamField path="model" type="string">
-  Override model eksplisit untuk sesi child ACP. Spawn Codex ACP
-  menormalkan referensi OpenClaw Codex seperti `openai-codex/gpt-5.4` ke konfigurasi
+  Override model eksplisit untuk sesi anak ACP. Spawn Codex ACP
+  menormalisasi referensi OpenClaw Codex seperti `openai-codex/gpt-5.4` ke konfigurasi
   startup Codex ACP sebelum `session/new`; bentuk slash seperti
   `openai-codex/gpt-5.4/high` juga menetapkan upaya penalaran Codex ACP.
   Harness lain harus mengiklankan `models` ACP dan mendukung
   `session/set_model`; jika tidak, OpenClaw/acpx gagal dengan jelas alih-alih
-  diam-diam beralih ke default agent target.
+  fallback diam-diam ke default agen target.
 </ParamField>
 <ParamField path="thinking" type="string">
-  Upaya thinking/penalaran eksplisit. Untuk Codex ACP, `minimal` dipetakan ke
+  Upaya berpikir/penalaran eksplisit. Untuk Codex ACP, `minimal` dipetakan ke
   upaya rendah, `low`/`medium`/`high`/`xhigh` dipetakan langsung, dan `off`
-  menghilangkan override startup upaya penalaran.
+  menghilangkan override startup upaya-penalaran.
 </ParamField>
 
-## Mode bind dan thread spawn
+## Mode binding dan thread spawn
 
 <Tabs>
   <Tab title="--bind here|off">
     | Mode   | Perilaku                                                               |
     | ------ | ---------------------------------------------------------------------- |
     | `here` | Ikat percakapan aktif saat ini di tempat; gagal jika tidak ada yang aktif. |
-    | `off`  | Jangan buat pengikatan percakapan saat ini.                          |
+    | `off`  | Jangan buat binding percakapan saat ini.                               |
 
     Catatan:
 
     - `--bind here` adalah jalur operator paling sederhana untuk "jadikan channel atau chat ini didukung Codex."
-    - `--bind here` tidak membuat thread child.
-    - `--bind here` hanya tersedia pada channel yang mengekspos dukungan pengikatan percakapan saat ini.
+    - `--bind here` tidak membuat thread anak.
+    - `--bind here` hanya tersedia pada channel yang mengekspos dukungan binding percakapan saat ini.
     - `--bind` dan `--thread` tidak dapat digabungkan dalam panggilan `/acp spawn` yang sama.
 
   </Tab>
   <Tab title="--thread auto|here|off">
     | Mode   | Perilaku                                                                                            |
     | ------ | --------------------------------------------------------------------------------------------------- |
-    | `auto` | Dalam thread aktif: ikat thread tersebut. Di luar thread: buat/ikat thread child jika didukung. |
-    | `here` | Memerlukan thread aktif saat ini; gagal jika tidak berada di thread.                                                  |
-    | `off`  | Tidak ada pengikatan. Sesi dimulai tanpa ikatan.                                                                 |
+    | `auto` | Dalam thread aktif: ikat thread tersebut. Di luar thread: buat/ikat thread anak jika didukung. |
+    | `here` | Wajib ada thread aktif saat ini; gagal jika tidak berada di dalam thread.                           |
+    | `off`  | Tidak ada binding. Sesi dimulai tanpa binding.                                                      |
 
     Catatan:
 
-    - Pada permukaan pengikatan non-thread, perilaku default secara efektif adalah `off`.
+    - Pada permukaan binding non-thread, perilaku default secara efektif adalah `off`.
     - Spawn terikat thread memerlukan dukungan kebijakan channel:
       - Discord: `channels.discord.threadBindings.spawnSessions=true`
       - Telegram: `channels.telegram.threadBindings.spawnSessions=true`
-    - Gunakan `--bind here` saat Anda ingin memasang pin pada percakapan saat ini tanpa membuat thread child.
+    - Gunakan `--bind here` saat Anda ingin menyematkan percakapan saat ini tanpa membuat thread anak.
 
   </Tab>
 </Tabs>
@@ -614,7 +616,7 @@ Dua cara untuk memulai sesi ACP:
 ## Model pengiriman
 
 Sesi ACP dapat berupa workspace interaktif atau pekerjaan latar belakang
-milik parent. Jalur pengiriman bergantung pada bentuk tersebut.
+milik induk. Jalur pengiriman bergantung pada bentuk tersebut.
 
 <AccordionGroup>
   <Accordion title="Interactive ACP sessions">
@@ -626,59 +628,59 @@ milik parent. Jalur pengiriman bergantung pada bentuk tersebut.
     - `bindings[].type="acp"` terkonfigurasi persisten merutekan percakapan yang cocok ke sesi ACP yang sama.
 
     Pesan lanjutan dalam percakapan terikat dirutekan langsung ke
-    sesi ACP, dan output ACP dikirim kembali ke
+    sesi ACP, dan output ACP dikirimkan kembali ke
     channel/thread/topik yang sama.
 
     Yang dikirim OpenClaw ke harness:
 
-    - Lanjutan terikat normal dikirim sebagai teks prompt, ditambah lampiran hanya saat harness/backend mendukungnya.
-    - Perintah manajemen `/acp` dan perintah Gateway lokal dicegat sebelum dispatch ACP.
-    - Peristiwa penyelesaian yang dihasilkan runtime diwujudkan per target. Agent OpenClaw mendapatkan envelope runtime-context internal OpenClaw; harness ACP eksternal mendapatkan prompt polos dengan hasil child dan instruksi. Envelope mentah `<<<BEGIN_OPENCLAW_INTERNAL_CONTEXT>>>` tidak boleh pernah dikirim ke harness eksternal atau dipersistenkan sebagai teks transkrip pengguna ACP.
-    - Entri transkrip ACP menggunakan teks pemicu yang terlihat pengguna atau prompt penyelesaian polos. Metadata peristiwa internal tetap terstruktur di OpenClaw jika memungkinkan dan tidak diperlakukan sebagai konten chat yang ditulis pengguna.
+    - Lanjutan terikat normal dikirim sebagai teks prompt, ditambah lampiran hanya jika harness/backend mendukungnya.
+    - Perintah manajemen `/acp` dan perintah Gateway lokal diintersepsi sebelum dispatch ACP.
+    - Peristiwa penyelesaian yang dihasilkan runtime dimaterialisasi per target. Agen OpenClaw mendapatkan envelope konteks-runtime internal OpenClaw; harness ACP eksternal mendapatkan prompt biasa dengan hasil anak dan instruksi. Envelope mentah `<<<BEGIN_OPENCLAW_INTERNAL_CONTEXT>>>` tidak boleh pernah dikirim ke harness eksternal atau dipersistenkan sebagai teks transkrip pengguna ACP.
+    - Entri transkrip ACP menggunakan teks pemicu yang terlihat pengguna atau prompt penyelesaian biasa. Metadata peristiwa internal tetap terstruktur di OpenClaw jika memungkinkan dan tidak diperlakukan sebagai konten chat yang ditulis pengguna.
 
   </Accordion>
   <Accordion title="Parent-owned one-shot ACP sessions">
-    Sesi ACP sekali jalan yang di-spawn oleh run agent lain adalah child
-    latar belakang, mirip dengan sub-agent:
+    Sesi ACP sekali jalan yang di-spawn oleh run agen lain adalah anak
+    latar belakang, mirip dengan sub-agen:
 
-    - Parent meminta pekerjaan dengan `sessions_spawn({ runtime: "acp", mode: "run" })`.
-    - Child berjalan dalam sesi harness ACP sendiri.
-    - Giliran child berjalan pada lane latar belakang yang sama yang digunakan oleh spawn sub-agent native, sehingga harness ACP yang lambat tidak memblokir pekerjaan sesi utama yang tidak terkait.
-    - Laporan penyelesaian kembali melalui jalur pengumuman task-completion. OpenClaw mengonversi metadata penyelesaian internal menjadi prompt ACP polos sebelum mengirimnya ke harness eksternal, sehingga harness tidak melihat marker konteks runtime khusus OpenClaw.
-    - Parent menulis ulang hasil child dengan suara asisten normal saat balasan yang terlihat pengguna berguna.
+    - Induk meminta pekerjaan dengan `sessions_spawn({ runtime: "acp", mode: "run" })`.
+    - Anak berjalan dalam sesi harness ACP-nya sendiri.
+    - Giliran anak berjalan pada lane latar belakang yang sama yang digunakan oleh spawn sub-agen native, sehingga harness ACP yang lambat tidak memblokir pekerjaan sesi utama yang tidak terkait.
+    - Laporan penyelesaian kembali melalui jalur pengumuman penyelesaian tugas. OpenClaw mengonversi metadata penyelesaian internal menjadi prompt ACP biasa sebelum mengirimkannya ke harness eksternal, sehingga harness tidak melihat penanda konteks runtime khusus OpenClaw.
+    - Induk menulis ulang hasil anak dalam suara asisten normal saat balasan yang terlihat pengguna berguna.
 
-    **Jangan** perlakukan jalur ini sebagai chat peer-to-peer antara parent
-    dan child. Child sudah memiliki channel penyelesaian kembali ke
-    parent.
+    Jangan perlakukan jalur ini sebagai chat peer-to-peer antara induk
+    dan anak. Anak sudah memiliki channel penyelesaian kembali ke
+    induk.
 
   </Accordion>
   <Accordion title="sessions_send and A2A delivery">
     `sessions_send` dapat menargetkan sesi lain setelah spawn. Untuk sesi
-    peer normal, OpenClaw menggunakan jalur lanjutan agent-to-agent (A2A)
+    peer normal, OpenClaw menggunakan jalur lanjutan agen-ke-agen (A2A)
     setelah menyuntikkan pesan:
 
     - Tunggu balasan sesi target.
-    - Secara opsional izinkan peminta dan target bertukar jumlah giliran lanjutan yang dibatasi.
-    - Minta target menghasilkan pesan pengumuman.
-    - Kirim pengumuman tersebut ke channel atau thread yang terlihat.
+    - Secara opsional izinkan peminta dan target bertukar sejumlah terbatas giliran lanjutan.
+    - Minta target membuat pesan pengumuman.
+    - Kirimkan pengumuman tersebut ke channel atau thread yang terlihat.
 
-    Jalur A2A tersebut adalah fallback untuk pengiriman peer ketika pengirim membutuhkan
+    Jalur A2A tersebut adalah fallback untuk pengiriman peer saat pengirim membutuhkan
     lanjutan yang terlihat. Jalur ini tetap aktif saat sesi yang tidak terkait dapat
     melihat dan mengirim pesan ke target ACP, misalnya di bawah pengaturan
     `tools.sessions.visibility` yang luas.
 
-    OpenClaw melewati lanjutan A2A hanya ketika peminta adalah
-    parent dari child ACP sekali jalan milik parent-nya sendiri. Dalam kasus tersebut,
-    menjalankan A2A di atas penyelesaian tugas dapat membangunkan parent dengan
-    hasil child, meneruskan balasan parent kembali ke child, dan
-    membuat loop gema parent/child. Hasil `sessions_send` melaporkan
-    `delivery.status="skipped"` untuk kasus child milik sendiri tersebut karena
+    OpenClaw melewati lanjutan A2A hanya saat peminta adalah
+    induk dari anak ACP sekali jalan milik induknya sendiri. Dalam kasus itu,
+    menjalankan A2A di atas penyelesaian tugas dapat membangunkan induk dengan
+    hasil anak, meneruskan balasan induk kembali ke anak, dan
+    membuat loop gema induk/anak. Hasil `sessions_send` melaporkan
+    `delivery.status="skipped"` untuk kasus anak milik sendiri tersebut karena
     jalur penyelesaian sudah bertanggung jawab atas hasilnya.
 
   </Accordion>
   <Accordion title="Resume an existing session">
     Gunakan `resumeSessionId` untuk melanjutkan sesi ACP sebelumnya alih-alih
-    memulai dari awal. Agent memutar ulang riwayat percakapannya melalui
+    memulai dari awal. Agen memutar ulang riwayat percakapannya melalui
     `session/load`, sehingga melanjutkan dengan konteks penuh dari yang terjadi sebelumnya.
 
     ```json
@@ -692,33 +694,33 @@ milik parent. Jalur pengiriman bergantung pada bentuk tersebut.
 
     Kasus penggunaan umum:
 
-    - Serahkan sesi Codex dari laptop Anda ke ponsel Anda - beri tahu agent Anda untuk melanjutkan dari tempat Anda berhenti.
-    - Lanjutkan sesi coding yang Anda mulai secara interaktif di CLI, sekarang secara headless melalui agent Anda.
+    - Serahkan sesi Codex dari laptop Anda ke ponsel Anda - beri tahu agen Anda untuk melanjutkan dari tempat Anda berhenti.
+    - Lanjutkan sesi coding yang Anda mulai secara interaktif di CLI, sekarang secara headless melalui agen Anda.
     - Lanjutkan pekerjaan yang terputus oleh restart gateway atau timeout idle.
 
     Catatan:
 
-    - `resumeSessionId` hanya berlaku saat `runtime: "acp"`; runtime sub-agent default mengabaikan field khusus ACP ini.
-    - `streamTo` hanya berlaku saat `runtime: "acp"`; runtime sub-agent default mengabaikan field khusus ACP ini.
-    - `resumeSessionId` adalah id resume ACP/harness lokal host, bukan kunci sesi channel OpenClaw; OpenClaw tetap memeriksa kebijakan spawn ACP dan kebijakan agent target sebelum dispatch, sementara backend atau harness ACP memiliki otorisasi untuk memuat id upstream tersebut.
-    - `resumeSessionId` memulihkan riwayat percakapan ACP upstream; `thread` dan `mode` tetap berlaku normal pada sesi OpenClaw baru yang Anda buat, jadi `mode: "session"` tetap memerlukan `thread: true`.
-    - Agent target harus mendukung `session/load` (Codex dan Claude Code mendukungnya).
-    - Jika id sesi tidak ditemukan, spawn gagal dengan kesalahan yang jelas - tidak ada fallback diam-diam ke sesi baru.
+    - `resumeSessionId` hanya berlaku saat `runtime: "acp"`; runtime sub-agen default mengabaikan field khusus ACP ini.
+    - `streamTo` hanya berlaku saat `runtime: "acp"`; runtime sub-agen default mengabaikan field khusus ACP ini.
+    - `resumeSessionId` adalah id resume ACP/harness lokal host, bukan kunci sesi channel OpenClaw; OpenClaw tetap memeriksa kebijakan spawn ACP dan kebijakan agen target sebelum dispatch, sementara backend atau harness ACP memiliki otorisasi untuk memuat id upstream tersebut.
+    - `resumeSessionId` memulihkan riwayat percakapan ACP upstream; `thread` dan `mode` tetap berlaku normal pada sesi OpenClaw baru yang Anda buat, sehingga `mode: "session"` tetap memerlukan `thread: true`.
+    - Agen target harus mendukung `session/load` (Codex dan Claude Code mendukungnya).
+    - Jika id sesi tidak ditemukan, spawn gagal dengan error yang jelas - tidak ada fallback diam-diam ke sesi baru.
 
   </Accordion>
   <Accordion title="Post-deploy smoke test">
     Setelah deploy gateway, jalankan pemeriksaan end-to-end live alih-alih
-    memercayai pengujian unit:
+    memercayai unit test:
 
-    1. Verifikasi versi gateway dan commit yang di-deploy pada host target.
-    2. Buka sesi bridge ACPX sementara ke agent live.
-    3. Minta agent tersebut memanggil `sessions_spawn` dengan `runtime: "acp"`, `agentId: "codex"`, `mode: "run"`, dan task `Reply with exactly LIVE-ACP-SPAWN-OK`.
-    4. Verifikasi `accepted=yes`, `childSessionKey` nyata, dan tidak ada kesalahan validator.
-    5. Bersihkan sesi bridge sementara.
+    1. Verifikasi versi Gateway yang dideploy dan commit pada host target.
+    2. Buka sesi jembatan ACPX sementara ke agen live.
+    3. Minta agen tersebut memanggil `sessions_spawn` dengan `runtime: "acp"`, `agentId: "codex"`, `mode: "run"`, dan tugas `Reply with exactly LIVE-ACP-SPAWN-OK`.
+    4. Verifikasi `accepted=yes`, `childSessionKey` nyata, dan tidak ada galat validator.
+    5. Bersihkan sesi jembatan sementara.
 
     Pertahankan gate pada `mode: "run"` dan lewati `streamTo: "parent"` -
-    `mode: "session"` terikat thread dan jalur stream-relay adalah pass
-    integrasi yang lebih kaya dan terpisah.
+    `mode: "session"` yang terikat thread dan jalur stream-relay adalah
+    pass integrasi yang lebih kaya dan terpisah.
 
   </Accordion>
 </AccordionGroup>
@@ -733,19 +735,19 @@ sandbox OpenClaw.
 
 - Harness eksternal dapat membaca/menulis sesuai izin CLI miliknya sendiri dan `cwd` yang dipilih.
 - Kebijakan sandbox OpenClaw **tidak** membungkus eksekusi harness ACP.
-- OpenClaw tetap memberlakukan gerbang fitur ACP, agen yang diizinkan, kepemilikan sesi, binding kanal, dan kebijakan pengiriman Gateway.
+- OpenClaw tetap memberlakukan gate fitur ACP, agen yang diizinkan, kepemilikan sesi, binding channel, dan kebijakan pengiriman Gateway.
 - Gunakan `runtime: "subagent"` untuk pekerjaan native OpenClaw yang diberlakukan sandbox.
 
 </Warning>
 
 Batasan saat ini:
 
-- Jika sesi peminta berada dalam sandbox, spawn ACP diblokir untuk `sessions_spawn({ runtime: "acp" })` maupun `/acp spawn`.
+- Jika sesi requester berada dalam sandbox, spawn ACP diblokir untuk `sessions_spawn({ runtime: "acp" })` maupun `/acp spawn`.
 - `sessions_spawn` dengan `runtime: "acp"` tidak mendukung `sandbox: "require"`.
 
 ## Resolusi target sesi
 
-Sebagian besar aksi `/acp` menerima target sesi opsional (`session-key`,
+Sebagian besar tindakan `/acp` menerima target sesi opsional (`session-key`,
 `session-id`, atau `session-label`).
 
 **Urutan resolusi:**
@@ -755,88 +757,88 @@ Sebagian besar aksi `/acp` menerima target sesi opsional (`session-key`,
    - lalu id sesi berbentuk UUID
    - lalu label
 2. Binding thread saat ini (jika percakapan/thread ini terikat ke sesi ACP).
-3. Fallback sesi peminta saat ini.
+3. Fallback sesi requester saat ini.
 
-Binding percakapan saat ini dan binding thread keduanya berpartisipasi dalam
+Binding percakapan saat ini dan binding thread sama-sama ikut dalam
 langkah 2.
 
-Jika tidak ada target yang teresolusi, OpenClaw mengembalikan error yang jelas
+Jika tidak ada target yang terselesaikan, OpenClaw mengembalikan galat yang jelas
 (`Unable to resolve session target: ...`).
 
 ## Kontrol ACP
 
 | Perintah             | Fungsinya                                                 | Contoh                                                        |
 | -------------------- | --------------------------------------------------------- | ------------------------------------------------------------- |
-| `/acp spawn`         | Membuat sesi ACP; binding saat ini atau binding thread opsional. | `/acp spawn codex --bind here --cwd /repo`                    |
-| `/acp cancel`        | Membatalkan turn yang sedang berjalan untuk sesi target.  | `/acp cancel agent:codex:acp:<uuid>`                          |
-| `/acp steer`         | Mengirim instruksi steer ke sesi yang berjalan.           | `/acp steer --session support inbox prioritize failing tests` |
-| `/acp close`         | Menutup sesi dan melepas binding target thread.           | `/acp close`                                                  |
-| `/acp status`        | Menampilkan backend, mode, status, opsi runtime, kapabilitas. | `/acp status`                                                 |
-| `/acp set-mode`      | Mengatur mode runtime untuk sesi target.                  | `/acp set-mode plan`                                          |
-| `/acp set`           | Menulis opsi konfigurasi runtime generik.                 | `/acp set model openai/gpt-5.4`                               |
-| `/acp cwd`           | Mengatur override direktori kerja runtime.                | `/acp cwd /Users/user/Projects/repo`                          |
-| `/acp permissions`   | Mengatur profil kebijakan persetujuan.                    | `/acp permissions strict`                                     |
-| `/acp timeout`       | Mengatur timeout runtime (detik).                         | `/acp timeout 120`                                            |
-| `/acp model`         | Mengatur override model runtime.                          | `/acp model anthropic/claude-opus-4-6`                        |
-| `/acp reset-options` | Menghapus override opsi runtime sesi.                     | `/acp reset-options`                                          |
-| `/acp sessions`      | Mencantumkan sesi ACP terbaru dari store.                 | `/acp sessions`                                               |
+| `/acp spawn`         | Buat sesi ACP; binding saat ini atau binding thread opsional. | `/acp spawn codex --bind here --cwd /repo`                    |
+| `/acp cancel`        | Batalkan turn yang sedang berjalan untuk sesi target.     | `/acp cancel agent:codex:acp:<uuid>`                          |
+| `/acp steer`         | Kirim instruksi steer ke sesi yang berjalan.              | `/acp steer --session support inbox prioritize failing tests` |
+| `/acp close`         | Tutup sesi dan lepas binding target thread.               | `/acp close`                                                  |
+| `/acp status`        | Tampilkan backend, mode, state, opsi runtime, kapabilitas. | `/acp status`                                                 |
+| `/acp set-mode`      | Tetapkan mode runtime untuk sesi target.                  | `/acp set-mode plan`                                          |
+| `/acp set`           | Tulis opsi konfigurasi runtime generik.                   | `/acp set model openai/gpt-5.4`                               |
+| `/acp cwd`           | Tetapkan override direktori kerja runtime.                | `/acp cwd /Users/user/Projects/repo`                          |
+| `/acp permissions`   | Tetapkan profil kebijakan persetujuan.                    | `/acp permissions strict`                                     |
+| `/acp timeout`       | Tetapkan timeout runtime (detik).                         | `/acp timeout 120`                                            |
+| `/acp model`         | Tetapkan override model runtime.                          | `/acp model anthropic/claude-opus-4-6`                        |
+| `/acp reset-options` | Hapus override opsi runtime sesi.                         | `/acp reset-options`                                          |
+| `/acp sessions`      | Cantumkan sesi ACP terbaru dari store.                    | `/acp sessions`                                               |
 | `/acp doctor`        | Kesehatan backend, kapabilitas, perbaikan yang dapat ditindaklanjuti. | `/acp doctor`                                                 |
-| `/acp install`       | Mencetak langkah install dan pengaktifan deterministik.   | `/acp install`                                                |
+| `/acp install`       | Cetak langkah instalasi dan pengaktifan deterministik.    | `/acp install`                                                |
 
-`/acp status` menampilkan opsi runtime efektif plus pengenal sesi level runtime dan
-level backend. Error kontrol yang tidak didukung muncul
+`/acp status` menampilkan opsi runtime efektif serta identifier sesi tingkat runtime dan
+tingkat backend. Galat kontrol yang tidak didukung muncul
 dengan jelas ketika backend tidak memiliki kapabilitas. `/acp sessions` membaca
-store untuk sesi terikat saat ini atau sesi peminta; token target
-(`session-key`, `session-id`, atau `session-label`) diresolusi melalui
-discovery sesi gateway, termasuk root `session.store` khusus per agen.
+store untuk sesi yang sedang terikat atau sesi requester; token target
+(`session-key`, `session-id`, atau `session-label`) diselesaikan melalui
+penemuan sesi Gateway, termasuk root `session.store` kustom per agen.
 
 ### Pemetaan opsi runtime
 
-`/acp` memiliki perintah praktis dan setter generik. Operasi yang setara:
+`/acp` memiliki perintah praktis dan setter generik. Operasi
+yang ekuivalen:
 
 | Perintah                     | Dipetakan ke                         | Catatan                                                                                                                                                                        |
 | ---------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `/acp model <id>`            | key konfigurasi runtime `model`      | Untuk Codex ACP, OpenClaw menormalkan `openai-codex/<model>` menjadi id model adapter dan memetakan akhiran reasoning garis miring seperti `openai-codex/gpt-5.4/high` ke `reasoning_effort`. |
-| `/acp set thinking <level>`  | key konfigurasi runtime `thinking`   | Untuk Codex ACP, OpenClaw mengirim `reasoning_effort` yang sesuai ketika adapter mendukungnya.                                                                                 |
+| `/acp model <id>`            | key konfigurasi runtime `model`      | Untuk Codex ACP, OpenClaw menormalisasi `openai-codex/<model>` ke id model adapter dan memetakan sufiks reasoning slash seperti `openai-codex/gpt-5.4/high` ke `reasoning_effort`. |
+| `/acp set thinking <level>`  | key konfigurasi runtime `thinking`   | Untuk Codex ACP, OpenClaw mengirim `reasoning_effort` yang sesuai jika adapter mendukungnya.                                                                                   |
 | `/acp permissions <profile>` | key konfigurasi runtime `approval_policy` | -                                                                                                                                                                              |
 | `/acp timeout <seconds>`     | key konfigurasi runtime `timeout`    | -                                                                                                                                                                              |
 | `/acp cwd <path>`            | override cwd runtime                 | Pembaruan langsung.                                                                                                                                                           |
-| `/acp set <key> <value>`     | generik                              | `key=cwd` menggunakan jalur override cwd.                                                                                                                                      |
+| `/acp set <key> <value>`     | generik                              | `key=cwd` menggunakan path override cwd.                                                                                                                                       |
 | `/acp reset-options`         | menghapus semua override runtime     | -                                                                                                                                                                              |
 
-## Harness acpx, penyiapan Plugin, dan izin
+## harness acpx, penyiapan Plugin, dan izin
 
-Untuk konfigurasi harness acpx (alias Claude Code / Codex / Gemini CLI
-), bridge MCP plugin-tools dan OpenClaw-tools, serta mode
-izin ACP, lihat
+Untuk konfigurasi harness acpx (alias Claude Code / Codex / Gemini CLI),
+bridge MCP plugin-tools dan OpenClaw-tools, serta mode izin ACP, lihat
 [Agen ACP - penyiapan](/id/tools/acp-agents-setup).
 
 ## Pemecahan masalah
 
-| Gejala                                                                     | Kemungkinan penyebab                                                                                                           | Perbaikan                                                                                                                                                                      |
+| Gejala                                                                     | Kemungkinan penyebab                                                                                                   | Perbaikan                                                                                                                                                                      |
 | --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `ACP runtime backend is not configured`                                     | Plugin backend hilang, dinonaktifkan, atau diblokir oleh `plugins.allow`.                                                       | Instal dan aktifkan Plugin backend, sertakan `acpx` dalam `plugins.allow` saat daftar izin tersebut disetel, lalu jalankan `/acp doctor`.                                                 |
+| `ACP runtime backend is not configured`                                     | Plugin backend hilang, dinonaktifkan, atau diblokir oleh `plugins.allow`.                                                       | Pasang dan aktifkan Plugin backend, sertakan `acpx` dalam `plugins.allow` saat daftar izin tersebut disetel, lalu jalankan `/acp doctor`.                                                 |
 | `ACP is disabled by policy (acp.enabled=false)`                             | ACP dinonaktifkan secara global.                                                                                                 | Setel `acp.enabled=true`.                                                                                                                                                  |
-| `ACP dispatch is disabled by policy (acp.dispatch.enabled=false)`           | Pengiriman otomatis dari pesan thread normal dinonaktifkan.                                                               | Setel `acp.dispatch.enabled=true` untuk melanjutkan perutean thread otomatis; panggilan eksplisit `sessions_spawn({ runtime: "acp" })` tetap berfungsi.                                      |
+| `ACP dispatch is disabled by policy (acp.dispatch.enabled=false)`           | Dispatch otomatis dari pesan thread normal dinonaktifkan.                                                               | Setel `acp.dispatch.enabled=true` untuk melanjutkan perutean thread otomatis; panggilan eksplisit `sessions_spawn({ runtime: "acp" })` tetap berfungsi.                                      |
 | `ACP agent "<id>" is not allowed by policy`                                 | Agen tidak ada dalam daftar izin.                                                                                                | Gunakan `agentId` yang diizinkan atau perbarui `acp.allowedAgents`.                                                                                                                     |
-| `/acp doctor` melaporkan backend belum siap tepat setelah startup                 | Plugin backend hilang, dinonaktifkan, diblokir oleh kebijakan izin/tolak, atau executable yang dikonfigurasi tidak tersedia.        | Instal/aktifkan Plugin backend, jalankan ulang `/acp doctor`, dan periksa kesalahan instalasi backend atau kebijakan jika tetap tidak sehat.                                           |
-| Perintah harness tidak ditemukan                                                   | CLI adaptor tidak terinstal, Plugin eksternal hilang, atau pengambilan `npx` saat pertama berjalan gagal untuk adaptor non-Codex. | Jalankan `/acp doctor`, instal/prapanaskan adaptor pada host Gateway, atau konfigurasikan perintah agen acpx secara eksplisit.                                                      |
-| Model tidak ditemukan dari harness                                            | ID model valid untuk penyedia/harness lain tetapi tidak untuk target ACP ini.                                                | Gunakan model yang tercantum oleh harness tersebut, konfigurasikan model dalam harness, atau hilangkan override.                                                                            |
-| Kesalahan autentikasi vendor dari harness                                          | OpenClaw sehat, tetapi CLI/penyedia target belum login.                                                     | Login atau berikan kunci penyedia yang diperlukan pada lingkungan host Gateway.                                                                                             |
-| `Unable to resolve session target: ...`                                     | Token kunci/id/label salah.                                                                                                | Jalankan `/acp sessions`, salin kunci/label persisnya, lalu coba lagi.                                                                                                                        |
-| `--bind here requires running /acp spawn inside an active ... conversation` | `--bind here` digunakan tanpa percakapan aktif yang dapat diikat.                                                            | Pindah ke chat/channel target dan coba lagi, atau gunakan spawn tanpa ikatan.                                                                                                         |
-| `Conversation bindings are unavailable for <channel>.`                      | Adaptor tidak memiliki kapabilitas pengikatan ACP percakapan saat ini.                                                             | Gunakan `/acp spawn ... --thread ...` jika didukung, konfigurasikan `bindings[]` tingkat atas, atau pindah ke channel yang didukung.                                                     |
+| `/acp doctor` melaporkan backend belum siap tepat setelah startup                 | Plugin backend hilang, dinonaktifkan, diblokir oleh kebijakan izin/tolak, atau executable yang dikonfigurasi tidak tersedia.        | Pasang/aktifkan Plugin backend, jalankan ulang `/acp doctor`, dan periksa kesalahan pemasangan backend atau kebijakan jika tetap tidak sehat.                                           |
+| Perintah harness tidak ditemukan                                                   | CLI adaptor tidak terpasang, Plugin eksternal hilang, atau pengambilan `npx` saat pertama kali dijalankan gagal untuk adaptor non-Codex. | Jalankan `/acp doctor`, pasang/prahangatkan adaptor pada host Gateway, atau konfigurasikan perintah agen acpx secara eksplisit.                                                      |
+| Model-tidak-ditemukan dari harness                                            | ID model valid untuk provider/harness lain tetapi tidak untuk target ACP ini.                                                | Gunakan model yang tercantum oleh harness tersebut, konfigurasikan model di harness, atau hilangkan override.                                                                            |
+| Kesalahan autentikasi vendor dari harness                                          | OpenClaw sehat, tetapi CLI/provider target belum login.                                                     | Login atau sediakan kunci provider yang diperlukan di lingkungan host Gateway.                                                                                             |
+| `Unable to resolve session target: ...`                                     | Token kunci/id/label salah.                                                                                                | Jalankan `/acp sessions`, salin kunci/label persis, coba lagi.                                                                                                                        |
+| `--bind here requires running /acp spawn inside an active ... conversation` | `--bind here` digunakan tanpa percakapan aktif yang dapat di-bind.                                                            | Pindah ke chat/channel target dan coba lagi, atau gunakan spawn tanpa bind.                                                                                                         |
+| `Conversation bindings are unavailable for <channel>.`                      | Adaptor tidak memiliki kapabilitas binding ACP percakapan saat ini.                                                             | Gunakan `/acp spawn ... --thread ...` jika didukung, konfigurasikan `bindings[]` tingkat atas, atau pindah ke channel yang didukung.                                                     |
 | `--thread here requires running /acp spawn inside an active ... thread`     | `--thread here` digunakan di luar konteks thread.                                                                         | Pindah ke thread target atau gunakan `--thread auto`/`off`.                                                                                                                      |
-| `Only <user-id> can rebind this channel/conversation/thread.`               | Pengguna lain memiliki target pengikatan aktif.                                                                           | Ikat ulang sebagai pemilik atau gunakan percakapan atau thread lain.                                                                                                               |
-| `Thread bindings are unavailable for <channel>.`                            | Adaptor tidak memiliki kapabilitas pengikatan thread.                                                                               | Gunakan `--thread off` atau pindah ke adaptor/channel yang didukung.                                                                                                                 |
+| `Only <user-id> can rebind this channel/conversation/thread.`               | Pengguna lain memiliki target binding aktif.                                                                           | Rebind sebagai pemilik atau gunakan percakapan atau thread lain.                                                                                                               |
+| `Thread bindings are unavailable for <channel>.`                            | Adaptor tidak memiliki kapabilitas binding thread.                                                                               | Gunakan `--thread off` atau pindah ke adaptor/channel yang didukung.                                                                                                                 |
 | `Sandboxed sessions cannot spawn ACP sessions ...`                          | Runtime ACP berada di sisi host; sesi peminta berada dalam sandbox.                                                              | Gunakan `runtime="subagent"` dari sesi dalam sandbox, atau jalankan spawn ACP dari sesi non-sandbox.                                                                         |
 | `sessions_spawn sandbox="require" is unsupported for runtime="acp" ...`     | `sandbox="require"` diminta untuk runtime ACP.                                                                         | Gunakan `runtime="subagent"` untuk sandboxing wajib, atau gunakan ACP dengan `sandbox="inherit"` dari sesi non-sandbox.                                                      |
-| `Cannot apply --model ... did not advertise model support`                  | Harness target tidak mengekspos pengalihan model ACP generik.                                                        | Gunakan harness yang mengiklankan ACP `models`/`session/set_model`, gunakan referensi model ACP Codex, atau konfigurasikan model langsung di harness jika memiliki flag startup sendiri. |
-| Metadata ACP hilang untuk sesi terikat                                      | Metadata sesi ACP usang/dihapus.                                                                                    | Buat ulang dengan `/acp spawn`, lalu ikat ulang/fokuskan thread.                                                                                                                    |
-| `AcpRuntimeError: Permission prompt unavailable in non-interactive mode`    | `permissionMode` memblokir penulisan/exec dalam sesi ACP non-interaktif.                                                    | Setel `plugins.entries.acpx.config.permissionMode` ke `approve-all` dan mulai ulang gateway. Lihat [Konfigurasi izin](/id/tools/acp-agents-setup#permission-configuration). |
-| Sesi ACP gagal lebih awal dengan sedikit output                                  | Prompt izin diblokir oleh `permissionMode`/`nonInteractivePermissions`.                                        | Periksa log gateway untuk `AcpRuntimeError`. Untuk izin penuh, setel `permissionMode=approve-all`; untuk degradasi yang mulus, setel `nonInteractivePermissions=deny`.        |
-| Sesi ACP berhenti tanpa batas setelah menyelesaikan pekerjaan                       | Proses harness selesai tetapi sesi ACP tidak melaporkan penyelesaian.                                                    | Pantau dengan `ps aux \| grep acpx`; hentikan proses usang secara manual.                                                                                                       |
-| Harness melihat `<<<BEGIN_OPENCLAW_INTERNAL_CONTEXT>>>`                        | Amplop peristiwa internal bocor melintasi batas ACP.                                                                | Perbarui OpenClaw dan jalankan ulang alur penyelesaian; harness eksternal seharusnya hanya menerima prompt penyelesaian biasa.                                                          |
+| `Cannot apply --model ... did not advertise model support`                  | Harness target tidak mengekspos penggantian model ACP generik.                                                        | Gunakan harness yang mengiklankan ACP `models`/`session/set_model`, gunakan referensi model ACP Codex, atau konfigurasikan model langsung di harness jika memiliki flag startup sendiri. |
+| Metadata ACP hilang untuk sesi yang di-bind                                      | Metadata sesi ACP usang/dihapus.                                                                                    | Buat ulang dengan `/acp spawn`, lalu rebind/fokuskan thread.                                                                                                                    |
+| `AcpRuntimeError: Permission prompt unavailable in non-interactive mode`    | `permissionMode` memblokir penulisan/exec dalam sesi ACP noninteraktif.                                                    | Setel `plugins.entries.acpx.config.permissionMode` ke `approve-all` dan mulai ulang gateway. Lihat [Konfigurasi izin](/id/tools/acp-agents-setup#permission-configuration). |
+| Sesi ACP gagal lebih awal dengan sedikit output                                  | Prompt izin diblokir oleh `permissionMode`/`nonInteractivePermissions`.                                        | Periksa log gateway untuk `AcpRuntimeError`. Untuk izin penuh, setel `permissionMode=approve-all`; untuk degradasi yang halus, setel `nonInteractivePermissions=deny`.        |
+| Sesi ACP macet tanpa batas setelah menyelesaikan pekerjaan                       | Proses harness selesai tetapi sesi ACP tidak melaporkan penyelesaian.                                                    | Perbarui OpenClaw; pembersihan acpx saat ini menuai proses wrapper dan adaptor usang milik OpenClaw saat penutupan dan startup Gateway.                                             |
+| Harness melihat `<<<BEGIN_OPENCLAW_INTERNAL_CONTEXT>>>`                        | Amplop peristiwa internal bocor melintasi batas ACP.                                                                | Perbarui OpenClaw dan jalankan ulang alur penyelesaian; harness eksternal seharusnya hanya menerima prompt penyelesaian polos.                                                          |
 
 ## Terkait
 

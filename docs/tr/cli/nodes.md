@@ -1,14 +1,14 @@
 ---
 read_when:
     - Eşleştirilmiş Node'ları yönetiyorsunuz (kameralar, ekran, tuval)
-    - İstekleri onaylamanız veya node komutlarını çalıştırmanız gerekir
-summary: '`openclaw nodes` için CLI referansı (durum, eşleştirme, çağırma, kamera/tuval/ekran)'
+    - İstekleri onaylamanız veya Node komutlarını çağırmanız gerekir
+summary: '`openclaw nodes` için CLI başvurusu (durum, eşleştirme, çağırma, kamera/canvas/ekran)'
 title: Node'lar
 x-i18n:
-    generated_at: "2026-05-06T17:54:05Z"
+    generated_at: "2026-05-07T13:14:36Z"
     model: gpt-5.5
     provider: openai
-    source_hash: f3eb0d23037c939e4022115a2d65e0e9cb25a872daed715b8652979ce6707cf7
+    source_hash: 681c199462d5f58c3e4346713263a78e7513335f087c713877e3050e21c8e15f
     source_path: cli/nodes.md
     workflow: 16
 ---
@@ -21,7 +21,7 @@ Eşleştirilmiş Node'ları (cihazları) yönetin ve Node yeteneklerini çağır
 
 - Node'lara genel bakış: [Node'lar](/tr/nodes)
 - Kamera: [Kamera Node'ları](/tr/nodes/camera)
-- Görüntüler: [Görüntü Node'ları](/tr/nodes/images)
+- Görseller: [Görsel Node'ları](/tr/nodes/images)
 
 Yaygın seçenekler:
 
@@ -43,20 +43,21 @@ openclaw nodes status --connected
 openclaw nodes status --last-connected 24h
 ```
 
-`nodes list`, bekleyen/eşleştirilmiş tabloları yazdırır. Eşleştirilmiş satırlar en son bağlantı yaşını (Last Connect) içerir.
-Yalnızca şu anda bağlı Node'ları göstermek için `--connected` kullanın. Belirli bir süre içinde (ör. `24h`, `7d`)
-bağlanmış Node'lara filtrelemek için `--last-connected <duration>` kullanın.
-Eski bir Gateway sahipli Node eşleştirme kaydını silmek için `nodes remove --node <id|name|ip>` kullanın.
+`nodes list` bekleyen/eşleştirilmiş tabloları yazdırır. Eşleştirilmiş satırlar en son bağlantı yaşını (Son Bağlantı) içerir.
+Yalnızca şu anda bağlı Node'ları göstermek için `--connected` kullanın. Bir süre içinde bağlanmış Node'larla
+filtrelemek için `--last-connected <duration>` kullanın (örn. `24h`, `7d`).
+Eski bir Gateway'e ait Node eşleştirme kaydını silmek için `nodes remove --node <id|name|ip>` kullanın.
 
 Onay notu:
 
 - `openclaw nodes pending` yalnızca eşleştirme kapsamı gerektirir.
 - `gateway.nodes.pairing.autoApproveCidrs`, bekleme adımını yalnızca açıkça güvenilen,
-  ilk kez yapılan `role: node` cihaz eşleştirmesi için atlayabilir. Varsayılan olarak kapalıdır
-  ve yükseltmeleri onaylamaz.
-- `openclaw nodes approve <requestId>`, bekleyen isteğin ek kapsam gereksinimlerini devralır:
+  ilk kez yapılan `role: node` cihaz eşleştirmesi için atlayabilir. Varsayılan olarak
+  kapalıdır ve yükseltmeleri onaylamaz.
+- `openclaw nodes approve <requestId>`, bekleyen istekten ek kapsam gereksinimlerini
+  devralır:
   - komutsuz istek: yalnızca eşleştirme
-  - exec olmayan Node komutları: eşleştirme + yazma
+  - yürütme dışı Node komutları: eşleştirme + yazma
   - `system.run` / `system.run.prepare` / `system.which`: eşleştirme + yönetici
 
 ## Çağırma
@@ -67,16 +68,16 @@ openclaw nodes invoke --node <id|name|ip> --command <command> --params <json>
 
 Çağırma bayrakları:
 
-- `--params <json>`: JSON nesne dizesi (varsayılan `{}`).
+- `--params <json>`: JSON nesnesi dizesi (varsayılan `{}`).
 - `--invoke-timeout <ms>`: Node çağırma zaman aşımı (varsayılan `15000`).
 - `--idempotency-key <key>`: isteğe bağlı idempotency anahtarı.
-- `system.run` ve `system.run.prepare` burada engellenir; kabuk yürütmesi için `host=node` ile `exec` aracını kullanın.
+- `system.run` ve `system.run.prepare` burada engellenir; shell yürütmesi için `host=node` ile `exec` aracını kullanın.
 
-Bir Node üzerinde kabuk yürütmesi için `openclaw nodes run` yerine `host=node` ile `exec` aracını kullanın.
+Bir Node üzerinde shell yürütmesi için `openclaw nodes run` yerine `host=node` ile `exec` aracını kullanın.
 `nodes` CLI artık yetenek odaklıdır: `nodes invoke` üzerinden doğrudan RPC; ayrıca eşleştirme, kamera,
-ekran, konum, canvas ve bildirimler.
+ekran, konum, Canvas ve bildirimler. Canvas komutları birlikte gelen deneysel Canvas Plugin tarafından uygulanır; çekirdek, bunların `openclaw nodes canvas` altında kalması için bir uyumluluk kancası tutar.
 
 ## İlgili
 
-- [CLI başvurusu](/tr/cli)
+- [CLI referansı](/tr/cli)
 - [Node'lar](/tr/nodes)

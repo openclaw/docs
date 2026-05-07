@@ -1,22 +1,22 @@
 ---
 read_when:
-    - Vous voulez inspecter, auditer ou annuler des enregistrements de tâches en arrière-plan
-    - Vous documentez les commandes Task Flow sous `openclaw tasks flow`
-summary: Référence CLI pour `openclaw tasks` (journal des tâches en arrière-plan et état de TaskFlow)
+    - Vous souhaitez inspecter, auditer ou annuler des enregistrements de tâches en arrière-plan
+    - Vous documentez les commandes TaskFlow sous `openclaw tasks flow`
+summary: Référence CLI pour `openclaw tasks` (registre des tâches en arrière-plan et état du flux de tâches)
 title: '`openclaw tasks`'
 x-i18n:
-    generated_at: "2026-04-26T11:26:27Z"
-    model: gpt-5.4
+    generated_at: "2026-05-07T13:15:10Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 6e61fb0b67a2bdd932b29543199fb219890f256260a66881c8e7ffeb9fadee33
+    source_hash: ca3f05d7c2a3fa7790ad6059ce15721ebffb548ac4a2c627188ac17986442dc6
     source_path: cli/tasks.md
-    workflow: 15
+    workflow: 16
 ---
 
-Inspecter les tâches en arrière-plan durables et l’état de TaskFlow. Sans sous-commande,
+Inspectez les tâches d’arrière-plan durables et l’état de Task Flow. Sans sous-commande,
 `openclaw tasks` équivaut à `openclaw tasks list`.
 
-Voir [Background Tasks](/fr/automation/tasks) pour le cycle de vie et le modèle de livraison.
+Consultez [Tâches d’arrière-plan](/fr/automation/tasks) pour le cycle de vie et le modèle de livraison.
 
 ## Utilisation
 
@@ -38,9 +38,9 @@ openclaw tasks flow cancel <lookup>
 
 ## Options racine
 
-- `--json` : produit une sortie JSON.
+- `--json` : sortie JSON.
 - `--runtime <name>` : filtre par type : `subagent`, `acp`, `cron` ou `cli`.
-- `--status <name>` : filtre par statut : `queued`, `running`, `succeeded`, `failed`, `timed_out`, `cancelled` ou `lost`.
+- `--status <name>` : filtre par état : `queued`, `running`, `succeeded`, `failed`, `timed_out`, `cancelled` ou `lost`.
 
 ## Sous-commandes
 
@@ -50,7 +50,7 @@ openclaw tasks flow cancel <lookup>
 openclaw tasks list [--runtime <name>] [--status <name>] [--json]
 ```
 
-Liste les tâches en arrière-plan suivies, de la plus récente à la plus ancienne.
+Liste les tâches d’arrière-plan suivies, des plus récentes aux plus anciennes.
 
 ### `show`
 
@@ -66,7 +66,7 @@ Affiche une tâche par ID de tâche, ID d’exécution ou clé de session.
 openclaw tasks notify <lookup> <done_only|state_changes|silent>
 ```
 
-Modifie la politique de notification pour une tâche en cours d’exécution.
+Modifie la stratégie de notification d’une tâche en cours d’exécution.
 
 ### `cancel`
 
@@ -74,7 +74,7 @@ Modifie la politique de notification pour une tâche en cours d’exécution.
 openclaw tasks cancel <lookup>
 ```
 
-Annule une tâche en arrière-plan en cours d’exécution.
+Annule une tâche d’arrière-plan en cours d’exécution.
 
 ### `audit`
 
@@ -82,7 +82,7 @@ Annule une tâche en arrière-plan en cours d’exécution.
 openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--json]
 ```
 
-Fait ressortir les enregistrements de tâches et d’état de Task Flow périmés, perdus, en échec de livraison ou autrement incohérents. Les tâches perdues conservées jusqu’à `cleanupAfter` sont des avertissements ; les tâches perdues expirées ou sans horodatage sont des erreurs.
+Fait apparaître les enregistrements de tâches et de Task Flow obsolètes, perdus, dont la livraison a échoué ou autrement incohérents. Les tâches perdues conservées jusqu’à `cleanupAfter` sont des avertissements ; les tâches perdues expirées ou non horodatées sont des erreurs.
 
 ### `maintenance`
 
@@ -90,11 +90,13 @@ Fait ressortir les enregistrements de tâches et d’état de Task Flow périmé
 openclaw tasks maintenance [--apply] [--json]
 ```
 
-Prévisualise ou applique le rapprochement, l’horodatage de nettoyage et la suppression des tâches et de l’état de Task Flow.
-Pour les tâches Cron, le rapprochement utilise les journaux d’exécution persistés/l’état des tâches avant de marquer une
-ancienne tâche active comme `lost`, afin que les exécutions Cron terminées ne deviennent pas de fausses erreurs d’audit
-simplement parce que l’état du runtime Gateway en mémoire a disparu. L’audit CLI hors ligne
-ne fait pas autorité pour l’ensemble local au processus des tâches Cron actives de la Gateway.
+Prévisualise ou applique la réconciliation des tâches et de Task Flow, l’horodatage du nettoyage et l’élagage.
+Pour les tâches cron, la réconciliation utilise les journaux d’exécution persistés/l’état des jobs avant de marquer une
+ancienne tâche active comme `lost`, afin que les exécutions cron terminées ne deviennent pas de fausses erreurs d’audit
+simplement parce que l’état d’exécution en mémoire du Gateway a disparu. L’audit CLI hors ligne ne fait pas autorité
+pour l’ensemble des jobs cron actifs locaux au processus du Gateway. Les tâches CLI
+avec un ID d’exécution/ID source sont marquées comme `lost` lorsque leur contexte d’exécution Gateway en direct a
+disparu, même s’il reste une ancienne ligne de session enfant.
 
 ### `flow`
 
@@ -104,9 +106,9 @@ openclaw tasks flow show <lookup> [--json]
 openclaw tasks flow cancel <lookup>
 ```
 
-Inspecte ou annule l’état durable de Task Flow sous le journal des tâches.
+Inspecte ou annule l’état durable de Task Flow sous le registre des tâches.
 
-## Associé
+## Voir aussi
 
 - [Référence CLI](/fr/cli)
-- [Tâches en arrière-plan](/fr/automation/tasks)
+- [Tâches d’arrière-plan](/fr/automation/tasks)

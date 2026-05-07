@@ -6,31 +6,31 @@ sidebarTitle: Plugins
 summary: เอกสารอ้างอิง CLI สำหรับ `openclaw plugins` (list, install, marketplace, uninstall, enable/disable, doctor)
 title: Plugin
 x-i18n:
-    generated_at: "2026-05-07T01:51:27Z"
+    generated_at: "2026-05-07T13:14:59Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c43d51a8ecc2d420991e7beb585cbf3046d44cd6dca755377f4c050c7a155064
+    source_hash: 73023d11309c5dc4fe9fab9cffc0f7d96de1e1c22ce1ec4d2cd22d2aa4808f1a
     source_path: cli/plugins.md
     workflow: 16
 ---
 
-จัดการ Gateway plugins, ชุด hook และบันเดิลที่เข้ากันได้
+จัดการ Plugin ของ Gateway, ชุด hook, และ bundle ที่เข้ากันได้
 
 <CardGroup cols={2}>
-  <Card title="ระบบ Plugin" href="/th/tools/plugin">
-    คู่มือสำหรับผู้ใช้ปลายทางในการติดตั้ง เปิดใช้งาน และแก้ไขปัญหา plugins
+  <Card title="Plugin system" href="/th/tools/plugin">
+    คู่มือสำหรับผู้ใช้ปลายทางในการติดตั้ง เปิดใช้งาน และแก้ปัญหา Plugin
   </Card>
-  <Card title="จัดการ plugins" href="/th/plugins/manage-plugins">
-    ตัวอย่างสั้น ๆ สำหรับการติดตั้ง แสดงรายการ อัปเดต ถอนการติดตั้ง และเผยแพร่
+  <Card title="Manage plugins" href="/th/plugins/manage-plugins">
+    ตัวอย่างแบบรวดเร็วสำหรับการติดตั้ง แสดงรายการ อัปเดต ถอนการติดตั้ง และเผยแพร่
   </Card>
-  <Card title="บันเดิล Plugin" href="/th/plugins/bundles">
-    โมเดลความเข้ากันได้ของบันเดิล
+  <Card title="Plugin bundles" href="/th/plugins/bundles">
+    โมเดลความเข้ากันได้ของ bundle
   </Card>
-  <Card title="แมนิเฟสต์ Plugin" href="/th/plugins/manifest">
-    ฟิลด์ของแมนิเฟสต์และสคีมาการกำหนดค่า
+  <Card title="Plugin manifest" href="/th/plugins/manifest">
+    ฟิลด์ manifest และสกีมา config
   </Card>
-  <Card title="ความปลอดภัย" href="/th/gateway/security">
-    การเสริมความแข็งแกร่งด้านความปลอดภัยสำหรับการติดตั้ง plugin
+  <Card title="Security" href="/th/gateway/security">
+    การเสริมความปลอดภัยสำหรับการติดตั้ง Plugin
   </Card>
 </CardGroup>
 
@@ -62,20 +62,20 @@ openclaw plugins marketplace list <marketplace>
 openclaw plugins marketplace list <marketplace> --json
 ```
 
-สำหรับการตรวจสอบการติดตั้ง การตรวจสอบ การถอนการติดตั้ง หรือการรีเฟรชรีจิสทรีที่ช้า ให้รัน
-คำสั่งพร้อม `OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1` trace จะเขียนเวลาของแต่ละเฟส
-ไปยัง stderr และยังคงทำให้เอาต์พุต JSON แยกวิเคราะห์ได้ ดู [การดีบัก](/th/help/debugging#plugin-lifecycle-trace)
+สำหรับการตรวจสอบกรณีติดตั้ง ตรวจสอบ ถอนการติดตั้ง หรือ refresh registry ที่ช้า ให้รัน
+คำสั่งพร้อม `OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1` trace จะเขียนเวลาแต่ละ phase
+ไปยัง stderr และทำให้เอาต์พุต JSON ยังคง parse ได้ ดู [การดีบัก](/th/help/debugging#plugin-lifecycle-trace)
 
 <Note>
-ในโหมด Nix (`OPENCLAW_NIX_MODE=1`) ตัวเปลี่ยนแปลงวงจรชีวิตของ plugin จะถูกปิดใช้งาน ใช้แหล่งที่มาของ Nix สำหรับการติดตั้งนี้แทน `plugins install`, `plugins update`, `plugins uninstall`, `plugins enable` หรือ `plugins disable`; สำหรับ nix-openclaw ให้ใช้ [เริ่มต้นอย่างรวดเร็ว](https://github.com/openclaw/nix-openclaw#quick-start) แบบยึด agent เป็นหลัก
+ในโหมด Nix (`OPENCLAW_NIX_MODE=1`) mutator ของ lifecycle Plugin จะถูกปิดใช้งาน ให้ใช้ซอร์ส Nix สำหรับการติดตั้งนี้แทน `plugins install`, `plugins update`, `plugins uninstall`, `plugins enable`, หรือ `plugins disable`; สำหรับ nix-openclaw ให้ใช้ [Quick Start](https://github.com/openclaw/nix-openclaw#quick-start) แบบ agent-first
 </Note>
 
 <Note>
-plugins ที่บันเดิลมาพร้อมกับ OpenClaw บางรายการถูกเปิดใช้งานโดยค่าเริ่มต้น (เช่น ผู้ให้บริการโมเดลที่บันเดิลมา ผู้ให้บริการเสียงพูดที่บันเดิลมา และ plugin เบราว์เซอร์ที่บันเดิลมา); รายการอื่นต้องใช้ `plugins enable`
+Plugin ที่ bundled มาพร้อมกับ OpenClaw บางรายการเปิดใช้งานตามค่าเริ่มต้น (เช่น provider โมเดลที่ bundled, provider เสียงพูดที่ bundled, และ Plugin เบราว์เซอร์ที่ bundled); รายการอื่นต้องใช้ `plugins enable`
 
-plugins ของ OpenClaw แบบเนทีฟต้องมาพร้อม `openclaw.plugin.json` ที่มี JSON Schema แบบอินไลน์ (`configSchema` แม้ว่าจะว่างเปล่าก็ตาม) บันเดิลที่เข้ากันได้จะใช้แมนิเฟสต์บันเดิลของตนเองแทน
+Plugin ของ OpenClaw แบบ native ต้องมาพร้อม `openclaw.plugin.json` ที่มี JSON Schema แบบ inline (`configSchema` แม้จะว่างก็ตาม) bundle ที่เข้ากันได้จะใช้ manifest ของ bundle เองแทน
 
-`plugins list` แสดง `Format: openclaw` หรือ `Format: bundle` เอาต์พุตรายการ/ข้อมูลแบบละเอียดจะแสดงชนิดย่อยของบันเดิลด้วย (`codex`, `claude` หรือ `cursor`) พร้อมความสามารถของบันเดิลที่ตรวจพบ
+`plugins list` แสดง `Format: openclaw` หรือ `Format: bundle` เอาต์พุตแบบ verbose ของ list/info ยังแสดง subtype ของ bundle (`codex`, `claude`, หรือ `cursor`) พร้อม capability ของ bundle ที่ตรวจพบด้วย
 </Note>
 
 ### ติดตั้ง
@@ -98,89 +98,89 @@ openclaw plugins install <plugin> --marketplace https://github.com/<owner>/<repo
 ```
 
 <Warning>
-ชื่อแพ็กเกจแบบเปล่าจะติดตั้งจาก npm โดยค่าเริ่มต้นระหว่างช่วงเปลี่ยนผ่านการเปิดตัว ใช้ `clawhub:<package>` สำหรับ ClawHub ปฏิบัติต่อการติดตั้ง plugin เหมือนการรันโค้ด ควรใช้เวอร์ชันที่ปักหมุดไว้
+ชื่อแพ็กเกจแบบ bare จะติดตั้งจาก npm ตามค่าเริ่มต้นระหว่างช่วงเปลี่ยนผ่านการเปิดตัว ใช้ `clawhub:<package>` สำหรับ ClawHub ปฏิบัติกับการติดตั้ง Plugin เหมือนการรันโค้ด ควรใช้เวอร์ชันที่ pin ไว้
 </Warning>
 
-`plugins search` คิวรี ClawHub เพื่อค้นหาแพ็กเกจ plugin ที่ติดตั้งได้ และพิมพ์
-ชื่อแพ็กเกจที่พร้อมติดตั้ง โดยค้นหาแพ็กเกจ code-plugin และ bundle-plugin
-ไม่ใช่ skills ใช้ `openclaw skills search` สำหรับ ClawHub skills
+`plugins search` query ClawHub เพื่อหาแพ็กเกจ Plugin ที่ติดตั้งได้ และพิมพ์
+ชื่อแพ็กเกจที่พร้อมติดตั้ง ระบบจะค้นหาแพ็กเกจ code-plugin และ bundle-plugin
+ไม่ใช่ Skills ใช้ `openclaw skills search` สำหรับ Skills บน ClawHub
 
 <Note>
-ClawHub เป็นพื้นผิวหลักสำหรับการเผยแพร่และการค้นพบ plugins ส่วนใหญ่ Npm
-ยังคงเป็นทางเลือกสำรองที่รองรับและเป็นเส้นทางติดตั้งโดยตรง แพ็กเกจ plugin
+ClawHub เป็นพื้นผิวหลักสำหรับการเผยแพร่และค้นพบ Plugin ส่วนใหญ่ Npm
+ยังคงเป็น fallback ที่รองรับและเป็นเส้นทาง direct-install แพ็กเกจ Plugin
 `@openclaw/*` ที่ OpenClaw เป็นเจ้าของถูกเผยแพร่บน npm อีกครั้งแล้ว; ดูรายการปัจจุบัน
-ที่ [npmjs.com/org/openclaw](https://www.npmjs.com/org/openclaw) หรือ
-[คลังรายการ plugin](/th/plugins/plugin-inventory) การติดตั้งเสถียรใช้ `latest`
-การติดตั้งและอัปเดตช่องเบต้าจะเลือกใช้ dist-tag `beta` ของ npm เมื่อมีแท็กนั้น
-จากนั้นจึง fallback ไปที่ `latest`
+ได้ที่ [npmjs.com/org/openclaw](https://www.npmjs.com/org/openclaw) หรือ
+[คลังรายการ Plugin](/th/plugins/plugin-inventory) การติดตั้ง stable ใช้ `latest`
+การติดตั้งและอัปเดตจากช่อง beta จะเลือกใช้ dist-tag `beta` ของ npm เมื่อ tag นั้น
+พร้อมใช้งาน แล้วจึง fallback ไปที่ `latest`
 </Note>
 
 <AccordionGroup>
-  <Accordion title="Config includes และการซ่อมแซม config ที่ไม่ถูกต้อง">
-    หากส่วน `plugins` ของคุณอ้างอิงด้วย `$include` แบบไฟล์เดียว `plugins install/update/enable/disable/uninstall` จะเขียนผ่านไปยังไฟล์ที่ include นั้น และปล่อย `openclaw.json` ไว้โดยไม่แตะต้อง Root includes, include arrays และ includes ที่มี sibling overrides จะล้มเหลวแบบปิดแทนการ flatten ดู [Config includes](/th/gateway/configuration) สำหรับรูปแบบที่รองรับ
+  <Accordion title="Config includes and invalid-config repair">
+    หากส่วน `plugins` ของคุณรองรับด้วย `$include` แบบไฟล์เดียว `plugins install/update/enable/disable/uninstall` จะเขียนทะลุไปยังไฟล์ที่ include นั้นและปล่อย `openclaw.json` ไว้ไม่เปลี่ยนแปลง root include, include array, และ include ที่มี sibling override จะ fail closed แทนการ flatten ดู [Config includes](/th/gateway/configuration) สำหรับรูปแบบที่รองรับ
 
-    หาก config ไม่ถูกต้องระหว่างการติดตั้ง โดยปกติ `plugins install` จะล้มเหลวแบบปิดและบอกให้คุณรัน `openclaw doctor --fix` ก่อน ระหว่างการเริ่มต้น Gateway และ hot reload config ของ plugin ที่ไม่ถูกต้องจะล้มเหลวแบบปิดเหมือน config ที่ไม่ถูกต้องอื่น ๆ; `openclaw doctor --fix` สามารถกักกันรายการ plugin ที่ไม่ถูกต้องได้ ข้อยกเว้นระหว่างการติดตั้งเพียงรายการเดียวที่มีเอกสารกำกับคือเส้นทางกู้คืน plugin ที่บันเดิลมาแบบแคบ สำหรับ plugins ที่เลือกใช้ `openclaw.install.allowInvalidConfigRecovery` อย่างชัดเจน
-
-  </Accordion>
-  <Accordion title="--force และการติดตั้งซ้ำเทียบกับการอัปเดต">
-    `--force` ใช้เป้าหมายการติดตั้งเดิมซ้ำและเขียนทับ plugin หรือชุด hook ที่ติดตั้งอยู่แล้วในที่เดิม ใช้เมื่อคุณตั้งใจติดตั้ง id เดิมซ้ำจาก local path, archive, แพ็กเกจ ClawHub หรือ artifact npm ใหม่ สำหรับการอัปเกรดตามปกติของ plugin npm ที่ติดตามอยู่แล้ว ควรใช้ `openclaw plugins update <id-or-npm-spec>`
-
-    หากคุณรัน `plugins install` สำหรับ id ของ plugin ที่ติดตั้งแล้ว OpenClaw จะหยุดและชี้ให้คุณใช้ `plugins update <id-or-npm-spec>` สำหรับการอัปเกรดปกติ หรือ `plugins install <package> --force` เมื่อคุณต้องการเขียนทับการติดตั้งปัจจุบันจากแหล่งอื่นจริง ๆ
+    หาก config ไม่ถูกต้องระหว่างการติดตั้ง โดยปกติ `plugins install` จะ fail closed และแจ้งให้คุณรัน `openclaw doctor --fix` ก่อน ระหว่างการเริ่มต้น Gateway และ hot reload config ของ Plugin ที่ไม่ถูกต้องจะ fail closed เหมือน config ที่ไม่ถูกต้องอื่น ๆ; `openclaw doctor --fix` สามารถ quarantine รายการ Plugin ที่ไม่ถูกต้องได้ ข้อยกเว้นตอนติดตั้งที่มีเอกสารระบุไว้เพียงอย่างเดียวคือเส้นทางกู้คืน Plugin ที่ bundled แบบแคบสำหรับ Plugin ที่ opt in เข้า `openclaw.install.allowInvalidConfigRecovery` อย่างชัดเจน
 
   </Accordion>
-  <Accordion title="ขอบเขต --pin">
-    `--pin` ใช้กับการติดตั้ง npm เท่านั้น ไม่รองรับกับการติดตั้ง `git:`; ใช้ git ref ที่ระบุชัดเจน เช่น `git:github.com/acme/plugin@v1.2.3` เมื่อคุณต้องการแหล่งที่มาที่ปักหมุดไว้ ไม่รองรับกับ `--marketplace` เพราะการติดตั้ง marketplace จะคง metadata แหล่งที่มาของ marketplace แทน spec ของ npm
+  <Accordion title="--force and reinstall vs update">
+    `--force` ใช้เป้าหมายการติดตั้งเดิมซ้ำและเขียนทับ Plugin หรือชุด hook ที่ติดตั้งอยู่แล้วในตำแหน่งเดิม ใช้เมื่อคุณตั้งใจติดตั้ง id เดิมซ้ำจาก path ภายในเครื่อง archive แพ็กเกจ ClawHub หรือ artifact ของ npm ใหม่ สำหรับการอัปเกรดปกติของ Plugin npm ที่ติดตามอยู่แล้ว ควรใช้ `openclaw plugins update <id-or-npm-spec>`
+
+    หากคุณรัน `plugins install` สำหรับ id ของ Plugin ที่ติดตั้งอยู่แล้ว OpenClaw จะหยุดและชี้ให้คุณใช้ `plugins update <id-or-npm-spec>` สำหรับการอัปเกรดปกติ หรือใช้ `plugins install <package> --force` เมื่อคุณต้องการเขียนทับการติดตั้งปัจจุบันจากซอร์สอื่นจริง ๆ
+
+  </Accordion>
+  <Accordion title="--pin scope">
+    `--pin` ใช้ได้กับการติดตั้ง npm เท่านั้น ไม่รองรับกับการติดตั้ง `git:`; ใช้ git ref แบบชัดเจน เช่น `git:github.com/acme/plugin@v1.2.3` เมื่อคุณต้องการซอร์สที่ pin ไว้ ไม่รองรับกับ `--marketplace` เพราะการติดตั้งผ่าน marketplace จะเก็บ metadata ซอร์สของ marketplace แทน npm spec
   </Accordion>
   <Accordion title="--dangerously-force-unsafe-install">
-    `--dangerously-force-unsafe-install` เป็นตัวเลือก break-glass สำหรับ false positives ในตัวสแกนโค้ดอันตรายในตัว มันอนุญาตให้การติดตั้งดำเนินต่อไปได้แม้ตัวสแกนในตัวรายงานผลการค้นพบระดับ `critical` แต่จะ **ไม่** ข้ามบล็อกนโยบาย hook `before_install` ของ plugin และ **ไม่** ข้ามความล้มเหลวของการสแกน
+    `--dangerously-force-unsafe-install` เป็นตัวเลือก break-glass สำหรับ false positive ในตัวสแกนโค้ดอันตรายแบบ built-in โดยอนุญาตให้การติดตั้งดำเนินต่อได้แม้ตัวสแกน built-in รายงาน finding ระดับ `critical` แต่จะ **ไม่** ข้าม policy block ของ hook `before_install` ของ Plugin และ **ไม่** ข้ามความล้มเหลวของการสแกน
 
-    flag ของ CLI นี้ใช้กับ flow การติดตั้ง/อัปเดต plugin การติดตั้ง dependency ของ skill ที่รองรับโดย Gateway ใช้ request override `dangerouslyForceUnsafeInstall` ที่ตรงกัน ขณะที่ `openclaw skills install` ยังคงเป็น flow ดาวน์โหลด/ติดตั้ง skill ของ ClawHub แยกต่างหาก
+    แฟล็ก CLI นี้ใช้กับ flow การติดตั้ง/อัปเดต Plugin การติดตั้ง dependency ของ skill ที่หนุนด้วย Gateway ใช้ request override `dangerouslyForceUnsafeInstall` ที่สอดคล้องกัน ส่วน `openclaw skills install` ยังคงเป็น flow ดาวน์โหลด/ติดตั้ง skill จาก ClawHub แยกต่างหาก
 
-    หาก plugin ที่คุณเผยแพร่บน ClawHub ถูกบล็อกโดยการสแกนรีจิสทรี ให้ใช้ขั้นตอนสำหรับผู้เผยแพร่ใน [ClawHub](/th/tools/clawhub)
-
-  </Accordion>
-  <Accordion title="ชุด hook และ npm specs">
-    `plugins install` ยังเป็นพื้นผิวการติดตั้งสำหรับชุด hook ที่เปิดเผย `openclaw.hooks` ใน `package.json` ด้วย ใช้ `openclaw hooks` สำหรับการมองเห็น hook แบบกรองและการเปิดใช้งานราย hook ไม่ใช่การติดตั้งแพ็กเกจ
-
-    Npm specs เป็นแบบ **registry-only** (ชื่อแพ็กเกจ + **เวอร์ชันที่แน่นอน** หรือ **dist-tag** ที่เลือกได้) Git/URL/file specs และช่วง semver จะถูกปฏิเสธ การติดตั้ง dependency จะรันแบบ project-local พร้อม `--ignore-scripts` เพื่อความปลอดภัย แม้ shell ของคุณจะมีการตั้งค่าติดตั้ง npm ระดับ global ก็ตาม ราก npm ของ plugin ที่จัดการอยู่จะสืบทอด `overrides` ของ npm ระดับแพ็กเกจของ OpenClaw ดังนั้น pin ความปลอดภัยของ host จึงใช้กับ dependency ของ plugin ที่ถูก hoist ด้วย
-
-    ใช้ `npm:<package>` เมื่อคุณต้องการระบุการ resolve ของ npm ให้ชัดเจน Bare package specs จะติดตั้งโดยตรงจาก npm เช่นกันในช่วงเปลี่ยนผ่านการเปิดตัว
-
-    Bare specs และ `@latest` จะอยู่บน track เสถียร เวอร์ชันแก้ไขเดิมของ OpenClaw เช่น `2026.5.3-1` ยังคงถูกถือเป็นรุ่นเสถียรสำหรับการตรวจนี้ เพื่อให้แพ็กเกจเก่ายังคงอัปเดตได้อย่างปลอดภัย งานสายซัพพอร์ตใหม่รายเดือนมีแผนใช้หมายเลข patch ของ SemVer ปกติแทน suffix การแก้ไขแบบ hyphen หาก npm resolve default-line spec เป็น prerelease OpenClaw จะหยุดและขอให้คุณเลือกใช้อย่างชัดเจนด้วยแท็ก prerelease เช่น `@beta`/`@rc` หรือเวอร์ชัน prerelease ที่แน่นอน เช่น `@1.2.3-beta.4`
-
-    หาก bare install spec ตรงกับ id ของ plugin ทางการ (เช่น `diffs`) OpenClaw จะติดตั้งรายการ catalog โดยตรง หากต้องการติดตั้งแพ็กเกจ npm ที่มีชื่อเดียวกัน ให้ใช้ scoped spec ที่ชัดเจน (เช่น `@scope/diffs`)
+    หาก Plugin ที่คุณเผยแพร่บน ClawHub ถูกบล็อกโดย registry scan ให้ใช้ขั้นตอนสำหรับผู้เผยแพร่ใน [ClawHub](/th/tools/clawhub)
 
   </Accordion>
-  <Accordion title="ที่เก็บ Git">
-    ใช้ `git:<repo>` เพื่อติดตั้งโดยตรงจากที่เก็บ git รูปแบบที่รองรับรวมถึง URL โคลน `git:github.com/owner/repo`, `git:owner/repo`, `https://` แบบเต็ม, `ssh://`, `git://`, `file://` และ `git@host:owner/repo.git` เพิ่ม `@<ref>` หรือ `#<ref>` เพื่อ checkout branch, tag หรือ commit ก่อนติดตั้ง
+  <Accordion title="Hook packs and npm specs">
+    `plugins install` ยังเป็นพื้นผิวการติดตั้งสำหรับชุด hook ที่ expose `openclaw.hooks` ใน `package.json` ด้วย ใช้ `openclaw hooks` สำหรับการมองเห็น hook แบบกรองและการเปิดใช้งานราย hook ไม่ใช่สำหรับติดตั้งแพ็กเกจ
 
-    การติดตั้ง Git จะ clone ไปยังไดเรกทอรีชั่วคราว checkout ref ที่ร้องขอเมื่อมี จากนั้นใช้ตัวติดตั้งไดเรกทอรี plugin ตามปกติ นั่นหมายความว่า การตรวจสอบแมนิเฟสต์ การสแกนโค้ดอันตราย งานติดตั้งของ package-manager และบันทึกการติดตั้งจะทำงานเหมือนการติดตั้ง npm การติดตั้ง git ที่บันทึกไว้จะรวม URL/ref แหล่งที่มาและ commit ที่ resolve แล้ว เพื่อให้ `openclaw plugins update` สามารถ resolve แหล่งที่มาอีกครั้งได้ภายหลัง
+    spec ของ Npm เป็นแบบ **registry-only** (ชื่อแพ็กเกจ + **เวอร์ชันแบบ exact** หรือ **dist-tag** ที่ไม่บังคับ) spec แบบ Git/URL/file และช่วง semver จะถูกปฏิเสธ การติดตั้ง dependency จะรันแบบ project-local พร้อม `--ignore-scripts` เพื่อความปลอดภัย แม้ shell ของคุณจะมีการตั้งค่า npm install แบบ global ก็ตาม root ของ npm สำหรับ Plugin ที่จัดการโดยระบบจะสืบทอด `overrides` ของ npm ระดับแพ็กเกจของ OpenClaw ดังนั้น pin ด้านความปลอดภัยของ host จึงมีผลกับ dependency ของ Plugin ที่ hoist ด้วย
 
-    หลังติดตั้งจาก git ให้ใช้ `openclaw plugins inspect <id> --runtime --json` เพื่อตรวจสอบการลงทะเบียน runtime เช่นเมธอด gateway และคำสั่ง CLI หาก plugin ลงทะเบียนราก CLI ด้วย `api.registerCli` ให้เรียกใช้คำสั่งนั้นโดยตรงผ่าน root CLI ของ OpenClaw เช่น `openclaw demo-plugin ping`
+    ใช้ `npm:<package>` เมื่อคุณต้องการระบุการ resolve ของ npm ให้ชัดเจน spec แพ็กเกจแบบ bare จะติดตั้งจาก npm โดยตรงระหว่างช่วงเปลี่ยนผ่านการเปิดตัวด้วย
+
+    spec แบบ bare และ `@latest` จะอยู่บน track stable เวอร์ชัน correction แบบ date-stamped ของ OpenClaw เช่น `2026.5.3-1` เป็น stable release สำหรับการตรวจนี้ หาก npm resolve สิ่งใดสิ่งหนึ่งเหล่านั้นเป็น prerelease OpenClaw จะหยุดและขอให้คุณ opt in อย่างชัดเจนด้วย tag prerelease เช่น `@beta`/`@rc` หรือเวอร์ชัน prerelease แบบ exact เช่น `@1.2.3-beta.4`
+
+    หาก spec ติดตั้งแบบ bare ตรงกับ id ของ Plugin อย่างเป็นทางการ (เช่น `diffs`) OpenClaw จะติดตั้งรายการใน catalog โดยตรง หากต้องการติดตั้งแพ็กเกจ npm ที่มีชื่อเดียวกัน ให้ใช้ spec แบบ scoped ที่ชัดเจน (เช่น `@scope/diffs`)
+
+  </Accordion>
+  <Accordion title="Git repositories">
+    ใช้ `git:<repo>` เพื่อติดตั้งโดยตรงจาก git repository รูปแบบที่รองรับรวมถึง `git:github.com/owner/repo`, `git:owner/repo`, clone URL แบบเต็ม `https://`, `ssh://`, `git://`, `file://`, และ `git@host:owner/repo.git` เพิ่ม `@<ref>` หรือ `#<ref>` เพื่อ checkout branch, tag หรือ commit ก่อนติดตั้ง
+
+    การติดตั้งจาก Git จะ clone ไปยัง directory ชั่วคราว checkout ref ที่ขอเมื่อมี แล้วใช้ตัวติดตั้ง directory ของ Plugin ตามปกติ ซึ่งหมายความว่า manifest validation, dangerous-code scanning, งานติดตั้งของ package-manager และ install record จะทำงานเหมือนการติดตั้ง npm การติดตั้ง git ที่บันทึกไว้จะรวม source URL/ref พร้อม commit ที่ resolve แล้ว เพื่อให้ `openclaw plugins update` สามารถ re-resolve ซอร์สภายหลังได้
+
+    หลังติดตั้งจาก git ให้ใช้ `openclaw plugins inspect <id> --runtime --json` เพื่อตรวจสอบ registration ตอน runtime เช่น method ของ gateway และคำสั่ง CLI หาก Plugin ลงทะเบียน root ของ CLI ด้วย `api.registerCli` ให้ execute คำสั่งนั้นโดยตรงผ่าน root CLI ของ OpenClaw เช่น `openclaw demo-plugin ping`
 
   </Accordion>
   <Accordion title="Archives">
-    Archives ที่รองรับ: `.zip`, `.tgz`, `.tar.gz`, `.tar` Archives ของ plugin OpenClaw แบบเนทีฟต้องมี `openclaw.plugin.json` ที่ถูกต้องที่ราก plugin หลังแตกไฟล์; archives ที่มีเพียง `package.json` จะถูกปฏิเสธก่อนที่ OpenClaw จะเขียนบันทึกการติดตั้ง
+    archive ที่รองรับ: `.zip`, `.tgz`, `.tar.gz`, `.tar` archive ของ Plugin OpenClaw แบบ native ต้องมี `openclaw.plugin.json` ที่ถูกต้องที่ root ของ Plugin หลังแตกไฟล์; archive ที่มีเพียง `package.json` จะถูกปฏิเสธก่อนที่ OpenClaw จะเขียน install record
 
     ใช้ `npm-pack:<path.tgz>` เมื่อไฟล์เป็น tarball ของ npm-pack และคุณต้องการ
-    ทดสอบเส้นทางติดตั้ง npm-root ที่จัดการอยู่แบบเดียวกับที่การติดตั้งจากรีจิสทรีใช้
-    รวมถึงการตรวจสอบ `package-lock.json`, การสแกน dependency ที่ถูก hoist และ
-    บันทึกการติดตั้ง npm เส้นทาง archive แบบธรรมดายังคงติดตั้งเป็น local archives
-    ใต้ราก extensions ของ plugin
+    ทดสอบเส้นทางการติดตั้ง npm-root ที่จัดการโดยระบบแบบเดียวกับที่ใช้ในการติดตั้งจาก registry
+    รวมถึงการตรวจสอบ `package-lock.json`, การสแกน dependency ที่ hoist และ
+    install record ของ npm path ของ archive แบบ plain จะยังติดตั้งเป็น local archive
+    ใต้ root ของ extensions ของ Plugin
 
-    การติดตั้ง Claude marketplace ก็รองรับเช่นกัน
+    รองรับการติดตั้งจาก marketplace ของ Claude ด้วย
 
   </Accordion>
 </AccordionGroup>
 
-การติดตั้ง ClawHub ใช้ locator `clawhub:<package>` ที่ชัดเจน:
+การติดตั้งจาก ClawHub ใช้ locator `clawhub:<package>` แบบชัดเจน:
 
 ```bash
 openclaw plugins install clawhub:openclaw-codex-app-server
 openclaw plugins install clawhub:openclaw-codex-app-server@1.2.3
 ```
 
-Bare plugin specs ที่ปลอดภัยสำหรับ npm จะติดตั้งจาก npm โดยค่าเริ่มต้นในช่วงเปลี่ยนผ่านการเปิดตัว:
+spec ของ Plugin ที่ปลอดภัยสำหรับ npm แบบ bare จะติดตั้งจาก npm ตามค่าเริ่มต้นระหว่างช่วงเปลี่ยนผ่านการเปิดตัว:
 
 ```bash
 openclaw plugins install openclaw-codex-app-server
@@ -193,12 +193,12 @@ openclaw plugins install npm:openclaw-codex-app-server
 openclaw plugins install npm:@scope/plugin-name@1.0.1
 ```
 
-OpenClaw ตรวจสอบ API ของ Plugin ที่ประกาศไว้ / ความเข้ากันได้ขั้นต่ำของ Gateway ก่อนติดตั้ง เมื่อเวอร์ชัน ClawHub ที่เลือกเผยแพร่ artifact ของ ClawPack แล้ว OpenClaw จะดาวน์โหลด npm-pack `.tgz` ที่มีเวอร์ชัน ตรวจสอบส่วนหัว digest ของ ClawHub และ digest ของ artifact จากนั้นติดตั้งผ่านเส้นทาง archive ปกติ เวอร์ชัน ClawHub ที่เก่ากว่าซึ่งไม่มี metadata ของ ClawPack จะยังติดตั้งผ่านเส้นทางตรวจสอบ package archive แบบเดิม การติดตั้งที่บันทึกไว้จะเก็บ metadata แหล่งที่มาจาก ClawHub, ชนิด artifact, npm integrity, npm shasum, ชื่อ tarball และข้อมูล digest ของ ClawPack ไว้สำหรับการอัปเดตภายหลัง
-การติดตั้ง ClawHub แบบไม่ระบุเวอร์ชันจะเก็บ spec ที่บันทึกไว้แบบไม่ระบุเวอร์ชัน เพื่อให้ `openclaw plugins update` สามารถติดตามรุ่นใหม่กว่าของ ClawHub ได้ ส่วนตัวเลือกเวอร์ชันหรือแท็กแบบชัดเจน เช่น `clawhub:pkg@1.2.3` และ `clawhub:pkg@beta` จะยังถูกตรึงไว้กับตัวเลือกนั้น
+OpenClaw จะตรวจสอบ API ของ Plugin ที่ประกาศไว้ / ความเข้ากันได้ขั้นต่ำของ Gateway ก่อนติดตั้ง เมื่อเวอร์ชัน ClawHub ที่เลือกเผยแพร่อาร์ติแฟกต์ ClawPack OpenClaw จะดาวน์โหลด npm-pack `.tgz` แบบมีเวอร์ชัน ตรวจสอบส่วนหัว digest ของ ClawHub และ digest ของอาร์ติแฟกต์ จากนั้นติดตั้งผ่านเส้นทางอาร์ไคฟ์ปกติ เวอร์ชัน ClawHub ที่เก่ากว่าซึ่งไม่มีเมตาดาต้า ClawPack จะยังติดตั้งผ่านเส้นทางตรวจสอบอาร์ไคฟ์แพ็กเกจแบบเดิม การติดตั้งที่บันทึกไว้จะเก็บเมตาดาต้าแหล่งที่มาของ ClawHub, ชนิดอาร์ติแฟกต์, npm integrity, npm shasum, ชื่อ tarball และข้อเท็จจริง digest ของ ClawPack ไว้สำหรับการอัปเดตในภายหลัง
+การติดตั้ง ClawHub แบบไม่มีเวอร์ชันจะเก็บสเปกที่บันทึกไว้แบบไม่มีเวอร์ชัน เพื่อให้ `openclaw plugins update` สามารถตามรุ่น ClawHub ที่ใหม่กว่าได้ ส่วนตัวเลือกเวอร์ชันหรือแท็กที่ระบุชัดเจน เช่น `clawhub:pkg@1.2.3` และ `clawhub:pkg@beta` จะยังคงถูกตรึงไว้กับตัวเลือกนั้น
 
 #### ชวเลข Marketplace
 
-ใช้ชวเลข `plugin@marketplace` เมื่อชื่อ marketplace มีอยู่ใน cache รีจิสทรีท้องถิ่นของ Claude ที่ `~/.claude/plugins/known_marketplaces.json`:
+ใช้ชวเลข `plugin@marketplace` เมื่อชื่อ marketplace มีอยู่ในแคชรีจิสทรีภายในเครื่องของ Claude ที่ `~/.claude/plugins/known_marketplaces.json`:
 
 ```bash
 openclaw plugins marketplace list <marketplace-name>
@@ -216,30 +216,30 @@ openclaw plugins install <plugin-name> --marketplace ./my-marketplace
 
 <Tabs>
   <Tab title="แหล่งที่มาของ Marketplace">
-    - ชื่อ known-marketplace ของ Claude จาก `~/.claude/plugins/known_marketplaces.json`
-    - root ของ marketplace ในเครื่องหรือ path ของ `marketplace.json`
+    - ชื่อ marketplace ที่ Claude รู้จักจาก `~/.claude/plugins/known_marketplaces.json`
+    - รูท marketplace ภายในเครื่องหรือพาธ `marketplace.json`
     - ชวเลข repo ของ GitHub เช่น `owner/repo`
     - URL repo ของ GitHub เช่น `https://github.com/owner/repo`
-    - URL ของ git
+    - URL git
 
   </Tab>
-  <Tab title="กฎของ Marketplace ระยะไกล">
-    สำหรับ marketplace ระยะไกลที่โหลดจาก GitHub หรือ git รายการ Plugin ต้องอยู่ภายใน repo marketplace ที่ clone มา OpenClaw ยอมรับแหล่งที่มาแบบ relative path จาก repo นั้น และปฏิเสธแหล่งที่มาของ Plugin แบบ HTTP(S), absolute-path, git, GitHub และแบบอื่นที่ไม่ใช่ path จาก manifest ระยะไกล
+  <Tab title="กฎของ marketplace ระยะไกล">
+    สำหรับ marketplace ระยะไกลที่โหลดจาก GitHub หรือ git รายการ Plugin ต้องอยู่ภายใน repo marketplace ที่โคลนมา OpenClaw ยอมรับแหล่งที่มาแบบพาธสัมพัทธ์จาก repo นั้น และปฏิเสธแหล่งที่มาของ Plugin แบบ HTTP(S), พาธสัมบูรณ์, git, GitHub และแหล่งอื่นที่ไม่ใช่พาธจาก manifest ระยะไกล
   </Tab>
 </Tabs>
 
-สำหรับ path ในเครื่องและ archive นั้น OpenClaw ตรวจจับโดยอัตโนมัติ:
+สำหรับพาธและอาร์ไคฟ์ภายในเครื่อง OpenClaw จะตรวจหาโดยอัตโนมัติ:
 
-- Plugin แบบเนทีฟของ OpenClaw (`openclaw.plugin.json`)
-- bundle ที่เข้ากันได้กับ Codex (`.codex-plugin/plugin.json`)
-- bundle ที่เข้ากันได้กับ Claude (`.claude-plugin/plugin.json` หรือ layout องค์ประกอบเริ่มต้นของ Claude)
-- bundle ที่เข้ากันได้กับ Cursor (`.cursor-plugin/plugin.json`)
+- Plugin ดั้งเดิมของ OpenClaw (`openclaw.plugin.json`)
+- บันเดิลที่เข้ากันได้กับ Codex (`.codex-plugin/plugin.json`)
+- บันเดิลที่เข้ากันได้กับ Claude (`.claude-plugin/plugin.json` หรือเลย์เอาต์คอมโพเนนต์เริ่มต้นของ Claude)
+- บันเดิลที่เข้ากันได้กับ Cursor (`.cursor-plugin/plugin.json`)
 
 <Note>
-bundle ที่เข้ากันได้จะติดตั้งลงใน root ของ Plugin ปกติ และเข้าร่วม flow list/info/enable/disable เดียวกัน ปัจจุบันรองรับ Skills ของ bundle, command-skills ของ Claude, ค่าเริ่มต้นของ Claude `settings.json`, ค่าเริ่มต้นของ Claude `.lsp.json` / `lspServers` ที่ประกาศใน manifest, command-skills ของ Cursor และไดเรกทอรี hook ของ Codex ที่เข้ากันได้ ส่วนความสามารถอื่นของ bundle ที่ตรวจพบจะแสดงใน diagnostics/info แต่ยังไม่ได้เชื่อมเข้ากับการทำงาน runtime
+บันเดิลที่เข้ากันได้จะติดตั้งลงในรูท Plugin ปกติและเข้าร่วมในโฟลว์ list/info/enable/disable เดียวกัน ปัจจุบันรองรับ Skills ของบันเดิล, command-skills ของ Claude, ค่าเริ่มต้น `settings.json` ของ Claude, ค่าเริ่มต้น `.lsp.json` / `lspServers` ที่ประกาศใน manifest ของ Claude, command-skills ของ Cursor และไดเรกทอรี hook ของ Codex ที่เข้ากันได้ ส่วนความสามารถอื่นของบันเดิลที่ตรวจพบจะแสดงใน diagnostics/info แต่ยังไม่ได้เชื่อมเข้ากับการทำงานของ runtime
 </Note>
 
-### แสดงรายการ
+### รายการ
 
 ```bash
 openclaw plugins list
@@ -252,49 +252,54 @@ openclaw plugins search <query> --json
 ```
 
 <ParamField path="--enabled" type="boolean">
-  แสดงเฉพาะ Plugin ที่เปิดใช้งานอยู่
+  แสดงเฉพาะ Plugin ที่เปิดใช้งาน
 </ParamField>
 <ParamField path="--verbose" type="boolean">
-  เปลี่ยนจากมุมมองตารางเป็นบรรทัดรายละเอียดราย Plugin พร้อม metadata แหล่งที่มา/ต้นทาง/เวอร์ชัน/การเปิดใช้งาน
+  เปลี่ยนจากมุมมองตารางเป็นบรรทัดรายละเอียดราย Plugin พร้อมเมตาดาต้าแหล่งที่มา/ต้นทาง/เวอร์ชัน/การเปิดใช้งาน
 </ParamField>
 <ParamField path="--json" type="boolean">
-  inventory แบบอ่านได้โดยเครื่อง พร้อม diagnostics ของรีจิสทรีและสถานะการติดตั้ง dependency ของ package
+  อินเวนทอรีที่เครื่องอ่านได้ พร้อม diagnostics ของรีจิสทรีและสถานะการติดตั้ง dependency ของแพ็กเกจ
 </ParamField>
 
 <Note>
-`plugins list` อ่านรีจิสทรี Plugin ในเครื่องที่ persisted ไว้ก่อน โดยมี fallback ที่ derive จาก manifest เท่านั้นเมื่อรีจิสทรีหายไปหรือไม่ถูกต้อง คำสั่งนี้มีประโยชน์สำหรับตรวจสอบว่า Plugin ถูกติดตั้ง เปิดใช้งาน และมองเห็นได้ต่อการวางแผน cold startup หรือไม่ แต่ไม่ใช่ probe runtime แบบสดของ process Gateway ที่กำลังทำงานอยู่ หลังจากเปลี่ยนโค้ด Plugin, การเปิดใช้งาน, นโยบาย hook หรือ `plugins.load.paths` ให้ restart Gateway ที่ให้บริการ channel ก่อนคาดหวังให้โค้ด `register(api)` หรือ hook ใหม่ทำงาน สำหรับ deployment ระยะไกล/container ให้ตรวจสอบว่าคุณกำลัง restart child ของ `openclaw gateway run` ตัวจริง ไม่ใช่เพียง process wrapper
+`plugins list` จะอ่านรีจิสทรี Plugin ภายในเครื่องที่คงอยู่ก่อน โดยมี fallback ที่สร้างจาก manifest เท่านั้นเมื่อรีจิสทรีหายไปหรือไม่ถูกต้อง คำสั่งนี้มีประโยชน์สำหรับตรวจสอบว่า Plugin ถูกติดตั้ง เปิดใช้งาน และมองเห็นในการวางแผนเริ่มต้นแบบเย็นหรือไม่ แต่ไม่ใช่การตรวจ probe runtime สดของกระบวนการ Gateway ที่กำลังทำงานอยู่ หลังจากเปลี่ยนโค้ด Plugin, การเปิดใช้งาน, นโยบาย hook หรือ `plugins.load.paths` ให้รีสตาร์ท Gateway ที่ให้บริการช่องทางก่อนคาดหวังให้โค้ด `register(api)` หรือ hook ใหม่ทำงาน สำหรับการปรับใช้ระยะไกล/คอนเทนเนอร์ ให้ตรวจสอบว่าคุณกำลังรีสตาร์ท child ของ `openclaw gateway run` จริง ไม่ใช่แค่กระบวนการ wrapper
 
 `plugins list --json` รวม `dependencyStatus` ของแต่ละ Plugin จาก `package.json`
-`dependencies` และ `optionalDependencies` OpenClaw ตรวจสอบว่าชื่อ package เหล่านั้นมีอยู่ตาม path lookup `node_modules` ปกติของ Node สำหรับ Plugin หรือไม่ โดยจะไม่ import โค้ด runtime ของ Plugin, ไม่รัน package manager และไม่ซ่อมแซม dependency ที่ขาดหาย
+`dependencies` และ `optionalDependencies` OpenClaw ตรวจสอบว่าชื่อแพ็กเกจเหล่านั้นมีอยู่ตามพาธ lookup `node_modules` ปกติของ Node สำหรับ Plugin หรือไม่ โดยจะไม่นำเข้าโค้ด runtime ของ Plugin ไม่รันตัวจัดการแพ็กเกจ และไม่ซ่อม dependency ที่ขาดหาย
 </Note>
 
-`plugins search` เป็นการค้นหา catalog ClawHub ระยะไกล คำสั่งนี้ไม่ตรวจสอบสถานะในเครื่อง ไม่แก้ไข config ไม่ติดตั้ง package และไม่โหลดโค้ด runtime ของ Plugin ผลการค้นหารวมชื่อ package ของ ClawHub, family, channel, version, summary และคำแนะนำการติดตั้ง เช่น `openclaw plugins install clawhub:<package>`
+`plugins search` คือการค้นหาแคตตาล็อก ClawHub ระยะไกล ไม่ตรวจสอบสถานะภายในเครื่อง
+ไม่แก้ไข config ไม่ติดตั้งแพ็กเกจ และไม่โหลดโค้ด runtime ของ Plugin ผลการค้นหาจะรวมชื่อแพ็กเกจ ClawHub, family, channel, เวอร์ชัน, สรุป และ
+คำแนะนำการติดตั้ง เช่น `openclaw plugins install clawhub:<package>`
 
-สำหรับงาน Plugin ที่ bundle มาแล้วภายใน Docker image ที่ package แล้ว ให้ bind-mount ไดเรกทอรี source ของ Plugin ทับ path source ที่ package ตรงกัน เช่น `/app/extensions/synology-chat` OpenClaw จะค้นพบ overlay source ที่ mount ไว้นั้นก่อน `/app/dist/extensions/synology-chat`; ไดเรกทอรี source ที่คัดลอกมาเฉย ๆ จะยังไม่ทำงาน เพื่อให้การติดตั้งแบบ packaged ปกติยังใช้ dist ที่ compile แล้ว
+สำหรับงาน Plugin ที่บันเดิลอยู่ภายในอิมเมจ Docker แบบแพ็กเกจ ให้ bind-mount ไดเรกทอรีแหล่งที่มาของ Plugin
+ทับพาธแหล่งที่มาแบบแพ็กเกจที่ตรงกัน เช่น
+`/app/extensions/synology-chat` OpenClaw จะค้นพบ overlay แหล่งที่มาที่ mount นั้น
+ก่อน `/app/dist/extensions/synology-chat`; ไดเรกทอรีแหล่งที่มาที่คัดลอกแบบธรรมดาจะยังไม่ทำงาน ดังนั้นการติดตั้งแบบแพ็กเกจปกติจะยังใช้ dist ที่คอมไพล์แล้ว
 
-สำหรับการ debug hook runtime:
+สำหรับการดีบัก hook ของ runtime:
 
-- `openclaw plugins inspect <id> --runtime --json` แสดง hook ที่ register แล้วและ diagnostics จากรอบตรวจสอบที่โหลด module การตรวจสอบ runtime จะไม่ติดตั้ง dependency; ใช้ `openclaw doctor --fix` เพื่อล้างสถานะ dependency เก่า หรือกู้ Plugin ที่ดาวน์โหลดได้ซึ่งขาดหายและถูกอ้างถึงโดย config
-- `openclaw gateway status --deep --require-rpc` ยืนยัน Gateway ที่เข้าถึงได้, คำใบ้ service/process, path config และสุขภาพ RPC
-- hook การสนทนาที่ไม่ได้ bundle มา (`llm_input`, `llm_output`, `before_model_resolve`, `before_agent_reply`, `before_agent_run`, `before_agent_finalize`, `agent_end`) ต้องใช้ `plugins.entries.<id>.hooks.allowConversationAccess=true`
+- `openclaw plugins inspect <id> --runtime --json` แสดง hook ที่ลงทะเบียนไว้และ diagnostics จากรอบการตรวจสอบที่โหลดโมดูล การตรวจสอบ runtime จะไม่ติดตั้ง dependency; ใช้ `openclaw doctor --fix` เพื่อล้างสถานะ dependency เดิมหรือกู้คืน Plugin ที่ดาวน์โหลดได้ซึ่งถูกอ้างอิงโดย config แต่หายไป
+- `openclaw gateway status --deep --require-rpc` ยืนยัน Gateway ที่เข้าถึงได้, คำใบ้บริการ/กระบวนการ, พาธ config และสุขภาพ RPC
+- hook การสนทนาที่ไม่ได้บันเดิล (`llm_input`, `llm_output`, `before_model_resolve`, `before_agent_reply`, `before_agent_run`, `before_agent_finalize`, `agent_end`) ต้องใช้ `plugins.entries.<id>.hooks.allowConversationAccess=true`
 
-ใช้ `--link` เพื่อหลีกเลี่ยงการคัดลอกไดเรกทอรีในเครื่อง (เพิ่มไปยัง `plugins.load.paths`):
+ใช้ `--link` เพื่อหลีกเลี่ยงการคัดลอกไดเรกทอรีภายในเครื่อง (เพิ่มไปยัง `plugins.load.paths`):
 
 ```bash
 openclaw plugins install -l ./my-plugin
 ```
 
 <Note>
-ไม่รองรับ `--force` ร่วมกับ `--link` เพราะการติดตั้งแบบ linked จะใช้ path source ซ้ำแทนการคัดลอกทับ target การติดตั้งแบบ managed
+ไม่รองรับ `--force` ร่วมกับ `--link` เพราะการติดตั้งแบบลิงก์จะใช้พาธแหล่งที่มาซ้ำ แทนที่จะคัดลอกทับเป้าหมายการติดตั้งที่จัดการอยู่
 
-ใช้ `--pin` กับการติดตั้ง npm เพื่อบันทึก spec ที่ resolve แล้วแบบตรงตัว (`name@version`) ในดัชนี Plugin แบบ managed โดยยังคงพฤติกรรมเริ่มต้นไว้เป็นแบบไม่ตรึง
+ใช้ `--pin` กับการติดตั้ง npm เพื่อบันทึกสเปกที่ resolve แล้วแบบแน่นอน (`name@version`) ในดัชนี Plugin ที่จัดการอยู่ โดยยังคงพฤติกรรมเริ่มต้นแบบไม่ตรึงไว้
 </Note>
 
 ### ดัชนี Plugin
 
-metadata การติดตั้ง Plugin เป็นสถานะที่จัดการโดยเครื่อง ไม่ใช่ config ของผู้ใช้ การติดตั้งและการอัปเดตจะเขียนข้อมูลนี้ไปยัง `plugins/installs.json` ภายใต้ไดเรกทอรีสถานะ OpenClaw ที่ active อยู่ map ระดับบนสุด `installRecords` เป็นแหล่งข้อมูลถาวรของ metadata การติดตั้ง รวมถึง record สำหรับ manifest ของ Plugin ที่เสียหรือหายไป array `plugins` คือ cache รีจิสทรี cold ที่ derive จาก manifest ไฟล์นี้มีคำเตือนห้ามแก้ไขและถูกใช้โดย `openclaw plugins update`, uninstall, diagnostics และรีจิสทรี Plugin แบบ cold
+เมตาดาต้าการติดตั้ง Plugin คือสถานะที่เครื่องจัดการ ไม่ใช่ config ของผู้ใช้ การติดตั้งและการอัปเดตจะเขียนข้อมูลนี้ไปยัง `plugins/installs.json` ภายใต้ไดเรกทอรีสถานะ OpenClaw ที่ใช้งานอยู่ แผนที่ `installRecords` ระดับบนสุดคือแหล่งที่มาคงทนของเมตาดาต้าการติดตั้ง รวมถึงระเบียนสำหรับ manifest ของ Plugin ที่เสียหรือหายไป อาร์เรย์ `plugins` คือแคชรีจิสทรีแบบเย็นที่สร้างจาก manifest ไฟล์นี้มีคำเตือนห้ามแก้ไข และถูกใช้โดย `openclaw plugins update`, uninstall, diagnostics และรีจิสทรี Plugin แบบเย็น
 
-เมื่อ OpenClaw เห็น record `plugins.installs` แบบ legacy ที่ shipped มาใน config การอ่าน runtime จะปฏิบัติกับ record เหล่านั้นเป็น input สำหรับความเข้ากันได้โดยไม่เขียน `openclaw.json` ใหม่ การเขียน Plugin แบบชัดเจนและ `openclaw doctor --fix` จะย้าย record เหล่านั้นเข้าไปในดัชนี Plugin และลบ key config เมื่ออนุญาตให้เขียน config ได้ หากการเขียนใดล้มเหลว record ใน config จะถูกเก็บไว้เพื่อไม่ให้ metadata การติดตั้งสูญหาย
+เมื่อ OpenClaw พบระเบียน `plugins.installs` เดิมที่ถูกส่งมากับ config การอ่าน runtime จะถือว่าข้อมูลเหล่านั้นเป็นอินพุตความเข้ากันได้โดยไม่เขียน `openclaw.json` ใหม่ การเขียน Plugin อย่างชัดเจนและ `openclaw doctor --fix` จะย้ายระเบียนเหล่านั้นไปยังดัชนี Plugin และลบคีย์ config เมื่ออนุญาตให้เขียน config ได้; หากการเขียนใดล้มเหลว ระเบียนใน config จะถูกเก็บไว้เพื่อไม่ให้เมตาดาต้าการติดตั้งสูญหาย
 
 ### ถอนการติดตั้ง
 
@@ -304,10 +309,10 @@ openclaw plugins uninstall <id> --dry-run
 openclaw plugins uninstall <id> --keep-files
 ```
 
-`uninstall` ลบ record ของ Plugin ออกจาก `plugins.entries`, ดัชนี Plugin ที่ persisted ไว้, รายการ allow/deny ของ Plugin และรายการ `plugins.load.paths` ที่ linked เมื่อเกี่ยวข้อง เว้นแต่ตั้งค่า `--keep-files` ไว้ uninstall จะลบไดเรกทอรีการติดตั้งแบบ managed ที่ติดตามอยู่ด้วย เมื่อไดเรกทอรีนั้นอยู่ภายใน root extensions ของ Plugin ของ OpenClaw สำหรับ Plugin หน่วยความจำ active ช่องหน่วยความจำจะ reset เป็น `memory-core`
+`uninstall` จะลบระเบียน Plugin ออกจาก `plugins.entries`, ดัชนี Plugin ที่คงอยู่, รายการ allow/deny ของ Plugin และรายการ `plugins.load.paths` ที่ลิงก์ไว้เมื่อเกี่ยวข้อง เว้นแต่ตั้งค่า `--keep-files` การถอนการติดตั้งจะลบไดเรกทอรีการติดตั้งที่จัดการและติดตามไว้ด้วยเมื่ออยู่ภายในรูทส่วนขยาย Plugin ของ OpenClaw สำหรับ Plugin หน่วยความจำที่ใช้งานอยู่ สล็อตหน่วยความจำจะรีเซ็ตเป็น `memory-core`
 
 <Note>
-รองรับ `--keep-config` ในฐานะ alias ที่เลิกใช้แล้วของ `--keep-files`
+รองรับ `--keep-config` เป็น alias ที่เลิกใช้แล้วของ `--keep-files`
 </Note>
 
 ### อัปเดต
@@ -320,31 +325,29 @@ openclaw plugins update @openclaw/voice-call
 openclaw plugins update openclaw-codex-app-server --dangerously-force-unsafe-install
 ```
 
-การอัปเดตใช้กับการติดตั้ง Plugin ที่ติดตามอยู่ในดัชนี Plugin แบบ managed และการติดตั้ง hook-pack ที่ติดตามอยู่ใน `hooks.internal.installs`
+การอัปเดตจะใช้กับการติดตั้ง Plugin ที่ติดตามไว้ในดัชนี Plugin ที่จัดการอยู่ และการติดตั้ง hook-pack ที่ติดตามไว้ใน `hooks.internal.installs`
 
 <AccordionGroup>
-  <Accordion title="การ resolve id ของ Plugin เทียบกับ spec ของ npm">
-    เมื่อคุณส่ง id ของ Plugin OpenClaw จะนำ spec การติดตั้งที่บันทึกไว้ของ Plugin นั้นกลับมาใช้ ซึ่งหมายความว่า dist-tags ที่เก็บไว้ก่อนหน้า เช่น `@beta` และเวอร์ชันที่ตรึงแบบตรงตัว จะยังถูกใช้ต่อไปในการรัน `update <id>` ภายหลัง
+  <Accordion title="การ resolve id ของ Plugin เทียบกับสเปก npm">
+    เมื่อคุณส่ง id ของ Plugin OpenClaw จะใช้สเปกการติดตั้งที่บันทึกไว้สำหรับ Plugin นั้นซ้ำ ซึ่งหมายความว่า dist-tag ที่เก็บไว้ก่อนหน้า เช่น `@beta` และเวอร์ชันที่ตรึงไว้แบบแน่นอนจะยังคงถูกใช้ในการรัน `update <id>` ครั้งต่อไป
 
-    สำหรับการติดตั้ง npm คุณยังสามารถส่ง spec package npm แบบชัดเจนพร้อม dist-tag หรือเวอร์ชันตรงตัวได้ OpenClaw จะ resolve ชื่อ package นั้นกลับไปยัง record ของ Plugin ที่ติดตามอยู่ อัปเดต Plugin ที่ติดตั้งนั้น และบันทึก spec npm ใหม่สำหรับการอัปเดตตาม id ในอนาคต
+    สำหรับการติดตั้ง npm คุณยังสามารถส่งสเปกแพ็กเกจ npm อย่างชัดเจนพร้อม dist-tag หรือเวอร์ชันแน่นอนได้ OpenClaw จะ resolve ชื่อแพ็กเกจนั้นกลับไปยังระเบียน Plugin ที่ติดตามไว้ อัปเดต Plugin ที่ติดตั้งนั้น และบันทึกสเปก npm ใหม่สำหรับการอัปเดตตาม id ในอนาคต
 
-    การส่งชื่อ package npm โดยไม่มีเวอร์ชันหรือแท็กก็จะ resolve กลับไปยัง record ของ Plugin ที่ติดตามอยู่เช่นกัน ใช้วิธีนี้เมื่อ Plugin ถูกตรึงไว้กับเวอร์ชันตรงตัว และคุณต้องการย้ายกลับไปยังสาย release เริ่มต้นของรีจิสทรี
+    การส่งชื่อแพ็กเกจ npm โดยไม่มีเวอร์ชันหรือแท็กจะ resolve กลับไปยังระเบียน Plugin ที่ติดตามไว้เช่นกัน ใช้กรณีนี้เมื่อ Plugin ถูกตรึงไว้กับเวอร์ชันแน่นอนและคุณต้องการย้ายกลับไปยังสาย release เริ่มต้นของรีจิสทรี
 
   </Accordion>
-  <Accordion title="การอัปเดต channel beta">
-    `openclaw plugins update` นำ spec ของ Plugin ที่ติดตามอยู่กลับมาใช้ เว้นแต่คุณจะส่ง spec ใหม่ `openclaw update` ยังรู้จัก channel อัปเดต OpenClaw ที่ active อยู่ด้วย: บน channel beta, record Plugin ของ npm และ ClawHub ในสายเริ่มต้นจะลอง `@beta` ก่อน แล้ว fallback ไปยัง spec default/latest ที่บันทึกไว้ หากไม่มี release beta ของ Plugin เวอร์ชันตรงตัวและแท็กชัดเจนจะยังถูกตรึงไว้กับตัวเลือกนั้น
-
-    OpenClaw ยังไม่เปิดเผย channel Plugin สำหรับการสนับสนุน LTS หรือรายเดือน งาน support-line ที่วางแผนไว้จะต้องให้ tag ของ package Plugin และ ClawHub ติดตาม support line เดียวกับ package core
+  <Accordion title="การอัปเดตช่องทาง Beta">
+    `openclaw plugins update` ใช้สเปก Plugin ที่ติดตามไว้ซ้ำ เว้นแต่คุณจะส่งสเปกใหม่ `openclaw update` ยังรู้จักช่องทางอัปเดต OpenClaw ที่ใช้งานอยู่ด้วย: บนช่องทาง beta ระเบียน Plugin แบบ npm และ ClawHub ในสายเริ่มต้นจะลอง `@beta` ก่อน จากนั้น fallback ไปยังสเปก default/latest ที่บันทึกไว้หากไม่มี beta release ของ Plugin เวอร์ชันแน่นอนและแท็กที่ระบุชัดเจนจะยังคงถูกตรึงไว้กับตัวเลือกนั้น
 
   </Accordion>
   <Accordion title="การตรวจสอบเวอร์ชันและ integrity drift">
-    ก่อนการอัปเดต npm แบบสด OpenClaw จะตรวจสอบเวอร์ชัน package ที่ติดตั้งเทียบกับ metadata รีจิสทรี npm หากเวอร์ชันที่ติดตั้งและตัวตน artifact ที่บันทึกไว้ตรงกับ target ที่ resolve แล้วอยู่แล้ว การอัปเดตจะถูกข้ามโดยไม่ดาวน์โหลด ไม่ติดตั้งใหม่ และไม่เขียน `openclaw.json` ใหม่
+    ก่อนอัปเดต npm แบบสด OpenClaw จะตรวจสอบเวอร์ชันแพ็กเกจที่ติดตั้งกับเมตาดาต้ารีจิสทรี npm หากเวอร์ชันที่ติดตั้งและตัวตนอาร์ติแฟกต์ที่บันทึกไว้ตรงกับเป้าหมายที่ resolve แล้ว การอัปเดตจะถูกข้ามโดยไม่ดาวน์โหลด ติดตั้งใหม่ หรือเขียน `openclaw.json` ใหม่
 
-    เมื่อมี integrity hash ที่เก็บไว้และ hash artifact ที่ fetch มาเปลี่ยนไป OpenClaw จะถือว่านั่นเป็น npm artifact drift คำสั่ง interactive `openclaw plugins update` จะพิมพ์ hash ที่คาดหวังและ hash จริง แล้วขอการยืนยันก่อนดำเนินการต่อ helper การอัปเดตแบบ non-interactive จะ fail closed เว้นแต่ caller จะระบุนโยบายการดำเนินการต่ออย่างชัดเจน
+    เมื่อมีแฮช integrity ที่เก็บไว้และแฮชอาร์ติแฟกต์ที่ดึงมาเปลี่ยนไป OpenClaw จะถือว่านั่นเป็น npm artifact drift คำสั่ง `openclaw plugins update` แบบโต้ตอบจะแสดงแฮชที่คาดหวังและแฮชจริง และขอการยืนยันก่อนดำเนินการต่อ ตัวช่วยอัปเดตแบบไม่โต้ตอบจะล้มเหลวแบบปิด เว้นแต่ผู้เรียกจะระบุนโยบายการดำเนินการต่ออย่างชัดเจน
 
   </Accordion>
-  <Accordion title="--dangerously-force-unsafe-install ในการอัปเดต">
-    `--dangerously-force-unsafe-install` ยังมีให้ใช้กับ `plugins update` ในฐานะ override แบบ break-glass สำหรับ false positive ของการสแกน dangerous-code ในตัวระหว่างการอัปเดต Plugin โดยยังคงไม่ข้าม block จากนโยบาย `before_install` ของ Plugin หรือการ block จากความล้มเหลวของการสแกน และใช้ได้เฉพาะกับการอัปเดต Plugin ไม่ใช่การอัปเดต hook-pack
+  <Accordion title="--dangerously-force-unsafe-install บน update">
+    `--dangerously-force-unsafe-install` ยังใช้ได้บน `plugins update` เป็น override ฉุกเฉินสำหรับ false positive ของการสแกนโค้ดอันตรายในตัวระหว่างการอัปเดต Plugin แต่ยังไม่ข้ามการบล็อกตามนโยบาย `before_install` ของ Plugin หรือการบล็อกเมื่อสแกนล้มเหลว และใช้ได้เฉพาะกับการอัปเดต Plugin ไม่ใช่การอัปเดต hook-pack
   </Accordion>
 </AccordionGroup>
 
@@ -356,21 +359,21 @@ openclaw plugins inspect <id> --runtime
 openclaw plugins inspect <id> --json
 ```
 
-Inspect แสดง identity, สถานะการโหลด, แหล่งที่มา, ความสามารถของ manifest, flag นโยบาย, diagnostics, metadata การติดตั้ง, ความสามารถของ bundle และการรองรับ server MCP หรือ LSP ที่ตรวจพบ โดยค่าเริ่มต้นจะไม่ import runtime ของ Plugin เพิ่ม `--runtime` เพื่อโหลด module ของ Plugin และรวม hook, tool, command, service, method ของ gateway และ HTTP route ที่ register แล้ว การตรวจสอบ runtime จะรายงาน dependency ของ Plugin ที่ขาดหายโดยตรง ส่วนการติดตั้งและซ่อมแซมยังอยู่ใน `openclaw plugins install`, `openclaw plugins update` และ `openclaw doctor --fix`
+Inspect แสดง identity, สถานะการโหลด, แหล่งที่มา, ความสามารถของ manifest, แฟล็กนโยบาย, diagnostics, เมตาดาต้าการติดตั้ง, ความสามารถของบันเดิล และการรองรับเซิร์ฟเวอร์ MCP หรือ LSP ที่ตรวจพบ โดยค่าเริ่มต้นจะไม่นำเข้า runtime ของ Plugin เพิ่ม `--runtime` เพื่อโหลดโมดูล Plugin และรวม hook, tool, command, service, เมธอด gateway และ route HTTP ที่ลงทะเบียนไว้ การตรวจสอบ runtime รายงาน dependency ของ Plugin ที่ขาดหายโดยตรง; การติดตั้งและการซ่อมยังอยู่ใน `openclaw plugins install`, `openclaw plugins update` และ `openclaw doctor --fix`
 
-command CLI ที่ Plugin เป็นเจ้าของจะถูกติดตั้งเป็นกลุ่มคำสั่ง root `openclaw` หลังจาก `inspect --runtime` แสดง command ใต้ `cliCommands` แล้ว ให้รันเป็น `openclaw <command> ...`; ตัวอย่างเช่น Plugin ที่ register `demo-git` สามารถตรวจสอบได้ด้วย `openclaw demo-git ping`
+คำสั่ง CLI ที่ Plugin เป็นเจ้าของมักติดตั้งเป็นกลุ่มคำสั่ง `openclaw` ระดับรูท แต่ Plugin อาจลงทะเบียนคำสั่งซ้อนใต้ parent หลัก เช่น `openclaw nodes` ได้เช่นกัน หลังจาก `inspect --runtime` แสดงคำสั่งใต้ `cliCommands` ให้รันที่พาธที่ระบุไว้; ตัวอย่างเช่น Plugin ที่ลงทะเบียน `demo-git` สามารถตรวจสอบได้ด้วย `openclaw demo-git ping`
 
-แต่ละ Plugin ถูกจัดประเภทตามสิ่งที่ register จริงใน runtime:
+Plugin แต่ละตัวถูกจัดประเภทตามสิ่งที่มันลงทะเบียนจริงใน runtime:
 
-- **plain-capability** — ประเภทความสามารถเดียว (เช่น Plugin ที่เป็นเฉพาะ provider)
-- **hybrid-capability** — ความสามารถหลายประเภท (เช่น ข้อความ + เสียงพูด + รูปภาพ)
-- **hook-only** — มีเฉพาะ hook ไม่มีความสามารถหรือพื้นผิว
-- **non-capability** — เครื่องมือ/คำสั่ง/บริการ แต่ไม่มีความสามารถ
+- **plain-capability** — ประเภท capability หนึ่งประเภท (เช่น Plugin ที่เป็น provider-only)
+- **hybrid-capability** — ประเภท capability หลายประเภท (เช่น ข้อความ + เสียงพูด + รูปภาพ)
+- **hook-only** — เฉพาะ hooks เท่านั้น ไม่มี capabilities หรือ surfaces
+- **non-capability** — เครื่องมือ/คำสั่ง/บริการ แต่ไม่มี capabilities
 
-ดู [รูปแบบ Plugin](/th/plugins/architecture#plugin-shapes) สำหรับข้อมูลเพิ่มเติมเกี่ยวกับโมเดลความสามารถ
+ดู [รูปแบบของ Plugin](/th/plugins/architecture#plugin-shapes) สำหรับรายละเอียดเพิ่มเติมเกี่ยวกับโมเดล capability
 
 <Note>
-แฟล็ก `--json` จะแสดงรายงานที่เครื่องอ่านได้ซึ่งเหมาะสำหรับการเขียนสคริปต์และการตรวจสอบ `inspect --all` จะแสดงตารางทั้ง fleet ที่มีคอลัมน์รูปแบบ ชนิดความสามารถ ประกาศความเข้ากันได้ ความสามารถของ bundle และสรุป hook `info` เป็น alias ของ `inspect`
+แฟล็ก `--json` จะแสดงรายงานที่เครื่องอ่านได้ เหมาะสำหรับการเขียนสคริปต์และการตรวจสอบ `inspect --all` จะแสดงตารางทั้ง fleet พร้อมคอลัมน์ shape, capability kinds, compatibility notices, bundle capabilities และสรุป hook `info` เป็น alias ของ `inspect`
 </Note>
 
 ### Doctor
@@ -379,13 +382,13 @@ command CLI ที่ Plugin เป็นเจ้าของจะถูกต
 openclaw plugins doctor
 ```
 
-`doctor` รายงานข้อผิดพลาดในการโหลด Plugin การวินิจฉัย manifest/discovery และประกาศความเข้ากันได้ เมื่อทุกอย่างเรียบร้อย จะแสดง `No plugin issues detected.`
+`doctor` รายงานข้อผิดพลาดในการโหลด Plugin, การวินิจฉัย manifest/discovery และ compatibility notices เมื่อทุกอย่างเรียบร้อย จะพิมพ์ `No plugin issues detected.`
 
-หาก Plugin ที่กำหนดค่าไว้มีอยู่บนดิสก์แต่ถูกบล็อกโดยการตรวจสอบความปลอดภัยของ path ของ loader การตรวจสอบ config จะเก็บรายการ Plugin ไว้และรายงานเป็น `present but blocked` ให้แก้การวินิจฉัย Plugin ที่ถูกบล็อกก่อนหน้านั้น เช่น ความเป็นเจ้าของ path หรือสิทธิ์แบบ world-writable แทนการลบ config `plugins.entries.<id>` หรือ `plugins.allow`
+หาก Plugin ที่กำหนดค่าไว้มีอยู่บนดิสก์แต่ถูกบล็อกโดยการตรวจสอบ path-safety ของ loader การตรวจสอบ config จะคงรายการ Plugin ไว้และรายงานเป็น `present but blocked` ให้แก้การวินิจฉัย blocked-plugin ก่อนหน้า เช่น ความเป็นเจ้าของ path หรือสิทธิ์แบบ world-writable แทนการลบ config `plugins.entries.<id>` หรือ `plugins.allow`
 
-สำหรับความล้มเหลวของรูปแบบ module เช่น ไม่มี export `register`/`activate` ให้รันซ้ำพร้อม `OPENCLAW_PLUGIN_LOAD_DEBUG=1` เพื่อรวมสรุปรูปแบบ export แบบย่อไว้ในผลลัพธ์การวินิจฉัย
+สำหรับความล้มเหลวด้านรูปแบบโมดูล เช่น export `register`/`activate` หายไป ให้รันซ้ำพร้อม `OPENCLAW_PLUGIN_LOAD_DEBUG=1` เพื่อรวมสรุป export-shape แบบย่อในผลลัพธ์การวินิจฉัย
 
-### Registry
+### รีจิสทรี
 
 ```bash
 openclaw plugins registry
@@ -393,27 +396,27 @@ openclaw plugins registry --refresh
 openclaw plugins registry --json
 ```
 
-registry Plugin ในเครื่องคือโมเดลอ่านแบบ cold ที่ OpenClaw เก็บถาวรไว้สำหรับตัวตนของ Plugin ที่ติดตั้ง การเปิดใช้งาน เมทาดาทาแหล่งที่มา และความเป็นเจ้าของ contribution การเริ่มต้นปกติ การค้นหาเจ้าของ provider การจัดประเภทการตั้งค่า channel และ inventory ของ Plugin สามารถอ่านได้โดยไม่ต้อง import module runtime ของ Plugin
+รีจิสทรี Plugin ภายในเครื่องคือ cold read model ที่ OpenClaw เก็บถาวรสำหรับตัวตนของ Plugin ที่ติดตั้ง การเปิดใช้งาน เมตาดาต้าแหล่งที่มา และความเป็นเจ้าของ contribution การเริ่มต้นตามปกติ การค้นหาเจ้าของ provider การจัดประเภทการตั้งค่า channel และ inventory ของ Plugin สามารถอ่านได้โดยไม่ต้องนำเข้าโมดูล runtime ของ Plugin
 
-ใช้ `plugins registry` เพื่อตรวจสอบว่า registry ที่เก็บถาวรมีอยู่ เป็นปัจจุบัน หรือล้าสมัย ใช้ `--refresh` เพื่อสร้างใหม่จากดัชนี Plugin ที่เก็บถาวร นโยบาย config และเมทาดาทา manifest/package นี่เป็นเส้นทางซ่อมแซม ไม่ใช่เส้นทางเปิดใช้งาน runtime
+ใช้ `plugins registry` เพื่อตรวจสอบว่ารีจิสทรีที่เก็บถาวรมีอยู่ เป็นปัจจุบัน หรือ stale ใช้ `--refresh` เพื่อสร้างใหม่จากดัชนี Plugin ที่เก็บถาวร นโยบาย config และเมตาดาต้า manifest/package นี่คือเส้นทางซ่อมแซม ไม่ใช่เส้นทางเปิดใช้งาน runtime
 
-`openclaw doctor --fix` ยังซ่อมแซมความคลาดเคลื่อนของ npm ที่จัดการอยู่ซึ่งอยู่ใกล้กับ registry ด้วย: หาก package `@openclaw/*` ที่กำพร้าหรือกู้คืนมาใต้ราก npm ของ Plugin ที่จัดการอยู่ไปบดบัง Plugin ที่ bundle มา doctor จะลบ package เก่านั้นและสร้าง registry ใหม่เพื่อให้การเริ่มต้นตรวจสอบกับ manifest ที่ bundle มา
+`openclaw doctor --fix` ยังซ่อมแซม drift ของ managed npm ที่อยู่ใกล้รีจิสทรีด้วย: หากแพ็กเกจ `@openclaw/*` ที่ orphaned หรือ recovered ภายใต้ราก npm ของ managed Plugin ไป shadow Plugin ที่ bundled อยู่ doctor จะลบแพ็กเกจ stale นั้นและสร้างรีจิสทรีใหม่ เพื่อให้การเริ่มต้นตรวจสอบกับ bundled manifest
 
 <Warning>
-`OPENCLAW_DISABLE_PERSISTED_PLUGIN_REGISTRY=1` เป็นสวิตช์ความเข้ากันได้แบบ break-glass ที่เลิกใช้แล้วสำหรับความล้มเหลวในการอ่าน registry ควรใช้ `plugins registry --refresh` หรือ `openclaw doctor --fix`; fallback ผ่าน env มีไว้เฉพาะสำหรับการกู้คืนการเริ่มต้นฉุกเฉินระหว่างที่ migration กำลัง rollout เท่านั้น
+`OPENCLAW_DISABLE_PERSISTED_PLUGIN_REGISTRY=1` เป็นสวิตช์ความเข้ากันได้แบบ break-glass ที่เลิกใช้แล้วสำหรับความล้มเหลวในการอ่านรีจิสทรี ควรใช้ `plugins registry --refresh` หรือ `openclaw doctor --fix`; env fallback มีไว้สำหรับการกู้คืนการเริ่มต้นฉุกเฉินเท่านั้นระหว่างที่ migration กำลังทยอยใช้งาน
 </Warning>
 
-### Marketplace
+### มาร์เก็ตเพลซ
 
 ```bash
 openclaw plugins marketplace list <source>
 openclaw plugins marketplace list <source> --json
 ```
 
-รายการ Marketplace รับ path ของ marketplace ในเครื่อง, path ของ `marketplace.json`, shorthand ของ GitHub เช่น `owner/repo`, URL repo ของ GitHub หรือ URL git `--json` จะแสดงป้ายกำกับแหล่งที่มาที่ resolve แล้ว พร้อม manifest ของ marketplace และรายการ Plugin ที่ parse แล้ว
+รายการมาร์เก็ตเพลซยอมรับ path มาร์เก็ตเพลซภายในเครื่อง, path ของ `marketplace.json`, shorthand ของ GitHub เช่น `owner/repo`, URL repo ของ GitHub หรือ URL git `--json` จะพิมพ์ป้ายกำกับแหล่งที่มาที่ resolve แล้ว พร้อม manifest มาร์เก็ตเพลซและรายการ Plugin ที่ parse แล้ว
 
 ## ที่เกี่ยวข้อง
 
 - [การสร้าง Plugin](/th/plugins/building-plugins)
-- [อ้างอิง CLI](/th/cli)
+- [ข้อมูลอ้างอิง CLI](/th/cli)
 - [Plugin จากชุมชน](/th/plugins/community)

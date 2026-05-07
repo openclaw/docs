@@ -1,53 +1,53 @@
 ---
 read_when:
     - Konfigurowanie nowego komputera
-    - Chcesz mieć „najnowsze + najlepsze” bez psucia swojej osobistej konfiguracji
+    - Chcesz mieć „najnowsze i najlepsze” bez psucia własnej konfiguracji
 summary: Zaawansowana konfiguracja i przepływy pracy programistycznej dla OpenClaw
 title: Konfiguracja
 x-i18n:
-    generated_at: "2026-05-06T09:30:43Z"
+    generated_at: "2026-05-07T13:25:50Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 99b65443deac92ed74d2fb0d8db9a00bf81b37d60ce25c0c38c1f8d9a7c0cfd3
+    source_hash: 9325ebfc2c5868e44fba18b75ca27cd9333a8bc7072e933468e1608dde487a8e
     source_path: start/setup.md
     workflow: 16
 ---
 
 <Note>
-Jeśli konfigurujesz po raz pierwszy, zacznij od [Pierwsze kroki](/pl/start/getting-started).
-Szczegóły onboardingu znajdziesz w [Onboarding (CLI)](/pl/start/wizard).
+Jeśli konfigurujesz po raz pierwszy, zacznij od [Pierwszych kroków](/pl/start/getting-started).
+Szczegóły wdrażania znajdziesz w [Wdrażanie (CLI)](/pl/start/wizard).
 </Note>
 
 ## TL;DR
 
-Wybierz workflow konfiguracji w zależności od tego, jak często chcesz aktualizować i czy chcesz samodzielnie uruchamiać Gateway:
+Wybierz przepływ konfiguracji na podstawie tego, jak często chcesz otrzymywać aktualizacje i czy chcesz samodzielnie uruchamiać Gateway:
 
-- **Dostosowanie żyje poza repozytorium:** trzymaj konfigurację i workspace w `~/.openclaw/openclaw.json` oraz `~/.openclaw/workspace/`, aby aktualizacje repozytorium ich nie dotykały.
-- **Stabilny workflow (zalecany dla większości):** zainstaluj aplikację macOS i pozwól jej uruchamiać dołączony Gateway.
-- **Workflow bleeding edge (dev):** uruchamiaj Gateway samodzielnie przez `pnpm gateway:watch`, a następnie pozwól aplikacji macOS podłączyć się w trybie Local.
+- **Dostosowanie znajduje się poza repozytorium:** trzymaj konfigurację i obszar roboczy w `~/.openclaw/openclaw.json` oraz `~/.openclaw/workspace/`, aby aktualizacje repozytorium ich nie dotykały.
+- **Stabilny przepływ pracy (zalecany dla większości):** zainstaluj aplikację macOS i pozwól jej uruchamiać dołączony Gateway.
+- **Przepływ pracy na najnowszych zmianach (dev):** uruchamiaj Gateway samodzielnie przez `pnpm gateway:watch`, a następnie pozwól aplikacji macOS podłączyć się w trybie lokalnym.
 
-## Wymagania wstępne (ze źródła)
+## Wymagania wstępne (ze źródeł)
 
-- Zalecany Node 24 (Node 22 LTS, obecnie `22.14+`, nadal obsługiwany)
-- `pnpm` jest wymagany dla checkoutów źródłowych. OpenClaw ładuje dołączone pluginy z pakietów workspace pnpm
-  `extensions/*` w trybie dev, więc główne `npm install`
-  nie przygotowuje pełnego drzewa źródeł.
-- Docker (opcjonalnie; tylko do konfiguracji skonteneryzowanej/e2e - zobacz [Docker](/pl/install/docker))
+- Zalecany Node 24 (Node 22 LTS, obecnie `22.16+`, nadal obsługiwany)
+- `pnpm` jest wymagany dla checkoutów źródłowych. OpenClaw ładuje dołączone pluginy z pakietów obszaru roboczego pnpm
+  `extensions/*` w trybie dev, więc główne `npm install` nie przygotowuje
+  pełnego drzewa źródeł.
+- Docker (opcjonalnie; tylko dla konfiguracji kontenerowej/e2e - zobacz [Docker](/pl/install/docker))
 
 ## Strategia dostosowania (aby aktualizacje nie szkodziły)
 
-Jeśli chcesz „w 100% dostosowane do mnie” _i_ łatwe aktualizacje, trzymaj swoją personalizację w:
+Jeśli chcesz „100% dostosowane do mnie” _i_ łatwe aktualizacje, trzymaj własne dostosowania w:
 
-- **Konfiguracja:** `~/.openclaw/openclaw.json` (JSON/JSON5-ish)
-- **Workspace:** `~/.openclaw/workspace` (skills, prompty, pamięci; zrób z niego prywatne repozytorium git)
+- **Konfiguracja:** `~/.openclaw/openclaw.json` (JSON/około JSON5)
+- **Obszar roboczy:** `~/.openclaw/workspace` (Skills, prompty, pamięci; zrób z niego prywatne repozytorium git)
 
-Jednorazowy bootstrap:
+Zainicjuj raz:
 
 ```bash
 openclaw setup
 ```
 
-Z wnętrza tego repozytorium użyj lokalnego wejścia CLI:
+Z wnętrza tego repozytorium użyj lokalnego wpisu CLI:
 
 ```bash
 openclaw setup
@@ -63,40 +63,40 @@ Po `pnpm build` możesz uruchomić spakowane CLI bezpośrednio:
 node openclaw.mjs gateway --port 18789 --verbose
 ```
 
-## Stabilny workflow (najpierw aplikacja macOS)
+## Stabilny przepływ pracy (najpierw aplikacja macOS)
 
 1. Zainstaluj i uruchom **OpenClaw.app** (pasek menu).
-2. Ukończ checklistę onboardingu/uprawnień (prompty TCC).
-3. Upewnij się, że Gateway jest **Local** i działa (aplikacja nim zarządza).
+2. Ukończ listę kontrolną wdrażania/uprawnień (prompty TCC).
+3. Upewnij się, że Gateway jest **lokalny** i działa (aplikacja nim zarządza).
 4. Połącz powierzchnie (przykład: WhatsApp):
 
 ```bash
 openclaw channels login
 ```
 
-5. Kontrola poprawności:
+5. Sprawdzenie poprawności:
 
 ```bash
 openclaw health
 ```
 
-Jeśli onboarding nie jest dostępny w Twojej kompilacji:
+Jeśli wdrażanie nie jest dostępne w Twojej kompilacji:
 
 - Uruchom `openclaw setup`, potem `openclaw channels login`, a następnie ręcznie uruchom Gateway (`openclaw gateway`).
 
-## Workflow bleeding edge (Gateway w terminalu)
+## Przepływ pracy na najnowszych zmianach (Gateway w terminalu)
 
-Cel: pracować nad TypeScript Gateway, mieć hot reload i utrzymywać podłączony UI aplikacji macOS.
+Cel: pracować nad TypeScript Gateway, mieć przeładowywanie na gorąco i utrzymywać podłączony interfejs aplikacji macOS.
 
 ### 0) (Opcjonalnie) Uruchom też aplikację macOS ze źródeł
 
-Jeśli chcesz także aplikację macOS w wersji bleeding edge:
+Jeśli chcesz mieć także aplikację macOS na najnowszych zmianach:
 
 ```bash
 ./scripts/restart-mac.sh
 ```
 
-### 1) Uruchom dev Gateway
+### 1) Uruchom Gateway dev
 
 ```bash
 pnpm install
@@ -105,37 +105,37 @@ pnpm openclaw setup
 pnpm gateway:watch
 ```
 
-`gateway:watch` uruchamia lub restartuje proces watch Gateway w nazwanej sesji tmux
-i automatycznie podłącza się z interaktywnych terminali. Powłoki nieinteraktywne pozostają
+`gateway:watch` uruchamia lub restartuje proces obserwowania Gateway w nazwanej
+sesji tmux i automatycznie podłącza się z terminali interaktywnych. Powłoki nieinteraktywne pozostają
 odłączone i wypisują `tmux attach -t openclaw-gateway-watch-main`; użyj
-`OPENCLAW_GATEWAY_WATCH_ATTACH=0 pnpm gateway:watch`, aby pozostawić interaktywne uruchomienie
-odłączone, albo `pnpm gateway:watch:raw` dla trybu watch na pierwszym planie. Watcher
-przeładowuje się przy odpowiednich zmianach źródeł, konfiguracji i metadanych dołączonych pluginów. Jeśli
+`OPENCLAW_GATEWAY_WATCH_ATTACH=0 pnpm gateway:watch`, aby utrzymać interaktywne uruchomienie
+odłączone, albo `pnpm gateway:watch:raw` dla trybu obserwowania na pierwszym planie. Obserwator
+przeładowuje się przy istotnych zmianach źródeł, konfiguracji i metadanych dołączonych pluginów. Jeśli
 obserwowany Gateway zakończy działanie podczas startu, `gateway:watch` uruchamia
 `openclaw doctor --fix --non-interactive` raz i ponawia próbę; ustaw
-`OPENCLAW_GATEWAY_WATCH_AUTO_DOCTOR=0`, aby wyłączyć ten przebieg naprawczy tylko dla dev.
-`pnpm openclaw setup` to jednorazowy krok inicjalizacji lokalnej konfiguracji/workspace dla świeżego checkoutu.
-`pnpm gateway:watch` nie przebudowuje `dist/control-ui`, więc po zmianach w `ui/` uruchom ponownie `pnpm ui:build` albo używaj `pnpm ui:dev` podczas rozwijania Control UI.
+`OPENCLAW_GATEWAY_WATCH_AUTO_DOCTOR=0`, aby wyłączyć tę naprawę tylko dla dev.
+`pnpm openclaw setup` to jednorazowy krok inicjalizacji lokalnej konfiguracji/obszaru roboczego dla świeżego checkoutu.
+`pnpm gateway:watch` nie przebudowuje `dist/control-ui`, więc uruchom ponownie `pnpm ui:build` po zmianach w `ui/` albo używaj `pnpm ui:dev` podczas rozwijania interfejsu sterowania.
 
 ### 2) Skieruj aplikację macOS na działający Gateway
 
 W **OpenClaw.app**:
 
-- Connection Mode: **Local**
+- Tryb połączenia: **lokalny**
   Aplikacja podłączy się do działającego gateway na skonfigurowanym porcie.
 
-### 3) Zweryfikuj
+### 3) Weryfikacja
 
-- Status Gateway w aplikacji powinien pokazywać **"Using existing gateway …"**
+- Status Gateway w aplikacji powinien brzmieć **„Używanie istniejącego gateway …”**
 - Albo przez CLI:
 
 ```bash
 openclaw health
 ```
 
-### Typowe pułapki
+### Częste pułapki
 
-- **Zły port:** Gateway WS domyślnie używa `ws://127.0.0.1:18789`; trzymaj aplikację i CLI na tym samym porcie.
+- **Zły port:** Gateway WS domyślnie używa `ws://127.0.0.1:18789`; utrzymuj aplikację i CLI na tym samym porcie.
 - **Gdzie znajduje się stan:**
   - Stan kanału/providera: `~/.openclaw/credentials/`
   - Profile uwierzytelniania modeli: `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
@@ -144,41 +144,41 @@ openclaw health
 
 ## Mapa przechowywania poświadczeń
 
-Używaj tego podczas debugowania auth lub decydowania, co backupować:
+Użyj tego podczas debugowania uwierzytelniania lub decydowania, co uwzględnić w kopii zapasowej:
 
 - **WhatsApp**: `~/.openclaw/credentials/whatsapp/<accountId>/creds.json`
-- **Token bota Telegram**: config/env albo `channels.telegram.tokenFile` (tylko zwykły plik; symlinki odrzucane)
-- **Token bota Discord**: config/env albo SecretRef (providery env/file/exec)
-- **Tokeny Slack**: config/env (`channels.slack.*`)
-- **Allowlisty parowania**:
+- **Token bota Telegram**: konfiguracja/env albo `channels.telegram.tokenFile` (tylko zwykły plik; dowiązania symboliczne odrzucane)
+- **Token bota Discord**: konfiguracja/env albo SecretRef (providery env/file/exec)
+- **Tokeny Slack**: konfiguracja/env (`channels.slack.*`)
+- **Listy dozwolone dla parowania**:
   - `~/.openclaw/credentials/<channel>-allowFrom.json` (konto domyślne)
-  - `~/.openclaw/credentials/<channel>-<accountId>-allowFrom.json` (konta niedomyślne)
+  - `~/.openclaw/credentials/<channel>-<accountId>-allowFrom.json` (konta inne niż domyślne)
 - **Profile uwierzytelniania modeli**: `~/.openclaw/agents/<agentId>/agent/auth-profiles.json`
-- **Payload sekretów oparty na pliku (opcjonalnie)**: `~/.openclaw/secrets.json`
+- **Ładunek sekretów oparty na pliku (opcjonalnie)**: `~/.openclaw/secrets.json`
 - **Import starszego OAuth**: `~/.openclaw/credentials/oauth.json`
-  Więcej szczegółów: [Security](/pl/gateway/security#credential-storage-map).
+  Więcej szczegółów: [Bezpieczeństwo](/pl/gateway/security#credential-storage-map).
 
 ## Aktualizowanie (bez niszczenia konfiguracji)
 
-- Traktuj `~/.openclaw/workspace` i `~/.openclaw/` jako „swoje rzeczy”; nie umieszczaj osobistych promptów/konfiguracji w repozytorium `openclaw`.
+- Traktuj `~/.openclaw/workspace` i `~/.openclaw/` jako „swoje rzeczy”; nie wkładaj osobistych promptów/konfiguracji do repozytorium `openclaw`.
 - Aktualizowanie źródeł: `git pull` + `pnpm install` + dalsze używanie `pnpm gateway:watch`.
 
 ## Linux (usługa użytkownika systemd)
 
-Instalacje Linux używają usługi systemd **user**. Domyślnie systemd zatrzymuje usługi
-użytkownika przy wylogowaniu/bezczynności, co zabija Gateway. Onboarding próbuje włączyć
-lingering za Ciebie (może poprosić o sudo). Jeśli nadal jest wyłączony, uruchom:
+Instalacje Linux używają usługi systemd **użytkownika**. Domyślnie systemd zatrzymuje usługi
+użytkownika po wylogowaniu/bezczynności, co zabija Gateway. Wdrażanie próbuje włączyć
+lingering za Ciebie (może poprosić o sudo). Jeśli nadal jest wyłączone, uruchom:
 
 ```bash
 sudo loginctl enable-linger $USER
 ```
 
-Dla serwerów always-on lub wieloużytkownikowych rozważ usługę **system** zamiast
-usługi użytkownika (lingering nie jest potrzebny). Zobacz [Gateway runbook](/pl/gateway), aby znaleźć notatki systemd.
+Dla serwerów zawsze włączonych lub wieloużytkownikowych rozważ usługę **systemową** zamiast
+usługi użytkownika (bez potrzeby lingering). Zobacz [runbook Gateway](/pl/gateway), aby uzyskać notatki systemd.
 
 ## Powiązane dokumenty
 
-- [Gateway runbook](/pl/gateway) (flagi, nadzór, porty)
+- [Runbook Gateway](/pl/gateway) (flagi, nadzór, porty)
 - [Konfiguracja Gateway](/pl/gateway/configuration) (schemat konfiguracji + przykłady)
 - [Discord](/pl/channels/discord) i [Telegram](/pl/channels/telegram) (tagi odpowiedzi + ustawienia replyToMode)
 - [Konfiguracja asystenta OpenClaw](/pl/start/openclaw)

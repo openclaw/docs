@@ -2,34 +2,34 @@
 read_when:
     - Eerste installatie vanaf nul
     - Je wilt de snelste weg naar een werkende chat
-summary: Installeer OpenClaw en start binnen enkele minuten je eerste chat.
+summary: Installeer OpenClaw en voer binnen enkele minuten je eerste chatgesprek.
 title: Aan de slag
 x-i18n:
-    generated_at: "2026-04-29T23:19:11Z"
+    generated_at: "2026-05-07T13:26:28Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fe3f92b1464ebf0a5b631c293fa4a3e4b686fdb35c1152663428025dd3c01259
+    source_hash: 295ce8fd03320027a77a3aef494f785f0fe58e0f57c72ee63f6f9aca68626c20
     source_path: start/getting-started.md
     workflow: 16
 ---
 
-Installeer OpenClaw, voer onboarding uit en chat met je AI-assistent — alles in
-ongeveer 5 minuten. Aan het einde heb je een werkende Gateway, geconfigureerde auth
+Installeer OpenClaw, doorloop de onboarding en chat met je AI-assistent, alles in
+ongeveer 5 minuten. Aan het einde heb je een draaiende Gateway, geconfigureerde auth
 en een werkende chatsessie.
 
 ## Wat je nodig hebt
 
-- **Node.js** — Node 24 aanbevolen (Node 22.14+ wordt ook ondersteund)
-- **Een API-sleutel** van een modelprovider (Anthropic, OpenAI, Google, enz.) — onboarding vraagt je hierom
+- **Node.js** — Node 24 aanbevolen (Node 22.16+ ook ondersteund)
+- **Een API-sleutel** van een modelprovider (Anthropic, OpenAI, Google, enz.) — onboarding vraagt hierom
 
 <Tip>
 Controleer je Node-versie met `node --version`.
-**Windows-gebruikers:** zowel native Windows als WSL2 worden ondersteund. WSL2 is stabieler
-en aanbevolen voor de volledige ervaring. Zie [Windows](/nl/platforms/windows).
-Moet je Node installeren? Zie [Node-installatie](/nl/install/node).
+**Windows-gebruikers:** zowel native Windows als WSL2 worden ondersteund. WSL2 is
+stabieler en aanbevolen voor de volledige ervaring. Zie [Windows](/nl/platforms/windows).
+Moet je Node installeren? Zie [Node instellen](/nl/install/node).
 </Tip>
 
-## Snelle configuratie
+## Snelle setup
 
 <Steps>
   <Step title="OpenClaw installeren">
@@ -40,7 +40,7 @@ Moet je Node installeren? Zie [Node-installatie](/nl/install/node).
         ```
         <img
   src="/assets/install-script.svg"
-  alt="Install Script Process"
+  alt="Proces van installatiescript"
   className="rounded-lg"
 />
       </Tab>
@@ -67,7 +67,7 @@ Moet je Node installeren? Zie [Node-installatie](/nl/install/node).
     Zie [Onboarding (CLI)](/nl/start/wizard) voor de volledige referentie.
 
   </Step>
-  <Step title="Controleren of de Gateway actief is">
+  <Step title="Controleren of de Gateway draait">
     ```bash
     openclaw gateway status
     ```
@@ -83,7 +83,7 @@ Moet je Node installeren? Zie [Node-installatie](/nl/install/node).
     Dit opent de Control UI in je browser. Als deze laadt, werkt alles.
 
   </Step>
-  <Step title="Je eerste bericht sturen">
+  <Step title="Je eerste bericht verzenden">
     Typ een bericht in de Control UI-chat en je zou een AI-antwoord moeten krijgen.
 
     Wil je liever vanaf je telefoon chatten? Het snelste kanaal om in te stellen is
@@ -93,17 +93,17 @@ Moet je Node installeren? Zie [Node-installatie](/nl/install/node).
   </Step>
 </Steps>
 
-<Accordion title="Geavanceerd: een aangepaste Control UI-build mounten">
-  Als je een gelokaliseerde of aangepaste dashboardbuild onderhoudt, wijs
-  `gateway.controlUi.root` naar een map die je gebouwde statische
+<Accordion title="Geavanceerd: een aangepaste Control UI-build koppelen">
+  Als je een gelokaliseerde of aangepaste dashboardbuild onderhoudt, laat
+  `gateway.controlUi.root` verwijzen naar een map die je gebouwde statische
   assets en `index.html` bevat.
 
 ```bash
 mkdir -p "$HOME/.openclaw/control-ui-custom"
-# Copy your built static files into that directory.
+# Kopieer je gebouwde statische bestanden naar die map.
 ```
 
-Stel daarna in:
+Stel vervolgens in:
 
 ```json
 {
@@ -125,7 +125,7 @@ openclaw dashboard
 
 </Accordion>
 
-## Wat nu te doen
+## Wat je hierna kunt doen
 
 <Columns>
   <Card title="Een kanaal verbinden" href="/nl/channels" icon="message-square">
@@ -138,16 +138,16 @@ openclaw dashboard
     Modellen, tools, sandbox en geavanceerde instellingen.
   </Card>
   <Card title="Tools bekijken" href="/nl/tools" icon="wrench">
-    Browser, exec, zoeken op het web, skills en plugins.
+    Browser, exec, webzoekfunctie, Skills en plugins.
   </Card>
 </Columns>
 
 <Accordion title="Geavanceerd: omgevingsvariabelen">
-  Als je OpenClaw uitvoert als serviceaccount of aangepaste paden wilt gebruiken:
+  Als je OpenClaw als serviceaccount uitvoert of aangepaste paden wilt:
 
-- `OPENCLAW_HOME` — thuismap voor interne padresolutie
-- `OPENCLAW_STATE_DIR` — overschrijf de statusmap
-- `OPENCLAW_CONFIG_PATH` — overschrijf het pad naar het configuratiebestand
+- `OPENCLAW_HOME` — homedirectory voor interne padresolutie
+- `OPENCLAW_STATE_DIR` — overschrijf de statusdirectory
+- `OPENCLAW_CONFIG_PATH` — overschrijf het pad naar het configbestand
 
 Volledige referentie: [Omgevingsvariabelen](/nl/help/environment).
 </Accordion>
@@ -156,4 +156,4 @@ Volledige referentie: [Omgevingsvariabelen](/nl/help/environment).
 
 - [Installatieoverzicht](/nl/install)
 - [Kanalenoverzicht](/nl/channels)
-- [Configuratie](/nl/start/setup)
+- [Setup](/nl/start/setup)

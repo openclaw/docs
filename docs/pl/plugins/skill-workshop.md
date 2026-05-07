@@ -1,28 +1,23 @@
 ---
 read_when:
-    - Chcesz, aby agenci przekształcali poprawki lub procedury wielokrotnego użytku w Skills przestrzeni roboczej
-    - Konfigurujesz pamięć proceduralnych umiejętności
-    - Debugujesz zachowanie narzędzia skill_workshop
+    - Chcesz, aby agenci przekształcali poprawki lub procedury wielokrotnego użytku w Skills obszaru roboczego
+    - Konfigurujesz pamięć umiejętności proceduralnych
+    - Diagnozujesz zachowanie narzędzia skill_workshop
     - Decydujesz, czy włączyć automatyczne tworzenie Skills
-summary: Eksperymentalne przechwytywanie procedur wielokrotnego użytku jako Skills obszaru roboczego z przeglądem, zatwierdzaniem, kwarantanną i odświeżaniem Skills na gorąco
+summary: Eksperymentalne zapisywanie procedur wielokrotnego użytku jako Skills obszaru roboczego, z przeglądem, zatwierdzaniem, kwarantanną i odświeżaniem Skills na gorąco
 title: Plugin warsztatu Skills
 x-i18n:
-    generated_at: "2026-05-06T09:25:50Z"
+    generated_at: "2026-05-07T13:24:12Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 03c4259777823d256bd00374858b9f47d310e727db360db37f9ba7ad3583d9dc
+    source_hash: f7dc89644a1ac1d7400b8a03d7a132c1e836b3aca96e66018710945637d5c393
     source_path: plugins/skill-workshop.md
     workflow: 16
 ---
 
-Skill Workshop jest **eksperymentalny**. Domyślnie jest wyłączony, jego
-heurystyki przechwytywania i prompty recenzenta mogą zmieniać się między
-wydaniami, a automatycznych zapisów należy używać tylko w zaufanych przestrzeniach
-roboczych po wcześniejszym przejrzeniu danych wyjściowych trybu oczekującego.
+Skill Workshop jest **eksperymentalny**. Jest domyślnie wyłączony, jego heurystyki przechwytywania i prompty recenzenta mogą zmieniać się między wydaniami, a automatycznych zapisów należy używać tylko w zaufanych obszarach roboczych po wcześniejszym sprawdzeniu wyniku w trybie oczekiwania.
 
-Skill Workshop to pamięć proceduralna dla Skills w przestrzeni roboczej. Pozwala agentowi zamieniać
-wielokrotnego użytku przepływy pracy, poprawki użytkownika, wypracowane z trudem rozwiązania i powtarzające się pułapki
-na pliki `SKILL.md` w:
+Skill Workshop to pamięć proceduralna dla umiejętności obszaru roboczego. Pozwala agentowi przekształcać wielokrotnego użytku przepływy pracy, poprawki użytkownika, trudne do wypracowania naprawy i powtarzające się pułapki w pliki `SKILL.md` pod ścieżką:
 
 ```text
 <workspace>/skills/<skill-name>/SKILL.md
@@ -30,17 +25,16 @@ na pliki `SKILL.md` w:
 
 Różni się to od pamięci długoterminowej:
 
-- **Pamięć** przechowuje fakty, preferencje, encje i wcześniejszy kontekst.
-- **Skills** przechowują procedury wielokrotnego użytku, których agent powinien przestrzegać w przyszłych zadaniach.
-- **Skill Workshop** jest pomostem od użytecznej tury do trwałej umiejętności w przestrzeni roboczej
-  z kontrolami bezpieczeństwa i opcjonalną akceptacją.
+- **Pamięć** przechowuje fakty, preferencje, jednostki i wcześniejszy kontekst.
+- **Skills** przechowują wielokrotnego użytku procedury, których agent powinien przestrzegać przy przyszłych zadaniach.
+- **Skill Workshop** jest pomostem między użytecznym przebiegiem a trwałą umiejętnością obszaru roboczego, z kontrolami bezpieczeństwa i opcjonalnym zatwierdzaniem.
 
-Skill Workshop jest przydatny, gdy agent poznaje procedurę taką jak:
+Skill Workshop jest przydatny, gdy agent uczy się procedury, takiej jak:
 
-- jak sprawdzać poprawność animowanych zasobów GIF pochodzących ze źródeł zewnętrznych
+- jak walidować pochodzące z zewnętrznych źródeł animowane zasoby GIF
 - jak zastępować zasoby zrzutów ekranu i weryfikować wymiary
 - jak uruchamiać scenariusz QA specyficzny dla repozytorium
-- jak debugować powtarzającą się awarię providera
+- jak debugować powtarzającą się awarię dostawcy
 - jak naprawiać nieaktualną lokalną notatkę przepływu pracy
 
 Nie jest przeznaczony do:
@@ -48,25 +42,21 @@ Nie jest przeznaczony do:
 - faktów takich jak „użytkownik lubi niebieski”
 - szerokiej pamięci autobiograficznej
 - surowej archiwizacji transkrypcji
-- sekretów, danych uwierzytelniających lub ukrytego tekstu promptu
-- jednorazowych instrukcji, które się nie powtórzą
+- sekretów, danych uwierzytelniających ani ukrytego tekstu promptu
+- jednorazowych instrukcji, które nie będą się powtarzać
 
 ## Stan domyślny
 
-Dołączony plugin jest **eksperymentalny** i **domyślnie wyłączony**, chyba że jest
-jawnie włączony w `plugins.entries.skill-workshop`.
+Dołączony Plugin jest **eksperymentalny** i **domyślnie wyłączony**, chyba że zostanie jawnie włączony w `plugins.entries.skill-workshop`.
 
-Manifest pluginu nie ustawia `enabledByDefault: true`. Domyślne `enabled: true`
-w schemacie konfiguracji pluginu obowiązuje dopiero po tym, jak wpis pluginu
-został już wybrany i załadowany.
+Manifest Pluginu nie ustawia `enabledByDefault: true`. Wartość domyślna `enabled: true` wewnątrz schematu konfiguracji Pluginu ma zastosowanie dopiero po tym, jak wpis Pluginu został już wybrany i załadowany.
 
 Eksperymentalny oznacza:
 
-- plugin jest obsługiwany wystarczająco do testów opt-in i dogfoodingu
+- Plugin jest obsługiwany w stopniu wystarczającym do testowania opt-in i dogfoodingu
 - przechowywanie propozycji, progi recenzenta i heurystyki przechwytywania mogą ewoluować
-- oczekująca akceptacja jest zalecanym trybem początkowym
-- automatyczne stosowanie jest przeznaczone dla zaufanych konfiguracji osobistych/przestrzeni roboczej, a nie dla współdzielonych lub wrogich
-  środowisk intensywnie wykorzystujących dane wejściowe
+- zalecanym trybem początkowym jest oczekujące zatwierdzenie
+- automatyczne stosowanie jest przeznaczone do zaufanych konfiguracji osobistych/obszarów roboczych, a nie do współdzielonych lub wrogich środowisk z dużą ilością danych wejściowych
 
 ## Włączanie
 
@@ -89,14 +79,14 @@ Minimalna bezpieczna konfiguracja:
 }
 ```
 
-Z tą konfiguracją:
+Przy tej konfiguracji:
 
 - narzędzie `skill_workshop` jest dostępne
 - jawne poprawki wielokrotnego użytku są kolejkowane jako oczekujące propozycje
-- przejścia recenzenta oparte na progach mogą proponować aktualizacje Skills
-- żaden plik umiejętności nie jest zapisywany, dopóki oczekująca propozycja nie zostanie zastosowana
+- przebiegi recenzenta oparte na progach mogą proponować aktualizacje umiejętności
+- żaden plik umiejętności nie zostanie zapisany, dopóki oczekująca propozycja nie zostanie zastosowana
 
-Automatycznych zapisów używaj tylko w zaufanych przestrzeniach roboczych:
+Automatycznych zapisów używaj tylko w zaufanych obszarach roboczych:
 
 ```json5
 {
@@ -115,22 +105,21 @@ Automatycznych zapisów używaj tylko w zaufanych przestrzeniach roboczych:
 }
 ```
 
-`approvalPolicy: "auto"` nadal używa tej samej ścieżki skanera i kwarantanny. Nie
-stosuje propozycji z krytycznymi ustaleniami.
+`approvalPolicy: "auto"` nadal używa tej samej ścieżki skanera i kwarantanny. Nie stosuje propozycji z krytycznymi ustaleniami.
 
 ## Konfiguracja
 
-| Klucz                | Wartość domyślna | Zakres / wartości                           | Znaczenie                                                            |
+| Klucz                | Domyślnie   | Zakres / wartości                           | Znaczenie                                                            |
 | -------------------- | ----------- | ------------------------------------------- | -------------------------------------------------------------------- |
-| `enabled`            | `true`      | boolean                                     | Włącza plugin po załadowaniu wpisu pluginu.                          |
-| `autoCapture`        | `true`      | boolean                                     | Włącza przechwytywanie/recenzję po turze przy udanych turach agenta. |
+| `enabled`            | `true`      | boolean                                     | Włącza Plugin po załadowaniu wpisu Pluginu.                          |
+| `autoCapture`        | `true`      | boolean                                     | Włącza przechwytywanie/recenzję po przebiegu dla pomyślnych przebiegów agenta. |
 | `approvalPolicy`     | `"pending"` | `"pending"`, `"auto"`                       | Kolejkuje propozycje lub automatycznie zapisuje bezpieczne propozycje. |
-| `reviewMode`         | `"hybrid"`  | `"off"`, `"heuristic"`, `"llm"`, `"hybrid"` | Wybiera przechwytywanie jawnych poprawek, recenzenta LLM, oba lub żadne. |
-| `reviewInterval`     | `15`        | `1..200`                                    | Uruchamia recenzenta po tylu udanych turach.                         |
+| `reviewMode`         | `"hybrid"`  | `"off"`, `"heuristic"`, `"llm"`, `"hybrid"` | Wybiera przechwytywanie jawnych poprawek, recenzenta LLM, oba mechanizmy albo żaden. |
+| `reviewInterval`     | `15`        | `1..200`                                    | Uruchamia recenzenta po tylu pomyślnych przebiegach.                 |
 | `reviewMinToolCalls` | `8`         | `1..500`                                    | Uruchamia recenzenta po tylu zaobserwowanych wywołaniach narzędzi.   |
-| `reviewTimeoutMs`    | `45000`     | `5000..180000`                              | Limit czasu dla osadzonego uruchomienia recenzenta.                  |
-| `maxPending`         | `50`        | `1..200`                                    | Maksymalna liczba oczekujących/poddanych kwarantannie propozycji przechowywanych na przestrzeń roboczą. |
-| `maxSkillBytes`      | `40000`     | `1024..200000`                              | Maksymalny rozmiar wygenerowanego pliku umiejętności/wsparcia.       |
+| `reviewTimeoutMs`    | `45000`     | `5000..180000`                              | Limit czasu dla osadzonego przebiegu recenzenta.                     |
+| `maxPending`         | `50`        | `1..200`                                    | Maksymalna liczba oczekujących/objętych kwarantanną propozycji przechowywanych na obszar roboczy. |
+| `maxSkillBytes`      | `40000`     | `1024..200000`                              | Maksymalny rozmiar wygenerowanego pliku umiejętności/pomocniczego.   |
 
 Zalecane profile:
 
@@ -176,15 +165,13 @@ Skill Workshop ma trzy ścieżki przechwytywania.
 
 ### Sugestie narzędzia
 
-Model może wywołać `skill_workshop` bezpośrednio, gdy widzi procedurę wielokrotnego użytku
-lub gdy użytkownik prosi o zapisanie/zaktualizowanie umiejętności.
+Model może bezpośrednio wywołać `skill_workshop`, gdy zauważy procedurę wielokrotnego użytku albo gdy użytkownik poprosi go o zapisanie/zaktualizowanie umiejętności.
 
 To najbardziej jawna ścieżka i działa nawet z `autoCapture: false`.
 
 ### Przechwytywanie heurystyczne
 
-Gdy `autoCapture` jest włączone, a `reviewMode` ma wartość `heuristic` lub `hybrid`,
-plugin skanuje udane tury pod kątem jawnych fraz poprawek użytkownika:
+Gdy `autoCapture` jest włączone, a `reviewMode` ma wartość `heuristic` lub `hybrid`, Plugin skanuje pomyślne przebiegi pod kątem jawnych fraz poprawek użytkownika:
 
 - `next time`
 - `from now on`
@@ -194,29 +181,26 @@ plugin skanuje udane tury pod kątem jawnych fraz poprawek użytkownika:
 - `prefer ... when/for/instead/use`
 - `when asked`
 
-Heurystyka tworzy propozycję z najnowszej pasującej instrukcji użytkownika. Używa
-wskazówek tematycznych, aby wybrać nazwy Skills dla typowych przepływów pracy:
+Heurystyka tworzy propozycję z najnowszej pasującej instrukcji użytkownika. Używa wskazówek tematycznych do wybierania nazw umiejętności dla typowych przepływów pracy:
 
-- zadania z animowanymi GIF -> `animated-gif-workflow`
-- zadania związane ze zrzutami ekranu lub zasobami -> `screenshot-asset-workflow`
+- zadania dotyczące animowanych GIF-ów -> `animated-gif-workflow`
+- zadania dotyczące zrzutów ekranu lub zasobów -> `screenshot-asset-workflow`
 - zadania QA lub scenariuszy -> `qa-scenario-workflow`
-- zadania GitHub PR -> `github-pr-workflow`
-- rozwiązanie awaryjne -> `learned-workflows`
+- zadania dotyczące PR-ów GitHub -> `github-pr-workflow`
+- rozwiązanie zapasowe -> `learned-workflows`
 
-Przechwytywanie heurystyczne jest celowo wąskie. Jest przeznaczone do jasnych poprawek i
-powtarzalnych notatek procesowych, a nie do ogólnego podsumowywania transkrypcji.
+Przechwytywanie heurystyczne jest celowo wąskie. Służy do jasnych poprawek i powtarzalnych notatek procesowych, a nie do ogólnego podsumowywania transkrypcji.
 
 ### Recenzent LLM
 
-Gdy `autoCapture` jest włączone, a `reviewMode` ma wartość `llm` lub `hybrid`, plugin
-uruchamia kompaktowego osadzonego recenzenta po osiągnięciu progów.
+Gdy `autoCapture` jest włączone, a `reviewMode` ma wartość `llm` lub `hybrid`, Plugin uruchamia zwarty, osadzony przegląd po osiągnięciu progów.
 
 Recenzent otrzymuje:
 
-- ostatni tekst transkrypcji, ograniczony do ostatnich 12 000 znaków
-- do 12 istniejących Skills w przestrzeni roboczej
+- tekst ostatniej transkrypcji, ograniczony do ostatnich 12 000 znaków
+- do 12 istniejących umiejętności obszaru roboczego
 - do 2000 znaków z każdej istniejącej umiejętności
-- instrukcje wyłącznie w JSON
+- instrukcje wyłącznie w formacie JSON
 
 Recenzent nie ma narzędzi:
 
@@ -224,7 +208,7 @@ Recenzent nie ma narzędzi:
 - `toolsAllow: []`
 - `disableMessageTool: true`
 
-Recenzent zwraca albo `{ "action": "none" }`, albo jedną propozycję. Pole `action` to `create`, `append` lub `replace` - preferuj `append`/`replace`, gdy istnieje już odpowiednia umiejętność; używaj `create` tylko wtedy, gdy żadna istniejąca umiejętność nie pasuje.
+Recenzent zwraca albo `{ "action": "none" }`, albo jedną propozycję. Pole `action` ma wartość `create`, `append` albo `replace` - preferuj `append`/`replace`, gdy odpowiednia umiejętność już istnieje; używaj `create` tylko wtedy, gdy żadna istniejąca umiejętność nie pasuje.
 
 Przykład `create`:
 
@@ -263,19 +247,17 @@ Każda wygenerowana aktualizacja staje się propozycją z:
 Statusy propozycji:
 
 - `pending` - oczekuje na zatwierdzenie
-- `applied` - zapisane w `<workspace>/skills`
-- `rejected` - odrzucone przez operatora/model
-- `quarantined` - zablokowane przez krytyczne wyniki skanera
+- `applied` - zapisano do `<workspace>/skills`
+- `rejected` - odrzucono przez operatora/model
+- `quarantined` - zablokowano przez krytyczne ustalenia skanera
 
-Stan jest przechowywany osobno dla każdego obszaru roboczego w katalogu stanu Gateway:
+Stan jest przechowywany dla każdego obszaru roboczego w katalogu stanu Gateway:
 
 ```text
 <stateDir>/skill-workshop/<workspace-hash>.json
 ```
 
-Oczekujące i poddane kwarantannie propozycje są deduplikowane według nazwy skill i
-ładunku zmiany. Magazyn przechowuje najnowsze oczekujące/poddane kwarantannie propozycje do limitu
-`maxPending`.
+Oczekujące i poddane kwarantannie propozycje są deduplikowane według nazwy umiejętności i ładunku zmiany. Magazyn zachowuje najnowsze oczekujące/poddane kwarantannie propozycje do limitu `maxPending`.
 
 ## Dokumentacja narzędzia
 
@@ -287,7 +269,7 @@ skill_workshop
 
 ### `status`
 
-Zlicz propozycje według stanu dla aktywnego obszaru roboczego.
+Zlicza propozycje według stanu dla aktywnego obszaru roboczego.
 
 ```json
 { "action": "status" }
@@ -307,7 +289,7 @@ Kształt wyniku:
 
 ### `list_pending`
 
-Wyświetl oczekujące propozycje.
+Wyświetla oczekujące propozycje.
 
 ```json
 { "action": "list_pending" }
@@ -328,18 +310,17 @@ Prawidłowe wartości `status`:
 
 ### `list_quarantine`
 
-Wyświetl propozycje poddane kwarantannie.
+Wyświetla propozycje poddane kwarantannie.
 
 ```json
 { "action": "list_quarantine" }
 ```
 
-Użyj tego, gdy automatyczne przechwytywanie wydaje się nic nie robić, a logi wspominają o
-`skill-workshop: quarantined <skill>`.
+Użyj tego, gdy automatyczne przechwytywanie wydaje się nic nie robić, a logi zawierają wzmiankę o `skill-workshop: quarantined <skill>`.
 
 ### `inspect`
 
-Pobierz propozycję według identyfikatora.
+Pobiera propozycję według identyfikatora.
 
 ```json
 {
@@ -350,7 +331,7 @@ Pobierz propozycję według identyfikatora.
 
 ### `suggest`
 
-Utwórz propozycję. Z `approvalPolicy: "pending"` (domyślnie) powoduje to dodanie do kolejki zamiast zapisu.
+Tworzy propozycję. Przy `approvalPolicy: "pending"` (domyślnie) umieszcza ją w kolejce zamiast zapisywać.
 
 ```json
 {
@@ -364,7 +345,7 @@ Utwórz propozycję. Z `approvalPolicy: "pending"` (domyślnie) powoduje to doda
 ```
 
 <AccordionGroup>
-  <Accordion title="Wymuś bezpieczny zapis (apply: true)">
+  <Accordion title="Request immediate write in auto mode (apply: true)">
 
 ```json
 {
@@ -376,9 +357,11 @@ Utwórz propozycję. Z `approvalPolicy: "pending"` (domyślnie) powoduje to doda
 }
 ```
 
+Przy `approvalPolicy: "pending"` opcja `apply: true` nadal umieszcza propozycję w kolejce. Sprawdź ją, a następnie po zatwierdzeniu użyj akcji `apply`.
+
   </Accordion>
 
-  <Accordion title="Wymuś oczekiwanie w zasadach automatycznych (apply: false)">
+  <Accordion title="Force pending under auto policy (apply: false)">
 
 ```json
 {
@@ -392,7 +375,7 @@ Utwórz propozycję. Z `approvalPolicy: "pending"` (domyślnie) powoduje to doda
 
   </Accordion>
 
-  <Accordion title="Dołącz do nazwanej sekcji">
+  <Accordion title="Append to a named section">
 
 ```json
 {
@@ -406,7 +389,7 @@ Utwórz propozycję. Z `approvalPolicy: "pending"` (domyślnie) powoduje to doda
 
   </Accordion>
 
-  <Accordion title="Zastąp dokładny tekst">
+  <Accordion title="Replace exact text">
 
 ```json
 {
@@ -422,7 +405,9 @@ Utwórz propozycję. Z `approvalPolicy: "pending"` (domyślnie) powoduje to doda
 
 ### `apply`
 
-Zastosuj oczekującą propozycję.
+Stosuje oczekującą propozycję.
+
+Przy `approvalPolicy: "pending"` ta akcja prosi operatora o zatwierdzenie przed zapisaniem umiejętności obszaru roboczego.
 
 ```json
 {
@@ -431,7 +416,7 @@ Zastosuj oczekującą propozycję.
 }
 ```
 
-`apply` odmawia propozycjom poddanym kwarantannie:
+`apply` odrzuca propozycje poddane kwarantannie:
 
 ```text
 quarantined proposal cannot be applied
@@ -439,7 +424,7 @@ quarantined proposal cannot be applied
 
 ### `reject`
 
-Oznacz propozycję jako odrzuconą.
+Oznacza propozycję jako odrzuconą.
 
 ```json
 {
@@ -450,7 +435,7 @@ Oznacz propozycję jako odrzuconą.
 
 ### `write_support_file`
 
-Zapisz plik pomocniczy wewnątrz istniejącego lub proponowanego katalogu skill.
+Zapisuje plik pomocniczy w istniejącym lub proponowanym katalogu umiejętności.
 
 Dozwolone katalogi pomocnicze najwyższego poziomu:
 
@@ -470,10 +455,10 @@ Przykład:
 }
 ```
 
-Pliki pomocnicze są ograniczone do workspace, sprawdzane pod kątem ścieżki, limitowane bajtowo przez
+Pliki pomocnicze mają zakres obszaru roboczego, są sprawdzane pod kątem ścieżki, ograniczone bajtowo przez
 `maxSkillBytes`, skanowane i zapisywane atomowo.
 
-## Zapisy Skills
+## Zapisy Skill
 
 Skill Workshop zapisuje tylko w:
 
@@ -481,7 +466,7 @@ Skill Workshop zapisuje tylko w:
 <workspace>/skills/<normalized-skill-name>/
 ```
 
-Nazwy Skills są normalizowane:
+Nazwy Skill są normalizowane:
 
 - zamieniane na małe litery
 - ciągi znaków innych niż `[a-z0-9_-]` stają się `-`
@@ -497,35 +482,35 @@ Dla `create`:
 Dla `append`:
 
 - jeśli Skill istnieje, Skill Workshop dopisuje do żądanej sekcji
-- jeśli nie istnieje, Skill Workshop tworzy minimalny Skill, a następnie dopisuje treść
+- jeśli nie istnieje, Skill Workshop tworzy minimalny Skill, a następnie dopisuje
 
 Dla `replace`:
 
 - Skill musi już istnieć
-- `oldText` musi być obecne dokładnie
+- `oldText` musi być obecny dokładnie
 - zastępowane jest tylko pierwsze dokładne dopasowanie
 
 Wszystkie zapisy są atomowe i natychmiast odświeżają migawkę Skills w pamięci, więc
-nowy lub zaktualizowany Skill może stać się widoczny bez restartu Gateway.
+nowy lub zaktualizowany Skill może stać się widoczny bez ponownego uruchamiania Gateway.
 
 ## Model bezpieczeństwa
 
 Skill Workshop ma skaner bezpieczeństwa dla wygenerowanej zawartości `SKILL.md` i plików
 pomocniczych.
 
-Wyniki krytyczne poddają propozycje kwarantannie:
+Krytyczne ustalenia poddają propozycje kwarantannie:
 
-| Identyfikator reguły                  | Blokuje treść, która...                                                |
-| -------------------------------------- | --------------------------------------------------------------------- |
-| `prompt-injection-ignore-instructions` | nakazuje agentowi ignorowanie wcześniejszych/wyższych instrukcji      |
-| `prompt-injection-system`              | odwołuje się do promptów systemowych, komunikatów deweloperskich lub ukrytych instrukcji |
-| `prompt-injection-tool`                | zachęca do obchodzenia uprawnień/akceptacji narzędzi                  |
+| Identyfikator reguły                   | Blokuje treść, która...                                             |
+| -------------------------------------- | ------------------------------------------------------------------- |
+| `prompt-injection-ignore-instructions` | mówi agentowi, aby ignorował wcześniejsze/wyższe instrukcje         |
+| `prompt-injection-system`              | odwołuje się do promptów systemowych, komunikatów dewelopera lub ukrytych instrukcji |
+| `prompt-injection-tool`                | zachęca do obchodzenia uprawnień/zatwierdzeń narzędzi               |
 | `shell-pipe-to-shell`                  | zawiera `curl`/`wget` przekierowane potokiem do `sh`, `bash` lub `zsh` |
-| `secret-exfiltration`                  | wygląda na wysyłanie danych env/process env przez sieć                |
+| `secret-exfiltration`                  | wydaje się wysyłać dane env/procesu env przez sieć                  |
 
-Wyniki ostrzegawcze są zachowywane, ale same nie blokują:
+Ostrzeżenia są zachowywane, ale same nie blokują:
 
-| Identyfikator reguły | Ostrzega przy...                 |
+| Identyfikator reguły | Ostrzega o...                    |
 | -------------------- | -------------------------------- |
 | `destructive-delete` | szerokich poleceniach w stylu `rm -rf` |
 | `unsafe-permissions` | użyciu uprawnień w stylu `chmod 777` |
@@ -537,12 +522,12 @@ Propozycje poddane kwarantannie:
 - pojawiają się w `list_quarantine`
 - nie mogą zostać zastosowane przez `apply`
 
-Aby odzyskać propozycję poddaną kwarantannie, utwórz nową bezpieczną propozycję z
-usuniętą niebezpieczną treścią. Nie edytuj ręcznie JSON magazynu.
+Aby odzyskać propozycję z kwarantanny, utwórz nową bezpieczną propozycję z usuniętą
+niebezpieczną treścią. Nie edytuj ręcznie pliku JSON magazynu.
 
 ## Wskazówki promptu
 
-Po włączeniu Skill Workshop wstrzykuje krótką sekcję promptu, która mówi agentowi,
+Gdy jest włączony, Skill Workshop wstrzykuje krótką sekcję promptu, która mówi agentowi,
 aby używał `skill_workshop` do trwałej pamięci proceduralnej.
 
 Wskazówki podkreślają:
@@ -551,46 +536,46 @@ Wskazówki podkreślają:
 - poprawki użytkownika
 - nieoczywiste skuteczne procedury
 - powtarzające się pułapki
-- naprawę nieaktualnych/cienkich/błędnych Skills przez append/replace
-- zapisywanie procedury wielokrotnego użytku po długich pętlach narzędzi lub trudnych poprawkach
-- krótki, imperatywny tekst Skill
+- naprawę nieaktualnych/cienkich/błędnych Skill przez append/replace
+- zapisywanie wielokrotnego użytku procedury po długich pętlach narzędzi lub trudnych poprawkach
+- krótki imperatywny tekst Skill
 - brak zrzutów transkrypcji
 
 Tekst trybu zapisu zmienia się wraz z `approvalPolicy`:
 
-- tryb pending: kolejkuj sugestie; stosuj tylko po jawnej akceptacji
-- tryb auto: stosuj bezpieczne aktualizacje workspace Skills, gdy są wyraźnie wielokrotnego użytku
+- tryb oczekujący: kolejkuj sugestie; użyj `apply` po wyraźnym zatwierdzeniu
+- tryb automatyczny: stosuj bezpieczne aktualizacje workspace-skill, chyba że `apply: false` zamiast tego kolejkuje
 
 ## Koszty i zachowanie w czasie działania
 
 Przechwytywanie heurystyczne nie wywołuje modelu.
 
 Przegląd LLM używa osadzonego uruchomienia na aktywnym/domyślnym modelu agenta. Jest
-oparty na progach, więc domyślnie nie działa w każdej turze.
+oparty na progach, więc domyślnie nie uruchamia się w każdej turze.
 
 Recenzent:
 
 - używa tego samego skonfigurowanego kontekstu dostawcy/modelu, gdy jest dostępny
-- wraca do domyślnych ustawień agenta czasu działania
+- wraca do domyślnych ustawień agenta w czasie działania
 - ma `reviewTimeoutMs`
 - używa lekkiego kontekstu startowego
 - nie ma narzędzi
-- nie zapisuje niczego bezpośrednio
-- może wyemitować tylko propozycję, która przechodzi normalną ścieżkę skanera oraz
-  akceptacji/kwarantanny
+- niczego nie zapisuje bezpośrednio
+- może tylko wyemitować propozycję, która przechodzi przez normalną ścieżkę skanera oraz
+  zatwierdzania/kwarantanny
 
-Jeśli recenzent zawiedzie, przekroczy limit czasu albo zwróci nieprawidłowy JSON, plugin zapisuje
-komunikat ostrzegawczy/debugowania i pomija ten przebieg przeglądu.
+Jeśli recenzent zawiedzie, przekroczy limit czasu lub zwróci nieprawidłowy JSON, Plugin rejestruje
+komunikat ostrzeżenia/debugowania i pomija ten przebieg przeglądu.
 
-## Wzorce użycia
+## Wzorce działania
 
-Używaj Skill Workshop, gdy użytkownik mówi:
+Użyj Skill Workshop, gdy użytkownik mówi:
 
 - „następnym razem zrób X”
 - „od teraz preferuj Y”
 - „upewnij się, że weryfikujesz Z”
-- „zapisz to jako workflow”
-- „to zajęło trochę czasu; zapamiętaj proces”
+- „zapisz to jako przepływ pracy”
+- „to zajęło chwilę; zapamiętaj proces”
 - „zaktualizuj lokalny Skill dla tego”
 
 Dobry tekst Skill:
@@ -614,32 +599,32 @@ Cloudflare. The final answer said to check attribution.
 
 Powody, dla których słaba wersja nie powinna zostać zapisana:
 
-- ma kształt transkrypcji
+- ma formę transkrypcji
 - nie jest imperatywna
-- zawiera hałaśliwe, jednorazowe szczegóły
-- nie mówi następnemu agentowi, co zrobić
+- zawiera hałaśliwe jednorazowe szczegóły
+- nie mówi następnemu agentowi, co ma zrobić
 
 ## Debugowanie
 
-Sprawdź, czy plugin jest załadowany:
+Sprawdź, czy Plugin jest załadowany:
 
 ```bash
 openclaw plugins list --enabled
 ```
 
-Sprawdź liczby propozycji z kontekstu agenta/narzędzia:
+Sprawdź liczbę propozycji z kontekstu agenta/narzędzia:
 
 ```json
 { "action": "status" }
 ```
 
-Przejrzyj oczekujące propozycje:
+Sprawdź oczekujące propozycje:
 
 ```json
 { "action": "list_pending" }
 ```
 
-Przejrzyj propozycje poddane kwarantannie:
+Sprawdź propozycje w kwarantannie:
 
 ```json
 { "action": "list_quarantine" }
@@ -647,17 +632,17 @@ Przejrzyj propozycje poddane kwarantannie:
 
 Typowe objawy:
 
-| Objaw                                 | Prawdopodobna przyczyna                                                          | Sprawdź                                                              |
+| Objaw                                 | Prawdopodobna przyczyna                                                            | Sprawdź                                                              |
 | ------------------------------------- | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| Narzędzie jest niedostępne            | Wpis pluginu nie jest włączony                                                       | `plugins.entries.skill-workshop.enabled` i `openclaw plugins list` |
-| Nie pojawia się automatyczna propozycja | `autoCapture: false`, `reviewMode: "off"` albo progi nie zostały spełnione        | Konfiguracja, status propozycji, logi Gateway                        |
-| Heurystyka nie przechwyciła           | Sformułowanie użytkownika nie pasowało do wzorców poprawek                         | Użyj jawnego `skill_workshop.suggest` albo włącz recenzenta LLM      |
-| Recenzent nie utworzył propozycji     | Recenzent zwrócił `none`, nieprawidłowy JSON albo przekroczył limit czasu           | Logi Gateway, `reviewTimeoutMs`, progi                               |
-| Propozycja nie została zastosowana    | `approvalPolicy: "pending"`                                                         | `list_pending`, potem `apply`                                        |
-| Propozycja zniknęła z oczekujących    | Ponownie użyto zduplikowanej propozycji, przycięto maksymalną liczbę oczekujących albo została zastosowana/odrzucona/poddana kwarantannie | `status`, `list_pending` z filtrami statusu, `list_quarantine`      |
-| Plik Skill istnieje, ale model go pomija | Migawka Skill nie została odświeżona albo bramkowanie Skill go wyklucza          | status `openclaw skills` i kwalifikowalność workspace Skill          |
+| Narzędzie jest niedostępne            | Wpis Plugin nie jest włączony                                                       | `plugins.entries.skill-workshop.enabled` i `openclaw plugins list` |
+| Nie pojawia się automatyczna propozycja | `autoCapture: false`, `reviewMode: "off"` lub progi nie zostały spełnione           | Konfiguracja, status propozycji, logi Gateway                        |
+| Heurystyka niczego nie przechwyciła   | Sformułowanie użytkownika nie pasowało do wzorców poprawek                          | Użyj jawnego `skill_workshop.suggest` albo włącz recenzenta LLM      |
+| Recenzent nie utworzył propozycji     | Recenzent zwrócił `none`, nieprawidłowy JSON albo przekroczył limit czasu            | Logi Gateway, `reviewTimeoutMs`, progi                               |
+| Propozycja nie jest zastosowana       | `approvalPolicy: "pending"`                                                         | `list_pending`, potem `apply`                                        |
+| Propozycja zniknęła z oczekujących    | Użyto ponownie duplikatu propozycji, przycięto maksymalną liczbę oczekujących albo została zastosowana/odrzucona/poddana kwarantannie | `status`, `list_pending` z filtrami statusu, `list_quarantine`      |
+| Plik Skill istnieje, ale model go pomija | Migawka Skill nie została odświeżona albo bramkowanie Skill go wyklucza             | status `openclaw skills` i kwalifikowalność Skill w obszarze roboczym |
 
-Odpowiednie logi:
+Istotne logi:
 
 - `skill-workshop: queued <skill>`
 - `skill-workshop: applied <skill>`
@@ -698,17 +683,17 @@ Scenariusz recenzenta jest celowo oddzielny, ponieważ włącza
 
 Unikaj `approvalPolicy: "auto"`, gdy:
 
-- workspace zawiera wrażliwe procedury
+- obszar roboczy zawiera poufne procedury
 - agent pracuje na niezaufanych danych wejściowych
 - Skills są współdzielone przez szeroki zespół
-- wciąż dostrajasz prompty lub reguły skanera
-- model często obsługuje wrogą treść z sieci/e-maili
+- nadal dostrajasz prompty lub reguły skanera
+- model często obsługuje wrogą treść z sieci/e-maila
 
-Najpierw użyj trybu pending. Przełącz na tryb auto dopiero po przejrzeniu rodzaju
-Skills proponowanych przez agenta w tym workspace.
+Najpierw użyj trybu oczekującego. Przełącz na tryb automatyczny dopiero po przejrzeniu rodzaju
+Skills proponowanych przez agenta w tym obszarze roboczym.
 
 ## Powiązana dokumentacja
 
 - [Skills](/pl/tools/skills)
-- [Pluginy](/pl/tools/plugin)
+- [Plugins](/pl/tools/plugin)
 - [Testowanie](/pl/reference/test)

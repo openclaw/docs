@@ -1,22 +1,22 @@
 ---
 read_when:
-    - คุณต้องการตรวจสอบ ทำ audit หรือยกเลิกเรคคอร์ดงานเบื้องหลัง
+    - คุณต้องการตรวจดู ตรวจสอบ หรือยกเลิกระเบียนงานเบื้องหลัง
     - คุณกำลังจัดทำเอกสารคำสั่ง TaskFlow ภายใต้ `openclaw tasks flow`
-summary: ข้อมูลอ้างอิง CLI สำหรับ `openclaw tasks` (บัญชีงานเบื้องหลังและสถานะ Task Flow)
+summary: เอกสารอ้างอิง CLI สำหรับ `openclaw tasks` (บัญชีแยกประเภทของงานเบื้องหลังและสถานะโฟลว์งาน)
 title: '`openclaw tasks`'
 x-i18n:
-    generated_at: "2026-04-26T11:27:13Z"
-    model: gpt-5.4
+    generated_at: "2026-05-07T13:15:10Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 6e61fb0b67a2bdd932b29543199fb219890f256260a66881c8e7ffeb9fadee33
+    source_hash: ca3f05d7c2a3fa7790ad6059ce15721ebffb548ac4a2c627188ac17986442dc6
     source_path: cli/tasks.md
-    workflow: 15
+    workflow: 16
 ---
 
-ตรวจสอบงานเบื้องหลังแบบถาวรและสถานะ TaskFlow หากไม่มี subcommand,
+ตรวจสอบงานเบื้องหลังแบบคงทนและสถานะ Task Flow เมื่อไม่มีคำสั่งย่อย
 `openclaw tasks` จะเทียบเท่ากับ `openclaw tasks list`
 
-ดู [งานเบื้องหลัง](/th/automation/tasks) สำหรับวงจรชีวิตและโมเดลการส่ง
+ดู [งานเบื้องหลัง](/th/automation/tasks) สำหรับวงจรชีวิตและโมเดลการส่งมอบ
 
 ## การใช้งาน
 
@@ -38,11 +38,11 @@ openclaw tasks flow cancel <lookup>
 
 ## ตัวเลือกระดับราก
 
-- `--json`: ส่งออกเป็น JSON
+- `--json`: แสดงผล JSON
 - `--runtime <name>`: กรองตามชนิด: `subagent`, `acp`, `cron` หรือ `cli`
 - `--status <name>`: กรองตามสถานะ: `queued`, `running`, `succeeded`, `failed`, `timed_out`, `cancelled` หรือ `lost`
 
-## Subcommand
+## คำสั่งย่อย
 
 ### `list`
 
@@ -50,7 +50,7 @@ openclaw tasks flow cancel <lookup>
 openclaw tasks list [--runtime <name>] [--status <name>] [--json]
 ```
 
-แสดงรายการงานเบื้องหลังที่ติดตามไว้ โดยเรียงจากใหม่ไปเก่า
+แสดงรายการงานเบื้องหลังที่ติดตามไว้ โดยรายการล่าสุดอยู่ก่อน
 
 ### `show`
 
@@ -58,7 +58,7 @@ openclaw tasks list [--runtime <name>] [--status <name>] [--json]
 openclaw tasks show <lookup> [--json]
 ```
 
-แสดงงานหนึ่งรายการตาม task ID, run ID หรือ session key
+แสดงงานหนึ่งรายการตามรหัสงาน รหัสการรัน หรือคีย์เซสชัน
 
 ### `notify`
 
@@ -66,7 +66,7 @@ openclaw tasks show <lookup> [--json]
 openclaw tasks notify <lookup> <done_only|state_changes|silent>
 ```
 
-เปลี่ยนนโยบายการแจ้งเตือนสำหรับงานที่กำลังรันอยู่
+เปลี่ยนนโยบายการแจ้งเตือนสำหรับงานที่กำลังทำงานอยู่
 
 ### `cancel`
 
@@ -74,7 +74,7 @@ openclaw tasks notify <lookup> <done_only|state_changes|silent>
 openclaw tasks cancel <lookup>
 ```
 
-ยกเลิกงานเบื้องหลังที่กำลังรันอยู่
+ยกเลิกงานเบื้องหลังที่กำลังทำงานอยู่
 
 ### `audit`
 
@@ -82,7 +82,7 @@ openclaw tasks cancel <lookup>
 openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--json]
 ```
 
-แสดงเรคคอร์ดของงานและ TaskFlow ที่เก่า สูญหาย ส่งไม่สำเร็จ หรือไม่สอดคล้องกันในลักษณะอื่น งานที่สูญหายซึ่งยังถูกเก็บไว้จนถึง `cleanupAfter` จะเป็นคำเตือน; งานที่สูญหายและหมดอายุแล้วหรือไม่มีตราประทับจะเป็นข้อผิดพลาด
+แสดงเรคคอร์ดงานและ Task Flow ที่เก่าเกินไป สูญหาย ส่งมอบล้มเหลว หรือไม่สอดคล้องด้วยเหตุอื่น งานที่สูญหายซึ่งเก็บไว้จนถึง `cleanupAfter` เป็นคำเตือน ส่วนงานที่สูญหายซึ่งหมดอายุหรือไม่มีตราประทับเป็นข้อผิดพลาด
 
 ### `maintenance`
 
@@ -90,11 +90,8 @@ openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--
 openclaw tasks maintenance [--apply] [--json]
 ```
 
-แสดงตัวอย่างหรือดำเนินการกระทบยอด การประทับตราการล้างข้อมูล และการลบข้อมูลเก่าของงานและ TaskFlow
-สำหรับงาน cron การกระทบยอดจะใช้บันทึกการรัน/สถานะงานที่จัดเก็บไว้ก่อนทำเครื่องหมาย
-งานเก่าที่ active ว่า `lost` ดังนั้นการรัน cron ที่เสร็จแล้วจะไม่กลายเป็นข้อผิดพลาด audit ปลอม
-เพียงเพราะสถานะ runtime ในหน่วยความจำของ Gateway หายไปแล้ว
-การทำ audit แบบออฟไลน์ผ่าน CLI ไม่ถือเป็นแหล่งอ้างอิงสิทธิ์ขาดสำหรับชุด active-job ของ cron ที่อยู่ในโพรเซสเฉพาะของ Gateway
+แสดงตัวอย่างหรือนำการกระทบยอดงานและ Task Flow การประทับตราการล้างข้อมูล และการตัดทิ้งไปใช้
+สำหรับงาน cron การกระทบยอดจะใช้บันทึกการรัน/สถานะงานที่คงอยู่ก่อนทำเครื่องหมายงานที่ใช้งานเก่าเป็น `lost` ดังนั้นการรัน cron ที่เสร็จแล้วจะไม่กลายเป็นข้อผิดพลาดการตรวจสอบเท็จเพียงเพราะสถานะรันไทม์ Gateway ในหน่วยความจำหายไป การตรวจสอบ CLI แบบออฟไลน์ไม่ใช่แหล่งอ้างอิงที่เชื่อถือได้สำหรับชุดงาน cron ที่ใช้งานอยู่เฉพาะกระบวนการของ Gateway งาน CLI ที่มีรหัสการรัน/รหัสแหล่งที่มาจะถูกทำเครื่องหมายเป็น `lost` เมื่อบริบทการรัน Gateway แบบสดหายไป แม้ว่าจะยังมีแถวเซสชันย่อยเก่าเหลืออยู่ก็ตาม
 
 ### `flow`
 
@@ -104,9 +101,9 @@ openclaw tasks flow show <lookup> [--json]
 openclaw tasks flow cancel <lookup>
 ```
 
-ตรวจสอบหรือยกเลิกสถานะ TaskFlow แบบถาวรภายใต้บัญชีงาน
+ตรวจสอบหรือยกเลิกสถานะ Task Flow แบบคงทนใต้บัญชีแยกประเภทของงาน
 
 ## ที่เกี่ยวข้อง
 
-- [ข้อมูลอ้างอิง CLI](/th/cli)
+- [อ้างอิง CLI](/th/cli)
 - [งานเบื้องหลัง](/th/automation/tasks)

@@ -1,28 +1,28 @@
 ---
 read_when:
-    - 你需要一种不同于入门指南快速开始的安装方法
+    - 你需要使用入门指南快速开始以外的安装方法
     - 你想部署到云平台
     - 你需要更新、迁移或卸载
-summary: 安装 OpenClaw - 安装脚本、npm/pnpm/bun、从源码安装、Docker 等
+summary: 安装 OpenClaw - 安装程序脚本、npm/pnpm/bun、从源代码安装、Docker 等
 title: 安装
 x-i18n:
-    generated_at: "2026-05-06T02:09:30Z"
+    generated_at: "2026-05-07T13:19:44Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 2d5b38787ad80f91c82aa1fd4020a11c99f440ccbf2e9b9309da336dd5883462
+    source_hash: 8a5dc92d262710cc96a160b7cac2b93ee1e25f994ddcd45e274ad96c026b7d72
     source_path: install/index.md
     workflow: 16
 ---
 
 ## 系统要求
 
-- **Node 24**（推荐）或 Node 22.14+ - 安装器脚本会自动处理
-- **macOS、Linux 或 Windows** - 支持原生 Windows 和 WSL2；WSL2 更稳定。请参阅 [Windows](/zh-CN/platforms/windows)。
+- **Node 24**（推荐）或 Node 22.16+ - 安装脚本会自动处理这一点
+- **macOS、Linux 或 Windows** - 支持原生 Windows 和 WSL2；WSL2 更稳定。参见 [Windows](/zh-CN/platforms/windows)。
 - 只有从源码构建时才需要 `pnpm`
 
-## 推荐：安装器脚本
+## 推荐：安装脚本
 
-最快的安装方式。它会检测你的操作系统，按需安装 Node，安装 OpenClaw，并启动新手引导。
+最快的安装方式。它会检测你的 OS，在需要时安装 Node，安装 OpenClaw，并启动新手引导。
 
 <Tabs>
   <Tab title="macOS / Linux / WSL2">
@@ -37,7 +37,7 @@ x-i18n:
   </Tab>
 </Tabs>
 
-如需安装但不运行新手引导：
+安装但不运行新手引导：
 
 <Tabs>
   <Tab title="macOS / Linux / WSL2">
@@ -52,27 +52,28 @@ x-i18n:
   </Tab>
 </Tabs>
 
-如需了解所有标志和 CI/自动化选项，请参阅 [安装器内部机制](/zh-CN/install/installer)。
+有关所有标志和 CI/自动化选项，请参见[安装器内部机制](/zh-CN/install/installer)。
 
-## 其他安装方法
+## 替代安装方法
 
 ### 本地前缀安装器（`install-cli.sh`）
 
-当你想把 OpenClaw 和 Node 保存在本地前缀（例如
-`~/.openclaw`）下，而不依赖系统级 Node 安装时，请使用此方式：
+当你希望将 OpenClaw 和 Node 保存在本地前缀（例如
+`~/.openclaw`）下，而不依赖系统范围的 Node 安装时，请使用此方法：
 
 ```bash
 curl -fsSL https://openclaw.ai/install-cli.sh | bash
 ```
 
-它默认支持 npm 安装，也支持在同一前缀流程下进行 git-checkout 安装。完整参考：[安装器内部机制](/zh-CN/install/installer#install-clish)。
+它默认支持 npm 安装，也支持在同一个
+前缀流程下进行 git-checkout 安装。完整参考：[安装器内部机制](/zh-CN/install/installer#install-clish)。
 
-已经安装了？使用 `openclaw update --channel dev` 和 `openclaw update --channel stable` 在包安装和 git 安装之间切换。请参阅
+已经安装了？使用 `openclaw update --channel dev` 和 `openclaw update --channel stable` 在 package 和 git 安装之间切换。参见
 [更新](/zh-CN/install/updating#switch-between-npm-and-git-installs)。
 
 ### npm、pnpm 或 bun
 
-如果你已经自己管理 Node：
+如果你已经自行管理 Node：
 
 <Tabs>
   <Tab title="npm">
@@ -89,7 +90,7 @@ curl -fsSL https://openclaw.ai/install-cli.sh | bash
     ```
 
     <Note>
-    pnpm 要求显式批准带有构建脚本的包。首次安装后运行 `pnpm approve-builds -g`。
+    pnpm 对带有构建脚本的 package 需要显式批准。首次安装后运行 `pnpm approve-builds -g`。
     </Note>
 
   </Tab>
@@ -100,13 +101,13 @@ curl -fsSL https://openclaw.ai/install-cli.sh | bash
     ```
 
     <Note>
-    全局 CLI 安装路径支持 Bun。对于 Gateway 网关运行时，Node 仍然是推荐的守护进程运行时。
+    全局 CLI 安装路径支持 Bun。对于 Gateway 网关运行时，Node 仍然是推荐的 daemon 运行时。
     </Note>
 
   </Tab>
 </Tabs>
 
-<Accordion title="Troubleshooting: sharp build errors (npm)">
+<Accordion title="故障排除：sharp 构建错误（npm）">
   如果 `sharp` 因全局安装的 libvips 而失败：
 
 ```bash
@@ -117,7 +118,7 @@ SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install -g openclaw@latest
 
 ### 从源码安装
 
-适用于贡献者，或任何想从本地检出运行的人：
+适用于贡献者或任何想从本地 checkout 运行的人：
 
 ```bash
 git clone https://github.com/openclaw/openclaw.git
@@ -127,7 +128,7 @@ pnpm link --global
 openclaw onboard --install-daemon
 ```
 
-也可以跳过链接，在仓库内使用 `pnpm openclaw ...`。完整开发工作流请参阅 [设置](/zh-CN/start/setup)。
+或者跳过链接，在 repo 内部使用 `pnpm openclaw ...`。完整开发工作流请参见[设置](/zh-CN/start/setup)。
 
 ### 从 GitHub main 安装
 
@@ -135,7 +136,7 @@ openclaw onboard --install-daemon
 npm install -g github:openclaw/openclaw#main
 ```
 
-### 容器和包管理器
+### 容器和 package manager
 
 <CardGroup cols={2}>
   <Card title="Docker" href="/zh-CN/install/docker" icon="container">
@@ -148,10 +149,10 @@ npm install -g github:openclaw/openclaw#main
     通过 Nix flake 进行声明式安装。
   </Card>
   <Card title="Ansible" href="/zh-CN/install/ansible" icon="server">
-    自动化机群预配。
+    自动化集群预配。
   </Card>
   <Card title="Bun" href="/zh-CN/install/bun" icon="zap">
-    通过 Bun 运行时仅使用 CLI。
+    通过 Bun 运行时进行仅 CLI 使用。
   </Card>
 </CardGroup>
 
@@ -163,11 +164,11 @@ openclaw doctor         # check for config issues
 openclaw gateway status # verify the Gateway is running
 ```
 
-如果你希望安装后进行托管启动：
+如果你希望安装后启用托管启动：
 
 - macOS：通过 `openclaw onboard --install-daemon` 或 `openclaw gateway install` 使用 LaunchAgent
 - Linux/WSL2：通过相同命令使用 systemd 用户服务
-- 原生 Windows：优先使用计划任务；如果任务创建被拒绝，则回退到每用户的启动文件夹登录项
+- 原生 Windows：优先使用计划任务；如果任务创建被拒绝，则回退到按用户的 Startup 文件夹登录项
 
 ## 托管和部署
 
@@ -202,7 +203,7 @@ openclaw gateway status # verify the Gateway is running
 
 ## 故障排除：找不到 `openclaw`
 
-如果安装成功，但终端中找不到 `openclaw`：
+如果安装成功但你的终端中找不到 `openclaw`：
 
 ```bash
 node -v           # Node installed?
@@ -216,4 +217,4 @@ echo "$PATH"      # Is the global bin dir in PATH?
 export PATH="$(npm prefix -g)/bin:$PATH"
 ```
 
-然后打开一个新终端。更多详情请参阅 [Node 设置](/zh-CN/install/node)。
+然后打开新的终端。更多详情请参见 [Node 设置](/zh-CN/install/node)。

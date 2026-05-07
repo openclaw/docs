@@ -1,62 +1,63 @@
 ---
 read_when:
     - คุณกำลังเปลี่ยนรันไทม์เอเจนต์แบบฝังตัวหรือรีจิสทรีของฮาร์เนส
-    - คุณกำลังลงทะเบียนฮาร์เนสเอเจนต์จาก Plugin ที่รวมมาให้หรือ Plugin ที่เชื่อถือได้
-    - คุณต้องเข้าใจว่า Plugin ของ Codex เกี่ยวข้องกับผู้ให้บริการโมเดลอย่างไร
+    - คุณกำลังลงทะเบียนฮาร์เนสของเอเจนต์จาก Plugin ที่รวมมาให้หรือเชื่อถือได้
+    - คุณต้องทำความเข้าใจว่า Plugin ของ Codex เกี่ยวข้องกับผู้ให้บริการโมเดลอย่างไร
 sidebarTitle: Agent Harness
-summary: ส่วนติดต่อ SDK รุ่นทดลองสำหรับ Plugin ที่แทนที่ตัวดำเนินการเอเจนต์แบบฝังตัวระดับต่ำ
-title: Plugin สำหรับฮาร์เนสของเอเจนต์
+summary: ส่วนติดต่อ SDK แบบทดลองสำหรับ Plugin ที่แทนที่ตัวดำเนินการเอเจนต์แบบฝังตัวระดับต่ำ
+title: Plugin สำหรับฮาร์เนสเอเจนต์
 x-i18n:
-    generated_at: "2026-05-03T10:18:33Z"
+    generated_at: "2026-05-07T13:23:47Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ed416bbb433fc502c60fd8c24d20cd0f862d45472ff2eb0e2484b256b58f1b35
+    source_hash: ab47fbedbd429a4c0e72da0057a88be34528b69804fa1e7af795f377c4907f55
     source_path: plugins/sdk-agent-harness.md
     workflow: 16
 ---
 
-**ฮาร์เนสของเอเจนต์** คือ executor ระดับต่ำสำหรับหนึ่งรอบของเอเจนต์ OpenClaw ที่เตรียมไว้แล้ว ไม่ใช่ผู้ให้บริการโมเดล ไม่ใช่ช่องทาง และไม่ใช่รีจิสทรีเครื่องมือ สำหรับโมเดลทางความคิดที่ผู้ใช้เห็น โปรดดู [รันไทม์ของเอเจนต์](/th/concepts/agent-runtimes)
+**agent harness** คือ executor ระดับต่ำสำหรับเทิร์นของ OpenClaw agent ที่เตรียมไว้หนึ่งครั้ง ซึ่งไม่ใช่ model provider ไม่ใช่ channel และไม่ใช่ tool registry สำหรับ mental model ที่แสดงต่อผู้ใช้ โปรดดู [Agent runtimes](/th/concepts/agent-runtimes)
 
-ใช้พื้นผิวนี้เฉพาะกับ Plugin แบบเนทีฟที่มาพร้อมกันหรือเชื่อถือได้เท่านั้น สัญญานี้ยังอยู่ในสถานะทดลอง เพราะชนิดของพารามิเตอร์จงใจสะท้อน runner แบบฝังตัวในปัจจุบัน
+ใช้พื้นผิวนี้เฉพาะกับ Plugin native ที่ bundled หรือเชื่อถือได้เท่านั้น contract นี้ยังอยู่ในขั้นทดลอง เพราะประเภทพารามิเตอร์ตั้งใจให้สะท้อน runner แบบ embedded ปัจจุบัน
 
-## ควรใช้ฮาร์เนสเมื่อใด
+## ควรใช้ harness เมื่อใด
 
-ลงทะเบียนฮาร์เนสของเอเจนต์เมื่อกลุ่มโมเดลมีรันไทม์เซสชันแบบเนทีฟของตัวเอง และ transport ของผู้ให้บริการ OpenClaw ตามปกติเป็นนามธรรมที่ไม่เหมาะสม
+ลงทะเบียน agent harness เมื่อ model family มี runtime session แบบ native ของตัวเอง และ transport ของ OpenClaw provider ปกติไม่ใช่ abstraction ที่เหมาะสม
 
 ตัวอย่าง:
 
-- เซิร์ฟเวอร์เอเจนต์เขียนโค้ดแบบเนทีฟที่เป็นเจ้าของเธรดและ Compaction
-- CLI หรือ daemon ในเครื่องที่ต้องสตรีมเหตุการณ์แผน/เหตุผล/เครื่องมือแบบเนทีฟ
-- รันไทม์โมเดลที่ต้องมี resume id ของตัวเอง นอกเหนือจาก transcript เซสชันของ OpenClaw
+- เซิร์ฟเวอร์ coding-agent แบบ native ที่เป็นเจ้าของ thread และ compaction
+- CLI หรือ daemon แบบ local ที่ต้อง stream เหตุการณ์ native plan/reasoning/tool
+- runtime ของ model ที่ต้องใช้ resume id ของตัวเองเพิ่มเติมจาก transcript ของ OpenClaw session
 
-อย่า ลงทะเบียนฮาร์เนสเพียงเพื่อเพิ่ม LLM API ใหม่ สำหรับ HTTP หรือ WebSocket model APIs ตามปกติ ให้สร้าง [Plugin ผู้ให้บริการ](/th/plugins/sdk-provider-plugins)
+อย่าลงทะเบียน harness เพียงเพื่อเพิ่ม LLM API ใหม่ สำหรับ API model แบบ HTTP หรือ WebSocket ปกติ ให้สร้าง [provider plugin](/th/plugins/sdk-provider-plugins)
 
-## สิ่งที่ core ยังเป็นเจ้าของ
+## สิ่งที่ core ยังคงเป็นเจ้าของ
 
-ก่อนเลือกฮาร์เนส OpenClaw ได้ resolve สิ่งเหล่านี้แล้ว:
+ก่อนที่ harness จะถูกเลือก OpenClaw ได้ resolve สิ่งเหล่านี้แล้ว:
 
-- ผู้ให้บริการและโมเดล
-- สถานะ auth ของรันไทม์
-- ระดับการคิดและงบประมาณ context
-- ไฟล์ transcript/เซสชันของ OpenClaw
-- workspace, sandbox และนโยบายเครื่องมือ
-- callback สำหรับการตอบกลับช่องทางและ callback สำหรับสตรีม
-- นโยบาย fallback ของโมเดลและการสลับโมเดลแบบ live
+- provider และ model
+- สถานะ runtime auth
+- ระดับ thinking และ context budget
+- ไฟล์ transcript/session ของ OpenClaw
+- workspace, sandbox และ tool policy
+- callback สำหรับ channel reply และ callback สำหรับ streaming
+- นโยบาย model fallback และ live model switching
 
-การแยกนี้เป็นไปโดยตั้งใจ ฮาร์เนสจะรัน attempt ที่เตรียมไว้แล้ว ไม่ได้เลือกผู้ให้บริการ แทนที่การส่งผ่านช่องทาง หรือสลับโมเดลอย่างเงียบ ๆ
+การแบ่งนี้เป็นไปโดยตั้งใจ harness จะรัน attempt ที่เตรียมไว้แล้ว ไม่ได้เลือก provider แทนที่การส่งผ่าน channel หรือสลับ model อย่างเงียบ ๆ
 
-attempt ที่เตรียมไว้ยังรวม `params.runtimePlan` ซึ่งเป็นชุดนโยบายที่ OpenClaw เป็นเจ้าของสำหรับการตัดสินใจของรันไทม์ที่ต้องใช้ร่วมกันระหว่าง PI และฮาร์เนสแบบเนทีฟ:
+attempt ที่เตรียมไว้ยังมี `params.runtimePlan` ซึ่งเป็น policy bundle ที่ OpenClaw เป็นเจ้าของสำหรับการตัดสินใจของ runtime ที่ต้องใช้ร่วมกันระหว่าง PI และ native harnesses:
 
 - `runtimePlan.tools.normalize(...)` และ
-  `runtimePlan.tools.logDiagnostics(...)` สำหรับนโยบาย schema ของเครื่องมือที่รับรู้ผู้ให้บริการ
-- `runtimePlan.transcript.resolvePolicy(...)` สำหรับนโยบาย sanitization ของ transcript และการซ่อมแซม tool-call
-- `runtimePlan.delivery.isSilentPayload(...)` สำหรับการระงับการส่ง `NO_REPLY` และสื่อที่ใช้ร่วมกัน
-- `runtimePlan.outcome.classifyRunResult(...)` สำหรับการจัดประเภท fallback ของโมเดล
-- `runtimePlan.observability` สำหรับ metadata ของผู้ให้บริการ/โมเดล/ฮาร์เนสที่ resolve แล้ว
+  `runtimePlan.tools.logDiagnostics(...)` สำหรับนโยบาย tool schema ที่รับรู้ provider
+- `runtimePlan.transcript.resolvePolicy(...)` สำหรับการ sanitize transcript และ
+  นโยบายซ่อมแซม tool-call
+- `runtimePlan.delivery.isSilentPayload(...)` สำหรับการ suppress การส่งมอบ `NO_REPLY` และ media ร่วมกัน
+- `runtimePlan.outcome.classifyRunResult(...)` สำหรับการจัดประเภท model fallback
+- `runtimePlan.observability` สำหรับ metadata ของ provider/model/harness ที่ resolve แล้ว
 
-ฮาร์เนสอาจใช้แผนนี้สำหรับการตัดสินใจที่ต้องสอดคล้องกับพฤติกรรมของ PI แต่ยังควรมองว่าเป็นสถานะ attempt ที่ host เป็นเจ้าของ อย่า mutate แผนนี้หรือใช้เพื่อสลับผู้ให้บริการ/โมเดลภายในรอบเดียวกัน
+Harnesses อาจใช้ plan สำหรับการตัดสินใจที่ต้องตรงกับพฤติกรรม PI แต่ยังควรถือว่าเป็น attempt state ที่ host เป็นเจ้าของ อย่า mutate หรือใช้เพื่อสลับ providers/models ภายในเทิร์น
 
-## ลงทะเบียนฮาร์เนส
+## ลงทะเบียน harness
 
 **Import:** `openclaw/plugin-sdk/agent-harness`
 
@@ -94,60 +95,60 @@ export default definePluginEntry({
 
 ## นโยบายการเลือก
 
-OpenClaw เลือกฮาร์เนสหลัง resolve ผู้ให้บริการ/โมเดลแล้ว:
+OpenClaw เลือก harness หลังจาก resolve provider/model แล้ว:
 
-1. harness id ที่บันทึกไว้ของเซสชันเดิมชนะ เพื่อไม่ให้การเปลี่ยน config/env hot-switch transcript นั้นไปยังรันไทม์อื่น
-2. `OPENCLAW_AGENT_RUNTIME=<id>` บังคับใช้ฮาร์เนสที่ลงทะเบียนด้วย id นั้นสำหรับเซสชันที่ยังไม่ได้ pin
-3. `OPENCLAW_AGENT_RUNTIME=pi` บังคับใช้ฮาร์เนส PI ที่มีมาให้
-4. `OPENCLAW_AGENT_RUNTIME=auto` ถามฮาร์เนสที่ลงทะเบียนไว้ว่ารองรับผู้ให้บริการ/โมเดลที่ resolve แล้วหรือไม่
-5. หากไม่มีฮาร์เนสที่ลงทะเบียนตรงกัน OpenClaw จะใช้ PI เว้นแต่ปิดใช้งาน PI fallback
+1. harness id ที่บันทึกไว้ของ session เดิมจะชนะ เพื่อไม่ให้การเปลี่ยน config/env hot-switch transcript นั้นไปยัง runtime อื่น
+2. `OPENCLAW_AGENT_RUNTIME=<id>` บังคับใช้ harness ที่ลงทะเบียนไว้ซึ่งมี id นั้นกับ session ที่ยังไม่ได้ถูก pin
+3. `OPENCLAW_AGENT_RUNTIME=pi` บังคับใช้ harness PI ในตัว
+4. `OPENCLAW_AGENT_RUNTIME=auto` ขอให้ harnesses ที่ลงทะเบียนไว้ตรวจว่ารองรับ provider/model ที่ resolve แล้วหรือไม่
+5. หากไม่มี harness ที่ลงทะเบียนไว้ตรงกัน OpenClaw จะใช้ PI เว้นแต่ PI fallback ถูกปิดใช้งาน
 
-ความล้มเหลวของฮาร์เนส Plugin จะแสดงเป็นความล้มเหลวของการรัน ในโหมด `auto` จะใช้ PI fallback เฉพาะเมื่อไม่มีฮาร์เนส Plugin ที่ลงทะเบียนรองรับผู้ให้บริการ/โมเดลที่ resolve แล้ว เมื่อฮาร์เนส Plugin claim การรันแล้ว OpenClaw จะไม่ replay รอบเดียวกันนั้นผ่าน PI เพราะอาจเปลี่ยน semantics ของ auth/runtime หรือทำ side effects ซ้ำ
+ความล้มเหลวของ Plugin harness จะแสดงเป็น run failures ในโหมด `auto` จะใช้ PI fallback เฉพาะเมื่อไม่มี Plugin harness ที่ลงทะเบียนไว้รองรับ provider/model ที่ resolve แล้วเท่านั้น เมื่อ Plugin harness claim run แล้ว OpenClaw จะไม่ replay เทิร์นเดียวกันนั้นผ่าน PI เพราะอาจเปลี่ยนความหมายของ auth/runtime หรือทำให้ side effects ซ้ำ
 
-harness id ที่เลือกจะถูก persist พร้อม session id หลังจากการรันแบบฝังตัว เซสชัน legacy ที่สร้างก่อนมี harness pins จะถูกถือว่า PI-pinned เมื่อมีประวัติ transcript แล้ว ใช้เซสชันใหม่/รีเซ็ตเมื่อเปลี่ยนระหว่าง PI และฮาร์เนส Plugin แบบเนทีฟ `/status` แสดง harness ids ที่ไม่ใช่ค่าเริ่มต้น เช่น `codex` ถัดจาก `Fast`; PI จะถูกซ่อนเพราะเป็น path ความเข้ากันได้เริ่มต้น หากฮาร์เนสที่เลือกดูน่าแปลกใจ ให้เปิดใช้งาน debug logging ของ `agents/harness` และตรวจสอบระเบียนแบบมีโครงสร้าง `agent harness selected` ของ Gateway ระเบียนนี้รวม harness id ที่เลือก เหตุผลการเลือก นโยบาย runtime/fallback และในโหมด `auto` รวมผลการรองรับของผู้สมัคร Plugin แต่ละตัว
+harness id ที่เลือกจะถูก persist พร้อม session id หลังจาก embedded run Legacy sessions ที่สร้างก่อนมี harness pins จะถูกถือว่า pin กับ PI เมื่อมีประวัติ transcript แล้ว ใช้ session ใหม่หรือ reset session เมื่อเปลี่ยนระหว่าง PI กับ native Plugin harness `/status` แสดง harness id ที่ไม่ใช่ค่า default เช่น `codex` ถัดจาก `Fast`; PI ถูกซ่อนไว้เพราะเป็น path ความเข้ากันได้เริ่มต้น หาก harness ที่เลือกดูน่าประหลาดใจ ให้เปิดใช้งาน debug logging ของ `agents/harness` และตรวจสอบ structured record `agent harness selected` ของ gateway ซึ่งมี harness id ที่เลือก เหตุผลการเลือก นโยบาย runtime/fallback และในโหมด `auto` มี support result ของผู้สมัคร Plugin แต่ละตัว
 
-Plugin Codex ที่มาพร้อมกันลงทะเบียน `codex` เป็น harness id ของมัน Core มองสิ่งนี้เป็น harness id ของ Plugin ปกติ alias ที่เฉพาะกับ Codex ควรอยู่ใน Plugin หรือ config ของ operator ไม่ใช่ในตัวเลือก runtime ที่ใช้ร่วมกัน
+Codex Plugin ที่ bundled ลงทะเบียน `codex` เป็น harness id ของตัวเอง Core ปฏิบัติต่อค่านี้เป็น Plugin harness id ปกติ aliases เฉพาะ Codex ควรอยู่ใน Plugin หรือ config ของ operator ไม่ใช่ใน shared runtime selector
 
-## การจับคู่ผู้ให้บริการกับฮาร์เนส
+## การจับคู่ provider กับ harness
 
-ฮาร์เนสส่วนใหญ่ควรลงทะเบียนผู้ให้บริการด้วย ผู้ให้บริการทำให้ model refs, สถานะ auth, metadata ของโมเดล และการเลือก `/model` มองเห็นได้ต่อส่วนที่เหลือของ OpenClaw จากนั้นฮาร์เนสจะ claim ผู้ให้บริการนั้นใน `supports(...)`
+Harnesses ส่วนใหญ่ควรลงทะเบียน provider ด้วย provider ทำให้ model refs, auth status, model metadata และการเลือก `/model` มองเห็นได้ต่อส่วนอื่นของ OpenClaw จากนั้น harness จึง claim provider นั้นใน `supports(...)`
 
-Plugin Codex ที่มาพร้อมกันทำตามรูปแบบนี้:
+Codex Plugin ที่ bundled ทำตามรูปแบบนี้:
 
-- model refs ผู้ใช้ที่แนะนำ: `openai/gpt-5.5` พร้อม
+- model refs ที่แนะนำสำหรับผู้ใช้: `openai/gpt-5.5` พร้อม
   `agentRuntime.id: "codex"`
-- refs ความเข้ากันได้: refs legacy `codex/gpt-*` ยังคงรับได้ แต่ config ใหม่ไม่ควรใช้เป็น refs ผู้ให้บริการ/โมเดลตามปกติ
+- refs เพื่อความเข้ากันได้: legacy `codex/gpt-*` refs ยังคงถูกยอมรับ แต่ config ใหม่ไม่ควรใช้เป็น refs provider/model ปกติ
 - harness id: `codex`
-- auth: ความพร้อมใช้งานผู้ให้บริการแบบ synthetic เพราะฮาร์เนส Codex เป็นเจ้าของการ login/เซสชัน Codex แบบเนทีฟ
-- คำขอ app-server: OpenClaw ส่ง bare model id ไปยัง Codex และให้ฮาร์เนสคุยกับโปรโตคอล app-server แบบเนทีฟ
+- auth: ความพร้อมใช้งานของ provider แบบ synthetic เพราะ Codex harness เป็นเจ้าของ native Codex login/session
+- คำขอ app-server: OpenClaw ส่งเฉพาะ model id เปล่าไปยัง Codex และให้ harness คุยกับ protocol ของ native app-server
 
-Plugin Codex เป็นแบบ additive refs `openai/gpt-*` ทั่วไปยังคงใช้ path ผู้ให้บริการ OpenClaw ตามปกติ เว้นแต่คุณบังคับใช้ฮาร์เนส Codex ด้วย `agentRuntime.id: "codex"` refs `codex/gpt-*` ที่เก่ากว่ายังคงเลือกผู้ให้บริการและฮาร์เนส Codex เพื่อความเข้ากันได้
+Codex Plugin เป็นแบบ additive refs `openai/gpt-*` ธรรมดายังคงใช้ path ของ OpenClaw provider ปกติ เว้นแต่คุณบังคับ Codex harness ด้วย `agentRuntime.id: "codex"` refs `codex/gpt-*` ที่เก่ากว่ายังคงเลือก Codex provider และ harness เพื่อความเข้ากันได้
 
-สำหรับการตั้งค่าของ operator ตัวอย่าง prefix ของโมเดล และ config เฉพาะ Codex โปรดดู [ฮาร์เนส Codex](/th/plugins/codex-harness)
+สำหรับการตั้งค่า operator ตัวอย่าง model prefix และ config เฉพาะ Codex โปรดดู [Codex Harness](/th/plugins/codex-harness)
 
-OpenClaw ต้องใช้ Codex app-server `0.125.0` หรือใหม่กว่า Plugin Codex ตรวจสอบ handshake initialize ของ app-server และบล็อกเซิร์ฟเวอร์ที่เก่ากว่าหรือไม่มีเวอร์ชัน เพื่อให้ OpenClaw รันกับพื้นผิวโปรโตคอลที่ผ่านการทดสอบแล้วเท่านั้น floor `0.125.0` รวมการรองรับ payload ของ hook MCP แบบเนทีฟที่ลงใน Codex `0.124.0` พร้อมกับ pin OpenClaw ไว้กับ stable line รุ่นใหม่กว่าที่ผ่านการทดสอบแล้ว
+OpenClaw ต้องใช้ Codex app-server `0.125.0` หรือใหม่กว่า Codex Plugin ตรวจสอบ app-server initialize handshake และบล็อก server ที่เก่ากว่าหรือไม่มี version เพื่อให้ OpenClaw รันเฉพาะกับพื้นผิว protocol ที่ได้ทดสอบแล้วเท่านั้น floor `0.125.0` รวมการรองรับ native MCP hook payload ที่เพิ่มเข้ามาใน Codex `0.124.0` พร้อมทั้ง pin OpenClaw กับ stable line ที่ใหม่กว่าและผ่านการทดสอบแล้ว
 
-### middleware ผลลัพธ์เครื่องมือ
+### Tool-result middleware
 
-Plugin ที่มาพร้อมกันสามารถแนบ middleware ผลลัพธ์เครื่องมือที่เป็นกลางต่อรันไทม์ผ่าน `api.registerAgentToolResultMiddleware(...)` เมื่อ manifest ของพวกมันประกาศ runtime ids เป้าหมายไว้ใน `contracts.agentToolResultMiddleware` seam ที่เชื่อถือได้นี้มีไว้สำหรับ transform ผลลัพธ์เครื่องมือแบบ async ที่ต้องรันก่อนที่ PI หรือ Codex จะ feed เอาต์พุตเครื่องมือกลับเข้าโมเดล
+Plugin ที่ bundled สามารถแนบ tool-result middleware ที่ไม่ผูกกับ runtime ผ่าน `api.registerAgentToolResultMiddleware(...)` เมื่อ manifest ประกาศ runtime ids เป้าหมายไว้ใน `contracts.agentToolResultMiddleware` seam ที่เชื่อถือได้นี้มีไว้สำหรับ async tool-result transforms ที่ต้องรันก่อนที่ PI หรือ Codex จะป้อน tool output กลับเข้า model
 
-Plugin legacy ที่มาพร้อมกันยังคงใช้ `api.registerCodexAppServerExtensionFactory(...)` สำหรับ middleware เฉพาะ Codex app-server ได้ แต่ transform ผลลัพธ์ใหม่ควรใช้ API ที่เป็นกลางต่อรันไทม์ hook `api.registerEmbeddedExtensionFactory(...)` ที่ใช้เฉพาะ Pi ถูกนำออกแล้ว transform ผลลัพธ์เครื่องมือของ Pi ต้องใช้ middleware ที่เป็นกลางต่อรันไทม์
+Legacy bundled plugins ยังสามารถใช้ `api.registerCodexAppServerExtensionFactory(...)` สำหรับ middleware เฉพาะ Codex app-server ได้ แต่ result transforms ใหม่ควรใช้ API ที่ไม่ผูกกับ runtime hook เฉพาะ Pi `api.registerEmbeddedExtensionFactory(...)` ถูกนำออกแล้ว; tool-result transforms ของ Pi ต้องใช้ middleware ที่ไม่ผูกกับ runtime
 
-### การจัดประเภทผลลัพธ์ปลายทาง
+### การจัดประเภท terminal outcome
 
-ฮาร์เนสแบบเนทีฟที่เป็นเจ้าของ protocol projection ของตัวเองสามารถใช้ `classifyAgentHarnessTerminalOutcome(...)` จาก `openclaw/plugin-sdk/agent-harness-runtime` เมื่อรอบที่เสร็จสมบูรณ์ไม่มีข้อความ assistant ที่มองเห็นได้ helper จะคืนค่า `empty`, `reasoning-only` หรือ `planning-only` เพื่อให้นโยบาย fallback ของ OpenClaw ตัดสินใจว่าจะ retry บนโมเดลอื่นหรือไม่ โดยตั้งใจไม่จัดประเภท prompt errors, รอบที่ยัง in-flight และการตอบกลับเงียบโดยตั้งใจ เช่น `NO_REPLY`
+Native harnesses ที่เป็นเจ้าของ protocol projection ของตัวเองสามารถใช้ `classifyAgentHarnessTerminalOutcome(...)` จาก `openclaw/plugin-sdk/agent-harness-runtime` เมื่อเทิร์นที่เสร็จสิ้นไม่มีข้อความ assistant ที่มองเห็นได้ helper จะคืนค่า `empty`, `reasoning-only` หรือ `planning-only` เพื่อให้นโยบาย fallback ของ OpenClaw ตัดสินใจว่าจะ retry บน model อื่นหรือไม่ โดยตั้งใจไม่จัดประเภท prompt errors, in-flight turns และ intentional silent replies เช่น `NO_REPLY`
 
-### โหมดฮาร์เนส Codex แบบเนทีฟ
+### โหมด native Codex harness
 
-ฮาร์เนส `codex` ที่มาพร้อมกันคือโหมด Codex แบบเนทีฟสำหรับรอบเอเจนต์ OpenClaw แบบฝังตัว เปิดใช้งาน Plugin `codex` ที่มาพร้อมกันก่อน และรวม `codex` ใน `plugins.allow` หาก config ของคุณใช้ allowlist ที่จำกัด config app-server แบบเนทีฟควรใช้ `openai/gpt-*` พร้อม `agentRuntime.id: "codex"` ใช้ `openai-codex/*` สำหรับ Codex OAuth ผ่าน PI แทน refs โมเดล legacy `codex/*` ยังคงเป็น alias ความเข้ากันได้สำหรับฮาร์เนสแบบเนทีฟ
+harness `codex` ที่ bundled คือโหมด native Codex สำหรับ embedded OpenClaw agent turns เปิดใช้งาน bundled `codex` Plugin ก่อน และใส่ `codex` ใน `plugins.allow` หาก config ของคุณใช้ allowlist แบบจำกัด config ของ native app-server ควรใช้ `openai/gpt-*`; OpenAI agent turns จะเลือก Codex harness เป็นค่า default legacy routes `openai-codex/*` ควรถูกซ่อมด้วย `openclaw doctor --fix` และ legacy `codex/*` model refs ยังคงเป็น compatibility aliases สำหรับ native harness
 
-เมื่อโหมดนี้รัน Codex เป็นเจ้าของ native thread id, พฤติกรรม resume, Compaction และการ execution ของ app-server OpenClaw ยังเป็นเจ้าของช่องทางแชต, mirror ของ transcript ที่มองเห็นได้, นโยบายเครื่องมือ, approvals, การส่งสื่อ และการเลือกเซสชัน ใช้ `agentRuntime.id: "codex"` เมื่อคุณต้องพิสูจน์ว่ามีเพียง path Codex app-server เท่านั้นที่สามารถ claim การรันได้ รันไทม์ Plugin แบบ explicit จะ fail closed; ความล้มเหลวในการเลือก Codex app-server และความล้มเหลวของรันไทม์จะไม่ถูก retry ผ่าน PI
+เมื่อโหมดนี้รัน Codex จะเป็นเจ้าของ native thread id, resume behavior, compaction และการ execute ของ app-server OpenClaw ยังคงเป็นเจ้าของ chat channel, visible transcript mirror, tool policy, approvals, media delivery และ session selection ใช้ `agentRuntime.id: "codex"` เมื่อคุณต้องพิสูจน์ว่าเฉพาะ path ของ Codex app-server เท่านั้นที่สามารถ claim run ได้ Explicit plugin runtimes จะ fail closed; ความล้มเหลวของการเลือก Codex app-server และความล้มเหลวของ runtime จะไม่ถูก retry ผ่าน PI
 
-## ความเข้มงวดของรันไทม์
+## ความเข้มงวดของ runtime
 
-โดยค่าเริ่มต้น OpenClaw รันเอเจนต์แบบฝังตัวด้วย OpenClaw Pi ในโหมด `auto` ฮาร์เนส Plugin ที่ลงทะเบียนสามารถ claim คู่ผู้ให้บริการ/โมเดลได้ และ PI จะจัดการรอบเมื่อไม่มีตัวใดตรงกัน ใช้รันไทม์ Plugin แบบ explicit เช่น `agentRuntime.id: "codex"` เมื่อการเลือกฮาร์เนสที่ขาดหายควรล้มเหลวแทนที่จะ route ผ่าน PI ความล้มเหลวของฮาร์เนส Plugin ที่เลือกจะล้มเหลวแบบ hard เสมอ สิ่งนี้ไม่บล็อก `agentRuntime.id: "pi"` หรือ `OPENCLAW_AGENT_RUNTIME=pi` แบบ explicit
+ตามค่า default OpenClaw รัน embedded agents ด้วย OpenClaw Pi ในโหมด `auto` Plugin harnesses ที่ลงทะเบียนไว้สามารถ claim คู่ provider/model และ PI จะจัดการเทิร์นเมื่อไม่มีรายการใดตรงกัน ใช้ explicit Plugin runtime เช่น `agentRuntime.id: "codex"` เมื่อการเลือก harness ที่หายไปควร fail แทนที่จะ route ผ่าน PI ความล้มเหลวของ Plugin harness ที่เลือกแล้วจะ fail hard เสมอ สิ่งนี้ไม่บล็อก `agentRuntime.id: "pi"` หรือ `OPENCLAW_AGENT_RUNTIME=pi` แบบ explicit
 
-สำหรับการรันแบบฝังตัวเฉพาะ Codex:
+สำหรับ embedded runs เฉพาะ Codex:
 
 ```json
 {
@@ -162,7 +163,7 @@ Plugin legacy ที่มาพร้อมกันยังคงใช้ `a
 }
 ```
 
-หากคุณต้องการให้ฮาร์เนส Plugin ที่ลงทะเบียนใด ๆ claim โมเดลที่ตรงกัน และใช้ PI ในกรณีอื่น ให้ตั้ง `id: "auto"`:
+หากคุณต้องการให้ Plugin harness ที่ลงทะเบียนไว้ตัวใดก็ได้ claim models ที่ตรงกัน และมิฉะนั้นให้ใช้ PI ให้ตั้ง `id: "auto"`:
 
 ```json
 {
@@ -176,7 +177,7 @@ Plugin legacy ที่มาพร้อมกันยังคงใช้ `a
 }
 ```
 
-override รายเอเจนต์ใช้ shape เดียวกัน:
+overrides ต่อ agent ใช้ shape เดียวกัน:
 
 ```json
 {
@@ -195,44 +196,44 @@ override รายเอเจนต์ใช้ shape เดียวกัน:
 }
 ```
 
-`OPENCLAW_AGENT_RUNTIME` ยังคง override รันไทม์ที่กำหนดค่าไว้
+`OPENCLAW_AGENT_RUNTIME` ยังคง override runtime ที่กำหนดค่าไว้
 
 ```bash
 OPENCLAW_AGENT_RUNTIME=codex openclaw gateway run
 ```
 
-เมื่อใช้รันไทม์ Plugin แบบ explicit เซสชันจะล้มเหลวตั้งแต่เนิ่น ๆ เมื่อฮาร์เนสที่ขอไม่ได้ลงทะเบียน ไม่รองรับผู้ให้บริการ/โมเดลที่ resolve แล้ว หรือ fail ก่อนสร้าง side effects ของรอบ นั่นเป็นเจตนาสำหรับการ deploy เฉพาะ Codex และสำหรับ live tests ที่ต้องพิสูจน์ว่า path Codex app-server ถูกใช้งานจริง
+เมื่อใช้ explicit Plugin runtime session จะ fail ตั้งแต่ต้นเมื่อ harness ที่ร้องขอไม่ได้ลงทะเบียน ไม่รองรับ provider/model ที่ resolve แล้ว หรือ fail ก่อนสร้าง turn side effects นั่นเป็นพฤติกรรมโดยตั้งใจสำหรับ deployment เฉพาะ Codex และสำหรับ live tests ที่ต้องพิสูจน์ว่า path ของ Codex app-server ถูกใช้งานจริง
 
-การตั้งค่านี้ควบคุมเฉพาะฮาร์เนสเอเจนต์แบบฝังตัวเท่านั้น ไม่ได้ปิดใช้งานการ routing โมเดลเฉพาะผู้ให้บริการสำหรับภาพ วิดีโอ เพลง TTS, PDF หรืออื่น ๆ
+การตั้งค่านี้ควบคุมเฉพาะ embedded agent harness เท่านั้น ไม่ได้ปิดใช้งานการ route model เฉพาะ provider สำหรับ image, video, music, TTS, PDF หรืออื่น ๆ
 
-## เซสชันแบบเนทีฟและ mirror ของ transcript
+## Native sessions และ transcript mirror
 
-ฮาร์เนสอาจเก็บ native session id, thread id หรือ resume token ฝั่ง daemon ให้ผูก binding นั้นกับเซสชัน OpenClaw อย่างชัดเจน และ mirror เอาต์พุต assistant/เครื่องมือที่ผู้ใช้มองเห็นลงใน transcript ของ OpenClaw ต่อไป
+Harness อาจเก็บ native session id, thread id หรือ resume token ฝั่ง daemon เก็บ binding นั้นให้เชื่อมโยงกับ OpenClaw session อย่างชัดเจน และ mirror assistant/tool output ที่ผู้ใช้มองเห็นได้เข้าไปยัง transcript ของ OpenClaw ต่อไป
 
-transcript ของ OpenClaw ยังคงเป็นเลเยอร์ความเข้ากันได้สำหรับ:
+transcript ของ OpenClaw ยังคงเป็น compatibility layer สำหรับ:
 
-- ประวัติเซสชันที่ช่องทางมองเห็นได้
+- ประวัติ session ที่ channel มองเห็นได้
 - การค้นหาและ indexing transcript
-- การสลับกลับไปยังฮาร์เนส PI ที่มีมาให้ในรอบถัดไป
-- พฤติกรรม `/new`, `/reset` และการลบเซสชันแบบ generic
+- การสลับกลับไปใช้ PI harness ในตัวในเทิร์นภายหลัง
+- พฤติกรรม `/new`, `/reset` และการลบ session แบบ generic
 
-หากฮาร์เนสของคุณเก็บ sidecar binding ให้ implement `reset(...)` เพื่อให้ OpenClaw ล้างได้เมื่อเซสชัน OpenClaw ที่เป็นเจ้าของถูกรีเซ็ต
+หาก harness ของคุณเก็บ sidecar binding ให้ implement `reset(...)` เพื่อให้ OpenClaw สามารถล้างมันเมื่อ OpenClaw session ที่เป็นเจ้าของถูก reset
 
-## ผลลัพธ์เครื่องมือและสื่อ
+## Tool และ media results
 
-Core สร้างรายการเครื่องมือของ OpenClaw และส่งเข้า attempt ที่เตรียมไว้ เมื่อฮาร์เนส execute dynamic tool call ให้คืนผลลัพธ์เครื่องมือกลับผ่าน shape ผลลัพธ์ของฮาร์เนส แทนที่จะส่งสื่อของช่องทางเอง
+Core สร้างรายการ tool ของ OpenClaw และส่งเข้าไปใน attempt ที่เตรียมไว้ เมื่อ harness execute dynamic tool call ให้คืน tool result กลับผ่าน result shape ของ harness แทนการส่ง channel media เอง
 
-สิ่งนี้ทำให้เอาต์พุตข้อความ ภาพ วิดีโอ เพลง TTS, approval และ messaging-tool อยู่บน path การส่งเดียวกันกับการรันที่ backing โดย PI
+สิ่งนี้ทำให้ outputs ของ text, image, video, music, TTS, approval และ messaging-tool อยู่บน delivery path เดียวกับ runs ที่มี PI รองรับ
 
 ## ข้อจำกัดปัจจุบัน
 
-- พาธนำเข้าสาธารณะเป็นแบบทั่วไป แต่ alias ของชนิด attempt/result บางรายการยังคง
-  ใช้ชื่อ `Pi` เพื่อความเข้ากันได้
-- การติดตั้งฮาร์เนสของบุคคลที่สามยังอยู่ในขั้นทดลอง แนะนำให้ใช้ Plugin ผู้ให้บริการ
+- เส้นทางนำเข้าสาธารณะเป็นแบบทั่วไป แต่ alias ชนิดของความพยายาม/ผลลัพธ์บางรายการยัง
+  มีชื่อ `Pi` เพื่อความเข้ากันได้
+- การติดตั้งฮาร์เนสของบุคคลที่สามยังเป็นแบบทดลอง ควรใช้ Plugin ผู้ให้บริการ
   จนกว่าคุณจะต้องใช้รันไทม์เซสชันแบบเนทีฟ
-- รองรับการสลับฮาร์เนสข้ามรอบโต้ตอบ อย่าสลับฮาร์เนสใน
-  ระหว่างรอบโต้ตอบหลังจากเครื่องมือแบบเนทีฟ การอนุมัติ ข้อความของผู้ช่วย หรือการส่ง
-  ข้อความได้เริ่มแล้ว
+- รองรับการสลับฮาร์เนสข้ามเทิร์น อย่าสลับฮาร์เนสระหว่าง
+  เทิร์นหลังจากที่เครื่องมือเนทีฟ การอนุมัติ ข้อความของผู้ช่วย หรือการส่งข้อความ
+  เริ่มต้นแล้ว
 
 ## ที่เกี่ยวข้อง
 

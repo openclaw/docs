@@ -1,33 +1,30 @@
 ---
 read_when:
     - Microsoft Teams kanal özellikleri üzerinde çalışma
-summary: Microsoft Teams bot destek durumu, yetenekleri ve yapılandırması
+summary: Microsoft Teams bot desteği durumu, yetenekleri ve yapılandırması
 title: Microsoft Teams
 x-i18n:
-    generated_at: "2026-05-06T17:52:14Z"
+    generated_at: "2026-05-07T13:13:13Z"
     model: gpt-5.5
     provider: openai
-    source_hash: be669545bd692754fbee8b670b1b482c39399a3d26e06a7ae01230fdaee645fe
+    source_hash: 2fa2aff4d957a59f694cf37d9a4e5ad6b7ee18004d84cbaf8d7ac1aa16860090
     source_path: channels/msteams.md
     workflow: 16
 ---
 
-Durum: metin + DM ekleri desteklenir; kanal/grup dosya gönderimi `sharePointSiteId` + Graph izinleri gerektirir (bkz. [Grup sohbetlerinde dosya gönderme](#sending-files-in-group-chats)). Anketler Adaptive Cards aracılığıyla gönderilir. Mesaj eylemleri, dosya öncelikli gönderimler için açık `upload-file` sunar.
+Durum: metin + DM ekleri desteklenir; kanal/grup dosya gönderimi `sharePointSiteId` + Graph izinleri gerektirir (bkz. [Grup sohbetlerinde dosya gönderme](#sending-files-in-group-chats)). Anketler Adaptive Cards aracılığıyla gönderilir. İleti eylemleri, önce dosya gönderimleri için açık `upload-file` sunar.
 
-## Birlikte gelen plugin
+## Paketlenmiş Plugin
 
-Microsoft Teams, güncel OpenClaw sürümlerinde birlikte gelen bir plugin olarak
-sunulur; bu nedenle normal paketlenmiş derlemede ayrı kurulum gerekmez.
+Microsoft Teams, geçerli OpenClaw sürümlerinde paketlenmiş bir Plugin olarak gelir, bu nedenle normal paketlenmiş derlemede ayrı bir kurulum gerekmez.
 
-Daha eski bir derlemedeyseniz veya birlikte gelen Teams'i hariç tutan özel bir
-kurulum kullanıyorsanız, npm paketini doğrudan kurun:
+Daha eski bir derlemedeyseniz veya paketlenmiş Teams'i hariç tutan özel bir kurulum kullanıyorsanız, npm paketini doğrudan yükleyin:
 
 ```bash
 openclaw plugins install @openclaw/msteams
 ```
 
-Geçerli resmi sürüm etiketini takip etmek için sade paketi kullanın. Tam bir
-sürümü yalnızca yeniden üretilebilir bir kurulum gerektiğinde sabitleyin.
+Geçerli resmi sürüm etiketini takip etmek için yalın paketi kullanın. Tam bir sürümü yalnızca yeniden üretilebilir bir kuruluma ihtiyacınız olduğunda sabitleyin.
 
 Yerel checkout (bir git deposundan çalıştırırken):
 
@@ -35,40 +32,40 @@ Yerel checkout (bir git deposundan çalıştırırken):
 openclaw plugins install ./path/to/local/msteams-plugin
 ```
 
-Ayrıntılar: [Plugins](/tr/tools/plugin)
+Ayrıntılar: [Plugin'ler](/tr/tools/plugin)
 
 ## Hızlı kurulum
 
-[`@microsoft/teams.cli`](https://www.npmjs.com/package/@microsoft/teams.cli), bot kaydını, manifest oluşturmayı ve kimlik bilgisi üretimini tek bir komutla yönetir.
+[`@microsoft/teams.cli`](https://www.npmjs.com/package/@microsoft/teams.cli), bot kaydını, manifest oluşturmayı ve kimlik bilgisi üretimini tek bir komutta yönetir.
 
-**1. Kurun ve oturum açın**
+**1. Yükleyin ve oturum açın**
 
 ```bash
 npm install -g @microsoft/teams.cli@preview
 teams login
-teams status   # oturum açtığınızı doğrulayın ve tenant bilgilerinizi görün
+teams status   # verify you're logged in and see your tenant info
 ```
 
 <Note>
-Teams CLI şu anda preview aşamasındadır. Komutlar ve bayraklar sürümler arasında değişebilir.
+Teams CLI şu anda önizlemededir. Komutlar ve bayraklar sürümler arasında değişebilir.
 </Note>
 
 **2. Bir tünel başlatın** (Teams localhost'a erişemez)
 
-Henüz yapmadıysanız devtunnel CLI'yi kurun ve kimlik doğrulaması yapın ([başlangıç kılavuzu](https://learn.microsoft.com/en-us/azure/developer/dev-tunnels/get-started)).
+Henüz yapmadıysanız devtunnel CLI'yi yükleyip kimlik doğrulaması yapın ([başlangıç kılavuzu](https://learn.microsoft.com/en-us/azure/developer/dev-tunnels/get-started)).
 
 ```bash
-# Tek seferlik kurulum (oturumlar arasında kalıcı URL):
+# One-time setup (persistent URL across sessions):
 devtunnel create my-openclaw-bot --allow-anonymous
 devtunnel port create my-openclaw-bot -p 3978 --protocol auto
 
-# Her geliştirici oturumu:
+# Each dev session:
 devtunnel host my-openclaw-bot
-# Uç noktanız: https://<tunnel-id>.devtunnels.ms/api/messages
+# Your endpoint: https://<tunnel-id>.devtunnels.ms/api/messages
 ```
 
 <Note>
-Teams devtunnels ile kimlik doğrulaması yapamadığı için `--allow-anonymous` gereklidir. Gelen her bot isteği yine de Teams SDK tarafından otomatik olarak doğrulanır.
+`--allow-anonymous` gereklidir çünkü Teams devtunnels ile kimlik doğrulaması yapamaz. Gelen her bot isteği yine de Teams SDK tarafından otomatik olarak doğrulanır.
 </Note>
 
 Alternatifler: `ngrok http 3978` veya `tailscale funnel 3978` (ancak bunlar her oturumda URL'leri değiştirebilir).
@@ -88,9 +85,9 @@ Bu tek komut:
 - Bir Teams uygulama manifesti oluşturur ve yükler (simgelerle birlikte)
 - Botu kaydeder (varsayılan olarak Teams tarafından yönetilir - Azure aboneliği gerekmez)
 
-Çıktı `CLIENT_ID`, `CLIENT_SECRET`, `TENANT_ID` ve bir **Teams App ID** gösterir; sonraki adımlar için bunları not edin. Ayrıca uygulamayı doğrudan Teams'e kurmayı da teklif eder.
+Çıktı `CLIENT_ID`, `CLIENT_SECRET`, `TENANT_ID` ve bir **Teams Uygulama ID'si** gösterir; sonraki adımlar için bunları not edin. Ayrıca uygulamayı doğrudan Teams'e yüklemeyi de önerir.
 
-**4. OpenClaw'u yapılandırın**; çıktıda verilen kimlik bilgilerini kullanın:
+**4. OpenClaw'ı yapılandırın**; çıktıdaki kimlik bilgilerini kullanın:
 
 ```json5
 {
@@ -106,11 +103,11 @@ Bu tek komut:
 }
 ```
 
-Veya ortam değişkenlerini doğrudan kullanın: `MSTEAMS_APP_ID`, `MSTEAMS_APP_PASSWORD`, `MSTEAMS_TENANT_ID`.
+Ya da ortam değişkenlerini doğrudan kullanın: `MSTEAMS_APP_ID`, `MSTEAMS_APP_PASSWORD`, `MSTEAMS_TENANT_ID`.
 
-**5. Uygulamayı Teams'e kurun**
+**5. Uygulamayı Teams'e yükleyin**
 
-`teams app create` uygulamayı kurmanızı ister; "Install in Teams" seçeneğini seçin. Bunu atladıysanız bağlantıyı daha sonra alabilirsiniz:
+`teams app create` uygulamayı yüklemeniz için sizi yönlendirecektir; "Install in Teams" seçeneğini seçin. Bunu atladıysanız bağlantıyı daha sonra alabilirsiniz:
 
 ```bash
 teams app get <teamsAppId> --install-link
@@ -124,17 +121,17 @@ teams app doctor <teamsAppId>
 
 Bu, bot kaydı, AAD uygulama yapılandırması, manifest geçerliliği ve SSO kurulumu genelinde tanılamalar çalıştırır.
 
-Üretim dağıtımları için istemci sırları yerine [federe kimlik doğrulama](/tr/channels/msteams#federated-authentication-certificate-plus-managed-identity) (sertifika veya yönetilen kimlik) kullanmayı değerlendirin.
+Üretim dağıtımları için, istemci sırları yerine [federe kimlik doğrulaması](/tr/channels/msteams#federated-authentication-certificate-plus-managed-identity) (sertifika veya yönetilen kimlik) kullanmayı düşünün.
 
 <Note>
-Grup sohbetleri varsayılan olarak engellenir (`channels.msteams.groupPolicy: "allowlist"`). Grup yanıtlarına izin vermek için `channels.msteams.groupAllowFrom` ayarlayın veya herhangi bir üyeye izin vermek için `groupPolicy: "open"` kullanın (bahsetme kapılı).
+Grup sohbetleri varsayılan olarak engellenir (`channels.msteams.groupPolicy: "allowlist"`). Grup yanıtlarına izin vermek için `channels.msteams.groupAllowFrom` ayarlayın veya herhangi bir üyeye izin vermek için `groupPolicy: "open"` kullanın (bahsetme koşullu).
 </Note>
 
 ## Hedefler
 
-- Teams DM'leri, grup sohbetleri veya kanallar üzerinden OpenClaw ile konuşun.
-- Yönlendirmeyi deterministik tutun: yanıtlar her zaman geldikleri kanala geri gider.
-- Varsayılan olarak güvenli kanal davranışı kullanın (aksi yapılandırılmadıkça bahsetme gerekir).
+- Teams DM'leri, grup sohbetleri veya kanallar aracılığıyla OpenClaw ile konuşun.
+- Yönlendirmeyi deterministik tutun: yanıtlar her zaman geldikleri kanala geri döner.
+- Varsayılan olarak güvenli kanal davranışı kullanın (aksi yapılandırılmadıkça bahsetmeler gerekir).
 
 ## Yapılandırma yazmaları
 
@@ -154,14 +151,14 @@ Varsayılan olarak Microsoft Teams'in `/config set|unset` tarafından tetiklenen
 
 - Varsayılan: `channels.msteams.dmPolicy = "pairing"`. Bilinmeyen gönderenler onaylanana kadar yok sayılır.
 - `channels.msteams.allowFrom` kararlı AAD nesne ID'leri kullanmalıdır.
-- İzin listeleri için UPN/görünen ad eşleşmesine güvenmeyin - bunlar değişebilir. OpenClaw, doğrudan ad eşleşmesini varsayılan olarak devre dışı bırakır; `channels.msteams.dangerouslyAllowNameMatching: true` ile açıkça etkinleştirin.
-- Sihirbaz, kimlik bilgileri izin verdiğinde Microsoft Graph aracılığıyla adları ID'lere çözebilir.
+- İzin listeleri için UPN/görünen ad eşleştirmesine güvenmeyin; değişebilirler. OpenClaw doğrudan ad eşleştirmesini varsayılan olarak devre dışı bırakır; `channels.msteams.dangerouslyAllowNameMatching: true` ile açıkça etkinleştirin.
+- Sihirbaz, kimlik bilgileri izin verdiğinde Microsoft Graph aracılığıyla adları ID'lere çözümleyebilir.
 
 **Grup erişimi**
 
-- Varsayılan: `channels.msteams.groupPolicy = "allowlist"` (`groupAllowFrom` eklemediğiniz sürece engellenir). Ayarlanmadığında varsayılanı geçersiz kılmak için `channels.defaults.groupPolicy` kullanın.
+- Varsayılan: `channels.msteams.groupPolicy = "allowlist"` (`groupAllowFrom` eklemediğiniz sürece engellenir). Ayarlanmamışken varsayılanı geçersiz kılmak için `channels.defaults.groupPolicy` kullanın.
 - `channels.msteams.groupAllowFrom`, grup sohbetlerinde/kanallarda hangi gönderenlerin tetikleyebileceğini denetler (`channels.msteams.allowFrom` değerine geri döner).
-- Herhangi bir üyeye izin vermek için `groupPolicy: "open"` ayarlayın (varsayılan olarak yine de bahsetme kapılıdır).
+- Herhangi bir üyeye izin vermek için `groupPolicy: "open"` ayarlayın (varsayılan olarak yine bahsetme koşulludur).
 - **Hiçbir kanala** izin vermemek için `channels.msteams.groupPolicy: "disabled"` ayarlayın.
 
 Örnek:
@@ -179,12 +176,12 @@ Varsayılan olarak Microsoft Teams'in `/config set|unset` tarafından tetiklenen
 
 **Teams + kanal izin listesi**
 
-- Takımları ve kanalları `channels.msteams.teams` altında listeleyerek grup/kanal yanıtlarının kapsamını belirleyin.
+- `channels.msteams.teams` altında takımları ve kanalları listeleyerek grup/kanal yanıtlarının kapsamını belirleyin.
 - Anahtarlar, değişebilir görünen adlar yerine Teams bağlantılarındaki kararlı Teams konuşma ID'lerini kullanmalıdır.
-- `groupPolicy="allowlist"` olduğunda ve bir takım izin listesi mevcut olduğunda yalnızca listelenen takımlar/kanallar kabul edilir (bahsetme kapılı).
-- Yapılandırma sihirbazı `Team/Channel` girdilerini kabul eder ve sizin için depolar.
-- Başlatmada OpenClaw, takım/kanal ve kullanıcı izin listesi adlarını ID'lere çözer (Graph izinleri izin verdiğinde)
-  ve eşlemeyi günlüğe yazar; çözümlenemeyen takım/kanal adları yazıldığı gibi tutulur ancak `channels.msteams.dangerouslyAllowNameMatching: true` etkinleştirilmedikçe varsayılan olarak yönlendirme için yok sayılır.
+- `groupPolicy="allowlist"` olduğunda ve bir teams izin listesi mevcut olduğunda, yalnızca listelenen takımlar/kanallar kabul edilir (bahsetme koşullu).
+- Yapılandırma sihirbazı `Team/Channel` girdilerini kabul eder ve sizin için saklar.
+- Başlangıçta OpenClaw, takım/kanal ve kullanıcı izin listesi adlarını ID'lere çözümler (Graph izinleri izin verdiğinde)
+  ve eşlemeyi günlüğe yazar; çözümlenemeyen takım/kanal adları yazıldığı gibi tutulur ancak `channels.msteams.dangerouslyAllowNameMatching: true` etkinleştirilmediği sürece varsayılan olarak yönlendirmede yok sayılır.
 
 Örnek:
 
@@ -212,21 +209,21 @@ Teams CLI'yi kullanamıyorsanız botu Azure Portal üzerinden manuel olarak kura
 
 ### Nasıl çalışır
 
-1. Microsoft Teams plugin'inin kullanılabilir olduğundan emin olun (güncel sürümlerde birlikte gelir).
-2. Bir **Azure Bot** oluşturun (App ID + sır + tenant ID).
-3. Botu referans alan ve aşağıdaki RSC izinlerini içeren bir **Teams uygulama paketi** oluşturun.
+1. Microsoft Teams Plugin'inin kullanılabilir olduğundan emin olun (geçerli sürümlerde paketlenmiştir).
+2. Bir **Azure Bot** oluşturun (Uygulama ID'si + sır + tenant ID'si).
+3. Bota başvuran ve aşağıdaki RSC izinlerini içeren bir **Teams uygulama paketi** oluşturun.
 4. Teams uygulamasını bir takıma (veya DM'ler için kişisel kapsama) yükleyin/kurun.
-5. `~/.openclaw/openclaw.json` içinde (veya ortam değişkenleriyle) `msteams` yapılandırın ve Gateway'i başlatın.
-6. Gateway, varsayılan olarak `/api/messages` üzerinde Bot Framework Webhook trafiğini dinler.
+5. `~/.openclaw/openclaw.json` içinde (veya env vars ile) `msteams` yapılandırmasını yapın ve Gateway'i başlatın.
+6. Gateway, Bot Framework Webhook trafiğini varsayılan olarak `/api/messages` üzerinde dinler.
 
 ### 1. Adım: Azure Bot oluşturun
 
-1. [Create Azure Bot](https://portal.azure.com/#create/Microsoft.AzureBot) adresine gidin
+1. [Azure Bot Oluştur](https://portal.azure.com/#create/Microsoft.AzureBot) sayfasına gidin
 2. **Basics** sekmesini doldurun:
 
    | Alan               | Değer                                                    |
    | ------------------ | -------------------------------------------------------- |
-   | **Bot handle**     | Bot adınız, örn. `openclaw-msteams` (benzersiz olmalı) |
+   | **Bot handle**     | Bot adınız, ör. `openclaw-msteams` (benzersiz olmalıdır) |
    | **Subscription**   | Azure aboneliğinizi seçin                                |
    | **Resource group** | Yeni oluşturun veya mevcut olanı kullanın                |
    | **Pricing tier**   | Geliştirme/test için **Free**                            |
@@ -234,10 +231,10 @@ Teams CLI'yi kullanamıyorsanız botu Azure Portal üzerinden manuel olarak kura
    | **Creation type**  | **Create new Microsoft App ID**                          |
 
 <Warning>
-Yeni çok tenant'lı botların oluşturulması 2025-07-31 sonrasında kullanımdan kaldırıldı. Yeni botlar için **Single Tenant** kullanın.
+Yeni çok kiracılı botların oluşturulması 2025-07-31 sonrasında kullanımdan kaldırıldı. Yeni botlar için **Single Tenant** kullanın.
 </Warning>
 
-3. **Review + create** → **Create** öğesine tıklayın (yaklaşık 1-2 dakika bekleyin)
+3. **Review + create** → **Create** öğesine tıklayın (~1-2 dakika bekleyin)
 
 ### 2. Adım: Kimlik bilgilerini alın
 
@@ -245,31 +242,31 @@ Yeni çok tenant'lı botların oluşturulması 2025-07-31 sonrasında kullanımd
 2. **Microsoft App ID** değerini kopyalayın → bu sizin `appId` değerinizdir
 3. **Manage Password** öğesine tıklayın → App Registration'a gidin
 4. **Certificates & secrets** altında → **New client secret** → **Value** değerini kopyalayın → bu sizin `appPassword` değerinizdir
-5. **Overview** öğesine gidin → **Directory (tenant) ID** değerini kopyalayın → bu sizin `tenantId` değerinizdir
+5. **Overview** bölümüne gidin → **Directory (tenant) ID** değerini kopyalayın → bu sizin `tenantId` değerinizdir
 
-### 3. Adım: Messaging Endpoint yapılandırın
+### 3. Adım: Messaging Endpoint'i yapılandırın
 
-1. Azure Bot → **Configuration**
+1. Azure Bot → **Configuration** içinde
 2. **Messaging endpoint** değerini Webhook URL'nize ayarlayın:
    - Üretim: `https://your-domain.com/api/messages`
    - Yerel geliştirme: Bir tünel kullanın (aşağıdaki [Yerel Geliştirme](#local-development-tunneling) bölümüne bakın)
 
-### 4. Adım: Teams Kanalını etkinleştirin
+### 4. Adım: Teams Channel'ı etkinleştirin
 
-1. Azure Bot → **Channels**
-2. **Microsoft Teams** öğesine tıklayın → Configure → Save
-3. Terms of Service'i kabul edin
+1. Azure Bot → **Channels** içinde
+2. **Microsoft Teams** → Configure → Save öğelerine tıklayın
+3. Hizmet Şartları'nı kabul edin
 
 ### 5. Adım: Teams uygulama manifesti oluşturun
 
 - `botId = <App ID>` olan bir `bot` girdisi ekleyin.
 - Kapsamlar: `personal`, `team`, `groupChat`.
 - `supportsFiles: true` (kişisel kapsam dosya işleme için gereklidir).
-- RSC izinlerini ekleyin (bkz. [RSC İzinleri](#current-teams-rsc-permissions-manifest)).
+- RSC izinleri ekleyin (bkz. [RSC İzinleri](#current-teams-rsc-permissions-manifest)).
 - Simgeler oluşturun: `outline.png` (32x32) ve `color.png` (192x192).
 - Üç dosyayı birlikte zipleyin: `manifest.json`, `outline.png`, `color.png`.
 
-### 6. Adım: OpenClaw'u yapılandırın
+### 6. Adım: OpenClaw'ı yapılandırın
 
 ```json5
 {
@@ -289,24 +286,24 @@ Ortam değişkenleri: `MSTEAMS_APP_ID`, `MSTEAMS_APP_PASSWORD`, `MSTEAMS_TENANT_
 
 ### 7. Adım: Gateway'i çalıştırın
 
-Teams kanalı, plugin kullanılabilir olduğunda ve kimlik bilgileriyle birlikte `msteams` yapılandırması mevcut olduğunda otomatik olarak başlar.
+Microsoft Teams kanalı, Plugin kullanılabilir olduğunda ve `msteams` yapılandırması kimlik bilgileriyle birlikte mevcut olduğunda otomatik olarak başlar.
 
 </details>
 
-## Federe kimlik doğrulama (sertifika artı yönetilen kimlik)
+## Federe kimlik doğrulaması (sertifika artı yönetilen kimlik)
 
 > 2026.4.11'de eklendi
 
-Üretim dağıtımları için OpenClaw, istemci sırlarına daha güvenli bir alternatif olarak **federe kimlik doğrulama** destekler. İki yöntem kullanılabilir:
+Üretim dağıtımları için OpenClaw, istemci sırlarına daha güvenli bir alternatif olarak **federe kimlik doğrulamasını** destekler. İki yöntem mevcuttur:
 
-### Seçenek A: Sertifika tabanlı kimlik doğrulama
+### Seçenek A: Sertifika tabanlı kimlik doğrulaması
 
-Entra ID uygulama kaydınızla kayıtlı bir PEM sertifikası kullanın.
+Entra ID uygulama kaydınıza kayıtlı bir PEM sertifikası kullanın.
 
 **Kurulum:**
 
-1. Bir sertifika oluşturun veya edinin (özel anahtarlı PEM biçimi).
-2. Entra ID → App Registration → **Certificates & secrets** → **Certificates** içinde → genel sertifikayı yükleyin.
+1. Bir sertifika üretin veya edinin (özel anahtarlı PEM biçimi).
+2. Entra ID → App Registration → **Certificates & secrets** → **Certificates** → Genel sertifikayı yükleyin.
 
 **Yapılandırma:**
 
@@ -325,25 +322,25 @@ Entra ID uygulama kaydınızla kayıtlı bir PEM sertifikası kullanın.
 }
 ```
 
-**Ortam değişkenleri:**
+**Env vars:**
 
 - `MSTEAMS_AUTH_TYPE=federated`
 - `MSTEAMS_CERTIFICATE_PATH=/path/to/cert.pem`
 
 ### Seçenek B: Azure Managed Identity
 
-Parolasız kimlik doğrulama için Azure Managed Identity kullanın. Bu, yönetilen kimliğin mevcut olduğu Azure altyapısı (AKS, App Service, Azure VM'leri) üzerindeki dağıtımlar için idealdir.
+Parolasız kimlik doğrulaması için Azure Managed Identity kullanın. Bu, yönetilen kimliğin bulunduğu Azure altyapısındaki dağıtımlar (AKS, App Service, Azure VM'leri) için idealdir.
 
 **Nasıl çalışır:**
 
-1. Bot pod/VM'sinin bir yönetilen kimliği vardır (sistem atanmış veya kullanıcı atanmış).
+1. Bot pod/VM'si bir yönetilen kimliğe sahiptir (sistem atanmış veya kullanıcı atanmış).
 2. Bir **federe kimlik bilgisi**, yönetilen kimliği Entra ID uygulama kaydına bağlar.
-3. Çalışma zamanında OpenClaw, Azure IMDS uç noktasından (`169.254.169.254`) token almak için `@azure/identity` kullanır.
-4. Token, bot kimlik doğrulaması için Teams SDK'ya iletilir.
+3. Çalışma zamanında OpenClaw, Azure IMDS uç noktasından (`169.254.169.254`) belirteç almak için `@azure/identity` kullanır.
+4. Belirteç, bot kimlik doğrulaması için Teams SDK'ya geçirilir.
 
 **Ön koşullar:**
 
-- Yönetilen kimlik etkinleştirilmiş Azure altyapısı (AKS workload identity, App Service, VM)
+- Yönetilen kimlik etkinleştirilmiş Azure altyapısı (AKS iş yükü kimliği, App Service, VM)
 - Entra ID uygulama kaydında oluşturulmuş federe kimlik bilgisi
 - Pod/VM'den IMDS'ye (`169.254.169.254:80`) ağ erişimi
 
@@ -364,7 +361,7 @@ Parolasız kimlik doğrulama için Azure Managed Identity kullanın. Bu, yöneti
 }
 ```
 
-**Yapılandırma (kullanıcı atamalı yönetilen kimlik):**
+**Config (kullanıcı tarafından atanmış yönetilen kimlik):**
 
 ```json5
 {
@@ -386,14 +383,14 @@ Parolasız kimlik doğrulama için Azure Managed Identity kullanın. Bu, yöneti
 
 - `MSTEAMS_AUTH_TYPE=federated`
 - `MSTEAMS_USE_MANAGED_IDENTITY=true`
-- `MSTEAMS_MANAGED_IDENTITY_CLIENT_ID=<client-id>` (yalnızca kullanıcı atamalı için)
+- `MSTEAMS_MANAGED_IDENTITY_CLIENT_ID=<client-id>` (yalnızca kullanıcı tarafından atanmış için)
 
-### AKS iş yükü kimliği kurulumu
+### AKS İş Yükü Kimliği Kurulumu
 
 İş yükü kimliği kullanan AKS dağıtımları için:
 
 1. AKS kümenizde **iş yükü kimliğini etkinleştirin**.
-2. Entra ID uygulama kaydında **bir federated identity credential oluşturun**:
+2. Entra ID uygulama kaydında **bir birleşik kimlik kimlik bilgisi oluşturun**:
 
    ```bash
    az ad app federated-credential create --id <APP_OBJECT_ID> --parameters '{
@@ -415,7 +412,7 @@ Parolasız kimlik doğrulama için Azure Managed Identity kullanın. Bu, yöneti
        azure.workload.identity/client-id: "<APP_CLIENT_ID>"
    ```
 
-4. İş yükü kimliği enjeksiyonu için **pod’a etiket ekleyin**:
+4. İş yükü kimliği enjeksiyonu için **pod'a etiket ekleyin**:
 
    ```yaml
    metadata:
@@ -423,40 +420,40 @@ Parolasız kimlik doğrulama için Azure Managed Identity kullanın. Bu, yöneti
        azure.workload.identity/use: "true"
    ```
 
-5. IMDS’ye (`169.254.169.254`) **ağ erişimi olduğundan emin olun** - NetworkPolicy kullanıyorsanız 80 numaralı bağlantı noktasında `169.254.169.254/32` hedefine trafiğe izin veren bir çıkış kuralı ekleyin.
+5. IMDS'ye (`169.254.169.254`) **ağ erişimi olduğundan emin olun** - NetworkPolicy kullanıyorsanız 80 numaralı bağlantı noktasında `169.254.169.254/32` adresine trafiğe izin veren bir çıkış kuralı ekleyin.
 
 ### Kimlik doğrulama türü karşılaştırması
 
-| Yöntem                  | Yapılandırma                                  | Artılar                                | Eksiler                                      |
-| ----------------------- | -------------------------------------------- | -------------------------------------- | ------------------------------------------- |
-| **İstemci gizli dizisi** | `appPassword`                                | Basit kurulum                          | Gizli dizi rotasyonu gerekir, daha az güvenli |
-| **Sertifika**           | `authType: "federated"` + `certificatePath`  | Ağ üzerinden paylaşılan gizli dizi yok | Sertifika yönetimi yükü                     |
-| **Yönetilen kimlik**    | `authType: "federated"` + `useManagedIdentity` | Parolasız, yönetilecek gizli dizi yok  | Azure altyapısı gerekir                     |
+| Yöntem                | Config                                         | Artılar                              | Eksiler                                           |
+| --------------------- | ---------------------------------------------- | ------------------------------------ | ------------------------------------------------- |
+| **İstemci gizli anahtarı** | `appPassword`                                  | Basit kurulum                        | Gizli anahtar rotasyonu gerekir, daha az güvenli  |
+| **Sertifika**         | `authType: "federated"` + `certificatePath`    | Ağ üzerinden paylaşılan gizli anahtar yok | Sertifika yönetimi yükü                       |
+| **Yönetilen Kimlik**  | `authType: "federated"` + `useManagedIdentity` | Parolasız, yönetilecek gizli anahtar yok | Azure altyapısı gerekir                        |
 
-**Varsayılan davranış:** `authType` ayarlanmadığında OpenClaw varsayılan olarak istemci gizli dizisi kimlik doğrulamasını kullanır. Mevcut yapılandırmalar değişiklik yapılmadan çalışmaya devam eder.
+**Varsayılan davranış:** `authType` ayarlanmadığında OpenClaw varsayılan olarak istemci gizli anahtarı kimlik doğrulamasını kullanır. Mevcut yapılandırmalar değişiklik yapılmadan çalışmaya devam eder.
 
 ## Yerel geliştirme (tünelleme)
 
-Teams `localhost` adresine erişemez. URL’nizin oturumlar arasında aynı kalması için kalıcı bir geliştirme tüneli kullanın:
+Teams `localhost` adresine erişemez. URL'nizin oturumlar arasında aynı kalması için kalıcı bir geliştirme tüneli kullanın:
 
 ```bash
-# One-time setup:
+# Tek seferlik kurulum:
 devtunnel create my-openclaw-bot --allow-anonymous
 devtunnel port create my-openclaw-bot -p 3978 --protocol auto
 
-# Each dev session:
+# Her geliştirme oturumu:
 devtunnel host my-openclaw-bot
 ```
 
-Alternatifler: `ngrok http 3978` veya `tailscale funnel 3978` (URL’ler her oturumda değişebilir).
+Alternatifler: `ngrok http 3978` veya `tailscale funnel 3978` (URL'ler her oturumda değişebilir).
 
-Tünel URL’niz değişirse uç noktayı güncelleyin:
+Tünel URL'niz değişirse uç noktayı güncelleyin:
 
 ```bash
 teams app update <teamsAppId> --endpoint "https://<new-url>/api/messages"
 ```
 
-## Botu test etme
+## Botu Test Etme
 
 **Tanılamaları çalıştırın:**
 
@@ -466,11 +463,11 @@ teams app doctor <teamsAppId>
 
 Bot kaydını, AAD uygulamasını, manifesti ve SSO yapılandırmasını tek geçişte denetler.
 
-**Test iletisi gönderin:**
+**Bir test iletisi gönderin:**
 
-1. Teams uygulamasını yükleyin (`teams app get <id> --install-link` komutundaki yükleme bağlantısını kullanın)
+1. Teams uygulamasını yükleyin (`teams app get <id> --install-link` komutundan gelen yükleme bağlantısını kullanın)
 2. Teams içinde botu bulun ve bir DM gönderin
-3. Gelen etkinlik için Gateway günlüklerini denetleyin
+3. Gelen etkinlik için gateway günlüklerini denetleyin
 
 ## Ortam değişkenleri
 
@@ -480,38 +477,38 @@ Tüm yapılandırma anahtarları bunun yerine ortam değişkenleriyle ayarlanabi
 - `MSTEAMS_APP_PASSWORD`
 - `MSTEAMS_TENANT_ID`
 - `MSTEAMS_AUTH_TYPE` (isteğe bağlı: `"secret"` veya `"federated"`)
-- `MSTEAMS_CERTIFICATE_PATH` (federated + sertifika)
-- `MSTEAMS_CERTIFICATE_THUMBPRINT` (isteğe bağlı, kimlik doğrulama için gerekli değildir)
-- `MSTEAMS_USE_MANAGED_IDENTITY` (federated + yönetilen kimlik)
-- `MSTEAMS_MANAGED_IDENTITY_CLIENT_ID` (yalnızca kullanıcı atamalı MI)
+- `MSTEAMS_CERTIFICATE_PATH` (birleşik + sertifika)
+- `MSTEAMS_CERTIFICATE_THUMBPRINT` (isteğe bağlı, kimlik doğrulama için gerekli değil)
+- `MSTEAMS_USE_MANAGED_IDENTITY` (birleşik + yönetilen kimlik)
+- `MSTEAMS_MANAGED_IDENTITY_CLIENT_ID` (yalnızca kullanıcı tarafından atanmış MI)
 
 ## Üye bilgisi eylemi
 
-OpenClaw, ajanların ve otomasyonların kanal üyesi ayrıntılarını (görünen ad, e-posta, rol) doğrudan Microsoft Graph üzerinden çözümleyebilmesi için Microsoft Teams’e yönelik Graph destekli bir `member-info` eylemi sunar.
+OpenClaw, aracıların ve otomasyonların kanal üyesi ayrıntılarını (görünen ad, e-posta, rol) doğrudan Microsoft Graph üzerinden çözebilmesi için Microsoft Teams'e Graph destekli bir `member-info` eylemi sunar.
 
 Gereksinimler:
 
-- `Member.Read.Group` RSC izni (önerilen manifestte zaten var)
-- Ekipler arası aramalar için: yönetici onayıyla `User.Read.All` Graph Application izni
+- `Member.Read.Group` RSC izni (önerilen manifestte zaten bulunur)
+- Ekipler arası aramalar için: yönetici onayıyla `User.Read.All` Graph Uygulama izni
 
-Eylem `channels.msteams.actions.memberInfo` tarafından denetlenir (varsayılan: Graph kimlik bilgileri kullanılabilir olduğunda etkin).
+Eylem `channels.msteams.actions.memberInfo` ile denetlenir (varsayılan: Graph kimlik bilgileri kullanılabilir olduğunda etkin).
 
 ## Geçmiş bağlamı
 
-- `channels.msteams.historyLimit`, kaç yeni kanal/grup iletisinin isteme sarılacağını denetler.
+- `channels.msteams.historyLimit`, isteme kaç son kanal/grup iletisinin sarılacağını denetler.
 - `messages.groupChat.historyLimit` değerine geri döner. Devre dışı bırakmak için `0` olarak ayarlayın (varsayılan 50).
-- Alınan iş parçacığı geçmişi gönderen izin listelerine (`allowFrom` / `groupAllowFrom`) göre filtrelenir; bu nedenle iş parçacığı bağlamı başlatma yalnızca izin verilen gönderenlerden gelen iletileri içerir.
-- Alıntılanan ek bağlamı (Teams yanıt HTML’sinden türetilen `ReplyTo*`) şu anda alındığı gibi geçirilir.
-- Başka bir deyişle, izin listeleri ajanı kimin tetikleyebileceğini sınırlar; bugün yalnızca belirli ek bağlam yolları filtrelenir.
-- DM geçmişi `channels.msteams.dmHistoryLimit` ile sınırlandırılabilir (kullanıcı turları). Kullanıcı bazlı geçersiz kılmalar: `channels.msteams.dms["<user_id>"].historyLimit`.
+- Alınan konu geçmişi gönderici izin listelerine (`allowFrom` / `groupAllowFrom`) göre filtrelenir; bu nedenle konu bağlamı besleme yalnızca izin verilen göndericilerden gelen iletileri içerir.
+- Alıntılanan ek bağlamı (Teams yanıt HTML'sinden türetilen `ReplyTo*`) şu anda alındığı gibi iletilir.
+- Başka bir deyişle, izin listeleri aracıyı kimin tetikleyebileceğini denetler; bugün yalnızca belirli ek bağlam yolları filtrelenir.
+- DM geçmişi `channels.msteams.dmHistoryLimit` (kullanıcı dönüşleri) ile sınırlandırılabilir. Kullanıcı başına geçersiz kılmalar: `channels.msteams.dms["<user_id>"].historyLimit`.
 
-## Geçerli Teams RSC izinleri (manifest)
+## Mevcut Teams RSC izinleri (manifest)
 
 Bunlar Teams uygulama manifestimizdeki **mevcut resourceSpecific izinleridir**. Yalnızca uygulamanın yüklü olduğu ekip/sohbet içinde geçerlidir.
 
 **Kanallar için (ekip kapsamı):**
 
-- `ChannelMessage.Read.Group` (Application) - @mention olmadan tüm kanal iletilerini al
+- `ChannelMessage.Read.Group` (Application) - @mention olmadan tüm kanal iletilerini alma
 - `ChannelMessage.Send.Group` (Application)
 - `Member.Read.Group` (Application)
 - `Owner.Read.Group` (Application)
@@ -521,9 +518,9 @@ Bunlar Teams uygulama manifestimizdeki **mevcut resourceSpecific izinleridir**. 
 
 **Grup sohbetleri için:**
 
-- `ChatMessage.Read.Chat` (Application) - @mention olmadan tüm grup sohbeti iletilerini al
+- `ChatMessage.Read.Chat` (Application) - @mention olmadan tüm grup sohbeti iletilerini alma
 
-Teams CLI üzerinden RSC izinleri eklemek için:
+Teams CLI ile RSC izinleri eklemek için:
 
 ```bash
 teams app rsc add <teamsAppId> ChannelMessage.Read.Group --type Application
@@ -531,7 +528,7 @@ teams app rsc add <teamsAppId> ChannelMessage.Read.Group --type Application
 
 ## Örnek Teams manifesti (düzenlenmiş)
 
-Gerekli alanlarla minimal, geçerli örnek. Kimlikleri ve URL’leri değiştirin.
+Gerekli alanlarla birlikte minimal, geçerli örnek. Kimlikleri ve URL'leri değiştirin.
 
 ```json5
 {
@@ -579,43 +576,43 @@ Gerekli alanlarla minimal, geçerli örnek. Kimlikleri ve URL’leri değiştiri
 }
 ```
 
-### Manifest uyarıları (zorunlu alanlar)
+### Manifest uyarıları (olmazsa olmaz alanlar)
 
-- `bots[].botId`, Azure Bot uygulama kimliğiyle **eşleşmelidir**.
-- `webApplicationInfo.id`, Azure Bot uygulama kimliğiyle **eşleşmelidir**.
-- `bots[].scopes`, kullanmayı planladığınız yüzeyleri (`personal`, `team`, `groupChat`) içermelidir.
+- `bots[].botId` Azure Bot App ID ile **eşleşmelidir**.
+- `webApplicationInfo.id` Azure Bot App ID ile **eşleşmelidir**.
+- `bots[].scopes` kullanmayı planladığınız yüzeyleri içermelidir (`personal`, `team`, `groupChat`).
 - `bots[].supportsFiles: true`, kişisel kapsamda dosya işleme için gereklidir.
-- Kanal trafiği istiyorsanız `authorization.permissions.resourceSpecific` kanal okuma/göndermeyi içermelidir.
+- Kanal trafiği istiyorsanız `authorization.permissions.resourceSpecific` kanal okuma/gönderme izinlerini içermelidir.
 
 ### Mevcut bir uygulamayı güncelleme
 
-Zaten yüklü bir Teams uygulamasını güncellemek için (ör. RSC izinleri eklemek üzere):
+Zaten yüklenmiş bir Teams uygulamasını güncellemek için (ör. RSC izinleri eklemek):
 
 ```bash
-# Download, edit, and re-upload the manifest
+# Manifesti indirin, düzenleyin ve yeniden yükleyin
 teams app manifest download <teamsAppId> manifest.json
-# Edit manifest.json locally...
+# manifest.json dosyasını yerel olarak düzenleyin...
 teams app manifest upload manifest.json <teamsAppId>
-# Version is auto-bumped if content changed
+# İçerik değiştiyse sürüm otomatik artırılır
 ```
 
-Güncellemeden sonra yeni izinlerin etkili olması için uygulamayı her ekipte yeniden yükleyin ve önbelleğe alınmış uygulama meta verilerini temizlemek için **Teams’ten tamamen çıkıp yeniden başlatın** (yalnızca pencereyi kapatmayın).
+Güncellemeden sonra, yeni izinlerin etkili olması için uygulamayı her ekipte yeniden yükleyin ve önbelleğe alınmış uygulama meta verilerini temizlemek için **Teams'i tamamen kapatıp yeniden başlatın** (yalnızca pencereyi kapatmak yetmez).
 
 <details>
-<summary>Manuel manifest güncellemesi (CLI olmadan)</summary>
+<summary>El ile manifest güncellemesi (CLI olmadan)</summary>
 
 1. `manifest.json` dosyanızı yeni ayarlarla güncelleyin
 2. **`version` alanını artırın** (ör. `1.0.0` → `1.1.0`)
 3. Manifesti simgelerle birlikte **yeniden zipleyin** (`manifest.json`, `outline.png`, `color.png`)
 4. Yeni zip dosyasını yükleyin:
-   - **Teams Yönetim Merkezi:** Teams uygulamaları → Uygulamaları yönet → uygulamanızı bulun → Yeni sürüm yükle
-   - **Sideload:** Teams içinde → Uygulamalar → Uygulamalarınızı yönetin → Özel uygulama yükle
+   - **Teams Admin Center:** Teams apps → Manage apps → uygulamanızı bulun → Upload new version
+   - **Yandan yükleme:** Teams içinde → Apps → Manage your apps → Upload a custom app
 
 </details>
 
-## Yetenekler: yalnızca RSC ve Graph karşılaştırması
+## Yetenekler: yalnızca RSC ve Graph
 
-### **Yalnızca Teams RSC** ile (uygulama yüklü, Graph API izinleri yok)
+### Yalnızca **Teams RSC** ile (uygulama yüklü, Graph API izni yok)
 
 Çalışır:
 
@@ -625,41 +622,41 @@ Güncellemeden sonra yeni izinlerin etkili olması için uygulamayı her ekipte 
 
 Çalışmaz:
 
-- Kanal/grup **görüntü veya dosya içerikleri** (payload yalnızca HTML stub içerir).
-- SharePoint/OneDrive’da depolanan ekleri indirme.
-- İleti geçmişini okuma (canlı Webhook olayı dışında).
+- Kanal/grup **görüntü veya dosya içerikleri** (yük yalnızca HTML yer tutucusu içerir).
+- SharePoint/OneDrive içinde depolanan ekleri indirme.
+- İleti geçmişini okuma (canlı Webhook olayı ötesinde).
 
-### **Teams RSC + Microsoft Graph Application izinleri** ile
+### **Teams RSC + Microsoft Graph Uygulama izinleri** ile
 
 Şunları ekler:
 
 - Barındırılan içerikleri indirme (iletilere yapıştırılan görüntüler).
-- SharePoint/OneDrive’da depolanan dosya eklerini indirme.
+- SharePoint/OneDrive içinde depolanan dosya eklerini indirme.
 - Graph üzerinden kanal/sohbet ileti geçmişini okuma.
 
-### RSC ve Graph API karşılaştırması
+### RSC ve Graph API
 
-| Yetenek                  | RSC İzinleri          | Graph API                                |
-| ------------------------ | --------------------- | ---------------------------------------- |
-| **Gerçek zamanlı iletiler** | Evet (Webhook ile)    | Hayır (yalnızca yoklama)                 |
-| **Geçmiş iletiler**      | Hayır                 | Evet (geçmiş sorgulanabilir)             |
+| Yetenek                 | RSC İzinleri         | Graph API                              |
+| ----------------------- | -------------------- | -------------------------------------- |
+| **Gerçek zamanlı iletiler** | Evet (Webhook üzerinden) | Hayır (yalnızca yoklama)           |
+| **Geçmiş iletiler**     | Hayır                | Evet (geçmiş sorgulanabilir)           |
 | **Kurulum karmaşıklığı** | Yalnızca uygulama manifesti | Yönetici onayı + token akışı gerekir |
-| **Çevrimdışı çalışır**   | Hayır (çalışıyor olmalı) | Evet (her zaman sorgulanabilir)       |
+| **Çevrimdışı çalışır**  | Hayır (çalışıyor olmalı) | Evet (her zaman sorgulanabilir)     |
 
-**Özet:** RSC gerçek zamanlı dinleme içindir; Graph API geçmişe erişim içindir. Çevrimdışıyken kaçırılan iletileri yakalamak için `ChannelMessage.Read.All` ile Graph API gerekir (yönetici onayı gerektirir).
+**Özet:** RSC gerçek zamanlı dinleme içindir; Graph API geçmiş erişimi içindir. Çevrimdışıyken kaçırılan iletileri yakalamak için `ChannelMessage.Read.All` ile Graph API gerekir (yönetici onayı gerektirir).
 
-## Graph etkin medya + geçmiş (kanallar için gereklidir)
+## Graph etkin medya + geçmiş (kanallar için gerekli)
 
-**Kanallarda** görüntü/dosyalara ihtiyacınız varsa veya **ileti geçmişini** almak istiyorsanız Microsoft Graph izinlerini etkinleştirmeli ve yönetici onayı vermelisiniz.
+**Kanallarda** görüntülere/dosyalara ihtiyacınız varsa veya **ileti geçmişini** almak istiyorsanız Microsoft Graph izinlerini etkinleştirmeli ve yönetici onayı vermelisiniz.
 
-1. Entra ID (Azure AD) **Uygulama Kaydı** içinde Microsoft Graph **Application izinleri** ekleyin:
+1. Entra ID (Azure AD) **Uygulama Kaydı** içinde Microsoft Graph **Uygulama izinleri** ekleyin:
    - `ChannelMessage.Read.All` (kanal ekleri + geçmiş)
    - `Chat.Read.All` veya `ChatMessage.Read.All` (grup sohbetleri)
 2. Kiracı için **yönetici onayı verin**.
-3. Teams uygulaması **manifest sürümünü** artırın, yeniden yükleyin ve **uygulamayı Teams’te yeniden yükleyin**.
-4. Önbelleğe alınmış uygulama meta verilerini temizlemek için **Teams’ten tamamen çıkıp yeniden başlatın**.
+3. Teams uygulaması **manifest sürümünü** artırın, yeniden yükleyin ve **uygulamayı Teams'te yeniden yükleyin**.
+4. Önbelleğe alınmış uygulama meta verilerini temizlemek için **Teams'i tamamen kapatıp yeniden başlatın**.
 
-**Kullanıcı bahsetmeleri için ek izin:** Kullanıcı @mentions, konuşmadaki kullanıcılar için varsayılan olarak çalışır. Ancak **mevcut konuşmada olmayan** kullanıcıları dinamik olarak aramak ve onlardan bahsetmek istiyorsanız `User.Read.All` (Application) iznini ekleyin ve yönetici onayı verin.
+**Kullanıcı bahsetmeleri için ek izin:** Kullanıcı @mentions, konuşmadaki kullanıcılar için kutudan çıktığı gibi çalışır. Ancak **mevcut konuşmada olmayan** kullanıcıları dinamik olarak aramak ve bahsetmek istiyorsanız `User.Read.All` (Application) iznini ekleyin ve yönetici onayı verin.
 
 ## Bilinen sınırlamalar
 
@@ -668,75 +665,75 @@ Güncellemeden sonra yeni izinlerin etkili olması için uygulamayı her ekipte 
 Teams iletileri HTTP Webhook üzerinden teslim eder. İşleme çok uzun sürerse (ör. yavaş LLM yanıtları), şunları görebilirsiniz:
 
 - Gateway zaman aşımları
-- Teams’in iletiyi yeniden denemesi (yinelenenlere neden olur)
+- Teams'in iletiyi yeniden denemesi (yinelenenlere neden olur)
 - Düşen yanıtlar
 
-OpenClaw bunu hızlı dönerek ve yanıtları proaktif olarak göndererek ele alır, ancak çok yavaş yanıtlar yine de sorunlara neden olabilir.
+OpenClaw bunu hızlı dönerek ve yanıtları proaktif şekilde göndererek yönetir, ancak çok yavaş yanıtlar yine de sorunlara neden olabilir.
 
 ### Biçimlendirme
 
-Teams markdown’u Slack veya Discord’dan daha sınırlıdır:
+Teams markdown'ı Slack veya Discord'a göre daha sınırlıdır:
 
 - Temel biçimlendirme çalışır: **kalın**, _italik_, `code`, bağlantılar
-- Karmaşık markdown (tablolar, iç içe listeler) doğru işlenmeyebilir
+- Karmaşık markdown (tablolar, iç içe listeler) doğru şekilde işlenmeyebilir
 - Adaptive Cards, anketler ve anlamsal sunum gönderimleri için desteklenir (aşağıya bakın)
 
 ## Yapılandırma
 
-Anahtar ayarlar (paylaşılan kanal kalıpları için `/gateway/configuration` bölümüne bakın):
+Temel ayarlar (paylaşılan kanal kalıpları için `/gateway/configuration` bölümüne bakın):
 
 - `channels.msteams.enabled`: kanalı etkinleştirir/devre dışı bırakır.
 - `channels.msteams.appId`, `channels.msteams.appPassword`, `channels.msteams.tenantId`: bot kimlik bilgileri.
 - `channels.msteams.webhook.port` (varsayılan `3978`)
 - `channels.msteams.webhook.path` (varsayılan `/api/messages`)
-- `channels.msteams.dmPolicy`: `pairing | allowlist | open | disabled` (varsayılan: eşleştirme)
-- `channels.msteams.allowFrom`: DM izin listesi (AAD nesne kimlikleri önerilir). Graph erişimi mevcut olduğunda sihirbaz kurulum sırasında adları kimliklere çözümler.
-- `channels.msteams.dangerouslyAllowNameMatching`: değiştirilebilir UPN/görünen ad eşleştirmesini ve doğrudan ekip/kanal adına yönlendirmeyi yeniden etkinleştirmek için acil durum anahtarı.
-- `channels.msteams.textChunkLimit`: giden metin parça boyutu.
-- `channels.msteams.chunkMode`: uzunluğa göre parçalamadan önce boş satırlardan (paragraf sınırları) bölmek için `length` (varsayılan) veya `newline`.
+- `channels.msteams.dmPolicy`: `pairing | allowlist | open | disabled` (varsayılan: pairing)
+- `channels.msteams.allowFrom`: DM izin listesi (AAD nesne ID’leri önerilir). Graph erişimi kullanılabilir olduğunda sihirbaz, kurulum sırasında adları ID’lere çözer.
+- `channels.msteams.dangerouslyAllowNameMatching`: değiştirilebilir UPN/görünen ad eşleştirmesini ve doğrudan ekip/kanal adıyla yönlendirmeyi yeniden etkinleştiren acil durum anahtarı.
+- `channels.msteams.textChunkLimit`: giden metin parçası boyutu.
+- `channels.msteams.chunkMode`: uzunluğa göre parçalamadan önce boş satırlarda (paragraf sınırlarında) bölmek için `length` (varsayılan) veya `newline`.
 - `channels.msteams.mediaAllowHosts`: gelen ek ana makineleri için izin listesi (varsayılan olarak Microsoft/Teams etki alanları).
-- `channels.msteams.mediaAuthAllowHosts`: medya yeniden denemelerinde Authorization başlıklarını eklemek için izin listesi (varsayılan olarak Graph + Bot Framework ana makineleri).
+- `channels.msteams.mediaAuthAllowHosts`: medya yeniden denemelerinde Authorization üstbilgileri eklemek için izin listesi (varsayılan olarak Graph + Bot Framework ana makineleri).
 - `channels.msteams.requireMention`: kanallarda/gruplarda @mention gerektirir (varsayılan true).
 - `channels.msteams.replyStyle`: `thread | top-level` ([Yanıt Stili](#reply-style-threads-vs-posts) bölümüne bakın).
 - `channels.msteams.teams.<teamId>.replyStyle`: ekip başına geçersiz kılma.
 - `channels.msteams.teams.<teamId>.requireMention`: ekip başına geçersiz kılma.
-- `channels.msteams.teams.<teamId>.tools`: kanal geçersiz kılması yoksa kullanılan ekip başına varsayılan araç ilkesi geçersiz kılmaları (`allow`/`deny`/`alsoAllow`).
+- `channels.msteams.teams.<teamId>.tools`: kanal geçersiz kılma eksik olduğunda kullanılan, ekip başına varsayılan araç ilkesi geçersiz kılmaları (`allow`/`deny`/`alsoAllow`).
 - `channels.msteams.teams.<teamId>.toolsBySender`: ekip başına, gönderen başına varsayılan araç ilkesi geçersiz kılmaları (`"*"` joker karakteri desteklenir).
 - `channels.msteams.teams.<teamId>.channels.<conversationId>.replyStyle`: kanal başına geçersiz kılma.
 - `channels.msteams.teams.<teamId>.channels.<conversationId>.requireMention`: kanal başına geçersiz kılma.
 - `channels.msteams.teams.<teamId>.channels.<conversationId>.tools`: kanal başına araç ilkesi geçersiz kılmaları (`allow`/`deny`/`alsoAllow`).
 - `channels.msteams.teams.<teamId>.channels.<conversationId>.toolsBySender`: kanal başına, gönderen başına araç ilkesi geçersiz kılmaları (`"*"` joker karakteri desteklenir).
-- `toolsBySender` anahtarları açık önekler kullanmalıdır:
-  `id:`, `e164:`, `username:`, `name:` (eski öneksiz anahtarlar hâlâ yalnızca `id:` ile eşleşir).
-- `channels.msteams.actions.memberInfo`: Graph destekli üye bilgisi eylemini etkinleştirir veya devre dışı bırakır (varsayılan: Graph kimlik bilgileri mevcut olduğunda etkin).
+- `toolsBySender` anahtarları açık ön ekler kullanmalıdır:
+  `id:`, `e164:`, `username:`, `name:` (eski ön eksiz anahtarlar hâlâ yalnızca `id:` ile eşleşir).
+- `channels.msteams.actions.memberInfo`: Graph destekli üye bilgisi eylemini etkinleştirir veya devre dışı bırakır (varsayılan: Graph kimlik bilgileri kullanılabilir olduğunda etkin).
 - `channels.msteams.authType`: kimlik doğrulama türü - `"secret"` (varsayılan) veya `"federated"`.
 - `channels.msteams.certificatePath`: PEM sertifika dosyasının yolu (federated + sertifika kimlik doğrulaması).
-- `channels.msteams.certificateThumbprint`: sertifika parmak izi (isteğe bağlı, kimlik doğrulama için gerekli değil).
-- `channels.msteams.useManagedIdentity`: yönetilen kimlik kimlik doğrulamasını etkinleştirir (federated modu).
-- `channels.msteams.managedIdentityClientId`: kullanıcı tarafından atanan yönetilen kimlik için istemci kimliği.
-- `channels.msteams.sharePointSiteId`: grup sohbetlerinde/kanallarda dosya yüklemeleri için SharePoint site kimliği ([Grup sohbetlerinde dosya gönderme](#sending-files-in-group-chats) bölümüne bakın).
+- `channels.msteams.certificateThumbprint`: sertifika parmak izi (isteğe bağlı, kimlik doğrulama için gerekli değildir).
+- `channels.msteams.useManagedIdentity`: managed identity kimlik doğrulamasını etkinleştirir (federated modu).
+- `channels.msteams.managedIdentityClientId`: kullanıcı tarafından atanmış managed identity için istemci ID’si.
+- `channels.msteams.sharePointSiteId`: grup sohbetlerinde/kanallarda dosya yüklemeleri için SharePoint site ID’si ([Grup sohbetlerinde dosya gönderme](#sending-files-in-group-chats) bölümüne bakın).
 
 ## Yönlendirme ve oturumlar
 
-- Oturum anahtarları standart ajan biçimini izler ([/concepts/session](/tr/concepts/session) bölümüne bakın):
-  - Doğrudan mesajlar ana oturumu paylaşır (`agent:<agentId>:<mainKey>`).
-  - Kanal/grup mesajları konuşma kimliğini kullanır:
+- Oturum anahtarları standart agent biçimini izler ([/concepts/session](/tr/concepts/session) bölümüne bakın):
+  - Doğrudan iletiler ana oturumu paylaşır (`agent:<agentId>:<mainKey>`).
+  - Kanal/grup iletileri konuşma ID’sini kullanır:
     - `agent:<agentId>:msteams:channel:<conversationId>`
     - `agent:<agentId>:msteams:group:<conversationId>`
 
-## Yanıt stili: iş parçacıkları ve gönderiler
+## Yanıt stili: threads ve posts
 
-Teams kısa süre önce aynı temel veri modeli üzerinde iki kanal kullanıcı arayüzü stili tanıttı:
+Teams yakın zamanda aynı temel veri modeli üzerinde iki kanal UI stili tanıttı:
 
 | Stil                     | Açıklama                                                     | Önerilen `replyStyle` |
 | ------------------------ | ------------------------------------------------------------ | --------------------- |
-| **Gönderiler** (klasik)  | Mesajlar, altında iş parçacıklı yanıtlar bulunan kartlar olarak görünür | `thread` (varsayılan) |
-| **İş parçacıkları** (Slack benzeri) | Mesajlar Slack'e daha benzer şekilde doğrusal akar      | `top-level`           |
+| **Posts** (klasik)       | İletiler, altında thread yanıtları olan kartlar olarak görünür | `thread` (varsayılan) |
+| **Threads** (Slack benzeri) | İletiler Slack’e daha benzer şekilde doğrusal akar          | `top-level`           |
 
-**Sorun:** Teams API, bir kanalın hangi kullanıcı arayüzü stilini kullandığını açığa çıkarmaz. Yanlış `replyStyle` kullanırsanız:
+**Sorun:** Teams API, bir kanalın hangi UI stilini kullandığını göstermez. Yanlış `replyStyle` kullanırsanız:
 
-- İş parçacığı stilindeki bir kanalda `thread` → yanıtlar garip şekilde iç içe görünür
-- Gönderi stilindeki bir kanalda `top-level` → yanıtlar iş parçacığı içinde değil, ayrı üst düzey gönderiler olarak görünür
+- Threads stili bir kanalda `thread` → yanıtlar garip biçimde iç içe görünür
+- Posts stili bir kanalda `top-level` → yanıtlar thread içinde değil, ayrı üst düzey gönderiler olarak görünür
 
 **Çözüm:** Kanalın nasıl ayarlandığına göre kanal başına `replyStyle` yapılandırın:
 
@@ -759,41 +756,62 @@ Teams kısa süre önce aynı temel veri modeli üzerinde iki kanal kullanıcı 
 }
 ```
 
+### Çözümleme önceliği
+
+Bot bir kanala yanıt gönderdiğinde, `replyStyle` en özel geçersiz kılmadan varsayılana doğru çözümlenir. İlk `undefined` olmayan değer kazanır:
+
+1. **Kanal başına** — `channels.msteams.teams.<teamId>.channels.<conversationId>.replyStyle`
+2. **Ekip başına** — `channels.msteams.teams.<teamId>.replyStyle`
+3. **Genel** — `channels.msteams.replyStyle`
+4. **Örtük varsayılan** — `requireMention` üzerinden türetilir:
+   - `requireMention: true` → `thread`
+   - `requireMention: false` → `top-level`
+
+Açık bir `replyStyle` olmadan genel olarak `requireMention: false` ayarlarsanız, Posts stili kanallardaki mention’lar, gelen ileti bir thread yanıtı olsa bile üst düzey gönderiler olarak görünür. Beklenmedik durumları önlemek için genel, ekip veya kanal düzeyinde `replyStyle: "thread"` sabitleyin.
+
+### Thread bağlamını koruma
+
+`replyStyle: "thread"` etkin olduğunda ve bot bir kanal thread’i içinden @mentioned olduğunda, OpenClaw özgün thread kökünü giden konuşma referansına (`19:…@thread.tacv2;messageid=<root>`) yeniden ekler; böylece yanıt aynı thread içine düşer. Bu, hem canlı (tur içi) gönderimler hem de Bot Framework tur bağlamı süresi dolduktan sonra yapılan proaktif gönderimler için geçerlidir (ör. uzun çalışan agent’lar, `mcp__openclaw__message` üzerinden kuyruğa alınmış tool-call yanıtları).
+
+Thread kökü, konuşma referansında saklanan `threadId` değerinden alınır. `threadId` öncesine ait daha eski saklanmış referanslar `activityId` değerine (konuşmayı en son başlatan gelen etkinlik neyse) geri döner; böylece mevcut dağıtımlar yeniden tohumlama olmadan çalışmaya devam eder.
+
+`replyStyle: "top-level"` etkin olduğunda, kanal-thread gelen iletileri bilerek yeni üst düzey gönderiler olarak yanıtlanır — thread soneki eklenmez. Threads stili kanallar için doğru davranış budur; thread yanıtları beklediğiniz yerde üst düzey gönderiler görüyorsanız, o kanal için `replyStyle` yanlış ayarlanmıştır.
+
 ## Ekler ve görseller
 
-**Geçerli sınırlamalar:**
+**Mevcut sınırlamalar:**
 
-- **DM'ler:** Görseller ve dosya ekleri Teams bot dosya API'leri üzerinden çalışır.
-- **Kanallar/gruplar:** Ekler M365 depolamasında (SharePoint/OneDrive) bulunur. Webhook yükü gerçek dosya baytlarını değil, yalnızca bir HTML taslağını içerir. Kanal eklerini indirmek için **Graph API izinleri gereklidir**.
+- **DM’ler:** Görseller ve dosya ekleri Teams bot dosya API’leri üzerinden çalışır.
+- **Kanallar/gruplar:** Ekler M365 depolamasında (SharePoint/OneDrive) bulunur. Webhook yükü gerçek dosya baytlarını değil, yalnızca bir HTML stub’ını içerir. Kanal eklerini indirmek için **Graph API izinleri gereklidir**.
 - Açıkça dosya öncelikli gönderimler için `media` / `filePath` / `path` ile `action=upload-file` kullanın; isteğe bağlı `message` eşlik eden metin/yorum olur ve `filename` yüklenen adı geçersiz kılar.
 
-Graph izinleri olmadan, görsel içeren kanal mesajları yalnızca metin olarak alınır (görsel içeriğine bot erişemez).
+Graph izinleri olmadan, görsel içeren kanal iletileri yalnızca metin olarak alınır (görsel içeriğine bot tarafından erişilemez).
 Varsayılan olarak OpenClaw medyayı yalnızca Microsoft/Teams ana makine adlarından indirir. `channels.msteams.mediaAllowHosts` ile geçersiz kılın (herhangi bir ana makineye izin vermek için `["*"]` kullanın).
-Authorization başlıkları yalnızca `channels.msteams.mediaAuthAllowHosts` içindeki ana makineler için eklenir (varsayılan olarak Graph + Bot Framework ana makineleri). Bu listeyi katı tutun (çok kiracılı soneklerden kaçının).
+Authorization üstbilgileri yalnızca `channels.msteams.mediaAuthAllowHosts` içindeki ana makineler için eklenir (varsayılan olarak Graph + Bot Framework ana makineleri). Bu listeyi sıkı tutun (çok kiracılı soneklerden kaçının).
 
 ## Grup sohbetlerinde dosya gönderme
 
-Botlar, FileConsentCard akışını (yerleşik) kullanarak DM'lerde dosya gönderebilir. Ancak **grup sohbetlerinde/kanallarda dosya göndermek** ek kurulum gerektirir:
+Bot’lar DM’lerde FileConsentCard akışını kullanarak dosya gönderebilir (yerleşik). Ancak **grup sohbetlerinde/kanallarda dosya göndermek** ek kurulum gerektirir:
 
-| Bağlam                  | Dosyalar nasıl gönderilir                    | Gerekli kurulum                                  |
-| ----------------------- | -------------------------------------------- | ----------------------------------------------- |
-| **DM'ler**              | FileConsentCard → kullanıcı kabul eder → bot yükler | Hazır olarak çalışır                            |
-| **Grup sohbetleri/kanallar** | SharePoint'e yükle → bağlantıyı paylaş       | `sharePointSiteId` + Graph izinleri gerektirir  |
-| **Görseller (herhangi bir bağlam)** | Base64 kodlu satır içi                       | Hazır olarak çalışır                            |
+| Bağlam                   | Dosyalar nasıl gönderilir                         | Gerekli kurulum                                  |
+| ------------------------ | ------------------------------------------------- | ------------------------------------------------ |
+| **DM’ler**               | FileConsentCard → kullanıcı kabul eder → bot yükler | Hazır olarak çalışır                            |
+| **Grup sohbetleri/kanallar** | SharePoint’e yükle → bağlantı paylaş            | `sharePointSiteId` + Graph izinleri gerektirir  |
+| **Görseller (herhangi bir bağlam)** | Base64 kodlu satır içi                         | Hazır olarak çalışır                            |
 
-### Grup sohbetleri neden SharePoint gerektirir
+### Grup sohbetleri neden SharePoint gerektirir?
 
-Botların kişisel OneDrive sürücüsü yoktur (`/me/drive` Graph API uç noktası uygulama kimlikleri için çalışmaz). Grup sohbetlerinde/kanallarda dosya göndermek için bot bir **SharePoint sitesine** yükler ve bir paylaşım bağlantısı oluşturur.
+Bot’ların kişisel OneDrive sürücüsü yoktur (`/me/drive` Graph API uç noktası uygulama kimlikleri için çalışmaz). Grup sohbetlerinde/kanallarda dosya göndermek için bot bir **SharePoint sitesine** yükleme yapar ve paylaşım bağlantısı oluşturur.
 
 ### Kurulum
 
-1. Entra ID'de (Azure AD) → Uygulama Kaydı içinde **Graph API izinleri ekleyin**:
-   - `Sites.ReadWrite.All` (Uygulama) - dosyaları SharePoint'e yükleme
-   - `Chat.Read.All` (Uygulama) - isteğe bağlı, kullanıcı başına paylaşım bağlantılarını etkinleştirir
+1. Entra ID (Azure AD) → App Registration içinde **Graph API izinleri ekleyin**:
+   - `Sites.ReadWrite.All` (Application) - dosyaları SharePoint’e yükler
+   - `Chat.Read.All` (Application) - isteğe bağlı, kullanıcı başına paylaşım bağlantılarını etkinleştirir
 
 2. Kiracı için **yönetici onayı verin**.
 
-3. **SharePoint site kimliğinizi alın:**
+3. **SharePoint site ID’nizi alın:**
 
    ```bash
    # Via Graph Explorer or curl with a valid token:
@@ -807,7 +825,7 @@ Botların kişisel OneDrive sürücüsü yoktur (`/me/drive` Graph API uç nokta
    # Response includes: "id": "contoso.sharepoint.com,guid1,guid2"
    ```
 
-4. **OpenClaw'ı yapılandırın:**
+4. **OpenClaw’ı yapılandırın:**
 
    ```json5
    {
@@ -824,40 +842,40 @@ Botların kişisel OneDrive sürücüsü yoktur (`/me/drive` Graph API uç nokta
 
 | İzin                                    | Paylaşım davranışı                                      |
 | --------------------------------------- | ------------------------------------------------------- |
-| Yalnızca `Sites.ReadWrite.All`          | Kuruluş genelinde paylaşım bağlantısı (kuruluştaki herkes erişebilir) |
+| Yalnızca `Sites.ReadWrite.All`          | Kuruluş çapında paylaşım bağlantısı (kuruluştaki herkes erişebilir) |
 | `Sites.ReadWrite.All` + `Chat.Read.All` | Kullanıcı başına paylaşım bağlantısı (yalnızca sohbet üyeleri erişebilir) |
 
-Kullanıcı başına paylaşım daha güvenlidir çünkü dosyaya yalnızca sohbet katılımcıları erişebilir. `Chat.Read.All` izni eksikse bot kuruluş genelinde paylaşıma geri döner.
+Kullanıcı başına paylaşım daha güvenlidir, çünkü dosyaya yalnızca sohbet katılımcıları erişebilir. `Chat.Read.All` izni eksikse bot kuruluş çapında paylaşıma geri döner.
 
 ### Geri dönüş davranışı
 
-| Senaryo                                          | Sonuç                                             |
-| ------------------------------------------------ | ------------------------------------------------- |
-| Grup sohbeti + dosya + `sharePointSiteId` yapılandırılmış | SharePoint'e yükler, paylaşım bağlantısı gönderir |
-| Grup sohbeti + dosya + `sharePointSiteId` yok    | OneDrive yüklemeyi dener (başarısız olabilir), yalnızca metin gönderir |
+| Senaryo                                          | Sonuç                                              |
+| ------------------------------------------------ | -------------------------------------------------- |
+| Grup sohbeti + dosya + `sharePointSiteId` yapılandırılmış | SharePoint’e yükler, paylaşım bağlantısı gönderir |
+| Grup sohbeti + dosya + `sharePointSiteId` yok    | OneDrive yüklemesini dener (başarısız olabilir), yalnızca metin gönderir |
 | Kişisel sohbet + dosya                           | FileConsentCard akışı (SharePoint olmadan çalışır) |
 | Herhangi bir bağlam + görsel                     | Base64 kodlu satır içi (SharePoint olmadan çalışır) |
 
-### Dosyaların depolandığı konum
+### Dosyaların saklandığı konum
 
-Yüklenen dosyalar, yapılandırılan SharePoint sitesinin varsayılan belge kitaplığındaki `/OpenClawShared/` klasöründe depolanır.
+Yüklenen dosyalar, yapılandırılmış SharePoint sitesinin varsayılan belge kitaplığındaki `/OpenClawShared/` klasöründe saklanır.
 
 ## Anketler (Adaptive Cards)
 
-OpenClaw, Teams anketlerini Adaptive Cards olarak gönderir (yerel Teams anket API'si yoktur).
+OpenClaw, Teams anketlerini Adaptive Cards olarak gönderir (yerel Teams anket API’si yoktur).
 
 - CLI: `openclaw message poll --channel msteams --target conversation:<id> ...`
 - Oylar Gateway tarafından `~/.openclaw/msteams-polls.json` içinde kaydedilir.
 - Oyları kaydetmek için Gateway çevrimiçi kalmalıdır.
-- Anketler henüz sonuç özetlerini otomatik olarak göndermez (gerekirse depo dosyasını inceleyin).
+- Anketler henüz sonuç özetlerini otomatik olarak göndermez (gerekirse mağaza dosyasını inceleyin).
 
 ## Sunum kartları
 
-`message` aracı veya CLI kullanarak Teams kullanıcılarına ya da konuşmalarına anlamsal sunum yükleri gönderin. OpenClaw bunları genel sunum sözleşmesinden Teams Adaptive Cards olarak işler.
+Semantik sunum yüklerini `message` aracı veya CLI kullanarak Teams kullanıcılarına ya da konuşmalarına gönderin. OpenClaw bunları genel sunum sözleşmesinden Teams Adaptive Cards olarak işler.
 
-`presentation` parametresi anlamsal blokları kabul eder. `presentation` sağlandığında mesaj metni isteğe bağlıdır.
+`presentation` parametresi semantik blokları kabul eder. `presentation` sağlandığında ileti metni isteğe bağlıdır.
 
-**Ajan aracı:**
+**Agent aracı:**
 
 ```json5
 {
@@ -883,12 +901,12 @@ Hedef biçimi ayrıntıları için aşağıdaki [Hedef biçimleri](#target-forma
 
 ## Hedef biçimleri
 
-MSTeams hedefleri, kullanıcılar ile konuşmaları ayırt etmek için önekler kullanır:
+MSTeams hedefleri, kullanıcıları ve konuşmaları ayırt etmek için ön ekler kullanır:
 
 | Hedef türü          | Biçim                           | Örnek                                               |
 | ------------------- | -------------------------------- | --------------------------------------------------- |
-| Kullanıcı (kimliğe göre) | `user:<aad-object-id>`           | `user:40a1a0ed-4ff2-4164-a219-55518990c197`         |
-| Kullanıcı (ada göre) | `user:<display-name>`            | `user:John Smith` (Graph API gerektirir)            |
+| Kullanıcı (ID ile)  | `user:<aad-object-id>`           | `user:40a1a0ed-4ff2-4164-a219-55518990c197`         |
+| Kullanıcı (ad ile)  | `user:<display-name>`            | `user:John Smith` (Graph API gerektirir)            |
 | Grup/kanal          | `conversation:<conversation-id>` | `conversation:19:abc123...@thread.tacv2`            |
 | Grup/kanal (ham)    | `<conversation-id>`              | `19:abc123...@thread.tacv2` (`@thread` içeriyorsa)  |
 
@@ -909,7 +927,7 @@ openclaw message send --channel msteams --target "conversation:19:abc...@thread.
   --presentation '{"title":"Hello","blocks":[{"type":"text","text":"Hello"}]}'
 ```
 
-**Aracı araç örnekleri:**
+**Agent aracı örnekleri:**
 
 ```json5
 {
@@ -933,19 +951,19 @@ openclaw message send --channel msteams --target "conversation:19:abc...@thread.
 ```
 
 <Note>
-`user:` ön eki olmadan adlar varsayılan olarak grup veya ekip çözümlemesine gider. Görünen ada göre kişileri hedeflerken her zaman `user:` kullanın.
+`user:` ön eki olmadan, adlar varsayılan olarak grup veya takım çözümlemesine gider. Kişileri görüntü adıyla hedeflerken her zaman `user:` kullanın.
 </Note>
 
 ## Proaktif mesajlaşma
 
-- Proaktif mesajlar yalnızca bir kullanıcı etkileşim kurduktan **sonra** mümkündür, çünkü konuşma referanslarını o noktada saklarız.
-- `dmPolicy` ve allowlist geçidi için `/gateway/configuration` bölümüne bakın.
+- Proaktif iletiler yalnızca bir kullanıcı etkileşimde bulunduktan **sonra** mümkündür, çünkü konuşma başvurularını bu noktada saklarız.
+- `dmPolicy` ve izin listesi geçidi için `/gateway/configuration` bölümüne bakın.
 
-## Ekip ve Kanal Kimlikleri (Yaygın Sorun)
+## Takım ve Kanal ID'leri (Yaygın Yanılgı)
 
-Teams URL'lerindeki `groupId` sorgu parametresi, yapılandırma için kullanılan ekip kimliği **DEĞİLDİR**. Bunun yerine kimlikleri URL yolundan çıkarın:
+Teams URL'lerindeki `groupId` sorgu parametresi, yapılandırma için kullanılan takım ID'si **DEĞİLDİR**. Bunun yerine ID'leri URL yolundan çıkarın:
 
-**Ekip URL'si:**
+**Takım URL'si:**
 
 ```
 https://teams.microsoft.com/l/team/19%3ABk4j...%40thread.tacv2/conversations?groupId=...
@@ -963,26 +981,26 @@ https://teams.microsoft.com/l/channel/19%3A15bc...%40thread.tacv2/ChannelName?gr
 
 **Yapılandırma için:**
 
-- Ekip anahtarı = `/team/` sonrasındaki yol segmenti (URL kodu çözülmüş, örn. `19:Bk4j...@thread.tacv2`; eski kiracılar `@thread.skype` gösterebilir, bu da geçerlidir)
+- Takım anahtarı = `/team/` sonrasındaki yol segmenti (URL kodu çözülmüş, örn. `19:Bk4j...@thread.tacv2`; eski kiracılarda `@thread.skype` görünebilir, bu da geçerlidir)
 - Kanal anahtarı = `/channel/` sonrasındaki yol segmenti (URL kodu çözülmüş)
-- OpenClaw yönlendirmesi için `groupId` sorgu parametresini **yok sayın**. Bu, gelen Teams etkinliklerinde kullanılan Bot Framework konuşma kimliği değil, Microsoft Entra grup kimliğidir.
+- OpenClaw yönlendirmesi için `groupId` sorgu parametresini **yok sayın**. Bu, gelen Teams etkinliklerinde kullanılan Bot Framework konuşma ID'si değil, Microsoft Entra grup ID'sidir.
 
 ## Özel kanallar
 
-Botların özel kanallarda desteği sınırlıdır:
+Botların özel kanallarda sınırlı desteği vardır:
 
-| Özellik                       | Standart Kanallar | Özel Kanallar            |
-| ----------------------------- | ----------------- | ------------------------ |
-| Bot kurulumu                  | Evet              | Sınırlı                  |
-| Gerçek zamanlı mesajlar (Webhook) | Evet              | Çalışmayabilir           |
-| RSC izinleri                  | Evet              | Farklı davranabilir      |
-| @bahsetmeler                  | Evet              | Bot erişilebilirse       |
-| Graph API geçmişi             | Evet              | Evet (izinlerle)         |
+| Özellik                       | Standart Kanallar | Özel Kanallar          |
+| ----------------------------- | ----------------- | ---------------------- |
+| Bot kurulumu                  | Evet              | Sınırlı                |
+| Gerçek zamanlı iletiler (webhook) | Evet          | Çalışmayabilir         |
+| RSC izinleri                  | Evet              | Farklı davranabilir    |
+| @mentions                     | Evet              | Bot erişilebilirse     |
+| Graph API geçmişi             | Evet              | Evet (izinlerle)       |
 
-**Özel kanallar çalışmazsa geçici çözümler:**
+**Özel kanallar çalışmıyorsa geçici çözümler:**
 
 1. Bot etkileşimleri için standart kanalları kullanın
-2. DM'leri kullanın - kullanıcılar bota her zaman doğrudan mesaj gönderebilir
+2. DM'leri kullanın - kullanıcılar bota her zaman doğrudan ileti gönderebilir
 3. Geçmiş erişimi için Graph API kullanın (`ChannelMessage.Read.All` gerektirir)
 
 ## Sorun giderme
@@ -990,31 +1008,31 @@ Botların özel kanallarda desteği sınırlıdır:
 ### Yaygın sorunlar
 
 - **Görseller kanallarda görünmüyor:** Graph izinleri veya yönetici onayı eksik. Teams uygulamasını yeniden yükleyin ve Teams'ten tamamen çıkıp yeniden açın.
-- **Kanalda yanıt yok:** Varsayılan olarak bahsetmeler gerekir; `channels.msteams.requireMention=false` ayarlayın veya ekip/kanal başına yapılandırın.
+- **Kanalda yanıt yok:** varsayılan olarak mention'lar gereklidir; `channels.msteams.requireMention=false` ayarlayın veya takım/kanal başına yapılandırın.
 - **Sürüm uyuşmazlığı (Teams hâlâ eski manifesti gösteriyor):** uygulamayı kaldırıp yeniden ekleyin ve yenilemek için Teams'ten tamamen çıkın.
-- **Webhook'tan 401 Unauthorized:** Azure JWT olmadan elle test ederken beklenir; uç noktanın erişilebilir olduğu ancak kimlik doğrulamasının başarısız olduğu anlamına gelir. Doğru test için Azure Web Chat kullanın.
+- **Webhook'tan 401 Unauthorized:** Azure JWT olmadan elle test ederken beklenir - uç noktanın erişilebilir olduğu ancak kimlik doğrulamanın başarısız olduğu anlamına gelir. Doğru şekilde test etmek için Azure Web Chat kullanın.
 
 ### Manifest yükleme hataları
 
-- **"Icon file cannot be empty":** Manifest, 0 baytlık simge dosyalarına referans veriyor. Geçerli PNG simgeleri oluşturun (`outline.png` için 32x32, `color.png` için 192x192).
-- **"webApplicationInfo.Id already in use":** Uygulama hâlâ başka bir ekipte/sohbette yüklü. Önce bulup kaldırın veya yayılım için 5-10 dakika bekleyin.
+- **"Icon file cannot be empty":** Manifest, 0 bayt olan simge dosyalarına başvuruyor. Geçerli PNG simgeleri oluşturun (`outline.png` için 32x32, `color.png` için 192x192).
+- **"webApplicationInfo.Id already in use":** Uygulama hâlâ başka bir takımda/sohbette yüklü. Önce bulup kaldırın veya yayılım için 5-10 dakika bekleyin.
 - **Yüklemede "Something went wrong":** Bunun yerine [https://admin.teams.microsoft.com](https://admin.teams.microsoft.com) üzerinden yükleyin, tarayıcı DevTools'u (F12) → Network sekmesini açın ve gerçek hata için yanıt gövdesini kontrol edin.
-- **Sideload başarısız oluyor:** "Upload a custom app" yerine "Upload an app to your org's app catalog" seçeneğini deneyin; bu genellikle sideload kısıtlamalarını aşar.
+- **Sideload başarısız:** "Upload a custom app" yerine "Upload an app to your org's app catalog" deneyin - bu genellikle sideload kısıtlamalarını aşar.
 
 ### RSC izinleri çalışmıyor
 
 1. `webApplicationInfo.id` değerinin botunuzun App ID'siyle tam olarak eşleştiğini doğrulayın
-2. Uygulamayı yeniden yükleyin ve ekipte/sohbette yeniden kurun
+2. Uygulamayı yeniden yükleyin ve takımda/sohbette yeniden kurun
 3. Kuruluş yöneticinizin RSC izinlerini engelleyip engellemediğini kontrol edin
-4. Doğru kapsamı kullandığınızı doğrulayın: ekipler için `ChannelMessage.Read.Group`, grup sohbetleri için `ChatMessage.Read.Chat`
+4. Doğru kapsamı kullandığınızı doğrulayın: takımlar için `ChannelMessage.Read.Group`, grup sohbetleri için `ChatMessage.Read.Chat`
 
-## Referanslar
+## Başvurular
 
-- [Azure Bot Oluştur](https://learn.microsoft.com/en-us/azure/bot-service/bot-service-quickstart-registration) - Azure Bot kurulum kılavuzu
-- [Teams Geliştirici Portalı](https://dev.teams.microsoft.com/apps) - Teams uygulamaları oluşturma/yönetme
-- [Teams uygulaması manifest şeması](https://learn.microsoft.com/en-us/microsoftteams/platform/resources/schema/manifest-schema)
-- [RSC ile kanal mesajları alma](https://learn.microsoft.com/en-us/microsoftteams/platform/bots/how-to/conversations/channel-messages-with-rsc)
-- [RSC izinleri referansı](https://learn.microsoft.com/en-us/microsoftteams/platform/graph-api/rsc/resource-specific-consent)
+- [Azure Bot oluşturma](https://learn.microsoft.com/en-us/azure/bot-service/bot-service-quickstart-registration) - Azure Bot kurulum kılavuzu
+- [Teams Developer Portal](https://dev.teams.microsoft.com/apps) - Teams uygulamaları oluşturma/yönetme
+- [Teams uygulama manifest şeması](https://learn.microsoft.com/en-us/microsoftteams/platform/resources/schema/manifest-schema)
+- [RSC ile kanal iletilerini alma](https://learn.microsoft.com/en-us/microsoftteams/platform/bots/how-to/conversations/channel-messages-with-rsc)
+- [RSC izinleri başvurusu](https://learn.microsoft.com/en-us/microsoftteams/platform/graph-api/rsc/resource-specific-consent)
 - [Teams bot dosya işleme](https://learn.microsoft.com/en-us/microsoftteams/platform/bots/how-to/bots-filesv4) (kanal/grup Graph gerektirir)
 - [Proaktif mesajlaşma](https://learn.microsoft.com/en-us/microsoftteams/platform/bots/how-to/conversations/send-proactive-messages)
 - [@microsoft/teams.cli](https://www.npmjs.com/package/@microsoft/teams.cli) - bot yönetimi için Teams CLI
@@ -1023,6 +1041,6 @@ Botların özel kanallarda desteği sınırlıdır:
 
 - [Kanallara Genel Bakış](/tr/channels) - desteklenen tüm kanallar
 - [Eşleştirme](/tr/channels/pairing) - DM kimlik doğrulaması ve eşleştirme akışı
-- [Gruplar](/tr/channels/groups) - grup sohbeti davranışı ve bahsetme geçidi
-- [Kanal Yönlendirme](/tr/channels/channel-routing) - mesajlar için oturum yönlendirme
-- [Güvenlik](/tr/gateway/security) - erişim modeli ve güçlendirme
+- [Gruplar](/tr/channels/groups) - grup sohbeti davranışı ve mention geçidi
+- [Kanal Yönlendirme](/tr/channels/channel-routing) - iletiler için oturum yönlendirmesi
+- [Güvenlik](/tr/gateway/security) - erişim modeli ve sağlamlaştırma

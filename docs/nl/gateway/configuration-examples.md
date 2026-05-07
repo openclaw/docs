@@ -1,22 +1,22 @@
 ---
 read_when:
     - Leren hoe u OpenClaw configureert
-    - Zoeken naar configuratievoorbeelden
+    - Op zoek naar configuratievoorbeelden
     - OpenClaw voor het eerst instellen
-summary: Schemagetrouwe configuratievoorbeelden voor gangbare OpenClaw-installaties
+summary: Schemacorrecte configuratievoorbeelden voor gangbare OpenClaw-configuraties
 title: Configuratievoorbeelden
 x-i18n:
-    generated_at: "2026-05-06T17:55:32Z"
+    generated_at: "2026-05-07T13:17:19Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 01dd16c73f1156c4012fd3956083062141825b502722b6aa34f1f90462a6823a
+    source_hash: 87c7e75841ee36121c764f1ed51b6547d0fccf7ed6c1f05895d916dbf93f061a
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-De onderstaande voorbeelden zijn afgestemd op het huidige configuratieschema. Zie [Configuratie](/nl/gateway/configuration) voor de volledige referentie en opmerkingen per veld.
+Voorbeelden hieronder zijn afgestemd op het huidige configuratieschema. Zie [Configuratie](/nl/gateway/configuration) voor de volledige referentie en opmerkingen per veld.
 
-## Snelstart
+## Snel starten
 
 ### Absoluut minimum
 
@@ -27,9 +27,9 @@ De onderstaande voorbeelden zijn afgestemd op het huidige configuratieschema. Zi
 }
 ```
 
-Sla dit op in `~/.openclaw/openclaw.json` en u kunt de bot vanaf dat nummer een direct bericht sturen.
+Sla op als `~/.openclaw/openclaw.json` en je kunt de bot vanaf dat nummer een DM sturen.
 
-### Aanbevolen startconfiguratie
+### Aanbevolen starter
 
 ```json5
 {
@@ -59,7 +59,7 @@ Sla dit op in `~/.openclaw/openclaw.json` en u kunt de bot vanaf dat nummer een 
 
 ## Uitgebreid voorbeeld (belangrijkste opties)
 
-> Met JSON5 kunt u opmerkingen en afsluitende komma's gebruiken. Gewone JSON werkt ook.
+> Met JSON5 kun je opmerkingen en afsluitende komma's gebruiken. Gewone JSON werkt ook.
 
 ```json5
 {
@@ -473,7 +473,7 @@ Sla dit op in `~/.openclaw/openclaw.json` en u kunt de bot vanaf dat nummer een 
 
 ## Veelvoorkomende patronen
 
-### Gedeelde Skill-basislijn met één overschrijving
+### Gedeelde Skills-basis met één overschrijving
 
 ```json5
 {
@@ -494,7 +494,7 @@ Sla dit op in `~/.openclaw/openclaw.json` en u kunt de bot vanaf dat nummer een 
 - `agents.list[].skills` vervangt die basislijn voor één agent.
 - Gebruik `skills: []` wanneer een agent geen Skills mag zien.
 
-### Installatie voor meerdere platforms
+### Multiplatform-configuratie
 
 ```json5
 {
@@ -515,11 +515,11 @@ Sla dit op in `~/.openclaw/openclaw.json` en u kunt de bot vanaf dat nummer een 
 }
 ```
 
-### Automatische goedkeuring voor vertrouwde Node-netwerken
+### Automatische goedkeuring voor vertrouwd Node-netwerk
 
-Houd apparaatkoppeling handmatig, tenzij je het netwerkpad beheert. Voor een toegewezen
-lab of tailnet-subnet kun je automatische goedkeuring van Node-apparaten bij eerste gebruik
-inschakelen met exacte CIDR's of IP-adressen:
+Houd apparaatkoppeling handmatig, tenzij je het netwerkpad beheert. Voor een specifiek
+lab of tailnet-subnet kun je je aanmelden voor automatische goedkeuring van
+nieuwe Node-apparaten met exacte CIDR's of IP's:
 
 ```json5
 {
@@ -533,8 +533,8 @@ inschakelen met exacte CIDR's of IP-adressen:
 }
 ```
 
-Dit blijft uitgeschakeld wanneer het niet is ingesteld. Het geldt alleen voor nieuwe `role: node`-koppeling met
-geen aangevraagde scopes. Operator-/browserclients en upgrades van rol, scope, metadata of
+Dit blijft uitgeschakeld wanneer het niet is ingesteld. Het geldt alleen voor nieuwe `role: node`-koppelingen
+zonder aangevraagde scopes. Operator-/browserclients en upgrades van rol, scope, metadata of
 openbare sleutel vereisen nog steeds handmatige goedkeuring.
 
 ### Veilige DM-modus (gedeelde inbox / DM's met meerdere gebruikers)
@@ -564,7 +564,7 @@ Als meer dan één persoon je bot een DM kan sturen (meerdere vermeldingen in `a
 ```
 
 Voor Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC is afzenderautorisatie standaard eerst op ID gebaseerd.
-Schakel directe veranderbare naam-/e-mail-/nick-matching met `dangerouslyAllowNameMatching: true` van elk kanaal alleen in als je dat risico expliciet accepteert.
+Schakel directe, wijzigbare matching op naam/e-mail/nick alleen in met de `dangerouslyAllowNameMatching: true` van elk kanaal als je dat risico expliciet accepteert.
 
 ### Anthropic API-sleutel + MiniMax-terugval
 
@@ -661,8 +661,8 @@ Schakel directe veranderbare naam-/e-mail-/nick-matching met `dangerouslyAllowNa
 
 - Als je `dmPolicy: "open"` instelt, moet de bijbehorende `allowFrom`-lijst `"*"` bevatten.
 - Provider-ID's verschillen (telefoonnummers, gebruikers-ID's, kanaal-ID's). Gebruik de providerdocumentatie om de indeling te bevestigen.
-- Optionele secties om later toe te voegen: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
-- Zie [Providers](/nl/providers) en [Probleemoplossing](/nl/gateway/troubleshooting) voor uitgebreidere installatie-opmerkingen.
+- Optionele secties om later toe te voegen: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
+- Zie [Providers](/nl/providers) en [Probleemoplossing](/nl/gateway/troubleshooting) voor uitgebreidere configuratienotities.
 
 ## Gerelateerd
 

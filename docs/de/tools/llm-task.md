@@ -1,23 +1,23 @@
 ---
 read_when:
-    - Sie möchten einen reinen JSON-LLM-Schritt innerhalb von Workflows
+    - Sie möchten einen LLM-Schritt in Arbeitsabläufen, der ausschließlich JSON ausgibt
     - Sie benötigen schema-validierte LLM-Ausgaben für die Automatisierung
-summary: Nur-JSON-LLM-Aufgaben für Workflows (optionales Plugin-Tool)
+summary: JSON-only-LLM-Aufgaben für Workflows (optionales Plugin-Tool)
 title: LLM-Aufgabe
 x-i18n:
-    generated_at: "2026-05-04T02:25:47Z"
+    generated_at: "2026-05-07T13:26:11Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9cdc5d4feef17fb6d6d90d819d4c92d26a4ec43e4f5364c6acbaad1934a89269
+    source_hash: 4f5efe399165e31a7f5966b93c2f83bced4fd96b7f04f5156412fd321bf5f403
     source_path: tools/llm-task.md
     workflow: 16
 ---
 
-`llm-task` ist ein **optionales Plugin-Tool**, das eine JSON-only-LLM-Aufgabe ausführt und
+`llm-task` ist ein **optionales Plugin-Tool**, das eine reine JSON-LLM-Aufgabe ausführt und
 strukturierte Ausgabe zurückgibt (optional gegen JSON Schema validiert).
 
-Dies ist ideal für Workflow-Engines wie Lobster: Sie können einen einzelnen LLM-Schritt
-hinzufügen, ohne für jeden Workflow benutzerdefinierten OpenClaw-Code schreiben zu müssen.
+Dies ist ideal für Workflow-Engines wie Lobster: Sie können einen einzelnen LLM-Schritt hinzufügen,
+ohne für jeden Workflow eigenen OpenClaw-Code zu schreiben.
 
 ## Plugin aktivieren
 
@@ -43,7 +43,7 @@ hinzufügen, ohne für jeden Workflow benutzerdefinierten OpenClaw-Code schreibe
 }
 ```
 
-Verwenden Sie `tools.allow` nur, wenn Sie den restriktiven Allowlist-Modus nutzen möchten.
+Verwenden Sie `tools.allow` nur, wenn Sie den restriktiven Allowlist-Modus möchten.
 
 ## Konfiguration (optional)
 
@@ -83,14 +83,31 @@ außerhalb der Liste abgelehnt.
 - `maxTokens` (Zahl, optional)
 - `timeoutMs` (Zahl, optional)
 
-`thinking` akzeptiert die standardmäßigen OpenClaw-Reasoning-Voreinstellungen, wie `low` oder `medium`.
+`thinking` akzeptiert die standardmäßigen OpenClaw-Reasoning-Voreinstellungen, etwa `low` oder `medium`.
 
 ## Ausgabe
 
-Gibt `details.json` mit dem geparsten JSON zurück (und validiert gegen
-`schema`, wenn angegeben).
+Gibt `details.json` zurück, das das geparste JSON enthält (und gegen
+`schema` validiert, wenn angegeben).
 
 ## Beispiel: Lobster-Workflow-Schritt
+
+### Wichtige Einschränkung
+
+Das folgende Beispiel setzt voraus, dass die **eigenständige Lobster CLI** in einer Umgebung ausgeführt wird, in der `openclaw.invoke` bereits den korrekten Gateway-URL-/Auth-Kontext hat.
+
+Für den gebündelten **eingebetteten** Lobster-Runner innerhalb von OpenClaw ist dieses verschachtelte CLI-Muster **derzeit nicht zuverlässig**:
+
+```lobster
+openclaw.invoke --tool llm-task --action json --args-json '{ ... }'
+```
+
+Bis eingebettetes Lobster eine unterstützte Bridge für diesen Ablauf hat, bevorzugen Sie entweder:
+
+- direkte `llm-task`-Tool-Aufrufe außerhalb von Lobster oder
+- Lobster-Schritte, die nicht auf verschachtelte `openclaw.invoke`-Aufrufe angewiesen sind.
+
+Beispiel für eigenständige Lobster CLI:
 
 ```lobster
 openclaw.invoke --tool llm-task --action json --args-json '{
@@ -114,14 +131,14 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 
 ## Sicherheitshinweise
 
-- Das Tool ist **JSON-only** und weist das Modell an, nur JSON auszugeben (keine
+- Das Tool ist **ausschließlich JSON** und weist das Modell an, nur JSON auszugeben (keine
   Code-Fences, keine Kommentare).
-- Für diesen Lauf werden dem Modell keine Tools bereitgestellt.
+- Dem Modell werden für diesen Lauf keine Tools bereitgestellt.
 - Behandeln Sie die Ausgabe als nicht vertrauenswürdig, sofern Sie sie nicht mit `schema` validieren.
-- Platzieren Sie Genehmigungen vor jedem Schritt mit Nebeneffekten (send, post, exec).
+- Platzieren Sie Genehmigungen vor jedem Schritt mit Seiteneffekten (senden, posten, ausführen).
 
-## Verwandte Themen
+## Siehe auch
 
-- [Denkstufen](/de/tools/thinking)
-- [Sub-Agenten](/de/tools/subagents)
+- [Thinking-Stufen](/de/tools/thinking)
+- [Sub-Agents](/de/tools/subagents)
 - [Slash-Befehle](/de/tools/slash-commands)

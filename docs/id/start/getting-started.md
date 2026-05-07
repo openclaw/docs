@@ -1,26 +1,26 @@
 ---
 read_when:
     - Penyiapan pertama kali dari nol
-    - Anda menginginkan jalur tercepat menuju chat yang berfungsi
-summary: Instal OpenClaw dan jalankan chat pertama Anda dalam hitungan menit.
+    - Anda menginginkan cara tercepat menuju percakapan yang berfungsi
+summary: Instal OpenClaw dan mulai obrolan pertama Anda dalam hitungan menit.
 title: Memulai
 x-i18n:
-    generated_at: "2026-04-24T09:27:59Z"
-    model: gpt-5.4
+    generated_at: "2026-05-07T13:25:33Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: fe3f92b1464ebf0a5b631c293fa4a3e4b686fdb35c1152663428025dd3c01259
+    source_hash: 295ce8fd03320027a77a3aef494f785f0fe58e0f57c72ee63f6f9aca68626c20
     source_path: start/getting-started.md
-    workflow: 15
+    workflow: 16
 ---
 
-Instal OpenClaw, jalankan onboarding, dan chat dengan asisten AI Anda — semuanya
-dalam sekitar 5 menit. Pada akhirnya Anda akan memiliki Gateway yang berjalan, autentikasi yang dikonfigurasi,
+Instal OpenClaw, jalankan onboarding, dan chat dengan asisten AI Anda — semuanya dalam
+sekitar 5 menit. Pada akhirnya Anda akan memiliki Gateway yang berjalan, auth yang dikonfigurasi,
 dan sesi chat yang berfungsi.
 
 ## Yang Anda butuhkan
 
-- **Node.js** — Node 24 disarankan (Node 22.14+ juga didukung)
-- **Kunci API** dari penyedia model (Anthropic, OpenAI, Google, dll.) — onboarding akan memintanya
+- **Node.js** — Node 24 direkomendasikan (Node 22.16+ juga didukung)
+- **Kunci API** dari penyedia model (Anthropic, OpenAI, Google, dll.) — onboarding akan meminta Anda memasukkannya
 
 <Tip>
 Periksa versi Node Anda dengan `node --version`.
@@ -61,18 +61,18 @@ Perlu menginstal Node? Lihat [Penyiapan Node](/id/install/node).
     openclaw onboard --install-daemon
     ```
 
-    Wizard akan memandu Anda memilih penyedia model, menetapkan kunci API,
-    dan mengonfigurasi Gateway. Ini memakan waktu sekitar 2 menit.
+    Wizard memandu Anda memilih penyedia model, mengatur kunci API,
+    dan mengonfigurasi Gateway. Ini memerlukan sekitar 2 menit.
 
-    Lihat [Onboarding (CLI)](/id/start/wizard) untuk referensi lengkapnya.
+    Lihat [Onboarding (CLI)](/id/start/wizard) untuk referensi lengkap.
 
   </Step>
-  <Step title="Verifikasi bahwa Gateway berjalan">
+  <Step title="Verifikasi Gateway sedang berjalan">
     ```bash
     openclaw gateway status
     ```
 
-    Anda seharusnya melihat Gateway mendengarkan pada port 18789.
+    Anda akan melihat Gateway mendengarkan pada port 18789.
 
   </Step>
   <Step title="Buka dashboard">
@@ -80,30 +80,30 @@ Perlu menginstal Node? Lihat [Penyiapan Node](/id/install/node).
     openclaw dashboard
     ```
 
-    Ini membuka UI Kontrol di browser Anda. Jika berhasil dimuat, semuanya berfungsi.
+    Ini membuka Control UI di browser Anda. Jika halaman dimuat, semuanya berfungsi.
 
   </Step>
   <Step title="Kirim pesan pertama Anda">
-    Ketik pesan di chat UI Kontrol dan Anda akan mendapatkan balasan AI.
+    Ketik pesan di chat Control UI dan Anda akan mendapatkan balasan AI.
 
-    Ingin chat dari ponsel Anda? Channel tercepat untuk disiapkan adalah
-    [Telegram](/id/channels/telegram) (cukup token bot). Lihat [Channels](/id/channels)
+    Ingin chat dari ponsel sebagai gantinya? Channel tercepat untuk disiapkan adalah
+    [Telegram](/id/channels/telegram) (hanya token bot). Lihat [Channel](/id/channels)
     untuk semua opsi.
 
   </Step>
 </Steps>
 
-<Accordion title="Lanjutan: mount build UI Kontrol kustom">
+<Accordion title="Lanjutan: mount build Control UI kustom">
   Jika Anda memelihara build dashboard yang dilokalkan atau dikustomisasi, arahkan
-  `gateway.controlUi.root` ke direktori yang berisi asset statis hasil build
+  `gateway.controlUi.root` ke direktori yang berisi aset statis hasil build
   dan `index.html`.
 
 ```bash
 mkdir -p "$HOME/.openclaw/control-ui-custom"
-# Salin file statis hasil build Anda ke direktori tersebut.
+# Copy your built static files into that directory.
 ```
 
-Lalu tetapkan:
+Lalu atur:
 
 ```json
 {
@@ -116,7 +116,7 @@ Lalu tetapkan:
 }
 ```
 
-Mulai ulang gateway lalu buka kembali dashboard:
+Mulai ulang gateway dan buka kembali dashboard:
 
 ```bash
 openclaw gateway restart
@@ -125,7 +125,7 @@ openclaw dashboard
 
 </Accordion>
 
-## Apa yang harus dilakukan selanjutnya
+## Yang dapat dilakukan berikutnya
 
 <Columns>
   <Card title="Hubungkan channel" href="/id/channels" icon="message-square">
@@ -138,22 +138,22 @@ openclaw dashboard
     Model, alat, sandbox, dan pengaturan lanjutan.
   </Card>
   <Card title="Jelajahi alat" href="/id/tools" icon="wrench">
-    Browser, exec, pencarian web, Skills, dan Plugin.
+    Browser, exec, pencarian web, Skills, dan plugin.
   </Card>
 </Columns>
 
-<Accordion title="Lanjutan: variabel environment">
-  Jika Anda menjalankan OpenClaw sebagai akun layanan atau ingin jalur kustom:
+<Accordion title="Lanjutan: variabel lingkungan">
+  Jika Anda menjalankan OpenClaw sebagai akun layanan atau menginginkan path kustom:
 
-- `OPENCLAW_HOME` — direktori home untuk resolusi jalur internal
+- `OPENCLAW_HOME` — direktori home untuk resolusi path internal
 - `OPENCLAW_STATE_DIR` — timpa direktori state
-- `OPENCLAW_CONFIG_PATH` — timpa jalur file config
+- `OPENCLAW_CONFIG_PATH` — timpa path file konfigurasi
 
-Referensi lengkap: [Variabel environment](/id/help/environment).
+Referensi lengkap: [Variabel lingkungan](/id/help/environment).
 </Accordion>
 
 ## Terkait
 
 - [Ikhtisar instalasi](/id/install)
-- [Ikhtisar Channels](/id/channels)
+- [Ikhtisar channel](/id/channels)
 - [Penyiapan](/id/start/setup)

@@ -1,13 +1,13 @@
 ---
 read_when:
     - Konfigurowanie środowiska programistycznego macOS
-summary: Przewodnik konfiguracji dla programistów pracujących nad aplikacją OpenClaw dla macOS
+summary: Przewodnik konfiguracji dla deweloperów pracujących nad aplikacją OpenClaw dla systemu macOS
 title: Konfiguracja środowiska deweloperskiego na macOS
 x-i18n:
-    generated_at: "2026-05-06T09:21:18Z"
+    generated_at: "2026-05-07T13:21:36Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c3ecf014bff10e8416f1586f731e30c9de4a0f09eb82046d06ead7511c47d660
+    source_hash: b39b449570176f44305c98ec4f00482a8b75ad20174b80c93abc45df37ffa0bc
     source_path: platforms/mac/dev-setup.md
     workflow: 16
 ---
@@ -20,8 +20,8 @@ Zbuduj i uruchom aplikację OpenClaw dla macOS ze źródeł.
 
 Przed zbudowaniem aplikacji upewnij się, że masz zainstalowane:
 
-1. **Xcode 26.2+**: Wymagany do programowania w Swift.
-2. **Node.js 24 i pnpm**: Zalecane dla Gateway, CLI i skryptów pakietowania. Node 22 LTS, obecnie `22.14+`, pozostaje obsługiwany dla zgodności.
+1. **Xcode 26.2+**: wymagane do programowania w Swift.
+2. **Node.js 24 i pnpm**: zalecane dla Gateway, CLI oraz skryptów pakowania. Node 22 LTS, obecnie `22.16+`, pozostaje obsługiwany ze względu na zgodność.
 
 ## 1. Zainstaluj zależności
 
@@ -41,10 +41,10 @@ Aby zbudować aplikację macOS i spakować ją do `dist/OpenClaw.app`, uruchom:
 
 Jeśli nie masz certyfikatu Apple Developer ID, skrypt automatycznie użyje **podpisywania ad-hoc** (`-`).
 
-Informacje o trybach uruchamiania deweloperskiego, flagach podpisywania i rozwiązywaniu problemów z Team ID znajdziesz w README aplikacji macOS:
+Tryby uruchamiania deweloperskiego, flagi podpisywania i rozwiązywanie problemów z Team ID opisuje README aplikacji macOS:
 [https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md](https://github.com/openclaw/openclaw/blob/main/apps/macos/README.md)
 
-> **Uwaga**: Aplikacje podpisane ad-hoc mogą wywoływać monity zabezpieczeń. Jeśli aplikacja natychmiast ulega awarii z komunikatem „Abort trap 6”, zobacz sekcję [Rozwiązywanie problemów](#troubleshooting).
+> **Uwaga**: aplikacje podpisane ad-hoc mogą wywoływać monity zabezpieczeń. Jeśli aplikacja natychmiast się zawiesza z komunikatem „Abort trap 6”, zobacz sekcję [Rozwiązywanie problemów](#troubleshooting).
 
 ## 3. Zainstaluj CLI
 
@@ -67,13 +67,13 @@ Dla środowiska uruchomieniowego Gateway zalecaną ścieżką pozostaje Node.
 
 ## Rozwiązywanie problemów
 
-### Kompilacja kończy się niepowodzeniem: niezgodność toolchainu lub SDK
+### Kompilacja nie powiodła się: niezgodność toolchaina lub SDK
 
-Kompilacja aplikacji macOS oczekuje najnowszego SDK macOS oraz toolchainu Swift 6.2.
+Kompilacja aplikacji macOS oczekuje najnowszego SDK macOS oraz toolchaina Swift 6.2.
 
 **Zależności systemowe (wymagane):**
 
-- **Najnowsza wersja macOS dostępna w Software Update** (wymagana przez SDK Xcode 26.2)
+- **Najnowsza wersja macOS dostępna w Uaktualnieniach oprogramowania** (wymagana przez SDK Xcode 26.2)
 - **Xcode 26.2** (toolchain Swift 6.2)
 
 **Sprawdzenia:**
@@ -85,11 +85,11 @@ xcrun swift --version
 
 Jeśli wersje się nie zgadzają, zaktualizuj macOS/Xcode i ponownie uruchom kompilację.
 
-### Aplikacja ulega awarii podczas przyznawania uprawnień
+### Aplikacja zawiesza się przy przyznawaniu uprawnienia
 
-Jeśli aplikacja ulega awarii podczas próby zezwolenia na dostęp do **Rozpoznawania mowy** lub **Mikrofonu**, przyczyną może być uszkodzona pamięć podręczna TCC albo niezgodność podpisu.
+Jeśli aplikacja zawiesza się, gdy próbujesz zezwolić na dostęp do **Rozpoznawania mowy** lub **Mikrofonu**, przyczyną może być uszkodzona pamięć podręczna TCC albo niezgodność podpisu.
 
-**Poprawka:**
+**Naprawa:**
 
 1. Zresetuj uprawnienia TCC:
 
@@ -97,21 +97,21 @@ Jeśli aplikacja ulega awarii podczas próby zezwolenia na dostęp do **Rozpozna
    tccutil reset All ai.openclaw.mac.debug
    ```
 
-2. Jeśli to się nie powiedzie, tymczasowo zmień `BUNDLE_ID` w [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh), aby wymusić „czysty start” od macOS.
+2. Jeśli to się nie powiedzie, tymczasowo zmień `BUNDLE_ID` w [`scripts/package-mac-app.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/package-mac-app.sh), aby wymusić „czysty stan” w macOS.
 
-### Gateway „Starting...” bez końca
+### Gateway „Uruchamianie...” bez końca
 
-Jeśli status Gateway pozostaje na „Starting...”, sprawdź, czy proces zombie nie zajmuje portu:
+Jeśli status Gateway pozostaje na „Uruchamianie...”, sprawdź, czy proces zombie nie blokuje portu:
 
 ```bash
 openclaw gateway status
 openclaw gateway stop
 
-# Jeśli nie używasz LaunchAgent (tryb deweloperski / uruchomienia ręczne), znajdź proces nasłuchujący:
+# If you're not using a LaunchAgent (dev mode / manual runs), find the listener:
 lsof -nP -iTCP:18789 -sTCP:LISTEN
 ```
 
-Jeśli ręczne uruchomienie zajmuje port, zatrzymaj ten proces (Ctrl+C). W ostateczności zabij znaleziony powyżej PID.
+Jeśli ręczne uruchomienie blokuje port, zatrzymaj ten proces (Ctrl+C). W ostateczności zakończ proces o znalezionym wyżej PID.
 
 ## Powiązane
 

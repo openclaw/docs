@@ -1,25 +1,25 @@
 ---
 read_when:
-    - ワークフロー内で JSON のみの LLM ステップが必要な場合
-    - 自動化にはスキーマ検証済みの LLM 出力が必要
-summary: ワークフロー用の JSON 専用 LLM タスク（任意の Plugin ツール）
+    - ワークフロー内で JSON のみを返す LLM ステップを使いたい場合
+    - 自動化には、スキーマ検証済みの LLM 出力が必要です
+summary: ワークフロー向けJSON専用LLMタスク（任意のPluginツール）
 title: LLM タスク
 x-i18n:
-    generated_at: "2026-05-04T05:02:16Z"
+    generated_at: "2026-05-07T13:26:58Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9cdc5d4feef17fb6d6d90d819d4c92d26a4ec43e4f5364c6acbaad1934a89269
+    source_hash: 4f5efe399165e31a7f5966b93c2f83bced4fd96b7f04f5156412fd321bf5f403
     source_path: tools/llm-task.md
     workflow: 16
 ---
 
-`llm-task` は、JSONのみのLLMタスクを実行し、構造化出力を返す **任意のPluginツール** です (必要に応じてJSON Schemaで検証)。
+`llm-task` は、JSON のみの LLM タスクを実行し、構造化出力を返す **任意の Plugin ツール**です（必要に応じて JSON Schema に対して検証できます）。
 
-これはLobsterのようなワークフローエンジンに最適です。各ワークフロー用にカスタムOpenClawコードを書かずに、単一のLLMステップを追加できます。
+これは Lobster のようなワークフローエンジンに最適です。各ワークフロー向けにカスタム OpenClaw コードを書かずに、単一の LLM ステップを追加できます。
 
-## Pluginを有効化
+## Plugin を有効化する
 
-1. Pluginを有効化します。
+1. Plugin を有効化します。
 
 ```json
 {
@@ -41,9 +41,9 @@ x-i18n:
 }
 ```
 
-制限付きの許可リストモードにしたい場合にのみ、`tools.allow` を使用してください。
+制限付き allowlist モードを使いたい場合にのみ `tools.allow` を使用してください。
 
-## 設定 (任意)
+## 設定（任意）
 
 ```json
 {
@@ -65,28 +65,45 @@ x-i18n:
 }
 ```
 
-`allowedModels` は `provider/model` 文字列の許可リストです。設定されている場合、リスト外のリクエストはすべて拒否されます。
+`allowedModels` は `provider/model` 文字列の allowlist です。設定されている場合、リスト外のリクエストはすべて拒否されます。
 
-## ツールパラメータ
+## ツールパラメーター
 
-- `prompt` (文字列、必須)
-- `input` (任意、任意)
-- `schema` (オブジェクト、任意のJSON Schema)
-- `provider` (文字列、任意)
-- `model` (文字列、任意)
-- `thinking` (文字列、任意)
-- `authProfileId` (文字列、任意)
-- `temperature` (数値、任意)
-- `maxTokens` (数値、任意)
-- `timeoutMs` (数値、任意)
+- `prompt`（文字列、必須）
+- `input`（任意、任意）
+- `schema`（オブジェクト、任意の JSON Schema）
+- `provider`（文字列、任意）
+- `model`（文字列、任意）
+- `thinking`（文字列、任意）
+- `authProfileId`（文字列、任意）
+- `temperature`（数値、任意）
+- `maxTokens`（数値、任意）
+- `timeoutMs`（数値、任意）
 
-`thinking` は、`low` や `medium` など、標準のOpenClaw推論プリセットを受け付けます。
+`thinking` は `low` や `medium` などの標準 OpenClaw 推論プリセットを受け付けます。
 
 ## 出力
 
-解析済みJSONを含む `details.json` を返します (`schema` が指定されている場合はそれに対して検証します)。
+解析済み JSON を含む `details.json` を返します（`schema` が指定されている場合は、それに対して検証します）。
 
-## 例: Lobsterワークフローステップ
+## 例: Lobster ワークフローステップ
+
+### 重要な制限
+
+以下の例は、**スタンドアロン Lobster CLI** が、`openclaw.invoke` にすでに正しい Gateway URL/認証コンテキストがある環境で実行されていることを前提としています。
+
+OpenClaw 内にバンドルされている **埋め込み** Lobster ランナーでは、この入れ子 CLI パターンは **現在のところ信頼できません**。
+
+```lobster
+openclaw.invoke --tool llm-task --action json --args-json '{ ... }'
+```
+
+埋め込み Lobster でこのフロー向けのサポート済みブリッジが用意されるまでは、次のいずれかを優先してください。
+
+- Lobster の外で直接 `llm-task` ツールを呼び出す
+- 入れ子の `openclaw.invoke` 呼び出しに依存しない Lobster ステップ
+
+スタンドアロン Lobster CLI の例:
 
 ```lobster
 openclaw.invoke --tool llm-task --action json --args-json '{
@@ -110,13 +127,13 @@ openclaw.invoke --tool llm-task --action json --args-json '{
 
 ## 安全上の注意
 
-- このツールは **JSONのみ** で、モデルにはJSONのみを出力するよう指示します (コードフェンスや解説は含めません)。
+- このツールは **JSON のみ** であり、モデルに JSON だけを出力するよう指示します（コードフェンスや解説は含めません）。
 - この実行では、モデルにツールは公開されません。
 - `schema` で検証しない限り、出力は信頼できないものとして扱ってください。
-- 副作用のあるステップ (送信、投稿、実行) の前に承認を置いてください。
+- 副作用のあるステップ（送信、投稿、実行）の前に承認を置いてください。
 
 ## 関連
 
-- [Thinkingレベル](/ja-JP/tools/thinking)
+- [Thinking レベル](/ja-JP/tools/thinking)
 - [サブエージェント](/ja-JP/tools/subagents)
 - [スラッシュコマンド](/ja-JP/tools/slash-commands)

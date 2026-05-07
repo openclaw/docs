@@ -1,38 +1,38 @@
 ---
 read_when:
-    - Anda ingin menggunakan teks-ke-ucapan ElevenLabs di OpenClaw
-    - Anda ingin ElevenLabs Scribe mengubah ucapan menjadi teks untuk lampiran audio
+    - Anda ingin teks-ke-suara ElevenLabs di OpenClaw
+    - Anda menginginkan ElevenLabs Scribe untuk konversi ucapan-ke-teks pada lampiran audio
     - Anda menginginkan transkripsi waktu nyata ElevenLabs untuk Panggilan Suara atau Google Meet
-summary: Gunakan ucapan ElevenLabs, Scribe STT, dan transkripsi waktu nyata dengan OpenClaw
+summary: Gunakan suara ElevenLabs, Scribe STT, dan transkripsi waktu nyata dengan OpenClaw
 title: ElevenLabs
 x-i18n:
-    generated_at: "2026-05-04T07:07:02Z"
+    generated_at: "2026-05-07T13:24:38Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 4c880bf9dcab01ef70779c74576c70ea5d0203b96b5f739291842fafcb4bdb4b
+    source_hash: 72e655dc2260a353bb5e84e6df32cc39bf6329836cb29ab569c3f93833df144a
     source_path: providers/elevenlabs.md
     workflow: 16
 ---
 
-OpenClaw menggunakan ElevenLabs untuk teks-ke-ucapan, ucapan-ke-teks batch dengan Scribe
+OpenClaw menggunakan ElevenLabs untuk text-to-speech, speech-to-text batch dengan Scribe
 v2, dan STT streaming dengan Scribe v2 Realtime.
 
-| Kapabilitas              | Permukaan OpenClaw                                                    | Bawaan                   |
-| ------------------------ | -------------------------------------------------------------------- | ------------------------ |
-| Teks-ke-ucapan           | `messages.tts` / `talk`                                              | `eleven_multilingual_v2` |
-| Ucapan-ke-teks batch     | `tools.media.audio`                                                  | `scribe_v2`              |
-| Ucapan-ke-teks streaming | Streaming Panggilan Suara atau Google Meet `realtime.transcriptionProvider` | `scribe_v2_realtime`     |
+| Kemampuan                | Permukaan OpenClaw                                                   | Bawaan                  |
+| ------------------------ | -------------------------------------------------------------------- | ----------------------- |
+| Text-to-speech           | `messages.tts` / `talk`                                              | `eleven_multilingual_v2` |
+| Speech-to-text batch     | `tools.media.audio`                                                  | `scribe_v2`             |
+| Speech-to-text streaming | Streaming Voice Call atau Google Meet `realtime.transcriptionProvider` | `scribe_v2_realtime`    |
 
 ## Autentikasi
 
 Atur `ELEVENLABS_API_KEY` di lingkungan. `XI_API_KEY` juga diterima untuk
-kompatibilitas dengan tooling ElevenLabs yang ada.
+kompatibilitas dengan tooling ElevenLabs yang sudah ada.
 
 ```bash
 export ELEVENLABS_API_KEY="..."
 ```
 
-## Teks-ke-ucapan
+## Text-to-speech
 
 ```json5
 {
@@ -50,12 +50,19 @@ export ELEVENLABS_API_KEY="..."
 }
 ```
 
-Atur `modelId` ke `eleven_v3` untuk menggunakan TTS ElevenLabs v3. OpenClaw tetap menjadikan
-`eleven_multilingual_v2` sebagai bawaan untuk instalasi yang ada.
+Atur `modelId` ke `eleven_v3` untuk menggunakan ElevenLabs v3 TTS. OpenClaw mempertahankan
+`eleven_multilingual_v2` sebagai bawaan untuk instalasi yang sudah ada.
 
-## Ucapan-ke-teks
+Saluran suara Discord menggunakan endpoint TTS streaming ElevenLabs saat ElevenLabs menjadi
+penyedia `voice.tts`/`messages.tts` yang dipilih. Pemutaran dimulai dari stream audio
+yang dikembalikan alih-alih menunggu OpenClaw mengunduh dan menulis seluruh file
+audio terlebih dahulu. `latencyTier` dipetakan ke parameter kueri ElevenLabs
+`optimize_streaming_latency` untuk model yang menerimanya; OpenClaw
+menghilangkan parameter tersebut untuk `eleven_v3`, yang menolaknya.
 
-Gunakan Scribe v2 untuk lampiran audio masuk dan segmen suara rekaman singkat:
+## Speech-to-text
+
+Gunakan Scribe v2 untuk lampiran audio masuk dan segmen suara rekaman pendek:
 
 ```json5
 {
@@ -71,21 +78,21 @@ Gunakan Scribe v2 untuk lampiran audio masuk dan segmen suara rekaman singkat:
 ```
 
 OpenClaw mengirim audio multipart ke ElevenLabs `/v1/speech-to-text` dengan
-`model_id: "scribe_v2"`. Petunjuk bahasa dipetakan ke `language_code` saat tersedia.
+`model_id: "scribe_v2"`. Petunjuk bahasa dipetakan ke `language_code` bila ada.
 
 ## STT Streaming
 
-Plugin `elevenlabs` bawaan mendaftarkan Scribe v2 Realtime untuk Panggilan Suara dan
-transkripsi streaming mode agen Google Meet.
+Plugin `elevenlabs` bawaan mendaftarkan Scribe v2 Realtime untuk transkripsi streaming
+mode agen Voice Call dan Google Meet.
 
-| Pengaturan      | Path config                                                               | Bawaan                                           |
-| --------------- | ------------------------------------------------------------------------- | ------------------------------------------------- |
-| Kunci API       | `plugins.entries.voice-call.config.streaming.providers.elevenlabs.apiKey` | Fallback ke `ELEVENLABS_API_KEY` / `XI_API_KEY` |
-| Model           | `...elevenlabs.modelId`                                                   | `scribe_v2_realtime`                              |
-| Format audio    | `...elevenlabs.audioFormat`                                               | `ulaw_8000`                                       |
-| Laju sampel     | `...elevenlabs.sampleRate`                                                | `8000`                                            |
-| Strategi commit | `...elevenlabs.commitStrategy`                                            | `vad`                                             |
-| Bahasa          | `...elevenlabs.languageCode`                                              | (belum diatur)                                    |
+| Pengaturan      | Jalur konfigurasi                                                       | Bawaan                                            |
+| --------------- | ----------------------------------------------------------------------- | ------------------------------------------------- |
+| Kunci API       | `plugins.entries.voice-call.config.streaming.providers.elevenlabs.apiKey` | Beralih ke `ELEVENLABS_API_KEY` / `XI_API_KEY`    |
+| Model           | `...elevenlabs.modelId`                                                 | `scribe_v2_realtime`                              |
+| Format audio    | `...elevenlabs.audioFormat`                                             | `ulaw_8000`                                       |
+| Laju sampel     | `...elevenlabs.sampleRate`                                              | `8000`                                            |
+| Strategi commit | `...elevenlabs.commitStrategy`                                          | `vad`                                             |
+| Bahasa          | `...elevenlabs.languageCode`                                            | (belum diatur)                                    |
 
 ```json5
 {
@@ -113,18 +120,18 @@ transkripsi streaming mode agen Google Meet.
 ```
 
 <Note>
-Panggilan Suara menerima media Twilio sebagai G.711 u-law 8 kHz. Provider realtime
-ElevenLabs secara bawaan menggunakan `ulaw_8000`, sehingga frame telepon dapat diteruskan tanpa
+Voice Call menerima media Twilio sebagai G.711 u-law 8 kHz. Penyedia realtime
+ElevenLabs menggunakan `ulaw_8000` sebagai bawaan, sehingga frame telepon dapat diteruskan tanpa
 transcoding.
 </Note>
 
 Untuk mode agen Google Meet, atur
 `plugins.entries.google-meet.config.realtime.transcriptionProvider` ke
-`"elevenlabs"` dan konfigurasikan blok provider yang sama di bawah
+`"elevenlabs"` dan konfigurasikan blok penyedia yang sama di bawah
 `plugins.entries.google-meet.config.realtime.providers.elevenlabs`.
 
 ## Terkait
 
-- [Teks-ke-ucapan](/id/tools/tts)
+- [Text-to-speech](/id/tools/tts)
 - [Google Meet](/id/plugins/google-meet)
 - [Pemilihan model](/id/concepts/model-providers)

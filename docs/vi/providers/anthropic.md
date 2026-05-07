@@ -4,26 +4,26 @@ read_when:
 summary: Sử dụng Anthropic Claude qua khóa API hoặc Claude CLI trong OpenClaw
 title: Anthropic
 x-i18n:
-    generated_at: "2026-04-29T23:04:47Z"
+    generated_at: "2026-05-07T13:23:23Z"
     model: gpt-5.5
     provider: openai
-    source_hash: dfaba2eea6a2d263d76036d1e6859fc3b487e886ec460ef2ced83e5e8e834327
+    source_hash: 15ae1d2751d0127a45ece3d0a25bead21fd6bacc2ffc80636188fc2cb5f3d7ce
     source_path: providers/anthropic.md
     workflow: 16
 ---
 
-Anthropic xây dựng dòng mô hình **Claude**. OpenClaw hỗ trợ hai cách xác thực:
+Anthropic xây dựng họ mô hình **Claude**. OpenClaw hỗ trợ hai cách xác thực:
 
 - **Khóa API** — truy cập trực tiếp API Anthropic với tính phí theo mức sử dụng (mô hình `anthropic/*`)
 - **Claude CLI** — dùng lại phiên đăng nhập Claude CLI hiện có trên cùng máy chủ
 
 <Warning>
-Nhân viên Anthropic đã cho chúng tôi biết rằng kiểu sử dụng Claude CLI như OpenClaw được phép trở lại, nên
-OpenClaw xem việc dùng lại Claude CLI và sử dụng `claude -p` là được chấp thuận trừ khi
+Nhân viên Anthropic đã cho chúng tôi biết rằng cách dùng Claude CLI kiểu OpenClaw đã được cho phép trở lại, vì vậy
+OpenClaw xem việc dùng lại Claude CLI và sử dụng `claude -p` là được chấp thuận, trừ khi
 Anthropic công bố chính sách mới.
 
-Với các máy chủ Gateway chạy lâu dài, khóa API Anthropic vẫn là đường dẫn sản xuất rõ ràng và
-dễ dự đoán nhất.
+Đối với các máy chủ Gateway chạy lâu dài, khóa API Anthropic vẫn là lộ trình sản xuất rõ ràng
+và dễ dự đoán nhất.
 
 Tài liệu công khai hiện tại của Anthropic:
 
@@ -44,7 +44,7 @@ Tài liệu công khai hiện tại của Anthropic:
       <Step title="Lấy khóa API của bạn">
         Tạo khóa API trong [Anthropic Console](https://console.anthropic.com/).
       </Step>
-      <Step title="Chạy onboarding">
+      <Step title="Chạy quy trình thiết lập ban đầu">
         ```bash
         openclaw onboard
         # choose: Anthropic API key
@@ -78,14 +78,14 @@ Tài liệu công khai hiện tại của Anthropic:
     **Phù hợp nhất cho:** dùng lại phiên đăng nhập Claude CLI hiện có mà không cần khóa API riêng.
 
     <Steps>
-      <Step title="Đảm bảo Claude CLI đã được cài đặt và đã đăng nhập">
+      <Step title="Đảm bảo Claude CLI đã được cài đặt và đăng nhập">
         Xác minh bằng:
 
         ```bash
         claude --version
         ```
       </Step>
-      <Step title="Chạy onboarding">
+      <Step title="Chạy quy trình thiết lập ban đầu">
         ```bash
         openclaw onboard
         # choose: Claude CLI
@@ -106,7 +106,7 @@ Tài liệu công khai hiện tại của Anthropic:
 
     ### Ví dụ cấu hình
 
-    Ưu tiên ref mô hình Anthropic chuẩn cùng với ghi đè runtime CLI:
+    Ưu tiên tham chiếu mô hình Anthropic chuẩn cùng một ghi đè runtime CLI:
 
     ```json5
     {
@@ -119,20 +119,20 @@ Tài liệu công khai hiện tại của Anthropic:
     }
     ```
 
-    Ref mô hình `claude-cli/claude-opus-4-7` cũ vẫn hoạt động để
-    tương thích, nhưng cấu hình mới nên giữ lựa chọn provider/mô hình dưới dạng
+    Các tham chiếu mô hình cũ `claude-cli/claude-opus-4-7` vẫn hoạt động để
+    tương thích, nhưng cấu hình mới nên giữ phần chọn nhà cung cấp/mô hình là
     `anthropic/*` và đặt backend thực thi trong `agentRuntime.id`.
 
     <Tip>
-    Nếu bạn muốn đường dẫn tính phí rõ ràng nhất, hãy dùng khóa API Anthropic. OpenClaw cũng hỗ trợ các tùy chọn kiểu đăng ký từ [OpenAI Codex](/vi/providers/openai), [Qwen Cloud](/vi/providers/qwen), [MiniMax](/vi/providers/minimax), và [Z.AI / GLM](/vi/providers/glm).
+    Nếu bạn muốn lộ trình tính phí rõ ràng nhất, hãy dùng khóa API Anthropic. OpenClaw cũng hỗ trợ các tùy chọn kiểu thuê bao từ [OpenAI Codex](/vi/providers/openai), [Qwen Cloud](/vi/providers/qwen), [MiniMax](/vi/providers/minimax), và [Z.AI / GLM](/vi/providers/glm).
     </Tip>
 
   </Tab>
 </Tabs>
 
-## Mặc định thinking (Claude 4.6)
+## Mặc định suy nghĩ (Claude 4.6)
 
-Các mô hình Claude 4.6 mặc định dùng thinking `adaptive` trong OpenClaw khi không đặt cấp thinking rõ ràng.
+Các mô hình Claude 4.6 mặc định dùng suy nghĩ `adaptive` trong OpenClaw khi không đặt mức suy nghĩ rõ ràng.
 
 Ghi đè theo từng tin nhắn bằng `/think:<level>` hoặc trong tham số mô hình:
 
@@ -152,8 +152,8 @@ Ghi đè theo từng tin nhắn bằng `/think:<level>` hoặc trong tham số m
 
 <Note>
 Tài liệu Anthropic liên quan:
-- [Adaptive thinking](https://platform.claude.com/docs/en/build-with-claude/adaptive-thinking)
-- [Extended thinking](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)
+- [Suy nghĩ thích ứng](https://platform.claude.com/docs/en/build-with-claude/adaptive-thinking)
+- [Suy nghĩ mở rộng](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)
 
 </Note>
 
@@ -164,8 +164,8 @@ OpenClaw hỗ trợ tính năng lưu bộ nhớ đệm prompt của Anthropic ch
 | Giá trị             | Thời lượng bộ nhớ đệm | Mô tả                                      |
 | ------------------- | -------------- | -------------------------------------- |
 | `"short"` (mặc định) | 5 phút         | Tự động áp dụng cho xác thực bằng khóa API |
-| `"long"`            | 1 giờ          | Bộ nhớ đệm mở rộng                         |
-| `"none"`            | Không lưu bộ nhớ đệm | Tắt lưu bộ nhớ đệm prompt                 |
+| `"long"`            | 1 giờ          | Bộ nhớ đệm mở rộng                      |
+| `"none"`            | Không lưu bộ nhớ đệm | Tắt lưu bộ nhớ đệm prompt              |
 
 ```json5
 {
@@ -183,7 +183,7 @@ OpenClaw hỗ trợ tính năng lưu bộ nhớ đệm prompt của Anthropic ch
 
 <AccordionGroup>
   <Accordion title="Ghi đè bộ nhớ đệm theo từng agent">
-    Dùng tham số cấp mô hình làm đường cơ sở, rồi ghi đè các agent cụ thể qua `agents.list[].params`:
+    Dùng tham số cấp mô hình làm đường cơ sở, sau đó ghi đè các agent cụ thể qua `agents.list[].params`:
 
     ```json5
     {
@@ -209,14 +209,14 @@ OpenClaw hỗ trợ tính năng lưu bộ nhớ đệm prompt của Anthropic ch
     1. `agents.defaults.models["provider/model"].params`
     2. `agents.list[].params` (khớp `id`, ghi đè theo khóa)
 
-    Điều này cho phép một agent giữ bộ nhớ đệm dài hạn trong khi agent khác trên cùng mô hình tắt lưu bộ nhớ đệm cho lưu lượng bùng nổ/ít tái sử dụng.
+    Điều này cho phép một agent giữ bộ nhớ đệm dài hạn trong khi một agent khác trên cùng mô hình tắt bộ nhớ đệm cho lưu lượng tăng đột biến hoặc ít tái sử dụng.
 
   </Accordion>
 
   <Accordion title="Ghi chú về Bedrock Claude">
     - Các mô hình Anthropic Claude trên Bedrock (`amazon-bedrock/*anthropic.claude*`) chấp nhận truyền qua `cacheRetention` khi được cấu hình.
-    - Các mô hình Bedrock không phải Anthropic bị ép thành `cacheRetention: "none"` tại runtime.
-    - Mặc định thông minh cho khóa API cũng khởi tạo `cacheRetention: "short"` cho các ref Claude-on-Bedrock khi không đặt giá trị rõ ràng.
+    - Các mô hình Bedrock không phải Anthropic bị ép thành `cacheRetention: "none"` trong runtime.
+    - Các mặc định thông minh cho khóa API cũng đặt trước `cacheRetention: "short"` cho tham chiếu Claude-on-Bedrock khi không đặt giá trị rõ ràng.
 
   </Accordion>
 </AccordionGroup>
@@ -225,7 +225,7 @@ OpenClaw hỗ trợ tính năng lưu bộ nhớ đệm prompt của Anthropic ch
 
 <AccordionGroup>
   <Accordion title="Chế độ nhanh">
-    Nút bật/tắt `/fast` dùng chung của OpenClaw hỗ trợ lưu lượng Anthropic trực tiếp (khóa API và OAuth tới `api.anthropic.com`).
+    Công tắc `/fast` dùng chung của OpenClaw hỗ trợ lưu lượng Anthropic trực tiếp (khóa API và OAuth đến `api.anthropic.com`).
 
     | Lệnh | Ánh xạ tới |
     |---------|---------|
@@ -247,31 +247,31 @@ OpenClaw hỗ trợ tính năng lưu bộ nhớ đệm prompt của Anthropic ch
     ```
 
     <Note>
-    - Chỉ được chèn cho yêu cầu trực tiếp tới `api.anthropic.com`. Các tuyến proxy giữ nguyên `service_tier`.
-    - Tham số `serviceTier` hoặc `service_tier` rõ ràng sẽ ghi đè `/fast` khi cả hai được đặt.
-    - Trên tài khoản không có dung lượng Priority Tier, `service_tier: "auto"` có thể được phân giải thành `standard`.
+    - Chỉ được chèn cho các yêu cầu trực tiếp đến `api.anthropic.com`. Các tuyến proxy giữ nguyên `service_tier`.
+    - Tham số `serviceTier` hoặc `service_tier` rõ ràng sẽ ghi đè `/fast` khi cả hai đều được đặt.
+    - Trên các tài khoản không có dung lượng Priority Tier, `service_tier: "auto"` có thể được phân giải thành `standard`.
 
     </Note>
 
   </Accordion>
 
-  <Accordion title="Hiểu media (hình ảnh và PDF)">
+  <Accordion title="Hiểu nội dung media (hình ảnh và PDF)">
     Plugin Anthropic được đóng gói đăng ký khả năng hiểu hình ảnh và PDF. OpenClaw
-    tự động phân giải các khả năng media từ xác thực Anthropic đã cấu hình — không
+    tự động phân giải năng lực media từ xác thực Anthropic đã cấu hình — không
     cần cấu hình bổ sung.
 
-    | Thuộc tính     | Giá trị              |
-    | -------------- | -------------------- |
-    | Mô hình mặc định | `claude-opus-4-6`    |
+    | Thuộc tính      | Giá trị                |
+    | --------------- | --------------------- |
+    | Mô hình mặc định | `claude-opus-4-7`     |
     | Đầu vào được hỗ trợ | Hình ảnh, tài liệu PDF |
 
-    Khi hình ảnh hoặc PDF được đính kèm vào cuộc trò chuyện, OpenClaw tự động
-    định tuyến nó qua provider hiểu media Anthropic.
+    Khi một hình ảnh hoặc PDF được đính kèm vào cuộc trò chuyện, OpenClaw tự động
+    định tuyến nó qua nhà cung cấp hiểu media Anthropic.
 
   </Accordion>
 
   <Accordion title="Cửa sổ ngữ cảnh 1M (beta)">
-    Cửa sổ ngữ cảnh 1M của Anthropic bị giới hạn bởi beta. Bật theo từng mô hình:
+    Cửa sổ ngữ cảnh 1M của Anthropic đang được kiểm soát bằng beta. Bật theo từng mô hình:
 
     ```json5
     {
@@ -287,14 +287,14 @@ OpenClaw hỗ trợ tính năng lưu bộ nhớ đệm prompt của Anthropic ch
     }
     ```
 
-    OpenClaw ánh xạ điều này thành `anthropic-beta: context-1m-2025-08-07` trên các yêu cầu.
+    OpenClaw ánh xạ giá trị này thành `anthropic-beta: context-1m-2025-08-07` trên các yêu cầu.
 
     `params.context1m: true` cũng áp dụng cho backend Claude CLI
-    (`claude-cli/*`) với các mô hình Opus và Sonnet đủ điều kiện, mở rộng cửa sổ
+    (`claude-cli/*`) đối với các mô hình Opus và Sonnet đủ điều kiện, mở rộng cửa sổ
     ngữ cảnh runtime cho các phiên CLI đó để khớp với hành vi API trực tiếp.
 
     <Warning>
-    Yêu cầu quyền truy cập ngữ cảnh dài trên thông tin xác thực Anthropic của bạn. Xác thực token cũ (`sk-ant-oat-*`) bị từ chối cho các yêu cầu ngữ cảnh 1M — OpenClaw ghi cảnh báo và quay về cửa sổ ngữ cảnh tiêu chuẩn.
+    Yêu cầu thông tin xác thực Anthropic của bạn có quyền truy cập ngữ cảnh dài. Xác thực token cũ (`sk-ant-oat-*`) bị từ chối cho các yêu cầu ngữ cảnh 1M — OpenClaw ghi cảnh báo và quay về cửa sổ ngữ cảnh tiêu chuẩn.
     </Warning>
 
   </Accordion>
@@ -308,20 +308,20 @@ OpenClaw hỗ trợ tính năng lưu bộ nhớ đệm prompt của Anthropic ch
 ## Khắc phục sự cố
 
 <AccordionGroup>
-  <Accordion title="Lỗi 401 / token đột nhiên không hợp lệ">
-    Xác thực token Anthropic hết hạn và có thể bị thu hồi. Với thiết lập mới, hãy dùng khóa API Anthropic thay thế.
+  <Accordion title="Lỗi 401 / token đột ngột không hợp lệ">
+    Xác thực bằng token Anthropic sẽ hết hạn và có thể bị thu hồi. Với các thiết lập mới, hãy dùng khóa API Anthropic thay thế.
   </Accordion>
 
-  <Accordion title='Không tìm thấy khóa API cho provider "anthropic"'>
-    Xác thực Anthropic là **theo từng agent** — agent mới không kế thừa khóa của agent chính. Chạy lại onboarding cho agent đó (hoặc cấu hình khóa API trên máy chủ Gateway), rồi xác minh bằng `openclaw models status`.
+  <Accordion title='Không tìm thấy khóa API cho nhà cung cấp "anthropic"'>
+    Xác thực Anthropic là **theo từng agent** — các agent mới không kế thừa khóa của agent chính. Chạy lại quy trình thiết lập ban đầu cho agent đó (hoặc cấu hình khóa API trên máy chủ Gateway), rồi xác minh bằng `openclaw models status`.
   </Accordion>
 
-  <Accordion title='Không tìm thấy thông tin xác thực cho profile "anthropic:default"'>
-    Chạy `openclaw models status` để xem profile xác thực nào đang hoạt động. Chạy lại onboarding, hoặc cấu hình khóa API cho đường dẫn profile đó.
+  <Accordion title='Không tìm thấy thông tin xác thực cho hồ sơ "anthropic:default"'>
+    Chạy `openclaw models status` để xem hồ sơ xác thực nào đang hoạt động. Chạy lại quy trình thiết lập ban đầu, hoặc cấu hình khóa API cho đường dẫn hồ sơ đó.
   </Accordion>
 
-  <Accordion title="Không có profile xác thực khả dụng (tất cả đang trong thời gian chờ)">
-    Kiểm tra `openclaw models status --json` để xem `auth.unusableProfiles`. Thời gian chờ do giới hạn tốc độ của Anthropic có thể theo phạm vi mô hình, nên một mô hình Anthropic cùng nhóm vẫn có thể dùng được. Thêm một profile Anthropic khác hoặc chờ hết thời gian chờ.
+  <Accordion title="Không có hồ sơ xác thực khả dụng (tất cả đang trong thời gian hồi">
+    Kiểm tra `openclaw models status --json` để xem `auth.unusableProfiles`. Thời gian hồi do giới hạn tốc độ của Anthropic có thể theo từng mô hình, nên một mô hình Anthropic cùng nhóm có thể vẫn dùng được. Thêm hồ sơ Anthropic khác hoặc chờ hết thời gian hồi.
   </Accordion>
 </AccordionGroup>
 
@@ -333,13 +333,13 @@ Trợ giúp thêm: [Khắc phục sự cố](/vi/help/troubleshooting) và [Câu
 
 <CardGroup cols={2}>
   <Card title="Chọn mô hình" href="/vi/concepts/model-providers" icon="layers">
-    Chọn provider, ref mô hình và hành vi failover.
+    Chọn nhà cung cấp, tham chiếu mô hình và hành vi chuyển dự phòng.
   </Card>
   <Card title="Backend CLI" href="/vi/gateway/cli-backends" icon="terminal">
-    Thiết lập backend Claude CLI và chi tiết runtime.
+    Chi tiết thiết lập và runtime backend Claude CLI.
   </Card>
   <Card title="Lưu bộ nhớ đệm prompt" href="/vi/reference/prompt-caching" icon="database">
-    Cách lưu bộ nhớ đệm prompt hoạt động trên các provider.
+    Cách lưu bộ nhớ đệm prompt hoạt động trên các nhà cung cấp.
   </Card>
   <Card title="OAuth và xác thực" href="/vi/gateway/authentication" icon="key">
     Chi tiết xác thực và quy tắc dùng lại thông tin xác thực.

@@ -4,35 +4,35 @@ read_when:
 summary: Gateway protokolü için tek doğruluk kaynağı olarak TypeBox şemaları
 title: TypeBox
 x-i18n:
-    generated_at: "2026-05-06T09:10:48Z"
+    generated_at: "2026-05-07T13:15:52Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 3e188ec0fefcbaf01c8b575a1898eafbbcf309d3032930aa0c09c2d9a63b93e5
+    source_hash: 95baccfdfa6f77ba57f6ac8502d502084289a84cfd03a450dd1e9422931706dd
     source_path: concepts/typebox.md
     workflow: 16
 ---
 
-TypeBox, TypeScript öncelikli bir şema kitaplığıdır. Onu **Gateway
-WebSocket protokolünü** (el sıkışma, istek/yanıt, sunucu olayları) tanımlamak için kullanırız. Bu şemalar
+TypeBox, TypeScript odaklı bir şema kitaplığıdır. Bunu **Gateway
+WebSocket protokolünü** (handshake, request/response, server events) tanımlamak için kullanırız. Bu şemalar
 macOS uygulaması için **çalışma zamanı doğrulamasını**, **JSON Schema dışa aktarımını** ve **Swift kod üretimini**
-yönlendirir. Tek doğruluk kaynağı; geri kalan her şey üretilir.
+yürütür. Tek doğruluk kaynağı; geri kalan her şey üretilir.
 
 Daha üst düzey protokol bağlamını istiyorsanız
 [Gateway mimarisi](/tr/concepts/architecture) ile başlayın.
 
 ## Zihinsel model (30 saniye)
 
-Her Gateway WS iletisi üç çerçeveden biridir:
+Her Gateway WS mesajı üç çerçeveden biridir:
 
-- **İstek**: `{ type: "req", id, method, params }`
-- **Yanıt**: `{ type: "res", id, ok, payload | error }`
-- **Olay**: `{ type: "event", event, payload, seq?, stateVersion? }`
+- **Request**: `{ type: "req", id, method, params }`
+- **Response**: `{ type: "res", id, ok, payload | error }`
+- **Event**: `{ type: "event", event, payload, seq?, stateVersion? }`
 
 İlk çerçeve **mutlaka** bir `connect` isteği olmalıdır. Bundan sonra istemciler
-yöntemleri çağırabilir (örn. `health`, `send`, `chat.send`) ve olaylara abone olabilir (örn.
+metotları çağırabilir (ör. `health`, `send`, `chat.send`) ve event'lere abone olabilir (ör.
 `presence`, `tick`, `agent`).
 
-Bağlantı akışı (asgari):
+Bağlantı akışı (minimal):
 
 ```
 Client                    Gateway
@@ -43,7 +43,7 @@ Client                    Gateway
   |<---- res:health ----------|
 ```
 
-Yaygın yöntemler + olaylar:
+Yaygın metotlar + event'ler:
 
 | Kategori   | Örnekler                                                   | Notlar                              |
 | ---------- | ---------------------------------------------------------- | ---------------------------------- |
@@ -51,48 +51,48 @@ Yaygın yöntemler + olaylar:
 | Mesajlaşma | `send`, `agent`, `agent.wait`, `system-event`, `logs.tail` | yan etkiler `idempotencyKey` gerektirir |
 | Sohbet     | `chat.history`, `chat.send`, `chat.abort`                  | WebChat bunları kullanır           |
 | Oturumlar  | `sessions.list`, `sessions.patch`, `sessions.delete`       | oturum yönetimi                    |
-| Otomasyon  | `wake`, `cron.list`, `cron.run`, `cron.runs`               | uyandırma + cron denetimi          |
-| Düğümler   | `node.list`, `node.invoke`, `node.pair.*`                  | Gateway WS + düğüm eylemleri       |
-| Olaylar    | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown`  | sunucu gönderimi                   |
+| Otomasyon  | `wake`, `cron.list`, `cron.run`, `cron.runs`               | wake + cron denetimi               |
+| Node'lar   | `node.list`, `node.invoke`, `node.pair.*`                  | Gateway WS + node eylemleri        |
+| Event'ler  | `tick`, `presence`, `agent`, `chat`, `health`, `shutdown`  | sunucu push                        |
 
-Yetkili olarak duyurulan **keşif** envanteri
-`src/gateway/server-methods-list.ts` içinde bulunur (`listGatewayMethods`, `GATEWAY_EVENTS`).
+Yetkili duyurulan **keşif** envanteri
+`src/gateway/server-methods-list.ts` içinde yaşar (`listGatewayMethods`, `GATEWAY_EVENTS`).
 
 ## Şemaların bulunduğu yer
 
 - Kaynak: `src/gateway/protocol/schema.ts`
 - Çalışma zamanı doğrulayıcıları (AJV): `src/gateway/protocol/index.ts`
 - Duyurulan özellik/keşif kayıt defteri: `src/gateway/server-methods-list.ts`
-- Sunucu el sıkışması + yöntem yönlendirme: `src/gateway/server.impl.ts`
+- Sunucu handshake + metot yönlendirme: `src/gateway/server.impl.ts`
 - Node istemcisi: `src/gateway/client.ts`
 - Üretilen JSON Schema: `dist/protocol.schema.json`
 - Üretilen Swift modelleri: `apps/macos/Sources/OpenClawProtocol/GatewayModels.swift`
 
-## Mevcut işlem hattı
+## Geçerli pipeline
 
 - `pnpm protocol:gen`
   - JSON Schema'yı (draft-07) `dist/protocol.schema.json` konumuna yazar
 - `pnpm protocol:gen:swift`
   - Swift gateway modellerini üretir
 - `pnpm protocol:check`
-  - iki üreticiyi de çalıştırır ve çıktının commit edildiğini doğrular
+  - iki üreticiyi de çalıştırır ve çıktının commit'lendiğini doğrular
 
 ## Şemalar çalışma zamanında nasıl kullanılır?
 
-- **Sunucu tarafı**: gelen her çerçeve AJV ile doğrulanır. El sıkışma yalnızca
+- **Sunucu tarafı**: gelen her çerçeve AJV ile doğrulanır. Handshake yalnızca
   parametreleri `ConnectParams` ile eşleşen bir `connect` isteğini kabul eder.
-- **İstemci tarafı**: JS istemcisi, olay ve yanıt çerçevelerini kullanmadan önce
+- **İstemci tarafı**: JS istemcisi event ve response çerçevelerini kullanmadan önce
   doğrular.
 - **Özellik keşfi**: Gateway, `listGatewayMethods()` ve
   `GATEWAY_EVENTS` üzerinden `hello-ok` içinde tutucu bir `features.methods`
   ve `features.events` listesi gönderir.
-- Bu keşif listesi, `coreGatewayHandlers` içindeki her çağrılabilir yardımcı işlevin
-  üretilmiş bir dökümü değildir; bazı yardımcı RPC'ler duyurulan
-  özellik listesinde sıralanmadan `src/gateway/server-methods/*.ts` içinde uygulanır.
+- Bu keşif listesi, `coreGatewayHandlers` içindeki çağrılabilir her yardımcının
+  üretilmiş bir dökümü değildir; bazı yardımcı RPC'ler, duyurulan özellik
+  listesinde numaralandırılmadan `src/gateway/server-methods/*.ts` içinde uygulanır.
 
 ## Örnek çerçeveler
 
-Connect (ilk ileti):
+Connect (ilk mesaj):
 
 ```json
 {
@@ -100,8 +100,8 @@ Connect (ilk ileti):
   "id": "c1",
   "method": "connect",
   "params": {
-    "minProtocol": 3,
-    "maxProtocol": 3,
+    "minProtocol": 4,
+    "maxProtocol": 4,
     "client": {
       "id": "openclaw-macos",
       "displayName": "macos",
@@ -114,7 +114,7 @@ Connect (ilk ileti):
 }
 ```
 
-Hello-ok yanıtı:
+Hello-ok response:
 
 ```json
 {
@@ -123,7 +123,7 @@ Hello-ok yanıtı:
   "ok": true,
   "payload": {
     "type": "hello-ok",
-    "protocol": 3,
+    "protocol": 4,
     "server": { "version": "dev", "connId": "ws-1" },
     "features": { "methods": ["health"], "events": ["tick"] },
     "snapshot": {
@@ -137,7 +137,7 @@ Hello-ok yanıtı:
 }
 ```
 
-İstek + yanıt:
+Request + response:
 
 ```json
 { "type": "req", "id": "r1", "method": "health" }
@@ -147,15 +147,15 @@ Hello-ok yanıtı:
 { "type": "res", "id": "r1", "ok": true, "payload": { "ok": true } }
 ```
 
-Olay:
+Event:
 
 ```json
 { "type": "event", "event": "tick", "payload": { "ts": 1730000000 }, "seq": 12 }
 ```
 
-## Asgari istemci (Node.js)
+## Minimal istemci (Node.js)
 
-En küçük yararlı akış: connect + health.
+En küçük kullanışlı akış: connect + health.
 
 ```ts
 import { WebSocket } from "ws";
@@ -169,8 +169,8 @@ ws.on("open", () => {
       id: "c1",
       method: "connect",
       params: {
-        minProtocol: 3,
-        maxProtocol: 3,
+        minProtocol: 4,
+        maxProtocol: 4,
         client: {
           id: "cli",
           displayName: "example",
@@ -195,13 +195,13 @@ ws.on("message", (data) => {
 });
 ```
 
-## Çalışılmış örnek: uçtan uca bir yöntem ekleme
+## Çalışılmış örnek: uçtan uca bir metot ekleme
 
 Örnek: `{ ok: true, text }` döndüren yeni bir `system.echo` isteği ekleyin.
 
 1. **Şema (doğruluk kaynağı)**
 
-`src/gateway/protocol/schema.ts` dosyasına ekleyin:
+`src/gateway/protocol/schema.ts` içine ekleyin:
 
 ```ts
 export const SystemEchoParamsSchema = Type.Object(
@@ -237,7 +237,7 @@ export const validateSystemEchoParams = ajv.compile<SystemEchoParams>(SystemEcho
 
 3. **Sunucu davranışı**
 
-`src/gateway/server-methods/system.ts` içinde bir işleyici ekleyin:
+`src/gateway/server-methods/system.ts` içine bir handler ekleyin:
 
 ```ts
 export const systemHandlers: GatewayRequestHandlers = {
@@ -249,52 +249,52 @@ export const systemHandlers: GatewayRequestHandlers = {
 ```
 
 Bunu `src/gateway/server-methods.ts` içinde kaydedin (`systemHandlers` zaten birleştirilir),
-ardından `src/gateway/server-methods-list.ts` içindeki `listGatewayMethods` girdisine
+ardından `src/gateway/server-methods-list.ts` içinde `listGatewayMethods` girdisine
 `"system.echo"` ekleyin.
 
-Yöntem operatör veya düğüm istemcileri tarafından çağrılabiliyorsa,
-kapsam zorlaması ve `hello-ok` özellik duyurumu uyumlu kalsın diye bunu
+Metot operatör veya node istemcileri tarafından çağrılabiliyorsa, kapsam zorlaması ve
+`hello-ok` özellik duyurusu hizalı kalsın diye bunu
 `src/gateway/method-scopes.ts` içinde de sınıflandırın.
 
-4. **Yeniden üretme**
+4. **Yeniden üretin**
 
 ```bash
 pnpm protocol:check
 ```
 
-5. **Testler + belgeler**
+5. **Testler + dokümanlar**
 
-`src/gateway/server.*.test.ts` içinde bir sunucu testi ekleyin ve yöntemi belgelerde belirtin.
+`src/gateway/server.*.test.ts` içinde bir sunucu testi ekleyin ve metodu dokümanlarda belirtin.
 
 ## Swift kod üretimi davranışı
 
-Swift üreticisi şunları yayar:
+Swift üreticisi şunları çıkarır:
 
-- `req`, `res`, `event` ve `unknown` durumlarını içeren `GatewayFrame` enum'u
-- Güçlü türlendirilmiş yük struct/enum'ları
+- `req`, `res`, `event` ve `unknown` vakalarına sahip `GatewayFrame` enum'u
+- Güçlü tiplendirilmiş payload struct/enum'ları
 - `ErrorCode` değerleri ve `GATEWAY_PROTOCOL_VERSION`
 
-Bilinmeyen çerçeve türleri, ileriye dönük uyumluluk için ham yükler olarak korunur.
+Bilinmeyen çerçeve türleri, ileriye dönük uyumluluk için ham payload olarak korunur.
 
 ## Sürümleme + uyumluluk
 
-- `PROTOCOL_VERSION`, `src/gateway/protocol/schema.ts` içinde bulunur.
+- `PROTOCOL_VERSION`, `src/gateway/protocol/version.ts` içinde yaşar.
 - İstemciler `minProtocol` + `maxProtocol` gönderir; sunucu uyumsuzlukları reddeder.
-- Swift modelleri, eski istemcileri bozmamak için bilinmeyen çerçeve türlerini korur.
+- Swift modelleri, eski istemcileri kırmamak için bilinmeyen çerçeve türlerini korur.
 
 ## Şema kalıpları ve kurallar
 
-- Çoğu nesne, katı yükler için `additionalProperties: false` kullanır.
-- `NonEmptyString`, kimlikler ve yöntem/olay adları için varsayılandır.
+- Çoğu nesne katı payload'lar için `additionalProperties: false` kullanır.
+- ID'ler ve metot/event adları için varsayılan `NonEmptyString`'dir.
 - Üst düzey `GatewayFrame`, `type` üzerinde bir **discriminator** kullanır.
-- Yan etkileri olan yöntemler genellikle params içinde bir `idempotencyKey` gerektirir
+- Yan etkileri olan metotlar genellikle parametrelerde bir `idempotencyKey` gerektirir
   (örnek: `send`, `poll`, `agent`, `chat.send`).
 - `agent`, çalışma zamanında üretilen orkestrasyon bağlamı için isteğe bağlı `internalEvents` kabul eder
-  (örneğin alt ajan/cron görevi tamamlama devri); bunu dahili API yüzeyi olarak ele alın.
+  (örneğin subagent/cron görev tamamlama devri); bunu dahili API yüzeyi olarak ele alın.
 
 ## Canlı şema JSON'u
 
-Üretilen JSON Schema depoda `dist/protocol.schema.json` konumundadır. Yayımlanan
+Üretilen JSON Schema, repoda `dist/protocol.schema.json` konumundadır. Yayınlanan
 ham dosya genellikle şu adreste bulunur:
 
 - [https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json](https://raw.githubusercontent.com/openclaw/openclaw/main/dist/protocol.schema.json)
@@ -302,13 +302,13 @@ ham dosya genellikle şu adreste bulunur:
 ## Şemaları değiştirdiğinizde
 
 1. TypeBox şemalarını güncelleyin.
-2. Yöntemi/olayı `src/gateway/server-methods-list.ts` içinde kaydedin.
-3. Yeni RPC operatör veya
-   düğüm kapsamı sınıflandırması gerektirdiğinde `src/gateway/method-scopes.ts` dosyasını güncelleyin.
+2. Metodu/event'i `src/gateway/server-methods-list.ts` içinde kaydedin.
+3. Yeni RPC operatör veya node kapsamı sınıflandırması gerektirdiğinde
+   `src/gateway/method-scopes.ts` dosyasını güncelleyin.
 4. `pnpm protocol:check` çalıştırın.
-5. Yeniden üretilen şemayı + Swift modellerini commit edin.
+5. Yeniden üretilen şema + Swift modellerini commit'leyin.
 
 ## İlgili
 
 - [Zengin çıktı protokolü](/tr/reference/rich-output-protocol)
-- [RPC bağdaştırıcıları](/tr/reference/rpc)
+- [RPC adaptörleri](/tr/reference/rpc)

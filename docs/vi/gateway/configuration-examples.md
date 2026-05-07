@@ -1,24 +1,24 @@
 ---
 read_when:
     - Tìm hiểu cách cấu hình OpenClaw
-    - Tìm kiếm ví dụ cấu hình
+    - Đang tìm các ví dụ cấu hình
     - Thiết lập OpenClaw lần đầu tiên
-summary: Các ví dụ cấu hình chính xác theo schema cho các thiết lập OpenClaw phổ biến
-title: Ví dụ về cấu hình
+summary: Ví dụ cấu hình chính xác theo schema cho các thiết lập OpenClaw phổ biến
+title: Ví dụ cấu hình
 x-i18n:
-    generated_at: "2026-05-06T17:55:08Z"
+    generated_at: "2026-05-07T13:16:57Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 01dd16c73f1156c4012fd3956083062141825b502722b6aa34f1f90462a6823a
+    source_hash: 87c7e75841ee36121c764f1ed51b6547d0fccf7ed6c1f05895d916dbf93f061a
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Các ví dụ bên dưới được căn chỉnh với schema cấu hình hiện tại. Để xem tài liệu tham khảo đầy đủ và ghi chú theo từng trường, hãy xem [Cấu hình](/vi/gateway/configuration).
+Các ví dụ bên dưới phù hợp với schema cấu hình hiện tại. Để xem tài liệu tham chiếu đầy đủ và ghi chú theo từng trường, hãy xem [Cấu hình](/vi/gateway/configuration).
 
 ## Bắt đầu nhanh
 
-### Mức tối thiểu tuyệt đối
+### Tối thiểu tuyệt đối
 
 ```json5
 {
@@ -27,7 +27,7 @@ Các ví dụ bên dưới được căn chỉnh với schema cấu hình hiện
 }
 ```
 
-Lưu vào `~/.openclaw/openclaw.json` và bạn có thể nhắn DM cho bot từ số đó.
+Lưu vào `~/.openclaw/openclaw.json` và bạn có thể nhắn tin riêng cho bot từ số đó.
 
 ### Cấu hình khởi đầu được khuyến nghị
 
@@ -59,7 +59,7 @@ Lưu vào `~/.openclaw/openclaw.json` và bạn có thể nhắn DM cho bot từ
 
 ## Ví dụ mở rộng (các tùy chọn chính)
 
-> JSON5 cho phép bạn dùng chú thích và dấu phẩy cuối. JSON thông thường cũng hoạt động.
+> JSON5 cho phép bạn dùng chú thích và dấu phẩy ở cuối. JSON thông thường cũng hoạt động.
 
 ```json5
 {
@@ -471,9 +471,9 @@ Lưu vào `~/.openclaw/openclaw.json` và bạn có thể nhắn DM cho bot từ
 }
 ```
 
-## Các mẫu thường gặp
+## Các mẫu phổ biến
 
-### Đường cơ sở skill dùng chung với một ghi đè
+### Đường cơ sở kỹ năng dùng chung với một ghi đè
 
 ```json5
 {
@@ -492,7 +492,7 @@ Lưu vào `~/.openclaw/openclaw.json` và bạn có thể nhắn DM cho bot từ
 
 - `agents.defaults.skills` là đường cơ sở dùng chung.
 - `agents.list[].skills` thay thế đường cơ sở đó cho một agent.
-- Dùng `skills: []` khi agent không nên thấy Skills nào.
+- Sử dụng `skills: []` khi một agent không nên thấy kỹ năng nào.
 
 ### Thiết lập đa nền tảng
 
@@ -515,9 +515,9 @@ Lưu vào `~/.openclaw/openclaw.json` và bạn có thể nhắn DM cho bot từ
 }
 ```
 
-### Tự động phê duyệt mạng Node tin cậy
+### Tự động phê duyệt mạng Node đáng tin cậy
 
-Giữ thao tác ghép đôi thiết bị ở chế độ thủ công trừ khi bạn kiểm soát đường truyền mạng. Với một phòng lab chuyên dụng hoặc mạng con tailnet, bạn có thể chọn tham gia tự động phê duyệt thiết bị Node lần đầu bằng CIDR hoặc IP chính xác:
+Giữ việc ghép nối thiết bị ở chế độ thủ công trừ khi bạn kiểm soát đường dẫn mạng. Đối với một phòng lab chuyên dụng hoặc mạng con tailnet, bạn có thể chọn bật tự động phê duyệt thiết bị Node trong lần đầu bằng các CIDR hoặc IP chính xác:
 
 ```json5
 {
@@ -531,11 +531,11 @@ Giữ thao tác ghép đôi thiết bị ở chế độ thủ công trừ khi b
 }
 ```
 
-Tùy chọn này vẫn tắt khi không được đặt. Nó chỉ áp dụng cho ghép đôi `role: node` mới không có phạm vi được yêu cầu. Các client operator/trình duyệt và nâng cấp vai trò, phạm vi, metadata hoặc khóa công khai vẫn cần phê duyệt thủ công.
+Tính năng này vẫn tắt khi chưa được đặt. Nó chỉ áp dụng cho ghép nối `role: node` mới, không có phạm vi được yêu cầu. Các client operator/trình duyệt và các nâng cấp về vai trò, phạm vi, siêu dữ liệu hoặc khóa công khai vẫn cần phê duyệt thủ công.
 
 ### Chế độ DM bảo mật (hộp thư đến dùng chung / DM nhiều người dùng)
 
-Nếu có hơn một người có thể DM bot của bạn (nhiều mục trong `allowFrom`, phê duyệt ghép đôi cho nhiều người, hoặc `dmPolicy: "open"`), hãy bật **chế độ DM bảo mật** để DM từ các người gửi khác nhau không dùng chung một ngữ cảnh theo mặc định:
+Nếu có nhiều hơn một người có thể DM bot của bạn (nhiều mục trong `allowFrom`, phê duyệt ghép nối cho nhiều người, hoặc `dmPolicy: "open"`), hãy bật **chế độ DM bảo mật** để DM từ các người gửi khác nhau không dùng chung một ngữ cảnh theo mặc định:
 
 ```json5
 {
@@ -559,10 +559,10 @@ Nếu có hơn một người có thể DM bot của bạn (nhiều mục trong 
 }
 ```
 
-Đối với Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, ủy quyền người gửi mặc định ưu tiên ID.
-Chỉ bật đối sánh trực tiếp theo tên/email/biệt danh có thể thay đổi bằng `dangerouslyAllowNameMatching: true` của từng kênh nếu bạn chấp nhận rõ ràng rủi ro đó.
+Đối với Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, theo mặc định việc ủy quyền người gửi ưu tiên ID trước.
+Chỉ bật khớp trực tiếp theo tên/email/nick có thể thay đổi bằng `dangerouslyAllowNameMatching: true` của từng kênh nếu bạn chấp nhận rõ ràng rủi ro đó.
 
-### Khóa API Anthropic + fallback MiniMax
+### Khóa API Anthropic + dự phòng MiniMax
 
 ```json5
 {
@@ -596,7 +596,7 @@ Chỉ bật đối sánh trực tiếp theo tên/email/biệt danh có thể tha
 }
 ```
 
-### Bot công việc (quyền truy cập bị giới hạn)
+### Bot công việc (quyền truy cập hạn chế)
 
 ```json5
 {
@@ -621,7 +621,7 @@ Chỉ bật đối sánh trực tiếp theo tên/email/biệt danh có thể tha
 }
 ```
 
-### Chỉ dùng mô hình cục bộ
+### Chỉ mô hình cục bộ
 
 ```json5
 {
@@ -657,7 +657,7 @@ Chỉ bật đối sánh trực tiếp theo tên/email/biệt danh có thể tha
 
 - Nếu bạn đặt `dmPolicy: "open"`, danh sách `allowFrom` tương ứng phải bao gồm `"*"`.
 - ID của nhà cung cấp khác nhau (số điện thoại, ID người dùng, ID kênh). Hãy dùng tài liệu của nhà cung cấp để xác nhận định dạng.
-- Các phần tùy chọn để thêm sau: `web`, `browser`, `ui`, `discovery`, `canvasHost`, `talk`, `signal`, `imessage`.
+- Các phần tùy chọn có thể thêm sau: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
 - Xem [Nhà cung cấp](/vi/providers) và [Khắc phục sự cố](/vi/gateway/troubleshooting) để biết ghi chú thiết lập chuyên sâu hơn.
 
 ## Liên quan

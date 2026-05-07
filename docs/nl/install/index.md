@@ -1,28 +1,28 @@
 ---
 read_when:
-    - Je hebt een andere installatiemethode nodig dan de quickstart Aan de slag
-    - Je wilt implementeren op een cloudplatform
+    - Je hebt een andere installatiemethode nodig dan de snelstart Aan de slag
+    - Je wilt uitrollen naar een cloudplatform
     - Je moet bijwerken, migreren of verwijderen
 summary: OpenClaw installeren - installatiescript, npm/pnpm/bun, vanuit de broncode, Docker en meer
 title: Installeren
 x-i18n:
-    generated_at: "2026-05-06T09:19:54Z"
+    generated_at: "2026-05-07T13:21:30Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 2d5b38787ad80f91c82aa1fd4020a11c99f440ccbf2e9b9309da336dd5883462
+    source_hash: 8a5dc92d262710cc96a160b7cac2b93ee1e25f994ddcd45e274ad96c026b7d72
     source_path: install/index.md
     workflow: 16
 ---
 
 ## Systeemvereisten
 
-- **Node 24** (aanbevolen) of Node 22.14+ - het installatiescript handelt dit automatisch af
+- **Node 24** (aanbevolen) of Node 22.16+ - het installatiescript regelt dit automatisch
 - **macOS, Linux of Windows** - zowel native Windows als WSL2 worden ondersteund; WSL2 is stabieler. Zie [Windows](/nl/platforms/windows).
-- `pnpm` is alleen nodig als je vanaf broncode bouwt
+- `pnpm` is alleen nodig als je vanuit de broncode bouwt
 
 ## Aanbevolen: installatiescript
 
-De snelste manier om te installeren. Het detecteert je besturingssysteem, installeert Node indien nodig, installeert OpenClaw en start het introductieproces.
+De snelste manier om te installeren. Het detecteert je OS, installeert Node indien nodig, installeert OpenClaw en start de onboarding.
 
 <Tabs>
   <Tab title="macOS / Linux / WSL2">
@@ -37,7 +37,7 @@ De snelste manier om te installeren. Het detecteert je besturingssysteem, instal
   </Tab>
 </Tabs>
 
-Installeren zonder het introductieproces uit te voeren:
+Installeren zonder onboarding uit te voeren:
 
 <Tabs>
   <Tab title="macOS / Linux / WSL2">
@@ -52,11 +52,11 @@ Installeren zonder het introductieproces uit te voeren:
   </Tab>
 </Tabs>
 
-Zie voor alle flags en CI-/automatiseringsopties [Interne werking van het installatiescript](/nl/install/installer).
+Zie [Interne werking van de installer](/nl/install/installer) voor alle vlaggen en CI-/automatiseringsopties.
 
 ## Alternatieve installatiemethoden
 
-### Installer met lokale prefix (`install-cli.sh`)
+### Lokale prefix-installer (`install-cli.sh`)
 
 Gebruik dit wanneer je OpenClaw en Node onder een lokale prefix zoals
 `~/.openclaw` wilt houden, zonder afhankelijk te zijn van een systeembrede Node-installatie:
@@ -65,10 +65,10 @@ Gebruik dit wanneer je OpenClaw en Node onder een lokale prefix zoals
 curl -fsSL https://openclaw.ai/install-cli.sh | bash
 ```
 
-Het ondersteunt standaard npm-installaties, plus git-checkout-installaties via dezelfde
-prefix-werkwijze. Volledige referentie: [Interne werking van het installatiescript](/nl/install/installer#install-clish).
+Standaard worden npm-installaties ondersteund, plus git-checkout-installaties onder dezelfde
+prefix-flow. Volledige referentie: [Interne werking van de installer](/nl/install/installer#install-clish).
 
-Al geïnstalleerd? Schakel tussen pakket- en git-installaties met
+Al geinstalleerd? Wissel tussen package- en git-installaties met
 `openclaw update --channel dev` en `openclaw update --channel stable`. Zie
 [Bijwerken](/nl/install/updating#switch-between-npm-and-git-installs).
 
@@ -91,7 +91,7 @@ Als je Node al zelf beheert:
     ```
 
     <Note>
-    pnpm vereist expliciete goedkeuring voor pakketten met buildscripts. Voer `pnpm approve-builds -g` uit na de eerste installatie.
+    pnpm vereist expliciete goedkeuring voor packages met buildscripts. Voer `pnpm approve-builds -g` uit na de eerste installatie.
     </Note>
 
   </Tab>
@@ -102,14 +102,14 @@ Als je Node al zelf beheert:
     ```
 
     <Note>
-    Bun wordt ondersteund voor het globale CLI-installatiepad. Voor de Gateway-runtime blijft Node de aanbevolen runtime voor de daemon.
+    Bun wordt ondersteund voor het globale CLI-installatiepad. Voor de Gateway-runtime blijft Node de aanbevolen daemon-runtime.
     </Note>
 
   </Tab>
 </Tabs>
 
-<Accordion title="Probleemoplossing: buildfouten van sharp (npm)">
-  Als `sharp` faalt door een globaal geïnstalleerde libvips:
+<Accordion title="Probleemoplossing: sharp-buildfouten (npm)">
+  Als `sharp` mislukt door een globaal geinstalleerde libvips:
 
 ```bash
 SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install -g openclaw@latest
@@ -117,7 +117,7 @@ SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install -g openclaw@latest
 
 </Accordion>
 
-### Vanaf broncode
+### Vanuit broncode
 
 Voor bijdragers of iedereen die vanuit een lokale checkout wil draaien:
 
@@ -129,7 +129,7 @@ pnpm link --global
 openclaw onboard --install-daemon
 ```
 
-Of sla de link over en gebruik `pnpm openclaw ...` vanuit de repo. Zie [Installatie](/nl/start/setup) voor volledige ontwikkelwerkwijzen.
+Of sla de link over en gebruik `pnpm openclaw ...` vanuit de repo. Zie [Setup](/nl/start/setup) voor volledige ontwikkelworkflows.
 
 ### Installeren vanaf GitHub main
 
@@ -137,27 +137,27 @@ Of sla de link over en gebruik `pnpm openclaw ...` vanuit de repo. Zie [Installa
 npm install -g github:openclaw/openclaw#main
 ```
 
-### Containers en pakketbeheerders
+### Containers en packagemanagers
 
 <CardGroup cols={2}>
   <Card title="Docker" href="/nl/install/docker" icon="container">
-    Gecontaineriseerde implementaties of implementaties zonder grafische interface.
+    Gecontaineriseerde of headless deployments.
   </Card>
   <Card title="Podman" href="/nl/install/podman" icon="container">
-    Containeralternatief voor Docker zonder rootrechten.
+    Containeralternatief zonder rootrechten voor Docker.
   </Card>
   <Card title="Nix" href="/nl/install/nix" icon="snowflake">
-    Declaratieve installatie via Nix-flake.
+    Declaratieve installatie via Nix flake.
   </Card>
   <Card title="Ansible" href="/nl/install/ansible" icon="server">
-    Geautomatiseerde inrichting van een servervloot.
+    Geautomatiseerde fleet-provisioning.
   </Card>
   <Card title="Bun" href="/nl/install/bun" icon="zap">
-    Gebruik alleen via de CLI met de Bun-runtime.
+    Alleen CLI-gebruik via de Bun-runtime.
   </Card>
 </CardGroup>
 
-## Controleer de installatie
+## De installatie verifieren
 
 ```bash
 openclaw --version      # confirm the CLI is available
@@ -165,19 +165,19 @@ openclaw doctor         # check for config issues
 openclaw gateway status # verify the Gateway is running
 ```
 
-Als je beheerd opstarten na installatie wilt:
+Als je beheerde opstart na installatie wilt:
 
 - macOS: LaunchAgent via `openclaw onboard --install-daemon` of `openclaw gateway install`
 - Linux/WSL2: systemd-gebruikersservice via dezelfde opdrachten
-- Native Windows: eerst een geplande taak, met een loginitem in de Opstartmap per gebruiker als terugvaloptie als het maken van de taak wordt geweigerd
+- Native Windows: eerst Scheduled Task, met een login-item in de Startup-map per gebruiker als fallback als het maken van de taak wordt geweigerd
 
-## Hosting en implementatie
+## Hosting en deployment
 
-Implementeer OpenClaw op een cloudserver of VPS:
+Deploy OpenClaw op een cloudserver of VPS:
 
 <CardGroup cols={3}>
   <Card title="VPS" href="/nl/vps">Elke Linux-VPS</Card>
-  <Card title="Docker VM" href="/nl/install/docker-vm-runtime">Gedeelde Docker-stappen</Card>
+  <Card title="Docker-VM" href="/nl/install/docker-vm-runtime">Gedeelde Docker-stappen</Card>
   <Card title="Kubernetes" href="/nl/install/kubernetes">K8s</Card>
   <Card title="Fly.io" href="/nl/install/fly">Fly.io</Card>
   <Card title="Hetzner" href="/nl/install/hetzner">Hetzner</Card>
@@ -192,10 +192,10 @@ Implementeer OpenClaw op een cloudserver of VPS:
 
 <CardGroup cols={3}>
   <Card title="Bijwerken" href="/nl/install/updating" icon="refresh-cw">
-    Houd OpenClaw bijgewerkt.
+    Houd OpenClaw up-to-date.
   </Card>
   <Card title="Migreren" href="/nl/install/migrating" icon="arrow-right">
-    Verhuis naar een nieuwe machine.
+    Verplaats naar een nieuwe machine.
   </Card>
   <Card title="Verwijderen" href="/nl/install/uninstall" icon="trash-2">
     Verwijder OpenClaw volledig.
@@ -204,7 +204,7 @@ Implementeer OpenClaw op een cloudserver of VPS:
 
 ## Probleemoplossing: `openclaw` niet gevonden
 
-Als de installatie is geslaagd maar `openclaw` niet wordt gevonden in je terminal:
+Als de installatie is geslaagd, maar `openclaw` niet wordt gevonden in je terminal:
 
 ```bash
 node -v           # Node installed?
@@ -212,10 +212,10 @@ npm prefix -g     # Where are global packages?
 echo "$PATH"      # Is the global bin dir in PATH?
 ```
 
-Als `$(npm prefix -g)/bin` niet in je `$PATH` staat, voeg deze toe aan je shell-opstartbestand (`~/.zshrc` of `~/.bashrc`):
+Als `$(npm prefix -g)/bin` niet in je `$PATH` staat, voeg dit dan toe aan je shell-startupbestand (`~/.zshrc` of `~/.bashrc`):
 
 ```bash
 export PATH="$(npm prefix -g)/bin:$PATH"
 ```
 
-Open daarna een nieuwe terminal. Zie [Node-installatie](/nl/install/node) voor meer informatie.
+Open daarna een nieuwe terminal. Zie [Node-setup](/nl/install/node) voor meer details.

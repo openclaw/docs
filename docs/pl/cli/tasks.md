@@ -1,22 +1,22 @@
 ---
 read_when:
-    - Chcesz sprawdzać, audytować lub anulować rekordy zadań w tle
-    - Dokumentujesz polecenia TaskFlow w sekcji `openclaw tasks flow`
-summary: Dokumentacja CLI dla `openclaw tasks` (rejestr zadań w tle i stan przepływu zadań)
+    - Chcesz sprawdzić, audytować lub anulować rekordy zadań w tle
+    - Dokumentujesz polecenia TaskFlow w `openclaw tasks flow`
+summary: Dokumentacja referencyjna CLI dla `openclaw tasks` (rejestr zadań w tle i stan TaskFlow)
 title: '`openclaw tasks`'
 x-i18n:
-    generated_at: "2026-04-26T11:26:58Z"
-    model: gpt-5.4
+    generated_at: "2026-05-07T13:14:59Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 6e61fb0b67a2bdd932b29543199fb219890f256260a66881c8e7ffeb9fadee33
+    source_hash: ca3f05d7c2a3fa7790ad6059ce15721ebffb548ac4a2c627188ac17986442dc6
     source_path: cli/tasks.md
-    workflow: 15
+    workflow: 16
 ---
 
-Sprawdzaj trwałe zadania w tle i stan TaskFlow. Bez podpolecenia
+Sprawdzaj trwałe zadania w tle oraz stan Task Flow. Bez podpolecenia
 `openclaw tasks` jest równoważne z `openclaw tasks list`.
 
-Zobacz [Zadania w tle](/pl/automation/tasks), aby poznać model cyklu życia i dostarczania.
+Zobacz [Zadania w tle](/pl/automation/tasks), aby poznać cykl życia i model dostarczania.
 
 ## Użycie
 
@@ -38,7 +38,7 @@ openclaw tasks flow cancel <lookup>
 
 ## Opcje główne
 
-- `--json`: wyjście JSON.
+- `--json`: wypisz JSON.
 - `--runtime <name>`: filtruj według rodzaju: `subagent`, `acp`, `cron` lub `cli`.
 - `--status <name>`: filtruj według statusu: `queued`, `running`, `succeeded`, `failed`, `timed_out`, `cancelled` lub `lost`.
 
@@ -50,7 +50,7 @@ openclaw tasks flow cancel <lookup>
 openclaw tasks list [--runtime <name>] [--status <name>] [--json]
 ```
 
-Wyświetla śledzone zadania w tle od najnowszych.
+Wyświetla śledzone zadania w tle, od najnowszych.
 
 ### `show`
 
@@ -66,7 +66,7 @@ Pokazuje jedno zadanie według identyfikatora zadania, identyfikatora uruchomien
 openclaw tasks notify <lookup> <done_only|state_changes|silent>
 ```
 
-Zmienia politykę powiadomień dla uruchomionego zadania.
+Zmienia zasady powiadomień dla uruchomionego zadania.
 
 ### `cancel`
 
@@ -82,7 +82,7 @@ Anuluje uruchomione zadanie w tle.
 openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--json]
 ```
 
-Ujawnia nieaktualne, utracone, z błędami dostarczania lub w inny sposób niespójne rekordy zadań i TaskFlow. Utracone zadania zachowane do czasu `cleanupAfter` są ostrzeżeniami; wygasłe lub nieoznaczone utracone zadania są błędami.
+Ujawnia nieaktualne, utracone, niedostarczone lub w inny sposób niespójne rekordy zadań i Task Flow. Utracone zadania zachowane do `cleanupAfter` są ostrzeżeniami; wygasłe albo utracone zadania bez znacznika czasu są błędami.
 
 ### `maintenance`
 
@@ -90,11 +90,13 @@ Ujawnia nieaktualne, utracone, z błędami dostarczania lub w inny sposób niesp
 openclaw tasks maintenance [--apply] [--json]
 ```
 
-Wyświetla podgląd lub stosuje uzgadnianie zadań i TaskFlow, oznaczanie czyszczenia oraz przycinanie.
-W przypadku zadań Cron uzgadnianie używa utrwalonych logów uruchomień/stanu zadań przed oznaczeniem
+Podgląda lub stosuje uzgadnianie zadań i Task Flow, oznaczanie do czyszczenia oraz przycinanie.
+W przypadku zadań Cron uzgadnianie używa utrwalonych dzienników uruchomień/stanu zadań przed oznaczeniem
 starego aktywnego zadania jako `lost`, dzięki czemu ukończone uruchomienia Cron nie stają się fałszywymi błędami audytu
-tylko dlatego, że zniknął stan działania Gateway przechowywany w pamięci. Audyt CLI offline
-nie jest autorytatywny dla lokalnego w procesie zestawu aktywnych zadań Cron Gateway.
+tylko dlatego, że stan środowiska uruchomieniowego Gateway w pamięci zniknął. Audyt CLI offline nie jest
+autorytatywny dla procesowo lokalnego zestawu aktywnych zadań Cron Gateway. Zadania CLI
+z identyfikatorem uruchomienia/identyfikatorem źródła są oznaczane jako `lost`, gdy ich kontekst uruchomienia Gateway na żywo
+zniknął, nawet jeśli pozostaje stary wiersz sesji podrzędnej.
 
 ### `flow`
 
@@ -104,7 +106,7 @@ openclaw tasks flow show <lookup> [--json]
 openclaw tasks flow cancel <lookup>
 ```
 
-Sprawdza lub anuluje trwały stan TaskFlow w rejestrze zadań.
+Sprawdza lub anuluje trwały stan Task Flow w rejestrze zadań.
 
 ## Powiązane
 
