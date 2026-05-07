@@ -1223,6 +1223,7 @@
                       "plugins/sdk-channel-plugins",
                       "plugins/sdk-channel-message",
                       "plugins/sdk-provider-plugins",
+                      "plugins/cli-backend-plugins",
                       "plugins/adding-capabilities",
                       "plugins/compatibility",
                       "plugins/sdk-migration"
@@ -2716,6 +2717,7 @@
                       "zh-TW/plugins/sdk-channel-plugins",
                       "zh-TW/plugins/sdk-channel-message",
                       "zh-TW/plugins/sdk-provider-plugins",
+                      "zh-TW/plugins/cli-backend-plugins",
                       "zh-TW/plugins/adding-capabilities",
                       "zh-TW/plugins/compatibility",
                       "zh-TW/plugins/sdk-migration"
@@ -3594,6 +3596,7 @@
                       "ja-JP/plugins/sdk-channel-plugins",
                       "ja-JP/plugins/sdk-channel-message",
                       "ja-JP/plugins/sdk-provider-plugins",
+                      "ja-JP/plugins/cli-backend-plugins",
                       "ja-JP/plugins/adding-capabilities",
                       "ja-JP/plugins/compatibility",
                       "ja-JP/plugins/sdk-migration"
@@ -4472,6 +4475,7 @@
                       "es/plugins/sdk-channel-plugins",
                       "es/plugins/sdk-channel-message",
                       "es/plugins/sdk-provider-plugins",
+                      "es/plugins/cli-backend-plugins",
                       "es/plugins/adding-capabilities",
                       "es/plugins/compatibility",
                       "es/plugins/sdk-migration"
@@ -5350,6 +5354,7 @@
                       "pt-BR/plugins/sdk-channel-plugins",
                       "pt-BR/plugins/sdk-channel-message",
                       "pt-BR/plugins/sdk-provider-plugins",
+                      "pt-BR/plugins/cli-backend-plugins",
                       "pt-BR/plugins/adding-capabilities",
                       "pt-BR/plugins/compatibility",
                       "pt-BR/plugins/sdk-migration"
@@ -6228,6 +6233,7 @@
                       "ko/plugins/sdk-channel-plugins",
                       "ko/plugins/sdk-channel-message",
                       "ko/plugins/sdk-provider-plugins",
+                      "ko/plugins/cli-backend-plugins",
                       "ko/plugins/adding-capabilities",
                       "ko/plugins/compatibility",
                       "ko/plugins/sdk-migration"
@@ -7106,6 +7112,7 @@
                       "de/plugins/sdk-channel-plugins",
                       "de/plugins/sdk-channel-message",
                       "de/plugins/sdk-provider-plugins",
+                      "de/plugins/cli-backend-plugins",
                       "de/plugins/adding-capabilities",
                       "de/plugins/compatibility",
                       "de/plugins/sdk-migration"
@@ -7984,6 +7991,7 @@
                       "fr/plugins/sdk-channel-plugins",
                       "fr/plugins/sdk-channel-message",
                       "fr/plugins/sdk-provider-plugins",
+                      "fr/plugins/cli-backend-plugins",
                       "fr/plugins/adding-capabilities",
                       "fr/plugins/compatibility",
                       "fr/plugins/sdk-migration"
@@ -8862,6 +8870,7 @@
                       "ar/plugins/sdk-channel-plugins",
                       "ar/plugins/sdk-channel-message",
                       "ar/plugins/sdk-provider-plugins",
+                      "ar/plugins/cli-backend-plugins",
                       "ar/plugins/adding-capabilities",
                       "ar/plugins/compatibility",
                       "ar/plugins/sdk-migration"
@@ -9740,6 +9749,7 @@
                       "it/plugins/sdk-channel-plugins",
                       "it/plugins/sdk-channel-message",
                       "it/plugins/sdk-provider-plugins",
+                      "it/plugins/cli-backend-plugins",
                       "it/plugins/adding-capabilities",
                       "it/plugins/compatibility",
                       "it/plugins/sdk-migration"
@@ -10618,6 +10628,7 @@
                       "vi/plugins/sdk-channel-plugins",
                       "vi/plugins/sdk-channel-message",
                       "vi/plugins/sdk-provider-plugins",
+                      "vi/plugins/cli-backend-plugins",
                       "vi/plugins/adding-capabilities",
                       "vi/plugins/compatibility",
                       "vi/plugins/sdk-migration"
@@ -11496,6 +11507,7 @@
                       "nl/plugins/sdk-channel-plugins",
                       "nl/plugins/sdk-channel-message",
                       "nl/plugins/sdk-provider-plugins",
+                      "nl/plugins/cli-backend-plugins",
                       "nl/plugins/adding-capabilities",
                       "nl/plugins/compatibility",
                       "nl/plugins/sdk-migration"
@@ -12374,6 +12386,7 @@
                       "tr/plugins/sdk-channel-plugins",
                       "tr/plugins/sdk-channel-message",
                       "tr/plugins/sdk-provider-plugins",
+                      "tr/plugins/cli-backend-plugins",
                       "tr/plugins/adding-capabilities",
                       "tr/plugins/compatibility",
                       "tr/plugins/sdk-migration"
@@ -13252,6 +13265,7 @@
                       "uk/plugins/sdk-channel-plugins",
                       "uk/plugins/sdk-channel-message",
                       "uk/plugins/sdk-provider-plugins",
+                      "uk/plugins/cli-backend-plugins",
                       "uk/plugins/adding-capabilities",
                       "uk/plugins/compatibility",
                       "uk/plugins/sdk-migration"
@@ -14130,6 +14144,7 @@
                       "id/plugins/sdk-channel-plugins",
                       "id/plugins/sdk-channel-message",
                       "id/plugins/sdk-provider-plugins",
+                      "id/plugins/cli-backend-plugins",
                       "id/plugins/adding-capabilities",
                       "id/plugins/compatibility",
                       "id/plugins/sdk-migration"
@@ -15008,6 +15023,7 @@
                       "pl/plugins/sdk-channel-plugins",
                       "pl/plugins/sdk-channel-message",
                       "pl/plugins/sdk-provider-plugins",
+                      "pl/plugins/cli-backend-plugins",
                       "pl/plugins/adding-capabilities",
                       "pl/plugins/compatibility",
                       "pl/plugins/sdk-migration"
