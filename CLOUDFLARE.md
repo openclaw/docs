@@ -27,22 +27,24 @@ The repo-side pieces are in place:
 
 ## Current Production State
 
-Production is still on the safe Worker Static Assets fallback until the R2 custom domain and cache rules are cut over:
+Production is cut over to R2-backed storage with a small Worker router in front:
 
 - Worker: `openclaw-docs-router`
 - Route: `documentation.openclaw.ai/*`
-- Static assets binding: `env.ASSETS`
-- Header: `X-OpenClaw-Docs-Origin: cloudflare-static-assets`
+- Router origin: `docs2.openclaw.ai`
+- Header: `X-OpenClaw-Docs-Origin: cloudflare-r2`
 - Cache-Control follows the same policy as the R2 manifest.
 
-The fallback uses two cache mechanisms:
+Why a Worker still exists:
 
-- `workers/docs-router.ts` sets headers for slashless docs pages and `Accept: text/markdown` responses because those paths run through Worker code.
-- `scripts/docs-site/cloudflare-prune.mjs` writes `dist/docs-site/_headers` so direct asset-first paths like `/assets/docs-site.css`, `/concepts/models.md`, and `/llms-full.txt` get the same cache policy without forcing all traffic through Worker code.
+- Plain R2 custom domains do not serve `/` as `/index.html`.
+- Plain R2 custom domains do not redirect non-root trailing slash docs paths to slashless paths.
+- Plain R2 custom domains cannot negotiate markdown from `Accept: text/markdown`.
+- The available Cloudflare auth can manage R2, DNS, custom domains, and Worker routes, but not zone Rulesets/Page Rules. Dashboard-session replay via `mcporter chrome-devtools` also returned Cloudflare API auth error `10000` for `/rulesets`.
 
-The R2 bucket is already seeded and verified. Do not remove the Worker route or switch `.github/workflows/pages.yml` to R2-only until the R2 custom domain, root rewrite, cache rules, and live smoke have completed successfully.
+The pure Vincent target remains possible after a Cloudflare token/session with `Zone: Rulesets: Edit` is available. Until then, the Worker is the compatibility layer and R2 is the storage/source of truth.
 
-The fallback remains the rollback path.
+The old Worker Static Assets build remains the rollback path in git history.
 
 ## Required Cloudflare Access
 
@@ -78,20 +80,18 @@ The secret access key is the SHA-256 hex digest of the R2 token value. These are
 
 ## Deploy Flow
 
-The production fallback workflow remains:
-
-1. `.github/workflows/pages.yml`
-2. `npm run docs:build:cloudflare`
-3. `npm run docs:smoke`
-4. `npx wrangler@4.88.0 deploy --config wrangler.toml`
-5. `docs-live-smoke.yml`
-
-The R2 target workflow is manual until production cutover:
+Production docs object deploy:
 
 1. `.github/workflows/r2-pages.yml`
 2. `npm run docs:build:r2`
 3. `npm run docs:smoke`
 4. `npm run docs:r2:upload`
+
+Production router deploy:
+
+1. `.github/workflows/pages.yml`
+2. `npx wrangler@4.88.0 deploy --config wrangler.toml`
+3. `docs-live-smoke.yml`
 
 Local R2 build:
 
@@ -119,9 +119,7 @@ The generated R2 manifest uploads both canonical files and slashless aliases:
 - `/concepts/models.md` serves markdown from object key `concepts/models.md`.
 - `/docs/platforms/digitalocean` serves the compatibility redirect HTML.
 
-Plain R2 custom domains cannot do `Accept: text/markdown` negotiation by themselves. To keep the request path Worker-free, prefer explicit `.md` URLs. If `Accept: text/markdown` must stay, add a tiny Worker in front of only that behavior or keep the current router.
-
-Root `/` may need a Cloudflare URL rewrite to `/index.html`, depending on R2 custom-domain behavior at cutover time. Test it before removing the fallback Worker.
+The Worker router preserves `Accept: text/markdown` negotiation and root `/` behavior while fetching objects from R2. Pure R2 custom-domain serving still needs Cloudflare URL rewrite/redirect rules.
 
 ## Cache Policy
 
@@ -132,14 +130,25 @@ Root `/` may need a Cloudflare URL rewrite to `/index.html`, depending on R2 cus
 - markdown, JSON, JSONL, and text indexes: `public, max-age=300, s-maxage=3600, stale-while-revalidate=86400`
 - upload manifest: `private, max-age=0, no-store`
 
-Recommended Cloudflare cache rules:
+The Worker router splits browser and edge cache headers so cached HTML does not become stale in users' browsers:
+
+- HTML and slashless HTML aliases:
+  - `Cache-Control: public, max-age=60, stale-while-revalidate=60`
+  - `CDN-Cache-Control` / `Cloudflare-CDN-Cache-Control: public, s-maxage=86400, stale-while-revalidate=604800`
+- markdown, JSON, JSONL, and text indexes:
+  - `Cache-Control: public, max-age=300, stale-while-revalidate=300`
+  - `CDN-Cache-Control` / `Cloudflare-CDN-Cache-Control: public, s-maxage=3600, stale-while-revalidate=86400`
+- hashed/static assets:
+  - `Cache-Control: public, max-age=31536000, immutable`
+
+The Worker also uses `caches.default` for production router responses. Recommended Cloudflare cache rules for the later pure-R2 path:
 
 1. Cache static assets and Pagefind files for one year.
 2. Cache HTML at the edge for one day with short browser TTL.
 3. Cache `.md`, `.txt`, `.json`, and `.jsonl` for one hour at the edge.
 4. Bypass cache for `/ask-molty/*`.
 
-After cutover, verify repeated requests show `cf-cache-status: MISS` then `HIT`.
+After router deploy, verify repeated requests show `X-OpenClaw-Docs-Cache: MISS` then `HIT`. After pure-R2 ruleset cutover, verify repeated requests show `cf-cache-status: MISS` then `HIT`.
 
 ## Cutover Checklist
 
@@ -158,14 +167,19 @@ After cutover, verify repeated requests show `cf-cache-status: MISS` then `HIT`.
 
 4. Run the manual `R2 Pages` workflow, or run the local upload command above.
 5. Attach the R2 custom domain for `documentation.openclaw.ai`.
-6. Add or verify Cloudflare rules:
+6. Deploy `openclaw-docs-router` with `R2_ORIGIN_HOST=docs2.openclaw.ai`.
+7. Live-test the URLs below.
+
+Pure R2 follow-up, blocked on `Zone: Rulesets: Edit`:
+
+1. Add or verify Cloudflare rules:
    - `/` rewrites to `/index.html` if needed.
    - non-root trailing-slash docs paths redirect to slashless paths.
    - cache rules match the policy above.
    - `/ask-molty/*` remains routed to `openclaw-docs-chat-proxy`.
-7. Remove the `documentation.openclaw.ai/*` route from `openclaw-docs-router`.
-8. Purge Cloudflare cache.
-9. Live-test the URLs below.
+2. Remove the `documentation.openclaw.ai/*` route from `openclaw-docs-router`.
+3. Purge Cloudflare cache.
+4. Live-test the URLs below.
 
 ## Live Smoke
 
@@ -186,7 +200,8 @@ Expected after R2 cutover:
 
 - slashless HTML paths return `200`.
 - `.md` paths return `text/markdown`.
-- static assets become `cf-cache-status: HIT` on repeat requests.
+- docs responses include `X-OpenClaw-Docs-Origin: cloudflare-r2`.
+- repeated router requests become `X-OpenClaw-Docs-Cache: HIT`.
 - `/ask-molty/api/session` returns `401` when logged out.
 - no `X-OpenClaw-Docs-Origin: cloudflare-static-assets` header on normal docs pages.
 

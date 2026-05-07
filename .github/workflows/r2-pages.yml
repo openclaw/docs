@@ -1,6 +1,17 @@
 name: R2 Pages
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - "docs/**"
+      - "scripts/docs-site/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/r2-pages.yml"
+      - "README.md"
+      - "CLOUDFLARE.md"
   workflow_dispatch:
 
 permissions:

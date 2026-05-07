@@ -10,8 +10,8 @@ Source of truth lives in [`openclaw/openclaw`](https://github.com/openclaw/openc
 2. `openclaw/openclaw/.github/workflows/docs-sync-publish.yml` mirrors the docs tree into this repo.
 3. This repo stores the published docs tree plus generated locale output.
 4. `openclaw/docs/.github/workflows/translate-all.yml` debounces docs changes, runs locale translation in parallel, and commits one aggregate locale refresh.
-5. `.github/workflows/pages.yml` builds `dist/docs-site` from the mirrored docs and deploys the current production fallback to Cloudflare Workers Static Assets.
-6. `.github/workflows/r2-pages.yml` builds the full unpruned R2 artifact for the target Cloudflare CDN design.
+5. `.github/workflows/r2-pages.yml` builds the full unpruned static site and uploads changed objects to Cloudflare R2.
+6. `.github/workflows/pages.yml` deploys the small Cloudflare Worker router that preserves clean URLs and markdown negotiation while reading docs from R2.
 
 ## Translation behavior
 
@@ -34,18 +34,18 @@ Source of truth lives in [`openclaw/openclaw`](https://github.com/openclaw/openc
 ## Static site build
 
 - `npm run docs:build` renders the mirrored Mintlify-flavored docs into `dist/docs-site`.
-- `npm run docs:build:cloudflare` prunes deploy-only duplicates so the Worker asset manifest stays below Cloudflare Free's 20,000-file limit.
+- `npm run docs:build:cloudflare` is the legacy Worker Static Assets fallback build.
 - `npm run docs:build:r2` renders the full unpruned site and prepares `dist/docs-r2-manifest.json` for R2 upload.
 - `npm run docs:r2:upload` uploads only changed R2 objects by comparing against the remote manifest.
 - `npm run docs:smoke` checks representative English and locale pages plus the Pagefind search bundle.
 - `npm run docs:check` runs both steps.
 - The generated site includes the language picker and static full-text search via Pagefind.
-- Cloudflare deploys `workers/docs-router.ts`, which serves slashless page URLs and English markdown responses for `.md` paths or `Accept: text/markdown`.
+- Cloudflare deploys `workers/docs-router.ts`, which serves slashless page URLs and English markdown responses for `.md` paths or `Accept: text/markdown` from the R2 bucket.
 - Cloudflare hosting details and limitations are documented in `CLOUDFLARE.md`.
 
 ## Secrets
 
 - `OPENCLAW_DOCS_SYNC_TOKEN` lives in `openclaw/openclaw` and lets the source repo push into this repo.
 - `OPENCLAW_DOCS_I18N_OPENAI_API_KEY` lives in this repo and powers locale translation refreshes.
-- `CLOUDFLARE_API_TOKEN` lives in this repo and deploys `documentation.openclaw.ai`.
-- The R2 deploy path needs the same GitHub secret to include `Account: R2 Storage: Edit` for the Services@openclaw.org account before it can become production.
+- `CLOUDFLARE_API_TOKEN` lives in this repo and deploys the `documentation.openclaw.ai` router.
+- `OPENCLAW_R2_ACCESS_KEY_ID` and `OPENCLAW_R2_SECRET_ACCESS_KEY` live in this repo and upload docs objects to R2.

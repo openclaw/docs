@@ -5,14 +5,9 @@ on:
     branches:
       - main
     paths:
-      - "docs/**"
-      - "scripts/docs-site/**"
       - "workers/**"
-      - "package.json"
-      - "package-lock.json"
       - ".github/workflows/pages.yml"
       - "wrangler.toml"
-      - "README.md"
       - "CLOUDFLARE.md"
   workflow_dispatch:
 
@@ -36,25 +31,6 @@ jobs:
       - name: Check out
         uses: actions/checkout@v6
 
-      - name: Read source metadata
-        id: source-meta
-        run: |
-          node - <<'NODE'
-          const fs = require("node:fs");
-          const data = JSON.parse(fs.readFileSync(".openclaw-sync/source.json", "utf8"));
-          if (!data.repository || !data.sha) throw new Error("invalid .openclaw-sync/source.json");
-          fs.appendFileSync(process.env.GITHUB_OUTPUT, `repository=${data.repository}\n`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT, `sha=${data.sha}\n`);
-          NODE
-
-      - name: Check out OpenClaw source
-        uses: actions/checkout@v6
-        with:
-          repository: ${{ steps.source-meta.outputs.repository }}
-          ref: ${{ steps.source-meta.outputs.sha }}
-          path: source
-          fetch-depth: 1
-
       - name: Set up Node
         uses: actions/setup-node@v6
         with:
@@ -63,20 +39,6 @@ jobs:
 
       - name: Install
         run: npm ci
-
-      - name: Install librsvg2-bin
-        run: sudo apt-get update && sudo apt-get install -y librsvg2-bin
-
-      - name: Build
-        env:
-          DOCS_SITE_CNAME: documentation.openclaw.ai
-          DOCS_SOURCE_REPO_DIR: source
-          DOCS_SOURCE_REPO_URL: https://github.com/${{ steps.source-meta.outputs.repository }}
-          DOCS_SOURCE_SHA: ${{ steps.source-meta.outputs.sha }}
-        run: npm run docs:build:cloudflare
-
-      - name: Smoke generated site
-        run: npm run docs:smoke
 
       - name: Deploy to Cloudflare
         env:

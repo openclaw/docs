@@ -6,8 +6,5 @@ routes = [
   { pattern = "documentation.openclaw.ai/*", zone_name = "openclaw.ai" }
 ]
 
-[assets]
-directory = "./dist/docs-site"
-binding = "ASSETS"
-html_handling = "none"
-not_found_handling = "none"
+[vars]
+R2_ORIGIN_HOST = "docs2.openclaw.ai"
