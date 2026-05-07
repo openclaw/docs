@@ -1,58 +1,58 @@
 ---
 read_when:
     - Anda ingin akses cepat ke halaman dokumentasi utama
-summary: Tautan pilihan ke dokumentasi OpenClaw yang paling sering digunakan.
+summary: Tautan terkurasi ke dokumentasi OpenClaw yang paling sering digunakan.
 title: Direktori dokumentasi
 x-i18n:
-    generated_at: "2026-04-24T09:27:53Z"
-    model: gpt-5.4
+    generated_at: "2026-05-07T01:53:33Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 924ac5c5ef1f24fa7afc8f23a53ddab4df75a475d4dba380b9f8f384f3098876
+    source_hash: bd24805e17b89747850f01302e761babea411d50aee4e50ec43f93c2e893a4e1
     source_path: start/docs-directory.md
-    workflow: 15
+    workflow: 16
 ---
 
 <Note>
-Halaman ini adalah indeks pilihan. Jika Anda baru, mulai dari [Getting Started](/id/start/getting-started).
-Untuk peta dokumentasi lengkap, lihat [Docs hubs](/id/start/hubs).
+Halaman ini adalah indeks terkurasi. Jika Anda baru mulai, mulai dengan [Memulai](/id/start/getting-started).
+Untuk peta dokumentasi lengkap, lihat [Hub dokumentasi](/id/start/hubs).
 </Note>
 
-## Mulai dari sini
+## Mulai di sini
 
-- [Docs hubs (semua halaman tertaut)](/id/start/hubs)
+- [Hub dokumentasi (semua halaman ditautkan)](/id/start/hubs)
 - [Bantuan](/id/help)
 - [Konfigurasi](/id/gateway/configuration)
 - [Contoh konfigurasi](/id/gateway/configuration-examples)
 - [Perintah slash](/id/tools/slash-commands)
 - [Perutean multi-agen](/id/concepts/multi-agent)
 - [Pembaruan dan rollback](/id/install/updating)
-- [Pairing (DM dan Node)](/id/channels/pairing)
+- [Pemasangan pasangan (DM dan node)](/id/channels/pairing)
 - [Mode Nix](/id/install/nix)
 - [Penyiapan asisten OpenClaw](/id/start/openclaw)
 - [Skills](/id/tools/skills)
 - [Konfigurasi Skills](/id/tools/skills-config)
-- [Template workspace](/id/reference/templates/AGENTS)
+- [Templat workspace](/id/reference/templates/AGENTS)
 - [Adaptor RPC](/id/reference/rpc)
 - [Runbook Gateway](/id/gateway)
 - [Node (iOS dan Android)](/id/nodes)
-- [Permukaan web (UI Control)](/id/web)
-- [Discovery dan transport](/id/gateway/discovery)
+- [Permukaan web (Control UI)](/id/web)
+- [Penemuan dan transport](/id/gateway/discovery)
 - [Akses jarak jauh](/id/gateway/remote)
 
-## Provider dan UX
+## Penyedia dan UX
 
 - [WebChat](/id/web/webchat)
-- [UI Control (browser)](/id/web/control-ui)
+- [Control UI (browser)](/id/web/control-ui)
 - [Telegram](/id/channels/telegram)
 - [Discord](/id/channels/discord)
 - [Mattermost](/id/channels/mattermost)
-- [BlueBubbles (iMessage)](/id/channels/bluebubbles)
+- [BlueBubbles (bridge iMessage lama)](/id/channels/bluebubbles)
 - [QQ Bot](/id/channels/qqbot)
-- [iMessage (legacy)](/id/channels/imessage)
+- [iMessage](/id/channels/imessage)
 - [Grup](/id/channels/groups)
 - [Pesan grup WhatsApp](/id/channels/group-messages)
-- [Media gambar](/id/nodes/images)
-- [Media audio](/id/nodes/audio)
+- [Gambar media](/id/nodes/images)
+- [Audio media](/id/nodes/audio)
 
 ## Aplikasi pendamping
 
@@ -73,5 +73,5 @@ Untuk peta dokumentasi lengkap, lihat [Docs hubs](/id/start/hubs).
 
 ## Terkait
 
-- [Getting started](/id/start/getting-started)
-- [Docs hubs](/id/start/hubs)
+- [Memulai](/id/start/getting-started)
+- [Hub dokumentasi](/id/start/hubs)

@@ -4,55 +4,55 @@ read_when:
 summary: پیوندهای گزینش‌شده به پرکاربردترین مستندات OpenClaw.
 title: دایرکتوری مستندات
 x-i18n:
-    generated_at: "2026-04-29T23:36:24Z"
+    generated_at: "2026-05-07T01:55:25Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 924ac5c5ef1f24fa7afc8f23a53ddab4df75a475d4dba380b9f8f384f3098876
+    source_hash: bd24805e17b89747850f01302e761babea411d50aee4e50ec43f93c2e893a4e1
     source_path: start/docs-directory.md
     workflow: 16
 ---
 
 <Note>
-این صفحه یک نمایهٔ گزینش‌شده است. اگر تازه‌وارد هستید، با [شروع به کار](/fa/start/getting-started) شروع کنید.
+این صفحه یک نمایهٔ گزینش‌شده است. اگر تازه‌کار هستید، از [شروع به کار](/fa/start/getting-started) شروع کنید.
 برای نقشهٔ کامل مستندات، [هاب‌های مستندات](/fa/start/hubs) را ببینید.
 </Note>
 
 ## از اینجا شروع کنید
 
-- [هاب‌های مستندات (همهٔ صفحه‌ها پیوند داده شده‌اند)](/fa/start/hubs)
+- [هاب‌های مستندات (همهٔ صفحه‌ها پیوند شده‌اند)](/fa/start/hubs)
 - [راهنما](/fa/help)
 - [پیکربندی](/fa/gateway/configuration)
 - [نمونه‌های پیکربندی](/fa/gateway/configuration-examples)
 - [دستورهای اسلش](/fa/tools/slash-commands)
 - [مسیریابی چندعاملی](/fa/concepts/multi-agent)
-- [به‌روزرسانی و بازگردانی](/fa/install/updating)
+- [به‌روزرسانی و بازگشت](/fa/install/updating)
 - [جفت‌سازی (پیام مستقیم و گره‌ها)](/fa/channels/pairing)
 - [حالت Nix](/fa/install/nix)
 - [راه‌اندازی دستیار OpenClaw](/fa/start/openclaw)
 - [Skills](/fa/tools/skills)
 - [پیکربندی Skills](/fa/tools/skills-config)
-- [الگوهای فضای کاری](/fa/reference/templates/AGENTS)
+- [قالب‌های فضای کاری](/fa/reference/templates/AGENTS)
 - [آداپتورهای RPC](/fa/reference/rpc)
 - [راهنمای عملیاتی Gateway](/fa/gateway)
 - [گره‌ها (iOS و Android)](/fa/nodes)
-- [سطح‌های وب (رابط کاربری کنترل)](/fa/web)
+- [سطوح وب (Control UI)](/fa/web)
 - [کشف و انتقال‌ها](/fa/gateway/discovery)
 - [دسترسی از راه دور](/fa/gateway/remote)
 
 ## ارائه‌دهندگان و تجربهٔ کاربری
 
 - [WebChat](/fa/web/webchat)
-- [رابط کاربری کنترل (مرورگر)](/fa/web/control-ui)
+- [Control UI (مرورگر)](/fa/web/control-ui)
 - [Telegram](/fa/channels/telegram)
 - [Discord](/fa/channels/discord)
 - [Mattermost](/fa/channels/mattermost)
-- [BlueBubbles (iMessage)](/fa/channels/bluebubbles)
+- [BlueBubbles (پل قدیمی iMessage)](/fa/channels/bluebubbles)
 - [ربات QQ](/fa/channels/qqbot)
-- [iMessage (قدیمی)](/fa/channels/imessage)
+- [iMessage](/fa/channels/imessage)
 - [گروه‌ها](/fa/channels/groups)
 - [پیام‌های گروهی WhatsApp](/fa/channels/group-messages)
-- [تصاویر رسانه‌ای](/fa/nodes/images)
-- [صدای رسانه‌ای](/fa/nodes/audio)
+- [تصاویر رسانه](/fa/nodes/images)
+- [صدای رسانه](/fa/nodes/audio)
 
 ## برنامه‌های همراه
 

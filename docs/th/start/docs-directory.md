@@ -1,32 +1,32 @@
 ---
 read_when:
     - คุณต้องการเข้าถึงหน้าเอกสารสำคัญได้อย่างรวดเร็ว
-summary: ลิงก์ที่คัดสรรไปยังเอกสาร OpenClaw ที่ถูกใช้งานบ่อยที่สุด
+summary: ลิงก์ที่คัดสรรไว้ไปยังเอกสาร OpenClaw ที่ใช้บ่อยที่สุด
 title: ไดเรกทอรีเอกสาร
 x-i18n:
-    generated_at: "2026-04-24T09:33:36Z"
-    model: gpt-5.4
+    generated_at: "2026-05-07T01:54:03Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 924ac5c5ef1f24fa7afc8f23a53ddab4df75a475d4dba380b9f8f384f3098876
+    source_hash: bd24805e17b89747850f01302e761babea411d50aee4e50ec43f93c2e893a4e1
     source_path: start/docs-directory.md
-    workflow: 15
+    workflow: 16
 ---
 
 <Note>
-หน้านี้คือดัชนีที่คัดสรรไว้ หากคุณเป็นผู้ใช้ใหม่ ให้เริ่มที่ [เริ่มต้นใช้งาน](/th/start/getting-started)
+หน้านี้เป็นดัชนีที่คัดสรรไว้ หากคุณเพิ่งเริ่มต้น ให้เริ่มที่ [เริ่มต้นใช้งาน](/th/start/getting-started)
 สำหรับแผนผังเอกสารทั้งหมด ดูที่ [ศูนย์รวมเอกสาร](/th/start/hubs)
 </Note>
 
 ## เริ่มที่นี่
 
-- [ศูนย์รวมเอกสาร (ลิงก์ทุกหน้า)](/th/start/hubs)
+- [ศูนย์รวมเอกสาร (ลิงก์ครบทุกหน้า)](/th/start/hubs)
 - [ความช่วยเหลือ](/th/help)
 - [การกำหนดค่า](/th/gateway/configuration)
 - [ตัวอย่างการกำหนดค่า](/th/gateway/configuration-examples)
-- [คำสั่งสแลช](/th/tools/slash-commands)
+- [คำสั่งแบบ Slash](/th/tools/slash-commands)
 - [การกำหนดเส้นทางหลายเอเจนต์](/th/concepts/multi-agent)
 - [การอัปเดตและการย้อนกลับ](/th/install/updating)
-- [การจับคู่ (DM และ Node)](/th/channels/pairing)
+- [การจับคู่ (DM และโหนด)](/th/channels/pairing)
 - [โหมด Nix](/th/install/nix)
 - [การตั้งค่าผู้ช่วย OpenClaw](/th/start/openclaw)
 - [Skills](/th/tools/skills)
@@ -34,21 +34,21 @@ x-i18n:
 - [เทมเพลตพื้นที่ทำงาน](/th/reference/templates/AGENTS)
 - [อะแดปเตอร์ RPC](/th/reference/rpc)
 - [คู่มือปฏิบัติการ Gateway](/th/gateway)
-- [Node (iOS และ Android)](/th/nodes)
+- [โหนด (iOS และ Android)](/th/nodes)
 - [พื้นผิวเว็บ (Control UI)](/th/web)
-- [การค้นหาและทรานสปอร์ต](/th/gateway/discovery)
+- [การค้นพบและการขนส่งข้อมูล](/th/gateway/discovery)
 - [การเข้าถึงระยะไกล](/th/gateway/remote)
 
-## ผู้ให้บริการและประสบการณ์ใช้งาน
+## ผู้ให้บริการและ UX
 
 - [WebChat](/th/web/webchat)
 - [Control UI (เบราว์เซอร์)](/th/web/control-ui)
 - [Telegram](/th/channels/telegram)
 - [Discord](/th/channels/discord)
 - [Mattermost](/th/channels/mattermost)
-- [BlueBubbles (iMessage)](/th/channels/bluebubbles)
+- [BlueBubbles (บริดจ์ iMessage แบบเดิม)](/th/channels/bluebubbles)
 - [QQ Bot](/th/channels/qqbot)
-- [iMessage (แบบเดิม)](/th/channels/imessage)
+- [iMessage](/th/channels/imessage)
 - [กลุ่ม](/th/channels/groups)
 - [ข้อความกลุ่ม WhatsApp](/th/channels/group-messages)
 - [รูปภาพสื่อ](/th/nodes/images)

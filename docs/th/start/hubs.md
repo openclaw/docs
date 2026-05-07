@@ -1,19 +1,19 @@
 ---
 read_when:
-    - คุณต้องการแผนผังที่ครบถ้วนของเอกสาร
-summary: ศูนย์รวมที่ลิงก์ไปยังเอกสาร OpenClaw ทุกหน้า
-title: ศูนย์รวมเอกสาร
+    - คุณต้องการแผนผังเอกสารประกอบที่ครบถ้วน
+summary: ฮับที่ลิงก์ไปยังเอกสาร OpenClaw ทุกหน้า
+title: ฮับเอกสาร
 x-i18n:
-    generated_at: "2026-05-06T09:31:26Z"
+    generated_at: "2026-05-07T01:54:21Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9c5822f46d0c4014ec5874d06c40f9adbe4439e8164cc75709e15c519b3e11af
+    source_hash: b7de6012e4e8db02d22cda7d8f275c634e15511b1c4e94e219672cf167f9848d
     source_path: start/hubs.md
     workflow: 16
 ---
 
 <Note>
-หากคุณยังใหม่กับ OpenClaw ให้เริ่มที่ [เริ่มต้นใช้งาน](/th/start/getting-started)
+หากคุณเพิ่งเริ่มใช้ OpenClaw ให้เริ่มจาก [เริ่มต้นใช้งาน](/th/start/getting-started)
 </Note>
 
 ใช้ฮับเหล่านี้เพื่อค้นหาทุกหน้า รวมถึงบทเจาะลึกและเอกสารอ้างอิงที่ไม่ปรากฏในแถบนำทางด้านซ้าย
@@ -31,7 +31,7 @@ x-i18n:
 - [การกำหนดค่า](/th/gateway/configuration)
 - [ตัวอย่างการกำหนดค่า](/th/gateway/configuration-examples)
 - [ผู้ช่วย OpenClaw](/th/start/openclaw)
-- [ผลงานตัวอย่าง](/th/start/showcase)
+- [โชว์เคส](/th/start/showcase)
 - [ตำนาน](/th/start/lore)
 
 ## การติดตั้ง + การอัปเดต
@@ -49,7 +49,7 @@ x-i18n:
 - [รันไทม์ของเอเจนต์](/th/concepts/agent)
 - [พื้นที่ทำงานของเอเจนต์](/th/concepts/agent-workspace)
 - [หน่วยความจำ](/th/concepts/memory)
-- [ลูปเอเจนต์](/th/concepts/agent-loop)
+- [ลูปของเอเจนต์](/th/concepts/agent-loop)
 - [การสตรีม + การแบ่งชังก์](/th/concepts/streaming)
 - [การกำหนดเส้นทางหลายเอเจนต์](/th/concepts/multi-agent)
 - [Compaction](/th/concepts/compaction)
@@ -57,12 +57,12 @@ x-i18n:
 - [การตัดแต่งเซสชัน](/th/concepts/session-pruning)
 - [เครื่องมือเซสชัน](/th/concepts/session-tool)
 - [คิว](/th/concepts/queue)
-- [คำสั่งแบบสแลช](/th/tools/slash-commands)
+- [คำสั่งสแลช](/th/tools/slash-commands)
 - [อะแดปเตอร์ RPC](/th/reference/rpc)
 - [สคีมา TypeBox](/th/concepts/typebox)
 - [การจัดการเขตเวลา](/th/concepts/timezone)
-- [สถานะการปรากฏตัว](/th/concepts/presence)
-- [การค้นพบ + การขนส่ง](/th/gateway/discovery)
+- [สถานะการออนไลน์](/th/concepts/presence)
+- [การค้นพบ + ทรานสปอร์ต](/th/gateway/discovery)
 - [Bonjour](/th/gateway/bonjour)
 - [การกำหนดเส้นทางช่องทาง](/th/channels/channel-routing)
 - [กลุ่ม](/th/channels/groups)
@@ -80,26 +80,26 @@ x-i18n:
 - [Discord](/th/channels/discord)
 - [Mattermost](/th/channels/mattermost)
 - [Signal](/th/channels/signal)
-- [BlueBubbles (iMessage)](/th/channels/bluebubbles)
+- [BlueBubbles (บริดจ์ iMessage รุ่นเดิม)](/th/channels/bluebubbles)
 - [QQ Bot](/th/channels/qqbot)
-- [iMessage (เดิม)](/th/channels/imessage)
+- [iMessage](/th/channels/imessage)
 - [การแยกวิเคราะห์ตำแหน่ง](/th/channels/location)
 - [WebChat](/th/web/webchat)
 - [Webhooks](/th/automation/cron-jobs#webhooks)
 - [Gmail Pub/Sub](/th/automation/cron-jobs#gmail-pubsub-integration)
 
-## Gateway + การดำเนินงาน
+## Gateway + การปฏิบัติการ
 
 - [คู่มือปฏิบัติการ Gateway](/th/gateway)
 - [โมเดลเครือข่าย](/th/network#core-model)
 - [การจับคู่ Gateway](/th/gateway/pairing)
 - [ล็อก Gateway](/th/gateway/gateway-lock)
 - [กระบวนการเบื้องหลัง](/th/gateway/background-process)
-- [สถานะสุขภาพ](/th/gateway/health)
+- [สุขภาพ](/th/gateway/health)
 - [Heartbeat](/th/gateway/heartbeat)
 - [Doctor](/th/gateway/doctor)
 - [การบันทึกล็อก](/th/gateway/logging)
-- [การทำแซนด์บ็อกซ์](/th/gateway/sandboxing)
+- [Sandboxing](/th/gateway/sandboxing)
 - [Dashboard](/th/web/dashboard)
 - [Control UI](/th/web/control-ui)
 - [การเข้าถึงระยะไกล](/th/gateway/remote)
@@ -112,22 +112,22 @@ x-i18n:
 
 - [พื้นผิวเครื่องมือ](/th/tools)
 - [OpenProse](/th/prose)
-- [ข้อมูลอ้างอิง CLI](/th/cli)
+- [เอกสารอ้างอิง CLI](/th/cli)
 - [เครื่องมือ Exec](/th/tools/exec)
 - [เครื่องมือ PDF](/th/tools/pdf)
 - [โหมดยกระดับสิทธิ์](/th/tools/elevated)
 - [งาน Cron](/th/automation/cron-jobs)
 - [ระบบอัตโนมัติและงาน](/th/automation)
-- [การคิด + แบบละเอียด](/th/tools/thinking)
+- [การคิด + โหมดละเอียด](/th/tools/thinking)
 - [โมเดล](/th/concepts/models)
 - [เอเจนต์ย่อย](/th/tools/subagents)
-- [CLI ส่งเอเจนต์](/th/tools/agent-send)
+- [CLI สำหรับส่งไปยังเอเจนต์](/th/tools/agent-send)
 - [Terminal UI](/th/web/tui)
 - [การควบคุมเบราว์เซอร์](/th/tools/browser)
-- [เบราว์เซอร์ (การแก้ไขปัญหา Linux)](/th/tools/browser-linux-troubleshooting)
+- [เบราว์เซอร์ (การแก้ไขปัญหาบน Linux)](/th/tools/browser-linux-troubleshooting)
 - [โพล](/th/cli/message)
 
-## Node สื่อ เสียง
+## Node, สื่อ, เสียง
 
 - [ภาพรวม Node](/th/nodes)
 - [กล้อง](/th/nodes/camera)
@@ -135,7 +135,7 @@ x-i18n:
 - [เสียง](/th/nodes/audio)
 - [คำสั่งตำแหน่ง](/th/nodes/location-command)
 - [การปลุกด้วยเสียง](/th/nodes/voicewake)
-- [โหมดสนทนา](/th/nodes/talk)
+- [โหมดพูดคุย](/th/nodes/talk)
 
 ## แพลตฟอร์ม
 
@@ -149,23 +149,23 @@ x-i18n:
 
 ## แอปคู่หู macOS (ขั้นสูง)
 
-- [การตั้งค่าสภาพแวดล้อมพัฒนา macOS](/th/platforms/mac/dev-setup)
+- [การตั้งค่านักพัฒนา macOS](/th/platforms/mac/dev-setup)
 - [แถบเมนู macOS](/th/platforms/mac/menu-bar)
 - [การปลุกด้วยเสียงบน macOS](/th/platforms/mac/voicewake)
 - [โอเวอร์เลย์เสียงบน macOS](/th/platforms/mac/voice-overlay)
-- [macOS WebChat](/th/platforms/mac/webchat)
-- [macOS Canvas](/th/platforms/mac/canvas)
-- [กระบวนการลูกของ macOS](/th/platforms/mac/child-process)
-- [สถานะสุขภาพ macOS](/th/platforms/mac/health)
+- [WebChat บน macOS](/th/platforms/mac/webchat)
+- [Canvas บน macOS](/th/platforms/mac/canvas)
+- [กระบวนการลูกบน macOS](/th/platforms/mac/child-process)
+- [สุขภาพบน macOS](/th/platforms/mac/health)
 - [ไอคอน macOS](/th/platforms/mac/icon)
-- [การบันทึกล็อก macOS](/th/platforms/mac/logging)
-- [สิทธิ์ macOS](/th/platforms/mac/permissions)
-- [macOS ระยะไกล](/th/platforms/mac/remote)
-- [การลงนาม macOS](/th/platforms/mac/signing)
-- [macOS gateway (launchd)](/th/platforms/mac/bundled-gateway)
-- [macOS XPC](/th/platforms/mac/xpc)
-- [macOS skills](/th/platforms/mac/skills)
-- [macOS Peekaboo](/th/platforms/mac/peekaboo)
+- [การบันทึกล็อกบน macOS](/th/platforms/mac/logging)
+- [สิทธิ์บน macOS](/th/platforms/mac/permissions)
+- [ระยะไกลบน macOS](/th/platforms/mac/remote)
+- [การลงนามบน macOS](/th/platforms/mac/signing)
+- [Gateway บน macOS (launchd)](/th/platforms/mac/bundled-gateway)
+- [XPC บน macOS](/th/platforms/mac/xpc)
+- [Skills บน macOS](/th/platforms/mac/skills)
+- [Peekaboo บน macOS](/th/platforms/mac/peekaboo)
 
 ## Plugins
 
@@ -185,7 +185,7 @@ x-i18n:
 - [Skills](/th/tools/skills)
 - [ClawHub](/th/tools/clawhub)
 - [การกำหนดค่า Skills](/th/tools/skills-config)
-- [AGENTS เริ่มต้น](/th/reference/AGENTS.default)
+- [AGENTS ค่าเริ่มต้น](/th/reference/AGENTS.default)
 - [เทมเพลต: AGENTS](/th/reference/templates/AGENTS)
 - [เทมเพลต: BOOTSTRAP](/th/reference/templates/BOOTSTRAP)
 - [เทมเพลต: HEARTBEAT](/th/reference/templates/HEARTBEAT)
@@ -194,7 +194,7 @@ x-i18n:
 - [เทมเพลต: TOOLS](/th/reference/templates/TOOLS)
 - [เทมเพลต: USER](/th/reference/templates/USER)
 
-## โครงการ
+## โปรเจกต์
 
 - [เครดิต](/th/reference/credits)
 

@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Anda ingin daftar lengkap tentang apa saja yang didukung OpenClaw
+    - Anda menginginkan daftar lengkap hal yang didukung OpenClaw
 summary: Kemampuan OpenClaw di seluruh saluran, perutean, media, dan UX.
 title: Fitur
 x-i18n:
-    generated_at: "2026-05-06T09:06:55Z"
+    generated_at: "2026-05-07T01:51:37Z"
     model: gpt-5.5
     provider: openai
-    source_hash: d46085b326dd1e5f0d5531bdf8d7d84ac8c22b7fb4637b7183be2bd9d556c500
+    source_hash: 1f95185073e52f4b5b34042ea27927984bf0b040d20eb61b135514816fddc214
     source_path: concepts/features.md
     workflow: 16
 ---
@@ -15,7 +15,7 @@ x-i18n:
 ## Sorotan
 
 <Columns>
-  <Card title="Saluran" icon="message-square" href="/id/channels">
+  <Card title="Kanal" icon="message-square" href="/id/channels">
     Discord, iMessage, Signal, Slack, Telegram, WhatsApp, WebChat, dan lainnya dengan satu Gateway.
   </Card>
   <Card title="Plugin" icon="plug" href="/id/tools/plugin">
@@ -31,53 +31,53 @@ x-i18n:
     UI Kontrol Web dan aplikasi pendamping macOS.
   </Card>
   <Card title="Node seluler" icon="smartphone" href="/id/nodes">
-    Node iOS dan Android dengan pemasangan, suara/obrolan, dan perintah perangkat yang kaya.
+    Node iOS dan Android dengan pemasangan, suara/chat, dan perintah perangkat kaya.
   </Card>
 </Columns>
 
 ## Daftar lengkap
 
-**Saluran:**
+**Kanal:**
 
-- Saluran bawaan mencakup Discord, Google Chat, iMessage (legacy), IRC, Signal, Slack, Telegram, WebChat, dan WhatsApp
-- Saluran Plugin bawaan mencakup BlueBubbles untuk iMessage, Feishu, LINE, Matrix, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Synology Chat, Tlon, Twitch, Zalo, dan Zalo Personal
-- Plugin saluran opsional yang diinstal secara terpisah mencakup Voice Call dan paket pihak ketiga seperti WeChat
-- Plugin saluran pihak ketiga dapat memperluas Gateway lebih jauh, seperti WeChat
-- Dukungan obrolan grup dengan aktivasi berbasis mention
+- Kanal bawaan mencakup Discord, Google Chat, iMessage, IRC, Signal, Slack, Telegram, WebChat, dan WhatsApp
+- Kanal Plugin bawaan mencakup BlueBubbles sebagai bridge iMessage lama, Feishu, LINE, Matrix, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Synology Chat, Tlon, Twitch, Zalo, dan Zalo Personal
+- Plugin kanal opsional yang diinstal secara terpisah mencakup Voice Call dan paket pihak ketiga seperti WeChat
+- Plugin kanal pihak ketiga dapat memperluas Gateway lebih jauh, seperti WeChat
+- Dukungan chat grup dengan aktivasi berbasis mention
 - Keamanan DM dengan allowlist dan pemasangan
 
 **Agen:**
 
 - Runtime agen tertanam dengan streaming alat
 - Perutean multi-agen dengan sesi terisolasi per workspace atau pengirim
-- Sesi: obrolan langsung digabungkan ke `main` bersama; grup diisolasi
-- Streaming dan pemotongan menjadi bagian untuk respons panjang
+- Sesi: chat langsung digabungkan ke `main` bersama; grup diisolasi
+- Streaming dan pemotongan untuk respons panjang
 
-**Autentikasi dan penyedia:**
+**Auth dan provider:**
 
-- 35+ penyedia model (Anthropic, OpenAI, Google, dan lainnya)
-- Autentikasi langganan melalui OAuth (mis. OpenAI Codex)
-- Dukungan penyedia kustom dan self-hosted (vLLM, SGLang, Ollama, dan endpoint apa pun yang kompatibel dengan OpenAI atau kompatibel dengan Anthropic)
+- 35+ provider model (Anthropic, OpenAI, Google, dan lainnya)
+- Auth langganan melalui OAuth (mis. OpenAI Codex)
+- Dukungan provider kustom dan self-hosted (vLLM, SGLang, Ollama, dan endpoint apa pun yang kompatibel dengan OpenAI atau Anthropic)
 
 **Media:**
 
 - Gambar, audio, video, dan dokumen masuk dan keluar
-- Permukaan kemampuan bersama untuk pembuatan gambar dan pembuatan video
+- Permukaan kapabilitas bersama untuk pembuatan gambar dan pembuatan video
 - Transkripsi catatan suara
-- Teks-ke-ucapan dengan beberapa penyedia
+- Text-to-speech dengan beberapa provider
 
 **Aplikasi dan antarmuka:**
 
 - WebChat dan UI Kontrol browser
 - Aplikasi pendamping bilah menu macOS
 - Node iOS dengan pemasangan, Canvas, kamera, perekaman layar, lokasi, dan suara
-- Node Android dengan pemasangan, obrolan, suara, Canvas, kamera, dan perintah perangkat
+- Node Android dengan pemasangan, chat, suara, Canvas, kamera, dan perintah perangkat
 
 **Alat dan otomatisasi:**
 
 - Otomatisasi browser, exec, sandboxing
 - Pencarian web (Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG, Tavily)
-- Pekerjaan Cron dan penjadwalan Heartbeat
+- Tugas Cron dan penjadwalan Heartbeat
 - Skills, Plugin, dan pipeline workflow (Lobster)
 
 ## Terkait
@@ -87,9 +87,9 @@ x-i18n:
     Fitur opt-in yang belum dikirimkan ke permukaan default.
   </Card>
   <Card title="Runtime agen" href="/id/concepts/agent" icon="robot">
-    Model runtime agen dan cara run didispatch.
+    Model runtime agen dan cara run dikirimkan.
   </Card>
-  <Card title="Saluran" href="/id/channels" icon="message-square">
+  <Card title="Kanal" href="/id/channels" icon="message-square">
     Hubungkan Telegram, WhatsApp, Discord, Slack, dan lainnya dari satu Gateway.
   </Card>
   <Card title="Plugin" href="/id/tools/plugin" icon="plug">

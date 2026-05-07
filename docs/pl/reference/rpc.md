@@ -1,51 +1,51 @@
 ---
 read_when:
-    - Dodawanie lub zmiana integracji zewnętrznych CLI
-    - Debugowanie adapterów RPC (`signal-cli`, `imsg`)
-summary: Adaptery RPC dla zewnętrznych CLI (`signal-cli`, legacy `imsg`) i wzorce gateway
+    - Dodawanie lub zmienianie zewnętrznych integracji CLI
+    - Debugowanie adapterów RPC (signal-cli, imsg)
+summary: Adaptery RPC dla zewnętrznych CLI (signal-cli, imsg) i wzorce Gateway
 title: Adaptery RPC
 x-i18n:
-    generated_at: "2026-04-24T09:31:37Z"
-    model: gpt-5.4
+    generated_at: "2026-05-07T01:54:01Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: e35a08831db5317071aea6fc39dbf2407a7254710b2d1b751a9cc8dc4cc0d307
+    source_hash: 446e54d736352f45e6cc6988a1835233cace7f854b6e62c64bb1fae115ce76f6
     source_path: reference/rpc.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw integruje zewnętrzne CLI przez JSON-RPC. Obecnie używane są dwa wzorce.
+OpenClaw integruje zewnętrzne narzędzia CLI przez JSON-RPC. Obecnie używane są dwa wzorce.
 
-## Wzorzec A: daemon HTTP (`signal-cli`)
+## Wzorzec A: demon HTTP (signal-cli)
 
-- `signal-cli` działa jako daemon z JSON-RPC przez HTTP.
+- `signal-cli` działa jako demon z JSON-RPC przez HTTP.
 - Strumień zdarzeń to SSE (`/api/v1/events`).
-- Health probe: `/api/v1/check`.
+- Sonda kondycji: `/api/v1/check`.
 - OpenClaw zarządza cyklem życia, gdy `channels.signal.autoStart=true`.
 
-Konfigurację i punkty końcowe znajdziesz w [Signal](/pl/channels/signal).
+Zobacz [Signal](/pl/channels/signal), aby poznać konfigurację i punkty końcowe.
 
-## Wzorzec B: proces potomny stdio (legacy: `imsg`)
+## Wzorzec B: proces potomny stdio (starsze: imsg)
 
-> **Note:** W przypadku nowych konfiguracji iMessage używaj zamiast tego [BlueBubbles](/pl/channels/bluebubbles).
+> **Uwaga:** W nowych konfiguracjach iMessage używaj zamiast tego [BlueBubbles](/pl/channels/bluebubbles).
 
 - OpenClaw uruchamia `imsg rpc` jako proces potomny (starsza integracja iMessage).
-- JSON-RPC jest rozdzielane wierszami przez stdin/stdout (jeden obiekt JSON na wiersz).
-- Brak portu TCP, daemon nie jest wymagany.
+- JSON-RPC jest rozdzielany wierszami przez stdin/stdout (jeden obiekt JSON na wiersz).
+- Brak portu TCP, demon nie jest wymagany.
 
 Używane metody rdzenia:
 
 - `watch.subscribe` → powiadomienia (`method: "message"`)
 - `watch.unsubscribe`
 - `send`
-- `chats.list` (probe/diagnostyka)
+- `chats.list` (sonda/diagnostyka)
 
-Konfigurację legacy i adresowanie (`chat_id` preferowane) znajdziesz w [iMessage](/pl/channels/imessage).
+Zobacz [iMessage](/pl/channels/imessage), aby poznać starszą konfigurację i adresowanie (preferowane `chat_id`).
 
-## Wskazówki dotyczące adapterów
+## Wytyczne dotyczące adapterów
 
-- Gateway jest właścicielem procesu (start/stop powiązane z cyklem życia providera).
-- Utrzymuj klientów RPC odpornych: limity czasu, restart po zakończeniu procesu.
-- Preferuj stabilne identyfikatory (np. `chat_id`) zamiast ciągów wyświetlanych.
+- Gateway zarządza procesem (start/stop powiązane z cyklem życia dostawcy).
+- Klienty RPC powinny być odporne: limity czasu, ponowne uruchamianie po zakończeniu.
+- Preferuj stabilne identyfikatory (np. `chat_id`) zamiast wyświetlanych ciągów znaków.
 
 ## Powiązane
 

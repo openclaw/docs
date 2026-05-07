@@ -1,40 +1,40 @@
 ---
 read_when:
-    - Quieres acceso rápido a páginas clave de la documentación
+    - Quieres acceder rápidamente a páginas clave de la documentación
 summary: Enlaces seleccionados a la documentación más utilizada de OpenClaw.
 title: Directorio de documentación
 x-i18n:
-    generated_at: "2026-04-24T05:50:27Z"
-    model: gpt-5.4
+    generated_at: "2026-05-07T01:53:21Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 924ac5c5ef1f24fa7afc8f23a53ddab4df75a475d4dba380b9f8f384f3098876
+    source_hash: bd24805e17b89747850f01302e761babea411d50aee4e50ec43f93c2e893a4e1
     source_path: start/docs-directory.md
-    workflow: 15
+    workflow: 16
 ---
 
 <Note>
-Esta página es un índice curado. Si eres nuevo, empieza con [Primeros pasos](/es/start/getting-started).
-Para ver un mapa completo de la documentación, consulta [Hubs de documentación](/es/start/hubs).
+Esta página es un índice seleccionado. Si eres nuevo, empieza con [Primeros pasos](/es/start/getting-started).
+Para ver un mapa completo de la documentación, consulta [Centros de documentación](/es/start/hubs).
 </Note>
 
 ## Empieza aquí
 
-- [Hubs de documentación (todas las páginas enlazadas)](/es/start/hubs)
+- [Centros de documentación (todas las páginas enlazadas)](/es/start/hubs)
 - [Ayuda](/es/help)
 - [Configuración](/es/gateway/configuration)
 - [Ejemplos de configuración](/es/gateway/configuration-examples)
 - [Comandos slash](/es/tools/slash-commands)
 - [Enrutamiento multiagente](/es/concepts/multi-agent)
-- [Actualización y rollback](/es/install/updating)
-- [Emparejamiento (DM y Nodes)](/es/channels/pairing)
+- [Actualización y reversión](/es/install/updating)
+- [Emparejamiento (MD y nodos)](/es/channels/pairing)
 - [Modo Nix](/es/install/nix)
-- [Configuración del asistente OpenClaw](/es/start/openclaw)
+- [Configuración del asistente de OpenClaw](/es/start/openclaw)
 - [Skills](/es/tools/skills)
 - [Configuración de Skills](/es/tools/skills-config)
 - [Plantillas de espacio de trabajo](/es/reference/templates/AGENTS)
 - [Adaptadores RPC](/es/reference/rpc)
-- [Guía operativa del Gateway](/es/gateway)
-- [Nodes (iOS y Android)](/es/nodes)
+- [Runbook de Gateway](/es/gateway)
+- [Nodos (iOS y Android)](/es/nodes)
 - [Superficies web (Control UI)](/es/web)
 - [Descubrimiento y transportes](/es/gateway/discovery)
 - [Acceso remoto](/es/gateway/remote)
@@ -46,26 +46,26 @@ Para ver un mapa completo de la documentación, consulta [Hubs de documentación
 - [Telegram](/es/channels/telegram)
 - [Discord](/es/channels/discord)
 - [Mattermost](/es/channels/mattermost)
-- [BlueBubbles (iMessage)](/es/channels/bluebubbles)
+- [BlueBubbles (puente heredado de iMessage)](/es/channels/bluebubbles)
 - [QQ Bot](/es/channels/qqbot)
-- [iMessage (legado)](/es/channels/imessage)
+- [iMessage](/es/channels/imessage)
 - [Grupos](/es/channels/groups)
 - [Mensajes de grupo de WhatsApp](/es/channels/group-messages)
-- [Imágenes de medios](/es/nodes/images)
-- [Audio de medios](/es/nodes/audio)
+- [Imágenes multimedia](/es/nodes/images)
+- [Audio multimedia](/es/nodes/audio)
 
 ## Apps complementarias
 
-- [App de macOS](/es/platforms/macos)
-- [App de iOS](/es/platforms/ios)
-- [App de Android](/es/platforms/android)
+- [App para macOS](/es/platforms/macos)
+- [App para iOS](/es/platforms/ios)
+- [App para Android](/es/platforms/android)
 - [Windows (WSL2)](/es/platforms/windows)
-- [App de Linux](/es/platforms/linux)
+- [App para Linux](/es/platforms/linux)
 
 ## Operaciones y seguridad
 
 - [Sesiones](/es/concepts/session)
-- [Trabajos Cron](/es/automation/cron-jobs)
+- [Tareas Cron](/es/automation/cron-jobs)
 - [Webhooks](/es/automation/cron-jobs#webhooks)
 - [Hooks de Gmail (Pub/Sub)](/es/automation/cron-jobs#gmail-pubsub-integration)
 - [Seguridad](/es/gateway/security)
@@ -74,4 +74,4 @@ Para ver un mapa completo de la documentación, consulta [Hubs de documentación
 ## Relacionado
 
 - [Primeros pasos](/es/start/getting-started)
-- [Hubs de documentación](/es/start/hubs)
+- [Centros de documentación](/es/start/hubs)

@@ -1,19 +1,19 @@
 ---
 read_when:
     - Você quer um mapa completo da documentação
-summary: Hubs com links para toda a documentação do OpenClaw
+summary: Centrais que levam a todos os documentos do OpenClaw
 title: Hubs de documentação
 x-i18n:
-    generated_at: "2026-05-06T09:13:58Z"
+    generated_at: "2026-05-07T01:54:00Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9c5822f46d0c4014ec5874d06c40f9adbe4439e8164cc75709e15c519b3e11af
+    source_hash: b7de6012e4e8db02d22cda7d8f275c634e15511b1c4e94e219672cf167f9848d
     source_path: start/hubs.md
     workflow: 16
 ---
 
 <Note>
-Se você é novo no OpenClaw, comece por [Primeiros Passos](/pt-BR/start/getting-started).
+Se você é novo no OpenClaw, comece com [Getting Started](/pt-BR/start/getting-started).
 </Note>
 
 Use estes hubs para descobrir todas as páginas, incluindo aprofundamentos e documentos de referência que não aparecem na navegação à esquerda.
@@ -21,16 +21,16 @@ Use estes hubs para descobrir todas as páginas, incluindo aprofundamentos e doc
 ## Comece aqui
 
 - [Índice](/pt-BR)
-- [Primeiros Passos](/pt-BR/start/getting-started)
-- [Integração inicial](/pt-BR/start/onboarding)
-- [Integração inicial (CLI)](/pt-BR/start/wizard)
+- [Getting Started](/pt-BR/start/getting-started)
+- [Onboarding](/pt-BR/start/onboarding)
+- [Onboarding (CLI)](/pt-BR/start/wizard)
 - [Configuração](/pt-BR/start/setup)
 - [Dashboard (Gateway local)](http://127.0.0.1:18789/)
 - [Ajuda](/pt-BR/help)
 - [Diretório da documentação](/pt-BR/start/docs-directory)
 - [Configuração](/pt-BR/gateway/configuration)
 - [Exemplos de configuração](/pt-BR/gateway/configuration-examples)
-- [Assistente do OpenClaw](/pt-BR/start/openclaw)
+- [Assistente OpenClaw](/pt-BR/start/openclaw)
 - [Showcase](/pt-BR/start/showcase)
 - [Lore](/pt-BR/start/lore)
 
@@ -38,8 +38,8 @@ Use estes hubs para descobrir todas as páginas, incluindo aprofundamentos e doc
 
 - [Docker](/pt-BR/install/docker)
 - [Nix](/pt-BR/install/nix)
-- [Atualização / reversão](/pt-BR/install/updating)
-- [Fluxo de trabalho com Bun (experimental)](/pt-BR/install/bun)
+- [Atualização / rollback](/pt-BR/install/updating)
+- [Fluxo de trabalho Bun (experimental)](/pt-BR/install/bun)
 
 ## Conceitos principais
 
@@ -50,16 +50,16 @@ Use estes hubs para descobrir todas as páginas, incluindo aprofundamentos e doc
 - [Workspace do agente](/pt-BR/concepts/agent-workspace)
 - [Memória](/pt-BR/concepts/memory)
 - [Loop do agente](/pt-BR/concepts/agent-loop)
-- [Streaming + fragmentação](/pt-BR/concepts/streaming)
+- [Streaming + chunking](/pt-BR/concepts/streaming)
 - [Roteamento multiagente](/pt-BR/concepts/multi-agent)
 - [Compaction](/pt-BR/concepts/compaction)
 - [Sessões](/pt-BR/concepts/session)
 - [Poda de sessões](/pt-BR/concepts/session-pruning)
 - [Ferramentas de sessão](/pt-BR/concepts/session-tool)
 - [Fila](/pt-BR/concepts/queue)
-- [Comandos de barra](/pt-BR/tools/slash-commands)
+- [Comandos slash](/pt-BR/tools/slash-commands)
 - [Adaptadores RPC](/pt-BR/reference/rpc)
-- [Esquemas TypeBox](/pt-BR/concepts/typebox)
+- [Schemas TypeBox](/pt-BR/concepts/typebox)
 - [Tratamento de fuso horário](/pt-BR/concepts/timezone)
 - [Presença](/pt-BR/concepts/presence)
 - [Descoberta + transportes](/pt-BR/gateway/discovery)
@@ -73,16 +73,16 @@ Use estes hubs para descobrir todas as páginas, incluindo aprofundamentos e doc
 ## Provedores + ingresso
 
 - [Hub de canais de chat](/pt-BR/channels)
-- [Hub de provedores de modelos](/pt-BR/providers/models)
+- [Hub de provedores de modelo](/pt-BR/providers/models)
 - [WhatsApp](/pt-BR/channels/whatsapp)
 - [Telegram](/pt-BR/channels/telegram)
 - [Slack](/pt-BR/channels/slack)
 - [Discord](/pt-BR/channels/discord)
 - [Mattermost](/pt-BR/channels/mattermost)
 - [Signal](/pt-BR/channels/signal)
-- [BlueBubbles (iMessage)](/pt-BR/channels/bluebubbles)
+- [BlueBubbles (ponte iMessage legada)](/pt-BR/channels/bluebubbles)
 - [Bot QQ](/pt-BR/channels/qqbot)
-- [iMessage (legado)](/pt-BR/channels/imessage)
+- [iMessage](/pt-BR/channels/imessage)
 - [Análise de localização](/pt-BR/channels/location)
 - [WebChat](/pt-BR/web/webchat)
 - [Webhooks](/pt-BR/automation/cron-jobs#webhooks)
@@ -95,13 +95,13 @@ Use estes hubs para descobrir todas as páginas, incluindo aprofundamentos e doc
 - [Pareamento do Gateway](/pt-BR/gateway/pairing)
 - [Bloqueio do Gateway](/pt-BR/gateway/gateway-lock)
 - [Processo em segundo plano](/pt-BR/gateway/background-process)
-- [Saúde](/pt-BR/gateway/health)
+- [Integridade](/pt-BR/gateway/health)
 - [Heartbeat](/pt-BR/gateway/heartbeat)
 - [Doctor](/pt-BR/gateway/doctor)
-- [Logs](/pt-BR/gateway/logging)
+- [Registro de logs](/pt-BR/gateway/logging)
 - [Sandboxing](/pt-BR/gateway/sandboxing)
 - [Dashboard](/pt-BR/web/dashboard)
-- [Interface de controle](/pt-BR/web/control-ui)
+- [Control UI](/pt-BR/web/control-ui)
 - [Acesso remoto](/pt-BR/gateway/remote)
 - [README do Gateway remoto](/pt-BR/gateway/remote-gateway-readme)
 - [Tailscale](/pt-BR/gateway/tailscale)
@@ -113,15 +113,15 @@ Use estes hubs para descobrir todas as páginas, incluindo aprofundamentos e doc
 - [Superfície de ferramentas](/pt-BR/tools)
 - [OpenProse](/pt-BR/prose)
 - [Referência da CLI](/pt-BR/cli)
-- [Ferramenta de execução](/pt-BR/tools/exec)
-- [Ferramenta de PDF](/pt-BR/tools/pdf)
+- [Ferramenta exec](/pt-BR/tools/exec)
+- [Ferramenta PDF](/pt-BR/tools/pdf)
 - [Modo elevado](/pt-BR/tools/elevated)
 - [Tarefas Cron](/pt-BR/automation/cron-jobs)
 - [Automação e tarefas](/pt-BR/automation)
 - [Pensamento + verboso](/pt-BR/tools/thinking)
 - [Modelos](/pt-BR/concepts/models)
 - [Subagentes](/pt-BR/tools/subagents)
-- [CLI de envio do agente](/pt-BR/tools/agent-send)
+- [CLI de envio ao agente](/pt-BR/tools/agent-send)
 - [Interface de terminal](/pt-BR/web/tui)
 - [Controle do navegador](/pt-BR/tools/browser)
 - [Navegador (solução de problemas no Linux)](/pt-BR/tools/browser-linux-troubleshooting)
@@ -129,7 +129,7 @@ Use estes hubs para descobrir todas as páginas, incluindo aprofundamentos e doc
 
 ## Nodes, mídia, voz
 
-- [Visão geral dos Nodes](/pt-BR/nodes)
+- [Visão geral de Nodes](/pt-BR/nodes)
 - [Câmera](/pt-BR/nodes/camera)
 - [Imagens](/pt-BR/nodes/images)
 - [Áudio](/pt-BR/nodes/audio)
@@ -149,36 +149,36 @@ Use estes hubs para descobrir todas as páginas, incluindo aprofundamentos e doc
 
 ## App complementar para macOS (avançado)
 
-- [Configuração de desenvolvimento no macOS](/pt-BR/platforms/mac/dev-setup)
-- [Barra de menu do macOS](/pt-BR/platforms/mac/menu-bar)
+- [Configuração de desenvolvimento para macOS](/pt-BR/platforms/mac/dev-setup)
+- [Barra de menus do macOS](/pt-BR/platforms/mac/menu-bar)
 - [Ativação por voz no macOS](/pt-BR/platforms/mac/voicewake)
-- [Sobreposição de voz no macOS](/pt-BR/platforms/mac/voice-overlay)
+- [Overlay de voz do macOS](/pt-BR/platforms/mac/voice-overlay)
 - [WebChat no macOS](/pt-BR/platforms/mac/webchat)
 - [Canvas no macOS](/pt-BR/platforms/mac/canvas)
-- [Processo filho no macOS](/pt-BR/platforms/mac/child-process)
-- [Saúde no macOS](/pt-BR/platforms/mac/health)
-- [Ícone no macOS](/pt-BR/platforms/mac/icon)
-- [Logs no macOS](/pt-BR/platforms/mac/logging)
-- [Permissões no macOS](/pt-BR/platforms/mac/permissions)
-- [Remoto no macOS](/pt-BR/platforms/mac/remote)
-- [Assinatura no macOS](/pt-BR/platforms/mac/signing)
-- [Gateway no macOS (launchd)](/pt-BR/platforms/mac/bundled-gateway)
-- [XPC no macOS](/pt-BR/platforms/mac/xpc)
-- [Skills no macOS](/pt-BR/platforms/mac/skills)
-- [Peekaboo no macOS](/pt-BR/platforms/mac/peekaboo)
+- [Processo filho do macOS](/pt-BR/platforms/mac/child-process)
+- [Integridade do macOS](/pt-BR/platforms/mac/health)
+- [Ícone do macOS](/pt-BR/platforms/mac/icon)
+- [Logs do macOS](/pt-BR/platforms/mac/logging)
+- [Permissões do macOS](/pt-BR/platforms/mac/permissions)
+- [Remoto do macOS](/pt-BR/platforms/mac/remote)
+- [Assinatura do macOS](/pt-BR/platforms/mac/signing)
+- [Gateway do macOS (launchd)](/pt-BR/platforms/mac/bundled-gateway)
+- [XPC do macOS](/pt-BR/platforms/mac/xpc)
+- [Skills do macOS](/pt-BR/platforms/mac/skills)
+- [Peekaboo do macOS](/pt-BR/platforms/mac/peekaboo)
 
 ## Plugins
 
-- [Visão geral dos plugins](/pt-BR/tools/plugin)
+- [Visão geral de Plugins](/pt-BR/tools/plugin)
 - [Criando plugins](/pt-BR/plugins/building-plugins)
 - [Hooks de Plugin](/pt-BR/plugins/hooks)
 - [Manifesto de Plugin](/pt-BR/plugins/manifest)
-- [Ferramentas do agente](/pt-BR/plugins/building-plugins#registering-agent-tools)
+- [Ferramentas de agente](/pt-BR/plugins/building-plugins#registering-agent-tools)
 - [Bundles de Plugin](/pt-BR/plugins/bundles)
 - [Plugins da comunidade](/pt-BR/plugins/community)
-- [Receitas de capacidades](/pt-BR/plugins/adding-capabilities)
+- [Cookbook de capacidade](/pt-BR/plugins/adding-capabilities)
 - [Plugin de chamada de voz](/pt-BR/plugins/voice-call)
-- [Plugin de usuário do Zalo](/pt-BR/plugins/zalouser)
+- [Plugin de usuário Zalo](/pt-BR/plugins/zalouser)
 
 ## Workspace + modelos
 
@@ -198,12 +198,12 @@ Use estes hubs para descobrir todas as páginas, incluindo aprofundamentos e doc
 
 - [Créditos](/pt-BR/reference/credits)
 
-## Testes + lançamento
+## Testes + release
 
 - [Testes](/pt-BR/reference/test)
-- [Política de lançamento](/pt-BR/reference/RELEASING)
+- [Política de release](/pt-BR/reference/RELEASING)
 - [Modelos de dispositivos](/pt-BR/reference/device-models)
 
 ## Relacionado
 
-- [Primeiros passos](/pt-BR/start/getting-started)
+- [Getting started](/pt-BR/start/getting-started)

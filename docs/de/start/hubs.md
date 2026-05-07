@@ -1,47 +1,47 @@
 ---
 read_when:
-    - Sie möchten eine vollständige Übersicht über die Dokumentation
-summary: Übersichtsseiten, die auf jede OpenClaw-Dokumentationsseite verlinken
+    - Sie möchten eine vollständige Übersicht der Dokumentation
+summary: Hubs, die auf alle OpenClaw-Dokumentationsseiten verlinken
 title: Dokumentations-Hubs
 x-i18n:
-    generated_at: "2026-05-06T07:03:31Z"
+    generated_at: "2026-05-07T01:54:09Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9c5822f46d0c4014ec5874d06c40f9adbe4439e8164cc75709e15c519b3e11af
+    source_hash: b7de6012e4e8db02d22cda7d8f275c634e15511b1c4e94e219672cf167f9848d
     source_path: start/hubs.md
     workflow: 16
 ---
 
 <Note>
-Wenn Sie OpenClaw noch nicht kennen, beginnen Sie mit [Erste Schritte](/de/start/getting-started).
+Wenn Sie neu bei OpenClaw sind, beginnen Sie mit [Einstieg](/de/start/getting-started).
 </Note>
 
-Nutzen Sie diese Hubs, um jede Seite zu finden, einschließlich ausführlicher Erläuterungen und Referenzdokumentation, die nicht in der linken Navigation erscheinen.
+Verwenden Sie diese Hubs, um jede Seite zu finden, einschließlich Deep Dives und Referenzdokumentation, die nicht in der linken Navigation erscheinen.
 
 ## Hier beginnen
 
 - [Index](/de)
-- [Erste Schritte](/de/start/getting-started)
+- [Einstieg](/de/start/getting-started)
 - [Onboarding](/de/start/onboarding)
 - [Onboarding (CLI)](/de/start/wizard)
 - [Einrichtung](/de/start/setup)
-- [Dashboard (lokales Gateway)](http://127.0.0.1:18789/)
+- [Dashboard (lokaler Gateway)](http://127.0.0.1:18789/)
 - [Hilfe](/de/help)
-- [Dokumentenverzeichnis](/de/start/docs-directory)
+- [Dokumentationsverzeichnis](/de/start/docs-directory)
 - [Konfiguration](/de/gateway/configuration)
 - [Konfigurationsbeispiele](/de/gateway/configuration-examples)
 - [OpenClaw-Assistent](/de/start/openclaw)
-- [Showcase](/de/start/showcase)
-- [Lore](/de/start/lore)
+- [Präsentation](/de/start/showcase)
+- [Hintergrundgeschichte](/de/start/lore)
 
-## Installation + Updates
+## Installation + Aktualisierungen
 
 - [Docker](/de/install/docker)
 - [Nix](/de/install/nix)
 - [Aktualisierung / Rollback](/de/install/updating)
 - [Bun-Workflow (experimentell)](/de/install/bun)
 
-## Kernkonzepte
+## Grundkonzepte
 
 - [Architektur](/de/concepts/architecture)
 - [Funktionen](/de/concepts/features)
@@ -49,7 +49,7 @@ Nutzen Sie diese Hubs, um jede Seite zu finden, einschließlich ausführlicher E
 - [Agent-Laufzeit](/de/concepts/agent)
 - [Agent-Arbeitsbereich](/de/concepts/agent-workspace)
 - [Speicher](/de/concepts/memory)
-- [Agent-Loop](/de/concepts/agent-loop)
+- [Agent-Schleife](/de/concepts/agent-loop)
 - [Streaming + Chunking](/de/concepts/streaming)
 - [Multi-Agent-Routing](/de/concepts/multi-agent)
 - [Compaction](/de/concepts/compaction)
@@ -72,17 +72,17 @@ Nutzen Sie diese Hubs, um jede Seite zu finden, einschließlich ausführlicher E
 
 ## Provider + Ingress
 
-- [Chatkanäle-Hub](/de/channels)
-- [Modell-Provider-Hub](/de/providers/models)
+- [Hub für Chat-Kanäle](/de/channels)
+- [Hub für Modell-Provider](/de/providers/models)
 - [WhatsApp](/de/channels/whatsapp)
 - [Telegram](/de/channels/telegram)
 - [Slack](/de/channels/slack)
 - [Discord](/de/channels/discord)
 - [Mattermost](/de/channels/mattermost)
 - [Signal](/de/channels/signal)
-- [BlueBubbles (iMessage)](/de/channels/bluebubbles)
+- [BlueBubbles (Legacy-iMessage-Bridge)](/de/channels/bluebubbles)
 - [QQ Bot](/de/channels/qqbot)
-- [iMessage (Legacy)](/de/channels/imessage)
+- [iMessage](/de/channels/imessage)
 - [Standort-Parsing](/de/channels/location)
 - [WebChat](/de/web/webchat)
 - [Webhooks](/de/automation/cron-jobs#webhooks)
@@ -92,7 +92,7 @@ Nutzen Sie diese Hubs, um jede Seite zu finden, einschließlich ausführlicher E
 
 - [Gateway-Runbook](/de/gateway)
 - [Netzwerkmodell](/de/network#core-model)
-- [Gateway-Pairing](/de/gateway/pairing)
+- [Gateway-Kopplung](/de/gateway/pairing)
 - [Gateway-Sperre](/de/gateway/gateway-lock)
 - [Hintergrundprozess](/de/gateway/background-process)
 - [Zustand](/de/gateway/health)
@@ -102,7 +102,7 @@ Nutzen Sie diese Hubs, um jede Seite zu finden, einschließlich ausführlicher E
 - [Sandboxing](/de/gateway/sandboxing)
 - [Dashboard](/de/web/dashboard)
 - [Control UI](/de/web/control-ui)
-- [Remote-Zugriff](/de/gateway/remote)
+- [Remotezugriff](/de/gateway/remote)
 - [Remote-Gateway-README](/de/gateway/remote-gateway-readme)
 - [Tailscale](/de/gateway/tailscale)
 - [Sicherheit](/de/gateway/security)
@@ -120,8 +120,8 @@ Nutzen Sie diese Hubs, um jede Seite zu finden, einschließlich ausführlicher E
 - [Automatisierung & Aufgaben](/de/automation)
 - [Denken + ausführlich](/de/tools/thinking)
 - [Modelle](/de/concepts/models)
-- [Sub-Agenten](/de/tools/subagents)
-- [Agent-Send-CLI](/de/tools/agent-send)
+- [Sub-Agents](/de/tools/subagents)
+- [Agent-Sende-CLI](/de/tools/agent-send)
 - [Terminal-UI](/de/web/tui)
 - [Browsersteuerung](/de/tools/browser)
 - [Browser (Linux-Fehlerbehebung)](/de/tools/browser-linux-troubleshooting)
@@ -134,7 +134,7 @@ Nutzen Sie diese Hubs, um jede Seite zu finden, einschließlich ausführlicher E
 - [Bilder](/de/nodes/images)
 - [Audio](/de/nodes/audio)
 - [Standortbefehl](/de/nodes/location-command)
-- [Voice Wake](/de/nodes/voicewake)
+- [Sprachaktivierung](/de/nodes/voicewake)
 - [Sprechmodus](/de/nodes/talk)
 
 ## Plattformen
@@ -145,27 +145,27 @@ Nutzen Sie diese Hubs, um jede Seite zu finden, einschließlich ausführlicher E
 - [Android](/de/platforms/android)
 - [Windows (WSL2)](/de/platforms/windows)
 - [Linux](/de/platforms/linux)
-- [Web-Oberflächen](/de/web)
+- [Weboberflächen](/de/web)
 
 ## macOS-Begleit-App (fortgeschritten)
 
 - [macOS-Entwicklungseinrichtung](/de/platforms/mac/dev-setup)
 - [macOS-Menüleiste](/de/platforms/mac/menu-bar)
-- [macOS Voice Wake](/de/platforms/mac/voicewake)
+- [macOS-Sprachaktivierung](/de/platforms/mac/voicewake)
 - [macOS-Sprach-Overlay](/de/platforms/mac/voice-overlay)
-- [macOS WebChat](/de/platforms/mac/webchat)
-- [macOS Canvas](/de/platforms/mac/canvas)
+- [macOS-WebChat](/de/platforms/mac/webchat)
+- [macOS-Canvas](/de/platforms/mac/canvas)
 - [macOS-Kindprozess](/de/platforms/mac/child-process)
 - [macOS-Zustand](/de/platforms/mac/health)
 - [macOS-Symbol](/de/platforms/mac/icon)
 - [macOS-Protokollierung](/de/platforms/mac/logging)
 - [macOS-Berechtigungen](/de/platforms/mac/permissions)
-- [macOS Remote](/de/platforms/mac/remote)
+- [macOS-Remote](/de/platforms/mac/remote)
 - [macOS-Signierung](/de/platforms/mac/signing)
 - [macOS-Gateway (launchd)](/de/platforms/mac/bundled-gateway)
-- [macOS XPC](/de/platforms/mac/xpc)
-- [macOS Skills](/de/platforms/mac/skills)
-- [macOS Peekaboo](/de/platforms/mac/peekaboo)
+- [macOS-XPC](/de/platforms/mac/xpc)
+- [macOS-Skills](/de/platforms/mac/skills)
+- [macOS-Peekaboo](/de/platforms/mac/peekaboo)
 
 ## Plugins
 
@@ -176,7 +176,7 @@ Nutzen Sie diese Hubs, um jede Seite zu finden, einschließlich ausführlicher E
 - [Agent-Tools](/de/plugins/building-plugins#registering-agent-tools)
 - [Plugin-Bundles](/de/plugins/bundles)
 - [Community-Plugins](/de/plugins/community)
-- [Capability-Cookbook](/de/plugins/adding-capabilities)
+- [Capability-Kochbuch](/de/plugins/adding-capabilities)
 - [Sprachanruf-Plugin](/de/plugins/voice-call)
 - [Zalo-Benutzer-Plugin](/de/plugins/zalouser)
 
@@ -196,7 +196,7 @@ Nutzen Sie diese Hubs, um jede Seite zu finden, einschließlich ausführlicher E
 
 ## Projekt
 
-- [Danksagungen](/de/reference/credits)
+- [Mitwirkende](/de/reference/credits)
 
 ## Tests + Release
 
@@ -206,4 +206,4 @@ Nutzen Sie diese Hubs, um jede Seite zu finden, einschließlich ausführlicher E
 
 ## Verwandt
 
-- [Erste Schritte](/de/start/getting-started)
+- [Einstieg](/de/start/getting-started)

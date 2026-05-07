@@ -1,44 +1,42 @@
 ---
 read_when:
     - iMessage-ondersteuning instellen
-    - iMessage-verzenden/-ontvangen debuggen
-summary: Verouderde iMessage-ondersteuning via imsg (JSON-RPC via stdio). Nieuwe installaties moeten BlueBubbles gebruiken.
+    - Foutopsporing bij iMessage verzenden/ontvangen
+summary: Native iMessage-ondersteuning via imsg (JSON-RPC via stdio). Aanbevolen voor nieuwe OpenClaw iMessage-configuraties wanneer aan de hostvereisten wordt voldaan.
 title: iMessage
 x-i18n:
-    generated_at: "2026-04-29T22:25:28Z"
+    generated_at: "2026-05-07T01:50:37Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 60eeb3553a6511d56b8177ca4eafbedfed2d0852ac64c230c250911cd18ce17e
+    source_hash: 39a3d6350333292c147d7986568eb539aa8ce562405092b71b8cecbbf7584450
     source_path: channels/imessage.md
     workflow: 16
 ---
 
-<Warning>
-Gebruik voor nieuwe iMessage-implementaties <a href="/nl/channels/bluebubbles">BlueBubbles</a>.
+<Note>
+Voor nieuwe OpenClaw iMessage-implementaties begin je hier wanneer je `imsg` kunt uitvoeren op een ingelogde macOS Messages-host. BlueBubbles blijft beschikbaar als verouderde fallback voor bestaande setups die afhankelijk zijn van de HTTP-server, webhooks of uitgebreidere private-API-acties.
+</Note>
 
-De `imsg`-integratie is verouderd en kan in een toekomstige release worden verwijderd.
-</Warning>
-
-Status: verouderde externe CLI-integratie. Gateway start `imsg rpc` en communiceert via JSON-RPC op stdio (geen aparte daemon/poort).
+Status: native externe CLI-integratie. Gateway start `imsg rpc` en communiceert via JSON-RPC op stdio (geen afzonderlijke daemon/poort).
 
 <CardGroup cols={3}>
-  <Card title="BlueBubbles (aanbevolen)" icon="message-circle" href="/nl/channels/bluebubbles">
-    Voorkeurspad voor iMessage bij nieuwe configuraties.
+  <Card title="BlueBubbles (verouderde fallback)" icon="message-circle" href="/nl/channels/bluebubbles">
+    Blijf dit gebruiken voor bestaande routering die door BlueBubbles wordt ondersteund; vermijd dit voor nieuwe setups wanneer imsg past.
   </Card>
   <Card title="Koppelen" icon="link" href="/nl/channels/pairing">
-    iMessage-DM's gebruiken standaard de koppelingsmodus.
+    iMessage-DM's gebruiken standaard de koppelmodus.
   </Card>
   <Card title="Configuratiereferentie" icon="settings" href="/nl/gateway/config-channels#imessage">
-    Volledige veldreferentie voor iMessage.
+    Volledige iMessage-veldreferentie.
   </Card>
 </CardGroup>
 
-## Snelle configuratie
+## Snelle setup
 
 <Tabs>
   <Tab title="Lokale Mac (snel pad)">
     <Steps>
-      <Step title="Installeer en verifieer imsg">
+      <Step title="imsg installeren en verifiëren">
 
 ```bash
 brew install steipete/tap/imsg
@@ -47,7 +45,7 @@ imsg rpc --help
 
       </Step>
 
-      <Step title="Configureer OpenClaw">
+      <Step title="OpenClaw configureren">
 
 ```json5
 {
@@ -63,7 +61,7 @@ imsg rpc --help
 
       </Step>
 
-      <Step title="Start Gateway">
+      <Step title="Gateway starten">
 
 ```bash
 openclaw gateway
@@ -71,28 +69,28 @@ openclaw gateway
 
       </Step>
 
-      <Step title="Keur eerste DM-koppeling goed (standaard dmPolicy)">
+      <Step title="Eerste DM-koppeling goedkeuren (standaard dmPolicy)">
 
 ```bash
 openclaw pairing list imessage
 openclaw pairing approve imessage <CODE>
 ```
 
-        Koppelingsverzoeken verlopen na 1 uur.
+        Koppelverzoeken verlopen na 1 uur.
       </Step>
     </Steps>
 
   </Tab>
 
   <Tab title="Externe Mac via SSH">
-    OpenClaw vereist alleen een stdio-compatibele `cliPath`, dus je kunt `cliPath` laten verwijzen naar een wrapperscript dat via SSH verbinding maakt met een externe Mac en `imsg` uitvoert.
+    OpenClaw vereist alleen een stdio-compatibele `cliPath`, dus je kunt `cliPath` naar een wrapperscript laten verwijzen dat via SSH verbinding maakt met een externe Mac en `imsg` uitvoert.
 
 ```bash
 #!/usr/bin/env bash
 exec ssh -T gateway-host imsg "$@"
 ```
 
-    Aanbevolen configuratie wanneer bijlagen zijn ingeschakeld:
+    Aanbevolen config wanneer bijlagen zijn ingeschakeld:
 
 ```json5
 {
@@ -113,20 +111,20 @@ exec ssh -T gateway-host imsg "$@"
 
     Als `remoteHost` niet is ingesteld, probeert OpenClaw dit automatisch te detecteren door het SSH-wrapperscript te parsen.
     `remoteHost` moet `host` of `user@host` zijn (geen spaties of SSH-opties).
-    OpenClaw gebruikt strikte host-sleutelcontrole voor SCP, dus de hostsleutel van de relay moet al bestaan in `~/.ssh/known_hosts`.
-    Paden naar bijlagen worden gevalideerd tegen toegestane roots (`attachmentRoots` / `remoteAttachmentRoots`).
+    OpenClaw gebruikt strikte host-key-controle voor SCP, dus de sleutel van de relay-host moet al bestaan in `~/.ssh/known_hosts`.
+    Bijlagepaden worden gevalideerd tegen toegestane roots (`attachmentRoots` / `remoteAttachmentRoots`).
 
   </Tab>
 </Tabs>
 
-## Vereisten en rechten (macOS)
+## Vereisten en machtigingen (macOS)
 
-- Messages moet zijn aangemeld op de Mac waarop `imsg` draait.
-- Volledige schijftoegang is vereist voor de procescontext waarin OpenClaw/`imsg` draait (toegang tot de Messages-database).
-- Automatiseringsrecht is vereist om berichten via Messages.app te verzenden.
+- Messages moet ingelogd zijn op de Mac waarop `imsg` wordt uitgevoerd.
+- Full Disk Access is vereist voor de procescontext waarin OpenClaw/`imsg` wordt uitgevoerd (toegang tot de Messages-database).
+- Automatiseringsmachtiging is vereist om berichten via Messages.app te versturen.
 
 <Tip>
-Rechten worden per procescontext verleend. Als Gateway headless draait (LaunchAgent/SSH), voer dan een eenmalige interactieve opdracht uit in diezelfde context om prompts te activeren:
+Machtigingen worden per procescontext verleend. Als Gateway headless draait (LaunchAgent/SSH), voer dan een eenmalige interactieve opdracht uit in diezelfde context om prompts te activeren:
 
 ```bash
 imsg chats --limit 1
@@ -136,7 +134,7 @@ imsg send <handle> "test"
 
 </Tip>
 
-## Toegangscontrole en routering
+## Toegangsbeheer en routering
 
 <Tabs>
   <Tab title="DM-beleid">
@@ -149,7 +147,7 @@ imsg send <handle> "test"
 
     Allowlist-veld: `channels.imessage.allowFrom`.
 
-    Allowlist-vermeldingen kunnen handles of chatdoelen zijn (`chat_id:*`, `chat_guid:*`, `chat_identifier:*`).
+    Allowlist-items kunnen handles of chatdoelen zijn (`chat_id:*`, `chat_guid:*`, `chat_identifier:*`).
 
   </Tab>
 
@@ -163,15 +161,15 @@ imsg send <handle> "test"
     Allowlist voor groepsafzenders: `channels.imessage.groupAllowFrom`.
 
     Runtime-fallback: als `groupAllowFrom` niet is ingesteld, vallen iMessage-controles voor groepsafzenders terug op `allowFrom` wanneer beschikbaar.
-    Runtime-opmerking: als `channels.imessage` volledig ontbreekt, valt runtime terug op `groupPolicy="allowlist"` en logt een waarschuwing (zelfs als `channels.defaults.groupPolicy` is ingesteld).
+    Runtime-opmerking: als `channels.imessage` volledig ontbreekt, valt de runtime terug op `groupPolicy="allowlist"` en logt een waarschuwing (zelfs als `channels.defaults.groupPolicy` is ingesteld).
 
-    Vermeldingsgating voor groepen:
+    Vermeldingspoort voor groepen:
 
-    - iMessage heeft geen native metadata voor vermeldingen
-    - detectie van vermeldingen gebruikt regexpatronen (`agents.list[].groupChat.mentionPatterns`, fallback `messages.groupChat.mentionPatterns`)
-    - zonder geconfigureerde patronen kan vermeldingsgating niet worden afgedwongen
+    - iMessage heeft geen native vermeldingsmetadata
+    - vermeldingsdetectie gebruikt regex-patronen (`agents.list[].groupChat.mentionPatterns`, fallback `messages.groupChat.mentionPatterns`)
+    - zonder geconfigureerde patronen kan de vermeldingspoort niet worden afgedwongen
 
-    Besturingsopdrachten van geautoriseerde afzenders kunnen vermeldingsgating in groepen omzeilen.
+    Besturingsopdrachten van geautoriseerde afzenders kunnen de vermeldingspoort in groepen omzeilen.
 
   </Tab>
 
@@ -179,12 +177,12 @@ imsg send <handle> "test"
     - DM's gebruiken directe routering; groepen gebruiken groepsroutering.
     - Met de standaard `session.dmScope=main` worden iMessage-DM's samengevoegd in de hoofdsessie van de agent.
     - Groepssessies zijn geïsoleerd (`agent:<agentId>:imessage:group:<chat_id>`).
-    - Antwoorden worden teruggeleid naar iMessage met metadata van het oorspronkelijke kanaal/doel.
+    - Antwoorden worden terug naar iMessage gerouteerd met metadata van het oorspronkelijke kanaal/doel.
 
-    Gedrag van groepachtige threads:
+    Groepsachtig threadgedrag:
 
     Sommige iMessage-threads met meerdere deelnemers kunnen binnenkomen met `is_group=false`.
-    Als die `chat_id` expliciet is geconfigureerd onder `channels.imessage.groups`, behandelt OpenClaw dit als groepsverkeer (groepsgating + isolatie van groepssessies).
+    Als die `chat_id` expliciet is geconfigureerd onder `channels.imessage.groups`, behandelt OpenClaw dit als groepsverkeer (groepspoort + isolatie van groepssessies).
 
   </Tab>
 </Tabs>
@@ -197,12 +195,12 @@ Snelle operatorflow:
 
 - Voer `/acp spawn codex --bind here` uit in de DM of toegestane groepschat.
 - Toekomstige berichten in datzelfde iMessage-gesprek worden naar de gespawnde ACP-sessie gerouteerd.
-- `/new` en `/reset` resetten dezelfde gebonden ACP-sessie ter plaatse.
+- `/new` en `/reset` resetten dezelfde gebonden ACP-sessie op zijn plek.
 - `/acp close` sluit de ACP-sessie en verwijdert de binding.
 
-Geconfigureerde persistente bindingen worden ondersteund via top-level `bindings[]`-vermeldingen met `type: "acp"` en `match.channel: "imessage"`.
+Geconfigureerde persistente bindingen worden ondersteund via top-level `bindings[]`-items met `type: "acp"` en `match.channel: "imessage"`.
 
-`match.peer.id` kan het volgende gebruiken:
+`match.peer.id` kan gebruiken:
 
 - genormaliseerde DM-handle zoals `+15555550123` of `user@example.com`
 - `chat_id:<id>` (aanbevolen voor stabiele groepsbindingen)
@@ -239,23 +237,23 @@ Voorbeeld:
 }
 ```
 
-Zie [ACP Agents](/nl/tools/acp-agents) voor gedeeld gedrag van ACP-bindingen.
+Zie [ACP-agents](/nl/tools/acp-agents) voor gedeeld gedrag van ACP-bindingen.
 
 ## Implementatiepatronen
 
 <AccordionGroup>
-  <Accordion title="Toegewijde macOS-gebruiker voor de bot (aparte iMessage-identiteit)">
+  <Accordion title="Toegewijde macOS-botgebruiker (afzonderlijke iMessage-identiteit)">
     Gebruik een toegewijde Apple ID en macOS-gebruiker zodat botverkeer is geïsoleerd van je persoonlijke Messages-profiel.
 
     Typische flow:
 
-    1. Maak een toegewijde macOS-gebruiker aan/log daarmee in.
-    2. Meld je in die gebruiker aan bij Messages met de Apple ID van de bot.
+    1. Maak een toegewijde macOS-gebruiker aan/log daarop in.
+    2. Log in bij Messages met de Apple ID van de bot in die gebruiker.
     3. Installeer `imsg` in die gebruiker.
-    4. Maak een SSH-wrapper zodat OpenClaw `imsg` kan uitvoeren in die gebruikerscontext.
-    5. Laat `channels.imessage.accounts.<id>.cliPath` en `.dbPath` verwijzen naar dat gebruikersprofiel.
+    4. Maak een SSH-wrapper zodat OpenClaw `imsg` in die gebruikerscontext kan uitvoeren.
+    5. Laat `channels.imessage.accounts.<id>.cliPath` en `.dbPath` naar dat gebruikersprofiel verwijzen.
 
-    De eerste uitvoering kan GUI-goedkeuringen vereisen (Automatisering + Volledige schijftoegang) in die botgebruikerssessie.
+    De eerste run kan GUI-goedkeuringen vereisen (Automation + Full Disk Access) in die botgebruikerssessie.
 
   </Accordion>
 
@@ -265,7 +263,7 @@ Zie [ACP Agents](/nl/tools/acp-agents) voor gedeeld gedrag van ACP-bindingen.
     - Gateway draait op Linux/VM
     - iMessage + `imsg` draait op een Mac in je tailnet
     - `cliPath`-wrapper gebruikt SSH om `imsg` uit te voeren
-    - `remoteHost` maakt het ophalen van bijlagen via SCP mogelijk
+    - `remoteHost` schakelt SCP-ophalen van bijlagen in
 
     Voorbeeld:
 
@@ -289,43 +287,43 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
 ```
 
     Gebruik SSH-sleutels zodat zowel SSH als SCP niet-interactief zijn.
-    Zorg ervoor dat de hostsleutel eerst wordt vertrouwd (bijvoorbeeld `ssh bot@mac-mini.tailnet-1234.ts.net`), zodat `known_hosts` wordt gevuld.
+    Zorg dat de hostsleutel eerst wordt vertrouwd (bijvoorbeeld `ssh bot@mac-mini.tailnet-1234.ts.net`) zodat `known_hosts` wordt gevuld.
 
   </Accordion>
 
-  <Accordion title="Patroon voor meerdere accounts">
+  <Accordion title="Multi-accountpatroon">
     iMessage ondersteunt configuratie per account onder `channels.imessage.accounts`.
 
-    Elk account kan velden overschrijven zoals `cliPath`, `dbPath`, `allowFrom`, `groupPolicy`, `mediaMaxMb`, geschiedenisinstellingen en allowlists voor bijlagenroots.
+    Elk account kan velden overschrijven zoals `cliPath`, `dbPath`, `allowFrom`, `groupPolicy`, `mediaMaxMb`, geschiedenisinstellingen en allowlists voor bijlageroots.
 
   </Accordion>
 </AccordionGroup>
 
-## Media, chunking en bezorgdoelen
+## Media, chunking en leveringsdoelen
 
 <AccordionGroup>
   <Accordion title="Bijlagen en media">
-    - inkomende bijlage-inname is optioneel: `channels.imessage.includeAttachments`
-    - paden naar externe bijlagen kunnen via SCP worden opgehaald wanneer `remoteHost` is ingesteld
-    - paden naar bijlagen moeten overeenkomen met toegestane roots:
+    - verwerking van inkomende bijlagen is optioneel: `channels.imessage.includeAttachments`
+    - externe bijlagepaden kunnen via SCP worden opgehaald wanneer `remoteHost` is ingesteld
+    - bijlagepaden moeten overeenkomen met toegestane roots:
       - `channels.imessage.attachmentRoots` (lokaal)
       - `channels.imessage.remoteAttachmentRoots` (externe SCP-modus)
-      - standaard rootpatroon: `/Users/*/Library/Messages/Attachments`
-    - SCP gebruikt strikte host-sleutelcontrole (`StrictHostKeyChecking=yes`)
+      - standaardrootpatroon: `/Users/*/Library/Messages/Attachments`
+    - SCP gebruikt strikte host-key-controle (`StrictHostKeyChecking=yes`)
     - grootte van uitgaande media gebruikt `channels.imessage.mediaMaxMb` (standaard 16 MB)
 
   </Accordion>
 
   <Accordion title="Uitgaande chunking">
-    - limiet voor tekstchunks: `channels.imessage.textChunkLimit` (standaard 4000)
+    - tekstchunklimiet: `channels.imessage.textChunkLimit` (standaard 4000)
     - chunkmodus: `channels.imessage.chunkMode`
       - `length` (standaard)
-      - `newline` (splitsing met alinea's eerst)
+      - `newline` (eerst op alinea splitsen)
 
   </Accordion>
 
   <Accordion title="Adresseringsindelingen">
-    Voorkeur voor expliciete doelen:
+    Voorkeursdoelen met expliciete notatie:
 
     - `chat_id:123` (aanbevolen voor stabiele routering)
     - `chat_guid:...`
@@ -344,9 +342,9 @@ imsg chats --limit 20
   </Accordion>
 </AccordionGroup>
 
-## Configuratiewijzigingen
+## Config-schrijfacties
 
-iMessage staat standaard door kanalen geïnitieerde configuratiewijzigingen toe (voor `/config set|unset` wanneer `commands.config: true`).
+iMessage staat standaard door het kanaal geïnitieerde config-schrijfacties toe (voor `/config set|unset` wanneer `commands.config: true`).
 
 Uitschakelen:
 
@@ -364,14 +362,14 @@ Uitschakelen:
 
 <AccordionGroup>
   <Accordion title="imsg niet gevonden of RPC niet ondersteund">
-    Valideer de binary en RPC-ondersteuning:
+    Valideer het binaire bestand en RPC-ondersteuning:
 
 ```bash
 imsg rpc --help
 openclaw channels status --probe
 ```
 
-    Als de probe meldt dat RPC niet wordt ondersteund, werk `imsg` bij.
+    Als de probe meldt dat RPC niet wordt ondersteund, werk `imsg` dan bij.
 
   </Accordion>
 
@@ -401,11 +399,11 @@ openclaw channels status --probe
     - `channels.imessage.remoteAttachmentRoots`
     - SSH/SCP-sleutelauthenticatie vanaf de Gateway-host
     - hostsleutel bestaat in `~/.ssh/known_hosts` op de Gateway-host
-    - leesbaarheid van extern pad op de Mac waarop Messages draait
+    - leesbaarheid van het externe pad op de Mac waarop Messages draait
 
   </Accordion>
 
-  <Accordion title="macOS-rechtenprompts zijn gemist">
+  <Accordion title="macOS-machtigingsprompts zijn gemist">
     Voer opnieuw uit in een interactieve GUI-terminal in dezelfde gebruikers-/sessiecontext en keur prompts goed:
 
 ```bash
@@ -413,7 +411,7 @@ imsg chats --limit 1
 imsg send <handle> "test"
 ```
 
-    Bevestig dat Volledige schijftoegang + Automatisering zijn verleend voor de procescontext waarin OpenClaw/`imsg` draait.
+    Bevestig dat Full Disk Access + Automation zijn verleend voor de procescontext waarin OpenClaw/`imsg` draait.
 
   </Accordion>
 </AccordionGroup>
@@ -427,8 +425,8 @@ imsg send <handle> "test"
 
 ## Gerelateerd
 
-- [Kanalenoverzicht](/nl/channels) — alle ondersteunde kanalen
-- [Koppelen](/nl/channels/pairing) — DM-authenticatie en koppelingsflow
-- [Groepen](/nl/channels/groups) — groepschatgedrag en vermeldingsgating
+- [Overzicht van kanalen](/nl/channels) — alle ondersteunde kanalen
+- [Koppelen](/nl/channels/pairing) — DM-authenticatie en koppelingsstroom
+- [Groepen](/nl/channels/groups) — gedrag van groepschats en vermeldingsfiltering
 - [Kanaalroutering](/nl/channels/channel-routing) — sessieroutering voor berichten
-- [Beveiliging](/nl/gateway/security) — toegangsmodel en hardening
+- [Beveiliging](/nl/gateway/security) — toegangsmodel en beveiligingsversterking

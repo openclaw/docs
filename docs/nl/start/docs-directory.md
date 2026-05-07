@@ -1,31 +1,31 @@
 ---
 read_when:
     - Je wilt snel toegang tot belangrijke documentatiepagina's
-summary: Samengestelde links naar de meest gebruikte OpenClaw-documentatie.
+summary: Samengestelde links naar de meestgebruikte OpenClaw-documentatie.
 title: Documentatiemap
 x-i18n:
-    generated_at: "2026-04-29T23:18:58Z"
+    generated_at: "2026-05-07T01:53:33Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 924ac5c5ef1f24fa7afc8f23a53ddab4df75a475d4dba380b9f8f384f3098876
+    source_hash: bd24805e17b89747850f01302e761babea411d50aee4e50ec43f93c2e893a4e1
     source_path: start/docs-directory.md
     workflow: 16
 ---
 
 <Note>
 Deze pagina is een samengestelde index. Als je nieuw bent, begin dan met [Aan de slag](/nl/start/getting-started).
-Zie [Docshubs](/nl/start/hubs) voor een volledige kaart van de documentatie.
+Zie [Docs-hubs](/nl/start/hubs) voor een volledige kaart van de docs.
 </Note>
 
 ## Begin hier
 
-- [Docshubs (alle pagina's gekoppeld)](/nl/start/hubs)
+- [Docs-hubs (alle pagina's gelinkt)](/nl/start/hubs)
 - [Help](/nl/help)
 - [Configuratie](/nl/gateway/configuration)
 - [Configuratievoorbeelden](/nl/gateway/configuration-examples)
 - [Slash-opdrachten](/nl/tools/slash-commands)
-- [Multi-agentroutering](/nl/concepts/multi-agent)
-- [Bijwerken en terugdraaien](/nl/install/updating)
+- [Multi-agent-routering](/nl/concepts/multi-agent)
+- [Bijwerken en rollback](/nl/install/updating)
 - [Koppelen (DM en nodes)](/nl/channels/pairing)
 - [Nix-modus](/nl/install/nix)
 - [OpenClaw-assistent instellen](/nl/start/openclaw)
@@ -36,7 +36,7 @@ Zie [Docshubs](/nl/start/hubs) voor een volledige kaart van de documentatie.
 - [Gateway-runbook](/nl/gateway)
 - [Nodes (iOS en Android)](/nl/nodes)
 - [Weboppervlakken (Control UI)](/nl/web)
-- [Detectie en transports](/nl/gateway/discovery)
+- [Detectie en transporten](/nl/gateway/discovery)
 - [Externe toegang](/nl/gateway/remote)
 
 ## Providers en UX
@@ -46,15 +46,15 @@ Zie [Docshubs](/nl/start/hubs) voor een volledige kaart van de documentatie.
 - [Telegram](/nl/channels/telegram)
 - [Discord](/nl/channels/discord)
 - [Mattermost](/nl/channels/mattermost)
-- [BlueBubbles (iMessage)](/nl/channels/bluebubbles)
+- [BlueBubbles (legacy iMessage-bridge)](/nl/channels/bluebubbles)
 - [QQ Bot](/nl/channels/qqbot)
-- [iMessage (verouderd)](/nl/channels/imessage)
+- [iMessage](/nl/channels/imessage)
 - [Groepen](/nl/channels/groups)
 - [WhatsApp-groepsberichten](/nl/channels/group-messages)
 - [Media-afbeeldingen](/nl/nodes/images)
 - [Media-audio](/nl/nodes/audio)
 
-## Begeleidende apps
+## Companion-apps
 
 - [macOS-app](/nl/platforms/macos)
 - [iOS-app](/nl/platforms/ios)
@@ -62,16 +62,16 @@ Zie [Docshubs](/nl/start/hubs) voor een volledige kaart van de documentatie.
 - [Windows (WSL2)](/nl/platforms/windows)
 - [Linux-app](/nl/platforms/linux)
 
-## Bewerkingen en veiligheid
+## Operaties en veiligheid
 
 - [Sessies](/nl/concepts/session)
-- [Cron-taken](/nl/automation/cron-jobs)
+- [Cron-jobs](/nl/automation/cron-jobs)
 - [Webhooks](/nl/automation/cron-jobs#webhooks)
 - [Gmail-hooks (Pub/Sub)](/nl/automation/cron-jobs#gmail-pubsub-integration)
 - [Beveiliging](/nl/gateway/security)
-- [Problemen oplossen](/nl/gateway/troubleshooting)
+- [Probleemoplossing](/nl/gateway/troubleshooting)
 
 ## Gerelateerd
 
 - [Aan de slag](/nl/start/getting-started)
-- [Docshubs](/nl/start/hubs)
+- [Docs-hubs](/nl/start/hubs)

@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Bạn muốn danh sách đầy đủ về những gì OpenClaw hỗ trợ
-summary: Các khả năng của OpenClaw trên các kênh, định tuyến, phương tiện và trải nghiệm người dùng.
+    - Bạn muốn danh sách đầy đủ những gì OpenClaw hỗ trợ
+summary: Các khả năng của OpenClaw trên các kênh, định tuyến, phương tiện và UX.
 title: Tính năng
 x-i18n:
-    generated_at: "2026-05-06T09:07:24Z"
+    generated_at: "2026-05-07T01:51:38Z"
     model: gpt-5.5
     provider: openai
-    source_hash: d46085b326dd1e5f0d5531bdf8d7d84ac8c22b7fb4637b7183be2bd9d556c500
+    source_hash: 1f95185073e52f4b5b34042ea27927984bf0b040d20eb61b135514816fddc214
     source_path: concepts/features.md
     workflow: 16
 ---
@@ -15,23 +15,23 @@ x-i18n:
 ## Điểm nổi bật
 
 <Columns>
-  <Card title="Channels" icon="message-square" href="/vi/channels">
+  <Card title="Kênh" icon="message-square" href="/vi/channels">
     Discord, iMessage, Signal, Slack, Telegram, WhatsApp, WebChat, và nhiều kênh khác với một Gateway duy nhất.
   </Card>
-  <Card title="Plugins" icon="plug" href="/vi/tools/plugin">
-    Các plugin đi kèm bổ sung Matrix, Nextcloud Talk, Nostr, Twitch, Zalo, và nhiều dịch vụ khác mà không cần cài đặt riêng trong các bản phát hành hiện tại thông thường.
+  <Card title="Plugin" icon="plug" href="/vi/tools/plugin">
+    Các Plugin tích hợp sẵn bổ sung Matrix, Nextcloud Talk, Nostr, Twitch, Zalo, và nhiều dịch vụ khác mà không cần cài đặt riêng trong các bản phát hành hiện tại thông thường.
   </Card>
-  <Card title="Routing" icon="route" href="/vi/concepts/multi-agent">
-    Định tuyến đa tác nhân với các phiên cô lập.
+  <Card title="Định tuyến" icon="route" href="/vi/concepts/multi-agent">
+    Định tuyến đa agent với các phiên biệt lập.
   </Card>
-  <Card title="Media" icon="image" href="/vi/nodes/images">
+  <Card title="Phương tiện" icon="image" href="/vi/nodes/images">
     Hình ảnh, âm thanh, video, tài liệu, và tạo hình ảnh/video.
   </Card>
-  <Card title="Apps and UI" icon="monitor" href="/vi/web/control-ui">
-    Web Control UI và ứng dụng đồng hành trên macOS.
+  <Card title="Ứng dụng và giao diện người dùng" icon="monitor" href="/vi/web/control-ui">
+    Giao diện điều khiển Web và ứng dụng đồng hành trên macOS.
   </Card>
-  <Card title="Mobile nodes" icon="smartphone" href="/vi/nodes">
-    Các nút iOS và Android với ghép nối, thoại/trò chuyện, và lệnh thiết bị phong phú.
+  <Card title="Node di động" icon="smartphone" href="/vi/nodes">
+    Các node iOS và Android với ghép nối, giọng nói/trò chuyện, và lệnh thiết bị phong phú.
   </Card>
 </Columns>
 
@@ -39,60 +39,60 @@ x-i18n:
 
 **Kênh:**
 
-- Các kênh tích hợp sẵn bao gồm Discord, Google Chat, iMessage (cũ), IRC, Signal, Slack, Telegram, WebChat, và WhatsApp
-- Các kênh plugin đi kèm bao gồm BlueBubbles cho iMessage, Feishu, LINE, Matrix, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Synology Chat, Tlon, Twitch, Zalo, và Zalo Personal
-- Các plugin kênh tùy chọn được cài đặt riêng bao gồm Voice Call và các gói bên thứ ba như WeChat
-- Plugin kênh bên thứ ba có thể mở rộng Gateway hơn nữa, chẳng hạn như WeChat
-- Hỗ trợ trò chuyện nhóm với kích hoạt dựa trên lượt nhắc
+- Các kênh tích hợp sẵn bao gồm Discord, Google Chat, iMessage, IRC, Signal, Slack, Telegram, WebChat, và WhatsApp
+- Các kênh Plugin tích hợp sẵn bao gồm BlueBubbles làm cầu nối iMessage cũ, Feishu, LINE, Matrix, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Synology Chat, Tlon, Twitch, Zalo, và Zalo Personal
+- Các Plugin kênh tùy chọn được cài đặt riêng bao gồm Voice Call và các gói bên thứ ba như WeChat
+- Các Plugin kênh bên thứ ba có thể mở rộng Gateway hơn nữa, chẳng hạn như WeChat
+- Hỗ trợ trò chuyện nhóm với kích hoạt dựa trên lượt nhắc đến
 - An toàn DM với danh sách cho phép và ghép nối
 
-**Tác nhân:**
+**Agent:**
 
-- Runtime tác nhân nhúng với truyền phát công cụ
-- Định tuyến đa tác nhân với các phiên cô lập theo từng workspace hoặc người gửi
-- Phiên: trò chuyện trực tiếp được gộp vào `main` dùng chung; nhóm được cô lập
-- Truyền phát và chia đoạn cho phản hồi dài
+- Runtime agent nhúng với phát trực tuyến công cụ
+- Định tuyến đa agent với các phiên biệt lập theo từng workspace hoặc người gửi
+- Phiên: các cuộc trò chuyện trực tiếp được gộp vào `main` dùng chung; nhóm được biệt lập
+- Phát trực tuyến và chia đoạn cho phản hồi dài
 
 **Xác thực và nhà cung cấp:**
 
-- Hơn 35 nhà cung cấp mô hình (Anthropic, OpenAI, Google, và nhiều hơn nữa)
+- Hơn 35 nhà cung cấp mô hình (Anthropic, OpenAI, Google, và nhiều nhà cung cấp khác)
 - Xác thực thuê bao qua OAuth (ví dụ: OpenAI Codex)
-- Hỗ trợ nhà cung cấp tùy chỉnh và tự lưu trữ (vLLM, SGLang, Ollama, và bất kỳ endpoint tương thích OpenAI hoặc tương thích Anthropic nào)
+- Hỗ trợ nhà cung cấp tùy chỉnh và tự lưu trữ (vLLM, SGLang, Ollama, và mọi endpoint tương thích OpenAI hoặc tương thích Anthropic)
 
-**Media:**
+**Phương tiện:**
 
-- Hình ảnh, âm thanh, video, và tài liệu đầu vào và đầu ra
-- Các bề mặt năng lực dùng chung cho tạo hình ảnh và tạo video
+- Nhập và xuất hình ảnh, âm thanh, video, và tài liệu
+- Các bề mặt năng lực tạo hình ảnh và tạo video dùng chung
 - Chuyển lời nhắn thoại thành văn bản
 - Chuyển văn bản thành giọng nói với nhiều nhà cung cấp
 
 **Ứng dụng và giao diện:**
 
-- WebChat và Control UI trên trình duyệt
+- WebChat và giao diện điều khiển trên trình duyệt
 - Ứng dụng đồng hành trên thanh menu macOS
-- Nút iOS với ghép nối, Canvas, camera, ghi màn hình, vị trí, và thoại
-- Nút Android với ghép nối, trò chuyện, thoại, Canvas, camera, và lệnh thiết bị
+- Node iOS với ghép nối, Canvas, camera, ghi màn hình, vị trí, và giọng nói
+- Node Android với ghép nối, trò chuyện, giọng nói, Canvas, camera, và lệnh thiết bị
 
 **Công cụ và tự động hóa:**
 
 - Tự động hóa trình duyệt, exec, sandboxing
 - Tìm kiếm web (Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG, Tavily)
 - Tác vụ Cron và lập lịch Heartbeat
-- Skills, plugin, và pipeline quy trình công việc (Lobster)
+- Skills, Plugin, và pipeline quy trình làm việc (Lobster)
 
 ## Liên quan
 
 <CardGroup cols={2}>
-  <Card title="Experimental features" href="/vi/concepts/experimental-features" icon="flask">
+  <Card title="Tính năng thử nghiệm" href="/vi/concepts/experimental-features" icon="flask">
     Các tính năng chọn tham gia chưa được phát hành lên bề mặt mặc định.
   </Card>
-  <Card title="Agent runtime" href="/vi/concepts/agent" icon="robot">
-    Mô hình runtime tác nhân và cách các lượt chạy được điều phối.
+  <Card title="Runtime agent" href="/vi/concepts/agent" icon="robot">
+    Mô hình runtime agent và cách các lượt chạy được điều phối.
   </Card>
-  <Card title="Channels" href="/vi/channels" icon="message-square">
+  <Card title="Kênh" href="/vi/channels" icon="message-square">
     Kết nối Telegram, WhatsApp, Discord, Slack, và nhiều kênh khác từ một Gateway.
   </Card>
-  <Card title="Plugins" href="/vi/tools/plugin" icon="plug">
-    Plugin đi kèm và bên thứ ba mở rộng OpenClaw.
+  <Card title="Plugin" href="/vi/tools/plugin" icon="plug">
+    Các Plugin tích hợp sẵn và bên thứ ba mở rộng OpenClaw.
   </Card>
 </CardGroup>

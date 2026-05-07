@@ -1,52 +1,51 @@
 ---
 read_when:
-- Adding or changing external CLI integrations
-- การแก้ปัญหาอะแดปเตอร์ RPC (`signal-cli`, `imsg`)
-summary: อะแดปเตอร์ RPC สำหรับ CLI ภายนอก (`signal-cli`, `imsg` แบบ legacy) และแพตเทิร์นของ
-  gateway
+    - การเพิ่มหรือเปลี่ยนแปลงการผสานการทำงานกับ CLI ภายนอก
+    - การดีบักอะแดปเตอร์ RPC (signal-cli, imsg)
+summary: อะแดปเตอร์ RPC สำหรับ CLI ภายนอก (signal-cli, imsg) และรูปแบบ Gateway
 title: อะแดปเตอร์ RPC
 x-i18n:
-  generated_at: '2026-04-24T09:31:41Z'
-  model: gpt-5.4
-  provider: openai
-  source_hash: e35a08831db5317071aea6fc39dbf2407a7254710b2d1b751a9cc8dc4cc0d307
-  source_path: reference/rpc.md
-  workflow: 15
+    generated_at: "2026-05-07T01:53:50Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 446e54d736352f45e6cc6988a1835233cace7f854b6e62c64bb1fae115ce76f6
+    source_path: reference/rpc.md
+    workflow: 16
 ---
 
-OpenClaw เชื่อมต่อ CLI ภายนอกผ่าน JSON-RPC ปัจจุบันมีการใช้ 2 รูปแบบ
+OpenClaw ผสานรวม CLI ภายนอกผ่าน JSON-RPC ปัจจุบันใช้สองรูปแบบ
 
-## รูปแบบ A: HTTP daemon (`signal-cli`)
+## รูปแบบ A: ดีมอน HTTP (signal-cli)
 
-- `signal-cli` ทำงานเป็น daemon พร้อม JSON-RPC ผ่าน HTTP
-- event stream เป็น SSE (`/api/v1/events`)
-- health probe: `/api/v1/check`
-- OpenClaw เป็นเจ้าของวงจรชีวิตเมื่อ `channels.signal.autoStart=true`
+- `signal-cli` ทำงานเป็นดีมอนด้วย JSON-RPC ผ่าน HTTP
+- สตรีมเหตุการณ์คือ SSE (`/api/v1/events`)
+- โพรบสุขภาพ: `/api/v1/check`
+- OpenClaw จัดการวงจรชีวิตเมื่อ `channels.signal.autoStart=true`
 
-ดู [Signal](/th/channels/signal) สำหรับการตั้งค่าและ endpoint
+ดู [Signal](/th/channels/signal) สำหรับการตั้งค่าและปลายทาง
 
-## รูปแบบ B: stdio child process (legacy: `imsg`)
+## รูปแบบ B: โปรเซสลูก stdio (เดิม: imsg)
 
 > **หมายเหตุ:** สำหรับการตั้งค่า iMessage ใหม่ ให้ใช้ [BlueBubbles](/th/channels/bluebubbles) แทน
 
-- OpenClaw จะ spawn `imsg rpc` เป็น child process (การเชื่อมต่อ iMessage แบบ legacy)
-- JSON-RPC เป็นแบบคั่นบรรทัดผ่าน stdin/stdout (หนึ่ง JSON object ต่อหนึ่งบรรทัด)
-- ไม่ต้องใช้พอร์ต TCP และไม่ต้องมี daemon
+- OpenClaw สร้าง `imsg rpc` เป็นโปรเซสลูก (การผสานรวม iMessage แบบเดิม)
+- JSON-RPC ถูกคั่นตามบรรทัดผ่าน stdin/stdout (หนึ่งออบเจ็กต์ JSON ต่อหนึ่งบรรทัด)
+- ไม่มีพอร์ต TCP และไม่จำเป็นต้องมีดีมอน
 
 เมธอดหลักที่ใช้:
 
 - `watch.subscribe` → การแจ้งเตือน (`method: "message"`)
 - `watch.unsubscribe`
 - `send`
-- `chats.list` (probe/diagnostics)
+- `chats.list` (โพรบ/การวินิจฉัย)
 
-ดู [iMessage](/th/channels/imessage) สำหรับการตั้งค่าแบบ legacy และการระบุปลายทาง (`chat_id` ควรใช้เป็นหลัก)
+ดู [iMessage](/th/channels/imessage) สำหรับการตั้งค่าแบบเดิมและการระบุที่อยู่ (แนะนำให้ใช้ `chat_id`)
 
 ## แนวทางสำหรับอะแดปเตอร์
 
-- Gateway เป็นเจ้าของโพรเซส (การเริ่ม/หยุดผูกกับวงจรชีวิตของ provider)
-- ควรทำให้ RPC client ทนทาน: มี timeout, รีสตาร์ตเมื่อโพรเซสออก
-- ควรใช้ ID ที่เสถียร (เช่น `chat_id`) มากกว่าสตริงที่ใช้แสดงผล
+- Gateway เป็นเจ้าของโปรเซส (เริ่ม/หยุดผูกกับวงจรชีวิตของผู้ให้บริการ)
+- ทำให้ไคลเอนต์ RPC ทนทานอยู่เสมอ: หมดเวลา, เริ่มใหม่เมื่อออก
+- ควรใช้ ID ที่เสถียร (เช่น `chat_id`) แทนสตริงที่ใช้แสดงผล
 
 ## ที่เกี่ยวข้อง
 

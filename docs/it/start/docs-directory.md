@@ -1,42 +1,42 @@
 ---
 read_when:
-    - Vuoi un accesso rapido alle pagine chiave della documentazione
-summary: Link selezionati alla documentazione OpenClaw più usata.
+    - Vuoi accedere rapidamente alle pagine principali della documentazione
+summary: Collegamenti selezionati alla documentazione OpenClaw più consultata.
 title: Directory della documentazione
 x-i18n:
-    generated_at: "2026-04-24T09:02:21Z"
-    model: gpt-5.4
+    generated_at: "2026-05-07T01:53:50Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 924ac5c5ef1f24fa7afc8f23a53ddab4df75a475d4dba380b9f8f384f3098876
+    source_hash: bd24805e17b89747850f01302e761babea411d50aee4e50ec43f93c2e893a4e1
     source_path: start/docs-directory.md
-    workflow: 15
+    workflow: 16
 ---
 
 <Note>
-Questa pagina è un indice selezionato. Se sei nuovo, inizia da [Getting Started](/it/start/getting-started).
-Per una mappa completa della documentazione, vedi [Docs hubs](/it/start/hubs).
+Questa pagina è un indice curato. Se hai appena iniziato, parti da [Guida introduttiva](/it/start/getting-started).
+Per una mappa completa della documentazione, consulta [Hub della documentazione](/it/start/hubs).
 </Note>
 
-## Inizia da qui
+## Inizia qui
 
-- [Docs hubs (tutte le pagine collegate)](/it/start/hubs)
-- [Help](/it/help)
-- [Configuration](/it/gateway/configuration)
-- [Configuration examples](/it/gateway/configuration-examples)
+- [Hub della documentazione (tutte le pagine collegate)](/it/start/hubs)
+- [Aiuto](/it/help)
+- [Configurazione](/it/gateway/configuration)
+- [Esempi di configurazione](/it/gateway/configuration-examples)
 - [Comandi slash](/it/tools/slash-commands)
-- [Multi-agent routing](/it/concepts/multi-agent)
+- [Instradamento multi-agente](/it/concepts/multi-agent)
 - [Aggiornamento e rollback](/it/install/updating)
-- [Pairing (DM e Node)](/it/channels/pairing)
+- [Abbinamento (DM e nodi)](/it/channels/pairing)
 - [Modalità Nix](/it/install/nix)
 - [Configurazione dell'assistente OpenClaw](/it/start/openclaw)
 - [Skills](/it/tools/skills)
-- [Skills config](/it/tools/skills-config)
-- [Template dello spazio di lavoro](/it/reference/templates/AGENTS)
-- [Adapter RPC](/it/reference/rpc)
-- [Gateway runbook](/it/gateway)
-- [Nodes (iOS e Android)](/it/nodes)
-- [Superfici Web (Control UI)](/it/web)
-- [Discovery e trasporti](/it/gateway/discovery)
+- [Configurazione delle Skills](/it/tools/skills-config)
+- [Template dell'area di lavoro](/it/reference/templates/AGENTS)
+- [Adattatori RPC](/it/reference/rpc)
+- [Runbook del Gateway](/it/gateway)
+- [Nodi (iOS e Android)](/it/nodes)
+- [Superfici web (Control UI)](/it/web)
+- [Rilevamento e trasporti](/it/gateway/discovery)
 - [Accesso remoto](/it/gateway/remote)
 
 ## Provider e UX
@@ -46,13 +46,13 @@ Per una mappa completa della documentazione, vedi [Docs hubs](/it/start/hubs).
 - [Telegram](/it/channels/telegram)
 - [Discord](/it/channels/discord)
 - [Mattermost](/it/channels/mattermost)
-- [BlueBubbles (iMessage)](/it/channels/bluebubbles)
+- [BlueBubbles (bridge iMessage legacy)](/it/channels/bluebubbles)
 - [QQ Bot](/it/channels/qqbot)
-- [iMessage (legacy)](/it/channels/imessage)
-- [Groups](/it/channels/groups)
+- [iMessage](/it/channels/imessage)
+- [Gruppi](/it/channels/groups)
 - [Messaggi di gruppo WhatsApp](/it/channels/group-messages)
-- [Immagini media](/it/nodes/images)
-- [Audio media](/it/nodes/audio)
+- [Immagini multimediali](/it/nodes/images)
+- [Audio multimediale](/it/nodes/audio)
 
 ## App companion
 
@@ -65,13 +65,13 @@ Per una mappa completa della documentazione, vedi [Docs hubs](/it/start/hubs).
 ## Operazioni e sicurezza
 
 - [Sessioni](/it/concepts/session)
-- [Cron jobs](/it/automation/cron-jobs)
+- [Job Cron](/it/automation/cron-jobs)
 - [Webhook](/it/automation/cron-jobs#webhooks)
 - [Hook Gmail (Pub/Sub)](/it/automation/cron-jobs#gmail-pubsub-integration)
-- [Security](/it/gateway/security)
-- [Troubleshooting](/it/gateway/troubleshooting)
+- [Sicurezza](/it/gateway/security)
+- [Risoluzione dei problemi](/it/gateway/troubleshooting)
 
 ## Correlati
 
-- [Getting started](/it/start/getting-started)
-- [Docs hubs](/it/start/hubs)
+- [Guida introduttiva](/it/start/getting-started)
+- [Hub della documentazione](/it/start/hubs)

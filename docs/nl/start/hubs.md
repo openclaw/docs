@@ -1,13 +1,13 @@
 ---
 read_when:
     - Je wilt een volledig overzicht van de documentatie
-summary: Hubs die naar elk OpenClaw-document verwijzen
+summary: Hubpagina's die naar elke OpenClaw-documentatiepagina verwijzen
 title: Documentatiehubs
 x-i18n:
-    generated_at: "2026-05-06T09:32:44Z"
+    generated_at: "2026-05-07T01:54:03Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9c5822f46d0c4014ec5874d06c40f9adbe4439e8164cc75709e15c519b3e11af
+    source_hash: b7de6012e4e8db02d22cda7d8f275c634e15511b1c4e94e219672cf167f9848d
     source_path: start/hubs.md
     workflow: 16
 ---
@@ -16,7 +16,7 @@ x-i18n:
 Als je nieuw bent met OpenClaw, begin dan met [Aan de slag](/nl/start/getting-started).
 </Note>
 
-Gebruik deze hubs om elke pagina te ontdekken, inclusief deep dives en referentiedocumentatie die niet in de linkernavigatie staat.
+Gebruik deze hubs om elke pagina te ontdekken, inclusief verdiepingen en referentiedocumentatie die niet in de linkernavigatie verschijnen.
 
 ## Begin hier
 
@@ -27,7 +27,7 @@ Gebruik deze hubs om elke pagina te ontdekken, inclusief deep dives en referenti
 - [Installatie](/nl/start/setup)
 - [Dashboard (lokale Gateway)](http://127.0.0.1:18789/)
 - [Hulp](/nl/help)
-- [Documentatiemap](/nl/start/docs-directory)
+- [Docs-map](/nl/start/docs-directory)
 - [Configuratie](/nl/gateway/configuration)
 - [Configuratievoorbeelden](/nl/gateway/configuration-examples)
 - [OpenClaw-assistent](/nl/start/openclaw)
@@ -38,7 +38,7 @@ Gebruik deze hubs om elke pagina te ontdekken, inclusief deep dives en referenti
 
 - [Docker](/nl/install/docker)
 - [Nix](/nl/install/nix)
-- [Bijwerken / terugdraaien](/nl/install/updating)
+- [Bijwerken / rollback](/nl/install/updating)
 - [Bun-workflow (experimenteel)](/nl/install/bun)
 
 ## Kernconcepten
@@ -46,25 +46,25 @@ Gebruik deze hubs om elke pagina te ontdekken, inclusief deep dives en referenti
 - [Architectuur](/nl/concepts/architecture)
 - [Functies](/nl/concepts/features)
 - [Netwerkhub](/nl/network)
-- [Agent-runtime](/nl/concepts/agent)
-- [Agent-werkruimte](/nl/concepts/agent-workspace)
+- [Agentruntime](/nl/concepts/agent)
+- [Agentwerkruimte](/nl/concepts/agent-workspace)
 - [Geheugen](/nl/concepts/memory)
-- [Agent-lus](/nl/concepts/agent-loop)
+- [Agentlus](/nl/concepts/agent-loop)
 - [Streaming + chunking](/nl/concepts/streaming)
-- [Multi-agent-routering](/nl/concepts/multi-agent)
+- [Multi-agentrouting](/nl/concepts/multi-agent)
 - [Compaction](/nl/concepts/compaction)
 - [Sessies](/nl/concepts/session)
 - [Sessies opschonen](/nl/concepts/session-pruning)
 - [Sessietools](/nl/concepts/session-tool)
 - [Wachtrij](/nl/concepts/queue)
-- [Slash-opdrachten](/nl/tools/slash-commands)
+- [Slash-commando's](/nl/tools/slash-commands)
 - [RPC-adapters](/nl/reference/rpc)
 - [TypeBox-schema's](/nl/concepts/typebox)
 - [Tijdzoneafhandeling](/nl/concepts/timezone)
 - [Aanwezigheid](/nl/concepts/presence)
 - [Detectie + transporten](/nl/gateway/discovery)
 - [Bonjour](/nl/gateway/bonjour)
-- [Kanaalroutering](/nl/channels/channel-routing)
+- [Kanaalrouting](/nl/channels/channel-routing)
 - [Groepen](/nl/channels/groups)
 - [Groepsberichten](/nl/channels/group-messages)
 - [Model-failover](/nl/concepts/model-failover)
@@ -80,15 +80,15 @@ Gebruik deze hubs om elke pagina te ontdekken, inclusief deep dives en referenti
 - [Discord](/nl/channels/discord)
 - [Mattermost](/nl/channels/mattermost)
 - [Signal](/nl/channels/signal)
-- [BlueBubbles (iMessage)](/nl/channels/bluebubbles)
+- [BlueBubbles (legacy iMessage-bridge)](/nl/channels/bluebubbles)
 - [QQ Bot](/nl/channels/qqbot)
-- [iMessage (legacy)](/nl/channels/imessage)
+- [iMessage](/nl/channels/imessage)
 - [Locatieparsing](/nl/channels/location)
 - [WebChat](/nl/web/webchat)
 - [Webhooks](/nl/automation/cron-jobs#webhooks)
 - [Gmail Pub/Sub](/nl/automation/cron-jobs#gmail-pubsub-integration)
 
-## Gateway + beheer
+## Gateway + bewerkingen
 
 - [Gateway-runbook](/nl/gateway)
 - [Netwerkmodel](/nl/network#core-model)
@@ -103,14 +103,14 @@ Gebruik deze hubs om elke pagina te ontdekken, inclusief deep dives en referenti
 - [Dashboard](/nl/web/dashboard)
 - [Control UI](/nl/web/control-ui)
 - [Externe toegang](/nl/gateway/remote)
-- [Remote gateway README](/nl/gateway/remote-gateway-readme)
+- [README voor externe Gateway](/nl/gateway/remote-gateway-readme)
 - [Tailscale](/nl/gateway/tailscale)
 - [Beveiliging](/nl/gateway/security)
 - [Probleemoplossing](/nl/gateway/troubleshooting)
 
 ## Tools + automatisering
 
-- [Tools-oppervlak](/nl/tools)
+- [Tooloppervlak](/nl/tools)
 - [OpenProse](/nl/prose)
 - [CLI-referentie](/nl/cli)
 - [Exec-tool](/nl/tools/exec)
@@ -120,8 +120,8 @@ Gebruik deze hubs om elke pagina te ontdekken, inclusief deep dives en referenti
 - [Automatisering en taken](/nl/automation)
 - [Denken + uitgebreid](/nl/tools/thinking)
 - [Modellen](/nl/concepts/models)
-- [Sub-agents](/nl/tools/subagents)
-- [Agent send CLI](/nl/tools/agent-send)
+- [Subagenten](/nl/tools/subagents)
+- [Agent verzenden-CLI](/nl/tools/agent-send)
 - [Terminal-UI](/nl/web/tui)
 - [Browserbesturing](/nl/tools/browser)
 - [Browser (Linux-probleemoplossing)](/nl/tools/browser-linux-troubleshooting)
@@ -133,7 +133,7 @@ Gebruik deze hubs om elke pagina te ontdekken, inclusief deep dives en referenti
 - [Camera](/nl/nodes/camera)
 - [Afbeeldingen](/nl/nodes/images)
 - [Audio](/nl/nodes/audio)
-- [Locatieopdracht](/nl/nodes/location-command)
+- [Locatiecommando](/nl/nodes/location-command)
 - [Voice wake](/nl/nodes/voicewake)
 - [Praatmodus](/nl/nodes/talk)
 
@@ -147,7 +147,7 @@ Gebruik deze hubs om elke pagina te ontdekken, inclusief deep dives en referenti
 - [Linux](/nl/platforms/linux)
 - [Weboppervlakken](/nl/web)
 
-## macOS companion-app (geavanceerd)
+## macOS-begeleidende app (geavanceerd)
 
 - [macOS-devinstallatie](/nl/platforms/mac/dev-setup)
 - [macOS-menubalk](/nl/platforms/mac/menu-bar)
@@ -162,9 +162,9 @@ Gebruik deze hubs om elke pagina te ontdekken, inclusief deep dives en referenti
 - [macOS-machtigingen](/nl/platforms/mac/permissions)
 - [macOS extern](/nl/platforms/mac/remote)
 - [macOS-ondertekening](/nl/platforms/mac/signing)
-- [macOS-gateway (launchd)](/nl/platforms/mac/bundled-gateway)
+- [macOS-Gateway (launchd)](/nl/platforms/mac/bundled-gateway)
 - [macOS XPC](/nl/platforms/mac/xpc)
-- [macOS skills](/nl/platforms/mac/skills)
+- [macOS Skills](/nl/platforms/mac/skills)
 - [macOS Peekaboo](/nl/platforms/mac/peekaboo)
 
 ## Plugins
@@ -173,26 +173,26 @@ Gebruik deze hubs om elke pagina te ontdekken, inclusief deep dives en referenti
 - [Plugins bouwen](/nl/plugins/building-plugins)
 - [Plugin-hooks](/nl/plugins/hooks)
 - [Plugin-manifest](/nl/plugins/manifest)
-- [Agent-tools](/nl/plugins/building-plugins#registering-agent-tools)
+- [Agenttools](/nl/plugins/building-plugins#registering-agent-tools)
 - [Plugin-bundels](/nl/plugins/bundles)
 - [Community-plugins](/nl/plugins/community)
-- [Capability-cookbook](/nl/plugins/adding-capabilities)
-- [Spraakoproep-plugin](/nl/plugins/voice-call)
+- [Capability-kookboek](/nl/plugins/adding-capabilities)
+- [Voice-call-plugin](/nl/plugins/voice-call)
 - [Zalo-gebruikersplugin](/nl/plugins/zalouser)
 
-## Werkruimte + sjablonen
+## Werkruimte + templates
 
 - [Skills](/nl/tools/skills)
 - [ClawHub](/nl/tools/clawhub)
 - [Skills-configuratie](/nl/tools/skills-config)
-- [Standaard AGENTS](/nl/reference/AGENTS.default)
-- [Sjablonen: AGENTS](/nl/reference/templates/AGENTS)
-- [Sjablonen: BOOTSTRAP](/nl/reference/templates/BOOTSTRAP)
-- [Sjablonen: HEARTBEAT](/nl/reference/templates/HEARTBEAT)
-- [Sjablonen: IDENTITY](/nl/reference/templates/IDENTITY)
-- [Sjablonen: SOUL](/nl/reference/templates/SOUL)
-- [Sjablonen: TOOLS](/nl/reference/templates/TOOLS)
-- [Sjablonen: USER](/nl/reference/templates/USER)
+- [Standaard-AGENTS](/nl/reference/AGENTS.default)
+- [Templates: AGENTS](/nl/reference/templates/AGENTS)
+- [Templates: BOOTSTRAP](/nl/reference/templates/BOOTSTRAP)
+- [Templates: HEARTBEAT](/nl/reference/templates/HEARTBEAT)
+- [Templates: IDENTITY](/nl/reference/templates/IDENTITY)
+- [Templates: SOUL](/nl/reference/templates/SOUL)
+- [Templates: TOOLS](/nl/reference/templates/TOOLS)
+- [Templates: USER](/nl/reference/templates/USER)
 
 ## Project
 

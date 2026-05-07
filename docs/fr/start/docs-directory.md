@@ -1,21 +1,20 @@
 ---
 read_when:
-    - Vous souhaitez un accès rapide aux principales pages de documentation
+    - Vous souhaitez accéder rapidement aux pages clés de la documentation
 summary: Liens sélectionnés vers la documentation OpenClaw la plus utilisée.
-title: Répertoire docs
+title: Répertoire de documentation
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T07:33:03Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: 924ac5c5ef1f24fa7afc8f23a53ddab4df75a475d4dba380b9f8f384f3098876
-  source_path: start/docs-directory.md
-  workflow: 15
+    generated_at: "2026-05-07T01:53:56Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: bd24805e17b89747850f01302e761babea411d50aee4e50ec43f93c2e893a4e1
+    source_path: start/docs-directory.md
+    workflow: 16
 ---
 
 <Note>
-Cette page est un index sélectionné. Si vous débutez, commencez par [Getting Started](/fr/start/getting-started).
-Pour une carte complète de la documentation, voir [Hubs de documentation](/fr/start/hubs).
+Cette page est un index organisé. Si vous débutez, commencez par [Bien démarrer](/fr/start/getting-started).
+Pour une carte complète de la documentation, consultez les [hubs de documentation](/fr/start/hubs).
 </Note>
 
 ## Commencez ici
@@ -26,17 +25,17 @@ Pour une carte complète de la documentation, voir [Hubs de documentation](/fr/s
 - [Exemples de configuration](/fr/gateway/configuration-examples)
 - [Commandes slash](/fr/tools/slash-commands)
 - [Routage multi-agent](/fr/concepts/multi-agent)
-- [Mise à jour et rollback](/fr/install/updating)
-- [Appairage (messages privés et Node)](/fr/channels/pairing)
+- [Mise à jour et restauration](/fr/install/updating)
+- [Appairage (DM et nœuds)](/fr/channels/pairing)
 - [Mode Nix](/fr/install/nix)
 - [Configuration de l’assistant OpenClaw](/fr/start/openclaw)
 - [Skills](/fr/tools/skills)
-- [Configuration des Skills](/fr/tools/skills-config)
+- [Configuration de Skills](/fr/tools/skills-config)
 - [Modèles d’espace de travail](/fr/reference/templates/AGENTS)
 - [Adaptateurs RPC](/fr/reference/rpc)
 - [Runbook Gateway](/fr/gateway)
-- [Nodes (iOS et Android)](/fr/nodes)
-- [Surfaces web (Control UI)](/fr/web)
+- [Nœuds (iOS et Android)](/fr/nodes)
+- [Surfaces Web (Control UI)](/fr/web)
 - [Découverte et transports](/fr/gateway/discovery)
 - [Accès distant](/fr/gateway/remote)
 
@@ -47,21 +46,21 @@ Pour une carte complète de la documentation, voir [Hubs de documentation](/fr/s
 - [Telegram](/fr/channels/telegram)
 - [Discord](/fr/channels/discord)
 - [Mattermost](/fr/channels/mattermost)
-- [BlueBubbles (iMessage)](/fr/channels/bluebubbles)
+- [BlueBubbles (pont iMessage hérité)](/fr/channels/bluebubbles)
 - [QQ Bot](/fr/channels/qqbot)
-- [iMessage (hérité)](/fr/channels/imessage)
-- [Groups](/fr/channels/groups)
+- [iMessage](/fr/channels/imessage)
+- [Groupes](/fr/channels/groups)
 - [Messages de groupe WhatsApp](/fr/channels/group-messages)
-- [Images média](/fr/nodes/images)
-- [Audio média](/fr/nodes/audio)
+- [Images multimédias](/fr/nodes/images)
+- [Audio multimédia](/fr/nodes/audio)
 
 ## Applications compagnons
 
-- [App macOS](/fr/platforms/macos)
-- [App iOS](/fr/platforms/ios)
-- [App Android](/fr/platforms/android)
+- [Application macOS](/fr/platforms/macos)
+- [Application iOS](/fr/platforms/ios)
+- [Application Android](/fr/platforms/android)
 - [Windows (WSL2)](/fr/platforms/windows)
-- [App Linux](/fr/platforms/linux)
+- [Application Linux](/fr/platforms/linux)
 
 ## Opérations et sécurité
 
@@ -72,7 +71,7 @@ Pour une carte complète de la documentation, voir [Hubs de documentation](/fr/s
 - [Sécurité](/fr/gateway/security)
 - [Dépannage](/fr/gateway/troubleshooting)
 
-## Lié
+## Connexe
 
-- [Getting started](/fr/start/getting-started)
+- [Bien démarrer](/fr/start/getting-started)
 - [Hubs de documentation](/fr/start/hubs)

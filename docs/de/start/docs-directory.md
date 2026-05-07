@@ -1,15 +1,15 @@
 ---
 read_when:
-    - Sie möchten schnellen Zugriff auf wichtige Doku-Seiten.
-summary: Kuratiere Links zu den am häufigsten verwendeten OpenClaw-Dokumenten.
+    - Sie möchten schnellen Zugriff auf wichtige Dokumentationsseiten
+summary: Kuratierte Links zu den am häufigsten genutzten OpenClaw-Dokumentationsseiten.
 title: Dokumentationsverzeichnis
 x-i18n:
-    generated_at: "2026-04-24T06:59:56Z"
-    model: gpt-5.4
+    generated_at: "2026-05-07T01:53:38Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 924ac5c5ef1f24fa7afc8f23a53ddab4df75a475d4dba380b9f8f384f3098876
+    source_hash: bd24805e17b89747850f01302e761babea411d50aee4e50ec43f93c2e893a4e1
     source_path: start/docs-directory.md
-    workflow: 15
+    workflow: 16
 ---
 
 <Note>
@@ -17,26 +17,26 @@ Diese Seite ist ein kuratierter Index. Wenn Sie neu sind, beginnen Sie mit [Erst
 Eine vollständige Übersicht über die Dokumentation finden Sie unter [Dokumentations-Hubs](/de/start/hubs).
 </Note>
 
-## Hier beginnen
+## Hier starten
 
 - [Dokumentations-Hubs (alle Seiten verlinkt)](/de/start/hubs)
 - [Hilfe](/de/help)
 - [Konfiguration](/de/gateway/configuration)
 - [Konfigurationsbeispiele](/de/gateway/configuration-examples)
-- [Slash-Commands](/de/tools/slash-commands)
+- [Slash-Befehle](/de/tools/slash-commands)
 - [Multi-Agent-Routing](/de/concepts/multi-agent)
-- [Aktualisieren und Rollback](/de/install/updating)
-- [Pairing (DM und Nodes)](/de/channels/pairing)
+- [Aktualisierung und Rollback](/de/install/updating)
+- [Kopplung (DM und Nodes)](/de/channels/pairing)
 - [Nix-Modus](/de/install/nix)
-- [OpenClaw-Assistant einrichten](/de/start/openclaw)
+- [Einrichtung des OpenClaw-Assistenten](/de/start/openclaw)
 - [Skills](/de/tools/skills)
 - [Skills-Konfiguration](/de/tools/skills-config)
-- [Workspace-Vorlagen](/de/reference/templates/AGENTS)
+- [Arbeitsbereichsvorlagen](/de/reference/templates/AGENTS)
 - [RPC-Adapter](/de/reference/rpc)
 - [Gateway-Runbook](/de/gateway)
 - [Nodes (iOS und Android)](/de/nodes)
 - [Web-Oberflächen (Control UI)](/de/web)
-- [Discovery und Transporte](/de/gateway/discovery)
+- [Erkennung und Transporte](/de/gateway/discovery)
 - [Remote-Zugriff](/de/gateway/remote)
 
 ## Provider und UX
@@ -46,15 +46,15 @@ Eine vollständige Übersicht über die Dokumentation finden Sie unter [Dokument
 - [Telegram](/de/channels/telegram)
 - [Discord](/de/channels/discord)
 - [Mattermost](/de/channels/mattermost)
-- [BlueBubbles (iMessage)](/de/channels/bluebubbles)
+- [BlueBubbles (alte iMessage-Bridge)](/de/channels/bluebubbles)
 - [QQ Bot](/de/channels/qqbot)
-- [iMessage (Legacy)](/de/channels/imessage)
+- [iMessage](/de/channels/imessage)
 - [Gruppen](/de/channels/groups)
 - [WhatsApp-Gruppennachrichten](/de/channels/group-messages)
 - [Medienbilder](/de/nodes/images)
-- [Medien-Audio](/de/nodes/audio)
+- [Medienaudio](/de/nodes/audio)
 
-## Begleit-Apps
+## Companion-Apps
 
 - [macOS-App](/de/platforms/macos)
 - [iOS-App](/de/platforms/ios)

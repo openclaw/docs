@@ -1,41 +1,41 @@
 ---
 read_when:
     - Вам потрібен швидкий доступ до ключових сторінок документації
-summary: Добірка посилань на документацію OpenClaw, яка використовується найчастіше.
+summary: Підібрані посилання на найчастіше використовувані сторінки документації OpenClaw.
 title: Каталог документації
 x-i18n:
-    generated_at: "2026-04-24T04:19:08Z"
-    model: gpt-5.4
+    generated_at: "2026-05-07T01:53:34Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 924ac5c5ef1f24fa7afc8f23a53ddab4df75a475d4dba380b9f8f384f3098876
+    source_hash: bd24805e17b89747850f01302e761babea411d50aee4e50ec43f93c2e893a4e1
     source_path: start/docs-directory.md
-    workflow: 15
+    workflow: 16
 ---
 
 <Note>
-Ця сторінка — добірний покажчик. Якщо ви новачок, почніть із [Getting Started](/uk/start/getting-started).
-Повну карту документації див. у [Docs hubs](/uk/start/hubs).
+Ця сторінка — curated index. Якщо ви новачок, почніть із [Початку роботи](/uk/start/getting-started).
+Повну мапу документації див. у [центрах документації](/uk/start/hubs).
 </Note>
 
 ## Почніть тут
 
-- [Docs hubs (усі сторінки пов’язані)](/uk/start/hubs)
+- [Центри документації (усі сторінки пов’язані)](/uk/start/hubs)
 - [Довідка](/uk/help)
 - [Конфігурація](/uk/gateway/configuration)
 - [Приклади конфігурації](/uk/gateway/configuration-examples)
 - [Slash-команди](/uk/tools/slash-commands)
-- [Маршрутизація між агентами](/uk/concepts/multi-agent)
-- [Оновлення та rollback](/uk/install/updating)
-- [Спарювання (DM і вузли)](/uk/channels/pairing)
+- [Маршрутизація між кількома агентами](/uk/concepts/multi-agent)
+- [Оновлення та відкат](/uk/install/updating)
+- [Сполучення (DM і вузли)](/uk/channels/pairing)
 - [Режим Nix](/uk/install/nix)
 - [Налаштування асистента OpenClaw](/uk/start/openclaw)
 - [Skills](/uk/tools/skills)
 - [Конфігурація Skills](/uk/tools/skills-config)
-- [Шаблони workspace](/uk/reference/templates/AGENTS)
+- [Шаблони робочого простору](/uk/reference/templates/AGENTS)
 - [Адаптери RPC](/uk/reference/rpc)
-- [Runbook Gateway](/uk/gateway)
+- [Операційний посібник Gateway](/uk/gateway)
 - [Вузли (iOS та Android)](/uk/nodes)
-- [Веб-поверхні (Control UI)](/uk/web)
+- [Вебповерхні (Control UI)](/uk/web)
 - [Виявлення та транспорти](/uk/gateway/discovery)
 - [Віддалений доступ](/uk/gateway/remote)
 
@@ -46,13 +46,13 @@ x-i18n:
 - [Telegram](/uk/channels/telegram)
 - [Discord](/uk/channels/discord)
 - [Mattermost](/uk/channels/mattermost)
-- [BlueBubbles (iMessage)](/uk/channels/bluebubbles)
+- [BlueBubbles (застарілий міст iMessage)](/uk/channels/bluebubbles)
 - [QQ Bot](/uk/channels/qqbot)
-- [iMessage (застаріле)](/uk/channels/imessage)
+- [iMessage](/uk/channels/imessage)
 - [Групи](/uk/channels/groups)
 - [Групові повідомлення WhatsApp](/uk/channels/group-messages)
-- [Медіа-зображення](/uk/nodes/images)
-- [Медіа-аудіо](/uk/nodes/audio)
+- [Медіазображення](/uk/nodes/images)
+- [Медіааудіо](/uk/nodes/audio)
 
 ## Супутні застосунки
 
@@ -64,14 +64,14 @@ x-i18n:
 
 ## Операції та безпека
 
-- [Сесії](/uk/concepts/session)
+- [Сеанси](/uk/concepts/session)
 - [Завдання Cron](/uk/automation/cron-jobs)
-- [Webhook-и](/uk/automation/cron-jobs#webhooks)
-- [Hooks Gmail (Pub/Sub)](/uk/automation/cron-jobs#gmail-pubsub-integration)
+- [Webhooks](/uk/automation/cron-jobs#webhooks)
+- [Хуки Gmail (Pub/Sub)](/uk/automation/cron-jobs#gmail-pubsub-integration)
 - [Безпека](/uk/gateway/security)
-- [Усунення проблем](/uk/gateway/troubleshooting)
+- [Усунення несправностей](/uk/gateway/troubleshooting)
 
 ## Пов’язане
 
 - [Початок роботи](/uk/start/getting-started)
-- [Docs hubs](/uk/start/hubs)
+- [Центри документації](/uk/start/hubs)

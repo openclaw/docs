@@ -1,13 +1,13 @@
 ---
 read_when:
     - Você quer uma lista completa do que o OpenClaw suporta
-summary: Recursos do OpenClaw em canais, roteamento, mídia e experiência do usuário.
+summary: Recursos do OpenClaw em canais, roteamento, mídia e UX.
 title: Recursos
 x-i18n:
-    generated_at: "2026-05-06T05:50:11Z"
+    generated_at: "2026-05-07T01:51:37Z"
     model: gpt-5.5
     provider: openai
-    source_hash: d46085b326dd1e5f0d5531bdf8d7d84ac8c22b7fb4637b7183be2bd9d556c500
+    source_hash: 1f95185073e52f4b5b34042ea27927984bf0b040d20eb61b135514816fddc214
     source_path: concepts/features.md
     workflow: 16
 ---
@@ -25,13 +25,13 @@ x-i18n:
     Roteamento multiagente com sessões isoladas.
   </Card>
   <Card title="Mídia" icon="image" href="/pt-BR/nodes/images">
-    Imagens, áudio, vídeo, documentos e geração de imagem/vídeo.
+    Imagens, áudio, vídeo, documentos e geração de imagens/vídeo.
   </Card>
   <Card title="Apps e UI" icon="monitor" href="/pt-BR/web/control-ui">
     UI de Controle Web e app complementar para macOS.
   </Card>
   <Card title="Nós móveis" icon="smartphone" href="/pt-BR/nodes">
-    Nós iOS e Android com pareamento, voz/chat e comandos avançados do dispositivo.
+    Nós iOS e Android com pareamento, voz/chat e comandos avançados de dispositivo.
   </Card>
 </Columns>
 
@@ -39,46 +39,46 @@ x-i18n:
 
 **Canais:**
 
-- Os canais integrados incluem Discord, Google Chat, iMessage (legado), IRC, Signal, Slack, Telegram, WebChat e WhatsApp
-- Os canais de Plugin incluídos incluem BlueBubbles para iMessage, Feishu, LINE, Matrix, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Synology Chat, Tlon, Twitch, Zalo e Zalo Personal
-- Plugins de canal opcionais instalados separadamente incluem Voice Call e pacotes de terceiros, como WeChat
+- Canais integrados incluem Discord, Google Chat, iMessage, IRC, Signal, Slack, Telegram, WebChat e WhatsApp
+- Canais de Plugin incluídos incluem BlueBubbles como uma ponte iMessage legada, Feishu, LINE, Matrix, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Synology Chat, Tlon, Twitch, Zalo e Zalo Personal
+- Plugins de canal opcionais instalados separadamente incluem Voice Call e pacotes de terceiros como WeChat
 - Plugins de canal de terceiros podem estender ainda mais o Gateway, como WeChat
-- Suporte a chat em grupo com ativação baseada em menções
-- Segurança em DM com listas de permissão e pareamento
+- Suporte a chats em grupo com ativação baseada em menções
+- Segurança em DMs com listas de permissões e pareamento
 
 **Agente:**
 
 - Runtime de agente incorporado com streaming de ferramentas
-- Roteamento multiagente com sessões isoladas por workspace ou remetente
-- Sessões: chats diretos são agrupados no `main`; grupos são isolados
+- Roteamento multiagente com sessões isoladas por espaço de trabalho ou remetente
+- Sessões: chats diretos são agrupados em `main`; grupos são isolados
 - Streaming e divisão em partes para respostas longas
 
 **Autenticação e provedores:**
 
-- Mais de 35 provedores de modelo (Anthropic, OpenAI, Google e mais)
-- Autenticação por assinatura via OAuth (por exemplo, OpenAI Codex)
+- Mais de 35 provedores de modelos (Anthropic, OpenAI, Google e mais)
+- Autenticação de assinatura via OAuth (por exemplo, OpenAI Codex)
 - Suporte a provedores personalizados e auto-hospedados (vLLM, SGLang, Ollama e qualquer endpoint compatível com OpenAI ou compatível com Anthropic)
 
 **Mídia:**
 
-- Imagens, áudio, vídeo e documentos na entrada e na saída
-- Superfícies compartilhadas de capacidade de geração de imagens e geração de vídeo
+- Imagens, áudio, vídeo e documentos de entrada e saída
+- Superfícies compartilhadas de capacidade para geração de imagens e geração de vídeo
 - Transcrição de notas de voz
-- Texto para fala com vários provedores
+- Conversão de texto em fala com múltiplos provedores
 
 **Apps e interfaces:**
 
 - WebChat e UI de Controle no navegador
 - App complementar de barra de menus do macOS
 - Nó iOS com pareamento, Canvas, câmera, gravação de tela, localização e voz
-- Nó Android com pareamento, chat, voz, Canvas, câmera e comandos do dispositivo
+- Nó Android com pareamento, chat, voz, Canvas, câmera e comandos de dispositivo
 
 **Ferramentas e automação:**
 
 - Automação de navegador, exec, sandboxing
-- Busca na Web (Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG, Tavily)
-- Jobs Cron e agendamento de Heartbeat
-- Skills, plugins e pipelines de workflow (Lobster)
+- Busca na web (Brave, DuckDuckGo, Exa, Firecrawl, Gemini, Grok, Kimi, MiniMax Search, Ollama Web Search, Perplexity, SearXNG, Tavily)
+- Tarefas Cron e agendamento de Heartbeat
+- Skills, Plugins e pipelines de workflow (Lobster)
 
 ## Relacionados
 

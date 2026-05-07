@@ -1,13 +1,13 @@
 ---
 read_when:
     - Quieres un mapa completo de la documentación
-summary: Centros que enlazan a todos los documentos de OpenClaw
+summary: Centros que enlazan con todos los documentos de OpenClaw
 title: Centros de documentación
 x-i18n:
-    generated_at: "2026-05-06T09:06:39Z"
+    generated_at: "2026-05-07T01:53:52Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9c5822f46d0c4014ec5874d06c40f9adbe4439e8164cc75709e15c519b3e11af
+    source_hash: b7de6012e4e8db02d22cda7d8f275c634e15511b1c4e94e219672cf167f9848d
     source_path: start/hubs.md
     workflow: 16
 ---
@@ -16,14 +16,14 @@ x-i18n:
 Si eres nuevo en OpenClaw, empieza con [Primeros pasos](/es/start/getting-started).
 </Note>
 
-Usa estos centros para descubrir todas las páginas, incluidas las guías detalladas y la documentación de referencia que no aparece en la navegación izquierda.
+Usa estos centros para descubrir todas las páginas, incluidas las inmersiones profundas y la documentación de referencia que no aparece en la navegación izquierda.
 
 ## Empieza aquí
 
 - [Índice](/es)
 - [Primeros pasos](/es/start/getting-started)
-- [Incorporación](/es/start/onboarding)
-- [Incorporación (CLI)](/es/start/wizard)
+- [Onboarding](/es/start/onboarding)
+- [Onboarding (CLI)](/es/start/wizard)
 - [Configuración](/es/start/setup)
 - [Panel (Gateway local)](http://127.0.0.1:18789/)
 - [Ayuda](/es/help)
@@ -31,15 +31,15 @@ Usa estos centros para descubrir todas las páginas, incluidas las guías detall
 - [Configuración](/es/gateway/configuration)
 - [Ejemplos de configuración](/es/gateway/configuration-examples)
 - [Asistente de OpenClaw](/es/start/openclaw)
-- [Muestra](/es/start/showcase)
-- [Historia](/es/start/lore)
+- [Vitrina](/es/start/showcase)
+- [Tradición](/es/start/lore)
 
 ## Instalación + actualizaciones
 
 - [Docker](/es/install/docker)
 - [Nix](/es/install/nix)
-- [Actualización / reversión](/es/install/updating)
-- [Flujo de trabajo de Bun (experimental)](/es/install/bun)
+- [Actualizar / revertir](/es/install/updating)
+- [Flujo de trabajo con Bun (experimental)](/es/install/bun)
 
 ## Conceptos principales
 
@@ -49,7 +49,7 @@ Usa estos centros para descubrir todas las páginas, incluidas las guías detall
 - [Runtime de agente](/es/concepts/agent)
 - [Espacio de trabajo del agente](/es/concepts/agent-workspace)
 - [Memoria](/es/concepts/memory)
-- [Bucle del agente](/es/concepts/agent-loop)
+- [Bucle de agente](/es/concepts/agent-loop)
 - [Streaming + fragmentación](/es/concepts/streaming)
 - [Enrutamiento multiagente](/es/concepts/multi-agent)
 - [Compaction](/es/concepts/compaction)
@@ -57,7 +57,7 @@ Usa estos centros para descubrir todas las páginas, incluidas las guías detall
 - [Poda de sesiones](/es/concepts/session-pruning)
 - [Herramientas de sesión](/es/concepts/session-tool)
 - [Cola](/es/concepts/queue)
-- [Comandos de barra](/es/tools/slash-commands)
+- [Comandos slash](/es/tools/slash-commands)
 - [Adaptadores RPC](/es/reference/rpc)
 - [Esquemas TypeBox](/es/concepts/typebox)
 - [Gestión de zona horaria](/es/concepts/timezone)
@@ -80,9 +80,9 @@ Usa estos centros para descubrir todas las páginas, incluidas las guías detall
 - [Discord](/es/channels/discord)
 - [Mattermost](/es/channels/mattermost)
 - [Signal](/es/channels/signal)
-- [BlueBubbles (iMessage)](/es/channels/bluebubbles)
+- [BlueBubbles (puente heredado de iMessage)](/es/channels/bluebubbles)
 - [Bot de QQ](/es/channels/qqbot)
-- [iMessage (heredado)](/es/channels/imessage)
+- [iMessage](/es/channels/imessage)
 - [Análisis de ubicación](/es/channels/location)
 - [WebChat](/es/web/webchat)
 - [Webhooks](/es/automation/cron-jobs#webhooks)
@@ -95,11 +95,11 @@ Usa estos centros para descubrir todas las páginas, incluidas las guías detall
 - [Emparejamiento de Gateway](/es/gateway/pairing)
 - [Bloqueo de Gateway](/es/gateway/gateway-lock)
 - [Proceso en segundo plano](/es/gateway/background-process)
-- [Salud](/es/gateway/health)
+- [Estado de salud](/es/gateway/health)
 - [Heartbeat](/es/gateway/heartbeat)
 - [Doctor](/es/gateway/doctor)
 - [Registro](/es/gateway/logging)
-- [Aislamiento](/es/gateway/sandboxing)
+- [Aislamiento en sandbox](/es/gateway/sandboxing)
 - [Panel](/es/web/dashboard)
 - [Interfaz de control](/es/web/control-ui)
 - [Acceso remoto](/es/gateway/remote)
@@ -127,9 +127,9 @@ Usa estos centros para descubrir todas las páginas, incluidas las guías detall
 - [Navegador (solución de problemas en Linux)](/es/tools/browser-linux-troubleshooting)
 - [Encuestas](/es/cli/message)
 
-## Nodes, medios, voz
+## Nodos, medios, voz
 
-- [Resumen de Nodes](/es/nodes)
+- [Resumen de nodos](/es/nodes)
 - [Cámara](/es/nodes/camera)
 - [Imágenes](/es/nodes/images)
 - [Audio](/es/nodes/audio)
@@ -156,7 +156,7 @@ Usa estos centros para descubrir todas las páginas, incluidas las guías detall
 - [WebChat de macOS](/es/platforms/mac/webchat)
 - [Canvas de macOS](/es/platforms/mac/canvas)
 - [Proceso hijo de macOS](/es/platforms/mac/child-process)
-- [Salud de macOS](/es/platforms/mac/health)
+- [Estado de salud de macOS](/es/platforms/mac/health)
 - [Icono de macOS](/es/platforms/mac/icon)
 - [Registro de macOS](/es/platforms/mac/logging)
 - [Permisos de macOS](/es/platforms/mac/permissions)
@@ -169,15 +169,15 @@ Usa estos centros para descubrir todas las páginas, incluidas las guías detall
 
 ## Plugins
 
-- [Resumen de Plugins](/es/tools/plugin)
-- [Creación de Plugins](/es/plugins/building-plugins)
+- [Resumen de plugins](/es/tools/plugin)
+- [Crear plugins](/es/plugins/building-plugins)
 - [Hooks de Plugin](/es/plugins/hooks)
 - [Manifiesto de Plugin](/es/plugins/manifest)
 - [Herramientas de agente](/es/plugins/building-plugins#registering-agent-tools)
 - [Paquetes de Plugin](/es/plugins/bundles)
 - [Plugins de la comunidad](/es/plugins/community)
 - [Recetario de capacidades](/es/plugins/adding-capabilities)
-- [Plugin de llamada de voz](/es/plugins/voice-call)
+- [Plugin de llamadas de voz](/es/plugins/voice-call)
 - [Plugin de usuario de Zalo](/es/plugins/zalouser)
 
 ## Espacio de trabajo + plantillas
@@ -202,7 +202,7 @@ Usa estos centros para descubrir todas las páginas, incluidas las guías detall
 
 - [Pruebas](/es/reference/test)
 - [Política de lanzamiento](/es/reference/RELEASING)
-- [Modelos de dispositivo](/es/reference/device-models)
+- [Modelos de dispositivos](/es/reference/device-models)
 
 ## Relacionado
 

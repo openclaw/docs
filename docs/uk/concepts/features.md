@@ -1,13 +1,13 @@
 ---
 read_when:
     - Вам потрібен повний список того, що підтримує OpenClaw
-summary: Можливості OpenClaw у каналах, маршрутизації, медіа та UX.
+summary: Можливості OpenClaw для каналів, маршрутизації, медіа та UX.
 title: Можливості
 x-i18n:
-    generated_at: "2026-05-06T02:05:26Z"
+    generated_at: "2026-05-07T01:51:34Z"
     model: gpt-5.5
     provider: openai
-    source_hash: d46085b326dd1e5f0d5531bdf8d7d84ac8c22b7fb4637b7183be2bd9d556c500
+    source_hash: 1f95185073e52f4b5b34042ea27927984bf0b040d20eb61b135514816fddc214
     source_path: concepts/features.md
     workflow: 16
 ---
@@ -19,19 +19,19 @@ x-i18n:
     Discord, iMessage, Signal, Slack, Telegram, WhatsApp, WebChat та інші через один Gateway.
   </Card>
   <Card title="Plugins" icon="plug" href="/uk/tools/plugin">
-    Вбудовані plugins додають Matrix, Nextcloud Talk, Nostr, Twitch, Zalo та інші без окремого встановлення у звичайних поточних випусках.
+    Вбудовані plugins додають Matrix, Nextcloud Talk, Nostr, Twitch, Zalo та інші без окремого встановлення у звичайних актуальних випусках.
   </Card>
   <Card title="Маршрутизація" icon="route" href="/uk/concepts/multi-agent">
-    Багатоагентна маршрутизація з ізольованими сеансами.
+    Маршрутизація між кількома агентами з ізольованими сеансами.
   </Card>
   <Card title="Медіа" icon="image" href="/uk/nodes/images">
     Зображення, аудіо, відео, документи та генерація зображень/відео.
   </Card>
-  <Card title="Застосунки та UI" icon="monitor" href="/uk/web/control-ui">
-    Веб Control UI та супровідний застосунок для macOS.
+  <Card title="Застосунки й UI" icon="monitor" href="/uk/web/control-ui">
+    Веб Control UI і супровідний застосунок для macOS.
   </Card>
   <Card title="Мобільні вузли" icon="smartphone" href="/uk/nodes">
-    Вузли iOS і Android зі сполученням, голосом/чатом і розширеними командами пристрою.
+    Вузли iOS і Android зі сполученням, голосом/чатом та розширеними командами пристрою.
   </Card>
 </Columns>
 
@@ -39,25 +39,25 @@ x-i18n:
 
 **Канали:**
 
-- Вбудовані канали охоплюють Discord, Google Chat, iMessage (застарілий), IRC, Signal, Slack, Telegram, WebChat і WhatsApp
-- Вбудовані канали plugin охоплюють BlueBubbles для iMessage, Feishu, LINE, Matrix, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Synology Chat, Tlon, Twitch, Zalo і Zalo Personal
-- Необов’язкові окремо встановлювані канальні plugins охоплюють Voice Call і сторонні пакети, як-от WeChat
-- Сторонні канальні plugins можуть додатково розширювати Gateway, наприклад WeChat
-- Підтримка групових чатів з активацією на основі згадок
-- Безпека DM з allowlists і сполученням
+- Вбудовані канали включають Discord, Google Chat, iMessage, IRC, Signal, Slack, Telegram, WebChat і WhatsApp
+- Канали вбудованих plugin включають BlueBubbles як застарілий міст iMessage, Feishu, LINE, Matrix, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQ Bot, Synology Chat, Tlon, Twitch, Zalo і Zalo Personal
+- Необов’язкові окремо встановлювані plugins каналів включають Voice Call і сторонні пакети, як-от WeChat
+- Сторонні plugins каналів можуть ще більше розширювати Gateway, наприклад WeChat
+- Підтримка групових чатів з активацією через згадки
+- Безпека DM з allowlist і сполученням
 
 **Агент:**
 
 - Вбудоване середовище виконання агента зі streaming інструментів
-- Багатоагентна маршрутизація з ізольованими сеансами для кожного робочого простору або відправника
+- Маршрутизація між кількома агентами з ізольованими сеансами для кожного робочого простору або відправника
 - Сеанси: прямі чати згортаються у спільний `main`; групи ізольовані
-- Streaming і chunking для довгих відповідей
+- Streaming і розбиття на частини для довгих відповідей
 
 **Автентифікація та провайдери:**
 
 - 35+ провайдерів моделей (Anthropic, OpenAI, Google та інші)
 - Автентифікація за підпискою через OAuth (наприклад, OpenAI Codex)
-- Підтримка власних і самостійно розгорнутих провайдерів (vLLM, SGLang, Ollama і будь-який OpenAI-сумісний або Anthropic-сумісний endpoint)
+- Підтримка власних і self-hosted провайдерів (vLLM, SGLang, Ollama та будь-який endpoint, сумісний з OpenAI або Anthropic)
 
 **Медіа:**
 
@@ -84,13 +84,13 @@ x-i18n:
 
 <CardGroup cols={2}>
   <Card title="Експериментальні функції" href="/uk/concepts/experimental-features" icon="flask">
-    Функції з добровільним увімкненням, які ще не вийшли на стандартну поверхню.
+    Функції з ручним увімкненням, які ще не постачаються в типовій поверхні.
   </Card>
   <Card title="Середовище виконання агента" href="/uk/concepts/agent" icon="robot">
-    Модель середовища виконання агента та спосіб диспетчеризації запусків.
+    Модель середовища виконання агента й те, як запускаються виконання.
   </Card>
   <Card title="Канали" href="/uk/channels" icon="message-square">
-    Підключайте Telegram, WhatsApp, Discord, Slack та інші з одного Gateway.
+    Під’єднайте Telegram, WhatsApp, Discord, Slack та інші з одного Gateway.
   </Card>
   <Card title="Plugins" href="/uk/tools/plugin" icon="plug">
     Вбудовані та сторонні plugins, які розширюють OpenClaw.

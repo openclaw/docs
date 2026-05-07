@@ -1,44 +1,42 @@
 ---
 read_when:
     - iMessage-Unterstützung einrichten
-    - Debugging beim Senden/Empfangen mit iMessage
-summary: Veraltete Unterstützung für iMessage über imsg (JSON-RPC über stdio). Neue Installationen sollten BlueBubbles verwenden.
+    - Fehlersuche beim Senden/Empfangen von iMessage
+summary: Native iMessage-Unterstützung über imsg (JSON-RPC über stdio). Bevorzugt für neue OpenClaw-iMessage-Setups, wenn die Host-Anforderungen erfüllt sind.
 title: iMessage
 x-i18n:
-    generated_at: "2026-04-30T06:39:59Z"
+    generated_at: "2026-05-07T01:50:46Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 60eeb3553a6511d56b8177ca4eafbedfed2d0852ac64c230c250911cd18ce17e
+    source_hash: 39a3d6350333292c147d7986568eb539aa8ce562405092b71b8cecbbf7584450
     source_path: channels/imessage.md
     workflow: 16
 ---
 
-<Warning>
-Für neue iMessage-Bereitstellungen verwenden Sie <a href="/de/channels/bluebubbles">BlueBubbles</a>.
+<Note>
+Beginnen Sie bei neuen OpenClaw-iMessage-Bereitstellungen hier, wenn Sie `imsg` auf einem angemeldeten macOS-Messages-Host ausführen können. BlueBubbles bleibt als Legacy-Fallback für bestehende Setups verfügbar, die von seinem HTTP-Server, Webhooks oder umfangreicheren Private-API-Aktionen abhängen.
+</Note>
 
-Die `imsg`-Integration ist veraltet und kann in einer zukünftigen Version entfernt werden.
-</Warning>
-
-Status: veraltete externe CLI-Integration. Gateway startet `imsg rpc` und kommuniziert über JSON-RPC auf stdio (kein separater Daemon/Port).
+Status: native externe CLI-Integration. Gateway startet `imsg rpc` und kommuniziert über JSON-RPC auf stdio (kein separater Daemon/Port).
 
 <CardGroup cols={3}>
-  <Card title="BlueBubbles (empfohlen)" icon="message-circle" href="/de/channels/bluebubbles">
-    Bevorzugter iMessage-Weg für neue Einrichtungen.
+  <Card title="BlueBubbles (Legacy-Fallback)" icon="message-circle" href="/de/channels/bluebubbles">
+    Verwenden Sie es weiter für bestehendes BlueBubbles-gestütztes Routing; vermeiden Sie es für neue Setups, wenn imsg passt.
   </Card>
   <Card title="Kopplung" icon="link" href="/de/channels/pairing">
-    iMessage-Direktnachrichten verwenden standardmäßig den Kopplungsmodus.
+    iMessage-DMs verwenden standardmäßig den Kopplungsmodus.
   </Card>
   <Card title="Konfigurationsreferenz" icon="settings" href="/de/gateway/config-channels#imessage">
     Vollständige iMessage-Feldreferenz.
   </Card>
 </CardGroup>
 
-## Schnelleinrichtung
+## Schnelle Einrichtung
 
 <Tabs>
   <Tab title="Lokaler Mac (schneller Weg)">
     <Steps>
-      <Step title="imsg installieren und prüfen">
+      <Step title="imsg installieren und überprüfen">
 
 ```bash
 brew install steipete/tap/imsg
@@ -71,7 +69,7 @@ openclaw gateway
 
       </Step>
 
-      <Step title="Erste Direktnachrichten-Kopplung genehmigen (Standard-dmPolicy)">
+      <Step title="Erste DM-Kopplung genehmigen (standardmäßige dmPolicy)">
 
 ```bash
 openclaw pairing list imessage
@@ -84,8 +82,8 @@ openclaw pairing approve imessage <CODE>
 
   </Tab>
 
-  <Tab title="Remote-Mac über SSH">
-    OpenClaw benötigt nur einen stdio-kompatiblen `cliPath`, daher können Sie `cliPath` auf ein Wrapper-Skript verweisen lassen, das per SSH eine Verbindung zu einem Remote-Mac herstellt und `imsg` ausführt.
+  <Tab title="Entfernter Mac über SSH">
+    OpenClaw benötigt nur einen stdio-kompatiblen `cliPath`, Sie können `cliPath` also auf ein Wrapper-Skript verweisen lassen, das per SSH eine Verbindung zu einem entfernten Mac herstellt und `imsg` ausführt.
 
 ```bash
 #!/usr/bin/env bash
@@ -111,22 +109,22 @@ exec ssh -T gateway-host imsg "$@"
 }
 ```
 
-    Wenn `remoteHost` nicht gesetzt ist, versucht OpenClaw, ihn durch Parsen des SSH-Wrapper-Skripts automatisch zu erkennen.
+    Wenn `remoteHost` nicht festgelegt ist, versucht OpenClaw, ihn durch Parsen des SSH-Wrapper-Skripts automatisch zu erkennen.
     `remoteHost` muss `host` oder `user@host` sein (keine Leerzeichen oder SSH-Optionen).
-    OpenClaw verwendet für SCP eine strikte Host-Key-Prüfung, daher muss der Relay-Host-Schlüssel bereits in `~/.ssh/known_hosts` vorhanden sein.
-    Anhangspfade werden gegen zulässige Stammverzeichnisse (`attachmentRoots` / `remoteAttachmentRoots`) validiert.
+    OpenClaw verwendet für SCP eine strikte Host-Key-Prüfung, daher muss der Relay-Host-Key bereits in `~/.ssh/known_hosts` vorhanden sein.
+    Anhangspfade werden gegen erlaubte Roots (`attachmentRoots` / `remoteAttachmentRoots`) validiert.
 
   </Tab>
 </Tabs>
 
 ## Anforderungen und Berechtigungen (macOS)
 
-- Messages muss auf dem Mac angemeldet sein, auf dem `imsg` läuft.
-- Voller Festplattenzugriff ist für den Prozesskontext erforderlich, der OpenClaw/`imsg` ausführt (Zugriff auf die Messages-Datenbank).
-- Die Automation-Berechtigung ist erforderlich, um Nachrichten über Messages.app zu senden.
+- Messages muss auf dem Mac angemeldet sein, auf dem `imsg` ausgeführt wird.
+- Full Disk Access ist für den Prozesskontext erforderlich, in dem OpenClaw/`imsg` ausgeführt wird (Zugriff auf die Messages-Datenbank).
+- Automation-Berechtigung ist erforderlich, um Nachrichten über Messages.app zu senden.
 
 <Tip>
-Berechtigungen werden pro Prozesskontext erteilt. Wenn Gateway ohne grafische Oberfläche läuft (LaunchAgent/SSH), führen Sie einmalig einen interaktiven Befehl in demselben Kontext aus, um Abfragen auszulösen:
+Berechtigungen werden pro Prozesskontext erteilt. Wenn Gateway headless ausgeführt wird (LaunchAgent/SSH), führen Sie in demselben Kontext einmalig einen interaktiven Befehl aus, um Eingabeaufforderungen auszulösen:
 
 ```bash
 imsg chats --limit 1
@@ -139,7 +137,7 @@ imsg send <handle> "test"
 ## Zugriffskontrolle und Routing
 
 <Tabs>
-  <Tab title="Richtlinie für Direktnachrichten">
+  <Tab title="DM-Richtlinie">
     `channels.imessage.dmPolicy` steuert Direktnachrichten:
 
     - `pairing` (Standard)
@@ -149,62 +147,62 @@ imsg send <handle> "test"
 
     Allowlist-Feld: `channels.imessage.allowFrom`.
 
-    Allowlist-Einträge können Kennungen oder Chat-Ziele sein (`chat_id:*`, `chat_guid:*`, `chat_identifier:*`).
+    Allowlist-Einträge können Handles oder Chat-Ziele sein (`chat_id:*`, `chat_guid:*`, `chat_identifier:*`).
 
   </Tab>
 
   <Tab title="Gruppenrichtlinie + Erwähnungen">
-    `channels.imessage.groupPolicy` steuert die Gruppenverarbeitung:
+    `channels.imessage.groupPolicy` steuert die Gruppenbehandlung:
 
     - `allowlist` (Standard, wenn konfiguriert)
     - `open`
     - `disabled`
 
-    Allowlist für Gruppensender: `channels.imessage.groupAllowFrom`.
+    Allowlist für Gruppenabsender: `channels.imessage.groupAllowFrom`.
 
-    Laufzeit-Fallback: Wenn `groupAllowFrom` nicht gesetzt ist, greifen iMessage-Gruppensenderprüfungen auf `allowFrom` zurück, sofern verfügbar.
-    Laufzeithinweis: Wenn `channels.imessage` vollständig fehlt, fällt die Laufzeit auf `groupPolicy="allowlist"` zurück und protokolliert eine Warnung (auch wenn `channels.defaults.groupPolicy` gesetzt ist).
+    Laufzeit-Fallback: Wenn `groupAllowFrom` nicht festgelegt ist, fallen iMessage-Prüfungen für Gruppenabsender auf `allowFrom` zurück, sofern verfügbar.
+    Laufzeithinweis: Wenn `channels.imessage` vollständig fehlt, fällt die Laufzeit auf `groupPolicy="allowlist"` zurück und protokolliert eine Warnung (auch wenn `channels.defaults.groupPolicy` festgelegt ist).
 
-    Erwähnungsprüfung für Gruppen:
+    Erwähnungs-Gating für Gruppen:
 
     - iMessage hat keine nativen Metadaten für Erwähnungen
-    - Die Erkennung von Erwähnungen verwendet Regex-Muster (`agents.list[].groupChat.mentionPatterns`, Fallback `messages.groupChat.mentionPatterns`)
-    - Ohne konfigurierte Muster kann die Erwähnungsprüfung nicht erzwungen werden
+    - die Erkennung von Erwähnungen verwendet Regex-Muster (`agents.list[].groupChat.mentionPatterns`, Fallback `messages.groupChat.mentionPatterns`)
+    - ohne konfigurierte Muster kann Erwähnungs-Gating nicht durchgesetzt werden
 
-    Steuerbefehle von autorisierten Absendern können die Erwähnungsprüfung in Gruppen umgehen.
+    Steuerbefehle von autorisierten Absendern können Erwähnungs-Gating in Gruppen umgehen.
 
   </Tab>
 
   <Tab title="Sitzungen und deterministische Antworten">
-    - Direktnachrichten verwenden direktes Routing; Gruppen verwenden Gruppen-Routing.
-    - Mit dem Standard `session.dmScope=main` werden iMessage-Direktnachrichten in der Hauptsitzung des Agenten zusammengeführt.
+    - DMs verwenden direktes Routing; Gruppen verwenden Gruppen-Routing.
+    - Mit dem standardmäßigen `session.dmScope=main` werden iMessage-DMs in der Hauptsitzung des Agents zusammengeführt.
     - Gruppensitzungen sind isoliert (`agent:<agentId>:imessage:group:<chat_id>`).
-    - Antworten werden anhand der Metadaten des ursprünglichen Kanals/Ziels zurück an iMessage geleitet.
+    - Antworten werden mithilfe der Metadaten des ursprünglichen Channels/Ziels zurück zu iMessage geroutet.
 
-    Verhalten gruppenähnlicher Threads:
+    Gruppenähnliches Thread-Verhalten:
 
-    Einige iMessage-Threads mit mehreren Teilnehmern können mit `is_group=false` eintreffen.
-    Wenn diese `chat_id` explizit unter `channels.imessage.groups` konfiguriert ist, behandelt OpenClaw sie als Gruppenverkehr (Gruppenprüfung + Gruppensitzungsisolation).
+    Einige iMessage-Threads mit mehreren Teilnehmenden können mit `is_group=false` ankommen.
+    Wenn diese `chat_id` explizit unter `channels.imessage.groups` konfiguriert ist, behandelt OpenClaw sie als Gruppenverkehr (Gruppen-Gating + Gruppensitzungsisolation).
 
   </Tab>
 </Tabs>
 
-## ACP-Konversationsbindungen
+## ACP-Unterhaltungsbindungen
 
-iMessage-Chats der Legacy-Integration können auch an ACP-Sitzungen gebunden werden.
+Legacy-iMessage-Chats können auch an ACP-Sitzungen gebunden werden.
 
-Schneller Ablauf für Operatoren:
+Schneller Operator-Ablauf:
 
-- Führen Sie `/acp spawn codex --bind here` innerhalb der Direktnachricht oder des zugelassenen Gruppenchats aus.
-- Künftige Nachrichten in derselben iMessage-Konversation werden an die erzeugte ACP-Sitzung geleitet.
+- Führen Sie `/acp spawn codex --bind here` innerhalb der DM oder des erlaubten Gruppenchats aus.
+- Zukünftige Nachrichten in derselben iMessage-Unterhaltung werden an die erzeugte ACP-Sitzung geroutet.
 - `/new` und `/reset` setzen dieselbe gebundene ACP-Sitzung direkt zurück.
 - `/acp close` schließt die ACP-Sitzung und entfernt die Bindung.
 
-Konfigurierte persistente Bindungen werden über Einträge auf oberster Ebene in `bindings[]` mit `type: "acp"` und `match.channel: "imessage"` unterstützt.
+Konfigurierte persistente Bindungen werden über Top-Level-`bindings[]`-Einträge mit `type: "acp"` und `match.channel: "imessage"` unterstützt.
 
 `match.peer.id` kann Folgendes verwenden:
 
-- normalisierte Direktnachrichten-Kennung wie `+15555550123` oder `user@example.com`
+- normalisierten DM-Handle wie `+15555550123` oder `user@example.com`
 - `chat_id:<id>` (empfohlen für stabile Gruppenbindungen)
 - `chat_guid:<guid>`
 - `chat_identifier:<identifier>`
@@ -239,33 +237,33 @@ Beispiel:
 }
 ```
 
-Siehe [ACP-Agenten](/de/tools/acp-agents) für gemeinsames Verhalten von ACP-Bindungen.
+Siehe [ACP-Agents](/de/tools/acp-agents) für gemeinsames ACP-Bindungsverhalten.
 
 ## Bereitstellungsmuster
 
 <AccordionGroup>
   <Accordion title="Dedizierter macOS-Bot-Benutzer (separate iMessage-Identität)">
-    Verwenden Sie eine dedizierte Apple-ID und einen dedizierten macOS-Benutzer, damit Bot-Datenverkehr von Ihrem persönlichen Messages-Profil isoliert ist.
+    Verwenden Sie eine dedizierte Apple-ID und einen dedizierten macOS-Benutzer, damit Bot-Traffic von Ihrem persönlichen Messages-Profil isoliert ist.
 
     Typischer Ablauf:
 
-    1. Einen dedizierten macOS-Benutzer erstellen bzw. anmelden.
-    2. In diesem Benutzer mit der Bot-Apple-ID bei Messages anmelden.
-    3. `imsg` für diesen Benutzer installieren.
-    4. SSH-Wrapper erstellen, damit OpenClaw `imsg` im Kontext dieses Benutzers ausführen kann.
-    5. `channels.imessage.accounts.<id>.cliPath` und `.dbPath` auf dieses Benutzerprofil verweisen lassen.
+    1. Erstellen Sie einen dedizierten macOS-Benutzer oder melden Sie ihn an.
+    2. Melden Sie sich in diesem Benutzer mit der Bot-Apple-ID bei Messages an.
+    3. Installieren Sie `imsg` in diesem Benutzer.
+    4. Erstellen Sie einen SSH-Wrapper, damit OpenClaw `imsg` im Kontext dieses Benutzers ausführen kann.
+    5. Verweisen Sie `channels.imessage.accounts.<id>.cliPath` und `.dbPath` auf dieses Benutzerprofil.
 
-    Der erste Lauf kann GUI-Genehmigungen (Automation + Voller Festplattenzugriff) in dieser Bot-Benutzersitzung erfordern.
+    Der erste Lauf kann GUI-Genehmigungen (Automation + Full Disk Access) in dieser Bot-Benutzersitzung erfordern.
 
   </Accordion>
 
-  <Accordion title="Remote-Mac über Tailscale (Beispiel)">
-    Typische Topologie:
+  <Accordion title="Entfernter Mac über Tailscale (Beispiel)">
+    Häufige Topologie:
 
-    - Gateway läuft auf Linux/einer VM
+    - Gateway läuft auf Linux/VM
     - iMessage + `imsg` läuft auf einem Mac in Ihrem Tailnet
-    - Der `cliPath`-Wrapper verwendet SSH, um `imsg` auszuführen
-    - `remoteHost` ermöglicht SCP-Abrufe von Anhängen
+    - der `cliPath`-Wrapper verwendet SSH, um `imsg` auszuführen
+    - `remoteHost` aktiviert das Abrufen von Anhängen per SCP
 
     Beispiel:
 
@@ -289,38 +287,38 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
 ```
 
     Verwenden Sie SSH-Schlüssel, damit sowohl SSH als auch SCP nicht interaktiv sind.
-    Stellen Sie sicher, dass der Host-Schlüssel zuerst vertrauenswürdig ist (zum Beispiel `ssh bot@mac-mini.tailnet-1234.ts.net`), damit `known_hosts` befüllt ist.
+    Stellen Sie zuerst sicher, dass der Host-Key vertrauenswürdig ist (zum Beispiel `ssh bot@mac-mini.tailnet-1234.ts.net`), damit `known_hosts` befüllt wird.
 
   </Accordion>
 
-  <Accordion title="Muster für mehrere Konten">
-    iMessage unterstützt eine Konfiguration pro Konto unter `channels.imessage.accounts`.
+  <Accordion title="Multi-Account-Muster">
+    iMessage unterstützt accountbezogene Konfiguration unter `channels.imessage.accounts`.
 
-    Jedes Konto kann Felder wie `cliPath`, `dbPath`, `allowFrom`, `groupPolicy`, `mediaMaxMb`, Verlaufseinstellungen und Allowlists für Anhangsstammverzeichnisse überschreiben.
+    Jeder Account kann Felder wie `cliPath`, `dbPath`, `allowFrom`, `groupPolicy`, `mediaMaxMb`, Verlaufseinstellungen und Allowlists für Anhangs-Roots überschreiben.
 
   </Accordion>
 </AccordionGroup>
 
-## Medien, Textaufteilung und Zustellungsziele
+## Medien, Chunking und Zustellungsziele
 
 <AccordionGroup>
   <Accordion title="Anhänge und Medien">
-    - Die Erfassung eingehender Anhänge ist optional: `channels.imessage.includeAttachments`
-    - Remote-Anhangspfade können per SCP abgerufen werden, wenn `remoteHost` gesetzt ist
-    - Anhangspfade müssen zulässigen Stammverzeichnissen entsprechen:
+    - eingehende Anhangserfassung ist optional: `channels.imessage.includeAttachments`
+    - entfernte Anhangspfade können per SCP abgerufen werden, wenn `remoteHost` festgelegt ist
+    - Anhangspfade müssen erlaubten Roots entsprechen:
       - `channels.imessage.attachmentRoots` (lokal)
-      - `channels.imessage.remoteAttachmentRoots` (Remote-SCP-Modus)
-      - Standardmuster für das Stammverzeichnis: `/Users/*/Library/Messages/Attachments`
+      - `channels.imessage.remoteAttachmentRoots` (entfernter SCP-Modus)
+      - Standard-Root-Muster: `/Users/*/Library/Messages/Attachments`
     - SCP verwendet strikte Host-Key-Prüfung (`StrictHostKeyChecking=yes`)
-    - Für die Größe ausgehender Medien gilt `channels.imessage.mediaMaxMb` (Standard 16 MB)
+    - die Größe ausgehender Medien verwendet `channels.imessage.mediaMaxMb` (Standard 16 MB)
 
   </Accordion>
 
-  <Accordion title="Ausgehende Textaufteilung">
-    - Grenze für Textabschnitte: `channels.imessage.textChunkLimit` (Standard 4000)
-    - Aufteilungsmodus: `channels.imessage.chunkMode`
+  <Accordion title="Ausgehendes Chunking">
+    - Text-Chunk-Limit: `channels.imessage.textChunkLimit` (Standard 4000)
+    - Chunk-Modus: `channels.imessage.chunkMode`
       - `length` (Standard)
-      - `newline` (Aufteilung zuerst nach Absätzen)
+      - `newline` (Absatz-zuerst-Aufteilung)
 
   </Accordion>
 
@@ -331,7 +329,7 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
     - `chat_guid:...`
     - `chat_identifier:...`
 
-    Ziele mit Kennung werden ebenfalls unterstützt:
+    Handle-Ziele werden ebenfalls unterstützt:
 
     - `imessage:+1555...`
     - `sms:+1555...`
@@ -346,7 +344,7 @@ imsg chats --limit 20
 
 ## Konfigurationsschreibvorgänge
 
-iMessage erlaubt standardmäßig kanalinitiierte Konfigurationsschreibvorgänge (für `/config set|unset`, wenn `commands.config: true`).
+iMessage erlaubt standardmäßig vom Channel initiierte Konfigurationsschreibvorgänge (für `/config set|unset`, wenn `commands.config: true`).
 
 Deaktivieren:
 
@@ -364,7 +362,7 @@ Deaktivieren:
 
 <AccordionGroup>
   <Accordion title="imsg nicht gefunden oder RPC nicht unterstützt">
-    Validieren Sie die Binärdatei und die RPC-Unterstützung:
+    Validieren Sie das Binary und die RPC-Unterstützung:
 
 ```bash
 imsg rpc --help
@@ -375,7 +373,7 @@ openclaw channels status --probe
 
   </Accordion>
 
-  <Accordion title="Direktnachrichten werden ignoriert">
+  <Accordion title="DMs werden ignoriert">
     Prüfen Sie:
 
     - `channels.imessage.dmPolicy`
@@ -389,31 +387,31 @@ openclaw channels status --probe
 
     - `channels.imessage.groupPolicy`
     - `channels.imessage.groupAllowFrom`
-    - `channels.imessage.groups`-Allowlist-Verhalten
-    - Konfiguration der Erwähnungsmuster (`agents.list[].groupChat.mentionPatterns`)
+    - Allowlist-Verhalten von `channels.imessage.groups`
+    - Konfiguration von Erwähnungsmustern (`agents.list[].groupChat.mentionPatterns`)
 
   </Accordion>
 
-  <Accordion title="Remote-Anhänge schlagen fehl">
+  <Accordion title="Entfernte Anhänge schlagen fehl">
     Prüfen Sie:
 
     - `channels.imessage.remoteHost`
     - `channels.imessage.remoteAttachmentRoots`
-    - SSH/SCP-Schlüsselauthentifizierung vom Gateway-Host aus
-    - Host-Schlüssel ist in `~/.ssh/known_hosts` auf dem Gateway-Host vorhanden
-    - Lesbarkeit des Remote-Pfads auf dem Mac, auf dem Messages läuft
+    - SSH/SCP-Schlüsselauthentifizierung vom Gateway-Host
+    - Host-Key ist in `~/.ssh/known_hosts` auf dem Gateway-Host vorhanden
+    - Lesbarkeit des entfernten Pfads auf dem Mac, auf dem Messages läuft
 
   </Accordion>
 
-  <Accordion title="macOS-Berechtigungsabfragen wurden verpasst">
-    Führen Sie die Befehle erneut in einem interaktiven GUI-Terminal im gleichen Benutzer-/Sitzungskontext aus und genehmigen Sie die Abfragen:
+  <Accordion title="macOS-Berechtigungsaufforderungen wurden verpasst">
+    Führen Sie die Befehle erneut in einem interaktiven GUI-Terminal im selben Benutzer-/Sitzungskontext aus und genehmigen Sie die Aufforderungen:
 
 ```bash
 imsg chats --limit 1
 imsg send <handle> "test"
 ```
 
-    Bestätigen Sie, dass Voller Festplattenzugriff + Automation für den Prozesskontext gewährt sind, der OpenClaw/`imsg` ausführt.
+    Bestätigen Sie, dass Full Disk Access + Automation für den Prozesskontext gewährt sind, in dem OpenClaw/`imsg` ausgeführt wird.
 
   </Accordion>
 </AccordionGroup>
@@ -425,10 +423,10 @@ imsg send <handle> "test"
 - [Kopplung](/de/channels/pairing)
 - [BlueBubbles](/de/channels/bluebubbles)
 
-## Verwandte Themen
+## Verwandte
 
 - [Kanalübersicht](/de/channels) — alle unterstützten Kanäle
-- [Kopplung](/de/channels/pairing) — Authentifizierung von Direktnachrichten und Kopplungsablauf
-- [Gruppen](/de/channels/groups) — Gruppenchat-Verhalten und Erwähnungsprüfung
-- [Kanal-Routing](/de/channels/channel-routing) — Sitzungsrouting für Nachrichten
+- [Kopplung](/de/channels/pairing) — DM-Authentifizierung und Kopplungsablauf
+- [Gruppen](/de/channels/groups) — Gruppenchat-Verhalten und Erwähnungs-Gating
+- [Kanal-Routing](/de/channels/channel-routing) — Sitzungs-Routing für Nachrichten
 - [Sicherheit](/de/gateway/security) — Zugriffsmodell und Härtung

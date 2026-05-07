@@ -1,13 +1,13 @@
 ---
 read_when:
     - 你想要一份完整的文档地图
-summary: 链接到每篇 OpenClaw 文档的中心页面
+summary: 链接到每篇 OpenClaw 文档的中心页
 title: 文档中心
 x-i18n:
-    generated_at: "2026-05-06T06:20:00Z"
+    generated_at: "2026-05-07T01:53:45Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9c5822f46d0c4014ec5874d06c40f9adbe4439e8164cc75709e15c519b3e11af
+    source_hash: b7de6012e4e8db02d22cda7d8f275c634e15511b1c4e94e219672cf167f9848d
     source_path: start/hubs.md
     workflow: 16
 ---
@@ -16,7 +16,7 @@ x-i18n:
 如果你刚接触 OpenClaw，请从[入门指南](/zh-CN/start/getting-started)开始。
 </Note>
 
-使用这些中心发现每个页面，包括左侧导航中未显示的深入解析和参考文档。
+使用这些中心页发现每个页面，包括左侧导航中未显示的深度解析和参考文档。
 
 ## 从这里开始
 
@@ -25,14 +25,14 @@ x-i18n:
 - [新手引导](/zh-CN/start/onboarding)
 - [新手引导（CLI）](/zh-CN/start/wizard)
 - [设置](/zh-CN/start/setup)
-- [仪表板（本地 Gateway 网关）](http://127.0.0.1:18789/)
+- [仪表盘（本地 Gateway 网关）](http://127.0.0.1:18789/)
 - [帮助](/zh-CN/help)
 - [文档目录](/zh-CN/start/docs-directory)
 - [配置](/zh-CN/gateway/configuration)
 - [配置示例](/zh-CN/gateway/configuration-examples)
 - [OpenClaw 助手](/zh-CN/start/openclaw)
 - [展示](/zh-CN/start/showcase)
-- [传说](/zh-CN/start/lore)
+- [背景设定](/zh-CN/start/lore)
 
 ## 安装 + 更新
 
@@ -46,7 +46,7 @@ x-i18n:
 - [架构](/zh-CN/concepts/architecture)
 - [功能](/zh-CN/concepts/features)
 - [网络中心](/zh-CN/network)
-- [Agent 运行时](/zh-CN/concepts/agent)
+- [智能体运行时](/zh-CN/concepts/agent)
 - [Agent 工作区](/zh-CN/concepts/agent-workspace)
 - [记忆](/zh-CN/concepts/memory)
 - [Agent loop](/zh-CN/concepts/agent-loop)
@@ -64,7 +64,7 @@ x-i18n:
 - [在线状态](/zh-CN/concepts/presence)
 - [设备发现 + 传输协议](/zh-CN/gateway/discovery)
 - [Bonjour](/zh-CN/gateway/bonjour)
-- [渠道路由](/zh-CN/channels/channel-routing)
+- [频道路由](/zh-CN/channels/channel-routing)
 - [群组](/zh-CN/channels/groups)
 - [群组消息](/zh-CN/channels/group-messages)
 - [模型故障转移](/zh-CN/concepts/model-failover)
@@ -80,9 +80,9 @@ x-i18n:
 - [Discord](/zh-CN/channels/discord)
 - [Mattermost](/zh-CN/channels/mattermost)
 - [Signal](/zh-CN/channels/signal)
-- [BlueBubbles（iMessage）](/zh-CN/channels/bluebubbles)
+- [BlueBubbles（旧版 iMessage 桥接）](/zh-CN/channels/bluebubbles)
 - [QQ Bot](/zh-CN/channels/qqbot)
-- [iMessage（旧版）](/zh-CN/channels/imessage)
+- [iMessage](/zh-CN/channels/imessage)
 - [位置解析](/zh-CN/channels/location)
 - [WebChat](/zh-CN/web/webchat)
 - [Webhook](/zh-CN/automation/cron-jobs#webhooks)
@@ -100,7 +100,7 @@ x-i18n:
 - [Doctor](/zh-CN/gateway/doctor)
 - [日志记录](/zh-CN/gateway/logging)
 - [沙箱隔离](/zh-CN/gateway/sandboxing)
-- [仪表板](/zh-CN/web/dashboard)
+- [仪表盘](/zh-CN/web/dashboard)
 - [控制 UI](/zh-CN/web/control-ui)
 - [远程访问](/zh-CN/gateway/remote)
 - [远程 Gateway 网关 README](/zh-CN/gateway/remote-gateway-readme)
@@ -116,9 +116,9 @@ x-i18n:
 - [Exec 工具](/zh-CN/tools/exec)
 - [PDF 工具](/zh-CN/tools/pdf)
 - [提权模式](/zh-CN/tools/elevated)
-- [Cron 作业](/zh-CN/automation/cron-jobs)
-- [自动化和任务](/zh-CN/automation)
-- [思考 + 详细输出](/zh-CN/tools/thinking)
+- [Cron 任务](/zh-CN/automation/cron-jobs)
+- [自动化与任务](/zh-CN/automation)
+- [思考 + 详细模式](/zh-CN/tools/thinking)
 - [Models](/zh-CN/concepts/models)
 - [子智能体](/zh-CN/tools/subagents)
 - [智能体发送 CLI](/zh-CN/tools/agent-send)
@@ -160,7 +160,7 @@ x-i18n:
 - [macOS 图标](/zh-CN/platforms/mac/icon)
 - [macOS 日志记录](/zh-CN/platforms/mac/logging)
 - [macOS 权限](/zh-CN/platforms/mac/permissions)
-- [macOS 远程访问](/zh-CN/platforms/mac/remote)
+- [macOS 远程](/zh-CN/platforms/mac/remote)
 - [macOS 签名](/zh-CN/platforms/mac/signing)
 - [macOS Gateway 网关（launchd）](/zh-CN/platforms/mac/bundled-gateway)
 - [macOS XPC](/zh-CN/platforms/mac/xpc)
@@ -173,7 +173,7 @@ x-i18n:
 - [构建插件](/zh-CN/plugins/building-plugins)
 - [插件钩子](/zh-CN/plugins/hooks)
 - [插件清单](/zh-CN/plugins/manifest)
-- [Agent 工具](/zh-CN/plugins/building-plugins#registering-agent-tools)
+- [智能体工具](/zh-CN/plugins/building-plugins#registering-agent-tools)
 - [插件包](/zh-CN/plugins/bundles)
 - [社区插件](/zh-CN/plugins/community)
 - [能力扩展手册](/zh-CN/plugins/adding-capabilities)

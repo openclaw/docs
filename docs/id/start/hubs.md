@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Anda menginginkan peta dokumentasi yang lengkap
+    - Anda ingin peta lengkap dokumentasi
 summary: Hub yang menautkan ke setiap dokumen OpenClaw
 title: Pusat dokumentasi
 x-i18n:
-    generated_at: "2026-05-06T09:28:10Z"
+    generated_at: "2026-05-07T01:54:02Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9c5822f46d0c4014ec5874d06c40f9adbe4439e8164cc75709e15c519b3e11af
+    source_hash: b7de6012e4e8db02d22cda7d8f275c634e15511b1c4e94e219672cf167f9848d
     source_path: start/hubs.md
     workflow: 16
 ---
 
 <Note>
-Jika Anda baru menggunakan OpenClaw, mulai dengan [Memulai](/id/start/getting-started).
+Jika Anda baru mengenal OpenClaw, mulai dengan [Mulai](/id/start/getting-started).
 </Note>
 
-Gunakan hub ini untuk menemukan setiap halaman, termasuk pembahasan mendalam dan dokumen referensi yang tidak muncul di navigasi kiri.
+Gunakan hub ini untuk menemukan setiap halaman, termasuk pembahasan mendalam dan dokumentasi referensi yang tidak muncul di nav kiri.
 
 ## Mulai di sini
 
 - [Indeks](/id)
-- [Memulai](/id/start/getting-started)
-- [Orientasi](/id/start/onboarding)
-- [Orientasi (CLI)](/id/start/wizard)
+- [Mulai](/id/start/getting-started)
+- [Onboarding](/id/start/onboarding)
+- [Onboarding (CLI)](/id/start/wizard)
 - [Penyiapan](/id/start/setup)
 - [Dasbor (Gateway lokal)](http://127.0.0.1:18789/)
 - [Bantuan](/id/help)
@@ -31,8 +31,8 @@ Gunakan hub ini untuk menemukan setiap halaman, termasuk pembahasan mendalam dan
 - [Konfigurasi](/id/gateway/configuration)
 - [Contoh konfigurasi](/id/gateway/configuration-examples)
 - [Asisten OpenClaw](/id/start/openclaw)
-- [Etalase](/id/start/showcase)
-- [Latar cerita](/id/start/lore)
+- [Showcase](/id/start/showcase)
+- [Lore](/id/start/lore)
 
 ## Instalasi + pembaruan
 
@@ -47,7 +47,7 @@ Gunakan hub ini untuk menemukan setiap halaman, termasuk pembahasan mendalam dan
 - [Fitur](/id/concepts/features)
 - [Hub jaringan](/id/network)
 - [Runtime agen](/id/concepts/agent)
-- [Workspace agen](/id/concepts/agent-workspace)
+- [Ruang kerja agen](/id/concepts/agent-workspace)
 - [Memori](/id/concepts/memory)
 - [Loop agen](/id/concepts/agent-loop)
 - [Streaming + chunking](/id/concepts/streaming)
@@ -57,7 +57,7 @@ Gunakan hub ini untuk menemukan setiap halaman, termasuk pembahasan mendalam dan
 - [Pemangkasan sesi](/id/concepts/session-pruning)
 - [Alat sesi](/id/concepts/session-tool)
 - [Antrean](/id/concepts/queue)
-- [Perintah garis miring](/id/tools/slash-commands)
+- [Perintah slash](/id/tools/slash-commands)
 - [Adaptor RPC](/id/reference/rpc)
 - [Skema TypeBox](/id/concepts/typebox)
 - [Penanganan zona waktu](/id/concepts/timezone)
@@ -80,9 +80,9 @@ Gunakan hub ini untuk menemukan setiap halaman, termasuk pembahasan mendalam dan
 - [Discord](/id/channels/discord)
 - [Mattermost](/id/channels/mattermost)
 - [Signal](/id/channels/signal)
-- [BlueBubbles (iMessage)](/id/channels/bluebubbles)
+- [BlueBubbles (bridge iMessage lama)](/id/channels/bluebubbles)
 - [Bot QQ](/id/channels/qqbot)
-- [iMessage (lama)](/id/channels/imessage)
+- [iMessage](/id/channels/imessage)
 - [Penguraian lokasi](/id/channels/location)
 - [WebChat](/id/web/webchat)
 - [Webhook](/id/automation/cron-jobs#webhooks)
@@ -103,7 +103,7 @@ Gunakan hub ini untuk menemukan setiap halaman, termasuk pembahasan mendalam dan
 - [Dasbor](/id/web/dashboard)
 - [UI kontrol](/id/web/control-ui)
 - [Akses jarak jauh](/id/gateway/remote)
-- [README Gateway jarak jauh](/id/gateway/remote-gateway-readme)
+- [README gateway jarak jauh](/id/gateway/remote-gateway-readme)
 - [Tailscale](/id/gateway/tailscale)
 - [Keamanan](/id/gateway/security)
 - [Pemecahan masalah](/id/gateway/troubleshooting)
@@ -116,25 +116,25 @@ Gunakan hub ini untuk menemukan setiap halaman, termasuk pembahasan mendalam dan
 - [Alat exec](/id/tools/exec)
 - [Alat PDF](/id/tools/pdf)
 - [Mode elevated](/id/tools/elevated)
-- [Tugas Cron](/id/automation/cron-jobs)
+- [Cron jobs](/id/automation/cron-jobs)
 - [Otomatisasi & Tugas](/id/automation)
-- [Thinking + verbose](/id/tools/thinking)
+- [Berpikir + verbose](/id/tools/thinking)
 - [Model](/id/concepts/models)
 - [Sub-agen](/id/tools/subagents)
 - [CLI kirim agen](/id/tools/agent-send)
 - [UI terminal](/id/web/tui)
 - [Kontrol browser](/id/tools/browser)
 - [Browser (pemecahan masalah Linux)](/id/tools/browser-linux-troubleshooting)
-- [Polling](/id/cli/message)
+- [Poll](/id/cli/message)
 
 ## Node, media, suara
 
-- [Ikhtisar Node](/id/nodes)
+- [Ikhtisar node](/id/nodes)
 - [Kamera](/id/nodes/camera)
 - [Gambar](/id/nodes/images)
 - [Audio](/id/nodes/audio)
 - [Perintah lokasi](/id/nodes/location-command)
-- [Voice wake](/id/nodes/voicewake)
+- [Bangun suara](/id/nodes/voicewake)
 - [Mode bicara](/id/nodes/talk)
 
 ## Platform
@@ -151,7 +151,7 @@ Gunakan hub ini untuk menemukan setiap halaman, termasuk pembahasan mendalam dan
 
 - [Penyiapan dev macOS](/id/platforms/mac/dev-setup)
 - [Bilah menu macOS](/id/platforms/mac/menu-bar)
-- [Voice wake macOS](/id/platforms/mac/voicewake)
+- [Bangun suara macOS](/id/platforms/mac/voicewake)
 - [Overlay suara macOS](/id/platforms/mac/voice-overlay)
 - [WebChat macOS](/id/platforms/mac/webchat)
 - [Canvas macOS](/id/platforms/mac/canvas)
@@ -160,7 +160,7 @@ Gunakan hub ini untuk menemukan setiap halaman, termasuk pembahasan mendalam dan
 - [Ikon macOS](/id/platforms/mac/icon)
 - [Logging macOS](/id/platforms/mac/logging)
 - [Izin macOS](/id/platforms/mac/permissions)
-- [Jarak jauh macOS](/id/platforms/mac/remote)
+- [Remote macOS](/id/platforms/mac/remote)
 - [Penandatanganan macOS](/id/platforms/mac/signing)
 - [Gateway macOS (launchd)](/id/platforms/mac/bundled-gateway)
 - [XPC macOS](/id/platforms/mac/xpc)
@@ -170,17 +170,17 @@ Gunakan hub ini untuk menemukan setiap halaman, termasuk pembahasan mendalam dan
 ## Plugin
 
 - [Ikhtisar Plugin](/id/tools/plugin)
-- [Membangun Plugin](/id/plugins/building-plugins)
+- [Membangun plugin](/id/plugins/building-plugins)
 - [Hook Plugin](/id/plugins/hooks)
-- [Manifes Plugin](/id/plugins/manifest)
+- [Manifest Plugin](/id/plugins/manifest)
 - [Alat agen](/id/plugins/building-plugins#registering-agent-tools)
-- [Bundle Plugin](/id/plugins/bundles)
+- [Bundel Plugin](/id/plugins/bundles)
 - [Plugin komunitas](/id/plugins/community)
 - [Cookbook kapabilitas](/id/plugins/adding-capabilities)
 - [Plugin panggilan suara](/id/plugins/voice-call)
 - [Plugin pengguna Zalo](/id/plugins/zalouser)
 
-## Workspace + templat
+## Ruang kerja + templat
 
 - [Skills](/id/tools/skills)
 - [ClawHub](/id/tools/clawhub)
@@ -206,4 +206,4 @@ Gunakan hub ini untuk menemukan setiap halaman, termasuk pembahasan mendalam dan
 
 ## Terkait
 
-- [Memulai](/id/start/getting-started)
+- [Mulai](/id/start/getting-started)

@@ -2,41 +2,39 @@
 read_when:
     - การตั้งค่าการรองรับ iMessage
     - การดีบักการส่ง/รับ iMessage
-summary: การรองรับ iMessage แบบเดิมผ่าน imsg (JSON-RPC ผ่าน stdio) การตั้งค่าใหม่ควรใช้ BlueBubbles.
+summary: รองรับ iMessage แบบเนทีฟผ่าน imsg (JSON-RPC ผ่าน stdio). แนะนำสำหรับการตั้งค่า OpenClaw iMessage ใหม่เมื่อข้อกำหนดของโฮสต์เหมาะสม.
 title: iMessage
 x-i18n:
-    generated_at: "2026-04-30T09:36:48Z"
+    generated_at: "2026-05-07T01:50:41Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 60eeb3553a6511d56b8177ca4eafbedfed2d0852ac64c230c250911cd18ce17e
+    source_hash: 39a3d6350333292c147d7986568eb539aa8ce562405092b71b8cecbbf7584450
     source_path: channels/imessage.md
     workflow: 16
 ---
 
-<Warning>
-สำหรับการติดตั้ง iMessage ใหม่ ให้ใช้ <a href="/th/channels/bluebubbles">BlueBubbles</a>
+<Note>
+สำหรับการปรับใช้ OpenClaw iMessage ใหม่ ให้เริ่มที่นี่เมื่อคุณสามารถเรียกใช้ `imsg` บนโฮสต์ macOS Messages ที่ลงชื่อเข้าใช้แล้วได้ BlueBubbles ยังพร้อมใช้งานเป็นทางเลือกสำรองแบบเดิมสำหรับการตั้งค่าที่มีอยู่ซึ่งพึ่งพาเซิร์ฟเวอร์ HTTP, Webhook หรือการกระทำ private-API ที่สมบูรณ์กว่าของ BlueBubbles
+</Note>
 
-การผสานรวม `imsg` เป็นแบบเดิมและอาจถูกนำออกในรุ่นอนาคต
-</Warning>
-
-สถานะ: การผสานรวม CLI ภายนอกแบบเดิม Gateway จะสร้าง `imsg rpc` และสื่อสารผ่าน JSON-RPC บน stdio (ไม่มีดีมอน/พอร์ตแยกต่างหาก)
+สถานะ: การผสานรวม CLI ภายนอกแบบเนทีฟ Gateway สร้าง `imsg rpc` และสื่อสารผ่าน JSON-RPC บน stdio (ไม่มี daemon/พอร์ตแยกต่างหาก)
 
 <CardGroup cols={3}>
-  <Card title="BlueBubbles (แนะนำ)" icon="message-circle" href="/th/channels/bluebubbles">
-    เส้นทาง iMessage ที่แนะนำสำหรับการตั้งค่าใหม่
+  <Card title="BlueBubbles (ทางเลือกสำรองแบบเดิม)" icon="message-circle" href="/th/channels/bluebubbles">
+    ใช้ต่อไปสำหรับการกำหนดเส้นทางที่มีอยู่ซึ่งรองรับด้วย BlueBubbles; หลีกเลี่ยงสำหรับการตั้งค่าใหม่เมื่อ imsg เหมาะสม
   </Card>
   <Card title="การจับคู่" icon="link" href="/th/channels/pairing">
-    DM ของ iMessage ใช้โหมดจับคู่เป็นค่าเริ่มต้น
+    DM ของ iMessage ใช้โหมดการจับคู่เป็นค่าเริ่มต้น
   </Card>
-  <Card title="ข้อมูลอ้างอิงการกำหนดค่า" icon="settings" href="/th/gateway/config-channels#imessage">
-    ข้อมูลอ้างอิงฟิลด์ iMessage ทั้งหมด
+  <Card title="เอกสารอ้างอิงการกำหนดค่า" icon="settings" href="/th/gateway/config-channels#imessage">
+    เอกสารอ้างอิงฟิลด์ iMessage แบบเต็ม
   </Card>
 </CardGroup>
 
 ## การตั้งค่าอย่างรวดเร็ว
 
 <Tabs>
-  <Tab title="Mac ในเครื่อง (เส้นทางเร็ว)">
+  <Tab title="Mac ภายในเครื่อง (เส้นทางเร็ว)">
     <Steps>
       <Step title="ติดตั้งและตรวจสอบ imsg">
 
@@ -71,7 +69,7 @@ openclaw gateway
 
       </Step>
 
-      <Step title="อนุมัติการจับคู่ DM ครั้งแรก (dmPolicy เริ่มต้น)">
+      <Step title="อนุมัติการจับคู่ DM ครั้งแรก (dmPolicy ค่าเริ่มต้น)">
 
 ```bash
 openclaw pairing list imessage
@@ -85,7 +83,7 @@ openclaw pairing approve imessage <CODE>
   </Tab>
 
   <Tab title="Mac ระยะไกลผ่าน SSH">
-    OpenClaw ต้องการเพียง `cliPath` ที่เข้ากันได้กับ stdio ดังนั้นคุณจึงชี้ `cliPath` ไปยังสคริปต์ wrapper ที่ SSH ไปยัง Mac ระยะไกลและเรียกใช้ `imsg` ได้
+    OpenClaw ต้องการเพียง `cliPath` ที่เข้ากันได้กับ stdio ดังนั้นคุณจึงสามารถชี้ `cliPath` ไปยังสคริปต์ wrapper ที่ SSH ไปยัง Mac ระยะไกลและเรียกใช้ `imsg`
 
 ```bash
 #!/usr/bin/env bash
@@ -111,9 +109,9 @@ exec ssh -T gateway-host imsg "$@"
 }
 ```
 
-    หากไม่ได้ตั้งค่า `remoteHost` OpenClaw จะพยายามตรวจหาอัตโนมัติโดยแยกวิเคราะห์สคริปต์ SSH wrapper
+    หากไม่ได้ตั้งค่า `remoteHost` OpenClaw จะพยายามตรวจจับโดยอัตโนมัติด้วยการแยกวิเคราะห์สคริปต์ SSH wrapper
     `remoteHost` ต้องเป็น `host` หรือ `user@host` (ไม่มีช่องว่างหรือตัวเลือก SSH)
-    OpenClaw ใช้การตรวจสอบ host-key แบบเข้มงวดสำหรับ SCP ดังนั้นคีย์ของโฮสต์รีเลย์ต้องมีอยู่แล้วใน `~/.ssh/known_hosts`
+    OpenClaw ใช้การตรวจสอบ host-key อย่างเข้มงวดสำหรับ SCP ดังนั้นคีย์ของโฮสต์ relay ต้องมีอยู่แล้วใน `~/.ssh/known_hosts`
     เส้นทางไฟล์แนบจะถูกตรวจสอบกับรากที่อนุญาต (`attachmentRoots` / `remoteAttachmentRoots`)
 
   </Tab>
@@ -121,12 +119,12 @@ exec ssh -T gateway-host imsg "$@"
 
 ## ข้อกำหนดและสิทธิ์ (macOS)
 
-- Messages ต้องลงชื่อเข้าใช้อยู่บน Mac ที่เรียกใช้ `imsg`
-- จำเป็นต้องมี Full Disk Access สำหรับบริบทของโปรเซสที่เรียกใช้ OpenClaw/`imsg` (การเข้าถึงฐานข้อมูล Messages)
-- จำเป็นต้องมีสิทธิ์ Automation เพื่อส่งข้อความผ่าน Messages.app
+- ต้องลงชื่อเข้าใช้ Messages บน Mac ที่เรียกใช้ `imsg`
+- ต้องมี Full Disk Access สำหรับบริบทกระบวนการที่เรียกใช้ OpenClaw/`imsg` (การเข้าถึง DB ของ Messages)
+- ต้องมีสิทธิ์ Automation เพื่อส่งข้อความผ่าน Messages.app
 
 <Tip>
-สิทธิ์จะถูกให้ตามบริบทของโปรเซส หาก Gateway ทำงานแบบ headless (LaunchAgent/SSH) ให้เรียกใช้คำสั่งแบบโต้ตอบครั้งเดียวในบริบทเดียวกันนั้นเพื่อเรียกพรอมป์:
+สิทธิ์จะมอบให้ตามบริบทกระบวนการ หาก Gateway ทำงานแบบไม่มีหน้าจอ (LaunchAgent/SSH) ให้เรียกใช้คำสั่งแบบโต้ตอบหนึ่งครั้งในบริบทเดียวกันนั้นเพื่อทริกเกอร์พรอมป์:
 
 ```bash
 imsg chats --limit 1
@@ -149,62 +147,62 @@ imsg send <handle> "test"
 
     ฟิลด์ allowlist: `channels.imessage.allowFrom`
 
-    รายการ allowlist อาจเป็น handle หรือเป้าหมายแชต (`chat_id:*`, `chat_guid:*`, `chat_identifier:*`)
+    รายการ allowlist อาจเป็น handle หรือเป้าหมายแชท (`chat_id:*`, `chat_guid:*`, `chat_identifier:*`)
 
   </Tab>
 
   <Tab title="นโยบายกลุ่ม + การกล่าวถึง">
     `channels.imessage.groupPolicy` ควบคุมการจัดการกลุ่ม:
 
-    - `allowlist` (ค่าเริ่มต้นเมื่อกำหนดค่าไว้)
+    - `allowlist` (ค่าเริ่มต้นเมื่อกำหนดค่าแล้ว)
     - `open`
     - `disabled`
 
     allowlist ผู้ส่งกลุ่ม: `channels.imessage.groupAllowFrom`
 
-    ทางเลือกสำรองขณะรันไทม์: หากไม่ได้ตั้งค่า `groupAllowFrom` การตรวจสอบผู้ส่งกลุ่มของ iMessage จะถอยกลับไปใช้ `allowFrom` เมื่อมีอยู่
-    หมายเหตุขณะรันไทม์: หาก `channels.imessage` หายไปทั้งหมด รันไทม์จะถอยกลับไปใช้ `groupPolicy="allowlist"` และบันทึกคำเตือน (แม้จะตั้งค่า `channels.defaults.groupPolicy` แล้วก็ตาม)
+    การสำรองขณะรันไทม์: หากไม่ได้ตั้งค่า `groupAllowFrom` การตรวจสอบผู้ส่งกลุ่ม iMessage จะถอยกลับไปใช้ `allowFrom` เมื่อพร้อมใช้งาน
+    หมายเหตุขณะรันไทม์: หาก `channels.imessage` หายไปทั้งหมด รันไทม์จะถอยกลับไปใช้ `groupPolicy="allowlist"` และบันทึกคำเตือน (แม้จะตั้งค่า `channels.defaults.groupPolicy` ไว้ก็ตาม)
 
-    การกั้นด้วยการกล่าวถึงสำหรับกลุ่ม:
+    การควบคุมการกล่าวถึงสำหรับกลุ่ม:
 
-    - iMessage ไม่มีเมทาดาต้าการกล่าวถึงแบบเนทีฟ
+    - iMessage ไม่มีเมตาดาต้าการกล่าวถึงแบบเนทีฟ
     - การตรวจจับการกล่าวถึงใช้แพตเทิร์น regex (`agents.list[].groupChat.mentionPatterns`, สำรองเป็น `messages.groupChat.mentionPatterns`)
-    - หากไม่มีแพตเทิร์นที่กำหนดค่าไว้ จะไม่สามารถบังคับใช้การกั้นด้วยการกล่าวถึงได้
+    - หากไม่มีแพตเทิร์นที่กำหนดค่าไว้ จะไม่สามารถบังคับใช้การควบคุมการกล่าวถึงได้
 
-    คำสั่งควบคุมจากผู้ส่งที่ได้รับอนุญาตสามารถข้ามการกั้นด้วยการกล่าวถึงในกลุ่มได้
+    คำสั่งควบคุมจากผู้ส่งที่ได้รับอนุญาตสามารถข้ามการควบคุมการกล่าวถึงในกลุ่มได้
 
   </Tab>
 
-  <Tab title="เซสชันและการตอบกลับแบบกำหนดได้แน่นอน">
-    - DM ใช้การกำหนดเส้นทางโดยตรง กลุ่มใช้การกำหนดเส้นทางกลุ่ม
-    - ด้วยค่าเริ่มต้น `session.dmScope=main` DM ของ iMessage จะถูกรวมเข้าในเซสชันหลักของ agent
+  <Tab title="เซสชันและการตอบกลับแบบกำหนดแน่นอน">
+    - DM ใช้การกำหนดเส้นทางโดยตรง; กลุ่มใช้การกำหนดเส้นทางกลุ่ม
+    - ด้วยค่าเริ่มต้น `session.dmScope=main` DM ของ iMessage จะถูกรวมเข้าในเซสชันหลักของเอเจนต์
     - เซสชันกลุ่มถูกแยกออกจากกัน (`agent:<agentId>:imessage:group:<chat_id>`)
-    - การตอบกลับจะถูกส่งกลับไปยัง iMessage โดยใช้เมทาดาต้าช่องทาง/เป้าหมายต้นทาง
+    - การตอบกลับจะส่งกลับไปยัง iMessage โดยใช้เมตาดาต้าช่องทาง/เป้าหมายต้นทาง
 
     พฤติกรรมเธรดที่คล้ายกลุ่ม:
 
-    เธรด iMessage ที่มีผู้เข้าร่วมหลายคนบางรายการอาจเข้ามาพร้อม `is_group=false`
-    หาก `chat_id` นั้นถูกกำหนดค่าไว้อย่างชัดเจนใต้ `channels.imessage.groups` OpenClaw จะถือว่าเป็นทราฟฟิกกลุ่ม (การกั้นกลุ่ม + การแยกเซสชันกลุ่ม)
+    เธรด iMessage ที่มีผู้เข้าร่วมหลายคนบางรายการอาจมาถึงพร้อม `is_group=false`
+    หาก `chat_id` นั้นถูกกำหนดค่าไว้อย่างชัดเจนภายใต้ `channels.imessage.groups` OpenClaw จะถือว่าเป็นทราฟฟิกกลุ่ม (การควบคุมกลุ่ม + การแยกเซสชันกลุ่ม)
 
   </Tab>
 </Tabs>
 
 ## การผูกการสนทนา ACP
 
-แชต iMessage แบบเดิมยังสามารถผูกกับเซสชัน ACP ได้ด้วย
+แชท iMessage แบบเดิมยังสามารถผูกกับเซสชัน ACP ได้ด้วย
 
 โฟลว์ผู้ปฏิบัติงานแบบเร็ว:
 
-- เรียกใช้ `/acp spawn codex --bind here` ภายใน DM หรือแชตกลุ่มที่อนุญาต
-- ข้อความในอนาคตในการสนทนา iMessage เดียวกันนั้นจะถูกส่งไปยังเซสชัน ACP ที่สร้างขึ้น
-- `/new` และ `/reset` รีเซ็ตเซสชัน ACP ที่ผูกไว้เดิมในที่เดิม
+- เรียกใช้ `/acp spawn codex --bind here` ภายใน DM หรือแชทกลุ่มที่อนุญาต
+- ข้อความในอนาคตในบทสนทนา iMessage เดียวกันนั้นจะถูกกำหนดเส้นทางไปยังเซสชัน ACP ที่สร้างขึ้น
+- `/new` และ `/reset` รีเซ็ตเซสชัน ACP ที่ผูกไว้เดิมในตำแหน่งเดิม
 - `/acp close` ปิดเซสชัน ACP และลบการผูก
 
-รองรับการผูกถาวรที่กำหนดค่าไว้ผ่านรายการ `bindings[]` ระดับบนสุดที่มี `type: "acp"` และ `match.channel: "imessage"`
+รองรับการผูกถาวรที่กำหนดค่าไว้ผ่านรายการระดับบนสุด `bindings[]` ที่มี `type: "acp"` และ `match.channel: "imessage"`
 
 `match.peer.id` สามารถใช้:
 
-- handle DM ที่ปรับให้อยู่ในรูปแบบมาตรฐาน เช่น `+15555550123` หรือ `user@example.com`
+- handle DM ที่ปรับให้เป็นรูปแบบมาตรฐาน เช่น `+15555550123` หรือ `user@example.com`
 - `chat_id:<id>` (แนะนำสำหรับการผูกกลุ่มที่เสถียร)
 - `chat_guid:<guid>`
 - `chat_identifier:<identifier>`
@@ -239,23 +237,23 @@ imsg send <handle> "test"
 }
 ```
 
-ดู [ACP Agents](/th/tools/acp-agents) สำหรับพฤติกรรมการผูก ACP ที่ใช้ร่วมกัน
+ดู [เอเจนต์ ACP](/th/tools/acp-agents) สำหรับพฤติกรรมการผูก ACP ที่ใช้ร่วมกัน
 
-## รูปแบบการติดตั้ง
+## รูปแบบการปรับใช้
 
 <AccordionGroup>
-  <Accordion title="ผู้ใช้ macOS สำหรับบอทโดยเฉพาะ (ตัวตน iMessage แยกต่างหาก)">
-    ใช้ Apple ID และผู้ใช้ macOS เฉพาะเพื่อแยกทราฟฟิกบอทออกจากโปรไฟล์ Messages ส่วนตัวของคุณ
+  <Accordion title="ผู้ใช้ macOS สำหรับบอทโดยเฉพาะ (ข้อมูลประจำตัว iMessage แยกต่างหาก)">
+    ใช้ Apple ID และผู้ใช้ macOS โดยเฉพาะเพื่อให้ทราฟฟิกของบอทแยกออกจากโปรไฟล์ Messages ส่วนตัวของคุณ
 
     โฟลว์ทั่วไป:
 
-    1. สร้าง/ลงชื่อเข้าใช้ผู้ใช้ macOS เฉพาะ
+    1. สร้าง/ลงชื่อเข้าใช้ผู้ใช้ macOS โดยเฉพาะ
     2. ลงชื่อเข้าใช้ Messages ด้วย Apple ID ของบอทในผู้ใช้นั้น
     3. ติดตั้ง `imsg` ในผู้ใช้นั้น
-    4. สร้าง SSH wrapper เพื่อให้ OpenClaw เรียกใช้ `imsg` ในบริบทของผู้ใช้นั้นได้
+    4. สร้าง SSH wrapper เพื่อให้ OpenClaw เรียกใช้ `imsg` ในบริบทผู้ใช้นั้นได้
     5. ชี้ `channels.imessage.accounts.<id>.cliPath` และ `.dbPath` ไปยังโปรไฟล์ผู้ใช้นั้น
 
-    การรันครั้งแรกอาจต้องมีการอนุมัติผ่าน GUI (Automation + Full Disk Access) ในเซสชันผู้ใช้บอทนั้น
+    การเรียกใช้ครั้งแรกอาจต้องมีการอนุมัติ GUI (Automation + Full Disk Access) ในเซสชันผู้ใช้บอทนั้น
 
   </Accordion>
 
@@ -264,8 +262,8 @@ imsg send <handle> "test"
 
     - Gateway ทำงานบน Linux/VM
     - iMessage + `imsg` ทำงานบน Mac ใน tailnet ของคุณ
-    - wrapper `cliPath` ใช้ SSH เพื่อเรียกใช้ `imsg`
-    - `remoteHost` เปิดใช้การดึงไฟล์แนบผ่าน SCP
+    - wrapper ของ `cliPath` ใช้ SSH เพื่อเรียกใช้ `imsg`
+    - `remoteHost` เปิดใช้งานการดึงไฟล์แนบผ่าน SCP
 
     ตัวอย่าง:
 
@@ -289,36 +287,36 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
 ```
 
     ใช้คีย์ SSH เพื่อให้ทั้ง SSH และ SCP ไม่ต้องโต้ตอบ
-    ตรวจให้แน่ใจว่าคีย์ของโฮสต์ได้รับความเชื่อถือก่อน (เช่น `ssh bot@mac-mini.tailnet-1234.ts.net`) เพื่อให้ `known_hosts` ถูกเติมข้อมูล
+    ตรวจสอบให้แน่ใจก่อนว่าคีย์โฮสต์เชื่อถือได้แล้ว (เช่น `ssh bot@mac-mini.tailnet-1234.ts.net`) เพื่อให้ `known_hosts` ถูกเติมข้อมูล
 
   </Accordion>
 
   <Accordion title="รูปแบบหลายบัญชี">
-    iMessage รองรับการกำหนดค่าต่อบัญชีใต้ `channels.imessage.accounts`
+    iMessage รองรับการกำหนดค่ารายบัญชีภายใต้ `channels.imessage.accounts`
 
-    แต่ละบัญชีสามารถ override ฟิลด์ต่างๆ เช่น `cliPath`, `dbPath`, `allowFrom`, `groupPolicy`, `mediaMaxMb`, การตั้งค่าประวัติ และ allowlist รากของไฟล์แนบ
+    แต่ละบัญชีสามารถ override ฟิลด์ เช่น `cliPath`, `dbPath`, `allowFrom`, `groupPolicy`, `mediaMaxMb`, การตั้งค่าประวัติ และ allowlist รากไฟล์แนบได้
 
   </Accordion>
 </AccordionGroup>
 
-## สื่อ การแบ่งส่วน และเป้าหมายการส่งมอบ
+## สื่อ การแบ่งชิ้น และเป้าหมายการส่ง
 
 <AccordionGroup>
   <Accordion title="ไฟล์แนบและสื่อ">
-    - การนำเข้าไฟล์แนบขาเข้าเป็นตัวเลือก: `channels.imessage.includeAttachments`
-    - เส้นทางไฟล์แนบระยะไกลสามารถดึงผ่าน SCP ได้เมื่อตั้งค่า `remoteHost`
+    - การรับไฟล์แนบขาเข้าเป็นตัวเลือก: `channels.imessage.includeAttachments`
+    - สามารถดึงเส้นทางไฟล์แนบระยะไกลผ่าน SCP เมื่อมีการตั้งค่า `remoteHost`
     - เส้นทางไฟล์แนบต้องตรงกับรากที่อนุญาต:
-      - `channels.imessage.attachmentRoots` (ในเครื่อง)
+      - `channels.imessage.attachmentRoots` (ภายในเครื่อง)
       - `channels.imessage.remoteAttachmentRoots` (โหมด SCP ระยะไกล)
-      - แพตเทิร์นรากเริ่มต้น: `/Users/*/Library/Messages/Attachments`
-    - SCP ใช้การตรวจสอบ host-key แบบเข้มงวด (`StrictHostKeyChecking=yes`)
+      - แพตเทิร์นรากค่าเริ่มต้น: `/Users/*/Library/Messages/Attachments`
+    - SCP ใช้การตรวจสอบ host-key อย่างเข้มงวด (`StrictHostKeyChecking=yes`)
     - ขนาดสื่อขาออกใช้ `channels.imessage.mediaMaxMb` (ค่าเริ่มต้น 16 MB)
 
   </Accordion>
 
-  <Accordion title="การแบ่งส่วนขาออก">
-    - ขีดจำกัดส่วนข้อความ: `channels.imessage.textChunkLimit` (ค่าเริ่มต้น 4000)
-    - โหมดแบ่งส่วน: `channels.imessage.chunkMode`
+  <Accordion title="การแบ่งขาออกเป็นชิ้น">
+    - ขีดจำกัดชิ้นข้อความ: `channels.imessage.textChunkLimit` (ค่าเริ่มต้น 4000)
+    - โหมดการแบ่งชิ้น: `channels.imessage.chunkMode`
       - `length` (ค่าเริ่มต้น)
       - `newline` (การแบ่งโดยให้ย่อหน้ามาก่อน)
 
@@ -331,7 +329,7 @@ exec ssh -T bot@mac-mini.tailnet-1234.ts.net imsg "$@"
     - `chat_guid:...`
     - `chat_identifier:...`
 
-    รองรับเป้าหมาย handle ด้วย:
+    รองรับเป้าหมายแบบ handle ด้วย:
 
     - `imessage:+1555...`
     - `sms:+1555...`
@@ -346,7 +344,7 @@ imsg chats --limit 20
 
 ## การเขียนการกำหนดค่า
 
-iMessage อนุญาตการเขียนการกำหนดค่าที่เริ่มจากช่องทางโดยค่าเริ่มต้น (สำหรับ `/config set|unset` เมื่อ `commands.config: true`)
+iMessage อนุญาตให้ช่องทางเริ่มเขียนการกำหนดค่าได้ตามค่าเริ่มต้น (สำหรับ `/config set|unset` เมื่อ `commands.config: true`)
 
 ปิดใช้งาน:
 
@@ -399,36 +397,36 @@ openclaw channels status --probe
 
     - `channels.imessage.remoteHost`
     - `channels.imessage.remoteAttachmentRoots`
-    - การยืนยันตัวตนด้วยคีย์ SSH/SCP จากโฮสต์ Gateway
-    - คีย์ของโฮสต์มีอยู่ใน `~/.ssh/known_hosts` บนโฮสต์ Gateway
-    - การอ่านเส้นทางระยะไกลได้บน Mac ที่เรียกใช้ Messages
+    - การรับรองความถูกต้องด้วยคีย์ SSH/SCP จากโฮสต์ Gateway
+    - คีย์โฮสต์มีอยู่ใน `~/.ssh/known_hosts` บนโฮสต์ Gateway
+    - ความสามารถในการอ่านเส้นทางระยะไกลบน Mac ที่เรียกใช้ Messages
 
   </Accordion>
 
-  <Accordion title="พลาดพรอมป์สิทธิ์ของ macOS">
-    รันอีกครั้งในเทอร์มินัล GUI แบบโต้ตอบในบริบทผู้ใช้/เซสชันเดียวกันและอนุมัติพรอมป์:
+  <Accordion title="พลาดพรอมป์สิทธิ์ macOS">
+    เรียกใช้อีกครั้งในเทอร์มินัล GUI แบบโต้ตอบในบริบทผู้ใช้/เซสชันเดียวกัน และอนุมัติพรอมป์:
 
 ```bash
 imsg chats --limit 1
 imsg send <handle> "test"
 ```
 
-    ยืนยันว่าให้ Full Disk Access + Automation สำหรับบริบทของโปรเซสที่เรียกใช้ OpenClaw/`imsg` แล้ว
+    ยืนยันว่า Full Disk Access + Automation ได้รับการอนุญาตสำหรับบริบทกระบวนการที่เรียกใช้ OpenClaw/`imsg`
 
   </Accordion>
 </AccordionGroup>
 
-## ตัวชี้ไปยังข้อมูลอ้างอิงการกำหนดค่า
+## ตัวชี้ไปยังเอกสารอ้างอิงการกำหนดค่า
 
-- [ข้อมูลอ้างอิงการกำหนดค่า - iMessage](/th/gateway/config-channels#imessage)
+- [เอกสารอ้างอิงการกำหนดค่า - iMessage](/th/gateway/config-channels#imessage)
 - [การกำหนดค่า Gateway](/th/gateway/configuration)
 - [การจับคู่](/th/channels/pairing)
 - [BlueBubbles](/th/channels/bluebubbles)
 
 ## ที่เกี่ยวข้อง
 
-- [ภาพรวมช่องทาง](/th/channels) — ช่องทางทั้งหมดที่รองรับ
-- [การจับคู่](/th/channels/pairing) — การยืนยันตัวตน DM และโฟลว์การจับคู่
-- [กลุ่ม](/th/channels/groups) — พฤติกรรมแชตกลุ่มและการกั้นด้วยการกล่าวถึง
+- [ภาพรวมช่องทาง](/th/channels) — ช่องทางที่รองรับทั้งหมด
+- [การจับคู่](/th/channels/pairing) — การยืนยันตัวตนผ่าน DM และขั้นตอนการจับคู่
+- [กลุ่ม](/th/channels/groups) — พฤติกรรมแชตกลุ่มและการควบคุมด้วยการกล่าวถึง
 - [การกำหนดเส้นทางช่องทาง](/th/channels/channel-routing) — การกำหนดเส้นทางเซสชันสำหรับข้อความ
-- [ความปลอดภัย](/th/gateway/security) — โมเดลการเข้าถึงและการเสริมความปลอดภัย
+- [ความปลอดภัย](/th/gateway/security) — โมเดลการเข้าถึงและการเสริมความแข็งแกร่ง

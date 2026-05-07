@@ -5,62 +5,62 @@ read_when:
 summary: Plateformes de messagerie auxquelles OpenClaw peut se connecter
 title: Canaux de discussion
 x-i18n:
-    generated_at: "2026-05-06T07:14:42Z"
+    generated_at: "2026-05-07T01:50:43Z"
     model: gpt-5.5
     provider: openai
-    source_hash: c357a9dfabf12329954f30084fe9abfad9aa96f62bcd72b3d0802819d5979d7b
+    source_hash: ff6875f4ae86b341b6a82e13f022266461bc102ee03074a8c352eea2203d657a
     source_path: channels/index.md
     workflow: 16
 ---
 
-OpenClaw peut communiquer avec vous sur n’importe quelle application de chat que vous utilisez déjà. Chaque canal se connecte via le Gateway.
+OpenClaw peut vous parler sur n’importe quelle application de chat que vous utilisez déjà. Chaque canal se connecte via le Gateway.
 Le texte est pris en charge partout ; les médias et les réactions varient selon le canal.
 
 ## Notes de livraison
 
-- Les réponses Telegram qui contiennent une syntaxe d’image Markdown, comme `![alt](url)`,
-  sont converties en réponses média sur le chemin de sortie final lorsque c’est possible.
-- Les DM Slack à plusieurs personnes sont acheminés comme des discussions de groupe ; la politique de groupe, le comportement des mentions
-  et les règles de session de groupe s’appliquent donc aux conversations MPIM.
-- La configuration de WhatsApp se fait par installation à la demande : l’intégration peut afficher le flux de configuration avant
-  l’installation du paquet Plugin, et le Gateway charge l’environnement d’exécution WhatsApp
-  uniquement lorsque le canal est effectivement actif.
+- Les réponses Telegram contenant une syntaxe d’image Markdown, comme `![alt](url)`,
+  sont converties en réponses média sur le chemin sortant final lorsque c’est possible.
+- Les MPIM Slack sont routés comme des discussions de groupe ; la politique de groupe, le
+  comportement des mentions et les règles de session de groupe s’appliquent donc aux conversations MPIM.
+- La configuration WhatsApp s’installe à la demande : l’onboarding peut afficher le flux de configuration avant
+  l’installation du package du plugin, et le Gateway charge le runtime WhatsApp
+  uniquement lorsque le canal est réellement actif.
 
 ## Canaux pris en charge
 
-- [BlueBubbles](/fr/channels/bluebubbles) - **Recommandé pour iMessage** ; utilise l’API REST du serveur macOS BlueBubbles avec prise en charge complète des fonctionnalités (Plugin groupé ; modification, annulation d’envoi, effets, réactions, gestion de groupe - la modification est actuellement cassée sur macOS 26 Tahoe).
-- [Discord](/fr/channels/discord) - API Discord Bot + Gateway ; prend en charge les serveurs, les canaux et les DM.
-- [Feishu](/fr/channels/feishu) - Bot Feishu/Lark via WebSocket (Plugin groupé).
-- [Google Chat](/fr/channels/googlechat) - Application Google Chat API via Webhook HTTP (Plugin téléchargeable).
-- [iMessage (ancien)](/fr/channels/imessage) - Ancienne intégration macOS via imsg CLI (obsolète, utilisez BlueBubbles pour les nouvelles configurations).
-- [IRC](/fr/channels/irc) - Serveurs IRC classiques ; canaux + DM avec contrôles d’appairage et de liste d’autorisation.
-- [LINE](/fr/channels/line) - Bot LINE Messaging API (Plugin téléchargeable).
-- [Matrix](/fr/channels/matrix) - Protocole Matrix (Plugin téléchargeable).
-- [Mattermost](/fr/channels/mattermost) - API Bot + WebSocket ; canaux, groupes, DM (Plugin téléchargeable).
-- [Microsoft Teams](/fr/channels/msteams) - Bot Framework ; prise en charge entreprise (Plugin groupé).
-- [Nextcloud Talk](/fr/channels/nextcloud-talk) - Chat auto-hébergé via Nextcloud Talk (Plugin groupé).
-- [Nostr](/fr/channels/nostr) - DM décentralisés via NIP-04 (Plugin groupé).
-- [QQ Bot](/fr/channels/qqbot) - API QQ Bot ; discussion privée, discussion de groupe et médias enrichis (Plugin groupé).
+- [BlueBubbles](/fr/channels/bluebubbles) - Pont iMessage hérité via l’API REST du serveur macOS BlueBubbles ; déconseillé pour les nouvelles configurations OpenClaw, mais toujours pris en charge pour les configurations existantes et les actions d’API privée plus riches.
+- [Discord](/fr/channels/discord) - API Discord Bot + Gateway ; prend en charge les serveurs, les canaux et les MP.
+- [Feishu](/fr/channels/feishu) - Bot Feishu/Lark via WebSocket (plugin groupé).
+- [Google Chat](/fr/channels/googlechat) - Application d’API Google Chat via Webhook HTTP (plugin téléchargeable).
+- [iMessage](/fr/channels/imessage) - Intégration macOS native via la CLI imsg ; recommandée pour les nouvelles configurations iMessage OpenClaw lorsque les autorisations de l’hôte et l’accès à Messages conviennent.
+- [IRC](/fr/channels/irc) - Serveurs IRC classiques ; canaux + MP avec contrôles d’appairage et de liste d’autorisation.
+- [LINE](/fr/channels/line) - Bot LINE Messaging API (plugin téléchargeable).
+- [Matrix](/fr/channels/matrix) - Protocole Matrix (plugin téléchargeable).
+- [Mattermost](/fr/channels/mattermost) - API Bot + WebSocket ; canaux, groupes, MP (plugin téléchargeable).
+- [Microsoft Teams](/fr/channels/msteams) - Bot Framework ; prise en charge en entreprise (plugin groupé).
+- [Nextcloud Talk](/fr/channels/nextcloud-talk) - Chat auto-hébergé via Nextcloud Talk (plugin groupé).
+- [Nostr](/fr/channels/nostr) - MP décentralisés via NIP-04 (plugin groupé).
+- [QQ Bot](/fr/channels/qqbot) - API QQ Bot ; chat privé, chat de groupe et médias riches (plugin groupé).
 - [Signal](/fr/channels/signal) - signal-cli ; axé sur la confidentialité.
-- [Slack](/fr/channels/slack) - Bolt SDK ; applications d’espace de travail.
-- [Synology Chat](/fr/channels/synology-chat) - Synology NAS Chat via Webhooks sortants+entrants (Plugin groupé).
+- [Slack](/fr/channels/slack) - SDK Bolt ; applications d’espace de travail.
+- [Synology Chat](/fr/channels/synology-chat) - Synology NAS Chat via webhooks sortants+entrants (plugin groupé).
 - [Telegram](/fr/channels/telegram) - API Bot via grammY ; prend en charge les groupes.
-- [Tlon](/fr/channels/tlon) - Messagerie basée sur Urbit (Plugin groupé).
-- [Twitch](/fr/channels/twitch) - Chat Twitch via connexion IRC (Plugin groupé).
-- [Voice Call](/fr/plugins/voice-call) - Téléphonie via Plivo ou Twilio (Plugin, installé séparément).
-- [WebChat](/fr/web/webchat) - Interface utilisateur Gateway WebChat via WebSocket.
-- [WeChat](/fr/channels/wechat) - Plugin Tencent iLink Bot via connexion par QR ; discussions privées uniquement (Plugin externe).
-- [WhatsApp](/fr/channels/whatsapp) - Le plus populaire ; utilise Baileys et nécessite un appairage par QR.
-- [Yuanbao](/fr/channels/yuanbao) - Bot Tencent Yuanbao (Plugin externe).
-- [Zalo](/fr/channels/zalo) - API Zalo Bot ; messagerie populaire du Vietnam (Plugin groupé).
-- [Zalo Personal](/fr/channels/zalouser) - Compte personnel Zalo via connexion par QR (Plugin groupé).
+- [Tlon](/fr/channels/tlon) - Messagerie basée sur Urbit (plugin groupé).
+- [Twitch](/fr/channels/twitch) - Chat Twitch via connexion IRC (plugin groupé).
+- [Voice Call](/fr/plugins/voice-call) - Téléphonie via Plivo ou Twilio (plugin, installé séparément).
+- [WebChat](/fr/web/webchat) - Interface WebChat du Gateway sur WebSocket.
+- [WeChat](/fr/channels/wechat) - Plugin Tencent iLink Bot via connexion par QR code ; chats privés uniquement (plugin externe).
+- [WhatsApp](/fr/channels/whatsapp) - Le plus populaire ; utilise Baileys et nécessite un appairage par QR code.
+- [Yuanbao](/fr/channels/yuanbao) - Bot Tencent Yuanbao (plugin externe).
+- [Zalo](/fr/channels/zalo) - API Zalo Bot ; messagerie populaire au Vietnam (plugin groupé).
+- [Zalo Personal](/fr/channels/zalouser) - Compte personnel Zalo via connexion par QR code (plugin groupé).
 
 ## Notes
 
-- Les canaux peuvent fonctionner simultanément ; configurez-en plusieurs et OpenClaw acheminera les messages par chat.
-- La configuration la plus rapide est généralement **Telegram** (simple jeton de bot). WhatsApp nécessite un appairage par QR et
+- Les canaux peuvent s’exécuter simultanément ; configurez-en plusieurs et OpenClaw routera chaque chat.
+- La configuration la plus rapide est généralement **Telegram** (simple jeton de bot). WhatsApp nécessite un appairage par QR code et
   stocke davantage d’état sur le disque.
-- Le comportement des groupes varie selon le canal ; consultez [Groupes](/fr/channels/groups).
-- L’appairage des DM et les listes d’autorisation sont appliqués pour la sécurité ; consultez [Sécurité](/fr/gateway/security).
+- Le comportement de groupe varie selon le canal ; consultez [Groupes](/fr/channels/groups).
+- L’appairage des MP et les listes d’autorisation sont appliqués pour la sécurité ; consultez [Sécurité](/fr/gateway/security).
 - Dépannage : [Dépannage des canaux](/fr/channels/troubleshooting).
 - Les fournisseurs de modèles sont documentés séparément ; consultez [Fournisseurs de modèles](/fr/providers/models).
