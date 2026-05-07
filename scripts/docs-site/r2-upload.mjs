@@ -15,6 +15,7 @@ const secretAccessKey = process.env.OPENCLAW_R2_SECRET_ACCESS_KEY || process.env
 const region = process.env.OPENCLAW_R2_REGION || "auto";
 const service = "s3";
 const retryAttempts = Number.parseInt(process.env.R2_UPLOAD_RETRIES || "5", 10);
+const deleteOrphans = process.env.R2_DELETE_ORPHANS !== "0";
 
 if (!Number.isFinite(concurrency) || concurrency < 1) throw new Error("R2_UPLOAD_CONCURRENCY must be a positive integer");
 if (!fs.existsSync(manifestPath)) throw new Error("dist/docs-r2-manifest.json does not exist; run docs:build:r2 first");
@@ -26,6 +27,7 @@ const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
 const remoteManifest = await getRemoteManifest();
 const remoteEntries = new Map((remoteManifest?.entries || []).map((entry) => [entry.key, entry]));
 const localKeys = new Set(manifest.entries.map((entry) => entry.key));
+localKeys.add(remoteManifestKey);
 const changed = manifest.entries.filter((entry) => {
   const remote = remoteEntries.get(entry.key);
   return !remote
@@ -33,10 +35,12 @@ const changed = manifest.entries.filter((entry) => {
     || remote.contentType !== entry.contentType
     || remote.cacheControl !== entry.cacheControl;
 });
-const deleted = Array.from(remoteEntries.values()).filter((entry) => !localKeys.has(entry.key));
+const manifestDeletedKeys = Array.from(remoteEntries.keys()).filter((key) => !localKeys.has(key));
+const orphanedKeys = deleteOrphans ? (await listBucketKeys()).filter((key) => !localKeys.has(key)) : [];
+const deleted = Array.from(new Set([...manifestDeletedKeys, ...orphanedKeys])).sort().map((key) => ({ key }));
 
 console.log(
-  `r2 upload plan: ${changed.length}/${manifest.entries.length} changed objects, ${deleted.length} deleted objects for ${bucket}`,
+  `r2 upload plan: ${changed.length}/${manifest.entries.length} changed objects, ${deleted.length} deleted objects (${manifestDeletedKeys.length} from manifest, ${orphanedKeys.length} orphaned) for ${bucket}`,
 );
 await uploadEntries(changed);
 await deleteEntries(deleted);
@@ -59,6 +63,27 @@ async function getRemoteManifest() {
   } catch {
     return null;
   }
+}
+
+async function listBucketKeys() {
+  const keys = [];
+  let continuationToken;
+  do {
+    const query = {
+      "encoding-type": "url",
+      "list-type": "2",
+      "max-keys": "1000",
+    };
+    if (continuationToken) query["continuation-token"] = continuationToken;
+    const response = await signedFetchWithRetry("GET", "", undefined, {}, query);
+    if (!response.ok) throw new Error(`R2 list failed: ${response.status} ${await response.text()}`);
+    const xml = await response.text();
+    keys.push(...extractXmlValues(xml, "Key").map(decodeS3ListKey));
+    continuationToken = extractXmlValue(xml, "NextContinuationToken");
+    const isTruncated = extractXmlValue(xml, "IsTruncated") === "true";
+    if (isTruncated && !continuationToken) throw new Error("R2 list was truncated without a continuation token");
+  } while (continuationToken);
+  return keys;
 }
 
 async function uploadEntries(entries) {
@@ -107,11 +132,11 @@ async function deleteObject(entry) {
   if (!response.ok) throw new Error(`R2 delete failed for ${entry.key}: ${response.status} ${await response.text()}`);
 }
 
-async function signedFetchWithRetry(method, key, body, headers = {}) {
+async function signedFetchWithRetry(method, key, body, headers = {}, query = {}) {
   let lastError;
   for (let attempt = 0; attempt <= retryAttempts; attempt++) {
     try {
-      const response = await signedFetch(method, key, body, headers);
+      const response = await signedFetch(method, key, body, headers, query);
       if (!isRetryableStatus(response.status) || attempt === retryAttempts) return response;
       lastError = new Error(`HTTP ${response.status}`);
       await response.arrayBuffer().catch(() => {});
@@ -124,8 +149,11 @@ async function signedFetchWithRetry(method, key, body, headers = {}) {
   throw lastError;
 }
 
-async function signedFetch(method, key, body, headers = {}) {
-  const url = new URL(`${endpoint.replace(/\/$/, "")}/${bucket}/${encodeS3Key(key)}`);
+async function signedFetch(method, key, body, headers = {}, query = {}) {
+  const encodedKey = key ? `/${encodeS3Key(key)}` : "";
+  const url = new URL(`${endpoint.replace(/\/$/, "")}/${bucket}${encodedKey}`);
+  const canonicalQuery = canonicalQueryString(query);
+  if (canonicalQuery) url.search = canonicalQuery;
   const now = new Date();
   const amzDate = now.toISOString().replace(/[:-]|\.\d{3}/g, "");
   const date = amzDate.slice(0, 8);
@@ -140,7 +168,7 @@ async function signedFetch(method, key, body, headers = {}) {
   const canonicalRequest = [
     method,
     url.pathname,
-    "",
+    canonicalQuery,
     canonicalHeaders,
     signedHeaders.join(";"),
     normalizedHeaders["x-amz-content-sha256"],
@@ -173,6 +201,40 @@ function retryDelay(attempt) {
 
 function encodeS3Key(key) {
   return key.split("/").map((segment) => encodeURIComponent(segment)).join("/");
+}
+
+function canonicalQueryString(query) {
+  return Object.entries(query)
+    .filter(([, value]) => value !== undefined && value !== null)
+    .map(([name, value]) => [awsEncodeURIComponent(name), awsEncodeURIComponent(String(value))])
+    .sort(([leftName, leftValue], [rightName, rightValue]) => leftName.localeCompare(rightName) || leftValue.localeCompare(rightValue))
+    .map(([name, value]) => `${name}=${value}`)
+    .join("&");
+}
+
+function awsEncodeURIComponent(value) {
+  return encodeURIComponent(value).replace(/[!'()*]/g, (char) => `%${char.charCodeAt(0).toString(16).toUpperCase()}`);
+}
+
+function extractXmlValue(xml, name) {
+  return extractXmlValues(xml, name)[0] || "";
+}
+
+function extractXmlValues(xml, name) {
+  return Array.from(xml.matchAll(new RegExp(`<${name}>([\\s\\S]*?)</${name}>`, "g")), (match) => decodeXml(match[1]));
+}
+
+function decodeS3ListKey(value) {
+  return decodeURIComponent(value);
+}
+
+function decodeXml(value) {
+  return value
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, "\"")
+    .replace(/&apos;/g, "'")
+    .replace(/&amp;/g, "&");
 }
 
 function hmac(key, value, encoding) {
