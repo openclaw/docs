@@ -23,11 +23,11 @@ The repo-side pieces are in place:
 - `/concepts/models` -> `concepts/models/index.html`
 - `/concepts/models.md` -> `concepts/models.md`
 
-`r2-upload.mjs` downloads `.openclaw-docs-r2-manifest.json` from R2, compares hashes and metadata, uploads only changed objects, and then writes the new manifest back. The first upload seeds everything; later uploads should be small.
+`r2-upload.mjs` downloads `.openclaw-docs-r2-manifest.json` from R2, compares hashes and metadata, uploads only changed objects through the R2 S3 API, and then writes the new manifest back. The first upload seeds everything; later uploads should be small.
 
 ## Current Production State
 
-Production is still on the safe Worker Static Assets fallback until the Cloudflare account can write R2:
+Production is still on the safe Worker Static Assets fallback until the R2 custom domain and cache rules are cut over:
 
 - Worker: `openclaw-docs-router`
 - Route: `documentation.openclaw.ai/*`
@@ -40,9 +40,9 @@ The fallback uses two cache mechanisms:
 - `workers/docs-router.ts` sets headers for slashless docs pages and `Accept: text/markdown` responses because those paths run through Worker code.
 - `scripts/docs-site/cloudflare-prune.mjs` writes `dist/docs-site/_headers` so direct asset-first paths like `/assets/docs-site.css`, `/concepts/models.md`, and `/llms-full.txt` get the same cache policy without forcing all traffic through Worker code.
 
-The fallback exists because the Services@openclaw.org Cloudflare token currently cannot access R2. Local verification against account `91b59577e757131d68d55a471fe32aca` fails before bucket operations with Cloudflare API auth error `10000`.
+The R2 bucket is already seeded and verified. Do not remove the Worker route or switch `.github/workflows/pages.yml` to R2-only until the R2 custom domain, root rewrite, cache rules, and live smoke have completed successfully.
 
-Do not remove the Worker route or switch `.github/workflows/pages.yml` to R2-only until R2 access is fixed and the R2 workflow has completed successfully.
+The fallback remains the rollback path.
 
 ## Required Cloudflare Access
 
@@ -52,7 +52,7 @@ Cloudflare account:
 - account id: `91b59577e757131d68d55a471fe32aca`
 - zone: `openclaw.ai`
 
-Required token scopes:
+Required Cloudflare API token scopes for bucket/domain/DNS setup:
 
 - `Account: R2 Storage: Edit`
 - `Zone: DNS: Edit`
@@ -61,6 +61,20 @@ Required token scopes:
 - `Zone: Read`
 
 R2 must be enabled for the account before bucket creation works.
+
+Required R2 S3 upload credentials:
+
+- `OPENCLAW_R2_ACCESS_KEY_ID`
+- `OPENCLAW_R2_SECRET_ACCESS_KEY`
+
+For Cloudflare R2 API tokens, the access key id is the account-token id returned by:
+
+```sh
+curl -H "Authorization: Bearer $OPENCLAW_CLOUDFLARE_API_TOKEN" \
+  "https://api.cloudflare.com/client/v4/accounts/$OPENCLAW_CLOUDFLARE_ACCOUNT_ID/tokens/verify"
+```
+
+The secret access key is the SHA-256 hex digest of the R2 token value. These are stored locally in `~/.profile` and should be added to GitHub Actions secrets before enabling the R2 workflow in CI.
 
 ## Deploy Flow
 
@@ -72,7 +86,7 @@ The production fallback workflow remains:
 4. `npx wrangler@4.88.0 deploy --config wrangler.toml`
 5. `docs-live-smoke.yml`
 
-The R2 target workflow is manual until access is fixed:
+The R2 target workflow is manual until production cutover:
 
 1. `.github/workflows/r2-pages.yml`
 2. `npm run docs:build:r2`
@@ -85,13 +99,15 @@ Local R2 build:
 npm run docs:build:r2
 ```
 
-Local R2 upload after access is fixed:
+Local R2 upload:
 
 ```sh
 source ~/.profile
 CLOUDFLARE_ACCOUNT_ID=91b59577e757131d68d55a471fe32aca \
 CLOUDFLARE_R2_BUCKET=openclaw-docs \
-CLOUDFLARE_API_TOKEN="$CRABBOX_CLOUDFLARE_API_TOKEN" \
+OPENCLAW_R2_ACCESS_KEY_ID="$OPENCLAW_R2_ACCESS_KEY_ID" \
+OPENCLAW_R2_SECRET_ACCESS_KEY="$OPENCLAW_R2_SECRET_ACCESS_KEY" \
+R2_UPLOAD_CONCURRENCY=64 \
 npm run docs:r2:upload
 ```
 
@@ -127,15 +143,17 @@ After cutover, verify repeated requests show `cf-cache-status: MISS` then `HIT`.
 
 ## Cutover Checklist
 
-1. Enable R2 on the Services@openclaw.org account.
-2. Fix the GitHub `CLOUDFLARE_API_TOKEN` scopes listed above.
-3. Create the bucket:
+1. Confirm R2 is enabled on the Services@openclaw.org account.
+2. Confirm the GitHub R2 upload secrets are present:
+   - `OPENCLAW_R2_ACCESS_KEY_ID`
+   - `OPENCLAW_R2_SECRET_ACCESS_KEY`
+3. Confirm the bucket exists:
 
    ```sh
    source ~/.profile
    CLOUDFLARE_ACCOUNT_ID=91b59577e757131d68d55a471fe32aca \
-   CLOUDFLARE_API_TOKEN="$CRABBOX_CLOUDFLARE_API_TOKEN" \
-   npx wrangler@4.88.0 r2 bucket create openclaw-docs
+   CLOUDFLARE_API_TOKEN="$OPENCLAW_CLOUDFLARE_API_TOKEN" \
+   npx wrangler@4.88.0 r2 bucket list
    ```
 
 4. Run the manual `R2 Pages` workflow, or run the local upload command above.
