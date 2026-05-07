@@ -16,11 +16,13 @@ copyTree(sourceDir, outputDir);
 const entries = [];
 for (const file of walk(outputDir)) {
   const key = toKey(path.relative(outputDir, file));
+  if (key === "_headers") continue;
   entries.push(entryFor(key, file, key));
 }
 
 for (const file of walk(outputDir)) {
   const rel = toKey(path.relative(outputDir, file));
+  if (rel === "_headers") continue;
   if (!rel.endsWith("/index.html") || rel === "index.html") continue;
   const slashlessKey = rel.slice(0, -"/index.html".length);
   entries.push(entryFor(slashlessKey, file, rel));

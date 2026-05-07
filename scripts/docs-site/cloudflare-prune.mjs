@@ -16,6 +16,7 @@ if (!fs.existsSync(site)) throw new Error("dist/docs-site does not exist; run do
 removeJunkFiles(site);
 removeLocalizedMarkdown(site);
 rebuildEnglishSearch();
+writeStaticAssetHeaders();
 
 const fileCount = countFiles(site);
 if (fileCount > cloudflareFreeFileLimit) {
@@ -65,6 +66,32 @@ function rebuildEnglishSearch() {
   ], { stdio: "inherit" });
   fs.rmSync(tempSearchSite, { recursive: true, force: true });
   if (result.status !== 0) throw new Error(`pagefind failed with status ${result.status ?? "unknown"}`);
+}
+
+function writeStaticAssetHeaders() {
+  fs.writeFileSync(path.join(site, "_headers"), [
+    "/assets/*",
+    "  Cache-Control: public, max-age=31536000, immutable",
+    "",
+    "/pagefind/*",
+    "  Cache-Control: public, max-age=31536000, immutable",
+    "",
+    "/*.html",
+    "  Cache-Control: public, max-age=60, s-maxage=86400, stale-while-revalidate=604800",
+    "",
+    "/*.md",
+    "  Cache-Control: public, max-age=300, s-maxage=3600, stale-while-revalidate=86400",
+    "",
+    "/*.txt",
+    "  Cache-Control: public, max-age=300, s-maxage=3600, stale-while-revalidate=86400",
+    "",
+    "/*.json",
+    "  Cache-Control: public, max-age=300, s-maxage=3600, stale-while-revalidate=86400",
+    "",
+    "/*.jsonl",
+    "  Cache-Control: public, max-age=300, s-maxage=3600, stale-while-revalidate=86400",
+    "",
+  ].join("\n"));
 }
 
 function linkOrCopy(from, to) {

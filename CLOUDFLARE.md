@@ -35,6 +35,11 @@ Production is still on the safe Worker Static Assets fallback until the Cloudfla
 - Header: `X-OpenClaw-Docs-Origin: cloudflare-static-assets`
 - Cache-Control follows the same policy as the R2 manifest.
 
+The fallback uses two cache mechanisms:
+
+- `workers/docs-router.ts` sets headers for slashless docs pages and `Accept: text/markdown` responses because those paths run through Worker code.
+- `scripts/docs-site/cloudflare-prune.mjs` writes `dist/docs-site/_headers` so direct asset-first paths like `/assets/docs-site.css`, `/concepts/models.md`, and `/llms-full.txt` get the same cache policy without forcing all traffic through Worker code.
+
 The fallback exists because the Services@openclaw.org Cloudflare token currently cannot access R2. Local verification against account `91b59577e757131d68d55a471fe32aca` fails before bucket operations with Cloudflare API auth error `10000`.
 
 Do not remove the Worker route or switch `.github/workflows/pages.yml` to R2-only until R2 access is fixed and the R2 workflow has completed successfully.
