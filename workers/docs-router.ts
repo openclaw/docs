@@ -137,6 +137,9 @@ function r2RequestHeaders(request: Request): Headers {
 function cacheRequest(request: Request, pathname: string): Request {
   const url = new URL(request.url);
   url.pathname = pathname;
+  if (isHtmlPath(pathname)) {
+    url.searchParams.set("__openclaw_docs_cache_minute", String(Math.floor(Date.now() / 60_000)));
+  }
   return new Request(url.toString(), {
     headers: request.headers,
     method: "GET",
@@ -151,7 +154,7 @@ function applyCacheHeaders(headers: Headers, pathname: string): void {
 }
 
 function browserCacheControlFor(pathname: string): string {
-  if (pathname.endsWith(".html") || !/\.[^/]+$/.test(pathname)) {
+  if (isHtmlPath(pathname)) {
     return "public, max-age=60, stale-while-revalidate=60";
   }
   if (pathname.endsWith(".md") || pathname.endsWith(".txt") || pathname.endsWith(".json") || pathname.endsWith(".jsonl")) {
@@ -161,13 +164,17 @@ function browserCacheControlFor(pathname: string): string {
 }
 
 function edgeCacheControlFor(pathname: string): string {
-  if (pathname.endsWith(".html") || !/\.[^/]+$/.test(pathname)) {
-    return "public, s-maxage=86400, stale-while-revalidate=604800";
+  if (isHtmlPath(pathname)) {
+    return "public, s-maxage=60, stale-while-revalidate=60";
   }
   if (pathname.endsWith(".md") || pathname.endsWith(".txt") || pathname.endsWith(".json") || pathname.endsWith(".jsonl")) {
     return "public, s-maxage=3600, stale-while-revalidate=86400";
   }
   return "public, max-age=31536000, immutable";
+}
+
+function isHtmlPath(pathname: string): boolean {
+  return pathname.endsWith(".html") || !/\.[^/]+$/.test(pathname);
 }
 
 function appendVary(current: string | null, value: string): string {
