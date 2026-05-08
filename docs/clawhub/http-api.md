@@ -1138,6 +1138,10 @@ Publishes a new version.
 - JSON body with `files` (storageId-based) is also accepted.
 - Optional payload field: `ownerHandle`. When present, the API resolves that
   publisher server-side and requires the actor to have publisher access.
+- Optional payload field: `migrateOwner`. When `true` with `ownerHandle`, an
+  existing skill may move to that owner if the actor is an admin/owner on both
+  the current and target publishers. Without this opt-in, owner changes are
+  rejected.
 
 ### `POST /api/v1/packages`
 

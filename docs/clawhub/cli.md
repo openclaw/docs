@@ -154,6 +154,8 @@ Stores your API token + cached registry URL.
 - Requires semver: `--version 1.2.3`.
 - `--owner <handle>` publishes under an org/user publisher handle when the
   actor has publisher access.
+- `--migrate-owner` moves an existing skill to `--owner` while publishing a new
+  version. Requires admin/owner access on both publishers.
 - Owner and review behavior is explained in `docs/publishing.md`.
 - Publishing a skill means it is released under `MIT-0` on ClawHub.
 - Published skills are free to use, modify, and redistribute without attribution.
@@ -489,7 +491,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/38c21345906ab1f107a91b33bb86b63667d96643/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/5b63d5df6071a91cfd3e5e184bc44e212e977cc9/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:
