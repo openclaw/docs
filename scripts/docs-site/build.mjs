@@ -62,7 +62,9 @@ const localePickerLabels = {
 copyPublicFiles();
 await renderPageOgCards();
 for (const page of pages) writePage(page);
+writeLlmsIndex();
 writeLlmsFull();
+writeSitemap();
 writeRedirects();
 writeStaticAssets();
 console.log(`built ${pages.length} pages in ${path.relative(root, outDir)}`);
@@ -330,14 +332,59 @@ function searchModal() {
 
 function writeLlmsFull() {
   const llmsOrigin = (process.env.DOCS_SITE_CANONICAL_ORIGIN ?? (process.env.DOCS_SITE_CNAME ? `https://${process.env.DOCS_SITE_CNAME}` : "")).replace(/\/$/, "");
-  const englishPages = pages
-    .filter((page) => page.locale === "en" && !localeLabels[page.rel.split("/")[0]])
-    .sort((a, b) => a.slug.localeCompare(b.slug));
+  const englishPages = englishDocsPages();
   const content = englishPages.map((page) => {
     const source = llmsOrigin ? `${llmsOrigin}${pageRoute(page)}` : pageRoute(page);
     return `# ${page.title}\nSource: ${source}\n\n${stripMdxForLlms(page.body).trim()}\n`;
   }).join("\n\n---\n\n");
   fs.writeFileSync(path.join(outDir, "llms-full.txt"), `${content}\n`, "utf8");
+}
+
+function writeLlmsIndex() {
+  const origin = docsOrigin();
+  const lines = [
+    `# ${config.name}`,
+    "",
+    config.description ?? "OpenClaw documentation.",
+    "",
+    "## Full Documentation",
+    "",
+    `- [llms-full.txt](${origin}/llms-full.txt): Full plain-text documentation bundle for LLM context.`,
+    "",
+    "## Documentation Index",
+    "",
+  ];
+  for (const page of englishDocsPages()) {
+    const summary = page.summary ? `: ${stripMdxForLlms(page.summary).replace(/\s+/g, " ").trim()}` : "";
+    lines.push(`- [${page.title}](${origin}${pageRoute(page)})${summary}`);
+  }
+  const content = `${lines.join("\n")}\n`;
+  fs.writeFileSync(path.join(outDir, "llms.txt"), content, "utf8");
+  fs.writeFileSync(path.join(outDir, "llm.txt"), content, "utf8");
+}
+
+function writeSitemap() {
+  const origin = docsOrigin();
+  const urls = [...new Set(pages.map((page) => `${origin}${pageRoute(page)}`))]
+    .sort((a, b) => a.localeCompare(b));
+  const xml = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ...urls.map((url) => `  <url><loc>${escapeXml(url)}</loc></url>`),
+    "</urlset>",
+    "",
+  ].join("\n");
+  fs.writeFileSync(path.join(outDir, "sitemap.xml"), xml, "utf8");
+}
+
+function englishDocsPages() {
+  return pages
+    .filter((page) => page.locale === "en" && !localeLabels[page.rel.split("/")[0]])
+    .sort((a, b) => a.slug.localeCompare(b.slug));
+}
+
+function docsOrigin() {
+  return (canonicalOrigin || "https://documentation.openclaw.ai").replace(/\/$/, "");
 }
 
 function chatWidget() {
@@ -616,4 +663,8 @@ function escapeHtml(value) {
 
 function escapeAttr(value) {
   return escapeHtml(value).replaceAll("'", "&#39;");
+}
+
+function escapeXml(value) {
+  return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&apos;");
 }
