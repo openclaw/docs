@@ -1076,6 +1076,7 @@
                   "channels/msteams",
                   "channels/googlechat",
                   "channels/imessage",
+                  "channels/imessage-from-bluebubbles",
                   "channels/matrix",
                   "channels/matrix-migration",
                   "channels/matrix-push-rules"
@@ -2600,6 +2601,7 @@
                   "zh-TW/channels/msteams",
                   "zh-TW/channels/googlechat",
                   "zh-TW/channels/imessage",
+                  "zh-TW/channels/imessage-from-bluebubbles",
                   "zh-TW/channels/matrix",
                   "zh-TW/channels/matrix-migration",
                   "zh-TW/channels/matrix-push-rules"
@@ -3477,6 +3479,7 @@
                   "ja-JP/channels/msteams",
                   "ja-JP/channels/googlechat",
                   "ja-JP/channels/imessage",
+                  "ja-JP/channels/imessage-from-bluebubbles",
                   "ja-JP/channels/matrix",
                   "ja-JP/channels/matrix-migration",
                   "ja-JP/channels/matrix-push-rules"
@@ -4354,6 +4357,7 @@
                   "es/channels/msteams",
                   "es/channels/googlechat",
                   "es/channels/imessage",
+                  "es/channels/imessage-from-bluebubbles",
                   "es/channels/matrix",
                   "es/channels/matrix-migration",
                   "es/channels/matrix-push-rules"
@@ -5231,6 +5235,7 @@
                   "pt-BR/channels/msteams",
                   "pt-BR/channels/googlechat",
                   "pt-BR/channels/imessage",
+                  "pt-BR/channels/imessage-from-bluebubbles",
                   "pt-BR/channels/matrix",
                   "pt-BR/channels/matrix-migration",
                   "pt-BR/channels/matrix-push-rules"
@@ -6108,6 +6113,7 @@
                   "ko/channels/msteams",
                   "ko/channels/googlechat",
                   "ko/channels/imessage",
+                  "ko/channels/imessage-from-bluebubbles",
                   "ko/channels/matrix",
                   "ko/channels/matrix-migration",
                   "ko/channels/matrix-push-rules"
@@ -6985,6 +6991,7 @@
                   "de/channels/msteams",
                   "de/channels/googlechat",
                   "de/channels/imessage",
+                  "de/channels/imessage-from-bluebubbles",
                   "de/channels/matrix",
                   "de/channels/matrix-migration",
                   "de/channels/matrix-push-rules"
@@ -7862,6 +7869,7 @@
                   "fr/channels/msteams",
                   "fr/channels/googlechat",
                   "fr/channels/imessage",
+                  "fr/channels/imessage-from-bluebubbles",
                   "fr/channels/matrix",
                   "fr/channels/matrix-migration",
                   "fr/channels/matrix-push-rules"
@@ -8739,6 +8747,7 @@
                   "ar/channels/msteams",
                   "ar/channels/googlechat",
                   "ar/channels/imessage",
+                  "ar/channels/imessage-from-bluebubbles",
                   "ar/channels/matrix",
                   "ar/channels/matrix-migration",
                   "ar/channels/matrix-push-rules"
@@ -9616,6 +9625,7 @@
                   "it/channels/msteams",
                   "it/channels/googlechat",
                   "it/channels/imessage",
+                  "it/channels/imessage-from-bluebubbles",
                   "it/channels/matrix",
                   "it/channels/matrix-migration",
                   "it/channels/matrix-push-rules"
@@ -10493,6 +10503,7 @@
                   "vi/channels/msteams",
                   "vi/channels/googlechat",
                   "vi/channels/imessage",
+                  "vi/channels/imessage-from-bluebubbles",
                   "vi/channels/matrix",
                   "vi/channels/matrix-migration",
                   "vi/channels/matrix-push-rules"
@@ -11370,6 +11381,7 @@
                   "nl/channels/msteams",
                   "nl/channels/googlechat",
                   "nl/channels/imessage",
+                  "nl/channels/imessage-from-bluebubbles",
                   "nl/channels/matrix",
                   "nl/channels/matrix-migration",
                   "nl/channels/matrix-push-rules"
@@ -12247,6 +12259,7 @@
                   "tr/channels/msteams",
                   "tr/channels/googlechat",
                   "tr/channels/imessage",
+                  "tr/channels/imessage-from-bluebubbles",
                   "tr/channels/matrix",
                   "tr/channels/matrix-migration",
                   "tr/channels/matrix-push-rules"
@@ -13124,6 +13137,7 @@
                   "uk/channels/msteams",
                   "uk/channels/googlechat",
                   "uk/channels/imessage",
+                  "uk/channels/imessage-from-bluebubbles",
                   "uk/channels/matrix",
                   "uk/channels/matrix-migration",
                   "uk/channels/matrix-push-rules"
@@ -14001,6 +14015,7 @@
                   "id/channels/msteams",
                   "id/channels/googlechat",
                   "id/channels/imessage",
+                  "id/channels/imessage-from-bluebubbles",
                   "id/channels/matrix",
                   "id/channels/matrix-migration",
                   "id/channels/matrix-push-rules"
@@ -14878,6 +14893,7 @@
                   "pl/channels/msteams",
                   "pl/channels/googlechat",
                   "pl/channels/imessage",
+                  "pl/channels/imessage-from-bluebubbles",
                   "pl/channels/matrix",
                   "pl/channels/matrix-migration",
                   "pl/channels/matrix-push-rules"
