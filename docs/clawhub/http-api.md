@@ -1,0 +1,1361 @@
+---
+summary: "HTTP API reference (public + CLI endpoints + auth)."
+read_when:
+  - Adding/changing endpoints
+  - Debugging CLI ↔ registry requests
+---
+
+# HTTP API
+
+Base URL: `https://clawhub.ai` (default).
+
+All v1 paths are under `/api/v1/...`.
+Legacy `/api/...` and `/api/cli/...` remain for compatibility (see `DEPRECATIONS.md`).
+OpenAPI: `/api/v1/openapi.json`.
+
+## Public catalog reuse
+
+Third-party directories may use the public read endpoints to list or search ClawHub skills. Please cache results, honor `429`/`Retry-After`, link users back to the canonical ClawHub listing (`https://clawhub.ai/<owner>/<slug>`), and avoid implying ClawHub endorsement of the third-party site. Do not attempt to mirror hidden, private, or moderation-blocked content outside the public API surface.
+
+Web slug shortcuts resolve across registry families, but API clients should use
+the canonical URLs returned by read endpoints instead of reconstructing route
+precedence.
+
+## Rate limits
+
+Enforcement model:
+
+- Anonymous requests: enforced per IP.
+- Authenticated requests (valid Bearer token): enforced per user bucket.
+- If token is missing/invalid, behavior falls back to IP enforcement.
+- Authenticated write endpoints should not return a bare `Unauthorized` when
+  the server knows the reason. Missing tokens, invalid/revoked tokens, and
+  deleted/banned/disabled accounts should each get actionable text so CLI
+  clients can tell users what blocked them.
+
+- Read: 600/min per IP, 2400/min per key
+- Write: 45/min per IP, 180/min per key
+- Download: 30/min per IP, 180/min per key (`/api/v1/download`)
+
+Headers:
+
+- Legacy compatibility: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`
+- Standardized: `RateLimit-Limit`, `RateLimit-Remaining`, `RateLimit-Reset`
+- On `429`: `Retry-After`
+
+Header semantics:
+
+- `X-RateLimit-Reset`: absolute Unix epoch seconds
+- `RateLimit-Reset`: seconds until reset (delay)
+- `Retry-After`: seconds to wait before retry (delay) on `429`
+
+Example `429` response:
+
+```http
+HTTP/2 429
+content-type: text/plain; charset=utf-8
+x-ratelimit-limit: 20
+x-ratelimit-remaining: 0
+x-ratelimit-reset: 1771404540
+ratelimit-limit: 20
+ratelimit-remaining: 0
+ratelimit-reset: 34
+retry-after: 34
+
+Rate limit exceeded
+```
+
+Client guidance:
+
+- If `Retry-After` exists, wait that many seconds before retry.
+- Use jittered backoff to avoid synchronized retries.
+- If `Retry-After` is missing, fallback to `RateLimit-Reset` (or compute from `X-RateLimit-Reset`).
+
+IP source:
+
+- Uses `cf-connecting-ip` (Cloudflare) for client IP by default.
+- ClawHub uses trusted forwarding headers to identify client IPs at the edge.
+- If no trusted client IP is available, anonymous download requests use an endpoint-scoped fallback bucket instead of one global `ip:unknown` bucket. Anonymous read/write requests still use the shared unknown bucket so missing-IP routing remains visible and conservative.
+
+## Public endpoints (no auth)
+
+### `GET /api/v1/search`
+
+Query params:
+
+- `q` (required): query string
+- `limit` (optional): integer
+- `highlightedOnly` (optional): `true` to filter to highlighted skills
+- `nonSuspiciousOnly` (optional): `true` to hide suspicious (`flagged.suspicious`) skills
+- `nonSuspicious` (optional): legacy alias for `nonSuspiciousOnly`
+
+Response:
+
+```json
+{
+  "results": [
+    {
+      "score": 0.123,
+      "slug": "gifgrep",
+      "displayName": "GifGrep",
+      "summary": "…",
+      "version": "1.2.3",
+      "updatedAt": 1730000000000
+    }
+  ]
+}
+```
+
+Notes:
+
+- Results are returned in relevance order (embedding similarity + exact slug/name token boosts + popularity prior from downloads).
+- Relevance is stronger than popularity. A precise slug or display-name token match can outrank a looser match with many more downloads.
+- ASCII text is tokenized on word and punctuation boundaries. For example, `personal-map` contains a standalone `map` token, while `amap-jsapi-skill` contains `amap`, `jsapi`, and `skill`; searching for `map` therefore gives `personal-map` a stronger lexical match than `amap-jsapi-skill`.
+- Downloads are used as a small log-scaled prior and tie-breaker, not as the primary ranking signal. High-download skills can rank lower when the query text is a weaker match.
+- Suspicious or hidden moderation state can remove a skill from public search depending on caller filters and current moderation status.
+
+Publisher discoverability guidance:
+
+- Put the terms users will literally search for in the display name, summary, and tags. Use a standalone slug token only when it is also a stable identity you want to keep.
+- Do not rename a slug just to chase one query unless the new slug is a better long-term canonical name. Old slugs become redirect aliases, but the canonical URL, displayed slug, and future search digests use the new slug.
+- Rename aliases preserve resolution for old URLs and installs that resolve through the registry, but search ranking is based on the canonical skill metadata after the rename has indexed. Existing stats stay with the skill.
+- If a skill is unexpectedly invisible, check moderation state first with `clawhub inspect <slug>` while logged in before changing ranking-related metadata.
+
+### `GET /api/v1/skills`
+
+Query params:
+
+- `limit` (optional): integer (1–200)
+- `cursor` (optional): pagination cursor for any non-`trending` sort
+- `sort` (optional): `updated` (default), `createdAt` (alias: `newest`), `downloads`, `stars` (alias: `rating`), `installsCurrent` (alias: `installs`), `installsAllTime`, `trending`
+- `nonSuspiciousOnly` (optional): `true` to hide suspicious (`flagged.suspicious`) skills
+- `nonSuspicious` (optional): legacy alias for `nonSuspiciousOnly`
+
+Notes:
+
+- `trending` ranks by installs in the last 7 days (telemetry-based).
+- `createdAt` is stable for new-skill crawls; `updated` changes when existing skills are republished.
+- When `nonSuspiciousOnly=true`, cursor-based sorts may return fewer than `limit` items on a page because suspicious skills are filtered after page retrieval.
+- Use `nextCursor` to continue pagination when present. A short page does not by itself mean end-of-results.
+
+Response:
+
+```json
+{
+  "items": [
+    {
+      "slug": "gifgrep",
+      "displayName": "GifGrep",
+      "summary": "…",
+      "tags": { "latest": "1.2.3" },
+      "stats": {},
+      "createdAt": 0,
+      "updatedAt": 0,
+      "latestVersion": { "version": "1.2.3", "createdAt": 0, "changelog": "…" },
+      "metadata": { "os": ["macos"], "systems": ["aarch64-darwin"] }
+    }
+  ],
+  "nextCursor": null
+}
+```
+
+### `GET /api/v1/skills/{slug}`
+
+Response:
+
+```json
+{
+  "skill": {
+    "slug": "gifgrep",
+    "displayName": "GifGrep",
+    "summary": "…",
+    "tags": { "latest": "1.2.3" },
+    "stats": {},
+    "createdAt": 0,
+    "updatedAt": 0
+  },
+  "latestVersion": { "version": "1.2.3", "createdAt": 0, "changelog": "…" },
+  "metadata": { "os": ["macos"], "systems": ["aarch64-darwin"] },
+  "owner": { "handle": "steipete", "displayName": "Peter", "image": null },
+  "moderation": {
+    "isSuspicious": false,
+    "isMalwareBlocked": false,
+    "verdict": "clean",
+    "reasonCodes": [],
+    "summary": null,
+    "engineVersion": "v2.0.0",
+    "updatedAt": 0
+  }
+}
+```
+
+Notes:
+
+- Old slugs created by owner rename/merge flows resolve to the canonical skill.
+- `metadata.os`: OS restrictions declared in skill frontmatter (e.g. `["macos"]`, `["linux"]`). `null` if not declared.
+- `metadata.systems`: Nix system targets (e.g. `["aarch64-darwin", "x86_64-linux"]`). `null` if not declared.
+- `metadata` is `null` if the skill has no platform metadata.
+- `moderation` is included only when the skill is flagged or the owner is viewing it.
+
+### `GET /api/v1/skills/{slug}/moderation`
+
+Returns structured moderation state.
+
+Response:
+
+```json
+{
+  "moderation": {
+    "isSuspicious": true,
+    "isMalwareBlocked": false,
+    "verdict": "suspicious",
+    "reasonCodes": ["suspicious.dynamic_code_execution"],
+    "summary": "Detected: suspicious.dynamic_code_execution",
+    "engineVersion": "v2.0.0",
+    "updatedAt": 0,
+    "legacyReason": null,
+    "evidence": [
+      {
+        "code": "suspicious.dynamic_code_execution",
+        "severity": "critical",
+        "file": "index.ts",
+        "line": 3,
+        "message": "Dynamic code execution detected.",
+        "evidence": ""
+      }
+    ]
+  }
+}
+```
+
+Notes:
+
+- Owners and moderators can access moderation details for hidden skills.
+- Public callers only get `200` for already-flagged visible skills.
+- Evidence is redacted for public callers and only includes raw snippets for owners/moderators.
+
+### `POST /api/v1/skills/{slug}/report`
+
+Report a skill for moderator review. Reports are skill-level, optionally linked
+to a version, and feed the skill report queue.
+
+Auth:
+
+- Requires an API token.
+
+Request:
+
+```json
+{ "reason": "Suspicious install step", "version": "1.2.3" }
+```
+
+Response:
+
+```json
+{
+  "ok": true,
+  "reported": true,
+  "alreadyReported": false,
+  "reportId": "skillReports:...",
+  "skillId": "skills:...",
+  "reportCount": 1
+}
+```
+
+### `POST /api/v1/skills/{slug}/appeal`
+
+Skill owner/publisher endpoint for appealing moderation on a skill.
+
+Auth:
+
+- Requires an API token for the skill owner or publisher member.
+
+Request:
+
+```json
+{ "version": "1.2.3", "message": "The flagged command is documented setup." }
+```
+
+Appeals are accepted for hidden, removed, suspicious, malicious, or
+scanner-flagged skill outcomes. ClawHub keeps one open appeal per skill.
+
+Response:
+
+```json
+{
+  "ok": true,
+  "submitted": true,
+  "alreadyOpen": false,
+  "appealId": "skillAppeals:...",
+  "skillId": "skills:...",
+  "status": "open"
+}
+```
+
+### `GET /api/v1/skills/-/reports`
+
+Moderator/admin endpoint for skill report intake.
+
+Query params:
+
+- `status` (optional): `open` (default), `confirmed`, `dismissed`, or `all`
+- `limit` (optional): integer (1-200)
+- `cursor` (optional): pagination cursor
+
+Response:
+
+```json
+{
+  "items": [
+    {
+      "reportId": "skillReports:...",
+      "skillId": "skills:...",
+      "skillVersionId": "skillVersions:...",
+      "slug": "gifgrep",
+      "displayName": "GifGrep",
+      "version": "1.2.3",
+      "reason": "Suspicious install step",
+      "status": "open",
+      "createdAt": 1730000000000,
+      "reporter": {
+        "userId": "users:...",
+        "handle": "reporter",
+        "displayName": "Reporter"
+      },
+      "triagedAt": null,
+      "triagedBy": null,
+      "triageNote": null
+    }
+  ],
+  "nextCursor": null,
+  "done": true
+}
+```
+
+### `POST /api/v1/skills/-/reports/{reportId}/triage`
+
+Moderator/admin endpoint for resolving or reopening skill reports.
+
+Request:
+
+```json
+{ "status": "confirmed", "note": "Reviewed and hid affected version.", "finalAction": "hide" }
+```
+
+`note` is required for `confirmed` and `dismissed`; it may be omitted when
+setting `status` back to `open`. Pass `finalAction: "hide"` with a triaged
+report to hide the skill in the same auditable workflow.
+
+### `GET /api/v1/skills/-/appeals`
+
+Moderator/admin endpoint for skill appeal intake.
+
+Query params:
+
+- `status` (optional): `open` (default), `accepted`, `rejected`, or `all`
+- `limit` (optional): integer (1-200)
+- `cursor` (optional): pagination cursor
+
+### `POST /api/v1/skills/-/appeals/{appealId}/resolve`
+
+Moderator/admin endpoint for accepting, rejecting, or reopening a skill appeal.
+`note` is required for `accepted` and `rejected`; it may be omitted when setting
+`status` back to `open`. Pass `finalAction: "restore"` with an accepted appeal
+to make the skill available again.
+
+### `GET /api/v1/skills/{slug}/versions`
+
+Query params:
+
+- `limit` (optional): integer
+- `cursor` (optional): pagination cursor
+
+### `GET /api/v1/skills/{slug}/versions/{version}`
+
+Returns version metadata + files list.
+
+- `version.security` includes normalized scan verification status and scanner details
+  (VirusTotal + LLM), when available.
+
+### `GET /api/v1/skills/{slug}/scan`
+
+Returns security scan verification details for a skill version.
+
+Query params:
+
+- `version` (optional): specific version string.
+- `tag` (optional): resolve a tagged version (for example `latest`).
+
+Notes:
+
+- If neither `version` nor `tag` is provided, uses the latest version.
+- Includes normalized verification status plus scanner-specific details.
+- `security.capabilityTags` includes deterministic capability/risk labels such as
+  `crypto`, `requires-wallet`, `can-make-purchases`, `can-sign-transactions`,
+  `requires-oauth-token`, and `posts-externally` when detected.
+- `security.hasScanResult` is `true` only when a scanner produced a definitive verdict (`clean`, `suspicious`, or `malicious`).
+- `moderation` is a current skill-level moderation snapshot derived from the latest version.
+- When querying a historical version, check `moderation.matchesRequestedVersion` and `moderation.sourceVersion` before treating `moderation` and `security` as the same version context.
+
+### `GET /api/v1/skills/{slug}/file`
+
+Returns raw text content.
+
+Query params:
+
+- `path` (required)
+- `version` (optional)
+- `tag` (optional)
+
+Notes:
+
+- Defaults to latest version.
+- File size limit: 200KB.
+
+### `GET /api/v1/packages`
+
+Unified catalog endpoint for:
+
+- skills
+- code plugins
+- bundle plugins
+
+Query params:
+
+- `limit` (optional): integer (1–100)
+- `cursor` (optional): pagination cursor
+- `family` (optional): `skill`, `code-plugin`, or `bundle-plugin`
+- `channel` (optional): `official`, `community`, or `private`
+- `isOfficial` (optional): `true` or `false`
+- `executesCode` (optional): `true` or `false`
+- `capabilityTag` (optional): capability filter for plugin packages
+- `target` / `hostTarget` (optional): shorthand for `host:<target>`
+- `os`, `arch`, `libc` (optional): shorthand for host capability filters
+- `requiresBrowser`, `requiresDesktop`, `requiresNativeDeps`,
+  `requiresExternalService`, `requiresBinary`, `requiresOsPermission`
+  (optional): `true`/`1` shorthand for environment requirement tags
+- `externalService`, `binary`, `osPermission` (optional): shorthand for named
+  environment requirement tags
+- `artifactKind` (optional): `legacy-zip` or `npm-pack`
+- `npmMirror` (optional): `true`/`1` to show ClawPack-backed package versions
+  available through the npm mirror
+
+Notes:
+
+- `GET /api/v1/code-plugins` and `GET /api/v1/bundle-plugins` remain fixed-family aliases.
+- Skill entries stay backed by the skill registry and can still be published only through `POST /api/v1/skills`.
+- `POST /api/v1/packages` is still only for code-plugin and bundle-plugin releases.
+- Anonymous callers only see public package channels.
+- Authenticated callers can see private packages for publishers they belong to in list/search results.
+- `channel=private` only returns packages the authenticated caller can read.
+
+### `GET /api/v1/packages/search`
+
+Unified catalog search across skills + plugin packages.
+
+Query params:
+
+- `q` (required): query string
+- `limit` (optional): integer (1–100)
+- `family` (optional): `skill`, `code-plugin`, or `bundle-plugin`
+- `channel` (optional): `official`, `community`, or `private`
+- `isOfficial` (optional): `true` or `false`
+- `executesCode` (optional): `true` or `false`
+- `capabilityTag` (optional): capability filter for plugin packages
+- `target` / `hostTarget`, `os`, `arch`, `libc`, `requiresBrowser`,
+  `requiresDesktop`, `requiresNativeDeps`, `requiresExternalService`,
+  `requiresBinary`, `requiresOsPermission`, `externalService`, `binary`, and
+  `osPermission` are accepted as shorthands for common capability tags
+- `artifactKind` (optional): `legacy-zip` or `npm-pack`
+- `npmMirror` (optional): `true`/`1` to search ClawPack-backed package versions
+  available through the npm mirror
+
+Notes:
+
+- Anonymous callers only see public package channels.
+- Authenticated callers can search private packages for publishers they belong to.
+- `channel=private` only returns packages the authenticated caller can read.
+- Artifact filters are backed by indexed capability tags:
+  `artifact:legacy-zip`, `artifact:npm-pack`, and `npm-mirror:available`.
+
+### `GET /api/v1/packages/{name}`
+
+Returns package detail metadata.
+
+Notes:
+
+- Skills can also resolve through this route in the unified catalog.
+- Private packages return `404` unless the caller can read the owning publisher.
+
+### `DELETE /api/v1/packages/{name}`
+
+Soft-deletes a package and all releases.
+
+Notes:
+
+- Requires an API token for the package owner, an org publisher owner/admin,
+  platform moderator, or platform admin.
+
+### `GET /api/v1/packages/{name}/versions`
+
+Returns version history.
+
+Query params:
+
+- `limit` (optional): integer (1–100)
+- `cursor` (optional): pagination cursor
+
+Notes:
+
+- Private packages return `404` unless the caller can read the owning publisher.
+
+### `GET /api/v1/packages/{name}/versions/{version}`
+
+Returns one package version, including file metadata, compatibility,
+capabilities, verification, artifact metadata, and scan data.
+
+Notes:
+
+- `version.artifact.kind` is `legacy-zip` for old-world package archives or
+  `npm-pack` for ClawPack-backed releases.
+- ClawPack releases include npm-compatible `npmIntegrity`, `npmShasum`, and
+  `npmTarballName` fields.
+- `version.sha256hash`, `version.vtAnalysis`, `version.llmAnalysis`, and `version.staticScan` are included when scan data exists.
+- Private packages return `404` unless the caller can read the owning publisher.
+
+### `GET /api/v1/packages/{name}/versions/{version}/artifact`
+
+Returns the explicit artifact resolver metadata for a package version.
+
+Notes:
+
+- Legacy package versions return a `legacy-zip` artifact and a legacy ZIP
+  `downloadUrl`.
+- ClawPack versions return an `npm-pack` artifact, npm integrity fields, a
+  `tarballUrl`, and the legacy ZIP compatibility URL.
+- This is the OpenClaw resolver surface; it avoids guessing archive format from
+  a shared URL.
+
+### `GET /api/v1/packages/{name}/versions/{version}/artifact/download`
+
+Downloads the version artifact through the explicit resolver path.
+
+Notes:
+
+- ClawPack versions stream the exact uploaded npm-pack `.tgz` bytes.
+- Legacy ZIP versions redirect to `/api/v1/packages/{name}/download?version=`.
+- Uses the download rate bucket.
+
+### `GET /api/v1/packages/{name}/readiness`
+
+Returns computed readiness for future OpenClaw consumption.
+
+Readiness checks cover:
+
+- official channel status
+- latest version availability
+- ClawPack npm-pack artifact availability
+- artifact digest
+- source repo and commit provenance
+- OpenClaw compatibility metadata
+- host targets
+- scan state
+
+Response:
+
+```json
+{
+  "package": {
+    "name": "@openclaw/example-plugin",
+    "displayName": "Example Plugin",
+    "family": "code-plugin",
+    "isOfficial": true,
+    "latestVersion": "1.2.3"
+  },
+  "ready": false,
+  "checks": [
+    {
+      "id": "clawpack",
+      "label": "ClawPack artifact",
+      "status": "fail",
+      "message": "Latest version is legacy ZIP-only."
+    }
+  ],
+  "blockers": ["clawpack"]
+}
+```
+
+### `GET /api/v1/packages/migrations`
+
+Moderator endpoint for listing official OpenClaw plugin migration rows.
+
+Auth:
+
+- Requires an API token for a moderator or admin user.
+
+Query params:
+
+- `phase` (optional): `planned`, `published`, `clawpack-ready`,
+  `legacy-zip-only`, `metadata-ready`, `blocked`, `ready-for-openclaw`, or
+  `all` (default).
+- `limit` (optional): integer (1-100)
+- `cursor` (optional): pagination cursor
+
+Response:
+
+```json
+{
+  "items": [
+    {
+      "migrationId": "officialPluginMigrations:...",
+      "bundledPluginId": "core.search",
+      "packageName": "@openclaw/search-plugin",
+      "packageId": "packages:...",
+      "owner": "platform",
+      "sourceRepo": "openclaw/openclaw",
+      "sourcePath": "plugins/search",
+      "sourceCommit": "abc123",
+      "phase": "blocked",
+      "blockers": ["missing ClawPack"],
+      "hostTargetsComplete": true,
+      "scanClean": false,
+      "moderationApproved": false,
+      "runtimeBundlesReady": false,
+      "notes": null,
+      "createdAt": 1760000000000,
+      "updatedAt": 1760000000000
+    }
+  ],
+  "nextCursor": null,
+  "done": true
+}
+```
+
+### `POST /api/v1/packages/migrations`
+
+Admin endpoint for creating or updating an official plugin migration row.
+
+Auth:
+
+- Requires an API token for an admin user.
+
+Request body:
+
+```json
+{
+  "bundledPluginId": "core.search",
+  "packageName": "@openclaw/search-plugin",
+  "owner": "platform",
+  "sourceRepo": "openclaw/openclaw",
+  "sourcePath": "plugins/search",
+  "sourceCommit": "abc123",
+  "phase": "blocked",
+  "blockers": ["missing ClawPack"],
+  "hostTargetsComplete": true,
+  "scanClean": false,
+  "moderationApproved": false,
+  "runtimeBundlesReady": false,
+  "notes": "waiting on publisher upload"
+}
+```
+
+Notes:
+
+- `bundledPluginId` is normalized to lowercase and is the stable upsert key.
+- `packageName` is npm-name normalized; the package can be missing for planned
+  migrations.
+- This tracks migration readiness only. It does not mutate OpenClaw or generate
+  ClawPacks.
+
+### `GET /api/v1/packages/moderation/queue`
+
+Moderator/admin endpoint for package release review queues.
+
+Auth:
+
+- Requires an API token for a moderator or admin user.
+
+Query params:
+
+- `status` (optional): `open` (default), `blocked`, `manual`, or `all`
+- `limit` (optional): integer (1-100)
+- `cursor` (optional): pagination cursor
+
+Status meanings:
+
+- `open`: suspicious, malicious, pending, quarantined, revoked, or reported releases.
+- `blocked`: quarantined, revoked, or malicious releases.
+- `manual`: any release with a manual moderation override.
+- `all`: any release with a manual override, non-clean scan state, or package report.
+
+Response:
+
+```json
+{
+  "items": [
+    {
+      "packageId": "packages:...",
+      "releaseId": "packageReleases:...",
+      "name": "@openclaw/example-plugin",
+      "displayName": "Example Plugin",
+      "family": "code-plugin",
+      "channel": "community",
+      "isOfficial": false,
+      "version": "1.2.3",
+      "createdAt": 1730000000000,
+      "artifactKind": "npm-pack",
+      "scanStatus": "malicious",
+      "moderationState": "quarantined",
+      "moderationReason": "manual review",
+      "sourceRepo": "openclaw/example-plugin",
+      "sourceCommit": "abc123",
+      "reportCount": 2,
+      "lastReportedAt": 1730000001000,
+      "reasons": ["manual:quarantined", "scan:malicious", "reports:2"]
+    }
+  ],
+  "nextCursor": null,
+  "done": true
+}
+```
+
+### `POST /api/v1/packages/{name}/report`
+
+Report a package for moderator review. Reports are package-level, optionally
+linked to a version. They feed the moderation queue but do not auto-hide or
+block downloads by themselves; moderators should use release moderation to
+approve, quarantine, or revoke artifacts.
+
+Auth:
+
+- Requires an API token.
+
+Request:
+
+```json
+{ "reason": "Suspicious native binary", "version": "1.2.3" }
+```
+
+Response:
+
+```json
+{
+  "ok": true,
+  "reported": true,
+  "alreadyReported": false,
+  "packageId": "packages:...",
+  "releaseId": "packageReleases:...",
+  "reportCount": 1
+}
+```
+
+### `POST /api/v1/packages/{name}/appeal`
+
+Package owner/publisher endpoint for appealing moderation on a release.
+
+Auth:
+
+- Requires an API token for the package owner or publisher member.
+
+Request:
+
+```json
+{
+  "version": "1.2.3",
+  "message": "The native binary is signed and matches the linked source release."
+}
+```
+
+Appeals are accepted only for releases that are quarantined, revoked,
+suspicious, or malicious. ClawHub keeps one open appeal per release.
+
+Response:
+
+```json
+{
+  "ok": true,
+  "submitted": true,
+  "alreadyOpen": false,
+  "appealId": "packageAppeals:...",
+  "packageId": "packages:...",
+  "releaseId": "packageReleases:...",
+  "status": "open"
+}
+```
+
+### `GET /api/v1/packages/appeals`
+
+Moderator/admin endpoint for package appeal intake.
+
+Auth:
+
+- Requires an API token for a moderator or admin user.
+
+Query params:
+
+- `status` (optional): `open` (default), `accepted`, `rejected`, or `all`
+- `limit` (optional): integer (1-100)
+- `cursor` (optional): pagination cursor
+
+Response:
+
+```json
+{
+  "items": [
+    {
+      "appealId": "packageAppeals:...",
+      "packageId": "packages:...",
+      "releaseId": "packageReleases:...",
+      "name": "@openclaw/example-plugin",
+      "displayName": "Example Plugin",
+      "family": "code-plugin",
+      "version": "1.2.3",
+      "message": "The native binary is signed.",
+      "status": "open",
+      "createdAt": 1730000000000,
+      "submitter": {
+        "userId": "users:...",
+        "handle": "publisher",
+        "displayName": "Publisher"
+      },
+      "resolvedAt": null,
+      "resolvedBy": null,
+      "resolutionNote": null
+    }
+  ],
+  "nextCursor": null,
+  "done": true
+}
+```
+
+### `POST /api/v1/packages/appeals/{appealId}/resolve`
+
+Moderator/admin endpoint for accepting, rejecting, or reopening an appeal.
+
+Request:
+
+```json
+{ "status": "accepted", "note": "False positive confirmed.", "finalAction": "approve" }
+```
+
+`note` is required for `accepted` and `rejected`; it may be omitted when
+setting `status` back to `open`. Pass `finalAction: "approve"` with an accepted
+appeal to approve the affected release in the same auditable workflow.
+
+Response:
+
+```json
+{
+  "ok": true,
+  "appealId": "packageAppeals:...",
+  "packageId": "packages:...",
+  "releaseId": "packageReleases:...",
+  "status": "rejected"
+}
+```
+
+### `GET /api/v1/packages/reports`
+
+Moderator/admin endpoint for package report intake.
+
+Auth:
+
+- Requires an API token for a moderator or admin user.
+
+Query params:
+
+- `status` (optional): `open` (default), `confirmed`, `dismissed`, or `all`
+- `limit` (optional): integer (1-100)
+- `cursor` (optional): pagination cursor
+
+Response:
+
+```json
+{
+  "items": [
+    {
+      "reportId": "packageReports:...",
+      "packageId": "packages:...",
+      "releaseId": "packageReleases:...",
+      "name": "@openclaw/example-plugin",
+      "displayName": "Example Plugin",
+      "family": "code-plugin",
+      "version": "1.2.3",
+      "reason": "Suspicious native binary",
+      "status": "open",
+      "createdAt": 1730000000000,
+      "reporter": {
+        "userId": "users:...",
+        "handle": "reporter",
+        "displayName": "Reporter"
+      },
+      "triagedAt": null,
+      "triagedBy": null,
+      "triageNote": null
+    }
+  ],
+  "nextCursor": null,
+  "done": true
+}
+```
+
+### `GET /api/v1/packages/{name}/moderation`
+
+Owner/moderator endpoint for package moderation visibility.
+
+Auth:
+
+- Requires an API token for the package owner, publisher member, moderator, or
+  admin user.
+
+Response:
+
+```json
+{
+  "package": {
+    "packageId": "packages:...",
+    "name": "@openclaw/example-plugin",
+    "displayName": "Example Plugin",
+    "family": "code-plugin",
+    "channel": "community",
+    "isOfficial": false,
+    "reportCount": 2,
+    "lastReportedAt": 1730000001000,
+    "scanStatus": "malicious"
+  },
+  "latestRelease": {
+    "releaseId": "packageReleases:...",
+    "version": "1.2.3",
+    "artifactKind": "npm-pack",
+    "scanStatus": "malicious",
+    "moderationState": "quarantined",
+    "moderationReason": "manual review",
+    "blockedFromDownload": true,
+    "reasons": ["manual:quarantined", "scan:malicious", "reports:2"],
+    "createdAt": 1730000000000
+  }
+}
+```
+
+### `POST /api/v1/packages/reports/{reportId}/triage`
+
+Moderator/admin endpoint for resolving or reopening package reports.
+
+Request:
+
+```json
+{
+  "status": "confirmed",
+  "note": "Reviewed and quarantined affected release.",
+  "finalAction": "quarantine"
+}
+```
+
+`note` is required for `confirmed` and `dismissed`; it may be omitted when
+setting `status` back to `open`. Pass `finalAction: "quarantine"` or
+`finalAction: "revoke"` with a confirmed report to apply release moderation in the
+same auditable workflow.
+
+Response:
+
+```json
+{
+  "ok": true,
+  "reportId": "packageReports:...",
+  "packageId": "packages:...",
+  "status": "confirmed",
+  "reportCount": 0
+}
+```
+
+### `POST /api/v1/packages/{name}/versions/{version}/moderation`
+
+Moderator/admin endpoint for package release review.
+
+Request:
+
+```json
+{ "state": "quarantined", "reason": "Suspicious native payload." }
+```
+
+Supported states:
+
+- `approved`: manually reviewed and allowed.
+- `quarantined`: blocked pending follow-up.
+- `revoked`: blocked after a release was previously trusted.
+
+Quarantined and revoked releases return `403` from artifact download routes.
+Every change writes an audit log entry.
+
+### `POST /api/v1/packages/backfill/artifacts`
+
+Admin-only maintenance endpoint for labeling older package releases with
+explicit artifact-kind metadata.
+
+Request body:
+
+```json
+{
+  "cursor": null,
+  "batchSize": 100,
+  "dryRun": true
+}
+```
+
+Response:
+
+```json
+{
+  "ok": true,
+  "scanned": 100,
+  "updated": 12,
+  "nextCursor": "cursor...",
+  "done": false,
+  "dryRun": true
+}
+```
+
+Notes:
+
+- Defaults to dry-run.
+- Releases without ClawPack storage are labeled `legacy-zip`.
+- Existing ClawPack-backed rows missing `artifactKind` are repaired as
+  `npm-pack`.
+- This does not generate ClawPacks or mutate artifact bytes.
+
+### `GET /api/v1/packages/{name}/file`
+
+Returns raw text content for a package file.
+
+Query params:
+
+- `path` (required)
+- `version` (optional)
+- `tag` (optional)
+
+Notes:
+
+- Defaults to the latest release.
+- Uses the read rate bucket, not the download bucket.
+- Binary files return `415`.
+- File size limit: 200KB.
+- Pending VirusTotal scans do not block reads; malicious releases may still be withheld elsewhere.
+- Private packages return `404` unless the caller can read the owning publisher.
+
+### `GET /api/v1/packages/{name}/download`
+
+Downloads the legacy deterministic ZIP archive for a package release.
+
+Query params:
+
+- `version` (optional)
+- `tag` (optional)
+
+Notes:
+
+- Defaults to the latest release.
+- Skills redirect to `GET /api/v1/download`.
+- Plugin/package archives are zip files with a `package/` root so old OpenClaw
+  clients keep working.
+- This route stays ZIP-only. It does not stream ClawPack `.tgz` files.
+- Responses include `ETag`, `Digest`, `X-ClawHub-Artifact-Type`, and
+  `X-ClawHub-Artifact-Sha256` headers for resolver integrity checks.
+- Registry-only metadata is not injected into the downloaded archive.
+- Pending VirusTotal scans do not block downloads; malicious releases return `403`.
+- Private packages return `404` unless the caller is the owner.
+
+### `GET /api/npm/{package}`
+
+Returns an npm-compatible packument for ClawPack-backed package versions.
+
+Notes:
+
+- Only versions with uploaded ClawPack npm-pack tarballs are listed.
+- Legacy ZIP-only versions are intentionally omitted.
+- `dist.tarball`, `dist.integrity`, and `dist.shasum` use npm-compatible
+  fields so users can point npm at the mirror if they choose.
+- Scoped package packuments support both `/api/npm/@scope/name` and npm's
+  encoded `/api/npm/@scope%2Fname` request path.
+
+### `GET /api/npm/{package}/-/{tarball}.tgz`
+
+Streams the exact uploaded ClawPack tarball bytes for npm mirror clients.
+
+Notes:
+
+- Uses the download rate bucket.
+- Download headers include ClawHub SHA-256 plus npm integrity/shasum metadata.
+- Moderation and private package access checks still apply.
+
+### `GET /api/v1/resolve`
+
+Used by the CLI to map a local fingerprint to a known version.
+
+Query params:
+
+- `slug` (required)
+- `hash` (required): 64-char hex sha256 of the bundle fingerprint
+
+Response:
+
+```json
+{ "slug": "gifgrep", "match": { "version": "1.2.2" }, "latestVersion": { "version": "1.2.3" } }
+```
+
+### `GET /api/v1/download`
+
+Downloads a zip of a skill version.
+
+Query params:
+
+- `slug` (required)
+- `version` (optional): semver string
+- `tag` (optional): tag name (e.g. `latest`)
+
+Notes:
+
+- If neither `version` nor `tag` is provided, the latest version is used.
+- Soft-deleted versions return `410`.
+- Download stats are counted as unique identities per hour (`userId` when API token is valid, otherwise IP).
+
+## Auth endpoints (Bearer token)
+
+All endpoints require:
+
+```
+Authorization: Bearer clh_...
+```
+
+### `GET /api/v1/whoami`
+
+Validates token and returns the user handle.
+
+### `POST /api/v1/skills`
+
+Publishes a new version.
+
+- Preferred: `multipart/form-data` with `payload` JSON + `files[]` blobs.
+- JSON body with `files` (storageId-based) is also accepted.
+- Optional payload field: `ownerHandle`. When present, the API resolves that
+  publisher server-side and requires the actor to have publisher access.
+
+### `POST /api/v1/packages`
+
+Publishes a code-plugin or bundle-plugin release.
+
+- Requires Bearer token auth.
+- Preferred: `multipart/form-data` with `payload` JSON + `files[]` blobs.
+- JSON body with `files` (storageId-based) is also accepted.
+- Optional payload field: `ownerHandle`. When present, only admins may publish on behalf of that owner.
+
+Validation highlights:
+
+- `family` must be `code-plugin` or `bundle-plugin`.
+- Plugin packages require `openclaw.plugin.json`. ClawPack `.tgz` uploads must
+  contain it at `package/openclaw.plugin.json`.
+- Code plugins require `package.json`, source repo metadata, source commit
+  metadata, config schema metadata, `openclaw.compat.pluginApi`, and
+  `openclaw.build.openclawVersion`.
+- `openclaw.hostTargets` and `openclaw.environment` are optional metadata.
+- Only trusted publishers may publish to the `official` channel.
+- On-behalf publishes still validate official-channel eligibility against the target owner account.
+
+### `DELETE /api/v1/skills/{slug}` / `POST /api/v1/skills/{slug}/undelete`
+
+Soft-delete / restore a skill (owner, moderator, or admin).
+
+Optional JSON body:
+
+```json
+{ "reason": "Held for moderation pending legal review." }
+```
+
+When present, `reason` is stored as the skill moderation note and copied into the audit log.
+
+Status codes:
+
+- `200`: ok
+- `401`: unauthorized
+- `403`: forbidden
+- `404`: skill/user not found
+- `500`: internal server error
+
+### `POST /api/v1/users/publisher`
+
+Admin-only. Ensures an org publisher exists for a handle. If the handle still points at a
+legacy shared user/personal publisher, the endpoint migrates it into an org publisher first.
+
+- Body: `{ "handle": "openclaw", "displayName": "OpenClaw", "trusted": true }`
+- Response: `{ "ok": true, "publisherId": "...", "handle": "openclaw", "created": true, "migrated": false, "trusted": true }`
+
+### `POST /api/v1/users/reserve`
+
+Admin-only. Reserves root slugs and package names for a rightful owner without publishing a
+release. Package names become private placeholder packages with no release rows, so the same
+owner can later publish the real code-plugin or bundle-plugin release into that name.
+
+- Body: `{ "handle": "openclaw", "slugs": ["diffs"], "packageNames": ["@openclaw/diffs"], "reason": "reserved for official OpenClaw plugin" }`
+- Response: `{ "ok": true, "succeeded": 2, "failed": 0, "results": [{ "kind": "slug", "name": "diffs", "ok": true, "action": "reserved" }] }`
+
+### Owner slug management endpoints
+
+- `POST /api/v1/skills/{slug}/rename`
+  - Body: `{ "newSlug": "new-canonical-slug" }`
+  - Response: `{ "ok": true, "slug": "new-canonical-slug", "previousSlug": "old-slug" }`
+- `POST /api/v1/skills/{slug}/merge`
+  - Body: `{ "targetSlug": "canonical-target-slug" }`
+  - Response: `{ "ok": true, "sourceSlug": "old-slug", "targetSlug": "canonical-target-slug" }`
+
+Notes:
+
+- Both endpoints require API token auth and only work for the skill owner.
+- `rename` preserves the previous slug as a redirect alias.
+- `merge` hides the source listing and redirects the source slug to the target listing.
+
+### Transfer ownership endpoints
+
+- `POST /api/v1/skills/{slug}/transfer`
+  - Body: `{ "toUserHandle": "target_handle", "message": "optional" }`
+  - Response: `{ "ok": true, "transferId": "skillOwnershipTransfers:...", "toUserHandle": "target_handle", "expiresAt": 1730000000000 }`
+- `POST /api/v1/skills/{slug}/transfer/accept`
+- `POST /api/v1/skills/{slug}/transfer/reject`
+- `POST /api/v1/skills/{slug}/transfer/cancel`
+  - Response (accept/reject/cancel): `{ "ok": true, "skillSlug": "demo-skill?" }`
+- `GET /api/v1/transfers/incoming`
+- `GET /api/v1/transfers/outgoing`
+  - Response shape: `{ "transfers": [{ "_id": "...", "skill": { "slug": "demo", "displayName": "Demo" }, "fromUser"|"toUser": { "handle": "..." }, "message": "...", "requestedAt": 0, "expiresAt": 0 }] }`
+
+### `POST /api/v1/users/ban`
+
+Ban a user and hard-delete owned skills (moderator/admin only).
+
+Body:
+
+```json
+{ "handle": "user_handle", "reason": "optional ban reason" }
+```
+
+or
+
+```json
+{ "userId": "users_...", "reason": "optional ban reason" }
+```
+
+Response:
+
+```json
+{ "ok": true, "alreadyBanned": false, "deletedSkills": 3 }
+```
+
+### `POST /api/v1/users/unban`
+
+Unban a user and restore eligible skills (admin only).
+
+Body:
+
+```json
+{ "handle": "user_handle", "reason": "optional unban reason" }
+```
+
+or
+
+```json
+{ "userId": "users_...", "reason": "optional unban reason" }
+```
+
+Response:
+
+```json
+{ "ok": true, "alreadyUnbanned": false, "restoredSkills": 3 }
+```
+
+### `POST /api/v1/users/role`
+
+Change a user role (admin only).
+
+Body:
+
+```json
+{ "handle": "user_handle", "role": "moderator" }
+```
+
+or
+
+```json
+{ "userId": "users_...", "role": "admin" }
+```
+
+Response:
+
+```json
+{ "ok": true, "role": "moderator" }
+```
+
+### `GET /api/v1/users`
+
+List or search users (admin only).
+
+Query params:
+
+- `q` (optional): search query
+- `query` (optional): alias for `q`
+- `limit` (optional): max results (default 20, max 200)
+
+Response:
+
+```json
+{
+  "items": [
+    {
+      "userId": "users_...",
+      "handle": "user_handle",
+      "displayName": "User",
+      "name": "User",
+      "role": "moderator"
+    }
+  ],
+  "total": 1
+}
+```
+
+### `POST /api/v1/stars/{slug}` / `DELETE /api/v1/stars/{slug}`
+
+Add/remove a star (highlights). Both endpoints are idempotent.
+
+Responses:
+
+```json
+{ "ok": true, "starred": true, "alreadyStarred": false }
+```
+
+```json
+{ "ok": true, "unstarred": true, "alreadyUnstarred": false }
+```
+
+## Legacy CLI endpoints (deprecated)
+
+Still supported for older CLI versions:
+
+- `GET /api/cli/whoami`
+- `POST /api/cli/upload-url`
+- `POST /api/cli/publish`
+- `POST /api/cli/telemetry/sync`
+- `POST /api/cli/skill/delete`
+- `POST /api/cli/skill/undelete`
+
+See `DEPRECATIONS.md` for removal plan.
+
+## Registry discovery (`/.well-known/clawhub.json`)
+
+The CLI can discover registry/auth settings from the site:
+
+- `/.well-known/clawhub.json` (JSON, preferred)
+- `/.well-known/clawdhub.json` (legacy)
+
+Schema:
+
+```json
+{ "apiBase": "https://clawhub.ai", "authBase": "https://clawhub.ai", "minCliVersion": "0.0.5" }
+```
+
+If you self-host, serve this file (or set `CLAWHUB_REGISTRY` explicitly; legacy `CLAWDHUB_REGISTRY`).

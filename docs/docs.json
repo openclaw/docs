@@ -393,16 +393,16 @@
       "destination": "/channels/pairing"
     },
     {
-      "source": "/clawhub",
-      "destination": "/tools/clawhub"
+      "source": "/clawdhub",
+      "destination": "/clawhub"
     },
     {
-      "source": "/clawdhub",
-      "destination": "/tools/clawhub"
+      "source": "/tools/clawhub",
+      "destination": "/clawhub"
     },
     {
       "source": "/tools/clawdhub",
-      "destination": "/tools/clawhub"
+      "destination": "/clawhub"
     },
     {
       "source": "/configuration",
@@ -1257,7 +1257,6 @@
                   "tools/creating-skills",
                   "tools/skills-config",
                   "tools/slash-commands",
-                  "tools/clawhub",
                   "prose"
                 ]
               },
@@ -1336,6 +1335,40 @@
                   "tools/acp-agents",
                   "tools/acp-agents-setup",
                   "tools/multi-agent-sandbox-tools"
+                ]
+              }
+            ]
+          },
+          {
+            "tab": "ClawHub",
+            "groups": [
+              {
+                "group": "Overview",
+                "pages": [
+                  "clawhub/index",
+                  "clawhub/quickstart",
+                  "clawhub/how-it-works"
+                ]
+              },
+              {
+                "group": "Using ClawHub",
+                "pages": [
+                  "clawhub/cli",
+                  "clawhub/publishing",
+                  "clawhub/skill-format",
+                  "clawhub/soul-format",
+                  "clawhub/auth",
+                  "clawhub/telemetry",
+                  "clawhub/troubleshooting"
+                ]
+              },
+              {
+                "group": "API and trust",
+                "pages": [
+                  "clawhub/api",
+                  "clawhub/http-api",
+                  "clawhub/security",
+                  "clawhub/acceptable-usage"
                 ]
               }
             ]
@@ -2068,7 +2101,6 @@
                   "zh-CN/tools/slash-commands",
                   "zh-CN/tools/skills",
                   "zh-CN/tools/skills-config",
-                  "zh-CN/tools/clawhub",
                   "zh-CN/tools/plugin"
                 ]
               },
@@ -2749,7 +2781,6 @@
                   "zh-TW/tools/creating-skills",
                   "zh-TW/tools/skills-config",
                   "zh-TW/tools/slash-commands",
-                  "zh-TW/tools/clawhub",
                   "zh-TW/prose"
                 ]
               },
@@ -3627,7 +3658,6 @@
                   "ja-JP/tools/creating-skills",
                   "ja-JP/tools/skills-config",
                   "ja-JP/tools/slash-commands",
-                  "ja-JP/tools/clawhub",
                   "ja-JP/prose"
                 ]
               },
@@ -4505,7 +4535,6 @@
                   "es/tools/creating-skills",
                   "es/tools/skills-config",
                   "es/tools/slash-commands",
-                  "es/tools/clawhub",
                   "es/prose"
                 ]
               },
@@ -5383,7 +5412,6 @@
                   "pt-BR/tools/creating-skills",
                   "pt-BR/tools/skills-config",
                   "pt-BR/tools/slash-commands",
-                  "pt-BR/tools/clawhub",
                   "pt-BR/prose"
                 ]
               },
@@ -6261,7 +6289,6 @@
                   "ko/tools/creating-skills",
                   "ko/tools/skills-config",
                   "ko/tools/slash-commands",
-                  "ko/tools/clawhub",
                   "ko/prose"
                 ]
               },
@@ -7139,7 +7166,6 @@
                   "de/tools/creating-skills",
                   "de/tools/skills-config",
                   "de/tools/slash-commands",
-                  "de/tools/clawhub",
                   "de/prose"
                 ]
               },
@@ -8017,7 +8043,6 @@
                   "fr/tools/creating-skills",
                   "fr/tools/skills-config",
                   "fr/tools/slash-commands",
-                  "fr/tools/clawhub",
                   "fr/prose"
                 ]
               },
@@ -8895,7 +8920,6 @@
                   "ar/tools/creating-skills",
                   "ar/tools/skills-config",
                   "ar/tools/slash-commands",
-                  "ar/tools/clawhub",
                   "ar/prose"
                 ]
               },
@@ -9773,7 +9797,6 @@
                   "it/tools/creating-skills",
                   "it/tools/skills-config",
                   "it/tools/slash-commands",
-                  "it/tools/clawhub",
                   "it/prose"
                 ]
               },
@@ -10651,7 +10674,6 @@
                   "vi/tools/creating-skills",
                   "vi/tools/skills-config",
                   "vi/tools/slash-commands",
-                  "vi/tools/clawhub",
                   "vi/prose"
                 ]
               },
@@ -11529,7 +11551,6 @@
                   "nl/tools/creating-skills",
                   "nl/tools/skills-config",
                   "nl/tools/slash-commands",
-                  "nl/tools/clawhub",
                   "nl/prose"
                 ]
               },
@@ -12407,7 +12428,6 @@
                   "tr/tools/creating-skills",
                   "tr/tools/skills-config",
                   "tr/tools/slash-commands",
-                  "tr/tools/clawhub",
                   "tr/prose"
                 ]
               },
@@ -13285,7 +13305,6 @@
                   "uk/tools/creating-skills",
                   "uk/tools/skills-config",
                   "uk/tools/slash-commands",
-                  "uk/tools/clawhub",
                   "uk/prose"
                 ]
               },
@@ -14163,7 +14182,6 @@
                   "id/tools/creating-skills",
                   "id/tools/skills-config",
                   "id/tools/slash-commands",
-                  "id/tools/clawhub",
                   "id/prose"
                 ]
               },
@@ -15041,7 +15059,6 @@
                   "pl/tools/creating-skills",
                   "pl/tools/skills-config",
                   "pl/tools/slash-commands",
-                  "pl/tools/clawhub",
                   "pl/prose"
                 ]
               },

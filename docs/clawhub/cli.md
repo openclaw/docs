@@ -1,0 +1,558 @@
+---
+summary: "CLI reference: commands, flags, config, lockfile, sync behavior."
+read_when:
+  - Using the ClawHub CLI
+  - Debugging install, update, publish, or sync
+---
+
+# CLI
+
+CLI package: `clawhub`, bin: `clawhub`.
+
+Install it globally with npm or pnpm:
+
+```bash
+npm i -g clawhub
+# or
+pnpm add -g clawhub
+```
+
+Then verify it:
+
+```bash
+clawhub --help
+clawhub login
+clawhub whoami
+```
+
+## Global flags
+
+- `--workdir <dir>`: working directory (default: cwd; falls back to Clawdbot workspace if configured)
+- `--dir <dir>`: install dir under workdir (default: `skills`)
+- `--site <url>`: base URL for browser login (default: `https://clawhub.ai`)
+- `--registry <url>`: API base URL (default: discovered, else `https://clawhub.ai`)
+- `--no-input`: disable prompts
+
+Env equivalents:
+
+- `CLAWHUB_SITE` (legacy `CLAWDHUB_SITE`)
+- `CLAWHUB_REGISTRY` (legacy `CLAWDHUB_REGISTRY`)
+- `CLAWHUB_WORKDIR` (legacy `CLAWDHUB_WORKDIR`)
+
+### HTTP proxy
+
+The CLI respects standard HTTP proxy environment variables for systems behind
+corporate proxies or restricted networks:
+
+- `HTTPS_PROXY` / `https_proxy`
+- `HTTP_PROXY` / `http_proxy`
+- `NO_PROXY` / `no_proxy`
+
+When any of these variables is set, the CLI routes outbound requests through
+the specified proxy. `HTTPS_PROXY` is used for HTTPS requests, `HTTP_PROXY`
+for plain HTTP. `NO_PROXY` / `no_proxy` is respected to bypass the proxy for
+specific hosts or domains.
+
+This is required on systems where direct outbound connections are blocked
+(e.g. Docker containers, Hetzner VPS with proxy-only internet, corporate
+firewalls).
+
+Example:
+
+```bash
+export HTTPS_PROXY=http://proxy.example.com:3128
+export NO_PROXY=localhost,127.0.0.1
+clawhub search "my query"
+```
+
+When no proxy variable is set, behavior is unchanged (direct connections).
+
+## Config file
+
+Stores your API token + cached registry URL.
+
+- macOS: `~/Library/Application Support/clawhub/config.json`
+- Linux/XDG: `$XDG_CONFIG_HOME/clawhub/config.json` or `~/.config/clawhub/config.json`
+- Windows: `%APPDATA%\\clawhub\\config.json`
+- Legacy fallback: if `clawhub/config.json` does not exist yet but `clawdhub/config.json` does, the CLI reuses the legacy path
+- override: `CLAWHUB_CONFIG_PATH` (legacy `CLAWDHUB_CONFIG_PATH`)
+
+## Commands
+
+### `login` / `auth login`
+
+- Default: opens browser to `<site>/cli/auth` and completes via loopback callback.
+- Headless: `clawhub login --token clh_...`
+
+### `whoami`
+
+- Verifies the stored token via `/api/v1/whoami`.
+
+### `star <slug>` / `unstar <slug>`
+
+- Adds/removes a skill from your highlights.
+- Calls `POST /api/v1/stars/<slug>` and `DELETE /api/v1/stars/<slug>`.
+- `--yes` skips confirmation.
+
+### `search <query...>`
+
+- Calls `/api/v1/search?q=...`.
+- Search favors exact slug/name token matches before download popularity. A standalone slug token such as `map` matches `personal-map` more strongly than the substring inside `amap`.
+- Downloads are a small popularity prior, not a guarantee of top placement.
+- If a skill should appear but does not, run `clawhub inspect <slug>` while logged in to check owner-visible moderation diagnostics before renaming metadata.
+
+### `explore`
+
+- Lists newest skills via `/api/v1/skills?limit=...&sort=createdAt` (sorted by `createdAt` desc).
+- Flags:
+  - `--limit <n>` (1-200, default: 25)
+  - `--sort newest|updated|downloads|rating|installs|installsAllTime|trending` (default: newest)
+  - `--json` (machine-readable output)
+- Output: `<slug>  v<version>  <age>  <summary>` (summary truncated to 50 chars).
+
+### `inspect <slug>`
+
+- Fetches skill metadata and version files without installing.
+- `--version <version>`: inspect a specific version (default: latest).
+- `--tag <tag>`: inspect a tagged version (e.g. `latest`).
+- `--versions`: list version history (first page).
+- `--limit <n>`: max versions to list (1-200).
+- `--files`: list files for the selected version.
+- `--file <path>`: fetch raw file content (text files only; 200KB limit).
+- `--json`: machine-readable output.
+
+### `install <slug>`
+
+- Resolves latest version via `/api/v1/skills/<slug>`.
+- Downloads zip via `/api/v1/download`.
+- Extracts into `<workdir>/<dir>/<slug>`.
+- Writes:
+  - `<workdir>/.clawhub/lock.json` (legacy `.clawdhub`)
+  - `<skill>/.clawhub/origin.json` (legacy `.clawdhub`)
+
+### `uninstall <slug>`
+
+- Removes `<workdir>/<dir>/<slug>` and deletes the lockfile entry.
+- Interactive: asks for confirmation.
+- Non-interactive (`--no-input`): requires `--yes`.
+
+### `list`
+
+- Reads `<workdir>/.clawhub/lock.json` (legacy `.clawdhub`).
+
+### `update [slug]` / `update --all`
+
+- Computes fingerprint from local files.
+- If fingerprint matches a known version: no prompt.
+- If fingerprint does not match:
+  - refuses by default
+  - overwrites with `--force` (or prompt, if interactive)
+
+### `skill publish <path>`
+
+- Publishes via `POST /api/v1/skills` (multipart).
+- Requires semver: `--version 1.2.3`.
+- `--owner <handle>` publishes under an org/user publisher handle when the
+  actor has publisher access.
+- Publishing a skill means it is released under `MIT-0` on ClawHub.
+- Published skills are free to use, modify, and redistribute without attribution.
+- ClawHub does not support paid skills or per-skill pricing.
+- Legacy alias: `publish <path>`.
+
+### `delete <slug>`
+
+- Soft-delete a skill (owner, moderator, or admin).
+- Calls `DELETE /api/v1/skills/{slug}`.
+- `--reason <text>` records a moderation note on the skill and audit log.
+- `--note <text>` is an alias for `--reason`.
+- `--yes` skips confirmation.
+
+### `undelete <slug>`
+
+- Restore a hidden skill (owner, moderator, or admin).
+- Calls `POST /api/v1/skills/{slug}/undelete`.
+- `--reason <text>` records a moderation note on the skill and audit log.
+- `--note <text>` is an alias for `--reason`.
+- `--yes` skips confirmation.
+
+### `hide <slug>`
+
+- Hide a skill (owner, moderator, or admin).
+- Alias for `delete`.
+
+### `unhide <slug>`
+
+- Unhide a skill (owner, moderator, or admin).
+- Alias for `undelete`.
+
+### `skill rename <slug> <new-slug>`
+
+- Rename an owned skill and keep the previous slug as a redirect alias.
+- Calls `POST /api/v1/skills/{slug}/rename`.
+- `--yes` skips confirmation.
+
+### `skill merge <source-slug> <target-slug>`
+
+- Merge one owned skill into another owned skill.
+- The source slug stops listing publicly and becomes a redirect alias to the target.
+- Calls `POST /api/v1/skills/{sourceSlug}/merge`.
+- `--yes` skips confirmation.
+
+### `transfer`
+
+- Ownership transfer workflow.
+- Subcommands:
+  - `transfer request <slug> <handle> [--message "..."] [--yes]`
+  - `transfer list [--outgoing]`
+  - `transfer accept <slug> [--yes]`
+  - `transfer reject <slug> [--yes]`
+  - `transfer cancel <slug> [--yes]`
+- Endpoints:
+  - `POST /api/v1/skills/{slug}/transfer`
+  - `POST /api/v1/skills/{slug}/transfer/accept`
+  - `POST /api/v1/skills/{slug}/transfer/reject`
+  - `POST /api/v1/skills/{slug}/transfer/cancel`
+  - `GET /api/v1/transfers/incoming`
+  - `GET /api/v1/transfers/outgoing`
+
+### `package explore [query...]`
+
+- Browses or searches the unified package catalog via `GET /api/v1/packages` and `GET /api/v1/packages/search`.
+- Use this for plugins and other package-family entries; top-level `search` remains the skill search surface.
+- Flags:
+  - `--family skill|code-plugin|bundle-plugin`
+  - `--official`
+  - `--executes-code`
+  - `--target <target>`, `--os <os>`, `--arch <arch>`, `--libc <libc>`
+  - `--requires-browser`, `--requires-desktop`, `--requires-native-deps`
+  - `--requires-external-service`, `--external-service <name>`
+  - `--binary <name>`, `--os-permission <name>`
+  - `--artifact-kind legacy-zip|npm-pack`
+  - `--npm-mirror`
+  - `--limit <n>` (1-100, default: 25)
+  - `--json`
+
+Examples:
+
+```bash
+clawhub package explore --family code-plugin
+clawhub package explore --family code-plugin --os darwin --requires-desktop
+clawhub package explore --family code-plugin --artifact-kind npm-pack
+clawhub package explore --npm-mirror
+clawhub package explore episodic-claw --family code-plugin
+```
+
+### `package inspect <name>`
+
+- Fetches package metadata without installing.
+- Use this for plugin metadata, compatibility, verification, source, and version/file inspection.
+- `--version <version>`: inspect a specific version (default: latest).
+- `--tag <tag>`: inspect a tagged version (e.g. `latest`).
+- `--versions`: list version history (first page).
+- `--limit <n>`: max versions to list (1-100).
+- `--files`: list files for the selected version.
+- `--file <path>`: fetch raw file content (text files only; 200KB limit).
+- `--json`: machine-readable output.
+
+### `package download <name>`
+
+- Resolves a package version through
+  `GET /api/v1/packages/{name}/versions/{version}/artifact`.
+- Downloads the artifact from the resolver's `downloadUrl`.
+- Verifies ClawHub SHA-256 for all artifacts.
+- For ClawPack npm-pack artifacts, also verifies npm `sha512` integrity,
+  npm shasum, and the tarball's `package.json` name/version.
+- Legacy ZIP versions download through the legacy ZIP route.
+- Flags:
+  - `--version <version>`: download a specific version.
+  - `--tag <tag>`: download a tagged version (default: `latest`).
+  - `-o, --output <path>`: output file or directory.
+  - `--force`: overwrite an existing output file.
+  - `--json`: machine-readable output.
+
+Examples:
+
+```bash
+clawhub package download @openclaw/example-plugin --tag latest
+clawhub package download @openclaw/example-plugin --version 1.2.3 -o artifacts/
+```
+
+### `package verify <file>`
+
+- Computes ClawHub SHA-256, npm `sha512` integrity, and npm shasum for a local
+  artifact.
+- With `--package`, resolves expected metadata from ClawHub and compares the
+  local file against the published artifact metadata.
+- With direct digest flags, verifies without a network lookup.
+- Flags:
+  - `--package <name>`: package name to resolve expected artifact metadata.
+  - `--version <version>` or `--tag <tag>`: expected package version.
+  - `--sha256 <hex>`: expected ClawHub SHA-256.
+  - `--npm-integrity <sri>`: expected npm integrity.
+  - `--npm-shasum <sha1>`: expected npm shasum.
+  - `--json`: machine-readable output.
+
+Examples:
+
+```bash
+clawhub package verify ./example-plugin-1.2.3.tgz --package @openclaw/example-plugin --version 1.2.3
+clawhub package verify ./example-plugin-1.2.3.tgz --sha256 <hex>
+```
+
+### `package delete <name>`
+
+- Soft-deletes a package and all releases.
+- Requires the package owner, an org publisher owner/admin, platform moderator,
+  or platform admin.
+- Flags:
+  - `--yes`: skip confirmation.
+  - `--json`: machine-readable output.
+
+Example:
+
+```bash
+clawhub package delete @openclaw/example-plugin --yes
+```
+
+### `package report`
+
+- Authenticated command for reporting a package to moderators.
+- Calls `POST /api/v1/packages/{name}/report`.
+- Reports are package-level, optionally tied to a version, and become visible
+  to moderators for review.
+- Reports do not auto-hide packages or block downloads by themselves.
+- Flags:
+  - `--version <version>`: optional package version to attach to the report.
+  - `--reason <text>`: required report reason.
+  - `--json`: machine-readable output.
+
+Example:
+
+```bash
+clawhub package report @openclaw/example-plugin --version 1.2.3 --reason "suspicious native payload"
+```
+
+### `package appeal`
+
+- Owner/publisher command for appealing release moderation.
+- Calls `POST /api/v1/packages/{name}/appeal`.
+- Appeals are accepted for quarantined, revoked, suspicious, or malicious
+  releases.
+- Flags:
+  - `--version <version>`: required package version.
+  - `--message <text>`: required appeal message.
+  - `--json`: machine-readable output.
+
+Example:
+
+```bash
+clawhub package appeal @openclaw/example-plugin --version 1.2.3 --message "linked source release explains the native binary"
+```
+
+### `package moderation-status`
+
+- Owner command for checking package moderation visibility.
+- Calls `GET /api/v1/packages/{name}/moderation`.
+- Shows current package scan state, open report count, latest release manual
+  moderation state, download block state, and moderation reasons.
+- Flags:
+  - `--json`: machine-readable output.
+
+Example:
+
+```bash
+clawhub package moderation-status @openclaw/example-plugin
+```
+
+### `package readiness <name>`
+
+- Checks whether a package is ready for future OpenClaw consumption.
+- Calls `GET /api/v1/packages/{name}/readiness`.
+- Reports blockers for official status, ClawPack availability, artifact digest,
+  source provenance, OpenClaw compatibility, host targets, environment metadata,
+  and scan state.
+- Flags:
+  - `--json`: machine-readable output.
+
+Example:
+
+```bash
+clawhub package readiness @openclaw/example-plugin
+```
+
+### `package migration-status <name>`
+
+- Shows operator-oriented migration status for a package that may replace a
+  bundled OpenClaw plugin.
+- Calls the same computed readiness endpoint as `package readiness`, but prints
+  migration-focused status, latest version, official-package state, checks, and
+  blockers.
+- Flags:
+  - `--json`: machine-readable output.
+
+Example:
+
+```bash
+clawhub package migration-status @openclaw/example-plugin
+```
+
+### `package publish <source>`
+
+- Publishes a code plugin or bundle plugin via `POST /api/v1/packages`.
+- `<source>` accepts:
+  - Local folder path: `./my-plugin`
+  - Local ClawPack npm-pack tarball: `./my-plugin-1.2.3.tgz`
+  - GitHub repo: `owner/repo` or `owner/repo@ref`
+  - GitHub URL: `https://github.com/owner/repo`
+- Metadata is auto-detected from `package.json`, `openclaw.plugin.json`, and
+  real OpenClaw bundle markers such as `.codex-plugin/plugin.json`,
+  `.claude-plugin/plugin.json`, and `.cursor-plugin/plugin.json`.
+- `.tgz` sources are treated as ClawPack. The CLI uploads the exact npm-pack
+  bytes and uses the extracted `package/` contents only for validation and
+  metadata prefill.
+- Code-plugin folders are packed into a ClawPack npm tarball before upload so
+  OpenClaw installs can verify the exact artifact. Bundle-plugin folders still
+  use the extracted-file publish path.
+- For GitHub sources, source attribution is auto-populated from the repo, resolved commit, ref, and subpath.
+- For local folders, source attribution is auto-detected from local git when the origin remote points at GitHub.
+- External code plugins must declare `openclaw.compat.pluginApi` and
+  `openclaw.build.openclawVersion` explicitly.
+  Top-level `package.json.version` is not used as a fallback for publish validation.
+- `--dry-run` previews the resolved publish payload without uploading.
+- `--json` emits machine-readable output for CI.
+- `--owner <handle>` publishes under a user or org publisher handle when the actor has publisher access.
+- Existing flags (`--family`, `--name`, `--version`, `--source-repo`, `--source-commit`, `--source-ref`, `--source-path`) still work as overrides.
+- Private GitHub repos require `GITHUB_TOKEN`.
+
+#### Recommended local flow
+
+Use `--dry-run` first so you can confirm the resolved package metadata and
+source attribution before creating a live release:
+
+```bash
+npm pack
+clawhub package publish ./my-plugin-1.2.3.tgz --family code-plugin --dry-run
+clawhub package publish ./my-plugin-1.2.3.tgz --family code-plugin
+```
+
+#### Local folder flow
+
+For code plugins, folder publish builds and uploads a ClawPack artifact from
+the package folder:
+
+```bash
+clawhub package publish ./my-plugin --family code-plugin --dry-run
+clawhub package publish ./my-plugin --family code-plugin
+```
+
+#### Minimal `package.json` for `--family code-plugin`
+
+External code plugins need a small amount of OpenClaw metadata in
+`package.json`. This minimal manifest is enough for a successful publish:
+
+```json
+{
+  "name": "@myorg/openclaw-my-plugin",
+  "version": "1.0.0",
+  "type": "module",
+  "openclaw": {
+    "extensions": ["./index.ts"],
+    "compat": {
+      "pluginApi": ">=2026.3.24-beta.2"
+    },
+    "build": {
+      "openclawVersion": "2026.3.24-beta.2"
+    }
+  }
+}
+```
+
+Required fields:
+
+- `openclaw.compat.pluginApi`
+- `openclaw.build.openclawVersion`
+
+Notes:
+
+- `package.json.version` is your package release version, but it is not used as
+  a fallback for OpenClaw compatibility/build validation.
+- `openclaw.hostTargets` and `openclaw.environment` are optional metadata.
+  ClawHub may surface them when present, but they are not required for publish.
+- `openclaw.compat.minGatewayVersion` and
+  `openclaw.build.pluginSdkVersion` are optional extras if you want to publish
+  more detailed compatibility metadata.
+- If you are using an older `clawhub` CLI release, upgrade before publishing so
+  the local preflight checks run before upload.
+
+#### GitHub Actions
+
+ClawHub also ships an official reusable workflow at
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/86898837fb3aa9f7370d8b15a1c2bb50e7aa9793/.github/workflows/package-publish.yml)
+for plugin repos.
+
+Typical caller setup:
+
+```yaml
+name: Package Publish
+
+on:
+  pull_request:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  dry-run:
+    if: github.event_name == 'pull_request'
+    uses: openclaw/clawhub/.github/workflows/package-publish.yml@v0.12.0
+    with:
+      dry_run: true
+
+  publish:
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
+    permissions:
+      contents: read
+      id-token: write
+    uses: openclaw/clawhub/.github/workflows/package-publish.yml@v0.12.0
+    with:
+      dry_run: false
+    secrets:
+      clawhub_token: ${{ secrets.CLAWHUB_TOKEN }}
+```
+
+Notes:
+
+- The reusable workflow defaults `source` to the caller repo.
+- For monorepos, pass `source_path` so the workflow publishes the plugin
+  package folder, for example `source_path: extensions/codex`.
+- Pin the reusable workflow to a stable tag or full commit SHA. Do not run release publishing from `@main`.
+- `pull_request` should use `dry_run: true` so CI stays non-polluting.
+- Real publishes should be limited to trusted events such as `workflow_dispatch` or tag pushes.
+- Trusted publishing without a secret only works on `workflow_dispatch`; tag pushes still need `clawhub_token`.
+- Keep `clawhub_token` available for first publish, untrusted packages, or break-glass publishes.
+- The workflow uploads the JSON result as an artifact and exposes it as workflow outputs.
+
+### `sync`
+
+- Scans for local skill folders and publishes new/changed ones.
+- Roots can be any folder: a skills directory or a single skill folder with `SKILL.md`.
+- Auto-adds Clawdbot skill roots when `~/.clawdbot/clawdbot.json` is present:
+  - `agent.workspace/skills` (main agent)
+  - `routing.agents.*.workspace/skills` (per-agent)
+  - `~/.clawdbot/skills` (shared)
+  - `skills.load.extraDirs` (shared packs)
+- Respects `CLAWDBOT_CONFIG_PATH` / `CLAWDBOT_STATE_DIR` and `OPENCLAW_CONFIG_PATH` / `OPENCLAW_STATE_DIR`.
+- Flags:
+  - `--root <dir...>` extra scan roots
+  - `--all` upload without prompting
+  - `--dry-run` show plan only
+  - `--bump patch|minor|major` (default: patch)
+  - `--changelog <text>` (non-interactive)
+  - `--tags a,b,c` (default: latest)
+  - `--concurrency <n>` (default: 4)
+
+Telemetry:
+
+- Sent during `sync` when logged in, unless `CLAWHUB_DISABLE_TELEMETRY=1` (legacy `CLAWDHUB_DISABLE_TELEMETRY=1`).
+- Details: `docs/telemetry.md`.
