@@ -99,6 +99,34 @@ jobs:
             if (!/^---\n/m.test(text)) throw new Error(`${path}: markdown frontmatter missing`);
             console.log(`${path}: ok (markdown)`);
           };
+          const assertText = async (path, pattern) => {
+            const url = new URL(path, baseUrl);
+            url.searchParams.set("_openclaw_smoke", process.env.GITHUB_SHA);
+            const response = await fetch(url, {
+              headers: {
+                "cache-control": "no-cache",
+                pragma: "no-cache",
+              },
+            });
+            if (!response.ok) throw new Error(`${path}: text HTTP ${response.status}`);
+            const text = await response.text();
+            const contentType = response.headers.get("content-type") ?? "";
+            if (!/text\/plain|text\/markdown|application\/xml/.test(contentType)) {
+              throw new Error(`${path}: unexpected content-type ${contentType}`);
+            }
+            if (!pattern.test(text)) throw new Error(`${path}: expected marker missing`);
+            console.log(`${path}: ok (${contentType})`);
+          };
+          const assertStatus = async (path, status) => {
+            const response = await fetch(new URL(path, baseUrl), {
+              headers: {
+                "cache-control": "no-cache",
+                pragma: "no-cache",
+              },
+            });
+            if (response.status !== status) throw new Error(`${path}: expected HTTP ${status}, got ${response.status}`);
+            console.log(`${path}: ok (HTTP ${status})`);
+          };
           const deadline = Date.now() + 20 * 60 * 1000;
           let lastError;
           for (let attempt = 1; Date.now() < deadline; attempt += 1) {
@@ -107,6 +135,12 @@ jobs:
                 await assertPage(page, attempt);
               }
               await assertMarkdown("/concepts/models");
+              await assertText("/robots.txt", /Sitemap: .*\/sitemap\.xml/);
+              await assertText("/llms.txt", /## Documentation Index/);
+              await assertText("/.well-known/llms.txt", /## Documentation Index/);
+              await assertText("/sitemap.xml", /<urlset/);
+              await assertStatus("/llms-full.txt", 410);
+              await assertStatus("/.well-known/llms-full.txt", 410);
               process.exit(0);
             } catch (error) {
               lastError = error;

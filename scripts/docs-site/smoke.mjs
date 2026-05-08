@@ -12,7 +12,8 @@ const required = [
   "concepts/models.md",
   "llm.txt",
   "llms.txt",
-  "llms-full.txt",
+  ".well-known/llms.txt",
+  "robots.txt",
   "sitemap.xml",
   "de/tools/reactions/index.html",
   "de/gateway/heartbeat/index.html",
@@ -39,6 +40,21 @@ for (const rel of required) {
   for (const pattern of poison) {
     if (pattern.test(html)) throw new Error(`${rel}: poison matched ${pattern}`);
   }
+}
+for (const rel of ["llms-full.txt", ".well-known/llms-full.txt"]) {
+  if (fs.existsSync(path.join(site, rel))) throw new Error(`${rel}: full-site LLM corpus should not be emitted`);
+}
+const llms = fs.readFileSync(path.join(site, "llms.txt"), "utf8");
+if (/llms-full\.txt/.test(llms)) throw new Error("llms.txt: should not advertise llms-full.txt");
+if (!/Accept: text\/markdown|\.md/.test(llms)) throw new Error("llms.txt: should advertise page-level Markdown");
+const wellKnownLlms = fs.readFileSync(path.join(site, ".well-known/llms.txt"), "utf8");
+if (wellKnownLlms !== llms) throw new Error(".well-known/llms.txt: does not match root llms.txt");
+const robots = fs.readFileSync(path.join(site, "robots.txt"), "utf8");
+if (!/Sitemap: https:\/\/documentation\.openclaw\.ai\/sitemap\.xml/.test(robots)) {
+  throw new Error("robots.txt: sitemap directive missing");
+}
+if (!/Disallow: \/llms-full\.txt/.test(robots) || !/LLMS: https:\/\/documentation\.openclaw\.ai\/llms\.txt/.test(robots)) {
+  throw new Error("robots.txt: LLM directives missing");
 }
 const zhReactions = fs.readFileSync(path.join(site, "zh-CN/tools/reactions/index.html"), "utf8");
 if (!/href="(?:\/docs)?\/zh-CN\/tools\/reactions"/.test(zhReactions)) {

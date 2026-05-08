@@ -191,6 +191,10 @@ curl -I https://documentation.openclaw.ai/start/getting-started
 curl -I https://documentation.openclaw.ai/concepts/models
 curl -I https://documentation.openclaw.ai/concepts/models.md
 curl -I https://documentation.openclaw.ai/docs/platforms/digitalocean
+curl -I https://documentation.openclaw.ai/llms.txt
+curl -I https://documentation.openclaw.ai/.well-known/llms.txt
+curl -I https://documentation.openclaw.ai/robots.txt
+curl -I https://documentation.openclaw.ai/sitemap.xml
 curl -I https://documentation.openclaw.ai/llms-full.txt
 curl -I https://documentation.openclaw.ai/assets/docs-site.css
 curl -i https://documentation.openclaw.ai/ask-molty/api/session
@@ -200,6 +204,10 @@ Expected after R2 cutover:
 
 - slashless HTML paths return `200`.
 - `.md` paths return `text/markdown`.
+- `/llms.txt` and `/.well-known/llms.txt` return the lightweight docs index, not a full-site corpus.
+- `/robots.txt` returns `200 text/plain`.
+- `/sitemap.xml` returns `200 application/xml`.
+- `/llms-full.txt` returns `410`; OpenClaw intentionally does not publish a full-site LLM corpus.
 - docs responses include `X-OpenClaw-Docs-Origin: cloudflare-r2`.
 - repeated router requests become `X-OpenClaw-Docs-Cache: HIT`.
 - `/ask-molty/api/session` returns `401` when logged out.

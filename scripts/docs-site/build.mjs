@@ -63,7 +63,7 @@ copyPublicFiles();
 await renderPageOgCards();
 for (const page of pages) writePage(page);
 writeLlmsIndex();
-writeLlmsFull();
+writeRobotsTxt();
 writeSitemap();
 writeRedirects();
 writeStaticAssets();
@@ -330,16 +330,6 @@ function searchModal() {
   return `<div class="search-modal"><div class="search-panel"><div class="search-head"><input data-search-input placeholder="Search docs"><button data-search-close>Close</button></div><div class="search-results" data-search-results></div></div></div>`;
 }
 
-function writeLlmsFull() {
-  const llmsOrigin = (process.env.DOCS_SITE_CANONICAL_ORIGIN ?? (process.env.DOCS_SITE_CNAME ? `https://${process.env.DOCS_SITE_CNAME}` : "")).replace(/\/$/, "");
-  const englishPages = englishDocsPages();
-  const content = englishPages.map((page) => {
-    const source = llmsOrigin ? `${llmsOrigin}${pageRoute(page)}` : pageRoute(page);
-    return `# ${page.title}\nSource: ${source}\n\n${stripMdxForLlms(page.body).trim()}\n`;
-  }).join("\n\n---\n\n");
-  fs.writeFileSync(path.join(outDir, "llms-full.txt"), `${content}\n`, "utf8");
-}
-
 function writeLlmsIndex() {
   const origin = docsOrigin();
   const lines = [
@@ -347,9 +337,13 @@ function writeLlmsIndex() {
     "",
     config.description ?? "OpenClaw documentation.",
     "",
-    "## Full Documentation",
+    "> Use this file as a lightweight map of the OpenClaw documentation. Fetch individual pages as Markdown with `.md` URLs or `Accept: text/markdown`; OpenClaw does not publish a full-site LLM corpus.",
     "",
-    `- [llms-full.txt](${origin}/llms-full.txt): Full plain-text documentation bundle for LLM context.`,
+    "## Agent Resources",
+    "",
+    `- [Markdown page export](${origin}/start/getting-started.md): Append \`.md\` to any docs page URL for clean Markdown.`,
+    `- [Sitemap](${origin}/sitemap.xml): Search crawler URL index.`,
+    `- [Robots policy](${origin}/robots.txt): Bot and crawler policy.`,
     "",
     "## Documentation Index",
     "",
@@ -361,6 +355,47 @@ function writeLlmsIndex() {
   const content = `${lines.join("\n")}\n`;
   fs.writeFileSync(path.join(outDir, "llms.txt"), content, "utf8");
   fs.writeFileSync(path.join(outDir, "llm.txt"), content, "utf8");
+  const wellKnownDir = path.join(outDir, ".well-known");
+  fs.mkdirSync(wellKnownDir, { recursive: true });
+  fs.writeFileSync(path.join(wellKnownDir, "llms.txt"), content, "utf8");
+}
+
+function writeRobotsTxt() {
+  const origin = docsOrigin();
+  const botAgents = [
+    "GPTBot",
+    "OAI-SearchBot",
+    "ChatGPT-User",
+    "ClaudeBot",
+    "Claude-User",
+    "PerplexityBot",
+    "Perplexity-User",
+    "Google-Extended",
+  ];
+  const lines = [
+    "# OpenClaw documentation crawler policy",
+    "# Human docs are HTML. Agent-optimized docs are available as Markdown via .md URLs or Accept: text/markdown.",
+    "# No full-site LLM corpus is published; use /llms.txt as the index and fetch only the pages you need.",
+    "",
+    "User-agent: *",
+    "Allow: /",
+    "Disallow: /ask-molty/api/",
+    "Disallow: /llms-full.txt",
+    "Disallow: /.well-known/llms-full.txt",
+    "",
+  ];
+  for (const agent of botAgents) {
+    lines.push(`User-agent: ${agent}`);
+    lines.push("Allow: /");
+    lines.push("Disallow: /ask-molty/api/");
+    lines.push("Disallow: /llms-full.txt");
+    lines.push("Disallow: /.well-known/llms-full.txt");
+    lines.push("");
+  }
+  lines.push(`Sitemap: ${origin}/sitemap.xml`);
+  lines.push(`LLMS: ${origin}/llms.txt`);
+  lines.push("");
+  fs.writeFileSync(path.join(outDir, "robots.txt"), lines.join("\n"), "utf8");
 }
 
 function writeSitemap() {
