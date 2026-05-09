@@ -166,6 +166,7 @@ Stores your API token + cached registry URL.
 
 - Soft-delete a skill (owner, moderator, or admin).
 - Calls `DELETE /api/v1/skills/{slug}`.
+- Owner-initiated soft deletes reserve the slug for 30 days; the command prints the expiry time.
 - `--reason <text>` records a moderation note on the skill and audit log.
 - `--note <text>` is an alias for `--reason`.
 - `--yes` skips confirmation.
@@ -491,7 +492,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/5b63d5df6071a91cfd3e5e184bc44e212e977cc9/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/b6875e60f64b0a93dffa73dd415c9fd2e79c1488/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:
