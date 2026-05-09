@@ -1079,6 +1079,7 @@
                   "channels/imessage-from-bluebubbles",
                   "channels/matrix",
                   "channels/matrix-migration",
+                  "channels/matrix-presentation",
                   "channels/matrix-push-rules"
                 ]
               },
@@ -2606,6 +2607,7 @@
                   "zh-TW/channels/imessage-from-bluebubbles",
                   "zh-TW/channels/matrix",
                   "zh-TW/channels/matrix-migration",
+                  "zh-TW/channels/matrix-presentation",
                   "zh-TW/channels/matrix-push-rules"
                 ]
               },
@@ -3486,6 +3488,7 @@
                   "ja-JP/channels/imessage-from-bluebubbles",
                   "ja-JP/channels/matrix",
                   "ja-JP/channels/matrix-migration",
+                  "ja-JP/channels/matrix-presentation",
                   "ja-JP/channels/matrix-push-rules"
                 ]
               },
@@ -4366,6 +4369,7 @@
                   "es/channels/imessage-from-bluebubbles",
                   "es/channels/matrix",
                   "es/channels/matrix-migration",
+                  "es/channels/matrix-presentation",
                   "es/channels/matrix-push-rules"
                 ]
               },
@@ -5246,6 +5250,7 @@
                   "pt-BR/channels/imessage-from-bluebubbles",
                   "pt-BR/channels/matrix",
                   "pt-BR/channels/matrix-migration",
+                  "pt-BR/channels/matrix-presentation",
                   "pt-BR/channels/matrix-push-rules"
                 ]
               },
@@ -6126,6 +6131,7 @@
                   "ko/channels/imessage-from-bluebubbles",
                   "ko/channels/matrix",
                   "ko/channels/matrix-migration",
+                  "ko/channels/matrix-presentation",
                   "ko/channels/matrix-push-rules"
                 ]
               },
@@ -7006,6 +7012,7 @@
                   "de/channels/imessage-from-bluebubbles",
                   "de/channels/matrix",
                   "de/channels/matrix-migration",
+                  "de/channels/matrix-presentation",
                   "de/channels/matrix-push-rules"
                 ]
               },
@@ -7886,6 +7893,7 @@
                   "fr/channels/imessage-from-bluebubbles",
                   "fr/channels/matrix",
                   "fr/channels/matrix-migration",
+                  "fr/channels/matrix-presentation",
                   "fr/channels/matrix-push-rules"
                 ]
               },
@@ -8766,6 +8774,7 @@
                   "ar/channels/imessage-from-bluebubbles",
                   "ar/channels/matrix",
                   "ar/channels/matrix-migration",
+                  "ar/channels/matrix-presentation",
                   "ar/channels/matrix-push-rules"
                 ]
               },
@@ -9646,6 +9655,7 @@
                   "it/channels/imessage-from-bluebubbles",
                   "it/channels/matrix",
                   "it/channels/matrix-migration",
+                  "it/channels/matrix-presentation",
                   "it/channels/matrix-push-rules"
                 ]
               },
@@ -10526,6 +10536,7 @@
                   "vi/channels/imessage-from-bluebubbles",
                   "vi/channels/matrix",
                   "vi/channels/matrix-migration",
+                  "vi/channels/matrix-presentation",
                   "vi/channels/matrix-push-rules"
                 ]
               },
@@ -11406,6 +11417,7 @@
                   "nl/channels/imessage-from-bluebubbles",
                   "nl/channels/matrix",
                   "nl/channels/matrix-migration",
+                  "nl/channels/matrix-presentation",
                   "nl/channels/matrix-push-rules"
                 ]
               },
@@ -12286,6 +12298,7 @@
                   "tr/channels/imessage-from-bluebubbles",
                   "tr/channels/matrix",
                   "tr/channels/matrix-migration",
+                  "tr/channels/matrix-presentation",
                   "tr/channels/matrix-push-rules"
                 ]
               },
@@ -13166,6 +13179,7 @@
                   "uk/channels/imessage-from-bluebubbles",
                   "uk/channels/matrix",
                   "uk/channels/matrix-migration",
+                  "uk/channels/matrix-presentation",
                   "uk/channels/matrix-push-rules"
                 ]
               },
@@ -14046,6 +14060,7 @@
                   "id/channels/imessage-from-bluebubbles",
                   "id/channels/matrix",
                   "id/channels/matrix-migration",
+                  "id/channels/matrix-presentation",
                   "id/channels/matrix-push-rules"
                 ]
               },
@@ -14926,6 +14941,7 @@
                   "pl/channels/imessage-from-bluebubbles",
                   "pl/channels/matrix",
                   "pl/channels/matrix-migration",
+                  "pl/channels/matrix-presentation",
                   "pl/channels/matrix-push-rules"
                 ]
               },
