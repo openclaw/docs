@@ -133,6 +133,7 @@ See [MCP](/cli/mcp#openclaw-as-an-mcp-client-registry) and
     allowBundled: ["gemini", "peekaboo"],
     load: {
       extraDirs: ["~/Projects/agent-scripts/skills"],
+      allowSymlinkTargets: ["~/Projects/manager/skills"],
     },
     install: {
       preferBrew: true,
@@ -152,6 +153,8 @@ See [MCP](/cli/mcp#openclaw-as-an-mcp-client-registry) and
 
 - `allowBundled`: optional allowlist for bundled skills only (managed/workspace skills unaffected).
 - `load.extraDirs`: extra shared skill roots (lowest precedence).
+- `load.allowSymlinkTargets`: trusted real target roots that skill symlinks may
+  resolve into when the link lives outside its configured source root.
 - `install.preferBrew`: when true, prefer Homebrew installers when `brew` is
   available before falling back to other installer kinds.
 - `install.nodeManager`: node installer preference for `metadata.openclaw.install`
