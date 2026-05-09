@@ -1217,6 +1217,7 @@
                   "plugins/memory-wiki",
                   "plugins/memory-lancedb",
                   "plugins/message-presentation",
+                  "plugins/oc-path",
                   "plugins/skill-workshop",
                   "plugins/zalouser",
                   {
@@ -1725,6 +1726,7 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "cli/plugins",
+                      "cli/path",
                       "cli/skills"
                     ]
                   },
@@ -2742,6 +2744,7 @@
                   "zh-TW/plugins/memory-wiki",
                   "zh-TW/plugins/memory-lancedb",
                   "zh-TW/plugins/message-presentation",
+                  "zh-TW/plugins/oc-path",
                   "zh-TW/plugins/skill-workshop",
                   "zh-TW/plugins/zalouser",
                   {
@@ -3216,6 +3219,7 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "zh-TW/cli/plugins",
+                      "zh-TW/cli/path",
                       "zh-TW/cli/skills"
                     ]
                   },
@@ -3620,6 +3624,7 @@
                   "ja-JP/plugins/memory-wiki",
                   "ja-JP/plugins/memory-lancedb",
                   "ja-JP/plugins/message-presentation",
+                  "ja-JP/plugins/oc-path",
                   "ja-JP/plugins/skill-workshop",
                   "ja-JP/plugins/zalouser",
                   {
@@ -4094,6 +4099,7 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "ja-JP/cli/plugins",
+                      "ja-JP/cli/path",
                       "ja-JP/cli/skills"
                     ]
                   },
@@ -4498,6 +4504,7 @@
                   "es/plugins/memory-wiki",
                   "es/plugins/memory-lancedb",
                   "es/plugins/message-presentation",
+                  "es/plugins/oc-path",
                   "es/plugins/skill-workshop",
                   "es/plugins/zalouser",
                   {
@@ -4972,6 +4979,7 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "es/cli/plugins",
+                      "es/cli/path",
                       "es/cli/skills"
                     ]
                   },
@@ -5376,6 +5384,7 @@
                   "pt-BR/plugins/memory-wiki",
                   "pt-BR/plugins/memory-lancedb",
                   "pt-BR/plugins/message-presentation",
+                  "pt-BR/plugins/oc-path",
                   "pt-BR/plugins/skill-workshop",
                   "pt-BR/plugins/zalouser",
                   {
@@ -5850,6 +5859,7 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "pt-BR/cli/plugins",
+                      "pt-BR/cli/path",
                       "pt-BR/cli/skills"
                     ]
                   },
@@ -6254,6 +6264,7 @@
                   "ko/plugins/memory-wiki",
                   "ko/plugins/memory-lancedb",
                   "ko/plugins/message-presentation",
+                  "ko/plugins/oc-path",
                   "ko/plugins/skill-workshop",
                   "ko/plugins/zalouser",
                   {
@@ -6728,6 +6739,7 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "ko/cli/plugins",
+                      "ko/cli/path",
                       "ko/cli/skills"
                     ]
                   },
@@ -7132,6 +7144,7 @@
                   "de/plugins/memory-wiki",
                   "de/plugins/memory-lancedb",
                   "de/plugins/message-presentation",
+                  "de/plugins/oc-path",
                   "de/plugins/skill-workshop",
                   "de/plugins/zalouser",
                   {
@@ -7606,6 +7619,7 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "de/cli/plugins",
+                      "de/cli/path",
                       "de/cli/skills"
                     ]
                   },
@@ -8010,6 +8024,7 @@
                   "fr/plugins/memory-wiki",
                   "fr/plugins/memory-lancedb",
                   "fr/plugins/message-presentation",
+                  "fr/plugins/oc-path",
                   "fr/plugins/skill-workshop",
                   "fr/plugins/zalouser",
                   {
@@ -8484,6 +8499,7 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "fr/cli/plugins",
+                      "fr/cli/path",
                       "fr/cli/skills"
                     ]
                   },
@@ -8888,6 +8904,7 @@
                   "ar/plugins/memory-wiki",
                   "ar/plugins/memory-lancedb",
                   "ar/plugins/message-presentation",
+                  "ar/plugins/oc-path",
                   "ar/plugins/skill-workshop",
                   "ar/plugins/zalouser",
                   {
@@ -9362,6 +9379,7 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "ar/cli/plugins",
+                      "ar/cli/path",
                       "ar/cli/skills"
                     ]
                   },
@@ -9766,6 +9784,7 @@
                   "it/plugins/memory-wiki",
                   "it/plugins/memory-lancedb",
                   "it/plugins/message-presentation",
+                  "it/plugins/oc-path",
                   "it/plugins/skill-workshop",
                   "it/plugins/zalouser",
                   {
@@ -10240,6 +10259,7 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "it/cli/plugins",
+                      "it/cli/path",
                       "it/cli/skills"
                     ]
                   },
@@ -10644,6 +10664,7 @@
                   "vi/plugins/memory-wiki",
                   "vi/plugins/memory-lancedb",
                   "vi/plugins/message-presentation",
+                  "vi/plugins/oc-path",
                   "vi/plugins/skill-workshop",
                   "vi/plugins/zalouser",
                   {
@@ -11118,6 +11139,7 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "vi/cli/plugins",
+                      "vi/cli/path",
                       "vi/cli/skills"
                     ]
                   },
@@ -11522,6 +11544,7 @@
                   "nl/plugins/memory-wiki",
                   "nl/plugins/memory-lancedb",
                   "nl/plugins/message-presentation",
+                  "nl/plugins/oc-path",
                   "nl/plugins/skill-workshop",
                   "nl/plugins/zalouser",
                   {
@@ -11996,6 +12019,7 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "nl/cli/plugins",
+                      "nl/cli/path",
                       "nl/cli/skills"
                     ]
                   },
@@ -12400,6 +12424,7 @@
                   "tr/plugins/memory-wiki",
                   "tr/plugins/memory-lancedb",
                   "tr/plugins/message-presentation",
+                  "tr/plugins/oc-path",
                   "tr/plugins/skill-workshop",
                   "tr/plugins/zalouser",
                   {
@@ -12874,6 +12899,7 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "tr/cli/plugins",
+                      "tr/cli/path",
                       "tr/cli/skills"
                     ]
                   },
@@ -13278,6 +13304,7 @@
                   "uk/plugins/memory-wiki",
                   "uk/plugins/memory-lancedb",
                   "uk/plugins/message-presentation",
+                  "uk/plugins/oc-path",
                   "uk/plugins/skill-workshop",
                   "uk/plugins/zalouser",
                   {
@@ -13752,6 +13779,7 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "uk/cli/plugins",
+                      "uk/cli/path",
                       "uk/cli/skills"
                     ]
                   },
@@ -14156,6 +14184,7 @@
                   "id/plugins/memory-wiki",
                   "id/plugins/memory-lancedb",
                   "id/plugins/message-presentation",
+                  "id/plugins/oc-path",
                   "id/plugins/skill-workshop",
                   "id/plugins/zalouser",
                   {
@@ -14630,6 +14659,7 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "id/cli/plugins",
+                      "id/cli/path",
                       "id/cli/skills"
                     ]
                   },
@@ -15034,6 +15064,7 @@
                   "pl/plugins/memory-wiki",
                   "pl/plugins/memory-lancedb",
                   "pl/plugins/message-presentation",
+                  "pl/plugins/oc-path",
                   "pl/plugins/skill-workshop",
                   "pl/plugins/zalouser",
                   {
@@ -15508,6 +15539,7 @@
                     "group": "Plugins and skills",
                     "pages": [
                       "pl/cli/plugins",
+                      "pl/cli/path",
                       "pl/cli/skills"
                     ]
                   },
