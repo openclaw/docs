@@ -478,6 +478,12 @@ alive, an agent can keep testing until satisfied:
 - `finish --session <file>` stops the recorder, captures screenshot/video/motion-trim artifacts, releases the Convex credential, stops local SUT processes, and stops the Crabbox lease unless `--keep-box` is passed.
 - `publish --session <file> --pr <number>` publishes a GIF-only PR comment by default. Pass `--full-artifacts` only when logs or JSON artifacts are intentionally needed.
 
+For deterministic visual repros, pass `--mock-response-file <path>` to `start`
+or to the one-command `probe` shorthand. The runner defaults to a standard
+Crabbox class, 24fps recording, 24fps motion GIF previews, and 1920px GIF
+width. Override with `--class`, `--record-fps`, `--preview-fps`, and
+`--preview-width` only when the proof needs different capture settings.
+
 One-command Crabbox proof:
 
 ```bash

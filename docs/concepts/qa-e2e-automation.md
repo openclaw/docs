@@ -594,6 +594,13 @@ and logs before releasing the credential. `publish --session <file> --pr
 explicit opt-in for logs and JSON output. The default `probe` command remains a
 one-command shorthand for quick `/status` smoke checks.
 
+Use `--mock-response-file <path>` when a PR needs a deterministic visual diff:
+the same mock model reply can be run on `main` and on the PR head while the
+Telegram formatter or delivery layer changes. Capture defaults are tuned for PR
+comments: standard Crabbox class, 24fps desktop recording, 24fps motion GIF, and
+1920px preview width. Before/after comments should publish a clean bundle that
+contains only the intended GIFs.
+
 Slack lanes can also use the pool. Slack payload shape checks currently live in the Slack QA runner rather than the broker; use `{ channelId: string, driverBotToken: string, sutBotToken: string, sutAppToken: string }`, with a Slack channel id like `Cxxxxxxxxxx`. See [Setting up the Slack workspace](#setting-up-the-slack-workspace) for app and scope provisioning.
 
 Operational env vars and the Convex broker endpoint contract live in [Testing → Shared Telegram credentials via Convex](/help/testing#shared-telegram-credentials-via-convex-v1) (the section name predates the multi-channel pool; the lease semantics are shared across kinds).
