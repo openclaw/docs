@@ -424,6 +424,7 @@ Aliases legados ainda são normalizados para os IDs integrados canônicos:
     - `grok-4.20-multi-agent-experimental-beta-0304` não é compatível com o caminho normal do provedor xAI porque exige uma superfície de API upstream diferente do transporte xAI padrão do OpenClaw.
     - A voz xAI Realtime ainda não está registrada como um provedor do OpenClaw. Ela precisa de um contrato de sessão de voz bidirecional diferente de STT em lote ou transcrição por streaming.
     - `quality` de imagem da xAI, `mask` de imagem e proporções extras somente nativas não são expostas até que a ferramenta compartilhada `image_generate` tenha controles correspondentes entre provedores.
+
   </Accordion>
 
   <Accordion title="Observações avançadas">

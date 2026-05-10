@@ -88,6 +88,7 @@ allowlists 決定 agent 實際可以使用哪些 skills。
     - 設定 `agents.list[].skills: []` 以停用所有 skills。
     - 非空的 `agents.list[].skills` 清單是該 agent 的**最終**集合 - 它不會與預設值合併。
     - 有效的 allowlist 會套用於 prompt 建構、skill slash-command discovery、sandbox sync，以及 skill snapshots。
+
   </Accordion>
 </AccordionGroup>
 

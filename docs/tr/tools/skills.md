@@ -88,6 +88,7 @@ izin listeleri ise bir ajanın gerçekte hangi becerileri kullanabileceğini bel
     - Beceri olmaması için `agents.list[].skills: []` ayarlayın.
     - Boş olmayan bir `agents.list[].skills` listesi, o ajan için **nihai** kümedir - varsayılanlarla birleştirilmez.
     - Etkili izin listesi istem oluşturma, beceri eğik çizgi komutu keşfi, sandbox eşitlemesi ve beceri anlık görüntüleri genelinde uygulanır.
+
   </Accordion>
 </AccordionGroup>
 
