@@ -31,15 +31,15 @@ Production is cut over to R2-backed storage with a small Worker router in front:
 
 - Worker: `openclaw-docs-router`
 - Route: `documentation.openclaw.ai/*`
-- R2 binding: `DOCS_BUCKET` -> bucket `openclaw-docs`
+- Router storage: signed R2 S3 reads from bucket `openclaw-docs`
 - Header: `X-OpenClaw-Docs-Origin: cloudflare-r2`
 - Cache-Control follows the same policy as the R2 manifest.
 
 Why a Worker still exists:
 
-- Direct R2 bucket bindings do not serve `/` as `/index.html` without router logic.
-- Direct R2 bucket bindings do not redirect non-root trailing slash docs paths to slashless paths.
-- Direct R2 bucket bindings cannot negotiate markdown from `Accept: text/markdown` without router logic.
+- R2 object storage does not serve `/` as `/index.html` without router logic.
+- R2 object storage does not redirect non-root trailing slash docs paths to slashless paths.
+- R2 object storage cannot negotiate markdown from `Accept: text/markdown` without router logic.
 - The available Cloudflare auth can manage R2, DNS, custom domains, and Worker routes, but not zone Rulesets/Page Rules. Dashboard-session replay via `mcporter chrome-devtools` also returned Cloudflare API auth error `10000` for `/rulesets`.
 
 The pure Vincent target remains possible after a Cloudflare token/session with `Zone: Rulesets: Edit` is available. Until then, the Worker is the compatibility layer and R2 is the storage/source of truth.
@@ -68,6 +68,8 @@ Required R2 S3 upload credentials:
 
 - `OPENCLAW_R2_ACCESS_KEY_ID`
 - `OPENCLAW_R2_SECRET_ACCESS_KEY`
+
+The same values are used by the Worker router for signed R2 reads. The Pages workflow writes them to Worker secrets before deployment, so the Worker deploy token does not need `Account: R2 Storage: Read`.
 
 For Cloudflare R2 API tokens, the access key id is the account-token id returned by:
 
@@ -119,7 +121,7 @@ The generated R2 manifest uploads both canonical files and slashless aliases:
 - `/concepts/models.md` serves markdown from object key `concepts/models.md`.
 - `/docs/platforms/digitalocean` serves the compatibility redirect HTML.
 
-The Worker router preserves `Accept: text/markdown` negotiation and root `/` behavior while reading objects from the bound R2 bucket. Pure R2 custom-domain serving still needs Cloudflare URL rewrite/redirect rules.
+The Worker router preserves `Accept: text/markdown` negotiation and root `/` behavior while reading objects from R2 with signed S3 requests. Pure R2 custom-domain serving still needs Cloudflare URL rewrite/redirect rules.
 
 ## Cache Policy
 
@@ -166,7 +168,7 @@ After router deploy, verify repeated requests show `X-OpenClaw-Docs-Cache: MISS`
    ```
 
 4. Run the manual `R2 Pages` workflow, or run the local upload command above.
-5. Deploy `openclaw-docs-router` with the `DOCS_BUCKET` R2 binding.
+5. Deploy `openclaw-docs-router`; the Pages workflow syncs the R2 S3 credentials into Worker secrets before deploy.
 6. Live-test the URLs below.
 
 Pure R2 follow-up, blocked on `Zone: Rulesets: Edit`:

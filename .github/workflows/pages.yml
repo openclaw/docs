@@ -40,6 +40,17 @@ jobs:
       - name: Install
         run: npm ci
 
+      - name: Sync R2 router secrets
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          OPENCLAW_R2_ACCESS_KEY_ID: ${{ secrets.OPENCLAW_R2_ACCESS_KEY_ID }}
+          OPENCLAW_R2_SECRET_ACCESS_KEY: ${{ secrets.OPENCLAW_R2_SECRET_ACCESS_KEY }}
+        run: |
+          : "${OPENCLAW_R2_ACCESS_KEY_ID:?OPENCLAW_R2_ACCESS_KEY_ID is required}"
+          : "${OPENCLAW_R2_SECRET_ACCESS_KEY:?OPENCLAW_R2_SECRET_ACCESS_KEY is required}"
+          printf '%s' "${OPENCLAW_R2_ACCESS_KEY_ID}" | npx wrangler@4.88.0 secret put OPENCLAW_R2_ACCESS_KEY_ID --config wrangler.toml
+          printf '%s' "${OPENCLAW_R2_SECRET_ACCESS_KEY}" | npx wrangler@4.88.0 secret put OPENCLAW_R2_SECRET_ACCESS_KEY --config wrangler.toml
+
       - name: Deploy to Cloudflare
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

@@ -1,8 +1,14 @@
 interface Env {
-  DOCS_BUCKET: R2Bucket;
+  CLOUDFLARE_ACCOUNT_ID?: string;
+  CLOUDFLARE_R2_BUCKET?: string;
+  OPENCLAW_R2_ACCESS_KEY_ID?: string;
+  OPENCLAW_R2_REGION?: string;
+  OPENCLAW_R2_SECRET_ACCESS_KEY?: string;
 }
 
 const markdownAcceptTypes = new Set(["text/markdown", "text/x-markdown", "application/markdown"]);
+const defaultR2Bucket = "openclaw-docs";
+const defaultR2Region = "auto";
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -101,8 +107,8 @@ async function assetResponse(env: Env, ctx: ExecutionContext, request: Request, 
   }
 
   const key = r2ObjectKey(pathname);
-  const object = request.method === "HEAD" ? await env.DOCS_BUCKET.head(key) : await env.DOCS_BUCKET.get(key);
-  if (!object) {
+  const response = await signedR2Fetch(env, request.method, key);
+  if (response.status === 404) {
     return new Response(request.method === "HEAD" ? null : "Not found\n", {
       status: 404,
       headers: {
@@ -113,12 +119,14 @@ async function assetResponse(env: Env, ctx: ExecutionContext, request: Request, 
       },
     });
   }
-  const responseHeaders = r2ObjectHeaders(object);
+  const responseHeaders = new Headers(response.headers);
   responseHeaders.set("X-OpenClaw-Docs-Origin", "cloudflare-r2");
   responseHeaders.set("X-OpenClaw-Docs-Cache", "MISS");
-  applyCacheHeaders(responseHeaders, pathname);
-  const finalResponse = new Response(request.method === "HEAD" ? null : object.body, {
-    status: 200,
+  responseHeaders.delete("Content-Length");
+  if (response.ok) applyCacheHeaders(responseHeaders, pathname);
+  const finalResponse = new Response(request.method === "HEAD" ? null : response.body, {
+    status: response.status,
+    statusText: response.statusText,
     headers: responseHeaders,
   });
   if (request.method === "GET" && finalResponse.ok) {
@@ -134,14 +142,6 @@ async function assetResponse(env: Env, ctx: ExecutionContext, request: Request, 
   return finalResponse;
 }
 
-function r2ObjectHeaders(object: R2Object): Headers {
-  const headers = new Headers();
-  object.writeHttpMetadata(headers);
-  headers.set("ETag", object.httpEtag);
-  headers.set("Last-Modified", object.uploaded.toUTCString());
-  return headers;
-}
-
 function r2ObjectKey(pathname: string): string {
   const key = pathname.replace(/^\/+/, "");
   try {
@@ -149,6 +149,78 @@ function r2ObjectKey(pathname: string): string {
   } catch {
     return key;
   }
+}
+
+async function signedR2Fetch(env: Env, method: string, key: string): Promise<Response> {
+  const accountId = requiredEnv(env.CLOUDFLARE_ACCOUNT_ID, "CLOUDFLARE_ACCOUNT_ID");
+  const accessKeyId = requiredEnv(env.OPENCLAW_R2_ACCESS_KEY_ID, "OPENCLAW_R2_ACCESS_KEY_ID");
+  const secretAccessKey = requiredEnv(env.OPENCLAW_R2_SECRET_ACCESS_KEY, "OPENCLAW_R2_SECRET_ACCESS_KEY");
+  const bucket = env.CLOUDFLARE_R2_BUCKET || defaultR2Bucket;
+  const region = env.OPENCLAW_R2_REGION || defaultR2Region;
+  const service = "s3";
+  const url = new URL(`https://${accountId}.r2.cloudflarestorage.com/${bucket}/${encodeS3Key(key)}`);
+  const now = new Date();
+  const amzDate = now.toISOString().replace(/[:-]|\.\d{3}/g, "");
+  const date = amzDate.slice(0, 8);
+  const headers: Record<string, string> = {
+    host: url.host,
+    "x-amz-content-sha256": "UNSIGNED-PAYLOAD",
+    "x-amz-date": amzDate,
+  };
+  const signedHeaders = Object.keys(headers).sort();
+  const canonicalHeaders = signedHeaders.map((name) => `${name}:${normalizeHeader(headers[name] ?? "")}\n`).join("");
+  const canonicalRequest = [
+    method,
+    url.pathname,
+    "",
+    canonicalHeaders,
+    signedHeaders.join(";"),
+    headers["x-amz-content-sha256"],
+  ].join("\n");
+  const scope = `${date}/${region}/${service}/aws4_request`;
+  const stringToSign = [
+    "AWS4-HMAC-SHA256",
+    amzDate,
+    scope,
+    await sha256Hex(canonicalRequest),
+  ].join("\n");
+  const signingKey = await hmac(await hmac(await hmac(await hmac(`AWS4${secretAccessKey}`, date), region), service), "aws4_request");
+  const signature = hex(await hmac(signingKey, stringToSign));
+  const authorization = `AWS4-HMAC-SHA256 Credential=${accessKeyId}/${scope}, SignedHeaders=${signedHeaders.join(";")}, Signature=${signature}`;
+  return fetch(url.toString(), {
+    headers: {
+      ...headers,
+      authorization,
+    },
+    method,
+  });
+}
+
+function requiredEnv(value: string | undefined, name: string): string {
+  if (!value) throw new Error(`${name} is required`);
+  return value;
+}
+
+function encodeS3Key(key: string): string {
+  return key.split("/").map((segment) => encodeURIComponent(segment)).join("/");
+}
+
+function normalizeHeader(value: string): string {
+  return value.trim().replace(/\s+/g, " ");
+}
+
+async function sha256Hex(value: string): Promise<string> {
+  return hex(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value)));
+}
+
+async function hmac(key: string | ArrayBuffer, value: string): Promise<ArrayBuffer> {
+  const rawKey = typeof key === "string" ? new TextEncoder().encode(key) : key;
+  const cryptoKey = await crypto.subtle.importKey("raw", rawKey, { hash: "SHA-256", name: "HMAC" }, false, ["sign"]);
+  return crypto.subtle.sign("HMAC", cryptoKey, new TextEncoder().encode(value));
+}
+
+function hex(buffer: ArrayBuffer): string {
+  return Array.from(new Uint8Array(buffer), (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
 function cacheRequest(request: Request, pathname: string): Request {
