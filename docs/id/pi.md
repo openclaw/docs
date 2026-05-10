@@ -1,27 +1,27 @@
 ---
 read_when:
     - Memahami desain integrasi Pi SDK di OpenClaw
-    - Mengubah siklus hidup sesi agen, perkakas, atau pengaturan koneksi penyedia untuk Pi
+    - Memodifikasi siklus hidup sesi agen, peralatan, atau pengkabelan penyedia untuk Pi
 summary: Arsitektur integrasi agen Pi tertanam OpenClaw dan siklus hidup sesi
 title: Arsitektur integrasi Pi
 x-i18n:
-    generated_at: "2026-05-06T09:19:08Z"
+    generated_at: "2026-05-10T19:41:29Z"
     model: gpt-5.5
     provider: openai
-    source_hash: abd9e828b0a72ac4e796f33c247bb2b5d7143ddf5e897ad9d7380cfbfce1eb64
+    source_hash: 93f468416b453f4f3277406f5f40386748b7388502444266f611926cd66c96ba
     source_path: pi.md
     workflow: 16
 ---
 
-OpenClaw terintegrasi dengan [pi-coding-agent](https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent) dan paket saudaranya (`pi-ai`, `pi-agent-core`, `pi-tui`) untuk mendukung kemampuan agen AI-nya.
+OpenClaw terintegrasi dengan [pi-coding-agent](https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent) dan paket-paket saudaranya (`pi-ai`, `pi-agent-core`, `pi-tui`) untuk menjalankan kemampuan agen AI-nya.
 
-## Gambaran umum
+## Ikhtisar
 
-OpenClaw menggunakan SDK pi untuk menanamkan agen coding AI ke dalam arsitektur Gateway perpesanannya. Alih-alih menjalankan pi sebagai subprocess atau menggunakan mode RPC, OpenClaw langsung mengimpor dan membuat instance `AgentSession` milik pi melalui `createAgentSession()`. Pendekatan tertanam ini menyediakan:
+OpenClaw menggunakan SDK pi untuk menyematkan agen pengodean AI ke dalam arsitektur Gateway perpesanannya. Alih-alih menjalankan pi sebagai subproses atau menggunakan mode RPC, OpenClaw langsung mengimpor dan menginstansiasi `AgentSession` milik pi melalui `createAgentSession()`. Pendekatan tertanam ini menyediakan:
 
 - Kontrol penuh atas siklus hidup sesi dan penanganan peristiwa
-- Injeksi tool kustom (perpesanan, sandbox, tindakan khusus channel)
-- Kustomisasi system prompt per channel/konteks
+- Injeksi alat khusus (perpesanan, sandbox, tindakan khusus kanal)
+- Penyesuaian prompt sistem per kanal/konteks
 - Persistensi sesi dengan dukungan percabangan/Compaction
 - Rotasi profil autentikasi multi-akun dengan failover
 - Peralihan model yang agnostik terhadap penyedia
@@ -39,88 +39,88 @@ OpenClaw menggunakan SDK pi untuk menanamkan agen coding AI ke dalam arsitektur 
 
 | Paket             | Tujuan                                                                                                 |
 | ----------------- | ------------------------------------------------------------------------------------------------------ |
-| `pi-ai`           | Abstraksi LLM inti: `Model`, `streamSimple`, jenis pesan, API penyedia                                 |
-| `pi-agent-core`   | Loop agen, eksekusi tool, jenis `AgentMessage`                                                         |
-| `pi-coding-agent` | SDK tingkat tinggi: `createAgentSession`, `SessionManager`, `AuthStorage`, `ModelRegistry`, tool bawaan |
+| `pi-ai`           | Abstraksi LLM inti: `Model`, `streamSimple`, tipe pesan, API penyedia                                  |
+| `pi-agent-core`   | Loop agen, eksekusi alat, tipe `AgentMessage`                                                          |
+| `pi-coding-agent` | SDK tingkat tinggi: `createAgentSession`, `SessionManager`, `AuthStorage`, `ModelRegistry`, alat bawaan |
 | `pi-tui`          | Komponen UI terminal (digunakan dalam mode TUI lokal OpenClaw)                                         |
 
-## Struktur berkas
+## Struktur file
 
 ```
 src/agents/
-├── pi-embedded-runner.ts          # Re-exports from pi-embedded-runner/
+├── pi-embedded-runner.ts          # Mengekspor ulang dari pi-embedded-runner/
 ├── pi-embedded-runner/
-│   ├── run.ts                     # Main entry: runEmbeddedPiAgent()
+│   ├── run.ts                     # Entri utama: runEmbeddedPiAgent()
 │   ├── run/
-│   │   ├── attempt.ts             # Single attempt logic with session setup
-│   │   ├── params.ts              # RunEmbeddedPiAgentParams type
-│   │   ├── payloads.ts            # Build response payloads from run results
-│   │   ├── images.ts              # Vision model image injection
+│   │   ├── attempt.ts             # Logika satu percobaan dengan penyiapan sesi
+│   │   ├── params.ts              # Tipe RunEmbeddedPiAgentParams
+│   │   ├── payloads.ts            # Membangun payload respons dari hasil eksekusi
+│   │   ├── images.ts              # Injeksi gambar model visi
 │   │   └── types.ts               # EmbeddedRunAttemptResult
-│   ├── abort.ts                   # Abort error detection
-│   ├── cache-ttl.ts               # Cache TTL tracking for context pruning
-│   ├── compact.ts                 # Manual/auto compaction logic
-│   ├── extensions.ts              # Load pi extensions for embedded runs
-│   ├── extra-params.ts            # Provider-specific stream params
-│   ├── google.ts                  # Google/Gemini turn ordering fixes
-│   ├── history.ts                 # History limiting (DM vs group)
-│   ├── lanes.ts                   # Session/global command lanes
-│   ├── logger.ts                  # Subsystem logger
-│   ├── model.ts                   # Model resolution via ModelRegistry
-│   ├── runs.ts                    # Active run tracking, abort, queue
-│   ├── sandbox-info.ts            # Sandbox info for system prompt
-│   ├── session-manager-cache.ts   # SessionManager instance caching
-│   ├── session-manager-init.ts    # Session file initialization
-│   ├── system-prompt.ts           # System prompt builder
-│   ├── tool-split.ts              # Split tools into builtIn vs custom
+│   ├── abort.ts                   # Deteksi error abort
+│   ├── cache-ttl.ts               # Pelacakan TTL cache untuk pemangkasan konteks
+│   ├── compact.ts                 # Logika Compaction manual/otomatis
+│   ├── extensions.ts              # Memuat ekstensi pi untuk eksekusi tertanam
+│   ├── extra-params.ts            # Parameter stream khusus penyedia
+│   ├── google.ts                  # Perbaikan pengurutan turn Google/Gemini
+│   ├── history.ts                 # Pembatasan riwayat (DM vs grup)
+│   ├── lanes.ts                   # Jalur perintah sesi/global
+│   ├── logger.ts                  # Logger subsistem
+│   ├── model.ts                   # Resolusi model melalui ModelRegistry
+│   ├── runs.ts                    # Pelacakan eksekusi aktif, abort, antrean
+│   ├── sandbox-info.ts            # Info sandbox untuk prompt sistem
+│   ├── session-manager-cache.ts   # Cache instance SessionManager
+│   ├── session-manager-init.ts    # Inisialisasi file sesi
+│   ├── system-prompt.ts           # Pembuat prompt sistem
+│   ├── tool-split.ts              # Memisahkan alat menjadi builtIn vs custom
 │   ├── types.ts                   # EmbeddedPiAgentMeta, EmbeddedPiRunResult
-│   └── utils.ts                   # ThinkLevel mapping, error description
-├── pi-embedded-subscribe.ts       # Session event subscription/dispatch
+│   └── utils.ts                   # Pemetaan ThinkLevel, deskripsi error
+├── pi-embedded-subscribe.ts       # Langganan/pengiriman peristiwa sesi
 ├── pi-embedded-subscribe.types.ts # SubscribeEmbeddedPiSessionParams
-├── pi-embedded-subscribe.handlers.ts # Event handler factory
+├── pi-embedded-subscribe.handlers.ts # Factory handler peristiwa
 ├── pi-embedded-subscribe.handlers.lifecycle.ts
 ├── pi-embedded-subscribe.handlers.types.ts
-├── pi-embedded-block-chunker.ts   # Streaming block reply chunking
-├── pi-embedded-messaging.ts       # Messaging tool sent tracking
-├── pi-embedded-helpers.ts         # Error classification, turn validation
-├── pi-embedded-helpers/           # Helper modules
-├── pi-embedded-utils.ts           # Formatting utilities
+├── pi-embedded-block-chunker.ts   # Pemotongan balasan blok streaming
+├── pi-embedded-messaging.ts       # Pelacakan pengiriman alat perpesanan
+├── pi-embedded-helpers.ts         # Klasifikasi error, validasi turn
+├── pi-embedded-helpers/           # Modul helper
+├── pi-embedded-utils.ts           # Utilitas pemformatan
 ├── pi-tools.ts                    # createOpenClawCodingTools()
-├── pi-tools.abort.ts              # AbortSignal wrapping for tools
-├── pi-tools.policy.ts             # Tool allowlist/denylist policy
-├── pi-tools.read.ts               # Read tool customizations
-├── pi-tools.schema.ts             # Tool schema normalization
-├── pi-tools.types.ts              # AnyAgentTool type alias
-├── pi-tool-definition-adapter.ts  # AgentTool -> ToolDefinition adapter
-├── pi-settings.ts                 # Settings overrides
-├── pi-hooks/                      # Custom pi hooks
-│   ├── compaction-safeguard.ts    # Safeguard extension
+├── pi-tools.abort.ts              # Pembungkusan AbortSignal untuk alat
+├── pi-tools.policy.ts             # Kebijakan allowlist/denylist alat
+├── pi-tools.read.ts               # Kustomisasi alat baca
+├── pi-tools.schema.ts             # Normalisasi skema alat
+├── pi-tools.types.ts              # Alias tipe AnyAgentTool
+├── pi-tool-definition-adapter.ts  # Adapter AgentTool -> ToolDefinition
+├── pi-settings.ts                 # Override pengaturan
+├── pi-hooks/                      # Hook pi khusus
+│   ├── compaction-safeguard.ts    # Ekstensi safeguard
 │   ├── compaction-safeguard-runtime.ts
-│   ├── context-pruning.ts         # Cache-TTL context pruning extension
+│   ├── context-pruning.ts         # Ekstensi pemangkasan konteks Cache-TTL
 │   └── context-pruning/
-├── model-auth.ts                  # Auth profile resolution
-├── auth-profiles.ts               # Profile store, cooldown, failover
-├── model-selection.ts             # Default model resolution
-├── models-config.ts               # models.json generation
-├── model-catalog.ts               # Model catalog cache
-├── context-window-guard.ts        # Context window validation
-├── failover-error.ts              # FailoverError class
+├── model-auth.ts                  # Resolusi profil autentikasi
+├── auth-profiles.ts               # Penyimpanan profil, cooldown, failover
+├── model-selection.ts             # Resolusi model default
+├── models-config.ts               # Pembuatan models.json
+├── model-catalog.ts               # Cache katalog model
+├── context-window-guard.ts        # Validasi jendela konteks
+├── failover-error.ts              # Kelas FailoverError
 ├── defaults.ts                    # DEFAULT_PROVIDER, DEFAULT_MODEL
 ├── system-prompt.ts               # buildAgentSystemPrompt()
-├── system-prompt-params.ts        # System prompt parameter resolution
-├── system-prompt-report.ts        # Debug report generation
-├── tool-summaries.ts              # Tool description summaries
-├── tool-policy.ts                 # Tool policy resolution
-├── transcript-policy.ts           # Transcript validation policy
-├── skills.ts                      # Skill snapshot/prompt building
-├── skills/                        # Skill subsystem
-├── sandbox.ts                     # Sandbox context resolution
-├── sandbox/                       # Sandbox subsystem
-├── channel-tools.ts               # Channel-specific tool injection
-├── openclaw-tools.ts              # OpenClaw-specific tools
-├── bash-tools.ts                  # exec/process tools
-├── apply-patch.ts                 # apply_patch tool (OpenAI)
-├── tools/                         # Individual tool implementations
+├── system-prompt-params.ts        # Resolusi parameter prompt sistem
+├── system-prompt-report.ts        # Pembuatan laporan debug
+├── tool-summaries.ts              # Ringkasan deskripsi alat
+├── tool-policy.ts                 # Resolusi kebijakan alat
+├── transcript-policy.ts           # Kebijakan validasi transkrip
+├── skills.ts                      # Pembuatan snapshot/prompt Skills
+├── skills/                        # Subsistem Skills
+├── sandbox.ts                     # Resolusi konteks sandbox
+├── sandbox/                       # Subsistem sandbox
+├── channel-tools.ts               # Injeksi alat khusus kanal
+├── openclaw-tools.ts              # Alat khusus OpenClaw
+├── bash-tools.ts                  # Alat exec/process
+├── apply-patch.ts                 # Alat apply_patch (OpenAI)
+├── tools/                         # Implementasi alat individual
 │   ├── browser-tool.ts
 │   ├── canvas-tool.ts
 │   ├── cron-tool.ts
@@ -134,16 +134,17 @@ src/agents/
 └── ...
 ```
 
-Runtime tindakan pesan khusus channel kini berada di direktori ekstensi milik plugin, bukan di bawah `src/agents/tools`, misalnya:
+Runtime tindakan pesan khusus kanal kini berada di direktori ekstensi milik Plugin
+alih-alih di bawah `src/agents/tools`, misalnya:
 
-- berkas runtime tindakan Plugin Discord
-- berkas runtime tindakan Plugin Slack
-- berkas runtime tindakan Plugin Telegram
-- berkas runtime tindakan Plugin WhatsApp
+- file runtime tindakan Plugin Discord
+- file runtime tindakan Plugin Slack
+- file runtime tindakan Plugin Telegram
+- file runtime tindakan Plugin WhatsApp
 
 ## Alur integrasi inti
 
-### 1. Menjalankan agen tertanam
+### 1. Menjalankan Agen Tertanam
 
 Titik masuk utama adalah `runEmbeddedPiAgent()` di `pi-embedded-runner/run.ts`:
 
@@ -167,9 +168,9 @@ const result = await runEmbeddedPiAgent({
 });
 ```
 
-### 2. Pembuatan sesi
+### 2. Pembuatan Sesi
 
-Di dalam `runEmbeddedAttempt()` (dipanggil oleh `runEmbeddedPiAgent()`), SDK pi digunakan:
+Di dalam `runEmbeddedAttempt()` (yang dipanggil oleh `runEmbeddedPiAgent()`), SDK pi digunakan:
 
 ```typescript
 import {
@@ -204,7 +205,7 @@ const { session } = await createAgentSession({
 applySystemPromptOverrideToSession(session, systemPromptOverride);
 ```
 
-### 3. Langganan peristiwa
+### 3. Langganan Peristiwa
 
 `subscribeEmbeddedPiSession()` berlangganan ke peristiwa `AgentSession` milik pi:
 
@@ -239,23 +240,25 @@ Setelah penyiapan, sesi diberi prompt:
 await session.prompt(effectivePrompt, { images: imageResult.images });
 ```
 
-SDK menangani loop agen penuh: mengirim ke LLM, mengeksekusi panggilan tool, melakukan streaming respons.
+SDK menangani seluruh loop agen: mengirim ke LLM, mengeksekusi panggilan alat, melakukan streaming respons.
 
-Injeksi gambar bersifat lokal terhadap prompt: OpenClaw memuat referensi gambar dari prompt saat ini dan meneruskannya melalui `images` hanya untuk giliran tersebut. OpenClaw tidak memindai ulang giliran riwayat yang lebih lama untuk menginjeksi ulang payload gambar.
+Injeksi gambar bersifat lokal terhadap prompt: OpenClaw memuat referensi gambar dari prompt saat ini dan
+meneruskannya melalui `images` hanya untuk turn tersebut. OpenClaw tidak memindai ulang turn riwayat yang lebih lama
+untuk menginjeksi ulang payload gambar.
 
-## Arsitektur tool
+## Arsitektur alat
 
-### Pipeline tool
+### Pipeline alat
 
-1. **Tool dasar**: `codingTools` milik pi (read, bash, edit, write)
-2. **Pengganti kustom**: OpenClaw mengganti bash dengan `exec`/`process`, menyesuaikan read/edit/write untuk sandbox
-3. **Tool OpenClaw**: perpesanan, browser, canvas, sesi, Cron, Gateway, dan lainnya.
-4. **Tool channel**: tool tindakan khusus Discord/Telegram/Slack/WhatsApp
-5. **Pemfilteran kebijakan**: Tool difilter menurut profil, penyedia, agen, grup, kebijakan sandbox
-6. **Normalisasi skema**: Skema dibersihkan untuk kekhasan Gemini/OpenAI
-7. **Pembungkus AbortSignal**: Tool dibungkus agar menghormati sinyal abort
+1. **Alat Dasar**: `codingTools` milik pi (read, bash, edit, write)
+2. **Pengganti Khusus**: OpenClaw mengganti bash dengan `exec`/`process`, menyesuaikan read/edit/write untuk sandbox
+3. **Alat OpenClaw**: perpesanan, browser, canvas, sesi, Cron, Gateway, dll.
+4. **Alat Kanal**: alat tindakan khusus Discord/Telegram/Slack/WhatsApp
+5. **Pemfilteran Kebijakan**: Alat difilter berdasarkan kebijakan profil, penyedia, agen, grup, sandbox
+6. **Normalisasi Skema**: Skema dibersihkan untuk kekhasan Gemini/OpenAI
+7. **Pembungkusan AbortSignal**: Alat dibungkus agar menghormati sinyal abort
 
-### Adapter definisi tool
+### Adapter definisi alat
 
 `AgentTool` milik pi-agent-core memiliki signature `execute` yang berbeda dari `ToolDefinition` milik pi-coding-agent. Adapter di `pi-tool-definition-adapter.ts` menjembatani ini:
 
@@ -274,9 +277,9 @@ export function toToolDefinitions(tools: AnyAgentTool[]): ToolDefinition[] {
 }
 ```
 
-### Strategi pemisahan tool
+### Strategi pemisahan alat
 
-`splitSdkTools()` meneruskan semua tool melalui `customTools`:
+`splitSdkTools()` meneruskan semua alat melalui `customTools`:
 
 ```typescript
 export function splitSdkTools(options: { tools: AnyAgentTool[]; sandboxEnabled: boolean }) {
@@ -287,11 +290,11 @@ export function splitSdkTools(options: { tools: AnyAgentTool[]; sandboxEnabled: 
 }
 ```
 
-Ini memastikan pemfilteran kebijakan OpenClaw, integrasi sandbox, dan set alat yang diperluas tetap konsisten di seluruh provider.
+Ini memastikan pemfilteran kebijakan, integrasi sandbox, dan toolset tambahan OpenClaw tetap konsisten di seluruh provider.
 
-## Konstruksi prompt sistem
+## Konstruksi system prompt
 
-Prompt sistem dibangun di `buildAgentSystemPrompt()` (`system-prompt.ts`). Fungsi ini menyusun prompt lengkap dengan bagian-bagian yang mencakup Tooling, Gaya Panggilan Alat, pembatas keamanan, referensi CLI OpenClaw, Skills, Dokumentasi, Workspace, Sandbox, Pesan, Tag Balasan, Suara, Balasan Senyap, Heartbeat, metadata runtime, ditambah Memori dan Reaksi saat diaktifkan, serta file konteks opsional dan konten prompt sistem tambahan. Bagian-bagian dipangkas untuk mode prompt minimal yang digunakan oleh subagen.
+System prompt dibangun di `buildAgentSystemPrompt()` (`system-prompt.ts`). Fungsi ini menyusun prompt lengkap dengan bagian-bagian yang mencakup Tooling, Gaya Tool Call, guardrail Keamanan, Kontrol OpenClaw, Skills, Dokumentasi, Workspace, Sandbox, Messaging, Direktif Output Assistant, Voice, Balasan Senyap, Heartbeat, metadata Runtime, serta Memory dan Reactions saat diaktifkan, dan file konteks opsional serta konten system prompt tambahan. Bagian-bagian dipangkas untuk mode prompt minimal yang digunakan oleh subagent.
 
 Prompt diterapkan setelah pembuatan sesi melalui `applySystemPromptOverrideToSession()`:
 
@@ -310,11 +313,11 @@ Sesi adalah file JSONL dengan struktur pohon (tautan id/parentId). `SessionManag
 const sessionManager = SessionManager.open(params.sessionFile);
 ```
 
-OpenClaw membungkus ini dengan `guardSessionManager()` untuk keamanan hasil alat.
+OpenClaw membungkus ini dengan `guardSessionManager()` untuk keamanan hasil tool.
 
 ### Caching sesi
 
-`session-manager-cache.ts` menyimpan instance SessionManager dalam cache untuk menghindari parsing file berulang:
+`session-manager-cache.ts` melakukan cache instance SessionManager untuk menghindari parsing file berulang:
 
 ```typescript
 await prewarmSessionFile(params.sessionFile);
@@ -324,11 +327,11 @@ trackSessionManagerAccess(params.sessionFile);
 
 ### Pembatasan riwayat
 
-`limitHistoryTurns()` memangkas riwayat percakapan berdasarkan jenis kanal (DM vs grup).
+`limitHistoryTurns()` memangkas riwayat percakapan berdasarkan jenis channel (DM vs grup).
 
 ### Compaction
 
-Auto-compaction dipicu saat konteks melampaui batas. Tanda umum kelebihan batas
+Auto-compaction dipicu saat konteks meluap. Signature overflow umum
 mencakup `request_too_large`, `context length exceeded`, `input exceeds the
 maximum number of tokens`, `input token count exceeds the maximum number of
 input tokens`, `input is too long for the model`, dan `ollama error: context
@@ -345,7 +348,7 @@ const compactResult = await compactEmbeddedPiSessionDirect({
 
 ### Profil auth
 
-OpenClaw mempertahankan penyimpanan profil auth dengan beberapa kunci API per provider:
+OpenClaw mengelola store profil auth dengan beberapa kunci API per provider:
 
 ```typescript
 const authStore = ensureAuthProfileStore(agentDir, { allowKeychainPrompt: false });
@@ -395,9 +398,9 @@ if (fallbackConfigured && isFailoverErrorMessage(errorText)) {
 
 OpenClaw memuat ekstensi pi kustom untuk perilaku khusus:
 
-### Perlindungan Compaction
+### Safeguard Compaction
 
-`src/agents/pi-hooks/compaction-safeguard.ts` menambahkan pembatas pada compaction, termasuk penganggaran token adaptif serta ringkasan kegagalan alat dan operasi file:
+`src/agents/pi-hooks/compaction-safeguard.ts` menambahkan guardrail ke compaction, termasuk penganggaran token adaptif serta ringkasan kegagalan tool dan operasi file:
 
 ```typescript
 if (resolveCompactionMode(params.cfg) === "safeguard") {
@@ -424,9 +427,9 @@ if (cfg?.agents?.defaults?.contextPruning?.mode === "cache-ttl") {
 
 ## Streaming dan balasan blok
 
-### Pemotongan blok
+### Pemecahan blok
 
-`EmbeddedBlockChunker` mengelola teks streaming menjadi blok balasan terpisah:
+`EmbeddedBlockChunker` mengelola streaming teks menjadi blok balasan diskret:
 
 ```typescript
 const blockChunker = blockChunking ? new EmbeddedBlockChunker(blockChunking) : null;
@@ -445,17 +448,17 @@ const stripBlockTags = (text: string, state: { thinking: boolean; final: boolean
 
 ### Direktif balasan
 
-Direktif balasan seperti `[[media:url]]`, `[[voice]]`, `[[reply:id]]` diurai dan diekstrak:
+Direktif balasan seperti `[[media:url]]`, `[[voice]]`, `[[reply:id]]` di-parse dan diekstrak:
 
 ```typescript
 const { text: cleanedText, mediaUrls, audioAsVoice, replyToId } = consumeReplyDirectives(chunk);
 ```
 
-## Penanganan kesalahan
+## Penanganan error
 
-### Klasifikasi kesalahan
+### Klasifikasi error
 
-`pi-embedded-helpers.ts` mengklasifikasikan kesalahan untuk penanganan yang sesuai:
+`pi-embedded-helpers.ts` mengklasifikasikan error untuk penanganan yang sesuai:
 
 ```typescript
 isContextOverflowError(errorText)     // Context too large
@@ -466,9 +469,9 @@ isFailoverAssistantError(...)         // Should failover
 classifyFailoverReason(errorText)     // "auth" | "rate_limit" | "quota" | "timeout" | ...
 ```
 
-### Fallback level berpikir
+### Fallback level thinking
 
-Jika level berpikir tidak didukung, level tersebut akan fallback:
+Jika level thinking tidak didukung, sistem melakukan fallback:
 
 ```typescript
 const fallbackThinking = pickFallbackThinkingLevel({
@@ -483,7 +486,7 @@ if (fallbackThinking) {
 
 ## Integrasi sandbox
 
-Saat mode sandbox diaktifkan, alat dan path dibatasi:
+Saat mode sandbox diaktifkan, tool dan path dibatasi:
 
 ```typescript
 const sandbox = await resolveSandboxContext({
@@ -503,18 +506,18 @@ if (sandboxRoot) {
 
 ### Anthropic
 
-- Pembersihan string ajaib penolakan
-- Validasi giliran untuk peran berurutan
-- Validasi parameter alat Pi upstream yang ketat
+- Pembersihan string ajaib refusal
+- Validasi turn untuk role berurutan
+- Validasi ketat parameter tool Pi upstream
 
 ### Google/Gemini
 
-- Sanitasi skema alat milik Plugin
+- Sanitasi skema tool yang dimiliki Plugin
 
 ### OpenAI
 
-- Alat `apply_patch` untuk model Codex
-- Penanganan penurunan level berpikir
+- Tool `apply_patch` untuk model Codex
+- Penanganan downgrade level thinking
 
 ## Integrasi TUI
 
@@ -525,33 +528,33 @@ OpenClaw juga memiliki mode TUI lokal yang menggunakan komponen pi-tui secara la
 import { ... } from "@mariozechner/pi-tui";
 ```
 
-Ini menyediakan pengalaman terminal interaktif yang mirip dengan mode native pi.
+Ini menyediakan pengalaman terminal interaktif yang serupa dengan mode native Pi.
 
 ## Perbedaan utama dari Pi CLI
 
-| Aspek           | Pi CLI                  | OpenClaw Embedded                                                                              |
-| --------------- | ----------------------- | ---------------------------------------------------------------------------------------------- |
-| Pemanggilan     | Perintah `pi` / RPC     | SDK melalui `createAgentSession()`                                                             |
-| Alat            | Alat coding default     | Suite alat OpenClaw kustom                                                                     |
-| Prompt sistem   | AGENTS.md + prompt      | Dinamis per kanal/konteks                                                                      |
+| Aspek           | Pi CLI                  | OpenClaw Embedded                                                                                   |
+| --------------- | ----------------------- | --------------------------------------------------------------------------------------------------- |
+| Pemanggilan     | Perintah `pi` / RPC     | SDK melalui `createAgentSession()`                                                                  |
+| Tool            | Tool coding default     | Rangkaian tool OpenClaw kustom                                                                      |
+| System prompt   | AGENTS.md + prompt      | Dinamis per channel/konteks                                                                         |
 | Penyimpanan sesi | `~/.pi/agent/sessions/` | `~/.openclaw/agents/<agentId>/sessions/` (atau `$OPENCLAW_STATE_DIR/agents/<agentId>/sessions/`) |
-| Auth            | Kredensial tunggal      | Multi-profil dengan rotasi                                                                     |
-| Ekstensi        | Dimuat dari disk        | Programatik + path disk                                                                        |
-| Penanganan event | Rendering TUI          | Berbasis callback (onBlockReply, dll.)                                                         |
+| Auth            | Satu kredensial         | Multi-profil dengan rotasi                                                                          |
+| Ekstensi        | Dimuat dari disk        | Terprogram + path disk                                                                              |
+| Penanganan event | Rendering TUI          | Berbasis callback (onBlockReply, dll.)                                                              |
 
 ## Pertimbangan masa depan
 
 Area yang berpotensi dikerjakan ulang:
 
-1. **Penyelarasan tanda tangan alat**: Saat ini beradaptasi antara tanda tangan pi-agent-core dan pi-coding-agent
-2. **Pembungkusan manajer sesi**: `guardSessionManager` menambahkan keamanan tetapi meningkatkan kompleksitas
+1. **Penyelarasan signature tool**: Saat ini mengadaptasi antara signature pi-agent-core dan pi-coding-agent
+2. **Pembungkusan session manager**: `guardSessionManager` menambahkan keamanan tetapi meningkatkan kompleksitas
 3. **Pemuatan ekstensi**: Dapat menggunakan `ResourceLoader` milik pi secara lebih langsung
 4. **Kompleksitas handler streaming**: `subscribeEmbeddedPiSession` telah menjadi besar
-5. **Keunikan provider**: Banyak jalur kode khusus provider yang berpotensi dapat ditangani oleh pi
+5. **Keunikan provider**: Banyak codepath khusus provider yang berpotensi dapat ditangani oleh pi
 
 ## Pengujian
 
-Cakupan integrasi Pi mencakup suite berikut:
+Cakupan integrasi Pi mencakup suite ini:
 
 - `src/agents/pi-*.test.ts`
 - `src/agents/pi-auth-json.test.ts`
@@ -565,7 +568,7 @@ Cakupan integrasi Pi mencakup suite berikut:
 - `src/agents/pi-settings.test.ts`
 - `src/agents/pi-hooks/**/*.test.ts`
 
-Live/ikut-serta:
+Live/opt-in:
 
 - `src/agents/pi-embedded-runner-extraparams.live.test.ts` (aktifkan `OPENCLAW_LIVE_TEST=1`)
 

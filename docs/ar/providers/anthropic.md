@@ -4,41 +4,41 @@ read_when:
 summary: استخدم Anthropic Claude عبر مفاتيح API أو Claude CLI في OpenClaw
 title: Anthropic
 x-i18n:
-    generated_at: "2026-05-07T13:27:30Z"
+    generated_at: "2026-05-10T19:56:49Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 15ae1d2751d0127a45ece3d0a25bead21fd6bacc2ffc80636188fc2cb5f3d7ce
+    source_hash: c36764f1adb7585389d241303e9c61c1fe2fa49fefdfb28c314abbafa646b273
     source_path: providers/anthropic.md
     workflow: 16
 ---
 
-تطوّر Anthropic عائلة نماذج **Claude**. يدعم OpenClaw مساري مصادقة:
+تُطوّر Anthropic عائلة نماذج **Claude**. يدعم OpenClaw مساري مصادقة:
 
 - **مفتاح API** — وصول مباشر إلى Anthropic API مع فوترة حسب الاستخدام (نماذج `anthropic/*`)
 - **Claude CLI** — إعادة استخدام تسجيل دخول Claude CLI موجود على المضيف نفسه
 
 <Warning>
-أبلغنا موظفو Anthropic بأن استخدام Claude CLI على نمط OpenClaw مسموح به مجدداً، لذلك
+أخبرنا موظفو Anthropic أن استخدام Claude CLI بأسلوب OpenClaw مسموح به مرة أخرى، لذلك
 يتعامل OpenClaw مع إعادة استخدام Claude CLI واستخدام `claude -p` على أنهما مصرّح بهما ما لم
 تنشر Anthropic سياسة جديدة.
 
-بالنسبة إلى مضيفي Gateway طويلي العمر، تظل مفاتيح Anthropic API أوضح مسار إنتاجي
-وأكثر قابلية للتنبؤ.
+بالنسبة إلى مضيفي Gateway طويلة الأمد، لا تزال مفاتيح Anthropic API هي مسار الإنتاج الأوضح
+والأكثر قابلية للتنبؤ.
 
 مستندات Anthropic العامة الحالية:
 
 - [مرجع Claude Code CLI](https://code.claude.com/docs/en/cli-reference)
 - [نظرة عامة على Claude Agent SDK](https://platform.claude.com/docs/en/agent-sdk/overview)
-- [استخدام Claude Code مع خطة Pro أو Max الخاصة بك](https://support.claude.com/en/articles/11145838-using-claude-code-with-your-pro-or-max-plan)
-- [استخدام Claude Code مع خطة Team أو Enterprise الخاصة بك](https://support.anthropic.com/en/articles/11845131-using-claude-code-with-your-team-or-enterprise-plan/)
+- [استخدام Claude Code مع خطة Pro أو Max لديك](https://support.claude.com/en/articles/11145838-using-claude-code-with-your-pro-or-max-plan)
+- [استخدام Claude Code مع خطة Team أو Enterprise لديك](https://support.anthropic.com/en/articles/11845131-using-claude-code-with-your-team-or-enterprise-plan/)
 
 </Warning>
 
-## بدء الاستخدام
+## البدء
 
 <Tabs>
   <Tab title="مفتاح API">
-    **الأفضل لـ:** الوصول القياسي إلى API والفوترة حسب الاستخدام.
+    **الأفضل لـ:** وصول API القياسي والفوترة حسب الاستخدام.
 
     <Steps>
       <Step title="احصل على مفتاح API الخاص بك">
@@ -50,20 +50,20 @@ x-i18n:
         # choose: Anthropic API key
         ```
 
-        أو مرّر المفتاح مباشرة:
+        أو مرّر المفتاح مباشرةً:
 
         ```bash
         openclaw onboard --anthropic-api-key "$ANTHROPIC_API_KEY"
         ```
       </Step>
-      <Step title="تحقق من توفر النموذج">
+      <Step title="تحقّق من أن النموذج متاح">
         ```bash
         openclaw models list --provider anthropic
         ```
       </Step>
     </Steps>
 
-    ### مثال على التكوين
+    ### مثال على الإعدادات
 
     ```json5
     {
@@ -75,11 +75,11 @@ x-i18n:
   </Tab>
 
   <Tab title="Claude CLI">
-    **الأفضل لـ:** إعادة استخدام تسجيل دخول Claude CLI موجود دون مفتاح API منفصل.
+    **الأفضل لـ:** إعادة استخدام تسجيل دخول Claude CLI موجود بدون مفتاح API منفصل.
 
     <Steps>
-      <Step title="تأكد من تثبيت Claude CLI وتسجيل الدخول إليه">
-        تحقق باستخدام:
+      <Step title="تأكّد من تثبيت Claude CLI وتسجيل الدخول إليه">
+        تحقّق باستخدام:
 
         ```bash
         claude --version
@@ -93,7 +93,7 @@ x-i18n:
 
         يكتشف OpenClaw بيانات اعتماد Claude CLI الموجودة ويعيد استخدامها.
       </Step>
-      <Step title="تحقق من توفر النموذج">
+      <Step title="تحقّق من أن النموذج متاح">
         ```bash
         openclaw models list --provider anthropic
         ```
@@ -101,36 +101,40 @@ x-i18n:
     </Steps>
 
     <Note>
-    توجد تفاصيل الإعداد ووقت التشغيل للواجهة الخلفية لـ Claude CLI في [واجهات CLI الخلفية](/ar/gateway/cli-backends).
+    توجد تفاصيل الإعداد والتشغيل لخلفية Claude CLI في [خلفيات CLI](/ar/gateway/cli-backends).
     </Note>
 
-    ### مثال على التكوين
+    ### مثال على الإعدادات
 
-    فضّل مرجع نموذج Anthropic القياسي مع تجاوز وقت تشغيل CLI:
+    فضّل مرجع نموذج Anthropic القياسي مع تجاوز تشغيل CLI:
 
     ```json5
     {
       agents: {
         defaults: {
           model: { primary: "anthropic/claude-opus-4-7" },
-          agentRuntime: { id: "claude-cli" },
+          models: {
+            "anthropic/claude-opus-4-7": {
+              agentRuntime: { id: "claude-cli" },
+            },
+          },
         },
       },
     }
     ```
 
-    ما زالت مراجع النماذج القديمة `claude-cli/claude-opus-4-7` تعمل من أجل
-    التوافق، لكن ينبغي للتكوين الجديد أن يبقي اختيار الموفر/النموذج بصيغة
-    `anthropic/*` وأن يضع واجهة التنفيذ الخلفية في `agentRuntime.id`.
+    لا تزال مراجع نماذج `claude-cli/claude-opus-4-7` القديمة تعمل من أجل
+    التوافق، لكن يجب أن تبقي الإعدادات الجديدة اختيار المزوّد/النموذج بصيغة
+    `anthropic/*` وأن تضع خلفية التنفيذ في سياسة تشغيل المزوّد/النموذج.
 
     <Tip>
-    إذا كنت تريد أوضح مسار للفوترة، فاستخدم مفتاح Anthropic API بدلاً من ذلك. يدعم OpenClaw أيضاً خيارات بنمط الاشتراك من [OpenAI Codex](/ar/providers/openai)، و[Qwen Cloud](/ar/providers/qwen)، و[MiniMax](/ar/providers/minimax)، و[Z.AI / GLM](/ar/providers/glm).
+    إذا أردت مسار الفوترة الأوضح، فاستخدم مفتاح Anthropic API بدلاً من ذلك. يدعم OpenClaw أيضاً خيارات بنمط الاشتراك من [OpenAI Codex](/ar/providers/openai)، و[Qwen Cloud](/ar/providers/qwen)، و[MiniMax](/ar/providers/minimax)، و[Z.AI / GLM](/ar/providers/glm).
     </Tip>
 
   </Tab>
 </Tabs>
 
-## إعدادات التفكير الافتراضية (Claude 4.6)
+## افتراضيات التفكير (Claude 4.6)
 
 تستخدم نماذج Claude 4.6 التفكير `adaptive` افتراضياً في OpenClaw عند عدم تعيين مستوى تفكير صريح.
 
@@ -152,20 +156,20 @@ x-i18n:
 
 <Note>
 مستندات Anthropic ذات الصلة:
-- [التفكير التكيفي](https://platform.claude.com/docs/en/build-with-claude/adaptive-thinking)
+- [التفكير التكيّفي](https://platform.claude.com/docs/en/build-with-claude/adaptive-thinking)
 - [التفكير الممتد](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)
 
 </Note>
 
-## تخزين الموجهات مؤقتاً
+## تخزين المطالبات مؤقتاً
 
-يدعم OpenClaw ميزة تخزين الموجهات مؤقتاً في Anthropic لمصادقة مفتاح API.
+يدعم OpenClaw ميزة تخزين المطالبات مؤقتاً من Anthropic لمصادقة مفتاح API.
 
-| القيمة               | مدة التخزين المؤقت | الوصف                                  |
-| ------------------- | -------------- | -------------------------------------- |
-| `"short"` (الافتراضي) | 5 دقائق        | يطبّق تلقائياً لمصادقة مفتاح API |
-| `"long"`            | ساعة واحدة     | تخزين مؤقت ممتد                        |
-| `"none"`            | بلا تخزين مؤقت | تعطيل تخزين الموجهات مؤقتاً            |
+| القيمة              | مدة التخزين المؤقت | الوصف                                  |
+| ------------------- | ------------------ | -------------------------------------- |
+| `"short"` (افتراضي) | 5 دقائق            | يُطبّق تلقائياً لمصادقة مفتاح API      |
+| `"long"`            | ساعة واحدة         | تخزين مؤقت ممتد                        |
+| `"none"`            | بدون تخزين مؤقت    | تعطيل تخزين المطالبات مؤقتاً           |
 
 ```json5
 {
@@ -204,30 +208,30 @@ x-i18n:
     }
     ```
 
-    ترتيب دمج التكوين:
+    ترتيب دمج الإعدادات:
 
     1. `agents.defaults.models["provider/model"].params`
-    2. `agents.list[].params` (مطابقة `id`، وتتجاوز حسب المفتاح)
+    2. `agents.list[].params` (المطابقة لـ `id`، وتتجاوز حسب المفتاح)
 
-    يتيح ذلك لوكيل واحد الاحتفاظ بتخزين مؤقت طويل العمر بينما يعطّل وكيل آخر على النموذج نفسه التخزين المؤقت لحركة مرور متقطعة/قليلة إعادة الاستخدام.
+    يتيح هذا لوكيل واحد الاحتفاظ بذاكرة تخزين مؤقت طويلة الأمد بينما يعطّل وكيل آخر على النموذج نفسه التخزين المؤقت لحركة المرور المتقطعة/منخفضة إعادة الاستخدام.
 
   </Accordion>
 
   <Accordion title="ملاحظات Bedrock Claude">
     - تقبل نماذج Anthropic Claude على Bedrock (`amazon-bedrock/*anthropic.claude*`) تمرير `cacheRetention` عند تكوينها.
-    - تُفرض قيمة `cacheRetention: "none"` على نماذج Bedrock غير التابعة لـ Anthropic في وقت التشغيل.
-    - تضبط الإعدادات الافتراضية الذكية لمفتاح API أيضاً قيمة `cacheRetention: "short"` لمراجع Claude-on-Bedrock عند عدم تعيين قيمة صريحة.
+    - تُجبَر نماذج Bedrock غير التابعة لـ Anthropic على `cacheRetention: "none"` وقت التشغيل.
+    - كما تضع الافتراضيات الذكية لمفتاح API القيمة `cacheRetention: "short"` لمراجع Claude-on-Bedrock عندما لا تكون هناك قيمة صريحة معيّنة.
 
   </Accordion>
 </AccordionGroup>
 
-## التكوين المتقدم
+## الإعدادات المتقدمة
 
 <AccordionGroup>
   <Accordion title="الوضع السريع">
     يدعم مفتاح التبديل المشترك `/fast` في OpenClaw حركة Anthropic المباشرة (مفتاح API وOAuth إلى `api.anthropic.com`).
 
-    | الأمر | يُعيّن إلى |
+    | الأمر | يُطابَق مع |
     |---------|---------|
     | `/fast on` | `service_tier: "auto"` |
     | `/fast off` | `service_tier: "standard_only"` |
@@ -247,30 +251,31 @@ x-i18n:
     ```
 
     <Note>
-    - يُحقن فقط لطلبات `api.anthropic.com` المباشرة. تترك مسارات الوكيل `service_tier` دون تغيير.
-    - تتجاوز معاملات `serviceTier` أو `service_tier` الصريحة `/fast` عند تعيينهما معاً.
-    - في الحسابات التي لا تملك سعة Priority Tier، قد تُحل `service_tier: "auto"` إلى `standard`.
+    - يُحقن فقط لطلبات `api.anthropic.com` المباشرة. تترك مسارات الوكيل `service_tier` بدون تغيير.
+    - معاملات `serviceTier` أو `service_tier` الصريحة تتجاوز `/fast` عند تعيينهما معاً.
+    - في الحسابات التي لا تملك سعة Priority Tier، قد تُحلّ `service_tier: "auto"` إلى `standard`.
 
     </Note>
 
   </Accordion>
 
   <Accordion title="فهم الوسائط (الصور وPDF)">
-    يسجّل Plugin Anthropic المضمّن فهم الصور وPDF. يحل OpenClaw
-    إمكانات الوسائط تلقائياً من مصادقة Anthropic المكوّنة — ولا حاجة إلى
-    تكوين إضافي.
+    يسجّل Plugin Anthropic المضمّن فهم الصور وPDF. يحلّ OpenClaw
+    إمكانات الوسائط تلقائياً من مصادقة Anthropic المكوّنة — لا حاجة إلى
+    إعدادات إضافية.
 
-    | الخاصية        | القيمة                 |
+    | الخاصية        | القيمة                |
     | --------------- | --------------------- |
-    | النموذج الافتراضي   | `claude-opus-4-7`     |
+    | النموذج الافتراضي | `claude-opus-4-7`     |
     | الإدخال المدعوم | الصور، مستندات PDF |
 
-    عند إرفاق صورة أو PDF بمحادثة، يوجّه OpenClaw ذلك تلقائياً عبر موفر فهم الوسائط من Anthropic.
+    عند إرفاق صورة أو PDF بمحادثة، يوجّهها OpenClaw تلقائياً
+    عبر مزوّد فهم وسائط Anthropic.
 
   </Accordion>
 
   <Accordion title="نافذة سياق 1M (تجريبية)">
-    نافذة السياق 1M في Anthropic مقيّدة بإصدار تجريبي. مكّنها لكل نموذج:
+    نافذة السياق 1M من Anthropic محكومة ببوابة تجريبية. فعّلها لكل نموذج:
 
     ```json5
     {
@@ -286,41 +291,41 @@ x-i18n:
     }
     ```
 
-    يعيّن OpenClaw هذا إلى `anthropic-beta: context-1m-2025-08-07` في الطلبات.
+    يطابق OpenClaw هذا مع `anthropic-beta: context-1m-2025-08-07` في الطلبات.
 
-    ينطبق `params.context1m: true` أيضاً على الواجهة الخلفية Claude CLI
-    (`claude-cli/*`) لنماذج Opus وSonnet المؤهلة، مما يوسّع نافذة سياق وقت التشغيل
-    لتلك جلسات CLI كي تطابق سلوك API المباشر.
+    ينطبق `params.context1m: true` أيضاً على خلفية Claude CLI
+    (`claude-cli/*`) لنماذج Opus وSonnet المؤهلة، مما يوسّع نافذة سياق
+    التشغيل لتلك جلسات CLI لتطابق سلوك API المباشر.
 
     <Warning>
-    يتطلب وصولاً إلى السياق الطويل على بيانات اعتماد Anthropic الخاصة بك. تُرفض مصادقة الرمز القديمة (`sk-ant-oat-*`) لطلبات سياق 1M — ويسجل OpenClaw تحذيراً ثم يعود إلى نافذة السياق القياسية.
+    يتطلب وصولاً طويل السياق على بيانات اعتماد Anthropic لديك. تُرفض مصادقة الرمز القديمة (`sk-ant-oat-*`) لطلبات سياق 1M — يسجّل OpenClaw تحذيراً ويعود إلى نافذة السياق القياسية.
     </Warning>
 
   </Accordion>
 
   <Accordion title="سياق 1M في Claude Opus 4.7">
-    لدى `anthropic/claude-opus-4.7` ومتغيره `claude-cli` نافذة سياق 1M
-    افتراضياً — ولا حاجة إلى `params.context1m: true`.
+    يملك `anthropic/claude-opus-4.7` ومتغيره `claude-cli` نافذة سياق 1M
+    افتراضياً — لا حاجة إلى `params.context1m: true`.
   </Accordion>
 </AccordionGroup>
 
 ## استكشاف الأخطاء وإصلاحها
 
 <AccordionGroup>
-  <Accordion title="أخطاء 401 / أصبح الرمز غير صالح فجأة">
-    تنتهي صلاحية مصادقة رمز Anthropic ويمكن إبطالها. بالنسبة إلى الإعدادات الجديدة، استخدم مفتاح Anthropic API بدلاً من ذلك.
+  <Accordion title="أخطاء 401 / الرمز أصبح غير صالح فجأة">
+    تنتهي صلاحية مصادقة رمز Anthropic ويمكن إبطالها. للإعدادات الجديدة، استخدم مفتاح Anthropic API بدلاً من ذلك.
   </Accordion>
 
-  <Accordion title='لم يُعثر على مفتاح API للموفر "anthropic"'>
-    مصادقة Anthropic تكون **لكل وكيل** — لا ترث الوكلاء الجديدة مفاتيح الوكيل الرئيسي. أعد تشغيل الإعداد الأولي لذلك الوكيل (أو كوّن مفتاح API على مضيف Gateway)، ثم تحقق باستخدام `openclaw models status`.
+  <Accordion title='لم يتم العثور على مفتاح API للمزوّد "anthropic"'>
+    مصادقة Anthropic هي **لكل وكيل** — لا ترث الوكلاء الجدد مفاتيح الوكيل الرئيسي. أعد تشغيل الإعداد الأولي لذلك الوكيل (أو كوّن مفتاح API على مضيف Gateway)، ثم تحقّق باستخدام `openclaw models status`.
   </Accordion>
 
-  <Accordion title='لم يُعثر على بيانات اعتماد لملف التعريف "anthropic:default"'>
-    شغّل `openclaw models status` لمعرفة ملف تعريف المصادقة النشط. أعد تشغيل الإعداد الأولي، أو كوّن مفتاح API لمسار ملف التعريف ذلك.
+  <Accordion title='لم يتم العثور على بيانات اعتماد للملف الشخصي "anthropic:default"'>
+    شغّل `openclaw models status` لمعرفة ملف المصادقة الشخصي النشط. أعد تشغيل الإعداد الأولي، أو كوّن مفتاح API لمسار ذلك الملف الشخصي.
   </Accordion>
 
-  <Accordion title="لا يوجد ملف تعريف مصادقة متاح (كلها في فترة تهدئة)">
-    تحقق من `openclaw models status --json` للاطلاع على `auth.unusableProfiles`. يمكن أن تكون فترات تهدئة حدود المعدل في Anthropic مقيّدة بنموذج معين، لذلك قد يظل نموذج Anthropic شقيق قابلاً للاستخدام. أضف ملف تعريف Anthropic آخر أو انتظر انتهاء فترة التهدئة.
+  <Accordion title="لا يوجد ملف مصادقة شخصي متاح (الكل في فترة تهدئة)">
+    افحص `openclaw models status --json` بحثاً عن `auth.unusableProfiles`. يمكن أن تكون فترات تهدئة حدود المعدل في Anthropic مقيّدة بنموذج معيّن، لذلك قد يظل نموذج Anthropic شقيق قابلاً للاستخدام. أضف ملف Anthropic شخصياً آخر أو انتظر انتهاء فترة التهدئة.
   </Accordion>
 </AccordionGroup>
 
@@ -332,13 +337,13 @@ x-i18n:
 
 <CardGroup cols={2}>
   <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
-    اختيار الموفرين ومراجع النماذج وسلوك تجاوز الفشل.
+    اختيار المزوّدين، ومراجع النماذج، وسلوك تجاوز الفشل.
   </Card>
-  <Card title="واجهات CLI الخلفية" href="/ar/gateway/cli-backends" icon="terminal">
-    إعداد الواجهة الخلفية Claude CLI وتفاصيل وقت التشغيل.
+  <Card title="خلفيات CLI" href="/ar/gateway/cli-backends" icon="terminal">
+    إعداد خلفية Claude CLI وتفاصيل التشغيل.
   </Card>
-  <Card title="تخزين الموجهات مؤقتاً" href="/ar/reference/prompt-caching" icon="database">
-    كيفية عمل تخزين الموجهات مؤقتاً عبر الموفرين.
+  <Card title="تخزين المطالبات مؤقتاً" href="/ar/reference/prompt-caching" icon="database">
+    كيفية عمل تخزين المطالبات مؤقتاً عبر المزوّدين.
   </Card>
   <Card title="OAuth والمصادقة" href="/ar/gateway/authentication" icon="key">
     تفاصيل المصادقة وقواعد إعادة استخدام بيانات الاعتماد.

@@ -1,21 +1,21 @@
 ---
 read_when:
     - Bạn đang xây dựng hoặc tái cấu trúc một Plugin kênh nhắn tin
-    - Bạn cần cơ chế chuyển phát phản hồi cuối cùng bền vững, biên nhận, hoàn tất bản xem trước trực tiếp hoặc chính sách xác nhận đã nhận
-    - Bạn đang di chuyển từ pipeline phản hồi cũ hoặc các helper điều phối phản hồi đầu vào
-summary: API vòng đời tin nhắn cho Plugin kênh, bao gồm gửi bền vững, biên nhận, xem trước trực tiếp, chính sách xác nhận đã nhận và di chuyển kế thừa
-title: API tin nhắn của kênh
+    - Bạn cần cơ chế gửi phản hồi cuối cùng bền vững, biên nhận, hoàn tất bản xem trước trực tiếp, hoặc chính sách xác nhận đã nhận
+    - Bạn đang di chuyển từ quy trình trả lời cũ hoặc các trình trợ giúp điều phối trả lời đến
+summary: API vòng đời tin nhắn cho các Plugin kênh, bao gồm gửi bền vững, biên nhận, xem trước trực tiếp, chính sách xác nhận đã nhận và di trú từ hệ thống cũ
+title: API tin nhắn kênh
 x-i18n:
-    generated_at: "2026-05-06T09:23:45Z"
+    generated_at: "2026-05-10T19:44:48Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b4c96cdc6fe13f4063958d4b999fae97329f5906638caad52e61cabae40985dc
+    source_hash: fd3f6ad071f4ff6fed0503d66dce04990d90e84f390bfa63b8507080c5ef20d3
     source_path: plugins/sdk-channel-message.md
     workflow: 16
 ---
 
-Plugin kênh nên cung cấp một adapter `message` từ
-`openclaw/plugin-sdk/channel-message`. Adapter này mô tả vòng đời thông điệp gốc
+Các Plugin kênh nên cung cấp một bộ chuyển đổi `message` từ
+`openclaw/plugin-sdk/channel-message`. Bộ chuyển đổi mô tả vòng đời tin nhắn gốc
 mà nền tảng hỗ trợ:
 
 ```text
@@ -24,23 +24,53 @@ send -> render batch -> platform I/O -> receipt -> lifecycle side effects
 live preview -> final edit or fallback -> receipt
 ```
 
-Core sở hữu việc xếp hàng, độ bền, chính sách thử lại chung, hook, biên nhận và
-công cụ `message` dùng chung. Plugin sở hữu các lệnh gọi gửi/chỉnh sửa/xóa gốc,
-chuẩn hóa đích, luồng hội thoại của nền tảng, trích dẫn được chọn, cờ thông báo,
-trạng thái tài khoản và các side effect riêng theo nền tảng.
+Phần lõi sở hữu việc xếp hàng, độ bền, chính sách thử lại chung, hook, biên nhận và
+công cụ `message` dùng chung. Plugin sở hữu các lệnh gọi gửi/chỉnh sửa/xóa gốc, chuẩn hóa đích,
+luồng thảo luận của nền tảng, trích dẫn đã chọn, cờ thông báo, trạng thái tài khoản
+và các hiệu ứng phụ dành riêng cho nền tảng.
 
 Dùng trang này cùng với [Xây dựng Plugin kênh](/vi/plugins/sdk-channel-plugins).
 
-Subpath `channel-message` được thiết kế đủ nhẹ cho các tệp bootstrap Plugin nóng
-như `channel.ts`: nó cung cấp các hợp đồng adapter, bằng chứng capability,
-biên nhận và facade tương thích mà không tải outbound delivery. Các helper
-runtime delivery có sẵn từ
-`openclaw/plugin-sdk/channel-message-runtime` cho các code path monitor/send vốn
-đã thực hiện message I/O bất đồng bộ.
+Đường dẫn con `channel-message` được thiết kế đủ nhẹ cho các tệp khởi động nóng của Plugin
+như `channel.ts`: nó cung cấp các hợp đồng bộ chuyển đổi, bằng chứng năng lực,
+biên nhận và facade tương thích mà không tải cơ chế phân phối đi.
+Các helper phân phối thời gian chạy có sẵn từ
+`openclaw/plugin-sdk/channel-message-runtime` cho các đường dẫn mã monitor/send
+vốn đã thực hiện I/O tin nhắn bất đồng bộ.
 
-## Adapter tối thiểu
+Mã gửi mới của kênh và Plugin nên dùng các helper vòng đời tin nhắn từ
+`openclaw/plugin-sdk/channel-message-runtime`: `sendDurableMessageBatch`,
+`withDurableMessageSendContext`, hoặc `deliverInboundReplyWithMessageSendContext`.
+Helper cũ
+`deliverOutboundPayloads(...)` trong `openclaw/plugin-sdk/outbound-runtime`
+là nền tương thích/thời gian chạy đã lỗi thời cho phần nội bộ outbound, khôi phục
+và các bộ chuyển đổi cũ. Không dùng nó cho đường dẫn gửi mới của kênh hoặc Plugin.
 
-Hầu hết Plugin kênh mới có thể bắt đầu với một adapter nhỏ:
+`sendDurableMessageBatch(...)` trả về một kết quả vòng đời tường minh:
+
+- `sent` - ít nhất một tin nhắn nền tảng hiển thị đã được phân phối.
+- `suppressed` - không nên coi là thiếu tin nhắn nền tảng nào. Các lý do ổn định
+  gồm `cancelled_by_message_sending_hook`,
+  `empty_after_message_sending_hook`, `no_visible_payload`,
+  `adapter_returned_no_identity`, và lý do cũ `no_visible_result`.
+- `partial_failed` - ít nhất một tin nhắn nền tảng đã được phân phối trước khi một
+  payload hoặc hiệu ứng phụ sau đó thất bại. Kết quả bao gồm tiền tố biên nhận đã phân phối
+  cùng với lỗi.
+- `failed` - không tạo ra biên nhận nền tảng nào.
+
+Dùng `payloadOutcomes` khi một lô trộn các payload đã gửi, bị chặn và thất bại.
+Không suy luận việc hook hủy bằng cách kiểm tra mảng phân phối trực tiếp cũ
+có rỗng hay không.
+
+Các bộ điều phối tương thích vẫn cần bộ điều phối trả lời đệm nên
+xây dựng tùy chọn tiền tố trả lời bằng `createChannelMessageReplyPipeline(...)` từ
+`openclaw/plugin-sdk/channel-message`, rồi gọi
+`channel.turn.runPrepared(...)` của runtime. Việc này giữ ghi phiên và thứ tự điều phối
+trên vòng đời lượt dùng chung mà không thêm một wrapper lượt công khai khác.
+
+## Bộ chuyển đổi tối thiểu
+
+Hầu hết Plugin kênh mới có thể bắt đầu bằng một bộ chuyển đổi nhỏ:
 
 ```typescript
 import {
@@ -95,13 +125,13 @@ export const demoPlugin = createChatChannelPlugin({
 });
 ```
 
-Chỉ khai báo các capability mà adapter thật sự giữ nguyên. Mỗi capability đã
-khai báo nên có một kiểm thử hợp đồng.
+Chỉ khai báo các năng lực mà bộ chuyển đổi thực sự bảo toàn. Mỗi năng lực đã khai báo
+nên có một kiểm thử hợp đồng.
 
 ## Cầu nối outbound
 
-Nếu kênh đã có adapter `outbound` tương thích, hãy ưu tiên dẫn xuất adapter
-message thay vì sao chép mã gửi:
+Nếu kênh đã có một bộ chuyển đổi `outbound` tương thích, hãy ưu tiên suy ra
+bộ chuyển đổi tin nhắn thay vì nhân đôi mã gửi:
 
 ```typescript
 import { createChannelMessageAdapterFromOutbound } from "openclaw/plugin-sdk/channel-message";
@@ -112,32 +142,34 @@ const demoMessageAdapter = createChannelMessageAdapterFromOutbound({
 });
 ```
 
-Cầu nối chuyển đổi kết quả gửi outbound cũ thành các giá trị `MessageReceipt`.
-Mã mới nên truyền biên nhận xuyên suốt và chỉ dẫn xuất id legacy ở các ranh giới
-tương thích bằng `listMessageReceiptPlatformIds(...)` hoặc
+Cầu nối chuyển đổi kết quả gửi outbound cũ thành các giá trị `MessageReceipt`. Mã mới
+nên truyền biên nhận xuyên suốt và chỉ suy ra id cũ tại các ranh giới tương thích
+bằng `listMessageReceiptPlatformIds(...)` hoặc
 `resolveMessageReceiptPrimaryId(...)`.
 Nếu không cung cấp chính sách nhận, `createChannelMessageAdapterFromOutbound(...)`
-sử dụng chính sách xác nhận nhận `manual`. Điều đó làm cho việc xác nhận nền tảng
-do Plugin sở hữu trở nên rõ ràng mà không thay đổi các kênh xác nhận Webhook,
+dùng chính sách xác nhận nhận `manual`. Điều đó làm cho xác nhận nền tảng do Plugin sở hữu
+trở nên tường minh mà không thay đổi các kênh xác nhận Webhook,
 socket hoặc offset polling bên ngoài ngữ cảnh nhận chung.
 
-## Gửi bằng công cụ message
+## Gửi bằng công cụ tin nhắn
 
-Đường dẫn `message(action="send")` dùng chung nên sử dụng cùng vòng đời core
-delivery như các phản hồi cuối cùng. Nếu một kênh cần định hình riêng theo nhà
-cung cấp cho lần gửi bằng công cụ, hãy triển khai `actions.prepareSendPayload(...)`
-thay vì gửi từ `actions.handleAction(...)`.
+Đường dẫn `message(action="send")` dùng chung nên dùng cùng vòng đời phân phối lõi
+như các trả lời cuối cùng. Nếu một kênh cần định dạng theo nhà cung cấp cho lần gửi bằng công cụ,
+hãy triển khai `actions.prepareSendPayload(...)` thay vì gửi từ
+`actions.handleAction(...)`.
 
-`prepareSendPayload(...)` nhận `ReplyPayload` core đã chuẩn hóa cùng toàn bộ ngữ
-cảnh action. Trả về một payload có dữ liệu riêng theo kênh trong
-`payload.channelData.<channel>` và để core gọi `sendMessage(...)`,
-`deliverOutboundPayloads(...)`, hàng đợi write-ahead, message-sending hook,
-thử lại, khôi phục và dọn dẹp ack.
+`prepareSendPayload(...)` nhận `ReplyPayload` lõi đã chuẩn hóa cùng với
+toàn bộ ngữ cảnh hành động. Trả về một payload có dữ liệu dành riêng cho kênh trong
+`payload.channelData.<channel>` và để phần lõi gọi `sendMessage(...)`,
+runtime vòng đời tin nhắn, hàng đợi ghi trước, hook gửi tin nhắn,
+thử lại, khôi phục và dọn dẹp ack. Runtime vòng đời có thể gọi
+`deliverOutboundPayloads(...)` nội bộ như nền tương thích, nhưng Plugin kênh
+không nên gọi trực tiếp nó cho hành vi gửi mới.
 
-Chỉ trả về `null` khi lần gửi không thể được biểu diễn dưới dạng payload bền,
-ví dụ vì nó chứa một component factory không thể tuần tự hóa. Core sẽ giữ lại
-fallback action Plugin legacy để tương thích, nhưng các tính năng gửi kênh mới
-nên có thể biểu diễn dưới dạng dữ liệu payload bền.
+Chỉ trả về `null` khi lần gửi không thể được biểu diễn thành payload bền vững, ví dụ
+vì nó chứa một component factory không thể tuần tự hóa. Phần lõi sẽ giữ
+fallback hành động Plugin cũ để tương thích, nhưng các tính năng gửi mới của kênh
+nên biểu diễn được dưới dạng dữ liệu payload bền vững.
 
 ```typescript
 export const demoActions: ChannelMessageActionAdapter = {
@@ -160,48 +192,49 @@ export const demoActions: ChannelMessageActionAdapter = {
 };
 ```
 
-Sau đó adapter outbound đọc `payload.channelData.demo` bên trong `sendPayload`.
-Điều này giữ phần render riêng theo nền tảng trong Plugin trong khi core vẫn sở
-hữu persist, thử lại, recover, hook và ack.
+Sau đó bộ chuyển đổi outbound đọc `payload.channelData.demo` bên trong `sendPayload`.
+Điều này giữ phần kết xuất dành riêng cho nền tảng trong Plugin trong khi phần lõi vẫn sở hữu
+lưu bền vững, thử lại, khôi phục, hook và ack.
 
-Các payload `message(action="send")` đã chuẩn bị và generic final-reply delivery
-sử dụng core delivery với xếp hàng best-effort theo mặc định. Xếp hàng bền bắt
-buộc chỉ hợp lệ sau khi core xác minh kênh có thể đối chiếu một lần gửi mà kết
-quả của nó không xác định sau sự cố. Nếu adapter không thể triển khai
-`reconcileUnknownSend`, hãy giữ đường dẫn gửi đã chuẩn bị ở best-effort; core vẫn
-sẽ thử hàng đợi write-ahead, nhưng queue persistence hoặc khôi phục sự cố không
-chắc chắn không thuộc hợp đồng delivery bắt buộc.
+Các payload `message(action="send")` đã chuẩn bị và phân phối trả lời cuối cùng chung dùng
+phân phối lõi với xếp hàng nỗ lực tối đa theo mặc định. Xếp hàng bền vững bắt buộc
+chỉ hợp lệ sau khi phần lõi xác minh kênh có thể đối chiếu một lần gửi có kết quả
+không xác định sau sự cố. Nếu bộ chuyển đổi không thể triển khai `reconcileUnknownSend`,
+hãy giữ đường dẫn gửi đã chuẩn bị ở mức nỗ lực tối đa; phần lõi vẫn sẽ thử hàng đợi ghi trước,
+nhưng tính bền vững của hàng đợi hoặc khôi phục sau sự cố không chắc chắn không thuộc
+hợp đồng phân phối bắt buộc.
 
-## Capability final bền
+## Năng lực gửi cuối bền vững
 
-Durable final delivery là tùy chọn theo từng side effect. Core sẽ chỉ dùng
-generic durable delivery khi adapter khai báo mọi capability mà payload và tùy
-chọn delivery cần.
+Phân phối cuối bền vững là tùy chọn theo từng hiệu ứng phụ. Phần lõi sẽ chỉ dùng
+phân phối bền vững chung khi bộ chuyển đổi khai báo mọi năng lực cần thiết bởi
+payload và tùy chọn phân phối.
 
-| Capability             | Khai báo khi                                                                         |
+| Năng lực               | Khai báo khi                                                                         |
 | ---------------------- | ------------------------------------------------------------------------------------ |
-| `text`                 | Adapter có thể gửi văn bản và trả về biên nhận.                                      |
-| `media`                | Lần gửi media trả về biên nhận cho mọi thông điệp nền tảng hiển thị.                 |
-| `payload`              | Adapter giữ nguyên ngữ nghĩa rich reply payload, không chỉ văn bản và một URL media. |
-| `replyTo`              | Đích trả lời gốc đến được nền tảng.                                                   |
-| `thread`               | Đích thread, topic hoặc channel thread gốc đến được nền tảng.                        |
-| `silent`               | Việc tắt thông báo đến được nền tảng.                                                 |
-| `nativeQuote`          | Metadata trích dẫn được chọn đến được nền tảng.                                       |
-| `messageSendingHooks`  | Core message-sending hook có thể hủy hoặc viết lại nội dung trước platform I/O.      |
-| `batch`                | Các batch render nhiều phần có thể phát lại như một kế hoạch bền duy nhất.           |
-| `reconcileUnknownSend` | Adapter có thể giải quyết khôi phục `unknown_after_send` mà không phát lại mù quáng. |
-| `afterSendSuccess`     | Side effect after-send cục bộ của kênh chạy một lần.                                 |
-| `afterCommit`          | Side effect after-commit cục bộ của kênh chạy một lần.                               |
+| `text`                 | Bộ chuyển đổi có thể gửi văn bản và trả về biên nhận.                                |
+| `media`                | Lần gửi media trả về biên nhận cho mọi tin nhắn nền tảng hiển thị.                   |
+| `payload`              | Bộ chuyển đổi bảo toàn ngữ nghĩa payload trả lời phong phú, không chỉ văn bản và một URL media. |
+| `replyTo`              | Đích trả lời gốc tới được nền tảng.                                                  |
+| `thread`               | Đích luồng, chủ đề hoặc luồng kênh gốc tới được nền tảng.                            |
+| `silent`               | Việc tắt thông báo tới được nền tảng.                                                |
+| `nativeQuote`          | Metadata trích dẫn đã chọn tới được nền tảng.                                        |
+| `messageSendingHooks`  | Hook gửi tin nhắn của phần lõi có thể hủy hoặc viết lại nội dung trước I/O nền tảng. |
+| `batch`                | Các lô đã kết xuất gồm nhiều phần có thể được phát lại như một kế hoạch bền vững.    |
+| `reconcileUnknownSend` | Bộ chuyển đổi có thể xử lý khôi phục `unknown_after_send` mà không phát lại mù.      |
+| `afterSendSuccess`     | Hiệu ứng phụ sau khi gửi cục bộ theo kênh chạy một lần.                              |
+| `afterCommit`          | Hiệu ứng phụ sau khi commit cục bộ theo kênh chạy một lần.                           |
 
-Best-effort final delivery không yêu cầu `reconcileUnknownSend`; nó dùng vòng
-đời dùng chung khi adapter giữ nguyên ngữ nghĩa hiển thị của payload, và fallback
-về platform I/O trực tiếp nếu queue persistence không khả dụng. Required durable
-final delivery phải yêu cầu rõ ràng `reconcileUnknownSend`. Nếu adapter không thể
-xác định liệu một lần gửi đã bắt đầu/không xác định có đến được nền tảng hay
-không, đừng khai báo capability đó; core sẽ từ chối required durable delivery
+Phân phối cuối nỗ lực tối đa không yêu cầu `reconcileUnknownSend`; nó dùng
+vòng đời dùng chung khi bộ chuyển đổi bảo toàn ngữ nghĩa hiển thị của payload, và
+fallback sang I/O nền tảng trực tiếp nếu tính bền vững của hàng đợi không sẵn có. Phân phối cuối
+bền vững bắt buộc phải yêu cầu tường minh `reconcileUnknownSend`. Nếu
+bộ chuyển đổi không thể xác định liệu một lần gửi đã bắt đầu/không xác định có tới nền tảng hay không,
+đừng khai báo năng lực đó; phần lõi sẽ từ chối phân phối bền vững bắt buộc
 trước khi xếp hàng.
 
-Khi caller cần durable delivery, hãy dẫn xuất yêu cầu thay vì tự xây map:
+Khi một caller cần phân phối bền vững, hãy suy ra yêu cầu thay vì tự xây dựng
+map thủ công:
 
 ```typescript
 import { deriveDurableFinalDeliveryRequirements } from "openclaw/plugin-sdk/channel-message";
@@ -218,33 +251,33 @@ const requiredCapabilities = deriveDurableFinalDeliveryRequirements({
 });
 ```
 
-`messageSendingHooks` được yêu cầu theo mặc định. Chỉ đặt `messageSendingHooks: false`
-cho một đường dẫn cố ý không thể chạy global message-sending hook.
+`messageSendingHooks` được yêu cầu theo mặc định. Đặt `messageSendingHooks: false`
+chỉ cho một đường dẫn cố ý không thể chạy các hook gửi tin nhắn toàn cục.
 
-## Hợp đồng gửi bền
+## Hợp đồng gửi bền vững
 
-Một lần gửi final bền có ngữ nghĩa nghiêm ngặt hơn delivery legacy do kênh sở
-hữu:
+Một lần gửi cuối bền vững có ngữ nghĩa nghiêm ngặt hơn phân phối cũ do kênh sở hữu:
 
-- Tạo intent bền trước platform I/O.
-- Nếu durable delivery trả về kết quả đã xử lý, không fallback về legacy send.
-- Xem hook cancellation và no-send result là kết thúc.
-- Xem `unsupported` là kết quả trước intent.
-- Với required durability, thất bại trước platform I/O nếu hàng đợi không thể
-  ghi nhận rằng platform send đã bắt đầu.
-- Với required final delivery và required prepared message-tool send, preflight
-  `reconcileUnknownSend`; recovery phải có thể ack một thông điệp đã gửi hoặc chỉ
-  phát lại sau khi adapter chứng minh lần gửi ban đầu đã không xảy ra.
-- Với `best_effort`, lỗi ghi hàng đợi có thể fallback về platform I/O trực tiếp.
-- Chuyển tiếp tín hiệu hủy đến media loading và platform send.
-- Chạy hook after-commit sau queue ack; direct best-effort fallback chạy chúng
-  sau platform I/O thành công vì không có commit hàng đợi bền.
-- Trả về biên nhận cho mọi id thông điệp nền tảng hiển thị.
-- Dùng `reconcileUnknownSend` khi một nền tảng có thể kiểm tra liệu một lần gửi
-  không chắc chắn đã đến người dùng hay chưa.
+- Tạo ý định bền vững trước I/O nền tảng.
+- Nếu phân phối bền vững trả về một kết quả đã xử lý, không fallback sang gửi cũ.
+- Coi việc hook hủy và kết quả không gửi là kết thúc.
+- Coi `unsupported` là kết quả trước ý định duy nhất.
+- Với độ bền bắt buộc, thất bại trước I/O nền tảng nếu hàng đợi không thể ghi nhận
+  rằng lần gửi nền tảng đã bắt đầu.
+- Với phân phối cuối bắt buộc và các lần gửi công cụ tin nhắn đã chuẩn bị bắt buộc,
+  preflight `reconcileUnknownSend`; quá trình khôi phục phải có khả năng ack một
+  tin nhắn đã gửi hoặc chỉ phát lại sau khi bộ chuyển đổi chứng minh lần gửi ban đầu
+  đã không xảy ra.
+- Với `best_effort`, lỗi ghi hàng đợi có thể fallback sang I/O nền tảng trực tiếp.
+- Chuyển tiếp tín hiệu hủy tới việc tải media và các lần gửi nền tảng.
+- Chạy hook sau commit sau ack hàng đợi; fallback trực tiếp nỗ lực tối đa chạy chúng
+  sau I/O nền tảng thành công vì không có commit hàng đợi bền vững.
+- Trả về biên nhận cho mọi id tin nhắn nền tảng hiển thị.
+- Dùng `reconcileUnknownSend` khi một nền tảng có thể kiểm tra liệu một lần gửi không chắc chắn
+  đã tới người dùng hay chưa.
 
-Hợp đồng này tránh gửi trùng sau sự cố và tránh bỏ qua các hook hủy
-message-sending.
+Hợp đồng này tránh gửi trùng lặp sau sự cố và tránh bỏ qua
+các hook hủy gửi tin nhắn.
 
 ## Biên nhận
 
@@ -264,16 +297,16 @@ type MessageReceipt = {
 };
 ```
 
-Dùng `createMessageReceiptFromOutboundResults(...)` khi chuyển đổi một kết quả
-gửi hiện có. Dùng `createPreviewMessageReceipt(...)` khi một thông điệp live
-preview trở thành biên nhận cuối cùng. Tránh thêm các trường `messageIds` cục bộ
-theo owner mới. Legacy `ChannelDeliveryResult.messageIds` vẫn được tạo ở các
-ranh giới tương thích.
+Dùng `createMessageReceiptFromOutboundResults(...)` khi điều chỉnh một kết quả
+gửi hiện có. Dùng `createPreviewMessageReceipt(...)` khi một thông báo xem trước
+trực tiếp trở thành biên nhận cuối cùng. Tránh thêm các trường `messageIds` mới
+cục bộ theo chủ sở hữu. `ChannelDeliveryResult.messageIds` cũ vẫn được tạo tại
+các rìa tương thích.
 
-## Live preview
+## Xem trước trực tiếp
 
-Các kênh stream bản nháp preview hoặc cập nhật tiến trình nên khai báo
-capability live:
+Các kênh truyền phát bản xem trước nháp hoặc cập nhật tiến độ nên khai báo các
+khả năng trực tiếp:
 
 ```typescript
 const demoMessageAdapter = defineChannelMessageAdapter({
@@ -299,14 +332,15 @@ const demoMessageAdapter = defineChannelMessageAdapter({
 ```
 
 Dùng `defineFinalizableLivePreviewAdapter(...)` và
-`deliverWithFinalizableLivePreviewAdapter(...)` cho finalization runtime.
-Finalizer quyết định liệu phản hồi cuối cùng có chỉnh sửa preview tại chỗ, gửi
-một fallback bình thường, loại bỏ trạng thái preview đang chờ, giữ một lần chỉnh
-sửa thất bại mơ hồ mà không nhân đôi thông điệp, và trả về biên nhận cuối cùng.
+`deliverWithFinalizableLivePreviewAdapter(...)` để hoàn tất trong thời gian chạy.
+Bộ hoàn tất quyết định liệu phản hồi cuối cùng có chỉnh sửa bản xem trước tại
+chỗ, gửi phương án dự phòng bình thường, loại bỏ trạng thái xem trước đang chờ,
+giữ một lần chỉnh sửa thất bại mơ hồ mà không nhân đôi thông báo, và trả về biên
+nhận cuối cùng hay không.
 
-## Chính sách receive ack
+## Chính sách ack nhận
 
-Các inbound receiver kiểm soát thời điểm xác nhận nền tảng nên khai báo chính
+Các bộ nhận đầu vào kiểm soát thời điểm xác nhận của nền tảng nên khai báo chính
 sách nhận:
 
 ```typescript
@@ -319,7 +353,7 @@ const demoMessageAdapter = defineChannelMessageAdapter({
 });
 ```
 
-Adapter không khai báo chính sách nhận sẽ mặc định thành:
+Các adapter không khai báo chính sách nhận sẽ mặc định là:
 
 ```typescript
 {
@@ -330,27 +364,28 @@ Adapter không khai báo chính sách nhận sẽ mặc định thành:
 }
 ```
 
-Sử dụng mặc định khi nền tảng không có acknowledgement để trì hoãn, đã
-acknowledge trước khi xử lý bất đồng bộ, hoặc cần ngữ nghĩa phản hồi riêng theo
-protocol. Chỉ khai báo một trong các chính sách theo giai đoạn khi receiver thực sự
-dùng receive context để chuyển acknowledgement của nền tảng sang muộn hơn.
+Dùng mặc định khi nền tảng không có xác nhận cần trì hoãn, đã xác nhận trước khi
+xử lý bất đồng bộ, hoặc cần ngữ nghĩa phản hồi dành riêng cho giao thức. Chỉ khai
+báo một trong các chính sách theo giai đoạn khi bộ nhận thực sự dùng ngữ cảnh
+nhận để dời xác nhận của nền tảng về sau.
 
 Chính sách:
 
 | Chính sách             | Dùng khi                                                                                  |
 | ---------------------- | ----------------------------------------------------------------------------------------- |
-| `after_receive_record` | Nền tảng có thể được acknowledgement sau khi event inbound được phân tích cú pháp và ghi lại. |
-| `after_agent_dispatch` | Nền tảng nên đợi đến khi agent dispatch đã được chấp nhận.                                |
-| `after_durable_send`   | Nền tảng nên đợi đến khi việc gửi cuối cùng có quyết định durable.                        |
-| `manual`               | Plugin sở hữu acknowledgement vì ngữ nghĩa nền tảng không khớp với một giai đoạn chung.   |
+| `after_receive_record` | Nền tảng có thể được xác nhận sau khi sự kiện đầu vào được phân tích cú pháp và ghi lại.  |
+| `after_agent_dispatch` | Nền tảng nên chờ cho đến khi việc dispatch agent đã được chấp nhận.                       |
+| `after_durable_send`   | Nền tảng nên chờ cho đến khi lần gửi cuối cùng có quyết định bền vững.                    |
+| `manual`               | Plugin sở hữu việc xác nhận vì ngữ nghĩa nền tảng không khớp với một giai đoạn chung.     |
 
-Dùng `createMessageReceiveContext(...)` trong các receiver trì hoãn trạng thái ack, và
-`shouldAckMessageAfterStage(...)` khi receiver cần kiểm tra liệu một giai đoạn
-đã thỏa mãn chính sách đã cấu hình hay chưa.
+Dùng `createMessageReceiveContext(...)` trong các bộ nhận trì hoãn trạng thái
+ack, và `shouldAckMessageAfterStage(...)` khi bộ nhận cần kiểm tra liệu một giai
+đoạn đã thỏa mãn chính sách đã cấu hình hay chưa.
 
-## Kiểm thử contract
+## Kiểm thử hợp đồng
 
-Khai báo capability là một phần của contract Plugin. Hãy hỗ trợ chúng bằng kiểm thử:
+Các khai báo khả năng là một phần của hợp đồng Plugin. Hãy bảo chứng chúng bằng
+kiểm thử:
 
 ```typescript
 import {
@@ -387,41 +422,45 @@ it("backs declared message capabilities", async () => {
 });
 ```
 
-Thêm các bộ proof live và receive khi adapter khai báo các tính năng đó. Một
-proof bị thiếu nên làm kiểm thử thất bại thay vì âm thầm mở rộng bề mặt durable.
+Thêm bộ kiểm thử bằng chứng trực tiếp và nhận khi adapter khai báo các tính năng
+đó. Thiếu bằng chứng nên làm kiểm thử thất bại thay vì âm thầm mở rộng bề mặt
+bền vững.
 
-## API tương thích không còn được khuyến nghị
+## API tương thích không còn khuyến nghị
 
-Các API này vẫn có thể import để tương thích với bên thứ ba. Không dùng chúng cho
-mã kênh mới.
+Các API này vẫn có thể được import để tương thích với bên thứ ba. Không dùng
+chúng cho mã kênh mới.
 
-| API không còn được khuyến nghị               | Thay thế                                                                                                            |
-| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `openclaw/plugin-sdk/channel-reply-pipeline` | `openclaw/plugin-sdk/channel-message`                                                                               |
-| `createChannelTurnReplyPipeline(...)`        | `createChannelMessageReplyPipeline(...)` cho dispatcher tương thích, hoặc adapter `message` cho mã kênh mới        |
-| `deliverDurableInboundReplyPayload(...)`     | `deliverInboundReplyWithMessageSendContext(...)` từ `openclaw/plugin-sdk/channel-message-runtime`                  |
-| `dispatchInboundReplyWithBase(...)`          | `dispatchChannelMessageReplyWithBase(...)` chỉ dành cho dispatcher tương thích                                      |
-| `recordInboundSessionAndDispatchReply(...)`  | `recordChannelMessageReplyDispatch(...)` chỉ dành cho dispatcher tương thích                                        |
-| `resolveChannelSourceReplyDeliveryMode(...)` | `resolveChannelMessageSourceReplyDeliveryMode(...)`                                                                 |
-| `deliverFinalizableDraftPreview(...)`        | `defineFinalizableLivePreviewAdapter(...)` cộng với `deliverWithFinalizableLivePreviewAdapter(...)`                 |
-| `DraftPreviewFinalizerDraft`                 | `LivePreviewFinalizerDraft`                                                                                         |
-| `DraftPreviewFinalizerResult`                | `LivePreviewFinalizerResult`                                                                                        |
+| API không còn khuyến nghị                    | Thay thế                                                                                                                     |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `openclaw/plugin-sdk/channel-reply-pipeline` | `openclaw/plugin-sdk/channel-message`                                                                                        |
+| `createChannelTurnReplyPipeline(...)`        | `createChannelMessageReplyPipeline(...)` cho dispatcher tương thích, hoặc adapter `message` cho mã kênh mới                 |
+| `buildChannelMessageReplyDispatchBase(...)`  | `createChannelMessageReplyPipeline(...)` cộng với `channel.turn.runPrepared(...)`, hoặc adapter `message` cho mã kênh mới    |
+| `dispatchChannelMessageReplyWithBase(...)`   | `createChannelMessageReplyPipeline(...)` cộng với `channel.turn.runPrepared(...)`, hoặc adapter `message` cho mã kênh mới    |
+| `recordChannelMessageReplyDispatch(...)`     | `createChannelMessageReplyPipeline(...)` cộng với `channel.turn.runPrepared(...)`, hoặc adapter `message` cho mã kênh mới    |
+| `deliverOutboundPayloads(...)`               | `sendDurableMessageBatch(...)` hoặc `deliverInboundReplyWithMessageSendContext(...)` từ `channel-message-runtime`            |
+| `deliverDurableInboundReplyPayload(...)`     | `deliverInboundReplyWithMessageSendContext(...)` từ `openclaw/plugin-sdk/channel-message-runtime`                            |
+| `dispatchInboundReplyWithBase(...)`          | `createChannelMessageReplyPipeline(...)` cộng với `channel.turn.runPrepared(...)`, hoặc adapter `message` cho mã kênh mới    |
+| `recordInboundSessionAndDispatchReply(...)`  | `createChannelMessageReplyPipeline(...)` cộng với `channel.turn.runPrepared(...)`, hoặc adapter `message` cho mã kênh mới    |
+| `resolveChannelSourceReplyDeliveryMode(...)` | `resolveChannelMessageSourceReplyDeliveryMode(...)`                                                                          |
+| `deliverFinalizableDraftPreview(...)`        | `defineFinalizableLivePreviewAdapter(...)` cộng với `deliverWithFinalizableLivePreviewAdapter(...)`                          |
+| `DraftPreviewFinalizerDraft`                 | `LivePreviewFinalizerDraft`                                                                                                  |
+| `DraftPreviewFinalizerResult`                | `LivePreviewFinalizerResult`                                                                                                 |
 
 Các dispatcher tương thích vẫn có thể dùng `createReplyPrefixContext(...)`,
-`createReplyPrefixOptions(...)`, và `createTypingCallbacks(...)` thông qua
-message facade. Mã lifecycle mới nên tránh subpath
-`channel-reply-pipeline` cũ.
+`createReplyPrefixOptions(...)`, và `createTypingCallbacks(...)` thông qua facade
+thông báo. Mã vòng đời mới nên tránh subpath `channel-reply-pipeline` cũ.
 
-## Checklist di chuyển
+## Danh sách kiểm tra di trú
 
 1. Thêm `message: defineChannelMessageAdapter(...)` hoặc
    `message: createChannelMessageAdapterFromOutbound(...)` vào Plugin kênh.
-2. Trả về `MessageReceipt` từ các lần gửi văn bản, media, và payload.
-3. Chỉ khai báo các capability được hỗ trợ bởi hành vi native và kiểm thử.
-4. Thay thế các durable requirement map viết tay bằng
+2. Trả về `MessageReceipt` từ các lần gửi văn bản, phương tiện và payload.
+3. Chỉ khai báo những khả năng được hành vi gốc và kiểm thử bảo chứng.
+4. Thay thế các bản đồ yêu cầu bền vững viết tay bằng
    `deriveDurableFinalDeliveryRequirements(...)`.
-5. Chuyển việc hoàn tất preview qua các live preview helper khi kênh
-   chỉnh sửa draft message tại chỗ.
-6. Chỉ khai báo receive ack policy khi receiver thực sự có thể trì hoãn
-   acknowledgement của nền tảng.
-7. Chỉ giữ các legacy reply dispatch helper ở ranh giới tương thích.
+5. Chuyển việc hoàn tất bản xem trước qua các helper xem trước trực tiếp khi kênh
+   chỉnh sửa thông báo nháp tại chỗ.
+6. Chỉ khai báo chính sách ack nhận khi bộ nhận thực sự có thể trì hoãn xác nhận
+   của nền tảng.
+7. Chỉ giữ các helper dispatch phản hồi cũ tại các rìa tương thích.

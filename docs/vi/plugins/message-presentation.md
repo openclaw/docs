@@ -1,25 +1,25 @@
 ---
 read_when:
-    - Thêm hoặc sửa đổi cách kết xuất thẻ tin nhắn, nút hoặc bộ chọn
+    - Thêm hoặc sửa đổi cách kết xuất thẻ tin nhắn, nút hoặc thành phần chọn
     - Xây dựng một Plugin kênh hỗ trợ tin nhắn gửi đi phong phú
-    - Thay đổi cách trình bày công cụ tin nhắn hoặc khả năng gửi
-    - Gỡ lỗi các hồi quy kết xuất thẻ/khối/thành phần theo từng nhà cung cấp
+    - Thay đổi cách trình bày công cụ nhắn tin hoặc khả năng gửi tin
+    - Gỡ lỗi các hồi quy kết xuất thẻ/khối/thành phần dành riêng cho nhà cung cấp
 summary: Thẻ tin nhắn ngữ nghĩa, nút, menu chọn, văn bản dự phòng và gợi ý gửi cho Plugin kênh
-title: Cách trình bày tin nhắn
+title: Cách hiển thị tin nhắn
 x-i18n:
-    generated_at: "2026-04-29T23:01:10Z"
+    generated_at: "2026-05-10T19:43:45Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 23ef0eab890ee174c1433f72e84932a84a481f2bcf4b69bc793a2660ec94b10c
+    source_hash: e3b6fc82b5faaff50e8c58f2c68e14a6a1b30ccf1d8dba7da8164dbec5ebe1b0
     source_path: plugins/message-presentation.md
     workflow: 16
 ---
 
-Trình bày tin nhắn là hợp đồng dùng chung của OpenClaw cho giao diện trò chuyện gửi đi phong phú.
-Nó cho phép agent, lệnh CLI, luồng phê duyệt và plugin mô tả ý định của tin nhắn
-một lần, trong khi mỗi plugin kênh hiển thị dạng gốc tốt nhất có thể.
+Trình bày thông điệp là hợp đồng dùng chung của OpenClaw cho giao diện trò chuyện gửi đi giàu nội dung.
+Nó cho phép agent, lệnh CLI, luồng phê duyệt và plugin mô tả ý định thông điệp
+một lần, trong khi mỗi plugin kênh hiển thị theo dạng gốc tốt nhất có thể.
 
-Dùng trình bày cho giao diện tin nhắn có tính di động:
+Dùng trình bày cho giao diện thông điệp có tính di động:
 
 - phần văn bản
 - văn bản ngữ cảnh/chân trang nhỏ
@@ -28,13 +28,13 @@ Dùng trình bày cho giao diện tin nhắn có tính di động:
 - menu chọn
 - tiêu đề thẻ và sắc thái
 
-Không thêm các trường gốc của nhà cung cấp mới như Discord `components`, Slack
+Không thêm các trường gốc theo nhà cung cấp mới như Discord `components`, Slack
 `blocks`, Telegram `buttons`, Teams `card`, hoặc Feishu `card` vào công cụ
-tin nhắn dùng chung. Những trường đó là đầu ra của trình kết xuất do plugin kênh sở hữu.
+thông điệp dùng chung. Chúng là đầu ra của trình hiển thị do plugin kênh sở hữu.
 
 ## Hợp đồng
 
-Tác giả Plugin nhập hợp đồng công khai từ:
+Tác giả plugin nhập hợp đồng công khai từ:
 
 ```ts
 import type {
@@ -84,21 +84,21 @@ type ReplyPayloadDelivery = {
 
 Ngữ nghĩa của nút:
 
-- `value` là giá trị hành động của ứng dụng được định tuyến trở lại qua đường dẫn
-  tương tác hiện có của kênh khi kênh hỗ trợ điều khiển có thể nhấp.
+- `value` là giá trị hành động ứng dụng được định tuyến lại qua đường dẫn tương tác
+  hiện có của kênh khi kênh hỗ trợ điều khiển có thể nhấp.
 - `url` là nút liên kết. Nó có thể tồn tại mà không có `value`.
-- `label` là bắt buộc và cũng được dùng trong văn bản dự phòng.
-- `style` mang tính gợi ý. Trình kết xuất nên ánh xạ các kiểu không được hỗ trợ sang mặc định
-  an toàn, thay vì làm lỗi việc gửi.
+- `label` là bắt buộc và cũng được dùng trong phương án văn bản dự phòng.
+- `style` mang tính gợi ý. Trình hiển thị nên ánh xạ các kiểu không được hỗ trợ
+  sang mặc định an toàn, thay vì làm lỗi thao tác gửi.
 
 Ngữ nghĩa của lựa chọn:
 
-- `options[].value` là giá trị ứng dụng đã chọn.
+- `options[].value` là giá trị ứng dụng được chọn.
 - `placeholder` mang tính gợi ý và có thể bị bỏ qua bởi các kênh không có hỗ trợ
   lựa chọn gốc.
-- Nếu một kênh không hỗ trợ lựa chọn, văn bản dự phòng sẽ liệt kê các nhãn.
+- Nếu kênh không hỗ trợ lựa chọn, văn bản dự phòng sẽ liệt kê các nhãn.
 
-## Ví dụ phía tạo
+## Ví dụ phía tạo nội dung
 
 Thẻ đơn giản:
 
@@ -161,7 +161,7 @@ openclaw message send --channel slack \
   --presentation '{"title":"Deploy approval","tone":"warning","blocks":[{"type":"text","text":"Canary is ready."},{"type":"buttons","buttons":[{"label":"Approve","value":"deploy:approve","style":"success"},{"label":"Decline","value":"deploy:decline","style":"danger"}]}]}'
 ```
 
-Gửi có ghim:
+Gửi kèm ghim:
 
 ```bash
 openclaw message send --channel telegram \
@@ -170,7 +170,7 @@ openclaw message send --channel telegram \
   --pin
 ```
 
-Gửi có ghim với JSON tường minh:
+Gửi kèm ghim với JSON tường minh:
 
 ```json
 {
@@ -182,9 +182,9 @@ Gửi có ghim với JSON tường minh:
 }
 ```
 
-## Hợp đồng trình kết xuất
+## Hợp đồng trình hiển thị
 
-Plugin kênh khai báo hỗ trợ kết xuất trên adapter gửi đi của chúng:
+Plugin kênh khai báo hỗ trợ hiển thị trên adapter gửi đi của chúng:
 
 ```ts
 const adapter: ChannelOutboundAdapter = {
@@ -208,25 +208,26 @@ const adapter: ChannelOutboundAdapter = {
 };
 ```
 
-Các trường năng lực được cố ý giữ là boolean đơn giản. Chúng mô tả những gì
-trình kết xuất có thể làm thành tương tác, không phải mọi giới hạn nền tảng gốc.
-Trình kết xuất vẫn sở hữu các giới hạn riêng của nền tảng như số nút tối đa, số khối và
-kích thước thẻ.
+Các trường khả năng được cố ý giữ là boolean đơn giản. Chúng mô tả những gì
+trình hiển thị có thể làm thành tương tác, không phải mọi giới hạn của nền tảng gốc.
+Trình hiển thị vẫn sở hữu các giới hạn theo nền tảng như số nút tối đa, số block,
+và kích thước thẻ.
 
-## Luồng kết xuất lõi
+## Luồng hiển thị lõi
 
-Khi một `ReplyPayload` hoặc hành động tin nhắn bao gồm `presentation`, lõi:
+Khi `ReplyPayload` hoặc hành động thông điệp bao gồm `presentation`, lõi:
 
 1. Chuẩn hóa payload trình bày.
 2. Phân giải adapter gửi đi của kênh đích.
 3. Đọc `presentationCapabilities`.
-4. Gọi `renderPresentation` khi adapter có thể kết xuất payload.
-5. Dự phòng về văn bản thận trọng khi adapter vắng mặt hoặc không thể kết xuất.
-6. Gửi payload kết quả qua đường dẫn gửi thông thường của kênh.
-7. Áp dụng siêu dữ liệu gửi như `delivery.pin` sau tin nhắn gửi thành công đầu tiên.
+4. Gọi `renderPresentation` khi adapter có thể hiển thị payload.
+5. Dự phòng sang văn bản thận trọng khi adapter vắng mặt hoặc không thể hiển thị.
+6. Gửi payload kết quả qua đường dẫn phân phối kênh thông thường.
+7. Áp dụng siêu dữ liệu phân phối như `delivery.pin` sau thông điệp đã gửi thành công
+   đầu tiên.
 
-Lõi sở hữu hành vi dự phòng để phía tạo có thể giữ tính bất khả tri với kênh. Plugin
-kênh sở hữu kết xuất gốc và xử lý tương tác.
+Lõi sở hữu hành vi dự phòng để phía tạo nội dung có thể không phụ thuộc kênh. Plugin
+kênh sở hữu hiển thị gốc và xử lý tương tác.
 
 ## Quy tắc suy giảm
 
@@ -234,65 +235,66 @@ Trình bày phải an toàn để gửi trên các kênh hạn chế.
 
 Văn bản dự phòng bao gồm:
 
-- `title` làm dòng đầu tiên
-- các khối `text` làm đoạn văn bình thường
-- các khối `context` làm dòng ngữ cảnh gọn
-- các khối `divider` làm dấu phân cách trực quan
+- `title` là dòng đầu tiên
+- các block `text` là đoạn văn bình thường
+- các block `context` là dòng ngữ cảnh gọn
+- các block `divider` là dấu phân cách trực quan
 - nhãn nút, bao gồm URL cho nút liên kết
-- nhãn tùy chọn chọn
+- nhãn tùy chọn lựa chọn
 
-Điều khiển gốc không được hỗ trợ nên suy giảm thay vì làm lỗi toàn bộ việc gửi.
+Điều khiển gốc không được hỗ trợ nên suy giảm thay vì làm lỗi toàn bộ thao tác gửi.
 Ví dụ:
 
-- Telegram với nút nội tuyến bị tắt sẽ gửi văn bản dự phòng.
-- Một kênh không hỗ trợ lựa chọn sẽ liệt kê các tùy chọn chọn dưới dạng văn bản.
+- Telegram với nút inline bị tắt sẽ gửi văn bản dự phòng.
+- Một kênh không hỗ trợ lựa chọn sẽ liệt kê tùy chọn lựa chọn dưới dạng văn bản.
 - Nút chỉ có URL trở thành nút liên kết gốc hoặc dòng URL dự phòng.
-- Lỗi ghim tùy chọn không làm lỗi tin nhắn đã gửi.
+- Lỗi ghim tùy chọn không làm lỗi thông điệp đã phân phối.
 
-Ngoại lệ chính là `delivery.pin.required: true`; nếu yêu cầu ghim là bắt buộc
-và kênh không thể ghim tin nhắn đã gửi, việc gửi sẽ báo lỗi.
+Ngoại lệ chính là `delivery.pin.required: true`; nếu yêu cầu ghim là bắt buộc và
+kênh không thể ghim thông điệp đã gửi, phân phối sẽ báo lỗi.
 
 ## Ánh xạ nhà cung cấp
 
-Các trình kết xuất đi kèm hiện tại:
+Trình hiển thị đi kèm hiện tại:
 
-| Kênh            | Đích kết xuất gốc                         | Ghi chú                                                                                                                                                              |
-| --------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Discord         | Thành phần và vùng chứa thành phần        | Giữ `channelData.discord.components` cũ cho các phía tạo payload gốc của nhà cung cấp hiện có, nhưng các lượt gửi dùng chung mới nên dùng `presentation`.            |
-| Slack           | Block Kit                                 | Giữ `channelData.slack.blocks` cũ cho các phía tạo payload gốc của nhà cung cấp hiện có, nhưng các lượt gửi dùng chung mới nên dùng `presentation`.                  |
-| Telegram        | Văn bản cộng bàn phím nội tuyến           | Nút/lựa chọn yêu cầu năng lực nút nội tuyến cho bề mặt đích; nếu không, văn bản dự phòng sẽ được dùng.                                                               |
-| Mattermost      | Văn bản cộng props tương tác              | Các khối khác suy giảm thành văn bản.                                                                                                                               |
-| Microsoft Teams | Adaptive Cards                            | Văn bản `message` thuần được đưa vào cùng thẻ khi cả hai đều được cung cấp.                                                                                          |
-| Feishu          | Thẻ tương tác                             | Tiêu đề thẻ có thể dùng `title`; phần thân tránh lặp lại tiêu đề đó.                                                                                                |
-| Kênh thuần      | Văn bản dự phòng                          | Các kênh không có trình kết xuất vẫn nhận được đầu ra dễ đọc.                                                                                                       |
+| Kênh            | Đích hiển thị gốc                   | Ghi chú                                                                                                                                           |
+| --------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Discord         | Thành phần và vùng chứa thành phần  | Giữ lại `channelData.discord.components` kế thừa cho các phía tạo payload gốc theo nhà cung cấp hiện có, nhưng các lượt gửi dùng chung mới nên dùng `presentation`. |
+| Slack           | Block Kit                           | Giữ lại `channelData.slack.blocks` kế thừa cho các phía tạo payload gốc theo nhà cung cấp hiện có, nhưng các lượt gửi dùng chung mới nên dùng `presentation`. |
+| Telegram        | Văn bản cộng bàn phím inline        | Nút/lựa chọn cần khả năng nút inline cho bề mặt đích; nếu không sẽ dùng văn bản dự phòng.                                                        |
+| Mattermost      | Văn bản cộng props tương tác        | Các block khác suy giảm thành văn bản.                                                                                                           |
+| Microsoft Teams | Adaptive Cards                      | Văn bản `message` thuần được đưa vào cùng thẻ khi cả hai đều được cung cấp.                                                                       |
+| Feishu          | Thẻ tương tác                       | Tiêu đề thẻ có thể dùng `title`; phần thân tránh lặp lại tiêu đề đó.                                                                              |
+| Kênh thuần      | Văn bản dự phòng                    | Các kênh không có trình hiển thị vẫn nhận được đầu ra đọc được.                                                                                  |
 
-Tương thích payload gốc của nhà cung cấp là phương tiện chuyển tiếp cho các phía tạo
-trả lời hiện có. Đây không phải là lý do để thêm các trường gốc dùng chung mới.
+Khả năng tương thích payload gốc theo nhà cung cấp là hỗ trợ chuyển tiếp cho các
+phía tạo phản hồi hiện có. Nó không phải lý do để thêm các trường gốc dùng chung mới.
 
 ## Trình bày so với InteractiveReply
 
-`InteractiveReply` là tập con nội bộ cũ hơn được dùng bởi các helper phê duyệt và tương tác.
-Nó hỗ trợ:
+`InteractiveReply` là tập con nội bộ cũ hơn được dùng bởi các trình trợ giúp phê duyệt
+và tương tác. Nó hỗ trợ:
 
 - văn bản
 - nút
 - lựa chọn
 
-`MessagePresentation` là hợp đồng gửi dùng chung chính tắc. Nó thêm:
+`MessagePresentation` là hợp đồng gửi dùng chung chuẩn tắc. Nó bổ sung:
 
 - tiêu đề
 - sắc thái
 - ngữ cảnh
 - đường phân cách
 - nút chỉ có URL
-- siêu dữ liệu gửi chung qua `ReplyPayload.delivery`
+- siêu dữ liệu phân phối chung qua `ReplyPayload.delivery`
 
-Dùng helper từ `openclaw/plugin-sdk/interactive-runtime` khi bắc cầu mã cũ hơn:
+Dùng các trình trợ giúp từ `openclaw/plugin-sdk/interactive-runtime` khi bắc cầu mã cũ:
 
 ```ts
 import {
   interactiveReplyToPresentation,
   normalizeMessagePresentation,
+  presentationToInteractiveControlsReply,
   presentationToInteractiveReply,
   renderMessagePresentationFallbackText,
 } from "openclaw/plugin-sdk/interactive-runtime";
@@ -300,42 +302,55 @@ import {
 
 Mã mới nên chấp nhận hoặc tạo trực tiếp `MessagePresentation`.
 
-## Ghim khi gửi
+`presentationToInteractiveReply(...)` giữ lại văn bản trình bày nhìn thấy được bằng cách
+ánh xạ tiêu đề, văn bản, ngữ cảnh, nút và lựa chọn vào hình dạng
+`InteractiveReply` cũ hơn. Các trình hiển thị thành phần vốn đã vẽ tiêu đề, văn bản,
+ngữ cảnh và block đường phân cách theo cách gốc nên dùng
+`presentationToInteractiveControlsReply(...)` thay vào đó, rồi chỉ thêm các điều khiển
+nút và lựa chọn.
 
-Ghim là hành vi gửi, không phải trình bày. Dùng `delivery.pin` thay cho
-các trường gốc của nhà cung cấp như `channelData.telegram.pin`.
+`renderMessagePresentationFallbackText(...)` trả về chuỗi rỗng cho các block trình bày
+không có văn bản dự phòng, chẳng hạn trình bày chỉ có đường phân cách.
+Các phương thức truyền tải yêu cầu thân gửi không rỗng có thể truyền
+`emptyFallback` để chọn dùng một thân tối thiểu mà không thay đổi hợp đồng dự phòng
+mặc định.
+
+## Ghim phân phối
+
+Ghim là hành vi phân phối, không phải trình bày. Dùng `delivery.pin` thay cho
+các trường gốc theo nhà cung cấp như `channelData.telegram.pin`.
 
 Ngữ nghĩa:
 
-- `pin: true` ghim tin nhắn đầu tiên được gửi thành công.
+- `pin: true` ghim thông điệp đầu tiên được phân phối thành công.
 - `pin.notify` mặc định là `false`.
 - `pin.required` mặc định là `false`.
-- Lỗi ghim tùy chọn sẽ suy giảm và giữ nguyên tin nhắn đã gửi.
-- Lỗi ghim bắt buộc làm lỗi việc gửi.
-- Tin nhắn chia khúc ghim khúc đầu tiên đã gửi, không phải khúc cuối.
+- Lỗi ghim tùy chọn sẽ suy giảm và giữ nguyên thông điệp đã gửi.
+- Lỗi ghim bắt buộc làm phân phối thất bại.
+- Thông điệp được chia đoạn sẽ ghim đoạn đã phân phối đầu tiên, không phải đoạn cuối.
 
-Các hành động tin nhắn thủ công `pin`, `unpin`, và `pins` vẫn tồn tại cho những
-tin nhắn hiện có khi nhà cung cấp hỗ trợ các thao tác đó.
+Các hành động thông điệp thủ công `pin`, `unpin`, và `pins` vẫn tồn tại cho các
+thông điệp hiện có ở nơi nhà cung cấp hỗ trợ các thao tác đó.
 
-## Danh sách kiểm tra cho tác giả Plugin
+## Danh sách kiểm tra cho tác giả plugin
 
 - Khai báo `presentation` từ `describeMessageTool(...)` khi kênh có thể
-  kết xuất hoặc suy giảm an toàn trình bày ngữ nghĩa.
-- Thêm `presentationCapabilities` vào adapter gửi đi thời gian chạy.
-- Triển khai `renderPresentation` trong mã thời gian chạy, không phải mã
-  thiết lập plugin mặt phẳng điều khiển.
-- Giữ các thư viện giao diện gốc khỏi các đường dẫn thiết lập/danh mục nóng.
-- Bảo toàn giới hạn nền tảng trong trình kết xuất và kiểm thử.
-- Thêm kiểm thử dự phòng cho nút không được hỗ trợ, lựa chọn, nút URL, trùng lặp tiêu đề/văn bản
-  và lượt gửi hỗn hợp `message` cộng `presentation`.
-- Thêm hỗ trợ ghim khi gửi qua `deliveryCapabilities.pin` và
-  `pinDeliveredMessage` chỉ khi nhà cung cấp có thể ghim id tin nhắn đã gửi.
-- Không để lộ các trường thẻ/khối/thành phần/nút gốc của nhà cung cấp mới qua
-  schema hành động tin nhắn dùng chung.
+  hiển thị hoặc suy giảm an toàn trình bày ngữ nghĩa.
+- Thêm `presentationCapabilities` vào adapter gửi đi lúc chạy.
+- Triển khai `renderPresentation` trong mã runtime, không phải mã thiết lập plugin
+  control plane.
+- Giữ thư viện giao diện gốc ra khỏi các đường dẫn thiết lập/catalog nóng.
+- Bảo toàn giới hạn nền tảng trong trình hiển thị và kiểm thử.
+- Thêm kiểm thử dự phòng cho nút không được hỗ trợ, lựa chọn, nút URL, trùng lặp tiêu đề/văn bản,
+  và lượt gửi kết hợp `message` cộng `presentation`.
+- Thêm hỗ trợ ghim phân phối qua `deliveryCapabilities.pin` và
+  `pinDeliveredMessage` chỉ khi nhà cung cấp có thể ghim id thông điệp đã gửi.
+- Không phơi bày các trường thẻ/block/thành phần/nút gốc theo nhà cung cấp mới qua
+  schema hành động thông điệp dùng chung.
 
 ## Tài liệu liên quan
 
-- [CLI tin nhắn](/vi/cli/message)
+- [CLI thông điệp](/vi/cli/message)
 - [Tổng quan Plugin SDK](/vi/plugins/sdk-overview)
 - [Kiến trúc Plugin](/vi/plugins/architecture-internals#message-tool-schemas)
 - [Kế hoạch tái cấu trúc trình bày kênh](/vi/plan/ui-channels)

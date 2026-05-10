@@ -1,22 +1,22 @@
 ---
 read_when:
-    - Sie möchten Datensätze zu Hintergrundaufgaben einsehen, prüfen oder abbrechen
-    - Sie dokumentieren Task-Flow-Befehle unter `openclaw tasks flow`
-summary: CLI-Referenz für `openclaw tasks` (Hintergrundaufgaben-Ledger und TaskFlow-Zustand)
+    - Sie möchten Hintergrundaufgaben-Datensätze einsehen, prüfen oder abbrechen
+    - Sie dokumentieren Task Flow-Befehle unter `openclaw tasks flow`
+summary: CLI-Referenz für `openclaw tasks` (Hintergrundaufgaben-Ledger und Task-Flow-Status)
 title: '`openclaw tasks`'
 x-i18n:
-    generated_at: "2026-05-07T13:15:08Z"
+    generated_at: "2026-05-10T19:29:54Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ca3f05d7c2a3fa7790ad6059ce15721ebffb548ac4a2c627188ac17986442dc6
+    source_hash: 7bbb97690124a8e59ec5e6a517f33166ad449ee6268894ab132ad9cb69dcaa81
     source_path: cli/tasks.md
     workflow: 16
 ---
 
-Persistente Hintergrundaufgaben und TaskFlow-Zustand prüfen. Ohne Unterbefehl ist
-`openclaw tasks` gleichbedeutend mit `openclaw tasks list`.
+Dauerhafte Hintergrundaufgaben und den Task Flow-Zustand prüfen. Ohne Unterbefehl
+ist `openclaw tasks` gleichbedeutend mit `openclaw tasks list`.
 
-Siehe [Hintergrundaufgaben](/de/automation/tasks) für Lebenszyklus und Zustellungsmodell.
+Siehe [Hintergrundaufgaben](/de/automation/tasks) für das Lebenszyklus- und Zustellmodell.
 
 ## Verwendung
 
@@ -39,8 +39,8 @@ openclaw tasks flow cancel <lookup>
 ## Root-Optionen
 
 - `--json`: JSON ausgeben.
-- `--runtime <name>`: nach Typ filtern: `subagent`, `acp`, `cron` oder `cli`.
-- `--status <name>`: nach Status filtern: `queued`, `running`, `succeeded`, `failed`, `timed_out`, `cancelled` oder `lost`.
+- `--runtime <name>`: Nach Art filtern: `subagent`, `acp`, `cron` oder `cli`.
+- `--status <name>`: Nach Status filtern: `queued`, `running`, `succeeded`, `failed`, `timed_out`, `cancelled` oder `lost`.
 
 ## Unterbefehle
 
@@ -50,7 +50,7 @@ openclaw tasks flow cancel <lookup>
 openclaw tasks list [--runtime <name>] [--status <name>] [--json]
 ```
 
-Listet nachverfolgte Hintergrundaufgaben, neueste zuerst.
+Listet erfasste Hintergrundaufgaben, neueste zuerst.
 
 ### `show`
 
@@ -58,7 +58,7 @@ Listet nachverfolgte Hintergrundaufgaben, neueste zuerst.
 openclaw tasks show <lookup> [--json]
 ```
 
-Zeigt eine Aufgabe anhand von Aufgaben-ID, Ausführungs-ID oder Sitzungsschlüssel.
+Zeigt eine Aufgabe anhand von Aufgaben-ID, Run-ID oder Sitzungsschlüssel an.
 
 ### `notify`
 
@@ -82,7 +82,7 @@ Bricht eine laufende Hintergrundaufgabe ab.
 openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--json]
 ```
 
-Zeigt veraltete, verlorene, zustellungsfehlgeschlagene oder anderweitig inkonsistente Aufgaben- und TaskFlow-Datensätze an. Verlorene Aufgaben, die bis `cleanupAfter` aufbewahrt werden, sind Warnungen; abgelaufene oder nicht mit Zeitstempel versehene verlorene Aufgaben sind Fehler.
+Zeigt veraltete, verlorene, zustellungsfehlgeschlagene oder anderweitig inkonsistente Aufgaben- und Task Flow-Datensätze an. Bis `cleanupAfter` aufbewahrte verlorene Aufgaben sind Warnungen; abgelaufene oder nicht gestempelte verlorene Aufgaben sind Fehler.
 
 ### `maintenance`
 
@@ -90,13 +90,17 @@ Zeigt veraltete, verlorene, zustellungsfehlgeschlagene oder anderweitig inkonsis
 openclaw tasks maintenance [--apply] [--json]
 ```
 
-Zeigt eine Vorschau der Abstimmung, Cleanup-Markierung und Bereinigung von Aufgaben und TaskFlow an oder wendet sie an.
-Bei Cron-Aufgaben verwendet die Abstimmung persistierte Ausführungsprotokolle bzw. den Job-Zustand, bevor eine
-alte aktive Aufgabe als `lost` markiert wird, sodass abgeschlossene Cron-Ausführungen nicht zu falschen Audit-Fehlern werden,
-nur weil der In-Memory-Gateway-Laufzeitzustand nicht mehr vorhanden ist. Offline-CLI-Audit ist
-nicht maßgeblich für die prozesslokale Cron-Menge aktiver Jobs des Gateway. CLI-Aufgaben
-mit einer Ausführungs-ID/Quell-ID werden als `lost` markiert, wenn ihr Live-Gateway-Ausführungskontext
-nicht mehr vorhanden ist, selbst wenn eine alte untergeordnete Sitzungszeile verbleibt.
+Zeigt eine Vorschau der Aufgaben- und Task Flow-Abstimmung, Bereinigungsstempelung, Ausdünnung
+und Bereinigung der Sitzungsregistrierung für veraltete Cron-Runs an oder wendet sie an.
+Für Cron-Aufgaben verwendet die Abstimmung persistierte Run-Protokolle bzw. den Job-Zustand, bevor eine
+alte aktive Aufgabe als `lost` markiert wird, sodass abgeschlossene Cron-Runs nicht zu falschen Audit-Fehlern werden,
+nur weil der speicherinterne Gateway-Laufzeitstatus nicht mehr vorhanden ist. Offline-CLI-Audit ist
+nicht maßgeblich für die prozesslokale aktive Cron-Job-Menge des Gateway. CLI-Aufgaben
+mit Run-ID/Quell-ID werden als `lost` markiert, wenn ihr Live-Gateway-Run-Kontext
+nicht mehr vorhanden ist, selbst wenn eine alte Kind-Sitzungszeile bestehen bleibt.
+Bei Anwendung entfernt die Wartung außerdem Sitzungsregistrierungszeilen der Form `cron:<jobId>:run:<uuid>`,
+die älter als 7 Tage sind, bewahrt dabei aktuell laufende Cron-Jobs und lässt
+Nicht-Cron-Sitzungszeilen unverändert.
 
 ### `flow`
 
@@ -106,9 +110,9 @@ openclaw tasks flow show <lookup> [--json]
 openclaw tasks flow cancel <lookup>
 ```
 
-Prüft persistenten TaskFlow-Zustand im Aufgaben-Ledger oder bricht ihn ab.
+Prüft oder bricht dauerhaften Task Flow-Zustand im Aufgaben-Ledger ab.
 
-## Verwandt
+## Verwandte Themen
 
 - [CLI-Referenz](/de/cli)
 - [Hintergrundaufgaben](/de/automation/tasks)

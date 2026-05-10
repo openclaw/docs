@@ -1,40 +1,40 @@
 ---
 read_when:
-    - Budujesz Plugin kanału i chcesz skorzystać ze współdzielonego cyklu życia tury przychodzącej
-    - Migrujesz monitor kanału z ręcznie napisanego kodu klejącego do rejestrowania i rozsyłania
-    - Musisz rozumieć etapy dopuszczania, pobierania, klasyfikowania, kontroli wstępnej, rozwiązywania, rejestrowania, wysyłania i finalizowania
+    - Tworzysz Plugin kanału i chcesz korzystać ze współdzielonego cyklu życia przychodzącej tury
+    - Migrujesz monitor kanału z ręcznie napisanego kodu łączącego rejestrowanie i wysyłanie
+    - Musisz rozumieć etapy dopuszczania, ingest, klasyfikacji, kontroli wstępnej, rozwiązywania, rejestrowania, wysyłania i finalizacji
 sidebarTitle: Channel turn
-summary: runtime.channel.turn -- współdzielone jądro przychodzącej tury, którego dołączone i zewnętrzne Pluginy kanałów używają do rejestrowania, wysyłania i finalizowania tur agenta
+summary: runtime.channel.turn -- współdzielone jądro przychodzących tur, którego wbudowane i zewnętrzne pluginy kanałów używają do rejestrowania, wysyłania i finalizowania tur agenta
 title: Jądro tury kanału
 x-i18n:
-    generated_at: "2026-05-06T09:24:10Z"
+    generated_at: "2026-05-10T19:48:57Z"
     model: gpt-5.5
     provider: openai
-    source_hash: a2af51bcbf179d68221e800b4c7ec6fa7db5d02a0812dc303eb1438d111c2ea4
+    source_hash: 1eb474bf2bf6f30270deb8a8ac0237ce4fc9b923521c5ac0cf7cb0714db13966
     source_path: plugins/sdk-channel-turn.md
     workflow: 16
 ---
 
-Jądro przebiegu tury kanału to wspólna maszyna stanów wejściowych, która przekształca znormalizowane zdarzenie platformy w turę agenta. Pluginy kanałów dostarczają fakty platformy i callback dostarczania. Core odpowiada za orkiestrację: pobieranie, klasyfikację, preflight, rozwiązywanie, autoryzację, składanie, rejestrowanie, wysyłanie i finalizację.
+Jądro tury kanału to współdzielona maszyna stanów przychodzących, która przekształca znormalizowane zdarzenie platformy w turę agenta. Pluginy kanałów dostarczają fakty platformy i wywołanie zwrotne dostarczania. Core odpowiada za orkiestrację: przyjmowanie, klasyfikowanie, preflight, rozwiązywanie, autoryzowanie, składanie, rejestrowanie, wysyłanie i finalizowanie.
 
-Użyj tego, gdy Twój plugin znajduje się na gorącej ścieżce wiadomości przychodzących. W przypadku zdarzeń niebędących wiadomościami (polecenia slash, modale, interakcje przycisków, zdarzenia cyklu życia, reakcje, stan głosu) pozostaw je lokalnie w pluginie. Jądro odpowiada tylko za zdarzenia, które mogą stać się tekstową turą agenta.
+Użyj tego, gdy Twój Plugin znajduje się na gorącej ścieżce wiadomości przychodzących. Dla zdarzeń innych niż wiadomości (polecenia slash, modale, interakcje przycisków, zdarzenia cyklu życia, reakcje, stan głosowy) trzymaj je lokalnie w Pluginie. Jądro obejmuje tylko zdarzenia, które mogą stać się tekstową turą agenta.
 
 <Info>
-  Jądro jest dostępne przez wstrzyknięte środowisko uruchomieniowe pluginu jako `runtime.channel.turn.*`. Typ środowiska uruchomieniowego pluginu jest eksportowany z `openclaw/plugin-sdk/core`, więc zewnętrzne natywne pluginy mogą używać tych punktów wejścia tak samo jak dołączone pluginy kanałów.
+  Do jądra dociera się przez wstrzyknięte środowisko uruchomieniowe Pluginu jako `runtime.channel.turn.*`. Typ środowiska uruchomieniowego Pluginu jest eksportowany z `openclaw/plugin-sdk/core`, więc zewnętrzne natywne Pluginy mogą używać tych punktów wejścia tak samo jak dołączone Pluginy kanałów.
 </Info>
 
-## Dlaczego wspólne jądro
+## Dlaczego współdzielone jądro
 
-Pluginy kanałów powtarzają ten sam przepływ wejściowy: normalizacja, trasowanie, bramkowanie, budowanie kontekstu, rejestrowanie metadanych sesji, wysyłanie tury agenta, finalizacja stanu dostarczania. Bez wspólnego jądra zmiana bramkowania wzmianek, widocznych odpowiedzi tylko z narzędzi, metadanych sesji, oczekującej historii albo finalizacji wysyłki musiałaby zostać zastosowana osobno dla każdego kanału.
+Pluginy kanałów powtarzają ten sam przepływ przychodzący: normalizowanie, trasowanie, bramkowanie, budowanie kontekstu, rejestrowanie metadanych sesji, wysyłanie tury agenta, finalizowanie stanu dostarczania. Bez współdzielonego jądra zmiana dotycząca bramkowania wzmianek, widocznych odpowiedzi tylko dla narzędzi, metadanych sesji, oczekującej historii lub finalizacji wysyłki musiałaby być stosowana osobno dla każdego kanału.
 
-Jądro celowo utrzymuje cztery pojęcia oddzielnie:
+Jądro celowo rozdziela cztery pojęcia:
 
 - `ConversationFacts`: skąd pochodzi wiadomość
 - `RouteFacts`: który agent i która sesja powinny ją przetworzyć
-- `ReplyPlanFacts`: dokąd mają trafić widoczne odpowiedzi
+- `ReplyPlanFacts`: dokąd powinny trafić widoczne odpowiedzi
 - `MessageFacts`: jaką treść i dodatkowy kontekst powinien zobaczyć agent
 
-W praktyce DM-y Slacka, tematy Telegrama, wątki Matrixa i sesje tematów Feishu odróżniają je wszystkie. Traktowanie ich jako jednego identyfikatora z czasem powoduje rozjazdy.
+W praktyce DM-y Slack, tematy Telegram, wątki Matrix i sesje tematów Feishu rozróżniają je wszystkie. Traktowanie ich jako jednego identyfikatora z czasem powoduje rozbieżności.
 
 ## Cykl życia etapów
 
@@ -42,35 +42,36 @@ Jądro uruchamia ten sam stały potok niezależnie od kanału:
 
 1. `ingest` -- adapter przekształca surowe zdarzenie platformy w `NormalizedTurnInput`
 2. `classify` -- adapter deklaruje, czy to zdarzenie może rozpocząć turę agenta
-3. `preflight` -- adapter wykonuje deduplikację, własne echo, hydratację, debounce, deszyfrowanie, częściowe wstępne uzupełnianie faktów
+3. `preflight` -- adapter wykonuje deduplikację, wykrywanie własnego echa, uzupełnianie, debounce, deszyfrowanie, częściowe wstępne wypełnienie faktów
 4. `resolve` -- adapter zwraca w pełni złożoną turę (trasa, plan odpowiedzi, wiadomość, dostarczanie)
-5. `authorize` -- zasady DM-ów, grup, wzmianek i poleceń stosowane do złożonych faktów
-6. `assemble` -- `FinalizedMsgContext` zbudowany z faktów przez `buildContext`
-7. `record` -- metadane sesji wejściowej i ostatnia trasa zapisane trwale
-8. `dispatch` -- tura agenta wykonana przez buforowany dispatcher bloków
+5. `authorize` -- zasady DM, grup, wzmianek i poleceń stosowane do złożonych faktów
+6. `assemble` -- `FinalizedMsgContext` budowany z faktów przez `buildContext`
+7. `record` -- metadane sesji przychodzącej i ostatnia trasa utrwalane
+8. `dispatch` -- tura agenta wykonywana przez buforowany dyspozytor bloków
 9. `finalize` -- adapter `onFinalize` uruchamia się nawet przy błędzie wysyłki
 
-Każdy etap emituje ustrukturyzowane zdarzenie logu, gdy podany jest callback `log`. Zobacz [Obserwowalność](#observability).
+Każdy etap emituje ustrukturyzowane zdarzenie dziennika, gdy podano wywołanie zwrotne `log`. Zobacz [Obserwowalność](#observability).
 
-## Rodzaje przyjęcia
+## Rodzaje dopuszczenia
 
-Jądro nie zgłasza wyjątku, gdy tura zostaje zablokowana. Zwraca `ChannelTurnAdmission`:
+Jądro nie zgłasza wyjątku, gdy tura zostanie zablokowana. Zwraca `ChannelTurnAdmission`:
 
-| Rodzaj        | Kiedy                                                                                                                                            |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `dispatch`    | Tura zostaje przyjęta. Tura agenta jest uruchamiana, a ścieżka widocznej odpowiedzi jest używana.                                                |
-| `observeOnly` | Tura działa od początku do końca, ale adapter dostarczania nie wysyła niczego widocznego. Używane dla agentów obserwujących transmisje i innych pasywnych przepływów wieloagentowych. |
-| `handled`     | Zdarzenie platformy zostało obsłużone lokalnie (cykl życia, reakcja, przycisk, modal). Jądro pomija wysyłkę.                                     |
-| `drop`        | Ścieżka pominięcia. Opcjonalnie `recordHistory: true` zachowuje wiadomość w oczekującej historii grupy, aby przyszła wzmianka miała kontekst.     |
+| Rodzaj        | Kiedy                                                                                                                                        |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `dispatch`    | Tura zostaje dopuszczona. Tura agenta jest uruchamiana, a widoczna ścieżka odpowiedzi zostaje użyta.                                       |
+| `observeOnly` | Tura przechodzi od początku do końca, ale adapter dostarczania nie wysyła nic widocznego. Używane dla agentów obserwatorów emisji i innych pasywnych przepływów wieloagentowych. |
+| `handled`     | Zdarzenie platformy zostało obsłużone lokalnie (cykl życia, reakcja, przycisk, modal). Jądro pomija wysyłkę.                              |
+| `drop`        | Ścieżka pominięcia. Opcjonalnie `recordHistory: true` zachowuje wiadomość w oczekującej historii grupy, aby przyszła wzmianka miała kontekst. |
 
-Przyjęcie może pochodzić z `classify` (klasa zdarzenia wskazała, że nie może ono rozpocząć tury), z `preflight` (deduplikacja, własne echo, brak wzmianki z zapisem historii) albo z samego `resolveTurn`.
+Dopuszczenie może pochodzić z `classify` (klasa zdarzenia stwierdziła, że nie może rozpocząć tury), z `preflight` (deduplikacja, własne echo, brak wzmianki z zapisem historii) albo z samego `resolveTurn`.
 
 ## Punkty wejścia
 
-Środowisko uruchomieniowe udostępnia trzy preferowane punkty wejścia, aby adaptery mogły włączać się na poziomie pasującym do kanału.
+Środowisko uruchomieniowe udostępnia trzy preferowane punkty wejścia, aby adaptery mogły włączyć się na poziomie pasującym do kanału.
 
 ```typescript
 runtime.channel.turn.run(...)             // adapter-driven full pipeline
+runtime.channel.turn.runAssembled(...)    // already-built context + delivery adapter
 runtime.channel.turn.runPrepared(...)     // channel owns dispatch; kernel runs record + finalize
 runtime.channel.turn.buildContext(...)    // pure facts to FinalizedMsgContext mapping
 ```
@@ -79,12 +80,12 @@ Dwa starsze helpery środowiska uruchomieniowego pozostają dostępne dla zgodno
 
 ```typescript
 runtime.channel.turn.runResolved(...)      // deprecated compatibility alias; prefer run
-runtime.channel.turn.dispatchAssembled(...) // deprecated compatibility alias; prefer run or runPrepared
+runtime.channel.turn.dispatchAssembled(...) // deprecated compatibility alias; prefer runAssembled
 ```
 
 ### run
 
-Użyj, gdy Twój kanał może wyrazić swój przepływ wejściowy jako `ChannelTurnAdapter<TRaw>`. Adapter ma callbacki dla `ingest`, opcjonalnego `classify`, opcjonalnego `preflight`, obowiązkowego `resolveTurn` i opcjonalnego `onFinalize`.
+Użyj, gdy Twój kanał może wyrazić swój przepływ przychodzący jako `ChannelTurnAdapter<TRaw>`. Adapter ma wywołania zwrotne dla `ingest`, opcjonalne `classify`, opcjonalne `preflight`, obowiązkowe `resolveTurn` oraz opcjonalne `onFinalize`.
 
 ```typescript
 await runtime.channel.turn.run({
@@ -119,11 +120,46 @@ await runtime.channel.turn.run({
 });
 ```
 
-`run` ma właściwy kształt, gdy kanał ma niewielką logikę adaptera i korzysta na zarządzaniu cyklem życia przez hooki.
+`run` ma właściwy kształt, gdy kanał ma niewielką logikę adaptera i korzysta z przejęcia cyklu życia przez hooki.
+
+### runAssembled
+
+Użyj, gdy kanał rozwiązał już trasowanie, zbudował `FinalizedMsgContext`
+i potrzebuje tylko współdzielonej kolejności rejestrowania, potoku odpowiedzi,
+wysyłki oraz finalizacji. To preferowany kształt dla prostych dołączonych
+ścieżek przychodzących, które w przeciwnym razie powtarzałyby boilerplate
+`createChannelMessageReplyPipeline(...)` i `runPrepared(...)`.
+
+```typescript
+await runtime.channel.turn.runAssembled({
+  cfg,
+  channel: "irc",
+  accountId,
+  agentId: route.agentId,
+  routeSessionKey: route.sessionKey,
+  storePath,
+  ctxPayload,
+  recordInboundSession: runtime.channel.session.recordInboundSession,
+  dispatchReplyWithBufferedBlockDispatcher:
+    runtime.channel.reply.dispatchReplyWithBufferedBlockDispatcher,
+  delivery: {
+    deliver: async (payload) => {
+      await sendPlatformReply(payload);
+    },
+    onError: (err, info) => {
+      runtime.error?.(`reply ${info.kind} failed: ${String(err)}`);
+    },
+  },
+});
+```
+
+Wybierz `runAssembled` zamiast `runPrepared`, gdy jedynym zachowaniem wysyłki
+należącym do kanału jest końcowe dostarczenie payloadu plus opcjonalne pisanie,
+opcje odpowiedzi, trwałe dostarczanie lub rejestrowanie błędów.
 
 ### runPrepared
 
-Użyj, gdy kanał ma złożony lokalny dispatcher z podglądami, ponowieniami, edycjami albo bootstrapem wątku, który musi pozostać własnością kanału. Jądro nadal rejestruje sesję wejściową przed wysyłką i udostępnia jednolity `DispatchedChannelTurnResult`.
+Użyj, gdy kanał ma złożony lokalny dyspozytor z podglądami, ponowieniami, edycjami lub bootstrapem wątku, który musi pozostać własnością kanału. Jądro nadal rejestruje sesję przychodzącą przed wysyłką i udostępnia jednolity `DispatchedChannelTurnResult`.
 
 ```typescript
 const { dispatchResult } = await runtime.channel.turn.runPrepared({
@@ -146,11 +182,11 @@ const { dispatchResult } = await runtime.channel.turn.runPrepared({
 });
 ```
 
-Bogate kanały (Matrix, Mattermost, Microsoft Teams, Feishu, QQ Bot) używają `runPrepared`, ponieważ ich dispatcher orkiestruje zachowanie specyficzne dla platformy, którego jądro nie może poznawać.
+Bogate kanały (Matrix, Mattermost, Microsoft Teams, Feishu, QQ Bot) używają `runPrepared`, ponieważ ich dyspozytor orkiestruje zachowanie specyficzne dla platformy, którego jądro nie może poznawać.
 
 ### buildContext
 
-Czysta funkcja, która mapuje pakiety faktów na `FinalizedMsgContext`. Użyj jej, gdy Twój kanał ręcznie implementuje część potoku, ale chce zachować spójny kształt kontekstu.
+Czysta funkcja, która mapuje pakiety faktów na `FinalizedMsgContext`. Użyj jej, gdy Twój kanał ręcznie obsługuje część potoku, ale chce zachować spójny kształt kontekstu.
 
 ```typescript
 const ctxPayload = runtime.channel.turn.buildContext({
@@ -170,26 +206,26 @@ const ctxPayload = runtime.channel.turn.buildContext({
 });
 ```
 
-`buildContext` jest także przydatne wewnątrz callbacków `resolveTurn` podczas składania tury dla `run`.
+`buildContext` jest też przydatne wewnątrz wywołań zwrotnych `resolveTurn` podczas składania tury dla `run`.
 
 <Note>
-  Przestarzałe helpery SDK, takie jak `dispatchInboundReplyWithBase`, nadal przechodzą przez helper złożonej tury. Nowy kod pluginu powinien używać `run` albo `runPrepared`.
+  Przestarzałe helpery SDK, takie jak `dispatchInboundReplyWithBase`, nadal przechodzą przez helper złożonej tury. Nowy kod Pluginu powinien używać `run` albo `runPrepared`.
 </Note>
 
 ## Typy faktów
 
-Fakty konsumowane przez jądro z adaptera są niezależne od platformy. Przetłumacz obiekty platformy na te kształty przed przekazaniem ich do jądra.
+Fakty konsumowane przez jądro z Twojego adaptera są niezależne od platformy. Przetłumacz obiekty platformy na te kształty przed przekazaniem ich do jądra.
 
 ### NormalizedTurnInput
 
 | Pole              | Cel                                                                          |
 | ----------------- | ---------------------------------------------------------------------------- |
-| `id`              | Stabilny identyfikator wiadomości używany do deduplikacji i logów            |
+| `id`              | Stabilny identyfikator wiadomości używany do deduplikacji i dzienników       |
 | `timestamp`       | Opcjonalny czas epoki w ms                                                   |
-| `rawText`         | Treść odebrana z platformy                                                   |
-| `textForAgent`    | Opcjonalnie oczyszczona treść dla agenta (usunięcie wzmianki, przycięcie wpisywania) |
+| `rawText`         | Treść otrzymana z platformy                                                  |
+| `textForAgent`    | Opcjonalnie oczyszczona treść dla agenta (usunięcie wzmianki, przycięcie pisania) |
 | `textForCommands` | Opcjonalna treść używana do parsowania `/command`                            |
-| `raw`             | Opcjonalna referencja przekazywana dalej dla callbacków adaptera wymagających oryginału |
+| `raw`             | Opcjonalna referencja przekazywana dalej dla wywołań zwrotnych adaptera, które potrzebują oryginału |
 
 ### ChannelEventClass
 
@@ -197,20 +233,20 @@ Fakty konsumowane przez jądro z adaptera są niezależne od platformy. Przetłu
 | ---------------------- | ---------------------------------------------------------------------- |
 | `kind`                 | `message`, `command`, `interaction`, `reaction`, `lifecycle`, `unknown` |
 | `canStartAgentTurn`    | Jeśli false, jądro zwraca `{ kind: "handled" }`                        |
-| `requiresImmediateAck` | Wskazówka dla adapterów, które muszą ACK przed wysyłką                 |
+| `requiresImmediateAck` | Wskazówka dla adapterów, które muszą potwierdzić ACK przed wysyłką     |
 
 ### SenderFacts
 
-| Pole           | Cel                                                                  |
-| -------------- | -------------------------------------------------------------------- |
-| `id`           | Stabilny identyfikator nadawcy na platformie                         |
-| `name`         | Nazwa wyświetlana                                                    |
-| `username`     | Uchwyt, jeśli różni się od `name`                                    |
-| `tag`          | Dyskryminator w stylu Discorda albo tag platformy                    |
+| Pole           | Cel                                                             |
+| -------------- | --------------------------------------------------------------- |
+| `id`           | Stabilny identyfikator nadawcy na platformie                    |
+| `name`         | Nazwa wyświetlana                                               |
+| `username`     | Uchwyt, jeśli różni się od `name`                               |
+| `tag`          | Dyskryminator w stylu Discord lub tag platformy                 |
 | `roles`        | Identyfikatory ról, używane do dopasowywania listy dozwolonych ról członków |
-| `isBot`        | True, gdy nadawca jest znanym botem (jądro używa tego do odrzucania) |
-| `isSelf`       | True, gdy nadawca jest samym skonfigurowanym agentem                 |
-| `displayLabel` | Wstępnie wyrenderowana etykieta dla tekstu koperty                   |
+| `isBot`        | Prawda, gdy nadawca jest znanym botem (jądro używa do odrzucania) |
+| `isSelf`       | Prawda, gdy nadawca jest skonfigurowanym agentem                |
+| `displayLabel` | Wstępnie wyrenderowana etykieta dla tekstu koperty              |
 
 ### ConversationFacts
 
@@ -218,73 +254,73 @@ Fakty konsumowane przez jądro z adaptera są niezależne od platformy. Przetłu
 | ----------------- | -------------------------------------------------------------------- |
 | `kind`            | `direct`, `group` albo `channel`                                     |
 | `id`              | Identyfikator konwersacji używany do trasowania                      |
-| `label`           | Czytelna etykieta koperty                                            |
-| `spaceId`         | Opcjonalny identyfikator przestrzeni zewnętrznej (workspace Slacka, homeserver Matrixa) |
+| `label`           | Ludzka etykieta dla koperty                                          |
+| `spaceId`         | Opcjonalny identyfikator zewnętrznej przestrzeni (obszar roboczy Slack, homeserver Matrix) |
 | `parentId`        | Identyfikator zewnętrznej konwersacji, gdy jest to wątek             |
 | `threadId`        | Identyfikator wątku, gdy ta wiadomość znajduje się w wątku           |
-| `nativeChannelId` | Natywny dla platformy identyfikator kanału, gdy różni się od identyfikatora trasowania |
+| `nativeChannelId` | Natywny identyfikator kanału platformy, gdy różni się od identyfikatora trasowania |
 | `routePeer`       | Peer używany do wyszukiwania `resolveAgentRoute`                     |
 
 ### RouteFacts
 
-| Pole                    | Cel                                                               |
-| ----------------------- | ----------------------------------------------------------------- |
-| `agentId`               | Agent, który powinien obsłużyć tę turę                            |
-| `accountId`             | Opcjonalne nadpisanie (kanały wielokontowe)                       |
-| `routeSessionKey`       | Klucz sesji używany do trasowania                                 |
-| `dispatchSessionKey`    | Klucz sesji używany przy wysyłce, gdy różni się od klucza trasy   |
-| `persistedSessionKey`   | Klucz sesji zapisywany w utrwalonych metadanych sesji             |
-| `parentSessionKey`      | Element nadrzędny dla sesji rozgałęzionych/wątkowanych            |
-| `modelParentSessionKey` | Element nadrzędny po stronie modelu dla sesji rozgałęzionych      |
-| `mainSessionKey`        | Przypięcie właściciela głównego DM dla rozmów bezpośrednich       |
-| `createIfMissing`       | Zezwól etapowi rejestrowania utworzyć brakujący wiersz sesji      |
+| Pole                    | Cel                                                       |
+| ----------------------- | --------------------------------------------------------- |
+| `agentId`               | Agent, który powinien obsłużyć tę turę                    |
+| `accountId`             | Opcjonalne nadpisanie (kanały z wieloma kontami)          |
+| `routeSessionKey`       | Klucz sesji używany do routingu                           |
+| `dispatchSessionKey`    | Klucz sesji używany przy dispatchu, gdy różni się od klucza routingu |
+| `persistedSessionKey`   | Klucz sesji zapisywany w utrwalonych metadanych sesji     |
+| `parentSessionKey`      | Sesja nadrzędna dla sesji rozgałęzionych/wątkowanych      |
+| `modelParentSessionKey` | Sesja nadrzędna po stronie modelu dla sesji rozgałęzionych |
+| `mainSessionKey`        | Główne przypięcie właściciela DM dla bezpośrednich rozmów |
+| `createIfMissing`       | Pozwala etapowi zapisu utworzyć brakujący wiersz sesji    |
 
 ### ReplyPlanFacts
 
-| Pole                      | Cel                                                   |
-| ------------------------- | ----------------------------------------------------- |
-| `to`                      | Logiczny cel odpowiedzi zapisany w kontekście `To`    |
-| `originatingTo`           | Pierwotny cel kontekstu (`OriginatingTo`)             |
-| `nativeChannelId`         | Natywny dla platformy identyfikator kanału dostawy    |
-| `replyTarget`             | Końcowy widoczny cel odpowiedzi, jeśli różni się od `to` |
-| `deliveryTarget`          | Niskopoziomowe nadpisanie dostawy                     |
-| `replyToId`               | Identyfikator cytowanej/zakotwiczonej wiadomości      |
+| Pole                      | Cel                                                     |
+| ------------------------- | ------------------------------------------------------- |
+| `to`                      | Logiczny cel odpowiedzi zapisywany w kontekście `To`    |
+| `originatingTo`           | Początkowy cel kontekstu (`OriginatingTo`)              |
+| `nativeChannelId`         | Natywny dla platformy identyfikator kanału do dostarczenia |
+| `replyTarget`             | Ostateczne miejsce docelowe widocznej odpowiedzi, jeśli różni się od `to` |
+| `deliveryTarget`          | Niższego poziomu nadpisanie dostarczenia                |
+| `replyToId`               | Identyfikator cytowanej/zakotwiczonej wiadomości        |
 | `replyToIdFull`           | Pełna postać cytowanego identyfikatora, gdy platforma ma oba |
-| `messageThreadId`         | Identyfikator wątku w czasie dostawy                  |
-| `threadParentId`          | Identyfikator wiadomości nadrzędnej wątku             |
-| `sourceReplyDeliveryMode` | `thread`, `reply`, `channel`, `direct` albo `none`    |
+| `messageThreadId`         | Identyfikator wątku w czasie dostarczenia               |
+| `threadParentId`          | Identyfikator wiadomości nadrzędnej wątku               |
+| `sourceReplyDeliveryMode` | `thread`, `reply`, `channel`, `direct` albo `none`      |
 
 ### AccessFacts
 
-`AccessFacts` przenosi wartości logiczne potrzebne etapowi autoryzacji. Dopasowywanie tożsamości pozostaje w kanale: jądro zużywa tylko wynik.
+`AccessFacts` przenosi wartości logiczne potrzebne etapowi autoryzacji. Dopasowywanie tożsamości pozostaje w kanale: kernel zużywa tylko wynik.
 
 | Pole       | Cel                                                                       |
 | ---------- | ------------------------------------------------------------------------- |
-| `dm`       | Decyzja zezwolenia/parowania/odmowy dla DM oraz lista `allowFrom`         |
-| `group`    | Polityka grupy, zezwolenie trasy, zezwolenie nadawcy, lista zezwoleń, wymaganie wzmianki |
-| `commands` | Autoryzacja poleceń w skonfigurowanych autoryzatorach                     |
+| `dm`       | Decyzja DM allow/pairing/deny oraz lista `allowFrom`                      |
+| `group`    | Polityka grupy, zezwolenie trasy, zezwolenie nadawcy, lista dozwolonych, wymaganie wzmianki |
+| `commands` | Autoryzacja poleceń w skonfigurowanych autoryzatorach                    |
 | `mentions` | Czy wykrywanie wzmianek jest możliwe i czy agent został wspomniany        |
 
 ### MessageFacts
 
-| Pole             | Cel                                                         |
-| ---------------- | ----------------------------------------------------------- |
-| `body`           | Końcowa treść koperty (sformatowana)                        |
-| `rawBody`        | Surowa treść przychodząca                                  |
-| `bodyForAgent`   | Treść widoczna dla agenta                                  |
-| `commandBody`    | Treść używana do parsowania poleceń                         |
-| `envelopeFrom`   | Wstępnie wyrenderowana etykieta nadawcy dla koperty         |
-| `senderLabel`    | Opcjonalne nadpisanie wyrenderowanego nadawcy               |
-| `preview`        | Krótki zredagowany podgląd do logów                         |
+| Pole             | Cel                                                            |
+| ---------------- | -------------------------------------------------------------- |
+| `body`           | Ostateczna treść koperty (sformatowana)                        |
+| `rawBody`        | Surowa treść przychodząca                                      |
+| `bodyForAgent`   | Treść widoczna dla agenta                                      |
+| `commandBody`    | Treść używana do parsowania poleceń                            |
+| `envelopeFrom`   | Wstępnie wyrenderowana etykieta nadawcy dla koperty            |
+| `senderLabel`    | Opcjonalne nadpisanie wyrenderowanego nadawcy                  |
+| `preview`        | Krótki zredagowany podgląd dla logów                           |
 | `inboundHistory` | Ostatnie wpisy historii przychodzącej, gdy kanał utrzymuje bufor |
 
 ### SupplementalContextFacts
 
-Kontekst uzupełniający obejmuje kontekst cytatu, przekazania dalej i rozruchu wątku. Jądro stosuje skonfigurowaną politykę `contextVisibility`. Adapter kanału dostarcza tylko fakty i flagi `senderAllowed`, aby polityka między kanałami pozostawała spójna.
+Kontekst uzupełniający obejmuje kontekst cytatu, przekazania i inicjalizacji wątku. Kernel stosuje skonfigurowaną politykę `contextVisibility`. Adapter kanału dostarcza tylko fakty i flagi `senderAllowed`, aby polityka międzykanałowa pozostała spójna.
 
 ### InboundMediaFacts
 
-Media mają postać faktów. Pobieranie platformowe, uwierzytelnianie, polityka SSRF, reguły CDN i odszyfrowywanie pozostają lokalne dla kanału. Jądro mapuje fakty na `MediaPath`, `MediaUrl`, `MediaType`, `MediaPaths`, `MediaUrls`, `MediaTypes` i `MediaTranscribedIndexes`.
+Media mają kształt faktów. Pobieranie z platformy, autoryzacja, polityka SSRF, reguły CDN i odszyfrowywanie pozostają lokalne dla kanału. Kernel mapuje fakty na `MediaPath`, `MediaUrl`, `MediaType`, `MediaPaths`, `MediaUrls`, `MediaTypes` i `MediaTranscribedIndexes`.
 
 ## Kontrakt adaptera
 
@@ -307,13 +343,13 @@ type ChannelTurnAdapter<TRaw> = {
 };
 ```
 
-`resolveTurn` zwraca `ChannelTurnResolved`, czyli `AssembledChannelTurn` z opcjonalnym rodzajem dopuszczenia. Zwrócenie `{ admission: { kind: "observeOnly" } }` uruchamia turę bez generowania widocznego wyjścia. Adapter nadal odpowiada za callback dostawy; po prostu staje się on operacją bez efektu dla tej tury.
+`resolveTurn` zwraca `ChannelTurnResolved`, czyli `AssembledChannelTurn` z opcjonalnym rodzajem dopuszczenia. Zwrócenie `{ admission: { kind: "observeOnly" } }` uruchamia turę bez tworzenia widocznego wyniku. Adapter nadal jest właścicielem callbacku dostarczenia; dla tej tury staje się on po prostu operacją bez efektu.
 
-`onFinalize` uruchamia się dla każdego wyniku, w tym błędów wysyłki. Używaj go do czyszczenia oczekującej historii grupy, usuwania reakcji potwierdzenia, zatrzymywania wskaźników statusu i opróżniania stanu lokalnego.
+`onFinalize` uruchamia się dla każdego wyniku, w tym błędów dispatchu. Użyj go do czyszczenia oczekującej historii grupy, usuwania reakcji potwierdzenia, zatrzymywania wskaźników statusu i opróżniania stanu lokalnego.
 
-## Adapter dostawy
+## Adapter dostarczenia
 
-Jądro nie wywołuje platformy bezpośrednio. Kanał przekazuje jądru `ChannelTurnDeliveryAdapter`:
+Kernel nie wywołuje platformy bezpośrednio. Kanał przekazuje kernelowi `ChannelTurnDeliveryAdapter`:
 
 ```typescript
 type ChannelTurnDeliveryAdapter = {
@@ -331,15 +367,15 @@ type ChannelDeliveryResult = {
 };
 ```
 
-`deliver` jest wywoływane raz dla każdego buforowanego fragmentu odpowiedzi. Podczas migracji cyklu życia wiadomości dostawa złożonej tury kanału jest domyślnie własnością kanału: pominięte pole `durable` oznacza, że jądro musi wywołać `deliver` bezpośrednio i nie może kierować przez generyczną dostawę wychodzącą. Ustaw `durable` dopiero wtedy, gdy kanał został zweryfikowany i wiadomo, że generyczna ścieżka wysyłki zachowuje stare zachowanie dostawy, w tym cele odpowiedzi/wątku, obsługę mediów, pamięci podręczne wysłanych wiadomości/własnego echa, czyszczenie statusu oraz zwracane identyfikatory wiadomości. `durable: false` pozostaje zgodnym zapisem dla „użyj callbacku należącego do kanału”, ale niezmodernizowane kanały nie powinny musieć go dodawać. Zwracaj identyfikatory wiadomości platformy, gdy kanał je ma, aby dyspozytor mógł zachować kotwice wątku i później edytować kolejne fragmenty; nowsze ścieżki dostawy powinny też zwracać `receipt`, aby odzyskiwanie, finalizacja podglądu i tłumienie duplikatów mogły odejść od `messageIds`. Dla tur tylko obserwacyjnych zwróć `{ visibleReplySent: false }` albo użyj `createNoopChannelTurnDeliveryAdapter()`.
+`deliver` jest wywoływane raz dla każdego buforowanego fragmentu odpowiedzi. Podczas migracji cyklu życia wiadomości dostarczenie złożonej tury kanału jest domyślnie własnością kanału: pominięte pole `durable` oznacza, że kernel musi wywołać `deliver` bezpośrednio i nie może kierować przez ogólne dostarczanie wychodzące. Ustaw `durable` dopiero po audycie kanału, który dowodzi, że ogólna ścieżka wysyłania zachowuje poprzednie zachowanie dostarczania, w tym cele odpowiedzi/wątków, obsługę mediów, pamięci podręczne wysłanych wiadomości/własnego echa, czyszczenie statusu i zwracane identyfikatory wiadomości. `durable: false` pozostaje zgodnym zapisem dla „użyj callbacku należącego do kanału”, ale niezmitigrowane kanały nie powinny musieć go dodawać. Zwracaj identyfikatory wiadomości platformy, gdy kanał je ma, aby dispatcher mógł zachować kotwice wątku i edytować późniejsze fragmenty; nowsze ścieżki dostarczania powinny także zwracać `receipt`, aby odzyskiwanie, finalizacja podglądu i tłumienie duplikatów mogły odejść od `messageIds`. Dla tur tylko obserwacyjnych zwróć `{ visibleReplySent: false }` albo użyj `createNoopChannelTurnDeliveryAdapter()`.
 
-Kanały używające `runPrepared` z dyspozytorem w pełni należącym do kanału nie mają `ChannelTurnDeliveryAdapter`. Te dyspozytory domyślnie nie są trwałe. Powinny utrzymać bezpośrednią ścieżkę dostawy, dopóki jawnie nie zdecydują się na nowy kontekst wysyłania z kompletnym celem, adapterem bezpiecznym przy ponownym odtwarzaniu, kontraktem potwierdzenia i hookami efektów ubocznych kanału.
+Kanały używające `runPrepared` z dispatcherem w pełni należącym do kanału nie mają `ChannelTurnDeliveryAdapter`. Te dispatchery domyślnie nie są trwałe. Powinny zachować swoją bezpośrednią ścieżkę dostarczania, dopóki jawnie nie wybiorą nowego kontekstu wysyłania z kompletnym celem, adapterem bezpiecznym dla ponownego odtwarzania, kontraktem potwierdzenia i hookami efektów ubocznych kanału.
 
-Publiczne pomocniki zgodności, takie jak `recordInboundSessionAndDispatchReply`, `dispatchInboundReplyWithBase` i pomocniki bezpośrednich DM, muszą zachowywać dotychczasowe zachowanie podczas migracji. Nie powinny wywoływać generycznej trwałej dostawy przed należącymi do wywołującego callbackami `deliver` lub `reply`.
+Publiczne helpery zgodności, takie jak `recordInboundSessionAndDispatchReply`, `dispatchInboundReplyWithBase` i helpery bezpośrednich DM, muszą zachować zachowanie podczas migracji. Nie powinny wywoływać ogólnego trwałego dostarczania przed należącymi do wywołującego callbackami `deliver` lub `reply`.
 
 ## Opcje zapisu
 
-Etap zapisu opakowuje `recordInboundSession`. Większość kanałów może używać wartości domyślnych. Nadpisuj przez `record`:
+Etap zapisu opakowuje `recordInboundSession`. Większość kanałów może używać wartości domyślnych. Nadpisz przez `record`:
 
 ```typescript
 record: {
@@ -351,11 +387,11 @@ record: {
 }
 ```
 
-Dyspozytor czeka na etap zapisu. Jeśli zapis rzuci wyjątek, jądro uruchamia `onPreDispatchFailure` (gdy podano je do `runPrepared`) i ponownie rzuca wyjątek.
+Dispatcher czeka na etap zapisu. Jeśli zapis zgłosi wyjątek, kernel uruchamia `onPreDispatchFailure` (gdy podano do `runPrepared`) i ponownie zgłasza wyjątek.
 
 ## Obserwowalność
 
-Każdy etap emituje zdarzenie strukturalne, gdy dostarczono callback `log`:
+Każdy etap emituje zdarzenie strukturalne, gdy podano callback `log`:
 
 ```typescript
 await runtime.channel.turn.run({
@@ -376,32 +412,32 @@ await runtime.channel.turn.run({
 });
 ```
 
-Logowane etapy: `ingest`, `classify`, `preflight`, `resolve`, `authorize`, `assemble`, `record`, `dispatch`, `finalize`. Unikaj logowania surowych treści; używaj `MessageFacts.preview` do krótkich zredagowanych podglądów.
+Logowane etapy: `ingest`, `classify`, `preflight`, `resolve`, `authorize`, `assemble`, `record`, `dispatch`, `finalize`. Unikaj logowania surowych treści; używaj `MessageFacts.preview` dla krótkich zredagowanych podglądów.
 
 ## Co pozostaje lokalne dla kanału
 
-Jądro odpowiada za orkiestrację. Kanał nadal odpowiada za:
+Kernel odpowiada za orkiestrację. Kanał nadal odpowiada za:
 
-- Transporty platformowe (Gateway, REST, websocket, polling, webhooki)
-- Rozwiązywanie tożsamości i dopasowywanie nazw wyświetlanych
-- Natywne polecenia, polecenia ukośnikowe, autouzupełnianie, modale, przyciski, stan głosu
+- Transporty platformy (gateway, REST, websocket, polling, webhooki)
+- Rozpoznawanie tożsamości i dopasowywanie nazw wyświetlanych
+- Polecenia natywne, polecenia slash, autouzupełnianie, modale, przyciski, stan głosu
 - Renderowanie kart, modali i kart adaptacyjnych
-- Uwierzytelnianie mediów, reguły CDN, media szyfrowane, transkrypcję
-- Interfejsy API edycji, reakcji, redakcji i obecności
+- Autoryzację mediów, reguły CDN, szyfrowane media, transkrypcję
+- API edycji, reakcji, redakcji i obecności
 - Backfill i pobieranie historii po stronie platformy
 - Przepływy parowania wymagające weryfikacji specyficznej dla platformy
 
-Jeśli dwa kanały zaczną potrzebować tego samego pomocnika dla jednej z tych rzeczy, wyodrębnij współdzielony pomocnik SDK zamiast wpychać go do jądra.
+Jeśli dwa kanały zaczynają potrzebować tego samego helpera dla jednego z tych obszarów, wyodrębnij wspólny helper SDK zamiast przenosić go do kernela.
 
 ## Stabilność
 
-`runtime.channel.turn.*` jest częścią publicznej powierzchni środowiska uruchomieniowego Plugin. Typy faktów (`SenderFacts`, `ConversationFacts`, `RouteFacts`, `ReplyPlanFacts`, `AccessFacts`, `MessageFacts`, `SupplementalContextFacts`, `InboundMediaFacts`) i kształty dopuszczenia (`ChannelTurnAdmission`, `ChannelEventClass`) są osiągalne przez `PluginRuntime` z `openclaw/plugin-sdk/core`.
+`runtime.channel.turn.*` jest częścią publicznej powierzchni runtime pluginu. Typy faktów (`SenderFacts`, `ConversationFacts`, `RouteFacts`, `ReplyPlanFacts`, `AccessFacts`, `MessageFacts`, `SupplementalContextFacts`, `InboundMediaFacts`) i kształty dopuszczenia (`ChannelTurnAdmission`, `ChannelEventClass`) są osiągalne przez `PluginRuntime` z `openclaw/plugin-sdk/core`.
 
-Obowiązują reguły zgodności wstecznej: nowe pola faktów są addytywne, rodzaje dopuszczenia nie są zmieniane, a nazwy punktów wejścia pozostają stabilne. Nowe potrzeby kanałów wymagające zmiany nieaddytywnej muszą przejść przez proces migracji SDK Plugin.
+Obowiązują reguły zgodności wstecznej: nowe pola faktów są addytywne, rodzaje dopuszczenia nie są zmieniane nazwą, a nazwy punktów wejścia pozostają stabilne. Nowe potrzeby kanału wymagające zmiany nieaddytywnej muszą przejść przez proces migracji plugin SDK.
 
 ## Powiązane
 
-- [Refaktoryzacja cyklu życia wiadomości](/pl/concepts/message-lifecycle-refactor) dla planowanego cyklu życia wysyłania/odbioru/live, który opakuje to jądro
-- [Budowanie pluginów kanałów](/pl/plugins/sdk-channel-plugins) dla szerszego kontraktu pluginów kanałów
-- [Pomocniki środowiska uruchomieniowego Plugin](/pl/plugins/sdk-runtime) dla innych powierzchni `runtime.*`
-- [Wewnętrzna architektura Plugin](/pl/plugins/architecture-internals) dla potoku ładowania i mechaniki rejestru
+- [Refaktoryzacja cyklu życia wiadomości](/pl/concepts/message-lifecycle-refactor) dla planowanego cyklu życia wysyłania/odbierania/live, który opakuje ten kernel
+- [Budowanie pluginów kanałów](/pl/plugins/sdk-channel-plugins) dla szerszego kontraktu pluginu kanału
+- [Helpery runtime pluginu](/pl/plugins/sdk-runtime) dla innych powierzchni `runtime.*`
+- [Wewnętrzne mechanizmy pluginów](/pl/plugins/architecture-internals) dla potoku ładowania i mechaniki rejestru

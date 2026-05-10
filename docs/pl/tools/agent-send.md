@@ -1,21 +1,21 @@
 ---
 read_when:
-    - Chcesz wyzwalać uruchomienia agenta ze skryptów lub z wiersza poleceń
+    - Chcesz wyzwalać uruchomienia agentów ze skryptów lub z poziomu wiersza poleceń
     - Musisz programowo dostarczać odpowiedzi agenta do kanału czatu
 summary: Uruchamiaj tury agenta z CLI i opcjonalnie dostarczaj odpowiedzi do kanałów
 title: Wysyłanie przez agenta
 x-i18n:
-    generated_at: "2026-05-06T09:30:59Z"
+    generated_at: "2026-05-10T19:56:00Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1339ebd74e2349669942ff93f200b53a69ad05f2186d6ff76437c779f312a291
+    source_hash: a2e1b05414312321e7136867bb8b998754d4a46289cc02764eb61d83f7239af1
     source_path: tools/agent-send.md
     workflow: 16
 ---
 
-`openclaw agent` uruchamia jedną turę agenta z wiersza poleceń bez potrzeby
-przychodzącej wiadomości czatu. Używaj go do skryptowanych przepływów pracy,
-testowania i dostarczania programowego.
+`openclaw agent` uruchamia pojedynczą turę agenta z wiersza poleceń bez potrzeby
+przychodzącej wiadomości czatu. Używaj tego do przepływów skryptowych, testowania i
+programowego dostarczania.
 
 ## Szybki start
 
@@ -62,28 +62,31 @@ testowania i dostarczania programowego.
 | ----------------------------- | ----------------------------------------------------------- |
 | `--message \<text\>`          | Wiadomość do wysłania (wymagana)                            |
 | `--to \<dest\>`               | Wyprowadź klucz sesji z celu (telefon, identyfikator czatu) |
-| `--agent \<id\>`              | Wskaż skonfigurowanego agenta (używa jego sesji `main`)     |
-| `--session-id \<id\>`         | Użyj ponownie istniejącej sesji według identyfikatora        |
-| `--local`                     | Wymuś lokalny wbudowany runtime (pomiń Gateway)             |
+| `--agent \<id\>`              | Wybierz skonfigurowanego agenta (używa jego sesji `main`)   |
+| `--session-id \<id\>`         | Użyj ponownie istniejącej sesji według identyfikatora       |
+| `--local`                     | Wymuś lokalne osadzone środowisko wykonawcze (pomiń Gateway) |
 | `--deliver`                   | Wyślij odpowiedź do kanału czatu                            |
-| `--channel \<name\>`          | Kanał dostarczania (whatsapp, telegram, discord, slack itp.) |
+| `--channel \<name\>`          | Kanał dostarczania (whatsapp, telegram, discord, slack itd.) |
 | `--reply-to \<target\>`       | Nadpisanie celu dostarczania                                |
 | `--reply-channel \<name\>`    | Nadpisanie kanału dostarczania                              |
 | `--reply-account \<id\>`      | Nadpisanie identyfikatora konta dostarczania                |
 | `--thinking \<level\>`        | Ustaw poziom myślenia dla wybranego profilu modelu          |
 | `--verbose \<on\|full\|off\>` | Ustaw poziom szczegółowości                                 |
 | `--timeout \<seconds\>`       | Nadpisz limit czasu agenta                                  |
-| `--json`                      | Wypisz strukturalny JSON                                    |
+| `--json`                      | Wypisz ustrukturyzowany JSON                                |
 
 ## Zachowanie
 
 - Domyślnie CLI przechodzi **przez Gateway**. Dodaj `--local`, aby wymusić
-  wbudowany runtime na bieżącej maszynie.
-- Jeśli Gateway jest nieosiągalny, CLI **przełącza się awaryjnie** na lokalne wbudowane uruchomienie.
+  osadzone środowisko wykonawcze na bieżącej maszynie.
+- Jeśli Gateway jest nieosiągalny, CLI **wraca** do lokalnego osadzonego uruchomienia.
 - Wybór sesji: `--to` wyprowadza klucz sesji (cele grup/kanałów
   zachowują izolację; czaty bezpośrednie zwijają się do `main`).
 - Flagi myślenia i szczegółowości są utrwalane w magazynie sesji.
-- Wyjście: domyślnie zwykły tekst albo `--json` dla strukturalnego ładunku i metadanych.
+- Wyjście: domyślnie zwykły tekst albo `--json` dla ustrukturyzowanego ładunku + metadanych.
+- Z `--json --deliver` JSON obejmuje status dostarczania dla wysyłek
+  wysłanych, wstrzymanych, częściowych i nieudanych. Zobacz
+  [status dostarczania JSON](/pl/cli/agent#json-delivery-status).
 
 ## Przykłady
 
@@ -111,6 +114,6 @@ openclaw agent --agent ops --message "Alert" --deliver --reply-channel telegram 
     Jak działają klucze sesji i jak `--to`, `--agent` oraz `--session-id` je rozpoznają.
   </Card>
   <Card title="Slash commands" href="/pl/tools/slash-commands" icon="slash">
-    Natywny katalog poleceń używany wewnątrz sesji agentów.
+    Natywny katalog poleceń używany wewnątrz sesji agenta.
   </Card>
 </CardGroup>

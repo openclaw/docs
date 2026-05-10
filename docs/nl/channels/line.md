@@ -1,25 +1,25 @@
 ---
 read_when:
     - Je wilt OpenClaw verbinden met LINE
-    - Je hebt LINE Webhook + configuratie van referentiegegevens nodig
+    - Je moet de LINE-Webhook en inloggegevens instellen
     - Je wilt LINE-specifieke berichtopties
-summary: Installatie, configuratie en gebruik van de LINE Messaging API Plugin
+summary: Installatie, configuratie en gebruik van de LINE Messaging API-Plugin
 title: REGEL
 x-i18n:
-    generated_at: "2026-05-06T09:03:21Z"
+    generated_at: "2026-05-10T19:22:24Z"
     model: gpt-5.5
     provider: openai
-    source_hash: d9d2880bd27e11b72b51ad8a1e8c9e9d41adb51622edf890554594b90d24cd8d
+    source_hash: 7a11edbadda1ec99452eadc19a4557bb594f8b69ebb92314e2c3a0be325ab89d
     source_path: channels/line.md
     workflow: 16
 ---
 
-LINE maakt verbinding met OpenClaw via de LINE Messaging API. De plugin draait als Webhook
-ontvanger op de Gateway en gebruikt je kanaaltoegangstoken + kanaalgeheim voor
+LINE maakt verbinding met OpenClaw via de LINE Messaging API. De Plugin draait als Webhook
+ontvanger op de Gateway en gebruikt je channel access token + channel secret voor
 authenticatie.
 
-Status: downloadbare plugin. Directe berichten, groepschats, media, locaties, Flex
-berichten, templateberichten en snelle antwoorden worden ondersteund. Reacties en threads
+Status: downloadbare Plugin. Directe berichten, groepschats, media, locaties, Flex
+messages, template messages en quick replies worden ondersteund. Reacties en threads
 worden niet ondersteund.
 
 ## Installeren
@@ -30,7 +30,7 @@ Installeer LINE voordat je het kanaal configureert:
 openclaw plugins install @openclaw/line
 ```
 
-Lokale checkout (bij uitvoeren vanuit een git-repo):
+Lokale checkout (bij draaien vanuit een git-repo):
 
 ```bash
 openclaw plugins install ./path/to/local/line-plugin
@@ -38,10 +38,10 @@ openclaw plugins install ./path/to/local/line-plugin
 
 ## Instellen
 
-1. Maak een LINE Developers-account en open de Console:
+1. Maak een LINE Developers-account aan en open de Console:
    [https://developers.line.biz/console/](https://developers.line.biz/console/)
 2. Maak (of kies) een Provider en voeg een **Messaging API**-kanaal toe.
-3. Kopieer het **Channel access token** en **Channel secret** uit de kanaalinstellingen.
+3. Kopieer de **Channel access token** en **Channel secret** uit de kanaalinstellingen.
 4. Schakel **Use webhook** in de Messaging API-instellingen in.
 5. Stel de Webhook-URL in op je Gateway-eindpunt (HTTPS vereist):
 
@@ -51,12 +51,12 @@ https://gateway-host/line/webhook
 
 De Gateway reageert op LINE's Webhook-verificatie (GET) en inkomende gebeurtenissen (POST).
 Als je een aangepast pad nodig hebt, stel dan `channels.line.webhookPath` of
-`channels.line.accounts.<id>.webhookPath` in en werk de URL overeenkomstig bij.
+`channels.line.accounts.<id>.webhookPath` in en werk de URL dienovereenkomstig bij.
 
 Beveiligingsopmerking:
 
-- LINE-handtekeningverificatie is afhankelijk van de body (HMAC over de ruwe body), dus OpenClaw past strikte bodylimieten vóór authenticatie en een timeout toe vóór verificatie.
-- OpenClaw verwerkt Webhook-gebeurtenissen vanuit de geverifieerde ruwe verzoekbytes. Door upstream-middleware getransformeerde `req.body`-waarden worden genegeerd voor veiligheid van handtekeningintegriteit.
+- LINE-handtekeningverificatie is afhankelijk van de body (HMAC over de ruwe body), dus OpenClaw past strikte pre-auth-bodylimieten en een timeout toe vóór verificatie.
+- OpenClaw verwerkt Webhook-gebeurtenissen vanuit de geverifieerde ruwe requestbytes. Door upstream middleware getransformeerde `req.body`-waarden worden genegeerd voor veilige handtekeningintegriteit.
 
 ## Configureren
 
@@ -96,7 +96,7 @@ Omgevingsvariabelen (alleen standaardaccount):
 - `LINE_CHANNEL_ACCESS_TOKEN`
 - `LINE_CHANNEL_SECRET`
 
-Token-/geheimbestanden:
+Token-/secret-bestanden:
 
 ```json5
 {
@@ -109,7 +109,7 @@ Token-/geheimbestanden:
 }
 ```
 
-`tokenFile` en `secretFile` moeten naar reguliere bestanden verwijzen. Symlinks worden geweigerd.
+`tokenFile` en `secretFile` moeten naar gewone bestanden verwijzen. Symlinks worden geweigerd.
 
 Meerdere accounts:
 
@@ -129,9 +129,9 @@ Meerdere accounts:
 }
 ```
 
-## Toegangscontrole
+## Toegangsbeheer
 
-Directe berichten gebruiken standaard koppeling. Onbekende afzenders krijgen een koppelingscode en hun
+Directe berichten gebruiken standaard pairing. Onbekende afzenders krijgen een pairingcode en hun
 berichten worden genegeerd totdat ze zijn goedgekeurd.
 
 ```bash
@@ -139,37 +139,38 @@ openclaw pairing list line
 openclaw pairing approve line <CODE>
 ```
 
-Toelatingslijsten en beleidsregels:
+Toestemmingslijsten en beleid:
 
 - `channels.line.dmPolicy`: `pairing | allowlist | open | disabled`
-- `channels.line.allowFrom`: LINE-gebruikers-ID's op de toelatingslijst voor DM's; `dmPolicy: "open"` vereist `["*"]`
+- `channels.line.allowFrom`: toegestane LINE-gebruikers-ID's voor DM's; `dmPolicy: "open"` vereist `["*"]`
 - `channels.line.groupPolicy`: `allowlist | open | disabled`
-- `channels.line.groupAllowFrom`: LINE-gebruikers-ID's op de toelatingslijst voor groepen
-- Overschrijvingen per groep: `channels.line.groups.<groupId>.allowFrom`
-- Runtime-opmerking: als `channels.line` volledig ontbreekt, valt runtime terug op `groupPolicy="allowlist"` voor groepscontroles (zelfs als `channels.defaults.groupPolicy` is ingesteld).
+- `channels.line.groupAllowFrom`: toegestane LINE-gebruikers-ID's voor groepen
+- Overrides per groep: `channels.line.groups.<groupId>.allowFrom`
+- Statische afzendertoegangsgroepen kunnen worden gebruikt vanuit `allowFrom`, `groupAllowFrom` en per-groep `allowFrom` met `accessGroup:<name>`.
+- Runtime-opmerking: als `channels.line` volledig ontbreekt, valt de runtime terug op `groupPolicy="allowlist"` voor groepscontroles (zelfs als `channels.defaults.groupPolicy` is ingesteld).
 
 LINE-ID's zijn hoofdlettergevoelig. Geldige ID's zien eruit als:
 
-- Gebruiker: `U` + 32 hextekens
-- Groep: `C` + 32 hextekens
-- Ruimte: `R` + 32 hextekens
+- Gebruiker: `U` + 32 hex-tekens
+- Groep: `C` + 32 hex-tekens
+- Ruimte: `R` + 32 hex-tekens
 
 ## Berichtgedrag
 
 - Tekst wordt opgesplitst bij 5000 tekens.
 - Markdown-opmaak wordt verwijderd; codeblokken en tabellen worden waar mogelijk omgezet naar Flex
-  kaarten.
-- Streamingreacties worden gebufferd; LINE ontvangt volledige stukken met een laadanimatie
+  cards.
+- Streaming-antwoorden worden gebufferd; LINE ontvangt volledige chunks met een laadanimatie
   terwijl de agent werkt.
 - Mediadownloads worden begrensd door `channels.line.mediaMaxMb` (standaard 10).
-- Inkomende media wordt opgeslagen onder `~/.openclaw/media/inbound/` voordat deze wordt doorgegeven
-  aan de agent, overeenkomstig de gedeelde mediaopslag die door andere gebundelde kanaalplugins
+- Inkomende media worden opgeslagen onder `~/.openclaw/media/inbound/` voordat ze worden doorgegeven
+  aan de agent, overeenkomend met de gedeelde mediaopslag die door andere gebundelde kanaalplugins
   wordt gebruikt.
 
 ## Kanaalgegevens (rijke berichten)
 
-Gebruik `channelData.line` om snelle antwoorden, locaties, Flex-kaarten of templateberichten
-te verzenden.
+Gebruik `channelData.line` om quick replies, locaties, Flex cards of template
+messages te verzenden.
 
 ```json5
 {
@@ -202,7 +203,7 @@ te verzenden.
 }
 ```
 
-De LINE-plugin levert ook een `/card`-opdracht voor Flex-berichtpresets:
+De LINE-Plugin levert ook een `/card`-opdracht voor Flex message-presets:
 
 ```
 /card info "Welcome" "Thanks for joining!"
@@ -210,38 +211,38 @@ De LINE-plugin levert ook een `/card`-opdracht voor Flex-berichtpresets:
 
 ## ACP-ondersteuning
 
-LINE ondersteunt ACP-conversatiebindingen (Agent Communication Protocol):
+LINE ondersteunt ACP-conversatiebindings (Agent Communication Protocol):
 
 - `/acp spawn <agent> --bind here` bindt de huidige LINE-chat aan een ACP-sessie zonder een child thread te maken.
-- Geconfigureerde ACP-bindingen en actieve conversatiegebonden ACP-sessies werken op LINE zoals op andere conversatiekanalen.
+- Geconfigureerde ACP-bindings en actieve conversatiegebonden ACP-sessies werken op LINE zoals op andere conversatiekanalen.
 
-Zie [ACP-agenten](/nl/tools/acp-agents) voor details.
+Zie [ACP-agents](/nl/tools/acp-agents) voor details.
 
 ## Uitgaande media
 
-De LINE-plugin ondersteunt het verzenden van afbeeldingen, video's en audiobestanden via de berichttool van de agent. Media wordt verzonden via het LINE-specifieke afleverpad met passende verwerking voor preview en tracking:
+De LINE-Plugin ondersteunt het verzenden van afbeeldingen, video's en audiobestanden via de berichttool van de agent. Media worden verzonden via het LINE-specifieke bezorgpad met passende preview- en trackingafhandeling:
 
 - **Afbeeldingen**: verzonden als LINE-afbeeldingsberichten met automatische previewgeneratie.
-- **Video's**: verzonden met expliciete verwerking van preview en contenttype.
+- **Video's**: verzonden met expliciete preview- en content-type-afhandeling.
 - **Audio**: verzonden als LINE-audioberichten.
 
-Uitgaande media-URL's moeten openbare HTTPS-URL's zijn. OpenClaw valideert de doelhostnaam voordat de URL aan LINE wordt doorgegeven en weigert loopback-, link-local- en privé-netwerkdoelen.
+Uitgaande media-URL's moeten openbare HTTPS-URL's zijn. OpenClaw valideert de doelhostnaam voordat de URL aan LINE wordt doorgegeven en weigert local loopback-, link-local- en private-netwerkdoelen.
 
-Algemene mediaverzendingen vallen terug op de bestaande route voor alleen afbeeldingen wanneer er geen LINE-specifiek pad beschikbaar is.
+Algemene mediaverzendingen vallen terug op de bestaande route voor alleen afbeeldingen wanneer een LINE-specifiek pad niet beschikbaar is.
 
 ## Probleemoplossing
 
-- **Webhook-verificatie mislukt:** zorg ervoor dat de Webhook-URL HTTPS gebruikt en dat het
+- **Webhook-verificatie mislukt:** zorg ervoor dat de Webhook-URL HTTPS gebruikt en dat
   `channelSecret` overeenkomt met de LINE-console.
-- **Geen inkomende gebeurtenissen:** bevestig dat het Webhook-pad overeenkomt met `channels.line.webhookPath`
-  en dat de Gateway bereikbaar is vanuit LINE.
+- **Geen inkomende gebeurtenissen:** controleer of het Webhook-pad overeenkomt met `channels.line.webhookPath`
+  en dat de Gateway bereikbaar is vanaf LINE.
 - **Mediadownloadfouten:** verhoog `channels.line.mediaMaxMb` als media de
-  standaardlimiet overschrijdt.
+  standaardlimiet overschrijden.
 
 ## Gerelateerd
 
 - [Kanalenoverzicht](/nl/channels) — alle ondersteunde kanalen
-- [Koppeling](/nl/channels/pairing) — DM-authenticatie en koppelingsstroom
-- [Groepen](/nl/channels/groups) — groepschatgedrag en vermeldingscontrole
+- [Pairing](/nl/channels/pairing) — DM-authenticatie en pairingflow
+- [Groepen](/nl/channels/groups) — gedrag van groepschats en mention gating
 - [Kanaalroutering](/nl/channels/channel-routing) — sessieroutering voor berichten
 - [Beveiliging](/nl/gateway/security) — toegangsmodel en hardening

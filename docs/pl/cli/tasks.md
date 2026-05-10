@@ -1,20 +1,20 @@
 ---
 read_when:
-    - Chcesz sprawdzić, audytować lub anulować rekordy zadań w tle
-    - Dokumentujesz polecenia TaskFlow w `openclaw tasks flow`
-summary: Dokumentacja referencyjna CLI dla `openclaw tasks` (rejestr zadań w tle i stan TaskFlow)
+    - Chcesz sprawdzać, audytować lub anulować rekordy zadań w tle
+    - Dokumentujesz polecenia Przepływu zadań w `openclaw tasks flow`
+summary: Dokumentacja referencyjna CLI dla `openclaw tasks` (rejestr zadań w tle i stan Task Flow)
 title: '`openclaw tasks`'
 x-i18n:
-    generated_at: "2026-05-07T13:14:59Z"
+    generated_at: "2026-05-10T19:30:32Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ca3f05d7c2a3fa7790ad6059ce15721ebffb548ac4a2c627188ac17986442dc6
+    source_hash: 7bbb97690124a8e59ec5e6a517f33166ad449ee6268894ab132ad9cb69dcaa81
     source_path: cli/tasks.md
     workflow: 16
 ---
 
-Sprawdzaj trwałe zadania w tle oraz stan Task Flow. Bez podpolecenia
-`openclaw tasks` jest równoważne z `openclaw tasks list`.
+Sprawdzaj trwałe zadania w tle oraz stan przepływu zadań. Bez podpolecenia
+`openclaw tasks` jest równoważne `openclaw tasks list`.
 
 Zobacz [Zadania w tle](/pl/automation/tasks), aby poznać cykl życia i model dostarczania.
 
@@ -38,9 +38,9 @@ openclaw tasks flow cancel <lookup>
 
 ## Opcje główne
 
-- `--json`: wypisz JSON.
-- `--runtime <name>`: filtruj według rodzaju: `subagent`, `acp`, `cron` lub `cli`.
-- `--status <name>`: filtruj według statusu: `queued`, `running`, `succeeded`, `failed`, `timed_out`, `cancelled` lub `lost`.
+- `--json`: wypisuje JSON.
+- `--runtime <name>`: filtruje według rodzaju: `subagent`, `acp`, `cron` lub `cli`.
+- `--status <name>`: filtruje według statusu: `queued`, `running`, `succeeded`, `failed`, `timed_out`, `cancelled` lub `lost`.
 
 ## Podpolecenia
 
@@ -50,7 +50,7 @@ openclaw tasks flow cancel <lookup>
 openclaw tasks list [--runtime <name>] [--status <name>] [--json]
 ```
 
-Wyświetla śledzone zadania w tle, od najnowszych.
+Wyświetla śledzone zadania w tle od najnowszych.
 
 ### `show`
 
@@ -66,7 +66,7 @@ Pokazuje jedno zadanie według identyfikatora zadania, identyfikatora uruchomien
 openclaw tasks notify <lookup> <done_only|state_changes|silent>
 ```
 
-Zmienia zasady powiadomień dla uruchomionego zadania.
+Zmienia zasadę powiadomień dla uruchomionego zadania.
 
 ### `cancel`
 
@@ -82,7 +82,7 @@ Anuluje uruchomione zadanie w tle.
 openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--json]
 ```
 
-Ujawnia nieaktualne, utracone, niedostarczone lub w inny sposób niespójne rekordy zadań i Task Flow. Utracone zadania zachowane do `cleanupAfter` są ostrzeżeniami; wygasłe albo utracone zadania bez znacznika czasu są błędami.
+Ujawnia nieaktualne, utracone, niedostarczone lub w inny sposób niespójne rekordy zadań i przepływu zadań. Utracone zadania przechowywane do `cleanupAfter` są ostrzeżeniami; wygasłe lub nieostemplowane utracone zadania są błędami.
 
 ### `maintenance`
 
@@ -90,13 +90,17 @@ Ujawnia nieaktualne, utracone, niedostarczone lub w inny sposób niespójne reko
 openclaw tasks maintenance [--apply] [--json]
 ```
 
-Podgląda lub stosuje uzgadnianie zadań i Task Flow, oznaczanie do czyszczenia oraz przycinanie.
+Podgląda lub stosuje uzgadnianie zadań i przepływu zadań, stemplowanie czyszczenia, przycinanie
+oraz czyszczenie rejestru sesji nieaktualnych uruchomień Cron.
 W przypadku zadań Cron uzgadnianie używa utrwalonych dzienników uruchomień/stanu zadań przed oznaczeniem
 starego aktywnego zadania jako `lost`, dzięki czemu ukończone uruchomienia Cron nie stają się fałszywymi błędami audytu
-tylko dlatego, że stan środowiska uruchomieniowego Gateway w pamięci zniknął. Audyt CLI offline nie jest
-autorytatywny dla procesowo lokalnego zestawu aktywnych zadań Cron Gateway. Zadania CLI
-z identyfikatorem uruchomienia/identyfikatorem źródła są oznaczane jako `lost`, gdy ich kontekst uruchomienia Gateway na żywo
-zniknął, nawet jeśli pozostaje stary wiersz sesji podrzędnej.
+tylko dlatego, że stan środowiska wykonawczego Gateway w pamięci zniknął. Audyt CLI w trybie offline
+nie jest autorytatywny dla lokalnego dla procesu zestawu aktywnych zadań Cron w Gateway. Zadania CLI
+z identyfikatorem uruchomienia/identyfikatorem źródła są oznaczane jako `lost`, gdy ich aktywny kontekst uruchomienia Gateway
+zniknął, nawet jeśli pozostał stary wiersz sesji podrzędnej.
+Po zastosowaniu konserwacja przycina także wiersze rejestru sesji `cron:<jobId>:run:<uuid>`
+starsze niż 7 dni, zachowując obecnie uruchomione zadania Cron i pozostawiając
+wiersze sesji inne niż Cron bez zmian.
 
 ### `flow`
 
@@ -106,7 +110,7 @@ openclaw tasks flow show <lookup> [--json]
 openclaw tasks flow cancel <lookup>
 ```
 
-Sprawdza lub anuluje trwały stan Task Flow w rejestrze zadań.
+Sprawdza lub anuluje trwały stan przepływu zadań w rejestrze zadań.
 
 ## Powiązane
 

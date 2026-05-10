@@ -1,15 +1,15 @@
 ---
 read_when:
-    - Konfigurieren von OpenClaw lernen
-    - Suche nach Konfigurationsbeispielen
+    - Erfahren Sie, wie Sie OpenClaw konfigurieren
+    - Nach Konfigurationsbeispielen suchen
     - OpenClaw zum ersten Mal einrichten
 summary: Schemakonforme Konfigurationsbeispiele für gängige OpenClaw-Setups
 title: Konfigurationsbeispiele
 x-i18n:
-    generated_at: "2026-05-07T13:16:54Z"
+    generated_at: "2026-05-10T19:34:27Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 87c7e75841ee36121c764f1ed51b6547d0fccf7ed6c1f05895d916dbf93f061a
+    source_hash: 9fd1c93d8c491de13c3679c766293a3401853625308e90588d7c83272c5b6e73
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
@@ -27,7 +27,7 @@ Die folgenden Beispiele sind auf das aktuelle Konfigurationsschema abgestimmt. D
 }
 ```
 
-Speichern Sie dies unter `~/.openclaw/openclaw.json`, dann können Sie dem Bot von dieser Nummer aus eine DM senden.
+Speichern Sie dies unter `~/.openclaw/openclaw.json`, und Sie können dem Bot von dieser Nummer aus eine Direktnachricht senden.
 
 ### Empfohlener Einstieg
 
@@ -57,9 +57,9 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`, dann können Sie dem Bot v
 }
 ```
 
-## Erweitertes Beispiel (wichtigste Optionen)
+## Erweitertes Beispiel (wichtige Optionen)
 
-> JSON5 erlaubt Kommentare und nachgestellte Kommas. Reguläres JSON funktioniert ebenfalls.
+> Mit JSON5 können Sie Kommentare und nachgestellte Kommas verwenden. Reguläres JSON funktioniert ebenfalls.
 
 ```json5
 {
@@ -454,10 +454,12 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`, dann können Sie dem Bot v
     allowBundled: ["gemini", "peekaboo"],
     load: {
       extraDirs: ["~/Projects/agent-scripts/skills"],
+      allowSymlinkTargets: ["~/Projects/agent-scripts/skills"],
     },
     install: {
       preferBrew: true,
       nodeManager: "npm", // npm | pnpm | yarn | bun
+      allowUploadedArchives: false,
     },
     entries: {
       "image-lab": {
@@ -471,9 +473,29 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`, dann können Sie dem Bot v
 }
 ```
 
+### Skill-Repository mit Symlink als Geschwister-Repo
+
+Verwenden Sie dies, wenn ein integriertes Skill-Stammverzeichnis einen Symlink in ein Geschwister-Repo enthält, zum
+Beispiel `~/.agents/skills/manager -> ~/Projects/manager/skills`.
+
+```json5
+{
+  skills: {
+    load: {
+      extraDirs: ["~/Projects/manager/skills"],
+      allowSymlinkTargets: ["~/Projects/manager/skills"],
+    },
+  },
+}
+```
+
+- `extraDirs` durchsucht das benachbarte Repository als expliziten Skills-Stamm.
+- `allowSymlinkTargets` ermöglicht es, per Symlink eingebundene Skills-Ordner auf diesen vertrauenswürdigen
+  realen Zielstamm aufzulösen, ohne beliebige Symlink-Ausbrüche zu erlauben.
+
 ## Häufige Muster
 
-### Gemeinsame Skill-Basis mit einer Überschreibung
+### Gemeinsame Skills-Basiskonfiguration mit einer Überschreibung
 
 ```json5
 {
@@ -490,8 +512,8 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`, dann können Sie dem Bot v
 }
 ```
 
-- `agents.defaults.skills` ist die gemeinsame Basis.
-- `agents.list[].skills` ersetzt diese Basis für einen Agenten.
+- `agents.defaults.skills` ist die gemeinsame Basiskonfiguration.
+- `agents.list[].skills` ersetzt diese Basiskonfiguration für einen Agenten.
 - Verwenden Sie `skills: []`, wenn ein Agent keine Skills sehen soll.
 
 ### Einrichtung für mehrere Plattformen
@@ -515,11 +537,11 @@ Speichern Sie dies unter `~/.openclaw/openclaw.json`, dann können Sie dem Bot v
 }
 ```
 
-### Automatische Genehmigung für ein vertrauenswürdiges Node-Netzwerk
+### Automatische Genehmigung vertrauenswürdiger Node-Netzwerke
 
-Lassen Sie das Geräte-Pairing manuell, sofern Sie den Netzwerkpfad nicht kontrollieren. Für ein dediziertes
-Labor oder ein Tailnet-Subnetz können Sie die automatische erstmalige Genehmigung von Node-Geräten
-mit exakten CIDRs oder IPs aktivieren:
+Halten Sie die Gerätekopplung manuell, sofern Sie den Netzwerkpfad nicht kontrollieren. Für ein dediziertes
+Labor- oder Tailnet-Subnetz können Sie sich für die erstmalige automatische Genehmigung von Node-Geräten
+mit exakten CIDRs oder IPs entscheiden:
 
 ```json5
 {
@@ -533,13 +555,13 @@ mit exakten CIDRs oder IPs aktivieren:
 }
 ```
 
-Dies bleibt deaktiviert, wenn es nicht gesetzt ist. Es gilt nur für neues `role: node`-Pairing
-ohne angeforderte Scopes. Operator-/Browser-Clients sowie Upgrades von Rolle, Scope, Metadaten oder
-öffentlichem Schlüssel erfordern weiterhin eine manuelle Genehmigung.
+Dies bleibt deaktiviert, wenn es nicht gesetzt ist. Es gilt nur für frische Kopplungen mit `role: node`
+ohne angeforderte Scopes. Operator-/Browser-Clients sowie Rollen-, Scope-, Metadaten- oder
+Public-Key-Upgrades erfordern weiterhin manuelle Genehmigung.
 
-### Sicherer DM-Modus (gemeinsamer Posteingang / Multi-User-DMs)
+### Sicherer DM-Modus (gemeinsamer Posteingang / Mehrbenutzer-DMs)
 
-Wenn mehr als eine Person Ihrem Bot eine DM senden kann (mehrere Einträge in `allowFrom`, Pairing-Genehmigungen für mehrere Personen oder `dmPolicy: "open"`), aktivieren Sie den **sicheren DM-Modus**, damit DMs von verschiedenen Absendern standardmäßig nicht denselben Kontext teilen:
+Wenn mehr als eine Person Ihrem Bot eine DM senden kann (mehrere Einträge in `allowFrom`, Kopplungsgenehmigungen für mehrere Personen oder `dmPolicy: "open"`), aktivieren Sie den **sicheren DM-Modus**, damit DMs von verschiedenen Absendern standardmäßig keinen gemeinsamen Kontext teilen:
 
 ```json5
 {
@@ -564,7 +586,7 @@ Wenn mehr als eine Person Ihrem Bot eine DM senden kann (mehrere Einträge in `a
 ```
 
 Für Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC erfolgt die Absenderautorisierung standardmäßig zuerst anhand der ID.
-Aktivieren Sie direktes Matching veränderbarer Namen/E-Mail-Adressen/Nicks über `dangerouslyAllowNameMatching: true` des jeweiligen Kanals nur, wenn Sie dieses Risiko ausdrücklich akzeptieren.
+Aktivieren Sie direkte veränderliche Namens-/E-Mail-/Nick-Abgleiche mit `dangerouslyAllowNameMatching: true` des jeweiligen Kanals nur, wenn Sie dieses Risiko ausdrücklich akzeptieren.
 
 ### Anthropic-API-Schlüssel + MiniMax-Fallback
 
@@ -661,10 +683,10 @@ Aktivieren Sie direktes Matching veränderbarer Namen/E-Mail-Adressen/Nicks übe
 
 - Wenn Sie `dmPolicy: "open"` setzen, muss die passende `allowFrom`-Liste `"*"` enthalten.
 - Provider-IDs unterscheiden sich (Telefonnummern, Benutzer-IDs, Kanal-IDs). Verwenden Sie die Provider-Dokumentation, um das Format zu bestätigen.
-- Optionale Abschnitte für später: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
-- Weitere Einrichtungshinweise finden Sie unter [Provider](/de/providers) und [Fehlerbehebung](/de/gateway/troubleshooting).
+- Optionale Abschnitte, die später ergänzt werden können: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
+- Weitere Hinweise zur Einrichtung finden Sie unter [Provider](/de/providers) und [Fehlerbehebung](/de/gateway/troubleshooting).
 
-## Verwandte Themen
+## Verwandt
 
 - [Konfigurationsreferenz](/de/gateway/configuration-reference)
 - [Konfiguration](/de/gateway/configuration)

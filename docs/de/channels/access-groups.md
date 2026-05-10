@@ -1,26 +1,26 @@
 ---
 read_when:
     - Dieselbe Allowlist für mehrere Nachrichtenkanäle konfigurieren
-    - Zugriffsregeln für Absender beim Teilen von DMs und Gruppen
+    - Zugriffsregeln für das Teilen von DM- und Gruppensendern
     - Überprüfung der Zugriffskontrolle für Nachrichtenkanäle
 summary: Wiederverwendbare Absender-Allowlists für Nachrichtenkanäle
 title: Zugriffsgruppen
 x-i18n:
-    generated_at: "2026-05-02T06:26:29Z"
+    generated_at: "2026-05-10T19:21:07Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fc7bc1d4fb80e5c5d4e72b190d49821aa93ced575eafcf89864ac800e8558f94
+    source_hash: 1dba4fc84deb6e0c8c7b17ebc10182aa6e4bc2c821070e33df44f384e285266f
     source_path: channels/access-groups.md
     workflow: 16
 ---
 
-Zugriffsgruppen sind benannte Absenderlisten, die Sie einmal definieren und über `accessGroup:<name>` aus Kanal-Allowlists referenzieren.
+Zugriffsgruppen sind benannte Absenderlisten, die Sie einmal definieren und aus Kanal-Allowlists mit `accessGroup:<name>` referenzieren.
 
-Verwenden Sie sie, wenn dieselben Personen über mehrere Nachrichtenkanäle hinweg zugelassen sein sollen oder wenn eine vertrauenswürdige Gruppe sowohl für DMs als auch für die Absenderautorisierung in Gruppen gelten soll.
+Verwenden Sie sie, wenn dieselben Personen über mehrere Nachrichtenkanäle hinweg zugelassen werden sollen oder wenn eine vertrauenswürdige Gruppe sowohl für DMs als auch für die Autorisierung von Gruppenabsendern gelten soll.
 
-Zugriffsgruppen gewähren für sich allein keinen Zugriff. Eine Gruppe ist nur relevant, wenn ein Allowlist-Feld sie referenziert.
+Zugriffsgruppen gewähren für sich genommen keinen Zugriff. Eine Gruppe ist nur relevant, wenn ein Allowlist-Feld sie referenziert.
 
-## Statische Nachrichten-Absendergruppen
+## Statische Gruppen von Nachrichtenabsendern
 
 Statische Absendergruppen verwenden `type: "message.senders"`.
 
@@ -40,16 +40,16 @@ Statische Absendergruppen verwenden `type: "message.senders"`.
 }
 ```
 
-Mitgliederlisten werden nach Nachrichtenkanal-ID geschlüsselt:
+Mitgliederlisten sind nach Nachrichtenkanal-ID verschlüsselt:
 
-| Schlüssel  | Bedeutung                                                                 |
-| ---------- | ------------------------------------------------------------------------- |
+| Schlüssel  | Bedeutung                                                                       |
+| ---------- | ------------------------------------------------------------------------------- |
 | `"*"`      | Gemeinsame Einträge, die für jeden Nachrichtenkanal geprüft werden, der die Gruppe referenziert. |
-| `discord`  | Einträge, die nur für Discord-Allowlist-Abgleiche geprüft werden.          |
-| `telegram` | Einträge, die nur für Telegram-Allowlist-Abgleiche geprüft werden.         |
-| `whatsapp` | Einträge, die nur für WhatsApp-Allowlist-Abgleiche geprüft werden.         |
+| `discord`  | Einträge, die nur für den Discord-Allowlist-Abgleich geprüft werden.             |
+| `telegram` | Einträge, die nur für den Telegram-Allowlist-Abgleich geprüft werden.            |
+| `whatsapp` | Einträge, die nur für den WhatsApp-Allowlist-Abgleich geprüft werden.            |
 
-Einträge werden mit den normalen `allowFrom`-Regeln des Zielkanals abgeglichen. OpenClaw übersetzt keine Absender-IDs zwischen Kanälen. Wenn Alice eine Telegram-ID und eine Discord-ID hat, führen Sie beide IDs unter den passenden Schlüsseln auf.
+Einträge werden mit den normalen `allowFrom`-Regeln des Zielkanals abgeglichen. OpenClaw übersetzt Absender-IDs nicht zwischen Kanälen. Wenn Alice eine Telegram-ID und eine Discord-ID hat, listen Sie beide IDs unter den passenden Schlüsseln auf.
 
 ## Gruppen aus Allowlists referenzieren
 
@@ -81,7 +81,7 @@ Beispiel für eine DM-Allowlist:
 }
 ```
 
-Beispiel für eine Gruppen-Absender-Allowlist:
+Beispiel für eine Allowlist von Gruppenabsendern:
 
 ```json5
 {
@@ -125,14 +125,33 @@ Sie können Gruppen und direkte Einträge mischen:
 
 ## Unterstützte Nachrichtenkanalpfade
 
-Zugriffsgruppen sind in gemeinsamen Autorisierungspfaden für Nachrichtenkanäle verfügbar, darunter:
+Zugriffsgruppen sind in gemeinsamen Autorisierungspfaden für Nachrichtenkanäle verfügbar, einschließlich:
 
 - DM-Absender-Allowlists wie `channels.<channel>.allowFrom`
-- Gruppen-Absender-Allowlists wie `channels.<channel>.groupAllowFrom`
+- Gruppenabsender-Allowlists wie `channels.<channel>.groupAllowFrom`
 - kanalspezifische Absender-Allowlists pro Raum, die dieselben Abgleichsregeln für Absender verwenden
 - Befehlsautorisierungspfade, die Absender-Allowlists von Nachrichtenkanälen wiederverwenden
 
-Die Kanalunterstützung hängt davon ab, ob dieser Kanal über die gemeinsamen OpenClaw-Hilfsfunktionen zur Absenderautorisierung angebunden ist. Die aktuelle gebündelte Unterstützung umfasst Discord, Google Chat, Nostr, WhatsApp, Zalo und Zalo Personal. Statische `message.senders`-Gruppen sind kanalunabhängig ausgelegt. Neue Nachrichtenkanäle sollten sie daher unterstützen, indem sie die gemeinsamen Hilfsfunktionen des Plugin-SDK statt einer eigenen Allowlist-Erweiterung verwenden.
+Die Kanalunterstützung hängt davon ab, ob dieser Kanal über die gemeinsamen OpenClaw-Hilfsfunktionen für Absenderautorisierung angebunden ist. Die aktuelle gebündelte Unterstützung umfasst Discord, Feishu, Google Chat, iMessage, LINE, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQBot, Signal, WhatsApp, Zalo und Zalo Personal. Statische `message.senders`-Gruppen sind kanalagnostisch ausgelegt, daher sollten neue Nachrichtenkanäle sie unterstützen, indem sie die gemeinsamen Plugin-SDK-Hilfsfunktionen anstelle einer eigenen Allowlist-Erweiterung verwenden.
+
+## Plugin-Diagnose
+
+Plugin-Autoren können den strukturierten Zugriffsgruppenstatus prüfen, ohne ihn wieder zu einer flachen Allowlist zu erweitern:
+
+```typescript
+import { resolveAccessGroupAllowFromState } from "openclaw/plugin-sdk/security-runtime";
+
+const state = await resolveAccessGroupAllowFromState({
+  accessGroups: cfg.accessGroups,
+  allowFrom: channelConfig.allowFrom,
+  channel: "my-channel",
+  accountId: "default",
+  senderId,
+  isSenderAllowed,
+});
+```
+
+Das Ergebnis meldet referenzierte, übereinstimmende, fehlende, nicht unterstützte und fehlgeschlagene Gruppen. Verwenden Sie dies, wenn Sie Diagnosen oder Konformitätstests benötigen. Verwenden Sie `expandAllowFromWithAccessGroups(...)` nur für Kompatibilitätspfade, die noch ein flaches `allowFrom`-Array erwarten.
 
 ## Discord-Kanalzielgruppen
 
@@ -157,7 +176,7 @@ Discord unterstützt außerdem einen dynamischen Zugriffsgruppentyp:
 }
 ```
 
-`discord.channelAudience` bedeutet: „Discord-DM-Absender zulassen, die diesen Guild-Kanal derzeit sehen können.“ OpenClaw löst den Absender zum Autorisierungszeitpunkt über Discord auf und wendet die Discord-`ViewChannel`-Berechtigungsregeln an.
+`discord.channelAudience` bedeutet „Discord-DM-Absender zulassen, die diesen Guild-Kanal aktuell sehen können.“ OpenClaw löst den Absender zum Autorisierungszeitpunkt über Discord auf und wendet die Discord-Berechtigungsregeln für `ViewChannel` an.
 
 Verwenden Sie dies, wenn ein Discord-Kanal bereits die maßgebliche Quelle für ein Team ist, etwa `#maintainers` oder `#on-call`.
 
@@ -171,19 +190,19 @@ Weitere Discord-spezifische Beispiele: [Discord-Zugriffskontrolle](/de/channels/
 
 ## Sicherheitshinweise
 
-- Zugriffsgruppen sind Allowlist-Aliase, keine Rollen. Sie erstellen für sich allein keine Owner, genehmigen keine Kopplungsanfragen und gewähren keine Tool-Berechtigungen.
-- `dmPolicy: "open"` erfordert weiterhin `"*"` in der effektiven DM-Allowlist. Das Referenzieren einer Zugriffsgruppe ist nicht dasselbe wie öffentlicher Zugriff.
+- Zugriffsgruppen sind Allowlist-Aliasse, keine Rollen. Sie erstellen keine Besitzer, genehmigen keine Kopplungsanfragen und gewähren für sich genommen keine Tool-Berechtigungen.
+- `dmPolicy: "open"` erfordert weiterhin `"*"` in der effektiven DM-Allowlist. Eine Zugriffsgruppe zu referenzieren ist nicht dasselbe wie öffentlicher Zugriff.
 - Fehlende Gruppennamen schlagen geschlossen fehl. Wenn `allowFrom` `accessGroup:operators` enthält und `accessGroups.operators` fehlt, autorisiert dieser Eintrag niemanden.
 - Halten Sie Kanal-IDs stabil. Bevorzugen Sie numerische IDs oder Benutzer-IDs gegenüber Anzeigenamen, wenn der Kanal beides unterstützt.
 
-## Fehlerbehebung
+## Problembehandlung
 
 Wenn ein Absender übereinstimmen sollte, aber blockiert wird:
 
-1. Bestätigen Sie, dass das Allowlist-Feld die exakte Referenz `accessGroup:<name>` enthält.
+1. Bestätigen Sie, dass das Allowlist-Feld die exakte `accessGroup:<name>`-Referenz enthält.
 2. Bestätigen Sie, dass `accessGroups.<name>.type` korrekt ist.
 3. Bestätigen Sie, dass die Absender-ID unter dem passenden Kanalschlüssel oder unter `"*"` aufgeführt ist.
 4. Bestätigen Sie, dass der Eintrag die normale Allowlist-Syntax dieses Kanals verwendet.
 5. Bestätigen Sie bei Discord-Kanalzielgruppen, dass der Bot den Guild-Kanal sehen kann und Server Members Intent aktiviert ist.
 
-Führen Sie nach dem Bearbeiten der Zugriffskontrollkonfiguration `openclaw doctor` aus. Der Befehl erkennt viele ungültige Kombinationen aus Allowlists und Richtlinien vor der Laufzeit.
+Führen Sie `openclaw doctor` aus, nachdem Sie die Zugriffskontrollkonfiguration bearbeitet haben. Es erkennt viele ungültige Allowlist- und Richtlinienkombinationen vor der Laufzeit.

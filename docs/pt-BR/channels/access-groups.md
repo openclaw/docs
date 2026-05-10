@@ -1,26 +1,26 @@
 ---
 read_when:
-    - Configurando a mesma lista de permissões em vários canais de mensagens
-    - Regras de acesso para compartilhamento de remetentes em mensagens diretas e grupos
-    - Revisando o controle de acesso ao canal de mensagens
+    - Configurando a mesma lista de permissões em vários canais de mensagem
+    - Compartilhando regras de acesso para remetentes em mensagens diretas e grupos
+    - Revisando o controle de acesso do canal de mensagens
 summary: Listas de permissões de remetentes reutilizáveis para canais de mensagens
 title: Grupos de acesso
 x-i18n:
-    generated_at: "2026-05-02T05:41:16Z"
+    generated_at: "2026-05-10T19:21:02Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fc7bc1d4fb80e5c5d4e72b190d49821aa93ced575eafcf89864ac800e8558f94
+    source_hash: 1dba4fc84deb6e0c8c7b17ebc10182aa6e4bc2c821070e33df44f384e285266f
     source_path: channels/access-groups.md
     workflow: 16
 ---
 
-Grupos de acesso são listas nomeadas de remetentes que você define uma vez e referencia nas listas de permissão de canais com `accessGroup:<name>`.
+Grupos de acesso são listas nomeadas de remetentes que você define uma vez e referencia a partir de listas de permissão de canais com `accessGroup:<name>`.
 
-Use-os quando as mesmas pessoas devem ser permitidas em vários canais de mensagem, ou quando um conjunto confiável deve se aplicar tanto à autorização de remetentes em DMs quanto em grupos.
+Use-os quando as mesmas pessoas devem ser permitidas em vários canais de mensagens, ou quando um conjunto confiável deve se aplicar tanto à autorização de remetentes em mensagens diretas quanto em grupos.
 
 Grupos de acesso não concedem acesso por si só. Um grupo só importa quando um campo de lista de permissão o referencia.
 
-## Grupos estáticos de remetentes de mensagem
+## Grupos estáticos de remetentes de mensagens
 
 Grupos estáticos de remetentes usam `type: "message.senders"`.
 
@@ -40,22 +40,22 @@ Grupos estáticos de remetentes usam `type: "message.senders"`.
 }
 ```
 
-As listas de membros são indexadas pelo id do canal de mensagem:
+As listas de membros são indexadas pelo id do canal de mensagens:
 
-| Chave      | Significado                                                                 |
-| ---------- | --------------------------------------------------------------------------- |
-| `"*"`      | Entradas compartilhadas verificadas para cada canal de mensagem que referencia o grupo. |
-| `discord`  | Entradas verificadas somente para correspondência da lista de permissão do Discord. |
-| `telegram` | Entradas verificadas somente para correspondência da lista de permissão do Telegram. |
-| `whatsapp` | Entradas verificadas somente para correspondência da lista de permissão do WhatsApp. |
+| Chave      | Significado                                                             |
+| ---------- | ----------------------------------------------------------------------- |
+| `"*"`      | Entradas compartilhadas verificadas para todo canal de mensagens que referencia o grupo. |
+| `discord`  | Entradas verificadas apenas para correspondência da lista de permissão do Discord. |
+| `telegram` | Entradas verificadas apenas para correspondência da lista de permissão do Telegram. |
+| `whatsapp` | Entradas verificadas apenas para correspondência da lista de permissão do WhatsApp. |
 
-As entradas são correspondidas pelas regras normais de `allowFrom` do canal de destino. A OpenClaw não traduz ids de remetentes entre canais. Se Alice tiver um id do Telegram e um id do Discord, liste ambos os ids nas chaves apropriadas.
+As entradas são correspondidas com as regras normais de `allowFrom` do canal de destino. O OpenClaw não traduz ids de remetentes entre canais. Se Alice tem um id do Telegram e um id do Discord, liste ambos os ids nas chaves apropriadas.
 
-## Referenciar grupos em listas de permissão
+## Referenciar grupos a partir de listas de permissão
 
-Referencie um grupo com `accessGroup:<name>` em qualquer lugar em que o caminho do canal de mensagem ofereça suporte a listas de permissão de remetentes.
+Referencie um grupo com `accessGroup:<name>` em qualquer lugar em que o caminho do canal de mensagens ofereça suporte a listas de permissão de remetentes.
 
-Exemplo de lista de permissão para DM:
+Exemplo de lista de permissão de mensagens diretas:
 
 ```json5
 {
@@ -110,7 +110,7 @@ Exemplo de lista de permissão de remetentes de grupo:
 }
 ```
 
-Você pode combinar grupos e entradas diretas:
+Você pode misturar grupos e entradas diretas:
 
 ```json5
 {
@@ -123,16 +123,35 @@ Você pode combinar grupos e entradas diretas:
 }
 ```
 
-## Caminhos de canais de mensagem compatíveis
+## Caminhos de canais de mensagens compatíveis
 
-Grupos de acesso estão disponíveis em caminhos compartilhados de autorização de canais de mensagem, incluindo:
+Grupos de acesso estão disponíveis em caminhos compartilhados de autorização de canais de mensagens, incluindo:
 
-- listas de permissão de remetentes de DM, como `channels.<channel>.allowFrom`
+- listas de permissão de remetentes de mensagens diretas, como `channels.<channel>.allowFrom`
 - listas de permissão de remetentes de grupo, como `channels.<channel>.groupAllowFrom`
-- listas de permissão de remetentes por sala específicas do canal que usam as mesmas regras de correspondência de remetente
-- caminhos de autorização de comandos que reutilizam listas de permissão de remetentes de canais de mensagem
+- listas de permissão de remetentes por sala específicas do canal que usam as mesmas regras de correspondência de remetentes
+- caminhos de autorização de comandos que reutilizam listas de permissão de remetentes de canais de mensagens
 
-O suporte do canal depende de esse canal estar conectado aos auxiliares compartilhados de autorização de remetente da OpenClaw. O suporte atual incluído no pacote inclui Discord, Google Chat, Nostr, WhatsApp, Zalo e Zalo Personal. Grupos estáticos `message.senders` são projetados para serem independentes de canal, então novos canais de mensagem devem oferecer suporte a eles usando os auxiliares compartilhados do SDK de Plugin em vez de expansão personalizada da lista de permissão.
+O suporte do canal depende de esse canal estar conectado aos helpers compartilhados de autorização de remetentes do OpenClaw. O suporte incluído atualmente inclui Discord, Feishu, Google Chat, iMessage, LINE, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQBot, Signal, WhatsApp, Zalo e Zalo Personal. Grupos estáticos `message.senders` são projetados para serem agnósticos a canais, portanto novos canais de mensagens devem oferecer suporte a eles usando os helpers compartilhados do SDK de Plugin em vez de expansão personalizada de listas de permissão.
+
+## Diagnósticos de Plugin
+
+Autores de Plugin podem inspecionar o estado estruturado de grupos de acesso sem expandi-lo de volta para uma lista de permissão plana:
+
+```typescript
+import { resolveAccessGroupAllowFromState } from "openclaw/plugin-sdk/security-runtime";
+
+const state = await resolveAccessGroupAllowFromState({
+  accessGroups: cfg.accessGroups,
+  allowFrom: channelConfig.allowFrom,
+  channel: "my-channel",
+  accountId: "default",
+  senderId,
+  isSenderAllowed,
+});
+```
+
+O resultado informa grupos referenciados, correspondidos, ausentes, sem suporte e com falha. Use isso quando precisar de diagnósticos ou testes de conformidade. Use `expandAllowFromWithAccessGroups(...)` apenas para caminhos de compatibilidade que ainda esperam um array `allowFrom` plano.
 
 ## Públicos de canais do Discord
 
@@ -157,24 +176,24 @@ O Discord também oferece suporte a um tipo dinâmico de grupo de acesso:
 }
 ```
 
-`discord.channelAudience` significa "permitir remetentes de DM do Discord que podem visualizar este canal do servidor atualmente." A OpenClaw resolve o remetente pelo Discord no momento da autorização e aplica as regras de permissão `ViewChannel` do Discord.
+`discord.channelAudience` significa "permitir remetentes de mensagens diretas do Discord que atualmente podem visualizar este canal do guild." O OpenClaw resolve o remetente pelo Discord no momento da autorização e aplica as regras de permissão `ViewChannel` do Discord.
 
 Use isso quando um canal do Discord já for a fonte da verdade para uma equipe, como `#maintainers` ou `#on-call`.
 
 Requisitos e comportamento de falha:
 
-- O bot precisa de acesso ao servidor e ao canal.
-- O bot precisa da **Intenção de membros do servidor** no Portal de Desenvolvedores do Discord.
-- O grupo de acesso falha fechado quando o Discord retorna `Missing Access`, o remetente não pode ser resolvido como membro do servidor, ou o canal pertence a outro servidor.
+- O bot precisa de acesso ao guild e ao canal.
+- O bot precisa da **Server Members Intent** no Discord Developer Portal.
+- O grupo de acesso falha fechado quando o Discord retorna `Missing Access`, o remetente não pode ser resolvido como membro do guild ou o canal pertence a outro guild.
 
 Mais exemplos específicos do Discord: [Controle de acesso do Discord](/pt-BR/channels/discord#access-control-and-routing)
 
 ## Observações de segurança
 
-- Grupos de acesso são aliases de listas de permissão, não funções. Eles não criam proprietários, aprovam solicitações de emparelhamento nem concedem permissões de ferramentas por si só.
-- `dmPolicy: "open"` ainda exige `"*"` na lista de permissão efetiva de DM. Referenciar um grupo de acesso não é o mesmo que acesso público.
-- Nomes de grupo ausentes falham fechados. Se `allowFrom` contiver `accessGroup:operators` e `accessGroups.operators` estiver ausente, essa entrada não autoriza ninguém.
-- Mantenha ids de canal estáveis. Prefira ids numéricos/de usuário a nomes de exibição quando o canal oferecer suporte a ambos.
+- Grupos de acesso são aliases de listas de permissão, não papéis. Eles não criam proprietários, não aprovam solicitações de pareamento nem concedem permissões de ferramentas por si só.
+- `dmPolicy: "open"` ainda exige `"*"` na lista de permissão efetiva de mensagens diretas. Referenciar um grupo de acesso não é o mesmo que acesso público.
+- Nomes de grupos ausentes falham fechados. Se `allowFrom` contém `accessGroup:operators` e `accessGroups.operators` está ausente, essa entrada não autoriza ninguém.
+- Mantenha os ids de canais estáveis. Prefira ids numéricos/de usuário a nomes de exibição quando o canal oferecer suporte a ambos.
 
 ## Solução de problemas
 
@@ -182,8 +201,8 @@ Se um remetente deveria corresponder, mas está bloqueado:
 
 1. Confirme que o campo da lista de permissão contém a referência exata `accessGroup:<name>`.
 2. Confirme que `accessGroups.<name>.type` está correto.
-3. Confirme que o id do remetente está listado na chave de canal correspondente, ou em `"*"`.
+3. Confirme que o id do remetente está listado na chave de canal correspondente ou em `"*"`.
 4. Confirme que a entrada usa a sintaxe normal de lista de permissão desse canal.
-5. Para públicos de canais do Discord, confirme que o bot consegue ver o canal do servidor e tem a Intenção de membros do servidor habilitada.
+5. Para públicos de canais do Discord, confirme que o bot consegue ver o canal do guild e tem Server Members Intent habilitada.
 
-Execute `openclaw doctor` depois de editar a configuração de controle de acesso. Ele detecta muitas combinações inválidas de listas de permissão e políticas antes do tempo de execução.
+Execute `openclaw doctor` depois de editar a configuração de controle de acesso. Ele detecta muitas combinações inválidas de listas de permissão e políticas antes do runtime.

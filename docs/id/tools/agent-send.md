@@ -1,26 +1,26 @@
 ---
 read_when:
     - Anda ingin memicu eksekusi agen dari skrip atau baris perintah
-    - Anda perlu mengirimkan balasan agen ke saluran obrolan secara terprogram
-summary: Jalankan giliran agen dari CLI dan secara opsional kirimkan balasan ke saluran
-title: Kirim agen
+    - Anda perlu mengirimkan balasan agen ke saluran chat secara terprogram
+summary: Jalankan putaran agen dari CLI dan secara opsional kirimkan balasan ke saluran
+title: Pengiriman agen
 x-i18n:
-    generated_at: "2026-05-06T09:28:56Z"
+    generated_at: "2026-05-10T19:54:12Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1339ebd74e2349669942ff93f200b53a69ad05f2186d6ff76437c779f312a291
+    source_hash: a2e1b05414312321e7136867bb8b998754d4a46289cc02764eb61d83f7239af1
     source_path: tools/agent-send.md
     workflow: 16
 ---
 
 `openclaw agent` menjalankan satu giliran agen dari baris perintah tanpa memerlukan
-pesan chat masuk. Gunakan untuk alur kerja terskrip, pengujian, dan
+pesan chat masuk. Gunakan untuk alur kerja berskrip, pengujian, dan
 pengiriman terprogram.
 
 ## Mulai cepat
 
 <Steps>
-  <Step title="Run a simple agent turn">
+  <Step title="Jalankan giliran agen sederhana">
     ```bash
     openclaw agent --message "What is the weather today?"
     ```
@@ -29,7 +29,7 @@ pengiriman terprogram.
 
   </Step>
 
-  <Step title="Target a specific agent or session">
+  <Step title="Targetkan agen atau sesi tertentu">
     ```bash
     # Target a specific agent
     openclaw agent --agent ops --message "Summarize logs"
@@ -43,7 +43,7 @@ pengiriman terprogram.
 
   </Step>
 
-  <Step title="Deliver the reply to a channel">
+  <Step title="Kirim balasan ke kanal">
     ```bash
     # Deliver to WhatsApp (default channel)
     openclaw agent --to +15555550123 --message "Report ready" --deliver
@@ -56,34 +56,37 @@ pengiriman terprogram.
   </Step>
 </Steps>
 
-## Flag
+## Opsi
 
-| Flag                          | Deskripsi                                                   |
+| Opsi                          | Deskripsi                                                   |
 | ----------------------------- | ----------------------------------------------------------- |
 | `--message \<text\>`          | Pesan yang akan dikirim (wajib)                             |
 | `--to \<dest\>`               | Turunkan kunci sesi dari target (telepon, id chat)          |
 | `--agent \<id\>`              | Targetkan agen yang dikonfigurasi (menggunakan sesi `main`) |
-| `--session-id \<id\>`         | Gunakan kembali sesi yang ada berdasarkan id                |
+| `--session-id \<id\>`         | Gunakan kembali sesi yang sudah ada berdasarkan id          |
 | `--local`                     | Paksa runtime tertanam lokal (lewati Gateway)               |
-| `--deliver`                   | Kirim balasan ke channel chat                               |
-| `--channel \<name\>`          | Channel pengiriman (whatsapp, telegram, discord, slack, dll.) |
-| `--reply-to \<target\>`       | Penggantian target pengiriman                               |
-| `--reply-channel \<name\>`    | Penggantian channel pengiriman                              |
-| `--reply-account \<id\>`      | Penggantian id akun pengiriman                              |
-| `--thinking \<level\>`        | Tetapkan level berpikir untuk profil model yang dipilih     |
-| `--verbose \<on\|full\|off\>` | Tetapkan level verbose                                      |
-| `--timeout \<seconds\>`       | Timpa batas waktu agen                                      |
+| `--deliver`                   | Kirim balasan ke kanal chat                                 |
+| `--channel \<name\>`          | Kanal pengiriman (whatsapp, telegram, discord, slack, dll.) |
+| `--reply-to \<target\>`       | Override target pengiriman                                  |
+| `--reply-channel \<name\>`    | Override kanal pengiriman                                   |
+| `--reply-account \<id\>`      | Override id akun pengiriman                                 |
+| `--thinking \<level\>`        | Atur level berpikir untuk profil model yang dipilih         |
+| `--verbose \<on\|full\|off\>` | Atur level verbose                                          |
+| `--timeout \<seconds\>`       | Override batas waktu agen                                   |
 | `--json`                      | Keluarkan JSON terstruktur                                  |
 
 ## Perilaku
 
 - Secara default, CLI berjalan **melalui Gateway**. Tambahkan `--local` untuk memaksa
   runtime tertanam pada mesin saat ini.
-- Jika Gateway tidak dapat dijangkau, CLI **beralih otomatis** ke eksekusi tertanam lokal.
-- Pemilihan sesi: `--to` menurunkan kunci sesi (target grup/channel
-  mempertahankan isolasi; chat langsung digabung ke `main`).
-- Flag thinking dan verbose dipertahankan ke penyimpanan sesi.
-- Keluaran: teks biasa secara default, atau `--json` untuk payload terstruktur + metadata.
+- Jika Gateway tidak dapat dijangkau, CLI **fallback** ke eksekusi tertanam lokal.
+- Pemilihan sesi: `--to` menurunkan kunci sesi (target grup/kanal
+  mempertahankan isolasi; chat langsung digabungkan ke `main`).
+- Flag thinking dan verbose dipertahankan ke dalam penyimpanan sesi.
+- Output: teks biasa secara default, atau `--json` untuk payload + metadata terstruktur.
+- Dengan `--json --deliver`, JSON menyertakan status pengiriman untuk pengiriman
+  terkirim, disupresi, parsial, dan gagal. Lihat
+  [Status pengiriman JSON](/id/cli/agent#json-delivery-status).
 
 ## Contoh
 
@@ -101,16 +104,16 @@ openclaw agent --agent ops --message "Alert" --deliver --reply-channel telegram 
 ## Terkait
 
 <CardGroup cols={2}>
-  <Card title="Agent CLI reference" href="/id/cli/agent" icon="terminal">
+  <Card title="Referensi CLI agen" href="/id/cli/agent" icon="terminal">
     Referensi lengkap flag dan opsi `openclaw agent`.
   </Card>
-  <Card title="Sub-agents" href="/id/tools/subagents" icon="users">
-    Pemunculan sub-agen latar belakang.
+  <Card title="Sub-agen" href="/id/tools/subagents" icon="users">
+    Pembuatan sub-agen latar belakang.
   </Card>
-  <Card title="Sessions" href="/id/concepts/session" icon="comments">
-    Cara kerja kunci sesi dan bagaimana `--to`, `--agent`, dan `--session-id` menyelesaikannya.
+  <Card title="Sesi" href="/id/concepts/session" icon="comments">
+    Cara kerja kunci sesi dan cara `--to`, `--agent`, dan `--session-id` menyelesaikannya.
   </Card>
-  <Card title="Slash commands" href="/id/tools/slash-commands" icon="slash">
+  <Card title="Perintah slash" href="/id/tools/slash-commands" icon="slash">
     Katalog perintah native yang digunakan di dalam sesi agen.
   </Card>
 </CardGroup>

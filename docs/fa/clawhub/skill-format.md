@@ -1,0 +1,199 @@
+---
+read_when:
+    - انتشار Skills
+    - اشکال‌زدایی از خرابی‌های انتشار/همگام‌سازی
+summary: قالب پوشهٔ Skill، فایل‌های الزامی، انواع فایل‌های مجاز، محدودیت‌ها.
+x-i18n:
+    generated_at: "2026-05-10T19:29:13Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 76c6a9f1c5b7b8df66a460d0f74b39581e40f43dbe99b825800e709ec57bd2fb
+    source_path: clawhub/skill-format.md
+    workflow: 16
+---
+
+# قالب Skill
+
+## روی دیسک
+
+یک skill یک پوشه است.
+
+الزامی:
+
+- `SKILL.md` (یا `skill.md`)
+
+اختیاری:
+
+- هر فایل پشتیبان _متنی_ (بخش «فایل‌های مجاز» را ببینید)
+- `.clawhubignore` (الگوهای نادیده‌گیری برای انتشار/همگام‌سازی، `.clawdhubignore` قدیمی)
+- `.gitignore` (آن هم رعایت می‌شود)
+
+فراداده نصب محلی (نوشته‌شده توسط CLI):
+
+- `<skill>/.clawhub/origin.json` (`.clawdhub` قدیمی)
+
+وضعیت نصب workdir (نوشته‌شده توسط CLI):
+
+- `<workdir>/.clawhub/lock.json` (`.clawdhub` قدیمی)
+
+## `SKILL.md`
+
+- Markdown با YAML frontmatter اختیاری.
+- سرور هنگام انتشار، فراداده را از frontmatter استخراج می‌کند.
+- `description` به‌عنوان خلاصه skill در UI/جست‌وجو استفاده می‌شود.
+
+## فراداده Frontmatter
+
+فراداده Skill در YAML frontmatter بالای `SKILL.md` شما تعریف می‌شود. این به رجیستری (و تحلیل امنیتی) می‌گوید skill شما برای اجرا به چه چیزهایی نیاز دارد.
+
+### Frontmatter پایه
+
+```yaml
+---
+name: my-skill
+description: Short summary of what this skill does.
+version: 1.0.0
+---
+```
+
+### فراداده زمان اجرا (`metadata.openclaw`)
+
+نیازمندی‌های زمان اجرای skill خود را زیر `metadata.openclaw` اعلام کنید (نام‌های مستعار: `metadata.clawdbot`، `metadata.clawdis`).
+
+```yaml
+---
+name: my-skill
+description: Manage tasks via the Todoist API.
+metadata:
+  openclaw:
+    requires:
+      env:
+        - TODOIST_API_KEY
+      bins:
+        - curl
+    primaryEnv: TODOIST_API_KEY
+---
+```
+
+از `requires.env` برای متغیرهای محیطی استفاده کنید که باید پیش از اجرای skill وجود داشته باشند. وقتی برای هر متغیر به فراداده جداگانه نیاز دارید، از جمله متغیرهای اختیاری با `required: false`، از `envVars` استفاده کنید.
+
+### مرجع کامل فیلدها
+
+| فیلد              | نوع       | توضیح                                                                                                                                  |
+| ------------------ | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `requires.env`     | `string[]` | متغیرهای محیطی الزامی که skill شما انتظار دارد.                                                                                           |
+| `requires.bins`    | `string[]` | باینری‌های CLI که همگی باید نصب باشند.                                                                                                     |
+| `requires.anyBins` | `string[]` | باینری‌های CLI که دست‌کم یکی از آن‌ها باید وجود داشته باشد.                                                                                                  |
+| `requires.config`  | `string[]` | مسیرهای فایل پیکربندی که skill شما می‌خواند.                                                                                                          |
+| `primaryEnv`       | `string`   | متغیر محیطی اعتبارنامه اصلی برای skill شما.                                                                                                  |
+| `envVars`          | `array`    | اعلان‌های متغیر محیطی با `name`، `required` اختیاری، و `description` اختیاری. برای متغیرهای محیطی اختیاری، `required: false` را تنظیم کنید. |
+| `always`           | `boolean`  | اگر `true` باشد، skill همیشه فعال است (نیازی به نصب صریح نیست).                                                                              |
+| `skillKey`         | `string`   | کلید فراخوانی skill را بازنویسی می‌کند.                                                                                                         |
+| `emoji`            | `string`   | ایموجی نمایشی برای skill.                                                                                                                 |
+| `homepage`         | `string`   | URL صفحه اصلی یا مستندات skill.                                                                                                         |
+| `os`               | `string[]` | محدودیت‌های OS (مثلاً `["macos"]`، `["linux"]`).                                                                                             |
+| `install`          | `array`    | مشخصات نصب برای وابستگی‌ها (پایین را ببینید).                                                                                                  |
+| `nix`              | `object`   | مشخصات Nix plugin (README را ببینید).                                                                                                                |
+| `config`           | `object`   | مشخصات پیکربندی Clawdbot (README را ببینید).                                                                                                           |
+
+### مشخصات نصب
+
+اگر skill شما نیاز دارد وابستگی‌هایی نصب شوند، آن‌ها را در آرایه `install` اعلام کنید:
+
+```yaml
+metadata:
+  openclaw:
+    install:
+      - kind: brew
+        formula: jq
+        bins: [jq]
+      - kind: node
+        package: typescript
+        bins: [tsc]
+```
+
+انواع نصب پشتیبانی‌شده: `brew`، `node`، `go`، `uv`.
+
+### متغیرهای محیطی اختیاری
+
+متغیرهای محیطی اختیاری را زیر `metadata.openclaw.envVars` اعلام کنید و `required: false` را تنظیم کنید. ورودی‌های اختیاری را به `requires.env` اضافه نکنید، چون `requires.env` یعنی skill بدون آن‌ها نمی‌تواند اجرا شود.
+
+```yaml
+metadata:
+  openclaw:
+    primaryEnv: TODOIST_API_KEY
+    envVars:
+      - name: TODOIST_API_KEY
+        required: true
+        description: Todoist API token used for authenticated requests.
+      - name: TODOIST_PROJECT_ID
+        required: false
+        description: Optional default project ID when the user does not specify one.
+```
+
+### چرا این مهم است
+
+تحلیل امنیتی ClawHub بررسی می‌کند که آنچه skill شما اعلام می‌کند با کاری که واقعاً انجام می‌دهد مطابقت داشته باشد. اگر کد شما به `TODOIST_API_KEY` ارجاع دهد اما frontmatter شما آن را زیر `requires.env`، `primaryEnv`، یا `envVars` اعلام نکند، تحلیل یک ناهماهنگی فراداده را گزارش می‌کند. دقیق نگه داشتن اعلان‌ها به skill شما کمک می‌کند بررسی را با موفقیت بگذراند و به کاربران کمک می‌کند بفهمند چه چیزی را نصب می‌کنند.
+
+### نمونه: frontmatter کامل
+
+```yaml
+---
+name: todoist-cli
+description: Manage Todoist tasks, projects, and labels from the command line.
+version: 1.2.0
+metadata:
+  openclaw:
+    requires:
+      env:
+        - TODOIST_API_KEY
+      bins:
+        - curl
+    primaryEnv: TODOIST_API_KEY
+    envVars:
+      - name: TODOIST_API_KEY
+        required: true
+        description: Todoist API token.
+      - name: TODOIST_PROJECT_ID
+        required: false
+        description: Optional default project ID.
+    emoji: "\u2705"
+    homepage: https://github.com/example/todoist-cli
+---
+```
+
+## فایل‌های مجاز
+
+فقط فایل‌های «متنی» توسط انتشار پذیرفته می‌شوند.
+
+- فهرست مجاز پسوندها در `packages/schema/src/textFiles.ts` (`TEXT_FILE_EXTENSIONS`) است.
+- فایل‌های اسکریپت پس از آپلود همچنان اسکن می‌شوند؛ فایل‌های PowerShell با پسوندهای `.ps1`، `.psm1`، و `.psd1` به‌عنوان متن پذیرفته می‌شوند.
+- نوع‌های محتوا که با `text/` شروع می‌شوند، متن تلقی می‌شوند؛ به‌علاوه یک فهرست مجاز کوچک (JSON/YAML/TOML/JS/TS/Markdown/SVG).
+
+محدودیت‌ها (سمت سرور):
+
+- اندازه کل باندل: 50MB.
+- متن embedding شامل `SKILL.md` + حداکثر حدود 40 فایل غیر `.md` است (سقف بر پایه بهترین تلاش).
+
+## Slugها
+
+- به‌صورت پیش‌فرض از نام پوشه مشتق می‌شود.
+- باید با حروف کوچک و برای URL امن باشد: `^[a-z0-9][a-z0-9-]*$`.
+
+## نسخه‌بندی + تگ‌ها
+
+- هر انتشار یک نسخه جدید (semver) ایجاد می‌کند.
+- تگ‌ها اشاره‌گرهای رشته‌ای به یک نسخه هستند؛ `latest` معمولاً استفاده می‌شود.
+
+## مجوز
+
+- همه skillهای منتشرشده در ClawHub تحت مجوز `MIT-0` هستند.
+- هر کسی می‌تواند از skillهای منتشرشده استفاده کند، آن‌ها را تغییر دهد و بازتوزیع کند، از جمله به‌صورت تجاری.
+- ذکر منبع الزامی نیست.
+- شرایط مجوز متعارض را در `SKILL.md` اضافه نکنید؛ ClawHub از بازنویسی مجوز برای هر skill پشتیبانی نمی‌کند.
+
+## skillهای پولی
+
+- ClawHub از skillهای پولی، قیمت‌گذاری برای هر skill، paywall، یا تقسیم درآمد پشتیبانی نمی‌کند.
+- فراداده قیمت‌گذاری را به `SKILL.md` اضافه نکنید؛ بخشی از قالب skill نیست و یک skill منتشرشده را پولی نمی‌کند.
+- اگر skill شما با یک سرویس شخص ثالث پولی یکپارچه می‌شود، هزینه خارجی و حساب الزامی را به‌روشنی در دستورالعمل‌های skill و اعلان‌های env مستند کنید (`requires.env` برای متغیرهای الزامی، یا `envVars` با `required: false` برای متغیرهای اختیاری).

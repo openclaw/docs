@@ -1,30 +1,46 @@
 ---
 read_when:
-    - Je voert de eerste installatie uit zonder volledige CLI-onboarding
-    - Je wilt het standaardpad voor de werkruimte instellen
-summary: CLI-referentie voor `openclaw setup` (configuratie + werkruimte initialiseren)
-title: Instellen
+    - Je voert de setup bij eerste gebruik uit zonder volledige onboarding via de CLI
+    - U wilt het standaardpad voor de werkruimte instellen
+    - Je hebt elke optie nodig en hoe de configuratie kiest tussen basismodus en wizardmodus
+summary: CLI-referentie voor `openclaw setup` (configuratie en werkruimte initialiseren, optioneel het introductieproces uitvoeren)
+title: Installatie
 x-i18n:
-    generated_at: "2026-05-06T17:54:41Z"
+    generated_at: "2026-05-10T19:30:07Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9a47d41f8c6c59395eaa4bc6055fa09f863af819c7920e29969793904180c910
+    source_hash: 55f0d771bb07c4c69293a470d54f4b6bb108ee521889bfb944fe450b24938b5e
     source_path: cli/setup.md
     workflow: 16
 ---
 
 # `openclaw setup`
 
-Initialiseer `~/.openclaw/openclaw.json` en de agentwerkruimte.
+Initialiseer de basisconfiguratie en agentwerkruimte. Als er een onboarding-vlag aanwezig is, wordt ook de wizard uitgevoerd.
 
 <Note>
-`openclaw setup` is bedoeld voor installaties met wijzigbare configuratie. In Nix-modus (`OPENCLAW_NIX_MODE=1`) weigert OpenClaw schrijfacties voor setup, omdat het configuratiebestand door Nix wordt beheerd. Agents moeten de eigen [nix-openclaw-snelstart](https://github.com/openclaw/nix-openclaw#quick-start) of de equivalente bronconfiguratie voor een ander Nix-pakket gebruiken.
+`openclaw setup` is bedoeld voor wijzigbare configuratie-installaties. In Nix-modus (`OPENCLAW_NIX_MODE=1`) weigert OpenClaw setup-schrijfacties omdat het configuratiebestand door Nix wordt beheerd. Gebruik de officiële [nix-openclaw Quick Start](https://github.com/openclaw/nix-openclaw#quick-start) of de equivalente bronconfiguratie voor een ander Nix-pakket.
 </Note>
 
-Gerelateerd:
+## Opties
 
-- Aan de slag: [Aan de slag](/nl/start/getting-started)
-- CLI-onboarding: [Onboarding (CLI)](/nl/start/wizard)
+| Vlag                       | Beschrijving                                                                                              |
+| -------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `--workspace <dir>`        | Agentwerkruimtemap (standaard `~/.openclaw/workspace`; opgeslagen als `agents.defaults.workspace`).       |
+| `--wizard`                 | Interactieve onboarding uitvoeren.                                                                        |
+| `--non-interactive`        | Onboarding zonder prompts uitvoeren.                                                                      |
+| `--mode <mode>`            | Onboardingmodus: `local` of `remote`.                                                                     |
+| `--import-from <provider>` | Migratieprovider die tijdens onboarding moet worden uitgevoerd.                                           |
+| `--import-source <path>`   | Bron-agenthome voor `--import-from`.                                                                      |
+| `--import-secrets`         | Ondersteunde geheimen importeren tijdens onboardingmigratie.                                              |
+| `--remote-url <url>`       | Remote Gateway WebSocket-URL.                                                                             |
+| `--remote-token <token>`   | Remote Gateway-token (optioneel).                                                                         |
+
+### Automatische wizard-trigger
+
+`openclaw setup` voert de wizard uit wanneer een van deze vlaggen expliciet aanwezig is, zelfs zonder `--wizard`:
+
+`--wizard`, `--non-interactive`, `--mode`, `--import-from`, `--import-source`, `--import-secrets`, `--remote-url`, `--remote-token`.
 
 ## Voorbeelden
 
@@ -36,32 +52,15 @@ openclaw setup --wizard --import-from hermes --import-source ~/.hermes
 openclaw setup --non-interactive --mode remote --remote-url wss://gateway-host:18789 --remote-token <token>
 ```
 
-## Opties
+## Notities
 
-- `--workspace <dir>`: agentwerkruimtemap (opgeslagen als `agents.defaults.workspace`)
-- `--wizard`: onboarding uitvoeren
-- `--non-interactive`: onboarding uitvoeren zonder prompts
-- `--mode <local|remote>`: onboardingmodus
-- `--import-from <provider>`: migratieprovider om tijdens onboarding uit te voeren
-- `--import-source <path>`: bron-agent-home voor `--import-from`
-- `--import-secrets`: ondersteunde geheimen importeren tijdens onboardingmigratie
-- `--remote-url <url>`: externe Gateway WebSocket-URL
-- `--remote-token <token>`: extern Gateway-token
-
-Onboarding uitvoeren via setup:
-
-```bash
-openclaw setup --wizard
-```
-
-Opmerkingen:
-
-- Eenvoudige `openclaw setup` initialiseert configuratie + werkruimte zonder de volledige onboardingflow.
-- Voer na eenvoudige setup `openclaw configure` uit om modellen, kanalen, Gateway, plugins, Skills of statuscontroles te kiezen.
-- Onboarding wordt automatisch uitgevoerd wanneer er onboardingvlaggen aanwezig zijn (`--wizard`, `--non-interactive`, `--mode`, `--import-from`, `--import-source`, `--import-secrets`, `--remote-url`, `--remote-token`).
+- Gewone `openclaw setup` initialiseert configuratie en werkruimte zonder de volledige onboarding-flow uit te voeren.
+- Voer na gewone setup `openclaw onboard` uit voor het volledige begeleide traject, `openclaw configure` voor gerichte wijzigingen, of `openclaw channels add` om kanaalaccounts toe te voegen.
 - Als Hermes-status wordt gedetecteerd, kan interactieve onboarding automatisch migratie aanbieden. Import-onboarding vereist een nieuwe setup; gebruik [Migreren](/nl/cli/migrate) voor dry-run-plannen, back-ups en overschrijfmodus buiten onboarding.
 
-## Gerelateerd
+## Verwant
 
 - [CLI-referentie](/nl/cli)
+- [Onboarding (CLI)](/nl/start/wizard)
+- [Aan de slag](/nl/start/getting-started)
 - [Installatieoverzicht](/nl/install)

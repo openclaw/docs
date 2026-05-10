@@ -1,21 +1,21 @@
 ---
 read_when:
     - Potrzebujesz pełnoprawnego archiwum kopii zapasowej lokalnego stanu OpenClaw
-    - Chcesz podejrzeć, które ścieżki zostałyby uwzględnione przed resetem lub odinstalowaniem
+    - Chcesz podejrzeć, które ścieżki zostałyby uwzględnione przed zresetowaniem lub odinstalowaniem
 summary: Dokumentacja referencyjna CLI dla `openclaw backup` (tworzenie lokalnych archiwów kopii zapasowych)
 title: Kopia zapasowa
 x-i18n:
-    generated_at: "2026-04-30T09:41:45Z"
+    generated_at: "2026-05-10T19:27:52Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 5c16f953bb32a1613181448f0e4c6ba8777383bce95bddc856dc7e1c3afe8550
+    source_hash: 2c95cf475a563ad4f0a2dbaeda504b265580545c9d3f6f71d2f4d2a183e76a5c
     source_path: cli/backup.md
     workflow: 16
 ---
 
 # `openclaw backup`
 
-Utwórz lokalne archiwum kopii zapasowej stanu OpenClaw, konfiguracji, profili uwierzytelniania, poświadczeń kanałów/dostawców, sesji oraz opcjonalnie przestrzeni roboczych.
+Utwórz lokalne archiwum kopii zapasowej dla stanu OpenClaw, konfiguracji, profili uwierzytelniania, danych uwierzytelniających kanałów/dostawców, sesji oraz opcjonalnie obszarów roboczych.
 
 ```bash
 openclaw backup create
@@ -30,12 +30,12 @@ openclaw backup verify ./2026-03-09T00-00-00.000Z-openclaw-backup.tar.gz
 ## Uwagi
 
 - Archiwum zawiera plik `manifest.json` z rozpoznanymi ścieżkami źródłowymi i układem archiwum.
-- Domyślne wyjście to archiwum `.tar.gz` ze znacznikiem czasu w bieżącym katalogu roboczym.
+- Domyślnym wyjściem jest archiwum `.tar.gz` ze znacznikiem czasu w bieżącym katalogu roboczym.
 - Jeśli bieżący katalog roboczy znajduje się wewnątrz drzewa źródłowego objętego kopią zapasową, OpenClaw używa katalogu domowego jako domyślnej lokalizacji archiwum.
 - Istniejące pliki archiwów nigdy nie są nadpisywane.
-- Ścieżki wyjściowe wewnątrz drzew stanu źródłowego/przestrzeni roboczej są odrzucane, aby uniknąć dołączenia archiwum do samego siebie.
-- `openclaw backup verify <archive>` sprawdza, czy archiwum zawiera dokładnie jeden główny manifest, odrzuca ścieżki archiwum typu traversal i sprawdza, czy każdy zadeklarowany w manifeście ładunek istnieje w pliku tarball.
-- `openclaw backup create --verify` uruchamia tę walidację bezpośrednio po zapisaniu archiwum.
+- Ścieżki wyjściowe wewnątrz drzew stanu źródłowego/obszaru roboczego są odrzucane, aby uniknąć samowłączenia.
+- `openclaw backup verify <archive>` sprawdza, czy archiwum zawiera dokładnie jeden główny manifest, odrzuca ścieżki archiwum w stylu przechodzenia po katalogach i sprawdza, czy każdy zadeklarowany w manifeście ładunek istnieje w tarballu.
+- `openclaw backup create --verify` uruchamia tę walidację natychmiast po zapisaniu archiwum.
 - `openclaw backup create --only-config` tworzy kopię zapasową tylko aktywnego pliku konfiguracji JSON.
 
 ## Co jest obejmowane kopią zapasową
@@ -45,57 +45,60 @@ openclaw backup verify ./2026-03-09T00-00-00.000Z-openclaw-backup.tar.gz
 - Katalog stanu zwracany przez lokalny resolver stanu OpenClaw, zwykle `~/.openclaw`
 - Ścieżka aktywnego pliku konfiguracji
 - Rozpoznany katalog `credentials/`, gdy istnieje poza katalogiem stanu
-- Katalogi przestrzeni roboczych wykryte z bieżącej konfiguracji, chyba że przekażesz `--no-include-workspace`
+- Katalogi obszarów roboczych odkryte z bieżącej konfiguracji, chyba że przekażesz `--no-include-workspace`
 
 Profile uwierzytelniania modeli są już częścią katalogu stanu pod
-`agents/<agentId>/agent/auth-profiles.json`, więc zwykle obejmuje je wpis
-kopii zapasowej stanu.
+`agents/<agentId>/agent/auth-profiles.json`, więc zwykle są objęte wpisem kopii
+zapasowej stanu.
 
-Jeśli użyjesz `--only-config`, OpenClaw pomija wykrywanie stanu, katalogu poświadczeń i przestrzeni roboczych oraz archiwizuje tylko ścieżkę aktywnego pliku konfiguracji.
+Jeśli użyjesz `--only-config`, OpenClaw pomija wykrywanie stanu, katalogu danych uwierzytelniających i obszaru roboczego oraz archiwizuje tylko ścieżkę aktywnego pliku konfiguracji.
 
 OpenClaw kanonikalizuje ścieżki przed zbudowaniem archiwum. Jeśli konfiguracja,
-katalog poświadczeń lub przestrzeń robocza już znajdują się wewnątrz katalogu
-stanu, nie są duplikowane jako osobne źródła kopii zapasowej najwyższego poziomu. Brakujące ścieżki są
-pomijane.
+katalog danych uwierzytelniających lub obszar roboczy już znajdują się w katalogu
+stanu, nie są duplikowane jako osobne źródła kopii zapasowej najwyższego poziomu.
+Brakujące ścieżki są pomijane.
 
-Ładunek archiwum przechowuje zawartość plików z tych drzew źródłowych, a osadzony `manifest.json` rejestruje rozpoznane bezwzględne ścieżki źródłowe oraz układ archiwum użyty dla każdego zasobu.
+Ładunek archiwum przechowuje zawartość plików z tych drzew źródłowych, a osadzony `manifest.json` zapisuje rozpoznane bezwzględne ścieżki źródłowe oraz układ archiwum użyty dla każdego zasobu.
 
-Zainstalowane pliki źródłowe pluginów i pliki manifestów pod drzewem
-`extensions/` katalogu stanu są uwzględniane, ale ich zagnieżdżone drzewa zależności
-`node_modules/` są pomijane. Te zależności są odtwarzalnymi artefaktami instalacji; po
-przywróceniu archiwum użyj `openclaw plugins update <id>` albo ponownie zainstaluj plugin
-za pomocą `openclaw plugins install <spec> --force`, gdy przywrócony plugin zgłasza
-brakujące zależności.
+Podczas tworzenia archiwum OpenClaw pomija znane pliki modyfikowane na żywo, które nie mają wartości przy przywracaniu, w tym aktywne transkrypty sesji agentów, logi uruchomień Cron, logi rotacyjne, kolejki dostarczania, pliki socket/pid/temp w katalogu stanu oraz powiązane pliki tymczasowe trwałych kolejek. Wynik JSON zawiera `skippedVolatileCount`, aby automatyzacja mogła zobaczyć, ile plików celowo pominięto.
+
+Zainstalowane pliki źródłowe i manifesty pluginów pod drzewem `extensions/`
+w katalogu stanu są uwzględniane, ale ich zagnieżdżone drzewa zależności
+`node_modules/` są pomijane. Te zależności są odtwarzalnymi artefaktami
+instalacji; po przywróceniu archiwum użyj `openclaw plugins update <id>` albo
+zainstaluj plugin ponownie za pomocą `openclaw plugins install <spec> --force`,
+gdy przywrócony plugin zgłasza brakujące zależności.
 
 ## Zachowanie przy nieprawidłowej konfiguracji
 
-`openclaw backup` celowo omija zwykłą wstępną kontrolę konfiguracji, aby nadal mógł pomóc podczas odzyskiwania. Ponieważ wykrywanie przestrzeni roboczych zależy od prawidłowej konfiguracji, `openclaw backup create` obecnie szybko kończy się niepowodzeniem, gdy plik konfiguracji istnieje, ale jest nieprawidłowy, a kopia zapasowa przestrzeni roboczej jest nadal włączona.
+`openclaw backup` celowo pomija normalny preflight konfiguracji, aby nadal mógł pomagać podczas odzyskiwania. Ponieważ wykrywanie obszarów roboczych zależy od prawidłowej konfiguracji, `openclaw backup create` teraz szybko kończy się niepowodzeniem, gdy plik konfiguracji istnieje, ale jest nieprawidłowy, a kopia zapasowa obszaru roboczego jest nadal włączona.
 
-Jeśli w takiej sytuacji nadal chcesz utworzyć częściową kopię zapasową, uruchom ponownie:
+Jeśli nadal chcesz w tej sytuacji częściową kopię zapasową, uruchom ponownie:
 
 ```bash
 openclaw backup create --no-include-workspace
 ```
 
-Dzięki temu stan, konfiguracja i zewnętrzny katalog poświadczeń pozostają w zakresie,
-a wykrywanie przestrzeni roboczych jest całkowicie pomijane.
+To pozostawia w zakresie stan, konfigurację i zewnętrzny katalog danych
+uwierzytelniających, jednocześnie całkowicie pomijając wykrywanie obszarów
+roboczych.
 
-Jeśli potrzebujesz tylko kopii samego pliku konfiguracji, `--only-config` działa również wtedy, gdy konfiguracja jest zniekształcona, ponieważ nie polega na parsowaniu konfiguracji w celu wykrywania przestrzeni roboczych.
+Jeśli potrzebujesz tylko kopii samego pliku konfiguracji, `--only-config` działa również wtedy, gdy konfiguracja jest zniekształcona, ponieważ nie polega na parsowaniu konfiguracji w celu wykrywania obszarów roboczych.
 
 ## Rozmiar i wydajność
 
-OpenClaw nie narzuca wbudowanego maksymalnego rozmiaru kopii zapasowej ani limitu rozmiaru pojedynczego pliku.
+OpenClaw nie wymusza wbudowanego maksymalnego rozmiaru kopii zapasowej ani limitu rozmiaru pojedynczego pliku.
 
 Praktyczne limity wynikają z lokalnej maszyny i docelowego systemu plików:
 
 - Dostępne miejsce na tymczasowy zapis archiwum oraz końcowe archiwum
-- Czas potrzebny na przejście przez duże drzewa przestrzeni roboczych i skompresowanie ich do `.tar.gz`
-- Czas potrzebny na ponowne przeskanowanie archiwum, jeśli użyjesz `openclaw backup create --verify` albo uruchomisz `openclaw backup verify`
-- Zachowanie systemu plików w ścieżce docelowej. OpenClaw preferuje etap publikacji przez twarde dowiązanie bez nadpisywania i przechodzi na wyłączną kopię, gdy twarde dowiązania nie są obsługiwane
+- Czas potrzebny na przejście dużych drzew obszarów roboczych i skompresowanie ich do `.tar.gz`
+- Czas potrzebny na ponowne przeskanowanie archiwum, jeśli używasz `openclaw backup create --verify` albo uruchamiasz `openclaw backup verify`
+- Zachowanie systemu plików w ścieżce docelowej. OpenClaw preferuje etap publikacji bez nadpisywania przez dowiązanie twarde i przechodzi na wyłączną kopię, gdy dowiązania twarde nie są obsługiwane
 
-Duże przestrzenie robocze są zwykle głównym czynnikiem wpływającym na rozmiar archiwum. Jeśli chcesz uzyskać mniejszą lub szybszą kopię zapasową, użyj `--no-include-workspace`.
+Duże obszary robocze są zwykle głównym czynnikiem wpływającym na rozmiar archiwum. Jeśli chcesz mniejszą lub szybszą kopię zapasową, użyj `--no-include-workspace`.
 
-Aby uzyskać najmniejsze archiwum, użyj `--only-config`.
+Dla najmniejszego archiwum użyj `--only-config`.
 
 ## Powiązane
 

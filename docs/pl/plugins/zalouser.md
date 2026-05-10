@@ -1,35 +1,35 @@
 ---
 read_when:
-    - Chcesz mieć obsługę Zalo Personal (nieoficjalną) w OpenClaw
+    - Chcesz obsługi Zalo Personal (nieoficjalnej) w OpenClaw
     - Konfigurujesz lub rozwijasz Plugin zalouser
-summary: 'Plugin Zalo Personal: logowanie QR + obsługa wiadomości przez natywne zca-js (instalacja pluginu + konfiguracja kanału + narzędzie)'
+summary: 'Plugin Zalo Personal: logowanie kodem QR + wysyłanie wiadomości przez natywny zca-js (instalacja Pluginu + konfiguracja kanału + narzędzie)'
 title: Osobisty Plugin Zalo
 x-i18n:
-    generated_at: "2026-05-06T17:59:45Z"
+    generated_at: "2026-05-10T19:51:00Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 423325f99ddb5b39bba4c5f3aa71215edfdc092c872f92b5d2f00b6ea691246f
+    source_hash: 405348eac4c08cc6e28b22cfff615fa34c117dedc51a31613545c4057069c20b
     source_path: plugins/zalouser.md
     workflow: 16
 ---
 
-Obsługa Zalo Personal dla OpenClaw za pośrednictwem pluginu, z użyciem natywnego `zca-js` do automatyzacji zwykłego konta użytkownika Zalo.
+Obsługa Zalo Personal dla OpenClaw przez Plugin, z użyciem natywnego `zca-js` do automatyzacji zwykłego konta użytkownika Zalo.
 
 <Warning>
-Nieoficjalna automatyzacja może doprowadzić do zawieszenia lub zablokowania konta. Używasz jej na własne ryzyko.
+Nieoficjalna automatyzacja może prowadzić do zawieszenia lub zablokowania konta. Używasz jej na własne ryzyko.
 </Warning>
 
 ## Nazewnictwo
 
-Identyfikator kanału to `zalouser`, aby jasno wskazać, że automatyzuje on **osobiste konto użytkownika Zalo** (nieoficjalnie). Zachowujemy `zalo` na potrzeby potencjalnej przyszłej oficjalnej integracji z API Zalo.
+Identyfikator kanału to `zalouser`, aby jednoznacznie wskazać, że automatyzuje on **osobiste konto użytkownika Zalo** (nieoficjalnie). Zachowujemy `zalo` dla potencjalnej przyszłej oficjalnej integracji z API Zalo.
 
 ## Gdzie działa
 
-Ten plugin działa **wewnątrz procesu Gateway**.
+Ten Plugin działa **wewnątrz procesu Gateway**.
 
 Jeśli używasz zdalnego Gateway, zainstaluj/skonfiguruj go na **maszynie uruchamiającej Gateway**, a następnie zrestartuj Gateway.
 
-Zewnętrzny plik binarny CLI `zca`/`openzca` nie jest wymagany.
+Nie jest wymagany zewnętrzny binarny CLI `zca`/`openzca`.
 
 ## Instalacja
 
@@ -39,8 +39,8 @@ Zewnętrzny plik binarny CLI `zca`/`openzca` nie jest wymagany.
 openclaw plugins install @openclaw/zalouser
 ```
 
-Użyj samej nazwy pakietu, aby śledzić bieżący oficjalny tag wydania. Przypnij dokładną
-wersję tylko wtedy, gdy potrzebujesz odtwarzalnej instalacji.
+Użyj samego pakietu, aby śledzić bieżący oficjalny tag wydania. Przypnij dokładną
+wersję tylko wtedy, gdy potrzebujesz powtarzalnej instalacji.
 
 Następnie zrestartuj Gateway.
 
@@ -89,5 +89,5 @@ Akcje wiadomości kanału obsługują także `react` dla reakcji na wiadomości.
 
 ## Powiązane
 
-- [Tworzenie pluginów](/pl/plugins/building-plugins)
-- [Pluginy społecznościowe](/pl/plugins/community)
+- [Tworzenie Pluginów](/pl/plugins/building-plugins)
+- [ClawHub](/pl/clawhub)

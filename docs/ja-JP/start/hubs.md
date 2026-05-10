@@ -1,31 +1,31 @@
 ---
 read_when:
-    - ドキュメント全体の完全なマップが必要な場合
-summary: すべての OpenClaw ドキュメントにリンクするハブ
+    - ドキュメントの完全なマップが必要です
+summary: すべての OpenClaw ドキュメントへリンクするハブ
 title: ドキュメントハブ
 x-i18n:
-    generated_at: "2026-05-07T01:53:59Z"
+    generated_at: "2026-05-10T19:52:47Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b7de6012e4e8db02d22cda7d8f275c634e15511b1c4e94e219672cf167f9848d
+    source_hash: fdf4128ddb05bb009faec0a21d45933ffb0a3abf5e5ba8dbe1b9710c8eee3bde
     source_path: start/hubs.md
     workflow: 16
 ---
 
 <Note>
-OpenClaw が初めての場合は、[はじめに](/ja-JP/start/getting-started)から始めてください。
+OpenClaw を初めて使う場合は、[はじめに](/ja-JP/start/getting-started)から始めてください。
 </Note>
 
-左ナビゲーションに表示されない詳細解説やリファレンスドキュメントを含む、すべてのページを見つけるには、これらのハブを使用してください。
+左ナビゲーションに表示されない詳細解説やリファレンスドキュメントを含め、すべてのページを見つけるにはこれらのハブを使用してください。
 
-## ここから始める
+## ここから開始
 
 - [インデックス](/ja-JP)
 - [はじめに](/ja-JP/start/getting-started)
 - [オンボーディング](/ja-JP/start/onboarding)
 - [オンボーディング (CLI)](/ja-JP/start/wizard)
 - [セットアップ](/ja-JP/start/setup)
-- [Dashboard (ローカル Gateway)](http://127.0.0.1:18789/)
+- [ダッシュボード (ローカル Gateway)](http://127.0.0.1:18789/)
 - [ヘルプ](/ja-JP/help)
 - [ドキュメントディレクトリ](/ja-JP/start/docs-directory)
 - [設定](/ja-JP/gateway/configuration)
@@ -41,7 +41,7 @@ OpenClaw が初めての場合は、[はじめに](/ja-JP/start/getting-started)
 - [更新 / ロールバック](/ja-JP/install/updating)
 - [Bun ワークフロー (実験的)](/ja-JP/install/bun)
 
-## コア概念
+## 中核概念
 
 - [アーキテクチャ](/ja-JP/concepts/architecture)
 - [機能](/ja-JP/concepts/features)
@@ -50,11 +50,11 @@ OpenClaw が初めての場合は、[はじめに](/ja-JP/start/getting-started)
 - [エージェントワークスペース](/ja-JP/concepts/agent-workspace)
 - [メモリ](/ja-JP/concepts/memory)
 - [エージェントループ](/ja-JP/concepts/agent-loop)
-- [ストリーミング + チャンク化](/ja-JP/concepts/streaming)
+- [ストリーミング + チャンキング](/ja-JP/concepts/streaming)
 - [マルチエージェントルーティング](/ja-JP/concepts/multi-agent)
 - [Compaction](/ja-JP/concepts/compaction)
 - [セッション](/ja-JP/concepts/session)
-- [セッションの剪定](/ja-JP/concepts/session-pruning)
+- [セッションのプルーニング](/ja-JP/concepts/session-pruning)
 - [セッションツール](/ja-JP/concepts/session-tool)
 - [キュー](/ja-JP/concepts/queue)
 - [スラッシュコマンド](/ja-JP/tools/slash-commands)
@@ -80,10 +80,9 @@ OpenClaw が初めての場合は、[はじめに](/ja-JP/start/getting-started)
 - [Discord](/ja-JP/channels/discord)
 - [Mattermost](/ja-JP/channels/mattermost)
 - [Signal](/ja-JP/channels/signal)
-- [BlueBubbles (レガシー iMessage ブリッジ)](/ja-JP/channels/bluebubbles)
 - [QQ Bot](/ja-JP/channels/qqbot)
 - [iMessage](/ja-JP/channels/imessage)
-- [位置情報解析](/ja-JP/channels/location)
+- [位置情報の解析](/ja-JP/channels/location)
 - [WebChat](/ja-JP/web/webchat)
 - [Webhooks](/ja-JP/automation/cron-jobs#webhooks)
 - [Gmail Pub/Sub](/ja-JP/automation/cron-jobs#gmail-pubsub-integration)
@@ -100,8 +99,8 @@ OpenClaw が初めての場合は、[はじめに](/ja-JP/start/getting-started)
 - [Doctor](/ja-JP/gateway/doctor)
 - [ロギング](/ja-JP/gateway/logging)
 - [サンドボックス化](/ja-JP/gateway/sandboxing)
-- [Dashboard](/ja-JP/web/dashboard)
-- [Control UI](/ja-JP/web/control-ui)
+- [ダッシュボード](/ja-JP/web/dashboard)
+- [コントロール UI](/ja-JP/web/control-ui)
 - [リモートアクセス](/ja-JP/gateway/remote)
 - [リモート Gateway README](/ja-JP/gateway/remote-gateway-readme)
 - [Tailscale](/ja-JP/gateway/tailscale)
@@ -117,8 +116,8 @@ OpenClaw が初めての場合は、[はじめに](/ja-JP/start/getting-started)
 - [PDF ツール](/ja-JP/tools/pdf)
 - [昇格モード](/ja-JP/tools/elevated)
 - [Cron ジョブ](/ja-JP/automation/cron-jobs)
-- [自動化 & タスク](/ja-JP/automation)
-- [思考 + 詳細表示](/ja-JP/tools/thinking)
+- [自動化とタスク](/ja-JP/automation)
+- [思考 + 詳細出力](/ja-JP/tools/thinking)
 - [モデル](/ja-JP/concepts/models)
 - [サブエージェント](/ja-JP/tools/subagents)
 - [エージェント送信 CLI](/ja-JP/tools/agent-send)
@@ -127,19 +126,19 @@ OpenClaw が初めての場合は、[はじめに](/ja-JP/start/getting-started)
 - [ブラウザー (Linux トラブルシューティング)](/ja-JP/tools/browser-linux-troubleshooting)
 - [投票](/ja-JP/cli/message)
 
-## ノード、メディア、音声
+## Node、メディア、音声
 
-- [ノードの概要](/ja-JP/nodes)
+- [Node 概要](/ja-JP/nodes)
 - [カメラ](/ja-JP/nodes/camera)
 - [画像](/ja-JP/nodes/images)
-- [音声](/ja-JP/nodes/audio)
+- [オーディオ](/ja-JP/nodes/audio)
 - [位置情報コマンド](/ja-JP/nodes/location-command)
 - [音声ウェイク](/ja-JP/nodes/voicewake)
 - [トークモード](/ja-JP/nodes/talk)
 
 ## プラットフォーム
 
-- [プラットフォームの概要](/ja-JP/platforms)
+- [プラットフォーム概要](/ja-JP/platforms)
 - [macOS](/ja-JP/platforms/macos)
 - [iOS](/ja-JP/platforms/ios)
 - [Android](/ja-JP/platforms/android)
@@ -164,26 +163,26 @@ OpenClaw が初めての場合は、[はじめに](/ja-JP/start/getting-started)
 - [macOS 署名](/ja-JP/platforms/mac/signing)
 - [macOS Gateway (launchd)](/ja-JP/platforms/mac/bundled-gateway)
 - [macOS XPC](/ja-JP/platforms/mac/xpc)
-- [macOS Skills](/ja-JP/platforms/mac/skills)
+- [macOS skills](/ja-JP/platforms/mac/skills)
 - [macOS Peekaboo](/ja-JP/platforms/mac/peekaboo)
 
-## Plugin
+## Plugins
 
-- [Plugin の概要](/ja-JP/tools/plugin)
-- [Plugin の構築](/ja-JP/plugins/building-plugins)
+- [Plugins 概要](/ja-JP/tools/plugin)
+- [Plugins の構築](/ja-JP/plugins/building-plugins)
 - [Plugin フック](/ja-JP/plugins/hooks)
 - [Plugin マニフェスト](/ja-JP/plugins/manifest)
 - [エージェントツール](/ja-JP/plugins/building-plugins#registering-agent-tools)
 - [Plugin バンドル](/ja-JP/plugins/bundles)
-- [コミュニティ Plugin](/ja-JP/plugins/community)
-- [Capability クックブック](/ja-JP/plugins/adding-capabilities)
-- [音声通話 Plugin](/ja-JP/plugins/voice-call)
-- [Zalo ユーザー Plugin](/ja-JP/plugins/zalouser)
+- [ClawHub](/ja-JP/clawhub)
+- [ケイパビリティクックブック](/ja-JP/plugins/adding-capabilities)
+- [音声通話 plugin](/ja-JP/plugins/voice-call)
+- [Zalo ユーザー plugin](/ja-JP/plugins/zalouser)
 
 ## ワークスペース + テンプレート
 
 - [Skills](/ja-JP/tools/skills)
-- [ClawHub](/ja-JP/tools/clawhub)
+- [ClawHub](/ja-JP/clawhub)
 - [Skills 設定](/ja-JP/tools/skills-config)
 - [デフォルト AGENTS](/ja-JP/reference/AGENTS.default)
 - [テンプレート: AGENTS](/ja-JP/reference/templates/AGENTS)

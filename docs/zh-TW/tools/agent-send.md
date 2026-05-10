@@ -1,21 +1,21 @@
 ---
 read_when:
-    - 您想要從指令碼或命令列觸發代理程式執行
-    - 您需要以程式方式將代理程式回覆傳送到聊天頻道
-summary: 從 CLI 執行代理回合，並可選擇將回覆傳送至頻道
+    - 您想從指令碼或命令列觸發代理執行
+    - 你需要以程式方式將代理程式回覆傳送到聊天頻道
+summary: 從 CLI 執行代理程式回合，並可選擇將回覆傳送到通道
 title: 代理程式傳送
 x-i18n:
-    generated_at: "2026-05-06T02:57:48Z"
+    generated_at: "2026-05-10T19:52:03Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1339ebd74e2349669942ff93f200b53a69ad05f2186d6ff76437c779f312a291
+    source_hash: a2e1b05414312321e7136867bb8b998754d4a46289cc02764eb61d83f7239af1
     source_path: tools/agent-send.md
     workflow: 16
 ---
 
-`openclaw agent` 會從命令列執行單一代理程式回合，不需要
-傳入的聊天訊息。可用於腳本化工作流程、測試，以及
-程式化傳遞。
+`openclaw agent` 會從命令列執行單次代理程式回合，不需要
+傳入的聊天訊息。可用於腳本化工作流程、測試與
+程式化交付。
 
 ## 快速開始
 
@@ -25,7 +25,7 @@ x-i18n:
     openclaw agent --message "What is the weather today?"
     ```
 
-    這會透過 Gateway 傳送訊息並印出回覆。
+    這會透過 Gateway 傳送訊息並列印回覆。
 
   </Step>
 
@@ -43,7 +43,7 @@ x-i18n:
 
   </Step>
 
-  <Step title="將回覆傳遞到頻道">
+  <Step title="將回覆交付至頻道">
     ```bash
     # Deliver to WhatsApp (default channel)
     openclaw agent --to +15555550123 --message "Report ready" --deliver
@@ -58,32 +58,35 @@ x-i18n:
 
 ## 旗標
 
-| 旗標                          | 說明                                                 |
+| 旗標                          | 說明                                                        |
 | ----------------------------- | ----------------------------------------------------------- |
-| `--message \<text\>`          | 要傳送的訊息（必填）                                  |
-| `--to \<dest\>`               | 從目標（電話、聊天 ID）衍生工作階段金鑰           |
-| `--agent \<id\>`              | 指定已設定的代理程式（使用其 `main` 工作階段）         |
-| `--session-id \<id\>`         | 依 ID 重用現有工作階段                             |
-| `--local`                     | 強制使用本機嵌入式執行階段（略過 Gateway）                 |
-| `--deliver`                   | 將回覆傳送到聊天頻道                            |
-| `--channel \<name\>`          | 傳遞頻道（whatsapp、telegram、discord、slack 等） |
-| `--reply-to \<target\>`       | 覆寫傳遞目標                                    |
-| `--reply-channel \<name\>`    | 覆寫傳遞頻道                                   |
-| `--reply-account \<id\>`      | 覆寫傳遞帳戶 ID                                |
-| `--thinking \<level\>`        | 設定所選模型設定檔的思考層級           |
-| `--verbose \<on\|full\|off\>` | 設定詳細程度                                           |
-| `--timeout \<seconds\>`       | 覆寫代理程式逾時                                      |
-| `--json`                      | 輸出結構化 JSON                                      |
+| `--message \<text\>`          | 要傳送的訊息（必填）                                       |
+| `--to \<dest\>`               | 從目標（電話、聊天 ID）衍生工作階段金鑰                    |
+| `--agent \<id\>`              | 指定已設定的代理程式（使用其 `main` 工作階段）             |
+| `--session-id \<id\>`         | 依 ID 重用現有工作階段                                     |
+| `--local`                     | 強制使用本機內嵌執行階段（略過 Gateway）                  |
+| `--deliver`                   | 將回覆傳送到聊天頻道                                       |
+| `--channel \<name\>`          | 交付頻道（whatsapp、telegram、discord、slack 等）          |
+| `--reply-to \<target\>`       | 覆寫交付目標                                               |
+| `--reply-channel \<name\>`    | 覆寫交付頻道                                               |
+| `--reply-account \<id\>`      | 覆寫交付帳戶 ID                                            |
+| `--thinking \<level\>`        | 設定所選模型設定檔的思考等級                               |
+| `--verbose \<on\|full\|off\>` | 設定詳細輸出等級                                           |
+| `--timeout \<seconds\>`       | 覆寫代理程式逾時時間                                       |
+| `--json`                      | 輸出結構化 JSON                                            |
 
 ## 行為
 
 - 預設情況下，CLI 會**透過 Gateway**。加入 `--local` 可強制使用目前機器上的
-  嵌入式執行階段。
-- 如果 Gateway 無法連線，CLI 會**退回**本機嵌入式執行。
-- 工作階段選取：`--to` 會衍生工作階段金鑰（群組/頻道目標
-  會保留隔離；直接聊天會收斂到 `main`）。
-- 思考與詳細旗標會持久保存到工作階段儲存區。
-- 輸出：預設為純文字，或使用 `--json` 取得結構化承載資料與中繼資料。
+  內嵌執行階段。
+- 如果無法連線到 Gateway，CLI 會**回退**到本機內嵌執行。
+- 工作階段選擇：`--to` 會衍生工作階段金鑰（群組/頻道目標
+  會保留隔離；直接聊天會合併到 `main`）。
+- 思考與詳細輸出旗標會保存在工作階段儲存區中。
+- 輸出：預設為純文字，或使用 `--json` 取得結構化承載 + 中繼資料。
+- 搭配 `--json --deliver` 時，JSON 會包含已傳送、
+  已抑制、部分與失敗傳送的交付狀態。請參閱
+  [JSON 交付狀態](/zh-TW/cli/agent#json-delivery-status)。
 
 ## 範例
 
@@ -110,7 +113,7 @@ openclaw agent --agent ops --message "Alert" --deliver --reply-channel telegram 
   <Card title="工作階段" href="/zh-TW/concepts/session" icon="comments">
     工作階段金鑰的運作方式，以及 `--to`、`--agent` 和 `--session-id` 如何解析它們。
   </Card>
-  <Card title="斜線命令" href="/zh-TW/tools/slash-commands" icon="slash">
+  <Card title="斜線指令" href="/zh-TW/tools/slash-commands" icon="slash">
     代理程式工作階段內使用的原生命令目錄。
   </Card>
 </CardGroup>

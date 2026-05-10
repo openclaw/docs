@@ -1,22 +1,22 @@
 ---
 read_when:
-    - Anda sedang membangun atau merefaktor Plugin kanal perpesanan
+    - Anda sedang membangun atau merefaktor Plugin saluran perpesanan
     - Anda memerlukan pengiriman balasan akhir yang persisten, tanda terima, finalisasi pratinjau langsung, atau kebijakan pengakuan penerimaan
-    - Anda sedang bermigrasi dari pipeline balasan lama atau helper pengiriman balasan masuk
-summary: API siklus hidup pesan untuk Plugin kanal, termasuk pengiriman persisten, tanda terima, pratinjau langsung, kebijakan pengakuan penerimaan, dan migrasi lama
-title: API pesan saluran
+    - Anda sedang bermigrasi dari alur pemrosesan balasan lama atau fungsi bantu pengiriman balasan masuk
+summary: API siklus hidup pesan untuk plugin saluran, termasuk pengiriman persisten, tanda terima, pratinjau langsung, kebijakan pengakuan penerimaan, dan migrasi sistem lama
+title: API pesan kanal
 x-i18n:
-    generated_at: "2026-05-06T09:21:53Z"
+    generated_at: "2026-05-10T19:46:20Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b4c96cdc6fe13f4063958d4b999fae97329f5906638caad52e61cabae40985dc
+    source_hash: fd3f6ad071f4ff6fed0503d66dce04990d90e84f390bfa63b8507080c5ef20d3
     source_path: plugins/sdk-channel-message.md
     workflow: 16
 ---
 
 Plugin channel harus mengekspos satu adapter `message` dari
-`openclaw/plugin-sdk/channel-message`. Adapter tersebut menjelaskan siklus hidup
-pesan natif yang didukung platform:
+`openclaw/plugin-sdk/channel-message`. Adapter tersebut menjelaskan siklus hidup pesan native
+yang didukung platform:
 
 ```text
 receive -> route and record -> agent turn -> durable final send
@@ -24,19 +24,47 @@ send -> render batch -> platform I/O -> receipt -> lifecycle side effects
 live preview -> final edit or fallback -> receipt
 ```
 
-Inti memiliki antrean, durabilitas, kebijakan coba ulang generik, hook, receipt, dan
-alat `message` bersama. Plugin memiliki panggilan send/edit/delete natif,
-normalisasi target, threading platform, kutipan terpilih, flag notifikasi, status
-akun, dan efek samping khusus platform.
+Core memiliki antrean, durabilitas, kebijakan percobaan ulang generik, hook, tanda terima, dan
+tool `message` bersama. Plugin memiliki panggilan native kirim/edit/hapus, normalisasi target,
+threading platform, kutipan terpilih, flag notifikasi, status akun, dan efek samping khusus platform.
 
-Gunakan halaman ini bersama dengan [Membangun Plugin channel](/id/plugins/sdk-channel-plugins).
+Gunakan halaman ini bersama [Membangun Plugin channel](/id/plugins/sdk-channel-plugins).
 
-Subpath `channel-message` sengaja dibuat cukup ringan untuk file bootstrap Plugin
-yang sering dijalankan seperti `channel.ts`: subpath ini mengekspos kontrak adapter,
-bukti kapabilitas, receipt, dan fasad kompatibilitas tanpa memuat pengiriman
-keluar. Helper pengiriman runtime tersedia dari
-`openclaw/plugin-sdk/channel-message-runtime` untuk jalur kode monitor/send yang
+Subpath `channel-message` sengaja dibuat cukup ringan untuk file bootstrap Plugin yang panas
+seperti `channel.ts`: ia mengekspos kontrak adapter, bukti kapabilitas, tanda terima, dan facade
+kompatibilitas tanpa memuat pengiriman outbound. Helper pengiriman runtime tersedia dari
+`openclaw/plugin-sdk/channel-message-runtime` untuk jalur kode monitor/kirim yang
 sudah melakukan I/O pesan asinkron.
+
+Kode kirim channel dan Plugin baru harus menggunakan helper siklus hidup pesan dari
+`openclaw/plugin-sdk/channel-message-runtime`: `sendDurableMessageBatch`,
+`withDurableMessageSendContext`, atau `deliverInboundReplyWithMessageSendContext`.
+Helper lama
+`deliverOutboundPayloads(...)` di `openclaw/plugin-sdk/outbound-runtime`
+sudah tidak disarankan dan merupakan substrat kompatibilitas/runtime untuk internal outbound, pemulihan,
+dan adapter legacy. Jangan gunakan itu untuk jalur kirim channel atau Plugin baru.
+
+`sendDurableMessageBatch(...)` mengembalikan hasil siklus hidup eksplisit:
+
+- `sent` - setidaknya satu pesan platform yang terlihat telah dikirim.
+- `suppressed` - tidak ada pesan platform yang harus dianggap hilang. Alasan stabil
+  mencakup `cancelled_by_message_sending_hook`,
+  `empty_after_message_sending_hook`, `no_visible_payload`,
+  `adapter_returned_no_identity`, dan legacy `no_visible_result`.
+- `partial_failed` - setidaknya satu pesan platform telah dikirim sebelum payload
+  atau efek samping berikutnya gagal. Hasilnya mencakup prefiks tanda terima yang sudah dikirim
+  plus kegagalan.
+- `failed` - tidak ada tanda terima platform yang dihasilkan.
+
+Gunakan `payloadOutcomes` saat batch mencampur payload terkirim, ditekan, dan gagal.
+Jangan menyimpulkan pembatalan hook dengan memeriksa apakah array pengiriman langsung lama
+kosong.
+
+Dispatcher kompatibilitas yang masih membutuhkan dispatcher balasan buffered harus
+membangun opsi prefiks balasan dengan `createChannelMessageReplyPipeline(...)` dari
+`openclaw/plugin-sdk/channel-message`, lalu memanggil
+`channel.turn.runPrepared(...)` milik runtime. Itu menjaga perekaman sesi dan urutan dispatch
+pada siklus hidup turn bersama tanpa menambahkan pembungkus turn publik lain.
 
 ## Adapter minimal
 
@@ -95,13 +123,13 @@ export const demoPlugin = createChatChannelPlugin({
 });
 ```
 
-Deklarasikan hanya kapabilitas yang benar-benar dipertahankan adapter. Setiap
-kapabilitas yang dideklarasikan harus memiliki uji kontrak.
+Hanya deklarasikan kapabilitas yang benar-benar dipertahankan oleh adapter. Setiap kapabilitas yang dideklarasikan
+harus memiliki uji kontrak.
 
-## Jembatan outbound
+## Bridge outbound
 
-Jika channel sudah memiliki adapter `outbound` yang kompatibel, utamakan menurunkan
-adapter pesan daripada menduplikasi kode pengiriman:
+Jika channel sudah memiliki adapter `outbound` yang kompatibel, lebih baik turunkan
+adapter pesan daripada menduplikasi kode kirim:
 
 ```typescript
 import { createChannelMessageAdapterFromOutbound } from "openclaw/plugin-sdk/channel-message";
@@ -112,34 +140,34 @@ const demoMessageAdapter = createChannelMessageAdapterFromOutbound({
 });
 ```
 
-Jembatan ini mengonversi hasil pengiriman outbound lama menjadi nilai
-`MessageReceipt`. Kode baru harus meneruskan receipt dari ujung ke ujung dan hanya
-menurunkan id lama di batas kompatibilitas dengan `listMessageReceiptPlatformIds(...)`
-atau `resolveMessageReceiptPrimaryId(...)`.
-Jika tidak ada kebijakan penerimaan yang disediakan,
-`createChannelMessageAdapterFromOutbound(...)` menggunakan kebijakan acknowledgement
-penerimaan `manual`. Ini membuat acknowledgement platform milik Plugin menjadi
-eksplisit tanpa mengubah channel yang meng-acknowledge webhook, soket, atau offset
-polling di luar konteks penerimaan generik.
+Bridge mengonversi hasil kirim outbound lama menjadi nilai `MessageReceipt`. Kode baru
+harus meneruskan tanda terima dari ujung ke ujung dan hanya menurunkan id legacy pada edge
+kompatibilitas dengan `listMessageReceiptPlatformIds(...)` atau
+`resolveMessageReceiptPrimaryId(...)`.
+Jika tidak ada kebijakan terima yang diberikan, `createChannelMessageAdapterFromOutbound(...)`
+menggunakan kebijakan acknowledgement terima `manual`. Itu membuat acknowledgement platform
+milik Plugin menjadi eksplisit tanpa mengubah channel yang mengakui Webhook,
+socket, atau offset polling di luar konteks terima generik.
 
-## Pengiriman alat pesan
+## Pengiriman tool pesan
 
-Jalur `message(action="send")` bersama harus menggunakan siklus hidup pengiriman
-inti yang sama seperti balasan final. Jika sebuah channel membutuhkan pembentukan
-khusus provider untuk pengiriman alat, implementasikan `actions.prepareSendPayload(...)`
-alih-alih mengirim dari `actions.handleAction(...)`.
+Jalur `message(action="send")` bersama harus menggunakan siklus hidup pengiriman core
+yang sama seperti balasan final. Jika sebuah channel membutuhkan pembentukan khusus penyedia untuk
+pengiriman tool, implementasikan `actions.prepareSendPayload(...)` alih-alih mengirim dari
+`actions.handleAction(...)`.
 
-`prepareSendPayload(...)` menerima `ReplyPayload` inti yang sudah dinormalisasi
-ditambah konteks aksi penuh. Kembalikan payload dengan data khusus channel di
-`payload.channelData.<channel>` dan biarkan inti memanggil `sendMessage(...)`,
-`deliverOutboundPayloads(...)`, antrean write-ahead, hook pengiriman pesan, coba
-ulang, pemulihan, dan pembersihan ack.
+`prepareSendPayload(...)` menerima `ReplyPayload` core yang sudah dinormalisasi plus konteks action
+lengkap. Kembalikan payload dengan data khusus channel di
+`payload.channelData.<channel>` dan biarkan core memanggil `sendMessage(...)`,
+runtime siklus hidup pesan, antrean write-ahead, hook pengiriman pesan,
+percobaan ulang, pemulihan, dan pembersihan ack. Runtime siklus hidup mungkin memanggil
+`deliverOutboundPayloads(...)` secara internal sebagai substrat kompatibilitas, tetapi Plugin
+channel tidak boleh memanggilnya langsung untuk perilaku kirim baru.
 
-Kembalikan `null` hanya ketika pengiriman tidak dapat direpresentasikan sebagai
-payload durabel, misalnya karena berisi factory komponen yang tidak dapat
-diserialisasi. Inti akan mempertahankan fallback aksi Plugin lama untuk
-kompatibilitas, tetapi fitur pengiriman channel baru harus dapat dinyatakan
-sebagai data payload durabel.
+Kembalikan `null` hanya saat pengiriman tidak dapat direpresentasikan sebagai payload durable, misalnya
+karena berisi factory komponen yang tidak dapat diserialisasi. Core akan mempertahankan
+fallback action Plugin legacy untuk kompatibilitas, tetapi fitur kirim channel baru
+harus dapat diekspresikan sebagai data payload durable.
 
 ```typescript
 export const demoActions: ChannelMessageActionAdapter = {
@@ -163,49 +191,48 @@ export const demoActions: ChannelMessageActionAdapter = {
 ```
 
 Adapter outbound kemudian membaca `payload.channelData.demo` di dalam `sendPayload`.
-Ini menjaga rendering khusus platform tetap berada di Plugin sementara inti tetap
-memiliki persistensi, coba ulang, pemulihan, hook, dan ack.
+Ini menjaga rendering khusus platform tetap berada di Plugin sementara core tetap memiliki
+persistensi, percobaan ulang, pemulihan, hook, dan ack.
 
-Payload `message(action="send")` yang disiapkan dan pengiriman balasan final
-generik menggunakan pengiriman inti dengan antrean best-effort secara default.
-Antrean durabel wajib hanya valid setelah inti memverifikasi bahwa channel dapat
-merekonsiliasi pengiriman yang hasilnya tidak diketahui setelah crash. Jika adapter
-tidak dapat mengimplementasikan `reconcileUnknownSend`, pertahankan jalur pengiriman
-yang disiapkan sebagai best-effort; inti tetap akan mencoba antrean write-ahead,
+Payload `message(action="send")` yang sudah disiapkan dan pengiriman balasan final generik menggunakan
+pengiriman core dengan antrean best-effort secara default. Antrean durable wajib
+hanya valid setelah core memverifikasi bahwa channel dapat merekonsiliasi pengiriman yang hasilnya
+tidak diketahui setelah crash. Jika adapter tidak dapat mengimplementasikan `reconcileUnknownSend`,
+pertahankan jalur kirim yang disiapkan sebagai best-effort; core tetap akan mencoba antrean write-ahead,
 tetapi persistensi antrean atau pemulihan crash yang tidak pasti bukan bagian dari
 kontrak pengiriman wajib.
 
-## Kapabilitas final durabel
+## Kapabilitas final durable
 
-Pengiriman final durabel bersifat opt-in per efek samping. Inti hanya akan
-menggunakan pengiriman durabel generik ketika adapter mendeklarasikan setiap
-kapabilitas yang dibutuhkan oleh payload dan opsi pengiriman.
+Pengiriman final durable bersifat opt-in per efek samping. Core hanya akan menggunakan pengiriman durable
+generik saat adapter mendeklarasikan setiap kapabilitas yang dibutuhkan oleh
+payload dan opsi pengiriman.
 
-| Kapabilitas            | Deklarasikan ketika                                                                  |
+| Kapabilitas            | Deklarasikan saat                                                                   |
 | ---------------------- | ------------------------------------------------------------------------------------ |
-| `text`                 | Adapter dapat mengirim teks dan mengembalikan receipt.                               |
-| `media`                | Pengiriman media mengembalikan receipt untuk setiap pesan platform yang terlihat.    |
+| `text`                 | Adapter dapat mengirim teks dan mengembalikan tanda terima.                         |
+| `media`                | Pengiriman media mengembalikan tanda terima untuk setiap pesan platform yang terlihat. |
 | `payload`              | Adapter mempertahankan semantik payload balasan kaya, bukan hanya teks dan satu URL media. |
-| `replyTo`              | Target balasan natif mencapai platform.                                              |
-| `thread`               | Target thread, topik, atau thread channel natif mencapai platform.                   |
+| `replyTo`              | Target balasan native mencapai platform.                                             |
+| `thread`               | Target thread, topik, atau thread channel native mencapai platform.                  |
 | `silent`               | Penekanan notifikasi mencapai platform.                                              |
 | `nativeQuote`          | Metadata kutipan terpilih mencapai platform.                                         |
-| `messageSendingHooks`  | Hook pengiriman pesan inti dapat membatalkan atau menulis ulang konten sebelum I/O platform. |
-| `batch`                | Batch multi-bagian yang dirender dapat diputar ulang sebagai satu rencana durabel.   |
+| `messageSendingHooks`  | Hook pengiriman pesan core dapat membatalkan atau menulis ulang konten sebelum I/O platform. |
+| `batch`                | Batch multi-bagian yang dirender dapat diputar ulang sebagai satu rencana durable.   |
 | `reconcileUnknownSend` | Adapter dapat menyelesaikan pemulihan `unknown_after_send` tanpa replay buta.        |
-| `afterSendSuccess`     | Efek samping after-send lokal channel berjalan sekali.                               |
-| `afterCommit`          | Efek samping after-commit lokal channel berjalan sekali.                             |
+| `afterSendSuccess`     | Efek samping setelah-kirim lokal channel berjalan satu kali.                         |
+| `afterCommit`          | Efek samping setelah-commit lokal channel berjalan satu kali.                        |
 
 Pengiriman final best-effort tidak memerlukan `reconcileUnknownSend`; ia menggunakan
-siklus hidup bersama ketika adapter mempertahankan semantik terlihat dari payload,
-dan fallback ke I/O platform langsung jika persistensi antrean tidak tersedia.
-Pengiriman final durabel wajib harus secara eksplisit mewajibkan
-`reconcileUnknownSend`. Jika adapter tidak dapat menentukan apakah pengiriman yang
-sudah dimulai/tidak diketahui mencapai platform, jangan deklarasikan kapabilitas
-tersebut; inti akan menolak pengiriman durabel wajib sebelum mengantrekan.
+siklus hidup bersama saat adapter mempertahankan semantik terlihat payload, dan
+fallback ke I/O platform langsung jika persistensi antrean tidak tersedia. Pengiriman final
+durable wajib harus secara eksplisit mensyaratkan `reconcileUnknownSend`. Jika
+adapter tidak dapat menentukan apakah pengiriman yang dimulai/tidak diketahui mencapai platform,
+jangan deklarasikan kapabilitas itu; core akan menolak pengiriman durable wajib
+sebelum mengantrekan.
 
-Ketika pemanggil membutuhkan pengiriman durabel, turunkan requirement alih-alih
-membangun map secara manual:
+Saat pemanggil membutuhkan pengiriman durable, turunkan persyaratan alih-alih membangun
+map secara manual:
 
 ```typescript
 import { deriveDurableFinalDeliveryRequirements } from "openclaw/plugin-sdk/channel-message";
@@ -223,36 +250,34 @@ const requiredCapabilities = deriveDurableFinalDeliveryRequirements({
 ```
 
 `messageSendingHooks` diwajibkan secara default. Tetapkan `messageSendingHooks: false`
-hanya untuk jalur yang memang sengaja tidak dapat menjalankan hook pengiriman pesan
-global.
+hanya untuk jalur yang secara sengaja tidak dapat menjalankan hook pengiriman pesan global.
 
-## Kontrak pengiriman durabel
+## Kontrak pengiriman durable
 
-Pengiriman final durabel memiliki semantik yang lebih ketat daripada pengiriman
-lama milik channel:
+Pengiriman final durable memiliki semantik yang lebih ketat daripada pengiriman legacy milik channel:
 
-- Buat intent durabel sebelum I/O platform.
-- Jika pengiriman durabel mengembalikan hasil yang tertangani, jangan fallback ke pengiriman lama.
-- Perlakukan pembatalan hook dan hasil no-send sebagai terminal.
+- Buat intent durable sebelum I/O platform.
+- Jika pengiriman durable mengembalikan hasil yang sudah ditangani, jangan fallback ke kirim legacy.
+- Perlakukan pembatalan hook dan hasil tanpa-kirim sebagai terminal.
 - Perlakukan `unsupported` sebagai hasil pra-intent saja.
 - Untuk durabilitas wajib, gagal sebelum I/O platform jika antrean tidak dapat mencatat
-  bahwa pengiriman platform sudah dimulai.
-- Untuk pengiriman final wajib dan pengiriman alat pesan yang disiapkan secara wajib,
+  bahwa pengiriman platform telah dimulai.
+- Untuk pengiriman final wajib dan pengiriman tool pesan yang disiapkan dan wajib,
   lakukan preflight `reconcileUnknownSend`; pemulihan harus dapat meng-ack pesan
-  yang sudah terkirim atau replay hanya setelah adapter membuktikan bahwa pengiriman
-  asli tidak terjadi.
-- Untuk `best_effort`, kegagalan penulisan antrean dapat fallback ke I/O platform langsung.
+  yang sudah terkirim atau hanya replay setelah adapter membuktikan pengiriman asli
+  tidak terjadi.
+- Untuk `best_effort`, kegagalan tulis antrean dapat fallback ke I/O platform langsung.
 - Teruskan sinyal abort ke pemuatan media dan pengiriman platform.
-- Jalankan hook after-commit setelah ack antrean; fallback best-effort langsung menjalankannya
-  setelah I/O platform berhasil karena tidak ada commit antrean durabel.
-- Kembalikan receipt untuk setiap id pesan platform yang terlihat.
-- Gunakan `reconcileUnknownSend` ketika platform dapat memeriksa apakah pengiriman
-  yang tidak pasti sudah mencapai pengguna.
+- Jalankan hook setelah-commit setelah ack antrean; fallback best-effort langsung menjalankannya
+  setelah I/O platform berhasil karena tidak ada commit antrean durable.
+- Kembalikan tanda terima untuk setiap id pesan platform yang terlihat.
+- Gunakan `reconcileUnknownSend` saat platform dapat memeriksa apakah pengiriman yang tidak pasti
+  sudah mencapai pengguna.
 
-Kontrak ini menghindari pengiriman duplikat setelah crash dan menghindari bypass
+Kontrak ini menghindari pengiriman duplikat setelah crash dan menghindari pemintasan
 hook pembatalan pengiriman pesan.
 
-## Receipt
+## Tanda terima
 
 `MessageReceipt` adalah catatan internal baru tentang apa yang diterima platform:
 
@@ -271,15 +296,15 @@ type MessageReceipt = {
 ```
 
 Gunakan `createMessageReceiptFromOutboundResults(...)` saat mengadaptasi hasil
-pengiriman yang ada. Gunakan `createPreviewMessageReceipt(...)` ketika pesan live
-preview menjadi receipt final. Hindari menambahkan field `messageIds` lokal pemilik
-yang baru. `ChannelDeliveryResult.messageIds` lama masih diproduksi di batas
-kompatibilitas.
+pengiriman yang sudah ada. Gunakan `createPreviewMessageReceipt(...)` saat pesan
+pratinjau langsung menjadi receipt akhir. Hindari menambahkan field `messageIds`
+lokal milik owner yang baru. `ChannelDeliveryResult.messageIds` lama masih
+diproduksi di batas kompatibilitas.
 
-## Live preview
+## Pratinjau langsung
 
-Channel yang melakukan streaming draft preview atau pembaruan progres harus
-mendeklarasikan kapabilitas live:
+Channel yang melakukan stream pratinjau draf atau pembaruan progres harus
+mendeklarasikan kapabilitas langsung:
 
 ```typescript
 const demoMessageAdapter = defineChannelMessageAdapter({
@@ -305,14 +330,15 @@ const demoMessageAdapter = defineChannelMessageAdapter({
 ```
 
 Gunakan `defineFinalizableLivePreviewAdapter(...)` dan
-`deliverWithFinalizableLivePreviewAdapter(...)` untuk finalisasi runtime. Finalizer
-memutuskan apakah balasan final mengedit preview di tempat, mengirim fallback
-normal, membuang status preview tertunda, mempertahankan edit gagal yang ambigu
-tanpa menduplikasi pesan, dan mengembalikan receipt final.
+`deliverWithFinalizableLivePreviewAdapter(...)` untuk finalisasi runtime.
+Finalizer memutuskan apakah balasan akhir mengedit pratinjau di tempat,
+mengirim fallback normal, membuang status pratinjau yang tertunda,
+mempertahankan edit gagal yang ambigu tanpa menduplikasi pesan, dan
+mengembalikan receipt akhir.
 
 ## Kebijakan ack penerimaan
 
-Receiver inbound yang mengontrol timing acknowledgement platform harus
+Receiver inbound yang mengontrol timing acknowledgment platform harus
 mendeklarasikan kebijakan penerimaan:
 
 ```typescript
@@ -325,7 +351,7 @@ const demoMessageAdapter = defineChannelMessageAdapter({
 });
 ```
 
-Adapter yang tidak mendeklarasikan kebijakan penerimaan default ke:
+Adapter yang tidak mendeklarasikan kebijakan penerimaan menggunakan default:
 
 ```typescript
 {
@@ -336,24 +362,24 @@ Adapter yang tidak mendeklarasikan kebijakan penerimaan default ke:
 }
 ```
 
-Gunakan default saat platform tidak memiliki acknowledgement untuk ditunda, sudah
-melakukan acknowledgement sebelum pemrosesan asinkron, atau memerlukan semantik
+Gunakan default saat platform tidak memiliki acknowledgment untuk ditunda, sudah
+melakukan acknowledgment sebelum pemrosesan asinkron, atau membutuhkan semantik
 respons khusus protokol. Deklarasikan salah satu kebijakan bertahap hanya saat
 receiver benar-benar menggunakan konteks penerimaan untuk memindahkan
-acknowledgement platform ke tahap yang lebih lambat.
+acknowledgment platform ke tahap yang lebih lambat.
 
 Kebijakan:
 
-| Kebijakan              | Gunakan saat                                                                            |
-| ---------------------- | --------------------------------------------------------------------------------------- |
-| `after_receive_record` | Platform dapat di-acknowledge setelah event masuk diurai dan dicatat.                  |
+| Kebijakan              | Gunakan saat                                                                           |
+| ---------------------- | -------------------------------------------------------------------------------------- |
+| `after_receive_record` | Platform dapat di-acknowledge setelah event inbound diurai dan dicatat.                |
 | `after_agent_dispatch` | Platform harus menunggu hingga dispatch agen diterima.                                 |
-| `after_durable_send`   | Platform harus menunggu hingga pengiriman akhir memiliki keputusan durable.            |
-| `manual`               | Plugin memiliki acknowledgement karena semantik platform tidak cocok dengan tahap generik. |
+| `after_durable_send`   | Platform harus menunggu hingga pengiriman akhir memiliki keputusan yang durable.        |
+| `manual`               | Plugin memiliki acknowledgment karena semantik platform tidak cocok dengan tahap umum. |
 
-Gunakan `createMessageReceiveContext(...)` pada receiver yang menunda status ack, dan
-`shouldAckMessageAfterStage(...)` saat receiver perlu menguji apakah sebuah
-tahap telah memenuhi kebijakan yang dikonfigurasi.
+Gunakan `createMessageReceiveContext(...)` di receiver yang menunda status ack,
+dan `shouldAckMessageAfterStage(...)` saat receiver perlu menguji apakah suatu
+tahap sudah memenuhi kebijakan yang dikonfigurasi.
 
 ## Pengujian kontrak
 
@@ -394,31 +420,35 @@ it("backs declared message capabilities", async () => {
 });
 ```
 
-Tambahkan suite bukti live dan penerimaan saat adapter mendeklarasikan fitur tersebut. Bukti yang
-hilang harus menggagalkan pengujian, bukan memperluas permukaan durable
-secara diam-diam.
+Tambahkan suite bukti langsung dan penerimaan saat adapter mendeklarasikan fitur
+tersebut. Bukti yang hilang harus menggagalkan pengujian, bukan memperluas
+permukaan durable secara diam-diam.
 
 ## API kompatibilitas yang tidak digunakan lagi
 
-API ini tetap dapat diimpor untuk kompatibilitas pihak ketiga. Jangan gunakan untuk
-kode channel baru.
+API ini tetap dapat diimpor untuk kompatibilitas pihak ketiga. Jangan gunakan
+untuk kode channel baru.
 
-| API yang tidak digunakan lagi                | Pengganti                                                                                                           |
-| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `openclaw/plugin-sdk/channel-reply-pipeline` | `openclaw/plugin-sdk/channel-message`                                                                               |
-| `createChannelTurnReplyPipeline(...)`        | `createChannelMessageReplyPipeline(...)` untuk dispatcher kompatibilitas, atau adapter `message` untuk kode channel baru |
-| `deliverDurableInboundReplyPayload(...)`     | `deliverInboundReplyWithMessageSendContext(...)` dari `openclaw/plugin-sdk/channel-message-runtime`                 |
-| `dispatchInboundReplyWithBase(...)`          | `dispatchChannelMessageReplyWithBase(...)` hanya untuk dispatcher kompatibilitas                                    |
-| `recordInboundSessionAndDispatchReply(...)`  | `recordChannelMessageReplyDispatch(...)` hanya untuk dispatcher kompatibilitas                                      |
-| `resolveChannelSourceReplyDeliveryMode(...)` | `resolveChannelMessageSourceReplyDeliveryMode(...)`                                                                 |
-| `deliverFinalizableDraftPreview(...)`        | `defineFinalizableLivePreviewAdapter(...)` plus `deliverWithFinalizableLivePreviewAdapter(...)`                     |
-| `DraftPreviewFinalizerDraft`                 | `LivePreviewFinalizerDraft`                                                                                         |
-| `DraftPreviewFinalizerResult`                | `LivePreviewFinalizerResult`                                                                                        |
+| API yang tidak digunakan lagi                 | Pengganti                                                                                                                  |
+| --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `openclaw/plugin-sdk/channel-reply-pipeline`  | `openclaw/plugin-sdk/channel-message`                                                                                      |
+| `createChannelTurnReplyPipeline(...)`         | `createChannelMessageReplyPipeline(...)` untuk dispatcher kompatibilitas, atau adapter `message` untuk kode channel baru   |
+| `buildChannelMessageReplyDispatchBase(...)`   | `createChannelMessageReplyPipeline(...)` plus `channel.turn.runPrepared(...)`, atau adapter `message` untuk kode channel baru |
+| `dispatchChannelMessageReplyWithBase(...)`    | `createChannelMessageReplyPipeline(...)` plus `channel.turn.runPrepared(...)`, atau adapter `message` untuk kode channel baru |
+| `recordChannelMessageReplyDispatch(...)`      | `createChannelMessageReplyPipeline(...)` plus `channel.turn.runPrepared(...)`, atau adapter `message` untuk kode channel baru |
+| `deliverOutboundPayloads(...)`                | `sendDurableMessageBatch(...)` atau `deliverInboundReplyWithMessageSendContext(...)` dari `channel-message-runtime`        |
+| `deliverDurableInboundReplyPayload(...)`      | `deliverInboundReplyWithMessageSendContext(...)` dari `openclaw/plugin-sdk/channel-message-runtime`                        |
+| `dispatchInboundReplyWithBase(...)`           | `createChannelMessageReplyPipeline(...)` plus `channel.turn.runPrepared(...)`, atau adapter `message` untuk kode channel baru |
+| `recordInboundSessionAndDispatchReply(...)`   | `createChannelMessageReplyPipeline(...)` plus `channel.turn.runPrepared(...)`, atau adapter `message` untuk kode channel baru |
+| `resolveChannelSourceReplyDeliveryMode(...)`  | `resolveChannelMessageSourceReplyDeliveryMode(...)`                                                                        |
+| `deliverFinalizableDraftPreview(...)`         | `defineFinalizableLivePreviewAdapter(...)` plus `deliverWithFinalizableLivePreviewAdapter(...)`                            |
+| `DraftPreviewFinalizerDraft`                  | `LivePreviewFinalizerDraft`                                                                                                |
+| `DraftPreviewFinalizerResult`                 | `LivePreviewFinalizerResult`                                                                                               |
 
-Dispatcher kompatibilitas masih dapat menggunakan `createReplyPrefixContext(...)`,
-`createReplyPrefixOptions(...)`, dan `createTypingCallbacks(...)` melalui
-facade message. Kode lifecycle baru harus menghindari subpath lama
-`channel-reply-pipeline`.
+Dispatcher kompatibilitas masih dapat menggunakan
+`createReplyPrefixContext(...)`, `createReplyPrefixOptions(...)`, dan
+`createTypingCallbacks(...)` melalui facade pesan. Kode lifecycle baru harus
+menghindari subpath `channel-reply-pipeline` lama.
 
 ## Checklist migrasi
 
@@ -428,8 +458,8 @@ facade message. Kode lifecycle baru harus menghindari subpath lama
 3. Deklarasikan hanya kapabilitas yang didukung oleh perilaku native dan pengujian.
 4. Ganti peta persyaratan durable yang ditulis manual dengan
    `deriveDurableFinalDeliveryRequirements(...)`.
-5. Pindahkan finalisasi pratinjau melalui helper live preview saat channel
+5. Pindahkan finalisasi pratinjau melalui helper pratinjau langsung saat channel
    mengedit pesan draf di tempat.
-6. Deklarasikan kebijakan ack penerimaan hanya saat receiver benar-benar dapat menunda
-   acknowledgement platform.
+6. Deklarasikan kebijakan ack penerimaan hanya saat receiver benar-benar dapat
+   menunda acknowledgment platform.
 7. Pertahankan helper dispatch balasan lama hanya di batas kompatibilitas.

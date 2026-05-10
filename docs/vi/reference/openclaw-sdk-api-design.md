@@ -1,16 +1,16 @@
 ---
 read_when:
     - Bạn đang triển khai SDK ứng dụng OpenClaw công khai được đề xuất
-    - Bạn cần hợp đồng dự thảo về không gian tên, sự kiện, kết quả, tạo phẩm, phê duyệt hoặc bảo mật cho SDK ứng dụng
+    - Bạn cần hợp đồng nháp về không gian tên, sự kiện, kết quả, tạo tác, phê duyệt hoặc bảo mật cho SDK ứng dụng
     - Bạn đang so sánh các tài nguyên giao thức Gateway với trình bao bọc OpenClaw App SDK cấp cao
 sidebarTitle: App SDK API design
-summary: Thiết kế tham chiếu cho API SDK Ứng dụng OpenClaw công khai, phân loại sự kiện, tạo tác, phê duyệt và cấu trúc gói
-title: Thiết kế API SDK ứng dụng OpenClaw
+summary: Thiết kế tham chiếu cho API công khai của OpenClaw App SDK, phân loại sự kiện, tạo phẩm, phê duyệt và cấu trúc gói
+title: Thiết kế API của OpenClaw App SDK
 x-i18n:
-    generated_at: "2026-05-06T09:29:16Z"
+    generated_at: "2026-05-10T19:50:15Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1c49afb4b3b23653e1c6512c22c7465dc1778fc9ea2b28864ca9eaa3ccc90f2f
+    source_hash: 7eab11a5dfb85465e7d6da971fba779baaef06fd333eb53a39b53d7150e85b72
     source_path: reference/openclaw-sdk-api-design.md
     workflow: 16
 ---
@@ -21,19 +21,19 @@ Trang này là thiết kế tham chiếu API chi tiết cho
 
 <Note>
   `@openclaw/sdk` là gói ứng dụng/máy khách bên ngoài để giao tiếp với
-  Gateway. `openclaw/plugin-sdk/*` là hợp đồng biên soạn plugin chạy trong tiến trình.
-  Không nhập các đường dẫn con của Plugin SDK từ các ứng dụng chỉ cần chạy agent.
+  Gateway. `openclaw/plugin-sdk/*` là hợp đồng tạo Plugin trong tiến trình.
+  Không nhập các đường dẫn con của Plugin SDK từ những ứng dụng chỉ cần chạy agent.
 </Note>
 
-App SDK công khai nên được xây dựng theo hai lớp:
+SDK ứng dụng công khai nên được xây dựng thành hai lớp:
 
-1. Máy khách Gateway được tạo ở mức thấp.
-2. Lớp bao mức cao, tiện dụng với các đối tượng `OpenClaw`, `Agent`, `Session`, `Run`,
+1. Máy khách Gateway cấp thấp được sinh tự động.
+2. Lớp bọc cấp cao, thuận tiện với các đối tượng `OpenClaw`, `Agent`, `Session`, `Run`,
    `Task`, `Artifact`, `Approval`, và `Environment`.
 
 ## Thiết kế namespace
 
-Các namespace mức thấp nên bám sát tài nguyên Gateway:
+Các namespace cấp thấp nên bám sát tài nguyên Gateway:
 
 ```typescript
 oc.agents.list();
@@ -56,9 +56,9 @@ oc.runs.events(runId, { after });
 oc.runs.wait(runId);
 oc.runs.cancel(runId);
 
-oc.tasks.list(); // future API: current SDK throws unsupported
-oc.tasks.get(taskId); // future API: current SDK throws unsupported
-oc.tasks.cancel(taskId); // future API: current SDK throws unsupported
+oc.tasks.list({ status: "running" });
+oc.tasks.get(taskId);
+oc.tasks.cancel(taskId, { reason });
 oc.tasks.events(taskId, { after }); // future API
 
 oc.models.list();
@@ -80,7 +80,7 @@ oc.environments.status(environmentId);
 oc.environments.delete(environmentId); // future API: current SDK throws unsupported
 ```
 
-Các lớp bao mức cao nên trả về những đối tượng giúp các luồng phổ biến trở nên thuận tiện:
+Các lớp bọc cấp cao nên trả về những đối tượng giúp các luồng phổ biến dễ dùng:
 
 ```typescript
 const run = await agent.run(inputOrParams);
@@ -97,7 +97,7 @@ const session = await run.session();
 
 ## Hợp đồng sự kiện
 
-SDK công khai nên hiển thị các sự kiện được chuẩn hóa, có phiên bản và có thể phát lại.
+SDK công khai nên cung cấp các sự kiện có phiên bản, có thể phát lại và đã chuẩn hóa.
 
 ```typescript
 type OpenClawEvent = {
@@ -116,42 +116,42 @@ type OpenClawEvent = {
 ```
 
 `id` là con trỏ phát lại. Người dùng nên có thể kết nối lại bằng
-`events({ after: id })` và nhận các sự kiện đã bỏ lỡ khi thời gian lưu giữ cho phép.
+`events({ after: id })` và nhận các sự kiện đã bỏ lỡ khi chính sách lưu giữ cho phép.
 
-Các nhóm sự kiện chuẩn hóa được khuyến nghị:
+Các nhóm sự kiện đã chuẩn hóa được khuyến nghị:
 
-| Sự kiện               | Ý nghĩa                                                      |
-| --------------------- | ------------------------------------------------------------ |
-| `run.created`         | Run đã được chấp nhận.                                       |
-| `run.queued`          | Run đang chờ làn session, runtime, hoặc môi trường.          |
-| `run.started`         | Runtime đã bắt đầu thực thi.                                 |
-| `run.completed`       | Run đã hoàn tất thành công.                                  |
-| `run.failed`          | Run kết thúc với lỗi.                                        |
-| `run.cancelled`       | Run đã bị hủy.                                               |
-| `run.timed_out`       | Run đã vượt quá thời gian chờ.                               |
-| `assistant.delta`     | Phần delta văn bản của assistant.                            |
-| `assistant.message`   | Tin nhắn assistant hoàn chỉnh hoặc bản thay thế.             |
-| `thinking.delta`      | Phần delta suy luận hoặc kế hoạch, khi chính sách cho phép hiển thị. |
-| `tool.call.started`   | Lệnh gọi công cụ đã bắt đầu.                                 |
-| `tool.call.delta`     | Lệnh gọi công cụ đã truyền tiến trình hoặc đầu ra một phần.  |
-| `tool.call.completed` | Lệnh gọi công cụ đã trả về thành công.                       |
-| `tool.call.failed`    | Lệnh gọi công cụ thất bại.                                   |
-| `approval.requested`  | Một run hoặc công cụ cần phê duyệt.                          |
-| `approval.resolved`   | Phê duyệt đã được cấp, bị từ chối, hết hạn, hoặc bị hủy.     |
-| `question.requested`  | Runtime yêu cầu người dùng hoặc ứng dụng chủ cung cấp đầu vào. |
-| `question.answered`   | Ứng dụng chủ đã cung cấp câu trả lời.                        |
-| `artifact.created`    | Artifact mới có sẵn.                                         |
-| `artifact.updated`    | Artifact hiện có đã thay đổi.                                |
-| `session.created`     | Session đã được tạo.                                         |
-| `session.updated`     | Siêu dữ liệu session đã thay đổi.                            |
-| `session.compacted`   | Compaction session đã diễn ra.                               |
-| `task.updated`        | Trạng thái tác vụ nền đã thay đổi.                           |
-| `git.branch`          | Runtime đã quan sát hoặc thay đổi trạng thái nhánh.          |
-| `git.diff`            | Runtime đã tạo hoặc thay đổi một diff.                       |
-| `git.pr`              | Runtime đã mở, cập nhật, hoặc liên kết một pull request.     |
+| Sự kiện               | Ý nghĩa                                                     |
+| --------------------- | ----------------------------------------------------------- |
+| `run.created`         | Run đã được chấp nhận.                                     |
+| `run.queued`          | Run đang chờ làn phiên, runtime, hoặc môi trường.          |
+| `run.started`         | Runtime đã bắt đầu thực thi.                               |
+| `run.completed`       | Run hoàn tất thành công.                                   |
+| `run.failed`          | Run kết thúc với lỗi.                                      |
+| `run.cancelled`       | Run đã bị hủy.                                             |
+| `run.timed_out`       | Run vượt quá thời gian chờ.                                |
+| `assistant.delta`     | Delta văn bản của trợ lý.                                  |
+| `assistant.message`   | Tin nhắn trợ lý hoàn chỉnh hoặc nội dung thay thế.         |
+| `thinking.delta`      | Delta suy luận hoặc kế hoạch, khi chính sách cho phép hiển thị. |
+| `tool.call.started`   | Lệnh gọi công cụ đã bắt đầu.                               |
+| `tool.call.delta`     | Lệnh gọi công cụ đã truyền tiến trình hoặc đầu ra một phần. |
+| `tool.call.completed` | Lệnh gọi công cụ trả về thành công.                        |
+| `tool.call.failed`    | Lệnh gọi công cụ thất bại.                                 |
+| `approval.requested`  | Một run hoặc công cụ cần phê duyệt.                        |
+| `approval.resolved`   | Phê duyệt đã được chấp thuận, từ chối, hết hạn, hoặc hủy.  |
+| `question.requested`  | Runtime yêu cầu người dùng hoặc ứng dụng host cung cấp đầu vào. |
+| `question.answered`   | Ứng dụng host đã cung cấp câu trả lời.                     |
+| `artifact.created`    | Artifact mới có sẵn.                                      |
+| `artifact.updated`    | Artifact hiện có đã thay đổi.                             |
+| `session.created`     | Phiên đã được tạo.                                         |
+| `session.updated`     | Siêu dữ liệu phiên đã thay đổi.                            |
+| `session.compacted`   | Compaction phiên đã xảy ra.                               |
+| `task.updated`        | Trạng thái tác vụ nền đã thay đổi.                         |
+| `git.branch`          | Runtime đã quan sát hoặc thay đổi trạng thái nhánh.        |
+| `git.diff`            | Runtime đã tạo hoặc thay đổi một diff.                     |
+| `git.pr`              | Runtime đã mở, cập nhật, hoặc liên kết một pull request.   |
 
-Các payload gốc của runtime nên có sẵn qua `raw`, nhưng ứng dụng không nên
-phải phân tích `raw` cho giao diện người dùng thông thường.
+Payload gốc của runtime nên có sẵn qua `raw`, nhưng ứng dụng không nên phải
+phân tích `raw` cho giao diện người dùng thông thường.
 
 ## Hợp đồng kết quả
 
@@ -181,20 +181,20 @@ type RunResult = {
 };
 ```
 
-Kết quả nên đơn giản và ổn định. Giá trị dấu thời gian giữ nguyên hình dạng của Gateway,
-vì vậy các run hiện tại được hỗ trợ bởi vòng đời thường báo cáo số mili giây epoch
-trong khi các adapter vẫn có thể hiển thị chuỗi ISO. Giao diện người dùng phong phú, vết công cụ và
+Kết quả nên đơn giản và ổn định. Giá trị timestamp giữ nguyên hình dạng của Gateway,
+nên các run hiện tại dựa trên vòng đời thường báo cáo số mili giây epoch,
+trong khi adapter vẫn có thể hiển thị chuỗi ISO. Giao diện người dùng giàu thông tin, trace công cụ, và
 chi tiết gốc của runtime thuộc về sự kiện và artifact.
 
 `accepted` là kết quả chờ không kết thúc: nó có nghĩa là hạn chờ của Gateway
 đã hết trước khi run tạo ra kết thúc/lỗi vòng đời. Không được coi nó là
-`timed_out`; `timed_out` được dành cho một run đã vượt quá thời gian chờ runtime
+`timed_out`; `timed_out` được dành riêng cho một run vượt quá timeout runtime
 của chính nó.
 
 ## Phê duyệt và câu hỏi
 
-Phê duyệt phải là thực thể hạng nhất vì các agent lập trình liên tục vượt qua
-các ranh giới an toàn.
+Phê duyệt phải là đối tượng hạng nhất vì các agent lập trình liên tục vượt qua các
+ranh giới an toàn.
 
 ```typescript
 run.onApproval(async (request) => {
@@ -206,24 +206,24 @@ run.onApproval(async (request) => {
 });
 ```
 
-Sự kiện phê duyệt nên mang theo:
+Sự kiện phê duyệt nên mang:
 
 - id phê duyệt
-- id run và id session
+- id run và id phiên
 - loại yêu cầu
 - tóm tắt hành động được yêu cầu
 - tên công cụ hoặc hành động môi trường
-- mức độ rủi ro
+- mức rủi ro
 - các quyết định có sẵn
 - thời điểm hết hạn
-- quyết định có thể được tái sử dụng hay không
+- liệu quyết định có thể được tái sử dụng hay không
 
-Câu hỏi tách biệt với phê duyệt. Một câu hỏi yêu cầu người dùng hoặc ứng dụng chủ cung cấp
-thông tin. Một phê duyệt yêu cầu quyền thực hiện một hành động.
+Câu hỏi tách biệt với phê duyệt. Một câu hỏi yêu cầu người dùng hoặc ứng dụng host
+cung cấp thông tin. Một phê duyệt yêu cầu quyền thực hiện một hành động.
 
 ## Mô hình ToolSpace
 
-Ứng dụng cần hiểu bề mặt công cụ mà không nhập phần nội bộ của plugin.
+Ứng dụng cần hiểu bề mặt công cụ mà không nhập phần nội bộ của Plugin.
 
 ```typescript
 const tools = await run.toolSpace();
@@ -233,21 +233,21 @@ for (const tool of tools.list()) {
 }
 ```
 
-SDK nên hiển thị:
+SDK nên cung cấp:
 
-- siêu dữ liệu công cụ được chuẩn hóa
-- nguồn: OpenClaw, MCP, plugin, kênh, runtime, hoặc ứng dụng
+- siêu dữ liệu công cụ đã chuẩn hóa
+- nguồn: OpenClaw, MCP, Plugin, kênh, runtime, hoặc ứng dụng
 - tóm tắt schema
 - chính sách phê duyệt
 - khả năng tương thích runtime
-- công cụ bị ẩn, chỉ đọc, có khả năng ghi, hoặc có khả năng phía host hay không
+- liệu một công cụ là ẩn, chỉ đọc, có khả năng ghi, hoặc có khả năng host
 
 Việc gọi công cụ qua SDK nên rõ ràng và có phạm vi. Hầu hết ứng dụng nên
 chạy agent, không gọi trực tiếp các công cụ tùy ý.
 
 ## Mô hình artifact
 
-Artifact nên bao quát nhiều hơn tệp.
+Artifact nên bao quát nhiều thứ hơn tệp.
 
 ```typescript
 type ArtifactSummary = {
@@ -272,23 +272,23 @@ type ArtifactSummary = {
 };
 ```
 
-Ví dụ phổ biến:
+Các ví dụ phổ biến:
 
 - chỉnh sửa tệp và tệp được tạo
 - gói patch
 - diff VCS
 - ảnh chụp màn hình và đầu ra media
-- nhật ký và gói trace
+- log và gói trace
 - liên kết pull request
 - trajectory runtime
-- ảnh chụp nhanh workspace của môi trường được quản lý
+- snapshot workspace môi trường được quản lý
 
-Truy cập artifact nên hỗ trợ biên tập ẩn, lưu giữ và URL tải xuống mà không
+Truy cập artifact nên hỗ trợ biên tập, lưu giữ, và URL tải xuống mà không
 giả định mọi artifact đều là tệp cục bộ thông thường.
 
 ## Mô hình bảo mật
 
-App SDK phải rõ ràng về quyền hạn.
+SDK ứng dụng phải rõ ràng về thẩm quyền.
 
 Các phạm vi token được khuyến nghị:
 
@@ -296,12 +296,12 @@ Các phạm vi token được khuyến nghị:
 | ------------------- | --------------------------------------------------- |
 | `agent.read`        | Liệt kê và kiểm tra agent.                          |
 | `agent.run`         | Bắt đầu run.                                        |
-| `session.read`      | Đọc siêu dữ liệu và tin nhắn session.               |
-| `session.write`     | Tạo, gửi đến, fork, compact và hủy bỏ session.      |
+| `session.read`      | Đọc siêu dữ liệu và tin nhắn phiên.                 |
+| `session.write`     | Tạo, gửi tới, fork, compact, và hủy phiên.          |
 | `task.read`         | Đọc trạng thái tác vụ nền.                          |
 | `task.write`        | Hủy hoặc sửa đổi chính sách thông báo tác vụ.       |
-| `approval.respond`  | Phê duyệt hoặc từ chối yêu cầu.                     |
-| `tools.invoke`      | Gọi trực tiếp các công cụ được hiển thị.            |
+| `approval.respond`  | Chấp thuận hoặc từ chối yêu cầu.                    |
+| `tools.invoke`      | Gọi trực tiếp các công cụ được phơi bày.            |
 | `artifacts.read`    | Liệt kê và tải xuống artifact.                      |
 | `environment.write` | Tạo hoặc hủy môi trường được quản lý.               |
 | `admin`             | Thao tác quản trị.                                  |
@@ -313,8 +313,8 @@ Mặc định:
 - tham chiếu bí mật thay vì giá trị bí mật
 - chính sách sandbox và mạng rõ ràng
 - lưu giữ môi trường từ xa rõ ràng
-- phê duyệt cho thực thi trên host trừ khi chính sách chứng minh điều ngược lại
-- sự kiện runtime thô được biên tập ẩn trước khi rời Gateway trừ khi bên gọi có
+- phê duyệt cho thực thi host trừ khi chính sách chứng minh điều ngược lại
+- sự kiện runtime thô được biên tập trước khi rời Gateway trừ khi bên gọi có
   phạm vi chẩn đoán mạnh hơn
 
 ## Nhà cung cấp môi trường được quản lý
@@ -337,19 +337,19 @@ type EnvironmentProvider = {
 };
 ```
 
-Triển khai đầu tiên không cần phải là SaaS được lưu trữ. Nó có thể nhắm tới
-các host node hiện có, workspace tạm thời, runner kiểu CI, hoặc môi trường kiểu Testbox.
-Hợp đồng quan trọng là:
+Triển khai đầu tiên không cần là SaaS được host. Nó có thể nhắm tới
+các host Node hiện có, workspace tạm thời, runner kiểu CI, hoặc
+môi trường kiểu Testbox. Hợp đồng quan trọng là:
 
 1. chuẩn bị workspace
-2. liên kết môi trường và bí mật an toàn
+2. ràng buộc môi trường và bí mật an toàn
 3. bắt đầu run
 4. truyền sự kiện
 5. thu thập artifact
 6. dọn dẹp hoặc lưu giữ theo chính sách
 
-Khi điều này ổn định, một dịch vụ đám mây được lưu trữ có thể triển khai cùng hợp đồng
-nhà cung cấp đó.
+Khi phần này ổn định, một dịch vụ cloud được host có thể triển khai cùng hợp đồng
+nhà cung cấp.
 
 ## Cấu trúc gói
 
@@ -357,40 +357,41 @@ Các gói được khuyến nghị:
 
 | Gói                     | Mục đích                                                      |
 | ----------------------- | ------------------------------------------------------------- |
-| `@openclaw/sdk`         | SDK mức cao công khai và máy khách Gateway mức thấp được tạo. |
-| `@openclaw/sdk-react`   | React hook tùy chọn cho dashboard và trình xây dựng ứng dụng. |
+| `@openclaw/sdk`         | SDK cấp cao công khai và máy khách Gateway cấp thấp được sinh tự động. |
+| `@openclaw/sdk-react`   | React hook tùy chọn cho dashboard và trình dựng ứng dụng.     |
 | `@openclaw/sdk-testing` | Trình trợ giúp kiểm thử và máy chủ Gateway giả cho tích hợp ứng dụng. |
 
-Repo đã có `openclaw/plugin-sdk/*` cho plugin. Giữ namespace đó riêng biệt
-để tránh làm tác giả plugin nhầm lẫn với nhà phát triển ứng dụng.
+Repo đã có `openclaw/plugin-sdk/*` cho Plugin. Giữ namespace đó tách biệt
+để tránh gây nhầm lẫn giữa tác giả Plugin và nhà phát triển ứng dụng.
 
-## Chiến lược máy khách được tạo
+## Chiến lược máy khách được sinh tự động
 
-Máy khách mức thấp nên được tạo từ các schema giao thức Gateway có phiên bản,
-sau đó được bao bọc bởi các lớp tiện dụng viết thủ công.
+Máy khách cấp thấp nên được sinh từ các schema giao thức Gateway có phiên bản,
+sau đó được bao bọc bởi các lớp tiện dụng viết tay.
 
 Phân lớp:
 
-1. Nguồn sự thật duy nhất của schema Gateway.
-2. Client TypeScript cấp thấp được tạo sinh.
+1. Nguồn chân lý của schema Gateway.
+2. Client TypeScript cấp thấp được tạo.
 3. Bộ xác thực runtime cho đầu vào bên ngoài và payload sự kiện.
-4. Các wrapper cấp cao `OpenClaw`, `Agent`, `Session`, `Run`, `Task` và `Artifact`.
-5. Ví dụ cookbook và kiểm thử tích hợp.
+4. Các wrapper cấp cao `OpenClaw`, `Agent`, `Session`, `Run`, `Task` và `Artifact`
+   .
+5. Ví dụ hướng dẫn thực hành và kiểm thử tích hợp.
 
 Lợi ích:
 
-- độ lệch protocol hiển thị rõ
-- kiểm thử có thể so sánh các phương thức được tạo sinh với phần export của Gateway
-- App SDK vẫn độc lập với phần nội bộ của Plugin SDK
-- người dùng cấp thấp vẫn có toàn quyền truy cập protocol
-- người dùng cấp cao có API sản phẩm nhỏ gọn
+- sai lệch giao thức sẽ dễ nhận thấy
+- kiểm thử có thể so sánh các phương thức được tạo với các export của Gateway
+- App SDK vẫn độc lập với nội bộ Plugin SDK
+- người dùng cấp thấp vẫn có toàn quyền truy cập giao thức
+- người dùng cấp cao nhận được API sản phẩm nhỏ gọn
 
 ## Liên quan
 
 - [OpenClaw App SDK](/vi/concepts/openclaw-sdk)
-- [Tham chiếu RPC Gateway](/vi/reference/rpc)
-- [Vòng lặp tác nhân](/vi/concepts/agent-loop)
-- [Runtime của tác nhân](/vi/concepts/agent-runtimes)
+- [Tài liệu tham khảo RPC của Gateway](/vi/reference/rpc)
+- [Vòng lặp tác tử](/vi/concepts/agent-loop)
+- [Runtime của tác tử](/vi/concepts/agent-runtimes)
 - [Tác vụ nền](/vi/automation/tasks)
-- [Tác nhân ACP](/vi/tools/acp-agents)
+- [Tác tử ACP](/vi/tools/acp-agents)
 - [Tổng quan Plugin SDK](/vi/plugins/sdk-overview)

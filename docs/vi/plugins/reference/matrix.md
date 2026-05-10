@@ -4,24 +4,24 @@ read_when:
 summary: Thêm giao diện kênh Matrix để gửi và nhận tin nhắn OpenClaw.
 title: Plugin Matrix
 x-i18n:
-    generated_at: "2026-05-03T10:41:56Z"
+    generated_at: "2026-05-10T19:44:07Z"
     model: gpt-5.5
     provider: openai
-    source_hash: f4f791546090a868b4dd40dbfd458eb5fb2b6beafcf94c259655faac655fdfd8
+    source_hash: 3c135053034d7d8c79c30316c788270278c00b72c1e0674dcbcc2215f1e23add
     source_path: plugins/reference/matrix.md
     workflow: 16
 ---
 
 # Plugin Matrix
 
-Thêm bề mặt kênh Matrix để gửi và nhận tin nhắn OpenClaw.
+Bổ sung giao diện kênh Matrix để gửi và nhận tin nhắn OpenClaw.
 
 ## Phân phối
 
 - Gói: `@openclaw/matrix`
-- Lộ trình cài đặt: được bao gồm trong OpenClaw
+- Đường dẫn cài đặt: ClawHub: `clawhub:@openclaw/matrix`; npm
 
-## Bề mặt
+## Giao diện
 
 channels: matrix
 

@@ -1,30 +1,46 @@
 ---
 read_when:
     - Stai eseguendo la configurazione al primo avvio senza l'onboarding completo della CLI
-    - Vuoi impostare il percorso predefinito dello spazio di lavoro
-summary: Riferimento CLI per `openclaw setup` (inizializza config + workspace)
+    - Si desidera impostare il percorso predefinito dell'area di lavoro
+    - Ti servono tutti i flag e il modo in cui setup decide tra la modalità baseline e la modalità wizard
+summary: Riferimento CLI per `openclaw setup` (inizializza la configurazione e lo spazio di lavoro, esegue facoltativamente la procedura di avvio iniziale)
 title: Configurazione
 x-i18n:
-    generated_at: "2026-05-06T17:54:50Z"
+    generated_at: "2026-05-10T19:29:45Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9a47d41f8c6c59395eaa4bc6055fa09f863af819c7920e29969793904180c910
+    source_hash: 55f0d771bb07c4c69293a470d54f4b6bb108ee521889bfb944fe450b24938b5e
     source_path: cli/setup.md
     workflow: 16
 ---
 
 # `openclaw setup`
 
-Inizializza `~/.openclaw/openclaw.json` e lo spazio di lavoro dell'agente.
+Inizializza la configurazione di base e il workspace dell'agente. Con qualsiasi opzione di configurazione iniziale presente, esegue anche la procedura guidata.
 
 <Note>
-`openclaw setup` è per installazioni con configurazione modificabile. In modalità Nix (`OPENCLAW_NIX_MODE=1`), OpenClaw rifiuta le scritture di setup perché il file di configurazione è gestito da Nix. Gli agenti devono usare l'[Avvio rapido di nix-openclaw](https://github.com/openclaw/nix-openclaw#quick-start) ufficiale oppure la configurazione sorgente equivalente per un altro pacchetto Nix.
+`openclaw setup` è destinato alle installazioni con configurazione modificabile. In modalità Nix (`OPENCLAW_NIX_MODE=1`) OpenClaw rifiuta le scritture di setup perché il file di configurazione è gestito da Nix. Usa la [Guida rapida nix-openclaw](https://github.com/openclaw/nix-openclaw#quick-start) ufficiale o la configurazione sorgente equivalente per un altro pacchetto Nix.
 </Note>
 
-Correlati:
+## Opzioni
 
-- Per iniziare: [Per iniziare](/it/start/getting-started)
-- Onboarding CLI: [Onboarding (CLI)](/it/start/wizard)
+| Opzione                    | Descrizione                                                                                                    |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `--workspace <dir>`        | Directory del workspace dell'agente (predefinita `~/.openclaw/workspace`; salvata come `agents.defaults.workspace`). |
+| `--wizard`                 | Esegue la configurazione iniziale interattiva.                                                                 |
+| `--non-interactive`        | Esegue la configurazione iniziale senza prompt.                                                                |
+| `--mode <mode>`            | Modalità di configurazione iniziale: `local` o `remote`.                                                       |
+| `--import-from <provider>` | Provider di migrazione da eseguire durante la configurazione iniziale.                                         |
+| `--import-source <path>`   | Home dell'agente sorgente per `--import-from`.                                                                 |
+| `--import-secrets`         | Importa i segreti supportati durante la migrazione della configurazione iniziale.                              |
+| `--remote-url <url>`       | URL WebSocket del Gateway remoto.                                                                              |
+| `--remote-token <token>`   | Token del Gateway remoto (facoltativo).                                                                        |
+
+### Avvio automatico della procedura guidata
+
+`openclaw setup` esegue la procedura guidata quando una di queste opzioni è esplicitamente presente, anche senza `--wizard`:
+
+`--wizard`, `--non-interactive`, `--mode`, `--import-from`, `--import-source`, `--import-secrets`, `--remote-url`, `--remote-token`.
 
 ## Esempi
 
@@ -36,32 +52,15 @@ openclaw setup --wizard --import-from hermes --import-source ~/.hermes
 openclaw setup --non-interactive --mode remote --remote-url wss://gateway-host:18789 --remote-token <token>
 ```
 
-## Opzioni
+## Note
 
-- `--workspace <dir>`: directory dello spazio di lavoro dell'agente (memorizzata come `agents.defaults.workspace`)
-- `--wizard`: esegui l'onboarding
-- `--non-interactive`: esegui l'onboarding senza prompt
-- `--mode <local|remote>`: modalità di onboarding
-- `--import-from <provider>`: provider di migrazione da eseguire durante l'onboarding
-- `--import-source <path>`: home dell'agente sorgente per `--import-from`
-- `--import-secrets`: importa i segreti supportati durante la migrazione di onboarding
-- `--remote-url <url>`: URL WebSocket del Gateway remoto
-- `--remote-token <token>`: token del Gateway remoto
-
-Per eseguire l'onboarding tramite setup:
-
-```bash
-openclaw setup --wizard
-```
-
-Note:
-
-- `openclaw setup` semplice inizializza configurazione + spazio di lavoro senza il flusso completo di onboarding.
-- Dopo il setup semplice, esegui `openclaw configure` per scegliere modelli, canali, Gateway, Plugin, Skills o controlli di integrità.
-- L'onboarding viene eseguito automaticamente quando sono presenti flag di onboarding (`--wizard`, `--non-interactive`, `--mode`, `--import-from`, `--import-source`, `--import-secrets`, `--remote-url`, `--remote-token`).
-- Se viene rilevato uno stato Hermes, l'onboarding interattivo può offrire automaticamente la migrazione. L'onboarding di importazione richiede un setup nuovo; usa [Migra](/it/cli/migrate) per piani di dry-run, backup e modalità di sovrascrittura al di fuori dell'onboarding.
+- Il semplice `openclaw setup` inizializza configurazione e workspace senza eseguire il flusso completo di configurazione iniziale.
+- Dopo il setup semplice, esegui `openclaw onboard` per il percorso guidato completo, `openclaw configure` per modifiche mirate oppure `openclaw channels add` per aggiungere account di canale.
+- Se viene rilevato lo stato di Hermes, la configurazione iniziale interattiva può proporre automaticamente la migrazione. La configurazione iniziale con importazione richiede un setup nuovo; usa [Migra](/it/cli/migrate) per piani di simulazione, backup e modalità di sovrascrittura al di fuori della configurazione iniziale.
 
 ## Correlati
 
 - [Riferimento CLI](/it/cli)
+- [Configurazione iniziale (CLI)](/it/start/wizard)
+- [Primi passi](/it/start/getting-started)
 - [Panoramica dell'installazione](/it/install)

@@ -1,29 +1,29 @@
 ---
 read_when:
-    - Stai installando, configurando o esaminando il plugin Matrix
+    - Stai installando, configurando o verificando il Plugin matrix
 summary: Aggiunge la superficie del canale Matrix per inviare e ricevere messaggi OpenClaw.
 title: Plugin Matrix
 x-i18n:
-    generated_at: "2026-05-03T21:41:27Z"
+    generated_at: "2026-05-10T19:44:38Z"
     model: gpt-5.5
     provider: openai
-    source_hash: f4f791546090a868b4dd40dbfd458eb5fb2b6beafcf94c259655faac655fdfd8
+    source_hash: 3c135053034d7d8c79c30316c788270278c00b72c1e0674dcbcc2215f1e23add
     source_path: plugins/reference/matrix.md
     workflow: 16
 ---
 
 # Plugin Matrix
 
-Aggiunge la superficie del canale Matrix per inviare e ricevere messaggi OpenClaw.
+Aggiunge la superficie del canale Matrix per l'invio e la ricezione di messaggi OpenClaw.
 
 ## Distribuzione
 
 - Pacchetto: `@openclaw/matrix`
-- Percorso di installazione: incluso in OpenClaw
+- Percorso di installazione: ClawHub: `clawhub:@openclaw/matrix`; npm
 
 ## Superficie
 
-canali: matrix
+channels: matrix
 
 ## Documentazione correlata
 

@@ -1,20 +1,20 @@
 ---
 read_when:
-    - คุณต้องการเข้าถึงหน้าเอกสารสำคัญได้อย่างรวดเร็ว
-summary: ลิงก์ที่คัดสรรไว้ไปยังเอกสาร OpenClaw ที่ใช้บ่อยที่สุด
+    - คุณต้องการเข้าถึงหน้าเอกสารสำคัญอย่างรวดเร็ว
+summary: ลิงก์ที่คัดสรรไปยังเอกสาร OpenClaw ที่ใช้งานบ่อยที่สุด
 title: ไดเรกทอรีเอกสาร
 x-i18n:
-    generated_at: "2026-05-07T01:54:03Z"
+    generated_at: "2026-05-10T19:57:30Z"
     model: gpt-5.5
     provider: openai
-    source_hash: bd24805e17b89747850f01302e761babea411d50aee4e50ec43f93c2e893a4e1
+    source_hash: ddd6903aeb87e36db977b2cef62bd80e84fc67633ca00beb3365ced1f5abdd99
     source_path: start/docs-directory.md
     workflow: 16
 ---
 
 <Note>
 หน้านี้เป็นดัชนีที่คัดสรรไว้ หากคุณเพิ่งเริ่มต้น ให้เริ่มที่ [เริ่มต้นใช้งาน](/th/start/getting-started)
-สำหรับแผนผังเอกสารทั้งหมด ดูที่ [ศูนย์รวมเอกสาร](/th/start/hubs)
+สำหรับแผนผังเอกสารทั้งหมด ดู [ศูนย์รวมเอกสาร](/th/start/hubs)
 </Note>
 
 ## เริ่มที่นี่
@@ -23,7 +23,7 @@ x-i18n:
 - [ความช่วยเหลือ](/th/help)
 - [การกำหนดค่า](/th/gateway/configuration)
 - [ตัวอย่างการกำหนดค่า](/th/gateway/configuration-examples)
-- [คำสั่งแบบ Slash](/th/tools/slash-commands)
+- [คำสั่ง Slash](/th/tools/slash-commands)
 - [การกำหนดเส้นทางหลายเอเจนต์](/th/concepts/multi-agent)
 - [การอัปเดตและการย้อนกลับ](/th/install/updating)
 - [การจับคู่ (DM และโหนด)](/th/channels/pairing)
@@ -36,7 +36,7 @@ x-i18n:
 - [คู่มือปฏิบัติการ Gateway](/th/gateway)
 - [โหนด (iOS และ Android)](/th/nodes)
 - [พื้นผิวเว็บ (Control UI)](/th/web)
-- [การค้นพบและการขนส่งข้อมูล](/th/gateway/discovery)
+- [การค้นพบและตัวขนส่ง](/th/gateway/discovery)
 - [การเข้าถึงระยะไกล](/th/gateway/remote)
 
 ## ผู้ให้บริการและ UX
@@ -46,13 +46,12 @@ x-i18n:
 - [Telegram](/th/channels/telegram)
 - [Discord](/th/channels/discord)
 - [Mattermost](/th/channels/mattermost)
-- [BlueBubbles (บริดจ์ iMessage แบบเดิม)](/th/channels/bluebubbles)
 - [QQ Bot](/th/channels/qqbot)
 - [iMessage](/th/channels/imessage)
 - [กลุ่ม](/th/channels/groups)
 - [ข้อความกลุ่ม WhatsApp](/th/channels/group-messages)
-- [รูปภาพสื่อ](/th/nodes/images)
-- [เสียงสื่อ](/th/nodes/audio)
+- [สื่อรูปภาพ](/th/nodes/images)
+- [สื่อเสียง](/th/nodes/audio)
 
 ## แอปคู่หู
 
@@ -66,7 +65,7 @@ x-i18n:
 
 - [เซสชัน](/th/concepts/session)
 - [งาน Cron](/th/automation/cron-jobs)
-- [Webhooks](/th/automation/cron-jobs#webhooks)
+- [Webhook](/th/automation/cron-jobs#webhooks)
 - [ฮุก Gmail (Pub/Sub)](/th/automation/cron-jobs#gmail-pubsub-integration)
 - [ความปลอดภัย](/th/gateway/security)
 - [การแก้ไขปัญหา](/th/gateway/troubleshooting)

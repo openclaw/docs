@@ -1,74 +1,74 @@
 ---
 read_when:
-    - Anda menginginkan pengaturan Moonshot K2 (Moonshot Open Platform) vs Kimi Coding
-    - Anda perlu memahami endpoint, key, dan referensi model yang terpisah
-    - Anda menginginkan config siap salin-tempel untuk salah satu provider
-summary: Konfigurasikan Moonshot K2 vs Kimi Coding (provider + key terpisah)
+    - Anda menginginkan penyiapan Moonshot K2 (Moonshot Open Platform) dibandingkan Kimi Coding
+    - Anda perlu memahami endpoint, kunci, dan referensi model yang terpisah
+    - Anda menginginkan konfigurasi salin/tempel untuk salah satu penyedia
+summary: Konfigurasikan Moonshot K2 vs Kimi Coding (penyedia + kunci terpisah)
 title: Moonshot AI
 x-i18n:
-    generated_at: "2026-04-25T13:54:51Z"
-    model: gpt-5.4
+    generated_at: "2026-05-10T19:50:43Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: fd6ababe59354a302975b68f4cdb12a623647f8e5cadfb8ae58a74bb2934ce65
+    source_hash: 0f6396d91ac8c1f698531ce067f79d4a4de7a5c7a166099c0fe4b7e5b78fde9e
     source_path: providers/moonshot.md
-    workflow: 15
+    workflow: 16
 ---
 
-Moonshot menyediakan API Kimi dengan endpoint yang kompatibel dengan OpenAI. Konfigurasikan
-provider dan setel model default ke `moonshot/kimi-k2.6`, atau gunakan
-Kimi Coding dengan `kimi/kimi-code`.
+Moonshot menyediakan Kimi API dengan endpoint yang kompatibel dengan OpenAI. Konfigurasikan
+penyedia dan tetapkan model default ke `moonshot/kimi-k2.6`, atau gunakan
+Kimi Coding dengan `kimi/kimi-for-coding`.
 
 <Warning>
-Moonshot dan Kimi Coding adalah **provider yang terpisah**. Key tidak dapat saling dipertukarkan, endpoint berbeda, dan referensi model berbeda (`moonshot/...` vs `kimi/...`).
+Moonshot dan Kimi Coding adalah **penyedia terpisah**. Kunci tidak dapat dipertukarkan, endpoint berbeda, dan referensi model berbeda (`moonshot/...` vs `kimi/...`).
 </Warning>
 
 ## Katalog model bawaan
 
 [//]: # "moonshot-kimi-k2-ids:start"
 
-| Model ref                         | Nama                   | Reasoning | Input       | Context | Output maks |
-| --------------------------------- | ---------------------- | --------- | ----------- | ------- | ----------- |
-| `moonshot/kimi-k2.6`              | Kimi K2.6              | Tidak     | text, image | 262,144 | 262,144     |
-| `moonshot/kimi-k2.5`              | Kimi K2.5              | Tidak     | text, image | 262,144 | 262,144     |
-| `moonshot/kimi-k2-thinking`       | Kimi K2 Thinking       | Ya        | text        | 262,144 | 262,144     |
-| `moonshot/kimi-k2-thinking-turbo` | Kimi K2 Thinking Turbo | Ya        | text        | 262,144 | 262,144     |
-| `moonshot/kimi-k2-turbo`          | Kimi K2 Turbo          | Tidak     | text        | 256,000 | 16,384      |
+| Referensi model                   | Nama                   | Penalaran | Masukan      | Konteks | Output maks |
+| --------------------------------- | ---------------------- | --------- | ------------ | ------- | ----------- |
+| `moonshot/kimi-k2.6`              | Kimi K2.6              | Tidak     | teks, gambar | 262,144 | 262,144     |
+| `moonshot/kimi-k2.5`              | Kimi K2.5              | Tidak     | teks, gambar | 262,144 | 262,144     |
+| `moonshot/kimi-k2-thinking`       | Kimi K2 Thinking       | Ya        | teks         | 262,144 | 262,144     |
+| `moonshot/kimi-k2-thinking-turbo` | Kimi K2 Thinking Turbo | Ya        | teks         | 262,144 | 262,144     |
+| `moonshot/kimi-k2-turbo`          | Kimi K2 Turbo          | Tidak     | teks         | 256,000 | 16,384      |
 
 [//]: # "moonshot-kimi-k2-ids:end"
 
-Estimasi biaya bawaan untuk model K2 yang saat ini di-host Moonshot menggunakan
-tarif pay-as-you-go yang dipublikasikan Moonshot: Kimi K2.6 adalah $0.16/MTok cache hit,
+Estimasi biaya yang dibundel untuk model K2 saat ini yang dihosting Moonshot menggunakan tarif
+bayar sesuai pemakaian yang diterbitkan Moonshot: Kimi K2.6 adalah $0.16/MTok cache hit,
 $0.95/MTok input, dan $4.00/MTok output; Kimi K2.5 adalah $0.10/MTok cache hit,
-$0.60/MTok input, dan $3.00/MTok output. Entri katalog lama lainnya tetap
-menggunakan placeholder biaya nol kecuali Anda menggantinya di config.
+$0.60/MTok input, dan $3.00/MTok output. Entri katalog lama lainnya mempertahankan
+nilai pengganti biaya nol kecuali Anda menimpanya di konfigurasi.
 
 ## Memulai
 
-Pilih provider Anda dan ikuti langkah penyiapannya.
+Pilih penyedia Anda dan ikuti langkah penyiapannya.
 
 <Tabs>
   <Tab title="Moonshot API">
     **Terbaik untuk:** model Kimi K2 melalui Moonshot Open Platform.
 
     <Steps>
-      <Step title="Pilih region endpoint Anda">
-        | Pilihan auth          | Endpoint                     | Region        |
-        | --------------------- | ---------------------------- | ------------- |
-        | `moonshot-api-key`    | `https://api.moonshot.ai/v1` | Internasional |
-        | `moonshot-api-key-cn` | `https://api.moonshot.cn/v1` | China         |
+      <Step title="Pilih wilayah endpoint Anda">
+        | Pilihan autentikasi    | Endpoint                       | Wilayah       |
+        | ---------------------- | ------------------------------ | ------------- |
+        | `moonshot-api-key`     | `https://api.moonshot.ai/v1`   | Internasional |
+        | `moonshot-api-key-cn`  | `https://api.moonshot.cn/v1`   | Tiongkok      |
       </Step>
       <Step title="Jalankan onboarding">
         ```bash
         openclaw onboard --auth-choice moonshot-api-key
         ```
 
-        Atau untuk endpoint China:
+        Atau untuk endpoint Tiongkok:
 
         ```bash
         openclaw onboard --auth-choice moonshot-api-key-cn
         ```
       </Step>
-      <Step title="Setel model default">
+      <Step title="Tetapkan model default">
         ```json5
         {
           agents: {
@@ -79,14 +79,14 @@ Pilih provider Anda dan ikuti langkah penyiapannya.
         }
         ```
       </Step>
-      <Step title="Verifikasi bahwa model tersedia">
+      <Step title="Pastikan model tersedia">
         ```bash
         openclaw models list --provider moonshot
         ```
       </Step>
-      <Step title="Jalankan live smoke test">
-        Gunakan direktori state terisolasi saat Anda ingin memverifikasi akses model dan pelacakan biaya
-        tanpa menyentuh sesi normal Anda:
+      <Step title="Jalankan uji smoke langsung">
+        Gunakan direktori status terisolasi saat Anda ingin memverifikasi akses model dan pelacakan
+        biaya tanpa menyentuh sesi normal Anda:
 
         ```bash
         OPENCLAW_CONFIG_PATH=/tmp/openclaw-kimi/openclaw.json \
@@ -98,14 +98,14 @@ Pilih provider Anda dan ikuti langkah penyiapannya.
           --json
         ```
 
-        Respons JSON seharusnya melaporkan `provider: "moonshot"` dan
-        `model: "kimi-k2.6"`. Entri transkrip asisten menyimpan penggunaan token
-        yang dinormalisasi beserta estimasi biaya di bawah `usage.cost` saat Moonshot mengembalikan
+        Respons JSON harus melaporkan `provider: "moonshot"` dan
+        `model: "kimi-k2.6"`. Entri transkrip asisten menyimpan penggunaan
+        token yang dinormalisasi plus estimasi biaya di bawah `usage.cost` saat Moonshot mengembalikan
         metadata penggunaan.
       </Step>
     </Steps>
 
-    ### Contoh config
+    ### Contoh konfigurasi
 
     ```json5
     {
@@ -192,7 +192,7 @@ Pilih provider Anda dan ikuti langkah penyiapannya.
     **Terbaik untuk:** tugas yang berfokus pada kode melalui endpoint Kimi Coding.
 
     <Note>
-    Kimi Coding menggunakan API key dan prefix provider (`kimi/...`) yang berbeda dari Moonshot (`moonshot/...`). Referensi model lama `kimi/k2p5` tetap diterima sebagai id kompatibilitas.
+    Kimi Coding menggunakan kunci API dan prefiks penyedia yang berbeda (`kimi/...`) dari Moonshot (`moonshot/...`). Referensi model API stabil adalah `kimi/kimi-for-coding`; referensi lama `kimi/kimi-code` dan `kimi/k2p5` tetap diterima dan dinormalisasi ke id model API tersebut.
     </Note>
 
     <Steps>
@@ -201,34 +201,34 @@ Pilih provider Anda dan ikuti langkah penyiapannya.
         openclaw onboard --auth-choice kimi-code-api-key
         ```
       </Step>
-      <Step title="Setel model default">
+      <Step title="Tetapkan model default">
         ```json5
         {
           agents: {
             defaults: {
-              model: { primary: "kimi/kimi-code" },
+              model: { primary: "kimi/kimi-for-coding" },
             },
           },
         }
         ```
       </Step>
-      <Step title="Verifikasi bahwa model tersedia">
+      <Step title="Pastikan model tersedia">
         ```bash
         openclaw models list --provider kimi
         ```
       </Step>
     </Steps>
 
-    ### Contoh config
+    ### Contoh konfigurasi
 
     ```json5
     {
       env: { KIMI_API_KEY: "sk-..." },
       agents: {
         defaults: {
-          model: { primary: "kimi/kimi-code" },
+          model: { primary: "kimi/kimi-for-coding" },
           models: {
-            "kimi/kimi-code": { alias: "Kimi" },
+            "kimi/kimi-for-coding": { alias: "Kimi" },
           },
         },
       },
@@ -240,8 +240,7 @@ Pilih provider Anda dan ikuti langkah penyiapannya.
 
 ## Pencarian web Kimi
 
-OpenClaw juga menyediakan **Kimi** sebagai provider `web_search`, yang didukung oleh
-pencarian web Moonshot.
+OpenClaw juga menyertakan **Kimi** sebagai penyedia `web_search`, yang didukung oleh pencarian web Moonshot.
 
 <Steps>
   <Step title="Jalankan penyiapan pencarian web interaktif">
@@ -249,22 +248,22 @@ pencarian web Moonshot.
     openclaw configure --section web
     ```
 
-    Pilih **Kimi** di bagian web-search untuk menyimpan
+    Pilih **Kimi** di bagian pencarian web untuk menyimpan
     `plugins.entries.moonshot.config.webSearch.*`.
 
   </Step>
-  <Step title="Konfigurasikan region pencarian web dan model">
-    Penyiapan interaktif akan meminta:
+  <Step title="Konfigurasikan wilayah dan model pencarian web">
+    Penyiapan interaktif meminta:
 
-    | Pengaturan         | Opsi                                                                 |
-    | ------------------ | -------------------------------------------------------------------- |
-    | Region API         | `https://api.moonshot.ai/v1` (internasional) atau `https://api.moonshot.cn/v1` (China) |
-    | Model pencarian web | Default ke `kimi-k2.6`                                              |
+    | Pengaturan          | Opsi                                                                 |
+    | ------------------- | -------------------------------------------------------------------- |
+    | Wilayah API         | `https://api.moonshot.ai/v1` (internasional) atau `https://api.moonshot.cn/v1` (China) |
+    | Model pencarian web | Default ke `kimi-k2.6`                                               |
 
   </Step>
 </Steps>
 
-Config berada di bawah `plugins.entries.moonshot.config.webSearch`:
+Konfigurasi berada di bawah `plugins.entries.moonshot.config.webSearch`:
 
 ```json5
 {
@@ -273,7 +272,7 @@ Config berada di bawah `plugins.entries.moonshot.config.webSearch`:
       moonshot: {
         config: {
           webSearch: {
-            apiKey: "sk-...", // atau gunakan KIMI_API_KEY / MOONSHOT_API_KEY
+            apiKey: "sk-...", // or use KIMI_API_KEY / MOONSHOT_API_KEY
             baseUrl: "https://api.moonshot.ai/v1",
             model: "kimi-k2.6",
           },
@@ -294,8 +293,8 @@ Config berada di bawah `plugins.entries.moonshot.config.webSearch`:
 ## Konfigurasi lanjutan
 
 <AccordionGroup>
-  <Accordion title="Mode thinking native">
-    Moonshot Kimi mendukung thinking native biner:
+  <Accordion title="Mode berpikir native">
+    Moonshot Kimi mendukung berpikir native biner:
 
     - `thinking: { type: "enabled" }`
     - `thinking: { type: "disabled" }`
@@ -318,21 +317,21 @@ Config berada di bawah `plugins.entries.moonshot.config.webSearch`:
     }
     ```
 
-    OpenClaw juga memetakan level runtime `/think` untuk Moonshot:
+    OpenClaw juga memetakan level `/think` saat berjalan untuk Moonshot:
 
-    | Level `/think`      | Perilaku Moonshot          |
-    | ------------------- | -------------------------- |
-    | `/think off`        | `thinking.type=disabled`   |
-    | Level non-off apa pun | `thinking.type=enabled`  |
+    | level `/think`       | Perilaku Moonshot          |
+    | -------------------- | -------------------------- |
+    | `/think off`         | `thinking.type=disabled`   |
+    | Level apa pun selain off | `thinking.type=enabled`    |
 
     <Warning>
-    Saat Moonshot thinking diaktifkan, `tool_choice` harus `auto` atau `none`. OpenClaw menormalkan nilai `tool_choice` yang tidak kompatibel menjadi `auto` untuk kompatibilitas.
+    Saat thinking Moonshot diaktifkan, `tool_choice` harus berupa `auto` atau `none`. OpenClaw menormalkan nilai `tool_choice` yang tidak kompatibel menjadi `auto` demi kompatibilitas.
     </Warning>
 
-    Kimi K2.6 juga menerima field opsional `thinking.keep` yang mengontrol
-    retensi multi-turn dari `reasoning_content`. Setel ke `"all"` untuk menyimpan seluruh
-    reasoning di semua turn; hilangkan (atau biarkan `null`) untuk menggunakan strategi default
-    server. OpenClaw hanya meneruskan `thinking.keep` untuk
+    Kimi K2.6 juga menerima bidang opsional `thinking.keep` yang mengontrol
+    retensi multi-giliran untuk `reasoning_content`. Atur ke `"all"` untuk mempertahankan
+    penalaran penuh di seluruh giliran; hilangkan (atau biarkan `null`) untuk menggunakan strategi
+    default server. OpenClaw hanya meneruskan `thinking.keep` untuk
     `moonshot/kimi-k2.6` dan menghapusnya dari model lain.
 
     ```json5
@@ -353,10 +352,10 @@ Config berada di bawah `plugins.entries.moonshot.config.webSearch`:
 
   </Accordion>
 
-  <Accordion title="Sanitisasi id pemanggilan tool">
-    Moonshot Kimi menyajikan id `tool_call` berbentuk seperti `functions.<name>:<index>`. OpenClaw mempertahankannya apa adanya agar pemanggilan tool multi-turn tetap berfungsi.
+  <Accordion title="Sanitasi id panggilan alat">
+    Moonshot Kimi menyajikan id tool_call berbentuk `functions.<name>:<index>`. OpenClaw mempertahankannya tanpa perubahan agar panggilan alat multi-giliran tetap berfungsi.
 
-    Untuk memaksa sanitisasi ketat pada provider kustom yang kompatibel dengan OpenAI, setel `sanitizeToolCallIds: true`:
+    Untuk memaksa sanitasi ketat pada penyedia khusus yang kompatibel dengan OpenAI, atur `sanitizeToolCallIds: true`:
 
     ```json5
     {
@@ -376,28 +375,27 @@ Config berada di bawah `plugins.entries.moonshot.config.webSearch`:
   <Accordion title="Kompatibilitas penggunaan streaming">
     Endpoint Moonshot native (`https://api.moonshot.ai/v1` dan
     `https://api.moonshot.cn/v1`) mengiklankan kompatibilitas penggunaan streaming pada
-    transport bersama `openai-completions`. OpenClaw mengaitkannya dengan kapabilitas endpoint,
-    sehingga id provider kustom yang kompatibel dan menargetkan host Moonshot native yang sama
-    mewarisi perilaku streaming-usage yang sama.
+    transport bersama `openai-completions`. OpenClaw menentukannya berdasarkan
+    kemampuan endpoint, sehingga id penyedia khusus yang kompatibel yang menargetkan host
+    Moonshot native yang sama mewarisi perilaku penggunaan streaming yang sama.
 
     Dengan harga K2.6 bawaan, penggunaan streaming yang mencakup token input, output,
-    dan cache-read juga dikonversi menjadi estimasi biaya USD lokal untuk
-    `/status`, `/usage full`, `/usage cost`, dan akuntansi sesi berbasis
-    transkrip.
+    dan pembacaan cache juga dikonversi menjadi estimasi biaya USD lokal untuk
+    `/status`, `/usage full`, `/usage cost`, dan akuntansi sesi berbasis transkrip.
 
   </Accordion>
 
-  <Accordion title="Referensi endpoint dan model ref">
-    | Provider    | Prefix model ref | Endpoint                      | Variabel env auth    |
-    | ----------- | ---------------- | ----------------------------- | -------------------- |
-    | Moonshot    | `moonshot/`      | `https://api.moonshot.ai/v1`  | `MOONSHOT_API_KEY`   |
-    | Moonshot CN | `moonshot/`      | `https://api.moonshot.cn/v1`  | `MOONSHOT_API_KEY`   |
-    | Kimi Coding | `kimi/`          | Endpoint Kimi Coding          | `KIMI_API_KEY`       |
-    | Web search  | N/A              | Sama seperti region API Moonshot | `KIMI_API_KEY` atau `MOONSHOT_API_KEY` |
+  <Accordion title="Referensi endpoint dan ref model">
+    | Penyedia   | Prefiks ref model | Endpoint                      | Variabel env autentikasi |
+    | ---------- | ----------------- | ----------------------------- | ------------------------ |
+    | Moonshot   | `moonshot/`       | `https://api.moonshot.ai/v1`  | `MOONSHOT_API_KEY`       |
+    | Moonshot CN| `moonshot/`       | `https://api.moonshot.cn/v1`  | `MOONSHOT_API_KEY`       |
+    | Kimi Coding| `kimi/`           | Endpoint Kimi Coding          | `KIMI_API_KEY`           |
+    | Pencarian web | N/A           | Sama seperti wilayah API Moonshot | `KIMI_API_KEY` atau `MOONSHOT_API_KEY` |
 
     - Pencarian web Kimi menggunakan `KIMI_API_KEY` atau `MOONSHOT_API_KEY`, dan secara default menggunakan `https://api.moonshot.ai/v1` dengan model `kimi-k2.6`.
-    - Ganti metadata harga dan context di `models.providers` jika diperlukan.
-    - Jika Moonshot memublikasikan batas context yang berbeda untuk suatu model, sesuaikan `contextWindow` sebagaimana mestinya.
+    - Timpa metadata harga dan konteks di `models.providers` jika diperlukan.
+    - Jika Moonshot memublikasikan batas konteks yang berbeda untuk sebuah model, sesuaikan `contextWindow` sebagaimana mestinya.
 
   </Accordion>
 </AccordionGroup>
@@ -406,15 +404,15 @@ Config berada di bawah `plugins.entries.moonshot.config.webSearch`:
 
 <CardGroup cols={2}>
   <Card title="Pemilihan model" href="/id/concepts/model-providers" icon="layers">
-    Memilih provider, model ref, dan perilaku failover.
+    Memilih penyedia, ref model, dan perilaku failover.
   </Card>
   <Card title="Pencarian web" href="/id/tools/web" icon="magnifying-glass">
-    Mengonfigurasi provider pencarian web termasuk Kimi.
+    Mengonfigurasi penyedia pencarian web termasuk Kimi.
   </Card>
   <Card title="Referensi konfigurasi" href="/id/gateway/configuration-reference" icon="gear">
-    Skema config lengkap untuk provider, model, dan plugin.
+    Skema konfigurasi lengkap untuk penyedia, model, dan plugin.
   </Card>
   <Card title="Moonshot Open Platform" href="https://platform.moonshot.ai" icon="globe">
-    Pengelolaan API key dan dokumentasi Moonshot.
+    Pengelolaan kunci API Moonshot dan dokumentasi.
   </Card>
 </CardGroup>

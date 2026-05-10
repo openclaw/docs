@@ -1,29 +1,29 @@
 ---
 read_when:
     - راستی‌آزمایی پوشش اعتبارنامه‌های SecretRef
-    - ممیزی واجد شرایط بودن یک اعتبارنامه برای `secrets configure` یا `secrets apply`
-    - در حال بررسی اینکه چرا یک اعتبارنامه خارج از سطح پشتیبانی‌شده است
-summary: سطح رسمی اعتبارنامهٔ SecretRef پشتیبانی‌شده در برابر پشتیبانی‌نشده
-title: سطح اعتبارنامه SecretRef
+    - حسابرسی اینکه آیا یک اعتبارنامه واجد شرایط `secrets configure` یا `secrets apply` است
+    - بررسی اینکه چرا یک اعتبارنامه خارج از سطح پشتیبانی‌شده است
+summary: سطح متعارف اعتبارنامه‌های SecretRef پشتیبانی‌شده در برابر پشتیبانی‌نشده
+title: سطح اعتبارنامهٔ SecretRef
 x-i18n:
-    generated_at: "2026-05-03T11:44:47Z"
+    generated_at: "2026-05-10T20:06:41Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8f95ca284f241e40f233fc9e388c26be094dd8bc878daf8a420453ef65b0ad6d
+    source_hash: 2778ea781f7b6fc4d579892225f9cf29bfb8f9ece5961554620ca8e82123ceff
     source_path: reference/secretref-credential-surface.md
     workflow: 16
 ---
 
-این صفحه سطح معتبر اعتبارنامه‌ی SecretRef را تعریف می‌کند.
+این صفحه سطح متعارف اعتبارنامه‌های SecretRef را تعریف می‌کند.
 
-قصد دامنه:
+هدف دامنه:
 
-- در دامنه: صرفاً اعتبارنامه‌های ارائه‌شده توسط کاربر که OpenClaw آن‌ها را صادر یا چرخش نمی‌کند.
-- خارج از دامنه: اعتبارنامه‌های صادرشده در زمان اجرا یا دارای چرخش، مواد refresh مربوط به OAuth، و مصنوعات شبیه نشست.
+- در دامنه: صرفا اعتبارنامه‌های ارائه‌شده توسط کاربر که OpenClaw آن‌ها را صادر یا چرخشی نمی‌کند.
+- خارج از دامنه: اعتبارنامه‌های صادرشده یا چرخشی در زمان اجرا، مواد نوسازی OAuth، و مصنوعات شبیه نشست.
 
 ## اعتبارنامه‌های پشتیبانی‌شده
 
-### هدف‌های `openclaw.json` (`secrets configure` + `secrets apply` + `secrets audit`)
+### اهداف `openclaw.json` (`secrets configure` + `secrets apply` + `secrets audit`)
 
 [//]: # "secretref-supported-list-start"
 
@@ -89,8 +89,6 @@ x-i18n:
 - `channels.irc.nickserv.password`
 - `channels.irc.accounts.*.password`
 - `channels.irc.accounts.*.nickserv.password`
-- `channels.bluebubbles.password`
-- `channels.bluebubbles.accounts.*.password`
 - `channels.feishu.appSecret`
 - `channels.feishu.encryptKey`
 - `channels.feishu.verificationToken`
@@ -117,31 +115,31 @@ x-i18n:
 - `channels.googlechat.serviceAccount` از طریق همتای `serviceAccountRef` (استثنای سازگاری)
 - `channels.googlechat.accounts.*.serviceAccount` از طریق همتای `serviceAccountRef` (استثنای سازگاری)
 
-### هدف‌های `auth-profiles.json` (`secrets configure` + `secrets apply` + `secrets audit`)
+### اهداف `auth-profiles.json` (`secrets configure` + `secrets apply` + `secrets audit`)
 
-- `profiles.*.keyRef` (`type: "api_key"`؛ وقتی `auth.profiles.<id>.mode = "oauth"` باشد پشتیبانی نمی‌شود)
-- `profiles.*.tokenRef` (`type: "token"`؛ وقتی `auth.profiles.<id>.mode = "oauth"` باشد پشتیبانی نمی‌شود)
+- `profiles.*.keyRef` (`type: "api_key"`؛ زمانی که `auth.profiles.<id>.mode = "oauth"` باشد پشتیبانی نمی‌شود)
+- `profiles.*.tokenRef` (`type: "token"`؛ زمانی که `auth.profiles.<id>.mode = "oauth"` باشد پشتیبانی نمی‌شود)
 
 [//]: # "secretref-supported-list-end"
 
 نکته‌ها:
 
-- هدف‌های طرح auth-profile به `agentId` نیاز دارند.
-- ورودی‌های طرح `profiles.*.key` / `profiles.*.token` را هدف می‌گیرند و refهای همتا (`keyRef` / `tokenRef`) را می‌نویسند.
-- refهای auth-profile در تفکیک زمان اجرا و پوشش audit گنجانده می‌شوند.
-- در `openclaw.json`، SecretRefها باید از شیءهای ساخت‌یافته مانند `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}` استفاده کنند. رشته‌های نشانگر قدیمی `secretref-env:<ENV_VAR>` در مسیرهای اعتبارنامه‌ی SecretRef رد می‌شوند؛ برای مهاجرت نشانگرهای معتبر، `openclaw doctor --fix` را اجرا کنید.
-- نگهبان سیاست OAuth: `auth.profiles.<id>.mode = "oauth"` نمی‌تواند با ورودی‌های SecretRef برای همان profile ترکیب شود. startup/reload و تفکیک auth-profile وقتی این سیاست نقض شود سریعاً شکست می‌خورند.
-- برای ارائه‌دهندگان مدل مدیریت‌شده با SecretRef، ورودی‌های تولیدشده‌ی `agents/*/agent/models.json` نشانگرهای غیرمحرمانه (نه مقدارهای محرمانه‌ی تفکیک‌شده) را برای سطح‌های `apiKey`/header نگه می‌دارند.
-- پایداری نشانگر بر اساس منبع معتبر است: OpenClaw نشانگرها را از snapshot پیکربندی منبع فعال (پیش از تفکیک) می‌نویسد، نه از مقدارهای محرمانه‌ی تفکیک‌شده در زمان اجرا.
+- اهداف طرح پروفایل احراز هویت به `agentId` نیاز دارند.
+- ورودی‌های طرح `profiles.*.key` / `profiles.*.token` را هدف می‌گیرند و ارجاع‌های همتا (`keyRef` / `tokenRef`) را می‌نویسند.
+- ارجاع‌های پروفایل احراز هویت در پوشش رفع ارجاع زمان اجرا و ممیزی گنجانده شده‌اند.
+- در `openclaw.json`، SecretRefها باید از اشیای ساختاریافته مانند `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}` استفاده کنند. رشته‌های نشانگر قدیمی `secretref-env:<ENV_VAR>` در مسیرهای اعتبارنامه SecretRef رد می‌شوند؛ برای مهاجرت نشانگرهای معتبر، `openclaw doctor --fix` را اجرا کنید.
+- محافظ خط‌مشی OAuth: `auth.profiles.<id>.mode = "oauth"` نمی‌تواند برای آن پروفایل با ورودی‌های SecretRef ترکیب شود. هنگامی که این خط‌مشی نقض شود، راه‌اندازی/بارگذاری دوباره و رفع ارجاع پروفایل احراز هویت به‌سرعت شکست می‌خورند.
+- برای ارائه‌دهندگان مدل مدیریت‌شده با SecretRef، ورودی‌های تولیدشده `agents/*/agent/models.json` نشانگرهای غیرمحرمانه (نه مقادیر محرمانه رفع‌ارجاع‌شده) را برای سطوح `apiKey`/سرآیند نگه می‌دارند.
+- ماندگاری نشانگر بر اساس منبع معتبر است: OpenClaw نشانگرها را از snapshot پیکربندی منبع فعال (پیش از رفع ارجاع) می‌نویسد، نه از مقادیر محرمانه رفع‌ارجاع‌شده زمان اجرا.
 - برای جست‌وجوی وب:
-  - در حالت ارائه‌دهنده‌ی صریح (`tools.web.search.provider` تنظیم شده)، فقط کلید ارائه‌دهنده‌ی انتخاب‌شده فعال است.
-  - در حالت خودکار (`tools.web.search.provider` تنظیم نشده)، فقط نخستین کلید ارائه‌دهنده‌ای که بر اساس تقدم تفکیک می‌شود فعال است.
-  - در حالت خودکار، refهای ارائه‌دهنده‌های انتخاب‌نشده تا زمان انتخاب غیرفعال تلقی می‌شوند.
-  - مسیرهای قدیمی ارائه‌دهنده‌ی `tools.web.search.*` همچنان در پنجره‌ی سازگاری تفکیک می‌شوند، اما سطح معتبر SecretRef برابر با `plugins.entries.<plugin>.config.webSearch.*` است.
+  - در حالت ارائه‌دهنده صریح (وقتی `tools.web.search.provider` تنظیم شده باشد)، فقط کلید ارائه‌دهنده انتخاب‌شده فعال است.
+  - در حالت خودکار (وقتی `tools.web.search.provider` تنظیم نشده باشد)، فقط نخستین کلید ارائه‌دهنده که طبق اولویت رفع ارجاع می‌شود فعال است.
+  - در حالت خودکار، ارجاع‌های ارائه‌دهندگان انتخاب‌نشده تا زمان انتخاب‌شدن غیرفعال تلقی می‌شوند.
+  - مسیرهای ارائه‌دهنده قدیمی `tools.web.search.*` همچنان در بازه سازگاری رفع ارجاع می‌شوند، اما سطح متعارف SecretRef برابر با `plugins.entries.<plugin>.config.webSearch.*` است.
 
 ## اعتبارنامه‌های پشتیبانی‌نشده
 
-اعتبارنامه‌های خارج از دامنه شامل موارد زیر هستند:
+اعتبارنامه‌های خارج از دامنه شامل این موارد هستند:
 
 [//]: # "secretref-unsupported-list-start"
 
@@ -159,9 +157,9 @@ x-i18n:
 
 دلیل:
 
-- این اعتبارنامه‌ها از کلاس‌هایی هستند که صادرشده، دارای چرخش، حامل نشست، یا ماندگار در OAuth هستند و با تفکیک SecretRef خارجی فقط‌خواندنی سازگار نیستند.
+- این اعتبارنامه‌ها از دسته‌هایی هستند که صادر می‌شوند، چرخشی می‌شوند، حامل نشست هستند، یا با OAuth بادوام‌اند و با رفع ارجاع خارجی و فقط‌خواندنی SecretRef سازگار نیستند.
 
 ## مرتبط
 
-- [مدیریت رازها](/fa/gateway/secrets)
-- [معناشناسی اعتبارنامه‌ی احراز هویت](/fa/auth-credential-semantics)
+- [مدیریت اسرار](/fa/gateway/secrets)
+- [معناشناسی اعتبارنامه احراز هویت](/fa/auth-credential-semantics)

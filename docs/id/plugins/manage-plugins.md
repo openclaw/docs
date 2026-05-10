@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Anda menginginkan contoh singkat untuk menginstal, mencantumkan, memperbarui, atau menghapus Plugin
-    - Anda ingin memilih antara ClawHub dan distribusi Plugin npm
+    - Anda menginginkan contoh cepat untuk menginstal, menampilkan daftar, memperbarui, atau menghapus instalan plugin
+    - Anda ingin memilih antara distribusi Plugin melalui ClawHub dan npm
     - Anda sedang menerbitkan paket Plugin
 sidebarTitle: Manage plugins
-summary: Contoh cepat untuk memasang, menampilkan daftar, menghapus pemasangan, memperbarui, dan memublikasikan Plugin OpenClaw
+summary: Contoh singkat untuk memasang, menampilkan daftar, mencopot pemasangan, memperbarui, dan memublikasikan Plugin OpenClaw
 title: Kelola Plugin
 x-i18n:
-    generated_at: "2026-05-06T17:58:48Z"
+    generated_at: "2026-05-10T19:44:34Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 265777b03434dd07caee6191765c34e17fda4c8347e0327c2f37d47f9dd7a054
+    source_hash: 5f666a8196c802190dfd69e8b6a679a47db22f97c4c14d2f9fed73e8fb1ffe5a
     source_path: plugins/manage-plugins.md
     workflow: 16
 ---
 
-Sebagian besar alur kerja Plugin hanya terdiri dari beberapa perintah: mencari, memasang, memulai ulang Gateway,
-memverifikasi, dan mencopot pemasangan saat Anda tidak lagi membutuhkan Plugin tersebut.
+Sebagian besar alur kerja plugin hanya terdiri dari beberapa perintah: cari, instal, mulai ulang Gateway,
+verifikasi, dan hapus instalasi saat Anda tidak lagi memerlukan plugin tersebut.
 
-## Daftar Plugin
+## Cantumkan plugin
 
 ```bash
 openclaw plugins list
@@ -28,7 +28,7 @@ openclaw plugins list --json
 ```
 
 Gunakan `--json` untuk skrip. Ini menyertakan diagnostik registri dan
-`dependencyStatus` statis setiap Plugin saat paket Plugin mendeklarasikan
+`dependencyStatus` statis setiap plugin saat paket plugin mendeklarasikan
 `dependencies` atau `optionalDependencies`.
 
 ```bash
@@ -36,12 +36,11 @@ openclaw plugins list --json \
   | jq '.plugins[] | {id, enabled, format, source, dependencyStatus}'
 ```
 
-`plugins list` adalah pemeriksaan inventaris dingin. Ini menampilkan apa yang
-dapat ditemukan OpenClaw dari konfigurasi, manifes, dan registri Plugin; ini
-tidak membuktikan bahwa proses Gateway yang sudah berjalan telah mengimpor
-runtime Plugin.
+`plugins list` adalah pemeriksaan inventaris dingin. Ini menampilkan apa yang dapat ditemukan OpenClaw
+dari konfigurasi, manifes, dan registri plugin; ini tidak membuktikan bahwa
+proses Gateway yang sudah berjalan telah mengimpor runtime plugin.
 
-## Pasang Plugin
+## Instal plugin
 
 ```bash
 # Search ClawHub for plugin packages.
@@ -66,18 +65,18 @@ openclaw plugins install ./my-plugin
 openclaw plugins install --link ./my-plugin
 ```
 
-Setelah memasang kode Plugin, mulai ulang Gateway yang melayani channel Anda:
+Setelah menginstal kode plugin, mulai ulang Gateway yang melayani saluran Anda:
 
 ```bash
 openclaw gateway restart
 openclaw plugins inspect <plugin-id> --runtime --json
 ```
 
-Gunakan `inspect --runtime` saat Anda membutuhkan bukti bahwa Plugin telah
-mendaftarkan permukaan runtime seperti alat, hook, layanan, metode Gateway, atau
-perintah CLI milik Plugin.
+Gunakan `inspect --runtime` saat Anda memerlukan bukti bahwa plugin mendaftarkan
+permukaan runtime seperti alat, hook, layanan, metode Gateway, atau perintah CLI
+milik plugin.
 
-## Perbarui Plugin
+## Perbarui plugin
 
 ```bash
 openclaw plugins update <plugin-id>
@@ -85,27 +84,26 @@ openclaw plugins update <npm-package-or-spec>
 openclaw plugins update --all
 ```
 
-Jika sebuah Plugin dipasang dari npm dist-tag seperti `@beta`, panggilan
-`update <plugin-id>` berikutnya akan menggunakan ulang tag yang tercatat itu.
-Meneruskan spec npm eksplisit akan mengalihkan pemasangan yang dilacak ke spec
-tersebut untuk pembaruan mendatang.
+Jika sebuah plugin diinstal dari dist-tag npm seperti `@beta`, pemanggilan
+`update <plugin-id>` berikutnya menggunakan kembali tag yang tercatat tersebut. Meneruskan spec npm eksplisit
+mengalihkan instalasi yang dilacak ke spec tersebut untuk pembaruan mendatang.
 
 ```bash
 openclaw plugins update @scope/openclaw-plugin@beta
 openclaw plugins update @scope/openclaw-plugin
 ```
 
-Perintah kedua memindahkan Plugin kembali ke jalur rilis default registri saat
-sebelumnya dipin ke versi atau tag yang tepat.
+Perintah kedua memindahkan plugin kembali ke jalur rilis default registri
+saat sebelumnya dipin ke versi atau tag yang tepat.
 
-Saat `openclaw update` berjalan di channel beta, catatan Plugin npm dan ClawHub
-jalur default akan mencoba rilis Plugin `@beta` yang cocok terlebih dahulu. Jika
-rilis beta tersebut tidak ada, OpenClaw kembali ke spec default/latest yang
-tercatat. Untuk Plugin npm, OpenClaw juga melakukan fallback saat paket beta ada
-tetapi gagal validasi pemasangan. Versi tepat dan tag eksplisit seperti `@rc`
-atau `@beta` dipertahankan.
+Saat `openclaw update` berjalan pada saluran beta, catatan plugin npm dan ClawHub
+jalur default mencoba rilis plugin `@beta` yang cocok terlebih dahulu. Jika rilis beta
+tersebut tidak ada, OpenClaw beralih ke spec default/latest yang tercatat.
+Untuk plugin npm, OpenClaw juga beralih saat paket beta ada tetapi gagal
+validasi instalasi. Versi tepat dan tag eksplisit seperti `@rc` atau `@beta`
+dipertahankan.
 
-## Copot Plugin
+## Hapus instalasi plugin
 
 ```bash
 openclaw plugins uninstall <plugin-id> --dry-run
@@ -114,26 +112,25 @@ openclaw plugins uninstall <plugin-id> --keep-files
 openclaw gateway restart
 ```
 
-Pencopotan menghapus entri konfigurasi Plugin, catatan indeks Plugin, entri
-daftar izin/tolak, dan jalur muat tertaut saat berlaku. Direktori pemasangan
-terkelola dihapus kecuali Anda meneruskan `--keep-files`.
+Penghapusan instalasi menghapus entri konfigurasi plugin, catatan indeks plugin, entri daftar
+izinkan/tolak, dan jalur pemuatan tertaut bila berlaku. Direktori instalasi terkelola
+dihapus kecuali Anda meneruskan `--keep-files`.
 
-Dalam mode Nix (`OPENCLAW_NIX_MODE=1`), perintah pemasangan, pembaruan,
-pencopotan, pengaktifan, dan penonaktifan Plugin dinonaktifkan. Kelola pilihan
-tersebut di sumber Nix untuk pemasangannya; untuk nix-openclaw, gunakan
-[Mulai Cepat](https://github.com/openclaw/nix-openclaw#quick-start) yang
-mengutamakan agen.
+Dalam mode Nix (`OPENCLAW_NIX_MODE=1`), perintah instal, perbarui, hapus instalasi, aktifkan,
+dan nonaktifkan plugin dinonaktifkan. Kelola pilihan tersebut di sumber Nix untuk
+instalasi sebagai gantinya; untuk nix-openclaw, gunakan
+[Mulai Cepat](https://github.com/openclaw/nix-openclaw#quick-start) yang mengutamakan agen.
 
-## Publikasikan Plugin
+## Publikasikan plugin
 
-Anda dapat memublikasikan Plugin eksternal ke [ClawHub](https://clawhub.ai),
-npmjs.com, atau keduanya.
+Anda dapat memublikasikan plugin eksternal ke [ClawHub](https://clawhub.ai), npmjs.com, atau
+keduanya.
 
 ### Publikasikan ke ClawHub
 
-ClawHub adalah permukaan penemuan publik utama untuk Plugin OpenClaw. Ini
-memberikan metadata yang dapat dicari, riwayat versi, dan hasil pemindaian
-registri kepada pengguna sebelum pemasangan.
+ClawHub adalah permukaan penemuan publik utama untuk plugin OpenClaw. Ini memberi
+pengguna metadata yang dapat dicari, riwayat versi, dan hasil pemindaian registri sebelum
+instalasi.
 
 ```bash
 npm i -g clawhub
@@ -143,7 +140,7 @@ clawhub package publish your-org/your-plugin
 clawhub package publish your-org/your-plugin@v1.0.0
 ```
 
-Pengguna memasang dari ClawHub dengan:
+Pengguna menginstal dari ClawHub dengan:
 
 ```bash
 openclaw plugins install clawhub:<package>
@@ -154,8 +151,8 @@ Bentuk polos tetap memeriksa ClawHub terlebih dahulu.
 
 ### Publikasikan ke npmjs.com
 
-Plugin npm native harus menyertakan manifes Plugin dan metadata entrypoint
-OpenClaw `package.json`.
+Plugin npm native harus menyertakan manifes plugin dan metadata entrypoint OpenClaw
+`package.json`.
 
 ```json package.json
 {
@@ -172,7 +169,7 @@ OpenClaw `package.json`.
 npm publish --access public
 ```
 
-Pengguna memasang yang hanya npm dengan:
+Pengguna menginstal hanya-npm dengan:
 
 ```bash
 openclaw plugins install npm:@acme/openclaw-plugin
@@ -180,23 +177,22 @@ openclaw plugins install npm:@acme/openclaw-plugin@beta
 openclaw plugins install npm:@acme/openclaw-plugin@1.0.0
 ```
 
-Jika paket yang sama juga tersedia di ClawHub, `npm:` melewati pencarian ClawHub
-dan memaksa resolusi npm.
+Jika paket yang sama juga tersedia di ClawHub, `npm:` melewati pencarian ClawHub dan
+memaksa resolusi npm.
 
-## Pilihan Sumber
+## Pilihan sumber
 
-- **ClawHub**: gunakan saat Anda menginginkan penemuan native OpenClaw,
-  ringkasan pemindaian, versi, dan petunjuk pemasangan.
-- **npmjs.com**: gunakan saat Anda sudah mengirimkan paket JavaScript atau
-  membutuhkan alur kerja dist-tag/registri privat npm.
-- **Git**: gunakan saat Anda ingin memasang langsung dari branch, tag, atau commit.
-- **Jalur lokal**: gunakan saat Anda sedang mengembangkan atau menguji Plugin di
-  mesin yang sama.
+- **ClawHub**: gunakan saat Anda menginginkan penemuan native OpenClaw, ringkasan pemindaian,
+  versi, dan petunjuk instalasi.
+- **npmjs.com**: gunakan saat Anda sudah mengirimkan paket JavaScript atau memerlukan
+  alur kerja dist-tag npm/registri privat.
+- **Git**: gunakan saat Anda ingin menginstal langsung dari branch, tag, atau commit.
+- **Jalur lokal**: gunakan saat Anda mengembangkan atau menguji plugin di mesin yang sama.
 
 ## Terkait
 
 - [Plugin](/id/tools/plugin) - ikhtisar dan pemecahan masalah
 - [`openclaw plugins`](/id/cli/plugins) - referensi CLI lengkap
-- [ClawHub](/id/tools/clawhub) - operasi publikasi dan registri
-- [Membangun Plugin](/id/plugins/building-plugins) - buat paket Plugin
-- [Manifes Plugin](/id/plugins/manifest) - manifes dan metadata paket
+- [ClawHub](/id/clawhub/cli) - publikasi dan operasi registri
+- [Membangun plugin](/id/plugins/building-plugins) - buat paket plugin
+- [Manifes plugin](/id/plugins/manifest) - metadata manifes dan paket

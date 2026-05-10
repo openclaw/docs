@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Konfigurowanie tej samej listy dozwolonych elementów w wielu kanałach wiadomości
-    - Reguły dostępu nadawców w wiadomościach prywatnych i grupach dotyczące udostępniania
+    - Konfigurowanie tej samej listy dozwolonych w wielu kanałach wiadomości
+    - Reguły udostępniania dostępu nadawcy w wiadomościach prywatnych i grupach
     - Przegląd kontroli dostępu do kanałów wiadomości
 summary: Listy dozwolonych nadawców wielokrotnego użytku dla kanałów wiadomości
 title: Grupy dostępu
 x-i18n:
-    generated_at: "2026-05-02T09:42:38Z"
+    generated_at: "2026-05-10T19:21:12Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fc7bc1d4fb80e5c5d4e72b190d49821aa93ced575eafcf89864ac800e8558f94
+    source_hash: 1dba4fc84deb6e0c8c7b17ebc10182aa6e4bc2c821070e33df44f384e285266f
     source_path: channels/access-groups.md
     workflow: 16
 ---
 
-Grupy dostępu to nazwane listy nadawców, które definiujesz raz i odwołujesz się do nich z list dozwolonych kanałów za pomocą `accessGroup:<name>`.
+Grupy dostępu to nazwane listy nadawców, które definiujesz raz i do których odwołujesz się z list dozwolonych kanałów za pomocą `accessGroup:<name>`.
 
-Używaj ich, gdy te same osoby powinny być dozwolone w kilku kanałach wiadomości albo gdy jeden zaufany zestaw powinien dotyczyć zarówno autoryzacji nadawców w wiadomościach prywatnych, jak i w grupach.
+Używaj ich, gdy te same osoby powinny mieć dostęp w kilku kanałach wiadomości albo gdy jeden zaufany zestaw ma obowiązywać zarówno dla autoryzacji nadawców w DM, jak i w grupach.
 
-Grupy dostępu same nie przyznają dostępu. Grupa ma znaczenie tylko wtedy, gdy odwołuje się do niej pole listy dozwolonych.
+Grupy dostępu same z siebie nie przyznają dostępu. Grupa ma znaczenie tylko wtedy, gdy odwołuje się do niej pole listy dozwolonych.
 
 ## Statyczne grupy nadawców wiadomości
 
@@ -45,9 +45,9 @@ Listy członków są indeksowane według identyfikatora kanału wiadomości:
 | Klucz      | Znaczenie                                                                 |
 | ---------- | ------------------------------------------------------------------------- |
 | `"*"`      | Wspólne wpisy sprawdzane dla każdego kanału wiadomości, który odwołuje się do grupy. |
-| `discord`  | Wpisy sprawdzane tylko przy dopasowywaniu listy dozwolonych dla Discord.  |
-| `telegram` | Wpisy sprawdzane tylko przy dopasowywaniu listy dozwolonych dla Telegram. |
-| `whatsapp` | Wpisy sprawdzane tylko przy dopasowywaniu listy dozwolonych dla WhatsApp. |
+| `discord`  | Wpisy sprawdzane tylko przy dopasowywaniu listy dozwolonych Discord.      |
+| `telegram` | Wpisy sprawdzane tylko przy dopasowywaniu listy dozwolonych Telegram.     |
+| `whatsapp` | Wpisy sprawdzane tylko przy dopasowywaniu listy dozwolonych WhatsApp.     |
 
 Wpisy są dopasowywane zgodnie ze zwykłymi regułami `allowFrom` kanału docelowego. OpenClaw nie tłumaczy identyfikatorów nadawców między kanałami. Jeśli Alice ma identyfikator Telegram i identyfikator Discord, podaj oba identyfikatory pod odpowiednimi kluczami.
 
@@ -55,7 +55,7 @@ Wpisy są dopasowywane zgodnie ze zwykłymi regułami `allowFrom` kanału docelo
 
 Odwołaj się do grupy za pomocą `accessGroup:<name>` wszędzie tam, gdzie ścieżka kanału wiadomości obsługuje listy dozwolonych nadawców.
 
-Przykład listy dozwolonych dla wiadomości prywatnych:
+Przykład listy dozwolonych dla DM:
 
 ```json5
 {
@@ -81,7 +81,7 @@ Przykład listy dozwolonych dla wiadomości prywatnych:
 }
 ```
 
-Przykład listy dozwolonych nadawców grupowych:
+Przykład listy dozwolonych nadawców w grupie:
 
 ```json5
 {
@@ -110,7 +110,7 @@ Przykład listy dozwolonych nadawców grupowych:
 }
 ```
 
-Możesz łączyć grupy i bezpośrednie wpisy:
+Możesz łączyć grupy i wpisy bezpośrednie:
 
 ```json5
 {
@@ -127,16 +127,35 @@ Możesz łączyć grupy i bezpośrednie wpisy:
 
 Grupy dostępu są dostępne we współdzielonych ścieżkach autoryzacji kanałów wiadomości, w tym:
 
-- listach dozwolonych nadawców wiadomości prywatnych, takich jak `channels.<channel>.allowFrom`
-- listach dozwolonych nadawców grupowych, takich jak `channels.<channel>.groupAllowFrom`
-- specyficznych dla kanału listach dozwolonych nadawców dla poszczególnych pokojów, które używają tych samych reguł dopasowywania nadawców
-- ścieżkach autoryzacji poleceń, które ponownie używają list dozwolonych nadawców kanałów wiadomości
+- listach dozwolonych nadawców DM, takich jak `channels.<channel>.allowFrom`
+- listach dozwolonych nadawców w grupach, takich jak `channels.<channel>.groupAllowFrom`
+- specyficznych dla kanału listach dozwolonych nadawców dla poszczególnych pokoi, które używają tych samych reguł dopasowywania nadawców
+- ścieżkach autoryzacji poleceń, które ponownie używają list dozwolonych nadawców kanału wiadomości
 
-Obsługa kanału zależy od tego, czy dany kanał jest podłączony przez współdzielonych pomocników autoryzacji nadawców OpenClaw. Obecnie wbudowana obsługa obejmuje Discord, Google Chat, Nostr, WhatsApp, Zalo i Zalo Personal. Statyczne grupy `message.senders` są zaprojektowane jako niezależne od kanału, więc nowe kanały wiadomości powinny je obsługiwać przez użycie współdzielonych pomocników SDK Plugin zamiast niestandardowego rozwijania list dozwolonych.
+Obsługa kanałów zależy od tego, czy dany kanał jest podłączony przez współdzielone pomocniki autoryzacji nadawców OpenClaw. Aktualna obsługa wbudowana obejmuje Discord, Feishu, Google Chat, iMessage, LINE, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQBot, Signal, WhatsApp, Zalo i Zalo Personal. Statyczne grupy `message.senders` są zaprojektowane jako niezależne od kanału, więc nowe kanały wiadomości powinny je obsługiwać, używając współdzielonych pomocników SDK Plugin zamiast niestandardowego rozwijania list dozwolonych.
+
+## Diagnostyka Plugin
+
+Autorzy Plugin mogą sprawdzać ustrukturyzowany stan grup dostępu bez rozwijania go z powrotem do płaskiej listy dozwolonych:
+
+```typescript
+import { resolveAccessGroupAllowFromState } from "openclaw/plugin-sdk/security-runtime";
+
+const state = await resolveAccessGroupAllowFromState({
+  accessGroups: cfg.accessGroups,
+  allowFrom: channelConfig.allowFrom,
+  channel: "my-channel",
+  accountId: "default",
+  senderId,
+  isSenderAllowed,
+});
+```
+
+Wynik raportuje grupy, do których się odwołano, dopasowane, brakujące, nieobsługiwane i zakończone niepowodzeniem. Użyj tego, gdy potrzebujesz diagnostyki lub testów zgodności. Używaj `expandAllowFromWithAccessGroups(...)` tylko dla ścieżek kompatybilności, które nadal oczekują płaskiej tablicy `allowFrom`.
 
 ## Odbiorcy kanału Discord
 
-Discord obsługuje też dynamiczny typ grupy dostępu:
+Discord obsługuje także dynamiczny typ grupy dostępu:
 
 ```json5
 {
@@ -157,24 +176,24 @@ Discord obsługuje też dynamiczny typ grupy dostępu:
 }
 ```
 
-`discord.channelAudience` oznacza „zezwalaj nadawcom wiadomości prywatnych Discord, którzy obecnie mogą wyświetlać ten kanał gildii”. OpenClaw rozwiązuje nadawcę przez Discord w czasie autoryzacji i stosuje reguły uprawnień Discord `ViewChannel`.
+`discord.channelAudience` oznacza „zezwól nadawcom DM Discord, którzy obecnie mogą wyświetlać ten kanał gildii”. OpenClaw rozpoznaje nadawcę przez Discord w czasie autoryzacji i stosuje reguły uprawnień Discord `ViewChannel`.
 
-Użyj tego, gdy kanał Discord jest już źródłem prawdy dla zespołu, takim jak `#maintainers` albo `#on-call`.
+Użyj tego, gdy kanał Discord jest już źródłem prawdy dla zespołu, takim jak `#maintainers` lub `#on-call`.
 
 Wymagania i zachowanie w razie niepowodzenia:
 
 - Bot potrzebuje dostępu do gildii i kanału.
-- Bot potrzebuje opcji **Server Members Intent** w Discord Developer Portal.
-- Grupa dostępu nie zezwala na dostęp, gdy Discord zwraca `Missing Access`, nie można rozwiązać nadawcy jako członka gildii albo kanał należy do innej gildii.
+- Bot potrzebuje **Server Members Intent** w Discord Developer Portal.
+- Grupa dostępu odmawia dostępu w razie niepowodzenia, gdy Discord zwraca `Missing Access`, nadawcy nie można rozpoznać jako członka gildii albo kanał należy do innej gildii.
 
 Więcej przykładów specyficznych dla Discord: [Kontrola dostępu Discord](/pl/channels/discord#access-control-and-routing)
 
 ## Uwagi dotyczące bezpieczeństwa
 
-- Grupy dostępu są aliasami list dozwolonych, a nie rolami. Same nie tworzą właścicieli, nie zatwierdzają próśb o parowanie ani nie przyznają uprawnień do narzędzi.
-- `dmPolicy: "open"` nadal wymaga `"*"` na efektywnej liście dozwolonych dla wiadomości prywatnych. Odwołanie się do grupy dostępu nie jest tym samym co dostęp publiczny.
-- Brakujące nazwy grup nie zezwalają na dostęp. Jeśli `allowFrom` zawiera `accessGroup:operators`, a `accessGroups.operators` nie istnieje, ten wpis nikogo nie autoryzuje.
-- Utrzymuj identyfikatory kanałów stabilne. Preferuj identyfikatory numeryczne lub identyfikatory użytkowników zamiast nazw wyświetlanych, gdy kanał obsługuje oba warianty.
+- Grupy dostępu są aliasami list dozwolonych, nie rolami. Same z siebie nie tworzą właścicieli, nie zatwierdzają próśb o parowanie ani nie przyznają uprawnień do narzędzi.
+- `dmPolicy: "open"` nadal wymaga `"*"` w efektywnej liście dozwolonych DM. Odwołanie do grupy dostępu nie jest tym samym co dostęp publiczny.
+- Brakujące nazwy grup odmawiają dostępu w razie niepowodzenia. Jeśli `allowFrom` zawiera `accessGroup:operators`, a `accessGroups.operators` nie istnieje, ten wpis nie autoryzuje nikogo.
+- Utrzymuj stabilne identyfikatory kanałów. Preferuj identyfikatory numeryczne/użytkowników zamiast nazw wyświetlanych, gdy kanał obsługuje oba warianty.
 
 ## Rozwiązywanie problemów
 
@@ -183,7 +202,7 @@ Jeśli nadawca powinien pasować, ale jest blokowany:
 1. Potwierdź, że pole listy dozwolonych zawiera dokładne odwołanie `accessGroup:<name>`.
 2. Potwierdź, że `accessGroups.<name>.type` jest poprawne.
 3. Potwierdź, że identyfikator nadawcy jest wymieniony pod pasującym kluczem kanału albo pod `"*"`.
-4. Potwierdź, że wpis używa zwykłej składni listy dozwolonych tego kanału.
+4. Potwierdź, że wpis używa zwykłej składni listy dozwolonych dla tego kanału.
 5. W przypadku odbiorców kanału Discord potwierdź, że bot widzi kanał gildii i ma włączone Server Members Intent.
 
-Uruchom `openclaw doctor` po edycji konfiguracji kontroli dostępu. Wykrywa wiele nieprawidłowych kombinacji list dozwolonych i zasad przed wykonaniem.
+Uruchom `openclaw doctor` po edycji konfiguracji kontroli dostępu. Wykrywa wiele nieprawidłowych kombinacji list dozwolonych i zasad przed uruchomieniem.

@@ -1,29 +1,58 @@
 ---
 read_when:
-    - Vuoi usare Gradium per la sintesi vocale in OpenClaw
-    - Ti servono la chiave API di Gradium o la configurazione della voce
-summary: Usa la sintesi vocale di Gradium in OpenClaw
+    - Ti serve Gradium per la sintesi vocale
+    - È necessaria la configurazione della chiave API Gradium, della voce o del token di direttiva
+summary: Usare la sintesi vocale Gradium in OpenClaw
 title: Gradium
 x-i18n:
-    generated_at: "2026-04-25T13:55:37Z"
-    model: gpt-5.4
+    generated_at: "2026-05-10T19:49:19Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: ed836c836ad4e5f5033fa982b28341ce0b37f6972a8eb1bb5a2b0b5619859bcb
+    source_hash: 5c79da6ec63532061a8112965a679f1113bbefcc91ee00def8153dd39b5b5e58
     source_path: providers/gradium.md
-    workflow: 15
+    workflow: 16
 ---
 
-Gradium è un provider di sintesi vocale incluso per OpenClaw. Può generare normali risposte audio, output Opus compatibile con i messaggi vocali e audio u-law a 8 kHz per le superfici di telefonia.
+[Gradium](https://gradium.ai) è un provider di sintesi vocale incluso in OpenClaw. Il plugin può generare normali risposte audio (WAV), output Opus compatibile con note vocali e audio u-law a 8 kHz per superfici di telefonia.
+
+| Proprietà      | Valore                               |
+| -------------- | ------------------------------------ |
+| ID provider    | `gradium`                            |
+| Autenticazione | `GRADIUM_API_KEY` o config `apiKey`  |
+| URL di base    | `https://api.gradium.ai` (default)   |
+| Voce predefinita | `Emma` (`YTpq7expH9539ERJ`)        |
 
 ## Configurazione
 
-Crea una chiave API Gradium, quindi esponila a OpenClaw:
+Crea una chiave API Gradium, quindi esponila a OpenClaw con una variabile d'ambiente o con la chiave di configurazione.
 
-```bash
-export GRADIUM_API_KEY="gsk_..."
-```
+<Tabs>
+  <Tab title="Variabile d'ambiente">
+    ```bash
+    export GRADIUM_API_KEY="gsk_..."
+    ```
+  </Tab>
 
-Puoi anche salvare la chiave nella configurazione in `messages.tts.providers.gradium.apiKey`.
+  <Tab title="Chiave di configurazione">
+    ```json5
+    {
+      messages: {
+        tts: {
+          auto: "always",
+          provider: "gradium",
+          providers: {
+            gradium: {
+              apiKey: "${GRADIUM_API_KEY}",
+            },
+          },
+        },
+      },
+    }
+    ```
+  </Tab>
+</Tabs>
+
+Il plugin controlla prima l'`apiKey` risolta e, in alternativa, usa la variabile d'ambiente `GRADIUM_API_KEY`.
 
 ## Configurazione
 
@@ -45,6 +74,14 @@ Puoi anche salvare la chiave nella configurazione in `messages.tts.providers.gra
 }
 ```
 
+| Chiave                                   | Tipo   | Descrizione                                                                                   |
+| ---------------------------------------- | ------ | --------------------------------------------------------------------------------------------- |
+| `messages.tts.providers.gradium.apiKey`  | string | Chiave API risolta. Supporta `${ENV}` e riferimenti a segreti.                                |
+| `messages.tts.providers.gradium.baseUrl` | string | Sovrascrive l'origine API. Le barre finali vengono rimosse. Il valore predefinito è `https://api.gradium.ai`. |
+| `messages.tts.providers.gradium.voiceId` | string | ID della voce predefinita usato quando non è presente alcuna sovrascrittura tramite direttiva. |
+
+Il formato audio di output viene selezionato automaticamente dal runtime in base alla superficie di destinazione e non è configurabile da `openclaw.json`. Vedi [Output](#output) sotto.
+
 ## Voci
 
 | Nome      | ID voce            |
@@ -59,11 +96,33 @@ Puoi anche salvare la chiave nella configurazione in `messages.tts.providers.gra
 
 Voce predefinita: Emma.
 
+### Sovrascrittura della voce per messaggio
+
+Quando la policy vocale attiva consente le sovrascritture della voce, puoi cambiare voce inline usando un token direttiva. Tutti questi vengono risolti nella stessa sovrascrittura di `voiceId`:
+
+```text
+/voice:LFZvm12tW_z0xfGo
+/voice_id:LFZvm12tW_z0xfGo
+/voiceid:LFZvm12tW_z0xfGo
+/gradium_voice:LFZvm12tW_z0xfGo
+/gradiumvoice:LFZvm12tW_z0xfGo
+```
+
+Se la policy vocale disabilita le sovrascritture della voce, la direttiva viene consumata ma ignorata.
+
 ## Output
 
-- Le risposte come file audio usano WAV.
-- Le risposte come messaggi vocali usano Opus e sono contrassegnate come compatibili con i messaggi vocali.
-- La sintesi per la telefonia usa `ulaw_8000` a 8 kHz.
+Il runtime sceglie il formato di output dalla superficie di destinazione. Oggi il provider non sintetizza altri formati.
+
+| Destinazione   | Formato     | Estensione file | Frequenza di campionamento | Flag compatibile con voce |
+| -------------- | ----------- | --------------- | --------------------------- | ------------------------- |
+| Audio standard | `wav`       | `.wav`          | provider                    | no                        |
+| Nota vocale    | `opus`      | `.opus`         | provider                    | sì                        |
+| Telefonia      | `ulaw_8000` | n/d             | 8 kHz                       | n/d                       |
+
+## Ordine di selezione automatica
+
+Tra i provider TTS configurati, l'ordine di selezione automatica di Gradium è `30`. Vedi [Sintesi vocale](/it/tools/tts) per sapere come OpenClaw sceglie il provider attivo quando `messages.tts.provider` non è fissato.
 
 ## Correlati
 

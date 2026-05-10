@@ -1,22 +1,22 @@
 ---
 read_when:
     - Você quer inspecionar, auditar ou cancelar registros de tarefas em segundo plano
-    - Você está documentando comandos do Task Flow em `openclaw tasks flow`
+    - Você está documentando os comandos do TaskFlow em `openclaw tasks flow`
 summary: Referência da CLI para `openclaw tasks` (registro de tarefas em segundo plano e estado do Task Flow)
 title: '`openclaw tasks`'
 x-i18n:
-    generated_at: "2026-05-07T13:15:02Z"
+    generated_at: "2026-05-10T19:29:35Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ca3f05d7c2a3fa7790ad6059ce15721ebffb548ac4a2c627188ac17986442dc6
+    source_hash: 7bbb97690124a8e59ec5e6a517f33166ad449ee6268894ab132ad9cb69dcaa81
     source_path: cli/tasks.md
     workflow: 16
 ---
 
-Inspeciona tarefas em segundo plano persistentes e o estado do Task Flow. Sem subcomando,
+Inspecione tarefas duráveis em segundo plano e o estado do Task Flow. Sem subcomando,
 `openclaw tasks` é equivalente a `openclaw tasks list`.
 
-Consulte [Tarefas em segundo plano](/pt-BR/automation/tasks) para o ciclo de vida e o modelo de entrega.
+Consulte [Tarefas em segundo plano](/pt-BR/automation/tasks) para ver o ciclo de vida e o modelo de entrega.
 
 ## Uso
 
@@ -58,7 +58,7 @@ Lista as tarefas em segundo plano rastreadas, da mais recente para a mais antiga
 openclaw tasks show <lookup> [--json]
 ```
 
-Mostra uma tarefa por ID da tarefa, ID da execução ou chave da sessão.
+Mostra uma tarefa por ID da tarefa, ID de execução ou chave de sessão.
 
 ### `notify`
 
@@ -66,7 +66,7 @@ Mostra uma tarefa por ID da tarefa, ID da execução ou chave da sessão.
 openclaw tasks notify <lookup> <done_only|state_changes|silent>
 ```
 
-Altera a política de notificação para uma tarefa em execução.
+Altera a política de notificação de uma tarefa em execução.
 
 ### `cancel`
 
@@ -82,7 +82,7 @@ Cancela uma tarefa em segundo plano em execução.
 openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--json]
 ```
 
-Exibe registros de tarefas e do Task Flow obsoletos, perdidos, com falha de entrega ou inconsistentes de outra forma. Tarefas perdidas retidas até `cleanupAfter` são avisos; tarefas perdidas expiradas ou sem carimbo são erros.
+Expõe registros de tarefas e de Task Flow obsoletos, perdidos, com falha de entrega ou inconsistentes de outra forma. Tarefas perdidas retidas até `cleanupAfter` são avisos; tarefas perdidas expiradas ou sem carimbo são erros.
 
 ### `maintenance`
 
@@ -90,13 +90,17 @@ Exibe registros de tarefas e do Task Flow obsoletos, perdidos, com falha de entr
 openclaw tasks maintenance [--apply] [--json]
 ```
 
-Visualiza ou aplica a reconciliação de tarefas e do Task Flow, o carimbo de limpeza e a remoção.
-Para tarefas cron, a reconciliação usa logs de execução/estado do job persistidos antes de marcar uma
-tarefa ativa antiga como `lost`, para que execuções cron concluídas não se tornem erros falsos de auditoria
-só porque o estado em memória do runtime do Gateway desapareceu. A auditoria offline da CLI
-não é autoritativa para o conjunto de jobs cron ativos locais ao processo do Gateway. Tarefas da CLI
+Pré-visualiza ou aplica reconciliação de tarefas e de Task Flow, carimbo de limpeza, remoção,
+e limpeza de registro de sessões obsoletas de execuções Cron.
+Para tarefas Cron, a reconciliação usa logs de execução/estado de jobs persistidos antes de marcar uma
+tarefa ativa antiga como `lost`, para que execuções Cron concluídas não se tornem falsos erros de auditoria
+apenas porque o estado de runtime em memória do Gateway desapareceu. A auditoria offline da CLI
+não é autoritativa para o conjunto de jobs ativos de Cron local ao processo do Gateway. Tarefas da CLI
 com um ID de execução/ID de origem são marcadas como `lost` quando seu contexto de execução ativo do Gateway
 desaparece, mesmo que uma linha antiga de sessão filha permaneça.
+Quando aplicada, a manutenção também remove linhas do registro de sessões `cron:<jobId>:run:<uuid>`
+com mais de 7 dias, preservando jobs Cron em execução no momento e deixando
+linhas de sessão não Cron intocadas.
 
 ### `flow`
 
@@ -106,7 +110,7 @@ openclaw tasks flow show <lookup> [--json]
 openclaw tasks flow cancel <lookup>
 ```
 
-Inspeciona ou cancela o estado persistente do Task Flow no registro de tarefas.
+Inspeciona ou cancela o estado durável de Task Flow sob o ledger de tarefas.
 
 ## Relacionados
 

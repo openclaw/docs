@@ -2,19 +2,19 @@
 read_when:
     - Mempelajari cara mengonfigurasi OpenClaw
     - Mencari contoh konfigurasi
-    - Menyiapkan OpenClaw untuk pertama kali
-summary: Contoh konfigurasi yang akurat sesuai skema untuk penyiapan OpenClaw umum
+    - Menyiapkan OpenClaw untuk pertama kalinya
+summary: Contoh konfigurasi yang sesuai skema untuk penyiapan OpenClaw yang umum
 title: Contoh konfigurasi
 x-i18n:
-    generated_at: "2026-05-07T13:17:09Z"
+    generated_at: "2026-05-10T19:34:31Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 87c7e75841ee36121c764f1ed51b6547d0fccf7ed6c1f05895d916dbf93f061a
+    source_hash: 9fd1c93d8c491de13c3679c766293a3401853625308e90588d7c83272c5b6e73
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Contoh di bawah selaras dengan skema konfigurasi saat ini. Untuk referensi lengkap dan catatan per bidang, lihat [Konfigurasi](/id/gateway/configuration).
+Contoh di bawah ini diselaraskan dengan skema konfigurasi saat ini. Untuk referensi lengkap dan catatan per bidang, lihat [Konfigurasi](/id/gateway/configuration).
 
 ## Mulai cepat
 
@@ -29,7 +29,7 @@ Contoh di bawah selaras dengan skema konfigurasi saat ini. Untuk referensi lengk
 
 Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nomor tersebut.
 
-### Awal yang direkomendasikan
+### Awalan yang direkomendasikan
 
 ```json5
 {
@@ -59,7 +59,7 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
 
 ## Contoh diperluas (opsi utama)
 
-> JSON5 memungkinkan Anda menggunakan komentar dan koma akhir. JSON biasa juga berfungsi.
+> JSON5 memungkinkan Anda menggunakan komentar dan koma di akhir. JSON biasa juga berfungsi.
 
 ```json5
 {
@@ -454,10 +454,12 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
     allowBundled: ["gemini", "peekaboo"],
     load: {
       extraDirs: ["~/Projects/agent-scripts/skills"],
+      allowSymlinkTargets: ["~/Projects/agent-scripts/skills"],
     },
     install: {
       preferBrew: true,
       nodeManager: "npm", // npm | pnpm | yarn | bun
+      allowUploadedArchives: false,
     },
     entries: {
       "image-lab": {
@@ -470,6 +472,25 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
   },
 }
 ```
+
+### Repo skill saudara yang disymlink
+
+Gunakan ini saat root skill bawaan berisi symlink ke repo saudara, misalnya `~/.agents/skills/manager -> ~/Projects/manager/skills`.
+
+```json5
+{
+  skills: {
+    load: {
+      extraDirs: ["~/Projects/manager/skills"],
+      allowSymlinkTargets: ["~/Projects/manager/skills"],
+    },
+  },
+}
+```
+
+- `extraDirs` memindai repo saudara sebagai root skill eksplisit.
+- `allowSymlinkTargets` memungkinkan folder skill yang disymlink diselesaikan ke
+  root target nyata tepercaya tersebut tanpa mengizinkan escape symlink sembarang.
 
 ## Pola umum
 
@@ -492,9 +513,9 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
 
 - `agents.defaults.skills` adalah baseline bersama.
 - `agents.list[].skills` menggantikan baseline tersebut untuk satu agen.
-- Gunakan `skills: []` ketika agen tidak boleh melihat skills apa pun.
+- Gunakan `skills: []` ketika agen tidak boleh melihat skill apa pun.
 
-### Penyiapan multi-platform
+### Penyiapan lintas platform
 
 ```json5
 {
@@ -517,7 +538,9 @@ Simpan ke `~/.openclaw/openclaw.json` dan Anda dapat mengirim DM ke bot dari nom
 
 ### Persetujuan otomatis jaringan Node tepercaya
 
-Biarkan pemasangan perangkat tetap manual kecuali Anda mengendalikan jalur jaringan. Untuk lab khusus atau subnet tailnet, Anda dapat memilih ikut serta dalam persetujuan otomatis perangkat Node pertama kali dengan CIDR atau IP yang tepat:
+Biarkan pemasangan perangkat tetap manual kecuali Anda mengendalikan jalur jaringan. Untuk
+lab khusus atau subnet tailnet, Anda dapat ikut serta dalam persetujuan otomatis
+perangkat Node pertama kali dengan CIDR atau IP yang tepat:
 
 ```json5
 {
@@ -531,11 +554,13 @@ Biarkan pemasangan perangkat tetap manual kecuali Anda mengendalikan jalur jarin
 }
 ```
 
-Ini tetap nonaktif jika tidak ditetapkan. Ini hanya berlaku untuk pemasangan `role: node` baru tanpa scope yang diminta. Klien operator/browser serta peningkatan role, scope, metadata, atau public-key tetap memerlukan persetujuan manual.
+Ini tetap nonaktif jika tidak diatur. Ini hanya berlaku untuk pemasangan `role: node` baru dengan
+tanpa scope yang diminta. Klien operator/browser dan peningkatan role, scope, metadata, atau
+public-key tetap memerlukan persetujuan manual.
 
-### Mode DM aman (kotak masuk bersama / DM multi-pengguna)
+### Mode DM aman (kotak masuk bersama / DM multipengguna)
 
-Jika lebih dari satu orang dapat mengirim DM ke bot Anda (beberapa entri di `allowFrom`, persetujuan pemasangan untuk beberapa orang, atau `dmPolicy: "open"`), aktifkan **mode DM aman** agar DM dari pengirim yang berbeda tidak berbagi satu konteks secara default:
+Jika lebih dari satu orang dapat mengirim DM ke bot Anda (beberapa entri di `allowFrom`, persetujuan pemasangan untuk beberapa orang, atau `dmPolicy: "open"`), aktifkan **mode DM aman** agar DM dari pengirim berbeda tidak berbagi satu konteks secara default:
 
 ```json5
 {
@@ -560,9 +585,9 @@ Jika lebih dari satu orang dapat mengirim DM ke bot Anda (beberapa entri di `all
 ```
 
 Untuk Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, otorisasi pengirim secara default mengutamakan ID.
-Aktifkan pencocokan nama/email/nick langsung yang dapat berubah dengan `dangerouslyAllowNameMatching: true` milik tiap channel hanya jika Anda secara eksplisit menerima risiko tersebut.
+Hanya aktifkan pencocokan nama/email/nick langsung yang dapat berubah dengan `dangerouslyAllowNameMatching: true` milik tiap channel jika Anda secara eksplisit menerima risiko tersebut.
 
-### Kunci API Anthropic + cadangan MiniMax
+### Kunci API Anthropic + fallback MiniMax
 
 ```json5
 {

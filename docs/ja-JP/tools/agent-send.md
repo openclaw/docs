@@ -1,19 +1,19 @@
 ---
 read_when:
-    - スクリプトまたはコマンドラインからエージェント実行をトリガーしたい
-    - エージェントの返信をプログラムからチャットチャネルに配信する必要がある
-summary: CLI からエージェントターンを実行し、任意で返信をチャネルへ配信します
+    - スクリプトまたはコマンドラインからエージェントの実行をトリガーしたい
+    - エージェントの返信をプログラムでチャットチャネルに配信する必要がある
+summary: CLI からエージェントターンを実行し、任意で返信をチャンネルに送信する
 title: エージェント送信
 x-i18n:
-    generated_at: "2026-05-06T05:19:21Z"
+    generated_at: "2026-05-10T19:53:25Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1339ebd74e2349669942ff93f200b53a69ad05f2186d6ff76437c779f312a291
+    source_hash: a2e1b05414312321e7136867bb8b998754d4a46289cc02764eb61d83f7239af1
     source_path: tools/agent-send.md
     workflow: 16
 ---
 
-`openclaw agent` は、受信チャットメッセージを必要とせずに、コマンドラインから単一のエージェントターンを実行します。スクリプト化されたワークフロー、テスト、プログラムによる配信に使用します。
+`openclaw agent` は、受信チャットメッセージを必要とせずにコマンドラインから単一のエージェントターンを実行します。スクリプト化されたワークフロー、テスト、プログラムによる配信に使用します。
 
 ## クイックスタート
 
@@ -23,7 +23,7 @@ x-i18n:
     openclaw agent --message "What is the weather today?"
     ```
 
-    これにより、メッセージが Gateway 経由で送信され、返信が出力されます。
+    これはメッセージを Gateway 経由で送信し、返信を出力します。
 
   </Step>
 
@@ -59,27 +59,28 @@ x-i18n:
 | フラグ                        | 説明                                                        |
 | ----------------------------- | ----------------------------------------------------------- |
 | `--message \<text\>`          | 送信するメッセージ（必須）                                  |
-| `--to \<dest\>`               | 対象（電話、チャット ID）からセッションキーを導出します      |
-| `--agent \<id\>`              | 設定済みエージェントを対象にします（その `main` セッションを使用） |
-| `--session-id \<id\>`         | ID で既存のセッションを再利用します                         |
-| `--local`                     | ローカルの組み込みランタイムを強制します（Gateway をスキップ） |
-| `--deliver`                   | 返信をチャットチャンネルに送信します                        |
-| `--channel \<name\>`          | 配信チャンネル（whatsapp、telegram、discord、slack など）    |
+| `--to \<dest\>`               | 対象（電話、チャット ID）からセッションキーを導出する       |
+| `--agent \<id\>`              | 設定済みエージェントを対象にする（その `main` セッションを使用） |
+| `--session-id \<id\>`         | ID で既存のセッションを再利用する                           |
+| `--local`                     | ローカルの組み込みランタイムを強制する（Gateway をスキップ） |
+| `--deliver`                   | 返信をチャットチャンネルに送信する                          |
+| `--channel \<name\>`          | 配信チャンネル（whatsapp、telegram、discord、slack など）   |
 | `--reply-to \<target\>`       | 配信先の上書き                                              |
 | `--reply-channel \<name\>`    | 配信チャンネルの上書き                                      |
 | `--reply-account \<id\>`      | 配信アカウント ID の上書き                                  |
-| `--thinking \<level\>`        | 選択したモデルプロファイルの思考レベルを設定します          |
-| `--verbose \<on\|full\|off\>` | 詳細出力レベルを設定します                                  |
-| `--timeout \<seconds\>`       | エージェントのタイムアウトを上書きします                    |
-| `--json`                      | 構造化 JSON を出力します                                    |
+| `--thinking \<level\>`        | 選択したモデルプロファイルの thinking レベルを設定する      |
+| `--verbose \<on\|full\|off\>` | verbose レベルを設定する                                    |
+| `--timeout \<seconds\>`       | エージェントのタイムアウトを上書きする                      |
+| `--json`                      | 構造化 JSON を出力する                                      |
 
 ## 動作
 
 - デフォルトでは、CLI は **Gateway 経由**で動作します。現在のマシン上の組み込みランタイムを強制するには `--local` を追加します。
 - Gateway に到達できない場合、CLI はローカルの組み込み実行に**フォールバック**します。
-- セッション選択: `--to` はセッションキーを導出します（グループ/チャンネル対象は分離を保持し、直接チャットは `main` に集約されます）。
-- thinking と verbose のフラグはセッションストアに保持されます。
+- セッション選択: `--to` はセッションキーを導出します（グループ/チャンネルの対象は分離を維持し、直接チャットは `main` に統合されます）。
+- thinking と verbose のフラグはセッションストアに永続化されます。
 - 出力: デフォルトはプレーンテキスト、構造化ペイロード + メタデータには `--json` を使用します。
+- `--json --deliver` を指定すると、JSON には送信済み、抑制済み、部分送信、送信失敗の配信ステータスが含まれます。[JSON 配信ステータス](/ja-JP/cli/agent#json-delivery-status)を参照してください。
 
 ## 例
 
@@ -98,10 +99,10 @@ openclaw agent --agent ops --message "Alert" --deliver --reply-channel telegram 
 
 <CardGroup cols={2}>
   <Card title="エージェント CLI リファレンス" href="/ja-JP/cli/agent" icon="terminal">
-    `openclaw agent` のすべてのフラグとオプションのリファレンス。
+    `openclaw agent` の全フラグとオプションのリファレンス。
   </Card>
   <Card title="サブエージェント" href="/ja-JP/tools/subagents" icon="users">
-    バックグラウンドでのサブエージェントの起動。
+    バックグラウンドでのサブエージェント生成。
   </Card>
   <Card title="セッション" href="/ja-JP/concepts/session" icon="comments">
     セッションキーの仕組みと、`--to`、`--agent`、`--session-id` がそれらを解決する方法。

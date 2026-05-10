@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Chcesz szybkich przykładów instalacji, wyświetlania listy, aktualizacji lub odinstalowania Plugin
-    - Chcesz wybrać między ClawHub a dystrybucją Pluginów przez npm
+    - Chcesz szybkie przykłady instalowania, wyświetlania listy, aktualizowania lub odinstalowywania pluginów
+    - Chcesz wybrać między dystrybucją Pluginów przez ClawHub a dystrybucją Pluginów przez npm
     - Publikujesz pakiet Plugin
 sidebarTitle: Manage plugins
 summary: Szybkie przykłady instalowania, wyświetlania, odinstalowywania, aktualizowania i publikowania Pluginów OpenClaw
 title: Zarządzanie pluginami
 x-i18n:
-    generated_at: "2026-05-06T17:59:24Z"
+    generated_at: "2026-05-10T19:46:25Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 265777b03434dd07caee6191765c34e17fda4c8347e0327c2f37d47f9dd7a054
+    source_hash: 5f666a8196c802190dfd69e8b6a679a47db22f97c4c14d2f9fed73e8fb1ffe5a
     source_path: plugins/manage-plugins.md
     workflow: 16
 ---
 
-Większość przepływów pracy z pluginami to kilka poleceń: wyszukiwanie, instalacja, ponowne uruchomienie Gateway,
+Większość przepływów pracy z Plugin to kilka poleceń: wyszukanie, instalacja, ponowne uruchomienie Gateway,
 weryfikacja i odinstalowanie, gdy Plugin nie jest już potrzebny.
 
-## Wyświetlanie listy pluginów
+## Lista Plugin
 
 ```bash
 openclaw plugins list
@@ -27,8 +27,8 @@ openclaw plugins list --verbose
 openclaw plugins list --json
 ```
 
-Użyj `--json` w skryptach. Obejmuje diagnostykę rejestru oraz statyczny
-`dependencyStatus` każdego pluginu, gdy pakiet pluginu deklaruje `dependencies` lub
+Użyj `--json` w skryptach. Zawiera diagnostykę rejestru oraz statyczny
+`dependencyStatus` każdego Plugin, gdy pakiet Plugin deklaruje `dependencies` lub
 `optionalDependencies`.
 
 ```bash
@@ -37,10 +37,10 @@ openclaw plugins list --json \
 ```
 
 `plugins list` to zimne sprawdzenie inwentarza. Pokazuje, co OpenClaw może wykryć
-z konfiguracji, manifestów i rejestru pluginów; nie dowodzi, że już uruchomiony
-proces Gateway zaimportował środowisko uruchomieniowe pluginu.
+z konfiguracji, manifestów i rejestru Plugin; nie dowodzi, że już działający
+proces Gateway zaimportował środowisko uruchomieniowe Plugin.
 
-## Instalowanie pluginów
+## Instalowanie Plugin
 
 ```bash
 # Search ClawHub for plugin packages.
@@ -65,7 +65,7 @@ openclaw plugins install ./my-plugin
 openclaw plugins install --link ./my-plugin
 ```
 
-Po zainstalowaniu kodu pluginu uruchom ponownie Gateway obsługujący Twoje kanały:
+Po zainstalowaniu kodu Plugin uruchom ponownie Gateway obsługujący Twoje kanały:
 
 ```bash
 openclaw gateway restart
@@ -73,10 +73,10 @@ openclaw plugins inspect <plugin-id> --runtime --json
 ```
 
 Użyj `inspect --runtime`, gdy potrzebujesz dowodu, że Plugin zarejestrował powierzchnie
-środowiska uruchomieniowego, takie jak narzędzia, haki, usługi, metody Gateway lub należące do pluginu
-polecenia CLI.
+środowiska uruchomieniowego, takie jak narzędzia, hooki, usługi, metody Gateway lub
+polecenia CLI należące do Plugin.
 
-## Aktualizowanie pluginów
+## Aktualizowanie Plugin
 
 ```bash
 openclaw plugins update <plugin-id>
@@ -84,8 +84,8 @@ openclaw plugins update <npm-package-or-spec>
 openclaw plugins update --all
 ```
 
-Jeśli Plugin został zainstalowany z dist-tagu npm, takiego jak `@beta`, późniejsze
-wywołania `update <plugin-id>` ponownie używają tego zapisanego tagu. Przekazanie jawnej specyfikacji npm
+Jeśli Plugin został zainstalowany z npm dist-tag, takiego jak `@beta`, późniejsze
+wywołania `update <plugin-id>` ponownie używają zapisanego tagu. Przekazanie jawnej specyfikacji npm
 przełącza śledzoną instalację na tę specyfikację dla przyszłych aktualizacji.
 
 ```bash
@@ -96,14 +96,14 @@ openclaw plugins update @scope/openclaw-plugin
 Drugie polecenie przenosi Plugin z powrotem do domyślnej linii wydań rejestru,
 gdy wcześniej był przypięty do dokładnej wersji lub tagu.
 
-Gdy `openclaw update` działa w kanale beta, rekordy pluginów npm i ClawHub
-z domyślnej linii najpierw próbują dopasowanego wydania pluginu `@beta`. Jeśli takie wydanie beta
+Gdy `openclaw update` działa w kanale beta, rekordy Plugin npm i ClawHub
+z domyślnej linii najpierw próbują dopasowanego wydania Plugin `@beta`. Jeśli takie wydanie beta
 nie istnieje, OpenClaw wraca do zapisanej domyślnej/najnowszej specyfikacji.
-W przypadku pluginów npm OpenClaw wraca również wtedy, gdy pakiet beta istnieje, ale nie przechodzi
+W przypadku Plugin npm OpenClaw wraca też wtedy, gdy pakiet beta istnieje, ale nie przechodzi
 walidacji instalacji. Dokładne wersje i jawne tagi, takie jak `@rc` lub `@beta`,
 są zachowywane.
 
-## Odinstalowywanie pluginów
+## Odinstalowywanie Plugin
 
 ```bash
 openclaw plugins uninstall <plugin-id> --dry-run
@@ -112,23 +112,23 @@ openclaw plugins uninstall <plugin-id> --keep-files
 openclaw gateway restart
 ```
 
-Odinstalowanie usuwa wpis konfiguracji pluginu, rekord indeksu pluginów, wpisy list
-zezwoleń/odmów oraz powiązane ścieżki ładowania, gdy ma to zastosowanie. Zarządzane katalogi instalacji są
+Odinstalowanie usuwa wpis konfiguracji Plugin, rekord indeksu Plugin, wpisy listy dozwolonych/zabronionych
+oraz połączone ścieżki ładowania, gdy ma to zastosowanie. Zarządzane katalogi instalacyjne są
 usuwane, chyba że przekażesz `--keep-files`.
 
-W trybie Nix (`OPENCLAW_NIX_MODE=1`) polecenia instalowania, aktualizowania, odinstalowywania, włączania
-i wyłączania pluginów są wyłączone. Zamiast tego zarządzaj tymi wyborami w źródle Nix dla
-instalacji; w przypadku nix-openclaw użyj ukierunkowanego na agenta
-[Szybkiego startu](https://github.com/openclaw/nix-openclaw#quick-start).
+W trybie Nix (`OPENCLAW_NIX_MODE=1`) polecenia instalacji, aktualizacji, odinstalowania, włączania
+i wyłączania Plugin są wyłączone. Zarządzaj tymi wyborami w źródle Nix dla
+instalacji; w przypadku nix-openclaw użyj najpierw agenta
+[Quick Start](https://github.com/openclaw/nix-openclaw#quick-start).
 
-## Publikowanie pluginów
+## Publikowanie Plugin
 
-Możesz publikować zewnętrzne pluginy w [ClawHub](https://clawhub.ai), npmjs.com albo
+Możesz publikować zewnętrzne Plugin w [ClawHub](https://clawhub.ai), npmjs.com lub
 w obu miejscach.
 
 ### Publikowanie w ClawHub
 
-ClawHub to podstawowa publiczna powierzchnia odkrywania pluginów OpenClaw. Zapewnia
+ClawHub to podstawowa publiczna powierzchnia odkrywania Plugin OpenClaw. Daje
 użytkownikom przeszukiwalne metadane, historię wersji i wyniki skanowania rejestru przed
 instalacją.
 
@@ -151,7 +151,7 @@ Forma bez prefiksu nadal najpierw sprawdza ClawHub.
 
 ### Publikowanie w npmjs.com
 
-Natywne pluginy npm muszą zawierać manifest pluginu oraz metadane punktu wejścia OpenClaw
+Natywne Plugin npm muszą zawierać manifest Plugin oraz metadane punktu wejścia OpenClaw
 w `package.json`.
 
 ```json package.json
@@ -169,7 +169,7 @@ w `package.json`.
 npm publish --access public
 ```
 
-Użytkownicy instalują tylko z npm za pomocą:
+Użytkownicy instalują wyłącznie z npm za pomocą:
 
 ```bash
 openclaw plugins install npm:@acme/openclaw-plugin
@@ -182,18 +182,18 @@ wymusza rozwiązywanie przez npm.
 
 ## Wybór źródła
 
-- **ClawHub**: użyj, gdy chcesz mieć natywne dla OpenClaw odkrywanie, podsumowania skanowania,
-  wersje i wskazówki instalacji.
-- **npmjs.com**: użyj, gdy już dostarczasz pakiety JavaScript albo potrzebujesz przepływów pracy
-  z dist-tagami npm/prywatnym rejestrem.
-- **Git**: użyj, gdy chcesz instalować bezpośrednio z gałęzi, tagu lub commitu.
-- **Ścieżka lokalna**: użyj, gdy tworzysz lub testujesz Plugin na tej samej
+- **ClawHub**: użyj, gdy chcesz natywnego dla OpenClaw odkrywania, podsumowań skanowania,
+  wersji i wskazówek instalacyjnych.
+- **npmjs.com**: użyj, gdy już publikujesz pakiety JavaScript lub potrzebujesz przepływów pracy npm
+  dist-tags/prywatnego rejestru.
+- **Git**: użyj, gdy chcesz instalować bezpośrednio z gałęzi, tagu lub commita.
+- **Ścieżka lokalna**: użyj, gdy rozwijasz lub testujesz Plugin na tej samej
   maszynie.
 
 ## Powiązane
 
-- [Pluginy](/pl/tools/plugin) - omówienie i rozwiązywanie problemów
+- [Plugin](/pl/tools/plugin) - omówienie i rozwiązywanie problemów
 - [`openclaw plugins`](/pl/cli/plugins) - pełna dokumentacja CLI
-- [ClawHub](/pl/tools/clawhub) - publikowanie i operacje rejestru
-- [Tworzenie pluginów](/pl/plugins/building-plugins) - tworzenie pakietu pluginu
-- [Manifest pluginu](/pl/plugins/manifest) - manifest i metadane pakietu
+- [ClawHub](/pl/clawhub/cli) - publikowanie i operacje rejestru
+- [Tworzenie Plugin](/pl/plugins/building-plugins) - tworzenie pakietu Plugin
+- [Manifest Plugin](/pl/plugins/manifest) - manifest i metadane pakietu

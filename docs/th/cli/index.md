@@ -1,62 +1,70 @@
 ---
 read_when:
     - การค้นหาคำสั่งย่อย `openclaw` ที่เหมาะสม
-    - ค้นหาแฟล็กส่วนกลางหรือกฎการจัดรูปแบบเอาต์พุต
-summary: 'ดัชนี CLI ของ OpenClaw: รายการคำสั่ง แฟล็กส่วนกลาง และลิงก์ไปยังหน้าของแต่ละคำสั่ง'
+    - การค้นหาแฟล็กส่วนกลางหรือกฎการจัดรูปแบบเอาต์พุต
+summary: 'ดัชนี OpenClaw CLI: รายการคำสั่ง แฟล็กส่วนกลาง และลิงก์ไปยังหน้าของแต่ละคำสั่ง'
 title: ข้อมูลอ้างอิง CLI
 x-i18n:
-    generated_at: "2026-04-30T09:43:18Z"
+    generated_at: "2026-05-10T19:30:04Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 522e0f156b919946756de6b933bb0a08374507401bf8639312daf52781927f33
+    source_hash: 34d37fea072d4f05098567456db832ecb93f40884892d8bc4b063319500933f5
     source_path: cli/index.md
     workflow: 16
 ---
 
-`openclaw` คือจุดเข้าใช้งานหลักของ CLI คำสั่งหลักแต่ละคำสั่งมีหน้าข้อมูลอ้างอิงเฉพาะ หรือมีเอกสารอยู่กับคำสั่งที่เป็น alias ของมัน ดัชนีนี้แสดงรายการคำสั่ง แฟล็กส่วนกลาง และกฎการจัดรูปแบบเอาต์พุตที่ใช้ทั่วทั้ง CLI
+`openclaw` คือจุดเข้าหลักของ CLI คำสั่งหลักแต่ละคำสั่งมีหน้าอ้างอิงเฉพาะ หรือได้รับการบันทึกไว้ร่วมกับคำสั่งที่เป็น alias ของมัน ดัชนีนี้แสดงรายการคำสั่ง แฟล็กส่วนกลาง และกฎการจัดรูปแบบเอาต์พุตที่ใช้ทั่วทั้ง CLI
+
+ใช้คำสั่งตั้งค่าตามเจตนา:
+
+- `openclaw setup` สร้างคอนฟิกพื้นฐานและ workspace โดยไม่ต้องผ่านโฟลว์ onboarding แบบมีคำแนะนำทั้งหมด
+- `openclaw onboard` คือเส้นทางเริ่มใช้งานครั้งแรกแบบมีคำแนะนำเต็มรูปแบบสำหรับ Gateway, การยืนยันตัวตนของโมเดล, workspace, ช่องทาง, Skills และสุขภาพระบบ
+- `openclaw configure` เปลี่ยนส่วนที่เจาะจงของการตั้งค่าที่มีอยู่ เช่น การยืนยันตัวตนของโมเดล, Gateway, ช่องทาง, Plugin หรือ Skills
+- `openclaw channels add` กำหนดค่าบัญชีช่องทางหลังจากมีพื้นฐานแล้ว รันโดยไม่ใส่แฟล็กเพื่อการตั้งค่าช่องทางแบบมีคำแนะนำ หรือใช้แฟล็กเฉพาะช่องทางสำหรับสคริปต์
 
 ## หน้าคำสั่ง
 
-| พื้นที่ | คำสั่ง |
+| พื้นที่               | คำสั่ง                                                                                                                                                                                                                                    |
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| การตั้งค่าและการเริ่มใช้งาน | [`crestodian`](/th/cli/crestodian) · [`setup`](/th/cli/setup) · [`onboard`](/th/cli/onboard) · [`configure`](/th/cli/configure) · [`config`](/th/cli/config) · [`completion`](/th/cli/completion) · [`doctor`](/th/cli/doctor) · [`dashboard`](/th/cli/dashboard) |
-| รีเซ็ตและถอนการติดตั้ง | [`backup`](/th/cli/backup) · [`reset`](/th/cli/reset) · [`uninstall`](/th/cli/uninstall) · [`update`](/th/cli/update) |
-| การรับส่งข้อความและเอเจนต์ | [`message`](/th/cli/message) · [`agent`](/th/cli/agent) · [`agents`](/th/cli/agents) · [`acp`](/th/cli/acp) · [`mcp`](/th/cli/mcp) |
-| สุขภาพระบบและเซสชัน | [`status`](/th/cli/status) · [`health`](/th/cli/health) · [`sessions`](/th/cli/sessions) |
-| Gateway และล็อก | [`gateway`](/th/cli/gateway) · [`logs`](/th/cli/logs) · [`system`](/th/cli/system) |
-| โมเดลและการอนุมาน | [`models`](/th/cli/models) · [`infer`](/th/cli/infer) · `capability` (alias สำหรับ [`infer`](/th/cli/infer)) · [`memory`](/th/cli/memory) · [`commitments`](/th/cli/commitments) · [`wiki`](/th/cli/wiki) |
-| เครือข่ายและโหนด | [`directory`](/th/cli/directory) · [`nodes`](/th/cli/nodes) · [`devices`](/th/cli/devices) · [`node`](/th/cli/node) |
-| รันไทม์และแซนด์บ็อกซ์ | [`approvals`](/th/cli/approvals) · `exec-policy` (ดู [`approvals`](/th/cli/approvals)) · [`sandbox`](/th/cli/sandbox) · [`tui`](/th/cli/tui) · `chat`/`terminal` (alias สำหรับ [`tui --local`](/th/cli/tui)) · [`browser`](/th/cli/browser) |
-| ระบบอัตโนมัติ | [`cron`](/th/cli/cron) · [`tasks`](/th/cli/tasks) · [`hooks`](/th/cli/hooks) · [`webhooks`](/th/cli/webhooks) |
-| การค้นพบและเอกสาร | [`dns`](/th/cli/dns) · [`docs`](/th/cli/docs) |
-| การจับคู่และช่องทาง | [`pairing`](/th/cli/pairing) · [`qr`](/th/cli/qr) · [`channels`](/th/cli/channels) |
-| ความปลอดภัยและ Plugins | [`security`](/th/cli/security) · [`secrets`](/th/cli/secrets) · [`skills`](/th/cli/skills) · [`plugins`](/th/cli/plugins) · [`proxy`](/th/cli/proxy) |
-| Alias แบบเดิม | [`daemon`](/th/cli/daemon) (บริการ Gateway) · [`clawbot`](/th/cli/clawbot) (namespace) |
-| Plugins (ไม่บังคับ) | [`voicecall`](/th/cli/voicecall) (หากติดตั้งแล้ว) |
+| การตั้งค่าและ onboarding | [`crestodian`](/th/cli/crestodian) · [`setup`](/th/cli/setup) · [`onboard`](/th/cli/onboard) · [`configure`](/th/cli/configure) · [`config`](/th/cli/config) · [`completion`](/th/cli/completion) · [`doctor`](/th/cli/doctor) · [`dashboard`](/th/cli/dashboard) |
+| รีเซ็ตและถอนการติดตั้ง | [`backup`](/th/cli/backup) · [`reset`](/th/cli/reset) · [`uninstall`](/th/cli/uninstall) · [`update`](/th/cli/update)                                                                                                                                 |
+| การส่งข้อความและ agent | [`message`](/th/cli/message) · [`agent`](/th/cli/agent) · [`agents`](/th/cli/agents) · [`acp`](/th/cli/acp) · [`mcp`](/th/cli/mcp)                                                                                                                       |
+| สุขภาพระบบและเซสชัน  | [`status`](/th/cli/status) · [`health`](/th/cli/health) · [`sessions`](/th/cli/sessions)                                                                                                                                                           |
+| Gateway และบันทึก    | [`gateway`](/th/cli/gateway) · [`logs`](/th/cli/logs) · [`system`](/th/cli/system)                                                                                                                                                                 |
+| โมเดลและการอนุมาน    | [`models`](/th/cli/models) · [`infer`](/th/cli/infer) · `capability` (alias ของ [`infer`](/th/cli/infer)) · [`memory`](/th/cli/memory) · [`commitments`](/th/cli/commitments) · [`wiki`](/th/cli/wiki)                                                      |
+| เครือข่ายและ Node    | [`directory`](/th/cli/directory) · [`nodes`](/th/cli/nodes) · [`devices`](/th/cli/devices) · [`node`](/th/cli/node)                                                                                                                                   |
+| รันไทม์และ sandbox   | [`approvals`](/th/cli/approvals) · `exec-policy` (ดู [`approvals`](/th/cli/approvals)) · [`sandbox`](/th/cli/sandbox) · [`tui`](/th/cli/tui) · `chat`/`terminal` (alias ของ [`tui --local`](/th/cli/tui)) · [`browser`](/th/cli/browser)                 |
+| ระบบอัตโนมัติ        | [`cron`](/th/cli/cron) · [`tasks`](/th/cli/tasks) · [`hooks`](/th/cli/hooks) · [`webhooks`](/th/cli/webhooks)                                                                                                                                         |
+| การค้นพบและเอกสาร    | [`dns`](/th/cli/dns) · [`docs`](/th/cli/docs)                                                                                                                                                                                                   |
+| การจับคู่และช่องทาง   | [`pairing`](/th/cli/pairing) · [`qr`](/th/cli/qr) · [`channels`](/th/cli/channels)                                                                                                                                                                 |
+| ความปลอดภัยและ Plugin | [`security`](/th/cli/security) · [`secrets`](/th/cli/secrets) · [`skills`](/th/cli/skills) · [`plugins`](/th/cli/plugins) · [`proxy`](/th/cli/proxy)                                                                                                     |
+| alias เดิม            | [`daemon`](/th/cli/daemon) (บริการ Gateway) · [`clawbot`](/th/cli/clawbot) (namespace)                                                                                                                                                         |
+| Plugin (ไม่บังคับ)   | [`path`](/th/cli/path) · [`voicecall`](/th/cli/voicecall) (หากติดตั้งแล้ว)                                                                                                                                                                      |
 
 ## แฟล็กส่วนกลาง
 
-| แฟล็ก | วัตถุประสงค์ |
+| แฟล็ก                   | วัตถุประสงค์                                                           |
 | ----------------------- | --------------------------------------------------------------------- |
-| `--dev` | แยกสถานะไว้ใต้ `~/.openclaw-dev` และเลื่อนพอร์ตเริ่มต้น |
-| `--profile <name>` | แยกสถานะไว้ใต้ `~/.openclaw-<name>` |
-| `--container <name>` | ระบุคอนเทนเนอร์ที่มีชื่อสำหรับการดำเนินการ |
-| `--no-color` | ปิดใช้สี ANSI (`NO_COLOR=1` ก็ได้รับการเคารพเช่นกัน) |
-| `--update` | รูปย่อสำหรับ [`openclaw update`](/th/cli/update) (เฉพาะการติดตั้งจากซอร์ส) |
-| `-V`, `--version`, `-v` | พิมพ์เวอร์ชันแล้วออก |
+| `--dev`                 | แยกสถานะไว้ใต้ `~/.openclaw-dev` และเลื่อนพอร์ตเริ่มต้น              |
+| `--profile <name>`      | แยกสถานะไว้ใต้ `~/.openclaw-<name>`                                   |
+| `--container <name>`    | กำหนดเป้าหมายคอนเทนเนอร์ที่ระบุชื่อสำหรับการประมวลผล                 |
+| `--no-color`            | ปิดใช้สี ANSI (`NO_COLOR=1` ก็ได้รับการรองรับเช่นกัน)                  |
+| `--update`              | รูปย่อของ [`openclaw update`](/th/cli/update) (สำหรับการติดตั้งจากซอร์สเท่านั้น) |
+| `-V`, `--version`, `-v` | พิมพ์เวอร์ชันแล้วออก                                                  |
 
 ## โหมดเอาต์พุต
 
-- สี ANSI และตัวบ่งชี้ความคืบหน้าจะแสดงผลเฉพาะในเซสชัน TTY
-- ไฮเปอร์ลิงก์ OSC-8 จะแสดงเป็นลิงก์ที่คลิกได้ในที่ที่รองรับ ไม่เช่นนั้น CLI จะย้อนกลับไปใช้ URL แบบข้อความธรรมดา
-- `--json` (และ `--plain` ในที่ที่รองรับ) จะปิดการจัดรูปแบบเพื่อให้ได้เอาต์พุตที่สะอาด
-- คำสั่งที่ทำงานนานจะแสดงตัวบ่งชี้ความคืบหน้า (OSC 9;4 เมื่อรองรับ)
+- สี ANSI และตัวบ่งชี้ความคืบหน้าจะแสดงเฉพาะในเซสชัน TTY
+- ไฮเปอร์ลิงก์ OSC-8 จะแสดงเป็นลิงก์ที่คลิกได้เมื่อรองรับ มิฉะนั้น
+  CLI จะย้อนกลับไปใช้ URL แบบธรรมดา
+- `--json` (และ `--plain` เมื่อรองรับ) จะปิดการจัดรูปแบบเพื่อเอาต์พุตที่สะอาด
+- คำสั่งที่รันนานจะแสดงตัวบ่งชี้ความคืบหน้า (OSC 9;4 เมื่อรองรับ)
 
-แหล่งความจริงของพาเลตต์: `src/terminal/palette.ts`.
+แหล่งความจริงของพาเลตต์: `src/terminal/palette.ts`
 
 ## ต้นไม้คำสั่ง
 
-<Accordion title="ต้นไม้คำสั่งทั้งหมด">
+<Accordion title="ต้นไม้คำสั่งแบบเต็ม">
 
 ```
 openclaw [--dev] [--profile <name>] <command>
@@ -124,6 +132,12 @@ openclaw [--dev] [--profile <name>] <command>
     status
     index
     search
+  path
+    resolve
+    find
+    set
+    validate
+    emit
   commitments
     list
     dismiss
@@ -353,7 +367,7 @@ openclaw [--dev] [--profile <name>] <command>
   terminal (alias: tui --local)
 ```
 
-Plugins สามารถเพิ่มคำสั่งระดับบนสุดเพิ่มเติมได้ (เช่น `openclaw voicecall`)
+Plugin สามารถเพิ่มคำสั่งระดับบนสุดเพิ่มเติมได้ (เช่น `openclaw voicecall`)
 
 </Accordion>
 
@@ -361,16 +375,20 @@ Plugins สามารถเพิ่มคำสั่งระดับบน
 
 ข้อความแชตรองรับคำสั่ง `/...` ดู [คำสั่ง slash](/th/tools/slash-commands)
 
-จุดเด่น:
+ไฮไลต์:
 
 - `/status` — การวินิจฉัยอย่างรวดเร็ว
 - `/trace` — บรรทัด trace/debug ของ Plugin ที่จำกัดขอบเขตตามเซสชัน
-- `/config` — การเปลี่ยนแปลง config ที่บันทึกคงอยู่
-- `/debug` — การแทนที่ config เฉพาะรันไทม์ (หน่วยความจำ ไม่ใช่ดิสก์ ต้องใช้ `commands.debug: true`)
+- `/config` — การเปลี่ยนแปลงคอนฟิกที่บันทึกถาวร
+- `/debug` — การ override คอนฟิกรันไทม์เท่านั้น (ในหน่วยความจำ ไม่ใช่ดิสก์ ต้องมี `commands.debug: true`)
 
 ## การติดตามการใช้งาน
 
-`openclaw status --usage` และ Control UI จะแสดงการใช้งาน/โควตาของผู้ให้บริการเมื่อมีข้อมูลรับรอง OAuth/API ข้อมูลมาจาก endpoints การใช้งานของผู้ให้บริการโดยตรง และถูกทำให้เป็นมาตรฐานเป็น `X% left` ผู้ให้บริการที่มีหน้าต่างการใช้งานปัจจุบัน: Anthropic, GitHub Copilot, Gemini CLI, OpenAI Codex, MiniMax, Xiaomi และ z.ai
+`openclaw status --usage` และ Control UI จะแสดงการใช้งาน/โควตาของผู้ให้บริการเมื่อมี
+ข้อมูลยืนยันตัวตน OAuth/API ข้อมูลมาจาก endpoint การใช้งานของผู้ให้บริการโดยตรง
+และถูกทำให้เป็นรูปแบบมาตรฐานเป็น `X% left` ผู้ให้บริการที่มีหน้าต่างการใช้งานปัจจุบัน:
+Anthropic, GitHub Copilot, Gemini CLI, OpenAI Codex, MiniMax,
+Xiaomi และ z.ai
 
 ดูรายละเอียดที่ [การติดตามการใช้งาน](/th/concepts/usage-tracking)
 

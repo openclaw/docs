@@ -1,67 +1,67 @@
 ---
 read_when:
-    - De Gateway-bedieningsinterface buiten localhost beschikbaar maken
+    - De Gateway-beheerinterface buiten localhost beschikbaar maken
     - Toegang tot tailnet of openbaar dashboard automatiseren
 summary: Geïntegreerde Tailscale Serve/Funnel voor het Gateway-dashboard
 title: Tailscale
 x-i18n:
-    generated_at: "2026-05-06T17:56:10Z"
+    generated_at: "2026-05-10T19:38:33Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 89a2094dc5d9250b3af2dcc991e83099bdf6fc4039c86358ca57f7e58899196d
+    source_hash: e3a90145b9884f31d43fabaddabe17e6ba017dabaec6e6e7d263dacefb33f1b6
     source_path: gateway/tailscale.md
     workflow: 16
 ---
 
-OpenClaw kan Tailscale **Serve** (tailnet) of **Funnel** (openbaar) automatisch configureren voor het
+OpenClaw kan Tailscale **Serve** (tailnet) of **Funnel** (publiek) automatisch configureren voor het
 Gateway-dashboard en de WebSocket-poort. Hierdoor blijft de Gateway gebonden aan loopback terwijl
-Tailscale HTTPS, routering en (voor Serve) identiteitsheaders biedt.
+Tailscale HTTPS, routering en (voor Serve) identiteitsheaders levert.
 
 ## Modi
 
-- `serve`: Serve alleen voor tailnet via `tailscale serve`. De gateway blijft op `127.0.0.1`.
-- `funnel`: Openbare HTTPS via `tailscale funnel`. OpenClaw vereist een gedeeld wachtwoord.
-- `off`: Standaard (geen Tailscale-automatisering).
+- `serve`: alleen-tailnet Serve via `tailscale serve`. De gateway blijft op `127.0.0.1`.
+- `funnel`: publieke HTTPS via `tailscale funnel`. OpenClaw vereist een gedeeld wachtwoord.
+- `off`: standaard (geen Tailscale-automatisering).
 
-Status- en audituitvoer gebruiken **Tailscale-blootstelling** voor deze OpenClaw Serve/Funnel
+Status- en audituitvoer gebruiken **Tailscale-blootstelling** voor deze OpenClaw Serve/Funnel-
 modus. `off` betekent dat OpenClaw Serve of Funnel niet beheert; het betekent niet dat de
-lokale Tailscale-daemon is gestopt of uitgelogd.
+lokale Tailscale-daemon is gestopt of is uitgelogd.
 
-## Auth
+## Authenticatie
 
 Stel `gateway.auth.mode` in om de handshake te beheren:
 
 - `none` (alleen private ingress)
 - `token` (standaard wanneer `OPENCLAW_GATEWAY_TOKEN` is ingesteld)
 - `password` (gedeeld geheim via `OPENCLAW_GATEWAY_PASSWORD` of configuratie)
-- `trusted-proxy` (identiteitsbewuste reverse proxy; zie [Vertrouwde proxy-auth](/nl/gateway/trusted-proxy-auth))
+- `trusted-proxy` (identiteitsbewuste reverse proxy; zie [Authenticatie via vertrouwde proxy](/nl/gateway/trusted-proxy-auth))
 
 Wanneer `tailscale.mode = "serve"` en `gateway.auth.allowTailscale` `true` is,
-kan Control UI/WebSocket-auth gebruikmaken van Tailscale-identiteitsheaders
-(`tailscale-user-login`) zonder een token/wachtwoord te leveren. OpenClaw verifieert
-de identiteit door het `x-forwarded-for`-adres via de lokale Tailscale-
-daemon (`tailscale whois`) op te lossen en dit met de header te vergelijken voordat het wordt geaccepteerd.
-OpenClaw behandelt een request alleen als Serve wanneer het vanaf loopback binnenkomt met
-Tailscale's `x-forwarded-for`, `x-forwarded-proto` en `x-forwarded-host`
+kan authenticatie voor de Control UI/WebSocket Tailscale-identiteitsheaders
+(`tailscale-user-login`) gebruiken zonder een token/wachtwoord op te geven. OpenClaw verifieert
+de identiteit door het `x-forwarded-for`-adres op te lossen via de lokale Tailscale-
+daemon (`tailscale whois`) en het te vergelijken met de header voordat deze wordt geaccepteerd.
+OpenClaw behandelt een aanvraag alleen als Serve wanneer deze vanaf loopback binnenkomt met
+Tailscale's `x-forwarded-for`, `x-forwarded-proto` en `x-forwarded-host`-
 headers.
 Voor Control UI-operatorsessies die browserapparaatidentiteit bevatten, slaat dit
-geverifieerde Serve-pad ook de device-pairing-rondgang over. Het omzeilt
+geverifieerde Serve-pad ook de retourstap voor apparaatkoppeling over. Het omzeilt
 browserapparaatidentiteit niet: clients zonder apparaat worden nog steeds geweigerd, en node-rol-
-of niet-Control UI-WebSocket-verbindingen volgen nog steeds de normale pairing- en
-auth-controles.
-HTTP API-endpoints (bijvoorbeeld `/v1/*`, `/tools/invoke` en `/api/channels/*`)
-gebruiken **geen** Tailscale-auth via identiteitsheaders. Ze volgen nog steeds de normale
-HTTP-authmodus van de gateway: standaard auth met gedeeld geheim, of een bewust
-geconfigureerde trusted-proxy / private-ingress `none`-instelling.
-Deze tokenloze flow gaat ervan uit dat de gatewayhost vertrouwd is. Als niet-vertrouwde lokale code
-op dezelfde host kan draaien, schakel dan `gateway.auth.allowTailscale` uit en vereis
-in plaats daarvan token-/wachtwoord-auth.
-Om expliciete inloggegevens met gedeeld geheim te vereisen, stel `gateway.auth.allowTailscale: false`
+of niet-Control UI-WebSocket-verbindingen volgen nog steeds de normale koppelings- en
+authenticatiecontroles.
+HTTP API-eindpunten (bijvoorbeeld `/v1/*`, `/tools/invoke` en `/api/channels/*`)
+gebruiken **geen** authenticatie via Tailscale-identiteitsheaders. Ze volgen nog steeds de
+normale HTTP-authenticatiemodus van de gateway: standaard authenticatie met gedeeld geheim,
+of een bewust geconfigureerde trusted-proxy- / private-ingress-`none`-opzet.
+Deze tokenloze stroom gaat ervan uit dat de gatewayhost wordt vertrouwd. Als niet-vertrouwde lokale code
+op dezelfde host kan worden uitgevoerd, schakel dan `gateway.auth.allowTailscale` uit en vereis
+in plaats daarvan token-/wachtwoordauthenticatie.
+Om expliciete referenties met gedeeld geheim te vereisen, stel `gateway.auth.allowTailscale: false`
 in en gebruik `gateway.auth.mode: "token"` of `"password"`.
 
 ## Configuratievoorbeelden
 
-### Alleen tailnet (Serve)
+### Alleen-tailnet (Serve)
 
 ```json5
 {
@@ -74,9 +74,9 @@ in en gebruik `gateway.auth.mode: "token"` of `"password"`.
 
 Open: `https://<magicdns>/` (of je geconfigureerde `gateway.controlUi.basePath`)
 
-### Alleen tailnet (binden aan Tailnet-IP)
+### Alleen-tailnet (binden aan Tailnet-IP)
 
-Gebruik dit wanneer je wilt dat de Gateway rechtstreeks op het Tailnet-IP luistert (geen Serve/Funnel).
+Gebruik dit wanneer je wilt dat de Gateway rechtstreeks luistert op het Tailnet-IP (geen Serve/Funnel).
 
 ```json5
 {
@@ -96,7 +96,7 @@ Maak verbinding vanaf een ander Tailnet-apparaat:
 Loopback (`http://127.0.0.1:18789`) werkt **niet** in deze modus.
 </Note>
 
-### Openbaar internet (Funnel + gedeeld wachtwoord)
+### Publiek internet (Funnel + gedeeld wachtwoord)
 
 ```json5
 {
@@ -120,39 +120,44 @@ openclaw gateway --tailscale funnel --auth password
 ## Opmerkingen
 
 - Tailscale Serve/Funnel vereist dat de `tailscale` CLI is geïnstalleerd en ingelogd.
-- `tailscale.mode: "funnel"` weigert te starten tenzij de authmodus `password` is om openbare blootstelling te voorkomen.
-- Stel `gateway.tailscale.resetOnExit` in als je wilt dat OpenClaw de `tailscale serve`-
-  of `tailscale funnel`-configuratie bij het afsluiten ongedaan maakt.
+- `tailscale.mode: "funnel"` weigert te starten tenzij de authenticatiemodus `password` is, om publieke blootstelling te voorkomen.
+- Stel `gateway.tailscale.resetOnExit` in als je wilt dat OpenClaw de configuratie van `tailscale serve`
+  of `tailscale funnel` ongedaan maakt bij afsluiten.
+- Stel `gateway.tailscale.preserveFunnel: true` in om een extern geconfigureerde
+  `tailscale funnel`-route actief te houden tijdens gateway-herstarts. Wanneer dit is ingeschakeld en de
+  gateway draait in `mode: "serve"`, controleert OpenClaw `tailscale funnel status`
+  voordat Serve opnieuw wordt toegepast en slaat dit over wanneer een Funnel-route de
+  gatewaypoort al afdekt. Het door OpenClaw beheerde beleid voor Funnel met alleen wachtwoord blijft ongewijzigd.
 - `gateway.bind: "tailnet"` is een directe Tailnet-binding (geen HTTPS, geen Serve/Funnel).
-- `gateway.bind: "auto"` geeft de voorkeur aan loopback; gebruik `tailnet` als je alleen Tailnet wilt.
-- Serve/Funnel stellen alleen de **Gateway control UI + WS** bloot. Nodes maken verbinding via
-  hetzelfde Gateway WS-endpoint, dus Serve kan werken voor node-toegang.
+- `gateway.bind: "auto"` geeft de voorkeur aan loopback; gebruik `tailnet` als je alleen-tailnet wilt.
+- Serve/Funnel stellen alleen de **Gateway Control UI + WS** bloot. Nodes maken verbinding via
+  hetzelfde Gateway WS-eindpunt, dus Serve kan werken voor nodetoegang.
 
 ## Browserbesturing (externe Gateway + lokale browser)
 
-Als je de Gateway op één machine draait maar een browser op een andere machine wilt aansturen,
-draai dan een **nodehost** op de browsermachine en houd beide op hetzelfde tailnet.
+Als je de Gateway op de ene machine draait maar een browser op een andere machine wilt aansturen,
+draai dan een **nodehost** op de browsermachine en houd beide op dezelfde tailnet.
 De Gateway proxyt browseracties naar de node; er is geen aparte controleserver of Serve-URL nodig.
 
-Vermijd Funnel voor browserbesturing; behandel node-pairing zoals operatortoegang.
+Vermijd Funnel voor browserbesturing; behandel nodekoppeling zoals operatortoegang.
 
 ## Tailscale-vereisten + limieten
 
-- Serve vereist dat HTTPS voor je tailnet is ingeschakeld; de CLI vraagt erom als dit ontbreekt.
+- Serve vereist dat HTTPS is ingeschakeld voor je tailnet; de CLI vraagt erom als dit ontbreekt.
 - Serve injecteert Tailscale-identiteitsheaders; Funnel doet dat niet.
-- Funnel vereist Tailscale v1.38.3+, MagicDNS, HTTPS ingeschakeld en een funnel-nodeattribuut.
+- Funnel vereist Tailscale v1.38.3+, MagicDNS, ingeschakelde HTTPS en een funnel-nodeattribuut.
 - Funnel ondersteunt alleen poorten `443`, `8443` en `10000` via TLS.
-- Funnel op macOS vereist de open-source Tailscale-appvariant.
+- Funnel op macOS vereist de opensourcevariant van de Tailscale-app.
 
 ## Meer informatie
 
 - Overzicht van Tailscale Serve: [https://tailscale.com/kb/1312/serve](https://tailscale.com/kb/1312/serve)
-- `tailscale serve`-commando: [https://tailscale.com/kb/1242/tailscale-serve](https://tailscale.com/kb/1242/tailscale-serve)
+- `tailscale serve`-opdracht: [https://tailscale.com/kb/1242/tailscale-serve](https://tailscale.com/kb/1242/tailscale-serve)
 - Overzicht van Tailscale Funnel: [https://tailscale.com/kb/1223/tailscale-funnel](https://tailscale.com/kb/1223/tailscale-funnel)
-- `tailscale funnel`-commando: [https://tailscale.com/kb/1311/tailscale-funnel](https://tailscale.com/kb/1311/tailscale-funnel)
+- `tailscale funnel`-opdracht: [https://tailscale.com/kb/1311/tailscale-funnel](https://tailscale.com/kb/1311/tailscale-funnel)
 
 ## Gerelateerd
 
 - [Externe toegang](/nl/gateway/remote)
-- [Detectie](/nl/gateway/discovery)
+- [Ontdekking](/nl/gateway/discovery)
 - [Authenticatie](/nl/gateway/authentication)

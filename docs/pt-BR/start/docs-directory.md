@@ -1,19 +1,19 @@
 ---
 read_when:
     - Você quer acesso rápido às principais páginas da documentação
-summary: Links selecionados para a documentação do OpenClaw mais usada.
+summary: Links selecionados para as páginas mais usadas da documentação do OpenClaw.
 title: Diretório de documentação
 x-i18n:
-    generated_at: "2026-05-07T01:53:32Z"
+    generated_at: "2026-05-10T19:50:12Z"
     model: gpt-5.5
     provider: openai
-    source_hash: bd24805e17b89747850f01302e761babea411d50aee4e50ec43f93c2e893a4e1
+    source_hash: ddd6903aeb87e36db977b2cef62bd80e84fc67633ca00beb3365ced1f5abdd99
     source_path: start/docs-directory.md
     workflow: 16
 ---
 
 <Note>
-Esta página é um índice curado. Se você está começando, comece por [Introdução](/pt-BR/start/getting-started).
+Esta página é um índice com curadoria. Se você é novo, comece com [Primeiros passos](/pt-BR/start/getting-started).
 Para um mapa completo da documentação, consulte [hubs da documentação](/pt-BR/start/hubs).
 </Note>
 
@@ -23,10 +23,10 @@ Para um mapa completo da documentação, consulte [hubs da documentação](/pt-B
 - [Ajuda](/pt-BR/help)
 - [Configuração](/pt-BR/gateway/configuration)
 - [Exemplos de configuração](/pt-BR/gateway/configuration-examples)
-- [Comandos slash](/pt-BR/tools/slash-commands)
+- [Comandos de barra](/pt-BR/tools/slash-commands)
 - [Roteamento multiagente](/pt-BR/concepts/multi-agent)
 - [Atualização e reversão](/pt-BR/install/updating)
-- [Emparelhamento (MD e nodes)](/pt-BR/channels/pairing)
+- [Pareamento (DM e nós)](/pt-BR/channels/pairing)
 - [Modo Nix](/pt-BR/install/nix)
 - [Configuração do assistente OpenClaw](/pt-BR/start/openclaw)
 - [Skills](/pt-BR/tools/skills)
@@ -34,7 +34,7 @@ Para um mapa completo da documentação, consulte [hubs da documentação](/pt-B
 - [Modelos de workspace](/pt-BR/reference/templates/AGENTS)
 - [Adaptadores RPC](/pt-BR/reference/rpc)
 - [Runbook do Gateway](/pt-BR/gateway)
-- [Nodes (iOS e Android)](/pt-BR/nodes)
+- [Nós (iOS e Android)](/pt-BR/nodes)
 - [Superfícies web (Control UI)](/pt-BR/web)
 - [Descoberta e transportes](/pt-BR/gateway/discovery)
 - [Acesso remoto](/pt-BR/gateway/remote)
@@ -46,8 +46,7 @@ Para um mapa completo da documentação, consulte [hubs da documentação](/pt-B
 - [Telegram](/pt-BR/channels/telegram)
 - [Discord](/pt-BR/channels/discord)
 - [Mattermost](/pt-BR/channels/mattermost)
-- [BlueBubbles (ponte iMessage legada)](/pt-BR/channels/bluebubbles)
-- [Bot QQ](/pt-BR/channels/qqbot)
+- [QQ Bot](/pt-BR/channels/qqbot)
 - [iMessage](/pt-BR/channels/imessage)
 - [Grupos](/pt-BR/channels/groups)
 - [Mensagens de grupo do WhatsApp](/pt-BR/channels/group-messages)
@@ -56,22 +55,22 @@ Para um mapa completo da documentação, consulte [hubs da documentação](/pt-B
 
 ## Aplicativos complementares
 
-- [App para macOS](/pt-BR/platforms/macos)
-- [App para iOS](/pt-BR/platforms/ios)
-- [App para Android](/pt-BR/platforms/android)
+- [Aplicativo macOS](/pt-BR/platforms/macos)
+- [Aplicativo iOS](/pt-BR/platforms/ios)
+- [Aplicativo Android](/pt-BR/platforms/android)
 - [Windows (WSL2)](/pt-BR/platforms/windows)
-- [App para Linux](/pt-BR/platforms/linux)
+- [Aplicativo Linux](/pt-BR/platforms/linux)
 
 ## Operações e segurança
 
 - [Sessões](/pt-BR/concepts/session)
-- [Jobs Cron](/pt-BR/automation/cron-jobs)
+- [Tarefas Cron](/pt-BR/automation/cron-jobs)
 - [Webhooks](/pt-BR/automation/cron-jobs#webhooks)
 - [Hooks do Gmail (Pub/Sub)](/pt-BR/automation/cron-jobs#gmail-pubsub-integration)
 - [Segurança](/pt-BR/gateway/security)
 - [Solução de problemas](/pt-BR/gateway/troubleshooting)
 
-## Relacionados
+## Relacionado
 
-- [Introdução](/pt-BR/start/getting-started)
+- [Primeiros passos](/pt-BR/start/getting-started)
 - [Hubs da documentação](/pt-BR/start/hubs)

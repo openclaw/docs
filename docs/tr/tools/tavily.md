@@ -1,133 +1,169 @@
 ---
 read_when:
-    - Tavily destekli web arama istiyorsunuz
-    - Bir Tavily API anahtarına ihtiyacınız var
-    - '`web_search` sağlayıcısı olarak Tavily istiyorsunuz'
-    - URL'lerden içerik çıkarımı istiyorsunuz
-summary: Tavily arama ve çıkarım araçları
+    - Tavily destekli web araması istiyorsunuz
+    - Tavily API anahtarına ihtiyacınız var
+    - Tavily'yi web_search sağlayıcısı olarak istiyorsunuz
+    - URL'lerden içerik çıkarmak istiyorsunuz
+summary: Tavily arama ve çıkarma araçları
 title: Tavily
 x-i18n:
-    generated_at: "2026-04-24T09:37:25Z"
-    model: gpt-5.4
+    generated_at: "2026-05-10T19:59:15Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 9af858cd8507e3ebe6614f0695f568ce589798c816c8475685526422a048ef1a
+    source_hash: 071e2b1be054890711e32d7424d16d94133d16ff1ce7da3703e62c53b5c217ef
     source_path: tools/tavily.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw, **Tavily**'yi iki şekilde kullanabilir:
+[Tavily](https://tavily.com), AI uygulamaları için tasarlanmış bir arama API'sidir. OpenClaw bunu iki şekilde sunar:
 
-- `web_search` sağlayıcısı olarak
+- genel arama aracı için `web_search` sağlayıcısı olarak
 - açık Plugin araçları olarak: `tavily_search` ve `tavily_extract`
 
-Tavily, AI uygulamaları için tasarlanmış bir arama API'sidir ve
-LLM tüketimi için optimize edilmiş yapılandırılmış sonuçlar döndürür. Yapılandırılabilir arama derinliği, konu
-filtreleme, alan adı filtreleri, AI tarafından üretilen yanıt özetleri ve
-URL'lerden içerik çıkarımı (JavaScript ile oluşturulmuş sayfalar dahil) destekler.
+Tavily, yapılandırılabilir arama derinliği, konu filtreleme, alan adı filtreleri, AI tarafından oluşturulan yanıt özetleri ve URL'lerden içerik çıkarma (JavaScript ile oluşturulan sayfalar dahil) ile LLM tüketimi için optimize edilmiş yapılandırılmış sonuçlar döndürür.
 
-## API anahtarı alın
+| Özellik      | Değer                               |
+| ------------- | ----------------------------------- |
+| Plugin kimliği     | `tavily`                            |
+| Kimlik doğrulama          | `TAVILY_API_KEY` veya config `apiKey` |
+| Temel URL      | `https://api.tavily.com` (varsayılan)  |
+| Paketli araçlar | `tavily_search`, `tavily_extract`   |
 
-1. [tavily.com](https://tavily.com/) adresinde bir Tavily hesabı oluşturun.
-2. Panoda bir API anahtarı üretin.
-3. Bunu yapılandırmada saklayın veya gateway ortamında `TAVILY_API_KEY` ayarlayın.
+## Başlarken
 
-## Tavily aramasını yapılandırın
-
-```json5
-{
-  plugins: {
-    entries: {
-      tavily: {
-        enabled: true,
-        config: {
-          webSearch: {
-            apiKey: "tvly-...", // TAVILY_API_KEY ayarlıysa isteğe bağlı
-            baseUrl: "https://api.tavily.com",
+<Steps>
+  <Step title="Bir API anahtarı alın">
+    [tavily.com](https://tavily.com) adresinde bir Tavily hesabı oluşturun, ardından panoda bir API anahtarı oluşturun.
+  </Step>
+  <Step title="Plugin ve sağlayıcıyı yapılandırın">
+    ```json5
+    {
+      plugins: {
+        entries: {
+          tavily: {
+            enabled: true,
+            config: {
+              webSearch: {
+                apiKey: "tvly-...", // optional if TAVILY_API_KEY is set
+                baseUrl: "https://api.tavily.com",
+              },
+            },
           },
         },
       },
-    },
-  },
-  tools: {
-    web: {
-      search: {
-        provider: "tavily",
+      tools: {
+        web: {
+          search: {
+            provider: "tavily",
+          },
+        },
       },
-    },
-  },
-}
-```
+    }
+    ```
+  </Step>
+  <Step title="Aramanın çalıştığını doğrulayın">
+    Herhangi bir agent'tan bir `web_search` tetikleyin veya doğrudan `tavily_search` çağırın.
+  </Step>
+</Steps>
 
-Notlar:
+<Tip>
+Onboarding sırasında Tavily'yi seçmek veya `openclaw configure --section web` komutunu kullanmak, paketli Tavily Plugin'ini otomatik olarak etkinleştirir.
+</Tip>
 
-- İlk katılımda veya `openclaw configure --section web` içinde Tavily seçmek,
-  paketlenmiş Tavily Plugin'ini otomatik olarak etkinleştirir.
-- Tavily yapılandırmasını `plugins.entries.tavily.config.webSearch.*` altında saklayın.
-- Tavily ile `web_search`, `query` ve `count` destekler (en fazla 20 sonuç).
-- `search_depth`, `topic`, `include_answer`
-  veya alan adı filtreleri gibi Tavily'ye özgü denetimler için `tavily_search` kullanın.
-
-## Tavily Plugin araçları
+## Araç referansı
 
 ### `tavily_search`
 
-Genel
-`web_search` yerine Tavily'ye özgü arama denetimlerini istediğinizde bunu kullanın.
+Genel `web_search` yerine Tavily'ye özgü arama kontrolleri istediğinizde bunu kullanın.
 
-| Parametre         | Açıklama                                                                |
-| ----------------- | ----------------------------------------------------------------------- |
-| `query`           | Arama sorgu dizesi (400 karakter altında tutun)                         |
-| `search_depth`    | `basic` (varsayılan, dengeli) veya `advanced` (en yüksek alaka, daha yavaş) |
-| `topic`           | `general` (varsayılan), `news` (gerçek zamanlı güncellemeler) veya `finance` |
-| `max_results`     | Sonuç sayısı, 1-20 (varsayılan: 5)                                      |
-| `include_answer`  | AI tarafından üretilen yanıt özetini dahil et (varsayılan: false)      |
-| `time_range`      | Yeniliğe göre filtrele: `day`, `week`, `month` veya `year`              |
-| `include_domains` | Sonuçları kısıtlamak için alan adı dizisi                               |
-| `exclude_domains` | Sonuçlardan hariç tutulacak alan adı dizisi                             |
+| Parametre         | Tür         | Kısıtlamalar / varsayılan                  | Açıklama                                     |
+| ----------------- | ------------ | -------------------------------------- | ----------------------------------------------- |
+| `query`           | string       | gerekli                               | Arama sorgusu dizesi. 400 karakterin altında tutun. |
+| `search_depth`    | enum         | `basic` (varsayılan), `advanced`          | `advanced` daha yavaştır ancak daha yüksek alaka düzeyi sağlar.      |
+| `topic`           | enum         | `general` (varsayılan), `news`, `finance` | Konu ailesine göre filtreleyin.                         |
+| `max_results`     | integer      | 1-20                                   | Sonuç sayısı.                              |
+| `include_answer`  | boolean      | varsayılan `false`                        | Tavily AI tarafından oluşturulan bir yanıt özeti ekleyin.   |
+| `time_range`      | enum         | `day`, `week`, `month`, `year`         | Sonuçları güncelliğe göre filtreleyin.                      |
+| `include_domains` | string dizisi | (yok)                                 | Yalnızca bu alan adlarından gelen sonuçları dahil edin.        |
+| `exclude_domains` | string dizisi | (yok)                                 | Bu alan adlarından gelen sonuçları hariç tutun.             |
 
-**Arama derinliği:**
+Arama derinliği ödünleşimi:
 
-| Derinlik    | Hız    | Alaka       | En uygun olduğu kullanım                |
-| ----------- | ------ | ----------- | --------------------------------------- |
-| `basic`     | Daha hızlı | Yüksek   | Genel amaçlı sorgular (varsayılan)      |
-| `advanced`  | Daha yavaş | En yüksek | Kesinlik, belirli gerçekler, araştırma |
+| Derinlik      | Hız  | Alaka düzeyi | En uygun kullanım                             |
+| ---------- | ------ | --------- | ------------------------------------ |
+| `basic`    | Daha hızlı | Yüksek      | Genel amaçlı sorgular (varsayılan).   |
+| `advanced` | Daha yavaş | En yüksek   | Hassas araştırma ve doğruluk kontrolü. |
 
 ### `tavily_extract`
 
-Bir veya daha fazla URL'den temiz içerik çıkarmak için bunu kullanın. JavaScript ile oluşturulmuş sayfaları işler ve hedefli
-çıkarım için sorgu odaklı parçalara ayırmayı destekler.
+Bir veya daha fazla URL'den temiz içerik çıkarmak için bunu kullanın. JavaScript ile oluşturulan sayfaları işler ve hedefli çıkarım için sorgu odaklı parçalamayı destekler.
 
-| Parametre           | Açıklama                                                         |
-| ------------------- | ---------------------------------------------------------------- |
-| `urls`              | Çıkarılacak URL dizisi (istek başına 1-20)                       |
-| `query`             | Çıkarılan parçaları bu sorguya göre alaka açısından yeniden sırala |
-| `extract_depth`     | `basic` (varsayılan, hızlı) veya `advanced` (JS ağırlıklı sayfalar için) |
-| `chunks_per_source` | URL başına parça, 1-5 (`query` gerektirir)                       |
-| `include_images`    | Sonuçlara görüntü URL'lerini dahil et (varsayılan: false)        |
+| Parametre           | Tür         | Kısıtlamalar / varsayılan         | Açıklama                                                 |
+| ------------------- | ------------ | ----------------------------- | ----------------------------------------------------------- |
+| `urls`              | string dizisi | gerekli, 1-20                | İçerik çıkarılacak URL'ler.                               |
+| `query`             | string       | (isteğe bağlı)                    | Çıkarılan parçaları bu sorguya göre alaka düzeyiyle yeniden sıralayın.         |
+| `extract_depth`     | enum         | `basic` (varsayılan), `advanced` | JS ağırlıklı sayfalar, SPA'lar veya dinamik tablolar için `advanced` kullanın. |
+| `chunks_per_source` | integer      | 1-5; **`query` gerektirir**     | URL başına döndürülen parçalar. `query` olmadan ayarlanırsa hata verir.     |
+| `include_images`    | boolean      | varsayılan `false`               | Sonuçlara görsel URL'lerini dahil edin.                              |
 
-**Çıkarım derinliği:**
+Çıkarma derinliği ödünleşimi:
 
-| Derinlik    | Ne zaman kullanılmalı                         |
-| ----------- | --------------------------------------------- |
-| `basic`     | Basit sayfalar - önce bunu deneyin            |
-| `advanced`  | JS ile oluşturulmuş SPA'lar, dinamik içerik, tablolar |
+| Derinlik      | Ne zaman kullanılmalı                                |
+| ---------- | ------------------------------------------ |
+| `basic`    | Basit sayfalar. Önce bunu deneyin.              |
+| `advanced` | JS ile oluşturulan SPA'lar, dinamik içerik, tablolar. |
 
-İpuçları:
-
-- İstek başına en fazla 20 URL. Daha büyük listeleri birden fazla çağrıya bölün.
-- Tüm sayfalar yerine yalnızca ilgili içeriği almak için `query` + `chunks_per_source` kullanın.
-- Önce `basic` deneyin; içerik eksikse veya tam değilse `advanced`'a geri dönün.
+<Tip>
+Daha büyük URL listelerini birden fazla `tavily_extract` çağrısına bölün (istek başına en fazla 20). Tam sayfalar yerine yalnızca ilgili içeriği almak için `query` ile `chunks_per_source` kullanın.
+</Tip>
 
 ## Doğru aracı seçme
 
-| İhtiyaç                               | Araç             |
-| ------------------------------------- | ---------------- |
-| Hızlı web araması, özel seçenek yok   | `web_search`     |
-| Derinlik, konu, AI yanıtları ile arama | `tavily_search` |
-| Belirli URL'lerden içerik çıkarma     | `tavily_extract` |
+| İhtiyaç                                 | Araç             |
+| ------------------------------------ | ---------------- |
+| Hızlı web araması, özel seçenek yok | `web_search`     |
+| Derinlik, konu ve AI yanıtlarıyla arama | `tavily_search`  |
+| Belirli URL'lerden içerik çıkarma   | `tavily_extract` |
+
+<Note>
+Sağlayıcı olarak Tavily kullanılan genel `web_search` aracı, `query` ve `count` (en fazla 20 sonuç) destekler. Tavily'ye özgü kontroller (`search_depth`, `topic`, `include_answer`, alan adı filtreleri, zaman aralığı) için bunun yerine `tavily_search` kullanın.
+</Note>
+
+## Gelişmiş yapılandırma
+
+<AccordionGroup>
+  <Accordion title="API anahtarı çözümleme sırası">
+    Tavily istemcisi API anahtarını şu sırayla arar:
+
+    1. `plugins.entries.tavily.config.webSearch.apiKey` (SecretRefs üzerinden çözümlenir).
+    2. Gateway ortamından `TAVILY_API_KEY`.
+
+    Hiçbiri yoksa `tavily_extract` bir kurulum hatası verir.
+
+  </Accordion>
+
+  <Accordion title="Özel temel URL">
+    Tavily'yi bir proxy üzerinden sunuyorsanız `plugins.entries.tavily.config.webSearch.baseUrl` değerini geçersiz kılın. Varsayılan `https://api.tavily.com` değeridir.
+  </Accordion>
+
+  <Accordion title="`chunks_per_source`, `query` gerektirir">
+    `tavily_extract`, `query` olmadan `chunks_per_source` iletilen çağrıları reddeder. Tavily parçaları sorgu alaka düzeyine göre sıralar, bu nedenle bu parametre sorgu olmadan anlamsızdır.
+  </Accordion>
+</AccordionGroup>
 
 ## İlgili
 
-- [Web Search genel bakışı](/tr/tools/web) -- tüm sağlayıcılar ve otomatik algılama
-- [Firecrawl](/tr/tools/firecrawl) -- içerik çıkarımlı arama + scraping
-- [Exa Search](/tr/tools/exa-search) -- içerik çıkarımlı nöral arama
+<CardGroup cols={2}>
+  <Card title="Web Araması genel bakışı" href="/tr/tools/web" icon="magnifying-glass">
+    Tüm sağlayıcılar ve otomatik algılama kuralları.
+  </Card>
+  <Card title="Firecrawl" href="/tr/tools/firecrawl" icon="fire">
+    İçerik çıkarma ile arama ve scraping.
+  </Card>
+  <Card title="Exa Search" href="/tr/tools/exa-search" icon="binoculars">
+    İçerik çıkarma ile nöral arama.
+  </Card>
+  <Card title="Yapılandırma" href="/tr/gateway/configuration" icon="gear">
+    Plugin girdileri ve araç yönlendirme için tam config şeması.
+  </Card>
+</CardGroup>

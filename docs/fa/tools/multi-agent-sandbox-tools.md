@@ -2,41 +2,41 @@
 read_when: You want per-agent sandboxing or per-agent tool allow/deny policies in a multi-agent gateway.
 sidebarTitle: Multi-agent sandbox and tools
 status: active
-summary: محیط ایزوله و محدودیت‌های ابزار به ازای هر عامل، ترتیب تقدم، و مثال‌ها
-title: محیط ایزوله و ابزارهای چندعاملی
+summary: سندباکس و محدودیت‌های ابزار به‌ازای هر عامل، تقدم، و مثال‌ها
+title: محیط ایزوله و ابزارهای چندعامله
 x-i18n:
-    generated_at: "2026-04-29T23:44:10Z"
+    generated_at: "2026-05-10T20:10:41Z"
     model: gpt-5.5
     provider: openai
-    source_hash: eedb36301f670bcd8956dbeb81788acfc96627e39401e34434c2348fcb10f155
+    source_hash: c988613438f2d179b859902d3f7a39a1e29b60a0e2ae6ed598bb5f5881cf0b9f
     source_path: tools/multi-agent-sandbox-tools.md
     workflow: 16
 ---
 
-هر agent در یک پیکربندی چند-agent می‌تواند sandbox سراسری و سیاست ابزار را بازنویسی کند. این صفحه پیکربندی برای هر agent، قواعد اولویت، و نمونه‌ها را پوشش می‌دهد.
+هر عامل در یک راه‌اندازی چندعاملی می‌تواند sandbox و سیاست ابزار سراسری را بازنویسی کند. این صفحه پیکربندی به‌ازای هر عامل، قواعد اولویت، و مثال‌ها را پوشش می‌دهد.
 
 <CardGroup cols={3}>
-  <Card title="ایزوله‌سازی" href="/fa/gateway/sandboxing">
-    بک‌اندها و حالت‌ها — مرجع کامل sandbox.
+  <Card title="Sandboxing" href="/fa/gateway/sandboxing">
+    backendها و حالت‌ها — مرجع کامل sandbox.
   </Card>
-  <Card title="sandbox در برابر سیاست ابزار در برابر ارتقایافته" href="/fa/gateway/sandbox-vs-tool-policy-vs-elevated">
+  <Card title="sandbox در برابر سیاست ابزار در برابر elevated" href="/fa/gateway/sandbox-vs-tool-policy-vs-elevated">
     اشکال‌زدایی «چرا این مسدود شده است؟»
   </Card>
-  <Card title="حالت ارتقایافته" href="/fa/tools/elevated">
-    اجرای ارتقایافته برای فرستنده‌های مورد اعتماد.
+  <Card title="حالت elevated" href="/fa/tools/elevated">
+    اجرای elevated برای فرستندگان مورد اعتماد.
   </Card>
 </CardGroup>
 
 <Warning>
-احراز هویت بر اساس agent محدوده‌بندی می‌شود: هر agent ذخیره‌گاه احراز هویت `agentDir` خودش را در `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` دارد. هرگز `agentDir` را بین agentها بازاستفاده نکنید. وقتی agentها پروفایل محلی ندارند، می‌توانند پروفایل‌های احراز هویت agent پیش‌فرض/اصلی را بخوانند، اما توکن‌های تازه‌سازی OAuth در ذخیره‌گاه‌های agentهای ثانویه کپی نمی‌شوند. اگر گواهی‌ها را دستی کپی می‌کنید، فقط پروفایل‌های ثابت و قابل‌حمل `api_key` یا `token` را کپی کنید.
+احراز هویت بر اساس عامل محدوده‌بندی می‌شود: هر عامل فروشگاه احراز هویت `agentDir` خودش را در `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` دارد. هرگز `agentDir` را بین عامل‌ها دوباره استفاده نکنید. وقتی عامل‌ها پروفایل محلی ندارند، می‌توانند پروفایل‌های احراز هویت عامل پیش‌فرض/اصلی را بخوانند، اما توکن‌های تازه‌سازی OAuth در فروشگاه‌های عامل ثانویه clone نمی‌شوند. اگر اعتبارنامه‌ها را دستی کپی می‌کنید، فقط پروفایل‌های ایستای قابل‌حمل `api_key` یا `token` را کپی کنید.
 </Warning>
 
 ---
 
-## نمونه‌های پیکربندی
+## مثال‌های پیکربندی
 
 <AccordionGroup>
-  <Accordion title="نمونه ۱: agent شخصی + خانوادگی محدود">
+  <Accordion title="مثال ۱: عامل شخصی + عامل خانوادگی محدودشده">
     ```json
     {
       "agents": {
@@ -81,11 +81,11 @@ x-i18n:
 
     **نتیجه:**
 
-    - agent `main`: روی میزبان اجرا می‌شود و دسترسی کامل به ابزارها دارد.
-    - agent `family`: در Docker اجرا می‌شود (یک کانتینر برای هر agent)، فقط ابزار `read`.
+    - عامل `main`: روی میزبان اجرا می‌شود، با دسترسی کامل به ابزارها.
+    - عامل `family`: در Docker اجرا می‌شود (یک container به‌ازای هر عامل)، فقط ابزار `read`.
 
   </Accordion>
-  <Accordion title="نمونه ۲: agent کاری با sandbox مشترک">
+  <Accordion title="مثال ۲: عامل کاری با sandbox مشترک">
     ```json
     {
       "agents": {
@@ -113,7 +113,7 @@ x-i18n:
     }
     ```
   </Accordion>
-  <Accordion title="نمونه ۲ب: پروفایل کدنویسی سراسری + agent فقط پیام‌رسانی">
+  <Accordion title="مثال ۲ب: پروفایل کدنویسی سراسری + عامل فقط پیام‌رسانی">
     ```json
     {
       "tools": { "profile": "coding" },
@@ -130,11 +130,11 @@ x-i18n:
 
     **نتیجه:**
 
-    - agentهای پیش‌فرض ابزارهای کدنویسی را دریافت می‌کنند.
-    - agent `support` فقط پیام‌رسانی است (+ ابزار Slack).
+    - عامل‌های پیش‌فرض ابزارهای کدنویسی را دریافت می‌کنند.
+    - عامل `support` فقط پیام‌رسانی است (+ ابزار Slack).
 
   </Accordion>
-  <Accordion title="نمونه ۳: حالت‌های sandbox متفاوت برای هر agent">
+  <Accordion title="مثال ۳: حالت‌های sandbox متفاوت برای هر عامل">
     ```json
     {
       "agents": {
@@ -175,11 +175,11 @@ x-i18n:
 
 ## اولویت پیکربندی
 
-وقتی هم پیکربندی‌های سراسری (`agents.defaults.*`) و هم پیکربندی‌های مختص agent (`agents.list[].*`) وجود داشته باشند:
+وقتی هر دو پیکربندی سراسری (`agents.defaults.*`) و مخصوص عامل (`agents.list[].*`) وجود داشته باشند:
 
 ### پیکربندی sandbox
 
-تنظیمات مختص agent تنظیمات سراسری را بازنویسی می‌کنند:
+تنظیمات مخصوص عامل، تنظیمات سراسری را بازنویسی می‌کنند:
 
 ```
 agents.list[].sandbox.mode > agents.defaults.sandbox.mode
@@ -192,12 +192,12 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 ```
 
 <Note>
-`agents.list[].sandbox.{docker,browser,prune}.*` برای آن agent مقدار `agents.defaults.sandbox.{docker,browser,prune}.*` را بازنویسی می‌کند (وقتی محدوده sandbox به `"shared"` resolve شود نادیده گرفته می‌شود).
+`agents.list[].sandbox.{docker,browser,prune}.*` برای آن عامل `agents.defaults.sandbox.{docker,browser,prune}.*` را بازنویسی می‌کند (وقتی محدوده sandbox به `"shared"` حل شود نادیده گرفته می‌شود).
 </Note>
 
 ### محدودیت‌های ابزار
 
-ترتیب فیلتر کردن چنین است:
+ترتیب فیلتر کردن این است:
 
 <Steps>
   <Step title="پروفایل ابزار">
@@ -212,43 +212,43 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
   <Step title="سیاست ابزار provider">
     `tools.byProvider[provider].allow/deny`.
   </Step>
-  <Step title="سیاست ابزار مختص agent">
+  <Step title="سیاست ابزار مخصوص عامل">
     `agents.list[].tools.allow/deny`.
   </Step>
-  <Step title="سیاست provider برای agent">
+  <Step title="سیاست provider عامل">
     `agents.list[].tools.byProvider[provider].allow/deny`.
   </Step>
   <Step title="سیاست ابزار sandbox">
     `tools.sandbox.tools` یا `agents.list[].tools.sandbox.tools`.
   </Step>
-  <Step title="سیاست ابزار subagent">
+  <Step title="سیاست ابزار زیرعامل">
     `tools.subagents.tools`، اگر قابل اعمال باشد.
   </Step>
 </Steps>
 
 <AccordionGroup>
   <Accordion title="قواعد اولویت">
-    - هر سطح می‌تواند ابزارها را بیشتر محدود کند، اما نمی‌تواند ابزارهایی را که در سطوح قبلی رد شده‌اند دوباره مجاز کند.
-    - اگر `agents.list[].tools.sandbox.tools` تنظیم شده باشد، برای آن agent جایگزین `tools.sandbox.tools` می‌شود.
-    - اگر `agents.list[].tools.profile` تنظیم شده باشد، برای آن agent مقدار `tools.profile` را بازنویسی می‌کند.
-    - کلیدهای ابزار provider یا `provider` (مثلاً `google-antigravity`) یا `provider/model` (مثلاً `openai/gpt-5.4`) را می‌پذیرند.
+    - هر سطح می‌تواند ابزارها را بیشتر محدود کند، اما نمی‌تواند ابزارهایی را که در سطح‌های قبلی رد شده‌اند دوباره مجاز کند.
+    - اگر `agents.list[].tools.sandbox.tools` تنظیم شده باشد، برای آن عامل جایگزین `tools.sandbox.tools` می‌شود.
+    - اگر `agents.list[].tools.profile` تنظیم شده باشد، برای آن عامل `tools.profile` را بازنویسی می‌کند.
+    - کلیدهای ابزار provider یا `provider` (برای مثال `google-antigravity`) یا `provider/model` (برای مثال `openai/gpt-5.4`) را می‌پذیرند.
 
   </Accordion>
   <Accordion title="رفتار allowlist خالی">
-    اگر هر allowlist صریحی در آن زنجیره باعث شود اجرا هیچ ابزار قابل‌فراخوانی نداشته باشد، OpenClaw پیش از ارسال prompt به مدل متوقف می‌شود. این عمدی است: agentی که با ابزار مفقودی مانند `agents.list[].tools.allow: ["query_db"]` پیکربندی شده است باید تا زمانی که Plugin ثبت‌کننده `query_db` فعال نشده، آشکارا خطا بدهد، نه اینکه به‌عنوان agent فقط متنی ادامه دهد.
+    اگر هر allowlist صریح در آن زنجیره باعث شود اجرا هیچ ابزار قابل فراخوانی نداشته باشد، OpenClaw قبل از ارسال prompt به مدل متوقف می‌شود. این عمدی است: عاملی که با یک ابزار غایب مانند `agents.list[].tools.allow: ["query_db"]` پیکربندی شده است باید تا زمانی که Plugin ثبت‌کننده `query_db` فعال نشده با خطای واضح شکست بخورد، نه اینکه به‌عنوان یک عامل فقط متنی ادامه دهد.
   </Accordion>
 </AccordionGroup>
 
-سیاست‌های ابزار از میان‌برهای `group:*` پشتیبانی می‌کنند که به چندین ابزار گسترش می‌یابند. برای فهرست کامل، [گروه‌های ابزار](/fa/gateway/sandbox-vs-tool-policy-vs-elevated#tool-groups-shorthands) را ببینید.
+سیاست‌های ابزار از میان‌برهای `group:*` پشتیبانی می‌کنند که به چند ابزار گسترش می‌یابند. برای فهرست کامل، [گروه‌های ابزار](/fa/gateway/sandbox-vs-tool-policy-vs-elevated#tool-groups-shorthands) را ببینید.
 
-بازنویسی‌های ارتقایافته برای هر agent (`agents.list[].tools.elevated`) می‌توانند اجرای ارتقایافته را برای agentهای خاص بیشتر محدود کنند. برای جزئیات، [حالت ارتقایافته](/fa/tools/elevated) را ببینید.
+بازنویسی‌های elevated به‌ازای هر عامل (`agents.list[].tools.elevated`) می‌توانند اجرای elevated را برای عامل‌های خاص بیشتر محدود کنند. برای جزئیات، [حالت elevated](/fa/tools/elevated) را ببینید.
 
 ---
 
-## مهاجرت از عامل واحد
+## مهاجرت از تک‌عامل
 
 <Tabs>
-  <Tab title="Before (single agent)">
+  <Tab title="قبل (تک‌عامل)">
     ```json
     {
       "agents": {
@@ -270,7 +270,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
     }
     ```
   </Tab>
-  <Tab title="After (multi-agent)">
+  <Tab title="بعد (چندعامل)">
     ```json
     {
       "agents": {
@@ -294,10 +294,10 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 
 ---
 
-## نمونه‌های محدودسازی ابزار
+## مثال‌های محدودیت ابزار
 
 <Tabs>
-  <Tab title="Read-only agent">
+  <Tab title="عامل فقط خواندنی">
     ```json
     {
       "tools": {
@@ -307,7 +307,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
     }
     ```
   </Tab>
-  <Tab title="Safe execution (no file modifications)">
+  <Tab title="اجرای shell با ابزارهای فایل‌سیستم غیرفعال">
     ```json
     {
       "tools": {
@@ -316,8 +316,13 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
       }
     }
     ```
+
+    <Warning>
+    این سیاست ابزارهای فایل‌سیستم OpenClaw را غیرفعال می‌کند، اما `exec` همچنان یک shell است و می‌تواند هر جا که فایل‌سیستم میزبان یا sandbox انتخاب‌شده اجازه دهد، فایل بنویسد. برای یک عامل فقط خواندنی، `exec` و `process` را رد کنید، یا دسترسی shell را با کنترل‌های فایل‌سیستم sandbox مانند `agents.defaults.sandbox.workspaceAccess: "ro"` یا `"none"` ترکیب کنید.
+    </Warning>
+
   </Tab>
-  <Tab title="Communication-only">
+  <Tab title="فقط ارتباطی">
     ```json
     {
       "tools": {
@@ -328,7 +333,7 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
     }
     ```
 
-    `sessions_history` در این پروفایل همچنان به‌جای رونوشت خام مکالمه، یک نمای یادآوری محدود و پاک‌سازی‌شده برمی‌گرداند. یادآوری دستیار برچسب‌های تفکر، داربست `<relevant-memories>`، محموله‌های XML فراخوانی ابزار به‌صورت متن ساده (از جمله `<tool_call>...</tool_call>`، `<function_call>...</function_call>`، `<tool_calls>...</tool_calls>`، `<function_calls>...</function_calls>` و بلوک‌های کوتاه‌شده فراخوانی ابزار)، داربست تنزل‌یافته فراخوانی ابزار، توکن‌های کنترلی مدل ASCII/تمام‌عرض نشت‌کرده، و XML نادرست فراخوانی ابزار MiniMax را پیش از ویرایش/کوتاه‌سازی حذف می‌کند.
+    `sessions_history` در این پروفایل همچنان یک نمای یادآوری محدود و پاک‌سازی‌شده برمی‌گرداند، نه یک dump خام از transcript. یادآوری assistant تگ‌های thinking، چارچوب `<relevant-memories>`، payloadهای XML فراخوانی ابزار به‌صورت متن ساده (از جمله `<tool_call>...</tool_call>`، `<function_call>...</function_call>`، `<tool_calls>...</tool_calls>`، `<function_calls>...</function_calls>`، و بلوک‌های کوتاه‌شده فراخوانی ابزار)، چارچوب فراخوانی ابزار تنزل‌داده‌شده، توکن‌های کنترلی مدل لو رفته ASCII/تمام‌عرض، و XML بدشکل فراخوانی ابزار MiniMax را پیش از redaction/truncation حذف می‌کند.
 
   </Tab>
 </Tabs>
@@ -338,32 +343,32 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 ## دام رایج: "non-main"
 
 <Warning>
-`agents.defaults.sandbox.mode: "non-main"` بر پایه `session.mainKey` (پیش‌فرض `"main"`) است، نه شناسه عامل. نشست‌های گروه/کانال همیشه کلیدهای خودشان را می‌گیرند، بنابراین غیر-main تلقی می‌شوند و در sandbox قرار می‌گیرند. اگر می‌خواهید یک عامل هرگز sandbox نشود، `agents.list[].sandbox.mode: "off"` را تنظیم کنید.
+`agents.defaults.sandbox.mode: "non-main"` بر اساس `session.mainKey` (پیش‌فرض `"main"`) است، نه شناسه عامل. نشست‌های گروه/کانال همیشه کلیدهای خودشان را می‌گیرند، بنابراین به‌عنوان غیر اصلی در نظر گرفته می‌شوند و sandbox می‌شوند. اگر می‌خواهید یک عامل هرگز sandbox نشود، `agents.list[].sandbox.mode: "off"` را تنظیم کنید.
 </Warning>
 
 ---
 
-## آزمایش
+## آزمون
 
-پس از پیکربندی sandbox و ابزارهای چندعامله:
+پس از پیکربندی sandbox و ابزارهای چندعاملی:
 
 <Steps>
-  <Step title="Check agent resolution">
+  <Step title="بررسی حل‌وفصل عامل">
     ```bash
     openclaw agents list --bindings
     ```
   </Step>
-  <Step title="Verify sandbox containers">
+  <Step title="راستی‌آزمایی containerهای sandbox">
     ```bash
     docker ps --filter "name=openclaw-sbx-"
     ```
   </Step>
-  <Step title="Test tool restrictions">
+  <Step title="آزمون محدودیت‌های ابزار">
     - پیامی ارسال کنید که به ابزارهای محدودشده نیاز دارد.
-    - تأیید کنید که عامل نمی‌تواند از ابزارهای ردشده استفاده کند.
+    - راستی‌آزمایی کنید که عامل نمی‌تواند از ابزارهای ردشده استفاده کند.
 
   </Step>
-  <Step title="Monitor logs">
+  <Step title="پایش logها">
     ```bash
     tail -f "${OPENCLAW_STATE_DIR:-$HOME/.openclaw}/logs/gateway.log" | grep -E "routing|sandbox|tools"
     ```
@@ -375,20 +380,20 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 ## عیب‌یابی
 
 <AccordionGroup>
-  <Accordion title="Agent not sandboxed despite `mode: 'all'`">
+  <Accordion title="عامل با وجود `mode: 'all'` در sandbox نیست">
     - بررسی کنید آیا یک `agents.defaults.sandbox.mode` سراسری وجود دارد که آن را بازنویسی می‌کند.
-    - پیکربندی اختصاصی عامل اولویت دارد، بنابراین `agents.list[].sandbox.mode: "all"` را تنظیم کنید.
+    - پیکربندی مخصوص عامل اولویت دارد، پس `agents.list[].sandbox.mode: "all"` را تنظیم کنید.
 
   </Accordion>
-  <Accordion title="Tools still available despite deny list">
-    - ترتیب فیلتر ابزار را بررسی کنید: سراسری → عامل → sandbox → زیرعامل.
-    - هر سطح فقط می‌تواند محدودیت بیشتری اعمال کند، نه اینکه دسترسی را دوباره اعطا کند.
-    - با لاگ‌ها تأیید کنید: `[tools] filtering tools for agent:${agentId}`.
+  <Accordion title="ابزارها با وجود فهرست deny همچنان در دسترس هستند">
+    - ترتیب فیلتر کردن ابزار را بررسی کنید: سراسری → عامل → sandbox → زیرعامل.
+    - هر سطح فقط می‌تواند بیشتر محدود کند، نه اینکه دوباره مجوز بدهد.
+    - با logها راستی‌آزمایی کنید: `[tools] filtering tools for agent:${agentId}`.
 
   </Accordion>
-  <Accordion title="Container not isolated per agent">
-    - در پیکربندی sandbox اختصاصی عامل، `scope: "agent"` را تنظیم کنید.
-    - پیش‌فرض `"session"` است که برای هر نشست یک کانتینر ایجاد می‌کند.
+  <Accordion title="container به‌ازای هر عامل ایزوله نیست">
+    - در پیکربندی sandbox مخصوص عامل، `scope: "agent"` را تنظیم کنید.
+    - مقدار پیش‌فرض `"session"` است که به‌ازای هر نشست یک container می‌سازد.
 
   </Accordion>
 </AccordionGroup>
@@ -398,8 +403,8 @@ agents.list[].sandbox.prune.* > agents.defaults.sandbox.prune.*
 ## مرتبط
 
 - [حالت ارتقایافته](/fa/tools/elevated)
-- [مسیریابی چندعامله](/fa/concepts/multi-agent)
-- [پیکربندی sandbox](/fa/gateway/config-agents#agentsdefaultssandbox)
-- [sandbox در برابر سیاست ابزار در برابر ارتقایافته](/fa/gateway/sandbox-vs-tool-policy-vs-elevated) — عیب‌یابی «چرا این مسدود شده است؟»
-- [sandbox کردن](/fa/gateway/sandboxing) — مرجع کامل sandbox (حالت‌ها، دامنه‌ها، backendها، imageها)
+- [مسیریابی چندعاملی](/fa/concepts/multi-agent)
+- [پیکربندی سندباکس](/fa/gateway/config-agents#agentsdefaultssandbox)
+- [سندباکس در برابر سیاست ابزار در برابر ارتقایافته](/fa/gateway/sandbox-vs-tool-policy-vs-elevated) — اشکال‌زدایی "چرا این مسدود شده است؟"
+- [سندباکسینگ](/fa/gateway/sandboxing) — مرجع کامل سندباکس (حالت‌ها، دامنه‌ها، بک‌اندها، تصاویر)
 - [مدیریت نشست](/fa/concepts/session)

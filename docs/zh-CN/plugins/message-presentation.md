@@ -1,39 +1,40 @@
 ---
 read_when:
-    - 添加或修改消息卡片、按钮或选择器渲染
-    - 构建支持丰富出站消息的渠道插件
-    - 更改消息工具的呈现方式或投递能力
-    - 调试提供商特定的卡片 / 区块 / 组件渲染回归问题
-summary: 渠道插件的语义化消息卡片、按钮、选择器、回退文本和投递提示
+    - 添加或修改消息卡片、按钮或选择控件的渲染
+    - 构建支持富格式出站消息的渠道插件
+    - 更改消息工具的呈现或递送能力
+    - 调试提供商特定的卡片/块/组件渲染回归问题
+summary: 面向渠道插件的语义化消息卡片、按钮、选择器、回退文本和投递提示
 title: 消息呈现
 x-i18n:
-    generated_at: "2026-04-27T06:55:59Z"
-    model: gpt-5.4
+    generated_at: "2026-05-10T19:41:44Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 23ef0eab890ee174c1433f72e84932a84a481f2bcf4b69bc793a2660ec94b10c
+    source_hash: e3b6fc82b5faaff50e8c58f2c68e14a6a1b30ccf1d8dba7da8164dbec5ebe1b0
     source_path: plugins/message-presentation.md
-    workflow: 15
+    workflow: 16
 ---
 
-消息呈现是 OpenClaw 用于丰富出站聊天 UI 的共享契约。
-它让智能体、CLI 命令、审批流程和插件只需描述一次消息意图，
-同时每个渠道插件都可以尽可能渲染出最合适的原生形态。
+消息呈现是 OpenClaw 面向丰富出站聊天 UI 的共享契约。
+它让智能体、CLI 命令、审批流程和插件只描述一次消息意图，
+而每个渠道插件都能渲染其可支持的最佳原生形态。
 
-对可移植的消息 UI 使用 presentation：
+将呈现用于可移植的消息 UI：
 
-- 文本区块
-- 简短的上下文 / 页脚文本
+- 文本区段
+- 小型上下文/页脚文本
 - 分隔线
 - 按钮
 - 选择菜单
 - 卡片标题和语气
 
-不要向共享消息工具中添加新的提供商原生字段，例如 Discord `components`、Slack
-`blocks`、Telegram `buttons`、Teams `card` 或 Feishu `card`。这些都是由渠道插件负责的渲染器输出。
+不要向共享消息工具添加新的提供商原生字段，例如 Discord `components`、Slack
+`blocks`、Telegram `buttons`、Teams `card` 或 Feishu `card`。
+这些是渠道插件拥有的渲染器输出。
 
 ## 契约
 
-插件作者从以下位置导入公开契约：
+插件作者从以下位置导入公共契约：
 
 ```ts
 import type {
@@ -42,7 +43,7 @@ import type {
 } from "openclaw/plugin-sdk/interactive-runtime";
 ```
 
-结构：
+形状：
 
 ```ts
 type MessagePresentation = {
@@ -83,18 +84,18 @@ type ReplyPayloadDelivery = {
 
 按钮语义：
 
-- `value` 是应用动作值；当渠道支持可点击控件时，它会通过该渠道现有的交互路径路由回来。
-- `url` 是链接按钮。它可以在没有 `value` 的情况下单独存在。
-- `label` 是必填项，也会用于文本回退。
-- `style` 是建议性的。渲染器应将不受支持的样式映射为安全的默认值，而不是让发送失败。
+- `value` 是应用操作值；当渠道支持可点击控件时，它会通过该渠道现有的交互路径路由回来。
+- `url` 是链接按钮。它可以在没有 `value` 的情况下存在。
+- `label` 是必需的，也会用于文本降级。
+- `style` 是建议性的。渲染器应将不支持的样式映射到安全默认值，而不是让发送失败。
 
-选择器语义：
+选择语义：
 
-- `options[].value` 是被选中的应用值。
-- `placeholder` 是建议性的，原生不支持选择器的渠道可以忽略它。
-- 如果某个渠道不支持选择器，回退文本会列出这些标签。
+- `options[].value` 是所选的应用值。
+- `placeholder` 是建议性的，可能会被没有原生选择支持的渠道忽略。
+- 如果渠道不支持选择，降级文本会列出标签。
 
-## 生产方示例
+## 生产者示例
 
 简单卡片：
 
@@ -116,7 +117,7 @@ type ReplyPayloadDelivery = {
 }
 ```
 
-仅含 URL 的链接按钮：
+仅 URL 的链接按钮：
 
 ```json
 {
@@ -204,87 +205,90 @@ const adapter: ChannelOutboundAdapter = {
 };
 ```
 
-能力字段刻意保持为简单布尔值。它们描述的是渲染器能将哪些内容做成交互式，
-而不是每一个原生平台限制。渲染器仍然负责处理平台特定限制，例如最大按钮数量、区块数量和卡片大小。
+能力字段刻意保持为简单布尔值。它们描述渲染器可以让什么变成可交互的，
+而不是描述每个原生平台限制。渲染器仍然拥有平台特定限制，
+例如最大按钮数量、块数量和卡片大小。
 
 ## 核心渲染流程
 
-当 `ReplyPayload` 或消息动作包含 `presentation` 时，核心会：
+当 `ReplyPayload` 或消息操作包含 `presentation` 时，核心会：
 
-1. 规范化 presentation 载荷。
+1. 规范化呈现载荷。
 2. 解析目标渠道的出站适配器。
 3. 读取 `presentationCapabilities`。
-4. 当适配器可以渲染该载荷时，调用 `renderPresentation`。
-5. 当适配器缺失或无法渲染时，回退为保守的文本。
-6. 通过正常的渠道投递路径发送生成的载荷。
-7. 在第一条消息成功发送后，应用诸如 `delivery.pin` 之类的投递元数据。
+4. 当适配器可以渲染载荷时，调用 `renderPresentation`。
+5. 当适配器不存在或无法渲染时，降级为保守文本。
+6. 通过常规渠道投递路径发送生成的载荷。
+7. 在第一条成功发送的消息后，应用 `delivery.pin` 等投递元数据。
 
-核心负责回退行为，因此生产方可以保持渠道无关。渠道插件则负责原生渲染和交互处理。
+核心拥有降级行为，因此生产者可以保持渠道无关。渠道插件拥有原生渲染和交互处理。
 
 ## 降级规则
 
-Presentation 必须能安全地发送到能力受限的渠道。
+呈现必须能够安全地发送到能力受限的渠道。
 
-回退文本包含：
+降级文本包括：
 
-- 第一行的 `title`
-- 作为普通段落的 `text` 区块
-- 作为紧凑上下文行的 `context` 区块
-- 作为可视分隔符的 `divider` 区块
+- `title` 作为第一行
+- `text` 块作为普通段落
+- `context` 块作为紧凑上下文行
+- `divider` 块作为视觉分隔符
 - 按钮标签，包括链接按钮的 URL
-- 选择项标签
+- 选择选项标签
 
-不受支持的原生控件应当降级，而不是让整次发送失败。
+不支持的原生控件应降级，而不是让整个发送失败。
 示例：
 
-- 当 Telegram 的内联按钮被禁用时，发送文本回退。
-- 不支持选择器的渠道会将选择项列为文本。
-- 仅含 URL 的按钮会变成原生链接按钮，或者回退为一行 URL 文本。
-- 可选的置顶失败不会让已投递的消息失败。
+- 禁用内联按钮的 Telegram 会发送文本降级。
+- 没有选择支持的渠道会将选择选项列为文本。
+- 仅 URL 的按钮会变成原生链接按钮或降级 URL 行。
+- 可选置顶失败不会让已投递消息失败。
 
 主要例外是 `delivery.pin.required: true`；如果请求将置顶设为必需，
-而该渠道无法置顶已发送消息，则投递会报告失败。
+而渠道无法置顶已发送的消息，则投递会报告失败。
 
 ## 提供商映射
 
 当前内置渲染器：
 
-| 渠道 | 原生渲染目标 | 说明 |
+| 渠道 | 原生渲染目标 | 备注 |
 | --------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Discord | Components 和 component containers | 为现有提供商原生载荷生产方保留旧版 `channelData.discord.components`，但新的共享发送应使用 `presentation`。 |
-| Slack | Block Kit | 为现有提供商原生载荷生产方保留旧版 `channelData.slack.blocks`，但新的共享发送应使用 `presentation`。 |
-| Telegram | 文本加内联键盘 | 按钮 / 选择器要求目标表面具备内联按钮能力；否则会使用文本回退。 |
-| Mattermost | 文本加交互式 props | 其他区块会降级为文本。 |
-| Microsoft Teams | Adaptive Cards | 当同时提供普通 `message` 文本和卡片时，卡片中会包含普通 `message` 文本。 |
-| Feishu | 交互式卡片 | 卡片头部可以使用 `title`；正文会避免重复该标题。 |
-| 纯文本渠道 | 文本回退 | 即使没有渲染器的渠道，也仍能获得可读输出。 |
+| Discord | 组件和组件容器 | 为现有提供商原生载荷生产者保留旧版 `channelData.discord.components`，但新的共享发送应使用 `presentation`。 |
+| Slack | Block Kit | 为现有提供商原生载荷生产者保留旧版 `channelData.slack.blocks`，但新的共享发送应使用 `presentation`。 |
+| Telegram | 文本加内联键盘 | 按钮/选择要求目标表面具备内联按钮能力；否则使用文本降级。 |
+| Mattermost | 文本加交互属性 | 其他块降级为文本。 |
+| Microsoft Teams | Adaptive Cards | 当同时提供普通 `message` 文本和卡片时，文本会随卡片一起包含。 |
+| Feishu | 交互式卡片 | 卡片标题可以使用 `title`；正文避免重复该标题。 |
+| 普通渠道 | 文本降级 | 没有渲染器的渠道仍会得到可读输出。 |
 
-对提供商原生载荷的兼容性，是为现有 reply 生产方提供的过渡性便利。
-这并不是添加新的共享原生字段的理由。
+提供商原生载荷兼容性是为现有回复生产者提供的过渡便利。
+这不是添加新的共享原生字段的理由。
 
 ## Presentation 与 InteractiveReply
 
-`InteractiveReply` 是旧的内部子集，供审批和交互辅助工具使用。它支持：
+`InteractiveReply` 是审批和交互助手使用的较旧内部子集。
+它支持：
 
 - 文本
 - 按钮
-- 选择器
+- 选择
 
-`MessagePresentation` 是标准的共享发送契约。它新增了：
+`MessagePresentation` 是规范的共享发送契约。它添加了：
 
 - 标题
 - 语气
 - 上下文
 - 分隔线
-- 仅含 URL 的按钮
+- 仅 URL 按钮
 - 通过 `ReplyPayload.delivery` 提供的通用投递元数据
 
-在桥接旧代码时，使用 `openclaw/plugin-sdk/interactive-runtime` 中的辅助函数：
+在桥接旧代码时，使用 `openclaw/plugin-sdk/interactive-runtime` 中的助手：
 
 ```ts
 import {
   interactiveReplyToPresentation,
   normalizeMessagePresentation,
+  presentationToInteractiveControlsReply,
   presentationToInteractiveReply,
   renderMessagePresentationFallbackText,
 } from "openclaw/plugin-sdk/interactive-runtime";
@@ -292,31 +296,42 @@ import {
 
 新代码应直接接受或生成 `MessagePresentation`。
 
+`presentationToInteractiveReply(...)` 会将标题、文本、上下文、按钮和选择映射到较旧的
+`InteractiveReply` 形状，从而保留可见的呈现文本。已经以原生方式绘制标题、文本、
+上下文和分隔线块的组件渲染器应改用
+`presentationToInteractiveControlsReply(...)`，然后只追加按钮和选择控件。
+
+`renderMessagePresentationFallbackText(...)` 会在呈现块没有文本降级时返回空字符串，
+例如仅包含分隔线的呈现。要求发送正文非空的传输协议可以传入
+`emptyFallback`，以选择使用最小正文，而不改变默认降级契约。
+
 ## 投递置顶
 
-置顶是投递行为，不是呈现。使用 `delivery.pin`，而不是提供商原生字段，例如 `channelData.telegram.pin`。
+置顶是投递行为，不是呈现。使用 `delivery.pin`，而不是
+`channelData.telegram.pin` 等提供商原生字段。
 
 语义：
 
 - `pin: true` 会置顶第一条成功投递的消息。
 - `pin.notify` 默认为 `false`。
 - `pin.required` 默认为 `false`。
-- 可选的置顶失败会降级，并保留已发送消息不变。
-- 必需的置顶失败会导致投递失败。
-- 分块流式传输消息会置顶第一个已投递分块，而不是末尾分块。
+- 可选置顶失败会降级，并保持已发送消息不变。
+- 必需置顶失败会让投递失败。
+- 分块消息会置顶第一条已投递分块，而不是尾部分块。
 
-对于提供商支持这些操作的现有消息，手动 `pin`、`unpin` 和 `pins` 消息动作仍然存在。
+对于提供商支持这些操作的现有消息，手动 `pin`、`unpin` 和 `pins` 消息操作仍然存在。
 
-## 插件作者检查清单
+## 插件作者清单
 
-- 当渠道可以渲染或安全降级语义化 presentation 时，在 `describeMessageTool(...)` 中声明 `presentation`。
+- 当渠道可以渲染或安全降级语义呈现时，从 `describeMessageTool(...)` 声明 `presentation`。
 - 将 `presentationCapabilities` 添加到运行时出站适配器。
 - 在运行时代码中实现 `renderPresentation`，而不是在控制平面插件设置代码中实现。
-- 不要将原生 UI 库放入高频的设置 / 目录路径中。
+- 让原生 UI 库远离热设置/目录路径。
 - 在渲染器和测试中保留平台限制。
-- 为不受支持的按钮、选择器、URL 按钮、标题 / 文本重复，以及混合 `message` 加 `presentation` 发送添加回退测试。
-- 仅当提供商能够置顶已发送消息 id 时，才通过 `deliveryCapabilities.pin` 和 `pinDeliveredMessage` 添加置顶投递支持。
-- 不要通过共享消息动作 schema 暴露新的提供商原生 card / block / component / button 字段。
+- 为不支持的按钮、选择、URL 按钮、标题/文本重复，以及混合 `message` 加 `presentation` 发送添加降级测试。
+- 只有当提供商可以置顶已发送的消息 ID 时，才通过 `deliveryCapabilities.pin` 和
+  `pinDeliveredMessage` 添加投递置顶支持。
+- 不要通过共享消息操作架构暴露新的提供商原生卡片/块/组件/按钮字段。
 
 ## 相关文档
 

@@ -1,14 +1,14 @@
 ---
 read_when:
-    - OpenClaw용 Zalo Personal 설정
+    - OpenClaw용 Zalo Personal 설정하기
     - Zalo Personal 로그인 또는 메시지 흐름 디버깅
-summary: 네이티브 zca-js(QR 로그인)를 통한 Zalo 개인 계정 지원, 기능 및 설정
+summary: 네이티브 zca-js(QR 로그인)를 통한 Zalo 개인 계정 지원, 기능 및 구성
 title: Zalo 개인용
 x-i18n:
-    generated_at: "2026-05-06T17:52:27Z"
+    generated_at: "2026-05-10T19:24:14Z"
     model: gpt-5.5
     provider: openai
-    source_hash: d56cbf0a6300709e9fe23421cd134acc68852d0025f305c73413308f412349e8
+    source_hash: 8b55f980b92a17f6a8de39df0ce49fc5705b5cb2bf4d69589c07d84a854e863a
     source_path: channels/zalouser.md
     workflow: 16
 ---
@@ -22,9 +22,9 @@ x-i18n:
 ## 번들 Plugin
 
 Zalo Personal은 현재 OpenClaw 릴리스에 번들 Plugin으로 제공되므로, 일반
-패키지 빌드에서는 별도 설치가 필요하지 않습니다.
+패키지 빌드에는 별도 설치가 필요하지 않습니다.
 
-Zalo Personal이 제외된 이전 빌드나 사용자 지정 설치를 사용 중이라면,
+Zalo Personal을 제외한 이전 빌드 또는 사용자 지정 설치를 사용 중이라면
 npm 패키지를 직접 설치하세요.
 
 - CLI로 설치: `openclaw plugins install @openclaw/zalouser`
@@ -34,10 +34,10 @@ npm 패키지를 직접 설치하세요.
 
 외부 `zca`/`openzca` CLI 바이너리는 필요하지 않습니다.
 
-## 빠른 설정(초보자용)
+## 빠른 설정(초보자)
 
 1. Zalo Personal Plugin을 사용할 수 있는지 확인합니다.
-   - 현재 패키지 OpenClaw 릴리스에는 이미 번들로 포함되어 있습니다.
+   - 현재 패키지된 OpenClaw 릴리스에는 이미 번들로 포함되어 있습니다.
    - 이전/사용자 지정 설치에서는 위 명령으로 수동 추가할 수 있습니다.
 2. 로그인합니다(QR, Gateway 머신에서):
    - `openclaw channels login --channel zalouser`
@@ -61,17 +61,17 @@ npm 패키지를 직접 설치하세요.
 ## 개요
 
 - `zca-js`를 통해 완전히 프로세스 내부에서 실행됩니다.
-- 네이티브 이벤트 리스너를 사용해 인바운드 메시지를 수신합니다.
+- 네이티브 이벤트 리스너를 사용해 수신 메시지를 받습니다.
 - JS API를 통해 직접 답장을 보냅니다(텍스트/미디어/링크).
 - Zalo Bot API를 사용할 수 없는 "개인 계정" 사용 사례를 위해 설계되었습니다.
 
 ## 이름 지정
 
-채널 ID는 `zalouser`입니다. 이는 **개인 Zalo 사용자 계정**(비공식)을 자동화한다는 점을 명확히 하기 위한 것입니다. `zalo`는 향후 공식 Zalo API 통합 가능성을 위해 예약해 둡니다.
+채널 ID는 `zalouser`이며, 이는 **개인 Zalo 사용자 계정**(비공식)을 자동화한다는 점을 명확히 하기 위한 것입니다. 향후 공식 Zalo API 통합 가능성을 위해 `zalo`는 예약해 둡니다.
 
 ## ID 찾기(디렉터리)
 
-디렉터리 CLI를 사용해 피어/그룹과 해당 ID를 찾으세요.
+디렉터리 CLI를 사용해 피어/그룹과 해당 ID를 찾습니다.
 
 ```bash
 openclaw directory self --channel zalouser
@@ -81,35 +81,35 @@ openclaw directory groups list --channel zalouser --query "work"
 
 ## 제한
 
-- 아웃바운드 텍스트는 약 2000자 단위로 분할됩니다(Zalo 클라이언트 제한).
+- 발신 텍스트는 약 2000자로 분할됩니다(Zalo 클라이언트 제한).
 - 스트리밍은 기본적으로 차단됩니다.
 
 ## 액세스 제어(DM)
 
 `channels.zalouser.dmPolicy`는 `pairing | allowlist | open | disabled`를 지원합니다(기본값: `pairing`).
 
-`channels.zalouser.allowFrom`에는 안정적인 Zalo 사용자 ID를 사용해야 합니다. 대화형 설정 중 입력한 이름은 Plugin의 프로세스 내부 연락처 조회를 사용해 ID로 확인할 수 있습니다.
+`channels.zalouser.allowFrom`에는 안정적인 Zalo 사용자 ID를 사용해야 합니다. 정적 발신자 액세스 그룹(`accessGroup:<name>`)도 참조할 수 있습니다. 대화형 설정 중 입력한 이름은 Plugin의 프로세스 내부 연락처 조회를 사용해 ID로 해석할 수 있습니다.
 
-원시 이름이 설정에 남아 있으면 시작 시 `channels.zalouser.dangerouslyAllowNameMatching: true`가 활성화된 경우에만 이를 확인합니다. 이 옵트인이 없으면 런타임 발신자 검사는 ID만 사용하며 원시 이름은 권한 부여에서 무시됩니다.
+원시 이름이 구성에 남아 있는 경우, 시작 시 `channels.zalouser.dangerouslyAllowNameMatching: true`가 활성화된 경우에만 이를 해석합니다. 이 옵트인이 없으면 런타임 발신자 검사는 ID만 사용하며 원시 이름은 권한 부여에서 무시됩니다.
 
-다음으로 승인합니다.
+승인 방법:
 
 - `openclaw pairing list zalouser`
 - `openclaw pairing approve zalouser <code>`
 
 ## 그룹 액세스(선택 사항)
 
-- 기본값: `channels.zalouser.groupPolicy = "open"`(그룹 허용). 설정되지 않은 경우 기본값을 재정의하려면 `channels.defaults.groupPolicy`를 사용하세요.
+- 기본값: `channels.zalouser.groupPolicy = "open"`(그룹 허용). 설정되지 않은 경우 기본값을 재정의하려면 `channels.defaults.groupPolicy`를 사용합니다.
 - allowlist로 제한:
   - `channels.zalouser.groupPolicy = "allowlist"`
-  - `channels.zalouser.groups`(키는 안정적인 그룹 ID여야 합니다. 이름은 `channels.zalouser.dangerouslyAllowNameMatching: true`가 활성화된 경우에만 시작 시 ID로 확인됩니다)
-  - `channels.zalouser.groupAllowFrom`(허용된 그룹에서 어떤 발신자가 봇을 트리거할 수 있는지 제어)
+  - `channels.zalouser.groups`(키는 안정적인 그룹 ID여야 합니다. 이름은 `channels.zalouser.dangerouslyAllowNameMatching: true`가 활성화된 경우에만 시작 시 ID로 해석됩니다)
+  - `channels.zalouser.groupAllowFrom`(허용된 그룹에서 어떤 발신자가 봇을 트리거할 수 있는지 제어합니다. 정적 발신자 액세스 그룹은 `accessGroup:<name>`으로 참조할 수 있습니다)
 - 모든 그룹 차단: `channels.zalouser.groupPolicy = "disabled"`.
-- 구성 마법사는 그룹 allowlist를 입력하도록 요청할 수 있습니다.
-- 시작 시 OpenClaw는 `channels.zalouser.dangerouslyAllowNameMatching: true`가 활성화된 경우에만 allowlist의 그룹/사용자 이름을 ID로 확인하고 매핑을 로그에 기록합니다.
-- 그룹 allowlist 매칭은 기본적으로 ID만 사용합니다. 확인되지 않은 이름은 `channels.zalouser.dangerouslyAllowNameMatching: true`가 활성화되지 않는 한 인증에서 무시됩니다.
-- `channels.zalouser.dangerouslyAllowNameMatching: true`는 변경 가능한 시작 시 이름 확인 및 런타임 그룹 이름 매칭을 다시 활성화하는 비상 호환성 모드입니다.
-- `groupAllowFrom`이 설정되지 않은 경우 런타임은 그룹 발신자 검사에 `allowFrom`으로 폴백합니다.
+- 구성 마법사는 그룹 allowlist 입력을 요청할 수 있습니다.
+- 시작 시 OpenClaw는 `channels.zalouser.dangerouslyAllowNameMatching: true`가 활성화된 경우에만 allowlist의 그룹/사용자 이름을 ID로 해석하고 매핑을 기록합니다.
+- 그룹 allowlist 매칭은 기본적으로 ID만 사용합니다. 해석되지 않은 이름은 `channels.zalouser.dangerouslyAllowNameMatching: true`가 활성화되지 않는 한 인증에서 무시됩니다.
+- `channels.zalouser.dangerouslyAllowNameMatching: true`는 변경 가능한 시작 시 이름 해석과 런타임 그룹 이름 매칭을 다시 활성화하는 비상 호환성 모드입니다.
+- `groupAllowFrom`이 설정되지 않은 경우, 런타임은 그룹 발신자 검사에 `allowFrom`을 대신 사용합니다.
 - 발신자 검사는 일반 그룹 메시지와 제어 명령(예: `/new`, `/reset`) 모두에 적용됩니다.
 
 예시:
@@ -129,15 +129,15 @@ openclaw directory groups list --channel zalouser --query "work"
 }
 ```
 
-### 그룹 멘션 게이팅
+### 그룹 멘션 게이트
 
 - `channels.zalouser.groups.<group>.requireMention`은 그룹 답장에 멘션이 필요한지 제어합니다.
-- 확인 순서: 정확한 그룹 ID/이름 -> 정규화된 그룹 슬러그 -> `*` -> 기본값(`true`).
-- 이는 allowlist에 있는 그룹과 열린 그룹 모드 모두에 적용됩니다.
+- 해석 순서: 정확한 그룹 id/name -> 정규화된 그룹 슬러그 -> `*` -> 기본값(`true`).
+- 이는 allowlist에 포함된 그룹과 열린 그룹 모드 모두에 적용됩니다.
 - 봇 메시지를 인용하면 그룹 활성화를 위한 암시적 멘션으로 간주됩니다.
-- 권한이 있는 제어 명령(예: `/new`)은 멘션 게이팅을 우회할 수 있습니다.
-- 멘션이 필요해 그룹 메시지를 건너뛰면 OpenClaw는 이를 대기 중인 그룹 기록으로 저장하고 다음 처리된 그룹 메시지에 포함합니다.
-- 그룹 기록 제한은 기본적으로 `messages.groupChat.historyLimit`입니다(폴백 `50`). `channels.zalouser.historyLimit`로 계정별로 재정의할 수 있습니다.
+- 승인된 제어 명령(예: `/new`)은 멘션 게이트를 우회할 수 있습니다.
+- 멘션이 필요해 그룹 메시지를 건너뛴 경우, OpenClaw는 이를 보류 중인 그룹 기록으로 저장하고 다음에 처리되는 그룹 메시지에 포함합니다.
+- 그룹 기록 제한은 기본적으로 `messages.groupChat.historyLimit`입니다(대체값 `50`). 계정별로 `channels.zalouser.historyLimit`로 재정의할 수 있습니다.
 
 예시:
 
@@ -173,34 +173,34 @@ openclaw directory groups list --channel zalouser --query "work"
 }
 ```
 
-## 입력 표시, 반응, 전달 확인
+## 입력 중 표시, 반응, 전달 확인
 
 - OpenClaw는 답장을 디스패치하기 전에 입력 중 이벤트를 보냅니다(최선 노력).
 - 메시지 반응 액션 `react`는 채널 액션에서 `zalouser`에 대해 지원됩니다.
-  - 메시지에서 특정 반응 이모지를 제거하려면 `remove: true`를 사용하세요.
+  - 메시지에서 특정 반응 이모지를 제거하려면 `remove: true`를 사용합니다.
   - 반응 의미 체계: [반응](/ko/tools/reactions)
-- 이벤트 메타데이터가 포함된 인바운드 메시지의 경우 OpenClaw는 전달됨 + 읽음 확인을 보냅니다(최선 노력).
+- 이벤트 메타데이터가 포함된 수신 메시지의 경우, OpenClaw는 전달됨 + 읽음 확인을 보냅니다(최선 노력).
 
 ## 문제 해결
 
-**로그인이 유지되지 않는 경우:**
+**로그인이 유지되지 않음:**
 
 - `openclaw channels status --probe`
 - 다시 로그인: `openclaw channels logout --channel zalouser && openclaw channels login --channel zalouser`
 
-**Allowlist/그룹 이름이 확인되지 않은 경우:**
+**Allowlist/그룹 이름이 해석되지 않음:**
 
-- `allowFrom`/`groupAllowFrom`에는 숫자 ID를 사용하고 `groups`에는 안정적인 그룹 ID를 사용하세요. 정확한 친구/그룹 이름이 의도적으로 필요하다면 `channels.zalouser.dangerouslyAllowNameMatching: true`를 활성화하세요.
+- `allowFrom`/`groupAllowFrom`에는 숫자 ID를 사용하고, `groups`에는 안정적인 그룹 ID를 사용하세요. 의도적으로 정확한 친구/그룹 이름이 필요한 경우 `channels.zalouser.dangerouslyAllowNameMatching: true`를 활성화하세요.
 
 **이전 CLI 기반 설정에서 업그레이드한 경우:**
 
-- 이전 외부 `zca` 프로세스 관련 가정을 모두 제거하세요.
+- 이전 외부 `zca` 프로세스에 대한 가정을 제거합니다.
 - 이제 채널은 외부 CLI 바이너리 없이 OpenClaw 내부에서 완전히 실행됩니다.
 
 ## 관련 항목
 
 - [채널 개요](/ko/channels) — 지원되는 모든 채널
 - [페어링](/ko/channels/pairing) — DM 인증 및 페어링 흐름
-- [그룹](/ko/channels/groups) — 그룹 채팅 동작 및 멘션 게이팅
+- [그룹](/ko/channels/groups) — 그룹 채팅 동작 및 멘션 게이트
 - [채널 라우팅](/ko/channels/channel-routing) — 메시지의 세션 라우팅
 - [보안](/ko/gateway/security) — 액세스 모델 및 강화

@@ -1,25 +1,25 @@
 ---
 read_when:
-    - 主要なドキュメントページにすばやくアクセスしたい場合
-summary: よく使われる OpenClaw ドキュメントへの厳選リンク。
+    - 主要なドキュメントページにすばやくアクセスしたい
+summary: 最もよく使われる OpenClaw ドキュメントへの厳選リンク。
 title: ドキュメントディレクトリ
 x-i18n:
-    generated_at: "2026-05-07T01:53:31Z"
+    generated_at: "2026-05-10T19:52:40Z"
     model: gpt-5.5
     provider: openai
-    source_hash: bd24805e17b89747850f01302e761babea411d50aee4e50ec43f93c2e893a4e1
+    source_hash: ddd6903aeb87e36db977b2cef62bd80e84fc67633ca00beb3365ced1f5abdd99
     source_path: start/docs-directory.md
     workflow: 16
 ---
 
 <Note>
-このページは厳選された索引です。初めての場合は、[はじめに](/ja-JP/start/getting-started)から始めてください。
-ドキュメント全体のマップについては、[ドキュメントハブ](/ja-JP/start/hubs)を参照してください。
+このページはキュレーションされた索引です。初めての場合は、[はじめに](/ja-JP/start/getting-started)から開始してください。
+ドキュメント全体のマップについては、[Docs ハブ](/ja-JP/start/hubs)を参照してください。
 </Note>
 
 ## ここから開始
 
-- [ドキュメントハブ（すべてのページへのリンク）](/ja-JP/start/hubs)
+- [Docs ハブ（すべてのページへのリンク）](/ja-JP/start/hubs)
 - [ヘルプ](/ja-JP/help)
 - [設定](/ja-JP/gateway/configuration)
 - [設定例](/ja-JP/gateway/configuration-examples)
@@ -46,7 +46,6 @@ x-i18n:
 - [Telegram](/ja-JP/channels/telegram)
 - [Discord](/ja-JP/channels/discord)
 - [Mattermost](/ja-JP/channels/mattermost)
-- [BlueBubbles（旧 iMessage ブリッジ）](/ja-JP/channels/bluebubbles)
 - [QQ Bot](/ja-JP/channels/qqbot)
 - [iMessage](/ja-JP/channels/imessage)
 - [グループ](/ja-JP/channels/groups)
@@ -74,4 +73,4 @@ x-i18n:
 ## 関連
 
 - [はじめに](/ja-JP/start/getting-started)
-- [ドキュメントハブ](/ja-JP/start/hubs)
+- [Docs ハブ](/ja-JP/start/hubs)

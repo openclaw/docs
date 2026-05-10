@@ -1,39 +1,39 @@
 ---
 read_when:
-    - Bạn muốn OpenClaw được cô lập khỏi môi trường macOS chính của mình
-    - Bạn muốn tích hợp iMessage (BlueBubbles) trong môi trường sandbox
+    - Bạn muốn tách biệt OpenClaw khỏi môi trường macOS chính của mình
+    - Bạn muốn tích hợp iMessage trong môi trường cách ly
     - Bạn muốn một môi trường macOS có thể đặt lại mà bạn có thể nhân bản
-    - Bạn muốn so sánh các tùy chọn máy ảo macOS cục bộ với máy ảo macOS được lưu trữ
-summary: Chạy OpenClaw trong máy ảo macOS được sandbox (cục bộ hoặc được lưu trữ) khi bạn cần cách ly hoặc iMessage
+    - Bạn muốn so sánh các tùy chọn VM macOS cục bộ và được lưu trữ
+summary: Chạy OpenClaw trong máy ảo macOS cách ly (cục bộ hoặc được lưu trữ) khi bạn cần cô lập hoặc iMessage
 title: Máy ảo macOS
 x-i18n:
-    generated_at: "2026-05-06T09:18:46Z"
+    generated_at: "2026-05-10T19:40:23Z"
     model: gpt-5.5
     provider: openai
-    source_hash: e2b6841f66e63606346f364bb1b1b9ca4a3d52558e3d8c6f129c5b89387c6968
+    source_hash: 3502ccaee51261573764440f9e782d2512e9da0332bd15eef3a5c4a83b0c2936
     source_path: install/macos-vm.md
     workflow: 16
 ---
 
-## Mặc định khuyến nghị (hầu hết người dùng)
+## Mặc định được khuyến nghị (hầu hết người dùng)
 
 - **VPS Linux nhỏ** cho Gateway luôn bật và chi phí thấp. Xem [lưu trữ VPS](/vi/vps).
 - **Phần cứng chuyên dụng** (Mac mini hoặc máy Linux) nếu bạn muốn toàn quyền kiểm soát và **IP dân cư** cho tự động hóa trình duyệt. Nhiều trang chặn IP trung tâm dữ liệu, nên duyệt cục bộ thường hoạt động tốt hơn.
-- **Kết hợp:** giữ Gateway trên VPS giá rẻ, và kết nối Mac của bạn làm **Node** khi bạn cần tự động hóa trình duyệt/UI. Xem [Nodes](/vi/nodes) và [Gateway từ xa](/vi/gateway/remote).
+- **Kết hợp:** giữ Gateway trên một VPS giá rẻ, và kết nối Mac của bạn làm **Node** khi bạn cần tự động hóa trình duyệt/UI. Xem [Node](/vi/nodes) và [Gateway từ xa](/vi/gateway/remote).
 
-Dùng VM macOS khi bạn đặc biệt cần các khả năng chỉ có trên macOS (iMessage/BlueBubbles) hoặc muốn cách ly nghiêm ngặt khỏi máy Mac dùng hằng ngày.
+Dùng VM macOS khi bạn đặc biệt cần các khả năng chỉ có trên macOS như iMessage hoặc muốn cách ly nghiêm ngặt khỏi máy Mac dùng hằng ngày.
 
 ## Tùy chọn VM macOS
 
-### VM cục bộ trên máy Mac Apple Silicon của bạn (Lume)
+### VM cục bộ trên Apple Silicon Mac của bạn (Lume)
 
-Chạy OpenClaw trong VM macOS sandbox trên máy Mac Apple Silicon hiện có của bạn bằng [Lume](https://cua.ai/docs/lume).
+Chạy OpenClaw trong một VM macOS dạng sandbox trên Apple Silicon Mac hiện có của bạn bằng [Lume](https://cua.ai/docs/lume).
 
-Điều này cung cấp cho bạn:
+Cách này cho bạn:
 
 - Môi trường macOS đầy đủ trong trạng thái cách ly (máy chủ của bạn vẫn sạch)
-- Hỗ trợ iMessage qua BlueBubbles (không thể thực hiện trên Linux/Windows)
-- Đặt lại tức thì bằng cách sao chép VM
+- Hỗ trợ iMessage qua `imsg` (đường dẫn cục bộ mặc định là không thể trên Linux/Windows)
+- Đặt lại tức thì bằng cách nhân bản VM
 - Không cần thêm phần cứng hoặc chi phí đám mây
 
 ### Nhà cung cấp Mac lưu trữ (đám mây)
@@ -43,25 +43,25 @@ Nếu bạn muốn macOS trên đám mây, các nhà cung cấp Mac lưu trữ c
 - [MacStadium](https://www.macstadium.com/) (Mac được lưu trữ)
 - Các nhà cung cấp Mac lưu trữ khác cũng hoạt động; làm theo tài liệu VM + SSH của họ
 
-Khi bạn có quyền truy cập SSH vào VM macOS, tiếp tục ở bước 6 bên dưới.
+Khi đã có quyền truy cập SSH vào VM macOS, tiếp tục ở bước 6 bên dưới.
 
 ---
 
-## Đường tắt nhanh (Lume, người dùng có kinh nghiệm)
+## Đường dẫn nhanh (Lume, người dùng có kinh nghiệm)
 
 1. Cài đặt Lume
 2. `lume create openclaw --os macos --ipsw latest`
-3. Hoàn tất Trợ lý thiết lập, bật Đăng nhập từ xa (SSH)
+3. Hoàn tất Setup Assistant, bật Remote Login (SSH)
 4. `lume run openclaw --no-display`
-5. SSH vào, cài đặt OpenClaw, cấu hình kênh
-6. Hoàn tất
+5. SSH vào, cài đặt OpenClaw, cấu hình các kênh
+6. Xong
 
 ---
 
-## Những gì bạn cần (Lume)
+## Bạn cần gì (Lume)
 
-- Máy Mac Apple Silicon (M1/M2/M3/M4)
-- macOS Sequoia trở lên trên máy chủ
+- Apple Silicon Mac (M1/M2/M3/M4)
+- macOS Sequoia hoặc mới hơn trên máy chủ
 - Khoảng 60 GB dung lượng đĩa trống cho mỗi VM
 - Khoảng 20 phút
 
@@ -95,27 +95,27 @@ Tài liệu: [Cài đặt Lume](https://cua.ai/docs/lume/guide/getting-started/i
 lume create openclaw --os macos --ipsw latest
 ```
 
-Lệnh này tải macOS xuống và tạo VM. Một cửa sổ VNC tự động mở.
+Lệnh này tải macOS xuống và tạo VM. Một cửa sổ VNC sẽ tự động mở.
 
 <Note>
-Việc tải xuống có thể mất một lúc tùy vào kết nối của bạn.
+Quá trình tải xuống có thể mất một lúc tùy vào kết nối của bạn.
 </Note>
 
 ---
 
-## 3) Hoàn tất Trợ lý thiết lập
+## 3) Hoàn tất Setup Assistant
 
 Trong cửa sổ VNC:
 
 1. Chọn ngôn ngữ và khu vực
-2. Bỏ qua Apple ID (hoặc đăng nhập nếu bạn muốn dùng iMessage sau)
-3. Tạo tài khoản người dùng (nhớ tên người dùng và mật khẩu)
-4. Bỏ qua tất cả tính năng tùy chọn
+2. Bỏ qua Apple ID (hoặc đăng nhập nếu sau này bạn muốn dùng iMessage)
+3. Tạo tài khoản người dùng (ghi nhớ tên người dùng và mật khẩu)
+4. Bỏ qua mọi tính năng tùy chọn
 
 Sau khi thiết lập hoàn tất, bật SSH:
 
-1. Mở Cài đặt hệ thống → Cài đặt chung → Chia sẻ
-2. Bật "Đăng nhập từ xa"
+1. Mở System Settings → General → Sharing
+2. Bật "Remote Login"
 
 ---
 
@@ -184,7 +184,7 @@ openclaw channels login
 
 ---
 
-## 8) Chạy VM không cần màn hình
+## 8) Chạy VM không có giao diện hiển thị
 
 Dừng VM và khởi động lại không có màn hình:
 
@@ -193,7 +193,7 @@ lume stop openclaw
 lume run openclaw --no-display
 ```
 
-VM chạy trong nền. Daemon của OpenClaw giữ cho Gateway hoạt động.
+VM chạy trong nền. Daemon của OpenClaw giữ cho gateway tiếp tục chạy.
 
 Để kiểm tra trạng thái:
 
@@ -203,40 +203,40 @@ ssh youruser@192.168.64.X "openclaw status"
 
 ---
 
-## Thêm: tích hợp iMessage
+## Bổ sung: tích hợp iMessage
 
-Đây là tính năng nổi bật nhất khi chạy trên macOS. Dùng [BlueBubbles](https://bluebubbles.app) để thêm iMessage vào OpenClaw.
+Đây là tính năng nổi bật nhất khi chạy trên macOS. Dùng [iMessage](/vi/channels/imessage) với `imsg` để thêm Messages vào OpenClaw.
 
 Bên trong VM:
 
-1. Tải BlueBubbles từ bluebubbles.app
-2. Đăng nhập bằng Apple ID của bạn
-3. Bật Web API và đặt mật khẩu
-4. Trỏ Webhook của BlueBubbles tới gateway của bạn (ví dụ: `https://your-gateway-host:3000/bluebubbles-webhook?password=<password>`)
+1. Đăng nhập vào Messages.
+2. Cài đặt `imsg`.
+3. Cấp quyền Full Disk Access và Automation cho tiến trình đang chạy OpenClaw/`imsg`.
+4. Xác minh hỗ trợ RPC bằng `imsg rpc --help`.
 
 Thêm vào cấu hình OpenClaw của bạn:
 
 ```json5
 {
   channels: {
-    bluebubbles: {
-      serverUrl: "http://localhost:1234",
-      password: "your-api-password",
-      webhookPath: "/bluebubbles-webhook",
+    imessage: {
+      enabled: true,
+      cliPath: "imsg",
+      dbPath: "~/Library/Messages/chat.db",
     },
   },
 }
 ```
 
-Khởi động lại gateway. Giờ đây agent của bạn có thể gửi và nhận iMessage.
+Khởi động lại gateway. Giờ đây tác nhân của bạn có thể gửi và nhận iMessage.
 
-Chi tiết thiết lập đầy đủ: [Kênh BlueBubbles](/vi/channels/bluebubbles)
+Chi tiết thiết lập đầy đủ: [kênh iMessage](/vi/channels/imessage)
 
 ---
 
-## Lưu ảnh vàng
+## Lưu một image chuẩn
 
-Trước khi tùy chỉnh thêm, hãy chụp trạng thái sạch của bạn:
+Trước khi tùy chỉnh thêm, chụp nhanh trạng thái sạch của bạn:
 
 ```bash
 lume stop openclaw
@@ -257,32 +257,32 @@ lume run openclaw --no-display
 
 Giữ VM chạy bằng cách:
 
-- Luôn cắm nguồn cho máy Mac
-- Tắt ngủ trong Cài đặt hệ thống → Tiết kiệm năng lượng
+- Luôn cắm nguồn cho Mac của bạn
+- Tắt chế độ ngủ trong System Settings → Energy Saver
 - Dùng `caffeinate` nếu cần
 
-Để thực sự luôn bật, hãy cân nhắc Mac mini chuyên dụng hoặc VPS nhỏ. Xem [lưu trữ VPS](/vi/vps).
+Để thật sự luôn bật, hãy cân nhắc một Mac mini chuyên dụng hoặc một VPS nhỏ. Xem [lưu trữ VPS](/vi/vps).
 
 ---
 
 ## Khắc phục sự cố
 
-| Sự cố                    | Giải pháp                                                                          |
-| ------------------------ | ---------------------------------------------------------------------------------- |
-| Không thể SSH vào VM     | Kiểm tra "Đăng nhập từ xa" đã được bật trong Cài đặt hệ thống của VM               |
-| IP VM không hiển thị     | Chờ VM khởi động hoàn tất, chạy lại `lume get openclaw`                            |
-| Không tìm thấy lệnh Lume | Thêm `~/.local/bin` vào PATH của bạn                                               |
-| QR WhatsApp không quét được | Đảm bảo bạn đã đăng nhập vào VM (không phải máy chủ) khi chạy `openclaw channels login` |
+| Vấn đề                         | Giải pháp                                                                                  |
+| ------------------------------ | ------------------------------------------------------------------------------------------ |
+| Không thể SSH vào VM           | Kiểm tra "Remote Login" đã được bật trong System Settings của VM                           |
+| IP của VM không hiển thị       | Chờ VM khởi động hoàn toàn, chạy lại `lume get openclaw`                                   |
+| Không tìm thấy lệnh Lume       | Thêm `~/.local/bin` vào PATH của bạn                                                       |
+| QR WhatsApp không quét được    | Đảm bảo bạn đã đăng nhập vào VM (không phải máy chủ) khi chạy `openclaw channels login`    |
 
 ---
 
 ## Tài liệu liên quan
 
-- [Lưu trữ VPS](/vi/vps)
-- [Nodes](/vi/nodes)
+- [lưu trữ VPS](/vi/vps)
+- [Node](/vi/nodes)
 - [Gateway từ xa](/vi/gateway/remote)
-- [Kênh BlueBubbles](/vi/channels/bluebubbles)
-- [Bắt đầu nhanh với Lume](https://cua.ai/docs/lume/guide/getting-started/quickstart)
-- [Tham chiếu CLI của Lume](https://cua.ai/docs/lume/reference/cli-reference)
-- [Thiết lập VM không giám sát](https://cua.ai/docs/lume/guide/fundamentals/unattended-setup) (nâng cao)
-- [Sandbox bằng Docker](/vi/install/docker) (cách cách ly thay thế)
+- [kênh iMessage](/vi/channels/imessage)
+- [Lume Quickstart](https://cua.ai/docs/lume/guide/getting-started/quickstart)
+- [Tham chiếu CLI Lume](https://cua.ai/docs/lume/reference/cli-reference)
+- [Thiết lập VM không cần giám sát](https://cua.ai/docs/lume/guide/fundamentals/unattended-setup) (nâng cao)
+- [Sandboxing bằng Docker](/vi/install/docker) (cách cách ly thay thế)

@@ -1,38 +1,46 @@
 ---
 x-i18n:
-    generated_at: "2026-04-23T06:58:24Z"
-    model: gpt-5.4
+    generated_at: "2026-05-10T19:20:20Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8b046833f9a15dc61894ab9e808a09a9fb055ef7ada5c3d4893fbe5f70dec126
+    source_hash: 4fb1075777cead58155336aa27359c8c149748bec8a854ff1de1f75a992b8c8f
     source_path: AGENTS.md
-    workflow: 15
+    workflow: 16
 ---
 
 # Guide de la documentation
 
-Ce répertoire gère la rédaction de la documentation, les règles de liens Mintlify et la politique d’i18n de la documentation.
+Ce répertoire couvre la rédaction de la documentation, les règles de liens Mintlify et la politique d’i18n de la documentation.
 
 ## Règles Mintlify
 
 - La documentation est hébergée sur Mintlify (`https://docs.openclaw.ai`).
 - Les liens internes de documentation dans `docs/**/*.md` doivent rester relatifs à la racine, sans suffixe `.md` ni `.mdx` (exemple : `[Configuration](/gateway/configuration)`).
-- Les références croisées vers des sections doivent utiliser des ancres sur des chemins relatifs à la racine (exemple : `[Hooks](/gateway/configuration-reference#hooks)`).
-- Les titres de documentation doivent éviter les tirets cadratins et les apostrophes, car la génération d’ancres de Mintlify est fragile avec ces caractères.
-- Les README et autres documents rendus sur GitHub doivent conserver des URL absolues vers la documentation afin que les liens fonctionnent en dehors de Mintlify.
-- Le contenu de la documentation doit rester générique : pas de noms d’appareils personnels, d’hôtes ou de chemins locaux ; utilisez des espaces réservés comme `user@gateway-host`.
+- Les références croisées de sections doivent utiliser des ancres sur des chemins relatifs à la racine (exemple : `[Hooks](/gateway/configuration-reference#hooks)`).
+- Les titres de documentation doivent éviter les tirets cadratins et les apostrophes, car la génération d’ancres Mintlify est fragile dans ces cas.
+- Le README et les autres documents rendus par GitHub doivent conserver des URL absolues vers la documentation afin que les liens fonctionnent en dehors de Mintlify.
+- Le contenu de la documentation doit rester générique : pas de noms d’appareils personnels, de noms d’hôte ni de chemins locaux ; utilisez des espaces réservés comme `user@gateway-host`.
 
 ## Règles de contenu de la documentation
 
-- Pour la documentation, les textes d’interface et les listes de sélection, classez les services/fournisseurs par ordre alphabétique, sauf si la section décrit explicitement l’ordre d’exécution ou l’ordre d’auto-détection.
-- Gardez une dénomination cohérente des plugins intégrés avec les règles de terminologie plugin à l’échelle du dépôt définies dans le `AGENTS.md` racine.
+- Pour la documentation, les libellés d’interface utilisateur et les listes de sélection, classez les services/fournisseurs par ordre alphabétique, sauf si la section décrit explicitement l’ordre d’exécution ou l’ordre de détection automatique.
+- Gardez la dénomination des plugins intégrés cohérente avec les règles terminologiques relatives aux plugins à l’échelle du dépôt dans le fichier racine `AGENTS.md`.
+
+## Documentation interne
+
+- La documentation privée durable destinée aux opérateurs doit se trouver dans `~/Projects/manager/docs/`.
+- Les brouillons ou miroirs internes locaux au dépôt peuvent se trouver sous `docs/internal/`, qui est ignoré.
+- N’ajoutez jamais de pages `docs/internal/**` à la navigation `docs/docs.json` et ne créez jamais de lien vers ces pages depuis la documentation publique.
+- `scripts/docs-sync-publish.mjs` exclut et supprime `docs/internal/**` du dépôt public de publication `openclaw/docs` si une page est ajoutée de force plus tard.
+- La documentation interne peut mentionner des chemins du dépôt, des noms d’applications privées, des noms d’éléments 1Password et des runbooks, mais ne doit jamais inclure de valeurs secrètes.
 
 ## i18n de la documentation
 
-- Les versions en langue étrangère de la documentation ne sont pas maintenues dans ce dépôt. La sortie de publication générée se trouve dans le dépôt séparé `openclaw/docs` (souvent cloné localement comme `../openclaw-docs`).
-- N’ajoutez ni ne modifiez de documentation localisée sous `docs/<locale>/**` ici.
-- Considérez la documentation en anglais de ce dépôt, ainsi que les fichiers de glossaire, comme la source de vérité.
-- Pipeline : mettez à jour la documentation en anglais ici, mettez à jour `docs/.i18n/glossary.<locale>.json` si nécessaire, puis laissez la synchronisation du dépôt de publication et `scripts/docs-i18n` s’exécuter dans `openclaw/docs`.
-- Avant de relancer `scripts/docs-i18n`, ajoutez des entrées au glossaire pour tout nouveau terme technique, titre de page ou libellé de navigation court qui doit rester en anglais ou utiliser une traduction fixe.
-- `pnpm docs:check-i18n-glossary` est le garde-fou pour les titres de documentation anglaise modifiés et les libellés internes courts de la documentation.
+- La documentation en langues étrangères n’est pas maintenue dans ce dépôt. La sortie de publication générée se trouve dans le dépôt séparé `openclaw/docs` (souvent cloné localement sous `../openclaw-docs`).
+- N’ajoutez ni ne modifiez ici de documentation localisée sous `docs/<locale>/**`.
+- Considérez la documentation anglaise de ce dépôt ainsi que les fichiers de glossaire comme la source de vérité.
+- Pipeline : mettez à jour ici la documentation anglaise, mettez à jour `docs/.i18n/glossary.<locale>.json` si nécessaire, puis laissez la synchronisation du dépôt de publication et `scripts/docs-i18n` s’exécuter dans `openclaw/docs`.
+- Avant de relancer `scripts/docs-i18n`, ajoutez des entrées de glossaire pour tout nouveau terme technique, titre de page ou court libellé de navigation qui doit rester en anglais ou utiliser une traduction fixe.
+- `pnpm docs:check-i18n-glossary` est la garde pour les titres de documentation anglaise modifiés et les courts libellés internes de documentation.
 - La mémoire de traduction se trouve dans les fichiers générés `docs/.i18n/*.tm.jsonl` dans le dépôt de publication.
 - Voir `docs/.i18n/README.md`.

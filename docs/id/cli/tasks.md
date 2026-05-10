@@ -1,14 +1,14 @@
 ---
 read_when:
     - Anda ingin memeriksa, mengaudit, atau membatalkan catatan tugas latar belakang
-    - Anda sedang mendokumentasikan perintah TaskFlow di bawah `openclaw tasks flow`
-summary: Referensi CLI untuk `openclaw tasks` (ledger tugas latar belakang dan status Task Flow)
+    - Anda sedang mendokumentasikan perintah Task Flow di bawah `openclaw tasks flow`
+summary: Referensi CLI untuk `openclaw tasks` (buku besar tugas latar belakang dan status TaskFlow)
 title: '`openclaw tasks`'
 x-i18n:
-    generated_at: "2026-05-07T13:15:09Z"
+    generated_at: "2026-05-10T19:30:02Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ca3f05d7c2a3fa7790ad6059ce15721ebffb548ac4a2c627188ac17986442dc6
+    source_hash: 7bbb97690124a8e59ec5e6a517f33166ad449ee6268894ab132ad9cb69dcaa81
     source_path: cli/tasks.md
     workflow: 16
 ---
@@ -16,7 +16,7 @@ x-i18n:
 Periksa tugas latar belakang persisten dan status Task Flow. Tanpa subperintah,
 `openclaw tasks` setara dengan `openclaw tasks list`.
 
-Lihat [Tugas Latar Belakang](/id/automation/tasks) untuk model siklus hidup dan pengiriman.
+Lihat [Tugas Latar Belakang](/id/automation/tasks) untuk siklus hidup dan model pengiriman.
 
 ## Penggunaan
 
@@ -38,9 +38,9 @@ openclaw tasks flow cancel <lookup>
 
 ## Opsi Root
 
-- `--json`: hasilkan JSON.
-- `--runtime <name>`: filter berdasarkan jenis: `subagent`, `acp`, `cron`, atau `cli`.
-- `--status <name>`: filter berdasarkan status: `queued`, `running`, `succeeded`, `failed`, `timed_out`, `cancelled`, atau `lost`.
+- `--json`: keluarkan JSON.
+- `--runtime <name>`: filter menurut jenis: `subagent`, `acp`, `cron`, atau `cli`.
+- `--status <name>`: filter menurut status: `queued`, `running`, `succeeded`, `failed`, `timed_out`, `cancelled`, atau `lost`.
 
 ## Subperintah
 
@@ -50,7 +50,7 @@ openclaw tasks flow cancel <lookup>
 openclaw tasks list [--runtime <name>] [--status <name>] [--json]
 ```
 
-Mencantumkan tugas latar belakang yang dilacak, yang terbaru terlebih dahulu.
+Mencantumkan tugas latar belakang yang dilacak, yang terbaru lebih dulu.
 
 ### `show`
 
@@ -82,7 +82,7 @@ Membatalkan tugas latar belakang yang sedang berjalan.
 openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--json]
 ```
 
-Memunculkan catatan tugas dan Task Flow yang kedaluwarsa, hilang, gagal dikirim, atau tidak konsisten. Tugas hilang yang dipertahankan hingga `cleanupAfter` adalah peringatan; tugas hilang yang kedaluwarsa atau tidak diberi stempel adalah galat.
+Memunculkan catatan tugas dan Task Flow yang basi, hilang, gagal dikirim, atau tidak konsisten. Tugas hilang yang dipertahankan hingga `cleanupAfter` adalah peringatan; tugas hilang yang kedaluwarsa atau tidak diberi stempel adalah kesalahan.
 
 ### `maintenance`
 
@@ -90,8 +90,17 @@ Memunculkan catatan tugas dan Task Flow yang kedaluwarsa, hilang, gagal dikirim,
 openclaw tasks maintenance [--apply] [--json]
 ```
 
-Mempratinjau atau menerapkan rekonsiliasi tugas dan Task Flow, pemberian stempel pembersihan, dan pemangkasan.
-Untuk tugas cron, rekonsiliasi menggunakan log eksekusi/status pekerjaan yang dipersistenkan sebelum menandai tugas aktif lama sebagai `lost`, sehingga eksekusi cron yang selesai tidak menjadi galat audit palsu hanya karena status runtime Gateway dalam memori sudah hilang. Audit CLI offline tidak otoritatif untuk kumpulan pekerjaan aktif cron lokal-proses milik Gateway. Tugas CLI dengan ID eksekusi/ID sumber ditandai sebagai `lost` ketika konteks eksekusi Gateway live-nya hilang, meskipun baris sesi anak lama masih ada.
+Mempratinjau atau menerapkan rekonsiliasi tugas dan Task Flow, pemberian stempel pembersihan, pemangkasan,
+dan pembersihan registri sesi eksekusi cron yang basi.
+Untuk tugas cron, rekonsiliasi menggunakan log eksekusi/status pekerjaan yang dipersistenkan sebelum menandai
+tugas aktif lama sebagai `lost`, sehingga eksekusi cron yang selesai tidak menjadi kesalahan audit palsu
+hanya karena status runtime Gateway di memori sudah hilang. Audit CLI offline
+tidak otoritatif untuk kumpulan pekerjaan aktif cron lokal-proses milik Gateway. Tugas CLI
+dengan ID eksekusi/ID sumber ditandai `lost` saat konteks eksekusi Gateway langsungnya
+hilang, meskipun baris sesi anak lama masih ada.
+Saat diterapkan, pemeliharaan juga memangkas baris registri sesi `cron:<jobId>:run:<uuid>`
+yang lebih lama dari 7 hari sambil mempertahankan pekerjaan cron yang sedang berjalan dan membiarkan
+baris sesi non-cron tidak tersentuh.
 
 ### `flow`
 

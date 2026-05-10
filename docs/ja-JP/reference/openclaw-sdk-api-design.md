@@ -1,37 +1,39 @@
 ---
 read_when:
     - 提案されている公開 OpenClaw アプリ SDK を実装しています
-    - アプリ SDK のドラフト名前空間、イベント、結果、アーティファクト、承認、またはセキュリティのコントラクトが必要
-    - Gatewayプロトコルリソースを、高レベルのOpenClaw App SDKラッパーと比較しています
+    - アプリ SDK のドラフト名前空間、イベント、結果、アーティファクト、承認、またはセキュリティ契約が必要です
+    - Gateway プロトコルリソースを高レベルの OpenClaw App SDK ラッパーと比較しています
 sidebarTitle: App SDK API design
-summary: 公開 OpenClaw App SDK API、イベント分類体系、アーティファクト、承認、パッケージ構造のリファレンス設計
-title: OpenClaw アプリ SDK API の設計
+summary: 公開 OpenClaw アプリ SDK API、イベント分類体系、アーティファクト、承認、パッケージ構造のリファレンス設計
+title: OpenClaw App SDK API の設計
 x-i18n:
-    generated_at: "2026-05-06T09:09:33Z"
+    generated_at: "2026-05-10T19:51:38Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1c49afb4b3b23653e1c6512c22c7465dc1778fc9ea2b28864ca9eaa3ccc90f2f
+    source_hash: 7eab11a5dfb85465e7d6da971fba779baaef06fd333eb53a39b53d7150e85b72
     source_path: reference/openclaw-sdk-api-design.md
     workflow: 16
 ---
 
-このページは、公開 [OpenClaw App SDK](/ja-JP/concepts/openclaw-sdk) の詳細な API リファレンス設計です。これは意図的に
+このページは、公開
+[OpenClaw App SDK](/ja-JP/concepts/openclaw-sdk) の詳細な API リファレンス設計です。これは意図的に
 [Plugin SDK](/ja-JP/plugins/sdk-overview) とは分けられています。
 
 <Note>
-  `@openclaw/sdk` は Gateway と通信するための外部 app/client パッケージです。`openclaw/plugin-sdk/*` はインプロセスの Plugin 作成契約です。
-  エージェントを実行するだけのアプリから Plugin SDK サブパスをインポートしないでください。
+  `@openclaw/sdk` は Gateway と通信するための外部アプリ/クライアントパッケージです。
+  `openclaw/plugin-sdk/*` はインプロセスのプラグイン作成契約です。
+  エージェントを実行するだけのアプリから Plugin SDK のサブパスをインポートしないでください。
 </Note>
 
-公開 app SDK は 2 つの層で構築する必要があります。
+公開アプリ SDK は 2 つのレイヤーで構築する必要があります。
 
-1. 低レベルの生成された Gateway クライアント。
+1. 低レベルの生成済み Gateway クライアント。
 2. `OpenClaw`、`Agent`、`Session`、`Run`、
-   `Task`、`Artifact`、`Approval`、`Environment` オブジェクトを備えた、高レベルで使いやすいラッパー。
+   `Task`、`Artifact`、`Approval`、`Environment` オブジェクトを備えた高レベルで使いやすいラッパー。
 
 ## 名前空間設計
 
-低レベルの名前空間は Gateway リソースに密接に従う必要があります。
+低レベルの名前空間は Gateway リソースに厳密に従う必要があります。
 
 ```typescript
 oc.agents.list();
@@ -54,9 +56,9 @@ oc.runs.events(runId, { after });
 oc.runs.wait(runId);
 oc.runs.cancel(runId);
 
-oc.tasks.list(); // future API: current SDK throws unsupported
-oc.tasks.get(taskId); // future API: current SDK throws unsupported
-oc.tasks.cancel(taskId); // future API: current SDK throws unsupported
+oc.tasks.list({ status: "running" });
+oc.tasks.get(taskId);
+oc.tasks.cancel(taskId, { reason });
 oc.tasks.events(taskId, { after }); // future API
 
 oc.models.list();
@@ -95,7 +97,7 @@ const session = await run.session();
 
 ## イベント契約
 
-公開 SDK は、バージョン管理され、再生可能で、正規化されたイベントを公開する必要があります。
+公開 SDK は、バージョン付きで再生可能な正規化イベントを公開する必要があります。
 
 ```typescript
 type OpenClawEvent = {
@@ -113,42 +115,42 @@ type OpenClawEvent = {
 };
 ```
 
-`id` は再生カーソルです。コンシューマーは
+`id` は再生カーソルです。利用側は
 `events({ after: id })` で再接続し、保持期間が許す場合は見逃したイベントを受け取れる必要があります。
 
 推奨される正規化イベントファミリー:
 
 | イベント              | 意味                                                        |
 | --------------------- | ----------------------------------------------------------- |
-| `run.created`         | Run が受け付けられた。                                     |
-| `run.queued`          | Run がセッションレーン、ランタイム、または環境を待っている。 |
-| `run.started`         | ランタイムが実行を開始した。                               |
-| `run.completed`       | Run が正常に終了した。                                     |
-| `run.failed`          | Run がエラーで終了した。                                   |
-| `run.cancelled`       | Run がキャンセルされた。                                   |
-| `run.timed_out`       | Run がタイムアウトを超過した。                             |
-| `assistant.delta`     | アシスタントテキストの差分。                               |
-| `assistant.message`   | 完全なアシスタントメッセージまたは置換。                   |
-| `thinking.delta`      | ポリシーで公開が許可されている場合の推論または計画の差分。 |
-| `tool.call.started`   | ツール呼び出しが開始された。                               |
-| `tool.call.delta`     | ツール呼び出しが進捗または部分出力をストリーミングした。   |
-| `tool.call.completed` | ツール呼び出しが正常に返された。                           |
-| `tool.call.failed`    | ツール呼び出しが失敗した。                                 |
-| `approval.requested`  | Run またはツールが承認を必要としている。                   |
-| `approval.resolved`   | 承認が許可、拒否、期限切れ、またはキャンセルされた。       |
-| `question.requested`  | ランタイムがユーザーまたはホストアプリに入力を求めた。     |
-| `question.answered`   | ホストアプリが回答を提供した。                             |
-| `artifact.created`    | 新しいアーティファクトが利用可能になった。                 |
-| `artifact.updated`    | 既存のアーティファクトが変更された。                       |
-| `session.created`     | セッションが作成された。                                   |
-| `session.updated`     | セッションメタデータが変更された。                         |
-| `session.compacted`   | セッション Compaction が発生した。                         |
-| `task.updated`        | バックグラウンドタスクの状態が変更された。                 |
-| `git.branch`          | ランタイムがブランチ状態を観測または変更した。             |
+| `run.created`         | 実行が受け付けられた。                                    |
+| `run.queued`          | 実行がセッションレーン、ランタイム、または環境を待っている。 |
+| `run.started`         | ランタイムが実行を開始した。                              |
+| `run.completed`       | 実行が正常に完了した。                                    |
+| `run.failed`          | 実行がエラーで終了した。                                  |
+| `run.cancelled`       | 実行がキャンセルされた。                                  |
+| `run.timed_out`       | 実行がタイムアウトを超過した。                            |
+| `assistant.delta`     | アシスタントのテキスト差分。                              |
+| `assistant.message`   | 完全なアシスタントメッセージまたは置換。                  |
+| `thinking.delta`      | ポリシーで公開が許可される場合の推論または計画の差分。    |
+| `tool.call.started`   | ツール呼び出しが開始された。                              |
+| `tool.call.delta`     | ツール呼び出しが進行状況または部分出力をストリームした。  |
+| `tool.call.completed` | ツール呼び出しが正常に返された。                          |
+| `tool.call.failed`    | ツール呼び出しが失敗した。                                |
+| `approval.requested`  | 実行またはツールに承認が必要。                            |
+| `approval.resolved`   | 承認が許可、拒否、期限切れ、またはキャンセルされた。      |
+| `question.requested`  | ランタイムがユーザーまたはホストアプリに入力を求めている。 |
+| `question.answered`   | ホストアプリが回答を提供した。                            |
+| `artifact.created`    | 新しい成果物が利用可能になった。                          |
+| `artifact.updated`    | 既存の成果物が変更された。                                |
+| `session.created`     | セッションが作成された。                                  |
+| `session.updated`     | セッションのメタデータが変更された。                      |
+| `session.compacted`   | セッションの Compaction が発生した。                       |
+| `task.updated`        | バックグラウンドタスクの状態が変更された。                |
+| `git.branch`          | ランタイムがブランチ状態を観測または変更した。            |
 | `git.diff`            | ランタイムが diff を生成または変更した。                   |
-| `git.pr`              | ランタイムがプルリクエストを開く、更新、またはリンクした。 |
+| `git.pr`              | ランタイムがプルリクエストを作成、更新、またはリンクした。 |
 
-ランタイムネイティブのペイロードは `raw` から利用できる必要がありますが、通常の UI ではアプリが `raw` を解析しなくてもよいようにする必要があります。
+ランタイムネイティブのペイロードは `raw` から利用可能にする必要がありますが、通常の UI でアプリが `raw` を解析する必要があってはなりません。
 
 ## 結果契約
 
@@ -178,13 +180,13 @@ type RunResult = {
 };
 ```
 
-結果は単純で安定しているべきです。タイムスタンプ値は Gateway の形を保持するため、現在のライフサイクルに裏付けられた Run は通常エポックミリ秒の数値を報告しますが、アダプターは引き続き ISO 文字列を公開する場合があります。リッチな UI、ツールトレース、ランタイムネイティブの詳細は、イベントとアーティファクトに属します。
+結果は平凡で安定している必要があります。タイムスタンプ値は Gateway の形状を保持するため、現在のライフサイクルに基づく実行は通常エポックミリ秒の数値を報告しますが、アダプターはまだ ISO 文字列を公開する場合があります。リッチな UI、ツールトレース、ランタイムネイティブの詳細は、イベントと成果物に属します。
 
-`accepted` は非終端の wait 結果です。これは、Run がライフサイクルの終了/エラーを生成する前に Gateway の wait 期限が切れたことを意味します。`timed_out` として扱ってはいけません。`timed_out` は、Run が自身のランタイムタイムアウトを超過した場合のために予約されています。
+`accepted` は非終端の待機結果です。これは、実行がライフサイクルの終了/エラーを生成する前に Gateway の待機期限が切れたことを意味します。`timed_out` として扱ってはなりません。`timed_out` は、実行が自身のランタイムタイムアウトを超過した場合に予約されています。
 
 ## 承認と質問
 
-コーディングエージェントは常に安全境界を越えるため、承認は第一級である必要があります。
+コーディングエージェントは安全境界を頻繁にまたぐため、承認はファーストクラスでなければなりません。
 
 ```typescript
 run.onApproval(async (request) => {
@@ -196,10 +198,10 @@ run.onApproval(async (request) => {
 });
 ```
 
-承認イベントには以下を含める必要があります。
+承認イベントは次を含む必要があります。
 
 - 承認 ID
-- Run ID とセッション ID
+- 実行 ID とセッション ID
 - リクエスト種別
 - 要求されたアクションの概要
 - ツール名または環境アクション
@@ -208,11 +210,11 @@ run.onApproval(async (request) => {
 - 有効期限
 - 判断を再利用できるかどうか
 
-質問は承認とは別です。質問は、ユーザーまたはホストアプリに情報を求めます。承認は、アクションを実行する許可を求めます。
+質問は承認とは別です。質問はユーザーまたはホストアプリに情報を求めます。承認はアクションを実行する許可を求めます。
 
 ## ToolSpace モデル
 
-アプリは Plugin 内部をインポートせずにツールサーフェスを理解する必要があります。
+アプリは、プラグイン内部をインポートせずにツールサーフェスを理解する必要があります。
 
 ```typescript
 const tools = await run.toolSpace();
@@ -222,20 +224,20 @@ for (const tool of tools.list()) {
 }
 ```
 
-SDK は以下を公開する必要があります。
+SDK は次を公開する必要があります。
 
 - 正規化されたツールメタデータ
-- ソース: OpenClaw、MCP、Plugin、channel、runtime、または app
+- ソース: OpenClaw、MCP、プラグイン、チャンネル、ランタイム、またはアプリ
 - スキーマ概要
 - 承認ポリシー
 - ランタイム互換性
-- ツールが hidden、readonly、write capable、または host capable かどうか
+- ツールが非表示、読み取り専用、書き込み可能、またはホスト対応かどうか
 
-SDK 経由のツール呼び出しは、明示的でスコープ付きである必要があります。ほとんどのアプリは任意のツールを直接呼び出すのではなく、エージェントを実行するべきです。
+SDK 経由のツール呼び出しは明示的でスコープ付きである必要があります。ほとんどのアプリは任意のツールを直接呼び出すのではなく、エージェントを実行するべきです。
 
-## アーティファクトモデル
+## 成果物モデル
 
-アーティファクトはファイル以上のものを扱う必要があります。
+成果物はファイル以外もカバーする必要があります。
 
 ```typescript
 type ArtifactSummary = {
@@ -271,37 +273,37 @@ type ArtifactSummary = {
 - ランタイム軌跡
 - 管理対象環境のワークスペーススナップショット
 
-アーティファクトアクセスは、すべてのアーティファクトが通常のローカルファイルであると仮定せずに、リダクション、保持、ダウンロード URL をサポートする必要があります。
+成果物アクセスは、すべての成果物が通常のローカルファイルであると仮定せずに、墨消し、保持、ダウンロード URL をサポートする必要があります。
 
 ## セキュリティモデル
 
-app SDK は権限について明示的でなければなりません。
+アプリ SDK は権限について明示的でなければなりません。
 
 推奨されるトークンスコープ:
 
-| スコープ            | 許可すること                                        |
-| ------------------- | --------------------------------------------------- |
-| `agent.read`        | エージェントの一覧表示と検査。                     |
-| `agent.run`         | Run の開始。                                       |
-| `session.read`      | セッションメタデータとメッセージの読み取り。       |
-| `session.write`     | セッションの作成、送信、fork、compact、中止。      |
-| `task.read`         | バックグラウンドタスク状態の読み取り。             |
-| `task.write`        | タスク通知ポリシーのキャンセルまたは変更。         |
-| `approval.respond`  | リクエストの承認または拒否。                       |
-| `tools.invoke`      | 公開されたツールの直接呼び出し。                   |
-| `artifacts.read`    | アーティファクトの一覧表示とダウンロード。         |
-| `environment.write` | 管理対象環境の作成または破棄。                     |
-| `admin`             | 管理操作。                                         |
+| スコープ            | 許可する内容                                          |
+| ------------------- | ----------------------------------------------------- |
+| `agent.read`        | エージェントの一覧表示と検査。                       |
+| `agent.run`         | 実行の開始。                                         |
+| `session.read`      | セッションメタデータとメッセージの読み取り。         |
+| `session.write`     | セッションの作成、送信、フォーク、Compaction、中止。 |
+| `task.read`         | バックグラウンドタスク状態の読み取り。               |
+| `task.write`        | タスク通知ポリシーのキャンセルまたは変更。           |
+| `approval.respond`  | リクエストの承認または拒否。                         |
+| `tools.invoke`      | 公開されたツールの直接呼び出し。                     |
+| `artifacts.read`    | 成果物の一覧表示とダウンロード。                     |
+| `environment.write` | 管理対象環境の作成または破棄。                       |
+| `admin`             | 管理操作。                                           |
 
 デフォルト:
 
 - デフォルトではシークレットを転送しない
-- 無制限の環境変数パススルーを行わない
-- シークレット値の代わりにシークレット参照を使う
+- 環境変数の無制限のパススルーをしない
+- シークレット値ではなくシークレット参照
 - 明示的なサンドボックスとネットワークポリシー
 - 明示的なリモート環境保持
-- ポリシーで別途証明されない限り、ホスト実行には承認を要求する
-- 呼び出し元がより強い診断スコープを持たない限り、Gateway を離れる前に raw ランタイムイベントをリダクションする
+- ポリシーが別の扱いを証明しない限り、ホスト実行には承認
+- 呼び出し元がより強い診断スコープを持たない限り、raw ランタイムイベントは Gateway を離れる前に墨消しされる
 
 ## 管理対象環境プロバイダー
 
@@ -323,32 +325,32 @@ type EnvironmentProvider = {
 };
 ```
 
-最初の実装は hosted SaaS である必要はありません。既存の Node ホスト、一時的なワークスペース、CI スタイルの runner、または Testbox スタイルの環境を対象にできます。重要な契約は次のとおりです。
+最初の実装はホスト型 SaaS である必要はありません。既存の Node ホスト、一時的なワークスペース、CI 形式のランナー、または Testbox 形式の環境を対象にできます。重要な契約は次のとおりです。
 
 1. ワークスペースを準備する
 2. 安全な環境とシークレットをバインドする
-3. Run を開始する
-4. イベントをストリーミングする
-5. アーティファクトを収集する
+3. 実行を開始する
+4. イベントをストリームする
+5. 成果物を収集する
 6. ポリシーに従ってクリーンアップまたは保持する
 
-これが安定すれば、hosted cloud service は同じプロバイダー契約を実装できます。
+これが安定すれば、ホスト型クラウドサービスは同じプロバイダー契約を実装できます。
 
 ## パッケージ構造
 
 推奨パッケージ:
 
-| パッケージ            | 目的                                                          |
-| --------------------- | ------------------------------------------------------------- |
-| `@openclaw/sdk`       | 公開高レベル SDK と生成された低レベル Gateway クライアント。 |
-| `@openclaw/sdk-react` | ダッシュボードと app builder 向けの任意の React hooks。       |
-| `@openclaw/sdk-testing` | app integration 向けのテストヘルパーと fake Gateway server。 |
+| パッケージ              | 目的                                                          |
+| ----------------------- | ------------------------------------------------------------- |
+| `@openclaw/sdk`         | 公開高レベル SDK と生成済み低レベル Gateway クライアント。    |
+| `@openclaw/sdk-react`   | ダッシュボードとアプリビルダー向けのオプション React フック。 |
+| `@openclaw/sdk-testing` | アプリ統合用のテストヘルパーと偽 Gateway サーバー。           |
 
-このリポジトリにはすでに Plugin 用の `openclaw/plugin-sdk/*` があります。Plugin 作成者とアプリ開発者を混同させないように、その名前空間は分けておいてください。
+リポジトリにはすでにプラグイン向けの `openclaw/plugin-sdk/*` があります。プラグイン作成者とアプリ開発者の混乱を避けるため、その名前空間は分離したままにしてください。
 
 ## 生成クライアント戦略
 
-低レベルクライアントは、バージョン管理された Gateway プロトコルスキーマから生成し、その後、手書きの使いやすいクラスでラップする必要があります。
+低レベルクライアントは、バージョン付き Gateway プロトコルスキーマから生成し、その後、手書きの使いやすいクラスでラップする必要があります。
 
 レイヤリング:
 
@@ -357,22 +359,22 @@ type EnvironmentProvider = {
 3. 外部入力とイベントペイロード用のランタイムバリデーター。
 4. 高レベルの `OpenClaw`、`Agent`、`Session`、`Run`、`Task`、`Artifact`
    ラッパー。
-5. クックブックの例と統合テスト。
+5. クックブック例と統合テスト。
 
 利点:
 
-- プロトコルのずれが可視化される
-- テストで生成されたメソッドと Gateway のエクスポートを比較できる
-- App SDK は Plugin SDK の内部実装から独立したままになる
-- 低レベルの利用者も完全なプロトコルアクセスを維持できる
+- プロトコルのずれが見える
+- テストで生成されたメソッドを Gateway エクスポートと比較できる
+- App SDK は Plugin SDK 内部から独立したままになる
+- 低レベルの利用者は引き続きプロトコル全体にアクセスできる
 - 高レベルの利用者は小さなプロダクト API を利用できる
 
 ## 関連
 
 - [OpenClaw App SDK](/ja-JP/concepts/openclaw-sdk)
 - [Gateway RPC リファレンス](/ja-JP/reference/rpc)
-- [エージェントループ](/ja-JP/concepts/agent-loop)
-- [エージェントランタイム](/ja-JP/concepts/agent-runtimes)
+- [Agent ループ](/ja-JP/concepts/agent-loop)
+- [Agent ランタイム](/ja-JP/concepts/agent-runtimes)
 - [バックグラウンドタスク](/ja-JP/automation/tasks)
 - [ACP エージェント](/ja-JP/tools/acp-agents)
 - [Plugin SDK 概要](/ja-JP/plugins/sdk-overview)

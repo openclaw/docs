@@ -1,41 +1,43 @@
 ---
 read_when:
     - Chcesz interaktywnie dostosować poświadczenia, urządzenia lub domyślne ustawienia agenta
-summary: Dokumentacja referencyjna CLI dla `openclaw configure` (interaktywne monity konfiguracyjne)
-title: Konfiguracja
+summary: Dokumentacja referencyjna CLI dla `openclaw configure` (interaktywne monity konfiguracji)
+title: Skonfiguruj
 x-i18n:
-    generated_at: "2026-05-02T09:44:33Z"
+    generated_at: "2026-05-10T19:27:47Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 16e45fdead5e8026e8d359a09c799fb1248226a9425fcd9ff956d165b880663d
+    source_hash: aba5320fefb856c208405511619fc1a4314e3f5e3990f221e987a03d692189fb
     source_path: cli/configure.md
     workflow: 16
 ---
 
 # `openclaw configure`
 
-Interaktywny monit do skonfigurowania poświadczeń, urządzeń i domyślnych ustawień agenta.
+Interaktywny monit do ukierunkowanych zmian w istniejącej konfiguracji: poświadczeń, urządzeń, domyślnych ustawień agenta, Gateway, kanałów, pluginów, Skills i kontroli kondycji.
+
+Użyj `openclaw onboard` dla pełnego, prowadzonego procesu pierwszego uruchomienia, `openclaw setup` tylko dla bazowej konfiguracji/przestrzeni roboczej oraz `openclaw channels add`, gdy potrzebujesz wyłącznie skonfigurować konto kanału.
 
 <Note>
-Sekcja **Model** zawiera wybór wielokrotny dla listy dozwolonych `agents.defaults.models` (tego, co pojawia się w `/model` i selektorze modeli). Wybory konfiguracji ograniczone do dostawcy scalają wybrane modele z istniejącą listą dozwolonych, zamiast zastępować niepowiązanych dostawców, którzy są już w konfiguracji.
+Sekcja **Model** zawiera wielokrotny wybór dla listy dozwolonych `agents.defaults.models` (tego, co pojawia się w `/model` i selektorze modeli). Wybory konfiguracji ograniczone do dostawcy scalają wybrane modele z istniejącą listą dozwolonych zamiast zastępować niepowiązanych dostawców już obecnych w konfiguracji.
 
-Ponowne uruchomienie uwierzytelniania dostawcy z poziomu konfiguracji zachowuje istniejące `agents.defaults.model.primary`, nawet gdy krok uwierzytelniania dostawcy zwraca poprawkę konfiguracji z własnym zalecanym modelem domyślnym. Oznacza to, że dodanie lub ponowne uwierzytelnienie xAI, OpenRouter albo innego dostawcy powinno udostępnić nowy model bez przejmowania roli bieżącego modelu głównego. Użyj `openclaw models auth login --provider <id> --set-default` albo `openclaw models set <model>`, gdy celowo chcesz zmienić model domyślny.
+Ponowne uruchomienie uwierzytelniania dostawcy z poziomu konfiguracji zachowuje istniejące `agents.defaults.model.primary`, nawet gdy krok uwierzytelniania dostawcy zwraca poprawkę konfiguracji z własnym zalecanym modelem domyślnym. Oznacza to, że dodanie lub ponowne uwierzytelnienie xAI, OpenRouter albo innego dostawcy powinno udostępnić nowy model bez przejmowania roli bieżącego modelu podstawowego. Użyj `openclaw models auth login --provider <id> --set-default` lub `openclaw models set <model>`, gdy celowo chcesz zmienić model domyślny.
 </Note>
 
-Gdy konfiguracja rozpoczyna się od wyboru uwierzytelniania dostawcy, selektory modelu domyślnego i listy dozwolonych automatycznie preferują tego dostawcę. W przypadku sparowanych dostawców, takich jak Volcengine i BytePlus, ta sama preferencja obejmuje też ich warianty planów kodowania (`volcengine-plan/*`, `byteplus-plan/*`). Jeśli filtr preferowanego dostawcy zwróciłby pustą listę, konfiguracja wraca do niefiltrowanego katalogu zamiast pokazywać pusty selektor.
+Gdy konfiguracja zaczyna się od wyboru uwierzytelniania dostawcy, selektory modelu domyślnego i listy dozwolonych automatycznie preferują tego dostawcę. W przypadku sparowanych dostawców, takich jak Volcengine i BytePlus, ta sama preferencja obejmuje także ich warianty planu kodowania (`volcengine-plan/*`, `byteplus-plan/*`). Jeśli filtr preferowanego dostawcy dałby pustą listę, konfiguracja wraca do niefiltrowanego katalogu zamiast pokazywać pusty selektor.
 
 <Tip>
-`openclaw config` bez podkomendy otwiera ten sam kreator. Użyj `openclaw config get|set|unset` do nieinteraktywnych edycji.
+`openclaw config` bez podpolecenia otwiera ten sam kreator. Użyj `openclaw config get|set|unset` do nieinteraktywnych edycji.
 </Tip>
 
-W przypadku wyszukiwania w internecie `openclaw configure --section web` pozwala wybrać dostawcę
-i skonfigurować jego poświadczenia. Niektórzy dostawcy pokazują też właściwe dla nich
-dodatkowe monity:
+Dla wyszukiwania w sieci `openclaw configure --section web` pozwala wybrać dostawcę
+i skonfigurować jego poświadczenia. Niektórzy dostawcy pokazują także specyficzne
+dla dostawcy dodatkowe monity:
 
 - **Grok** może zaoferować opcjonalną konfigurację `x_search` z tym samym `XAI_API_KEY` i
   pozwolić wybrać model `x_search`.
-- **Kimi** może zapytać o region API Moonshot (`api.moonshot.ai` vs
-  `api.moonshot.cn`) oraz domyślny model wyszukiwania internetowego Kimi.
+- **Kimi** może zapytać o region API Moonshot (`api.moonshot.ai` kontra
+  `api.moonshot.cn`) oraz domyślny model wyszukiwania w sieci Kimi.
 
 Powiązane:
 
@@ -60,12 +62,12 @@ Dostępne sekcje:
 
 Uwagi:
 
-- Wybór miejsca, w którym działa Gateway, zawsze aktualizuje `gateway.mode`. Możesz wybrać „Kontynuuj” bez innych sekcji, jeśli tylko tego potrzebujesz.
-- Po lokalnych zapisach konfiguracji kreator instaluje wybrane Pluginy do pobrania, gdy wymaga ich wybrana ścieżka konfiguracji. Zdalna konfiguracja Gateway nie instaluje lokalnych pakietów Pluginów.
-- Usługi zorientowane na kanały (Slack/Discord/Matrix/Microsoft Teams) proszą podczas konfiguracji o listy dozwolonych kanałów/pokoi. Możesz wprowadzić nazwy lub identyfikatory; kreator rozwiązuje nazwy na identyfikatory, gdy to możliwe.
-- Jeśli uruchomisz krok instalacji demona, uwierzytelnianie tokenem wymaga tokena, a `gateway.auth.token` jest zarządzany przez SecretRef, konfiguracja weryfikuje SecretRef, ale nie zapisuje rozwiązanych wartości tokena w postaci zwykłego tekstu do metadanych środowiska usługi nadzorcy.
-- Jeśli uwierzytelnianie tokenem wymaga tokena, a skonfigurowany SecretRef tokena nie został rozwiązany, konfiguracja blokuje instalację demona i podaje wskazówki naprawcze możliwe do wykonania.
-- Jeśli skonfigurowano zarówno `gateway.auth.token`, jak i `gateway.auth.password`, a `gateway.auth.mode` nie jest ustawiony, konfiguracja blokuje instalację demona do czasu jawnego ustawienia trybu.
+- Wybór miejsca działania Gateway zawsze aktualizuje `gateway.mode`. Możesz wybrać „Kontynuuj” bez innych sekcji, jeśli tylko tego potrzebujesz.
+- Po zapisach lokalnej konfiguracji narzędzie konfiguracyjne instaluje wybrane pluginy do pobrania, gdy wymaga ich wybrana ścieżka konfiguracji. Zdalna konfiguracja Gateway nie instaluje lokalnych pakietów pluginów.
+- Usługi zorientowane na kanały (Slack/Discord/Matrix/Microsoft Teams) podczas konfiguracji proszą o listy dozwolonych kanałów/pokojów. Możesz wprowadzić nazwy lub identyfikatory; kreator rozwiązuje nazwy na identyfikatory, gdy to możliwe.
+- Jeśli uruchomisz krok instalacji demona, uwierzytelnianie tokenem wymaga tokenu, a `gateway.auth.token` jest zarządzane przez SecretRef, konfiguracja weryfikuje SecretRef, ale nie zapisuje rozwiązanych wartości tokenu w postaci zwykłego tekstu do metadanych środowiska usługi nadzorcy.
+- Jeśli uwierzytelnianie tokenem wymaga tokenu, a skonfigurowany SecretRef tokenu nie został rozwiązany, konfiguracja blokuje instalację demona z praktycznymi wskazówkami naprawczymi.
+- Jeśli skonfigurowane są zarówno `gateway.auth.token`, jak i `gateway.auth.password`, a `gateway.auth.mode` nie jest ustawione, konfiguracja blokuje instalację demona do czasu jawnego ustawienia trybu.
 
 ## Przykłady
 
@@ -78,5 +80,5 @@ openclaw configure --section gateway --section daemon
 
 ## Powiązane
 
-- [Odniesienie CLI](/pl/cli)
+- [Odnośnik CLI](/pl/cli)
 - [Konfiguracja](/pl/gateway/configuration)

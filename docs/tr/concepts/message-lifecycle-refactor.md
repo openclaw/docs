@@ -1,48 +1,46 @@
 ---
 read_when:
-    - Kanal gönderme veya alma davranışını yeniden yapılandırma
-    - Kanal turunu, yanıt gönderimini, giden kuyruğunu, önizleme akışını veya plugin SDK mesaj API'lerini değiştirme
-    - Dayanıklı gönderimler, alındı bildirimleri, önizlemeler, düzenlemeler veya yeniden denemeler gerektiren yeni bir kanal Plugin'i tasarlama
+    - Kanal gönderme veya alma davranışını yeniden düzenleme
+    - Kanal turunu, yanıt gönderimini, giden kuyruğunu, önizleme akışını veya Plugin SDK mesaj API'lerini değiştirme
+    - Kalıcı gönderimler, alındı bildirimleri, önizlemeler, düzenlemeler veya yeniden denemeler gerektiren yeni bir kanal Plugin tasarlama
 summary: Birleşik kalıcı mesaj alma, gönderme, önizleme, düzenleme ve akış yaşam döngüsü için tasarım planı
 title: Mesaj yaşam döngüsü yeniden düzenlemesi
 x-i18n:
-    generated_at: "2026-05-06T09:08:34Z"
+    generated_at: "2026-05-10T19:32:29Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 488846c370e2b9c07a3dc87f74e7ac3cf58de9935980c0ffe889a56b9b719d79
+    source_hash: b2e136f1be0f7c1952731b464c3732c68c14a31e672ce628af8182a3f666c914
     source_path: concepts/message-lifecycle-refactor.md
     workflow: 16
 ---
 
-Bu sayfa, dağınık kanal turu, yanıt gönderimi, önizleme akışı ve giden teslim yardımcılarını tek bir dayanıklı mesaj yaşam döngüsüyle değiştirmek için hedef tasarımdır.
+Bu sayfa, dağınık kanal turn, reply dispatch, önizleme akışı ve giden teslimat yardımcılarını tek bir dayanıklı ileti yaşam döngüsüyle değiştirmek için hedef tasarımdır.
 
 Kısa sürüm:
 
-- Çekirdek ilkeller **yanıt** değil, **alma** ve **gönderme** olmalıdır.
-- Yanıt, yalnızca giden mesaj üzerindeki bir ilişkidir.
-- Tur, teslimin sahibi değil, gelen işleme için bir kolaylıktır.
-- Gönderme bağlama dayalı olmalıdır: `begin`, işle, önizle veya akışa al, son gönderimi yap,
-  işle, başarısız ol.
-- Alma da bağlama dayalı olmalıdır: normalleştir, yineleneni ayıkla, yönlendir, kaydet,
-  dağıt, platform onayı, başarısız ol.
-- Genel Plugin SDK, tek bir küçük kanal-mesaj yüzeyine indirgenmelidir.
+- Temel ilkel öğeler **reply** değil, **receive** ve **send** olmalıdır.
+- Yanıt, yalnızca giden bir ileti üzerindeki ilişkidir.
+- Turn, gelen işleme için bir kolaylıktır; teslimatın sahibi değildir.
+- Gönderme bağlam tabanlı olmalıdır: `begin`, render, preview veya stream, final send, commit, fail.
+- Alma da bağlam tabanlı olmalıdır: normalize, dedupe, route, record, dispatch, platform ack, fail.
+- Herkese açık Plugin SDK tek, küçük bir kanal-ileti yüzeyine indirgenmelidir.
 
 ## Sorunlar
 
-Geçerli kanal yığını birkaç geçerli yerel ihtiyaçtan büyüdü:
+Mevcut kanal yığını birkaç geçerli yerel ihtiyaçtan doğdu:
 
 - Basit gelen bağdaştırıcılar `runtime.channel.turn.run` kullanır.
 - Zengin bağdaştırıcılar `runtime.channel.turn.runPrepared` kullanır.
 - Eski yardımcılar `dispatchInboundReplyWithBase`,
   `recordInboundSessionAndDispatchReply`, yanıt yükü yardımcıları, yanıt parçalama,
   yanıt referansları ve giden çalışma zamanı yardımcılarını kullanır.
-- Önizleme akışı, kanala özgü dağıtıcılarda yaşar.
-- Son teslim dayanıklılığı mevcut yanıt yükü yollarının etrafına ekleniyor.
+- Önizleme akışı kanala özgü dispatcher'larda yaşar.
+- Nihai teslimat dayanıklılığı mevcut yanıt yükü yolları etrafında ekleniyor.
 
-Bu biçim yerel hataları düzeltir, ancak OpenClaw içinde çok fazla genel
-kavram ve teslim semantiğinin sapabileceği çok fazla yer bırakır.
+Bu yapı yerel hataları düzeltir, ancak OpenClaw'da çok fazla herkese açık kavram
+ve teslimat semantiklerinin sapabileceği çok fazla yer bırakır.
 
-Bunu açığa çıkaran güvenilirlik sorunu şudur:
+Bunu ortaya çıkaran güvenilirlik sorunu şudur:
 
 ```text
 Telegram polling update acked
@@ -51,81 +49,70 @@ Telegram polling update acked
   -> final response is lost
 ```
 
-Hedef değişmez yalnızca Telegram'dan daha geniştir: çekirdek görünür bir
-giden mesajın var olması gerektiğine karar verdiğinde, platform gönderimi
-denenmeden önce niyet dayanıklı olmalı ve başarılı olduktan sonra platform
-alındısı işlenmelidir. Bu, OpenClaw'a en az bir kez kurtarma sağlar. Tam olarak
-bir kez davranışı yalnızca yerel idempotency kanıtlayabilen veya gönderimden
-sonra bilinmeyen bir denemeyi yeniden oynatmadan önce platform durumuyla
-uzlaştırabilen bağdaştırıcılarda vardır.
+Hedef değişmez yalnızca Telegram'dan daha geniştir: çekirdek görünür bir giden
+iletinin var olması gerektiğine karar verdiğinde, platform gönderimi denenmeden
+önce niyet dayanıklı olmalı ve başarılı olduktan sonra platform alındısı commit
+edilmelidir. Bu, OpenClaw'a en az bir kez kurtarma sağlar. Tam olarak bir kez
+davranışı yalnızca yerel idempotency kanıtlayabilen veya gönderimden sonra
+bilinmeyen bir denemeyi yeniden oynatmadan önce platform durumuyla uzlaştırabilen
+bağdaştırıcılarda vardır.
 
-Bu, bu yeniden düzenlemenin nihai durumudur; her geçerli yolun açıklaması
-değildir. Geçiş sırasında, mevcut giden yardımcılar en iyi çaba kuyruk
-yazmaları başarısız olduğunda yine de doğrudan gönderime düşebilir. Yeniden
-düzenleme ancak dayanıklı son gönderimler kapalı başarısız olduğunda veya
-belgelenmiş dayanıklı olmayan bir politikayla açıkça devre dışı bırakıldığında
-tamamlanmış sayılır.
+Bu, bu refactor için son durumdur; her mevcut yolun açıklaması değildir. Geçiş
+sırasında, mevcut giden yardımcılar en iyi çaba kuyruk yazımları başarısız
+olduğunda hâlâ doğrudan gönderime düşebilir. Refactor ancak dayanıklı nihai
+gönderimler kapalı başarısız olduğunda veya belgelenmiş dayanıklı olmayan bir
+politikayla açıkça dışarıda bırakıldığında tamamlanır.
 
 ## Hedefler
 
-- Tüm kanal mesajı alma ve gönderme yolları için tek bir çekirdek yaşam döngüsü.
-- Bir bağdaştırıcı yeniden oynatma açısından güvenli davranış beyan ettikten
-  sonra yeni mesaj yaşam döngüsünde varsayılan olarak dayanıklı son gönderimler.
-- Paylaşılan önizleme, düzenleme, akış, sonlandırma, yeniden deneme, kurtarma ve alındı
-  semantiği.
+- Tüm kanal iletisi alma ve gönderme yolları için tek bir çekirdek yaşam döngüsü.
+- Bir bağdaştırıcı yeniden oynatma açısından güvenli davranış bildirdikten sonra yeni ileti yaşam döngüsünde varsayılan olarak dayanıklı nihai gönderimler.
+- Paylaşılan önizleme, düzenleme, akış, sonlandırma, yeniden deneme, kurtarma ve alındı semantikleri.
 - Üçüncü taraf Plugin'lerin öğrenip sürdürebileceği küçük bir Plugin SDK yüzeyi.
 - Geçiş sırasında mevcut `channel.turn` çağıranları için uyumluluk.
-- Yeni kanal yetenekleri için açık genişletme noktaları.
-- Çekirdekte platforma özgü dallanma yok.
-- Token-delta kanal mesajları yok. Kanal akışı mesaj önizlemesi,
-  düzenleme, ekleme veya tamamlanmış blok teslimi olarak kalır.
-- Operasyonel/sistem çıktısı için yapılandırılmış OpenClaw kökenli meta veri;
-  böylece görünür Gateway hataları, bot etkinleştirilmiş paylaşılan odalara
-  yeni istemler olarak tekrar girmez.
+- Yeni kanal yetenekleri için net genişletme noktaları.
+- Çekirdekte platforma özgü dallar yok.
+- Token-delta kanal iletileri yok. Kanal akışı ileti önizlemesi, düzenleme, ekleme veya tamamlanmış blok teslimatı olarak kalır.
+- Görünür Gateway hatalarının paylaşılan bot etkin odalara yeni prompt'lar olarak yeniden girmemesi için operasyonel/sistem çıktısına yönelik yapılandırılmış OpenClaw kaynak metadatası.
 
-## Hedef Olmayanlar
+## Hedef dışı kalanlar
 
 - İlk aşamada `runtime.channel.turn.*` kaldırılmayacak.
-- Her kanal aynı yerel taşıma davranışına zorlanmayacak.
+- Her kanal aynı yerel aktarım davranışına zorlanmayacak.
 - Çekirdeğe Telegram konuları, Slack yerel akışları, Matrix redaction'ları,
-  Feishu kartları, QQ ses veya Teams etkinlikleri öğretilmeyecek.
+  Feishu kartları, QQ sesleri veya Teams etkinlikleri öğretilmeyecek.
 - Tüm dahili geçiş yardımcıları kararlı SDK API olarak yayımlanmayacak.
 - Yeniden denemeler tamamlanmış idempotent olmayan platform işlemlerini yeniden oynatmayacak.
 
-## Referans Model
+## Referans model
 
-Vercel Chat iyi bir genel zihinsel modele sahiptir:
+Vercel Chat iyi bir herkese açık zihinsel modele sahiptir:
 
 - `Chat`
 - `Thread`
 - `Channel`
 - `Message`
 - `postMessage`, `editMessage`, `deleteMessage`,
-  `stream`, `startTyping` ve geçmiş getirmeler gibi bağdaştırıcı yöntemleri
-- yinelenenleri ayıklama, kilitler, kuyruklar ve kalıcılık için bir durum bağdaştırıcısı
+  `stream`, `startTyping` ve geçmiş getirmeleri gibi bağdaştırıcı yöntemleri
+- dedupe, kilitler, kuyruklar ve kalıcılık için bir durum bağdaştırıcısı
 
-OpenClaw yüzeyi kopyalamamalı, söz dağarcığını ödünç almalıdır.
+OpenClaw yüzeyi kopyalamamalı, sözcük dağarcığını ödünç almalıdır.
 
-OpenClaw'ın bu modelin ötesinde ihtiyaç duydukları:
+OpenClaw'ın bu modelin ötesinde ihtiyaç duyduğu şeyler:
 
-- Doğrudan taşıma çağrılarından önce dayanıklı giden gönderim niyetleri.
-- Başlatma, işleme ve başarısız olma içeren açık gönderme bağlamları.
-- Platform onay politikasını bilen alma bağlamları.
-- Yeniden başlatmadan sağ çıkan ve düzenleme, silme, kurtarma ve
-  yinelenen bastırmayı yürütebilen alındılar.
-- Daha küçük bir genel SDK. Paketli Plugin'ler dahili çalışma zamanı yardımcılarını kullanabilir, ancak
-  üçüncü taraf Plugin'ler tek ve tutarlı bir mesaj API'si görmelidir.
-- Aracıya özgü davranış: oturumlar, transkriptler, blok akışı, araç
-  ilerlemesi, onaylar, medya yönergeleri, sessiz yanıtlar ve grup bahsi
-  geçmişi.
+- Doğrudan aktarım çağrılarından önce dayanıklı giden gönderim niyetleri.
+- Begin, commit ve fail içeren açık gönderim bağlamları.
+- Platform ack politikasını bilen alma bağlamları.
+- Yeniden başlatmadan sağ çıkan ve düzenleme, silme, kurtarma ve kopya bastırmayı yönlendirebilen alındılar.
+- Daha küçük bir herkese açık SDK. Birlikte gelen Plugin'ler dahili çalışma zamanı yardımcılarını kullanabilir, ancak üçüncü taraf Plugin'ler tek, tutarlı bir ileti API'si görmelidir.
+- Ajana özgü davranış: oturumlar, transcript'ler, blok akışı, araç ilerlemesi, onaylar, medya yönergeleri, sessiz yanıtlar ve grup mention geçmişi.
 
 `thread.post()` tarzı promise'ler OpenClaw için yeterli değildir. Bir gönderimin
 kurtarılabilir olup olmadığına karar veren işlem sınırını gizlerler.
 
-## Çekirdek Model
+## Çekirdek model
 
-Yeni alan adı `src/channels/message/*` gibi dahili bir çekirdek ad alanı altında
-yaşamalıdır.
+Yeni domain `src/channels/message/*` gibi dahili bir çekirdek namespace altında yaşamalıdır.
 
 Dört kavramı vardır:
 
@@ -143,13 +130,13 @@ core.messages.state(...)
 `live`, önizleme, düzenleme, ilerleme ve akış durumunun sahibidir.
 
 `state`, dayanıklı niyet depolama, alındılar, idempotency, kurtarma, kilitler ve
-yinelenen ayıklamanın sahibidir.
+dedupe'nun sahibidir.
 
-## Mesaj Terimleri
+## İleti terimleri
 
-### Mesaj
+### İleti
 
-Normalleştirilmiş mesaj platformdan bağımsızdır:
+Normalize edilmiş ileti platformdan bağımsızdır:
 
 ```typescript
 type ChannelMessage = {
@@ -170,7 +157,7 @@ type ChannelMessage = {
 
 ### Hedef
 
-Hedef, mesajın nerede yaşadığını açıklar:
+Hedef, iletinin nerede yaşadığını açıklar:
 
 ```typescript
 type MessageTarget = {
@@ -222,15 +209,16 @@ type MessageRelation =
     };
 ```
 
-Bu, aynı gönderme yolunun normal yanıtları, cron bildirimlerini, onay
-istemlerini, görev tamamlamalarını, mesaj-aracı gönderimlerini, CLI veya Control UI
-gönderimlerini, alt aracı sonuçlarını ve otomasyon gönderimlerini işlemesini sağlar.
+Bu, aynı gönderim yolunun normal yanıtları, cron bildirimlerini, onay
+prompt'larını, görev tamamlamalarını, message-tool gönderimlerini, CLI veya
+Control UI gönderimlerini, alt ajan sonuçlarını ve otomasyon gönderimlerini
+işlemesini sağlar.
 
-### Köken
+### Origin
 
-Köken, bir mesajı kimin ürettiğini ve OpenClaw'ın o mesajın yankılarını nasıl
-ele alması gerektiğini açıklar. İlişkiden ayrıdır: bir mesaj bir kullanıcıya
-yanıt olabilir ve yine de OpenClaw kökenli operasyonel çıktı olabilir.
+Origin, bir iletiyi kimin ürettiğini ve OpenClaw'ın bu iletinin yankılarını nasıl
+ele alması gerektiğini açıklar. İlişkiden ayrıdır: bir ileti bir kullanıcıya
+yanıt olabilir ve yine de OpenClaw kaynaklı operasyonel çıktı olabilir.
 
 ```typescript
 type MessageOrigin =
@@ -246,13 +234,13 @@ type MessageOrigin =
     };
 ```
 
-OpenClaw kökenli çıktının anlamı çekirdeğe aittir. Kanallar, bu kökenin
-taşımlarında nasıl kodlandığına sahiptir.
+OpenClaw kaynaklı çıktının anlamına çekirdek sahiptir. Kanallar bu origin'in
+kendi aktarımlarına nasıl kodlandığına sahiptir.
 
 İlk gerekli kullanım Gateway hata çıktısıdır. İnsanlar "Agent failed before reply"
-veya "Missing API key" gibi mesajları yine de görmelidir, ancak etiketlenmiş
-OpenClaw operasyonel çıktısı `allowBots` etkinleştirildiğinde paylaşılan odalarda
-bot tarafından yazılmış girdi olarak kabul edilmemelidir.
+veya "Missing API key" gibi iletileri hâlâ görmelidir, ancak OpenClaw operasyonel
+çıktısı olarak etiketlenmiş çıktı, `allowBots` etkin olduğunda paylaşılan
+odalarda bot tarafından yazılmış girdi olarak kabul edilmemelidir.
 
 ### Alındı
 
@@ -286,17 +274,17 @@ type MessageReceiptPart = {
 ```
 
 Alındılar, dayanıklı niyetten gelecekteki düzenleme, silme, önizleme
-sonlandırması, yinelenen bastırma ve kurtarmaya giden köprüdür.
+sonlandırma, kopya bastırma ve kurtarmaya köprü kurar.
 
-Bir alındı tek bir platform mesajını veya çok parçalı bir teslimi açıklayabilir.
-Parçalanmış metin, medya artı metin, ses artı metin ve kart yedekleri tüm
-platform kimliklerini korumalı, aynı zamanda iş parçacığı oluşturma ve sonraki
-düzenlemeler için birincil kimliği açığa çıkarmalıdır.
+Bir alındı tek bir platform iletisini veya çok parçalı teslimatı açıklayabilir.
+Parçalanmış metin, medya artı metin, ses artı metin ve kart fallback'leri tüm
+platform id'lerini korumalı, aynı zamanda thread oluşturma ve sonraki düzenlemeler
+için birincil bir id sunmalıdır.
 
-## Alma Bağlamı
+## Alma bağlamı
 
-Alma, çıplak bir yardımcı çağrısı olmamalıdır. Çekirdeğin yinelenenleri ayıklama,
-yönlendirme, oturum kaydı ve platform onay politikasını bilen bir bağlama ihtiyacı vardır.
+Alma, yalın bir yardımcı çağrısı olmamalıdır. Çekirdeğin dedupe, yönlendirme,
+oturum kaydı ve platform ack politikasını bilen bir bağlama ihtiyacı vardır.
 
 ```typescript
 type MessageReceiveContext = {
@@ -334,22 +322,18 @@ platform event
   -> ack platform when policy allows
 ```
 
-Onay tek bir şey değildir. Alma sözleşmesi bu sinyalleri ayrı tutmalıdır:
+Ack tek bir şey değildir. Alma sözleşmesi şu sinyalleri ayrı tutmalıdır:
 
-- **Taşıma onayı:** platform webhook'una veya soketine OpenClaw'ın olay zarfını
-  kabul ettiğini söyler. Bazı platformlar bunu dağıtımdan önce gerektirir.
-- **Polling offset onayı:** aynı olayın tekrar getirilmemesi için imleci ilerletir.
-  Bu, kurtarılamayacak işin ötesine ilerlememelidir.
-- **Gelen kayıt onayı:** OpenClaw'ın bir yeniden teslimi yinelenen olarak ayıklamak
-  ve yönlendirmek için yeterli gelen meta veriyi kalıcı hale getirdiğini doğrular.
-- **Kullanıcıya görünür alındı:** isteğe bağlı okundu/durum/yazıyor davranışı;
-  asla bir dayanıklılık sınırı değildir.
+- **Aktarım ack'i:** platform webhook'una veya socket'ine OpenClaw'ın olay zarfını kabul ettiğini söyler. Bazı platformlar bunu dispatch'ten önce gerektirir.
+- **Polling offset ack'i:** aynı olayın tekrar getirilmemesi için bir imleci ilerletir. Bu, kurtarılamayacak işin ötesine ilerlememelidir.
+- **Gelen kayıt ack'i:** OpenClaw'ın bir yeniden teslimatı dedupe etmek ve yönlendirmek için yeterli gelen metadatasını kalıcılaştırdığını doğrular.
+- **Kullanıcıya görünür alındı:** isteğe bağlı okundu/durum/yazıyor davranışı; asla dayanıklılık sınırı değildir.
 
-`ReceiveAckPolicy` yalnızca taşıma veya polling onayını kontrol eder. Okundu
+`ReceiveAckPolicy` yalnızca aktarım veya polling onayını kontrol eder. Okundu
 alındıları veya durum tepkileri için yeniden kullanılmamalıdır.
 
-Bot yetkilendirmesinden önce, kanal mesaj kökeni meta verisini çözebildiğinde
-alma, paylaşılan OpenClaw yankı politikasını uygulamalıdır:
+Bot yetkilendirmesinden önce, kanal ileti origin metadatasını çözebildiğinde alma
+paylaşılan OpenClaw echo politikasını uygulamalıdır:
 
 ```typescript
 function shouldDropOpenClawEcho(params: {
@@ -367,11 +351,11 @@ function shouldDropOpenClawEcho(params: {
 }
 ```
 
-Bu düşürme metin tabanlı değil, etiket tabanlıdır. Aynı görünür Gateway hata
-metnine sahip, ancak OpenClaw köken meta verisi olmayan bot tarafından yazılmış
-bir oda mesajı yine normal `allowBots` yetkilendirmesinden geçer.
+Bu drop metin tabanlı değil, etiket tabanlıdır. Aynı görünür Gateway hata metnine
+sahip, ancak OpenClaw origin metadatası olmayan bot tarafından yazılmış bir oda
+iletisi yine normal `allowBots` yetkilendirmesinden geçer.
 
-Onay politikası açıktır:
+Ack politikası açıktır:
 
 ```typescript
 type ReceiveAckPolicy =
@@ -381,22 +365,22 @@ type ReceiveAckPolicy =
   | { kind: "manual" };
 ```
 
-Telegram polling artık kalıcı yeniden başlatma watermark'ı için alma-bağlamı onay
-politikasını kullanır. İzleyici, grammY güncellemelerini middleware zincirine
-girerken gözlemlemeye devam eder, ancak OpenClaw yalnızca başarılı dağıtımdan
-sonra güvenli tamamlanmış güncelleme kimliğini kalıcı hale getirir; başarısız
-veya daha düşük bekleyen güncellemeler yeniden başlatmadan sonra yeniden
-oynatılabilir kalır. Telegram'ın upstream `getUpdates` getirme offset'i hâlâ
-polling kitaplığı tarafından kontrol edilir; bu yüzden OpenClaw'ın yeniden
-başlatma watermark'ının ötesinde platform düzeyi yeniden teslim gerekiyorsa kalan
-daha derin değişiklik tam dayanıklı bir polling kaynağıdır. Webhook platformları
-anında HTTP onayına ihtiyaç duyabilir, ancak webhook'lar yeniden teslim
-edebileceğinden yine de gelen yinelenen ayıklama ve dayanıklı giden gönderim
-niyetlerine ihtiyaç duyarlar.
+Telegram polling artık kalıcı yeniden başlatma watermark'ı için receive-context
+ack politikasını kullanır. Tracker grammY güncellemelerini middleware zincirine
+girerken hâlâ gözlemler, ancak OpenClaw yalnızca başarılı dispatch'ten sonra
+güvenli tamamlanmış güncelleme id'sini kalıcılaştırır; başarısız veya daha düşük
+bekleyen güncellemeleri yeniden başlatma sonrasında yeniden oynatılabilir bırakır.
+Telegram'ın upstream `getUpdates` getirme offset'i hâlâ polling kitaplığı
+tarafından kontrol edilir, bu nedenle platform düzeyinde yeniden teslimata
+OpenClaw'ın yeniden başlatma watermark'ının ötesinde ihtiyacımız olursa geriye
+kalan daha derin değişiklik tamamen dayanıklı bir polling kaynağıdır. Webhook
+platformları anında HTTP ack'i gerektirebilir, ancak webhook'lar yeniden teslim
+edebildiği için yine de gelen dedupe'ya ve dayanıklı giden gönderim niyetlerine
+ihtiyaç duyarlar.
 
-## Gönderme Bağlamı
+## Gönderim bağlamı
 
-Gönderme de bağlama dayalıdır:
+Gönderme de bağlam tabanlıdır:
 
 ```typescript
 type MessageSendContext = {
@@ -449,55 +433,23 @@ begin durable intent
   -> fail durable intent on classified failure
 ```
 
-Amaç, taşıma I/O'sundan önce var olmalıdır. Başlatmadan sonra ancak
-commit'ten önce gerçekleşen yeniden başlatma kurtarılabilir.
+Amaç, aktarım G/Ç işleminden önce var olmalıdır. Başlatmadan sonra ama commit işleminden önce gerçekleşen bir yeniden başlatma kurtarılabilir.
 
-Tehlikeli sınır, platform başarısından sonra ve receipt commit'inden öncedir. Bir
-süreç orada ölürse, adaptör yerel idempotency veya bir receipt uzlaştırma yolu
-sağlamadığı sürece OpenClaw platform iletisinin var olup olmadığını bilemez.
-Bu denemeler körü körüne yeniden oynatılmamalı, `unknown_after_send` içinde
-sürdürülmelidir. Uzlaştırması olmayan kanallar, yinelenen görünür iletilerin o
-kanal ve ilişki için kabul edilebilir, belgelenmiş bir ödünleşim olması halinde
-yalnızca en az bir kez yeniden oynatmayı seçebilir. Geçerli SDK uzlaştırma köprüsü,
-adaptörün `reconcileUnknownSend` bildirmesini gerektirir, ardından bilinmeyen bir
-girdiyi `sent`, `not_sent` veya `unresolved` olarak sınıflandırmak için
-`durableFinal.reconcileUnknownSend` ister; yalnızca `not_sent` yeniden oynatmaya
-izin verir ve çözümlenmemiş girdiler terminal olarak kalır ya da yalnızca
-uzlaştırma denetimini yeniden dener.
+Tehlikeli sınır, platform başarısından sonra ve alındı commit işleminden öncedir. Bir süreç burada ölürse OpenClaw, adaptör yerel idempotency veya alındı uzlaştırma yolu sağlamadığı sürece platform mesajının var olup olmadığını bilemez. Bu denemeler körlemesine yeniden oynatılmamalı, `unknown_after_send` durumunda sürdürülmelidir. Uzlaştırma olmayan kanallar, yinelenen görünür mesajlar o kanal ve ilişki için kabul edilebilir, belgelenmiş bir ödünse yalnızca en az bir kez yeniden oynatmayı seçebilir. Mevcut SDK uzlaştırma köprüsü, adaptörün `reconcileUnknownSend` bildirmesini gerektirir, ardından `durableFinal.reconcileUnknownSend` üzerinden bilinmeyen bir kaydı `sent`, `not_sent` veya `unresolved` olarak sınıflandırmasını ister; yalnızca `not_sent` yeniden oynatmaya izin verir ve çözümlenmemiş kayıtlar terminal durumda kalır ya da yalnızca uzlaştırma denetimini yeniden dener.
 
-Dayanıklılık ilkesi açık olmalıdır:
+Kalıcılık ilkesi açık olmalıdır:
 
 ```typescript
 type MessageDurabilityPolicy = "required" | "best_effort" | "disabled";
 ```
 
-`required`, core dayanıklı amacı yazamadığında kapalı biçimde başarısız olmalıdır
-anlamına gelir. `best_effort`, kalıcılık kullanılamadığında devam edebilir.
-`disabled` eski doğrudan gönderim davranışını korur. Geçiş sırasında, eski
-wrapper'lar ve herkese açık uyumluluk yardımcıları varsayılan olarak `disabled`
-kullanır; bir kanalın genel bir outbound adaptörü olmasından `required`
-çıkarımı yapmamalıdırlar.
+`required`, kalıcı amacı yazamadığında çekirdeğin kapalı şekilde başarısız olması gerektiği anlamına gelir. `best_effort`, kalıcılık kullanılamadığında devam edebilir. `disabled`, eski doğrudan gönderme davranışını korur. Geçiş sırasında eski sarmalayıcılar ve genel uyumluluk yardımcıları varsayılan olarak `disabled` kullanır; bir kanalın genel bir outbound adaptörü olmasından `required` sonucunu çıkarmamalıdırlar.
 
-Gönderim bağlamları kanal-yerel gönderim sonrası etkilerin de sahibidir.
-Dayanıklı teslim, daha önce kanalın doğrudan gönderim yoluna bağlı olan yerel
-davranışı atlıyorsa geçiş güvenli değildir. Örnekler arasında self-echo bastırma
-önbellekleri, thread katılım işaretleyicileri, yerel düzenleme anchor'ları,
-model-signature render etme ve platforma özgü yinelenen ileti korumaları bulunur.
-Bu etkiler, ilgili kanal dayanıklı genel nihai teslimi etkinleştirmeden önce
-gönderim adaptörüne, render adaptörüne veya adlandırılmış bir gönderim bağlamı
-hook'una taşınmalıdır.
+Gönderim bağlamları kanal yerelindeki gönderim sonrası etkilerin de sahibidir. Kalıcı teslimat, daha önce kanalın doğrudan gönderim yoluna bağlı olan yerel davranışı atlıyorsa geçiş güvenli değildir. Örnekler arasında self-echo bastırma önbellekleri, iş parçacığı katılım işaretçileri, yerel düzenleme çapaları, model imzası oluşturma ve platforma özgü yinelenen ileti korumaları bulunur. Bu etkiler, ilgili kanal kalıcı genel nihai teslimatı etkinleştirmeden önce gönderim adaptörüne, render adaptörüne veya adlandırılmış bir gönderim bağlamı hook’una taşınmalıdır.
 
-Gönderim yardımcıları receipt'leri çağıranlarına kadar geri döndürmelidir.
-Dayanıklı wrapper'lar ileti id'lerini yutamaz veya bir kanal teslim sonucunu
-`undefined` ile değiştiremez; buffer'lı dispatcher'lar bu id'leri thread
-anchor'ları, sonraki düzenlemeler, önizleme sonlandırma ve yinelenen ileti
-bastırma için kullanır.
+Gönderim yardımcıları alındıları çağırana kadar geri döndürmelidir. Kalıcı sarmalayıcılar mesaj kimliklerini yutamaz veya bir kanal teslimat sonucunu `undefined` ile değiştiremez; tamponlanan dağıtıcılar bu kimlikleri iş parçacığı çapaları, sonraki düzenlemeler, önizleme sonlandırma ve yinelenen ileti bastırma için kullanır.
 
-Fallback gönderimleri tek payload'lar üzerinde değil, batch'ler üzerinde çalışır.
-Silent-reply yeniden yazımları, media fallback, card fallback ve chunk projection
-birden fazla teslim edilebilir ileti üretebilir; bu nedenle bir gönderim bağlamı
-ya projekte edilen batch'in tamamını teslim etmeli ya da neden yalnızca bir
-payload'ın geçerli olduğunu açıkça belgelemelidir.
+Geri dönüş gönderimleri tek payload’lar üzerinde değil, batch’ler üzerinde çalışır. Sessiz yanıt yeniden yazımları, medya geri dönüşü, kart geri dönüşü ve parça projeksiyonu birden fazla teslim edilebilir mesaj üretebilir; bu nedenle bir gönderim bağlamı ya projelendirilmiş batch’in tamamını teslim etmeli ya da neden yalnızca bir payload’un geçerli olduğunu açıkça belgelemelidir.
 
 ```typescript
 type RenderedMessageBatch = {
@@ -514,19 +466,11 @@ type RenderedMessageUnit = {
 };
 ```
 
-Böyle bir fallback dayanıklı olduğunda, projekte edilen batch'in tamamı tek bir
-dayanıklı gönderim amacıyla veya başka bir atomik batch planıyla temsil
-edilmelidir. Her payload'ı tek tek kaydetmek yeterli değildir: payload'lar
-arasında gerçekleşen bir çökme, kalan payload'lar için dayanıklı kayıt olmadan
-kısmi görünür bir fallback bırakabilir. Kurtarma, hangi birimlerin zaten
-receipt'e sahip olduğunu bilmeli ve yalnızca eksik birimleri yeniden oynatmalı ya
-da adaptör bunu uzlaştırana kadar batch'i `unknown_after_send` olarak
-işaretlemelidir.
+Böyle bir geri dönüş kalıcı olduğunda, projelendirilmiş batch’in tamamı tek bir kalıcı gönderim amacıyla veya başka bir atomik batch planıyla temsil edilmelidir. Her payload’u tek tek kaydetmek yeterli değildir: payload’lar arasındaki bir çökme, kalan payload’lar için kalıcı kayıt olmadan kısmi görünür bir geri dönüş bırakabilir. Kurtarma, hangi birimlerin zaten alındıya sahip olduğunu bilmeli ve yalnızca eksik birimleri yeniden oynatmalı ya da adaptör bunu uzlaştırana kadar batch’i `unknown_after_send` olarak işaretlemelidir.
 
 ## Canlı bağlam
 
-Önizleme, düzenleme, ilerleme ve akış davranışı tek bir isteğe bağlı lifecycle
-olmalıdır.
+Önizleme, düzenleme, ilerleme ve stream davranışı tek bir isteğe bağlı yaşam döngüsü olmalıdır.
 
 ```typescript
 type MessageLiveAdapter = {
@@ -549,7 +493,7 @@ type MessageLiveAdapter = {
 };
 ```
 
-Canlı durum, yinelenenleri kurtarmaya veya bastırmaya yetecek kadar dayanıklıdır:
+Canlı durum, yinelenenleri kurtarmak veya bastırmak için yeterince kalıcıdır:
 
 ```typescript
 type LiveMessageState = {
@@ -562,19 +506,19 @@ type LiveMessageState = {
 };
 ```
 
-Bu, geçerli davranışı kapsamalıdır:
+Bu, mevcut davranışı kapsamalıdır:
 
-- Telegram gönderimi ve düzenleme önizlemesi; bayat önizleme yaşından sonra taze final ile.
-- Discord gönderimi ve düzenleme önizlemesi; media/hata/açık yanıt durumunda iptal.
-- Thread şekline bağlı olarak Slack yerel akışı veya taslak önizlemesi.
+- Telegram gönderimi ve düzenleme önizlemesi, bayat önizleme yaşından sonra taze nihai iletiyle.
+- Discord gönderimi ve düzenleme önizlemesi, medya/hata/açık yanıt durumunda iptal.
+- İş parçacığı şekline bağlı olarak Slack yerel stream’i veya taslak önizlemesi.
 - Mattermost taslak gönderi sonlandırması.
 - Matrix taslak olay sonlandırması veya uyumsuzlukta redaksiyon.
-- Teams yerel ilerleme akışı.
-- QQ Bot akışı veya birikmiş fallback.
+- Teams yerel ilerleme stream’i.
+- QQ Bot stream’i veya biriktirilmiş geri dönüş.
 
 ## Adaptör yüzeyi
 
-Herkese açık SDK hedefi tek bir alt yol olmalıdır:
+Genel SDK hedefi tek bir alt yol olmalıdır:
 
 ```typescript
 import { defineChannelMessageAdapter } from "openclaw/plugin-sdk/channel-message";
@@ -611,7 +555,7 @@ type MessageSendAdapter = {
 };
 ```
 
-Alım adaptörü:
+Alma adaptörü:
 
 ```typescript
 type MessageReceiveAdapter<TRaw = unknown> = {
@@ -622,13 +566,9 @@ type MessageReceiveAdapter<TRaw = unknown> = {
 };
 ```
 
-Preflight yetkilendirmesinden önce core, `origin.decode` OpenClaw kökenli
-metadata döndürdüğünde paylaşılan OpenClaw echo predicate'ini çalıştırmalıdır.
-Alım adaptörü bot yazarı ve oda şekli gibi platform gerçeklerini sağlar; core
-drop kararının ve sıralamanın sahibidir, böylece kanallar metin filtrelerini
-yeniden uygulamaz.
+Ön kontrol yetkilendirmesinden önce, `origin.decode` OpenClaw kökenli metadata döndürdüğünde çekirdek paylaşılan OpenClaw echo yüklemini çalıştırmalıdır. Alma adaptörü bot yazarı ve oda şekli gibi platform olgularını sağlar; bırakma kararı ve sıralama çekirdeğe aittir, böylece kanallar metin filtrelerini yeniden uygulamaz.
 
-Origin adaptörü:
+Köken adaptörü:
 
 ```typescript
 type MessageOriginAdapter<TRaw = unknown, TNative = unknown> = {
@@ -637,11 +577,7 @@ type MessageOriginAdapter<TRaw = unknown, TNative = unknown> = {
 };
 ```
 
-Core `MessageOrigin` ayarlar. Kanallar onu yalnızca yerel taşıma metadata'sına
-çevirir ve oradan geri çevirir. Slack bunu
-`chat.postMessage({ metadata })` ve inbound `message.metadata` ile eşler; Matrix
-bunu ek olay içeriğine eşleyebilir; yerel metadata'sı olmayan kanallar, mevcut en
-iyi yaklaşım bu olduğunda bir receipt/outbound registry kullanabilir.
+Çekirdek `MessageOrigin` ayarlar. Kanallar bunu yalnızca yerel aktarım metadata’sına çevirir ve oradan geri çevirir. Slack bunu `chat.postMessage({ metadata })` ve gelen `message.metadata` ile eşler; Matrix bunu ek olay içeriğine eşleyebilir; yerel metadata olmayan kanallar, mevcut en iyi yaklaşım bu olduğunda bir alındı/outbound kayıt defteri kullanabilir.
 
 Yetenekler:
 
@@ -672,10 +608,9 @@ type MessageCapabilities = {
 };
 ```
 
-## Herkese açık SDK azaltımı
+## Genel SDK sadeleştirmesi
 
-Yeni herkese açık yüzey şu kavramsal alanları içine almalı veya kullanımdan
-kaldırmalıdır:
+Yeni genel yüzey şu kavramsal alanları içine almalı veya kullanım dışı bırakmalıdır:
 
 - `reply-runtime`
 - `reply-dispatch-runtime`
@@ -684,17 +619,14 @@ kaldırmalıdır:
 - `reply-payload`
 - `inbound-reply-dispatch`
 - `channel-reply-pipeline`
-- `outbound-runtime` için çoğu herkese açık kullanım
-- ad hoc taslak akış lifecycle yardımcıları
+- `outbound-runtime` genel kullanımlarının çoğu
+- geçici taslak stream yaşam döngüsü yardımcıları
 
-Uyumluluk alt yolları wrapper olarak kalabilir, ancak yeni üçüncü taraf
-Plugin'lerin bunlara ihtiyaç duymaması gerekir.
+Uyumluluk alt yolları sarmalayıcı olarak kalabilir, ancak yeni üçüncü taraf Plugin’ler bunlara ihtiyaç duymamalıdır.
 
-Birlikte gelen Plugin'ler geçiş sırasında ayrılmış runtime alt yolları üzerinden
-dahili yardımcı import'larını koruyabilir. Herkese açık belgeler, var olduğunda
-Plugin yazarlarını `plugin-sdk/channel-message` yoluna yönlendirmelidir.
+Bundled Plugin’ler geçiş sırasında ayrılmış runtime alt yolları üzerinden dahili yardımcı import’larını koruyabilir. Genel dokümanlar, var olduktan sonra Plugin yazarlarını `plugin-sdk/channel-message` yoluna yönlendirmelidir.
 
-## Kanal turn ile ilişki
+## Kanal turu ile ilişki
 
 `runtime.channel.turn.*` geçiş sırasında kalmalıdır.
 
@@ -707,7 +639,7 @@ channel.turn.run
   -> messages.send context for visible output
 ```
 
-`channel.turn.runPrepared` da başlangıçta kalmalıdır:
+`channel.turn.runPrepared` başlangıçta da kalmalıdır:
 
 ```text
 channel-owned dispatcher
@@ -716,96 +648,84 @@ channel-owned dispatcher
   -> messages.send for final delivery
 ```
 
-Birlikte gelen tüm Plugin'ler ve bilinen üçüncü taraf uyumluluk yolları
-köprülendikten sonra, `channel.turn` kullanımdan kaldırılabilir. Yayımlanmış bir
-SDK geçiş yolu ve eski Plugin'lerin hâlâ çalıştığını ya da net bir sürüm hatasıyla
-başarısız olduğunu kanıtlayan sözleşme testleri olmadan kaldırılmamalıdır.
+Tüm bundled Plugin’ler ve bilinen üçüncü taraf uyumluluk yolları köprülendikten sonra `channel.turn` kullanım dışı bırakılabilir. Yayınlanmış bir SDK geçiş yolu ve eski Plugin’lerin hâlâ çalıştığını veya açık bir sürüm hatasıyla başarısız olduğunu kanıtlayan sözleşme testleri olmadan kaldırılmamalıdır.
 
-## Uyumluluk korkulukları
+## Uyumluluk koruma sınırları
 
-Geçiş sırasında, mevcut teslim callback'i "bu payload'ı gönder" dışında yan
-etkilere sahip olan herhangi bir kanal için genel dayanıklı teslim isteğe
-bağlıdır.
+Geçiş sırasında genel kalıcı teslimat, mevcut teslimat callback’i “bu payload’u gönder” dışında yan etkilere sahip olan her kanal için isteğe bağlıdır.
 
-Eski giriş noktaları varsayılan olarak dayanıklı değildir:
+Eski giriş noktaları varsayılan olarak kalıcı değildir:
 
-- `channel.turn.run` ve `dispatchAssembledChannelTurn`, ilgili kanal açıkça
-  denetlenmiş bir dayanıklı ilke/seçenekler nesnesi sağlamadığı sürece kanalın
-  teslim callback'ini kullanır.
-- Hazırlanmış dispatcher gönderim bağlamını açıkça çağırana kadar
-  `channel.turn.runPrepared` kanal sahipliğinde kalır.
-- `recordInboundSessionAndDispatchReply`, `dispatchInboundReplyWithBase` ve
-  direct-DM yardımcıları gibi herkese açık uyumluluk yardımcıları, çağıranın
-  sağladığı `deliver` veya `reply` callback'inden önce hiçbir zaman genel
-  dayanıklı teslim enjekte etmez.
+- `channel.turn.run` ve `dispatchAssembledChannelTurn`, ilgili kanal açıkça denetlenmiş bir kalıcılık ilkesi/seçenekler nesnesi sağlamadığı sürece kanalın teslimat callback’ini kullanır.
+- `channel.turn.runPrepared`, hazırlanmış dağıtıcı gönderim bağlamını açıkça çağırana kadar kanal sahipliğinde kalır.
+- `recordInboundSessionAndDispatchReply`, `dispatchInboundReplyWithBase` ve doğrudan DM yardımcıları gibi genel uyumluluk yardımcıları, çağıranın sağladığı `deliver` veya `reply` callback’inden önce asla genel kalıcı teslimat enjekte etmez.
 
-Geçiş köprüsü türleri için `durable: undefined` "dayanıklı değil" anlamına gelir.
-Dayanıklı yol yalnızca açık bir ilke/seçenekler değeriyle etkinleştirilir.
-`durable: false` uyumluluk yazımı olarak kalabilir, ancak uygulama her geçmemiş
-kanalın bunu eklemesini gerektirmemelidir.
+Geçiş köprüsü türleri için `durable: undefined`, “kalıcı değil” anlamına gelir. Kalıcı yol yalnızca açık bir ilke/seçenek değeriyle etkinleştirilir. `durable:
+false` bir uyumluluk yazımı olarak kalabilir, ancak uygulama geçirilmemiş her kanalın bunu eklemesini gerektirmemelidir.
 
-Geçerli köprü kodu dayanıklılık kararını açık tutmalıdır:
+Mevcut köprü kodu kalıcılık kararını açık tutmalıdır:
 
-- Dayanıklı nihai teslim, ayrıştırılmış bir durum döndürür. `handled_visible` ve
-  `handled_no_send` terminaldir; `unsupported` ve `not_applicable`, kanalın sahip
-  olduğu teslime geri dönebilir; `failed` gönderme hatasını iletir.
-- Genel dayanıklı nihai teslim, sessiz teslim, yanıt hedefinin korunması, yerel
-  alıntının korunması ve ileti gönderme kancaları gibi adaptör kabiliyetleriyle
-  sınırlandırılır. Eksik eşdeğerlik, kullanıcıya görünen davranışı değiştiren
-  genel bir gönderimi değil, kanalın sahip olduğu teslimi seçmelidir.
-- Kuyruk destekli dayanıklı gönderimler bir teslim niyeti referansı sunar. Mevcut
-  `pendingFinalDelivery*` oturum alanları geçiş sırasında niyet kimliğini
-  taşıyabilir; nihai durum, dondurulmuş yanıt metni ve geçici bağlam alanları
-  yerine bir `MessageSendIntent` deposudur.
+- Dayanıklı nihai teslimat, ayrıştırılmış bir durum döndürür. `handled_visible` ve
+  `handled_no_send` sonlandırıcıdır; `unsupported` ve `not_applicable`, kanalın
+  sahip olduğu teslimata geri düşebilir; `failed` gönderme hatasını iletir.
+- Genel dayanıklı nihai teslimat; sessiz teslimat, yanıt hedefini koruma, yerel
+  alıntıyı koruma ve mesaj gönderme kancaları gibi adaptör yetenekleriyle
+  sınırlandırılır. Eksik denklik, kullanıcıya görünen davranışı değiştiren genel
+  bir gönderimi değil, kanalın sahip olduğu teslimatı seçmelidir.
+- Kuyruk destekli dayanıklı gönderimler bir teslimat niyeti referansı sunar.
+  Mevcut `pendingFinalDelivery*` oturum alanları geçiş sırasında niyet kimliğini
+  taşıyabilir; son durum, donmuş yanıt metni artı geçici bağlam alanları yerine
+  bir `MessageSendIntent` deposudur.
 
-Aşağıdakilerin tümü doğru olana kadar bir kanal için genel dayanıklı yolu
+Bunların tümü doğru olana kadar bir kanal için genel dayanıklı yolu
 etkinleştirmeyin:
 
 - Genel gönderim adaptörü, eski doğrudan yolla aynı işleme ve taşıma davranışını
   yürütür.
-- Yerel gönderim sonrası yan etkiler, gönderim bağlamı üzerinden korunur.
-- Adaptör, tüm platform ileti kimlikleriyle birlikte alındı bilgileri veya teslim
-  sonuçları döndürür.
-- Hazırlanmış dağıtıcı yolları ya yeni gönderim bağlamını çağırır ya da dayanıklı
-  garantinin dışında olarak belgelenmiş kalır.
-- Geri dönüş teslimi, yalnızca ilkini değil, öngörülen her yükü işler.
-- Dayanıklı geri dönüş teslimi, öngörülen yük dizisinin tamamını tek bir yeniden
-  oynatılabilir niyet veya toplu plan olarak kaydeder.
+- Yerel gönderim sonrası yan etkiler gönderim bağlamı üzerinden korunur.
+- Adaptör, tüm platform mesaj kimlikleriyle birlikte alındıları veya teslimat
+  sonuçlarını döndürür.
+- Hazırlanmış dispatcher yolları ya yeni gönderim bağlamını çağırır ya da
+  dayanıklı garantinin dışında olarak belgelenmiş kalır.
+- Geri dönüş teslimatı, yalnızca ilkini değil, öngörülen her yükü işler.
+- Dayanıklı geri dönüş teslimatı, öngörülen yük dizisinin tamamını tek bir
+  yeniden oynatılabilir niyet veya toplu plan olarak kaydeder.
 
 Korunması gereken somut geçiş tehlikeleri:
 
-- iMessage izleyici teslimi, başarılı bir gönderimden sonra gönderilen iletileri
-  bir yankı önbelleğine kaydeder. Dayanıklı nihai gönderimler bu önbelleği hâlâ
-  doldurmalıdır; aksi halde OpenClaw kendi nihai yanıtlarını gelen kullanıcı
-  iletileri olarak yeniden alabilir.
+- iMessage izleyici teslimatı, başarılı bir gönderimden sonra gönderilen
+  mesajları bir yankı önbelleğine kaydeder. Dayanıklı nihai gönderimler yine de
+  bu önbelleği doldurmalıdır; aksi takdirde OpenClaw kendi nihai yanıtlarını
+  gelen kullanıcı mesajları olarak yeniden alabilir.
 - Tlon isteğe bağlı bir model imzası ekler ve grup yanıtlarından sonra katılım
-  sağlanan iş parçacıklarını kaydeder. Genel dayanıklı teslim bu etkileri
-  atlamamalıdır; bunları Tlon işleme/gönderme/sonlandırma adaptörlerine taşıyın
-  veya Tlon'u kanalın sahip olduğu yolda tutun.
-- Discord ve diğer hazırlanmış dağıtıcılar doğrudan teslim ve önizleme
-  davranışına zaten sahiptir. Hazırlanmış dağıtıcıları nihai iletileri açıkça
-  gönderim bağlamı üzerinden yönlendirmeden, birleştirilmiş tur dayanıklı
-  garantisi kapsamında değildirler.
-- Telegram sessiz geri dönüş teslimi, öngörülen yük dizisinin tamamını teslim
-  etmelidir. Tek yüklü bir kısayol, projeksiyondan sonra ek geri dönüş yüklerini
+  sağlanan iş parçacıklarını kaydeder. Genel dayanıklı teslimat bu etkileri
+  atlamamalıdır; bunları ya Tlon işleme/gönderme/sonlandırma adaptörlerine
+  taşıyın ya da Tlon’u kanalın sahip olduğu yolda tutun.
+- Discord ve diğer hazırlanmış dispatcher’lar zaten doğrudan teslimata ve
+  önizleme davranışına sahiptir. Hazırlanmış dispatcher’ları nihai yanıtları
+  gönderim bağlamı üzerinden açıkça yönlendirmedikçe, birleştirilmiş dönüş
+  dayanıklı garantisi kapsamında değildirler.
+- Telegram sessiz geri dönüş teslimatı, öngörülen yük dizisinin tamamını teslim
+  etmelidir. Tek yük kısayolu, projeksiyondan sonra ek geri dönüş yüklerini
   düşürebilir.
-- LINE, BlueBubbles, Zalo, Nostr ve diğer mevcut birleştirilmiş/yardımcı yolların
-  yanıt belirteci işleme, medya vekilleme, gönderilen ileti önbellekleri,
-  yükleme/durum temizliği veya yalnızca geri çağırma hedefleri olabilir. Bu
-  semantik gönderim adaptörüyle temsil edilip testlerle doğrulanana kadar
-  kanalın sahip olduğu teslimde kalırlar.
-- Direct-DM yardımcılarında, tek doğru taşıma hedefi olan bir yanıt geri çağırması
-  bulunabilir. Genel giden gönderim `OriginatingTo` veya `To` üzerinden tahmin
-  yürütüp bu geri çağırmayı atlamamalıdır.
-- OpenClaw Gateway hata çıktısı insanlara görünür kalmalıdır, ancak etiketlenmiş
-  bot tarafından yazılmış oda yankıları `allowBots` yetkilendirmesinden önce
-  düşürülmelidir. Kanallar bunu kısa süreli acil durum geçici önlemi dışında
-  görünür metin önek filtreleriyle uygulamamalıdır; dayanıklı sözleşme,
-  yapılandırılmış kaynak meta verisidir.
+- LINE, Zalo, Nostr ve diğer mevcut birleştirilmiş/yardımcı yollar; yanıt
+  belirteci işleme, medya proxy’leme, gönderilen mesaj önbellekleri,
+  yükleniyor/durum temizliği veya yalnızca geri çağrı hedeflerine sahip olabilir.
+  Bu semantik gönderim adaptörü tarafından temsil edilip testlerle doğrulanana
+  kadar kanalın sahip olduğu teslimatta kalırlar.
+- Doğrudan-DM yardımcıları, tek doğru taşıma hedefi olan bir yanıt geri
+  çağrısına sahip olabilir. Genel giden ileti, `OriginatingTo` veya `To`
+  üzerinden tahminde bulunup bu geri çağrıyı atlamamalıdır.
+- OpenClaw gateway hata çıktısı insanlar için görünür kalmalıdır, ancak
+  etiketlenmiş bot tarafından yazılmış oda yankıları `allowBots`
+  yetkilendirmesinden önce düşürülmelidir. Kanallar bunu, kısa süreli acil
+  durdurma dışında görünür metin öneki filtreleriyle uygulamamalıdır; dayanıklı
+  sözleşme yapılandırılmış kaynak meta verisidir.
 
-## İç depolama
+## Dahili depolama
 
-Dayanıklı kuyruk, yanıt yüklerini değil, ileti gönderim niyetlerini depolamalıdır.
+Dayanıklı kuyruk, yanıt yüklerini değil, mesaj gönderme niyetlerini
+depolamalıdır.
 
 ```typescript
 type DurableSendIntent = {
@@ -847,13 +767,13 @@ load pending or sending intents
   -> commit receipt, mark unknown_after_send, or schedule retry
 ```
 
-Kuyruk, yeniden başlatmadan sonra aynı hesap, iş parçacığı, hedef,
-biçimlendirme politikası ve medya kuralları üzerinden yeniden oynatmaya yetecek
-kimliği tutmalıdır.
+Kuyruk, yeniden başlatmadan sonra aynı hesap, iş parçacığı, hedef, biçimlendirme
+politikası ve medya kuralları üzerinden yeniden oynatmak için yeterli kimliği
+saklamalıdır.
 
 ## Hata sınıfları
 
-Kanal adaptörleri taşıma hatalarını kapalı kategorilerde sınıflandırır:
+Kanal adaptörleri taşıma hatalarını kapalı kategorilere ayırır:
 
 ```typescript
 type DeliveryFailureKind =
@@ -873,299 +793,293 @@ type DeliveryFailureKind =
 - `transient` ve `rate_limit` için yeniden deneyin.
 - Bir işleme geri dönüşü yoksa `invalid_payload` için yeniden denemeyin.
 - Yapılandırma değişene kadar `auth` veya `permission` için yeniden denemeyin.
-- `not_found` için, kanal bunun güvenli olduğunu bildirdiğinde canlı
-  sonlandırmanın düzenlemeden yeni gönderime geri dönmesine izin verin.
-- `conflict` için iletinin zaten mevcut olup olmadığına karar vermek amacıyla
-  alındı/idempotency kurallarını kullanın.
-- Adaptör platform G/Ç'sini tamamlamış olabilecekken alındı kaydı işlenmeden önce
+- `not_found` için, kanal bunun güvenli olduğunu beyan ettiğinde canlı
+  sonlandırmanın düzenlemeden yeni gönderime geri düşmesine izin verin.
+- `conflict` için, mesajın zaten var olup olmadığına karar vermek üzere alındı/
+  idempotency kurallarını kullanın.
+- Adaptör platform G/Ç’sini tamamlamış olabileceği halde alındı kaydından önce
   oluşan herhangi bir hata, adaptör platform işleminin gerçekleşmediğini
-  kanıtlayamadığı sürece `unknown_after_send` olur.
+  kanıtlayamazsa `unknown_after_send` olur.
 
 ## Kanal eşlemesi
 
-| Kanal                   | Hedef geçiş                                                                                                                                                                                                                                                                                                                                                     |
-| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Telegram                 | Ack ilkesini ve dayanıklı nihai gönderimleri alır. Canlı adaptör gönderimi ve önizleme düzenlemeyi, eskimiş önizleme nihai gönderimini, konuları, alıntı-yanıt önizleme atlamasını, medya yedek yolunu ve retry-after işlemeyi üstlenir.                                                                                                                       |
-| Discord                  | Gönderim adaptörü mevcut dayanıklı yük teslimini sarmalar. Canlı adaptör taslak düzenlemeyi, ilerleme taslağını, medya/hata önizleme iptalini, yanıt hedefinin korunmasını ve mesaj kimliği alındılarını üstlenir. Paylaşılan odalarda bot tarafından yazılmış Gateway hatası yankılarını denetleyin; Discord normal mesajlarda köken meta verilerini taşıyamıyorsa bir giden kayıt defteri veya başka bir yerel eşdeğer kullanın. |
-| Slack                    | Gönderim adaptörü normal sohbet gönderilerini işler. Canlı adaptör, ileti dizisi şekli destekliyorsa yerel akışı, aksi halde taslak önizlemeyi seçer. Alındılar ileti dizisi zaman damgalarını korur. Köken adaptörü OpenClaw Gateway hatalarını Slack `chat.postMessage.metadata` ile eşler ve `allowBots` yetkilendirmesinden önce etiketlenmiş bot-odası yankılarını düşürür. |
-| WhatsApp                 | Gönderim adaptörü metin/medya gönderimini dayanıklı nihai niyetlerle üstlenir. Alım adaptörü grup bahsini ve gönderen kimliğini işler. WhatsApp düzenlenebilir bir taşıma sağlayana kadar canlı adaptör bulunmayabilir.                                                                                                                                             |
-| Matrix                   | Canlı adaptör taslak olay düzenlemelerini, sonlandırmayı, redaksiyonu, şifreli medya kısıtlarını ve yanıt-hedefi uyumsuzluğu yedek yolunu üstlenir. Alım adaptörü şifreli olay doldurmayı ve tekilleştirmeyi üstlenir. Köken adaptörü OpenClaw Gateway hatası kökenini Matrix olay içeriğine kodlamalı ve `allowBots` işleminden önce yapılandırılmış bot oda yankılarını düşürmelidir. |
-| Mattermost               | Canlı adaptör tek bir taslak gönderiyi, ilerleme/araç katlamayı, yerinde sonlandırmayı ve yeni gönderim yedek yolunu üstlenir.                                                                                                                                                                                                                                  |
-| Microsoft Teams          | Canlı adaptör yerel ilerleme ve blok akışı davranışını üstlenir. Gönderim adaptörü etkinlikleri ve ek/kart alındılarını üstlenir.                                                                                                                                                                                                                               |
-| Feishu                   | İşleme adaptörü metin/kart/ham işlemeyi üstlenir. Canlı adaptör akış kartlarını ve yinelenen nihai bastırmayı üstlenir. Gönderim adaptörü yorumları, konu oturumlarını, medyayı ve ses bastırmayı üstlenir.                                                                                                                                                      |
-| QQ Bot                   | Canlı adaptör C2C akışını, biriktirici zaman aşımını ve yedek nihai gönderimi üstlenir. İşleme adaptörü medya etiketlerini ve metin-olarak-sesi üstlenir.                                                                                                                                                                                                        |
-| Signal                   | Basit alım ve gönderim adaptörü. signal-cli güvenilir düzenleme desteği eklemediği sürece canlı adaptör yoktur.                                                                                                                                                                                                                                                |
-| iMessage and BlueBubbles | Basit alım ve gönderim adaptörü. Dayanıklı nihai gönderimler izleyici teslimini atlayabilmeden önce iMessage gönderimi izleyici yankı-önbelleği doldurmasını korumalıdır. BlueBubbles'a özgü yazıyor göstergesi, tepkiler ve ekler adaptör yetenekleri olarak kalır.                                                                                            |
-| Google Chat              | Alanlara ve ileti dizisi kimliklerine eşlenen ileti dizisi ilişkisiyle basit alım ve gönderim adaptörü. Etiketlenmiş OpenClaw Gateway hatası yankıları için `allowBots=true` oda davranışını denetleyin.                                                                                                                                                         |
-| LINE                     | Yanıt belirteci kısıtları hedef/ilişki yeteneği olarak modellenmiş basit alım ve gönderim adaptörü.                                                                                                                                                                                                                                                            |
-| Nextcloud Talk           | SDK alım köprüsü ve gönderim adaptörü.                                                                                                                                                                                                                                                                                                                          |
-| IRC                      | Basit alım ve gönderim adaptörü, dayanıklı düzenleme alındıları yok.                                                                                                                                                                                                                                                                                            |
-| Nostr                    | Şifreli DM'ler için alım ve gönderim adaptörü; alındılar olay kimlikleridir.                                                                                                                                                                                                                                                                                    |
-| QA Channel               | Alım, gönderim, canlı, yeniden deneme ve kurtarma davranışı için sözleşme testi adaptörü.                                                                                                                                                                                                                                                                       |
-| Synology Chat            | Basit alım ve gönderim adaptörü.                                                                                                                                                                                                                                                                                                                               |
-| Tlon                     | Genel dayanıklı nihai teslim etkinleştirilmeden önce gönderim adaptörü model-imzası işlemeyi ve katılınan-ileti dizisi takibini korumalıdır.                                                                                                                                                                                                                    |
-| Twitch                   | Hız sınırı sınıflandırmasıyla basit alım ve gönderim adaptörü.                                                                                                                                                                                                                                                                                                 |
-| Zalo                     | Basit alım ve gönderim adaptörü.                                                                                                                                                                                                                                                                                                                               |
-| Zalo Personal            | Basit alım ve gönderim adaptörü.                                                                                                                                                                                                                                                                                                                               |
+| Kanal           | Hedef geçiş                                                                                                                                                                                                                                                                                                                                                     |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Telegram        | Alım onay ilkesi ve dayanıklı nihai gönderimler. Canlı adaptör gönderim ile düzenleme önizlemesini, bayat önizlemenin nihai gönderimini, konuları, alıntı-yanıt önizleme atlamasını, medya yedek yolunu ve retry-after işlemeyi üstlenir.                                                                                                                       |
+| Discord         | Gönderim adaptörü mevcut dayanıklı yük teslimini sarmalar. Canlı adaptör taslak düzenlemeyi, ilerleme taslağını, medya/hata önizleme iptalini, yanıt hedefinin korunmasını ve mesaj kimliği alındılarını üstlenir. Paylaşılan odalarda bot tarafından yazılan Gateway hatası yankılarını denetleyin; Discord normal mesajlarda köken üst verisini taşıyamıyorsa bir çıkış kayıt defteri veya başka bir yerel eşdeğer kullanın. |
+| Slack           | Gönderim adaptörü normal sohbet gönderilerini işler. Canlı adaptör, iş parçacığı yapısı desteklediğinde yerel akışı, aksi halde taslak önizlemeyi seçer. Alındılar iş parçacığı zaman damgalarını korur. Köken adaptörü OpenClaw Gateway hatalarını Slack `chat.postMessage.metadata` ile eşler ve `allowBots` yetkilendirmesinden önce etiketlenmiş bot odası yankılarını düşürür. |
+| WhatsApp        | Gönderim adaptörü dayanıklı nihai niyetlerle metin/medya gönderimini üstlenir. Alma adaptörü grup bahsini ve gönderen kimliğini işler. WhatsApp düzenlenebilir bir taşıma sunana kadar canlı adaptör olmayabilir.                                                                                                                                                |
+| Matrix          | Canlı adaptör taslak olay düzenlemelerini, nihai hale getirmeyi, redaksiyonu, şifreli medya kısıtlarını ve yanıt hedefi uyuşmazlığı yedek yolunu üstlenir. Alma adaptörü şifreli olay hidrasyonunu ve tekilleştirmeyi üstlenir. Köken adaptörü OpenClaw Gateway hatası kökenini Matrix olay içeriğine kodlamalı ve yapılandırılmış bot oda yankılarını `allowBots` işlemeden önce düşürmelidir. |
+| Mattermost      | Canlı adaptör tek bir taslak gönderiyi, ilerleme/araç katlamayı, yerinde nihai hale getirmeyi ve yeni gönderim yedek yolunu üstlenir.                                                                                                                                                                                                                           |
+| Microsoft Teams | Canlı adaptör yerel ilerleme ve blok akışı davranışını üstlenir. Gönderim adaptörü etkinlikleri ve ek/kart alındılarını üstlenir.                                                                                                                                                                                                                                |
+| Feishu          | İşleme adaptörü metin/kart/ham işlemeyi üstlenir. Canlı adaptör akış kartlarını ve yinelenen nihai bastırmayı üstlenir. Gönderim adaptörü yorumları, konu oturumlarını, medyayı ve ses bastırmayı üstlenir.                                                                                                                                                      |
+| QQ Bot          | Canlı adaptör C2C akışını, biriktirici zaman aşımını ve yedek nihai gönderimi üstlenir. İşleme adaptörü medya etiketlerini ve metnin ses olarak kullanılmasını üstlenir.                                                                                                                                                                                         |
+| Signal          | Basit alma ve gönderim adaptörü. signal-cli güvenilir düzenleme desteği eklemediği sürece canlı adaptör yok.                                                                                                                                                                                                                                                    |
+| iMessage        | Basit alma ve gönderim adaptörü. iMessage gönderimi, dayanıklı nihai gönderimler izleyici teslimini atlayabilmeden önce izleyici yankı önbelleği doldurmasını korumalıdır.                                                                                                                                                                                      |
+| Google Chat     | Alanlara ve iş parçacığı kimliklerine eşlenen iş parçacığı ilişkisiyle basit alma ve gönderim adaptörü. Etiketlenmiş OpenClaw Gateway hatası yankıları için `allowBots=true` oda davranışını denetleyin.                                                                                                                                                         |
+| LINE            | Hedef/ilişki yeteneği olarak modellenmiş yanıt belirteci kısıtlarıyla basit alma ve gönderim adaptörü.                                                                                                                                                                                                                                                           |
+| Nextcloud Talk  | SDK alma köprüsü ve gönderim adaptörü.                                                                                                                                                                                                                                                                                                                          |
+| IRC             | Basit alma ve gönderim adaptörü, dayanıklı düzenleme alındıları yok.                                                                                                                                                                                                                                                                                            |
+| Nostr           | Şifreli DM'ler için alma ve gönderim adaptörü; alındılar olay kimlikleridir.                                                                                                                                                                                                                                                                                    |
+| QA Kanalı       | Alma, gönderim, canlı, yeniden deneme ve kurtarma davranışı için sözleşme testi adaptörü.                                                                                                                                                                                                                                                                        |
+| Synology Chat   | Basit alma ve gönderim adaptörü.                                                                                                                                                                                                                                                                                                                                |
+| Tlon            | Gönderim adaptörü, genel dayanıklı nihai teslim etkinleştirilmeden önce model imzası işlemeyi ve katılınmış iş parçacığı takibini korumalıdır.                                                                                                                                                                                                                   |
+| Twitch          | Hız sınırı sınıflandırmasıyla basit alma ve gönderim adaptörü.                                                                                                                                                                                                                                                                                                  |
+| Zalo            | Basit alma ve gönderim adaptörü.                                                                                                                                                                                                                                                                                                                                |
+| Zalo Personal   | Basit alma ve gönderim adaptörü.                                                                                                                                                                                                                                                                                                                                |
 
 ## Geçiş planı
 
-### Aşama 1: Dahili Mesaj Alanı
+### Aşama 1: Dahili Mesaj Etki Alanı
 
 - Mesajlar, hedefler, ilişkiler,
-  kökenler, alındılar, yetenekler, dayanıklı niyetler, alım bağlamı, gönderim
+  kökenler, alındılar, yetenekler, dayanıklı niyetler, alma bağlamı, gönderim
   bağlamı, canlı bağlam ve hata sınıfları için `src/channels/message/*` türleri ekleyin.
-- Geçerli yanıt teslimi tarafından kullanılan geçiş köprüsü yük türüne
-  `origin?: MessageOrigin` ekleyin, ardından refactor yanıt yüklerini değiştirdikçe
-  bu alanı `ChannelMessage` ve işlenmiş mesaj türlerine taşıyın.
+- Mevcut yanıt teslimi tarafından kullanılan geçiş köprüsü yük türüne
+  `origin?: MessageOrigin` ekleyin, ardından yeniden düzenleme yanıt yüklerinin
+  yerini aldıkça bu alanı `ChannelMessage` ve işlenmiş mesaj türlerine taşıyın.
 - Adaptörler ve testler şekli kanıtlayana kadar bunu dahili tutun.
 - Durum geçişleri ve serileştirme için saf birim testleri ekleyin.
 
 ### Aşama 2: Dayanıklı Gönderim Çekirdeği
 
-- Mevcut giden kuyruğunu yanıt-yükü dayanıklılığından dayanıklı
+- Mevcut çıkış kuyruğunu yanıt-yükü dayanıklılığından dayanıklı
   mesaj gönderim niyetlerine taşıyın.
-- Dayanıklı bir gönderim niyetinin yalnızca tek bir yanıt yükü değil,
-  yansıtılmış bir yük dizisi veya toplu iş planı taşımasına izin verin.
-- Uyumluluk dönüşümü yoluyla mevcut kuyruk kurtarma davranışını koruyun.
+- Dayanıklı gönderim niyetinin yalnızca tek bir yanıt yükü değil,
+  öngörülen bir yük dizisi veya toplu iş planı taşımasına izin verin.
+- Uyumluluk dönüştürmesi yoluyla mevcut kuyruk kurtarma davranışını koruyun.
 - `deliverOutboundPayloads` işlevinin `messages.send` çağırmasını sağlayın.
 - Adaptör yeniden oynatma güvenliğini bildirdikten sonra, yeni mesaj yaşam döngüsünde
-  dayanıklı niyet yazılamadığında nihai-gönderim dayanıklılığını varsayılan yapın
-  ve kapalı başarısız olun. Mevcut kanal-tur ve SDK uyumluluk yolları bu aşamada
-  varsayılan olarak doğrudan gönderim olarak kalır.
-- Alındıları tutarlı biçimde kaydedin.
-- Dayanıklı gönderimi son bir yan etki olarak ele almak yerine, alındıları ve
-  teslim sonuçlarını özgün dispatcher çağıranına döndürün.
-- Kurtarma, yeniden oynatma ve parçalı gönderimlerin OpenClaw operasyonel kökenini
-  koruması için mesaj kökenini dayanıklı gönderim niyetleri boyunca kalıcılaştırın.
+  dayanıklı niyet yazılamadığında nihai gönderim dayanıklılığını varsayılan yapın ve kapalı şekilde hata verin.
+  Mevcut kanal turu ve SDK uyumluluk yolları bu aşamada varsayılan olarak doğrudan gönderim olarak kalır.
+- Alındıları tutarlı şekilde kaydedin.
+- Dayanıklı gönderimi terminal bir yan etki olarak ele almak yerine,
+  alındıları ve teslim sonuçlarını özgün dağıtıcı çağırana döndürün.
+- Kurtarma, yeniden oynatma ve parçalı gönderimler OpenClaw operasyonel kökenini
+  korusun diye mesaj kökenini dayanıklı gönderim niyetleri üzerinden kalıcı hale getirin.
 
 ### Aşama 3: Kanal Turu Köprüsü
 
-- `channel.turn.run` ve `dispatchAssembledChannelTurn` öğelerini
+- `channel.turn.run` ve `dispatchAssembledChannelTurn` işlevlerini
   `messages.receive` ve `messages.send` üzerine yeniden uygulayın.
-- Geçerli olgu türlerini kararlı tutun.
-- Varsayılan olarak eski davranışı koruyun. Birleştirilmiş-tur kanalı yalnızca
-  adaptörü yeniden oynatma güvenli bir dayanıklılık ilkesiyle açıkça katıldığında
-  dayanıklı hale gelir.
-- Yerel düzenlemeleri sonlandıran ve henüz güvenle yeniden oynatılamayan yollar için
-  uyumluluk kaçış yolu olarak `durable: false` değerini koruyun, ancak geçirilmemiş
-  kanalları korumak için `false` işaretlerine güvenmeyin.
-- Birleştirilmiş-tur dayanıklılığını yalnızca yeni mesaj yaşam döngüsünde,
-  kanal eşlemesi genel gönderim yolunun eski kanal teslim semantiğini koruduğunu
-  kanıtladıktan sonra varsayılan yapın.
+- Mevcut olgu türlerini kararlı tutun.
+- Eski davranışı varsayılan olarak koruyun. Birleştirilmiş tur kanalı yalnızca
+  adaptörü yeniden oynatma açısından güvenli bir dayanıklılık ilkesiyle açıkça katıldığında dayanıklı hale gelir.
+- Yerel düzenlemeleri nihai hale getiren ve henüz güvenli şekilde yeniden oynatamayan yollar için
+  uyumluluk kaçış noktası olarak `durable: false` değerini koruyun, ancak taşınmamış kanalları
+  korumak için `false` işaretlerine güvenmeyin.
+- Birleştirilmiş tur dayanıklılığını yalnızca yeni mesaj yaşam döngüsünde,
+  kanal eşlemesi genel gönderim yolunun eski kanal teslim semantiklerini koruduğunu kanıtladıktan sonra varsayılan yapın.
 
-### Aşama 4: Hazırlanmış Dispatcher Köprüsü
+### Aşama 4: Hazırlanmış Dağıtıcı Köprüsü
 
-- `deliverDurableInboundReplyPayload` yerine bir gönderme-bağlamı köprüsü kullanın.
+- `deliverDurableInboundReplyPayload` yerine bir gönderim bağlamı köprüsü koyun.
 - Eski yardımcıyı bir sarmalayıcı olarak tutun.
 - Önce Telegram, WhatsApp, Slack, Signal, iMessage ve Discord'u taşıyın; çünkü
-  bunlarda zaten durable-final çalışması veya daha basit gönderme yolları var.
-- Her hazırlanmış dispatcher'ı, gönderme bağlamına açıkça dahil olana kadar
-  kapsanmamış kabul edin. Belgeler ve changelog girdileri, tüm otomatik final
-  yanıtlarını kapsadığını iddia etmek yerine "birleştirilmiş kanal dönüşleri"
-  demeli veya taşınan kanal yollarını adlandırmalıdır.
-- `recordInboundSessionAndDispatchReply`, doğrudan-DM yardımcıları ve benzer
-  herkese açık uyumluluk yardımcılarını davranışı koruyacak şekilde tutun. Daha
-  sonra açık bir gönderme-bağlamı katılımı sunabilirler, ancak çağıranın sahip
-  olduğu teslim callback'inden önce otomatik olarak genel durable teslimat
-  denememelidirler.
+  bunlarda zaten dayanıklı final çalışması veya daha basit gönderim yolları var.
+- Açıkça gönderim bağlamına katılana kadar her hazırlanmış dağıtıcıyı kapsam dışı
+  kabul edin. Dokümantasyon ve changelog girdileri, tüm otomatik final
+  yanıtlarını iddia etmek yerine "assembled channel turns" demeli veya taşınan
+  kanal yollarını adlandırmalıdır.
+- `recordInboundSessionAndDispatchReply`, doğrudan DM yardımcıları ve benzer
+  genel uyumluluk yardımcılarının davranışını koruyun. Daha sonra açık bir
+  gönderim bağlamı katılımı sunabilirler, ancak çağıranın sahip olduğu teslim
+  geri çağrısından önce otomatik olarak genel dayanıklı teslimat denememelidirler.
 
 ### Aşama 5: Birleşik Canlı Yaşam Döngüsü
 
-- İki kanıt adapter'ı ile `messages.live` oluşturun:
-  - Gönderme, düzenleme ve eskimiş final gönderimi için Telegram.
-  - Taslak finalizasyonu ve redaction fallback için Matrix.
+- `messages.live` öğesini iki kanıt bağdaştırıcısıyla oluşturun:
+  - Gönderim, düzenleme ve eski final gönderimi için Telegram.
+  - Taslak finalizasyonu ve düzeltme yedeği için Matrix.
 - Ardından Discord, Slack, Mattermost, Teams, QQ Bot ve Feishu'yu taşıyın.
-- Yinelenen önizleme finalizasyon kodunu ancak her kanalın eşdeğerlik testleri
-  olduktan sonra silin.
+- Yinelenen önizleme finalizasyon kodunu yalnızca her kanalın eşdeğerlik
+  testleri olduktan sonra silin.
 
-### Aşama 6: Herkese Açık SDK
+### Aşama 6: Genel SDK
 
 - `openclaw/plugin-sdk/channel-message` ekleyin.
 - Bunu tercih edilen kanal Plugin API'si olarak belgeleyin.
-- Paket export'larını, entrypoint envanterini, üretilmiş API baseline'larını ve
-  Plugin SDK belgelerini güncelleyin.
-- Kanal-message SDK yüzeyine `MessageOrigin`, origin encode/decode hook'ları ve
-  paylaşılan `shouldDropOpenClawEcho` predicate'ini dahil edin.
+- Paket dışa aktarımlarını, giriş noktası envanterini, üretilen API
+  temellerini ve Plugin SDK dokümantasyonunu güncelleyin.
+- Kanal-ileti SDK yüzeyine `MessageOrigin`, origin kodlama/kod çözme hook'ları
+  ve paylaşılan `shouldDropOpenClawEcho` predicate'ini dahil edin.
 - Eski alt yollar için uyumluluk sarmalayıcılarını tutun.
-- Paketlenmiş Plugin'ler taşındıktan sonra reply adlı SDK yardımcılarını
-  belgelerde deprecated olarak işaretleyin.
+- Paketli Plugin'ler taşındıktan sonra yanıta göre adlandırılmış SDK
+  yardımcılarını dokümantasyonda kullanımdan kaldırılmış olarak işaretleyin.
 
 ### Aşama 7: Tüm Göndericiler
 
-Yanıt olmayan tüm outbound üreticileri `messages.send` üzerine taşıyın:
+Tüm yanıt dışı giden üreticileri `messages.send` üzerine taşıyın:
 
-- cron ve heartbeat bildirimleri
-- görev tamamlanmaları
+- Cron ve Heartbeat bildirimleri
+- görev tamamlamaları
 - hook sonuçları
 - onay istemleri ve onay sonuçları
-- message tool gönderimleri
-- subagent tamamlama duyuruları
+- ileti aracı gönderimleri
+- alt ajan tamamlanma duyuruları
 - açık CLI veya Control UI gönderimleri
-- otomasyon/broadcast yolları
+- otomasyon/yayın yolları
 
-Modelin "agent yanıtları" olmaktan çıkıp "OpenClaw mesaj gönderir" haline
+Modelin "ajan yanıtları" olmaktan çıkıp "OpenClaw ileti gönderir" haline
 geldiği yer burasıdır.
 
-### Aşama 8: Turn'ü Deprecated Yapma
+### Aşama 8: Turn'ü Kullanımdan Kaldırma
 
-- `channel.turn` değerini en az bir uyumluluk penceresi boyunca sarmalayıcı
-  olarak tutun.
+- `channel.turn` öğesini en az bir uyumluluk penceresi boyunca sarmalayıcı olarak tutun.
 - Geçiş notlarını yayımlayın.
-- Eski import'lara karşı Plugin SDK uyumluluk testlerini çalıştırın.
-- Eski dahili yardımcıları ancak hiçbir paketlenmiş Plugin bunlara ihtiyaç
-  duymadığında ve üçüncü taraf sözleşmelerin kararlı bir yerine geçen çözümü
-  olduğunda kaldırın veya gizleyin.
+- Eski içe aktarımlara karşı Plugin SDK uyumluluk testlerini çalıştırın.
+- Eski dahili yardımcıları yalnızca hiçbir paketli Plugin bunlara ihtiyaç
+  duymadığında ve üçüncü taraf sözleşmelerin kararlı bir ikamesi olduğunda
+  kaldırın veya gizleyin.
 
 ## Test planı
 
 Birim testleri:
 
-- Durable gönderme intent serileştirme ve kurtarma.
-- Idempotency key yeniden kullanımı ve yinelenenleri bastırma.
-- Receipt commit ve replay atlama.
-- Bir adapter reconciliation desteklediğinde replay'den önce uzlaştıran
-  `unknown_after_send` kurtarması.
+- Dayanıklı gönderim amacı serileştirme ve kurtarma.
+- Idempotency anahtarı yeniden kullanımı ve yineleme baskılama.
+- Alındı kaydı commit'i ve yeniden oynatma atlama.
+- Bir bağdaştırıcı uzlaştırmayı desteklediğinde yeniden oynatmadan önce
+  uzlaştıran `unknown_after_send` kurtarması.
 - Hata sınıflandırma politikası.
-- Receive ack policy sıralaması.
-- Reply, followup, system ve broadcast gönderimleri için ilişki eşlemesi.
-- Gateway-failure origin factory ve `shouldDropOpenClawEcho` predicate'i.
-- Payload normalizasyonu, chunking, durable queue serileştirme ve kurtarma
-  boyunca origin'in korunması.
+- Alma onayı politikası sıralaması.
+- Yanıt, takip, sistem ve yayın gönderimleri için ilişki eşlemesi.
+- Gateway hatası origin fabrikası ve `shouldDropOpenClawEcho` predicate'i.
+- Yük normalizasyonu, parçalama, dayanıklı kuyruk serileştirmesi ve kurtarma
+  boyunca origin koruması.
 
 Entegrasyon testleri:
 
-- `channel.turn.run` basit adapter'ı hâlâ kaydeder ve gönderir.
-- Eski birleştirilmiş-turn teslimatı, kanal açıkça dahil olmadıkça durable hale
-  gelmez.
+- `channel.turn.run` basit bağdaştırıcısı hâlâ kaydeder ve gönderir.
+- Eski assembled-turn teslimatı, kanal açıkça katılmadıkça dayanıklı hale gelmez.
 - `channel.turn.runPrepared` köprüsü hâlâ kaydeder ve finalize eder.
-- Herkese açık uyumluluk yardımcıları varsayılan olarak çağıranın sahip olduğu
-  teslim callback'lerini çağırır ve bu callback'lerden önce generic-send yapmaz.
-- Durable fallback teslimatı, yeniden başlatmadan sonra tüm projected payload
-  dizisini replay eder ve erken bir çökmeden sonra sonraki payload'ları kayıtsız
-  bırakamaz.
-- Durable birleştirilmiş-turn teslimatı, platform mesaj id'lerini buffered
-  dispatcher'a döndürür.
-- Özel teslim hook'ları, durable teslimat devre dışı veya kullanılamaz olduğunda
-  da platform mesaj id'lerini döndürür.
-- Final yanıt, assistant tamamlaması ile platform gönderimi arasındaki yeniden
+- Genel uyumluluk yardımcıları varsayılan olarak çağıranın sahip olduğu teslim
+  geri çağrılarını çağırır ve bu geri çağrılardan önce genel gönderim yapmaz.
+- Dayanıklı yedek teslimat, yeniden başlatmadan sonra tüm projeksiyonu yapılan
+  yük dizisini yeniden oynatır ve erken bir çökmeden sonra sonraki yüklerin
+  kaydedilmeden kalmasına izin veremez.
+- Dayanıklı assembled-turn teslimatı, platform ileti kimliklerini tamponlanmış
+  dağıtıcıya döndürür.
+- Özel teslim hook'ları, dayanıklı teslimat devre dışı veya kullanılamazken de
+  platform ileti kimliklerini döndürür.
+- Final yanıtı, asistan tamamlaması ile platform gönderimi arasındaki yeniden
   başlatmadan sağ çıkar.
 - Önizleme taslağı izin verildiğinde yerinde finalize edilir.
 - Medya/hata/yanıt-hedefi uyuşmazlığı normal teslimat gerektirdiğinde önizleme
-  taslağı iptal edilir veya redacted yapılır.
-- Block streaming ve preview streaming aynı metni birlikte teslim etmez.
-- Erken stream edilen medya final teslimatta yinelenmez.
+  taslağı iptal edilir veya düzeltilir.
+- Blok akışı ve önizleme akışı aynı metni ikisi birden teslim etmez.
+- Erken akışla gönderilen medya final teslimatta yinelenmez.
 
 Kanal testleri:
 
-- Polling ack'i receive context'in güvenli completed watermark'ına kadar
-  geciktirilmiş Telegram konu yanıtı.
-- Kabul edilmiş ama teslim edilmemiş güncellemeler için Telegram polling
-  kurtarması, kalıcı safe-completed offset modeliyle kapsanır.
-- Telegram eskimiş önizlemesi yeni final gönderir ve önizlemeyi temizler.
-- Telegram sessiz fallback, her projected fallback payload'unu gönderir.
-- Telegram sessiz fallback durability, her döngü iterasyonu için tek bir
-  single-payload durable intent değil, tam projected fallback dizisini atomik
-  olarak kaydeder.
+- Telegram konu yanıtında polling onayı, alma bağlamının güvenli tamamlanmış
+  watermark'ına kadar geciktirilir.
+- Kabul edilmiş ancak teslim edilmemiş güncellemeler için Telegram polling
+  kurtarması, kalıcı güvenli-tamamlanmış offset modeliyle kapsanır.
+- Telegram eski önizlemesi yeni final gönderir ve önizlemeyi temizler.
+- Telegram sessiz yedeği, projeksiyonu yapılan her yedek yükü gönderir.
+- Telegram sessiz yedek dayanıklılığı, tam projeksiyonu yapılan yedek dizisini
+  her döngü yinelemesi için tek bir tek-yük dayanıklı amacı olarak değil,
+  atomik olarak kaydeder.
 - Medya/hata/açık yanıt durumunda Discord önizleme iptali.
-- Discord final-reply durability belgelerde veya changelog'da iddia edilmeden
-  önce Discord hazırlanmış dispatcher final'ları gönderme bağlamı üzerinden
-  yönlendirilir.
-- iMessage durable final gönderimleri, monitor sent-message echo cache'ini
-  doldurur.
-- LINE, BlueBubbles, Zalo ve Nostr eski teslimat yolları, adapter eşdeğerlik
-  testleri var olana kadar genel durable send tarafından bypass edilmez.
-- Direct-DM/Nostr callback teslimatı, eksiksiz bir message target'a ve
-  replay-safe send adapter'a açıkça taşınmadıkça authoritative kalır.
-- Slack etiketlenmiş OpenClaw Gateway failure mesajları outbound olarak görünür
-  kalır, etiketlenmiş bot-room echo'ları `allowBots` öncesinde düşer ve aynı
-  görünür metne sahip etiketsiz bot mesajları normal bot yetkilendirmesini
-  izlemeye devam eder.
-- Üst seviye DM'lerde Slack native stream fallback'i draft preview'e düşer.
-- Matrix önizleme finalizasyonu ve redaction fallback.
-- Yapılandırılmış bot hesaplarından gelen Matrix etiketlenmiş OpenClaw
-  gateway-failure oda echo'ları `allowBots` işleme alınmadan önce düşer.
-- Discord ve Google Chat paylaşımlı-oda gateway-failure cascade denetimleri,
-  burada genel koruma iddia edilmeden önce `allowBots` modlarını kapsar.
-- Mattermost taslak finalizasyonu ve fresh-send fallback.
-- Teams native progress finalizasyonu.
-- Feishu yinelenen final bastırma.
-- QQ Bot accumulator timeout fallback.
-- Tlon durable final gönderimleri model-signature rendering ve participated
-  thread tracking'i korur.
+- Discord hazırlanmış dağıtıcı finalleri, dokümanlar veya changelog Discord
+  final-yanıt dayanıklılığı iddia etmeden önce gönderim bağlamından geçer.
+- iMessage dayanıklı final gönderimleri, izleyici gönderilen-ileti yankı
+  önbelleğini doldurur.
+- LINE, Zalo ve Nostr eski teslimat yolları, bağdaştırıcı eşdeğerlik testleri
+  var olana kadar genel dayanıklı gönderim tarafından atlanmaz.
+- Direct-DM/Nostr geri çağrılı teslimat, açıkça eksiksiz bir ileti hedefine ve
+  yeniden oynatma güvenli gönderim bağdaştırıcısına taşınmadıkça yetkili kalır.
+- Slack etiketli OpenClaw Gateway hatası iletileri giden tarafta görünür kalır,
+  etiketli bot-odası yankıları `allowBots` öncesinde düşer ve aynı görünür
+  metne sahip etiketsiz bot iletileri normal bot yetkilendirmesini izlemeye
+  devam eder.
+- Üst düzey DM'lerde Slack yerel akış yedeği taslak önizlemeye düşer.
+- Matrix önizleme finalizasyonu ve düzeltme yedeği.
+- Yapılandırılmış bot hesaplarından gelen Matrix etiketli OpenClaw Gateway
+  hatası oda yankıları, `allowBots` işlenmeden önce düşer.
+- Discord ve Google Chat paylaşımlı oda Gateway hatası cascade denetimleri,
+  orada genel koruma iddia etmeden önce `allowBots` modlarını kapsar.
+- Mattermost taslak finalizasyonu ve yeni-gönderim yedeği.
+- Teams yerel ilerleme finalizasyonu.
+- Feishu yinelenen final baskılaması.
+- QQ Bot biriktirici zaman aşımı yedeği.
+- Tlon dayanıklı final gönderimleri model-imzası görüntülemesini ve katılım
+  sağlanan konu izlemeyi korur.
 - WhatsApp, Signal, iMessage, Google Chat, LINE, IRC, Nostr, Nextcloud Talk,
-  Synology Chat, Tlon, Twitch, Zalo ve Zalo Personal basit durable final
+  Synology Chat, Tlon, Twitch, Zalo ve Zalo Personal basit dayanıklı final
   gönderimleri.
 
 Doğrulama:
 
 - Geliştirme sırasında hedeflenmiş Vitest dosyaları.
-- Tam changed yüzeyi için Testbox içinde `pnpm check:changed`.
-- Tam refactor'ı land etmeden önce veya herkese açık SDK/export değişiklikleri
-  sonrasında Testbox içinde daha geniş `pnpm check`.
-- Uyumluluk sarmalayıcılarını kaldırmadan önce en az bir düzenleme-yetenekli
-  kanal ve bir basit yalnızca-gönder kanal için live veya qa-channel smoke.
+- Tam değişen yüzey için Testbox içinde `pnpm check:changed`.
+- Tam refactor indirilmeden veya genel SDK/dışa aktarım değişikliklerinden önce
+  Testbox içinde daha geniş `pnpm check`.
+- Uyumluluk sarmalayıcıları kaldırmadan önce en az bir düzenleme yetenekli
+  kanal ve bir basit yalnızca-gönderim kanalı için canlı veya qa-channel smoke.
 
 ## Açık sorular
 
 - Telegram'ın sonunda grammY runner kaynağını, yalnızca OpenClaw'ın kalıcı
-  restart watermark'ını değil platform düzeyi yeniden teslimatı da kontrol
-  edebilen tamamen durable bir polling source ile değiştirip değiştirmemesi.
-- Durable live preview state'in final send intent ile aynı queue kaydında mı,
-  yoksa kardeş bir live-state store'da mı saklanması gerektiği.
-- `plugin-sdk/channel-message` gönderildikten sonra uyumluluk sarmalayıcılarının
-  ne kadar süre belgelenmiş kalacağı.
-- Üçüncü taraf Plugin'lerin receive adapter'larını doğrudan mı uygulaması
-  gerektiği, yoksa yalnızca `defineChannelMessageAdapter` üzerinden
+  yeniden başlatma watermark'ını değil, platform düzeyinde yeniden teslimatı
+  kontrol edebilen tamamen dayanıklı bir polling kaynağıyla değiştirip
+  değiştirmemesi gerektiği.
+- Dayanıklı canlı önizleme durumunun final gönderim amacıyla aynı kuyruk
+  kaydında mı yoksa kardeş bir canlı-durum deposunda mı saklanması gerektiği.
+- `plugin-sdk/channel-message` yayımlandıktan sonra uyumluluk sarmalayıcılarının
+  ne kadar süre belgeli kalacağı.
+- Üçüncü taraf Plugin'lerin alma bağdaştırıcılarını doğrudan mı uygulaması
+  gerektiği, yoksa `defineChannelMessageAdapter` üzerinden yalnızca
   normalize/send/live hook'ları mı sağlaması gerektiği.
-- Hangi receipt alanlarının herkese açık SDK'da, hangilerinin dahili runtime
-  state'te gösterilmesinin güvenli olduğu.
-- Self-echo cache'leri ve participated-thread marker'ları gibi yan etkilerin
-  send-context hook'ları, adapter'a ait finalize adımları veya receipt
-  subscriber'ları olarak mı modellenmesi gerektiği.
-- Hangi kanalların native origin metadata'ya sahip olduğu, hangilerinin kalıcı
-  outbound registry'lere ihtiyaç duyduğu ve hangilerinin güvenilir cross-bot
-  echo suppression sunamayacağı.
+- Hangi alındı alanlarının genel SDK'da, hangilerinin dahili çalışma zamanı
+  durumunda açığa çıkarılmasının güvenli olduğu.
+- Öz-yankı önbellekleri ve katılım sağlanan konu işaretçileri gibi yan etkilerin
+  gönderim bağlamı hook'ları, bağdaştırıcıya ait finalize adımları veya alındı
+  aboneleri olarak modellenip modellenmemesi gerektiği.
+- Hangi kanalların yerel origin meta verisine sahip olduğu, hangilerinin kalıcı
+  giden kayıt defterlerine ihtiyaç duyduğu ve hangilerinin güvenilir botlar arası
+  yankı baskılama sunamayacağı.
 
-## Kabul ölçütleri
+## Kabul kriterleri
 
-- Paketlenmiş her mesaj kanalı final görünür çıktıyı `messages.send` üzerinden
-  gönderir.
-- Her inbound mesaj kanalı `messages.receive` veya belgelenmiş bir uyumluluk
+- Her paketli ileti kanalı, final görünür çıktıyı `messages.send` üzerinden gönderir.
+- Her gelen ileti kanalı `messages.receive` veya belgeli bir uyumluluk
   sarmalayıcısı üzerinden girer.
-- Her preview/edit/stream kanalı, taslak state ve finalizasyon için
+- Her önizleme/düzenleme/akış kanalı, taslak durumu ve finalizasyon için
   `messages.live` kullanır.
 - `channel.turn` yalnızca bir sarmalayıcıdır.
-- Reply adlı SDK yardımcıları önerilen yol değil, uyumluluk export'larıdır.
-- Durable recovery, final yanıtı kaybetmeden veya zaten commit edilmiş
-  gönderimleri yinelemeden yeniden başlatma sonrasında bekleyen final
-  gönderimleri replay edebilir; platform sonucu bilinmeyen gönderimler
-  replay'den önce uzlaştırılır veya o adapter için at-least-once olarak
-  belgelenir.
-- Durable final gönderimleri, durable intent yazılamadığında, çağıran açıkça
-  belgelenmiş non-durable bir mod seçmedikçe fail closed davranır.
+- Yanıta göre adlandırılmış SDK yardımcıları, önerilen yol değil, uyumluluk
+  dışa aktarımlarıdır.
+- Dayanıklı kurtarma, yeniden başlatmadan sonra bekleyen final gönderimleri
+  final yanıtı kaybetmeden veya zaten commit edilmiş gönderimleri yinelemeden
+  yeniden oynatabilir; platform sonucu bilinmeyen gönderimler yeniden oynatmadan
+  önce uzlaştırılır veya o bağdaştırıcı için at-least-once olarak belgelenir.
+- Dayanıklı final gönderimleri, dayanıklı amaç yazılamadığında kapalı hata verir;
+  yalnızca çağıran açıkça belgeli bir dayanıklı olmayan mod seçtiyse bu geçerli
+  değildir.
 - Eski channel-turn ve SDK uyumluluk yardımcıları varsayılan olarak doğrudan
-  kanalın sahip olduğu teslimatı kullanır; generic durable send yalnızca açık
-  katılımdır.
-- Receipt'ler, çok parçalı teslimatlar için tüm platform mesaj id'lerini ve
-  threading/edit kolaylığı için bir primary id'yi korur.
-- Durable sarmalayıcılar, doğrudan teslim callback'lerini değiştirmeden önce
+  kanalın sahip olduğu teslimatı kullanır; genel dayanıklı gönderim yalnızca
+  açık katılımdır.
+- Alındılar, çok parçalı teslimatlar için tüm platform ileti kimliklerini ve
+  konu/düzenleme kolaylığı için birincil kimliği korur.
+- Dayanıklı sarmalayıcılar, doğrudan teslim geri çağrılarını değiştirmeden önce
   kanal-yerel yan etkileri korur.
-- Hazırlanmış dispatcher'lar, final teslimat yolları açıkça gönderme bağlamını
-  kullanana kadar durable sayılmaz.
-- Fallback teslimatı her projected payload'u işler.
-- Durable fallback teslimatı her projected payload'u tek bir replay edilebilir
-  intent veya batch plan içinde kaydeder.
-- OpenClaw kaynaklı Gateway failure çıktısı insanlar için görünürdür, ancak
-  etiketlenmiş bot-yazarlı oda echo'ları, origin sözleşmesini desteklediğini
-  bildiren kanallarda bot yetkilendirmesinden önce düşürülür.
-- Belgeler send, receive, live, state, receipt'ler, ilişkiler, hata politikası,
+- Hazırlanmış dağıtıcılar, final teslimat yolları açıkça gönderim bağlamını
+  kullanana kadar dayanıklı sayılmaz.
+- Yedek teslimat, projeksiyonu yapılan her yükü işler.
+- Dayanıklı yedek teslimat, projeksiyonu yapılan her yükü tek bir yeniden
+  oynatılabilir amaç veya toplu plan içinde kaydeder.
+- OpenClaw kaynaklı Gateway hatası çıktısı insanlar tarafından görünürdür, ancak
+  etiketli bot yazarlı oda yankıları, origin sözleşmesi desteğini bildiren
+  kanallarda bot yetkilendirmesinden önce düşürülür.
+- Dokümanlar gönderim, alma, canlı, durum, alındılar, ilişkiler, hata politikası,
   geçiş ve test kapsamını açıklar.
 
 ## İlgili
 
-- [Mesajlar](/tr/concepts/messages)
-- [Streaming ve chunking](/tr/concepts/streaming)
+- [İletiler](/tr/concepts/messages)
+- [Akış ve parçalama](/tr/concepts/streaming)
 - [İlerleme taslakları](/tr/concepts/progress-drafts)
-- [Retry policy](/tr/concepts/retry)
-- [Channel turn kernel](/tr/plugins/sdk-channel-turn)
+- [Yeniden deneme politikası](/tr/concepts/retry)
+- [Kanal turn çekirdeği](/tr/plugins/sdk-channel-turn)

@@ -1,20 +1,21 @@
 ---
 read_when:
-    - 使用或修改 exec 工具
+    - 使用或修改 Exec 工具
     - 调试 stdin 或 TTY 行为
-summary: Exec 工具用法、stdin 模式和 TTY 支持
-title: 执行工具
+summary: Exec 工具的用法、stdin 模式和 TTY 支持
+title: Exec 工具
 x-i18n:
-    generated_at: "2026-05-06T04:10:58Z"
+    generated_at: "2026-05-10T19:50:39Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9892f030f1eeb83ca0cebac462c469e5f9f000763e4c96d62d82b819f98c3084
+    source_hash: 445b09c1c6cdc1998c1c2a6b1223fdef438011413d246c4de0de0436465b448f
     source_path: tools/exec.md
     workflow: 16
 ---
 
-在工作区中运行 shell 命令。通过 `process` 支持前台 + 后台执行。
-如果不允许使用 `process`，`exec` 会同步运行并忽略 `yieldMs`/`background`。
+在工作区中运行 shell 命令。`exec` 是一个会变更状态的 shell 表面：只要所选主机或沙箱文件系统允许，命令就可以创建、编辑或删除文件。禁用 OpenClaw 文件系统工具，例如 `write`、`edit` 或 `apply_patch`，不会让 `exec` 变成只读。
+
+通过 `process` 支持前台 + 后台执行。如果不允许使用 `process`，`exec` 会同步运行，并忽略 `yieldMs`/`background`。
 后台会话按智能体限定范围；`process` 只能看到来自同一智能体的会话。
 
 ## 参数
@@ -28,11 +29,11 @@ x-i18n:
 </ParamField>
 
 <ParamField path="env" type="object">
-合并到继承环境之上的键/值环境覆盖项。
+叠加到继承环境之上的键/值环境覆盖项。
 </ParamField>
 
 <ParamField path="yieldMs" type="number" default="10000">
-在此延迟（毫秒）后自动将命令转入后台。
+经过此延迟后自动将命令转入后台（毫秒）。
 </ParamField>
 
 <ParamField path="background" type="boolean" default="false">
@@ -40,15 +41,15 @@ x-i18n:
 </ParamField>
 
 <ParamField path="timeout" type="number" default="tools.exec.timeoutSec">
-覆盖此次调用配置的 exec 超时时间。仅当命令应在没有 exec 进程超时的情况下运行时，才设置 `timeout: 0`。
+覆盖本次调用配置的 exec 超时时间。仅当命令应在没有 exec 进程超时的情况下运行时，才设置 `timeout: 0`。
 </ParamField>
 
 <ParamField path="pty" type="boolean" default="false">
-在可用时在伪终端中运行。用于仅支持 TTY 的 CLI、编码智能体和终端 UI。
+在可用时于伪终端中运行。用于仅支持 TTY 的 CLI、编码智能体和终端 UI。
 </ParamField>
 
 <ParamField path="host" type="'auto' | 'sandbox' | 'gateway' | 'node'" default="auto">
-执行位置。当沙箱运行时处于活动状态时，`auto` 解析为 `sandbox`，否则解析为 `gateway`。
+执行位置。`auto` 会在沙箱运行时处于活动状态时解析为 `sandbox`，否则解析为 `gateway`。
 </ParamField>
 
 <ParamField path="security" type="'deny' | 'allowlist' | 'full'">
@@ -56,66 +57,66 @@ x-i18n:
 </ParamField>
 
 <ParamField path="ask" type="'off' | 'on-miss' | 'always'">
-`gateway` / `node` 执行的审批提示行为。
+`gateway` / `node` 执行的批准提示行为。
 </ParamField>
 
 <ParamField path="node" type="string">
-当 `host=node` 时的节点 id/名称。
+当 `host=node` 时使用的节点 ID/名称。
 </ParamField>
 
 <ParamField path="elevated" type="boolean" default="false">
-请求提权模式 —— 从沙箱逃逸到配置的主机路径。仅当 elevated 解析为 `full` 时，才会强制 `security=full`。
+请求提升模式 —— 逃逸沙箱并进入配置的主机路径。只有当 elevated 解析为 `full` 时，才会强制 `security=full`。
 </ParamField>
 
-说明：
+注意：
 
-- `host` 默认为 `auto`：当沙箱运行时对会话处于活动状态时使用沙箱，否则使用 Gateway 网关。
+- `host` 默认是 `auto`：当会话的沙箱运行时处于活动状态时使用沙箱，否则使用 Gateway 网关。
 - `host` 只接受 `auto`、`sandbox`、`gateway` 或 `node`。它不是主机名选择器；类似主机名的值会在命令运行前被拒绝。
-- `auto` 是默认路由策略，不是通配符。允许从 `auto` 逐次调用设置 `host=node`；只有在没有活动沙箱运行时时，才允许逐次调用设置 `host=gateway`。
-- 在没有额外配置的情况下，`host=auto` 仍然“直接可用”：没有沙箱意味着它会解析为 `gateway`；有活动沙箱意味着它会留在沙箱中。
-- `elevated` 会从沙箱逃逸到配置的主机路径：默认是 `gateway`，当 `tools.exec.host=node`（或会话默认是 `host=node`）时是 `node`。它仅在当前会话/提供商启用提权访问时可用。
-- `gateway`/`node` 审批由 `~/.openclaw/exec-approvals.json` 控制。
+- `auto` 是默认路由策略，不是通配符。允许从 `auto` 按调用设置 `host=node`；只有在没有活动沙箱运行时时，才允许按调用设置 `host=gateway`。
+- 没有额外配置时，`host=auto` 仍然“开箱即用”：没有沙箱表示它解析为 `gateway`；存在实时沙箱表示它留在沙箱中。
+- `elevated` 会逃逸沙箱并进入配置的主机路径：默认是 `gateway`，或当 `tools.exec.host=node`（或会话默认值是 `host=node`）时为 `node`。只有当前会话/提供商启用了提升访问时，它才可用。
+- `gateway`/`node` 批准由 `~/.openclaw/exec-approvals.json` 控制。
 - `node` 需要已配对的节点（配套应用或无头节点主机）。
-- 如果有多个节点可用，请设置 `exec.node` 或 `tools.exec.node` 来选择一个。
-- `exec host=node` 是节点的唯一 shell 执行路径；旧版 `nodes.run` 包装器已移除。
-- `timeout` 适用于前台、后台、`yieldMs`、Gateway 网关、沙箱和节点 `system.run` 执行。如果省略，OpenClaw 使用 `tools.exec.timeoutSec`；显式 `timeout: 0` 会为该调用禁用 exec 进程超时。
-- 在非 Windows 主机上，exec 会在设置了 `SHELL` 时使用它；如果 `SHELL` 是 `fish`，则优先使用 `PATH` 中的 `bash`（或 `sh`）
-  以避免与 fish 不兼容的脚本，如果两者都不存在，再回退到 `SHELL`。
+- 如果有多个节点可用，请设置 `exec.node` 或 `tools.exec.node` 来选择其中一个。
+- `exec host=node` 是节点唯一的 shell 执行路径；旧版 `nodes.run` 包装器已移除。
+- `timeout` 适用于前台、后台、`yieldMs`、Gateway 网关、沙箱和节点 `system.run` 执行。如果省略，OpenClaw 会使用 `tools.exec.timeoutSec`；显式 `timeout: 0` 会为该调用禁用 exec 进程超时。
+- 在非 Windows 主机上，exec 会在设置了 `SHELL` 时使用它；如果 `SHELL` 是 `fish`，它会优先从 `PATH` 使用 `bash`（或 `sh`）
+  以避免与 fish 不兼容的脚本，然后在两者都不存在时回退到 `SHELL`。
 - 在 Windows 主机上，exec 优先发现 PowerShell 7（`pwsh`）（Program Files、ProgramW6432，然后是 PATH），
   然后回退到 Windows PowerShell 5.1。
 - 主机执行（`gateway`/`node`）会拒绝 `env.PATH` 和加载器覆盖项（`LD_*`/`DYLD_*`），以
   防止二进制劫持或注入代码。
-- OpenClaw 会在生成的命令环境中设置 `OPENCLAW_SHELL=exec`（包括 PTY 和沙箱执行），以便 shell/profile 规则可以检测 exec 工具上下文。
-- `openclaw channels login` 会被 `exec` 阻止，因为它是交互式渠道认证流程；请在 Gateway 网关主机上的终端中运行它，或者在存在渠道原生登录工具时从聊天中使用该工具。
-- 重要：沙箱隔离**默认关闭**。如果沙箱隔离关闭，隐式 `host=auto`
-  会解析为 `gateway`。显式 `host=sandbox` 仍会封闭失败，而不是静默地
-  在 Gateway 网关主机上运行。启用沙箱隔离，或在审批下使用 `host=gateway`。
-- 脚本预检检查（针对常见 Python/Node shell 语法错误）只会检查有效
+- OpenClaw 会在派生的命令环境中（包括 PTY 和沙箱执行）设置 `OPENCLAW_SHELL=exec`，让 shell/profile 规则能够检测 exec 工具上下文。
+- `openclaw channels login` 会被 `exec` 阻止，因为它是交互式渠道认证流程；请在 Gateway 网关主机上的终端中运行它，或在存在对应工具时从聊天中使用渠道原生登录工具。
+- 重要：默认**关闭**沙箱隔离。如果沙箱隔离关闭，隐式 `host=auto`
+  会解析为 `gateway`。显式 `host=sandbox` 仍会安全失败，而不是静默
+  在 Gateway 网关主机上运行。启用沙箱隔离，或使用带批准的 `host=gateway`。
+- 脚本预检检查（针对常见 Python/Node shell 语法错误）只检查有效
   `workdir` 边界内的文件。如果脚本路径解析到 `workdir` 之外，则会跳过该文件的预检。
-- 对于现在开始的长时间运行工作，启动一次，然后在启用自动
-  完成唤醒且命令有输出或失败时依赖它。
-  使用 `process` 查看日志、状态、输入或进行干预；不要用 sleep 循环、timeout 循环或重复轮询来模拟
+- 对于现在开始的长时间运行工作，只启动一次，并在启用自动
+  完成唤醒且命令输出内容或失败时依赖它。
+  使用 `process` 获取日志、状态、输入或干预；不要用 sleep 循环、timeout 循环或重复轮询来模拟
   调度。
 - 对于应稍后发生或按计划发生的工作，请使用 cron，而不是
   `exec` sleep/delay 模式。
 
 ## 配置
 
-- `tools.exec.notifyOnExit`（默认：true）：为 true 时，后台 exec 会话在退出时会排入一个系统事件并请求 Heartbeat。
-- `tools.exec.approvalRunningNoticeMs`（默认：10000）：当需要审批的 exec 运行时间超过此值时，发出一次“running”通知（0 表示禁用）。
-- `tools.exec.timeoutSec`（默认：1800）：每条命令的默认 exec 超时时间（秒）。逐次调用的 `timeout` 会覆盖它；逐次调用的 `timeout: 0` 会禁用 exec 进程超时。
-- `tools.exec.host`（默认：`auto`；当沙箱运行时处于活动状态时解析为 `sandbox`，否则解析为 `gateway`）
-- `tools.exec.security`（默认：沙箱为 `deny`，未设置时 Gateway 网关 + 节点为 `full`）
-- `tools.exec.ask`（默认：`off`）
-- 无审批主机 exec 是 Gateway 网关 + 节点的默认行为。如果你想要审批/allowlist 行为，请同时收紧 `tools.exec.*` 和主机 `~/.openclaw/exec-approvals.json`；参见 [Exec 审批](/zh-CN/tools/exec-approvals#yolo-mode-no-approval)。
-- YOLO 来自主机策略默认值（`security=full`、`ask=off`），不是来自 `host=auto`。如果你想强制 Gateway 网关或节点路由，请设置 `tools.exec.host` 或使用 `/exec host=...`。
+- `tools.exec.notifyOnExit`（默认值：true）：为 true 时，转入后台的 exec 会话在退出时会排入系统事件并请求一次 Heartbeat。
+- `tools.exec.approvalRunningNoticeMs`（默认值：10000）：当受批准门控的 exec 运行时间超过此值时，发出一次“running”通知（0 表示禁用）。
+- `tools.exec.timeoutSec`（默认值：1800）：每条命令默认 exec 超时时间，单位为秒。按调用设置的 `timeout` 会覆盖它；按调用设置 `timeout: 0` 会禁用 exec 进程超时。
+- `tools.exec.host`（默认值：`auto`；当沙箱运行时处于活动状态时解析为 `sandbox`，否则解析为 `gateway`）
+- `tools.exec.security`（默认值：沙箱为 `deny`，未设置时 Gateway 网关 + 节点为 `full`）
+- `tools.exec.ask`（默认值：`off`）
+- Gateway 网关 + 节点默认使用免批准主机 exec。如果你想要批准/允许列表行为，请同时收紧 `tools.exec.*` 和主机 `~/.openclaw/exec-approvals.json`；参见 [Exec approvals](/zh-CN/tools/exec-approvals#yolo-mode-no-approval)。
+- YOLO 来自主机策略默认值（`security=full`、`ask=off`），而不是来自 `host=auto`。如果你想强制 Gateway 网关或节点路由，请设置 `tools.exec.host` 或使用 `/exec host=...`。
 - 在 `security=full` 加 `ask=off` 模式下，主机 exec 会直接遵循配置的策略；没有额外的启发式命令混淆预过滤器或脚本预检拒绝层。
-- `tools.exec.node`（默认：未设置）
-- `tools.exec.strictInlineEval`（默认：false）：为 true 时，内联解释器 eval 形式（如 `python -c`、`node -e`、`ruby -e`、`perl -e`、`php -r`、`lua -e` 和 `osascript -e`）始终需要显式审批。`allow-always` 仍可持久化良性的解释器/脚本调用，但内联 eval 形式每次仍会提示。
-- `tools.exec.pathPrepend`：要前置到 exec 运行的 `PATH` 的目录列表（仅 Gateway 网关 + 沙箱）。
-- `tools.exec.safeBins`：仅 stdin 的安全二进制程序，可在没有显式 allowlist 条目的情况下运行。行为详情参见 [Safe bins](/zh-CN/tools/exec-approvals-advanced#safe-bins-stdin-only)。
-- `tools.exec.safeBinTrustedDirs`：用于 `safeBins` 路径检查的额外显式可信目录。`PATH` 条目永远不会自动受信任。内置默认值是 `/bin` 和 `/usr/bin`。
-- `tools.exec.safeBinProfiles`：每个安全二进制程序可选的自定义 argv 策略（`minPositional`、`maxPositional`、`allowedValueFlags`、`deniedFlags`）。
+- `tools.exec.node`（默认值：未设置）
+- `tools.exec.strictInlineEval`（默认值：false）：为 true 时，内联解释器 eval 形式（例如 `python -c`、`node -e`、`ruby -e`、`perl -e`、`php -r`、`lua -e` 和 `osascript -e`）始终需要显式批准。`allow-always` 仍可持久化良性的解释器/脚本调用，但内联 eval 形式仍会每次提示。
+- `tools.exec.pathPrepend`：为 exec 运行添加到 `PATH` 前面的目录列表（仅限 Gateway 网关 + 沙箱）。
+- `tools.exec.safeBins`：仅 stdin 的安全二进制文件，可在没有显式允许列表条目的情况下运行。行为详情见 [Safe bins](/zh-CN/tools/exec-approvals-advanced#safe-bins-stdin-only)。
+- `tools.exec.safeBinTrustedDirs`：信任用于 `safeBins` 路径检查的额外显式目录。`PATH` 条目绝不会被自动信任。内置默认值是 `/bin` 和 `/usr/bin`。
+- `tools.exec.safeBinProfiles`：每个安全二进制文件的可选自定义 argv 策略（`minPositional`、`maxPositional`、`allowedValueFlags`、`deniedFlags`）。
 
 示例：
 
@@ -131,14 +132,16 @@ x-i18n:
 
 ### PATH 处理
 
-- `host=gateway`：将你的登录 shell `PATH` 合并到 exec 环境中。主机执行会拒绝 `env.PATH` 覆盖项。守护进程本身仍使用最小 `PATH`：
+- `host=gateway`：将你的登录 shell `PATH` 合并到 exec 环境中。主机执行会拒绝 `env.PATH` 覆盖。
+  守护进程本身仍使用最小 `PATH` 运行：
   - macOS：`/opt/homebrew/bin`、`/usr/local/bin`、`/usr/bin`、`/bin`
   - Linux：`/usr/local/bin`、`/usr/bin`、`/bin`
 - `host=sandbox`：在容器内运行 `sh -lc`（登录 shell），因此 `/etc/profile` 可能会重置 `PATH`。
-  OpenClaw 会在 profile sourcing 之后通过内部环境变量前置 `env.PATH`（无 shell 插值）；
+  OpenClaw 会在 profile sourcing 后通过内部环境变量添加 `env.PATH` 前缀（不进行 shell 插值）；
   `tools.exec.pathPrepend` 也适用于这里。
-- `host=node`：只有你传递的未被阻止的环境覆盖项会发送到节点。主机执行会拒绝 `env.PATH` 覆盖项，并且节点主机会忽略它们。如果你需要节点上的额外 PATH 条目，
-  请配置节点主机服务环境（systemd/launchd），或将工具安装到标准位置。
+- `host=node`：只有你传入的未被阻止的环境覆盖项会发送到节点。主机执行会拒绝 `env.PATH` 覆盖，
+  节点主机也会忽略它们。如果你需要在节点上添加额外 PATH 条目，
+  请配置节点主机服务环境（systemd/launchd）或将工具安装到标准位置。
 
 按智能体绑定节点（在配置中使用智能体列表索引）：
 
@@ -147,12 +150,12 @@ openclaw config get agents.list
 openclaw config set agents.list[0].tools.exec.node "node-id-or-name"
 ```
 
-控制 UI：Nodes 选项卡包含一个小的“Exec node binding”面板，用于相同设置。
+控制 UI：Nodes 标签页包含一个小型“Exec node binding”面板，用于相同设置。
 
 ## 会话覆盖（`/exec`）
 
 使用 `/exec` 为 `host`、`security`、`ask` 和 `node` 设置**按会话**默认值。
-发送不带参数的 `/exec` 可显示当前值。
+不带参数发送 `/exec` 可显示当前值。
 
 示例：
 
@@ -162,52 +165,52 @@ openclaw config set agents.list[0].tools.exec.node "node-id-or-name"
 
 ## 授权模型
 
-`/exec` 只会对**已授权发送者**生效（渠道 allowlist/配对加 `commands.useAccessGroups`）。
-它只更新**会话状态**，不会写入配置。要硬性禁用 exec，请通过工具
+`/exec` 仅对**已授权发送者**生效（渠道允许列表/配对加 `commands.useAccessGroups`）。
+它只更新**会话状态**，不会写入配置。要硬禁用 exec，请通过工具
 策略拒绝它（`tools.deny: ["exec"]` 或按智能体设置）。除非你显式设置
-`security=full` 和 `ask=off`，否则主机审批仍会适用。
+`security=full` 和 `ask=off`，否则主机批准仍会适用。
 
-## Exec 审批（配套应用 / 节点主机）
+## Exec approvals（配套应用 / 节点主机）
 
-沙箱隔离的智能体可在 `exec` 于 Gateway 网关或节点主机上运行前要求逐请求审批。
-策略、allowlist 和 UI 流程见 [Exec 审批](/zh-CN/tools/exec-approvals)。
+沙箱隔离的智能体可以要求在 `exec` 于 Gateway 网关或节点主机上运行前进行逐请求批准。
+有关策略、允许列表和 UI 流程，请参见 [Exec approvals](/zh-CN/tools/exec-approvals)。
 
-当需要审批时，exec 工具会立即返回
-`status: "approval-pending"` 和一个审批 id。获批后（或被拒绝 / 超时后），
+当需要批准时，exec 工具会立即返回
+`status: "approval-pending"` 和一个批准 ID。一旦批准（或拒绝 / 超时），
 Gateway 网关会发出系统事件（`Exec finished` / `Exec denied`）。如果命令在
-`tools.exec.approvalRunningNoticeMs` 后仍在运行，会发出一次 `Exec running` 通知。
-在带有原生审批卡片/按钮的渠道上，智能体应优先依赖该
-原生 UI，并且仅当工具结果明确说明聊天审批不可用或手动审批是
+`tools.exec.approvalRunningNoticeMs` 后仍在运行，则会发出一次 `Exec running` 通知。
+在具有原生批准卡片/按钮的渠道中，智能体应优先依赖该
+原生 UI，只有在工具结果明确表示聊天批准不可用或手动批准是
 唯一路径时，才包含手动 `/approve` 命令。
 
-## Allowlist + 安全二进制程序
+## 允许列表 + 安全二进制文件
 
-手动 allowlist 强制执行会匹配解析后的二进制路径 glob 和裸命令名
+手动允许列表强制执行会匹配已解析的二进制路径 glob 和裸命令名
 glob。裸名称只匹配通过 PATH 调用的命令，因此当命令是 `rg` 时，`rg` 可以匹配
-`/opt/homebrew/bin/rg`，但不匹配 `./rg` 或 `/tmp/rg`。
-当 `security=allowlist` 时，只有每个管道
-片段都在 allowlist 中或是安全二进制程序，shell 命令才会自动允许。链式执行（`;`、`&&`、`||`）和重定向
-在 allowlist 模式下会被拒绝，除非每个顶层片段都满足
-allowlist（包括安全二进制程序）。重定向仍不受支持。
+`/opt/homebrew/bin/rg`，但不会匹配 `./rg` 或 `/tmp/rg`。
+当 `security=allowlist` 时，只有在每个管道
+片段都在允许列表中或是安全二进制文件时，shell 命令才会被自动允许。链式命令（`;`、`&&`、`||`）和重定向
+在允许列表模式下会被拒绝，除非每个顶级片段都满足
+允许列表（包括安全二进制文件）。重定向仍不受支持。
 持久的 `allow-always` 信任不会绕过该规则：链式命令仍要求每个
-顶层片段都匹配。
+顶级片段都匹配。
 
-`autoAllowSkills` 是 exec 审批中的一个独立便利路径。它不同于
-手动路径 allowlist 条目。对于严格的显式信任，请保持禁用 `autoAllowSkills`。
+`autoAllowSkills` 是 exec 批准中的单独便利路径。它与
+手动路径允许列表条目不同。若需要严格的显式信任，请保持 `autoAllowSkills` 禁用。
 
-对不同任务使用这两类控制项：
+将这两个控件用于不同任务：
 
 - `tools.exec.safeBins`：小型、仅 stdin 的流过滤器。
-- `tools.exec.safeBinTrustedDirs`：安全二进制程序可执行路径的显式额外可信目录。
-- `tools.exec.safeBinProfiles`：自定义安全二进制程序的显式 argv 策略。
+- `tools.exec.safeBinTrustedDirs`：用于安全二进制可执行路径的显式额外受信任目录。
+- `tools.exec.safeBinProfiles`：用于自定义安全二进制文件的显式 argv 策略。
 - allowlist：对可执行路径的显式信任。
 
-不要把 `safeBins` 当作通用允许列表，也不要添加解释器/运行时二进制文件（例如 `python3`、`node`、`ruby`、`bash`）。如果你需要这些，请使用显式允许列表条目，并保持启用审批提示。
-当解释器/运行时 `safeBins` 条目缺少显式配置文件时，`openclaw security audit` 会发出警告，而 `openclaw doctor --fix` 可以搭建缺失的自定义 `safeBinProfiles` 条目。
-当你显式地将 `jq` 等宽泛行为的二进制文件重新添加到 `safeBins` 中时，`openclaw security audit` 和 `openclaw doctor` 也会发出警告。
-如果你显式允许解释器，请启用 `tools.exec.strictInlineEval`，这样内联代码求值形式仍然需要新的审批。
+不要把 `safeBins` 当作通用 allowlist，也不要添加解释器/运行时二进制文件（例如 `python3`、`node`、`ruby`、`bash`）。如果你需要这些，请使用显式 allowlist 条目，并保持启用审批提示。
+当解释器/运行时 `safeBins` 条目缺少显式 profiles 时，`openclaw security audit` 会发出警告，而 `openclaw doctor --fix` 可以搭建缺失的自定义 `safeBinProfiles` 条目。
+当你将 `jq` 等宽行为 bin 显式加回 `safeBins` 时，`openclaw security audit` 和 `openclaw doctor` 也会发出警告。
+如果你显式 allowlist 解释器，请启用 `tools.exec.strictInlineEval`，这样内联代码求值形式仍需要新的审批。
 
-有关完整策略详情和示例，请参阅 [Exec 审批](/zh-CN/tools/exec-approvals-advanced#safe-bins-stdin-only) 和 [安全二进制与允许列表](/zh-CN/tools/exec-approvals-advanced#safe-bins-versus-allowlist)。
+有关完整策略细节和示例，请参阅 [Exec 审批](/zh-CN/tools/exec-approvals-advanced#safe-bins-stdin-only) 和 [安全 bin 与 allowlist](/zh-CN/tools/exec-approvals-advanced#safe-bins-versus-allowlist)。
 
 ## 示例
 
@@ -241,7 +244,7 @@ allowlist（包括安全二进制程序）。重定向仍不受支持。
 { "tool": "process", "action": "submit", "sessionId": "<id>" }
 ```
 
-粘贴（默认使用括号粘贴）：
+粘贴（默认带括号粘贴）：
 
 ```json
 { "tool": "process", "action": "paste", "sessionId": "<id>", "text": "line1\nline2\n" }
@@ -250,7 +253,7 @@ allowlist（包括安全二进制程序）。重定向仍不受支持。
 ## apply_patch
 
 `apply_patch` 是 `exec` 的子工具，用于结构化的多文件编辑。
-它默认对 OpenAI 和 OpenAI Codex 模型启用。仅在你想禁用它或将其限制为特定模型时使用配置：
+对于 OpenAI 和 OpenAI Codex 模型，它默认启用。仅在你想禁用它或将它限制到特定模型时使用配置：
 
 ```json5
 {
@@ -266,14 +269,14 @@ allowlist（包括安全二进制程序）。重定向仍不受支持。
 
 - 仅适用于 OpenAI/OpenAI Codex 模型。
 - 工具策略仍然适用；`allow: ["write"]` 会隐式允许 `apply_patch`。
-- `deny: ["write"]` 不会拒绝 `apply_patch`；当补丁写入也应被阻止时，请显式拒绝 `apply_patch`，或使用 `deny: ["group:fs"]`。
+- `deny: ["write"]` 不会拒绝 `apply_patch`；请显式拒绝 `apply_patch`，或在补丁写入也应被阻止时使用 `deny: ["group:fs"]`。
 - 配置位于 `tools.exec.applyPatch` 下。
 - `tools.exec.applyPatch.enabled` 默认为 `true`；将其设为 `false` 可为 OpenAI 模型禁用该工具。
-- `tools.exec.applyPatch.workspaceOnly` 默认为 `true`（限制在工作区内）。仅当你有意希望 `apply_patch` 在工作区目录之外写入/删除时，才将其设为 `false`。
+- `tools.exec.applyPatch.workspaceOnly` 默认为 `true`（限于工作区内）。仅当你确实希望 `apply_patch` 在工作区目录外写入/删除时，才将其设为 `false`。
 
 ## 相关
 
-- [Exec 审批](/zh-CN/tools/exec-approvals) — shell 命令的审批关卡
+- [Exec 审批](/zh-CN/tools/exec-approvals) — shell 命令的审批门禁
 - [沙箱隔离](/zh-CN/gateway/sandboxing) — 在沙箱隔离环境中运行命令
-- [后台进程](/zh-CN/gateway/background-process) — 长时间运行的 exec 和进程工具
+- [后台进程](/zh-CN/gateway/background-process) — 长时间运行的 exec 和 process 工具
 - [安全](/zh-CN/gateway/security) — 工具策略和提升访问权限

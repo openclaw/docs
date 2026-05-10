@@ -1,77 +1,77 @@
 ---
 read_when:
-    - Memilih jalur onboarding
+    - Memilih jalur orientasi
     - Menyiapkan lingkungan baru
 sidebarTitle: Onboarding Overview
-summary: Ikhtisar opsi dan alur onboarding OpenClaw
-title: Ikhtisar onboarding
+summary: Gambaran umum opsi dan alur orientasi OpenClaw
+title: Ikhtisar orientasi awal
 x-i18n:
-    generated_at: "2026-04-24T09:28:16Z"
-    model: gpt-5.4
+    generated_at: "2026-05-10T19:53:21Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 3a161e504f94c633873a497dd97c971ebfed6f31ef23a3fe9e85eec5a06d1d97
+    source_hash: f9b375b9090250992b9deead25ae6502592cb63c9774204782b2d4f69d8f3395
     source_path: start/onboarding-overview.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw memiliki dua jalur onboarding. Keduanya mengonfigurasi auth, Gateway, dan
+OpenClaw memiliki dua jalur onboarding. Keduanya mengonfigurasi autentikasi, Gateway, dan
 channel chat opsional — perbedaannya hanya pada cara Anda berinteraksi dengan penyiapan.
 
-## Jalur mana yang harus saya gunakan?
+## Jalur mana yang sebaiknya saya gunakan?
 
 |                | Onboarding CLI                         | Onboarding aplikasi macOS |
 | -------------- | -------------------------------------- | ------------------------- |
-| **Platform**   | macOS, Linux, Windows (native atau WSL2) | hanya macOS             |
+| **Platform**   | macOS, Linux, Windows (native atau WSL2) | Hanya macOS             |
 | **Antarmuka**  | Wizard terminal                        | UI terpandu di aplikasi   |
-| **Terbaik untuk** | Server, headless, kontrol penuh     | Mac desktop, penyiapan visual |
-| **Otomatisasi** | `--non-interactive` untuk skrip       | hanya manual              |
-| **Perintah**   | `openclaw onboard`                     | Luncurkan aplikasi        |
+| **Paling cocok untuk** | Server, headless, kontrol penuh | Mac desktop, penyiapan visual |
+| **Otomasi**    | `--non-interactive` untuk skrip        | Hanya manual              |
+| **Perintah**   | `openclaw onboard`                     | Jalankan aplikasi         |
 
-Sebagian besar pengguna sebaiknya memulai dengan **onboarding CLI** — ini berfungsi di mana saja dan memberi
+Sebagian besar pengguna sebaiknya mulai dengan **onboarding CLI** — ini berfungsi di mana saja dan memberi
 Anda kontrol paling besar.
 
-## Apa yang dikonfigurasi oleh onboarding
+## Yang dikonfigurasi onboarding
 
 Terlepas dari jalur yang Anda pilih, onboarding menyiapkan:
 
-1. **Provider model dan auth** — API key, OAuth, atau token penyiapan untuk provider pilihan Anda
-2. **Workspace** — direktori untuk file agen, template bootstrap, dan memori
-3. **Gateway** — port, alamat bind, mode auth
-4. **Channels** (opsional) — channel chat built-in dan bundled seperti
-   BlueBubbles, Discord, Feishu, Google Chat, Mattermost, Microsoft Teams,
+1. **Penyedia model dan autentikasi** — kunci API, OAuth, atau token penyiapan untuk penyedia yang Anda pilih
+2. **Workspace** — direktori untuk file agent, templat bootstrap, dan memori
+3. **Gateway** — port, alamat bind, mode autentikasi
+4. **Channel** (opsional) — channel chat bawaan dan terbundel seperti
+   iMessage, Discord, Feishu, Google Chat, Mattermost, Microsoft Teams,
    Telegram, WhatsApp, dan lainnya
 5. **Daemon** (opsional) — layanan latar belakang agar Gateway dimulai secara otomatis
 
 ## Onboarding CLI
 
-Jalankan di terminal mana pun:
+Jalankan di terminal apa pun:
 
 ```bash
 openclaw onboard
 ```
 
-Tambahkan `--install-daemon` untuk sekaligus menginstal layanan latar belakang dalam satu langkah.
+Tambahkan `--install-daemon` untuk juga menginstal layanan latar belakang dalam satu langkah.
 
 Referensi lengkap: [Onboarding (CLI)](/id/start/wizard)
-Dokumen perintah CLI: [`openclaw onboard`](/id/cli/onboard)
+Dokumentasi perintah CLI: [`openclaw onboard`](/id/cli/onboard)
 
 ## Onboarding aplikasi macOS
 
-Buka aplikasi OpenClaw. Wizard pertama kali menjalankan akan memandu Anda melalui langkah yang sama
+Buka aplikasi OpenClaw. Wizard saat pertama dijalankan memandu Anda melalui langkah yang sama
 dengan antarmuka visual.
 
 Referensi lengkap: [Onboarding (Aplikasi macOS)](/id/start/onboarding)
 
-## Provider kustom atau yang tidak tercantum
+## Penyedia kustom atau tidak terdaftar
 
-Jika provider Anda tidak tercantum di onboarding, pilih **Custom Provider** dan
+Jika penyedia Anda tidak tercantum dalam onboarding, pilih **Penyedia Kustom** dan
 masukkan:
 
 - Mode kompatibilitas API (kompatibel dengan OpenAI, kompatibel dengan Anthropic, atau deteksi otomatis)
-- Base URL dan API key
+- URL dasar dan kunci API
 - ID model dan alias opsional
 
-Beberapa endpoint kustom dapat hidup berdampingan — masing-masing mendapatkan ID endpoint-nya sendiri.
+Beberapa endpoint kustom dapat berdampingan — masing-masing mendapatkan ID endpoint sendiri.
 
 ## Terkait
 

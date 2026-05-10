@@ -2,14 +2,14 @@
 read_when:
     - Memverifikasi cakupan kredensial SecretRef
     - Mengaudit apakah kredensial memenuhi syarat untuk `secrets configure` atau `secrets apply`
-    - Memverifikasi mengapa kredensial berada di luar permukaan yang didukung
-summary: Permukaan kredensial SecretRef kanonis yang didukung dibanding yang tidak didukung
+    - Memverifikasi alasan kredensial berada di luar permukaan yang didukung
+summary: Permukaan kredensial SecretRef kanonis yang didukung vs tidak didukung
 title: Permukaan kredensial SecretRef
 x-i18n:
-    generated_at: "2026-05-03T21:36:55Z"
+    generated_at: "2026-05-10T19:52:37Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8f95ca284f241e40f233fc9e388c26be094dd8bc878daf8a420453ef65b0ad6d
+    source_hash: 2778ea781f7b6fc4d579892225f9cf29bfb8f9ece5961554620ca8e82123ceff
     source_path: reference/secretref-credential-surface.md
     workflow: 16
 ---
@@ -18,12 +18,12 @@ Halaman ini mendefinisikan permukaan kredensial SecretRef kanonis.
 
 Maksud cakupan:
 
-- Dalam cakupan: kredensial yang secara ketat disediakan pengguna dan tidak dibuat atau dirotasi oleh OpenClaw.
-- Di luar cakupan: kredensial yang dibuat saat runtime atau dirotasi, materi refresh OAuth, dan artefak mirip sesi.
+- Dalam cakupan: kredensial yang sepenuhnya disediakan pengguna dan tidak dibuat atau dirotasi oleh OpenClaw.
+- Di luar cakupan: kredensial yang dibuat saat runtime atau berotasi, material refresh OAuth, dan artefak mirip sesi.
 
 ## Kredensial yang didukung
 
-### Target `openclaw.json` (`secrets configure` + `secrets apply` + `secrets audit`)
+### target `openclaw.json` (`secrets configure` + `secrets apply` + `secrets audit`)
 
 [//]: # "secretref-supported-list-start"
 
@@ -89,8 +89,6 @@ Maksud cakupan:
 - `channels.irc.nickserv.password`
 - `channels.irc.accounts.*.password`
 - `channels.irc.accounts.*.nickserv.password`
-- `channels.bluebubbles.password`
-- `channels.bluebubbles.accounts.*.password`
 - `channels.feishu.appSecret`
 - `channels.feishu.encryptKey`
 - `channels.feishu.verificationToken`
@@ -114,10 +112,10 @@ Maksud cakupan:
 - `channels.zalo.webhookSecret`
 - `channels.zalo.accounts.*.botToken`
 - `channels.zalo.accounts.*.webhookSecret`
-- `channels.googlechat.serviceAccount` melalui saudara `serviceAccountRef` (pengecualian kompatibilitas)
-- `channels.googlechat.accounts.*.serviceAccount` melalui saudara `serviceAccountRef` (pengecualian kompatibilitas)
+- `channels.googlechat.serviceAccount` melalui sibling `serviceAccountRef` (pengecualian kompatibilitas)
+- `channels.googlechat.accounts.*.serviceAccount` melalui sibling `serviceAccountRef` (pengecualian kompatibilitas)
 
-### Target `auth-profiles.json` (`secrets configure` + `secrets apply` + `secrets audit`)
+### target `auth-profiles.json` (`secrets configure` + `secrets apply` + `secrets audit`)
 
 - `profiles.*.keyRef` (`type: "api_key"`; tidak didukung ketika `auth.profiles.<id>.mode = "oauth"`)
 - `profiles.*.tokenRef` (`type: "token"`; tidak didukung ketika `auth.profiles.<id>.mode = "oauth"`)
@@ -126,18 +124,18 @@ Maksud cakupan:
 
 Catatan:
 
-- Target rencana profil auth memerlukan `agentId`.
-- Entri rencana menargetkan `profiles.*.key` / `profiles.*.token` dan menulis referensi saudara (`keyRef` / `tokenRef`).
-- Referensi profil auth disertakan dalam resolusi runtime dan cakupan audit.
-- Di `openclaw.json`, SecretRef harus menggunakan objek terstruktur seperti `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}`. String penanda lama `secretref-env:<ENV_VAR>` ditolak pada jalur kredensial SecretRef; jalankan `openclaw doctor --fix` untuk memigrasikan penanda yang valid.
-- Penjaga kebijakan OAuth: `auth.profiles.<id>.mode = "oauth"` tidak dapat digabungkan dengan input SecretRef untuk profil tersebut. Startup/reload dan resolusi profil auth gagal cepat ketika kebijakan ini dilanggar.
-- Untuk penyedia model yang dikelola SecretRef, entri `agents/*/agent/models.json` yang dibuat mempertahankan penanda non-rahasia (bukan nilai rahasia yang sudah di-resolve) untuk permukaan `apiKey`/header.
-- Persistensi penanda bersifat otoritatif terhadap sumber: OpenClaw menulis penanda dari snapshot konfigurasi sumber aktif (pra-resolusi), bukan dari nilai rahasia runtime yang sudah di-resolve.
+- Target rencana auth-profile memerlukan `agentId`.
+- Entri rencana menargetkan `profiles.*.key` / `profiles.*.token` dan menulis ref sibling (`keyRef` / `tokenRef`).
+- Ref auth-profile disertakan dalam resolusi runtime dan cakupan audit.
+- Dalam `openclaw.json`, SecretRef harus menggunakan objek terstruktur seperti `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}`. String penanda lama `secretref-env:<ENV_VAR>` ditolak pada jalur kredensial SecretRef; jalankan `openclaw doctor --fix` untuk memigrasikan penanda yang valid.
+- Pengaman kebijakan OAuth: `auth.profiles.<id>.mode = "oauth"` tidak dapat digabungkan dengan input SecretRef untuk profil tersebut. Startup/reload dan resolusi auth-profile gagal cepat ketika kebijakan ini dilanggar.
+- Untuk penyedia model yang dikelola SecretRef, entri `agents/*/agent/models.json` yang dihasilkan mempertahankan penanda non-rahasia (bukan nilai rahasia yang telah diresolusikan) untuk permukaan `apiKey`/header.
+- Persistensi penanda bersifat otoritatif terhadap sumber: OpenClaw menulis penanda dari snapshot konfigurasi sumber aktif (pra-resolusi), bukan dari nilai rahasia runtime yang telah diresolusikan.
 - Untuk pencarian web:
-  - Dalam mode penyedia eksplisit (`tools.web.search.provider` disetel), hanya kunci penyedia yang dipilih yang aktif.
-  - Dalam mode otomatis (`tools.web.search.provider` tidak disetel), hanya kunci penyedia pertama yang di-resolve berdasarkan presedensi yang aktif.
-  - Dalam mode otomatis, referensi penyedia yang tidak dipilih diperlakukan sebagai tidak aktif sampai dipilih.
-  - Jalur penyedia lama `tools.web.search.*` tetap di-resolve selama jendela kompatibilitas, tetapi permukaan SecretRef kanonis adalah `plugins.entries.<plugin>.config.webSearch.*`.
+  - Dalam mode penyedia eksplisit (`tools.web.search.provider` ditetapkan), hanya kunci penyedia yang dipilih yang aktif.
+  - Dalam mode otomatis (`tools.web.search.provider` tidak ditetapkan), hanya kunci penyedia pertama yang teresolusi berdasarkan presedensi yang aktif.
+  - Dalam mode otomatis, ref penyedia yang tidak dipilih diperlakukan sebagai tidak aktif hingga dipilih.
+  - Jalur penyedia lama `tools.web.search.*` masih teresolusi selama jendela kompatibilitas, tetapi permukaan SecretRef kanonis adalah `plugins.entries.<plugin>.config.webSearch.*`.
 
 ## Kredensial yang tidak didukung
 
@@ -159,9 +157,9 @@ Kredensial di luar cakupan mencakup:
 
 Alasan:
 
-- Kredensial ini merupakan kelas yang dibuat, dirotasi, membawa sesi, atau tahan lama OAuth yang tidak cocok dengan resolusi SecretRef eksternal hanya-baca.
+- Kredensial ini termasuk kelas yang dibuat, dirotasi, memuat sesi, atau tahan lama untuk OAuth yang tidak sesuai dengan resolusi SecretRef eksternal baca-saja.
 
 ## Terkait
 
-- [Pengelolaan rahasia](/id/gateway/secrets)
+- [Manajemen rahasia](/id/gateway/secrets)
 - [Semantik kredensial auth](/id/auth-credential-semantics)

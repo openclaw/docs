@@ -1,31 +1,31 @@
 ---
 read_when:
-    - ローカルの inferrs サーバーに対して OpenClaw を実行したい
-    - Gemma または別のモデルを inferrs 経由で提供している
-    - inferrs には正確な OpenClaw 互換フラグが必要です
-summary: inferrs 経由で OpenClaw を実行する（OpenAI 互換のローカルサーバー）
+    - OpenClaw をローカルの inferrs サーバーに対して実行したい
+    - inferrs を通じて Gemma または別のモデルを提供している
+    - inferrs には正確な OpenClaw 互換性フラグが必要です
+summary: inferrs（OpenAI 互換のローカルサーバー）経由で OpenClaw を実行する
 title: 推論する
 x-i18n:
-    generated_at: "2026-05-06T05:16:55Z"
+    generated_at: "2026-05-10T19:50:00Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 216783689527229835acf4f0fb6d2981d1915bd5df28e631b5384c4cbb9ee158
+    source_hash: 8352da589baaa3a193bb3a56d12ee1a50630346dda186898346e805844d22aa1
     source_path: providers/inferrs.md
     workflow: 16
 ---
 
 [inferrs](https://github.com/ericcurtin/inferrs) は、OpenAI 互換の `/v1` API の背後でローカルモデルを提供できます。OpenClaw は汎用の `openai-completions` パスを通じて `inferrs` と連携します。
 
-| プロパティ       | 値                                                                 |
-| ---------------- | ------------------------------------------------------------------ |
-| プロバイダー id  | `inferrs`（カスタム。`models.providers.inferrs` で設定）           |
-| Plugin           | なし — `inferrs` はバンドル済みの OpenClaw プロバイダー Plugin ではありません |
-| 認証環境変数     | 任意。inferrs サーバーに認証がない場合は任意の値で動作します       |
-| API              | OpenAI 互換（`openai-completions`）                                |
-| 推奨ベース URL   | `http://127.0.0.1:8080/v1`（または inferrs サーバーの場所）        |
+| プロパティ           | 値                                                              |
+| ------------------ | ------------------------------------------------------------------ |
+| プロバイダー ID        | `inferrs` (カスタム。`models.providers.inferrs` の下で設定)     |
+| Plugin             | なし — `inferrs` はバンドルされた OpenClaw プロバイダー Plugin ではありません         |
+| 認証環境変数       | 任意。inferrs サーバーに認証がない場合は任意の値で動作します       |
+| API                | OpenAI 互換 (`openai-completions`)                           |
+| 推奨ベース URL | `http://127.0.0.1:8080/v1` (または inferrs サーバーが稼働している場所) |
 
 <Note>
-  `inferrs` は現在、専用の OpenClaw プロバイダー Plugin ではなく、カスタムのセルフホスト OpenAI 互換バックエンドとして扱うのが最適です。オンボーディングの選択フラグではなく、`models.providers.inferrs` を通じて設定します。自動検出付きの真のバンドル済み Plugin が必要な場合は、[SGLang](/ja-JP/providers/sglang) または [vLLM](/ja-JP/providers/vllm) を参照してください。
+  `inferrs` は現在、専用の OpenClaw プロバイダー Plugin ではなく、カスタムのセルフホスト OpenAI 互換バックエンドとして扱うのが最適です。オンボーディング選択フラグではなく、`models.providers.inferrs` を通じて設定します。自動検出付きの真のバンドル Plugin が必要な場合は、[SGLang](/ja-JP/providers/sglang) または [vLLM](/ja-JP/providers/vllm) を参照してください。
 </Note>
 
 ## はじめに
@@ -46,13 +46,13 @@ x-i18n:
     ```
   </Step>
   <Step title="OpenClaw プロバイダーエントリを追加する">
-    明示的なプロバイダーエントリを追加し、デフォルトモデルをそれに向けます。完全な設定例は下記を参照してください。
+    明示的なプロバイダーエントリを追加し、デフォルトモデルをそこに向けます。完全な設定例は以下を参照してください。
   </Step>
 </Steps>
 
 ## 完全な設定例
 
-この例では、ローカルの `inferrs` サーバーで Gemma 4 を使用します。
+この例では、ローカルの `inferrs` サーバー上で Gemma 4 を使用します。
 
 ```json5
 {
@@ -93,12 +93,62 @@ x-i18n:
 }
 ```
 
+## オンデマンド起動
+
+`inferrs/...` モデルが選択された場合にのみ、OpenClaw によって Inferrs を起動することもできます。同じプロバイダーエントリに `localService` を追加します。
+
+```json5
+{
+  models: {
+    providers: {
+      inferrs: {
+        baseUrl: "http://127.0.0.1:8080/v1",
+        apiKey: "inferrs-local",
+        api: "openai-completions",
+        timeoutSeconds: 300,
+        localService: {
+          command: "/opt/homebrew/bin/inferrs",
+          args: [
+            "serve",
+            "google/gemma-4-E2B-it",
+            "--host",
+            "127.0.0.1",
+            "--port",
+            "8080",
+            "--device",
+            "metal",
+          ],
+          healthUrl: "http://127.0.0.1:8080/v1/models",
+          readyTimeoutMs: 180000,
+          idleStopMs: 0,
+        },
+        models: [
+          {
+            id: "google/gemma-4-E2B-it",
+            name: "Gemma 4 E2B (inferrs)",
+            reasoning: false,
+            input: ["text"],
+            cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+            contextWindow: 131072,
+            maxTokens: 4096,
+            compat: {
+              requiresStringContent: true,
+            },
+          },
+        ],
+      },
+    },
+  },
+}
+```
+
+`command` は絶対パスである必要があります。Gateway ホストで `which inferrs` を使用し、そのパスを設定に入れてください。すべてのフィールドリファレンスについては、[ローカルモデルサービス](/ja-JP/gateway/local-model-services) を参照してください。
+
 ## 高度な設定
 
 <AccordionGroup>
   <Accordion title="requiresStringContent が重要な理由">
-    一部の `inferrs` Chat Completions ルートは、構造化された content-part 配列ではなく、文字列の
-    `messages[].content` のみを受け付けます。
+    一部の `inferrs` Chat Completions ルートは、構造化された content-part 配列ではなく、文字列の `messages[].content` のみを受け付けます。
 
     <Warning>
     OpenClaw の実行が次のようなエラーで失敗する場合:
@@ -116,14 +166,12 @@ x-i18n:
     }
     ```
 
-    OpenClaw はリクエスト送信前に、純粋なテキスト content part をプレーン文字列へ平坦化します。
+    OpenClaw はリクエストを送信する前に、純粋なテキストの content part をプレーンな文字列にフラット化します。
 
   </Accordion>
 
   <Accordion title="Gemma とツールスキーマの注意点">
-    現在の一部の `inferrs` + Gemma の組み合わせでは、小さな直接
-    `/v1/chat/completions` リクエストは受け付けるものの、完全な OpenClaw agent-runtime
-    ターンでは失敗することがあります。
+    現在の一部の `inferrs` + Gemma の組み合わせは、小さな直接の `/v1/chat/completions` リクエストを受け付けますが、完全な OpenClaw agent-runtime ターンではまだ失敗します。
 
     その場合は、まずこれを試してください。
 
@@ -134,9 +182,9 @@ x-i18n:
     }
     ```
 
-    これにより、そのモデルに対する OpenClaw のツールスキーマサーフェスが無効になり、より厳格なローカルバックエンドへのプロンプト負荷を減らせる場合があります。
+    これにより、そのモデルに対する OpenClaw のツールスキーマサーフェスが無効になり、より厳格なローカルバックエンドへのプロンプト負荷を軽減できます。
 
-    ごく小さな直接リクエストは引き続き動作するのに、通常の OpenClaw エージェントターンが `inferrs` 内でクラッシュし続ける場合、残っている問題は通常、OpenClaw のトランスポート層ではなくアップストリームのモデルまたはサーバーの挙動です。
+    ごく小さな直接リクエストは引き続き動作するものの、通常の OpenClaw エージェントターンが `inferrs` 内でクラッシュし続ける場合、残っている問題は通常、OpenClaw のトランスポート層ではなく、アップストリームのモデルまたはサーバーの挙動です。
 
   </Accordion>
 
@@ -156,7 +204,7 @@ x-i18n:
       --json
     ```
 
-    最初のコマンドは動作するのに 2 番目が失敗する場合は、下記のトラブルシューティングセクションを確認してください。
+    最初のコマンドは動作するが、2 番目が失敗する場合は、以下のトラブルシューティングセクションを確認してください。
 
   </Accordion>
 
@@ -164,8 +212,8 @@ x-i18n:
     `inferrs` はネイティブの OpenAI エンドポイントではなく、プロキシ形式の OpenAI 互換 `/v1` バックエンドとして扱われます。
 
     - ネイティブ OpenAI 専用のリクエスト整形はここでは適用されません
-    - `service_tier`、Responses `store`、prompt-cache ヒント、OpenAI reasoning-compat ペイロード整形はありません
-    - 非表示の OpenClaw attribution ヘッダー（`originator`、`version`、`User-Agent`）は、カスタムの `inferrs` ベース URL には注入されません
+    - `service_tier`、Responses `store`、プロンプトキャッシュヒント、OpenAI reasoning 互換ペイロード整形はありません
+    - 隠し OpenClaw attribution ヘッダー (`originator`、`version`、`User-Agent`) はカスタム `inferrs` ベース URL には注入されません
 
   </Accordion>
 </AccordionGroup>
@@ -174,23 +222,19 @@ x-i18n:
 
 <AccordionGroup>
   <Accordion title="curl /v1/models が失敗する">
-    `inferrs` が実行されていない、到達できない、または想定した
-    ホスト/ポートにバインドされていません。サーバーが起動しており、設定したアドレスで待ち受けていることを確認してください。
+    `inferrs` が実行されていない、到達できない、または想定された host/port にバインドされていません。サーバーが起動され、設定したアドレスでリッスンしていることを確認してください。
   </Accordion>
 
   <Accordion title="messages[].content expected a string">
-    モデルエントリで `compat.requiresStringContent: true` を設定してください。詳細は上記の
-    `requiresStringContent` セクションを参照してください。
+    モデルエントリで `compat.requiresStringContent: true` を設定してください。詳細は上記の `requiresStringContent` セクションを参照してください。
   </Accordion>
 
-  <Accordion title="直接 /v1/chat/completions 呼び出しは成功するが openclaw infer model run が失敗する">
-    ツールスキーマサーフェスを無効にするために、`compat.supportsTools: false` の設定を試してください。
-    上記の Gemma ツールスキーマの注意点を参照してください。
+  <Accordion title="直接の /v1/chat/completions 呼び出しは成功するが openclaw infer model run が失敗する">
+    ツールスキーマサーフェスを無効にするために、`compat.supportsTools: false` を設定してみてください。上記の Gemma ツールスキーマの注意点を参照してください。
   </Accordion>
 
-  <Accordion title="大きなエージェントターンで inferrs がまだクラッシュする">
-    OpenClaw がスキーマエラーを受け取らなくなっても、大きな
-    エージェントターンで `inferrs` がまだクラッシュする場合は、アップストリームの `inferrs` またはモデルの制限として扱ってください。プロンプト負荷を減らすか、別のローカルバックエンドまたはモデルに切り替えてください。
+  <Accordion title="inferrs が大きなエージェントターンでまだクラッシュする">
+    OpenClaw がスキーマエラーを受け取らなくなっても、`inferrs` が大きなエージェントターンでまだクラッシュする場合は、アップストリームの `inferrs` またはモデルの制限として扱ってください。プロンプト負荷を下げるか、別のローカルバックエンドまたはモデルに切り替えてください。
   </Accordion>
 </AccordionGroup>
 
@@ -202,12 +246,15 @@ x-i18n:
 
 <CardGroup cols={2}>
   <Card title="ローカルモデル" href="/ja-JP/gateway/local-models" icon="server">
-    ローカルモデルサーバーに対して OpenClaw を実行します。
+    ローカルモデルサーバーに対して OpenClaw を実行する。
+  </Card>
+  <Card title="ローカルモデルサービス" href="/ja-JP/gateway/local-model-services" icon="play">
+    設定済みプロバイダーのためにローカルモデルサーバーをオンデマンドで起動する。
   </Card>
   <Card title="Gateway トラブルシューティング" href="/ja-JP/gateway/troubleshooting#local-openai-compatible-backend-passes-direct-probes-but-agent-runs-fail" icon="wrench">
-    プローブは通るもののエージェント実行が失敗する、ローカル OpenAI 互換バックエンドをデバッグします。
+    プローブは通るがエージェント実行に失敗するローカル OpenAI 互換バックエンドをデバッグする。
   </Card>
   <Card title="モデル選択" href="/ja-JP/concepts/model-providers" icon="layers">
-    すべてのプロバイダー、モデル参照、フェイルオーバー挙動の概要です。
+    すべてのプロバイダー、モデル参照、フェイルオーバー挙動の概要。
   </Card>
 </CardGroup>

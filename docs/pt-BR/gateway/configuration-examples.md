@@ -3,13 +3,13 @@ read_when:
     - Aprendendo a configurar o OpenClaw
     - Procurando exemplos de configuração
     - Configurando o OpenClaw pela primeira vez
-summary: Exemplos de configuração compatíveis com o esquema para configurações comuns do OpenClaw
+summary: Exemplos de configuração precisos conforme o esquema para configurações comuns do OpenClaw
 title: Exemplos de configuração
 x-i18n:
-    generated_at: "2026-05-07T13:16:33Z"
+    generated_at: "2026-05-10T19:33:36Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 87c7e75841ee36121c764f1ed51b6547d0fccf7ed6c1f05895d916dbf93f061a
+    source_hash: 9fd1c93d8c491de13c3679c766293a3401853625308e90588d7c83272c5b6e73
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
@@ -27,7 +27,7 @@ Os exemplos abaixo estão alinhados com o esquema de configuração atual. Para 
 }
 ```
 
-Salve em `~/.openclaw/openclaw.json` e você poderá enviar mensagem direta ao bot a partir desse número.
+Salve em `~/.openclaw/openclaw.json` e você poderá enviar uma mensagem direta para o bot a partir desse número.
 
 ### Configuração inicial recomendada
 
@@ -57,9 +57,9 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar mensagem direta ao b
 }
 ```
 
-## Exemplo expandido (principais opções)
+## Exemplo expandido (opções principais)
 
-> O JSON5 permite usar comentários e vírgulas finais. JSON comum também funciona.
+> JSON5 permite usar comentários e vírgulas finais. JSON comum também funciona.
 
 ```json5
 {
@@ -454,10 +454,12 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar mensagem direta ao b
     allowBundled: ["gemini", "peekaboo"],
     load: {
       extraDirs: ["~/Projects/agent-scripts/skills"],
+      allowSymlinkTargets: ["~/Projects/agent-scripts/skills"],
     },
     install: {
       preferBrew: true,
       nodeManager: "npm", // npm | pnpm | yarn | bun
+      allowUploadedArchives: false,
     },
     entries: {
       "image-lab": {
@@ -471,9 +473,28 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar mensagem direta ao b
 }
 ```
 
+### Repositório irmão de Skills com link simbólico
+
+Use isto quando uma raiz de skill integrada contiver um link simbólico para um repositório irmão, por exemplo `~/.agents/skills/manager -> ~/Projects/manager/skills`.
+
+```json5
+{
+  skills: {
+    load: {
+      extraDirs: ["~/Projects/manager/skills"],
+      allowSymlinkTargets: ["~/Projects/manager/skills"],
+    },
+  },
+}
+```
+
+- `extraDirs` examina o repositório irmão como uma raiz explícita de Skills.
+- `allowSymlinkTargets` permite que pastas de Skills vinculadas por symlink sejam resolvidas para essa raiz
+  de destino real confiável sem permitir escapes arbitrários por symlink.
+
 ## Padrões comuns
 
-### Linha de base de skill compartilhada com uma substituição
+### Linha de base compartilhada de Skills com uma substituição
 
 ```json5
 {
@@ -490,8 +511,8 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar mensagem direta ao b
 }
 ```
 
-- `agents.defaults.skills` é a base compartilhada.
-- `agents.list[].skills` substitui essa base para um agente.
+- `agents.defaults.skills` é a linha de base compartilhada.
+- `agents.list[].skills` substitui essa linha de base para um agente.
 - Use `skills: []` quando um agente não deve ver nenhuma Skills.
 
 ### Configuração multiplataforma
@@ -515,11 +536,11 @@ Salve em `~/.openclaw/openclaw.json` e você poderá enviar mensagem direta ao b
 }
 ```
 
-### Aprovação automática de rede de Node confiável
+### Aprovação automática de rede de nodes confiáveis
 
-Mantenha o pareamento de dispositivos manual, a menos que você controle o caminho da rede. Para um
-laboratório dedicado ou sub-rede de tailnet, você pode ativar a aprovação automática
-de dispositivos Node no primeiro uso com CIDRs ou IPs exatos:
+Mantenha o pareamento de dispositivos manual, a menos que você controle o caminho de rede. Para um laboratório
+dedicado ou uma sub-rede tailnet, você pode optar pela aprovação automática de dispositivos node
+na primeira vez com CIDRs ou IPs exatos:
 
 ```json5
 {
@@ -533,13 +554,13 @@ de dispositivos Node no primeiro uso com CIDRs ou IPs exatos:
 }
 ```
 
-Isso permanece desativado quando não configurado. Aplica-se apenas ao pareamento novo com `role: node` e
-sem escopos solicitados. Clientes de operador/navegador e upgrades de função, escopo, metadados ou
+Isso permanece desativado quando não configurado. Aplica-se apenas ao pareamento novo com `role: node`
+sem escopos solicitados. Clientes de operador/navegador e atualizações de função, escopo, metadados ou
 chave pública ainda exigem aprovação manual.
 
 ### Modo de DM seguro (caixa de entrada compartilhada / DMs multiusuário)
 
-Se mais de uma pessoa puder enviar DM para o seu bot (várias entradas em `allowFrom`, aprovações de pareamento para várias pessoas ou `dmPolicy: "open"`), ative o **modo de DM seguro** para que DMs de remetentes diferentes não compartilhem um contexto por padrão:
+Se mais de uma pessoa puder enviar DM para o seu bot (várias entradas em `allowFrom`, aprovações de pareamento para várias pessoas ou `dmPolicy: "open"`), ative o **modo de DM seguro** para que DMs de remetentes diferentes não compartilhem um único contexto por padrão:
 
 ```json5
 {
@@ -563,8 +584,8 @@ Se mais de uma pessoa puder enviar DM para o seu bot (várias entradas em `allow
 }
 ```
 
-Para Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, a autorização de remetente é baseada em ID por padrão.
-Ative a correspondência direta por nome/email/nick mutável com `dangerouslyAllowNameMatching: true` de cada canal somente se você aceitar explicitamente esse risco.
+Para Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, a autorização de remetente usa IDs por padrão.
+Ative a correspondência direta por nome/e-mail/apelido mutável com `dangerouslyAllowNameMatching: true` de cada canal somente se você aceitar explicitamente esse risco.
 
 ### Chave de API da Anthropic + fallback MiniMax
 
@@ -662,9 +683,9 @@ Ative a correspondência direta por nome/email/nick mutável com `dangerouslyAll
 - Se você definir `dmPolicy: "open"`, a lista `allowFrom` correspondente deve incluir `"*"`.
 - IDs de provedores variam (números de telefone, IDs de usuário, IDs de canal). Use a documentação do provedor para confirmar o formato.
 - Seções opcionais para adicionar depois: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
-- Consulte [Provedores](/pt-BR/providers) e [Solução de problemas](/pt-BR/gateway/troubleshooting) para notas mais detalhadas de configuração.
+- Consulte [Provedores](/pt-BR/providers) e [Solução de problemas](/pt-BR/gateway/troubleshooting) para notas de configuração mais detalhadas.
 
-## Relacionados
+## Relacionado
 
 - [Referência de configuração](/pt-BR/gateway/configuration-reference)
 - [Configuração](/pt-BR/gateway/configuration)

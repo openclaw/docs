@@ -1,71 +1,71 @@
 ---
 read_when:
-    - Sağlayıcı bazında bir model kurulum referansına ihtiyacınız var
-    - Model sağlayıcıları için örnek yapılandırmalar veya CLI ilk kurulum komutları istiyorsunuz
+    - Sağlayıcı bazında bir model kurulumu referansına ihtiyacınız var
+    - Model sağlayıcıları için örnek yapılandırmalar veya CLI ilk katılım komutları istiyorsunuz
 sidebarTitle: Model providers
-summary: Örnek yapılandırmalar + CLI akışlarıyla model sağlayıcısına genel bakış
+summary: Örnek yapılandırmalar + CLI akışlarıyla model sağlayıcı genel bakışı
 title: Model sağlayıcıları
 x-i18n:
-    generated_at: "2026-05-06T09:08:44Z"
+    generated_at: "2026-05-10T19:32:49Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8375caf4bacbb360e57637801d06a9d7898b36d440b82885d993b8248cd4daff
+    source_hash: 643ee88e7d0cf4f9fe148ae8e390a1d7bba4986c29dd4fda6074f048f58dd7bb
     source_path: concepts/model-providers.md
     workflow: 16
 ---
 
-LLM/model sağlayıcıları için başvuru (WhatsApp/Telegram gibi sohbet kanalları değil). Model seçimi kuralları için bkz. [Modeller](/tr/concepts/models).
+LLM/model sağlayıcıları için başvuru (**LLM/model providers**; WhatsApp/Telegram gibi sohbet kanalları değil). Model seçimi kuralları için bkz. [Modeller](/tr/concepts/models).
 
 ## Hızlı kurallar
 
 <AccordionGroup>
   <Accordion title="Model referansları ve CLI yardımcıları">
     - Model referansları `provider/model` biçimini kullanır (örnek: `opencode/claude-opus-4-6`).
-    - `agents.defaults.models` ayarlandığında izin listesi gibi davranır.
+    - `agents.defaults.models` ayarlandığında izin listesi olarak davranır.
     - CLI yardımcıları: `openclaw onboard`, `openclaw models list`, `openclaw models set <provider/model>`.
-    - `models.providers.*.contextWindow` / `contextTokens` / `maxTokens` sağlayıcı düzeyindeki varsayılanları ayarlar; `models.providers.*.models[].contextWindow` / `contextTokens` / `maxTokens` bunları model bazında geçersiz kılar.
-    - Geri dönüş kuralları, bekleme süresi yoklamaları ve oturum geçersiz kılma kalıcılığı: [Model yük devretme](/tr/concepts/model-failover).
+    - `models.providers.*.contextWindow` / `contextTokens` / `maxTokens` sağlayıcı düzeyi varsayılanları ayarlar; `models.providers.*.models[].contextWindow` / `contextTokens` / `maxTokens` bunları model başına geçersiz kılar.
+    - Geri dönüş kuralları, bekleme süresi sondaları ve oturum geçersiz kılma kalıcılığı: [Model failover](/tr/concepts/model-failover).
 
   </Accordion>
   <Accordion title="Sağlayıcı kimlik doğrulaması eklemek birincil modelinizi değiştirmez">
-    `openclaw configure`, bir sağlayıcı eklediğinizde veya yeniden kimlik doğrulaması yaptığınızda mevcut bir `agents.defaults.model.primary` değerini korur. Sağlayıcı Plugin’leri, kimlik doğrulama yapılandırma yamalarında yine de önerilen bir varsayılan model döndürebilir, ancak configure bunu birincil model zaten varsa "bu modeli kullanılabilir yap" olarak değerlendirir; "geçerli birincil modeli değiştir" olarak değil.
+    `openclaw configure`, bir sağlayıcı eklediğinizde veya yeniden kimlik doğrulaması yaptığınızda mevcut `agents.defaults.model.primary` değerini korur. Sağlayıcı Plugin'leri, kimlik doğrulama yapılandırma yamalarında yine de önerilen bir varsayılan model döndürebilir, ancak configure bunu bir birincil model zaten varsa "geçerli birincil modeli değiştir" olarak değil, "bu modeli kullanılabilir yap" olarak ele alır.
 
-    Varsayılan modeli bilinçli olarak değiştirmek için `openclaw models set <provider/model>` veya `openclaw models auth login --provider <id> --set-default` kullanın.
+    Varsayılan modeli bilerek değiştirmek için `openclaw models set <provider/model>` veya `openclaw models auth login --provider <id> --set-default` kullanın.
 
   </Accordion>
   <Accordion title="OpenAI sağlayıcı/çalışma zamanı ayrımı">
-    OpenAI ailesi rotaları öneke özeldir:
+    OpenAI ailesi rotalar öneke özeldir:
 
-    - `openai/<model>` ve `agents.defaults.agentRuntime.id: "codex"` yerel Codex uygulama sunucusu donanımını kullanır. Bu, olağan ChatGPT/Codex abonelik kurulumudur.
-    - `openai-codex/<model>` PI içinde Codex OAuth kullanır.
-    - Codex çalışma zamanı geçersiz kılması olmadan `openai/<model>`, PI içindeki doğrudan OpenAI API anahtarı sağlayıcısını kullanır.
+    - `openai/<model>` varsayılan olarak aracı turları için yerel Codex uygulama sunucusu harness'ını kullanır. Bu, olağan ChatGPT/Codex abonelik kurulumudur.
+    - `openai-codex/<model>`, doctor'ın `openai/<model>` olarak yeniden yazdığı eski yapılandırmadır.
+    - `openai/<model>` artı sağlayıcı/model `agentRuntime.id: "pi"`, açık API anahtarı veya uyumluluk rotaları için PI kullanır.
 
-    Bkz. [OpenAI](/tr/providers/openai) ve [Codex donanımı](/tr/plugins/codex-harness). Sağlayıcı/çalışma zamanı ayrımı kafa karıştırıyorsa önce [Ajan çalışma zamanları](/tr/concepts/agent-runtimes) bölümünü okuyun.
+    Bkz. [OpenAI](/tr/providers/openai) ve [Codex harness](/tr/plugins/codex-harness). Sağlayıcı/çalışma zamanı ayrımı kafa karıştırıcıysa önce [Aracı çalışma zamanları](/tr/concepts/agent-runtimes) sayfasını okuyun.
 
-    Plugin otomatik etkinleştirme aynı sınırı izler: `openai-codex/<model>` OpenAI Plugin’ine aittir; Codex Plugin’i ise `agentRuntime.id: "codex"` veya eski `codex/<model>` referanslarıyla etkinleştirilir.
+    Plugin otomatik etkinleştirme aynı sınırı izler: `openai/*` aracı referansları varsayılan rota için Codex Plugin'ini etkinleştirir ve açık sağlayıcı/model `agentRuntime.id: "codex"` veya eski `codex/<model>` referansları da bunu gerektirir.
 
-    GPT-5.5, `agentRuntime.id: "codex"` ayarlandığında yerel Codex uygulama sunucusu donanımı üzerinden, Codex OAuth için PI içinde `openai-codex/gpt-5.5` üzerinden ve hesabınız bunu sunduğunda doğrudan API anahtarı trafiği için PI içinde `openai/gpt-5.5` üzerinden kullanılabilir.
+    GPT-5.5 varsayılan olarak `openai/gpt-5.5` üzerinde yerel Codex uygulama sunucusu harness'ı üzerinden, PI üzerinden ise yalnızca sağlayıcı/model çalışma zamanı ilkesi açıkça `pi` seçtiğinde kullanılabilir.
 
   </Accordion>
   <Accordion title="CLI çalışma zamanları">
-    CLI çalışma zamanları aynı ayrımı kullanır: `anthropic/claude-*`, `google/gemini-*` veya `openai/gpt-*` gibi kanonik model referanslarını seçin, ardından yerel bir CLI arka ucu istediğinizde `agents.defaults.agentRuntime.id` değerini `claude-cli`, `google-gemini-cli` veya `codex-cli` olarak ayarlayın.
+    CLI çalışma zamanları aynı ayrımı kullanır: `anthropic/claude-*`, `google/gemini-*` veya `openai/gpt-*` gibi kanonik model referanslarını seçin, ardından yerel bir CLI arka ucu istediğinizde sağlayıcı/model çalışma zamanı ilkesini `claude-cli`, `google-gemini-cli` veya `codex-cli` olarak ayarlayın.
 
-    Eski `claude-cli/*`, `google-gemini-cli/*` ve `codex-cli/*` referansları, çalışma zamanı ayrı olarak kaydedilerek yeniden kanonik sağlayıcı referanslarına taşınır.
+    Eski `claude-cli/*`, `google-gemini-cli/*` ve `codex-cli/*` referansları, çalışma zamanı ayrı kaydedilmiş olarak kanonik sağlayıcı referanslarına geri taşınır.
 
   </Accordion>
 </AccordionGroup>
 
-## Plugin’e ait sağlayıcı davranışı
+## Plugin'e ait sağlayıcı davranışı
 
-Sağlayıcıya özgü mantığın çoğu sağlayıcı Plugin’lerinde (`registerProvider(...)`) yaşarken OpenClaw genel çıkarım döngüsünü tutar. Plugin’ler katılımı, model kataloglarını, kimlik doğrulama ortam değişkeni eşlemesini, aktarım/yapılandırma normalleştirmesini, araç şeması temizliğini, yük devretme sınıflandırmasını, OAuth yenilemeyi, kullanım raporlamayı, düşünme/akıl yürütme profillerini ve daha fazlasını sahiplenir.
+Sağlayıcıya özgü mantığın çoğu sağlayıcı Plugin'lerinde (`registerProvider(...)`) yaşarken OpenClaw genel çıkarım döngüsünü korur. Plugin'ler onboarding, model katalogları, kimlik doğrulama ortam değişkeni eşlemesi, taşıma/yapılandırma normalleştirmesi, araç şeması temizliği, failover sınıflandırması, OAuth yenileme, kullanım raporlama, düşünme/akıl yürütme profilleri ve daha fazlasının sahibidir.
 
-Sağlayıcı SDK hook’larının ve paketlenmiş Plugin örneklerinin tam listesi [Sağlayıcı Plugin’leri](/tr/plugins/sdk-provider-plugins) içinde yer alır. Tamamen özel bir istek yürütücüsüne ihtiyaç duyan bir sağlayıcı ayrı ve daha derin bir uzantı yüzeyidir.
+Sağlayıcı SDK hook'larının ve paketli Plugin örneklerinin tam listesi [Sağlayıcı Plugin'leri](/tr/plugins/sdk-provider-plugins) içinde yer alır. Tamamen özel bir istek yürütücüsüne ihtiyaç duyan bir sağlayıcı ayrı ve daha derin bir genişletme yüzeyidir.
 
 <Note>
-Sağlayıcıya ait çalıştırıcı davranışı yeniden oynatma ilkesi, araç şeması normalleştirme, akış sarmalama ve aktarım/istek yardımcıları gibi açık sağlayıcı hook’larında yaşar. Eski `ProviderPlugin.capabilities` statik torbası yalnızca uyumluluk içindir ve artık paylaşılan çalıştırıcı mantığı tarafından okunmaz.
+Sağlayıcıya ait runner davranışı, yeniden oynatma ilkesi, araç şeması normalleştirmesi, akış sarmalama ve taşıma/istek yardımcıları gibi açık sağlayıcı hook'larında yaşar. Eski `ProviderPlugin.capabilities` statik torbası yalnızca uyumluluk içindir ve artık paylaşılan runner mantığı tarafından okunmaz.
 </Note>
 
-## API anahtarı rotasyonu
+## API anahtarı döndürme
 
 <AccordionGroup>
   <Accordion title="Anahtar kaynakları ve öncelik">
@@ -76,38 +76,37 @@ Sağlayıcıya ait çalıştırıcı davranışı yeniden oynatma ilkesi, araç 
     - `<PROVIDER>_API_KEY` (birincil anahtar)
     - `<PROVIDER>_API_KEY_*` (numaralı liste, ör. `<PROVIDER>_API_KEY_1`)
 
-    Google sağlayıcıları için `GOOGLE_API_KEY` de geri dönüş olarak dahil edilir. Anahtar seçimi sırası önceliği korur ve değerlerin yinelenenlerini kaldırır.
+    Google sağlayıcıları için `GOOGLE_API_KEY` de geri dönüş olarak dahil edilir. Anahtar seçim sırası önceliği korur ve değerlerin tekrarını kaldırır.
 
   </Accordion>
-  <Accordion title="Rotasyon ne zaman devreye girer">
-    - İstekler yalnızca hız sınırı yanıtlarında sonraki anahtarla yeniden denenir (örneğin `429`, `rate_limit`, `quota`, `resource exhausted`, `Too many concurrent requests`, `ThrottlingException`, `concurrency limit reached`, `workers_ai ... quota limit exceeded` veya dönemsel kullanım sınırı iletileri).
-    - Hız sınırı dışındaki hatalar hemen başarısız olur; anahtar rotasyonu denenmez.
-    - Tüm aday anahtarlar başarısız olduğunda, son hata son denemeden döndürülür.
+  <Accordion title="Döndürme ne zaman devreye girer">
+    - İstekler yalnızca hız sınırı yanıtlarında sonraki anahtarla yeniden denenir (örneğin `429`, `rate_limit`, `quota`, `resource exhausted`, `Too many concurrent requests`, `ThrottlingException`, `concurrency limit reached`, `workers_ai ... quota limit exceeded` veya periyodik kullanım sınırı mesajları).
+    - Hız sınırı olmayan hatalar hemen başarısız olur; anahtar döndürme denenmez.
+    - Tüm aday anahtarlar başarısız olduğunda, son hatadan dönen nihai hata döndürülür.
 
   </Accordion>
 </AccordionGroup>
 
 ## Yerleşik sağlayıcılar (pi-ai kataloğu)
 
-OpenClaw pi-ai kataloğuyla birlikte gelir. Bu sağlayıcılar **hiçbir** `models.providers` yapılandırması gerektirmez; yalnızca kimlik doğrulamasını ayarlayın ve bir model seçin.
+OpenClaw, pi-ai kataloğuyla birlikte gelir. Bu sağlayıcılar **hiçbir** `models.providers` yapılandırması gerektirmez; yalnızca kimlik doğrulamayı ayarlayın ve bir model seçin.
 
 ### OpenAI
 
 - Sağlayıcı: `openai`
 - Kimlik doğrulama: `OPENAI_API_KEY`
-- İsteğe bağlı rotasyon: `OPENAI_API_KEYS`, `OPENAI_API_KEY_1`, `OPENAI_API_KEY_2`, ayrıca `OPENCLAW_LIVE_OPENAI_KEY` (tek geçersiz kılma)
+- İsteğe bağlı döndürme: `OPENAI_API_KEYS`, `OPENAI_API_KEY_1`, `OPENAI_API_KEY_2`, artı `OPENCLAW_LIVE_OPENAI_KEY` (tek geçersiz kılma)
 - Örnek modeller: `openai/gpt-5.5`, `openai/gpt-5.4-mini`
 - Belirli bir kurulum veya API anahtarı farklı davranıyorsa hesap/model kullanılabilirliğini `openclaw models list --provider openai` ile doğrulayın.
 - CLI: `openclaw onboard --auth-choice openai-api-key`
-- Varsayılan aktarım `auto` olur (önce WebSocket, SSE geri dönüşü)
-- Model bazında `agents.defaults.models["openai/<model>"].params.transport` üzerinden geçersiz kılın (`"sse"`, `"websocket"` veya `"auto"`)
-- OpenAI Responses WebSocket ısınması varsayılan olarak `params.openaiWsWarmup` (`true`/`false`) üzerinden etkinleştirilir
-- OpenAI öncelikli işleme `agents.defaults.models["openai/<model>"].params.serviceTier` üzerinden etkinleştirilebilir
+- Varsayılan taşıma `auto`; OpenClaw taşıma seçimini pi-ai'ye iletir.
+- Model başına `agents.defaults.models["openai/<model>"].params.transport` ile geçersiz kılın (`"sse"`, `"websocket"` veya `"auto"`)
+- OpenAI öncelikli işleme `agents.defaults.models["openai/<model>"].params.serviceTier` ile etkinleştirilebilir
 - `/fast` ve `params.fastMode`, doğrudan `openai/*` Responses isteklerini `api.openai.com` üzerinde `service_tier=priority` değerine eşler
 - Paylaşılan `/fast` anahtarı yerine açık bir katman istediğinizde `params.serviceTier` kullanın
-- Gizli OpenClaw atıf başlıkları (`originator`, `version`, `User-Agent`) genel OpenAI uyumlu proxy’lere değil, yalnızca `api.openai.com` üzerindeki yerel OpenAI trafiğine uygulanır
-- Yerel OpenAI rotaları ayrıca Responses `store`, istem önbelleği ipuçları ve OpenAI akıl yürütme uyumluluğu yük şekillendirmesini korur; proxy rotaları korumaz
-- `openai/gpt-5.3-codex-spark`, canlı OpenAI API istekleri bunu reddettiği ve mevcut Codex kataloğu bunu sunmadığı için OpenClaw içinde bilinçli olarak bastırılır
+- Gizli OpenClaw atıf üstbilgileri (`originator`, `version`, `User-Agent`) genel OpenAI uyumlu proxy'lere değil, yalnızca `api.openai.com` üzerindeki yerel OpenAI trafiğine uygulanır
+- Yerel OpenAI rotaları ayrıca Responses `store`, prompt-cache ipuçları ve OpenAI akıl yürütme uyumluluğu yük şekillendirmesini korur; proxy rotaları korumaz
+- `openai/gpt-5.3-codex-spark`, canlı OpenAI API istekleri bunu reddettiği ve mevcut Codex kataloğu bunu göstermediği için OpenClaw'da bilerek bastırılmıştır
 
 ```json5
 {
@@ -119,17 +118,17 @@ OpenClaw pi-ai kataloğuyla birlikte gelir. Bu sağlayıcılar **hiçbir** `mode
 
 - Sağlayıcı: `anthropic`
 - Kimlik doğrulama: `ANTHROPIC_API_KEY`
-- İsteğe bağlı rotasyon: `ANTHROPIC_API_KEYS`, `ANTHROPIC_API_KEY_1`, `ANTHROPIC_API_KEY_2`, ayrıca `OPENCLAW_LIVE_ANTHROPIC_KEY` (tek geçersiz kılma)
+- İsteğe bağlı döndürme: `ANTHROPIC_API_KEYS`, `ANTHROPIC_API_KEY_1`, `ANTHROPIC_API_KEY_2`, artı `OPENCLAW_LIVE_ANTHROPIC_KEY` (tek geçersiz kılma)
 - Örnek model: `anthropic/claude-opus-4-6`
 - CLI: `openclaw onboard --auth-choice apiKey`
-- Doğrudan herkese açık Anthropic istekleri, `api.anthropic.com` adresine gönderilen API anahtarı ve OAuth kimlik doğrulamalı trafik dahil olmak üzere paylaşılan `/fast` anahtarını ve `params.fastMode` değerini destekler; OpenClaw bunu Anthropic `service_tier` değerine eşler (`auto` ve `standard_only`)
+- Doğrudan herkese açık Anthropic istekleri, `api.anthropic.com` adresine gönderilen API anahtarlı ve OAuth kimliği doğrulanmış trafik dahil olmak üzere paylaşılan `/fast` anahtarını ve `params.fastMode` değerini destekler; OpenClaw bunu Anthropic `service_tier` değerine eşler (`auto` ile `standard_only`)
 - Tercih edilen Claude CLI yapılandırması model referansını kanonik tutar ve CLI
-  arka ucunu ayrı seçer: `agents.defaults.agentRuntime.id: "claude-cli"` ile
-  `anthropic/claude-opus-4-7`. Eski
-  `claude-cli/claude-opus-4-7` referansları uyumluluk için çalışmaya devam eder.
+  arka ucunu ayrı seçer: model kapsamlı
+  `agentRuntime.id: "claude-cli"` ile `anthropic/claude-opus-4-7`. Eski
+  `claude-cli/claude-opus-4-7` referansları uyumluluk için hâlâ çalışır.
 
 <Note>
-Anthropic personeli, OpenClaw tarzı Claude CLI kullanımına yeniden izin verildiğini bize bildirdi; bu nedenle OpenClaw, Anthropic yeni bir ilke yayımlamadığı sürece bu entegrasyon için Claude CLI yeniden kullanımını ve `claude -p` kullanımını onaylı kabul eder. Anthropic kurulum belirteci desteklenen bir OpenClaw belirteç yolu olarak kullanılabilir kalır, ancak OpenClaw artık mevcut olduğunda Claude CLI yeniden kullanımını ve `claude -p` kullanımını tercih eder.
+Anthropic çalışanları bize OpenClaw tarzı Claude CLI kullanımına tekrar izin verildiğini söyledi, bu nedenle Anthropic yeni bir ilke yayımlamadıkça OpenClaw, Claude CLI yeniden kullanımını ve `claude -p` kullanımını bu entegrasyon için onaylanmış kabul eder. Anthropic setup-token desteklenen bir OpenClaw token yolu olarak kullanılmaya devam eder, ancak OpenClaw artık mevcut olduğunda Claude CLI yeniden kullanımını ve `claude -p` komutunu tercih eder.
 </Note>
 
 ```json5
@@ -142,22 +141,22 @@ Anthropic personeli, OpenClaw tarzı Claude CLI kullanımına yeniden izin veril
 
 - Sağlayıcı: `openai-codex`
 - Kimlik doğrulama: OAuth (ChatGPT)
-- PI model referansı: `openai-codex/gpt-5.5`
-- Yerel Codex uygulama sunucusu donanımı referansı: `agents.defaults.agentRuntime.id: "codex"` ile `openai/gpt-5.5`
-- Yerel Codex uygulama sunucusu donanımı belgeleri: [Codex donanımı](/tr/plugins/codex-harness)
+- Eski PI model referansı: `openai-codex/gpt-5.5`
+- Yerel Codex uygulama sunucusu harness referansı: `openai/gpt-5.5`
+- Yerel Codex uygulama sunucusu harness belgeleri: [Codex harness](/tr/plugins/codex-harness)
 - Eski model referansları: `codex/gpt-*`
-- Plugin sınırı: `openai-codex/*` OpenAI Plugin’ini yükler; yerel Codex uygulama sunucusu Plugin’i yalnızca Codex donanımı çalışma zamanı veya eski `codex/*` referanslarıyla seçilir.
+- Plugin sınırı: `openai-codex/*` OpenAI Plugin'ini yükler; yerel Codex uygulama sunucusu Plugin'i yalnızca Codex harness çalışma zamanı veya eski `codex/*` referansları tarafından seçilir.
 - CLI: `openclaw onboard --auth-choice openai-codex` veya `openclaw models auth login --provider openai-codex`
-- Varsayılan aktarım `auto` olur (önce WebSocket, SSE geri dönüşü)
-- PI modeli bazında `agents.defaults.models["openai-codex/<model>"].params.transport` üzerinden geçersiz kılın (`"sse"`, `"websocket"` veya `"auto"`)
-- `params.serviceTier`, yerel Codex Responses isteklerinde de iletilir (`chatgpt.com/backend-api`)
-- Gizli OpenClaw atıf başlıkları (`originator`, `version`, `User-Agent`) genel OpenAI uyumlu proxy’lere değil, yalnızca `chatgpt.com/backend-api` üzerindeki yerel Codex trafiğine eklenir
+- Varsayılan taşıma `auto` (önce WebSocket, SSE geri dönüşü)
+- PI modeli başına `agents.defaults.models["openai-codex/<model>"].params.transport` ile geçersiz kılın (`"sse"`, `"websocket"` veya `"auto"`)
+- `params.serviceTier` yerel Codex Responses isteklerinde (`chatgpt.com/backend-api`) de iletilir
+- Gizli OpenClaw atıf üstbilgileri (`originator`, `version`, `User-Agent`) genel OpenAI uyumlu proxy'lere değil, yalnızca `chatgpt.com/backend-api` üzerindeki yerel Codex trafiğine eklenir
 - Doğrudan `openai/*` ile aynı `/fast` anahtarını ve `params.fastMode` yapılandırmasını paylaşır; OpenClaw bunu `service_tier=priority` değerine eşler
 - `openai-codex/gpt-5.5`, Codex kataloğunun yerel `contextWindow = 400000` değerini ve varsayılan çalışma zamanı `contextTokens = 272000` değerini kullanır; çalışma zamanı sınırını `models.providers.openai-codex.models[].contextTokens` ile geçersiz kılın
 - İlke notu: OpenAI Codex OAuth, OpenClaw gibi harici araçlar/iş akışları için açıkça desteklenir.
-- Yaygın abonelik artı yerel Codex çalışma zamanı rotası için `openai-codex` kimlik doğrulamasıyla oturum açın, ancak `openai/gpt-5.5` ve `agents.defaults.agentRuntime.id: "codex"` yapılandırın.
-- `openai-codex/gpt-5.5` değerini yalnızca PI üzerinden Codex OAuth/abonelik rotasını istediğinizde kullanın; API anahtarı kurulumunuz ve yerel kataloğunuz herkese açık API rotasını sunduğunda Codex çalışma zamanı geçersiz kılması olmadan `openai/gpt-5.5` kullanın.
-- Daha eski `openai-codex/gpt-5.1*`, `openai-codex/gpt-5.2*` ve `openai-codex/gpt-5.3*` referansları ChatGPT/Codex OAuth hesapları bunları reddettiği için bastırılır; bunun yerine `openai-codex/gpt-5.5` veya yerel Codex çalışma zamanı rotasını kullanın.
+- Yaygın abonelik artı yerel Codex çalışma zamanı rotası için `openai-codex` kimlik doğrulamasıyla oturum açın ancak `openai/gpt-5.5` yapılandırın; OpenAI aracı turları varsayılan olarak Codex'i seçer.
+- PI üzerinden bir uyumluluk rotası istediğinizde yalnızca sağlayıcı/model `agentRuntime.id: "pi"` kullanın; aksi halde `openai/gpt-5.5` değerini varsayılan Codex harness üzerinde tutun.
+- Eski `openai-codex/gpt-5.1*`, `openai-codex/gpt-5.2*` ve `openai-codex/gpt-5.3*` referansları, ChatGPT/Codex OAuth hesapları bunları reddettiği için bastırılmıştır; bunun yerine `openai-codex/gpt-5.5` veya yerel Codex çalışma zamanı rotasını kullanın.
 
 ```json5
 {
@@ -165,7 +164,6 @@ Anthropic personeli, OpenClaw tarzı Claude CLI kullanımına yeniden izin veril
   agents: {
     defaults: {
       model: { primary: "openai/gpt-5.5" },
-      agentRuntime: { id: "codex" },
     },
   },
 }
@@ -193,7 +191,7 @@ Anthropic personeli, OpenClaw tarzı Claude CLI kullanımına yeniden izin veril
     MiniMax Coding Plan OAuth veya API anahtarı erişimi.
   </Card>
   <Card title="Qwen Cloud" href="/tr/providers/qwen">
-    Qwen Cloud sağlayıcı yüzeyi ile Alibaba DashScope ve Coding Plan uç noktası eşlemesi.
+    Qwen Cloud sağlayıcı yüzeyi artı Alibaba DashScope ve Coding Plan uç noktası eşlemesi.
   </Card>
 </CardGroup>
 
@@ -215,27 +213,27 @@ Anthropic personeli, OpenClaw tarzı Claude CLI kullanımına yeniden izin veril
 
 - Sağlayıcı: `google`
 - Kimlik doğrulama: `GEMINI_API_KEY`
-- İsteğe bağlı rotasyon: `GEMINI_API_KEYS`, `GEMINI_API_KEY_1`, `GEMINI_API_KEY_2`, `GOOGLE_API_KEY` yedeği ve `OPENCLAW_LIVE_GEMINI_KEY` (tekil geçersiz kılma)
+- İsteğe bağlı rotasyon: `GEMINI_API_KEYS`, `GEMINI_API_KEY_1`, `GEMINI_API_KEY_2`, `GOOGLE_API_KEY` yedeği ve `OPENCLAW_LIVE_GEMINI_KEY` (tek geçersiz kılma)
 - Örnek modeller: `google/gemini-3.1-pro-preview`, `google/gemini-3-flash-preview`
 - Uyumluluk: `google/gemini-3.1-flash-preview` kullanan eski OpenClaw yapılandırması `google/gemini-3-flash-preview` olarak normalleştirilir
-- Takma ad: `google/gemini-3.1-pro` kabul edilir ve Google'ın canlı Gemini API kimliği olan `google/gemini-3.1-pro-preview` olarak normalleştirilir
+- Takma ad: `google/gemini-3.1-pro` kabul edilir ve Google'ın canlı Gemini API kimliğine, `google/gemini-3.1-pro-preview` değerine normalleştirilir
 - CLI: `openclaw onboard --auth-choice gemini-api-key`
-- Düşünme: `/think adaptive`, Google dinamik düşünmesini kullanır. Gemini 3/3.1 sabit bir `thinkingLevel` içermez; Gemini 2.5 `thinkingBudget: -1` gönderir.
-- Doğrudan Gemini çalıştırmaları, sağlayıcıya özgü bir `cachedContents/...` tanıtıcısını iletmek için `agents.defaults.models["google/<model>"].params.cachedContent` (veya eski `cached_content`) değerini de kabul eder; Gemini önbellek isabetleri OpenClaw `cacheRead` olarak görünür
+- Düşünme: `/think adaptive`, Google dinamik düşünmesini kullanır. Gemini 3/3.1 sabit bir `thinkingLevel` belirtmez; Gemini 2.5 `thinkingBudget: -1` gönderir.
+- Doğrudan Gemini çalıştırmaları ayrıca sağlayıcıya özgü bir `cachedContents/...` tutamacını iletmek için `agents.defaults.models["google/<model>"].params.cachedContent` (veya eski `cached_content`) değerini kabul eder; Gemini önbellek isabetleri OpenClaw `cacheRead` olarak görünür
 
 ### Google Vertex ve Gemini CLI
 
 - Sağlayıcılar: `google-vertex`, `google-gemini-cli`
-- Kimlik doğrulama: Vertex gcloud ADC kullanır; Gemini CLI kendi OAuth akışını kullanır
+- Kimlik doğrulama: Vertex, gcloud ADC kullanır; Gemini CLI kendi OAuth akışını kullanır
 
 <Warning>
-OpenClaw içindeki Gemini CLI OAuth resmi olmayan bir entegrasyondur. Bazı kullanıcılar üçüncü taraf istemcileri kullandıktan sonra Google hesap kısıtlamaları bildirmiştir. Devam etmeyi seçerseniz Google şartlarını inceleyin ve kritik olmayan bir hesap kullanın.
+OpenClaw içindeki Gemini CLI OAuth, resmi olmayan bir entegrasyondur. Bazı kullanıcılar, üçüncü taraf istemciler kullandıktan sonra Google hesap kısıtlamaları bildirmiştir. Devam etmeyi seçerseniz Google şartlarını inceleyin ve kritik olmayan bir hesap kullanın.
 </Warning>
 
-Gemini CLI OAuth, paketlenen `google` Plugin kapsamında gönderilir.
+Gemini CLI OAuth, birlikte gelen `google` Plugin kapsamında gönderilir.
 
 <Steps>
-  <Step title="Gemini CLI'yi yükle">
+  <Step title="Gemini CLI'yı yükle">
     <Tabs>
       <Tab title="brew">
         ```bash
@@ -259,11 +257,11 @@ Gemini CLI OAuth, paketlenen `google` Plugin kapsamında gönderilir.
     openclaw models auth login --provider google-gemini-cli --set-default
     ```
 
-    Varsayılan model: `google-gemini-cli/gemini-3-flash-preview`. `openclaw.json` içine bir istemci kimliği veya gizli anahtar yapıştırmazsınız. CLI oturum açma akışı, tokenları Gateway ana makinesindeki kimlik doğrulama profillerinde saklar.
+    Varsayılan model: `google-gemini-cli/gemini-3-flash-preview`. `openclaw.json` içine bir istemci kimliği veya gizli anahtar **yapıştırmazsınız**. CLI oturum açma akışı, belirteçleri gateway ana makinesindeki kimlik doğrulama profillerinde saklar.
 
   </Step>
   <Step title="Projeyi ayarla (gerekirse)">
-    Oturum açtıktan sonra istekler başarısız olursa Gateway ana makinesinde `GOOGLE_CLOUD_PROJECT` veya `GOOGLE_CLOUD_PROJECT_ID` ayarlayın.
+    Oturum açtıktan sonra istekler başarısız olursa gateway ana makinesinde `GOOGLE_CLOUD_PROJECT` veya `GOOGLE_CLOUD_PROJECT_ID` ayarlayın.
   </Step>
 </Steps>
 
@@ -276,7 +274,7 @@ Gemini CLI JSON yanıtları `response` üzerinden ayrıştırılır; kullanım `
 - Örnek model: `zai/glm-5.1`
 - CLI: `openclaw onboard --auth-choice zai-api-key`
   - Takma adlar: `z.ai/*` ve `z-ai/*`, `zai/*` olarak normalleştirilir
-  - `zai-api-key` eşleşen Z.AI uç noktasını otomatik algılar; `zai-coding-global`, `zai-coding-cn`, `zai-global` ve `zai-cn` belirli bir yüzeyi zorunlu kılar
+  - `zai-api-key`, eşleşen Z.AI uç noktasını otomatik algılar; `zai-coding-global`, `zai-coding-cn`, `zai-global` ve `zai-cn` belirli bir yüzeyi zorunlu kılar
 
 ### Vercel AI Gateway
 
@@ -292,14 +290,14 @@ Gemini CLI JSON yanıtları `response` üzerinden ayrıştırılır; kullanım `
 - Örnek model: `kilocode/kilo/auto`
 - CLI: `openclaw onboard --auth-choice kilocode-api-key`
 - Temel URL: `https://api.kilo.ai/api/gateway/`
-- Statik yedek katalog `kilocode/kilo/auto` ile birlikte gönderilir; canlı `https://api.kilo.ai/api/gateway/models` keşfi çalışma zamanı kataloğunu daha da genişletebilir.
-- `kilocode/kilo/auto` arkasındaki tam üst akış yönlendirmesi OpenClaw içinde sabit kodlanmamıştır; Kilo Gateway tarafından sahiplenilir.
+- Statik yedek katalog `kilocode/kilo/auto` ile gönderilir; canlı `https://api.kilo.ai/api/gateway/models` keşfi çalışma zamanı kataloğunu daha da genişletebilir.
+- `kilocode/kilo/auto` arkasındaki kesin upstream yönlendirmesi Kilo Gateway'e aittir, OpenClaw içinde sabit kodlanmamıştır.
 
-Kurulum ayrıntıları için [/providers/kilocode](/tr/providers/kilocode) sayfasına bakın.
+Kurulum ayrıntıları için bkz. [/providers/kilocode](/tr/providers/kilocode).
 
-### Diğer paketlenmiş sağlayıcı Plugin'leri
+### Diğer birlikte gelen sağlayıcı Plugin'leri
 
-| Sağlayıcı               | Kimlik                          | Kimlik doğrulama env                                      | Örnek model                                   |
+| Sağlayıcı               | Kimlik                           | Kimlik doğrulama env                                        | Örnek model                                   |
 | ----------------------- | -------------------------------- | ------------------------------------------------------------ | --------------------------------------------- |
 | BytePlus                | `byteplus` / `byteplus-plan`     | `BYTEPLUS_API_KEY`                                           | `byteplus-plan/ark-code-latest`               |
 | Cerebras                | `cerebras`                       | `CEREBRAS_API_KEY`                                           | `cerebras/zai-glm-4.7`                        |
@@ -310,7 +308,7 @@ Kurulum ayrıntıları için [/providers/kilocode](/tr/providers/kilocode) sayfa
 | Groq                    | `groq`                           | `GROQ_API_KEY`                                               | -                                             |
 | Hugging Face Inference  | `huggingface`                    | `HUGGINGFACE_HUB_TOKEN` veya `HF_TOKEN`                      | `huggingface/deepseek-ai/DeepSeek-R1`         |
 | Kilo Gateway            | `kilocode`                       | `KILOCODE_API_KEY`                                           | `kilocode/kilo/auto`                          |
-| Kimi Coding             | `kimi`                           | `KIMI_API_KEY` veya `KIMICODE_API_KEY`                       | `kimi/kimi-code`                              |
+| Kimi Coding             | `kimi`                           | `KIMI_API_KEY` veya `KIMICODE_API_KEY`                       | `kimi/kimi-for-coding`                        |
 | MiniMax                 | `minimax` / `minimax-portal`     | `MINIMAX_API_KEY` / `MINIMAX_OAUTH_TOKEN`                    | `minimax/MiniMax-M2.7`                        |
 | Mistral                 | `mistral`                        | `MISTRAL_API_KEY`                                            | `mistral/mistral-large-latest`                |
 | Moonshot                | `moonshot`                       | `MOONSHOT_API_KEY`                                           | `moonshot/kimi-k2.6`                          |
@@ -326,40 +324,42 @@ Kurulum ayrıntıları için [/providers/kilocode](/tr/providers/kilocode) sayfa
 | xAI                     | `xai`                            | `XAI_API_KEY`                                                | `xai/grok-4.3`                                |
 | Xiaomi                  | `xiaomi`                         | `XIAOMI_API_KEY`                                             | `xiaomi/mimo-v2-flash`                        |
 
-#### Bilmeye değer tuhaflıklar
+#### Bilinmesi gereken özel durumlar
 
 <AccordionGroup>
   <Accordion title="OpenRouter">
-    Uygulama atıf başlıklarını ve Anthropic `cache_control` işaretleyicilerini yalnızca doğrulanmış `openrouter.ai` rotalarında uygular. DeepSeek, Moonshot ve ZAI referansları, OpenRouter tarafından yönetilen prompt önbelleklemesi için cache-TTL kullanımına uygundur ancak Anthropic önbellek işaretleyicileri almaz. Proxy tarzı OpenAI uyumlu bir yol olarak, yerel OpenAI’ye özgü biçimlendirmeyi (`serviceTier`, Responses `store`, prompt-cache ipuçları, OpenAI reasoning-compat) atlar. Gemini destekli referanslar yalnızca proxy-Gemini düşünce imzası temizliğini korur.
+    Uygulama atıf üstbilgilerini ve Anthropic `cache_control` işaretleyicilerini yalnızca doğrulanmış `openrouter.ai` rotalarında uygular. DeepSeek, Moonshot ve ZAI referansları, OpenRouter tarafından yönetilen istem önbelleğe alma için cache-TTL uygundur ancak Anthropic önbellek işaretleyicileri almaz. Proxy tarzı OpenAI uyumlu bir yol olarak, yalnızca yerel OpenAI biçimlendirmesini (`serviceTier`, Responses `store`, istem önbelleği ipuçları, OpenAI reasoning uyumluluğu) atlar. Gemini destekli referanslar yalnızca proxy-Gemini düşünce imzası temizlemesini korur.
   </Accordion>
   <Accordion title="Kilo Gateway">
-    Gemini destekli referanslar aynı proxy-Gemini temizleme yolunu izler; `kilocode/kilo/auto` ve proxy reasoning desteklemeyen diğer referanslar proxy reasoning enjeksiyonunu atlar.
+    Gemini destekli referanslar aynı proxy-Gemini temizleme yolunu izler; `kilocode/kilo/auto` ve proxy reasoning desteklenmeyen diğer referanslar proxy reasoning eklemeyi atlar.
   </Accordion>
   <Accordion title="MiniMax">
-    API anahtarıyla onboarding, açıkça yalnızca metin M2.7 sohbet modeli tanımları yazar; görüntü anlama, Plugin’e ait `MiniMax-VL-01` medya sağlayıcısında kalır.
+    API anahtarıyla ilk kurulum, açıkça yalnızca metin destekli M2.7 sohbet modeli tanımları yazar; görüntü anlama, Plugin tarafından sahiplenilen `MiniMax-VL-01` medya sağlayıcısında kalır.
   </Accordion>
   <Accordion title="NVIDIA">
-    Model kimlikleri bir `nvidia/<vendor>/<model>` ad alanı kullanır (örneğin `nvidia/moonshotai/kimi-k2.5` ile birlikte `nvidia/nvidia/nemotron-...`); seçiciler gerçek `<provider>/<model-id>` bileşimini korurken API’ye gönderilen kanonik anahtar tek önekli kalır.
+    Model kimlikleri `nvidia/<vendor>/<model>` ad alanını kullanır (örneğin `nvidia/moonshotai/kimi-k2.5` ile birlikte `nvidia/nvidia/nemotron-...`); seçiciler gerçek `<provider>/<model-id>` bileşimini korurken API'ye gönderilen kanonik anahtar tek önekli kalır.
   </Accordion>
   <Accordion title="xAI">
-    xAI Responses yolunu kullanır. `grok-4.3`, paketle gelen varsayılan sohbet modelidir. `/fast` veya `params.fastMode: true`, `grok-3`, `grok-3-mini`, `grok-4` ve `grok-4-0709` değerlerini `*-fast` varyantlarına yeniden yazar. `tool_stream` varsayılan olarak açıktır; `agents.defaults.models["xai/<model>"].params.tool_stream=false` ile devre dışı bırakın.
+    xAI Responses yolunu kullanır. `grok-4.3`, paketle gelen varsayılan sohbet modelidir. `/fast` veya `params.fastMode: true`, `grok-3`, `grok-3-mini`, `grok-4` ve `grok-4-0709` değerlerini ilgili `*-fast` varyantlarına yeniden yazar. `tool_stream` varsayılan olarak açıktır; `agents.defaults.models["xai/<model>"].params.tool_stream=false` ile devre dışı bırakın.
   </Accordion>
   <Accordion title="Cerebras">
-    Paketle gelen `cerebras` sağlayıcı Plugin’i olarak gönderilir. GLM, `zai-glm-4.7` kullanır; OpenAI uyumlu temel URL `https://api.cerebras.ai/v1` şeklindedir.
+    Paketle gelen `cerebras` sağlayıcı Plugin olarak gönderilir. GLM `zai-glm-4.7` kullanır; OpenAI uyumlu temel URL `https://api.cerebras.ai/v1` değeridir.
   </Accordion>
 </AccordionGroup>
 
 ## `models.providers` üzerinden sağlayıcılar (özel/temel URL)
 
-**Özel** sağlayıcılar veya OpenAI/Anthropic uyumlu proxy’ler eklemek için `models.providers` (veya `models.json`) kullanın.
+**Özel** sağlayıcılar veya OpenAI/Anthropic uyumlu proxy'ler eklemek için `models.providers` (veya `models.json`) kullanın.
 
-Aşağıdaki paketle gelen sağlayıcı Plugin’lerinin birçoğu zaten varsayılan bir katalog yayımlar. Açık `models.providers.<id>` girdilerini yalnızca varsayılan temel URL’yi, başlıkları veya model listesini geçersiz kılmak istediğinizde kullanın.
+Aşağıdaki paketle gelen sağlayıcı Plugin'lerinin çoğu zaten varsayılan bir katalog yayımlar. Açık `models.providers.<id>` girdilerini yalnızca varsayılan temel URL'yi, üstbilgileri veya model listesini geçersiz kılmak istediğinizde kullanın.
 
-Gateway model yetenek denetimleri, açık `models.providers.<id>.models[]` meta verilerini de okur. Özel veya proxy bir model görüntü kabul ediyorsa, WebChat ve node kaynaklı ek yollarının görüntüleri yalnızca metin medya referansları yerine yerel model girdileri olarak geçirmesi için o modelde `input: ["text", "image"]` ayarlayın.
+Gateway model yetenek denetimleri, açık `models.providers.<id>.models[]` meta verilerini de okur. Özel veya proxy bir model görüntüleri kabul ediyorsa, WebChat ve düğüm kaynaklı ek yollarının görüntüleri yalnızca metin medya referansları yerine yerel model girdileri olarak iletmesi için o modelde `input: ["text", "image"]` ayarlayın.
+
+`agents.defaults.models["provider/model"]` yalnızca model görünürlüğünü, takma adları ve ajanlar için model başına meta verileri denetler. Tek başına yeni bir çalışma zamanı modeli kaydetmez. Özel sağlayıcı modelleri için, en azından eşleşen `id` ile birlikte `models.providers.<provider>.models[]` de ekleyin.
 
 ### Moonshot AI (Kimi)
 
-Moonshot, paketle gelen bir sağlayıcı Plugin’i olarak gönderilir. Varsayılan olarak yerleşik sağlayıcıyı kullanın ve açık bir `models.providers.moonshot` girdisini yalnızca temel URL’yi veya model meta verilerini geçersiz kılmanız gerektiğinde ekleyin:
+Moonshot, paketle gelen bir sağlayıcı Plugin olarak gönderilir. Varsayılan olarak yerleşik sağlayıcıyı kullanın ve yalnızca temel URL'yi veya model meta verilerini geçersiz kılmanız gerektiğinde açık bir `models.providers.moonshot` girdisi ekleyin:
 
 - Sağlayıcı: `moonshot`
 - Kimlik doğrulama: `MOONSHOT_API_KEY`
@@ -397,24 +397,24 @@ Kimi K2 model kimlikleri:
 }
 ```
 
-### Kimi kodlama
+### Kimi coding
 
-Kimi Coding, Moonshot AI’ın Anthropic uyumlu uç noktasını kullanır:
+Kimi Coding, Moonshot AI'ın Anthropic uyumlu uç noktasını kullanır:
 
 - Sağlayıcı: `kimi`
 - Kimlik doğrulama: `KIMI_API_KEY`
-- Örnek model: `kimi/kimi-code`
+- Örnek model: `kimi/kimi-for-coding`
 
 ```json5
 {
   env: { KIMI_API_KEY: "sk-..." },
   agents: {
-    defaults: { model: { primary: "kimi/kimi-code" } },
+    defaults: { model: { primary: "kimi/kimi-for-coding" } },
   },
 }
 ```
 
-Eski `kimi/k2p5`, uyumluluk model kimliği olarak kabul edilmeye devam eder.
+Eski `kimi/kimi-code` ve `kimi/k2p5`, uyumluluk model kimlikleri olarak kabul edilmeye devam eder ve Kimi'nin kararlı API model kimliğine normalleştirilir.
 
 ### Volcano Engine (Doubao)
 
@@ -433,12 +433,12 @@ Volcano Engine (火山引擎), Çin'de Doubao ve diğer modellere erişim sağla
 }
 ```
 
-İlk kurulum varsayılan olarak kodlama yüzeyini kullanır, ancak genel `volcengine/*` kataloğu da aynı anda kaydedilir.
+Onboarding varsayılan olarak kodlama yüzeyini kullanır, ancak genel `volcengine/*` kataloğu aynı anda kaydedilir.
 
-İlk kurulum/yapılandırma model seçicilerinde, Volcengine kimlik doğrulama seçimi hem `volcengine/*` hem de `volcengine-plan/*` satırlarını tercih eder. Bu modeller henüz yüklenmemişse OpenClaw, boş bir sağlayıcı kapsamlı seçici göstermek yerine filtrelenmemiş kataloğa geri döner.
+Onboarding/yapılandırma model seçicilerinde, Volcengine kimlik doğrulama seçeneği hem `volcengine/*` hem de `volcengine-plan/*` satırlarını tercih eder. Bu modeller henüz yüklenmemişse OpenClaw, boş bir sağlayıcı kapsamlı seçici göstermek yerine filtrelenmemiş kataloğa geri döner.
 
 <Tabs>
-  <Tab title="Standart modeller">
+  <Tab title="Standard models">
     - `volcengine/doubao-seed-1-8-251228` (Doubao Seed 1.8)
     - `volcengine/doubao-seed-code-preview-251028`
     - `volcengine/kimi-k2-5-260127` (Kimi K2.5)
@@ -446,7 +446,7 @@ Volcano Engine (火山引擎), Çin'de Doubao ve diğer modellere erişim sağla
     - `volcengine/deepseek-v3-2-251201` (DeepSeek V3.2 128K)
 
   </Tab>
-  <Tab title="Kodlama modelleri (volcengine-plan)">
+  <Tab title="Coding models (volcengine-plan)">
     - `volcengine-plan/ark-code-latest`
     - `volcengine-plan/doubao-seed-code`
     - `volcengine-plan/kimi-k2.5`
@@ -473,18 +473,18 @@ BytePlus ARK, uluslararası kullanıcılar için Volcano Engine ile aynı modell
 }
 ```
 
-İlk kurulum varsayılan olarak kodlama yüzeyini kullanır, ancak genel `byteplus/*` kataloğu da aynı anda kaydedilir.
+Onboarding varsayılan olarak kodlama yüzeyini kullanır, ancak genel `byteplus/*` kataloğu aynı anda kaydedilir.
 
-İlk kurulum/yapılandırma model seçicilerinde, BytePlus kimlik doğrulama seçimi hem `byteplus/*` hem de `byteplus-plan/*` satırlarını tercih eder. Bu modeller henüz yüklenmemişse OpenClaw, boş bir sağlayıcı kapsamlı seçici göstermek yerine filtrelenmemiş kataloğa geri döner.
+Onboarding/yapılandırma model seçicilerinde, BytePlus kimlik doğrulama seçeneği hem `byteplus/*` hem de `byteplus-plan/*` satırlarını tercih eder. Bu modeller henüz yüklenmemişse OpenClaw, boş bir sağlayıcı kapsamlı seçici göstermek yerine filtrelenmemiş kataloğa geri döner.
 
 <Tabs>
-  <Tab title="Standart modeller">
+  <Tab title="Standard models">
     - `byteplus/seed-1-8-251228` (Seed 1.8)
     - `byteplus/kimi-k2-5-260127` (Kimi K2.5)
     - `byteplus/glm-4-7-251222` (GLM 4.7)
 
   </Tab>
-  <Tab title="Kodlama modelleri (byteplus-plan)">
+  <Tab title="Coding models (byteplus-plan)">
     - `byteplus-plan/ark-code-latest`
     - `byteplus-plan/doubao-seed-code`
     - `byteplus-plan/kimi-k2.5`
@@ -524,7 +524,7 @@ Synthetic, `synthetic` sağlayıcısının arkasında Anthropic uyumlu modeller 
 
 ### MiniMax
 
-MiniMax, özel uç noktalar kullandığı için `models.providers` üzerinden yapılandırılır:
+MiniMax, özel uç noktalar kullandığı için `models.providers` aracılığıyla yapılandırılır:
 
 - MiniMax OAuth (Küresel): `--auth-choice minimax-global-oauth`
 - MiniMax OAuth (CN): `--auth-choice minimax-cn-oauth`
@@ -532,22 +532,22 @@ MiniMax, özel uç noktalar kullandığı için `models.providers` üzerinden ya
 - MiniMax API anahtarı (CN): `--auth-choice minimax-cn-api`
 - Kimlik doğrulama: `minimax` için `MINIMAX_API_KEY`; `minimax-portal` için `MINIMAX_OAUTH_TOKEN` veya `MINIMAX_API_KEY`
 
-Kurulum ayrıntıları, model seçenekleri ve yapılandırma parçaları için [/providers/minimax](/tr/providers/minimax) sayfasına bakın.
+Kurulum ayrıntıları, model seçenekleri ve yapılandırma parçacıkları için bkz. [/providers/minimax](/tr/providers/minimax).
 
 <Note>
-MiniMax'in Anthropic uyumlu akış yolunda OpenClaw, açıkça ayarlamadığınız sürece düşünmeyi varsayılan olarak devre dışı bırakır ve `/fast on`, `MiniMax-M2.7` değerini `MiniMax-M2.7-highspeed` olarak yeniden yazar.
+MiniMax'in Anthropic uyumlu akış yolunda, siz açıkça ayarlamadıkça OpenClaw varsayılan olarak düşünmeyi devre dışı bırakır ve `/fast on`, `MiniMax-M2.7` değerini `MiniMax-M2.7-highspeed` olarak yeniden yazar.
 </Note>
 
-Plugin'e ait yetenek ayrımı:
+Plugin tarafından sahiplenilen yetenek ayrımı:
 
 - Metin/sohbet varsayılanları `minimax/MiniMax-M2.7` üzerinde kalır
-- Görüntü üretimi `minimax/image-01` veya `minimax-portal/image-01` olur
-- Görüntü anlama, her iki MiniMax kimlik doğrulama yolunda da Plugin'e ait `MiniMax-VL-01` olur
+- Görsel oluşturma `minimax/image-01` veya `minimax-portal/image-01` değeridir
+- Görsel anlama, her iki MiniMax kimlik doğrulama yolunda Plugin tarafından sahiplenilen `MiniMax-VL-01` değeridir
 - Web araması sağlayıcı kimliği `minimax` üzerinde kalır
 
 ### LM Studio
 
-LM Studio, yerel API'yi kullanan paketle gelen bir sağlayıcı Plugin'i olarak gönderilir:
+LM Studio, yerel API'yi kullanan paketlenmiş bir sağlayıcı Plugin olarak gelir:
 
 - Sağlayıcı: `lmstudio`
 - Kimlik doğrulama: `LM_API_TOKEN`
@@ -563,14 +563,14 @@ Ardından bir model ayarlayın (`http://localhost:1234/api/v1/models` tarafında
 }
 ```
 
-OpenClaw, keşif + otomatik yükleme için LM Studio'nun yerel `/api/v1/models` ve `/api/v1/models/load` uç noktalarını, çıkarım içinse varsayılan olarak `/v1/chat/completions` uç noktasını kullanır. LM Studio JIT yüklemesinin, TTL'nin ve otomatik çıkarma işleminin model yaşam döngüsünü yönetmesini istiyorsanız `models.providers.lmstudio.params.preload: false` ayarlayın. Kurulum ve sorun giderme için [/providers/lmstudio](/tr/providers/lmstudio) sayfasına bakın.
+OpenClaw, keşif + otomatik yükleme için LM Studio'nun yerel `/api/v1/models` ve `/api/v1/models/load` uç noktalarını, çıkarım içinse varsayılan olarak `/v1/chat/completions` uç noktasını kullanır. LM Studio JIT yükleme, TTL ve otomatik çıkarma özelliklerinin model yaşam döngüsünü sahiplenmesini istiyorsanız `models.providers.lmstudio.params.preload: false` ayarını yapın. Kurulum ve sorun giderme için bkz. [/providers/lmstudio](/tr/providers/lmstudio).
 
 ### Ollama
 
-Ollama, paketle gelen bir sağlayıcı Plugin'i olarak gönderilir ve Ollama'nın yerel API'sini kullanır:
+Ollama, paketlenmiş bir sağlayıcı Plugin olarak gelir ve Ollama'nın yerel API'sini kullanır:
 
 - Sağlayıcı: `ollama`
-- Kimlik doğrulama: Gerekmez (yerel sunucu)
+- Kimlik doğrulama: Gerekli değil (yerel sunucu)
 - Örnek model: `ollama/llama3.3`
 - Kurulum: [https://ollama.com/download](https://ollama.com/download)
 
@@ -587,17 +587,17 @@ ollama pull llama3.3
 }
 ```
 
-Ollama, `OLLAMA_API_KEY` ile etkinleştirdiğinizde `http://127.0.0.1:11434` adresinde yerel olarak algılanır ve paketle gelen sağlayıcı Plugin'i Ollama'yı doğrudan `openclaw onboard` ve model seçiciye ekler. İlk kurulum, bulut/yerel mod ve özel yapılandırma için [/providers/ollama](/tr/providers/ollama) sayfasına bakın.
+Ollama, `OLLAMA_API_KEY` ile katıldığınızda yerel olarak `http://127.0.0.1:11434` adresinde algılanır ve paketlenmiş sağlayıcı Plugin, Ollama'yı doğrudan `openclaw onboard` ve model seçiciye ekler. Onboarding, bulut/yerel mod ve özel yapılandırma için bkz. [/providers/ollama](/tr/providers/ollama).
 
 ### vLLM
 
-vLLM, yerel/kendi barındırılan OpenAI uyumlu sunucular için paketle gelen bir sağlayıcı Plugin'i olarak gönderilir:
+vLLM, yerel/kendi barındırdığınız OpenAI uyumlu sunucular için paketlenmiş bir sağlayıcı Plugin olarak gelir:
 
 - Sağlayıcı: `vllm`
 - Kimlik doğrulama: İsteğe bağlı (sunucunuza bağlıdır)
 - Varsayılan temel URL: `http://127.0.0.1:8000/v1`
 
-Yerel olarak otomatik keşfi etkinleştirmek için (sunucunuz kimlik doğrulamayı zorunlu kılmıyorsa herhangi bir değer çalışır):
+Yerel olarak otomatik keşfe katılmak için (sunucunuz kimlik doğrulamayı zorunlu kılmıyorsa herhangi bir değer çalışır):
 
 ```bash
 export VLLM_API_KEY="vllm-local"
@@ -613,17 +613,17 @@ Ardından bir model ayarlayın (`/v1/models` tarafından döndürülen kimlikler
 }
 ```
 
-Ayrıntılar için [/providers/vllm](/tr/providers/vllm) sayfasına bakın.
+Ayrıntılar için bkz. [/providers/vllm](/tr/providers/vllm).
 
 ### SGLang
 
-SGLang, hızlı kendi barındırılan OpenAI uyumlu sunucular için paketle gelen bir sağlayıcı Plugin'i olarak gönderilir:
+SGLang, hızlı kendi barındırdığınız OpenAI uyumlu sunucular için paketlenmiş bir sağlayıcı Plugin olarak gelir:
 
 - Sağlayıcı: `sglang`
 - Kimlik doğrulama: İsteğe bağlı (sunucunuza bağlıdır)
 - Varsayılan temel URL: `http://127.0.0.1:30000/v1`
 
-Yerel olarak otomatik keşfi etkinleştirmek için (sunucunuz kimlik doğrulamayı zorunlu kılmıyorsa herhangi bir değer çalışır):
+Yerel olarak otomatik keşfe katılmak için (sunucunuz kimlik doğrulamayı zorunlu kılmıyorsa herhangi bir değer çalışır):
 
 ```bash
 export SGLANG_API_KEY="sglang-local"
@@ -639,7 +639,7 @@ Ardından bir model ayarlayın (`/v1/models` tarafından döndürülen kimlikler
 }
 ```
 
-Ayrıntılar için [/providers/sglang](/tr/providers/sglang) sayfasına bakın.
+Ayrıntılar için bkz. [/providers/sglang](/tr/providers/sglang).
 
 ### Yerel proxy'ler (LM Studio, vLLM, LiteLLM vb.)
 
@@ -678,7 +678,7 @@ Ayrıntılar için [/providers/sglang](/tr/providers/sglang) sayfasına bakın.
 ```
 
 <AccordionGroup>
-  <Accordion title="Varsayılan isteğe bağlı alanlar">
+  <Accordion title="Default optional fields">
     Özel sağlayıcılar için `reasoning`, `input`, `cost`, `contextWindow` ve `maxTokens` isteğe bağlıdır. Atlandıklarında OpenClaw varsayılan olarak şunları kullanır:
 
     - `reasoning: false`
@@ -687,19 +687,19 @@ Ayrıntılar için [/providers/sglang](/tr/providers/sglang) sayfasına bakın.
     - `contextWindow: 200000`
     - `maxTokens: 8192`
 
-    Önerilen: proxy/model sınırlarınızla eşleşen açık değerler ayarlayın.
+    Önerilir: proxy/model sınırlarınızla eşleşen açık değerler ayarlayın.
 
   </Accordion>
-  <Accordion title="Proxy rota şekillendirme kuralları">
-    - Yerel olmayan uç noktalarda `api: "openai-completions"` için (`baseUrl` boş değilse ve ana makinesi `api.openai.com` değilse), OpenClaw desteklenmeyen `developer` rolleri için sağlayıcı 400 hatalarını önlemek amacıyla `compat.supportsDeveloperRole: false` değerini zorunlu kılar.
-    - Proxy tarzı OpenAI uyumlu rotalar ayrıca yalnızca yerel OpenAI'ye özgü istek şekillendirmeyi atlar: `service_tier` yok, Responses `store` yok, Completions `store` yok, istem önbelleği ipuçları yok, OpenAI düşünme uyumluluğu yük şekillendirmesi yok ve gizli OpenClaw atıf başlıkları yok.
-    - Satıcıya özgü alanlara ihtiyaç duyan OpenAI uyumlu Completions proxy'leri için, giden istek gövdesine ek JSON birleştirmek üzere `agents.defaults.models["provider/model"].params.extra_body` (veya `extraBody`) ayarlayın.
-    - vLLM sohbet şablonu denetimleri için `agents.defaults.models["provider/model"].params.chat_template_kwargs` ayarlayın. Paketle gelen vLLM Plugin'i, oturum düşünme düzeyi kapalıyken `vllm/nemotron-3-*` için otomatik olarak `enable_thinking: false` ve `force_nonempty_content: true` gönderir.
-    - Yavaş yerel modeller veya uzak LAN/tailnet ana makineleri için `models.providers.<id>.timeoutSeconds` ayarlayın. Bu, tüm agent çalışma zamanı zaman aşımını artırmadan bağlantı, başlıklar, gövde akışı ve toplam korumalı getirme iptali dahil sağlayıcı model HTTP isteği işlemeyi uzatır.
-    - Model sağlayıcı HTTP çağrıları, Surge, Clash ve sing-box sahte IP DNS yanıtlarına yalnızca yapılandırılmış sağlayıcı `baseUrl` ana makine adı için `198.18.0.0/15` ve `fc00::/7` içinde izin verir. Diğer özel, loopback, bağlantı yerel ve metadata hedefleri hâlâ açık bir `models.providers.<id>.request.allowPrivateNetwork: true` etkinleştirmesi gerektirir.
-    - `baseUrl` boşsa/atlanmışsa OpenClaw varsayılan OpenAI davranışını korur (bu da `api.openai.com` olarak çözümlenir).
+  <Accordion title="Proxy-route shaping rules">
+    - Yerel olmayan uç noktalarda `api: "openai-completions"` için (ana makinesi `api.openai.com` olmayan, boş olmayan herhangi bir `baseUrl`), OpenClaw desteklenmeyen `developer` rolleri için sağlayıcı 400 hatalarından kaçınmak üzere `compat.supportsDeveloperRole: false` değerini zorunlu kılar.
+    - Proxy tarzı OpenAI uyumlu rotalar, yerel yalnızca OpenAI istek şekillendirmesini de atlar: `service_tier` yok, Responses `store` yok, Completions `store` yok, prompt-cache ipuçları yok, OpenAI düşünme uyumluluğu yük şekillendirmesi yok ve gizli OpenClaw atıf üstbilgileri yok.
+    - Tedarikçiye özgü alanlara ihtiyaç duyan OpenAI uyumlu Completions proxy'leri için, giden istek gövdesine ek JSON birleştirmek üzere `agents.defaults.models["provider/model"].params.extra_body` (veya `extraBody`) ayarını yapın.
+    - vLLM sohbet şablonu kontrolleri için `agents.defaults.models["provider/model"].params.chat_template_kwargs` ayarını yapın. Paketlenmiş vLLM Plugin, oturum düşünme düzeyi kapalıyken `vllm/nemotron-3-*` için otomatik olarak `enable_thinking: false` ve `force_nonempty_content: true` gönderir.
+    - Yavaş yerel modeller veya uzak LAN/tailnet ana makineleri için `models.providers.<id>.timeoutSeconds` ayarını yapın. Bu, tüm ajan çalışma zamanı zaman aşımını artırmadan bağlanma, üstbilgiler, gövde akışı ve toplam korumalı-fetch iptali dahil sağlayıcı model HTTP istek işlemeyi genişletir.
+    - Model sağlayıcı HTTP çağrıları, yalnızca yapılandırılmış sağlayıcı `baseUrl` ana makine adı için `198.18.0.0/15` ve `fc00::/7` içindeki Surge, Clash ve sing-box sahte IP DNS yanıtlarına izin verir. Diğer özel, loopback, link-local ve metadata hedefleri yine de açık bir `models.providers.<id>.request.allowPrivateNetwork: true` katılımı gerektirir.
+    - `baseUrl` boşsa/atlanmışsa OpenClaw varsayılan OpenAI davranışını korur (bu da `api.openai.com` adresine çözümlenir).
     - Güvenlik için, açık bir `compat.supportsDeveloperRole: true` yine de yerel olmayan `openai-completions` uç noktalarında geçersiz kılınır.
-    - Yerel olmayan uç noktalarda `api: "anthropic-messages"` için (kanonik `anthropic` dışındaki herhangi bir sağlayıcı veya ana makinesi herkese açık bir `api.anthropic.com` uç noktası olmayan özel bir `models.providers.anthropic.baseUrl`), OpenClaw `claude-code-20250219`, `interleaved-thinking-2025-05-14` ve OAuth işaretleri gibi örtük Anthropic beta başlıklarını bastırır; böylece özel Anthropic uyumlu proxy'ler desteklenmeyen beta bayraklarını reddetmez. Proxy'nizin belirli beta özelliklerine ihtiyacı varsa `models.providers.<id>.headers["anthropic-beta"]` değerini açıkça ayarlayın.
+    - Yerel olmayan uç noktalarda `api: "anthropic-messages"` için (kanonik `anthropic` dışındaki herhangi bir sağlayıcı veya ana makinesi genel bir `api.anthropic.com` uç noktası olmayan özel bir `models.providers.anthropic.baseUrl`), OpenClaw `claude-code-20250219`, `interleaved-thinking-2025-05-14` ve OAuth işaretleri gibi örtük Anthropic beta üstbilgilerini bastırır; böylece özel Anthropic uyumlu proxy'ler desteklenmeyen beta bayraklarını reddetmez. Proxy'nizin belirli beta özelliklerine ihtiyacı varsa `models.providers.<id>.headers["anthropic-beta"]` değerini açıkça ayarlayın.
 
   </Accordion>
 </AccordionGroup>
@@ -712,11 +712,11 @@ openclaw models set opencode/claude-opus-4-6
 openclaw models list
 ```
 
-Ayrıca bkz.: tam yapılandırma örnekleri için [Yapılandırma](/tr/gateway/configuration).
+Tam yapılandırma örnekleri için ayrıca bkz.: [Yapılandırma](/tr/gateway/configuration).
 
 ## İlgili
 
-- [Yapılandırma referansı](/tr/gateway/config-agents#agent-defaults) - model yapılandırma anahtarları
-- [Model failover](/tr/concepts/model-failover) - geri dönüş zincirleri ve yeniden deneme davranışı
+- [Yapılandırma başvurusu](/tr/gateway/config-agents#agent-defaults) - model yapılandırma anahtarları
+- [Model devretme](/tr/concepts/model-failover) - yedek zincirleri ve yeniden deneme davranışı
 - [Modeller](/tr/concepts/models) - model yapılandırması ve takma adlar
-- [Sağlayıcılar](/tr/providers) - sağlayıcı bazında kurulum kılavuzları
+- [Sağlayıcılar](/tr/providers) - sağlayıcı başına kurulum kılavuzları

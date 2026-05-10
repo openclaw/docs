@@ -1,31 +1,60 @@
 ---
 read_when:
-    - text-to-speech に Gradium を使いたい場合
-    - Gradium API キーまたは音声設定が必要です
-summary: OpenClaw で Gradium の text-to-speech を使う
+    - テキスト読み上げには Gradium を使うことをおすすめします。
+    - Gradium API キー、音声、またはディレクティブトークンの設定が必要です
+summary: OpenClawでGradiumのテキスト読み上げを使用する
 title: Gradium
 x-i18n:
-    generated_at: "2026-04-25T13:57:27Z"
-    model: gpt-5.4
+    generated_at: "2026-05-10T19:49:40Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: ed836c836ad4e5f5033fa982b28341ce0b37f6972a8eb1bb5a2b0b5619859bcb
+    source_hash: 5c79da6ec63532061a8112965a679f1113bbefcc91ee00def8153dd39b5b5e58
     source_path: providers/gradium.md
-    workflow: 15
+    workflow: 16
 ---
 
-Gradium は OpenClaw に同梱されている text-to-speech provider です。通常の音声返信、ボイスノート互換の Opus 出力、そして電話向けサーフェス用の 8 kHz u-law 音声を生成できます。
+[Gradium](https://gradium.ai) は OpenClaw にバンドルされているテキスト読み上げプロバイダーです。この Plugin は通常の音声返信（WAV）、音声メモ互換の Opus 出力、電話サーフェス向けの 8 kHz u-law 音声をレンダリングできます。
+
+| プロパティ      | 値                                |
+| ------------- | ------------------------------------ |
+| プロバイダー ID   | `gradium`                            |
+| 認証          | `GRADIUM_API_KEY` または設定の `apiKey` |
+| ベース URL      | `https://api.gradium.ai`（デフォルト）   |
+| デフォルト音声 | `Emma`（`YTpq7expH9539ERJ`）          |
 
 ## セットアップ
 
-Gradium API キーを作成し、それを OpenClaw から参照できるようにします。
+Gradium API キーを作成し、環境変数または設定キーのどちらかで OpenClaw に公開します。
 
-```bash
-export GRADIUM_API_KEY="gsk_..."
-```
+<Tabs>
+  <Tab title="環境変数">
+    ```bash
+    export GRADIUM_API_KEY="gsk_..."
+    ```
+  </Tab>
 
-キーは `messages.tts.providers.gradium.apiKey` の下に config として保存することもできます。
+  <Tab title="設定キー">
+    ```json5
+    {
+      messages: {
+        tts: {
+          auto: "always",
+          provider: "gradium",
+          providers: {
+            gradium: {
+              apiKey: "${GRADIUM_API_KEY}",
+            },
+          },
+        },
+      },
+    }
+    ```
+  </Tab>
+</Tabs>
 
-## config
+この Plugin は、解決済みの `apiKey` を最初に確認し、`GRADIUM_API_KEY` 環境変数にフォールバックします。
+
+## 設定
 
 ```json5
 {
@@ -45,9 +74,17 @@ export GRADIUM_API_KEY="gsk_..."
 }
 ```
 
+| キー                                      | 型   | 説明                                                                                   |
+| ---------------------------------------- | ------ | --------------------------------------------------------------------------------------------- |
+| `messages.tts.providers.gradium.apiKey`  | string | 解決済み API キー。`${ENV}` とシークレット参照をサポートします。                                          |
+| `messages.tts.providers.gradium.baseUrl` | string | API オリジンを上書きします。末尾のスラッシュは削除されます。デフォルトは `https://api.gradium.ai` です。 |
+| `messages.tts.providers.gradium.voiceId` | string | ディレクティブによる上書きがない場合に使用されるデフォルトの音声 ID。                                  |
+
+出力音声形式は、対象サーフェスに基づいてランタイムが自動的に選択し、`openclaw.json` からは設定できません。下の[出力](#output)を参照してください。
+
 ## 音声
 
-| Name      | Voice ID           |
+| 名前      | 音声 ID           |
 | --------- | ------------------ |
 | Emma      | `YTpq7expH9539ERJ` |
 | Kent      | `LFZvm12tW_z0xfGo` |
@@ -59,13 +96,35 @@ export GRADIUM_API_KEY="gsk_..."
 
 デフォルト音声: Emma。
 
+### メッセージごとの音声上書き
+
+有効な音声ポリシーが音声上書きを許可している場合、ディレクティブトークンを使ってインラインで音声を切り替えられます。これらはすべて同じ `voiceId` 上書きに解決されます。
+
+```text
+/voice:LFZvm12tW_z0xfGo
+/voice_id:LFZvm12tW_z0xfGo
+/voiceid:LFZvm12tW_z0xfGo
+/gradium_voice:LFZvm12tW_z0xfGo
+/gradiumvoice:LFZvm12tW_z0xfGo
+```
+
+音声ポリシーが音声上書きを無効にしている場合、ディレクティブは消費されますが無視されます。
+
 ## 出力
 
-- 音声ファイル返信には WAV を使います。
-- ボイスノート返信には Opus を使い、voice 互換としてマークされます。
-- 電話向け合成では 8 kHz の `ulaw_8000` を使います。
+ランタイムは、対象サーフェスから出力形式を選択します。このプロバイダーは現在、他の形式を合成しません。
+
+| 対象         | 形式      | ファイル拡張子 | サンプルレート | 音声互換フラグ |
+| -------------- | ----------- | -------- | ----------- | --------------------- |
+| 標準音声 | `wav`       | `.wav`   | プロバイダー    | いいえ                    |
+| 音声メモ     | `opus`      | `.opus`  | プロバイダー    | はい                   |
+| 電話      | `ulaw_8000` | 該当なし      | 8 kHz       | 該当なし                   |
+
+## 自動選択順
+
+設定された TTS プロバイダーの中で、Gradium の自動選択順は `30` です。`messages.tts.provider` が固定されていない場合に OpenClaw が有効なプロバイダーを選択する方法については、[テキスト読み上げ](/ja-JP/tools/tts)を参照してください。
 
 ## 関連
 
-- [Text-to-Speech](/ja-JP/tools/tts)
-- [Media Overview](/ja-JP/tools/media-overview)
+- [テキスト読み上げ](/ja-JP/tools/tts)
+- [メディア概要](/ja-JP/tools/media-overview)

@@ -1,26 +1,26 @@
 ---
 read_when:
     - Ham model çıktısını akıl yürütme sızıntısı açısından incelemeniz gerekir
-    - Gateway’i yineleme yaparken izleme modunda çalıştırmak istiyorsunuz
+    - Yineleme yaparken Gateway'i izleme modunda çalıştırmak istiyorsunuz
     - Tekrarlanabilir bir hata ayıklama iş akışına ihtiyacınız var
 summary: 'Hata ayıklama araçları: izleme modu, ham model akışları ve akıl yürütme sızıntısını izleme'
 title: Hata ayıklama
 x-i18n:
-    generated_at: "2026-05-06T09:16:05Z"
+    generated_at: "2026-05-10T19:39:57Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 6b59845244a1e2920ca15b9b85ce5b29424e3a1528eece8c18ddeab69feaf86f
+    source_hash: adee3f6e81af12c73e7e8126111f5c4bcba1a5014f4d0d0714ae67b45db93cb0
     source_path: help/debugging.md
     workflow: 16
 ---
 
-Hata ayıklama yardımcıları, özellikle bir sağlayıcı akıl yürütmeyi normal metne karıştırdığında akış çıktısı için.
+Akış çıktısı için hata ayıklama yardımcıları, özellikle bir sağlayıcı akıl yürütmeyi normal metne karıştırdığında.
 
-## Runtime hata ayıklama geçersiz kılmaları
+## Çalışma zamanı hata ayıklama geçersiz kılmaları
 
-**Yalnızca runtime** yapılandırma geçersiz kılmalarını (disk değil, bellek) ayarlamak için sohbette `/debug` kullanın.
+**Yalnızca çalışma zamanına ait** yapılandırma geçersiz kılmaları (bellek, disk değil) ayarlamak için sohbette `/debug` kullanın.
 `/debug` varsayılan olarak devre dışıdır; `commands.debug: true` ile etkinleştirin.
-Bu, `openclaw.json` dosyasını düzenlemeden belirsiz ayarları açıp kapatmanız gerektiğinde kullanışlıdır.
+Bu, `openclaw.json` dosyasını düzenlemeden belirsiz ayarları değiştirmeniz gerektiğinde kullanışlıdır.
 
 Örnekler:
 
@@ -31,11 +31,12 @@ Bu, `openclaw.json` dosyasını düzenlemeden belirsiz ayarları açıp kapatman
 /debug reset
 ```
 
-`/debug reset` tüm geçersiz kılmaları temizler ve diskteki yapılandırmaya döner.
+`/debug reset` tüm geçersiz kılmaları temizler ve diskteki yapılandırmaya geri döner.
 
-## Oturum izleme çıktısı
+## Oturum iz çıktısı
 
-Tam ayrıntılı modu açmadan tek bir oturumda Plugin sahibi izleme/hata ayıklama satırlarını görmek istediğinizde `/trace` kullanın.
+Tam ayrıntılı modu açmadan tek bir oturumda Plugin'e ait iz/hata ayıklama
+satırlarını görmek istediğinizde `/trace` kullanın.
 
 Örnekler:
 
@@ -46,11 +47,15 @@ Tam ayrıntılı modu açmadan tek bir oturumda Plugin sahibi izleme/hata ayıkl
 ```
 
 Active Memory hata ayıklama özetleri gibi Plugin tanılamaları için `/trace` kullanın.
-Normal ayrıntılı durum/araç çıktısı için `/verbose` kullanmaya devam edin ve yalnızca runtime yapılandırma geçersiz kılmaları için `/debug` kullanmaya devam edin.
+Normal ayrıntılı durum/araç çıktısı için `/verbose` kullanmaya devam edin ve yalnızca
+çalışma zamanına ait yapılandırma geçersiz kılmaları için `/debug` kullanmaya devam edin.
 
-## Plugin yaşam döngüsü izlemesi
+## Plugin yaşam döngüsü izi
 
-Plugin yaşam döngüsü komutları yavaş hissettirdiğinde ve Plugin meta verisi, keşif, kayıt, runtime yansısı, yapılandırma mutasyonu ve yenileme işi için yerleşik bir aşama dökümüne ihtiyacınız olduğunda `OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1` kullanın. İzleme isteğe bağlıdır ve stderr'e yazar, bu nedenle JSON komut çıktısı ayrıştırılabilir kalır.
+Plugin yaşam döngüsü komutları yavaş hissettirdiğinde ve Plugin meta verileri,
+keşif, kayıt defteri, çalışma zamanı aynası, yapılandırma mutasyonu ve yenileme işi için
+yerleşik bir aşama dökümüne ihtiyaç duyduğunuzda `OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1`
+kullanın. İz isteğe bağlıdır ve stderr'e yazar; bu nedenle JSON komut çıktısı ayrıştırılabilir kalır.
 
 Örnek:
 
@@ -66,12 +71,14 @@ OPENCLAW_PLUGIN_LIFECYCLE_TRACE=1 openclaw plugins install tokenjuice --force
 [plugins:lifecycle] phase="registry refresh" ms=51.56 status=ok command="install" reason="source-changed"
 ```
 
-CPU profil aracına başvurmadan önce bunu Plugin yaşam döngüsü araştırması için kullanın.
-Komut bir kaynak checkout'ından çalışıyorsa, `pnpm build` sonrasında `node dist/entry.js ...` ile derlenmiş runtime'ı ölçmeyi tercih edin; `pnpm openclaw ...` kaynak çalıştırıcı ek yükünü de ölçer.
+CPU profiler'a başvurmadan önce Plugin yaşam döngüsü incelemesi için bunu kullanın.
+Komut bir kaynak checkout'ından çalışıyorsa `pnpm build` sonrasında oluşturulmuş
+çalışma zamanını `node dist/entry.js ...` ile ölçmeyi tercih edin; `pnpm openclaw ...`
+kaynak çalıştırıcısı ek yükünü de ölçer.
 
-## CLI başlatma ve komut profilleme
+## CLI başlangıcı ve komut profilleme
 
-Bir komut yavaş hissettirdiğinde depoya eklenmiş başlatma karşılaştırmasını kullanın:
+Bir komut yavaş hissettirdiğinde depoya eklenmiş başlangıç benchmark'ını kullanın:
 
 ```bash
 pnpm test:startup:bench:smoke
@@ -79,32 +86,39 @@ pnpm tsx scripts/bench-cli-startup.ts --preset real --case status --runs 3
 pnpm tsx scripts/bench-cli-startup.ts --preset real --cpu-prof-dir .artifacts/cli-cpu
 ```
 
-Normal kaynak çalıştırıcı üzerinden tek seferlik profilleme için `OPENCLAW_RUN_NODE_CPU_PROF_DIR` ayarlayın:
+Normal kaynak çalıştırıcısı üzerinden tek seferlik profilleme için
+`OPENCLAW_RUN_NODE_CPU_PROF_DIR` ayarlayın:
 
 ```bash
 OPENCLAW_RUN_NODE_CPU_PROF_DIR=.artifacts/cli-cpu pnpm openclaw status
 ```
 
-Kaynak çalıştırıcı Node CPU profil bayraklarını ekler ve komut için bir `.cpuprofile` yazar. Komut koduna geçici enstrümantasyon eklemeden önce bunu kullanın.
+Kaynak çalıştırıcısı Node CPU profil bayraklarını ekler ve komut için bir
+`.cpuprofile` yazar. Komut koduna geçici enstrümantasyon eklemeden önce bunu kullanın.
 
-Eşzamanlı dosya sistemi veya modül yükleyici işi gibi görünen başlatma takılmaları için, kaynak çalıştırıcı üzerinden Node'un senkron G/Ç izleme bayrağını ekleyin:
+Eşzamanlı dosya sistemi veya modül yükleyici işi gibi görünen başlangıç takılmaları için
+kaynak çalıştırıcısı üzerinden Node'un sync I/O iz bayrağını ekleyin:
 
 ```bash
 OPENCLAW_TRACE_SYNC_IO=1 pnpm openclaw gateway --force
 ```
 
-`pnpm gateway:watch`, izlenen Gateway alt süreci için bu bayrağı varsayılan olarak etkinleştirir.
-İzleme modunda Node senkron G/Ç izleme çıktısını bastırmak için `OPENCLAW_TRACE_SYNC_IO=0` ayarlayın.
+`pnpm gateway:watch`, izlenen Gateway child için bu bayrağı varsayılan olarak devre dışı bırakır.
+İzleme modunda Node sync I/O iz çıktısını açıkça istediğinizde `OPENCLAW_TRACE_SYNC_IO=1` ayarlayın.
 
 ## Gateway izleme modu
 
-Hızlı yineleme için gateway'i dosya izleyicisi altında çalıştırın:
+Hızlı yineleme için Gateway'i dosya izleyicisi altında çalıştırın:
 
 ```bash
 pnpm gateway:watch
 ```
 
-Varsayılan olarak bu, `openclaw-gateway-watch-main` adlı bir tmux oturumu (veya `openclaw-gateway-watch-dev-19001` gibi profile/porta özgü bir varyant) başlatır veya yeniden başlatır ve etkileşimli terminallerden otomatik olarak bağlanır. Etkileşimsiz kabuklar, CI ve agent exec çağrıları bağlı kalmaz ve bunun yerine bağlanma talimatlarını yazdırır. Gerektiğinde elle bağlanın:
+Varsayılan olarak bu, `openclaw-gateway-watch-main` adlı bir tmux oturumu (veya
+`openclaw-gateway-watch-dev-19001` gibi profile/porta özel bir varyant) başlatır ya da yeniden başlatır
+ve etkileşimli terminallerden otomatik olarak bağlanır. Etkileşimsiz kabuklar, CI
+ve agent exec çağrıları ayrık kalır ve bunun yerine bağlanma yönergelerini yazdırır.
+Gerektiğinde elle bağlanın:
 
 ```bash
 tmux attach -t openclaw-gateway-watch-main
@@ -130,38 +144,63 @@ tmux yönetimini korurken otomatik bağlanmayı devre dışı bırakın:
 OPENCLAW_GATEWAY_WATCH_ATTACH=0 pnpm gateway:watch
 ```
 
-Başlatma/runtime darboğazlarını hata ayıklarken izlenen Gateway CPU süresini profilleyin:
+Başlangıç/çalışma zamanı etkin noktalarında hata ayıklarken izlenen Gateway CPU süresini profilleyin:
 
 ```bash
 pnpm gateway:watch --benchmark
 ```
 
-İzleme sarmalayıcısı Gateway'i çağırmadan önce `--benchmark` tüketir ve `.artifacts/gateway-watch-profiles/` altında her Gateway alt süreç çıkışı için bir V8 `.cpuprofile` yazar. Mevcut profili diske yazmak için izlenen gateway'i durdurun veya yeniden başlatın, ardından Chrome DevTools ya da Speedscope ile açın:
+İzleme sarmalayıcısı Gateway'i çağırmadan önce `--benchmark` seçeneğini tüketir ve
+`.artifacts/gateway-watch-profiles/` altında her Gateway child çıkışı için
+bir V8 `.cpuprofile` yazar. Geçerli profili boşaltmak için izlenen gateway'i durdurun
+veya yeniden başlatın, ardından Chrome DevTools ya da Speedscope ile açın:
 
 ```bash
 npx speedscope .artifacts/gateway-watch-profiles/*.cpuprofile
 ```
 
 Profilleri başka bir yerde istediğinizde `--benchmark-dir <path>` kullanın.
-Karşılaştırılan alt sürecin varsayılan `--force` port temizliğini atlamasını ve Gateway portu zaten kullanımdaysa hızlıca başarısız olmasını istediğinizde `--benchmark-no-force` kullanın.
-Karşılaştırma modu varsayılan olarak senkron G/Ç izleme gürültüsünü bastırır. Açıkça hem CPU profillerini hem de Node senkron G/Ç yığın izlerini istediğinizde `--benchmark` ile `OPENCLAW_TRACE_SYNC_IO=1` ayarlayın. Karşılaştırma modunda bu izleme blokları karşılaştırma dizini altında `gateway-watch-output.log` dosyasına yazılır ve terminal bölmesinden filtrelenir; normal Gateway günlükleri görünür kalır.
+Benchmark yapılan child'ın varsayılan `--force` port temizliğini atlamasını ve
+Gateway portu zaten kullanımdaysa hızlıca başarısız olmasını istediğinizde `--benchmark-no-force` kullanın.
+Benchmark modu, varsayılan olarak sync-I/O iz spam'ini bastırır. Hem CPU
+profilleri hem de Node sync-I/O yığın izlerini açıkça istediğinizde `--benchmark` ile
+`OPENCLAW_TRACE_SYNC_IO=1` ayarlayın. Benchmark modunda bu iz blokları benchmark
+dizini altındaki `gateway-watch-output.log` dosyasına yazılır ve terminal bölmesinden
+filtrelenir; normal Gateway günlükleri görünür kalır.
 
-tmux sarmalayıcısı `OPENCLAW_PROFILE`, `OPENCLAW_CONFIG_PATH`, `OPENCLAW_STATE_DIR`, `OPENCLAW_GATEWAY_PORT` ve `OPENCLAW_SKIP_CHANNELS` gibi yaygın gizli olmayan runtime seçicilerini bölmeye taşır. Sağlayıcı kimlik bilgilerini normal profil/yapılandırmanıza koyun veya tek seferlik geçici sırlar için ham ön plan modunu kullanın.
-İzlenen Gateway başlatma sırasında çıkarsa, izleyici bir kez `openclaw doctor --fix --non-interactive` çalıştırır ve Gateway alt sürecini yeniden başlatır. Geliştirmeye özel onarım geçişi olmadan özgün başlatma hatasını istediğinizde `OPENCLAW_GATEWAY_WATCH_AUTO_DOCTOR=0` kullanın.
-Yönetilen tmux bölmesi ayrıca okunabilirlik için varsayılan olarak renkli Gateway günlükleri kullanır; ANSI çıktısını devre dışı bırakmak için `pnpm gateway:watch` başlatırken `FORCE_COLOR=0` ayarlayın.
+tmux sarmalayıcısı `OPENCLAW_PROFILE`, `OPENCLAW_CONFIG_PATH`, `OPENCLAW_STATE_DIR`,
+`OPENCLAW_GATEWAY_PORT` ve `OPENCLAW_SKIP_CHANNELS` gibi yaygın gizli olmayan
+çalışma zamanı seçicilerini bölmeye taşır. Sağlayıcı kimlik bilgilerini normal
+profilinize/yapılandırmanıza koyun veya tek seferlik geçici sırlar için ham ön plan modunu kullanın.
+İzlenen Gateway başlangıç sırasında çıkarsa izleyici bir kez
+`openclaw doctor --fix --non-interactive` çalıştırır ve Gateway child'ı yeniden başlatır.
+Yalnızca geliştirmeye özel onarım geçişi olmadan özgün başlangıç hatasını istediğinizde
+`OPENCLAW_GATEWAY_WATCH_AUTO_DOCTOR=0` kullanın.
+Yönetilen tmux bölmesi ayrıca okunabilirlik için varsayılan olarak renkli Gateway günlükleri kullanır;
+ANSI çıktısını devre dışı bırakmak için `pnpm gateway:watch` başlatırken `FORCE_COLOR=0` ayarlayın.
 
-İzleyici, `src/` altındaki derlemeyle ilgili dosyalar, Plugin kaynak dosyaları, Plugin `package.json` ve `openclaw.plugin.json` meta verileri, `tsconfig.json`, `package.json` ve `tsdown.config.ts` üzerinde yeniden başlatır. Plugin meta verisi değişiklikleri gateway'i `tsdown` yeniden derlemesini zorlamadan yeniden başlatır; kaynak ve yapılandırma değişiklikleri hâlâ önce `dist` derler.
+İzleyici, `src/` altındaki derlemeyle ilgili dosyalarda, uzantı kaynak dosyalarında,
+uzantı `package.json` ve `openclaw.plugin.json` meta verilerinde, `tsconfig.json`,
+`package.json` ve `tsdown.config.ts` dosyalarında yeniden başlatılır. Uzantı meta verisi değişiklikleri
+gateway'i `tsdown` yeniden derlemesini zorlamadan yeniden başlatır; kaynak ve yapılandırma
+değişiklikleri yine önce `dist` derler.
 
-Her yeniden başlatmada geçirilmeleri için gateway CLI bayraklarını `gateway:watch` sonrasına ekleyin. Aynı izleme komutunu yeniden çalıştırmak adlandırılmış tmux bölmesini yeniden oluşturur ve ham izleyici yine tek izleyici kilidini korur, böylece yinelenen izleyici üst süreçleri birikmek yerine değiştirilir.
+`gateway:watch` sonrasına herhangi bir gateway CLI bayrağı ekleyin; her yeniden başlatmada
+aktarılırlar. Aynı izleme komutunu yeniden çalıştırmak adlı tmux bölmesini yeniden oluşturur ve
+ham izleyici, yinelenen izleyici üst süreçlerinin birikmek yerine değiştirilmesi için
+tek izleyici kilidini korumaya devam eder.
 
-## Dev profili + dev gateway (--dev)
+## Geliştirme profili + geliştirme gateway'i (--dev)
 
-Durumu yalıtmak ve hata ayıklama için güvenli, atılabilir bir kurulum başlatmak üzere dev profilini kullanın. **İki** `--dev` bayrağı vardır:
+Durumu izole etmek ve hata ayıklama için güvenli, atılabilir bir kurulum başlatmak üzere
+geliştirme profilini kullanın. **İki** `--dev` bayrağı vardır:
 
-- **Global `--dev` (profil):** durumu `~/.openclaw-dev` altında yalıtır ve gateway portunu varsayılan olarak `19001` yapar (türetilmiş portlar bununla birlikte kayar).
-- **`gateway --dev`: eksik olduğunda Gateway'e varsayılan bir yapılandırma + çalışma alanını otomatik oluşturmasını söyler** (ve BOOTSTRAP.md dosyasını atlar).
+- **Global `--dev` (profil):** durumu `~/.openclaw-dev` altında izole eder ve
+  varsayılan gateway portunu `19001` olarak ayarlar (türetilmiş portlar onunla birlikte kayar).
+- **`gateway --dev`: eksik olduğunda Gateway'e varsayılan bir yapılandırma +
+  çalışma alanını otomatik oluşturmasını söyler** (ve BOOTSTRAP.md dosyasını atlar).
 
-Önerilen akış (dev profili + dev bootstrap):
+Önerilen akış (geliştirme profili + geliştirme bootstrap'i):
 
 ```bash
 pnpm gateway:dev
@@ -170,7 +209,7 @@ OPENCLAW_PROFILE=dev openclaw tui
 
 Henüz global kurulumunuz yoksa CLI'yi `pnpm openclaw ...` üzerinden çalıştırın.
 
-Bunun yaptığı:
+Bunun yaptıkları:
 
 1. **Profil yalıtımı** (global `--dev`)
    - `OPENCLAW_PROFILE=dev`
@@ -178,23 +217,23 @@ Bunun yaptığı:
    - `OPENCLAW_CONFIG_PATH=~/.openclaw-dev/openclaw.json`
    - `OPENCLAW_GATEWAY_PORT=19001` (tarayıcı/canvas buna göre kayar)
 
-2. **Dev bootstrap** (`gateway --dev`)
+2. **Geliştirme bootstrap'i** (`gateway --dev`)
    - Eksikse minimal bir yapılandırma yazar (`gateway.mode=local`, bind loopback).
-   - `agent.workspace` değerini dev çalışma alanına ayarlar.
-   - `agent.skipBootstrap=true` ayarlar (BOOTSTRAP.md yok).
+   - `agent.workspace` değerini geliştirme çalışma alanına ayarlar.
+   - `agent.skipBootstrap=true` değerini ayarlar (BOOTSTRAP.md yok).
    - Eksikse çalışma alanı dosyalarını tohumlar:
      `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`.
    - Varsayılan kimlik: **C3-PO** (protokol droidi).
-   - Dev modunda kanal sağlayıcılarını atlar (`OPENCLAW_SKIP_CHANNELS=1`).
+   - Geliştirme modunda kanal sağlayıcılarını atlar (`OPENCLAW_SKIP_CHANNELS=1`).
 
-Sıfırlama akışı (temiz başlangıç):
+Sıfırlama akışı (taze başlangıç):
 
 ```bash
 pnpm gateway:dev:reset
 ```
 
 <Note>
-`--dev` **global** bir profil bayrağıdır ve bazı çalıştırıcılar tarafından yutulur. Açıkça yazmanız gerekiyorsa env var biçimini kullanın:
+`--dev` bir **global** profil bayrağıdır ve bazı çalıştırıcılar tarafından tüketilir. Açıkça yazmanız gerekiyorsa env var biçimini kullanın:
 
 ```bash
 OPENCLAW_PROFILE=dev openclaw gateway --dev --reset
@@ -202,10 +241,11 @@ OPENCLAW_PROFILE=dev openclaw gateway --dev --reset
 
 </Note>
 
-`--reset` yapılandırmayı, kimlik bilgilerini, oturumları ve dev çalışma alanını (`rm` değil `trash` kullanarak) siler, ardından varsayılan dev kurulumunu yeniden oluşturur.
+`--reset`, yapılandırmayı, kimlik bilgilerini, oturumları ve geliştirme çalışma alanını
+(`rm` değil, `trash` kullanarak) siler, ardından varsayılan geliştirme kurulumunu yeniden oluşturur.
 
 <Tip>
-Dev olmayan bir gateway zaten çalışıyorsa (launchd veya systemd), önce onu durdurun:
+Geliştirme dışı bir gateway zaten çalışıyorsa (launchd veya systemd), önce durdurun:
 
 ```bash
 openclaw gateway stop
@@ -213,10 +253,11 @@ openclaw gateway stop
 
 </Tip>
 
-## Ham akış günlüğü (OpenClaw)
+## Ham akış günlükleme (OpenClaw)
 
-OpenClaw, herhangi bir filtreleme/biçimlendirme öncesinde **ham asistan akışını** günlüğe kaydedebilir.
-Bu, akıl yürütmenin düz metin deltaları olarak mı (yoksa ayrı düşünme blokları olarak mı) geldiğini görmenin en iyi yoludur.
+OpenClaw, herhangi bir filtreleme/biçimlendirme öncesinde **ham asistan akışını** günlüğe yazabilir.
+Bu, akıl yürütmenin düz metin deltaları olarak mı (yoksa ayrı düşünme blokları olarak mı)
+geldiğini görmenin en iyi yoludur.
 
 CLI üzerinden etkinleştirin:
 
@@ -224,13 +265,13 @@ CLI üzerinden etkinleştirin:
 pnpm gateway:watch --raw-stream
 ```
 
-İsteğe bağlı yol geçersiz kılma:
+İsteğe bağlı yol geçersiz kılması:
 
 ```bash
 pnpm gateway:watch --raw-stream --raw-stream-path ~/.openclaw/logs/raw-stream.jsonl
 ```
 
-Eşdeğer env var değerleri:
+Eşdeğer env var'lar:
 
 ```bash
 OPENCLAW_RAW_STREAM=1
@@ -241,9 +282,10 @@ Varsayılan dosya:
 
 `~/.openclaw/logs/raw-stream.jsonl`
 
-## Ham parça günlüğü (pi-mono)
+## Ham parça günlükleme (pi-mono)
 
-**Ham OpenAI uyumlu parçaları** bloklara ayrıştırılmadan önce yakalamak için pi-mono ayrı bir günlükleyici sunar:
+**Ham OpenAI uyumlu parçaları** bloklara ayrıştırılmadan önce yakalamak için
+pi-mono ayrı bir günlükleyici sunar:
 
 ```bash
 PI_RAW_STREAM=1
@@ -259,28 +301,28 @@ Varsayılan dosya:
 
 `~/.pi-mono/logs/raw-openai-completions.jsonl`
 
-> Not: bu yalnızca pi-mono'nun
-> `openai-completions` sağlayıcısını kullanan süreçler tarafından üretilir.
+> Not: Bu yalnızca pi-mono'nun
+> `openai-completions` sağlayıcısını kullanan süreçler tarafından yayılır.
 
 ## Güvenlik notları
 
-- Ham akış günlükleri tam promptları, araç çıktısını ve kullanıcı verilerini içerebilir.
+- Ham akış günlükleri tam istemleri, araç çıktısını ve kullanıcı verilerini içerebilir.
 - Günlükleri yerel tutun ve hata ayıklamadan sonra silin.
-- Günlükleri paylaşırsanız önce sırları ve kişisel verileri temizleyin.
+- Günlükleri paylaşırsanız önce sırları ve PII'yi temizleyin.
 
 ## VSCode'da hata ayıklama
 
-VSCode tabanlı IDE'lerde hata ayıklamayı etkinleştirmek için kaynak haritaları gerekir, çünkü üretilen dosyaların çoğu derleme sürecinin bir parçası olarak hash'li adlarla sonuçlanır. Dahil edilen `launch.json` yapılandırmaları Gateway servisini hedefler, ancak başka amaçlar için hızlıca uyarlanabilir:
+Derleme sürecinin bir parçası olarak oluşturulan dosyaların çoğu karma adlarla sonuçlandığı için VSCode tabanlı IDE'lerde hata ayıklamayı etkinleştirmek üzere kaynak haritaları gerekir. Dahil edilen `launch.json` yapılandırmaları Gateway hizmetini hedefler, ancak başka amaçlar için hızla uyarlanabilir:
 
-1. **Gateway'i Yeniden Derle ve Hata Ayıkla** - Yeni bir derleme oluşturduktan sonra Gateway servisinde hata ayıklar
-2. **Gateway'de Hata Ayıkla** - Önceden var olan bir derlemenin Gateway servisinde hata ayıklar
+1. **Gateway'i Yeniden Derle ve Hata Ayıkla** - Yeni bir derleme oluşturduktan sonra Gateway hizmetinde hata ayıklar
+2. **Gateway'de Hata Ayıkla** - Önceden var olan bir derlemenin Gateway hizmetinde hata ayıklar
 
 ### Kurulum
 
-Varsayılan **Gateway'i Yeniden Derle ve Hata Ayıkla** yapılandırması hazır gelir; `/dist` klasörünü otomatik olarak siler ve projeyi hata ayıklama etkin şekilde yeniden derler:
+Varsayılan **Gateway'i Yeniden Derle ve Hata Ayıkla** yapılandırması kullanıma hazırdır; `/dist` klasörünü otomatik olarak siler ve hata ayıklama etkin olarak projeyi yeniden derler:
 
 1. Activity Bar'dan **Çalıştır ve Hata Ayıkla** panelini açın veya `Ctrl`+`Shift`+`D` tuşlarına basın
-2. IDE'de yapılandırma açılır menüsünde **Gateway'i Yeniden Derle ve Hata Ayıkla** seçili olduğundan emin olun, ardından **Hata Ayıklamayı Başlat** düğmesine basın
+2. IDE'de yapılandırma açılır menüsünde **Gateway'i Yeniden Derle ve Hata Ayıkla** seçili olduğundan emin olun ve ardından **Hata Ayıklamayı Başlat** düğmesine basın
 
 Alternatif olarak - derleme ve hata ayıklama süreçlerini elle yönetmeyi tercih ediyorsanız:
 
@@ -289,18 +331,18 @@ Alternatif olarak - derleme ve hata ayıklama süreçlerini elle yönetmeyi terc
    - **Windows (PowerShell)**: `$env:OUTPUT_SOURCE_MAPS="1"`
    - **Windows (CMD)**: `set OUTPUT_SOURCE_MAPS=1`
 2. Aynı terminalde projeyi yeniden derleyin: `pnpm clean:dist && pnpm build`
-3. IDE'de **Çalıştır ve Hata Ayıkla** yapılandırma açılır menüsünde **Gateway'de Hata Ayıkla** seçeneğini seçin, ardından **Hata Ayıklamayı Başlat** düğmesine basın
+3. IDE'de **Çalıştır ve Hata Ayıkla** yapılandırma açılır menüsünde **Gateway'de Hata Ayıkla** seçeneğini seçin ve ardından **Hata Ayıklamayı Başlat** düğmesine basın
 
-Artık TypeScript kaynak dosyalarınızda (`src/` dizini) kesme noktaları ayarlayabilirsiniz ve hata ayıklayıcı, kaynak haritaları aracılığıyla kesme noktalarını derlenmiş JavaScript'e doğru şekilde eşler. Değişkenleri inceleyebilir, kodda adım adım ilerleyebilir ve çağrı yığınlarını beklendiği gibi inceleyebilirsiniz.
+Artık TypeScript kaynak dosyalarınızda (`src/` dizini) kesme noktaları ayarlayabilirsiniz ve hata ayıklayıcı, kaynak haritaları aracılığıyla kesme noktalarını derlenmiş JavaScript'e doğru şekilde eşleyecektir. Değişkenleri inceleyebilecek, kodda adım adım ilerleyebilecek ve çağrı yığınlarını beklendiği gibi inceleyebileceksiniz.
 
 ### Notlar
 
-- **"Gateway'i Yeniden Derle ve Hata Ayıkla"** seçeneğini kullanıyorsanız - hata ayıklayıcı her başlatıldığında `/dist` klasörünü tamamen siler ve Gateway'i başlatmadan önce kaynak haritaları etkin şekilde tam bir `pnpm build` çalıştırır
+- **"Gateway'i Yeniden Derle ve Hata Ayıkla"** seçeneğini kullanıyorsanız - hata ayıklayıcı her başlatıldığında `/dist` klasörünü tamamen siler ve Gateway'i başlatmadan önce kaynak haritaları etkinleştirilmiş tam bir `pnpm build` çalıştırır
 - **"Gateway'de Hata Ayıkla"** seçeneğini kullanıyorsanız - hata ayıklama oturumları `/dist` klasörünü etkilemeden herhangi bir zamanda başlatılıp durdurulabilir, ancak hem hata ayıklamayı etkinleştirmek hem de derleme döngüsünü yönetmek için ayrı bir terminal süreci kullanmanız gerekir
-- Projenin diğer bölümlerinde hata ayıklamak için `launch.json` ayarlarında `args` değerini değiştirin
-- Diğer görevler için derlenmiş OpenClaw CLI'yi kullanmanız gerekiyorsa (yani hata ayıklama oturumunuz yeni bir auth token oluşturursa `dashboard --no-open`), başka bir terminalde `node ./openclaw.mjs` olarak çalıştırabilir veya `alias openclaw-build="node $(pwd)/openclaw.mjs"` gibi bir kabuk alias'ı oluşturabilirsiniz
+- Projenin diğer bölümlerinde hata ayıklamak için `args` için `launch.json` ayarlarını değiştirin
+- Başka görevler için oluşturulmuş OpenClaw CLI'yi kullanmanız gerekiyorsa (örn. hata ayıklama oturumunuz yeni bir auth token oluşturuyorsa `dashboard --no-open`), başka bir terminalde `node ./openclaw.mjs` olarak çalıştırabilir veya `alias openclaw-build="node $(pwd)/openclaw.mjs"` gibi bir shell alias oluşturabilirsiniz
 
 ## İlgili
 
-- [Sorun Giderme](/tr/help/troubleshooting)
+- [Sorun giderme](/tr/help/troubleshooting)
 - [SSS](/tr/help/faq)

@@ -1,21 +1,21 @@
 ---
 read_when:
-    - 你想通过脚本运行一次智能体轮次（可选择发送回复）
+    - 你想从脚本运行一次智能体轮次（可选择递送回复）
 summary: '`openclaw agent` 的 CLI 参考（通过 Gateway 网关发送一个智能体轮次）'
 title: 智能体
 x-i18n:
-    generated_at: "2026-04-29T18:42:32Z"
+    generated_at: "2026-05-10T19:26:41Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b77668949040933c5281f2f183e48cc2593d09252470483b9ae38dcffd13d071
+    source_hash: ae5c2f895cadf70a6253e49a3c7c698a04840a24231076cf8ef5bab340162f52
     source_path: cli/agent.md
     workflow: 16
 ---
 
 # `openclaw agent`
 
-通过 Gateway 网关运行一个智能体轮次（嵌入式模式使用 `--local`）。
-使用 `--agent <id>` 直接指定已配置的智能体。
+通过 Gateway 网关运行一次智能体轮次（嵌入式模式使用 `--local`）。
+使用 `--agent <id>` 直接定位一个已配置的智能体。
 
 至少传入一个会话选择器：
 
@@ -31,11 +31,11 @@ x-i18n:
 
 - `-m, --message <text>`：必需的消息正文
 - `-t, --to <dest>`：用于派生会话键的接收方
-- `--session-id <id>`：显式会话 ID
-- `--agent <id>`：智能体 ID；覆盖路由绑定
-- `--model <id>`：本次运行的模型覆盖项（`provider/model` 或模型 ID）
+- `--session-id <id>`：显式会话 id
+- `--agent <id>`：智能体 id；覆盖路由绑定
+- `--model <id>`：本次运行的模型覆盖项（`provider/model` 或模型 id）
 - `--thinking <level>`：智能体思考级别（`off`、`minimal`、`low`、`medium`、`high`，以及提供商支持的自定义级别，例如 `xhigh`、`adaptive` 或 `max`）
-- `--verbose <on|off>`：为该会话持久化详细级别
+- `--verbose <on|off>`：为会话持久化详细级别
 - `--channel <channel>`：投递渠道；省略时使用主会话渠道
 - `--reply-to <target>`：投递目标覆盖项
 - `--reply-channel <channel>`：投递渠道覆盖项
@@ -57,18 +57,52 @@ openclaw agent --agent ops --message "Generate report" --deliver --reply-channel
 openclaw agent --agent ops --message "Run locally" --local
 ```
 
-## 说明
+## 注意事项
 
-- Gateway 网关模式会在 Gateway 网关请求失败时回退到嵌入式智能体。使用 `--local` 可从一开始就强制执行嵌入式运行。
+- 当 Gateway 网关请求失败时，Gateway 网关模式会回退到嵌入式智能体。使用 `--local` 可从一开始就强制嵌入式执行。
 - `--local` 仍会先预加载插件注册表，因此插件提供的提供商、工具和渠道在嵌入式运行期间仍然可用。
-- `--local` 和嵌入式回退运行会被视为一次性运行。为该本地进程打开的内置 MCP loopback 资源和预热的 Claude stdio 会话会在回复后被回收，因此脚本调用不会让本地子进程保持运行。
-- 由 Gateway 网关支持的运行会把 Gateway 网关拥有的 MCP loopback 资源留在正在运行的 Gateway 网关进程下；较旧的客户端可能仍会发送历史清理标志，但 Gateway 网关会将其作为兼容性空操作接受。
-- `--channel`、`--reply-channel` 和 `--reply-account` 影响回复投递，而不是会话路由。
-- `--json` 会保留 stdout 专用于 JSON 响应。Gateway 网关、插件和嵌入式回退诊断会路由到 stderr，因此脚本可以直接解析 stdout。
-- 嵌入式回退 JSON 包含 `meta.transport: "embedded"` 和 `meta.fallbackFrom: "gateway"`，因此脚本可以将回退运行与 Gateway 网关运行区分开。
-- 如果 Gateway 网关接受了智能体运行，但 CLI 在等待最终回复时超时，嵌入式回退会使用新的显式 `gateway-fallback-*` 会话/运行 ID，并报告 `meta.fallbackReason: "gateway_timeout"` 以及回退会话字段。这样可避免与 Gateway 网关拥有的转录锁竞争，或静默替换原始路由会话。
-- 当此命令触发 `models.json` 重新生成时，由 SecretRef 管理的提供商凭据会以非秘密标记形式持久化（例如环境变量名称、`secretref-env:ENV_VAR_NAME` 或 `secretref-managed`），而不是解析后的秘密明文。
-- 标记写入以来源为权威：OpenClaw 会从活跃来源配置快照持久化标记，而不是从已解析的运行时秘密值持久化。
+- `--local` 和嵌入式回退运行会被视为一次性运行。为该本地进程打开的内置 MCP 回环资源和预热的 Claude stdio 会话会在回复后被回收，因此脚本化调用不会让本地子进程保持存活。
+- Gateway 网关支持的运行会将 Gateway 网关拥有的 MCP 回环资源留在正在运行的 Gateway 网关进程下；较旧的客户端可能仍会发送历史清理标志，但 Gateway 网关会将其作为兼容性空操作接受。
+- `--channel`、`--reply-channel` 和 `--reply-account` 影响回复投递，而不影响会话路由。
+- `--json` 会将 stdout 保留给 JSON 响应。Gateway 网关、插件和嵌入式回退诊断信息会路由到 stderr，因此脚本可以直接解析 stdout。
+- 嵌入式回退 JSON 包含 `meta.transport: "embedded"` 和 `meta.fallbackFrom: "gateway"`，因此脚本可以区分回退运行和 Gateway 网关运行。
+- 如果 Gateway 网关接受了智能体运行，但 CLI 在等待最终回复时超时，嵌入式回退会使用一个新的显式 `gateway-fallback-*` 会话/运行 id，并报告 `meta.fallbackReason: "gateway_timeout"` 以及回退会话字段。这样可以避免与 Gateway 网关拥有的转录锁竞争，或静默替换原始路由会话。
+- 当此命令触发 `models.json` 重新生成时，由 SecretRef 管理的提供商凭证会以非密钥标记形式持久化（例如环境变量名称、`secretref-env:ENV_VAR_NAME` 或 `secretref-managed`），而不是解析后的密钥明文。
+- 标记写入以源为权威：OpenClaw 会从活动源配置快照持久化标记，而不是从解析后的运行时密钥值持久化。
+
+## JSON 投递状态
+
+使用 `--json --deliver` 时，CLI JSON 响应可能包含顶层 `deliveryStatus`，以便脚本区分已投递、已抑制、部分失败和发送失败：
+
+```json
+{
+  "payloads": [{ "text": "Report ready", "mediaUrl": null }],
+  "meta": { "durationMs": 1200 },
+  "deliveryStatus": {
+    "requested": true,
+    "attempted": true,
+    "status": "sent",
+    "succeeded": true,
+    "resultCount": 1
+  }
+}
+```
+
+`deliveryStatus.status` 是 `sent`、`suppressed`、`partial_failed` 或 `failed` 之一。`suppressed` 表示有意未发送投递，例如消息发送钩子取消了它，或者没有可见结果；它仍然是一个终止性的无重试结果。`partial_failed` 表示至少一个载荷已发送，但后续载荷失败。`failed` 表示没有完成持久发送，或投递预检失败。
+
+Gateway 网关支持的 CLI 响应也会保留原始 Gateway 网关结果形状，其中同一对象可在 `result.deliveryStatus` 中获得。
+
+常见字段：
+
+- `requested`：对象存在时始终为 `true`。
+- `attempted`：持久发送路径运行后为 `true`；预检失败或没有可见载荷时为 `false`。
+- `succeeded`：`true`、`false` 或 `"partial"`；`"partial"` 与 `status: "partial_failed"` 配对。
+- `reason`：来自持久投递或预检验证的小写 snake-case 原因。已知原因包括 `cancelled_by_message_sending_hook`、`no_visible_payload`、`no_visible_result`、`channel_resolved_to_internal`、`unknown_channel`、`invalid_delivery_target` 和 `no_delivery_target`；失败的持久发送也可能报告失败阶段。将未知值视为不透明值，因为集合可能会扩展。
+- `resultCount`：可用时表示渠道发送结果的数量。
+- `sentBeforeError`：部分失败在发生错误前已发送至少一个载荷时为 `true`。
+- `error`：发送失败或部分失败时布尔值为 `true`。
+- `errorMessage`：仅在捕获到底层投递错误消息时包含。预检失败会带有 `error` 和 `reason`，但没有 `errorMessage`。
+- `payloadOutcomes`：可选的逐载荷结果，可用时包含 `index`、`status`、`reason`、`resultCount`、`error`、`stage`、`sentBeforeError` 或钩子元数据。
 
 ## 相关
 

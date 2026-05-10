@@ -1,47 +1,47 @@
 ---
 read_when:
-    - Bir ilk katılım yolu seçme
+    - Bir ilk kurulum yolu seçme
     - Yeni bir ortam kurma
 sidebarTitle: Onboarding Overview
-summary: OpenClaw ilk katılım seçenekleri ve akışlarına genel bakış
-title: İlk katılıma genel bakış
+summary: OpenClaw ilk kurulum seçenekleri ve akışlarına genel bakış
+title: Başlangıç sürecine genel bakış
 x-i18n:
-    generated_at: "2026-04-24T09:32:05Z"
-    model: gpt-5.4
+    generated_at: "2026-05-10T19:55:21Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 3a161e504f94c633873a497dd97c971ebfed6f31ef23a3fe9e85eec5a06d1d97
+    source_hash: f9b375b9090250992b9deead25ae6502592cb63c9774204782b2d4f69d8f3395
     source_path: start/onboarding-overview.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw'ın iki ilk katılım yolu vardır. Her ikisi de auth'u, Gateway'i ve
-isteğe bağlı sohbet kanallarını yapılandırır — fark yalnızca kurulumla nasıl etkileşim kurduğunuzdur.
+OpenClaw'ın iki ilk kurulum yolu vardır. İkisi de kimlik doğrulamayı, Gateway'i ve
+isteğe bağlı sohbet kanallarını yapılandırır; yalnızca kurulumla nasıl etkileşim kurduğunuz farklıdır.
 
 ## Hangi yolu kullanmalıyım?
 
-|                | CLI ilk katılımı                        | macOS uygulaması ilk katılımı |
+|                | CLI ilk kurulumu                       | macOS uygulaması ilk kurulumu |
 | -------------- | -------------------------------------- | ----------------------------- |
 | **Platformlar** | macOS, Linux, Windows (yerel veya WSL2) | Yalnızca macOS                |
-| **Arayüz**     | Terminal sihirbazı                     | Uygulamada yönlendirmeli UI   |
-| **En uygun olduğu kullanım** | Sunucular, başsız kullanım, tam denetim | Masaüstü Mac, görsel kurulum |
+| **Arayüz**     | Terminal sihirbazı                     | Uygulamada rehberli kullanıcı arayüzü |
+| **En uygun**   | Sunucular, başsız kullanım, tam kontrol | Masaüstü Mac, görsel kurulum |
 | **Otomasyon**  | Betikler için `--non-interactive`      | Yalnızca manuel               |
 | **Komut**      | `openclaw onboard`                     | Uygulamayı başlatın           |
 
-Çoğu kullanıcı **CLI ilk katılımı** ile başlamalıdır — her yerde çalışır ve
-en fazla denetimi sağlar.
+Çoğu kullanıcı **CLI ilk kurulumu** ile başlamalıdır; her yerde çalışır ve size
+en fazla kontrolü sağlar.
 
-## İlk katılım neyi yapılandırır
+## İlk kurulumun yapılandırdıkları
 
-Hangi yolu seçerseniz seçin, ilk katılım şunları kurar:
+Hangi yolu seçerseniz seçin, ilk kurulum şunları ayarlar:
 
-1. **Model sağlayıcısı ve auth** — seçtiğiniz sağlayıcı için API anahtarı, OAuth veya kurulum belirteci
-2. **Çalışma alanı** — aracı dosyaları, önyüklemeleme şablonları ve bellek için dizin
-3. **Gateway** — port, bağlanma adresi, auth modu
-4. **Kanallar** (isteğe bağlı) — BlueBubbles, Discord, Feishu, Google Chat, Mattermost, Microsoft Teams,
+1. **Model sağlayıcısı ve kimlik doğrulama** — seçtiğiniz sağlayıcı için API anahtarı, OAuth veya kurulum belirteci
+2. **Çalışma alanı** — agent dosyaları, bootstrap şablonları ve bellek için dizin
+3. **Gateway** — bağlantı noktası, bağlanma adresi, kimlik doğrulama modu
+4. **Kanallar** (isteğe bağlı) — iMessage, Discord, Feishu, Google Chat, Mattermost, Microsoft Teams,
    Telegram, WhatsApp ve daha fazlası gibi yerleşik ve paketlenmiş sohbet kanalları
-5. **Daemon** (isteğe bağlı) — Gateway'in otomatik başlaması için arka plan hizmeti
+5. **Daemon** (isteğe bağlı) — Gateway'in otomatik olarak başlaması için arka plan hizmeti
 
-## CLI ilk katılımı
+## CLI ilk kurulumu
 
 Herhangi bir terminalde çalıştırın:
 
@@ -49,29 +49,30 @@ Herhangi bir terminalde çalıştırın:
 openclaw onboard
 ```
 
-Arka plan hizmetini de tek adımda kurmak için `--install-daemon` ekleyin.
+Arka plan hizmetini de tek adımda yüklemek için `--install-daemon` ekleyin.
 
-Tam başvuru: [İlk katılım (CLI)](/tr/start/wizard)
+Tam başvuru: [İlk kurulum (CLI)](/tr/start/wizard)
 CLI komut belgeleri: [`openclaw onboard`](/tr/cli/onboard)
 
-## macOS uygulaması ilk katılımı
+## macOS uygulaması ilk kurulumu
 
-OpenClaw uygulamasını açın. İlk çalıştırma sihirbazı sizi aynı adımlardan
-görsel bir arayüzle geçirir.
+OpenClaw uygulamasını açın. İlk çalıştırma sihirbazı, aynı adımlarda size
+görsel bir arayüzle yol gösterir.
 
-Tam başvuru: [İlk katılım (macOS Uygulaması)](/tr/start/onboarding)
+Tam başvuru: [İlk kurulum (macOS Uygulaması)](/tr/start/onboarding)
 
-## Özel veya listelenmemiş sağlayıcılar
+## Özel veya listelenmeyen sağlayıcılar
 
-Sağlayıcınız ilk katılımda listelenmiyorsa **Custom Provider** seçin ve şunları girin:
+Sağlayıcınız ilk kurulumda listelenmiyorsa **Özel Sağlayıcı** seçeneğini belirleyin ve
+şunları girin:
 
 - API uyumluluk modu (OpenAI uyumlu, Anthropic uyumlu veya otomatik algılama)
-- Base URL ve API anahtarı
+- Temel URL ve API anahtarı
 - Model kimliği ve isteğe bağlı takma ad
 
-Birden fazla özel uç nokta bir arada var olabilir — her biri kendi uç nokta kimliğini alır.
+Birden çok özel uç nokta birlikte var olabilir; her biri kendi uç nokta kimliğini alır.
 
 ## İlgili
 
-- [Başlangıç](/tr/start/getting-started)
+- [Başlarken](/tr/start/getting-started)
 - [CLI kurulum başvurusu](/tr/start/wizard-cli-reference)

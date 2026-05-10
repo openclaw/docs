@@ -1,21 +1,21 @@
 ---
 read_when:
-    - Il Node è connesso ma gli strumenti camera/canvas/screen/exec falliscono
-    - Ti serve il modello mentale pairing dei Node vs approvazioni
-summary: Risoluzione dei problemi di pairing dei Node, requisiti di esecuzione in primo piano, permessi e guasti degli strumenti
-title: Risoluzione dei problemi dei Node
+    - Node è connesso, ma gli strumenti camera/canvas/screen/exec non funzionano
+    - Serve il modello mentale per distinguere l’abbinamento dei nodi dalle approvazioni
+summary: Risolvi i problemi relativi all'abbinamento dei Node, ai requisiti di esecuzione in primo piano, alle autorizzazioni e agli errori degli strumenti
+title: Risoluzione dei problemi di Node
 x-i18n:
-    generated_at: "2026-04-24T08:48:43Z"
-    model: gpt-5.4
+    generated_at: "2026-05-10T19:41:08Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 59c7367d02945e972094b47832164d95573a2aab1122e8ccf6feb80bcfcd95be
+    source_hash: d53f06367b63125f04b4b542c322e6e50e1f33153e0fbdd09e7a38772c69a438
     source_path: nodes/troubleshooting.md
-    workflow: 15
+    workflow: 16
 ---
 
-Usa questa pagina quando un Node è visibile nello stato ma gli strumenti del Node falliscono.
+Usa questa pagina quando un Node è visibile nello stato ma gli strumenti del Node non funzionano.
 
-## Sequenza di comandi
+## Scala dei comandi
 
 ```bash
 openclaw status
@@ -25,7 +25,7 @@ openclaw doctor
 openclaw channels status --probe
 ```
 
-Poi esegui controlli specifici del Node:
+Poi esegui i controlli specifici del Node:
 
 ```bash
 openclaw nodes status
@@ -33,15 +33,15 @@ openclaw nodes describe --node <idOrNameOrIp>
 openclaw approvals get --node <idOrNameOrIp>
 ```
 
-Segnali di stato integro:
+Segnali di integrità:
 
 - Il Node è connesso e associato per il ruolo `node`.
 - `nodes describe` include la capability che stai chiamando.
-- Le approvazioni exec mostrano la modalità/lista di autorizzazione previste.
+- Le approvazioni exec mostrano la modalità/allowlist prevista.
 
-## Requisiti di foreground
+## Requisiti in primo piano
 
-`canvas.*`, `camera.*` e `screen.*` funzionano solo in foreground sui Node iOS/Android.
+`canvas.*`, `camera.*` e `screen.*` sono disponibili solo in primo piano sui Node iOS/Android.
 
 Controllo e correzione rapidi:
 
@@ -51,24 +51,24 @@ openclaw nodes canvas snapshot --node <idOrNameOrIp>
 openclaw logs --follow
 ```
 
-Se vedi `NODE_BACKGROUND_UNAVAILABLE`, porta l'app del Node in foreground e riprova.
+Se vedi `NODE_BACKGROUND_UNAVAILABLE`, porta l'app del Node in primo piano e riprova.
 
-## Matrice dei permessi
+## Matrice delle autorizzazioni
 
-| Capability                   | iOS                                     | Android                                      | app Node macOS                | Codice di errore tipico        |
-| ---------------------------- | --------------------------------------- | -------------------------------------------- | ----------------------------- | ------------------------------ |
-| `camera.snap`, `camera.clip` | Fotocamera (+ microfono per audio clip) | Fotocamera (+ microfono per audio clip)      | Fotocamera (+ microfono per audio clip) | `*_PERMISSION_REQUIRED` |
-| `screen.record`              | Registrazione schermo (+ microfono facoltativo) | Prompt cattura schermo (+ microfono facoltativo) | Registrazione schermo | `*_PERMISSION_REQUIRED` |
-| `location.get`               | During Using oppure Always (dipende dalla modalità) | Posizione foreground/background in base alla modalità | Permesso posizione | `LOCATION_PERMISSION_REQUIRED` |
-| `system.run`                 | n/a (percorso host Node)                | n/a (percorso host Node)                     | Richiede approvazioni exec    | `SYSTEM_RUN_DENIED`            |
+| Capability                   | iOS                                             | Android                                             | app Node macOS                        | Codice di errore tipico         |
+| ---------------------------- | ----------------------------------------------- | --------------------------------------------------- | ------------------------------------- | ------------------------------- |
+| `camera.snap`, `camera.clip` | Fotocamera (+ microfono per l'audio della clip) | Fotocamera (+ microfono per l'audio della clip)     | Fotocamera (+ microfono per l'audio della clip) | `*_PERMISSION_REQUIRED`        |
+| `screen.record`              | Registrazione schermo (+ microfono opzionale)   | Prompt di acquisizione schermo (+ microfono opzionale) | Registrazione schermo              | `*_PERMISSION_REQUIRED`        |
+| `location.get`               | Mentre usi l'app o Sempre (dipende dalla modalità) | Posizione in primo piano/sfondo in base alla modalità | Autorizzazione posizione            | `LOCATION_PERMISSION_REQUIRED` |
+| `system.run`                 | n/d (percorso host del Node)                    | n/d (percorso host del Node)                        | Approvazioni exec richieste           | `SYSTEM_RUN_DENIED`            |
 
-## Pairing vs approvazioni
+## Associazione rispetto ad approvazioni
 
-Queste sono barriere diverse:
+Sono gate diversi:
 
-1. **Pairing del dispositivo**: questo Node può connettersi al gateway?
-2. **Policy dei comandi Node del Gateway**: l'ID comando RPC è consentito da `gateway.nodes.allowCommands` / `denyCommands` e dai valori predefiniti della piattaforma?
-3. **Approvazioni exec**: questo Node può eseguire uno specifico comando shell in locale?
+1. **Associazione dispositivo**: questo Node può connettersi al Gateway?
+2. **Policy dei comandi del Node nel Gateway**: l'ID comando RPC è consentito da `gateway.nodes.allowCommands` / `denyCommands` e dai default della piattaforma?
+3. **Approvazioni exec**: questo Node può eseguire localmente uno specifico comando shell?
 
 Controlli rapidi:
 
@@ -79,31 +79,31 @@ openclaw approvals get --node <idOrNameOrIp>
 openclaw approvals allowlist add --node <idOrNameOrIp> "/usr/bin/uname"
 ```
 
-Se il pairing manca, approva prima il dispositivo Node.
-Se `nodes describe` non include un comando, controlla la policy dei comandi Node del gateway e se il Node ha effettivamente dichiarato quel comando alla connessione.
-Se il pairing è corretto ma `system.run` fallisce, correggi le approvazioni exec/allowlist su quel Node.
+Se manca l'associazione, approva prima il dispositivo Node.
+Se in `nodes describe` manca un comando, controlla la policy dei comandi del Node nel Gateway e se il Node ha effettivamente dichiarato quel comando alla connessione.
+Se l'associazione è corretta ma `system.run` fallisce, correggi le approvazioni exec/allowlist su quel Node.
 
-Il pairing del Node è una barriera di identità/fiducia, non una superficie di approvazione per comando. Per `system.run`, la policy per Node risiede nel file di approvazioni exec di quel Node (`openclaw approvals get --node ...`), non nel record di pairing del gateway.
+L'associazione del Node è un gate di identità/fiducia, non una superficie di approvazione per comando. Per `system.run`, la policy per Node risiede nel file delle approvazioni exec di quel Node (`openclaw approvals get --node ...`), non nel record di associazione del Gateway.
 
-Per le esecuzioni `host=node` supportate da approvazione, il gateway lega anche l'esecuzione al
+Per le esecuzioni `host=node` basate su approvazione, il Gateway vincola anche l'esecuzione al
 `systemRunPlan` canonico preparato. Se un chiamante successivo modifica comando/cwd o
-metadati della sessione prima che l'esecuzione approvata venga inoltrata, il gateway rifiuta l'esecuzione
-come mancata corrispondenza dell'approvazione invece di fidarsi del payload modificato.
+metadati della sessione prima che l'esecuzione approvata venga inoltrata, il Gateway rifiuta
+l'esecuzione come mancata corrispondenza dell'approvazione invece di fidarsi del payload modificato.
 
 ## Codici di errore comuni del Node
 
-- `NODE_BACKGROUND_UNAVAILABLE` → l'app è in background; portala in foreground.
-- `CAMERA_DISABLED` → toggle della fotocamera disabilitato nelle impostazioni del Node.
-- `*_PERMISSION_REQUIRED` → permesso OS mancante/negato.
+- `NODE_BACKGROUND_UNAVAILABLE` → l'app è in background; portala in primo piano.
+- `CAMERA_DISABLED` → toggle della fotocamera disattivato nelle impostazioni del Node.
+- `*_PERMISSION_REQUIRED` → autorizzazione del sistema operativo mancante/negata.
 - `LOCATION_DISABLED` → la modalità posizione è disattivata.
-- `LOCATION_PERMISSION_REQUIRED` → la modalità posizione richiesta non è concessa.
-- `LOCATION_BACKGROUND_UNAVAILABLE` → l'app è in background ma esiste solo il permesso While Using.
-- `SYSTEM_RUN_DENIED: approval required` → la richiesta exec necessita di approvazione esplicita.
+- `LOCATION_PERMISSION_REQUIRED` → la modalità posizione richiesta non è stata concessa.
+- `LOCATION_BACKGROUND_UNAVAILABLE` → l'app è in background ma è presente solo l'autorizzazione Mentre usi l'app.
+- `SYSTEM_RUN_DENIED: approval required` → la richiesta exec richiede approvazione esplicita.
 - `SYSTEM_RUN_DENIED: allowlist miss` → comando bloccato dalla modalità allowlist.
-  Sugli host Node Windows, forme con shell-wrapper come `cmd.exe /c ...` vengono trattate come allowlist miss in
-  modalità allowlist, a meno che non siano approvate tramite il flusso ask.
+  Sugli host Node Windows, forme shell-wrapper come `cmd.exe /c ...` sono trattate come allowlist miss in
+  modalità allowlist, a meno che non siano approvate tramite flusso di richiesta.
 
-## Ciclo rapido di recupero
+## Ciclo di ripristino rapido
 
 ```bash
 openclaw nodes status
@@ -114,21 +114,17 @@ openclaw logs --follow
 
 Se sei ancora bloccato:
 
-- Riapprova il pairing del dispositivo.
-- Riapri l'app del Node (foreground).
-- Riconcedi i permessi del sistema operativo.
-- Ricrea/regola la policy di approvazione exec.
-
-Correlati:
-
-- [/nodes/index](/it/nodes/index)
-- [/nodes/camera](/it/nodes/camera)
-- [/nodes/location-command](/it/nodes/location-command)
-- [/tools/exec-approvals](/it/tools/exec-approvals)
-- [/gateway/pairing](/it/gateway/pairing)
+- Riapprova l'associazione del dispositivo.
+- Riapri l'app del Node (in primo piano).
+- Concedi di nuovo le autorizzazioni del sistema operativo.
+- Ricrea/modifica la policy di approvazione exec.
 
 ## Correlati
 
 - [Panoramica dei Node](/it/nodes)
-- [Gateway troubleshooting](/it/gateway/troubleshooting)
-- [Channel troubleshooting](/it/channels/troubleshooting)
+- [Node fotocamera](/it/nodes/camera)
+- [Comando posizione](/it/nodes/location-command)
+- [Approvazioni exec](/it/tools/exec-approvals)
+- [Associazione Gateway](/it/gateway/pairing)
+- [Risoluzione dei problemi del Gateway](/it/gateway/troubleshooting)
+- [Risoluzione dei problemi dei canali](/it/channels/troubleshooting)

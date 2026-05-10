@@ -1,15 +1,15 @@
 ---
 read_when:
-    - Je wilt zien welke Skills beschikbaar zijn en klaar zijn om te worden uitgevoerd
-    - Je wilt Skills van ClawHub zoeken, installeren of bijwerken
-    - Je wilt ontbrekende binaire bestanden/env/config voor Skills debuggen
+    - Je wilt zien welke Skills beschikbaar zijn en klaar zijn om uit te voeren
+    - Je wilt Skills zoeken, installeren of bijwerken vanuit ClawHub
+    - Je wilt ontbrekende uitvoerbare bestanden/omgevingsvariabelen/configuratie voor Skills debuggen
 summary: CLI-referentie voor `openclaw skills` (search/install/update/list/info/check)
 title: Skills
 x-i18n:
-    generated_at: "2026-05-02T20:42:41Z"
+    generated_at: "2026-05-10T19:30:12Z"
     model: gpt-5.5
     provider: openai
-    source_hash: d819cdc421151a0093423f57a9e974489e9cc02de644358bd5700ee75181192e
+    source_hash: 90663068f51cd3aabe9cfcf60e319ce9f9016e338488797869162608132a9e87
     source_path: cli/skills.md
     workflow: 16
 ---
@@ -21,8 +21,8 @@ Inspecteer lokale Skills en installeer/update Skills vanuit ClawHub.
 Gerelateerd:
 
 - Skills-systeem: [Skills](/nl/tools/skills)
-- Skills-configuratie: [Skills config](/nl/tools/skills-config)
-- ClawHub-installaties: [ClawHub](/nl/tools/clawhub)
+- Skills-configuratie: [Skills-configuratie](/nl/tools/skills-config)
+- ClawHub-installaties: [ClawHub](/nl/clawhub/cli)
 
 ## Commando's
 
@@ -50,32 +50,30 @@ openclaw skills check --json
 ```
 
 `search`/`install`/`update` gebruiken ClawHub rechtstreeks en installeren in de
-actieve `skills/`-map van de werkruimte. `list`/`info`/`check` inspecteren nog
-steeds de lokale Skills die zichtbaar zijn voor de huidige werkruimte en
-configuratie. Werkruimtegebaseerde commando's bepalen de doelwerkruimte via
-`--agent <id>`, daarna via de huidige werkmap wanneer die zich binnen een
-geconfigureerde agentwerkruimte bevindt, en daarna via de standaardagent.
+`skills/`-map van de actieve workspace. `list`/`info`/`check` inspecteren nog steeds de lokale
+Skills die zichtbaar zijn voor de huidige workspace en configuratie. Opdrachten met workspace-ondersteuning
+lossen de doel-workspace op via `--agent <id>`, daarna via de huidige werkmap
+wanneer die zich in een geconfigureerde agent-workspace bevindt, en daarna via de standaardagent.
 
-Dit CLI-`install`-commando downloadt skillmappen vanuit ClawHub. Door de Gateway
-ondersteunde installaties van skillafhankelijkheden die vanuit onboarding of
-Skills-instellingen worden geactiveerd, gebruiken in plaats daarvan het aparte
-`skills.install`-aanvraagpad.
+Deze CLI-opdracht `install` downloadt Skill-mappen van ClawHub. Door Gateway ondersteunde
+installaties van Skill-afhankelijkheden die worden geactiveerd vanuit introductie of Skills-instellingen gebruiken in plaats daarvan het
+aparte aanvraagpad `skills.install`.
 
 Opmerkingen:
 
-- `search [query...]` accepteert een optionele query; laat deze weg om door de
-  standaardzoekfeed van ClawHub te bladeren.
-- `search --limit <n>` beperkt het aantal geretourneerde resultaten.
-- `install --force` overschrijft een bestaande skillmap in de werkruimte voor
-  dezelfde slug.
-- `--agent <id>` richt zich op één geconfigureerde agentwerkruimte en overschrijft
-  afleiding op basis van de huidige werkmap.
-- `update --all` updatet alleen gevolgde ClawHub-installaties in de actieve werkruimte.
-- `check --agent <id>` controleert de werkruimte van de geselecteerde agent en rapporteert welke
-  gereedstaande Skills daadwerkelijk zichtbaar zijn voor de prompt of commando-interface van die agent.
-- `list` is de standaardactie wanneer er geen subcommando is opgegeven.
+- `search [query...]` accepteert een optionele query; laat deze weg om door de standaard
+  ClawHub-zoekfeed te bladeren.
+- `search --limit <n>` begrenst de geretourneerde resultaten.
+- `install --force` overschrijft een bestaande Skill-map in de workspace voor dezelfde
+  slug.
+- `--agent <id>` richt zich op een geconfigureerde agent-workspace en overschrijft de afleiding uit de huidige
+  werkmap.
+- `update --all` updatet alleen gevolgde ClawHub-installaties in de actieve workspace.
+- `check --agent <id>` controleert de workspace van de geselecteerde agent en rapporteert welke
+  gereedstaande Skills daadwerkelijk zichtbaar zijn voor de prompt- of opdrachtinterface van die agent.
+- `list` is de standaardactie wanneer er geen subopdracht is opgegeven.
 - `list`, `info` en `check` schrijven hun gerenderde uitvoer naar stdout. Met
-  `--json` betekent dit dat de machinaal leesbare payload op stdout blijft voor pipes
+  `--json` betekent dit dat de machineleesbare payload op stdout blijft voor pipes
   en scripts.
 
 ## Gerelateerd

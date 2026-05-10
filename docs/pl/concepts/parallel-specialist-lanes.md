@@ -1,69 +1,69 @@
 ---
 read_when:
     - Kierujesz czaty grupowe do dedykowanych agentów
-    - Chcesz pracy równoległej bez blokowania każdego czatu przez jedno długie zadanie
-    - Projektujesz konfigurację operacyjną dla wielu agentów
+    - Chcesz równoległej pracy bez jednego długiego zadania blokującego każdy czat
+    - Projektujesz wieloagentową konfigurację operacyjną
 sidebarTitle: Specialist lanes
 status: active
-summary: Uruchamiaj równoległych wyspecjalizowanych agentów bez zapychania współdzielonej przepustowości modeli i narzędzi
+summary: Uruchamiaj równoległych agentów specjalistycznych bez przeciążania współdzielonej przepustowości modelu i narzędzi
 title: Równoległe ścieżki specjalistyczne
 x-i18n:
-    generated_at: "2026-05-02T20:43:35Z"
+    generated_at: "2026-05-10T19:33:27Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b09f10ce4fbd79954a7196fbedb23f9b3f34b459b98eb7a5480f7eeb0bb6be98
+    source_hash: 8721056fbe08822ac92d4bc14c8c2b0977e93eaa58c2849f83b3c0f310992f93
     source_path: concepts/parallel-specialist-lanes.md
     workflow: 16
 ---
 
-Równoległe ścieżki specjalistyczne pozwalają jednemu Gateway kierować różne czaty lub pokoje do
-różnych agentów, jednocześnie utrzymując szybką obsługę użytkownika. Sztuka polega na traktowaniu
-równoległości jako problemu projektowania pod kątem ograniczonych zasobów, a nie tylko jako „więcej agentów”.
+Równoległe tory specjalistyczne pozwalają jednemu Gateway kierować różne czaty lub pokoje do
+różnych agentów, zachowując przy tym szybką obsługę użytkownika. Sztuka polega na traktowaniu
+równoległości jako problemu projektowania z ograniczonymi zasobami, a nie tylko jako „więcej agentów”.
 
-## Podstawowe zasady
+## Pierwsze zasady
 
-Ścieżka specjalistyczna poprawia przepustowość tylko wtedy, gdy zmniejsza rywalizację o
+Tor specjalistyczny poprawia przepustowość tylko wtedy, gdy zmniejsza rywalizację o
 rzeczywiste wąskie gardła:
 
-- **Blokady sesji**: tylko jedno uruchomienie powinno modyfikować daną sesję naraz.
-- **Globalna pojemność modelu**: wszystkie widoczne uruchomienia czatów nadal współdzielą limity dostawcy.
-- **Pojemność narzędzi**: praca w powłoce, przeglądarce, sieci i repozytorium może być wolniejsza
+- **Blokady sesji**: tylko jedno uruchomienie powinno jednocześnie modyfikować daną sesję.
+- **Globalna przepustowość modelu**: wszystkie widoczne uruchomienia czatu nadal współdzielą limity dostawcy.
+- **Przepustowość narzędzi**: praca z powłoką, przeglądarką, siecią i repozytorium może być wolniejsza
   niż sama tura modelu.
 - **Budżet kontekstu**: długie transkrypty spowalniają każdą przyszłą turę i zmniejszają jej
-  skupienie.
-- **Niejasność własności**: zduplikowani agenci wykonujący tę samą pracę marnują pojemność.
+  koncentrację.
+- **Niejasność własności**: zduplikowani agenci wykonujący tę samą pracę marnują przepustowość.
 
-OpenClaw już serializuje uruchomienia na sesję i ogranicza globalną równoległość przez
-[kolejkę poleceń](/pl/concepts/queue). Ścieżki specjalistyczne dodają na to warstwę zasad:
-który agent odpowiada za którą pracę, co pozostaje w czacie, a co staje się pracą w tle.
+OpenClaw już szereguje uruchomienia w ramach sesji i ogranicza globalną równoległość przez
+[kolejkę poleceń](/pl/concepts/queue). Tory specjalistyczne dodają na to politykę:
+który agent jest właścicielem której pracy, co zostaje w czacie, a co staje się pracą w tle.
 
 ## Zalecane wdrożenie
 
-### Faza 1: kontrakty ścieżek + ciężka praca w tle
+### Faza 1: kontrakty torów + ciężka praca w tle
 
-Daj każdej ścieżce pisemny kontrakt w jej obszarze roboczym i prompcie systemowym:
+Nadaj każdemu torowi pisemny kontrakt w jego przestrzeni roboczej i prompcie systemowym:
 
-- **Cel**: praca, za którą ta ścieżka odpowiada.
-- **Poza zakresem**: praca, którą powinna przekazać zamiast wykonywać samodzielnie.
-- **Budżet czatu**: szybkie odpowiedzi pozostają w czacie; długie zadania powinny być krótko
-  potwierdzone, a następnie uruchomione w tle przez podagenta lub zadanie.
-- **Zasada przekazania**: gdy inna ścieżka odpowiada za pracę, powiedz, dokąd powinna trafić, i
+- **Cel**: praca, za którą odpowiada ten tor.
+- **Poza zakresem**: praca, którą powinien przekazać dalej zamiast próbować wykonać.
+- **Budżet czatu**: szybkie odpowiedzi zostają w czacie; długie zadania powinny zostać krótko
+  potwierdzone, a następnie uruchomione w subagencie lub zadaniu w tle.
+- **Reguła przekazania**: gdy inny tor jest właścicielem pracy, powiedz, dokąd powinna trafić, i
   podaj zwięzłe podsumowanie przekazania.
-- **Zasada ryzyka narzędzi**: preferuj najmniejszą powierzchnię narzędzi, która może wykonać zadanie.
+- **Reguła ryzyka narzędzi**: preferuj najmniejszą powierzchnię narzędziową, która może wykonać zadanie.
 
 To najtańsza faza i rozwiązuje większość zatorów: jedno zadanie programistyczne nie zamienia już
-ścieżki badawczej w melasę, a każdy czat utrzymuje własny kontekst w czystości.
+toru badawczego w melasę, a każdy czat utrzymuje własny kontekst w czystości.
 
-### Faza 2: priorytety i kontrola współbieżności
+### Faza 2: priorytet i kontrola współbieżności
 
-Dostrój kolejkę i pojemność modelu wokół wartości biznesowej każdej ścieżki:
+Dostrój kolejkę i przepustowość modelu wokół wartości biznesowej każdego toru:
 
 ```json5
 {
   agents: {
     defaults: {
       maxConcurrent: 4,
-      subagents: { maxConcurrent: 8 },
+      subagents: { maxConcurrent: 8, delegationMode: "prefer" },
     },
   },
   messages: {
@@ -77,22 +77,22 @@ Dostrój kolejkę i pojemność modelu wokół wartości biznesowej każdej ści
 }
 ```
 
-Używaj bezpośrednich/prywatnych czatów oraz agentów operacji produkcyjnych do pracy o wysokim priorytecie. Pozwól,
-aby badania, redagowanie i wsadowe programowanie przechodziły do zadań w tle, gdy system jest
+Używaj bezpośrednich/prywatnych czatów i agentów operacji produkcyjnych do pracy o wysokim priorytecie. Pozwól,
+aby badania, szkicowanie i wsadowe programowanie przechodziły do zadań w tle, gdy system jest
 zajęty.
 
 ### Faza 3: koordynator / kontroler ruchu
 
-Dodaj mały wzorzec koordynatora, gdy wiele ścieżek jest już aktywnych:
+Dodaj mały wzorzec koordynatora, gdy aktywnych jest już wiele torów:
 
-- Śledź aktywne zadania ścieżek i właścicieli.
-- Wykrywaj zduplikowane prośby w grupach.
-- Kieruj podsumowania przekazań między ścieżkami.
-- Pokazuj tylko blokady, ukończone wyniki i decyzje, które musi podjąć człowiek.
+- Śledź aktywne zadania torów i ich właścicieli.
+- Wykrywaj zduplikowane żądania w różnych grupach.
+- Przekazuj podsumowania między torami.
+- Pokazuj tylko blokery, ukończone wyniki i decyzje, które musi podjąć człowiek.
 
-Nie zaczynaj od tego. Koordynator bez kontraktów ścieżek tylko koordynuje chaos.
+Nie zaczynaj od tego. Koordynator bez kontraktów torów tylko koordynuje chaos.
 
-## Minimalny szablon kontraktu ścieżki
+## Minimalny szablon kontraktu toru
 
 ```md
 # Lane contract
@@ -130,4 +130,4 @@ network work unless this lane explicitly owns it.
 
 - [Routing wieloagentowy](/pl/concepts/multi-agent)
 - [Kolejka poleceń](/pl/concepts/queue)
-- [Podagenci](/pl/tools/subagents)
+- [Subagenci](/pl/tools/subagents)

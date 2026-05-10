@@ -1,14 +1,14 @@
 ---
 read_when:
     - Menambahkan atau mengubah integrasi CLI eksternal
-    - Men-debug adapter RPC (signal-cli, imsg)
-summary: Adaptor RPC untuk CLI eksternal (signal-cli, imsg) dan pola Gateway
-title: Adaptor RPC
+    - Menelusuri kesalahan adaptor RPC (signal-cli, imsg)
+summary: Adapter RPC untuk CLI eksternal (signal-cli, imsg) dan pola Gateway
+title: Adapter RPC
 x-i18n:
-    generated_at: "2026-05-07T01:53:40Z"
+    generated_at: "2026-05-10T19:51:49Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 446e54d736352f45e6cc6988a1835233cace7f854b6e62c64bb1fae115ce76f6
+    source_hash: 63556f140bee55821fa0a09ff9808e163728049f8db4c58f7bb4ceca6e1cac1a
     source_path: reference/rpc.md
     workflow: 16
 ---
@@ -20,17 +20,15 @@ OpenClaw mengintegrasikan CLI eksternal melalui JSON-RPC. Dua pola digunakan saa
 - `signal-cli` berjalan sebagai daemon dengan JSON-RPC melalui HTTP.
 - Aliran peristiwa adalah SSE (`/api/v1/events`).
 - Probe kesehatan: `/api/v1/check`.
-- OpenClaw memiliki siklus hidup saat `channels.signal.autoStart=true`.
+- OpenClaw mengelola siklus hidup saat `channels.signal.autoStart=true`.
 
 Lihat [Signal](/id/channels/signal) untuk penyiapan dan endpoint.
 
-## Pola B: proses anak stdio (lama: imsg)
+## Pola B: proses anak stdio (imsg)
 
-> **Catatan:** Untuk penyiapan iMessage baru, gunakan [BlueBubbles](/id/channels/bluebubbles) sebagai gantinya.
-
-- OpenClaw menjalankan `imsg rpc` sebagai proses anak (integrasi iMessage lama).
+- OpenClaw menjalankan `imsg rpc` sebagai proses anak untuk [iMessage](/id/channels/imessage).
 - JSON-RPC dibatasi baris melalui stdin/stdout (satu objek JSON per baris).
-- Tidak ada port TCP, tidak memerlukan daemon.
+- Tidak ada port TCP, tidak diperlukan daemon.
 
 Metode inti yang digunakan:
 
@@ -39,13 +37,13 @@ Metode inti yang digunakan:
 - `send`
 - `chats.list` (probe/diagnostik)
 
-Lihat [iMessage](/id/channels/imessage) untuk penyiapan lama dan pengalamatan (`chat_id` lebih disukai).
+Lihat [iMessage](/id/channels/imessage) untuk penyiapan legacy dan pengalamatan (`chat_id` lebih disukai).
 
-## Panduan adaptor
+## Panduan adapter
 
-- Gateway memiliki proses (mulai/henti terkait dengan siklus hidup penyedia).
+- Gateway mengelola proses (start/stop terkait dengan siklus hidup provider).
 - Jaga agar klien RPC tetap tangguh: timeout, mulai ulang saat keluar.
-- Lebih pilih ID stabil (mis., `chat_id`) daripada string tampilan.
+- Lebih pilih ID stabil (misalnya, `chat_id`) daripada string tampilan.
 
 ## Terkait
 

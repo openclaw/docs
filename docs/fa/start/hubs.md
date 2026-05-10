@@ -1,56 +1,56 @@
 ---
 read_when:
-    - شما یک نقشهٔ کامل از مستندات می‌خواهید
-summary: هاب‌هایی که به همه مستندات OpenClaw پیوند می‌دهند
-title: مراکز مستندات
+    - می‌خواهید نقشهٔ کاملی از مستندات داشته باشید
+summary: هاب‌هایی که به همهٔ مستندات OpenClaw پیوند می‌دهند
+title: هاب‌های مستندات
 x-i18n:
-    generated_at: "2026-05-07T01:55:42Z"
+    generated_at: "2026-05-10T20:07:22Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b7de6012e4e8db02d22cda7d8f275c634e15511b1c4e94e219672cf167f9848d
+    source_hash: fdf4128ddb05bb009faec0a21d45933ffb0a3abf5e5ba8dbe1b9710c8eee3bde
     source_path: start/hubs.md
     workflow: 16
 ---
 
 <Note>
-اگر با OpenClaw تازه آشنا شده‌اید، از [شروع به کار](/fa/start/getting-started) آغاز کنید.
+اگر با OpenClaw تازه‌کار هستید، از [شروع به کار](/fa/start/getting-started) شروع کنید.
 </Note>
 
-از این هاب‌ها برای کشف همهٔ صفحه‌ها استفاده کنید، از جمله بررسی‌های عمیق و مستندات مرجعی که در پیمایش سمت چپ نمایش داده نمی‌شوند.
+از این هاب‌ها برای پیدا کردن همه صفحه‌ها استفاده کنید، از جمله بررسی‌های عمیق و مستندات مرجعی که در ناوبری سمت چپ ظاهر نمی‌شوند.
 
 ## از اینجا شروع کنید
 
 - [فهرست](/fa)
 - [شروع به کار](/fa/start/getting-started)
-- [راه‌اندازی اولیه](/fa/start/onboarding)
-- [راه‌اندازی اولیه (CLI)](/fa/start/wizard)
-- [تنظیم](/fa/start/setup)
+- [آنبوردینگ](/fa/start/onboarding)
+- [آنبوردینگ (CLI)](/fa/start/wizard)
+- [راه‌اندازی](/fa/start/setup)
 - [داشبورد (Gateway محلی)](http://127.0.0.1:18789/)
 - [راهنما](/fa/help)
-- [دایرکتوری مستندات](/fa/start/docs-directory)
+- [فهرست راهنمای مستندات](/fa/start/docs-directory)
 - [پیکربندی](/fa/gateway/configuration)
 - [نمونه‌های پیکربندی](/fa/gateway/configuration-examples)
 - [دستیار OpenClaw](/fa/start/openclaw)
-- [نمونه‌کارها](/fa/start/showcase)
-- [Lore](/fa/start/lore)
+- [ویترین](/fa/start/showcase)
+- [داستان زمینه‌ای](/fa/start/lore)
 
 ## نصب + به‌روزرسانی‌ها
 
 - [Docker](/fa/install/docker)
 - [Nix](/fa/install/nix)
 - [به‌روزرسانی / بازگردانی](/fa/install/updating)
-- [گردش کار Bun (آزمایشی)](/fa/install/bun)
+- [گردش‌کار Bun (آزمایشی)](/fa/install/bun)
 
 ## مفاهیم اصلی
 
 - [معماری](/fa/concepts/architecture)
-- [ویژگی‌ها](/fa/concepts/features)
+- [قابلیت‌ها](/fa/concepts/features)
 - [هاب شبکه](/fa/network)
 - [زمان اجرای عامل](/fa/concepts/agent)
 - [فضای کاری عامل](/fa/concepts/agent-workspace)
 - [حافظه](/fa/concepts/memory)
-- [حلقهٔ عامل](/fa/concepts/agent-loop)
-- [استریمینگ + تکه‌بندی](/fa/concepts/streaming)
+- [حلقه عامل](/fa/concepts/agent-loop)
+- [استریمینگ + قطعه‌بندی](/fa/concepts/streaming)
 - [مسیریابی چندعاملی](/fa/concepts/multi-agent)
 - [Compaction](/fa/concepts/compaction)
 - [نشست‌ها](/fa/concepts/session)
@@ -60,30 +60,29 @@ x-i18n:
 - [دستورهای اسلش](/fa/tools/slash-commands)
 - [آداپتورهای RPC](/fa/reference/rpc)
 - [طرحواره‌های TypeBox](/fa/concepts/typebox)
-- [مدیریت منطقهٔ زمانی](/fa/concepts/timezone)
+- [مدیریت منطقه زمانی](/fa/concepts/timezone)
 - [حضور](/fa/concepts/presence)
 - [کشف + انتقال‌ها](/fa/gateway/discovery)
 - [Bonjour](/fa/gateway/bonjour)
 - [مسیریابی کانال](/fa/channels/channel-routing)
 - [گروه‌ها](/fa/channels/groups)
 - [پیام‌های گروهی](/fa/channels/group-messages)
-- [جایگزینی مدل هنگام خطا](/fa/concepts/model-failover)
+- [بازیابی مدل پس از خطا](/fa/concepts/model-failover)
 - [OAuth](/fa/concepts/oauth)
 
-## ارائه‌دهندگان + ورودی
+## ارائه‌دهنده‌ها + ورودی
 
 - [هاب کانال‌های چت](/fa/channels)
-- [هاب ارائه‌دهندگان مدل](/fa/providers/models)
+- [هاب ارائه‌دهنده‌های مدل](/fa/providers/models)
 - [WhatsApp](/fa/channels/whatsapp)
 - [Telegram](/fa/channels/telegram)
 - [Slack](/fa/channels/slack)
 - [Discord](/fa/channels/discord)
 - [Mattermost](/fa/channels/mattermost)
 - [Signal](/fa/channels/signal)
-- [BlueBubbles (پل قدیمی iMessage)](/fa/channels/bluebubbles)
-- [QQ Bot](/fa/channels/qqbot)
+- [ربات QQ](/fa/channels/qqbot)
 - [iMessage](/fa/channels/imessage)
-- [تجزیهٔ مکان](/fa/channels/location)
+- [تجزیه موقعیت مکانی](/fa/channels/location)
 - [WebChat](/fa/web/webchat)
 - [Webhookها](/fa/automation/cron-jobs#webhooks)
 - [Gmail Pub/Sub](/fa/automation/cron-jobs#gmail-pubsub-integration)
@@ -98,12 +97,12 @@ x-i18n:
 - [سلامت](/fa/gateway/health)
 - [Heartbeat](/fa/gateway/heartbeat)
 - [Doctor](/fa/gateway/doctor)
-- [لاگ‌گیری](/fa/gateway/logging)
-- [سندباکسینگ](/fa/gateway/sandboxing)
+- [ثبت گزارش](/fa/gateway/logging)
+- [سندباکس‌سازی](/fa/gateway/sandboxing)
 - [داشبورد](/fa/web/dashboard)
 - [رابط کاربری کنترل](/fa/web/control-ui)
-- [دسترسی از راه دور](/fa/gateway/remote)
-- [README مربوط به Gateway راه دور](/fa/gateway/remote-gateway-readme)
+- [دسترسی راه‌دور](/fa/gateway/remote)
+- [README Gateway راه‌دور](/fa/gateway/remote-gateway-readme)
 - [Tailscale](/fa/gateway/tailscale)
 - [امنیت](/fa/gateway/security)
 - [عیب‌یابی](/fa/gateway/troubleshooting)
@@ -113,14 +112,14 @@ x-i18n:
 - [سطح ابزارها](/fa/tools)
 - [OpenProse](/fa/prose)
 - [مرجع CLI](/fa/cli)
-- [ابزار Exec](/fa/tools/exec)
+- [ابزار اجرا](/fa/tools/exec)
 - [ابزار PDF](/fa/tools/pdf)
 - [حالت ارتقایافته](/fa/tools/elevated)
 - [کارهای Cron](/fa/automation/cron-jobs)
-- [خودکارسازی و وظایف](/fa/automation)
-- [تفکر + پرحرفی](/fa/tools/thinking)
+- [خودکارسازی و وظیفه‌ها](/fa/automation)
+- [تفکر + پرجزئیات](/fa/tools/thinking)
 - [مدل‌ها](/fa/concepts/models)
-- [زیرعامل‌ها](/fa/tools/subagents)
+- [عامل‌های فرعی](/fa/tools/subagents)
 - [CLI ارسال عامل](/fa/tools/agent-send)
 - [رابط کاربری ترمینال](/fa/web/tui)
 - [کنترل مرورگر](/fa/tools/browser)
@@ -133,7 +132,7 @@ x-i18n:
 - [دوربین](/fa/nodes/camera)
 - [تصاویر](/fa/nodes/images)
 - [صدا](/fa/nodes/audio)
-- [دستور مکان](/fa/nodes/location-command)
+- [دستور موقعیت مکانی](/fa/nodes/location-command)
 - [بیدارباش صوتی](/fa/nodes/voicewake)
 - [حالت گفت‌وگو](/fa/nodes/talk)
 
@@ -145,27 +144,27 @@ x-i18n:
 - [Android](/fa/platforms/android)
 - [Windows (WSL2)](/fa/platforms/windows)
 - [Linux](/fa/platforms/linux)
-- [سطوح وب](/fa/web)
+- [سطح‌های وب](/fa/web)
 
-## برنامهٔ همراه macOS (پیشرفته)
+## برنامه همراه macOS (پیشرفته)
 
-- [تنظیم محیط توسعهٔ macOS](/fa/platforms/mac/dev-setup)
+- [راه‌اندازی توسعه macOS](/fa/platforms/mac/dev-setup)
 - [نوار منوی macOS](/fa/platforms/mac/menu-bar)
 - [بیدارباش صوتی macOS](/fa/platforms/mac/voicewake)
-- [پوشش صوتی macOS](/fa/platforms/mac/voice-overlay)
-- [WebChat در macOS](/fa/platforms/mac/webchat)
-- [Canvas در macOS](/fa/platforms/mac/canvas)
+- [هم‌پوشانی صوتی macOS](/fa/platforms/mac/voice-overlay)
+- [macOS WebChat](/fa/platforms/mac/webchat)
+- [macOS Canvas](/fa/platforms/mac/canvas)
 - [فرایند فرزند macOS](/fa/platforms/mac/child-process)
 - [سلامت macOS](/fa/platforms/mac/health)
 - [آیکن macOS](/fa/platforms/mac/icon)
-- [لاگ‌گیری macOS](/fa/platforms/mac/logging)
+- [ثبت گزارش macOS](/fa/platforms/mac/logging)
 - [مجوزهای macOS](/fa/platforms/mac/permissions)
-- [دسترسی از راه دور macOS](/fa/platforms/mac/remote)
+- [راه‌دور macOS](/fa/platforms/mac/remote)
 - [امضای macOS](/fa/platforms/mac/signing)
 - [Gateway در macOS (launchd)](/fa/platforms/mac/bundled-gateway)
-- [XPC در macOS](/fa/platforms/mac/xpc)
+- [macOS XPC](/fa/platforms/mac/xpc)
 - [Skills در macOS](/fa/platforms/mac/skills)
-- [Peekaboo در macOS](/fa/platforms/mac/peekaboo)
+- [macOS Peekaboo](/fa/platforms/mac/peekaboo)
 
 ## Pluginها
 
@@ -174,8 +173,8 @@ x-i18n:
 - [هوک‌های Plugin](/fa/plugins/hooks)
 - [مانیفست Plugin](/fa/plugins/manifest)
 - [ابزارهای عامل](/fa/plugins/building-plugins#registering-agent-tools)
-- [باندل‌های Plugin](/fa/plugins/bundles)
-- [Pluginهای جامعه](/fa/plugins/community)
+- [بسته‌های Plugin](/fa/plugins/bundles)
+- [ClawHub](/fa/clawhub)
 - [کتاب آشپزی قابلیت‌ها](/fa/plugins/adding-capabilities)
 - [Plugin تماس صوتی](/fa/plugins/voice-call)
 - [Plugin کاربر Zalo](/fa/plugins/zalouser)
@@ -183,7 +182,7 @@ x-i18n:
 ## فضای کاری + قالب‌ها
 
 - [Skills](/fa/tools/skills)
-- [ClawHub](/fa/tools/clawhub)
+- [ClawHub](/fa/clawhub)
 - [پیکربندی Skills](/fa/tools/skills-config)
 - [AGENTS پیش‌فرض](/fa/reference/AGENTS.default)
 - [قالب‌ها: AGENTS](/fa/reference/templates/AGENTS)
@@ -196,7 +195,7 @@ x-i18n:
 
 ## پروژه
 
-- [اعتبارات](/fa/reference/credits)
+- [اعتبارها](/fa/reference/credits)
 
 ## آزمون + انتشار
 

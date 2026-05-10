@@ -1,54 +1,54 @@
 ---
 read_when:
-    - Menyiapkan alur kerja agen otonom yang berjalan tanpa pemberian instruksi per tugas
-    - Menentukan apa yang dapat dilakukan agen secara mandiri dan apa yang memerlukan persetujuan manusia
-    - Menyusun agen multi-program dengan batasan yang jelas dan aturan eskalasi
+    - Menyiapkan alur kerja agen otonom yang berjalan tanpa prompt per tugas
+    - Menentukan apa yang dapat dilakukan agen secara mandiri dibandingkan dengan apa yang memerlukan persetujuan manusia
+    - Menyusun agen multi-program dengan batasan dan aturan eskalasi yang jelas
 summary: Tetapkan kewenangan operasional permanen untuk program agen otonom
 title: Instruksi tetap
 x-i18n:
-    generated_at: "2026-05-06T09:02:14Z"
+    generated_at: "2026-05-10T19:21:12Z"
     model: gpt-5.5
     provider: openai
-    source_hash: a04e871bbd3f51b50ce162576936d4b37acbdc5a94edcd73e390adc784465aa4
+    source_hash: 3c78a723c296e1b695fd0fa7b0c3dbc3572fcfc1f49d6fadcab7a5a7a44c4b8d
     source_path: automation/standing-orders.md
     workflow: 16
 ---
 
-Perintah tetap memberi agen Anda **wewenang operasional permanen** untuk program yang ditentukan. Alih-alih memberikan instruksi tugas individual setiap kali, Anda mendefinisikan program dengan cakupan, pemicu, dan aturan eskalasi yang jelas - lalu agen mengeksekusinya secara otonom dalam batas tersebut.
+Perintah tetap memberi agen Anda **wewenang operasi permanen** untuk program yang ditentukan. Alih-alih memberikan instruksi tugas individual setiap kali, Anda mendefinisikan program dengan cakupan, pemicu, dan aturan eskalasi yang jelas - dan agen menjalankannya secara mandiri dalam batas tersebut.
 
-Inilah perbedaan antara memberi tahu asisten Anda "kirim laporan mingguan" setiap Jumat vs. memberi wewenang tetap: "Kamu bertanggung jawab atas laporan mingguan. Susun setiap Jumat, kirim, dan eskalasikan hanya jika ada sesuatu yang terlihat salah."
+Inilah perbedaan antara memberi tahu asisten Anda "kirim laporan mingguan" setiap Jumat vs. memberikan wewenang tetap: "Anda bertanggung jawab atas laporan mingguan. Susun setiap Jumat, kirimkan, dan hanya eskalasikan jika ada sesuatu yang tampak salah."
 
 ## Mengapa perintah tetap
 
 **Tanpa perintah tetap:**
 
 - Anda harus memberi prompt kepada agen untuk setiap tugas
-- Agen diam tanpa aktivitas di antara permintaan
-- Pekerjaan rutin terlupakan atau tertunda
-- Anda menjadi hambatan
+- Agen menganggur di antara permintaan
+- Pekerjaan rutin terlupa atau tertunda
+- Anda menjadi penghambat
 
 **Dengan perintah tetap:**
 
-- Agen mengeksekusi secara otonom dalam batas yang ditentukan
+- Agen berjalan secara mandiri dalam batas yang ditentukan
 - Pekerjaan rutin berjalan sesuai jadwal tanpa prompt
 - Anda hanya terlibat untuk pengecualian dan persetujuan
-- Agen mengisi waktu idle secara produktif
+- Agen mengisi waktu menganggur secara produktif
 
 ## Cara kerjanya
 
-Perintah tetap didefinisikan dalam file [ruang kerja agen](/id/concepts/agent-workspace) Anda. Pendekatan yang disarankan adalah memasukkannya langsung di `AGENTS.md` (yang disuntikkan otomatis setiap sesi) agar agen selalu memilikinya dalam konteks. Untuk konfigurasi yang lebih besar, Anda juga dapat menempatkannya dalam file khusus seperti `standing-orders.md` dan merujuknya dari `AGENTS.md`.
+Perintah tetap didefinisikan dalam file [ruang kerja agen](/id/concepts/agent-workspace) Anda. Pendekatan yang direkomendasikan adalah menyertakannya langsung di `AGENTS.md` (yang disuntikkan otomatis setiap sesi) agar agen selalu memilikinya dalam konteks. Untuk konfigurasi yang lebih besar, Anda juga dapat menempatkannya dalam file khusus seperti `standing-orders.md` dan merujuknya dari `AGENTS.md`.
 
 Setiap program menentukan:
 
-1. **Cakupan** - apa yang boleh dilakukan agen
-2. **Pemicu** - kapan harus mengeksekusi (jadwal, peristiwa, atau kondisi)
+1. **Cakupan** - apa yang berwenang dilakukan agen
+2. **Pemicu** - kapan dijalankan (jadwal, peristiwa, atau kondisi)
 3. **Gerbang persetujuan** - apa yang memerlukan persetujuan manusia sebelum bertindak
 4. **Aturan eskalasi** - kapan harus berhenti dan meminta bantuan
 
-Agen memuat instruksi ini setiap sesi melalui file bootstrap ruang kerja (lihat [Ruang Kerja Agen](/id/concepts/agent-workspace) untuk daftar lengkap file yang disuntikkan otomatis) dan mengeksekusinya, dikombinasikan dengan [tugas Cron](/id/automation/cron-jobs) untuk penegakan berbasis waktu.
+Agen memuat instruksi ini setiap sesi melalui file bootstrap ruang kerja (lihat [Ruang Kerja Agen](/id/concepts/agent-workspace) untuk daftar lengkap file yang disuntikkan otomatis) dan menjalankannya, digabungkan dengan [pekerjaan cron](/id/automation/cron-jobs) untuk penegakan berbasis waktu.
 
 <Tip>
-Letakkan perintah tetap di `AGENTS.md` untuk menjamin perintah tersebut dimuat setiap sesi. Bootstrap ruang kerja secara otomatis menyuntikkan `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md`, dan `MEMORY.md` - tetapi tidak file arbitrer di subdirektori.
+Letakkan perintah tetap di `AGENTS.md` untuk menjamin perintah tersebut dimuat setiap sesi. Bootstrap ruang kerja secara otomatis menyuntikkan `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md`, dan `MEMORY.md` - tetapi bukan file arbitrer dalam subdirektori.
 </Tip>
 
 ## Anatomi perintah tetap
@@ -76,9 +76,9 @@ Letakkan perintah tetap di `AGENTS.md` untuk menjamin perintah tersebut dimuat s
 - Do not skip delivery if metrics look bad - report accurately
 ```
 
-## Perintah tetap ditambah tugas Cron
+## Perintah tetap plus pekerjaan cron
 
-Perintah tetap mendefinisikan **apa** yang boleh dilakukan agen. [Tugas Cron](/id/automation/cron-jobs) mendefinisikan **kapan** itu terjadi. Keduanya bekerja bersama:
+Perintah tetap mendefinisikan **apa** yang berwenang dilakukan agen. [Pekerjaan cron](/id/automation/cron-jobs) mendefinisikan **kapan** hal itu terjadi. Keduanya bekerja bersama:
 
 ```
 Standing Order: "You own the daily inbox triage"
@@ -88,7 +88,7 @@ Cron Job (8 AM daily): "Execute inbox triage per standing orders"
 Agent: Reads standing orders → executes steps → reports results
 ```
 
-Prompt tugas Cron sebaiknya merujuk ke perintah tetap, bukan menggandakannya:
+Prompt pekerjaan cron sebaiknya merujuk perintah tetap alih-alih menduplikasinya:
 
 ```bash
 openclaw cron add \
@@ -97,7 +97,7 @@ openclaw cron add \
   --tz America/New_York \
   --timeout-seconds 300 \
   --announce \
-  --channel bluebubbles \
+  --channel imessage \
   --to "+1XXXXXXXXXX" \
   --message "Execute daily inbox triage per standing orders. Check mail for new alerts. Parse, categorize, and persist each item. Report summary to owner. Escalate unknowns."
 ```
@@ -179,13 +179,13 @@ openclaw cron add \
 | Channel offline  | Log and retry next cycle | If offline > 2 hours     |
 ```
 
-## Pola eksekusi-verifikasi-laporan
+## Pola jalankan-verifikasi-laporkan
 
-Perintah tetap bekerja paling baik saat dikombinasikan dengan disiplin eksekusi yang ketat. Setiap tugas dalam perintah tetap harus mengikuti loop ini:
+Perintah tetap bekerja paling baik bila digabungkan dengan disiplin eksekusi yang ketat. Setiap tugas dalam perintah tetap sebaiknya mengikuti loop ini:
 
-1. **Eksekusi** - Lakukan pekerjaan sebenarnya (jangan hanya mengakui instruksi)
-2. **Verifikasi** - Konfirmasi hasilnya benar (file ada, pesan terkirim, data terurai)
-3. **Laporan** - Beri tahu pemilik apa yang sudah dilakukan dan apa yang sudah diverifikasi
+1. **Jalankan** - Lakukan pekerjaan yang sebenarnya (jangan hanya mengakui instruksi)
+2. **Verifikasi** - Konfirmasi hasilnya benar (file ada, pesan terkirim, data diurai)
+3. **Laporkan** - Beri tahu pemilik apa yang telah dilakukan dan apa yang telah diverifikasi
 
 ```markdown
 ### Execution rules
@@ -202,7 +202,7 @@ Pola ini mencegah mode kegagalan agen yang paling umum: mengakui tugas tanpa men
 
 ## Arsitektur multi-program
 
-Untuk agen yang mengelola beberapa area, susun perintah tetap sebagai program terpisah dengan batas yang jelas:
+Untuk agen yang mengelola banyak urusan, susun perintah tetap sebagai program terpisah dengan batas yang jelas:
 
 ```markdown
 ## Program 1: [Domain A] (Weekly)
@@ -223,35 +223,35 @@ Untuk agen yang mengelola beberapa area, susun perintah tetap sebagai program te
 - [Approval gates that apply across programs]
 ```
 
-Setiap program harus memiliki:
+Setiap program sebaiknya memiliki:
 
 - **Irama pemicu** sendiri (mingguan, bulanan, digerakkan peristiwa, berkelanjutan)
-- **Gerbang persetujuan** sendiri (beberapa program memerlukan pengawasan lebih banyak daripada yang lain)
-- **Batas** yang jelas (agen harus tahu di mana satu program berakhir dan program lain dimulai)
+- **Gerbang persetujuan** sendiri (beberapa program memerlukan pengawasan lebih daripada yang lain)
+- **Batas** yang jelas (agen sebaiknya tahu di mana satu program berakhir dan program lain dimulai)
 
 ## Praktik terbaik
 
 ### Lakukan
 
-- Mulai dengan wewenang sempit dan perluas saat kepercayaan terbentuk
+- Mulai dengan wewenang sempit dan perluas seiring tumbuhnya kepercayaan
 - Definisikan gerbang persetujuan eksplisit untuk tindakan berisiko tinggi
-- Sertakan bagian "Yang TIDAK boleh dilakukan" - batas sama pentingnya dengan izin
-- Kombinasikan dengan tugas Cron untuk eksekusi berbasis waktu yang andal
+- Sertakan bagian "Apa yang TIDAK boleh dilakukan" - batas sama pentingnya dengan izin
+- Gabungkan dengan pekerjaan cron untuk eksekusi berbasis waktu yang andal
 - Tinjau log agen setiap minggu untuk memverifikasi perintah tetap diikuti
-- Perbarui perintah tetap saat kebutuhan Anda berkembang - dokumen ini bersifat hidup
+- Perbarui perintah tetap seiring kebutuhan Anda berkembang - perintah tersebut adalah dokumen hidup
 
 ### Hindari
 
-- Memberikan wewenang luas pada hari pertama ("lakukan apa pun yang menurutmu terbaik")
-- Melewatkan aturan eskalasi - setiap program memerlukan klausul "kapan berhenti dan bertanya"
+- Memberikan wewenang luas pada hari pertama ("lakukan apa pun yang menurut Anda terbaik")
+- Melewatkan aturan eskalasi - setiap program memerlukan klausul "kapan harus berhenti dan bertanya"
 - Menganggap agen akan mengingat instruksi verbal - letakkan semuanya di file
-- Mencampur area dalam satu program - pisahkan program untuk domain yang berbeda
-- Lupa menegakkan dengan tugas Cron - perintah tetap tanpa pemicu menjadi sekadar saran
+- Mencampur urusan dalam satu program - pisahkan program untuk domain yang berbeda
+- Lupa menegakkan dengan pekerjaan cron - perintah tetap tanpa pemicu menjadi saran
 
 ## Terkait
 
-- [Otomatisasi dan tugas](/id/automation): semua mekanisme otomatisasi secara ringkas.
-- [Tugas Cron](/id/automation/cron-jobs): penegakan jadwal untuk perintah tetap.
+- [Otomasi dan tugas](/id/automation): semua mekanisme otomasi secara ringkas.
+- [Pekerjaan cron](/id/automation/cron-jobs): penegakan jadwal untuk perintah tetap.
 - [Hook](/id/automation/hooks): skrip berbasis peristiwa untuk peristiwa siklus hidup agen.
 - [Webhook](/id/automation/cron-jobs#webhooks): pemicu peristiwa HTTP masuk.
 - [Ruang kerja agen](/id/concepts/agent-workspace): tempat perintah tetap berada, termasuk daftar lengkap file bootstrap yang disuntikkan otomatis (`AGENTS.md`, `SOUL.md`, dll.).

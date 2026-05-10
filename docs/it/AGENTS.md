@@ -1,38 +1,46 @@
 ---
 x-i18n:
-    generated_at: "2026-04-23T08:23:00Z"
-    model: gpt-5.4
+    generated_at: "2026-05-10T19:20:30Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 8b046833f9a15dc61894ab9e808a09a9fb055ef7ada5c3d4893fbe5f70dec126
+    source_hash: 4fb1075777cead58155336aa27359c8c149748bec8a854ff1de1f75a992b8c8f
     source_path: AGENTS.md
-    workflow: 15
+    workflow: 16
 ---
 
 # Guida alla documentazione
 
-Questa directory gestisce l’authoring della documentazione, le regole dei link di Mintlify e la policy di i18n della documentazione.
+Questa directory gestisce la scrittura della documentazione, le regole dei link di Mintlify e la policy i18n della documentazione.
 
 ## Regole di Mintlify
 
 - La documentazione è ospitata su Mintlify (`https://docs.openclaw.ai`).
-- I link interni alla documentazione in `docs/**/*.md` devono restare root-relative senza suffisso `.md` o `.mdx` (esempio: `[Config](/gateway/configuration)`).
-- I riferimenti incrociati alle sezioni devono usare ancore su percorsi root-relative (esempio: `[Hooks](/gateway/configuration-reference#hooks)`).
-- Le intestazioni della documentazione dovrebbero evitare lineette lunghe ed apostrofi perché la generazione delle ancore di Mintlify è fragile in quei casi.
-- README e altri documenti renderizzati su GitHub devono mantenere URL assoluti della documentazione affinché i link funzionino anche fuori da Mintlify.
-- Il contenuto della documentazione deve restare generico: niente nomi personali di dispositivi, hostname o percorsi locali; usare segnaposto come `user@gateway-host`.
+- I link interni alla documentazione in `docs/**/*.md` devono rimanere relativi alla radice, senza suffisso `.md` o `.mdx` (esempio: `[Config](/gateway/configuration)`).
+- I riferimenti incrociati alle sezioni dovrebbero usare ancore su percorsi relativi alla radice (esempio: `[Hooks](/gateway/configuration-reference#hooks)`).
+- Le intestazioni della documentazione dovrebbero evitare trattini lunghi e apostrofi perché la generazione delle ancore di Mintlify è fragile in quei casi.
+- Il README e altra documentazione renderizzata da GitHub dovrebbero mantenere URL assoluti della documentazione, così i link funzionano fuori da Mintlify.
+- I contenuti della documentazione devono rimanere generici: niente nomi di dispositivi personali, nomi host o percorsi locali; usa segnaposto come `user@gateway-host`.
 
-## Regole sui contenuti della documentazione
+## Regole per i contenuti della documentazione
 
-- Per la documentazione, il testo dell’interfaccia e gli elenchi nei selettori, ordinare servizi/provider alfabeticamente, a meno che la sezione non descriva esplicitamente l’ordine di esecuzione o l’ordine di rilevamento automatico.
-- Mantenere coerente la denominazione dei plugin inclusi con le regole terminologiche repo-wide sui plugin nel `AGENTS.md` radice.
+- Per documentazione, testi UI ed elenchi dei selettori, ordina servizi/provider alfabeticamente, a meno che la sezione descriva esplicitamente l'ordine di runtime o l'ordine di rilevamento automatico.
+- Mantieni la denominazione dei plugin inclusi coerente con le regole terminologiche sui plugin valide in tutto il repo nel file `AGENTS.md` radice.
+
+## Documentazione interna
+
+- La documentazione privata di lungo periodo per operatori appartiene a `~/Projects/manager/docs/`.
+- La documentazione interna locale al repo usata come appunti/mirror può risiedere sotto `docs/internal/` ignorato.
+- Non aggiungere mai pagine `docs/internal/**` alla navigazione di `docs/docs.json` né collegarle dalla documentazione pubblica.
+- `scripts/docs-sync-publish.mjs` esclude e rimuove `docs/internal/**` dal repo pubblico di pubblicazione `openclaw/docs` se una pagina viene aggiunta forzatamente in seguito.
+- La documentazione interna può menzionare percorsi del repo, nomi di app private, nomi di elementi 1Password e runbook, ma non deve mai includere valori segreti.
 
 ## i18n della documentazione
 
-- La documentazione in lingua straniera non viene mantenuta in questo repository. L’output pubblicato generato si trova nel repository separato `openclaw/docs` (spesso clonato localmente come `../openclaw-docs`).
-- Non aggiungere né modificare documentazione localizzata in `docs/<locale>/**` qui.
-- Trattare la documentazione in inglese in questo repository, insieme ai file di glossario, come fonte di verità.
-- Pipeline: aggiornare qui la documentazione inglese, aggiornare `docs/.i18n/glossary.<locale>.json` se necessario, quindi lasciare che il sync del repository di pubblicazione e `scripts/docs-i18n` vengano eseguiti in `openclaw/docs`.
-- Prima di rieseguire `scripts/docs-i18n`, aggiungere voci di glossario per eventuali nuovi termini tecnici, titoli di pagina o brevi etichette di navigazione che devono restare in inglese o usare una traduzione fissa.
-- `pnpm docs:check-i18n-glossary` è il controllo per i titoli della documentazione inglese modificati e per le brevi etichette interne della documentazione.
-- La translation memory si trova nei file generati `docs/.i18n/*.tm.jsonl` nel repository di pubblicazione.
-- Vedere `docs/.i18n/README.md`.
+- La documentazione in lingue straniere non è mantenuta in questo repo. L'output di pubblicazione generato vive nel repo separato `openclaw/docs` (spesso clonato localmente come `../openclaw-docs`).
+- Non aggiungere né modificare qui documentazione localizzata sotto `docs/<locale>/**`.
+- Considera la documentazione in inglese in questo repo, insieme ai file di glossario, come fonte di verità.
+- Pipeline: aggiorna qui la documentazione in inglese, aggiorna `docs/.i18n/glossary.<locale>.json` secondo necessità, quindi lascia che la sincronizzazione del repo di pubblicazione e `scripts/docs-i18n` vengano eseguiti in `openclaw/docs`.
+- Prima di rieseguire `scripts/docs-i18n`, aggiungi voci di glossario per qualsiasi nuovo termine tecnico, titolo di pagina o breve etichetta di navigazione che debba rimanere in inglese o usare una traduzione fissa.
+- `pnpm docs:check-i18n-glossary` è la guardia per i titoli della documentazione in inglese modificati e le brevi etichette interne della documentazione.
+- La memoria di traduzione vive nei file generati `docs/.i18n/*.tm.jsonl` nel repo di pubblicazione.
+- Vedi `docs/.i18n/README.md`.

@@ -1,54 +1,54 @@
 ---
 read_when:
-    - Görev başına istem gerektirmeden çalışan otonom ajan iş akışlarını ayarlama
+    - Görev başına istem gerektirmeden çalışan otonom ajan iş akışlarını kurma
     - Ajanın bağımsız olarak neler yapabileceğini ve nelerin insan onayı gerektirdiğini tanımlama
     - Çok programlı ajanları net sınırlar ve yükseltme kurallarıyla yapılandırma
-summary: Otonom ajan programları için kalıcı çalışma yetkisini tanımlayın
-title: Kalıcı talimatlar
+summary: Otonom ajan programları için kalıcı çalışma yetkisi tanımlayın
+title: Sürekli talimatlar
 x-i18n:
-    generated_at: "2026-05-06T09:02:16Z"
+    generated_at: "2026-05-10T19:21:14Z"
     model: gpt-5.5
     provider: openai
-    source_hash: a04e871bbd3f51b50ce162576936d4b37acbdc5a94edcd73e390adc784465aa4
+    source_hash: 3c78a723c296e1b695fd0fa7b0c3dbc3572fcfc1f49d6fadcab7a5a7a44c4b8d
     source_path: automation/standing-orders.md
     workflow: 16
 ---
 
-Sürekli talimatlar, tanımlı programlar için agent'ınıza **kalıcı işletim yetkisi** verir. Her seferinde ayrı görev talimatları vermek yerine, net kapsam, tetikleyiciler ve yükseltme kuralları olan programlar tanımlarsınız; agent da bu sınırlar içinde otonom olarak yürütür.
+Sürekli talimatlar, tanımlanmış programlar için ajanınıza **kalıcı çalışma yetkisi** verir. Her seferinde tek tek görev talimatı vermek yerine, net kapsamı, tetikleyicileri ve eskalasyon kuralları olan programlar tanımlarsınız; ajan da bu sınırlar içinde otonom olarak yürütür.
 
-Bu, asistanınıza her cuma "haftalık raporu gönder" demek ile sürekli yetki vermek arasındaki farktır: "Haftalık rapor senin sorumluluğunda. Her cuma derle, gönder ve yalnızca bir şey yanlış görünürse yükselt."
+Bu, asistanınıza her Cuma "haftalık raporu gönder" demek ile sürekli yetki vermek arasındaki farktır: "Haftalık raporun sahibi sensin. Her Cuma derle, gönder ve yalnızca bir şey yanlış görünüyorsa eskale et."
 
 ## Neden sürekli talimatlar
 
 **Sürekli talimatlar olmadan:**
 
-- Her görev için agent'ı yönlendirmeniz gerekir
-- Agent istekler arasında boşta bekler
+- Her görev için ajana istem vermeniz gerekir
+- Ajan istekler arasında boşta bekler
 - Rutin işler unutulur veya gecikir
 - Darboğaz siz olursunuz
 
 **Sürekli talimatlarla:**
 
-- Agent tanımlı sınırlar içinde otonom olarak yürütür
-- Rutin işler yönlendirme olmadan zamanında gerçekleşir
-- Yalnızca istisnalar ve onaylar için dahil olursunuz
-- Agent boş zamanı verimli şekilde doldurur
+- Ajan tanımlı sınırlar içinde otonom olarak yürütür
+- Rutin işler istem verilmeden plana göre gerçekleşir
+- Siz yalnızca istisnalar ve onaylar için devreye girersiniz
+- Ajan boş zamanı verimli şekilde doldurur
 
 ## Nasıl çalışırlar
 
-Sürekli talimatlar [agent çalışma alanı](/tr/concepts/agent-workspace) dosyalarınızda tanımlanır. Önerilen yaklaşım, bunları doğrudan `AGENTS.md` içine eklemektir (`AGENTS.md` her oturumda otomatik olarak enjekte edilir); böylece agent bunları her zaman bağlamında bulundurur. Daha büyük yapılandırmalar için bunları `standing-orders.md` gibi ayrılmış bir dosyaya da koyabilir ve `AGENTS.md` içinden bu dosyaya referans verebilirsiniz.
+Sürekli talimatlar [ajan çalışma alanı](/tr/concepts/agent-workspace) dosyalarınızda tanımlanır. Önerilen yaklaşım, bunları doğrudan `AGENTS.md` içine eklemektir (her oturumda otomatik enjekte edilir), böylece ajan bunları her zaman bağlamında bulundurur. Daha büyük yapılandırmalar için bunları `standing-orders.md` gibi ayrılmış bir dosyaya da koyabilir ve `AGENTS.md` içinden buna başvurabilirsiniz.
 
 Her program şunları belirtir:
 
-1. **Kapsam** - agent'ın ne yapmaya yetkili olduğu
+1. **Kapsam** - ajanın ne yapmaya yetkili olduğu
 2. **Tetikleyiciler** - ne zaman yürütüleceği (zamanlama, olay veya koşul)
-3. **Onay geçitleri** - işlem yapılmadan önce nelerin insan onayı gerektirdiği
-4. **Yükseltme kuralları** - ne zaman durup yardım isteneceği
+3. **Onay kapıları** - harekete geçmeden önce neyin insan onayı gerektirdiği
+4. **Eskalasyon kuralları** - ne zaman durup yardım isteneceği
 
-Agent, bu talimatları her oturumda çalışma alanı başlangıç dosyaları aracılığıyla yükler (otomatik enjekte edilen dosyaların tam listesi için [Agent Çalışma Alanı](/tr/concepts/agent-workspace) bölümüne bakın) ve zaman tabanlı uygulama için [Cron işleri](/tr/automation/cron-jobs) ile birlikte bunlara göre yürütür.
+Ajan bu talimatları her oturumda çalışma alanı başlangıç dosyaları aracılığıyla yükler (otomatik enjekte edilen dosyaların tam listesi için bkz. [Ajan Çalışma Alanı](/tr/concepts/agent-workspace)) ve zamana dayalı uygulama için [Cron işleri](/tr/automation/cron-jobs) ile birlikte bunlara göre yürütür.
 
 <Tip>
-Her oturumda yüklendiklerinden emin olmak için sürekli talimatları `AGENTS.md` içine koyun. Çalışma alanı başlangıcı `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` ve `MEMORY.md` dosyalarını otomatik olarak enjekte eder; ancak alt dizinlerdeki rastgele dosyaları etmez.
+Her oturumda yüklendiklerini garanti etmek için sürekli talimatları `AGENTS.md` içine koyun. Çalışma alanı başlangıcı `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, `BOOTSTRAP.md` ve `MEMORY.md` dosyalarını otomatik olarak enjekte eder; ancak alt dizinlerdeki rastgele dosyaları enjekte etmez.
 </Tip>
 
 ## Bir sürekli talimatın anatomisi
@@ -76,9 +76,9 @@ Her oturumda yüklendiklerinden emin olmak için sürekli talimatları `AGENTS.m
 - Do not skip delivery if metrics look bad - report accurately
 ```
 
-## Sürekli talimatlar ve Cron işleri
+## Sürekli talimatlar artı Cron işleri
 
-Sürekli talimatlar, agent'ın **ne** yapmaya yetkili olduğunu tanımlar. [Cron işleri](/tr/automation/cron-jobs), bunun **ne zaman** gerçekleşeceğini tanımlar. Birlikte çalışırlar:
+Sürekli talimatlar, ajanın **ne** yapmaya yetkili olduğunu tanımlar. [Cron işleri](/tr/automation/cron-jobs) bunun **ne zaman** gerçekleşeceğini tanımlar. Birlikte çalışırlar:
 
 ```
 Standing Order: "You own the daily inbox triage"
@@ -88,7 +88,7 @@ Cron Job (8 AM daily): "Execute inbox triage per standing orders"
 Agent: Reads standing orders → executes steps → reports results
 ```
 
-Cron işi istemi, talimatı çoğaltmak yerine sürekli talimata referans vermelidir:
+Cron işi istemi, onu çoğaltmak yerine sürekli talimata başvurmalıdır:
 
 ```bash
 openclaw cron add \
@@ -97,7 +97,7 @@ openclaw cron add \
   --tz America/New_York \
   --timeout-seconds 300 \
   --announce \
-  --channel bluebubbles \
+  --channel imessage \
   --to "+1XXXXXXXXXX" \
   --message "Execute daily inbox triage per standing orders. Check mail for new alerts. Parse, categorize, and persist each item. Report summary to owner. Escalate unknowns."
 ```
@@ -181,11 +181,11 @@ openclaw cron add \
 
 ## Yürüt-doğrula-raporla kalıbı
 
-Sürekli talimatlar, katı yürütme disipliniyle birleştirildiğinde en iyi şekilde çalışır. Sürekli talimattaki her görev şu döngüyü izlemelidir:
+Sürekli talimatlar, sıkı yürütme disipliniyle birleştirildiğinde en iyi sonucu verir. Bir sürekli talimattaki her görev şu döngüyü izlemelidir:
 
-1. **Yürüt** - Asıl işi yapın (talimatı yalnızca onaylamakla kalmayın)
-2. **Doğrula** - Sonucun doğru olduğunu teyit edin (dosya var, mesaj teslim edildi, veri ayrıştırıldı)
-3. **Raporla** - Sahibe ne yapıldığını ve neyin doğrulandığını bildirin
+1. **Yürüt** - Asıl işi yapın (talimatı yalnızca kabul etmekle kalmayın)
+2. **Doğrula** - Sonucun doğru olduğunu onaylayın (dosya var, mesaj teslim edildi, veri ayrıştırıldı)
+3. **Raporla** - Sahibe ne yapıldığını ve neyin doğrulandığını söyleyin
 
 ```markdown
 ### Execution rules
@@ -198,11 +198,11 @@ Sürekli talimatlar, katı yürütme disipliniyle birleştirildiğinde en iyi ş
 - Never retry indefinitely - 3 attempts max, then escalate.
 ```
 
-Bu kalıp, en yaygın agent hata modunu önler: bir görevi tamamlamadan kabul etmek.
+Bu kalıp, en yaygın ajan hata modunu önler: bir görevi tamamlamadan kabul etmek.
 
 ## Çok programlı mimari
 
-Birden fazla konuyu yöneten agent'lar için sürekli talimatları net sınırları olan ayrı programlar olarak düzenleyin:
+Birden fazla konuyu yöneten ajanlar için sürekli talimatları net sınırları olan ayrı programlar olarak düzenleyin:
 
 ```markdown
 ## Program 1: [Domain A] (Weekly)
@@ -223,35 +223,35 @@ Birden fazla konuyu yöneten agent'lar için sürekli talimatları net sınırla
 - [Approval gates that apply across programs]
 ```
 
-Her programda şunlar olmalıdır:
+Her program şunlara sahip olmalıdır:
 
-- Kendi **tetikleyici ritmi** (haftalık, aylık, olay odaklı, sürekli)
-- Kendi **onay geçitleri** (bazı programlar diğerlerinden daha fazla gözetim gerektirir)
-- Net **sınırlar** (agent bir programın nerede bittiğini ve diğerinin nerede başladığını bilmelidir)
+- Kendi **tetikleyici sıklığı** (haftalık, aylık, olay odaklı, sürekli)
+- Kendi **onay kapıları** (bazı programlar diğerlerinden daha fazla gözetim gerektirir)
+- Net **sınırlar** (ajan bir programın nerede bittiğini ve diğerinin nerede başladığını bilmelidir)
 
 ## En iyi uygulamalar
 
 ### Yapın
 
 - Dar yetkiyle başlayın ve güven oluştukça genişletin
-- Yüksek riskli eylemler için açık onay geçitleri tanımlayın
-- "Ne YAPILMAMALI" bölümleri ekleyin; sınırlar izinler kadar önemlidir
-- Güvenilir zaman tabanlı yürütme için Cron işleriyle birleştirin
-- Sürekli talimatların izlendiğini doğrulamak için agent günlüklerini haftalık olarak gözden geçirin
+- Yüksek riskli eylemler için açık onay kapıları tanımlayın
+- "Ne YAPILMAMALI" bölümlerini ekleyin; sınırlar izinler kadar önemlidir
+- Güvenilir zamana dayalı yürütme için Cron işleriyle birleştirin
+- Sürekli talimatlara uyulduğunu doğrulamak için ajan günlüklerini haftalık inceleyin
 - İhtiyaçlarınız geliştikçe sürekli talimatları güncelleyin; bunlar yaşayan belgelerdir
 
 ### Kaçının
 
-- İlk günden geniş yetki vermek ("en iyi olduğunu düşündüğün şeyi yap")
-- Yükseltme kurallarını atlamak; her programın bir "ne zaman durup sorulacak" maddesine ihtiyacı vardır
-- Agent'ın sözlü talimatları hatırlayacağını varsaymak; her şeyi dosyaya koyun
+- İlk günden geniş yetki vermek ("en iyi olduğunu düşündüğün neyse onu yap")
+- Eskalasyon kurallarını atlamak; her programın bir "ne zaman durup sorulacak" maddesine ihtiyacı vardır
+- Ajanın sözlü talimatları hatırlayacağını varsaymak; her şeyi dosyaya koyun
 - Konuları tek bir programda karıştırmak; ayrı alanlar için ayrı programlar kullanın
-- Cron işleriyle uygulamayı unutmak; tetikleyiciler olmadan sürekli talimatlar öneriye dönüşür
+- Cron işleriyle uygulamayı unutmak; tetikleyicisiz sürekli talimatlar öneriye dönüşür
 
 ## İlgili
 
 - [Otomasyon ve görevler](/tr/automation): tüm otomasyon mekanizmalarına genel bakış.
 - [Cron işleri](/tr/automation/cron-jobs): sürekli talimatlar için zamanlama uygulaması.
-- [Hooks](/tr/automation/hooks): agent yaşam döngüsü olayları için olay odaklı betikler.
-- [Webhooks](/tr/automation/cron-jobs#webhooks): gelen HTTP olay tetikleyicileri.
-- [Agent çalışma alanı](/tr/concepts/agent-workspace): otomatik enjekte edilen başlangıç dosyalarının tam listesi (`AGENTS.md`, `SOUL.md` vb.) dahil, sürekli talimatların bulunduğu yer.
+- [Kancalar](/tr/automation/hooks): ajan yaşam döngüsü olayları için olay odaklı betikler.
+- [Webhook'lar](/tr/automation/cron-jobs#webhooks): gelen HTTP olay tetikleyicileri.
+- [Ajan çalışma alanı](/tr/concepts/agent-workspace): otomatik enjekte edilen başlangıç dosyalarının tam listesi (`AGENTS.md`, `SOUL.md` vb.) dahil, sürekli talimatların bulunduğu yer.

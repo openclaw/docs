@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Sie installieren, konfigurieren oder prüfen das matrix-Plugin
-summary: Fügt die Matrix-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
+    - Sie installieren, konfigurieren oder überprüfen das Matrix-Plugin
+summary: Fügt die Matrix-Kanalschnittstelle zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
 title: Matrix-Plugin
 x-i18n:
-    generated_at: "2026-05-03T06:42:03Z"
+    generated_at: "2026-05-10T19:44:48Z"
     model: gpt-5.5
     provider: openai
-    source_hash: f4f791546090a868b4dd40dbfd458eb5fb2b6beafcf94c259655faac655fdfd8
+    source_hash: 3c135053034d7d8c79c30316c788270278c00b72c1e0674dcbcc2215f1e23add
     source_path: plugins/reference/matrix.md
     workflow: 16
 ---
@@ -16,14 +16,14 @@ x-i18n:
 
 Fügt die Matrix-Kanaloberfläche zum Senden und Empfangen von OpenClaw-Nachrichten hinzu.
 
-## Distribution
+## Verteilung
 
 - Paket: `@openclaw/matrix`
-- Installationsweg: in OpenClaw enthalten
+- Installationsroute: ClawHub: `clawhub:@openclaw/matrix`; npm
 
 ## Oberfläche
 
-Kanäle: Matrix
+channels: matrix
 
 ## Zugehörige Dokumentation
 

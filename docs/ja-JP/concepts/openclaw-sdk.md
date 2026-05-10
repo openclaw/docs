@@ -1,64 +1,67 @@
 ---
 read_when:
-    - OpenClaw と通信する外部アプリ、スクリプト、ダッシュボード、CI ジョブ、または IDE 拡張機能を構築している場合
+    - OpenClaw と通信する外部アプリ、スクリプト、ダッシュボード、CI ジョブ、または IDE 拡張機能を構築している
     - App SDK と Plugin SDK のどちらを選ぶか
-    - Gateway のエージェント実行、セッション、イベント、承認、モデル、またはツールと連携する
+    - Gateway のエージェント実行、セッション、イベント、承認、モデル、またはツールと連携している
 sidebarTitle: App SDK
 summary: 外部アプリ、スクリプト、ダッシュボード、CI ジョブ、IDE 拡張機能向けの公開 OpenClaw App SDK
 title: OpenClaw アプリ SDK
 x-i18n:
-    generated_at: "2026-05-06T05:02:01Z"
+    generated_at: "2026-05-10T19:32:25Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 23d161958e8b100bfc829319ef6bfd2ea2bf7c873ef29a0d4a849b064e5a3b66
+    source_hash: cc339e9f29dd1297353d85827dbac207311a9633e1ab6cc47dace80a72259356
     source_path: concepts/openclaw-sdk.md
     workflow: 16
 ---
 
-**OpenClaw App SDK** は、OpenClaw プロセス外のアプリ向けの公開クライアント API です。スクリプト、ダッシュボード、CI ジョブ、IDE 拡張、その他の外部アプリが Gateway に接続し、エージェント実行を開始し、イベントをストリーミングし、結果を待機し、作業をキャンセルし、Gateway リソースを調べる場合は `@openclaw/sdk` を使用します。
+**OpenClaw App SDK**は、OpenClawプロセスの外部にあるアプリ向けの公開クライアントAPIです。スクリプト、ダッシュボード、CIジョブ、IDE拡張、その他の外部アプリがGatewayへ接続し、agent runを開始し、イベントをストリームし、結果を待機し、作業をキャンセルし、Gatewayリソースを検査したい場合は`@openclaw/sdk`を使用します。
 
 <Note>
-  App SDK は [Plugin SDK](/ja-JP/plugins/sdk-overview) とは異なります。
-  `@openclaw/sdk` は OpenClaw の外部から Gateway と通信します。
-  `openclaw/plugin-sdk/*` は、OpenClaw 内で実行され、プロバイダー、チャネル、ツール、フック、または信頼済みランタイムを登録するプラグイン専用です。
+  App SDKは[Plugin SDK](/ja-JP/plugins/sdk-overview)とは異なります。
+  `@openclaw/sdk`はOpenClawの外部からGatewayと通信します。
+  `openclaw/plugin-sdk/*`は、OpenClaw内部で実行され、プロバイダー、チャンネル、ツール、フック、信頼済みランタイムを登録するPlugin専用です。
 </Note>
 
-## 現在同梱されているもの
+## 現在提供されているもの
 
-`@openclaw/sdk` には次が含まれています。
+`@openclaw/sdk`には次が含まれています。
 
-| サーフェス                | 状態       | 内容                                                                              |
-| ------------------------- | ---------- | --------------------------------------------------------------------------------- |
-| `OpenClaw`                | 利用可能   | メインのクライアントエントリーポイント。トランスポート、接続、リクエスト、イベントを所有します。 |
-| `GatewayClientTransport`  | 利用可能   | Gateway クライアントを基盤にした WebSocket トランスポート。                       |
-| `oc.agents`               | 利用可能   | エージェントハンドルの一覧取得、作成、更新、削除、取得を行います。                |
-| `Agent.run()`             | 利用可能   | Gateway の `agent` 実行を開始し、`Run` を返します。                               |
-| `oc.runs`                 | 利用可能   | 実行の作成、取得、待機、キャンセル、ストリーミングを行います。                    |
-| `Run.events()`            | 利用可能   | 高速な実行向けのリプレイ付きで、実行ごとに正規化されたイベントをストリーミングします。 |
-| `Run.wait()`              | 利用可能   | `agent.wait` を呼び出し、安定した `RunResult` を返します。                        |
-| `Run.cancel()`            | 利用可能   | 実行 ID により `sessions.abort` を呼び出し、利用可能な場合はセッションキーも使用します。 |
-| `oc.sessions`             | 利用可能   | セッションハンドルの作成、解決、送信、パッチ適用、圧縮、取得を行います。          |
-| `Session.send()`          | 利用可能   | `sessions.send` を呼び出し、`Run` を返します。                                    |
-| `oc.models`               | 利用可能   | `models.list` と現在の `models.authStatus` ステータス RPC を呼び出します。        |
-| `oc.tools`                | 利用可能   | ポリシーパイプラインを通じて Gateway ツールの一覧取得、スコープ指定、呼び出しを行います。 |
-| `oc.artifacts`            | 利用可能   | Gateway トランスクリプトアーティファクトの一覧取得、取得、ダウンロードを行います。 |
-| `oc.approvals`            | 利用可能   | Gateway 承認 RPC を通じて exec 承認の一覧取得と解決を行います。                  |
-| `oc.environments`         | 一部対応   | Gateway ローカルおよびノード環境の候補を一覧取得します。作成/削除は未接続です。 |
-| `oc.rawEvents()`          | 利用可能   | 高度なコンシューマー向けに生の Gateway イベントを公開します。                    |
-| `normalizeGatewayEvent()` | 利用可能   | 生の Gateway イベントを安定した SDK イベント形状へ変換します。                   |
+| サーフェス                | 状態    | 機能                                                                              |
+| ------------------------- | ------- | --------------------------------------------------------------------------------- |
+| `OpenClaw`                | 準備完了 | メインのクライアントエントリポイント。transport、接続、リクエスト、イベントを所有します。 |
+| `GatewayClientTransport`  | 準備完了 | Gatewayクライアントに支えられたWebSocket transport。                              |
+| `oc.agents`               | 準備完了 | agentハンドルを一覧表示、作成、更新、削除、取得します。                          |
+| `Agent.run()`             | 準備完了 | Gatewayの`agent` runを開始し、`Run`を返します。                                  |
+| `oc.runs`                 | 準備完了 | runを作成、取得、待機、キャンセル、ストリームします。                            |
+| `Run.events()`            | 準備完了 | 高速なrun向けのリプレイ付きで、runごとの正規化済みイベントをストリームします。   |
+| `Run.wait()`              | 準備完了 | `agent.wait`を呼び出し、安定した`RunResult`を返します。                          |
+| `Run.cancel()`            | 準備完了 | run idで`sessions.abort`を呼び出し、利用可能な場合はsession keyも使用します。     |
+| `oc.sessions`             | 準備完了 | sessionハンドルを作成、解決、送信、パッチ、compact、取得します。                 |
+| `Session.send()`          | 準備完了 | `sessions.send`を呼び出し、`Run`を返します。                                     |
+| `oc.tasks`                | 準備完了 | Gateway task台帳のエントリを一覧表示、読み取り、キャンセルします。               |
+| `oc.models`               | 準備完了 | `models.list`と現在の`models.authStatus`ステータスRPCを呼び出します。            |
+| `oc.tools`                | 準備完了 | ポリシーパイプラインを通じてGatewayツールを一覧表示、スコープ設定、呼び出します。 |
+| `oc.artifacts`            | 準備完了 | Gateway transcript artifactを一覧表示、取得、ダウンロードします。                |
+| `oc.approvals`            | 準備完了 | Gateway approval RPCを通じてexec approvalを一覧表示、解決します。                |
+| `oc.environments`         | 一部対応 | Gateway-localおよびnode environment候補を一覧表示します。create/deleteは未接続です。 |
+| `oc.rawEvents()`          | 準備完了 | 高度なコンシューマー向けに生のGatewayイベントを公開します。                      |
+| `normalizeGatewayEvent()` | 準備完了 | 生のGatewayイベントを安定したSDKイベント形状に変換します。                       |
 
-SDK は、これらのサーフェスで使用されるコア型もエクスポートします。
-`AgentRunParams`, `RunResult`, `RunStatus`, `OpenClawEvent`,
-`OpenClawEventType`, `GatewayEvent`, `OpenClawTransport`,
-`GatewayRequestOptions`, `SessionCreateParams`, `SessionSendParams`,
-`ArtifactSummary`, `ArtifactQuery`, `ArtifactsListResult`,
-`ArtifactsGetResult`, `ArtifactsDownloadResult`, `RuntimeSelection`,
-`EnvironmentSelection`, `WorkspaceSelection`, `ApprovalMode`、および関連する
+SDKは、これらのサーフェスで使用されるコア型もエクスポートします。
+`AgentRunParams`、`RunResult`、`RunStatus`、`OpenClawEvent`、
+`OpenClawEventType`、`GatewayEvent`、`OpenClawTransport`、
+`GatewayRequestOptions`、`SessionCreateParams`、`SessionSendParams`、
+`ArtifactSummary`、`ArtifactQuery`、`ArtifactsListResult`、
+`ArtifactsGetResult`、`ArtifactsDownloadResult`、
+`TaskSummary`、`TaskStatus`、`TasksListParams`、`TasksListResult`、
+`TasksGetResult`、`TasksCancelResult`、`RuntimeSelection`、
+`EnvironmentSelection`、`WorkspaceSelection`、`ApprovalMode`、および関連する
 結果型です。
 
-## Gateway に接続する
+## Gatewayへ接続する
 
-明示的な Gateway URL でクライアントを作成するか、テストおよび組み込みアプリランタイム向けにカスタムトランスポートを注入します。
+明示的なGateway URLでクライアントを作成するか、テストや組み込みアプリランタイム向けにカスタムtransportを注入します。
 
 ```typescript
 import { OpenClaw } from "@openclaw/sdk";
@@ -72,9 +75,9 @@ const oc = new OpenClaw({
 await oc.connect();
 ```
 
-`new OpenClaw({ gateway: "ws://..." })` は `url` と同等です。`gateway: "auto"` オプションはコンストラクターで受け付けられますが、自動 Gateway 検出はまだ独立した SDK 機能ではありません。アプリが Gateway の検出方法をまだ知らない場合は `url` を渡してください。
+`new OpenClaw({ gateway: "ws://..." })`は`url`と同等です。`gateway: "auto"`オプションはコンストラクターで受け付けられますが、自動Gateway discoveryはまだ独立したSDK機能ではありません。アプリがGatewayの検出方法をまだ知らない場合は`url`を渡してください。
 
-テストでは、`OpenClawTransport` を実装するオブジェクトを渡します。
+テストでは、`OpenClawTransport`を実装するオブジェクトを渡します。
 
 ```typescript
 const oc = new OpenClaw({
@@ -87,9 +90,9 @@ const oc = new OpenClaw({
 });
 ```
 
-## エージェントを実行する
+## agentを実行する
 
-アプリがエージェントハンドルを必要とする場合は `oc.agents.get(id)` を使用し、その後 `agent.run()` を呼び出します。
+アプリがagentハンドルを必要とする場合は`oc.agents.get(id)`を使用し、その後`agent.run()`を呼び出します。
 
 ```typescript
 const agent = await oc.agents.get("main");
@@ -112,13 +115,13 @@ const result = await run.wait({ timeoutMs: 120_000 });
 console.log(result.status);
 ```
 
-`openai/gpt-5.5` のようなプロバイダー修飾付きモデル参照は、Gateway の `provider` と `model` オーバーライドに分割されます。SDK 内の `timeoutMs` はミリ秒のままで、`agent` RPC 用の Gateway タイムアウト秒に変換されます。
+`openai/gpt-5.5`のようなプロバイダー修飾付きmodel refは、Gatewayの`provider`および`model`オーバーライドに分割されます。`timeoutMs`はSDK内ではミリ秒のままで、`agent` RPC向けにGateway timeout秒へ変換されます。
 
-`run.wait()` は Gateway の `agent.wait` RPC を使用します。実行がまだアクティブな間に待機期限が切れた場合、実行自体がタイムアウトしたように見せるのではなく、`status: "accepted"` を返します。ランタイムタイムアウト、中止された実行、キャンセルされた実行は `timed_out` または `cancelled` に正規化されます。
+`run.wait()`はGatewayの`agent.wait` RPCを使用します。runがまだアクティブな間にwait期限が切れた場合、run自体がタイムアウトしたかのように見せかけるのではなく、`status: "accepted"`を返します。ランタイムタイムアウト、中止されたrun、キャンセルされたrunは、`timed_out`または`cancelled`に正規化されます。
 
-## セッションを作成して再利用する
+## sessionを作成して再利用する
 
-アプリが永続的なトランスクリプト状態を必要とする場合は、セッションを使用します。
+アプリが永続的なtranscript状態を必要とする場合はsessionを使用します。
 
 ```typescript
 const session = await oc.sessions.create({
@@ -130,7 +133,7 @@ const run = await session.send("Prepare release notes from the current diff.");
 await run.wait();
 ```
 
-`Session.send()` は `sessions.send` を呼び出し、`Run` を返します。セッションハンドルは次にも対応します。
+`Session.send()`は`sessions.send`を呼び出し、`Run`を返します。sessionハンドルは次もサポートします。
 
 ```typescript
 await session.abort(run.id);
@@ -138,9 +141,9 @@ await session.patch({ label: "renamed-session" });
 await session.compact({ maxLines: 200 });
 ```
 
-## イベントをストリーミングする
+## イベントをストリームする
 
-SDK は、生の Gateway イベントを安定した `OpenClawEvent` エンベロープへ正規化します。
+SDKは生のGatewayイベントを安定した`OpenClawEvent`エンベロープに正規化します。
 
 ```typescript
 type OpenClawEvent = {
@@ -158,32 +161,32 @@ type OpenClawEvent = {
 };
 ```
 
-一般的なイベントタイプは次のとおりです。
+一般的なイベントタイプには次が含まれます。
 
-| イベントタイプ        | ソース Gateway イベント                  |
-| --------------------- | ---------------------------------------- |
-| `run.started`         | `agent` ライフサイクル開始               |
-| `run.completed`       | `agent` ライフサイクル終了               |
-| `run.failed`          | `agent` ライフサイクルエラー             |
-| `run.cancelled`       | 中止/キャンセルされたライフサイクル終了  |
-| `run.timed_out`       | タイムアウトによるライフサイクル終了     |
-| `assistant.delta`     | アシスタントのストリーミング差分         |
-| `assistant.message`   | アシスタントメッセージ                   |
-| `thinking.delta`      | 思考またはプランのストリーム             |
-| `tool.call.started`   | ツール/項目/コマンド開始                 |
-| `tool.call.delta`     | ツール/項目/コマンド更新                 |
-| `tool.call.completed` | ツール/項目/コマンド完了                 |
-| `tool.call.failed`    | ツール/項目/コマンド失敗またはブロック状態 |
-| `approval.requested`  | exec またはプラグイン承認リクエスト      |
-| `approval.resolved`   | exec またはプラグイン承認解決            |
-| `session.created`     | `sessions.changed` 作成                  |
-| `session.updated`     | `sessions.changed` 更新                  |
-| `session.compacted`   | `sessions.changed` 圧縮                  |
-| `task.updated`        | タスク更新イベント                       |
-| `artifact.updated`    | パッチストリームイベント                 |
-| `raw`                 | まだ安定した SDK マッピングがない任意のイベント |
+| イベントタイプ        | 元のGatewayイベント                         |
+| --------------------- | ------------------------------------------- |
+| `run.started`         | `agent`ライフサイクル開始                   |
+| `run.completed`       | `agent`ライフサイクル終了                   |
+| `run.failed`          | `agent`ライフサイクルエラー                 |
+| `run.cancelled`       | 中止/キャンセルされたライフサイクル終了     |
+| `run.timed_out`       | タイムアウトによるライフサイクル終了        |
+| `assistant.delta`     | Assistantストリーミング差分                 |
+| `assistant.message`   | Assistantメッセージ                         |
+| `thinking.delta`      | 思考またはplanストリーム                    |
+| `tool.call.started`   | ツール/item/command開始                     |
+| `tool.call.delta`     | ツール/item/command更新                     |
+| `tool.call.completed` | ツール/item/command完了                     |
+| `tool.call.failed`    | ツール/item/command失敗またはブロック状態   |
+| `approval.requested`  | ExecまたはPlugin approval request           |
+| `approval.resolved`   | ExecまたはPlugin approval resolution        |
+| `session.created`     | `sessions.changed`作成                      |
+| `session.updated`     | `sessions.changed`更新                      |
+| `session.compacted`   | `sessions.changed` compaction               |
+| `task.updated`        | Task更新イベント                            |
+| `artifact.updated`    | Patchストリームイベント                     |
+| `raw`                 | まだ安定したSDKマッピングがない任意のイベント |
 
-`Run.events()` はイベントを 1 つの実行 ID に絞り込み、高速な実行向けに既に確認済みのイベントをリプレイします。つまり、次のドキュメント化されたフローは安全です。
+`Run.events()`はイベントを1つのrun idに絞り込み、高速なrun向けにすでに見たイベントをリプレイします。つまり、ドキュメント化された次のフローは安全です。
 
 ```typescript
 const run = await agent.run("Summarize the latest session.");
@@ -195,18 +198,18 @@ for await (const event of run.events()) {
 }
 ```
 
-アプリ全体のストリームには `oc.events()` を使用します。生の Gateway フレームには `oc.rawEvents()` を使用します。
+アプリ全体のストリームには`oc.events()`を使用します。生のGatewayフレームには`oc.rawEvents()`を使用します。
 
-## モデル、ツール、アーティファクト、承認
+## モデル、ツール、artifact、approval
 
-モデルヘルパーは現在の Gateway メソッドに対応します。
+モデルヘルパーは現在のGatewayメソッドに対応します。
 
 ```typescript
 await oc.models.list();
 await oc.models.status({ probe: false }); // calls models.authStatus
 ```
 
-ツールヘルパーは、Gateway カタログ、有効なツールビュー、直接の Gateway ツール呼び出しを公開します。`oc.tools.invoke()` は、ポリシーまたは承認拒否に対して例外を投げるのではなく、型付きエンベロープを返します。
+ツールヘルパーは、Gatewayカタログ、有効なツールビュー、直接のGatewayツール呼び出しを公開します。`oc.tools.invoke()`は、ポリシーまたはapproval拒否でthrowするのではなく、型付きエンベロープを返します。
 
 ```typescript
 await oc.tools.list();
@@ -219,7 +222,7 @@ await oc.tools.invoke("tool-name", {
 });
 ```
 
-アーティファクトヘルパーは、セッション、実行、またはタスクコンテキスト向けの Gateway アーティファクト投影を公開します。各呼び出しには、明示的な `sessionKey`、`runId`、または `taskId` スコープのいずれかが必要です。
+artifactヘルパーは、session、run、またはtaskコンテキスト向けのGateway artifact projectionを公開します。各呼び出しには、明示的な`sessionKey`、`runId`、または`taskId`スコープが1つ必要です。
 
 ```typescript
 const { artifacts } = await oc.artifacts.list({ sessionKey: "main" });
@@ -232,14 +235,22 @@ if (first) {
 }
 ```
 
-承認ヘルパーは exec 承認 RPC を使用します。
+approvalヘルパーはexec approval RPCを使用します。
 
 ```typescript
 const approvals = await oc.approvals.list();
 await oc.approvals.respond("approval-id", { decision: "approve" });
 ```
 
-環境ヘルパーは、読み取り専用の Gateway ローカルおよびノード検出を公開します。
+taskヘルパーは、`openclaw tasks`も支える永続的なtask台帳を使用します。
+
+```typescript
+const tasks = await oc.tasks.list({ status: "running", sessionKey: "agent:main:main" });
+const task = await oc.tasks.get(tasks.tasks[0].id);
+await oc.tasks.cancel(task.task.id, { reason: "user stopped task" });
+```
+
+environmentヘルパーは、読み取り専用のGateway-localおよびnode discoveryを公開します。
 
 ```typescript
 const { environments } = await oc.environments.list();
@@ -248,39 +259,35 @@ await oc.environments.status(environments[0].id);
 
 ## 現在明示的に未対応のもの
 
-SDK には目指している製品モデルの名前が含まれていますが、Gateway RPC が存在するかのように密かに装うことはありません。次の呼び出しは現在、明示的な未対応エラーを投げます。
+SDKには目指しているプロダクトモデル向けの名前が含まれていますが、Gateway RPCが存在するかのように暗黙的に振る舞うことはありません。これらの呼び出しは現在、明示的なunsupported errorをthrowします。
 
 ```typescript
-await oc.tasks.list();
-await oc.tasks.get("task-id");
-await oc.tasks.cancel("task-id");
-
 await oc.environments.create({});
 await oc.environments.delete("environment-id");
 ```
 
-実行ごとの `workspace`、`runtime`、`environment`、`approvals` フィールドは将来の形状として型付けされていますが、現在の Gateway は `agent` RPC でこれらのオーバーライドに対応していません。呼び出し元がそれらを渡した場合、SDK は実行を送信する前に例外を投げるため、作業がデフォルトのワークスペース、ランタイム、環境、または承認動作で誤って実行されることはありません。
+runごとの`workspace`、`runtime`、`environment`、`approvals`フィールドは将来の形状として型付けされていますが、現在のGatewayは`agent` RPC上でこれらのオーバーライドをサポートしていません。呼び出し元がそれらを渡した場合、SDKはrunを送信する前にthrowするため、デフォルトのworkspace、runtime、environment、approval動作で作業が誤って実行されることはありません。
 
-## App SDK と Plugin SDK
+## App SDKとPlugin SDK
 
-コードが OpenClaw の外部にある場合は App SDK を使用します。
+コードがOpenClawの外部にある場合はApp SDKを使用します。
 
-- エージェント実行を開始または監視する Node スクリプト
-- Gateway を呼び出す CI ジョブ
+- agent runを開始または監視するNodeスクリプト
+- Gatewayを呼び出すCIジョブ
 - ダッシュボードと管理パネル
-- IDE 拡張
-- チャネルプラグインになる必要がない外部ブリッジ
-- 偽または実際の Gateway トランスポートを使った統合テスト
+- IDE拡張
+- channel pluginになる必要がない外部ブリッジ
+- 偽または実際のGateway transportを使うintegration test
 
-コードが OpenClaw 内で実行される場合は Plugin SDK を使用します。
+コードがOpenClaw内部で実行される場合はPlugin SDKを使用します。
 
-- プロバイダープラグイン
-- チャネルプラグイン
+- provider plugin
+- channel plugin
 - ツールまたはライフサイクルフック
-- エージェントハーネスプラグイン
+- agent harness plugin
 - 信頼済みランタイムヘルパー
 
-App SDK コードは `@openclaw/sdk` からインポートする必要があります。Plugin コードは、ドキュメント化された `openclaw/plugin-sdk/*` サブパスからインポートする必要があります。2 つの契約を混在させないでください。
+App SDKコードは`@openclaw/sdk`からimportする必要があります。Pluginコードは、ドキュメント化された`openclaw/plugin-sdk/*`サブパスからimportする必要があります。2つの契約を混在させないでください。
 
 ## 関連
 

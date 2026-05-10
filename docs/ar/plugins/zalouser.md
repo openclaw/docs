@@ -1,19 +1,19 @@
 ---
 read_when:
     - تريد دعم Zalo Personal (غير الرسمي) في OpenClaw
-    - أنت تقوم بإعداد Plugin zalouser أو تطويره
-summary: 'Plugin Zalo Personal: تسجيل الدخول عبر QR + المراسلة عبر zca-js الأصلي (تثبيت Plugin + إعداد القناة + الأداة)'
+    - أنت تقوم بتكوين Plugin zalouser أو تطويره
+summary: 'Plugin Zalo Personal: تسجيل الدخول عبر QR + المراسلة عبر zca-js الأصلي (تثبيت Plugin + تكوين القناة + الأداة)'
 title: Plugin Zalo الشخصي
 x-i18n:
-    generated_at: "2026-05-06T18:02:04Z"
+    generated_at: "2026-05-10T19:56:59Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 423325f99ddb5b39bba4c5f3aa71215edfdc092c872f92b5d2f00b6ea691246f
+    source_hash: 405348eac4c08cc6e28b22cfff615fa34c117dedc51a31613545c4057069c20b
     source_path: plugins/zalouser.md
     workflow: 16
 ---
 
-دعم Zalo Personal لـ OpenClaw عبر Plugin، باستخدام `zca-js` الأصلي لأتمتة حساب مستخدم عادي على Zalo.
+دعم Zalo Personal لـ OpenClaw عبر Plugin، باستخدام `zca-js` الأصلي لأتمتة حساب مستخدم Zalo عادي.
 
 <Warning>
 قد تؤدي الأتمتة غير الرسمية إلى تعليق الحساب أو حظره. استخدمها على مسؤوليتك الخاصة.
@@ -21,15 +21,15 @@ x-i18n:
 
 ## التسمية
 
-معرّف القناة هو `zalouser` لتوضيح أن هذا يؤتمت **حساب مستخدم شخصي على Zalo** (غير رسمي). نُبقي `zalo` محجوزًا لتكامل محتمل مستقبلاً مع API رسمي لـ Zalo.
+معرّف القناة هو `zalouser` لتوضيح أن هذا يؤتمت **حساب مستخدم Zalo شخصيًا** (غير رسمي). نُبقي `zalo` محجوزًا لتكامل محتمل مستقبلًا مع واجهة Zalo API الرسمية.
 
-## مكان التشغيل
+## أين يعمل
 
 يعمل هذا Plugin **داخل عملية Gateway**.
 
 إذا كنت تستخدم Gateway بعيدًا، فثبّته/اضبطه على **الجهاز الذي يشغّل Gateway**، ثم أعد تشغيل Gateway.
 
-لا يلزم أي ملف CLI ثنائي خارجي لـ `zca`/`openzca`.
+لا يلزم وجود ملف CLI تنفيذي خارجي لـ `zca`/`openzca`.
 
 ## التثبيت
 
@@ -39,12 +39,12 @@ x-i18n:
 openclaw plugins install @openclaw/zalouser
 ```
 
-استخدم الحزمة الأساسية لمتابعة وسم الإصدار الرسمي الحالي. ثبّت إصدارًا
-دقيقًا فقط عندما تحتاج إلى تثبيت قابل للتكرار.
+استخدم الحزمة المجردة لمتابعة وسم الإصدار الرسمي الحالي. ثبّت إصدارًا
+دقيقًا فقط عندما تحتاج إلى تثبيت قابل لإعادة الإنتاج.
 
 أعد تشغيل Gateway بعد ذلك.
 
-### الخيار ب: التثبيت من مجلد محلي (تطوير)
+### الخيار ب: التثبيت من مجلد محلي (للتطوير)
 
 ```bash
 PLUGIN_SRC=./path/to/local/zalouser-plugin
@@ -90,4 +90,4 @@ openclaw directory peers list --channel zalouser --query "name"
 ## ذو صلة
 
 - [بناء Plugins](/ar/plugins/building-plugins)
-- [Plugins المجتمع](/ar/plugins/community)
+- [ClawHub](/ar/clawhub)

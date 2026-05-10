@@ -1,133 +1,169 @@
 ---
 read_when:
-    - Tavily を使った Web 検索をしたい場合
-    - Tavily API key が必要な場合
-    - '`web_search` provider として Tavily を使いたい場合'
-    - URL からコンテンツを抽出したい場合
-summary: Tavily の検索ツールと抽出ツール
+    - Tavily によるウェブ検索を使いたい場合
+    - Tavily API キーが必要です
+    - Tavily を web_search プロバイダーとして使用したい場合
+    - URL からのコンテンツ抽出が必要な場合
+summary: Tavily の検索および抽出ツール
 title: Tavily
 x-i18n:
-    generated_at: "2026-04-24T05:26:49Z"
-    model: gpt-5.4
+    generated_at: "2026-05-10T19:56:35Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 9af858cd8507e3ebe6614f0695f568ce589798c816c8475685526422a048ef1a
+    source_hash: 071e2b1be054890711e32d7424d16d94133d16ff1ce7da3703e62c53b5c217ef
     source_path: tools/tavily.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw は **Tavily** を 2 つの方法で使えます。
+[Tavily](https://tavily.com) は、AIアプリケーション向けに設計された検索APIです。OpenClaw では、次の2つの方法で公開されています。
 
-- `web_search` provider として
-- 明示的な Plugin tool として: `tavily_search` と `tavily_extract`
+- 汎用検索ツールの `web_search` provider として
+- 明示的な Plugin ツールとして: `tavily_search` と `tavily_extract`
 
-Tavily は AI アプリケーション向けに設計された検索 API で、
-LLM が扱いやすいよう最適化された構造化結果を返します。設定可能な検索深度、
-トピックフィルタリング、ドメインフィルター、AI 生成の回答要約、URL からのコンテンツ抽出
-（JavaScript レンダリングされたページを含む）をサポートします。
+Tavily は、設定可能な検索深度、トピックフィルタリング、ドメインフィルター、AI生成の回答要約、URLからのコンテンツ抽出（JavaScriptでレンダリングされるページを含む）を備えた、LLMでの利用に最適化された構造化結果を返します。
 
-## API key を取得する
+| プロパティ      | 値                               |
+| ------------- | ----------------------------------- |
+| Plugin ID     | `tavily`                            |
+| 認証          | `TAVILY_API_KEY` または config `apiKey` |
+| ベースURL      | `https://api.tavily.com` (デフォルト)  |
+| 同梱ツール | `tavily_search`, `tavily_extract`   |
 
-1. [tavily.com](https://tavily.com/) で Tavily アカウントを作成します。
-2. ダッシュボードで API key を生成します。
-3. config に保存するか、gateway 環境で `TAVILY_API_KEY` を設定します。
+## はじめに
 
-## Tavily 検索を設定する
-
-```json5
-{
-  plugins: {
-    entries: {
-      tavily: {
-        enabled: true,
-        config: {
-          webSearch: {
-            apiKey: "tvly-...", // TAVILY_API_KEY が設定されていれば任意
-            baseUrl: "https://api.tavily.com",
+<Steps>
+  <Step title="APIキーを取得する">
+    [tavily.com](https://tavily.com) で Tavily アカウントを作成し、ダッシュボードでAPIキーを生成します。
+  </Step>
+  <Step title="Plugin と provider を設定する">
+    ```json5
+    {
+      plugins: {
+        entries: {
+          tavily: {
+            enabled: true,
+            config: {
+              webSearch: {
+                apiKey: "tvly-...", // optional if TAVILY_API_KEY is set
+                baseUrl: "https://api.tavily.com",
+              },
+            },
           },
         },
       },
-    },
-  },
-  tools: {
-    web: {
-      search: {
-        provider: "tavily",
+      tools: {
+        web: {
+          search: {
+            provider: "tavily",
+          },
+        },
       },
-    },
-  },
-}
-```
+    }
+    ```
+  </Step>
+  <Step title="検索が実行されることを確認する">
+    任意の agent から `web_search` をトリガーするか、`tavily_search` を直接呼び出します。
+  </Step>
+</Steps>
 
-注:
+<Tip>
+オンボーディングまたは `openclaw configure --section web` で Tavily を選択すると、同梱の Tavily Plugin が自動的に有効になります。
+</Tip>
 
-- オンボーディングまたは `openclaw configure --section web` で Tavily を選ぶと、
-  bundled Tavily Plugin が自動的に有効になります。
-- Tavily config は `plugins.entries.tavily.config.webSearch.*` 配下に保存してください。
-- Tavily を使う `web_search` は `query` と `count`（最大 20 件）をサポートします。
-- `search_depth`、`topic`、`include_answer`、
-  ドメインフィルターのような Tavily 固有制御には `tavily_search` を使ってください。
-
-## Tavily Plugin tools
+## ツールリファレンス
 
 ### `tavily_search`
 
-汎用 `web_search` ではなく Tavily 固有の検索制御を使いたい場合に使います。
+汎用の `web_search` ではなく、Tavily 固有の検索制御を使用したい場合に使います。
 
-| Parameter         | 説明                                                                 |
-| ----------------- | -------------------------------------------------------------------- |
-| `query`           | 検索 query 文字列（400 文字未満を推奨）                              |
-| `search_depth`    | `basic`（デフォルト、バランス型）または `advanced`（最高関連性、低速） |
-| `topic`           | `general`（デフォルト）、`news`（リアルタイム更新）、または `finance` |
-| `max_results`     | 結果件数、1-20（デフォルト: 5）                                      |
-| `include_answer`  | AI 生成の回答要約を含める（デフォルト: false）                       |
-| `time_range`      | 新しさでフィルタ: `day`、`week`、`month`、`year`                     |
-| `include_domains` | 結果を制限するドメインの配列                                         |
-| `exclude_domains` | 結果から除外するドメインの配列                                       |
+| パラメーター         | 型         | 制約 / デフォルト                  | 説明                                     |
+| ----------------- | ------------ | -------------------------------------- | ----------------------------------------------- |
+| `query`           | 文字列       | 必須                               | 検索クエリ文字列。400文字未満にしてください。 |
+| `search_depth`    | 列挙型         | `basic` (デフォルト), `advanced`          | `advanced` は遅いものの、関連性が高くなります。      |
+| `topic`           | 列挙型         | `general` (デフォルト), `news`, `finance` | トピックファミリーでフィルタリングします。                         |
+| `max_results`     | 整数      | 1-20                                   | 結果の数。                              |
+| `include_answer`  | 真偽値      | デフォルト `false`                        | Tavily のAI生成回答要約を含めます。   |
+| `time_range`      | 列挙型         | `day`, `week`, `month`, `year`         | 新しさで結果をフィルタリングします。                      |
+| `include_domains` | 文字列配列 | (なし)                                 | これらのドメインからの結果のみを含めます。        |
+| `exclude_domains` | 文字列配列 | (なし)                                 | これらのドメインからの結果を除外します。             |
 
-**検索深度:**
+検索深度のトレードオフ:
 
-| Depth      | 速度   | 関連性 | 向いている用途                        |
-| ---------- | ------ | ------ | ------------------------------------- |
-| `basic`    | 高速   | 高い   | 汎用クエリ（デフォルト）              |
-| `advanced` | 低速   | 最高   | 精度重視、具体的事実、調査            |
+| 深度      | 速度  | 関連性 | 最適な用途                             |
+| ---------- | ------ | --------- | ------------------------------------ |
+| `basic`    | 高速 | 高い      | 汎用クエリ (デフォルト)。   |
+| `advanced` | 低速 | 最高   | 精密な調査と事実確認。 |
 
 ### `tavily_extract`
 
-1 つ以上の URL からクリーンなコンテンツを抽出するにはこれを使います。
-JavaScript レンダリングページを処理し、対象を絞った
-抽出のための query ベース chunking もサポートします。
+1つ以上のURLからクリーンなコンテンツを抽出するために使います。JavaScriptでレンダリングされるページに対応し、対象を絞った抽出のためにクエリ重視のチャンク化をサポートします。
 
-| Parameter           | 説明                                                        |
-| ------------------- | ----------------------------------------------------------- |
-| `urls`              | 抽出する URL の配列（1 リクエストあたり 1-20 件）           |
-| `query`             | この query への関連性で抽出 chunk を再ランクする            |
-| `extract_depth`     | `basic`（デフォルト、高速）または `advanced`（JS の多いページ向け） |
-| `chunks_per_source` | URL ごとの chunk 数、1-5（`query` が必要）                  |
-| `include_images`    | 結果に画像 URL を含める（デフォルト: false）                |
+| パラメーター           | 型         | 制約 / デフォルト         | 説明                                                 |
+| ------------------- | ------------ | ----------------------------- | ----------------------------------------------------------- |
+| `urls`              | 文字列配列 | 必須、1-20                | コンテンツ抽出元のURL。                               |
+| `query`             | 文字列       | (任意)                    | 抽出されたチャンクをこのクエリとの関連性で再ランク付けします。         |
+| `extract_depth`     | 列挙型         | `basic` (デフォルト), `advanced` | JSの多いページ、SPA、動的テーブルには `advanced` を使います。 |
+| `chunks_per_source` | 整数      | 1-5; **`query` が必要**     | URLごとに返されるチャンク数。`query` なしで設定するとエラーになります。     |
+| `include_images`    | 真偽値      | デフォルト `false`               | 結果に画像URLを含めます。                              |
 
-**抽出深度:**
+抽出深度のトレードオフ:
 
-| Depth      | 使うタイミング                              |
-| ---------- | ------------------------------------------- |
-| `basic`    | シンプルなページ - まずはこちらを試す       |
-| `advanced` | JS レンダリング SPA、動的コンテンツ、表     |
+| 深度      | 使用する場面                                |
+| ---------- | ------------------------------------------ |
+| `basic`    | 単純なページ。まずはこちらを試してください。              |
+| `advanced` | JSでレンダリングされるSPA、動的コンテンツ、テーブル。 |
 
-ヒント:
+<Tip>
+大きなURLリストは複数の `tavily_extract` 呼び出しに分割してください（1リクエストあたり最大20件）。ページ全体ではなく関連コンテンツのみを取得するには、`query` と `chunks_per_source` を併用します。
+</Tip>
 
-- 1 リクエストあたり最大 20 URL です。より多い場合は複数回に分けてください。
-- 全ページではなく関連コンテンツだけ欲しい場合は、`query` + `chunks_per_source` を使ってください。
-- まず `basic` を試し、コンテンツが欠けているか不完全なら `advanced` にフォールバックしてください。
+## 適切なツールの選択
 
-## 適切な tool を選ぶ
-
-| 必要なこと                           | Tool             |
+| 必要なこと                                 | ツール             |
 | ------------------------------------ | ---------------- |
-| 手早い Web 検索、特別なオプション不要 | `web_search`     |
-| 深度、トピック、AI 回答付きの検索     | `tavily_search`  |
-| 特定 URL からのコンテンツ抽出         | `tavily_extract` |
+| 特別なオプションなしのクイックWeb検索 | `web_search`     |
+| 深度、トピック、AI回答を指定した検索 | `tavily_search`  |
+| 特定URLからのコンテンツ抽出   | `tavily_extract` |
+
+<Note>
+Tavily を provider とする汎用 `web_search` ツールは、`query` と `count`（最大20件の結果）をサポートします。Tavily 固有の制御（`search_depth`、`topic`、`include_answer`、ドメインフィルター、時間範囲）には、代わりに `tavily_search` を使います。
+</Note>
+
+## 高度な設定
+
+<AccordionGroup>
+  <Accordion title="APIキーの解決順序">
+    Tavily クライアントは、次の順序でAPIキーを検索します。
+
+    1. `plugins.entries.tavily.config.webSearch.apiKey` (SecretRefs 経由で解決)。
+    2. gateway 環境の `TAVILY_API_KEY`。
+
+    どちらも存在しない場合、`tavily_extract` はセットアップエラーを発生させます。
+
+  </Accordion>
+
+  <Accordion title="カスタムベースURL">
+    プロキシ経由で Tavily を利用する場合は、`plugins.entries.tavily.config.webSearch.baseUrl` を上書きします。デフォルトは `https://api.tavily.com` です。
+  </Accordion>
+
+  <Accordion title="`chunks_per_source` には `query` が必要">
+    `tavily_extract` は、`query` なしで `chunks_per_source` を渡す呼び出しを拒否します。Tavily はクエリとの関連性でチャンクをランク付けするため、このパラメーターはクエリなしでは意味を持ちません。
+  </Accordion>
+</AccordionGroup>
 
 ## 関連
 
-- [Web Search overview](/ja-JP/tools/web) -- すべての provider と自動検出
-- [Firecrawl](/ja-JP/tools/firecrawl) -- コンテンツ抽出付きの検索 + scraping
-- [Exa Search](/ja-JP/tools/exa-search) -- コンテンツ抽出付き neural search
+<CardGroup cols={2}>
+  <Card title="Web Search の概要" href="/ja-JP/tools/web" icon="magnifying-glass">
+    すべての provider と自動検出ルール。
+  </Card>
+  <Card title="Firecrawl" href="/ja-JP/tools/firecrawl" icon="fire">
+    検索に加えてコンテンツ抽出付きのスクレイピング。
+  </Card>
+  <Card title="Exa Search" href="/ja-JP/tools/exa-search" icon="binoculars">
+    コンテンツ抽出付きのニューラル検索。
+  </Card>
+  <Card title="設定" href="/ja-JP/gateway/configuration" icon="gear">
+    Plugin エントリとツールルーティングの完全な config スキーマ。
+  </Card>
+</CardGroup>

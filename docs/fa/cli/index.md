@@ -1,62 +1,65 @@
 ---
 read_when:
-    - یافتن زیر‌فرمان مناسب `openclaw`
-    - جست‌وجوی پرچم‌های سراسری یا قواعد سبک‌دهی خروجی
-summary: 'نمایه OpenClaw CLI: فهرست دستورها، پرچم‌های سراسری، و پیوندها به صفحه‌های مربوط به هر دستور'
+    - یافتن زیرفرمان مناسب `openclaw`
+    - جست‌وجوی فلگ‌های سراسری یا قواعد سبک‌دهی خروجی
+summary: 'نمایهٔ CLI OpenClaw: فهرست فرمان‌ها، پرچم‌های سراسری، و پیوندها به صفحه‌های هر فرمان'
 title: مرجع CLI
 x-i18n:
-    generated_at: "2026-04-29T22:36:14Z"
+    generated_at: "2026-05-10T19:32:19Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 522e0f156b919946756de6b933bb0a08374507401bf8639312daf52781927f33
+    source_hash: 34d37fea072d4f05098567456db832ecb93f40884892d8bc4b063319500933f5
     source_path: cli/index.md
     workflow: 16
 ---
 
-`openclaw` نقطهٔ ورود اصلی CLI است. هر فرمان هسته‌ای یا یک صفحهٔ مرجع
-اختصاصی دارد یا همراه با فرمانی که برای آن alias است مستند شده است؛ این
-نمایه فرمان‌ها، پرچم‌های سراسری و قواعد سبک‌دهی خروجی را که در سراسر CLI
-اعمال می‌شوند فهرست می‌کند.
+`openclaw` نقطهٔ ورود اصلی CLI است. هر فرمان اصلی یا صفحهٔ مرجع اختصاصی دارد یا همراه با فرمانی که نام مستعار آن است مستند شده؛ این فهرست فرمان‌ها، فلگ‌های سراسری، و قواعد سبک‌دهی خروجی را که در سراسر CLI اعمال می‌شوند نشان می‌دهد.
+
+فرمان‌های راه‌اندازی را بر اساس هدف استفاده کنید:
+
+- `openclaw setup` پیکربندی پایه و workspace را بدون طی کردن جریان کامل onboarding راهنمایی‌شده ایجاد می‌کند.
+- `openclaw onboard` مسیر کامل و راهنمایی‌شدهٔ اجرای نخست برای Gateway، احراز هویت مدل، workspace، کانال‌ها، Skills، و سلامت است.
+- `openclaw configure` بخش‌های مشخصی از یک راه‌اندازی موجود را تغییر می‌دهد، مانند احراز هویت مدل، Gateway، کانال‌ها، Pluginها، یا Skills.
+- `openclaw channels add` حساب‌های کانال را پس از وجود داشتن پایه پیکربندی می‌کند؛ آن را بدون فلگ برای راه‌اندازی راهنمایی‌شدهٔ کانال یا با فلگ‌های ویژهٔ کانال برای اسکریپت‌ها اجرا کنید.
 
 ## صفحه‌های فرمان
 
 | حوزه                 | فرمان‌ها                                                                                                                                                                                                                                  |
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| راه‌اندازی و شروع به کار | [`crestodian`](/fa/cli/crestodian) · [`setup`](/fa/cli/setup) · [`onboard`](/fa/cli/onboard) · [`configure`](/fa/cli/configure) · [`config`](/fa/cli/config) · [`completion`](/fa/cli/completion) · [`doctor`](/fa/cli/doctor) · [`dashboard`](/fa/cli/dashboard) |
+| راه‌اندازی و onboarding | [`crestodian`](/fa/cli/crestodian) · [`setup`](/fa/cli/setup) · [`onboard`](/fa/cli/onboard) · [`configure`](/fa/cli/configure) · [`config`](/fa/cli/config) · [`completion`](/fa/cli/completion) · [`doctor`](/fa/cli/doctor) · [`dashboard`](/fa/cli/dashboard) |
 | بازنشانی و حذف نصب  | [`backup`](/fa/cli/backup) · [`reset`](/fa/cli/reset) · [`uninstall`](/fa/cli/uninstall) · [`update`](/fa/cli/update)                                                                                                                                 |
 | پیام‌رسانی و عامل‌ها | [`message`](/fa/cli/message) · [`agent`](/fa/cli/agent) · [`agents`](/fa/cli/agents) · [`acp`](/fa/cli/acp) · [`mcp`](/fa/cli/mcp)                                                                                                                       |
 | سلامت و نشست‌ها  | [`status`](/fa/cli/status) · [`health`](/fa/cli/health) · [`sessions`](/fa/cli/sessions)                                                                                                                                                           |
-| Gateway و گزارش‌ها     | [`gateway`](/fa/cli/gateway) · [`logs`](/fa/cli/logs) · [`system`](/fa/cli/system)                                                                                                                                                                 |
-| مدل‌ها و استنتاج | [`models`](/fa/cli/models) · [`infer`](/fa/cli/infer) · `capability` (alias برای [`infer`](/fa/cli/infer)) · [`memory`](/fa/cli/memory) · [`commitments`](/fa/cli/commitments) · [`wiki`](/fa/cli/wiki)                                                      |
+| Gateway و لاگ‌ها     | [`gateway`](/fa/cli/gateway) · [`logs`](/fa/cli/logs) · [`system`](/fa/cli/system)                                                                                                                                                                 |
+| مدل‌ها و استنتاج | [`models`](/fa/cli/models) · [`infer`](/fa/cli/infer) · `capability` (نام مستعار برای [`infer`](/fa/cli/infer)) · [`memory`](/fa/cli/memory) · [`commitments`](/fa/cli/commitments) · [`wiki`](/fa/cli/wiki)                                                      |
 | شبکه و Nodeها    | [`directory`](/fa/cli/directory) · [`nodes`](/fa/cli/nodes) · [`devices`](/fa/cli/devices) · [`node`](/fa/cli/node)                                                                                                                                   |
-| زمان اجرا و sandbox  | [`approvals`](/fa/cli/approvals) · `exec-policy` (ببینید [`approvals`](/fa/cli/approvals)) · [`sandbox`](/fa/cli/sandbox) · [`tui`](/fa/cli/tui) · `chat`/`terminal` (aliasها برای [`tui --local`](/fa/cli/tui)) · [`browser`](/fa/cli/browser)                 |
+| Runtime و sandbox  | [`approvals`](/fa/cli/approvals) · `exec-policy` (ببینید [`approvals`](/fa/cli/approvals)) · [`sandbox`](/fa/cli/sandbox) · [`tui`](/fa/cli/tui) · `chat`/`terminal` (نام‌های مستعار برای [`tui --local`](/fa/cli/tui)) · [`browser`](/fa/cli/browser)                 |
 | خودکارسازی           | [`cron`](/fa/cli/cron) · [`tasks`](/fa/cli/tasks) · [`hooks`](/fa/cli/hooks) · [`webhooks`](/fa/cli/webhooks)                                                                                                                                         |
 | کشف و مستندات   | [`dns`](/fa/cli/dns) · [`docs`](/fa/cli/docs)                                                                                                                                                                                                   |
-| جفت‌سازی و کانال‌ها | [`pairing`](/fa/cli/pairing) · [`qr`](/fa/cli/qr) · [`channels`](/fa/cli/channels)                                                                                                                                                                 |
+| Pairing و کانال‌ها | [`pairing`](/fa/cli/pairing) · [`qr`](/fa/cli/qr) · [`channels`](/fa/cli/channels)                                                                                                                                                                 |
 | امنیت و Pluginها | [`security`](/fa/cli/security) · [`secrets`](/fa/cli/secrets) · [`skills`](/fa/cli/skills) · [`plugins`](/fa/cli/plugins) · [`proxy`](/fa/cli/proxy)                                                                                                     |
-| aliasهای قدیمی       | [`daemon`](/fa/cli/daemon) (سرویس Gateway) · [`clawbot`](/fa/cli/clawbot) (فضای نام)                                                                                                                                                         |
-| Pluginها (اختیاری)   | [`voicecall`](/fa/cli/voicecall) (در صورت نصب بودن)                                                                                                                                                                                              |
+| نام‌های مستعار قدیمی       | [`daemon`](/fa/cli/daemon) (سرویس Gateway) · [`clawbot`](/fa/cli/clawbot) (namespace)                                                                                                                                                         |
+| Pluginها (اختیاری)   | [`path`](/fa/cli/path) · [`voicecall`](/fa/cli/voicecall) (اگر نصب شده باشد)                                                                                                                                                                        |
 
-## پرچم‌های سراسری
+## فلگ‌های سراسری
 
-| پرچم                    | هدف                                                               |
+| فلگ                    | هدف                                                               |
 | ----------------------- | --------------------------------------------------------------------- |
-| `--dev`                 | وضعیت را زیر `~/.openclaw-dev` جدا می‌کند و پورت‌های پیش‌فرض را تغییر می‌دهد         |
+| `--dev`                 | وضعیت را زیر `~/.openclaw-dev` جدا می‌کند و پورت‌های پیش‌فرض را جابه‌جا می‌کند         |
 | `--profile <name>`      | وضعیت را زیر `~/.openclaw-<name>` جدا می‌کند                              |
-| `--container <name>`    | یک کانتینر نام‌گذاری‌شده را برای اجرا هدف می‌گیرد                                |
+| `--container <name>`    | یک container نام‌گذاری‌شده را برای اجرا هدف می‌گیرد                                |
 | `--no-color`            | رنگ‌های ANSI را غیرفعال می‌کند (`NO_COLOR=1` نیز رعایت می‌شود)                  |
-| `--update`              | کوتاه‌نویسی برای [`openclaw update`](/fa/cli/update) (فقط نصب‌های منبعی) |
+| `--update`              | کوتاه‌نویسی برای [`openclaw update`](/fa/cli/update) (فقط نصب‌های source) |
 | `-V`, `--version`, `-v` | نسخه را چاپ می‌کند و خارج می‌شود                                                |
 
 ## حالت‌های خروجی
 
 - رنگ‌های ANSI و نشانگرهای پیشرفت فقط در نشست‌های TTY رندر می‌شوند.
-- پیوندهای OSC-8 در جاهایی که پشتیبانی شوند به‌صورت پیوندهای قابل کلیک رندر می‌شوند؛ در غیر این صورت
-  CLI به URLهای ساده بازمی‌گردد.
+- هایپرلینک‌های OSC-8 در جاهایی که پشتیبانی شوند به‌صورت لینک‌های قابل کلیک رندر می‌شوند؛ در غیر این صورت CLI به URLهای ساده fallback می‌کند.
 - `--json` (و `--plain` در جاهایی که پشتیبانی شود) سبک‌دهی را برای خروجی تمیز غیرفعال می‌کند.
-- فرمان‌های طولانی‌مدت یک نشانگر پیشرفت نمایش می‌دهند (OSC 9;4 در صورت پشتیبانی).
+- فرمان‌های طولانی‌مدت یک نشانگر پیشرفت نشان می‌دهند (OSC 9;4 در صورت پشتیبانی).
 
-منبع حقیقت پالت: `src/terminal/palette.ts`.
+منبع حقیقت palette: `src/terminal/palette.ts`.
 
 ## درخت فرمان
 
@@ -128,6 +131,12 @@ openclaw [--dev] [--profile <name>] <command>
     status
     index
     search
+  path
+    resolve
+    find
+    set
+    validate
+    emit
   commitments
     list
     dismiss
@@ -357,33 +366,29 @@ openclaw [--dev] [--profile <name>] <command>
   terminal (alias: tui --local)
 ```
 
-Pluginها می‌توانند فرمان‌های سطح بالای بیشتری اضافه کنند (برای مثال `openclaw voicecall`).
+Pluginها می‌توانند فرمان‌های سطح بالای دیگری اضافه کنند (برای مثال `openclaw voicecall`).
 
 </Accordion>
 
-## فرمان‌های اسلش چت
+## فرمان‌های slash در چت
 
-پیام‌های چت از فرمان‌های `/...` پشتیبانی می‌کنند. [فرمان‌های اسلش](/fa/tools/slash-commands) را ببینید.
+پیام‌های چت از فرمان‌های `/...` پشتیبانی می‌کنند. ببینید [فرمان‌های slash](/fa/tools/slash-commands).
 
 نکات برجسته:
 
-- `/status` — عیب‌یابی سریع.
-- `/trace` — خطوط trace/debug Plugin در محدودهٔ نشست.
+- `/status` — diagnostics سریع.
+- `/trace` — خط‌های trace/debug مربوط به Plugin در محدودهٔ نشست.
 - `/config` — تغییرات پیکربندی پایدارشده.
-- `/debug` — overrideهای پیکربندی فقط زمان اجرا (در حافظه، نه دیسک؛ به `commands.debug: true` نیاز دارد).
+- `/debug` — overrideهای پیکربندی فقط در runtime (حافظه، نه disk؛ به `commands.debug: true` نیاز دارد).
 
-## رهگیری مصرف
+## ردیابی استفاده
 
-`openclaw status --usage` و Control UI میزان مصرف/سهمیهٔ provider را زمانی که
-اعتبارنامه‌های OAuth/API در دسترس باشند نمایش می‌دهند. داده‌ها مستقیماً از endpointهای مصرف provider
-می‌آیند و به `X% left` نرمال‌سازی می‌شوند. Providerهایی با پنجره‌های مصرف فعلی:
-Anthropic، GitHub Copilot، Gemini CLI، OpenAI Codex، MiniMax،
-Xiaomi و z.ai.
+`openclaw status --usage` و Control UI زمانی که اعتبارنامه‌های OAuth/API در دسترس باشند، استفاده/quota ارائه‌دهنده را نمایش می‌دهند. داده مستقیماً از endpointهای استفادهٔ ارائه‌دهنده می‌آید و به `X% left` نرمال‌سازی می‌شود. ارائه‌دهندگان با پنجره‌های استفادهٔ فعلی: Anthropic، GitHub Copilot، Gemini CLI، OpenAI Codex، MiniMax، Xiaomi، و z.ai.
 
-برای جزئیات، [رهگیری مصرف](/fa/concepts/usage-tracking) را ببینید.
+برای جزئیات ببینید [ردیابی استفاده](/fa/concepts/usage-tracking).
 
 ## مرتبط
 
-- [فرمان‌های اسلش](/fa/tools/slash-commands)
+- [فرمان‌های slash](/fa/tools/slash-commands)
 - [پیکربندی](/fa/gateway/configuration)
 - [محیط](/fa/help/environment)

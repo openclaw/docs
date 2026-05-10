@@ -1,14 +1,14 @@
 ---
 read_when:
-    - OpenClaw’da Zalo Personal (resmi olmayan) desteği istiyorsunuz
+    - OpenClaw'da Zalo Personal (resmi olmayan) desteği istiyorsunuz
     - zalouser Plugin'ini yapılandırıyor veya geliştiriyorsunuz
-summary: 'Zalo Personal Plugin: QR ile oturum açma + yerel zca-js aracılığıyla mesajlaşma (Plugin kurulumu + kanal yapılandırması + araç)'
+summary: 'Zalo Personal Plugin’i: QR ile oturum açma + yerel zca-js üzerinden mesajlaşma (Plugin kurulumu + kanal yapılandırması + araç)'
 title: Zalo kişisel Plugin
 x-i18n:
-    generated_at: "2026-05-06T17:59:26Z"
+    generated_at: "2026-05-10T19:50:51Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 423325f99ddb5b39bba4c5f3aa71215edfdc092c872f92b5d2f00b6ea691246f
+    source_hash: 405348eac4c08cc6e28b22cfff615fa34c117dedc51a31613545c4057069c20b
     source_path: plugins/zalouser.md
     workflow: 16
 ---
@@ -16,20 +16,20 @@ x-i18n:
 OpenClaw için Zalo Personal desteği, normal bir Zalo kullanıcı hesabını otomatikleştirmek üzere yerel `zca-js` kullanan bir Plugin aracılığıyla sağlanır.
 
 <Warning>
-Resmi olmayan otomasyon, hesabın askıya alınmasına veya yasaklanmasına yol açabilir. Kullanım riski size aittir.
+Resmi olmayan otomasyon hesabın askıya alınmasına veya yasaklanmasına yol açabilir. Kendi riskinizle kullanın.
 </Warning>
 
 ## Adlandırma
 
-Kanal kimliği `zalouser` değeridir; bu, bunun bir **kişisel Zalo kullanıcı hesabını** otomatikleştirdiğini açıkça belirtir (resmi değildir). `zalo` değerini olası gelecekteki resmi bir Zalo API entegrasyonu için ayrılmış tutuyoruz.
+Kanal kimliği, bunun **kişisel Zalo kullanıcı hesabını** otomatikleştirdiğini açıkça göstermek için `zalouser` şeklindedir (resmi değildir). `zalo` değerini gelecekteki olası resmi Zalo API entegrasyonu için ayrılmış tutuyoruz.
 
 ## Nerede çalışır
 
-Bu Plugin, **Gateway işleminin içinde** çalışır.
+Bu Plugin **Gateway süreci içinde** çalışır.
 
-Uzak bir Gateway kullanıyorsanız, bunu **Gateway’i çalıştıran makinede** kurun/yapılandırın ve ardından Gateway’i yeniden başlatın.
+Uzak bir Gateway kullanıyorsanız bunu **Gateway’in çalıştığı makinede** kurun/yapılandırın, ardından Gateway’i yeniden başlatın.
 
-Harici bir `zca`/`openzca` CLI ikili dosyası gerekmez.
+Harici bir `zca`/`openzca` CLI ikilisi gerekmez.
 
 ## Kurulum
 
@@ -39,8 +39,8 @@ Harici bir `zca`/`openzca` CLI ikili dosyası gerekmez.
 openclaw plugins install @openclaw/zalouser
 ```
 
-Geçerli resmi sürüm etiketini takip etmek için paketi sürüm belirtmeden kullanın. Kesin bir
-sürümü yalnızca tekrarlanabilir bir kurulum gerektiğinde sabitleyin.
+Geçerli resmi yayın etiketini takip etmek için yalın paketi kullanın. Tam bir
+sürümü yalnızca yeniden üretilebilir bir kurulum gerektiğinde sabitleyin.
 
 Ardından Gateway’i yeniden başlatın.
 
@@ -56,7 +56,7 @@ Ardından Gateway’i yeniden başlatın.
 
 ## Yapılandırma
 
-Kanal yapılandırması `channels.zalouser` altında yer alır (`plugins.entries.*` altında değil):
+Kanal yapılandırması `channels.zalouser` altında bulunur (`plugins.entries.*` altında değil):
 
 ```json5
 {
@@ -79,15 +79,15 @@ openclaw message send --channel zalouser --target <threadId> --message "Hello fr
 openclaw directory peers list --channel zalouser --query "name"
 ```
 
-## Agent aracı
+## Aracı aracı
 
 Araç adı: `zalouser`
 
 Eylemler: `send`, `image`, `link`, `friends`, `groups`, `me`, `status`
 
-Kanal mesajı eylemleri, mesaj tepkileri için `react` desteği de sağlar.
+Kanal mesaj eylemleri, mesaj tepkileri için `react` desteği de sunar.
 
 ## İlgili
 
 - [Plugin oluşturma](/tr/plugins/building-plugins)
-- [Topluluk Plugin’leri](/tr/plugins/community)
+- [ClawHub](/tr/clawhub)

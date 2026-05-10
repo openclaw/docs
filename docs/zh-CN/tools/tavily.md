@@ -1,129 +1,169 @@
 ---
 read_when:
-    - 你想使用由 Tavily 支持的 web 搜索
-    - 你需要一个 Tavily API key
-    - 你想将 Tavily 作为 `web_search` provider
+    - 你想要由 Tavily 支持的 Web 搜索
+    - 你需要一个 Tavily API 密钥
+    - 你想将 Tavily 用作 web_search 提供商
     - 你想从 URL 中提取内容
-summary: Tavily 搜索与提取工具
+summary: Tavily 搜索和提取工具
 title: Tavily
 x-i18n:
-    generated_at: "2026-04-23T21:10:13Z"
-    model: gpt-5.4
+    generated_at: "2026-05-10T19:52:31Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 9af858cd8507e3ebe6614f0695f568ce589798c816c8475685526422a048ef1a
+    source_hash: 071e2b1be054890711e32d7424d16d94133d16ff1ce7da3703e62c53b5c217ef
     source_path: tools/tavily.md
-    workflow: 15
+    workflow: 16
 ---
 
-OpenClaw 可以通过两种方式使用 **Tavily**：
+[Tavily](https://tavily.com) 是一个面向 AI 应用设计的搜索 API。OpenClaw 以两种方式公开它：
 
-- 作为 `web_search` provider
+- 作为通用搜索工具的 `web_search` 提供商
 - 作为显式插件工具：`tavily_search` 和 `tavily_extract`
 
-Tavily 是一个面向 AI 应用设计的搜索 API，返回针对 LLM 消费优化的结构化结果。它支持可配置的搜索深度、主题过滤、域名过滤、AI 生成的答案摘要，以及从 URL 提取内容（包括 JavaScript 渲染页面）。
+Tavily 返回针对 LLM 消费优化的结构化结果，支持可配置的搜索深度、主题过滤、域名过滤、AI 生成的答案摘要，以及从 URL 提取内容（包括 JavaScript 渲染的页面）。
 
-## 获取 API key
+| 属性          | 值                                  |
+| ------------- | ----------------------------------- |
+| 插件 id       | `tavily`                            |
+| 凭证          | `TAVILY_API_KEY` 或配置 `apiKey`    |
+| 基础 URL      | `https://api.tavily.com`（默认）    |
+| 内置工具      | `tavily_search`, `tavily_extract`   |
 
-1. 在 [tavily.com](https://tavily.com/) 创建一个 Tavily 账户。
-2. 在控制台中生成一个 API key。
-3. 将它存入配置，或在 gateway 环境中设置 `TAVILY_API_KEY`。
+## 入门指南
 
-## 配置 Tavily 搜索
-
-```json5
-{
-  plugins: {
-    entries: {
-      tavily: {
-        enabled: true,
-        config: {
-          webSearch: {
-            apiKey: "tvly-...", // 如果已设置 TAVILY_API_KEY，则可选
-            baseUrl: "https://api.tavily.com",
+<Steps>
+  <Step title="获取 API key">
+    在 [tavily.com](https://tavily.com) 创建 Tavily 账户，然后在控制台中生成 API key。
+  </Step>
+  <Step title="配置插件和提供商">
+    ```json5
+    {
+      plugins: {
+        entries: {
+          tavily: {
+            enabled: true,
+            config: {
+              webSearch: {
+                apiKey: "tvly-...", // optional if TAVILY_API_KEY is set
+                baseUrl: "https://api.tavily.com",
+              },
+            },
           },
         },
       },
-    },
-  },
-  tools: {
-    web: {
-      search: {
-        provider: "tavily",
+      tools: {
+        web: {
+          search: {
+            provider: "tavily",
+          },
+        },
       },
-    },
-  },
-}
-```
+    }
+    ```
+  </Step>
+  <Step title="验证搜索能运行">
+    从任意智能体触发一次 `web_search`，或直接调用 `tavily_search`。
+  </Step>
+</Steps>
 
-说明：
+<Tip>
+在新手引导或 `openclaw configure --section web` 中选择 Tavily 会自动启用内置的 Tavily 插件。
+</Tip>
 
-- 在新手引导中选择 Tavily，或执行 `openclaw configure --section web` 时选择 Tavily，都会自动启用内置 Tavily 插件。
-- Tavily 配置应存放在 `plugins.entries.tavily.config.webSearch.*` 下。
-- 使用 Tavily 的 `web_search` 支持 `query` 和 `count`（最多 20 条结果）。
-- 如果你需要 Tavily 专用控制项，如 `search_depth`、`topic`、`include_answer` 或域名过滤，请使用 `tavily_search`。
-
-## Tavily 插件工具
+## 工具参考
 
 ### `tavily_search`
 
-当你希望使用 Tavily 专用搜索控制，而不是通用的
-`web_search` 时，请使用它。
+当你需要使用 Tavily 特有的搜索控制，而不是通用的 `web_search` 时，请使用此工具。
 
-| 参数 | 描述 |
-| ----------------- | --------------------------------------------------------------------- |
-| `query` | 搜索查询字符串（请保持在 400 个字符以内） |
-| `search_depth` | `basic`（默认，均衡）或 `advanced`（相关性最高，但更慢） |
-| `topic` | `general`（默认）、`news`（实时更新）或 `finance` |
-| `max_results` | 结果数量，1–20（默认：5） |
-| `include_answer` | 是否包含 AI 生成的答案摘要（默认：false） |
-| `time_range` | 按时间新近性过滤：`day`、`week`、`month` 或 `year` |
-| `include_domains` | 用于限制结果范围的域名数组 |
-| `exclude_domains` | 需要从结果中排除的域名数组 |
+| 参数              | 类型         | 约束 / 默认值                          | 描述                                            |
+| ----------------- | ------------ | -------------------------------------- | ----------------------------------------------- |
+| `query`           | string       | 必填                                   | 搜索查询字符串。保持在 400 个字符以内。         |
+| `search_depth`    | enum         | `basic`（默认）、`advanced`            | `advanced` 较慢，但相关性更高。                 |
+| `topic`           | enum         | `general`（默认）、`news`、`finance`   | 按主题类别过滤。                                |
+| `max_results`     | integer      | 1-20                                   | 结果数量。                                      |
+| `include_answer`  | boolean      | 默认 `false`                           | 包含 Tavily AI 生成的答案摘要。                 |
+| `time_range`      | enum         | `day`、`week`、`month`、`year`         | 按新近程度过滤结果。                            |
+| `include_domains` | string array | （无）                                 | 仅包含来自这些域名的结果。                      |
+| `exclude_domains` | string array | （无）                                 | 排除来自这些域名的结果。                        |
 
-**搜索深度：**
+搜索深度权衡：
 
-| 深度 | 速度 | 相关性 | 最适合 |
-| ---------- | ------ | --------- | ----------------------------------- |
-| `basic` | 更快 | 高 | 通用查询（默认） |
-| `advanced` | 更慢 | 最高 | 高精度、特定事实、研究 |
+| 深度       | 速度 | 相关性 | 最适合                               |
+| ---------- | ---- | ------ | ------------------------------------ |
+| `basic`    | 更快 | 高     | 通用查询（默认）。                   |
+| `advanced` | 更慢 | 最高   | 精确研究和事实查找。                 |
 
 ### `tavily_extract`
 
-当你需要从一个或多个 URL 中提取干净内容时，请使用它。它支持
-JavaScript 渲染页面，并支持基于查询聚焦的分块，以实现定向
-提取。
+使用此工具从一个或多个 URL 提取干净内容。可处理 JavaScript 渲染的页面，并支持面向查询的分块，用于有针对性的提取。
 
-| 参数 | 描述 |
-| ------------------- | ---------------------------------------------------------- |
-| `urls` | 要提取的 URL 数组（每次请求 1–20 个） |
-| `query` | 按与该查询的相关性对提取出的块重新排序 |
-| `extract_depth` | `basic`（默认，快速）或 `advanced`（适用于重 JS 页面） |
-| `chunks_per_source` | 每个 URL 的块数，1–5（要求提供 `query`） |
-| `include_images` | 是否在结果中包含图片 URL（默认：false） |
+| 参数                | 类型         | 约束 / 默认值                | 描述                                                        |
+| ------------------- | ------------ | ---------------------------- | ----------------------------------------------------------- |
+| `urls`              | string array | 必填，1-20                   | 要从中提取内容的 URL。                                      |
+| `query`             | string       | （可选）                     | 按与此查询的相关性对提取的分块重新排序。                    |
+| `extract_depth`     | enum         | `basic`（默认）、`advanced`  | 对 JS 较重的页面、SPA 或动态表格使用 `advanced`。           |
+| `chunks_per_source` | integer      | 1-5；**需要 `query`**        | 每个 URL 返回的分块数。如果未设置 `query` 则会报错。        |
+| `include_images`    | boolean      | 默认 `false`                 | 在结果中包含图片 URL。                                      |
 
-**提取深度：**
+提取深度权衡：
 
-| 深度 | 使用场景 |
-| ---------- | ----------------------------------------- |
-| `basic` | 简单页面——优先尝试它 |
-| `advanced` | JS 渲染的 SPA、动态内容、表格 |
+| 深度       | 何时使用                                   |
+| ---------- | ------------------------------------------ |
+| `basic`    | 简单页面。先尝试这个。                     |
+| `advanced` | JS 渲染的 SPA、动态内容、表格。            |
 
-提示：
+<Tip>
+将较大的 URL 列表拆分为多次 `tavily_extract` 调用（每次请求最多 20 个）。使用 `query` 加 `chunks_per_source`，只获取相关内容，而不是完整页面。
+</Tip>
 
-- 每次请求最多 20 个 URL。更大的列表请拆成多次调用。
-- 使用 `query` + `chunks_per_source` 可只获取相关内容，而不是整页内容。
-- 优先尝试 `basic`；如果内容缺失或不完整，再回退到 `advanced`。
+## 选择合适的工具
 
-## 选择正确的工具
-
-| 需求 | 工具 |
+| 需求                                 | 工具             |
 | ------------------------------------ | ---------------- |
-| 快速 web 搜索，无需特殊选项 | `web_search` |
-| 带深度、主题、AI 答案的搜索 | `tavily_search` |
-| 从特定 URL 中提取内容 | `tavily_extract` |
+| 快速 Web 搜索，无特殊选项            | `web_search`     |
+| 使用深度、主题、AI 答案进行搜索      | `tavily_search`  |
+| 从特定 URL 提取内容                  | `tavily_extract` |
 
-## 相关内容
+<Note>
+以 Tavily 作为提供商的通用 `web_search` 工具支持 `query` 和 `count`（最多 20 个结果）。对于 Tavily 特有的控制项（`search_depth`、`topic`、`include_answer`、域名过滤、时间范围），请改用 `tavily_search`。
+</Note>
 
-- [Web 搜索概览](/zh-CN/tools/web) —— 所有 provider 与自动检测
-- [Firecrawl](/zh-CN/tools/firecrawl) —— 带内容提取的搜索 + 抓取
-- [Exa 搜索](/zh-CN/tools/exa-search) —— 带内容提取的神经搜索
+## 高级配置
+
+<AccordionGroup>
+  <Accordion title="API key 解析顺序">
+    Tavily 客户端按以下顺序查找其 API key：
+
+    1. `plugins.entries.tavily.config.webSearch.apiKey`（通过 SecretRefs 解析）。
+    2. Gateway 网关环境中的 `TAVILY_API_KEY`。
+
+    如果两者都不存在，`tavily_extract` 会抛出设置错误。
+
+  </Accordion>
+
+  <Accordion title="自定义基础 URL">
+    如果你通过代理前置 Tavily，请覆盖 `plugins.entries.tavily.config.webSearch.baseUrl`。默认值为 `https://api.tavily.com`。
+  </Accordion>
+
+  <Accordion title="`chunks_per_source` 需要 `query`">
+    `tavily_extract` 会拒绝传入 `chunks_per_source` 但未传入 `query` 的调用。Tavily 会按查询相关性对分块排序，因此没有查询时该参数没有意义。
+  </Accordion>
+</AccordionGroup>
+
+## 相关
+
+<CardGroup cols={2}>
+  <Card title="Web 搜索概览" href="/zh-CN/tools/web" icon="magnifying-glass">
+    所有提供商和自动检测规则。
+  </Card>
+  <Card title="Firecrawl" href="/zh-CN/tools/firecrawl" icon="fire">
+    搜索加内容提取式抓取。
+  </Card>
+  <Card title="Exa Search" href="/zh-CN/tools/exa-search" icon="binoculars">
+    带内容提取的神经搜索。
+  </Card>
+  <Card title="配置" href="/zh-CN/gateway/configuration" icon="gear">
+    插件条目和工具路由的完整配置架构。
+  </Card>
+</CardGroup>

@@ -1,27 +1,27 @@
 ---
 read_when:
-    - 你正在工作區中建立新的自訂技能
+    - 您正在工作區中建立新的自訂技能
     - 你需要一個以 SKILL.md 為基礎的 Skills 快速入門工作流程
 summary: 使用 SKILL.md 建置並測試自訂工作區 Skills
 title: 建立 Skills
 x-i18n:
-    generated_at: "2026-04-30T03:43:46Z"
+    generated_at: "2026-05-10T19:52:48Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 201718f4088f4243b0dabe12fb4fce4b8a7e64df9a4b7d651356ab4ae0dd3579
+    source_hash: a468a0b21f4e43542b175b8acb8ad8b19dbbea06ce8e0b97c48206bf88a661c5
     source_path: tools/creating-skills.md
     workflow: 16
 ---
 
-Skills 會教導代理程式如何以及何時使用工具。每個 skill 都是一個目錄，
-其中包含帶有 YAML frontmatter 和 markdown 指示的 `SKILL.md` 檔案。
+Skills 會教導代理如何以及何時使用工具。每個技能都是一個目錄，
+其中包含一個 `SKILL.md` 檔案，內含 YAML frontmatter 與 Markdown 指示。
 
-如需了解 skills 的載入與優先順序，請參閱 [Skills](/zh-TW/tools/skills)。
+若要了解 Skills 如何載入與排定優先順序，請參閱 [Skills](/zh-TW/tools/skills)。
 
-## 建立你的第一個 skill
+## 建立你的第一個技能
 
 <Steps>
-  <Step title="建立 skill 目錄">
+  <Step title="建立技能目錄">
     Skills 位於你的工作區中。建立新資料夾：
 
     ```bash
@@ -32,7 +32,7 @@ Skills 會教導代理程式如何以及何時使用工具。每個 skill 都是
 
   <Step title="撰寫 SKILL.md">
     在該目錄中建立 `SKILL.md`。frontmatter 會定義中繼資料，
-    markdown 內文則包含給代理程式的指示。
+    Markdown 主體則包含給代理的指示。
 
     ```markdown
     ---
@@ -46,20 +46,20 @@ Skills 會教導代理程式如何以及何時使用工具。每個 skill 都是
     "Hello from your custom skill!".
     ```
 
-    skill `name` 請使用由小寫字母、數字和連字號組成的 hyphen-case。
-    保持資料夾名稱與 frontmatter `name` 一致。
+    技能 `name` 請使用由小寫字母、數字與連字號組成的 hyphen-case。
+    請讓資料夾名稱與 frontmatter `name` 保持一致。
 
   </Step>
 
   <Step title="新增工具（選用）">
-    你可以在 frontmatter 中定義自訂工具 schema，或指示代理程式
+    你可以在 frontmatter 中定義自訂工具結構描述，或指示代理
     使用現有的系統工具（例如 `exec` 或 `browser`）。Skills 也可以
-    與其記錄的工具一起封裝在 plugins 中。
+    隨 Plugin 一起發佈，與其所記錄的工具並列。
 
   </Step>
 
-  <Step title="載入 skill">
-    啟動新的工作階段，讓 OpenClaw 載入該 skill：
+  <Step title="載入技能">
+    啟動新的工作階段，讓 OpenClaw 偵測到該技能：
 
     ```bash
     # From chat
@@ -69,7 +69,7 @@ Skills 會教導代理程式如何以及何時使用工具。每個 skill 都是
     openclaw gateway restart
     ```
 
-    驗證 skill 已載入：
+    確認技能已載入：
 
     ```bash
     openclaw skills list
@@ -78,50 +78,50 @@ Skills 會教導代理程式如何以及何時使用工具。每個 skill 都是
   </Step>
 
   <Step title="測試它">
-    傳送應該會觸發該 skill 的訊息：
+    傳送一則應該觸發該技能的訊息：
 
     ```bash
     openclaw agent --message "give me a greeting"
     ```
 
-    或直接與代理程式聊天並要求問候語。
+    或者直接與代理聊天並要求問候語。
 
   </Step>
 </Steps>
 
-## Skill 中繼資料參考
+## 技能中繼資料參考
 
-YAML frontmatter 支援以下欄位：
+YAML frontmatter 支援下列欄位：
 
-| 欄位                                | 必填 | 說明                                                           |
-| ----------------------------------- | ---- | -------------------------------------------------------------- |
-| `name`                              | 是   | 使用小寫字母、數字和連字號的唯一識別碼                         |
-| `description`                       | 是   | 顯示給代理程式的一行描述                                       |
-| `metadata.openclaw.os`              | 否   | 作業系統篩選器（`["darwin"]`、`["linux"]` 等）                 |
-| `metadata.openclaw.requires.bins`   | 否   | PATH 上所需的二進位檔                                          |
-| `metadata.openclaw.requires.config` | 否   | 所需的 config keys                                             |
+| 欄位                                | 必填     | 說明                                                           |
+| ----------------------------------- | -------- | -------------------------------------------------------------- |
+| `name`                              | 是       | 使用小寫字母、數字與連字號的唯一識別碼                         |
+| `description`                       | 是       | 顯示給代理的一行描述                                           |
+| `metadata.openclaw.os`              | 否       | 作業系統篩選器（`["darwin"]`、`["linux"]` 等）                 |
+| `metadata.openclaw.requires.bins`   | 否       | PATH 上所需的二進位檔                                          |
+| `metadata.openclaw.requires.config` | 否       | 必要的設定鍵                                                   |
 
 ## 最佳實務
 
-- **保持精簡** — 指示模型要做_什麼_，而不是如何成為 AI
-- **安全優先** — 如果你的 skill 使用 `exec`，請確保提示不允許來自不受信任輸入的任意命令注入
-- **在本機測試** — 分享前使用 `openclaw agent --message "..."` 進行測試
-- **使用 ClawHub** — 在 [ClawHub](https://clawhub.ai) 瀏覽並貢獻 skills
+- **保持精簡** — 指示模型要做 _什麼_，而不是如何當 AI
+- **安全優先** — 如果你的技能使用 `exec`，請確保提示不會允許來自不受信任輸入的任意命令注入
+- **在本機測試** — 分享前先使用 `openclaw agent --message "..."` 測試
+- **使用 ClawHub** — 在 [ClawHub](https://clawhub.ai) 瀏覽並貢獻 Skills
 
 ## Skills 的位置
 
 | 位置                            | 優先順序 | 範圍                  |
-| ------------------------------- | -------- | --------------------- |
-| `\<workspace\>/skills/`         | 最高     | 每個代理程式          |
-| `\<workspace\>/.agents/skills/` | 高       | 每個工作區代理程式    |
-| `~/.agents/skills/`             | 中       | 共用代理程式設定檔    |
-| `~/.openclaw/skills/`           | 中       | 共用（所有代理程式）  |
-| 內建（隨 OpenClaw 發佈）        | 低       | 全域                  |
-| `skills.load.extraDirs`         | 最低     | 自訂共用資料夾        |
+| ------------------------------- | ---------- | --------------------- |
+| `\<workspace\>/skills/`         | 最高       | 每個代理              |
+| `\<workspace\>/.agents/skills/` | 高         | 每個工作區代理        |
+| `~/.agents/skills/`             | 中         | 共用代理設定檔        |
+| `~/.openclaw/skills/`           | 中         | 共用（所有代理）      |
+| Bundled（隨 OpenClaw 發佈）     | 低         | 全域                  |
+| `skills.load.extraDirs`         | 最低       | 自訂共用資料夾        |
 
 ## 相關
 
-- [Skills 參考](/zh-TW/tools/skills) — 載入、優先順序與閘控規則
-- [Skills config](/zh-TW/tools/skills-config) — `skills.*` config schema
-- [ClawHub](/zh-TW/tools/clawhub) — 公開 skill registry
-- [建置 Plugins](/zh-TW/plugins/building-plugins) — plugins 可以封裝 skills
+- [Skills 參考](/zh-TW/tools/skills) — 載入、優先順序與控管規則
+- [Skills 設定](/zh-TW/tools/skills-config) — `skills.*` 設定結構描述
+- [ClawHub](/zh-TW/clawhub) — 公開技能登錄檔
+- [建置 Plugin](/zh-TW/plugins/building-plugins) — Plugin 可以隨附 Skills

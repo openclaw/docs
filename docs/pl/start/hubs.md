@@ -1,22 +1,22 @@
 ---
 read_when:
-    - Potrzebujesz kompletnej mapy dokumentacji
-summary: Centra z linkami do wszystkich dokumentów OpenClaw
+    - Chcesz uzyskać kompletną mapę dokumentacji
+summary: Centra z linkami do każdego dokumentu OpenClaw
 title: Centra dokumentacji
 x-i18n:
-    generated_at: "2026-05-07T01:54:32Z"
+    generated_at: "2026-05-10T19:54:59Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b7de6012e4e8db02d22cda7d8f275c634e15511b1c4e94e219672cf167f9848d
+    source_hash: fdf4128ddb05bb009faec0a21d45933ffb0a3abf5e5ba8dbe1b9710c8eee3bde
     source_path: start/hubs.md
     workflow: 16
 ---
 
 <Note>
-Jeśli dopiero zaczynasz korzystać z OpenClaw, zacznij od [Pierwsze kroki](/pl/start/getting-started).
+Jeśli dopiero zaczynasz z OpenClaw, zacznij od [Pierwszych kroków](/pl/start/getting-started).
 </Note>
 
-Użyj tych centrów, aby odkryć każdą stronę, w tym szczegółowe omówienia i dokumentację referencyjną, które nie pojawiają się w lewej nawigacji.
+Użyj tych centrów, aby odkryć każdą stronę, w tym szczegółowe omówienia i dokumentację referencyjną, które nie pojawiają się w lewym menu nawigacyjnym.
 
 ## Zacznij tutaj
 
@@ -34,14 +34,14 @@ Użyj tych centrów, aby odkryć każdą stronę, w tym szczegółowe omówienia
 - [Prezentacja](/pl/start/showcase)
 - [Lore](/pl/start/lore)
 
-## Instalacja + aktualizacje
+## Instalacja i aktualizacje
 
 - [Docker](/pl/install/docker)
 - [Nix](/pl/install/nix)
 - [Aktualizacja / wycofanie](/pl/install/updating)
 - [Przepływ pracy Bun (eksperymentalny)](/pl/install/bun)
 
-## Podstawowe pojęcia
+## Podstawowe koncepcje
 
 - [Architektura](/pl/concepts/architecture)
 - [Funkcje](/pl/concepts/features)
@@ -50,27 +50,27 @@ Użyj tych centrów, aby odkryć każdą stronę, w tym szczegółowe omówienia
 - [Obszar roboczy agenta](/pl/concepts/agent-workspace)
 - [Pamięć](/pl/concepts/memory)
 - [Pętla agenta](/pl/concepts/agent-loop)
-- [Strumieniowanie + dzielenie na fragmenty](/pl/concepts/streaming)
+- [Strumieniowanie i dzielenie na fragmenty](/pl/concepts/streaming)
 - [Routing wielu agentów](/pl/concepts/multi-agent)
 - [Compaction](/pl/concepts/compaction)
 - [Sesje](/pl/concepts/session)
 - [Przycinanie sesji](/pl/concepts/session-pruning)
 - [Narzędzia sesji](/pl/concepts/session-tool)
 - [Kolejka](/pl/concepts/queue)
-- [Polecenia z ukośnikiem](/pl/tools/slash-commands)
+- [Polecenia ukośnika](/pl/tools/slash-commands)
 - [Adaptery RPC](/pl/reference/rpc)
 - [Schematy TypeBox](/pl/concepts/typebox)
 - [Obsługa stref czasowych](/pl/concepts/timezone)
 - [Obecność](/pl/concepts/presence)
-- [Wykrywanie + transporty](/pl/gateway/discovery)
+- [Wykrywanie i transporty](/pl/gateway/discovery)
 - [Bonjour](/pl/gateway/bonjour)
 - [Routing kanałów](/pl/channels/channel-routing)
 - [Grupy](/pl/channels/groups)
 - [Wiadomości grupowe](/pl/channels/group-messages)
-- [Przełączanie awaryjne modelu](/pl/concepts/model-failover)
+- [Przełączanie awaryjne modeli](/pl/concepts/model-failover)
 - [OAuth](/pl/concepts/oauth)
 
-## Dostawcy + wejście
+## Dostawcy i ingress
 
 - [Centrum kanałów czatu](/pl/channels)
 - [Centrum dostawców modeli](/pl/providers/models)
@@ -80,26 +80,25 @@ Użyj tych centrów, aby odkryć każdą stronę, w tym szczegółowe omówienia
 - [Discord](/pl/channels/discord)
 - [Mattermost](/pl/channels/mattermost)
 - [Signal](/pl/channels/signal)
-- [BlueBubbles (starszy mostek iMessage)](/pl/channels/bluebubbles)
-- [Bot QQ](/pl/channels/qqbot)
+- [QQ Bot](/pl/channels/qqbot)
 - [iMessage](/pl/channels/imessage)
 - [Parsowanie lokalizacji](/pl/channels/location)
 - [WebChat](/pl/web/webchat)
 - [Webhooki](/pl/automation/cron-jobs#webhooks)
 - [Gmail Pub/Sub](/pl/automation/cron-jobs#gmail-pubsub-integration)
 
-## Gateway + operacje
+## Gateway i operacje
 
 - [Runbook Gateway](/pl/gateway)
-- [Model sieci](/pl/network#core-model)
+- [Model sieciowy](/pl/network#core-model)
 - [Parowanie Gateway](/pl/gateway/pairing)
 - [Blokada Gateway](/pl/gateway/gateway-lock)
 - [Proces w tle](/pl/gateway/background-process)
 - [Kondycja](/pl/gateway/health)
 - [Heartbeat](/pl/gateway/heartbeat)
 - [Doctor](/pl/gateway/doctor)
-- [Logowanie](/pl/gateway/logging)
-- [Izolowanie w piaskownicy](/pl/gateway/sandboxing)
+- [Rejestrowanie](/pl/gateway/logging)
+- [Piaskownica](/pl/gateway/sandboxing)
 - [Panel](/pl/web/dashboard)
 - [Interfejs sterowania](/pl/web/control-ui)
 - [Dostęp zdalny](/pl/gateway/remote)
@@ -108,23 +107,23 @@ Użyj tych centrów, aby odkryć każdą stronę, w tym szczegółowe omówienia
 - [Bezpieczeństwo](/pl/gateway/security)
 - [Rozwiązywanie problemów](/pl/gateway/troubleshooting)
 
-## Narzędzia + automatyzacja
+## Narzędzia i automatyzacja
 
 - [Powierzchnia narzędzi](/pl/tools)
 - [OpenProse](/pl/prose)
-- [Dokumentacja referencyjna CLI](/pl/cli)
+- [Referencja CLI](/pl/cli)
 - [Narzędzie exec](/pl/tools/exec)
 - [Narzędzie PDF](/pl/tools/pdf)
-- [Tryb podwyższony](/pl/tools/elevated)
+- [Tryb podwyższonych uprawnień](/pl/tools/elevated)
 - [Zadania Cron](/pl/automation/cron-jobs)
 - [Automatyzacja i zadania](/pl/automation)
-- [Myślenie + tryb szczegółowy](/pl/tools/thinking)
+- [Myślenie i szczegółowe informacje](/pl/tools/thinking)
 - [Modele](/pl/concepts/models)
 - [Podagenci](/pl/tools/subagents)
 - [CLI wysyłania do agenta](/pl/tools/agent-send)
 - [Interfejs terminalowy](/pl/web/tui)
 - [Sterowanie przeglądarką](/pl/tools/browser)
-- [Przeglądarka (rozwiązywanie problemów w systemie Linux)](/pl/tools/browser-linux-troubleshooting)
+- [Przeglądarka (rozwiązywanie problemów w Linuksie)](/pl/tools/browser-linux-troubleshooting)
 - [Ankiety](/pl/cli/message)
 
 ## Węzły, multimedia, głos
@@ -132,9 +131,9 @@ Użyj tych centrów, aby odkryć każdą stronę, w tym szczegółowe omówienia
 - [Przegląd węzłów](/pl/nodes)
 - [Kamera](/pl/nodes/camera)
 - [Obrazy](/pl/nodes/images)
-- [Dźwięk](/pl/nodes/audio)
+- [Audio](/pl/nodes/audio)
 - [Polecenie lokalizacji](/pl/nodes/location-command)
-- [Wybudzanie głosem](/pl/nodes/voicewake)
+- [Wybudzanie głosowe](/pl/nodes/voicewake)
 - [Tryb rozmowy](/pl/nodes/talk)
 
 ## Platformy
@@ -151,14 +150,14 @@ Użyj tych centrów, aby odkryć każdą stronę, w tym szczegółowe omówienia
 
 - [Konfiguracja deweloperska macOS](/pl/platforms/mac/dev-setup)
 - [Pasek menu macOS](/pl/platforms/mac/menu-bar)
-- [Wybudzanie głosem macOS](/pl/platforms/mac/voicewake)
+- [Wybudzanie głosowe macOS](/pl/platforms/mac/voicewake)
 - [Nakładka głosowa macOS](/pl/platforms/mac/voice-overlay)
 - [WebChat macOS](/pl/platforms/mac/webchat)
 - [Canvas macOS](/pl/platforms/mac/canvas)
 - [Proces potomny macOS](/pl/platforms/mac/child-process)
 - [Kondycja macOS](/pl/platforms/mac/health)
 - [Ikona macOS](/pl/platforms/mac/icon)
-- [Logowanie macOS](/pl/platforms/mac/logging)
+- [Rejestrowanie macOS](/pl/platforms/mac/logging)
 - [Uprawnienia macOS](/pl/platforms/mac/permissions)
 - [Zdalny dostęp macOS](/pl/platforms/mac/remote)
 - [Podpisywanie macOS](/pl/platforms/mac/signing)
@@ -171,21 +170,21 @@ Użyj tych centrów, aby odkryć każdą stronę, w tym szczegółowe omówienia
 
 - [Przegląd pluginów](/pl/tools/plugin)
 - [Tworzenie pluginów](/pl/plugins/building-plugins)
-- [Hooki pluginów](/pl/plugins/hooks)
+- [Haki Plugin](/pl/plugins/hooks)
 - [Manifest Plugin](/pl/plugins/manifest)
 - [Narzędzia agenta](/pl/plugins/building-plugins#registering-agent-tools)
-- [Pakiety pluginów](/pl/plugins/bundles)
-- [Pluginy społecznościowe](/pl/plugins/community)
-- [Przepisy na capabilities](/pl/plugins/adding-capabilities)
+- [Pakiety Plugin](/pl/plugins/bundles)
+- [ClawHub](/pl/clawhub)
+- [Przewodnik po możliwościach](/pl/plugins/adding-capabilities)
 - [Plugin połączeń głosowych](/pl/plugins/voice-call)
 - [Plugin użytkownika Zalo](/pl/plugins/zalouser)
 
-## Obszar roboczy + szablony
+## Obszar roboczy i szablony
 
 - [Skills](/pl/tools/skills)
-- [ClawHub](/pl/tools/clawhub)
+- [ClawHub](/pl/clawhub)
 - [Konfiguracja Skills](/pl/tools/skills-config)
-- [Domyślny AGENTS](/pl/reference/AGENTS.default)
+- [Domyślne AGENTS](/pl/reference/AGENTS.default)
 - [Szablony: AGENTS](/pl/reference/templates/AGENTS)
 - [Szablony: BOOTSTRAP](/pl/reference/templates/BOOTSTRAP)
 - [Szablony: HEARTBEAT](/pl/reference/templates/HEARTBEAT)
@@ -198,10 +197,10 @@ Użyj tych centrów, aby odkryć każdą stronę, w tym szczegółowe omówienia
 
 - [Podziękowania](/pl/reference/credits)
 
-## Testowanie + wydanie
+## Testowanie i wydanie
 
 - [Testowanie](/pl/reference/test)
-- [Polityka wydań](/pl/reference/RELEASING)
+- [Zasady wydań](/pl/reference/RELEASING)
 - [Modele urządzeń](/pl/reference/device-models)
 
 ## Powiązane

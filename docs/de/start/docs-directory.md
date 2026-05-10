@@ -1,20 +1,20 @@
 ---
 read_when:
-    - Sie möchten schnellen Zugriff auf wichtige Dokumentationsseiten
+    - Sie möchten schnell auf wichtige Dokumentationsseiten zugreifen
 summary: Kuratierte Links zu den am häufigsten genutzten OpenClaw-Dokumentationsseiten.
 title: Dokumentationsverzeichnis
 x-i18n:
-    generated_at: "2026-05-07T01:53:38Z"
+    generated_at: "2026-05-10T19:52:15Z"
     model: gpt-5.5
     provider: openai
-    source_hash: bd24805e17b89747850f01302e761babea411d50aee4e50ec43f93c2e893a4e1
+    source_hash: ddd6903aeb87e36db977b2cef62bd80e84fc67633ca00beb3365ced1f5abdd99
     source_path: start/docs-directory.md
     workflow: 16
 ---
 
 <Note>
 Diese Seite ist ein kuratierter Index. Wenn Sie neu sind, beginnen Sie mit [Erste Schritte](/de/start/getting-started).
-Eine vollständige Übersicht über die Dokumentation finden Sie unter [Dokumentations-Hubs](/de/start/hubs).
+Eine vollständige Übersicht der Dokumentation finden Sie unter [Dokumentations-Hubs](/de/start/hubs).
 </Note>
 
 ## Hier starten
@@ -28,15 +28,15 @@ Eine vollständige Übersicht über die Dokumentation finden Sie unter [Dokument
 - [Aktualisierung und Rollback](/de/install/updating)
 - [Kopplung (DM und Nodes)](/de/channels/pairing)
 - [Nix-Modus](/de/install/nix)
-- [Einrichtung des OpenClaw-Assistenten](/de/start/openclaw)
+- [OpenClaw-Assistent einrichten](/de/start/openclaw)
 - [Skills](/de/tools/skills)
 - [Skills-Konfiguration](/de/tools/skills-config)
-- [Arbeitsbereichsvorlagen](/de/reference/templates/AGENTS)
+- [Workspace-Vorlagen](/de/reference/templates/AGENTS)
 - [RPC-Adapter](/de/reference/rpc)
 - [Gateway-Runbook](/de/gateway)
 - [Nodes (iOS und Android)](/de/nodes)
 - [Web-Oberflächen (Control UI)](/de/web)
-- [Erkennung und Transporte](/de/gateway/discovery)
+- [Discovery und Transporte](/de/gateway/discovery)
 - [Remote-Zugriff](/de/gateway/remote)
 
 ## Provider und UX
@@ -46,7 +46,6 @@ Eine vollständige Übersicht über die Dokumentation finden Sie unter [Dokument
 - [Telegram](/de/channels/telegram)
 - [Discord](/de/channels/discord)
 - [Mattermost](/de/channels/mattermost)
-- [BlueBubbles (alte iMessage-Bridge)](/de/channels/bluebubbles)
 - [QQ Bot](/de/channels/qqbot)
 - [iMessage](/de/channels/imessage)
 - [Gruppen](/de/channels/groups)
@@ -54,7 +53,7 @@ Eine vollständige Übersicht über die Dokumentation finden Sie unter [Dokument
 - [Medienbilder](/de/nodes/images)
 - [Medienaudio](/de/nodes/audio)
 
-## Companion-Apps
+## Begleit-Apps
 
 - [macOS-App](/de/platforms/macos)
 - [iOS-App](/de/platforms/ios)
@@ -71,7 +70,7 @@ Eine vollständige Übersicht über die Dokumentation finden Sie unter [Dokument
 - [Sicherheit](/de/gateway/security)
 - [Fehlerbehebung](/de/gateway/troubleshooting)
 
-## Verwandt
+## Verwandte Themen
 
 - [Erste Schritte](/de/start/getting-started)
 - [Dokumentations-Hubs](/de/start/hubs)

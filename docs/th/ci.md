@@ -1,96 +1,96 @@
 ---
 read_when:
-    - คุณต้องเข้าใจว่าเหตุใดงาน CI จึงถูกเรียกใช้หรือไม่ถูกเรียกใช้
+    - คุณต้องเข้าใจว่าเหตุใดงาน CI จึงทำงานหรือไม่ทำงาน
     - คุณกำลังดีบักการตรวจสอบ GitHub Actions ที่ล้มเหลว
-    - คุณกำลังประสานงานการรันหรือการรันซ้ำสำหรับการตรวจสอบความถูกต้องของรีลีส
-    - คุณกำลังเปลี่ยนการส่งงานของ ClawSweeper หรือการส่งต่อกิจกรรม GitHub
-summary: กราฟงานการผสานรวมอย่างต่อเนื่อง ด่านตรวจตามขอบเขต ชุดครอบการปล่อยรุ่น และคำสั่งในเครื่องที่เทียบเท่า
+    - คุณกำลังประสานงานการรันหรือการรันซ้ำเพื่อตรวจสอบความถูกต้องของรีลีส
+    - คุณกำลังเปลี่ยนการ dispatch ของ ClawSweeper หรือการส่งต่อกิจกรรม GitHub
+summary: กราฟงาน CI, เกตตามขอบเขต, ชุดครอบคลุมการเผยแพร่ และคำสั่งภายในเครื่องที่เทียบเท่า
 title: ไปป์ไลน์ CI
 x-i18n:
-    generated_at: "2026-05-07T13:13:27Z"
+    generated_at: "2026-05-10T19:26:05Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1258ddb510538a250c68626f98b7f32201a46abf36f92d29e945bb7149a841cc
+    source_hash: b4317a3985fd34470c4b9fd981a2048af9c395bdc65fe99853286628d1ee47d3
     source_path: ci.md
     workflow: 16
 ---
 
-OpenClaw CI ทำงานทุกครั้งที่ push ไปยัง `main` และทุก pull request งาน `preflight` จะจำแนก diff และปิด lane ที่ใช้ทรัพยากรมากเมื่อมีการเปลี่ยนแปลงเฉพาะพื้นที่ที่ไม่เกี่ยวข้อง การรัน `workflow_dispatch` แบบแมนนวลตั้งใจข้ามการกำหนดขอบเขตอัจฉริยะและกระจายงานเป็นกราฟเต็มสำหรับ release candidate และการตรวจสอบแบบกว้าง lane ของ Android ยังคงเป็นแบบเลือกเปิดผ่าน `include_android` ความครอบคลุมของ Plugin เฉพาะ release อยู่ใน workflow [`Plugin ก่อนเผยแพร่`](#plugin-prerelease) แยกต่างหาก และจะทำงานเฉพาะจาก [`การตรวจสอบ Release แบบเต็ม`](#full-release-validation) หรือการสั่งรันแบบแมนนวลโดยชัดเจนเท่านั้น
+OpenClaw CI ทำงานทุกครั้งที่ push ไปยัง `main` และทุก pull request งาน `preflight` จะจัดประเภท diff และปิด lane ที่มีค่าใช้จ่ายสูงเมื่อมีเพียงพื้นที่ที่ไม่เกี่ยวข้องเปลี่ยนแปลง การรันแบบ manual `workflow_dispatch` ตั้งใจข้าม smart scoping และกระจายไปยังกราฟเต็มสำหรับ release candidate และการตรวจสอบแบบกว้าง lane ของ Android ยังคงเป็นแบบ opt-in ผ่าน `include_android` ความครอบคลุมของ Plugin เฉพาะ release อยู่ใน workflow แยก [`Plugin Prerelease`](#plugin-prerelease) และจะรันจาก [`การตรวจสอบ Release แบบเต็ม`](#full-release-validation) หรือการ dispatch แบบ manual ที่ระบุชัดเท่านั้น
 
 ## ภาพรวม Pipeline
 
-| งาน                              | วัตถุประสงค์                                                                                                   | ทำงานเมื่อ                       |
+| งาน                              | วัตถุประสงค์                                                                                                   | ทำงานเมื่อใด                       |
 | -------------------------------- | --------------------------------------------------------------------------------------------------------- | ---------------------------------- |
-| `preflight`                      | ตรวจจับการเปลี่ยนแปลงเฉพาะ docs, scope ที่เปลี่ยน, extension ที่เปลี่ยน และสร้าง manifest ของ CI                   | เสมอบน push และ PR ที่ไม่ใช่ draft |
-| `security-scm-fast`              | การตรวจจับ private key และการ audit workflow ผ่าน `zizmor`                                                     | เสมอบน push และ PR ที่ไม่ใช่ draft |
-| `security-dependency-audit`      | Audit lockfile ฝั่ง production แบบไม่ต้องใช้ dependency เทียบกับ npm advisories                                          | เสมอบน push และ PR ที่ไม่ใช่ draft |
-| `security-fast`                  | Aggregate ที่จำเป็นสำหรับงาน security แบบเร็ว                                                             | เสมอบน push และ PR ที่ไม่ใช่ draft |
-| `check-dependencies`             | รอบ production Knip เฉพาะ dependency รวมถึง guard สำหรับ allowlist ของไฟล์ที่ไม่ได้ใช้                                 | การเปลี่ยนแปลงที่เกี่ยวข้องกับ Node              |
-| `build-artifacts`                | Build `dist/`, Control UI, การตรวจ built-artifact และ artifact downstream ที่ใช้ซ้ำได้                       | การเปลี่ยนแปลงที่เกี่ยวข้องกับ Node              |
-| `checks-fast-core`               | lane ตรวจความถูกต้องบน Linux แบบเร็ว เช่น การตรวจ bundled/plugin-contract/protocol                              | การเปลี่ยนแปลงที่เกี่ยวข้องกับ Node              |
-| `checks-fast-contracts-channels` | การตรวจ channel contract แบบ shard พร้อมผล aggregate check ที่เสถียร                                      | การเปลี่ยนแปลงที่เกี่ยวข้องกับ Node              |
-| `checks-node-core-test`          | shard ทดสอบ Core Node โดยยกเว้น lane ของ channel, bundled, contract และ extension                          | การเปลี่ยนแปลงที่เกี่ยวข้องกับ Node              |
-| `check`                          | เทียบเท่า local gate หลักแบบ shard: prod types, lint, guards, test types และ strict smoke                | การเปลี่ยนแปลงที่เกี่ยวข้องกับ Node              |
-| `check-additional`               | Architecture, boundary/prompt drift แบบ shard, extension guards, package boundary และ gateway watch        | การเปลี่ยนแปลงที่เกี่ยวข้องกับ Node              |
-| `build-smoke`                    | การทดสอบ smoke ของ built-CLI และ smoke หน่วยความจำตอนเริ่มต้น                                                            | การเปลี่ยนแปลงที่เกี่ยวข้องกับ Node              |
-| `checks`                         | Verifier สำหรับการทดสอบ channel ของ built-artifact                                                                 | การเปลี่ยนแปลงที่เกี่ยวข้องกับ Node              |
-| `checks-node-compat-node22`      | lane build และ smoke สำหรับความเข้ากันได้กับ Node 22                                                                | CI dispatch แบบแมนนวลสำหรับ release    |
-| `check-docs`                     | การจัดรูปแบบ docs, lint และการตรวจ broken link                                                             | Docs เปลี่ยน                       |
-| `skills-python`                  | Ruff + pytest สำหรับ Skills ที่รองรับด้วย Python                                                                    | การเปลี่ยนแปลงที่เกี่ยวข้องกับ Skills ฝั่ง Python      |
-| `checks-windows`                 | การทดสอบ process/path เฉพาะ Windows รวมถึง regression ของ shared runtime import specifier                      | การเปลี่ยนแปลงที่เกี่ยวข้องกับ Windows           |
-| `macos-node`                     | lane ทดสอบ TypeScript บน macOS โดยใช้ built artifacts ที่ใช้ร่วมกัน                                               | การเปลี่ยนแปลงที่เกี่ยวข้องกับ macOS             |
-| `macos-swift`                    | Swift lint, build และ tests สำหรับแอป macOS                                                            | การเปลี่ยนแปลงที่เกี่ยวข้องกับ macOS             |
-| `android`                        | Unit tests ของ Android สำหรับทั้งสอง flavor พร้อม build debug APK หนึ่งรายการ                                              | การเปลี่ยนแปลงที่เกี่ยวข้องกับ Android           |
-| `test-performance-agent`         | การปรับปรุง slow-test ของ Codex รายวันหลังจาก trusted activity                                                 | CI บน main สำเร็จหรือ manual dispatch |
-| `openclaw-performance`           | รายงาน performance ของ runtime Kova แบบรายวัน/ตามสั่ง พร้อม lane mock-provider, deep-profile และ GPT 5.4 live | Scheduled และ manual dispatch      |
+| `preflight`                      | ตรวจจับการเปลี่ยนแปลงเฉพาะ docs, scope ที่เปลี่ยน, extension ที่เปลี่ยน และสร้าง manifest ของ CI                   | ทำงานเสมอบน push และ PR ที่ไม่ใช่ draft |
+| `security-scm-fast`              | ตรวจจับ private key และตรวจสอบ workflow ผ่าน `zizmor`                                                     | ทำงานเสมอบน push และ PR ที่ไม่ใช่ draft |
+| `security-dependency-audit`      | ตรวจสอบ production lockfile แบบไม่ต้องใช้ dependency เทียบกับ advisory ของ npm                                          | ทำงานเสมอบน push และ PR ที่ไม่ใช่ draft |
+| `security-fast`                  | ผลรวมที่บังคับใช้สำหรับงาน security แบบเร็ว                                                             | ทำงานเสมอบน push และ PR ที่ไม่ใช่ draft |
+| `check-dependencies`             | pass เฉพาะ production Knip dependency พร้อม guard สำหรับ allowlist ของไฟล์ที่ไม่ถูกใช้                                 | การเปลี่ยนแปลงที่เกี่ยวข้องกับ Node              |
+| `build-artifacts`                | build `dist/`, Control UI, ตรวจ artifact ที่ build แล้ว และ artifact downstream ที่นำกลับมาใช้ซ้ำได้                       | การเปลี่ยนแปลงที่เกี่ยวข้องกับ Node              |
+| `checks-fast-core`               | lane ความถูกต้องบน Linux แบบเร็ว เช่น การตรวจ bundled/plugin-contract/protocol                              | การเปลี่ยนแปลงที่เกี่ยวข้องกับ Node              |
+| `checks-fast-contracts-channels` | ตรวจ channel contract แบบ shard พร้อมผลตรวจรวมที่เสถียร                                      | การเปลี่ยนแปลงที่เกี่ยวข้องกับ Node              |
+| `checks-node-core-test`          | shard ของการทดสอบ core Node โดยไม่รวม lane ของ channel, bundled, contract และ extension                          | การเปลี่ยนแปลงที่เกี่ยวข้องกับ Node              |
+| `check`                          | เทียบเท่า gate หลักใน local แบบ shard: prod types, lint, guards, test types และ strict smoke                | การเปลี่ยนแปลงที่เกี่ยวข้องกับ Node              |
+| `check-additional`               | architecture, boundary/prompt drift แบบ shard, extension guards, package boundary และ gateway watch        | การเปลี่ยนแปลงที่เกี่ยวข้องกับ Node              |
+| `build-smoke`                    | smoke test ของ CLI ที่ build แล้ว และ smoke ของ startup-memory                                                            | การเปลี่ยนแปลงที่เกี่ยวข้องกับ Node              |
+| `checks`                         | verifier สำหรับการทดสอบ channel ของ artifact ที่ build แล้ว                                                                 | การเปลี่ยนแปลงที่เกี่ยวข้องกับ Node              |
+| `checks-node-compat-node22`      | lane build และ smoke สำหรับความเข้ากันได้กับ Node 22                                                                | dispatch CI แบบ manual สำหรับ release    |
+| `check-docs`                     | ตรวจ formatting, lint และ broken-link ของ docs                                                             | docs เปลี่ยน                       |
+| `skills-python`                  | Ruff + pytest สำหรับ Skills ที่มี Python รองรับ                                                                    | การเปลี่ยนแปลงที่เกี่ยวข้องกับ Python-skill      |
+| `checks-windows`                 | การทดสอบ process/path เฉพาะ Windows พร้อม regression ของ runtime import specifier ที่ใช้ร่วมกัน                      | การเปลี่ยนแปลงที่เกี่ยวข้องกับ Windows           |
+| `macos-node`                     | lane ทดสอบ TypeScript บน macOS โดยใช้ artifact ที่ build แล้วร่วมกัน                                               | การเปลี่ยนแปลงที่เกี่ยวข้องกับ macOS             |
+| `macos-swift`                    | Swift lint, build และทดสอบสำหรับแอป macOS                                                            | การเปลี่ยนแปลงที่เกี่ยวข้องกับ macOS             |
+| `android`                        | unit test ของ Android สำหรับทั้งสอง flavor พร้อม build APK debug หนึ่งรายการ                                              | การเปลี่ยนแปลงที่เกี่ยวข้องกับ Android           |
+| `test-performance-agent`         | การปรับแต่ง slow-test ของ Codex รายวันหลังจากกิจกรรมที่ trusted                                                 | CI บน main สำเร็จหรือ dispatch แบบ manual |
+| `openclaw-performance`           | รายงานประสิทธิภาพ runtime ของ Kova แบบรายวัน/ตามต้องการ พร้อม lane mock-provider, deep-profile และ GPT 5.4 live | ตาม schedule และ dispatch แบบ manual      |
 
 ## ลำดับ Fail-fast
 
-1. `preflight` ตัดสินว่า lane ใดมีอยู่ตั้งแต่แรก ตรรกะ `docs-scope` และ `changed-scope` เป็น step ภายในงานนี้ ไม่ใช่งานแยกต่างหาก
-2. `security-scm-fast`, `security-dependency-audit`, `security-fast`, `check`, `check-additional`, `check-docs` และ `skills-python` ล้มเหลวอย่างรวดเร็วโดยไม่ต้องรอ matrix งาน artifact และ platform ที่หนักกว่า
-3. `build-artifacts` ทำงานซ้อนกับ lane Linux แบบเร็ว เพื่อให้ consumer downstream เริ่มได้ทันทีที่ shared build พร้อม
-4. lane platform และ runtime ที่หนักกว่าจะกระจายงานหลังจากนั้น: `checks-fast-core`, `checks-fast-contracts-channels`, `checks-node-core-test`, `checks`, `checks-windows`, `macos-node`, `macos-swift` และ `android`
+1. `preflight` ตัดสินว่า lane ใดมีอยู่บ้างตั้งแต่แรก logic `docs-scope` และ `changed-scope` เป็น step ภายในงานนี้ ไม่ใช่งานแยกเดี่ยว
+2. `security-scm-fast`, `security-dependency-audit`, `security-fast`, `check`, `check-additional`, `check-docs` และ `skills-python` fail ได้อย่างรวดเร็วโดยไม่ต้องรอ artifact ที่หนักกว่าและงาน matrix ของ platform
+3. `build-artifacts` ทำงานทับซ้อนกับ lane Linux แบบเร็ว เพื่อให้ consumer downstream เริ่มได้ทันทีที่ shared build พร้อม
+4. lane platform และ runtime ที่หนักกว่าจะกระจายออกหลังจากนั้น: `checks-fast-core`, `checks-fast-contracts-channels`, `checks-node-core-test`, `checks`, `checks-windows`, `macos-node`, `macos-swift` และ `android`
 
-GitHub อาจทำเครื่องหมายงานที่ถูกแทนที่เป็น `cancelled` เมื่อมี push ใหม่ลงบน PR เดียวกันหรือ ref `main` เดียวกัน ให้ถือว่านั่นเป็น noise ของ CI เว้นแต่ว่าการรันล่าสุดสำหรับ ref เดียวกันก็ล้มเหลวด้วย การตรวจ aggregate shard ใช้ `!cancelled() && always()` เพื่อให้ยังรายงาน shard failure ตามปกติ แต่ไม่เข้าคิวหลังจาก workflow ทั้งหมดถูกแทนที่แล้ว concurrency key ของ CI อัตโนมัติมีเวอร์ชัน (`CI-v7-*`) เพื่อให้ zombie ฝั่ง GitHub ใน queue group เก่าไม่สามารถบล็อกการรัน main ใหม่ได้ไม่มีกำหนด การรัน full-suite แบบแมนนวลใช้ `CI-manual-v1-*` และไม่ยกเลิกการรันที่กำลังดำเนินอยู่
+GitHub อาจทำเครื่องหมายงานที่ถูกแทนที่ว่า `cancelled` เมื่อมี push ใหม่กว่าลงบน PR เดียวกันหรือ ref `main` เดียวกัน ให้ถือว่าเป็น noise ของ CI เว้นแต่ run ล่าสุดสำหรับ ref เดียวกันก็ล้มเหลวด้วย check รวมของ shard ใช้ `!cancelled() && always()` เพื่อให้ยังรายงาน failure ปกติของ shard แต่ไม่ queue ต่อหลังจาก workflow ทั้งหมดถูกแทนที่ไปแล้ว key concurrency อัตโนมัติของ CI มีเวอร์ชัน (`CI-v7-*`) เพื่อไม่ให้ zombie ฝั่ง GitHub ใน queue group เก่าบล็อก run บน main ที่ใหม่กว่าไปเรื่อย ๆ run แบบ full-suite ด้วย manual ใช้ `CI-manual-v1-*` และไม่ cancel run ที่กำลังดำเนินอยู่
 
-งาน `ci-timings-summary` อัปโหลด artifact `ci-timings-summary` แบบกะทัดรัดสำหรับ CI แต่ละครั้งที่ไม่ใช่ draft โดยบันทึก wall time, queue time, งานที่ช้าที่สุด และงานที่ล้มเหลวสำหรับการรันปัจจุบัน เพื่อให้การตรวจสุขภาพ CI ไม่ต้อง scrape payload ของ Actions แบบเต็มซ้ำ ๆ
+งาน `ci-timings-summary` อัปโหลด artifact ขนาดกะทัดรัดชื่อ `ci-timings-summary` สำหรับ CI run ที่ไม่ใช่ draft แต่ละรายการ โดยบันทึก wall time, queue time, งานที่ช้าที่สุด และงานที่ล้มเหลวสำหรับ run ปัจจุบัน เพื่อให้การตรวจสุขภาพ CI ไม่ต้อง scrape payload ทั้งหมดของ Actions ซ้ำ ๆ
 
 ## Scope และ routing
 
-ตรรกะ scope อยู่ใน `scripts/ci-changed-scope.mjs` และครอบคลุมด้วย unit tests ใน `src/scripts/ci-changed-scope.test.ts` manual dispatch จะข้ามการตรวจจับ changed-scope และทำให้ manifest ของ preflight ทำงานเหมือนกับว่าทุกพื้นที่ที่มี scope เปลี่ยนแปลง
+logic ของ scope อยู่ใน `scripts/ci-changed-scope.mjs` และมี unit test ครอบคลุมใน `src/scripts/ci-changed-scope.test.ts` manual dispatch จะข้ามการตรวจจับ changed-scope และทำให้ manifest ของ preflight ทำเหมือนทุกพื้นที่ที่มี scope เปลี่ยนแปลง
 
-- **การแก้ไข CI workflow** ตรวจสอบกราฟ Node CI รวมถึง workflow linting แต่ไม่ได้บังคับ Windows, Android หรือ native build ของ macOS ด้วยตัวเอง; lane ของ platform เหล่านั้นยังคง scoped ตามการเปลี่ยนแปลง source ของ platform
-- **การแก้ไขเฉพาะ CI routing, การแก้ไข fixture ของ core-test ราคาถูกบางรายการ และการแก้ไข helper/test-routing ของ plugin contract แบบแคบ** ใช้เส้นทาง manifest แบบ Node-only ที่เร็ว: `preflight`, security และ task `checks-fast-core` เดียว เส้นทางนั้นข้าม build artifacts, ความเข้ากันได้กับ Node 22, channel contracts, core shards แบบเต็ม, bundled-plugin shards และ guard matrices เพิ่มเติม เมื่อการเปลี่ยนแปลงจำกัดอยู่ที่พื้นผิว routing หรือ helper ที่ task เร็วทดสอบโดยตรง
-- **การตรวจ Windows Node** scoped ตาม wrapper process/path เฉพาะ Windows, helper runner ของ npm/pnpm/UI, config ของ package manager และพื้นผิว CI workflow ที่เรียกใช้ lane นั้น; การเปลี่ยนแปลง source, plugin, install-smoke และ test-only ที่ไม่เกี่ยวข้องยังคงอยู่บน lane Linux Node
+- **การแก้ไข workflow ของ CI** ตรวจสอบกราฟ CI ของ Node พร้อม workflow linting แต่ไม่บังคับ build native ของ Windows, Android หรือ macOS ด้วยตัวเอง lane ของ platform เหล่านั้นยังคง scoped ตามการเปลี่ยนแปลงของ source สำหรับ platform
+- **การแก้ไขเฉพาะ routing ของ CI, การแก้ไข fixture core-test ราคาถูกบางรายการ และการแก้ไข helper/test-routing ของ plugin contract แบบแคบ** ใช้ path manifest แบบ Node-only ที่เร็ว: `preflight`, security และ task `checks-fast-core` เพียงรายการเดียว path นั้นข้าม build artifact, ความเข้ากันได้กับ Node 22, channel contracts, shard core แบบเต็ม, shard bundled-plugin และ matrix guard เพิ่มเติม เมื่อการเปลี่ยนแปลงจำกัดอยู่ที่พื้นผิว routing หรือ helper ที่ task แบบเร็วทดสอบโดยตรง
+- **การตรวจ Node บน Windows** scoped ไปยัง wrapper process/path เฉพาะ Windows, helper runner ของ npm/pnpm/UI, config ของ package manager และพื้นผิว workflow ของ CI ที่ execute lane นั้น การเปลี่ยนแปลง source, plugin, install-smoke และ test-only ที่ไม่เกี่ยวข้องยังคงอยู่บน lane Linux Node
 
-กลุ่มการทดสอบ Node ที่ช้าที่สุดถูกแยกหรือปรับสมดุลเพื่อให้งานแต่ละงานยังเล็กโดยไม่จอง runner เกินจำเป็น: channel contracts ทำงานเป็น shard แบบถ่วงน้ำหนักสามชุดที่รองรับด้วย Blacksmith พร้อม fallback runner มาตรฐานของ GitHub, lane core unit fast/support ทำงานแยกกัน, core runtime infra ถูกแบ่งระหว่าง shard state, process/config, cron และ shared, auto-reply ทำงานเป็น worker ที่ปรับสมดุลแล้ว (โดยแยก subtree reply เป็น shard agent-runner, dispatch และ commands/state-routing) และ config ของ agentic gateway/server ถูกแยกข้าม lane chat/auth/model/http-plugin/runtime/startup แทนที่จะรอ built artifacts การทดสอบ browser, QA, media และ plugin เบ็ดเตล็ดแบบกว้างใช้ config Vitest เฉพาะของตัวเองแทน shared plugin catch-all shard แบบ include-pattern บันทึก timing entry โดยใช้ชื่อ CI shard เพื่อให้ `.artifacts/vitest-shard-timings.json` แยกความแตกต่างระหว่าง config ทั้งชุดกับ shard ที่ถูกกรองได้ `check-additional` เก็บงาน compile/canary ของ package-boundary ไว้ด้วยกัน และแยก runtime topology architecture ออกจาก coverage ของ gateway watch; รายการ boundary guard ถูกแบ่งแถบข้าม matrix shard สี่ชุด แต่ละชุดรัน guard อิสระที่เลือกไว้พร้อมกันและพิมพ์ timing ต่อ check การตรวจ snapshot drift ของ prompt happy-path ของ Codex ที่มีต้นทุนสูงทำงานเป็นงาน additional แยกสำหรับ CI แบบแมนนวลและเฉพาะการเปลี่ยนแปลงที่กระทบ prompt เท่านั้น เพื่อให้การเปลี่ยนแปลง Node ปกติที่ไม่เกี่ยวข้องไม่ต้องรอการสร้าง cold prompt snapshot และ boundary shards ยังคงสมดุล ขณะที่ prompt drift ยังถูกตรึงกับ PR ที่ทำให้เกิดการเปลี่ยนแปลงนั้น; flag เดียวกันนี้ข้ามการสร้าง prompt snapshot Vitest ภายใน shard core support-boundary ของ built-artifact Gateway watch, channel tests และ shard core support-boundary ทำงานพร้อมกันภายใน `build-artifacts` หลังจาก `dist/` และ `dist-runtime/` ถูก build แล้ว
+ตระกูลการทดสอบ Node ที่ช้าที่สุดถูกแยกหรือ balance เพื่อให้งานแต่ละรายการยังเล็กโดยไม่ reserve runner มากเกินไป: channel contracts รันเป็น shard แบบถ่วงน้ำหนักสามรายการที่มี Blacksmith รองรับ พร้อม fallback เป็น runner มาตรฐานของ GitHub, lane core unit fast/support แยกรันต่างหาก, core runtime infra แบ่งระหว่าง state, process/config, cron และ shard ที่ใช้ร่วมกัน, auto-reply รันเป็น worker ที่ balance แล้ว (โดยแยก subtree ของ reply เป็น shard agent-runner, dispatch และ commands/state-routing) และ config ของ agentic gateway/server แยกข้าม lane chat/auth/model/http-plugin/runtime/startup แทนการรอ artifact ที่ build แล้ว การทดสอบ browser, QA, media และ plugin อื่น ๆ แบบกว้างใช้ config Vitest เฉพาะของตัวเองแทน catch-all ของ plugin ที่ใช้ร่วมกัน shard แบบ include-pattern บันทึก timing entry โดยใช้ชื่อ shard ของ CI เพื่อให้ `.artifacts/vitest-shard-timings.json` แยกความแตกต่างระหว่าง config ทั้งชุดกับ shard ที่ถูกกรองได้ `check-additional` เก็บงาน compile/canary ของ package-boundary ไว้ด้วยกัน และแยก architecture ของ runtime topology ออกจาก coverage ของ gateway watch รายการ boundary guard ถูก stripe ข้าม matrix shard สี่รายการ โดยแต่ละรายการรัน guard อิสระที่เลือกไว้พร้อมกันและพิมพ์ timing ต่อ check การตรวจ drift ของ Codex happy-path prompt snapshot ที่มีค่าใช้จ่ายสูงรันเป็นงาน additional ของตัวเองสำหรับ manual CI และเฉพาะการเปลี่ยนแปลงที่กระทบ prompt เท่านั้น ดังนั้นการเปลี่ยนแปลง Node ที่ไม่เกี่ยวข้องตามปกติจะไม่ต้องรออยู่หลังการสร้าง prompt snapshot แบบ cold และ shard boundary ยัง balance อยู่ ขณะที่ prompt drift ยังคงถูก pin กับ PR ที่ทำให้เกิด drift นั้น flag เดียวกันข้ามการสร้าง prompt snapshot ของ Vitest ภายใน shard support-boundary ของ core ใน built-artifact ด้วย Gateway watch, การทดสอบ channel และ shard support-boundary ของ core รันพร้อมกันภายใน `build-artifacts` หลังจาก `dist/` และ `dist-runtime/` build เสร็จแล้ว
 
-Android CI รันทั้ง `testPlayDebugUnitTest` และ `testThirdPartyDebugUnitTest` แล้วจึง build Play debug APK flavor third-party ไม่มี source set หรือ manifest แยกต่างหาก; unit-test lane ของมันยังคง compile flavor พร้อม flag BuildConfig ของ SMS/call-log ขณะหลีกเลี่ยงงาน packaging debug APK ซ้ำในทุก push ที่เกี่ยวข้องกับ Android
+Android CI รันทั้ง `testPlayDebugUnitTest` และ `testThirdPartyDebugUnitTest` แล้วจึง build Play debug APK flavor ของ third-party ไม่มี source set หรือ manifest แยก lane unit-test ของมันยังคง compile flavor พร้อม flag BuildConfig ของ SMS/call-log ในขณะหลีกเลี่ยงงาน packaging debug APK ที่ซ้ำกันในทุก push ที่เกี่ยวข้องกับ Android
 
-shard `check-dependencies` รัน `pnpm deadcode:dependencies` (รอบ production Knip เฉพาะ dependency ที่ตรึงกับ Knip เวอร์ชันล่าสุด โดยปิด minimum release age ของ pnpm สำหรับการติดตั้ง `dlx`) และ `pnpm deadcode:unused-files` ซึ่งเปรียบเทียบผล unused-file ของ production จาก Knip กับ `scripts/deadcode-unused-files.allowlist.mjs` guard unused-file จะล้มเหลวเมื่อ PR เพิ่มไฟล์ที่ไม่ได้ใช้และยังไม่ได้ review ใหม่ หรือเหลือ entry allowlist ที่ stale ไว้ ขณะยังรักษาพื้นผิว dynamic plugin, generated, build, live-test และ package bridge ที่ตั้งใจไว้ซึ่ง Knip ไม่สามารถ resolve แบบ static ได้
+shard `check-dependencies` รัน `pnpm deadcode:dependencies` (pass เฉพาะ production Knip dependency ที่ pin กับ Knip เวอร์ชันล่าสุด โดยปิดอายุ release ขั้นต่ำของ pnpm สำหรับการติดตั้ง `dlx`) และ `pnpm deadcode:unused-files` ซึ่งเปรียบเทียบ finding ของไฟล์ production ที่ไม่ได้ใช้จาก Knip กับ `scripts/deadcode-unused-files.allowlist.mjs` guard ของ unused-file จะ fail เมื่อ PR เพิ่มไฟล์ที่ไม่ได้ใช้ใหม่โดยยังไม่ผ่านการ review หรือทิ้ง entry ใน allowlist ที่ stale ไว้ ขณะยังคงรักษาพื้นผิว dynamic plugin, generated, build, live-test และ package bridge ที่ตั้งใจไว้ซึ่ง Knip resolve แบบ static ไม่ได้
 
 ## การส่งต่อกิจกรรม ClawSweeper
 
-`.github/workflows/clawsweeper-dispatch.yml` เป็น bridge ฝั่ง target จากกิจกรรม repository ของ OpenClaw เข้าสู่ ClawSweeper มันไม่ checkout หรือ execute โค้ด pull request ที่ไม่น่าเชื่อถือ workflow จะสร้าง GitHub App token จาก `CLAWSWEEPER_APP_PRIVATE_KEY` แล้ว dispatch payload `repository_dispatch` แบบกะทัดรัดไปยัง `openclaw/clawsweeper`
+`.github/workflows/clawsweeper-dispatch.yml` เป็น bridge ฝั่ง target จากกิจกรรม repository ของ OpenClaw ไปยัง ClawSweeper โดยไม่ checkout หรือ execute code จาก pull request ที่ไม่ trusted workflow สร้าง token ของ GitHub App จาก `CLAWSWEEPER_APP_PRIVATE_KEY` แล้ว dispatch payload `repository_dispatch` ขนาดกะทัดรัดไปยัง `openclaw/clawsweeper`
 
 workflow มีสี่ lane:
 
-- `clawsweeper_item` สำหรับคำขอ review issue และ pull request แบบเจาะจง;
-- `clawsweeper_comment` สำหรับคำสั่ง ClawSweeper ที่ชัดเจนใน issue comments;
+- `clawsweeper_item` สำหรับคำขอ review issue และ pull request แบบระบุชัด;
+- `clawsweeper_comment` สำหรับคำสั่ง ClawSweeper ที่ระบุชัดใน comment ของ issue;
 - `clawsweeper_commit_review` สำหรับคำขอ review ระดับ commit บน push ไปยัง `main`;
 - `github_activity` สำหรับกิจกรรม GitHub ทั่วไปที่ agent ClawSweeper อาจตรวจสอบ
 
-lane `github_activity` ส่งต่อเฉพาะ metadata ที่ normalize แล้ว: event type, action, actor, repository, item number, URL, title, state และ excerpt สั้น ๆ สำหรับ comments หรือ reviews เมื่อมี มันตั้งใจหลีกเลี่ยงการส่งต่อ webhook body แบบเต็ม workflow ฝั่งรับใน `openclaw/clawsweeper` คือ `.github/workflows/github-activity.yml` ซึ่งโพสต์ event ที่ normalize แล้วไปยัง hook ของ OpenClaw Gateway สำหรับ agent ClawSweeper
+lane `github_activity` ส่งต่อเฉพาะ metadata ที่ normalize แล้ว: event type, action, actor, repository, item number, URL, title, state และ excerpt สั้น ๆ สำหรับ comment หรือ review เมื่อมี โดยตั้งใจหลีกเลี่ยงการส่งต่อ body ของ webhook ทั้งหมด workflow ฝั่งรับใน `openclaw/clawsweeper` คือ `.github/workflows/github-activity.yml` ซึ่ง post event ที่ normalize แล้วไปยัง hook ของ OpenClaw Gateway สำหรับ agent ClawSweeper
 
-กิจกรรมทั่วไปคือการสังเกต ไม่ใช่การส่งมอบโดยค่าเริ่มต้น agent ClawSweeper ได้รับ target ของ Discord ใน prompt และควรโพสต์ไปยัง `#clawsweeper` เฉพาะเมื่อ event นั้นน่าประหลาดใจ, ดำเนินการได้, มีความเสี่ยง หรือมีประโยชน์เชิงปฏิบัติการ การเปิด, แก้ไข, bot churn, noise จาก webhook ซ้ำ และ traffic review ปกติควรส่งผลเป็น `NO_REPLY`
+กิจกรรมทั่วไปเป็นการสังเกตการณ์ ไม่ใช่การส่งมอบโดย default agent ClawSweeper ได้รับ target Discord ใน prompt และควร post ไปยัง `#clawsweeper` เฉพาะเมื่อ event นั้นน่าประหลาดใจ, ดำเนินการได้, มีความเสี่ยง หรือมีประโยชน์เชิงปฏิบัติการ การเปิดทั่วไป, การแก้ไข, churn จาก bot, noise ของ webhook ที่ซ้ำกัน และ traffic review ปกติควรให้ผลเป็น `NO_REPLY`
 
-ถือว่าชื่อเรื่อง ความคิดเห็น เนื้อหา ข้อความรีวิว ชื่อ branch และข้อความ commit ของ GitHub เป็นข้อมูลที่ไม่น่าเชื่อถือตลอดเส้นทางนี้ สิ่งเหล่านี้เป็นอินพุตสำหรับการสรุปและการคัดแยก ไม่ใช่คำสั่งสำหรับ workflow หรือ agent runtime
+ปฏิบัติต่อชื่อ GitHub, ความคิดเห็น, เนื้อหา, ข้อความรีวิว, ชื่อสาขา และข้อความคอมมิตเป็นข้อมูลที่ไม่น่าเชื่อถือตลอดเส้นทางนี้ ข้อมูลเหล่านี้เป็นอินพุตสำหรับการสรุปและการคัดแยก ไม่ใช่คำสั่งสำหรับเวิร์กโฟลว์หรือรันไทม์ของเอเจนต์
 
-## การ dispatch แบบแมนนวล
+## การสั่งรันด้วยตนเอง
 
-การ dispatch CI แบบแมนนวลจะรันกราฟงานเดียวกับ CI ปกติ แต่บังคับเปิดทุก lane ที่ไม่อยู่ในขอบเขต Android: Linux Node shards, bundled-plugin shards, channel contracts, ความเข้ากันได้กับ Node 22, `check`, `check-additional`, build smoke, การตรวจสอบเอกสาร, Python skills, Windows, macOS และ Control UI i18n การ dispatch CI แบบแมนนวลเดี่ยวจะรัน Android เท่านั้นด้วย `include_android=true`; umbrella สำหรับ release เต็มรูปแบบจะเปิดใช้ Android โดยส่ง `include_android=true` การตรวจสอบ static ของ Plugin prerelease, shard `agentic-plugins` เฉพาะ release, การ sweep batch ส่วนขยายทั้งหมด และ lane Docker ของ Plugin prerelease จะถูกแยกออกจาก CI ชุด Docker prerelease จะรันก็ต่อเมื่อ `Full Release Validation` dispatch workflow `Plugin Prerelease` แยกต่างหากโดยเปิด gate release-validation
+การสั่งรัน CI ด้วยตนเองจะรันกราฟงานเดียวกับ CI ปกติ แต่บังคับเปิดเลนที่อยู่ในขอบเขตที่ไม่ใช่ Android ทั้งหมด: ชาร์ด Linux Node, ชาร์ด Plugin ที่รวมมาให้, สัญญาช่องทาง, ความเข้ากันได้กับ Node 22, `check`, `check-additional`, build smoke, การตรวจเอกสาร, Python skills, Windows, macOS และ Control UI i18n การสั่งรัน CI แบบสแตนด์อโลนด้วยตนเองจะรัน Android เท่านั้นด้วย `include_android=true`; ชุดครอบการเผยแพร่เต็มรูปแบบจะเปิด Android โดยส่ง `include_android=true` การตรวจแบบสแตติกก่อนเผยแพร่ Plugin, ชาร์ดสำหรับการเผยแพร่เท่านั้น `agentic-plugins`, การกวาดชุดส่วนขยายทั้งหมด และเลน Docker ก่อนเผยแพร่ Plugin จะถูกยกเว้นจาก CI ชุดทดสอบ Docker ก่อนเผยแพร่จะรันเฉพาะเมื่อ `Full Release Validation` สั่งรันเวิร์กโฟลว์ `Plugin Prerelease` แยกต่างหากพร้อมเปิดเกตตรวจสอบการเผยแพร่
 
-การรันแบบแมนนวลใช้ concurrency group ที่ไม่ซ้ำกันเพื่อให้ชุดเต็มของ release-candidate ไม่ถูกยกเลิกโดย push หรือ PR run อื่นบน ref เดียวกัน อินพุต `target_ref` แบบเลือกได้ทำให้ caller ที่เชื่อถือได้รันกราฟนั้นกับ branch, tag หรือ commit SHA แบบเต็มได้ ขณะใช้ไฟล์ workflow จาก dispatch ref ที่เลือก
+การรันด้วยตนเองใช้กลุ่ม concurrency ที่ไม่ซ้ำกัน เพื่อไม่ให้ชุดเต็มของ release-candidate ถูกยกเลิกโดยการ push หรือการรัน PR อื่นบน ref เดียวกัน อินพุตเสริม `target_ref` ทำให้ผู้เรียกที่เชื่อถือได้รันกราฟนั้นกับสาขา แท็ก หรือ SHA คอมมิตแบบเต็มได้ โดยใช้ไฟล์เวิร์กโฟลว์จาก ref ที่เลือกสำหรับการสั่งรัน
 
 ```bash
 gh workflow run ci.yml --ref release/YYYY.M.D
@@ -98,19 +98,19 @@ gh workflow run ci.yml --ref main -f target_ref=<branch-or-sha> -f include_andro
 gh workflow run full-release-validation.yml --ref main -f ref=<branch-or-sha>
 ```
 
-## Runner
+## ตัวรัน
 
-| Runner                           | งาน                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ตัวรัน                           | งาน                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `ubuntu-24.04`                   | `preflight`, งานและ aggregate ด้านความปลอดภัยแบบเร็ว (`security-scm-fast`, `security-dependency-audit`, `security-fast`), การตรวจสอบ protocol/contract/bundled แบบเร็ว, การตรวจสอบ channel contract แบบ sharded, shard ของ `check` ยกเว้น lint, aggregate ของ `check-additional`, ตัวตรวจสอบ aggregate ของ Node test, การตรวจสอบเอกสาร, Python skills, workflow-sanity, labeler, auto-response; install-smoke preflight ยังใช้ Ubuntu ที่โฮสต์โดย GitHub เพื่อให้ Blacksmith matrix เข้าคิวได้เร็วขึ้น |
-| `blacksmith-4vcpu-ubuntu-2404`   | `CodeQL Critical Quality`, shard ส่วนขยายที่น้ำหนักต่ำกว่า, `checks-fast-core`, `checks-node-compat-node22`, `check-prod-types` และ `check-test-types`                                                                                                                                                                                                                                                                                                        |
-| `blacksmith-8vcpu-ubuntu-2404`   | `build-artifacts`, build-smoke, shard การทดสอบ Linux Node, shard การทดสอบ bundled plugin, shard ของ `check-additional`, `android`                                                                                                                                                                                                                                                                                                                                     |
-| `blacksmith-16vcpu-ubuntu-2404`  | `check-lint` (ไวต่อ CPU มากพอที่ 8 vCPU มีต้นทุนมากกว่าสิ่งที่ประหยัดได้); build Docker ของ install-smoke (เวลาเข้าคิว 32-vCPU มีต้นทุนมากกว่าสิ่งที่ประหยัดได้)                                                                                                                                                                                                                                                                                                          |
+| `ubuntu-24.04`                   | `preflight`, งานความปลอดภัยแบบเร็วและงานรวม (`security-scm-fast`, `security-dependency-audit`, `security-fast`), การตรวจโปรโตคอล/สัญญา/สิ่งที่รวมมาให้แบบเร็ว, การตรวจสัญญาช่องทางแบบแบ่งชาร์ด, ชาร์ด `check` ยกเว้น lint, งานรวม `check-additional`, ตัวตรวจยืนยันงานรวมการทดสอบ Node, การตรวจเอกสาร, Python skills, workflow-sanity, labeler, auto-response; preflight ของ install-smoke ก็ใช้ Ubuntu ที่โฮสต์โดย GitHub เพื่อให้เมทริกซ์ Blacksmith เข้าคิวได้เร็วขึ้น |
+| `blacksmith-4vcpu-ubuntu-2404`   | `CodeQL Critical Quality`, ชาร์ดส่วนขยายที่น้ำหนักต่ำกว่า, `checks-fast-core`, `checks-node-compat-node22`, `check-prod-types` และ `check-test-types`                                                                                                                                                                                                                                                                                                        |
+| `blacksmith-8vcpu-ubuntu-2404`   | build-smoke, ชาร์ดทดสอบ Linux Node, ชาร์ดทดสอบ Plugin ที่รวมมาให้, ชาร์ด `check-additional`, `android`                                                                                                                                                                                                                                                                                                                                                        |
+| `blacksmith-16vcpu-ubuntu-2404`  | `build-artifacts`, `check-lint` (ไวต่อ CPU มากพอที่ 8 vCPU มีต้นทุนสูงกว่าสิ่งที่ประหยัดได้); บิลด์ Docker ของ install-smoke (เวลาเข้าคิว 32-vCPU มีต้นทุนสูงกว่าสิ่งที่ประหยัดได้)                                                                                                                                                                                                                                                                                       |
 | `blacksmith-16vcpu-windows-2025` | `checks-windows`                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| `blacksmith-6vcpu-macos-latest`  | `macos-node` บน `openclaw/openclaw`; fork จะ fallback ไปที่ `macos-latest`                                                                                                                                                                                                                                                                                                                                                                                       |
-| `blacksmith-12vcpu-macos-latest` | `macos-swift` บน `openclaw/openclaw`; fork จะ fallback ไปที่ `macos-latest`                                                                                                                                                                                                                                                                                                                                                                                      |
+| `blacksmith-6vcpu-macos-latest`  | `macos-node` บน `openclaw/openclaw`; fork จะย้อนกลับไปใช้ `macos-latest`                                                                                                                                                                                                                                                                                                                                                                                       |
+| `blacksmith-12vcpu-macos-latest` | `macos-swift` บน `openclaw/openclaw`; fork จะย้อนกลับไปใช้ `macos-latest`                                                                                                                                                                                                                                                                                                                                                                                      |
 
-CI ของ canonical-repo คงให้ Blacksmith เป็นเส้นทาง runner เริ่มต้น ระหว่าง `preflight`, `scripts/ci-runner-labels.mjs` จะตรวจสอบ Actions runs ล่าสุดที่อยู่ในคิวและกำลังดำเนินการสำหรับงาน Blacksmith ที่อยู่ในคิว หาก label Blacksmith เฉพาะใดมีงานอยู่ในคิวอยู่แล้ว งาน downstream ที่จะใช้ label ตรงนั้นจะ fallback ไปยัง runner ที่โฮสต์โดย GitHub ที่ตรงกัน (`ubuntu-24.04`, `windows-2025` หรือ `macos-latest`) สำหรับการรันนั้นเท่านั้น ขนาด Blacksmith อื่นในตระกูล OS เดียวกันยังคงอยู่บน label หลักของตัวเอง หาก API probe ล้มเหลว จะไม่ใช้ fallback
+CI ของรีโพ canonical จะคง Blacksmith เป็นเส้นทางตัวรันเริ่มต้น ระหว่าง `preflight`, `scripts/ci-runner-labels.mjs` จะตรวจการรัน Actions ล่าสุดที่กำลังเข้าคิวและกำลังดำเนินการ เพื่อหางาน Blacksmith ที่เข้าคิวอยู่ หากป้ายกำกับ Blacksmith เฉพาะมีงานเข้าคิวอยู่แล้ว งานปลายน้ำที่จะใช้ป้ายกำกับนั้นพอดีจะย้อนกลับไปใช้ตัวรันที่โฮสต์โดย GitHub ที่ตรงกัน (`ubuntu-24.04`, `windows-2025` หรือ `macos-latest`) เฉพาะสำหรับการรันนั้นเท่านั้น ขนาด Blacksmith อื่นในตระกูล OS เดียวกันยังคงใช้ป้ายกำกับหลักของตน หากการ probe API ล้มเหลว จะไม่มีการ fallback ใดๆ
 
 ## คำสั่งเทียบเท่าในเครื่อง
 
@@ -141,7 +141,7 @@ pnpm perf:kova:summary --report .artifacts/kova/reports/mock-provider/report.jso
 
 ## ประสิทธิภาพของ OpenClaw
 
-`OpenClaw Performance` คือ workflow ประสิทธิภาพของ product/runtime โดยรันทุกวันบน `main` และสามารถ dispatch แบบแมนนวลได้:
+`OpenClaw Performance` คือเวิร์กโฟลว์ประสิทธิภาพของผลิตภัณฑ์/รันไทม์ โดยจะรันทุกวันบน `main` และสามารถสั่งรันด้วยตนเองได้:
 
 ```bash
 gh workflow run openclaw-performance.yml --ref main -f profile=diagnostic -f repeat=3
@@ -149,31 +149,27 @@ gh workflow run openclaw-performance.yml --ref main -f profile=smoke -f repeat=1
 gh workflow run openclaw-performance.yml --ref main -f target_ref=v2026.5.2 -f profile=diagnostic -f repeat=3
 ```
 
-โดยปกติการ dispatch แบบแมนนวลจะ benchmark workflow ref ตั้งค่า `target_ref` เพื่อ benchmark release tag หรือ branch อื่นด้วย implementation ของ workflow ปัจจุบัน เส้นทางรายงานที่เผยแพร่และ pointer ล่าสุดจะผูกกับ ref ที่ทดสอบ และ `index.md` แต่ละไฟล์จะบันทึก ref/SHA ที่ทดสอบ, workflow ref/SHA, Kova ref, profile, โหมด lane auth, model, จำนวน repeat และ scenario filters
+โดยปกติการสั่งรันด้วยตนเองจะทำ benchmark กับ ref ของเวิร์กโฟลว์ ตั้งค่า `target_ref` เพื่อทำ benchmark กับแท็กรีลีสหรือสาขาอื่นด้วยการติดตั้งใช้งานเวิร์กโฟลว์ปัจจุบัน พาธรายงานที่เผยแพร่และตัวชี้ล่าสุดจะผูกตาม ref ที่ทดสอบ และแต่ละ `index.md` จะบันทึก ref/SHA ที่ทดสอบ, ref/SHA ของเวิร์กโฟลว์, ref ของ Kova, โปรไฟล์, โหมดการยืนยันตัวตนของเลน, โมเดล, จำนวนครั้งที่ทำซ้ำ และตัวกรองสถานการณ์
 
-workflow จะติดตั้ง OCM จาก release ที่ pin ไว้ และ Kova จาก `openclaw/Kova` ที่อินพุต `kova_ref` ที่ pin ไว้ จากนั้นรันสาม lane:
+เวิร์กโฟลว์จะติดตั้ง OCM จากรีลีสที่ปักหมุดไว้ และติดตั้ง Kova จาก `openclaw/Kova` ที่อินพุต `kova_ref` ซึ่งปักหมุดไว้ จากนั้นรันสามเลน:
 
-- `mock-provider`: scenario วินิจฉัยของ Kova กับ runtime ที่ build ในเครื่องพร้อม auth ปลอมที่เข้ากันได้กับ OpenAI แบบกำหนดผลได้
-- `mock-deep-profile`: การทำ profiling CPU/heap/trace สำหรับ hotspot ของ startup, Gateway และ agent-turn
-- `live-gpt54`: agent turn ของ OpenAI `openai/gpt-5.4` จริง ข้ามเมื่อไม่มี `OPENAI_API_KEY`
+- `mock-provider`: สถานการณ์ diagnostic ของ Kova กับรันไทม์ที่บิลด์ในเครื่อง พร้อมการยืนยันตัวตน OpenAI-compatible ปลอมแบบ deterministic
+- `mock-deep-profile`: การทำโปรไฟล์ CPU/heap/trace สำหรับจุดร้อนของการเริ่มต้นระบบ, Gateway และรอบการทำงานของเอเจนต์
+- `live-gpt54`: รอบการทำงานของเอเจนต์ OpenAI `openai/gpt-5.4` จริง ข้ามเมื่อ `OPENAI_API_KEY` ไม่พร้อมใช้งาน
 
-lane mock-provider ยังรัน source probe แบบ native ของ OpenClaw หลังจาก Kova pass: เวลา boot และหน่วยความจำของ Gateway ในกรณี startup ค่าเริ่มต้น, hook และ 50-Plugin; loop hello ของ mock-OpenAI `channel-chat-baseline` ซ้ำ; และคำสั่ง startup ของ CLI กับ Gateway ที่ boot แล้ว สรุป Markdown ของ source probe อยู่ที่ `source/index.md` ใน report bundle พร้อม raw JSON อยู่ข้างกัน
+เลน mock-provider ยังรัน source probe แบบเนทีฟของ OpenClaw หลังจากผ่าน Kova: เวลา boot และหน่วยความจำของ Gateway ในกรณีเริ่มต้นแบบ default, hook และ 50-plugin; ลูป hello ของ mock-OpenAI `channel-chat-baseline` แบบซ้ำ; และคำสั่งเริ่มต้น CLI กับ Gateway ที่ boot แล้ว สรุป Markdown ของ source probe อยู่ที่ `source/index.md` ในชุดรายงาน โดยมี JSON ดิบอยู่ข้างๆ
 
-ทุก lane อัปโหลด artifact ของ GitHub เมื่อกำหนดค่า `CLAWGRIT_REPORTS_TOKEN` แล้ว workflow จะ commit `report.json`, `report.md`, bundle, `index.md` และ artifact ของ source-probe เข้าไปใน `openclaw/clawgrit-reports` ภายใต้ `openclaw-performance/<tested-ref>/<run-id>-<attempt>/<lane>/` ด้วย pointer ของ tested-ref ปัจจุบันจะถูกเขียนเป็น `openclaw-performance/<tested-ref>/latest-<lane>.json`
+ทุกเลนอัปโหลด artifacts ของ GitHub เมื่อกำหนดค่า `CLAWGRIT_REPORTS_TOKEN` แล้ว เวิร์กโฟลว์จะคอมมิต `report.json`, `report.md`, ชุด bundle, `index.md` และ artifacts ของ source-probe เข้าไปใน `openclaw/clawgrit-reports` ภายใต้ `openclaw-performance/<tested-ref>/<run-id>-<attempt>/<lane>/` ด้วย ตัวชี้ ref ที่ทดสอบล่าสุดจะถูกเขียนเป็น `openclaw-performance/<tested-ref>/latest-<lane>.json`
 
-## Full Release Validation
+## การตรวจสอบรีลีสเต็มรูปแบบ
 
-`Full Release Validation` คือ workflow umbrella แบบแมนนวลสำหรับ "รันทุกอย่างก่อน release" โดยรับ branch, tag หรือ commit SHA แบบเต็ม dispatch workflow `CI` แบบแมนนวลด้วย target นั้น, dispatch `Plugin Prerelease` สำหรับหลักฐาน Plugin/package/static/Docker เฉพาะ release และ dispatch `OpenClaw Release Checks` สำหรับ install smoke, package acceptance, การตรวจสอบ package ข้าม OS, QA Lab parity, Matrix และ lane ของ Telegram การรัน stable/default จะเก็บ coverage live/E2E แบบ exhaustive และ Docker release-path ไว้หลัง `run_release_soak=true`; `release_profile=full` จะบังคับเปิด coverage soak นั้น เพื่อให้การตรวจสอบ advisory ที่กว้างยังคงกว้างอยู่ เมื่อใช้ `rerun_group=all` และ `release_profile=full` จะรัน `NPM Telegram Beta E2E` กับ artifact `release-package-under-test` จาก release checks ด้วย หลังเผยแพร่แล้ว ให้ส่ง `npm_telegram_package_spec` เพื่อรัน lane package ของ Telegram เดิมซ้ำกับ package npm ที่เผยแพร่แล้ว
+`Full Release Validation` คือเวิร์กโฟลว์ครอบแบบสั่งรันด้วยตนเองสำหรับ "รันทุกอย่างก่อนรีลีส" โดยรับสาขา แท็ก หรือ SHA คอมมิตแบบเต็ม, สั่งรันเวิร์กโฟลว์ `CI` ด้วยตนเองกับเป้าหมายนั้น, สั่งรัน `Plugin Prerelease` สำหรับหลักฐาน Plugin/แพ็กเกจ/สแตติก/Docker สำหรับรีลีสเท่านั้น และสั่งรัน `OpenClaw Release Checks` สำหรับ install smoke, package acceptance, การตรวจแพ็กเกจข้าม OS, ความเท่าเทียมของ QA Lab, Matrix และเลน Telegram การรันแบบ stable/default จะเก็บความครอบคลุม live/E2E แบบละเอียดและ Docker release-path ไว้หลัง `run_release_soak=true`; `release_profile=full` จะบังคับเปิดความครอบคลุมแบบ soak นั้น เพื่อให้การตรวจสอบ advisory แบบกว้างยังคงกว้างอยู่ ด้วย `rerun_group=all` และ `release_profile=full` จะรัน `NPM Telegram Beta E2E` กับ artifact `release-package-under-test` จาก release checks ด้วย หลังเผยแพร่แล้ว ให้ส่ง `npm_telegram_package_spec` เพื่อรันเลนแพ็กเกจ Telegram เดิมซ้ำกับแพ็กเกจ npm ที่เผยแพร่แล้ว
 
-ดู [การตรวจสอบ release แบบเต็ม](/th/reference/full-release-validation) สำหรับ
-stage matrix, ชื่องาน workflow ที่แน่นอน, ความแตกต่างของ profile, artifact และ
-handle สำหรับ rerun แบบเจาะจง
+ดู [การตรวจสอบรีลีสเต็มรูปแบบ](/th/reference/full-release-validation) สำหรับ
+เมทริกซ์สเตจ ชื่องานเวิร์กโฟลว์ที่แน่นอน ความแตกต่างของโปรไฟล์ artifacts และ
+ตัวจัดการ rerun แบบเจาะจง
 
-`OpenClaw Release Publish` คือ workflow release แบบแมนนวลที่เปลี่ยนแปลงสถานะ Dispatch จาก `release/YYYY.M.D` หรือ `main` หลังจาก release tag มีอยู่แล้วและหลังจาก
-OpenClaw npm preflight สำเร็จแล้ว โดยจะตรวจสอบ `pnpm plugins:sync:check`,
-dispatch `Plugin NPM Release` สำหรับ package Plugin ทั้งหมดที่ publish ได้, dispatch
-`Plugin ClawHub Release` สำหรับ release SHA เดียวกัน และหลังจากนั้นเท่านั้นจึง dispatch
-`OpenClaw NPM Release` ด้วย `preflight_run_id` ที่บันทึกไว้
+`OpenClaw Release Publish` คือเวิร์กโฟลว์รีลีสแบบเปลี่ยนแปลงสถานะที่สั่งรันด้วยตนเอง สั่งรันจาก `release/YYYY.M.D` หรือ `main` หลังจากมีแท็กรีลีสแล้ว และหลังจาก preflight ของ OpenClaw npm สำเร็จแล้ว เวิร์กโฟลว์จะตรวจสอบ `pnpm plugins:sync:check`, สั่งรัน `Plugin NPM Release` สำหรับแพ็กเกจ Plugin ทั้งหมดที่เผยแพร่ได้, สั่งรัน `Plugin ClawHub Release` สำหรับ SHA รีลีสเดียวกัน และหลังจากนั้นเท่านั้นจึงสั่งรัน `OpenClaw NPM Release` พร้อม `preflight_run_id` ที่บันทึกไว้
 
 ```bash
 gh workflow run openclaw-release-publish.yml \
@@ -183,49 +179,37 @@ gh workflow run openclaw-release-publish.yml \
   -f npm_dist_tag=beta
 ```
 
-สำหรับหลักฐาน commit ที่ปักหมุดบน branch ที่เปลี่ยนเร็ว ให้ใช้ helper แทน
+สำหรับหลักฐานคอมมิตที่ปักหมุดไว้บนแบรนช์ที่เคลื่อนไหวเร็ว ให้ใช้ตัวช่วยแทน
 `gh workflow run ... --ref main -f ref=<sha>`:
 
 ```bash
 pnpm ci:full-release --sha <full-sha>
 ```
 
-ref สำหรับ dispatch workflow ของ GitHub ต้องเป็น branch หรือ tag ไม่ใช่ commit SHA ดิบ
-helper จะ push branch ชั่วคราว `release-ci/<sha>-...` ที่ SHA เป้าหมาย,
-dispatch `Full Release Validation` จาก ref ที่ปักหมุดนั้น, ตรวจสอบว่า
-`headSha` ของ workflow ลูกทุกตัวตรงกับเป้าหมาย และลบ branch ชั่วคราวเมื่อ
-run เสร็จ ตัวตรวจสอบ umbrella จะล้มเหลวด้วยถ้า workflow ลูกใดๆ run ที่
-SHA อื่น
+ค่าอ้างอิงสำหรับ dispatch เวิร์กโฟลว์ของ GitHub ต้องเป็นแบรนช์หรือแท็ก ไม่ใช่ SHA ของคอมมิตดิบ ตัวช่วยจะพุชแบรนช์ชั่วคราว `release-ci/<sha>-...` ที่ SHA เป้าหมาย, dispatch `Full Release Validation` จาก ref ที่ปักหมุดนั้น, ตรวจสอบว่า `headSha` ของทุกเวิร์กโฟลว์ลูกตรงกับเป้าหมาย และลบแบรนช์ชั่วคราวเมื่อรันเสร็จ ตัวตรวจสอบแบบร่มยังล้มเหลวด้วยหากมีเวิร์กโฟลว์ลูกใดรันที่ SHA ต่างออกไป
 
-`release_profile` ควบคุมความครอบคลุม live/provider ที่ส่งเข้า release checks
-workflow release แบบ manual มีค่าเริ่มต้นเป็น `stable`; ใช้ `full` เฉพาะเมื่อคุณ
-ตั้งใจต้องการ matrix provider/media เชิง advisory ที่กว้าง `run_release_soak`
-ควบคุมว่า release checks แบบ stable/default จะ run live/E2E แบบละเอียดและ
-soak เส้นทาง Docker release แบบครบถ้วนหรือไม่; `full` จะบังคับเปิด soak
+`release_profile` ควบคุมความครอบคลุมของ live/provider ที่ส่งเข้าไปในการตรวจสอบรีลีส เวิร์กโฟลว์รีลีสแบบแมนนวลมีค่าเริ่มต้นเป็น `stable`; ใช้ `full` เฉพาะเมื่อคุณตั้งใจต้องการเมทริกซ์ provider/media เชิงแนะนำที่กว้าง `run_release_soak` ควบคุมว่าการตรวจสอบรีลีส stable/default จะรัน soak สำหรับ live/E2E และเส้นทางรีลีส Docker แบบละเอียดหรือไม่; `full` จะบังคับเปิด soak
 
-- `minimum` คง lane ที่เร็วที่สุดและสำคัญต่อ release ของ OpenAI/core
+- `minimum` คงไว้เฉพาะเลน OpenAI/core ที่เร็วที่สุดและสำคัญต่อรีลีส
 - `stable` เพิ่มชุด provider/backend แบบ stable
-- `full` run matrix provider/media เชิง advisory ที่กว้าง
+- `full` รันเมทริกซ์ provider/media เชิงแนะนำแบบกว้าง
 
-umbrella จะบันทึก run id ของ child ที่ dispatch แล้ว และ job สุดท้าย `Verify full validation` จะตรวจสอบข้อสรุปของ child run ปัจจุบันอีกครั้งและต่อท้ายตาราง job ที่ช้าที่สุดสำหรับ child run แต่ละตัว หาก child workflow ถูก rerun แล้วเขียว ให้ rerun เฉพาะ parent verifier job เพื่อ refresh ผลลัพธ์ umbrella และสรุปเวลา
+ร่มจะบันทึก id ของรันลูกที่ dispatch แล้ว และงานสุดท้าย `Verify full validation` จะตรวจสอบ conclusion ปัจจุบันของรันลูกอีกครั้งและแนบตารางงานที่ช้าที่สุดสำหรับแต่ละรันลูก หากเวิร์กโฟลว์ลูกถูกรันซ้ำแล้วเปลี่ยนเป็นเขียว ให้รันซ้ำเฉพาะงาน verifier ของพาเรนต์เพื่อรีเฟรชผลลัพธ์ร่มและสรุปเวลา
 
-สำหรับการกู้คืน ทั้ง `Full Release Validation` และ `OpenClaw Release Checks` รองรับ `rerun_group` ใช้ `all` สำหรับ release candidate, `ci` สำหรับ child full CI ปกติเท่านั้น, `plugin-prerelease` สำหรับ child plugin prerelease เท่านั้น, `release-checks` สำหรับ child release ทุกตัว หรือ group ที่แคบกว่า: `install-smoke`, `cross-os`, `live-e2e`, `package`, `qa`, `qa-parity`, `qa-live`, หรือ `npm-telegram` บน umbrella วิธีนี้ทำให้การ rerun กล่อง release ที่ล้มเหลวถูกจำกัดขอบเขตหลังการแก้เฉพาะจุด สำหรับ lane cross-OS ที่ล้มเหลวเพียงหนึ่ง lane ให้รวม `rerun_group=cross-os` กับ `cross_os_suite_filter` เช่น `windows/packaged-upgrade`; คำสั่ง cross-OS ที่ใช้เวลานานจะปล่อยบรรทัด Heartbeat และสรุป packaged-upgrade จะรวม timing ราย phase lane QA release-check เป็น advisory ดังนั้นความล้มเหลวเฉพาะ QA จะเตือนแต่ไม่ block release-check verifier
+สำหรับการกู้คืน ทั้ง `Full Release Validation` และ `OpenClaw Release Checks` รับ `rerun_group` ใช้ `all` สำหรับ release candidate, `ci` สำหรับเฉพาะลูก full CI ปกติ, `plugin-prerelease` สำหรับเฉพาะลูก plugin prerelease, `release-checks` สำหรับลูกรีลีสทุกตัว หรือกลุ่มที่แคบกว่า: `install-smoke`, `cross-os`, `live-e2e`, `package`, `qa`, `qa-parity`, `qa-live`, หรือ `npm-telegram` บนร่ม วิธีนี้จำกัดการรันซ้ำของกล่องรีลีสที่ล้มเหลวหลังแก้เฉพาะจุด สำหรับเลน cross-OS ที่ล้มเหลวหนึ่งเลน ให้รวม `rerun_group=cross-os` กับ `cross_os_suite_filter` เช่น `windows/packaged-upgrade`; คำสั่ง cross-OS ที่ยาวจะปล่อยบรรทัด heartbeat และสรุป packaged-upgrade จะรวมเวลารายเฟส เลน QA release-check เป็นเชิงแนะนำ ดังนั้นความล้มเหลวเฉพาะ QA จะเตือนแต่ไม่บล็อก verifier ของ release-check
 
-`OpenClaw Release Checks` ใช้ workflow ref ที่เชื่อถือได้เพื่อ resolve ref ที่เลือกหนึ่งครั้งเป็น tarball `release-package-under-test` จากนั้นส่ง artifact นั้นไปยัง cross-OS checks และ Package Acceptance รวมถึง workflow Docker สำหรับเส้นทาง release แบบ live/E2E เมื่อมีการ run soak coverage วิธีนี้ทำให้ bytes ของ package สอดคล้องกันในกล่อง release ต่างๆ และหลีกเลี่ยงการ pack candidate เดียวกันซ้ำใน child job หลายตัว
+`OpenClaw Release Checks` ใช้ ref ของเวิร์กโฟลว์ที่เชื่อถือได้เพื่อ resolve ref ที่เลือกครั้งเดียวเป็น tarball `release-package-under-test` จากนั้นส่ง artifact นั้นไปยังการตรวจสอบ cross-OS และ Package Acceptance รวมถึงเวิร์กโฟลว์ Docker สำหรับเส้นทางรีลีส live/E2E เมื่อรันความครอบคลุมแบบ soak วิธีนี้ทำให้ไบต์ของแพ็กเกจคงที่ข้ามกล่องรีลีสและหลีกเลี่ยงการแพ็ก candidate เดิมซ้ำในงานลูกหลายงาน
 
-run `Full Release Validation` ที่ซ้ำกันสำหรับ `ref=main` และ `rerun_group=all`
-จะแทนที่ umbrella เก่ากว่า parent monitor จะ cancel child workflow ใดๆ ที่
-dispatch ไปแล้วเมื่อ parent ถูก cancel ดังนั้น validation บน main ที่ใหม่กว่า
-จะไม่ต้องรออยู่หลัง release-check run เก่าสองชั่วโมง validation ของ release
-branch/tag และ rerun group แบบโฟกัสยังคงใช้ `cancel-in-progress: false`
+รัน `Full Release Validation` ที่ซ้ำกันสำหรับ `ref=main` และ `rerun_group=all`
+จะแทนที่ร่มที่เก่ากว่า ตัว monitor ของพาเรนต์จะยกเลิกเวิร์กโฟลว์ลูกใดก็ตามที่ dispatch ไปแล้วเมื่อพาเรนต์ถูกยกเลิก ดังนั้นการตรวจสอบ main ที่ใหม่กว่าจะไม่ต้องรอหลังรัน release-check เก่าสองชั่วโมง การตรวจสอบ release branch/tag และกลุ่ม rerun เฉพาะจุดจะคง `cancel-in-progress: false`
 
-## shard ของ Live และ E2E
+## ชาร์ด Live และ E2E
 
-child live/E2E ของ release ยังคงครอบคลุม `pnpm test:live` แบบ native กว้าง แต่จะ run เป็น shard ที่มีชื่อผ่าน `scripts/test-live-shard.mjs` แทน job แบบ serial เดียว:
+ลูก release live/E2E ยังคงความครอบคลุม `pnpm test:live` แบบ native ที่กว้าง แต่รันเป็นชาร์ดที่มีชื่อผ่าน `scripts/test-live-shard.mjs` แทนงาน serial งานเดียว:
 
 - `native-live-src-agents`
 - `native-live-src-gateway-core`
-- job `native-live-src-gateway-profiles` ที่กรองตาม provider
+- งาน `native-live-src-gateway-profiles` ที่กรองตาม provider
 - `native-live-src-gateway-backends`
 - `native-live-test`
 - `native-live-extensions-a-k`
@@ -233,61 +217,61 @@ child live/E2E ของ release ยังคงครอบคลุม `pnpm t
 - `native-live-extensions-openai`
 - `native-live-extensions-o-z-other`
 - `native-live-extensions-xai`
-- shard media audio/video ที่แยก และ shard music ที่กรองตาม provider
+- ชาร์ดสื่อ audio/video ที่แยกออก และชาร์ด music ที่กรองตาม provider
 
-วิธีนี้คง coverage ของไฟล์เดิมไว้ พร้อมทำให้ความล้มเหลวของ live provider ที่ช้า rerun และวินิจฉัยได้ง่ายขึ้น ชื่อ shard แบบ aggregate `native-live-extensions-o-z`, `native-live-extensions-media`, และ `native-live-extensions-media-music` ยังคงใช้ได้สำหรับการ rerun แบบ manual one-shot
+วิธีนี้คงความครอบคลุมไฟล์เดิมไว้ พร้อมทำให้ความล้มเหลวของ live provider ที่ช้ารันซ้ำและวิเคราะห์ได้ง่ายขึ้น ชื่อชาร์ดรวม `native-live-extensions-o-z`, `native-live-extensions-media`, และ `native-live-extensions-media-music` ยังใช้ได้สำหรับการรันซ้ำแบบ one-shot ด้วยตนเอง
 
-shard native live media run ใน `ghcr.io/openclaw/openclaw-live-media-runner:ubuntu-24.04` ซึ่ง build โดย workflow `Live Media Runner Image` image นี้ติดตั้ง `ffmpeg` และ `ffprobe` ไว้ล่วงหน้า; job media ตรวจสอบเฉพาะ binary ก่อน setup ให้คง suite live ที่ใช้ Docker-backed ไว้บน runner Blacksmith ปกติ เพราะ container job ไม่เหมาะกับการ launch nested Docker tests
+ชาร์ด native live media รันใน `ghcr.io/openclaw/openclaw-live-media-runner:ubuntu-24.04` ซึ่งสร้างโดยเวิร์กโฟลว์ `Live Media Runner Image` อิมเมจนั้นติดตั้ง `ffmpeg` และ `ffprobe` ไว้ล่วงหน้า; งาน media ตรวจสอบเฉพาะ binary ก่อน setup ให้คงชุด live ที่พึ่ง Docker ไว้บน runner Blacksmith ปกติ — งาน container ไม่ใช่ที่ที่เหมาะสำหรับเปิดการทดสอบ Docker ซ้อน
 
-shard live model/backend ที่ใช้ Docker-backed ใช้ image shared แยกต่างหาก `ghcr.io/openclaw/openclaw-live-test:<sha>` ต่อ commit ที่เลือก workflow live release จะ build และ push image นั้นครั้งเดียว จากนั้น shard Docker live model, Gateway ที่แบ่งตาม provider, CLI backend, ACP bind และ Codex harness จะ run พร้อม `OPENCLAW_SKIP_DOCKER_BUILD=1` shard Gateway Docker มีค่า `timeout` ระดับ script ชัดเจนที่ต่ำกว่า timeout ของ workflow job เพื่อให้ container หรือ path cleanup ที่ค้างล้มเหลวเร็ว แทนที่จะกินงบเวลา release-check ทั้งหมด หาก shard เหล่านั้น rebuild Docker target ของ source ทั้งหมดแยกกัน แสดงว่า release run ตั้งค่าผิดและจะเสียเวลาจริงไปกับการ build image ซ้ำ
+ชาร์ด live model/backend ที่พึ่ง Docker ใช้อิมเมจ shared `ghcr.io/openclaw/openclaw-live-test:<sha>` แยกต่อคอมมิตที่เลือก เวิร์กโฟลว์ live release สร้างและพุชอิมเมจนั้นหนึ่งครั้ง จากนั้นชาร์ด Docker live model, gateway ที่แบ่งตาม provider, CLI backend, ACP bind และ Codex harness จะรันด้วย `OPENCLAW_SKIP_DOCKER_BUILD=1` ชาร์ด Gateway Docker มีเพดาน `timeout` ระดับสคริปต์ที่ชัดเจนต่ำกว่า timeout ของงานเวิร์กโฟลว์ เพื่อให้ container ที่ค้างหรือเส้นทาง cleanup ล้มเหลวเร็วแทนที่จะกินงบ release-check ทั้งหมด หากชาร์ดเหล่านั้นสร้าง Docker target ของซอร์สเต็มใหม่เอง รันรีลีสนั้นถูกตั้งค่าผิดและจะเสียเวลา wall clock ไปกับการ build อิมเมจซ้ำ
 
 ## Package Acceptance
 
-ใช้ `Package Acceptance` เมื่อคำถามคือ "package OpenClaw ที่ติดตั้งได้นี้ใช้งานเป็น product ได้หรือไม่?" มันต่างจาก CI ปกติ: CI ปกติตรวจสอบ source tree ขณะที่ package acceptance ตรวจสอบ tarball เดียวผ่าน Docker E2E harness เดียวกับที่ผู้ใช้ใช้งานหลังติดตั้งหรืออัปเดต
+ใช้ `Package Acceptance` เมื่อคำถามคือ "แพ็กเกจ OpenClaw ที่ติดตั้งได้นี้ทำงานเป็นผลิตภัณฑ์ได้หรือไม่" สิ่งนี้ต่างจาก CI ปกติ: CI ปกติตรวจสอบซอร์สทรี ขณะที่ package acceptance ตรวจสอบ tarball เดี่ยวผ่าน Docker E2E harness เดียวกับที่ผู้ใช้ใช้งานหลังติดตั้งหรืออัปเดต
 
-### Job
+### งาน
 
-1. `resolve_package` checkout `workflow_ref`, resolve candidate package หนึ่งตัว, เขียน `.artifacts/docker-e2e-package/openclaw-current.tgz`, เขียน `.artifacts/docker-e2e-package/package-candidate.json`, upload ทั้งคู่เป็น artifact `package-under-test`, และพิมพ์ source, workflow ref, package ref, version, SHA-256, และ profile ใน GitHub step summary
-2. `docker_acceptance` เรียก `openclaw-live-and-e2e-checks-reusable.yml` ด้วย `ref=workflow_ref` และ `package_artifact_name=package-under-test` workflow ที่ reuse ได้จะ download artifact นั้น, validate inventory ของ tarball, เตรียม Docker image แบบ package-digest เมื่อจำเป็น และ run lane Docker ที่เลือกกับ package นั้นแทนการ pack workflow checkout เมื่อ profile เลือก `docker_lanes` แบบ targeted หลายตัว workflow ที่ reuse ได้จะเตรียม package และ shared image เพียงครั้งเดียว จากนั้น fan out lane เหล่านั้นเป็น targeted Docker job แบบ parallel พร้อม artifact ที่ไม่ซ้ำกัน
-3. `package_telegram` เรียก `NPM Telegram Beta E2E` แบบ optional มันจะ run เมื่อ `telegram_mode` ไม่ใช่ `none` และติดตั้ง artifact `package-under-test` เดียวกันเมื่อ Package Acceptance resolve ไว้แล้ว; dispatch Telegram แบบ standalone ยังสามารถติดตั้ง published npm spec ได้
-4. `summary` ทำให้ workflow ล้มเหลวหาก package resolution, Docker acceptance หรือ lane Telegram แบบ optional ล้มเหลว
+1. `resolve_package` checkout `workflow_ref`, resolve candidate แพ็กเกจหนึ่งตัว, เขียน `.artifacts/docker-e2e-package/openclaw-current.tgz`, เขียน `.artifacts/docker-e2e-package/package-candidate.json`, อัปโหลดทั้งสองเป็น artifact `package-under-test` และพิมพ์แหล่งที่มา, workflow ref, package ref, เวอร์ชัน, SHA-256 และ profile ในสรุป step ของ GitHub
+2. `docker_acceptance` เรียก `openclaw-live-and-e2e-checks-reusable.yml` ด้วย `ref=workflow_ref` และ `package_artifact_name=package-under-test` เวิร์กโฟลว์ที่ใช้ซ้ำจะดาวน์โหลด artifact นั้น, ตรวจสอบ inventory ของ tarball, เตรียมอิมเมจ Docker แบบ package-digest เมื่อจำเป็น และรันเลน Docker ที่เลือกกับแพ็กเกจนั้นแทนการแพ็ก workflow checkout เมื่อ profile เลือก `docker_lanes` แบบเจาะจงหลายรายการ เวิร์กโฟลว์ที่ใช้ซ้ำจะเตรียมแพ็กเกจและอิมเมจ shared หนึ่งครั้ง จากนั้นกระจายเลนเหล่านั้นออกเป็นงาน Docker เจาะจงแบบขนานพร้อม artifact ที่ไม่ซ้ำกัน
+3. `package_telegram` เรียก `NPM Telegram Beta E2E` แบบไม่บังคับ โดยจะรันเมื่อ `telegram_mode` ไม่ใช่ `none` และติดตั้ง artifact `package-under-test` เดียวกันเมื่อ Package Acceptance resolve ได้หนึ่งรายการ; dispatch Telegram แบบ standalone ยังติดตั้ง spec npm ที่เผยแพร่แล้วได้
+4. `summary` ทำให้เวิร์กโฟลว์ล้มเหลวหากการ resolve แพ็กเกจ, Docker acceptance หรือเลน Telegram แบบไม่บังคับล้มเหลว
 
-### แหล่งที่มาของ candidate
+### แหล่ง candidate
 
-- `source=npm` รับเฉพาะ `openclaw@beta`, `openclaw@latest` หรือ release version ของ OpenClaw แบบ exact เช่น `openclaw@2026.4.27-beta.2` ใช้สิ่งนี้สำหรับ acceptance ของ prerelease/stable ที่ publish แล้ว
-- `source=ref` pack branch, tag หรือ commit SHA แบบเต็มของ `package_ref` ที่เชื่อถือได้ resolver จะ fetch branch/tag ของ OpenClaw, ตรวจสอบว่า commit ที่เลือก reachable จากประวัติ branch ของ repository หรือ release tag, ติดตั้ง deps ใน detached worktree และ pack ด้วย `scripts/package-openclaw-for-docker.mjs`
-- `source=url` download `.tgz` ผ่าน HTTPS; ต้องมี `package_sha256`
-- `source=artifact` download `.tgz` หนึ่งไฟล์จาก `artifact_run_id` และ `artifact_name`; `package_sha256` เป็น optional แต่ควรระบุสำหรับ artifact ที่แชร์ภายนอก
+- `source=npm` รับเฉพาะ `openclaw@beta`, `openclaw@latest` หรือเวอร์ชันรีลีส OpenClaw แบบเจาะจง เช่น `openclaw@2026.4.27-beta.2` ใช้ค่านี้สำหรับ acceptance ของ prerelease/stable ที่เผยแพร่แล้ว
+- `source=ref` แพ็กแบรนช์, แท็ก หรือ SHA คอมมิตเต็มของ `package_ref` ที่เชื่อถือได้ resolver จะ fetch แบรนช์/แท็กของ OpenClaw, ตรวจสอบว่าคอมมิตที่เลือกเข้าถึงได้จากประวัติแบรนช์ของ repository หรือ release tag, ติดตั้ง deps ใน worktree แบบ detached และแพ็กด้วย `scripts/package-openclaw-for-docker.mjs`
+- `source=url` ดาวน์โหลด HTTPS `.tgz`; ต้องระบุ `package_sha256`
+- `source=artifact` ดาวน์โหลด `.tgz` หนึ่งไฟล์จาก `artifact_run_id` และ `artifact_name`; `package_sha256` ไม่บังคับแต่ควรระบุสำหรับ artifact ที่แชร์ภายนอก
 
-แยก `workflow_ref` และ `package_ref` ออกจากกัน `workflow_ref` คือ workflow/harness code ที่เชื่อถือได้ซึ่ง run test `package_ref` คือ source commit ที่จะถูก pack เมื่อ `source=ref` วิธีนี้ทำให้ test harness ปัจจุบันตรวจสอบ source commit เก่าที่เชื่อถือได้โดยไม่ต้อง run workflow logic เก่า
+แยก `workflow_ref` และ `package_ref` ออกจากกัน `workflow_ref` คือโค้ด workflow/harness ที่เชื่อถือได้ซึ่งรันการทดสอบ `package_ref` คือคอมมิตต้นทางที่จะถูกแพ็กเมื่อ `source=ref` วิธีนี้ทำให้ test harness ปัจจุบันตรวจสอบคอมมิตซอร์สเก่าที่เชื่อถือได้โดยไม่ต้องรัน logic เวิร์กโฟลว์เก่า
 
-### Suite profile
+### โปรไฟล์ชุดทดสอบ
 
 - `smoke` — `npm-onboard-channel-agent`, `gateway-network`, `config-reload`
-- `package` — `npm-onboard-channel-agent`, `doctor-switch`, `update-channel-switch`, `upgrade-survivor`, `published-upgrade-survivor`, `plugins-offline`, `plugin-update`
-- `product` — `package` บวก `mcp-channels`, `cron-mcp-cleanup`, `openai-web-search-minimal`, `openwebui`
-- `full` — chunk เส้นทาง Docker release แบบเต็มพร้อม OpenWebUI
-- `custom` — `docker_lanes` แบบ exact; จำเป็นเมื่อ `suite_profile=custom`
+- `package` — `npm-onboard-channel-agent`, `doctor-switch`, `update-channel-switch`, `skill-install`, `update-corrupt-plugin`, `upgrade-survivor`, `published-upgrade-survivor`, `update-restart-auth`, `plugins-offline`, `plugin-update`
+- `product` — `package` รวมกับ `mcp-channels`, `cron-mcp-cleanup`, `openai-web-search-minimal`, `openwebui`
+- `full` — ชังก์เส้นทางรีลีส Docker เต็มพร้อม OpenWebUI
+- `custom` — `docker_lanes` แบบเจาะจง; ต้องระบุเมื่อ `suite_profile=custom`
 
-profile `package` ใช้ coverage ของ Plugin แบบ offline เพื่อให้ validation ของ package ที่ publish แล้วไม่ถูก gate ด้วย availability ของ ClawHub แบบ live lane Telegram แบบ optional reuse artifact `package-under-test` ใน `NPM Telegram Beta E2E` โดยยังคง path published npm spec สำหรับ dispatch แบบ standalone
+โปรไฟล์ `package` ใช้ความครอบคลุม Plugin แบบ offline เพื่อไม่ให้การตรวจสอบแพ็กเกจที่เผยแพร่แล้วถูกกั้นด้วยความพร้อมใช้งานของ ClawHub แบบ live เลน Telegram แบบไม่บังคับใช้ artifact `package-under-test` ซ้ำใน `NPM Telegram Beta E2E` โดยคงเส้นทาง spec npm ที่เผยแพร่แล้วไว้สำหรับ dispatch แบบ standalone
 
-สำหรับนโยบายการทดสอบ update และ Plugin โดยเฉพาะ รวมถึงคำสั่ง local,
-lane Docker, input ของ Package Acceptance, ค่าเริ่มต้นของ release และการ triage ความล้มเหลว,
-ดู [การทดสอบ update และ Plugin](/th/help/testing-updates-plugins)
+สำหรับนโยบายการทดสอบอัปเดตและ Plugin เฉพาะ รวมถึงคำสั่งภายในเครื่อง,
+เลน Docker, input ของ Package Acceptance, ค่าเริ่มต้นของรีลีส และการคัดแยกความล้มเหลว,
+ดู [การทดสอบอัปเดตและ Plugin](/th/help/testing-updates-plugins)
 
-release checks เรียก Package Acceptance ด้วย `source=artifact`, artifact package release ที่เตรียมไว้, `suite_profile=custom`, `docker_lanes='doctor-switch update-channel-switch upgrade-survivor published-upgrade-survivor plugins-offline plugin-update'`, และ `telegram_mode=mock-openai` วิธีนี้ทำให้หลักฐานการ migration package, update, cleanup dependency ของ Plugin ที่ stale, การซ่อมการติดตั้ง Plugin ที่ configure ไว้, Plugin แบบ offline, plugin-update และ Telegram อยู่บน tarball package ที่ resolve เดียวกัน ตั้งค่า `package_acceptance_package_spec` บน Full Release Validation หรือ OpenClaw Release Checks เพื่อ run matrix เดียวกันกับ package npm ที่ shipped แล้วแทน artifact ที่ build จาก SHA cross-OS release checks ยังคงครอบคลุม onboarding, installer และพฤติกรรม platform เฉพาะ OS; validation ของ product package/update ควรเริ่มจาก Package Acceptance lane Docker `published-upgrade-survivor` ตรวจสอบ baseline package ที่ publish แล้วหนึ่งตัวต่อ run ในเส้นทาง release ที่ blocking ใน Package Acceptance tarball `package-under-test` ที่ resolve แล้วจะเป็น candidate เสมอ และ `published_upgrade_survivor_baseline` เลือก fallback published baseline โดยมีค่าเริ่มต้นเป็น `openclaw@latest`; คำสั่ง rerun ของ lane ที่ล้มเหลวจะรักษา baseline นั้นไว้ Full Release Validation ที่มี `run_release_soak=true` หรือ `release_profile=full` ตั้งค่า `published_upgrade_survivor_baselines='last-stable-4 2026.4.23 2026.5.2 2026.4.15'` และ `published_upgrade_survivor_scenarios=reported-issues` เพื่อขยายไปยัง release npm stable ล่าสุดสี่ตัว รวมถึง release boundary ที่ปักหมุดสำหรับความเข้ากันได้ของ Plugin และ fixture รูปแบบ issue สำหรับ config Feishu, ไฟล์ bootstrap/persona ที่เก็บรักษาไว้, การติดตั้ง OpenClaw Plugin ที่ configure ไว้, path log แบบ tilde และ root dependency Plugin legacy ที่ stale การเลือก published-upgrade survivor หลาย baseline จะถูก shard ตาม baseline เป็น targeted Docker runner job แยกกัน workflow `Update Migration` แยกต่างหากใช้ lane Docker `update-migration` พร้อม `all-since-2026.4.23` และ `plugin-deps-cleanup` เมื่อคำถามคือ cleanup การ update ที่ publish แล้วแบบ exhaustive ไม่ใช่ breadth ของ Full Release CI ปกติ run aggregate แบบ local สามารถส่ง spec package แบบ exact ด้วย `OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPECS`, คง lane เดียวด้วย `OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPEC` เช่น `openclaw@2026.4.15` หรือ set `OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS` สำหรับ scenario matrix lane ที่ publish แล้ว configure baseline ด้วย recipe คำสั่ง `openclaw config set` แบบ baked, บันทึกขั้นตอน recipe ใน `summary.json`, และ probe `/healthz`, `/readyz` รวมถึงสถานะ RPC หลัง Gateway start lane Windows packaged และ installer fresh ยังตรวจสอบด้วยว่า package ที่ติดตั้งแล้วสามารถ import browser-control override จาก raw absolute Windows path ได้ smoke agent-turn แบบ cross-OS ของ OpenAI มีค่าเริ่มต้นเป็น `OPENCLAW_CROSS_OS_OPENAI_MODEL` เมื่อ set ไว้ มิฉะนั้นเป็น `openai/gpt-5.4` ดังนั้นหลักฐาน install และ Gateway จะยังอยู่บน test model GPT-5 พร้อมหลีกเลี่ยงค่าเริ่มต้น GPT-4.x
+Release checks เรียก Package Acceptance ด้วย `source=artifact`, artifact แพ็กเกจรีลีสที่เตรียมไว้, `suite_profile=custom`, `docker_lanes='doctor-switch update-channel-switch skill-install update-corrupt-plugin upgrade-survivor published-upgrade-survivor update-restart-auth plugins-offline plugin-update'` และ `telegram_mode=mock-openai` วิธีนี้ทำให้หลักฐาน package migration, update, การติดตั้ง skill จาก ClawHub แบบ live, cleanup dependency ของ Plugin เก่า, การซ่อมการติดตั้ง Plugin ที่กำหนดค่าไว้, Plugin แบบ offline, plugin-update และ Telegram อยู่บน tarball แพ็กเกจที่ resolve เดียวกัน ตั้งค่า `package_acceptance_package_spec` บน Full Release Validation หรือ OpenClaw Release Checks เพื่อรันเมทริกซ์เดียวกันกับแพ็กเกจ npm ที่จัดส่งแล้วแทน artifact ที่สร้างจาก SHA การตรวจสอบรีลีส cross-OS ยังคงครอบคลุมพฤติกรรม onboarding, installer และ platform เฉพาะ OS; การตรวจสอบผลิตภัณฑ์ด้าน package/update ควรเริ่มด้วย Package Acceptance เลน Docker `published-upgrade-survivor` ตรวจสอบ baseline แพ็กเกจที่เผยแพร่แล้วหนึ่งรายการต่อรันในเส้นทางรีลีสที่บล็อก ใน Package Acceptance tarball `package-under-test` ที่ resolve แล้วจะเป็น candidate เสมอ และ `published_upgrade_survivor_baseline` เลือก baseline ที่เผยแพร่แล้วสำหรับ fallback โดยมีค่าเริ่มต้นเป็น `openclaw@latest`; คำสั่งรันซ้ำของเลนที่ล้มเหลวจะคง baseline นั้นไว้ Full Release Validation ที่มี `run_release_soak=true` หรือ `release_profile=full` จะตั้งค่า `published_upgrade_survivor_baselines='last-stable-4 2026.4.23 2026.5.2 2026.4.15'` และ `published_upgrade_survivor_scenarios=reported-issues` เพื่อขยายครอบคลุมรีลีส npm stable ล่าสุดสี่รายการ รวมถึงรีลีสขอบเขตความเข้ากันได้ของ Plugin ที่ปักหมุดไว้ และ fixture ตามรูปแบบ issue สำหรับ config ของ Feishu, ไฟล์ bootstrap/persona ที่เก็บรักษาไว้, การติดตั้ง Plugin OpenClaw ที่กำหนดค่าไว้, เส้นทาง log แบบ tilde และราก dependency ของ Plugin legacy ที่ค้าง การเลือก published-upgrade survivor แบบหลาย baseline จะถูกแบ่งชาร์ดตาม baseline เป็นงาน targeted Docker runner แยกกัน เวิร์กโฟลว์ `Update Migration` แยกต่างหากใช้เลน Docker `update-migration` พร้อม `all-since-2026.4.23` และ `plugin-deps-cleanup` เมื่อคำถามคือ cleanup การอัปเดตที่เผยแพร่แล้วแบบละเอียด ไม่ใช่ความกว้างของ Full Release CI ปกติ รัน aggregate ภายในเครื่องสามารถส่ง spec แพ็กเกจแบบเจาะจงด้วย `OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPECS`, คงไว้เลนเดียวด้วย `OPENCLAW_UPGRADE_SURVIVOR_BASELINE_SPEC` เช่น `openclaw@2026.4.15` หรือตั้งค่า `OPENCLAW_UPGRADE_SURVIVOR_SCENARIOS` สำหรับเมทริกซ์ scenario เลนที่เผยแพร่แล้วกำหนดค่า baseline ด้วย recipe คำสั่ง `openclaw config set` ที่ฝังมา, บันทึกขั้นตอน recipe ใน `summary.json` และ probe `/healthz`, `/readyz` รวมถึงสถานะ RPC หลังเริ่ม Gateway เลน Windows packaged และ installer fresh ยังตรวจสอบด้วยว่าแพ็กเกจที่ติดตั้งแล้วสามารถ import browser-control override จากเส้นทาง Windows แบบ absolute ดิบได้ smoke สำหรับ agent-turn แบบ cross-OS ของ OpenAI มีค่าเริ่มต้นเป็น `OPENCLAW_CROSS_OS_OPENAI_MODEL` เมื่อถูกตั้งค่า มิฉะนั้นเป็น `openai/gpt-5.4` เพื่อให้หลักฐาน install และ Gateway อยู่บนโมเดลทดสอบ GPT-5 พร้อมหลีกเลี่ยงค่าเริ่มต้น GPT-4.x
 
-### หน้าต่างความเข้ากันได้แบบ legacy
+### หน้าต่างความเข้ากันได้แบบเดิม
 
-Package Acceptance มีช่วงเวลาความเข้ากันได้แบบเดิมที่มีขอบเขตสำหรับแพ็กเกจที่เผยแพร่ไปแล้ว แพ็กเกจจนถึง `2026.4.25` รวมถึง `2026.4.25-beta.*` อาจใช้เส้นทางความเข้ากันได้ได้:
+การยอมรับแพ็กเกจมีหน้าต่างความเข้ากันได้แบบเดิมที่มีขอบเขตสำหรับแพ็กเกจที่เผยแพร่ไปแล้ว แพ็กเกจจนถึง `2026.4.25` รวมถึง `2026.4.25-beta.*` อาจใช้เส้นทางความเข้ากันได้ได้:
 
 - รายการ QA ส่วนตัวที่รู้จักใน `dist/postinstall-inventory.json` อาจชี้ไปยังไฟล์ที่ถูกละเว้นจาก tarball;
 - `doctor-switch` อาจข้ามกรณีย่อยการคงอยู่ของ `gateway install --wrapper` เมื่อแพ็กเกจไม่เปิดเผยแฟล็กนั้น;
-- `update-channel-switch` อาจตัด `pnpm.patchedDependencies` ที่หายไปออกจาก fake git fixture ที่ได้จาก tarball และอาจบันทึก `update.channel` ที่คงอยู่ไว้แต่หายไป;
+- `update-channel-switch` อาจตัด `pnpm.patchedDependencies` ที่หายไปออกจาก fixture git ปลอมที่ได้จาก tarball และอาจบันทึก `update.channel` ที่คงอยู่แล้วแต่หายไป;
 - smoke ของ Plugin อาจอ่านตำแหน่ง install-record แบบเดิม หรือยอมรับการคงอยู่ของ marketplace install-record ที่หายไป;
-- `plugin-update` อาจอนุญาตการย้ายข้อมูลเมตาของคอนฟิก โดยยังคงกำหนดให้ install record และพฤติกรรมไม่ติดตั้งซ้ำต้องไม่เปลี่ยนแปลง
+- `plugin-update` อาจอนุญาตการย้าย metadata ของ config ขณะที่ยังคงกำหนดให้ install record และพฤติกรรมไม่มีการติดตั้งซ้ำต้องไม่เปลี่ยนแปลง
 
-แพ็กเกจ `2026.4.26` ที่เผยแพร่แล้วอาจเตือนสำหรับไฟล์ stamp เมตาดาต้าบิลด์ในเครื่องที่เคยถูกจัดส่งไปแล้วด้วย แพ็กเกจหลังจากนั้นต้องเป็นไปตามสัญญาสมัยใหม่ เงื่อนไขเดียวกันจะล้มเหลวแทนที่จะเตือนหรือข้าม
+แพ็กเกจ `2026.4.26` ที่เผยแพร่แล้วอาจเตือนสำหรับไฟล์ stamp metadata ของบิลด์ในเครื่องที่จัดส่งไปแล้วด้วย แพ็กเกจที่ใหม่กว่าต้องเป็นไปตามสัญญาสมัยใหม่ เงื่อนไขเดียวกันจะล้มเหลวแทนที่จะเตือนหรือข้าม
 
 ### ตัวอย่าง
 
@@ -330,151 +314,151 @@ gh workflow run package-acceptance.yml \
   -f docker_lanes='install-e2e plugin-update'
 ```
 
-เมื่อดีบักการรัน package acceptance ที่ล้มเหลว ให้เริ่มที่สรุป `resolve_package` เพื่อยืนยันแหล่งที่มาของแพ็กเกจ เวอร์ชัน และ SHA-256 จากนั้นตรวจสอบ child run `docker_acceptance` และอาร์ติแฟกต์ Docker ของรันนั้น: `.artifacts/docker-tests/**/summary.json`, `failures.json`, บันทึกของเลน, เวลาแต่ละเฟส และคำสั่งรันซ้ำ ควรรันโปรไฟล์แพ็กเกจที่ล้มเหลวหรือเลน Docker ที่ตรงกันซ้ำ แทนการรัน full release validation ทั้งหมดซ้ำ
+เมื่อดีบักการรันการยอมรับแพ็กเกจที่ล้มเหลว ให้เริ่มที่สรุป `resolve_package` เพื่อยืนยันแหล่งที่มาของแพ็กเกจ เวอร์ชัน และ SHA-256 จากนั้นตรวจสอบ child run ของ `docker_acceptance` และ artifact ของ Docker: `.artifacts/docker-tests/**/summary.json`, `failures.json`, บันทึกของ lane, เวลาแต่ละ phase และคำสั่ง rerun ควร rerun โปรไฟล์แพ็กเกจที่ล้มเหลวหรือ lane ของ Docker ที่ตรงกัน แทนที่จะ rerun การตรวจสอบ release ทั้งหมด
 
-## การทดสอบ smoke การติดตั้ง
+## Install smoke
 
-เวิร์กโฟลว์ `Install Smoke` แยกต่างหากใช้สคริปต์ขอบเขตเดียวกันซ้ำผ่านงาน `preflight` ของตัวเอง โดยแบ่งความครอบคลุมของ smoke เป็น `run_fast_install_smoke` และ `run_full_install_smoke`
+Workflow `Install Smoke` แยกต่างหากใช้สคริปต์ scope เดียวกันซ้ำผ่าน job `preflight` ของตัวเอง โดยแบ่งความครอบคลุม smoke ออกเป็น `run_fast_install_smoke` และ `run_full_install_smoke`
 
-- **เส้นทางเร็ว** รันสำหรับ pull request ที่แตะพื้นผิว Docker/แพ็กเกจ, การเปลี่ยนแปลงแพ็กเกจ/manifest ของ Plugin ที่รวมมา, หรือพื้นผิวหลักของ Plugin/channel/gateway/Plugin SDK ที่งาน Docker smoke ใช้งาน การเปลี่ยนแปลงเฉพาะซอร์สของ Plugin ที่รวมมา, การแก้ไขเฉพาะการทดสอบ และการแก้ไขเฉพาะเอกสารจะไม่จอง Docker worker เส้นทางเร็วจะสร้างอิมเมจ Dockerfile รากหนึ่งครั้ง ตรวจสอบ CLI รัน smoke ของ CLI สำหรับการลบ agents shared-workspace รัน e2e ของ container gateway-network ตรวจสอบ build arg ของ extension ที่รวมมา และรันโปรไฟล์ Docker ของ bundled-plugin แบบมีขอบเขตภายใต้ timeout คำสั่งรวม 240 วินาที โดยแต่ละสถานการณ์จำกัดเวลาการรัน Docker แยกกัน
-- **เส้นทางเต็ม** เก็บความครอบคลุมการติดตั้งแพ็กเกจ QR และ Docker/update ของตัวติดตั้งไว้สำหรับการรันตามกำหนดเวลากลางคืน, การสั่งรันด้วยตนเอง, การตรวจ release แบบ workflow-call และ pull request ที่แตะพื้นผิว installer/package/Docker จริง ๆ ในโหมดเต็ม install-smoke จะเตรียมหรือใช้ซ้ำอิมเมจ GHCR root Dockerfile smoke ของ target-SHA หนึ่งอิมเมจ จากนั้นรันการติดตั้งแพ็กเกจ QR, smoke ของ root Dockerfile/gateway, smoke ของ installer/update และ Docker E2E ของ bundled-plugin แบบเร็วเป็นงานแยกกัน เพื่อให้งานตัวติดตั้งไม่ต้องรอหลัง smoke ของอิมเมจราก
+- **เส้นทางเร็ว** ทำงานสำหรับ pull request ที่แตะพื้นผิว Docker/แพ็กเกจ การเปลี่ยนแปลงแพ็กเกจ/manifest ของ Plugin ที่ bundled หรือพื้นผิว core Plugin/channel/Gateway/Plugin SDK ที่ job smoke ของ Docker ทดสอบ การเปลี่ยนแปลง Plugin ที่ bundled เฉพาะ source, การแก้ไขเฉพาะ test และการแก้ไขเฉพาะ docs จะไม่จอง worker ของ Docker เส้นทางเร็วจะ build image ของ root Dockerfile หนึ่งครั้ง ตรวจสอบ CLI รัน smoke ของ CLI สำหรับ agents delete shared-workspace รัน e2e gateway-network ใน container ตรวจสอบ build arg ของ bundled extension และรันโปรไฟล์ Docker ของ bundled-Plugin แบบมีขอบเขตภายใต้ timeout รวมของคำสั่ง 240 วินาที (Docker run ของแต่ละ scenario ถูกจำกัดแยกกัน)
+- **เส้นทางเต็ม** เก็บการติดตั้งแพ็กเกจ QR และความครอบคลุม Docker/update ของ installer ไว้สำหรับการรันตามกำหนดการทุกคืน การ dispatch ด้วยตนเอง การตรวจ release แบบ workflow-call และ pull request ที่แตะพื้นผิว installer/package/Docker จริง ๆ ในโหมดเต็ม install-smoke จะเตรียมหรือใช้ image smoke ของ root Dockerfile จาก GHCR ตาม target-SHA หนึ่งรายการซ้ำ จากนั้นรันการติดตั้งแพ็กเกจ QR, smoke ของ root Dockerfile/Gateway, smoke ของ installer/update และ Docker E2E แบบเร็วของ bundled-Plugin เป็น job แยกกัน เพื่อให้งาน installer ไม่ต้องรออยู่หลัง smoke ของ root image
 
-การ push ไปยัง `main` รวมถึง merge commit ไม่บังคับใช้เส้นทางเต็ม เมื่อ logic changed-scope ขอความครอบคลุมเต็มในการ push เวิร์กโฟลว์จะคง Docker smoke แบบเร็วไว้ และปล่อย full install smoke ให้กับการรันกลางคืนหรือ release validation
+การ push ไปยัง `main` (รวมถึง merge commit) ไม่บังคับเส้นทางเต็ม เมื่อ logic ของ changed-scope ขอความครอบคลุมเต็มในการ push workflow จะคง smoke Docker แบบเร็วไว้ และปล่อย smoke การติดตั้งแบบเต็มให้การตรวจสอบ nightly หรือ release validation
 
-smoke ของ image-provider สำหรับการติดตั้ง Bun แบบ global ที่ช้าถูก gate แยกด้วย `run_bun_global_install_smoke` โดยรันตามกำหนดเวลากลางคืนและจากเวิร์กโฟลว์ release checks และการสั่งรัน `Install Smoke` ด้วยตนเองสามารถเลือกเปิดใช้ได้ แต่ pull request และการ push ไปยัง `main` จะไม่รัน การทดสอบ Docker สำหรับ QR และ installer ยังคงมี Dockerfile ที่เน้นการติดตั้งของตัวเอง
+smoke image-provider ของการติดตั้ง Bun global ที่ช้าถูก gate แยกด้วย `run_bun_global_install_smoke` โดยทำงานตามกำหนดการ nightly และจาก workflow ตรวจ release และการ dispatch `Install Smoke` ด้วยตนเองสามารถเลือกเข้าใช้งานได้ แต่ pull request และการ push ไปยัง `main` จะไม่รัน การทดสอบ Docker ของ QR และ installer เก็บ Dockerfile ที่เน้นการติดตั้งของตัวเองไว้
 
 ## Docker E2E ในเครื่อง
 
-`pnpm test:docker:all` สร้างอิมเมจ live-test ที่ใช้ร่วมกันล่วงหน้าหนึ่งอิมเมจ แพ็ก OpenClaw หนึ่งครั้งเป็น npm tarball และสร้างอิมเมจ `scripts/e2e/Dockerfile` ที่ใช้ร่วมกันสองแบบ:
+`pnpm test:docker:all` prebuild image live-test ที่ใช้ร่วมกันหนึ่งรายการ pack OpenClaw หนึ่งครั้งเป็น npm tarball และ build image `scripts/e2e/Dockerfile` ที่ใช้ร่วมกันสองรายการ:
 
-- runner Node/Git เปล่าสำหรับเลน installer/update/plugin-dependency;
-- อิมเมจฟังก์ชันที่ติดตั้ง tarball เดียวกันลงใน `/app` สำหรับเลนฟังก์ชันปกติ
+- runner Node/Git เปล่าสำหรับ lane ของ installer/update/plugin-dependency;
+- image ที่ใช้งานได้ซึ่งติดตั้ง tarball เดียวกันลงใน `/app` สำหรับ lane การทำงานปกติ
 
-นิยามเลน Docker อยู่ใน `scripts/lib/docker-e2e-scenarios.mjs`, logic ของ planner อยู่ใน `scripts/lib/docker-e2e-plan.mjs` และ runner จะรันเฉพาะแผนที่เลือกเท่านั้น scheduler เลือกอิมเมจต่อเลนด้วย `OPENCLAW_DOCKER_E2E_BARE_IMAGE` และ `OPENCLAW_DOCKER_E2E_FUNCTIONAL_IMAGE` จากนั้นรันเลนด้วย `OPENCLAW_SKIP_DOCKER_BUILD=1`
+คำจำกัดความของ lane Docker อยู่ใน `scripts/lib/docker-e2e-scenarios.mjs`, logic ของ planner อยู่ใน `scripts/lib/docker-e2e-plan.mjs` และ runner จะ execute เฉพาะ plan ที่เลือก scheduler เลือก image ต่อ lane ด้วย `OPENCLAW_DOCKER_E2E_BARE_IMAGE` และ `OPENCLAW_DOCKER_E2E_FUNCTIONAL_IMAGE` แล้วรัน lane ด้วย `OPENCLAW_SKIP_DOCKER_BUILD=1`
 
-### ค่าที่ปรับได้
+### ค่าที่ปรับแต่งได้
 
-| ตัวแปร                                 | ค่าเริ่มต้น | วัตถุประสงค์                                                                                  |
-| -------------------------------------- | ----------- | --------------------------------------------------------------------------------------------- |
-| `OPENCLAW_DOCKER_ALL_PARALLELISM`      | 10          | จำนวนสล็อต main-pool สำหรับเลนปกติ                                                           |
-| `OPENCLAW_DOCKER_ALL_TAIL_PARALLELISM` | 10          | จำนวนสล็อต tail-pool ที่อ่อนไหวต่อ provider                                                   |
-| `OPENCLAW_DOCKER_ALL_LIVE_LIMIT`       | 9           | เพดานเลน live พร้อมกันเพื่อไม่ให้ provider throttle                                           |
-| `OPENCLAW_DOCKER_ALL_NPM_LIMIT`        | 10          | เพดานเลนติดตั้ง npm พร้อมกัน                                                                  |
-| `OPENCLAW_DOCKER_ALL_SERVICE_LIMIT`    | 7           | เพดานเลนหลายบริการพร้อมกัน                                                                    |
-| `OPENCLAW_DOCKER_ALL_START_STAGGER_MS` | 2000        | หน่วงระหว่างการเริ่มเลนเพื่อหลีกเลี่ยง create storm ของ Docker daemon; ตั้ง `0` หากไม่ต้องหน่วง |
-| `OPENCLAW_DOCKER_ALL_LANE_TIMEOUT_MS`  | 7200000     | timeout สำรองต่อเลน (120 นาที); เลน live/tail ที่เลือกใช้เพดานที่เข้มกว่า                     |
-| `OPENCLAW_DOCKER_ALL_DRY_RUN`          | ไม่ได้ตั้งค่า | `1` พิมพ์แผน scheduler โดยไม่รันเลน                                                           |
-| `OPENCLAW_DOCKER_ALL_LANES`            | ไม่ได้ตั้งค่า | รายการเลนตรงตัวคั่นด้วยจุลภาค; ข้าม cleanup smoke เพื่อให้ agents ทำซ้ำเลนที่ล้มเหลวหนึ่งเลนได้ |
+| ตัวแปร                                  | ค่าเริ่มต้น | วัตถุประสงค์                                                                                       |
+| -------------------------------------- | ------- | --------------------------------------------------------------------------------------------- |
+| `OPENCLAW_DOCKER_ALL_PARALLELISM`      | 10      | จำนวน slot ของ main-pool สำหรับ lane ปกติ                                                        |
+| `OPENCLAW_DOCKER_ALL_TAIL_PARALLELISM` | 10      | จำนวน slot ของ tail-pool ที่อ่อนไหวต่อ provider                                                      |
+| `OPENCLAW_DOCKER_ALL_LIVE_LIMIT`       | 9       | เพดาน lane live พร้อมกันเพื่อไม่ให้ provider throttle                                        |
+| `OPENCLAW_DOCKER_ALL_NPM_LIMIT`        | 10      | เพดาน lane ติดตั้ง npm พร้อมกัน                                                              |
+| `OPENCLAW_DOCKER_ALL_SERVICE_LIMIT`    | 7       | เพดาน lane multi-service พร้อมกัน                                                            |
+| `OPENCLAW_DOCKER_ALL_START_STAGGER_MS` | 2000    | ระยะหน่วงระหว่างการเริ่ม lane เพื่อหลีกเลี่ยงพายุการสร้างของ Docker daemon; ตั้งเป็น `0` เพื่อไม่หน่วง     |
+| `OPENCLAW_DOCKER_ALL_LANE_TIMEOUT_MS`  | 7200000 | timeout สำรองต่อ lane (120 นาที); lane live/tail ที่เลือกใช้เพดานที่เข้มกว่า           |
+| `OPENCLAW_DOCKER_ALL_DRY_RUN`          | unset   | `1` พิมพ์ plan ของ scheduler โดยไม่รัน lane                                          |
+| `OPENCLAW_DOCKER_ALL_LANES`            | unset   | รายการ lane แบบ exact คั่นด้วยคอมมา; ข้าม cleanup smoke เพื่อให้ agent ทำซ้ำ lane ที่ล้มเหลวหนึ่งรายการได้ |
 
-เลนที่หนักกว่าเพดานที่มีผลยังคงเริ่มจาก pool ว่างได้ จากนั้นรันเดี่ยวจนกว่าจะปล่อย capacity aggregate preflight ในเครื่องจะตรวจ Docker, ลบคอนเทนเนอร์ OpenClaw E2E ที่ค้าง, ส่งสถานะเลนที่ใช้งานอยู่, คงเวลาเลนไว้สำหรับการเรียงลำดับแบบยาวที่สุดก่อน และตามค่าเริ่มต้นจะหยุดจัดตารางเลน pooled ใหม่หลังเกิดความล้มเหลวครั้งแรก
+lane ที่หนักกว่าเพดานจริงยังคงเริ่มจาก pool ว่างได้ จากนั้นรันเดี่ยวจนกว่าจะปล่อย capacity preflight รวมในเครื่องจะ preflight Docker, ลบ container E2E ของ OpenClaw ที่ค้างอยู่, แสดงสถานะ active-lane, คงเวลาแต่ละ lane เพื่อจัดลำดับแบบ longest-first และหยุด schedule lane ใหม่ใน pool หลังจากความล้มเหลวแรกตามค่าเริ่มต้น
 
-### เวิร์กโฟลว์ live/E2E ที่ใช้ซ้ำได้
+### Workflow live/E2E ที่ใช้ซ้ำได้
 
-เวิร์กโฟลว์ live/E2E ที่ใช้ซ้ำได้จะถาม `scripts/test-docker-all.mjs --plan-json` ว่าต้องใช้แพ็กเกจ ชนิดอิมเมจ อิมเมจ live เลน และความครอบคลุมของ credential ใด จากนั้น `scripts/docker-e2e.mjs` จะแปลงแผนนั้นเป็น GitHub outputs และสรุป โดยจะ pack OpenClaw ผ่าน `scripts/package-openclaw-for-docker.mjs`, ดาวน์โหลดอาร์ติแฟกต์แพ็กเกจของรันปัจจุบัน หรือดาวน์โหลดอาร์ติแฟกต์แพ็กเกจจาก `package_artifact_run_id`; ตรวจสอบ inventory ของ tarball; สร้างและ push อิมเมจ GHCR Docker E2E แบบ bare/functional ที่ติดแท็กด้วย package digest ผ่าน Docker layer cache ของ Blacksmith เมื่อแผนต้องใช้เลนที่ติดตั้งแพ็กเกจ; และใช้ input `docker_e2e_bare_image`/`docker_e2e_functional_image` ที่ให้มา หรืออิมเมจที่มี package digest อยู่แล้วแทนการสร้างใหม่ การ pull อิมเมจ Docker จะ retry พร้อม timeout ต่อครั้งแบบมีขอบเขต 180 วินาที เพื่อให้ registry/cache stream ที่ค้าง retry ได้เร็วแทนที่จะกินเวลาส่วนใหญ่ของ critical path ใน CI
+Workflow live/E2E ที่ใช้ซ้ำได้ถาม `scripts/test-docker-all.mjs --plan-json` ว่าต้องใช้แพ็กเกจ ชนิด image, live image, lane และความครอบคลุม credential ใดบ้าง จากนั้น `scripts/docker-e2e.mjs` แปลง plan นั้นเป็น output และ summary ของ GitHub โดยจะ pack OpenClaw ผ่าน `scripts/package-openclaw-for-docker.mjs`, ดาวน์โหลด artifact แพ็กเกจของรันปัจจุบัน หรือดาวน์โหลด artifact แพ็กเกจจาก `package_artifact_run_id`; ตรวจสอบ inventory ของ tarball; build และ push image Docker E2E แบบ bare/functional จาก GHCR ที่ tag ตาม package-digest ผ่าน Docker layer cache ของ Blacksmith เมื่อ plan ต้องการ lane ที่ติดตั้งแพ็กเกจแล้ว; และใช้ input `docker_e2e_bare_image`/`docker_e2e_functional_image` ที่ให้มา หรือ image ที่มีอยู่แล้วตาม package-digest ซ้ำแทนการ build ใหม่ การ pull image ของ Docker จะ retry ด้วย timeout ต่อครั้งที่มีขอบเขต 180 วินาที เพื่อให้ stream registry/cache ที่ค้าง retry ได้รวดเร็วแทนที่จะกินเวลาส่วนใหญ่ของ critical path ใน CI
 
-### ชังก์ของเส้นทาง release
+### ชุดย่อย release-path
 
-ความครอบคลุม Docker ของ release รันเป็นงานแบบชังก์เล็กลงด้วย `OPENCLAW_SKIP_DOCKER_BUILD=1` เพื่อให้แต่ละชังก์ pull เฉพาะชนิดอิมเมจที่ต้องใช้และรันหลายเลนผ่าน scheduler แบบ weighted เดียวกัน:
+ความครอบคลุม Docker ของ release รัน job แบบ chunk ขนาดเล็กด้วย `OPENCLAW_SKIP_DOCKER_BUILD=1` เพื่อให้แต่ละ chunk pull เฉพาะชนิด image ที่ต้องใช้ และ execute หลาย lane ผ่าน scheduler แบบถ่วงน้ำหนักเดียวกัน:
 
 - `OPENCLAW_DOCKER_ALL_PROFILE=release-path`
 - `OPENCLAW_DOCKER_ALL_CHUNK=core | package-update-openai | package-update-anthropic | package-update-core | plugins-runtime-plugins | plugins-runtime-services | plugins-runtime-install-a..h`
 
-ชังก์ Docker ของ release ปัจจุบันคือ `core`, `package-update-openai`, `package-update-anthropic`, `package-update-core`, `plugins-runtime-plugins`, `plugins-runtime-services` และ `plugins-runtime-install-a` ถึง `plugins-runtime-install-h` ส่วน `plugins-runtime-core`, `plugins-runtime` และ `plugins-integrations` ยังคงเป็น alias รวมของ Plugin/runtime alias เลน `install-e2e` ยังคงเป็น alias รันซ้ำด้วยตนเองแบบรวมสำหรับเลน provider installer ทั้งสอง
+chunk Docker สำหรับ release ปัจจุบันคือ `core`, `package-update-openai`, `package-update-anthropic`, `package-update-core`, `plugins-runtime-plugins`, `plugins-runtime-services` และ `plugins-runtime-install-a` ถึง `plugins-runtime-install-h` ส่วน `plugins-runtime-core`, `plugins-runtime` และ `plugins-integrations` ยังคงเป็น alias รวมของ plugin/runtime alias ของ lane `install-e2e` ยังคงเป็น alias rerun ด้วยตนเองแบบรวมสำหรับ lane installer ของทั้งสอง provider
 
-OpenWebUI ถูกพับเข้าใน `plugins-runtime-services` เมื่อความครอบคลุม release-path แบบเต็มร้องขอ และคงชังก์ `openwebui` แบบ standalone ไว้เฉพาะสำหรับการสั่งรันที่มีเฉพาะ OpenWebUI เท่านั้น เลนอัปเดต bundled-channel จะ retry หนึ่งครั้งสำหรับความล้มเหลวเครือข่าย npm ชั่วคราว
+OpenWebUI ถูกรวมเข้าใน `plugins-runtime-services` เมื่อความครอบคลุม release-path แบบเต็มร้องขอ และเก็บ chunk `openwebui` แบบ standalone ไว้เฉพาะการ dispatch สำหรับ OpenWebUI เท่านั้น lane อัปเดตของ bundled-channel จะ retry หนึ่งครั้งสำหรับความล้มเหลวชั่วคราวของเครือข่าย npm
 
-แต่ละชังก์อัปโหลด `.artifacts/docker-tests/` พร้อมบันทึกเลน, timings, `summary.json`, `failures.json`, phase timings, JSON ของแผน scheduler, ตาราง slow-lane และคำสั่งรันซ้ำต่อเลน input `docker_lanes` ของเวิร์กโฟลว์จะรันเลนที่เลือกกับอิมเมจที่เตรียมไว้แทนงานชังก์ ซึ่งจำกัดการดีบักเลนที่ล้มเหลวไว้ที่งาน Docker เป้าหมายหนึ่งงาน และเตรียม ดาวน์โหลด หรือใช้ซ้ำอาร์ติแฟกต์แพ็กเกจสำหรับรันนั้น หากเลนที่เลือกเป็นเลน Docker แบบ live งานเป้าหมายจะสร้างอิมเมจ live-test ในเครื่องสำหรับการรันซ้ำนั้น คำสั่ง GitHub rerun ต่อเลนที่สร้างขึ้นจะรวม `package_artifact_run_id`, `package_artifact_name` และ input อิมเมจที่เตรียมไว้เมื่อมีค่าเหล่านั้น เพื่อให้เลนที่ล้มเหลวสามารถใช้แพ็กเกจและอิมเมจตรงชุดจากรันที่ล้มเหลวซ้ำได้
+แต่ละ chunk อัปโหลด `.artifacts/docker-tests/` พร้อมบันทึก lane, timings, `summary.json`, `failures.json`, เวลาแต่ละ phase, JSON plan ของ scheduler, ตาราง lane ที่ช้า และคำสั่ง rerun ต่อ lane input `docker_lanes` ของ workflow จะรัน lane ที่เลือกกับ image ที่เตรียมไว้แทน job chunk ซึ่งทำให้การดีบัก lane ที่ล้มเหลวถูกจำกัดไว้ที่ job Docker เป้าหมายเดียว และเตรียม ดาวน์โหลด หรือใช้ artifact แพ็กเกจซ้ำสำหรับรันนั้น หาก lane ที่เลือกเป็น lane Docker แบบ live job เป้าหมายจะ build image live-test ในเครื่องสำหรับ rerun นั้น คำสั่ง rerun GitHub ที่สร้างต่อ lane จะรวม `package_artifact_run_id`, `package_artifact_name` และ input image ที่เตรียมไว้เมื่อมีค่าเหล่านั้นอยู่ เพื่อให้ lane ที่ล้มเหลวสามารถใช้แพ็กเกจและ image เดิมจากรันที่ล้มเหลวได้
 
 ```bash
 pnpm test:docker:rerun <run-id>      # download Docker artifacts and print combined/per-lane targeted rerun commands
 pnpm test:docker:timings <summary>   # slow-lane and phase critical-path summaries
 ```
 
-เวิร์กโฟลว์ live/E2E ตามกำหนดเวลาจะรันชุด Docker release-path แบบเต็มทุกวัน
+Workflow live/E2E ตามกำหนดการรันชุด Docker release-path แบบเต็มทุกวัน
 
-## ก่อนเผยแพร่ Plugin
+## Plugin Prerelease
 
-`Plugin Prerelease` เป็นความครอบคลุมระดับ product/package ที่มีค่าใช้จ่ายมากกว่า จึงเป็นเวิร์กโฟลว์แยกที่ถูกสั่งรันโดย `Full Release Validation` หรือโดยผู้ปฏิบัติงานอย่างชัดเจน pull request ปกติ, การ push ไปยัง `main` และการสั่งรัน CI แบบ standalone ด้วยตนเองจะปิดชุดทดสอบนี้ไว้ ชุดนี้กระจายการทดสอบ Plugin ที่รวมมาไปยัง worker extension แปดตัว งาน shard ของ extension เหล่านั้นรันกลุ่มคอนฟิก Plugin ได้ครั้งละสูงสุดสองกลุ่ม โดยใช้ Vitest worker หนึ่งตัวต่อกลุ่มและ Node heap ที่ใหญ่ขึ้น เพื่อให้ batch ของ Plugin ที่ import หนักไม่สร้างงาน CI เพิ่ม เส้นทาง Docker prerelease เฉพาะ release จะจัดกลุ่มเลน Docker เป้าหมายเป็นกลุ่มเล็กเพื่อหลีกเลี่ยงการจอง runner หลายสิบตัวสำหรับงานหนึ่งถึงสามนาที
+`Plugin Prerelease` เป็นความครอบคลุม product/package ที่มีค่าใช้จ่ายสูงกว่า จึงเป็น workflow แยกต่างหากที่ dispatch โดย `Full Release Validation` หรือ operator ที่ระบุชัดเจน Pull request ปกติ การ push ไปยัง `main` และการ dispatch CI ด้วยตนเองแบบ standalone จะปิด suite นั้นไว้ มันปรับสมดุลการทดสอบ Plugin ที่ bundled ข้าม worker extension แปดตัว; job shard ของ extension เหล่านั้นรันกลุ่ม config ของ Plugin ได้สูงสุดสองกลุ่มพร้อมกัน โดยใช้ Vitest worker หนึ่งตัวต่อกลุ่มและ heap ของ Node ที่ใหญ่ขึ้น เพื่อให้ batch ของ Plugin ที่มี import หนักไม่สร้าง job CI เพิ่มเติม เส้นทาง prerelease ของ Docker สำหรับ release เท่านั้นจะ batch lane Docker เป้าหมายเป็นกลุ่มเล็ก ๆ เพื่อหลีกเลี่ยงการจอง runner หลายสิบตัวสำหรับ job ที่ใช้เวลาหนึ่งถึงสามนาที
 
 ## QA Lab
 
-QA Lab มีเลน CI เฉพาะอยู่นอกเวิร์กโฟลว์หลักแบบ smart-scoped Agentic parity ถูกซ้อนอยู่ใต้ harness QA และ release แบบกว้าง ไม่ใช่เวิร์กโฟลว์ PR แบบ standalone ใช้ `Full Release Validation` พร้อม `rerun_group=qa-parity` เมื่อ parity ควรไปพร้อมกับการรัน validation แบบกว้าง
+QA Lab มี lane CI เฉพาะนอก workflow smart-scoped หลัก ความเท่าเทียมแบบ agentic ถูกซ้อนอยู่ใต้ harness QA และ release แบบกว้าง ไม่ใช่ workflow PR แบบ standalone ใช้ `Full Release Validation` พร้อม `rerun_group=qa-parity` เมื่อ parity ควรเดินไปกับการรันตรวจสอบแบบกว้าง
 
-- เวิร์กโฟลว์ `QA-Lab - All Lanes` รันทุกคืนบน `main` และเมื่อสั่งรันด้วยตนเอง โดย fan out เลน mock parity, เลน live Matrix และเลน live Telegram กับ Discord เป็นงานแบบขนาน งาน live ใช้ environment `qa-live-shared` และ Telegram/Discord ใช้ Convex leases
+- Workflow `QA-Lab - All Lanes` รันทุกคืนบน `main` และเมื่อ dispatch ด้วยตนเอง; มัน fan out lane mock parity, lane Matrix แบบ live และ lane Telegram และ Discord แบบ live เป็น job ขนานกัน job live ใช้ environment `qa-live-shared` และ Telegram/Discord ใช้ lease ของ Convex
 
-การตรวจสอบรุ่นเผยแพร่จะรันเลนทรานสปอร์ตแบบสดของ Matrix และ Telegram ด้วยผู้ให้บริการจำลองแบบกำหนดผลลัพธ์ได้และโมเดลที่ระบุว่าเป็น mock (`mock-openai/gpt-5.5` และ `mock-openai/gpt-5.5-alt`) เพื่อแยกสัญญาของช่องทางออกจากความหน่วงของโมเดลสดและการเริ่มต้น Plugin ผู้ให้บริการตามปกติ Gateway ทรานสปอร์ตสดจะปิดใช้งานการค้นหาหน่วยความจำ เพราะความเท่าเทียมของ QA ครอบคลุมพฤติกรรมหน่วยความจำแยกต่างหากแล้ว ส่วนการเชื่อมต่อผู้ให้บริการครอบคลุมโดยชุดทดสอบโมเดลสด ผู้ให้บริการเนทีฟ และผู้ให้บริการ Docker แยกต่างหาก
+การตรวจสอบรีลีสรันเลน live transport ของ Matrix และ Telegram ด้วย deterministic mock provider และโมเดลที่ระบุว่าเป็น mock (`mock-openai/gpt-5.5` และ `mock-openai/gpt-5.5-alt`) เพื่อแยกสัญญาของช่องออกจากเวลาแฝงของโมเดลจริงและการเริ่มต้น provider-plugin ตามปกติ Live transport gateway ปิดใช้งานการค้นหา memory เพราะ QA parity ครอบคลุมพฤติกรรม memory แยกต่างหาก ส่วนการเชื่อมต่อ provider ครอบคลุมโดยชุดทดสอบ live model, native provider และ Docker provider แยกต่างหาก
 
-Matrix ใช้ `--profile fast` สำหรับเกตตามกำหนดเวลาและเกตรุ่นเผยแพร่ โดยเพิ่ม `--fail-fast` เฉพาะเมื่อ CLI ที่ checkout รองรับ ค่าเริ่มต้นของ CLI และอินพุตเวิร์กโฟลว์แบบแมนนวลยังคงเป็น `all`; การ dispatch แบบแมนนวลด้วย `matrix_profile=all` จะแบ่งชาร์ดความครอบคลุม Matrix เต็มรูปแบบเป็นงาน `transport`, `media`, `e2ee-smoke`, `e2ee-deep`, และ `e2ee-cli` เสมอ
+Matrix ใช้ `--profile fast` สำหรับเกตแบบกำหนดเวลาและเกตรีลีส โดยเพิ่ม `--fail-fast` เฉพาะเมื่อ CLI ที่ checkout รองรับ ค่าเริ่มต้นของ CLI และอินพุต workflow แบบ manual ยังคงเป็น `all`; การ dispatch แบบ manual ด้วย `matrix_profile=all` จะแบ่ง coverage ของ Matrix แบบเต็มเป็นงาน `transport`, `media`, `e2ee-smoke`, `e2ee-deep` และ `e2ee-cli` เสมอ
 
-`OpenClaw Release Checks` ยังรันเลน QA Lab ที่สำคัญต่อการเผยแพร่ก่อนอนุมัติรุ่นเผยแพร่ด้วย; เกตความเท่าเทียม QA จะรันแพ็ก candidate และ baseline เป็นงานเลนแบบขนาน จากนั้นดาวน์โหลด artifact ทั้งสองลงในงานรายงานขนาดเล็กสำหรับการเปรียบเทียบความเท่าเทียมขั้นสุดท้าย
+`OpenClaw Release Checks` ยังรันเลน QA Lab ที่สำคัญต่อรีลีสก่อนการอนุมัติรีลีสด้วย; เกต QA parity ของ workflow นี้รัน candidate pack และ baseline pack เป็นงานเลนแบบขนาน จากนั้นดาวน์โหลด artifact ทั้งสองเข้าไปยังงานรายงานขนาดเล็กเพื่อทำการเปรียบเทียบ parity ขั้นสุดท้าย
 
-สำหรับ PR ปกติ ให้ใช้หลักฐาน CI/การตรวจสอบตามขอบเขตแทนการถือว่าความเท่าเทียมเป็นสถานะที่จำเป็น
+สำหรับ PR ปกติ ให้ยึดหลักฐาน CI/check ตามขอบเขตแทนการถือว่า parity เป็นสถานะที่จำเป็น
 
 ## CodeQL
 
-เวิร์กโฟลว์ `CodeQL` ตั้งใจให้เป็นตัวสแกนความปลอดภัยรอบแรกแบบขอบเขตแคบ ไม่ใช่การกวาดตรวจทั้งคลังโค้ด การรันแบบรายวัน แบบแมนนวล และ guard สำหรับ pull request ที่ไม่ใช่ draft จะสแกนโค้ดเวิร์กโฟลว์ Actions พร้อมพื้นผิว JavaScript/TypeScript ที่มีความเสี่ยงสูงที่สุด ด้วยคิวรีความปลอดภัยความเชื่อมั่นสูงที่กรองเฉพาะ `security-severity` ระดับสูง/วิกฤต
+workflow `CodeQL` ตั้งใจให้เป็นสแกนเนอร์ความปลอดภัยรอบแรกที่มีขอบเขตแคบ ไม่ใช่การกวาดตรวจทั้ง repository แบบเต็ม การรันรายวัน แบบ manual และ guard สำหรับ pull request ที่ไม่ใช่ draft จะสแกนโค้ด Actions workflow รวมถึงพื้นผิว JavaScript/TypeScript ที่มีความเสี่ยงสูงที่สุด ด้วย query ความปลอดภัยที่มีความเชื่อมั่นสูงซึ่งกรองเป็น `security-severity` ระดับ high/critical
 
-Guard สำหรับ pull request ยังคงเบา: จะเริ่มเฉพาะเมื่อมีการเปลี่ยนแปลงภายใต้ `.github/actions`, `.github/codeql`, `.github/workflows`, `packages`, หรือ `src` และจะรันเมทริกซ์ความปลอดภัยความเชื่อมั่นสูงชุดเดียวกับเวิร์กโฟลว์ตามกำหนดเวลา CodeQL ของ Android และ macOS ไม่รวมอยู่ในค่าเริ่มต้นของ PR
+guard สำหรับ pull request ยังคงเบา: จะเริ่มเฉพาะการเปลี่ยนแปลงภายใต้ `.github/actions`, `.github/codeql`, `.github/workflows`, `packages` หรือ `src` และรัน security matrix ที่มีความเชื่อมั่นสูงชุดเดียวกับ workflow แบบกำหนดเวลา Android และ macOS CodeQL ไม่อยู่ในค่าเริ่มต้นของ PR
 
 ### หมวดหมู่ความปลอดภัย
 
 | หมวดหมู่                                          | พื้นผิว                                                                                                                             |
 | ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `/codeql-security-high/core-auth-secrets`         | Auth, secrets, sandbox, cron และ baseline ของ Gateway                                                                                  |
-| `/codeql-security-high/channel-runtime-boundary`  | สัญญาการใช้งานช่องทางหลัก รวมถึง runtime ของ Plugin ช่องทาง, Gateway, Plugin SDK, secrets และจุดสัมผัส audit              |
-| `/codeql-security-high/network-ssrf-boundary`     | พื้นผิว core SSRF, การแยกวิเคราะห์ IP, network guard, web-fetch และนโยบาย SSRF ของ Plugin SDK                                                |
-| `/codeql-security-high/mcp-process-tool-boundary` | เซิร์ฟเวอร์ MCP, helper สำหรับการดำเนินการ process, การส่งออกภายนอก และเกตการดำเนินการเครื่องมือของ agent                                           |
-| `/codeql-security-high/plugin-trust-boundary`     | พื้นผิวความเชื่อถือของการติดตั้ง Plugin, loader, manifest, registry, การติดตั้ง package-manager, source-loading และสัญญาแพ็กเกจ Plugin SDK |
+| `/codeql-security-high/core-auth-secrets`         | Auth, secrets, sandbox, cron และ baseline ของ gateway                                                                                  |
+| `/codeql-security-high/channel-runtime-boundary`  | สัญญาการใช้งาน channel หลัก รวมถึง runtime ของ channel plugin, gateway, Plugin SDK, secrets และจุดสัมผัส audit              |
+| `/codeql-security-high/network-ssrf-boundary`     | พื้นผิว SSRF หลัก, การ parse IP, network guard, web-fetch และนโยบาย SSRF ของ Plugin SDK                                                |
+| `/codeql-security-high/mcp-process-tool-boundary` | MCP servers, helper สำหรับการ execute process, outbound delivery และเกตการ execute tool ของ agent                                           |
+| `/codeql-security-high/plugin-trust-boundary`     | พื้นผิว trust ของ Plugin install, loader, manifest, registry, การติดตั้ง package-manager, source-loading และสัญญา package ของ Plugin SDK |
 
-### ชาร์ดความปลอดภัยเฉพาะแพลตฟอร์ม
+### shard ความปลอดภัยเฉพาะแพลตฟอร์ม
 
-- `CodeQL Android Critical Security` — ชาร์ดความปลอดภัย Android ตามกำหนดเวลา สร้างแอป Android แบบแมนนวลสำหรับ CodeQL บน runner Blacksmith Linux ที่เล็กที่สุดที่ workflow sanity ยอมรับ อัปโหลดภายใต้ `/codeql-critical-security/android`
-- `CodeQL macOS Critical Security` — ชาร์ดความปลอดภัย macOS รายสัปดาห์/แบบแมนนวล สร้างแอป macOS แบบแมนนวลสำหรับ CodeQL บน Blacksmith macOS, กรองผลลัพธ์ build ของ dependency ออกจาก SARIF ที่อัปโหลด และอัปโหลดภายใต้ `/codeql-critical-security/macos` เก็บไว้นอกค่าเริ่มต้นรายวันเพราะ build ของ macOS ใช้เวลาหลักของ runtime แม้เมื่อไม่มีปัญหา
+- `CodeQL Android Critical Security` — shard ความปลอดภัย Android แบบกำหนดเวลา สร้างแอป Android แบบ manual สำหรับ CodeQL บน Blacksmith Linux runner ที่เล็กที่สุดซึ่ง workflow sanity ยอมรับ อัปโหลดภายใต้ `/codeql-critical-security/android`
+- `CodeQL macOS Critical Security` — shard ความปลอดภัย macOS แบบรายสัปดาห์/manual สร้างแอป macOS แบบ manual สำหรับ CodeQL บน Blacksmith macOS, กรองผลลัพธ์ build ของ dependency ออกจาก SARIF ที่อัปโหลด และอัปโหลดภายใต้ `/codeql-critical-security/macos` เก็บไว้นอกค่าเริ่มต้นรายวันเพราะ build ของ macOS กิน runtime มากแม้ในสถานะสะอาด
 
-### หมวดหมู่คุณภาพวิกฤต
+### หมวดหมู่ Critical Quality
 
-`CodeQL Critical Quality` คือชาร์ดที่ตรงกันในฝั่งที่ไม่ใช่ความปลอดภัย โดยรันเฉพาะคิวรีคุณภาพ JavaScript/TypeScript ที่มี `severity` เป็น error และไม่ใช่ด้านความปลอดภัยบนพื้นผิวมูลค่าสูงแบบขอบเขตแคบบน runner Blacksmith Linux ขนาดเล็กกว่า Guard สำหรับ pull request ของมันตั้งใจให้เล็กกว่าโปรไฟล์ตามกำหนดเวลา: PR ที่ไม่ใช่ draft จะรันเฉพาะชาร์ด `agent-runtime-boundary`, `config-boundary`, `core-auth-secrets`, `channel-runtime-boundary`, `gateway-runtime-boundary`, `memory-runtime-boundary`, `mcp-process-runtime-boundary`, `provider-runtime-boundary`, `session-diagnostics-boundary`, `plugin-boundary`, `plugin-sdk-package-contract`, และ `plugin-sdk-reply-runtime` ที่ตรงกัน สำหรับการเปลี่ยนแปลงโค้ดดำเนินการคำสั่ง/โมเดล/เครื่องมือของ agent และการ dispatch การตอบกลับ, โค้ด schema/migration/IO ของ config, โค้ด auth/secrets/sandbox/security, runtime ของช่องทางหลักและ Plugin ช่องทางที่ bundled, protocol/server-method ของ Gateway, runtime หน่วยความจำ/กาว SDK, MCP/process/การส่งออกภายนอก, แค็ตตาล็อก runtime/model ของผู้ให้บริการ, diagnostics ของ session/คิวการส่ง, loader ของ Plugin, สัญญา Plugin SDK/package-contract หรือ runtime การตอบกลับของ Plugin SDK การเปลี่ยนแปลง config ของ CodeQL และเวิร์กโฟลว์คุณภาพจะรันชาร์ดคุณภาพ PR ทั้งสิบสองชาร์ด
+`CodeQL Critical Quality` คือ shard ที่จับคู่กันซึ่งไม่ใช่ด้านความปลอดภัย โดยรันเฉพาะ query คุณภาพ JavaScript/TypeScript ที่มี error-severity และไม่ใช่ security บนพื้นผิวมูลค่าสูงที่มีขอบเขตแคบ บน Blacksmith Linux runner ขนาดเล็กกว่า guard สำหรับ pull request ของมันตั้งใจให้เล็กกว่า profile แบบกำหนดเวลา: PR ที่ไม่ใช่ draft จะรันเฉพาะ shard ที่ตรงกัน ได้แก่ `agent-runtime-boundary`, `config-boundary`, `core-auth-secrets`, `channel-runtime-boundary`, `gateway-runtime-boundary`, `memory-runtime-boundary`, `mcp-process-runtime-boundary`, `provider-runtime-boundary`, `session-diagnostics-boundary`, `plugin-boundary`, `plugin-sdk-package-contract` และ `plugin-sdk-reply-runtime` สำหรับการเปลี่ยนแปลงในโค้ดการ execute คำสั่ง/model/tool ของ agent และการ dispatch reply, โค้ด config schema/migration/IO, โค้ด auth/secrets/sandbox/security, channel หลักและ runtime ของ channel plugin ที่ bundled, gateway protocol/server-method, memory runtime/SDK glue, MCP/process/outbound delivery, provider runtime/model catalog, session diagnostics/delivery queues, plugin loader, Plugin SDK/package-contract หรือ runtime การ reply ของ Plugin SDK การเปลี่ยนแปลง CodeQL config และ quality workflow จะรัน PR quality shard ทั้งสิบสองรายการ
 
-การ dispatch แบบแมนนวลรับค่า:
+manual dispatch รับค่า:
 
 ```
 profile=all|agent-runtime-boundary|config-boundary|core-auth-secrets|channel-runtime-boundary|gateway-runtime-boundary|memory-runtime-boundary|mcp-process-runtime-boundary|plugin-boundary|plugin-sdk-package-contract|plugin-sdk-reply-runtime|provider-runtime-boundary|session-diagnostics-boundary
 ```
 
-โปรไฟล์แบบแคบเป็น hook สำหรับสอน/วนรอบการพัฒนา เพื่อรันชาร์ดคุณภาพหนึ่งชาร์ดแบบแยกเดี่ยว
+profile แบบแคบเป็น hook สำหรับการสอน/iteration เพื่อรัน quality shard หนึ่งรายการแยกเดี่ยว
 
 | หมวดหมู่                                                | พื้นผิว                                                                                                                                                           |
 | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/codeql-critical-quality/core-auth-secrets`            | โค้ด Auth, secrets, sandbox, cron และขอบเขตความปลอดภัยของ Gateway                                                                                                  |
-| `/codeql-critical-quality/config-boundary`              | สัญญาของ schema, migration, normalization และ IO ของ config                                                                                                         |
-| `/codeql-critical-quality/gateway-runtime-boundary`     | schema ของ protocol Gateway และสัญญา method ของเซิร์ฟเวอร์                                                                                                              |
-| `/codeql-critical-quality/channel-runtime-boundary`     | สัญญาการใช้งานช่องทางหลักและ Plugin ช่องทางที่ bundled                                                                                                  |
-| `/codeql-critical-quality/agent-runtime-boundary`       | สัญญา runtime ของการดำเนินการคำสั่ง, การ dispatch โมเดล/ผู้ให้บริการ, การ dispatch และคิว auto-reply และ control-plane ของ ACP                                               |
-| `/codeql-critical-quality/mcp-process-runtime-boundary` | เซิร์ฟเวอร์ MCP และ tool bridge, helper สำหรับการควบคุม process และสัญญาการส่งออกภายนอก                                                                        |
-| `/codeql-critical-quality/memory-runtime-boundary`      | SDK โฮสต์หน่วยความจำ, facade ของ runtime หน่วยความจำ, alias Plugin SDK ของหน่วยความจำ, กาวการเปิดใช้งาน runtime หน่วยความจำ และคำสั่ง doctor ของหน่วยความจำ                                    |
-| `/codeql-critical-quality/session-diagnostics-boundary` | ส่วนภายในของคิวตอบกลับ, คิวการส่งของ session, helper สำหรับการ binding/การส่ง session ออกภายนอก, พื้นผิว bundle เหตุการณ์/บันทึก diagnostic และสัญญา CLI ของ session doctor |
-| `/codeql-critical-quality/plugin-sdk-reply-runtime`     | การ dispatch การตอบกลับขาเข้าของ Plugin SDK, helper สำหรับ payload/chunking/runtime ของการตอบกลับ, ตัวเลือกการตอบกลับของช่องทาง, คิวการส่ง และ helper สำหรับการ binding session/thread             |
-| `/codeql-critical-quality/provider-runtime-boundary`    | การ normalize แค็ตตาล็อกโมเดล, auth และ discovery ของผู้ให้บริการ, การลงทะเบียน runtime ของผู้ให้บริการ, ค่าเริ่มต้น/แค็ตตาล็อกของผู้ให้บริการ และ registry สำหรับ web/search/fetch/embedding    |
-| `/codeql-critical-quality/ui-control-plane`             | การ bootstrap Control UI, persistence ภายในเครื่อง, flow การควบคุม Gateway และสัญญา runtime ของ control-plane ของงาน                                                          |
+| `/codeql-critical-quality/core-auth-secrets`            | โค้ดขอบเขตความปลอดภัยของ auth, secrets, sandbox, cron และ gateway                                                                                                  |
+| `/codeql-critical-quality/config-boundary`              | สัญญาของ config schema, migration, normalization และ IO                                                                                                         |
+| `/codeql-critical-quality/gateway-runtime-boundary`     | สัญญาของ gateway protocol schema และ server method                                                                                                              |
+| `/codeql-critical-quality/channel-runtime-boundary`     | สัญญาการใช้งาน channel หลักและ channel plugin ที่ bundled                                                                                                  |
+| `/codeql-critical-quality/agent-runtime-boundary`       | สัญญา runtime ของการ execute คำสั่ง, การ dispatch model/provider, การ dispatch และ queue ของ auto-reply และ control-plane ของ ACP                                               |
+| `/codeql-critical-quality/mcp-process-runtime-boundary` | MCP servers และ tool bridges, helper สำหรับการ supervise process และสัญญา outbound delivery                                                                        |
+| `/codeql-critical-quality/memory-runtime-boundary`      | Memory host SDK, memory runtime facade, alias ของ memory Plugin SDK, glue สำหรับการ activate memory runtime และคำสั่ง memory doctor                                    |
+| `/codeql-critical-quality/session-diagnostics-boundary` | internals ของ reply queue, session delivery queues, helper สำหรับ outbound session binding/delivery, พื้นผิว diagnostic event/log bundle และสัญญา CLI ของ session doctor |
+| `/codeql-critical-quality/plugin-sdk-reply-runtime`     | การ dispatch inbound reply ของ Plugin SDK, helper สำหรับ reply payload/chunking/runtime, ตัวเลือก channel reply, delivery queues และ helper สำหรับ session/thread binding             |
+| `/codeql-critical-quality/provider-runtime-boundary`    | การ normalize model catalog, provider auth และ discovery, การลงทะเบียน provider runtime, provider defaults/catalogs และ registry ของ web/search/fetch/embedding    |
+| `/codeql-critical-quality/ui-control-plane`             | bootstrap ของ control UI, local persistence, control flow ของ gateway และสัญญา runtime ของ task control-plane                                                          |
 | `/codeql-critical-quality/web-media-runtime-boundary`   | สัญญา runtime ของ core web fetch/search, media IO, media understanding, image-generation และ media-generation                                                    |
-| `/codeql-critical-quality/plugin-boundary`              | สัญญาของ Loader, registry, public-surface และ entrypoint ของ Plugin SDK                                                                                             |
-| `/codeql-critical-quality/plugin-sdk-package-contract`  | ซอร์ส Plugin SDK ฝั่งแพ็กเกจที่เผยแพร่แล้วและ helper สำหรับสัญญาแพ็กเกจ Plugin                                                                                      |
+| `/codeql-critical-quality/plugin-boundary`              | สัญญาของ loader, registry, public-surface และ entrypoint ของ Plugin SDK                                                                                             |
+| `/codeql-critical-quality/plugin-sdk-package-contract`  | source ของ Plugin SDK ฝั่ง package ที่เผยแพร่ และ helper สำหรับสัญญา plugin package                                                                                      |
 
-คุณภาพแยกจากความปลอดภัย เพื่อให้สามารถจัดกำหนดเวลา วัดผล ปิดใช้งาน หรือขยายผลการค้นพบด้านคุณภาพได้โดยไม่บดบังสัญญาณความปลอดภัย การขยาย CodeQL สำหรับ Swift, Python และ bundled-plugin ควรเพิ่มกลับมาเป็นงาน follow-up แบบมีขอบเขตหรือแบ่งชาร์ดเท่านั้น หลังจากโปรไฟล์แบบแคบมี runtime และสัญญาณที่เสถียรแล้ว
+คุณภาพถูกแยกจากความปลอดภัยเพื่อให้ findings ด้านคุณภาพสามารถถูกกำหนดเวลา วัด ปิดใช้งาน หรือขยายได้โดยไม่บดบังสัญญาณด้านความปลอดภัย การขยาย CodeQL สำหรับ Swift, Python และ bundled-plugin ควรถูกเพิ่มกลับเข้ามาเป็นงานติดตามผลแบบ scoped หรือ sharded เท่านั้นหลังจาก profile แบบแคบมี runtime และสัญญาณที่เสถียรแล้ว
 
-## เวิร์กโฟลว์การบำรุงรักษา
+## workflow สำหรับการบำรุงรักษา
 
 ### Docs Agent
 
-เวิร์กโฟลว์ `Docs Agent` เป็นเลนบำรุงรักษา Codex ที่ขับเคลื่อนด้วยเหตุการณ์สำหรับทำให้เอกสารที่มีอยู่สอดคล้องกับการเปลี่ยนแปลงที่เพิ่ง land แล้ว มันไม่มี schedule ล้วน: การรัน CI ของ push ที่สำเร็จและไม่ใช่ bot บน `main` สามารถ trigger ได้ และการ dispatch แบบแมนนวลสามารถรันได้โดยตรง การเรียกจาก workflow-run จะข้ามเมื่อ `main` เคลื่อนไปแล้ว หรือเมื่อมีการรัน Docs Agent อื่นที่ไม่ถูกข้ามถูกสร้างขึ้นในชั่วโมงที่ผ่านมา เมื่อรัน มันจะตรวจทานช่วง commit จาก SHA ต้นทางของ Docs Agent ที่ไม่ถูกข้ามก่อนหน้าไปจนถึง `main` ปัจจุบัน ดังนั้นการรันรายชั่วโมงหนึ่งครั้งสามารถครอบคลุมการเปลี่ยนแปลงทั้งหมดบน main ที่สะสมตั้งแต่รอบตรวจเอกสารครั้งล่าสุดได้
+workflow `Docs Agent` เป็นเลนการบำรุงรักษา Codex แบบ event-driven สำหรับทำให้เอกสารที่มีอยู่สอดคล้องกับการเปลี่ยนแปลงที่เพิ่ง land แล้ว ไม่มี schedule ล้วน ๆ: การรัน CI จาก push ที่สำเร็จและไม่ใช่ bot บน `main` สามารถ trigger ได้ และ manual dispatch สามารถรันได้โดยตรง การเรียกผ่าน workflow-run จะ skip เมื่อ `main` เดินหน้าไปแล้ว หรือเมื่อมีการรัน Docs Agent แบบไม่ skip อีกรายการถูกสร้างขึ้นในชั่วโมงที่ผ่านมา เมื่อรัน มันจะตรวจสอบช่วง commit ตั้งแต่ source SHA ของ Docs Agent ที่ไม่ skip ครั้งก่อนจนถึง `main` ปัจจุบัน ดังนั้นการรันรายชั่วโมงหนึ่งครั้งจึงครอบคลุมการเปลี่ยนแปลงทั้งหมดบน main ที่สะสมตั้งแต่ pass เอกสารครั้งล่าสุดได้
 
 ### Test Performance Agent
 
-เวิร์กโฟลว์ `Test Performance Agent` เป็นเลนบำรุงรักษา Codex ที่ขับเคลื่อนด้วยเหตุการณ์สำหรับการทดสอบที่ช้า มันไม่มี schedule ล้วน: การรัน CI ของ push ที่สำเร็จและไม่ใช่ bot บน `main` สามารถ trigger ได้ แต่จะข้ามหากการเรียกจาก workflow-run อื่นเคยรันแล้วหรือกำลังรันอยู่ในวัน UTC นั้น การ dispatch แบบแมนนวลจะข้ามเกตกิจกรรมรายวันนั้น เลนนี้จะสร้างรายงานประสิทธิภาพ Vitest แบบจัดกลุ่มของทั้งชุด ให้ Codex ทำเฉพาะการแก้ไขประสิทธิภาพการทดสอบขนาดเล็กที่ยังรักษาความครอบคลุมไว้ แทนการ refactor กว้าง จากนั้นรันรายงานทั้งชุดซ้ำ และปฏิเสธการเปลี่ยนแปลงที่ลดจำนวน baseline ของการทดสอบที่ผ่าน หาก baseline มีการทดสอบที่ล้มเหลว Codex อาจแก้เฉพาะความล้มเหลวที่ชัดเจน และรายงานทั้งชุดหลัง agent ต้องผ่านก่อนจะ commit อะไร เมื่อ `main` เดินหน้าไปก่อนที่ bot push จะ land เลนนี้จะ rebase patch ที่ตรวจสอบแล้ว รัน `pnpm check:changed` ซ้ำ และลอง push ใหม่; patch ที่ล้าสมัยและมี conflict จะถูกข้าม มันใช้ GitHub-hosted Ubuntu เพื่อให้ action ของ Codex รักษาท่าทีความปลอดภัยแบบ drop-sudo เดียวกับ docs agent ได้
+workflow `Test Performance Agent` เป็นเลนการบำรุงรักษา Codex แบบ event-driven สำหรับ test ที่ช้า ไม่มี schedule ล้วน ๆ: การรัน CI จาก push ที่สำเร็จและไม่ใช่ bot บน `main` สามารถ trigger ได้ แต่จะ skip หาก invocation จาก workflow-run อีกอันเคยรันแล้วหรือกำลังรันอยู่ในวัน UTC นั้น manual dispatch จะข้ามเกตกิจกรรมรายวันนี้ เลนนี้สร้างรายงาน performance ของ Vitest แบบ full-suite grouped, ให้ Codex ทำเฉพาะการแก้ไข performance ของ test ขนาดเล็กที่รักษา coverage ไว้แทนการ refactor กว้าง ๆ จากนั้นรันรายงาน full-suite ซ้ำ และปฏิเสธการเปลี่ยนแปลงที่ลดจำนวน test baseline ที่ผ่าน หาก baseline มี test ที่ล้มเหลว Codex อาจแก้เฉพาะความล้มเหลวที่ชัดเจน และรายงาน full-suite หลัง agent ต้องผ่านก่อนจึงจะ commit อะไรได้ เมื่อ `main` เดินหน้าก่อน bot push จะ land เลนนี้จะ rebase patch ที่ตรวจสอบแล้ว รัน `pnpm check:changed` ซ้ำ และ retry การ push; patch ที่ stale และขัดแย้งจะถูก skip ใช้ GitHub-hosted Ubuntu เพื่อให้ Codex action คง posture ความปลอดภัยแบบ drop-sudo เดียวกับ docs agent ได้
 
-### PR ซ้ำหลัง Merge
+### Duplicate PRs After Merge
 
-เวิร์กโฟลว์ `Duplicate PRs After Merge` เป็นเวิร์กโฟลว์ maintainer แบบแมนนวลสำหรับการล้างรายการซ้ำหลัง land ค่าเริ่มต้นเป็น dry-run และจะปิดเฉพาะ PR ที่ระบุไว้อย่างชัดเจนเมื่อ `apply=true` ก่อนแก้ไข GitHub มันตรวจสอบว่า PR ที่ land แล้วถูก merge แล้ว และ PR ซ้ำแต่ละรายการมี issue ที่อ้างอิงร่วมกันหรือ hunk ที่เปลี่ยนแปลงทับซ้อนกัน
+workflow `Duplicate PRs After Merge` เป็น workflow แบบ manual สำหรับ maintainer เพื่อ cleanup duplicate หลัง land ค่าเริ่มต้นเป็น dry-run และจะปิดเฉพาะ PR ที่ระบุอย่างชัดเจนเมื่อ `apply=true` ก่อนแก้ไข GitHub จะตรวจสอบว่า PR ที่ land แล้วถูก merge แล้ว และ duplicate แต่ละรายการมี issue ที่อ้างอิงร่วมกันหรือมี hunk ที่เปลี่ยนแปลงทับซ้อนกัน
 
 ```bash
 gh workflow run duplicate-after-merge.yml \
@@ -483,37 +467,37 @@ gh workflow run duplicate-after-merge.yml \
   -f apply=true
 ```
 
-## เกตตรวจสอบภายในเครื่องและการกำหนดเส้นทางการเปลี่ยนแปลง
+## เกตการตรวจสอบ local และการ route ตามการเปลี่ยนแปลง
 
-ตรรกะ changed-lane ภายในเครื่องอยู่ใน `scripts/changed-lanes.mjs` และถูกดำเนินการโดย `scripts/check-changed.mjs` เกตตรวจสอบภายในเครื่องนั้นเข้มงวดกว่าเกี่ยวกับขอบเขตสถาปัตยกรรมเมื่อเทียบกับขอบเขตแพลตฟอร์ม CI แบบกว้าง:
+ตรรกะ changed-lane แบบ local อยู่ใน `scripts/changed-lanes.mjs` และถูก execute โดย `scripts/check-changed.mjs` เกตการตรวจสอบ local นั้นเข้มงวดเรื่องขอบเขต architecture มากกว่า scope แพลตฟอร์ม CI แบบกว้าง:
 
-- การเปลี่ยนแปลงในโค้ดโปรดักชันของคอร์จะรัน typecheck ของ core prod และ core test รวมถึง lint/guards ของคอร์;
-- การเปลี่ยนแปลงเฉพาะการทดสอบของคอร์จะรันเฉพาะ typecheck ของ core test รวมถึง lint ของคอร์;
-- การเปลี่ยนแปลงในโค้ดโปรดักชันของส่วนขยายจะรัน typecheck ของ extension prod และ extension test รวมถึง lint ของส่วนขยาย;
-- การเปลี่ยนแปลงเฉพาะการทดสอบของส่วนขยายจะรัน typecheck ของ extension test รวมถึง lint ของส่วนขยาย;
-- การเปลี่ยนแปลง public Plugin SDK หรือ plugin-contract จะขยายไปยัง typecheck ของส่วนขยาย เพราะส่วนขยายพึ่งพาสัญญาคอร์เหล่านั้น (การกวาดตรวจส่วนขยายด้วย Vitest ยังคงเป็นงานทดสอบแบบชัดเจน);
-- การเพิ่มเลขเวอร์ชันที่เปลี่ยนเฉพาะเมตาดาตารีลีสจะรันการตรวจเวอร์ชัน/config/root-dependency แบบเจาะจง;
-- การเปลี่ยนแปลง root/config ที่ไม่ทราบขอบเขตจะเลือกเส้นทางปลอดภัยโดยรันทุก check lane
+- การเปลี่ยนแปลง production ของ core รัน typecheck สำหรับ core prod และ core test พร้อม core lint/guards;
+- การเปลี่ยนแปลงเฉพาะการทดสอบของ core รันเฉพาะ typecheck สำหรับ core test พร้อม core lint;
+- การเปลี่ยนแปลง production ของ extension รัน typecheck สำหรับ extension prod และ extension test พร้อม extension lint;
+- การเปลี่ยนแปลงเฉพาะการทดสอบของ extension รัน typecheck สำหรับ extension test พร้อม extension lint;
+- การเปลี่ยนแปลง Plugin SDK สาธารณะหรือ plugin-contract ขยายไปยัง typecheck ของ extension เพราะ extension ขึ้นกับสัญญา core เหล่านั้น (การกวาด extension ของ Vitest ยังคงเป็นงานทดสอบที่ต้องระบุชัด);
+- การปรับเวอร์ชันที่เป็น release metadata-only รันการตรวจสอบ version/config/root-dependency แบบเจาะจง;
+- การเปลี่ยนแปลง root/config ที่ไม่ทราบแน่ชัดจะ fail safe ไปยัง check lanes ทั้งหมด.
 
-การกำหนดเส้นทาง changed-test ในเครื่องอยู่ใน `scripts/test-projects.test-support.mjs` และตั้งใจให้ประหยัดกว่า `check:changed`: การแก้ไขไฟล์ทดสอบโดยตรงจะรันตัวเอง, การแก้ไขซอร์สจะเลือก mapping ที่ระบุไว้ก่อน แล้วจึงเลือกการทดสอบข้างเคียงและ dependents จาก import graph config การส่งข้อความ group-room แบบแชร์เป็นหนึ่งใน mapping ที่ระบุไว้: การเปลี่ยนแปลง config visible-reply ของกลุ่ม, โหมดการส่ง source reply, หรือ system prompt ของ message-tool จะถูกส่งผ่านการทดสอบ core reply รวมถึง regression ของการส่งผ่าน Discord และ Slack เพื่อให้การเปลี่ยนค่าเริ่มต้นแบบแชร์ล้มเหลวก่อนการ push PR ครั้งแรก ใช้ `OPENCLAW_TEST_CHANGED_BROAD=1 pnpm test:changed` เฉพาะเมื่อการเปลี่ยนแปลงกว้างถึงระดับ harness จนชุด mapped ราคาถูกไม่น่าเชื่อถือพอจะใช้แทนได้
+การกำหนดเส้นทาง changed-test ในเครื่องอยู่ใน `scripts/test-projects.test-support.mjs` และตั้งใจให้เบากว่า `check:changed`: การแก้ไข test โดยตรงจะรันตัวมันเอง, การแก้ไข source จะเลือก mapping ที่ระบุไว้ก่อน จากนั้นจึงเป็น sibling tests และ dependent จาก import-graph การตั้งค่าการส่ง group-room ที่ใช้ร่วมกันเป็นหนึ่งใน explicit mappings: การเปลี่ยนแปลง config visible-reply ของ group, source reply delivery mode, หรือ system prompt ของ message-tool จะถูกกำหนดเส้นทางผ่าน core reply tests พร้อม regression ของการส่ง Discord และ Slack เพื่อให้การเปลี่ยนค่า default ที่ใช้ร่วมกันล้มเหลวก่อน push PR ครั้งแรก ใช้ `OPENCLAW_TEST_CHANGED_BROAD=1 pnpm test:changed` เฉพาะเมื่อการเปลี่ยนแปลงกว้างทั้ง harness จนชุดที่ map แบบประหยัดไม่ใช่ proxy ที่น่าเชื่อถือ
 
 ## การตรวจสอบด้วย Testbox
 
-รัน Testbox จากรูทของรีโป และควรใช้กล่องใหม่ที่อุ่นไว้แล้วสำหรับหลักฐานแบบกว้าง ก่อนใช้เวลาไปกับ gate ที่ช้าบนกล่องที่ถูกใช้ซ้ำ หมดอายุ หรือเพิ่งรายงาน sync ที่ใหญ่ผิดคาด ให้รัน `pnpm testbox:sanity` ภายในกล่องก่อน
+รัน Testbox จาก repo root และควรใช้กล่อง warmed ใหม่สำหรับ broad proof ก่อนใช้เวลาไปกับ slow gate บนกล่องที่ถูกใช้ซ้ำ หมดอายุ หรือเพิ่งรายงานการ sync ที่ใหญ่ผิดคาด ให้รัน `pnpm testbox:sanity` ภายในกล่องก่อน
 
-การตรวจ sanity จะล้มเหลวอย่างรวดเร็วเมื่อไฟล์รูทที่จำเป็น เช่น `pnpm-lock.yaml` หายไป หรือเมื่อ `git status --short` แสดงการลบไฟล์ที่ tracked อย่างน้อย 200 รายการ โดยปกติหมายความว่าสถานะ sync ระยะไกลไม่ใช่สำเนา PR ที่เชื่อถือได้ ให้หยุดกล่องนั้นและอุ่นกล่องใหม่แทนการดีบักความล้มเหลวของการทดสอบผลิตภัณฑ์ สำหรับ PR ที่ตั้งใจลบไฟล์จำนวนมาก ให้ตั้งค่า `OPENCLAW_TESTBOX_ALLOW_MASS_DELETIONS=1` สำหรับการรัน sanity นั้น
+sanity check จะล้มเหลวอย่างรวดเร็วเมื่อไฟล์ root ที่จำเป็น เช่น `pnpm-lock.yaml` หายไป หรือเมื่อ `git status --short` แสดง tracked deletions อย่างน้อย 200 รายการ โดยปกติหมายความว่าสถานะ remote sync ไม่ใช่สำเนาที่น่าเชื่อถือของ PR; ให้หยุดกล่องนั้นและ warm กล่องใหม่แทนการ debug product test failure สำหรับ PR ที่ตั้งใจลบจำนวนมาก ให้ตั้ง `OPENCLAW_TESTBOX_ALLOW_MASS_DELETIONS=1` สำหรับ sanity run นั้น
 
-`pnpm testbox:run` จะยุติการเรียกใช้ Blacksmith CLI ในเครื่องด้วย หากค้างอยู่ในเฟส sync นานเกินห้านาทีโดยไม่มีเอาต์พุตหลัง sync ตั้งค่า `OPENCLAW_TESTBOX_SYNC_TIMEOUT_MS=0` เพื่อปิด guard นั้น หรือใช้ค่ามิลลิวินาทีที่มากขึ้นสำหรับ local diff ที่ใหญ่ผิดปกติ
+`pnpm testbox:run` ยังยุติการเรียก Blacksmith CLI ในเครื่องที่ค้างอยู่ในช่วง sync นานกว่า 5 นาทีโดยไม่มี output หลัง sync ตั้ง `OPENCLAW_TESTBOX_SYNC_TIMEOUT_MS=0` เพื่อปิด guard นั้น หรือใช้ค่ามิลลิวินาทีที่มากขึ้นสำหรับ local diffs ที่ใหญ่ผิดปกติ
 
-Crabbox คือ wrapper กล่องระยะไกลของรีโปสำหรับหลักฐาน Linux ของ maintainer ใช้เมื่อการตรวจสอบกว้างเกินกว่าจะอยู่ใน local edit loop, เมื่อความสอดคล้องกับ CI สำคัญ, หรือเมื่อหลักฐานต้องใช้ secrets, Docker, package lanes, กล่องที่ใช้ซ้ำได้, หรือ log ระยะไกล backend ปกติของ OpenClaw คือ `blacksmith-testbox`; capacity AWS/Hetzner ที่เป็นเจ้าของเองเป็น fallback สำหรับกรณี Blacksmith ล่ม, ปัญหา quota, หรือการทดสอบที่ระบุชัดว่าต้องใช้ owned-capacity
+Crabbox คือ remote-box wrapper ที่ repo เป็นเจ้าของสำหรับ proof บน Linux ของ maintainer ใช้มันเมื่อ check กว้างเกินไปสำหรับ local edit loop, เมื่อ CI parity สำคัญ, หรือเมื่อ proof ต้องใช้ secrets, Docker, package lanes, กล่องที่ใช้ซ้ำได้, หรือ remote logs backend ปกติของ OpenClaw คือ `blacksmith-testbox`; capacity ของ AWS/Hetzner ที่เป็นเจ้าของเป็น fallback สำหรับ Blacksmith outages, quota issues, หรือการทดสอบ owned-capacity ที่ระบุชัดเจน
 
-ก่อนรันครั้งแรก ให้ตรวจ wrapper จากรูทของรีโป:
+ก่อนรันครั้งแรก ให้ตรวจ wrapper จาก repo root:
 
 ```bash
 pnpm crabbox:run -- --help | sed -n '1,120p'
 ```
 
-wrapper ของรีโปจะปฏิเสธ Crabbox binary ที่เก่าและไม่ได้ประกาศ `blacksmith-testbox` ส่ง provider อย่างชัดเจนแม้ว่า `.crabbox.yaml` จะมีค่าเริ่มต้น owned-cloud อยู่แล้ว
+repo wrapper จะปฏิเสธ Crabbox binary ที่ล้าสมัยซึ่งไม่ได้ประกาศ `blacksmith-testbox` ให้ส่ง provider อย่างชัดเจนแม้ว่า `.crabbox.yaml` จะมี owned-cloud defaults อยู่แล้ว
 
 Changed gate:
 
@@ -530,7 +514,7 @@ pnpm crabbox:run -- --provider blacksmith-testbox \
   "env CI=1 NODE_OPTIONS=--max-old-space-size=4096 OPENCLAW_TEST_PROJECTS_PARALLEL=6 OPENCLAW_VITEST_MAX_WORKERS=1 OPENCLAW_VITEST_NO_OUTPUT_TIMEOUT_MS=900000 pnpm check:changed"
 ```
 
-การรันทดสอบซ้ำแบบเจาะจง:
+รัน focused test ซ้ำ:
 
 ```bash
 pnpm crabbox:run -- --provider blacksmith-testbox \
@@ -545,7 +529,7 @@ pnpm crabbox:run -- --provider blacksmith-testbox \
   "env CI=1 NODE_OPTIONS=--max-old-space-size=4096 OPENCLAW_VITEST_MAX_WORKERS=1 OPENCLAW_VITEST_NO_OUTPUT_TIMEOUT_MS=900000 pnpm test <path-or-filter>"
 ```
 
-ชุดเต็ม:
+ชุดทดสอบเต็ม:
 
 ```bash
 pnpm crabbox:run -- --provider blacksmith-testbox \
@@ -560,7 +544,7 @@ pnpm crabbox:run -- --provider blacksmith-testbox \
   "env CI=1 NODE_OPTIONS=--max-old-space-size=4096 OPENCLAW_TEST_PROJECTS_PARALLEL=6 OPENCLAW_VITEST_MAX_WORKERS=1 OPENCLAW_VITEST_NO_OUTPUT_TIMEOUT_MS=900000 pnpm test"
 ```
 
-อ่านสรุป JSON สุดท้าย ฟิลด์ที่มีประโยชน์คือ `provider`, `leaseId`, `syncDelegated`, `exitCode`, `commandMs` และ `totalMs` การรัน Crabbox แบบครั้งเดียวที่อาศัย Blacksmith ควรหยุด Testbox โดยอัตโนมัติ; หากการรันถูกขัดจังหวะหรือการ cleanup ไม่ชัดเจน ให้ตรวจกล่องที่ยังทำงานอยู่และหยุดเฉพาะกล่องที่คุณสร้าง:
+อ่านสรุป JSON สุดท้าย fields ที่มีประโยชน์คือ `provider`, `leaseId`, `syncDelegated`, `exitCode`, `commandMs`, และ `totalMs` การรัน Crabbox แบบ one-shot ที่ backed โดย Blacksmith ควรหยุด Testbox โดยอัตโนมัติ; หากการรันถูกขัดจังหวะหรือ cleanup ไม่ชัดเจน ให้ตรวจกล่อง live และหยุดเฉพาะกล่องที่คุณสร้าง:
 
 ```bash
 blacksmith testbox list --all
@@ -568,14 +552,14 @@ blacksmith testbox status --id <tbx_id>
 blacksmith testbox stop --id <tbx_id>
 ```
 
-ใช้การ reuse เฉพาะเมื่อคุณตั้งใจต้องรันหลายคำสั่งบนกล่องที่ hydrate แล้วกล่องเดียวกัน:
+ใช้ reuse เฉพาะเมื่อคุณตั้งใจต้องการหลายคำสั่งบนกล่อง hydrated เดียวกัน:
 
 ```bash
 pnpm crabbox:run -- --provider blacksmith-testbox --id <tbx_id> --no-sync --timing-json --shell -- "pnpm test <path-or-filter>"
 pnpm crabbox:stop -- <tbx_id>
 ```
 
-หาก Crabbox เป็นชั้นที่เสีย แต่ Blacksmith เองยังทำงาน ให้ใช้ Blacksmith โดยตรงเป็น fallback แบบแคบ:
+หาก Crabbox เป็น layer ที่เสียแต่ Blacksmith เองยังทำงาน ให้ใช้ Blacksmith โดยตรงเป็น fallback แบบแคบ:
 
 ```bash
 blacksmith testbox warmup ci-check-testbox.yml --ref main --idle-timeout 90
@@ -583,9 +567,9 @@ blacksmith testbox run --id <tbx_id> "env CI=1 NODE_OPTIONS=--max-old-space-size
 blacksmith testbox stop --id <tbx_id>
 ```
 
-หาก `blacksmith testbox list --all` และ `blacksmith testbox status` ทำงาน แต่ warmup ใหม่ค้างอยู่ที่ `queued` โดยไม่มี IP หรือ URL ของ Actions run หลังผ่านไปสองสามนาที ให้ถือว่าเป็นแรงกดดันจาก provider, queue, billing, หรือ org-limit ของ Blacksmith หยุด queued id ที่คุณสร้าง หลีกเลี่ยงการเริ่ม Testbox เพิ่ม และย้ายหลักฐานไปยังเส้นทาง owned Crabbox capacity ด้านล่าง ระหว่างที่มีคนตรวจ dashboard, billing และ org limits ของ Blacksmith
+หาก `blacksmith testbox list --all` และ `blacksmith testbox status` ทำงาน แต่ warmups ใหม่ค้างอยู่ที่ `queued` โดยไม่มี IP หรือ Actions run URL หลังผ่านไปสองสามนาที ให้ถือว่าเป็นแรงกดดันจาก Blacksmith provider, queue, billing, หรือ org-limit หยุด queued ids ที่คุณสร้าง หลีกเลี่ยงการเริ่ม Testboxes เพิ่ม และย้าย proof ไปยังเส้นทาง capacity ของ Crabbox ที่เป็นเจ้าของด้านล่าง ระหว่างที่มีคนตรวจ Blacksmith dashboard, billing, และ org limits
 
-ยกระดับไปใช้ owned Crabbox capacity เฉพาะเมื่อ Blacksmith ล่ม, ถูกจำกัด quota, ไม่มีสภาพแวดล้อมที่ต้องใช้, หรือ owned capacity คือเป้าหมายที่ระบุชัดเจน:
+ยกระดับไปยัง capacity ของ Crabbox ที่เป็นเจ้าของเฉพาะเมื่อ Blacksmith ล่ม, ถูกจำกัด quota, ไม่มี environment ที่ต้องใช้, หรือ owned capacity เป็นเป้าหมายอย่างชัดเจน:
 
 ```bash
 CRABBOX_CAPACITY_REGIONS=eu-west-1,eu-west-2,eu-central-1,us-east-1,us-west-2 \
@@ -595,9 +579,9 @@ pnpm crabbox:run -- --id <cbx_id-or-slug> --timing-json --shell -- "env NODE_OPT
 pnpm crabbox:stop -- <cbx_id-or-slug>
 ```
 
-เมื่อ AWS มีแรงกดดัน ให้หลีกเลี่ยง `class=beast` เว้นแต่งานนั้นต้องใช้ CPU ระดับ 48xlarge จริงๆ คำขอ `beast` เริ่มที่ 192 vCPU และเป็นวิธีที่ง่ายที่สุดในการชน quota ระดับภูมิภาคของ EC2 Spot หรือ On-Demand Standard ค่าเริ่มต้น `.crabbox.yaml` ที่รีโปเป็นเจ้าของตั้งเป็น `standard`, หลาย capacity regions และ `capacity.hints: true` เพื่อให้ lease ของ AWS ที่ผ่าน broker พิมพ์ region/market ที่เลือก, แรงกดดัน quota, fallback ของ Spot และคำเตือน class แรงกดดันสูง ใช้ `fast` สำหรับการตรวจแบบกว้างที่หนักขึ้น, ใช้ `large` เฉพาะหลังจาก standard/fast ไม่พอ, และใช้ `beast` เฉพาะ lane ที่ใช้ CPU หนักเป็นพิเศษ เช่น full-suite หรือ Docker matrix ของทุก Plugin, การตรวจสอบ release/blocker ที่ระบุชัด, หรือการทำ performance profiling ที่ใช้ core จำนวนมาก อย่าใช้ `beast` สำหรับ `pnpm check:changed`, การทดสอบแบบเจาะจง, งานเฉพาะ docs, lint/typecheck ปกติ, E2E repro ขนาดเล็ก, หรือการ triage กรณี Blacksmith ล่ม ใช้ `--market on-demand` สำหรับการวินิจฉัย capacity เพื่อไม่ให้ความผันผวนของตลาด Spot ปะปนกับสัญญาณ
+ภายใต้แรงกดดันของ AWS ให้หลีกเลี่ยง `class=beast` เว้นแต่งานต้องใช้ CPU ระดับ 48xlarge-class จริง ๆ คำขอ `beast` เริ่มที่ 192 vCPUs และเป็นวิธีที่ง่ายที่สุดในการชน regional EC2 Spot หรือ On-Demand Standard quota ค่า default ของ `.crabbox.yaml` ที่ repo เป็นเจ้าของคือ `standard`, capacity regions หลายแห่ง, และ `capacity.hints: true` เพื่อให้ brokered AWS leases พิมพ์ region/market ที่เลือก, แรงกดดันของ quota, Spot fallback, และคำเตือน high-pressure class ใช้ `fast` สำหรับ broad checks ที่หนักกว่า, ใช้ `large` เฉพาะหลังจาก standard/fast ไม่พอ, และใช้ `beast` เฉพาะ lanes ที่ผูกกับ CPU เป็นกรณีพิเศษ เช่น full-suite หรือ all-plugin Docker matrices, release/blocker validation ที่ระบุชัด, หรือ high-core performance profiling อย่าใช้ `beast` สำหรับ `pnpm check:changed`, focused tests, งาน docs-only, lint/typecheck ปกติ, E2E repro ขนาดเล็ก, หรือ Blacksmith outage triage ใช้ `--market on-demand` สำหรับ capacity diagnosis เพื่อไม่ให้ความผันผวนของ Spot market ปะปนกับ signal
 
-`.crabbox.yaml` เป็นเจ้าของค่าเริ่มต้นของ provider, sync และ GitHub Actions hydration สำหรับ owned-cloud lanes โดย exclude `.git` ในเครื่อง เพื่อให้ Actions checkout ที่ hydrate แล้วเก็บ metadata ของ Git ระยะไกลของตัวเอง แทนการ sync remotes และ object stores จากเครื่อง maintainer และ exclude runtime/build artifacts ในเครื่องที่ไม่ควรถูกถ่ายโอนเลย `.github/workflows/crabbox-hydrate.yml` เป็นเจ้าของ checkout, การตั้งค่า Node/pnpm, การ fetch `origin/main` และการส่งต่อ environment ที่ไม่ใช่ secret สำหรับคำสั่ง owned-cloud `crabbox run --id <cbx_id>`
+`.crabbox.yaml` เป็นเจ้าของ defaults ของ provider, sync, และ GitHub Actions hydration สำหรับ owned-cloud lanes ไฟล์นี้ exclude `.git` ในเครื่อง เพื่อให้ hydrated Actions checkout เก็บ remote Git metadata ของตัวเองแทนการ sync remotes และ object stores ในเครื่องของ maintainer และ exclude runtime/build artifacts ในเครื่องที่ไม่ควรถูกถ่ายโอนเด็ดขาด `.github/workflows/crabbox-hydrate.yml` เป็นเจ้าของ checkout, การตั้งค่า Node/pnpm, การ fetch `origin/main`, และ non-secret environment handoff สำหรับคำสั่ง owned-cloud `crabbox run --id <cbx_id>`
 
 ## ที่เกี่ยวข้อง
 

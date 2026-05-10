@@ -1,20 +1,20 @@
 ---
 read_when:
     - Imparare a configurare OpenClaw
-    - Cerchi esempi di configurazione
+    - Ricerca di esempi di configurazione
     - Configurare OpenClaw per la prima volta
 summary: Esempi di configurazione conformi allo schema per configurazioni OpenClaw comuni
 title: Esempi di configurazione
 x-i18n:
-    generated_at: "2026-05-07T13:16:58Z"
+    generated_at: "2026-05-10T19:34:09Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 87c7e75841ee36121c764f1ed51b6547d0fccf7ed6c1f05895d916dbf93f061a
+    source_hash: 9fd1c93d8c491de13c3679c766293a3401853625308e90588d7c83272c5b6e73
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Gli esempi seguenti sono allineati allo schema di configurazione attuale. Per il riferimento completo e le note per ogni campo, consulta [Configurazione](/it/gateway/configuration).
+Gli esempi seguenti sono allineati allo schema di configurazione corrente. Per il riferimento completo e le note per campo, consulta [Configurazione](/it/gateway/configuration).
 
 ## Avvio rapido
 
@@ -27,7 +27,7 @@ Gli esempi seguenti sono allineati allo schema di configurazione attuale. Per il
 }
 ```
 
-Salva in `~/.openclaw/openclaw.json` e potrai inviare un messaggio diretto al bot da quel numero.
+Salva in `~/.openclaw/openclaw.json` e potrai inviare DM al bot da quel numero.
 
 ### Configurazione iniziale consigliata
 
@@ -57,9 +57,9 @@ Salva in `~/.openclaw/openclaw.json` e potrai inviare un messaggio diretto al bo
 }
 ```
 
-## Esempio ampliato (opzioni principali)
+## Esempio esteso (opzioni principali)
 
-> JSON5 ti consente di usare commenti e virgole finali. Anche il JSON normale funziona.
+> JSON5 consente di usare commenti e virgole finali. Funziona anche il normale JSON.
 
 ```json5
 {
@@ -454,10 +454,12 @@ Salva in `~/.openclaw/openclaw.json` e potrai inviare un messaggio diretto al bo
     allowBundled: ["gemini", "peekaboo"],
     load: {
       extraDirs: ["~/Projects/agent-scripts/skills"],
+      allowSymlinkTargets: ["~/Projects/agent-scripts/skills"],
     },
     install: {
       preferBrew: true,
       nodeManager: "npm", // npm | pnpm | yarn | bun
+      allowUploadedArchives: false,
     },
     entries: {
       "image-lab": {
@@ -471,9 +473,29 @@ Salva in `~/.openclaw/openclaw.json` e potrai inviare un messaggio diretto al bo
 }
 ```
 
-## Schemi comuni
+### Repository skill sibling con symlink
 
-### Baseline Skills condivisa con un override
+Usa questa opzione quando una radice skill integrata contiene un symlink verso un repository sibling, per
+esempio `~/.agents/skills/manager -> ~/Projects/manager/skills`.
+
+```json5
+{
+  skills: {
+    load: {
+      extraDirs: ["~/Projects/manager/skills"],
+      allowSymlinkTargets: ["~/Projects/manager/skills"],
+    },
+  },
+}
+```
+
+- `extraDirs` analizza il repository sibling come root delle skill esplicita.
+- `allowSymlinkTargets` consente alle cartelle delle skill collegate tramite symlink di risolversi in quella root di destinazione
+  reale attendibile senza consentire escape arbitrari tramite symlink.
+
+## Pattern comuni
+
+### Baseline delle skill condivisa con una sovrascrittura
 
 ```json5
 {
@@ -491,7 +513,7 @@ Salva in `~/.openclaw/openclaw.json` e potrai inviare un messaggio diretto al bo
 ```
 
 - `agents.defaults.skills` è la baseline condivisa.
-- `agents.list[].skills` sostituisce quella baseline per un singolo agente.
+- `agents.list[].skills` sostituisce quella baseline per un agente.
 - Usa `skills: []` quando un agente non deve vedere alcuna skill.
 
 ### Configurazione multipiattaforma
@@ -515,10 +537,10 @@ Salva in `~/.openclaw/openclaw.json` e potrai inviare un messaggio diretto al bo
 }
 ```
 
-### Approvazione automatica della rete di nodi attendibili
+### Approvazione automatica della rete di Node attendibili
 
-Mantieni manuale l'associazione dei dispositivi, a meno che tu non controlli il percorso di rete. Per un laboratorio dedicato
-o una subnet tailnet, puoi attivare l'approvazione automatica dei dispositivi nodo alla prima connessione
+Mantieni manuale l'associazione dei dispositivi a meno che tu non controlli il percorso di rete. Per un laboratorio dedicato
+o una sottorete tailnet, puoi abilitare l'approvazione automatica dei dispositivi Node al primo utilizzo
 con CIDR o IP esatti:
 
 ```json5
@@ -533,8 +555,8 @@ con CIDR o IP esatti:
 }
 ```
 
-Rimane disattivata quando non è impostata. Si applica solo alla nuova associazione `role: node` senza
-scope richiesti. I client operatore/browser e gli aggiornamenti di ruolo, scope, metadati o
+Questa opzione resta disattivata quando non è impostata. Si applica solo alle nuove associazioni `role: node` con
+nessuno scope richiesto. I client operatore/browser e gli aggiornamenti di ruolo, scope, metadati o
 chiave pubblica richiedono comunque l'approvazione manuale.
 
 ### Modalità DM sicura (posta in arrivo condivisa / DM multiutente)
@@ -564,7 +586,7 @@ Se più di una persona può inviare DM al tuo bot (più voci in `allowFrom`, app
 ```
 
 Per Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC, l'autorizzazione del mittente è basata sugli ID per impostazione predefinita.
-Abilita la corrispondenza diretta mutabile di nome/email/nick con `dangerouslyAllowNameMatching: true` di ciascun canale solo se accetti esplicitamente quel rischio.
+Abilita il matching diretto mutabile per nome/email/nick con `dangerouslyAllowNameMatching: true` di ciascun canale solo se accetti esplicitamente tale rischio.
 
 ### Chiave API Anthropic + fallback MiniMax
 
@@ -660,11 +682,11 @@ Abilita la corrispondenza diretta mutabile di nome/email/nick con `dangerouslyAl
 ## Suggerimenti
 
 - Se imposti `dmPolicy: "open"`, l'elenco `allowFrom` corrispondente deve includere `"*"`.
-- Gli ID dei provider differiscono (numeri di telefono, ID utente, ID canale). Usa la documentazione del provider per confermare il formato.
-- Sezioni opzionali da aggiungere in seguito: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
+- Gli ID dei provider sono diversi (numeri di telefono, ID utente, ID canale). Usa la documentazione del provider per confermare il formato.
+- Sezioni facoltative da aggiungere in seguito: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
 - Consulta [Provider](/it/providers) e [Risoluzione dei problemi](/it/gateway/troubleshooting) per note di configurazione più approfondite.
 
 ## Correlati
 
-- [Riferimento di configurazione](/it/gateway/configuration-reference)
+- [Riferimento configurazione](/it/gateway/configuration-reference)
 - [Configurazione](/it/gateway/configuration)

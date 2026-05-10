@@ -1,24 +1,24 @@
 ---
 read_when:
     - 学习如何配置 OpenClaw
-    - 正在查找配置示例
+    - 查找配置示例
     - 首次设置 OpenClaw
-summary: 适用于常见 OpenClaw 设置、且与模式一致的配置示例
+summary: 适用于常见 OpenClaw 设置的符合模式定义的配置示例
 title: 配置示例
 x-i18n:
-    generated_at: "2026-05-07T13:16:12Z"
+    generated_at: "2026-05-10T19:32:58Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 87c7e75841ee36121c764f1ed51b6547d0fccf7ed6c1f05895d916dbf93f061a
+    source_hash: 9fd1c93d8c491de13c3679c766293a3401853625308e90588d7c83272c5b6e73
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-下面的示例与当前配置模式保持一致。完整参考和逐字段说明见[配置](/zh-CN/gateway/configuration)。
+以下示例与当前配置架构保持一致。完整参考和逐字段说明请参阅[配置](/zh-CN/gateway/configuration)。
 
 ## 快速开始
 
-### 绝对最小配置
+### 绝对最低配置
 
 ```json5
 {
@@ -27,9 +27,9 @@ x-i18n:
 }
 ```
 
-保存到 `~/.openclaw/openclaw.json`，然后你就可以从该号码向机器人发私信。
+保存到 `~/.openclaw/openclaw.json` 后，你就可以从该号码向机器人发送私信。
 
-### 推荐起始配置
+### 推荐入门配置
 
 ```json5
 {
@@ -57,9 +57,9 @@ x-i18n:
 }
 ```
 
-## 扩展示例（主要选项）
+## 展开示例（主要选项）
 
-> JSON5 允许使用注释和尾随逗号。常规 JSON 也可以使用。
+> JSON5 允许使用注释和尾随逗号。普通 JSON 也可以使用。
 
 ```json5
 {
@@ -454,10 +454,12 @@ x-i18n:
     allowBundled: ["gemini", "peekaboo"],
     load: {
       extraDirs: ["~/Projects/agent-scripts/skills"],
+      allowSymlinkTargets: ["~/Projects/agent-scripts/skills"],
     },
     install: {
       preferBrew: true,
       nodeManager: "npm", // npm | pnpm | yarn | bun
+      allowUploadedArchives: false,
     },
     entries: {
       "image-lab": {
@@ -471,9 +473,28 @@ x-i18n:
 }
 ```
 
+### 符号链接到同级技能仓库
+
+当内置技能根目录包含指向同级仓库的符号链接时使用此配置，例如 `~/.agents/skills/manager -> ~/Projects/manager/skills`。
+
+```json5
+{
+  skills: {
+    load: {
+      extraDirs: ["~/Projects/manager/skills"],
+      allowSymlinkTargets: ["~/Projects/manager/skills"],
+    },
+  },
+}
+```
+
+- `extraDirs` 会将同级仓库作为显式技能根目录扫描。
+- `allowSymlinkTargets` 允许符号链接的技能文件夹解析到该受信任的
+  真实目标根目录，而不会允许任意符号链接逃逸。
+
 ## 常见模式
 
-### 带有一个覆盖项的共享技能基线
+### 带一个覆盖项的共享技能基线
 
 ```json5
 {
@@ -491,8 +512,8 @@ x-i18n:
 ```
 
 - `agents.defaults.skills` 是共享基线。
-- `agents.list[].skills` 会为单个智能体替换该基线。
-- 当智能体不应看到任何技能时，使用 `skills: []`。
+- `agents.list[].skills` 会为一个智能体替换该基线。
+- 当智能体不应看到任何 Skills 时，使用 `skills: []`。
 
 ### 多平台设置
 
@@ -515,9 +536,10 @@ x-i18n:
 }
 ```
 
-### 可信节点网络自动批准
+### 受信任节点网络自动批准
 
-除非你控制网络路径，否则请保持设备配对为手动。对于专用实验室或 tailnet 子网，你可以选择使用精确的 CIDR 或 IP 启用首次节点设备自动批准：
+除非你控制网络路径，否则请保持设备配对为手动。对于专用
+实验室或 tailnet 子网，你可以选择使用精确的 CIDR 或 IP 来启用首次节点设备自动批准：
 
 ```json5
 {
@@ -531,11 +553,12 @@ x-i18n:
 }
 ```
 
-未设置时，此功能保持关闭。它仅适用于没有请求范围的全新 `role: node` 配对。操作员/浏览器客户端，以及角色、范围、元数据或公钥升级仍然需要手动批准。
+未设置时，此功能保持关闭。它只适用于没有请求作用域的新 `role: node` 配对。操作员/浏览器客户端，以及角色、作用域、元数据或
+公钥升级仍需要手动批准。
 
 ### 安全私信模式（共享收件箱 / 多用户私信）
 
-如果不止一个人可以私信你的 bot（`allowFrom` 中有多个条目、为多个人批准了配对，或设置了 `dmPolicy: "open"`），请启用**安全私信模式**，这样来自不同发送者的私信默认不会共享同一个上下文：
+如果不止一个人可以私信你的机器人（`allowFrom` 中有多个条目、为多个人批准了配对，或 `dmPolicy: "open"`），请启用**安全私信模式**，这样默认情况下来自不同发送者的私信不会共享同一个上下文：
 
 ```json5
 {
@@ -559,7 +582,8 @@ x-i18n:
 }
 ```
 
-对于 Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC，发送者授权默认优先使用 ID。只有在你明确接受该风险时，才通过每个渠道的 `dangerouslyAllowNameMatching: true` 启用直接可变的姓名/电子邮件/昵称匹配。
+对于 Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC，默认优先使用 ID 进行发送者授权。
+只有在你明确接受该风险时，才使用每个渠道的 `dangerouslyAllowNameMatching: true` 启用可直接变更的名称/电子邮件/nick 匹配。
 
 ### Anthropic API key + MiniMax 回退
 
@@ -595,7 +619,7 @@ x-i18n:
 }
 ```
 
-### 工作 bot（受限访问）
+### 工作机器人（受限访问）
 
 ```json5
 {
@@ -620,7 +644,7 @@ x-i18n:
 }
 ```
 
-### 仅使用本地模型
+### 仅本地模型
 
 ```json5
 {
@@ -654,10 +678,10 @@ x-i18n:
 
 ## 提示
 
-- 如果你设置 `dmPolicy: "open"`，对应的 `allowFrom` 列表必须包含 `"*"`。
+- 如果你设置了 `dmPolicy: "open"`，匹配的 `allowFrom` 列表必须包含 `"*"`。
 - 提供商 ID 各不相同（电话号码、用户 ID、渠道 ID）。请使用提供商文档确认格式。
-- 后续可添加的可选部分：`web`、`browser`、`ui`、`discovery`、`plugins`、`talk`、`signal`、`imessage`。
-- 如需更深入的设置说明，请参阅[提供商](/zh-CN/providers)和[故障排除](/zh-CN/gateway/troubleshooting)。
+- 可稍后添加的可选部分：`web`、`browser`、`ui`、`discovery`、`plugins`、`talk`、`signal`、`imessage`。
+- 请参阅[提供商](/zh-CN/providers)和[故障排除](/zh-CN/gateway/troubleshooting)，了解更深入的设置说明。
 
 ## 相关
 

@@ -1,20 +1,20 @@
 ---
 read_when:
-    - Dowiedz się, jak skonfigurować OpenClaw
+    - Nauka konfiguracji OpenClaw
     - Wyszukiwanie przykładów konfiguracji
-    - Pierwsza konfiguracja OpenClaw
-summary: Przykłady konfiguracji zgodne ze schematem dla typowych instalacji OpenClaw
+    - Konfigurowanie OpenClaw po raz pierwszy
+summary: Przykłady konfiguracji zgodne ze schematem dla typowych środowisk OpenClaw
 title: Przykłady konfiguracji
 x-i18n:
-    generated_at: "2026-05-07T13:16:45Z"
+    generated_at: "2026-05-10T19:35:13Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 87c7e75841ee36121c764f1ed51b6547d0fccf7ed6c1f05895d916dbf93f061a
+    source_hash: 9fd1c93d8c491de13c3679c766293a3401853625308e90588d7c83272c5b6e73
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Przykłady poniżej są zgodne z bieżącym schematem konfiguracji. Pełną dokumentację referencyjną i uwagi dla poszczególnych pól znajdziesz w sekcji [Konfiguracja](/pl/gateway/configuration).
+Poniższe przykłady są zgodne z bieżącym schematem konfiguracji. Pełną dokumentację i uwagi dla poszczególnych pól znajdziesz w sekcji [Konfiguracja](/pl/gateway/configuration).
 
 ## Szybki start
 
@@ -27,9 +27,9 @@ Przykłady poniżej są zgodne z bieżącym schematem konfiguracji. Pełną doku
 }
 ```
 
-Zapisz w `~/.openclaw/openclaw.json`, a będziesz mógł wysłać wiadomość prywatną do bota z tego numeru.
+Zapisz w `~/.openclaw/openclaw.json`, a będzie można wysyłać botowi wiadomości DM z tego numeru.
 
-### Zalecana konfiguracja startowa
+### Zalecana konfiguracja początkowa
 
 ```json5
 {
@@ -454,10 +454,12 @@ Zapisz w `~/.openclaw/openclaw.json`, a będziesz mógł wysłać wiadomość pr
     allowBundled: ["gemini", "peekaboo"],
     load: {
       extraDirs: ["~/Projects/agent-scripts/skills"],
+      allowSymlinkTargets: ["~/Projects/agent-scripts/skills"],
     },
     install: {
       preferBrew: true,
       nodeManager: "npm", // npm | pnpm | yarn | bun
+      allowUploadedArchives: false,
     },
     entries: {
       "image-lab": {
@@ -471,9 +473,28 @@ Zapisz w `~/.openclaw/openclaw.json`, a będziesz mógł wysłać wiadomość pr
 }
 ```
 
+### Repozytorium równorzędne umiejętności dowiązane symbolicznie
+
+Użyj tego, gdy wbudowany katalog główny umiejętności zawiera dowiązanie symboliczne do równorzędnego repozytorium, na przykład `~/.agents/skills/manager -> ~/Projects/manager/skills`.
+
+```json5
+{
+  skills: {
+    load: {
+      extraDirs: ["~/Projects/manager/skills"],
+      allowSymlinkTargets: ["~/Projects/manager/skills"],
+    },
+  },
+}
+```
+
+- `extraDirs` skanuje sąsiednie repozytorium jako jawny katalog główny skill.
+- `allowSymlinkTargets` pozwala folderom skill wskazywanym przez dowiązania symboliczne rozwiązywać się do tego zaufanego
+  rzeczywistego katalogu głównego docelowego bez dopuszczania dowolnych wyjść przez dowiązania symboliczne.
+
 ## Typowe wzorce
 
-### Wspólna bazowa konfiguracja Skills z jednym nadpisaniem
+### Wspólna baza skill z jednym nadpisaniem
 
 ```json5
 {
@@ -490,9 +511,9 @@ Zapisz w `~/.openclaw/openclaw.json`, a będziesz mógł wysłać wiadomość pr
 }
 ```
 
-- `agents.defaults.skills` to wspólna wartość bazowa.
-- `agents.list[].skills` zastępuje tę wartość bazową dla jednego agenta.
-- Użyj `skills: []`, gdy agent nie powinien widzieć żadnych Skills.
+- `agents.defaults.skills` to wspólna baza.
+- `agents.list[].skills` zastępuje tę bazę dla jednego agenta.
+- Użyj `skills: []`, gdy agent nie powinien widzieć żadnych skills.
 
 ### Konfiguracja wieloplatformowa
 
@@ -515,11 +536,11 @@ Zapisz w `~/.openclaw/openclaw.json`, a będziesz mógł wysłać wiadomość pr
 }
 ```
 
-### Automatyczne zatwierdzanie zaufanej sieci Node
+### Automatyczne zatwierdzanie sieci zaufanych Node
 
-Pozostaw parowanie urządzeń jako ręczne, chyba że kontrolujesz ścieżkę sieciową. W dedykowanym
+Zachowaj ręczne parowanie urządzeń, chyba że kontrolujesz ścieżkę sieciową. Dla dedykowanego
 laboratorium lub podsieci tailnet możesz włączyć automatyczne zatwierdzanie urządzeń Node przy pierwszym użyciu
-za pomocą dokładnych CIDR-ów lub adresów IP:
+z dokładnymi CIDR lub adresami IP:
 
 ```json5
 {
@@ -533,13 +554,13 @@ za pomocą dokładnych CIDR-ów lub adresów IP:
 }
 ```
 
-Gdy nie jest ustawione, pozostaje wyłączone. Dotyczy tylko świeżego parowania `role: node`
-bez żądanych zakresów. Klienci operatora/przeglądarki oraz ulepszenia roli, zakresu, metadanych lub
+Pozostaje to wyłączone, gdy nie jest ustawione. Dotyczy tylko świeżego parowania `role: node` bez
+żądanych zakresów. Klienci operatora/przeglądarki oraz zmiany roli, zakresu, metadanych lub
 klucza publicznego nadal wymagają ręcznego zatwierdzenia.
 
 ### Bezpieczny tryb DM (wspólna skrzynka odbiorcza / DM wielu użytkowników)
 
-Jeśli więcej niż jedna osoba może wysłać DM do Twojego bota (wiele wpisów w `allowFrom`, zatwierdzenia parowania dla wielu osób albo `dmPolicy: "open"`), włącz **bezpieczny tryb DM**, aby DM od różnych nadawców domyślnie nie współdzieliły jednego kontekstu:
+Jeśli więcej niż jedna osoba może wysyłać DM do Twojego bota (wiele wpisów w `allowFrom`, zatwierdzenia parowania dla wielu osób lub `dmPolicy: "open"`), włącz **bezpieczny tryb DM**, aby DM od różnych nadawców domyślnie nie współdzieliły jednego kontekstu:
 
 ```json5
 {
@@ -563,10 +584,10 @@ Jeśli więcej niż jedna osoba może wysłać DM do Twojego bota (wiele wpisów
 }
 ```
 
-W przypadku Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC autoryzacja nadawcy domyślnie zaczyna się od identyfikatora.
-Włącz bezpośrednie, modyfikowalne dopasowywanie nazwy/adresu e-mail/pseudonimu za pomocą `dangerouslyAllowNameMatching: true` danego kanału tylko wtedy, gdy jawnie akceptujesz to ryzyko.
+Dla Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC autoryzacja nadawcy domyślnie opiera się najpierw na ID.
+Włącz bezpośrednie, zmienne dopasowywanie nazwy/adresu e-mail/nicku za pomocą `dangerouslyAllowNameMatching: true` danego kanału tylko wtedy, gdy jawnie akceptujesz to ryzyko.
 
-### Klucz API Anthropic + rozwiązanie awaryjne MiniMax
+### Klucz API Anthropic + awaryjny MiniMax
 
 ```json5
 {
@@ -659,12 +680,12 @@ Włącz bezpośrednie, modyfikowalne dopasowywanie nazwy/adresu e-mail/pseudonim
 
 ## Wskazówki
 
-- Jeśli ustawisz `dmPolicy: "open"`, pasująca lista `allowFrom` musi zawierać `"*"`.
-- Identyfikatory dostawców różnią się (numery telefonów, identyfikatory użytkowników, identyfikatory kanałów). Użyj dokumentacji dostawcy, aby potwierdzić format.
+- Jeśli ustawisz `dmPolicy: "open"`, odpowiadająca lista `allowFrom` musi zawierać `"*"`.
+- ID dostawców różnią się (numery telefonów, ID użytkowników, ID kanałów). Użyj dokumentacji dostawcy, aby potwierdzić format.
 - Opcjonalne sekcje do dodania później: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
 - Zobacz [Dostawcy](/pl/providers) i [Rozwiązywanie problemów](/pl/gateway/troubleshooting), aby uzyskać bardziej szczegółowe uwagi dotyczące konfiguracji.
 
 ## Powiązane
 
-- [Dokumentacja konfiguracji](/pl/gateway/configuration-reference)
+- [Informacje o konfiguracji](/pl/gateway/configuration-reference)
 - [Konfiguracja](/pl/gateway/configuration)

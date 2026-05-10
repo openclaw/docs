@@ -2,28 +2,28 @@
 read_when:
     - Verificando a cobertura de credenciais SecretRef
     - Auditando se uma credencial é elegível para `secrets configure` ou `secrets apply`
-    - Verificando por que uma credencial está fora da superfície com suporte
-summary: Superfície canônica de credenciais SecretRef com suporte versus sem suporte
-title: Superfície de credenciais do SecretRef
+    - Verificando por que uma credencial está fora da superfície suportada
+summary: Superfície canônica de credenciais SecretRef compatíveis versus incompatíveis
+title: Superfície de credenciais SecretRef
 x-i18n:
-    generated_at: "2026-05-03T21:38:19Z"
+    generated_at: "2026-05-10T19:49:34Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 8f95ca284f241e40f233fc9e388c26be094dd8bc878daf8a420453ef65b0ad6d
+    source_hash: 2778ea781f7b6fc4d579892225f9cf29bfb8f9ece5961554620ca8e82123ceff
     source_path: reference/secretref-credential-surface.md
     workflow: 16
 ---
 
 Esta página define a superfície canônica de credenciais SecretRef.
 
-Intenção de escopo:
+Intenção do escopo:
 
-- No escopo: credenciais estritamente fornecidas pelo usuário que o OpenClaw não emite nem alterna.
-- Fora do escopo: credenciais emitidas em tempo de execução ou rotativas, material de atualização OAuth e artefatos semelhantes a sessões.
+- No escopo: credenciais estritamente fornecidas pelo usuário que o OpenClaw não emite nem rotaciona.
+- Fora do escopo: credenciais emitidas ou rotacionadas em tempo de execução, material de atualização OAuth e artefatos semelhantes a sessões.
 
 ## Credenciais compatíveis
 
-### Destinos de `openclaw.json` (`secrets configure` + `secrets apply` + `secrets audit`)
+### Alvos de `openclaw.json` (`secrets configure` + `secrets apply` + `secrets audit`)
 
 [//]: # "secretref-supported-list-start"
 
@@ -89,8 +89,6 @@ Intenção de escopo:
 - `channels.irc.nickserv.password`
 - `channels.irc.accounts.*.password`
 - `channels.irc.accounts.*.nickserv.password`
-- `channels.bluebubbles.password`
-- `channels.bluebubbles.accounts.*.password`
 - `channels.feishu.appSecret`
 - `channels.feishu.encryptKey`
 - `channels.feishu.verificationToken`
@@ -114,32 +112,32 @@ Intenção de escopo:
 - `channels.zalo.webhookSecret`
 - `channels.zalo.accounts.*.botToken`
 - `channels.zalo.accounts.*.webhookSecret`
-- `channels.googlechat.serviceAccount` via `serviceAccountRef` irmão (exceção de compatibilidade)
-- `channels.googlechat.accounts.*.serviceAccount` via `serviceAccountRef` irmão (exceção de compatibilidade)
+- `channels.googlechat.serviceAccount` por meio do campo irmão `serviceAccountRef` (exceção de compatibilidade)
+- `channels.googlechat.accounts.*.serviceAccount` por meio do campo irmão `serviceAccountRef` (exceção de compatibilidade)
 
-### Destinos de `auth-profiles.json` (`secrets configure` + `secrets apply` + `secrets audit`)
+### Alvos de `auth-profiles.json` (`secrets configure` + `secrets apply` + `secrets audit`)
 
-- `profiles.*.keyRef` (`type: "api_key"`; sem suporte quando `auth.profiles.<id>.mode = "oauth"`)
-- `profiles.*.tokenRef` (`type: "token"`; sem suporte quando `auth.profiles.<id>.mode = "oauth"`)
+- `profiles.*.keyRef` (`type: "api_key"`; incompatível quando `auth.profiles.<id>.mode = "oauth"`)
+- `profiles.*.tokenRef` (`type: "token"`; incompatível quando `auth.profiles.<id>.mode = "oauth"`)
 
 [//]: # "secretref-supported-list-end"
 
 Observações:
 
-- Destinos de plano de perfil de autenticação exigem `agentId`.
-- Entradas de plano apontam para `profiles.*.key` / `profiles.*.token` e gravam referências irmãs (`keyRef` / `tokenRef`).
-- Referências de perfil de autenticação são incluídas na resolução em tempo de execução e na cobertura de auditoria.
-- Em `openclaw.json`, SecretRefs devem usar objetos estruturados como `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}`. Strings marcadoras legadas `secretref-env:<ENV_VAR>` são rejeitadas em caminhos de credenciais SecretRef; execute `openclaw doctor --fix` para migrar marcadores válidos.
-- Proteção da política OAuth: `auth.profiles.<id>.mode = "oauth"` não pode ser combinado com entradas SecretRef para esse perfil. Inicialização/recarregamento e resolução de perfil de autenticação falham rapidamente quando essa política é violada.
-- Para provedores de modelo gerenciados por SecretRef, as entradas geradas de `agents/*/agent/models.json` persistem marcadores não secretos (não valores secretos resolvidos) para superfícies `apiKey`/cabeçalho.
-- A persistência de marcadores é autoritativa pela fonte: o OpenClaw grava marcadores a partir do snapshot de configuração da fonte ativa (pré-resolução), não a partir de valores secretos resolvidos em tempo de execução.
-- Para busca na Web:
+- Os alvos do plano de perfis de autenticação exigem `agentId`.
+- As entradas de plano têm como alvo `profiles.*.key` / `profiles.*.token` e gravam refs irmãs (`keyRef` / `tokenRef`).
+- As refs de perfis de autenticação são incluídas na resolução em tempo de execução e na cobertura de auditoria.
+- Em `openclaw.json`, SecretRefs devem usar objetos estruturados como `{"source":"env","provider":"default","id":"DISCORD_BOT_TOKEN"}`. Strings de marcador legadas `secretref-env:<ENV_VAR>` são rejeitadas em caminhos de credenciais SecretRef; execute `openclaw doctor --fix` para migrar marcadores válidos.
+- Guarda da política OAuth: `auth.profiles.<id>.mode = "oauth"` não pode ser combinado com entradas SecretRef para esse perfil. A inicialização/recarregamento e a resolução de perfis de autenticação falham rapidamente quando essa política é violada.
+- Para provedores de modelos gerenciados por SecretRef, as entradas geradas em `agents/*/agent/models.json` persistem marcadores não secretos (não valores secretos resolvidos) para as superfícies de `apiKey`/cabeçalhos.
+- A persistência de marcadores é autoritativa da fonte: o OpenClaw grava marcadores a partir do snapshot da configuração de origem ativa (pré-resolução), não de valores secretos resolvidos em tempo de execução.
+- Para pesquisa na web:
   - No modo de provedor explícito (`tools.web.search.provider` definido), somente a chave do provedor selecionado fica ativa.
   - No modo automático (`tools.web.search.provider` não definido), somente a primeira chave de provedor que resolve por precedência fica ativa.
-  - No modo automático, referências de provedores não selecionados são tratadas como inativas até serem selecionadas.
-  - Caminhos legados de provedor `tools.web.search.*` ainda são resolvidos durante a janela de compatibilidade, mas a superfície canônica SecretRef é `plugins.entries.<plugin>.config.webSearch.*`.
+  - No modo automático, refs de provedores não selecionados são tratadas como inativas até serem selecionadas.
+  - Caminhos de provedores legados `tools.web.search.*` ainda resolvem durante a janela de compatibilidade, mas a superfície canônica SecretRef é `plugins.entries.<plugin>.config.webSearch.*`.
 
-## Credenciais sem suporte
+## Credenciais incompatíveis
 
 Credenciais fora do escopo incluem:
 
@@ -159,9 +157,9 @@ Credenciais fora do escopo incluem:
 
 Justificativa:
 
-- Essas credenciais pertencem a classes emitidas, rotativas, portadoras de sessão ou duráveis de OAuth que não se ajustam à resolução externa somente leitura de SecretRef.
+- Essas credenciais são classes emitidas, rotacionadas, portadoras de sessão ou duráveis de OAuth que não se encaixam na resolução externa somente leitura de SecretRef.
 
-## Relacionado
+## Relacionados
 
 - [Gerenciamento de segredos](/pt-BR/gateway/secrets)
 - [Semântica de credenciais de autenticação](/pt-BR/auth-credential-semantics)

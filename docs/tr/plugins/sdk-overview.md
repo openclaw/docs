@@ -1,33 +1,33 @@
 ---
 read_when:
-    - Hangi SDK alt yolundan içe aktarım yapacağınızı bilmeniz gerekir
-    - OpenClawPluginApi'deki tüm kayıt yöntemleri için bir referans istiyorsunuz
+    - Hangi SDK alt yolundan içe aktaracağınızı bilmeniz gerekir
+    - OpenClawPluginApi üzerindeki tüm kayıt yöntemleri için bir referans istiyorsunuz
     - Belirli bir SDK dışa aktarımını arıyorsunuz
 sidebarTitle: Plugin SDK overview
 summary: İçe aktarma haritası, kayıt API referansı ve SDK mimarisi
 title: Plugin SDK genel bakışı
 x-i18n:
-    generated_at: "2026-05-07T13:24:06Z"
+    generated_at: "2026-05-10T19:49:05Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ce2d4480368a11f559da7c5116d51c0cd603dd38985ca744723ecdf134fa21f3
+    source_hash: 9ca09b142accc03d8ae897c5da62eab6c25793354e0175742ce1a63d700e64dd
     source_path: plugins/sdk-overview.md
     workflow: 16
 ---
 
-Plugin SDK, plugins ile çekirdek arasındaki tipli sözleşmedir. Bu sayfa,
-**neyi içe aktaracağınız** ve **neyi kaydedebileceğiniz** için referanstır.
+Plugin SDK, Pluginler ile çekirdek arasındaki tipli sözleşmedir. Bu sayfa,
+**neyi içe aktaracağınız** ve **neyi kaydedebileceğiniz** için başvurudur.
 
 <Note>
-  Bu sayfa, OpenClaw içinde `openclaw/plugin-sdk/*` kullanan plugin yazarları
-  içindir. Gateway üzerinden agent çalıştırmak isteyen harici uygulamalar,
+  Bu sayfa, OpenClaw içinde `openclaw/plugin-sdk/*` kullanan Plugin yazarları
+  içindir. Gateway üzerinden ajanları çalıştırmak isteyen harici uygulamalar,
   betikler, panolar, CI işleri ve IDE uzantıları için bunun yerine
   [OpenClaw App SDK](/tr/concepts/openclaw-sdk) ve `@openclaw/sdk` paketini
   kullanın.
 </Note>
 
 <Tip>
-Bunun yerine bir nasıl yapılır kılavuzu mu arıyorsunuz? [Plugin oluşturma](/tr/plugins/building-plugins) ile başlayın; kanal pluginleri için [Kanal pluginleri](/tr/plugins/sdk-channel-plugins), sağlayıcı pluginleri için [Sağlayıcı pluginleri](/tr/plugins/sdk-provider-plugins), yerel AI CLI arka uçları için [CLI arka uç pluginleri](/tr/plugins/cli-backend-plugins) ve araç veya yaşam döngüsü hook pluginleri için [Plugin hook'ları](/tr/plugins/hooks) kullanın.
+Bunun yerine nasıl yapılır kılavuzu mu arıyorsunuz? [Plugin oluşturma](/tr/plugins/building-plugins) ile başlayın; kanal Pluginleri için [Kanal Pluginleri](/tr/plugins/sdk-channel-plugins), sağlayıcı Pluginleri için [Sağlayıcı Pluginleri](/tr/plugins/sdk-provider-plugins), yerel yapay zeka CLI arka uçları için [CLI arka uç Pluginleri](/tr/plugins/cli-backend-plugins) ve araç ya da yaşam döngüsü kancası Pluginleri için [Plugin kancaları](/tr/plugins/hooks) sayfalarını kullanın.
 </Tip>
 
 ## İçe aktarma kuralı
@@ -39,164 +39,183 @@ import { definePluginEntry } from "openclaw/plugin-sdk/plugin-entry";
 import { defineChannelPluginEntry } from "openclaw/plugin-sdk/channel-core";
 ```
 
-Her alt yol küçük, bağımsız bir modüldür. Bu, başlatmayı hızlı tutar ve
-döngüsel bağımlılık sorunlarını önler. Kanala özgü giriş/derleme yardımcıları
-için `openclaw/plugin-sdk/channel-core` tercih edin; `openclaw/plugin-sdk/core`
-yolunu daha geniş şemsiye yüzey ve `buildChannelConfigSchema` gibi paylaşılan
-yardımcılar için saklayın.
+Her alt yol küçük, kendi kendine yeterli bir modüldür. Bu, başlatmayı hızlı
+tutar ve döngüsel bağımlılık sorunlarını önler. Kanala özgü giriş/derleme
+yardımcıları için `openclaw/plugin-sdk/channel-core` tercih edin;
+`openclaw/plugin-sdk/core` yolunu daha geniş şemsiye yüzey ve
+`buildChannelConfigSchema` gibi paylaşılan yardımcılar için ayırın.
 
-Kanal yapılandırması için, kanalın sahibi olduğu JSON Schema'yı
+Kanal yapılandırması için kanalın sahip olduğu JSON Schema'yı
 `openclaw.plugin.json#channelConfigs` üzerinden yayımlayın. `plugin-sdk/channel-config-schema`
-alt yolu, paylaşılan şema ilkelleri ve genel oluşturucu içindir. OpenClaw'ın
-paketlenmiş pluginleri, korunmuş paketlenmiş-kanal şemaları için
-`plugin-sdk/bundled-channel-config-schema` kullanır. Kullanımı kaldırılmış uyumluluk
-dışa aktarımları `plugin-sdk/channel-config-schema-legacy` üzerinde kalır;
-paketlenmiş şema alt yollarının hiçbiri yeni pluginler için bir kalıp değildir.
+alt yolu, paylaşılan şema ilkel değerleri ve genel oluşturucu içindir.
+OpenClaw'ın paketli Pluginleri, korunan paketli kanal şemaları için
+`plugin-sdk/bundled-channel-config-schema` kullanır. Kullanımdan kaldırılmış
+uyumluluk dışa aktarımları `plugin-sdk/channel-config-schema-legacy` üzerinde
+kalır; paketli şema alt yollarından hiçbiri yeni Pluginler için bir örüntü
+değildir.
 
 <Warning>
-  Sağlayıcı veya kanal markalı kolaylık seam'lerini içe aktarmayın (örneğin
+  Sağlayıcı veya kanal markalı kolaylık yüzeylerini içe aktarmayın (örneğin
   `openclaw/plugin-sdk/slack`, `.../discord`, `.../signal`, `.../whatsapp`).
-  Paketlenmiş pluginler, genel SDK alt yollarını kendi `api.ts` /
-  `runtime-api.ts` barrel'ları içinde birleştirir; çekirdek tüketiciler ya bu
-  plugine-yerel barrel'ları kullanmalı ya da ihtiyaç gerçekten kanallar arasıysa
-  dar bir genel SDK sözleşmesi eklemelidir.
+  Paketli Pluginler, kendi `api.ts` / `runtime-api.ts` varilleri içinde genel
+  SDK alt yollarını birleştirir; çekirdek tüketicileri ya bu Plugin yerel
+  varillerini kullanmalı ya da ihtiyaç gerçekten kanallar arası olduğunda dar
+  bir genel SDK sözleşmesi eklemelidir.
 
-Sahip kullanımını takip ettikleri durumlarda, oluşturulan dışa aktarma haritasında
-az sayıda paketlenmiş-plugin yardımcı seam'i hâlâ görünür. Bunlar yalnızca
-paketlenmiş-plugin bakımı için vardır ve yeni üçüncü taraf pluginler için önerilen
-içe aktarma yolları değildir.
+Sahip kullanımı izlenen küçük bir paketli Plugin yardımcı yüzeyi kümesi, üretilen
+dışa aktarma haritasında hâlâ görünür. Bunlar yalnızca paketli Plugin bakımı
+için vardır ve yeni üçüncü taraf Pluginler için önerilen içe aktarma yolları
+değildir.
 
-`openclaw/plugin-sdk/discord` ve `openclaw/plugin-sdk/telegram-account`, takip
-edilen sahip kullanımı için kullanımı kaldırılmış uyumluluk facade'ları olarak da
-tutulur. Bu içe aktarma yollarını yeni pluginlere kopyalamayın; bunun yerine
+`openclaw/plugin-sdk/discord` ve `openclaw/plugin-sdk/telegram-account` ayrıca
+izlenen sahip kullanımı için kullanımdan kaldırılmış uyumluluk cepheleri olarak
+tutulur. Bu içe aktarma yollarını yeni Pluginlere kopyalamayın; bunun yerine
 enjekte edilen çalışma zamanı yardımcılarını ve genel kanal SDK alt yollarını
 kullanın.
 </Warning>
 
-## Alt yol referansı
+## Alt yol başvurusu
 
-Plugin SDK; plugin girişi, kanal, sağlayıcı, kimlik doğrulama, çalışma zamanı,
-capability, bellek ve ayrılmış paketlenmiş-plugin yardımcıları alanlarına göre
-gruplandırılmış dar alt yollar kümesi olarak sunulur. Gruplandırılmış ve
-bağlantılı tam katalog için [Plugin SDK alt yolları](/tr/plugins/sdk-subpaths)
-sayfasına bakın.
+Plugin SDK, alana göre gruplandırılmış dar alt yollar kümesi olarak sunulur
+(Plugin girişi, kanal, sağlayıcı, kimlik doğrulama, çalışma zamanı, yetenek,
+bellek ve ayrılmış paketli Plugin yardımcıları). Gruplandırılmış ve bağlantılı
+tam katalog için [Plugin SDK alt yolları](/tr/plugins/sdk-subpaths) sayfasına bakın.
 
-Oluşturulan 200+ alt yol listesi `scripts/lib/plugin-sdk-entrypoints.json` içinde bulunur.
+Derleyici giriş noktası envanteri `scripts/lib/plugin-sdk-entrypoints.json`
+içinde bulunur; paket dışa aktarımları, `scripts/lib/plugin-sdk-private-local-only-subpaths.json`
+içinde listelenen depo yerel test/dahili alt yollar çıkarıldıktan sonra herkese
+açık alt kümeden üretilir. Herkese açık dışa aktarma sayısını denetlemek için
+`pnpm plugin-sdk:surface` çalıştırın. Yeterince eski olan ve paketli uzantı
+üretim kodu tarafından kullanılmayan kullanımdan kaldırılmış herkese açık alt
+yollar `scripts/lib/plugin-sdk-deprecated-public-subpaths.json` içinde izlenir;
+geniş kullanımdan kaldırılmış yeniden dışa aktarma varilleri
+`scripts/lib/plugin-sdk-deprecated-barrel-subpaths.json` içinde izlenir.
 
 ## Kayıt API'si
 
-`register(api)` callback'i, şu yöntemlere sahip bir `OpenClawPluginApi` nesnesi
-alır:
+`register(api)` geri çağrısı, şu yöntemlere sahip bir `OpenClawPluginApi`
+nesnesi alır:
 
-### Capability kaydı
+### Yetenek kaydı
 
-| Yöntem                                           | Neyi kaydeder                          |
-| ------------------------------------------------ | -------------------------------------- |
-| `api.registerProvider(...)`                      | Metin çıkarımı (LLM)                   |
-| `api.registerAgentHarness(...)`                  | Deneysel düşük seviyeli agent yürütücü |
-| `api.registerCliBackend(...)`                    | Yerel CLI çıkarım arka ucu             |
-| `api.registerChannel(...)`                       | Mesajlaşma kanalı                      |
-| `api.registerSpeechProvider(...)`                | Metinden sese / STT sentezi            |
-| `api.registerRealtimeTranscriptionProvider(...)` | Streaming gerçek zamanlı transkripsiyon |
+| Yöntem                                           | Kaydettiği şey                         |
+| ------------------------------------------------ | ------------------------------------- |
+| `api.registerProvider(...)`                      | Metin çıkarımı (LLM)                  |
+| `api.registerAgentHarness(...)`                  | Deneysel düşük seviyeli ajan yürütücü |
+| `api.registerCliBackend(...)`                    | Yerel CLI çıkarım arka ucu            |
+| `api.registerChannel(...)`                       | Mesajlaşma kanalı                     |
+| `api.registerSpeechProvider(...)`                | Metinden konuşmaya / STT sentezi      |
+| `api.registerRealtimeTranscriptionProvider(...)` | Akışlı gerçek zamanlı transkripsiyon  |
 | `api.registerRealtimeVoiceProvider(...)`         | Çift yönlü gerçek zamanlı ses oturumları |
-| `api.registerMediaUnderstandingProvider(...)`    | Görüntü/ses/video analizi              |
-| `api.registerImageGenerationProvider(...)`       | Görüntü üretimi                        |
-| `api.registerMusicGenerationProvider(...)`       | Müzik üretimi                          |
-| `api.registerVideoGenerationProvider(...)`       | Video üretimi                          |
-| `api.registerWebFetchProvider(...)`              | Web fetch / scrape sağlayıcısı         |
-| `api.registerWebSearchProvider(...)`             | Web araması                            |
+| `api.registerMediaUnderstandingProvider(...)`    | Görüntü/ses/video analizi             |
+| `api.registerImageGenerationProvider(...)`       | Görüntü üretimi                       |
+| `api.registerMusicGenerationProvider(...)`       | Müzik üretimi                         |
+| `api.registerVideoGenerationProvider(...)`       | Video üretimi                         |
+| `api.registerWebFetchProvider(...)`              | Web getirme / kazıma sağlayıcısı      |
+| `api.registerWebSearchProvider(...)`             | Web arama                             |
 
 ### Araçlar ve komutlar
 
-| Yöntem                         | Neyi kaydeder                                  |
-| ------------------------------ | ---------------------------------------------- |
-| `api.registerTool(tool, opts?)` | Agent aracı (gerekli veya `{ optional: true }`) |
-| `api.registerCommand(def)`      | Özel komut (LLM'yi atlar)                      |
+| Yöntem                          | Kaydettiği şey                                      |
+| ------------------------------- | -------------------------------------------------- |
+| `api.registerTool(tool, opts?)` | Ajan aracı (gerekli veya `{ optional: true }`)      |
+| `api.registerCommand(def)`      | Özel komut (LLM'yi atlar)                          |
 
-Plugin komutları, agent kısa ve komuta ait bir yönlendirme ipucuna ihtiyaç
-duyduğunda `agentPromptGuidance` ayarlayabilir. Bu metni komutun kendisiyle
-ilgili tutun; çekirdek istem oluşturucularına sağlayıcıya veya plugine özgü
-politika eklemeyin.
+Plugin komutları, ajanın kısa ve komuta ait bir yönlendirme ipucuna ihtiyaç
+duyduğu durumlarda `agentPromptGuidance` ayarlayabilir. Bu metni komutun
+kendisiyle ilgili tutun; çekirdek prompt oluşturucularına sağlayıcıya veya
+Plugin'e özgü politika eklemeyin.
 
 ### Altyapı
 
-| Yöntem                                         | Neyi kaydeder                            |
-| ---------------------------------------------- | ---------------------------------------- |
-| `api.registerHook(events, handler, opts?)`     | Olay hook'u                              |
-| `api.registerHttpRoute(params)`                | Gateway HTTP endpoint'i                  |
-| `api.registerGatewayMethod(name, handler)`     | Gateway RPC yöntemi                      |
-| `api.registerGatewayDiscoveryService(service)` | Yerel Gateway keşif duyurucusu           |
-| `api.registerCli(registrar, opts?)`            | CLI alt komutu                           |
-| `api.registerNodeCliFeature(registrar, opts?)` | `openclaw nodes` altında Node özelliği CLI |
-| `api.registerService(service)`                 | Arka plan servisi                        |
-| `api.registerInteractiveHandler(registration)` | Etkileşimli işleyici                     |
-| `api.registerAgentToolResultMiddleware(...)`   | Çalışma zamanı araç-sonucu middleware'i  |
-| `api.registerMemoryPromptSupplement(builder)`  | Eklemeli belleğe-yakın istem bölümü      |
-| `api.registerMemoryCorpusSupplement(adapter)`  | Eklemeli bellek arama/okuma korpusu      |
+| Yöntem                                         | Kaydettiği şey                               |
+| ---------------------------------------------- | ------------------------------------------- |
+| `api.registerHook(events, handler, opts?)`     | Olay kancası                                |
+| `api.registerHttpRoute(params)`                | Gateway HTTP uç noktası                     |
+| `api.registerGatewayMethod(name, handler)`     | Gateway RPC yöntemi                         |
+| `api.registerGatewayDiscoveryService(service)` | Yerel Gateway keşif duyurucusu              |
+| `api.registerCli(registrar, opts?)`            | CLI alt komutu                              |
+| `api.registerNodeCliFeature(registrar, opts?)` | `openclaw nodes` altında Node özellik CLI'si |
+| `api.registerService(service)`                 | Arka plan servisi                           |
+| `api.registerInteractiveHandler(registration)` | Etkileşimli işleyici                        |
+| `api.registerAgentToolResultMiddleware(...)`   | Çalışma zamanı araç sonucu ara katmanı      |
+| `api.registerMemoryPromptSupplement(builder)`  | Eklemeli, belleğe komşu prompt bölümü       |
+| `api.registerMemoryCorpusSupplement(adapter)`  | Eklemeli bellek arama/okuma korpusu         |
 
-### Workflow pluginleri için host hook'ları
+### İş akışı Pluginleri için ana makine kancaları
 
-Host hook'ları, yalnızca bir sağlayıcı, kanal veya araç eklemek yerine host
-yaşam döngüsüne katılması gereken pluginler için SDK seam'leridir. Bunlar
-genel sözleşmelerdir; Plan Modu bunları kullanabilir, ancak onay workflow'ları,
-workspace politika gate'leri, arka plan izleyicileri, kurulum sihirbazları ve UI
-yardımcı pluginleri de kullanabilir.
+Ana makine kancaları, yalnızca bir sağlayıcı, kanal veya araç eklemek yerine
+ana makine yaşam döngüsüne katılması gereken Pluginler için SDK yüzeyleridir.
+Bunlar genel sözleşmelerdir; Plan Mode bunları kullanabilir, ancak onay iş
+akışları, çalışma alanı politika kapıları, arka plan izleyicileri, kurulum
+sihirbazları ve UI eşlikçi Pluginleri de kullanabilir.
 
-| Yöntem                                                                   | Sahip olduğu sözleşme                                                                                                             |
-| ------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
-| `api.registerSessionExtension(...)`                                      | Gateway oturumları üzerinden yansıtılan, plugine ait, JSON uyumlu oturum durumu                                                   |
-| `api.enqueueNextTurnInjection(...)`                                      | Tek oturum için sonraki agent turuna enjekte edilen dayanıklı, tam olarak bir kez kullanılan bağlam                                |
-| `api.registerTrustedToolPolicy(...)`                                     | Araç parametrelerini engelleyebilen veya yeniden yazabilen paketlenmiş/güvenilir plugin-öncesi araç politikası                    |
-| `api.registerToolMetadata(...)`                                          | Araç uygulamasını değiştirmeden araç katalog gösterim metadata'sı                                                                 |
-| `api.registerCommand(...)`                                               | Kapsamlı plugin komutları; komut sonuçları `continueAgent: true` ayarlayabilir; Discord yerel komutları `descriptionLocalizations` destekler |
-| `api.registerControlUiDescriptor(...)`                                   | Oturum, araç, çalışma veya ayarlar yüzeyleri için Control UI katkı tanımlayıcıları                                                |
-| `api.registerRuntimeLifecycle(...)`                                      | Sıfırlama/silme/yeniden yükleme yollarında plugine ait çalışma zamanı kaynakları için cleanup callback'leri                       |
-| `api.registerAgentEventSubscription(...)`                                | Workflow durumu ve izleyiciler için sanitize edilmiş olay abonelikleri                                                            |
-| `api.setRunContext(...)` / `getRunContext(...)` / `clearRunContext(...)` | Terminal çalışma yaşam döngüsünde temizlenen çalışma-başına plugin geçici durumu                                                  |
-| `api.registerSessionSchedulerJob(...)`                                   | Deterministik cleanup ile plugine ait oturum zamanlayıcı iş kayıtları                                                             |
+| Yöntem                                                                   | Sahip olduğu sözleşme                                                                                                                |
+| ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `api.registerSessionExtension(...)`                                      | Gateway oturumları üzerinden yansıtılan, Plugin'e ait JSON uyumlu oturum durumu                                                     |
+| `api.enqueueNextTurnInjection(...)`                                      | Bir oturum için bir sonraki ajan turuna enjekte edilen, dayanıklı ve tam olarak bir kez kullanılan bağlam                             |
+| `api.registerTrustedToolPolicy(...)`                                     | Araç parametrelerini engelleyebilen veya yeniden yazabilen paketli/güvenilir, Plugin öncesi araç politikası                         |
+| `api.registerToolMetadata(...)`                                          | Araç uygulamasını değiştirmeden araç kataloğu görüntüleme meta verileri                                                              |
+| `api.registerCommand(...)`                                               | Kapsamlı Plugin komutları; komut sonuçları `continueAgent: true` ayarlayabilir; Discord yerel komutları `descriptionLocalizations` destekler |
+| `api.registerControlUiDescriptor(...)`                                   | Oturum, araç, çalışma veya ayarlar yüzeyleri için Control UI katkı tanımlayıcıları                                                   |
+| `api.registerRuntimeLifecycle(...)`                                      | Sıfırlama/silme/yeniden yükleme yollarında Plugin'e ait çalışma zamanı kaynakları için temizleme geri çağrıları                      |
+| `api.registerAgentEventSubscription(...)`                                | İş akışı durumu ve izleyiciler için temizlenmiş olay abonelikleri                                                                    |
+| `api.setRunContext(...)` / `getRunContext(...)` / `clearRunContext(...)` | Terminal çalışma yaşam döngüsünde temizlenen, çalışma başına Plugin geçici durumu                                                    |
+| `api.registerSessionSchedulerJob(...)`                                   | Belirleyici temizlemeye sahip, Plugin'e ait oturum zamanlayıcı işi kayıtları                                                         |
 
-Sözleşmeler yetkiyi bilinçli olarak ayırır:
+Sözleşmeler yetkiyi kasıtlı olarak ayırır:
 
-- Harici pluginler oturum uzantılarına, UI tanımlayıcılarına, komutlara, araç
-  metadata'sına, sonraki-tur enjeksiyonlarına ve normal hook'lara sahip olabilir.
-- Güvenilir araç politikaları sıradan `before_tool_call` hook'larından önce
-  çalışır ve host güvenlik politikasına katıldıkları için yalnızca paketlenmiş
-  pluginlere açıktır.
-- Ayrılmış komut sahipliği yalnızca paketlenmiş pluginlere açıktır. Harici
-  pluginler kendi komut adlarını veya alias'larını kullanmalıdır.
+- Harici Pluginler oturum uzantılarına, UI tanımlayıcılarına, komutlara, araç
+  meta verilerine, sonraki tur enjeksiyonlarına ve normal kancalara sahip
+  olabilir.
+- Güvenilir araç politikaları sıradan `before_tool_call` kancalarından önce
+  çalışır ve ana makine güvenlik politikasına katıldıkları için yalnızca
+  paketlidir.
+- Ayrılmış komut sahipliği yalnızca paketlidir. Harici Pluginler kendi komut
+  adlarını veya takma adlarını kullanmalıdır.
 - `allowPromptInjection=false`, `agent_turn_prepare`, `before_prompt_build`,
-  `heartbeat_prompt_contribution`, eski `before_agent_start` içindeki istem
-  alanları ve `enqueueNextTurnInjection` dahil olmak üzere istemi değiştiren
-  hook'ları devre dışı bırakır.
+  `heartbeat_prompt_contribution`, eski `before_agent_start` kaynaklı prompt
+  alanları ve `enqueueNextTurnInjection` dahil prompt'u değiştiren kancaları
+  devre dışı bırakır.
 
 Plan dışı tüketici örnekleri:
 
-| Plugin arketipi             | Kullanılan hook'lar                                                                                                                 |
-| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Onay workflow'u             | Oturum uzantısı, komut devamı, sonraki-tur enjeksiyonu, UI tanımlayıcısı                                                            |
-| Bütçe/workspace politika gate'i | Güvenilir araç politikası, araç metadata'sı, oturum projeksiyonu                                                                 |
-| Arka plan yaşam döngüsü izleyicisi | Çalışma zamanı cleanup'ı, agent olay aboneliği, oturum zamanlayıcı sahipliği/cleanup'ı, Heartbeat istem katkısı, UI tanımlayıcısı |
-| Kurulum veya onboarding sihirbazı | Oturum uzantısı, kapsamlı komutlar, Control UI tanımlayıcısı                                                                    |
+| Plugin arketipi             | Kullanılan kancalar                                                                                                                   |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Onay iş akışı               | Oturum uzantısı, komut devamı, sonraki tur enjeksiyonu, UI tanımlayıcısı                                                              |
+| Bütçe/çalışma alanı politika kapısı | Güvenilir araç politikası, araç meta verileri, oturum projeksiyonu                                                          |
+| Arka plan yaşam döngüsü izleyicisi | Çalışma zamanı yaşam döngüsü temizliği, ajan olay aboneliği, oturum zamanlayıcı sahipliği/temizliği, Heartbeat prompt katkısı, UI tanımlayıcısı |
+| Kurulum veya başlangıç sihirbazı | Oturum uzantısı, kapsamlı komutlar, Control UI tanımlayıcısı                                                                     |
 
 <Note>
-  Ayrılmış çekirdek admin namespace'leri (`config.*`, `exec.approvals.*`,
-  `wizard.*`, `update.*`), bir plugin daha dar bir gateway yöntemi kapsamı
-  atamaya çalışsa bile her zaman `operator.admin` olarak kalır. Plugine ait
-  yöntemler için plugine özgü prefix'ler tercih edin.
+  Ayrılmış çekirdek yönetici ad alanları (`config.*`, `exec.approvals.*`, `wizard.*`,
+  `update.*`), bir Plugin daha dar bir Gateway yöntemi kapsamı atamaya çalışsa
+  bile her zaman `operator.admin` olarak kalır. Plugin'e ait yöntemler için
+  Plugin'e özgü önekleri tercih edin.
 </Note>
 
-<Accordion title="Araç-sonucu middleware'i ne zaman kullanılmalı">
-  Paketlenmiş pluginler, yürütmeden sonra ve çalışma zamanı bu sonucu modele
-  geri beslemeden önce bir araç sonucunu yeniden yazmaları gerektiğinde
+<Accordion title="When to use tool-result middleware">
+  Birlikte gelen plugin'ler, yürütmeden sonra ve runtime bu sonucu modele geri
+  beslemeden önce bir araç sonucunu yeniden yazmaları gerektiğinde
   `api.registerAgentToolResultMiddleware(...)` kullanabilir. Bu, tokenjuice gibi
-  async çıktı azaltıcıları için güvenilir ve çalışma zamanından bağımsız seam'dir.
+  asenkron çıktı azaltıcıları için güvenilir, runtime'dan bağımsız bağlantı
+  noktasıdır.
 
-Paketlenmiş Plugin'ler, hedeflenen her runtime için `contracts.agentToolResultMiddleware` bildirmelidir; örneğin `["pi", "codex"]`. Harici Plugin'ler bu middleware'i kaydedemez; model öncesi araç sonucu zamanlamasına ihtiyaç duymayan işler için normal OpenClaw Plugin hook'larını kullanın. Eski, yalnızca Pi'ye yönelik gömülü extension factory kayıt yolu kaldırıldı.
+Birlikte gelen plugin'ler, hedeflenen her runtime için
+`contracts.agentToolResultMiddleware` bildirmelidir; örneğin `["pi", "codex"]`.
+Harici plugin'ler bu middleware'i kaydedemez; model öncesi araç sonucu
+zamanlamasına ihtiyaç duymayan işler için normal OpenClaw plugin hook'larını
+kullanmaya devam edin. Eski, yalnızca Pi'ye özgü gömülü extension factory
+kayıt yolu kaldırıldı.
 </Accordion>
 
 ### Gateway keşif kaydı
 
-`api.registerGatewayDiscoveryService(...)`, bir Plugin'in etkin Gateway'i mDNS/Bonjour gibi yerel bir keşif taşıması üzerinde duyurmasını sağlar. OpenClaw, yerel keşif etkinleştirildiğinde Gateway başlatılırken servisi çağırır, geçerli Gateway portlarını ve gizli olmayan TXT ipucu verilerini iletir ve Gateway kapatılırken döndürülen `stop` işleyicisini çağırır.
+`api.registerGatewayDiscoveryService(...)`, bir plugin'in etkin Gateway'i
+mDNS/Bonjour gibi yerel bir keşif taşıması üzerinde duyurmasını sağlar.
+OpenClaw, yerel keşif etkinleştirildiğinde Gateway başlatma sırasında servisi
+çağırır, mevcut Gateway portlarını ve gizli olmayan TXT ipucu verilerini iletir
+ve Gateway kapatılırken döndürülen `stop` işleyicisini çağırır.
 
 ```typescript
 api.registerGatewayDiscoveryService({
@@ -212,19 +231,28 @@ api.registerGatewayDiscoveryService({
 });
 ```
 
-Gateway keşif Plugin'leri, duyurulan TXT değerlerini gizli bilgi veya kimlik doğrulama olarak değerlendirmemelidir. Keşif bir yönlendirme ipucudur; güveni hâlâ Gateway kimlik doğrulaması ve TLS pinning yönetir.
+Gateway keşif plugin'leri, duyurulan TXT değerlerini gizli bilgi veya kimlik
+doğrulama olarak ele almamalıdır. Keşif bir yönlendirme ipucudur; güvenin
+sahipliği yine Gateway kimlik doğrulamasına ve TLS sabitlemesine aittir.
 
-### CLI kayıt metaverisi
+### CLI kayıt meta verileri
 
-`api.registerCli(registrar, opts?)` iki tür komut metaverisi kabul eder:
+`api.registerCli(registrar, opts?)` iki tür komut meta verisi kabul eder:
 
-- `commands`: kayıtçıya ait açık komut adları
-- `descriptors`: CLI yardımı, yönlendirme ve geç yüklenen Plugin CLI kaydı için kullanılan ayrıştırma zamanı komut tanımlayıcıları
+- `commands`: kaydedicinin sahip olduğu açık komut adları
+- `descriptors`: CLI yardımı, yönlendirme ve tembel plugin CLI kaydı için
+  kullanılan ayrıştırma zamanı komut tanımlayıcıları
 - `parentPath`: `["nodes"]` gibi iç içe komut grupları için isteğe bağlı üst komut yolu
 
-Eşleştirilmiş Node özellikleri için `api.registerNodeCliFeature(registrar, opts?)` tercih edin. Bu, `api.registerCli(..., { parentPath: ["nodes"] })` etrafında küçük bir sarmalayıcıdır ve `openclaw nodes canvas` gibi komutları açıkça Plugin'e ait Node özellikleri yapar.
+Eşleştirilmiş düğüm özellikleri için
+`api.registerNodeCliFeature(registrar, opts?)` tercih edin. Bu,
+`api.registerCli(..., { parentPath: ["nodes"] })` etrafında küçük bir sarmalayıcıdır
+ve `openclaw nodes canvas` gibi komutları açıkça plugin sahipliğinde düğüm
+özellikleri yapar.
 
-Bir Plugin komutunun normal kök CLI yolunda geç yüklenmiş kalmasını istiyorsanız, o kayıtçının sunduğu her üst düzey komut kökünü kapsayan `descriptors` sağlayın.
+Bir plugin komutunun normal kök CLI yolunda tembel yüklenmiş kalmasını
+istiyorsanız, o kaydedicinin açığa çıkardığı her üst düzey komut kökünü kapsayan
+`descriptors` sağlayın.
 
 ```typescript
 api.registerCli(
@@ -244,7 +272,7 @@ api.registerCli(
 );
 ```
 
-İç içe komutlar, çözümlenen üst komutu `program` olarak alır:
+İç içe komutlar, çözümlenmiş üst komutu `program` olarak alır:
 
 ```typescript
 api.registerCli(
@@ -265,67 +293,86 @@ api.registerCli(
 );
 ```
 
-Yalnızca geç kök CLI kaydına ihtiyaç duymadığınızda `commands` öğesini tek başına kullanın. Bu istekli uyumluluk yolu desteklenmeye devam eder, ancak ayrıştırma zamanında geç yükleme için tanımlayıcı destekli yer tutucular kurmaz.
+`commands` öğesini tek başına yalnızca tembel kök CLI kaydına ihtiyacınız
+olmadığında kullanın. Bu istekli uyumluluk yolu desteklenmeye devam eder, ancak
+ayrıştırma zamanı tembel yükleme için tanımlayıcı destekli yer tutucular kurmaz.
 
-### CLI arka uç kaydı
+### CLI backend kaydı
 
-`api.registerCliBackend(...)`, bir Plugin'in `codex-cli` gibi yerel bir AI CLI arka ucu için varsayılan yapılandırmaya sahip olmasını sağlar.
+`api.registerCliBackend(...)`, bir plugin'in `codex-cli` gibi yerel bir AI CLI
+backend'i için varsayılan yapılandırmaya sahip olmasını sağlar.
 
-- Arka uç `id` değeri, `codex-cli/gpt-5` gibi model başvurularında sağlayıcı öneki olur.
-- Arka uç `config` değeri, `agents.defaults.cliBackends.<id>` ile aynı şekli kullanır.
-- Kullanıcı yapılandırması yine önceliklidir. OpenClaw, CLI'yi çalıştırmadan önce `agents.defaults.cliBackends.<id>` değerini Plugin varsayılanının üzerine birleştirir.
-- Bir arka uç, birleştirme sonrasında uyumluluk yeniden yazımlarına ihtiyaç duyduğunda `normalizeConfig` kullanın (örneğin eski flag şekillerini normalleştirmek için).
-- OpenClaw düşünme seviyelerini yerel bir effort flag'ine eşlemek gibi CLI lehçesine ait istek kapsamlı argv yeniden yazımları için `resolveExecutionArgs` kullanın.
+- Backend `id`, `codex-cli/gpt-5` gibi model referanslarında provider öneki olur.
+- Backend `config`, `agents.defaults.cliBackends.<id>` ile aynı biçimi kullanır.
+- Kullanıcı yapılandırması yine kazanır. OpenClaw, CLI'yi çalıştırmadan önce
+  `agents.defaults.cliBackends.<id>` öğesini plugin varsayılanının üzerine birleştirir.
+- Bir backend, birleştirme sonrasında uyumluluk yeniden yazmalarına ihtiyaç
+  duyduğunda `normalizeConfig` kullanın (örneğin eski bayrak biçimlerini
+  normalleştirmek için).
+- OpenClaw düşünme seviyelerini yerel bir çaba bayrağına eşlemek gibi CLI
+  lehçesine ait istek kapsamlı argv yeniden yazmaları için `resolveExecutionArgs`
+  kullanın.
 
-Uçtan uca yazarlık kılavuzu için bkz. [CLI arka uç Plugin'leri](/tr/plugins/cli-backend-plugins).
+Uçtan uca yazarlık kılavuzu için bkz.
+[CLI backend plugin'leri](/tr/plugins/cli-backend-plugins).
 
-### Özel slotlar
+### Özel yuvalar
 
-| Yöntem                                    | Neyi kaydeder                                                                                                                                                 |
-| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `api.registerContextEngine(id, factory)`  | Bağlam motoru (aynı anda bir etkin). `assemble()` geri çağrısı `availableTools` ve `citationsMode` alır; böylece motor prompt eklemelerini uyarlayabilir. |
-| `api.registerMemoryCapability(capability)` | Birleşik bellek yeteneği                                                                                                                                     |
-| `api.registerMemoryPromptSection(builder)` | Bellek prompt bölümü oluşturucu                                                                                                                             |
-| `api.registerMemoryFlushPlan(resolver)`   | Bellek flush planı çözücü                                                                                                                                     |
-| `api.registerMemoryRuntime(runtime)`      | Bellek runtime adaptörü                                                                                                                                       |
+| Yöntem                                     | Ne kaydeder                                                                                                                                              |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `api.registerContextEngine(id, factory)`   | Bağlam motoru (aynı anda bir etkin). `assemble()` callback'i `availableTools` ve `citationsMode` alır, böylece motor prompt eklemelerini uyarlayabilir. |
+| `api.registerMemoryCapability(capability)` | Birleşik bellek yeteneği                                                                                                                                |
+| `api.registerMemoryPromptSection(builder)` | Bellek prompt bölümü oluşturucu                                                                                                                         |
+| `api.registerMemoryFlushPlan(resolver)`    | Bellek boşaltma planı çözücü                                                                                                                            |
+| `api.registerMemoryRuntime(runtime)`       | Bellek runtime adaptörü                                                                                                                                 |
 
 ### Bellek embedding adaptörleri
 
-| Yöntem                                        | Neyi kaydeder                              |
-| --------------------------------------------- | ------------------------------------------ |
-| `api.registerMemoryEmbeddingProvider(adapter)` | Etkin Plugin için bellek embedding adaptörü |
+| Yöntem                                         | Ne kaydeder                                    |
+| ---------------------------------------------- | ---------------------------------------------- |
+| `api.registerMemoryEmbeddingProvider(adapter)` | Etkin plugin için bellek embedding adaptörü    |
 
-- `registerMemoryCapability`, tercih edilen özel bellek Plugin API'sidir.
-- `registerMemoryCapability`, eşlik eden Plugin'lerin belirli bir bellek Plugin'inin özel düzenine erişmek yerine dışa aktarılan bellek artifact'lerini `openclaw/plugin-sdk/memory-host-core` üzerinden tüketebilmesi için `publicArtifacts.listArtifacts(...)` da sunabilir.
-- `registerMemoryPromptSection`, `registerMemoryFlushPlan` ve `registerMemoryRuntime` eski sürüm uyumlu özel bellek Plugin API'leridir.
-- `MemoryFlushPlan.model`, flush turunu etkin fallback zincirini devralmadan `ollama/qwen3:8b` gibi tam bir `provider/model` başvurusuna sabitleyebilir.
-- `registerMemoryEmbeddingProvider`, etkin bellek Plugin'inin bir veya daha fazla embedding adaptörü kimliği kaydetmesini sağlar (örneğin `openai`, `gemini` veya Plugin tarafından tanımlanan özel bir kimlik).
-- `agents.defaults.memorySearch.provider` ve `agents.defaults.memorySearch.fallback` gibi kullanıcı yapılandırması, bu kayıtlı adaptör kimliklerine göre çözümlenir.
+- `registerMemoryCapability`, tercih edilen özel bellek plugin'i API'sidir.
+- `registerMemoryCapability`, tamamlayıcı plugin'lerin belirli bir bellek
+  plugin'inin özel düzenine erişmek yerine dışa aktarılan bellek artefaktlarını
+  `openclaw/plugin-sdk/memory-host-core` üzerinden tüketebilmesi için
+  `publicArtifacts.listArtifacts(...)` de açığa çıkarabilir.
+- `registerMemoryPromptSection`, `registerMemoryFlushPlan` ve
+  `registerMemoryRuntime`, eskiyle uyumlu özel bellek plugin'i API'leridir.
+- `MemoryFlushPlan.model`, boşaltma turunu etkin yedek zinciri devralmadan
+  `ollama/qwen3:8b` gibi tam bir `provider/model` referansına sabitleyebilir.
+- `registerMemoryEmbeddingProvider`, etkin bellek plugin'inin bir veya daha
+  fazla embedding adaptörü kimliği kaydetmesini sağlar (örneğin `openai`,
+  `gemini` veya özel plugin tanımlı bir kimlik).
+- `agents.defaults.memorySearch.provider` ve
+  `agents.defaults.memorySearch.fallback` gibi kullanıcı yapılandırması, bu
+  kayıtlı adaptör kimliklerine göre çözümlenir.
 
 ### Olaylar ve yaşam döngüsü
 
-| Yöntem                                      | Ne yapar                    |
-| ------------------------------------------- | --------------------------- |
-| `api.on(hookName, handler, opts?)`          | Tiplenmiş yaşam döngüsü hook'u |
-| `api.onConversationBindingResolved(handler)` | Konuşma bağlama geri çağrısı |
+| Yöntem                                       | Ne yapar                       |
+| -------------------------------------------- | ------------------------------ |
+| `api.on(hookName, handler, opts?)`           | Türlü yaşam döngüsü hook'u     |
+| `api.onConversationBindingResolved(handler)` | Konuşma bağlama callback'i     |
 
-Örnekler, yaygın hook adları ve guard semantiği için bkz. [Plugin hook'ları](/tr/plugins/hooks).
+Örnekler, yaygın hook adları ve koruma semantiği için bkz.
+[Plugin hook'ları](/tr/plugins/hooks).
 
 ### Hook karar semantiği
 
 - `before_tool_call`: `{ block: true }` döndürmek sonlandırıcıdır. Herhangi bir işleyici bunu ayarladığında, daha düşük öncelikli işleyiciler atlanır.
-- `before_tool_call`: `{ block: false }` döndürmek karar yok olarak ele alınır (`block` öğesini atlamakla aynı), override olarak değil.
+- `before_tool_call`: `{ block: false }` döndürmek karar yok olarak ele alınır (`block` öğesini atlamakla aynıdır), geçersiz kılma değildir.
 - `before_install`: `{ block: true }` döndürmek sonlandırıcıdır. Herhangi bir işleyici bunu ayarladığında, daha düşük öncelikli işleyiciler atlanır.
-- `before_install`: `{ block: false }` döndürmek karar yok olarak ele alınır (`block` öğesini atlamakla aynı), override olarak değil.
-- `reply_dispatch`: `{ handled: true, ... }` döndürmek sonlandırıcıdır. Herhangi bir işleyici gönderimi üstlendiğinde, daha düşük öncelikli işleyiciler ve varsayılan model gönderim yolu atlanır.
+- `before_install`: `{ block: false }` döndürmek karar yok olarak ele alınır (`block` öğesini atlamakla aynıdır), geçersiz kılma değildir.
+- `reply_dispatch`: `{ handled: true, ... }` döndürmek sonlandırıcıdır. Herhangi bir işleyici dispatch'i üstlendiğinde, daha düşük öncelikli işleyiciler ve varsayılan model dispatch yolu atlanır.
 - `message_sending`: `{ cancel: true }` döndürmek sonlandırıcıdır. Herhangi bir işleyici bunu ayarladığında, daha düşük öncelikli işleyiciler atlanır.
-- `message_sending`: `{ cancel: false }` döndürmek karar yok olarak ele alınır (`cancel` öğesini atlamakla aynı), override olarak değil.
-- `message_received`: gelen thread/topic yönlendirmesine ihtiyaç duyduğunuzda tiplenmiş `threadId` alanını kullanın. Kanal özelindeki ekler için `metadata` kullanmaya devam edin.
-- `message_sending`: kanal özelindeki `metadata` değerine geri dönmeden önce tiplenmiş `replyToId` / `threadId` yönlendirme alanlarını kullanın.
-- `gateway_start`: dahili `gateway:startup` hook'larına güvenmek yerine Gateway'e ait başlatma durumu için `ctx.config`, `ctx.workspaceDir` ve `ctx.getCron?.()` kullanın.
-- `cron_changed`: Gateway'e ait Cron yaşam döngüsü değişikliklerini gözlemleyin. Harici uyandırma zamanlayıcılarını eşitlerken `event.job?.state?.nextRunAtMs` ve `ctx.getCron?.()` kullanın; due kontrolleri ve yürütme için doğruluk kaynağı olarak OpenClaw'ı tutun.
+- `message_sending`: `{ cancel: false }` döndürmek karar yok olarak ele alınır (`cancel` öğesini atlamakla aynıdır), geçersiz kılma değildir.
+- `message_received`: gelen thread/konu yönlendirmesine ihtiyacınız olduğunda türlü `threadId` alanını kullanın. `metadata` öğesini kanala özgü ek bilgiler için saklayın.
+- `message_sending`: kanala özgü `metadata` öğesine geri dönmeden önce türlü `replyToId` / `threadId` yönlendirme alanlarını kullanın.
+- `gateway_start`: dahili `gateway:startup` hook'larına güvenmek yerine gateway sahipliğindeki başlatma durumu için `ctx.config`, `ctx.workspaceDir` ve `ctx.getCron?.()` kullanın.
+- `cron_changed`: gateway sahipliğindeki cron yaşam döngüsü değişikliklerini gözlemleyin. Harici uyandırma zamanlayıcılarını senkronize ederken `event.job?.state?.nextRunAtMs` ve `ctx.getCron?.()` kullanın ve vade kontrolleri ile yürütme için doğruluk kaynağı olarak OpenClaw'ı tutun.
 
-### API nesnesi alanları
+### API nesne alanları
 
 | Alan                     | Tür                       | Açıklama                                                                                         |
 | ------------------------ | ------------------------- | ------------------------------------------------------------------------------------------------ |
@@ -335,11 +382,11 @@ Uçtan uca yazarlık kılavuzu için bkz. [CLI arka uç Plugin'leri](/tr/plugins
 | `api.description`        | `string?`                 | Plugin açıklaması (isteğe bağlı)                                                                 |
 | `api.source`             | `string`                  | Plugin kaynak yolu                                                                               |
 | `api.rootDir`            | `string?`                 | Plugin kök dizini (isteğe bağlı)                                                                 |
-| `api.config`             | `OpenClawConfig`          | Geçerli yapılandırma anlık görüntüsü (varsa etkin bellek içi runtime anlık görüntüsü)             |
-| `api.pluginConfig`       | `Record<string, unknown>` | `plugins.entries.<id>.config` üzerinden Plugin'e özel yapılandırma                               |
+| `api.config`             | `OpenClawConfig`          | Geçerli yapılandırma anlık görüntüsü (varsa etkin bellek içi runtime anlık görüntüsü)            |
+| `api.pluginConfig`       | `Record<string, unknown>` | `plugins.entries.<id>.config` öğesinden plugin'e özgü yapılandırma                               |
 | `api.runtime`            | `PluginRuntime`           | [Runtime yardımcıları](/tr/plugins/sdk-runtime)                                                     |
-| `api.logger`             | `PluginLogger`            | Kapsamlı logger (`debug`, `info`, `warn`, `error`)                                                |
-| `api.registrationMode`   | `PluginRegistrationMode`  | Geçerli yükleme modu; `"setup-runtime"` hafif, tam giriş öncesi başlangıç/kurulum penceresidir |
+| `api.logger`             | `PluginLogger`            | Kapsamlı logger (`debug`, `info`, `warn`, `error`)                                               |
+| `api.registrationMode`   | `PluginRegistrationMode`  | Geçerli yükleme modu; `"setup-runtime"` hafif, tam giriş öncesi başlatma/kurulum penceresidir    |
 | `api.resolvePath(input)` | `(string) => string`      | Plugin köküne göre yolu çözümle                                                                  |
 
 ## Dahili modül kuralı
@@ -355,29 +402,36 @@ my-plugin/
 ```
 
 <Warning>
-  Production kodundan kendi Plugin'inizi asla `openclaw/plugin-sdk/<your-plugin>`
+  Production kodundan kendi plugin'inizi asla `openclaw/plugin-sdk/<your-plugin>`
   üzerinden import etmeyin. Dahili import'ları `./api.ts` veya
-  `./runtime-api.ts` üzerinden yönlendirin. SDK yolu yalnızca harici sözleşmedir.
+  `./runtime-api.ts` üzerinden yönlendirin. SDK yolu yalnızca harici kontrattır.
 </Warning>
 
-Facade ile yüklenen paketlenmiş Plugin public yüzeyleri (`api.ts`, `runtime-api.ts`, `index.ts`, `setup-entry.ts` ve benzeri public giriş dosyaları), OpenClaw zaten çalışıyorsa etkin runtime yapılandırma anlık görüntüsünü tercih eder. Henüz runtime anlık görüntüsü yoksa, diskteki çözümlenmiş yapılandırma dosyasına geri dönerler. Paketlenmiş Plugin facade'ları OpenClaw'ın Plugin facade yükleyicileri üzerinden yüklenmelidir; `dist/extensions/...` üzerinden doğrudan import'lar, paketlenmiş kurulumların Plugin'e ait kod için kullandığı manifest ve runtime sidecar kontrollerini atlar.
+Facade üzerinden yüklenen birlikte gelen Plugin genel yüzeyleri (`api.ts`, `runtime-api.ts`,
+`index.ts`, `setup-entry.ts` ve benzer genel giriş dosyaları), OpenClaw zaten çalışıyorsa
+etkin çalışma zamanı yapılandırma anlık görüntüsünü tercih eder. Henüz çalışma zamanı
+anlık görüntüsü yoksa, diskteki çözümlenmiş yapılandırma dosyasına geri dönerler.
+Paketlenmiş birlikte gelen Plugin facade'ları, OpenClaw'ın Plugin facade
+yükleyicileri üzerinden yüklenmelidir; `dist/extensions/...` içinden doğrudan içe
+aktarımlar, paketlenmiş kurulumların Plugin'e ait kod için kullandığı manifest ve
+çalışma zamanı yan yardımcı kontrollerini atlar.
 
 Sağlayıcı Plugin'leri, bir yardımcı özellikle sağlayıcıya özgü olduğunda ve henüz
-genel bir SDK alt yoluna ait olmadığında dar bir Plugin yerel sözleşme barrel'ı
-sunabilir. Paketlenmiş örnekler:
+genel bir SDK alt yoluna ait olmadığında dar, Plugin'e yerel bir sözleşme barrel'ı
+sunabilir. Birlikte gelen örnekler:
 
-- **Anthropic**: Claude beta-header ve `service_tier` stream yardımcıları için
-  herkese açık `api.ts` / `contract-api.ts` arayüzü.
-- **`@openclaw/openai-provider`**: `api.ts` sağlayıcı oluşturucuları,
-  varsayılan model yardımcılarını ve realtime sağlayıcı oluşturucularını dışa aktarır.
-- **`@openclaw/openrouter-provider`**: `api.ts`, sağlayıcı oluşturucusunu
-  ve onboarding/config yardımcılarını dışa aktarır.
+- **Anthropic**: Claude beta-header ve `service_tier` akış yardımcıları için genel
+  `api.ts` / `contract-api.ts` bağlantı noktası.
+- **`@openclaw/openai-provider`**: `api.ts`, sağlayıcı oluşturucularını,
+  varsayılan model yardımcılarını ve gerçek zamanlı sağlayıcı oluşturucularını dışa aktarır.
+- **`@openclaw/openrouter-provider`**: `api.ts`, sağlayıcı oluşturucusunu ve
+  onboarding/yapılandırma yardımcılarını dışa aktarır.
 
 <Warning>
-  Uzantı üretim kodu, `openclaw/plugin-sdk/<other-plugin>` içe aktarımlarından da
+  Extension üretim kodu `openclaw/plugin-sdk/<other-plugin>` içe aktarımlarından da
   kaçınmalıdır. Bir yardımcı gerçekten paylaşılıyorsa, iki Plugin'i birbirine
   bağlamak yerine onu `openclaw/plugin-sdk/speech`, `.../provider-model-shared`
-  veya başka bir yetenek odaklı yüzey gibi tarafsız bir SDK alt yoluna taşıyın.
+  veya başka bir yetenek odaklı yüzey gibi tarafsız bir SDK alt yoluna yükseltin.
 </Warning>
 
 ## İlgili
@@ -386,19 +440,19 @@ sunabilir. Paketlenmiş örnekler:
   <Card title="Giriş noktaları" icon="door-open" href="/tr/plugins/sdk-entrypoints">
     `definePluginEntry` ve `defineChannelPluginEntry` seçenekleri.
   </Card>
-  <Card title="Runtime yardımcıları" icon="gears" href="/tr/plugins/sdk-runtime">
-    Tam `api.runtime` namespace başvurusu.
+  <Card title="Çalışma zamanı yardımcıları" icon="gears" href="/tr/plugins/sdk-runtime">
+    Tam `api.runtime` ad alanı başvurusu.
   </Card>
   <Card title="Kurulum ve yapılandırma" icon="sliders" href="/tr/plugins/sdk-setup">
-    Paketleme, manifest'ler ve config şemaları.
+    Paketleme, manifestler ve yapılandırma şemaları.
   </Card>
-  <Card title="Test" icon="vial" href="/tr/plugins/sdk-testing">
-    Test araçları ve lint kuralları.
+  <Card title="Test etme" icon="vial" href="/tr/plugins/sdk-testing">
+    Test yardımcıları ve lint kuralları.
   </Card>
-  <Card title="SDK migration" icon="arrows-turn-right" href="/tr/plugins/sdk-migration">
+  <Card title="SDK geçişi" icon="arrows-turn-right" href="/tr/plugins/sdk-migration">
     Kullanımdan kaldırılmış yüzeylerden geçiş.
   </Card>
-  <Card title="Plugin internalleri" icon="diagram-project" href="/tr/plugins/architecture">
+  <Card title="Plugin iç yapıları" icon="diagram-project" href="/tr/plugins/architecture">
     Derin mimari ve yetenek modeli.
   </Card>
 </CardGroup>

@@ -1,25 +1,25 @@
 ---
 read_when:
-    - می‌خواهید به صفحات کلیدی مستندات دسترسی سریع داشته باشید
-summary: پیوندهای گزینش‌شده به پرکاربردترین مستندات OpenClaw.
-title: دایرکتوری مستندات
+    - می‌خواهید به صفحه‌های کلیدی مستندات دسترسی سریع داشته باشید
+summary: پیوندهای منتخب به پرکاربردترین مستندات OpenClaw.
+title: پوشهٔ مستندات
 x-i18n:
-    generated_at: "2026-05-07T01:55:25Z"
+    generated_at: "2026-05-10T20:07:18Z"
     model: gpt-5.5
     provider: openai
-    source_hash: bd24805e17b89747850f01302e761babea411d50aee4e50ec43f93c2e893a4e1
+    source_hash: ddd6903aeb87e36db977b2cef62bd80e84fc67633ca00beb3365ced1f5abdd99
     source_path: start/docs-directory.md
     workflow: 16
 ---
 
 <Note>
-این صفحه یک نمایهٔ گزینش‌شده است. اگر تازه‌کار هستید، از [شروع به کار](/fa/start/getting-started) شروع کنید.
+این صفحه یک نمایهٔ گزینش‌شده است. اگر تازه‌وارد هستید، با [شروع به کار](/fa/start/getting-started) آغاز کنید.
 برای نقشهٔ کامل مستندات، [هاب‌های مستندات](/fa/start/hubs) را ببینید.
 </Note>
 
 ## از اینجا شروع کنید
 
-- [هاب‌های مستندات (همهٔ صفحه‌ها پیوند شده‌اند)](/fa/start/hubs)
+- [هاب‌های مستندات (همهٔ صفحه‌ها پیوند داده شده‌اند)](/fa/start/hubs)
 - [راهنما](/fa/help)
 - [پیکربندی](/fa/gateway/configuration)
 - [نمونه‌های پیکربندی](/fa/gateway/configuration-examples)
@@ -33,26 +33,25 @@ x-i18n:
 - [پیکربندی Skills](/fa/tools/skills-config)
 - [قالب‌های فضای کاری](/fa/reference/templates/AGENTS)
 - [آداپتورهای RPC](/fa/reference/rpc)
-- [راهنمای عملیاتی Gateway](/fa/gateway)
+- [دفترچهٔ عملیات Gateway](/fa/gateway)
 - [گره‌ها (iOS و Android)](/fa/nodes)
-- [سطوح وب (Control UI)](/fa/web)
-- [کشف و انتقال‌ها](/fa/gateway/discovery)
+- [سطوح وب (رابط کاربری کنترل)](/fa/web)
+- [کشف و ترابری‌ها](/fa/gateway/discovery)
 - [دسترسی از راه دور](/fa/gateway/remote)
 
-## ارائه‌دهندگان و تجربهٔ کاربری
+## ارائه‌دهندگان و تجربه کاربری
 
 - [WebChat](/fa/web/webchat)
-- [Control UI (مرورگر)](/fa/web/control-ui)
+- [رابط کاربری کنترل (مرورگر)](/fa/web/control-ui)
 - [Telegram](/fa/channels/telegram)
 - [Discord](/fa/channels/discord)
 - [Mattermost](/fa/channels/mattermost)
-- [BlueBubbles (پل قدیمی iMessage)](/fa/channels/bluebubbles)
 - [ربات QQ](/fa/channels/qqbot)
 - [iMessage](/fa/channels/imessage)
 - [گروه‌ها](/fa/channels/groups)
 - [پیام‌های گروهی WhatsApp](/fa/channels/group-messages)
-- [تصاویر رسانه](/fa/nodes/images)
-- [صدای رسانه](/fa/nodes/audio)
+- [تصاویر رسانه‌ای](/fa/nodes/images)
+- [صدای رسانه‌ای](/fa/nodes/audio)
 
 ## برنامه‌های همراه
 
@@ -64,10 +63,10 @@ x-i18n:
 
 ## عملیات و ایمنی
 
-- [جلسه‌ها](/fa/concepts/session)
+- [نشست‌ها](/fa/concepts/session)
 - [کارهای Cron](/fa/automation/cron-jobs)
 - [Webhookها](/fa/automation/cron-jobs#webhooks)
-- [قلاب‌های Gmail (Pub/Sub)](/fa/automation/cron-jobs#gmail-pubsub-integration)
+- [هوک‌های Gmail (Pub/Sub)](/fa/automation/cron-jobs#gmail-pubsub-integration)
 - [امنیت](/fa/gateway/security)
 - [عیب‌یابی](/fa/gateway/troubleshooting)
 

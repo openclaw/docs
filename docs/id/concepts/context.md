@@ -1,42 +1,43 @@
 ---
 read_when:
-    - Anda ingin memahami apa arti "konteks" di OpenClaw
-    - Anda sedang menyelidiki mengapa model "mengetahui" sesuatu (atau melupakannya)
-    - Anda ingin mengurangi beban konteks (/context, /status, /compact)
-summary: 'Konteks: apa yang dilihat model, bagaimana konteks tersebut dibangun, dan bagaimana memeriksanya'
+    - Anda ingin memahami apa arti "konteks" dalam OpenClaw
+    - Anda sedang men-debug mengapa model "mengetahui" sesuatu (atau melupakannya)
+    - Anda ingin mengurangi overhead konteks (/context, /status, /compact)
+summary: 'Konteks: apa yang dilihat model, bagaimana konteks itu dibangun, dan cara memeriksanya'
 title: Konteks
 x-i18n:
-    generated_at: "2026-05-06T09:07:01Z"
+    generated_at: "2026-05-10T19:31:01Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1bd23094ef23928ee277c1b84ee17b9324aaea963d72a0c4c73da359409a5de9
+    source_hash: dc2dae290e63f82111d865ae066567ef58ec3f48eb62b409b76ee9e6ff65d696
     source_path: concepts/context.md
     workflow: 16
 ---
 
-"Konteks" adalah **semua yang OpenClaw kirim ke model untuk sebuah proses berjalan**. Ini dibatasi oleh **jendela konteks** model (batas token).
+"Konteks" adalah **semua yang OpenClaw kirim ke model untuk sebuah proses**. Ini dibatasi oleh **jendela konteks** model (batas token).
 
 Model mental pemula:
 
-- **Prompt sistem** (dibangun OpenClaw): aturan, alat, daftar skills, waktu/runtime, dan file workspace yang diinjeksi.
+- **Prompt sistem** (dibangun oleh OpenClaw): aturan, alat, daftar Skills, waktu/runtime, dan file ruang kerja yang disisipkan.
 - **Riwayat percakapan**: pesan Anda + pesan asisten untuk sesi ini.
-- **Panggilan/hasil alat + lampiran**: output perintah, pembacaan file, gambar/audio, dll.
+- **Pemanggilan/hasil alat + lampiran**: keluaran perintah, pembacaan file, gambar/audio, dll.
 
-Konteks _tidak sama_ dengan "memori": memori dapat disimpan di disk dan dimuat ulang nanti; konteks adalah apa yang ada di dalam jendela model saat ini.
+Konteks _tidak sama_ dengan "memori": memori dapat disimpan di disk dan dimuat ulang nanti; konteks adalah yang berada di dalam jendela model saat ini.
 
 ## Mulai cepat (periksa konteks)
 
 - `/status` → tampilan cepat "seberapa penuh jendela saya?" + pengaturan sesi.
-- `/context list` → apa yang diinjeksi + ukuran kasar (per file + total).
-- `/context detail` → perincian lebih dalam: ukuran per file, per skema alat, per entri skill, dan ukuran prompt sistem.
+- `/context list` → apa yang disisipkan + ukuran kasar (per file + total).
+- `/context detail` → rincian lebih dalam: ukuran per file, per skema alat, per entri skill, dan ukuran prompt sistem.
+- `/context map` → gambar treemap bergaya WinDirStat dari kontributor konteks terlacak sesi saat ini.
 - `/usage tokens` → tambahkan footer penggunaan per balasan ke balasan normal.
-- `/compact` → ringkas riwayat lama menjadi entri ringkas untuk mengosongkan ruang jendela.
+- `/compact` → ringkas riwayat lama menjadi entri ringkas untuk membebaskan ruang jendela.
 
 Lihat juga: [Perintah slash](/id/tools/slash-commands), [Penggunaan token & biaya](/id/reference/token-use), [Compaction](/id/concepts/compaction).
 
-## Contoh output
+## Contoh keluaran
 
-Nilai bervariasi menurut model, provider, kebijakan alat, dan apa yang ada di workspace Anda.
+Nilai bervariasi menurut model, penyedia, kebijakan alat, dan isi ruang kerja Anda.
 
 ### `/context list`
 
@@ -81,33 +82,44 @@ Top tools (schema size):
 … (+N more tools)
 ```
 
-## Apa yang dihitung ke dalam jendela konteks
+### `/context map`
+
+Mengirim gambar yang dibuat dari laporan proses cache terbaru. Sebelum pesan normal menghasilkan laporan proses dalam sesi, `/context map` mengembalikan pesan tidak tersedia alih-alih merender perkiraan. Luas persegi panjang sebanding dengan karakter prompt yang dilacak:
+
+- file ruang kerja yang disisipkan
+- teks prompt sistem dasar
+- entri prompt skill
+- skema JSON alat
+
+`/context list`, `/context detail`, dan `/context json` tetap dapat memeriksa perkiraan sesuai permintaan saat tidak ada laporan proses yang di-cache.
+
+## Apa yang dihitung dalam jendela konteks
 
 Semua yang diterima model dihitung, termasuk:
 
 - Prompt sistem (semua bagian).
 - Riwayat percakapan.
-- Panggilan alat + hasil alat.
+- Pemanggilan alat + hasil alat.
 - Lampiran/transkrip (gambar/audio/file).
 - Ringkasan Compaction dan artefak pemangkasan.
-- "Wrapper" provider atau header tersembunyi (tidak terlihat, tetap dihitung).
+- "Wrapper" penyedia atau header tersembunyi (tidak terlihat, tetap dihitung).
 
 ## Cara OpenClaw membangun prompt sistem
 
-Prompt sistem **dimiliki OpenClaw** dan dibangun ulang setiap proses berjalan. Ini mencakup:
+Prompt sistem **dimiliki OpenClaw** dan dibangun ulang setiap proses. Ini mencakup:
 
 - Daftar alat + deskripsi singkat.
-- Daftar Skills (metadata saja; lihat di bawah).
-- Lokasi workspace.
+- Daftar Skills (hanya metadata; lihat di bawah).
+- Lokasi ruang kerja.
 - Waktu (UTC + waktu pengguna yang dikonversi jika dikonfigurasi).
 - Metadata runtime (host/OS/model/thinking).
-- File bootstrap workspace yang diinjeksi di bawah **Konteks Proyek**.
+- File bootstrap ruang kerja yang disisipkan di bawah **Konteks Proyek**.
 
-Perincian lengkap: [Prompt Sistem](/id/concepts/system-prompt).
+Rincian lengkap: [Prompt Sistem](/id/concepts/system-prompt).
 
-## File workspace yang diinjeksi (Konteks Proyek)
+## File ruang kerja yang disisipkan (Konteks Proyek)
 
-Secara default, OpenClaw menginjeksi serangkaian file workspace tetap (jika ada):
+Secara default, OpenClaw menyisipkan sekumpulan file ruang kerja tetap (jika ada):
 
 - `AGENTS.md`
 - `SOUL.md`
@@ -117,24 +129,24 @@ Secara default, OpenClaw menginjeksi serangkaian file workspace tetap (jika ada)
 - `HEARTBEAT.md`
 - `BOOTSTRAP.md` (hanya proses pertama)
 
-File besar dipotong per file menggunakan `agents.defaults.bootstrapMaxChars` (default `12000` karakter). OpenClaw juga menerapkan batas total injeksi bootstrap lintas file dengan `agents.defaults.bootstrapTotalMaxChars` (default `60000` karakter). `/context` menampilkan ukuran **mentah vs diinjeksi** dan apakah pemotongan terjadi.
+File besar dipotong per file menggunakan `agents.defaults.bootstrapMaxChars` (default `12000` karakter). OpenClaw juga menerapkan batas total penyisipan bootstrap di seluruh file dengan `agents.defaults.bootstrapTotalMaxChars` (default `60000` karakter). `/context` menampilkan ukuran **mentah vs disisipkan** dan apakah pemotongan terjadi.
 
-Saat pemotongan terjadi, runtime dapat menginjeksi blok peringatan di dalam prompt di bawah Konteks Proyek. Konfigurasikan ini dengan `agents.defaults.bootstrapPromptTruncationWarning` (`off`, `once`, `always`; default `once`).
+Saat pemotongan terjadi, runtime dapat menyisipkan blok peringatan dalam prompt di bawah Konteks Proyek. Konfigurasikan ini dengan `agents.defaults.bootstrapPromptTruncationWarning` (`off`, `once`, `always`; default `once`).
 
-## Skills: diinjeksi vs dimuat sesuai kebutuhan
+## Skills: disisipkan vs dimuat sesuai permintaan
 
-Prompt sistem mencakup **daftar skills** yang ringkas (nama + deskripsi + lokasi). Daftar ini memiliki overhead nyata.
+Prompt sistem menyertakan **daftar Skills** ringkas (nama + deskripsi + lokasi). Daftar ini memiliki overhead nyata.
 
-Instruksi skill _tidak_ disertakan secara default. Model diharapkan untuk `read` `SKILL.md` milik skill **hanya saat diperlukan**.
+Instruksi skill _tidak_ disertakan secara default. Model diharapkan `read` `SKILL.md` milik skill **hanya saat diperlukan**.
 
 ## Alat: ada dua biaya
 
-Alat memengaruhi konteks dengan dua cara:
+Alat memengaruhi konteks dalam dua cara:
 
-1. **Teks daftar alat** di prompt sistem (yang Anda lihat sebagai "Tooling").
-2. **Skema alat** (JSON). Ini dikirim ke model agar model dapat memanggil alat. Skema ini dihitung ke dalam konteks meskipun Anda tidak melihatnya sebagai teks biasa.
+1. **Teks daftar alat** dalam prompt sistem (yang Anda lihat sebagai "Tooling").
+2. **Skema alat** (JSON). Ini dikirim ke model agar model dapat memanggil alat. Skema ini dihitung dalam konteks meskipun Anda tidak melihatnya sebagai teks biasa.
 
-`/context detail` memecah skema alat terbesar agar Anda dapat melihat apa yang paling dominan.
+`/context detail` merinci skema alat terbesar sehingga Anda dapat melihat apa yang dominan.
 
 ## Perintah, direktif, dan "pintasan inline"
 
@@ -144,49 +156,49 @@ Perintah slash ditangani oleh Gateway. Ada beberapa perilaku berbeda:
 - **Direktif**: `/think`, `/verbose`, `/trace`, `/reasoning`, `/elevated`, `/model`, `/queue` dihapus sebelum model melihat pesan.
   - Pesan yang hanya berisi direktif mempertahankan pengaturan sesi.
   - Direktif inline dalam pesan normal bertindak sebagai petunjuk per pesan.
-- **Pintasan inline** (hanya pengirim yang diizinkan): token `/...` tertentu di dalam pesan normal dapat langsung berjalan (contoh: "hey /status"), dan dihapus sebelum model melihat teks sisanya.
+- **Pintasan inline** (hanya pengirim yang diizinkan): token `/...` tertentu di dalam pesan normal dapat langsung berjalan (contoh: "hey /status"), dan dihapus sebelum model melihat teks yang tersisa.
 
 Detail: [Perintah slash](/id/tools/slash-commands).
 
 ## Sesi, Compaction, dan pemangkasan (apa yang bertahan)
 
-Apa yang bertahan antar pesan bergantung pada mekanismenya:
+Apa yang bertahan di antara pesan bergantung pada mekanismenya:
 
-- **Riwayat normal** bertahan dalam transkrip sesi hingga dikompaksi/dipangkas oleh kebijakan.
+- **Riwayat normal** bertahan dalam transkrip sesi hingga dipadatkan/dipangkas oleh kebijakan.
 - **Compaction** mempertahankan ringkasan ke dalam transkrip dan menjaga pesan terbaru tetap utuh.
-- **Pemangkasan** menghapus hasil alat lama dari prompt _dalam memori_ untuk mengosongkan ruang jendela konteks, tetapi tidak menulis ulang transkrip sesi - riwayat lengkap masih dapat diperiksa di disk.
+- **Pemangkasan** menghapus hasil alat lama dari prompt _dalam memori_ untuk membebaskan ruang jendela konteks, tetapi tidak menulis ulang transkrip sesi - riwayat lengkap tetap dapat diperiksa di disk.
 
 Dokumentasi: [Sesi](/id/concepts/session), [Compaction](/id/concepts/compaction), [Pemangkasan sesi](/id/concepts/session-pruning).
 
-Secara default, OpenClaw menggunakan engine konteks bawaan `legacy` untuk perakitan dan
-Compaction. Jika Anda memasang plugin yang menyediakan `kind: "context-engine"` dan
-memilihnya dengan `plugins.slots.contextEngine`, OpenClaw mendelegasikan perakitan konteks,
-`/compact`, dan hook siklus hidup konteks subagent terkait ke engine tersebut
-sebagai gantinya. `ownsCompaction: false` tidak otomatis fallback ke engine
-legacy; engine aktif tetap harus mengimplementasikan `compact()` dengan benar. Lihat
-[Engine Konteks](/id/concepts/context-engine) untuk antarmuka lengkap yang dapat
-dipasang, hook siklus hidup, dan konfigurasi.
+Secara default, OpenClaw menggunakan mesin konteks bawaan `legacy` untuk perakitan dan
+Compaction. Jika Anda menginstal plugin yang menyediakan `kind: "context-engine"` dan
+memilihnya dengan `plugins.slots.contextEngine`, OpenClaw mendelegasikan
+perakitan konteks, `/compact`, dan hook siklus hidup konteks subagen terkait ke
+mesin tersebut. `ownsCompaction: false` tidak melakukan fallback otomatis ke mesin
+`legacy`; mesin aktif tetap harus mengimplementasikan `compact()` dengan benar. Lihat
+[Mesin Konteks](/id/concepts/context-engine) untuk antarmuka
+yang dapat dipasang, hook siklus hidup, dan konfigurasi lengkap.
 
 ## Apa yang sebenarnya dilaporkan `/context`
 
-`/context` lebih memilih laporan prompt sistem **yang dibangun saat proses berjalan** terbaru saat tersedia:
+`/context` lebih memilih laporan prompt sistem **yang dibangun oleh proses** terbaru jika tersedia:
 
-- `System prompt (run)` = diambil dari proses berjalan tertanam terakhir (mampu memakai alat) dan dipertahankan di penyimpanan sesi.
-- `System prompt (estimate)` = dihitung langsung saat tidak ada laporan proses berjalan (atau saat berjalan melalui backend CLI yang tidak menghasilkan laporan).
+- `System prompt (run)` = ditangkap dari proses tertanam terakhir (mampu alat) dan disimpan di penyimpanan sesi.
+- `System prompt (estimate)` = dihitung langsung saat tidak ada laporan proses (atau saat berjalan melalui backend CLI yang tidak menghasilkan laporan).
 
-Apa pun caranya, ini melaporkan ukuran dan kontributor terbesar; ini **tidak** membuang prompt sistem lengkap atau skema alat.
+Bagaimanapun, ini melaporkan ukuran dan kontributor teratas; ini **tidak** membuang prompt sistem lengkap atau skema alat.
 
 ## Terkait
 
 <CardGroup cols={2}>
-  <Card title="Engine konteks" href="/id/concepts/context-engine" icon="puzzle-piece">
+  <Card title="Mesin konteks" href="/id/concepts/context-engine" icon="puzzle-piece">
     Injeksi konteks kustom melalui plugin.
   </Card>
   <Card title="Compaction" href="/id/concepts/compaction" icon="compress">
     Meringkas percakapan panjang agar tetap berada di dalam jendela model.
   </Card>
   <Card title="Prompt sistem" href="/id/concepts/system-prompt" icon="message-lines">
-    Cara prompt sistem dibangun dan apa yang diinjeksi setiap giliran.
+    Cara prompt sistem dibangun dan apa yang disisipkan setiap giliran.
   </Card>
   <Card title="Loop agen" href="/id/concepts/agent-loop" icon="arrows-rotate">
     Siklus eksekusi agen lengkap dari pesan masuk hingga balasan akhir.

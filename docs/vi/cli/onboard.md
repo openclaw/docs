@@ -1,37 +1,37 @@
 ---
 read_when:
-    - Bạn muốn được hướng dẫn thiết lập Gateway, không gian làm việc, xác thực, kênh và Skills
+    - Bạn muốn thiết lập có hướng dẫn cho Gateway, không gian làm việc, xác thực, kênh và Skills
 summary: Tài liệu tham khảo CLI cho `openclaw onboard` (thiết lập ban đầu tương tác)
 title: Thiết lập ban đầu
 x-i18n:
-    generated_at: "2026-05-02T10:37:11Z"
+    generated_at: "2026-05-10T19:28:32Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 79fd15da17beb5e66da760bcf490a15340d42af0730c19f04d41908995da8ffb
+    source_hash: 510b2bbb688605ce1bf30918e4982e783963e7d43be65f9c23cffac11248ffd2
     source_path: cli/onboard.md
     workflow: 16
 ---
 
 # `openclaw onboard`
 
-Thiết lập ban đầu tương tác cho thiết lập Gateway cục bộ hoặc từ xa.
+Quy trình thiết lập ban đầu được hướng dẫn đầy đủ cho thiết lập Gateway cục bộ hoặc từ xa. Dùng lệnh này khi bạn muốn OpenClaw hướng dẫn qua xác thực mô hình, không gian làm việc, Gateway, kênh, Skills và tình trạng trong một luồng duy nhất.
 
 ## Hướng dẫn liên quan
 
 <CardGroup cols={2}>
-  <Card title="CLI onboarding hub" href="/vi/start/wizard" icon="rocket">
+  <Card title="Trung tâm thiết lập ban đầu CLI" href="/vi/start/wizard" icon="rocket">
     Hướng dẫn từng bước về luồng CLI tương tác.
   </Card>
-  <Card title="Onboarding overview" href="/vi/start/onboarding-overview" icon="map">
+  <Card title="Tổng quan thiết lập ban đầu" href="/vi/start/onboarding-overview" icon="map">
     Cách các phần thiết lập ban đầu của OpenClaw kết hợp với nhau.
   </Card>
-  <Card title="CLI setup reference" href="/vi/start/wizard-cli-reference" icon="book">
-    Đầu ra, chi tiết nội bộ và hành vi theo từng bước.
+  <Card title="Tham chiếu thiết lập CLI" href="/vi/start/wizard-cli-reference" icon="book">
+    Đầu ra, nội bộ và hành vi theo từng bước.
   </Card>
-  <Card title="CLI automation" href="/vi/start/wizard-cli-automation" icon="terminal">
+  <Card title="Tự động hóa CLI" href="/vi/start/wizard-cli-automation" icon="terminal">
     Cờ không tương tác và thiết lập bằng script.
   </Card>
-  <Card title="macOS app onboarding" href="/vi/start/onboarding" icon="apple">
+  <Card title="Thiết lập ban đầu ứng dụng macOS" href="/vi/start/onboarding" icon="apple">
     Luồng thiết lập ban đầu cho ứng dụng thanh menu macOS.
   </Card>
 </CardGroup>
@@ -49,15 +49,14 @@ openclaw onboard --skip-bootstrap
 openclaw onboard --mode remote --remote-url wss://gateway-host:18789
 ```
 
-`--flow import` dùng các nhà cung cấp di chuyển do plugin sở hữu, chẳng hạn như Hermes. Nó chỉ chạy trên một thiết lập OpenClaw mới; nếu đã có cấu hình, thông tin xác thực, phiên, hoặc các tệp bộ nhớ/danh tính workspace, hãy đặt lại hoặc chọn một thiết lập mới trước khi nhập.
+`--flow import` dùng các nhà cung cấp di trú do Plugin sở hữu, chẳng hạn như Hermes. Lệnh này chỉ chạy với một thiết lập OpenClaw mới; nếu đã có cấu hình, thông tin xác thực, phiên hoặc tệp bộ nhớ/định danh không gian làm việc, hãy đặt lại hoặc chọn một thiết lập mới trước khi nhập.
 
-`--modern` khởi động bản xem trước thiết lập ban đầu dạng hội thoại Crestodian. Không có
+`--modern` khởi động bản xem trước thiết lập ban đầu dạng hội thoại Crestodian. Nếu không có
 `--modern`, `openclaw onboard` giữ luồng thiết lập ban đầu cổ điển.
 
-Đối với các đích `ws://` dạng văn bản thuần trên mạng riêng tư (chỉ mạng tin cậy), hãy đặt
+Đối với các đích `ws://` dạng văn bản thuần trên mạng riêng (chỉ dành cho mạng đáng tin cậy), hãy đặt
 `OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` trong môi trường tiến trình thiết lập ban đầu.
-Không có cấu hình tương đương trong `openclaw.json` cho cơ chế
-phá kính truyền tải phía máy khách này.
+Không có mục tương đương trong `openclaw.json` cho cơ chế phá kính khẩn cấp của truyền tải phía máy khách này.
 
 Nhà cung cấp tùy chỉnh không tương tác:
 
@@ -73,9 +72,9 @@ openclaw onboard --non-interactive \
 ```
 
 `--custom-api-key` là tùy chọn trong chế độ không tương tác. Nếu bỏ qua, thiết lập ban đầu sẽ kiểm tra `CUSTOM_API_KEY`.
-OpenClaw tự động đánh dấu các ID mô hình thị giác phổ biến là có khả năng xử lý hình ảnh. Truyền `--custom-image-input` cho các ID thị giác tùy chỉnh chưa biết, hoặc `--custom-text-input` để buộc metadata chỉ văn bản.
+OpenClaw tự động đánh dấu các ID mô hình thị giác phổ biến là có khả năng xử lý hình ảnh. Truyền `--custom-image-input` cho các ID thị giác tùy chỉnh chưa biết, hoặc `--custom-text-input` để buộc siêu dữ liệu chỉ văn bản.
 
-LM Studio cũng hỗ trợ cờ khóa dành riêng cho nhà cung cấp trong chế độ không tương tác:
+LM Studio cũng hỗ trợ cờ khóa riêng cho nhà cung cấp trong chế độ không tương tác:
 
 ```bash
 openclaw onboard --non-interactive \
@@ -107,28 +106,28 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-Với `--secret-input-mode ref`, thiết lập ban đầu ghi các tham chiếu dựa trên env thay vì giá trị khóa dạng văn bản thuần.
+Với `--secret-input-mode ref`, thiết lập ban đầu ghi các tham chiếu dựa trên env thay vì giá trị khóa văn bản thuần.
 Đối với các nhà cung cấp dựa trên auth-profile, thao tác này ghi các mục `keyRef`; đối với nhà cung cấp tùy chỉnh, thao tác này ghi `models.providers.<id>.apiKey` dưới dạng tham chiếu env (ví dụ `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`).
 
 Hợp đồng chế độ `ref` không tương tác:
 
 - Đặt biến env của nhà cung cấp trong môi trường tiến trình thiết lập ban đầu (ví dụ `OPENAI_API_KEY`).
 - Không truyền cờ khóa nội tuyến (ví dụ `--openai-api-key`) trừ khi biến env đó cũng được đặt.
-- Nếu cờ khóa nội tuyến được truyền mà không có biến env bắt buộc, thiết lập ban đầu sẽ thất bại nhanh kèm hướng dẫn.
+- Nếu một cờ khóa nội tuyến được truyền mà không có biến env bắt buộc, thiết lập ban đầu sẽ thất bại nhanh kèm hướng dẫn.
 
 Tùy chọn token Gateway trong chế độ không tương tác:
 
-- `--gateway-auth token --gateway-token <token>` lưu token dạng văn bản thuần.
+- `--gateway-auth token --gateway-token <token>` lưu một token văn bản thuần.
 - `--gateway-auth token --gateway-token-ref-env <name>` lưu `gateway.auth.token` dưới dạng SecretRef env.
 - `--gateway-token` và `--gateway-token-ref-env` loại trừ lẫn nhau.
-- `--gateway-token-ref-env` yêu cầu biến env không rỗng trong môi trường tiến trình thiết lập ban đầu.
-- Với `--install-daemon`, khi xác thực token yêu cầu token, token gateway do SecretRef quản lý được xác thực nhưng không được lưu bền dưới dạng văn bản thuần đã phân giải trong metadata môi trường dịch vụ supervisor.
-- Với `--install-daemon`, nếu chế độ token yêu cầu token và SecretRef token đã cấu hình chưa phân giải được, thiết lập ban đầu sẽ đóng thất bại kèm hướng dẫn khắc phục.
-- Với `--install-daemon`, nếu cả `gateway.auth.token` và `gateway.auth.password` đều được cấu hình và `gateway.auth.mode` chưa được đặt, thiết lập ban đầu chặn cài đặt cho đến khi chế độ được đặt rõ ràng.
-- Thiết lập ban đầu cục bộ ghi `gateway.mode="local"` vào cấu hình. Nếu một tệp cấu hình sau đó thiếu `gateway.mode`, hãy xem đó là cấu hình bị hỏng hoặc chỉnh sửa thủ công chưa hoàn chỉnh, không phải lối tắt chế độ cục bộ hợp lệ.
-- Thiết lập ban đầu cục bộ cài đặt các plugin có thể tải xuống đã chọn khi đường dẫn thiết lập được chọn yêu cầu chúng.
-- Thiết lập ban đầu từ xa chỉ ghi thông tin kết nối cho Gateway từ xa và không cài đặt các gói plugin cục bộ.
-- `--allow-unconfigured` là một cửa thoát riêng cho thời gian chạy gateway. Nó không có nghĩa là thiết lập ban đầu có thể bỏ qua `gateway.mode`.
+- `--gateway-token-ref-env` yêu cầu một biến env không rỗng trong môi trường tiến trình thiết lập ban đầu.
+- Với `--install-daemon`, khi xác thực token yêu cầu token, các token Gateway do SecretRef quản lý được xác thực nhưng không được lưu bền dưới dạng văn bản thuần đã phân giải trong siêu dữ liệu môi trường dịch vụ supervisor.
+- Với `--install-daemon`, nếu chế độ token yêu cầu token và SecretRef token đã cấu hình không phân giải được, thiết lập ban đầu sẽ đóng thất bại kèm hướng dẫn khắc phục.
+- Với `--install-daemon`, nếu cả `gateway.auth.token` và `gateway.auth.password` đều được cấu hình và `gateway.auth.mode` chưa được đặt, thiết lập ban đầu sẽ chặn cài đặt cho đến khi chế độ được đặt rõ ràng.
+- Thiết lập ban đầu cục bộ ghi `gateway.mode="local"` vào cấu hình. Nếu một tệp cấu hình sau này thiếu `gateway.mode`, hãy xem đó là cấu hình bị hỏng hoặc chỉnh sửa thủ công chưa hoàn chỉnh, không phải là lối tắt chế độ cục bộ hợp lệ.
+- Thiết lập ban đầu cục bộ cài đặt các Plugin có thể tải xuống đã chọn khi đường dẫn thiết lập được chọn yêu cầu chúng.
+- Thiết lập ban đầu từ xa chỉ ghi thông tin kết nối cho Gateway từ xa và không cài đặt các gói Plugin cục bộ.
+- `--allow-unconfigured` là một cửa thoát riêng cho runtime Gateway. Điều đó không có nghĩa là thiết lập ban đầu có thể bỏ qua `gateway.mode`.
 
 Ví dụ:
 
@@ -144,11 +143,11 @@ openclaw onboard --non-interactive \
 
 Tình trạng Gateway cục bộ không tương tác:
 
-- Trừ khi bạn truyền `--skip-health`, thiết lập ban đầu sẽ chờ một gateway cục bộ có thể truy cập trước khi thoát thành công.
-- `--install-daemon` khởi động đường dẫn cài đặt gateway được quản lý trước. Nếu không có cờ này, bạn phải có sẵn một gateway cục bộ đang chạy, ví dụ `openclaw gateway run`.
-- Nếu bạn chỉ muốn ghi cấu hình/workspace/bootstrap trong tự động hóa, hãy dùng `--skip-health`.
-- Nếu bạn tự quản lý các tệp workspace, hãy truyền `--skip-bootstrap` để đặt `agents.defaults.skipBootstrap: true` và bỏ qua việc tạo `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, và `BOOTSTRAP.md`.
-- Trên Windows gốc, `--install-daemon` thử Scheduled Tasks trước và rơi về một mục đăng nhập trong thư mục Startup theo người dùng nếu việc tạo tác vụ bị từ chối.
+- Trừ khi bạn truyền `--skip-health`, thiết lập ban đầu sẽ chờ một Gateway cục bộ có thể truy cập được trước khi thoát thành công.
+- `--install-daemon` khởi động đường dẫn cài đặt Gateway được quản lý trước. Nếu không có cờ này, bạn phải đã có một Gateway cục bộ đang chạy, ví dụ `openclaw gateway run`.
+- Nếu trong tự động hóa bạn chỉ muốn ghi cấu hình/không gian làm việc/bootstrap, hãy dùng `--skip-health`.
+- Nếu bạn tự quản lý tệp không gian làm việc, hãy truyền `--skip-bootstrap` để đặt `agents.defaults.skipBootstrap: true` và bỏ qua việc tạo `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, và `BOOTSTRAP.md`.
+- Trên Windows gốc, `--install-daemon` thử Scheduled Tasks trước và chuyển sang mục đăng nhập Startup-folder theo từng người dùng nếu việc tạo tác vụ bị từ chối.
 
 Hành vi thiết lập ban đầu tương tác với chế độ tham chiếu:
 
@@ -188,40 +187,43 @@ openclaw onboard --non-interactive \
 ## Ghi chú về luồng
 
 <AccordionGroup>
-  <Accordion title="Flow types">
-    - `quickstart`: lời nhắc tối thiểu, tự động tạo token gateway.
-    - `manual`: đầy đủ lời nhắc cho cổng, bind và xác thực (bí danh của `advanced`).
-    - `import`: chạy một nhà cung cấp di chuyển đã phát hiện, xem trước kế hoạch, sau đó áp dụng sau khi xác nhận.
+  <Accordion title="Loại luồng">
+    - `quickstart`: lời nhắc tối thiểu, tự động tạo token Gateway.
+    - `manual`: lời nhắc đầy đủ cho cổng, bind và xác thực (bí danh của `advanced`).
+    - `import`: chạy một nhà cung cấp di trú đã phát hiện, xem trước kế hoạch, rồi áp dụng sau khi xác nhận.
 
   </Accordion>
-  <Accordion title="Provider prefiltering">
-    Khi một lựa chọn xác thực ngụ ý một nhà cung cấp ưu tiên, thiết lập ban đầu lọc trước các bộ chọn mô hình mặc định và allowlist theo nhà cung cấp đó. Với Volcengine và BytePlus, điều này cũng khớp với các biến thể coding-plan (`volcengine-plan/*`, `byteplus-plan/*`).
+  <Accordion title="Lọc trước nhà cung cấp">
+    Khi một lựa chọn xác thực ngụ ý nhà cung cấp ưu tiên, thiết lập ban đầu lọc trước các bộ chọn mô hình mặc định và allowlist theo nhà cung cấp đó. Đối với Volcengine và BytePlus, điều này cũng khớp với các biến thể coding-plan (`volcengine-plan/*`, `byteplus-plan/*`).
 
-    Nếu bộ lọc nhà cung cấp ưu tiên chưa cho ra mô hình đã tải nào, thiết lập ban đầu sẽ rơi về catalog chưa lọc thay vì để bộ chọn trống.
+    Nếu bộ lọc nhà cung cấp ưu tiên chưa trả về mô hình đã tải nào, thiết lập ban đầu sẽ quay về danh mục chưa lọc thay vì để bộ chọn trống.
 
   </Accordion>
-  <Accordion title="Web-search follow-ups">
-    Một số nhà cung cấp tìm kiếm web kích hoạt các lời nhắc tiếp theo dành riêng cho nhà cung cấp:
+  <Accordion title="Theo dõi tìm kiếm web">
+    Một số nhà cung cấp tìm kiếm web kích hoạt các lời nhắc theo dõi riêng cho nhà cung cấp:
 
-    - **Grok** có thể cung cấp thiết lập `x_search` tùy chọn với cùng `XAI_API_KEY` và một lựa chọn mô hình `x_search`.
+    - **Grok** có thể cung cấp thiết lập `x_search` tùy chọn với cùng `XAI_API_KEY` và lựa chọn mô hình `x_search`.
     - **Kimi** có thể hỏi vùng API Moonshot (`api.moonshot.ai` so với `api.moonshot.cn`) và mô hình tìm kiếm web Kimi mặc định.
 
   </Accordion>
-  <Accordion title="Other behaviors">
+  <Accordion title="Hành vi khác">
     - Hành vi phạm vi DM của thiết lập ban đầu cục bộ: [Tham chiếu thiết lập CLI](/vi/start/wizard-cli-reference#outputs-and-internals).
-    - Trò chuyện đầu tiên nhanh nhất: `openclaw dashboard` (Control UI, không cần thiết lập kênh).
+    - Cuộc trò chuyện đầu tiên nhanh nhất: `openclaw dashboard` (Control UI, không cần thiết lập kênh).
     - Nhà cung cấp tùy chỉnh: kết nối bất kỳ endpoint tương thích OpenAI hoặc Anthropic nào, bao gồm các nhà cung cấp được lưu trữ không được liệt kê. Dùng Unknown để tự động phát hiện.
-    - Nếu phát hiện trạng thái Hermes, thiết lập ban đầu cung cấp một luồng di chuyển. Dùng [Di chuyển](/vi/cli/migrate) cho kế hoạch dry-run, chế độ ghi đè, báo cáo và ánh xạ chính xác.
+    - Nếu phát hiện trạng thái Hermes, thiết lập ban đầu sẽ cung cấp luồng di trú. Dùng [Di trú](/vi/cli/migrate) cho kế hoạch chạy thử, chế độ ghi đè, báo cáo và ánh xạ chính xác.
 
   </Accordion>
 </AccordionGroup>
 
-## Lệnh tiếp theo thường dùng
+## Lệnh theo dõi thường dùng
 
 ```bash
+openclaw channels add
 openclaw configure
 openclaw agents add <name>
 ```
+
+Dùng `openclaw setup` thay thế khi bạn chỉ cần cấu hình/không gian làm việc cơ sở. Dùng `openclaw configure` sau đó cho các thay đổi có mục tiêu và `openclaw channels add` cho thiết lập chỉ kênh.
 
 <Note>
 `--json` không ngụ ý chế độ không tương tác. Dùng `--non-interactive` cho script.

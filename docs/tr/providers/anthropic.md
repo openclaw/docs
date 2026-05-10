@@ -1,27 +1,27 @@
 ---
 read_when:
     - OpenClaw'da Anthropic modellerini kullanmak istiyorsunuz
-summary: OpenClaw'da API anahtarları veya Claude CLI aracılığıyla Anthropic Claude'u kullanın
+summary: OpenClaw'da Anthropic Claude'u API anahtarları veya Claude CLI aracılığıyla kullanın
 title: Anthropic
 x-i18n:
-    generated_at: "2026-05-07T13:24:27Z"
+    generated_at: "2026-05-10T19:50:45Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 15ae1d2751d0127a45ece3d0a25bead21fd6bacc2ffc80636188fc2cb5f3d7ce
+    source_hash: c36764f1adb7585389d241303e9c61c1fe2fa49fefdfb28c314abbafa646b273
     source_path: providers/anthropic.md
     workflow: 16
 ---
 
-Anthropic, **Claude** model ailesini geliştirir. OpenClaw iki kimlik doğrulama yolu destekler:
+Anthropic, **Claude** model ailesini geliştirir. OpenClaw iki kimlik doğrulama rotasını destekler:
 
 - **API anahtarı** — kullanıma dayalı faturalandırmayla doğrudan Anthropic API erişimi (`anthropic/*` modelleri)
-- **Claude CLI** — aynı ana makinedeki mevcut bir Claude CLI oturum açmasını yeniden kullanma
+- **Claude CLI** — aynı ana makinede mevcut bir Claude CLI oturum açmasını yeniden kullanma
 
 <Warning>
 Anthropic çalışanları bize OpenClaw tarzı Claude CLI kullanımına yeniden izin verildiğini söyledi, bu nedenle
-OpenClaw, Anthropic yeni bir politika yayımlamadıkça Claude CLI yeniden kullanımını ve `claude -p` kullanımını onaylanmış kabul eder.
+OpenClaw, Anthropic yeni bir politika yayımlamadığı sürece Claude CLI yeniden kullanımını ve `claude -p` kullanımını onaylanmış olarak değerlendirir.
 
-Uzun ömürlü Gateway ana makineleri için Anthropic API anahtarları hâlâ en net ve
+Uzun ömürlü gateway ana makineleri için Anthropic API anahtarları hâlâ en açık ve
 en öngörülebilir üretim yoludur.
 
 Anthropic'in güncel herkese açık dokümanları:
@@ -37,7 +37,7 @@ Anthropic'in güncel herkese açık dokümanları:
 
 <Tabs>
   <Tab title="API anahtarı">
-    **En uygun kullanım:** standart API erişimi ve kullanıma dayalı faturalandırma.
+    **En uygun olduğu durum:** standart API erişimi ve kullanıma dayalı faturalandırma.
 
     <Steps>
       <Step title="API anahtarınızı alın">
@@ -49,7 +49,7 @@ Anthropic'in güncel herkese açık dokümanları:
         # choose: Anthropic API key
         ```
 
-        Ya da anahtarı doğrudan geçirin:
+        Ya da anahtarı doğrudan iletin:
 
         ```bash
         openclaw onboard --anthropic-api-key "$ANTHROPIC_API_KEY"
@@ -74,10 +74,10 @@ Anthropic'in güncel herkese açık dokümanları:
   </Tab>
 
   <Tab title="Claude CLI">
-    **En uygun kullanım:** ayrı bir API anahtarı olmadan mevcut bir Claude CLI oturum açmasını yeniden kullanma.
+    **En uygun olduğu durum:** ayrı bir API anahtarı olmadan mevcut bir Claude CLI oturum açmasını yeniden kullanma.
 
     <Steps>
-      <Step title="Claude CLI'nin yüklü ve oturum açmış olduğundan emin olun">
+      <Step title="Claude CLI'nin kurulu ve oturum açmış olduğundan emin olun">
         Şununla doğrulayın:
 
         ```bash
@@ -100,30 +100,34 @@ Anthropic'in güncel herkese açık dokümanları:
     </Steps>
 
     <Note>
-    Claude CLI arka ucu için kurulum ve çalışma zamanı ayrıntıları [CLI Arka Uçları](/tr/gateway/cli-backends) sayfasındadır.
+    Claude CLI arka ucu için kurulum ve çalışma zamanı ayrıntıları [CLI Arka Uçları](/tr/gateway/cli-backends) içinde yer alır.
     </Note>
 
     ### Yapılandırma örneği
 
-    Kanonik Anthropic model referansını ve bir CLI çalışma zamanı geçersiz kılmasını tercih edin:
+    Kanonik Anthropic model ref değerini ve bir CLI çalışma zamanı geçersiz kılmasını tercih edin:
 
     ```json5
     {
       agents: {
         defaults: {
           model: { primary: "anthropic/claude-opus-4-7" },
-          agentRuntime: { id: "claude-cli" },
+          models: {
+            "anthropic/claude-opus-4-7": {
+              agentRuntime: { id: "claude-cli" },
+            },
+          },
         },
       },
     }
     ```
 
-    Eski `claude-cli/claude-opus-4-7` model referansları uyumluluk için
+    Eski `claude-cli/claude-opus-4-7` model ref değerleri uyumluluk için
     hâlâ çalışır, ancak yeni yapılandırma sağlayıcı/model seçimini
-    `anthropic/*` olarak tutmalı ve yürütme arka ucunu `agentRuntime.id` içine koymalıdır.
+    `anthropic/*` olarak tutmalı ve yürütme arka ucunu sağlayıcı/model çalışma zamanı politikasına koymalıdır.
 
     <Tip>
-    En net faturalandırma yolunu istiyorsanız bunun yerine bir Anthropic API anahtarı kullanın. OpenClaw ayrıca [OpenAI Codex](/tr/providers/openai), [Qwen Cloud](/tr/providers/qwen), [MiniMax](/tr/providers/minimax) ve [Z.AI / GLM](/tr/providers/glm) kaynaklı abonelik tarzı seçenekleri de destekler.
+    En açık faturalandırma yolunu istiyorsanız bunun yerine bir Anthropic API anahtarı kullanın. OpenClaw ayrıca [OpenAI Codex](/tr/providers/openai), [Qwen Cloud](/tr/providers/qwen), [MiniMax](/tr/providers/minimax) ve [Z.AI / GLM](/tr/providers/glm) üzerinden abonelik tarzı seçenekleri destekler.
     </Tip>
 
   </Tab>
@@ -151,20 +155,20 @@ Claude 4.6 modelleri, açık bir düşünme düzeyi ayarlanmadığında OpenClaw
 
 <Note>
 İlgili Anthropic dokümanları:
-- [Adaptive thinking](https://platform.claude.com/docs/en/build-with-claude/adaptive-thinking)
-- [Extended thinking](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)
+- [Uyarlanabilir düşünme](https://platform.claude.com/docs/en/build-with-claude/adaptive-thinking)
+- [Genişletilmiş düşünme](https://platform.claude.com/docs/en/build-with-claude/extended-thinking)
 
 </Note>
 
-## İstem önbellekleme
+## İstem önbelleğe alma
 
-OpenClaw, API anahtarı kimlik doğrulaması için Anthropic'in istem önbellekleme özelliğini destekler.
+OpenClaw, API anahtarıyla kimlik doğrulama için Anthropic'in istem önbelleğe alma özelliğini destekler.
 
-| Değer               | Önbellek süresi | Açıklama                            |
+| Değer               | Önbellek süresi | Açıklama                              |
 | ------------------- | -------------- | -------------------------------------- |
-| `"short"` (varsayılan) | 5 dakika      | API anahtarı kimlik doğrulaması için otomatik uygulanır |
-| `"long"`            | 1 saat         | Uzatılmış önbellek                         |
-| `"none"`            | Önbellekleme yok     | İstem önbelleklemeyi devre dışı bırak                 |
+| `"short"` (varsayılan) | 5 dakika       | API anahtarıyla kimlik doğrulama için otomatik uygulanır |
+| `"long"`            | 1 saat         | Genişletilmiş önbellek                 |
+| `"none"`            | Önbelleğe alma yok | İstem önbelleğe almayı devre dışı bırakır |
 
 ```json5
 {
@@ -181,8 +185,8 @@ OpenClaw, API anahtarı kimlik doğrulaması için Anthropic'in istem önbellekl
 ```
 
 <AccordionGroup>
-  <Accordion title="Aracı başına önbellek geçersiz kılmaları">
-    Model düzeyi parametreleri temeliniz olarak kullanın, ardından belirli aracıları `agents.list[].params` üzerinden geçersiz kılın:
+  <Accordion title="Agent başına önbellek geçersiz kılmaları">
+    Temeliniz olarak model düzeyi parametreleri kullanın, ardından belirli agent'ları `agents.list[].params` aracılığıyla geçersiz kılın:
 
     ```json5
     {
@@ -208,14 +212,14 @@ OpenClaw, API anahtarı kimlik doğrulaması için Anthropic'in istem önbellekl
     1. `agents.defaults.models["provider/model"].params`
     2. `agents.list[].params` (eşleşen `id`, anahtara göre geçersiz kılar)
 
-    Bu, bir aracının uzun ömürlü bir önbelleği korurken aynı modeldeki başka bir aracının ani/düşük yeniden kullanım trafiği için önbelleklemeyi devre dışı bırakmasına olanak tanır.
+    Bu, aynı modeldeki başka bir agent ani/az yeniden kullanılan trafik için önbelleğe almayı devre dışı bırakırken, bir agent'ın uzun ömürlü bir önbellek tutmasını sağlar.
 
   </Accordion>
 
   <Accordion title="Bedrock Claude notları">
-    - Bedrock üzerindeki Anthropic Claude modelleri (`amazon-bedrock/*anthropic.claude*`), yapılandırıldığında `cacheRetention` geçişini kabul eder.
-    - Anthropic olmayan Bedrock modelleri çalışma zamanında `cacheRetention: "none"` değerine zorlanır.
-    - API anahtarı akıllı varsayılanları, açık bir değer ayarlanmadığında Claude-on-Bedrock referansları için `cacheRetention: "short"` değerini de başlangıç olarak ayarlar.
+    - Bedrock üzerindeki Anthropic Claude modelleri (`amazon-bedrock/*anthropic.claude*`) yapılandırıldığında `cacheRetention` geçişini kabul eder.
+    - Anthropic olmayan Bedrock modelleri çalışma zamanında zorla `cacheRetention: "none"` kullanır.
+    - API anahtarı akıllı varsayılanları, açık bir değer ayarlanmadığında Claude-on-Bedrock ref değerleri için de `cacheRetention: "short"` başlangıç değerini verir.
 
   </Accordion>
 </AccordionGroup>
@@ -224,7 +228,7 @@ OpenClaw, API anahtarı kimlik doğrulaması için Anthropic'in istem önbellekl
 
 <AccordionGroup>
   <Accordion title="Hızlı mod">
-    OpenClaw'ın paylaşılan `/fast` geçişi doğrudan Anthropic trafiğini destekler (API anahtarı ve `api.anthropic.com` için OAuth).
+    OpenClaw'ın paylaşılan `/fast` anahtarı doğrudan Anthropic trafiğini destekler (API anahtarı ve `api.anthropic.com` için OAuth).
 
     | Komut | Şuna eşlenir |
     |---------|---------|
@@ -246,22 +250,22 @@ OpenClaw, API anahtarı kimlik doğrulaması için Anthropic'in istem önbellekl
     ```
 
     <Note>
-    - Yalnızca doğrudan `api.anthropic.com` istekleri için enjekte edilir. Proxy yolları `service_tier` değerine dokunmaz.
+    - Yalnızca doğrudan `api.anthropic.com` istekleri için enjekte edilir. Proxy rotaları `service_tier` değerine dokunmaz.
     - Açık `serviceTier` veya `service_tier` parametreleri, ikisi de ayarlandığında `/fast` değerini geçersiz kılar.
-    - Priority Tier kapasitesi olmayan hesaplarda `service_tier: "auto"` değeri `standard` olarak çözümlenebilir.
+    - Priority Tier kapasitesi olmayan hesaplarda `service_tier: "auto"` `standard` olarak çözümlenebilir.
 
     </Note>
 
   </Accordion>
 
   <Accordion title="Medya anlama (görüntü ve PDF)">
-    Paketle gelen Anthropic Plugin, görüntü ve PDF anlama özelliğini kaydeder. OpenClaw
-    yapılandırılmış Anthropic kimlik doğrulamasından medya yeteneklerini otomatik çözümler; ek
+    Paketlenmiş Anthropic Plugin, görüntü ve PDF anlama özelliğini kaydeder. OpenClaw
+    medya yeteneklerini yapılandırılmış Anthropic kimlik doğrulamasından otomatik çözer — ek
     yapılandırma gerekmez.
 
     | Özellik        | Değer                 |
     | --------------- | --------------------- |
-    | Varsayılan model   | `claude-opus-4-7`     |
+    | Varsayılan model | `claude-opus-4-7`     |
     | Desteklenen girdi | Görüntüler, PDF belgeleri |
 
     Bir konuşmaya görüntü veya PDF eklendiğinde OpenClaw bunu otomatik olarak
@@ -270,7 +274,7 @@ OpenClaw, API anahtarı kimlik doğrulaması için Anthropic'in istem önbellekl
   </Accordion>
 
   <Accordion title="1M bağlam penceresi (beta)">
-    Anthropic'in 1M bağlam penceresi beta kapılıdır. Bunu model başına etkinleştirin:
+    Anthropic'in 1M bağlam penceresi beta geçitlidir. Bunu model başına etkinleştirin:
 
     ```json5
     {
@@ -286,21 +290,21 @@ OpenClaw, API anahtarı kimlik doğrulaması için Anthropic'in istem önbellekl
     }
     ```
 
-    OpenClaw bunu isteklerde `anthropic-beta: context-1m-2025-08-07` değerine eşler.
+    OpenClaw bunu isteklerde `anthropic-beta: context-1m-2025-08-07` olarak eşler.
 
     `params.context1m: true`, uygun Opus ve Sonnet modelleri için Claude CLI arka ucuna
-    (`claude-cli/*`) da uygulanır ve bu CLI oturumları için çalışma zamanı
+    (`claude-cli/*`) da uygulanır ve bu CLI oturumlarının çalışma zamanı
     bağlam penceresini doğrudan API davranışıyla eşleşecek şekilde genişletir.
 
     <Warning>
-    Anthropic kimlik bilgilerinizde uzun bağlam erişimi gerektirir. Eski token kimlik doğrulaması (`sk-ant-oat-*`) 1M bağlam istekleri için reddedilir; OpenClaw bir uyarı günlüğe yazar ve standart bağlam penceresine geri döner.
+    Anthropic kimlik bilginizde uzun bağlam erişimi gerektirir. Eski token kimlik doğrulaması (`sk-ant-oat-*`) 1M bağlam istekleri için reddedilir — OpenClaw bir uyarı günlüğe yazar ve standart bağlam penceresine geri döner.
     </Warning>
 
   </Accordion>
 
   <Accordion title="Claude Opus 4.7 1M bağlam">
-    `anthropic/claude-opus-4.7` ve bunun `claude-cli` varyantı varsayılan olarak 1M bağlam
-    penceresine sahiptir; `params.context1m: true` gerekmez.
+    `anthropic/claude-opus-4.7` ve onun `claude-cli` varyantı varsayılan olarak 1M bağlam
+    penceresine sahiptir — `params.context1m: true` gerekmez.
   </Accordion>
 </AccordionGroup>
 
@@ -312,33 +316,33 @@ OpenClaw, API anahtarı kimlik doğrulaması için Anthropic'in istem önbellekl
   </Accordion>
 
   <Accordion title='"anthropic" sağlayıcısı için API anahtarı bulunamadı'>
-    Anthropic kimlik doğrulaması **aracı başınadır**; yeni aracılar ana aracının anahtarlarını devralmaz. Bu aracı için onboarding'i yeniden çalıştırın (veya Gateway ana makinesinde bir API anahtarı yapılandırın), ardından `openclaw models status` ile doğrulayın.
+    Anthropic kimlik doğrulaması **agent başınadır** — yeni agent'lar ana agent'ın anahtarlarını devralmaz. Bu agent için onboarding'i yeniden çalıştırın (veya gateway ana makinesinde bir API anahtarı yapılandırın), ardından `openclaw models status` ile doğrulayın.
   </Accordion>
 
   <Accordion title='"anthropic:default" profili için kimlik bilgisi bulunamadı'>
     Hangi kimlik doğrulama profilinin etkin olduğunu görmek için `openclaw models status` çalıştırın. Onboarding'i yeniden çalıştırın veya bu profil yolu için bir API anahtarı yapılandırın.
   </Accordion>
 
-  <Accordion title="Kullanılabilir kimlik doğrulama profili yok (tümü bekleme süresinde)">
-    `auth.unusableProfiles` için `openclaw models status --json` çıktısını kontrol edin. Anthropic hız sınırı bekleme süreleri model kapsamlı olabilir, bu nedenle kardeş bir Anthropic modeli hâlâ kullanılabilir olabilir. Başka bir Anthropic profili ekleyin veya bekleme süresinin bitmesini bekleyin.
+  <Accordion title="Kullanılabilir kimlik doğrulama profili yok (hepsi bekleme süresinde)">
+    `auth.unusableProfiles` için `openclaw models status --json` çıktısını kontrol edin. Anthropic hız sınırı bekleme süreleri model kapsamlı olabilir, bu nedenle kardeş bir Anthropic modeli hâlâ kullanılabilir olabilir. Başka bir Anthropic profili ekleyin veya bekleme süresinin dolmasını bekleyin.
   </Accordion>
 </AccordionGroup>
 
 <Note>
-Daha fazla yardım: [Sorun giderme](/tr/help/troubleshooting) ve [SSS](/tr/help/faq).
+Daha fazla yardım: [Sorun Giderme](/tr/help/troubleshooting) ve [SSS](/tr/help/faq).
 </Note>
 
 ## İlgili
 
 <CardGroup cols={2}>
   <Card title="Model seçimi" href="/tr/concepts/model-providers" icon="layers">
-    Sağlayıcıları, model referanslarını ve yük devretme davranışını seçme.
+    Sağlayıcıları, model ref değerlerini ve failover davranışını seçme.
   </Card>
   <Card title="CLI arka uçları" href="/tr/gateway/cli-backends" icon="terminal">
     Claude CLI arka ucu kurulumu ve çalışma zamanı ayrıntıları.
   </Card>
-  <Card title="İstem önbellekleme" href="/tr/reference/prompt-caching" icon="database">
-    İstem önbelleklemenin sağlayıcılar arasında nasıl çalıştığı.
+  <Card title="İstem önbelleğe alma" href="/tr/reference/prompt-caching" icon="database">
+    İstem önbelleğe almanın sağlayıcılar genelinde nasıl çalıştığı.
   </Card>
   <Card title="OAuth ve kimlik doğrulama" href="/tr/gateway/authentication" icon="key">
     Kimlik doğrulama ayrıntıları ve kimlik bilgisi yeniden kullanım kuralları.

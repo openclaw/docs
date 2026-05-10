@@ -2,30 +2,30 @@
 read_when:
     - Stai collegando il trasporto QA sintetico a un'esecuzione di test locale o in CI
     - È necessaria la superficie di configurazione qa-channel inclusa
-    - Stai iterando sull'automazione del controllo qualità da inizio a fine
+    - Stai iterando sull'automazione QA end-to-end
 summary: Plugin di canale sintetico di classe Slack per scenari di QA deterministici di OpenClaw
 title: Canale QA
 x-i18n:
-    generated_at: "2026-05-06T08:41:35Z"
+    generated_at: "2026-05-10T19:23:25Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1990b64d8a3ed158b11fc08742f774c5355ee25b68402ec447b92316109ac2f2
+    source_hash: 8f28962032bc5f6b228de731ae6bd9a22831604b506b7073aeffba19ac22e0e8
     source_path: channels/qa-channel.md
     workflow: 16
 ---
 
-`qa-channel` è un trasporto di messaggi sintetico incluso per la QA automatizzata di OpenClaw. Non è un canale di produzione: esiste per esercitare lo stesso confine del Plugin di canale usato dai trasporti reali mantenendo lo stato deterministico e completamente ispezionabile.
+`qa-channel` è un trasporto di messaggi sintetico incluso per la QA automatizzata di OpenClaw. Non è un canale di produzione: esiste per esercitare lo stesso confine del Plugin di canale usato dai trasporti reali, mantenendo al tempo stesso lo stato deterministico e completamente ispezionabile.
 
 ## Cosa fa
 
-- Grammatica di destinazione di classe Slack:
+- Grammatica dei target in stile Slack:
   - `dm:<user>`
   - `channel:<room>`
   - `group:<room>`
   - `thread:<room>/<thread>`
-- Le conversazioni condivise `channel:` e `group:` vengono esposte agli agenti come turni di stanza gruppo/canale, quindi esercitano la stessa policy di risposta visibile e instradamento dello strumento messaggi usata da Discord, Slack, Telegram e trasporti simili.
-- Bus sintetico basato su HTTP per l'iniezione di messaggi in ingresso, la cattura delle trascrizioni in uscita, la creazione di thread, reazioni, modifiche, eliminazioni e azioni di ricerca/lettura.
-- Runner di autocontrollo lato host che scrive un report Markdown in `.artifacts/qa-e2e/`.
+- Le conversazioni condivise `channel:` e `group:` vengono esposte agli agenti come turni di stanze gruppo/canale, quindi esercitano la stessa policy di routing per risposte visibili e strumenti di messaggistica usata da Discord, Slack, Telegram e trasporti simili.
+- Bus sintetico basato su HTTP per iniezione di messaggi in ingresso, acquisizione della trascrizione in uscita, creazione di thread, reazioni, modifiche, eliminazioni e azioni di ricerca/lettura.
+- Runner di autoverifica lato host che scrive un report Markdown in `.artifacts/qa-e2e/`.
 
 ## Configurazione
 
@@ -43,32 +43,39 @@ x-i18n:
 }
 ```
 
-Chiavi account:
+Chiavi dell'account:
 
 - `enabled` - interruttore principale per questo account.
 - `name` - etichetta di visualizzazione opzionale.
 - `baseUrl` - URL del bus sintetico.
-- `botUserId` - ID utente bot in stile Matrix usato nella grammatica di destinazione.
+- `botUserId` - id utente del bot in stile Matrix usato nella grammatica dei target.
 - `botDisplayName` - nome visualizzato per i messaggi in uscita.
 - `pollTimeoutMs` - finestra di attesa long-poll. Intero tra 100 e 30000.
-- `allowFrom` - allowlist dei mittenti (ID utente o `"*"`).
-- `defaultTo` - destinazione di fallback quando non ne viene fornita alcuna.
-- `actions.messages` / `actions.reactions` / `actions.search` / `actions.threads` - controllo dell'accesso agli strumenti per azione.
+- `allowFrom` - allowlist dei mittenti (id utente o `"*"`). I messaggi diretti e
+  la policy di gruppo con allowlist usano entrambi questi id mittente sintetici.
+- `groupPolicy` - policy delle stanze condivise: `"open"` (predefinita), `"allowlist"` o
+  `"disabled"`.
+- `groupAllowFrom` - allowlist opzionale dei mittenti per le stanze condivise. Quando è omessa con
+  `"allowlist"`, QA Channel ripiega su `allowFrom`.
+- `groups.<room>.requireMention` - richiede una menzione del bot prima di rispondere in una
+  stanza gruppo/canale specifica. `groups."*"` imposta il valore predefinito.
+- `defaultTo` - target di fallback quando non ne viene fornito nessuno.
+- `actions.messages` / `actions.reactions` / `actions.search` / `actions.threads` - gating degli strumenti per azione.
 
 Chiavi multi-account al livello superiore:
 
-- `accounts` - record di override per account nominati indicizzati per ID account.
-- `defaultAccount` - ID account preferito quando ne sono configurati più di uno.
+- `accounts` - record di override per account denominati, indicizzati per id account.
+- `defaultAccount` - id account preferito quando ne sono configurati più di uno.
 
 ## Runner
 
-Autocontrollo lato host (scrive un report Markdown sotto `.artifacts/qa-e2e/`):
+Autoverifica lato host (scrive un report Markdown in `.artifacts/qa-e2e/`):
 
 ```bash
 pnpm qa:e2e
 ```
 
-Questo passa attraverso `qa-lab`, avvia il bus QA interno al repository, inizializza il segmento runtime `qa-channel` incluso ed esegue un autocontrollo deterministico.
+Questo passa attraverso `qa-lab`, avvia il bus QA interno al repository, esegue il boot della slice runtime `qa-channel` inclusa ed esegue un'autoverifica deterministica.
 
 Suite completa di scenari basata sul repository:
 
@@ -76,20 +83,20 @@ Suite completa di scenari basata sul repository:
 pnpm openclaw qa suite
 ```
 
-Esegue gli scenari in parallelo contro la lane QA del Gateway. Vedi [Panoramica QA](/it/concepts/qa-e2e-automation) per scenari, profili e modalità provider.
+Esegue scenari in parallelo sulla lane del Gateway QA. Vedi [Panoramica QA](/it/concepts/qa-e2e-automation) per scenari, profili e modalità provider.
 
-Sito QA basato su Docker (Gateway + UI debugger di QA Lab in un unico stack):
+Sito QA basato su Docker (Gateway + UI del debugger QA Lab in un unico stack):
 
 ```bash
 pnpm qa:lab:up
 ```
 
-Compila il sito QA, avvia lo stack Gateway + QA Lab basato su Docker e stampa l'URL di QA Lab. Da lì puoi scegliere gli scenari, selezionare la lane del modello, avviare singole esecuzioni e osservare i risultati in tempo reale. Il debugger di QA Lab è separato dal bundle Control UI distribuito.
+Compila il sito QA, avvia lo stack Gateway + QA Lab basato su Docker e stampa l'URL di QA Lab. Da lì puoi scegliere scenari, selezionare la lane del modello, avviare esecuzioni individuali e osservare i risultati in tempo reale. Il debugger QA Lab è separato dal bundle Control UI distribuito.
 
 ## Correlati
 
-- [Panoramica QA](/it/concepts/qa-e2e-automation) - stack complessivo, adattatori di trasporto, creazione degli scenari
+- [Panoramica QA](/it/concepts/qa-e2e-automation) - stack complessivo, adattatori di trasporto, authoring degli scenari
 - [QA Matrix](/it/concepts/qa-matrix) - esempio di runner con trasporto live che pilota un canale reale
 - [Abbinamento](/it/channels/pairing)
 - [Gruppi](/it/channels/groups)
-- [Panoramica canali](/it/channels)
+- [Panoramica dei canali](/it/channels)

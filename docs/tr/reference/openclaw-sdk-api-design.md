@@ -1,35 +1,35 @@
 ---
 read_when:
-    - Önerilen herkese açık OpenClaw uygulama SDK'sini uyguluyorsunuz
-    - Uygulama SDK'sı için taslak ad alanı, olay, sonuç, artefakt, onay veya güvenlik sözleşmesine ihtiyacınız var
-    - Gateway protokol kaynaklarını üst düzey OpenClaw App SDK sarmalayıcısıyla karşılaştırıyorsunuz
+    - Önerilen herkese açık OpenClaw uygulama SDK'sını uyguluyorsunuz
+    - Uygulama SDK'sı için taslak ad alanı, olay, sonuç, yapıt, onay veya güvenlik sözleşmesine ihtiyacınız var
+    - Gateway protokol kaynaklarını yüksek düzey OpenClaw App SDK sarmalayıcısıyla karşılaştırıyorsunuz
 sidebarTitle: App SDK API design
-summary: Genel kullanıma açık OpenClaw App SDK API'si, olay taksonomisi, artefaktlar, onaylar ve paket yapısı için referans tasarım
+summary: Herkese açık OpenClaw App SDK API'si, olay taksonomisi, yapıtlar, onaylar ve paket yapısı için referans tasarım
 title: OpenClaw Uygulama SDK API tasarımı
 x-i18n:
-    generated_at: "2026-05-06T09:30:08Z"
+    generated_at: "2026-05-10T19:53:58Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1c49afb4b3b23653e1c6512c22c7465dc1778fc9ea2b28864ca9eaa3ccc90f2f
+    source_hash: 7eab11a5dfb85465e7d6da971fba779baaef06fd333eb53a39b53d7150e85b72
     source_path: reference/openclaw-sdk-api-design.md
     workflow: 16
 ---
 
-Bu sayfa, genel
-[OpenClaw Uygulama SDK'si](/tr/concepts/openclaw-sdk) için ayrıntılı API referansı tasarımıdır. Bilerek
-[Plugin SDK](/tr/plugins/sdk-overview) öğesinden ayrı tutulmuştur.
+Bu sayfa, herkese açık
+[OpenClaw App SDK](/tr/concepts/openclaw-sdk) için ayrıntılı API referansı tasarımıdır. Bilinçli olarak
+[Plugin SDK](/tr/plugins/sdk-overview) bölümünden ayrı tutulmuştur.
 
 <Note>
-  `@openclaw/sdk`, Gateway ile konuşmak için kullanılan harici uygulama/istemci paketidir.
+  `@openclaw/sdk`, Gateway ile konuşmak için kullanılan harici app/client paketidir.
   `openclaw/plugin-sdk/*`, süreç içi Plugin yazarlığı sözleşmesidir.
-  Yalnızca ajan çalıştırması gereken uygulamalardan Plugin SDK alt yollarını içe aktarmayın.
+  Yalnızca agent çalıştırması gereken uygulamalardan Plugin SDK alt yollarını içe aktarmayın.
 </Note>
 
-Genel uygulama SDK'si iki katmanda oluşturulmalıdır:
+Herkese açık app SDK iki katmanda oluşturulmalıdır:
 
 1. Düşük seviyeli, üretilmiş bir Gateway istemcisi.
 2. `OpenClaw`, `Agent`, `Session`, `Run`,
-   `Task`, `Artifact`, `Approval` ve `Environment` nesneleri içeren, yüksek seviyeli ergonomik bir sarmalayıcı.
+   `Task`, `Artifact`, `Approval` ve `Environment` nesnelerine sahip, yüksek seviyeli ergonomik bir sarmalayıcı.
 
 ## Ad alanı tasarımı
 
@@ -56,9 +56,9 @@ oc.runs.events(runId, { after });
 oc.runs.wait(runId);
 oc.runs.cancel(runId);
 
-oc.tasks.list(); // future API: current SDK throws unsupported
-oc.tasks.get(taskId); // future API: current SDK throws unsupported
-oc.tasks.cancel(taskId); // future API: current SDK throws unsupported
+oc.tasks.list({ status: "running" });
+oc.tasks.get(taskId);
+oc.tasks.cancel(taskId, { reason });
 oc.tasks.events(taskId, { after }); // future API
 
 oc.models.list();
@@ -97,7 +97,7 @@ const session = await run.session();
 
 ## Olay sözleşmesi
 
-Genel SDK, sürümlenmiş, yeniden oynatılabilir, normalleştirilmiş olaylar sunmalıdır.
+Herkese açık SDK, sürümlü, yeniden oynatılabilir ve normalize edilmiş olaylar sunmalıdır.
 
 ```typescript
 type OpenClawEvent = {
@@ -118,39 +118,39 @@ type OpenClawEvent = {
 `id` bir yeniden oynatma imlecidir. Tüketiciler
 `events({ after: id })` ile yeniden bağlanabilmeli ve saklama izin verdiğinde kaçırılan olayları alabilmelidir.
 
-Önerilen normalleştirilmiş olay aileleri:
+Önerilen normalize edilmiş olay aileleri:
 
-| Olay                  | Anlam                                                        |
-| --------------------- | ------------------------------------------------------------ |
-| `run.created`         | Çalıştırma kabul edildi.                                     |
-| `run.queued`          | Çalıştırma bir oturum hattı, çalışma zamanı veya ortam bekliyor. |
-| `run.started`         | Çalışma zamanı yürütmeyi başlattı.                           |
-| `run.completed`       | Çalıştırma başarıyla tamamlandı.                             |
-| `run.failed`          | Çalıştırma bir hatayla sona erdi.                            |
-| `run.cancelled`       | Çalıştırma iptal edildi.                                     |
-| `run.timed_out`       | Çalıştırma zaman aşımını aştı.                               |
-| `assistant.delta`     | Asistan metin deltası.                                       |
-| `assistant.message`   | Tam asistan mesajı veya değiştirme.                          |
+| Olay                  | Anlam                                                       |
+| --------------------- | ----------------------------------------------------------- |
+| `run.created`         | Run kabul edildi.                                           |
+| `run.queued`          | Run bir oturum hattı, runtime veya ortam bekliyor.          |
+| `run.started`         | Runtime yürütmeyi başlattı.                                 |
+| `run.completed`       | Run başarıyla tamamlandı.                                   |
+| `run.failed`          | Run bir hatayla sona erdi.                                  |
+| `run.cancelled`       | Run iptal edildi.                                           |
+| `run.timed_out`       | Run zaman aşımını aştı.                                     |
+| `assistant.delta`     | Assistant metin deltası.                                    |
+| `assistant.message`   | Tam assistant mesajı veya değişimi.                         |
 | `thinking.delta`      | Politika gösterime izin verdiğinde akıl yürütme veya plan deltası. |
-| `tool.call.started`   | Araç çağrısı başladı.                                        |
-| `tool.call.delta`     | Araç çağrısı ilerleme veya kısmi çıktı akışı yaptı.          |
-| `tool.call.completed` | Araç çağrısı başarıyla döndü.                                |
-| `tool.call.failed`    | Araç çağrısı başarısız oldu.                                 |
-| `approval.requested`  | Bir çalıştırma veya aracın onaya ihtiyacı var.               |
-| `approval.resolved`   | Onay verildi, reddedildi, süresi doldu veya iptal edildi.    |
-| `question.requested`  | Çalışma zamanı kullanıcıdan veya ana uygulamadan girdi ister. |
-| `question.answered`   | Ana uygulama bir yanıt sağladı.                              |
-| `artifact.created`    | Yeni artifact kullanılabilir.                                |
-| `artifact.updated`    | Mevcut artifact değişti.                                     |
-| `session.created`     | Oturum oluşturuldu.                                          |
-| `session.updated`     | Oturum meta verileri değişti.                                |
-| `session.compacted`   | Oturum Compaction gerçekleşti.                               |
-| `task.updated`        | Arka plan görevi durumu değişti.                             |
-| `git.branch`          | Çalışma zamanı dal durumunu gözlemledi veya değiştirdi.      |
-| `git.diff`            | Çalışma zamanı bir diff üretti veya değiştirdi.              |
-| `git.pr`              | Çalışma zamanı bir pull request açtı, güncelledi veya bağladı. |
+| `tool.call.started`   | Tool çağrısı başladı.                                       |
+| `tool.call.delta`     | Tool çağrısı ilerleme veya kısmi çıktı akışı sağladı.       |
+| `tool.call.completed` | Tool çağrısı başarıyla döndü.                               |
+| `tool.call.failed`    | Tool çağrısı başarısız oldu.                                |
+| `approval.requested`  | Bir run veya tool onay gerektiriyor.                        |
+| `approval.resolved`   | Onay verildi, reddedildi, süresi doldu veya iptal edildi.   |
+| `question.requested`  | Runtime kullanıcıdan veya host uygulamadan girdi istiyor.   |
+| `question.answered`   | Host uygulama bir yanıt sağladı.                            |
+| `artifact.created`    | Yeni artifact kullanılabilir.                               |
+| `artifact.updated`    | Mevcut artifact değişti.                                    |
+| `session.created`     | Oturum oluşturuldu.                                         |
+| `session.updated`     | Oturum metadata'sı değişti.                                 |
+| `session.compacted`   | Oturum Compaction gerçekleşti.                              |
+| `task.updated`        | Arka plan task durumu değişti.                              |
+| `git.branch`          | Runtime branch durumunu gözlemledi veya değiştirdi.         |
+| `git.diff`            | Runtime bir diff üretti veya değiştirdi.                    |
+| `git.pr`              | Runtime bir pull request açtı, güncelledi veya bağladı.     |
 
-Çalışma zamanına özgü yükler `raw` üzerinden erişilebilir olmalıdır, ancak uygulamaların normal UI için
+Runtime'a özgü yükler `raw` üzerinden kullanılabilir olmalıdır, ancak uygulamaların normal UI için
 `raw` ayrıştırması gerekmemelidir.
 
 ## Sonuç sözleşmesi
@@ -181,18 +181,18 @@ type RunResult = {
 };
 ```
 
-Sonuç sade ve kararlı olmalıdır. Zaman damgası değerleri Gateway biçimini korur;
-bu nedenle mevcut yaşam döngüsü destekli çalıştırmalar genellikle epoch milisaniye
-sayıları bildirirken bağdaştırıcılar hâlâ ISO dizeleri sunabilir. Zengin UI, araç izleri ve
-çalışma zamanına özgü ayrıntılar olaylara ve artifact'lere aittir.
+Sonuç sade ve kararlı olmalıdır. Zaman damgası değerleri Gateway
+şeklini korur; bu nedenle mevcut lifecycle destekli run'lar genellikle epoch milisaniye
+sayıları bildirirken adapter'lar hâlâ ISO dizgileri gösterebilir. Zengin UI, tool izleri ve
+runtime'a özgü ayrıntılar olaylara ve artifact'lara aittir.
 
-`accepted` terminal olmayan bir bekleme sonucudur: Gateway bekleme son tarihi,
-çalıştırma bir yaşam döngüsü sonu/hatası üretmeden önce doldu demektir. `timed_out` olarak ele alınmamalıdır;
-`timed_out`, kendi çalışma zamanı zaman aşımını aşan bir çalıştırma için ayrılmıştır.
+`accepted` terminal olmayan bir bekleme sonucudur: Gateway bekleme son tarihinin,
+run bir lifecycle bitişi/hatası üretmeden önce dolduğu anlamına gelir. `timed_out` olarak
+ele alınmamalıdır; `timed_out`, kendi runtime zaman aşımını aşan bir run için ayrılmıştır.
 
 ## Onaylar ve sorular
 
-Kodlama ajanları sürekli olarak güvenlik sınırlarını aştığı için onaylar birinci sınıf olmalıdır.
+Kodlama agent'ları sürekli güvenlik sınırlarını geçtiği için onaylar birinci sınıf olmalıdır.
 
 ```typescript
 run.onApproval(async (request) => {
@@ -206,22 +206,21 @@ run.onApproval(async (request) => {
 
 Onay olayları şunları taşımalıdır:
 
-- onay kimliği
-- çalıştırma kimliği ve oturum kimliği
+- onay id'si
+- run id'si ve oturum id'si
 - istek türü
 - istenen eylem özeti
-- araç adı veya ortam eylemi
-- risk düzeyi
+- tool adı veya ortam eylemi
+- risk seviyesi
 - kullanılabilir kararlar
-- sona erme
+- süre sonu
 - kararın yeniden kullanılıp kullanılamayacağı
 
-Sorular onaylardan ayrıdır. Bir soru, kullanıcıdan veya ana uygulamadan bilgi ister.
-Bir onay, bir eylemi gerçekleştirmek için izin ister.
+Sorular onaylardan ayrıdır. Bir soru, kullanıcıdan veya host uygulamadan bilgi ister. Bir onay, bir eylemi gerçekleştirmek için izin ister.
 
 ## ToolSpace modeli
 
-Uygulamaların, Plugin iç işleyişlerini içe aktarmadan araç yüzeyini anlaması gerekir.
+Uygulamaların, Plugin iç bileşenlerini içe aktarmadan tool yüzeyini anlaması gerekir.
 
 ```typescript
 const tools = await run.toolSpace();
@@ -233,19 +232,18 @@ for (const tool of tools.list()) {
 
 SDK şunları sunmalıdır:
 
-- normalleştirilmiş araç meta verileri
-- kaynak: OpenClaw, MCP, Plugin, kanal, çalışma zamanı veya uygulama
+- normalize edilmiş tool metadata'sı
+- kaynak: OpenClaw, MCP, Plugin, channel, runtime veya app
 - şema özeti
 - onay politikası
-- çalışma zamanı uyumluluğu
-- bir aracın gizli, salt okunur, yazma yetenekli veya ana makine yetenekli olup olmadığı
+- runtime uyumluluğu
+- bir tool'un gizli, readonly, yazma yetenekli veya host yetenekli olup olmadığı
 
-SDK üzerinden araç çağırma açık ve kapsamlı olmalıdır. Çoğu uygulama, rastgele araçları doğrudan çağırmak yerine
-ajanları çalıştırmalıdır.
+SDK üzerinden tool çağırma açık ve kapsamlı olmalıdır. Çoğu uygulama agent çalıştırmalı, rastgele tool'ları doğrudan çağırmamalıdır.
 
 ## Artifact modeli
 
-Artifact'ler dosyalardan fazlasını kapsamalıdır.
+Artifact'lar dosyalardan daha fazlasını kapsamalıdır.
 
 ```typescript
 type ArtifactSummary = {
@@ -272,51 +270,50 @@ type ArtifactSummary = {
 
 Yaygın örnekler:
 
-- dosya düzenlemeleri ve üretilmiş dosyalar
+- dosya düzenlemeleri ve üretilen dosyalar
 - patch paketleri
 - VCS diff'leri
 - ekran görüntüleri ve medya çıktıları
-- günlükler ve iz paketleri
+- log'lar ve iz paketleri
 - pull request bağlantıları
-- çalışma zamanı izlekleri
-- yönetilen ortam çalışma alanı anlık görüntüleri
+- runtime yörüngeleri
+- yönetilen ortam workspace snapshot'ları
 
-Artifact erişimi, her artifact'in normal bir yerel dosya olduğunu varsaymadan
-redaksiyon, saklama ve indirme URL'lerini desteklemelidir.
+Artifact erişimi, her artifact'ın normal bir yerel dosya olduğunu varsaymadan redaction, saklama ve indirme URL'lerini desteklemelidir.
 
 ## Güvenlik modeli
 
-Uygulama SDK'si yetki konusunda açık olmalıdır.
+App SDK yetki konusunda açık olmalıdır.
 
 Önerilen token kapsamları:
 
-| Kapsam              | İzin verir                                          |
+| Kapsam              | İzin verir                                           |
 | ------------------- | --------------------------------------------------- |
-| `agent.read`        | Ajanları listeleme ve inceleme.                     |
-| `agent.run`         | Çalıştırmaları başlatma.                            |
-| `session.read`      | Oturum meta verilerini ve mesajlarını okuma.        |
-| `session.write`     | Oturum oluşturma, oturuma gönderme, fork etme, compact etme ve iptal etme. |
-| `task.read`         | Arka plan görevi durumunu okuma.                    |
-| `task.write`        | Görev bildirim politikasını iptal etme veya değiştirme. |
+| `agent.read`        | Agent'ları listeleme ve inceleme.                   |
+| `agent.run`         | Run başlatma.                                       |
+| `session.read`      | Oturum metadata'sını ve mesajları okuma.            |
+| `session.write`     | Oturum oluşturma, oturuma gönderme, fork etme, compact etme ve abort etme. |
+| `task.read`         | Arka plan task durumunu okuma.                      |
+| `task.write`        | Task bildirim politikasını iptal etme veya değiştirme. |
 | `approval.respond`  | İstekleri onaylama veya reddetme.                   |
-| `tools.invoke`      | Açığa çıkarılmış araçları doğrudan çağırma.         |
-| `artifacts.read`    | Artifact'leri listeleme ve indirme.                 |
-| `environment.write` | Yönetilen ortamlar oluşturma veya yok etme.         |
+| `tools.invoke`      | Açığa çıkarılan tool'ları doğrudan çağırma.         |
+| `artifacts.read`    | Artifact'ları listeleme ve indirme.                 |
+| `environment.write` | Yönetilen ortamları oluşturma veya yok etme.        |
 | `admin`             | Yönetim işlemleri.                                  |
 
 Varsayılanlar:
 
 - varsayılan olarak gizli bilgi iletimi yok
 - sınırsız ortam değişkeni aktarımı yok
-- gizli değerleri yerine gizli referansları
+- gizli değerler yerine gizli referansları
 - açık sandbox ve ağ politikası
-- açık uzak ortam saklama
-- politika aksini kanıtlamadığı sürece ana makine yürütmesi için onaylar
-- çağıranın daha güçlü bir tanılama kapsamı yoksa, ham çalışma zamanı olayları Gateway'den çıkmadan önce redakte edilir
+- açık uzak ortam saklama politikası
+- politika aksini kanıtlamadıkça host yürütmesi için onaylar
+- raw runtime olayları, çağıranın daha güçlü bir tanılama kapsamı yoksa Gateway'den ayrılmadan önce redacted edilir
 
 ## Yönetilen ortam sağlayıcısı
 
-Yönetilen ajanlar ortam sağlayıcıları olarak uygulanmalıdır.
+Yönetilen agent'lar ortam sağlayıcıları olarak uygulanmalıdır.
 
 ```typescript
 type EnvironmentProvider = {
@@ -334,19 +331,17 @@ type EnvironmentProvider = {
 };
 ```
 
-İlk uygulamanın barındırılan bir SaaS olması gerekmez. Mevcut Node ana makinelerini,
-geçici çalışma alanlarını, CI tarzı çalıştırıcıları veya Testbox tarzı ortamları hedefleyebilir.
-Önemli sözleşme şudur:
+İlk uygulamanın hosted SaaS olması gerekmez. Mevcut node host'larını, geçici workspace'leri, CI tarzı runner'ları veya Testbox tarzı
+ortamları hedefleyebilir. Önemli sözleşme şudur:
 
-1. çalışma alanını hazırla
+1. workspace hazırla
 2. güvenli ortamı ve gizli bilgileri bağla
-3. çalıştırmayı başlat
-4. olayları akışla
-5. artifact'leri topla
+3. run başlat
+4. olay akışı sağla
+5. artifact'ları topla
 6. politikaya göre temizle veya sakla
 
-Bu kararlı hale geldiğinde, barındırılan bir bulut hizmeti aynı sağlayıcı
-sözleşmesini uygulayabilir.
+Bu kararlı hale geldiğinde hosted cloud hizmeti aynı sağlayıcı sözleşmesini uygulayabilir.
 
 ## Paket yapısı
 
@@ -354,34 +349,33 @@ sözleşmesini uygulayabilir.
 
 | Paket                   | Amaç                                                          |
 | ----------------------- | ------------------------------------------------------------- |
-| `@openclaw/sdk`         | Genel yüksek seviyeli SDK ve üretilmiş düşük seviyeli Gateway istemcisi. |
-| `@openclaw/sdk-react`   | Panolar ve uygulama oluşturucular için isteğe bağlı React hook'ları. |
-| `@openclaw/sdk-testing` | Uygulama entegrasyonları için test yardımcıları ve sahte Gateway sunucusu. |
+| `@openclaw/sdk`         | Herkese açık yüksek seviyeli SDK ve üretilmiş düşük seviyeli Gateway istemcisi. |
+| `@openclaw/sdk-react`   | Dashboard'lar ve app oluşturucular için isteğe bağlı React hook'ları. |
+| `@openclaw/sdk-testing` | App entegrasyonları için test yardımcıları ve sahte Gateway sunucusu. |
 
-Depoda Plugin'ler için zaten `openclaw/plugin-sdk/*` vardır. Plugin yazarları ile uygulama geliştiricilerini
-karıştırmamak için bu ad alanını ayrı tutun.
+Depoda Plugin'ler için zaten `openclaw/plugin-sdk/*` bulunur. Plugin yazarları ile app geliştiricilerini karıştırmamak için bu ad alanını ayrı tutun.
 
 ## Üretilmiş istemci stratejisi
 
-Düşük seviyeli istemci, sürümlenmiş Gateway protokol şemalarından üretilmeli,
-ardından elle yazılmış ergonomik sınıflarla sarmalanmalıdır.
+Düşük seviyeli istemci, sürümlü Gateway protokol
+şemalarından üretilmeli, ardından elle yazılmış ergonomik sınıflarla sarmalanmalıdır.
 
 Katmanlama:
 
-1. Gateway şeması için doğruluk kaynağı.
-2. Oluşturulmuş düşük seviyeli TypeScript istemcisi.
-3. Harici girdiler ve olay yükleri için çalışma zamanı doğrulayıcıları.
-4. Yüksek seviyeli `OpenClaw`, `Agent`, `Session`, `Run`, `Task` ve `Artifact`
+1. Gateway şeması için tek doğruluk kaynağı.
+2. Oluşturulmuş düşük düzey TypeScript istemcisi.
+3. Dış girdiler ve olay yükleri için çalışma zamanı doğrulayıcıları.
+4. Üst düzey `OpenClaw`, `Agent`, `Session`, `Run`, `Task` ve `Artifact`
    sarmalayıcıları.
-5. Tarif niteliğinde örnekler ve entegrasyon testleri.
+5. Tarif örnekleri ve entegrasyon testleri.
 
-Avantajlar:
+Faydalar:
 
-- protokol sapması görünürdür
-- testler oluşturulan yöntemleri Gateway dışa aktarımlarıyla karşılaştırabilir
-- App SDK, Plugin SDK iç yapılarından bağımsız kalır
-- düşük seviyeli tüketiciler hâlâ tam protokol erişimine sahiptir
-- yüksek seviyeli tüketiciler küçük ürün API'sini alır
+- protokol sapması görünür olur
+- testler, oluşturulan yöntemleri Gateway dışa aktarımlarıyla karşılaştırabilir
+- App SDK, Plugin SDK iç bileşenlerinden bağımsız kalır
+- düşük düzey tüketiciler hâlâ protokole tam erişime sahiptir
+- üst düzey tüketiciler küçük ürün API'sini alır
 
 ## İlgili
 

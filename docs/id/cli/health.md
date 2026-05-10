@@ -1,27 +1,29 @@
 ---
 read_when:
-    - Anda ingin memeriksa kesehatan Gateway yang sedang berjalan dengan cepat
-summary: Referensi CLI untuk `openclaw health` (snapshot kesehatan Gateway melalui RPC)
+    - Anda ingin cepat memeriksa kesehatan Gateway yang sedang berjalan
+summary: Referensi CLI untuk `openclaw health` (cuplikan kesehatan Gateway melalui RPC)
 title: Kesehatan
 x-i18n:
-    generated_at: "2026-05-06T09:04:59Z"
+    generated_at: "2026-05-10T19:28:29Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 443684af04efce2c54a6679e13b0bff0a5c1869f85d60fae0e853aed0a362226
+    source_hash: 26be7bbbf75c2eca1213fe145fdeeab6fee96798dff457278ac69a20145bf75d
     source_path: cli/health.md
     workflow: 16
 ---
 
 # `openclaw health`
 
-Ambil status kesehatan dari Gateway yang sedang berjalan.
+Mengambil status kesehatan dari Gateway yang sedang berjalan.
 
-Opsi:
+## Opsi
 
-- `--json`: keluaran yang dapat dibaca mesin
-- `--timeout <ms>`: tenggat waktu koneksi dalam milidetik (default `10000`)
-- `--verbose`: pencatatan log mendetail
-- `--debug`: alias untuk `--verbose`
+| Flag             | Bawaan | Deskripsi                                                        |
+| ---------------- | ------- | ------------------------------------------------------------------ |
+| `--json`         | `false` | Mencetak JSON yang dapat dibaca mesin, bukan teks.                       |
+| `--timeout <ms>` | `10000` | Tenggat waktu koneksi dalam milidetik.                                |
+| `--verbose`      | `false` | Pencatatan log verbose. Memaksa probe langsung dan memperluas output per agen. |
+| `--debug`        | `false` | Alias untuk `--verbose`.                                             |
 
 Contoh:
 
@@ -35,12 +37,12 @@ openclaw health --debug
 
 Catatan:
 
-- Default `openclaw health` meminta snapshot kesehatan dari Gateway yang sedang berjalan. Ketika
-  Gateway sudah memiliki snapshot cache yang masih segar, Gateway dapat mengembalikan payload cache tersebut dan
-  melakukan penyegaran di latar belakang.
-- `--verbose` memaksa probe langsung, mencetak detail koneksi Gateway, dan memperluas
-  keluaran yang dapat dibaca manusia di semua akun dan agen yang dikonfigurasi.
-- Keluaran menyertakan penyimpanan sesi per agen ketika beberapa agen dikonfigurasi.
+- `openclaw health` bawaan meminta snapshot kesehatan dari gateway yang sedang berjalan. Ketika
+  gateway sudah memiliki snapshot cache yang masih segar, perintah ini dapat mengembalikan payload cache tersebut dan
+  menyegarkan di latar belakang.
+- `--verbose` memaksa probe langsung, mencetak detail koneksi gateway, dan memperluas
+  output yang dapat dibaca manusia di semua akun dan agen yang dikonfigurasi.
+- Output mencakup penyimpanan sesi per agen ketika beberapa agen dikonfigurasi.
 
 ## Terkait
 

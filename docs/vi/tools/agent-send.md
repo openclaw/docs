@@ -1,21 +1,21 @@
 ---
 read_when:
-    - Bạn muốn kích hoạt các lượt chạy tác tử từ các tập lệnh hoặc dòng lệnh
-    - Bạn cần gửi phản hồi của tác nhân đến một kênh trò chuyện bằng lập trình
-summary: Chạy các lượt tác nhân từ CLI và tùy chọn gửi phản hồi đến các kênh
-title: Gửi tới tác tử
+    - Bạn muốn kích hoạt các lần chạy tác tử từ tập lệnh hoặc dòng lệnh
+    - Bạn cần gửi phản hồi của tác nhân đến một kênh trò chuyện bằng chương trình
+summary: Chạy các lượt tác tử từ CLI và tùy chọn gửi phản hồi đến các kênh
+title: Tác nhân gửi
 x-i18n:
-    generated_at: "2026-05-06T09:31:19Z"
+    generated_at: "2026-05-10T19:52:23Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1339ebd74e2349669942ff93f200b53a69ad05f2186d6ff76437c779f312a291
+    source_hash: a2e1b05414312321e7136867bb8b998754d4a46289cc02764eb61d83f7239af1
     source_path: tools/agent-send.md
     workflow: 16
 ---
 
 `openclaw agent` chạy một lượt agent duy nhất từ dòng lệnh mà không cần
-tin nhắn chat gửi đến. Dùng lệnh này cho các workflow có script, kiểm thử và
-phân phối theo chương trình.
+tin nhắn trò chuyện đến. Dùng lệnh này cho các quy trình có kịch bản, kiểm thử và
+gửi nội dung theo chương trình.
 
 ## Bắt đầu nhanh
 
@@ -29,7 +29,7 @@ phân phối theo chương trình.
 
   </Step>
 
-  <Step title="Nhắm tới một agent hoặc phiên cụ thể">
+  <Step title="Nhắm đến một agent hoặc phiên cụ thể">
     ```bash
     # Target a specific agent
     openclaw agent --agent ops --message "Summarize logs"
@@ -43,7 +43,7 @@ phân phối theo chương trình.
 
   </Step>
 
-  <Step title="Phân phối phản hồi đến một kênh">
+  <Step title="Gửi phản hồi đến một kênh">
     ```bash
     # Deliver to WhatsApp (default channel)
     openclaw agent --to +15555550123 --message "Report ready" --deliver
@@ -59,31 +59,34 @@ phân phối theo chương trình.
 ## Cờ
 
 | Cờ                            | Mô tả                                                        |
-| ----------------------------- | ----------------------------------------------------------- |
-| `--message \<text\>`          | Tin nhắn cần gửi (bắt buộc)                                 |
-| `--to \<dest\>`               | Suy ra khóa phiên từ một đích (điện thoại, chat id)         |
-| `--agent \<id\>`              | Nhắm tới một agent đã cấu hình (dùng phiên `main` của nó)   |
-| `--session-id \<id\>`         | Tái sử dụng một phiên hiện có theo id                       |
-| `--local`                     | Buộc dùng runtime nhúng cục bộ (bỏ qua Gateway)             |
-| `--deliver`                   | Gửi phản hồi đến một kênh chat                              |
-| `--channel \<name\>`          | Kênh phân phối (WhatsApp, Telegram, Discord, Slack, v.v.)   |
-| `--reply-to \<target\>`       | Ghi đè đích phân phối                                      |
-| `--reply-channel \<name\>`    | Ghi đè kênh phân phối                                      |
-| `--reply-account \<id\>`      | Ghi đè id tài khoản phân phối                              |
-| `--thinking \<level\>`        | Đặt mức suy nghĩ cho hồ sơ mô hình đã chọn                  |
-| `--verbose \<on\|full\|off\>` | Đặt mức chi tiết                                            |
-| `--timeout \<seconds\>`       | Ghi đè thời gian chờ của agent                              |
-| `--json`                      | Xuất JSON có cấu trúc                                       |
+| ----------------------------- | ------------------------------------------------------------ |
+| `--message \<text\>`          | Tin nhắn cần gửi (bắt buộc)                                  |
+| `--to \<dest\>`               | Suy ra khóa phiên từ một mục tiêu (điện thoại, id trò chuyện) |
+| `--agent \<id\>`              | Nhắm đến một agent đã cấu hình (dùng phiên `main` của agent đó) |
+| `--session-id \<id\>`         | Tái sử dụng một phiên hiện có theo id                        |
+| `--local`                     | Buộc dùng runtime nhúng cục bộ (bỏ qua Gateway)              |
+| `--deliver`                   | Gửi phản hồi đến một kênh trò chuyện                         |
+| `--channel \<name\>`          | Kênh gửi (whatsapp, telegram, discord, slack, v.v.)          |
+| `--reply-to \<target\>`       | Ghi đè mục tiêu gửi                                          |
+| `--reply-channel \<name\>`    | Ghi đè kênh gửi                                              |
+| `--reply-account \<id\>`      | Ghi đè id tài khoản gửi                                      |
+| `--thinking \<level\>`        | Đặt mức suy luận cho hồ sơ mô hình đã chọn                   |
+| `--verbose \<on\|full\|off\>` | Đặt mức chi tiết                                             |
+| `--timeout \<seconds\>`       | Ghi đè thời gian chờ của agent                               |
+| `--json`                      | Xuất JSON có cấu trúc                                        |
 
 ## Hành vi
 
 - Theo mặc định, CLI đi **qua Gateway**. Thêm `--local` để buộc dùng
   runtime nhúng trên máy hiện tại.
-- Nếu không thể kết nối Gateway, CLI **chuyển dự phòng** sang lượt chạy nhúng cục bộ.
-- Chọn phiên: `--to` suy ra khóa phiên (đích nhóm/kênh
-  giữ nguyên cách ly; chat trực tiếp thu gọn thành `main`).
-- Các cờ thinking và verbose được lưu vào kho phiên.
+- Nếu không thể truy cập Gateway, CLI **chuyển dự phòng** sang lượt chạy nhúng cục bộ.
+- Chọn phiên: `--to` suy ra khóa phiên (mục tiêu nhóm/kênh
+  giữ nguyên cách ly; trò chuyện trực tiếp được gộp về `main`).
+- Các cờ suy luận và chi tiết được lưu vào kho phiên.
 - Đầu ra: mặc định là văn bản thuần, hoặc `--json` để có payload + siêu dữ liệu có cấu trúc.
+- Với `--json --deliver`, JSON bao gồm trạng thái gửi cho các lượt gửi đã gửi,
+  bị chặn, một phần và thất bại. Xem
+  [trạng thái gửi JSON](/vi/cli/agent#json-delivery-status).
 
 ## Ví dụ
 
@@ -101,16 +104,16 @@ openclaw agent --agent ops --message "Alert" --deliver --reply-channel telegram 
 ## Liên quan
 
 <CardGroup cols={2}>
-  <Card title="Tham chiếu CLI của agent" href="/vi/cli/agent" icon="terminal">
+  <Card title="Tham chiếu CLI cho agent" href="/vi/cli/agent" icon="terminal">
     Tham chiếu đầy đủ về cờ và tùy chọn của `openclaw agent`.
   </Card>
-  <Card title="Sub-agent" href="/vi/tools/subagents" icon="users">
-    Sinh sub-agent trong nền.
+  <Card title="Agent phụ" href="/vi/tools/subagents" icon="users">
+    Khởi tạo agent phụ chạy nền.
   </Card>
   <Card title="Phiên" href="/vi/concepts/session" icon="comments">
-    Cách khóa phiên hoạt động và cách `--to`, `--agent` và `--session-id` phân giải chúng.
+    Cách khóa phiên hoạt động và cách `--to`, `--agent`, và `--session-id` phân giải chúng.
   </Card>
-  <Card title="Lệnh slash" href="/vi/tools/slash-commands" icon="slash">
-    Danh mục lệnh native được dùng bên trong các phiên agent.
+  <Card title="Lệnh dấu gạch chéo" href="/vi/tools/slash-commands" icon="slash">
+    Danh mục lệnh gốc được dùng bên trong các phiên agent.
   </Card>
 </CardGroup>

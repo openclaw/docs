@@ -1,21 +1,21 @@
 ---
 read_when:
     - Bir Plugin için testler yazıyorsunuz
-    - Plugin SDK'daki test yardımcı araçlarına ihtiyacınız var
-    - Birlikte gelen Plugin'ler için sözleşme testlerini anlamak istiyorsunuz
+    - Plugin SDK'sindeki test yardımcı programlarına ihtiyacınız var
+    - Birlikte sunulan Plugin'ler için sözleşme testlerini anlamak istiyorsunuz
 sidebarTitle: Testing
 summary: OpenClaw Plugin'leri için test yardımcıları ve kalıpları
 title: Plugin testi
 x-i18n:
-    generated_at: "2026-05-02T22:21:28Z"
+    generated_at: "2026-05-10T19:50:26Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 67092d71302d566ee9ed3f3f1e32b5aa6f4eabf522a9656ad13cad812550f1e8
+    source_hash: 7887b005792aa24958461b1db22d72701ab3a0419ff9d9cc0981df42893038e9
     source_path: plugins/sdk-testing.md
     workflow: 16
 ---
 
-OpenClaw Plugin'leri için test yardımcıları, kalıplar ve lint zorlaması referansı.
+OpenClaw Plugin'leri için test yardımcıları, kalıplar ve lint uygulaması başvurusu.
 
 <Tip>
   **Test örnekleri mi arıyorsunuz?** Nasıl yapılır kılavuzları çalışılmış test örnekleri içerir:
@@ -25,34 +25,37 @@ OpenClaw Plugin'leri için test yardımcıları, kalıplar ve lint zorlaması re
 
 ## Test yardımcıları
 
-**Plugin API sahte içe aktarımı:** `openclaw/plugin-sdk/plugin-test-api`
+Bu test yardımcısı alt yolları, OpenClaw'ın kendi paketlenmiş Plugin testleri için
+depoya yerel kaynak giriş noktalarıdır. Üçüncü taraf Plugin'ler için paket dışa aktarımları değildir.
 
-**Aracı çalışma zamanı sözleşmesi içe aktarımı:** `openclaw/plugin-sdk/agent-runtime-test-contracts`
+**Plugin API mock içe aktarımı:** `openclaw/plugin-sdk/plugin-test-api`
+
+**Ajan çalışma zamanı sözleşmesi içe aktarımı:** `openclaw/plugin-sdk/agent-runtime-test-contracts`
 
 **Kanal sözleşmesi içe aktarımı:** `openclaw/plugin-sdk/channel-contract-testing`
 
 **Kanal test yardımcısı içe aktarımı:** `openclaw/plugin-sdk/channel-test-helpers`
 
-**Kanal hedef testi içe aktarımı:** `openclaw/plugin-sdk/channel-target-testing`
+**Kanal hedefi test içe aktarımı:** `openclaw/plugin-sdk/channel-target-testing`
 
 **Plugin sözleşmesi içe aktarımı:** `openclaw/plugin-sdk/plugin-test-contracts`
 
-**Plugin çalışma zamanı testi içe aktarımı:** `openclaw/plugin-sdk/plugin-test-runtime`
+**Plugin çalışma zamanı test içe aktarımı:** `openclaw/plugin-sdk/plugin-test-runtime`
 
 **Sağlayıcı sözleşmesi içe aktarımı:** `openclaw/plugin-sdk/provider-test-contracts`
 
-**Sağlayıcı HTTP sahte içe aktarımı:** `openclaw/plugin-sdk/provider-http-test-mocks`
+**Sağlayıcı HTTP mock içe aktarımı:** `openclaw/plugin-sdk/provider-http-test-mocks`
 
-**Ortam/ağ testi içe aktarımı:** `openclaw/plugin-sdk/test-env`
+**Ortam/ağ test içe aktarımı:** `openclaw/plugin-sdk/test-env`
 
 **Genel fixture içe aktarımı:** `openclaw/plugin-sdk/test-fixtures`
 
-**Node yerleşik sahte içe aktarımı:** `openclaw/plugin-sdk/test-node-mocks`
+**Node yerleşik mock içe aktarımı:** `openclaw/plugin-sdk/test-node-mocks`
 
-Yeni Plugin testleri için aşağıdaki odaklanmış alt yolları tercih edin. Geniş
-`openclaw/plugin-sdk/testing` barrel'i yalnızca eski uyumluluk içindir.
-Repo koruma kuralları, `plugin-sdk/testing` ve
-`plugin-sdk/test-utils` üzerinden yeni gerçek içe aktarımları reddeder; bu adlar yalnızca harici Plugin'ler ve uyumluluk kaydı testleri için kullanımdan kaldırılmış uyumluluk yüzeyleri olarak kalır.
+Yeni Plugin testleri için aşağıdaki odaklı alt yolları tercih edin. Geniş
+`openclaw/plugin-sdk/testing` barrel yalnızca eski uyumluluk içindir.
+Depo güvenlik kuralları, `plugin-sdk/testing` ve
+`plugin-sdk/test-utils` üzerinden yeni gerçek içe aktarımları reddeder; bu adlar yalnızca uyumluluk kaydı testleri için kullanımdan kaldırılmış uyumluluk yüzeyleri olarak kalır.
 
 ```typescript
 import {
@@ -79,91 +82,91 @@ import { mockNodeBuiltinModule } from "openclaw/plugin-sdk/test-node-mocks";
 
 ### Kullanılabilir dışa aktarımlar
 
-| Dışa Aktarım                                         | Amaç                                                                                                                                                  |
-| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `createTestPluginApi`                                | Doğrudan kayıt birim testleri için minimal bir Plugin API sahtesi oluşturur. `plugin-sdk/plugin-test-api` içinden içe aktarın                         |
-| `AUTH_PROFILE_RUNTIME_CONTRACT`                      | Yerel ajan çalışma zamanı bağdaştırıcıları için paylaşılan kimlik doğrulama profili sözleşme fikstürü. `plugin-sdk/agent-runtime-test-contracts` içinden içe aktarın |
-| `DELIVERY_NO_REPLY_RUNTIME_CONTRACT`                 | Yerel ajan çalışma zamanı bağdaştırıcıları için paylaşılan teslimat bastırma sözleşme fikstürü. `plugin-sdk/agent-runtime-test-contracts` içinden içe aktarın |
-| `OUTCOME_FALLBACK_RUNTIME_CONTRACT`                  | Yerel ajan çalışma zamanı bağdaştırıcıları için paylaşılan geri dönüş sınıflandırma sözleşme fikstürü. `plugin-sdk/agent-runtime-test-contracts` içinden içe aktarın |
-| `createParameterFreeTool`                            | Yerel çalışma zamanı sözleşme testleri için dinamik araç şeması fikstürleri oluşturur. `plugin-sdk/agent-runtime-test-contracts` içinden içe aktarın |
-| `expectChannelInboundContextContract`                | Kanal gelen bağlam biçimini doğrular. `plugin-sdk/channel-contract-testing` içinden içe aktarın                                                       |
-| `installChannelOutboundPayloadContractSuite`         | Kanal giden yük sözleşme senaryolarını kurar. `plugin-sdk/channel-contract-testing` içinden içe aktarın                                               |
-| `createStartAccountContext`                          | Kanal hesabı yaşam döngüsü bağlamları oluşturur. `plugin-sdk/channel-test-helpers` içinden içe aktarın                                                |
-| `installChannelActionsContractSuite`                 | Genel kanal mesaj eylemi sözleşme senaryolarını kurar. `plugin-sdk/channel-test-helpers` içinden içe aktarın                                          |
-| `installChannelSetupContractSuite`                   | Genel kanal kurulum sözleşme senaryolarını kurar. `plugin-sdk/channel-test-helpers` içinden içe aktarın                                               |
-| `installChannelStatusContractSuite`                  | Genel kanal durum sözleşme senaryolarını kurar. `plugin-sdk/channel-test-helpers` içinden içe aktarın                                                 |
-| `expectDirectoryIds`                                 | Bir dizin listeleme işlevinden kanal dizin kimliklerini doğrular. `plugin-sdk/channel-test-helpers` içinden içe aktarın                               |
-| `assertBundledChannelEntries`                        | Paketlenmiş kanal giriş noktalarının beklenen genel sözleşmeyi sunduğunu doğrular. `plugin-sdk/channel-test-helpers` içinden içe aktarın              |
-| `formatEnvelopeTimestamp`                            | Deterministik zarf zaman damgalarını biçimlendirir. `plugin-sdk/channel-test-helpers` içinden içe aktarın                                             |
-| `expectPairingReplyText`                             | Kanal eşleştirme yanıt metnini doğrular ve kodunu çıkarır. `plugin-sdk/channel-test-helpers` içinden içe aktarın                                      |
-| `describePluginRegistrationContract`                 | Plugin kayıt sözleşmesi denetimlerini kurar. `plugin-sdk/plugin-test-contracts` içinden içe aktarın                                                   |
-| `registerSingleProviderPlugin`                       | Yükleyici duman testlerinde tek bir sağlayıcı Plugin kaydeder. `plugin-sdk/plugin-test-runtime` içinden içe aktarın                                   |
-| `registerProviderPlugin`                             | Tek bir Plugin içinden tüm sağlayıcı türlerini yakalar. `plugin-sdk/plugin-test-runtime` içinden içe aktarın                                          |
-| `registerProviderPlugins`                            | Birden çok Plugin genelinde sağlayıcı kayıtlarını yakalar. `plugin-sdk/plugin-test-runtime` içinden içe aktarın                                       |
-| `requireRegisteredProvider`                          | Bir sağlayıcı koleksiyonunun bir kimlik içerdiğini doğrular. `plugin-sdk/plugin-test-runtime` içinden içe aktarın                                     |
-| `createRuntimeEnv`                                   | Sahte bir CLI/Plugin çalışma zamanı ortamı oluşturur. `plugin-sdk/plugin-test-runtime` içinden içe aktarın                                            |
-| `createPluginSetupWizardStatus`                      | Kanal Plugin'leri için kurulum durumu yardımcıları oluşturur. `plugin-sdk/plugin-test-runtime` içinden içe aktarın                                    |
-| `describeOpenAIProviderRuntimeContract`              | Sağlayıcı ailesi çalışma zamanı sözleşmesi denetimlerini kurar. `plugin-sdk/provider-test-contracts` içinden içe aktarın                              |
-| `expectPassthroughReplayPolicy`                      | Sağlayıcı yeniden yürütme ilkelerinin sağlayıcıya ait araçları ve meta verileri olduğu gibi geçirdiğini doğrular. `plugin-sdk/provider-test-contracts` içinden içe aktarın |
-| `runRealtimeSttLiveTest`                             | Paylaşılan ses fikstürleriyle canlı gerçek zamanlı STT sağlayıcı testi çalıştırır. `plugin-sdk/provider-test-contracts` içinden içe aktarın           |
-| `normalizeTranscriptForMatch`                        | Belirsiz doğrulamalardan önce canlı transkript çıktısını normalleştirir. `plugin-sdk/provider-test-contracts` içinden içe aktarın                     |
-| `expectExplicitVideoGenerationCapabilities`          | Video sağlayıcılarının açık üretim modu yetenekleri bildirdiğini doğrular. `plugin-sdk/provider-test-contracts` içinden içe aktarın                   |
-| `expectExplicitMusicGenerationCapabilities`          | Müzik sağlayıcılarının açık üretim/düzenleme yetenekleri bildirdiğini doğrular. `plugin-sdk/provider-test-contracts` içinden içe aktarın              |
-| `mockSuccessfulDashscopeVideoTask`                   | Başarılı bir DashScope uyumlu video görevi yanıtı kurar. `plugin-sdk/provider-test-contracts` içinden içe aktarın                                     |
-| `getProviderHttpMocks`                               | İsteğe bağlı sağlayıcı HTTP/kimlik doğrulama Vitest sahtelerine erişir. `plugin-sdk/provider-http-test-mocks` içinden içe aktarın                     |
-| `installProviderHttpMockCleanup`                     | Her testten sonra sağlayıcı HTTP/kimlik doğrulama sahtelerini sıfırlar. `plugin-sdk/provider-http-test-mocks` içinden içe aktarın                     |
-| `installCommonResolveTargetErrorCases`               | Hedef çözümleme hata işleme için paylaşılan test senaryoları. `plugin-sdk/channel-target-testing` içinden içe aktarın                                 |
-| `shouldAckReaction`                                  | Bir kanalın onay tepkisi ekleyip eklememesi gerektiğini denetler. `plugin-sdk/channel-feedback` içinden içe aktarın                                  |
-| `removeAckReactionAfterReply`                        | Yanıt tesliminden sonra onay tepkisini kaldırır. `plugin-sdk/channel-feedback` içinden içe aktarın                                                    |
-| `createTestRegistry`                                 | Kanal Plugin kayıt defteri fikstürü oluşturur. `plugin-sdk/plugin-test-runtime` veya `plugin-sdk/channel-test-helpers` içinden içe aktarın            |
-| `createEmptyPluginRegistry`                          | Boş bir Plugin kayıt defteri fikstürü oluşturur. `plugin-sdk/plugin-test-runtime` veya `plugin-sdk/channel-test-helpers` içinden içe aktarın          |
-| `setActivePluginRegistry`                            | Plugin çalışma zamanı testleri için bir kayıt defteri fikstürü kurar. `plugin-sdk/plugin-test-runtime` veya `plugin-sdk/channel-test-helpers` içinden içe aktarın |
-| `createRequestCaptureJsonFetch`                      | Medya yardımcı testlerinde JSON fetch isteklerini yakalar. `plugin-sdk/test-env` içinden içe aktarın                                                   |
-| `withServer`                                         | Atılabilir bir yerel HTTP sunucusuna karşı testleri çalıştırır. `plugin-sdk/test-env` içinden içe aktarın                                             |
-| `createMockIncomingRequest`                          | Minimal bir gelen HTTP isteği nesnesi oluşturur. `plugin-sdk/test-env` içinden içe aktarın                                                            |
-| `withFetchPreconnect`                                | Ön bağlantı kancaları kurulu olarak fetch testlerini çalıştırır. `plugin-sdk/test-env` içinden içe aktarın                                           |
-| `withEnv` / `withEnvAsync`                           | Ortam değişkenlerini geçici olarak yamalar. `plugin-sdk/test-env` içinden içe aktarın                                                                 |
-| `createTempHomeEnv` / `withTempHome` / `withTempDir` | Yalıtılmış dosya sistemi test fikstürleri oluşturur. `plugin-sdk/test-env` içinden içe aktarın                                                        |
-| `createMockServerResponse`                           | Minimal bir HTTP sunucusu yanıt sahtesi oluşturur. `plugin-sdk/test-env` içinden içe aktarın                                                          |
-| `createCliRuntimeCapture`                            | Testlerde CLI çalışma zamanı çıktısını yakalar. `plugin-sdk/test-fixtures` içinden içe aktarın                                                        |
-| `importFreshModule`                                  | Modül önbelleğini atlamak için yeni bir sorgu belirteciyle bir ESM modülünü içe aktarır. `plugin-sdk/test-fixtures` içinden içe aktarın               |
-| `bundledPluginRoot` / `bundledPluginFile`            | Paketlenmiş Plugin kaynak veya dist fikstür yollarını çözer. `plugin-sdk/test-fixtures` içinden içe aktarın                                          |
-| `mockNodeBuiltinModule`                              | Dar kapsamlı Node yerleşik Vitest sahteleri kurar. `plugin-sdk/test-node-mocks` içinden içe aktarın                                                   |
-| `createSandboxTestContext`                           | Korumalı alan test bağlamları oluşturur. `plugin-sdk/test-fixtures` içinden içe aktarın                                                               |
-| `writeSkill`                                         | Skill fikstürleri yazar. `plugin-sdk/test-fixtures` içinden içe aktarın                                                                               |
-| `makeAgentAssistantMessage`                          | Ajan transkript mesaj fikstürleri oluşturur. `plugin-sdk/test-fixtures` içinden içe aktarın                                                           |
-| `peekSystemEvents` / `resetSystemEventsForTest`      | Sistem olayı fikstürlerini inceler ve sıfırlar. `plugin-sdk/test-fixtures` içinden içe aktarın                                                        |
-| `sanitizeTerminalText`                               | Doğrulamalar için terminal çıktısını temizler. `plugin-sdk/test-fixtures` içinden içe aktarın                                                         |
-| `countLines` / `hasBalancedFences`                   | Parçalama çıktı biçimini doğrular. `plugin-sdk/test-fixtures` içinden içe aktarın                                                                     |
-| `runProviderCatalog`                                 | Test bağımlılıklarıyla bir sağlayıcı katalog kancası yürütür                                                                                          |
-| `resolveProviderWizardOptions`                       | Sözleşme testlerinde sağlayıcı kurulum sihirbazı seçeneklerini çözer                                                                                  |
-| `resolveProviderModelPickerEntries`                  | Sözleşme testlerinde sağlayıcı model seçici girdilerini çözer                                                                                         |
-| `buildProviderPluginMethodChoice`                    | Doğrulamalar için sağlayıcı sihirbazı seçim kimlikleri oluşturur                                                                                      |
-| `setProviderWizardProvidersResolverForTest`          | Yalıtılmış testler için sağlayıcı sihirbazı sağlayıcılarını enjekte eder                                                                              |
-| `createProviderUsageFetch`                           | Sağlayıcı kullanım getirme fixture'larını oluştur                                                                                                      |
-| `useFrozenTime` / `useRealTime`                      | Zamana duyarlı testler için zamanlayıcıları dondurup geri yükleyin. `plugin-sdk/test-env` içinden içe aktarın                                                    |
-| `createTestWizardPrompter`                           | Taklit edilmiş bir kurulum sihirbazı istem oluşturucusu oluştur                                                                                                     |
+| Dışa aktarım                                        | Amaç                                                                                                                                     |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `createTestPluginApi`                                | Doğrudan kayıt birim testleri için en küçük Plugin API mock’u oluşturun. `plugin-sdk/plugin-test-api` içinden içe aktarın               |
+| `AUTH_PROFILE_RUNTIME_CONTRACT`                      | Yerel ajan çalışma zamanı adaptörleri için paylaşılan auth-profile sözleşme fikstürü. `plugin-sdk/agent-runtime-test-contracts` içinden içe aktarın |
+| `DELIVERY_NO_REPLY_RUNTIME_CONTRACT`                 | Yerel ajan çalışma zamanı adaptörleri için paylaşılan teslimat bastırma sözleşme fikstürü. `plugin-sdk/agent-runtime-test-contracts` içinden içe aktarın |
+| `OUTCOME_FALLBACK_RUNTIME_CONTRACT`                  | Yerel ajan çalışma zamanı adaptörleri için paylaşılan fallback sınıflandırma sözleşme fikstürü. `plugin-sdk/agent-runtime-test-contracts` içinden içe aktarın |
+| `createParameterFreeTool`                            | Yerel çalışma zamanı sözleşme testleri için dinamik araç şema fikstürleri oluşturun. `plugin-sdk/agent-runtime-test-contracts` içinden içe aktarın |
+| `expectChannelInboundContextContract`                | Kanal inbound bağlam biçimini doğrulayın. `plugin-sdk/channel-contract-testing` içinden içe aktarın                                      |
+| `installChannelOutboundPayloadContractSuite`         | Kanal outbound yük sözleşme vakalarını yükleyin. `plugin-sdk/channel-contract-testing` içinden içe aktarın                               |
+| `createStartAccountContext`                          | Kanal hesap yaşam döngüsü bağlamları oluşturun. `plugin-sdk/channel-test-helpers` içinden içe aktarın                                    |
+| `installChannelActionsContractSuite`                 | Genel kanal ileti-eylem sözleşme vakalarını yükleyin. `plugin-sdk/channel-test-helpers` içinden içe aktarın                              |
+| `installChannelSetupContractSuite`                   | Genel kanal kurulum sözleşme vakalarını yükleyin. `plugin-sdk/channel-test-helpers` içinden içe aktarın                                  |
+| `installChannelStatusContractSuite`                  | Genel kanal durum sözleşme vakalarını yükleyin. `plugin-sdk/channel-test-helpers` içinden içe aktarın                                    |
+| `expectDirectoryIds`                                 | Bir dizin listeleme işlevinden kanal dizin kimliklerini doğrulayın. `plugin-sdk/channel-test-helpers` içinden içe aktarın                |
+| `assertBundledChannelEntries`                        | Paketlenmiş kanal giriş noktalarının beklenen genel sözleşmeyi açığa çıkardığını doğrulayın. `plugin-sdk/channel-test-helpers` içinden içe aktarın |
+| `formatEnvelopeTimestamp`                            | Belirlenimci zarf zaman damgalarını biçimlendirin. `plugin-sdk/channel-test-helpers` içinden içe aktarın                                 |
+| `expectPairingReplyText`                             | Kanal eşleme yanıt metnini doğrulayın ve kodunu ayıklayın. `plugin-sdk/channel-test-helpers` içinden içe aktarın                         |
+| `describePluginRegistrationContract`                 | Plugin kayıt sözleşmesi kontrollerini yükleyin. `plugin-sdk/plugin-test-contracts` içinden içe aktarın                                   |
+| `registerSingleProviderPlugin`                       | Yükleyici smoke testlerinde bir sağlayıcı Plugin kaydedin. `plugin-sdk/plugin-test-runtime` içinden içe aktarın                          |
+| `registerProviderPlugin`                             | Bir Plugin’den tüm sağlayıcı türlerini yakalayın. `plugin-sdk/plugin-test-runtime` içinden içe aktarın                                   |
+| `registerProviderPlugins`                            | Birden çok Plugin genelindeki sağlayıcı kayıtlarını yakalayın. `plugin-sdk/plugin-test-runtime` içinden içe aktarın                      |
+| `requireRegisteredProvider`                          | Bir sağlayıcı koleksiyonunun bir kimlik içerdiğini doğrulayın. `plugin-sdk/plugin-test-runtime` içinden içe aktarın                      |
+| `createRuntimeEnv`                                   | Mock’lanmış bir CLI/Plugin çalışma zamanı ortamı oluşturun. `plugin-sdk/plugin-test-runtime` içinden içe aktarın                         |
+| `createPluginSetupWizardStatus`                      | Kanal Plugin’leri için kurulum durumu yardımcılarını oluşturun. `plugin-sdk/plugin-test-runtime` içinden içe aktarın                     |
+| `describeOpenAIProviderRuntimeContract`              | Sağlayıcı ailesi çalışma zamanı sözleşme kontrollerini yükleyin. `plugin-sdk/provider-test-contracts` içinden içe aktarın                |
+| `expectPassthroughReplayPolicy`                      | Sağlayıcı replay ilkelerinin sağlayıcının sahip olduğu araçları ve meta verileri aynen geçirdiğini doğrulayın. `plugin-sdk/provider-test-contracts` içinden içe aktarın |
+| `runRealtimeSttLiveTest`                             | Paylaşılan ses fikstürleriyle canlı gerçek zamanlı STT sağlayıcı testi çalıştırın. `plugin-sdk/provider-test-contracts` içinden içe aktarın |
+| `normalizeTranscriptForMatch`                        | Bulanık doğrulamalardan önce canlı transkript çıktısını normalleştirin. `plugin-sdk/provider-test-contracts` içinden içe aktarın         |
+| `expectExplicitVideoGenerationCapabilities`          | Video sağlayıcılarının açık üretim modu yetenekleri bildirdiğini doğrulayın. `plugin-sdk/provider-test-contracts` içinden içe aktarın    |
+| `expectExplicitMusicGenerationCapabilities`          | Müzik sağlayıcılarının açık üretim/düzenleme yetenekleri bildirdiğini doğrulayın. `plugin-sdk/provider-test-contracts` içinden içe aktarın |
+| `mockSuccessfulDashscopeVideoTask`                   | Başarılı bir DashScope uyumlu video görevi yanıtı yükleyin. `plugin-sdk/provider-test-contracts` içinden içe aktarın                     |
+| `getProviderHttpMocks`                               | İsteğe bağlı sağlayıcı HTTP/auth Vitest mock’larına erişin. `plugin-sdk/provider-http-test-mocks` içinden içe aktarın                    |
+| `installProviderHttpMockCleanup`                     | Her testten sonra sağlayıcı HTTP/auth mock’larını sıfırlayın. `plugin-sdk/provider-http-test-mocks` içinden içe aktarın                  |
+| `installCommonResolveTargetErrorCases`               | Hedef çözümleme hata işleme için paylaşılan test vakaları. `plugin-sdk/channel-target-testing` içinden içe aktarın                       |
+| `shouldAckReaction`                                  | Bir kanalın ack tepkisi ekleyip eklememesi gerektiğini denetleyin. `plugin-sdk/channel-feedback` içinden içe aktarın                    |
+| `removeAckReactionAfterReply`                        | Yanıt tesliminden sonra ack tepkisini kaldırın. `plugin-sdk/channel-feedback` içinden içe aktarın                                        |
+| `createTestRegistry`                                 | Kanal Plugin kayıt defteri fikstürü oluşturun. `plugin-sdk/plugin-test-runtime` veya `plugin-sdk/channel-test-helpers` içinden içe aktarın |
+| `createEmptyPluginRegistry`                          | Boş bir Plugin kayıt defteri fikstürü oluşturun. `plugin-sdk/plugin-test-runtime` veya `plugin-sdk/channel-test-helpers` içinden içe aktarın |
+| `setActivePluginRegistry`                            | Plugin çalışma zamanı testleri için bir kayıt defteri fikstürü yükleyin. `plugin-sdk/plugin-test-runtime` veya `plugin-sdk/channel-test-helpers` içinden içe aktarın |
+| `createRequestCaptureJsonFetch`                      | Medya yardımcı testlerinde JSON fetch isteklerini yakalayın. `plugin-sdk/test-env` içinden içe aktarın                                   |
+| `withServer`                                         | Tek kullanımlık yerel HTTP sunucusuna karşı testleri çalıştırın. `plugin-sdk/test-env` içinden içe aktarın                               |
+| `createMockIncomingRequest`                          | En küçük gelen HTTP istek nesnesi oluşturun. `plugin-sdk/test-env` içinden içe aktarın                                                    |
+| `withFetchPreconnect`                                | Preconnect hook’ları yüklenmiş olarak fetch testlerini çalıştırın. `plugin-sdk/test-env` içinden içe aktarın                            |
+| `withEnv` / `withEnvAsync`                           | Ortam değişkenlerini geçici olarak yamalayın. `plugin-sdk/test-env` içinden içe aktarın                                                   |
+| `createTempHomeEnv` / `withTempHome` / `withTempDir` | Yalıtılmış dosya sistemi test fikstürleri oluşturun. `plugin-sdk/test-env` içinden içe aktarın                                           |
+| `createMockServerResponse`                           | En küçük HTTP sunucu yanıtı mock’u oluşturun. `plugin-sdk/test-env` içinden içe aktarın                                                   |
+| `createCliRuntimeCapture`                            | Testlerde CLI çalışma zamanı çıktısını yakalayın. `plugin-sdk/test-fixtures` içinden içe aktarın                                         |
+| `importFreshModule`                                  | Modül önbelleğini atlamak için yeni bir sorgu token’ı ile bir ESM modülünü içe aktarın. `plugin-sdk/test-fixtures` içinden içe aktarın   |
+| `bundledPluginRoot` / `bundledPluginFile`            | Paketlenmiş Plugin kaynak veya dist fikstür yollarını çözümleyin. `plugin-sdk/test-fixtures` içinden içe aktarın                         |
+| `mockNodeBuiltinModule`                              | Dar kapsamlı Node yerleşik Vitest mock’larını yükleyin. `plugin-sdk/test-node-mocks` içinden içe aktarın                                 |
+| `createSandboxTestContext`                           | Sandbox test bağlamları oluşturun. `plugin-sdk/test-fixtures` içinden içe aktarın                                                        |
+| `writeSkill`                                         | Skill fikstürleri yazın. `plugin-sdk/test-fixtures` içinden içe aktarın                                                                  |
+| `makeAgentAssistantMessage`                          | Ajan transkript ileti fikstürleri oluşturun. `plugin-sdk/test-fixtures` içinden içe aktarın                                              |
+| `peekSystemEvents` / `resetSystemEventsForTest`      | Sistem olay fikstürlerini inceleyin ve sıfırlayın. `plugin-sdk/test-fixtures` içinden içe aktarın                                        |
+| `sanitizeTerminalText`                               | Doğrulamalar için terminal çıktısını temizleyin. `plugin-sdk/test-fixtures` içinden içe aktarın                                          |
+| `countLines` / `hasBalancedFences`                   | Parçalama çıktı biçimini doğrulayın. `plugin-sdk/test-fixtures` içinden içe aktarın                                                      |
+| `runProviderCatalog`                                 | Test bağımlılıklarıyla bir sağlayıcı katalog hook’u yürütün                                                                               |
+| `resolveProviderWizardOptions`                       | Sözleşme testlerinde sağlayıcı kurulum sihirbazı seçimlerini çözümleyin                                                                  |
+| `resolveProviderModelPickerEntries`                  | Sözleşme testlerinde sağlayıcı model seçici girdilerini çözümleyin                                                                       |
+| `buildProviderPluginMethodChoice`                    | Doğrulamalar için sağlayıcı sihirbazı seçim kimlikleri oluşturun                                                                         |
+| `setProviderWizardProvidersResolverForTest`          | Yalıtılmış testler için sağlayıcı sihirbazı sağlayıcılarını enjekte edin                                                                 |
+| `createProviderUsageFetch`                           | Sağlayıcı kullanımını getirme için test sabitleri oluştur                                                                                                      |
+| `useFrozenTime` / `useRealTime`                      | Zamana duyarlı testler için zamanlayıcıları dondur ve geri yükle. `plugin-sdk/test-env` içinden içe aktar                                                    |
+| `createTestWizardPrompter`                           | Sahte bir kurulum sihirbazı istem yöneticisi oluştur                                                                                                     |
 | `createRuntimeTaskFlow`                              | Yalıtılmış çalışma zamanı görev akışı durumunu oluştur                                                                                                  |
-| `typedCases`                                         | Tablo odaklı testler için literal türleri koruyun. `plugin-sdk/test-fixtures` içinden içe aktarın                                                    |
+| `typedCases`                                         | Tablo güdümlü testler için değişmez türleri koru. `plugin-sdk/test-fixtures` içinden içe aktar                                                    |
 
-Paketle gelen plugin sözleşme takımları, yalnızca test amaçlı kayıt defteri, bildirim, public-artifact ve runtime fixture yardımcıları için SDK test alt yollarını da kullanır. Paketle gelen OpenClaw envanterine bağlı yalnızca core takımları `src/plugins/contracts` altında kalır. Yeni extension testlerini doğrudan geniş `plugin-sdk/testing` uyumluluk barrel’ını, repo `src/**` dosyalarını veya repo `test/helpers/*` köprülerini içe aktarmak yerine `plugin-sdk/plugin-test-api`, `plugin-sdk/channel-contract-testing`, `plugin-sdk/agent-runtime-test-contracts`, `plugin-sdk/channel-test-helpers`, `plugin-sdk/plugin-test-contracts`, `plugin-sdk/plugin-test-runtime`, `plugin-sdk/provider-test-contracts`, `plugin-sdk/provider-http-test-mocks`, `plugin-sdk/test-env` veya `plugin-sdk/test-fixtures` gibi belgelenmiş, odaklı bir SDK alt yolunda tutun.
+Paketle gelen plugin sözleşme paketleri de yalnızca test amaçlı kayıt defteri, manifest, herkese açık artefakt ve çalışma zamanı fixture yardımcıları için SDK test alt yollarını kullanır. Yalnızca çekirdeğe ait olan ve paketle gelen OpenClaw envanterine bağımlı paketler `src/plugins/contracts` altında kalır. Yeni eklenti testlerini, geniş `plugin-sdk/testing` uyumluluk barrel'ını, repo `src/**` dosyalarını veya repo `test/helpers/*` köprülerini doğrudan içe aktarmak yerine `plugin-sdk/plugin-test-api`, `plugin-sdk/channel-contract-testing`, `plugin-sdk/agent-runtime-test-contracts`, `plugin-sdk/channel-test-helpers`, `plugin-sdk/plugin-test-contracts`, `plugin-sdk/plugin-test-runtime`, `plugin-sdk/provider-test-contracts`, `plugin-sdk/provider-http-test-mocks`, `plugin-sdk/test-env` ya da `plugin-sdk/test-fixtures` gibi belgelenmiş, odaklı bir SDK alt yolunda tutun.
 
 ### Türler
 
-Odaklı test alt yolları, test dosyalarında kullanışlı olan türleri de yeniden dışa aktarır:
+Odaklı test alt yolları, test dosyalarında yararlı olan türleri de yeniden dışa aktarır:
 
 ```typescript
 import type {
   ChannelAccountSnapshot,
   ChannelGatewayContext,
 } from "openclaw/plugin-sdk/channel-contract";
-import type { OpenClawConfig } from "openclaw/plugin-sdk/config-types";
+import type { OpenClawConfig } from "openclaw/plugin-sdk/config-contracts";
 import type { MockFn, PluginRuntime, RuntimeEnv } from "openclaw/plugin-sdk/plugin-test-runtime";
 ```
 
 ## Test hedefi çözümleme
 
-Channel hedef çözümlemesi için standart hata durumları eklemek üzere `installCommonResolveTargetErrorCases` kullanın:
+Kanal hedefi çözümlemesi için standart hata durumlarını eklemek üzere `installCommonResolveTargetErrorCases` kullanın:
 
 ```typescript
 import { describe } from "vitest";
@@ -189,15 +192,15 @@ describe("my-channel target resolution", () => {
 
 ### Kayıt sözleşmelerini test etme
 
-`register(api)` işlevine elle yazılmış bir `api` mock’u geçiren birim testleri, OpenClaw’un loader kabul kapılarını çalıştırmaz. Plugininizin bağlı olduğu her kayıt yüzeyi için, özellikle hook’lar ve memory gibi özel yetenekler için en az bir loader destekli smoke testi ekleyin.
+`register(api)` işlevine elle yazılmış bir `api` mock'u geçiren birim testleri, OpenClaw'ın yükleyici kabul kapılarını çalıştırmaz. Plugin'inizin bağımlı olduğu her kayıt yüzeyi için, özellikle hook'lar ve bellek gibi özel yetenekler için, en az bir yükleyici destekli smoke testi ekleyin.
 
-Gerçek loader, gerekli metadata eksik olduğunda veya bir plugin sahip olmadığı bir yetenek API’sini çağırdığında plugin kaydını başarısız kılar. Örneğin, `api.registerHook(...)` bir hook adı gerektirir ve `api.registerMemoryCapability(...)` plugin bildiriminin veya dışa aktarılan girişin `kind: "memory"` bildirmesini gerektirir.
+Gerçek yükleyici, gerekli metadata eksik olduğunda veya bir plugin sahip olmadığı bir yetenek API'sini çağırdığında plugin kaydını başarısız kılar. Örneğin, `api.registerHook(...)` bir hook adı gerektirir ve `api.registerMemoryCapability(...)`, plugin manifestinin veya dışa aktarılan girişin `kind: "memory"` bildirmesini gerektirir.
 
-### Runtime yapılandırma erişimini test etme
+### Çalışma zamanı yapılandırma erişimini test etme
 
-Paketle gelen channel pluginlerini test ederken `openclaw/plugin-sdk/channel-test-helpers` içindeki paylaşılan plugin runtime mock’unu tercih edin. Kullanımdan kaldırılmış `runtime.config.loadConfig()` ve `runtime.config.writeConfigFile(...)` mock’ları varsayılan olarak hata fırlatır; böylece testler uyumluluk API’lerinin yeni kullanımlarını yakalar. Bu mock’ları yalnızca test açıkça eski uyumluluk davranışını kapsıyorsa override edin.
+Paketle gelen kanal plugin'lerini test ederken `openclaw/plugin-sdk/channel-test-helpers` içindeki paylaşılan plugin çalışma zamanı mock'unu tercih edin. Kullanımdan kaldırılmış `runtime.config.loadConfig()` ve `runtime.config.writeConfigFile(...)` mock'ları varsayılan olarak hata fırlatır; böylece testler, uyumluluk API'lerinin yeni kullanımını yakalar. Bu mock'ları yalnızca test açıkça eski uyumluluk davranışını kapsıyorsa geçersiz kılın.
 
-### Bir channel pluginini birim test etme
+### Bir kanal plugin'ini birim test etme
 
 ```typescript
 import { describe, it, expect, vi } from "vitest";
@@ -233,7 +236,7 @@ describe("my-channel plugin", () => {
 });
 ```
 
-### Bir provider pluginini birim test etme
+### Bir sağlayıcı plugin'ini birim test etme
 
 ```typescript
 import { describe, it, expect } from "vitest";
@@ -261,9 +264,9 @@ describe("my-provider plugin", () => {
 });
 ```
 
-### Plugin runtime’ını mock’lama
+### Plugin çalışma zamanını mock'lama
 
-`createPluginRuntimeStore` kullanan kod için testlerde runtime’ı mock’layın:
+`createPluginRuntimeStore` kullanan kod için testlerde çalışma zamanını mock'layın:
 
 ```typescript
 import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
@@ -294,9 +297,9 @@ store.setRuntime(mockRuntime);
 store.clearRuntime();
 ```
 
-### Her instance için ayrı stub’larla test etme
+### Örnek başına stub'larla test etme
 
-Prototype mutasyonu yerine her instance için ayrı stub’ları tercih edin:
+Prototip mutasyonu yerine örnek başına stub'ları tercih edin:
 
 ```typescript
 // Preferred: per-instance stub
@@ -307,9 +310,9 @@ client.sendMessage = vi.fn().mockResolvedValue({ id: "msg-1" });
 // MyChannelClient.prototype.sendMessage = vi.fn();
 ```
 
-## Sözleşme testleri (repo içi pluginler)
+## Sözleşme testleri (repo içi plugin'ler)
 
-Paketle gelen pluginlerin kayıt sahipliğini doğrulayan sözleşme testleri vardır:
+Paketle gelen plugin'lerde kayıt sahipliğini doğrulayan sözleşme testleri bulunur:
 
 ```bash
 pnpm test -- src/plugins/contracts/
@@ -317,10 +320,10 @@ pnpm test -- src/plugins/contracts/
 
 Bu testler şunları doğrular:
 
-- Hangi pluginlerin hangi provider’ları kaydettiği
-- Hangi pluginlerin hangi speech provider’larını kaydettiği
-- Kayıt şekli doğruluğu
-- Runtime sözleşmesi uyumluluğu
+- Hangi plugin'lerin hangi sağlayıcıları kaydettiği
+- Hangi plugin'lerin hangi konuşma sağlayıcılarını kaydettiği
+- Kayıt şeklinin doğruluğu
+- Çalışma zamanı sözleşmesine uyum
 
 ### Kapsamlı testleri çalıştırma
 
@@ -338,19 +341,19 @@ pnpm test -- src/plugins/contracts/auth-choice.contract.test.ts
 pnpm test -- src/plugins/contracts/runtime-seams.contract.test.ts
 ```
 
-## Lint zorlaması (repo içi pluginler)
+## Lint zorlaması (repo içi plugin'ler)
 
-Repo içi pluginler için `pnpm check` tarafından üç kural zorlanır:
+Repo içi plugin'ler için `pnpm check` tarafından üç kural zorlanır:
 
-1. **Monolitik root içe aktarması yok** -- `openclaw/plugin-sdk` root barrel’ı reddedilir
-2. **Doğrudan `src/` içe aktarması yok** -- pluginler doğrudan `../../src/` içe aktaramaz
-3. **Kendi kendini içe aktarma yok** -- pluginler kendi `plugin-sdk/<name>` alt yollarını içe aktaramaz
+1. **Monolitik kök içe aktarmalar yok** -- `openclaw/plugin-sdk` kök barrel'ı reddedilir
+2. **Doğrudan `src/` içe aktarmaları yok** -- plugin'ler `../../src/` öğesini doğrudan içe aktaramaz
+3. **Kendini içe aktarma yok** -- plugin'ler kendi `plugin-sdk/<name>` alt yolunu içe aktaramaz
 
-Harici pluginler bu lint kurallarına tabi değildir, ancak aynı kalıpları izlemek önerilir.
+Harici plugin'ler bu lint kurallarına tabi değildir, ancak aynı kalıpları izlemek önerilir.
 
 ## Test yapılandırması
 
-OpenClaw, V8 coverage eşikleriyle Vitest kullanır. Plugin testleri için:
+OpenClaw, V8 kapsam eşikleriyle Vitest kullanır. Plugin testleri için:
 
 ```bash
 # Run all tests
@@ -374,7 +377,7 @@ OPENCLAW_VITEST_MAX_WORKERS=1 pnpm test
 
 ## İlgili
 
-- [SDK’ye Genel Bakış](/tr/plugins/sdk-overview) -- içe aktarma kuralları
-- [SDK Channel Pluginleri](/tr/plugins/sdk-channel-plugins) -- channel plugin arayüzü
-- [SDK Provider Pluginleri](/tr/plugins/sdk-provider-plugins) -- provider plugin hook’ları
+- [SDK Genel Bakış](/tr/plugins/sdk-overview) -- içe aktarma kuralları
+- [SDK Kanal Plugin'leri](/tr/plugins/sdk-channel-plugins) -- kanal plugin arayüzü
+- [SDK Sağlayıcı Plugin'leri](/tr/plugins/sdk-provider-plugins) -- sağlayıcı plugin hook'ları
 - [Plugin Oluşturma](/tr/plugins/building-plugins) -- başlangıç kılavuzu

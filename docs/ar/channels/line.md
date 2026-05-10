@@ -1,15 +1,15 @@
 ---
 read_when:
     - تريد ربط OpenClaw بـ LINE
-    - تحتاج إلى إعداد Webhook وبيانات الاعتماد لـ LINE
+    - تحتاج إلى إعداد Webhook LINE + بيانات الاعتماد
     - تريد خيارات رسائل خاصة بـ LINE
 summary: إعداد Plugin LINE Messaging API وتكوينه واستخدامه
 title: سطر
 x-i18n:
-    generated_at: "2026-05-06T07:43:41Z"
+    generated_at: "2026-05-10T19:22:14Z"
     model: gpt-5.5
     provider: openai
-    source_hash: d9d2880bd27e11b72b51ad8a1e8c9e9d41adb51622edf890554594b90d24cd8d
+    source_hash: 7a11edbadda1ec99452eadc19a4557bb594f8b69ebb92314e2c3a0be325ab89d
     source_path: channels/line.md
     workflow: 16
 ---
@@ -24,7 +24,7 @@ x-i18n:
 
 ## التثبيت
 
-ثبّت LINE قبل تهيئة القناة:
+ثبّت LINE قبل تكوين القناة:
 
 ```bash
 openclaw plugins install @openclaw/line
@@ -40,10 +40,10 @@ openclaw plugins install ./path/to/local/line-plugin
 
 1. أنشئ حساب LINE Developers وافتح Console:
    [https://developers.line.biz/console/](https://developers.line.biz/console/)
-2. أنشئ (أو اختر) Provider وأضف قناة **Messaging API**.
+2. أنشئ Provider أو اختر واحدًا وأضف قناة **Messaging API**.
 3. انسخ **Channel access token** و **Channel secret** من إعدادات القناة.
 4. فعّل **Use webhook** في إعدادات Messaging API.
-5. اضبط عنوان URL للـ Webhook على نقطة نهاية Gateway لديك (يلزم HTTPS):
+5. اضبط عنوان Webhook URL على نقطة نهاية Gateway لديك (يتطلب HTTPS):
 
 ```
 https://gateway-host/line/webhook
@@ -55,12 +55,12 @@ https://gateway-host/line/webhook
 
 ملاحظة أمنية:
 
-- يعتمد التحقق من توقيع LINE على جسم الطلب (HMAC على الجسم الخام)، لذلك يطبّق OpenClaw حدودًا صارمة لجسم الطلب قبل المصادقة ومهلة زمنية قبل التحقق.
-- يعالج OpenClaw أحداث Webhook من بايتات الطلب الخام المتحقق منها. يتم تجاهل قيم `req.body` التي حوّلتها برمجيات وسيطة علوية حفاظًا على سلامة التوقيع.
+- يعتمد التحقق من توقيع LINE على المتن (HMAC على المتن الخام)، لذلك يطبّق OpenClaw حدودًا صارمة على المتن قبل المصادقة ومهلة زمنية قبل التحقق.
+- يعالج OpenClaw أحداث Webhook من بايتات الطلب الخام التي تم التحقق منها. يتم تجاهل قيم `req.body` المحوّلة عبر البرمجيات الوسيطة العليا حفاظًا على سلامة التوقيع.
 
-## التهيئة
+## التكوين
 
-الحد الأدنى من التهيئة:
+تكوين حد أدنى:
 
 ```json5
 {
@@ -75,7 +75,7 @@ https://gateway-host/line/webhook
 }
 ```
 
-تهيئة الرسائل المباشرة العامة:
+تكوين الرسائل المباشرة العامة:
 
 ```json5
 {
@@ -131,8 +131,8 @@ https://gateway-host/line/webhook
 
 ## التحكم في الوصول
 
-تستخدم الرسائل المباشرة الاقتران افتراضيًا. يتلقى المرسلون غير المعروفين رمز اقتران ويتم
-تجاهل رسائلهم إلى أن تتم الموافقة عليهم.
+تستخدم الرسائل المباشرة الاقتران افتراضيًا. يحصل المرسلون غير المعروفين على رمز اقتران ويتم
+تجاهل رسائلهم حتى تتم الموافقة عليهم.
 
 ```bash
 openclaw pairing list line
@@ -145,8 +145,9 @@ openclaw pairing approve line <CODE>
 - `channels.line.allowFrom`: معرّفات مستخدمي LINE المسموح بها للرسائل المباشرة؛ يتطلب `dmPolicy: "open"` القيمة `["*"]`
 - `channels.line.groupPolicy`: `allowlist | open | disabled`
 - `channels.line.groupAllowFrom`: معرّفات مستخدمي LINE المسموح بها للمجموعات
-- التجاوزات لكل مجموعة: `channels.line.groups.<groupId>.allowFrom`
-- ملاحظة وقت التشغيل: إذا كانت `channels.line` مفقودة بالكامل، يعود وقت التشغيل إلى `groupPolicy="allowlist"` لفحوصات المجموعات (حتى إذا كان `channels.defaults.groupPolicy` مضبوطًا).
+- تجاوزات لكل مجموعة: `channels.line.groups.<groupId>.allowFrom`
+- يمكن الرجوع إلى مجموعات وصول المرسلين الثابتة من `allowFrom` و `groupAllowFrom` و `allowFrom` لكل مجموعة باستخدام `accessGroup:<name>`.
+- ملاحظة وقت التشغيل: إذا كان `channels.line` مفقودًا تمامًا، يعود وقت التشغيل إلى `groupPolicy="allowlist"` لفحوصات المجموعات (حتى إذا كان `channels.defaults.groupPolicy` مضبوطًا).
 
 معرّفات LINE حساسة لحالة الأحرف. تبدو المعرّفات الصالحة كما يلي:
 
@@ -156,19 +157,18 @@ openclaw pairing approve line <CODE>
 
 ## سلوك الرسائل
 
-- يتم تقسيم النص إلى أجزاء عند 5000 حرف.
+- يتم تقسيم النص عند 5000 حرف.
 - تتم إزالة تنسيق Markdown؛ ويتم تحويل كتل التعليمات البرمجية والجداول إلى بطاقات Flex
-  عند الإمكان.
-- تتم موازنة الاستجابات المتدفقة؛ يتلقى LINE أجزاء كاملة مع رسوم تحميل
-  متحركة بينما يعمل الوكيل.
+  عندما يكون ذلك ممكنًا.
+- يتم تخزين الاستجابات المتدفقة مؤقتًا؛ يتلقى LINE المقاطع كاملة مع رسم متحرك للتحميل
+  أثناء عمل الوكيل.
 - يتم تقييد تنزيلات الوسائط بواسطة `channels.line.mediaMaxMb` (الافتراضي 10).
-- يتم حفظ الوسائط الواردة ضمن `~/.openclaw/media/inbound/` قبل تمريرها
-  إلى الوكيل، بما يطابق مخزن الوسائط المشترك الذي تستخدمه Plugins القنوات
-  المضمنة الأخرى.
+- يتم حفظ الوسائط الواردة تحت `~/.openclaw/media/inbound/` قبل تمريرها
+  إلى الوكيل، بما يطابق مخزن الوسائط المشترك الذي تستخدمه Plugins القنوات المضمنة الأخرى.
 
 ## بيانات القناة (الرسائل الغنية)
 
-استخدم `channelData.line` لإرسال ردود سريعة أو مواقع أو بطاقات Flex أو رسائل قوالب.
+استخدم `channelData.line` لإرسال ردود سريعة، أو مواقع، أو بطاقات Flex، أو رسائل قوالب.
 
 ```json5
 {
@@ -201,7 +201,7 @@ openclaw pairing approve line <CODE>
 }
 ```
 
-يوفّر Plugin الخاص بـ LINE أيضًا أمر `/card` لإعدادات رسائل Flex المسبقة:
+يوفر LINE Plugin أيضًا أمر `/card` لإعدادات رسائل Flex المسبقة:
 
 ```
 /card info "Welcome" "Thanks for joining!"
@@ -209,31 +209,31 @@ openclaw pairing approve line <CODE>
 
 ## دعم ACP
 
-يدعم LINE روابط محادثات ACP (Agent Communication Protocol):
+يدعم LINE ارتباطات محادثات ACP (بروتوكول تواصل الوكلاء):
 
-- يربط `/acp spawn <agent> --bind here` دردشة LINE الحالية بجلسة ACP دون إنشاء سلسلة فرعية.
-- تعمل روابط ACP المهيأة وجلسات ACP النشطة المرتبطة بالمحادثة على LINE مثل قنوات المحادثة الأخرى.
+- يربط `/acp spawn <agent> --bind here` دردشة LINE الحالية بجلسة ACP من دون إنشاء سلسلة فرعية.
+- تعمل ارتباطات ACP المكوّنة وجلسات ACP النشطة المرتبطة بالمحادثة على LINE مثل قنوات المحادثة الأخرى.
 
-راجع [وكلاء ACP](/ar/tools/acp-agents) للتفاصيل.
+راجع [وكلاء ACP](/ar/tools/acp-agents) للحصول على التفاصيل.
 
 ## الوسائط الصادرة
 
-يدعم Plugin الخاص بـ LINE إرسال الصور ومقاطع الفيديو وملفات الصوت عبر أداة رسائل الوكيل. تُرسل الوسائط عبر مسار التسليم الخاص بـ LINE مع معالجة مناسبة للمعاينة والتتبع:
+يدعم LINE Plugin إرسال الصور، ومقاطع الفيديو، وملفات الصوت عبر أداة رسائل الوكيل. يتم إرسال الوسائط عبر مسار التسليم الخاص بـ LINE مع المعالجة المناسبة للمعاينة والتتبع:
 
 - **الصور**: تُرسل كرسائل صور LINE مع إنشاء معاينة تلقائي.
 - **مقاطع الفيديو**: تُرسل مع معالجة صريحة للمعاينة ونوع المحتوى.
 - **الصوت**: يُرسل كرسائل صوت LINE.
 
-يجب أن تكون عناوين URL للوسائط الصادرة عناوين HTTPS عامة. يتحقق OpenClaw من اسم مضيف الهدف قبل تسليم عنوان URL إلى LINE ويرفض أهداف local loopback وlink-local والشبكات الخاصة.
+يجب أن تكون عناوين URL للوسائط الصادرة عناوين HTTPS عامة. يتحقق OpenClaw من اسم مضيف الهدف قبل تسليم عنوان URL إلى LINE ويرفض أهداف loopback، وlink-local، والشبكات الخاصة.
 
 تعود عمليات إرسال الوسائط العامة إلى مسار الصور فقط الحالي عندما لا يتوفر مسار خاص بـ LINE.
 
 ## استكشاف الأخطاء وإصلاحها
 
-- **فشل التحقق من Webhook:** تأكد من أن عنوان URL للـ Webhook يستخدم HTTPS وأن
-  `channelSecret` يطابق Console الخاص بـ LINE.
+- **يفشل التحقق من Webhook:** تأكد من أن عنوان Webhook URL يستخدم HTTPS وأن
+  `channelSecret` يطابق LINE console.
 - **لا توجد أحداث واردة:** تأكد من أن مسار Webhook يطابق `channels.line.webhookPath`
-  وأن Gateway يمكن الوصول إليه من LINE.
+  وأن Gateway قابل للوصول من LINE.
 - **أخطاء تنزيل الوسائط:** ارفع `channels.line.mediaMaxMb` إذا تجاوزت الوسائط
   الحد الافتراضي.
 
@@ -241,6 +241,6 @@ openclaw pairing approve line <CODE>
 
 - [نظرة عامة على القنوات](/ar/channels) — جميع القنوات المدعومة
 - [الاقتران](/ar/channels/pairing) — مصادقة الرسائل المباشرة وتدفق الاقتران
-- [المجموعات](/ar/channels/groups) — سلوك دردشة المجموعات وبوابة الإشارات
+- [المجموعات](/ar/channels/groups) — سلوك دردشات المجموعات وبوابة الإشارات
 - [توجيه القنوات](/ar/channels/channel-routing) — توجيه الجلسات للرسائل
 - [الأمان](/ar/gateway/security) — نموذج الوصول والتقوية

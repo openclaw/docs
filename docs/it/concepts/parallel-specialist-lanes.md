@@ -1,70 +1,60 @@
 ---
 read_when:
     - Instradi le chat di gruppo verso agenti dedicati
-    - Vuoi svolgere il lavoro in parallelo senza che una lunga attività blocchi ogni chat
+    - Vuoi lavorare in parallelo senza che un'attività lunga blocchi ogni chat
     - Stai progettando una configurazione operativa multi-agente
 sidebarTitle: Specialist lanes
 status: active
-summary: Esegui agenti specialistici in parallelo senza saturare la capacità condivisa del modello e degli strumenti
+summary: Esegui agenti specialisti in parallelo senza saturare la capacità condivisa del modello e degli strumenti
 title: Percorsi specialistici paralleli
 x-i18n:
-    generated_at: "2026-05-02T20:44:19Z"
+    generated_at: "2026-05-10T19:32:35Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b09f10ce4fbd79954a7196fbedb23f9b3f34b459b98eb7a5480f7eeb0bb6be98
+    source_hash: 8721056fbe08822ac92d4bc14c8c2b0977e93eaa58c2849f83b3c0f310992f93
     source_path: concepts/parallel-specialist-lanes.md
     workflow: 16
 ---
 
-Le lane specialistiche parallele consentono a un Gateway di instradare chat o stanze diverse verso
-agenti diversi, mantenendo rapida l'esperienza utente. Il trucco è trattare il
-parallelismo come un problema di progettazione con risorse scarse, non solo come "più agenti".
+Le corsie specialistiche parallele consentono a un Gateway di indirizzare chat o stanze diverse ad agenti diversi, mantenendo rapida l'esperienza utente. Il punto è trattare il parallelismo come un problema di progettazione di risorse scarse, non semplicemente come "più agenti".
 
 ## Principi fondamentali
 
-Una lane specialistica migliora il throughput solo quando riduce la contesa per i
-veri colli di bottiglia:
+Una corsia specialistica migliora il throughput solo quando riduce la contesa sui colli di bottiglia reali:
 
-- **Blocchi di sessione**: una sola esecuzione dovrebbe modificare una determinata sessione alla volta.
+- **Blocchi di sessione**: una sola esecuzione alla volta dovrebbe modificare una determinata sessione.
 - **Capacità globale del modello**: tutte le esecuzioni di chat visibili condividono comunque i limiti del provider.
-- **Capacità degli strumenti**: shell, browser, rete e lavoro sul repository possono essere più lenti
-  del turno del modello stesso.
-- **Budget di contesto**: transcript lunghi rendono ogni turno futuro più lento e meno
-  focalizzato.
-- **Ambiguità di proprietà**: agenti duplicati che svolgono lo stesso lavoro sprecano capacità.
+- **Capacità degli strumenti**: shell, browser, rete e lavoro sul repository possono essere più lenti del turno del modello stesso.
+- **Budget di contesto**: trascrizioni lunghe rendono ogni turno futuro più lento e meno focalizzato.
+- **Ambiguità di ownership**: agenti duplicati che fanno lo stesso lavoro sprecano capacità.
 
-OpenClaw serializza già le esecuzioni per sessione e limita il parallelismo globale tramite
-la [coda dei comandi](/it/concepts/queue). Le lane specialistiche aggiungono policy sopra:
-quale agente possiede quale lavoro, cosa resta in chat e cosa diventa lavoro
-in background.
+OpenClaw serializza già le esecuzioni per sessione e limita il parallelismo globale tramite la [coda dei comandi](/it/concepts/queue). Le corsie specialistiche aggiungono una policy sopra:
+quale agente possiede quale lavoro, cosa resta in chat e cosa diventa lavoro in background.
 
 ## Rollout consigliato
 
-### Fase 1: contratti di lane + lavoro pesante in background
+### Fase 1: contratti di corsia + lavoro pesante in background
 
-Assegna a ogni lane un contratto scritto nel suo workspace e nel prompt di sistema:
+Assegna a ogni corsia un contratto scritto nel suo workspace e nel prompt di sistema:
 
-- **Scopo**: il lavoro di cui questa lane è proprietaria.
+- **Scopo**: il lavoro di cui questa corsia è responsabile.
 - **Non obiettivi**: lavoro che dovrebbe passare ad altri invece di tentare.
-- **Budget di chat**: le risposte rapide restano in chat; le attività lunghe dovrebbero confermare
-  brevemente, quindi eseguirsi in un sub-agente o task in background.
-- **Regola di handoff**: quando un'altra lane possiede il lavoro, indicare dove dovrebbe andare e
-  fornire un riepilogo compatto per l'handoff.
-- **Regola sul rischio degli strumenti**: preferire la superficie di strumenti più piccola in grado di svolgere il lavoro.
+- **Budget di chat**: le risposte rapide restano in chat; le attività lunghe dovrebbero ricevere un breve riscontro, poi essere eseguite in un sottoagente o task in background.
+- **Regola di handoff**: quando un'altra corsia possiede il lavoro, indica dove dovrebbe andare e fornisci un riepilogo compatto di handoff.
+- **Regola di rischio degli strumenti**: preferisci la superficie di strumenti più piccola che possa svolgere il lavoro.
 
-Questa è la fase più economica e risolve la maggior parte degli intasamenti: un lavoro di coding non
-trasforma più la lane di ricerca in melassa, e ogni chat mantiene pulito il proprio contesto.
+Questa è la fase più economica e risolve la maggior parte degli intasamenti: un lavoro di coding non trasforma più la corsia di ricerca in melassa, e ogni chat mantiene pulito il proprio contesto.
 
 ### Fase 2: controlli di priorità e concorrenza
 
-Configura coda e capacità del modello in base al valore aziendale di ogni lane:
+Regola la coda e la capacità del modello intorno al valore di business di ogni corsia:
 
 ```json5
 {
   agents: {
     defaults: {
       maxConcurrent: 4,
-      subagents: { maxConcurrent: 8 },
+      subagents: { maxConcurrent: 8, delegationMode: "prefer" },
     },
   },
   messages: {
@@ -78,22 +68,20 @@ Configura coda e capacità del modello in base al valore aziendale di ogni lane:
 }
 ```
 
-Usa chat dirette/personali e agenti per operazioni di produzione per il lavoro ad alta priorità. Lascia che
-ricerca, stesura e coding batch passino a task in background quando il sistema è
-occupato.
+Usa chat dirette/personali e agenti di produzione-ops per il lavoro ad alta priorità. Lascia che ricerca, stesura e coding in batch passino a task in background quando il sistema è occupato.
 
 ### Fase 3: coordinatore / controller del traffico
 
-Aggiungi un piccolo pattern di coordinamento quando più lane sono attive:
+Aggiungi un piccolo pattern di coordinatore quando più corsie sono attive:
 
-- Tieni traccia dei task e dei proprietari delle lane attive.
+- Traccia i task attivi delle corsie e i proprietari.
 - Rileva richieste duplicate tra gruppi.
-- Instrada i riepiloghi di handoff tra lane.
-- Mostra solo blocker, risultati completati e decisioni che la persona deve prendere.
+- Instrada i riepiloghi di handoff tra corsie.
+- Mostra solo blocchi, risultati completati e decisioni che l'umano deve prendere.
 
-Non iniziare da qui. Un coordinatore senza contratti di lane coordina solo il caos.
+Non iniziare da qui. Un coordinatore senza contratti di corsia coordina solo caos.
 
-## Template minimo di contratto di lane
+## Template minimo di contratto di corsia
 
 ```md
 # Lane contract
@@ -129,6 +117,6 @@ network work unless this lane explicitly owns it.
 
 ## Correlati
 
-- [Instradamento multi-agente](/it/concepts/multi-agent)
+- [Routing multi-agente](/it/concepts/multi-agent)
 - [Coda dei comandi](/it/concepts/queue)
-- [Sub-agenti](/it/tools/subagents)
+- [Sottoagenti](/it/tools/subagents)

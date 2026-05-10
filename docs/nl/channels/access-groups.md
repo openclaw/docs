@@ -1,24 +1,24 @@
 ---
 read_when:
-    - Dezelfde allowlist configureren voor meerdere berichtkanalen
-    - Toegangsregels voor afzenders in DM's en groepen delen
+    - Dezelfde toelatingslijst configureren voor meerdere berichtkanalen
+    - Toegangsregels voor het delen van DM- en groepsafzenders
     - Toegangscontrole voor berichtkanalen beoordelen
-summary: Herbruikbare afzender-allowlists voor berichtkanalen
+summary: Herbruikbare lijsten met toegestane afzenders voor berichtkanalen
 title: Toegangsgroepen
 x-i18n:
-    generated_at: "2026-05-02T11:08:33Z"
+    generated_at: "2026-05-10T19:20:58Z"
     model: gpt-5.5
     provider: openai
-    source_hash: fc7bc1d4fb80e5c5d4e72b190d49821aa93ced575eafcf89864ac800e8558f94
+    source_hash: 1dba4fc84deb6e0c8c7b17ebc10182aa6e4bc2c821070e33df44f384e285266f
     source_path: channels/access-groups.md
     workflow: 16
 ---
 
 Toegangsgroepen zijn benoemde afzenderlijsten die je eenmaal definieert en vanuit kanaal-allowlists verwijst met `accessGroup:<name>`.
 
-Gebruik ze wanneer dezelfde mensen toegang moeten krijgen tot meerdere berichtkanalen, of wanneer één vertrouwde set moet gelden voor autorisatie van zowel privéberichten als groepsafzenders.
+Gebruik ze wanneer dezelfde personen toegang moeten hebben tot meerdere berichtkanalen, of wanneer een vertrouwde set moet gelden voor zowel DM's als autorisatie van groepsafzenders.
 
-Toegangsgroepen verlenen op zichzelf geen toegang. Een groep is alleen relevant wanneer een allowlist-veld ernaar verwijst.
+Toegangsgroepen verlenen op zichzelf geen toegang. Een groep is alleen van belang wanneer een allowlist-veld ernaar verwijst.
 
 ## Statische groepen voor berichtafzenders
 
@@ -40,10 +40,10 @@ Statische afzendergroepen gebruiken `type: "message.senders"`.
 }
 ```
 
-Ledenlijsten zijn gesleuteld op berichtkanaal-id:
+Ledenlijsten worden gesleuteld op berichtkanaal-id:
 
 | Sleutel    | Betekenis                                                              |
-| ---------- | ---------------------------------------------------------------------- |
+| ---------- | --------------------------------------------------------------------- |
 | `"*"`      | Gedeelde vermeldingen die worden gecontroleerd voor elk berichtkanaal dat naar de groep verwijst. |
 | `discord`  | Vermeldingen die alleen worden gecontroleerd voor Discord-allowlistmatching. |
 | `telegram` | Vermeldingen die alleen worden gecontroleerd voor Telegram-allowlistmatching. |
@@ -81,7 +81,7 @@ Voorbeeld van DM-allowlist:
 }
 ```
 
-Voorbeeld van groepsafzender-allowlist:
+Voorbeeld van allowlist voor groepsafzenders:
 
 ```json5
 {
@@ -127,12 +127,31 @@ Je kunt groepen en directe vermeldingen combineren:
 
 Toegangsgroepen zijn beschikbaar in gedeelde autorisatiepaden voor berichtkanalen, waaronder:
 
-- afzender-allowlists voor privéberichten, zoals `channels.<channel>.allowFrom`
-- groepsafzender-allowlists, zoals `channels.<channel>.groupAllowFrom`
+- DM-afzender-allowlists zoals `channels.<channel>.allowFrom`
+- allowlists voor groepsafzenders zoals `channels.<channel>.groupAllowFrom`
 - kanaalspecifieke afzender-allowlists per ruimte die dezelfde regels voor afzendermatching gebruiken
 - opdracht-autorisatiepaden die afzender-allowlists van berichtkanalen hergebruiken
 
-Kanaalondersteuning hangt ervan af of dat kanaal is aangesloten op de gedeelde helpers voor OpenClaw-afzenderautorisatie. Huidige gebundelde ondersteuning omvat Discord, Google Chat, Nostr, WhatsApp, Zalo en Zalo Personal. Statische `message.senders`-groepen zijn ontworpen om kanaalonafhankelijk te zijn, dus nieuwe berichtkanalen zouden ze moeten ondersteunen door de gedeelde Plugin SDK-helpers te gebruiken in plaats van aangepaste allowlist-uitbreiding.
+Kanaalondersteuning hangt ervan af of dat kanaal is aangesloten op de gedeelde OpenClaw-helpers voor afzenderautorisatie. De huidige gebundelde ondersteuning omvat Discord, Feishu, Google Chat, iMessage, LINE, Mattermost, Microsoft Teams, Nextcloud Talk, Nostr, QQBot, Signal, WhatsApp, Zalo en Zalo Personal. Statische `message.senders`-groepen zijn ontworpen om kanaalonafhankelijk te zijn, dus nieuwe berichtkanalen zouden ze moeten ondersteunen door de gedeelde Plugin SDK-helpers te gebruiken in plaats van aangepaste allowlist-uitbreiding.
+
+## Plugin-diagnostiek
+
+Plugin-auteurs kunnen gestructureerde toegangsgroepstatus inspecteren zonder die terug uit te breiden naar een platte allowlist:
+
+```typescript
+import { resolveAccessGroupAllowFromState } from "openclaw/plugin-sdk/security-runtime";
+
+const state = await resolveAccessGroupAllowFromState({
+  accessGroups: cfg.accessGroups,
+  allowFrom: channelConfig.allowFrom,
+  channel: "my-channel",
+  accountId: "default",
+  senderId,
+  isSenderAllowed,
+});
+```
+
+Het resultaat rapporteert verwezen, gematchte, ontbrekende, niet-ondersteunde en mislukte groepen. Gebruik dit wanneer je diagnostiek of conformiteitstests nodig hebt. Gebruik `expandAllowFromWithAccessGroups(...)` alleen voor compatibiliteitspaden die nog steeds een platte `allowFrom`-array verwachten.
 
 ## Discord-kanaaldoelgroepen
 
@@ -157,26 +176,26 @@ Discord ondersteunt ook een dynamisch toegangsgroeptype:
 }
 ```
 
-`discord.channelAudience` betekent "sta Discord-DM-afzenders toe die dit guild-kanaal momenteel kunnen bekijken." OpenClaw lost de afzender via Discord op tijdens autorisatie en past Discord `ViewChannel`-machtigingsregels toe.
+`discord.channelAudience` betekent "sta Discord-DM-afzenders toe die dit guildkanaal momenteel kunnen bekijken." OpenClaw resolveert de afzender via Discord op het moment van autorisatie en past de Discord-`ViewChannel`-machtigingsregels toe.
 
 Gebruik dit wanneer een Discord-kanaal al de bron van waarheid is voor een team, zoals `#maintainers` of `#on-call`.
 
-Vereisten en foutgedrag:
+Vereisten en gedrag bij fouten:
 
 - De bot heeft toegang nodig tot de guild en het kanaal.
 - De bot heeft de Discord Developer Portal **Server Members Intent** nodig.
-- De toegangsgroep faalt gesloten wanneer Discord `Missing Access` retourneert, de afzender niet kan worden opgelost als guild-lid, of het kanaal bij een andere guild hoort.
+- De toegangsgroep faalt gesloten wanneer Discord `Missing Access` retourneert, de afzender niet als guildlid kan worden geresolveerd, of het kanaal bij een andere guild hoort.
 
-Meer Discord-specifieke voorbeelden: [Discord-toegangscontrole](/nl/channels/discord#access-control-and-routing)
+Meer Discord-specifieke voorbeelden: [Discord-toegangsbeheer](/nl/channels/discord#access-control-and-routing)
 
-## Beveiligingsopmerkingen
+## Beveiligingsnotities
 
-- Toegangsgroepen zijn allowlist-aliassen, geen rollen. Ze maken geen eigenaars aan, keuren geen koppelingsverzoeken goed en verlenen op zichzelf geen toolmachtigingen.
-- `dmPolicy: "open"` vereist nog steeds `"*"` in de effectieve DM-allowlist. Naar een toegangsgroep verwijzen is niet hetzelfde als publieke toegang.
+- Toegangsgroepen zijn allowlist-aliassen, geen rollen. Ze maken op zichzelf geen eigenaren aan, keuren geen koppelingsverzoeken goed en verlenen geen toolmachtigingen.
+- `dmPolicy: "open"` vereist nog steeds `"*"` in de effectieve DM-allowlist. Verwijzen naar een toegangsgroep is niet hetzelfde als openbare toegang.
 - Ontbrekende groepsnamen falen gesloten. Als `allowFrom` `accessGroup:operators` bevat en `accessGroups.operators` ontbreekt, autoriseert die vermelding niemand.
 - Houd kanaal-id's stabiel. Geef de voorkeur aan numerieke/gebruikers-id's boven weergavenamen wanneer het kanaal beide ondersteunt.
 
-## Probleemoplossing
+## Problemen oplossen
 
 Als een afzender zou moeten matchen maar wordt geblokkeerd:
 
@@ -184,6 +203,6 @@ Als een afzender zou moeten matchen maar wordt geblokkeerd:
 2. Controleer of `accessGroups.<name>.type` correct is.
 3. Controleer of de afzender-id onder de overeenkomende kanaalsleutel staat, of onder `"*"`.
 4. Controleer of de vermelding de normale allowlist-syntaxis van dat kanaal gebruikt.
-5. Controleer voor Discord-kanaaldoelgroepen of de bot het guild-kanaal kan zien en Server Members Intent heeft ingeschakeld.
+5. Controleer voor Discord-kanaaldoelgroepen of de bot het guildkanaal kan zien en Server Members Intent heeft ingeschakeld.
 
-Voer `openclaw doctor` uit nadat je de configuratie voor toegangscontrole hebt bewerkt. Dit detecteert veel ongeldige combinaties van allowlists en beleid vóór runtime.
+Voer `openclaw doctor` uit nadat je de toegangsbeheerconfiguratie hebt bewerkt. Dit vangt veel ongeldige combinaties van allowlists en beleid op vóór runtime.

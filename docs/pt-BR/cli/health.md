@@ -4,10 +4,10 @@ read_when:
 summary: Referência da CLI para `openclaw health` (instantâneo de integridade do Gateway via RPC)
 title: Saúde
 x-i18n:
-    generated_at: "2026-05-06T09:02:44Z"
+    generated_at: "2026-05-10T19:28:16Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 443684af04efce2c54a6679e13b0bff0a5c1869f85d60fae0e853aed0a362226
+    source_hash: 26be7bbbf75c2eca1213fe145fdeeab6fee96798dff457278ac69a20145bf75d
     source_path: cli/health.md
     workflow: 16
 ---
@@ -16,12 +16,14 @@ x-i18n:
 
 Busca a integridade do Gateway em execução.
 
-Opções:
+## Opções
 
-- `--json`: saída legível por máquina
-- `--timeout <ms>`: tempo limite de conexão em milissegundos (padrão `10000`)
-- `--verbose`: registro detalhado
-- `--debug`: alias para `--verbose`
+| Opção            | Padrão  | Descrição                                                                  |
+| ---------------- | ------- | -------------------------------------------------------------------------- |
+| `--json`         | `false` | Imprime JSON legível por máquina em vez de texto.                          |
+| `--timeout <ms>` | `10000` | Tempo limite da conexão em milissegundos.                                  |
+| `--verbose`      | `false` | Registro detalhado. Força uma sondagem ativa e expande a saída por agente. |
+| `--debug`        | `false` | Alias para `--verbose`.                                                    |
 
 Exemplos:
 
@@ -35,14 +37,14 @@ openclaw health --debug
 
 Observações:
 
-- Por padrão, `openclaw health` solicita ao gateway em execução o snapshot de integridade. Quando o
-  gateway já tem um snapshot recente em cache, ele pode retornar essa carga útil em cache e
+- Por padrão, `openclaw health` solicita ao Gateway em execução o instantâneo de integridade. Quando o
+  Gateway já tem um instantâneo em cache recente, ele pode retornar essa carga útil em cache e
   atualizar em segundo plano.
-- `--verbose` força uma sondagem ao vivo, imprime detalhes da conexão do gateway e expande a
+- `--verbose` força uma sondagem ativa, imprime os detalhes de conexão do Gateway e expande a
   saída legível por humanos em todas as contas e agentes configurados.
 - A saída inclui armazenamentos de sessão por agente quando vários agentes estão configurados.
 
-## Relacionado
+## Relacionados
 
 - [Referência da CLI](/pt-BR/cli)
 - [Integridade do Gateway](/pt-BR/gateway/health)

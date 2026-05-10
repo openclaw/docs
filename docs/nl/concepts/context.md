@@ -2,37 +2,38 @@
 read_when:
     - Je wilt begrijpen wat "context" betekent in OpenClaw
     - Je debugt waarom het model iets "weet" (of het is vergeten)
-    - U wilt de contextoverhead verminderen (/context, /status, /compact)
-summary: 'Context: wat het model ziet, hoe het wordt opgebouwd en hoe je het inspecteert'
+    - Je wilt de contextoverhead verminderen (/context, /status, /compact)
+summary: 'Context: wat het model ziet, hoe deze wordt opgebouwd en hoe u deze inspecteert'
 title: Context
 x-i18n:
-    generated_at: "2026-05-06T09:08:06Z"
+    generated_at: "2026-05-10T19:31:32Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1bd23094ef23928ee277c1b84ee17b9324aaea963d72a0c4c73da359409a5de9
+    source_hash: dc2dae290e63f82111d865ae066567ef58ec3f48eb62b409b76ee9e6ff65d696
     source_path: concepts/context.md
     workflow: 16
 ---
 
-"Context" is **alles wat OpenClaw voor een uitvoering naar het model stuurt**. Dit wordt begrensd door het **contextvenster** van het model (tokenlimiet).
+"Context" is **alles wat OpenClaw voor een run naar het model stuurt**. Dit wordt begrensd door het **contextvenster** van het model (tokenlimiet).
 
-Mentale kapstok voor beginners:
+Beginnersmodel:
 
-- **Systeemprompt** (door OpenClaw gebouwd): regels, tools, Skills-lijst, tijd/runtime en geïnjecteerde werkruimtebestanden.
-- **Gespreksgeschiedenis**: jouw berichten + de berichten van de assistent voor deze sessie.
+- **Systeemprompt** (door OpenClaw gebouwd): regels, tools, Skills-lijst, tijd/runtime en geinjecteerde werkruimtebestanden.
+- **Gespreksgeschiedenis**: jouw berichten + de berichten van de assistant voor deze sessie.
 - **Toolaanroepen/resultaten + bijlagen**: commandouitvoer, gelezen bestanden, afbeeldingen/audio, enz.
 
 Context is _niet hetzelfde_ als "geheugen": geheugen kan op schijf worden opgeslagen en later opnieuw worden geladen; context is wat zich in het huidige venster van het model bevindt.
 
 ## Snel starten (context inspecteren)
 
-- `/status` → snelle weergave van "hoe vol is mijn venster?" + sessie-instellingen.
-- `/context list` → wat is geïnjecteerd + ruwe groottes (per bestand + totalen).
-- `/context detail` → diepere uitsplitsing: groottes per bestand, per toolschema, per Skill-item en grootte van de systeemprompt.
-- `/usage tokens` → voeg een gebruiksfooter per antwoord toe aan normale antwoorden.
-- `/compact` → vat oudere geschiedenis samen tot een compacte vermelding om ruimte in het venster vrij te maken.
+- `/status` -> snelle weergave "hoe vol is mijn venster?" + sessie-instellingen.
+- `/context list` -> wat is geinjecteerd + grove groottes (per bestand + totalen).
+- `/context detail` -> diepere uitsplitsing: per-bestand, groottes van schema's per tool, groottes van items per Skill en grootte van de systeemprompt.
+- `/context map` -> WinDirStat-achtige treemapafbeelding van de bijgehouden contextbijdragers van de huidige sessie.
+- `/usage tokens` -> voeg een gebruiksfooter per antwoord toe aan normale antwoorden.
+- `/compact` -> vat oudere geschiedenis samen in een compacte vermelding om vensterruimte vrij te maken.
 
-Zie ook: [Slash commands](/nl/tools/slash-commands), [Tokengebruik en kosten](/nl/reference/token-use), [Compaction](/nl/concepts/compaction).
+Zie ook: [Slash-commando's](/nl/tools/slash-commands), [Tokengebruik en kosten](/nl/reference/token-use), [Compaction](/nl/concepts/compaction).
 
 ## Voorbeelduitvoer
 
@@ -81,6 +82,17 @@ Top tools (schema size):
 … (+N more tools)
 ```
 
+### `/context map`
+
+Verstuurt een afbeelding die is gegenereerd uit het meest recente gecachte runrapport. Voordat een normaal bericht een runrapport in de sessie heeft geproduceerd, retourneert `/context map` een bericht dat de functie niet beschikbaar is in plaats van een schatting te renderen. De oppervlakte van rechthoeken is evenredig met bijgehouden prompttekens:
+
+- geinjecteerde werkruimtebestanden
+- basistekst van de systeemprompt
+- promptitems van Skills
+- JSON-schema's van tools
+
+`/context list`, `/context detail` en `/context json` kunnen nog steeds een schatting op aanvraag inspecteren wanneer er geen runrapport is gecachet.
+
 ## Wat meetelt voor het contextvenster
 
 Alles wat het model ontvangt telt mee, waaronder:
@@ -88,24 +100,24 @@ Alles wat het model ontvangt telt mee, waaronder:
 - Systeemprompt (alle secties).
 - Gespreksgeschiedenis.
 - Toolaanroepen + toolresultaten.
-- Bijlagen/transcripten (afbeeldingen/audio/bestanden).
-- Compaction-samenvattingen en pruning-artefacten.
-- Provider-"wrappers" of verborgen headers (niet zichtbaar, tellen toch mee).
+- Bijlagen/transcripties (afbeeldingen/audio/bestanden).
+- Compaction-samenvattingen en snoei-artefacten.
+- Provider-"wrappers" of verborgen headers (niet zichtbaar, tellen nog steeds mee).
 
 ## Hoe OpenClaw de systeemprompt bouwt
 
-De systeemprompt is **eigendom van OpenClaw** en wordt bij elke uitvoering opnieuw opgebouwd. Deze bevat:
+De systeemprompt is **eigendom van OpenClaw** en wordt bij elke run opnieuw opgebouwd. Deze bevat:
 
 - Toollijst + korte beschrijvingen.
 - Skills-lijst (alleen metadata; zie hieronder).
 - Werkruimtelocatie.
 - Tijd (UTC + geconverteerde gebruikerstijd indien geconfigureerd).
 - Runtime-metadata (host/OS/model/denken).
-- Geïnjecteerde bootstrap-bestanden uit de werkruimte onder **Projectcontext**.
+- Geinjecteerde bootstrapbestanden van de werkruimte onder **Projectcontext**.
 
 Volledige uitsplitsing: [Systeemprompt](/nl/concepts/system-prompt).
 
-## Geïnjecteerde werkruimtebestanden (Projectcontext)
+## Geinjecteerde werkruimtebestanden (Projectcontext)
 
 Standaard injecteert OpenClaw een vaste set werkruimtebestanden (indien aanwezig):
 
@@ -115,13 +127,13 @@ Standaard injecteert OpenClaw een vaste set werkruimtebestanden (indien aanwezig
 - `IDENTITY.md`
 - `USER.md`
 - `HEARTBEAT.md`
-- `BOOTSTRAP.md` (alleen eerste uitvoering)
+- `BOOTSTRAP.md` (alleen eerste run)
 
-Grote bestanden worden per bestand afgekapt met `agents.defaults.bootstrapMaxChars` (standaard `12000` tekens). OpenClaw dwingt ook een totale limiet af voor bootstrap-injectie over alle bestanden met `agents.defaults.bootstrapTotalMaxChars` (standaard `60000` tekens). `/context` toont groottes van **ruw versus geïnjecteerd** en of er is afgekapt.
+Grote bestanden worden per bestand afgekapt met `agents.defaults.bootstrapMaxChars` (standaard `12000` tekens). OpenClaw dwingt ook een totale limiet voor bootstrapinjectie over bestanden heen af met `agents.defaults.bootstrapTotalMaxChars` (standaard `60000` tekens). `/context` toont groottes van **onbewerkt versus geinjecteerd** en of er afkapping heeft plaatsgevonden.
 
 Wanneer afkapping optreedt, kan de runtime een waarschuwingsblok in de prompt injecteren onder Projectcontext. Configureer dit met `agents.defaults.bootstrapPromptTruncationWarning` (`off`, `once`, `always`; standaard `once`).
 
-## Skills: geïnjecteerd versus op aanvraag geladen
+## Skills: geinjecteerd versus op aanvraag geladen
 
 De systeemprompt bevat een compacte **Skills-lijst** (naam + beschrijving + locatie). Deze lijst heeft echte overhead.
 
@@ -129,52 +141,52 @@ Skill-instructies worden standaard _niet_ opgenomen. Van het model wordt verwach
 
 ## Tools: er zijn twee kostenposten
 
-Tools beïnvloeden context op twee manieren:
+Tools beinvloeden context op twee manieren:
 
-1. **Toollijsttekst** in de systeemprompt (wat je ziet als "Tooling").
+1. **Tekst van de toollijst** in de systeemprompt (wat je ziet als "Tooling").
 2. **Toolschema's** (JSON). Deze worden naar het model gestuurd zodat het tools kan aanroepen. Ze tellen mee voor context, ook al zie je ze niet als platte tekst.
 
-`/context detail` splitst de grootste toolschema's uit, zodat je kunt zien wat domineert.
+`/context detail` splitst de grootste toolschema's uit zodat je kunt zien wat domineert.
 
-## Commands, richtlijnen en "inline snelkoppelingen"
+## Commando's, directives en "inline snelkoppelingen"
 
-Slash commands worden afgehandeld door de Gateway. Er zijn een paar verschillende gedragingen:
+Slash-commando's worden afgehandeld door de Gateway. Er zijn een paar verschillende gedragingen:
 
-- **Losse commands**: een bericht dat alleen `/...` bevat, wordt als command uitgevoerd.
-- **Richtlijnen**: `/think`, `/verbose`, `/trace`, `/reasoning`, `/elevated`, `/model`, `/queue` worden verwijderd voordat het model het bericht ziet.
-  - Berichten met alleen richtlijnen bewaren sessie-instellingen.
-  - Inline richtlijnen in een normaal bericht werken als hints per bericht.
-- **Inline snelkoppelingen** (alleen toegestane afzenders): bepaalde `/...`-tokens in een normaal bericht kunnen onmiddellijk worden uitgevoerd (voorbeeld: "hey /status") en worden verwijderd voordat het model de resterende tekst ziet.
+- **Zelfstandige commando's**: een bericht dat alleen `/...` bevat, wordt als commando uitgevoerd.
+- **Directives**: `/think`, `/verbose`, `/trace`, `/reasoning`, `/elevated`, `/model`, `/queue` worden verwijderd voordat het model het bericht ziet.
+  - Berichten met alleen directives bewaren sessie-instellingen.
+  - Inline directives in een normaal bericht werken als hints per bericht.
+- **Inline snelkoppelingen** (alleen toegestane afzenders): bepaalde `/...`-tokens binnen een normaal bericht kunnen direct worden uitgevoerd (voorbeeld: "hey /status"), en worden verwijderd voordat het model de resterende tekst ziet.
 
-Details: [Slash commands](/nl/tools/slash-commands).
+Details: [Slash-commando's](/nl/tools/slash-commands).
 
-## Sessies, Compaction en pruning (wat blijft bewaard)
+## Sessies, Compaction en snoeien (wat blijft bestaan)
 
-Wat tussen berichten bewaard blijft, hangt af van het mechanisme:
+Wat tussen berichten blijft bestaan, hangt af van het mechanisme:
 
-- **Normale geschiedenis** blijft in het sessietranscript staan totdat deze volgens beleid wordt gecompacteerd/gepruned.
+- **Normale geschiedenis** blijft bestaan in het sessietranscript totdat deze door beleid wordt gecompacteerd/gesnoeid.
 - **Compaction** bewaart een samenvatting in het transcript en houdt recente berichten intact.
-- **Pruning** verwijdert oude toolresultaten uit de _in-memory_ prompt om ruimte in het contextvenster vrij te maken, maar herschrijft het sessietranscript niet - de volledige geschiedenis blijft op schijf inspecteerbaar.
+- **Snoeien** verwijdert oude toolresultaten uit de prompt _in het geheugen_ om ruimte in het contextvenster vrij te maken, maar herschrijft het sessietranscript niet - de volledige geschiedenis blijft op schijf inspecteerbaar.
 
-Docs: [Sessie](/nl/concepts/session), [Compaction](/nl/concepts/compaction), [Sessiesnoei](/nl/concepts/session-pruning).
+Documentatie: [Sessie](/nl/concepts/session), [Compaction](/nl/concepts/compaction), [Sessiesnoei](/nl/concepts/session-pruning).
 
-Standaard gebruikt OpenClaw de ingebouwde `legacy` context-engine voor assemblage en
-Compaction. Als je een Plugin installeert die `kind: "context-engine"` levert en
-deze selecteert met `plugins.slots.contextEngine`, delegeert OpenClaw context-
-assemblage, `/compact` en gerelateerde subagent-contextlevenscyclushooks in plaats daarvan naar die
-engine. `ownsCompaction: false` zorgt niet automatisch voor een fallback naar de legacy
+Standaard gebruikt OpenClaw de ingebouwde `legacy` context-engine voor samenstelling en
+Compaction. Als je een plugin installeert die `kind: "context-engine"` levert en
+deze selecteert met `plugins.slots.contextEngine`, delegeert OpenClaw de
+contextsamenstelling, `/compact` en gerelateerde lifecycle-hooks voor subagent-context naar die
+engine. `ownsCompaction: false` valt niet automatisch terug op de legacy
 engine; de actieve engine moet `compact()` nog steeds correct implementeren. Zie
-[Context Engine](/nl/concepts/context-engine) voor de volledige
-plug-inbare interface, levenscyclushooks en configuratie.
+[Context-engine](/nl/concepts/context-engine) voor de volledige
+plugbare interface, lifecycle-hooks en configuratie.
 
 ## Wat `/context` daadwerkelijk rapporteert
 
-`/context` geeft de voorkeur aan het nieuwste **tijdens de uitvoering gebouwde** systeempromptrapport wanneer beschikbaar:
+`/context` geeft de voorkeur aan het meest recente **door een run gebouwde** systeempromptrapport wanneer beschikbaar:
 
-- `System prompt (run)` = vastgelegd uit de laatste embedded (tool-geschikte) uitvoering en bewaard in de sessiestore.
-- `System prompt (estimate)` = direct berekend wanneer er geen uitvoeringsrapport bestaat (of wanneer er via een CLI-backend wordt uitgevoerd die het rapport niet genereert).
+- `System prompt (run)` = vastgelegd uit de laatste ingebedde (tool-geschikte) run en bewaard in de sessiestore.
+- `System prompt (estimate)` = on-the-fly berekend wanneer er geen runrapport bestaat (of wanneer er via een CLI-backend wordt gewerkt die het rapport niet genereert).
 
-In beide gevallen rapporteert het groottes en belangrijkste bijdragers; het dumpt **niet** de volledige systeemprompt of toolschema's.
+Hoe dan ook rapporteert het groottes en belangrijkste bijdragers; het dumpt **niet** de volledige systeemprompt of toolschema's.
 
 ## Gerelateerd
 
@@ -185,10 +197,10 @@ In beide gevallen rapporteert het groottes en belangrijkste bijdragers; het dump
   <Card title="Compaction" href="/nl/concepts/compaction" icon="compress">
     Lange gesprekken samenvatten om ze binnen het modelvenster te houden.
   </Card>
-  <Card title="Systeemprompt" href="/nl/concepts/system-prompt" icon="message-lines">
-    Hoe de systeemprompt wordt gebouwd en wat deze bij elke beurt injecteert.
+  <Card title="System prompt" href="/nl/concepts/system-prompt" icon="message-lines">
+    Hoe de systeemprompt wordt gebouwd en wat deze elke beurt injecteert.
   </Card>
-  <Card title="Agentlus" href="/nl/concepts/agent-loop" icon="arrows-rotate">
-    De volledige agentuitvoeringscyclus van binnenkomend bericht tot definitief antwoord.
+  <Card title="Agent loop" href="/nl/concepts/agent-loop" icon="arrows-rotate">
+    De volledige uitvoeringscyclus van de agent, van binnenkomend bericht tot definitief antwoord.
   </Card>
 </CardGroup>

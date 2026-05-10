@@ -1,20 +1,20 @@
 ---
 read_when:
-    - OpenClaw'u yapılandırmayı öğrenme
-    - Yapılandırma örnekleri mi arıyorsunuz?
-    - OpenClaw'u ilk kez kurma
+    - OpenClaw'ı yapılandırmayı öğrenme
+    - Yapılandırma örnekleri aranıyor
+    - OpenClaw'ı ilk kez kurma
 summary: Yaygın OpenClaw kurulumları için şemaya uygun yapılandırma örnekleri
 title: Yapılandırma örnekleri
 x-i18n:
-    generated_at: "2026-05-07T13:17:06Z"
+    generated_at: "2026-05-10T19:35:38Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 87c7e75841ee36121c764f1ed51b6547d0fccf7ed6c1f05895d916dbf93f061a
+    source_hash: 9fd1c93d8c491de13c3679c766293a3401853625308e90588d7c83272c5b6e73
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Aşağıdaki örnekler geçerli yapılandırma şemasıyla uyumludur. Eksiksiz referans ve alan bazlı notlar için bkz. [Yapılandırma](/tr/gateway/configuration).
+Aşağıdaki örnekler mevcut yapılandırma şemasıyla uyumludur. Kapsamlı başvuru ve alan bazlı notlar için [Yapılandırma](/tr/gateway/configuration) sayfasına bakın.
 
 ## Hızlı başlangıç
 
@@ -27,7 +27,7 @@ Aşağıdaki örnekler geçerli yapılandırma şemasıyla uyumludur. Eksiksiz r
 }
 ```
 
-`~/.openclaw/openclaw.json` dosyasına kaydedin; ardından bu numaradan bota doğrudan mesaj gönderebilirsiniz.
+`~/.openclaw/openclaw.json` olarak kaydedin; ardından bot'a bu numaradan doğrudan mesaj gönderebilirsiniz.
 
 ### Önerilen başlangıç
 
@@ -59,7 +59,7 @@ Aşağıdaki örnekler geçerli yapılandırma şemasıyla uyumludur. Eksiksiz r
 
 ## Genişletilmiş örnek (başlıca seçenekler)
 
-> JSON5 yorumlar ve sonda virgüller kullanmanıza olanak tanır. Normal JSON da çalışır.
+> JSON5, yorumları ve sondaki virgülleri kullanmanıza izin verir. Normal JSON da çalışır.
 
 ```json5
 {
@@ -454,10 +454,12 @@ Aşağıdaki örnekler geçerli yapılandırma şemasıyla uyumludur. Eksiksiz r
     allowBundled: ["gemini", "peekaboo"],
     load: {
       extraDirs: ["~/Projects/agent-scripts/skills"],
+      allowSymlinkTargets: ["~/Projects/agent-scripts/skills"],
     },
     install: {
       preferBrew: true,
       nodeManager: "npm", // npm | pnpm | yarn | bun
+      allowUploadedArchives: false,
     },
     entries: {
       "image-lab": {
@@ -471,9 +473,28 @@ Aşağıdaki örnekler geçerli yapılandırma şemasıyla uyumludur. Eksiksiz r
 }
 ```
 
-## Yaygın kalıplar
+### Sembolik bağlantılı kardeş skill deposu
 
-### Tek geçersiz kılma ile paylaşılan skill temeli
+Yerleşik skill kökü bir kardeş depoya sembolik bağlantı içeriyorsa bunu kullanın; örneğin `~/.agents/skills/manager -> ~/Projects/manager/skills`.
+
+```json5
+{
+  skills: {
+    load: {
+      extraDirs: ["~/Projects/manager/skills"],
+      allowSymlinkTargets: ["~/Projects/manager/skills"],
+    },
+  },
+}
+```
+
+- `extraDirs`, kardeş depoyu açık bir Skills kökü olarak tarar.
+- `allowSymlinkTargets`, sembolik bağlı Skills klasörlerinin rastgele sembolik bağ kaçışlarına izin vermeden bu güvenilir
+  gerçek hedef köke çözülmesini sağlar.
+
+## Yaygın desenler
+
+### Tek geçersiz kılma ile paylaşılan Skills temeli
 
 ```json5
 {
@@ -492,7 +513,7 @@ Aşağıdaki örnekler geçerli yapılandırma şemasıyla uyumludur. Eksiksiz r
 
 - `agents.defaults.skills` paylaşılan temeldir.
 - `agents.list[].skills`, bir agent için bu temelin yerini alır.
-- Bir agent'ın hiçbir Skills görmemesi gerekiyorsa `skills: []` kullanın.
+- Bir agent hiçbir Skills görmemeliyse `skills: []` kullanın.
 
 ### Çok platformlu kurulum
 
@@ -517,9 +538,9 @@ Aşağıdaki örnekler geçerli yapılandırma şemasıyla uyumludur. Eksiksiz r
 
 ### Güvenilir Node ağı otomatik onayı
 
-Ağ yolunu kontrol etmiyorsanız cihaz eşleştirmeyi manuel tutun. Ayrılmış bir
-laboratuvar veya tailnet alt ağı için, tam CIDR'ler veya IP'lerle ilk kez kullanılan
-Node cihazı otomatik onayına katılabilirsiniz:
+Ağ yolunu siz kontrol etmiyorsanız cihaz eşleştirmeyi manuel tutun. Ayrılmış bir
+laboratuvar veya tailnet alt ağı için, ilk kez Node cihaz otomatik onayını
+tam CIDR'ler veya IP'lerle etkinleştirebilirsiniz:
 
 ```json5
 {
@@ -533,13 +554,12 @@ Node cihazı otomatik onayına katılabilirsiniz:
 }
 ```
 
-Ayarlanmadığında bu kapalı kalır. Yalnızca istenen kapsam bulunmayan yeni `role: node` eşleştirmeleri için geçerlidir.
-Operatör/tarayıcı istemcileri ile rol, kapsam, metadata veya
-public-key yükseltmeleri yine manuel onay gerektirir.
+Bu, ayarlanmamışsa kapalı kalır. Yalnızca istenen kapsamları olmayan yeni `role: node` eşleştirmesine uygulanır. Operatör/tarayıcı istemcileri ve rol, kapsam, meta veri veya
+açık anahtar yükseltmeleri yine de manuel onay gerektirir.
 
 ### Güvenli DM modu (paylaşılan gelen kutusu / çok kullanıcılı DM'ler)
 
-Birden fazla kişi botunuza DM gönderebiliyorsa (`allowFrom` içinde birden fazla giriş, birden fazla kişi için eşleştirme onayları veya `dmPolicy: "open"`), farklı gönderenlerden gelen DM'lerin varsayılan olarak tek bir bağlamı paylaşmaması için **güvenli DM modunu** etkinleştirin:
+Birden fazla kişi botunuza DM gönderebiliyorsa (`allowFrom` içinde birden fazla giriş, birden fazla kişi için eşleştirme onayları veya `dmPolicy: "open"`), farklı göndericilerden gelen DM'lerin varsayılan olarak tek bir bağlamı paylaşmaması için **güvenli DM modunu** etkinleştirin:
 
 ```json5
 {
@@ -563,10 +583,10 @@ Birden fazla kişi botunuza DM gönderebiliyorsa (`allowFrom` içinde birden faz
 }
 ```
 
-Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC için gönderen yetkilendirmesi varsayılan olarak önce ID'ye dayanır.
-Doğrudan değiştirilebilir ad/e-posta/takma ad eşleştirmesini her kanalın `dangerouslyAllowNameMatching: true` ayarıyla yalnızca bu riski açıkça kabul ediyorsanız etkinleştirin.
+Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC için gönderici yetkilendirmesi varsayılan olarak önce ID'ye göre yapılır.
+Doğrudan değiştirilebilir ad/e-posta/rumuz eşleştirmesini yalnızca bu riski açıkça kabul ediyorsanız her kanalın `dangerouslyAllowNameMatching: true` ayarıyla etkinleştirin.
 
-### Anthropic API anahtarı + MiniMax yedeklemesi
+### Anthropic API anahtarı + MiniMax yedeği
 
 ```json5
 {
@@ -660,7 +680,7 @@ Doğrudan değiştirilebilir ad/e-posta/takma ad eşleştirmesini her kanalın `
 ## İpuçları
 
 - `dmPolicy: "open"` ayarlarsanız, eşleşen `allowFrom` listesi `"*"` içermelidir.
-- Sağlayıcı ID'leri farklıdır (telefon numaraları, kullanıcı ID'leri, kanal ID'leri). Biçimi doğrulamak için sağlayıcı belgelerini kullanın.
+- Sağlayıcı ID'leri farklılık gösterir (telefon numaraları, kullanıcı ID'leri, kanal ID'leri). Biçimi doğrulamak için sağlayıcı belgelerini kullanın.
 - Daha sonra eklenecek isteğe bağlı bölümler: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
 - Daha ayrıntılı kurulum notları için [Sağlayıcılar](/tr/providers) ve [Sorun giderme](/tr/gateway/troubleshooting) bölümlerine bakın.
 

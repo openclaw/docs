@@ -1,27 +1,29 @@
 ---
 read_when:
-    - Çalışan Gateway'in durumunu hızlıca kontrol etmek istiyorsunuz
-summary: '`openclaw health` için CLI referansı (RPC aracılığıyla Gateway sağlık durumu anlık görüntüsü)'
+    - Çalışan Gateway'in sağlığını hızlıca kontrol etmek istiyorsunuz
+summary: '`openclaw health` için CLI referansı (RPC üzerinden Gateway sağlık anlık görüntüsü)'
 title: Sağlık
 x-i18n:
-    generated_at: "2026-05-06T09:05:14Z"
+    generated_at: "2026-05-10T19:29:31Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 443684af04efce2c54a6679e13b0bff0a5c1869f85d60fae0e853aed0a362226
+    source_hash: 26be7bbbf75c2eca1213fe145fdeeab6fee96798dff457278ac69a20145bf75d
     source_path: cli/health.md
     workflow: 16
 ---
 
 # `openclaw health`
 
-Çalışan Gateway'den sağlık durumunu alır.
+Çalışan Gateway'den sağlık durumunu getirir.
 
-Seçenekler:
+## Seçenekler
 
-- `--json`: makine tarafından okunabilir çıktı
-- `--timeout <ms>`: milisaniye cinsinden bağlantı zaman aşımı (varsayılan `10000`)
-- `--verbose`: ayrıntılı günlük kaydı
-- `--debug`: `--verbose` için diğer ad
+| Bayrak           | Varsayılan | Açıklama                                                            |
+| ---------------- | ---------- | ------------------------------------------------------------------- |
+| `--json`         | `false`    | Metin yerine makine tarafından okunabilir JSON yazdırır.            |
+| `--timeout <ms>` | `10000`    | Milisaniye cinsinden bağlantı zaman aşımı.                          |
+| `--verbose`      | `false`    | Ayrıntılı günlükleme. Canlı bir yoklamayı zorunlu kılar ve ajan başına çıktıyı genişletir. |
+| `--debug`        | `false`    | `--verbose` için takma ad.                                          |
 
 Örnekler:
 
@@ -35,14 +37,14 @@ openclaw health --debug
 
 Notlar:
 
-- Varsayılan `openclaw health`, çalışan gateway'den sağlık anlık görüntüsünü ister. Gateway'de
-  zaten yeni bir önbelleğe alınmış anlık görüntü varsa, bu önbelleğe alınmış yükü döndürebilir ve
+- Varsayılan `openclaw health`, çalışan Gateway'den sağlık anlık görüntüsünü ister. Gateway'in
+  zaten taze ve önbelleğe alınmış bir anlık görüntüsü varsa, bu önbelleğe alınmış yükü döndürebilir ve
   arka planda yenileyebilir.
-- `--verbose` canlı bir yoklamayı zorunlu kılar, gateway bağlantı ayrıntılarını yazdırır ve
-  insan tarafından okunabilir çıktıyı yapılandırılmış tüm hesaplar ve aracılar genelinde genişletir.
-- Çıktı, birden fazla aracı yapılandırıldığında aracı başına oturum depolarını içerir.
+- `--verbose` canlı bir yoklamayı zorunlu kılar, Gateway bağlantı ayrıntılarını yazdırır ve
+  insan tarafından okunabilir çıktıyı yapılandırılmış tüm hesaplar ve ajanlar genelinde genişletir.
+- Birden fazla ajan yapılandırıldığında çıktı, ajan başına oturum depolarını içerir.
 
 ## İlgili
 
 - [CLI başvurusu](/tr/cli)
-- [Gateway sağlığı](/tr/gateway/health)
+- [Gateway sağlık durumu](/tr/gateway/health)

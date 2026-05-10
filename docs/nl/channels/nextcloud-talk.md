@@ -1,18 +1,18 @@
 ---
 read_when:
     - Werken aan functies voor het Nextcloud Talk-kanaal
-summary: Ondersteuningsstatus, mogelijkheden en configuratie van Nextcloud Talk
+summary: Nextcloud Talk-ondersteuningsstatus, mogelijkheden en configuratie
 title: Nextcloud Talk
 x-i18n:
-    generated_at: "2026-05-02T22:16:22Z"
+    generated_at: "2026-05-10T19:22:56Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 4956586ae8622118dcf136f4279c6ed1c2895fd4bb4576a7f5799de600a95740
+    source_hash: e4b3b2d074cc8d3c19223dbb0c306c6861717d0f35e638e3aab04b03647fd248
     source_path: channels/nextcloud-talk.md
     workflow: 16
 ---
 
-Status: gebundelde Plugin (webhookbot). Directe berichten, ruimtes, reacties en markdownberichten worden ondersteund.
+Status: gebundelde Plugin (Webhook-bot). Direct messages, ruimtes, reacties en markdown-berichten worden ondersteund.
 
 ## Gebundelde Plugin
 
@@ -31,7 +31,7 @@ openclaw plugins install @openclaw/nextcloud-talk
 Gebruik het kale pakket om de huidige officiële releasetag te volgen. Pin alleen een exacte
 versie wanneer je een reproduceerbare installatie nodig hebt.
 
-Lokale checkout (wanneer je vanuit een git-repo draait):
+Lokale checkout (bij uitvoeren vanuit een git-repo):
 
 ```bash
 openclaw plugins install ./path/to/local/nextcloud-talk-plugin
@@ -43,11 +43,11 @@ Details: [Plugins](/nl/tools/plugin)
 
 1. Zorg dat de Nextcloud Talk-Plugin beschikbaar is.
    - Huidige verpakte OpenClaw-releases bundelen deze al.
-   - Oudere/aangepaste installaties kunnen deze handmatig toevoegen met de bovenstaande opdrachten.
+   - Oudere/aangepaste installaties kunnen deze handmatig toevoegen met de bovenstaande commando's.
 2. Maak op je Nextcloud-server een bot aan:
 
    ```bash
-   ./occ talk:bot:install "OpenClaw" "<shared-secret>" "<webhook-url>" --feature reaction
+   ./occ talk:bot:install "OpenClaw" "<shared-secret>" "<webhook-url>" --feature webhook --feature response --feature reaction
    ```
 
 3. Schakel de bot in de instellingen van de doelruimte in.
@@ -71,7 +71,7 @@ Details: [Plugins](/nl/tools/plugin)
      --secret "<shared-secret>"
    ```
 
-   Bestandsgebaseerd geheim:
+   Bestandsgesteund geheim:
 
    ```bash
    openclaw channels add --channel nextcloud-talk \
@@ -79,7 +79,7 @@ Details: [Plugins](/nl/tools/plugin)
      --secret-file /path/to/nextcloud-talk-secret
    ```
 
-5. Herstart de Gateway (of voltooi de setup).
+5. Herstart de Gateway (of rond de setup af).
 
 Minimale configuratie:
 
@@ -96,26 +96,26 @@ Minimale configuratie:
 }
 ```
 
-## Notities
+## Opmerkingen
 
-- Bots kunnen geen DM's starten. De gebruiker moet eerst een bericht naar de bot sturen.
-- De Webhook-URL moet bereikbaar zijn voor de Gateway; stel `webhookPublicUrl` in als deze achter een proxy zit.
+- Bots kunnen geen DM's initiëren. De gebruiker moet eerst een bericht naar de bot sturen.
+- De Webhook-URL moet bereikbaar zijn voor de Gateway; stel `webhookPublicUrl` in als deze zich achter een proxy bevindt.
 - Media-uploads worden niet ondersteund door de bot-API; media wordt als URL's verzonden.
-- De Webhook-payload maakt geen onderscheid tussen DM's en ruimtes; stel `apiUser` + `apiPassword` in om ruimtetype-opzoekingen in te schakelen (anders worden DM's als ruimtes behandeld).
+- De Webhook-payload maakt geen onderscheid tussen DM's en ruimtes; stel `apiUser` + `apiPassword` in om opzoekacties voor ruimtetypes in te schakelen (anders worden DM's als ruimtes behandeld).
 
-## Toegangscontrole (DM's)
+## Toegangsbeheer (DM's)
 
-- Standaard: `channels.nextcloud-talk.dmPolicy = "pairing"`. Onbekende afzenders krijgen een koppelcode.
+- Standaard: `channels.nextcloud-talk.dmPolicy = "pairing"`. Onbekende afzenders krijgen een koppelingscode.
 - Goedkeuren via:
   - `openclaw pairing list nextcloud-talk`
   - `openclaw pairing approve nextcloud-talk <CODE>`
 - Openbare DM's: `channels.nextcloud-talk.dmPolicy="open"` plus `channels.nextcloud-talk.allowFrom=["*"]`.
-- `allowFrom` komt alleen overeen met Nextcloud-gebruikers-ID's; weergavenamen worden genegeerd.
+- `allowFrom` matcht alleen Nextcloud-gebruikers-ID's; weergavenamen worden genegeerd.
 
 ## Ruimtes (groepen)
 
 - Standaard: `channels.nextcloud-talk.groupPolicy = "allowlist"` (vermelding vereist).
-- Zet ruimtes op de toelatingslijst met `channels.nextcloud-talk.rooms`:
+- Zet ruimtes op de allowlist met `channels.nextcloud-talk.rooms`:
 
 ```json5
 {
@@ -129,18 +129,18 @@ Minimale configuratie:
 }
 ```
 
-- Houd de toelatingslijst leeg of stel `channels.nextcloud-talk.groupPolicy="disabled"` in om geen ruimtes toe te staan.
+- Om geen ruimtes toe te staan, laat je de allowlist leeg of stel je `channels.nextcloud-talk.groupPolicy="disabled"` in.
 
 ## Mogelijkheden
 
-| Functie          | Status             |
-| ---------------- | ------------------ |
-| Directe berichten | Ondersteund        |
-| Ruimtes          | Ondersteund        |
-| Threads          | Niet ondersteund   |
-| Media            | Alleen URL         |
-| Reacties         | Ondersteund        |
-| Native opdrachten | Niet ondersteund  |
+| Functie         | Status                |
+| --------------- | --------------------- |
+| Direct messages | Ondersteund           |
+| Ruimtes         | Ondersteund           |
+| Threads         | Niet ondersteund      |
+| Media           | Alleen URL's          |
+| Reacties        | Ondersteund           |
+| Native commands | Niet ondersteund      |
 
 ## Configuratiereferentie (Nextcloud Talk)
 
@@ -148,35 +148,36 @@ Volledige configuratie: [Configuratie](/nl/gateway/configuration)
 
 Provideropties:
 
-- `channels.nextcloud-talk.enabled`: kanaalstart in-/uitschakelen.
+- `channels.nextcloud-talk.enabled`: inschakelen/uitschakelen van kanaalopstart.
 - `channels.nextcloud-talk.baseUrl`: URL van de Nextcloud-instantie.
-- `channels.nextcloud-talk.botSecret`: gedeeld geheim van de bot.
+- `channels.nextcloud-talk.botSecret`: gedeeld botgeheim.
 - `channels.nextcloud-talk.botSecretFile`: geheim pad naar regulier bestand. Symlinks worden geweigerd.
-- `channels.nextcloud-talk.apiUser`: API-gebruiker voor ruimte-opzoekingen (DM-detectie).
-- `channels.nextcloud-talk.apiPassword`: API-/app-wachtwoord voor ruimte-opzoekingen.
+- `channels.nextcloud-talk.apiUser`: API-gebruiker voor opzoekacties van ruimtes (DM-detectie).
+- `channels.nextcloud-talk.apiPassword`: API-/app-wachtwoord voor opzoekacties van ruimtes.
 - `channels.nextcloud-talk.apiPasswordFile`: bestandspad voor API-wachtwoord.
-- `channels.nextcloud-talk.webhookPort`: poort voor Webhook-listener (standaard: 8788).
+- `channels.nextcloud-talk.webhookPort`: listenerpoort voor Webhooks (standaard: 8788).
 - `channels.nextcloud-talk.webhookHost`: Webhook-host (standaard: 0.0.0.0).
 - `channels.nextcloud-talk.webhookPath`: Webhook-pad (standaard: /nextcloud-talk-webhook).
 - `channels.nextcloud-talk.webhookPublicUrl`: extern bereikbare Webhook-URL.
 - `channels.nextcloud-talk.dmPolicy`: `pairing | allowlist | open | disabled`.
-- `channels.nextcloud-talk.allowFrom`: DM-toelatingslijst (gebruikers-ID's). `open` vereist `"*"`.
+- `channels.nextcloud-talk.allowFrom`: DM-allowlist (gebruikers-ID's). `open` vereist `"*"`.
 - `channels.nextcloud-talk.groupPolicy`: `allowlist | open | disabled`.
-- `channels.nextcloud-talk.groupAllowFrom`: groepstoelatingslijst (gebruikers-ID's).
-- `channels.nextcloud-talk.rooms`: instellingen en toelatingslijst per ruimte.
-- `channels.nextcloud-talk.historyLimit`: limiet voor groepsgeschiedenis (0 schakelt uit).
-- `channels.nextcloud-talk.dmHistoryLimit`: limiet voor DM-geschiedenis (0 schakelt uit).
+- `channels.nextcloud-talk.groupAllowFrom`: groeps-allowlist (gebruikers-ID's).
+- `channels.nextcloud-talk.rooms`: instellingen en allowlist per ruimte.
+- Statische toegangsgroepen voor afzenders kunnen vanuit `allowFrom` en `groupAllowFrom` worden gerefereerd met `accessGroup:<name>`.
+- `channels.nextcloud-talk.historyLimit`: geschiedenisluit voor groepen (0 schakelt uit).
+- `channels.nextcloud-talk.dmHistoryLimit`: geschiedenisluit voor DM's (0 schakelt uit).
 - `channels.nextcloud-talk.dms`: overschrijvingen per DM (historyLimit).
-- `channels.nextcloud-talk.textChunkLimit`: grootte van uitgaande tekstchunks (tekens).
-- `channels.nextcloud-talk.chunkMode`: `length` (standaard) of `newline` om op lege regels (alineagrenzen) te splitsen vóór lengtechunking.
-- `channels.nextcloud-talk.blockStreaming`: blockstreaming voor dit kanaal uitschakelen.
-- `channels.nextcloud-talk.blockStreamingCoalesce`: afstemming voor samenvoegen van blockstreaming.
+- `channels.nextcloud-talk.textChunkLimit`: chunkgrootte voor uitgaande tekst (tekens).
+- `channels.nextcloud-talk.chunkMode`: `length` (standaard) of `newline` om te splitsen op lege regels (alineagrenzen) vóór chunking op lengte.
+- `channels.nextcloud-talk.blockStreaming`: block-streaming uitschakelen voor dit kanaal.
+- `channels.nextcloud-talk.blockStreamingCoalesce`: afstemming voor coalescing van block-streaming.
 - `channels.nextcloud-talk.mediaMaxMb`: limiet voor inkomende media (MB).
 
 ## Gerelateerd
 
 - [Kanalenoverzicht](/nl/channels) — alle ondersteunde kanalen
-- [Koppelen](/nl/channels/pairing) — DM-authenticatie en koppelingsflow
-- [Groepen](/nl/channels/groups) — gedrag van groepschats en vermeldingsvereiste
+- [Koppeling](/nl/channels/pairing) — DM-authenticatie en koppelingsflow
+- [Groepen](/nl/channels/groups) — gedrag van groepschats en gating op vermeldingen
 - [Kanaalroutering](/nl/channels/channel-routing) — sessieroutering voor berichten
 - [Beveiliging](/nl/gateway/security) — toegangsmodel en hardening

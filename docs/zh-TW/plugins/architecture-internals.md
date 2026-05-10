@@ -1,123 +1,181 @@
 ---
 read_when:
-    - 實作提供者執行階段掛鉤、通道生命週期或套件包
+    - 實作提供者執行階段鉤子、通道生命週期或套件包
     - 偵錯 Plugin 載入順序或註冊表狀態
-    - 新增 Plugin 功能或上下文引擎 Plugin
-summary: Plugin 架構內部：載入管線、註冊表、執行階段鉤子、HTTP 路由與參考表
+    - 新增 Plugin 能力或上下文引擎 Plugin
+summary: Plugin 架構內部：載入管線、登錄表、執行階段 hooks、HTTP 路由與參考表格
 title: Plugin 架構內部機制
 x-i18n:
-    generated_at: "2026-05-03T21:36:57Z"
+    generated_at: "2026-05-10T19:40:47Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 898cbe2f97d666fc8bb2c2197cb786efb6d13a8842d8eb931fa3ce535bfd21fb
+    source_hash: d41a28b83759906df693a00f3a20237bb7b91905eb948ff7bb354608e7997119
     source_path: plugins/architecture-internals.md
     workflow: 16
 ---
 
-關於公開能力模型、Plugin 形狀，以及擁有權/執行合約，請參閱 [Plugin 架構](/zh-TW/plugins/architecture)。本頁是內部機制的參考：載入管線、登錄表、執行階段掛鉤、Gateway HTTP 路由、匯入路徑，以及結構描述表格。
+對於公開的能力模型、Plugin 形狀，以及所有權/執行
+合約，請參閱 [Plugin 架構](/zh-TW/plugins/architecture)。本頁是
+內部機制的參考資料：載入管線、註冊表、執行階段 hooks、
+Gateway HTTP routes、匯入路徑，以及 schema 表格。
 
 ## 載入管線
 
 啟動時，OpenClaw 大致會執行以下動作：
 
 1. 探索候選 Plugin 根目錄
-2. 讀取原生或相容的 bundle manifest 與套件中繼資料
+2. 讀取原生或相容 bundle manifests 與 package metadata
 3. 拒絕不安全的候選項
-4. 正規化 Plugin 設定（`plugins.enabled`、`allow`、`deny`、`entries`、`slots`、`load.paths`）
-5. 判定每個候選項是否啟用
-6. 載入已啟用的原生模組：建置後的內建 bundled 模組使用原生載入器；第三方本機來源 TypeScript 使用緊急 Jiti 備援
-7. 呼叫原生 `register(api)` 掛鉤，並將註冊項目收集到 Plugin 登錄表
-8. 將登錄表公開給命令/執行階段介面
+4. 正規化 Plugin 設定（`plugins.enabled`、`allow`、`deny`、`entries`、
+   `slots`、`load.paths`）
+5. 決定每個候選項是否啟用
+6. 載入已啟用的原生模組：建置完成的 bundled modules 會使用原生 loader；
+   第三方本機原始碼 TypeScript 會使用緊急 Jiti fallback
+7. 呼叫原生 `register(api)` hooks，並將 registrations 收集到 Plugin 註冊表
+8. 將註冊表公開給 commands/runtime surfaces
 
 <Note>
-`activate` 是 `register` 的舊版別名：載入器會解析存在的項目（`def.register ?? def.activate`），並在相同時間點呼叫它。所有 bundled Plugin 都使用 `register`；新的 Plugin 請優先使用 `register`。
+`activate` 是 `register` 的 legacy alias — loader 會解析存在的那一個（`def.register ?? def.activate`），並在同一個時間點呼叫它。所有 bundled plugins 都使用 `register`；新的 plugins 請優先使用 `register`。
 </Note>
 
-安全閘門會在執行階段執行**之前**發生。當進入點逸出 Plugin 根目錄、路徑可由所有人寫入，或非 bundled Plugin 的路徑擁有權看起來可疑時，候選項會被封鎖。
+安全閘門會在執行階段執行**之前**發生。當 entry 逸出 Plugin 根目錄、
+路徑可被所有使用者寫入，或非 bundled plugins 的路徑所有權看起來可疑時，
+候選項會被封鎖。
 
-被封鎖的候選項仍會為了診斷而綁定到其 Plugin id。如果設定仍參照該 id，驗證會將該 Plugin 回報為存在但已封鎖，並指回路徑安全警告，而不是把該設定項目視為過時。
+被封鎖的候選項仍會繫結到其 Plugin id 以供診斷。如果設定仍引用該 id，
+驗證會將 Plugin 回報為存在但已封鎖，並指回 path-safety 警告，而不是
+將設定 entry 視為過期。
 
-### Manifest 優先行為
+### Manifest-first 行為
 
-Manifest 是控制平面的真實來源。OpenClaw 會用它來：
+manifest 是 control-plane 的真實來源。OpenClaw 會使用它來：
 
 - 識別 Plugin
-- 探索宣告的頻道/Skills/設定結構描述或 bundle 能力
+- 探索宣告的 channels/skills/config schema 或 bundle capabilities
 - 驗證 `plugins.entries.<id>.config`
-- 補充 Control UI 標籤/placeholder
-- 顯示安裝/目錄中繼資料
-- 在不載入 Plugin 執行階段的情況下，保留低成本的啟用與設定描述子
+- 擴充 Control UI labels/placeholders
+- 顯示 install/catalog metadata
+- 在不載入 Plugin runtime 的情況下保留低成本的 activation 與 setup descriptors
 
-對於原生 Plugin，執行階段模組是資料平面部分。它會註冊實際行為，例如掛鉤、工具、命令或 provider 流程。
+對於原生 plugins，runtime module 是 data-plane 部分。它會註冊
+實際行為，例如 hooks、tools、commands，或 provider flows。
 
-選用的 manifest `activation` 與 `setup` 區塊會留在控制平面。它們是僅含中繼資料的描述子，用於啟用規劃與設定探索；它們不會取代執行階段註冊、`register(...)` 或 `setupEntry`。第一批即時啟用消費者現在會使用 manifest 命令、頻道與 provider 提示，在更廣泛的登錄表具現化之前縮小 Plugin 載入範圍：
+選用的 manifest `activation` 與 `setup` blocks 會留在 control plane。
+它們是僅限 metadata 的 descriptors，用於 activation planning 與 setup discovery；
+它們不會取代 runtime registration、`register(...)` 或 `setupEntry`。
+第一批 live activation consumers 現在會使用 manifest command、channel 與 provider hints，
+在更廣泛的 registry materialization 之前縮小 Plugin 載入範圍：
 
-- CLI 載入會縮小到擁有所請求主要命令的 Plugin
-- 頻道設定/Plugin 解析會縮小到擁有所請求頻道 id 的 Plugin
-- 明確的 provider 設定/執行階段解析會縮小到擁有所請求 provider id 的 Plugin
-- Gateway 啟動規劃會使用 `activation.onStartup` 進行明確的啟動匯入與啟動退出；沒有啟動中繼資料的 Plugin 只會透過更窄的啟用觸發器載入
+- CLI loading 會縮小到擁有所要求 primary command 的 plugins
+- channel setup/plugin resolution 會縮小到擁有所要求
+  channel id 的 plugins
+- explicit provider setup/runtime resolution 會縮小到擁有所要求
+  provider id 的 plugins
+- Gateway startup planning 會使用 `activation.onStartup` 處理明確的 startup
+  imports 與 startup opt-outs；沒有 startup metadata 的 plugins 只會
+  透過較窄的 activation triggers 載入
 
-請求期間的執行階段預載若要求廣泛的 `all` 範圍，仍會從設定、啟動規劃、已設定頻道、slot 與自動啟用規則衍生明確的有效 Plugin id 集合。如果該衍生集合為空，OpenClaw 會載入空的執行階段登錄表，而不是擴大到每個可探索的 Plugin。
+要求廣泛 `all` scope 的 request-time runtime preloads，仍會從設定、startup planning、
+已設定的 channels、slots，以及 auto-enable rules 推導出明確的 effective Plugin id set。
+如果推導出的集合為空，OpenClaw 會載入空的 runtime registry，而不是擴大到每個可探索的
+Plugin。
 
-啟用規劃器會同時公開給既有呼叫端使用的僅 ids API，以及供新診斷使用的 plan API。Plan 項目會回報 Plugin 被選取的原因，並區分明確的 `activation.*` 規劃器提示與 manifest 擁有權備援，例如 `providers`、`channels`、`commandAliases`、`setup.providers`、`contracts.tools` 和掛鉤。這種原因拆分就是相容性邊界：既有 Plugin 中繼資料會持續運作，而新程式碼可以偵測廣泛提示或備援行為，且不改變執行階段載入語義。
+activation planner 同時公開 ids-only API 給現有 callers，並提供 plan API 給新的診斷。
+Plan entries 會回報 Plugin 被選取的原因，將明確的 `activation.*` planner hints 與
+manifest ownership fallback（例如 `providers`、`channels`、`commandAliases`、
+`setup.providers`、`contracts.tools` 與 hooks）分開。這種 reason split 是相容性邊界：
+現有 Plugin metadata 會繼續運作，而新程式碼可以偵測 broad hints 或 fallback behavior，
+不必變更 runtime loading semantics。
 
-設定探索現在會優先使用描述子擁有的 id，例如 `setup.providers` 與 `setup.cliBackends`，在退回到仍需要設定期間執行階段掛鉤的 Plugin 所用 `setup-api` 之前縮小候選 Plugin。Provider 設定清單會使用 manifest `providerAuthChoices`、由描述子衍生的設定選項，以及安裝目錄中繼資料，而不載入 provider 執行階段。明確的 `setup.requiresRuntime: false` 是僅限描述子的截止點；省略的 `requiresRuntime` 會保留舊版 `setup-api` 備援以維持相容性。如果多個已探索 Plugin 宣稱相同的正規化設定 provider 或 CLI backend id，設定查找會拒絕含糊的擁有者，而不是依賴探索順序。當設定執行階段確實執行時，登錄表診斷會回報 `setup.providers` / `setup.cliBackends` 與 setup-api 註冊的 provider 或 CLI backend 之間的偏移，但不會封鎖舊版 Plugin。
+Setup discovery 現在會優先使用 descriptor-owned ids，例如 `setup.providers` 與
+`setup.cliBackends`，在 fallback 到 `setup-api` 之前先縮小候選 plugins；
+`setup-api` 仍供需要 setup-time runtime hooks 的 plugins 使用。Provider
+setup lists 會使用 manifest `providerAuthChoices`、descriptor-derived setup
+choices，以及 install-catalog metadata，而不載入 provider runtime。明確的
+`setup.requiresRuntime: false` 是 descriptor-only cutoff；省略
+`requiresRuntime` 會保留 legacy setup-api fallback 以維持相容性。如果有多個
+已探索的 Plugin 宣稱同一個正規化後的 setup provider 或 CLI backend id，setup lookup
+會拒絕這個 ambiguous owner，而不是依賴 discovery order。當 setup runtime 確實執行時，
+registry diagnostics 會回報 `setup.providers` / `setup.cliBackends` 與 setup-api
+註冊的 providers 或 CLI backends 之間的 drift，但不會封鎖 legacy plugins。
 
 ### Plugin 快取邊界
 
-OpenClaw 不會在以牆上時鐘時間為基準的時間窗後方，快取 Plugin 探索結果或直接 manifest 登錄表資料。安裝、manifest 編輯與載入路徑變更，必須在下一次明確中繼資料讀取或 snapshot 重建時可見。Manifest 檔案解析器可以保留有界的檔案簽章快取，以開啟的 manifest 路徑、inode、大小與時間戳記作為 key；該快取只會避免重新解析未變更的位元組，且不得快取探索、登錄表、擁有者或策略答案。
+OpenClaw 不會在 wall-clock windows 背後快取 Plugin discovery results 或 direct manifest registry
+data。安裝、manifest 編輯，以及 load-path 變更，必須在下一次明確的 metadata read 或
+snapshot rebuild 時變得可見。manifest file parser 可以保留有界的 file-signature cache，
+以已開啟的 manifest path、inode、size 與 timestamps 作為 key；該 cache 只會避免
+重新解析未變更的 bytes，且不得快取 discovery、registry、owner 或 policy answers。
 
-安全的中繼資料快速路徑是明確物件擁有權，而不是隱藏快取。Gateway 啟動熱路徑應該透過呼叫鏈傳遞目前的 `PluginMetadataSnapshot`、衍生的 `PluginLookUpTable`，或明確的 manifest 登錄表。設定驗證、啟動自動啟用、Plugin bootstrap 與 provider 選擇，可以在這些物件代表目前設定與 Plugin inventory 時重用它們。設定查找仍會視需要重建 manifest 中繼資料，除非特定設定路徑收到明確的 manifest 登錄表；請將它保留為冷路徑備援，而不是新增隱藏查找快取。當輸入變更時，請重建並替換 snapshot，而不是改動它或保留歷史副本。
-作用中 Plugin 登錄表上的檢視與 bundled 頻道 bootstrap helper 應該從目前的登錄表/根目錄重新計算。短生命週期 map 在單次呼叫內用於去重工作或防止重入是可以的；它們不得變成程序中繼資料快取。
+安全的 metadata fast path 是明確的 object ownership，而不是隱藏 cache。
+Gateway startup hot paths 應該透過 call chain 傳遞目前的 `PluginMetadataSnapshot`、
+推導出的 `PluginLookUpTable`，或明確的 manifest registry。Config validation、
+startup auto-enable、Plugin bootstrap 與 provider selection 可以在這些 objects
+代表目前 config 與 Plugin inventory 時重用它們。Setup lookup 仍會依需求重建 manifest
+metadata，除非特定 setup path 收到明確的 manifest registry；請將其保留為 cold-path
+fallback，而不是新增隱藏 lookup caches。當 input 變更時，請 rebuild 並替換 snapshot，
+而不是 mutate 它或保留歷史 copies。
+針對 active Plugin registry 的 views 與 bundled channel bootstrap helpers，應該從目前的
+registry/root 重新計算。短生命週期 maps 可在單次 call 內用於 dedupe work 或 guard reentry；
+它們不得變成 process metadata caches。
 
-對於 Plugin 載入，持久快取層是執行階段載入。當程式碼或已安裝成品確實被載入時，它可以重用載入器狀態，例如：
+對於 Plugin loading，持久 cache layer 是 runtime loading。它可以在 code 或 installed artifacts
+實際被載入時重用 loader state，例如：
 
-- `PluginLoaderCacheState` 與相容的作用中執行階段登錄表
-- 用來避免重複匯入相同執行階段介面的 jiti/module 快取與公開介面載入器快取
-- 已安裝 Plugin 成品的檔案系統快取
-- 用於路徑正規化或重複項解析的短生命週期每次呼叫 map
+- `PluginLoaderCacheState` 與 compatible active runtime registries
+- 用於避免重複匯入相同 runtime surface 的 jiti/module caches 與 public-surface loader caches
+- installed Plugin artifacts 的 filesystem caches
+- 用於 path normalization 或 duplicate resolution 的短生命週期 per-call maps
 
-這些快取是資料平面實作細節。它們不得回答控制平面問題，例如「哪個 Plugin 擁有這個 provider？」除非呼叫端刻意要求執行階段載入。
+這些 caches 是 data-plane implementation details。除非 caller 明確要求 runtime loading，
+否則它們不得回答 control-plane 問題，例如「哪個 Plugin 擁有此 provider？」
 
-不要為以下項目新增持久或牆上時鐘快取：
+不要為以下項目新增 persistent 或 wall-clock caches：
 
-- 探索結果
-- 直接 manifest 登錄表
-- 從已安裝 Plugin index 重建的 manifest 登錄表
-- provider 擁有者查找、模型抑制、provider 策略，或公開成品中繼資料
-- 任何其他由 manifest 衍生的答案，其中已變更的 manifest、已安裝 index 或載入路徑應在下一次中繼資料讀取時可見
+- discovery results
+- direct manifest registries
+- 從 installed Plugin index 重建的 manifest registries
+- provider owner lookup、model suppression、provider policy，或 public-artifact
+  metadata
+- 任何其他 manifest-derived answer，其中變更後的 manifest、installed index，
+  或 load path 應該在下一次 metadata read 時可見
 
-從持久化已安裝 Plugin index 重建 manifest 中繼資料的呼叫端，會視需要重建該登錄表。已安裝 index 是持久來源平面狀態；它不是隱藏的程序內中繼資料快取。
+從 persisted installed Plugin index rebuild manifest metadata 的 callers 會依需求重建該 registry。
+installed index 是 durable source-plane state；它不是隱藏的 in-process metadata cache。
 
-## 登錄表模型
+## 註冊表模型
 
-已載入的 Plugin 不會直接改動隨機核心全域。它們會註冊到中央 Plugin 登錄表。
+已載入的 plugins 不會直接 mutate 隨機的 core globals。它們會註冊到
+中央 Plugin 註冊表。
 
-登錄表會追蹤：
+註冊表會追蹤：
 
-- Plugin records（身分、來源、原點、狀態、診斷）
-- 工具
-- 舊版掛鉤與型別化掛鉤
-- 頻道
+- Plugin records（identity、source、origin、status、diagnostics）
+- tools
+- legacy hooks 與 typed hooks
+- channels
 - providers
-- Gateway RPC 處理器
-- HTTP 路由
-- CLI registrar
-- 背景服務
-- Plugin 擁有的命令
+- Gateway RPC handlers
+- HTTP routes
+- CLI registrars
+- background services
+- Plugin-owned commands
 
-核心功能接著會從該登錄表讀取，而不是直接與 Plugin 模組溝通。這會讓載入維持單向：
+Core features 接著會從該註冊表讀取，而不是直接與 Plugin modules 溝通。
+這會讓載入保持單向：
 
-- Plugin 模組 -> 登錄表註冊
-- 核心執行階段 -> 登錄表消費
+- Plugin module -> registry registration
+- core runtime -> registry consumption
 
-這種分離對可維護性很重要。它表示多數核心介面只需要一個整合點：「讀取登錄表」，而不是「為每個 Plugin 模組做特殊處理」。
+這種分離對可維護性很重要。這表示多數 core surfaces 只需要一個 integration point：
+「讀取註冊表」，而不是「為每個 Plugin module 做 special-case」。
 
-## 對話綁定回呼
+## 對話繫結 callbacks
 
-綁定對話的 Plugin 可以在核准完成時做出反應。
+繫結對話的 plugins 可以在 approval 被解析時做出反應。
 
-使用 `api.onConversationBindingResolved(...)` 在綁定請求獲准或拒絕後接收回呼：
+使用 `api.onConversationBindingResolved(...)`，在 bind request 被 approved 或 denied
+之後接收 callback：
 
 ```ts
 export default {
@@ -137,88 +195,116 @@ export default {
 };
 ```
 
-回呼 payload 欄位：
+Callback payload fields：
 
-- `status`：`"approved"` 或 `"denied"`
-- `decision`：`"allow-once"`、`"allow-always"` 或 `"deny"`
-- `binding`：已核准請求的已解析綁定
-- `request`：原始請求摘要、detach 提示、sender id 與對話中繼資料
+- `status`: `"approved"` 或 `"denied"`
+- `decision`: `"allow-once"`、`"allow-always"` 或 `"deny"`
+- `binding`: approved requests 的 resolved binding
+- `request`: 原始 request summary、detach hint、sender id，以及
+  conversation metadata
 
-此回呼僅供通知。它不會改變誰被允許綁定對話，且會在核心核准處理完成後執行。
+此 callback 僅供 notification。它不會改變誰被允許 bind conversation，
+且會在 core approval handling 完成後執行。
 
-## Provider 執行階段掛鉤
+## Provider runtime hooks
 
-Provider Plugin 有三層：
+Provider plugins 有三層：
 
-- **Manifest 中繼資料**，用於低成本的執行階段前查找：
-  `setup.providers[].envVars`、已棄用的相容性 `providerAuthEnvVars`、`providerAuthAliases`、`providerAuthChoices` 與 `channelEnvVars`。
-- **設定期間掛鉤**：`catalog`（舊版 `discovery`）加上 `applyConfigDefaults`。
-- **執行階段掛鉤**：40 多個選用掛鉤，涵蓋 auth、模型解析、串流包裝、思考層級、重放策略與用量端點。完整清單請參閱[掛鉤順序與用法](#hook-order-and-usage)。
+- **Manifest metadata**，用於低成本的 pre-runtime lookup：
+  `setup.providers[].envVars`、deprecated compatibility `providerAuthEnvVars`、
+  `providerAuthAliases`、`providerAuthChoices`，以及 `channelEnvVars`。
+- **Config-time hooks**：`catalog`（legacy `discovery`）加上
+  `applyConfigDefaults`。
+- **Runtime hooks**：40+ 個選用 hooks，涵蓋 auth、model resolution、
+  stream wrapping、thinking levels、replay policy，以及 usage endpoints。完整清單請見
+  [Hook 順序與用法](#hook-order-and-usage)。
 
-OpenClaw 仍擁有通用 agent 迴圈、failover、transcript 處理與工具策略。這些掛鉤是 provider 特定行為的擴充介面，不需要整個自訂推論傳輸。
+OpenClaw 仍擁有 generic agent loop、failover、transcript handling 與
+tool policy。這些 hooks 是 provider-specific behavior 的 extension surface，
+不需要完整的 custom inference transport。
 
-當 provider 具有環境變數式憑證，且通用 auth/status/model-picker 路徑應該在不載入 Plugin 執行階段的情況下看見它們時，請使用 manifest `setup.providers[].envVars`。已棄用的 `providerAuthEnvVars` 在棄用期間仍會由相容性 adapter 讀取，使用它的非 bundled Plugin 會收到 manifest 診斷。當某個 provider id 應重用另一個 provider id 的 env vars、auth profiles、設定支援的 auth，以及 API-key onboarding 選項時，請使用 manifest `providerAuthAliases`。當 onboarding/auth-choice CLI 介面應該在不載入 provider 執行階段的情況下知道 provider 的選項 id、群組標籤與簡單的單一旗標 auth wiring 時，請使用 manifest `providerAuthChoices`。Provider 執行階段 `envVars` 請保留給面向操作者的提示，例如 onboarding 標籤或 OAuth client-id/client-secret 設定變數。
+當 provider 具有 env-based credentials，且 generic auth/status/model-picker paths
+應該在不載入 Plugin runtime 的情況下看到它們時，請使用 manifest
+`setup.providers[].envVars`。Deprecated `providerAuthEnvVars` 在 deprecation window
+期間仍會由 compatibility adapter 讀取，而使用它的 non-bundled plugins 會收到
+manifest diagnostic。當一個 provider id 應重用另一個 provider id 的 env vars、auth profiles、
+config-backed auth，以及 API-key onboarding choice 時，請使用 manifest `providerAuthAliases`。
+當 onboarding/auth-choice CLI surfaces 應該在不載入 provider runtime 的情況下知道
+provider 的 choice id、group labels，以及簡單的 one-flag auth wiring 時，請使用 manifest
+`providerAuthChoices`。保留 provider runtime `envVars` 給 operator-facing hints，
+例如 onboarding labels 或 OAuth client-id/client-secret setup vars。
 
-當頻道具有環境變數驅動的 auth 或設定，且通用 shell-env 備援、設定/狀態檢查或設定提示應該在不載入頻道執行階段的情況下看見它們時，請使用 manifest `channelEnvVars`。
+當 channel 具有 env-driven auth 或 setup，且 generic shell-env fallback、config/status checks
+或 setup prompts 應該在不載入 channel runtime 的情況下看到它們時，請使用 manifest
+`channelEnvVars`。
 
-### 掛鉤順序與用法
+### Hook 順序與用法
 
-對於模型/provider Plugin，OpenClaw 會依大致以下順序呼叫掛鉤。
+對於 model/provider plugins，OpenClaw 會大致依下列順序呼叫 hooks。
 「何時使用」欄是快速決策指南。
-OpenClaw 已不再呼叫的僅相容性 provider 欄位，例如 `ProviderPlugin.capabilities` 與 `suppressBuiltInModel`，刻意未列在此處。
+OpenClaw 不再呼叫的 compatibility-only provider fields，例如
+`ProviderPlugin.capabilities` 與 `suppressBuiltInModel`，會刻意不列在這裡。
 
-| #   | 鉤子                              | 作用                                                                                                   | 使用時機                                                                                                                                   |
+| #   | 掛鉤                              | 作用                                                                                                   | 使用時機                                                                                                                                   |
 | --- | --------------------------------- | -------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | `catalog`                         | 在產生 `models.json` 期間，將提供者設定發布到 `models.providers`                                | 提供者擁有目錄或基礎 URL 預設值                                                                                                  |
-| 2   | `applyConfigDefaults`             | 在設定具體化期間，套用由提供者擁有的全域設定預設值                                      | 預設值取決於驗證模式、環境，或提供者模型家族語意                                                                         |
-| --  | _(內建模型查找)_         | OpenClaw 會先嘗試一般的登錄檔/目錄路徑                                                          | _(不是 Plugin 鉤子)_                                                                                                                         |
-| 3   | `normalizeModelId`                | 在查找前正規化舊版或預覽模型 ID 別名                                                     | 提供者在解析標準模型前，擁有別名清理邏輯                                                                                 |
-| 4   | `normalizeTransport`              | 在通用模型組裝前，正規化提供者家族的 `api` / `baseUrl`                                      | 提供者擁有同一傳輸家族中自訂提供者 ID 的傳輸清理邏輯                                                          |
-| 5   | `normalizeConfig`                 | 在執行階段/提供者解析前，正規化 `models.providers.<id>`                                           | 提供者需要應與 Plugin 同放的設定清理；內建的 Google 家族輔助工具也會作為支援 Google 設定項目的後備   |
+| 1   | `catalog`                         | 在產生 `models.json` 期間，將提供者設定發布到 `models.providers`                                | 提供者擁有目錄或基底 URL 預設值                                                                                                  |
+| 2   | `applyConfigDefaults`             | 在設定具體化期間套用提供者擁有的全域設定預設值                                      | 預設值取決於驗證模式、環境或提供者模型家族語意                                                                         |
+| --  | _(內建模型查找)_         | OpenClaw 會先嘗試一般的登錄檔/目錄路徑                                                          | _(不是 Plugin 掛鉤)_                                                                                                                         |
+| 3   | `normalizeModelId`                | 在查找前正規化舊版或預覽模型 ID 別名                                                     | 提供者在標準模型解析前負責別名清理                                                                                 |
+| 4   | `normalizeTransport`              | 在通用模型組裝前，正規化提供者家族的 `api` / `baseUrl`                                      | 提供者負責清理同一傳輸家族中自訂提供者 ID 的傳輸設定                                                          |
+| 5   | `normalizeConfig`                 | 在執行階段/提供者解析前，正規化 `models.providers.<id>`                                           | 提供者需要與 Plugin 一起維護的設定清理；內建的 Google 家族輔助工具也會備援支援的 Google 設定項目   |
 | 6   | `applyNativeStreamingUsageCompat` | 對設定提供者套用原生串流用量相容性重寫                                               | 提供者需要由端點驅動的原生串流用量中繼資料修正                                                                          |
-| 7   | `resolveConfigApiKey`             | 在載入執行階段驗證前，解析設定提供者的環境標記驗證                                       | 提供者有由提供者擁有的環境標記 API 金鑰解析；`amazon-bedrock` 也在此處有內建 AWS 環境標記解析器                  |
-| 8   | `resolveSyntheticAuth`            | 顯示本機/自行託管或由設定支援的驗證，而不持久化明文                                   | 提供者可使用合成/本機憑證標記運作                                                                                 |
-| 9   | `resolveExternalAuthProfiles`     | 疊加由提供者擁有的外部驗證設定檔；CLI/應用程式擁有的憑證預設 `persistence` 為 `runtime-only` | 提供者重用外部驗證憑證，而不持久化複製的重新整理權杖；在資訊清單中宣告 `contracts.externalAuthProviders` |
-| 10  | `shouldDeferSyntheticProfileAuth` | 將已儲存的合成設定檔預留位置降到環境/設定支援的驗證之後                                      | 提供者儲存不應取得優先權的合成預留位置設定檔                                                                 |
-| 11  | `resolveDynamicModel`             | 針對本機登錄檔尚未包含、由提供者擁有的模型 ID 進行同步後備                                       | 提供者接受任意上游模型 ID                                                                                                 |
-| 12  | `prepareDynamicModel`             | 非同步預熱，然後再次執行 `resolveDynamicModel`                                                           | 提供者需要網路中繼資料才能解析未知 ID                                                                                  |
-| 13  | `normalizeResolvedModel`          | 在嵌入式執行器使用已解析模型前進行最終重寫                                               | 提供者需要傳輸重寫，但仍使用核心傳輸                                                                             |
-| 14  | `contributeResolvedModelCompat`   | 為另一個相容傳輸背後的供應商模型提供相容性旗標                                  | 提供者在代理傳輸上辨識自己的模型，而不接管該提供者                                                       |
-| 15  | `normalizeToolSchemas`            | 在嵌入式執行器看到工具結構描述前將其正規化                                                    | 提供者需要傳輸家族結構描述清理                                                                                                |
-| 16  | `inspectToolSchemas`              | 在正規化後顯示由提供者擁有的結構描述診斷                                                  | 提供者想要關鍵字警告，而不把提供者專屬規則教給核心                                                                 |
-| 17  | `resolveReasoningOutputMode`      | 選擇原生或標記式推理輸出契約                                                              | 提供者需要標記式推理/最終輸出，而不是原生欄位                                                                         |
-| 18  | `prepareExtraParams`              | 在通用串流選項包裝器前，進行請求參數正規化                                              | 提供者需要預設請求參數或逐提供者參數清理                                                                           |
-| 19  | `createStreamFn`                  | 以自訂傳輸完全取代一般串流路徑                                                   | 提供者需要自訂線路協定，而不只是包裝器                                                                                     |
-| 20  | `wrapStreamFn`                    | 套用通用包裝器後的串流包裝器                                                              | 提供者需要請求標頭/主體/模型相容性包裝器，而不需要自訂傳輸                                                          |
-| 21  | `resolveTransportTurnState`       | 附加原生逐回合傳輸標頭或中繼資料                                                           | 提供者希望通用傳輸送出提供者原生的回合身分                                                                       |
-| 22  | `resolveWebSocketSessionPolicy`   | 附加原生 WebSocket 標頭或工作階段冷卻政策                                                    | 提供者希望通用 WS 傳輸調整工作階段標頭或後備政策                                                               |
-| 23  | `formatApiKey`                    | 驗證設定檔格式化器：已儲存設定檔會變成執行階段 `apiKey` 字串                                     | 提供者儲存額外驗證中繼資料，且需要自訂執行階段權杖形狀                                                                    |
-| 24  | `refreshOAuth`                    | 針對自訂重新整理端點或重新整理失敗政策的 OAuth 重新整理覆寫                                  | 提供者不符合共用的 `pi-ai` 重新整理器                                                                                           |
-| 25  | `buildAuthDoctorHint`             | OAuth 重新整理失敗時附加的修復提示                                                                  | 提供者需要在重新整理失敗後提供由提供者擁有的驗證修復指引                                                                      |
-| 26  | `matchesContextOverflowError`     | 由提供者擁有的內容視窗溢位比對器                                                                 | 提供者有通用啟發式方法會漏掉的原始溢位錯誤                                                                                |
-| 27  | `classifyFailoverReason`          | 由提供者擁有的容錯移轉原因分類                                                                  | 提供者可將原始 API/傳輸錯誤對應為速率限制/過載等                                                                          |
-| 28  | `isCacheTtlEligible`              | 代理/回程提供者的提示快取政策                                                               | 提供者需要代理專屬的快取 TTL 閘控                                                                                                |
-| 29  | `buildMissingAuthMessage`         | 取代通用缺少驗證復原訊息                                                      | 提供者需要提供者專屬的缺少驗證復原提示                                                                                 |
+| 7   | `resolveConfigApiKey`             | 在載入執行階段驗證前，解析設定提供者的環境標記驗證                                       | 提供者有提供者擁有的環境標記 API 金鑰解析；`amazon-bedrock` 也在此內建 AWS 環境標記解析器                  |
+| 8   | `resolveSyntheticAuth`            | 露出本機/自託管或設定支援的驗證，而不持久化明文                                   | 提供者可使用合成/本機憑證標記運作                                                                                 |
+| 9   | `resolveExternalAuthProfiles`     | 疊加提供者擁有的外部驗證設定檔；CLI/應用程式擁有的憑證預設 `persistence` 為 `runtime-only` | 提供者重用外部驗證憑證，而不持久化複製的重新整理權杖；在 manifest 中宣告 `contracts.externalAuthProviders` |
+| 10  | `shouldDeferSyntheticProfileAuth` | 將已儲存的合成設定檔佔位符降至環境/設定支援的驗證之後                                      | 提供者儲存不應取得優先順位的合成佔位符設定檔                                                                 |
+| 11  | `resolveDynamicModel`             | 對尚未在本機登錄檔中的提供者擁有模型 ID 進行同步備援                                       | 提供者接受任意上游模型 ID                                                                                                 |
+| 12  | `prepareDynamicModel`             | 非同步暖機，然後再次執行 `resolveDynamicModel`                                                           | 提供者在解析未知 ID 前需要網路中繼資料                                                                                  |
+| 13  | `normalizeResolvedModel`          | 在嵌入式執行器使用已解析模型前進行最後重寫                                               | 提供者需要傳輸重寫，但仍使用核心傳輸                                                                             |
+| 14  | `contributeResolvedModelCompat`   | 為位於另一個相容傳輸後方的供應商模型提供相容性旗標                                  | 提供者可在代理傳輸上辨識自己的模型，而不接管該提供者                                                       |
+| 15  | `normalizeToolSchemas`            | 在嵌入式執行器看到工具 schema 前正規化它們                                                    | 提供者需要傳輸家族 schema 清理                                                                                                |
+| 16  | `inspectToolSchemas`              | 在正規化後露出提供者擁有的 schema 診斷                                                  | 提供者想要關鍵字警告，而不讓核心學習提供者特定規則                                                                 |
+| 17  | `resolveReasoningOutputMode`      | 選擇原生或標記式推理輸出合約                                                              | 提供者需要標記式推理/最終輸出，而不是原生欄位                                                                         |
+| 18  | `prepareExtraParams`              | 在通用串流選項包裝器前進行請求參數正規化                                              | 提供者需要預設請求參數或個別提供者的參數清理                                                                           |
+| 19  | `createStreamFn`                  | 以自訂傳輸完整取代一般串流路徑                                                   | 提供者需要自訂線路協定，而不只是包裝器                                                                                     |
+| 20  | `wrapStreamFn`                    | 在套用通用包裝器後的串流包裝器                                                              | 提供者需要請求標頭/本文/模型相容性包裝器，而不是自訂傳輸                                                          |
+| 21  | `resolveTransportTurnState`       | 附加原生每回合傳輸標頭或中繼資料                                                           | 提供者希望通用傳輸送出提供者原生的回合身分                                                                       |
+| 22  | `resolveWebSocketSessionPolicy`   | 附加原生 WebSocket 標頭或工作階段冷卻原則                                                    | 提供者希望通用 WS 傳輸調整工作階段標頭或備援原則                                                               |
+| 23  | `formatApiKey`                    | 驗證設定檔格式器：已儲存的設定檔會成為執行階段 `apiKey` 字串                                     | 提供者儲存額外驗證中繼資料，並需要自訂執行階段權杖形狀                                                                    |
+| 24  | `refreshOAuth`                    | OAuth 重新整理覆寫，用於自訂重新整理端點或重新整理失敗原則                                  | 提供者不適合共用的 `pi-ai` 重新整理器                                                                                           |
+| 25  | `buildAuthDoctorHint`             | OAuth 重新整理失敗時附加的修復提示                                                                  | 提供者在重新整理失敗後需要提供者擁有的驗證修復指引                                                                      |
+| 26  | `matchesContextOverflowError`     | 提供者擁有的內容視窗溢位比對器                                                                 | 提供者有通用啟發式規則會漏掉的原始溢位錯誤                                                                                |
+| 27  | `classifyFailoverReason`          | 提供者擁有的容錯移轉原因分類                                                                  | 提供者可將原始 API/傳輸錯誤映射為速率限制/過載等                                                                          |
+| 28  | `isCacheTtlEligible`              | 代理/回程提供者的提示快取原則                                                               | 提供者需要代理特定的快取 TTL 門控                                                                                                |
+| 29  | `buildMissingAuthMessage`         | 取代通用缺少驗證復原訊息                                                      | 提供者需要提供者特定的缺少驗證復原提示                                                                                 |
 | 30  | `augmentModelCatalog`             | 在探索後附加的合成/最終目錄列                                                          | 提供者需要在 `models list` 和選擇器中加入合成的向前相容列                                                                     |
-| 31  | `resolveThinkingProfile`          | 特定模型的 `/think` 等級集合、顯示標籤與預設值                                                 | 提供者針對所選模型公開自訂思考階梯或二元標籤                                                                 |
-| 32  | `isBinaryThinking`                | 開/關推理切換相容性鉤子                                                                     | 提供者只公開二元思考開/關                                                                                                  |
-| 33  | `supportsXHighThinking`           | `xhigh` 推理支援相容性鉤子                                                                   | 提供者只想在部分模型上啟用 `xhigh`                                                                                             |
-| 34  | `resolveDefaultThinkingLevel`     | 預設 `/think` 等級相容性鉤子                                                                      | 提供者擁有模型家族的預設 `/think` 政策                                                                                      |
-| 35  | `isModernModelRef`                | 用於即時設定檔篩選器與煙霧測試選擇的現代模型比對器                                              | 提供者擁有即時/煙霧測試偏好模型比對                                                                                             |
+| 31  | `resolveThinkingProfile`          | 模型特定的 `/think` 等級集、顯示標籤和預設值                                                 | 提供者為選定模型公開自訂思考階梯或二元標籤                                                                 |
+| 32  | `isBinaryThinking`                | 開/關推理切換相容性掛鉤                                                                     | 提供者只公開二元思考開/關                                                                                                  |
+| 33  | `supportsXHighThinking`           | `xhigh` 推理支援相容性掛鉤                                                                   | 提供者只想在部分模型上啟用 `xhigh`                                                                                             |
+| 34  | `resolveDefaultThinkingLevel`     | 預設 `/think` 等級相容性掛鉤                                                                      | 提供者擁有某個模型家族的預設 `/think` 原則                                                                                      |
+| 35  | `isModernModelRef`                | 用於即時設定檔篩選器和煙霧測試選擇的現代模型比對器                                              | 提供者擁有即時/煙霧測試偏好模型比對                                                                                             |
 | 36  | `prepareRuntimeAuth`              | 在推論前，將已設定的憑證交換為實際的執行階段權杖/金鑰                       | 提供者需要權杖交換或短效請求憑證                                                                             |
-| 37  | `resolveUsageAuth`                | 解析 `/usage` 和相關狀態介面的使用量/計費認證資訊                                     | 提供者需要自訂使用量/配額權杖解析，或不同的使用量認證資訊                                                               |
-| 38  | `fetchUsageSnapshot`              | 在身分驗證解析後，擷取並正規化提供者特定的使用量/配額快照                             | 提供者需要提供者特定的使用量端點或酬載解析器                                                                           |
-| 39  | `createEmbeddingProvider`         | 為記憶體/搜尋建構由提供者擁有的嵌入配接器                                                     | 記憶體嵌入行為屬於提供者 Plugin                                                                                    |
-| 40  | `buildReplayPolicy`               | 傳回控制提供者逐字稿處理的重播政策                                        | 提供者需要自訂逐字稿政策（例如移除思考區塊）                                                               |
-| 41  | `sanitizeReplayHistory`           | 在一般逐字稿清理後重寫重播歷史                                                        | 提供者需要超出共用 Compaction 輔助工具之外的提供者特定重播重寫                                                             |
-| 42  | `validateReplayTurns`             | 在嵌入式執行器前進行最終重播回合驗證或重塑                                           | 提供者傳輸層在一般清理後需要更嚴格的回合驗證                                                                    |
-| 43  | `onModelSelected`                 | 執行由提供者擁有的選取後副作用                                                                 | 當模型變為作用中時，提供者需要遙測或由提供者擁有的狀態                                                                  |
+| 37  | `resolveUsageAuth`                | 解析 `/usage` 與相關狀態介面的用量/帳務憑證                                     | 供應商需要自訂用量/配額權杖解析，或不同的用量憑證                                                               |
+| 38  | `fetchUsageSnapshot`              | 在驗證解析完成後，擷取並正規化供應商特定的用量/配額快照                             | 供應商需要供應商特定的用量端點或承載資料解析器                                                                           |
+| 39  | `createEmbeddingProvider`         | 為記憶/搜尋建立供應商擁有的嵌入配接器                                                     | 記憶嵌入行為屬於供應商 Plugin                                                                                    |
+| 40  | `buildReplayPolicy`               | 回傳控制供應商對話記錄處理的重播原則                                        | 供應商需要自訂對話記錄原則（例如，移除思考區塊）                                                               |
+| 41  | `sanitizeReplayHistory`           | 在通用對話記錄清理後重寫重播歷程                                                        | 供應商需要超出共用 Compaction 輔助工具範圍的供應商特定重播重寫                                                             |
+| 42  | `validateReplayTurns`             | 在嵌入式執行器之前進行最終重播回合驗證或重塑                                           | 在通用清理後，供應商傳輸需要更嚴格的回合驗證                                                                    |
+| 43  | `onModelSelected`                 | 執行供應商擁有的選取後副作用                                                                 | 模型啟用時，供應商需要遙測或供應商擁有的狀態                                                                  |
 
-`normalizeModelId`、`normalizeTransport` 和 `normalizeConfig` 會先檢查相符的提供者 Plugin，接著依序落到其他具備 hook 能力的提供者 Plugin，直到其中一個實際變更模型 ID 或 transport/config。這能讓別名/相容性提供者 shim 持續運作，而不要求呼叫端知道哪個內建 Plugin 擁有該 rewrite。若沒有提供者 hook rewrite 支援的 Google 系列設定項目，內建 Google 設定 normalizer 仍會套用該相容性清理。
+`normalizeModelId`、`normalizeTransport` 和 `normalizeConfig` 會先檢查
+相符的供應商 Plugin，接著繼續檢查其他具備 hook 能力的供應商 Plugin，
+直到其中一個實際變更模型 ID 或傳輸/config 為止。這讓
+別名/相容性供應商 shim 能持續運作，而不要求呼叫端知道哪個
+內建 Plugin 擁有該重寫邏輯。如果沒有供應商 hook 重寫受支援的
+Google-family config 項目，內建 Google config normalizer 仍會套用
+該相容性清理。
 
-如果提供者需要完全自訂的 wire protocol 或自訂請求執行器，那屬於另一類 extension。這些 hook 用於仍在 OpenClaw 一般推論迴圈上執行的提供者行為。
+如果供應商需要完全自訂的 wire protocol 或自訂 request executor，
+那是另一類擴充。這些 hook 適用於仍在 OpenClaw 一般 inference loop
+上執行的供應商行為。
 
-### 提供者範例
+### 供應商範例
 
 ```ts
 api.registerProvider({
@@ -274,29 +360,44 @@ api.registerProvider({
 
 ### 內建範例
 
-內建提供者 Plugin 會組合上述 hook，以符合各廠商的目錄、驗證、thinking、重播和用量需求。權威的 hook 集合位於 `extensions/` 底下各自的 Plugin；本頁示範的是形態，而不是鏡像完整清單。
+內建供應商 Plugin 會組合上述 hook，以符合各供應商的 catalog、
+auth、thinking、replay 與 usage 需求。權威的 hook 集合位於
+`extensions/` 下的各 Plugin；本頁說明的是形態，而不是鏡像列出清單。
 
 <AccordionGroup>
   <Accordion title="Pass-through catalog providers">
-    OpenRouter、Kilocode、Z.AI、xAI 會註冊 `catalog` 加上 `resolveDynamicModel` / `prepareDynamicModel`，因此它們可以在 OpenClaw 靜態目錄之前公開上游模型 ID。
+    OpenRouter、Kilocode、Z.AI、xAI 會註冊 `catalog` 加上
+    `resolveDynamicModel` / `prepareDynamicModel`，因此它們可以在
+    OpenClaw 的靜態 catalog 之前公開上游模型 ID。
   </Accordion>
   <Accordion title="OAuth and usage endpoint providers">
-    GitHub Copilot、Gemini CLI、ChatGPT Codex、MiniMax、Xiaomi、z.ai 會將 `prepareRuntimeAuth` 或 `formatApiKey` 搭配 `resolveUsageAuth` + `fetchUsageSnapshot`，以擁有權杖交換和 `/usage` 整合。
+    GitHub Copilot、Gemini CLI、ChatGPT Codex、MiniMax、Xiaomi、z.ai 會將
+    `prepareRuntimeAuth` 或 `formatApiKey` 與 `resolveUsageAuth` +
+    `fetchUsageSnapshot` 配對，以擁有 token exchange 和 `/usage` 整合。
   </Accordion>
   <Accordion title="Replay and transcript cleanup families">
-    共用的具名系列（`google-gemini`、`passthrough-gemini`、`anthropic-by-model`、`hybrid-anthropic-openai`）讓提供者可透過 `buildReplayPolicy` 選用轉錄稿政策，而不必讓每個 Plugin 重新實作清理。
+    共用的命名 family（`google-gemini`、`passthrough-gemini`、
+    `anthropic-by-model`、`hybrid-anthropic-openai`）讓供應商可透過
+    `buildReplayPolicy` 選用 transcript policy，而不必讓每個 Plugin
+    重新實作清理。
   </Accordion>
   <Accordion title="Catalog-only providers">
-    `byteplus`、`cloudflare-ai-gateway`、`huggingface`、`kimi-coding`、`nvidia`、`qianfan`、`synthetic`、`together`、`venice`、`vercel-ai-gateway` 和 `volcengine` 只註冊 `catalog`，並沿用共用推論迴圈。
+    `byteplus`、`cloudflare-ai-gateway`、`huggingface`、`kimi-coding`、`nvidia`、
+    `qianfan`、`synthetic`、`together`、`venice`、`vercel-ai-gateway` 和
+    `volcengine` 只註冊 `catalog`，並沿用共用 inference loop。
   </Accordion>
   <Accordion title="Anthropic-specific stream helpers">
-    Beta 標頭、`/fast` / `serviceTier` 和 `context1m` 位於 Anthropic Plugin 的公開 `api.ts` / `contract-api.ts` seam（`wrapAnthropicProviderStream`、`resolveAnthropicBetas`、`resolveAnthropicFastMode`、`resolveAnthropicServiceTier`）內，而不是位於通用 SDK。
+    Beta headers、`/fast` / `serviceTier` 和 `context1m` 位於
+    Anthropic Plugin 的公開 `api.ts` / `contract-api.ts` seam
+    （`wrapAnthropicProviderStream`、`resolveAnthropicBetas`、
+    `resolveAnthropicFastMode`、`resolveAnthropicServiceTier`）中，而不是位於
+    generic SDK。
   </Accordion>
 </AccordionGroup>
 
 ## 執行階段輔助工具
 
-Plugin 可以透過 `api.runtime` 存取選定的核心輔助工具。以 TTS 來說：
+Plugin 可以透過 `api.runtime` 存取選定的核心輔助工具。對於 TTS：
 
 ```ts
 const clip = await api.runtime.tts.textToSpeech({
@@ -317,14 +418,14 @@ const voices = await api.runtime.tts.listVoices({
 
 注意事項：
 
-- `textToSpeech` 會回傳一般核心 TTS 輸出 payload，供檔案/語音筆記介面使用。
-- 使用核心 `messages.tts` 設定和提供者選擇。
-- 回傳 PCM 音訊 buffer + 取樣率。Plugin 必須為提供者重新取樣/編碼。
-- `listVoices` 對每個提供者而言是選用的。可將其用於廠商擁有的語音選擇器或設定流程。
-- 語音清單可以包含更豐富的中繼資料，例如 locale、gender 和 personality tag，供可感知提供者的選擇器使用。
+- `textToSpeech` 會回傳一般核心 TTS 輸出 payload，用於檔案/語音備註介面。
+- 使用核心 `messages.tts` 設定與供應商選擇。
+- 回傳 PCM 音訊 buffer + sample rate。Plugin 必須針對供應商重新取樣/編碼。
+- `listVoices` 對每個供應商而言都是選用項目。請將它用於供應商擁有的語音選擇器或設定流程。
+- 語音清單可包含更豐富的 metadata，例如 locale、gender 和 personality tags，以供 provider-aware picker 使用。
 - OpenAI 和 ElevenLabs 目前支援 telephony。Microsoft 不支援。
 
-Plugin 也可以透過 `api.registerSpeechProvider(...)` 註冊語音提供者。
+Plugin 也可以透過 `api.registerSpeechProvider(...)` 註冊 speech provider。
 
 ```ts
 api.registerSpeechProvider({
@@ -344,12 +445,14 @@ api.registerSpeechProvider({
 
 注意事項：
 
-- 將 TTS 政策、fallback 和回覆遞送保留在核心中。
-- 將語音提供者用於廠商擁有的合成行為。
-- 舊版 Microsoft `edge` 輸入會 normalize 為 `microsoft` 提供者 ID。
-- 偏好的擁有權模型以公司為導向：一個廠商 Plugin 可以隨著 OpenClaw 新增這些能力合約，而擁有文字、語音、圖片和未來的媒體提供者。
+- 將 TTS policy、fallback 和回覆傳遞保留在核心中。
+- 使用 speech provider 處理由供應商擁有的 synthesis 行為。
+- 舊版 Microsoft `edge` input 會 normalize 為 `microsoft` provider id。
+- 偏好的 ownership model 是以公司為導向：單一供應商 Plugin 可以在
+  OpenClaw 新增這些 capability contract 時，擁有文字、語音、影像和未來媒體供應商。
 
-對於圖片/音訊/影片理解，Plugin 會註冊一個具型別的媒體理解提供者，而不是通用 key/value bag：
+對於影像/音訊/影片 understanding，Plugin 會註冊一個具型別的
+media-understanding provider，而不是 generic key/value bag：
 
 ```ts
 api.registerMediaUnderstandingProvider({
@@ -363,15 +466,16 @@ api.registerMediaUnderstandingProvider({
 
 注意事項：
 
-- 將 orchestration、fallback、設定和頻道 wiring 保留在核心中。
-- 將廠商行為保留在提供者 Plugin 中。
-- 加法式擴充應維持具型別：新的選用方法、新的選用結果欄位、新的選用能力。
-- 影片生成已遵循相同模式：
-  - 核心擁有能力合約和執行階段輔助工具
-  - 廠商 Plugin 註冊 `api.registerVideoGenerationProvider(...)`
-  - 功能/頻道 Plugin 使用 `api.runtime.videoGeneration.*`
+- 將 orchestration、fallback、config 和 channel wiring 保留在核心中。
+- 將供應商行為保留在供應商 Plugin 中。
+- 加法式擴充應維持具型別：新的 optional methods、新的 optional
+  result fields、新的 optional capabilities。
+- Video generation 已遵循相同模式：
+  - 核心擁有 capability contract 和 runtime helper
+  - 供應商 Plugin 註冊 `api.registerVideoGenerationProvider(...)`
+  - feature/channel Plugin 使用 `api.runtime.videoGeneration.*`
 
-對於媒體理解執行階段輔助工具，Plugin 可以呼叫：
+對於 media-understanding runtime helper，Plugin 可以呼叫：
 
 ```ts
 const image = await api.runtime.mediaUnderstanding.describeImageFile({
@@ -386,7 +490,8 @@ const video = await api.runtime.mediaUnderstanding.describeVideoFile({
 });
 ```
 
-對於音訊轉錄，Plugin 可以使用媒體理解執行階段，或較舊的 STT 別名：
+對於 audio transcription，Plugin 可以使用 media-understanding runtime
+或較舊的 STT alias：
 
 ```ts
 const { text } = await api.runtime.mediaUnderstanding.transcribeAudioFile({
@@ -399,12 +504,12 @@ const { text } = await api.runtime.mediaUnderstanding.transcribeAudioFile({
 
 注意事項：
 
-- `api.runtime.mediaUnderstanding.*` 是圖片/音訊/影片理解的偏好共用介面。
-- 使用核心媒體理解音訊設定（`tools.media.audio`）和提供者 fallback 順序。
-- 當未產生任何轉錄輸出時（例如略過/不支援的輸入），會回傳 `{ text: undefined }`。
-- `api.runtime.stt.transcribeAudioFile(...)` 會保留作為相容性別名。
+- `api.runtime.mediaUnderstanding.*` 是 image/audio/video understanding 的偏好共用介面。
+- 使用核心 media-understanding audio 設定（`tools.media.audio`）和 provider fallback order。
+- 未產生 transcription 輸出時，回傳 `{ text: undefined }`（例如略過/不支援的 input）。
+- `api.runtime.stt.transcribeAudioFile(...)` 仍保留為相容性 alias。
 
-Plugin 也可以透過 `api.runtime.subagent` 啟動背景子代理執行：
+Plugin 也可以透過 `api.runtime.subagent` 啟動 background subagent run：
 
 ```ts
 const result = await api.runtime.subagent.run({
@@ -418,14 +523,15 @@ const result = await api.runtime.subagent.run({
 
 注意事項：
 
-- `provider` 和 `model` 是每次執行的選用 override，而不是持久 session 變更。
-- OpenClaw 只會對受信任呼叫端採用這些 override 欄位。
-- 對於 Plugin 擁有的 fallback 執行，操作者必須透過 `plugins.entries.<id>.subagent.allowModelOverride: true` 選擇啟用。
-- 使用 `plugins.entries.<id>.subagent.allowedModels` 將受信任 Plugin 限制到特定 canonical `provider/model` 目標，或使用 `"*"` 明確允許任何目標。
-- 不受信任的 Plugin 子代理執行仍可運作，但 override 請求會被拒絕，而不是靜默 fallback。
-- Plugin 建立的子代理 session 會以建立它的 Plugin ID 標記。Fallback `api.runtime.subagent.deleteSession(...)` 只能刪除這些擁有的 session；任意 session 刪除仍需要 admin-scoped Gateway 請求。
+- `provider` 和 `model` 是每次執行的 optional override，不是持久性的 session 變更。
+- OpenClaw 只會為受信任的呼叫端採用這些 override 欄位。
+- 對於 Plugin 擁有的 fallback run，operator 必須以 `plugins.entries.<id>.subagent.allowModelOverride: true` 選擇啟用。
+- 使用 `plugins.entries.<id>.subagent.allowedModels`，將受信任的 Plugin 限制為特定 canonical `provider/model` target，或使用 `"*"` 明確允許任何 target。
+- 不受信任的 Plugin subagent run 仍會運作，但 override request 會被拒絕，而不是靜默 fallback。
+- Plugin 建立的 subagent session 會標記建立它的 Plugin ID。Fallback `api.runtime.subagent.deleteSession(...)` 只能刪除這些擁有的 session；任意刪除 session 仍需要 admin-scoped Gateway request。
 
-對於網頁搜尋，Plugin 可以使用共用執行階段輔助工具，而不是深入 agent tool wiring：
+對於 web search，Plugin 可以使用共用 runtime helper，而不是
+進入 agent tool wiring：
 
 ```ts
 const providers = api.runtime.webSearch.listProviders({
@@ -441,13 +547,14 @@ const result = await api.runtime.webSearch.search({
 });
 ```
 
-Plugin 也可以透過 `api.registerWebSearchProvider(...)` 註冊網頁搜尋提供者。
+Plugin 也可以透過
+`api.registerWebSearchProvider(...)` 註冊 web-search provider。
 
 注意事項：
 
-- 將提供者選擇、憑證解析和共用請求語意保留在核心中。
-- 將網頁搜尋提供者用於廠商特定的搜尋 transport。
-- `api.runtime.webSearch.*` 是需要搜尋行為、但不依賴 agent tool wrapper 的功能/頻道 Plugin 的偏好共用介面。
+- 將 provider selection、credential resolution 和 shared request semantics 保留在核心中。
+- 使用 web-search provider 處理由供應商特定的 search transport。
+- `api.runtime.webSearch.*` 是需要搜尋行為且不依賴 agent tool wrapper 的 feature/channel Plugin 偏好共用介面。
 
 ### `api.runtime.imageGeneration`
 
@@ -462,12 +569,12 @@ const providers = api.runtime.imageGeneration.listProviders({
 });
 ```
 
-- `generate(...)`：使用已設定的圖片生成提供者鏈生成圖片。
-- `listProviders(...)`：列出可用的圖片生成提供者及其能力。
+- `generate(...)`：使用已設定的 image-generation provider chain 產生影像。
+- `listProviders(...)`：列出可用的 image-generation provider 及其 capabilities。
 
 ## Gateway HTTP 路由
 
-Plugin 可以透過 `api.registerHttpRoute(...)` 公開 HTTP 端點。
+Plugin 可以透過 `api.registerHttpRoute(...)` 公開 HTTP endpoint。
 
 ```ts
 api.registerHttpRoute({
@@ -484,202 +591,156 @@ api.registerHttpRoute({
 
 路由欄位：
 
-- `path`：Gateway HTTP 伺服器下的路由路徑。
-- `auth`：必填。使用 `"gateway"` 要求一般 Gateway 驗證，或使用 `"plugin"` 進行 Plugin 管理的驗證/Webhook 驗證。
+- `path`：gateway HTTP server 下的 route path。
+- `auth`：必要。使用 `"gateway"` 要求一般 gateway auth，或使用 `"plugin"` 進行 plugin-managed auth/webhook verification。
 - `match`：選用。`"exact"`（預設）或 `"prefix"`。
-- `replaceExisting`：選用。允許同一個 Plugin 取代自己現有的路由註冊。
-- `handler`：當路由已處理請求時回傳 `true`。
+- `replaceExisting`：選用。允許同一個 Plugin 替換自己既有的 route registration。
+- `handler`：當 route 已處理 request 時回傳 `true`。
 
 注意事項：
 
-- `api.registerHttpHandler(...)` 已移除，且會造成 Plugin 載入錯誤。請改用 `api.registerHttpRoute(...)`。
+- `api.registerHttpHandler(...)` 已移除，並會造成 Plugin 載入錯誤。請改用 `api.registerHttpRoute(...)`。
 - Plugin 路由必須明確宣告 `auth`。
 - 精確的 `path + match` 衝突會被拒絕，除非設定 `replaceExisting: true`，且一個 Plugin 不能取代另一個 Plugin 的路由。
-- 具有不同 `auth` 層級的重疊路由會被拒絕。僅在相同 auth 層級上保留 `exact`/`prefix` 穿透鏈。
-- `auth: "plugin"` 路由**不會**自動取得操作者執行階段範圍。它們用於 Plugin 管理的 Webhook/簽章驗證，而不是具特殊權限的 Gateway 輔助呼叫。
+- 不同 `auth` 等級的重疊路由會被拒絕。請只在相同 auth 等級上保留 `exact`/`prefix` 後續比對鏈。
+- `auth: "plugin"` 路由**不會**自動接收操作員執行階段範圍。它們用於 Plugin 管理的 Webhook/簽章驗證，而不是具特權的 Gateway 輔助呼叫。
 - `auth: "gateway"` 路由會在 Gateway 請求執行階段範圍內執行，但該範圍刻意保持保守：
-  - shared-secret bearer auth（`gateway.auth.mode = "token"` / `"password"`）會將 Plugin 路由的執行階段範圍固定為 `operator.write`，即使呼叫端傳送 `x-openclaw-scopes`
-  - 可信的具身分 HTTP 模式（例如私人入口上的 `trusted-proxy` 或 `gateway.auth.mode = "none"`）只有在明確存在該標頭時，才會採用 `x-openclaw-scopes`
-  - 如果這些具身分的 Plugin 路由請求缺少 `x-openclaw-scopes`，執行階段範圍會退回到 `operator.write`
-- 實務規則：不要假設 Gateway 驗證的 Plugin 路由是隱含的管理介面。如果你的路由需要僅限管理員的行為，請要求具身分的驗證模式，並記錄明確的 `x-openclaw-scopes` 標頭合約。
+  - shared-secret bearer auth（`gateway.auth.mode = "token"` / `"password"`）會將 Plugin 路由執行階段範圍固定為 `operator.write`，即使呼叫端傳送 `x-openclaw-scopes`
+  - 受信任且帶有身分的 HTTP 模式（例如 `trusted-proxy`，或私人入口上的 `gateway.auth.mode = "none"`）只有在標頭明確存在時才會採用 `x-openclaw-scopes`
+  - 如果這些帶有身分的 Plugin 路由請求缺少 `x-openclaw-scopes`，執行階段範圍會退回到 `operator.write`
+- 實務規則：不要假設 gateway-auth Plugin 路由是隱含的管理員介面。如果你的路由需要僅限管理員的行為，請要求帶有身分的 auth 模式，並記錄明確的 `x-openclaw-scopes` 標頭合約。
 
 ## Plugin SDK 匯入路徑
 
-撰寫新的 Plugin 時，請使用精簡的 SDK 子路徑，而不是單體式 `openclaw/plugin-sdk` 根
-barrel。核心子路徑：
+撰寫新 Plugin 時，請使用較窄的 SDK 子路徑，而不是整合式的 `openclaw/plugin-sdk` 根 barrel。核心子路徑：
 
 | 子路徑                              | 用途                                               |
 | ----------------------------------- | -------------------------------------------------- |
-| `openclaw/plugin-sdk/plugin-entry`  | Plugin 註冊基礎元件                               |
+| `openclaw/plugin-sdk/plugin-entry`  | Plugin 註冊基本元件                               |
 | `openclaw/plugin-sdk/channel-core`  | 頻道進入點/建置輔助工具                           |
 | `openclaw/plugin-sdk/core`          | 通用共享輔助工具與總括合約                         |
-| `openclaw/plugin-sdk/config-schema` | 根 `openclaw.json` Zod schema（`OpenClawSchema`） |
+| `openclaw/plugin-sdk/config-schema` | 根 `openclaw.json` Zod 結構描述（`OpenClawSchema`） |
 
-頻道 Plugin 可從一組精簡銜接面中選擇：`channel-setup`、
-`setup-runtime`、`setup-adapter-runtime`、`setup-tools`、`channel-pairing`、
-`channel-contract`、`channel-feedback`、`channel-inbound`、`channel-lifecycle`、
-`channel-reply-pipeline`、`command-auth`、`secret-input`、`webhook-ingress`、
-`channel-targets` 和 `channel-actions`。核准行為應統一到單一
-`approvalCapability` 合約，而不是混用彼此無關的
-Plugin 欄位。請參閱[頻道 Plugin](/zh-TW/plugins/sdk-channel-plugins)。
+頻道 Plugin 從一系列較窄的接縫中選用：`channel-setup`、`setup-runtime`、`setup-tools`、`channel-pairing`、`channel-contract`、`channel-feedback`、`channel-inbound`、`channel-lifecycle`、`channel-reply-pipeline`、`command-auth`、`secret-input`、`webhook-ingress`、`channel-targets` 和 `channel-actions`。核准行為應整合到單一 `approvalCapability` 合約，而不是混用無關的 Plugin 欄位。請參閱[頻道 Plugin](/zh-TW/plugins/sdk-channel-plugins)。
 
-執行階段與設定輔助工具位於相符且聚焦的 `*-runtime` 子路徑下
-（`approval-runtime`、`agent-runtime`、`lazy-runtime`、`directory-runtime`、
-`text-runtime`、`runtime-store`、`system-event-runtime`、`heartbeat-runtime`、
-`channel-activity-runtime` 等）。請優先使用 `config-types`、
-`plugin-config-runtime`、`runtime-config-snapshot` 和 `config-mutation`，
-而不是寬泛的 `config-runtime` 相容性 barrel。
+執行階段與設定輔助工具位於對應的聚焦 `*-runtime` 子路徑下（`approval-runtime`、`agent-runtime`、`lazy-runtime`、`directory-runtime`、`text-runtime`、`runtime-store`、`system-event-runtime`、`heartbeat-runtime`、`channel-activity-runtime` 等）。請優先使用 `config-contracts`、`plugin-config-runtime`、`runtime-config-snapshot` 和 `config-mutation`，而不是寬泛的 `config-runtime` 相容性 barrel。
 
 <Info>
-`openclaw/plugin-sdk/channel-runtime`、`openclaw/plugin-sdk/config-runtime`
-和 `openclaw/plugin-sdk/infra-runtime` 是供較舊 Plugin 使用的已棄用相容性轉接層。
-新程式碼應改為匯入更精簡的通用基礎元件。
+`openclaw/plugin-sdk/channel-runtime`、`openclaw/plugin-sdk/config-runtime` 和 `openclaw/plugin-sdk/infra-runtime` 是供舊版 Plugin 使用的已棄用相容性 shim。新程式碼應改為匯入較窄的通用基本元件。
 </Info>
 
-Repo 內部進入點（每個隨附 Plugin 套件根目錄）：
+Repo 內部進入點（依每個隨附 Plugin 套件根目錄）：
 
 - `index.js` — 隨附 Plugin 進入點
 - `api.js` — 輔助工具/型別 barrel
 - `runtime-api.js` — 僅限執行階段的 barrel
 - `setup-entry.js` — 設定 Plugin 進入點
 
-外部 Plugin 只應匯入 `openclaw/plugin-sdk/*` 子路徑。絕不要從核心或另一個 Plugin
-匯入另一個 Plugin 套件的 `src/*`。由 facade 載入的進入點會在存在時優先使用作用中的執行階段設定快照，
-然後才退回到磁碟上已解析的設定檔。
+外部 Plugin 只應匯入 `openclaw/plugin-sdk/*` 子路徑。切勿從核心或另一個 Plugin 匯入另一個 Plugin 套件的 `src/*`。透過 Facade 載入的進入點會在存在時優先使用作用中的執行階段設定快照，然後才退回到磁碟上已解析的設定檔。
 
-能力專用子路徑，例如 `image-generation`、`media-understanding`
-和 `speech`，之所以存在，是因為隨附 Plugin 目前使用它們。它們不會
-自動成為長期凍結的外部合約；依賴它們時，請查看相關 SDK
-參考頁面。
+`image-generation`、`media-understanding` 和 `speech` 等能力特定子路徑存在，是因為隨附 Plugin 目前正在使用它們。它們不會自動成為長期凍結的外部合約；依賴它們時，請查看相關 SDK 參考頁面。
 
-## 訊息工具 schema
+## 訊息工具結構描述
 
-Plugin 應自行負責頻道專屬的 `describeMessageTool(...)` schema
-貢獻，用於回應、已讀和投票等非訊息基礎元件。
-共享傳送呈現應使用通用 `MessagePresentation` 合約，
-而不是提供者原生的按鈕、元件、區塊或卡片欄位。
-請參閱[訊息呈現](/zh-TW/plugins/message-presentation)，了解合約、
-後備規則、提供者對應和 Plugin 作者檢查清單。
+Plugin 應擁有頻道特定的 `describeMessageTool(...)` 結構描述貢獻，用於反應、已讀和投票等非訊息基本元件。共享的傳送呈現應使用通用 `MessagePresentation` 合約，而不是供應商原生的按鈕、元件、區塊或卡片欄位。合約、後備規則、供應商對應和 Plugin 作者檢查清單請參閱[訊息呈現](/zh-TW/plugins/message-presentation)。
 
-可傳送的 Plugin 會透過訊息能力宣告它們能呈現的內容：
+可傳送的 Plugin 會透過訊息能力宣告它們可以呈現的內容：
 
 - `presentation` 用於語意呈現區塊（`text`、`context`、`divider`、`buttons`、`select`）
-- `delivery-pin` 用於釘選遞送請求
+- `delivery-pin` 用於釘選傳送請求
 
-核心會決定要以原生方式呈現該呈現，或降級為文字。
-不要從通用訊息工具暴露提供者原生 UI 逃生出口。
-舊版原生 schema 的已棄用 SDK 輔助工具仍會匯出，以供既有
-第三方 Plugin 使用，但新的 Plugin 不應使用它們。
+核心會決定要以原生方式呈現該呈現，或將其降級為文字。不要從通用訊息工具暴露供應商原生 UI 逃生口。舊版原生結構描述的已棄用 SDK 輔助工具仍會為既有第三方 Plugin 匯出，但新 Plugin 不應使用它們。
 
 ## 頻道目標解析
 
-頻道 Plugin 應自行負責頻道專屬的目標語意。讓共享
-輸出主機保持通用，並使用訊息配接器介面處理提供者規則：
+頻道 Plugin 應擁有頻道特定的目標語意。請讓共享的輸出主機保持通用，並使用訊息配接器介面處理供應商規則：
 
-- `messaging.inferTargetChatType({ to })` 會在目錄查詢前，決定正規化目標
-  應被視為 `direct`、`group` 或 `channel`。
-- `messaging.targetResolver.looksLikeId(raw, normalized)` 會告訴核心某個
-  輸入是否應跳過目錄搜尋，直接進入類似 id 的解析。
-- `messaging.targetResolver.resolveTarget(...)` 是當核心在正規化後或
-  目錄未命中後需要最終由提供者負責的解析時，Plugin 的後備方式。
-- `messaging.resolveOutboundSessionRoute(...)` 會在目標解析後，負責提供者專屬的工作階段
-  路由建構。
+- `messaging.inferTargetChatType({ to })` 會在目錄查找前，決定正規化目標應被視為 `direct`、`group` 或 `channel`。
+- `messaging.targetResolver.looksLikeId(raw, normalized)` 會告訴核心輸入是否應略過目錄搜尋，直接進入類似 id 的解析。
+- `messaging.targetResolver.resolveTarget(...)` 是 Plugin 後備機制，供核心在正規化後或目錄未命中後，需要最終由供應商擁有的解析時使用。
+- `messaging.resolveOutboundSessionRoute(...)` 會在目標解析完成後，負責供應商特定的工作階段路由建構。
 
 建議分工：
 
-- 使用 `inferTargetChatType` 處理應在搜尋對等項目/群組之前發生的分類決策。
-- 使用 `looksLikeId` 處理「將此視為明確/原生目標 id」檢查。
-- 使用 `resolveTarget` 處理提供者專屬的正規化後備，而不是廣泛的
-  目錄搜尋。
-- 將聊天 id、thread id、JID、handle 和 room id 等提供者原生 id
-  放在 `target` 值或提供者專屬參數中，而不是通用 SDK
-  欄位中。
+- 使用 `inferTargetChatType` 處理應在搜尋 peers/groups 之前發生的類別決策。
+- 使用 `looksLikeId` 進行「將此視為明確/原生目標 id」檢查。
+- 使用 `resolveTarget` 作為供應商特定的正規化後備，而不是用於廣泛的目錄搜尋。
+- 將聊天 id、討論串 id、JID、handle 和 room id 等供應商原生 id 保留在 `target` 值或供應商特定參數中，而不是放在通用 SDK 欄位。
 
 ## 設定支援的目錄
 
-從設定衍生目錄項目的 Plugin 應將該邏輯保留在
-Plugin 中，並重用來自
-`openclaw/plugin-sdk/directory-runtime` 的共享輔助工具。
+從設定衍生目錄項目的 Plugin 應將該邏輯保留在 Plugin 中，並重用 `openclaw/plugin-sdk/directory-runtime` 的共享輔助工具。
 
-當頻道需要設定支援的對等項目/群組時使用此方式，例如：
+當頻道需要設定支援的 peers/groups 時使用此方式，例如：
 
-- allowlist 驅動的 DM 對等項目
+- 由允許清單驅動的 DM peers
 - 已設定的頻道/群組對應
-- 帳戶範圍的靜態目錄後備
+- 帳號範圍的靜態目錄後備
 
 `directory-runtime` 中的共享輔助工具只處理通用操作：
 
 - 查詢篩選
 - 套用限制
 - 去重/正規化輔助工具
-- 建立 `ChannelDirectoryEntry[]`
+- 建置 `ChannelDirectoryEntry[]`
 
-頻道專屬的帳戶檢查與 id 正規化應保留在
-Plugin 實作中。
+頻道特定的帳號檢查與 id 正規化應保留在 Plugin 實作中。
 
-## 提供者 catalog
+## 供應商型錄
 
-提供者 Plugin 可以使用
-`registerProvider({ catalog: { run(...) { ... } } })` 定義用於推論的模型 catalog。
+供應商 Plugin 可以使用 `registerProvider({ catalog: { run(...) { ... } } })` 定義用於推論的模型型錄。
 
-`catalog.run(...)` 會回傳與 OpenClaw 寫入
-`models.providers` 相同的形狀：
+`catalog.run(...)` 會傳回與 OpenClaw 寫入 `models.providers` 相同的形狀：
 
-- `{ provider }` 用於單一提供者項目
-- `{ providers }` 用於多個提供者項目
+- `{ provider }` 用於單一供應商項目
+- `{ providers }` 用於多個供應商項目
 
-當 Plugin 擁有提供者專屬模型 id、基底 URL
-預設值或受驗證控管的模型中繼資料時，請使用 `catalog`。
+當 Plugin 擁有供應商特定模型 id、base URL 預設值或受 auth 控制的模型中繼資料時，請使用 `catalog`。
 
-`catalog.order` 控制 Plugin 的 catalog 相對於 OpenClaw
-內建隱含提供者的合併時機：
+`catalog.order` 控制 Plugin 型錄相對於 OpenClaw 內建隱含供應商的合併時機：
 
-- `simple`：單純 API 金鑰或 env 驅動的提供者
-- `profile`：當驗證設定檔存在時出現的提供者
-- `paired`：合成多個相關提供者項目的提供者
-- `late`：最後一輪，在其他隱含提供者之後
+- `simple`：一般 API key 或由 env 驅動的供應商
+- `profile`：auth profile 存在時出現的供應商
+- `paired`：合成多個相關供應商項目的供應商
+- `late`：最後一輪，在其他隱含供應商之後
 
-較晚的提供者會在鍵衝突時勝出，因此 Plugin 可以刻意以相同提供者 id
-覆寫內建提供者項目。
+較晚的供應商在 key 衝突時勝出，因此 Plugin 可以有意使用相同供應商 id 覆寫內建供應商項目。
+
+Plugin 也可以透過 `api.registerModelCatalogProvider({ provider, kinds, staticCatalog, liveCatalog
+})` 發布唯讀模型列。這是 list/help/picker 介面的前進路徑，並支援 `text`、`image_generation`、`video_generation` 和 `music_generation` 列。供應商 Plugin 仍擁有即時端點呼叫、token 交換和廠商回應對應；核心擁有通用列形狀、來源標籤和媒體工具說明格式。媒體生成供應商註冊會自動從 `defaultModel`、`models` 和 `capabilities` 合成靜態型錄列。
 
 相容性：
 
-- `discovery` 仍可作為舊版別名運作
+- `discovery` 仍可作為舊版別名使用，但會發出棄用警告
 - 如果同時註冊 `catalog` 和 `discovery`，OpenClaw 會使用 `catalog`
+- `augmentModelCatalog` 已棄用；隨附供應商應透過 `registerModelCatalogProvider` 發布補充列
 
 ## 唯讀頻道檢查
 
-如果你的 Plugin 註冊了頻道，請優先在 `resolveAccount(...)` 旁實作
-`plugin.config.inspectAccount(cfg, accountId)`。
+如果你的 Plugin 註冊了頻道，建議在 `resolveAccount(...)` 旁一併實作 `plugin.config.inspectAccount(cfg, accountId)`。
 
 原因：
 
-- `resolveAccount(...)` 是執行階段路徑。它可以假設憑證
-  已完整具體化，並可在缺少必要 secret 時快速失敗。
-- 唯讀命令路徑，例如 `openclaw status`、`openclaw status --all`、
-  `openclaw channels status`、`openclaw channels resolve`，以及 doctor/config
-  修復流程，不應只為了描述設定而需要具體化執行階段憑證。
+- `resolveAccount(...)` 是執行階段路徑。它可以假設認證已完整具現化，並可在缺少必要祕密時快速失敗。
+- `openclaw status`、`openclaw status --all`、`openclaw channels status`、`openclaw channels resolve` 以及 doctor/config 修復流程等唯讀命令路徑，不應為了描述設定而需要具現化執行階段認證。
 
 建議的 `inspectAccount(...)` 行為：
 
-- 僅回傳描述性的帳戶狀態。
+- 只傳回描述性的帳號狀態。
 - 保留 `enabled` 和 `configured`。
-- 在相關時包含憑證來源/狀態欄位，例如：
-  - `tokenSource`, `tokenStatus`
-  - `botTokenSource`, `botTokenStatus`
-  - `appTokenSource`, `appTokenStatus`
-  - `signingSecretSource`, `signingSecretStatus`
-- 你不需要為了回報唯讀可用性而回傳原始 token 值。
-  回傳 `tokenStatus: "available"`（以及相符的來源
-  欄位）對狀態類命令已經足夠。
-- 當憑證透過 SecretRef 設定，但在目前命令路徑中不可用時，請使用 `configured_unavailable`。
+- 在相關時包含認證來源/狀態欄位，例如：
+  - `tokenSource`、`tokenStatus`
+  - `botTokenSource`、`botTokenStatus`
+  - `appTokenSource`、`appTokenStatus`
+  - `signingSecretSource`、`signingSecretStatus`
+- 你不需要為了報告唯讀可用性而傳回原始 token 值。傳回 `tokenStatus: "available"`（以及對應的來源欄位）就足以供狀態類命令使用。
+- 當認證是透過 SecretRef 設定，但在目前命令路徑中不可用時，請使用 `configured_unavailable`。
 
-這可讓唯讀命令回報「已設定，但在此命令
-路徑中不可用」，而不是當機或誤報帳戶未設定。
+這可讓唯讀命令回報「已設定，但在此命令路徑中不可用」，而不是當機或誤報帳號未設定。
 
 ## 套件包
 
-Plugin 目錄可以包含帶有 `openclaw.extensions` 的 `package.json`：
+Plugin 目錄可以包含具有 `openclaw.extensions` 的 `package.json`：
 
 ```json
 {
@@ -691,57 +752,53 @@ Plugin 目錄可以包含帶有 `openclaw.extensions` 的 `package.json`：
 }
 ```
 
-每個項目都會成為一個 Plugin。如果該套件包列出多個 extension，Plugin id
-會變成 `name/<fileBase>`。
+每個項目都會成為一個 Plugin。如果套件包列出多個 extensions，Plugin id 會變成 `name/<fileBase>`。
 
-如果你的 Plugin 匯入 npm 相依套件，請將它們安裝在該目錄中，讓
-`node_modules` 可用（`npm install` / `pnpm install`）。
+如果你的 Plugin 匯入 npm deps，請在該目錄中安裝它們，讓 `node_modules` 可用（`npm install` / `pnpm install`）。
 
-安全防護：每個 `openclaw.extensions` 項目在解析 symlink 後，都必須留在 Plugin
-目錄內。逃出套件目錄的項目會被
-拒絕。
+安全防護：每個 `openclaw.extensions` 項目在符號連結解析後，都必須留在 Plugin 目錄內。逃出套件目錄的項目會被拒絕。
 
-安全注意事項：`openclaw plugins install` 會使用
-專案本機的 `npm install --omit=dev --ignore-scripts` 安裝 Plugin 相依套件（無 lifecycle scripts，
-執行階段無 dev dependencies），並忽略繼承的全域 npm install 設定。
-請讓 Plugin 相依樹保持「純 JS/TS」，並避免需要
-`postinstall` 建置的套件。
+安全注意事項：`openclaw plugins install` 會使用專案本機的 `npm install --omit=dev --ignore-scripts` 安裝 Plugin 相依套件（無生命週期 scripts，執行階段無 dev dependencies），並忽略繼承的全域 npm install 設定。請保持 Plugin 相依樹為「純 JS/TS」，並避免需要 `postinstall` 建置的套件。
 
-選用：`openclaw.setupEntry` 可以指向輕量的僅設定模組。
-當 OpenClaw 需要已停用頻道 Plugin 的設定介面，或
-當頻道 Plugin 已啟用但仍未設定時，它會載入 `setupEntry`
-而不是完整的 Plugin 進入點。當你的主要 Plugin 進入點也會接線工具、hook 或其他僅限執行階段的
-程式碼時，這可讓啟動和設定更輕量。
+選用：`openclaw.setupEntry` 可以指向輕量的僅設定模組。當 OpenClaw 需要已停用頻道 Plugin 的設定介面，或當頻道 Plugin 已啟用但仍未設定時，它會載入 `setupEntry`，而不是完整的 Plugin 進入點。當你的主要 Plugin 進入點也連接工具、hook 或其他僅限執行階段的程式碼時，這可讓啟動與設定更輕量。
 
-選用：`openclaw.startup.deferConfiguredChannelFullLoadUntilAfterListen`
-可讓頻道 Plugin 在 Gateway 的
-listen 前啟動階段選擇採用相同的 `setupEntry` 路徑，即使該頻道已設定。
+選用：`openclaw.startup.deferConfiguredChannelFullLoadUntilAfterListen` 可以讓頻道 Plugin 選擇在 Gateway 的 listen 前啟動階段使用相同的 `setupEntry` 路徑，即使該頻道已經設定完成。
 
-只有在 `setupEntry` 完整涵蓋 Gateway 開始 listen
-之前必須存在的啟動介面時，才使用此選項。實務上，這表示設定進入點
-必須註冊啟動所依賴的每個頻道擁有能力，例如：
+Use this only when `setupEntry` fully covers the startup surface that must exist
+before the gateway starts listening. In practice, that means the setup entry
+must register every channel-owned capability that startup depends on, such as:
 
-- 頻道註冊本身
-- Gateway 開始 listen 前必須可用的任何 HTTP 路由
-- 在同一時間窗口中必須存在的任何 Gateway 方法、工具或服務
+- channel registration itself
+- any HTTP routes that must be available before the gateway starts listening
+- any gateway methods, tools, or services that must exist during that same window
 
-如果你的完整進入點仍擁有任何必要的啟動能力，請不要啟用
-此旗標。讓 Plugin 保持預設行為，並讓 OpenClaw 在
-啟動期間載入完整進入點。
+If your full entry still owns any required startup capability, do not enable
+this flag. Keep the plugin on the default behavior and let OpenClaw load the
+full entry during startup.
 
-隨附頻道也可以發布僅設定的合約介面輔助工具，供核心
-在完整頻道執行階段載入前查詢。目前的設定
-提升介面是：
+Bundled channels can also publish setup-only contract-surface helpers that core
+can consult before the full channel runtime is loaded. The current setup
+promotion surface is:
 
 - `singleAccountKeysToMove`
 - `namedAccountPromotionKeys`
 - `resolveSingleAccountPromotionTarget(...)`
 
-core 在需要將舊版單帳戶通道設定提升為 `channels.<id>.accounts.*`，且不載入完整 Plugin 入口時，會使用這個介面。Matrix 是目前的內建範例：當命名帳戶已存在時，它只會將 auth/bootstrap key 移入具名提升帳戶，並且可以保留已設定的非標準預設帳戶 key，而不是一律建立 `accounts.default`。
+Core uses that surface when it needs to promote a legacy single-account channel
+config into `channels.<id>.accounts.*` without loading the full plugin entry.
+Matrix is the current bundled example: it moves only auth/bootstrap keys into a
+named promoted account when named accounts already exist, and it can preserve a
+configured non-canonical default-account key instead of always creating
+`accounts.default`.
 
-這些 setup patch adapter 會讓內建合約介面的探索保持惰性。匯入時間維持輕量；promotion 介面只會在第一次使用時載入，而不是在模組匯入時重新進入內建通道啟動流程。
+Those setup patch adapters keep bundled contract-surface discovery lazy. Import
+time stays light; the promotion surface is loaded only on first use instead of
+re-entering bundled channel startup on module import.
 
-當這些啟動介面包含 Gateway RPC 方法時，請將它們放在 Plugin 專屬前綴下。core admin 命名空間（`config.*`、`exec.approvals.*`、`wizard.*`、`update.*`）仍然保留，且一律解析為 `operator.admin`，即使某個 Plugin 要求更窄的 scope 也一樣。
+When those startup surfaces include gateway RPC methods, keep them on a
+plugin-specific prefix. Core admin namespaces (`config.*`,
+`exec.approvals.*`, `wizard.*`, `update.*`) remain reserved and always resolve
+to `operator.admin`, even if a plugin requests a narrower scope.
 
 範例：
 
@@ -758,9 +815,10 @@ core 在需要將舊版單帳戶通道設定提升為 `channels.<id>.accounts.*`
 }
 ```
 
-### 通道 catalog metadata
+### 頻道目錄中繼資料
 
-通道 Plugin 可以透過 `openclaw.channel` 公告 setup/discovery metadata，並透過 `openclaw.install` 公告安裝提示。這會讓 core catalog 不需要內建資料。
+頻道 plugins 可透過 `openclaw.channel` 宣告設定/探索中繼資料，並透過
+`openclaw.install` 宣告安裝提示。這會讓核心目錄不含資料。
 
 範例：
 
@@ -788,38 +846,58 @@ core 在需要將舊版單帳戶通道設定提升為 `channels.<id>.accounts.*`
 }
 ```
 
-除了最小範例之外，實用的 `openclaw.channel` 欄位：
+最小範例以外實用的 `openclaw.channel` 欄位：
 
-- `detailLabel`：較豐富 catalog/status 介面的次要標籤
-- `docsLabel`：覆寫文件連結文字
-- `preferOver`：此 catalog entry 應優先於哪些較低優先順序的 Plugin/通道 id
-- `selectionDocsPrefix`、`selectionDocsOmitLabel`、`selectionExtras`：選取介面的文案控制
-- `markdownCapable`：將通道標記為支援 Markdown，用於外送格式決策
-- `exposure.configured`：設為 `false` 時，從已設定通道清單介面隱藏此通道
-- `exposure.setup`：設為 `false` 時，從互動式 setup/configure 選擇器隱藏此通道
-- `exposure.docs`：將通道標記為文件導覽介面的 internal/private 項目
-- `showConfigured` / `showInSetup`：為相容性仍接受的舊版 alias；建議使用 `exposure`
-- `quickstartAllowFrom`：讓通道加入標準 quickstart `allowFrom` 流程
-- `forceAccountBinding`：即使只有一個帳戶，也要求明確的帳戶綁定
-- `preferSessionLookupForAnnounceTarget`：解析 announce target 時偏好使用 session lookup
+- `detailLabel`：用於更豐富的目錄/狀態介面的次要標籤
+- `docsLabel`：覆寫文件連結的連結文字
+- `preferOver`：此目錄項目應優先於較低優先序的 plugin/頻道 ID
+- `selectionDocsPrefix`、`selectionDocsOmitLabel`、`selectionExtras`：選擇介面的文案控制
+- `markdownCapable`：將頻道標記為支援 markdown，以供外送格式決策使用
+- `exposure.configured`：設為 `false` 時，從已設定頻道清單介面隱藏該頻道
+- `exposure.setup`：設為 `false` 時，從互動式設定/配置選擇器隱藏該頻道
+- `exposure.docs`：將頻道標記為文件導覽介面中的內部/私有頻道
+- `showConfigured` / `showInSetup`：為了相容性仍接受的舊別名；偏好使用 `exposure`
+- `quickstartAllowFrom`：讓頻道加入標準快速入門 `allowFrom` 流程
+- `forceAccountBinding`：即使只存在一個帳戶，也要求明確帳戶綁定
+- `preferSessionLookupForAnnounceTarget`：解析公告目標時偏好使用工作階段查找
 
-OpenClaw 也可以合併**外部通道 catalog**（例如 MPM registry export）。將 JSON 檔放在下列任一路徑：
+OpenClaw 也可以合併**外部頻道目錄**（例如 MPM registry 匯出）。將 JSON
+檔案放在以下其中一個位置：
 
 - `~/.openclaw/mpm/plugins.json`
 - `~/.openclaw/mpm/catalog.json`
 - `~/.openclaw/plugins/catalog.json`
 
-或將 `OPENCLAW_PLUGIN_CATALOG_PATHS`（或 `OPENCLAW_MPM_CATALOG_PATHS`）指向一個或多個 JSON 檔（以逗號、分號或 `PATH` 分隔）。每個檔案應包含 `{ "entries": [ { "name": "@scope/pkg", "openclaw": { "channel": {...}, "install": {...} } } ] }`。parser 也接受 `"packages"` 或 `"plugins"` 作為 `"entries"` key 的舊版 alias。
+或將 `OPENCLAW_PLUGIN_CATALOG_PATHS`（或 `OPENCLAW_MPM_CATALOG_PATHS`）指向
+一個或多個 JSON 檔案（以逗號/分號/`PATH` 分隔）。每個檔案都應包含
+`{ "entries": [ { "name": "@scope/pkg", "openclaw": { "channel": {...}, "install": {...} } } ] }`。解析器也接受 `"packages"` 或 `"plugins"` 作為 `"entries"` 鍵的舊別名。
 
-產生的通道 catalog entry 和 provider install catalog entry 會在原始 `openclaw.install` 區塊旁公開正規化的 install-source 事實。正規化事實會識別 npm spec 是確切版本或浮動 selector、是否存在預期的 integrity metadata，以及是否也有可用的本機來源路徑。當 catalog/package 身分已知時，如果解析出的 npm package 名稱偏離該身分，正規化事實會發出警告。當 `defaultChoice` 無效或指向不可用來源時，以及存在 npm integrity metadata 但沒有有效 npm source 時，也會發出警告。消費端應將 `installSource` 視為加成的選用欄位，這樣手工建立的 entry 和 catalog shim 就不必合成它。這讓 onboarding 與 diagnostics 可以說明 source-plane 狀態，而不需要匯入 Plugin runtime。
+產生的頻道目錄項目和供應商安裝目錄項目，會在原始 `openclaw.install` 區塊旁公開
+標準化的安裝來源事實。標準化事實會識別 npm 規格是精確版本還是浮動
+選擇器、預期的 integrity 中繼資料是否存在，以及本機來源路徑是否也可用。
+當目錄/套件身分已知時，如果解析出的 npm 套件名稱偏離該身分，標準化事實會提出警告。
+當 `defaultChoice` 無效或指向不可用來源，以及存在 npm integrity 中繼資料但沒有有效 npm
+來源時，也會提出警告。消費端應將 `installSource` 視為加成的選用欄位，讓手工建立的項目和目錄 shim
+不必合成它。這讓 onboarding 和診斷可以在不匯入 plugin runtime 的情況下說明來源平面狀態。
 
-官方外部 npm entry 應偏好使用確切的 `npmSpec` 加上 `expectedIntegrity`。裸 package 名稱和 dist-tag 仍可為了相容性運作，但它們會顯示 source-plane 警告，讓 catalog 能逐步走向 pinned、integrity-checked 的安裝方式，而不破壞既有 Plugin。當 onboarding 從本機 catalog 路徑安裝時，它會記錄一筆 managed Plugin Plugin index entry，並在可行時使用 `source: "path"` 和 workspace-relative 的 `sourcePath`。絕對操作載入路徑仍留在 `plugins.load.paths`；安裝記錄會避免將本機工作站路徑複製到長期設定中。這讓本機開發安裝能被 source-plane diagnostics 看見，而不新增第二個原始檔案系統路徑揭露介面。持久化的 `plugins/installs.json` Plugin index 是安裝來源的事實來源，並且可以在不載入 Plugin runtime 模組的情況下重新整理。即使 Plugin manifest 遺失或無效，其 `installRecords` map 仍是持久的；其 `plugins` array 則是可重建的 manifest view。
+官方外部 npm 項目應偏好精確的 `npmSpec` 加上
+`expectedIntegrity`。裸套件名稱和 dist-tags 為了相容性仍可運作，
+但它們會顯示來源平面警告，讓目錄能朝向已釘選、已檢查 integrity 的安裝前進，而不破壞現有 plugins。
+當 onboarding 從本機目錄路徑安裝時，會記錄一個 managed plugin
+plugin 索引項目，其中 `source: "path"`，並在可能時使用相對於工作區的
+`sourcePath`。絕對的操作載入路徑仍保留在
+`plugins.load.paths`；安裝記錄會避免將本機工作站路徑重複寫入長期設定。
+這讓本機開發安裝能被來源平面診斷看見，而不增加第二個原始檔案系統路徑揭露介面。
+持久化的 `plugins/installs.json` plugin 索引是安裝來源的真實來源，且可在不載入 plugin runtime 模組的情況下重新整理。
+即使 plugin manifest 遺失或無效，其 `installRecords` map 也會持久保留；其 `plugins` array 是可重建的 manifest 檢視。
 
-## Context engine Plugin
+## 上下文引擎 plugins
 
-Context engine Plugin 擁有 session context 的 ingest、assembly 與 Compaction orchestration。請從你的 Plugin 使用 `api.registerContextEngine(id, factory)` 註冊它們，然後用 `plugins.slots.contextEngine` 選取作用中的 engine。
+上下文引擎 plugins 擁有用於擷取、組裝和 Compaction 的工作階段上下文協調。
+從你的 plugin 使用 `api.registerContextEngine(id, factory)` 註冊它們，
+然後以 `plugins.slots.contextEngine` 選取作用中的引擎。
 
-當你的 Plugin 需要取代或擴充預設 context pipeline，而不只是新增 memory search 或 hook 時，請使用這個方式。
+當你的 plugin 需要取代或擴充預設上下文管線，而不只是新增記憶搜尋或 hooks 時，請使用此功能。
 
 ```ts
 import { buildMemorySystemPromptAddition } from "openclaw/plugin-sdk/core";
@@ -847,9 +925,11 @@ export default function (api) {
 }
 ```
 
-factory `ctx` 會公開選用的 `config`、`agentDir` 和 `workspaceDir` 值，以供建構時初始化。
+factory `ctx` 會公開選用的 `config`、`agentDir` 和 `workspaceDir`
+值，用於建構期間初始化。
 
-如果你的 engine **不**擁有 Compaction 演算法，請保留 `compact()` 實作並明確委派它：
+如果你的引擎**不**擁有 Compaction 演算法，請保持 `compact()`
+已實作並明確委派它：
 
 ```ts
 import {
@@ -884,41 +964,45 @@ export default function (api) {
 }
 ```
 
-## 新增 capability
+## 新增能力
 
-當某個 Plugin 需要的行為不適合目前 API 時，不要用 private reach-in 繞過 Plugin 系統。請新增缺少的 capability。
+當 plugin 需要的行為不符合目前 API 時，不要用私有的向內存取繞過
+plugin 系統。請新增缺少的能力。
 
 建議順序：
 
-1. 定義 core contract
-   決定 core 應擁有哪些 shared behavior：policy、fallback、config merge、lifecycle、面向通道的語意，以及 runtime helper shape。
-2. 新增型別化的 Plugin registration/runtime 介面
-   以最小但有用的型別化 capability surface 擴充 `OpenClawPluginApi` 和/或 `api.runtime`。
-3. 串接 core + channel/feature 消費端
-   Channel 和 feature Plugin 應透過 core 使用新的 capability，而不是直接匯入 vendor implementation。
-4. 註冊 vendor implementation
-   Vendor Plugin 接著針對該 capability 註冊自己的 backend。
-5. 新增 contract coverage
-   新增測試，讓 ownership 和 registration shape 隨時間保持明確。
+1. 定義核心合約
+   決定核心應擁有哪些共享行為：政策、fallback、設定合併、
+   lifecycle、面向頻道的語意，以及 runtime helper 形狀。
+2. 新增型別化的 plugin 註冊/runtime 介面
+   以最小且有用的型別化能力介面擴充 `OpenClawPluginApi` 和/或 `api.runtime`。
+3. 串接核心 + 頻道/功能消費端
+   頻道和功能 plugins 應透過核心消費新能力，
+   而不是直接匯入供應商實作。
+4. 註冊供應商實作
+   接著供應商 plugins 針對該能力註冊其後端。
+5. 新增合約涵蓋
+   新增測試，讓所有權和註冊形狀隨時間保持明確。
 
-這就是 OpenClaw 保持有主見、卻不硬編碼成單一 provider 世界觀的方式。請參閱 [Capability Cookbook](/zh-TW/plugins/architecture)，取得具體的檔案 checklist 和 worked example。
+這就是 OpenClaw 保持有主見而不被硬編碼到單一供應商世界觀的方式。
+請參閱 [能力 Cookbook](/zh-TW/plugins/adding-capabilities)，了解具體檔案檢查清單和完整範例。
 
-### Capability checklist
+### 能力檢查清單
 
-當你新增 capability 時，實作通常應一併觸及這些介面：
+新增能力時，實作通常應同時觸及這些介面：
 
-- `src/<capability>/types.ts` 中的 core contract type
-- `src/<capability>/runtime.ts` 中的 core runner/runtime helper
-- `src/plugins/types.ts` 中的 Plugin API registration surface
-- `src/plugins/registry.ts` 中的 Plugin registry wiring
-- 當 feature/channel Plugin 需要消費它時，`src/plugins/runtime/*` 中的 Plugin runtime exposure
-- `src/test-utils/plugin-registration.ts` 中的 capture/test helper
-- `src/plugins/contracts/registry.ts` 中的 ownership/contract assertion
-- `docs/` 中的 operator/Plugin 文件
+- `src/<capability>/types.ts` 中的核心合約型別
+- `src/<capability>/runtime.ts` 中的核心 runner/runtime helper
+- `src/plugins/types.ts` 中的 plugin API 註冊介面
+- `src/plugins/registry.ts` 中的 plugin registry 串接
+- 當功能/頻道 plugins 需要消費時，`src/plugins/runtime/*` 中的 plugin runtime 曝露
+- `src/test-utils/plugin-registration.ts` 中的捕捉/測試 helper
+- `src/plugins/contracts/registry.ts` 中的所有權/合約斷言
+- `docs/` 中的 operator/plugin 文件
 
-如果缺少其中一個介面，通常代表該 capability 尚未完整整合。
+如果缺少其中一個介面，通常表示該能力尚未完全整合。
 
-### Capability template
+### 能力範本
 
 最小模式：
 
@@ -946,22 +1030,22 @@ const clip = await api.runtime.videoGeneration.generate({
 });
 ```
 
-Contract test pattern：
+合約測試模式：
 
 ```ts
 expect(findVideoGenerationProviderIdsForPlugin("openai")).toEqual(["openai"]);
 ```
 
-這會讓規則保持簡單：
+這讓規則保持簡單：
 
-- core 擁有 capability contract + orchestration
-- vendor Plugin 擁有 vendor implementation
-- feature/channel Plugin 消費 runtime helper
-- contract test 讓 ownership 保持明確
+- 核心擁有能力合約 + 協調
+- 供應商 plugins 擁有供應商實作
+- 功能/頻道 plugins 消費 runtime helpers
+- 合約測試讓所有權保持明確
 
 ## 相關
 
-- [Plugin architecture](/zh-TW/plugins/architecture) — 公開 capability model 與 shape
-- [Plugin SDK subpaths](/zh-TW/plugins/sdk-subpaths)
-- [Plugin SDK setup](/zh-TW/plugins/sdk-setup)
-- [Building plugins](/zh-TW/plugins/building-plugins)
+- [Plugin 架構](/zh-TW/plugins/architecture) — 公開能力模型和形狀
+- [Plugin SDK 子路徑](/zh-TW/plugins/sdk-subpaths)
+- [Plugin SDK 設定](/zh-TW/plugins/sdk-setup)
+- [建置 plugins](/zh-TW/plugins/building-plugins)

@@ -1,38 +1,38 @@
 ---
 read_when:
     - Dokümantasyonun eksiksiz bir haritasını istiyorsunuz
-summary: Her OpenClaw belgesine bağlantı veren merkezler
-title: Dokümantasyon merkezleri
+summary: Tüm OpenClaw belgelerine bağlantı veren merkezler
+title: Belge merkezleri
 x-i18n:
-    generated_at: "2026-05-07T01:54:27Z"
+    generated_at: "2026-05-10T19:55:13Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b7de6012e4e8db02d22cda7d8f275c634e15511b1c4e94e219672cf167f9848d
+    source_hash: fdf4128ddb05bb009faec0a21d45933ffb0a3abf5e5ba8dbe1b9710c8eee3bde
     source_path: start/hubs.md
     workflow: 16
 ---
 
 <Note>
-OpenClaw’da yeniyseniz, [Başlarken](/tr/start/getting-started) ile başlayın.
+OpenClaw'da yeniyseniz [Başlarken](/tr/start/getting-started) ile başlayın.
 </Note>
 
-Sol gezinmede görünmeyen derin incelemeler ve referans belgeleri dahil her sayfayı keşfetmek için bu merkezleri kullanın.
+Sol gezinmede görünmeyen derin incelemeler ve başvuru dokümanları dahil her sayfayı keşfetmek için bu merkezleri kullanın.
 
 ## Buradan başlayın
 
 - [Dizin](/tr)
 - [Başlarken](/tr/start/getting-started)
-- [İlk kullanım](/tr/start/onboarding)
-- [İlk kullanım (CLI)](/tr/start/wizard)
+- [İlk katılım](/tr/start/onboarding)
+- [İlk katılım (CLI)](/tr/start/wizard)
 - [Kurulum](/tr/start/setup)
 - [Pano (yerel Gateway)](http://127.0.0.1:18789/)
 - [Yardım](/tr/help)
-- [Belgeler dizini](/tr/start/docs-directory)
+- [Dokümanlar dizini](/tr/start/docs-directory)
 - [Yapılandırma](/tr/gateway/configuration)
 - [Yapılandırma örnekleri](/tr/gateway/configuration-examples)
 - [OpenClaw asistanı](/tr/start/openclaw)
 - [Vitrin](/tr/start/showcase)
-- [Hikaye](/tr/start/lore)
+- [Evren bilgisi](/tr/start/lore)
 
 ## Kurulum + güncellemeler
 
@@ -50,7 +50,7 @@ Sol gezinmede görünmeyen derin incelemeler ve referans belgeleri dahil her say
 - [Ajan çalışma alanı](/tr/concepts/agent-workspace)
 - [Bellek](/tr/concepts/memory)
 - [Ajan döngüsü](/tr/concepts/agent-loop)
-- [Akış + parçalara ayırma](/tr/concepts/streaming)
+- [Akış + parçalama](/tr/concepts/streaming)
 - [Çok ajanlı yönlendirme](/tr/concepts/multi-agent)
 - [Compaction](/tr/concepts/compaction)
 - [Oturumlar](/tr/concepts/session)
@@ -80,17 +80,16 @@ Sol gezinmede görünmeyen derin incelemeler ve referans belgeleri dahil her say
 - [Discord](/tr/channels/discord)
 - [Mattermost](/tr/channels/mattermost)
 - [Signal](/tr/channels/signal)
-- [BlueBubbles (eski iMessage köprüsü)](/tr/channels/bluebubbles)
 - [QQ Bot](/tr/channels/qqbot)
 - [iMessage](/tr/channels/imessage)
 - [Konum ayrıştırma](/tr/channels/location)
 - [WebChat](/tr/web/webchat)
-- [Webhooks](/tr/automation/cron-jobs#webhooks)
+- [Webhook'lar](/tr/automation/cron-jobs#webhooks)
 - [Gmail Pub/Sub](/tr/automation/cron-jobs#gmail-pubsub-integration)
 
 ## Gateway + operasyonlar
 
-- [Gateway çalışma kılavuzu](/tr/gateway)
+- [Gateway runbook](/tr/gateway)
 - [Ağ modeli](/tr/network#core-model)
 - [Gateway eşleştirme](/tr/gateway/pairing)
 - [Gateway kilidi](/tr/gateway/gateway-lock)
@@ -99,7 +98,7 @@ Sol gezinmede görünmeyen derin incelemeler ve referans belgeleri dahil her say
 - [Heartbeat](/tr/gateway/heartbeat)
 - [Doctor](/tr/gateway/doctor)
 - [Günlükleme](/tr/gateway/logging)
-- [Sandbox kullanımı](/tr/gateway/sandboxing)
+- [Sandboxing](/tr/gateway/sandboxing)
 - [Pano](/tr/web/dashboard)
 - [Kontrol kullanıcı arayüzü](/tr/web/control-ui)
 - [Uzaktan erişim](/tr/gateway/remote)
@@ -112,7 +111,7 @@ Sol gezinmede görünmeyen derin incelemeler ve referans belgeleri dahil her say
 
 - [Araçlar yüzeyi](/tr/tools)
 - [OpenProse](/tr/prose)
-- [CLI referansı](/tr/cli)
+- [CLI başvurusu](/tr/cli)
 - [Exec aracı](/tr/tools/exec)
 - [PDF aracı](/tr/tools/pdf)
 - [Yükseltilmiş mod](/tr/tools/elevated)
@@ -127,9 +126,9 @@ Sol gezinmede görünmeyen derin incelemeler ve referans belgeleri dahil her say
 - [Tarayıcı (Linux sorun giderme)](/tr/tools/browser-linux-troubleshooting)
 - [Anketler](/tr/cli/message)
 
-## Node’lar, medya, ses
+## Node'lar, medya, ses
 
-- [Node’lara genel bakış](/tr/nodes)
+- [Node'lara genel bakış](/tr/nodes)
 - [Kamera](/tr/nodes/camera)
 - [Görseller](/tr/nodes/images)
 - [Ses](/tr/nodes/audio)
@@ -147,43 +146,43 @@ Sol gezinmede görünmeyen derin incelemeler ve referans belgeleri dahil her say
 - [Linux](/tr/platforms/linux)
 - [Web yüzeyleri](/tr/web)
 
-## macOS eşlik eden uygulama (ileri düzey)
+## macOS yardımcı uygulaması (gelişmiş)
 
 - [macOS geliştirme kurulumu](/tr/platforms/mac/dev-setup)
 - [macOS menü çubuğu](/tr/platforms/mac/menu-bar)
 - [macOS sesle uyandırma](/tr/platforms/mac/voicewake)
-- [macOS ses katmanı](/tr/platforms/mac/voice-overlay)
+- [macOS ses bindirmesi](/tr/platforms/mac/voice-overlay)
 - [macOS WebChat](/tr/platforms/mac/webchat)
 - [macOS Canvas](/tr/platforms/mac/canvas)
-- [macOS alt süreci](/tr/platforms/mac/child-process)
+- [macOS alt süreç](/tr/platforms/mac/child-process)
 - [macOS sağlık](/tr/platforms/mac/health)
 - [macOS simgesi](/tr/platforms/mac/icon)
 - [macOS günlükleme](/tr/platforms/mac/logging)
 - [macOS izinleri](/tr/platforms/mac/permissions)
-- [macOS uzak erişim](/tr/platforms/mac/remote)
+- [macOS uzak](/tr/platforms/mac/remote)
 - [macOS imzalama](/tr/platforms/mac/signing)
 - [macOS Gateway (launchd)](/tr/platforms/mac/bundled-gateway)
 - [macOS XPC](/tr/platforms/mac/xpc)
-- [macOS Skills](/tr/platforms/mac/skills)
+- [macOS skills](/tr/platforms/mac/skills)
 - [macOS Peekaboo](/tr/platforms/mac/peekaboo)
 
-## Plugin’ler
+## Plugins
 
-- [Plugin’lere genel bakış](/tr/tools/plugin)
-- [Plugin oluşturma](/tr/plugins/building-plugins)
-- [Plugin kancaları](/tr/plugins/hooks)
+- [Plugins genel bakışı](/tr/tools/plugin)
+- [Plugins oluşturma](/tr/plugins/building-plugins)
+- [Plugin hook'ları](/tr/plugins/hooks)
 - [Plugin manifesti](/tr/plugins/manifest)
 - [Ajan araçları](/tr/plugins/building-plugins#registering-agent-tools)
 - [Plugin paketleri](/tr/plugins/bundles)
-- [Topluluk Plugin’leri](/tr/plugins/community)
+- [ClawHub](/tr/clawhub)
 - [Yetenek yemek kitabı](/tr/plugins/adding-capabilities)
-- [Sesli arama Plugin’i](/tr/plugins/voice-call)
-- [Zalo kullanıcı Plugin’i](/tr/plugins/zalouser)
+- [Sesli arama plugin'i](/tr/plugins/voice-call)
+- [Zalo kullanıcı plugin'i](/tr/plugins/zalouser)
 
 ## Çalışma alanı + şablonlar
 
 - [Skills](/tr/tools/skills)
-- [ClawHub](/tr/tools/clawhub)
+- [ClawHub](/tr/clawhub)
 - [Skills yapılandırması](/tr/tools/skills-config)
 - [Varsayılan AGENTS](/tr/reference/AGENTS.default)
 - [Şablonlar: AGENTS](/tr/reference/templates/AGENTS)
@@ -198,10 +197,10 @@ Sol gezinmede görünmeyen derin incelemeler ve referans belgeleri dahil her say
 
 - [Katkıda bulunanlar](/tr/reference/credits)
 
-## Test + yayın
+## Test + sürüm
 
 - [Test](/tr/reference/test)
-- [Yayın politikası](/tr/reference/RELEASING)
+- [Sürüm politikası](/tr/reference/RELEASING)
 - [Cihaz modelleri](/tr/reference/device-models)
 
 ## İlgili

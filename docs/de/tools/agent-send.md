@@ -1,35 +1,35 @@
 ---
 read_when:
     - Sie möchten Agent-Ausführungen aus Skripten oder über die Befehlszeile auslösen
-    - Sie müssen Agentenantworten programmgesteuert an einen Chatkanal übermitteln
-summary: Agent-Turns über die CLI ausführen und Antworten optional an Kanäle übermitteln
+    - Sie müssen Agentenantworten programmgesteuert an einen Chat-Kanal übermitteln
+summary: Führen Sie Agentendurchläufe über die CLI aus und stellen Sie Antworten optional an Kanäle zu
 title: Agent senden
 x-i18n:
-    generated_at: "2026-05-06T07:04:26Z"
+    generated_at: "2026-05-10T19:53:31Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1339ebd74e2349669942ff93f200b53a69ad05f2186d6ff76437c779f312a291
+    source_hash: a2e1b05414312321e7136867bb8b998754d4a46289cc02764eb61d83f7239af1
     source_path: tools/agent-send.md
     workflow: 16
 ---
 
-`openclaw agent` führt eine einzelne Agent-Ausführung über die Befehlszeile aus, ohne
-dass eine eingehende Chatnachricht erforderlich ist. Verwenden Sie es für skriptgesteuerte Workflows, Tests und
-programmatische Zustellung.
+`openclaw agent` führt einen einzelnen Agent-Turn über die Befehlszeile aus, ohne dass
+eine eingehende Chatnachricht erforderlich ist. Verwenden Sie es für skriptgesteuerte Workflows, Tests und
+programmatische Auslieferung.
 
 ## Schnellstart
 
 <Steps>
-  <Step title="Einfache Agent-Ausführung starten">
+  <Step title="Einen einfachen Agent-Turn ausführen">
     ```bash
     openclaw agent --message "What is the weather today?"
     ```
 
-    Dadurch wird die Nachricht über das Gateway gesendet und die Antwort ausgegeben.
+    Dies sendet die Nachricht über den Gateway und gibt die Antwort aus.
 
   </Step>
 
-  <Step title="Bestimmten Agent oder bestimmte Sitzung ansteuern">
+  <Step title="Einen bestimmten Agent oder eine bestimmte Sitzung ansteuern">
     ```bash
     # Target a specific agent
     openclaw agent --agent ops --message "Summarize logs"
@@ -43,7 +43,7 @@ programmatische Zustellung.
 
   </Step>
 
-  <Step title="Antwort an einen Kanal zustellen">
+  <Step title="Die Antwort an einen Kanal zustellen">
     ```bash
     # Deliver to WhatsApp (default channel)
     openclaw agent --to +15555550123 --message "Report ready" --deliver
@@ -62,28 +62,31 @@ programmatische Zustellung.
 | ----------------------------- | ----------------------------------------------------------- |
 | `--message \<text\>`          | Zu sendende Nachricht (erforderlich)                        |
 | `--to \<dest\>`               | Sitzungsschlüssel aus einem Ziel ableiten (Telefon, Chat-ID) |
-| `--agent \<id\>`              | Konfigurierten Agent ansteuern (verwendet dessen `main`-Sitzung) |
-| `--session-id \<id\>`         | Vorhandene Sitzung anhand der ID wiederverwenden            |
-| `--local`                     | Lokale eingebettete Laufzeit erzwingen (Gateway überspringen) |
-| `--deliver`                   | Antwort an einen Chatkanal senden                           |
+| `--agent \<id\>`              | Einen konfigurierten Agent ansteuern (verwendet dessen `main`-Sitzung) |
+| `--session-id \<id\>`         | Eine vorhandene Sitzung nach ID wiederverwenden             |
+| `--local`                     | Lokale eingebettete Runtime erzwingen (Gateway überspringen) |
+| `--deliver`                   | Die Antwort an einen Chatkanal senden                       |
 | `--channel \<name\>`          | Zustellungskanal (whatsapp, telegram, discord, slack usw.)  |
-| `--reply-to \<target\>`       | Zustellungsziel überschreiben                               |
-| `--reply-channel \<name\>`    | Zustellungskanal überschreiben                              |
-| `--reply-account \<id\>`      | ID des Zustellungskontos überschreiben                      |
-| `--thinking \<level\>`        | Denkstufe für das ausgewählte Modellprofil festlegen        |
-| `--verbose \<on\|full\|off\>` | Ausführlichkeitsstufe festlegen                             |
+| `--reply-to \<target\>`       | Überschreibung des Zustellungsziels                         |
+| `--reply-channel \<name\>`    | Überschreibung des Zustellungskanals                        |
+| `--reply-account \<id\>`      | Überschreibung der Zustellungskonto-ID                      |
+| `--thinking \<level\>`        | Thinking-Level für das ausgewählte Modellprofil festlegen   |
+| `--verbose \<on\|full\|off\>` | Verbose-Level festlegen                                     |
 | `--timeout \<seconds\>`       | Agent-Timeout überschreiben                                 |
 | `--json`                      | Strukturiertes JSON ausgeben                                |
 
 ## Verhalten
 
-- Standardmäßig läuft die CLI **über das Gateway**. Fügen Sie `--local` hinzu, um die
-  eingebettete Laufzeit auf dem aktuellen Rechner zu erzwingen.
-- Wenn das Gateway nicht erreichbar ist, **fällt die CLI auf** die lokale eingebettete Ausführung zurück.
+- Standardmäßig läuft die CLI **über den Gateway**. Fügen Sie `--local` hinzu, um die
+  eingebettete Runtime auf dem aktuellen Computer zu erzwingen.
+- Wenn der Gateway nicht erreichbar ist, **fällt die CLI** auf die lokale eingebettete Ausführung zurück.
 - Sitzungsauswahl: `--to` leitet den Sitzungsschlüssel ab (Gruppen-/Kanalziele
-  behalten die Isolation bei; direkte Chats werden auf `main` zusammengeführt).
-- Thinking- und Verbose-Flags werden im Sitzungsspeicher beibehalten.
-- Ausgabe: standardmäßig Nur-Text oder `--json` für strukturierte Nutzdaten und Metadaten.
+  behalten die Isolation bei; direkte Chats fallen auf `main` zusammen).
+- Thinking- und Verbose-Flags bleiben im Sitzungsspeicher erhalten.
+- Ausgabe: standardmäßig Klartext oder `--json` für strukturierte Nutzdaten + Metadaten.
+- Mit `--json --deliver` enthält das JSON den Zustellungsstatus für gesendete,
+  unterdrückte, teilweise und fehlgeschlagene Sendungen. Siehe
+  [JSON-Zustellungsstatus](/de/cli/agent#json-delivery-status).
 
 ## Beispiele
 
@@ -102,10 +105,10 @@ openclaw agent --agent ops --message "Alert" --deliver --reply-channel telegram 
 
 <CardGroup cols={2}>
   <Card title="Agent-CLI-Referenz" href="/de/cli/agent" icon="terminal">
-    Vollständige Referenz zu Flags und Optionen von `openclaw agent`.
+    Vollständige Referenz zu Flags und Optionen für `openclaw agent`.
   </Card>
   <Card title="Sub-Agents" href="/de/tools/subagents" icon="users">
-    Erzeugen von Sub-Agents im Hintergrund.
+    Starten von Sub-Agents im Hintergrund.
   </Card>
   <Card title="Sitzungen" href="/de/concepts/session" icon="comments">
     Wie Sitzungsschlüssel funktionieren und wie `--to`, `--agent` und `--session-id` sie auflösen.

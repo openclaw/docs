@@ -1,342 +1,384 @@
 ---
 read_when:
-    - Memilih subpath plugin-sdk yang tepat untuk impor Plugin
-    - Mengaudit subjalur plugin bawaan dan antarmuka fungsi pembantu
-summary: 'Katalog subpath Plugin SDK: import mana berada di mana, dikelompokkan berdasarkan area'
-title: Subjalur Plugin SDK
+    - Memilih subpath plugin-sdk yang tepat untuk impor plugin
+    - Mengaudit subjalur Plugin bawaan dan antarmuka pembantu
+summary: 'Katalog subjalur SDK Plugin: lokasi setiap impor, dikelompokkan berdasarkan area'
+title: Subjalur SDK Plugin
 x-i18n:
-    generated_at: "2026-05-06T09:23:06Z"
+    generated_at: "2026-05-10T19:48:11Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 98b16cd3fcd6babc64df20ad4e679c35553fc21894617f30907bbf0e579a4d89
+    source_hash: ddcb1223ce9f749e57e866cc0ed3329a1aeeb5d90d00568b5942f7f779086f1f
     source_path: plugins/sdk-subpaths.md
     workflow: 16
 ---
 
-SDK Plugin diekspos sebagai sekumpulan subpath sempit di bawah `openclaw/plugin-sdk/`.
-Halaman ini mengatalogkan subpath yang umum digunakan, dikelompokkan berdasarkan tujuan. Daftar lengkap
-200+ subpath yang dihasilkan berada di `scripts/lib/plugin-sdk-entrypoints.json`;
-subpath pembantu Plugin bawaan yang dicadangkan muncul di sana tetapi merupakan detail
-implementasi kecuali halaman dokumentasi secara eksplisit mengangkatnya. Maintainer dapat mengaudit subpath pembantu
-cadangan yang aktif dengan `pnpm plugins:boundary-report:summary`; ekspor pembantu
-cadangan yang tidak digunakan akan menggagalkan laporan CI alih-alih tetap berada di SDK publik
-sebagai utang kompatibilitas dorman.
+SDK plugin diekspos sebagai sekumpulan subpath publik yang sempit di bawah
+`openclaw/plugin-sdk/`. Halaman ini mengatalogkan subpath yang umum digunakan,
+dikelompokkan berdasarkan tujuan. Inventaris entrypoint compiler yang dihasilkan
+berada di `scripts/lib/plugin-sdk-entrypoints.json`; ekspor paket adalah subset
+publik setelah mengurangi subpath pengujian/internal lokal repo yang tercantum di
+`scripts/lib/plugin-sdk-private-local-only-subpaths.json`. Maintainer dapat
+mengaudit jumlah ekspor publik dengan `pnpm plugin-sdk:surface` dan subpath
+helper cadangan aktif dengan `pnpm plugins:boundary-report:summary`; ekspor
+helper cadangan yang tidak digunakan akan menggagalkan laporan CI alih-alih
+tetap berada di SDK publik sebagai utang kompatibilitas dorman.
 
-Untuk panduan penulisan Plugin, lihat [Ikhtisar SDK Plugin](/id/plugins/sdk-overview).
+Untuk panduan penulisan plugin, lihat [Ikhtisar SDK Plugin](/id/plugins/sdk-overview).
 
-## Entri Plugin
+## Entri plugin
 
-| Subpath                                   | Ekspor utama                                                                                                                                                                  |
-| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `plugin-sdk/plugin-entry`                 | `definePluginEntry`                                                                                                                                                          |
-| `plugin-sdk/core`                         | `defineChannelPluginEntry`, `createChatChannelPlugin`, `createChannelPluginBase`, `defineSetupPluginEntry`, `buildChannelConfigSchema`, `buildJsonChannelConfigSchema`       |
-| `plugin-sdk/config-schema`                | `OpenClawSchema`                                                                                                                                                             |
-| `plugin-sdk/provider-entry`               | `defineSingleProviderPluginEntry`                                                                                                                                            |
-| `plugin-sdk/testing`                      | Barrel kompatibilitas luas untuk pengujian Plugin lama; lebih pilih subpath pengujian terfokus untuk pengujian ekstensi baru                                                                     |
-| `plugin-sdk/plugin-test-api`              | Pembuat mock `OpenClawPluginApi` minimal untuk pengujian unit pendaftaran Plugin langsung                                                                                           |
-| `plugin-sdk/agent-runtime-test-contracts` | Fixture kontrak adaptor runtime agen native untuk profil autentikasi, penekanan pengiriman, klasifikasi fallback, hook alat, overlay prompt, skema, dan perbaikan transkrip |
-| `plugin-sdk/channel-test-helpers`         | Pembantu pengujian kontrak kanal generik, balasan pemasangan, timestamp envelope, entri kanal bawaan, hook, mock runtime, konfigurasi pengiriman, direktori, dan siklus hidup akun kanal   |
-| `plugin-sdk/channel-target-testing`       | Rangkaian pengujian bersama untuk kasus kesalahan resolusi target kanal                                                                                                                       |
-| `plugin-sdk/plugin-test-contracts`        | Pembantu kontrak untuk pendaftaran Plugin, manifes paket, artefak publik, API runtime, efek samping impor, dan impor langsung                                                  |
-| `plugin-sdk/plugin-test-runtime`          | Fixture runtime Plugin, registry, pendaftaran penyedia, wizard penyiapan, dan alur tugas runtime untuk pengujian                                                                      |
-| `plugin-sdk/provider-test-contracts`      | Pembantu kontrak untuk runtime penyedia, autentikasi, discovery, onboarding, katalog, kemampuan media, kebijakan replay, audio langsung STT realtime, pencarian/pengambilan web, dan wizard                 |
-| `plugin-sdk/provider-http-test-mocks`     | Mock HTTP/autentikasi Vitest opt-in untuk pengujian penyedia yang menjalankan `plugin-sdk/provider-http`                                                                                    |
-| `plugin-sdk/test-env`                     | Fixture lingkungan pengujian, fetch/jaringan, server HTTP sekali pakai, permintaan masuk, pengujian langsung, sistem berkas sementara, dan kontrol waktu                                        |
-| `plugin-sdk/test-fixtures`                | Fixture pengujian generik untuk CLI, sandbox, skill, pesan agen, peristiwa sistem, pemuatan ulang modul, jalur Plugin bawaan, terminal, pemotongan chunk, token autentikasi, dan kasus bertipe                   |
-| `plugin-sdk/test-node-mocks`              | Pembantu mock bawaan Node terfokus untuk digunakan di dalam factory Vitest `vi.mock("node:*")`                                                                                        |
-| `plugin-sdk/migration`                    | Pembantu item penyedia migrasi seperti `createMigrationItem`, konstanta alasan, penanda status item, pembantu redaksi, dan `summarizeMigrationItems`                       |
-| `plugin-sdk/migration-runtime`            | Pembantu migrasi runtime seperti `copyMigrationFileItem`, `withCachedMigrationConfigRuntime`, dan `writeMigrationReport`                                                    |
+| Subpath                        | Ekspor utama                                                                                                                                                           |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `plugin-sdk/plugin-entry`      | `definePluginEntry`                                                                                                                                                    |
+| `plugin-sdk/core`              | `defineChannelPluginEntry`, `createChatChannelPlugin`, `createChannelPluginBase`, `defineSetupPluginEntry`, `buildChannelConfigSchema`, `buildJsonChannelConfigSchema` |
+| `plugin-sdk/config-schema`     | `OpenClawSchema`                                                                                                                                                       |
+| `plugin-sdk/provider-entry`    | `defineSingleProviderPluginEntry`                                                                                                                                      |
+| `plugin-sdk/migration`         | Helper item penyedia migrasi seperti `createMigrationItem`, konstanta alasan, penanda status item, helper redaksi, dan `summarizeMigrationItems`                       |
+| `plugin-sdk/migration-runtime` | Helper migrasi runtime seperti `copyMigrationFileItem`, `withCachedMigrationConfigRuntime`, dan `writeMigrationReport`                                                 |
+
+### Kompatibilitas dan helper pengujian yang tidak digunakan lagi
+
+Subpath ini tetap menjadi ekspor paket untuk plugin lama dan suite pengujian
+OpenClaw, tetapi kode baru tidak boleh menambahkan impor dari subpath ini:
+`agent-runtime-test-contracts`, `channel-contract-testing`,
+`channel-target-testing`, `channel-test-helpers`, `plugin-test-api`,
+`plugin-test-contracts`, `provider-http-test-mocks`,
+`provider-test-contracts`, `test-env`, `test-fixtures`, `test-node-mocks`,
+`testing`, `channel-runtime`, `compat`, `config-types`, `infra-runtime`,
+`text-runtime`, dan `zod`. Impor `zod` langsung dari `zod` dalam kode plugin baru.
+`plugin-test-runtime` masih merupakan subpath helper pengujian terfokus yang aktif.
+
+### Subpath publik tidak digunakan yang tidak digunakan lagi
+
+Subpath publik ini sudah ada setidaknya selama satu bulan dan saat ini tidak
+memiliki impor produksi ekstensi bawaan. Subpath ini tetap dapat diimpor untuk
+kompatibilitas, tetapi kode plugin baru sebaiknya menggunakan subpath SDK
+terfokus yang aktif dikonsumsi sebagai gantinya: `agent-config-primitives`,
+`channel-config-schema-legacy`, `channel-reply-pipeline`, `channel-runtime`,
+`channel-secret-runtime`, `command-auth`, `compat`, `config-runtime`,
+`config-schema`, `discord`, `group-access`, `infra-runtime`, `matrix`,
+`mattermost`, `media-generation-runtime-shared`, `memory-core-engine-runtime`,
+`memory-core-host-multimodal`, `memory-core-host-query`,
+`music-generation-core`, `self-hosted-provider-setup`, `telegram-account`,
+`telegram-command-config`, dan `zalouser`.
+
+### Subpath publik jarang digunakan yang tidak digunakan lagi
+
+Subpath publik yang saat ini hanya digunakan oleh satu atau dua pemilik plugin
+bawaan juga tidak digunakan lagi untuk kode plugin baru. Subpath ini tetap
+menjadi ekspor paket untuk kompatibilitas, tetapi kode baru sebaiknya memilih
+seam SDK yang aktif dibagikan atau API paket milik plugin. Maintainer melacak
+set persisnya di `scripts/lib/plugin-sdk-deprecated-public-subpaths.json` dan
+anggaran saat ini dengan `pnpm plugin-sdk:surface`.
+
+### Barrel luas yang tidak digunakan lagi
+
+Barrel re-ekspor luas ini tetap dapat dibangun untuk sumber OpenClaw dan
+pemeriksaan kompatibilitas, tetapi kode baru sebaiknya memilih subpath SDK
+terfokus: `agent-runtime`, `channel-lifecycle`, `channel-runtime`,
+`cli-runtime`, `compat`, `config-types`, `conversation-runtime`, `hook-runtime`,
+`infra-runtime`, `media-runtime`, `plugin-runtime`, `security-runtime`, dan
+`text-runtime`. `channel-runtime`, `compat`, `config-types`, `infra-runtime`,
+dan `text-runtime` tetap menjadi ekspor paket hanya untuk kompatibilitas mundur;
+gunakan subpath channel/runtime terfokus, `config-contracts`,
+`string-coerce-runtime`, `text-chunking`, `text-utility-runtime`, dan
+`logging-core` sebagai gantinya.
 
   <AccordionGroup>
-  <Accordion title="Channel subpaths">
+  <Accordion title="Subjalur kanal">
     | Subjalur | Ekspor utama |
     | --- | --- |
     | `plugin-sdk/channel-core` | `defineChannelPluginEntry`, `defineSetupPluginEntry`, `createChatChannelPlugin`, `createChannelPluginBase` |
-    | `plugin-sdk/config-schema` | Ekspor skema Zod `openclaw.json` akar (`OpenClawSchema`) |
+    | `plugin-sdk/config-schema` | Ekspor skema Zod root `openclaw.json` (`OpenClawSchema`) |
+    | `plugin-sdk/json-schema-runtime` | Pembantu validasi JSON Schema bercache untuk skema milik Plugin |
     | `plugin-sdk/channel-setup` | `createOptionalChannelSetupSurface`, `createOptionalChannelSetupAdapter`, `createOptionalChannelSetupWizard`, plus `DEFAULT_ACCOUNT_ID`, `createTopLevelChannelDmPolicy`, `setSetupChannelEnabled`, `splitSetupEntries` |
-    | `plugin-sdk/setup` | Helper wizard penyiapan bersama, prompt daftar izin, builder status penyiapan |
+    | `plugin-sdk/setup` | Pembantu wizard penyiapan bersama, prompt daftar izin, pembangun status penyiapan |
     | `plugin-sdk/setup-runtime` | `createPatchedAccountSetupAdapter`, `createEnvPatchedAccountSetupAdapter`, `createSetupInputPresenceValidator`, `noteChannelLookupFailure`, `noteChannelLookupSummary`, `promptResolvedAllowFrom`, `splitSetupEntries`, `createAllowlistSetupWizardProxy`, `createDelegatedSetupWizardProxy` |
-    | `plugin-sdk/setup-adapter-runtime` | `createEnvPatchedAccountSetupAdapter` |
+    | `plugin-sdk/setup-adapter-runtime` | Alias kompatibilitas yang usang; gunakan `plugin-sdk/setup-runtime` |
     | `plugin-sdk/setup-tools` | `formatCliCommand`, `detectBinary`, `extractArchive`, `resolveBrewExecutable`, `formatDocsLink`, `CONFIG_DIR` |
-    | `plugin-sdk/account-core` | Helper konfigurasi multi-akun/gerbang tindakan, helper fallback akun default |
-    | `plugin-sdk/account-id` | `DEFAULT_ACCOUNT_ID`, helper normalisasi ID akun |
-    | `plugin-sdk/account-resolution` | Helper pencarian akun + fallback default |
-    | `plugin-sdk/account-helpers` | Helper daftar akun/tindakan akun terbatas |
+    | `plugin-sdk/account-core` | Pembantu konfigurasi multi-akun/gerbang tindakan, pembantu fallback akun default |
+    | `plugin-sdk/account-id` | `DEFAULT_ACCOUNT_ID`, pembantu normalisasi id akun |
+    | `plugin-sdk/account-resolution` | Pembantu pencarian akun + fallback default |
+    | `plugin-sdk/account-helpers` | Pembantu daftar akun/tindakan akun yang sempit |
+    | `plugin-sdk/access-groups` | Pembantu penguraian daftar izin grup akses dan diagnostik grup yang disunting |
     | `plugin-sdk/channel-pairing` | `createChannelPairingController` |
-    | `plugin-sdk/channel-reply-pipeline` | Helper pipeline balasan lama. Kode pipeline balasan kanal baru sebaiknya menggunakan `createChannelMessageReplyPipeline` dan `resolveChannelMessageSourceReplyDeliveryMode` dari `plugin-sdk/channel-message`. |
+    | `plugin-sdk/channel-reply-pipeline` | Pembantu pipeline balasan lama. Kode pipeline balasan kanal baru harus menggunakan `createChannelMessageReplyPipeline` dan `resolveChannelMessageSourceReplyDeliveryMode` dari `plugin-sdk/channel-message`. |
     | `plugin-sdk/channel-config-helpers` | `createHybridChannelConfigAdapter`, `resolveChannelDmAccess`, `resolveChannelDmAllowFrom`, `resolveChannelDmPolicy`, `normalizeChannelDmPolicy`, `normalizeLegacyDmAliases` |
-    | `plugin-sdk/channel-config-schema` | Primitif skema konfigurasi kanal bersama plus builder Zod dan JSON/TypeBox langsung |
-    | `plugin-sdk/bundled-channel-config-schema` | Skema konfigurasi kanal OpenClaw bundel hanya untuk Plugin bundel yang dipelihara |
-    | `plugin-sdk/channel-config-schema-legacy` | Alias kompatibilitas usang untuk skema konfigurasi kanal bundel |
-    | `plugin-sdk/telegram-command-config` | Helper normalisasi/validasi perintah khusus Telegram dengan fallback kontrak bundel |
-    | `plugin-sdk/command-gating` | Helper gerbang otorisasi perintah terbatas |
+    | `plugin-sdk/channel-config-schema` | Primitif skema konfigurasi kanal bersama plus pembangun Zod dan JSON/TypeBox langsung |
+    | `plugin-sdk/bundled-channel-config-schema` | Skema konfigurasi kanal OpenClaw bawaan hanya untuk Plugin bawaan yang dipelihara |
+    | `plugin-sdk/channel-config-schema-legacy` | Alias kompatibilitas usang untuk skema konfigurasi kanal bawaan |
+    | `plugin-sdk/telegram-command-config` | Pembantu normalisasi/validasi perintah kustom Telegram dengan fallback kontrak bawaan |
+    | `plugin-sdk/command-gating` | Pembantu gerbang otorisasi perintah yang sempit |
     | `plugin-sdk/channel-policy` | `resolveChannelGroupRequireMention` |
-    | `plugin-sdk/channel-lifecycle` | `createAccountStatusSink`, `createChannelRunQueue`, dan helper siklus hidup stream draf lama. Kode finalisasi pratinjau baru sebaiknya menggunakan `plugin-sdk/channel-message`. |
-    | `plugin-sdk/channel-message` | Helper kontrak siklus hidup pesan murah seperti `defineChannelMessageAdapter`, `createChannelMessageAdapterFromOutbound`, `createReplyPrefixContext`, `resolveChannelMessageSourceReplyDeliveryMode`, facade kompatibilitas, derivasi kapabilitas final tahan lama, helper bukti kapabilitas untuk kapabilitas pengiriman/tanda terima/efek samping, `MessageReceiveContext`, bukti kebijakan ack penerimaan, `defineFinalizableLivePreviewAdapter`, `deliverWithFinalizableLivePreviewAdapter`, bukti kapabilitas pratinjau langsung dan finalizer langsung, status pemulihan tahan lama, `RenderedMessageBatch`, tipe tanda terima pesan, dan helper ID tanda terima. Lihat [API pesan kanal](/id/plugins/sdk-channel-message). `createChannelTurnReplyPipeline` lama tetap hanya untuk dispatcher kompatibilitas. |
-    | `plugin-sdk/channel-message-runtime` | Helper pengiriman runtime yang dapat memuat pengiriman keluar, termasuk `deliverInboundReplyWithMessageSendContext`, `sendDurableMessageBatch`, `withDurableMessageSendContext`, `dispatchChannelMessageReplyWithBase`, dan `recordChannelMessageReplyDispatch`. Gunakan dari modul runtime monitor/kirim, bukan file bootstrap Plugin panas. |
-    | `plugin-sdk/inbound-envelope` | Helper rute masuk bersama + builder envelope |
-    | `plugin-sdk/inbound-reply-dispatch` | Helper lama bersama untuk merekam dan mengirim masuk, predikat dispatch terlihat/final, dan kompatibilitas `deliverDurableInboundReplyPayload` usang untuk dispatcher kanal yang disiapkan. Kode penerimaan/dispatch kanal baru sebaiknya mengimpor helper siklus hidup runtime dari `plugin-sdk/channel-message-runtime`. |
-    | `plugin-sdk/messaging-targets` | Helper parsing/pencocokan target |
-    | `plugin-sdk/outbound-media` | Helper pemuatan media keluar bersama |
-    | `plugin-sdk/outbound-send-deps` | Pencarian dependensi kirim keluar ringan untuk adapter kanal |
-    | `plugin-sdk/outbound-runtime` | Helper pengiriman keluar, identitas, delegasi kirim, sesi, pemformatan, dan perencanaan payload |
-    | `plugin-sdk/poll-runtime` | Helper normalisasi polling terbatas |
-    | `plugin-sdk/thread-bindings-runtime` | Helper siklus hidup dan adapter pengikatan thread |
-    | `plugin-sdk/agent-media-payload` | Builder payload media agen lama |
-    | `plugin-sdk/conversation-runtime` | Helper percakapan/pengikatan thread, pairing, dan pengikatan terkonfigurasi |
-    | `plugin-sdk/runtime-config-snapshot` | Helper snapshot konfigurasi runtime |
-    | `plugin-sdk/runtime-group-policy` | Helper resolusi kebijakan grup runtime |
-    | `plugin-sdk/channel-status` | Helper snapshot/ringkasan status kanal bersama |
-    | `plugin-sdk/channel-config-primitives` | Primitif skema konfigurasi kanal terbatas |
-    | `plugin-sdk/channel-config-writes` | Helper otorisasi penulisan konfigurasi kanal |
+    | `plugin-sdk/channel-ingress` | Fasad kompatibilitas ingress kanal level rendah yang usang. Jalur penerimaan baru harus menggunakan `plugin-sdk/channel-ingress-runtime`. |
+    | `plugin-sdk/channel-ingress-runtime` | Resolver runtime ingress kanal level tinggi eksperimental dan pembangun fakta rute untuk jalur penerimaan kanal yang dimigrasikan. Lebih disarankan daripada menyusun daftar izin efektif, daftar izin perintah, dan proyeksi lama di setiap Plugin. Lihat [API ingress kanal](/id/plugins/sdk-channel-ingress). |
+    | `plugin-sdk/channel-lifecycle` | `createAccountStatusSink`, `createChannelRunQueue`, dan pembantu siklus hidup stream draf lama. Kode finalisasi pratinjau baru harus menggunakan `plugin-sdk/channel-message`. |
+    | `plugin-sdk/channel-message` | Pembantu kontrak siklus hidup pesan murah seperti `defineChannelMessageAdapter`, `createChannelMessageAdapterFromOutbound`, `createChannelMessageReplyPipeline`, `createReplyPrefixContext`, `resolveChannelMessageSourceReplyDeliveryMode`, derivasi kapabilitas final tahan lama, pembantu bukti kapabilitas untuk kapabilitas pengiriman/tanda terima/efek samping, `MessageReceiveContext`, bukti kebijakan ack penerimaan, `defineFinalizableLivePreviewAdapter`, `deliverWithFinalizableLivePreviewAdapter`, bukti kapabilitas pratinjau langsung dan finalizer langsung, status pemulihan tahan lama, `RenderedMessageBatch`, tipe tanda terima pesan, dan pembantu id tanda terima. Lihat [API pesan kanal](/id/plugins/sdk-channel-message). Fasad dispatch balasan lama hanya kompatibilitas yang usang. |
+    | `plugin-sdk/channel-message-runtime` | Pembantu pengiriman runtime yang dapat memuat pengiriman outbound, termasuk `deliverInboundReplyWithMessageSendContext`, `sendDurableMessageBatch`, dan `withDurableMessageSendContext`. Bridge dispatch balasan yang usang tetap dapat diimpor hanya untuk dispatcher kompatibilitas. Gunakan dari modul runtime pemantauan/pengiriman, bukan file bootstrap Plugin panas. |
+    | `plugin-sdk/inbound-envelope` | Pembantu rute inbound + pembangun envelope bersama |
+    | `plugin-sdk/inbound-reply-dispatch` | Pembantu lama bersama untuk merekam dan men-dispatch inbound, predikat dispatch terlihat/final, dan kompatibilitas `deliverDurableInboundReplyPayload` yang usang untuk dispatcher kanal yang disiapkan. Kode penerimaan/dispatch kanal baru harus mengimpor pembantu siklus hidup runtime dari `plugin-sdk/channel-message-runtime`. |
+    | `plugin-sdk/messaging-targets` | Pembantu penguraian/pencocokan target |
+    | `plugin-sdk/outbound-media` | Pembantu pemuatan media outbound bersama |
+    | `plugin-sdk/outbound-send-deps` | Pencarian dependensi pengiriman outbound ringan untuk adapter kanal |
+    | `plugin-sdk/outbound-runtime` | Pembantu identitas outbound, delegasi pengiriman, sesi, pemformatan, dan perencanaan payload. Pembantu pengiriman langsung seperti `deliverOutboundPayloads` adalah substrat kompatibilitas yang usang; gunakan `plugin-sdk/channel-message-runtime` untuk jalur pengiriman baru. |
+    | `plugin-sdk/poll-runtime` | Pembantu normalisasi polling yang sempit |
+    | `plugin-sdk/thread-bindings-runtime` | Pembantu siklus hidup binding utas dan adapter |
+    | `plugin-sdk/agent-media-payload` | Pembangun payload media agen lama |
+    | `plugin-sdk/conversation-runtime` | Pembantu percakapan/binding utas, pemasangan, dan binding terkonfigurasi |
+    | `plugin-sdk/runtime-config-snapshot` | Pembantu snapshot konfigurasi runtime |
+    | `plugin-sdk/runtime-group-policy` | Pembantu resolusi kebijakan grup runtime |
+    | `plugin-sdk/channel-status` | Pembantu snapshot/ringkasan status kanal bersama |
+    | `plugin-sdk/channel-config-primitives` | Primitif skema konfigurasi kanal yang sempit |
+    | `plugin-sdk/channel-config-writes` | Pembantu otorisasi penulisan konfigurasi kanal |
     | `plugin-sdk/channel-plugin-common` | Ekspor prelude Plugin kanal bersama |
-    | `plugin-sdk/allowlist-config-edit` | Helper edit/baca konfigurasi daftar izin |
-    | `plugin-sdk/group-access` | Helper keputusan akses grup bersama |
-    | `plugin-sdk/direct-dm` | Helper auth/guard DM langsung bersama |
-    | `plugin-sdk/discord` | Facade kompatibilitas Discord yang usang untuk `@openclaw/discord@2026.3.13` yang dipublikasikan dan kompatibilitas pemilik yang dilacak; Plugin baru sebaiknya menggunakan subjalur SDK kanal generik |
-    | `plugin-sdk/telegram-account` | Facade kompatibilitas resolusi akun Telegram yang usang untuk kompatibilitas pemilik yang dilacak; Plugin baru sebaiknya menggunakan helper runtime yang diinjeksi atau subjalur SDK kanal generik |
-    | `plugin-sdk/zalouser` | Facade kompatibilitas Zalo Personal yang usang untuk paket Lark/Zalo yang dipublikasikan yang masih mengimpor otorisasi perintah pengirim; Plugin baru sebaiknya menggunakan `plugin-sdk/command-auth` |
-    | `plugin-sdk/interactive-runtime` | Helper presentasi pesan semantik, pengiriman, dan balasan interaktif lama. Lihat [Presentasi Pesan](/id/plugins/message-presentation) |
-    | `plugin-sdk/channel-inbound` | Barrel kompatibilitas untuk debounce masuk, pencocokan mention, helper kebijakan mention, dan helper envelope |
-    | `plugin-sdk/channel-inbound-debounce` | Helper debounce masuk terbatas |
-    | `plugin-sdk/channel-mention-gating` | Helper kebijakan mention, penanda mention, dan teks mention terbatas tanpa permukaan runtime masuk yang lebih luas |
-    | `plugin-sdk/channel-envelope` | Helper pemformatan envelope masuk terbatas |
-    | `plugin-sdk/channel-location` | Helper konteks lokasi kanal dan pemformatan |
-    | `plugin-sdk/channel-logging` | Helper logging kanal untuk drop masuk dan kegagalan typing/ack |
+    | `plugin-sdk/allowlist-config-edit` | Pembantu edit/baca konfigurasi daftar izin |
+    | `plugin-sdk/group-access` | Pembantu keputusan akses grup bersama |
+    | `plugin-sdk/direct-dm` | Pembantu auth/guard DM langsung bersama |
+    | `plugin-sdk/discord` | Fasad kompatibilitas Discord yang usang untuk `@openclaw/discord@2026.3.13` yang dipublikasikan dan kompatibilitas pemilik yang dilacak; Plugin baru harus menggunakan subjalur SDK kanal generik |
+    | `plugin-sdk/telegram-account` | Fasad kompatibilitas resolusi akun Telegram yang usang untuk kompatibilitas pemilik yang dilacak; Plugin baru harus menggunakan pembantu runtime yang diinjeksi atau subjalur SDK kanal generik |
+    | `plugin-sdk/zalouser` | Fasad kompatibilitas Zalo Personal yang usang untuk paket Lark/Zalo yang dipublikasikan yang masih mengimpor otorisasi perintah pengirim; Plugin baru harus menggunakan `plugin-sdk/command-auth` |
+    | `plugin-sdk/interactive-runtime` | Presentasi pesan semantik, pengiriman, dan pembantu balasan interaktif lama. Lihat [Presentasi Pesan](/id/plugins/message-presentation) |
+    | `plugin-sdk/channel-inbound` | Barrel kompatibilitas untuk debounce inbound, pencocokan mention, pembantu kebijakan mention, dan pembantu envelope |
+    | `plugin-sdk/channel-inbound-debounce` | Pembantu debounce inbound yang sempit |
+    | `plugin-sdk/channel-mention-gating` | Pembantu kebijakan mention, marker mention, dan teks mention yang sempit tanpa permukaan runtime inbound yang lebih luas |
+    | `plugin-sdk/channel-envelope` | Pembantu pemformatan envelope inbound yang sempit |
+    | `plugin-sdk/channel-location` | Konteks lokasi kanal dan pembantu pemformatan |
+    | `plugin-sdk/channel-logging` | Pembantu logging kanal untuk drop inbound dan kegagalan mengetik/ack |
     | `plugin-sdk/channel-send-result` | Tipe hasil balasan |
-    | `plugin-sdk/channel-actions` | Helper tindakan pesan kanal, plus helper skema native usang yang dipertahankan untuk kompatibilitas Plugin |
-    | `plugin-sdk/channel-route` | Helper normalisasi rute bersama, resolusi target berbasis parser, stringifikasi ID thread, kunci rute dedupe/compact, tipe target terurai, dan perbandingan rute/target |
-    | `plugin-sdk/channel-targets` | Helper parsing target; pemanggil perbandingan rute sebaiknya menggunakan `plugin-sdk/channel-route` |
+    | `plugin-sdk/channel-actions` | Pembantu tindakan pesan kanal, plus pembantu skema native yang usang yang dipertahankan untuk kompatibilitas Plugin |
+    | `plugin-sdk/channel-route` | Normalisasi rute bersama, resolusi target berbasis parser, stringifikasi id utas, kunci rute dedupe/compact, tipe target terurai, dan pembantu perbandingan rute/target |
+    | `plugin-sdk/channel-targets` | Pembantu penguraian target; pemanggil perbandingan rute harus menggunakan `plugin-sdk/channel-route` |
     | `plugin-sdk/channel-contract` | Tipe kontrak kanal |
-    | `plugin-sdk/channel-feedback` | Wiring umpan balik/reaksi |
-    | `plugin-sdk/channel-secret-runtime` | Helper kontrak rahasia terbatas seperti `collectSimpleChannelFieldAssignments`, `getChannelSurface`, `pushAssignment`, dan tipe target rahasia |
+    | `plugin-sdk/channel-feedback` | Pengabelan umpan balik/reaksi |
+    | `plugin-sdk/channel-secret-runtime` | Pembantu kontrak rahasia yang sempit seperti `collectSimpleChannelFieldAssignments`, `getChannelSurface`, `pushAssignment`, dan tipe target rahasia |
   </Accordion>
 
   <Accordion title="Subjalur penyedia">
     | Subjalur | Ekspor utama |
     | --- | --- |
     | `plugin-sdk/provider-entry` | `defineSingleProviderPluginEntry` |
-    | `plugin-sdk/lmstudio` | Facade penyedia LM Studio yang didukung untuk penyiapan, penemuan katalog, dan persiapan model runtime |
-    | `plugin-sdk/lmstudio-runtime` | Facade runtime LM Studio yang didukung untuk default server lokal, penemuan model, header permintaan, dan helper model yang dimuat |
-    | `plugin-sdk/provider-setup` | Helper penyiapan penyedia lokal/hosting sendiri yang dikurasi |
-    | `plugin-sdk/self-hosted-provider-setup` | Helper penyiapan penyedia hosting sendiri yang kompatibel dengan OpenAI dan terfokus |
+    | `plugin-sdk/lmstudio` | Fasad penyedia LM Studio yang didukung untuk penyiapan, penemuan katalog, dan persiapan model runtime |
+    | `plugin-sdk/lmstudio-runtime` | Fasad runtime LM Studio yang didukung untuk default server lokal, penemuan model, header permintaan, dan helper model yang dimuat |
+    | `plugin-sdk/provider-setup` | Helper penyiapan penyedia lokal/self-hosted yang dikurasi |
+    | `plugin-sdk/self-hosted-provider-setup` | Helper penyiapan penyedia self-hosted yang kompatibel dengan OpenAI dan terfokus |
     | `plugin-sdk/cli-backend` | Default backend CLI + konstanta watchdog |
-    | `plugin-sdk/provider-auth-runtime` | Helper resolusi kunci API runtime untuk Plugin penyedia |
-    | `plugin-sdk/provider-auth-api-key` | Helper orientasi/penulisan profil kunci API seperti `upsertApiKeyProfile` |
-    | `plugin-sdk/provider-auth-result` | Builder hasil auth OAuth standar |
-    | `plugin-sdk/provider-auth-login` | Helper login interaktif bersama untuk Plugin penyedia |
-    | `plugin-sdk/provider-env-vars` | Helper pencarian variabel lingkungan auth penyedia |
-    | `plugin-sdk/provider-auth` | `createProviderApiKeyAuthMethod`, `ensureApiKeyFromOptionEnvOrPrompt`, `upsertAuthProfile`, `upsertApiKeyProfile`, `writeOAuthCredentials`, ekspor kompatibilitas `resolveOpenClawAgentDir` yang sudah usang |
-    | `plugin-sdk/provider-model-shared` | `ProviderReplayFamily`, `buildProviderReplayFamilyHooks`, `normalizeModelCompat`, builder kebijakan replay bersama, helper endpoint penyedia, dan helper normalisasi ID model seperti `normalizeNativeXaiModelId` |
+    | `plugin-sdk/provider-auth-runtime` | Helper resolusi kunci API runtime untuk plugin penyedia |
+    | `plugin-sdk/provider-auth-api-key` | Helper onboarding/penulisan profil kunci API seperti `upsertApiKeyProfile` |
+    | `plugin-sdk/provider-auth-result` | Builder hasil autentikasi OAuth standar |
+    | `plugin-sdk/provider-env-vars` | Helper pencarian variabel lingkungan autentikasi penyedia |
+    | `plugin-sdk/provider-auth` | `createProviderApiKeyAuthMethod`, `ensureApiKeyFromOptionEnvOrPrompt`, `upsertAuthProfile`, `upsertApiKeyProfile`, `writeOAuthCredentials`, ekspor kompatibilitas `resolveOpenClawAgentDir` yang sudah tidak digunakan |
+    | `plugin-sdk/provider-model-shared` | `ProviderReplayFamily`, `buildProviderReplayFamilyHooks`, `normalizeModelCompat`, builder kebijakan replay bersama, helper endpoint penyedia, dan helper normalisasi ID model bersama |
     | `plugin-sdk/provider-catalog-runtime` | Hook runtime augmentasi katalog penyedia dan seam registri plugin-penyedia untuk pengujian kontrak |
     | `plugin-sdk/provider-catalog-shared` | `findCatalogTemplate`, `buildSingleProviderApiKeyCatalog`, `buildManifestModelProviderConfig`, `supportsNativeStreamingUsageCompat`, `applyProviderNativeStreamingUsageCompat` |
-    | `plugin-sdk/provider-http` | Helper kemampuan HTTP/endpoint penyedia generik, galat HTTP penyedia, dan helper formulir multipart transkripsi audio |
+    | `plugin-sdk/provider-http` | Helper kemampuan HTTP/endpoint penyedia generik, error HTTP penyedia, dan helper formulir multipart transkripsi audio |
     | `plugin-sdk/provider-web-fetch-contract` | Helper kontrak konfigurasi/pemilihan web-fetch yang sempit seperti `enablePluginInConfig` dan `WebFetchProviderPlugin` |
     | `plugin-sdk/provider-web-fetch` | Helper registrasi/cache penyedia web-fetch |
-    | `plugin-sdk/provider-web-search-config-contract` | Helper konfigurasi/kredensial web-search yang sempit untuk penyedia yang tidak memerlukan pengabelan pengaktifan Plugin |
-    | `plugin-sdk/provider-web-search-contract` | Helper kontrak konfigurasi/kredensial web-search yang sempit seperti `createWebSearchProviderContractFields`, `enablePluginInConfig`, `resolveProviderWebSearchPluginConfig`, dan setter/getter kredensial bercakupan |
+    | `plugin-sdk/provider-web-search-config-contract` | Helper konfigurasi/kredensial web-search yang sempit untuk penyedia yang tidak memerlukan pengabelan aktivasi plugin |
+    | `plugin-sdk/provider-web-search-contract` | Helper kontrak konfigurasi/kredensial web-search yang sempit seperti `createWebSearchProviderContractFields`, `enablePluginInConfig`, `resolveProviderWebSearchPluginConfig`, dan setter/getter kredensial berskala |
     | `plugin-sdk/provider-web-search` | Helper registrasi/cache/runtime penyedia web-search |
-    | `plugin-sdk/provider-tools` | `ProviderToolCompatFamily`, `buildProviderToolCompatFamilyHooks`, pembersihan skema Gemini + diagnostik, dan helper kompatibilitas xAI seperti `resolveXaiModelCompatPatch` / `applyXaiModelCompat` |
-    | `plugin-sdk/provider-usage` | `fetchClaudeUsage` dan yang serupa |
-    | `plugin-sdk/provider-stream` | `ProviderStreamFamily`, `buildProviderStreamFamilyHooks`, `composeProviderStreamWrappers`, tipe wrapper stream, dan helper wrapper bersama Anthropic/Bedrock/DeepSeek V4/Google/Kilocode/Moonshot/OpenAI/OpenRouter/Z.A.I/MiniMax/Copilot |
-    | `plugin-sdk/provider-transport-runtime` | Helper transport penyedia native seperti fetch terjaga, transformasi pesan transport, dan stream peristiwa transport yang dapat ditulis |
-    | `plugin-sdk/provider-onboard` | Helper patch konfigurasi orientasi |
+    | `plugin-sdk/provider-tools` | `ProviderToolCompatFamily`, `buildProviderToolCompatFamilyHooks`, dan pembersihan skema Gemini + diagnostik |
+    | `plugin-sdk/provider-usage` | `fetchClaudeUsage` dan sejenisnya |
+    | `plugin-sdk/provider-stream` | `ProviderStreamFamily`, `buildProviderStreamFamilyHooks`, `composeProviderStreamWrappers`, tipe wrapper stream, dan helper wrapper Anthropic/Bedrock/DeepSeek V4/Google/Kilocode/Moonshot/OpenAI/OpenRouter/Z.A.I/MiniMax/Copilot bersama |
+    | `plugin-sdk/provider-transport-runtime` | Helper transport penyedia native seperti fetch berpelindung, transformasi pesan transport, dan stream peristiwa transport yang dapat ditulis |
+    | `plugin-sdk/provider-onboard` | Helper patch konfigurasi onboarding |
     | `plugin-sdk/global-singleton` | Helper singleton/map/cache lokal proses |
     | `plugin-sdk/group-activation` | Helper mode aktivasi grup dan parsing perintah yang sempit |
   </Accordion>
 
-  <Accordion title="Subjalur auth dan keamanan">
+  <Accordion title="Subjalur autentikasi dan keamanan">
     | Subjalur | Ekspor utama |
     | --- | --- |
     | `plugin-sdk/command-auth` | `resolveControlCommandGate`, helper registri perintah termasuk pemformatan menu argumen dinamis, helper otorisasi pengirim |
     | `plugin-sdk/command-status` | Builder pesan perintah/bantuan seperti `buildCommandsMessagePaginated` dan `buildHelpMessage` |
-    | `plugin-sdk/approval-auth-runtime` | Helper resolusi pemberi persetujuan dan auth tindakan dalam chat yang sama |
+    | `plugin-sdk/approval-auth-runtime` | Helper resolusi pemberi persetujuan dan autentikasi tindakan dalam chat yang sama |
     | `plugin-sdk/approval-client-runtime` | Helper profil/filter persetujuan eksekusi native |
-    | `plugin-sdk/approval-delivery-runtime` | Adaptor kemampuan/pengiriman persetujuan native |
+    | `plugin-sdk/approval-delivery-runtime` | Adapter kemampuan/pengiriman persetujuan native |
     | `plugin-sdk/approval-gateway-runtime` | Helper resolusi Gateway persetujuan bersama |
-    | `plugin-sdk/approval-handler-adapter-runtime` | Helper pemuatan adaptor persetujuan native ringan untuk entrypoint channel panas |
-    | `plugin-sdk/approval-handler-runtime` | Helper runtime handler persetujuan yang lebih luas; gunakan seam adaptor/Gateway yang lebih sempit jika sudah cukup |
+    | `plugin-sdk/approval-handler-adapter-runtime` | Helper pemuatan adapter persetujuan native ringan untuk entrypoint channel panas |
+    | `plugin-sdk/approval-handler-runtime` | Helper runtime handler persetujuan yang lebih luas; pilih seam adapter/Gateway yang lebih sempit saat sudah cukup |
     | `plugin-sdk/approval-native-runtime` | Helper target persetujuan native + pengikatan akun |
-    | `plugin-sdk/approval-reply-runtime` | Helper payload balasan persetujuan eksekusi/Plugin |
-    | `plugin-sdk/approval-runtime` | Helper payload persetujuan eksekusi/Plugin, helper routing/runtime persetujuan native, dan helper tampilan persetujuan terstruktur seperti `formatApprovalDisplayPath` |
+    | `plugin-sdk/approval-reply-runtime` | Helper payload balasan persetujuan exec/plugin |
+    | `plugin-sdk/approval-runtime` | Helper payload persetujuan exec/plugin, helper routing/runtime persetujuan native, dan helper tampilan persetujuan terstruktur seperti `formatApprovalDisplayPath` |
     | `plugin-sdk/reply-dedupe` | Helper reset deduplikasi balasan masuk yang sempit |
     | `plugin-sdk/channel-contract-testing` | Helper pengujian kontrak channel yang sempit tanpa barrel pengujian luas |
-    | `plugin-sdk/command-auth-native` | Auth perintah native, pemformatan menu argumen dinamis, dan helper target sesi native |
+    | `plugin-sdk/command-auth-native` | Autentikasi perintah native, pemformatan menu argumen dinamis, dan helper target sesi native |
     | `plugin-sdk/command-detection` | Helper deteksi perintah bersama |
     | `plugin-sdk/command-primitives-runtime` | Predikat teks perintah ringan untuk jalur channel panas |
-    | `plugin-sdk/command-surface` | Helper normalisasi body perintah dan permukaan perintah |
+    | `plugin-sdk/command-surface` | Helper normalisasi isi perintah dan permukaan perintah |
     | `plugin-sdk/allow-from` | `formatAllowFromLowercase` |
-    | `plugin-sdk/channel-secret-runtime` | Helper pengumpulan kontrak secret yang sempit untuk permukaan secret channel/Plugin |
-    | `plugin-sdk/secret-ref-runtime` | Helper pengetikan `coerceSecretRef` dan SecretRef yang sempit untuk parsing kontrak/konfigurasi secret |
-    | `plugin-sdk/security-runtime` | Helper bersama untuk trust, gating DM, file/jalur berbatas root termasuk penulisan hanya-buat, penggantian file atomik sinkron/asinkron, penulisan temp saudara, fallback pemindahan lintas-perangkat, helper penyimpanan file privat, penjaga induk symlink, konten eksternal, redaksi teks sensitif, perbandingan secret waktu-konstan, dan helper pengumpulan secret |
-    | `plugin-sdk/ssrf-policy` | Helper kebijakan SSRF untuk allowlist host dan jaringan privat |
-    | `plugin-sdk/ssrf-dispatcher` | Helper pinned-dispatcher yang sempit tanpa permukaan runtime infrastruktur luas |
-    | `plugin-sdk/ssrf-runtime` | Pinned-dispatcher, fetch terjaga SSRF, galat SSRF, dan helper kebijakan SSRF |
-    | `plugin-sdk/secret-input` | Helper parsing input secret |
+    | `plugin-sdk/channel-secret-runtime` | Helper pengumpulan kontrak rahasia yang sempit untuk permukaan rahasia channel/plugin |
+    | `plugin-sdk/secret-ref-runtime` | Helper pengetikan `coerceSecretRef` dan SecretRef yang sempit untuk parsing kontrak/konfigurasi rahasia |
+    | `plugin-sdk/security-runtime` | Helper kepercayaan, gating DM, file/path berbatas root bersama termasuk penulisan hanya-buat, penggantian file atomik sinkron/asinkron, penulisan temp sibling, fallback pemindahan lintas perangkat, helper penyimpanan file privat, guard induk symlink, konten eksternal, redaksi teks sensitif, perbandingan rahasia waktu-konstan, dan helper pengumpulan rahasia |
+    | `plugin-sdk/ssrf-policy` | Helper allowlist host dan kebijakan SSRF jaringan privat |
+    | `plugin-sdk/ssrf-dispatcher` | Helper dispatcher terpin sempit tanpa permukaan runtime infrastruktur luas |
+    | `plugin-sdk/ssrf-runtime` | Dispatcher terpin, fetch berpelindung SSRF, error SSRF, dan helper kebijakan SSRF |
+    | `plugin-sdk/secret-input` | Helper parsing input rahasia |
     | `plugin-sdk/webhook-ingress` | Helper permintaan/target Webhook dan koersi websocket/body mentah |
     | `plugin-sdk/webhook-request-guards` | Helper ukuran/timeout body permintaan |
   </Accordion>
 
-  <Accordion title="Runtime and storage subpaths">
+  <Accordion title="Subjalur runtime dan penyimpanan">
     | Subjalur | Ekspor utama |
     | --- | --- |
-    | `plugin-sdk/runtime` | Pembantu luas untuk runtime/pencatatan log/cadangan/instalasi-plugin |
-    | `plugin-sdk/runtime-env` | Pembantu sempit untuk env runtime, logger, batas waktu, percobaan ulang, dan backoff |
-    | `plugin-sdk/browser-config` | Fasad konfigurasi browser yang didukung untuk profil/default yang dinormalisasi, penguraian URL CDP, dan pembantu autentikasi kontrol-browser |
-    | `plugin-sdk/channel-runtime-context` | Pembantu pendaftaran dan pencarian konteks-runtime channel generik |
-    | `plugin-sdk/matrix` | Fasad kompatibilitas Matrix yang tidak digunakan lagi untuk paket channel pihak ketiga lama; Plugin baru sebaiknya mengimpor `plugin-sdk/run-command` secara langsung |
-    | `plugin-sdk/mattermost` | Fasad kompatibilitas Mattermost yang tidak digunakan lagi untuk paket channel pihak ketiga lama; Plugin baru sebaiknya mengimpor subjalur SDK generik secara langsung |
+    | `plugin-sdk/runtime` | Helper runtime/logging/cadangan/pemasangan-plugin yang luas |
+    | `plugin-sdk/runtime-env` | Helper env runtime, logger, timeout, retry, dan backoff yang sempit |
+    | `plugin-sdk/browser-config` | Fasad konfigurasi browser yang didukung untuk profil/default ternormalisasi, penguraian URL CDP, dan helper autentikasi kontrol-browser |
+    | `plugin-sdk/channel-runtime-context` | Helper registrasi dan pencarian konteks runtime channel generik |
+    | `plugin-sdk/matrix` | Fasad kompatibilitas Matrix yang tidak digunakan lagi untuk paket channel pihak ketiga lama; plugin baru sebaiknya mengimpor `plugin-sdk/run-command` secara langsung |
+    | `plugin-sdk/mattermost` | Fasad kompatibilitas Mattermost yang tidak digunakan lagi untuk paket channel pihak ketiga lama; plugin baru sebaiknya mengimpor subjalur SDK generik secara langsung |
     | `plugin-sdk/runtime-store` | `createPluginRuntimeStore` |
-    | `plugin-sdk/plugin-runtime` | Pembantu bersama untuk perintah/plugin/hook/http/interaktif Plugin |
-    | `plugin-sdk/hook-runtime` | Pembantu bersama untuk alur internal Webhook/hook |
-    | `plugin-sdk/lazy-runtime` | Pembantu impor/pengikatan runtime lambat seperti `createLazyRuntimeModule`, `createLazyRuntimeMethod`, dan `createLazyRuntimeSurface` |
-    | `plugin-sdk/process-runtime` | Pembantu eksekusi proses |
-    | `plugin-sdk/cli-runtime` | Pembantu CLI untuk pemformatan, tunggu, versi, pemanggilan-argumen, dan grup-perintah lambat |
-    | `plugin-sdk/gateway-runtime` | Klien Gateway, pembantu mulai klien siap-event-loop, RPC CLI Gateway, galat protokol Gateway, dan pembantu patch status-channel |
-    | `plugin-sdk/config-types` | Permukaan konfigurasi khusus-tipe untuk bentuk konfigurasi Plugin seperti `OpenClawConfig` dan tipe konfigurasi channel/provider |
-    | `plugin-sdk/plugin-config-runtime` | Pembantu pencarian konfigurasi-plugin runtime seperti `requireRuntimeConfig`, `resolvePluginConfigObject`, dan `resolveLivePluginConfigObject` |
-    | `plugin-sdk/config-mutation` | Pembantu mutasi konfigurasi transaksional seperti `mutateConfigFile`, `replaceConfigFile`, dan `logConfigUpdated` |
-    | `plugin-sdk/runtime-config-snapshot` | Pembantu snapshot konfigurasi proses saat ini seperti `getRuntimeConfig`, `getRuntimeConfigSnapshot`, dan penyetel snapshot pengujian |
-    | `plugin-sdk/telegram-command-config` | Normalisasi nama/deskripsi perintah Telegram dan pemeriksaan duplikat/konflik, bahkan ketika permukaan kontrak Telegram bawaan tidak tersedia |
-    | `plugin-sdk/text-autolink-runtime` | Deteksi autolink referensi-file tanpa barrel text-runtime yang luas |
-    | `plugin-sdk/approval-runtime` | Pembantu persetujuan exec/Plugin, pembangun kapabilitas-persetujuan, pembantu auth/profil, pembantu routing/runtime native, dan pemformatan jalur tampilan persetujuan terstruktur |
-    | `plugin-sdk/reply-runtime` | Pembantu runtime bersama untuk masuk/balasan, pemotongan, dispatch, Heartbeat, perencana balasan |
-    | `plugin-sdk/reply-dispatch-runtime` | Pembantu sempit untuk dispatch/finalisasi balasan dan label percakapan |
-    | `plugin-sdk/reply-history` | Pembantu dan penanda riwayat-balasan jendela-pendek bersama seperti `buildHistoryContext`, `HISTORY_CONTEXT_MARKER`, `recordPendingHistoryEntry`, dan `clearHistoryEntriesIfEnabled` |
+    | `plugin-sdk/plugin-runtime` | Helper command/hook/http/interaktif plugin bersama |
+    | `plugin-sdk/hook-runtime` | Helper pipeline webhook/hook internal bersama |
+    | `plugin-sdk/lazy-runtime` | Helper impor/binding runtime malas seperti `createLazyRuntimeModule`, `createLazyRuntimeMethod`, dan `createLazyRuntimeSurface` |
+    | `plugin-sdk/process-runtime` | Helper eksekusi proses |
+    | `plugin-sdk/cli-runtime` | Helper pemformatan CLI, tunggu, versi, pemanggilan argumen, dan grup command malas |
+    | `plugin-sdk/gateway-runtime` | Klien Gateway, helper memulai klien yang siap event loop, RPC CLI gateway, galat protokol gateway, dan helper patch status channel |
+    | `plugin-sdk/config-contracts` | Permukaan konfigurasi khusus tipe yang terfokus untuk bentuk konfigurasi plugin seperti `OpenClawConfig` dan tipe konfigurasi channel/provider |
+    | `plugin-sdk/plugin-config-runtime` | Helper pencarian konfigurasi plugin runtime seperti `requireRuntimeConfig`, `resolvePluginConfigObject`, dan `resolveLivePluginConfigObject` |
+    | `plugin-sdk/config-mutation` | Helper mutasi konfigurasi transaksional seperti `mutateConfigFile`, `replaceConfigFile`, dan `logConfigUpdated` |
+    | `plugin-sdk/runtime-config-snapshot` | Helper snapshot konfigurasi proses saat ini seperti `getRuntimeConfig`, `getRuntimeConfigSnapshot`, dan setter snapshot pengujian |
+    | `plugin-sdk/telegram-command-config` | Normalisasi nama/deskripsi command Telegram dan pemeriksaan duplikat/konflik, bahkan saat permukaan kontrak Telegram bawaan tidak tersedia |
+    | `plugin-sdk/text-autolink-runtime` | Deteksi autolink referensi file tanpa barrel teks yang luas |
+    | `plugin-sdk/approval-runtime` | Helper persetujuan exec/plugin, builder kapabilitas persetujuan, helper auth/profil, helper routing/runtime native, dan pemformatan jalur tampilan persetujuan terstruktur |
+    | `plugin-sdk/reply-runtime` | Helper runtime inbound/reply bersama, chunking, dispatch, heartbeat, perencana balasan |
+    | `plugin-sdk/reply-dispatch-runtime` | Helper dispatch/finalisasi balasan dan label percakapan yang sempit |
+    | `plugin-sdk/reply-history` | Helper dan marker riwayat balasan jendela pendek bersama seperti `buildHistoryContext`, `HISTORY_CONTEXT_MARKER`, `recordPendingHistoryEntry`, dan `clearHistoryEntriesIfEnabled` |
     | `plugin-sdk/reply-reference` | `createReplyReferencePlanner` |
-    | `plugin-sdk/reply-chunking` | Pembantu sempit untuk pemotongan teks/markdown |
-    | `plugin-sdk/session-store-runtime` | Pembantu jalur penyimpanan sesi, kunci-sesi, diperbarui-pada, dan mutasi penyimpanan |
-    | `plugin-sdk/cron-store-runtime` | Pembantu jalur/muat/simpan penyimpanan Cron |
-    | `plugin-sdk/state-paths` | Pembantu jalur direktori State/OAuth |
-    | `plugin-sdk/routing` | Pembantu routing/kunci-sesi/pengikatan akun seperti `resolveAgentRoute`, `buildAgentSessionKey`, dan `resolveDefaultAgentBoundAccountId` |
-    | `plugin-sdk/status-helpers` | Pembantu bersama untuk ringkasan status channel/akun, default status-runtime, dan metadata masalah |
-    | `plugin-sdk/target-resolver-runtime` | Pembantu resolver target bersama |
-    | `plugin-sdk/string-normalization-runtime` | Pembantu normalisasi slug/string |
-    | `plugin-sdk/request-url` | Ekstrak URL string dari input mirip fetch/request |
-    | `plugin-sdk/run-command` | Runner perintah berbatas waktu dengan hasil stdout/stderr yang dinormalisasi |
-    | `plugin-sdk/param-readers` | Pembaca param alat/CLI umum |
-    | `plugin-sdk/tool-payload` | Ekstrak payload yang dinormalisasi dari objek hasil alat |
-    | `plugin-sdk/tool-send` | Ekstrak kolom target kirim kanonis dari arg alat |
-    | `plugin-sdk/temp-path` | Pembantu jalur unduhan-sementara bersama dan ruang kerja sementara aman privat |
-    | `plugin-sdk/logging-core` | Pembantu logger subsistem dan redaksi |
-    | `plugin-sdk/markdown-table-runtime` | Pembantu mode dan konversi tabel Markdown |
-    | `plugin-sdk/model-session-runtime` | Pembantu override model/sesi seperti `applyModelOverrideToSessionEntry` dan `resolveAgentMaxConcurrent` |
-    | `plugin-sdk/talk-config-runtime` | Pembantu resolusi konfigurasi provider talk |
-    | `plugin-sdk/json-store` | Pembantu kecil untuk baca/tulis status JSON |
-    | `plugin-sdk/file-lock` | Pembantu kunci-file re-entrant |
-    | `plugin-sdk/persistent-dedupe` | Pembantu cache dedupe berbasis disk |
-    | `plugin-sdk/acp-runtime` | Pembantu runtime/sesi ACP dan dispatch-balasan |
-    | `plugin-sdk/acp-runtime-backend` | Pembantu ringan untuk pendaftaran backend ACP dan dispatch-balasan bagi Plugin yang dimuat saat startup |
-    | `plugin-sdk/acp-binding-resolve-runtime` | Resolusi pengikatan ACP baca-saja tanpa impor startup siklus hidup |
-    | `plugin-sdk/agent-config-primitives` | Primitif skema-konfigurasi runtime agen yang sempit |
-    | `plugin-sdk/boolean-param` | Pembaca param boolean longgar |
-    | `plugin-sdk/dangerous-name-runtime` | Pembantu resolusi pencocokan nama-berbahaya |
-    | `plugin-sdk/device-bootstrap` | Pembantu bootstrap perangkat dan token pemasangan |
-    | `plugin-sdk/extension-shared` | Primitif pembantu bersama untuk channel pasif, status, dan proxy ambient |
-    | `plugin-sdk/models-provider-runtime` | Pembantu balasan perintah/provider `/models` |
-    | `plugin-sdk/skill-commands-runtime` | Pembantu pencantuman perintah Skill |
-    | `plugin-sdk/native-command-registry` | Pembantu registry/bangun/serialisasi perintah native |
-    | `plugin-sdk/agent-harness` | Permukaan Plugin tepercaya eksperimental untuk harness agen tingkat-rendah: tipe harness, pembantu kemudi/batal run-aktif, pembantu bridge alat OpenClaw, pembantu kebijakan alat rencana-runtime, klasifikasi hasil terminal, pembantu pemformatan/detail progres alat, dan utilitas hasil percobaan |
-    | `plugin-sdk/provider-zai-endpoint` | Pembantu deteksi endpoint Z.AI |
-    | `plugin-sdk/async-lock-runtime` | Pembantu kunci async lokal-proses untuk file status runtime kecil |
-    | `plugin-sdk/channel-activity-runtime` | Pembantu telemetri aktivitas channel |
-    | `plugin-sdk/concurrency-runtime` | Pembantu konkurensi tugas async berbatas |
-    | `plugin-sdk/dedupe-runtime` | Pembantu cache dedupe dalam-memori |
-    | `plugin-sdk/delivery-queue-runtime` | Pembantu drain pengiriman-tertunda keluar |
-    | `plugin-sdk/file-access-runtime` | Pembantu jalur file-lokal dan sumber-media yang aman |
-    | `plugin-sdk/heartbeat-runtime` | Pembantu peristiwa dan visibilitas Heartbeat |
-    | `plugin-sdk/number-runtime` | Pembantu koersi numerik |
-    | `plugin-sdk/secure-random-runtime` | Pembantu token/UUID aman |
-    | `plugin-sdk/system-event-runtime` | Pembantu antrean peristiwa sistem |
-    | `plugin-sdk/transport-ready-runtime` | Pembantu tunggu kesiapan transport |
+    | `plugin-sdk/reply-chunking` | Helper chunking teks/markdown yang sempit |
+    | `plugin-sdk/session-store-runtime` | Helper jalur penyimpanan sesi, kunci sesi, diperbarui-pada, dan mutasi penyimpanan |
+    | `plugin-sdk/cron-store-runtime` | Helper jalur/muat/simpan penyimpanan Cron |
+    | `plugin-sdk/state-paths` | Helper jalur direktori state/OAuth |
+    | `plugin-sdk/routing` | Helper binding rute/kunci sesi/akun seperti `resolveAgentRoute`, `buildAgentSessionKey`, dan `resolveDefaultAgentBoundAccountId` |
+    | `plugin-sdk/status-helpers` | Helper ringkasan status channel/akun bersama, default state runtime, dan helper metadata issue |
+    | `plugin-sdk/target-resolver-runtime` | Helper resolver target bersama |
+    | `plugin-sdk/string-normalization-runtime` | Helper normalisasi slug/string |
+    | `plugin-sdk/request-url` | Mengekstrak URL string dari input mirip fetch/request |
+    | `plugin-sdk/run-command` | Runner command berwaktu dengan hasil stdout/stderr ternormalisasi |
+    | `plugin-sdk/param-readers` | Reader param tool/CLI umum |
+    | `plugin-sdk/tool-payload` | Mengekstrak payload ternormalisasi dari objek hasil tool |
+    | `plugin-sdk/tool-send` | Mengekstrak field target kirim kanonis dari argumen tool |
+    | `plugin-sdk/temp-path` | Helper jalur unduhan sementara bersama dan workspace sementara aman privat |
+    | `plugin-sdk/logging-core` | Helper logger subsistem dan redaksi |
+    | `plugin-sdk/markdown-table-runtime` | Helper mode dan konversi tabel Markdown |
+    | `plugin-sdk/model-session-runtime` | Helper override model/sesi seperti `applyModelOverrideToSessionEntry` dan `resolveAgentMaxConcurrent` |
+    | `plugin-sdk/talk-config-runtime` | Helper resolusi konfigurasi provider Talk |
+    | `plugin-sdk/json-store` | Helper baca/tulis state JSON kecil |
+    | `plugin-sdk/file-lock` | Helper file-lock re-entrant |
+    | `plugin-sdk/persistent-dedupe` | Helper cache dedupe berbasis disk |
+    | `plugin-sdk/acp-runtime` | Helper runtime/sesi ACP dan dispatch balasan |
+    | `plugin-sdk/acp-runtime-backend` | Helper registrasi backend ACP ringan dan dispatch balasan untuk plugin yang dimuat saat startup |
+    | `plugin-sdk/acp-binding-resolve-runtime` | Resolusi binding ACP hanya-baca tanpa impor startup lifecycle |
+    | `plugin-sdk/agent-config-primitives` | Primitive skema konfigurasi runtime agent yang sempit |
+    | `plugin-sdk/boolean-param` | Reader param boolean longgar |
+    | `plugin-sdk/dangerous-name-runtime` | Helper resolusi pencocokan nama berbahaya |
+    | `plugin-sdk/device-bootstrap` | Helper bootstrap perangkat dan token pairing |
+    | `plugin-sdk/extension-shared` | Primitive helper passive-channel, status, dan proksi ambient bersama |
+    | `plugin-sdk/models-provider-runtime` | Helper balasan command/provider `/models` |
+    | `plugin-sdk/skill-commands-runtime` | Helper daftar command Skill |
+    | `plugin-sdk/native-command-registry` | Helper registry/build/serialize command native |
+    | `plugin-sdk/agent-harness` | Permukaan plugin tepercaya eksperimental untuk harness agent tingkat rendah: tipe harness, helper steer/abort active-run, helper bridge tool OpenClaw, helper kebijakan tool runtime-plan, klasifikasi hasil terminal, helper pemformatan/detail progres tool, dan utilitas hasil percobaan |
+    | `plugin-sdk/provider-zai-endpoint` | Fasad deteksi endpoint milik provider Z.AI yang tidak digunakan lagi; gunakan API publik plugin Z.AI |
+    | `plugin-sdk/async-lock-runtime` | Helper lock async lokal proses untuk file state runtime kecil |
+    | `plugin-sdk/channel-activity-runtime` | Helper telemetri aktivitas channel |
+    | `plugin-sdk/concurrency-runtime` | Helper konkurensi tugas async berbatas |
+    | `plugin-sdk/dedupe-runtime` | Helper cache dedupe dalam memori |
+    | `plugin-sdk/delivery-queue-runtime` | Helper pengurasan pengiriman tertunda outbound |
+    | `plugin-sdk/file-access-runtime` | Helper jalur file lokal dan sumber media yang aman |
+    | `plugin-sdk/heartbeat-runtime` | Helper bangun, event, dan visibilitas Heartbeat |
+    | `plugin-sdk/number-runtime` | Helper koersi numerik |
+    | `plugin-sdk/secure-random-runtime` | Helper token/UUID aman |
+    | `plugin-sdk/system-event-runtime` | Helper antrean event sistem |
+    | `plugin-sdk/transport-ready-runtime` | Helper tunggu kesiapan transport |
     | `plugin-sdk/infra-runtime` | Shim kompatibilitas yang tidak digunakan lagi; gunakan subjalur runtime terfokus di atas |
-    | `plugin-sdk/collection-runtime` | Pembantu cache kecil berbatas |
-    | `plugin-sdk/diagnostic-runtime` | Pembantu flag diagnostik, peristiwa, dan konteks-jejak |
-    | `plugin-sdk/error-runtime` | Pembantu grafik galat, pemformatan, klasifikasi galat bersama, `isApprovalNotFoundError` |
-    | `plugin-sdk/fetch-runtime` | Pembantu fetch terbungkus, proxy, opsi EnvHttpProxyAgent, dan lookup berpinned |
-    | `plugin-sdk/runtime-fetch` | Fetch runtime sadar-dispatcher tanpa impor proxy/fetch-terjaga |
-    | `plugin-sdk/response-limit-runtime` | Pembaca isi-respons berbatas tanpa permukaan runtime media yang luas |
-    | `plugin-sdk/session-binding-runtime` | Status pengikatan percakapan saat ini tanpa routing pengikatan terkonfigurasi atau penyimpanan pemasangan |
-    | `plugin-sdk/session-store-runtime` | Pembantu penyimpanan-sesi tanpa impor luas untuk penulisan/pemeliharaan konfigurasi |
-    | `plugin-sdk/context-visibility-runtime` | Resolusi visibilitas konteks dan pemfilteran konteks tambahan tanpa impor luas konfigurasi/keamanan |
-    | `plugin-sdk/string-coerce-runtime` | Pembantu sempit untuk koersi dan normalisasi record/string primitif tanpa impor markdown/pencatatan log |
-    | `plugin-sdk/host-runtime` | Pembantu normalisasi hostname dan host SCP |
-    | `plugin-sdk/retry-runtime` | Pembantu konfigurasi percobaan ulang dan runner percobaan ulang |
-    | `plugin-sdk/agent-runtime` | Pembantu direktori/identitas/ruang kerja agen, termasuk `resolveAgentDir`, `resolveDefaultAgentDir`, dan ekspor kompatibilitas `resolveOpenClawAgentDir` yang tidak digunakan lagi |
+    | `plugin-sdk/collection-runtime` | Helper cache kecil berbatas |
+    | `plugin-sdk/diagnostic-runtime` | Helper flag diagnostik, event, dan trace-context |
+    | `plugin-sdk/error-runtime` | Helper grafik galat, pemformatan, klasifikasi galat bersama, `isApprovalNotFoundError` |
+    | `plugin-sdk/fetch-runtime` | Fetch terbungkus, proksi, opsi EnvHttpProxyAgent, dan helper lookup yang dipin |
+    | `plugin-sdk/runtime-fetch` | Fetch runtime sadar dispatcher tanpa impor proxy/guarded-fetch |
+    | `plugin-sdk/response-limit-runtime` | Reader body respons berbatas tanpa permukaan runtime media yang luas |
+    | `plugin-sdk/session-binding-runtime` | State binding percakapan saat ini tanpa routing binding terkonfigurasi atau penyimpanan pairing |
+    | `plugin-sdk/session-store-runtime` | Helper penyimpanan sesi tanpa impor penulisan/pemeliharaan konfigurasi yang luas |
+    | `plugin-sdk/context-visibility-runtime` | Resolusi visibilitas konteks dan pemfilteran konteks tambahan tanpa impor konfigurasi/keamanan yang luas |
+    | `plugin-sdk/string-coerce-runtime` | Helper koersi dan normalisasi record/string primitive yang sempit tanpa impor markdown/logging |
+    | `plugin-sdk/host-runtime` | Helper normalisasi hostname dan host SCP |
+    | `plugin-sdk/retry-runtime` | Helper konfigurasi retry dan runner retry |
+    | `plugin-sdk/agent-runtime` | Helper direktori/identitas/workspace agent, termasuk `resolveAgentDir`, `resolveDefaultAgentDir`, dan ekspor kompatibilitas `resolveOpenClawAgentDir` yang tidak digunakan lagi |
     | `plugin-sdk/directory-runtime` | Kueri/dedup direktori berbasis konfigurasi |
     | `plugin-sdk/keyed-async-queue` | `KeyedAsyncQueue` |
   </Accordion>
 
-  <Accordion title="Subjalur kapabilitas dan pengujian">
-    | Subjalur | Ekspor utama |
+  <Accordion title="Subpath kapabilitas dan pengujian">
+    | Subpath | Ekspor utama |
     | --- | --- |
-    | `plugin-sdk/media-runtime` | Helper bersama untuk mengambil/mentransformasi/menyimpan media, pemeriksaan dimensi video berbasis ffprobe, dan pembuat payload media |
+    | `plugin-sdk/media-runtime` | Helper pengambilan/transformasi/penyimpanan media bersama, pemeriksaan dimensi video berbasis ffprobe, dan pembangun payload media |
+    | `plugin-sdk/media-mime` | Normalisasi MIME terbatas, pemetaan ekstensi file, deteksi MIME, dan helper jenis media |
     | `plugin-sdk/media-store` | Helper penyimpanan media terbatas seperti `saveMediaBuffer` |
     | `plugin-sdk/media-generation-runtime` | Helper failover pembuatan media bersama, pemilihan kandidat, dan pesan model yang hilang |
     | `plugin-sdk/media-understanding` | Tipe penyedia pemahaman media serta ekspor helper gambar/audio untuk penyedia |
-    | `plugin-sdk/text-runtime` | Helper teks/markdown/logging bersama seperti penghapusan teks yang terlihat oleh asisten, helper render/chunking/tabel markdown, helper redaksi, helper tag direktif, dan utilitas teks aman |
-    | `plugin-sdk/text-chunking` | Helper chunking teks keluar |
-    | `plugin-sdk/speech` | Tipe penyedia ucapan serta ekspor direktif, registry, validasi, pembuat TTS kompatibel OpenAI, dan helper ucapan untuk penyedia |
-    | `plugin-sdk/speech-core` | Ekspor tipe penyedia ucapan bersama, registry, direktif, normalisasi, dan helper ucapan |
+    | `plugin-sdk/text-chunking` | Helper pemotongan/perenderan teks dan markdown, konversi tabel markdown, penghapusan tag direktif, dan utilitas teks aman |
+    | `plugin-sdk/text-chunking` | Helper pemotongan teks keluar |
+    | `plugin-sdk/speech` | Tipe penyedia ucapan serta ekspor direktif, registry, validasi, pembangun TTS yang kompatibel dengan OpenAI, dan helper ucapan untuk penyedia |
+    | `plugin-sdk/speech-core` | Tipe penyedia ucapan bersama, registry, direktif, normalisasi, dan ekspor helper ucapan |
     | `plugin-sdk/realtime-transcription` | Tipe penyedia transkripsi realtime, helper registry, dan helper sesi WebSocket bersama |
     | `plugin-sdk/realtime-voice` | Tipe penyedia suara realtime dan helper registry |
-    | `plugin-sdk/image-generation` | Tipe penyedia pembuatan gambar serta helper URL aset/data gambar dan pembuat penyedia gambar kompatibel OpenAI |
+    | `plugin-sdk/image-generation` | Tipe penyedia pembuatan gambar serta helper URL aset/data gambar dan pembangun penyedia gambar yang kompatibel dengan OpenAI |
     | `plugin-sdk/image-generation-core` | Tipe pembuatan gambar bersama, failover, autentikasi, dan helper registry |
     | `plugin-sdk/music-generation` | Tipe penyedia/permintaan/hasil pembuatan musik |
-    | `plugin-sdk/music-generation-core` | Tipe pembuatan musik bersama, helper failover, pencarian penyedia, dan parsing model-ref |
+    | `plugin-sdk/music-generation-core` | Tipe pembuatan musik bersama, helper failover, pencarian penyedia, dan penguraian referensi model |
     | `plugin-sdk/video-generation` | Tipe penyedia/permintaan/hasil pembuatan video |
-    | `plugin-sdk/video-generation-core` | Tipe pembuatan video bersama, helper failover, pencarian penyedia, dan parsing model-ref |
+    | `plugin-sdk/video-generation-core` | Tipe pembuatan video bersama, helper failover, pencarian penyedia, dan penguraian referensi model |
     | `plugin-sdk/webhook-targets` | Registry target Webhook dan helper pemasangan rute |
-    | `plugin-sdk/webhook-path` | Helper normalisasi jalur Webhook |
+    | `plugin-sdk/webhook-path` | Alias kompatibilitas yang tidak digunakan lagi; gunakan `plugin-sdk/webhook-ingress` |
     | `plugin-sdk/web-media` | Helper pemuatan media jarak jauh/lokal bersama |
-    | `plugin-sdk/zod` | `zod` yang diekspor ulang untuk konsumen SDK Plugin |
-    | `plugin-sdk/testing` | Barrel kompatibilitas luas untuk pengujian Plugin lama. Pengujian ekstensi baru sebaiknya mengimpor subjalur SDK terfokus seperti `plugin-sdk/agent-runtime-test-contracts`, `plugin-sdk/plugin-test-runtime`, `plugin-sdk/channel-test-helpers`, `plugin-sdk/test-env`, atau `plugin-sdk/test-fixtures` sebagai gantinya |
-    | `plugin-sdk/plugin-test-api` | Helper minimal `createTestPluginApi` untuk pengujian unit registrasi Plugin langsung tanpa mengimpor bridge helper pengujian repo |
-    | `plugin-sdk/agent-runtime-test-contracts` | Fixture kontrak adaptor agent-runtime native untuk pengujian autentikasi, pengiriman, fallback, tool-hook, prompt-overlay, skema, dan proyeksi transkrip |
-    | `plugin-sdk/channel-test-helpers` | Helper pengujian berorientasi channel untuk kontrak tindakan/setup/status generik, asersi direktori, siklus hidup startup akun, threading send-config, mock runtime, masalah status, pengiriman keluar, dan registrasi hook |
-    | `plugin-sdk/channel-target-testing` | Suite kasus kesalahan target-resolution bersama untuk pengujian channel |
-    | `plugin-sdk/plugin-test-contracts` | Helper kontrak paket Plugin, registrasi, artefak publik, impor langsung, API runtime, dan efek samping impor |
-    | `plugin-sdk/provider-test-contracts` | Helper kontrak runtime penyedia, autentikasi, discovery, onboard, katalog, wizard, kapabilitas media, kebijakan replay, audio live STT realtime, web-search/fetch, dan stream |
-    | `plugin-sdk/provider-http-test-mocks` | Mock HTTP/autentikasi Vitest opt-in untuk pengujian penyedia yang menjalankan `plugin-sdk/provider-http` |
-    | `plugin-sdk/test-fixtures` | Fixture generik untuk tangkapan runtime CLI, konteks sandbox, penulis skill, agent-message, system-event, pemuatan ulang modul, jalur Plugin bawaan, terminal-text, chunking, auth-token, dan typed-case |
-    | `plugin-sdk/test-node-mocks` | Helper mock bawaan Node terfokus untuk digunakan di dalam factory Vitest `vi.mock("node:*")` |
+    | `plugin-sdk/zod` | Ekspor ulang kompatibilitas yang tidak digunakan lagi; impor `zod` dari `zod` secara langsung |
+    | `plugin-sdk/testing` | Barrel kompatibilitas repo-lokal yang tidak digunakan lagi untuk pengujian OpenClaw lama. Pengujian repo baru sebaiknya mengimpor subpath pengujian lokal terfokus seperti `plugin-sdk/agent-runtime-test-contracts`, `plugin-sdk/plugin-test-runtime`, `plugin-sdk/channel-test-helpers`, `plugin-sdk/test-env`, atau `plugin-sdk/test-fixtures` sebagai gantinya |
+    | `plugin-sdk/plugin-test-api` | Helper `createTestPluginApi` minimal repo-lokal untuk pengujian unit pendaftaran plugin langsung tanpa mengimpor jembatan helper pengujian repo |
+    | `plugin-sdk/agent-runtime-test-contracts` | Fixture kontrak adapter runtime agen native repo-lokal untuk pengujian autentikasi, pengiriman, fallback, hook alat, overlay prompt, skema, dan proyeksi transkrip |
+    | `plugin-sdk/channel-test-helpers` | Helper pengujian berorientasi kanal repo-lokal untuk kontrak tindakan/penyiapan/status generik, asersi direktori, siklus hidup startup akun, threading konfigurasi pengiriman, mock runtime, masalah status, pengiriman keluar, dan pendaftaran hook |
+    | `plugin-sdk/channel-target-testing` | Suite kasus galat resolusi target bersama repo-lokal untuk pengujian kanal |
+    | `plugin-sdk/plugin-test-contracts` | Helper kontrak paket plugin, pendaftaran, artefak publik, impor langsung, API runtime, dan efek samping impor repo-lokal |
+    | `plugin-sdk/provider-test-contracts` | Helper kontrak runtime penyedia, autentikasi, discovery, onboard, katalog, wizard, kapabilitas media, kebijakan replay, audio langsung STT realtime, pencarian/pengambilan web, dan stream repo-lokal |
+    | `plugin-sdk/provider-http-test-mocks` | Mock HTTP/autentikasi Vitest opt-in repo-lokal untuk pengujian penyedia yang menjalankan `plugin-sdk/provider-http` |
+    | `plugin-sdk/test-fixtures` | Fixture generik repo-lokal untuk penangkapan runtime CLI, konteks sandbox, penulis skill, pesan agen, peristiwa sistem, pemuatan ulang modul, jalur plugin bawaan, teks terminal, pemotongan, token autentikasi, dan kasus bertipe |
+    | `plugin-sdk/test-node-mocks` | Helper mock bawaan Node terfokus repo-lokal untuk digunakan di dalam factory Vitest `vi.mock("node:*")` |
   </Accordion>
 
-  <Accordion title="Subjalur memori">
-    | Subjalur | Ekspor utama |
+  <Accordion title="Subpath memori">
+    | Subpath | Ekspor utama |
     | --- | --- |
-    | `plugin-sdk/memory-core` | Permukaan helper memory-core bawaan untuk helper manager/config/file/CLI |
-    | `plugin-sdk/memory-core-engine-runtime` | Facade runtime indeks/pencarian memori |
+    | `plugin-sdk/memory-core` | Permukaan helper memory-core bawaan untuk helper manajer/konfigurasi/file/CLI |
+    | `plugin-sdk/memory-core-engine-runtime` | Fasad runtime indeks/pencarian memori |
     | `plugin-sdk/memory-core-host-engine-foundation` | Ekspor mesin fondasi host memori |
-    | `plugin-sdk/memory-core-host-engine-embeddings` | Kontrak embedding host memori, akses registry, penyedia lokal, dan helper batch/remote generik |
+    | `plugin-sdk/memory-core-host-engine-embeddings` | Kontrak embedding host memori, akses registry, penyedia lokal, dan helper batch/jarak jauh generik |
     | `plugin-sdk/memory-core-host-engine-qmd` | Ekspor mesin QMD host memori |
     | `plugin-sdk/memory-core-host-engine-storage` | Ekspor mesin penyimpanan host memori |
     | `plugin-sdk/memory-core-host-multimodal` | Helper multimodal host memori |
     | `plugin-sdk/memory-core-host-query` | Helper kueri host memori |
-    | `plugin-sdk/memory-core-host-secret` | Helper secret host memori |
-    | `plugin-sdk/memory-core-host-events` | Helper jurnal event host memori |
+    | `plugin-sdk/memory-core-host-secret` | Helper rahasia host memori |
+    | `plugin-sdk/memory-core-host-events` | Alias kompatibilitas yang tidak digunakan lagi; gunakan `plugin-sdk/memory-host-events` |
     | `plugin-sdk/memory-core-host-status` | Helper status host memori |
     | `plugin-sdk/memory-core-host-runtime-cli` | Helper runtime CLI host memori |
     | `plugin-sdk/memory-core-host-runtime-core` | Helper runtime inti host memori |
     | `plugin-sdk/memory-core-host-runtime-files` | Helper file/runtime host memori |
-    | `plugin-sdk/memory-host-core` | Alias netral-vendor untuk helper runtime inti host memori |
-    | `plugin-sdk/memory-host-events` | Alias netral-vendor untuk helper jurnal event host memori |
-    | `plugin-sdk/memory-host-files` | Alias netral-vendor untuk helper file/runtime host memori |
-    | `plugin-sdk/memory-host-markdown` | Helper managed-markdown bersama untuk Plugin yang berdekatan dengan memori |
-    | `plugin-sdk/memory-host-search` | Facade runtime Active Memory untuk akses search-manager |
-    | `plugin-sdk/memory-host-status` | Alias netral-vendor untuk helper status host memori |
+    | `plugin-sdk/memory-host-core` | Alias netral vendor untuk helper runtime inti host memori |
+    | `plugin-sdk/memory-host-events` | Alias netral vendor untuk helper jurnal peristiwa host memori |
+    | `plugin-sdk/memory-host-files` | Alias kompatibilitas yang tidak digunakan lagi; gunakan `plugin-sdk/memory-core-host-runtime-files` |
+    | `plugin-sdk/memory-host-markdown` | Helper managed-markdown bersama untuk plugin yang berdekatan dengan memori |
+    | `plugin-sdk/memory-host-search` | Fasad runtime Active Memory untuk akses manajer pencarian |
+    | `plugin-sdk/memory-host-status` | Alias kompatibilitas yang tidak digunakan lagi; gunakan `plugin-sdk/memory-core-host-status` |
   </Accordion>
 
-  <Accordion title="Subjalur helper bawaan yang dicadangkan">
-    Saat ini tidak ada subjalur SDK helper bawaan yang dicadangkan. Helper spesifik pemilik
-    berada di dalam paket Plugin pemiliknya, sementara kontrak host yang dapat digunakan ulang
-    memakai subjalur SDK generik seperti `plugin-sdk/gateway-runtime`,
+  <Accordion title="Subpath helper bawaan yang dicadangkan">
+    Saat ini tidak ada subpath SDK helper bawaan yang dicadangkan. Helper khusus pemilik
+    berada di dalam paket plugin pemilik, sementara kontrak host yang dapat digunakan kembali
+    menggunakan subpath SDK generik seperti `plugin-sdk/gateway-runtime`,
     `plugin-sdk/security-runtime`, dan `plugin-sdk/plugin-config-runtime`.
   </Accordion>
 </AccordionGroup>
 
 ## Terkait
 
-- [Ikhtisar SDK Plugin](/id/plugins/sdk-overview)
-- [Penyiapan SDK Plugin](/id/plugins/sdk-setup)
-- [Membangun Plugin](/id/plugins/building-plugins)
+- [Ikhtisar Plugin SDK](/id/plugins/sdk-overview)
+- [Penyiapan Plugin SDK](/id/plugins/sdk-setup)
+- [Membangun plugin](/id/plugins/building-plugins)

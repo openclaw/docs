@@ -1,48 +1,47 @@
 ---
 read_when:
-    - Chcesz wykonywać pracę w tle lub równolegle za pomocą agenta
-    - Zmieniasz zasady narzędzia sessions_spawn lub narzędzia podagentów
+    - Chcesz wykonywać pracę w tle lub równoległą za pomocą agenta
+    - Zmieniasz politykę narzędzia sessions_spawn lub narzędzia subagentów
     - Implementujesz lub rozwiązujesz problemy z sesjami subagentów powiązanymi z wątkiem
 sidebarTitle: Sub-agents
-summary: Uruchamiaj izolowane przebiegi agentów w tle, które przekazują wyniki z powrotem na czat zlecającego
+summary: Uruchamiaj izolowane przebiegi agentów w tle, które przekazują wyniki z powrotem na czat osoby zgłaszającej
 title: Podagenci
 x-i18n:
-    generated_at: "2026-05-07T13:26:46Z"
+    generated_at: "2026-05-10T19:59:00Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 5b112f9c45bcb9cdc5d3b856f2fe2a36617606ad278b0ccc3db8830f0e847ba9
+    source_hash: 7b4a78b83fda42931ed2a4795e2db611121a30378de149c0478e989029123382
     source_path: tools/subagents.md
     workflow: 16
 ---
 
-Subagenci to uruchomienia agentów w tle wywoływane z istniejącego uruchomienia agenta.
-Działają we własnej sesji (`agent:<agentId>:subagent:<uuid>`) i
-po zakończeniu **ogłaszają** swój wynik z powrotem w kanale czatu
-zlecającego. Każde uruchomienie subagenta jest śledzone jako
+Podagenci to uruchomienia agentów w tle, tworzone z istniejącego uruchomienia agenta.
+Działają we własnej sesji (`agent:<agentId>:subagent:<uuid>`) i,
+po zakończeniu, **ogłaszają** swój wynik z powrotem w kanale czatu
+żądającego. Każde uruchomienie podagenta jest śledzone jako
 [zadanie w tle](/pl/automation/tasks).
 
 Główne cele:
 
-- Równoległe wykonywanie pracy typu „badanie / długie zadanie / powolne narzędzie” bez blokowania głównego uruchomienia.
-- Domyślna izolacja subagentów (oddzielenie sesji + opcjonalny sandboxing).
-- Utrzymanie powierzchni narzędzi trudnej do niewłaściwego użycia: subagenci domyślnie **nie** otrzymują narzędzi sesji.
-- Obsługa konfigurowalnej głębokości zagnieżdżania dla wzorców orkiestratora.
+- Równoleglenie pracy typu „badanie / długie zadanie / powolne narzędzie” bez blokowania głównego uruchomienia.
+- Domyślna izolacja podagentów (separacja sesji + opcjonalny sandboxing).
+- Utrzymanie powierzchni narzędzi trudnej do błędnego użycia: podagenci domyślnie **nie** otrzymują narzędzi sesji.
+- Obsługa konfigurowalnej głębokości zagnieżdżenia dla wzorców orkiestratora.
 
 <Note>
-**Uwaga o kosztach:** każdy subagent domyślnie ma własny kontekst
-i własne zużycie tokenów. W przypadku ciężkich lub powtarzalnych zadań ustaw
-tańszy model dla subagentów, a głównego agenta pozostaw na modelu wyższej
-jakości. Skonfiguruj to przez `agents.defaults.subagents.model` albo nadpisania
-dla konkretnego agenta. Gdy proces potomny naprawdę potrzebuje bieżącego
-transkryptu zlecającego, agent może zażądać `context: "fork"` dla tego jednego
-wywołania. Sesje subagentów powiązane z wątkiem domyślnie używają
-`context: "fork"`, ponieważ rozgałęziają bieżącą rozmowę do wątku
-uzupełniającego.
+**Uwaga o kosztach:** każdy podagent ma domyślnie własny kontekst i zużycie tokenów.
+W przypadku ciężkich lub powtarzalnych zadań ustaw tańszy model dla podagentów
+i pozostaw głównego agenta na modelu wyższej jakości. Skonfiguruj to przez
+`agents.defaults.subagents.model` albo nadpisania dla poszczególnych agentów. Gdy dziecko
+    rzeczywiście potrzebuje bieżącego transkryptu żądającego, agent może zażądać
+    `context: "fork"` przy tym jednym utworzeniu. Sesje podagentów powiązane z wątkiem domyślnie
+    używają `context: "fork"`, ponieważ rozgałęziają bieżącą rozmowę do
+    wątku kontynuacji.
 </Note>
 
-## Polecenie slash
+## Polecenie ukośnika
 
-Użyj `/subagents`, aby sprawdzać lub kontrolować uruchomienia subagentów dla **bieżącej
+Użyj `/subagents`, aby sprawdzać lub kontrolować uruchomienia podagentów dla **bieżącej
 sesji**:
 
 ```text
@@ -55,16 +54,16 @@ sesji**:
 /subagents spawn <agentId> <task> [--model <model>] [--thinking <level>]
 ```
 
-Użyj najwyższego poziomu [`/steer <message>`](/pl/tools/steer), aby sterować aktywnym uruchomieniem bieżącej sesji zlecającego. Użyj `/subagents steer <id|#> <message>`, gdy celem jest uruchomienie potomne.
+Użyj polecenia najwyższego poziomu [`/steer <message>`](/pl/tools/steer), aby sterować aktywnym uruchomieniem bieżącej sesji żądającego. Użyj `/subagents steer <id|#> <message>`, gdy celem jest uruchomienie podrzędne.
 
-`/subagents info` pokazuje metadane uruchomienia (status, znaczniki czasu, identyfikator sesji,
-ścieżka transkryptu, czyszczenie). Użyj `sessions_history`, aby uzyskać ograniczony,
-filtrowany pod kątem bezpieczeństwa widok przywoływania; sprawdź ścieżkę transkryptu na dysku, gdy
+`/subagents info` pokazuje metadane uruchomienia (stan, znaczniki czasu, identyfikator sesji,
+ścieżkę transkryptu, czyszczenie). Użyj `sessions_history`, aby uzyskać ograniczony,
+filtrowany pod kątem bezpieczeństwa widok przypomnienia; sprawdź ścieżkę transkryptu na dysku, gdy
 potrzebujesz surowego pełnego transkryptu.
 
-### Kontrolki wiązania wątków
+### Elementy sterowania powiązaniem wątku
 
-Te polecenia działają w kanałach obsługujących trwałe wiązania wątków.
+Te polecenia działają w kanałach obsługujących trwałe powiązania wątków.
 Zobacz [Kanały obsługujące wątki](#thread-supporting-channels) poniżej.
 
 ```text
@@ -75,145 +74,228 @@ Zobacz [Kanały obsługujące wątki](#thread-supporting-channels) poniżej.
 /session max-age <duration|off>
 ```
 
-### Zachowanie wywołania
+### Zachowanie tworzenia
 
-`/subagents spawn` uruchamia subagenta w tle jako polecenie użytkownika (nie
-wewnętrzne przekazanie) i wysyła jedną końcową aktualizację ukończenia z powrotem do
-czatu zlecającego, gdy uruchomienie się zakończy.
+`/subagents spawn` uruchamia podagenta w tle jako polecenie użytkownika (nie
+wewnętrzny przekaźnik) i wysyła jedną końcową aktualizację ukończenia z powrotem do
+czatu żądającego po zakończeniu uruchomienia.
 
 <AccordionGroup>
-  <Accordion title="Nieblokujące ukończenie oparte na wypychaniu">
-    - Polecenie wywołania jest nieblokujące; natychmiast zwraca identyfikator uruchomienia.
-    - Po ukończeniu subagent ogłasza wiadomość z podsumowaniem/wynikiem z powrotem w kanale czatu zlecającego.
-    - Ukończenie jest oparte na wypychaniu. Po wywołaniu **nie** odpytuj `/subagents list`, `sessions_list` ani `sessions_history` w pętli tylko po to, aby poczekać na zakończenie; sprawdzaj status wyłącznie na żądanie, na potrzeby debugowania lub interwencji.
-    - Po ukończeniu OpenClaw w trybie best-effort zamyka śledzone karty przeglądarki/procesy otwarte przez tę sesję subagenta, zanim przepływ czyszczenia ogłoszenia będzie kontynuowany.
+  <Accordion title="Non-blocking, push-based completion">
+    - Polecenie tworzenia nie blokuje; natychmiast zwraca identyfikator uruchomienia.
+    - Po ukończeniu podagent ogłasza wiadomość z podsumowaniem/wynikiem z powrotem w kanale czatu żądającego.
+    - Tury agenta, które potrzebują wyników dzieci, powinny wywołać `sessions_yield` po utworzeniu wymaganej pracy. Kończy to bieżącą turę i pozwala zdarzeniom ukończenia dotrzeć jako następna wiadomość widoczna dla modelu.
+    - Ukończenie działa przez wypychanie. Po utworzeniu **nie** odpytuj `/subagents list`, `sessions_list` ani `sessions_history` w pętli tylko po to, by czekać na zakończenie; sprawdzaj stan tylko na żądanie w celu debugowania lub interwencji.
+    - Dane wyjściowe dziecka są raportem/dowodem dla agenta żądającego do zsyntetyzowania. Nie są tekstem instrukcji autorstwa użytkownika i nie mogą nadpisać zasad systemowych, deweloperskich ani użytkownika.
+    - Po ukończeniu OpenClaw dokłada starań, aby zamknąć śledzone karty/procesy przeglądarki otwarte przez tę sesję podagenta, zanim przepływ czyszczenia ogłoszenia będzie kontynuowany.
 
   </Accordion>
-  <Accordion title="Odporność dostarczania przy ręcznym wywołaniu">
-    - OpenClaw przekazuje ukończenia z powrotem do sesji zlecającego przez turę `agent` ze stabilnym kluczem idempotencji.
-    - Jeśli uruchomienie zlecającego nadal jest aktywne, OpenClaw najpierw próbuje wybudzić/sterować tym uruchomieniem zamiast rozpoczynać drugą widoczną ścieżkę odpowiedzi.
-    - Jeśli przekazanie ukończenia do agenta zlecającego nie powiedzie się albo nie wytworzy widocznych danych wyjściowych, OpenClaw traktuje dostarczenie jako nieudane i przechodzi do routingu kolejki/ponownej próby. Nie wysyła surowego wyniku procesu potomnego bezpośrednio do zewnętrznego czatu.
-    - Jeśli bezpośrednie przekazanie nie może zostać użyte, następuje przejście do routingu kolejki.
-    - Jeśli routing kolejki nadal nie jest dostępny, ogłoszenie jest ponawiane z krótkim wykładniczym opóźnieniem przed ostatecznym zaniechaniem.
-    - Dostarczenie ukończenia zachowuje ustaloną trasę zlecającego: trasy ukończenia powiązane z wątkiem lub rozmową wygrywają, gdy są dostępne; jeśli źródło ukończenia podaje tylko kanał, OpenClaw uzupełnia brakujący cel/konto z ustalonej trasy sesji zlecającego (`lastChannel` / `lastTo` / `lastAccountId`), dzięki czemu bezpośrednie dostarczanie nadal działa.
+  <Accordion title="Manual-spawn delivery resilience">
+    - OpenClaw przekazuje ukończenia z powrotem do sesji żądającego przez turę `agent` ze stabilnym kluczem idempotencji.
+    - Jeśli uruchomienie żądającego jest nadal aktywne, OpenClaw najpierw próbuje obudzić/sterować tym uruchomieniem zamiast rozpoczynać drugą widoczną ścieżkę odpowiedzi.
+    - Jeśli przekazanie ukończenia do agenta żądającego nie powiedzie się lub nie wytworzy widocznych danych wyjściowych, OpenClaw traktuje dostarczenie jako nieudane i wraca do routingu kolejki/ponowienia. Nie wysyła surowego wyniku dziecka bezpośrednio do zewnętrznego czatu.
+    - Jeśli nie można użyć bezpośredniego przekazania, następuje powrót do routingu kolejki.
+    - Jeśli routing kolejki nadal nie jest dostępny, ogłoszenie jest ponawiane z krótkim wykładniczym opóźnieniem przed ostateczną rezygnacją.
+    - Dostarczanie ukończenia zachowuje rozwiązaną trasę żądającego: trasy ukończenia powiązane z wątkiem lub rozmową wygrywają, gdy są dostępne; jeśli źródło ukończenia podaje tylko kanał, OpenClaw uzupełnia brakujący cel/konto z rozwiązanej trasy sesji żądającego (`lastChannel` / `lastTo` / `lastAccountId`), dzięki czemu bezpośrednie dostarczenie nadal działa.
 
   </Accordion>
-  <Accordion title="Metadane przekazania ukończenia">
-    Przekazanie ukończenia do sesji zlecającego to generowany w czasie wykonywania
-    wewnętrzny kontekst (nie tekst napisany przez użytkownika), który obejmuje:
+  <Accordion title="Completion handoff metadata">
+    Przekazanie ukończenia do sesji żądającego jest generowanym przez środowisko wykonawcze
+    kontekstem wewnętrznym (nie tekstem autorstwa użytkownika) i obejmuje:
 
-    - `Result` — najnowszy widoczny tekst odpowiedzi `assistant`, w przeciwnym razie oczyszczony najnowszy tekst narzędzia/toolResult. Końcowo nieudane uruchomienia nie używają ponownie przechwyconego tekstu odpowiedzi.
+    - `Result` — najnowszy widoczny tekst odpowiedzi `assistant`, w przeciwnym razie oczyszczony najnowszy tekst narzędzia/wyniku narzędzia. Końcowe nieudane uruchomienia nie używają ponownie przechwyconego tekstu odpowiedzi.
     - `Status` — `completed successfully` / `failed` / `timed out` / `unknown`.
-    - Kompaktowe statystyki środowiska uruchomieniowego/tokenów.
-    - Instrukcję dostarczenia, która mówi agentowi zlecającemu, aby przeredagował treść normalnym głosem asystenta (zamiast przekazywać surowe metadane wewnętrzne).
+    - Zwięzłe statystyki środowiska wykonawczego/tokenów.
+    - Instrukcję dostarczenia nakazującą agentowi żądającemu przepisać treść normalnym głosem asystenta (nie przekazywać surowych metadanych wewnętrznych).
 
   </Accordion>
-  <Accordion title="Tryby i środowisko uruchomieniowe ACP">
+  <Accordion title="Modes and ACP runtime">
     - `--model` i `--thinking` nadpisują wartości domyślne dla tego konkretnego uruchomienia.
     - Użyj `info`/`log`, aby sprawdzić szczegóły i dane wyjściowe po ukończeniu.
-    - `/subagents spawn` działa w trybie jednorazowym (`mode: "run"`). W przypadku trwałych sesji powiązanych z wątkiem użyj `sessions_spawn` z `thread: true` i `mode: "session"`.
-    - W przypadku sesji uprzęży ACP (Claude Code, Gemini CLI, OpenCode albo jawne Codex ACP/acpx) użyj `sessions_spawn` z `runtime: "acp"`, gdy narzędzie ogłasza to środowisko uruchomieniowe. Zobacz [model dostarczania ACP](/pl/tools/acp-agents#delivery-model) podczas debugowania ukończeń lub pętli agent-agent. Gdy Plugin `codex` jest włączony, sterowanie czatem/wątkiem Codex powinno preferować `/codex ...` zamiast ACP, chyba że użytkownik jawnie poprosi o ACP/acpx.
-    - OpenClaw ukrywa `runtime: "acp"` do czasu włączenia ACP, gdy zlecający nie jest w sandboxie i gdy załadowany jest Plugin backendu taki jak `acpx`. `runtime: "acp"` oczekuje zewnętrznego identyfikatora uprzęży ACP albo wpisu `agents.list[]` z `runtime.type="acp"`; użyj domyślnego środowiska uruchomieniowego subagenta dla zwykłych agentów konfiguracji OpenClaw z `agents_list`.
+    - `/subagents spawn` to tryb jednorazowy (`mode: "run"`). Dla trwałych sesji powiązanych z wątkiem użyj `sessions_spawn` z `thread: true` i `mode: "session"`.
+    - Dla sesji uprzęży ACP (Claude Code, Gemini CLI, OpenCode albo jawne Codex ACP/acpx) użyj `sessions_spawn` z `runtime: "acp"`, gdy narzędzie ogłasza to środowisko wykonawcze. Zobacz [Model dostarczania ACP](/pl/tools/acp-agents#delivery-model) podczas debugowania ukończeń lub pętli agent-agent. Gdy Plugin `codex` jest włączony, sterowanie czatem/wątkiem Codex powinno preferować `/codex ...` zamiast ACP, chyba że użytkownik jawnie poprosi o ACP/acpx.
+    - OpenClaw ukrywa `runtime: "acp"` do czasu włączenia ACP, gdy żądający nie jest w sandboxie i załadowany jest Plugin zaplecza taki jak `acpx`. `runtime: "acp"` oczekuje zewnętrznego identyfikatora uprzęży ACP albo wpisu `agents.list[]` z `runtime.type="acp"`; użyj domyślnego środowiska wykonawczego podagenta dla zwykłych agentów konfiguracyjnych OpenClaw z `agents_list`.
 
   </Accordion>
 </AccordionGroup>
 
 ## Tryby kontekstu
 
-Natywni subagenci startują odizolowani, chyba że wywołujący jawnie poprosi o rozwidlenie
+Natywni podagenci startują w izolacji, chyba że wywołujący jawnie poprosi o rozwidlenie
 bieżącego transkryptu.
 
 | Tryb       | Kiedy go używać                                                                                                                         | Zachowanie                                                                          |
 | ---------- | -------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
-| `isolated` | Świeże badanie, niezależna implementacja, powolna praca narzędzia albo cokolwiek, co można opisać w tekście zadania                           | Tworzy czysty transkrypt potomny. To wartość domyślna i obniża zużycie tokenów.  |
-| `fork`     | Praca zależna od bieżącej rozmowy, wcześniejszych wyników narzędzi lub zniuansowanych instrukcji obecnych już w transkrypcie zlecającego | Rozgałęzia transkrypt zlecającego do sesji potomnej przed uruchomieniem procesu potomnego. |
+| `isolated` | Świeże badanie, niezależna implementacja, powolna praca narzędzia albo cokolwiek, co można opisać w tekście zadania                           | Tworzy czysty transkrypt dziecka. To ustawienie domyślne i utrzymuje niższe zużycie tokenów.  |
+| `fork`     | Praca zależna od bieżącej rozmowy, wcześniejszych wyników narzędzi lub niuansowych instrukcji już obecnych w transkrypcie żądającego | Rozgałęzia transkrypt żądającego do sesji dziecka, zanim dziecko wystartuje. |
 
-Używaj `fork` oszczędnie. Służy do delegowania wrażliwego na kontekst, a nie jako
+Używaj `fork` oszczędnie. Służy do delegowania zależnego od kontekstu, a nie jako
 zamiennik napisania jasnego promptu zadania.
 
 ## Narzędzie: `sessions_spawn`
 
-Uruchamia subagenta z `deliver: false` w globalnej ścieżce `subagent`,
-następnie wykonuje krok ogłoszenia i publikuje odpowiedź ogłoszenia w kanale
-czatu zlecającego.
+Uruchamia podagenta z `deliver: false` na globalnym pasie `subagent`,
+następnie wykonuje krok ogłoszenia i publikuje odpowiedź ogłoszenia w kanale czatu
+żądającego.
 
 Dostępność zależy od efektywnej polityki narzędzi wywołującego. Profile `coding` i
 `full` domyślnie udostępniają `sessions_spawn`. Profil `messaging`
-nie udostępnia go; dodaj `tools.alsoAllow: ["sessions_spawn", "sessions_yield",
-"subagents"]` albo użyj `tools.profile: "coding"` dla agentów, którzy powinni delegować
-pracę. Polityki kanału/grupy, dostawcy, sandboxu oraz zezwalania/odmawiania dla konkretnego agenta nadal mogą
-usunąć narzędzie po etapie profilu. Użyj `/tools` z tej samej
+tego nie robi; dodaj `tools.alsoAllow: ["sessions_spawn", "sessions_yield",
+"subagents"]` albo użyj `tools.profile: "coding"` dla agentów, które powinny delegować
+pracę. Polityki kanału/grupy, dostawcy, sandboxa oraz zezwalania/odmawiania dla poszczególnych agentów
+nadal mogą usunąć narzędzie po etapie profilu. Użyj `/tools` z tej samej
 sesji, aby potwierdzić efektywną listę narzędzi.
 
 **Wartości domyślne:**
 
-- **Model:** dziedziczy po wywołującym, chyba że ustawisz `agents.defaults.subagents.model` (albo `agents.list[].subagents.model` dla konkretnego agenta); jawne `sessions_spawn.model` nadal ma pierwszeństwo.
-- **Thinking:** dziedziczy po wywołującym, chyba że ustawisz `agents.defaults.subagents.thinking` (albo `agents.list[].subagents.thinking` dla konkretnego agenta); jawne `sessions_spawn.thinking` nadal ma pierwszeństwo.
-- **Limit czasu uruchomienia:** jeśli `sessions_spawn.runTimeoutSeconds` zostanie pominięte, OpenClaw używa `agents.defaults.subagents.runTimeoutSeconds`, gdy jest ustawione; w przeciwnym razie wraca do `0` (bez limitu czasu).
+- **Model:** dziedziczy po wywołującym, chyba że ustawisz `agents.defaults.subagents.model` (albo `agents.list[].subagents.model` dla poszczególnych agentów); jawne `sessions_spawn.model` nadal wygrywa.
+- **Myślenie:** dziedziczy po wywołującym, chyba że ustawisz `agents.defaults.subagents.thinking` (albo `agents.list[].subagents.thinking` dla poszczególnych agentów); jawne `sessions_spawn.thinking` nadal wygrywa.
+- **Limit czasu uruchomienia:** jeśli `sessions_spawn.runTimeoutSeconds` zostanie pominięte, OpenClaw używa `agents.defaults.subagents.runTimeoutSeconds`, gdy jest ustawione; w przeciwnym razie wraca do `0` (brak limitu czasu).
+
+### Tryb promptu delegowania
+
+`agents.defaults.subagents.delegationMode` steruje wyłącznie wskazówkami promptu; nie zmienia polityki narzędzi ani nie wymusza delegowania.
+
+- `suggest` (domyślne): zachowaj standardową zachętę promptu do używania podagentów przy większej lub wolniejszej pracy.
+- `prefer`: powiedz głównemu agentowi, aby pozostał responsywny i delegował przez `sessions_spawn` wszystko bardziej złożone niż bezpośrednia odpowiedź.
+
+Nadpisania dla poszczególnych agentów używają `agents.list[].subagents.delegationMode`.
+
+```json5
+{
+  agents: {
+    defaults: {
+      subagents: {
+        delegationMode: "prefer",
+        maxConcurrent: 4,
+      },
+    },
+    list: [
+      {
+        id: "coordinator",
+        subagents: { delegationMode: "prefer" },
+      },
+    ],
+  },
+}
+```
 
 ### Parametry narzędzia
 
 <ParamField path="task" type="string" required>
-  Opis zadania dla subagenta.
+  Opis zadania dla podagenta.
+</ParamField>
+<ParamField path="taskName" type="string">
+  Opcjonalny stabilny uchwyt do późniejszego kierowania przez `subagents`. Musi pasować do `[a-z][a-z0-9_]{0,63}` i nie może być zarezerwowanym celem, takim jak `last` lub `all`. Preferuj go, gdy koordynator może potrzebować pokierować, zabić lub zidentyfikować określone dziecko po utworzeniu kilku dzieci.
 </ParamField>
 <ParamField path="label" type="string">
   Opcjonalna etykieta czytelna dla człowieka.
 </ParamField>
 <ParamField path="agentId" type="string">
-  Wywołaj pod innym identyfikatorem agenta, gdy pozwala na to `subagents.allowAgents`.
+  Utwórz pod innym identyfikatorem agenta, gdy zezwala na to `subagents.allowAgents`.
 </ParamField>
 <ParamField path="runtime" type='"subagent" | "acp"' default="subagent">
-  `acp` służy wyłącznie do zewnętrznych uprzęży ACP (`claude`, `droid`, `gemini`, `opencode` albo jawnie zażądane Codex ACP/acpx) oraz wpisów `agents.list[]`, których `runtime.type` to `acp`.
+  `acp` jest przeznaczone tylko dla zewnętrznych uprzęży ACP (`claude`, `droid`, `gemini`, `opencode` lub jawnie zażądanych Codex ACP/acpx) oraz dla wpisów `agents.list[]`, których `runtime.type` to `acp`.
 </ParamField>
 <ParamField path="resumeSessionId" type="string">
-  Tylko ACP. Wznawia istniejącą sesję uprzęży ACP, gdy `runtime: "acp"`; ignorowane dla natywnych wywołań subagentów.
+  Tylko ACP. Wznawia istniejącą sesję uprzęży ACP, gdy `runtime: "acp"`; ignorowane przy natywnym tworzeniu podagentów.
 </ParamField>
 <ParamField path="streamTo" type='"parent"'>
-  Tylko ACP. Strumieniuje dane wyjściowe uruchomienia ACP do sesji nadrzędnej, gdy `runtime: "acp"`; pomiń dla natywnych wywołań subagentów.
+  Tylko ACP. Strumieniuje wyjście uruchomienia ACP do sesji nadrzędnej, gdy `runtime: "acp"`; pomiń przy natywnym tworzeniu podagentów.
 </ParamField>
 <ParamField path="model" type="string">
-  Nadpisuje model subagenta. Nieprawidłowe wartości są pomijane, a subagent działa na modelu domyślnym z ostrzeżeniem w wyniku narzędzia.
+  Nadpisuje model podagenta. Nieprawidłowe wartości są pomijane, a podagent działa na domyślnym modelu z ostrzeżeniem w wyniku narzędzia.
 </ParamField>
 <ParamField path="thinking" type="string">
-  Nadpisuje poziom myślenia dla uruchomienia subagenta.
+  Nadpisuje poziom myślenia dla uruchomienia podagenta.
 </ParamField>
 <ParamField path="runTimeoutSeconds" type="number">
-  Domyślnie `agents.defaults.subagents.runTimeoutSeconds`, gdy jest ustawione, w przeciwnym razie `0`. Gdy jest ustawione, uruchomienie subagenta zostaje przerwane po N sekundach.
+  Domyślnie przyjmuje `agents.defaults.subagents.runTimeoutSeconds`, gdy jest ustawione, w przeciwnym razie `0`. Gdy ustawione, uruchomienie podagenta jest przerywane po N sekundach.
 </ParamField>
 <ParamField path="thread" type="boolean" default="false">
-  Gdy `true`, żąda powiązania wątku kanału dla tej sesji subagenta.
+  Gdy `true`, żąda powiązania wątku kanału dla tej sesji podagenta.
 </ParamField>
 <ParamField path="mode" type='"run" | "session"' default="run">
-  Jeśli `thread: true`, a `mode` pominięto, wartością domyślną staje się `session`. `mode: "session"` wymaga `thread: true`.
+  Jeśli `thread: true` i `mode` pominięto, domyślną wartością staje się `session`. `mode: "session"` wymaga `thread: true`.
 </ParamField>
 <ParamField path="cleanup" type='"delete" | "keep"' default="keep">
   `"delete"` archiwizuje natychmiast po ogłoszeniu (nadal zachowuje transkrypt przez zmianę nazwy).
 </ParamField>
 <ParamField path="sandbox" type='"inherit" | "require"' default="inherit">
-  `require` odrzuca wywołanie, chyba że docelowe środowisko uruchomieniowe procesu potomnego działa w sandboxie.
+  `require` odrzuca utworzenie, chyba że docelowe środowisko uruchomieniowe dziecka działa w sandboxie.
 </ParamField>
 <ParamField path="context" type='"isolated" | "fork"' default="isolated">
-  `fork` rozgałęzia bieżący transkrypt zlecającego do sesji potomnej. Tylko natywni subagenci. Wywołania powiązane z wątkiem domyślnie używają `fork`; wywołania bez wątku domyślnie używają `isolated`.
+  `fork` rozgałęzia bieżący transkrypt żądającego do sesji dziecka. Tylko natywne podagenty. Utworzenia powiązane z wątkiem domyślnie używają `fork`; utworzenia bez wątku domyślnie używają `isolated`.
 </ParamField>
 
 <Warning>
 `sessions_spawn` **nie** akceptuje parametrów dostarczania kanałowego (`target`,
 `channel`, `to`, `threadId`, `replyTo`, `transport`). Do dostarczania użyj
-`message`/`sessions_send` z wywołanego uruchomienia.
+`message`/`sessions_send` z utworzonego uruchomienia.
 </Warning>
+
+### Nazwy zadań i kierowanie
+
+`taskName` to uchwyt widoczny dla modelu do orkiestracji, a nie klucz sesji.
+Używaj go dla stabilnych nazw dzieci, takich jak `review_subagents`,
+`linux_validation` lub `docs_update`, gdy koordynator może potrzebować pokierować
+tym dzieckiem lub zabić je później.
+
+Rozpoznawanie celu akceptuje dokładne dopasowania `taskName` i jednoznaczne
+prefiksy. Dopasowanie jest ograniczone do tego samego aktywnego/ostatniego okna
+celu, którego używają numerowane cele `/subagents`, więc przestarzałe ukończone
+dziecko nie powoduje niejednoznaczności ponownie użytego uchwytu. Jeśli dwoje
+aktywnych lub ostatnich dzieci współdzieli ten sam `taskName`, cel jest
+niejednoznaczny; zamiast tego użyj indeksu listy, klucza sesji lub identyfikatora
+uruchomienia.
+
+Zarezerwowane cele `last` i `all` nie są prawidłowymi wartościami `taskName`,
+ponieważ mają już znaczenie sterujące.
+
+## Narzędzie: `sessions_yield`
+
+Kończy bieżącą turę modelu i czeka, aż zdarzenia środowiska uruchomieniowego,
+głównie zdarzenia ukończenia podagentów, dotrą jako następna wiadomość. Użyj go
+po utworzeniu wymaganego zadania dziecka, gdy żądający nie może przygotować
+ostatecznej odpowiedzi, dopóki te ukończenia nie nadejdą.
+
+`sessions_yield` jest prymitywem oczekiwania. Nie zastępuj go pętlami odpytywania
+po `subagents`, `sessions_list`, `sessions_history`, powłokowym `sleep` ani
+odpytywaniem procesów tylko po to, aby wykryć ukończenie dziecka.
+
+Używaj `sessions_yield` tylko wtedy, gdy efektywna lista narzędzi sesji je
+zawiera. Niektóre minimalne lub niestandardowe profile narzędzi mogą udostępniać
+`sessions_spawn` i `subagents` bez udostępniania `sessions_yield`; w takim
+przypadku nie wymyślaj pętli odpytywania tylko po to, aby czekać na ukończenie.
+
+Gdy istnieją aktywne dzieci, OpenClaw wstrzykuje zwarty, wygenerowany przez
+środowisko uruchomieniowe blok promptu `Active Subagents` do zwykłych tur, aby
+żądający mógł zobaczyć bieżące sesje dzieci, identyfikatory uruchomień, statusy,
+etykiety, zadania i aliasy `taskName` bez odpytywania. Pola zadania i etykiety w
+tym bloku są cytowane jako dane, nie instrukcje, ponieważ mogą pochodzić z
+argumentów utworzenia dostarczonych przez użytkownika/model.
+
+## Narzędzie: `subagents`
+
+Wyświetla, kieruje lub zabija uruchomienia utworzonych podagentów należące do
+sesji żądającego. Jest ograniczone do bieżącego żądającego; dziecko może
+widzieć/kontrolować tylko własne kontrolowane dzieci.
+
+Użyj `subagents` do statusu na żądanie, debugowania, kierowania lub zabijania.
+Użyj `sessions_yield`, aby czekać na zdarzenia ukończenia.
 
 ## Sesje powiązane z wątkiem
 
-Gdy wiązania wątków są włączone dla kanału, subagent może pozostać powiązany
-z wątkiem, tak aby kolejne wiadomości użytkownika w tym wątku nadal były kierowane do
-tej samej sesji subagenta.
+Gdy powiązania wątków są włączone dla kanału, podagent może pozostać powiązany
+z wątkiem, aby kolejne wiadomości użytkownika w tym wątku nadal były kierowane
+do tej samej sesji podagenta.
 
 ### Kanały obsługujące wątki
 
-**Discord** jest obecnie jedynym obsługiwanym kanałem. Obsługuje
-trwałe sesje subagentów powiązane z wątkiem (`sessions_spawn` z
-`thread: true`), ręczne kontrolki wątku (`/focus`, `/unfocus`, `/agents`,
-`/session idle`, `/session max-age`) oraz klucze adaptera
+**Discord** jest obecnie jedynym obsługiwanym kanałem. Obsługuje trwałe sesje
+podagentów powiązane z wątkami (`sessions_spawn` z `thread: true`), ręczne
+elementy sterowania wątkami (`/focus`, `/unfocus`, `/agents`, `/session idle`,
+`/session max-age`) oraz klucze adaptera
 `channels.discord.threadBindings.enabled`,
 `channels.discord.threadBindings.idleHours`,
 `channels.discord.threadBindings.maxAgeHours` i
@@ -222,17 +304,17 @@ trwałe sesje subagentów powiązane z wątkiem (`sessions_spawn` z
 ### Szybki przepływ
 
 <Steps>
-  <Step title="Uruchom">
+  <Step title="Utwórz">
     `sessions_spawn` z `thread: true` (i opcjonalnie `mode: "session"`).
   </Step>
   <Step title="Powiąż">
     OpenClaw tworzy lub wiąże wątek z tym celem sesji w aktywnym kanale.
   </Step>
-  <Step title="Przekieruj kontynuacje">
+  <Step title="Kieruj kontynuacje">
     Odpowiedzi i kolejne wiadomości w tym wątku są kierowane do powiązanej sesji.
   </Step>
   <Step title="Sprawdź limity czasu">
-    Użyj `/session idle`, aby sprawdzić/zaktualizować automatyczne cofnięcie fokusu po braku aktywności, oraz
+    Użyj `/session idle`, aby sprawdzić/zaktualizować automatyczne odogniskowanie z powodu braku aktywności, oraz
     `/session max-age`, aby kontrolować twardy limit.
   </Step>
   <Step title="Odłącz">
@@ -240,72 +322,73 @@ trwałe sesje subagentów powiązane z wątkiem (`sessions_spawn` z
   </Step>
 </Steps>
 
-### Sterowanie ręczne
+### Ręczne elementy sterowania
 
 | Polecenie          | Efekt                                                                 |
 | ------------------ | --------------------------------------------------------------------- |
-| `/focus <target>`  | Powiąż bieżący wątek (lub utwórz go) z celem subagenta/sesji          |
+| `/focus <target>`  | Powiąż bieżący wątek (lub utwórz nowy) z celem podagenta/sesji        |
 | `/unfocus`         | Usuń powiązanie dla bieżącego powiązanego wątku                       |
 | `/agents`          | Wyświetl aktywne uruchomienia i stan powiązania (`thread:<id>` lub `unbound`) |
-| `/session idle`    | Sprawdź/zaktualizuj automatyczne cofnięcie fokusu po bezczynności (tylko powiązane wątki z fokusem) |
-| `/session max-age` | Sprawdź/zaktualizuj twardy limit (tylko powiązane wątki z fokusem)    |
+| `/session idle`    | Sprawdź/zaktualizuj automatyczne odogniskowanie przy bezczynności (tylko skupione powiązane wątki) |
+| `/session max-age` | Sprawdź/zaktualizuj twardy limit (tylko skupione powiązane wątki)     |
 
 ### Przełączniki konfiguracji
 
-- **Globalna wartość domyślna:** `session.threadBindings.enabled`, `session.threadBindings.idleHours`, `session.threadBindings.maxAgeHours`.
-- **Nadpisanie kanału i klucze automatycznego powiązania przy uruchomieniu** są specyficzne dla adaptera. Zobacz [kanały obsługujące wątki](#thread-supporting-channels) powyżej.
+- **Domyślne globalne:** `session.threadBindings.enabled`, `session.threadBindings.idleHours`, `session.threadBindings.maxAgeHours`.
+- **Nadpisanie kanału i klucze automatycznego powiązania przy tworzeniu** są specyficzne dla adaptera. Zobacz [Kanały obsługujące wątki](#thread-supporting-channels) powyżej.
 
-Zobacz [referencję konfiguracji](/pl/gateway/configuration-reference) i
-[polecenia z ukośnikiem](/pl/tools/slash-commands), aby uzyskać bieżące szczegóły adaptera.
+Zobacz [Informacje o konfiguracji](/pl/gateway/configuration-reference) i
+[Polecenia slash](/pl/tools/slash-commands), aby uzyskać bieżące szczegóły adaptera.
 
 ### Lista dozwolonych
 
 <ParamField path="agents.list[].subagents.allowAgents" type="string[]">
-  Lista identyfikatorów agentów, które mogą być celem przez jawne `agentId` (`["*"]` zezwala na dowolny). Domyślnie: tylko agent wysyłający żądanie. Jeśli ustawisz listę i nadal chcesz, aby agent wysyłający żądanie uruchamiał sam siebie z `agentId`, uwzględnij jego identyfikator na liście.
+  Lista identyfikatorów agentów, które mogą być celem przez jawne `agentId` (`["*"]` zezwala na dowolny). Domyślnie: tylko agent żądający. Jeśli ustawisz listę i nadal chcesz, aby żądający tworzył siebie za pomocą `agentId`, uwzględnij identyfikator żądającego na liście.
 </ParamField>
 <ParamField path="agents.defaults.subagents.allowAgents" type="string[]">
-  Domyślna lista dozwolonych agentów docelowych używana, gdy agent wysyłający żądanie nie ustawia własnego `subagents.allowAgents`.
+  Domyślna lista dozwolonych agentów docelowych używana, gdy agent żądający nie ustawia własnego `subagents.allowAgents`.
 </ParamField>
 <ParamField path="agents.defaults.subagents.requireAgentId" type="boolean" default="false">
-  Blokuj wywołania `sessions_spawn`, które pomijają `agentId` (wymusza jawny wybór profilu). Nadpisanie per agent: `agents.list[].subagents.requireAgentId`.
+  Blokuje wywołania `sessions_spawn`, które pomijają `agentId` (wymusza jawny wybór profilu). Nadpisanie per agent: `agents.list[].subagents.requireAgentId`.
 </ParamField>
 
-Jeśli sesja wysyłająca żądanie działa w piaskownicy, `sessions_spawn` odrzuca cele,
-które działałyby bez piaskownicy.
+Jeśli sesja żądającego działa w sandboxie, `sessions_spawn` odrzuca cele,
+które działałyby poza sandboxem.
 
 ### Wykrywanie
 
-Użyj `agents_list`, aby zobaczyć, które identyfikatory agentów są obecnie dozwolone dla
-`sessions_spawn`. Odpowiedź zawiera efektywny model każdego wymienionego agenta
-oraz osadzone metadane środowiska uruchomieniowego, dzięki czemu wywołujący mogą odróżnić PI, serwer aplikacji Codex
-i inne skonfigurowane natywne środowiska uruchomieniowe.
+Użyj `agents_list`, aby zobaczyć, które identyfikatory agentów są obecnie
+dozwolone dla `sessions_spawn`. Odpowiedź zawiera efektywny model każdego
+wymienionego agenta i osadzone metadane środowiska uruchomieniowego, aby
+wywołujący mogli odróżnić PI, serwer aplikacji Codex i inne skonfigurowane
+natywne środowiska uruchomieniowe.
 
 ### Automatyczna archiwizacja
 
-- Sesje subagentów są automatycznie archiwizowane po `agents.defaults.subagents.archiveAfterMinutes` (domyślnie `60`).
+- Sesje podagentów są automatycznie archiwizowane po `agents.defaults.subagents.archiveAfterMinutes` (domyślnie `60`).
 - Archiwizacja używa `sessions.delete` i zmienia nazwę transkryptu na `*.deleted.<timestamp>` (ten sam folder).
 - `cleanup: "delete"` archiwizuje natychmiast po ogłoszeniu (nadal zachowuje transkrypt przez zmianę nazwy).
-- Automatyczna archiwizacja działa na zasadzie najlepszej próby; oczekujące liczniki czasu zostają utracone, jeśli Gateway zostanie uruchomiony ponownie.
-- `runTimeoutSeconds` **nie** archiwizuje automatycznie; tylko zatrzymuje uruchomienie. Sesja pozostaje do czasu automatycznej archiwizacji.
-- Automatyczna archiwizacja dotyczy tak samo sesji głębokości 1 i głębokości 2.
-- Czyszczenie przeglądarki jest oddzielne od czyszczenia archiwum: śledzone karty/procesy przeglądarki są zamykane na zasadzie najlepszej próby po zakończeniu uruchomienia, nawet jeśli rekord transkryptu/sesji zostaje zachowany.
+- Automatyczna archiwizacja działa na zasadzie best-effort; oczekujące timery zostają utracone, jeśli gateway zostanie uruchomiony ponownie.
+- `runTimeoutSeconds` **nie** archiwizuje automatycznie; tylko zatrzymuje uruchomienie. Sesja pozostaje do automatycznej archiwizacji.
+- Automatyczna archiwizacja stosuje się tak samo do sesji głębokości 1 i głębokości 2.
+- Czyszczenie przeglądarki jest oddzielne od czyszczenia archiwum: śledzone karty/procesy przeglądarki są zamykane na zasadzie best-effort po zakończeniu uruchomienia, nawet jeśli rekord transkryptu/sesji zostaje zachowany.
 
-## Zagnieżdżeni subagenci
+## Zagnieżdżone podagenty
 
-Domyślnie subagenci nie mogą uruchamiać własnych subagentów
+Domyślnie podagenty nie mogą tworzyć własnych podagentów
 (`maxSpawnDepth: 1`). Ustaw `maxSpawnDepth: 2`, aby włączyć jeden poziom
-zagnieżdżenia — **wzorzec orkiestratora**: główny → subagent orkiestrator →
-roboczy sub-subagenci.
+zagnieżdżenia — **wzorzec orkiestratora**: główny → podagent orkiestrator →
+pod-podagenty pracownicy.
 
 ```json5
 {
   agents: {
     defaults: {
       subagents: {
-        maxSpawnDepth: 2, // zezwól subagentom na uruchamianie dzieci (domyślnie: 1)
-        maxChildrenPerAgent: 5, // maks. aktywnych dzieci na sesję agenta (domyślnie: 5)
-        maxConcurrent: 8, // globalny limit torów współbieżności (domyślnie: 8)
-        runTimeoutSeconds: 900, // domyślny limit czasu dla sessions_spawn, gdy pominięty (0 = brak limitu czasu)
+        maxSpawnDepth: 2, // allow sub-agents to spawn children (default: 1)
+        maxChildrenPerAgent: 5, // max active children per agent session (default: 5)
+        maxConcurrent: 8, // global concurrency lane cap (default: 8)
+        runTimeoutSeconds: 900, // default timeout for sessions_spawn when omitted (0 = no timeout)
       },
     },
   },
@@ -314,11 +397,11 @@ roboczy sub-subagenci.
 
 ### Poziomy głębokości
 
-| Głębokość | Kształt klucza sesji                         | Rola                                          | Może uruchamiać?             |
-| --------- | -------------------------------------------- | --------------------------------------------- | ---------------------------- |
-| 0         | `agent:<id>:main`                            | Agent główny                                  | Zawsze                       |
-| 1         | `agent:<id>:subagent:<uuid>`                 | Subagent (orkiestrator, gdy dozwolona głębokość 2) | Tylko jeśli `maxSpawnDepth >= 2` |
-| 2         | `agent:<id>:subagent:<uuid>:subagent:<uuid>` | Sub-subagent (pracownik liść)                 | Nigdy                        |
+| Głębokość | Kształt klucza sesji                         | Rola                                          | Może tworzyć?                |
+| ----- | -------------------------------------------- | --------------------------------------------- | ---------------------------- |
+| 0     | `agent:<id>:main`                            | Agent główny                                  | Zawsze                       |
+| 1     | `agent:<id>:subagent:<uuid>`                 | Podagent (orkiestrator, gdy dozwolona głębokość 2) | Tylko jeśli `maxSpawnDepth >= 2` |
+| 2     | `agent:<id>:subagent:<uuid>:subagent:<uuid>` | Pod-podagent (pracownik liść)                 | Nigdy                        |
 
 ### Łańcuch ogłoszeń
 
@@ -331,129 +414,135 @@ Wyniki płyną z powrotem w górę łańcucha:
 Każdy poziom widzi tylko ogłoszenia od swoich bezpośrednich dzieci.
 
 <Note>
-**Wskazówki operacyjne:** uruchamiaj pracę dzieci raz i czekaj na zdarzenia
+**Wytyczne operacyjne:** uruchamiaj pracę dziecka raz i czekaj na zdarzenia
 ukończenia zamiast budować pętle odpytywania wokół `sessions_list`,
-`sessions_history`, `/subagents list` lub poleceń uśpienia `exec`.
+`sessions_history`, `/subagents list` lub poleceń `exec` sleep.
 `sessions_list` i `/subagents list` utrzymują relacje sesji dzieci
-skupione na pracy na żywo — żywe dzieci pozostają dołączone, zakończone dzieci pozostają
-widoczne przez krótkie ostatnie okno, a przestarzałe łącza dzieci istniejące tylko w magazynie są
-ignorowane po upływie ich okna świeżości. Zapobiega to wskrzeszaniu pozornych dzieci przez stare metadane `spawnedBy` /
-`parentSessionKey` po ponownym uruchomieniu. Jeśli zdarzenie ukończenia dziecka dotrze po wysłaniu przez Ciebie
-ostatecznej odpowiedzi, właściwą kontynuacją jest dokładny cichy token
+skoncentrowane na pracy na żywo — aktywne dzieci pozostają dołączone, zakończone dzieci pozostają
+widoczne przez krótkie ostatnie okno, a przestarzałe linki dzieci istniejące tylko w magazynie są
+ignorowane po ich oknie świeżości. Zapobiega to wskrzeszaniu widmowych dzieci przez stare metadane `spawnedBy` /
+`parentSessionKey` po ponownym uruchomieniu. Jeśli zdarzenie ukończenia dziecka nadejdzie po wysłaniu przez Ciebie
+ostatecznej odpowiedzi, poprawną kontynuacją jest dokładny cichy token
 `NO_REPLY` / `no_reply`.
 </Note>
 
 ### Polityka narzędzi według głębokości
 
-- Rola i zakres kontroli są zapisywane w metadanych sesji w momencie uruchomienia. Dzięki temu płaskie lub przywrócone klucze sesji nie odzyskują przypadkowo uprawnień orkiestratora.
-- **Głębokość 1 (orkiestrator, gdy `maxSpawnDepth >= 2`):** otrzymuje `sessions_spawn`, `subagents`, `sessions_list`, `sessions_history`, aby móc zarządzać swoimi dziećmi. Inne narzędzia sesji/systemowe pozostają zabronione.
-- **Głębokość 1 (liść, gdy `maxSpawnDepth == 1`):** brak narzędzi sesji (bieżące zachowanie domyślne).
-- **Głębokość 2 (pracownik liść):** brak narzędzi sesji — `sessions_spawn` jest zawsze zabronione na głębokości 2. Nie może uruchamiać kolejnych dzieci.
+- Rola i zakres kontroli są zapisywane w metadanych sesji podczas uruchamiania. Dzięki temu spłaszczone lub przywrócone klucze sesji nie odzyskują przypadkowo uprawnień orkiestratora.
+- **Głębokość 1 (orkiestrator, gdy `maxSpawnDepth >= 2`):** otrzymuje `sessions_spawn`, `subagents`, `sessions_list`, `sessions_history`, aby mógł zarządzać swoimi dziećmi. Pozostałe narzędzia sesji/systemowe pozostają zabronione.
+- **Głębokość 1 (liść, gdy `maxSpawnDepth == 1`):** brak narzędzi sesji (obecne zachowanie domyślne).
+- **Głębokość 2 (pracownik-liść):** brak narzędzi sesji — `sessions_spawn` jest zawsze zabronione na głębokości 2. Nie może uruchamiać kolejnych dzieci.
 
-### Limit uruchomień per agent
+### Limit uruchomień na agenta
 
 Każda sesja agenta (na dowolnej głębokości) może mieć jednocześnie najwyżej `maxChildrenPerAgent`
 (domyślnie `5`) aktywnych dzieci. Zapobiega to niekontrolowanemu rozgałęzianiu
-z pojedynczego orkiestratora.
+z jednego orkiestratora.
 
 ### Kaskadowe zatrzymanie
 
-Zatrzymanie orkiestratora głębokości 1 automatycznie zatrzymuje wszystkie jego dzieci głębokości 2:
+Zatrzymanie orkiestratora na głębokości 1 automatycznie zatrzymuje wszystkie jego dzieci
+na głębokości 2:
 
-- `/stop` w czacie głównym zatrzymuje wszystkich agentów głębokości 1 i kaskadowo ich dzieci głębokości 2.
-- `/subagents kill <id>` zatrzymuje konkretnego subagenta i kaskadowo jego dzieci.
-- `/subagents kill all` zatrzymuje wszystkich subagentów dla wysyłającego żądanie i kaskadowo zatrzymuje ich dzieci.
+- `/stop` w głównym czacie zatrzymuje wszystkich agentów na głębokości 1 i kaskadowo zatrzymuje ich dzieci na głębokości 2.
+- `/subagents kill <id>` zatrzymuje konkretnego agenta podrzędnego i kaskadowo zatrzymuje jego dzieci.
+- `/subagents kill all` zatrzymuje wszystkich agentów podrzędnych dla żądającego i wykonuje kaskadę.
 
 ## Uwierzytelnianie
 
-Uwierzytelnianie subagenta jest rozwiązywane według **identyfikatora agenta**, a nie według typu sesji:
+Uwierzytelnianie agenta podrzędnego jest rozstrzygane według **identyfikatora agenta**, a nie typu sesji:
 
-- Klucz sesji subagenta to `agent:<agentId>:subagent:<uuid>`.
+- Klucz sesji agenta podrzędnego to `agent:<agentId>:subagent:<uuid>`.
 - Magazyn uwierzytelniania jest ładowany z `agentDir` tego agenta.
-- Profile uwierzytelniania agenta głównego są scalane jako **rezerwowe**; profile agenta zastępują profile główne w przypadku konfliktów.
+- Profile uwierzytelniania głównego agenta są scalane jako **fallback**; profile agenta zastępują profile główne w razie konfliktów.
 
 Scalanie jest addytywne, więc profile główne są zawsze dostępne jako
-rezerwowe. W pełni izolowane uwierzytelnianie per agent nie jest jeszcze obsługiwane.
+fallback. W pełni izolowane uwierzytelnianie per agent nie jest jeszcze obsługiwane.
 
-## Ogłoszenie
+## Ogłaszanie
 
-Subagenci zgłaszają się z powrotem przez krok ogłoszenia:
+Agenci podrzędni raportują z powrotem przez krok ogłaszania:
 
-- Krok ogłoszenia działa wewnątrz sesji subagenta (nie w sesji wysyłającej żądanie).
-- Jeśli subagent odpowie dokładnie `ANNOUNCE_SKIP`, nic nie zostanie opublikowane.
-- Jeśli najnowszy tekst asystenta jest dokładnym cichym tokenem `NO_REPLY` / `no_reply`, wyjście ogłoszenia jest tłumione nawet wtedy, gdy wcześniej istniał widoczny postęp.
+- Krok ogłaszania działa wewnątrz sesji agenta podrzędnego (nie w sesji żądającego).
+- Jeśli agent podrzędny odpowie dokładnie `ANNOUNCE_SKIP`, nic nie zostanie opublikowane.
+- Jeśli najnowszy tekst asystenta jest dokładnym cichym tokenem `NO_REPLY` / `no_reply`, wynik ogłoszenia jest wyciszony, nawet jeśli wcześniej istniał widoczny postęp.
 
-Dostarczenie zależy od głębokości wysyłającego żądanie:
+Dostarczenie zależy od głębokości żądającego:
 
-- Sesje wysyłające żądanie najwyższego poziomu używają kolejnego wywołania `agent` z dostarczeniem zewnętrznym (`deliver=true`).
-- Zagnieżdżone sesje subagentów wysyłające żądanie otrzymują wewnętrzne wstrzyknięcie kontynuacji (`deliver=false`), aby orkiestrator mógł syntetyzować wyniki dzieci w sesji.
-- Jeśli zagnieżdżona sesja subagenta wysyłająca żądanie zniknęła, OpenClaw przełącza się awaryjnie na wysyłającego żądanie tej sesji, gdy jest dostępny.
+- Sesje żądającego najwyższego poziomu używają kolejnego wywołania `agent` z dostarczeniem zewnętrznym (`deliver=true`).
+- Zagnieżdżone sesje agenta podrzędnego żądającego otrzymują wewnętrzne wstrzyknięcie kolejnego kroku (`deliver=false`), aby orkiestrator mógł syntetyzować wyniki dzieci w sesji.
+- Jeśli zagnieżdżona sesja agenta podrzędnego żądającego zniknęła, OpenClaw wraca do żądającego tej sesji, gdy jest dostępny.
 
-W przypadku sesji wysyłających żądanie najwyższego poziomu bezpośrednie dostarczanie w trybie ukończenia najpierw
-rozwiązuje dowolną powiązaną trasę rozmowy/wątku i nadpisanie haka, a następnie uzupełnia
-brakujące pola celu kanału z zapisanej trasy sesji wysyłającej żądanie.
-Dzięki temu ukończenia pozostają we właściwym czacie/temacie nawet wtedy, gdy źródło ukończenia
+W przypadku sesji żądającego najwyższego poziomu bezpośrednie dostarczenie w trybie ukończenia najpierw
+rozstrzyga powiązaną trasę konwersacji/wątku i nadpisanie hooka, a następnie uzupełnia
+brakujące pola kanału-docelowe z zapisanej trasy sesji żądającego.
+Dzięki temu ukończenia trafiają do właściwego czatu/tematu nawet wtedy, gdy źródło ukończenia
 identyfikuje tylko kanał.
 
-Agregacja ukończeń dzieci jest ograniczona do bieżącego uruchomienia wysyłającego żądanie podczas
-budowania zagnieżdżonych ustaleń ukończenia, co zapobiega wyciekaniu nieaktualnych wyjść dzieci
-z wcześniejszych uruchomień do bieżącego ogłoszenia. Odpowiedzi ogłoszeń zachowują
-routing wątku/tematu, gdy jest dostępny w adapterach kanałów.
+Agregacja ukończeń dzieci jest ograniczona do bieżącego uruchomienia żądającego podczas
+budowania zagnieżdżonych ustaleń ukończenia, co zapobiega wyciekaniu przestarzałych wyników dzieci
+z poprzednich uruchomień do bieżącego ogłoszenia. Odpowiedzi ogłoszeń zachowują
+trasowanie wątku/tematu, gdy jest dostępne w adapterach kanałów.
 
 ### Kontekst ogłoszenia
 
 Kontekst ogłoszenia jest normalizowany do stabilnego wewnętrznego bloku zdarzenia:
 
-| Pole             | Źródło                                                                                                        |
-| ---------------- | ------------------------------------------------------------------------------------------------------------- |
-| Źródło           | `subagent` lub `cron`                                                                                         |
+| Pole           | Źródło                                                                                                           |
+| -------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Źródło         | `subagent` lub `cron`                                                                                            |
 | Identyfikatory sesji | Klucz/id sesji dziecka                                                                                   |
-| Typ              | Typ ogłoszenia + etykieta zadania                                                                             |
-| Status           | Wyprowadzony z wyniku środowiska uruchomieniowego (`success`, `error`, `timeout` lub `unknown`) — **nie** wnioskowany z tekstu modelu |
-| Treść wyniku     | Najnowszy widoczny tekst asystenta, w przeciwnym razie oczyszczony najnowszy tekst narzędzia/toolResult       |
-| Kontynuacja      | Instrukcja opisująca, kiedy odpowiedzieć, a kiedy zachować ciszę                                              |
+| Typ            | Typ ogłoszenia + etykieta zadania                                                                                |
+| Status         | Wyprowadzony z wyniku środowiska uruchomieniowego (`success`, `error`, `timeout` lub `unknown`) — **nie** wnioskowany z tekstu modelu |
+| Treść wyniku   | Najnowszy widoczny tekst asystenta, w przeciwnym razie oczyszczony najnowszy tekst tool/toolResult                |
+| Kolejny krok   | Instrukcja opisująca, kiedy odpowiedzieć, a kiedy milczeć                                                        |
 
 Końcowe nieudane uruchomienia zgłaszają status niepowodzenia bez ponownego odtwarzania przechwyconego
-tekstu odpowiedzi. Po limicie czasu, jeśli dziecko przeszło tylko przez wywołania narzędzi, ogłoszenie
+tekstu odpowiedzi. Przy przekroczeniu limitu czasu, jeśli dziecko doszło tylko do wywołań narzędzi, ogłoszenie
 może zwinąć tę historię do krótkiego podsumowania częściowego postępu zamiast
-odtwarzać surowe wyjście narzędzi.
+odtwarzać surowe dane wyjściowe narzędzi.
 
-### Wiersz statystyk
+### Linia statystyk
 
-Ładunki ogłoszeń zawierają na końcu wiersz statystyk (nawet gdy są zawinięte):
+Ładunki ogłoszeń zawierają na końcu linię statystyk (nawet gdy są zawinięte):
 
 - Czas działania (np. `runtime 5m12s`).
-- Użycie tokenów (wejście/wyjście/razem).
+- Użycie tokenów (wejście/wyjście/łącznie).
 - Szacowany koszt, gdy skonfigurowano ceny modeli (`models.providers.*.models[].cost`).
-- `sessionKey`, `sessionId` i ścieżka transkryptu, aby agent główny mógł pobrać historię przez `sessions_history` lub sprawdzić plik na dysku.
+- `sessionKey`, `sessionId` i ścieżka transkryptu, aby główny agent mógł pobrać historię przez `sessions_history` albo sprawdzić plik na dysku.
 
-Metadane wewnętrzne są przeznaczone tylko do orkiestracji; odpowiedzi skierowane do użytkownika
-powinny być przepisane normalnym głosem asystenta.
+Metadane wewnętrzne są przeznaczone wyłącznie do orkiestracji; odpowiedzi widoczne dla użytkownika
+powinny zostać przepisane normalnym głosem asystenta.
 
 ### Dlaczego preferować `sessions_history`
 
-`sessions_history` jest bezpieczniejszą ścieżką orkiestracji:
+`sessions_history` to bezpieczniejsza ścieżka orkiestracji:
 
-- Przywołanie asystenta jest najpierw normalizowane: tagi myślenia usuwane; szkielety `<relevant-memories>` / `<relevant_memories>` usuwane; bloki ładunku XML wywołań narzędzi w zwykłym tekście (`<tool_call>`, `<function_call>`, `<tool_calls>`, `<function_calls>`) usuwane, w tym ucięte ładunki, które nigdy nie zamykają się poprawnie; obniżone szkielety wywołań/wyników narzędzi i znaczniki kontekstu historycznego usuwane; ujawnione tokeny sterujące modelu (`<|assistant|>`, inne ASCII `<|...|>`, pełnej szerokości `<｜...｜>`) usuwane; zniekształcony XML wywołań narzędzi MiniMax usuwany.
+- Pamięć asystenta jest najpierw normalizowana: tagi myślenia są usuwane; rusztowanie `<relevant-memories>` / `<relevant_memories>` jest usuwane; bloki ładunku XML wywołań narzędzi w zwykłym tekście (`<tool_call>`, `<function_call>`, `<tool_calls>`, `<function_calls>`) są usuwane, w tym obcięte ładunki, które nigdy nie zamykają się poprawnie; zdegradowane rusztowanie wywołań/wyników narzędzi i znaczniki kontekstu historycznego są usuwane; ujawnione tokeny sterujące modelu (`<|assistant|>`, inne ASCII `<|...|>`, pełnoszerokościowe `<｜...｜>`) są usuwane; wadliwy XML wywołań narzędzi MiniMax jest usuwany.
 - Tekst przypominający poświadczenia/tokeny jest redagowany.
-- Długie bloki mogą być skracane.
-- Bardzo duże historie mogą usuwać starsze wiersze lub zastępować nadmiernie duży wiersz tekstem `[sessions_history omitted: message too large]`.
-- Surowa inspekcja transkryptu na dysku jest rozwiązaniem awaryjnym, gdy potrzebujesz pełnego transkryptu bajt po bajcie.
+- Długie bloki mogą być obcinane.
+- Bardzo duże historie mogą porzucać starsze wiersze albo zastępować zbyt duży wiersz tekstem `[sessions_history omitted: message too large]`.
+- Surowa inspekcja transkryptu na dysku jest fallbackiem, gdy potrzebny jest pełny transkrypt bajt po bajcie.
 
-## Polityka narzędzi
+## Zasady narzędzi
 
-Subagenci najpierw używają tego samego profilu i potoku zasad narzędzi co agent nadrzędny lub docelowy. Następnie OpenClaw stosuje warstwę ograniczeń subagentów.
+Agenci podrzędni używają najpierw tego samego profilu i potoku zasad narzędzi co agent nadrzędny lub
+docelowy. Następnie OpenClaw stosuje warstwę ograniczeń dla agentów podrzędnych.
 
-Bez restrykcyjnego `tools.profile` subagenci otrzymują **wszystkie narzędzia oprócz narzędzi sesji** i narzędzi systemowych:
+Bez restrykcyjnego `tools.profile` agenci podrzędni otrzymują **wszystkie narzędzia oprócz
+narzędzi sesji** i narzędzi systemowych:
 
 - `sessions_list`
 - `sessions_history`
 - `sessions_send`
 - `sessions_spawn`
 
-`sessions_history` także tutaj pozostaje ograniczonym, oczyszczonym widokiem przywoływania — nie jest surowym zrzutem transkryptu.
+`sessions_history` także tutaj pozostaje ograniczonym, oczyszczonym widokiem przywołania — nie
+jest surowym zrzutem transkryptu.
 
-Gdy `maxSpawnDepth >= 2`, subagenci-orkiestratorzy na głębokości 1 dodatkowo otrzymują `sessions_spawn`, `subagents`, `sessions_list` oraz `sessions_history`, aby mogli zarządzać swoimi dziećmi.
+Gdy `maxSpawnDepth >= 2`, agenci podrzędni-orkiestratorzy na głębokości 1 dodatkowo
+otrzymują `sessions_spawn`, `subagents`, `sessions_list` i
+`sessions_history`, aby mogli zarządzać swoimi dziećmi.
 
 ### Nadpisanie przez konfigurację
 
@@ -479,7 +568,12 @@ Gdy `maxSpawnDepth >= 2`, subagenci-orkiestratorzy na głębokości 1 dodatkowo 
 }
 ```
 
-`tools.subagents.tools.allow` jest końcowym filtrem wyłącznie dopuszczającym. Może zawęzić już rozwiązany zestaw narzędzi, ale nie może **dodać z powrotem** narzędzia usuniętego przez `tools.profile`. Na przykład `tools.profile: "coding"` obejmuje `web_search`/`web_fetch`, ale nie narzędzie `browser`. Aby umożliwić subagentom z profilem coding używanie automatyzacji przeglądarki, dodaj browser na etapie profilu:
+`tools.subagents.tools.allow` jest ostatecznym filtrem typu allow-only. Może zawęzić
+już rozstrzygnięty zestaw narzędzi, ale nie może **dodać z powrotem** narzędzia usuniętego
+przez `tools.profile`. Na przykład `tools.profile: "coding"` obejmuje
+`web_search`/`web_fetch`, ale nie narzędzie `browser`. Aby pozwolić
+agentom podrzędnym z profilem coding używać automatyzacji przeglądarki, dodaj browser na
+etapie profilu:
 
 ```json5
 {
@@ -490,40 +584,60 @@ Gdy `maxSpawnDepth >= 2`, subagenci-orkiestratorzy na głębokości 1 dodatkowo 
 }
 ```
 
-Użyj `agents.list[].tools.alsoAllow: ["browser"]` dla konkretnego agenta, gdy tylko jeden agent powinien otrzymać automatyzację przeglądarki.
+Użyj `agents.list[].tools.alsoAllow: ["browser"]` per agent, gdy tylko jeden
+agent powinien otrzymać automatyzację przeglądarki.
 
 ## Współbieżność
 
-Subagenci używają dedykowanej, działającej w procesie kolejki:
+Agenci podrzędni używają dedykowanej kolejki wewnątrzprocesowej:
 
 - **Nazwa kolejki:** `subagent`
 - **Współbieżność:** `agents.defaults.subagents.maxConcurrent` (domyślnie `8`)
 
 ## Żywotność i odzyskiwanie
 
-OpenClaw nie traktuje braku `endedAt` jako trwałego dowodu, że subagent nadal działa. Niezakończone uruchomienia starsze niż okno przedawnionego uruchomienia przestają być liczone jako aktywne/oczekujące w `/subagents list`, podsumowaniach stanu, bramkowaniu zakończenia potomków oraz kontrolach współbieżności dla sesji.
+OpenClaw nie traktuje braku `endedAt` jako trwałego dowodu, że
+agent podrzędny wciąż działa. Niezakończone uruchomienia starsze niż okno nieaktualnego uruchomienia
+przestają być liczone jako aktywne/oczekujące w `/subagents list`, podsumowaniach statusu,
+bramkowaniu ukończenia potomków i kontrolach współbieżności per sesja.
 
-Po ponownym uruchomieniu Gateway przedawnione, niezakończone przywrócone uruchomienia są przycinane, chyba że ich sesja podrzędna jest oznaczona jako `abortedLastRun: true`. Te sesje podrzędne przerwane przez restart pozostają możliwe do odzyskania przez przepływ odzyskiwania osieroconego subagenta, który wysyła syntetyczną wiadomość wznowienia przed wyczyszczeniem znacznika przerwania.
+Po restarcie Gateway nieaktualne, niezakończone przywrócone uruchomienia są przycinane, chyba że
+ich sesja dziecka jest oznaczona jako `abortedLastRun: true`. Te
+dziecięce sesje przerwane restartem pozostają możliwe do odzyskania przez przepływ odzyskiwania osieroconych agentów podrzędnych, który wysyła syntetyczną wiadomość wznowienia przed
+wyczyszczeniem znacznika przerwania.
 
-Automatyczne odzyskiwanie po restarcie jest ograniczone dla każdej sesji podrzędnej. Jeśli to samo dziecko subagenta jest wielokrotnie akceptowane do odzyskiwania osieroconego procesu w oknie szybkiego ponownego zakleszczenia, OpenClaw utrwala tombstone odzyskiwania w tej sesji i przestaje automatycznie wznawiać ją po późniejszych restartach. Uruchom `openclaw tasks maintenance --apply`, aby uzgodnić rekord zadania, albo `openclaw doctor --fix`, aby wyczyścić przedawnione flagi przerwanego odzyskiwania w sesjach z tombstone.
+Automatyczne odzyskiwanie po restarcie jest ograniczone per sesja dziecka. Jeśli to samo
+dziecko agenta podrzędnego jest wielokrotnie akceptowane do odzyskiwania osieroconego stanu w
+oknie szybkiego ponownego zaklinowania, OpenClaw utrwala tombstone odzyskiwania w tej
+sesji i przestaje automatycznie ją wznawiać przy późniejszych restartach. Uruchom
+`openclaw tasks maintenance --apply`, aby uzgodnić rekord zadania, albo
+`openclaw doctor --fix`, aby wyczyścić nieaktualne flagi przerwanego odzyskiwania na
+sesjach z tombstone.
 
 <Note>
-Jeśli utworzenie subagenta nie powiedzie się z błędem Gateway `PAIRING_REQUIRED` / `scope-upgrade`, sprawdź wywołującego RPC przed edycją stanu parowania. Wewnętrzna koordynacja `sessions_spawn` powinna łączyć się jako `client.id: "gateway-client"` z `client.mode: "backend"` przez bezpośrednie uwierzytelnianie współdzielonym tokenem/hasłem po local loopback; ta ścieżka nie zależy od bazowego zakresu sparowanego urządzenia CLI. Zdalni wywołujący, jawne `deviceIdentity`, jawne ścieżki tokenów urządzeń oraz klienci przeglądarki/node nadal wymagają normalnego zatwierdzenia urządzenia dla podniesienia zakresu.
+Jeśli uruchomienie agenta podrzędnego nie powiedzie się z Gateway `PAIRING_REQUIRED` /
+`scope-upgrade`, sprawdź wywołującego RPC przed edycją stanu parowania.
+Wewnętrzna koordynacja `sessions_spawn` powinna łączyć się jako
+`client.id: "gateway-client"` z `client.mode: "backend"` przez bezpośrednie
+uwierzytelnianie local loopback z tokenem/hasłem współdzielonym; ta ścieżka nie zależy od
+bazowego zakresu sparowanego urządzenia CLI. Zdalni wywołujący, jawne
+`deviceIdentity`, jawne ścieżki tokena urządzenia oraz klienci browser/node
+nadal wymagają normalnego zatwierdzenia urządzenia dla podniesień zakresu.
 </Note>
 
 ## Zatrzymywanie
 
-- Wysłanie `/stop` w czacie żądającego przerywa sesję żądającego i zatrzymuje wszystkie aktywne uruchomienia subagentów utworzone z niej, kaskadowo obejmując zagnieżdżone dzieci.
-- `/subagents kill <id>` zatrzymuje określonego subagenta i kaskadowo zatrzymuje jego dzieci.
+- Wysłanie `/stop` w czacie żądającego przerywa sesję żądającego i zatrzymuje wszystkie aktywne uruchomienia agentów podrzędnych utworzone z niej, kaskadowo przechodząc do zagnieżdżonych dzieci.
+- `/subagents kill <id>` zatrzymuje konkretnego agenta podrzędnego i kaskadowo zatrzymuje jego dzieci.
 
 ## Ograniczenia
 
-- Ogłoszenie subagenta działa w trybie **best-effort**. Jeśli Gateway zostanie ponownie uruchomiony, oczekująca praca „ogłoś z powrotem” zostanie utracona.
-- Subagenci nadal współdzielą zasoby tego samego procesu Gateway; traktuj `maxConcurrent` jako zawór bezpieczeństwa.
+- Ogłaszanie agenta podrzędnego działa na zasadzie **best-effort**. Jeśli gateway zostanie zrestartowany, oczekująca praca „ogłoś z powrotem” zostanie utracona.
+- Agenci podrzędni nadal współdzielą te same zasoby procesu gateway; traktuj `maxConcurrent` jako zawór bezpieczeństwa.
 - `sessions_spawn` jest zawsze nieblokujące: natychmiast zwraca `{ status: "accepted", runId, childSessionKey }`.
-- Kontekst subagenta wstrzykuje tylko `AGENTS.md` + `TOOLS.md` (bez `SOUL.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md` ani `BOOTSTRAP.md`).
-- Maksymalna głębokość zagnieżdżenia wynosi 5 (zakres `maxSpawnDepth`: 1–5). Głębokość 2 jest zalecana w większości przypadków użycia.
-- `maxChildrenPerAgent` ogranicza aktywne dzieci na sesję (domyślnie `5`, zakres `1–20`).
+- Kontekst agenta podrzędnego wstrzykuje tylko `AGENTS.md`, `TOOLS.md`, `SOUL.md`, `IDENTITY.md` i `USER.md` (bez `MEMORY.md`, `HEARTBEAT.md` ani `BOOTSTRAP.md`).
+- Maksymalna głębokość zagnieżdżenia wynosi 5 (zakres `maxSpawnDepth`: 1–5). Głębokość 2 jest zalecana dla większości przypadków użycia.
+- `maxChildrenPerAgent` ogranicza liczbę aktywnych dzieci per sesja (domyślnie `5`, zakres `1–20`).
 
 ## Powiązane
 

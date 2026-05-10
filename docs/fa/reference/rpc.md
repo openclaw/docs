@@ -1,51 +1,49 @@
 ---
 read_when:
-    - افزودن یا تغییر یکپارچه‌سازی‌های CLI خارجی
+    - افزودن یا تغییر یکپارچه‌سازی‌های خارجی CLI
     - اشکال‌زدایی آداپتورهای RPC (signal-cli، imsg)
-summary: آداپتورهای RPC برای CLIهای خارجی (signal-cli، imsg) و الگوهای Gateway
+summary: آداپتورهای RPC برای CLIهای خارجی (signal-cli, imsg) و الگوهای Gateway
 title: آداپتورهای RPC
 x-i18n:
-    generated_at: "2026-05-07T01:55:12Z"
+    generated_at: "2026-05-10T20:05:58Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 446e54d736352f45e6cc6988a1835233cace7f854b6e62c64bb1fae115ce76f6
+    source_hash: 63556f140bee55821fa0a09ff9808e163728049f8db4c58f7bb4ceca6e1cac1a
     source_path: reference/rpc.md
     workflow: 16
 ---
 
-OpenClaw، CLIهای خارجی را از طریق JSON-RPC یکپارچه می‌کند. امروزه دو الگو استفاده می‌شود.
+OpenClaw از طریق JSON-RPC با CLIهای خارجی یکپارچه می‌شود. امروز از دو الگو استفاده می‌شود.
 
-## الگوی A: daemon مبتنی بر HTTP (signal-cli)
+## الگوی A: دیمون HTTP (signal-cli)
 
-- `signal-cli` به‌صورت daemon با JSON-RPC روی HTTP اجرا می‌شود.
+- `signal-cli` به‌صورت دیمون با JSON-RPC روی HTTP اجرا می‌شود.
 - جریان رویداد SSE است (`/api/v1/events`).
-- بررسی سلامت: `/api/v1/check`.
-- OpenClaw زمانی مالک چرخهٔ حیات است که `channels.signal.autoStart=true` باشد.
+- پروب سلامت: `/api/v1/check`.
+- وقتی `channels.signal.autoStart=true` باشد، OpenClaw مالک چرخهٔ حیات است.
 
-برای راه‌اندازی و endpointها، [Signal](/fa/channels/signal) را ببینید.
+برای راه‌اندازی و endpointها به [Signal](/fa/channels/signal) مراجعه کنید.
 
-## الگوی B: فرایند فرزند stdio (قدیمی: imsg)
+## الگوی B: فرایند فرزند stdio (imsg)
 
-> **نکته:** برای راه‌اندازی‌های جدید iMessage، به‌جای آن از [BlueBubbles](/fa/channels/bluebubbles) استفاده کنید.
-
-- OpenClaw، `imsg rpc` را به‌عنوان یک فرایند فرزند اجرا می‌کند (یکپارچه‌سازی قدیمی iMessage).
-- JSON-RPC روی stdin/stdout به‌صورت خط‌به‌خط جدا می‌شود (یک شیء JSON در هر خط).
-- هیچ پورت TCP و هیچ daemonی لازم نیست.
+- OpenClaw، `imsg rpc` را به‌عنوان فرایند فرزند برای [iMessage](/fa/channels/imessage) اجرا می‌کند.
+- JSON-RPC به‌صورت خط‌به‌خط روی stdin/stdout جدا می‌شود (هر خط یک شیء JSON).
+- هیچ پورت TCP و هیچ دیمونی لازم نیست.
 
 روش‌های اصلی استفاده‌شده:
 
-- `watch.subscribe` ← اعلان‌ها (`method: "message"`)
+- `watch.subscribe` → اعلان‌ها (`method: "message"`)
 - `watch.unsubscribe`
 - `send`
-- `chats.list` (بررسی/عیب‌یابی)
+- `chats.list` (پروب/عیب‌یابی)
 
-برای راه‌اندازی قدیمی و آدرس‌دهی (`chat_id` ترجیح داده می‌شود)، [iMessage](/fa/channels/imessage) را ببینید.
+برای راه‌اندازی قدیمی و آدرس‌دهی (`chat_id` ترجیح داده می‌شود) به [iMessage](/fa/channels/imessage) مراجعه کنید.
 
-## رهنمودهای adapter
+## رهنمودهای آداپتور
 
 - Gateway مالک فرایند است (شروع/توقف به چرخهٔ حیات provider گره خورده است).
-- کلاینت‌های RPC را تاب‌آور نگه دارید: timeoutها، راه‌اندازی مجدد هنگام خروج.
-- شناسه‌های پایدار (مانند `chat_id`) را به رشته‌های نمایشی ترجیح دهید.
+- کلاینت‌های RPC را تاب‌آور نگه دارید: timeoutها، راه‌اندازی دوباره هنگام خروج.
+- شناسه‌های پایدار (مثلاً `chat_id`) را به رشته‌های نمایشی ترجیح دهید.
 
 ## مرتبط
 

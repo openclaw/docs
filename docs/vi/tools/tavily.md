@@ -2,133 +2,168 @@
 read_when:
     - Bạn muốn tìm kiếm trên web do Tavily hỗ trợ
     - Bạn cần có khóa API Tavily
-    - Bạn muốn sử dụng Tavily làm nhà cung cấp web_search
+    - Bạn muốn Tavily làm nhà cung cấp web_search
     - Bạn muốn trích xuất nội dung từ các URL
-summary: Các công cụ tìm kiếm và trích xuất của Tavily
+summary: Công cụ tìm kiếm và trích xuất Tavily
 title: Tavily
 x-i18n:
-    generated_at: "2026-04-29T23:21:33Z"
+    generated_at: "2026-05-10T19:55:23Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9af858cd8507e3ebe6614f0695f568ce589798c816c8475685526422a048ef1a
+    source_hash: 071e2b1be054890711e32d7424d16d94133d16ff1ce7da3703e62c53b5c217ef
     source_path: tools/tavily.md
     workflow: 16
 ---
 
-OpenClaw có thể sử dụng **Tavily** theo hai cách:
+[Tavily](https://tavily.com) là một API tìm kiếm được thiết kế cho các ứng dụng AI. OpenClaw cung cấp API này theo hai cách:
 
-- làm nhà cung cấp `web_search`
-- làm các công cụ Plugin rõ ràng: `tavily_search` và `tavily_extract`
+- dưới dạng nhà cung cấp `web_search` cho công cụ tìm kiếm chung
+- dưới dạng các công cụ Plugin rõ ràng: `tavily_search` và `tavily_extract`
 
-Tavily là một API tìm kiếm được thiết kế cho các ứng dụng AI, trả về kết quả có cấu trúc
-được tối ưu hóa để LLM sử dụng. Tavily hỗ trợ độ sâu tìm kiếm có thể cấu hình, lọc theo chủ đề,
-bộ lọc miền, bản tóm tắt câu trả lời do AI tạo, và trích xuất nội dung
-từ URL (bao gồm các trang được JavaScript kết xuất).
+Tavily trả về kết quả có cấu trúc được tối ưu hóa để LLM sử dụng, với độ sâu tìm kiếm có thể cấu hình, lọc theo chủ đề, bộ lọc miền, tóm tắt câu trả lời do AI tạo và trích xuất nội dung từ URL (bao gồm cả các trang được render bằng JavaScript).
 
-## Lấy API key
+| Thuộc tính     | Giá trị                             |
+| -------------- | ----------------------------------- |
+| ID Plugin      | `tavily`                            |
+| Xác thực       | `TAVILY_API_KEY` hoặc cấu hình `apiKey` |
+| URL cơ sở      | `https://api.tavily.com` (mặc định) |
+| Công cụ đi kèm | `tavily_search`, `tavily_extract`   |
 
-1. Tạo tài khoản Tavily tại [tavily.com](https://tavily.com/).
-2. Tạo API key trong dashboard.
-3. Lưu khóa đó trong cấu hình hoặc đặt `TAVILY_API_KEY` trong môi trường Gateway.
+## Bắt đầu
 
-## Cấu hình tìm kiếm Tavily
-
-```json5
-{
-  plugins: {
-    entries: {
-      tavily: {
-        enabled: true,
-        config: {
-          webSearch: {
-            apiKey: "tvly-...", // optional if TAVILY_API_KEY is set
-            baseUrl: "https://api.tavily.com",
+<Steps>
+  <Step title="Get an API key">
+    Tạo tài khoản Tavily tại [tavily.com](https://tavily.com), rồi tạo một khóa API trong bảng điều khiển.
+  </Step>
+  <Step title="Configure the plugin and provider">
+    ```json5
+    {
+      plugins: {
+        entries: {
+          tavily: {
+            enabled: true,
+            config: {
+              webSearch: {
+                apiKey: "tvly-...", // optional if TAVILY_API_KEY is set
+                baseUrl: "https://api.tavily.com",
+              },
+            },
           },
         },
       },
-    },
-  },
-  tools: {
-    web: {
-      search: {
-        provider: "tavily",
+      tools: {
+        web: {
+          search: {
+            provider: "tavily",
+          },
+        },
       },
-    },
-  },
-}
-```
+    }
+    ```
+  </Step>
+  <Step title="Verify search runs">
+    Kích hoạt một `web_search` từ bất kỳ agent nào, hoặc gọi trực tiếp `tavily_search`.
+  </Step>
+</Steps>
 
-Ghi chú:
+<Tip>
+Chọn Tavily trong quá trình thiết lập ban đầu hoặc `openclaw configure --section web` sẽ tự động bật Plugin Tavily đi kèm.
+</Tip>
 
-- Chọn Tavily trong onboarding hoặc `openclaw configure --section web` sẽ tự động bật
-  Plugin Tavily được tích hợp sẵn.
-- Lưu cấu hình Tavily trong `plugins.entries.tavily.config.webSearch.*`.
-- `web_search` với Tavily hỗ trợ `query` và `count` (tối đa 20 kết quả).
-- Với các điều khiển riêng của Tavily như `search_depth`, `topic`, `include_answer`,
-  hoặc bộ lọc miền, hãy dùng `tavily_search`.
-
-## Công cụ Plugin Tavily
+## Tham chiếu công cụ
 
 ### `tavily_search`
 
-Dùng công cụ này khi bạn muốn các điều khiển tìm kiếm riêng của Tavily thay vì
-`web_search` chung.
+Dùng công cụ này khi bạn muốn các tùy chọn điều khiển tìm kiếm riêng của Tavily thay vì `web_search` chung.
 
-| Tham số           | Mô tả                                                                   |
-| ----------------- | ----------------------------------------------------------------------- |
-| `query`           | Chuỗi truy vấn tìm kiếm (giữ dưới 400 ký tự)                            |
-| `search_depth`    | `basic` (mặc định, cân bằng) hoặc `advanced` (độ liên quan cao nhất, chậm hơn) |
-| `topic`           | `general` (mặc định), `news` (cập nhật theo thời gian thực), hoặc `finance` |
-| `max_results`     | Số lượng kết quả, 1-20 (mặc định: 5)                                    |
-| `include_answer`  | Bao gồm bản tóm tắt câu trả lời do AI tạo (mặc định: false)             |
-| `time_range`      | Lọc theo độ mới: `day`, `week`, `month`, hoặc `year`                    |
-| `include_domains` | Mảng các miền để giới hạn kết quả                                       |
-| `exclude_domains` | Mảng các miền để loại khỏi kết quả                                      |
+| Tham số           | Kiểu         | Ràng buộc / mặc định                  | Mô tả                                                   |
+| ----------------- | ------------ | -------------------------------------- | ------------------------------------------------------- |
+| `query`           | string       | bắt buộc                               | Chuỗi truy vấn tìm kiếm. Giữ dưới 400 ký tự.            |
+| `search_depth`    | enum         | `basic` (mặc định), `advanced`         | `advanced` chậm hơn nhưng có độ liên quan cao hơn.      |
+| `topic`           | enum         | `general` (mặc định), `news`, `finance` | Lọc theo nhóm chủ đề.                                   |
+| `max_results`     | integer      | 1-20                                   | Số lượng kết quả.                                       |
+| `include_answer`  | boolean      | mặc định `false`                       | Bao gồm tóm tắt câu trả lời do AI của Tavily tạo.       |
+| `time_range`      | enum         | `day`, `week`, `month`, `year`         | Lọc kết quả theo độ mới.                                |
+| `include_domains` | string array | (không có)                             | Chỉ bao gồm kết quả từ các miền này.                    |
+| `exclude_domains` | string array | (không có)                             | Loại trừ kết quả từ các miền này.                       |
 
-**Độ sâu tìm kiếm:**
+Đánh đổi về độ sâu tìm kiếm:
 
-| Độ sâu     | Tốc độ    | Độ liên quan | Phù hợp nhất cho                         |
-| ---------- | --------- | ------------ | ---------------------------------------- |
-| `basic`    | Nhanh hơn | Cao          | Truy vấn đa dụng (mặc định)              |
-| `advanced` | Chậm hơn  | Cao nhất     | Độ chính xác, sự kiện cụ thể, nghiên cứu |
+| Độ sâu     | Tốc độ     | Độ liên quan | Phù hợp nhất cho                              |
+| ---------- | ---------- | ------------ | -------------------------------------------- |
+| `basic`    | Nhanh hơn  | Cao          | Truy vấn mục đích chung (mặc định).          |
+| `advanced` | Chậm hơn   | Cao nhất     | Nghiên cứu chính xác và xác minh dữ kiện.    |
 
 ### `tavily_extract`
 
-Dùng công cụ này để trích xuất nội dung sạch từ một hoặc nhiều URL. Xử lý
-các trang được JavaScript kết xuất và hỗ trợ chia đoạn tập trung theo truy vấn để trích xuất
-có mục tiêu.
+Dùng công cụ này để trích xuất nội dung sạch từ một hoặc nhiều URL. Xử lý các trang được render bằng JavaScript và hỗ trợ chia đoạn tập trung theo truy vấn để trích xuất có mục tiêu.
 
-| Tham số             | Mô tả                                                        |
-| ------------------- | ------------------------------------------------------------ |
-| `urls`              | Mảng URL cần trích xuất (1-20 mỗi yêu cầu)                   |
-| `query`             | Xếp hạng lại các đoạn đã trích xuất theo độ liên quan với truy vấn này |
-| `extract_depth`     | `basic` (mặc định, nhanh) hoặc `advanced` (cho các trang nhiều JS) |
-| `chunks_per_source` | Số đoạn trên mỗi URL, 1-5 (yêu cầu `query`)                  |
-| `include_images`    | Bao gồm URL hình ảnh trong kết quả (mặc định: false)         |
+| Tham số             | Kiểu         | Ràng buộc / mặc định         | Mô tả                                                       |
+| ------------------- | ------------ | ---------------------------- | ----------------------------------------------------------- |
+| `urls`              | string array | bắt buộc, 1-20               | URL để trích xuất nội dung từ đó.                           |
+| `query`             | string       | (tùy chọn)                   | Xếp hạng lại các đoạn trích xuất theo mức liên quan đến truy vấn này. |
+| `extract_depth`     | enum         | `basic` (mặc định), `advanced` | Dùng `advanced` cho các trang nặng JS, SPA hoặc bảng động.  |
+| `chunks_per_source` | integer      | 1-5; **yêu cầu `query`**     | Số đoạn trả về cho mỗi URL. Gây lỗi nếu đặt mà không có `query`. |
+| `include_images`    | boolean      | mặc định `false`             | Bao gồm URL hình ảnh trong kết quả.                         |
 
-**Độ sâu trích xuất:**
+Đánh đổi về độ sâu trích xuất:
 
-| Độ sâu     | Khi nào nên dùng                          |
-| ---------- | ----------------------------------------- |
-| `basic`    | Trang đơn giản - hãy thử lựa chọn này trước |
-| `advanced` | SPA được JS kết xuất, nội dung động, bảng |
+| Độ sâu     | Khi nào nên dùng                              |
+| ---------- | -------------------------------------------- |
+| `basic`    | Trang đơn giản. Thử tùy chọn này trước.       |
+| `advanced` | SPA được render bằng JS, nội dung động, bảng. |
 
-Mẹo:
-
-- Tối đa 20 URL mỗi yêu cầu. Chia danh sách lớn hơn thành nhiều lệnh gọi.
-- Dùng `query` + `chunks_per_source` để chỉ lấy nội dung liên quan thay vì toàn bộ trang.
-- Thử `basic` trước; chuyển sang `advanced` nếu nội dung bị thiếu hoặc không đầy đủ.
+<Tip>
+Chia danh sách URL lớn thành nhiều lệnh gọi `tavily_extract` (tối đa 20 URL mỗi yêu cầu). Dùng `query` cùng với `chunks_per_source` để chỉ lấy nội dung liên quan thay vì toàn bộ trang.
+</Tip>
 
 ## Chọn công cụ phù hợp
 
-| Nhu cầu                                      | Công cụ           |
-| ------------------------------------------- | ----------------- |
-| Tìm kiếm web nhanh, không có tùy chọn đặc biệt | `web_search`      |
-| Tìm kiếm với độ sâu, chủ đề, câu trả lời AI | `tavily_search`   |
-| Trích xuất nội dung từ URL cụ thể           | `tavily_extract`  |
+| Nhu cầu                                      | Công cụ          |
+| ------------------------------------------- | ---------------- |
+| Tìm kiếm web nhanh, không cần tùy chọn đặc biệt | `web_search`     |
+| Tìm kiếm với độ sâu, chủ đề, câu trả lời AI | `tavily_search`  |
+| Trích xuất nội dung từ các URL cụ thể       | `tavily_extract` |
+
+<Note>
+Công cụ `web_search` chung với Tavily làm nhà cung cấp hỗ trợ `query` và `count` (tối đa 20 kết quả). Để dùng các tùy chọn điều khiển riêng của Tavily (`search_depth`, `topic`, `include_answer`, bộ lọc miền, khoảng thời gian), hãy dùng `tavily_search` thay thế.
+</Note>
+
+## Cấu hình nâng cao
+
+<AccordionGroup>
+  <Accordion title="API key resolution order">
+    Client Tavily tra cứu khóa API theo thứ tự sau:
+
+    1. `plugins.entries.tavily.config.webSearch.apiKey` (được phân giải thông qua SecretRefs).
+    2. `TAVILY_API_KEY` từ môi trường Gateway.
+
+    `tavily_extract` báo lỗi thiết lập nếu không có mục nào trong hai mục trên.
+
+  </Accordion>
+
+  <Accordion title="Custom base URL">
+    Ghi đè `plugins.entries.tavily.config.webSearch.baseUrl` nếu bạn đưa Tavily qua proxy. Giá trị mặc định là `https://api.tavily.com`.
+  </Accordion>
+
+  <Accordion title="`chunks_per_source` requires `query`">
+    `tavily_extract` từ chối các lệnh gọi truyền `chunks_per_source` mà không có `query`. Tavily xếp hạng các đoạn theo mức liên quan của truy vấn, nên tham số này vô nghĩa nếu thiếu truy vấn.
+  </Accordion>
+</AccordionGroup>
 
 ## Liên quan
 
-- [Tổng quan Web Search](/vi/tools/web) -- tất cả nhà cung cấp và tự động phát hiện
-- [Firecrawl](/vi/tools/firecrawl) -- tìm kiếm + thu thập dữ liệu với trích xuất nội dung
-- [Exa Search](/vi/tools/exa-search) -- tìm kiếm neural với trích xuất nội dung
+<CardGroup cols={2}>
+  <Card title="Web Search overview" href="/vi/tools/web" icon="magnifying-glass">
+    Tất cả nhà cung cấp và quy tắc tự động phát hiện.
+  </Card>
+  <Card title="Firecrawl" href="/vi/tools/firecrawl" icon="fire">
+    Tìm kiếm kết hợp scraping với trích xuất nội dung.
+  </Card>
+  <Card title="Exa Search" href="/vi/tools/exa-search" icon="binoculars">
+    Tìm kiếm neural với trích xuất nội dung.
+  </Card>
+  <Card title="Configuration" href="/vi/gateway/configuration" icon="gear">
+    Schema cấu hình đầy đủ cho mục nhập Plugin và định tuyến công cụ.
+  </Card>
+</CardGroup>

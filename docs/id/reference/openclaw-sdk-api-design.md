@@ -1,39 +1,39 @@
 ---
 read_when:
     - Anda sedang mengimplementasikan SDK aplikasi OpenClaw publik yang diusulkan
-    - Anda memerlukan kontrak namespace, peristiwa, hasil, artefak, persetujuan, atau keamanan draf untuk SDK aplikasi
+    - Anda memerlukan kontrak namespace draf, peristiwa, hasil, artefak, persetujuan, atau keamanan untuk SDK aplikasi
     - Anda sedang membandingkan sumber daya protokol Gateway dengan pembungkus OpenClaw App SDK tingkat tinggi
 sidebarTitle: App SDK API design
-summary: Rancangan referensi untuk API publik OpenClaw App SDK, taksonomi peristiwa, artefak, persetujuan, dan struktur paket
+summary: Desain referensi untuk API OpenClaw App SDK publik, taksonomi peristiwa, artefak, persetujuan, dan struktur paket
 title: Desain API SDK Aplikasi OpenClaw
 x-i18n:
-    generated_at: "2026-05-06T09:26:57Z"
+    generated_at: "2026-05-10T19:51:50Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1c49afb4b3b23653e1c6512c22c7465dc1778fc9ea2b28864ca9eaa3ccc90f2f
+    source_hash: 7eab11a5dfb85465e7d6da971fba779baaef06fd333eb53a39b53d7150e85b72
     source_path: reference/openclaw-sdk-api-design.md
     workflow: 16
 ---
 
 Halaman ini adalah desain referensi API terperinci untuk
-[OpenClaw App SDK](/id/concepts/openclaw-sdk) publik. Halaman ini sengaja dipisahkan dari
-[Plugin SDK](/id/plugins/sdk-overview).
+[SDK Aplikasi OpenClaw](/id/concepts/openclaw-sdk) publik. Ini sengaja dipisahkan dari
+[SDK Plugin](/id/plugins/sdk-overview).
 
 <Note>
   `@openclaw/sdk` adalah paket aplikasi/klien eksternal untuk berkomunikasi dengan
   Gateway. `openclaw/plugin-sdk/*` adalah kontrak penulisan Plugin dalam proses.
-  Jangan mengimpor subpath Plugin SDK dari aplikasi yang hanya perlu menjalankan agent.
+  Jangan impor subpath SDK Plugin dari aplikasi yang hanya perlu menjalankan agen.
 </Note>
 
 SDK aplikasi publik harus dibangun dalam dua lapisan:
 
 1. Klien Gateway tingkat rendah yang dihasilkan.
-2. Pembungkus ergonomis tingkat tinggi dengan objek `OpenClaw`, `Agent`, `Session`, `Run`,
+2. Wrapper ergonomis tingkat tinggi dengan objek `OpenClaw`, `Agent`, `Session`, `Run`,
    `Task`, `Artifact`, `Approval`, dan `Environment`.
 
 ## Desain namespace
 
-Namespace tingkat rendah harus mengikuti resource Gateway dengan saksama:
+Namespace tingkat rendah harus mengikuti resource Gateway dengan cermat:
 
 ```typescript
 oc.agents.list();
@@ -56,9 +56,9 @@ oc.runs.events(runId, { after });
 oc.runs.wait(runId);
 oc.runs.cancel(runId);
 
-oc.tasks.list(); // future API: current SDK throws unsupported
-oc.tasks.get(taskId); // future API: current SDK throws unsupported
-oc.tasks.cancel(taskId); // future API: current SDK throws unsupported
+oc.tasks.list({ status: "running" });
+oc.tasks.get(taskId);
+oc.tasks.cancel(taskId, { reason });
 oc.tasks.events(taskId, { after }); // future API
 
 oc.models.list();
@@ -80,7 +80,7 @@ oc.environments.status(environmentId);
 oc.environments.delete(environmentId); // future API: current SDK throws unsupported
 ```
 
-Pembungkus tingkat tinggi harus mengembalikan objek yang membuat alur umum terasa nyaman:
+Wrapper tingkat tinggi harus mengembalikan objek yang membuat alur umum terasa nyaman:
 
 ```typescript
 const run = await agent.run(inputOrParams);
@@ -95,9 +95,9 @@ const artifacts = await run.artifacts.list();
 const session = await run.session();
 ```
 
-## Kontrak event
+## Kontrak peristiwa
 
-SDK publik harus mengekspos event yang berversi, dapat diputar ulang, dan dinormalisasi.
+SDK publik harus mengekspos peristiwa berversi, dapat diputar ulang, dan ternormalisasi.
 
 ```typescript
 type OpenClawEvent = {
@@ -115,31 +115,31 @@ type OpenClawEvent = {
 };
 ```
 
-`id` adalah kursor pemutaran ulang. Konsumen harus dapat terhubung ulang dengan
-`events({ after: id })` dan menerima event yang terlewat jika retensi memungkinkan.
+`id` adalah kursor pemutaran ulang. Konsumen harus dapat terhubung kembali dengan
+`events({ after: id })` dan menerima peristiwa yang terlewat ketika retensi memungkinkan.
 
-Keluarga event ternormalisasi yang direkomendasikan:
+Kelompok peristiwa ternormalisasi yang direkomendasikan:
 
-| Event                 | Makna                                                       |
+| Peristiwa             | Arti                                                        |
 | --------------------- | ----------------------------------------------------------- |
 | `run.created`         | Run diterima.                                               |
-| `run.queued`          | Run sedang menunggu jalur sesi, runtime, atau environment.  |
+| `run.queued`          | Run menunggu lane sesi, runtime, atau lingkungan.           |
 | `run.started`         | Runtime memulai eksekusi.                                   |
-| `run.completed`       | Run berhasil diselesaikan.                                  |
-| `run.failed`          | Run berakhir dengan error.                                  |
+| `run.completed`       | Run berhasil selesai.                                       |
+| `run.failed`          | Run berakhir dengan kesalahan.                              |
 | `run.cancelled`       | Run dibatalkan.                                             |
 | `run.timed_out`       | Run melampaui batas waktunya.                               |
 | `assistant.delta`     | Delta teks asisten.                                         |
 | `assistant.message`   | Pesan asisten lengkap atau pengganti.                       |
-| `thinking.delta`      | Delta penalaran atau rencana, saat kebijakan mengizinkan eksposur. |
-| `tool.call.started`   | Panggilan tool dimulai.                                     |
-| `tool.call.delta`     | Panggilan tool mengalirkan progres atau output parsial.     |
-| `tool.call.completed` | Panggilan tool berhasil dikembalikan.                       |
-| `tool.call.failed`    | Panggilan tool gagal.                                       |
+| `thinking.delta`      | Delta penalaran atau rencana, ketika kebijakan mengizinkan eksposur. |
+| `tool.call.started`   | Pemanggilan tool dimulai.                                   |
+| `tool.call.delta`     | Pemanggilan tool mengalirkan progres atau output parsial.   |
+| `tool.call.completed` | Pemanggilan tool berhasil dikembalikan.                     |
+| `tool.call.failed`    | Pemanggilan tool gagal.                                     |
 | `approval.requested`  | Run atau tool memerlukan persetujuan.                       |
 | `approval.resolved`   | Persetujuan diberikan, ditolak, kedaluwarsa, atau dibatalkan. |
 | `question.requested`  | Runtime meminta input dari pengguna atau aplikasi host.     |
-| `question.answered`   | Aplikasi host menyediakan jawaban.                          |
+| `question.answered`   | Aplikasi host memberikan jawaban.                           |
 | `artifact.created`    | Artifact baru tersedia.                                     |
 | `artifact.updated`    | Artifact yang ada berubah.                                  |
 | `session.created`     | Sesi dibuat.                                                |
@@ -150,12 +150,12 @@ Keluarga event ternormalisasi yang direkomendasikan:
 | `git.diff`            | Runtime menghasilkan atau mengubah diff.                    |
 | `git.pr`              | Runtime membuka, memperbarui, atau menautkan pull request.  |
 
-Payload asli runtime harus tersedia melalui `raw`, tetapi aplikasi tidak harus
-mengurai `raw` untuk UI normal.
+Payload bawaan runtime harus tersedia melalui `raw`, tetapi aplikasi tidak perlu
+mem-parse `raw` untuk UI normal.
 
 ## Kontrak hasil
 
-`Run.wait()` harus mengembalikan amplop hasil yang stabil:
+`Run.wait()` harus mengembalikan envelope hasil yang stabil:
 
 ```typescript
 type RunResult = {
@@ -182,18 +182,18 @@ type RunResult = {
 ```
 
 Hasil harus sederhana dan stabil. Nilai timestamp mempertahankan bentuk Gateway,
-jadi run saat ini yang didukung lifecycle biasanya melaporkan angka milidetik epoch,
-sementara adapter mungkin masih memunculkan string ISO. UI kaya, trace tool, dan
-detail asli runtime berada di event dan artifact.
+sehingga run berbasis lifecycle saat ini biasanya melaporkan angka milidetik epoch
+sementara adapter masih dapat menampilkan string ISO. UI kaya, trace tool, dan
+detail bawaan runtime berada di peristiwa dan artifact.
 
 `accepted` adalah hasil tunggu non-terminal: artinya tenggat tunggu Gateway
-berakhir sebelum run menghasilkan akhir/error lifecycle. Ini tidak boleh dianggap sebagai
-`timed_out`; `timed_out` dicadangkan untuk run yang melampaui timeout runtime-nya sendiri.
+kedaluwarsa sebelum run menghasilkan akhir/kesalahan lifecycle. Ini tidak boleh diperlakukan sebagai
+`timed_out`; `timed_out` dicadangkan untuk run yang melampaui batas waktu runtime-nya sendiri.
 
 ## Persetujuan dan pertanyaan
 
-Persetujuan harus menjadi konsep kelas satu karena agent coding terus-menerus melewati batas
-keamanan.
+Persetujuan harus menjadi warga kelas satu karena agen pemrograman terus-menerus melintasi
+batas keamanan.
 
 ```typescript
 run.onApproval(async (request) => {
@@ -205,20 +205,20 @@ run.onApproval(async (request) => {
 });
 ```
 
-Event persetujuan harus membawa:
+Peristiwa persetujuan harus memuat:
 
 - id persetujuan
 - id run dan id sesi
 - jenis permintaan
 - ringkasan tindakan yang diminta
-- nama tool atau tindakan environment
+- nama tool atau tindakan lingkungan
 - tingkat risiko
 - keputusan yang tersedia
 - kedaluwarsa
-- apakah keputusan dapat digunakan ulang
+- apakah keputusan dapat digunakan kembali
 
-Pertanyaan terpisah dari persetujuan. Pertanyaan meminta informasi dari pengguna atau aplikasi host.
-Persetujuan meminta izin untuk melakukan tindakan.
+Pertanyaan terpisah dari persetujuan. Pertanyaan meminta informasi kepada pengguna atau aplikasi host.
+Persetujuan meminta izin untuk melakukan suatu tindakan.
 
 ## Model ToolSpace
 
@@ -235,14 +235,14 @@ for (const tool of tools.list()) {
 SDK harus mengekspos:
 
 - metadata tool ternormalisasi
-- sumber: OpenClaw, MCP, Plugin, channel, runtime, atau aplikasi
-- ringkasan schema
+- source: OpenClaw, MCP, Plugin, channel, runtime, atau app
+- ringkasan skema
 - kebijakan persetujuan
 - kompatibilitas runtime
 - apakah tool tersembunyi, readonly, mampu menulis, atau mampu host
 
-Pemanggilan tool melalui SDK harus eksplisit dan tercakup. Sebagian besar aplikasi harus
-menjalankan agent, bukan memanggil tool sembarang secara langsung.
+Pemanggilan tool melalui SDK harus eksplisit dan terscoped. Sebagian besar aplikasi harus
+menjalankan agen, bukan memanggil tool sembarang secara langsung.
 
 ## Model artifact
 
@@ -280,10 +280,10 @@ Contoh umum:
 - log dan bundel trace
 - tautan pull request
 - trajectory runtime
-- snapshot workspace environment terkelola
+- snapshot workspace lingkungan terkelola
 
 Akses artifact harus mendukung redaksi, retensi, dan URL unduhan tanpa
-mengasumsikan setiap artifact adalah file lokal normal.
+berasumsi bahwa setiap artifact adalah file lokal normal.
 
 ## Model keamanan
 
@@ -293,32 +293,32 @@ Scope token yang direkomendasikan:
 
 | Scope               | Mengizinkan                                         |
 | ------------------- | --------------------------------------------------- |
-| `agent.read`        | Mencantumkan dan memeriksa agent.                   |
+| `agent.read`        | Mencantumkan dan memeriksa agen.                    |
 | `agent.run`         | Memulai run.                                        |
 | `session.read`      | Membaca metadata dan pesan sesi.                    |
-| `session.write`     | Membuat, mengirim ke, fork, compact, dan membatalkan sesi. |
+| `session.write`     | Membuat, mengirim ke, mem-fork, meng-compact, dan membatalkan sesi. |
 | `task.read`         | Membaca status tugas latar belakang.                |
 | `task.write`        | Membatalkan atau mengubah kebijakan notifikasi tugas. |
 | `approval.respond`  | Menyetujui atau menolak permintaan.                 |
 | `tools.invoke`      | Memanggil tool yang diekspos secara langsung.       |
 | `artifacts.read`    | Mencantumkan dan mengunduh artifact.                |
-| `environment.write` | Membuat atau menghancurkan environment terkelola.   |
+| `environment.write` | Membuat atau menghancurkan lingkungan terkelola.    |
 | `admin`             | Operasi administratif.                              |
 
 Default:
 
-- tidak ada penerusan secret secara default
-- tidak ada pass-through variabel environment tanpa batasan
-- referensi secret alih-alih nilai secret
+- tidak ada penerusan rahasia secara default
+- tidak ada pass-through variabel lingkungan tanpa batas
+- referensi rahasia, bukan nilai rahasia
 - kebijakan sandbox dan jaringan yang eksplisit
-- retensi environment remote yang eksplisit
+- retensi lingkungan jarak jauh yang eksplisit
 - persetujuan untuk eksekusi host kecuali kebijakan membuktikan sebaliknya
-- event runtime mentah diredaksi sebelum meninggalkan Gateway kecuali pemanggil memiliki
+- peristiwa runtime mentah direduksi sebelum keluar dari Gateway kecuali pemanggil memiliki
   scope diagnostik yang lebih kuat
 
-## Penyedia environment terkelola
+## Penyedia lingkungan terkelola
 
-Agent terkelola harus diimplementasikan sebagai penyedia environment.
+Agen terkelola harus diimplementasikan sebagai penyedia lingkungan.
 
 ```typescript
 type EnvironmentProvider = {
@@ -336,19 +336,19 @@ type EnvironmentProvider = {
 };
 ```
 
-Implementasi pertama tidak harus berupa SaaS terhosting. Implementasi ini dapat menargetkan
-host node yang ada, workspace ephemeral, runner bergaya CI, atau environment bergaya Testbox.
-Kontrak pentingnya adalah:
+Implementasi pertama tidak perlu berupa SaaS ter-hosting. Ia dapat menargetkan
+host node yang ada, workspace sementara, runner bergaya CI, atau lingkungan
+bergaya Testbox. Kontrak pentingnya adalah:
 
 1. menyiapkan workspace
-2. mengikat environment dan secret yang aman
+2. mengikat lingkungan dan rahasia yang aman
 3. memulai run
-4. mengalirkan event
+4. mengalirkan peristiwa
 5. mengumpulkan artifact
 6. membersihkan atau mempertahankan sesuai kebijakan
 
-Setelah ini stabil, layanan cloud terhosting dapat mengimplementasikan kontrak penyedia
-yang sama.
+Setelah ini stabil, layanan cloud ter-hosting dapat mengimplementasikan kontrak
+penyedia yang sama.
 
 ## Struktur paket
 
@@ -357,16 +357,16 @@ Paket yang direkomendasikan:
 | Paket                   | Tujuan                                                        |
 | ----------------------- | ------------------------------------------------------------- |
 | `@openclaw/sdk`         | SDK tingkat tinggi publik dan klien Gateway tingkat rendah yang dihasilkan. |
-| `@openclaw/sdk-react`   | Hook React opsional untuk dashboard dan pembuat aplikasi.     |
-| `@openclaw/sdk-testing` | Helper test dan server Gateway palsu untuk integrasi aplikasi. |
+| `@openclaw/sdk-react`   | Hook React opsional untuk dashboard dan pembangun aplikasi.   |
+| `@openclaw/sdk-testing` | Helper pengujian dan server Gateway palsu untuk integrasi aplikasi. |
 
-Repo sudah memiliki `openclaw/plugin-sdk/*` untuk Plugin. Jaga agar namespace itu
-tetap terpisah untuk menghindari kebingungan antara penulis Plugin dan developer aplikasi.
+Repo sudah memiliki `openclaw/plugin-sdk/*` untuk Plugin. Jaga namespace itu
+terpisah agar tidak membingungkan penulis Plugin dengan pengembang aplikasi.
 
 ## Strategi klien yang dihasilkan
 
-Klien tingkat rendah harus dihasilkan dari schema protokol Gateway berversi,
-lalu dibungkus oleh class ergonomis yang ditulis manual.
+Klien tingkat rendah harus dihasilkan dari skema protokol Gateway berversi,
+lalu dibungkus oleh kelas ergonomis yang ditulis manual.
 
 Pelapisan:
 
@@ -374,22 +374,22 @@ Pelapisan:
 2. Klien TypeScript tingkat rendah yang dihasilkan.
 3. Validator runtime untuk input eksternal dan payload peristiwa.
 4. Wrapper tingkat tinggi `OpenClaw`, `Agent`, `Session`, `Run`, `Task`, dan `Artifact`.
-5. Contoh cookbook dan pengujian integrasi.
+5. Contoh cookbook dan tes integrasi.
 
 Manfaat:
 
 - penyimpangan protokol terlihat
-- pengujian dapat membandingkan metode yang dihasilkan dengan ekspor Gateway
+- tes dapat membandingkan metode yang dihasilkan dengan ekspor Gateway
 - App SDK tetap independen dari internal Plugin SDK
-- konsumen tingkat rendah tetap memiliki akses protokol penuh
+- konsumen tingkat rendah tetap memiliki akses penuh ke protokol
 - konsumen tingkat tinggi mendapatkan API produk yang kecil
 
 ## Terkait
 
 - [OpenClaw App SDK](/id/concepts/openclaw-sdk)
 - [Referensi RPC Gateway](/id/reference/rpc)
-- [Loop agen](/id/concepts/agent-loop)
-- [Runtime agen](/id/concepts/agent-runtimes)
+- [Loop agent](/id/concepts/agent-loop)
+- [Runtime agent](/id/concepts/agent-runtimes)
 - [Tugas latar belakang](/id/automation/tasks)
-- [Agen ACP](/id/tools/acp-agents)
+- [Agent ACP](/id/tools/acp-agents)
 - [Ikhtisar Plugin SDK](/id/plugins/sdk-overview)

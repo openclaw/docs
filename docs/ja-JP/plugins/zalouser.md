@@ -1,19 +1,19 @@
 ---
 read_when:
-    - OpenClaw で Zalo Personal（非公式）サポートを利用したい
-    - zalouserプラグインを設定または開発しています
-summary: 'Zalo Personal Plugin: ネイティブ zca-js による QRログイン + メッセージング (Plugin インストール + チャンネル設定 + ツール)'
-title: Zalo 個人用 Plugin
+    - OpenClaw で Zalo Personal（非公式）対応を利用したい
+    - zalouser pluginを設定または開発しています
+summary: 'Zalo Personal Plugin: ネイティブ zca-js による QR ログイン + メッセージング (Plugin インストール + チャンネル設定 + ツール)'
+title: Zalo 個人用Plugin
 x-i18n:
-    generated_at: "2026-05-06T17:59:22Z"
+    generated_at: "2026-05-10T19:48:52Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 423325f99ddb5b39bba4c5f3aa71215edfdc092c872f92b5d2f00b6ea691246f
+    source_hash: 405348eac4c08cc6e28b22cfff615fa34c117dedc51a31613545c4057069c20b
     source_path: plugins/zalouser.md
     workflow: 16
 ---
 
-ネイティブの `zca-js` を使用して通常の Zalo ユーザーアカウントを自動化する、Plugin 経由の OpenClaw 向け Zalo Personal サポート。
+OpenClaw の Zalo Personal 対応をプラグインで提供し、ネイティブの `zca-js` を使って通常の Zalo ユーザーアカウントを自動化します。
 
 <Warning>
 非公式の自動化により、アカウントの停止または禁止につながる可能性があります。自己責任で使用してください。
@@ -21,13 +21,13 @@ x-i18n:
 
 ## 命名
 
-チャンネル ID は `zalouser` です。これは **個人の Zalo ユーザーアカウント**（非公式）を自動化することを明示するためです。将来の公式 Zalo API 連携の可能性に備えて、`zalo` は予約しています。
+チャネル id は `zalouser` です。これは、**個人の Zalo ユーザーアカウント**（非公式）を自動化することを明示するためです。`zalo` は将来の公式 Zalo API 統合の可能性のために予約しています。
 
 ## 実行場所
 
-この Plugin は **Gateway プロセス内**で実行されます。
+このプラグインは **Gateway プロセス内**で実行されます。
 
-リモート Gateway を使用している場合は、**Gateway を実行しているマシン**にインストールして設定し、その後 Gateway を再起動します。
+リモート Gateway を使用する場合は、**Gateway を実行しているマシン**にインストールして設定し、その後 Gateway を再起動してください。
 
 外部の `zca`/`openzca` CLI バイナリは不要です。
 
@@ -39,9 +39,9 @@ x-i18n:
 openclaw plugins install @openclaw/zalouser
 ```
 
-現在の公式リリースタグに追従するには、裸のパッケージを使用します。再現可能なインストールが必要な場合にのみ、正確なバージョンに固定してください。
+現在の公式リリースタグに追従するには、素のパッケージを使用してください。再現可能なインストールが必要な場合のみ、正確なバージョンに固定してください。
 
-その後、Gateway を再起動します。
+その後、Gateway を再起動してください。
 
 ### オプション B: ローカルフォルダーからインストール（開発）
 
@@ -51,11 +51,11 @@ openclaw plugins install "$PLUGIN_SRC"
 cd "$PLUGIN_SRC" && pnpm install
 ```
 
-その後、Gateway を再起動します。
+その後、Gateway を再起動してください。
 
 ## 設定
 
-チャンネル設定は `channels.zalouser` 配下にあります（`plugins.entries.*` ではありません）。
+チャネル設定は `channels.zalouser`（`plugins.entries.*` ではありません）配下にあります。
 
 ```json5
 {
@@ -82,11 +82,11 @@ openclaw directory peers list --channel zalouser --query "name"
 
 ツール名: `zalouser`
 
-アクション: `send`、`image`、`link`、`friends`、`groups`、`me`、`status`
+アクション: `send`, `image`, `link`, `friends`, `groups`, `me`, `status`
 
-チャンネルメッセージのアクションは、メッセージリアクション用の `react` もサポートします。
+チャネルメッセージアクションは、メッセージリアクション用の `react` もサポートしています。
 
 ## 関連
 
-- [Plugin の構築](/ja-JP/plugins/building-plugins)
-- [コミュニティ Plugin](/ja-JP/plugins/community)
+- [プラグインの構築](/ja-JP/plugins/building-plugins)
+- [ClawHub](/ja-JP/clawhub)

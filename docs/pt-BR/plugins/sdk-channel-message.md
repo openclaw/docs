@@ -1,21 +1,21 @@
 ---
 read_when:
     - Você está criando ou refatorando um Plugin de canal de mensagens
-    - Você precisa de entrega durável da resposta final, recibos, finalização da prévia ao vivo ou política de confirmação de recebimento
-    - Você está migrando do pipeline de respostas legado ou dos auxiliares de despacho de respostas de entrada
-summary: API de ciclo de vida de mensagens para Plugins de canais, incluindo envios duráveis, recibos, pré-visualização ao vivo, política de confirmação de recebimento e migração legada
+    - Você precisa de entrega durável da resposta final, confirmações de recebimento, finalização de pré-visualização ao vivo ou política de confirmação de recebimento
+    - Você está migrando do pipeline legado de respostas ou dos auxiliares de despacho de respostas recebidas
+summary: API de ciclo de vida de mensagens para plugins de canal, incluindo envios duráveis, recibos, pré-visualização ao vivo, política de confirmação de recebimento e migração legada
 title: API de mensagens de canal
 x-i18n:
-    generated_at: "2026-05-06T09:07:25Z"
+    generated_at: "2026-05-10T19:44:08Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b4c96cdc6fe13f4063958d4b999fae97329f5906638caad52e61cabae40985dc
+    source_hash: fd3f6ad071f4ff6fed0503d66dce04990d90e84f390bfa63b8507080c5ef20d3
     source_path: plugins/sdk-channel-message.md
     workflow: 16
 ---
 
-Plugins de canal devem expor um adapter `message` de
-`openclaw/plugin-sdk/channel-message`. O adapter descreve o ciclo de vida da mensagem nativa
+Os plugins de canal devem expor um adaptador `message` de
+`openclaw/plugin-sdk/channel-message`. O adaptador descreve o ciclo de vida de mensagem nativo
 compatível com a plataforma:
 
 ```text
@@ -24,19 +24,49 @@ send -> render batch -> platform I/O -> receipt -> lifecycle side effects
 live preview -> final edit or fallback -> receipt
 ```
 
-O core é responsável por enfileiramento, durabilidade, política genérica de nova tentativa, hooks, recibos e pela
-ferramenta `message` compartilhada. O plugin é responsável por chamadas nativas de send/edit/delete, normalização de destino, encadeamento da plataforma, citações selecionadas, flags de notificação, estado da conta e efeitos colaterais específicos da plataforma.
+O core é responsável por enfileiramento, durabilidade, política genérica de repetição, hooks, recibos e a
+ferramenta `message` compartilhada. O plugin é responsável por chamadas nativas de envio/edição/exclusão, normalização de destino, encadeamento da plataforma, citações selecionadas, sinalizadores de notificação, estado da conta e efeitos colaterais específicos da plataforma.
 
-Use esta página junto com [Criando plugins de canal](/pt-BR/plugins/sdk-channel-plugins).
+Use esta página junto com [Como criar plugins de canal](/pt-BR/plugins/sdk-channel-plugins).
 
-O subcaminho `channel-message` é intencionalmente leve o bastante para arquivos de bootstrap de plugin ativos, como `channel.ts`: ele expõe contratos de adapter, provas de capacidade, recibos e fachadas de compatibilidade sem carregar entrega de saída.
-Helpers de entrega em runtime estão disponíveis em
-`openclaw/plugin-sdk/channel-message-runtime` para caminhos de código de monitor/send que
-já fazem I/O assíncrono de mensagens.
+O subcaminho `channel-message` é intencionalmente leve o suficiente para arquivos de inicialização de plugin em caminhos críticos, como `channel.ts`: ele expõe contratos de adaptador, provas de capacidade, recibos e fachadas de compatibilidade sem carregar entrega de saída.
+Auxiliares de entrega em runtime estão disponíveis em
+`openclaw/plugin-sdk/channel-message-runtime` para caminhos de código de monitoramento/envio que
+já fazem E/S assíncrona de mensagens.
 
-## Adapter mínimo
+Novo código de envio de canais e plugins deve usar os auxiliares de ciclo de vida de mensagens de
+`openclaw/plugin-sdk/channel-message-runtime`: `sendDurableMessageBatch`,
+`withDurableMessageSendContext` ou `deliverInboundReplyWithMessageSendContext`.
+O auxiliar mais antigo
+`deliverOutboundPayloads(...)` em `openclaw/plugin-sdk/outbound-runtime`
+é um substrato de compatibilidade/runtime obsoleto para componentes internos de saída, recuperação
+e adaptadores legados. Não o use para novos caminhos de envio de canais ou plugins.
 
-A maioria dos novos plugins de canal pode começar com um adapter pequeno:
+`sendDurableMessageBatch(...)` retorna um resultado explícito de ciclo de vida:
+
+- `sent` - pelo menos uma mensagem visível da plataforma foi entregue.
+- `suppressed` - nenhuma mensagem da plataforma deve ser tratada como ausente. Motivos estáveis
+  incluem `cancelled_by_message_sending_hook`,
+  `empty_after_message_sending_hook`, `no_visible_payload`,
+  `adapter_returned_no_identity` e o legado `no_visible_result`.
+- `partial_failed` - pelo menos uma mensagem da plataforma foi entregue antes de uma carga útil
+  ou efeito colateral posterior falhar. O resultado inclui o prefixo de recibos entregues
+  mais a falha.
+- `failed` - nenhum recibo da plataforma foi produzido.
+
+Use `payloadOutcomes` quando um lote misturar cargas úteis enviadas, suprimidas e com falha.
+Não infira cancelamento por hook verificando se o array antigo de entrega direta
+está vazio.
+
+Despachadores de compatibilidade que ainda precisam do despachador de resposta em buffer devem
+criar opções de prefixo de resposta com `createChannelMessageReplyPipeline(...)` de
+`openclaw/plugin-sdk/channel-message` e então chamar
+`channel.turn.runPrepared(...)` do runtime. Isso mantém a gravação de sessão e a ordem de despacho
+no ciclo de vida compartilhado do turno, sem adicionar outro wrapper público de turno.
+
+## Adaptador mínimo
+
+A maioria dos novos plugins de canal pode começar com um adaptador pequeno:
 
 ```typescript
 import {
@@ -79,7 +109,7 @@ export const demoMessageAdapter = defineChannelMessageAdapter({
 });
 ```
 
-Depois, anexe-o ao plugin de canal:
+Em seguida, anexe-o ao plugin de canal:
 
 ```typescript
 export const demoPlugin = createChatChannelPlugin({
@@ -91,13 +121,13 @@ export const demoPlugin = createChatChannelPlugin({
 });
 ```
 
-Declare somente capacidades que o adapter realmente preserva. Toda capacidade declarada
+Declare apenas as capacidades que o adaptador realmente preserva. Toda capacidade declarada
 deve ter um teste de contrato.
 
 ## Ponte de saída
 
-Se o canal já tiver um adapter `outbound` compatível, prefira derivar o
-adapter de mensagem em vez de duplicar o código de envio:
+Se o canal já tiver um adaptador `outbound` compatível, prefira derivar o
+adaptador de mensagem em vez de duplicar código de envio:
 
 ```typescript
 import { createChannelMessageAdapterFromOutbound } from "openclaw/plugin-sdk/channel-message";
@@ -113,25 +143,29 @@ deve passar recibos de ponta a ponta e só derivar ids legados nas bordas de com
 com `listMessageReceiptPlatformIds(...)` ou
 `resolveMessageReceiptPrimaryId(...)`.
 Se nenhuma política de recebimento for fornecida, `createChannelMessageAdapterFromOutbound(...)`
-usa a política de confirmação de recebimento `manual`. Isso torna a confirmação de plataforma
-pertencente ao plugin explícita sem alterar canais que confirmam webhooks,
+usa a política de confirmação de recebimento `manual`. Isso torna explícita a confirmação da plataforma de propriedade do plugin
+sem alterar canais que confirmam webhooks,
 sockets ou offsets de polling fora do contexto genérico de recebimento.
 
-## Envios da ferramenta message
+## Envios da ferramenta de mensagem
 
-O caminho `message(action="send")` compartilhado deve usar o mesmo ciclo de vida de entrega do core que as respostas finais. Se um canal precisar de formatação específica de provedor para o envio da ferramenta, implemente `actions.prepareSendPayload(...)` em vez de enviar a partir de
+O caminho compartilhado `message(action="send")` deve usar o mesmo ciclo de vida de entrega do core
+que as respostas finais. Se um canal precisar de formatação específica de provedor para o
+envio da ferramenta, implemente `actions.prepareSendPayload(...)` em vez de enviar de
 `actions.handleAction(...)`.
 
-`prepareSendPayload(...)` recebe o `ReplyPayload` normalizado pelo core mais o
-contexto completo da ação. Retorne um payload com dados específicos do canal em
+`prepareSendPayload(...)` recebe o `ReplyPayload` normalizado do core mais o
+contexto completo da ação. Retorne uma carga útil com dados específicos do canal em
 `payload.channelData.<channel>` e deixe o core chamar `sendMessage(...)`,
-`deliverOutboundPayloads(...)`, a fila write-ahead, hooks de envio de mensagem,
-nova tentativa, recuperação e limpeza de ack.
+o runtime do ciclo de vida de mensagens, a fila de write-ahead, hooks de envio de mensagens,
+repetição, recuperação e limpeza de ack. O runtime do ciclo de vida pode chamar
+`deliverOutboundPayloads(...)` internamente como substrato de compatibilidade, mas plugins de canal
+não devem chamá-lo diretamente para novo comportamento de envio.
 
-Retorne `null` somente quando o envio não puder ser representado como um payload durável, por
-exemplo porque contém uma factory de componente não serializável. O core manterá
-o fallback de ação de plugin legado para compatibilidade, mas novos recursos de envio de canal
-devem ser expressáveis como dados de payload duráveis.
+Retorne `null` somente quando o envio não puder ser representado como uma carga útil durável, por
+exemplo porque contém uma fábrica de componentes não serializável. O core manterá
+o fallback de ação de plugin legado por compatibilidade, mas novos recursos de envio de canal
+devem ser expressáveis como dados de carga útil duráveis.
 
 ```typescript
 export const demoActions: ChannelMessageActionAdapter = {
@@ -154,44 +188,44 @@ export const demoActions: ChannelMessageActionAdapter = {
 };
 ```
 
-O adapter de saída então lê `payload.channelData.demo` dentro de `sendPayload`.
-Isso mantém a renderização específica da plataforma no plugin enquanto o core continua responsável por
-persistência, nova tentativa, recuperação, hooks e ack.
+O adaptador de saída então lê `payload.channelData.demo` dentro de `sendPayload`.
+Isso mantém a renderização específica da plataforma no plugin enquanto o core ainda é responsável por
+persistir, repetir, recuperar, hooks e ack.
 
-Payloads preparados de `message(action="send")` e entrega genérica de resposta final usam
+Cargas úteis preparadas de `message(action="send")` e entrega genérica de resposta final usam
 entrega do core com enfileiramento de melhor esforço por padrão. Enfileiramento durável obrigatório
-só é válido depois que o core verifica que o canal consegue reconciliar um envio cujo resultado é
-desconhecido após uma falha. Se o adapter não puder implementar `reconcileUnknownSend`,
-mantenha o caminho de envio preparado como melhor esforço; o core ainda tentará a fila write-ahead,
-mas persistência de fila ou recuperação incerta de falha não fazem parte do
+só é válido depois que o core verifica que o canal pode reconciliar um envio cujo resultado é
+desconhecido após uma falha. Se o adaptador não puder implementar `reconcileUnknownSend`,
+mantenha o caminho de envio preparado como melhor esforço; o core ainda tentará a fila de write-ahead,
+mas persistência de fila ou recuperação incerta após falha não faz parte do
 contrato de entrega obrigatório.
 
 ## Capacidades finais duráveis
 
-A entrega final durável é opt-in por efeito colateral. O core só usará entrega
-durável genérica quando o adapter declarar todas as capacidades necessárias pelo
-payload e pelas opções de entrega.
+Entrega final durável é opt-in por efeito colateral. O core só usará entrega
+durável genérica quando o adaptador declarar todas as capacidades necessárias pela
+carga útil e pelas opções de entrega.
 
-| Capacidade             | Declare quando                                                                        |
+| Capacidade             | Declare quando                                                                       |
 | ---------------------- | ------------------------------------------------------------------------------------ |
-| `text`                 | O adapter consegue enviar texto e retornar um recibo.                                      |
-| `media`                | Envios de mídia retornam recibos para cada mensagem visível da plataforma.                      |
-| `payload`              | O adapter preserva a semântica de payload de resposta rica, não apenas texto e uma URL de mídia. |
-| `replyTo`              | Destinos de resposta nativos chegam à plataforma.                                             |
-| `thread`               | Destinos nativos de thread, tópico ou thread de canal chegam à plataforma.                  |
-| `silent`               | Supressão de notificação chega à plataforma.                                       |
-| `nativeQuote`          | Metadados de citação selecionada chegam à plataforma.                                        |
-| `messageSendingHooks`  | Hooks de envio de mensagem do core podem cancelar ou reescrever conteúdo antes do I/O da plataforma.        |
-| `batch`                | Lotes renderizados em múltiplas partes podem ser reproduzidos como um único plano durável.                      |
-| `reconcileUnknownSend` | O adapter consegue resolver a recuperação `unknown_after_send` sem repetição cega.          |
-| `afterSendSuccess`     | Efeitos colaterais locais do canal após envio executam uma vez.                                      |
-| `afterCommit`          | Efeitos colaterais locais do canal após commit executam uma vez.                                    |
+| `text`                 | O adaptador pode enviar texto e retornar um recibo.                                  |
+| `media`                | Envios de mídia retornam recibos para cada mensagem visível da plataforma.           |
+| `payload`              | O adaptador preserva semânticas de carga útil de resposta rica, não apenas texto e uma URL de mídia. |
+| `replyTo`              | Destinos de resposta nativos chegam à plataforma.                                    |
+| `thread`               | Destinos nativos de thread, tópico ou thread de canal chegam à plataforma.           |
+| `silent`               | Supressão de notificação chega à plataforma.                                         |
+| `nativeQuote`          | Metadados de citação selecionada chegam à plataforma.                                |
+| `messageSendingHooks`  | Hooks de envio de mensagens do core podem cancelar ou reescrever conteúdo antes da E/S da plataforma. |
+| `batch`                | Lotes renderizados de várias partes podem ser reproduzidos como um plano durável.    |
+| `reconcileUnknownSend` | O adaptador pode resolver recuperação `unknown_after_send` sem reprodução cega.      |
+| `afterSendSuccess`     | Efeitos colaterais locais do canal após envio executam uma vez.                      |
+| `afterCommit`          | Efeitos colaterais locais do canal após commit executam uma vez.                     |
 
 Entrega final de melhor esforço não exige `reconcileUnknownSend`; ela usa o
-ciclo de vida compartilhado quando o adapter preserva a semântica visível do payload e
-recorre ao I/O direto da plataforma se a persistência de fila não estiver disponível. Entrega
+ciclo de vida compartilhado quando o adaptador preserva as semânticas visíveis da carga útil, e
+recorre a E/S direta da plataforma se a persistência da fila não estiver disponível. Entrega
 final durável obrigatória deve exigir explicitamente `reconcileUnknownSend`. Se o
-adapter não puder determinar se um envio iniciado/desconhecido chegou à plataforma,
+adaptador não puder determinar se um envio iniciado/desconhecido chegou à plataforma,
 não declare essa capacidade; o core rejeitará a entrega durável obrigatória
 antes do enfileiramento.
 
@@ -214,32 +248,32 @@ const requiredCapabilities = deriveDurableFinalDeliveryRequirements({
 ```
 
 `messageSendingHooks` é obrigatório por padrão. Defina `messageSendingHooks: false`
-somente para um caminho que intencionalmente não pode executar hooks globais de envio de mensagem.
+somente para um caminho que intencionalmente não possa executar hooks globais de envio de mensagens.
 
 ## Contrato de envio durável
 
-Um envio final durável tem semântica mais rígida do que a entrega legada pertencente ao canal:
+Um envio final durável tem semânticas mais rigorosas que a entrega legada de propriedade do canal:
 
-- Crie a intenção durável antes do I/O da plataforma.
+- Crie a intenção durável antes da E/S da plataforma.
 - Se a entrega durável retornar um resultado tratado, não recorra ao envio legado.
 - Trate cancelamento por hook e resultados sem envio como terminais.
-- Trate `unsupported` como resultado pré-intenção somente.
-- Para durabilidade obrigatória, falhe antes do I/O da plataforma se a fila não puder registrar
-  que o envio da plataforma começou.
+- Trate `unsupported` como um resultado apenas pré-intenção.
+- Para durabilidade obrigatória, falhe antes da E/S da plataforma se a fila não puder registrar
+  que o envio à plataforma foi iniciado.
 - Para entrega final obrigatória e envios preparados obrigatórios da ferramenta de mensagem,
-  faça preflight de `reconcileUnknownSend`; a recuperação deve conseguir confirmar com ack uma
-  mensagem já enviada ou repetir apenas depois que o adapter provar que o envio original
+  faça preflight de `reconcileUnknownSend`; a recuperação deve ser capaz de confirmar por ack uma
+  mensagem já enviada ou reproduzir somente depois que o adaptador provar que o envio original
   não aconteceu.
-- Para `best_effort`, falhas de escrita na fila podem recorrer a I/O direto da plataforma.
-- Encaminhe sinais de abort para carregamento de mídia e envios da plataforma.
+- Para `best_effort`, falhas de escrita na fila podem recorrer a E/S direta da plataforma.
+- Encaminhe sinais de abortamento para carregamento de mídia e envios da plataforma.
 - Execute hooks após commit depois do ack da fila; o fallback direto de melhor esforço os executa
-  após I/O de plataforma bem-sucedido porque não há commit de fila durável.
+  após E/S da plataforma bem-sucedida porque não há commit de fila durável.
 - Retorne recibos para cada id de mensagem visível da plataforma.
 - Use `reconcileUnknownSend` quando uma plataforma puder verificar se um envio incerto
   já chegou ao usuário.
 
-Esse contrato evita envios duplicados após falhas e evita burlar
-hooks de cancelamento de envio de mensagem.
+Este contrato evita envios duplicados após falhas e evita contornar
+hooks de cancelamento de envio de mensagens.
 
 ## Recibos
 
@@ -259,14 +293,16 @@ type MessageReceipt = {
 };
 ```
 
-Use `createMessageReceiptFromOutboundResults(...)` ao adaptar um resultado de envio existente. Use `createPreviewMessageReceipt(...)` quando uma mensagem de pré-visualização em tempo real
-se tornar o recibo final. Evite adicionar novos campos `messageIds` locais do proprietário.
-`ChannelDeliveryResult.messageIds` legado ainda é produzido nas bordas de compatibilidade.
+Use `createMessageReceiptFromOutboundResults(...)` ao adaptar um resultado de
+envio existente. Use `createPreviewMessageReceipt(...)` quando uma mensagem de
+visualização ao vivo se tornar o recibo final. Evite adicionar novos campos
+`messageIds` locais do proprietário. O `ChannelDeliveryResult.messageIds`
+legado ainda é produzido nas fronteiras de compatibilidade.
 
-## Pré-visualização em tempo real
+## Visualização ao vivo
 
-Canais que transmitem pré-visualizações de rascunho ou atualizações de progresso devem declarar capacidades
-em tempo real:
+Canais que transmitem pré-visualizações de rascunho ou atualizações de progresso
+devem declarar capacidades ao vivo:
 
 ```typescript
 const demoMessageAdapter = defineChannelMessageAdapter({
@@ -292,15 +328,16 @@ const demoMessageAdapter = defineChannelMessageAdapter({
 ```
 
 Use `defineFinalizableLivePreviewAdapter(...)` e
-`deliverWithFinalizableLivePreviewAdapter(...)` para finalização em runtime. O
-finalizador decide se a resposta final edita a pré-visualização no lugar, envia um
-fallback normal, descarta o estado pendente da pré-visualização, mantém uma edição ambígua com falha
-sem duplicar a mensagem e retorna o recibo final.
+`deliverWithFinalizableLivePreviewAdapter(...)` para finalização em tempo de
+execução. O finalizador decide se a resposta final edita a visualização no
+lugar, envia uma alternativa normal, descarta o estado de visualização pendente,
+mantém uma edição com falha ambígua sem duplicar a mensagem e retorna o recibo
+final.
 
-## Política de ack de recebimento
+## Política de confirmação de recebimento
 
-Receptores de entrada que controlam o timing de confirmação da plataforma devem declarar
-política de recebimento:
+Receivers de entrada que controlam o momento da confirmação da plataforma devem
+declarar a política de recebimento:
 
 ```typescript
 const demoMessageAdapter = defineChannelMessageAdapter({
@@ -312,7 +349,7 @@ const demoMessageAdapter = defineChannelMessageAdapter({
 });
 ```
 
-Adapters que não declaram política de recebimento usam por padrão:
+Adaptadores que não declaram política de recebimento usam por padrão:
 
 ```typescript
 {
@@ -323,27 +360,29 @@ Adapters que não declaram política de recebimento usam por padrão:
 }
 ```
 
-Use o padrão quando a plataforma não tiver nenhum reconhecimento a adiar, já
-reconhecer antes do processamento assíncrono ou precisar de semântica de resposta
-específica do protocolo. Declare uma das políticas em estágios somente quando o receptor realmente
-usar o contexto de recebimento para mover o reconhecimento da plataforma para depois.
+Use o padrão quando a plataforma não tem confirmação a adiar, já confirma antes
+do processamento assíncrono ou precisa de semântica de resposta específica do
+protocolo. Declare uma das políticas em etapas somente quando o receiver
+realmente usar o contexto de recebimento para mover a confirmação da plataforma
+para mais tarde.
 
 Políticas:
 
-| Política               | Use quando                                                                              |
-| ---------------------- | --------------------------------------------------------------------------------------- |
-| `after_receive_record` | A plataforma pode ser reconhecida depois que o evento de entrada é analisado e registrado. |
-| `after_agent_dispatch` | A plataforma deve aguardar até que o despacho do agente tenha sido aceito.               |
-| `after_durable_send`   | A plataforma deve aguardar até que a entrega final tenha uma decisão durável.            |
-| `manual`               | O plugin controla o reconhecimento porque a semântica da plataforma não corresponde a um estágio genérico. |
+| Política               | Use quando                                                                                |
+| ---------------------- | ---------------------------------------------------------------------------------------- |
+| `after_receive_record` | A plataforma pode ser confirmada depois que o evento de entrada é analisado e registrado. |
+| `after_agent_dispatch` | A plataforma deve esperar até que o despacho do agente tenha sido aceito.                 |
+| `after_durable_send`   | A plataforma deve esperar até que a entrega final tenha uma decisão durável.              |
+| `manual`               | O Plugin controla a confirmação porque a semântica da plataforma não corresponde a uma etapa genérica. |
 
-Use `createMessageReceiveContext(...)` em receptores que adiam o estado de ack, e
-`shouldAckMessageAfterStage(...)` quando o receptor precisar testar se um
-estágio satisfez a política configurada.
+Use `createMessageReceiveContext(...)` em receivers que adiam o estado de
+confirmação, e `shouldAckMessageAfterStage(...)` quando o receiver precisar
+testar se uma etapa satisfez a política configurada.
 
 ## Testes de contrato
 
-Declarações de capacidade fazem parte do contrato do plugin. Dê suporte a elas com testes:
+Declarações de capacidade fazem parte do contrato do Plugin. Dê suporte a elas
+com testes:
 
 ```typescript
 import {
@@ -380,42 +419,47 @@ it("backs declared message capabilities", async () => {
 });
 ```
 
-Adicione conjuntos de provas live e de recebimento quando o adaptador declarar esses recursos. Uma
-prova ausente deve fazer o teste falhar, em vez de ampliar silenciosamente a
-superfície durável.
+Adicione suítes de prova ao vivo e de recebimento quando o adaptador declarar
+esses recursos. Uma prova ausente deve fazer o teste falhar, em vez de ampliar
+silenciosamente a superfície durável.
 
 ## APIs de compatibilidade obsoletas
 
-Estas APIs continuam importáveis para compatibilidade com terceiros. Não as use em
-código novo de canal.
+Estas APIs continuam importáveis para compatibilidade com terceiros. Não as use
+para novo código de canal.
 
-| API obsoleta                                 | Substituição                                                                                                         |
-| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `openclaw/plugin-sdk/channel-reply-pipeline` | `openclaw/plugin-sdk/channel-message`                                                                               |
-| `createChannelTurnReplyPipeline(...)`        | `createChannelMessageReplyPipeline(...)` para despachantes de compatibilidade, ou um adaptador `message` para código novo de canal |
-| `deliverDurableInboundReplyPayload(...)`     | `deliverInboundReplyWithMessageSendContext(...)` de `openclaw/plugin-sdk/channel-message-runtime`                   |
-| `dispatchInboundReplyWithBase(...)`          | `dispatchChannelMessageReplyWithBase(...)` somente para despachantes de compatibilidade                             |
-| `recordInboundSessionAndDispatchReply(...)`  | `recordChannelMessageReplyDispatch(...)` somente para despachantes de compatibilidade                               |
-| `resolveChannelSourceReplyDeliveryMode(...)` | `resolveChannelMessageSourceReplyDeliveryMode(...)`                                                                 |
-| `deliverFinalizableDraftPreview(...)`        | `defineFinalizableLivePreviewAdapter(...)` mais `deliverWithFinalizableLivePreviewAdapter(...)`                     |
-| `DraftPreviewFinalizerDraft`                 | `LivePreviewFinalizerDraft`                                                                                         |
-| `DraftPreviewFinalizerResult`                | `LivePreviewFinalizerResult`                                                                                        |
+| API obsoleta                                 | Substituição                                                                                                                |
+| -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `openclaw/plugin-sdk/channel-reply-pipeline` | `openclaw/plugin-sdk/channel-message`                                                                                      |
+| `createChannelTurnReplyPipeline(...)`        | `createChannelMessageReplyPipeline(...)` para dispatchers de compatibilidade, ou um adaptador `message` para novo código de canal |
+| `buildChannelMessageReplyDispatchBase(...)`  | `createChannelMessageReplyPipeline(...)` mais `channel.turn.runPrepared(...)`, ou um adaptador `message` para novo código de canal |
+| `dispatchChannelMessageReplyWithBase(...)`   | `createChannelMessageReplyPipeline(...)` mais `channel.turn.runPrepared(...)`, ou um adaptador `message` para novo código de canal |
+| `recordChannelMessageReplyDispatch(...)`     | `createChannelMessageReplyPipeline(...)` mais `channel.turn.runPrepared(...)`, ou um adaptador `message` para novo código de canal |
+| `deliverOutboundPayloads(...)`               | `sendDurableMessageBatch(...)` ou `deliverInboundReplyWithMessageSendContext(...)` de `channel-message-runtime`             |
+| `deliverDurableInboundReplyPayload(...)`     | `deliverInboundReplyWithMessageSendContext(...)` de `openclaw/plugin-sdk/channel-message-runtime`                          |
+| `dispatchInboundReplyWithBase(...)`          | `createChannelMessageReplyPipeline(...)` mais `channel.turn.runPrepared(...)`, ou um adaptador `message` para novo código de canal |
+| `recordInboundSessionAndDispatchReply(...)`  | `createChannelMessageReplyPipeline(...)` mais `channel.turn.runPrepared(...)`, ou um adaptador `message` para novo código de canal |
+| `resolveChannelSourceReplyDeliveryMode(...)` | `resolveChannelMessageSourceReplyDeliveryMode(...)`                                                                        |
+| `deliverFinalizableDraftPreview(...)`        | `defineFinalizableLivePreviewAdapter(...)` mais `deliverWithFinalizableLivePreviewAdapter(...)`                            |
+| `DraftPreviewFinalizerDraft`                 | `LivePreviewFinalizerDraft`                                                                                                |
+| `DraftPreviewFinalizerResult`                | `LivePreviewFinalizerResult`                                                                                               |
 
-Despachantes de compatibilidade ainda podem usar `createReplyPrefixContext(...)`,
+Dispatchers de compatibilidade ainda podem usar `createReplyPrefixContext(...)`,
 `createReplyPrefixOptions(...)` e `createTypingCallbacks(...)` por meio da
-fachada de mensagens. Código novo de ciclo de vida deve evitar o subcaminho antigo
-`channel-reply-pipeline`.
+fachada de mensagens. Novo código de ciclo de vida deve evitar o subcaminho
+antigo `channel-reply-pipeline`.
 
-## Checklist de migração
+## Lista de verificação de migração
 
 1. Adicione `message: defineChannelMessageAdapter(...)` ou
-   `message: createChannelMessageAdapterFromOutbound(...)` ao plugin de canal.
+   `message: createChannelMessageAdapterFromOutbound(...)` ao Plugin de canal.
 2. Retorne `MessageReceipt` de envios de texto, mídia e payload.
-3. Declare somente capacidades respaldadas por comportamento nativo e testes.
+3. Declare somente capacidades apoiadas por comportamento nativo e testes.
 4. Substitua mapas de requisitos duráveis escritos manualmente por
    `deriveDurableFinalDeliveryRequirements(...)`.
-5. Mova a finalização de pré-visualização pelos auxiliares de pré-visualização live quando o canal
-   editar mensagens de rascunho no lugar.
-6. Declare a política de ack de recebimento somente quando o receptor puder realmente adiar o
-   reconhecimento da plataforma.
-7. Mantenha auxiliares legados de despacho de resposta somente nas bordas de compatibilidade.
+5. Mova a finalização da visualização pelos helpers de visualização ao vivo
+   quando o canal editar mensagens de rascunho no lugar.
+6. Declare a política de confirmação de recebimento somente quando o receiver
+   realmente puder adiar a confirmação da plataforma.
+7. Mantenha os helpers legados de despacho de resposta somente nas fronteiras de
+   compatibilidade.

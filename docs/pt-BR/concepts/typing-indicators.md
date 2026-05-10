@@ -1,13 +1,13 @@
 ---
 read_when:
     - Alterando o comportamento ou os padrões do indicador de digitação
-summary: Quando o OpenClaw exibe indicadores de digitação e como ajustá-los
+summary: Quando o OpenClaw mostra indicadores de digitação e como ajustá-los
 title: Indicadores de digitação
 x-i18n:
-    generated_at: "2026-05-06T05:53:17Z"
+    generated_at: "2026-05-10T19:32:31Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 59ee89a2f382b185e520fea178cf1860cbc4cfb8257c3b0ae7552fa4b1c79ef3
+    source_hash: e26b4008f165527098ffcbf9c39ee7179149063842cc5c6aacb5b7c606eedc26
     source_path: concepts/typing-indicators.md
     workflow: 16
 ---
@@ -22,20 +22,20 @@ Quando `agents.defaults.typingMode` **não está definido**, o OpenClaw mantém 
 
 - **Chats diretos**: a digitação começa imediatamente assim que o loop do modelo começa.
 - **Chats em grupo com uma menção**: a digitação começa imediatamente.
-- **Chats em grupo sem uma menção**: a digitação começa somente quando o texto da mensagem começa a ser transmitido em streaming.
+- **Chats em grupo sem uma menção**: a digitação começa somente quando o texto da mensagem começa a ser transmitido.
 - **Execuções de Heartbeat**: a digitação começa quando a execução de Heartbeat começa se o
-  destino de Heartbeat resolvido for um chat com suporte a digitação e a digitação não estiver desabilitada.
+  destino de Heartbeat resolvido for um chat compatível com digitação e a digitação não estiver desabilitada.
 
 ## Modos
 
-Defina `agents.defaults.typingMode` como um dos seguintes:
+Defina `agents.defaults.typingMode` como um destes:
 
 - `never` - nenhum indicador de digitação, nunca.
-- `instant` - começa a digitar **assim que o loop do modelo começa**, mesmo que a execução
+- `instant` - inicia a digitação **assim que o loop do modelo começa**, mesmo que a execução
   depois retorne apenas o token de resposta silenciosa.
-- `thinking` - começa a digitar no **primeiro delta de raciocínio** (requer
+- `thinking` - inicia a digitação no **primeiro delta de raciocínio** (requer
   `reasoningLevel: "stream"` para a execução).
-- `message` - começa a digitar no **primeiro delta de texto não silencioso** (ignora
+- `message` - inicia a digitação no **primeiro delta de texto não silencioso** (ignora
   o token silencioso `NO_REPLY`).
 
 Ordem de "quão cedo é acionado":
@@ -43,16 +43,20 @@ Ordem de "quão cedo é acionado":
 
 ## Configuração
 
+Defina o padrão no nível do agente:
+
 ```json5
 {
-  agent: {
-    typingMode: "thinking",
-    typingIntervalSeconds: 6,
+  agents: {
+    defaults: {
+      typingMode: "thinking",
+      typingIntervalSeconds: 6,
+    },
   },
 }
 ```
 
-Você pode substituir o modo ou a cadência por sessão:
+Substitua o modo ou a cadência por sessão:
 
 ```json5
 {
@@ -63,14 +67,14 @@ Você pode substituir o modo ou a cadência por sessão:
 }
 ```
 
-## Notas
+## Observações
 
-- O modo `message` não mostrará digitação para respostas somente silenciosas quando todo o
-  payload for exatamente o token silencioso (por exemplo, `NO_REPLY` / `no_reply`,
+- O modo `message` não mostra digitação para respostas somente silenciosas quando todo o
+  payload é exatamente o token silencioso (por exemplo `NO_REPLY` / `no_reply`,
   correspondido sem diferenciar maiúsculas de minúsculas).
 - `thinking` só é acionado se a execução transmitir raciocínio (`reasoningLevel: "stream"`).
   Se o modelo não emitir deltas de raciocínio, a digitação não começará.
-- A digitação de Heartbeat é um sinal de atividade para o destino de entrega resolvido. Ela
+- A digitação de Heartbeat é um sinal de vivacidade para o destino de entrega resolvido. Ela
   começa no início da execução de Heartbeat, em vez de seguir o tempo de stream de `message` ou `thinking`.
   Defina `typingMode: "never"` para desabilitá-la.
 - Heartbeats não mostram digitação quando `target: "none"`, quando o destino não pode
@@ -83,7 +87,7 @@ Você pode substituir o modo ou a cadência por sessão:
 
 <CardGroup cols={2}>
   <Card title="Presence" href="/pt-BR/concepts/presence" icon="signal">
-    Como o Gateway rastreia clientes conectados e os expõe na aba Instâncias do macOS.
+    Como o Gateway rastreia clientes conectados e os exibe na aba Instances do macOS.
   </Card>
   <Card title="Streaming and chunking" href="/pt-BR/concepts/streaming" icon="bars-staggered">
     Comportamento de streaming de saída, limites de chunks e entrega específica por canal.

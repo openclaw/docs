@@ -1,13 +1,13 @@
 ---
 read_when:
-    - Bạn muốn một bản đồ đầy đủ về tài liệu
+    - Bạn muốn có một bản đồ đầy đủ về tài liệu
 summary: Các trung tâm liên kết đến mọi tài liệu OpenClaw
-title: Các trung tâm tài liệu
+title: Trung tâm tài liệu
 x-i18n:
-    generated_at: "2026-05-07T01:54:05Z"
+    generated_at: "2026-05-10T19:51:22Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b7de6012e4e8db02d22cda7d8f275c634e15511b1c4e94e219672cf167f9848d
+    source_hash: fdf4128ddb05bb009faec0a21d45933ffb0a3abf5e5ba8dbe1b9710c8eee3bde
     source_path: start/hubs.md
     workflow: 16
 ---
@@ -16,7 +16,7 @@ x-i18n:
 Nếu bạn mới dùng OpenClaw, hãy bắt đầu với [Bắt đầu](/vi/start/getting-started).
 </Note>
 
-Dùng các trung tâm này để khám phá mọi trang, bao gồm các bài tìm hiểu chuyên sâu và tài liệu tham chiếu không xuất hiện trong thanh điều hướng bên trái.
+Dùng các trung tâm này để khám phá mọi trang, bao gồm các phần chuyên sâu và tài liệu tham khảo không xuất hiện trong thanh điều hướng bên trái.
 
 ## Bắt đầu tại đây
 
@@ -25,20 +25,20 @@ Dùng các trung tâm này để khám phá mọi trang, bao gồm các bài tì
 - [Onboarding](/vi/start/onboarding)
 - [Onboarding (CLI)](/vi/start/wizard)
 - [Thiết lập](/vi/start/setup)
-- [Bảng điều khiển (Gateway cục bộ)](http://127.0.0.1:18789/)
+- [Dashboard (Gateway cục bộ)](http://127.0.0.1:18789/)
 - [Trợ giúp](/vi/help)
 - [Thư mục tài liệu](/vi/start/docs-directory)
 - [Cấu hình](/vi/gateway/configuration)
 - [Ví dụ cấu hình](/vi/gateway/configuration-examples)
 - [Trợ lý OpenClaw](/vi/start/openclaw)
-- [Trưng bày](/vi/start/showcase)
-- [Truyền thuyết](/vi/start/lore)
+- [Showcase](/vi/start/showcase)
+- [Lore](/vi/start/lore)
 
 ## Cài đặt + cập nhật
 
 - [Docker](/vi/install/docker)
 - [Nix](/vi/install/nix)
-- [Cập nhật / khôi phục](/vi/install/updating)
+- [Cập nhật / rollback](/vi/install/updating)
 - [Quy trình Bun (thử nghiệm)](/vi/install/bun)
 
 ## Khái niệm cốt lõi
@@ -46,12 +46,12 @@ Dùng các trung tâm này để khám phá mọi trang, bao gồm các bài tì
 - [Kiến trúc](/vi/concepts/architecture)
 - [Tính năng](/vi/concepts/features)
 - [Trung tâm mạng](/vi/network)
-- [Runtime của agent](/vi/concepts/agent)
-- [Không gian làm việc của agent](/vi/concepts/agent-workspace)
+- [Runtime của tác tử](/vi/concepts/agent)
+- [Không gian làm việc của tác tử](/vi/concepts/agent-workspace)
 - [Bộ nhớ](/vi/concepts/memory)
-- [Vòng lặp agent](/vi/concepts/agent-loop)
-- [Phát trực tuyến + chia đoạn](/vi/concepts/streaming)
-- [Định tuyến đa agent](/vi/concepts/multi-agent)
+- [Vòng lặp tác tử](/vi/concepts/agent-loop)
+- [Streaming + phân đoạn](/vi/concepts/streaming)
+- [Định tuyến đa tác tử](/vi/concepts/multi-agent)
 - [Compaction](/vi/concepts/compaction)
 - [Phiên](/vi/concepts/session)
 - [Cắt tỉa phiên](/vi/concepts/session-pruning)
@@ -61,16 +61,16 @@ Dùng các trung tâm này để khám phá mọi trang, bao gồm các bài tì
 - [Bộ chuyển đổi RPC](/vi/reference/rpc)
 - [Schema TypeBox](/vi/concepts/typebox)
 - [Xử lý múi giờ](/vi/concepts/timezone)
-- [Trạng thái hiện diện](/vi/concepts/presence)
-- [Khám phá + truyền tải](/vi/gateway/discovery)
+- [Sự hiện diện](/vi/concepts/presence)
+- [Khám phá + transport](/vi/gateway/discovery)
 - [Bonjour](/vi/gateway/bonjour)
 - [Định tuyến kênh](/vi/channels/channel-routing)
 - [Nhóm](/vi/channels/groups)
 - [Tin nhắn nhóm](/vi/channels/group-messages)
-- [Chuyển đổi dự phòng mô hình](/vi/concepts/model-failover)
+- [Dự phòng mô hình](/vi/concepts/model-failover)
 - [OAuth](/vi/concepts/oauth)
 
-## Nhà cung cấp + ingress
+## Nhà cung cấp + đầu vào
 
 - [Trung tâm kênh chat](/vi/channels)
 - [Trung tâm nhà cung cấp mô hình](/vi/providers/models)
@@ -80,7 +80,6 @@ Dùng các trung tâm này để khám phá mọi trang, bao gồm các bài tì
 - [Discord](/vi/channels/discord)
 - [Mattermost](/vi/channels/mattermost)
 - [Signal](/vi/channels/signal)
-- [BlueBubbles (cầu nối iMessage cũ)](/vi/channels/bluebubbles)
 - [QQ Bot](/vi/channels/qqbot)
 - [iMessage](/vi/channels/imessage)
 - [Phân tích vị trí](/vi/channels/location)
@@ -92,15 +91,15 @@ Dùng các trung tâm này để khám phá mọi trang, bao gồm các bài tì
 
 - [Runbook Gateway](/vi/gateway)
 - [Mô hình mạng](/vi/network#core-model)
-- [Ghép cặp Gateway](/vi/gateway/pairing)
+- [Ghép nối Gateway](/vi/gateway/pairing)
 - [Khóa Gateway](/vi/gateway/gateway-lock)
 - [Tiến trình nền](/vi/gateway/background-process)
 - [Sức khỏe](/vi/gateway/health)
 - [Heartbeat](/vi/gateway/heartbeat)
 - [Doctor](/vi/gateway/doctor)
-- [Ghi log](/vi/gateway/logging)
+- [Ghi nhật ký](/vi/gateway/logging)
 - [Sandboxing](/vi/gateway/sandboxing)
-- [Bảng điều khiển](/vi/web/dashboard)
+- [Dashboard](/vi/web/dashboard)
 - [Giao diện điều khiển](/vi/web/control-ui)
 - [Truy cập từ xa](/vi/gateway/remote)
 - [README Gateway từ xa](/vi/gateway/remote-gateway-readme)
@@ -120,12 +119,12 @@ Dùng các trung tâm này để khám phá mọi trang, bao gồm các bài tì
 - [Tự động hóa & tác vụ](/vi/automation)
 - [Suy nghĩ + chi tiết](/vi/tools/thinking)
 - [Mô hình](/vi/concepts/models)
-- [Sub-agent](/vi/tools/subagents)
-- [CLI gửi agent](/vi/tools/agent-send)
+- [Tác tử con](/vi/tools/subagents)
+- [CLI gửi tác tử](/vi/tools/agent-send)
 - [Giao diện terminal](/vi/web/tui)
 - [Điều khiển trình duyệt](/vi/tools/browser)
 - [Trình duyệt (khắc phục sự cố Linux)](/vi/tools/browser-linux-troubleshooting)
-- [Bình chọn](/vi/cli/message)
+- [Thăm dò ý kiến](/vi/cli/message)
 
 ## Node, phương tiện, giọng nói
 
@@ -135,7 +134,7 @@ Dùng các trung tâm này để khám phá mọi trang, bao gồm các bài tì
 - [Âm thanh](/vi/nodes/audio)
 - [Lệnh vị trí](/vi/nodes/location-command)
 - [Đánh thức bằng giọng nói](/vi/nodes/voicewake)
-- [Chế độ nói chuyện](/vi/nodes/talk)
+- [Chế độ trò chuyện](/vi/nodes/talk)
 
 ## Nền tảng
 
@@ -151,16 +150,16 @@ Dùng các trung tâm này để khám phá mọi trang, bao gồm các bài tì
 
 - [Thiết lập dev macOS](/vi/platforms/mac/dev-setup)
 - [Thanh menu macOS](/vi/platforms/mac/menu-bar)
-- [Đánh thức bằng giọng nói trên macOS](/vi/platforms/mac/voicewake)
-- [Lớp phủ giọng nói trên macOS](/vi/platforms/mac/voice-overlay)
+- [Đánh thức bằng giọng nói macOS](/vi/platforms/mac/voicewake)
+- [Lớp phủ giọng nói macOS](/vi/platforms/mac/voice-overlay)
 - [WebChat macOS](/vi/platforms/mac/webchat)
 - [Canvas macOS](/vi/platforms/mac/canvas)
 - [Tiến trình con macOS](/vi/platforms/mac/child-process)
 - [Sức khỏe macOS](/vi/platforms/mac/health)
 - [Biểu tượng macOS](/vi/platforms/mac/icon)
-- [Ghi log macOS](/vi/platforms/mac/logging)
+- [Ghi nhật ký macOS](/vi/platforms/mac/logging)
 - [Quyền macOS](/vi/platforms/mac/permissions)
-- [Từ xa macOS](/vi/platforms/mac/remote)
+- [Điều khiển từ xa macOS](/vi/platforms/mac/remote)
 - [Ký macOS](/vi/platforms/mac/signing)
 - [Gateway macOS (launchd)](/vi/platforms/mac/bundled-gateway)
 - [XPC macOS](/vi/platforms/mac/xpc)
@@ -169,13 +168,13 @@ Dùng các trung tâm này để khám phá mọi trang, bao gồm các bài tì
 
 ## Plugins
 
-- [Tổng quan về Plugins](/vi/tools/plugin)
+- [Tổng quan Plugins](/vi/tools/plugin)
 - [Xây dựng plugins](/vi/plugins/building-plugins)
 - [Hook Plugin](/vi/plugins/hooks)
 - [Manifest Plugin](/vi/plugins/manifest)
-- [Công cụ agent](/vi/plugins/building-plugins#registering-agent-tools)
+- [Công cụ tác tử](/vi/plugins/building-plugins#registering-agent-tools)
 - [Gói Plugin](/vi/plugins/bundles)
-- [Plugin cộng đồng](/vi/plugins/community)
+- [ClawHub](/vi/clawhub)
 - [Sổ tay capability](/vi/plugins/adding-capabilities)
 - [Plugin cuộc gọi thoại](/vi/plugins/voice-call)
 - [Plugin người dùng Zalo](/vi/plugins/zalouser)
@@ -183,7 +182,7 @@ Dùng các trung tâm này để khám phá mọi trang, bao gồm các bài tì
 ## Không gian làm việc + mẫu
 
 - [Skills](/vi/tools/skills)
-- [ClawHub](/vi/tools/clawhub)
+- [ClawHub](/vi/clawhub)
 - [Cấu hình Skills](/vi/tools/skills-config)
 - [AGENTS mặc định](/vi/reference/AGENTS.default)
 - [Mẫu: AGENTS](/vi/reference/templates/AGENTS)

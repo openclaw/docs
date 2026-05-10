@@ -1,52 +1,51 @@
 ---
 read_when:
     - Bạn muốn truy cập nhanh vào các trang tài liệu quan trọng
-summary: Các liên kết được tuyển chọn tới những tài liệu OpenClaw được sử dụng nhiều nhất.
+summary: Các liên kết được tuyển chọn tới các tài liệu OpenClaw được sử dụng nhiều nhất.
 title: Thư mục tài liệu
 x-i18n:
-    generated_at: "2026-05-07T01:53:36Z"
+    generated_at: "2026-05-10T19:51:20Z"
     model: gpt-5.5
     provider: openai
-    source_hash: bd24805e17b89747850f01302e761babea411d50aee4e50ec43f93c2e893a4e1
+    source_hash: ddd6903aeb87e36db977b2cef62bd80e84fc67633ca00beb3365ced1f5abdd99
     source_path: start/docs-directory.md
     workflow: 16
 ---
 
 <Note>
 Trang này là một chỉ mục được tuyển chọn. Nếu bạn mới bắt đầu, hãy bắt đầu với [Bắt đầu](/vi/start/getting-started).
-Để xem bản đồ đầy đủ của tài liệu, xem [Trung tâm tài liệu](/vi/start/hubs).
+Để xem bản đồ đầy đủ của tài liệu, hãy xem [Trung tâm tài liệu](/vi/start/hubs).
 </Note>
 
 ## Bắt đầu tại đây
 
-- [Trung tâm tài liệu (liên kết đến tất cả trang)](/vi/start/hubs)
+- [Trung tâm tài liệu (liên kết tới tất cả trang)](/vi/start/hubs)
 - [Trợ giúp](/vi/help)
 - [Cấu hình](/vi/gateway/configuration)
 - [Ví dụ cấu hình](/vi/gateway/configuration-examples)
-- [Lệnh gạch chéo](/vi/tools/slash-commands)
+- [Lệnh dấu gạch chéo](/vi/tools/slash-commands)
 - [Định tuyến đa tác nhân](/vi/concepts/multi-agent)
 - [Cập nhật và khôi phục](/vi/install/updating)
-- [Ghép nối (DM và Node)](/vi/channels/pairing)
+- [Ghép đôi (tin nhắn trực tiếp và nút)](/vi/channels/pairing)
 - [Chế độ Nix](/vi/install/nix)
 - [Thiết lập trợ lý OpenClaw](/vi/start/openclaw)
 - [Skills](/vi/tools/skills)
 - [Cấu hình Skills](/vi/tools/skills-config)
-- [Mẫu workspace](/vi/reference/templates/AGENTS)
+- [Mẫu không gian làm việc](/vi/reference/templates/AGENTS)
 - [Bộ điều hợp RPC](/vi/reference/rpc)
-- [Runbook Gateway](/vi/gateway)
-- [Node (iOS và Android)](/vi/nodes)
-- [Bề mặt web (Control UI)](/vi/web)
-- [Khám phá và giao thức truyền tải](/vi/gateway/discovery)
+- [Sổ tay vận hành Gateway](/vi/gateway)
+- [Nút (iOS và Android)](/vi/nodes)
+- [Bề mặt web (Giao diện điều khiển)](/vi/web)
+- [Khám phá và phương thức truyền tải](/vi/gateway/discovery)
 - [Truy cập từ xa](/vi/gateway/remote)
 
-## Nhà cung cấp và UX
+## Nhà cung cấp và trải nghiệm người dùng
 
 - [WebChat](/vi/web/webchat)
-- [Control UI (trình duyệt)](/vi/web/control-ui)
+- [Giao diện điều khiển (trình duyệt)](/vi/web/control-ui)
 - [Telegram](/vi/channels/telegram)
 - [Discord](/vi/channels/discord)
 - [Mattermost](/vi/channels/mattermost)
-- [BlueBubbles (cầu nối iMessage cũ)](/vi/channels/bluebubbles)
 - [QQ Bot](/vi/channels/qqbot)
 - [iMessage](/vi/channels/imessage)
 - [Nhóm](/vi/channels/groups)

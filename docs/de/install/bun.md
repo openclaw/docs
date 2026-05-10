@@ -1,40 +1,40 @@
 ---
 read_when:
     - Sie möchten den schnellsten lokalen Entwicklungszyklus (bun + watch)
-    - Sie stoßen auf Probleme mit Bun-Installation, Patches oder Lifecycle-Skripten
-summary: 'Bun-Workflow (experimentell): Installationen und Stolperfallen im Vergleich zu pnpm'
+    - Sie stoßen auf Probleme mit Bun-Installations-, Patch- oder Lifecycle-Skripten
+summary: 'Bun-Workflow (experimentell): Installationen und Fallstricke im Vergleich zu pnpm'
 title: Bun (experimentell)
 x-i18n:
-    generated_at: "2026-05-07T13:20:14Z"
+    generated_at: "2026-05-10T19:39:21Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 1637cb81310422b718934f9c2d1f506dec46f1624dd9ac850bed04321b863041
+    source_hash: d97a7da26520d66e6033065c50d6490c869ace3d5f0b25aafcd196074cf7df7c
     source_path: install/bun.md
     workflow: 16
 ---
 
 <Warning>
-Bun wird **nicht für die Gateway-Laufzeit empfohlen** (bekannte Probleme mit WhatsApp und Telegram). Verwenden Sie Node für die Produktion.
+Bun wird **nicht für die Gateway-Runtime empfohlen** (bekannte Probleme mit WhatsApp und Telegram). Verwenden Sie Node für die Produktion.
 </Warning>
 
-Bun ist eine optionale lokale Laufzeit, um TypeScript direkt auszuführen (`bun run ...`, `bun --watch ...`). Der Standard-Paketmanager bleibt `pnpm`, der vollständig unterstützt und von der Docs-Toolchain verwendet wird. Bun kann `pnpm-lock.yaml` nicht verwenden und ignoriert sie.
+Bun ist eine optionale lokale Runtime, um TypeScript direkt auszuführen (`bun run ...`, `bun --watch ...`). Der Standard-Paketmanager bleibt `pnpm`, der vollständig unterstützt und vom Dokumentations-Tooling verwendet wird. Bun kann `pnpm-lock.yaml` nicht verwenden und ignoriert es.
 
 ## Installation
 
 <Steps>
-  <Step title="Abhängigkeiten installieren">
+  <Step title="Install dependencies">
     ```sh
     bun install
     ```
 
-    `bun.lock` / `bun.lockb` sind in `.gitignore` eingetragen, daher entsteht kein Repo-Churn. Um das Schreiben von Lockfiles vollständig zu überspringen:
+    `bun.lock` / `bun.lockb` werden von Git ignoriert, sodass keine Repo-Änderungen entstehen. Um das Schreiben von Lockfiles vollständig zu überspringen:
 
     ```sh
     bun install --no-save
     ```
 
   </Step>
-  <Step title="Build und Tests ausführen">
+  <Step title="Build and test">
     ```sh
     bun run build
     bun run vitest run
@@ -44,22 +44,22 @@ Bun ist eine optionale lokale Laufzeit, um TypeScript direkt auszuführen (`bun 
 
 ## Lifecycle-Skripte
 
-Bun blockiert Lifecycle-Skripte von Abhängigkeiten, sofern sie nicht ausdrücklich als vertrauenswürdig eingestuft wurden. Für dieses Repo sind die üblicherweise blockierten Skripte nicht erforderlich:
+Bun blockiert Lifecycle-Skripte von Abhängigkeiten, sofern ihnen nicht ausdrücklich vertraut wird. Für dieses Repo sind die üblicherweise blockierten Skripte nicht erforderlich:
 
-- `@whiskeysockets/baileys` `preinstall` -- prüft Node-Hauptversion >= 20 (OpenClaw verwendet standardmäßig Node 24 und unterstützt weiterhin Node 22 LTS, derzeit `22.16+`)
+- `baileys` `preinstall` -- prüft Node-Major >= 20 (OpenClaw verwendet standardmäßig Node 24 und unterstützt weiterhin Node 22 LTS, derzeit `22.16+`)
 - `protobufjs` `postinstall` -- gibt Warnungen zu inkompatiblen Versionsschemata aus (keine Build-Artefakte)
 
-Wenn ein Laufzeitproblem auftritt, das diese Skripte erfordert, stufen Sie sie ausdrücklich als vertrauenswürdig ein:
+Wenn ein Runtime-Problem auftritt, das diese Skripte erfordert, vertrauen Sie ihnen ausdrücklich:
 
 ```sh
-bun pm trust @whiskeysockets/baileys protobufjs
+bun pm trust baileys protobufjs
 ```
 
 ## Einschränkungen
 
-Einige Skripte codieren weiterhin pnpm fest (zum Beispiel `docs:build`, `ui:*`, `protocol:check`). Führen Sie diese vorerst über pnpm aus.
+Einige Skripte codieren pnpm weiterhin fest (zum Beispiel `docs:build`, `ui:*`, `protocol:check`). Führen Sie diese vorerst über pnpm aus.
 
-## Verwandt
+## Verwandte Themen
 
 - [Installationsübersicht](/de/install)
 - [Node.js](/de/install/node)

@@ -1,13 +1,13 @@
 ---
 read_when:
-    - تريد خريطة كاملة للوثائق
-summary: مراكز تربط بكل مستند من مستندات OpenClaw
+    - تريد خريطة كاملة للتوثيق
+summary: محاور تربط بكل وثيقة من وثائق OpenClaw
 title: محاور التوثيق
 x-i18n:
-    generated_at: "2026-05-07T01:55:14Z"
+    generated_at: "2026-05-10T20:01:46Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b7de6012e4e8db02d22cda7d8f275c634e15511b1c4e94e219672cf167f9848d
+    source_hash: fdf4128ddb05bb009faec0a21d45933ffb0a3abf5e5ba8dbe1b9710c8eee3bde
     source_path: start/hubs.md
     workflow: 16
 ---
@@ -46,12 +46,12 @@ x-i18n:
 - [البنية](/ar/concepts/architecture)
 - [الميزات](/ar/concepts/features)
 - [مركز الشبكة](/ar/network)
-- [بيئة تشغيل الوكيل](/ar/concepts/agent)
+- [زمن تشغيل الوكيل](/ar/concepts/agent)
 - [مساحة عمل الوكيل](/ar/concepts/agent-workspace)
 - [الذاكرة](/ar/concepts/memory)
 - [حلقة الوكيل](/ar/concepts/agent-loop)
-- [البث + التجزئة](/ar/concepts/streaming)
-- [توجيه الوكلاء المتعددين](/ar/concepts/multi-agent)
+- [البث + التقسيم إلى أجزاء](/ar/concepts/streaming)
+- [توجيه متعدد الوكلاء](/ar/concepts/multi-agent)
 - [Compaction](/ar/concepts/compaction)
 - [الجلسات](/ar/concepts/session)
 - [تشذيب الجلسات](/ar/concepts/session-pruning)
@@ -60,7 +60,7 @@ x-i18n:
 - [أوامر الشرطة المائلة](/ar/tools/slash-commands)
 - [محولات RPC](/ar/reference/rpc)
 - [مخططات TypeBox](/ar/concepts/typebox)
-- [التعامل مع المنطقة الزمنية](/ar/concepts/timezone)
+- [معالجة المنطقة الزمنية](/ar/concepts/timezone)
 - [الحضور](/ar/concepts/presence)
 - [الاكتشاف + وسائل النقل](/ar/gateway/discovery)
 - [Bonjour](/ar/gateway/bonjour)
@@ -70,7 +70,7 @@ x-i18n:
 - [التحويل الاحتياطي للنموذج](/ar/concepts/model-failover)
 - [OAuth](/ar/concepts/oauth)
 
-## المزوّدون + الإدخال
+## المزوّدون + الدخول
 
 - [مركز قنوات الدردشة](/ar/channels)
 - [مركز مزوّدي النماذج](/ar/providers/models)
@@ -80,8 +80,7 @@ x-i18n:
 - [Discord](/ar/channels/discord)
 - [Mattermost](/ar/channels/mattermost)
 - [Signal](/ar/channels/signal)
-- [BlueBubbles (جسر iMessage قديم)](/ar/channels/bluebubbles)
-- [روبوت QQ](/ar/channels/qqbot)
+- [QQ Bot](/ar/channels/qqbot)
 - [iMessage](/ar/channels/imessage)
 - [تحليل الموقع](/ar/channels/location)
 - [WebChat](/ar/web/webchat)
@@ -94,16 +93,16 @@ x-i18n:
 - [نموذج الشبكة](/ar/network#core-model)
 - [إقران Gateway](/ar/gateway/pairing)
 - [قفل Gateway](/ar/gateway/gateway-lock)
-- [العملية الخلفية](/ar/gateway/background-process)
+- [عملية الخلفية](/ar/gateway/background-process)
 - [الصحة](/ar/gateway/health)
 - [Heartbeat](/ar/gateway/heartbeat)
 - [Doctor](/ar/gateway/doctor)
-- [تسجيل السجلات](/ar/gateway/logging)
+- [التسجيل](/ar/gateway/logging)
 - [العزل](/ar/gateway/sandboxing)
 - [لوحة التحكم](/ar/web/dashboard)
 - [واجهة التحكم](/ar/web/control-ui)
-- [الوصول عن بُعد](/ar/gateway/remote)
-- [README للـ Gateway البعيد](/ar/gateway/remote-gateway-readme)
+- [الوصول البعيد](/ar/gateway/remote)
+- [ملف README لـ Gateway البعيد](/ar/gateway/remote-gateway-readme)
 - [Tailscale](/ar/gateway/tailscale)
 - [الأمان](/ar/gateway/security)
 - [استكشاف الأخطاء وإصلاحها](/ar/gateway/troubleshooting)
@@ -113,9 +112,9 @@ x-i18n:
 - [سطح الأدوات](/ar/tools)
 - [OpenProse](/ar/prose)
 - [مرجع CLI](/ar/cli)
-- [أداة التنفيذ](/ar/tools/exec)
+- [أداة Exec](/ar/tools/exec)
 - [أداة PDF](/ar/tools/pdf)
-- [الوضع المرتفع الصلاحيات](/ar/tools/elevated)
+- [الوضع المرتفع](/ar/tools/elevated)
 - [مهام Cron](/ar/automation/cron-jobs)
 - [الأتمتة والمهام](/ar/automation)
 - [التفكير + الإسهاب](/ar/tools/thinking)
@@ -127,15 +126,15 @@ x-i18n:
 - [المتصفح (استكشاف أخطاء Linux وإصلاحها)](/ar/tools/browser-linux-troubleshooting)
 - [استطلاعات الرأي](/ar/cli/message)
 
-## Nodes، الوسائط، الصوت
+## العقد والوسائط والصوت
 
-- [نظرة عامة على Nodes](/ar/nodes)
+- [نظرة عامة على العقد](/ar/nodes)
 - [الكاميرا](/ar/nodes/camera)
 - [الصور](/ar/nodes/images)
 - [الصوت](/ar/nodes/audio)
 - [أمر الموقع](/ar/nodes/location-command)
 - [تنبيه الصوت](/ar/nodes/voicewake)
-- [وضع التحدث](/ar/nodes/talk)
+- [وضع المحادثة](/ar/nodes/talk)
 
 ## المنصات
 
@@ -152,20 +151,20 @@ x-i18n:
 - [إعداد تطوير macOS](/ar/platforms/mac/dev-setup)
 - [شريط قوائم macOS](/ar/platforms/mac/menu-bar)
 - [تنبيه الصوت في macOS](/ar/platforms/mac/voicewake)
-- [طبقة الصوت في macOS](/ar/platforms/mac/voice-overlay)
-- [WebChat على macOS](/ar/platforms/mac/webchat)
-- [Canvas على macOS](/ar/platforms/mac/canvas)
+- [تراكب الصوت في macOS](/ar/platforms/mac/voice-overlay)
+- [WebChat في macOS](/ar/platforms/mac/webchat)
+- [Canvas في macOS](/ar/platforms/mac/canvas)
 - [عملية فرعية في macOS](/ar/platforms/mac/child-process)
 - [صحة macOS](/ar/platforms/mac/health)
 - [أيقونة macOS](/ar/platforms/mac/icon)
-- [تسجيل سجلات macOS](/ar/platforms/mac/logging)
+- [تسجيل macOS](/ar/platforms/mac/logging)
 - [أذونات macOS](/ar/platforms/mac/permissions)
-- [macOS عن بُعد](/ar/platforms/mac/remote)
+- [macOS البعيد](/ar/platforms/mac/remote)
 - [توقيع macOS](/ar/platforms/mac/signing)
 - [Gateway في macOS (launchd)](/ar/platforms/mac/bundled-gateway)
 - [XPC في macOS](/ar/platforms/mac/xpc)
 - [Skills في macOS](/ar/platforms/mac/skills)
-- [Peekaboo على macOS](/ar/platforms/mac/peekaboo)
+- [Peekaboo في macOS](/ar/platforms/mac/peekaboo)
 
 ## Plugins
 
@@ -175,15 +174,15 @@ x-i18n:
 - [بيان Plugin](/ar/plugins/manifest)
 - [أدوات الوكيل](/ar/plugins/building-plugins#registering-agent-tools)
 - [حزم Plugin](/ar/plugins/bundles)
-- [Plugins المجتمع](/ar/plugins/community)
-- [دليل وصفات الإمكانات](/ar/plugins/adding-capabilities)
-- [Plugin المكالمة الصوتية](/ar/plugins/voice-call)
+- [ClawHub](/ar/clawhub)
+- [كتاب وصفات القدرات](/ar/plugins/adding-capabilities)
+- [Plugin المكالمات الصوتية](/ar/plugins/voice-call)
 - [Plugin مستخدم Zalo](/ar/plugins/zalouser)
 
 ## مساحة العمل + القوالب
 
 - [Skills](/ar/tools/skills)
-- [ClawHub](/ar/tools/clawhub)
+- [ClawHub](/ar/clawhub)
 - [تكوين Skills](/ar/tools/skills-config)
 - [AGENTS الافتراضي](/ar/reference/AGENTS.default)
 - [القوالب: AGENTS](/ar/reference/templates/AGENTS)
@@ -196,7 +195,7 @@ x-i18n:
 
 ## المشروع
 
-- [الاعتمادات](/ar/reference/credits)
+- [الشكر والتقدير](/ar/reference/credits)
 
 ## الاختبار + الإصدار
 
@@ -204,6 +203,6 @@ x-i18n:
 - [سياسة الإصدار](/ar/reference/RELEASING)
 - [نماذج الأجهزة](/ar/reference/device-models)
 
-## ذات صلة
+## ذو صلة
 
 - [البدء](/ar/start/getting-started)

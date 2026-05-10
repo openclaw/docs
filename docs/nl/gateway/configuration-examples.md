@@ -1,22 +1,22 @@
 ---
 read_when:
     - Leren hoe u OpenClaw configureert
-    - Op zoek naar configuratievoorbeelden
+    - Configuratievoorbeelden zoeken
     - OpenClaw voor het eerst instellen
-summary: Schemacorrecte configuratievoorbeelden voor gangbare OpenClaw-configuraties
+summary: Schema-conforme configuratievoorbeelden voor veelvoorkomende OpenClaw-opstellingen
 title: Configuratievoorbeelden
 x-i18n:
-    generated_at: "2026-05-07T13:17:19Z"
+    generated_at: "2026-05-10T19:35:17Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 87c7e75841ee36121c764f1ed51b6547d0fccf7ed6c1f05895d916dbf93f061a
+    source_hash: 9fd1c93d8c491de13c3679c766293a3401853625308e90588d7c83272c5b6e73
     source_path: gateway/configuration-examples.md
     workflow: 16
 ---
 
-Voorbeelden hieronder zijn afgestemd op het huidige configuratieschema. Zie [Configuratie](/nl/gateway/configuration) voor de volledige referentie en opmerkingen per veld.
+De onderstaande voorbeelden zijn afgestemd op het huidige configuratieschema. Zie [Configuratie](/nl/gateway/configuration) voor de volledige referentie en opmerkingen per veld.
 
-## Snel starten
+## Snel aan de slag
 
 ### Absoluut minimum
 
@@ -27,9 +27,9 @@ Voorbeelden hieronder zijn afgestemd op het huidige configuratieschema. Zie [Con
 }
 ```
 
-Sla op als `~/.openclaw/openclaw.json` en je kunt de bot vanaf dat nummer een DM sturen.
+Sla dit op in `~/.openclaw/openclaw.json` en u kunt de bot vanaf dat nummer een DM sturen.
 
-### Aanbevolen starter
+### Aanbevolen startconfiguratie
 
 ```json5
 {
@@ -59,7 +59,7 @@ Sla op als `~/.openclaw/openclaw.json` en je kunt de bot vanaf dat nummer een DM
 
 ## Uitgebreid voorbeeld (belangrijkste opties)
 
-> Met JSON5 kun je opmerkingen en afsluitende komma's gebruiken. Gewone JSON werkt ook.
+> Met JSON5 kunt u opmerkingen en afsluitende komma's gebruiken. Gewone JSON werkt ook.
 
 ```json5
 {
@@ -454,10 +454,12 @@ Sla op als `~/.openclaw/openclaw.json` en je kunt de bot vanaf dat nummer een DM
     allowBundled: ["gemini", "peekaboo"],
     load: {
       extraDirs: ["~/Projects/agent-scripts/skills"],
+      allowSymlinkTargets: ["~/Projects/agent-scripts/skills"],
     },
     install: {
       preferBrew: true,
       nodeManager: "npm", // npm | pnpm | yarn | bun
+      allowUploadedArchives: false,
     },
     entries: {
       "image-lab": {
@@ -471,9 +473,28 @@ Sla op als `~/.openclaw/openclaw.json` en je kunt de bot vanaf dat nummer een DM
 }
 ```
 
+### Skill-repo met symlink als sibling
+
+Gebruik dit wanneer een ingebouwde Skill-root een symlink bevat naar een sibling-repo, bijvoorbeeld `~/.agents/skills/manager -> ~/Projects/manager/skills`.
+
+```json5
+{
+  skills: {
+    load: {
+      extraDirs: ["~/Projects/manager/skills"],
+      allowSymlinkTargets: ["~/Projects/manager/skills"],
+    },
+  },
+}
+```
+
+- `extraDirs` scant de naastliggende repo als een expliciete Skills-root.
+- `allowSymlinkTargets` laat gesymlinkte Skills-mappen naar die vertrouwde echte
+  doelroot verwijzen zonder willekeurige symlink-ontsnappingen toe te staan.
+
 ## Veelvoorkomende patronen
 
-### Gedeelde Skills-basis met één overschrijving
+### Gedeelde Skills-basislijn met één overschrijving
 
 ```json5
 {
@@ -494,7 +515,7 @@ Sla op als `~/.openclaw/openclaw.json` en je kunt de bot vanaf dat nummer een DM
 - `agents.list[].skills` vervangt die basislijn voor één agent.
 - Gebruik `skills: []` wanneer een agent geen Skills mag zien.
 
-### Multiplatform-configuratie
+### Setup voor meerdere platforms
 
 ```json5
 {
@@ -515,11 +536,11 @@ Sla op als `~/.openclaw/openclaw.json` en je kunt de bot vanaf dat nummer een DM
 }
 ```
 
-### Automatische goedkeuring voor vertrouwd Node-netwerk
+### Vertrouwd Node-netwerk met automatische goedkeuring
 
-Houd apparaatkoppeling handmatig, tenzij je het netwerkpad beheert. Voor een specifiek
-lab of tailnet-subnet kun je je aanmelden voor automatische goedkeuring van
-nieuwe Node-apparaten met exacte CIDR's of IP's:
+Houd apparaatkoppeling handmatig, tenzij je het netwerkpad beheert. Voor een speciaal
+lab of tailnet-subnet kun je automatische eerste goedkeuring voor Node-apparaten
+inschakelen met exacte CIDR's of IP's:
 
 ```json5
 {
@@ -533,9 +554,9 @@ nieuwe Node-apparaten met exacte CIDR's of IP's:
 }
 ```
 
-Dit blijft uitgeschakeld wanneer het niet is ingesteld. Het geldt alleen voor nieuwe `role: node`-koppelingen
+Dit blijft uitgeschakeld wanneer het niet is ingesteld. Het geldt alleen voor nieuwe koppeling met `role: node`
 zonder aangevraagde scopes. Operator-/browserclients en upgrades van rol, scope, metadata of
-openbare sleutel vereisen nog steeds handmatige goedkeuring.
+publieke sleutel vereisen nog steeds handmatige goedkeuring.
 
 ### Veilige DM-modus (gedeelde inbox / DM's met meerdere gebruikers)
 
@@ -564,7 +585,7 @@ Als meer dan één persoon je bot een DM kan sturen (meerdere vermeldingen in `a
 ```
 
 Voor Discord/Slack/Google Chat/Microsoft Teams/Mattermost/IRC is afzenderautorisatie standaard eerst op ID gebaseerd.
-Schakel directe, wijzigbare matching op naam/e-mail/nick alleen in met de `dangerouslyAllowNameMatching: true` van elk kanaal als je dat risico expliciet accepteert.
+Schakel directe matching op wijzigbare naam/e-mail/nickname met `dangerouslyAllowNameMatching: true` van elk kanaal alleen in als je dat risico expliciet accepteert.
 
 ### Anthropic API-sleutel + MiniMax-terugval
 
@@ -660,9 +681,9 @@ Schakel directe, wijzigbare matching op naam/e-mail/nick alleen in met de `dange
 ## Tips
 
 - Als je `dmPolicy: "open"` instelt, moet de bijbehorende `allowFrom`-lijst `"*"` bevatten.
-- Provider-ID's verschillen (telefoonnummers, gebruikers-ID's, kanaal-ID's). Gebruik de providerdocumentatie om de indeling te bevestigen.
+- Provider-ID's verschillen (telefoonnummers, gebruikers-ID's, kanaal-ID's). Gebruik de providerdocumentatie om het formaat te bevestigen.
 - Optionele secties om later toe te voegen: `web`, `browser`, `ui`, `discovery`, `plugins`, `talk`, `signal`, `imessage`.
-- Zie [Providers](/nl/providers) en [Probleemoplossing](/nl/gateway/troubleshooting) voor uitgebreidere configuratienotities.
+- Zie [Providers](/nl/providers) en [Probleemoplossing](/nl/gateway/troubleshooting) voor uitgebreidere setupnotities.
 
 ## Gerelateerd
 

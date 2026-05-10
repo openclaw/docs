@@ -5,32 +5,30 @@ read_when:
 summary: Adaptadores RPC para CLIs externas (signal-cli, imsg) e padrões de Gateway
 title: Adaptadores RPC
 x-i18n:
-    generated_at: "2026-05-07T01:53:30Z"
+    generated_at: "2026-05-10T19:49:17Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 446e54d736352f45e6cc6988a1835233cace7f854b6e62c64bb1fae115ce76f6
+    source_hash: 63556f140bee55821fa0a09ff9808e163728049f8db4c58f7bb4ceca6e1cac1a
     source_path: reference/rpc.md
     workflow: 16
 ---
 
-OpenClaw integra CLIs externos via JSON-RPC. Dois padrões são usados atualmente.
+OpenClaw integra CLIs externas via JSON-RPC. Dois padrões são usados hoje.
 
 ## Padrão A: daemon HTTP (signal-cli)
 
 - `signal-cli` é executado como um daemon com JSON-RPC sobre HTTP.
 - O fluxo de eventos é SSE (`/api/v1/events`).
 - Sonda de integridade: `/api/v1/check`.
-- OpenClaw gerencia o ciclo de vida quando `channels.signal.autoStart=true`.
+- OpenClaw controla o ciclo de vida quando `channels.signal.autoStart=true`.
 
 Consulte [Signal](/pt-BR/channels/signal) para configuração e endpoints.
 
-## Padrão B: processo filho stdio (legado: imsg)
+## Padrão B: processo filho stdio (imsg)
 
-> **Observação:** Para novas configurações do iMessage, use [BlueBubbles](/pt-BR/channels/bluebubbles).
-
-- OpenClaw inicia `imsg rpc` como um processo filho (integração legada do iMessage).
-- JSON-RPC é delimitado por linha sobre stdin/stdout (um objeto JSON por linha).
-- Nenhuma porta TCP, nenhum daemon necessário.
+- OpenClaw inicia `imsg rpc` como um processo filho para [iMessage](/pt-BR/channels/imessage).
+- JSON-RPC é delimitado por linhas sobre stdin/stdout (um objeto JSON por linha).
+- Sem porta TCP, sem daemon necessário.
 
 Métodos principais usados:
 
@@ -43,9 +41,9 @@ Consulte [iMessage](/pt-BR/channels/imessage) para configuração legada e ender
 
 ## Diretrizes para adaptadores
 
-- Gateway gerencia o processo (início/parada vinculados ao ciclo de vida do provedor).
-- Mantenha os clientes RPC resilientes: timeouts, reinício ao sair.
-- Prefira IDs estáveis (por exemplo, `chat_id`) em vez de strings de exibição.
+- Gateway controla o processo (início/parada vinculados ao ciclo de vida do provedor).
+- Mantenha os clientes RPC resilientes: timeouts, reiniciar ao sair.
+- Prefira IDs estáveis (por exemplo, `chat_id`) a strings de exibição.
 
 ## Relacionado
 

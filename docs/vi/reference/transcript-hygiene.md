@@ -1,65 +1,65 @@
 ---
 read_when:
-    - Bạn đang gỡ lỗi các trường hợp nhà cung cấp từ chối yêu cầu liên quan đến cấu trúc bản ghi hội thoại
-    - Bạn đang thay đổi logic làm sạch bản ghi hội thoại hoặc sửa chữa lệnh gọi công cụ
-    - Bạn đang điều tra các trường hợp ID lệnh gọi công cụ không khớp giữa các nhà cung cấp
-summary: 'Tham chiếu: các quy tắc làm sạch và sửa chữa bản ghi dành riêng cho từng nhà cung cấp'
-title: Vệ sinh bản ghi hội thoại
+    - Bạn đang gỡ lỗi các trường hợp từ chối yêu cầu của nhà cung cấp liên quan đến cấu trúc bản ghi hội thoại
+    - Bạn đang thay đổi logic làm sạch bản ghi hoặc sửa chữa lệnh gọi công cụ
+    - Bạn đang điều tra các điểm không khớp ID lệnh gọi công cụ giữa các nhà cung cấp
+summary: 'Tham chiếu: các quy tắc làm sạch và sửa chữa bản ghi hội thoại dành riêng cho nhà cung cấp'
+title: Giữ sạch bản ghi hội thoại
 x-i18n:
-    generated_at: "2026-05-05T01:50:30Z"
+    generated_at: "2026-05-10T19:51:21Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 9441494f3e8bb18d1648acc789a40bf9501fe3f2d32b6293792e6a24710675d0
+    source_hash: 197081fe829cf6463e84c5ead9b4c631a8088e771e68163a35ed39d9efbdbf6a
     source_path: reference/transcript-hygiene.md
     workflow: 16
 ---
 
-OpenClaw áp dụng **các bản sửa dành riêng cho nhà cung cấp** cho bản ghi hội thoại trước khi chạy (xây dựng ngữ cảnh mô hình). Hầu hết đây là các điều chỉnh **trong bộ nhớ** dùng để đáp ứng các yêu cầu nghiêm ngặt của nhà cung cấp. Một lượt sửa chữa tệp phiên riêng biệt cũng có thể ghi lại JSONL đã lưu trước khi phiên được tải, nhưng chỉ đối với các dòng sai định dạng hoặc các lượt đã lưu không phải là bản ghi bền hợp lệ. Các phản hồi assistant đã được chuyển phát được giữ nguyên trên đĩa; việc loại bỏ assistant-prefill dành riêng cho nhà cung cấp chỉ diễn ra khi xây dựng payload gửi đi. Khi có sửa chữa, tệp gốc được sao lưu bên cạnh tệp phiên.
+OpenClaw áp dụng **các bản sửa dành riêng cho nhà cung cấp** vào transcript trước một lần chạy (khi xây dựng ngữ cảnh mô hình). Hầu hết các bản sửa này là các điều chỉnh **trong bộ nhớ** dùng để đáp ứng những yêu cầu nghiêm ngặt của nhà cung cấp. Một lượt sửa chữa tệp phiên riêng cũng có thể ghi lại JSONL đã lưu trước khi phiên được tải, nhưng chỉ dành cho các dòng sai định dạng hoặc các lượt đã lưu không phải là bản ghi bền vững hợp lệ. Các phản hồi assistant đã gửi được giữ nguyên trên đĩa; việc loại bỏ phần assistant-prefill dành riêng cho nhà cung cấp chỉ xảy ra khi xây dựng payload gửi đi. Khi có sửa chữa, tệp gốc được sao lưu cạnh tệp phiên.
 
 Phạm vi bao gồm:
 
-- Ngữ cảnh prompt chỉ dùng khi chạy không xuất hiện trong các lượt bản ghi hội thoại người dùng có thể thấy
+- Ngữ cảnh prompt chỉ dùng lúc chạy không xuất hiện trong các lượt transcript hiển thị với người dùng
 - Làm sạch id lệnh gọi công cụ
 - Xác thực đầu vào lệnh gọi công cụ
-- Sửa chữa ghép cặp kết quả công cụ
+- Sửa ghép cặp kết quả công cụ
 - Xác thực / sắp xếp lượt
 - Dọn dẹp chữ ký suy nghĩ
 - Dọn dẹp chữ ký thinking
 - Làm sạch payload hình ảnh
-- Dọn dẹp khối văn bản trống trước khi phát lại qua nhà cung cấp
-- Gắn thẻ nguồn gốc đầu vào người dùng (cho prompt được định tuyến giữa các phiên)
-- Sửa chữa lượt lỗi assistant trống cho phát lại Bedrock Converse
+- Dọn dẹp khối văn bản trống trước khi phát lại cho nhà cung cấp
+- Gắn nhãn nguồn gốc đầu vào người dùng (cho các prompt được định tuyến giữa các phiên)
+- Sửa lượt lỗi assistant rỗng cho phát lại Bedrock Converse
 
-Nếu bạn cần chi tiết lưu trữ bản ghi hội thoại, xem:
+Nếu bạn cần chi tiết về lưu trữ transcript, xem:
 
-- [Phân tích sâu về quản lý phiên](/vi/reference/session-management-compaction)
+- [Phân tích chuyên sâu về quản lý phiên](/vi/reference/session-management-compaction)
 
 ---
 
-## Quy tắc toàn cục: ngữ cảnh khi chạy không phải là bản ghi hội thoại người dùng
+## Quy tắc toàn cục: ngữ cảnh lúc chạy không phải là transcript người dùng
 
 Ngữ cảnh runtime/system có thể được thêm vào prompt mô hình cho một lượt, nhưng đó
-không phải là nội dung do người dùng cuối soạn. OpenClaw giữ một phần thân prompt
-riêng hướng tới bản ghi hội thoại cho phản hồi Gateway, các followup xếp hàng, ACP, CLI, và các lần chạy Pi
-được nhúng. Các lượt người dùng hiển thị đã lưu dùng phần thân bản ghi hội thoại đó thay vì
-prompt đã được bổ sung ngữ cảnh khi chạy.
+không phải là nội dung do người dùng cuối soạn. OpenClaw giữ một thân prompt
+riêng dành cho transcript cho các phản hồi Gateway, followup xếp hàng, ACP, CLI,
+và các lần chạy Pi nhúng. Các lượt người dùng hiển thị được lưu dùng thân transcript đó thay vì
+prompt đã được làm giàu bằng ngữ cảnh lúc chạy.
 
-Đối với các phiên cũ đã lưu các lớp bọc runtime, các bề mặt lịch sử Gateway
-áp dụng một phép chiếu hiển thị trước khi trả về thông điệp cho WebChat,
-TUI, REST, hoặc máy khách SSE.
+Đối với các phiên cũ đã lưu các wrapper lúc chạy, các bề mặt lịch sử Gateway
+áp dụng một phép chiếu hiển thị trước khi trả thông điệp về WebChat,
+TUI, REST, hoặc các client SSE.
 
 ---
 
 ## Nơi phần này chạy
 
-Toàn bộ vệ sinh bản ghi hội thoại được tập trung trong runner nhúng:
+Toàn bộ vệ sinh transcript được tập trung trong runner nhúng:
 
 - Chọn chính sách: `src/agents/transcript-policy.ts`
 - Áp dụng làm sạch/sửa chữa: `sanitizeSessionHistory` trong `src/agents/pi-embedded-runner/replay-history.ts`
 
-Chính sách dùng `provider`, `modelApi`, và `modelId` để quyết định cần áp dụng gì.
+Chính sách dùng `provider`, `modelApi`, và `modelId` để quyết định áp dụng gì.
 
-Tách biệt với vệ sinh bản ghi hội thoại, các tệp phiên được sửa chữa (nếu cần) trước khi tải:
+Tách biệt với vệ sinh transcript, các tệp phiên được sửa chữa (nếu cần) trước khi tải:
 
 - `repairSessionFileIfNeeded` trong `src/agents/session-file-repair.ts`
 - Được gọi từ `run/attempt.ts` và `compact.ts` (runner nhúng)
@@ -68,27 +68,27 @@ Tách biệt với vệ sinh bản ghi hội thoại, các tệp phiên được
 
 ## Quy tắc toàn cục: làm sạch hình ảnh
 
-Payload hình ảnh luôn được làm sạch để ngăn nhà cung cấp từ chối do giới hạn
-kích thước (thu nhỏ/nén lại ảnh base64 quá lớn).
+Payload hình ảnh luôn được làm sạch để tránh bị nhà cung cấp từ chối do giới hạn
+kích thước (thu nhỏ/nén lại hình ảnh base64 quá lớn).
 
-Điều này cũng giúp kiểm soát áp lực token do hình ảnh gây ra cho các mô hình hỗ trợ vision.
-Kích thước tối đa thấp hơn thường giảm mức sử dụng token; kích thước cao hơn giữ được chi tiết.
+Điều này cũng giúp kiểm soát áp lực token do hình ảnh gây ra cho các mô hình hỗ trợ thị giác.
+Kích thước tối đa thấp hơn thường giảm mức dùng token; kích thước cao hơn giữ được chi tiết.
 
 Triển khai:
 
 - `sanitizeSessionMessagesImages` trong `src/agents/pi-embedded-helpers/images.ts`
 - `sanitizeContentBlocksImages` trong `src/agents/tool-images.ts`
-- Cạnh ảnh tối đa có thể cấu hình qua `agents.defaults.imageMaxDimensionPx` (mặc định: `1200`).
-- Các khối văn bản trống bị xóa trong khi lượt này duyệt nội dung phát lại. Các lượt assistant
-  trở thành trống sẽ bị loại khỏi bản sao phát lại; các lượt người dùng và kết quả công cụ
-  trở thành trống nhận một placeholder nội dung bị lược bỏ không trống.
+- Cạnh hình ảnh tối đa có thể cấu hình qua `agents.defaults.imageMaxDimensionPx` (mặc định: `1200`).
+- Các khối văn bản trống bị loại bỏ khi lượt này duyệt qua nội dung phát lại. Các lượt assistant
+  trở thành rỗng sẽ bị bỏ khỏi bản sao phát lại; các lượt người dùng và kết quả công cụ
+  trở thành rỗng sẽ nhận một placeholder nội dung bị bỏ qua nhưng không rỗng.
 
 ---
 
 ## Quy tắc toàn cục: lệnh gọi công cụ sai định dạng
 
-Các khối lệnh gọi công cụ của assistant thiếu cả `input` và `arguments` sẽ bị loại bỏ
-trước khi ngữ cảnh mô hình được xây dựng. Điều này ngăn việc nhà cung cấp từ chối từ các
+Các khối lệnh gọi công cụ của assistant thiếu cả `input` lẫn `arguments` sẽ bị bỏ
+trước khi ngữ cảnh mô hình được xây dựng. Điều này ngăn nhà cung cấp từ chối do các
 lệnh gọi công cụ được lưu một phần (ví dụ, sau lỗi giới hạn tốc độ).
 
 Triển khai:
@@ -100,19 +100,19 @@ Triển khai:
 
 ## Quy tắc toàn cục: nguồn gốc đầu vào giữa các phiên
 
-Khi một agent gửi prompt vào một phiên khác qua `sessions_send` (bao gồm
-các bước trả lời/thông báo từ agent tới agent), OpenClaw lưu lượt người dùng đã tạo với:
+Khi một agent gửi prompt vào phiên khác qua `sessions_send` (bao gồm
+các bước phản hồi/thông báo giữa agent với agent), OpenClaw lưu lượt người dùng đã tạo với:
 
 - `message.provenance.kind = "inter_session"`
 
-OpenClaw cũng thêm vào đầu cùng lượt một marker `[Inter-session message ... isUser=false]`
-trước văn bản prompt được định tuyến để lời gọi mô hình đang hoạt động có thể phân biệt
-đầu ra phiên bên ngoài với chỉ dẫn người dùng cuối bên ngoài. Marker này bao gồm
-phiên nguồn, kênh, và công cụ khi có. Bản ghi hội thoại vẫn dùng
-`role: "user"` để tương thích với nhà cung cấp, nhưng văn bản hiển thị và siêu dữ liệu nguồn gốc
-đều đánh dấu lượt này là dữ liệu giữa các phiên.
+OpenClaw cũng thêm trước văn bản prompt được định tuyến một marker cùng lượt `[Inter-session message ... isUser=false]`
+để lệnh gọi mô hình đang hoạt động có thể phân biệt
+đầu ra từ phiên bên ngoài với chỉ dẫn của người dùng cuối bên ngoài. Marker này bao gồm
+phiên nguồn, kênh, và công cụ khi có. Transcript vẫn dùng
+`role: "user"` để tương thích với nhà cung cấp, nhưng cả văn bản hiển thị và siêu dữ liệu
+nguồn gốc đều đánh dấu lượt này là dữ liệu giữa các phiên.
 
-Trong quá trình xây dựng lại ngữ cảnh, OpenClaw áp dụng cùng marker cho các lượt người dùng
+Trong quá trình xây dựng lại ngữ cảnh, OpenClaw áp dụng cùng marker đó cho các lượt người dùng
 giữa các phiên đã lưu cũ hơn chỉ có siêu dữ liệu nguồn gốc.
 
 ---
@@ -122,62 +122,65 @@ giữa các phiên đã lưu cũ hơn chỉ có siêu dữ liệu nguồn gốc.
 **OpenAI / OpenAI Codex**
 
 - Chỉ làm sạch hình ảnh.
-- Loại bỏ các chữ ký reasoning mồ côi (các mục reasoning độc lập không có khối nội dung theo sau) cho bản ghi hội thoại OpenAI Responses/Codex, và loại bỏ OpenAI reasoning có thể phát lại sau khi chuyển tuyến mô hình.
-- Giữ nguyên payload mục reasoning của OpenAI Responses có thể phát lại, bao gồm các mục tóm tắt trống đã mã hóa, để phát lại thủ công/WebSocket giữ trạng thái `rs_*` bắt buộc được ghép với các mục đầu ra assistant.
-- Native ChatGPT Codex Responses tuân theo tính tương đương dây Codex bằng cách phát lại payload reasoning/message/function Responses trước đó mà không có ID mục trước đó trong khi vẫn giữ `prompt_cache_key` của phiên.
+- Bỏ các chữ ký suy luận mồ côi (các mục suy luận độc lập không có khối nội dung theo sau) đối với transcript OpenAI Responses/Codex, và bỏ suy luận OpenAI có thể phát lại sau khi đổi tuyến mô hình.
+- Giữ nguyên các payload mục suy luận OpenAI Responses có thể phát lại, bao gồm các mục tóm tắt rỗng đã mã hóa, để phát lại thủ công/WebSocket vẫn giữ trạng thái `rs_*` bắt buộc được ghép với các mục đầu ra assistant.
+- Native ChatGPT Codex Responses tuân theo tính tương đồng giao thức Codex bằng cách phát lại các payload suy luận/thông điệp/hàm Responses trước đó mà không có id mục trước đó, đồng thời giữ nguyên `prompt_cache_key` của phiên.
 - Không làm sạch id lệnh gọi công cụ.
-- Sửa chữa ghép cặp kết quả công cụ có thể di chuyển các đầu ra khớp thật và tổng hợp đầu ra `aborted` kiểu Codex cho các lệnh gọi công cụ bị thiếu.
+- Sửa ghép cặp kết quả công cụ có thể di chuyển các đầu ra thật đã khớp và tổng hợp các đầu ra `aborted` kiểu Codex cho các lệnh gọi công cụ bị thiếu.
 - Không xác thực hoặc sắp xếp lại lượt.
-- Đầu ra công cụ bị thiếu thuộc họ OpenAI Responses được tổng hợp thành `aborted` để khớp với chuẩn hóa phát lại Codex.
+- Các đầu ra công cụ bị thiếu thuộc họ OpenAI Responses được tổng hợp thành `aborted` để khớp với chuẩn hóa phát lại Codex.
 - Không loại bỏ chữ ký suy nghĩ.
 
-**Gemma 4 tương thích OpenAI**
+**OpenAI-compatible Chat Completions**
 
-- Các khối thinking/reasoning lịch sử của assistant bị loại bỏ trước khi phát lại để máy chủ
-  Gemma 4 cục bộ tương thích OpenAI không nhận nội dung reasoning của lượt trước.
-- Các phần tiếp nối lệnh gọi công cụ cùng lượt hiện tại giữ khối reasoning của assistant
+- Các khối thinking/reasoning assistant trong lịch sử bị loại bỏ trước khi phát lại để
+  máy chủ cục bộ và máy chủ tương thích OpenAI kiểu proxy không nhận các trường suy luận
+  của lượt trước như `reasoning` hoặc `reasoning_content`.
+- Các phần tiếp nối lệnh gọi công cụ trong cùng lượt hiện tại giữ khối suy luận assistant
   gắn với lệnh gọi công cụ cho đến khi kết quả công cụ đã được phát lại.
+- Các ngoại lệ do nhà cung cấp sở hữu có thể chọn không áp dụng khi giao thức truyền của họ yêu cầu
+  siêu dữ liệu suy luận được phát lại.
 
 **Google (Generative AI / Gemini CLI / Antigravity)**
 
 - Làm sạch id lệnh gọi công cụ: chữ và số nghiêm ngặt.
-- Sửa chữa ghép cặp kết quả công cụ và kết quả công cụ tổng hợp.
+- Sửa ghép cặp kết quả công cụ và kết quả công cụ tổng hợp.
 - Xác thực lượt (luân phiên lượt kiểu Gemini).
 - Sửa thứ tự lượt Google (thêm một bootstrap người dùng rất nhỏ ở đầu nếu lịch sử bắt đầu bằng assistant).
-- Antigravity Claude: chuẩn hóa chữ ký thinking; loại bỏ các khối thinking không có chữ ký.
+- Antigravity Claude: chuẩn hóa chữ ký thinking; bỏ các khối thinking không có chữ ký.
 
 **Anthropic / Minimax (tương thích Anthropic)**
 
-- Sửa chữa ghép cặp kết quả công cụ và kết quả công cụ tổng hợp.
+- Sửa ghép cặp kết quả công cụ và kết quả công cụ tổng hợp.
 - Xác thực lượt (gộp các lượt người dùng liên tiếp để đáp ứng luân phiên nghiêm ngặt).
-- Các lượt assistant prefill ở cuối bị loại khỏi payload Anthropic Messages gửi đi
+- Các lượt prefill assistant ở cuối bị loại khỏi payload Anthropic Messages gửi đi
   khi thinking được bật, bao gồm các tuyến Cloudflare AI Gateway.
-- Các khối thinking bị thiếu, trống, hoặc có chữ ký phát lại chỉ gồm khoảng trắng sẽ bị loại bỏ
-  trước khi chuyển đổi nhà cung cấp. Nếu việc đó làm trống một lượt assistant, OpenClaw giữ
-  hình dạng lượt với văn bản reasoning bị lược bỏ không trống.
-- Các lượt assistant chỉ có thinking cũ hơn phải bị loại bỏ được thay bằng
-  văn bản reasoning bị lược bỏ không trống để adapter nhà cung cấp không loại lượt
+- Các khối thinking thiếu chữ ký phát lại, chữ ký rỗng, hoặc chữ ký chỉ có khoảng trắng bị loại bỏ
+  trước khi chuyển đổi nhà cung cấp. Nếu điều đó làm rỗng một lượt assistant, OpenClaw giữ
+  hình dạng lượt bằng văn bản omitted-reasoning không rỗng.
+- Các lượt assistant cũ chỉ có thinking cần bị loại bỏ sẽ được thay bằng
+  văn bản omitted-reasoning không rỗng để adapter nhà cung cấp không bỏ lượt
   phát lại.
 
 **Amazon Bedrock (Converse API)**
 
-- Các lượt lỗi luồng assistant trống được sửa thành một khối văn bản fallback không trống
-  trước khi phát lại. Bedrock Converse từ chối thông điệp assistant với `content: []`, vì vậy
-  các lượt assistant đã lưu có `stopReason: "error"` và nội dung trống cũng
-  được sửa trên đĩa trước khi tải.
-- Các lượt lỗi luồng assistant chỉ chứa các khối văn bản trống sẽ bị loại
+- Các lượt lỗi luồng assistant rỗng được sửa thành một khối văn bản dự phòng không rỗng
+  trước khi phát lại. Bedrock Converse từ chối thông điệp assistant có `content: []`, vì vậy
+  các lượt assistant đã lưu có `stopReason: "error"` và nội dung rỗng cũng được
+  sửa trên đĩa trước khi tải.
+- Các lượt lỗi luồng assistant chỉ chứa khối văn bản trống bị bỏ
   khỏi bản sao phát lại trong bộ nhớ thay vì phát lại một khối trống không hợp lệ.
-- Các khối thinking Claude bị thiếu, trống, hoặc có chữ ký phát lại chỉ gồm khoảng trắng sẽ
-  bị loại bỏ trước khi phát lại Converse. Nếu việc đó làm trống một lượt assistant, OpenClaw
-  giữ hình dạng lượt với văn bản reasoning bị lược bỏ không trống.
-- Các lượt assistant chỉ có thinking cũ hơn phải bị loại bỏ được thay bằng
-  văn bản reasoning bị lược bỏ không trống để phát lại Converse giữ hình dạng lượt nghiêm ngặt.
-- Phát lại lọc các lượt assistant delivery-mirror và do gateway chèn của OpenClaw.
-- Làm sạch hình ảnh áp dụng qua quy tắc toàn cục.
+- Các khối thinking Claude thiếu chữ ký phát lại, chữ ký rỗng, hoặc chữ ký chỉ có khoảng trắng
+  bị loại bỏ trước khi phát lại Converse. Nếu điều đó làm rỗng một lượt assistant, OpenClaw
+  giữ hình dạng lượt bằng văn bản omitted-reasoning không rỗng.
+- Các lượt assistant cũ chỉ có thinking cần bị loại bỏ sẽ được thay bằng
+  văn bản omitted-reasoning không rỗng để phát lại Converse giữ hình dạng lượt nghiêm ngặt.
+- Phát lại lọc các lượt assistant delivery-mirror của OpenClaw và các lượt assistant do Gateway chèn.
+- Làm sạch hình ảnh được áp dụng qua quy tắc toàn cục.
 
 **Mistral (bao gồm phát hiện dựa trên model-id)**
 
-- Làm sạch id lệnh gọi công cụ: strict9 (chữ và số độ dài 9).
+- Làm sạch id lệnh gọi công cụ: strict9 (chữ và số, độ dài 9).
 
 **OpenRouter Gemini**
 
@@ -185,9 +188,9 @@ giữa các phiên đã lưu cũ hơn chỉ có siêu dữ liệu nguồn gốc.
 
 **OpenRouter Anthropic**
 
-- Các lượt assistant prefill ở cuối bị loại khỏi payload mô hình Anthropic tương thích OpenAI
-  đã xác minh của OpenRouter khi reasoning được bật, khớp với hành vi phát lại
-  Anthropic trực tiếp và Cloudflare Anthropic.
+- Các lượt prefill assistant ở cuối bị loại khỏi payload mô hình Anthropic
+  tương thích OpenAI của OpenRouter đã xác minh khi suy luận được bật, khớp với
+  hành vi phát lại Anthropic trực tiếp và Cloudflare Anthropic.
 
 **Mọi thứ khác**
 
@@ -197,20 +200,20 @@ giữa các phiên đã lưu cũ hơn chỉ có siêu dữ liệu nguồn gốc.
 
 ## Hành vi lịch sử (trước 2026.1.22)
 
-Trước bản phát hành 2026.1.22, OpenClaw áp dụng nhiều lớp vệ sinh bản ghi hội thoại:
+Trước bản phát hành 2026.1.22, OpenClaw áp dụng nhiều lớp vệ sinh transcript:
 
 - Một **transcript-sanitize extension** chạy trên mọi lần xây dựng ngữ cảnh và có thể:
-  - Sửa chữa ghép cặp sử dụng/kết quả công cụ.
-  - Làm sạch id lệnh gọi công cụ (bao gồm chế độ không nghiêm ngặt giữ lại `_`/`-`).
-- Runner cũng thực hiện làm sạch dành riêng cho nhà cung cấp, dẫn đến trùng lặp công việc.
+  - Sửa ghép cặp sử dụng/kết quả công cụ.
+  - Làm sạch id lệnh gọi công cụ (bao gồm một chế độ không nghiêm ngặt giữ lại `_`/`-`).
+- Runner cũng thực hiện làm sạch dành riêng cho nhà cung cấp, gây trùng lặp công việc.
 - Các đột biến bổ sung xảy ra bên ngoài chính sách nhà cung cấp, bao gồm:
-  - Loại bỏ thẻ `<final>` khỏi văn bản assistant trước khi lưu.
-  - Loại bỏ các lượt lỗi assistant trống.
+  - Loại bỏ thẻ `<final>` khỏi văn bản assistant trước khi lưu bền vững.
+  - Bỏ các lượt lỗi assistant rỗng.
   - Cắt bớt nội dung assistant sau các lệnh gọi công cụ.
 
-Độ phức tạp này gây ra hồi quy giữa các nhà cung cấp (đáng chú ý là ghép cặp `call_id|fc_id`
-của `openai-responses`). Đợt dọn dẹp 2026.1.22 đã loại bỏ extension, tập trung hóa
-logic trong runner, và khiến OpenAI **không bị chạm tới** ngoài việc làm sạch hình ảnh.
+Độ phức tạp này gây ra hồi quy chéo nhà cung cấp (đáng chú ý là ghép cặp `call_id|fc_id`
+của `openai-responses`). Lần dọn dẹp 2026.1.22 đã loại bỏ extension, tập trung hóa
+logic trong runner, và biến OpenAI thành **không đụng chạm** ngoài làm sạch hình ảnh.
 
 ## Liên quan
 

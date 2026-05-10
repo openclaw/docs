@@ -1,74 +1,70 @@
 ---
 read_when:
-    - Moonshot K2（Moonshot Open Platform）とKimi Codingの設定について知りたい場合
-    - 別々のendpoint、キー、model refを理解する必要があります
-    - どちらのプロバイダーでも使えるコピペ可能なconfigが欲しい場合
-summary: Moonshot K2とKimi Codingを設定する（別々のプロバイダー + キー）
+    - Moonshot K2 (Moonshot Open Platform) と Kimi Coding のセットアップを比較したい場合
+    - 個別のエンドポイント、キー、モデル参照を理解する必要があります
+    - どちらのプロバイダーでもコピー＆ペーストできる設定が必要な場合
+summary: Moonshot K2 と Kimi Coding を設定する（プロバイダーとキーは別々）
 title: Moonshot AI
 x-i18n:
-    generated_at: "2026-04-25T13:57:31Z"
-    model: gpt-5.4
+    generated_at: "2026-05-10T19:50:21Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: fd6ababe59354a302975b68f4cdb12a623647f8e5cadfb8ae58a74bb2934ce65
+    source_hash: 0f6396d91ac8c1f698531ce067f79d4a4de7a5c7a166099c0fe4b7e5b78fde9e
     source_path: providers/moonshot.md
-    workflow: 15
+    workflow: 16
 ---
 
-MoonshotはOpenAI互換endpointを持つKimi APIを提供します。providerを設定し、
-デフォルトmodelを `moonshot/kimi-k2.6` に設定するか、
-Kimi Codingを `kimi/kimi-code` で使ってください。
+Moonshot は OpenAI 互換エンドポイントで Kimi API を提供します。
+プロバイダーを構成して既定のモデルを `moonshot/kimi-k2.6` に設定するか、
+`kimi/kimi-for-coding` で Kimi Coding を使用します。
 
 <Warning>
-MoonshotとKimi Codingは**別々のプロバイダー**です。キーは相互利用できず、endpointも異なり、model refも異なります（`moonshot/...` vs `kimi/...`）。
+Moonshot と Kimi Coding は**別々のプロバイダー**です。キーに互換性はなく、エンドポイントは異なり、モデル参照も異なります（`moonshot/...` と `kimi/...`）。
 </Warning>
 
-## 組み込みmodel catalog
+## 組み込みモデルカタログ
 
 [//]: # "moonshot-kimi-k2-ids:start"
 
-| Model ref                         | 名前                   | Reasoning | 入力        | Context | 最大出力   |
-| --------------------------------- | ---------------------- | --------- | ----------- | ------- | ---------- |
-| `moonshot/kimi-k2.6`              | Kimi K2.6              | いいえ    | text, image | 262,144 | 262,144    |
-| `moonshot/kimi-k2.5`              | Kimi K2.5              | いいえ    | text, image | 262,144 | 262,144    |
-| `moonshot/kimi-k2-thinking`       | Kimi K2 Thinking       | はい      | text        | 262,144 | 262,144    |
-| `moonshot/kimi-k2-thinking-turbo` | Kimi K2 Thinking Turbo | はい      | text        | 262,144 | 262,144    |
-| `moonshot/kimi-k2-turbo`          | Kimi K2 Turbo          | いいえ    | text        | 256,000 | 16,384     |
+| モデル参照                        | 名前                   | 推論     | 入力             | コンテキスト | 最大出力   |
+| --------------------------------- | ---------------------- | -------- | ---------------- | ------------ | ---------- |
+| `moonshot/kimi-k2.6`              | Kimi K2.6              | いいえ   | テキスト、画像   | 262,144      | 262,144    |
+| `moonshot/kimi-k2.5`              | Kimi K2.5              | いいえ   | テキスト、画像   | 262,144      | 262,144    |
+| `moonshot/kimi-k2-thinking`       | Kimi K2 Thinking       | はい     | テキスト         | 262,144      | 262,144    |
+| `moonshot/kimi-k2-thinking-turbo` | Kimi K2 Thinking Turbo | はい     | テキスト         | 262,144      | 262,144    |
+| `moonshot/kimi-k2-turbo`          | Kimi K2 Turbo          | いいえ   | テキスト         | 256,000      | 16,384     |
 
 [//]: # "moonshot-kimi-k2-ids:end"
 
-現在のMoonshotホストK2 model向けのバンドル済みコスト見積もりは、Moonshotが公開している
-従量課金料金を使います: Kimi K2.6はキャッシュヒット $0.16/MTok、
-入力 $0.95/MTok、出力 $4.00/MTok です。Kimi K2.5はキャッシュヒット $0.10/MTok、
-入力 $0.60/MTok、出力 $3.00/MTok です。その他のレガシーcatalog entryは、
-configで上書きしない限り、0コストのplaceholderのままです。
+現在の Moonshot ホスト型 K2 モデルに同梱されているコスト見積もりは、Moonshot が公開している従量課金レートを使用します。Kimi K2.6 はキャッシュヒットが $0.16/MTok、入力が $0.95/MTok、出力が $4.00/MTok です。Kimi K2.5 はキャッシュヒットが $0.10/MTok、入力が $0.60/MTok、出力が $3.00/MTok です。その他のレガシーカタログエントリは、config で上書きしない限り、ゼロコストのプレースホルダーを維持します。
 
 ## はじめに
 
-providerを選び、セットアップ手順に従ってください。
+プロバイダーを選択し、セットアップ手順に従います。
 
 <Tabs>
   <Tab title="Moonshot API">
-    **最適な用途:** Moonshot Open Platform経由のKimi K2 model。
+    **最適な用途:** Moonshot Open Platform 経由の Kimi K2 モデル。
 
     <Steps>
-      <Step title="endpointリージョンを選ぶ">
-        | 認証選択               | Endpoint                       | リージョン    |
-        | ---------------------- | ------------------------------ | ------------- |
-        | `moonshot-api-key`     | `https://api.moonshot.ai/v1`   | International |
-        | `moonshot-api-key-cn`  | `https://api.moonshot.cn/v1`   | China         |
+      <Step title="エンドポイントのリージョンを選択する">
+        | 認証の選択             | エンドポイント                 | リージョン |
+        | ---------------------- | ------------------------------ | ---------- |
+        | `moonshot-api-key`     | `https://api.moonshot.ai/v1`   | 国際       |
+        | `moonshot-api-key-cn`  | `https://api.moonshot.cn/v1`   | 中国       |
       </Step>
       <Step title="オンボーディングを実行する">
         ```bash
         openclaw onboard --auth-choice moonshot-api-key
         ```
 
-        または、中国endpointの場合:
+        中国エンドポイントの場合:
 
         ```bash
         openclaw onboard --auth-choice moonshot-api-key-cn
         ```
       </Step>
-      <Step title="デフォルトmodelを設定する">
+      <Step title="既定のモデルを設定する">
         ```json5
         {
           agents: {
@@ -79,14 +75,13 @@ providerを選び、セットアップ手順に従ってください。
         }
         ```
       </Step>
-      <Step title="modelが利用可能か確認する">
+      <Step title="モデルが利用可能であることを確認する">
         ```bash
         openclaw models list --provider moonshot
         ```
       </Step>
-      <Step title="live smoke testを実行する">
-        通常のsessionに触れずにmodelアクセスとコスト
-        追跡を確認したい場合は、分離されたstate dirを使ってください:
+      <Step title="ライブスモークテストを実行する">
+        通常のセッションに影響を与えずにモデルアクセスとコスト追跡を確認したい場合は、分離された状態ディレクトリを使用します。
 
         ```bash
         OPENCLAW_CONFIG_PATH=/tmp/openclaw-kimi/openclaw.json \
@@ -98,14 +93,11 @@ providerを選び、セットアップ手順に従ってください。
           --json
         ```
 
-        JSONレスポンスには `provider: "moonshot"` と
-        `model: "kimi-k2.6"` が報告されるはずです。assistant transcript entryには、
-        Moonshotがusage metadataを返した場合、正規化済み
-        token usageと推定コストが `usage.cost` 配下に保存されます。
+        JSON レスポンスには `provider: "moonshot"` と `model: "kimi-k2.6"` が報告されるはずです。Moonshot が使用量メタデータを返す場合、アシスタントのトランスクリプトエントリには、正規化されたトークン使用量と推定コストが `usage.cost` の下に保存されます。
       </Step>
     </Steps>
 
-    ### 設定例
+    ### config の例
 
     ```json5
     {
@@ -189,10 +181,10 @@ providerを選び、セットアップ手順に従ってください。
   </Tab>
 
   <Tab title="Kimi Coding">
-    **最適な用途:** Kimi Coding endpoint経由のコード重視タスク。
+    **最適な用途:** Kimi Coding エンドポイント経由のコード重視タスク。
 
     <Note>
-    Kimi Codingは、Moonshot（`moonshot/...`）とは異なるAPI keyとprovider prefix（`kimi/...`）を使います。レガシーmodel ref `kimi/k2p5` も互換idとして引き続き受け付けられます。
+    Kimi Coding は、Moonshot（`moonshot/...`）とは異なる API キーとプロバイダープレフィックス（`kimi/...`）を使用します。安定版 API モデル参照は `kimi/kimi-for-coding` です。レガシー参照の `kimi/kimi-code` と `kimi/k2p5` も引き続き受け付けられ、その API モデル ID に正規化されます。
     </Note>
 
     <Steps>
@@ -201,34 +193,34 @@ providerを選び、セットアップ手順に従ってください。
         openclaw onboard --auth-choice kimi-code-api-key
         ```
       </Step>
-      <Step title="デフォルトmodelを設定する">
+      <Step title="既定のモデルを設定する">
         ```json5
         {
           agents: {
             defaults: {
-              model: { primary: "kimi/kimi-code" },
+              model: { primary: "kimi/kimi-for-coding" },
             },
           },
         }
         ```
       </Step>
-      <Step title="modelが利用可能か確認する">
+      <Step title="モデルが利用可能であることを確認する">
         ```bash
         openclaw models list --provider kimi
         ```
       </Step>
     </Steps>
 
-    ### 設定例
+    ### config の例
 
     ```json5
     {
       env: { KIMI_API_KEY: "sk-..." },
       agents: {
         defaults: {
-          model: { primary: "kimi/kimi-code" },
+          model: { primary: "kimi/kimi-for-coding" },
           models: {
-            "kimi/kimi-code": { alias: "Kimi" },
+            "kimi/kimi-for-coding": { alias: "Kimi" },
           },
         },
       },
@@ -238,33 +230,32 @@ providerを選び、セットアップ手順に従ってください。
   </Tab>
 </Tabs>
 
-## Kimi web search
+## Kimi Web 検索
 
-OpenClawには、Moonshot web
-searchをバックエンドとする `web_search` providerとして **Kimi** も同梱されています。
+OpenClaw は Moonshot Web 検索を基盤とする `web_search` プロバイダーとして **Kimi** も同梱しています。
 
 <Steps>
-  <Step title="対話型web searchセットアップを実行する">
+  <Step title="対話型の Web 検索セットアップを実行する">
     ```bash
     openclaw configure --section web
     ```
 
-    web-searchセクションで **Kimi** を選ぶと、
-    `plugins.entries.moonshot.config.webSearch.*` が保存されます。
+    Web 検索セクションで **Kimi** を選択し、
+    `plugins.entries.moonshot.config.webSearch.*` を保存します。
 
   </Step>
-  <Step title="web searchリージョンとmodelを設定する">
-    対話型セットアップでは次を尋ねます:
+  <Step title="Web 検索のリージョンとモデルを設定する">
+    対話型セットアップでは次の入力を求められます。
 
-    | 設定                | オプション                                                           |
+    | 設定             | オプション                                                              |
     | ------------------- | -------------------------------------------------------------------- |
-    | APIリージョン       | `https://api.moonshot.ai/v1`（international）または `https://api.moonshot.cn/v1`（China） |
-    | Web search model    | デフォルトは `kimi-k2.6`                                             |
+    | API リージョン          | `https://api.moonshot.ai/v1` (国際) または `https://api.moonshot.cn/v1` (中国) |
+    | Web 検索モデル    | デフォルトは `kimi-k2.6`                                             |
 
   </Step>
 </Steps>
 
-configは `plugins.entries.moonshot.config.webSearch` 配下に置かれます:
+設定は `plugins.entries.moonshot.config.webSearch` 配下にあります。
 
 ```json5
 {
@@ -273,7 +264,7 @@ configは `plugins.entries.moonshot.config.webSearch` 配下に置かれます:
       moonshot: {
         config: {
           webSearch: {
-            apiKey: "sk-...", // または KIMI_API_KEY / MOONSHOT_API_KEY を使用
+            apiKey: "sk-...", // or use KIMI_API_KEY / MOONSHOT_API_KEY
             baseUrl: "https://api.moonshot.ai/v1",
             model: "kimi-k2.6",
           },
@@ -294,13 +285,13 @@ configは `plugins.entries.moonshot.config.webSearch` 配下に置かれます:
 ## 高度な設定
 
 <AccordionGroup>
-  <Accordion title="ネイティブthinkingモード">
-    Moonshot Kimiは二値のネイティブthinkingをサポートします:
+  <Accordion title="ネイティブ思考モード">
+    Moonshot Kimi はバイナリのネイティブ思考に対応しています。
 
     - `thinking: { type: "enabled" }`
     - `thinking: { type: "disabled" }`
 
-    `agents.defaults.models.<provider/model>.params` を通じてmodelごとに設定します:
+    モデルごとに `agents.defaults.models.<provider/model>.params` で設定します。
 
     ```json5
     {
@@ -318,22 +309,18 @@ configは `plugins.entries.moonshot.config.webSearch` 配下に置かれます:
     }
     ```
 
-    OpenClawは、Moonshot向けにruntime `/think` レベルもマッピングします:
+    OpenClaw は Moonshot 向けにランタイムの `/think` レベルもマッピングします。
 
-    | `/think` レベル     | Moonshotの挙動              |
-    | ------------------- | --------------------------- |
-    | `/think off`        | `thinking.type=disabled`    |
-    | off以外の任意のレベル | `thinking.type=enabled`   |
+    | `/think` レベル       | Moonshot の動作          |
+    | -------------------- | -------------------------- |
+    | `/think off`         | `thinking.type=disabled`   |
+    | off 以外の任意のレベル    | `thinking.type=enabled`    |
 
     <Warning>
-    Moonshot thinkingが有効な場合、`tool_choice` は `auto` または `none` でなければなりません。OpenClawは互換性のため、不適合な `tool_choice` 値を `auto` に正規化します。
+    Moonshot の思考が有効な場合、`tool_choice` は `auto` または `none` である必要があります。OpenClaw は互換性のため、互換性のない `tool_choice` 値を `auto` に正規化します。
     </Warning>
 
-    Kimi K2.6は、`reasoning_content` の
-    複数ターン保持を制御する任意の `thinking.keep` fieldも受け付けます。ターンをまたいで完全な
-    reasoningを保持するには `"all"` に設定してください。省略するか（または `null` のままにするか）、
-    サーバーデフォルト戦略を使ってください。OpenClawは `thinking.keep` を
-    `moonshot/kimi-k2.6` に対してのみ転送し、他のmodelからは削除します。
+    Kimi K2.6 は、`reasoning_content` の複数ターン保持を制御する任意の `thinking.keep` フィールドも受け付けます。ターンをまたいで完全な推論を保持するには `"all"` に設定します。サーバーのデフォルト戦略を使用するには、省略します（または `null` のままにします）。OpenClaw は `thinking.keep` を `moonshot/kimi-k2.6` に対してのみ転送し、他のモデルからは取り除きます。
 
     ```json5
     {
@@ -353,10 +340,10 @@ configは `plugins.entries.moonshot.config.webSearch` 配下に置かれます:
 
   </Accordion>
 
-  <Accordion title="tool call idのサニタイズ">
-    Moonshot Kimiは、`functions.<name>:<index>` 形式のtool_call idを返します。OpenClawはそれらを変更せず保持するため、複数ターンのtool callが動作し続けます。
+  <Accordion title="ツール呼び出し ID のサニタイズ">
+    Moonshot Kimi は `functions.<name>:<index>` の形をした tool_call ID を提供します。OpenClaw はそれらを変更せずに保持するため、複数ターンのツール呼び出しが動作し続けます。
 
-    カスタムOpenAI互換providerで厳格なサニタイズを強制するには、`sanitizeToolCallIds: true` を設定してください:
+    カスタム OpenAI 互換プロバイダーで厳密なサニタイズを強制するには、`sanitizeToolCallIds: true` を設定します。
 
     ```json5
     {
@@ -373,30 +360,25 @@ configは `plugins.entries.moonshot.config.webSearch` 配下に置かれます:
 
   </Accordion>
 
-  <Accordion title="ストリーミングusage互換性">
-    ネイティブMoonshot endpoint（`https://api.moonshot.ai/v1` および
-    `https://api.moonshot.cn/v1`）は、共有
-    `openai-completions` transport上でストリーミングusage互換性を公開します。OpenClawはこれをendpoint
-    capabilityに基づいて判定するため、同じネイティブ
-    Moonshot hostを対象とする互換カスタムprovider idは、同じストリーミングusage挙動を継承します。
+  <Accordion title="ストリーミング使用量の互換性">
+    ネイティブの Moonshot エンドポイント（`https://api.moonshot.ai/v1` と
+    `https://api.moonshot.cn/v1`）は、共有の `openai-completions` トランスポート上でストリーミング使用量の互換性を告知します。OpenClaw はこれをエンドポイント機能に基づいて判断するため、同じネイティブ Moonshot ホストを対象にする互換性のあるカスタムプロバイダー ID は、同じストリーミング使用量の動作を継承します。
 
-    バンドル済みK2.6価格設定では、入力、出力、
-    キャッシュ読み取りtokenを含むストリーミングusageは、`/status`, `/usage full`, `/usage cost`, およびtranscriptバックのsession
-    accounting向けに、ローカル推定USDコストにも変換されます。
+    バンドルされた K2.6 の価格設定では、入力、出力、キャッシュ読み取りトークンを含むストリーミングされた使用量も、`/status`、`/usage full`、`/usage cost`、およびトランスクリプトに基づくセッション会計向けに、ローカルの推定 USD コストへ変換されます。
 
   </Accordion>
 
-  <Accordion title="endpointとmodel refリファレンス">
-    | プロバイダー   | Model refプレフィックス | Endpoint                      | Auth env var        |
-    | -------------- | ---------------------- | ----------------------------- | ------------------- |
-    | Moonshot       | `moonshot/`            | `https://api.moonshot.ai/v1`  | `MOONSHOT_API_KEY`  |
-    | Moonshot CN    | `moonshot/`            | `https://api.moonshot.cn/v1`  | `MOONSHOT_API_KEY`  |
-    | Kimi Coding    | `kimi/`                | Kimi Coding endpoint          | `KIMI_API_KEY`      |
-    | Web search     | N/A                    | Moonshot APIリージョンと同じ   | `KIMI_API_KEY` または `MOONSHOT_API_KEY` |
+  <Accordion title="エンドポイントとモデル参照リファレンス">
+    | プロバイダー   | モデル参照プレフィックス | エンドポイント                      | 認証環境変数        |
+    | ---------- | ---------------- | ----------------------------- | ------------------- |
+    | Moonshot   | `moonshot/`      | `https://api.moonshot.ai/v1`  | `MOONSHOT_API_KEY`  |
+    | Moonshot CN| `moonshot/`      | `https://api.moonshot.cn/v1`  | `MOONSHOT_API_KEY`  |
+    | Kimi Coding| `kimi/`          | Kimi Coding エンドポイント          | `KIMI_API_KEY`      |
+    | Web 検索 | N/A              | Moonshot API リージョンと同じ   | `KIMI_API_KEY` または `MOONSHOT_API_KEY` |
 
-    - Kimi web searchは `KIMI_API_KEY` または `MOONSHOT_API_KEY` を使い、デフォルトでは `https://api.moonshot.ai/v1` とmodel `kimi-k2.6` を使用します。
-    - 必要に応じて、`models.providers` 内で価格設定およびcontext metadataを上書きしてください。
-    - Moonshotがあるmodelに対して異なるcontext制限を公開した場合は、それに応じて `contextWindow` を調整してください。
+    - Kimi Web 検索は `KIMI_API_KEY` または `MOONSHOT_API_KEY` を使用し、デフォルトではモデル `kimi-k2.6` とともに `https://api.moonshot.ai/v1` を使用します。
+    - 必要に応じて `models.providers` で料金とコンテキストメタデータを上書きします。
+    - Moonshot がモデルに対して異なるコンテキスト制限を公開している場合は、それに応じて `contextWindow` を調整します。
 
   </Accordion>
 </AccordionGroup>
@@ -404,16 +386,16 @@ configは `plugins.entries.moonshot.config.webSearch` 配下に置かれます:
 ## 関連
 
 <CardGroup cols={2}>
-  <Card title="Model selection" href="/ja-JP/concepts/model-providers" icon="layers">
-    プロバイダー、model ref、フェイルオーバー挙動の選び方。
+  <Card title="モデル選択" href="/ja-JP/concepts/model-providers" icon="layers">
+    プロバイダー、モデル参照、フェイルオーバー動作の選択。
   </Card>
-  <Card title="Web search" href="/ja-JP/tools/web" icon="magnifying-glass">
-    Kimiを含むweb search providerの設定。
+  <Card title="Web 検索" href="/ja-JP/tools/web" icon="magnifying-glass">
+    Kimi を含む Web 検索プロバイダーの設定。
   </Card>
-  <Card title="Configuration reference" href="/ja-JP/gateway/configuration-reference" icon="gear">
-    provider、model、plugin向けの完全なconfig schema。
+  <Card title="設定リファレンス" href="/ja-JP/gateway/configuration-reference" icon="gear">
+    プロバイダー、モデル、plugins の完全な設定スキーマ。
   </Card>
   <Card title="Moonshot Open Platform" href="https://platform.moonshot.ai" icon="globe">
-    Moonshot API key管理とドキュメント。
+    Moonshot API キー管理とドキュメント。
   </Card>
 </CardGroup>

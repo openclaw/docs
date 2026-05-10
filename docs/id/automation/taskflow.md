@@ -1,42 +1,42 @@
 ---
 read_when:
-    - Anda ingin memahami bagaimana Alur Tugas berkaitan dengan tugas latar belakang
-    - Anda menemukan Task Flow atau alur tugas openclaw dalam catatan rilis atau dokumentasi
+    - Anda ingin memahami bagaimana TaskFlow berkaitan dengan tugas latar belakang
+    - Anda menemukan Task Flow atau openclaw tasks flow dalam catatan rilis atau dokumentasi
     - Anda ingin memeriksa atau mengelola status alur yang persisten
-summary: Alur Tugas lapisan orkestrasi alur di atas tugas latar belakang
+summary: Lapisan orkestrasi alur tugas di atas tugas latar belakang
 title: Alur tugas
 x-i18n:
-    generated_at: "2026-04-30T09:32:33Z"
+    generated_at: "2026-05-10T19:21:18Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 2ab261dea0ec3beb10b53c641bd188288cada5345aef6ddbbc8071d37eb57bdc
+    source_hash: 135227b250840cd579f10a8ab4211e9319c447bb4d6df25907738ea138fc2d2a
     source_path: automation/taskflow.md
     workflow: 16
 ---
 
-Alur Tugas adalah substrat orkestrasi alur yang berada di atas [tugas latar belakang](/id/automation/tasks). Ini mengelola alur multi-langkah yang tahan lama dengan status, pelacakan revisi, dan semantik sinkronisasinya sendiri, sementara tugas individual tetap menjadi unit kerja terlepas.
+Task Flow adalah substrat orkestrasi alur yang berada di atas [tugas latar belakang](/id/automation/tasks). Ia mengelola alur multi-langkah yang tahan lama dengan status, pelacakan revisi, dan semantik sinkronisasinya sendiri, sementara tugas individual tetap menjadi unit pekerjaan terlepas.
 
-## Kapan menggunakan Alur Tugas
+## Kapan menggunakan Task Flow
 
-Gunakan Alur Tugas ketika pekerjaan mencakup beberapa langkah berurutan atau bercabang dan Anda membutuhkan pelacakan progres yang tahan lama di seluruh restart gateway. Untuk operasi latar belakang tunggal, [tugas](/id/automation/tasks) biasa sudah cukup.
+Gunakan Task Flow saat pekerjaan mencakup beberapa langkah berurutan atau bercabang dan Anda memerlukan pelacakan progres yang tahan lama di seluruh restart Gateway. Untuk operasi latar belakang tunggal, [tugas](/id/automation/tasks) biasa sudah cukup.
 
-| Skenario                             | Gunakan                  |
-| ------------------------------------ | ------------------------ |
-| Pekerjaan latar belakang tunggal     | Tugas biasa              |
-| Pipeline multi-langkah (A lalu B lalu C) | Alur Tugas (terkelola)   |
-| Mengamati tugas yang dibuat secara eksternal | Alur Tugas (dicerminkan) |
-| Pengingat sekali jalan               | Pekerjaan Cron           |
+| Skenario                              | Gunakan                  |
+| ------------------------------------- | -------------------- |
+| Pekerjaan latar belakang tunggal                 | Tugas biasa           |
+| Pipeline multi-langkah (A lalu B lalu C) | Task Flow (terkelola)  |
+| Mengamati tugas yang dibuat secara eksternal      | Task Flow (dicerminkan) |
+| Pengingat sekali jalan                     | Pekerjaan Cron             |
 
 ## Pola alur kerja terjadwal yang andal
 
-Untuk alur kerja berulang seperti briefing intelijen pasar, perlakukan jadwal, orkestrasi, dan pemeriksaan keandalan sebagai lapisan terpisah:
+Untuk alur kerja berulang seperti ringkasan intelijen pasar, perlakukan jadwal, orkestrasi, dan pemeriksaan keandalan sebagai lapisan terpisah:
 
 1. Gunakan [Tugas Terjadwal](/id/automation/cron-jobs) untuk penentuan waktu.
-2. Gunakan sesi cron persisten ketika alur kerja perlu dibangun di atas konteks sebelumnya.
+2. Gunakan sesi Cron persisten saat alur kerja harus dibangun di atas konteks sebelumnya.
 3. Gunakan [Lobster](/id/tools/lobster) untuk langkah deterministik, gerbang persetujuan, dan token lanjutkan.
-4. Gunakan Alur Tugas untuk melacak eksekusi multi-langkah di seluruh tugas anak, penantian, percobaan ulang, dan restart gateway.
+4. Gunakan Task Flow untuk melacak eksekusi multi-langkah di seluruh tugas anak, penantian, percobaan ulang, dan restart Gateway.
 
-Contoh bentuk cron:
+Contoh bentuk Cron:
 
 ```bash
 openclaw cron add \
@@ -50,7 +50,7 @@ openclaw cron add \
   --to "channel:C1234567890"
 ```
 
-Gunakan `session:<id>` alih-alih `isolated` ketika alur kerja berulang membutuhkan riwayat yang disengaja, ringkasan eksekusi sebelumnya, atau konteks tetap. Gunakan `isolated` ketika setiap eksekusi harus dimulai dari awal dan semua status yang diperlukan bersifat eksplisit dalam alur kerja.
+Gunakan `session:<id>` alih-alih `isolated` saat alur kerja berulang memerlukan riwayat yang disengaja, ringkasan eksekusi sebelumnya, atau konteks tetap. Gunakan `isolated` saat setiap eksekusi harus dimulai dari awal dan semua status yang diperlukan dinyatakan eksplisit dalam alur kerja.
 
 Di dalam alur kerja, letakkan pemeriksaan keandalan sebelum langkah ringkasan LLM:
 
@@ -75,15 +75,15 @@ steps:
     condition: $approve.approved
 ```
 
-Pemeriksaan preflight yang direkomendasikan:
+Pemeriksaan pra-jalan yang direkomendasikan:
 
-- Ketersediaan browser dan pilihan profil, misalnya `openclaw` untuk status terkelola atau `user` ketika sesi Chrome yang sudah masuk diperlukan. Lihat [Browser](/id/tools/browser).
+- Ketersediaan browser dan pilihan profil, misalnya `openclaw` untuk status terkelola atau `user` saat sesi Chrome yang sudah masuk diperlukan. Lihat [Browser](/id/tools/browser).
 - Kredensial API dan kuota untuk setiap sumber.
 - Keterjangkauan jaringan untuk endpoint yang diperlukan.
 - Alat yang diperlukan diaktifkan untuk agen, seperti `lobster`, `browser`, dan `llm-task`.
-- Tujuan kegagalan dikonfigurasi untuk cron agar kegagalan preflight terlihat. Lihat [Tugas Terjadwal](/id/automation/cron-jobs#delivery-and-output).
+- Tujuan kegagalan dikonfigurasi untuk Cron agar kegagalan pra-jalan terlihat. Lihat [Tugas Terjadwal](/id/automation/cron-jobs#delivery-and-output).
 
-Kolom asal-usul data yang direkomendasikan untuk setiap item yang dikumpulkan:
+Field asal-usul data yang direkomendasikan untuk setiap item yang dikumpulkan:
 
 ```json
 {
@@ -95,68 +95,68 @@ Kolom asal-usul data yang direkomendasikan untuk setiap item yang dikumpulkan:
 }
 ```
 
-Buat alur kerja menolak atau menandai item yang usang sebelum peringkasan. Langkah LLM sebaiknya hanya menerima JSON terstruktur dan diminta untuk mempertahankan `sourceUrl`, `retrievedAt`, dan `asOf` dalam keluarannya. Gunakan [Tugas LLM](/id/tools/llm-task) ketika Anda membutuhkan langkah model tervalidasi skema di dalam alur kerja.
+Buat alur kerja menolak atau menandai item yang usang sebelum peringkasan. Langkah LLM harus menerima hanya JSON terstruktur dan harus diminta untuk mempertahankan `sourceUrl`, `retrievedAt`, dan `asOf` dalam keluarannya. Gunakan [Tugas LLM](/id/tools/llm-task) saat Anda memerlukan langkah model yang divalidasi skema di dalam alur kerja.
 
-Untuk alur kerja tim atau komunitas yang dapat digunakan ulang, paketkan CLI, file `.lobster`, dan catatan penyiapan apa pun sebagai skill atau Plugin lalu publikasikan melalui [ClawHub](/id/tools/clawhub). Pertahankan guardrail khusus alur kerja dalam paket tersebut kecuali API Plugin tidak memiliki kapabilitas generik yang diperlukan.
+Untuk alur kerja tim atau komunitas yang dapat digunakan kembali, kemas CLI, file `.lobster`, dan catatan penyiapan apa pun sebagai skill atau plugin dan publikasikan melalui [ClawHub](/id/clawhub). Simpan guardrail khusus alur kerja di dalam paket tersebut kecuali API plugin tidak memiliki kapabilitas generik yang diperlukan.
 
 ## Mode sinkronisasi
 
 ### Mode terkelola
 
-Alur Tugas memiliki siklus hidup dari awal hingga akhir. Ini membuat tugas sebagai langkah alur, mendorongnya hingga selesai, dan memajukan status alur secara otomatis.
+Task Flow memiliki siklus hidup dari awal hingga akhir. Ia membuat tugas sebagai langkah alur, mendorongnya hingga selesai, dan memajukan status alur secara otomatis.
 
-Contoh: alur laporan mingguan yang (1) mengumpulkan data, (2) menghasilkan laporan, dan (3) mengirimkannya. Alur Tugas membuat setiap langkah sebagai tugas latar belakang, menunggu penyelesaian, lalu beralih ke langkah berikutnya.
+Contoh: alur laporan mingguan yang (1) mengumpulkan data, (2) menghasilkan laporan, dan (3) mengirimkannya. Task Flow membuat setiap langkah sebagai tugas latar belakang, menunggu penyelesaian, lalu beralih ke langkah berikutnya.
 
 ```
-Alur: weekly-report
-  Langkah 1: gather-data     → tugas dibuat → berhasil
-  Langkah 2: generate-report → tugas dibuat → berhasil
-  Langkah 3: deliver         → tugas dibuat → berjalan
+Flow: weekly-report
+  Step 1: gather-data     → task created → succeeded
+  Step 2: generate-report → task created → succeeded
+  Step 3: deliver         → task created → running
 ```
 
 ### Mode dicerminkan
 
-Alur Tugas mengamati tugas yang dibuat secara eksternal dan menjaga status alur tetap sinkron tanpa mengambil alih pembuatan tugas. Ini berguna ketika tugas berasal dari pekerjaan cron, perintah CLI, atau sumber lain dan Anda menginginkan tampilan terpadu atas progresnya sebagai alur.
+Task Flow mengamati tugas yang dibuat secara eksternal dan menjaga status alur tetap sinkron tanpa mengambil kepemilikan atas pembuatan tugas. Ini berguna saat tugas berasal dari pekerjaan Cron, perintah CLI, atau sumber lain dan Anda menginginkan tampilan terpadu atas progresnya sebagai sebuah alur.
 
-Contoh: tiga pekerjaan cron independen yang bersama-sama membentuk rutinitas "operasi pagi". Alur yang dicerminkan melacak progres kolektifnya tanpa mengontrol kapan atau bagaimana semuanya berjalan.
+Contoh: tiga pekerjaan Cron independen yang bersama-sama membentuk rutinitas "operasi pagi". Alur yang dicerminkan melacak progres kolektifnya tanpa mengendalikan kapan atau bagaimana tugas-tugas tersebut berjalan.
 
 ## Status tahan lama dan pelacakan revisi
 
-Setiap alur mempertahankan statusnya sendiri dan melacak revisi sehingga progres tetap bertahan melewati restart gateway. Pelacakan revisi memungkinkan deteksi konflik ketika beberapa sumber mencoba memajukan alur yang sama secara bersamaan.
+Setiap alur mempertahankan statusnya sendiri dan melacak revisi agar progres bertahan melewati restart Gateway. Pelacakan revisi memungkinkan deteksi konflik saat beberapa sumber mencoba memajukan alur yang sama secara bersamaan.
 Registri alur menggunakan SQLite dengan pemeliharaan write-ahead-log terbatas, termasuk
-checkpoint berkala dan saat shutdown, sehingga gateway yang berjalan lama tidak mempertahankan
-file sampingan `registry.sqlite-wal` tanpa batas.
+checkpoint berkala dan saat shutdown, sehingga Gateway yang berjalan lama tidak mempertahankan
+file pendamping `registry.sqlite-wal` tanpa batas.
 
 ## Perilaku pembatalan
 
-`openclaw tasks flow cancel` menetapkan niat pembatalan melekat pada alur. Tugas aktif di dalam alur dibatalkan, dan tidak ada langkah baru yang dimulai. Niat pembatalan tetap ada setelah restart, sehingga alur yang dibatalkan tetap dibatalkan meskipun gateway restart sebelum semua tugas anak berakhir.
+`openclaw tasks flow cancel` menetapkan niat pembatalan lengket pada alur. Tugas aktif di dalam alur dibatalkan, dan tidak ada langkah baru yang dimulai. Niat pembatalan tetap bertahan melewati restart, sehingga alur yang dibatalkan tetap dibatalkan meskipun Gateway restart sebelum semua tugas anak berakhir.
 
 ## Perintah CLI
 
 ```bash
-# Daftar alur aktif dan terbaru
+# List active and recent flows
 openclaw tasks flow list
 
-# Tampilkan detail untuk alur tertentu
+# Show details for a specific flow
 openclaw tasks flow show <lookup>
 
-# Batalkan alur yang sedang berjalan dan tugas aktifnya
+# Cancel a running flow and its active tasks
 openclaw tasks flow cancel <lookup>
 ```
 
-| Perintah                          | Deskripsi                                      |
-| --------------------------------- | ---------------------------------------------- |
-| `openclaw tasks flow list`        | Menampilkan alur yang dilacak dengan status dan mode sinkronisasi |
-| `openclaw tasks flow show <id>`   | Periksa satu alur berdasarkan id alur atau kunci pencarian |
-| `openclaw tasks flow cancel <id>` | Batalkan alur yang sedang berjalan dan tugas aktifnya |
+| Perintah                           | Deskripsi                                   |
+| --------------------------------- | --------------------------------------------- |
+| `openclaw tasks flow list`        | Menampilkan alur yang dilacak beserta status dan mode sinkronisasi |
+| `openclaw tasks flow show <id>`   | Periksa satu alur berdasarkan id alur atau kunci pencarian     |
+| `openclaw tasks flow cancel <id>` | Batalkan alur yang sedang berjalan dan tugas aktifnya    |
 
 ## Bagaimana alur berhubungan dengan tugas
 
-Alur mengoordinasikan tugas, bukan menggantikannya. Satu alur dapat menjalankan beberapa tugas latar belakang sepanjang masa hidupnya. Gunakan `openclaw tasks` untuk memeriksa catatan tugas individual dan `openclaw tasks flow` untuk memeriksa alur yang mengorkestrasi.
+Alur mengoordinasikan tugas, bukan menggantikannya. Satu alur dapat menjalankan beberapa tugas latar belakang selama masa hidupnya. Gunakan `openclaw tasks` untuk memeriksa rekaman tugas individual dan `openclaw tasks flow` untuk memeriksa alur yang mengorkestrasi.
 
 ## Terkait
 
-- [Tugas Latar Belakang](/id/automation/tasks) — buku besar kerja terlepas yang dikoordinasikan oleh alur
+- [Tugas Latar Belakang](/id/automation/tasks) — buku besar pekerjaan terlepas yang dikoordinasikan oleh alur
 - [CLI: tugas](/id/cli/tasks) — referensi perintah CLI untuk `openclaw tasks flow`
-- [Ikhtisar Otomatisasi](/id/automation) — semua mekanisme otomatisasi secara sekilas
+- [Ringkasan Otomasi](/id/automation) — semua mekanisme otomasi secara sekilas
 - [Pekerjaan Cron](/id/automation/cron-jobs) — pekerjaan terjadwal yang dapat memberi masukan ke alur

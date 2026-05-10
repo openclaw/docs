@@ -1,67 +1,67 @@
 ---
 read_when:
-    - تريد استخدام نماذج OSS المستضافة عبر Bedrock Mantle مع OpenClaw
-    - تحتاج إلى نقطة نهاية Mantle المتوافقة مع OpenAI لنماذج GPT-OSS أو Qwen أو Kimi أو GLM
-summary: استخدام نماذج Amazon Bedrock Mantle (المتوافقة مع OpenAI) مع OpenClaw
-title: Amazon Bedrock Mantle
+    - تريد استخدام نماذج OSS المستضافة على Bedrock Mantle مع OpenClaw
+    - تحتاج إلى نقطة نهاية Mantle المتوافقة مع OpenAI لاستخدام GPT-OSS أو Qwen أو Kimi أو GLM
+summary: استخدم نماذج Amazon Bedrock Mantle (المتوافقة مع OpenAI) مع OpenClaw
+title: طبقة Amazon Bedrock
 x-i18n:
-    generated_at: "2026-04-24T07:58:13Z"
-    model: gpt-5.4
+    generated_at: "2026-05-10T19:56:59Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: c5e9fb65cd5f5151470f0d8eeb9edceb9b035863dcd863d2bcabe233c1cfce41
+    source_hash: 721eef5b7ff606b8c5e02234dae1b8d846b43ff9f3d7bf871f701bb3136fec0e
     source_path: providers/bedrock-mantle.md
-    workflow: 15
+    workflow: 16
 ---
 
-يتضمن OpenClaw مزود **Amazon Bedrock Mantle** مجمّعًا يتصل
-بنقطة نهاية Mantle المتوافقة مع OpenAI. تستضيف Mantle نماذج مفتوحة المصدر
-ونماذج من أطراف ثالثة (GPT-OSS وQwen وKimi وGLM وما شابه) عبر سطح قياسي من نوع
+يتضمن OpenClaw موفر **Amazon Bedrock Mantle** المضمّن الذي يتصل
+بنقطة نهاية Mantle المتوافقة مع OpenAI. يستضيف Mantle نماذج مفتوحة المصدر
+ونماذج جهات خارجية (GPT-OSS وQwen وKimi وGLM وما شابهها) عبر سطح قياسي
 `/v1/chat/completions` مدعوم ببنية Bedrock التحتية.
 
-| الخاصية | القيمة |
+| الخاصية         | القيمة                                                                                       |
 | -------------- | ------------------------------------------------------------------------------------------- |
-| معرّف المزوّد | `amazon-bedrock-mantle` |
-| API | `openai-completions` (متوافق مع OpenAI) أو `anthropic-messages` (مسار Anthropic Messages) |
-| المصادقة | `AWS_BEARER_TOKEN_BEDROCK` صريح أو توليد bearer token من سلسلة بيانات اعتماد IAM |
-| المنطقة الافتراضية | `us-east-1` (يمكن تجاوزها عبر `AWS_REGION` أو `AWS_DEFAULT_REGION`) |
+| معرف الموفر    | `amazon-bedrock-mantle`                                                                     |
+| API            | `openai-completions` (متوافق مع OpenAI) أو `anthropic-messages` (مسار Anthropic Messages) |
+| المصادقة       | `AWS_BEARER_TOKEN_BEDROCK` صريح أو إنشاء رمز حامل عبر سلسلة بيانات اعتماد IAM         |
+| المنطقة الافتراضية | `us-east-1` (تجاوزها باستخدام `AWS_REGION` أو `AWS_DEFAULT_REGION`)                            |
 
 ## البدء
 
 اختر طريقة المصادقة المفضلة لديك واتبع خطوات الإعداد.
 
 <Tabs>
-  <Tab title="Bearer token صريح">
-    **الأفضل لـ:** البيئات التي لديك فيها بالفعل Mantle bearer token.
+  <Tab title="Explicit bearer token">
+    **الأفضل لـ:** البيئات التي لديك فيها بالفعل رمز حامل Mantle.
 
     <Steps>
-      <Step title="اضبط bearer token على مضيف gateway">
+      <Step title="Set the bearer token on the gateway host">
         ```bash
         export AWS_BEARER_TOKEN_BEDROCK="..."
         ```
 
-        اضبط منطقة اختياريًا (الافتراضي `us-east-1`):
+        يمكنك اختياريًا تعيين منطقة (الافتراضي هو `us-east-1`):
 
         ```bash
         export AWS_REGION="us-west-2"
         ```
       </Step>
-      <Step title="تحقّق من اكتشاف النماذج">
+      <Step title="Verify models are discovered">
         ```bash
         openclaw models list
         ```
 
-        تظهر النماذج المكتشفة تحت مزود `amazon-bedrock-mantle`. ولا
-        يلزم إعداد إضافي إلا إذا كنت تريد تجاوز الإعدادات الافتراضية.
+        تظهر النماذج المكتشفة ضمن موفر `amazon-bedrock-mantle`. لا يلزم
+        إعداد إضافي ما لم تكن تريد تجاوز الإعدادات الافتراضية.
       </Step>
     </Steps>
 
   </Tab>
 
-  <Tab title="بيانات اعتماد IAM">
-    **الأفضل لـ:** استخدام بيانات اعتماد متوافقة مع AWS SDK (إعداد مشترك، أو SSO، أو web identity، أو أدوار instance أو task).
+  <Tab title="IAM credentials">
+    **الأفضل لـ:** استخدام بيانات اعتماد متوافقة مع AWS SDK (إعداد مشترك، SSO، هوية ويب، أدوار مثيل أو مهمة).
 
     <Steps>
-      <Step title="اضبط بيانات اعتماد AWS على مضيف gateway">
+      <Step title="Configure AWS credentials on the gateway host">
         يعمل أي مصدر مصادقة متوافق مع AWS SDK:
 
         ```bash
@@ -69,47 +69,54 @@ x-i18n:
         export AWS_REGION="us-west-2"
         ```
       </Step>
-      <Step title="تحقّق من اكتشاف النماذج">
+      <Step title="Verify models are discovered">
         ```bash
         openclaw models list
         ```
 
-        يقوم OpenClaw بتوليد Mantle bearer token من سلسلة بيانات الاعتماد تلقائيًا.
+        ينشئ OpenClaw رمز حامل Mantle من سلسلة بيانات الاعتماد تلقائيًا.
       </Step>
     </Steps>
 
     <Tip>
-    عندما لا يكون `AWS_BEARER_TOKEN_BEDROCK` مضبوطًا، يقوم OpenClaw بإنشاء bearer token لك من سلسلة بيانات الاعتماد الافتراضية في AWS، بما في ذلك shared credentials/config profiles، وSSO، وweb identity، وأدوار instance أو task.
+    عندما لا يتم تعيين `AWS_BEARER_TOKEN_BEDROCK`، يصدر OpenClaw رمز الحامل نيابة عنك من سلسلة بيانات اعتماد AWS الافتراضية، بما في ذلك بيانات الاعتماد المشتركة/ملفات تعريف الإعداد، وSSO، وهوية الويب، وأدوار المثيل أو المهمة.
     </Tip>
 
   </Tab>
 </Tabs>
 
-## الاكتشاف التلقائي للنموذج
+## الاكتشاف التلقائي للنماذج
 
-عندما يكون `AWS_BEARER_TOKEN_BEDROCK` مضبوطًا، يستخدمه OpenClaw مباشرة. وبخلاف ذلك،
-يحاول OpenClaw توليد Mantle bearer token من سلسلة بيانات اعتماد AWS
-الافتراضية. ثم يكتشف نماذج Mantle المتاحة عبر الاستعلام عن
-نقطة النهاية `/v1/models` الخاصة بالمنطقة.
+عند تعيين `AWS_BEARER_TOKEN_BEDROCK`، يستخدمه OpenClaw مباشرة. بخلاف ذلك،
+يحاول OpenClaw إنشاء رمز حامل Mantle من سلسلة بيانات اعتماد AWS الافتراضية.
+ثم يكتشف نماذج Mantle المتاحة عبر الاستعلام عن نقطة نهاية
+`/v1/models` الخاصة بالمنطقة.
 
-| السلوك | التفاصيل |
+| السلوك          | التفاصيل                    |
 | ----------------- | ------------------------- |
-| ذاكرة مؤقتة للاكتشاف | يتم تخزين النتائج مؤقتًا لمدة ساعة واحدة |
-| تحديث رمز IAM | كل ساعة |
+| ذاكرة التخزين المؤقت للاكتشاف   | تُخزّن النتائج مؤقتًا لمدة ساعة واحدة |
+| تحديث رمز IAM | كل ساعة                    |
+
+لإبقاء Plugin Mantle مفعّلًا مع تعطيل الاكتشاف التلقائي وإنشاء رمز الحامل
+عبر IAM، عطّل مفتاح الاكتشاف المملوك للـ Plugin:
+
+```bash
+openclaw config set plugins.entries.amazon-bedrock-mantle.config.discovery.enabled false
+```
 
 <Note>
-إن bearer token هو نفسه `AWS_BEARER_TOKEN_BEDROCK` المستخدم مع مزود [Amazon Bedrock](/ar/providers/bedrock) القياسي.
+رمز الحامل هو نفس `AWS_BEARER_TOKEN_BEDROCK` الذي يستخدمه موفر [Amazon Bedrock](/ar/providers/bedrock) القياسي.
 </Note>
 
 ### المناطق المدعومة
 
-`us-east-1`، و`us-east-2`، و`us-west-2`، و`ap-northeast-1`،
-و`ap-south-1`، و`ap-southeast-3`، و`eu-central-1`، و`eu-west-1`، و`eu-west-2`،
-و`eu-south-1`، و`eu-north-1`، و`sa-east-1`.
+`us-east-1`, `us-east-2`, `us-west-2`, `ap-northeast-1`,
+`ap-south-1`, `ap-southeast-3`, `eu-central-1`, `eu-west-1`, `eu-west-2`,
+`eu-south-1`, `eu-north-1`, `sa-east-1`.
 
 ## الإعداد اليدوي
 
-إذا كنت تفضّل إعدادًا صريحًا بدلًا من الاكتشاف التلقائي:
+إذا كنت تفضل إعدادًا صريحًا بدلًا من الاكتشاف التلقائي:
 
 ```json5
 {
@@ -137,25 +144,25 @@ x-i18n:
 }
 ```
 
-## إعداد متقدم
+## الإعداد المتقدم
 
 <AccordionGroup>
-  <Accordion title="دعم reasoning">
-    يتم استنتاج دعم reasoning من معرّفات النماذج التي تحتوي على أنماط مثل
-    `thinking` أو `reasoner` أو `gpt-oss-120b`. ويضبط OpenClaw القيمة `reasoning: true`
+  <Accordion title="Reasoning support">
+    يُستنتج دعم الاستدلال من معرفات النماذج التي تحتوي على أنماط مثل
+    `thinking` أو `reasoner` أو `gpt-oss-120b`. يعيّن OpenClaw القيمة `reasoning: true`
     تلقائيًا للنماذج المطابقة أثناء الاكتشاف.
   </Accordion>
 
-  <Accordion title="عدم توفر نقطة النهاية">
-    إذا كانت نقطة نهاية Mantle غير متاحة أو لم تُرجع أي نماذج، فسيتم
-    تخطي المزوّد بصمت. ولا يصدر OpenClaw خطأً؛
-    وتستمر المزوّدات المهيأة الأخرى في العمل بشكل طبيعي.
+  <Accordion title="Endpoint unavailability">
+    إذا كانت نقطة نهاية Mantle غير متاحة أو لم تُرجع أي نماذج، فيتم
+    تخطي الموفر بصمت. لا يُظهر OpenClaw خطأ؛ وتواصل الموفرات الأخرى
+    المعدّة العمل بشكل طبيعي.
   </Accordion>
 
-  <Accordion title="Claude Opus 4.7 عبر مسار Anthropic Messages">
-    تعرض Mantle أيضًا مسار Anthropic Messages الذي ينقل نماذج Claude عبر نفس مسار البث المصادق عليه بواسطة bearer. ويمكن استدعاء Claude Opus 4.7 (`amazon-bedrock-mantle/claude-opus-4.7`) عبر هذا المسار مع بث مملوك للمزوّد، لذلك لا يتم التعامل مع AWS bearer tokens على أنها مفاتيح Anthropic API.
+  <Accordion title="Claude Opus 4.7 via the Anthropic Messages route">
+    يوفّر Mantle أيضًا مسار Anthropic Messages الذي ينقل نماذج Claude عبر مسار البث نفسه المصادق عليه برمز حامل. يمكن استدعاء Claude Opus 4.7 (`amazon-bedrock-mantle/claude-opus-4.7`) عبر هذا المسار باستخدام بث مملوك للموفر، لذلك لا تُعامل رموز AWS الحاملة مثل مفاتيح Anthropic API.
 
-    عندما تثبّت نموذج Anthropic Messages على مزوّد Mantle، يستخدم OpenClaw سطح API من نوع `anthropic-messages` بدلًا من `openai-completions` لذلك النموذج. ولا تزال المصادقة تأتي من `AWS_BEARER_TOKEN_BEDROCK` (أو من IAM bearer token المُنشأ).
+    عند تثبيت نموذج Anthropic Messages على موفر Mantle، يستخدم OpenClaw سطح API `anthropic-messages` بدلًا من `openai-completions` لذلك النموذج. لا تزال المصادقة تأتي من `AWS_BEARER_TOKEN_BEDROCK` (أو رمز حامل IAM المُصدر).
 
     ```json5
     {
@@ -181,31 +188,31 @@ x-i18n:
 
   </Accordion>
 
-  <Accordion title="العلاقة مع مزود Amazon Bedrock">
-    يُعد Bedrock Mantle مزودًا منفصلًا عن مزود
+  <Accordion title="Relationship to Amazon Bedrock provider">
+    Bedrock Mantle موفر منفصل عن موفر
     [Amazon Bedrock](/ar/providers/bedrock) القياسي. يستخدم Mantle سطح
-    `/v1` المتوافق مع OpenAI، بينما يستخدم مزود Bedrock القياسي
-    Bedrock API الأصلية.
+    `/v1` متوافقًا مع OpenAI، بينما يستخدم موفر Bedrock القياسي
+    Bedrock API الأصلي.
 
-    يشترك كلا المزوّدين في بيانات الاعتماد `AWS_BEARER_TOKEN_BEDROCK` نفسها عندما
-    تكون موجودة.
+    يشترك كلا الموفرين في بيانات اعتماد `AWS_BEARER_TOKEN_BEDROCK` نفسها عند
+    وجودها.
 
   </Accordion>
 </AccordionGroup>
 
-## ذو صلة
+## ذات صلة
 
 <CardGroup cols={2}>
   <Card title="Amazon Bedrock" href="/ar/providers/bedrock" icon="cloud">
-    مزوّد Bedrock الأصلي لنماذج Anthropic Claude وTitan وغيرها.
+    موفر Bedrock الأصلي لـ Anthropic Claude وTitan ونماذج أخرى.
   </Card>
-  <Card title="اختيار النموذج" href="/ar/concepts/model-providers" icon="layers">
-    اختيار المزوّدين، ومراجع النماذج، وسلوك الرجوع الاحتياطي.
+  <Card title="Model selection" href="/ar/concepts/model-providers" icon="layers">
+    اختيار الموفرين ومراجع النماذج وسلوك تجاوز الفشل.
   </Card>
-  <Card title="OAuth والمصادقة" href="/ar/gateway/authentication" icon="key">
+  <Card title="OAuth and auth" href="/ar/gateway/authentication" icon="key">
     تفاصيل المصادقة وقواعد إعادة استخدام بيانات الاعتماد.
   </Card>
-  <Card title="استكشاف الأخطاء وإصلاحها" href="/ar/help/troubleshooting" icon="wrench">
+  <Card title="Troubleshooting" href="/ar/help/troubleshooting" icon="wrench">
     المشكلات الشائعة وكيفية حلها.
   </Card>
 </CardGroup>

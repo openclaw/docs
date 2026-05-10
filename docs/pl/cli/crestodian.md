@@ -1,51 +1,51 @@
 ---
 read_when:
     - Uruchamiasz openclaw bez polecenia i chcesz zrozumieć Crestodian
-    - Potrzebujesz sposobu bezpiecznego przy braku konfiguracji, aby sprawdzić lub naprawić OpenClaw
+    - Potrzebujesz sposobu bezpiecznego bez konfiguracji, aby sprawdzić lub naprawić OpenClaw
     - Projektujesz lub włączasz tryb ratunkowy kanału wiadomości
-summary: Referencja CLI i model zabezpieczeń dla Crestodian, pomocnika konfiguracji i naprawy bezpiecznego w trybie bez konfiguracji
+summary: Referencja CLI i model bezpieczeństwa dla Crestodian, pomocnika konfiguracji i naprawy bezpiecznego dla pracy bez konfiguracji
 title: Crestodian
 x-i18n:
-    generated_at: "2026-05-02T09:45:13Z"
+    generated_at: "2026-05-10T19:28:05Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 30e7cd9bea920cb1201d4f17f3db7b04eafdb4c87e8a62f99229e6aeb177f64c
+    source_hash: e9124629ed8d4df00b8d4bee683bae3d336b7fadfa5a4fc8d84fb5e51be540fb
     source_path: cli/crestodian.md
     workflow: 16
 ---
 
 # `openclaw crestodian`
 
-Crestodian to lokalny pomocnik OpenClaw do konfiguracji, naprawy i ustawień. Został
-zaprojektowany tak, aby pozostawał dostępny, gdy normalna ścieżka agenta jest uszkodzona.
+Crestodian to lokalny pomocnik OpenClaw do konfiguracji, naprawy i ustawień.
+Zaprojektowano go tak, aby pozostawał dostępny, gdy zwykła ścieżka agenta jest uszkodzona.
 
-Uruchomienie `openclaw` bez polecenia startuje Crestodian w interaktywnym terminalu.
-Uruchomienie `openclaw crestodian` startuje tego samego pomocnika jawnie.
+Uruchomienie `openclaw` bez polecenia uruchamia Crestodian w interaktywnym terminalu.
+Uruchomienie `openclaw crestodian` jawnie uruchamia tego samego pomocnika.
 
 ## Co pokazuje Crestodian
 
-Przy starcie interaktywny Crestodian otwiera tę samą powłokę TUI używaną przez
+Podczas startu interaktywny Crestodian otwiera tę samą powłokę TUI, której używa
 `openclaw tui`, z backendem czatu Crestodian. Dziennik czatu zaczyna się krótkim
 powitaniem:
 
 - kiedy uruchomić Crestodian
-- model lub deterministyczna ścieżka planera, z której Crestodian faktycznie korzysta
+- model lub deterministyczna ścieżka planisty, której Crestodian faktycznie używa
 - poprawność konfiguracji i domyślny agent
-- osiągalność Gateway z pierwszej próby startowej
-- następna akcja debugowania, którą Crestodian może wykonać
+- osiągalność Gateway z pierwszej sondy startowej
+- następna czynność debugowania, którą Crestodian może wykonać
 
-Nie zrzuca sekretów ani nie ładuje poleceń CLI pluginów tylko po to, aby wystartować. TUI
-nadal zapewnia zwykły nagłówek, dziennik czatu, wiersz statusu, stopkę, autouzupełnianie
+Nie zrzuca sekretów ani nie ładuje poleceń CLI Plugin tylko po to, aby wystartować. TUI
+nadal udostępnia normalny nagłówek, dziennik czatu, wiersz stanu, stopkę, autouzupełnianie
 i kontrolki edytora.
 
-Użyj `status`, aby uzyskać szczegółowy spis ze ścieżką konfiguracji, ścieżkami dokumentacji/źródeł,
-lokalnymi próbami CLI, obecnością kluczy API, agentami, modelem i szczegółami Gateway.
+Użyj `status`, aby uzyskać szczegółowy inwentarz ze ścieżką konfiguracji, ścieżkami dokumentacji/źródeł,
+lokalnymi sondami CLI, obecnością kluczy API, agentami, modelem i szczegółami Gateway.
 
-Crestodian używa tego samego wykrywania referencji OpenClaw co zwykli agenci. W checkoutcie Git
+Crestodian używa tego samego wykrywania referencji OpenClaw co zwykli agenci. W kopii Git
 wskazuje lokalne `docs/` i lokalne drzewo źródeł. W instalacji pakietu npm
 używa dokumentacji dołączonej do pakietu i linkuje do
 [https://github.com/openclaw/openclaw](https://github.com/openclaw/openclaw), z wyraźną
-wskazówką, aby sprawdzić źródła, gdy dokumentacja nie wystarcza.
+wskazówką, aby przejrzeć źródła, gdy dokumentacja nie wystarcza.
 
 ## Przykłady
 
@@ -60,7 +60,7 @@ openclaw crestodian --message "set default model openai/gpt-5.5" --yes
 openclaw onboard --modern
 ```
 
-Wewnątrz TUI Crestodian:
+W TUI Crestodian:
 
 ```text
 status
@@ -94,12 +94,12 @@ quit
 
 - brakuje `openclaw.json`
 - `openclaw.json` jest nieprawidłowy
-- Gateway jest wyłączony
-- rejestracja poleceń pluginów jest niedostępna
+- Gateway nie działa
+- rejestracja poleceń Plugin jest niedostępna
 - żaden agent nie został jeszcze skonfigurowany
 
 `openclaw --help` i `openclaw --version` nadal używają normalnych szybkich ścieżek.
-Nieinteraktywne `openclaw` kończy działanie krótkim komunikatem zamiast drukować główną
+Nieinteraktywne `openclaw` kończy działanie krótkim komunikatem zamiast wypisywać główną
 pomoc, ponieważ produktem bez polecenia jest Crestodian.
 
 ## Operacje i zatwierdzanie
@@ -109,13 +109,13 @@ Crestodian używa typowanych operacji zamiast doraźnego edytowania konfiguracji
 Operacje tylko do odczytu mogą działać natychmiast:
 
 - pokaż przegląd
-- wyświetl listę agentów
-- wyświetl listę zainstalowanych pluginów
-- wyszukaj pluginy ClawHub
+- wyświetl agentów
+- wyświetl zainstalowane Plugin
+- wyszukaj Plugin ClawHub
 - pokaż status modelu/backendu
 - uruchom kontrole statusu lub kondycji
 - sprawdź osiągalność Gateway
-- uruchom doctor bez interaktywnych poprawek
+- uruchom doctor bez interaktywnych napraw
 - zweryfikuj konfigurację
 - pokaż ścieżkę dziennika audytu
 
@@ -129,8 +129,8 @@ przekażesz `--yes` dla bezpośredniego polecenia:
 - zmień domyślny model
 - uruchom, zatrzymaj lub zrestartuj Gateway
 - utwórz agentów
-- zainstaluj pluginy z ClawHub lub npm
-- odinstaluj pluginy
+- zainstaluj Plugin z ClawHub lub npm
+- odinstaluj Plugin
 - uruchom naprawy doctor, które przepisują konfigurację lub stan
 
 Zastosowane zapisy są rejestrowane w:
@@ -139,14 +139,14 @@ Zastosowane zapisy są rejestrowane w:
 ~/.openclaw/audit/crestodian.jsonl
 ```
 
-Wykrywanie nie jest audytowane. Logowane są tylko zastosowane operacje i zapisy.
+Wykrywanie nie jest audytowane. Rejestrowane są tylko zastosowane operacje i zapisy.
 
 `openclaw onboard --modern` uruchamia Crestodian jako nowoczesny podgląd onboardingu.
 Zwykłe `openclaw onboard` nadal uruchamia klasyczny onboarding.
 
 ## Bootstrap konfiguracji
 
-`setup` to bootstrap onboardingu zorientowany na czat. Zapisuje tylko przez typowane
+`setup` to onboardingowy bootstrap skoncentrowany na czacie. Zapisuje wyłącznie przez typowane
 operacje konfiguracji i najpierw prosi o zatwierdzenie.
 
 ```text
@@ -168,28 +168,28 @@ Jeśli żaden nie jest dostępny, setup nadal zapisuje domyślny workspace i poz
 model nieustawiony. Zainstaluj lub zaloguj się do Codex/Claude Code albo udostępnij
 `OPENAI_API_KEY`/`ANTHROPIC_API_KEY`, a następnie uruchom setup ponownie.
 
-## Planer wspomagany modelem
+## Planista Wspomagany Modelem
 
-Crestodian zawsze startuje w trybie deterministycznym. Dla niejednoznacznych poleceń, których
+Crestodian zawsze startuje w trybie deterministycznym. Dla nieprecyzyjnych poleceń, których
 deterministyczny parser nie rozumie, lokalny Crestodian może wykonać jedną ograniczoną
-turę planera przez normalne ścieżki runtime OpenClaw. Najpierw używa
-skonfigurowanego modelu OpenClaw. Jeśli żaden skonfigurowany model nie jest jeszcze użyteczny, może
-wrócić do lokalnych runtime’ów już obecnych na maszynie:
+turę planisty przez normalne ścieżki uruchomieniowe OpenClaw. Najpierw używa
+skonfigurowanego modelu OpenClaw. Jeśli żaden skonfigurowany model nie jest jeszcze użyteczny,
+może wrócić do lokalnych środowisk uruchomieniowych już obecnych na komputerze:
 
 - Claude Code CLI: `claude-cli/claude-opus-4-7`
-- Codex app-server harness: `openai/gpt-5.5` z `agentRuntime.id: "codex"`
+- harness serwera aplikacji Codex: `openai/gpt-5.5`
 - Codex CLI: `codex-cli/gpt-5.5`
 
-Planer wspomagany modelem nie może bezpośrednio modyfikować konfiguracji. Musi przetłumaczyć
-żądanie na jedno z typowanych poleceń Crestodian, a następnie obowiązują normalne zasady
-zatwierdzania i audytu. Crestodian drukuje model, którego użył, oraz zinterpretowane
-polecenie, zanim cokolwiek uruchomi. Awaryjne tury planera bez konfiguracji są
+Planista wspomagany modelem nie może bezpośrednio mutować konfiguracji. Musi przetłumaczyć
+żądanie na jedno z typowanych poleceń Crestodian, a następnie stosowane są normalne reguły
+zatwierdzania i audytu. Crestodian wypisuje model, którego użył, oraz zinterpretowane
+polecenie, zanim cokolwiek uruchomi. Tury awaryjnego planisty bez konfiguracji są
 tymczasowe, z wyłączonymi narzędziami tam, gdzie runtime to obsługuje, i używają tymczasowego
 workspace/sesji.
 
-Tryb ratunkowy kanału wiadomości nie używa planera wspomaganego modelem. Zdalny
-tryb ratunkowy pozostaje deterministyczny, aby uszkodzona lub przejęta normalna ścieżka agenta nie
-mogła być użyta jako edytor konfiguracji.
+Tryb ratunkowy kanału wiadomości nie używa planisty wspomaganego modelem. Zdalny
+tryb ratunkowy pozostaje deterministyczny, aby uszkodzona lub przejęta normalna ścieżka agenta
+nie mogła zostać użyta jako edytor konfiguracji.
 
 ## Przełączanie do agenta
 
@@ -212,12 +212,12 @@ Możesz dołączyć kolejne żądanie:
 /crestodian restart gateway
 ```
 
-Przełączenia agentów wewnątrz TUI zostawiają ślad, że `/crestodian` jest dostępny.
+Przełączenia agentów wewnątrz TUI zostawiają ślad informujący, że `/crestodian` jest dostępne.
 
 ## Tryb ratunkowy wiadomości
 
-Tryb ratunkowy wiadomości to punkt wejścia kanału wiadomości dla Crestodian. Jest przeznaczony dla
-przypadku, gdy normalny agent nie działa, ale zaufany kanał, taki jak WhatsApp,
+Tryb ratunkowy wiadomości to punkt wejścia kanału wiadomości dla Crestodian. Jest przeznaczony
+na przypadek, gdy normalny agent nie działa, ale zaufany kanał taki jak WhatsApp
 nadal odbiera polecenia.
 
 Obsługiwane polecenie tekstowe:
@@ -235,39 +235,39 @@ You: /crestodian yes
 OpenClaw: Applied. Audit entry written.
 ```
 
-Tworzenie agenta można również kolejkować z lokalnego promptu lub trybu ratunkowego:
+Tworzenie agenta można także zakolejkować z lokalnego promptu lub trybu ratunkowego:
 
 ```text
 create agent work workspace ~/Projects/work model openai/gpt-5.5
 /crestodian create agent work workspace ~/Projects/work
 ```
 
-Zdalny tryb ratunkowy jest powierzchnią administracyjną. Musi być traktowany jak zdalna naprawa
-konfiguracji, a nie jak zwykły czat.
+Zdalny tryb ratunkowy to powierzchnia administracyjna. Należy traktować go jak zdalną
+naprawę konfiguracji, a nie jak zwykły czat.
 
 Kontrakt bezpieczeństwa dla zdalnego trybu ratunkowego:
 
-- Wyłączony, gdy sandboxing jest aktywny. Jeśli agent/sesja jest w sandboxie,
+- Wyłączony, gdy aktywne jest sandboxing. Jeśli agent/sesja działa w sandboxie,
   Crestodian musi odmówić zdalnego trybu ratunkowego i wyjaśnić, że wymagana jest
-  lokalna naprawa przez CLI.
-- Domyślny efektywny stan to `auto`: zezwalaj na zdalny tryb ratunkowy tylko w zaufanej
-  operacji YOLO, gdzie runtime ma już niesandboxowane lokalne uprawnienia.
-- Wymagaj jawnej tożsamości właściciela. Tryb ratunkowy nie może akceptować wildcardowych reguł nadawcy,
-  otwartej polityki grupowej, nieuwierzytelnionych webhooków ani anonimowych kanałów.
-- Domyślnie tylko wiadomości DM właściciela. Tryb ratunkowy grupy/kanału wymaga jawnego opt-in.
-- Wyszukiwanie i lista pluginów są tylko do odczytu. Instalacja pluginu jest domyślnie tylko lokalna,
-  ponieważ pobiera kod wykonywalny. Odinstalowanie pluginu może być dozwolone jako
+  lokalna naprawa CLI.
+- Domyślny stan efektywny to `auto`: zezwalaj na zdalny tryb ratunkowy tylko w zaufanej
+  pracy YOLO, gdzie runtime ma już niesandboxowane uprawnienia lokalne.
+- Wymagaj jawnej tożsamości właściciela. Tryb ratunkowy nie może akceptować reguł nadawcy
+  z wildcardami, otwartej polityki grupowej, nieuwierzytelnionych webhooków ani anonimowych kanałów.
+- Domyślnie tylko DM właściciela. Tryb ratunkowy w grupie/kanale wymaga jawnego opt-in.
+- Wyszukiwanie i lista Plugin są tylko do odczytu. Instalacja Plugin jest domyślnie tylko lokalna,
+  ponieważ pobiera wykonywalny kod. Odinstalowanie Plugin może być dozwolone jako
   zatwierdzona operacja naprawcza, gdy polityka trybu ratunkowego pozwala na trwałe zapisy.
-- Zdalny tryb ratunkowy nie może otworzyć lokalnego TUI ani przełączyć się do interaktywnej sesji agenta.
-  Użyj lokalnego `openclaw` do przekazania do agenta.
+- Zdalny tryb ratunkowy nie może otworzyć lokalnego TUI ani przełączyć się do interaktywnej
+  sesji agenta. Użyj lokalnego `openclaw` do przekazania do agenta.
 - Trwałe zapisy nadal wymagają zatwierdzenia, nawet w trybie ratunkowym.
-- Audytuj każdą zastosowaną operację ratunkową. Tryb ratunkowy kanału wiadomości zapisuje kanał,
-  konto, nadawcę i metadane adresu źródłowego. Operacje modyfikujące konfigurację zapisują także
+- Audytuj każdą zastosowaną operację trybu ratunkowego. Tryb ratunkowy kanału wiadomości rejestruje kanał,
+  konto, nadawcę i metadane adresu źródłowego. Operacje mutujące konfigurację rejestrują także
   hashe konfiguracji przed i po.
-- Nigdy nie echo sekretów. Inspekcja SecretRef powinna raportować dostępność, nie
+- Nigdy nie wypisuj sekretów. Inspekcja SecretRef powinna raportować dostępność, nie
   wartości.
-- Jeśli Gateway działa, preferuj typowane operacje Gateway. Jeśli Gateway jest
-  wyłączony, użyj tylko minimalnej lokalnej powierzchni naprawczej, która nie zależy od
+- Jeśli Gateway działa, preferuj typowane operacje Gateway. Jeśli Gateway nie działa,
+  używaj tylko minimalnej lokalnej powierzchni naprawczej, która nie zależy od
   normalnej pętli agenta.
 
 Kształt konfiguracji:
@@ -288,12 +288,12 @@ Kształt konfiguracji:
 - `"auto"`: domyślne. Zezwalaj tylko wtedy, gdy efektywny runtime to YOLO, a
   sandboxing jest wyłączony.
 - `false`: nigdy nie zezwalaj na tryb ratunkowy kanału wiadomości.
-- `true`: jawnie zezwalaj na tryb ratunkowy, gdy kontrole właściciela/kanału przejdą. To
-  nadal nie może omijać odmowy sandboxingu.
+- `true`: jawnie zezwól na tryb ratunkowy, gdy kontrole właściciela/kanału przejdą. To
+  nadal nie może omijać odmowy z powodu sandboxingu.
 
 Domyślna postawa YOLO `"auto"` to:
 
-- tryb sandboxa rozwiązuje się do `off`
+- tryb sandbox rozwiązuje się do `off`
 - `tools.exec.security` rozwiązuje się do `full`
 - `tools.exec.ask` rozwiązuje się do `off`
 
@@ -303,28 +303,28 @@ Zdalny tryb ratunkowy jest objęty ścieżką Docker:
 pnpm test:docker:crestodian-rescue
 ```
 
-Awaryjny lokalny planer bez konfiguracji jest objęty przez:
+Lokalny awaryjny planista bez konfiguracji jest objęty przez:
 
 ```bash
 pnpm test:docker:crestodian-planner
 ```
 
-Opt-in smoke powierzchni poleceń kanału live sprawdza `/crestodian status` oraz
-trwały roundtrip zatwierdzenia przez handler trybu ratunkowego:
+Opcjonalny smoke test powierzchni poleceń kanału live sprawdza `/crestodian status` oraz
+trwały obieg zatwierdzenia przez handler trybu ratunkowego:
 
 ```bash
 pnpm test:live:crestodian-rescue-channel
 ```
 
-Świeża konfiguracja bez configu przez Crestodian jest objęta przez:
+Świeża konfiguracja bez istniejącej konfiguracji przez Crestodian jest objęta przez:
 
 ```bash
 pnpm test:docker:crestodian-first-run
 ```
 
-Ta ścieżka startuje z pustym katalogiem stanu, kieruje gołe `openclaw` do Crestodian,
+Ta ścieżka zaczyna od pustego katalogu stanu, kieruje gołe `openclaw` do Crestodian,
 ustawia domyślny model, tworzy dodatkowego agenta, konfiguruje Discord przez
-włączenie pluginu oraz token SecretRef, waliduje konfigurację i sprawdza dziennik audytu.
+włączenie Plugin oraz SecretRef tokenu, weryfikuje konfigurację i sprawdza dziennik audytu.
 QA Lab ma także scenariusz oparty na repozytorium dla tego samego przepływu Ring 0:
 
 ```bash

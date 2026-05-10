@@ -2,26 +2,26 @@
 read_when:
     - Vuoi il supporto per Zalo Personal (non ufficiale) in OpenClaw
     - Stai configurando o sviluppando il Plugin zalouser
-summary: 'Plugin Zalo Personal: accesso tramite QR + messaggistica tramite zca-js nativo (installazione del plugin + configurazione del canale + strumento)'
+summary: 'Plugin Zalo Personal: accesso tramite QR + messaggistica tramite zca-js nativo (installazione del Plugin + configurazione del canale + strumento)'
 title: Plugin personale Zalo
 x-i18n:
-    generated_at: "2026-05-06T17:59:59Z"
+    generated_at: "2026-05-10T19:48:17Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 423325f99ddb5b39bba4c5f3aa71215edfdc092c872f92b5d2f00b6ea691246f
+    source_hash: 405348eac4c08cc6e28b22cfff615fa34c117dedc51a31613545c4057069c20b
     source_path: plugins/zalouser.md
     workflow: 16
 ---
 
-Supporto Zalo Personal per OpenClaw tramite un Plugin, usando `zca-js` nativo per automatizzare un normale account utente Zalo.
+Supporto a Zalo Personal per OpenClaw tramite un Plugin, usando `zca-js` nativo per automatizzare un normale account utente Zalo.
 
 <Warning>
 L'automazione non ufficiale può portare alla sospensione o al ban dell'account. Usala a tuo rischio.
 </Warning>
 
-## Nomenclatura
+## Denominazione
 
-L'id del canale è `zalouser` per rendere esplicito che automatizza un **account utente Zalo personale** (non ufficiale). Manteniamo `zalo` riservato per una potenziale futura integrazione ufficiale con le API di Zalo.
+L'id del canale è `zalouser` per rendere esplicito che automatizza un **account utente Zalo personale** (non ufficiale). Manteniamo `zalo` riservato per una potenziale futura integrazione ufficiale con l'API Zalo.
 
 ## Dove viene eseguito
 
@@ -39,7 +39,7 @@ Non è richiesto alcun binario CLI esterno `zca`/`openzca`.
 openclaw plugins install @openclaw/zalouser
 ```
 
-Usa il pacchetto senza specificare altro per seguire il tag di rilascio ufficiale corrente. Fissa una versione esatta solo quando hai bisogno di un'installazione riproducibile.
+Usa il pacchetto senza versione per seguire il tag di rilascio ufficiale corrente. Fissa una versione esatta solo quando hai bisogno di un'installazione riproducibile.
 
 Riavvia poi il Gateway.
 
@@ -78,7 +78,7 @@ openclaw message send --channel zalouser --target <threadId> --message "Hello fr
 openclaw directory peers list --channel zalouser --query "name"
 ```
 
-## Strumento dell'agente
+## Strumento agente
 
 Nome dello strumento: `zalouser`
 
@@ -88,5 +88,5 @@ Le azioni sui messaggi del canale supportano anche `react` per le reazioni ai me
 
 ## Correlati
 
-- [Creare Plugin](/it/plugins/building-plugins)
-- [Plugin della community](/it/plugins/community)
+- [Creazione di Plugin](/it/plugins/building-plugins)
+- [ClawHub](/it/clawhub)

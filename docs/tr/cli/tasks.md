@@ -1,19 +1,19 @@
 ---
 read_when:
     - Arka plan görev kayıtlarını incelemek, denetlemek veya iptal etmek istiyorsunuz
-    - '`openclaw tasks flow` altında TaskFlow komutlarını belgeliyorsunuz'
-summary: '`openclaw tasks` için CLI başvurusu (arka plan görev defteri ve TaskFlow durumu)'
+    - Task Flow komutlarını `openclaw tasks flow` altında belgeliyorsunuz
+summary: '`openclaw tasks` için CLI başvurusu (arka plan görev defteri ve Task Flow durumu)'
 title: '`openclaw tasks`'
 x-i18n:
-    generated_at: "2026-05-07T13:15:18Z"
+    generated_at: "2026-05-10T19:30:59Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ca3f05d7c2a3fa7790ad6059ce15721ebffb548ac4a2c627188ac17986442dc6
+    source_hash: 7bbb97690124a8e59ec5e6a517f33166ad449ee6268894ab132ad9cb69dcaa81
     source_path: cli/tasks.md
     workflow: 16
 ---
 
-Dayanıklı arka plan görevlerini ve Task Flow durumunu inceleyin. Alt komut verilmediğinde,
+Dayanıklı arka plan görevlerini ve Task Flow durumunu inceleyin. Alt komut olmadan,
 `openclaw tasks`, `openclaw tasks list` ile eşdeğerdir.
 
 Yaşam döngüsü ve teslim modeli için [Arka Plan Görevleri](/tr/automation/tasks) bölümüne bakın.
@@ -38,7 +38,7 @@ openclaw tasks flow cancel <lookup>
 
 ## Kök Seçenekler
 
-- `--json`: JSON çıktısı verir.
+- `--json`: JSON çıktısı üretir.
 - `--runtime <name>`: türe göre filtreler: `subagent`, `acp`, `cron` veya `cli`.
 - `--status <name>`: duruma göre filtreler: `queued`, `running`, `succeeded`, `failed`, `timed_out`, `cancelled` veya `lost`.
 
@@ -58,7 +58,7 @@ openclaw tasks list [--runtime <name>] [--status <name>] [--json]
 openclaw tasks show <lookup> [--json]
 ```
 
-Görev kimliğine, çalıştırma kimliğine veya oturum anahtarına göre tek bir görevi gösterir.
+Görev kimliği, çalıştırma kimliği veya oturum anahtarıyla tek bir görevi gösterir.
 
 ### `notify`
 
@@ -66,7 +66,7 @@ Görev kimliğine, çalıştırma kimliğine veya oturum anahtarına göre tek b
 openclaw tasks notify <lookup> <done_only|state_changes|silent>
 ```
 
-Çalışan bir görevin bildirim ilkesini değiştirir.
+Çalışan bir görevin bildirim politikasını değiştirir.
 
 ### `cancel`
 
@@ -82,7 +82,7 @@ openclaw tasks cancel <lookup>
 openclaw tasks audit [--severity <warn|error>] [--code <name>] [--limit <n>] [--json]
 ```
 
-Eski, kayıp, teslimi başarısız olmuş veya başka şekilde tutarsız görev ve Task Flow kayıtlarını ortaya çıkarır. `cleanupAfter` süresine kadar tutulan kayıp görevler uyarıdır; süresi dolmuş veya damgalanmamış kayıp görevler hatadır.
+Bayat, kayıp, teslimi başarısız olmuş veya başka şekilde tutarsız görev ve Task Flow kayıtlarını ortaya çıkarır. `cleanupAfter` zamanına kadar tutulan kayıp görevler uyarıdır; süresi dolmuş veya damgalanmamış kayıp görevler hatadır.
 
 ### `maintenance`
 
@@ -90,8 +90,18 @@ Eski, kayıp, teslimi başarısız olmuş veya başka şekilde tutarsız görev 
 openclaw tasks maintenance [--apply] [--json]
 ```
 
-Görev ve Task Flow uzlaştırmasını, temizlik damgalamasını ve budamayı önizler veya uygular.
-Cron görevleri için uzlaştırma, eski bir etkin görevi `lost` olarak işaretlemeden önce kalıcı çalıştırma günlüklerini/iş durumunu kullanır; böylece tamamlanmış cron çalıştırmaları yalnızca bellek içi Gateway çalışma zamanı durumu kaybolduğu için hatalı denetim hatalarına dönüşmez. Çevrim dışı CLI denetimi, Gateway'in süreç yerel cron etkin iş kümesi için otoritatif değildir. Çalıştırma kimliği/kaynak kimliği olan CLI görevleri, canlı Gateway çalıştırma bağlamları kaybolduğunda, eski bir alt oturum satırı kalsa bile `lost` olarak işaretlenir.
+Görev ve Task Flow mutabakatını, temizleme damgalamasını, budamayı
+ve bayat cron çalıştırma oturumu kayıt defteri temizliğini önizler veya uygular.
+Cron görevleri için mutabakat, eski bir etkin görevi `lost` olarak işaretlemeden
+önce kalıcı çalıştırma günlüklerini/iş durumunu kullanır; böylece tamamlanmış cron
+çalıştırmaları, yalnızca bellek içi Gateway çalışma zamanı durumu kaybolduğu için
+yanlış denetim hatalarına dönüşmez. Çevrimdışı CLI denetimi, Gateway'in süreç
+yerel cron etkin iş kümesi için yetkili kaynak değildir. Çalıştırma kimliği/kaynak
+kimliği olan CLI görevleri, eski bir alt oturum satırı kalsa bile canlı Gateway
+çalıştırma bağlamları kaybolduğunda `lost` olarak işaretlenir.
+Uygulandığında bakım, şu anda çalışan cron işlerini korurken ve cron olmayan oturum
+satırlarına dokunmadan 7 günden eski `cron:<jobId>:run:<uuid>` oturum kayıt defteri
+satırlarını da budar.
 
 ### `flow`
 
@@ -105,5 +115,5 @@ Görev defteri altındaki dayanıklı Task Flow durumunu inceler veya iptal eder
 
 ## İlgili
 
-- [CLI başvurusu](/tr/cli)
+- [CLI referansı](/tr/cli)
 - [Arka plan görevleri](/tr/automation/tasks)

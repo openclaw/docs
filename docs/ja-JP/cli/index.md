@@ -1,22 +1,26 @@
 ---
 read_when:
     - 適切な `openclaw` サブコマンドを見つける
-    - グローバルフラグや出力スタイル規則を調べる
+    - グローバルフラグまたは出力スタイル規則を調べる
 summary: 'OpenClaw CLI インデックス: コマンド一覧、グローバルフラグ、コマンド別ページへのリンク'
 title: CLI リファレンス
 x-i18n:
-    generated_at: "2026-04-30T05:04:38Z"
+    generated_at: "2026-05-10T19:28:31Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 522e0f156b919946756de6b933bb0a08374507401bf8639312daf52781927f33
+    source_hash: 34d37fea072d4f05098567456db832ecb93f40884892d8bc4b063319500933f5
     source_path: cli/index.md
     workflow: 16
 ---
 
-`openclaw` はメインの CLI エントリーポイントです。各コアコマンドには
-専用のリファレンスページがあるか、エイリアス先のコマンドとともに文書化されています。この
-インデックスでは、CLI 全体に適用されるコマンド、グローバルフラグ、出力スタイル規則を
-一覧化しています。
+`openclaw` はメインの CLI エントリーポイントです。各コアコマンドには専用のリファレンスページがあるか、エイリアス先のコマンドと一緒に文書化されています。このインデックスには、CLI 全体に適用されるコマンド、グローバルフラグ、出力スタイル規則を一覧しています。
+
+目的に応じてセットアップコマンドを使い分けてください。
+
+- `openclaw setup` は、完全なガイド付きオンボーディングフローを進めずに、基本設定とワークスペースを作成します。
+- `openclaw onboard` は、Gateway、モデル認証、ワークスペース、チャネル、Skills、ヘルスのための、初回実行向けの完全なガイド付きパスです。
+- `openclaw configure` は、モデル認証、Gateway、チャネル、Plugins、Skills など、既存セットアップの対象部分を変更します。
+- `openclaw channels add` は、基本設定の作成後にチャネルアカウントを設定します。ガイド付きチャネルセットアップにはフラグなしで実行し、スクリプトにはチャネル固有のフラグを指定して実行します。
 
 ## コマンドページ
 
@@ -32,10 +36,10 @@ x-i18n:
 | ランタイムとサンドボックス  | [`approvals`](/ja-JP/cli/approvals) · `exec-policy` ([`approvals`](/ja-JP/cli/approvals) を参照) · [`sandbox`](/ja-JP/cli/sandbox) · [`tui`](/ja-JP/cli/tui) · `chat`/`terminal` ([`tui --local`](/ja-JP/cli/tui) のエイリアス) · [`browser`](/ja-JP/cli/browser)                 |
 | 自動化           | [`cron`](/ja-JP/cli/cron) · [`tasks`](/ja-JP/cli/tasks) · [`hooks`](/ja-JP/cli/hooks) · [`webhooks`](/ja-JP/cli/webhooks)                                                                                                                                         |
 | 検出とドキュメント   | [`dns`](/ja-JP/cli/dns) · [`docs`](/ja-JP/cli/docs)                                                                                                                                                                                                   |
-| ペアリングとチャンネル | [`pairing`](/ja-JP/cli/pairing) · [`qr`](/ja-JP/cli/qr) · [`channels`](/ja-JP/cli/channels)                                                                                                                                                                 |
-| セキュリティとPlugin | [`security`](/ja-JP/cli/security) · [`secrets`](/ja-JP/cli/secrets) · [`skills`](/ja-JP/cli/skills) · [`plugins`](/ja-JP/cli/plugins) · [`proxy`](/ja-JP/cli/proxy)                                                                                                     |
+| ペアリングとチャネル | [`pairing`](/ja-JP/cli/pairing) · [`qr`](/ja-JP/cli/qr) · [`channels`](/ja-JP/cli/channels)                                                                                                                                                                 |
+| セキュリティと Plugins | [`security`](/ja-JP/cli/security) · [`secrets`](/ja-JP/cli/secrets) · [`skills`](/ja-JP/cli/skills) · [`plugins`](/ja-JP/cli/plugins) · [`proxy`](/ja-JP/cli/proxy)                                                                                                     |
 | レガシーエイリアス       | [`daemon`](/ja-JP/cli/daemon) (Gateway サービス) · [`clawbot`](/ja-JP/cli/clawbot) (名前空間)                                                                                                                                                         |
-| Plugin (任意)   | [`voicecall`](/ja-JP/cli/voicecall) (インストール済みの場合)                                                                                                                                                                                              |
+| Plugins (任意)   | [`path`](/ja-JP/cli/path) · [`voicecall`](/ja-JP/cli/voicecall) (インストールされている場合)                                                                                                                                                                        |
 
 ## グローバルフラグ
 
@@ -43,20 +47,20 @@ x-i18n:
 | ----------------------- | --------------------------------------------------------------------- |
 | `--dev`                 | `~/.openclaw-dev` 配下に状態を分離し、デフォルトポートをずらします         |
 | `--profile <name>`      | `~/.openclaw-<name>` 配下に状態を分離します                              |
-| `--container <name>`    | 実行対象として名前付きコンテナを指定します                                |
-| `--no-color`            | ANSI カラーを無効化します (`NO_COLOR=1` も尊重されます)                  |
-| `--update`              | [`openclaw update`](/ja-JP/cli/update) の短縮形です (ソースインストールのみ) |
-| `-V`, `--version`, `-v` | バージョンを出力して終了します                                                |
+| `--container <name>`    | 実行対象の名前付きコンテナを指定します                                |
+| `--no-color`            | ANSI カラーを無効にします (`NO_COLOR=1` も尊重されます)                  |
+| `--update`              | [`openclaw update`](/ja-JP/cli/update) の省略形です (ソースインストールのみ) |
+| `-V`, `--version`, `-v` | バージョンを表示して終了します                                                |
 
 ## 出力モード
 
 - ANSI カラーと進行状況インジケーターは TTY セッションでのみ描画されます。
-- OSC-8 ハイパーリンクは、対応している環境ではクリック可能なリンクとして描画されます。それ以外の場合、
+- OSC-8 ハイパーリンクは、対応している場所ではクリック可能なリンクとして描画されます。それ以外の場合、
   CLI はプレーンな URL にフォールバックします。
-- `--json` (および対応している場合は `--plain`) は、クリーンな出力のためにスタイルを無効化します。
+- `--json` (および対応している場合は `--plain`) は、クリーンな出力のためにスタイル設定を無効にします。
 - 長時間実行されるコマンドは進行状況インジケーターを表示します (対応している場合は OSC 9;4)。
 
-パレットの信頼できるソース: `src/terminal/palette.ts`。
+パレットの信頼できる情報源: `src/terminal/palette.ts`。
 
 ## コマンドツリー
 
@@ -128,6 +132,12 @@ openclaw [--dev] [--profile <name>] <command>
     status
     index
     search
+  path
+    resolve
+    find
+    set
+    validate
+    emit
   commitments
     list
     dismiss
@@ -357,26 +367,27 @@ openclaw [--dev] [--profile <name>] <command>
   terminal (alias: tui --local)
 ```
 
-Plugin は追加のトップレベルコマンドを追加できます (例: `openclaw voicecall`)。
+Plugins は追加のトップレベルコマンドを追加できます (例: `openclaw voicecall`)。
 
 </Accordion>
 
-## チャットスラッシュコマンド
+## チャットのスラッシュコマンド
 
-チャットメッセージは `/...` コマンドをサポートします。[スラッシュコマンド](/ja-JP/tools/slash-commands) を参照してください。
+チャットメッセージは `/...` コマンドに対応しています。[スラッシュコマンド](/ja-JP/tools/slash-commands) を参照してください。
 
-注目点:
+主な項目:
 
 - `/status` — 簡易診断。
-- `/trace` — セッションスコープのPluginトレース/デバッグ行。
+- `/trace` — セッションスコープの Plugin トレース/デバッグ行。
 - `/config` — 永続化される設定変更。
-- `/debug` — ランタイム専用の設定上書き (メモリのみ、ディスクではありません。`commands.debug: true` が必要です)。
+- `/debug` — ランタイム専用の設定オーバーライド (メモリ上のみ、ディスクには保存されません。`commands.debug: true` が必要です)。
 
 ## 使用量トラッキング
 
-OAuth/API 認証情報が利用可能な場合、`openclaw status --usage` と Control UI はプロバイダーの使用量/クォータを表示します。データはプロバイダーの使用量
+`openclaw status --usage` と Control UI は、OAuth/API 資格情報が利用可能な場合に
+プロバイダーの使用量/クォータを表示します。データはプロバイダーの使用量
 エンドポイントから直接取得され、`X% left` に正規化されます。現在の使用量
-ウィンドウに対応しているプロバイダー: Anthropic、GitHub Copilot、Gemini CLI、OpenAI Codex、MiniMax、
+ウィンドウを持つプロバイダー: Anthropic、GitHub Copilot、Gemini CLI、OpenAI Codex、MiniMax、
 Xiaomi、z.ai。
 
 詳細は [使用量トラッキング](/ja-JP/concepts/usage-tracking) を参照してください。

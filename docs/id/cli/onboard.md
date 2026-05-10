@@ -1,38 +1,38 @@
 ---
 read_when:
-    - Anda menginginkan penyiapan terpandu untuk Gateway, ruang kerja, autentikasi, kanal, dan Skills
-summary: Referensi CLI untuk `openclaw onboard` (orientasi interaktif)
+    - Anda ingin penyiapan terpandu untuk Gateway, ruang kerja, autentikasi, saluran, dan Skills
+summary: Referensi CLI untuk `openclaw onboard` (orientasi awal interaktif)
 title: Orientasi
 x-i18n:
-    generated_at: "2026-05-02T09:16:23Z"
+    generated_at: "2026-05-10T19:28:56Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 79fd15da17beb5e66da760bcf490a15340d42af0730c19f04d41908995da8ffb
+    source_hash: 510b2bbb688605ce1bf30918e4982e783963e7d43be65f9c23cffac11248ffd2
     source_path: cli/onboard.md
     workflow: 16
 ---
 
 # `openclaw onboard`
 
-Onboarding interaktif untuk penyiapan Gateway lokal atau jarak jauh.
+Orientasi awal terpandu penuh untuk penyiapan Gateway lokal atau jarak jauh. Gunakan ini saat Anda ingin OpenClaw memandu autentikasi model, ruang kerja, gateway, channel, skills, dan kesehatan dalam satu alur.
 
 ## Panduan terkait
 
 <CardGroup cols={2}>
-  <Card title="Hub onboarding CLI" href="/id/start/wizard" icon="rocket">
-    Panduan alur CLI interaktif.
+  <Card title="Hub orientasi awal CLI" href="/id/start/wizard" icon="rocket">
+    Panduan langkah demi langkah untuk alur CLI interaktif.
   </Card>
-  <Card title="Ikhtisar onboarding" href="/id/start/onboarding-overview" icon="map">
-    Bagaimana onboarding OpenClaw tersusun.
+  <Card title="Ikhtisar orientasi awal" href="/id/start/onboarding-overview" icon="map">
+    Cara bagian-bagian orientasi awal OpenClaw saling terhubung.
   </Card>
   <Card title="Referensi penyiapan CLI" href="/id/start/wizard-cli-reference" icon="book">
     Output, internal, dan perilaku per langkah.
   </Card>
   <Card title="Otomasi CLI" href="/id/start/wizard-cli-automation" icon="terminal">
-    Flag non-interaktif dan penyiapan berskrip.
+    Flag non-interaktif dan penyiapan berbasis skrip.
   </Card>
-  <Card title="Onboarding aplikasi macOS" href="/id/start/onboarding" icon="apple">
-    Alur onboarding untuk aplikasi bilah menu macOS.
+  <Card title="Orientasi awal aplikasi macOS" href="/id/start/onboarding" icon="apple">
+    Alur orientasi awal untuk aplikasi bilah menu macOS.
   </Card>
 </CardGroup>
 
@@ -49,13 +49,13 @@ openclaw onboard --skip-bootstrap
 openclaw onboard --mode remote --remote-url wss://gateway-host:18789
 ```
 
-`--flow import` menggunakan penyedia migrasi milik plugin seperti Hermes. Ini hanya berjalan pada penyiapan OpenClaw yang masih baru; jika config, kredensial, sesi, atau file memori/identitas workspace sudah ada, reset atau pilih penyiapan baru sebelum mengimpor.
+`--flow import` menggunakan penyedia migrasi milik plugin seperti Hermes. Ini hanya berjalan pada penyiapan OpenClaw yang baru; jika konfigurasi, kredensial, sesi, atau file memori/identitas ruang kerja sudah ada, reset atau pilih penyiapan baru sebelum mengimpor.
 
-`--modern` memulai pratinjau onboarding percakapan Crestodian. Tanpa
-`--modern`, `openclaw onboard` tetap menggunakan alur onboarding klasik.
+`--modern` memulai pratinjau orientasi awal percakapan Crestodian. Tanpa
+`--modern`, `openclaw onboard` mempertahankan alur orientasi awal klasik.
 
-Untuk target `ws://` jaringan privat plaintext (hanya jaringan tepercaya), atur
-`OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` di environment proses onboarding.
+Untuk target `ws://` jaringan privat plaintext (hanya jaringan tepercaya), setel
+`OPENCLAW_ALLOW_INSECURE_PRIVATE_WS=1` di lingkungan proses orientasi awal.
 Tidak ada padanan `openclaw.json` untuk break-glass transport sisi klien ini.
 
 Penyedia kustom non-interaktif:
@@ -71,8 +71,8 @@ openclaw onboard --non-interactive \
   --custom-image-input
 ```
 
-`--custom-api-key` bersifat opsional dalam mode non-interaktif. Jika dihilangkan, onboarding memeriksa `CUSTOM_API_KEY`.
-OpenClaw secara otomatis menandai ID model visi umum sebagai mampu gambar. Berikan `--custom-image-input` untuk ID visi kustom yang tidak dikenal, atau `--custom-text-input` untuk memaksa metadata teks saja.
+`--custom-api-key` bersifat opsional dalam mode non-interaktif. Jika dihilangkan, orientasi awal memeriksa `CUSTOM_API_KEY`.
+OpenClaw secara otomatis menandai ID model vision umum sebagai mampu menerima gambar. Berikan `--custom-image-input` untuk ID vision kustom yang tidak dikenal, atau `--custom-text-input` untuk memaksa metadata hanya teks.
 
 LM Studio juga mendukung flag kunci khusus penyedia dalam mode non-interaktif:
 
@@ -95,7 +95,7 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-`--custom-base-url` default ke `http://127.0.0.1:11434`. `--custom-model-id` bersifat opsional; jika dihilangkan, onboarding menggunakan default yang disarankan Ollama. ID model cloud seperti `kimi-k2.5:cloud` juga berfungsi di sini.
+`--custom-base-url` default ke `http://127.0.0.1:11434`. `--custom-model-id` bersifat opsional; jika dihilangkan, orientasi awal menggunakan default yang disarankan Ollama. ID model cloud seperti `kimi-k2.5:cloud` juga berfungsi di sini.
 
 Simpan kunci penyedia sebagai ref, bukan plaintext:
 
@@ -106,28 +106,28 @@ openclaw onboard --non-interactive \
   --accept-risk
 ```
 
-Dengan `--secret-input-mode ref`, onboarding menulis ref berbasis env, bukan nilai kunci plaintext.
-Untuk penyedia berbasis auth-profile, ini menulis entri `keyRef`; untuk penyedia kustom, ini menulis `models.providers.<id>.apiKey` sebagai ref env (misalnya `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`).
+Dengan `--secret-input-mode ref`, orientasi awal menulis ref berbasis env, bukan nilai kunci plaintext.
+Untuk penyedia berbasis profil autentikasi, ini menulis entri `keyRef`; untuk penyedia kustom, ini menulis `models.providers.<id>.apiKey` sebagai ref env (misalnya `{ source: "env", provider: "default", id: "CUSTOM_API_KEY" }`).
 
 Kontrak mode `ref` non-interaktif:
 
-- Atur env var penyedia di environment proses onboarding (misalnya `OPENAI_API_KEY`).
-- Jangan berikan flag kunci inline (misalnya `--openai-api-key`) kecuali env var tersebut juga sudah diatur.
-- Jika flag kunci inline diberikan tanpa env var yang diwajibkan, onboarding gagal cepat dengan panduan.
+- Setel variabel env penyedia di lingkungan proses orientasi awal (misalnya `OPENAI_API_KEY`).
+- Jangan berikan flag kunci inline (misalnya `--openai-api-key`) kecuali variabel env tersebut juga disetel.
+- Jika flag kunci inline diberikan tanpa variabel env yang diwajibkan, orientasi awal gagal cepat dengan panduan.
 
 Opsi token Gateway dalam mode non-interaktif:
 
 - `--gateway-auth token --gateway-token <token>` menyimpan token plaintext.
 - `--gateway-auth token --gateway-token-ref-env <name>` menyimpan `gateway.auth.token` sebagai SecretRef env.
 - `--gateway-token` dan `--gateway-token-ref-env` saling eksklusif.
-- `--gateway-token-ref-env` memerlukan env var yang tidak kosong di environment proses onboarding.
-- Dengan `--install-daemon`, ketika autentikasi token memerlukan token, token gateway yang dikelola SecretRef divalidasi tetapi tidak dipersistenkan sebagai plaintext yang di-resolve dalam metadata environment layanan supervisor.
-- Dengan `--install-daemon`, jika mode token memerlukan token dan SecretRef token yang dikonfigurasi tidak dapat di-resolve, onboarding gagal tertutup dengan panduan remediasi.
-- Dengan `--install-daemon`, jika `gateway.auth.token` dan `gateway.auth.password` sama-sama dikonfigurasi dan `gateway.auth.mode` belum diatur, onboarding memblokir instalasi sampai mode diatur secara eksplisit.
-- Onboarding lokal menulis `gateway.mode="local"` ke dalam config. Jika file config berikutnya tidak memiliki `gateway.mode`, perlakukan itu sebagai kerusakan config atau edit manual yang belum lengkap, bukan sebagai pintasan mode lokal yang valid.
-- Onboarding lokal menginstal plugin unduhan yang dipilih ketika jalur penyiapan yang dipilih memerlukannya.
-- Onboarding jarak jauh hanya menulis info koneksi untuk Gateway jarak jauh dan tidak menginstal paket plugin lokal.
-- `--allow-unconfigured` adalah escape hatch runtime gateway terpisah. Itu tidak berarti onboarding boleh menghilangkan `gateway.mode`.
+- `--gateway-token-ref-env` memerlukan variabel env yang tidak kosong di lingkungan proses orientasi awal.
+- Dengan `--install-daemon`, saat autentikasi token memerlukan token, token gateway yang dikelola SecretRef divalidasi tetapi tidak dipersistensikan sebagai plaintext yang sudah di-resolve dalam metadata lingkungan layanan supervisor.
+- Dengan `--install-daemon`, jika mode token memerlukan token dan SecretRef token yang dikonfigurasi tidak dapat di-resolve, orientasi awal gagal tertutup dengan panduan remediasi.
+- Dengan `--install-daemon`, jika `gateway.auth.token` dan `gateway.auth.password` sama-sama dikonfigurasi dan `gateway.auth.mode` belum disetel, orientasi awal memblokir instalasi sampai mode disetel secara eksplisit.
+- Orientasi awal lokal menulis `gateway.mode="local"` ke dalam konfigurasi. Jika file konfigurasi berikutnya tidak memiliki `gateway.mode`, perlakukan itu sebagai kerusakan konfigurasi atau edit manual yang belum lengkap, bukan sebagai pintasan mode lokal yang valid.
+- Orientasi awal lokal menginstal plugin unduhan yang dipilih saat jalur penyiapan yang dipilih memerlukannya.
+- Orientasi awal jarak jauh hanya menulis info koneksi untuk Gateway jarak jauh dan tidak menginstal paket plugin lokal.
+- `--allow-unconfigured` adalah escape hatch runtime gateway yang terpisah. Itu tidak berarti orientasi awal boleh menghilangkan `gateway.mode`.
 
 Contoh:
 
@@ -143,20 +143,20 @@ openclaw onboard --non-interactive \
 
 Kesehatan gateway lokal non-interaktif:
 
-- Kecuali Anda memberikan `--skip-health`, onboarding menunggu gateway lokal yang dapat dijangkau sebelum berhasil keluar.
+- Kecuali Anda memberikan `--skip-health`, orientasi awal menunggu gateway lokal yang dapat dijangkau sebelum berhasil keluar.
 - `--install-daemon` memulai jalur instalasi gateway terkelola terlebih dahulu. Tanpanya, Anda harus sudah menjalankan gateway lokal, misalnya `openclaw gateway run`.
-- Jika Anda hanya menginginkan penulisan config/workspace/bootstrap dalam otomasi, gunakan `--skip-health`.
-- Jika Anda mengelola file workspace sendiri, berikan `--skip-bootstrap` untuk mengatur `agents.defaults.skipBootstrap: true` dan melewati pembuatan `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, dan `BOOTSTRAP.md`.
-- Pada Windows native, `--install-daemon` mencoba Scheduled Tasks terlebih dahulu dan fallback ke item login folder Startup per pengguna jika pembuatan tugas ditolak.
+- Jika Anda hanya menginginkan penulisan konfigurasi/ruang kerja/bootstrap dalam otomasi, gunakan `--skip-health`.
+- Jika Anda mengelola file ruang kerja sendiri, berikan `--skip-bootstrap` untuk menyetel `agents.defaults.skipBootstrap: true` dan melewati pembuatan `AGENTS.md`, `SOUL.md`, `TOOLS.md`, `IDENTITY.md`, `USER.md`, `HEARTBEAT.md`, dan `BOOTSTRAP.md`.
+- Di Windows native, `--install-daemon` mencoba Scheduled Tasks terlebih dahulu dan fallback ke item login folder Startup per pengguna jika pembuatan tugas ditolak.
 
-Perilaku onboarding interaktif dengan mode referensi:
+Perilaku orientasi awal interaktif dengan mode referensi:
 
-- Pilih **Use secret reference** saat diminta.
+- Pilih **Gunakan referensi rahasia** saat diminta.
 - Lalu pilih salah satu:
-  - Variabel environment
+  - Variabel lingkungan
   - Penyedia rahasia yang dikonfigurasi (`file` atau `exec`)
-- Onboarding melakukan validasi preflight cepat sebelum menyimpan ref.
-  - Jika validasi gagal, onboarding menampilkan error dan memungkinkan Anda mencoba lagi.
+- Orientasi awal melakukan validasi preflight cepat sebelum menyimpan ref.
+  - Jika validasi gagal, orientasi awal menampilkan error dan memungkinkan Anda mencoba lagi.
 
 ### Pilihan endpoint Z.AI non-interaktif
 
@@ -165,12 +165,12 @@ Perilaku onboarding interaktif dengan mode referensi:
 </Note>
 
 ```bash
-# Promptless endpoint selection
+# Pemilihan endpoint tanpa prompt
 openclaw onboard --non-interactive \
   --auth-choice zai-coding-global \
   --zai-api-key "$ZAI_API_KEY"
 
-# Other Z.AI endpoint choices:
+# Pilihan endpoint Z.AI lainnya:
 # --auth-choice zai-coding-cn
 # --auth-choice zai-global
 # --auth-choice zai-cn
@@ -190,13 +190,13 @@ openclaw onboard --non-interactive \
   <Accordion title="Jenis alur">
     - `quickstart`: prompt minimal, otomatis membuat token gateway.
     - `manual`: prompt lengkap untuk port, bind, dan auth (alias dari `advanced`).
-    - `import`: menjalankan penyedia migrasi yang terdeteksi, mempratinjau rencana, lalu menerapkannya setelah konfirmasi.
+    - `import`: menjalankan penyedia migrasi yang terdeteksi, menampilkan pratinjau rencana, lalu menerapkannya setelah konfirmasi.
 
   </Accordion>
   <Accordion title="Prafilter penyedia">
-    Ketika pilihan auth mengimplikasikan penyedia pilihan, onboarding memfilter terlebih dahulu pemilih model default dan allowlist ke penyedia tersebut. Untuk Volcengine dan BytePlus, ini juga mencocokkan varian coding-plan (`volcengine-plan/*`, `byteplus-plan/*`).
+    Saat pilihan auth mengimplikasikan penyedia pilihan, orientasi awal memfilter lebih dulu pemilih model default dan allowlist ke penyedia tersebut. Untuk Volcengine dan BytePlus, ini juga mencocokkan varian coding-plan (`volcengine-plan/*`, `byteplus-plan/*`).
 
-    Jika filter penyedia pilihan belum menghasilkan model yang dimuat, onboarding fallback ke katalog tanpa filter alih-alih membiarkan pemilih kosong.
+    Jika filter penyedia pilihan belum menghasilkan model yang dimuat, orientasi awal fallback ke katalog tanpa filter, bukan membiarkan pemilih kosong.
 
   </Accordion>
   <Accordion title="Tindak lanjut pencarian web">
@@ -207,10 +207,10 @@ openclaw onboard --non-interactive \
 
   </Accordion>
   <Accordion title="Perilaku lain">
-    - Perilaku cakupan DM onboarding lokal: [Referensi penyiapan CLI](/id/start/wizard-cli-reference#outputs-and-internals).
+    - Perilaku cakupan DM orientasi awal lokal: [Referensi penyiapan CLI](/id/start/wizard-cli-reference#outputs-and-internals).
     - Chat pertama tercepat: `openclaw dashboard` (UI Kontrol, tanpa penyiapan channel).
-    - Penyedia kustom: hubungkan endpoint apa pun yang kompatibel dengan OpenAI atau Anthropic, termasuk penyedia hosted yang tidak terdaftar. Gunakan Unknown untuk mendeteksi otomatis.
-    - Jika state Hermes terdeteksi, onboarding menawarkan alur migrasi. Gunakan [Migrate](/id/cli/migrate) untuk rencana dry-run, mode overwrite, laporan, dan pemetaan persis.
+    - Penyedia kustom: hubungkan endpoint apa pun yang kompatibel dengan OpenAI atau Anthropic, termasuk penyedia terhosting yang tidak tercantum. Gunakan Unknown untuk deteksi otomatis.
+    - Jika status Hermes terdeteksi, orientasi awal menawarkan alur migrasi. Gunakan [Migrasi](/id/cli/migrate) untuk rencana dry-run, mode timpa, laporan, dan pemetaan persis.
 
   </Accordion>
 </AccordionGroup>
@@ -218,9 +218,12 @@ openclaw onboard --non-interactive \
 ## Perintah tindak lanjut umum
 
 ```bash
+openclaw channels add
 openclaw configure
 openclaw agents add <name>
 ```
+
+Gunakan `openclaw setup` sebagai gantinya saat Anda hanya memerlukan konfigurasi/ruang kerja baseline. Gunakan `openclaw configure` nanti untuk perubahan tertarget dan `openclaw channels add` untuk penyiapan khusus channel.
 
 <Note>
 `--json` tidak mengimplikasikan mode non-interaktif. Gunakan `--non-interactive` untuk skrip.

@@ -2,34 +2,33 @@
 read_when:
     - Anda ingin membuat Plugin OpenClaw baru
     - Anda memerlukan panduan mulai cepat untuk pengembangan Plugin
-    - Anda sedang menambahkan saluran, penyedia, alat, atau kemampuan lainnya yang baru ke OpenClaw
+    - Anda sedang menambahkan saluran, penyedia, alat, atau kapabilitas baru lainnya ke OpenClaw
 sidebarTitle: Getting Started
 summary: Buat Plugin OpenClaw pertama Anda dalam hitungan menit
 title: Membangun Plugin
 x-i18n:
-    generated_at: "2026-05-07T13:22:26Z"
+    generated_at: "2026-05-10T19:41:53Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 4b8eb1d4c36828c8e7031f3780f6a795ead2a1e723dd385a54626112163d592d
+    source_hash: 320ea03395cd702e62831e3b6bb3e44443b4a00701f3e6d35d7c9e556e3bb258
     source_path: plugins/building-plugins.md
     workflow: 16
 ---
 
 Plugin memperluas OpenClaw dengan kemampuan baru: saluran, penyedia model,
-ucapan, transkripsi realtime, suara realtime, pemahaman media, pembuatan
-gambar, pembuatan video, pengambilan web, pencarian web, alat agen, atau
-kombinasi apa pun.
+ucapan, transkripsi realtime, suara realtime, pemahaman media, pembuatan gambar,
+pembuatan video, pengambilan web, pencarian web, alat agen, atau kombinasi apa pun.
 
 Anda tidak perlu menambahkan plugin Anda ke repositori OpenClaw. Publikasikan ke
-[ClawHub](/id/tools/clawhub) dan pengguna memasangnya dengan
-`openclaw plugins install clawhub:<package-name>`. Spesifikasi paket polos tetap
-dipasang dari npm selama peralihan peluncuran.
+[ClawHub](/id/clawhub) dan pengguna menginstalnya dengan
+`openclaw plugins install clawhub:<package-name>`. Spesifikasi paket bare tetap
+diinstal dari npm selama cutover peluncuran.
 
 ## Prasyarat
 
-- Node >= 22 dan manajer paket (npm atau pnpm)
-- Familiaritas dengan TypeScript (ESM)
-- Untuk plugin dalam repo: repositori sudah dikloning dan `pnpm install` sudah dijalankan. Pengembangan plugin dari checkout sumber hanya mendukung pnpm karena OpenClaw memuat plugin bawaan dari paket workspace `extensions/*`.
+- Node >= 22 dan package manager (npm atau pnpm)
+- Familiar dengan TypeScript (ESM)
+- Untuk plugin dalam repo: repositori sudah dikloning dan `pnpm install` sudah dijalankan. Pengembangan plugin dari checkout sumber hanya pnpm karena OpenClaw memuat plugin bawaan dari paket workspace `extensions/*`.
 
 ## Jenis plugin apa?
 
@@ -38,7 +37,7 @@ dipasang dari npm selama peralihan peluncuran.
     Hubungkan OpenClaw ke platform perpesanan (Discord, IRC, dll.)
   </Card>
   <Card title="Plugin penyedia" icon="cpu" href="/id/plugins/sdk-provider-plugins">
-    Tambahkan penyedia model (LLM, proxy, atau endpoint khusus)
+    Tambahkan penyedia model (LLM, proxy, atau endpoint kustom)
   </Card>
   <Card title="Plugin backend CLI" icon="terminal" href="/id/plugins/cli-backend-plugins">
     Petakan CLI AI lokal ke runner fallback teks OpenClaw
@@ -48,11 +47,11 @@ dipasang dari npm selama peralihan peluncuran.
   </Card>
 </CardGroup>
 
-Untuk plugin saluran yang tidak dijamin terpasang saat onboarding/penyiapan
+Untuk plugin saluran yang tidak dijamin terinstal saat onboarding/setup
 berjalan, gunakan `createOptionalChannelSetupSurface(...)` dari
-`openclaw/plugin-sdk/channel-setup`. Fungsi ini menghasilkan pasangan adapter
-penyiapan + wizard yang mengiklankan persyaratan pemasangan dan gagal secara
-tertutup pada penulisan konfigurasi nyata sampai plugin dipasang.
+`openclaw/plugin-sdk/channel-setup`. Ini menghasilkan pasangan adapter setup + wizard
+yang mengiklankan persyaratan instalasi dan gagal tertutup pada penulisan konfigurasi nyata
+hingga plugin terinstal.
 
 ## Mulai cepat: plugin alat
 
@@ -60,7 +59,7 @@ Panduan ini membuat plugin minimal yang mendaftarkan alat agen. Plugin saluran
 dan penyedia memiliki panduan khusus yang ditautkan di atas.
 
 <Steps>
-  <Step title="Buat paket dan manifest">
+  <Step title="Buat paket dan manifes">
     <CodeGroup>
     ```json package.json
     {
@@ -100,17 +99,16 @@ dan penyedia memiliki panduan khusus yang ditautkan di atas.
     ```
     </CodeGroup>
 
-    Setiap plugin memerlukan manifest, bahkan tanpa konfigurasi. Alat yang
-    didaftarkan saat runtime harus dicantumkan dalam `contracts.tools` agar
-    OpenClaw dapat menemukan plugin pemilik tanpa memuat setiap runtime plugin.
-    Plugin juga sebaiknya mendeklarasikan `activation.onStartup` secara
-    sengaja. Contoh ini menetapkannya ke `true`. Lihat
-    [Manifest](/id/plugins/manifest) untuk skema lengkap. Cuplikan publikasi ClawHub
+    Setiap plugin memerlukan manifes, bahkan tanpa konfigurasi. Alat yang didaftarkan saat runtime
+    harus dicantumkan di `contracts.tools` agar OpenClaw dapat menemukan
+    plugin pemilik tanpa memuat setiap runtime plugin. Plugin juga harus mendeklarasikan
+    `activation.onStartup` secara sengaja. Contoh ini menyetelnya ke `true`. Lihat
+    [Manifes](/id/plugins/manifest) untuk skema lengkap. Cuplikan publikasi ClawHub
     kanonis berada di `docs/snippets/plugin-publish/`.
 
   </Step>
 
-  <Step title="Tulis titik masuk">
+  <Step title="Tulis entry point">
 
     ```typescript
     // index.ts
@@ -134,15 +132,15 @@ dan penyedia memiliki panduan khusus yang ditautkan di atas.
     });
     ```
 
-    `definePluginEntry` digunakan untuk plugin non-saluran. Untuk saluran,
-    gunakan `defineChannelPluginEntry` - lihat [Plugin Saluran](/id/plugins/sdk-channel-plugins).
-    Untuk opsi titik masuk lengkap, lihat [Titik Masuk](/id/plugins/sdk-entrypoints).
+    `definePluginEntry` digunakan untuk plugin non-saluran. Untuk saluran, gunakan
+    `defineChannelPluginEntry` - lihat [Plugin Saluran](/id/plugins/sdk-channel-plugins).
+    Untuk opsi entry point lengkap, lihat [Entry Point](/id/plugins/sdk-entrypoints).
 
   </Step>
 
   <Step title="Uji dan publikasikan">
 
-    **Plugin eksternal:** validasi dan publikasikan dengan ClawHub, lalu pasang:
+    **Plugin eksternal:** validasi dan publikasikan dengan ClawHub, lalu instal:
 
     ```bash
     clawhub package publish your-org/your-plugin --dry-run
@@ -150,10 +148,10 @@ dan penyedia memiliki panduan khusus yang ditautkan di atas.
     openclaw plugins install clawhub:@myorg/openclaw-my-plugin
     ```
 
-    Spesifikasi paket polos seperti `@myorg/openclaw-my-plugin` dipasang dari npm selama
-    peralihan peluncuran. Gunakan `clawhub:` saat Anda menginginkan resolusi ClawHub.
+    Spesifikasi paket bare seperti `@myorg/openclaw-my-plugin` diinstal dari npm selama
+    cutover peluncuran. Gunakan `clawhub:` saat Anda ingin resolusi ClawHub.
 
-    **Plugin dalam repo:** tempatkan di bawah pohon workspace plugin bawaan - ditemukan otomatis.
+    **Plugin dalam repo:** tempatkan di bawah pohon workspace plugin bawaan - ditemukan secara otomatis.
 
     ```bash
     pnpm test -- <bundled-plugin-root>/my-plugin/
@@ -162,15 +160,15 @@ dan penyedia memiliki panduan khusus yang ditautkan di atas.
   </Step>
 </Steps>
 
-## Kemampuan plugin
+## Kemampuan Plugin
 
-Satu plugin dapat mendaftarkan berapa pun jumlah kemampuan melalui objek `api`:
+Satu plugin dapat mendaftarkan sejumlah kemampuan melalui objek `api`:
 
-| Kemampuan              | Metode pendaftaran                               | Panduan terperinci                                                            |
-| ---------------------- | ------------------------------------------------ | ----------------------------------------------------------------------------- |
-| Inferensi teks (LLM)   | `api.registerProvider(...)`                      | [Plugin Penyedia](/id/plugins/sdk-provider-plugins)                              |
-| Backend inferensi CLI  | `api.registerCliBackend(...)`                    | [Plugin Backend CLI](/id/plugins/cli-backend-plugins)                            |
-| Saluran / perpesanan   | `api.registerChannel(...)`                       | [Plugin Saluran](/id/plugins/sdk-channel-plugins)                                |
+| Kemampuan              | Metode pendaftaran                              | Panduan terperinci                                                            |
+| ---------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------- |
+| Inferensi teks (LLM)   | `api.registerProvider(...)`                      | [Plugin Penyedia](/id/plugins/sdk-provider-plugins)                               |
+| Backend inferensi CLI  | `api.registerCliBackend(...)`                    | [Plugin Backend CLI](/id/plugins/cli-backend-plugins)                             |
+| Saluran / perpesanan   | `api.registerChannel(...)`                       | [Plugin Saluran](/id/plugins/sdk-channel-plugins)                                 |
 | Ucapan (TTS/STT)       | `api.registerSpeechProvider(...)`                | [Plugin Penyedia](/id/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
 | Transkripsi realtime   | `api.registerRealtimeTranscriptionProvider(...)` | [Plugin Penyedia](/id/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
 | Suara realtime         | `api.registerRealtimeVoiceProvider(...)`         | [Plugin Penyedia](/id/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
@@ -180,54 +178,52 @@ Satu plugin dapat mendaftarkan berapa pun jumlah kemampuan melalui objek `api`:
 | Pembuatan video        | `api.registerVideoGenerationProvider(...)`       | [Plugin Penyedia](/id/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
 | Pengambilan web        | `api.registerWebFetchProvider(...)`              | [Plugin Penyedia](/id/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
 | Pencarian web          | `api.registerWebSearchProvider(...)`             | [Plugin Penyedia](/id/plugins/sdk-provider-plugins#step-5-add-extra-capabilities) |
-| Middleware hasil alat  | `api.registerAgentToolResultMiddleware(...)`     | [Ringkasan SDK](/id/plugins/sdk-overview#registration-api)                       |
-| Alat agen              | `api.registerTool(...)`                          | Di bawah                                                                       |
-| Perintah khusus        | `api.registerCommand(...)`                       | [Titik Masuk](/id/plugins/sdk-entrypoints)                                       |
-| Hook plugin            | `api.on(...)`                                    | [Hook plugin](/id/plugins/hooks)                                                 |
-| Hook peristiwa internal | `api.registerHook(...)`                         | [Titik Masuk](/id/plugins/sdk-entrypoints)                                       |
-| Rute HTTP              | `api.registerHttpRoute(...)`                     | [Internal](/id/plugins/architecture-internals#gateway-http-routes)               |
-| Subperintah CLI        | `api.registerCli(...)`                           | [Titik Masuk](/id/plugins/sdk-entrypoints)                                       |
+| Middleware hasil alat  | `api.registerAgentToolResultMiddleware(...)`     | [Ringkasan SDK](/id/plugins/sdk-overview#registration-api)                        |
+| Alat agen              | `api.registerTool(...)`                          | Di bawah                                                                        |
+| Perintah kustom        | `api.registerCommand(...)`                       | [Entry Point](/id/plugins/sdk-entrypoints)                                        |
+| Hook plugin            | `api.on(...)`                                    | [Hook plugin](/id/plugins/hooks)                                                  |
+| Hook peristiwa internal | `api.registerHook(...)`                         | [Entry Point](/id/plugins/sdk-entrypoints)                                        |
+| Rute HTTP              | `api.registerHttpRoute(...)`                     | [Internal](/id/plugins/architecture-internals#gateway-http-routes)                |
+| Subperintah CLI        | `api.registerCli(...)`                           | [Entry Point](/id/plugins/sdk-entrypoints)                                        |
 
 Untuk API pendaftaran lengkap, lihat [Ringkasan SDK](/id/plugins/sdk-overview#registration-api).
 
-Plugin bawaan dapat menggunakan `api.registerAgentToolResultMiddleware(...)` saat
-mereka memerlukan penulisan ulang hasil alat secara asinkron sebelum model
-melihat output. Deklarasikan runtime target dalam
-`contracts.agentToolResultMiddleware`, misalnya `["pi", "codex"]`. Ini adalah
-seam plugin bawaan tepercaya; plugin eksternal sebaiknya menggunakan hook plugin
-OpenClaw biasa kecuali OpenClaw menambahkan kebijakan kepercayaan eksplisit untuk
-kemampuan ini.
+Plugin bawaan dapat menggunakan `api.registerAgentToolResultMiddleware(...)` saat mereka
+memerlukan penulisan ulang hasil alat secara async sebelum model melihat output. Deklarasikan
+runtime yang ditargetkan di `contracts.agentToolResultMiddleware`, misalnya
+`["pi", "codex"]`. Ini adalah seam plugin bawaan tepercaya; plugin eksternal
+sebaiknya memilih hook plugin OpenClaw biasa kecuali OpenClaw menumbuhkan
+kebijakan kepercayaan eksplisit untuk kemampuan ini.
 
-Jika plugin Anda mendaftarkan metode RPC gateway khusus, pertahankan metode
-tersebut pada prefiks khusus plugin. Namespace admin inti (`config.*`,
-`exec.approvals.*`, `wizard.*`, `update.*`) tetap dicadangkan dan selalu
-diresolusikan ke `operator.admin`, bahkan jika plugin meminta cakupan yang lebih
-sempit.
+Jika plugin Anda mendaftarkan metode RPC Gateway kustom, simpan di
+prefix khusus plugin. Namespace admin inti (`config.*`,
+`exec.approvals.*`, `wizard.*`, `update.*`) tetap dicadangkan dan selalu di-resolve ke
+`operator.admin`, meskipun plugin meminta scope yang lebih sempit.
 
-Semantik penjaga hook yang perlu diingat:
+Semantik guard hook yang perlu diingat:
 
 - `before_tool_call`: `{ block: true }` bersifat terminal dan menghentikan handler berprioritas lebih rendah.
-- `before_tool_call`: `{ block: false }` diperlakukan sebagai tidak ada keputusan.
-- `before_tool_call`: `{ requireApproval: true }` menjeda eksekusi agen dan meminta persetujuan pengguna melalui overlay persetujuan exec, tombol Telegram, interaksi Discord, atau perintah `/approve` di saluran mana pun.
+- `before_tool_call`: `{ block: false }` diperlakukan sebagai tanpa keputusan.
+- `before_tool_call`: `{ requireApproval: true }` menjeda eksekusi agen dan meminta persetujuan pengguna melalui overlay persetujuan exec, tombol Telegram, interaksi Discord, atau perintah `/approve` di saluran apa pun.
 - `before_install`: `{ block: true }` bersifat terminal dan menghentikan handler berprioritas lebih rendah.
-- `before_install`: `{ block: false }` diperlakukan sebagai tidak ada keputusan.
+- `before_install`: `{ block: false }` diperlakukan sebagai tanpa keputusan.
 - `message_sending`: `{ cancel: true }` bersifat terminal dan menghentikan handler berprioritas lebih rendah.
-- `message_sending`: `{ cancel: false }` diperlakukan sebagai tidak ada keputusan.
-- `message_received`: utamakan field bertipe `threadId` saat Anda memerlukan perutean thread/topik masuk. Pertahankan `metadata` untuk tambahan khusus saluran.
-- `message_sending`: utamakan field perutean bertipe `replyToId` / `threadId` dibandingkan kunci metadata khusus saluran.
+- `message_sending`: `{ cancel: false }` diperlakukan sebagai tanpa keputusan.
+- `message_received`: prioritaskan field bertipe `threadId` saat Anda memerlukan routing thread/topik masuk. Simpan `metadata` untuk tambahan khusus saluran.
+- `message_sending`: prioritaskan field routing bertipe `replyToId` / `threadId` daripada key metadata khusus saluran.
 
-Perintah `/approve` menangani persetujuan exec dan plugin dengan fallback terbatas: ketika id persetujuan exec tidak ditemukan, OpenClaw mencoba ulang id yang sama melalui persetujuan plugin. Penerusan persetujuan plugin dapat dikonfigurasi secara independen melalui `approvals.plugin` dalam konfigurasi.
+Perintah `/approve` menangani persetujuan exec dan plugin dengan fallback terbatas: saat id persetujuan exec tidak ditemukan, OpenClaw mencoba ulang id yang sama melalui persetujuan plugin. Penerusan persetujuan plugin dapat dikonfigurasi secara independen melalui `approvals.plugin` dalam konfigurasi.
 
-Jika plumbing persetujuan khusus perlu mendeteksi kasus fallback terbatas yang
-sama, utamakan `isApprovalNotFoundError` dari `openclaw/plugin-sdk/error-runtime`
+Jika plumbing persetujuan kustom perlu mendeteksi kasus fallback terbatas yang sama,
+prioritaskan `isApprovalNotFoundError` dari `openclaw/plugin-sdk/error-runtime`
 daripada mencocokkan string kedaluwarsa persetujuan secara manual.
 
 Lihat [Hook plugin](/id/plugins/hooks) untuk contoh dan referensi hook.
 
 ## Mendaftarkan alat agen
 
-Alat adalah fungsi bertipe yang dapat dipanggil LLM. Alat dapat bersifat wajib
-(selalu tersedia) atau opsional (ikut serta oleh pengguna):
+Alat adalah fungsi bertipe yang dapat dipanggil LLM. Alat dapat wajib (selalu
+tersedia) atau opsional (opt-in pengguna):
 
 ```typescript
 register(api) {
@@ -256,8 +252,16 @@ register(api) {
 }
 ```
 
-Setiap alat yang didaftarkan dengan `api.registerTool(...)` juga harus
-dideklarasikan dalam manifest plugin:
+Factory alat menerima objek konteks yang disediakan runtime. Gunakan
+`ctx.activeModel` saat alat perlu mencatat log, menampilkan, atau menyesuaikan diri dengan model aktif
+untuk giliran saat ini. Objek dapat mencakup `provider`, `modelId`, dan
+`modelRef`. Perlakukan ini sebagai metadata runtime informatif, bukan sebagai batas keamanan
+terhadap operator lokal, kode Plugin yang terinstal, atau runtime
+OpenClaw yang dimodifikasi. Untuk alat lokal sensitif, pertahankan opt-in Plugin atau operator
+yang eksplisit dan gagal secara tertutup saat metadata model aktif hilang atau tidak sesuai.
+
+Setiap alat yang didaftarkan dengan `api.registerTool(...)` juga harus dideklarasikan di
+manifest Plugin:
 
 ```json
 {
@@ -272,13 +276,13 @@ dideklarasikan dalam manifest plugin:
 }
 ```
 
-OpenClaw menangkap dan menyimpan dalam cache deskriptor tervalidasi dari alat terdaftar,
-sehingga Plugin tidak menduplikasi data `description` atau skema dalam manifest. Kontrak
+OpenClaw menangkap dan menyimpan ke cache deskriptor yang divalidasi dari alat terdaftar,
+sehingga Plugin tidak menduplikasi data `description` atau skema di manifest. Kontrak
 manifest hanya mendeklarasikan kepemilikan dan penemuan; eksekusi tetap memanggil
 implementasi alat terdaftar yang aktif.
 Tetapkan `toolMetadata.<tool>.optional: true` untuk alat yang didaftarkan dengan
 `api.registerTool(..., { optional: true })` agar OpenClaw dapat menghindari pemuatan
-runtime Plugin tersebut sampai alat diizinkan secara eksplisit.
+runtime Plugin tersebut sampai alat tersebut secara eksplisit dimasukkan ke allowlist.
 
 Pengguna mengaktifkan alat opsional dalam konfigurasi:
 
@@ -288,16 +292,16 @@ Pengguna mengaktifkan alat opsional dalam konfigurasi:
 }
 ```
 
-- Nama alat tidak boleh bentrok dengan alat inti (konflik dilewati)
+- Nama alat tidak boleh bentrok dengan alat inti (konflik akan dilewati)
 - Alat dengan objek pendaftaran yang salah bentuk, termasuk `parameters` yang hilang, dilewati dan dilaporkan dalam diagnostik Plugin alih-alih merusak eksekusi agen
-- Gunakan `optional: true` untuk alat dengan efek samping atau kebutuhan biner tambahan
+- Gunakan `optional: true` untuk alat dengan efek samping atau persyaratan biner tambahan
 - Pengguna dapat mengaktifkan semua alat dari sebuah Plugin dengan menambahkan id Plugin ke `tools.allow`
 
 ## Mendaftarkan perintah CLI
 
 Plugin dapat menambahkan grup perintah root `openclaw` dengan `api.registerCli`. Sediakan
 `descriptors` untuk setiap root perintah tingkat atas agar OpenClaw dapat menampilkan dan merutekan
-perintah tanpa memuat setiap runtime Plugin secara dini.
+perintah tanpa memuat setiap runtime Plugin secara bersemangat.
 
 ```typescript
 register(api) {
@@ -346,30 +350,30 @@ import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
 import { ... } from "openclaw/plugin-sdk";
 ```
 
-Untuk referensi subpath lengkap, lihat [Ikhtisar SDK](/id/plugins/sdk-overview).
+Untuk referensi subjalur lengkap, lihat [Ikhtisar SDK](/id/plugins/sdk-overview).
 
 Di dalam Plugin Anda, gunakan file barrel lokal (`api.ts`, `runtime-api.ts`) untuk
 impor internal - jangan pernah mengimpor Plugin Anda sendiri melalui jalur SDK-nya.
 
-Untuk Plugin penyedia, simpan helper khusus penyedia di barrel root paket tersebut
-kecuali seam-nya benar-benar generik. Contoh bawaan saat ini:
+Untuk Plugin penyedia, simpan helper khusus penyedia di barrel root paket
+tersebut kecuali seam tersebut benar-benar generik. Contoh bawaan saat ini:
 
 - Anthropic: wrapper stream Claude dan helper `service_tier` / beta
 - OpenAI: builder penyedia, helper model default, penyedia realtime
 - OpenRouter: builder penyedia plus helper onboarding/konfigurasi
 
-Jika sebuah helper hanya berguna di dalam satu paket penyedia bawaan, simpan helper itu pada
-seam root paket tersebut alih-alih mempromosikannya ke `openclaw/plugin-sdk/*`.
+Jika sebuah helper hanya berguna di dalam satu paket penyedia bawaan, pertahankan di seam root paket
+tersebut alih-alih mempromosikannya ke `openclaw/plugin-sdk/*`.
 
 Beberapa seam helper `openclaw/plugin-sdk/<bundled-id>` yang dihasilkan masih ada untuk
-pemeliharaan Plugin bawaan ketika seam tersebut memiliki penggunaan pemilik yang terlacak. Perlakukan itu sebagai
+pemeliharaan Plugin bawaan saat memiliki penggunaan pemilik yang dilacak. Perlakukan itu sebagai
 permukaan yang dicadangkan, bukan sebagai pola default untuk Plugin pihak ketiga baru.
 
 ## Daftar periksa pra-pengajuan
 
 <Check>**package.json** memiliki metadata `openclaw` yang benar</Check>
 <Check>Manifest **openclaw.plugin.json** ada dan valid</Check>
-<Check>Titik masuk menggunakan `defineChannelPluginEntry` atau `definePluginEntry`</Check>
+<Check>Titik entri menggunakan `defineChannelPluginEntry` atau `definePluginEntry`</Check>
 <Check>Semua impor menggunakan jalur `plugin-sdk/<subpath>` yang terfokus</Check>
 <Check>Impor internal menggunakan modul lokal, bukan impor mandiri SDK</Check>
 <Check>Pengujian lulus (`pnpm test -- <bundled-plugin-root>/my-plugin/`)</Check>
@@ -378,17 +382,17 @@ permukaan yang dicadangkan, bukan sebagai pola default untuk Plugin pihak ketiga
 ## Pengujian rilis beta
 
 1. Pantau tag rilis GitHub di [openclaw/openclaw](https://github.com/openclaw/openclaw/releases) dan berlangganan melalui `Watch` > `Releases`. Tag beta terlihat seperti `v2026.3.N-beta.1`. Anda juga dapat mengaktifkan notifikasi untuk akun X resmi OpenClaw [@openclaw](https://x.com/openclaw) untuk pengumuman rilis.
-2. Uji Plugin Anda terhadap tag beta segera setelah tag muncul. Jendela sebelum stabil biasanya hanya beberapa jam.
-3. Posting di thread Plugin Anda di kanal Discord `plugin-forum` setelah pengujian dengan `all good` atau apa yang rusak. Jika Anda belum memiliki thread, buat satu.
-4. Jika ada sesuatu yang rusak, buka atau perbarui issue berjudul `Beta blocker: <plugin-name> - <summary>` dan terapkan label `beta-blocker`. Letakkan tautan issue di thread Anda.
-5. Buka PR ke `main` berjudul `fix(<plugin-id>): beta blocker - <summary>` dan tautkan issue di PR maupun thread Discord Anda. Kontributor tidak dapat memberi label pada PR, jadi judul adalah sinyal sisi PR untuk pemelihara dan otomasi. Blocker dengan PR akan digabungkan; blocker tanpa PR mungkin tetap dirilis. Pemelihara memantau thread ini selama pengujian beta.
-6. Diam berarti hijau. Jika Anda melewatkan jendelanya, perbaikan Anda kemungkinan masuk pada siklus berikutnya.
+2. Uji Plugin Anda terhadap tag beta segera setelah tag tersebut muncul. Jendela sebelum stabil biasanya hanya beberapa jam.
+3. Posting di utas Plugin Anda di kanal Discord `plugin-forum` setelah pengujian dengan `all good` atau apa yang rusak. Jika Anda belum memiliki utas, buat satu.
+4. Jika ada yang rusak, buka atau perbarui issue berjudul `Beta blocker: <plugin-name> - <summary>` dan terapkan label `beta-blocker`. Letakkan tautan issue di utas Anda.
+5. Buka PR ke `main` berjudul `fix(<plugin-id>): beta blocker - <summary>` dan tautkan issue di PR serta utas Discord Anda. Kontributor tidak dapat memberi label PR, sehingga judul menjadi sinyal sisi PR untuk maintainer dan otomasi. Pemblokir dengan PR akan digabungkan; pemblokir tanpa PR mungkin tetap dikirim. Maintainer memantau utas ini selama pengujian beta.
+6. Diam berarti hijau. Jika Anda melewatkan jendela tersebut, perbaikan Anda kemungkinan masuk di siklus berikutnya.
 
 ## Langkah berikutnya
 
 <CardGroup cols={2}>
   <Card title="Channel Plugins" icon="messages-square" href="/id/plugins/sdk-channel-plugins">
-    Bangun Plugin kanal pesan
+    Bangun Plugin kanal perpesanan
   </Card>
   <Card title="Provider Plugins" icon="cpu" href="/id/plugins/sdk-provider-plugins">
     Bangun Plugin penyedia model
@@ -415,5 +419,5 @@ permukaan yang dicadangkan, bukan sebagai pola default untuk Plugin pihak ketiga
 - [Arsitektur Plugin](/id/plugins/architecture) - pendalaman arsitektur internal
 - [Ikhtisar SDK](/id/plugins/sdk-overview) - referensi SDK Plugin
 - [Manifest](/id/plugins/manifest) - format manifest Plugin
-- [Channel Plugins](/id/plugins/sdk-channel-plugins) - membangun Plugin kanal
-- [Provider Plugins](/id/plugins/sdk-provider-plugins) - membangun Plugin penyedia
+- [Plugin Kanal](/id/plugins/sdk-channel-plugins) - membangun Plugin kanal
+- [Plugin Penyedia](/id/plugins/sdk-provider-plugins) - membangun Plugin penyedia

@@ -4,49 +4,48 @@ read_when:
 summary: Tautan terkurasi ke dokumentasi OpenClaw yang paling sering digunakan.
 title: Direktori dokumentasi
 x-i18n:
-    generated_at: "2026-05-07T01:53:33Z"
+    generated_at: "2026-05-10T19:53:00Z"
     model: gpt-5.5
     provider: openai
-    source_hash: bd24805e17b89747850f01302e761babea411d50aee4e50ec43f93c2e893a4e1
+    source_hash: ddd6903aeb87e36db977b2cef62bd80e84fc67633ca00beb3365ced1f5abdd99
     source_path: start/docs-directory.md
     workflow: 16
 ---
 
 <Note>
-Halaman ini adalah indeks terkurasi. Jika Anda baru mulai, mulai dengan [Memulai](/id/start/getting-started).
-Untuk peta dokumentasi lengkap, lihat [Hub dokumentasi](/id/start/hubs).
+Halaman ini adalah indeks terkurasi. Jika Anda baru mulai, mulai dari [Memulai](/id/start/getting-started).
+Untuk peta dokumentasi lengkap, lihat [Pusat dokumentasi](/id/start/hubs).
 </Note>
 
 ## Mulai di sini
 
-- [Hub dokumentasi (semua halaman ditautkan)](/id/start/hubs)
+- [Pusat dokumentasi (semua halaman ditautkan)](/id/start/hubs)
 - [Bantuan](/id/help)
 - [Konfigurasi](/id/gateway/configuration)
 - [Contoh konfigurasi](/id/gateway/configuration-examples)
 - [Perintah slash](/id/tools/slash-commands)
 - [Perutean multi-agen](/id/concepts/multi-agent)
 - [Pembaruan dan rollback](/id/install/updating)
-- [Pemasangan pasangan (DM dan node)](/id/channels/pairing)
+- [Penyandingan (DM dan node)](/id/channels/pairing)
 - [Mode Nix](/id/install/nix)
 - [Penyiapan asisten OpenClaw](/id/start/openclaw)
 - [Skills](/id/tools/skills)
 - [Konfigurasi Skills](/id/tools/skills-config)
-- [Templat workspace](/id/reference/templates/AGENTS)
-- [Adaptor RPC](/id/reference/rpc)
+- [Templat ruang kerja](/id/reference/templates/AGENTS)
+- [Adapter RPC](/id/reference/rpc)
 - [Runbook Gateway](/id/gateway)
 - [Node (iOS dan Android)](/id/nodes)
-- [Permukaan web (Control UI)](/id/web)
+- [Permukaan web (UI Kontrol)](/id/web)
 - [Penemuan dan transport](/id/gateway/discovery)
 - [Akses jarak jauh](/id/gateway/remote)
 
 ## Penyedia dan UX
 
 - [WebChat](/id/web/webchat)
-- [Control UI (browser)](/id/web/control-ui)
+- [UI Kontrol (browser)](/id/web/control-ui)
 - [Telegram](/id/channels/telegram)
 - [Discord](/id/channels/discord)
 - [Mattermost](/id/channels/mattermost)
-- [BlueBubbles (bridge iMessage lama)](/id/channels/bluebubbles)
 - [QQ Bot](/id/channels/qqbot)
 - [iMessage](/id/channels/imessage)
 - [Grup](/id/channels/groups)
@@ -65,8 +64,8 @@ Untuk peta dokumentasi lengkap, lihat [Hub dokumentasi](/id/start/hubs).
 ## Operasi dan keamanan
 
 - [Sesi](/id/concepts/session)
-- [Cron jobs](/id/automation/cron-jobs)
-- [Webhooks](/id/automation/cron-jobs#webhooks)
+- [Pekerjaan Cron](/id/automation/cron-jobs)
+- [Webhook](/id/automation/cron-jobs#webhooks)
 - [Hook Gmail (Pub/Sub)](/id/automation/cron-jobs#gmail-pubsub-integration)
 - [Keamanan](/id/gateway/security)
 - [Pemecahan masalah](/id/gateway/troubleshooting)
@@ -74,4 +73,4 @@ Untuk peta dokumentasi lengkap, lihat [Hub dokumentasi](/id/start/hubs).
 ## Terkait
 
 - [Memulai](/id/start/getting-started)
-- [Hub dokumentasi](/id/start/hubs)
+- [Pusat dokumentasi](/id/start/hubs)

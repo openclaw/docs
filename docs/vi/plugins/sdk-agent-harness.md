@@ -1,60 +1,60 @@
 ---
 read_when:
-    - Bạn đang thay đổi môi trường chạy tác nhân nhúng hoặc sổ đăng ký bộ khung kiểm thử
-    - Bạn đang đăng ký một bộ khung tác nhân từ một Plugin đi kèm hoặc đáng tin cậy
-    - Bạn cần hiểu mối quan hệ giữa Plugin Codex và các nhà cung cấp mô hình
+    - Bạn đang thay đổi môi trường chạy tác tử nhúng hoặc sổ đăng ký bộ kiểm thử
+    - Bạn đang đăng ký một bộ khung tác tử từ một Plugin được đóng gói kèm hoặc đáng tin cậy
+    - Bạn cần hiểu cách Plugin Codex liên quan đến các nhà cung cấp mô hình
 sidebarTitle: Agent Harness
-summary: Giao diện SDK thử nghiệm cho các Plugin thay thế bộ thực thi agent nhúng cấp thấp
+summary: Giao diện SDK thử nghiệm dành cho các Plugin thay thế trình thực thi tác nhân nhúng cấp thấp
 title: Các Plugin cho bộ khung tác nhân
 x-i18n:
-    generated_at: "2026-05-07T13:22:44Z"
+    generated_at: "2026-05-10T19:44:40Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ab47fbedbd429a4c0e72da0057a88be34528b69804fa1e7af795f377c4907f55
+    source_hash: 1685af479a8502ac743b0f520f0afae2cdc905524e48b3a84ce95ffe85c8fb49
     source_path: plugins/sdk-agent-harness.md
     workflow: 16
 ---
 
-**agent harness** là bộ thực thi cấp thấp cho một lượt tác tử OpenClaw đã được chuẩn bị. Nó không phải là nhà cung cấp mô hình, không phải kênh, và không phải sổ đăng ký công cụ. Với mô hình tư duy hướng đến người dùng, xem [runtime tác tử](/vi/concepts/agent-runtimes).
+Một **harness tác tử** là trình thực thi cấp thấp cho một lượt tác tử OpenClaw đã được chuẩn bị. Nó không phải là nhà cung cấp mô hình, không phải kênh, và không phải sổ đăng ký công cụ. Với mô hình tư duy hướng người dùng, xem [Runtime tác tử](/vi/concepts/agent-runtimes).
 
-Chỉ dùng bề mặt này cho các Plugin native được đóng gói sẵn hoặc đáng tin cậy. Hợp đồng vẫn còn thử nghiệm vì các kiểu tham số cố ý phản ánh runner nhúng hiện tại.
+Chỉ dùng bề mặt này cho các Plugin gốc đi kèm hoặc đáng tin cậy. Hợp đồng vẫn đang thử nghiệm vì các kiểu tham số cố ý phản ánh runner nhúng hiện tại.
 
 ## Khi nào dùng harness
 
-Đăng ký agent harness khi một họ mô hình có runtime phiên native riêng và lớp truyền tải provider OpenClaw thông thường là trừu tượng sai.
+Đăng ký một harness tác tử khi một họ mô hình có runtime phiên gốc riêng và cơ chế truyền tải nhà cung cấp OpenClaw thông thường là lớp trừu tượng không phù hợp.
 
 Ví dụ:
 
-- một server tác tử lập trình native sở hữu luồng và compaction
-- một CLI cục bộ hoặc daemon phải stream các sự kiện kế hoạch/lập luận/công cụ native
-- một runtime mô hình cần resume id riêng bên cạnh transcript phiên OpenClaw
+- một máy chủ tác tử lập trình gốc sở hữu luồng và Compaction
+- một CLI hoặc daemon cục bộ phải phát trực tuyến các sự kiện kế hoạch/lập luận/công cụ gốc
+- một runtime mô hình cần id tiếp tục riêng ngoài bản ghi phiên OpenClaw
 
-**Không** đăng ký harness chỉ để thêm một API LLM mới. Với các API mô hình HTTP hoặc WebSocket thông thường, hãy xây dựng [Plugin provider](/vi/plugins/sdk-provider-plugins).
+**Không** đăng ký harness chỉ để thêm một API LLM mới. Với các API mô hình HTTP hoặc WebSocket thông thường, hãy xây dựng [Plugin nhà cung cấp](/vi/plugins/sdk-provider-plugins).
 
-## Core vẫn sở hữu gì
+## Những gì phần lõi vẫn sở hữu
 
 Trước khi một harness được chọn, OpenClaw đã phân giải:
 
-- provider và mô hình
+- nhà cung cấp và mô hình
 - trạng thái xác thực runtime
-- mức thinking và ngân sách ngữ cảnh
-- tệp transcript/phiên OpenClaw
+- mức suy nghĩ và ngân sách ngữ cảnh
+- tệp bản ghi/phiên OpenClaw
 - workspace, sandbox, và chính sách công cụ
-- callback trả lời kênh và callback streaming
-- chính sách fallback mô hình và chuyển mô hình live
+- callback trả lời kênh và callback phát trực tuyến
+- chính sách dự phòng mô hình và chuyển đổi mô hình trực tiếp
 
-Sự phân tách đó là có chủ ý. Harness chạy một lần thử đã chuẩn bị; nó không chọn provider, thay thế việc phân phối qua kênh, hoặc âm thầm chuyển mô hình.
+Cách tách này là có chủ ý. Một harness chạy một lần thử đã được chuẩn bị; nó không chọn nhà cung cấp, thay thế việc phân phối kênh, hoặc âm thầm chuyển mô hình.
 
-Lần thử đã chuẩn bị cũng bao gồm `params.runtimePlan`, một gói chính sách do OpenClaw sở hữu cho các quyết định runtime phải được chia sẻ giữa PI và các harness native:
+Lần thử đã chuẩn bị cũng bao gồm `params.runtimePlan`, một gói chính sách do OpenClaw sở hữu cho các quyết định runtime phải được dùng chung giữa PI và các harness gốc:
 
 - `runtimePlan.tools.normalize(...)` và
-  `runtimePlan.tools.logDiagnostics(...)` cho chính sách schema công cụ nhận biết provider
-- `runtimePlan.transcript.resolvePolicy(...)` cho chính sách làm sạch transcript và sửa chữa tool-call
-- `runtimePlan.delivery.isSilentPayload(...)` cho việc triệt tiêu phân phối media và `NO_REPLY` dùng chung
-- `runtimePlan.outcome.classifyRunResult(...)` cho phân loại fallback mô hình
-- `runtimePlan.observability` cho metadata provider/mô hình/harness đã phân giải
+  `runtimePlan.tools.logDiagnostics(...)` cho chính sách schema công cụ nhận biết nhà cung cấp
+- `runtimePlan.transcript.resolvePolicy(...)` cho chính sách làm sạch bản ghi và sửa lời gọi công cụ
+- `runtimePlan.delivery.isSilentPayload(...)` cho việc triệt tiêu phân phối `NO_REPLY` và phương tiện dùng chung
+- `runtimePlan.outcome.classifyRunResult(...)` cho phân loại dự phòng mô hình
+- `runtimePlan.observability` cho siêu dữ liệu nhà cung cấp/mô hình/harness đã phân giải
 
-Harness có thể dùng plan cho các quyết định cần khớp với hành vi PI, nhưng vẫn nên xem nó là trạng thái lần thử do host sở hữu. Không sửa đổi nó hoặc dùng nó để chuyển provider/mô hình bên trong một lượt.
+Harness có thể dùng kế hoạch cho các quyết định cần khớp với hành vi PI, nhưng vẫn nên xem nó là trạng thái lần thử do host sở hữu. Không sửa đổi nó hoặc dùng nó để chuyển nhà cung cấp/mô hình trong một lượt.
 
 ## Đăng ký harness
 
@@ -94,66 +94,124 @@ export default definePluginEntry({
 
 ## Chính sách lựa chọn
 
-OpenClaw chọn harness sau khi phân giải provider/mô hình:
+OpenClaw chọn một harness sau khi phân giải nhà cung cấp/mô hình:
 
-1. Harness id đã ghi của một phiên hiện có được ưu tiên, để thay đổi config/env không hot-switch transcript đó sang runtime khác.
-2. `OPENCLAW_AGENT_RUNTIME=<id>` ép dùng một harness đã đăng ký với id đó cho các phiên chưa được ghim.
-3. `OPENCLAW_AGENT_RUNTIME=pi` ép dùng harness PI tích hợp.
-4. `OPENCLAW_AGENT_RUNTIME=auto` hỏi các harness đã đăng ký xem chúng có hỗ trợ provider/mô hình đã phân giải không.
-5. Nếu không có harness đã đăng ký nào khớp, OpenClaw dùng PI trừ khi fallback PI bị tắt.
+1. Chính sách runtime theo phạm vi mô hình thắng.
+2. Chính sách runtime theo phạm vi nhà cung cấp đứng kế tiếp.
+3. `auto` hỏi các harness đã đăng ký xem chúng có hỗ trợ nhà cung cấp/mô hình đã phân giải hay không.
+4. Nếu không có harness đã đăng ký nào khớp, OpenClaw dùng PI trừ khi dự phòng PI bị tắt.
 
-Lỗi harness Plugin hiển thị như lỗi chạy. Trong chế độ `auto`, fallback PI chỉ được dùng khi không có harness Plugin đã đăng ký nào hỗ trợ provider/mô hình đã phân giải. Sau khi một harness Plugin đã nhận một lần chạy, OpenClaw không phát lại cùng lượt đó qua PI vì điều đó có thể thay đổi ngữ nghĩa xác thực/runtime hoặc nhân đôi tác dụng phụ.
+Lỗi harness Plugin hiển thị dưới dạng lỗi chạy. Ở chế độ `auto`, dự phòng PI chỉ được dùng khi không có harness Plugin đã đăng ký nào hỗ trợ nhà cung cấp/mô hình đã phân giải. Khi một harness Plugin đã nhận một lần chạy, OpenClaw không phát lại cùng lượt đó qua PI vì điều đó có thể thay đổi ngữ nghĩa xác thực/runtime hoặc nhân đôi tác dụng phụ.
 
-Harness id đã chọn được lưu bền cùng session id sau một lần chạy nhúng. Các phiên legacy được tạo trước khi có ghim harness được xem là đã ghim PI sau khi chúng có lịch sử transcript. Dùng phiên mới/đã reset khi chuyển giữa PI và một harness Plugin native. `/status` hiển thị các harness id không mặc định như `codex` bên cạnh `Fast`; PI vẫn ẩn vì đó là đường dẫn tương thích mặc định. Nếu harness đã chọn gây bất ngờ, hãy bật logging debug `agents/harness` và kiểm tra bản ghi có cấu trúc `agent harness selected` của gateway. Bản ghi này bao gồm harness id đã chọn, lý do lựa chọn, chính sách runtime/fallback, và trong chế độ `auto`, kết quả hỗ trợ của từng ứng viên Plugin.
+Các ghim runtime toàn phiên và toàn tác tử bị lựa chọn bỏ qua. Điều đó bao gồm các giá trị `agentHarnessId` phiên cũ, `agents.defaults.agentRuntime`, `agents.list[].agentRuntime`, và `OPENCLAW_AGENT_RUNTIME`. `/status` hiển thị runtime hiệu lực được chọn từ tuyến nhà cung cấp/mô hình.
+Nếu harness được chọn gây bất ngờ, hãy bật ghi log debug `agents/harness` và kiểm tra bản ghi có cấu trúc `agent harness selected` của Gateway. Nó bao gồm id harness được chọn, lý do lựa chọn, chính sách runtime/dự phòng, và, ở chế độ `auto`, kết quả hỗ trợ của từng ứng viên Plugin.
 
-Plugin Codex được đóng gói sẵn đăng ký `codex` làm harness id. Core xem đó là một harness id Plugin bình thường; các alias riêng của Codex thuộc về Plugin hoặc config của operator, không nằm trong bộ chọn runtime dùng chung.
+Plugin Codex đi kèm đăng ký `codex` làm id harness. Phần lõi xem đó là một id harness Plugin thông thường; các alias riêng của Codex thuộc về Plugin hoặc cấu hình vận hành, không thuộc bộ chọn runtime dùng chung.
 
-## Ghép cặp provider và harness
+## Ghép cặp nhà cung cấp cộng harness
 
-Hầu hết harness cũng nên đăng ký một provider. Provider làm cho model ref, trạng thái xác thực, metadata mô hình, và lựa chọn `/model` hiển thị với phần còn lại của OpenClaw. Sau đó harness nhận provider đó trong `supports(...)`.
+Hầu hết harness cũng nên đăng ký một nhà cung cấp. Nhà cung cấp làm cho ref mô hình, trạng thái xác thực, siêu dữ liệu mô hình, và lựa chọn `/model` hiển thị với phần còn lại của OpenClaw. Sau đó harness nhận nhà cung cấp đó trong `supports(...)`.
 
-Plugin Codex được đóng gói sẵn theo mẫu này:
+Plugin Codex đi kèm tuân theo mẫu này:
 
-- model ref người dùng ưu tiên: `openai/gpt-5.5` cộng với
-  `agentRuntime.id: "codex"`
-- ref tương thích: các ref legacy `codex/gpt-*` vẫn được chấp nhận, nhưng config mới không nên dùng chúng như ref provider/mô hình thông thường
-- harness id: `codex`
-- xác thực: tính khả dụng provider tổng hợp, vì harness Codex sở hữu phiên/đăng nhập Codex native
-- yêu cầu app-server: OpenClaw gửi model id trần đến Codex và để harness nói chuyện với giao thức app-server native
+- ref mô hình người dùng ưu tiên: `openai/gpt-5.5`
+- ref tương thích: các ref `codex/gpt-*` cũ vẫn được chấp nhận, nhưng cấu hình mới không nên dùng chúng như ref nhà cung cấp/mô hình thông thường
+- id harness: `codex`
+- xác thực: tính khả dụng nhà cung cấp tổng hợp, vì harness Codex sở hữu phiên/đăng nhập Codex gốc
+- yêu cầu máy chủ ứng dụng: OpenClaw gửi id mô hình trần cho Codex và để harness nói chuyện với giao thức máy chủ ứng dụng gốc
 
-Plugin Codex là phần bổ sung. Các ref `openai/gpt-*` thuần vẫn tiếp tục dùng đường dẫn provider OpenClaw thông thường trừ khi bạn ép dùng harness Codex bằng `agentRuntime.id: "codex"`. Các ref `codex/gpt-*` cũ vẫn chọn provider và harness Codex để tương thích.
+Plugin Codex là dạng bổ sung. Các ref tác tử `openai/gpt-*` thuần trên nhà cung cấp OpenAI chính thức chọn harness Codex theo mặc định. Các ref `codex/gpt-*` cũ vẫn chọn nhà cung cấp và harness Codex để tương thích.
 
-Để biết cách thiết lập operator, ví dụ tiền tố mô hình, và config chỉ dành cho Codex, xem [Codex Harness](/vi/plugins/codex-harness).
+Để thiết lập vận hành, ví dụ tiền tố mô hình, và cấu hình chỉ dành cho Codex, xem [Codex Harness](/vi/plugins/codex-harness).
 
-OpenClaw yêu cầu Codex app-server `0.125.0` hoặc mới hơn. Plugin Codex kiểm tra handshake initialize của app-server và chặn các server cũ hơn hoặc không có phiên bản để OpenClaw chỉ chạy trên bề mặt giao thức đã được kiểm thử. Mức sàn `0.125.0` bao gồm hỗ trợ payload hook MCP native đã hạ cánh trong Codex `0.124.0`, đồng thời ghim OpenClaw vào dòng ổn định mới hơn đã được kiểm thử.
+OpenClaw yêu cầu máy chủ ứng dụng Codex `0.125.0` hoặc mới hơn. Plugin Codex kiểm tra bắt tay khởi tạo máy chủ ứng dụng và chặn các máy chủ cũ hơn hoặc không có phiên bản để OpenClaw chỉ chạy trên bề mặt giao thức đã được kiểm thử. Mức sàn `0.125.0` bao gồm hỗ trợ payload hook MCP gốc đã có trong Codex `0.124.0`, đồng thời ghim OpenClaw vào dòng ổn định mới hơn đã được kiểm thử.
 
 ### Middleware kết quả công cụ
 
-Plugin được đóng gói sẵn có thể gắn middleware kết quả công cụ trung lập runtime thông qua `api.registerAgentToolResultMiddleware(...)` khi manifest của chúng khai báo các runtime id được nhắm mục tiêu trong `contracts.agentToolResultMiddleware`. Seam đáng tin cậy này dành cho các biến đổi kết quả công cụ async phải chạy trước khi PI hoặc Codex đưa output công cụ trở lại mô hình.
+Plugin đi kèm có thể gắn middleware kết quả công cụ trung lập với runtime thông qua `api.registerAgentToolResultMiddleware(...)` khi manifest của chúng khai báo các id runtime đích trong `contracts.agentToolResultMiddleware`. Điểm nối đáng tin cậy này dành cho các biến đổi kết quả công cụ bất đồng bộ phải chạy trước khi PI hoặc Codex đưa đầu ra công cụ trở lại mô hình.
 
-Các Plugin legacy được đóng gói sẵn vẫn có thể dùng `api.registerCodexAppServerExtensionFactory(...)` cho middleware chỉ dành cho Codex app-server, nhưng các biến đổi kết quả mới nên dùng API trung lập runtime. Hook chỉ dành cho Pi `api.registerEmbeddedExtensionFactory(...)` đã bị xóa; các biến đổi kết quả công cụ Pi phải dùng middleware trung lập runtime.
+Plugin đi kèm cũ vẫn có thể dùng `api.registerCodexAppServerExtensionFactory(...)` cho middleware chỉ dành cho máy chủ ứng dụng Codex, nhưng các biến đổi kết quả mới nên dùng API trung lập với runtime. Hook chỉ dành cho Pi `api.registerEmbeddedExtensionFactory(...)` đã bị xóa; các biến đổi kết quả công cụ Pi phải dùng middleware trung lập với runtime.
 
-### Phân loại kết quả terminal
+### Phân loại kết quả cuối
 
-Harness native sở hữu phép chiếu giao thức riêng có thể dùng `classifyAgentHarnessTerminalOutcome(...)` từ `openclaw/plugin-sdk/agent-harness-runtime` khi một lượt đã hoàn tất không tạo ra văn bản assistant hiển thị. Helper trả về `empty`, `reasoning-only`, hoặc `planning-only` để chính sách fallback của OpenClaw có thể quyết định có thử lại trên mô hình khác không. Nó cố ý không phân loại lỗi prompt, các lượt đang chạy, và các trả lời im lặng có chủ ý như `NO_REPLY`.
+Các harness gốc sở hữu phép chiếu giao thức riêng có thể dùng `classifyAgentHarnessTerminalOutcome(...)` từ `openclaw/plugin-sdk/agent-harness-runtime` khi một lượt hoàn tất không tạo ra văn bản trợ lý hiển thị. Trình trợ giúp trả về `empty`, `reasoning-only`, hoặc `planning-only` để chính sách dự phòng của OpenClaw có thể quyết định có thử lại trên một mô hình khác hay không. Nó cố ý không phân loại lỗi lời nhắc, lượt đang chạy, và các trả lời im lặng có chủ ý như `NO_REPLY`.
 
-### Chế độ harness Codex native
+### Chế độ harness Codex gốc
 
-Harness `codex` được đóng gói sẵn là chế độ Codex native cho các lượt tác tử OpenClaw nhúng. Trước tiên hãy bật Plugin `codex` được đóng gói sẵn, và thêm `codex` vào `plugins.allow` nếu config của bạn dùng allowlist hạn chế. Config app-server native nên dùng `openai/gpt-*`; các lượt tác tử OpenAI chọn harness Codex theo mặc định. Các route legacy `openai-codex/*` nên được sửa bằng `openclaw doctor --fix`, và các model ref legacy `codex/*` vẫn là alias tương thích cho harness native.
+Harness `codex` đi kèm là chế độ Codex gốc cho các lượt tác tử OpenClaw nhúng. Trước tiên hãy bật Plugin `codex` đi kèm, và đưa `codex` vào `plugins.allow` nếu cấu hình của bạn dùng danh sách cho phép hạn chế. Cấu hình máy chủ ứng dụng gốc nên dùng `openai/gpt-*`; các lượt tác tử OpenAI chọn harness Codex theo mặc định. Các tuyến `openai-codex/*` cũ nên được sửa bằng `openclaw doctor --fix`, và các ref mô hình `codex/*` cũ vẫn là alias tương thích cho harness gốc.
 
-Khi chế độ này chạy, Codex sở hữu native thread id, hành vi resume, compaction, và thực thi app-server. OpenClaw vẫn sở hữu kênh chat, bản sao transcript hiển thị, chính sách công cụ, phê duyệt, phân phối media, và lựa chọn phiên. Dùng `agentRuntime.id: "codex"` khi bạn cần chứng minh rằng chỉ đường dẫn Codex app-server mới có thể nhận lần chạy. Runtime Plugin tường minh fail closed; lỗi lựa chọn Codex app-server và lỗi runtime không được thử lại qua PI.
+Khi chế độ này chạy, Codex sở hữu id luồng gốc, hành vi tiếp tục, Compaction, và thực thi máy chủ ứng dụng. OpenClaw vẫn sở hữu kênh trò chuyện, bản sao bản ghi hiển thị, chính sách công cụ, phê duyệt, phân phối phương tiện, và lựa chọn phiên. Dùng nhà cung cấp/mô hình `agentRuntime.id: "codex"` khi bạn cần chứng minh rằng chỉ đường dẫn máy chủ ứng dụng Codex mới có thể nhận lần chạy. Runtime Plugin tường minh sẽ đóng khi lỗi; lỗi lựa chọn máy chủ ứng dụng Codex và lỗi runtime không được thử lại qua PI.
 
-## Độ nghiêm ngặt runtime
+## Mức nghiêm ngặt runtime
 
-Theo mặc định, OpenClaw chạy tác tử nhúng với OpenClaw Pi. Trong chế độ `auto`, các harness Plugin đã đăng ký có thể nhận một cặp provider/mô hình, và PI xử lý lượt khi không có cặp nào khớp. Dùng runtime Plugin tường minh như `agentRuntime.id: "codex"` khi việc thiếu lựa chọn harness nên thất bại thay vì định tuyến qua PI. Lỗi harness Plugin đã chọn luôn thất bại cứng. Điều này không chặn `agentRuntime.id: "pi"` hoặc `OPENCLAW_AGENT_RUNTIME=pi` tường minh.
+Theo mặc định, OpenClaw dùng chính sách runtime nhà cung cấp/mô hình `auto`: các harness Plugin đã đăng ký có thể nhận một cặp nhà cung cấp/mô hình, và PI xử lý lượt khi không có cặp nào khớp. Ref tác tử OpenAI trên nhà cung cấp OpenAI chính thức mặc định dùng Codex. Dùng runtime Plugin nhà cung cấp/mô hình tường minh như `agentRuntime.id: "codex"` khi việc không chọn được harness nên thất bại thay vì định tuyến qua PI. Lỗi harness Plugin đã chọn luôn thất bại cứng. Điều này không chặn một `agentRuntime.id: "pi"` nhà cung cấp/mô hình tường minh.
 
-Cho các lần chạy nhúng chỉ dành cho Codex:
+Đối với các lần chạy nhúng chỉ Codex:
+
+```json
+{
+  "models": {
+    "providers": {
+      "openai": {
+        "agentRuntime": {
+          "id": "codex"
+        }
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": "openai/gpt-5.5"
+    }
+  }
+}
+```
+
+Nếu bạn muốn một backend CLI cho một mô hình chuẩn duy nhất, đặt runtime trên mục mô hình đó:
 
 ```json
 {
   "agents": {
     "defaults": {
-      "model": "openai/gpt-5.5",
+      "model": "anthropic/claude-opus-4-7",
+      "models": {
+        "anthropic/claude-opus-4-7": {
+          "agentRuntime": {
+            "id": "claude-cli"
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+Ghi đè theo từng tác tử dùng cùng hình dạng theo phạm vi mô hình:
+
+```json
+{
+  "agents": {
+    "list": [
+      {
+        "id": "codex-only",
+        "model": "openai/gpt-5.5",
+        "models": {
+          "openai/gpt-5.5": {
+            "agentRuntime": { "id": "codex" }
+          }
+        }
+      }
+    ]
+  }
+}
+```
+
+Các ví dụ runtime toàn tác tử cũ như sau bị bỏ qua:
+
+```json
+{
+  "agents": {
+    "defaults": {
       "agentRuntime": {
         "id": "codex"
       }
@@ -162,82 +220,39 @@ Cho các lần chạy nhúng chỉ dành cho Codex:
 }
 ```
 
-Nếu bạn muốn bất kỳ harness Plugin đã đăng ký nào nhận các mô hình khớp và nếu không thì dùng PI, đặt `id: "auto"`:
+Với một runtime Plugin tường minh, phiên thất bại sớm khi harness được yêu cầu chưa được đăng ký, không hỗ trợ nhà cung cấp/mô hình đã phân giải, hoặc thất bại trước khi tạo ra tác dụng phụ của lượt. Điều đó là có chủ ý cho các triển khai chỉ Codex và cho các kiểm thử trực tiếp phải chứng minh đường dẫn máy chủ ứng dụng Codex thực sự đang được dùng.
 
-```json
-{
-  "agents": {
-    "defaults": {
-      "agentRuntime": {
-        "id": "auto"
-      }
-    }
-  }
-}
-```
+Thiết lập này chỉ kiểm soát harness tác tử nhúng. Nó không tắt định tuyến mô hình riêng theo nhà cung cấp cho hình ảnh, video, nhạc, TTS, PDF, hoặc các loại khác.
 
-Override theo từng tác tử dùng cùng hình dạng:
+## Phiên gốc và bản sao bản ghi
 
-```json
-{
-  "agents": {
-    "defaults": {
-      "agentRuntime": { "id": "auto" }
-    },
-    "list": [
-      {
-        "id": "codex-only",
-        "model": "openai/gpt-5.5",
-        "agentRuntime": { "id": "codex" }
-      }
-    ]
-  }
-}
-```
+Một harness có thể giữ id phiên gốc, id luồng, hoặc token tiếp tục phía daemon. Giữ ràng buộc đó được liên kết rõ ràng với phiên OpenClaw, và tiếp tục sao chép đầu ra trợ lý/công cụ hiển thị với người dùng vào bản ghi OpenClaw.
 
-`OPENCLAW_AGENT_RUNTIME` vẫn override runtime đã cấu hình.
-
-```bash
-OPENCLAW_AGENT_RUNTIME=codex openclaw gateway run
-```
-
-Với runtime Plugin tường minh, một phiên thất bại sớm khi harness được yêu cầu chưa được đăng ký, không hỗ trợ provider/mô hình đã phân giải, hoặc thất bại trước khi tạo tác dụng phụ của lượt. Điều đó là có chủ ý cho các triển khai chỉ dành cho Codex và cho live test phải chứng minh rằng đường dẫn Codex app-server thực sự đang được dùng.
-
-Thiết lập này chỉ điều khiển agent harness nhúng. Nó không tắt định tuyến mô hình riêng theo provider cho hình ảnh, video, nhạc, TTS, PDF, hoặc các loại khác.
-
-## Phiên native và bản sao transcript
-
-Một harness có thể giữ native session id, thread id, hoặc resume token phía daemon. Hãy giữ ràng buộc đó được liên kết rõ ràng với phiên OpenClaw, và tiếp tục sao chép output assistant/công cụ hiển thị với người dùng vào transcript OpenClaw.
-
-Transcript OpenClaw vẫn là lớp tương thích cho:
+Bản ghi OpenClaw vẫn là lớp tương thích cho:
 
 - lịch sử phiên hiển thị trên kênh
-- tìm kiếm và lập chỉ mục transcript
-- chuyển lại sang harness PI tích hợp ở lượt sau
+- tìm kiếm và lập chỉ mục bản ghi
+- chuyển trở lại harness PI tích hợp sẵn ở một lượt sau
 - hành vi `/new`, `/reset`, và xóa phiên chung
 
-Nếu harness của bạn lưu một ràng buộc sidecar, hãy triển khai `reset(...)` để OpenClaw có thể xóa nó khi phiên OpenClaw sở hữu được reset.
+Nếu harness của bạn lưu một ràng buộc sidecar, hãy triển khai `reset(...)` để OpenClaw có thể xóa nó khi phiên OpenClaw sở hữu được đặt lại.
 
-## Kết quả công cụ và media
+## Kết quả công cụ và phương tiện
 
-Core dựng danh sách công cụ OpenClaw và truyền nó vào lần thử đã chuẩn bị. Khi một harness thực thi một lệnh gọi công cụ động, hãy trả kết quả công cụ trở lại qua shape kết quả harness thay vì tự gửi media qua kênh.
+Phần lõi xây dựng danh sách công cụ OpenClaw và truyền nó vào lần thử đã chuẩn bị. Khi một harness thực thi một lời gọi công cụ động, hãy trả kết quả công cụ về thông qua hình dạng kết quả harness thay vì tự gửi phương tiện kênh.
 
-Điều này giữ output văn bản, hình ảnh, video, nhạc, TTS, phê duyệt, và công cụ nhắn tin trên cùng đường dẫn phân phối như các lần chạy được PI hỗ trợ.
+Điều này giữ đầu ra văn bản, hình ảnh, video, nhạc, TTS, phê duyệt, và công cụ nhắn tin trên cùng đường dẫn phân phối với các lần chạy được PI hậu thuẫn.
 
 ## Giới hạn hiện tại
 
-- Đường dẫn import công khai là dạng tổng quát, nhưng một số type alias cho attempt/result vẫn
-  mang tên `Pi` để tương thích.
-- Cài đặt harness của bên thứ ba còn mang tính thử nghiệm. Ưu tiên các Plugin nhà cung cấp
-  cho đến khi bạn cần runtime phiên gốc.
-- Hỗ trợ chuyển harness giữa các lượt. Không chuyển harness ở
-  giữa một lượt sau khi các công cụ gốc, phê duyệt, văn bản trợ lý, hoặc
-  lượt gửi tin nhắn đã bắt đầu.
+- Đường dẫn import công khai là chung, nhưng một số alias kiểu lần thử/kết quả vẫn mang tên `Pi` để tương thích.
+- Cài đặt harness bên thứ ba đang thử nghiệm. Ưu tiên Plugin nhà cung cấp cho đến khi bạn cần runtime phiên gốc.
+- Hỗ trợ chuyển harness giữa các lượt. Không chuyển harness ở giữa một lượt sau khi công cụ gốc, phê duyệt, văn bản trợ lý, hoặc gửi tin nhắn đã bắt đầu.
 
 ## Liên quan
 
 - [Tổng quan SDK](/vi/plugins/sdk-overview)
-- [Trình trợ giúp thời gian chạy](/vi/plugins/sdk-runtime)
+- [Trình trợ giúp runtime](/vi/plugins/sdk-runtime)
 - [Plugin nhà cung cấp](/vi/plugins/sdk-provider-plugins)
-- [Harness Codex](/vi/plugins/codex-harness)
+- [Bộ khung Codex](/vi/plugins/codex-harness)
 - [Nhà cung cấp mô hình](/vi/concepts/model-providers)

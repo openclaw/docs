@@ -1,39 +1,80 @@
 ---
 read_when:
     - Chcesz przeszukiwać aktualną dokumentację OpenClaw z terminala
-summary: Odwołanie CLI dla `openclaw docs` (przeszukiwanie indeksu dokumentacji na żywo)
+    - Musisz wiedzieć, które pomocnicze pliki binarne CLI dokumentacji uruchamia przez powłokę
+summary: Referencja CLI dla `openclaw docs` (przeszukaj indeks dokumentacji na żywo)
 title: Dokumentacja
 x-i18n:
-    generated_at: "2026-04-24T09:02:34Z"
-    model: gpt-5.4
+    generated_at: "2026-05-10T19:28:35Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: 0d208f5b9a3576ce0597abca600df109db054d20068359a9f2070ac30b1a8f69
+    source_hash: c0f733083bf455695ed24b13db6fe53e95aa3804fa8696a2fd29e749f24324c8
     source_path: cli/docs.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw docs`
 
-Przeszukuj aktualny indeks dokumentacji.
+Przeszukuj aktywny indeks dokumentacji OpenClaw z terminala. Polecenie wywołuje publiczny punkt końcowy wyszukiwania MCP dokumentacji hostowanej przez Mintlify pod adresem `https://docs.openclaw.ai/mcp.SearchOpenClaw` i wyświetla wyniki w terminalu.
+
+## Użycie
+
+```bash
+openclaw docs                       # print docs entrypoint and example search
+openclaw docs <query...>            # search the live docs index
+```
 
 Argumenty:
 
-- `[query...]`: wyszukiwane terminy wysyłane do aktualnego indeksu dokumentacji
+| Argument     | Opis                                                                               |
+| ------------ | ---------------------------------------------------------------------------------- |
+| `[query...]` | Dowolne zapytanie wyszukiwania. Zapytania wielowyrazowe są łączone spacjami i wysyłane jako jedno. |
 
-Przykłady:
+## Przykłady
 
 ```bash
-openclaw docs
 openclaw docs browser existing-session
 openclaw docs sandbox allowHostControl
 openclaw docs gateway token secretref
 ```
 
-Uwagi:
+Bez zapytania `openclaw docs` wypisuje adres URL punktu wejścia dokumentacji oraz przykładowe polecenie wyszukiwania zamiast uruchamiać wyszukiwanie.
 
-- Bez zapytania `openclaw docs` otwiera punkt wejścia wyszukiwania w aktualnej dokumentacji.
-- Zapytania wielowyrazowe są przekazywane jako jedno żądanie wyszukiwania.
+## Jak to działa
+
+`openclaw docs` wywołuje CLI `mcporter`, aby uruchomić narzędzie MCP wyszukiwania dokumentacji, a następnie parsuje bloki `Title: / Link: / Content:` z wyjścia narzędzia do listy wyników.
+
+Aby rozwiązać `mcporter`, OpenClaw sprawdza kolejno:
+
+1. `mcporter` w `PATH` (używany bezpośrednio, jeśli jest dostępny).
+2. `pnpm dlx mcporter ...`, jeśli `pnpm` jest zainstalowany.
+3. `npx -y mcporter ...`, jeśli `npx` jest zainstalowany.
+
+Jeśli żadne z nich nie jest dostępne, polecenie kończy się niepowodzeniem z podpowiedzią, aby zainstalować `pnpm` (`npm install -g pnpm`).
+
+Wywołanie wyszukiwania używa stałego limitu czasu 30 sekund. Fragmenty wyników są skracane do około 220 znaków na wpis.
+
+## Wyjście
+
+W terminalu z bogatym wyjściem (TTY) wyniki są renderowane jako nagłówek, po którym następuje lista punktowana. Każdy punkt pokazuje tytuł strony, połączony adres URL dokumentacji oraz krótki fragment w następnym wierszu. Puste wyniki wypisują „Brak wyników.”.
+
+W zwykłym wyjściu (przekierowanym, `--no-color`, skrypty) te same dane są renderowane jako Markdown:
+
+```markdown
+# Docs search: <query>
+
+- [Title](https://docs.openclaw.ai/...) - snippet
+- [Title](https://docs.openclaw.ai/...) - snippet
+```
+
+## Kody zakończenia
+
+| Kod | Znaczenie                                           |
+| --- | --------------------------------------------------- |
+| `0` | Wyszukiwanie powiodło się (w tym odpowiedzi z zerową liczbą wyników). |
+| `1` | Wywołanie narzędzia MCP nie powiodło się; stderr jest wypisywany w treści. |
 
 ## Powiązane
 
-- [Odwołanie CLI](/pl/cli)
+- [Dokumentacja CLI](/pl/cli)
+- [Aktywna dokumentacja](https://docs.openclaw.ai)

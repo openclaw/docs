@@ -1,13 +1,13 @@
 ---
 read_when:
     - Praca nad funkcjami kanału Nextcloud Talk
-summary: Status obsługi Nextcloud Talk, możliwości i konfiguracja
+summary: Status obsługi, możliwości i konfiguracja Nextcloud Talk
 title: Nextcloud Talk
 x-i18n:
-    generated_at: "2026-05-02T22:16:30Z"
+    generated_at: "2026-05-10T19:23:00Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 4956586ae8622118dcf136f4279c6ed1c2895fd4bb4576a7f5799de600a95740
+    source_hash: e4b3b2d074cc8d3c19223dbb0c306c6861717d0f35e638e3aab04b03647fd248
     source_path: channels/nextcloud-talk.md
     workflow: 16
 ---
@@ -16,10 +16,10 @@ Status: dołączony Plugin (bot Webhook). Obsługiwane są wiadomości bezpośre
 
 ## Dołączony Plugin
 
-Nextcloud Talk jest dostarczany jako dołączony Plugin w aktualnych wydaniach OpenClaw, więc
-normalne spakowane kompilacje nie wymagają osobnej instalacji.
+Nextcloud Talk jest dostarczany jako dołączony Plugin w bieżących wydaniach OpenClaw, więc
+standardowe kompilacje pakietowe nie wymagają osobnej instalacji.
 
-Jeśli używasz starszej kompilacji lub instalacji niestandardowej, która wyklucza Nextcloud Talk,
+Jeśli używasz starszej kompilacji lub niestandardowej instalacji, która wyklucza Nextcloud Talk,
 zainstaluj pakiet npm bezpośrednio:
 
 Instalacja przez CLI (rejestr npm):
@@ -28,8 +28,8 @@ Instalacja przez CLI (rejestr npm):
 openclaw plugins install @openclaw/nextcloud-talk
 ```
 
-Użyj samego pakietu, aby śledzić bieżący oficjalny tag wydania. Przypnij dokładną
-wersję tylko wtedy, gdy potrzebujesz powtarzalnej instalacji.
+Użyj samej nazwy pakietu, aby podążać za bieżącym oficjalnym tagiem wydania. Przypnij dokładną
+wersję tylko wtedy, gdy potrzebujesz odtwarzalnej instalacji.
 
 Lokalny checkout (podczas uruchamiania z repozytorium git):
 
@@ -37,23 +37,23 @@ Lokalny checkout (podczas uruchamiania z repozytorium git):
 openclaw plugins install ./path/to/local/nextcloud-talk-plugin
 ```
 
-Szczegóły: [Plugins](/pl/tools/plugin)
+Szczegóły: [Pluginy](/pl/tools/plugin)
 
 ## Szybka konfiguracja (dla początkujących)
 
 1. Upewnij się, że Plugin Nextcloud Talk jest dostępny.
-   - Aktualne spakowane wydania OpenClaw już go zawierają.
+   - Bieżące pakietowe wydania OpenClaw już go zawierają.
    - Starsze/niestandardowe instalacje mogą dodać go ręcznie za pomocą powyższych poleceń.
-2. Na serwerze Nextcloud utwórz bota:
+2. Na swoim serwerze Nextcloud utwórz bota:
 
    ```bash
-   ./occ talk:bot:install "OpenClaw" "<shared-secret>" "<webhook-url>" --feature reaction
+   ./occ talk:bot:install "OpenClaw" "<shared-secret>" "<webhook-url>" --feature webhook --feature response --feature reaction
    ```
 
-3. Włącz bota w ustawieniach pokoju docelowego.
+3. Włącz bota w ustawieniach docelowego pokoju.
 4. Skonfiguruj OpenClaw:
    - Konfiguracja: `channels.nextcloud-talk.baseUrl` + `channels.nextcloud-talk.botSecret`
-   - Lub env: `NEXTCLOUD_TALK_BOT_SECRET` (tylko konto domyślne)
+   - Albo env: `NEXTCLOUD_TALK_BOT_SECRET` (tylko konto domyślne)
 
    Konfiguracja CLI:
 
@@ -63,7 +63,7 @@ Szczegóły: [Plugins](/pl/tools/plugin)
      --token "<shared-secret>"
    ```
 
-   Równoważne jawne pola:
+   Równoważne pola jawne:
 
    ```bash
    openclaw channels add --channel nextcloud-talk \
@@ -98,9 +98,9 @@ Minimalna konfiguracja:
 
 ## Uwagi
 
-- Boty nie mogą inicjować DM. Użytkownik musi najpierw wysłać wiadomość do bota.
-- URL Webhook musi być osiągalny przez Gateway; ustaw `webhookPublicUrl`, jeśli znajduje się za proxy.
-- Przesyłanie multimediów nie jest obsługiwane przez API bota; multimedia są wysyłane jako URL-e.
+- Boty nie mogą inicjować DM. Użytkownik musi najpierw napisać do bota.
+- Adres URL Webhook musi być osiągalny przez Gateway; ustaw `webhookPublicUrl`, jeśli jest za proxy.
+- Przesyłanie multimediów nie jest obsługiwane przez API bota; multimedia są wysyłane jako adresy URL.
 - Ładunek Webhook nie rozróżnia DM i pokoi; ustaw `apiUser` + `apiPassword`, aby włączyć wyszukiwanie typu pokoju (w przeciwnym razie DM są traktowane jak pokoje).
 
 ## Kontrola dostępu (DM)
@@ -110,11 +110,11 @@ Minimalna konfiguracja:
   - `openclaw pairing list nextcloud-talk`
   - `openclaw pairing approve nextcloud-talk <CODE>`
 - Publiczne DM: `channels.nextcloud-talk.dmPolicy="open"` plus `channels.nextcloud-talk.allowFrom=["*"]`.
-- `allowFrom` dopasowuje wyłącznie identyfikatory użytkowników Nextcloud; nazwy wyświetlane są ignorowane.
+- `allowFrom` dopasowuje tylko identyfikatory użytkowników Nextcloud; nazwy wyświetlane są ignorowane.
 
 ## Pokoje (grupy)
 
-- Domyślnie: `channels.nextcloud-talk.groupPolicy = "allowlist"` (bramkowane wzmianką).
+- Domyślnie: `channels.nextcloud-talk.groupPolicy = "allowlist"` (bramka przez wzmiankę).
 - Dodaj pokoje do listy dozwolonych za pomocą `channels.nextcloud-talk.rooms`:
 
 ```json5
@@ -134,13 +134,13 @@ Minimalna konfiguracja:
 ## Możliwości
 
 | Funkcja             | Status          |
-| --------------- | ------------- |
+| ------------------- | --------------- |
 | Wiadomości bezpośrednie | Obsługiwane     |
 | Pokoje              | Obsługiwane     |
-| Wątki               | Nieobsługiwane |
-| Multimedia          | Tylko URL      |
+| Wątki               | Nieobsługiwane  |
+| Multimedia          | Tylko URL       |
 | Reakcje             | Obsługiwane     |
-| Polecenia natywne   | Nieobsługiwane |
+| Natywne polecenia   | Nieobsługiwane  |
 
 ## Dokumentacja konfiguracji (Nextcloud Talk)
 
@@ -149,34 +149,35 @@ Pełna konfiguracja: [Konfiguracja](/pl/gateway/configuration)
 Opcje dostawcy:
 
 - `channels.nextcloud-talk.enabled`: włącza/wyłącza uruchamianie kanału.
-- `channels.nextcloud-talk.baseUrl`: URL instancji Nextcloud.
+- `channels.nextcloud-talk.baseUrl`: adres URL instancji Nextcloud.
 - `channels.nextcloud-talk.botSecret`: współdzielony sekret bota.
-- `channels.nextcloud-talk.botSecretFile`: ścieżka do sekretu w zwykłym pliku. Symlinki są odrzucane.
+- `channels.nextcloud-talk.botSecretFile`: ścieżka do sekretu w zwykłym pliku. Dowiązania symboliczne są odrzucane.
 - `channels.nextcloud-talk.apiUser`: użytkownik API do wyszukiwania pokoi (wykrywanie DM).
 - `channels.nextcloud-talk.apiPassword`: hasło API/aplikacji do wyszukiwania pokoi.
 - `channels.nextcloud-talk.apiPasswordFile`: ścieżka do pliku hasła API.
 - `channels.nextcloud-talk.webhookPort`: port nasłuchiwania Webhook (domyślnie: 8788).
 - `channels.nextcloud-talk.webhookHost`: host Webhook (domyślnie: 0.0.0.0).
 - `channels.nextcloud-talk.webhookPath`: ścieżka Webhook (domyślnie: /nextcloud-talk-webhook).
-- `channels.nextcloud-talk.webhookPublicUrl`: zewnętrznie osiągalny URL Webhook.
+- `channels.nextcloud-talk.webhookPublicUrl`: zewnętrznie osiągalny adres URL Webhook.
 - `channels.nextcloud-talk.dmPolicy`: `pairing | allowlist | open | disabled`.
 - `channels.nextcloud-talk.allowFrom`: lista dozwolonych DM (identyfikatory użytkowników). `open` wymaga `"*"`.
 - `channels.nextcloud-talk.groupPolicy`: `allowlist | open | disabled`.
 - `channels.nextcloud-talk.groupAllowFrom`: lista dozwolonych grup (identyfikatory użytkowników).
 - `channels.nextcloud-talk.rooms`: ustawienia dla poszczególnych pokoi i lista dozwolonych.
+- Statyczne grupy dostępu nadawców mogą być przywoływane z `allowFrom` i `groupAllowFrom` za pomocą `accessGroup:<name>`.
 - `channels.nextcloud-talk.historyLimit`: limit historii grupy (0 wyłącza).
 - `channels.nextcloud-talk.dmHistoryLimit`: limit historii DM (0 wyłącza).
 - `channels.nextcloud-talk.dms`: nadpisania dla poszczególnych DM (historyLimit).
 - `channels.nextcloud-talk.textChunkLimit`: rozmiar wychodzącego fragmentu tekstu (znaki).
-- `channels.nextcloud-talk.chunkMode`: `length` (domyślnie) lub `newline`, aby dzielić po pustych wierszach (granicach akapitów) przed dzieleniem według długości.
-- `channels.nextcloud-talk.blockStreaming`: wyłącza streaming bloków dla tego kanału.
-- `channels.nextcloud-talk.blockStreamingCoalesce`: strojenie scalania streamingu bloków.
+- `channels.nextcloud-talk.chunkMode`: `length` (domyślnie) albo `newline`, aby dzielić według pustych wierszy (granic akapitów) przed dzieleniem według długości.
+- `channels.nextcloud-talk.blockStreaming`: wyłącza strumieniowanie bloków dla tego kanału.
+- `channels.nextcloud-talk.blockStreamingCoalesce`: dostrajanie scalania strumieniowania bloków.
 - `channels.nextcloud-talk.mediaMaxMb`: limit przychodzących multimediów (MB).
 
 ## Powiązane
 
 - [Przegląd kanałów](/pl/channels) — wszystkie obsługiwane kanały
 - [Parowanie](/pl/channels/pairing) — uwierzytelnianie DM i przepływ parowania
-- [Grupy](/pl/channels/groups) — zachowanie czatu grupowego i bramkowanie wzmianką
+- [Grupy](/pl/channels/groups) — zachowanie czatu grupowego i bramkowanie wzmiankami
 - [Routing kanałów](/pl/channels/channel-routing) — routing sesji dla wiadomości
-- [Bezpieczeństwo](/pl/gateway/security) — model dostępu i wzmacnianie bezpieczeństwa
+- [Bezpieczeństwo](/pl/gateway/security) — model dostępu i utwardzanie

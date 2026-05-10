@@ -1,28 +1,28 @@
 ---
 read_when:
-    - تحتاج إلى استدعاء الدوال المساعدة الأساسية من Plugin (TTS، STT، إنشاء الصور، البحث في الويب، الوكيل الفرعي، العقد)
+    - تحتاج إلى استدعاء الدوال المساعدة الأساسية من Plugin (TTS، وSTT، وتوليد الصور، وبحث الويب، ووكيل فرعي، والعُقد)
     - تريد فهم ما يتيحه api.runtime
-    - أنت تصل إلى الدوال المساعدة الخاصة بالتكوين أو الوكيل أو الوسائط من كود Plugin
+    - أنت تصل إلى مساعدات الإعدادات أو الوكيل أو الوسائط من كود Plugin
 sidebarTitle: Runtime helpers
-summary: api.runtime -- مساعدات وقت التشغيل المحقونة المتاحة لـ Plugins
+summary: api.runtime -- مساعدات وقت التشغيل المحقونة والمتاحة للـ Plugin
 title: مساعدات وقت تشغيل Plugin
 x-i18n:
-    generated_at: "2026-05-06T18:01:58Z"
+    generated_at: "2026-05-10T19:54:50Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 2ce16325613efc07bccb8baee3fdb46eb28452b760a6c265d3a25d36bfcbcf0f
+    source_hash: 7771eb89c8ce132cc3c908b3775a89243db310d3d3222452b21ec070a78cd23d
     source_path: plugins/sdk-runtime.md
     workflow: 16
 ---
 
-مرجع لكائن `api.runtime` الذي يُحقن في كل plugin أثناء التسجيل. استخدم هذه المساعدات بدلًا من استيراد داخليات المضيف مباشرة.
+مرجع لكائن `api.runtime` الذي يُحقن في كل plugin أثناء التسجيل. استخدم هذه المساعدات بدلًا من استيراد العناصر الداخلية للمضيف مباشرةً.
 
 <CardGroup cols={2}>
   <Card title="Channel plugins" href="/ar/plugins/sdk-channel-plugins">
-    دليل تفصيلي خطوة بخطوة يستخدم هذه المساعدات ضمن السياق مع plugins القنوات.
+    دليل خطوة بخطوة يستخدم هذه المساعدات في سياق channel plugins.
   </Card>
   <Card title="Provider plugins" href="/ar/plugins/sdk-provider-plugins">
-    دليل تفصيلي خطوة بخطوة يستخدم هذه المساعدات ضمن السياق مع plugins المزوّدين.
+    دليل خطوة بخطوة يستخدم هذه المساعدات في سياق provider plugins.
   </Card>
 </CardGroup>
 
@@ -32,32 +32,36 @@ register(api) {
 }
 ```
 
-## تحميل التكوين والكتابة
+## تحميل الإعدادات والكتابة
 
-فضّل التكوين الذي مُرّر بالفعل إلى مسار الاستدعاء النشط، مثل `api.config` أثناء التسجيل أو وسيطة `cfg` في استدعاءات القناة/المزوّد. هذا يُبقي لقطة عملية واحدة متدفقة عبر العمل بدلًا من إعادة تحليل التكوين في المسارات الساخنة.
+فضّل الإعدادات التي مُررت بالفعل إلى مسار الاستدعاء النشط، مثل `api.config` أثناء التسجيل أو وسيطة `cfg` في استدعاءات channel/provider. هذا يُبقي لقطة عملية واحدة تتدفق عبر العمل بدلًا من إعادة تحليل الإعدادات في المسارات الساخنة.
 
-استخدم `api.runtime.config.current()` فقط عندما يحتاج معالج طويل العمر إلى لقطة العملية الحالية ولم يُمرّر أي تكوين إلى تلك الدالة. القيمة المُعادة للقراءة فقط؛ انسخها أو استخدم مساعد تعديل قبل التحرير.
+استخدم `api.runtime.config.current()` فقط عندما يحتاج معالج طويل العمر إلى لقطة العملية الحالية ولم تُمرر أي إعدادات إلى تلك الدالة. القيمة المُعادة للقراءة فقط؛ انسخها أو استخدم مساعد تعديل قبل التحرير.
 
-تتلقى مصانع الأدوات `ctx.runtimeConfig` بالإضافة إلى `ctx.getRuntimeConfig()`. استخدم الجالب داخل استدعاء `execute` لأداة طويلة العمر عندما يمكن أن يتغير التكوين بعد إنشاء تعريف الأداة.
+تتلقى مصانع الأدوات `ctx.runtimeConfig` إضافةً إلى `ctx.getRuntimeConfig()`. استخدم دالة الجلب داخل استدعاء `execute` لأداة طويلة العمر عندما يمكن أن تتغير الإعدادات بعد إنشاء تعريف الأداة.
 
 احفظ التغييرات باستخدام `api.runtime.config.mutateConfigFile(...)` أو `api.runtime.config.replaceConfigFile(...)`. يجب أن تختار كل عملية كتابة سياسة `afterWrite` صريحة:
 
-- `afterWrite: { mode: "auto" }` يترك قرار إعادة التحميل لمخطط Gateway.
-- `afterWrite: { mode: "restart", reason: "..." }` يفرض إعادة تشغيل نظيفة عندما يعرف الكاتب أن إعادة التحميل الساخنة غير آمنة.
-- `afterWrite: { mode: "none", reason: "..." }` يمنع إعادة التحميل/إعادة التشغيل التلقائية فقط عندما يملك المستدعي إجراء المتابعة.
+- يتيح `afterWrite: { mode: "auto" }` لقرار إعادة تحميل Gateway التخطيطي أن يقرر.
+- يفرض `afterWrite: { mode: "restart", reason: "..." }` إعادة تشغيل نظيفة عندما يعرف الكاتب أن إعادة التحميل الساخنة غير آمنة.
+- يمنع `afterWrite: { mode: "none", reason: "..." }` إعادة التحميل/إعادة التشغيل التلقائية فقط عندما يملك المستدعي المتابعة.
 
-تعيد مساعدات التعديل `afterWrite` بالإضافة إلى ملخص `followUp` مطبوع حتى يتمكن المستدعون من تسجيل ما إذا كانوا قد طلبوا إعادة تشغيل أو اختباره. يظل Gateway هو مالك توقيت حدوث إعادة التشغيل فعليًا.
+تعيد مساعدات التعديل `afterWrite` إضافةً إلى ملخص `followUp` بنوع محدد لكي يستطيع المستدعون تسجيل ما إذا كانوا قد طلبوا إعادة تشغيل أو اختباره. يظل Gateway مالكًا لتوقيت حدوث إعادة التشغيل فعليًا.
 
-`api.runtime.config.loadConfig()` و`api.runtime.config.writeConfigFile(...)` هما مساعدا توافق مهمَلان تحت `runtime-config-load-write`. يُصدران تحذيرًا مرة واحدة في وقت التشغيل، ويظلان متاحين للـ plugins الخارجية القديمة أثناء نافذة الترحيل. يجب ألا تستخدمهما plugins المضمّنة؛ تفشل حراس حدود التكوين إذا استدعى كود plugin هذه المساعدات أو استوردها من المسارات الفرعية لـ plugin SDK.
+`api.runtime.config.loadConfig()` و`api.runtime.config.writeConfigFile(...)` هما مساعدا توافق مهملان ضمن `runtime-config-load-write`. يصدران تحذيرًا مرة واحدة أثناء التشغيل، ويظلان متاحين لـ plugins الخارجية القديمة خلال نافذة الترحيل. يجب ألا تستخدمهما plugins المضمنة؛ تفشل حراسات حدود الإعدادات إذا استدعى كود plugin هذه المساعدات أو استوردها من مسارات فرعية في plugin SDK.
 
-بالنسبة إلى استيرادات SDK المباشرة، استخدم المسارات الفرعية المركّزة للتكوين بدلًا من حزمة التوافق الواسعة
-`openclaw/plugin-sdk/config-runtime`: استخدم `config-types` للأنواع، و`plugin-config-runtime` لتأكيدات التكوين المحمّل مسبقًا والبحث عن مدخل plugin، و`runtime-config-snapshot` للقطات العملية الحالية، و`config-mutation` للكتابات. يجب أن تحاكي اختبارات plugins المضمّنة هذه المسارات الفرعية المركّزة مباشرة بدلًا من محاكاة حزمة التوافق الواسعة.
+بالنسبة إلى استيرادات SDK المباشرة، استخدم مسارات الإعدادات الفرعية المركزة بدلًا من
+برميل التوافق الواسع `openclaw/plugin-sdk/config-runtime`: استخدم `config-contracts` من أجل
+الأنواع، و`plugin-config-runtime` لتأكيدات الإعدادات المحملة مسبقًا والبحث عن مدخلات plugin،
+و`runtime-config-snapshot` للقطات العملية الحالية، و
+`config-mutation` للكتابات. يجب أن تحاكي اختبارات plugins المضمنة هذه
+المسارات الفرعية المركزة مباشرةً بدلًا من محاكاة برميل التوافق الواسع.
 
-يتبع كود وقت تشغيل OpenClaw الداخلي الاتجاه نفسه: حمّل التكوين مرة واحدة عند حد CLI أو Gateway أو العملية، ثم مرّر تلك القيمة عبر المسار. تحدّث كتابات التعديل الناجحة لقطة وقت تشغيل العملية وتقدّم مراجعتها الداخلية؛ يجب أن تعتمد ذاكرات التخزين المؤقت طويلة العمر على مفتاح التخزين المؤقت المملوك لوقت التشغيل بدلًا من تسلسل التكوين محليًا. لدى وحدات وقت التشغيل طويلة العمر ماسح بلا تسامح مع استدعاءات `loadConfig()` المحيطة؛ استخدم `cfg` مُمرّرًا، أو `context.getRuntimeConfig()` للطلب، أو `getRuntimeConfig()` عند حد عملية صريح.
+كود تشغيل OpenClaw الداخلي له الاتجاه نفسه: حمّل الإعدادات مرة واحدة عند حدود CLI أو Gateway أو العملية، ثم مرر تلك القيمة عبر المسار. تحدّث كتابات التعديل الناجحة لقطة تشغيل العملية وتقدم مراجعتها الداخلية؛ يجب أن تعتمد الذاكرات المؤقتة طويلة العمر على مفتاح الذاكرة المؤقتة المملوك للتشغيل بدلًا من تسلسل الإعدادات محليًا. لدى وحدات التشغيل طويلة العمر ماسح بلا تسامح لاستدعاءات `loadConfig()` المحيطة؛ استخدم `cfg` ممررة، أو `context.getRuntimeConfig()` للطلب، أو `getRuntimeConfig()` عند حد عملية صريح.
 
-يجب أن تستخدم مسارات تنفيذ المزوّد والقناة لقطة تكوين وقت التشغيل النشطة، لا لقطة ملف مُعادة لقراءة التكوين أو تحريره. تحتفظ لقطات الملف بقيم المصدر مثل علامات SecretRef لواجهة المستخدم والكتابات؛ تحتاج استدعاءات المزوّد إلى منظور وقت التشغيل المحلول. عندما يمكن استدعاء مساعد إما بلقطة المصدر النشطة أو لقطة وقت التشغيل النشطة، مرّر عبر `selectApplicableRuntimeConfig()` قبل قراءة بيانات الاعتماد.
+يجب أن تستخدم مسارات تنفيذ provider وchannel لقطة إعدادات التشغيل النشطة، وليس لقطة ملف مُعادة لقراءة الإعدادات أو تحريرها. تحتفظ لقطات الملفات بقيم المصدر مثل علامات SecretRef لواجهة المستخدم والكتابات؛ تحتاج استدعاءات provider إلى عرض التشغيل المحلول. عندما يمكن استدعاء مساعد إما بلقطة المصدر النشطة أو لقطة التشغيل النشطة، مرر عبر `selectApplicableRuntimeConfig()` قبل قراءة بيانات الاعتماد.
 
-## نطاقات وقت التشغيل
+## مساحات أسماء التشغيل
 
 <AccordionGroup>
   <Accordion title="api.runtime.agent">
@@ -105,15 +109,15 @@ register(api) {
     });
     ```
 
-    `runEmbeddedAgent(...)` هو المساعد المحايد لبدء دور وكيل OpenClaw عادي من كود plugin. يستخدم حل المزوّد/النموذج نفسه واختيار عُدّة الوكيل نفسها كما في الردود التي تُشغّلها القنوات.
+    `runEmbeddedAgent(...)` هو المساعد المحايد لبدء دورة وكيل OpenClaw عادية من كود plugin. يستخدم آلية الحل نفسها لـ provider/model واختيار عدة الوكيل كما في الردود المُشغلة من channel.
 
     يظل `runEmbeddedPiAgent(...)` اسمًا مستعارًا للتوافق.
 
-    يعيد `resolveThinkingPolicy(...)` مستويات التفكير التي يدعمها المزوّد/النموذج والافتراضي الاختياري. تملك plugins المزوّدين الملف التعريفي الخاص بالنموذج عبر خطافات التفكير الخاصة بها، لذا يجب أن تستدعي plugins الأدوات مساعد وقت التشغيل هذا بدلًا من استيراد قوائم المزوّدين أو تكرارها.
+    يعيد `resolveThinkingPolicy(...)` مستويات التفكير المدعومة لـ provider/model والقيمة الافتراضية الاختيارية. تملك provider plugins ملف التعريف الخاص بالنموذج عبر خطافات التفكير الخاصة بها، لذلك يجب أن تستدعي tool plugins مساعد التشغيل هذا بدلًا من استيراد قوائم provider أو تكرارها.
 
-    يحوّل `normalizeThinkingLevel(...)` نص المستخدم مثل `on` أو `x-high` أو `extra high` إلى المستوى المخزّن القياسي قبل فحصه مقابل السياسة المحلولة.
+    يحوّل `normalizeThinkingLevel(...)` نص المستخدم مثل `on` أو `x-high` أو `extra high` إلى المستوى المخزن القياسي قبل التحقق منه مقابل السياسة المحلولة.
 
-    **مساعدات مخزن الجلسات** موجودة تحت `api.runtime.agent.session`:
+    **مساعدات مخزن الجلسات** موجودة ضمن `api.runtime.agent.session`:
 
     ```typescript
     const storePath = api.runtime.agent.session.resolveStorePath(cfg);
@@ -125,11 +129,11 @@ register(api) {
     const filePath = api.runtime.agent.session.resolveSessionFilePath(cfg, sessionId);
     ```
 
-    فضّل `updateSessionStore(...)` أو `updateSessionStoreEntry(...)` لكتابات وقت التشغيل. تمر عبر كاتب مخزن الجلسات المملوك لـ Gateway، وتحافظ على التحديثات المتزامنة، وتعيد استخدام ذاكرة التخزين المؤقت الساخنة. يظل `saveSessionStore(...)` متاحًا للتوافق وإعادات الكتابة بأسلوب الصيانة دون اتصال.
+    فضّل `updateSessionStore(...)` أو `updateSessionStoreEntry(...)` لكتابات التشغيل. تمر عبر كاتب مخزن الجلسات المملوك لـ Gateway، وتحافظ على التحديثات المتزامنة، وتعيد استخدام الذاكرة المؤقتة الساخنة. يظل `saveSessionStore(...)` متاحًا للتوافق وإعادة الكتابة بأسلوب الصيانة دون اتصال.
 
   </Accordion>
   <Accordion title="api.runtime.agent.defaults">
-    ثوابت النموذج والمزوّد الافتراضية:
+    ثوابت النموذج وprovider الافتراضية:
 
     ```typescript
     const model = api.runtime.agent.defaults.model; // e.g. "anthropic/claude-sonnet-4-6"
@@ -137,8 +141,34 @@ register(api) {
     ```
 
   </Accordion>
+
+  <Accordion title="api.runtime.llm">
+    شغّل إكمالًا نصيًا مملوكًا للمضيف دون استيراد العناصر الداخلية لـ provider أو
+    تكرار إعداد OpenClaw للنموذج/المصادقة/عنوان URL الأساسي.
+
+    ```typescript
+    const result = await api.runtime.llm.complete({
+      messages: [{ role: "user", content: "Summarize this transcript." }],
+      purpose: "my-plugin.summary",
+      maxTokens: 512,
+      temperature: 0.2,
+    });
+    ```
+
+    يستخدم المساعد مسار إعداد الإكمال البسيط نفسه الذي يستخدمه تشغيل OpenClaw
+    المدمج ولقطة إعدادات التشغيل المملوكة للمضيف. تتلقى محركات السياق
+    قدرة `llm.complete` مرتبطة بالجلسة، لذلك تستخدم استدعاءات النموذج وكيل
+    الجلسة النشطة ولا تعود بصمت إلى الوكيل الافتراضي. تتضمن
+    النتيجة إسناد provider/model/agent إضافةً إلى استخدام normalized token،
+    والذاكرة المؤقتة، والتكلفة التقديرية عند توفرها.
+
+    <Warning>
+    تتطلب تجاوزات النموذج موافقة المشغل عبر `plugins.entries.<id>.llm.allowModelOverride: true` في الإعدادات. استخدم `plugins.entries.<id>.llm.allowedModels` لتقييد plugins الموثوقة بأهداف `provider/model` قياسية محددة. تتطلب الإكمالات عبر الوكلاء `plugins.entries.<id>.llm.allowAgentIdOverride: true`.
+    </Warning>
+
+  </Accordion>
   <Accordion title="api.runtime.subagent">
-    تشغيل وإدارة عمليات وكيل فرعي في الخلفية.
+    شغّل وأدر عمليات subagent في الخلفية.
 
     ```typescript
     // Start a subagent run
@@ -166,14 +196,14 @@ register(api) {
     ```
 
     <Warning>
-    تتطلب تجاوزات النموذج (`provider`/`model`) موافقة المشغّل عبر `plugins.entries.<id>.subagent.allowModelOverride: true` في التكوين. لا تزال plugins غير الموثوقة قادرة على تشغيل وكلاء فرعيين، لكن طلبات التجاوز تُرفض.
+    تتطلب تجاوزات النموذج (`provider`/`model`) موافقة المشغل عبر `plugins.entries.<id>.subagent.allowModelOverride: true` في الإعدادات. ما زالت plugins غير الموثوقة قادرة على تشغيل subagents، لكن تُرفض طلبات التجاوز.
     </Warning>
 
-    يمكن لـ `deleteSession(...)` حذف الجلسات التي أنشأها plugin نفسه عبر `api.runtime.subagent.run(...)`. لا يزال حذف جلسات المستخدمين أو المشغّلين الاعتباطية يتطلب طلب Gateway بنطاق مسؤول.
+    يمكن لـ `deleteSession(...)` حذف الجلسات التي أنشأها plugin نفسه عبر `api.runtime.subagent.run(...)`. لا يزال حذف جلسات المستخدم أو المشغل العشوائية يتطلب طلب Gateway بنطاق admin.
 
   </Accordion>
   <Accordion title="api.runtime.nodes">
-    سرد العُقد المتصلة واستدعاء أمر مستضاف على عقدة من كود plugin المحمّل بواسطة Gateway أو من أوامر CLI الخاصة بـ plugin. استخدم هذا عندما يملك plugin عملًا محليًا على جهاز مقترن، مثل جسر متصفح أو صوت على جهاز Mac آخر.
+    اسرد العقد المتصلة واستدعِ أمرًا مستضافًا على عقدة من كود plugin المحمل بواسطة Gateway أو من أوامر CLI الخاصة بـ plugin. استخدم هذا عندما يملك plugin عملًا محليًا على جهاز مقترن، مثل متصفح أو جسر صوت على Mac آخر.
 
     ```typescript
     const { nodes } = await api.runtime.nodes.list({ connected: true });
@@ -186,13 +216,13 @@ register(api) {
     });
     ```
 
-    داخل Gateway يكون وقت التشغيل هذا ضمن العملية. في أوامر CLI الخاصة بـ plugin، يستدعي Gateway المُكوّن عبر RPC، لذا يمكن لأوامر مثل `openclaw googlemeet recover-tab` فحص العُقد المقترنة من الطرفية. لا تزال أوامر Node تمر عبر اقتران عُقد Gateway العادي، وقوائم السماح للأوامر، وسياسات استدعاء العقد من plugin، ومعالجة الأوامر المحلية للعقدة.
+    داخل Gateway يكون هذا التشغيل ضمن العملية. في أوامر CLI الخاصة بـ plugin يستدعي Gateway المكون عبر RPC، لذلك يمكن لأوامر مثل `openclaw googlemeet recover-tab` فحص العقد المقترنة من الطرفية. ما زالت أوامر Node تمر عبر اقتران عقد Gateway العادي، وقوائم السماح بالأوامر، وسياسات استدعاء عقد plugin، ومعالجة الأوامر المحلية للعقدة.
 
-    يجب على plugins التي تكشف أوامر خطرة مستضافة على عقدة تسجيل سياسة استدعاء عقدة باستخدام `api.registerNodeInvokePolicy(...)`. تعمل السياسة في Gateway بعد فحوصات قوائم السماح للأوامر وقبل تمرير الأمر إلى العقدة، لذا تشترك استدعاءات `node.invoke` المباشرة وأدوات plugin الأعلى مستوى في مسار الإنفاذ نفسه.
+    يجب على plugins التي تعرض أوامر خطرة مستضافة على العقدة تسجيل سياسة استدعاء عقدة باستخدام `api.registerNodeInvokePolicy(...)`. تعمل السياسة في Gateway بعد فحوصات قائمة السماح بالأوامر وقبل تمرير الأمر إلى العقدة، لذلك تشترك استدعاءات `node.invoke` المباشرة وأدوات plugin ذات المستوى الأعلى في مسار الإنفاذ نفسه.
 
   </Accordion>
   <Accordion title="api.runtime.tasks.managedFlows">
-    اربط وقت تشغيل Task Flow بمفتاح جلسة OpenClaw موجود أو سياق أداة موثوق، ثم أنشئ Task Flows وأدرها دون تمرير مالك في كل استدعاء.
+    اربط تشغيل Task Flow بمفتاح جلسة OpenClaw موجود أو بسياق أداة موثوق، ثم أنشئ وأدر Task Flows دون تمرير مالك في كل استدعاء.
 
     ```typescript
     const taskFlow = api.runtime.tasks.managedFlows.fromToolContext(ctx);
@@ -219,11 +249,11 @@ register(api) {
     });
     ```
 
-    استخدم `bindSession({ sessionKey, requesterOrigin })` عندما يكون لديك بالفعل مفتاح جلسة OpenClaw موثوق من طبقة الربط الخاصة بك. لا تربط من إدخال مستخدم خام.
+    استخدم `bindSession({ sessionKey, requesterOrigin })` عندما يكون لديك بالفعل مفتاح جلسة OpenClaw موثوق من طبقة الربط الخاصة بك. لا تربط من مدخلات المستخدم الخام.
 
   </Accordion>
   <Accordion title="api.runtime.tts">
-    تركيب النص إلى كلام.
+    توليف الكلام من النص.
 
     ```typescript
     // Standard TTS
@@ -245,7 +275,7 @@ register(api) {
     });
     ```
 
-    يستخدم تكوين `messages.tts` الأساسي واختيار المزوّد. يعيد مخزن صوت PCM مؤقتًا + معدل العينة.
+    يستخدم إعدادات `messages.tts` الأساسية واختيار المزود. يعيد مخزن صوت PCM + معدل العينة.
 
   </Accordion>
   <Accordion title="api.runtime.mediaUnderstanding">
@@ -279,15 +309,15 @@ register(api) {
     });
     ```
 
-    يعيد `{ text: undefined }` عندما لا يتم إنتاج أي مخرجات (مثل الإدخال الذي تم تخطيه).
+    يعيد `{ text: undefined }` عندما لا يُنتج أي مخرج (مثلًا عند تخطي الإدخال).
 
     <Info>
-    يبقى `api.runtime.stt.transcribeAudioFile(...)` اسمًا مستعارًا للتوافق مع `api.runtime.mediaUnderstanding.transcribeAudioFile(...)`.
+    يبقى `api.runtime.stt.transcribeAudioFile(...)` اسمًا بديلًا للتوافق مع `api.runtime.mediaUnderstanding.transcribeAudioFile(...)`.
     </Info>
 
   </Accordion>
   <Accordion title="api.runtime.imageGeneration">
-    إنشاء الصور.
+    توليد الصور.
 
     ```typescript
     const result = await api.runtime.imageGeneration.generate({
@@ -300,7 +330,7 @@ register(api) {
 
   </Accordion>
   <Accordion title="api.runtime.webSearch">
-    البحث في الويب.
+    بحث الويب.
 
     ```typescript
     const providers = api.runtime.webSearch.listProviders({ config: api.config });
@@ -313,7 +343,7 @@ register(api) {
 
   </Accordion>
   <Accordion title="api.runtime.media">
-    أدوات وسائط منخفضة المستوى.
+    أدوات مساعدة منخفضة المستوى للوسائط.
 
     ```typescript
     const webMedia = await api.runtime.media.loadWebMedia(url);
@@ -338,8 +368,8 @@ register(api) {
 
   </Accordion>
   <Accordion title="api.runtime.config">
-    لقطة الإعدادات الحالية في وقت التشغيل وعمليات كتابة الإعدادات المعاملاتية. فضّل
-    الإعدادات التي تم تمريرها بالفعل إلى مسار الاستدعاء النشط؛ استخدم
+    لقطة إعدادات وقت التشغيل الحالية وعمليات كتابة إعدادات معاملية. فضّل
+    الإعدادات التي مُرّرت بالفعل إلى مسار الاستدعاء النشط؛ استخدم
     `current()` فقط عندما يحتاج المعالج إلى لقطة العملية مباشرة.
 
     ```typescript
@@ -354,12 +384,12 @@ register(api) {
 
     يعيد `mutateConfigFile(...)` و`replaceConfigFile(...)` قيمة `followUp`،
     على سبيل المثال `{ mode: "restart", requiresRestart: true, reason }`،
-    والتي تسجل نية الكاتب دون سحب التحكم في إعادة التشغيل من
-    gateway.
+    التي تسجل نية الكاتب من دون أخذ التحكم في إعادة التشغيل من
+    Gateway.
 
   </Accordion>
   <Accordion title="api.runtime.system">
-    أدوات على مستوى النظام.
+    أدوات مساعدة على مستوى النظام.
 
     ```typescript
     await api.runtime.system.enqueueSystemEvent(event);
@@ -397,7 +427,7 @@ register(api) {
 
   </Accordion>
   <Accordion title="api.runtime.modelAuth">
-    حل مصادقة النموذج والمزوّد.
+    حل مصادقة النماذج والمزودين.
 
     ```typescript
     const auth = await api.runtime.modelAuth.getApiKeyForModel({ model, cfg });
@@ -409,7 +439,7 @@ register(api) {
 
   </Accordion>
   <Accordion title="api.runtime.state">
-    حل دليل الحالة والتخزين ذي المفاتيح المدعوم بـ SQLite.
+    حل دليل الحالة وتخزين مفاتيح مدعوم بـ SQLite.
 
     ```typescript
     const stateDir = api.runtime.state.resolveStateDir(process.env);
@@ -426,10 +456,10 @@ register(api) {
     await store.clear();
     ```
 
-    تبقى المخازن ذات المفاتيح بعد عمليات إعادة التشغيل وتُعزل حسب معرّف Plugin المرتبط بوقت التشغيل. استخدم `registerIfAbsent(...)` لمطالبات إزالة التكرار الذرية: يعيد `true` عندما يكون المفتاح مفقودًا أو منتهي الصلاحية وتم تسجيله، أو `false` عندما تكون قيمة حية موجودة بالفعل دون الكتابة فوق قيمتها أو وقت إنشائها أو مدة صلاحيتها. الحدود: `maxEntries` لكل مساحة اسم، و1,000 صف حي لكل Plugin، وقيم JSON أقل من 64 كيلوبايت، وانتهاء صلاحية اختياري عبر TTL.
+    تبقى مخازن المفاتيح بعد إعادة التشغيل وتُعزل بواسطة معرّف Plugin المرتبط بوقت التشغيل. استخدم `registerIfAbsent(...)` لمطالبات إزالة التكرار الذرية: فهي تعيد `true` عندما يكون المفتاح مفقودًا أو منتهي الصلاحية وتم تسجيله، أو `false` عندما تكون هناك قيمة نشطة موجودة بالفعل من دون استبدال قيمتها أو وقت إنشائها أو TTL الخاصة بها. الحدود: `maxEntries` لكل نطاق اسم، و1,000 صف نشط لكل Plugin، وقيم JSON أقل من 64KB، وانتهاء صلاحية TTL اختياري.
 
     <Warning>
-    Plugins المضمّنة فقط في هذا الإصدار.
+    Plugins المضمنة فقط في هذا الإصدار.
     </Warning>
 
   </Accordion>
@@ -444,9 +474,9 @@ register(api) {
 
   </Accordion>
   <Accordion title="api.runtime.channel">
-    مساعدات وقت التشغيل الخاصة بالقناة (متاحة عند تحميل Plugin قناة).
+    مساعدات وقت تشغيل خاصة بالقناة (متاحة عند تحميل Plugin قناة).
 
-    `api.runtime.channel.mentions` هو سطح سياسة الإشارة الواردة المشترك لـ Plugins القنوات المضمّنة التي تستخدم الحقن في وقت التشغيل:
+    `api.runtime.channel.mentions` هو سطح سياسة الإشارات الواردة المشترك لـPlugins القنوات المضمنة التي تستخدم حقن وقت التشغيل:
 
     ```typescript
     const mentionMatch = api.runtime.channel.mentions.matchesMentionWithExplicit(text, {
@@ -481,7 +511,7 @@ register(api) {
     - `implicitMentionKindWhen`
     - `resolveInboundMentionDecision`
 
-    لا يعرض `api.runtime.channel.mentions` عمدًا مساعدات التوافق الأقدم `resolveMentionGating*`. فضّل مسار `{ facts, policy }` الموحّد.
+    لا يكشف `api.runtime.channel.mentions` عمدًا عن مساعدات التوافق الأقدم `resolveMentionGating*`. فضّل مسار `{ facts, policy }` المطبّع.
 
   </Accordion>
 </AccordionGroup>
@@ -491,7 +521,7 @@ register(api) {
 استخدم `createPluginRuntimeStore` لتخزين مرجع وقت التشغيل لاستخدامه خارج رد النداء `register`:
 
 <Steps>
-  <Step title="Create the store">
+  <Step title="إنشاء المخزن">
     ```typescript
     import { createPluginRuntimeStore } from "openclaw/plugin-sdk/runtime-store";
     import type { PluginRuntime } from "openclaw/plugin-sdk/runtime-store";
@@ -503,7 +533,7 @@ register(api) {
     ```
 
   </Step>
-  <Step title="Wire into the entry point">
+  <Step title="توصيله بنقطة الدخول">
     ```typescript
     export default defineChannelPluginEntry({
       id: "my-plugin",
@@ -514,7 +544,7 @@ register(api) {
     });
     ```
   </Step>
-  <Step title="Access from other files">
+  <Step title="الوصول من ملفات أخرى">
     ```typescript
     export function getRuntime() {
       return store.getRuntime(); // throws if not initialized
@@ -529,12 +559,12 @@ register(api) {
 </Steps>
 
 <Note>
-فضّل `pluginId` لهوية مخزن وقت التشغيل. صيغة `key` الأدنى مستوى مخصصة للحالات غير الشائعة التي يحتاج فيها Plugin واحد عمدًا إلى أكثر من خانة وقت تشغيل واحدة.
+فضّل `pluginId` لهوية مخزن وقت التشغيل. صيغة `key` منخفضة المستوى مخصصة للحالات غير الشائعة التي يحتاج فيها Plugin واحد عمدًا إلى أكثر من خانة وقت تشغيل واحدة.
 </Note>
 
 ## حقول `api` علوية المستوى الأخرى
 
-إضافة إلى `api.runtime`، يوفر كائن API أيضًا:
+إلى جانب `api.runtime`، يوفر كائن API أيضًا:
 
 <ParamField path="api.id" type="string">
   معرّف Plugin.
@@ -543,23 +573,23 @@ register(api) {
   اسم عرض Plugin.
 </ParamField>
 <ParamField path="api.config" type="OpenClawConfig">
-  لقطة الإعدادات الحالية (لقطة وقت التشغيل النشطة في الذاكرة عند توفرها).
+  لقطة الإعدادات الحالية (لقطة وقت التشغيل النشطة داخل الذاكرة عند توفرها).
 </ParamField>
 <ParamField path="api.pluginConfig" type="Record<string, unknown>">
-  إعدادات خاصة بـ Plugin من `plugins.entries.<id>.config`.
+  إعدادات خاصة بـPlugin من `plugins.entries.<id>.config`.
 </ParamField>
 <ParamField path="api.logger" type="PluginLogger">
   مسجل محدود النطاق (`debug`، `info`، `warn`، `error`).
 </ParamField>
 <ParamField path="api.registrationMode" type="PluginRegistrationMode">
-  وضع التحميل الحالي؛ `"setup-runtime"` هو نافذة بدء/إعداد خفيفة قبل الإدخال الكامل.
+  وضع التحميل الحالي؛ `"setup-runtime"` هو نافذة بدء/إعداد خفيفة قبل نقطة الدخول الكاملة.
 </ParamField>
 <ParamField path="api.resolvePath(input)" type="(string) => string">
   حل مسار نسبيًا إلى جذر Plugin.
 </ParamField>
 
-## ذات صلة
+## ذو صلة
 
 - [داخليات Plugin](/ar/plugins/architecture) — نموذج القدرات والسجل
-- [نقاط إدخال SDK](/ar/plugins/sdk-entrypoints) — خيارات `definePluginEntry`
-- [نظرة عامة على SDK](/ar/plugins/sdk-overview) — مرجع المسار الفرعي
+- [نقاط دخول SDK](/ar/plugins/sdk-entrypoints) — خيارات `definePluginEntry`
+- [نظرة عامة على SDK](/ar/plugins/sdk-overview) — مرجع المسارات الفرعية

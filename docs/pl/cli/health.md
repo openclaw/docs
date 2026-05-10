@@ -1,13 +1,13 @@
 ---
 read_when:
     - Chcesz szybko sprawdzić stan działającego Gateway
-summary: Dokumentacja referencyjna CLI dla `openclaw health` (zrzut stanu kondycji Gateway za pośrednictwem RPC)
-title: Stan
+summary: Dokumentacja referencyjna CLI dla `openclaw health` (migawka kondycji Gateway za pomocą RPC)
+title: Kondycja
 x-i18n:
-    generated_at: "2026-05-06T09:05:19Z"
+    generated_at: "2026-05-10T19:29:01Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 443684af04efce2c54a6679e13b0bff0a5c1869f85d60fae0e853aed0a362226
+    source_hash: 26be7bbbf75c2eca1213fe145fdeeab6fee96798dff457278ac69a20145bf75d
     source_path: cli/health.md
     workflow: 16
 ---
@@ -16,12 +16,14 @@ x-i18n:
 
 Pobiera stan z działającego Gateway.
 
-Opcje:
+## Opcje
 
-- `--json`: dane wyjściowe czytelne maszynowo
-- `--timeout <ms>`: limit czasu połączenia w milisekundach (domyślnie `10000`)
-- `--verbose`: szczegółowe logowanie
-- `--debug`: alias dla `--verbose`
+| Flaga            | Domyślne | Opis                                                                    |
+| ---------------- | -------- | ----------------------------------------------------------------------- |
+| `--json`         | `false`  | Wypisuje JSON czytelny maszynowo zamiast tekstu.                        |
+| `--timeout <ms>` | `10000`  | Limit czasu połączenia w milisekundach.                                 |
+| `--verbose`      | `false`  | Szczegółowe logowanie. Wymusza sondowanie na żywo i rozszerza dane wyjściowe dla każdego agenta. |
+| `--debug`        | `false`  | Alias dla `--verbose`.                                                  |
 
 Przykłady:
 
@@ -35,12 +37,12 @@ openclaw health --debug
 
 Uwagi:
 
-- Domyślne `openclaw health` pyta działający gateway o migawkę jego stanu. Gdy
-  gateway ma już świeżą migawkę w pamięci podręcznej, może zwrócić te dane z pamięci podręcznej i
-  odświeżyć je w tle.
-- `--verbose` wymusza sondę na żywo, wypisuje szczegóły połączenia z gateway i rozszerza
+- Domyślnie `openclaw health` pyta działający Gateway o migawkę jego stanu. Gdy
+  Gateway ma już świeżą migawkę w pamięci podręcznej, może zwrócić ten buforowany ładunek i
+  odświeżyć go w tle.
+- `--verbose` wymusza sondowanie na żywo, wypisuje szczegóły połączenia z Gateway i rozszerza
   czytelne dla człowieka dane wyjściowe na wszystkie skonfigurowane konta i agentów.
-- Dane wyjściowe obejmują magazyny sesji poszczególnych agentów, gdy skonfigurowano wielu agentów.
+- Dane wyjściowe obejmują magazyny sesji dla każdego agenta, gdy skonfigurowano wielu agentów.
 
 ## Powiązane
 

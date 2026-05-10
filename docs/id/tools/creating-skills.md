@@ -1,27 +1,27 @@
 ---
 read_when:
-    - Anda sedang membuat skill kustom baru di ruang kerja Anda
-    - Anda membutuhkan alur kerja awal yang cepat untuk Skills berbasis SKILL.md
-summary: Buat dan uji Skills ruang kerja kustom dengan SKILL.md
+    - Anda sedang membuat keterampilan kustom baru di ruang kerja Anda
+    - Anda memerlukan alur kerja awal yang cepat untuk Skills berbasis SKILL.md
+summary: Bangun dan uji Skills ruang kerja kustom dengan SKILL.md
 title: Membuat Skills
 x-i18n:
-    generated_at: "2026-04-30T10:14:36Z"
+    generated_at: "2026-05-10T19:54:42Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 201718f4088f4243b0dabe12fb4fce4b8a7e64df9a4b7d651356ab4ae0dd3579
+    source_hash: a468a0b21f4e43542b175b8acb8ad8b19dbbea06ce8e0b97c48206bf88a661c5
     source_path: tools/creating-skills.md
     workflow: 16
 ---
 
-Skills mengajari agen bagaimana dan kapan menggunakan alat. Setiap skill adalah sebuah direktori
+Skills mengajarkan agen bagaimana dan kapan menggunakan alat. Setiap skill adalah sebuah direktori
 yang berisi file `SKILL.md` dengan frontmatter YAML dan instruksi markdown.
 
-Untuk cara skills dimuat dan diprioritaskan, lihat [Skills](/id/tools/skills).
+Untuk cara Skills dimuat dan diprioritaskan, lihat [Skills](/id/tools/skills).
 
 ## Buat skill pertama Anda
 
 <Steps>
-  <Step title="Buat direktori skill">
+  <Step title="Create the skill directory">
     Skills berada di workspace Anda. Buat folder baru:
 
     ```bash
@@ -30,9 +30,9 @@ Untuk cara skills dimuat dan diprioritaskan, lihat [Skills](/id/tools/skills).
 
   </Step>
 
-  <Step title="Tulis SKILL.md">
+  <Step title="Write SKILL.md">
     Buat `SKILL.md` di dalam direktori tersebut. Frontmatter mendefinisikan metadata,
-    dan isi markdown memuat instruksi untuk agen.
+    dan isi markdown berisi instruksi untuk agen.
 
     ```markdown
     ---
@@ -47,18 +47,18 @@ Untuk cara skills dimuat dan diprioritaskan, lihat [Skills](/id/tools/skills).
     ```
 
     Gunakan hyphen-case dengan huruf kecil, digit, dan tanda hubung untuk `name`
-    skill. Jaga agar nama folder dan `name` frontmatter tetap selaras.
+    skill. Pastikan nama folder dan `name` frontmatter selaras.
 
   </Step>
 
-  <Step title="Tambahkan alat (opsional)">
-    Anda dapat mendefinisikan skema alat khusus di frontmatter atau menginstruksikan agen
+  <Step title="Add tools (optional)">
+    Anda dapat mendefinisikan skema alat kustom di frontmatter atau menginstruksikan agen
     untuk menggunakan alat sistem yang sudah ada (seperti `exec` atau `browser`). Skills juga dapat
-    dikirim di dalam plugin bersama alat yang didokumentasikannya.
+    dikirimkan di dalam plugin bersama alat yang didokumentasikannya.
 
   </Step>
 
-  <Step title="Muat skill">
+  <Step title="Load the skill">
     Mulai sesi baru agar OpenClaw mengambil skill tersebut:
 
     ```bash
@@ -77,14 +77,14 @@ Untuk cara skills dimuat dan diprioritaskan, lihat [Skills](/id/tools/skills).
 
   </Step>
 
-  <Step title="Uji">
+  <Step title="Test it">
     Kirim pesan yang seharusnya memicu skill:
 
     ```bash
     openclaw agent --message "give me a greeting"
     ```
 
-    Atau cukup mengobrol dengan agen dan minta sapaan.
+    Atau cukup mengobrol dengan agen dan meminta sapaan.
 
   </Step>
 </Steps>
@@ -93,22 +93,22 @@ Untuk cara skills dimuat dan diprioritaskan, lihat [Skills](/id/tools/skills).
 
 Frontmatter YAML mendukung bidang berikut:
 
-| Bidang                              | Wajib | Deskripsi                                                      |
-| ----------------------------------- | ----- | -------------------------------------------------------------- |
+| Bidang                              | Wajib | Deskripsi                                                       |
+| ----------------------------------- | ----- | --------------------------------------------------------------- |
 | `name`                              | Ya    | Pengidentifikasi unik menggunakan huruf kecil, digit, dan tanda hubung |
-| `description`                       | Ya    | Deskripsi satu baris yang ditampilkan kepada agen              |
-| `metadata.openclaw.os`              | Tidak | Filter OS (`["darwin"]`, `["linux"]`, dll.)                    |
-| `metadata.openclaw.requires.bins`   | Tidak | Biner wajib di PATH                                            |
-| `metadata.openclaw.requires.config` | Tidak | Kunci konfigurasi wajib                                        |
+| `description`                       | Ya    | Deskripsi satu baris yang ditampilkan kepada agen               |
+| `metadata.openclaw.os`              | Tidak | Filter OS (`["darwin"]`, `["linux"]`, dll.)                     |
+| `metadata.openclaw.requires.bins`   | Tidak | Biner wajib di PATH                                             |
+| `metadata.openclaw.requires.config` | Tidak | Kunci konfigurasi wajib                                         |
 
 ## Praktik terbaik
 
-- **Ringkas** — instruksikan model tentang _apa_ yang harus dilakukan, bukan bagaimana menjadi AI
-- **Utamakan keamanan** — jika skill Anda menggunakan `exec`, pastikan prompt tidak mengizinkan injeksi perintah arbitrer dari input yang tidak tepercaya
-- **Uji secara lokal** — gunakan `openclaw agent --message "..."` untuk menguji sebelum membagikan
+- **Ringkas** — instruksikan model tentang _apa_ yang harus dilakukan, bukan cara menjadi AI
+- **Keselamatan terlebih dahulu** — jika skill Anda menggunakan `exec`, pastikan prompt tidak mengizinkan injeksi perintah arbitrer dari input yang tidak tepercaya
+- **Uji secara lokal** — gunakan `openclaw agent --message "..."` untuk menguji sebelum berbagi
 - **Gunakan ClawHub** — jelajahi dan kontribusikan skills di [ClawHub](https://clawhub.ai)
 
-## Tempat skills berada
+## Lokasi Skills
 
 | Lokasi                          | Prioritas | Cakupan               |
 | ------------------------------- | --------- | --------------------- |
@@ -116,12 +116,12 @@ Frontmatter YAML mendukung bidang berikut:
 | `\<workspace\>/.agents/skills/` | Tinggi    | Agen per workspace    |
 | `~/.agents/skills/`             | Sedang    | Profil agen bersama   |
 | `~/.openclaw/skills/`           | Sedang    | Bersama (semua agen)  |
-| Bundled (dikirim bersama OpenClaw) | Rendah | Global                |
-| `skills.load.extraDirs`         | Terendah  | Folder bersama khusus |
+| Terbundel (dikirimkan bersama OpenClaw) | Rendah | Global                |
+| `skills.load.extraDirs`         | Terendah  | Folder bersama kustom |
 
 ## Terkait
 
-- [Referensi Skills](/id/tools/skills) — aturan pemuatan, prioritas, dan gating
+- [Referensi Skills](/id/tools/skills) — pemuatan, prioritas, dan aturan gating
 - [Konfigurasi Skills](/id/tools/skills-config) — skema konfigurasi `skills.*`
-- [ClawHub](/id/tools/clawhub) — registry skill publik
-- [Membangun Plugins](/id/plugins/building-plugins) — plugins dapat mengirim skills
+- [ClawHub](/id/clawhub) — registri skill publik
+- [Membangun Plugin](/id/plugins/building-plugins) — plugin dapat mengirimkan skills

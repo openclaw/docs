@@ -1,38 +1,37 @@
 ---
 read_when:
-    - Anda ingin menggunakan model OSS yang di-host Bedrock Mantle dengan OpenClaw
-    - Anda memerlukan endpoint kompatibel OpenAI Mantle untuk GPT-OSS, Qwen, Kimi, atau GLM
+    - Anda ingin menggunakan model OSS yang dihosting oleh Bedrock Mantle dengan OpenClaw
+    - Anda memerlukan endpoint Mantle yang kompatibel dengan OpenAI untuk GPT-OSS, Qwen, Kimi, atau GLM
 summary: Gunakan model Amazon Bedrock Mantle (kompatibel dengan OpenAI) dengan OpenClaw
 title: Amazon Bedrock Mantle
 x-i18n:
-  refreshed_at: '2026-04-28T05:23:26Z'
-  generated_at: "2026-04-24T09:22:19Z"
-  model: gpt-5.4
-  provider: openai
-  source_hash: c5e9fb65cd5f5151470f0d8eeb9edceb9b035863dcd863d2bcabe233c1cfce41
-  source_path: providers/bedrock-mantle.md
-  workflow: 15
+    generated_at: "2026-05-10T19:49:19Z"
+    model: gpt-5.5
+    provider: openai
+    source_hash: 721eef5b7ff606b8c5e02234dae1b8d846b43ff9f3d7bf871f701bb3136fec0e
+    source_path: providers/bedrock-mantle.md
+    workflow: 16
 ---
 
-OpenClaw menyertakan provider bawaan **Amazon Bedrock Mantle** yang terhubung ke
-endpoint Mantle yang kompatibel dengan OpenAI. Mantle meng-host model open-source dan
+OpenClaw menyertakan provider **Amazon Bedrock Mantle** bawaan yang terhubung ke
+endpoint Mantle yang kompatibel dengan OpenAI. Mantle meng-host model sumber terbuka dan
 pihak ketiga (GPT-OSS, Qwen, Kimi, GLM, dan sejenisnya) melalui permukaan standar
 `/v1/chat/completions` yang didukung oleh infrastruktur Bedrock.
 
-| Properti       | Nilai                                                                                      |
-| -------------- | ------------------------------------------------------------------------------------------ |
-| ID Provider    | `amazon-bedrock-mantle`                                                                    |
-| API            | `openai-completions` (kompatibel dengan OpenAI) atau `anthropic-messages` (rute Anthropic Messages) |
-| Auth           | `AWS_BEARER_TOKEN_BEDROCK` eksplisit atau pembuatan bearer-token dari rantai kredensial IAM |
-| Region default | `us-east-1` (override dengan `AWS_REGION` atau `AWS_DEFAULT_REGION`)                       |
+| Properti        | Nilai                                                                                         |
+| --------------- | --------------------------------------------------------------------------------------------- |
+| ID Provider     | `amazon-bedrock-mantle`                                                                       |
+| API             | `openai-completions` (kompatibel dengan OpenAI) atau `anthropic-messages` (rute Anthropic Messages) |
+| Autentikasi     | `AWS_BEARER_TOKEN_BEDROCK` eksplisit atau pembuatan bearer token dari rantai kredensial IAM   |
+| Wilayah default | `us-east-1` (timpa dengan `AWS_REGION` atau `AWS_DEFAULT_REGION`)                             |
 
-## Mulai
+## Memulai
 
-Pilih metode auth yang Anda sukai dan ikuti langkah penyiapannya.
+Pilih metode autentikasi yang Anda inginkan dan ikuti langkah-langkah penyiapannya.
 
 <Tabs>
   <Tab title="Explicit bearer token">
-    **Paling cocok untuk:** lingkungan tempat Anda sudah memiliki bearer token Mantle.
+    **Paling cocok untuk:** lingkungan yang sudah memiliki bearer token Mantle.
 
     <Steps>
       <Step title="Set the bearer token on the gateway host">
@@ -40,7 +39,7 @@ Pilih metode auth yang Anda sukai dan ikuti langkah penyiapannya.
         export AWS_BEARER_TOKEN_BEDROCK="..."
         ```
 
-        Secara opsional setel region (default ke `us-east-1`):
+        Secara opsional, tetapkan wilayah (default-nya `us-east-1`):
 
         ```bash
         export AWS_REGION="us-west-2"
@@ -51,19 +50,19 @@ Pilih metode auth yang Anda sukai dan ikuti langkah penyiapannya.
         openclaw models list
         ```
 
-        Model yang ditemukan muncul di bawah provider `amazon-bedrock-mantle`. Tidak
-        diperlukan config tambahan kecuali Anda ingin meng-override default.
+        Model yang ditemukan muncul di bawah provider `amazon-bedrock-mantle`. Tidak ada
+        konfigurasi tambahan yang diperlukan kecuali Anda ingin menimpa default.
       </Step>
     </Steps>
 
   </Tab>
 
   <Tab title="IAM credentials">
-    **Paling cocok untuk:** menggunakan kredensial yang kompatibel dengan AWS SDK (shared config, SSO, web identity, instance atau task role).
+    **Paling cocok untuk:** menggunakan kredensial yang kompatibel dengan AWS SDK (konfigurasi bersama, SSO, identitas web, peran instance atau tugas).
 
     <Steps>
       <Step title="Configure AWS credentials on the gateway host">
-        Sumber auth apa pun yang kompatibel dengan AWS SDK dapat digunakan:
+        Sumber autentikasi apa pun yang kompatibel dengan AWS SDK dapat digunakan:
 
         ```bash
         export AWS_PROFILE="default"
@@ -75,12 +74,12 @@ Pilih metode auth yang Anda sukai dan ikuti langkah penyiapannya.
         openclaw models list
         ```
 
-        OpenClaw otomatis menghasilkan bearer token Mantle dari rantai kredensial.
+        OpenClaw membuat bearer token Mantle dari rantai kredensial secara otomatis.
       </Step>
     </Steps>
 
     <Tip>
-    Saat `AWS_BEARER_TOKEN_BEDROCK` tidak disetel, OpenClaw membuat bearer token untuk Anda dari rantai kredensial default AWS, termasuk shared credentials/config profiles, SSO, web identity, serta instance atau task role.
+    Ketika `AWS_BEARER_TOKEN_BEDROCK` tidak ditetapkan, OpenClaw menerbitkan bearer token untuk Anda dari rantai kredensial default AWS, termasuk kredensial/profil konfigurasi bersama, SSO, identitas web, serta peran instance atau tugas.
     </Tip>
 
   </Tab>
@@ -88,21 +87,28 @@ Pilih metode auth yang Anda sukai dan ikuti langkah penyiapannya.
 
 ## Penemuan model otomatis
 
-Saat `AWS_BEARER_TOKEN_BEDROCK` disetel, OpenClaw langsung menggunakannya. Jika tidak,
-OpenClaw mencoba menghasilkan bearer token Mantle dari rantai kredensial default AWS.
-Lalu OpenClaw menemukan model Mantle yang tersedia dengan melakukan query ke
-endpoint `/v1/models` region tersebut.
+Ketika `AWS_BEARER_TOKEN_BEDROCK` ditetapkan, OpenClaw menggunakannya secara langsung. Jika tidak,
+OpenClaw mencoba membuat bearer token Mantle dari rantai kredensial default
+AWS. Kemudian OpenClaw menemukan model Mantle yang tersedia dengan menanyakan
+endpoint `/v1/models` wilayah tersebut.
 
-| Perilaku          | Detail                      |
-| ----------------- | --------------------------- |
-| Cache discovery   | Hasil di-cache selama 1 jam |
-| Refresh token IAM | Per jam                     |
+| Perilaku             | Detail                        |
+| -------------------- | ----------------------------- |
+| Cache penemuan       | Hasil disimpan dalam cache selama 1 jam |
+| Penyegaran token IAM | Setiap jam                    |
+
+Untuk mempertahankan Plugin Mantle tetap aktif tetapi menekan penemuan otomatis dan pembuatan
+bearer token IAM, nonaktifkan toggle penemuan milik Plugin:
+
+```bash
+openclaw config set plugins.entries.amazon-bedrock-mantle.config.discovery.enabled false
+```
 
 <Note>
-Bearer token adalah `AWS_BEARER_TOKEN_BEDROCK` yang sama dengan yang digunakan oleh provider [Amazon Bedrock](/id/providers/bedrock) standar.
+Bearer token ini sama dengan `AWS_BEARER_TOKEN_BEDROCK` yang digunakan oleh provider standar [Amazon Bedrock](/id/providers/bedrock).
 </Note>
 
-### Region yang didukung
+### Wilayah yang didukung
 
 `us-east-1`, `us-east-2`, `us-west-2`, `ap-northeast-1`,
 `ap-south-1`, `ap-southeast-3`, `eu-central-1`, `eu-west-1`, `eu-west-2`,
@@ -110,7 +116,7 @@ Bearer token adalah `AWS_BEARER_TOKEN_BEDROCK` yang sama dengan yang digunakan o
 
 ## Konfigurasi manual
 
-Jika Anda lebih memilih config eksplisit daripada auto-discovery:
+Jika Anda lebih suka konfigurasi eksplisit daripada penemuan otomatis:
 
 ```json5
 {
@@ -142,21 +148,21 @@ Jika Anda lebih memilih config eksplisit daripada auto-discovery:
 
 <AccordionGroup>
   <Accordion title="Reasoning support">
-    Dukungan reasoning disimpulkan dari ID model yang mengandung pola seperti
-    `thinking`, `reasoner`, atau `gpt-oss-120b`. OpenClaw menyetel `reasoning: true`
-    secara otomatis untuk model yang cocok saat discovery.
+    Dukungan penalaran disimpulkan dari ID model yang memuat pola seperti
+    `thinking`, `reasoner`, atau `gpt-oss-120b`. OpenClaw menetapkan `reasoning: true`
+    secara otomatis untuk model yang cocok selama penemuan.
   </Accordion>
 
   <Accordion title="Endpoint unavailability">
-    Jika endpoint Mantle tidak tersedia atau tidak mengembalikan model, provider akan
+    Jika endpoint Mantle tidak tersedia atau tidak mengembalikan model, provider
     dilewati secara diam-diam. OpenClaw tidak menghasilkan error; provider lain yang dikonfigurasi
-    tetap bekerja seperti biasa.
+    tetap berfungsi normal.
   </Accordion>
 
   <Accordion title="Claude Opus 4.7 via the Anthropic Messages route">
-    Mantle juga mengekspos rute Anthropic Messages yang membawa model Claude melalui jalur streaming terautentikasi bearer yang sama. Claude Opus 4.7 (`amazon-bedrock-mantle/claude-opus-4.7`) dapat dipanggil melalui rute ini dengan streaming milik provider, sehingga bearer token AWS tidak diperlakukan seperti API key Anthropic.
+    Mantle juga mengekspos rute Anthropic Messages yang membawa model Claude melalui jalur streaming yang diautentikasi dengan bearer token yang sama. Claude Opus 4.7 (`amazon-bedrock-mantle/claude-opus-4.7`) dapat dipanggil melalui rute ini dengan streaming milik provider, sehingga bearer token AWS tidak diperlakukan seperti kunci API Anthropic.
 
-    Saat Anda menyematkan model Anthropic Messages pada provider Mantle, OpenClaw menggunakan permukaan API `anthropic-messages` alih-alih `openai-completions` untuk model tersebut. Auth tetap berasal dari `AWS_BEARER_TOKEN_BEDROCK` (atau bearer token IAM yang dibuat).
+    Ketika Anda menetapkan model Anthropic Messages pada provider Mantle, OpenClaw menggunakan permukaan API `anthropic-messages`, bukan `openai-completions`, untuk model tersebut. Autentikasi tetap berasal dari `AWS_BEARER_TOKEN_BEDROCK` (atau bearer token IAM yang diterbitkan).
 
     ```json5
     {
@@ -183,12 +189,12 @@ Jika Anda lebih memilih config eksplisit daripada auto-discovery:
   </Accordion>
 
   <Accordion title="Relationship to Amazon Bedrock provider">
-    Bedrock Mantle adalah provider yang terpisah dari provider
-    [Amazon Bedrock](/id/providers/bedrock) standar. Mantle menggunakan permukaan
-    `/v1` yang kompatibel dengan OpenAI, sementara provider Bedrock standar menggunakan
+    Bedrock Mantle adalah provider terpisah dari provider standar
+    [Amazon Bedrock](/id/providers/bedrock). Mantle menggunakan permukaan `/v1`
+    yang kompatibel dengan OpenAI, sementara provider standar Bedrock menggunakan
     API Bedrock native.
 
-    Kedua provider berbagi kredensial `AWS_BEARER_TOKEN_BEDROCK` yang sama saat
+    Kedua provider berbagi kredensial `AWS_BEARER_TOKEN_BEDROCK` yang sama ketika
     tersedia.
 
   </Accordion>
@@ -201,10 +207,10 @@ Jika Anda lebih memilih config eksplisit daripada auto-discovery:
     Provider Bedrock native untuk Anthropic Claude, Titan, dan model lainnya.
   </Card>
   <Card title="Model selection" href="/id/concepts/model-providers" icon="layers">
-    Memilih provider, ref model, dan perilaku failover.
+    Memilih provider, referensi model, dan perilaku failover.
   </Card>
   <Card title="OAuth and auth" href="/id/gateway/authentication" icon="key">
-    Detail auth dan aturan penggunaan ulang kredensial.
+    Detail autentikasi dan aturan penggunaan ulang kredensial.
   </Card>
   <Card title="Troubleshooting" href="/id/help/troubleshooting" icon="wrench">
     Masalah umum dan cara mengatasinya.

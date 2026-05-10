@@ -1,37 +1,54 @@
 ---
 read_when:
-    - คุณต้องการ TUI สำหรับ Gateway (ใช้งานระยะไกลได้สะดวก)
-    - คุณต้องการส่งผ่าน url/token/session จากสคริปต์
-    - คุณต้องการรัน TUI ในโหมด embedded ภายในเครื่องโดยไม่ใช้ Gateway
+    - คุณต้องการส่วนติดต่อผู้ใช้บนเทอร์มินัลสำหรับ Gateway (เหมาะกับการใช้งานระยะไกล)
+    - คุณต้องการส่ง url/token/session จากสคริปต์
+    - คุณต้องการเรียกใช้ TUI ในโหมดฝังตัวในเครื่องโดยไม่มี Gateway
     - คุณต้องการใช้ openclaw chat หรือ openclaw tui --local
-summary: เอกสารอ้างอิง CLI สำหรับ `openclaw tui` (TUI แบบ embedded ในเครื่องหรือที่ขับเคลื่อนด้วย Gateway)
+summary: ข้อมูลอ้างอิง CLI สำหรับ `openclaw tui` (ที่รองรับโดย Gateway หรือ UI เทอร์มินัลแบบฝังในเครื่อง)
 title: TUI
 x-i18n:
-    generated_at: "2026-04-24T09:04:45Z"
-    model: gpt-5.4
+    generated_at: "2026-05-10T19:32:03Z"
+    model: gpt-5.5
     provider: openai
-    source_hash: c3b3d337c55411fbcbae3bda85d9ca8d0f1b2a4224b5d4c9bbc5f96c41c5363c
+    source_hash: 3e59f0f5360a456d19cfee38adc540b27665c55de68480616f269d1088f13677
     source_path: cli/tui.md
-    workflow: 15
+    workflow: 16
 ---
 
 # `openclaw tui`
 
-เปิด TUI ที่เชื่อมต่อกับ Gateway หรือรันในโหมด embedded ภายในเครื่อง
+เปิด UI เทอร์มินัลที่เชื่อมต่อกับ Gateway หรือเรียกใช้ในโหมดฝังตัวภายในเครื่อง
 
 ที่เกี่ยวข้อง:
 
 - คู่มือ TUI: [TUI](/th/web/tui)
 
+## ตัวเลือก
+
+| แฟล็ก                 | ค่าเริ่มต้น                                | คำอธิบาย                                                                 |
+| --------------------- | ----------------------------------------- | ------------------------------------------------------------------------ |
+| `--local`             | `false`                                   | เรียกใช้กับรันไทม์เอเจนต์แบบฝังตัวภายในเครื่องแทน Gateway              |
+| `--url <url>`         | `gateway.remote.url` จากค่ากำหนด          | URL WebSocket ของ Gateway                                                |
+| `--token <token>`     | (ไม่มี)                                   | โทเค็น Gateway หากจำเป็น                                                 |
+| `--password <pass>`   | (ไม่มี)                                   | รหัสผ่าน Gateway หากจำเป็น                                               |
+| `--session <key>`     | `main` (หรือ `global` เมื่อขอบเขตเป็น global) | คีย์เซสชัน ภายในพื้นที่ทำงานของเอเจนต์ ระบบจะเลือกเอเจนต์นั้นโดยอัตโนมัติ เว้นแต่จะมีคำนำหน้า |
+| `--deliver`           | `false`                                   | ส่งคำตอบของผู้ช่วยผ่านช่องทางที่กำหนดค่าไว้                              |
+| `--thinking <level>`  | (ค่าเริ่มต้นของโมเดล)                    | แทนที่ระดับการคิด                                                        |
+| `--message <text>`    | (ไม่มี)                                   | ส่งข้อความเริ่มต้นหลังจากเชื่อมต่อ                                       |
+| `--timeout-ms <ms>`   | `agents.defaults.timeoutSeconds`          | หมดเวลาของเอเจนต์ ค่าที่ไม่ถูกต้องจะบันทึกคำเตือนและถูกละเว้น           |
+| `--history-limit <n>` | `200`                                     | รายการประวัติที่จะโหลดเมื่อแนบ                                           |
+
+นามแฝง: `openclaw chat` และ `openclaw terminal` เรียกคำสั่งเดียวกันโดยถือว่ามี `--local`
+
 หมายเหตุ:
 
-- `chat` และ `terminal` เป็น alias ของ `openclaw tui --local`
-- `--local` ไม่สามารถใช้ร่วมกับ `--url`, `--token` หรือ `--password` ได้
-- `tui` จะ resolve gateway auth SecretRefs ที่กำหนดค่าไว้สำหรับการยืนยันตัวตนด้วย token/password เมื่อเป็นไปได้ (`env`/`file`/`exec` providers)
-- เมื่อเปิดจากภายในไดเรกทอรี workspace ของเอเจนต์ที่กำหนดค่าไว้ TUI จะเลือกเอเจนต์นั้นโดยอัตโนมัติสำหรับค่าเริ่มต้นของ session key (เว้นแต่ `--session` จะระบุเป็น `agent:<id>:...` อย่างชัดเจน)
-- โหมด local ใช้ runtime ของ embedded agent โดยตรง เครื่องมือ local ส่วนใหญ่ใช้งานได้ แต่ฟีเจอร์ที่มีเฉพาะ Gateway จะไม่พร้อมใช้งาน
-- โหมด local เพิ่ม `/auth [provider]` ภายในพื้นผิวคำสั่งของ TUI
-- กฎการอนุมัติ Plugin ยังคงมีผลในโหมด local เครื่องมือที่ต้องการการอนุมัติจะถามเพื่อขอการตัดสินใจในเทอร์มินัล จะไม่มีอะไรได้รับการอนุมัติโดยอัตโนมัติแบบเงียบ ๆ เพราะ Gateway ไม่ได้มีส่วนเกี่ยวข้อง
+- `chat` และ `terminal` เป็นนามแฝงของ `openclaw tui --local`
+- `--local` ไม่สามารถใช้ร่วมกับ `--url`, `--token` หรือ `--password`
+- `tui` จะแก้ไข SecretRefs สำหรับการยืนยันตัวตน Gateway ที่กำหนดค่าไว้สำหรับการยืนยันตัวตนด้วยโทเค็น/รหัสผ่านเมื่อทำได้ (ผู้ให้บริการ `env`/`file`/`exec`)
+- เมื่อเปิดจากภายในไดเรกทอรีพื้นที่ทำงานของเอเจนต์ที่กำหนดค่าไว้ TUI จะเลือกเอเจนต์นั้นโดยอัตโนมัติเป็นค่าเริ่มต้นของคีย์เซสชัน (เว้นแต่ `--session` จะเป็น `agent:<id>:...` อย่างชัดเจน)
+- โหมดภายในเครื่องใช้รันไทม์เอเจนต์แบบฝังตัวโดยตรง เครื่องมือภายในเครื่องส่วนใหญ่ทำงานได้ แต่ฟีเจอร์ที่มีเฉพาะ Gateway จะใช้งานไม่ได้
+- โหมดภายในเครื่องเพิ่ม `/auth [provider]` ภายในพื้นผิวคำสั่งของ TUI
+- เกตการอนุมัติของ Plugin ยังคงมีผลในโหมดภายในเครื่อง เครื่องมือที่ต้องมีการอนุมัติจะแจ้งให้ตัดสินใจในเทอร์มินัล ไม่มีสิ่งใดถูกอนุมัติโดยอัตโนมัติอย่างเงียบ ๆ เพียงเพราะไม่ได้เกี่ยวข้องกับ Gateway
 
 ## ตัวอย่าง
 
@@ -42,19 +59,15 @@ openclaw tui
 openclaw tui --url ws://127.0.0.1:18789 --token <token>
 openclaw tui --session main --deliver
 openclaw chat --message "Compare my config to the docs and tell me what to fix"
-# เมื่อรันภายใน workspace ของเอเจนต์ จะอนุมานเอเจนต์นั้นให้อัตโนมัติ
+# when run inside an agent workspace, infers that agent automatically
 openclaw tui --session bugfix
 ```
 
-## วงจรการซ่อมคอนฟิก
+## ลูปซ่อมแซมค่ากำหนด
 
-ใช้โหมด local เมื่อคอนฟิกปัจจุบันยัง validate ผ่านอยู่แล้ว และคุณต้องการให้
-embedded agent ตรวจสอบ เปรียบเทียบกับเอกสาร และช่วยซ่อมแซมคอนฟิก
-จากเทอร์มินัลเดียวกัน
+ใช้โหมดภายในเครื่องเมื่อค่ากำหนดปัจจุบันตรวจสอบผ่านแล้ว และคุณต้องการให้เอเจนต์แบบฝังตัวตรวจสอบ เปรียบเทียบกับเอกสาร และช่วยซ่อมแซมจากเทอร์มินัลเดียวกัน:
 
-หาก `openclaw config validate` ล้มเหลวอยู่แล้ว ให้ใช้ `openclaw configure` หรือ
-`openclaw doctor --fix` ก่อน `openclaw chat` จะไม่ข้ามตัวป้องกันคอนฟิก
-ไม่ถูกต้อง
+หาก `openclaw config validate` ล้มเหลวอยู่แล้ว ให้ใช้ `openclaw configure` หรือ `openclaw doctor --fix` ก่อน `openclaw chat` ไม่ข้ามตัวป้องกันค่ากำหนดที่ไม่ถูกต้อง
 
 ```bash
 openclaw chat
@@ -69,10 +82,9 @@ openclaw chat
 !openclaw doctor
 ```
 
-ใช้ `openclaw config set` หรือ `openclaw configure` เพื่อแก้ไขแบบเจาะจง จากนั้น
-รัน `openclaw config validate` อีกครั้ง ดู [TUI](/th/web/tui) และ [Config](/th/cli/config)
+ใช้การแก้ไขแบบเจาะจงด้วย `openclaw config set` หรือ `openclaw configure` จากนั้นเรียก `openclaw config validate` อีกครั้ง ดู [TUI](/th/web/tui) และ [ค่ากำหนด](/th/cli/config)
 
 ## ที่เกี่ยวข้อง
 
-- [เอกสารอ้างอิง CLI](/th/cli)
+- [ข้อมูลอ้างอิง CLI](/th/cli)
 - [TUI](/th/web/tui)

@@ -5,10 +5,10 @@ read_when:
 summary: Platformy komunikacyjne, z którymi OpenClaw może się łączyć
 title: Kanały czatu
 x-i18n:
-    generated_at: "2026-05-07T01:50:51Z"
+    generated_at: "2026-05-10T19:22:05Z"
     model: gpt-5.5
     provider: openai
-    source_hash: ff6875f4ae86b341b6a82e13f022266461bc102ee03074a8c352eea2203d657a
+    source_hash: 57ae81a99d265abbf3f9f016506e787d66b4f6984d833e43e7a8554e157a3c17
     source_path: channels/index.md
     workflow: 16
 ---
@@ -18,49 +18,48 @@ Tekst jest obsługiwany wszędzie; multimedia i reakcje różnią się w zależn
 
 ## Uwagi dotyczące dostarczania
 
-- Odpowiedzi Telegram, które zawierają składnię obrazów Markdown, taką jak `![alt](url)`,
-  są w miarę możliwości konwertowane na odpowiedzi multimedialne na końcowej ścieżce wychodzącej.
-- Wieloosobowe wiadomości prywatne Slack są kierowane jako czaty grupowe, więc zasady grup,
-  zachowanie wzmianek i reguły sesji grupowych mają zastosowanie do rozmów MPIM.
-- Konfiguracja WhatsApp działa na zasadzie instalacji na żądanie: onboarding może pokazać przepływ konfiguracji przed
-  zainstalowaniem pakietu pluginu, a Gateway ładuje środowisko uruchomieniowe WhatsApp
-  dopiero wtedy, gdy kanał jest faktycznie aktywny.
+- Odpowiedzi Telegram zawierające składnię obrazów Markdown, taką jak `![alt](url)`,
+  są konwertowane na odpowiedzi multimedialne na końcowej ścieżce wychodzącej, gdy jest to możliwe.
+- Wieloosobowe wiadomości bezpośrednie Slack są kierowane jako czaty grupowe, więc zasady grup,
+  zachowanie wzmianek i reguły sesji grupowych mają zastosowanie do konwersacji MPIM.
+- Konfiguracja WhatsApp odbywa się na żądanie: onboarding może pokazać przepływ konfiguracji przed
+  zainstalowaniem pakietu pluginu, a Gateway ładuje runtime WhatsApp
+  tylko wtedy, gdy kanał jest rzeczywiście aktywny.
 
 ## Obsługiwane kanały
 
-- [BlueBubbles](/pl/channels/bluebubbles) - Starszy most iMessage przez REST API serwera BlueBubbles dla macOS; przestarzały dla nowych konfiguracji OpenClaw, ale nadal obsługiwany dla istniejących konfiguracji i bogatszych akcji prywatnego API.
-- [Discord](/pl/channels/discord) - Discord Bot API + Gateway; obsługuje serwery, kanały i wiadomości prywatne.
-- [Feishu](/pl/channels/feishu) - Bot Feishu/Lark przez WebSocket (dołączony plugin).
-- [Google Chat](/pl/channels/googlechat) - Aplikacja Google Chat API przez webhook HTTP (plugin do pobrania).
-- [iMessage](/pl/channels/imessage) - Natywna integracja z macOS przez CLI imsg; preferowana dla nowych konfiguracji OpenClaw iMessage, gdy uprawnienia hosta i dostęp do Wiadomości są odpowiednie.
-- [IRC](/pl/channels/irc) - Klasyczne serwery IRC; kanały + wiadomości prywatne z kontrolami parowania/listy dozwolonych.
-- [LINE](/pl/channels/line) - Bot LINE Messaging API (plugin do pobrania).
-- [Matrix](/pl/channels/matrix) - Protokół Matrix (plugin do pobrania).
-- [Mattermost](/pl/channels/mattermost) - Bot API + WebSocket; kanały, grupy, wiadomości prywatne (plugin do pobrania).
-- [Microsoft Teams](/pl/channels/msteams) - Bot Framework; obsługa dla przedsiębiorstw (dołączony plugin).
-- [Nextcloud Talk](/pl/channels/nextcloud-talk) - Samodzielnie hostowany czat przez Nextcloud Talk (dołączony plugin).
-- [Nostr](/pl/channels/nostr) - Zdecentralizowane wiadomości prywatne przez NIP-04 (dołączony plugin).
-- [QQ Bot](/pl/channels/qqbot) - QQ Bot API; czat prywatny, czat grupowy i bogate multimedia (dołączony plugin).
-- [Signal](/pl/channels/signal) - signal-cli; ukierunkowany na prywatność.
-- [Slack](/pl/channels/slack) - Bolt SDK; aplikacje obszarów roboczych.
-- [Synology Chat](/pl/channels/synology-chat) - Synology NAS Chat przez wychodzące+przychodzące webhooki (dołączony plugin).
+- [Discord](/pl/channels/discord) - Discord Bot API + Gateway; obsługuje serwery, kanały i wiadomości bezpośrednie.
+- [Feishu](/pl/channels/feishu) - bot Feishu/Lark przez WebSocket (wbudowany plugin).
+- [Google Chat](/pl/channels/googlechat) - aplikacja Google Chat API przez Webhook HTTP (plugin do pobrania).
+- [iMessage](/pl/channels/imessage) - natywna integracja z macOS przez most `imsg` na zalogowanym Macu (lub wrapper SSH, gdy Gateway działa gdzie indziej), w tym akcje prywatnego API dla odpowiedzi, tapbacków, efektów, załączników i zarządzania grupami. Zalecane dla nowych konfiguracji OpenClaw iMessage, gdy uprawnienia hosta i dostęp do Wiadomości są odpowiednie.
+- [IRC](/pl/channels/irc) - klasyczne serwery IRC; kanały i wiadomości bezpośrednie z kontrolami parowania/listy dozwolonych.
+- [LINE](/pl/channels/line) - bot LINE Messaging API (plugin do pobrania).
+- [Matrix](/pl/channels/matrix) - protokół Matrix (plugin do pobrania).
+- [Mattermost](/pl/channels/mattermost) - Bot API + WebSocket; kanały, grupy, wiadomości bezpośrednie (plugin do pobrania).
+- [Microsoft Teams](/pl/channels/msteams) - Bot Framework; wsparcie dla przedsiębiorstw (wbudowany plugin).
+- [Nextcloud Talk](/pl/channels/nextcloud-talk) - samoobsługowy czat przez Nextcloud Talk (wbudowany plugin).
+- [Nostr](/pl/channels/nostr) - zdecentralizowane wiadomości bezpośrednie przez NIP-04 (wbudowany plugin).
+- [QQ Bot](/pl/channels/qqbot) - QQ Bot API; czat prywatny, czat grupowy i bogate multimedia (wbudowany plugin).
+- [Signal](/pl/channels/signal) - signal-cli; skoncentrowany na prywatności.
+- [Slack](/pl/channels/slack) - Bolt SDK; aplikacje obszaru roboczego.
+- [Synology Chat](/pl/channels/synology-chat) - Synology NAS Chat przez wychodzące i przychodzące Webhooki (wbudowany plugin).
 - [Telegram](/pl/channels/telegram) - Bot API przez grammY; obsługuje grupy.
-- [Tlon](/pl/channels/tlon) - Komunikator oparty na Urbit (dołączony plugin).
-- [Twitch](/pl/channels/twitch) - Czat Twitch przez połączenie IRC (dołączony plugin).
-- [Połączenie głosowe](/pl/plugins/voice-call) - Telefonia przez Plivo lub Twilio (plugin, instalowany osobno).
-- [WebChat](/pl/web/webchat) - Interfejs Gateway WebChat przez WebSocket.
-- [WeChat](/pl/channels/wechat) - Plugin Tencent iLink Bot przez logowanie QR; tylko czaty prywatne (zewnętrzny plugin).
-- [WhatsApp](/pl/channels/whatsapp) - Najpopularniejszy; używa Baileys i wymaga parowania QR.
-- [Yuanbao](/pl/channels/yuanbao) - Bot Tencent Yuanbao (zewnętrzny plugin).
-- [Zalo](/pl/channels/zalo) - Zalo Bot API; popularny komunikator w Wietnamie (dołączony plugin).
-- [Zalo Personal](/pl/channels/zalouser) - Osobiste konto Zalo przez logowanie QR (dołączony plugin).
+- [Tlon](/pl/channels/tlon) - komunikator oparty na Urbit (wbudowany plugin).
+- [Twitch](/pl/channels/twitch) - czat Twitch przez połączenie IRC (wbudowany plugin).
+- [Voice Call](/pl/plugins/voice-call) - telefonia przez Plivo lub Twilio (plugin, instalowany osobno).
+- [WebChat](/pl/web/webchat) - interfejs Gateway WebChat przez WebSocket.
+- [WeChat](/pl/channels/wechat) - plugin Tencent iLink Bot przez logowanie QR; tylko czaty prywatne (zewnętrzny plugin).
+- [WhatsApp](/pl/channels/whatsapp) - najpopularniejszy; używa Baileys i wymaga parowania QR.
+- [Yuanbao](/pl/channels/yuanbao) - bot Tencent Yuanbao (zewnętrzny plugin).
+- [Zalo](/pl/channels/zalo) - Zalo Bot API; popularny komunikator w Wietnamie (wbudowany plugin).
+- [Zalo Personal](/pl/channels/zalouser) - osobiste konto Zalo przez logowanie QR (wbudowany plugin).
 
 ## Uwagi
 
-- Kanały mogą działać jednocześnie; skonfiguruj kilka, a OpenClaw będzie kierować wiadomości według czatu.
+- Kanały mogą działać jednocześnie; skonfiguruj wiele, a OpenClaw będzie kierować wiadomości według czatu.
 - Najszybsza konfiguracja to zwykle **Telegram** (prosty token bota). WhatsApp wymaga parowania QR i
   przechowuje więcej stanu na dysku.
 - Zachowanie grup różni się w zależności od kanału; zobacz [Grupy](/pl/channels/groups).
-- Parowanie wiadomości prywatnych i listy dozwolonych są egzekwowane dla bezpieczeństwa; zobacz [Bezpieczeństwo](/pl/gateway/security).
+- Parowanie wiadomości bezpośrednich i listy dozwolonych są egzekwowane dla bezpieczeństwa; zobacz [Bezpieczeństwo](/pl/gateway/security).
 - Rozwiązywanie problemów: [Rozwiązywanie problemów z kanałami](/pl/channels/troubleshooting).
 - Dostawcy modeli są udokumentowani osobno; zobacz [Dostawcy modeli](/pl/providers/models).

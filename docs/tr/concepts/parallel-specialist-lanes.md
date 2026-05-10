@@ -5,55 +5,67 @@ read_when:
     - Çok ajanlı bir operasyon kurulumu tasarlıyorsunuz
 sidebarTitle: Specialist lanes
 status: active
-summary: Paylaşılan model ve araç kapasitesini tıkamadan paralel uzman aracıları çalıştırın
-title: Paralel uzmanlık hatları
+summary: Uzman ajanları, paylaşılan model ve araç kapasitesini tıkamadan paralel çalıştırın
+title: Paralel uzman kulvarları
 x-i18n:
-    generated_at: "2026-05-02T20:44:04Z"
+    generated_at: "2026-05-10T19:33:58Z"
     model: gpt-5.5
     provider: openai
-    source_hash: b09f10ce4fbd79954a7196fbedb23f9b3f34b459b98eb7a5480f7eeb0bb6be98
+    source_hash: 8721056fbe08822ac92d4bc14c8c2b0977e93eaa58c2849f83b3c0f310992f93
     source_path: concepts/parallel-specialist-lanes.md
     workflow: 16
 ---
 
-Paralel uzman kulvarlar, bir Gateway’in farklı sohbetleri veya odaları farklı ajanlara yönlendirmesine olanak tanırken kullanıcı deneyimini hızlı tutar. Buradaki püf nokta, paralelliği sadece "daha fazla ajan" olarak değil, kıt kaynaklara yönelik bir tasarım problemi olarak ele almaktır.
+Paralel uzman hatları, bir Gateway'in farklı sohbetleri veya odaları
+farklı ajanlara yönlendirmesini sağlar ve kullanıcı deneyimini hızlı tutar.
+İşin püf noktası, paralelliği yalnızca "daha fazla ajan" olarak değil,
+kıt kaynak tasarımı problemi olarak ele almaktır.
 
-## Temel ilkeler
+## İlk ilkeler
 
-Bir uzman kulvarı, yalnızca gerçek darboğazlar üzerindeki çekişmeyi azalttığında iş hacmini artırır:
+Bir uzman hattı, yalnızca gerçek darboğazlar üzerindeki çekişmeyi azalttığında
+iş hacmini iyileştirir:
 
 - **Oturum kilitleri**: belirli bir oturumu aynı anda yalnızca bir çalıştırma değiştirmelidir.
-- **Küresel model kapasitesi**: görünür tüm sohbet çalıştırmaları hâlâ sağlayıcı limitlerini paylaşır.
-- **Araç kapasitesi**: kabuk, tarayıcı, ağ ve depo işleri model turunun kendisinden daha yavaş olabilir.
-- **Bağlam bütçesi**: uzun konuşma dökümleri gelecekteki her turu daha yavaş ve daha az odaklı hâle getirir.
+- **Küresel model kapasitesi**: tüm görünür sohbet çalıştırmaları yine de sağlayıcı sınırlarını paylaşır.
+- **Araç kapasitesi**: kabuk, tarayıcı, ağ ve depo işleri model turunun kendisinden
+  daha yavaş olabilir.
+- **Bağlam bütçesi**: uzun konuşma dökümleri gelecekteki her turu daha yavaş ve daha az
+  odaklı hale getirir.
 - **Sahiplik belirsizliği**: aynı işi yapan yinelenen ajanlar kapasiteyi boşa harcar.
 
-OpenClaw zaten oturum başına çalıştırmaları serileştirir ve küresel paralelliği [komut kuyruğu](/tr/concepts/queue) üzerinden sınırlar. Uzman kulvarlar bunun üzerine politika ekler: hangi ajanın hangi işe sahip olduğu, sohbette neyin kalacağı ve neyin arka plan işi olacağı.
+OpenClaw zaten çalıştırmaları oturum başına serileştirir ve küresel paralelliği
+[komut kuyruğu](/tr/concepts/queue) üzerinden sınırlar. Uzman hatları bunun üzerine politika ekler:
+hangi ajanın hangi işin sahibi olduğu, sohbette neyin kalacağı ve neyin arka plan
+işine dönüşeceği.
 
 ## Önerilen dağıtım
 
-### 1. Aşama: kulvar sözleşmeleri + arka planda ağır işler
+### Aşama 1: hat sözleşmeleri + arka planda ağır iş
 
-Her kulvara çalışma alanında ve sistem isteminde yazılı bir sözleşme verin:
+Her hatta, çalışma alanında ve sistem isteminde yazılı bir sözleşme verin:
 
-- **Amaç**: bu kulvarın sahip olduğu iş.
-- **Hedef dışı konular**: denemek yerine devretmesi gereken işler.
-- **Sohbet bütçesi**: hızlı yanıtlar sohbette kalır; uzun görevler kısa bir kabul mesajı vermeli, ardından arka plan alt ajanı veya görevinde çalışmalıdır.
-- **Devretme kuralı**: iş başka bir kulvara ait olduğunda nereye gitmesi gerektiğini söyleyin ve kompakt bir devretme özeti sağlayın.
+- **Amaç**: bu hattın sahibi olduğu iş.
+- **Hedef dışı olanlar**: denemek yerine devretmesi gereken işler.
+- **Sohbet bütçesi**: hızlı yanıtlar sohbette kalır; uzun görevler kısaca onaylanmalı,
+  ardından arka planda bir alt ajan veya görev olarak çalıştırılmalıdır.
+- **Devir kuralı**: başka bir hat işin sahibiyse, nereye gitmesi gerektiğini söyleyin ve
+  kısa bir devir özeti sağlayın.
 - **Araç riski kuralı**: işi yapabilecek en küçük araç yüzeyini tercih edin.
 
-Bu en düşük maliyetli aşamadır ve tıkanmaların çoğunu giderir: tek bir kodlama işi artık araştırma kulvarını pekmeze çevirmez ve her sohbet kendi bağlamını temiz tutar.
+Bu en ucuz aşamadır ve çoğu tıkanmayı düzeltir: bir kodlama işi artık araştırma
+hattını ağırlaştırmaz ve her sohbet kendi bağlamını temiz tutar.
 
-### 2. Aşama: öncelik ve eşzamanlılık denetimleri
+### Aşama 2: öncelik ve eşzamanlılık kontrolleri
 
-Kuyruk ve model kapasitesini her kulvarın iş değeri etrafında ayarlayın:
+Kuyruk ve model kapasitesini her hattın iş değerine göre ayarlayın:
 
 ```json5
 {
   agents: {
     defaults: {
       maxConcurrent: 4,
-      subagents: { maxConcurrent: 8 },
+      subagents: { maxConcurrent: 8, delegationMode: "prefer" },
     },
   },
   messages: {
@@ -67,51 +79,52 @@ Kuyruk ve model kapasitesini her kulvarın iş değeri etrafında ayarlayın:
 }
 ```
 
-Yüksek öncelikli işler için doğrudan/kişisel sohbetleri ve üretim operasyonları ajanlarını kullanın. Sistem meşgul olduğunda araştırma, taslak hazırlama ve toplu kodlama arka plan görevlerine taşınsın.
+Yüksek öncelikli işler için doğrudan/kişisel sohbetleri ve üretim operasyonları ajanlarını kullanın. Sistem
+meşgulken araştırma, taslak hazırlama ve toplu kodlamanın arka plan görevlerine taşınmasına izin verin.
 
-### 3. Aşama: koordinatör / trafik denetleyicisi
+### Aşama 3: koordinatör / trafik denetleyicisi
 
-Birden çok kulvar aktif olduğunda küçük bir koordinatör deseni ekleyin:
+Birden fazla hat etkin olduğunda küçük bir koordinatör deseni ekleyin:
 
-- Etkin kulvar görevlerini ve sahiplerini izleyin.
-- Gruplar arasındaki yinelenen istekleri tespit edin.
-- Devretme özetlerini kulvarlar arasında yönlendirin.
-- Yalnızca engelleyicileri, tamamlanan sonuçları ve insanın vermesi gereken kararları görünür hâle getirin.
+- Etkin hat görevlerini ve sahiplerini izleyin.
+- Gruplar arasında yinelenen istekleri tespit edin.
+- Hatlar arasında devir özetlerini yönlendirin.
+- Yalnızca engelleyicileri, tamamlanan sonuçları ve insanın vermesi gereken kararları yüzeye çıkarın.
 
-Buradan başlamayın. Kulvar sözleşmeleri olmayan bir koordinatör yalnızca kaosu koordine eder.
+Buradan başlamayın. Hat sözleşmeleri olmayan bir koordinatör yalnızca kaosu koordine eder.
 
-## En küçük kulvar sözleşmesi şablonu
+## En küçük hat sözleşmesi şablonu
 
 ```md
-# Lane contract
+# Hat sözleşmesi
 
-## Owns
+## Sahibi olduğu işler
 
-- <job this lane is responsible for>
+- <bu hattın sorumlu olduğu iş>
 
-## Does not own
+## Sahibi olmadığı işler
 
-- <work to hand off>
+- <devredilecek iş>
 
-## Chat budget
+## Sohbet bütçesi
 
-- Answer quick questions directly.
-- For multi-step, slow, or tool-heavy work: acknowledge briefly, spawn/background
-  the work, then return the result when complete.
+- Hızlı soruları doğrudan yanıtlayın.
+- Çok adımlı, yavaş veya araç ağırlıklı işler için: kısaca onaylayın, işi başlatın/arka plana alın,
+  ardından tamamlandığında sonucu döndürün.
 
-## Handoff
+## Devir
 
-If another lane owns the request, reply with:
+İsteğin sahibi başka bir hatsa, şunlarla yanıt verin:
 
-- target lane
-- objective
-- relevant context
-- exact next action
+- hedef hat
+- amaç
+- ilgili bağlam
+- tam sonraki eylem
 
-## Tool posture
+## Araç tutumu
 
-Use the smallest tool surface that can complete the task. Avoid broad shell or
-network work unless this lane explicitly owns it.
+Görevi tamamlayabilecek en küçük araç yüzeyini kullanın. Bu hat açıkça sahibi olmadığı sürece geniş kabuk veya
+ağ işlerinden kaçının.
 ```
 
 ## İlgili

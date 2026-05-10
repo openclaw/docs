@@ -1,27 +1,27 @@
 ---
 read_when:
     - Devi spiegare l'area di lavoro dell'agente o la sua struttura dei file
-    - Vuoi eseguire il backup o migrare uno spazio di lavoro di un agente
+    - Vuoi eseguire il backup o migrare un'area di lavoro dell'agente
 sidebarTitle: Agent workspace
 summary: 'Area di lavoro dell''agente: posizione, struttura e strategia di backup'
 title: Area di lavoro dell'agente
 x-i18n:
-    generated_at: "2026-05-06T08:44:22Z"
+    generated_at: "2026-05-10T19:30:44Z"
     model: gpt-5.5
     provider: openai
-    source_hash: be5c4c55f3cda5dcf6b763f8e59fa926283cee18270a58dbd62593947a55e67c
+    source_hash: adb2ae19c702589010cc67907940ae21feb669cca262e36790a3059aa7d7744c
     source_path: concepts/agent-workspace.md
     workflow: 16
 ---
 
-Lo spazio di lavoro è la casa dell'agente. È l'unica directory di lavoro usata per gli strumenti sui file e per il contesto dello spazio di lavoro. Mantienilo privato e trattalo come memoria.
+Lo workspace è la casa dell'agente. È l'unica directory di lavoro usata per gli strumenti sui file e per il contesto dello workspace. Mantienilo privato e trattalo come memoria.
 
-È separato da `~/.openclaw/`, che memorizza configurazione, credenziali e sessioni.
+Questo è separato da `~/.openclaw/`, che archivia configurazione, credenziali e sessioni.
 
 <Warning>
-Lo spazio di lavoro è il **cwd predefinito**, non una sandbox rigida. Gli strumenti risolvono i percorsi relativi rispetto allo spazio di lavoro, ma i percorsi assoluti possono comunque raggiungere altre posizioni sull'host, a meno che il sandboxing non sia abilitato. Se hai bisogno di isolamento, usa [`agents.defaults.sandbox`](/it/gateway/sandboxing) (e/o la configurazione sandbox per agente).
+Lo workspace è la **cwd predefinita**, non una sandbox rigida. Gli strumenti risolvono i percorsi relativi rispetto allo workspace, ma i percorsi assoluti possono comunque raggiungere altre posizioni sull'host, a meno che la sandbox non sia abilitata. Se ti serve isolamento, usa [`agents.defaults.sandbox`](/it/gateway/sandboxing) (e/o la configurazione sandbox per agente).
 
-Quando il sandboxing è abilitato e `workspaceAccess` non è `"rw"`, gli strumenti operano dentro uno spazio di lavoro sandbox sotto `~/.openclaw/sandboxes`, non nello spazio di lavoro dell'host.
+Quando la sandbox è abilitata e `workspaceAccess` non è `"rw"`, gli strumenti operano dentro uno workspace sandbox sotto `~/.openclaw/sandboxes`, non nel tuo workspace host.
 </Warning>
 
 ## Posizione predefinita
@@ -40,31 +40,31 @@ Quando il sandboxing è abilitato e `workspaceAccess` non è `"rw"`, gli strumen
 }
 ```
 
-`openclaw onboard`, `openclaw configure` o `openclaw setup` creeranno lo spazio di lavoro e inizializzeranno i file di bootstrap se mancano.
+`openclaw onboard`, `openclaw configure` o `openclaw setup` creeranno lo workspace e inizializzeranno i file bootstrap se mancano.
 
 <Note>
-Le copie iniziali della sandbox accettano solo file regolari interni allo spazio di lavoro; gli alias symlink/hardlink che si risolvono fuori dallo spazio di lavoro sorgente vengono ignorati.
+Le copie seed della sandbox accettano solo normali file interni allo workspace; gli alias symlink/hardlink che si risolvono fuori dallo workspace sorgente vengono ignorati.
 </Note>
 
-Se gestisci già tu i file dello spazio di lavoro, puoi disabilitare la creazione dei file di bootstrap:
+Se gestisci già autonomamente i file dello workspace, puoi disabilitare la creazione dei file bootstrap:
 
 ```json5
 { agents: { defaults: { skipBootstrap: true } } }
 ```
 
-## Cartelle aggiuntive dello spazio di lavoro
+## Cartelle workspace aggiuntive
 
-Le installazioni più vecchie potrebbero aver creato `~/openclaw`. Tenere più directory di spazio di lavoro può causare confusione nell'autenticazione o deriva dello stato, perché è attivo un solo spazio di lavoro alla volta.
+Le installazioni più vecchie potrebbero aver creato `~/openclaw`. Tenere più directory workspace può causare confusione con autenticazione o deriva dello stato, perché solo uno workspace è attivo alla volta.
 
 <Note>
-**Raccomandazione:** mantieni un solo spazio di lavoro attivo. Se non usi più le cartelle aggiuntive, archiviale o spostale nel Cestino (per esempio `trash ~/openclaw`). Se mantieni intenzionalmente più spazi di lavoro, assicurati che `agents.defaults.workspace` punti a quello attivo.
+**Raccomandazione:** mantieni un solo workspace attivo. Se non usi più le cartelle aggiuntive, archiviale o spostale nel Cestino (per esempio `trash ~/openclaw`). Se mantieni intenzionalmente più workspace, assicurati che `agents.defaults.workspace` punti a quello attivo.
 
-`openclaw doctor` avvisa quando rileva directory di spazio di lavoro aggiuntive.
+`openclaw doctor` avvisa quando rileva directory workspace aggiuntive.
 </Note>
 
-## Mappa dei file dello spazio di lavoro
+## Mappa dei file dello workspace
 
-Questi sono i file standard che OpenClaw si aspetta dentro lo spazio di lavoro:
+Questi sono i file standard che OpenClaw si aspetta dentro lo workspace:
 
 <AccordionGroup>
   <Accordion title="AGENTS.md - istruzioni operative">
@@ -76,61 +76,61 @@ Questi sono i file standard che OpenClaw si aspetta dentro lo spazio di lavoro:
   <Accordion title="USER.md - chi è l'utente">
     Chi è l'utente e come rivolgersi a lui. Caricato a ogni sessione.
   </Accordion>
-  <Accordion title="IDENTITY.md - nome, vibe, emoji">
-    Il nome, la vibe e l'emoji dell'agente. Creato/aggiornato durante il rituale di bootstrap.
+  <Accordion title="IDENTITY.md - nome, stile, emoji">
+    Nome, stile ed emoji dell'agente. Creato/aggiornato durante il rituale di bootstrap.
   </Accordion>
   <Accordion title="TOOLS.md - convenzioni degli strumenti locali">
-    Note sugli strumenti locali e sulle convenzioni. Non controlla la disponibilità degli strumenti; è solo una guida.
+    Note sui tuoi strumenti locali e sulle convenzioni. Non controlla la disponibilità degli strumenti; è solo una guida.
   </Accordion>
   <Accordion title="HEARTBEAT.md - checklist Heartbeat">
-    Piccola checklist facoltativa per le esecuzioni Heartbeat. Tienila breve per evitare consumo di token.
+    Piccola checklist opzionale per le esecuzioni Heartbeat. Mantienila breve per evitare consumo di token.
   </Accordion>
   <Accordion title="BOOT.md - checklist di avvio">
-    Checklist di avvio facoltativa eseguita automaticamente al riavvio del Gateway (quando gli [hook interni](/it/automation/hooks) sono abilitati). Tienila breve; usa lo strumento messaggi per gli invii in uscita.
+    Checklist di avvio opzionale eseguita automaticamente al riavvio del Gateway (quando gli [hook interni](/it/automation/hooks) sono abilitati). Mantienila breve; usa lo strumento messaggio per gli invii in uscita.
   </Accordion>
   <Accordion title="BOOTSTRAP.md - rituale della prima esecuzione">
-    Rituale una tantum della prima esecuzione. Creato solo per uno spazio di lavoro completamente nuovo. Eliminalo dopo il completamento del rituale.
+    Rituale una tantum della prima esecuzione. Creato solo per uno workspace completamente nuovo. Eliminalo dopo il completamento del rituale.
   </Accordion>
   <Accordion title="memory/YYYY-MM-DD.md - registro giornaliero della memoria">
-    Registro giornaliero della memoria (un file al giorno). Si consiglia di leggere oggi + ieri all'avvio della sessione.
+    Registro giornaliero della memoria (un file al giorno). Consigliato leggere oggi + ieri all'avvio della sessione.
   </Accordion>
-  <Accordion title="MEMORY.md - memoria a lungo termine curata (facoltativo)">
-    Memoria a lungo termine curata. Caricala solo nella sessione principale e privata (non nei contesti condivisi/di gruppo). Vedi [Memoria](/it/concepts/memory) per il flusso di lavoro e lo svuotamento automatico della memoria.
+  <Accordion title="MEMORY.md - memoria a lungo termine curata (opzionale)">
+    Memoria a lungo termine curata: fatti durevoli, preferenze, decisioni e brevi riepiloghi. Mantieni i log dettagliati in `memory/YYYY-MM-DD.md` così gli strumenti di memoria possono recuperarli su richiesta senza iniettarli in ogni prompt. Carica `MEMORY.md` solo nella sessione principale e privata (non in contesti condivisi/di gruppo). Vedi [Memoria](/it/concepts/memory) per il workflow e lo svuotamento automatico della memoria.
   </Accordion>
-  <Accordion title="skills/ - Skills dello spazio di lavoro (facoltativo)">
-    Skills specifiche dello spazio di lavoro. Posizione delle skill con precedenza più alta per quello spazio di lavoro. Sovrascrive le skill degli agenti di progetto, le skill degli agenti personali, le skill gestite, le skill incluse e `skills.load.extraDirs` quando i nomi coincidono.
+  <Accordion title="skills/ - Skills dello workspace (opzionale)">
+    Skills specifiche dello workspace. Posizione delle Skills con precedenza massima per quello workspace. Sovrascrive le Skills dell'agente di progetto, le Skills personali dell'agente, le Skills gestite, le Skills incluse e `skills.load.extraDirs` quando i nomi coincidono.
   </Accordion>
-  <Accordion title="canvas/ - file della UI Canvas (facoltativo)">
-    File della UI Canvas per le visualizzazioni dei nodi (per esempio `canvas/index.html`).
+  <Accordion title="canvas/ - file dell'interfaccia Canvas (opzionale)">
+    File dell'interfaccia Canvas per le visualizzazioni dei nodi (per esempio `canvas/index.html`).
   </Accordion>
 </AccordionGroup>
 
 <Note>
-Se manca un file di bootstrap, OpenClaw inietta nella sessione un marcatore "file mancante" e continua. I file di bootstrap grandi vengono troncati quando vengono iniettati; regola i limiti con `agents.defaults.bootstrapMaxChars` (predefinito: 12000) e `agents.defaults.bootstrapTotalMaxChars` (predefinito: 60000). `openclaw setup` può ricreare i valori predefiniti mancanti senza sovrascrivere i file esistenti.
+Se manca un file bootstrap, OpenClaw inietta un marcatore "file mancante" nella sessione e continua. I file bootstrap grandi vengono troncati quando vengono iniettati; regola i limiti con `agents.defaults.bootstrapMaxChars` (predefinito: 12000) e `agents.defaults.bootstrapTotalMaxChars` (predefinito: 60000). `openclaw setup` può ricreare i valori predefiniti mancanti senza sovrascrivere i file esistenti.
 </Note>
 
-## Cosa NON si trova nello spazio di lavoro
+## Cosa NON si trova nello workspace
 
-Questi elementi si trovano sotto `~/.openclaw/` e NON dovrebbero essere sottoposti a commit nel repo dello spazio di lavoro:
+Questi elementi risiedono sotto `~/.openclaw/` e NON dovrebbero essere sottoposti a commit nel repo dello workspace:
 
 - `~/.openclaw/openclaw.json` (configurazione)
 - `~/.openclaw/agents/<agentId>/agent/auth-profiles.json` (profili di autenticazione del modello: OAuth + chiavi API)
-- `~/.openclaw/agents/<agentId>/agent/codex-home/` (account runtime Codex per agente, configurazione, Skills, plugins e stato nativo dei thread)
-- `~/.openclaw/credentials/` (stato di canale/provider più dati di importazione OAuth legacy)
-- `~/.openclaw/agents/<agentId>/sessions/` (trascrizioni delle sessioni + metadati)
+- `~/.openclaw/agents/<agentId>/agent/codex-home/` (account runtime Codex per agente, configurazione, Skills, plugin e stato nativo del thread)
+- `~/.openclaw/credentials/` (stato di canali/provider più dati legacy di importazione OAuth)
+- `~/.openclaw/agents/<agentId>/sessions/` (trascrizioni di sessione + metadati)
 - `~/.openclaw/skills/` (Skills gestite)
 
 Se devi migrare sessioni o configurazione, copiale separatamente e tienile fuori dal controllo versione.
 
 ## Backup Git (consigliato, privato)
 
-Tratta lo spazio di lavoro come memoria privata. Mettilo in un repo git **privato** in modo che sia sottoposto a backup e recuperabile.
+Tratta lo workspace come memoria privata. Inseriscilo in un repo git **privato** così viene salvato e può essere recuperato.
 
-Esegui questi passaggi sulla macchina su cui gira il Gateway (è lì che si trova lo spazio di lavoro).
+Esegui questi passaggi sulla macchina dove gira il Gateway (cioè dove risiede lo workspace).
 
 <Steps>
   <Step title="Inizializza il repo">
-    Se git è installato, gli spazi di lavoro completamente nuovi vengono inizializzati automaticamente. Se questo spazio di lavoro non è già un repo, esegui:
+    Se git è installato, gli workspace completamente nuovi vengono inizializzati automaticamente. Se questo workspace non è già un repo, esegui:
 
     ```bash
     cd ~/.openclaw/workspace
@@ -142,7 +142,7 @@ Esegui questi passaggi sulla macchina su cui gira il Gateway (è lì che si trov
   </Step>
   <Step title="Aggiungi un remote privato">
     <Tabs>
-      <Tab title="UI web GitHub">
+      <Tab title="Interfaccia web GitHub">
         1. Crea un nuovo repository **privato** su GitHub.
         2. Non inizializzarlo con un README (evita conflitti di merge).
         3. Copia l'URL remote HTTPS.
@@ -160,7 +160,7 @@ Esegui questi passaggi sulla macchina su cui gira il Gateway (è lì che si trov
         gh repo create openclaw-workspace --private --source . --remote origin --push
         ```
       </Tab>
-      <Tab title="UI web GitLab">
+      <Tab title="Interfaccia web GitLab">
         1. Crea un nuovo repository **privato** su GitLab.
         2. Non inizializzarlo con un README (evita conflitti di merge).
         3. Copia l'URL remote HTTPS.
@@ -175,7 +175,7 @@ Esegui questi passaggi sulla macchina su cui gira il Gateway (è lì che si trov
     </Tabs>
 
   </Step>
-  <Step title="Aggiornamenti continuativi">
+  <Step title="Aggiornamenti continui">
     ```bash
     git status
     git add .
@@ -185,16 +185,16 @@ Esegui questi passaggi sulla macchina su cui gira il Gateway (è lì che si trov
   </Step>
 </Steps>
 
-## Non effettuare commit di segreti
+## Non committare segreti
 
 <Warning>
-Anche in un repo privato, evita di memorizzare segreti nello spazio di lavoro:
+Anche in un repo privato, evita di archiviare segreti nello workspace:
 
 - Chiavi API, token OAuth, password o credenziali private.
 - Qualsiasi cosa sotto `~/.openclaw/`.
 - Dump grezzi di chat o allegati sensibili.
 
-Se devi memorizzare riferimenti sensibili, usa segnaposto e conserva il segreto reale altrove (gestore di password, variabili d'ambiente o `~/.openclaw/`).
+Se devi archiviare riferimenti sensibili, usa placeholder e conserva il vero segreto altrove (gestore di password, variabili d'ambiente o `~/.openclaw/`).
 </Warning>
 
 Starter `.gitignore` suggerito:
@@ -207,7 +207,7 @@ Starter `.gitignore` suggerito:
 **/secrets*
 ```
 
-## Spostare lo spazio di lavoro su una nuova macchina
+## Spostare lo workspace su una nuova macchina
 
 <Steps>
   <Step title="Clona il repo">
@@ -219,19 +219,19 @@ Starter `.gitignore` suggerito:
   <Step title="Inizializza i file mancanti">
     Esegui `openclaw setup --workspace <path>` per inizializzare eventuali file mancanti.
   </Step>
-  <Step title="Copia le sessioni (facoltativo)">
-    Se hai bisogno delle sessioni, copia separatamente `~/.openclaw/agents/<agentId>/sessions/` dalla vecchia macchina.
+  <Step title="Copia le sessioni (opzionale)">
+    Se ti servono le sessioni, copia separatamente `~/.openclaw/agents/<agentId>/sessions/` dalla vecchia macchina.
   </Step>
 </Steps>
 
 ## Note avanzate
 
-- Il routing multi-agente può usare spazi di lavoro diversi per agente. Vedi [routing dei canali](/it/channels/channel-routing) per la configurazione del routing.
-- Se `agents.defaults.sandbox` è abilitato, le sessioni non principali possono usare spazi di lavoro sandbox per sessione sotto `agents.defaults.sandbox.workspaceRoot`.
+- Il routing multi-agente può usare workspace diversi per agente. Vedi [routing dei canali](/it/channels/channel-routing) per la configurazione del routing.
+- Se `agents.defaults.sandbox` è abilitato, le sessioni non principali possono usare workspace sandbox per sessione sotto `agents.defaults.sandbox.workspaceRoot`.
 
 ## Correlati
 
-- [Heartbeat](/it/gateway/heartbeat) - file dello spazio di lavoro HEARTBEAT.md
-- [Sandboxing](/it/gateway/sandboxing) - accesso allo spazio di lavoro in ambienti sandbox
+- [Heartbeat](/it/gateway/heartbeat) - file workspace HEARTBEAT.md
+- [Sandboxing](/it/gateway/sandboxing) - accesso allo workspace in ambienti sandbox
 - [Sessione](/it/concepts/session) - percorsi di archiviazione delle sessioni
-- [Ordini permanenti](/it/automation/standing-orders) - istruzioni persistenti nei file dello spazio di lavoro
+- [Ordini permanenti](/it/automation/standing-orders) - istruzioni persistenti nei file dello workspace

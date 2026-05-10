@@ -1,52 +1,50 @@
 ---
 read_when:
     - إضافة تكاملات CLI الخارجية أو تغييرها
-    - تصحيح أخطاء محوِّلات RPC (signal-cli، imsg)
-summary: محولات RPC لواجهات CLI الخارجية (signal-cli، imsg) وأنماط Gateway
-title: محولات RPC
+    - تصحيح أخطاء محولات RPC (signal-cli، imsg)
+summary: مهايئات RPC لواجهات CLI الخارجية (signal-cli، imsg) وأنماط Gateway
+title: مهايئات RPC
 x-i18n:
-    generated_at: "2026-05-07T01:54:37Z"
+    generated_at: "2026-05-10T20:00:49Z"
     model: gpt-5.5
     provider: openai
-    source_hash: 446e54d736352f45e6cc6988a1835233cace7f854b6e62c64bb1fae115ce76f6
+    source_hash: 63556f140bee55821fa0a09ff9808e163728049f8db4c58f7bb4ceca6e1cac1a
     source_path: reference/rpc.md
     workflow: 16
 ---
 
-يتكامل OpenClaw مع واجهات CLI خارجية عبر JSON-RPC. يُستخدم نمطان اليوم.
+يدمج OpenClaw أدوات CLI خارجية عبر JSON-RPC. يُستخدم نمطان حاليًا.
 
-## النمط A: daemon عبر HTTP (signal-cli)
+## النمط A: خدمة HTTP خفية (signal-cli)
 
-- يعمل `signal-cli` بصفته daemon مع JSON-RPC عبر HTTP.
+- يعمل `signal-cli` كخدمة خفية مع JSON-RPC عبر HTTP.
 - تدفق الأحداث هو SSE (`/api/v1/events`).
 - فحص الصحة: `/api/v1/check`.
-- يتولى OpenClaw دورة الحياة عندما تكون `channels.signal.autoStart=true`.
+- يتحكم OpenClaw في دورة الحياة عندما تكون `channels.signal.autoStart=true`.
 
-راجع [Signal](/ar/channels/signal) لمعرفة الإعداد ونقاط النهاية.
+راجع [Signal](/ar/channels/signal) للإعداد ونقاط النهاية.
 
-## النمط B: عملية فرعية عبر stdio (قديم: imsg)
+## النمط B: عملية فرعية عبر stdio (imsg)
 
-> **ملاحظة:** لإعدادات iMessage الجديدة، استخدم [BlueBubbles](/ar/channels/bluebubbles) بدلاً من ذلك.
-
-- يُشغّل OpenClaw الأمر `imsg rpc` كعملية فرعية (تكامل iMessage القديم).
-- يكون JSON-RPC مفصولاً بأسطر عبر stdin/stdout (كائن JSON واحد لكل سطر).
-- لا يلزم منفذ TCP ولا daemon.
+- يشغّل OpenClaw الأمر `imsg rpc` كعملية فرعية لـ [iMessage](/ar/channels/imessage).
+- يكون JSON-RPC محددًا بالأسطر عبر stdin/stdout (كائن JSON واحد لكل سطر).
+- لا يلزم منفذ TCP ولا خدمة خفية.
 
 الطرق الأساسية المستخدمة:
 
-- `watch.subscribe` ← الإشعارات (`method: "message"`)
+- `watch.subscribe` → إشعارات (`method: "message"`)
 - `watch.unsubscribe`
 - `send`
-- `chats.list` (الفحص/التشخيصات)
+- `chats.list` (فحص/تشخيصات)
 
-راجع [iMessage](/ar/channels/imessage) لمعرفة الإعداد القديم والعنونة (يُفضَّل `chat_id`).
+راجع [iMessage](/ar/channels/imessage) للإعداد القديم والعنونة (يُفضّل `chat_id`).
 
-## إرشادات Adapter
+## إرشادات المحوّل
 
-- يتولى Gateway ملكية العملية (يرتبط البدء/الإيقاف بدورة حياة المزوّد).
-- اجعل عملاء RPC قادرين على الصمود: المهل الزمنية، وإعادة التشغيل عند الخروج.
+- يتحكم Gateway في العملية (يرتبط البدء/الإيقاف بدورة حياة المزوّد).
+- اجعل عملاء RPC قادرين على الصمود: مهلات، وإعادة تشغيل عند الخروج.
 - فضّل المعرّفات المستقرة (مثل `chat_id`) على سلاسل العرض.
 
-## ذات صلة
+## ذو صلة
 
 - [بروتوكول Gateway](/ar/gateway/protocol)

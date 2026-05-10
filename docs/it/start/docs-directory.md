@@ -1,19 +1,19 @@
 ---
 read_when:
     - Vuoi accedere rapidamente alle pagine principali della documentazione
-summary: Collegamenti selezionati alla documentazione OpenClaw più consultata.
+summary: Link curati alla documentazione OpenClaw più usata.
 title: Directory della documentazione
 x-i18n:
-    generated_at: "2026-05-07T01:53:50Z"
+    generated_at: "2026-05-10T19:52:08Z"
     model: gpt-5.5
     provider: openai
-    source_hash: bd24805e17b89747850f01302e761babea411d50aee4e50ec43f93c2e893a4e1
+    source_hash: ddd6903aeb87e36db977b2cef62bd80e84fc67633ca00beb3365ced1f5abdd99
     source_path: start/docs-directory.md
     workflow: 16
 ---
 
 <Note>
-Questa pagina è un indice curato. Se hai appena iniziato, parti da [Guida introduttiva](/it/start/getting-started).
+Questa pagina è un indice curato. Se sei nuovo, inizia da [Guida introduttiva](/it/start/getting-started).
 Per una mappa completa della documentazione, consulta [Hub della documentazione](/it/start/hubs).
 </Note>
 
@@ -31,23 +31,22 @@ Per una mappa completa della documentazione, consulta [Hub della documentazione]
 - [Configurazione dell'assistente OpenClaw](/it/start/openclaw)
 - [Skills](/it/tools/skills)
 - [Configurazione delle Skills](/it/tools/skills-config)
-- [Template dell'area di lavoro](/it/reference/templates/AGENTS)
+- [Modelli di workspace](/it/reference/templates/AGENTS)
 - [Adattatori RPC](/it/reference/rpc)
 - [Runbook del Gateway](/it/gateway)
 - [Nodi (iOS e Android)](/it/nodes)
-- [Superfici web (Control UI)](/it/web)
-- [Rilevamento e trasporti](/it/gateway/discovery)
+- [Superfici web (interfaccia di controllo)](/it/web)
+- [Discovery e trasporti](/it/gateway/discovery)
 - [Accesso remoto](/it/gateway/remote)
 
 ## Provider e UX
 
 - [WebChat](/it/web/webchat)
-- [Control UI (browser)](/it/web/control-ui)
+- [Interfaccia di controllo (browser)](/it/web/control-ui)
 - [Telegram](/it/channels/telegram)
 - [Discord](/it/channels/discord)
 - [Mattermost](/it/channels/mattermost)
-- [BlueBubbles (bridge iMessage legacy)](/it/channels/bluebubbles)
-- [QQ Bot](/it/channels/qqbot)
+- [Bot QQ](/it/channels/qqbot)
 - [iMessage](/it/channels/imessage)
 - [Gruppi](/it/channels/groups)
 - [Messaggi di gruppo WhatsApp](/it/channels/group-messages)
