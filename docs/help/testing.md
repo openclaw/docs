@@ -712,6 +712,9 @@ OpenClaw gateway container with the OpenAI-compatible HTTP endpoints enabled,
 starts a pinned Open WebUI container against that gateway, signs in through
 Open WebUI, verifies `/api/models` exposes `openclaw/default`, then sends a
 real chat request through Open WebUI's `/api/chat/completions` proxy.
+Set `OPENWEBUI_SMOKE_MODE=models` for release-path CI checks that should stop
+after Open WebUI sign-in and model discovery, without waiting on a live model
+completion.
 The first run can be noticeably slower because Docker may need to pull the
 Open WebUI image and Open WebUI may need to finish its own cold-start setup.
 This lane expects a usable live model key, and `OPENCLAW_PROFILE_FILE`
