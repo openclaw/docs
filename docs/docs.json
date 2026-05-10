@@ -1764,6 +1764,14 @@
                 ]
               },
               {
+                "group": "Codex harness",
+                "pages": [
+                  "plugins/codex-harness-reference",
+                  "plugins/codex-harness-runtime",
+                  "plugins/codex-native-plugins"
+                ]
+              },
+              {
                 "group": "Templates",
                 "pages": [
                   "reference/AGENTS.default",
@@ -3259,6 +3267,14 @@
                 ]
               },
               {
+                "group": "Codex harness",
+                "pages": [
+                  "zh-TW/plugins/codex-harness-reference",
+                  "zh-TW/plugins/codex-harness-runtime",
+                  "zh-TW/plugins/codex-native-plugins"
+                ]
+              },
+              {
                 "group": "Templates",
                 "pages": [
                   "zh-TW/reference/AGENTS.default",
@@ -4138,6 +4154,14 @@
                   "ja-JP/concepts/openclaw-sdk",
                   "ja-JP/reference/openclaw-sdk-api-design",
                   "ja-JP/reference/device-models"
+                ]
+              },
+              {
+                "group": "Codex harness",
+                "pages": [
+                  "ja-JP/plugins/codex-harness-reference",
+                  "ja-JP/plugins/codex-harness-runtime",
+                  "ja-JP/plugins/codex-native-plugins"
                 ]
               },
               {
@@ -5023,6 +5047,14 @@
                 ]
               },
               {
+                "group": "Codex harness",
+                "pages": [
+                  "es/plugins/codex-harness-reference",
+                  "es/plugins/codex-harness-runtime",
+                  "es/plugins/codex-native-plugins"
+                ]
+              },
+              {
                 "group": "Templates",
                 "pages": [
                   "es/reference/AGENTS.default",
@@ -5902,6 +5934,14 @@
                   "pt-BR/concepts/openclaw-sdk",
                   "pt-BR/reference/openclaw-sdk-api-design",
                   "pt-BR/reference/device-models"
+                ]
+              },
+              {
+                "group": "Codex harness",
+                "pages": [
+                  "pt-BR/plugins/codex-harness-reference",
+                  "pt-BR/plugins/codex-harness-runtime",
+                  "pt-BR/plugins/codex-native-plugins"
                 ]
               },
               {
@@ -6787,6 +6827,14 @@
                 ]
               },
               {
+                "group": "Codex harness",
+                "pages": [
+                  "ko/plugins/codex-harness-reference",
+                  "ko/plugins/codex-harness-runtime",
+                  "ko/plugins/codex-native-plugins"
+                ]
+              },
+              {
                 "group": "Templates",
                 "pages": [
                   "ko/reference/AGENTS.default",
@@ -7666,6 +7714,14 @@
                   "de/concepts/openclaw-sdk",
                   "de/reference/openclaw-sdk-api-design",
                   "de/reference/device-models"
+                ]
+              },
+              {
+                "group": "Codex harness",
+                "pages": [
+                  "de/plugins/codex-harness-reference",
+                  "de/plugins/codex-harness-runtime",
+                  "de/plugins/codex-native-plugins"
                 ]
               },
               {
@@ -8551,6 +8607,14 @@
                 ]
               },
               {
+                "group": "Codex harness",
+                "pages": [
+                  "fr/plugins/codex-harness-reference",
+                  "fr/plugins/codex-harness-runtime",
+                  "fr/plugins/codex-native-plugins"
+                ]
+              },
+              {
                 "group": "Templates",
                 "pages": [
                   "fr/reference/AGENTS.default",
@@ -9430,6 +9494,14 @@
                   "ar/concepts/openclaw-sdk",
                   "ar/reference/openclaw-sdk-api-design",
                   "ar/reference/device-models"
+                ]
+              },
+              {
+                "group": "Codex harness",
+                "pages": [
+                  "ar/plugins/codex-harness-reference",
+                  "ar/plugins/codex-harness-runtime",
+                  "ar/plugins/codex-native-plugins"
                 ]
               },
               {
@@ -10315,6 +10387,14 @@
                 ]
               },
               {
+                "group": "Codex harness",
+                "pages": [
+                  "it/plugins/codex-harness-reference",
+                  "it/plugins/codex-harness-runtime",
+                  "it/plugins/codex-native-plugins"
+                ]
+              },
+              {
                 "group": "Templates",
                 "pages": [
                   "it/reference/AGENTS.default",
@@ -11194,6 +11274,14 @@
                   "vi/concepts/openclaw-sdk",
                   "vi/reference/openclaw-sdk-api-design",
                   "vi/reference/device-models"
+                ]
+              },
+              {
+                "group": "Codex harness",
+                "pages": [
+                  "vi/plugins/codex-harness-reference",
+                  "vi/plugins/codex-harness-runtime",
+                  "vi/plugins/codex-native-plugins"
                 ]
               },
               {
@@ -12079,6 +12167,14 @@
                 ]
               },
               {
+                "group": "Codex harness",
+                "pages": [
+                  "nl/plugins/codex-harness-reference",
+                  "nl/plugins/codex-harness-runtime",
+                  "nl/plugins/codex-native-plugins"
+                ]
+              },
+              {
                 "group": "Templates",
                 "pages": [
                   "nl/reference/AGENTS.default",
@@ -12958,6 +13054,14 @@
                   "tr/concepts/openclaw-sdk",
                   "tr/reference/openclaw-sdk-api-design",
                   "tr/reference/device-models"
+                ]
+              },
+              {
+                "group": "Codex harness",
+                "pages": [
+                  "tr/plugins/codex-harness-reference",
+                  "tr/plugins/codex-harness-runtime",
+                  "tr/plugins/codex-native-plugins"
                 ]
               },
               {
@@ -13843,6 +13947,14 @@
                 ]
               },
               {
+                "group": "Codex harness",
+                "pages": [
+                  "uk/plugins/codex-harness-reference",
+                  "uk/plugins/codex-harness-runtime",
+                  "uk/plugins/codex-native-plugins"
+                ]
+              },
+              {
                 "group": "Templates",
                 "pages": [
                   "uk/reference/AGENTS.default",
@@ -14725,6 +14837,14 @@
                 ]
               },
               {
+                "group": "Codex harness",
+                "pages": [
+                  "id/plugins/codex-harness-reference",
+                  "id/plugins/codex-harness-runtime",
+                  "id/plugins/codex-native-plugins"
+                ]
+              },
+              {
                 "group": "Templates",
                 "pages": [
                   "id/reference/AGENTS.default",
@@ -15604,6 +15724,14 @@
                   "pl/concepts/openclaw-sdk",
                   "pl/reference/openclaw-sdk-api-design",
                   "pl/reference/device-models"
+                ]
+              },
+              {
+                "group": "Codex harness",
+                "pages": [
+                  "pl/plugins/codex-harness-reference",
+                  "pl/plugins/codex-harness-runtime",
+                  "pl/plugins/codex-native-plugins"
                 ]
               },
               {

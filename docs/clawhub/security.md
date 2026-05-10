@@ -65,7 +65,9 @@ fields, and artifact integrity information.
 
 OpenClaw checks compatibility before installing ClawHub-hosted plugins. Package
 records may also expose digest metadata so OpenClaw can verify downloaded
-artifacts.
+artifacts. ClawScan includes declared package `openclaw.environment` env/config
+metadata when reviewing plugin releases so declared runtime requirements are
+compared against observed behavior.
 
 ## Reports
 
