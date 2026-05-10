@@ -56,6 +56,12 @@ what it appears to do. For example, a skill that references a required API key
 should declare that requirement in `SKILL.md` so users can see it before
 installing.
 
+Scan findings are artifact-based. Expected provider behavior, such as declared
+API credentials, localhost OAuth callbacks, scoped uninstall cleanup, Basic Auth
+encoding, or user-selected file uploads to the stated provider, is treated
+differently from hidden credential forwarding, broad private-file access,
+unrelated network destinations, or stealth browser abuse.
+
 See [Skill format](/clawhub/skill-format).
 
 ## Plugins
