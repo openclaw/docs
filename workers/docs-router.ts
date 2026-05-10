@@ -1,6 +1,6 @@
 interface Env {
-  CLOUDFLARE_ACCOUNT_ID?: string;
   CLOUDFLARE_R2_BUCKET?: string;
+  OPENCLAW_R2_ACCOUNT_ID?: string;
   OPENCLAW_R2_ACCESS_KEY_ID?: string;
   OPENCLAW_R2_REGION?: string;
   OPENCLAW_R2_SECRET_ACCESS_KEY?: string;
@@ -152,7 +152,7 @@ function r2ObjectKey(pathname: string): string {
 }
 
 async function signedR2Fetch(env: Env, method: string, key: string): Promise<Response> {
-  const accountId = requiredEnv(env.CLOUDFLARE_ACCOUNT_ID, "CLOUDFLARE_ACCOUNT_ID");
+  const accountId = requiredEnv(env.OPENCLAW_R2_ACCOUNT_ID, "OPENCLAW_R2_ACCOUNT_ID");
   const accessKeyId = requiredEnv(env.OPENCLAW_R2_ACCESS_KEY_ID, "OPENCLAW_R2_ACCESS_KEY_ID");
   const secretAccessKey = requiredEnv(env.OPENCLAW_R2_SECRET_ACCESS_KEY, "OPENCLAW_R2_SECRET_ACCESS_KEY");
   const bucket = env.CLOUDFLARE_R2_BUCKET || defaultR2Bucket;

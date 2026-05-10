@@ -70,7 +70,7 @@ Required R2 S3 upload credentials:
 - `OPENCLAW_R2_ACCESS_KEY_ID`
 - `OPENCLAW_R2_SECRET_ACCESS_KEY`
 
-The same values are used by the Worker router for signed R2 reads. The Pages workflow writes them to Worker secrets before deployment, so the Worker deploy token does not need `Account: R2 Storage: Read`. Do not commit the account id or credentials to this repository.
+The Worker router uses the same private account id value through the `OPENCLAW_R2_ACCOUNT_ID` Worker secret. The Pages workflow writes the R2 credentials to Worker secrets before deployment, so the Worker deploy token does not need `Account: R2 Storage: Read`. Do not commit the account id or credentials to this repository.
 
 For Cloudflare R2 API tokens, the access key id is the account-token id returned by:
 

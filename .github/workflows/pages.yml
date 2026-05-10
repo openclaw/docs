@@ -50,7 +50,7 @@ jobs:
           : "${CLOUDFLARE_ACCOUNT_ID:?CLOUDFLARE_ACCOUNT_ID is required}"
           : "${OPENCLAW_R2_ACCESS_KEY_ID:?OPENCLAW_R2_ACCESS_KEY_ID is required}"
           : "${OPENCLAW_R2_SECRET_ACCESS_KEY:?OPENCLAW_R2_SECRET_ACCESS_KEY is required}"
-          printf '%s' "${CLOUDFLARE_ACCOUNT_ID}" | npx wrangler@4.88.0 secret put CLOUDFLARE_ACCOUNT_ID --config wrangler.toml
+          printf '%s' "${CLOUDFLARE_ACCOUNT_ID}" | npx wrangler@4.88.0 secret put OPENCLAW_R2_ACCOUNT_ID --config wrangler.toml
           printf '%s' "${OPENCLAW_R2_ACCESS_KEY_ID}" | npx wrangler@4.88.0 secret put OPENCLAW_R2_ACCESS_KEY_ID --config wrangler.toml
           printf '%s' "${OPENCLAW_R2_SECRET_ACCESS_KEY}" | npx wrangler@4.88.0 secret put OPENCLAW_R2_SECRET_ACCESS_KEY --config wrangler.toml
 
