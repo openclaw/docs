@@ -133,6 +133,11 @@ automatically placed under a moderation hold (`requiresModerationAt` set on the
 user). This hides all of the publisher's skills, causes future publishes to
 start hidden, and creates a `user.moderation.auto` audit log entry.
 
+Static suspicious findings are retained as file/line evidence for moderators,
+but they do not hide content or decide the public scan verdict on their own.
+New uploads remain in review/pending state until the VirusTotal and LLM reviews
+settle; static scanning only blocks immediately for malicious signatures.
+
 Admins can lift a false-positive hold:
 
 ```bash
