@@ -149,6 +149,7 @@ jobs:
                 await assertPage(page, attempt);
               }
               await assertMarkdown("/concepts/models");
+              await assertHeader("/concepts/models", "link", /<\/concepts\/models\.md>; rel="alternate"; type="text\/markdown"/);
               await assertText("/robots.txt", /Sitemap: .*\/sitemap\.xml/);
               await assertText("/llms.txt", /## Documentation Index/);
               await assertText("/.well-known/llms.txt", /## Documentation Index/);

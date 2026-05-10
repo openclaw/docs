@@ -99,6 +99,7 @@ async function assetResponse(env: Env, ctx: ExecutionContext, request: Request, 
     const headers = new Headers(cached.headers);
     headers.set("X-OpenClaw-Docs-Cache", "HIT");
     applyCacheHeaders(headers, pathname);
+    applyMarkdownAlternateHeader(headers, pathname);
     return new Response(request.method === "HEAD" ? null : cached.body, {
       status: cached.status,
       statusText: cached.statusText,
@@ -123,7 +124,10 @@ async function assetResponse(env: Env, ctx: ExecutionContext, request: Request, 
   responseHeaders.set("X-OpenClaw-Docs-Origin", "cloudflare-r2");
   responseHeaders.set("X-OpenClaw-Docs-Cache", "MISS");
   responseHeaders.delete("Content-Length");
-  if (response.ok) applyCacheHeaders(responseHeaders, pathname);
+  if (response.ok) {
+    applyCacheHeaders(responseHeaders, pathname);
+    applyMarkdownAlternateHeader(responseHeaders, pathname);
+  }
   const finalResponse = new Response(request.method === "HEAD" ? null : response.body, {
     status: response.status,
     statusText: response.statusText,
@@ -242,6 +246,21 @@ function applyCacheHeaders(headers: Headers, pathname: string): void {
   headers.set("Cloudflare-CDN-Cache-Control", cdnCacheControl);
 }
 
+function applyMarkdownAlternateHeader(headers: Headers, pathname: string): void {
+  const markdownPath = markdownAlternatePathFor(pathname);
+  if (!markdownPath) return;
+  headers.set("Link", appendLink(headers.get("Link"), `<${markdownPath}>; rel="alternate"; type="text/markdown"`));
+}
+
+function markdownAlternatePathFor(pathname: string): string | null {
+  if (!isHtmlPath(pathname)) return null;
+  if (pathname === "/" || pathname === "/index.html") return "/index.md";
+  const clean = pathname.replace(/\/+$/, "");
+  if (clean.endsWith("/index.html")) return `${clean.slice(0, -"/index.html".length)}.md`;
+  if (clean.endsWith(".html")) return `${clean.slice(0, -".html".length)}.md`;
+  return `${clean}.md`;
+}
+
 function browserCacheControlFor(pathname: string): string {
   if (isHtmlPath(pathname)) {
     return "public, max-age=60, stale-while-revalidate=60";
@@ -283,4 +302,10 @@ function appendVary(current: string | null, value: string): string {
   const parts = new Set((current ?? "").split(",").map((part) => part.trim()).filter(Boolean));
   parts.add(value);
   return [...parts].join(", ");
+}
+
+function appendLink(current: string | null, value: string): string {
+  if (!current) return value;
+  if (current.includes(value)) return current;
+  return `${current}, ${value}`;
 }
