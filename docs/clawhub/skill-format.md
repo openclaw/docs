@@ -160,6 +160,7 @@ metadata:
 Only “text-based” files are accepted by publish.
 
 - Extension allowlist is in `packages/schema/src/textFiles.ts` (`TEXT_FILE_EXTENSIONS`).
+- Script files are still scanned after upload; PowerShell `.ps1`, `.psm1`, and `.psd1` files are accepted as text.
 - Content types starting with `text/` are treated as text; plus a small allowlist (JSON/YAML/TOML/JS/TS/Markdown/SVG).
 
 Limits (server-side):
