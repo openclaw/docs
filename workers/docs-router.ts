@@ -168,7 +168,7 @@ function browserCacheControlFor(pathname: string): string {
   if (isHtmlPath(pathname)) {
     return "public, max-age=60, stale-while-revalidate=60";
   }
-  if (pathname.endsWith(".md") || pathname.endsWith(".txt") || pathname.endsWith(".json") || pathname.endsWith(".jsonl")) {
+  if (isMutableStaticPath(pathname)) {
     return "public, max-age=300, stale-while-revalidate=300";
   }
   return "public, max-age=31536000, immutable";
@@ -178,10 +178,18 @@ function edgeCacheControlFor(pathname: string): string {
   if (isHtmlPath(pathname)) {
     return "public, s-maxage=60, stale-while-revalidate=60";
   }
-  if (pathname.endsWith(".md") || pathname.endsWith(".txt") || pathname.endsWith(".json") || pathname.endsWith(".jsonl")) {
+  if (isMutableStaticPath(pathname)) {
     return "public, s-maxage=3600, stale-while-revalidate=86400";
   }
   return "public, max-age=31536000, immutable";
+}
+
+function isMutableStaticPath(pathname: string): boolean {
+  return pathname.endsWith(".md")
+    || pathname.endsWith(".txt")
+    || pathname.endsWith(".xml")
+    || pathname.endsWith(".json")
+    || pathname.endsWith(".jsonl");
 }
 
 function isHtmlPath(pathname: string): boolean {

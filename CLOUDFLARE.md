@@ -206,7 +206,7 @@ Expected after R2 cutover:
 - `.md` paths return `text/markdown`.
 - `/llms.txt` and `/.well-known/llms.txt` return the lightweight docs index, not a full-site corpus.
 - `/robots.txt` returns `200 text/plain`.
-- `/sitemap.xml` returns `200 application/xml`.
+- `/sitemap.xml` returns `200 application/xml` with mutable cache headers, not `immutable`.
 - `/llms-full.txt` returns `410`; OpenClaw intentionally does not publish a full-site LLM corpus.
 - docs responses include `X-OpenClaw-Docs-Origin: cloudflare-r2`.
 - repeated router requests become `X-OpenClaw-Docs-Cache: HIT`.

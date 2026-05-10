@@ -43,7 +43,10 @@ jobs:
       - name: Deploy to Cloudflare
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: npx wrangler@4.88.0 deploy --config wrangler.toml
+        run: |
+          npx wrangler@4.88.0 deploy --config wrangler.toml \
+            --tag "${GITHUB_SHA::12}" \
+            --message "openclaw/docs ${GITHUB_SHA}"
 
       - name: Dispatch live smoke
         env:

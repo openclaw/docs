@@ -127,6 +127,20 @@ jobs:
             if (response.status !== status) throw new Error(`${path}: expected HTTP ${status}, got ${response.status}`);
             console.log(`${path}: ok (HTTP ${status})`);
           };
+          const assertHeader = async (path, name, required, forbidden) => {
+            const response = await fetch(new URL(path, baseUrl), {
+              method: "HEAD",
+              headers: {
+                "cache-control": "no-cache",
+                pragma: "no-cache",
+              },
+            });
+            if (!response.ok) throw new Error(`${path}: header HTTP ${response.status}`);
+            const value = response.headers.get(name) ?? "";
+            if (!required.test(value)) throw new Error(`${path}: ${name} missing expected value, got ${value}`);
+            if (forbidden?.test(value)) throw new Error(`${path}: ${name} has forbidden value, got ${value}`);
+            console.log(`${path}: ok (${name}: ${value})`);
+          };
           const deadline = Date.now() + 20 * 60 * 1000;
           let lastError;
           for (let attempt = 1; Date.now() < deadline; attempt += 1) {
@@ -139,6 +153,7 @@ jobs:
               await assertText("/llms.txt", /## Documentation Index/);
               await assertText("/.well-known/llms.txt", /## Documentation Index/);
               await assertText("/sitemap.xml", /<urlset/);
+              await assertHeader("/sitemap.xml", "cache-control", /max-age=300/, /immutable/);
               await assertStatus("/llms-full.txt", 410);
               await assertStatus("/.well-known/llms-full.txt", 410);
               process.exit(0);
