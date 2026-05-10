@@ -1582,7 +1582,8 @@
                       "gateway/openresponses-http-api",
                       "gateway/tools-invoke-http-api",
                       "gateway/cli-backends",
-                      "gateway/local-models"
+                      "gateway/local-models",
+                      "gateway/local-model-services"
                     ]
                   },
                   {
@@ -3086,7 +3087,8 @@
                       "zh-TW/gateway/openresponses-http-api",
                       "zh-TW/gateway/tools-invoke-http-api",
                       "zh-TW/gateway/cli-backends",
-                      "zh-TW/gateway/local-models"
+                      "zh-TW/gateway/local-models",
+                      "zh-TW/gateway/local-model-services"
                     ]
                   },
                   {
@@ -3977,7 +3979,8 @@
                       "ja-JP/gateway/openresponses-http-api",
                       "ja-JP/gateway/tools-invoke-http-api",
                       "ja-JP/gateway/cli-backends",
-                      "ja-JP/gateway/local-models"
+                      "ja-JP/gateway/local-models",
+                      "ja-JP/gateway/local-model-services"
                     ]
                   },
                   {
@@ -4868,7 +4871,8 @@
                       "es/gateway/openresponses-http-api",
                       "es/gateway/tools-invoke-http-api",
                       "es/gateway/cli-backends",
-                      "es/gateway/local-models"
+                      "es/gateway/local-models",
+                      "es/gateway/local-model-services"
                     ]
                   },
                   {
@@ -5759,7 +5763,8 @@
                       "pt-BR/gateway/openresponses-http-api",
                       "pt-BR/gateway/tools-invoke-http-api",
                       "pt-BR/gateway/cli-backends",
-                      "pt-BR/gateway/local-models"
+                      "pt-BR/gateway/local-models",
+                      "pt-BR/gateway/local-model-services"
                     ]
                   },
                   {
@@ -6650,7 +6655,8 @@
                       "ko/gateway/openresponses-http-api",
                       "ko/gateway/tools-invoke-http-api",
                       "ko/gateway/cli-backends",
-                      "ko/gateway/local-models"
+                      "ko/gateway/local-models",
+                      "ko/gateway/local-model-services"
                     ]
                   },
                   {
@@ -7541,7 +7547,8 @@
                       "de/gateway/openresponses-http-api",
                       "de/gateway/tools-invoke-http-api",
                       "de/gateway/cli-backends",
-                      "de/gateway/local-models"
+                      "de/gateway/local-models",
+                      "de/gateway/local-model-services"
                     ]
                   },
                   {
@@ -8432,7 +8439,8 @@
                       "fr/gateway/openresponses-http-api",
                       "fr/gateway/tools-invoke-http-api",
                       "fr/gateway/cli-backends",
-                      "fr/gateway/local-models"
+                      "fr/gateway/local-models",
+                      "fr/gateway/local-model-services"
                     ]
                   },
                   {
@@ -9323,7 +9331,8 @@
                       "ar/gateway/openresponses-http-api",
                       "ar/gateway/tools-invoke-http-api",
                       "ar/gateway/cli-backends",
-                      "ar/gateway/local-models"
+                      "ar/gateway/local-models",
+                      "ar/gateway/local-model-services"
                     ]
                   },
                   {
@@ -10214,7 +10223,8 @@
                       "it/gateway/openresponses-http-api",
                       "it/gateway/tools-invoke-http-api",
                       "it/gateway/cli-backends",
-                      "it/gateway/local-models"
+                      "it/gateway/local-models",
+                      "it/gateway/local-model-services"
                     ]
                   },
                   {
@@ -11105,7 +11115,8 @@
                       "vi/gateway/openresponses-http-api",
                       "vi/gateway/tools-invoke-http-api",
                       "vi/gateway/cli-backends",
-                      "vi/gateway/local-models"
+                      "vi/gateway/local-models",
+                      "vi/gateway/local-model-services"
                     ]
                   },
                   {
@@ -11996,7 +12007,8 @@
                       "nl/gateway/openresponses-http-api",
                       "nl/gateway/tools-invoke-http-api",
                       "nl/gateway/cli-backends",
-                      "nl/gateway/local-models"
+                      "nl/gateway/local-models",
+                      "nl/gateway/local-model-services"
                     ]
                   },
                   {
@@ -12887,7 +12899,8 @@
                       "tr/gateway/openresponses-http-api",
                       "tr/gateway/tools-invoke-http-api",
                       "tr/gateway/cli-backends",
-                      "tr/gateway/local-models"
+                      "tr/gateway/local-models",
+                      "tr/gateway/local-model-services"
                     ]
                   },
                   {
@@ -13778,7 +13791,8 @@
                       "uk/gateway/openresponses-http-api",
                       "uk/gateway/tools-invoke-http-api",
                       "uk/gateway/cli-backends",
-                      "uk/gateway/local-models"
+                      "uk/gateway/local-models",
+                      "uk/gateway/local-model-services"
                     ]
                   },
                   {
@@ -14669,7 +14683,8 @@
                       "id/gateway/openresponses-http-api",
                       "id/gateway/tools-invoke-http-api",
                       "id/gateway/cli-backends",
-                      "id/gateway/local-models"
+                      "id/gateway/local-models",
+                      "id/gateway/local-model-services"
                     ]
                   },
                   {
@@ -15560,7 +15575,8 @@
                       "pl/gateway/openresponses-http-api",
                       "pl/gateway/tools-invoke-http-api",
                       "pl/gateway/cli-backends",
-                      "pl/gateway/local-models"
+                      "pl/gateway/local-models",
+                      "pl/gateway/local-model-services"
                     ]
                   },
                   {
