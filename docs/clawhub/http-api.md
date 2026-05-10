@@ -292,6 +292,33 @@ Response:
 }
 ```
 
+### `POST /api/v1/skills/{slug}/rescan`
+
+Requests a security rescan for the latest published skill version.
+
+Auth:
+
+- Requires an API token for the skill owner, publisher admin, platform
+  moderator, or platform admin.
+- Owners and publisher admins are subject to the per-version owner recovery
+  limit. Platform moderators and admins are not, but ClawHub still allows only
+  one active rescan per version.
+
+Response:
+
+```json
+{
+  "ok": true,
+  "targetKind": "skill",
+  "name": "gifgrep",
+  "version": "1.2.3",
+  "status": "in_progress",
+  "remainingRequests": 2,
+  "maxRequests": 3,
+  "pendingRequestId": "rescanRequests:..."
+}
+```
+
 ### `GET /api/v1/skills/-/reports`
 
 Moderator/admin endpoint for skill report intake.
@@ -780,6 +807,33 @@ Response:
   "packageId": "packages:...",
   "releaseId": "packageReleases:...",
   "status": "open"
+}
+```
+
+### `POST /api/v1/packages/{name}/rescan`
+
+Requests a security rescan for the latest published package release.
+
+Auth:
+
+- Requires an API token for the package owner, publisher admin, platform
+  moderator, or platform admin.
+- Owners and publisher admins are subject to the per-release owner recovery
+  limit. Platform moderators and admins are not, but ClawHub still allows only
+  one active rescan per release.
+
+Response:
+
+```json
+{
+  "ok": true,
+  "targetKind": "package",
+  "name": "@openclaw/example-plugin",
+  "version": "1.2.3",
+  "status": "in_progress",
+  "remainingRequests": 2,
+  "maxRequests": 3,
+  "pendingRequestId": "rescanRequests:..."
 }
 ```
 

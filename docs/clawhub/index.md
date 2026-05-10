@@ -142,7 +142,9 @@ ClawHub runs automated checks on published skills and plugin releases. Scan-held
 or blocked releases may disappear from public catalog and install surfaces while
 remaining visible to their owner in `/dashboard`.
 
-Owners can request limited rescans for false-positive recovery:
+Owners can request limited rescans for false-positive recovery. Platform
+moderators and admins can request rescans for any skill or package when handling
+support reports:
 
 ```bash
 clawhub skill rescan <slug>

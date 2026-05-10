@@ -219,6 +219,24 @@ Stores your API token + cached registry URL.
 - Calls `POST /api/v1/skills/{sourceSlug}/merge`.
 - `--yes` skips confirmation.
 
+### `skill rescan <slug>`
+
+- Request a security rescan for the latest published skill version.
+- Owners and publisher admins can rescan their own skills up to the per-version
+  recovery limit.
+- Platform moderators and admins can rescan any skill and are not blocked by the
+  owner recovery limit, though only one rescan can run at a time per version.
+- Calls `POST /api/v1/skills/{slug}/rescan`.
+- Flags:
+  - `--yes`: skip confirmation.
+  - `--json`: machine-readable output.
+
+Example:
+
+```bash
+clawhub skill rescan suspicious-skill --yes
+```
+
 ### `transfer`
 
 - Ownership transfer workflow.
@@ -333,6 +351,24 @@ Example:
 
 ```bash
 clawhub package delete @openclaw/example-plugin --yes
+```
+
+### `package rescan <name>`
+
+- Request a security rescan for the latest published package release.
+- Owners and publisher admins can rescan their own packages up to the per-release
+  recovery limit.
+- Platform moderators and admins can rescan any package and are not blocked by
+  the owner recovery limit, though only one rescan can run at a time per release.
+- Calls `POST /api/v1/packages/{name}/rescan`.
+- Flags:
+  - `--yes`: skip confirmation.
+  - `--json`: machine-readable output.
+
+Example:
+
+```bash
+clawhub package rescan @openclaw/example-plugin --yes
 ```
 
 ### `package report`
@@ -509,7 +545,7 @@ Notes:
 #### GitHub Actions
 
 ClawHub also ships an official reusable workflow at
-[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/3a6ab49dc37dcb5e05cf8929064aa9aba2fee434/.github/workflows/package-publish.yml)
+[`/.github/workflows/package-publish.yml`](https://github.com/openclaw/clawhub/blob/003d243cccebe3b38293dd6bd3886b35842aabf5/.github/workflows/package-publish.yml)
 for plugin repos.
 
 Typical caller setup:

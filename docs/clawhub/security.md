@@ -108,7 +108,8 @@ handoff path when needed.
 ## Appeals and rescans
 
 Owners can request a rescan when they believe a skill or package was incorrectly
-held or flagged:
+held or flagged. Platform moderators and admins can request rescans for any
+skill or package while handling reports or support requests:
 
 ```bash
 clawhub skill rescan <slug>
