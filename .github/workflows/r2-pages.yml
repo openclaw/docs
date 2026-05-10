@@ -98,7 +98,7 @@ jobs:
       - name: Upload changed R2 objects
         if: steps.current-main.outputs.stale != 'true'
         env:
-          CLOUDFLARE_ACCOUNT_ID: 91b59577e757131d68d55a471fe32aca
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_R2_BUCKET: openclaw-docs
           OPENCLAW_R2_ACCESS_KEY_ID: ${{ secrets.OPENCLAW_R2_ACCESS_KEY_ID }}
           OPENCLAW_R2_SECRET_ACCESS_KEY: ${{ secrets.OPENCLAW_R2_SECRET_ACCESS_KEY }}

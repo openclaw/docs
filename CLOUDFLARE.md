@@ -51,7 +51,7 @@ The old Worker Static Assets build remains the rollback path in git history.
 Cloudflare account:
 
 - account: `Services@openclaw.org`
-- account id: `91b59577e757131d68d55a471fe32aca`
+- account id: stored in the private `CLOUDFLARE_ACCOUNT_ID` secret/local environment variable
 - zone: `openclaw.ai`
 
 Required Cloudflare API token scopes for bucket/domain/DNS setup:
@@ -66,10 +66,11 @@ R2 must be enabled for the account before bucket creation works.
 
 Required R2 S3 upload credentials:
 
+- `CLOUDFLARE_ACCOUNT_ID`
 - `OPENCLAW_R2_ACCESS_KEY_ID`
 - `OPENCLAW_R2_SECRET_ACCESS_KEY`
 
-The same values are used by the Worker router for signed R2 reads. The Pages workflow writes them to Worker secrets before deployment, so the Worker deploy token does not need `Account: R2 Storage: Read`.
+The same values are used by the Worker router for signed R2 reads. The Pages workflow writes them to Worker secrets before deployment, so the Worker deploy token does not need `Account: R2 Storage: Read`. Do not commit the account id or credentials to this repository.
 
 For Cloudflare R2 API tokens, the access key id is the account-token id returned by:
 
@@ -105,7 +106,7 @@ Local R2 upload:
 
 ```sh
 source ~/.profile
-CLOUDFLARE_ACCOUNT_ID=91b59577e757131d68d55a471fe32aca \
+CLOUDFLARE_ACCOUNT_ID="$CLOUDFLARE_ACCOUNT_ID" \
 CLOUDFLARE_R2_BUCKET=openclaw-docs \
 OPENCLAW_R2_ACCESS_KEY_ID="$OPENCLAW_R2_ACCESS_KEY_ID" \
 OPENCLAW_R2_SECRET_ACCESS_KEY="$OPENCLAW_R2_SECRET_ACCESS_KEY" \
@@ -162,7 +163,7 @@ After router deploy, verify repeated requests show `X-OpenClaw-Docs-Cache: MISS`
 
    ```sh
    source ~/.profile
-   CLOUDFLARE_ACCOUNT_ID=91b59577e757131d68d55a471fe32aca \
+   CLOUDFLARE_ACCOUNT_ID="$CLOUDFLARE_ACCOUNT_ID" \
    CLOUDFLARE_API_TOKEN="$OPENCLAW_CLOUDFLARE_API_TOKEN" \
    npx wrangler@4.88.0 r2 bucket list
    ```

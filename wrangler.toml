@@ -1,12 +1,10 @@
 name = "openclaw-docs-router"
 main = "workers/docs-router.ts"
-account_id = "91b59577e757131d68d55a471fe32aca"
 compatibility_date = "2026-05-06"
 routes = [
   { pattern = "documentation.openclaw.ai/*", zone_name = "openclaw.ai" }
 ]
 
 [vars]
-CLOUDFLARE_ACCOUNT_ID = "91b59577e757131d68d55a471fe32aca"
 CLOUDFLARE_R2_BUCKET = "openclaw-docs"
 OPENCLAW_R2_REGION = "auto"
