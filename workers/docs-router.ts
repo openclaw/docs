@@ -1,9 +1,8 @@
 interface Env {
-  R2_ORIGIN_HOST?: string;
+  DOCS_BUCKET: R2Bucket;
 }
 
 const markdownAcceptTypes = new Set(["text/markdown", "text/x-markdown", "application/markdown"]);
-const defaultR2OriginHost = "docs2.openclaw.ai";
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -101,19 +100,25 @@ async function assetResponse(env: Env, ctx: ExecutionContext, request: Request, 
     });
   }
 
-  const response = await fetch(r2OriginUrl(env, pathname), {
-    method: request.method,
-    headers: r2RequestHeaders(request),
-    redirect: "manual",
-  });
-  const responseHeaders = new Headers(response.headers);
+  const key = r2ObjectKey(pathname);
+  const object = request.method === "HEAD" ? await env.DOCS_BUCKET.head(key) : await env.DOCS_BUCKET.get(key);
+  if (!object) {
+    return new Response(request.method === "HEAD" ? null : "Not found\n", {
+      status: 404,
+      headers: {
+        "Cache-Control": "public, max-age=60",
+        "Content-Type": "text/plain; charset=utf-8",
+        "X-OpenClaw-Docs-Cache": "MISS",
+        "X-OpenClaw-Docs-Origin": "cloudflare-r2",
+      },
+    });
+  }
+  const responseHeaders = r2ObjectHeaders(object);
   responseHeaders.set("X-OpenClaw-Docs-Origin", "cloudflare-r2");
   responseHeaders.set("X-OpenClaw-Docs-Cache", "MISS");
-  responseHeaders.delete("Content-Length");
-  if (response.ok) applyCacheHeaders(responseHeaders, pathname);
-  const finalResponse = new Response(request.method === "HEAD" ? null : response.body, {
-    status: response.status,
-    statusText: response.statusText,
+  applyCacheHeaders(responseHeaders, pathname);
+  const finalResponse = new Response(request.method === "HEAD" ? null : object.body, {
+    status: 200,
     headers: responseHeaders,
   });
   if (request.method === "GET" && finalResponse.ok) {
@@ -129,20 +134,21 @@ async function assetResponse(env: Env, ctx: ExecutionContext, request: Request, 
   return finalResponse;
 }
 
-function r2OriginUrl(env: Env, pathname: string): string {
-  const host = env.R2_ORIGIN_HOST || defaultR2OriginHost;
-  const url = new URL(`https://${host}`);
-  url.pathname = pathname;
-  return url.toString();
+function r2ObjectHeaders(object: R2Object): Headers {
+  const headers = new Headers();
+  object.writeHttpMetadata(headers);
+  headers.set("ETag", object.httpEtag);
+  headers.set("Last-Modified", object.uploaded.toUTCString());
+  return headers;
 }
 
-function r2RequestHeaders(request: Request): Headers {
-  const headers = new Headers(request.headers);
-  headers.delete("Cookie");
-  headers.delete("Host");
-  headers.delete("If-None-Match");
-  headers.delete("If-Modified-Since");
-  return headers;
+function r2ObjectKey(pathname: string): string {
+  const key = pathname.replace(/^\/+/, "");
+  try {
+    return decodeURIComponent(key);
+  } catch {
+    return key;
+  }
 }
 
 function cacheRequest(request: Request, pathname: string): Request {

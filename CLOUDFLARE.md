@@ -31,15 +31,15 @@ Production is cut over to R2-backed storage with a small Worker router in front:
 
 - Worker: `openclaw-docs-router`
 - Route: `documentation.openclaw.ai/*`
-- Router origin: `docs2.openclaw.ai`
+- R2 binding: `DOCS_BUCKET` -> bucket `openclaw-docs`
 - Header: `X-OpenClaw-Docs-Origin: cloudflare-r2`
 - Cache-Control follows the same policy as the R2 manifest.
 
 Why a Worker still exists:
 
-- Plain R2 custom domains do not serve `/` as `/index.html`.
-- Plain R2 custom domains do not redirect non-root trailing slash docs paths to slashless paths.
-- Plain R2 custom domains cannot negotiate markdown from `Accept: text/markdown`.
+- Direct R2 bucket bindings do not serve `/` as `/index.html` without router logic.
+- Direct R2 bucket bindings do not redirect non-root trailing slash docs paths to slashless paths.
+- Direct R2 bucket bindings cannot negotiate markdown from `Accept: text/markdown` without router logic.
 - The available Cloudflare auth can manage R2, DNS, custom domains, and Worker routes, but not zone Rulesets/Page Rules. Dashboard-session replay via `mcporter chrome-devtools` also returned Cloudflare API auth error `10000` for `/rulesets`.
 
 The pure Vincent target remains possible after a Cloudflare token/session with `Zone: Rulesets: Edit` is available. Until then, the Worker is the compatibility layer and R2 is the storage/source of truth.
@@ -119,7 +119,7 @@ The generated R2 manifest uploads both canonical files and slashless aliases:
 - `/concepts/models.md` serves markdown from object key `concepts/models.md`.
 - `/docs/platforms/digitalocean` serves the compatibility redirect HTML.
 
-The Worker router preserves `Accept: text/markdown` negotiation and root `/` behavior while fetching objects from R2. Pure R2 custom-domain serving still needs Cloudflare URL rewrite/redirect rules.
+The Worker router preserves `Accept: text/markdown` negotiation and root `/` behavior while reading objects from the bound R2 bucket. Pure R2 custom-domain serving still needs Cloudflare URL rewrite/redirect rules.
 
 ## Cache Policy
 
@@ -166,9 +166,8 @@ After router deploy, verify repeated requests show `X-OpenClaw-Docs-Cache: MISS`
    ```
 
 4. Run the manual `R2 Pages` workflow, or run the local upload command above.
-5. Attach the R2 custom domain for `documentation.openclaw.ai`.
-6. Deploy `openclaw-docs-router` with `R2_ORIGIN_HOST=docs2.openclaw.ai`.
-7. Live-test the URLs below.
+5. Deploy `openclaw-docs-router` with the `DOCS_BUCKET` R2 binding.
+6. Live-test the URLs below.
 
 Pure R2 follow-up, blocked on `Zone: Rulesets: Edit`:
 
